@@ -35,7 +35,8 @@ import type {
 	GreekLetter,
 	MathSymbol,
 	MultiplicationDisplayStyle,
-	DivisionDisplayStyle
+	DivisionDisplayStyle,
+	RelationNode
 } from './types';
 
 import type { LatexGeneratorOptions } from './latex-generator';
@@ -107,6 +108,9 @@ import type { DifferentiationOptions } from './differentiation';
 
 import { match, applyRules } from './pattern';
 import type { Pattern, Rule } from './pattern';
+
+import { solve as solveEquation, SolveError } from './solve';
+import type { SolveOptions, SolveResult } from './solve';
 
 // =============================================================================
 // Type for Exp or MathNode parameters
@@ -904,5 +908,88 @@ export class Exp {
 	): Exp {
 		const result = differentiateN(this.#node, n, { variable, ...options });
 		return new Exp(result);
+	}
+
+	// =========================================================================
+	// Instance Methods - Equation Solving
+	// =========================================================================
+
+	/**
+	 * Solve this expression as an equation.
+	 *
+	 * This expression must be a relation with '=' (e.g., 2x + 4 = 0).
+	 * Returns a SolveResult containing the solutions and step-by-step explanations.
+	 *
+	 * @param options - Solving options (variable, verbosity, precision)
+	 * @returns SolveResult with solutions and metadata
+	 * @throws SolveError if the expression is not an equation or cannot be solved
+	 *
+	 * @example
+	 * // Solve linear equation: 2x + 4 = 0
+	 * const result = Exp.parse('2x + 4 = 0').solve();
+	 * // result.status === 'unique'
+	 * // result.solutions[0].value represents x = -2
+	 *
+	 * @example
+	 * // Solve quadratic equation with detailed steps
+	 * const result = Exp.parse('x^2 - 5x + 6 = 0').solve({ verbosity: 'detailed' });
+	 * // result.status === 'multiple'
+	 * // result.solutions contains x = 2 and x = 3
+	 * // result.steps contains step-by-step explanation
+	 *
+	 * @example
+	 * // Solve for a specific variable
+	 * const result = Exp.parse('a*x + b = 0').solve({ variable: 'x' });
+	 * // Solves for x in terms of a and b
+	 *
+	 * @example
+	 * // Handle no real solution
+	 * const result = Exp.parse('x^2 + 1 = 0').solve();
+	 * // result.status === 'no-real-solution'
+	 */
+	solve(options?: SolveOptions): SolveResult {
+		if (this.#node.type !== 'relation') {
+			throw new SolveError(
+				"L'expression doit etre une equation (ex: 2x + 3 = 0)",
+				'unknown',
+				`Type recu: ${this.#node.type}`
+			);
+		}
+
+		const relation = this.#node as RelationNode;
+		if (relation.relation !== '=') {
+			throw new SolveError(
+				'Seules les egalites peuvent etre resolues',
+				'unknown',
+				`Relation recue: ${relation.relation}`
+			);
+		}
+
+		return solveEquation(relation, options);
+	}
+
+	/**
+	 * Get solutions of this equation as Exp instances.
+	 *
+	 * Convenience method that solves the equation and returns the solution
+	 * values wrapped in Exp instances for further manipulation.
+	 *
+	 * @param options - Solving options (variable, verbosity, precision)
+	 * @returns Array of Exp instances representing the solutions
+	 * @throws SolveError if the expression is not an equation or cannot be solved
+	 *
+	 * @example
+	 * // Get solutions as Exp instances
+	 * const solutions = Exp.parse('x^2 - 4 = 0').solutions();
+	 * solutions.map(s => s.latex) // ['2', '-2'] or similar
+	 *
+	 * @example
+	 * // Chain with other operations
+	 * const [sol] = Exp.parse('x^2 - 2 = 0').solutions();
+	 * sol.latex // '\\sqrt{2}' or similar
+	 */
+	solutions(options?: SolveOptions): Exp[] {
+		const result = this.solve(options);
+		return result.solutions.map((sol) => new Exp(sol.value));
 	}
 }
