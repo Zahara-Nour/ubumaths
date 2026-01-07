@@ -81,6 +81,16 @@ export interface CommandResult {
 	readonly ast?: MathNode;
 	/** Optional HTML-formatted output for web display */
 	readonly outputHtml?: string;
+
+	// Toggle support for exact/decimal display (like eval results)
+	/** Exact representation (e.g., "x = -1", "x = sqrt(2)") */
+	readonly exactOutput?: string;
+	readonly exactOutputHtml?: string;
+	/** Decimal representation (e.g., "x ≈ -1.00000", "x ≈ 1.41421") */
+	readonly decimalOutput?: string;
+	readonly decimalOutputHtml?: string;
+	/** Whether user can toggle between exact and decimal display */
+	readonly canToggle?: boolean;
 }
 
 // =============================================================================
