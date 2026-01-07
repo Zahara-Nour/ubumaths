@@ -1351,6 +1351,7 @@ export class WebReplEngine {
 			decimalOutput?: string;
 			decimalOutputHtml?: string;
 			canToggle?: boolean;
+			showDecimalInitially?: boolean;
 		},
 		ast?: MathNode
 	): ReplExecutionResult {
@@ -1383,7 +1384,8 @@ export class WebReplEngine {
 				exactOutputHtml: cmdResult.exactOutputHtml,
 				decimalOutput: cmdResult.decimalOutput,
 				decimalOutputHtml: cmdResult.decimalOutputHtml,
-				canToggle: cmdResult.canToggle
+				canToggle: cmdResult.canToggle,
+				showDecimalInitially: cmdResult.showDecimalInitially
 			};
 		}
 
@@ -1410,7 +1412,8 @@ export class WebReplEngine {
 			exactOutputHtml: cmdResult.exactOutputHtml,
 			decimalOutput: cmdResult.decimalOutput,
 			decimalOutputHtml: cmdResult.decimalOutputHtml,
-			canToggle: cmdResult.canToggle
+			canToggle: cmdResult.canToggle,
+			showDecimalInitially: cmdResult.showDecimalInitially
 		};
 	}
 

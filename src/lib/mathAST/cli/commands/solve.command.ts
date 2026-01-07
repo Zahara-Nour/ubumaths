@@ -298,7 +298,8 @@ export class SolveCommand extends BaseCommand {
 					exactOutputHtml,
 					decimalOutput,
 					decimalOutputHtml,
-					canToggle
+					canToggle,
+					showDecimalInitially: useDecimal
 				};
 			}
 
