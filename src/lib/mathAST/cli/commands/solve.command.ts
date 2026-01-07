@@ -614,13 +614,9 @@ export class SolveCommand extends BaseCommand {
 					this.escapeHtml.bind(this)
 				);
 
-				// Use aligned header
+				// Use aligned header then steps (no blank line)
 				headerLines.push(globalAligned.headerText);
 				headerHtmlLines.push(globalAligned.headerHtml);
-
-				// Add blank line then steps
-				headerLines.push('');
-				headerHtmlLines.push('<br>');
 				headerLines.push(...globalAligned.textLines);
 				headerHtmlLines.push(...globalAligned.htmlLines);
 			} else {
