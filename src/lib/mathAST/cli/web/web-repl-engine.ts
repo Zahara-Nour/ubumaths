@@ -677,7 +677,7 @@ export class WebReplEngine {
 			const form2 = normalize(substituted2);
 			const isEquivalent = normalFormsEquivalent(form1, form2);
 
-			return this.createEqualityResult(isEquivalent, expr1Str, expr2Str);
+			return this.createEqualityResult(isEquivalent);
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Erreur lors de la comparaison';
 			return {

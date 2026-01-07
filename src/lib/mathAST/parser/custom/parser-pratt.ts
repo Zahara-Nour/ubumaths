@@ -27,6 +27,12 @@ import { CustomTokenizer, type CustomToken, type CustomTokenType } from './token
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
 import { MathAST, compose } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
+import {
+	SecurityError,
+	getEffectiveSecurityOptions,
+	checkInputLength,
+	type ParserSecurityOptions
+} from '../security';
 
 // =============================================================================
 // Binding Power (Precedence)
@@ -1498,6 +1504,107 @@ class CustomPrattParser {
 }
 
 // =============================================================================
+// AST Security Helpers
+// =============================================================================
+
+/**
+ * Get all child nodes of a MathNode for traversal.
+ */
+function getNodeChildren(node: MathNode): MathNode[] {
+	const children: MathNode[] = [];
+
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			children.push(node.left, node.right);
+			break;
+		case 'division':
+			children.push(node.numerator, node.denominator);
+			break;
+		case 'opposite':
+		case 'positive':
+			children.push(node.operand);
+			break;
+		case 'superscript':
+			children.push(node.base, node.superscript);
+			break;
+		case 'subscript':
+			children.push(node.base, node.subscript);
+			break;
+		case 'function':
+			children.push(...node.args);
+			if (node.power) children.push(node.power);
+			if (node.base) children.push(node.base);
+			break;
+		case 'relation':
+			children.push(node.left, node.right);
+			break;
+		case 'delimiter':
+			children.push(node.content);
+			break;
+		case 'unit':
+			children.push(node.expression);
+			break;
+		case 'composition':
+			children.push(node.outer, node.inner);
+			break;
+		// Leaf nodes: number, variable, greek, symbol, hole - no children
+	}
+
+	return children;
+}
+
+/**
+ * Measure AST depth and node count using iterative BFS (avoids stack overflow).
+ */
+function measureAST(node: MathNode | null): { depth: number; nodeCount: number } {
+	if (!node) return { depth: 0, nodeCount: 0 };
+
+	let nodeCount = 0;
+	let maxDepth = 0;
+
+	// Use BFS with depth tracking
+	const queue: Array<{ node: MathNode; depth: number }> = [{ node, depth: 1 }];
+
+	while (queue.length > 0) {
+		const current = queue.shift()!;
+		nodeCount++;
+		maxDepth = Math.max(maxDepth, current.depth);
+
+		const children = getNodeChildren(current.node);
+		for (const child of children) {
+			queue.push({ node: child, depth: current.depth + 1 });
+		}
+	}
+
+	return { depth: maxDepth, nodeCount };
+}
+
+/**
+ * Check AST security limits after parsing.
+ */
+function checkASTSecurity(ast: MathNode | null, security: Required<ParserSecurityOptions>): void {
+	if (!ast) return;
+
+	const metrics = measureAST(ast);
+
+	if (metrics.depth > security.maxASTDepth) {
+		throw new SecurityError(
+			`AST depth ${metrics.depth} exceeds maximum allowed ${security.maxASTDepth}`,
+			'AST_TOO_DEEP'
+		);
+	}
+
+	if (metrics.nodeCount > security.maxNodeCount) {
+		throw new SecurityError(
+			`AST node count ${metrics.nodeCount} exceeds maximum allowed ${security.maxNodeCount}`,
+			'AST_TOO_MANY_NODES'
+		);
+	}
+}
+
+// =============================================================================
 // Public API
 // =============================================================================
 
@@ -1509,12 +1616,19 @@ class CustomPrattParser {
  * @param options - Parser options (default: strict mode)
  * @returns The parsed MathNode
  * @throws ParseException if parsing fails in strict mode
+ * @throws SecurityError if security limits are exceeded
  */
 export function parseCustomPratt(input: string, options?: Partial<ParserOptions>): MathNode {
 	const fullOptions: ParserOptions = {
 		mode: 'strict',
 		...options
 	};
+
+	// Get effective security options (merge with defaults)
+	const security = getEffectiveSecurityOptions(fullOptions.security);
+
+	// Check input length BEFORE parsing (fail fast)
+	checkInputLength(input, security.maxInputLength);
 
 	const parser = new CustomPrattParser(input, fullOptions);
 	const result = parser.parse();
@@ -1532,6 +1646,9 @@ export function parseCustomPratt(input: string, options?: Partial<ParserOptions>
 		throw new ParseException('Empty input', 0, 0, 'UNEXPECTED_EOF');
 	}
 
+	// Check AST limits AFTER parsing
+	checkASTSecurity(result, security);
+
 	return result;
 }
 
@@ -1542,6 +1659,7 @@ export function parseCustomPratt(input: string, options?: Partial<ParserOptions>
  * @param input - The custom syntax string to parse
  * @param options - Parser options (default: tolerant mode)
  * @returns ParseResult containing the AST and errors
+ * @throws SecurityError if security limits are exceeded (not caught)
  */
 export function parseCustomPrattSafe(input: string, options?: Partial<ParserOptions>): ParseResult {
 	const fullOptions: ParserOptions = {
@@ -1549,10 +1667,22 @@ export function parseCustomPrattSafe(input: string, options?: Partial<ParserOpti
 		...options
 	};
 
+	// Get effective security options (merge with defaults)
+	const security = getEffectiveSecurityOptions(fullOptions.security);
+
+	// Check input length BEFORE parsing (fail fast)
+	// SecurityError is NOT caught - it propagates up
+	checkInputLength(input, security.maxInputLength);
+
 	const parser = new CustomPrattParser(input, fullOptions);
 
 	try {
 		const ast = parser.parse();
+
+		// Check AST limits AFTER parsing
+		// SecurityError propagates up (not caught)
+		checkASTSecurity(ast, security);
+
 		return {
 			ast,
 			errors: parser.getErrors()

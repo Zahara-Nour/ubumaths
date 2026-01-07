@@ -21,6 +21,8 @@ import { ColorStack, isValidColor, normalizeColor } from './color-stack';
 import { MathAST, compose } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
+import { SecurityError, checkInputLength, getEffectiveSecurityOptions } from '../security';
+import type { ParserSecurityOptions } from '../security';
 
 // =============================================================================
 // Binding Power (Precedence)
@@ -1618,6 +1620,116 @@ class PrattParser {
 }
 
 // =============================================================================
+// Security Helpers
+// =============================================================================
+
+/**
+ * Get children of a MathNode.
+ */
+function getNodeChildren(node: MathNode): MathNode[] {
+	const children: MathNode[] = [];
+
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			if (node.left) children.push(node.left);
+			if (node.right) children.push(node.right);
+			break;
+		case 'division':
+			if (node.numerator) children.push(node.numerator);
+			if (node.denominator) children.push(node.denominator);
+			break;
+		case 'superscript':
+			if (node.base) children.push(node.base);
+			if (node.superscript) children.push(node.superscript);
+			break;
+		case 'subscript':
+			if (node.base) children.push(node.base);
+			if (node.subscript) children.push(node.subscript);
+			break;
+		case 'opposite':
+		case 'positive':
+			if (node.operand) children.push(node.operand);
+			break;
+		case 'delimiter':
+			if (node.content) children.push(node.content);
+			break;
+		case 'function':
+			for (const arg of node.args) {
+				if (arg) children.push(arg);
+			}
+			break;
+		case 'relation':
+			if (node.left) children.push(node.left);
+			if (node.right) children.push(node.right);
+			break;
+		case 'composition':
+			if (node.outer) children.push(node.outer);
+			if (node.inner) children.push(node.inner);
+			break;
+		case 'unit':
+			if (node.expression) children.push(node.expression);
+			break;
+		// Leaf nodes: number, variable, greek, symbol, hole
+	}
+
+	return children;
+}
+
+/**
+ * Measure the depth and node count of an AST using iterative BFS.
+ * Avoids stack overflow for large ASTs.
+ */
+function measureAST(node: MathNode | null): { depth: number; nodeCount: number } {
+	if (!node) {
+		return { depth: 0, nodeCount: 0 };
+	}
+
+	let nodeCount = 0;
+	let maxDepth = 0;
+
+	// BFS with depth tracking
+	const queue: Array<{ node: MathNode; depth: number }> = [{ node, depth: 1 }];
+
+	while (queue.length > 0) {
+		const current = queue.shift()!;
+		nodeCount++;
+		maxDepth = Math.max(maxDepth, current.depth);
+
+		const children = getNodeChildren(current.node);
+		for (const child of children) {
+			queue.push({ node: child, depth: current.depth + 1 });
+		}
+	}
+
+	return { depth: maxDepth, nodeCount };
+}
+
+/**
+ * Check AST against security limits.
+ */
+function checkASTSecurity(ast: MathNode | null, security: Required<ParserSecurityOptions>): void {
+	if (!ast) return;
+
+	const metrics = measureAST(ast);
+
+	if (metrics.depth > security.maxASTDepth) {
+		throw new SecurityError(
+			`AST depth ${metrics.depth} exceeds maximum allowed ${security.maxASTDepth}`,
+			'AST_TOO_DEEP'
+		);
+	}
+
+	if (metrics.nodeCount > security.maxNodeCount) {
+		throw new SecurityError(
+			`AST node count ${metrics.nodeCount} exceeds maximum allowed ${security.maxNodeCount}`,
+			'AST_TOO_MANY_NODES'
+		);
+	}
+}
+
+// =============================================================================
 // Public API
 // =============================================================================
 
@@ -1629,12 +1741,17 @@ class PrattParser {
  * @param options - Parser options (default: strict mode)
  * @returns The parsed MathNode
  * @throws ParseException if parsing fails in strict mode
+ * @throws SecurityError if security limits are exceeded
  */
 export function parsePratt(input: string, options?: Partial<ParserOptions>): MathNode {
 	const fullOptions: ParserOptions = {
 		mode: 'strict',
 		...options
 	};
+
+	// Security checks
+	const security = getEffectiveSecurityOptions(fullOptions.security);
+	checkInputLength(input, security.maxInputLength);
 
 	const parser = new PrattParser(input, fullOptions);
 	const result = parser.parse();
@@ -1652,6 +1769,9 @@ export function parsePratt(input: string, options?: Partial<ParserOptions>): Mat
 		throw new ParseException('Empty input', 0, 0, 'UNEXPECTED_EOF');
 	}
 
+	// Check AST security limits
+	checkASTSecurity(result, security);
+
 	return result;
 }
 
@@ -1662,6 +1782,7 @@ export function parsePratt(input: string, options?: Partial<ParserOptions>): Mat
  * @param input - The LaTeX string to parse
  * @param options - Parser options (default: tolerant mode)
  * @returns ParseResult containing the AST and errors
+ * @throws SecurityError if security limits are exceeded (not caught)
  */
 export function parsePrattSafe(input: string, options?: Partial<ParserOptions>): ParseResult {
 	const fullOptions: ParserOptions = {
@@ -1669,10 +1790,18 @@ export function parsePrattSafe(input: string, options?: Partial<ParserOptions>):
 		...options
 	};
 
+	// Security checks - rethrow SecurityError (not a parse error)
+	const security = getEffectiveSecurityOptions(fullOptions.security);
+	checkInputLength(input, security.maxInputLength);
+
 	const parser = new PrattParser(input, fullOptions);
 
 	try {
 		const ast = parser.parse();
+
+		// Check AST security limits
+		checkASTSecurity(ast, security);
+
 		return {
 			ast,
 			errors: parser.getErrors()
@@ -1684,6 +1813,6 @@ export function parsePrattSafe(input: string, options?: Partial<ParserOptions>):
 				errors: [...parser.getErrors(), e.toParseError()]
 			};
 		}
-		throw e;
+		throw e; // Rethrow SecurityError and other errors
 	}
 }

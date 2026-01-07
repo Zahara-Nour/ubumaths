@@ -603,10 +603,96 @@ class MyCommand extends BaseCommand {
 registry.register(new MyCommand());
 ```
 
+## Auto-Completion API
+
+The CLI includes a completion provider for IDE-like input assistance.
+
+### CompletionProvider
+
+```typescript
+import { CompletionProvider } from '$lib/mathAST/cli/completion';
+
+const provider = new CompletionProvider();
+
+// Get completions for a prefix
+const completions = provider.getCompletions('sin');
+// Returns: [
+//   { label: 'sin', kind: 'function', insertText: 'sin(', signature: 'sin(x)', description: 'Sinus' },
+//   { label: 'sinh', kind: 'function', insertText: 'sinh(', signature: 'sinh(x)', description: 'Sinus hyperbolique' }
+// ]
+```
+
+### With Context
+
+```typescript
+// Provide variable and function context
+const completions = provider.getCompletions('', {
+	variables: ['x', 'y', 'myVar'],
+	functions: ['f', 'g']
+});
+
+// Limit results
+const top5 = provider.getCompletions('', undefined, { maxResults: 5 });
+```
+
+### Completion Types
+
+```typescript
+type CompletionKind = 'function' | 'variable' | 'command' | 'constant' | 'greek';
+
+interface Completion {
+	label: string; // Display name
+	kind: CompletionKind; // Type of completion
+	insertText: string; // Text to insert
+	signature?: string; // Function signature
+	description?: string; // Short description (French)
+}
+```
+
+### Built-in Completions
+
+| Category      | Items                                               |
+| ------------- | --------------------------------------------------- |
+| Functions     | sin, cos, tan, arcsin, ln, log, exp, sqrt, abs, ... |
+| Constants     | pi, e, infty                                        |
+| Greek letters | alpha, beta, gamma, theta, delta, epsilon, ...      |
+
+### Integration Example
+
+```svelte
+<script lang="ts">
+	import { CompletionProvider } from '$lib/mathAST/cli/completion';
+
+	const provider = new CompletionProvider();
+	let input = $state('');
+	let completions = $state<Completion[]>([]);
+
+	function updateCompletions() {
+		const prefix = getCurrentWord(input);
+		completions = provider.getCompletions(prefix, {
+			variables: ['x', 'y']
+		});
+	}
+</script>
+
+<input bind:value={input} oninput={updateCompletions} />
+
+{#if completions.length > 0}
+	<ul class="completions">
+		{#each completions as c}
+			<li>
+				<span class="label">{c.label}</span>
+				<span class="kind">{c.kind}</span>
+			</li>
+		{/each}
+	</ul>
+{/if}
+```
+
 ## Testing
 
 ```bash
-pnpm test:client src/lib/mathAST/cli
+pnpm test:server src/lib/mathAST/cli
 ```
 
 Test files:
@@ -622,4 +708,6 @@ src/lib/mathAST/cli/__tests__/
     ├── eval.command.test.ts
     ├── diff.command.test.ts
     └── ... (all commands)
+└── completion/
+    └── provider.test.ts
 ```

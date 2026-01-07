@@ -387,6 +387,100 @@ normalize(parseLatex('sqrt(sqrt(x))')); // limited simplification
 
 For symbolic manipulation beyond polynomials, use [Pattern Matching](./patterns.md).
 
+## Step-by-Step Recording
+
+Record transformation steps for educational display and debugging.
+
+### Basic Usage
+
+```typescript
+import { simplifyWithSteps, StepRecorder } from '$lib/mathAST';
+
+const ast = parseLatex('x + 0 + x');
+const { result, steps } = simplifyWithSteps(ast);
+
+// Display steps
+steps.forEach((step) => {
+	console.log(`Rule: ${step.rule}`);
+	console.log(`Description: ${step.description}`);
+	console.log(`Before: ${toLatex(step.before)}`);
+	console.log(`After: ${toLatex(step.after)}`);
+	console.log('---');
+});
+```
+
+### Step Interface
+
+```typescript
+interface NormalizationStep {
+	readonly rule: string; // Rule identifier (e.g., 'additive-identity')
+	readonly description: string; // Human-readable (French)
+	readonly before: MathNode; // AST before transformation
+	readonly after: MathNode; // AST after transformation
+}
+```
+
+### Using StepRecorder Directly
+
+For more control over step recording:
+
+```typescript
+import { StepRecorder, applyRules } from '$lib/mathAST';
+
+const recorder = new StepRecorder();
+
+// Record individual steps
+recorder.recordStep('combine-like-terms', beforeAst, afterAst);
+
+// Get all recorded steps
+const steps = recorder.getSteps();
+
+// Clear for reuse
+recorder.clear();
+```
+
+### Rule Descriptions (French)
+
+| Rule                  | Description                          |
+| --------------------- | ------------------------------------ |
+| `additive-identity`   | Suppression de l'élément neutre (+0) |
+| `multiplicative-one`  | Suppression du facteur 1             |
+| `multiply-by-zero`    | Multiplication par zéro              |
+| `combine-like-terms`  | Regroupement des termes semblables   |
+| `simplify-fraction`   | Simplification de la fraction        |
+| `distribute`          | Distribution                         |
+| `factor-common`       | Factorisation du facteur commun      |
+| `power-of-power`      | Puissance de puissance               |
+| `simplify-double-neg` | Simplification de la double négation |
+
+### Educational Use
+
+```svelte
+<script lang="ts">
+	import { simplifyWithSteps } from '$lib/mathAST';
+
+	let expression = $state('x + x + 0');
+	let steps = $state<NormalizationStep[]>([]);
+
+	function simplify() {
+		const ast = parseLatex(expression);
+		const result = simplifyWithSteps(ast);
+		steps = result.steps;
+	}
+</script>
+
+<button onclick={simplify}>Simplifier</button>
+
+{#each steps as step, i}
+	<div class="step">
+		<h4>Étape {i + 1}: {step.description}</h4>
+		<p>
+			<Katex formula={toLatex(step.before)} /> → <Katex formula={toLatex(step.after)} />
+		</p>
+	</div>
+{/each}
+```
+
 ## Performance
 
 - Normalization: O(n log n) for polynomial with n terms

@@ -376,6 +376,73 @@ try {
 }
 ```
 
+## Input Validation with Zod
+
+Runtime validation of evaluation bindings using Zod schemas:
+
+### Validation Functions
+
+```typescript
+import {
+	validateVariableName,
+	validateNumericValue,
+	validateEvalBindings,
+	VariableNameSchema,
+	NumericValueSchema,
+	EvalBindingsSchema
+} from '$lib/mathAST';
+
+// Validate variable names (returns { success, data?, error? })
+validateVariableName('x'); // { success: true, data: 'x' }
+validateVariableName('123'); // { success: false, error: ... }
+validateVariableName(''); // { success: false, error: ... }
+
+// Validate numeric values (rejects NaN, Infinity)
+validateNumericValue(42); // { success: true, data: 42 }
+validateNumericValue(NaN); // { success: false, error: ... }
+validateNumericValue(Infinity); // { success: false, error: ... }
+
+// Validate complete bindings object
+validateEvalBindings({ x: 1, y: 2 }); // { success: true, data: { x: 1, y: 2 } }
+validateEvalBindings({ x: NaN }); // { success: false, error: ... }
+```
+
+### Available Schemas
+
+```typescript
+// Variable name: alphanumeric starting with letter/underscore
+const VariableNameSchema = z.string().regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/);
+
+// Numeric value: finite number (not NaN or Infinity)
+const NumericValueSchema = z.number().refine((n) => Number.isFinite(n), 'Value must be finite');
+
+// Numeric value with bounds
+const BoundedNumericSchema = z.number().finite().min(-1e10).max(1e10);
+
+// Evaluation bindings: record of variable names to values
+const EvalBindingsSchema = z.record(VariableNameSchema, NumericValueSchema);
+```
+
+### Use Cases
+
+```typescript
+// Validate user input before evaluation
+function safeEvaluate(ast: MathNode, userBindings: unknown) {
+	const result = validateEvalBindings(userBindings);
+	if (!result.success) {
+		throw new Error(`Invalid bindings: ${result.error.message}`);
+	}
+	return evaluate(ast, { variables: result.data });
+}
+
+// In API endpoints
+const schema = z.object({
+	expression: z.string().max(1000),
+	variables: EvalBindingsSchema
+});
+const parsed = schema.safeParse(await request.json());
+```
+
 ## Unit-Aware Evaluation
 
 Evaluate expressions with unit propagation and dimensional validation.

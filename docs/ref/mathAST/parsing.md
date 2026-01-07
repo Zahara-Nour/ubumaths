@@ -41,6 +41,7 @@ interface LatexParserOptions {
 	mode: 'strict' | 'tolerant';
 	parser?: 'pratt' | 'rd';
 	genericFunctions?: GenericFunctionConfig;
+	security?: ParserSecurityOptions;
 }
 
 // Strict mode (default): errors on invalid input
@@ -52,6 +53,39 @@ parseLatex('x^', { mode: 'tolerant' }); // returns partial result
 // Choose parser implementation
 parseLatex('x^2', { parser: 'pratt' }); // Pratt parser (default)
 parseLatex('x^2', { parser: 'rd' }); // Recursive descent
+```
+
+### Security Options
+
+Protect against DoS attacks and resource exhaustion:
+
+```typescript
+interface ParserSecurityOptions {
+	maxInputLength?: number; // Default: 10000 characters
+	maxASTDepth?: number; // Default: 100 levels
+	maxNodeCount?: number; // Default: 10000 nodes
+}
+
+// With security limits
+parseLatex(userInput, {
+	security: {
+		maxInputLength: 5000,
+		maxASTDepth: 50,
+		maxNodeCount: 5000
+	}
+});
+
+// SecurityError thrown if limits exceeded
+import { SecurityError } from '$lib/mathAST';
+
+try {
+	parseLatex(veryLongInput);
+} catch (e) {
+	if (e instanceof SecurityError) {
+		console.error(`Security limit exceeded: ${e.code}`);
+		// e.code: 'INPUT_TOO_LONG' | 'AST_TOO_DEEP' | 'AST_TOO_MANY_NODES'
+	}
+}
 ```
 
 ### Generic Functions
@@ -541,6 +575,45 @@ if (!result.ast) {
 		console.error(`Error at position ${error.position}: ${error.message}`);
 	}
 }
+```
+
+### Rich Error Context
+
+Parse errors include detailed context for better diagnostics:
+
+```typescript
+import { createErrorContext, computeLineAndColumn, getSuggestions } from '$lib/mathAST';
+
+interface ParseError {
+	message: string;
+	position: number;
+	length: number;
+	code: ParseErrorCode;
+	// Enhanced fields (optional)
+	context?: {
+		before: string; // 20 chars before error
+		error: string; // The problematic segment
+		after: string; // 20 chars after error
+	};
+	line?: number; // 1-indexed
+	column?: number; // 1-indexed
+	suggestions?: string[]; // Helpful suggestions
+}
+
+// Create error context manually
+const input = 'x + \\frc{1}{2}';
+const ctx = createErrorContext(input, 4, 4);
+// ctx.before: "x + "
+// ctx.error: "\\frc"
+// ctx.after: "{1}{2}"
+
+// Compute line and column
+const { line, column } = computeLineAndColumn(input, 4);
+// line: 1, column: 5
+
+// Get suggestions for common errors
+const suggestions = getSuggestions('UNKNOWN_COMMAND', 'Unknown: \\frc');
+// suggestions: ['\\frac', ...]  (Levenshtein distance-based)
 ```
 
 ## Parser Internals

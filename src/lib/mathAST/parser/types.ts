@@ -9,6 +9,7 @@
  */
 
 import type { MathNode } from '../types';
+import type { ParserSecurityOptions } from './security';
 
 // =============================================================================
 // Token Types
@@ -152,6 +153,8 @@ export interface ParserOptions {
 	readonly mode: 'strict' | 'tolerant';
 	/** Configuration for generic function names (f, g, h) */
 	readonly genericFunctions?: GenericFunctionConfig;
+	/** Security limits for input size, AST depth, and node count */
+	readonly security?: ParserSecurityOptions;
 }
 
 /**
@@ -209,6 +212,18 @@ export type ParseErrorCode =
 	| 'INVALID_SUPERSCRIPT'; // Invalid superscript expression
 
 /**
+ * Context around an error showing surrounding text.
+ */
+export interface ErrorContext {
+	/** Text before the error (max 20 chars) */
+	readonly before: string;
+	/** The erroneous segment */
+	readonly error: string;
+	/** Text after the error (max 20 chars) */
+	readonly after: string;
+}
+
+/**
  * Represents a parsing error with location information.
  *
  * @example
@@ -231,6 +246,20 @@ export interface ParseError {
 
 	/** Error code for categorization */
 	readonly code: ParseErrorCode;
+
+	// Enhanced fields (optional for backwards compatibility)
+
+	/** Context showing surrounding text */
+	readonly context?: ErrorContext;
+
+	/** Line number (1-indexed) */
+	readonly line?: number;
+
+	/** Column number (1-indexed) */
+	readonly column?: number;
+
+	/** Suggestions for fixing the error */
+	readonly suggestions?: readonly string[];
 }
 
 // =============================================================================

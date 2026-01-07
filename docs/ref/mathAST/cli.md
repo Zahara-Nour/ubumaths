@@ -403,6 +403,113 @@ pnpm test:server src/lib/mathAST/cli/
 pnpm test:server src/lib/mathAST/cli/commands/eval.command.test.ts
 ```
 
+## Auto-Completion
+
+The Web REPL includes built-in auto-completion that appears as you type.
+
+### Usage
+
+1. Start typing a function name, variable, or greek letter (e.g., `si`)
+2. A dropdown appears with matching suggestions
+3. Use keyboard or mouse to select:
+
+| Key     | Action                           |
+| ------- | -------------------------------- |
+| `↑` `↓` | Navigate suggestions             |
+| `Tab`   | Insert selected item             |
+| `Enter` | Submit input (ignore completion) |
+| `Esc`   | Close dropdown                   |
+
+### What Gets Completed
+
+- **Built-in functions**: `sin`, `cos`, `sqrt`, `ln`, `exp`, etc.
+- **Constants**: `pi`, `e`, `infty`
+- **Greek letters**: `alpha`, `beta`, `gamma`, `theta`, etc.
+- **User variables**: Variables defined with `.let` or `:=`
+- **User functions**: Functions defined with `.def` or `:=`
+
+### CompletionProvider API
+
+For programmatic use:
+
+```typescript
+import { CompletionProvider } from '$lib/mathAST/cli/completion';
+
+const provider = new CompletionProvider();
+
+// Get completions for a prefix
+const completions = provider.getCompletions('sin');
+// Returns: [
+//   { label: 'sin', kind: 'function', insertText: 'sin(', signature: 'sin(x)', description: 'Sinus' },
+//   { label: 'sinh', kind: 'function', insertText: 'sinh(', signature: 'sinh(x)', description: 'Sinus hyperbolique' }
+// ]
+```
+
+### With Context
+
+```typescript
+// Provide variable and function context
+const completions = provider.getCompletions('', {
+	variables: ['x', 'y', 'myVar'],
+	functions: ['f', 'g']
+});
+
+// Limit results
+const top5 = provider.getCompletions('', undefined, { maxResults: 5 });
+```
+
+### Completion Types
+
+```typescript
+type CompletionKind = 'function' | 'variable' | 'command' | 'constant' | 'greek';
+
+interface Completion {
+	label: string; // Display name
+	kind: CompletionKind; // Type of completion
+	insertText: string; // Text to insert
+	signature?: string; // Function signature
+	description?: string; // Short description (French)
+}
+```
+
+### Built-in Completions
+
+**Functions:** `sin`, `cos`, `tan`, `arcsin`, `arccos`, `arctan`, `sinh`, `cosh`, `tanh`, `ln`, `log`, `exp`, `sqrt`, `lim`, `min`, `max`, `abs`, `gcd`, `lcm`
+
+**Constants:** `pi`, `e`, `infty`
+
+**Greek Letters:** `alpha`, `beta`, `gamma`, `theta`, `delta`, `epsilon`, `lambda`, `mu`, `sigma`, `omega`
+
+### Integration Example
+
+```svelte
+<script lang="ts">
+	import { CompletionProvider } from '$lib/mathAST/cli/completion';
+
+	const provider = new CompletionProvider();
+	let input = $state('');
+	let completions = $state<Completion[]>([]);
+
+	function updateCompletions() {
+		const prefix = getCurrentWord(input);
+		completions = provider.getCompletions(prefix, { variables: ['x', 'y'] });
+	}
+</script>
+
+<input bind:value={input} oninput={updateCompletions} />
+
+{#if completions.length > 0}
+	<ul class="completions">
+		{#each completions as c}
+			<li>
+				<span class="label">{c.label}</span>
+				<span class="kind">{c.kind}</span>
+			</li>
+		{/each}
+	</ul>
+{/if}
+```
+
 ## See Also
 
 - [Evaluation](./evaluation.md) - Underlying evaluation system

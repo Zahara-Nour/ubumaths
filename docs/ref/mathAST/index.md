@@ -13,6 +13,9 @@ MathAST (Mathematical Abstract Syntax Tree) is a fully-featured computer algebra
 - **Normalization** to canonical polynomial form for equivalence checking
 - **Domain of definition** computation with French interval notation
 - **Physical units** with dimensional analysis and conversion
+- **Security** with configurable input limits and DoS protection
+- **Expression caching** with LRU cache for performance
+- **Auto-completion** API for IDE-like input assistance
 
 ## Quick Start
 
@@ -57,13 +60,17 @@ mathAST/
 ├── Parsing
 │   ├── parser/           # Parser subsystem
 │   │   ├── latex/        # LaTeX parser (Pratt + RD)
-│   │   └── custom/       # Custom syntax parser
+│   │   ├── custom/       # Custom syntax parser
+│   │   ├── security.ts   # DoS protection (size/depth limits)
+│   │   └── error-context.ts # Rich error messages
 │   ├── latex-generator.ts
 │   └── custom-generator.ts
 │
 ├── Computation
 │   ├── eval/             # Evaluation and substitution
+│   │   └── validation.ts # Zod schemas for bindings
 │   ├── normal/           # Normalization (canonical form)
+│   │   └── step-recorder.ts # Step-by-step recording
 │   ├── differentiation/  # Symbolic derivatives
 │   ├── taylor/           # Taylor series expansion
 │   └── domain/           # Domain of definition
@@ -74,8 +81,12 @@ mathAST/
 ├── Physical Units
 │   └── units/            # SI units and conversion
 │
+├── Cache
+│   └── cache/            # LRU expression caching
+│
 └── CLI
     └── cli/              # REPL and web interface
+        └── completion/   # Auto-completion API
 ```
 
 ## Documentation Index
