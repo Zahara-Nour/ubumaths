@@ -10,7 +10,7 @@ MathAST includes a comprehensive REPL (Read-Eval-Print Loop) system for interact
 
 - **Engine**: `src/lib/mathAST/cli/web/`
 - **UI Components**: `src/lib/components/cas/`
-- **Store**: `src/lib/stores/repl.svelte`
+- **Store**: `src/lib/stores/repl.svelte.ts`
 - **Page**: `src/routes/(public)/cas/+page.svelte`
 
 ### Components
@@ -21,23 +21,38 @@ MathAST includes a comprehensive REPL (Read-Eval-Print Loop) system for interact
 	import { replStore } from '$lib/stores/repl.svelte';
 	import ReplInput from './ReplInput.svelte';
 	import ReplOutput from './ReplOutput.svelte';
-	import AstDrawer from './AstDrawer.svelte';
 </script>
 
 <div class="repl">
-	<ReplOutput history={replStore.history} />
-	<ReplInput onSubmit={replStore.execute} />
+	<ReplOutput variant={activeTab} />
+	<ReplInput variant={activeTab === 'terminal' ? 'terminal' : 'mathfield'} />
 </div>
-<AstDrawer ast={selectedAst} />
 ```
 
 ### Display Modes
 
-| Mode         | Description                          |
-| ------------ | ------------------------------------ |
-| **Terminal** | Classic terminal-style output        |
-| **Modern**   | LaTeX-rendered mathematical notation |
-| **Hybrid**   | Combined terminal and LaTeX display  |
+| Mode         | Description                        |
+| ------------ | ---------------------------------- |
+| **Terminal** | Classic terminal-style output      |
+| **Modern**   | Card-based UI with labels          |
+| **Hybrid**   | Terminal input + card-style output |
+
+### Exact/Decimal Toggle
+
+For expressions where exact and decimal representations differ, a toggle button appears next to the result:
+
+```
+1/3         →  1/3  [⇄]     (click to toggle)
+            →  ≈ 0.333...
+
+1/2 [m]     →  1/2 m  [⇄]
+            →  ≈ 0.5 m
+
+1/2+1/3     →  5/6  [⇄]
+            →  ≈ 0.833...
+```
+
+The toggle is per-result and doesn't change the global evaluation mode.
 
 ## Commands
 
@@ -99,6 +114,13 @@ const registry = createDefaultRegistry();
 | `diff`   | -       | Differentiate expression |
 | `taylor` | -       | Taylor series expansion  |
 
+#### Unit Commands
+
+| Command    | Aliases | Description                         |
+| ---------- | ------- | ----------------------------------- |
+| `convert`  | -       | Convert last result to target unit  |
+| `unitmode` | -       | Set conversion mode (first/si/best) |
+
 ## Command Syntax
 
 ### Basic Expression Input
@@ -113,32 +135,34 @@ x² + 3x - 5
 
 ### Command Invocation
 
+Commands are prefixed with `.` (dot):
+
 ```
-> :parse x^2
+> .parse x^2
 ParseResult { type: 'superscript', ... }
 
-> :tree x^2
+> .tree x^2
 superscript
 ├── base: variable "x"
 └── superscript: number "2"
 
-> :latex sin(x)
+> .latex sin(x)
 \sin(x)
 ```
 
 ### Command Options
 
 ```
-> :diff x^3
+> .diff x^3
 3x²
 
-> :diff x*y --var y
+> .diff x*y --var y
 x
 
-> :eval 1/3 --mode decimal
+> .eval 1/3 --mode decimal
 0.3333333333333333
 
-> :equiv x+y, y+x
+> .equiv x+y, y+x
 true (equivalent)
 ```
 
@@ -147,23 +171,30 @@ true (equivalent)
 ### Setting Variables
 
 ```
-> :let x = 5
+> .let x = 5
 x = 5
 
-> :let y = 2*pi
+> .let y = 2*pi
 y = 2π
 
 > x + y
 5 + 2π
 
-> :eval x + 1
+> .eval x + 1
 6
+```
+
+### Inline Assignment Syntax
+
+```
+> x = 5          # equivalent to .let x = 5
+x = 5
 ```
 
 ### Listing Variables
 
 ```
-> :vars
+> .vars
 Variables:
   x = 5
   y = 2π
@@ -172,10 +203,10 @@ Variables:
 ### Clearing
 
 ```
-> :unset x
+> .unset x
 Variable x removed
 
-> :clear
+> .clear
 All bindings cleared
 ```
 
@@ -184,30 +215,37 @@ All bindings cleared
 ### Simple Definition
 
 ```
-> :def f(x) = x^2 + 1
+> .def f(x) = x^2 + 1
 Function f defined
 
 > f(3)
 10
 
-> :diff f(x)
+> .diff f(x)
 2x
+```
+
+### Inline Definition Syntax
+
+```
+> f(x) = x^2 + 1    # equivalent to .def f(x) = x^2 + 1
+Function f defined
 ```
 
 ### With Derivative
 
 ```
-> :def-deriv f(x) = sin(x), f'(x) = cos(x)
+> .def' f(x) = sin(x), f'(x) = cos(x)
 Function f defined with derivative
 
-> :diff f(x)
+> .diff f(x)
 cos(x)
 ```
 
 ### With Inverse
 
 ```
-> :inv f(x) = x^2, f^{-1}(x) = sqrt(x)
+> .inv f(x) = x^2, f^{-1}(x) = sqrt(x)
 Function f defined with inverse
 
 > f^{-1}(9)
@@ -217,7 +255,7 @@ Function f defined with inverse
 ### Listing Functions
 
 ```
-> :fns
+> .fns
 Functions:
   f(x) = x² + 1
   g(x) = sin(x)  [derivative: cos(x)]
@@ -228,7 +266,7 @@ Functions:
 ### Exact Mode (Default)
 
 ```
-> :mode exact
+> .mode exact      # or simply: .exact
 Mode set to: exact
 
 > 1/3 + 1/6
@@ -241,18 +279,83 @@ Mode set to: exact
 ### Decimal Mode
 
 ```
-> :mode decimal
+> .mode decimal    # or simply: .decimal
 Mode set to: decimal
 
 > 1/3
-0.3333333333333333
+≈ 0.333...
 
 > sqrt(2)
-1.4142135623730951
+≈ 1.414...
 
 > sin(pi/4)
-0.7071067811865476
+≈ 0.707...
 ```
+
+## Units
+
+### Unit Syntax
+
+Units can be specified using bracket notation or LaTeX `\unit{}`:
+
+```
+> 5[m]              # 5 meters
+5 m
+
+> 1/2 [km]          # half a kilometer (with space)
+1/2 km
+
+> 3~\unit{m/s}      # LaTeX-style unit
+3 m/s
+
+> 5[km] + 300[m]    # Unit arithmetic
+5.3 km
+```
+
+### Unit Conversion
+
+```
+> 5[km]
+5 km
+
+> .convert m        # Convert last result to meters
+5000 m
+
+> .unitmode si      # Always convert to SI units
+> .unitmode first   # Use first operand's unit (default)
+> .unitmode best    # Choose best readable unit
+```
+
+## Keyboard Shortcuts
+
+| Shortcut  | Action                               |
+| --------- | ------------------------------------ |
+| `↑` / `↓` | Navigate command history             |
+| `Ctrl+R`  | Search command history               |
+| `Ctrl+S`  | Previous search result (in search)   |
+| `Escape`  | Cancel history navigation/search     |
+| `Enter`   | Execute input / Select search result |
+
+### History Search (Ctrl+R)
+
+Press `Ctrl+R` to activate reverse search mode. Type to filter history entries:
+
+```
+(search): sin        # Shows entries containing "sin"
+                     # Press Ctrl+R again for next match
+                     # Press Enter to select and edit
+                     # Press Escape to cancel
+```
+
+## Inline Syntax Shortcuts
+
+These shortcuts provide a more natural syntax without dot-commands:
+
+| Syntax       | Equivalent Command |
+| ------------ | ------------------ |
+| `x = 5`      | `.let x = 5`       |
+| `f(x) = x^2` | `.def f(x) = x^2`  |
+| `a === b`    | `.equiv a, b`      |
 
 ## REPL Engine Architecture
 
@@ -380,8 +483,24 @@ interface ReplStore {
 interface ReplHistoryEntry {
 	id: string;
 	input: string;
+	inputMode: ReplInputMode;
 	result: ReplExecutionResult;
+	isCommand: boolean;
 	timestamp: number;
+}
+
+interface ReplExecutionResult {
+	success: boolean;
+	output: string;
+	outputHtml?: string;
+	latex?: string;
+	error?: { code: string; message: string };
+	// Toggle support (exact/decimal)
+	exactOutput?: string;
+	exactOutputHtml?: string;
+	decimalOutput?: string;
+	decimalOutputHtml?: string;
+	canToggle?: boolean;
 }
 ```
 
@@ -416,6 +535,10 @@ function detectInputFormat(input: string): 'latex' | 'custom' {
 	}
 	return 'custom';
 }
+
+// Unit detection pattern (bracket notation)
+// Matches: 5[m], 1/2 [km], x[m/s], (a+b)[N]
+const UNIT_PATTERN = /[\d\w)]\s*\[[a-zA-Z][a-zA-Z0-9^/*-]*\]/;
 ```
 
 ### Command Detection
@@ -424,8 +547,8 @@ function detectInputFormat(input: string): 'latex' | 'custom' {
 function parseInput(input: string): ParsedInput {
 	const trimmed = input.trim();
 
-	// Commands start with :
-	if (trimmed.startsWith(':')) {
+	// Commands start with .
+	if (trimmed.startsWith('.')) {
 		const [command, ...args] = trimmed.slice(1).split(/\s+/);
 		return { isCommand: true, command, args };
 	}
