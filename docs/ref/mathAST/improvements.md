@@ -1033,26 +1033,123 @@ interface SystemNode {
 
 ## Implementation Priority Matrix
 
-| Improvement            | Effort    | Impact    | Priority |
-| ---------------------- | --------- | --------- | -------- |
-| Input Size Limits      | Low       | High      | **P0**   |
-| Rich Error Messages    | Medium    | High      | **P0**   |
-| Expression Caching     | Medium    | High      | **P1**   |
-| Validation with Zod    | Medium    | High      | **P1**   |
-| Step-by-Step Transform | Medium    | High      | **P1**   |
-| Auto-Completion API    | Medium    | High      | **P1**   |
-| Complexity Analysis    | Medium    | High      | **P1**   |
-| Plugin Architecture    | High      | High      | **P2**   |
-| Modular Builds         | High      | High      | **P2**   |
-| Equation Solving       | Very High | Very High | **P2**   |
-| Worker Offloading      | Medium    | Medium    | **P2**   |
-| Visitor Enhancement    | Medium    | Medium    | **P3**   |
-| Lazy Evaluation        | High      | Medium    | **P3**   |
-| Complex Numbers        | High      | Medium    | **P3**   |
-| Limits/Summations      | Very High | High      | **P3**   |
-| Matrix Operations      | Very High | High      | **P3**   |
-| Symbolic Integration   | Very High | High      | **P3**   |
-| WASM Acceleration      | Very High | High      | **P4**   |
+| Improvement            | Effort    | Impact    | Priority | Status          |
+| ---------------------- | --------- | --------- | -------- | --------------- |
+| Input Size Limits      | Low       | High      | **P0**   | **IMPLEMENTED** |
+| Rich Error Messages    | Medium    | High      | **P0**   | **IMPLEMENTED** |
+| Expression Caching     | Medium    | High      | **P1**   | **IMPLEMENTED** |
+| Validation with Zod    | Medium    | High      | **P1**   | **IMPLEMENTED** |
+| Step-by-Step Transform | Medium    | High      | **P1**   | **IMPLEMENTED** |
+| Auto-Completion API    | Medium    | High      | **P1**   | **IMPLEMENTED** |
+| Complexity Analysis    | Medium    | High      | **P1**   | Pending         |
+| Plugin Architecture    | High      | High      | **P2**   | Pending         |
+| Modular Builds         | High      | High      | **P2**   | Pending         |
+| Equation Solving       | Very High | Very High | **P2**   | Pending         |
+| Worker Offloading      | Medium    | Medium    | **P2**   | Pending         |
+| Visitor Enhancement    | Medium    | Medium    | **P3**   | Pending         |
+| Lazy Evaluation        | High      | Medium    | **P3**   | Pending         |
+| Complex Numbers        | High      | Medium    | **P3**   | Pending         |
+| Limits/Summations      | Very High | High      | **P3**   | Pending         |
+| Matrix Operations      | Very High | High      | **P3**   | Pending         |
+| Symbolic Integration   | Very High | High      | **P3**   | Pending         |
+| WASM Acceleration      | Very High | High      | **P4**   | Pending         |
+
+---
+
+## Implemented Features (P0/P1)
+
+### Security (P0) - IMPLEMENTED
+
+```typescript
+import { parseLatex, SecurityError } from '$lib/mathAST';
+
+// Security options
+parseLatex(input, {
+	security: {
+		maxInputLength: 10000, // characters
+		maxASTDepth: 100, // nesting levels
+		maxNodeCount: 10000 // total nodes
+	}
+});
+```
+
+**Files:** `src/lib/mathAST/parser/security.ts`
+
+### Rich Error Messages (P0) - IMPLEMENTED
+
+```typescript
+import { createErrorContext, computeLineAndColumn, getSuggestions } from '$lib/mathAST';
+
+const ctx = createErrorContext(input, position, length);
+const { line, column } = computeLineAndColumn(input, position);
+const hints = getSuggestions(errorCode, message);
+```
+
+**Files:** `src/lib/mathAST/parser/error-context.ts`
+
+### Parse Cache (P1) - IMPLEMENTED
+
+```typescript
+import { ParseCache } from '$lib/mathAST';
+
+const cache = new ParseCache(100); // LRU cache, 100 entries
+cache.set('x^2', ast);
+const cached = cache.get('x^2'); // Returns AST or null
+const stats = cache.getStats(); // { hits, misses, evictions, size }
+```
+
+**Files:** `src/lib/mathAST/cache/parse-cache.ts`
+
+### Zod Validation (P1) - IMPLEMENTED
+
+```typescript
+import {
+	validateVariableName,
+	validateEvalBindings,
+	VariableNameSchema,
+	EvalBindingsSchema
+} from '$lib/mathAST';
+
+// Validate variable names
+const result = validateVariableName('x'); // { success: true, data: 'x' }
+
+// Validate eval bindings
+const bindings = validateEvalBindings({ x: 1, y: NaN }); // fails for NaN
+```
+
+**Files:** `src/lib/mathAST/eval/validation.ts`
+
+### Step-by-Step Transform (P1) - IMPLEMENTED
+
+```typescript
+import { simplifyWithSteps, StepRecorder } from '$lib/mathAST';
+
+const { result, steps } = simplifyWithSteps(ast);
+
+steps.forEach((step) => {
+	console.log(`${step.rule}: ${step.description}`);
+	console.log(`  Before: ${toLatex(step.before)}`);
+	console.log(`  After: ${toLatex(step.after)}`);
+});
+```
+
+**Files:** `src/lib/mathAST/normal/step-recorder.ts`
+
+### Auto-Completion API (P1) - IMPLEMENTED
+
+```typescript
+import { CompletionProvider } from '$lib/mathAST';
+
+const provider = new CompletionProvider();
+const completions = provider.getCompletions('sin', {
+	variables: ['x', 'y'],
+	functions: ['f', 'g']
+});
+
+// Returns: [{ label: 'sin', kind: 'function', insertText: 'sin(', ... }, ...]
+```
+
+**Files:** `src/lib/mathAST/cli/completion/provider.ts`
 
 ---
 
@@ -1060,8 +1157,8 @@ interface SystemNode {
 
 The MathAST system is architecturally sound with room for growth in:
 
-1. **Immediate wins** (P0): Security hardening, error messages
-2. **Near-term** (P1): Caching, validation, UX improvements
+1. **Immediate wins** (P0): ~~Security hardening, error messages~~ **DONE**
+2. **Near-term** (P1): ~~Caching, validation, UX improvements~~ **MOSTLY DONE** (complexity analysis pending)
 3. **Medium-term** (P2): Plugin system, modular builds, equation solving
 4. **Long-term** (P3-P4): Advanced math features, performance optimization
 

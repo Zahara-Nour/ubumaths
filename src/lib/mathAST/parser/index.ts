@@ -23,7 +23,8 @@ export type {
 	ParseError,
 	ParseErrorCode,
 	KnownCommand,
-	GenericFunctionConfig
+	GenericFunctionConfig,
+	ErrorContext
 } from './types';
 
 export {
@@ -74,9 +75,23 @@ export {
 
 import type { MathNode } from '../types';
 import type { ParseResult, ParseError, ParserOptions, GenericFunctionConfig } from './types';
+import type { ParserSecurityOptions } from './security';
 import { DEFAULT_GENERIC_FUNCTIONS } from './types';
 import { parsePratt, parsePrattSafe } from './latex';
 import { parseRD, parseRDSafe } from './latex';
+
+// Re-export security types and constants
+export { SecurityError, DEFAULT_SECURITY_OPTIONS } from './security';
+export type { ParserSecurityOptions, SecurityErrorCode } from './security';
+
+// Re-export error context utilities
+export {
+	createErrorContext,
+	computeLineAndColumn,
+	getSuggestions,
+	createEnhancedErrorFields
+} from './error-context';
+export type { LineColumn, EnhancedErrorFields } from './error-context';
 
 /**
  * Options for the unified LaTeX parser API
@@ -92,6 +107,11 @@ export interface LatexParserOptions {
 	 * Set to `null` to disable generic function parsing entirely.
 	 */
 	genericFunctions?: GenericFunctionConfig | null;
+	/**
+	 * Security limits for input size, AST depth, and node count.
+	 * Uses sensible defaults if not specified.
+	 */
+	security?: ParserSecurityOptions;
 }
 
 /**
@@ -136,7 +156,8 @@ export function parseLatex(input: string, options?: LatexParserOptions): MathNod
 
 	const parserOptions: Partial<ParserOptions> = {
 		mode,
-		...(genericFunctions && { genericFunctions })
+		...(genericFunctions && { genericFunctions }),
+		...(options?.security && { security: options.security })
 	};
 
 	if (parser === 'rd') {
@@ -184,7 +205,8 @@ export function parseLatexSafe(input: string, options?: LatexParserOptions): Par
 
 	const parserOptions: Partial<ParserOptions> = {
 		mode,
-		...(genericFunctions && { genericFunctions })
+		...(genericFunctions && { genericFunctions }),
+		...(options?.security && { security: options.security })
 	};
 
 	if (parser === 'rd') {

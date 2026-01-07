@@ -26,6 +26,7 @@
 
 import type { MathNode } from '../../types';
 import type { ParserOptions, ParseResult, GenericFunctionConfig } from '../types';
+import type { ParserSecurityOptions } from '../security';
 import { DEFAULT_GENERIC_FUNCTIONS } from '../types';
 import {
 	parseCustomPratt as parseCustomPrattRaw,
@@ -95,6 +96,11 @@ export interface CustomParserOptions {
 	 * Set to `null` to disable generic function parsing entirely.
 	 */
 	genericFunctions?: GenericFunctionConfig | null;
+	/**
+	 * Security limits for input size, AST depth, and node count.
+	 * Uses sensible defaults if not specified.
+	 */
+	security?: ParserSecurityOptions;
 }
 
 // =============================================================================
@@ -140,7 +146,8 @@ export function parseCustom(input: string, options?: CustomParserOptions): MathN
 	const genericFunctions = resolveGenericFunctions(options?.genericFunctions);
 	const parserOptions: Partial<ParserOptions> = {
 		mode: options?.mode ?? 'strict',
-		...(genericFunctions && { genericFunctions })
+		...(genericFunctions && { genericFunctions }),
+		...(options?.security && { security: options.security })
 	};
 	return parseCustomPrattRaw(input, parserOptions);
 }
@@ -167,7 +174,8 @@ export function parseCustomSafe(input: string, options?: CustomParserOptions): P
 	const genericFunctions = resolveGenericFunctions(options?.genericFunctions);
 	const parserOptions: Partial<ParserOptions> = {
 		mode: options?.mode ?? 'tolerant',
-		...(genericFunctions && { genericFunctions })
+		...(genericFunctions && { genericFunctions }),
+		...(options?.security && { security: options.security })
 	};
 	return parseCustomPrattSafeRaw(input, parserOptions);
 }
@@ -185,7 +193,8 @@ export function parseCustomPratt(input: string, options?: CustomParserOptions): 
 	const genericFunctions = resolveGenericFunctions(options?.genericFunctions);
 	const parserOptions: Partial<ParserOptions> = {
 		mode: options?.mode ?? 'strict',
-		...(genericFunctions && { genericFunctions })
+		...(genericFunctions && { genericFunctions }),
+		...(options?.security && { security: options.security })
 	};
 	return parseCustomPrattRaw(input, parserOptions);
 }
@@ -202,7 +211,8 @@ export function parseCustomPrattSafe(input: string, options?: CustomParserOption
 	const genericFunctions = resolveGenericFunctions(options?.genericFunctions);
 	const parserOptions: Partial<ParserOptions> = {
 		mode: options?.mode ?? 'tolerant',
-		...(genericFunctions && { genericFunctions })
+		...(genericFunctions && { genericFunctions }),
+		...(options?.security && { security: options.security })
 	};
 	return parseCustomPrattSafeRaw(input, parserOptions);
 }
@@ -220,7 +230,8 @@ export function parseCustomRD(input: string, options?: CustomParserOptions): Mat
 	const genericFunctions = resolveGenericFunctions(options?.genericFunctions);
 	const parserOptions: Partial<ParserOptions> = {
 		mode: options?.mode ?? 'strict',
-		...(genericFunctions && { genericFunctions })
+		...(genericFunctions && { genericFunctions }),
+		...(options?.security && { security: options.security })
 	};
 	return parseCustomRDRaw(input, parserOptions);
 }
@@ -237,7 +248,8 @@ export function parseCustomRDSafe(input: string, options?: CustomParserOptions):
 	const genericFunctions = resolveGenericFunctions(options?.genericFunctions);
 	const parserOptions: Partial<ParserOptions> = {
 		mode: options?.mode ?? 'tolerant',
-		...(genericFunctions && { genericFunctions })
+		...(genericFunctions && { genericFunctions }),
+		...(options?.security && { security: options.security })
 	};
 	return parseCustomRDSafeRaw(input, parserOptions);
 }

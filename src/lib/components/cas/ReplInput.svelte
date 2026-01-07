@@ -4,6 +4,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Play, Search } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
+	import { CompletionProvider, type Completion } from '$lib/mathAST/cli/completion';
 
 	interface Props {
 		variant: 'terminal' | 'mathfield';
@@ -19,6 +20,162 @@
 
 	/** Track previous search state to detect transitions */
 	let wasSearching = $state(false);
+
+	// ==========================================================================
+	// Auto-Completion State
+	// ==========================================================================
+
+	const completionProvider = new CompletionProvider();
+
+	/** Current list of completion suggestions */
+	let completions = $state<Completion[]>([]);
+
+	/** Index of selected completion in the list */
+	let selectedIndex = $state(0);
+
+	/** Whether completion dropdown should be shown */
+	let showCompletions = $state(false);
+
+	/** Info about the current word being typed */
+	let currentWordInfo = $state<{ word: string; start: number; end: number } | null>(null);
+
+	/** Reference to the completion list for scrolling */
+	let completionListRef: HTMLDivElement | undefined = $state();
+
+	// ==========================================================================
+	// Word Extraction Helpers
+	// ==========================================================================
+
+	/**
+	 * Extract the current word being typed at cursor position.
+	 * A "word" consists of letters, numbers, and underscores.
+	 */
+	function getCurrentWord(
+		text: string,
+		cursorPos: number
+	): { word: string; start: number; end: number } {
+		// Word characters: letters, numbers, underscore, and dot (for commands)
+		const wordCharRegex = /[a-zA-Z0-9_.]/;
+
+		// Find start of word (scan backwards from cursor)
+		let start = cursorPos;
+		for (let i = cursorPos - 1; i >= 0; i--) {
+			if (wordCharRegex.test(text[i])) {
+				start = i;
+			} else {
+				break;
+			}
+		}
+
+		// Find end of word (scan forwards from cursor)
+		let end = cursorPos;
+		for (let i = cursorPos; i < text.length; i++) {
+			if (wordCharRegex.test(text[i])) {
+				end = i + 1;
+			} else {
+				break;
+			}
+		}
+
+		// Return the prefix (from word start to cursor)
+		return {
+			word: text.slice(start, cursorPos),
+			start,
+			end
+		};
+	}
+
+	// ==========================================================================
+	// Completion Logic
+	// ==========================================================================
+
+	/**
+	 * Update completion suggestions based on current input and cursor position.
+	 */
+	function updateCompletions(): void {
+		if (!textareaRef) {
+			hideCompletions();
+			return;
+		}
+
+		const cursorPos = textareaRef.selectionStart;
+		const text = replStore.currentInput;
+
+		const wordInfo = getCurrentWord(text, cursorPos);
+		currentWordInfo = wordInfo;
+
+		// Need at least 1 character to show completions
+		if (wordInfo.word.length < 1) {
+			hideCompletions();
+			return;
+		}
+
+		// Get context from replStore
+		const context = {
+			variables: replStore.getVariableNames(),
+			functions: replStore.getFunctionNames()
+		};
+
+		// Get completions (limit to reasonable number)
+		const results = completionProvider.getCompletions(wordInfo.word, context, { maxResults: 10 });
+
+		if (results.length > 0) {
+			completions = results;
+			selectedIndex = 0;
+			showCompletions = true;
+		} else {
+			hideCompletions();
+		}
+	}
+
+	/**
+	 * Hide completions and reset state.
+	 */
+	function hideCompletions(): void {
+		completions = [];
+		showCompletions = false;
+		selectedIndex = 0;
+		currentWordInfo = null;
+	}
+
+	/**
+	 * Insert the selected completion into the input.
+	 */
+	function insertCompletion(completion: Completion): void {
+		if (!currentWordInfo || !textareaRef) return;
+
+		const text = replStore.currentInput;
+		const before = text.slice(0, currentWordInfo.start);
+		const after = text.slice(currentWordInfo.end);
+
+		// Build new text
+		const newText = before + completion.insertText + after;
+		replStore.currentInput = newText;
+
+		// Position cursor after inserted text
+		const newCursorPos = currentWordInfo.start + completion.insertText.length;
+		requestAnimationFrame(() => {
+			if (textareaRef) {
+				textareaRef.selectionStart = newCursorPos;
+				textareaRef.selectionEnd = newCursorPos;
+				textareaRef.focus();
+			}
+		});
+
+		hideCompletions();
+	}
+
+	/**
+	 * Scroll the selected completion into view.
+	 */
+	function scrollSelectedIntoView(): void {
+		if (!completionListRef) return;
+
+		const selectedEl = completionListRef.querySelector(`[data-index="${selectedIndex}"]`);
+		if (selectedEl) {
+			selectedEl.scrollIntoView({ block: 'nearest' });
+		}
+	}
 
 	/** Focus search input when search mode starts */
 	$effect(() => {
@@ -47,14 +204,63 @@
 
 	/**
 	 * Handle key press in textarea input.
-	 * - Enter: Submit
+	 * - Tab: Insert completion (when completions shown)
+	 * - ArrowUp/Down: Navigate completions (when shown) or history (when not)
+	 * - Escape: Close completions or cancel history navigation
+	 * - Enter: Submit (closes completions first if shown)
 	 * - Shift+Enter: New line
-	 * - ArrowUp / Ctrl+P: Navigate to previous history entry
-	 * - ArrowDown / Ctrl+N: Navigate to next history entry
+	 * - Ctrl+P/N: Navigate history
 	 * - Ctrl+R: Search history
-	 * - Escape: Cancel history navigation and restore original input
 	 */
 	function handleKeyDown(event: KeyboardEvent): void {
+		// =======================================================================
+		// Completion Navigation (takes priority when completions are visible)
+		// =======================================================================
+
+		if (showCompletions && completions.length > 0) {
+			// Tab or Enter: Insert selected completion
+			if (event.key === 'Tab') {
+				event.preventDefault();
+				insertCompletion(completions[selectedIndex]);
+				return;
+			}
+
+			// Arrow down: Next completion
+			if (event.key === 'ArrowDown') {
+				event.preventDefault();
+				selectedIndex = (selectedIndex + 1) % completions.length;
+				scrollSelectedIntoView();
+				return;
+			}
+
+			// Arrow up: Previous completion
+			if (event.key === 'ArrowUp') {
+				event.preventDefault();
+				selectedIndex = (selectedIndex - 1 + completions.length) % completions.length;
+				scrollSelectedIntoView();
+				return;
+			}
+
+			// Escape: Close completions
+			if (event.key === 'Escape') {
+				event.preventDefault();
+				hideCompletions();
+				return;
+			}
+
+			// Enter with completions shown: submit (completions will hide on submit)
+			if (event.key === 'Enter' && !event.shiftKey) {
+				event.preventDefault();
+				hideCompletions();
+				submitInput();
+				return;
+			}
+		}
+
+		// =======================================================================
+		// Regular Key Handling (when completions not shown)
+		// =======================================================================
+
 		// Handle Enter key
 		if (event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault();
@@ -73,6 +279,7 @@
 		if (event.key === 'ArrowUp' || (event.ctrlKey && event.key === 'p')) {
 			event.preventDefault();
 			replStore.navigateHistory('up');
+			hideCompletions();
 			// Place cursor at end after navigation
 			requestAnimationFrame(() => {
 				if (textareaRef) {
@@ -87,6 +294,7 @@
 		if (event.key === 'ArrowDown' || (event.ctrlKey && event.key === 'n')) {
 			event.preventDefault();
 			replStore.navigateHistory('down');
+			hideCompletions();
 			// Place cursor at end after navigation
 			requestAnimationFrame(() => {
 				if (textareaRef) {
@@ -100,9 +308,20 @@
 		// History search: Ctrl+R
 		if (event.ctrlKey && event.key === 'r') {
 			event.preventDefault();
+			hideCompletions();
 			replStore.startHistorySearch();
 			return;
 		}
+	}
+
+	/**
+	 * Handle input changes in textarea - update completions.
+	 */
+	function handleInput(): void {
+		// Small delay to let the input value update
+		requestAnimationFrame(() => {
+			updateCompletions();
+		});
 	}
 
 	/**
@@ -166,7 +385,28 @@
 	 * Submit the current input.
 	 */
 	function submitInput(): void {
+		hideCompletions();
 		replStore.execute(replStore.currentInput);
+	}
+
+	/**
+	 * Get icon/badge for completion kind.
+	 */
+	function getKindBadge(kind: Completion['kind']): { text: string; class: string } {
+		switch (kind) {
+			case 'function':
+				return { text: 'fn', class: 'bg-blue-500/20 text-blue-400' };
+			case 'variable':
+				return { text: 'var', class: 'bg-green-500/20 text-green-400' };
+			case 'constant':
+				return { text: 'const', class: 'bg-purple-500/20 text-purple-400' };
+			case 'greek':
+				return { text: 'α', class: 'bg-amber-500/20 text-amber-400' };
+			case 'command':
+				return { text: 'cmd', class: 'bg-cyan-500/20 text-cyan-400' };
+			default:
+				return { text: '?', class: 'bg-gray-500/20 text-gray-400' };
+		}
 	}
 </script>
 
@@ -214,23 +454,81 @@
 		{/if}
 
 		<!-- Terminal-style textarea input -->
-		<div class="flex items-start gap-2">
+		<div class="relative flex items-start gap-2">
 			<span class="repl-hash shrink-0 font-mono text-sm text-primary select-none">math&gt;</span>
-			<textarea
-				bind:this={textareaRef}
-				bind:value={replStore.currentInput}
-				onkeydown={handleKeyDown}
-				placeholder="Entrez une expression ou commande..."
-				aria-label="Console de calcul symbolique"
-				rows="1"
-				disabled={replStore.isSearching}
-				class={cn(
-					'min-h-[2rem] flex-1 resize-none border-none bg-transparent font-mono text-sm',
-					'text-foreground outline-none placeholder:text-muted-foreground',
-					'focus:ring-0 focus:outline-none',
-					replStore.isSearching && 'opacity-50'
-				)}
-			></textarea>
+			<div class="relative flex-1">
+				<textarea
+					bind:this={textareaRef}
+					bind:value={replStore.currentInput}
+					onkeydown={handleKeyDown}
+					oninput={handleInput}
+					placeholder="Entrez une expression ou commande..."
+					aria-label="Console de calcul symbolique"
+					rows="1"
+					disabled={replStore.isSearching}
+					autocomplete="off"
+					class={cn(
+						'min-h-[2rem] w-full resize-none border-none bg-transparent font-mono text-sm',
+						'text-foreground outline-none placeholder:text-muted-foreground',
+						'focus:ring-0 focus:outline-none',
+						replStore.isSearching && 'opacity-50'
+					)}
+				></textarea>
+
+				<!-- Completion dropdown -->
+				{#if showCompletions && completions.length > 0}
+					<div
+						bind:this={completionListRef}
+						class="absolute top-full left-0 z-50 mt-1 max-h-48 w-64 overflow-auto rounded-md border border-border bg-popover shadow-lg"
+						role="listbox"
+						aria-label="Suggestions d'auto-complétion"
+					>
+						{#each completions as completion, i (completion.label)}
+							{@const badge = getKindBadge(completion.kind)}
+							<button
+								type="button"
+								data-index={i}
+								role="option"
+								aria-selected={i === selectedIndex}
+								class={cn(
+									'flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm',
+									'transition-colors duration-75',
+									i === selectedIndex ? 'bg-accent text-accent-foreground' : 'hover:bg-muted/50'
+								)}
+								onclick={() => insertCompletion(completion)}
+								onmouseenter={() => (selectedIndex = i)}
+							>
+								<!-- Kind badge -->
+								<span
+									class={cn(
+										'shrink-0 rounded px-1 py-0.5 font-mono text-[10px] leading-none',
+										badge.class
+									)}
+								>
+									{badge.text}
+								</span>
+
+								<!-- Label -->
+								<span class="flex-1 truncate font-mono">{completion.label}</span>
+
+								<!-- Description (optional) -->
+								{#if completion.description}
+									<span class="max-w-24 shrink-0 truncate text-xs text-muted-foreground">
+										{completion.description}
+									</span>
+								{/if}
+							</button>
+						{/each}
+
+						<!-- Keyboard hint -->
+						<div class="border-t border-border px-2 py-1 text-[10px] text-muted-foreground">
+							<kbd class="rounded border border-border bg-muted px-1">↑↓</kbd> naviguer
+							<kbd class="ml-1 rounded border border-border bg-muted px-1">Tab</kbd> insérer
+							<kbd class="ml-1 rounded border border-border bg-muted px-1">Esc</kbd> fermer
+						</div>
+					</div>
+				{/if}
+			</div>
 		</div>
 	{:else}
 		<!-- MathField input with submit button -->

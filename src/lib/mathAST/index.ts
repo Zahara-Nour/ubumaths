@@ -533,3 +533,58 @@ export type {
 	ComputeDomainOptions,
 	Bindings as DomainBindings
 } from './domain';
+
+// =============================================================================
+// Parse Cache
+// =============================================================================
+
+export { ParseCache } from './cache';
+export type { CacheStats } from './cache';
+
+// =============================================================================
+// Security
+// =============================================================================
+
+export { SecurityError, DEFAULT_SECURITY_OPTIONS } from './parser';
+export type { ParserSecurityOptions, SecurityErrorCode } from './parser';
+
+// =============================================================================
+// Rich Error Context
+// =============================================================================
+
+export {
+	createErrorContext,
+	computeLineAndColumn,
+	getSuggestions,
+	createEnhancedErrorFields
+} from './parser';
+export type { ErrorContext, LineColumn, EnhancedErrorFields } from './parser';
+
+// =============================================================================
+// Zod Validation Schemas
+// =============================================================================
+
+export {
+	VariableNameSchema,
+	NumericValueSchema,
+	BindingValueSchema,
+	EvalBindingsSchema,
+	ParserSecurityOptionsSchema,
+	createBoundedNumericSchema,
+	validateVariableName,
+	validateEvalBindings,
+	validateSecurityOptions
+} from './eval';
+export type { ValidatedEvalBindings, ValidatedSecurityOptions } from './eval';
+
+// =============================================================================
+// Auto-Completion API
+// =============================================================================
+
+export { CompletionProvider } from './cli/completion';
+export type {
+	Completion,
+	CompletionKind,
+	CompletionContext,
+	CompletionOptions
+} from './cli/completion';

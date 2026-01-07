@@ -250,3 +250,58 @@ export interface SimplifiedRadicalResult {
  * -1: a < b, 0: a = b, 1: a > b
  */
 export type ComparisonResult = -1 | 0 | 1;
+
+// =============================================================================
+// Step Recording Types
+// =============================================================================
+
+/**
+ * Represents a single normalization/simplification step.
+ *
+ * Used for pedagogical display to show the user each transformation
+ * that was applied to simplify an expression.
+ *
+ * @example
+ * // Step: 0 + x → x
+ * {
+ *   rule: 'additive-identity',
+ *   description: 'L\'addition de 0 est l\'élément neutre',
+ *   before: { type: 'addition', left: { type: 'number', value: '0' }, right: x },
+ *   after: x
+ * }
+ */
+export interface NormalizationStep {
+	/** Name of the rule applied */
+	readonly rule: string;
+
+	/** Human-readable description in French */
+	readonly description: string;
+
+	/** AST before the transformation */
+	readonly before: MathNode;
+
+	/** AST after the transformation */
+	readonly after: MathNode;
+}
+
+/**
+ * Options for normalization with step recording.
+ */
+export interface NormalizeOptions {
+	/** Whether to record transformation steps (default: false) */
+	readonly recordSteps?: boolean;
+
+	/** Maximum simplification iterations (default: 100) */
+	readonly maxIterations?: number;
+}
+
+/**
+ * Result of normalization with optional steps.
+ */
+export interface NormalizeResult {
+	/** The final normalized form */
+	readonly form: NormalForm;
+
+	/** Optional transformation steps (only if recordSteps was true) */
+	readonly steps?: readonly NormalizationStep[];
+}

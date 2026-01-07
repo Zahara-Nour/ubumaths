@@ -130,3 +130,21 @@ export { evaluateWithModifiers } from './evaluate-with-modifiers';
 // =============================================================================
 
 export { evaluateWithUnits, DimensionalEvaluationError } from './evaluate-with-units';
+
+// =============================================================================
+// Zod Validation Schemas
+// =============================================================================
+
+export {
+	VariableNameSchema,
+	NumericValueSchema,
+	BindingValueSchema,
+	EvalBindingsSchema,
+	ParserSecurityOptionsSchema,
+	createBoundedNumericSchema,
+	validateVariableName,
+	validateEvalBindings,
+	validateSecurityOptions
+} from './validation';
+
+export type { EvalBindings as ValidatedEvalBindings, ValidatedSecurityOptions } from './validation';

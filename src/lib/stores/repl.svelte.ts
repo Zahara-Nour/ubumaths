@@ -412,6 +412,26 @@ class ReplStore {
 		return this.engine.getCommands();
 	}
 
+	/**
+	 * Get all defined variable names for auto-completion.
+	 *
+	 * @returns Array of variable names currently defined in the REPL
+	 */
+	getVariableNames(): string[] {
+		const state = this.engine.getEvalState();
+		return Array.from(state.bindings.keys());
+	}
+
+	/**
+	 * Get all defined function names for auto-completion.
+	 *
+	 * @returns Array of function names currently defined in the REPL
+	 */
+	getFunctionNames(): string[] {
+		const state = this.engine.getEvalState();
+		return Object.keys(state.functions);
+	}
+
 	// ===========================================================================
 	// localStorage Persistence
 	// ===========================================================================

@@ -11,6 +11,19 @@ UbuMaths implements a sophisticated Computer Algebra System with two complementa
 
 Both systems share fundamental concepts but MathAST provides a cleaner, more modular architecture with TypeScript-first design.
 
+## Recent Additions (v0.5+)
+
+| Feature             | Description                                                |
+| ------------------- | ---------------------------------------------------------- |
+| **Security Limits** | DoS protection via input length, AST depth, and node count |
+| **Rich Errors**     | Context snippets, line/column numbers, suggestions         |
+| **Parse Cache**     | LRU caching for repeated expression parsing                |
+| **Zod Validation**  | Runtime validation of bindings with Zod schemas            |
+| **Step Recording**  | Record and display simplification steps (French)           |
+| **Auto-Completion** | IDE-like completion API for functions, variables, commands |
+
+See [mathAST Improvements](../mathAST/improvements.md) for implementation details.
+
 ## Documentation Structure
 
 | Document                                   | Description                                     |

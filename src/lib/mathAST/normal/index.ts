@@ -18,7 +18,10 @@ export type {
 	NormalTerm,
 	NormalForm,
 	SimplifiedRadicalResult,
-	ComparisonResult
+	ComparisonResult,
+	NormalizationStep,
+	NormalizeOptions,
+	NormalizeResult
 } from './types.js';
 
 // =============================================================================
@@ -243,3 +246,14 @@ export {
 	sortNormalTerms as sortNormalTermsCanonical,
 	isNormalTermArraySorted
 } from './compare.js';
+
+// =============================================================================
+// Step Recording (Pedagogical)
+// =============================================================================
+
+export {
+	StepRecorder,
+	getRuleDescription,
+	simplifyWithSteps,
+	simplifyOnceWithSteps
+} from './step-recorder.js';
