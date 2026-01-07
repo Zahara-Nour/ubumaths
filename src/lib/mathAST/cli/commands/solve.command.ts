@@ -19,12 +19,52 @@ import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
 import { parse } from '../core/pipeline';
 import { solve, type SolvingVerbosity, SolveError } from '../../solve';
-import { isRelation, isMultiplication, isOpposite, isVariable } from '../../guards';
+import { isRelation, isMultiplication, isOpposite, isVariable, isNumber } from '../../guards';
 import type { MathNode, RelationNode } from '../../types';
 import { simplify } from '../../normal';
 import { number, opposite, add, implicitMultiply } from '../../factory';
+
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { getVariables } from '../../eval/substitute';
+import { evaluate } from '../../eval/evaluate';
+
+/**
+ * Negate a math node, properly handling double negatives.
+ * For numbers like -4, returns 4 (not --4).
+ */
+function negate(node: MathNode): MathNode {
+	// If it's a number, negate the string value directly
+	if (isNumber(node)) {
+		const val = node.value;
+		if (val.startsWith('-')) {
+			return number(val.slice(1)); // -4 -> 4
+		} else {
+			return number('-' + val); // 4 -> -4
+		}
+	}
+	// If it's already an opposite, return the inner operand
+	if (isOpposite(node)) {
+		return node.operand;
+	}
+	// Otherwise wrap in opposite
+	return opposite(node);
+}
+
+/**
+ * Evaluate an expression numerically if possible, otherwise simplify.
+ * Returns the evaluated node (e.g., 1+4 -> 5).
+ */
+function evalSimplify(node: MathNode): MathNode {
+	try {
+		const result = evaluate(node);
+		if (result.exact && result.node) {
+			return result.node;
+		}
+	} catch {
+		// Evaluation failed (e.g., contains variables), fall back to simplify
+	}
+	return simplify(node);
+}
 
 // =============================================================================
 // Pedagogical Step Types
@@ -168,7 +208,7 @@ function generateLinearPedagogicalSteps(
 
 		if (isNegative) {
 			// b is negative, so we add |b|
-			const absB = simplify(opposite(bSimplified));
+			const absB = negate(bSimplified);
 			const absBStr = toCustom(absB);
 			operationDesc = `On ajoute ${absBStr} aux deux membres`;
 			transformLhs = `${toCustom(currentLhs)} + ${absBStr}`;
@@ -180,8 +220,8 @@ function generateLinearPedagogicalSteps(
 			transformRhs = `${toCustom(currentRhs)} - ${bStr}`;
 		}
 
-		// Compute simplified result: ax = c - b
-		const newRhs = simplify(add(currentRhs, opposite(bSimplified)));
+		// Compute simplified result: ax = c - b (evaluate numerically if pure numbers)
+		const newRhs = evalSimplify(add(currentRhs, negate(bSimplified)));
 		const varNode: MathNode = { type: 'variable', name: variable };
 		const newLhs = toCustom(simplify(a)) === '1' ? varNode : implicitMultiply(a, varNode);
 
