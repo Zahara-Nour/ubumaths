@@ -112,7 +112,7 @@ export class SolveCommand extends BaseCommand {
 			});
 
 			// Format output with toggle support
-			return this.formatOutputWithToggle(parseResult.ast, result, verbosity);
+			return this.formatOutputWithToggle(parseResult.ast, result, verbosity, ctx);
 		} catch (err) {
 			if (err instanceof SolveError) {
 				const message = err.details ? `${err.message}: ${err.details}` : err.message;
@@ -198,8 +198,11 @@ export class SolveCommand extends BaseCommand {
 	private formatOutputWithToggle(
 		equation: import('../../types').MathNode,
 		result: import('../../solve').SolveResult,
-		verbosity: SolvingVerbosity
+		verbosity: SolvingVerbosity,
+		ctx: CommandContext
 	): CommandResult {
+		// Check current mode from eval state
+		const currentMode = ctx.evalState?.mode ?? 'exact';
 		const eqCustom = toCustom(equation);
 
 		// Header with equation type
@@ -279,10 +282,13 @@ export class SolveCommand extends BaseCommand {
 					headerHtmlPrefix +
 					`<span class="text-green-400">${this.escapeHtml(decimalSolutions)}</span>`;
 
+				// Use current mode to determine initial display
+				const useDecimal = currentMode === 'decimal';
+
 				return {
 					success: true,
-					output: exactOutput,
-					outputHtml: exactOutputHtml,
+					output: useDecimal ? decimalOutput : exactOutput,
+					outputHtml: useDecimal ? decimalOutputHtml : exactOutputHtml,
 					ast: result.solutions[0]?.value,
 					exactOutput,
 					exactOutputHtml,
