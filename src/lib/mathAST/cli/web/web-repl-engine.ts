@@ -662,26 +662,28 @@ export class WebReplEngine {
 			return this.createAutoEvaluationResult(result.ast);
 		}
 
-		// Use parse command to display the result (no variables or some unbound)
-		const parseCmd = this.registry.get('parse');
-		if (parseCmd) {
-			const ctx: CommandContext = {
-				ast: result.ast,
-				input,
-				format: result.inputFormat,
-				options: {},
-				isRepl: true,
-				evalState: this.evalState
-			};
-			const cmdResult = parseCmd.execute(ctx);
-			return this.commandResultToReplResult(cmdResult, result.ast);
-		}
+		// Expression has unbound variables - show simple output
+		return this.createExpressionDisplayResult(result.ast, variables);
+	}
 
-		// Fallback if parse command not available
+	/**
+	 * Create a simple display result for expressions with unbound variables.
+	 */
+	private createExpressionDisplayResult(
+		ast: MathNode,
+		unboundVars: Set<string>
+	): ReplExecutionResult {
+		const exprStr = toCustom(ast);
+		const varList = [...unboundVars].sort().join(', ');
+
+		const output = `${exprStr}  (variables: ${varList})`;
+		const outputHtml = `<span class="text-cyan-400">${this.escapeHtml(exprStr)}</span> <span class="text-muted-foreground">(variables: ${this.escapeHtml(varList)})</span>`;
+
 		return {
 			success: true,
-			output: 'Parsed successfully',
-			ast: result.ast
+			output,
+			outputHtml,
+			ast
 		};
 	}
 
