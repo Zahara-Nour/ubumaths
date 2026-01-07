@@ -675,7 +675,7 @@ function extractQuadraticCoeff(term: MathNode, variable: string, degree: number)
 function generateQuadraticPedagogicalSteps(
 	equation: RelationNode,
 	variable: string,
-	solutions: Array<{ value: MathNode; approximate?: number }>
+	solutions: readonly { value: MathNode; approximate?: number }[]
 ): PedagogicalStep[] {
 	const steps: PedagogicalStep[] = [];
 	const lhs = equation.left;
@@ -1155,7 +1155,8 @@ export class SolveCommand extends BaseCommand {
 			}
 
 			case 'no-solution': {
-				const msg = "Pas de solution: l'equation est contradictoire";
+				// Check if this is an unsupported equation type vs truly contradictory
+				const msg = result.error ? result.error : "Pas de solution: l'equation est contradictoire";
 				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
 				const headerHtmlPrefix =
 					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';

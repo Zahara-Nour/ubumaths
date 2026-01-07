@@ -8,13 +8,14 @@
 
 export { linearSolver } from './linear';
 export { quadraticSolver } from './quadratic';
+export { polynomialSolver } from './polynomial';
 export { transcendentalSolver } from './transcendental';
-// Future: export { polynomialSolver } from './polynomial';
 // Future: export { numericSolver } from './numeric';
 
 import type { EquationSolver } from '../types';
 import { linearSolver } from './linear';
 import { quadraticSolver } from './quadratic';
+import { polynomialSolver } from './polynomial';
 import { transcendentalSolver } from './transcendental';
 
 /**
@@ -23,6 +24,7 @@ import { transcendentalSolver } from './transcendental';
 export const ALL_SOLVERS: readonly EquationSolver[] = [
 	linearSolver,
 	quadraticSolver,
+	polynomialSolver,
 	transcendentalSolver
 	// Future solvers will be added here
 ];
