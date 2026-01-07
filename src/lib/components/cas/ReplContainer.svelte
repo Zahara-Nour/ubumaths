@@ -4,6 +4,7 @@
 	import ReplOutput from './ReplOutput.svelte';
 	import ReplInput from './ReplInput.svelte';
 	import HelpPopover from './HelpPopover.svelte';
+	import ExportModal from './ExportModal.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Trash2 } from 'lucide-svelte';
 	import type { TabStyle } from '$lib/mathAST/cli/web';
@@ -76,3 +77,11 @@
 		{/each}
 	</Tabs.Root>
 </div>
+
+<!-- Export Modal -->
+<ExportModal
+	bind:open={replStore.exportModalOpen}
+	content={replStore.exportContent}
+	filename={replStore.exportFilename}
+	onClose={() => replStore.closeExportModal()}
+/>
