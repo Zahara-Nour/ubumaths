@@ -40,6 +40,12 @@ interface SerializedHistoryEntry {
 			message: string;
 			position?: number;
 		};
+		// Toggle support fields
+		exactOutput?: string;
+		exactOutputHtml?: string;
+		decimalOutput?: string;
+		decimalOutputHtml?: string;
+		canToggle?: boolean;
 	};
 }
 
@@ -421,7 +427,13 @@ class ReplStore {
 						output: entry.result.output,
 						outputHtml: entry.result.outputHtml,
 						latex: entry.result.latex,
-						error: entry.result.error
+						error: entry.result.error,
+						// Toggle support fields
+						exactOutput: entry.result.exactOutput,
+						exactOutputHtml: entry.result.exactOutputHtml,
+						decimalOutput: entry.result.decimalOutput,
+						decimalOutputHtml: entry.result.decimalOutputHtml,
+						canToggle: entry.result.canToggle
 						// AST is not persisted (too large and not serializable)
 					}
 				}))
@@ -453,7 +465,13 @@ class ReplStore {
 					output: entry.result.output,
 					outputHtml: entry.result.outputHtml,
 					latex: entry.result.latex,
-					error: entry.result.error
+					error: entry.result.error,
+					// Toggle support fields
+					exactOutput: entry.result.exactOutput,
+					exactOutputHtml: entry.result.exactOutputHtml,
+					decimalOutput: entry.result.decimalOutput,
+					decimalOutputHtml: entry.result.decimalOutputHtml,
+					canToggle: entry.result.canToggle
 					// Omit AST (not serializable and too large)
 				}
 			}));
@@ -478,7 +496,12 @@ class ReplStore {
 							output: entry.result.output,
 							outputHtml: entry.result.outputHtml,
 							latex: entry.result.latex,
-							error: entry.result.error
+							error: entry.result.error,
+							exactOutput: entry.result.exactOutput,
+							exactOutputHtml: entry.result.exactOutputHtml,
+							decimalOutput: entry.result.decimalOutput,
+							decimalOutputHtml: entry.result.decimalOutputHtml,
+							canToggle: entry.result.canToggle
 						}
 					}));
 					localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));

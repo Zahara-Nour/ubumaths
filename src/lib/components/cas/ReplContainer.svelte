@@ -3,12 +3,10 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import ReplOutput from './ReplOutput.svelte';
 	import ReplInput from './ReplInput.svelte';
-	import AstDrawer from './AstDrawer.svelte';
 	import HelpPopover from './HelpPopover.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Trash2 } from 'lucide-svelte';
-	import type { TabStyle, ReplHistoryEntry } from '$lib/mathAST/cli/web';
-	import type { MathNode } from '$lib/mathAST/types';
+	import type { TabStyle } from '$lib/mathAST/cli/web';
 
 	// Map tab IDs to TabStyle
 	const tabMap: Record<string, TabStyle> = {
@@ -17,26 +15,11 @@
 		hybrid: 'hybrid'
 	};
 
-	// Track the selected entry for the AST drawer
-	let selectedAstEntry = $state<ReplHistoryEntry | null>(null);
-
-	// Derived values for the drawer
-	let selectedAst = $derived<MathNode | undefined>(selectedAstEntry?.result.ast);
-	let selectedExpression = $derived<string | undefined>(selectedAstEntry?.input);
-
-	/**
-	 * Handle showing AST for a specific entry.
-	 */
-	function handleShowAst(entry: ReplHistoryEntry): void {
-		selectedAstEntry = entry;
-	}
-
 	/**
 	 * Clear all history entries.
 	 */
 	function handleClearHistory(): void {
 		replStore.clearHistory();
-		selectedAstEntry = null;
 	}
 </script>
 
@@ -81,7 +64,7 @@
 				<div class="flex min-h-[500px] flex-col">
 					<!-- Output area (scrollable) -->
 					<div class="flex-1 overflow-y-auto">
-						<ReplOutput {variant} onShowAst={handleShowAst} />
+						<ReplOutput {variant} />
 					</div>
 
 					<!-- Input area (fixed at bottom) -->
@@ -93,6 +76,3 @@
 		{/each}
 	</Tabs.Root>
 </div>
-
-<!-- AST Drawer -->
-<AstDrawer ast={selectedAst} expression={selectedExpression} />

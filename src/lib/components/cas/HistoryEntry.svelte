@@ -1,33 +1,42 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Eye } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
-	import { replStore } from '$lib/stores/repl.svelte';
 	import type { ReplHistoryEntry, TabStyle } from '$lib/mathAST/cli/web';
+	import { Button } from '$lib/components/ui/button';
+	import { ArrowRightLeft } from 'lucide-svelte';
 
 	interface Props {
 		entry: ReplHistoryEntry;
 		variant: TabStyle;
-		onShowAst?: (entry: ReplHistoryEntry) => void;
 	}
 
-	let { entry, variant, onShowAst }: Props = $props();
+	let { entry, variant }: Props = $props();
 
-	/**
-	 * Open AST drawer for this entry's expression.
-	 */
-	function showAst(): void {
-		if (onShowAst) {
-			onShowAst(entry);
-		}
-		replStore.showAstDrawer = true;
-	}
+	// Local toggle state (false = exact, true = decimal)
+	let showDecimal = $state(false);
 
 	// Determine if entry is an error
 	const isError = $derived(!entry.result.success);
 
 	// Determine if entry is a command
 	const isCommand = $derived(entry.isCommand);
+
+	// Can this entry toggle between exact/decimal?
+	const canToggle = $derived(entry.result.canToggle ?? false);
+
+	// Get the appropriate HTML output based on toggle state
+	const displayHtml = $derived.by(() => {
+		if (!canToggle) {
+			return entry.result.outputHtml || entry.result.output;
+		}
+		if (showDecimal) {
+			return entry.result.decimalOutputHtml || entry.result.decimalOutput || entry.result.output;
+		}
+		return entry.result.exactOutputHtml || entry.result.exactOutput || entry.result.output;
+	});
+
+	function handleToggle(): void {
+		showDecimal = !showDecimal;
+	}
 </script>
 
 {#if variant === 'terminal'}
@@ -40,7 +49,7 @@
 		</div>
 
 		<!-- Output line -->
-		<div class="pl-6">
+		<div class="flex items-center gap-2 pl-6">
 			{#if isError}
 				<div class="repl-error break-words text-destructive">
 					{entry.result.error?.message || entry.result.output}
@@ -51,20 +60,21 @@
 				</div>
 			{:else}
 				<div class="repl-success text-foreground">
-					{entry.result.output}
+					{@html displayHtml}
 				</div>
+				{#if canToggle}
+					<Button
+						variant="ghost"
+						size="icon"
+						class="size-6"
+						onclick={handleToggle}
+						aria-label={showDecimal ? 'Afficher exact' : 'Afficher décimal'}
+					>
+						<ArrowRightLeft class="size-3" />
+					</Button>
+				{/if}
 			{/if}
 		</div>
-
-		<!-- AST button (if available) -->
-		{#if entry.result.ast}
-			<div class="pl-6">
-				<Button variant="ghost" size="sm" onclick={showAst} class="h-6 gap-1 px-2 text-xs">
-					<Eye class="size-3" />
-					Voir AST
-				</Button>
-			</div>
-		{/if}
 	</div>
 {:else if variant === 'modern'}
 	<!-- Modern card style -->
@@ -86,8 +96,21 @@
 
 		<!-- Output -->
 		<div>
-			<div class="mb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-				Résultat
+			<div class="mb-1 flex items-center justify-between">
+				<span class="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+					Résultat
+				</span>
+				{#if canToggle && !isError && !isCommand}
+					<Button
+						variant="ghost"
+						size="icon"
+						class="size-6"
+						onclick={handleToggle}
+						aria-label={showDecimal ? 'Afficher exact' : 'Afficher décimal'}
+					>
+						<ArrowRightLeft class="size-3" />
+					</Button>
+				{/if}
 			</div>
 			<div
 				class={cn(
@@ -97,23 +120,13 @@
 			>
 				{#if isError}
 					{entry.result.error?.message || entry.result.output}
-				{:else if entry.result.outputHtml}
-					{@html entry.result.outputHtml}
+				{:else if isCommand}
+					{@html entry.result.outputHtml || entry.result.output}
 				{:else}
-					{entry.result.output}
+					{@html displayHtml}
 				{/if}
 			</div>
 		</div>
-
-		<!-- AST button (if available) -->
-		{#if entry.result.ast}
-			<div class="mt-3 flex justify-end">
-				<Button variant="outline" size="sm" onclick={showAst} class="gap-2">
-					<Eye class="size-4" />
-					Voir AST
-				</Button>
-			</div>
-		{/if}
 	</div>
 {:else}
 	<!-- Hybrid style (mix of terminal and modern) -->
@@ -128,28 +141,29 @@
 		<div class="ml-6">
 			<div
 				class={cn(
-					'rounded px-3 py-2 text-sm',
+					'flex items-center gap-2 rounded px-3 py-2 text-sm',
 					isError ? 'bg-destructive/10 text-destructive' : 'bg-muted/70 font-mono text-foreground'
 				)}
 			>
 				{#if isError}
-					{entry.result.error?.message || entry.result.output}
-				{:else if entry.result.outputHtml}
-					{@html entry.result.outputHtml}
+					<span>{entry.result.error?.message || entry.result.output}</span>
+				{:else if isCommand}
+					<span>{@html entry.result.outputHtml || entry.result.output}</span>
 				{:else}
-					{entry.result.output}
+					<span>{@html displayHtml}</span>
+					{#if canToggle}
+						<Button
+							variant="ghost"
+							size="icon"
+							class="size-6 shrink-0"
+							onclick={handleToggle}
+							aria-label={showDecimal ? 'Afficher exact' : 'Afficher décimal'}
+						>
+							<ArrowRightLeft class="size-3" />
+						</Button>
+					{/if}
 				{/if}
 			</div>
-
-			<!-- AST button (if available) -->
-			{#if entry.result.ast}
-				<div class="mt-2">
-					<Button variant="ghost" size="sm" onclick={showAst} class="h-7 gap-1.5 px-2 text-xs">
-						<Eye class="size-3" />
-						Voir AST
-					</Button>
-				</div>
-			{/if}
 		</div>
 	</div>
 {/if}

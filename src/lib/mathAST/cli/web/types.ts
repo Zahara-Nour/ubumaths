@@ -76,6 +76,21 @@ export interface ReplExecutionResult {
 		readonly message: string;
 		readonly position?: number;
 	};
+
+	// =========================================================================
+	// Exact/Decimal Toggle Support
+	// =========================================================================
+
+	/** Exact representation (e.g., "1/3", "sqrt(2)") */
+	readonly exactOutput?: string;
+	readonly exactOutputHtml?: string;
+
+	/** Decimal representation (e.g., "≈ 0.333", "≈ 1.414") */
+	readonly decimalOutput?: string;
+	readonly decimalOutputHtml?: string;
+
+	/** Whether user can toggle between exact and decimal display */
+	readonly canToggle?: boolean;
 }
 
 // =============================================================================
