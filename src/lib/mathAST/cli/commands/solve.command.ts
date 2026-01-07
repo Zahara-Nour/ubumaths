@@ -14,11 +14,9 @@
  * - --quiet or -q: Show only result
  */
 
-import chalk from 'chalk';
 import { BaseCommand, type OptionDefinition } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
-import { toLatex } from '../../latex-generator';
 import { parse } from '../core/pipeline';
 import { solve, type SolvingVerbosity, SolveError } from '../../solve';
 import { isRelation } from '../../guards';
@@ -113,14 +111,8 @@ export class SolveCommand extends BaseCommand {
 				verbosity
 			});
 
-			// Format output
-			const output = this.formatOutput(parseResult.ast, result, verbosity);
-
-			return {
-				success: true,
-				output,
-				ast: result.solutions[0]?.value
-			};
+			// Format output with toggle support
+			return this.formatOutputWithToggle(parseResult.ast, result, verbosity);
 		} catch (err) {
 			if (err instanceof SolveError) {
 				const message = err.details ? `${err.message}: ${err.details}` : err.message;
@@ -201,14 +193,13 @@ export class SolveCommand extends BaseCommand {
 	}
 
 	/**
-	 * Format the output based on solve result and verbosity.
+	 * Format output with toggle support (exact/decimal like eval).
 	 */
-	private formatOutput(
+	private formatOutputWithToggle(
 		equation: import('../../types').MathNode,
 		result: import('../../solve').SolveResult,
 		verbosity: SolvingVerbosity
-	): string {
-		const lines: string[] = [];
+	): CommandResult {
 		const eqCustom = toCustom(equation);
 
 		// Header with equation type
@@ -226,66 +217,144 @@ export class SolveCommand extends BaseCommand {
 
 		const typeLabel = typeLabels[result.equationType] ?? result.equationType;
 
+		// Build header lines (for detailed/summarized verbosity)
+		const headerLines: string[] = [];
+		const headerHtmlLines: string[] = [];
+
 		if (verbosity !== 'result') {
-			lines.push(chalk.bold(`Equation ${typeLabel}: `) + chalk.cyan(eqCustom));
+			headerLines.push(`Equation ${typeLabel}: ${eqCustom}`);
+			headerHtmlLines.push(
+				`<span class="text-muted-foreground">Equation ${typeLabel}:</span> <span class="text-cyan-400">${this.escapeHtml(eqCustom)}</span>`
+			);
 		}
 
-		// Show steps if not quiet mode
+		// Show steps if detailed mode
 		if (verbosity === 'detailed' && result.steps.length > 0) {
-			lines.push('');
-			lines.push(chalk.dim('--- Etapes ---'));
+			headerLines.push('');
+			headerLines.push('--- Etapes ---');
+			headerHtmlLines.push('<br><span class="text-muted-foreground">--- Etapes ---</span>');
 			for (const step of result.steps) {
-				lines.push(chalk.yellow(`[${step.rule}]`) + ' ' + step.description);
+				headerLines.push(`[${step.rule}] ${step.description}`);
+				headerHtmlLines.push(
+					`<br><span class="text-yellow-400">[${step.rule}]</span> ${this.escapeHtml(step.description)}`
+				);
 			}
-			lines.push(chalk.dim('--- Fin des etapes ---'));
+			headerLines.push('--- Fin des etapes ---');
+			headerHtmlLines.push('<br><span class="text-muted-foreground">--- Fin des etapes ---</span>');
 		}
 
-		// Show result
-		lines.push('');
-
+		// Handle different result statuses
 		switch (result.status) {
 			case 'unique':
 			case 'multiple': {
-				const solutionLabel = result.solutions.length === 1 ? 'Solution' : 'Solutions';
-				const solutionList = result.solutions
+				// Build exact and decimal solution strings
+				const exactSolutions = result.solutions
+					.map((sol) => `${result.variable} = ${toCustom(sol.value)}`)
+					.join(result.solutions.length > 1 ? ' ou ' : '');
+
+				const decimalSolutions = result.solutions
 					.map((sol) => {
-						const valueStr = toCustom(sol.value);
-						const approxStr =
-							sol.approximate !== undefined ? ` ≈ ${sol.approximate.toPrecision(6)}` : '';
-						return `${result.variable} = ${valueStr}${approxStr}`;
+						if (sol.approximate !== undefined) {
+							return `${result.variable} ≈ ${sol.approximate.toPrecision(6)}`;
+						}
+						return `${result.variable} = ${toCustom(sol.value)}`;
 					})
-					.join(', ');
+					.join(result.solutions.length > 1 ? ' ou ' : '');
 
-				lines.push(chalk.green(`${solutionLabel}: ${solutionList}`));
+				// Check if toggle makes sense
+				const canToggle = exactSolutions !== decimalSolutions;
 
-				// LaTeX for each solution
-				if (verbosity !== 'result') {
-					const latexSolutions = result.solutions.map((sol) => toLatex(sol.value)).join(', ');
-					lines.push(chalk.dim('LaTeX: ') + `${result.variable} = ${latexSolutions}`);
-				}
-				break;
+				// Build full output strings
+				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
+				const headerHtmlPrefix =
+					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
+
+				const exactOutput = headerPrefix + exactSolutions;
+				const decimalOutput = headerPrefix + decimalSolutions;
+
+				const exactOutputHtml =
+					headerHtmlPrefix +
+					`<span class="text-green-400">${this.escapeHtml(exactSolutions)}</span>`;
+				const decimalOutputHtml =
+					headerHtmlPrefix +
+					`<span class="text-green-400">${this.escapeHtml(decimalSolutions)}</span>`;
+
+				return {
+					success: true,
+					output: exactOutput,
+					outputHtml: exactOutputHtml,
+					ast: result.solutions[0]?.value,
+					exactOutput,
+					exactOutputHtml,
+					decimalOutput,
+					decimalOutputHtml,
+					canToggle
+				};
 			}
 
-			case 'infinite':
-				lines.push(chalk.blue('Solutions infinies: toute valeur est solution'));
-				break;
+			case 'infinite': {
+				const msg = 'Solutions infinies: toute valeur est solution';
+				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
+				const headerHtmlPrefix =
+					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
 
-			case 'no-solution':
-				lines.push(chalk.red("Pas de solution: l'equation est contradictoire"));
-				break;
+				return {
+					success: true,
+					output: headerPrefix + msg,
+					outputHtml: headerHtmlPrefix + `<span class="text-blue-400">${msg}</span>`
+				};
+			}
 
-			case 'no-real-solution':
-				lines.push(chalk.red('Pas de solution reelle'));
-				break;
+			case 'no-solution': {
+				const msg = "Pas de solution: l'equation est contradictoire";
+				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
+				const headerHtmlPrefix =
+					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
 
-			default:
-				if (result.error) {
-					lines.push(chalk.red(`Erreur: ${result.error}`));
-				} else {
-					lines.push(chalk.yellow('Resolution non supportee'));
-				}
+				return {
+					success: true,
+					output: headerPrefix + msg,
+					outputHtml: headerHtmlPrefix + `<span class="text-red-400">${msg}</span>`
+				};
+			}
+
+			case 'no-real-solution': {
+				const msg = 'Pas de solution reelle';
+				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
+				const headerHtmlPrefix =
+					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
+
+				return {
+					success: true,
+					output: headerPrefix + msg,
+					outputHtml: headerHtmlPrefix + `<span class="text-red-400">${msg}</span>`
+				};
+			}
+
+			default: {
+				const msg = result.error ? `Erreur: ${result.error}` : 'Resolution non supportee';
+				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
+				const headerHtmlPrefix =
+					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
+
+				return {
+					success: true,
+					output: headerPrefix + msg,
+					outputHtml: headerHtmlPrefix + `<span class="text-yellow-400">${msg}</span>`
+				};
+			}
 		}
+	}
 
-		return lines.join('\n');
+	/**
+	 * Escape HTML special characters.
+	 */
+	private escapeHtml(str: string): string {
+		return str
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#039;');
 	}
 }

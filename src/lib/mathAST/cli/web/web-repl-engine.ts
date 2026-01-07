@@ -1345,6 +1345,12 @@ export class WebReplEngine {
 			error?: unknown;
 			ast?: MathNode;
 			outputHtml?: string;
+			// Toggle support fields
+			exactOutput?: string;
+			exactOutputHtml?: string;
+			decimalOutput?: string;
+			decimalOutputHtml?: string;
+			canToggle?: boolean;
 		},
 		ast?: MathNode
 	): ReplExecutionResult {
@@ -1371,7 +1377,13 @@ export class WebReplEngine {
 				success: true,
 				output: cmdResult.output,
 				outputHtml: cmdResult.outputHtml,
-				ast: cmdResult.ast || ast
+				ast: cmdResult.ast || ast,
+				// Pass through toggle fields if present
+				exactOutput: cmdResult.exactOutput,
+				exactOutputHtml: cmdResult.exactOutputHtml,
+				decimalOutput: cmdResult.decimalOutput,
+				decimalOutputHtml: cmdResult.decimalOutputHtml,
+				canToggle: cmdResult.canToggle
 			};
 		}
 
@@ -1392,7 +1404,13 @@ export class WebReplEngine {
 			success: true,
 			output: cmdResult.output,
 			outputHtml,
-			ast: cmdResult.ast || ast
+			ast: cmdResult.ast || ast,
+			// Pass through toggle fields if present
+			exactOutput: cmdResult.exactOutput,
+			exactOutputHtml: cmdResult.exactOutputHtml,
+			decimalOutput: cmdResult.decimalOutput,
+			decimalOutputHtml: cmdResult.decimalOutputHtml,
+			canToggle: cmdResult.canToggle
 		};
 	}
 
