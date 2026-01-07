@@ -196,6 +196,87 @@ function formatAllStepsGloballyAligned(
 	return { headerText, headerHtml, textLines, htmlLines };
 }
 
+/**
+ * Format header and all pedagogical steps for summarized mode.
+ * Shows description + result only (no transformation), with aligned = signs.
+ */
+function formatStepsSummarized(
+	headerPrefix: string,
+	headerEquation: string,
+	steps: PedagogicalStep[],
+	escapeHtml: (s: string) => string
+): GlobalAlignedSteps {
+	const getEqIndex = (s: string) => s.indexOf('=');
+
+	// Format header equation with spaces around =
+	const formattedHeaderEq = headerEquation.replace(/=/, ' = ');
+
+	// Calculate = position for header
+	const headerEqIndex = getEqIndex(formattedHeaderEq);
+	const headerDescLen = headerPrefix.length + 2; // +2 for ": "
+	let maxEqPos = headerEqIndex !== -1 ? headerDescLen + headerEqIndex : 0;
+
+	// Calculate = position for each result line
+	for (const step of steps) {
+		const eqIndex = getEqIndex(step.result);
+		if (eqIndex !== -1) {
+			const descLen = step.description.length + 2; // +2 for ": "
+			maxEqPos = Math.max(maxEqPos, descLen + eqIndex);
+		}
+	}
+
+	// Format header
+	let headerText: string;
+	let headerHtml: string;
+	if (headerEqIndex !== -1) {
+		const headerPadding = maxEqPos - headerDescLen - headerEqIndex;
+		const paddingStr = ' '.repeat(Math.max(0, headerPadding));
+		const htmlPadding = '&nbsp;'.repeat(Math.max(0, headerPadding));
+		headerText = `${headerPrefix}: ${paddingStr}${formattedHeaderEq}`;
+		headerHtml =
+			`<span class="text-muted-foreground">${escapeHtml(headerPrefix)}:</span> ` +
+			`${htmlPadding}<span class="text-cyan-400">${escapeHtml(formattedHeaderEq)}</span>`;
+	} else {
+		headerText = `${headerPrefix}: ${formattedHeaderEq}`;
+		headerHtml =
+			`<span class="text-muted-foreground">${escapeHtml(headerPrefix)}:</span> ` +
+			`<span class="text-cyan-400">${escapeHtml(formattedHeaderEq)}</span>`;
+	}
+
+	// Format step lines (description: result)
+	const textLines: string[] = [];
+	const htmlLines: string[] = [];
+
+	for (const step of steps) {
+		const eqIndexResult = getEqIndex(step.result);
+		const descPrefix = `${step.description}: `;
+
+		if (eqIndexResult === -1) {
+			// No = in result, fallback
+			textLines.push(`${descPrefix}${step.result}`);
+			htmlLines.push(
+				`<br><span class="text-muted-foreground">${escapeHtml(step.description)}:</span> ` +
+					`<span class="text-cyan-400">${escapeHtml(step.result)}</span>`
+			);
+			continue;
+		}
+
+		// Align = sign
+		const currentEqPos = descPrefix.length + eqIndexResult;
+		const padding = maxEqPos - currentEqPos;
+		const paddingStr = ' '.repeat(Math.max(0, padding));
+		const htmlPadding = '&nbsp;'.repeat(Math.max(0, padding));
+
+		textLines.push(`${descPrefix}${paddingStr}${step.result}`);
+		htmlLines.push(
+			`<br><span class="text-muted-foreground">${escapeHtml(step.description)}:</span> ` +
+				`${htmlPadding}<span class="text-cyan-400">${escapeHtml(step.result)}</span>`
+		);
+	}
+
+	return { headerText, headerHtml, textLines, htmlLines };
+}
+
 // =============================================================================
 // Pedagogical Step Types
 // =============================================================================
@@ -706,20 +787,17 @@ export class SolveCommand extends BaseCommand {
 			headerLines.push(...globalAligned.textLines);
 			headerHtmlLines.push(...globalAligned.htmlLines);
 		} else if (verbosity === 'summarized' && pedagogicalSteps.length > 0) {
-			// Summarized: header + step descriptions only (no transformations)
-			const formattedHeaderEq = eqCustom.replace(/=/, ' = ');
-			headerLines.push(`${headerPrefix}: ${formattedHeaderEq}`);
-			headerHtmlLines.push(
-				`<span class="text-muted-foreground">${headerPrefix}:</span> ` +
-					`<span class="text-cyan-400">${this.escapeHtml(formattedHeaderEq)}</span>`
+			// Summarized: description + result only (no transformation), with aligned =
+			const summarized = formatStepsSummarized(
+				headerPrefix,
+				eqCustom,
+				pedagogicalSteps,
+				this.escapeHtml.bind(this)
 			);
-			// Add step descriptions with arrow prefix
-			for (const step of pedagogicalSteps) {
-				headerLines.push(`→ ${step.description}`);
-				headerHtmlLines.push(
-					`<br><span class="text-muted-foreground">→ ${this.escapeHtml(step.description)}</span>`
-				);
-			}
+			headerLines.push(summarized.headerText);
+			headerHtmlLines.push(summarized.headerHtml);
+			headerLines.push(...summarized.textLines);
+			headerHtmlLines.push(...summarized.htmlLines);
 		} else if (verbosity !== 'result') {
 			// Fallback: just header
 			headerLines.push(`${headerPrefix}: ${eqCustom}`);
