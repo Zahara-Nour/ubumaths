@@ -14,14 +14,8 @@
  * @module mathAST/parser/parser-pratt
  */
 
-import type {
-	MathNode,
-	GreekLetter,
-	MathSymbol,
-	RelationType,
-	NodeMetadata,
-	MatrixType
-} from '../../types';
+import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } from '../../types';
+import type { MatrixType } from '../../matrix/types';
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { Tokenizer } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
@@ -1357,7 +1351,7 @@ class PrattParser {
 					this.checkCommand('end')
 				) {
 					// Empty cell - add placeholder zero
-					currentRow.push(MathAST.number(0));
+					currentRow.push(MathAST.number('0'));
 				}
 				continue;
 			}
@@ -1406,7 +1400,7 @@ class PrattParser {
 	private parseExpressionUntilMatrixDelimiter(): MathNode {
 		// Check for empty element
 		if (this.isMatrixDelimiter()) {
-			return MathAST.number(0);
+			return MathAST.number('0');
 		}
 
 		// Parse using standard expression parsing but with special termination
@@ -1431,7 +1425,7 @@ class PrattParser {
 				break;
 			}
 
-			result = this.led(result, bp);
+			result = this.led(result);
 		}
 
 		return result;
