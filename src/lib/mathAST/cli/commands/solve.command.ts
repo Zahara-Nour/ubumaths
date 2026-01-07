@@ -79,49 +79,102 @@ function wrapForDivision(expr: string): string {
 }
 
 /**
- * Result of formatting a pedagogical step with alignment.
+ * Result of formatting all pedagogical steps with global alignment.
  */
-interface AlignedStepFormat {
-	/** Plain text: description line */
-	textDescLine: string;
-	/** Plain text: result line with space padding */
-	textResultLine: string;
-	/** Number of characters for HTML padding (use &nbsp;) */
-	htmlPadding: number;
+interface GlobalAlignedSteps {
+	textLines: string[];
+	htmlLines: string[];
 }
 
 /**
- * Format a pedagogical step with aligned = signs.
- * Returns both plain text lines and the padding count for HTML.
+ * Format all pedagogical steps with globally aligned = signs.
+ * All = signs across all steps are vertically aligned.
  */
-function formatAlignedStep(step: PedagogicalStep): AlignedStepFormat {
-	const textDescLine = `${step.description}: ${step.transformation}`;
+function formatAllStepsGloballyAligned(
+	steps: PedagogicalStep[],
+	escapeHtml: (s: string) => string
+): GlobalAlignedSteps {
+	const textLines: string[] = [];
+	const htmlLines: string[] = [];
 
-	// Find position of = in transformation and result
-	const eqIndexTransform = step.transformation.indexOf('=');
-	const eqIndexResult = step.result.indexOf('=');
-
-	if (eqIndexTransform === -1 || eqIndexResult === -1) {
-		// Fallback: no alignment possible
-		return {
-			textDescLine,
-			textResultLine: `    ${step.result}`,
-			htmlPadding: 4
-		};
+	if (steps.length === 0) {
+		return { textLines, htmlLines };
 	}
 
-	// Position of = in full description line
-	const eqPosLine1 = step.description.length + 2 + eqIndexTransform; // +2 for ": "
+	// First pass: find max = position across ALL transformation lines
+	let maxEqPos = 0;
+	for (const step of steps) {
+		const eqIndexTransform = step.transformation.indexOf('=');
+		if (eqIndexTransform !== -1) {
+			// Position of = in "{description}: {left_part} ="
+			const descLen = step.description.length + 2; // +2 for ": "
+			const eqPos = descLen + eqIndexTransform;
+			maxEqPos = Math.max(maxEqPos, eqPos);
+		}
+	}
 
-	// Calculate padding to align = in result line
-	const padding = eqPosLine1 - eqIndexResult;
-	const actualPadding = Math.max(4, padding); // minimum 4 spaces indent
+	// Second pass: format all lines aligned to maxEqPos
+	for (const step of steps) {
+		const eqIndexTransform = step.transformation.indexOf('=');
+		const eqIndexResult = step.result.indexOf('=');
 
-	return {
-		textDescLine,
-		textResultLine: ' '.repeat(actualPadding) + step.result,
-		htmlPadding: actualPadding
-	};
+		if (eqIndexTransform === -1) {
+			// No = in transformation, fallback
+			textLines.push(`${step.description}: ${step.transformation}`);
+			textLines.push(`    ${step.result}`);
+			htmlLines.push(
+				`<br><span class="text-muted-foreground">${escapeHtml(step.description)}:</span> ` +
+					`<span class="text-cyan-400">${escapeHtml(step.transformation)}</span>`
+			);
+			htmlLines.push(
+				`<br><span class="text-green-400">&nbsp;&nbsp;&nbsp;&nbsp;${escapeHtml(step.result)}</span>`
+			);
+			continue;
+		}
+
+		// Split transformation at =
+		const transformLeft = step.transformation.substring(0, eqIndexTransform);
+		const transformRight = step.transformation.substring(eqIndexTransform); // includes "= ..."
+
+		// Current = position
+		const descPrefix = `${step.description}: `;
+		const currentEqPos = descPrefix.length + transformLeft.length;
+
+		// Padding needed to reach maxEqPos
+		const transformPadding = maxEqPos - currentEqPos;
+		const transformPaddingStr = ' '.repeat(Math.max(0, transformPadding));
+
+		// Format transformation line with padding before =
+		const textDescLine = descPrefix + transformLeft + transformPaddingStr + transformRight;
+		textLines.push(textDescLine);
+
+		// HTML version
+		const htmlTransformPadding = '&nbsp;'.repeat(Math.max(0, transformPadding));
+		htmlLines.push(
+			`<br><span class="text-muted-foreground">${escapeHtml(step.description)}:</span> ` +
+				`<span class="text-cyan-400">${escapeHtml(transformLeft)}${htmlTransformPadding}${escapeHtml(transformRight)}</span>`
+		);
+
+		// Format result line - align = to maxEqPos
+		if (eqIndexResult !== -1) {
+			const resultPadding = maxEqPos - eqIndexResult;
+			const actualResultPadding = Math.max(4, resultPadding); // minimum 4 spaces
+
+			textLines.push(' '.repeat(actualResultPadding) + step.result);
+
+			const htmlResultPadding = '&nbsp;'.repeat(actualResultPadding);
+			htmlLines.push(
+				`<br><span class="text-green-400">${htmlResultPadding}${escapeHtml(step.result)}</span>`
+			);
+		} else {
+			textLines.push(`    ${step.result}`);
+			htmlLines.push(
+				`<br><span class="text-green-400">&nbsp;&nbsp;&nbsp;&nbsp;${escapeHtml(step.result)}</span>`
+			);
+		}
+	}
+
+	return { textLines, htmlLines };
 }
 
 // =============================================================================
@@ -539,29 +592,19 @@ export class SolveCommand extends BaseCommand {
 				);
 			}
 
-			// Display pedagogical steps with nice formatting
+			// Display pedagogical steps with global = alignment
 			if (pedagogicalSteps.length > 0) {
 				headerLines.push('');
 				headerHtmlLines.push('<br>');
 
-				for (const step of pedagogicalSteps) {
-					// Get aligned formatting for both text and HTML
-					const aligned = formatAlignedStep(step);
+				// Format all steps with globally aligned = signs
+				const globalAligned = formatAllStepsGloballyAligned(
+					pedagogicalSteps,
+					this.escapeHtml.bind(this)
+				);
 
-					// Plain text with aligned = signs
-					headerLines.push(aligned.textDescLine);
-					headerLines.push(aligned.textResultLine);
-
-					// HTML: styled output with &nbsp; for alignment
-					const htmlPadding = '&nbsp;'.repeat(aligned.htmlPadding);
-					headerHtmlLines.push(
-						`<br><span class="text-muted-foreground">${this.escapeHtml(step.description)}:</span> ` +
-							`<span class="text-cyan-400">${this.escapeHtml(step.transformation)}</span>`
-					);
-					headerHtmlLines.push(
-						`<br><span class="text-green-400">${htmlPadding}${this.escapeHtml(step.result)}</span>`
-					);
-				}
+				headerLines.push(...globalAligned.textLines);
+				headerHtmlLines.push(...globalAligned.htmlLines);
 			}
 		}
 
