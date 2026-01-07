@@ -66,6 +66,18 @@ function evalSimplify(node: MathNode): MathNode {
 	return simplify(node);
 }
 
+/**
+ * Wrap expression in braces if needed for division clarity.
+ * Adds {} around expressions that start with - or contain + or -.
+ */
+function wrapForDivision(expr: string): string {
+	// Needs braces if:
+	// - starts with minus sign
+	// - contains + or - operators (not at start)
+	const needsBraces = expr.startsWith('-') || /[+-]/.test(expr.slice(1));
+	return needsBraces ? `{${expr}}` : expr;
+}
+
 // =============================================================================
 // Pedagogical Step Types
 // =============================================================================
@@ -240,8 +252,11 @@ function generateLinearPedagogicalSteps(
 
 	if (!aIsOne) {
 		const operationDesc = `On divise les deux membres par ${aStr}`;
-		const transformLhs = `${toCustom(currentLhs)}/${aStr}`;
-		const transformRhs = `${toCustom(currentRhs)}/${aStr}`;
+		const lhsStr = toCustom(currentLhs);
+		const rhsStr = toCustom(currentRhs);
+		// Wrap in braces if needed to avoid ambiguity (e.g., {-3x}/{-3} not -3x/-3)
+		const transformLhs = `${wrapForDivision(lhsStr)}/${wrapForDivision(aStr)}`;
+		const transformRhs = `${wrapForDivision(rhsStr)}/${wrapForDivision(aStr)}`;
 
 		steps.push({
 			description: operationDesc,
