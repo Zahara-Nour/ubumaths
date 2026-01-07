@@ -141,7 +141,8 @@ describe('createJournalEntry', () => {
 
 		const input: CreateJournalEntryInput = {
 			classId: mockClassId,
-			entryDate: '2024-01-15'
+			entryDate: '2024-01-15',
+			isPublished: false
 		};
 
 		const result = await journal.createJournalEntry(mockSupabase, mockTeacherId, input);
@@ -168,7 +169,8 @@ describe('createJournalEntry', () => {
 
 		const input: CreateJournalEntryInput = {
 			classId: mockClassId,
-			entryDate: '2024-01-15'
+			entryDate: '2024-01-15',
+			isPublished: false
 		};
 
 		const result = await journal.createJournalEntry(mockSupabase, mockTeacherId, input);
@@ -201,7 +203,8 @@ describe('createJournalEntry', () => {
 
 		const input: CreateJournalEntryInput = {
 			classId: mockClassId,
-			entryDate: '2024-01-15'
+			entryDate: '2024-01-15',
+			isPublished: false
 		};
 
 		const result = await journal.createJournalEntry(mockSupabase, mockTeacherId, input);

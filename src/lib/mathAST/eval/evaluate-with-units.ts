@@ -298,7 +298,8 @@ function transformToTargetUnit(node: MathNode, targetUnit: Unit): MathNode {
 					type: 'multiplication',
 					left: number(String(factor)),
 					right: innerNode,
-					style: 'implicit'
+					style: 'implicit',
+					displayStyle: 'implicit'
 				} as MathNode,
 				targetUnit
 			);

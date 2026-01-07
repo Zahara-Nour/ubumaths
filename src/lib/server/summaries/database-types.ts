@@ -53,6 +53,9 @@ export interface GidouillesActivityRow {
 	created_at: string;
 }
 
+/** Alias for backwards compatibility */
+export type GidouillesHistoryRow = GidouillesActivityRow;
+
 /**
  * bonus_history table row type
  * Migration: 20251113140345_create_bonus_history_table.sql

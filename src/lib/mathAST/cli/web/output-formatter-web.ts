@@ -138,23 +138,26 @@ export function formatInputErrorHtml(input: string, position: number, message: s
 // =============================================================================
 
 /**
- * Format a success message with optional label as HTML.
+ * Escape text for safe HTML display, with optional styled label.
  *
- * @param output - The output content
- * @param label - Optional label to prefix the output
- * @returns HTML-formatted success output
+ * Use this for user-provided content that needs XSS protection.
+ * For system messages with HTML formatting, pass outputHtml directly.
+ *
+ * @param text - The text to escape (user content)
+ * @param label - Optional label to prefix (styled as success)
+ * @returns HTML-safe string
  *
  * @example
  * ```typescript
- * const html = formatSuccessHtml('x^2 + 3x', 'LaTeX:');
+ * const html = escapeWithLabel('x^2 + 3x', 'LaTeX:');
  * // => "<span class="repl-success">LaTeX:</span><br>x^2 + 3x"
  * ```
  */
-export function formatSuccessHtml(output: string, label?: string): string {
+export function escapeWithLabel(text: string, label?: string): string {
 	if (label) {
-		return `${span(label, CSS_CLASSES.success)}<br>${escapeHtml(output)}`;
+		return `${span(label, CSS_CLASSES.success)}<br>${escapeHtml(text)}`;
 	}
-	return escapeHtml(output);
+	return escapeHtml(text);
 }
 
 // =============================================================================

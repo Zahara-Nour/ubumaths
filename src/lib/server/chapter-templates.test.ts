@@ -30,6 +30,7 @@ import type {
 	UpdateChapterTemplateInput,
 	InstantiateTemplateInput
 } from './validation/chapter-templates';
+import type { GradeCode } from '$lib/types/grades';
 import type {
 	TemplateContentSnapshot,
 	DbChapterTemplate,
@@ -1039,7 +1040,9 @@ describe('Helper Functions', () => {
 		});
 
 		it('should format all grades', () => {
-			expect(formatGrades(['6', '5', '4', '3', '2', '1', 'T'])).toBe('6e, 5e, 4e, 3e, 2e, 1e, Te');
+			expect(formatGrades(['6', '5', '4', '3', '2', '1_GEN', 'T_GEN'])).toBe(
+				'6e, 5e, 4e, 3e, 2de, 1re Générale, Tle Générale'
+			);
 		});
 
 		it('should return default text for empty grades', () => {
@@ -1553,7 +1556,7 @@ describe('Template CRUD Functions', () => {
 		it('should create template with minimal data', async () => {
 			const templateData = {
 				title: 'Minimal Template',
-				grades: [] as ('6' | '5' | '4' | '3' | '2' | '1' | 'T')[]
+				grades: [] as GradeCode[]
 			};
 
 			const minimalTemplate = {
@@ -1579,7 +1582,7 @@ describe('Template CRUD Functions', () => {
 		it('should handle database error', async () => {
 			const templateData = {
 				title: 'Test',
-				grades: [] as ('6' | '5' | '4' | '3' | '2' | '1' | 'T')[]
+				grades: [] as GradeCode[]
 			};
 
 			supabase._mockChain.single.mockResolvedValueOnce({

@@ -211,12 +211,14 @@ export function generateClaudeCodeExport(report: BugReportWithAuthor): ClaudeCod
 	sections.push('## Informations générales');
 	sections.push(`- **ID**: \`${report.id}\``);
 	sections.push(
-		`- **Catégorie**: ${BUG_REPORT_CATEGORY_LABELS[report.category]} (${report.category})`
+		`- **Catégorie**: ${BUG_REPORT_CATEGORY_LABELS[report.category as keyof typeof BUG_REPORT_CATEGORY_LABELS] ?? report.category} (${report.category})`
 	);
 	sections.push(
-		`- **Sévérité**: ${BUG_REPORT_SEVERITY_LABELS[report.severity]} (${report.severity})`
+		`- **Sévérité**: ${BUG_REPORT_SEVERITY_LABELS[report.severity as keyof typeof BUG_REPORT_SEVERITY_LABELS] ?? report.severity} (${report.severity})`
 	);
-	sections.push(`- **Statut**: ${BUG_REPORT_STATUS_LABELS[report.status]} (${report.status})`);
+	sections.push(
+		`- **Statut**: ${BUG_REPORT_STATUS_LABELS[report.status as keyof typeof BUG_REPORT_STATUS_LABELS] ?? report.status} (${report.status})`
+	);
 	sections.push(`- **Créé le**: ${formatTimestamp(report.created_at)}`);
 
 	if (report.author) {

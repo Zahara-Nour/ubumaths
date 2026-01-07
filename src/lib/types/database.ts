@@ -14270,3 +14270,68 @@ export const Constants = {
 		}
 	}
 } as const;
+
+// ============================================================================
+// Custom Type Exports (for convenience, derived from database types)
+// ============================================================================
+
+/** User role enum */
+export type UserRole = Database['public']['Enums']['user_role'];
+
+/** Gender type (string from database, typically 'male' | 'female' | null) */
+export type Gender = 'male' | 'female' | null;
+
+/** Friendship status type */
+export type FriendshipStatus = 'pending' | 'accepted' | 'rejected';
+
+/** Friendship relation type */
+export type FriendshipRelationType = string;
+
+/** Class type alias */
+export type Class = Tables<'classes'>;
+
+/** Class schedule (for timetable matching) */
+export type ClassSchedule = {
+	day: number; // 0-6 (Sunday-Saturday)
+	day_of_week?: number; // Alias for day (0-6)
+	start_time: string; // HH:MM format
+	end_time: string; // HH:MM format
+	subject?: string; // Subject name (optional)
+	room?: string; // Room number/name (optional)
+};
+
+/** Friendship with profile data */
+export type FriendshipWithProfile = {
+	id: string;
+	status: FriendshipStatus;
+	friendship_type: FriendshipRelationType;
+	created_at: string;
+	updated_at: string;
+	requester_id: string;
+	addressee_id: string;
+	friend_profile?: {
+		id: string;
+		full_name: string | null;
+		firstname: string | null;
+		lastname: string | null;
+		avatar_url: string | null;
+		role: UserRole;
+		gender: Gender;
+		presence?: {
+			is_online: boolean;
+			last_seen: string | null;
+		};
+	};
+};
+
+/** Gidouilles history row type */
+export type GidouillesHistoryRow = {
+	id: string;
+	user_id: string;
+	event_type: Database['public']['Enums']['reward_event_type'];
+	amount: number;
+	balance_after: number;
+	description: string | null;
+	metadata: Json | null;
+	created_at: string;
+};

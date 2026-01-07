@@ -1,4 +1,5 @@
 import { formatTimeDisplay, timeToMinutes } from './schedule';
+import type { WeekConfig } from './week-config';
 
 /**
  * School period type - represents a single period in a school timetable
@@ -11,10 +12,12 @@ export interface SchoolPeriod {
 }
 
 /**
- * School timetable type - contains an array of periods
+ * School timetable type - contains an array of periods and optional week configuration
  */
 export interface SchoolTimetable {
 	periods: SchoolPeriod[];
+	/** Week configuration for school days */
+	week_config?: WeekConfig;
 }
 
 /**

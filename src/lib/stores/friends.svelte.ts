@@ -140,7 +140,7 @@ class FriendsManager {
 							lastname: profile.lastname ?? null,
 							avatar_url: profile.avatar_url ?? null,
 							role: profile.role ?? 'student',
-							gender: profile.gender ?? null,
+							gender: (profile.gender as 'male' | 'female' | null) ?? null,
 							presence
 						}
 					};

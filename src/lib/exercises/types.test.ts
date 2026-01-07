@@ -28,12 +28,17 @@ function createExercise(overrides: Partial<Exercise> = {}): Exercise {
 		id: 'test-exercise-id',
 		difficulty: 1,
 		tags: ['test'],
-		statement_md: 'Test statement',
-		solution_md: 'Test solution',
 		distribution_mode: 'on_demand',
 		created_at: '2024-01-01T00:00:00Z',
 		updated_at: '2024-01-01T00:00:00Z',
 		created_by: 'test-user-id',
+		variations: [
+			{
+				label: 'default',
+				statement_md: 'Test statement',
+				solution_md: 'Test solution'
+			}
+		],
 		...overrides
 	};
 }
@@ -507,14 +512,12 @@ describe('Type Helpers Integration', () => {
 		expect(resolvedVariation.hints).toHaveLength(1);
 	});
 
-	it('should handle legacy exercise (no variations)', () => {
+	it('should handle exercise without explicit variations property', () => {
 		const exercise = createExercise({
-			variables: [{ name: 'x', expression: '{{1..10}}' }],
-			statement_md: 'Calculate {{x}}',
-			solution_md: 'Answer: {{x}}'
+			variations: undefined
 		});
 
-		// Should not be a variations exercise
+		// Should not be a variations exercise (undefined)
 		expect(isVariationsExercise(exercise)).toBe(false);
 
 		// Type guard should work

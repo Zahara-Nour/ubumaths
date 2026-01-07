@@ -118,10 +118,14 @@ export async function createParamExercise(
 			title: data.title || 'Test Exercise',
 			difficulty: data.difficulty || 1,
 			tags: data.tags || [],
-			statement_md: data.statement_md || 'Default statement',
-			solution_md: data.solution_md || 'Default solution',
+			variations: data.variations || [
+				{
+					label: 'default',
+					statement_md: 'Default statement',
+					solution_md: 'Default solution'
+				}
+			],
 			distribution_mode: data.distribution_mode || 'on_demand',
-			variables: data.variables || [],
 			...data
 		}
 	});
