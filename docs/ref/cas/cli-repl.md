@@ -109,10 +109,11 @@ const registry = createDefaultRegistry();
 
 #### Calculus Commands
 
-| Command  | Aliases | Description              |
-| -------- | ------- | ------------------------ |
-| `diff`   | -       | Differentiate expression |
-| `taylor` | -       | Taylor series expansion  |
+| Command  | Aliases         | Description                                        |
+| -------- | --------------- | -------------------------------------------------- |
+| `diff`   | -               | Differentiate expression                           |
+| `taylor` | -               | Taylor series expansion                            |
+| `solve`  | `s`, `resoudre` | Solve equation (linear, quadratic, transcendental) |
 
 #### Unit Commands
 
@@ -252,6 +253,47 @@ Function f defined with derivative
 
 > .diff f(x)
 cos(x)
+```
+
+## Equation Solving
+
+### Basic Usage
+
+```
+> .solve 2x + 6 = 0
+Equation lineaire
+x = -3
+
+> .solve x^2 - 5x + 6 = 0
+Equation quadratique (Delta > 0)
+x = 2 ou x = 3
+
+> .solve x^2 + 1 = 0
+Equation quadratique (Delta < 0)
+Pas de solution reelle
+```
+
+### Verbosity Options
+
+```
+> .solve x^2 - 4 = 0 --verbose
+On identifie: a = 1, b = 0, c = -4
+Discriminant: Delta = 16 > 0 (deux solutions)
+x = (-0 + sqrt(16)) / 2 = 2
+x = (-0 - sqrt(16)) / 2 = -2
+
+> .solve 3x = 9 --quiet
+x = 3
+```
+
+### Transcendental Equations
+
+```
+> .solve ln(x) = 0
+x = 1
+
+> .solve sin(x) = 2
+Pas de solution reelle (sin hors domaine [-1,1])
 ```
 
 ### With Inverse

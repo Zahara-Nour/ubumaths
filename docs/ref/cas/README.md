@@ -13,14 +13,15 @@ Both systems share fundamental concepts but MathAST provides a cleaner, more mod
 
 ## Recent Additions (v0.5+)
 
-| Feature             | Description                                                |
-| ------------------- | ---------------------------------------------------------- |
-| **Security Limits** | DoS protection via input length, AST depth, and node count |
-| **Rich Errors**     | Context snippets, line/column numbers, suggestions         |
-| **Parse Cache**     | LRU caching for repeated expression parsing                |
-| **Zod Validation**  | Runtime validation of bindings with Zod schemas            |
-| **Step Recording**  | Record and display simplification steps (French)           |
-| **Auto-Completion** | IDE-like completion API for functions, variables, commands |
+| Feature              | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
+| **Security Limits**  | DoS protection via input length, AST depth, and node count |
+| **Rich Errors**      | Context snippets, line/column numbers, suggestions         |
+| **Parse Cache**      | LRU caching for repeated expression parsing                |
+| **Zod Validation**   | Runtime validation of bindings with Zod schemas            |
+| **Step Recording**   | Record and display simplification steps (French)           |
+| **Auto-Completion**  | IDE-like completion API for functions, variables, commands |
+| **Equation Solving** | Linear, quadratic, transcendental equations with steps     |
 
 See [mathAST Improvements](../mathAST/improvements.md) for implementation details.
 
@@ -69,4 +70,8 @@ console.log(derivative.latex); // "3 x^{2}"
 const a = Exp.parse('(a+b)^2');
 const b = Exp.parse('a^2 + 2ab + b^2');
 console.log(a.isEquivalent(b)); // true
+
+// Solve equations
+const solutions = Exp.from('x^2 - 5x + 6 = 0').solutions();
+console.log(solutions.map((s) => s.latex)); // ["-3", "-2"]
 ```
