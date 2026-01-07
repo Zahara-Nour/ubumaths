@@ -22,7 +22,7 @@ import { solve, type SolvingVerbosity, SolveError } from '../../solve';
 import { isRelation, isMultiplication, isOpposite, isVariable, isNumber } from '../../guards';
 import type { MathNode, RelationNode } from '../../types';
 import { simplify } from '../../normal';
-import { number, opposite, add, implicitMultiply } from '../../factory';
+import { number, opposite, add } from '../../factory';
 
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { getVariables } from '../../eval/substitute';
@@ -298,7 +298,7 @@ function extractLinearParts(expr: MathNode, variable: string): { a: MathNode; b:
 
 /**
  * Generate pedagogical steps for a linear equation.
- * Input: ax + b = c (where lhs = ax + b, rhs = c)
+ * Handles equations with variables on both sides: a1*x + b1 = a2*x + b2
  */
 function generateLinearPedagogicalSteps(
 	equation: RelationNode,
@@ -309,27 +309,94 @@ function generateLinearPedagogicalSteps(
 	const lhs = equation.left;
 	const rhs = equation.right;
 
-	// Extract ax + b from lhs
-	const parts = extractLinearParts(lhs, variable);
-	if (!parts) return steps;
+	// Extract parts from both sides
+	const lhsParts = extractLinearParts(lhs, variable);
+	const rhsParts = extractLinearParts(rhs, variable);
+	if (!lhsParts || !rhsParts) return steps;
 
-	const { a, b } = parts;
-	const aStr = toCustom(a);
-	const bSimplified = simplify(b);
+	const { a: a1, b: b1 } = lhsParts; // LHS: a1*x + b1
+	const { a: a2, b: b2 } = rhsParts; // RHS: a2*x + b2
 
-	// Current state: lhs = rhs
-	let currentLhs = lhs;
-	let currentRhs = rhs;
+	// Track current state as strings for display
+	let currentLhsStr = toCustom(lhs);
+	let currentRhsStr = toCustom(rhs);
 
-	// Step 1: Add/subtract constant to isolate variable term
-	// If b != 0, we need to eliminate it
-	const bIsZero = toCustom(bSimplified) === '0';
+	// Check if RHS has variable terms (a2 != 0)
+	const a2Str = toCustom(simplify(a2));
+	const hasVarOnRight = a2Str !== '0';
+
+	// Step 1: Move variable terms from RHS to LHS (if any)
+	// Subtract a2*x from both sides
+	if (hasVarOnRight) {
+		const a2Simplified = simplify(a2);
+		const a2StrDisplay = toCustom(a2Simplified);
+		const isNegative = a2StrDisplay.startsWith('-');
+
+		let operationDesc: string;
+		let transformLhs: string;
+		let transformRhs: string;
+
+		// Build variable term string for display
+		const varTermStr =
+			a2StrDisplay === '1'
+				? variable
+				: a2StrDisplay === '-1'
+					? `-${variable}`
+					: `${a2StrDisplay}${variable}`;
+		const absVarTermStr =
+			Math.abs(parseFloat(a2StrDisplay)) === 1
+				? variable
+				: `${toCustom(negate(a2Simplified))}${variable}`;
+
+		if (isNegative) {
+			// a2 is negative, so we add |a2|*x to both sides
+			operationDesc = `On ajoute ${absVarTermStr} aux deux membres`;
+			transformLhs = `${currentLhsStr} + ${absVarTermStr}`;
+			transformRhs = `${currentRhsStr} + ${absVarTermStr}`;
+		} else {
+			// a2 is positive, so we subtract a2*x from both sides
+			operationDesc = `On soustrait ${varTermStr} aux deux membres`;
+			transformLhs = `${currentLhsStr} - ${varTermStr}`;
+			transformRhs = `${currentRhsStr} - ${varTermStr}`;
+		}
+
+		// New coefficient: a1 - a2
+		const newA = evalSimplify(add(a1, negate(a2Simplified)));
+		const newAStr = toCustom(newA);
+		// New LHS: (a1-a2)*x + b1
+		const newLhsVarTerm =
+			newAStr === '1' ? variable : newAStr === '-1' ? `-${variable}` : `${newAStr}${variable}`;
+		const b1Str = toCustom(simplify(b1));
+		const newLhsStr =
+			b1Str === '0'
+				? newLhsVarTerm
+				: b1Str.startsWith('-')
+					? `${newLhsVarTerm}${b1Str}`
+					: `${newLhsVarTerm}+${b1Str}`;
+		// New RHS: just b2
+		const newRhsStr = toCustom(simplify(b2));
+
+		steps.push({
+			description: operationDesc,
+			transformation: `${transformLhs} = ${transformRhs}`,
+			result: `${newLhsStr} = ${newRhsStr}`
+		});
+
+		currentLhsStr = newLhsStr;
+		currentRhsStr = newRhsStr;
+	}
+
+	// Get updated coefficient and constant after moving variables
+	const finalA = hasVarOnRight ? evalSimplify(add(a1, negate(a2))) : simplify(a1);
+	const finalB = simplify(b1);
+	const finalC = simplify(b2); // RHS constant
+	const finalAStr = toCustom(finalA);
+
+	// Step 2: Move constant from LHS to RHS (if any)
+	const bStr = toCustom(finalB);
+	const bIsZero = bStr === '0';
 
 	if (!bIsZero) {
-		// Determine if we add or subtract
-		// If b is negative (e.g., -4), we add |b| (add 4)
-		// If b is positive (e.g., +4), we subtract b (subtract 4)
-		const bStr = toCustom(bSimplified);
 		const isNegative = bStr.startsWith('-');
 
 		let operationDesc: string;
@@ -338,49 +405,67 @@ function generateLinearPedagogicalSteps(
 
 		if (isNegative) {
 			// b is negative, so we add |b|
-			const absB = negate(bSimplified);
+			const absB = negate(finalB);
 			const absBStr = toCustom(absB);
 			operationDesc = `On ajoute ${absBStr} aux deux membres`;
-			transformLhs = `${toCustom(currentLhs)} + ${absBStr}`;
-			transformRhs = `${toCustom(currentRhs)} + ${absBStr}`;
+			transformLhs = `${currentLhsStr} + ${absBStr}`;
+			transformRhs = `${currentRhsStr} + ${absBStr}`;
 		} else {
 			// b is positive, so we subtract b
 			operationDesc = `On soustrait ${bStr} aux deux membres`;
-			transformLhs = `${toCustom(currentLhs)} - ${bStr}`;
-			transformRhs = `${toCustom(currentRhs)} - ${bStr}`;
+			transformLhs = `${currentLhsStr} - ${bStr}`;
+			transformRhs = `${currentRhsStr} - ${bStr}`;
 		}
 
-		// Compute simplified result: ax = c - b (evaluate numerically if pure numbers)
-		const newRhs = evalSimplify(add(currentRhs, negate(bSimplified)));
-		const varNode: MathNode = { type: 'variable', name: variable };
-		const newLhs = toCustom(simplify(a)) === '1' ? varNode : implicitMultiply(a, varNode);
+		// New RHS: finalC - finalB
+		const newRhs = evalSimplify(add(finalC, negate(finalB)));
+		const newRhsStr = toCustom(newRhs);
+		// New LHS: just the variable term
+		const newLhsStr =
+			finalAStr === '1'
+				? variable
+				: finalAStr === '-1'
+					? `-${variable}`
+					: `${finalAStr}${variable}`;
 
 		steps.push({
 			description: operationDesc,
 			transformation: `${transformLhs} = ${transformRhs}`,
-			result: `${toCustom(simplify(newLhs))} = ${toCustom(newRhs)}`
+			result: `${newLhsStr} = ${newRhsStr}`
 		});
 
-		currentLhs = newLhs;
-		currentRhs = newRhs;
+		currentLhsStr = newLhsStr;
+		currentRhsStr = newRhsStr;
 	}
 
-	// Step 2: Divide by coefficient if a != 1
-	const aIsOne = toCustom(simplify(a)) === '1';
+	// Step 3: Divide by coefficient if a != 1 and a != -1
+	const aIsOne = finalAStr === '1';
+	const aIsMinusOne = finalAStr === '-1';
 
 	if (!aIsOne) {
-		const operationDesc = `On divise les deux membres par ${aStr}`;
-		const lhsStr = toCustom(currentLhs);
-		const rhsStr = toCustom(currentRhs);
-		// Wrap in braces if needed to avoid ambiguity (e.g., {-3x}/{-3} not -3x/-3)
-		const transformLhs = `${wrapForDivision(lhsStr)}/${wrapForDivision(aStr)}`;
-		const transformRhs = `${wrapForDivision(rhsStr)}/${wrapForDivision(aStr)}`;
+		if (aIsMinusOne) {
+			// Multiply both sides by -1
+			const operationDesc = `On multiplie les deux membres par -1`;
+			const transformLhs = `${wrapForDivision(currentLhsStr)} × (-1)`;
+			const transformRhs = `${wrapForDivision(currentRhsStr)} × (-1)`;
 
-		steps.push({
-			description: operationDesc,
-			transformation: `${transformLhs} = ${transformRhs}`,
-			result: `${variable} = ${toCustom(solutionValue)}`
-		});
+			steps.push({
+				description: operationDesc,
+				transformation: `${transformLhs} = ${transformRhs}`,
+				result: `${variable} = ${toCustom(solutionValue)}`
+			});
+		} else {
+			const operationDesc = `On divise les deux membres par ${finalAStr}`;
+			// Wrap in braces if needed to avoid ambiguity
+			const transformLhs = `${wrapForDivision(currentLhsStr)}/${wrapForDivision(finalAStr)}`;
+			const transformRhs = `${wrapForDivision(currentRhsStr)}/${wrapForDivision(finalAStr)}`;
+
+			steps.push({
+				description: operationDesc,
+				transformation: `${transformLhs} = ${transformRhs}`,
+				result: `${variable} = ${toCustom(solutionValue)}`
+			});
+		}
 	}
 
 	return steps;
