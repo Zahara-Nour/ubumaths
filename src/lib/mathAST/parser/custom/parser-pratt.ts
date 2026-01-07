@@ -25,7 +25,7 @@ import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } fr
 import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
-import { MathAST, compose } from '../../factory';
+import { MathAST, compose, matrix } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
 import {
 	SecurityError,
@@ -314,6 +314,9 @@ class CustomPrattParser {
 			case 'QUESTION':
 				return this.parseAtomWithFraction();
 
+			case 'DOUBLE_LBRACKET':
+				return this.parseMatrixLiteral();
+
 			case 'MINUS':
 				return this.parsePrefixMinus();
 
@@ -478,6 +481,7 @@ class CustomPrattParser {
 			case 'SYMBOL':
 			case 'BACKSLASH':
 			case 'QUESTION':
+			case 'DOUBLE_LBRACKET':
 				return BP.MULTIPLY;
 
 			default:
@@ -551,6 +555,9 @@ class CustomPrattParser {
 
 			case 'QUESTION':
 				return this.parseHole();
+
+			case 'DOUBLE_LBRACKET':
+				return this.parseMatrixLiteral();
 
 			default:
 				this.error(
@@ -850,6 +857,127 @@ class CustomPrattParser {
 	}
 
 	// =========================================================================
+	// Matrix Literals
+	// =========================================================================
+
+	/**
+	 * Parse matrix literal: [[1,2],[3,4]]
+	 * Uses Python-like syntax with nested square brackets
+	 *
+	 * Syntax structure:
+	 * - `[[` starts the matrix (consumed as DOUBLE_LBRACKET)
+	 * - First row elements come directly: `1,2`
+	 * - `]` ends the first row, `,` separates rows
+	 * - `[` starts subsequent rows: `[3,4`
+	 * - `]]` ends the last row and matrix (consumed as DOUBLE_RBRACKET)
+	 */
+	private parseMatrixLiteral(): MathNode {
+		this.advance(); // consume [[
+
+		const rows: MathNode[][] = [];
+
+		// Parse first row (comes directly after [[, no [ prefix)
+		const firstRow = this.parseMatrixRow();
+		if (firstRow.length === 0) {
+			this.error(
+				'Empty matrix row not allowed',
+				this.currentToken.position,
+				this.currentToken.length,
+				'SYNTAX_ERROR'
+			);
+		}
+		rows.push(firstRow);
+
+		// Check for row terminator
+		// First row ends with ] or ]] (if single row matrix)
+		if (this.check('DOUBLE_RBRACKET')) {
+			// Single row matrix like [[1,2,3]]
+			this.advance(); // consume ]]
+			return this.applyColor(matrix(rows, { matrixType: 'pmatrix' }));
+		}
+
+		// Expect ] to close first row
+		this.expect('RBRACKET', "Expected ']' to close matrix row");
+
+		// Parse additional rows: ,[ ... ]
+		while (this.check('COMMA')) {
+			this.advance(); // consume ,
+
+			// Expect [ to start next row
+			if (!this.check('LBRACKET')) {
+				this.error(
+					"Expected '[' to start matrix row",
+					this.currentToken.position,
+					this.currentToken.length,
+					'SYNTAX_ERROR'
+				);
+			}
+			this.advance(); // consume [
+
+			const row = this.parseMatrixRow();
+			if (row.length === 0) {
+				this.error(
+					'Empty matrix row not allowed',
+					this.currentToken.position,
+					this.currentToken.length,
+					'SYNTAX_ERROR'
+				);
+			}
+			rows.push(row);
+
+			// Check for row terminator
+			if (this.check('DOUBLE_RBRACKET')) {
+				// Last row, matrix ends
+				this.advance(); // consume ]]
+				return this.applyColor(matrix(rows, { matrixType: 'pmatrix' }));
+			}
+
+			// Expect ] to close this row
+			this.expect('RBRACKET', "Expected ']' to close matrix row");
+		}
+
+		// If we get here, we should have ]]
+		this.expect('DOUBLE_RBRACKET', "Expected ']]' to close matrix");
+
+		// Create matrix with default type 'pmatrix' for custom syntax
+		return this.applyColor(matrix(rows, { matrixType: 'pmatrix' }));
+	}
+
+	/**
+	 * Parse a single matrix row: elements separated by commas
+	 * Stops at ] or ]]
+	 */
+	private parseMatrixRow(): MathNode[] {
+		const row: MathNode[] = [];
+
+		// Parse elements until ] or ]]
+		while (!this.check('RBRACKET') && !this.check('DOUBLE_RBRACKET') && !this.check('EOF')) {
+			const element = this.parseExpression(BP.NONE);
+			row.push(element);
+
+			// Check for comma between elements
+			if (this.check('COMMA')) {
+				// Peek to see if next is [ (row separator) or element
+				const next = this.tokenizer.peekAt(0);
+				if (next.type === 'LBRACKET') {
+					// This comma is a row separator, stop here
+					break;
+				}
+				this.advance(); // consume , (element separator)
+			} else if (!this.check('RBRACKET') && !this.check('DOUBLE_RBRACKET')) {
+				this.error(
+					"Expected ',' or ']' in matrix row",
+					this.currentToken.position,
+					this.currentToken.length,
+					'SYNTAX_ERROR'
+				);
+			}
+		}
+
+		return row;
+	}
+
+	// =========================================================================
 	// Unary Operators
 	// =========================================================================
 
@@ -1030,6 +1158,7 @@ class CustomPrattParser {
 			token.type === 'RPAREN' ||
 			token.type === 'RBRACE' ||
 			token.type === 'RBRACKET' ||
+			token.type === 'DOUBLE_RBRACKET' ||
 			token.type === 'COMMA' ||
 			this.isRelationToken(token.type)
 		) {
@@ -1056,7 +1185,8 @@ class CustomPrattParser {
 			token.type === 'SYMBOL' ||
 			token.type === 'BACKSLASH' ||
 			token.type === 'AT' ||
-			token.type === 'QUESTION'
+			token.type === 'QUESTION' ||
+			token.type === 'DOUBLE_LBRACKET'
 		);
 	}
 
@@ -1548,6 +1678,11 @@ function getNodeChildren(node: MathNode): MathNode[] {
 			break;
 		case 'composition':
 			children.push(node.outer, node.inner);
+			break;
+		case 'matrix':
+			for (const row of node.rows) {
+				children.push(...row);
+			}
 			break;
 		// Leaf nodes: number, variable, greek, symbol, hole - no children
 	}

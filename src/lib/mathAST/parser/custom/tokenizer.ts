@@ -66,6 +66,8 @@ export type CustomTokenType =
 	| 'RBRACE' // }
 	| 'LBRACKET' // [
 	| 'RBRACKET' // ]
+	| 'DOUBLE_LBRACKET' // [[ (matrix start)
+	| 'DOUBLE_RBRACKET' // ]] (matrix end)
 	| 'EQUALS' // =
 	| 'LESS' // <
 	| 'GREATER' // >
@@ -197,6 +199,11 @@ export class CustomTokenizer {
 	private position: number = 0;
 	private tokenCache: CustomToken[] = [];
 	private cachePosition: number = 0;
+	/**
+	 * Track matrix depth for context-aware comma parsing.
+	 * Inside matrices ([[...]]), comma should NOT be treated as decimal separator.
+	 */
+	private matrixDepth: number = 0;
 
 	constructor(input: string) {
 		// Keep original input (don't strip whitespace)
@@ -258,6 +265,7 @@ export class CustomTokenizer {
 		this.position = 0;
 		this.tokenCache = [];
 		this.cachePosition = 0;
+		this.matrixDepth = 0;
 	}
 
 	/**
@@ -351,6 +359,20 @@ export class CustomTokenizer {
 			return this.scanMultiChar('COLON_SLASH', ':/', 2);
 		}
 
+		// [[ (matrix start)
+		if (char === '[' && this.peekChar(1) === '[') {
+			this.matrixDepth++;
+			return this.scanMultiChar('DOUBLE_LBRACKET', '[[', 2);
+		}
+
+		// ]] (matrix end)
+		if (char === ']' && this.peekChar(1) === ']') {
+			if (this.matrixDepth > 0) {
+				this.matrixDepth--;
+			}
+			return this.scanMultiChar('DOUBLE_RBRACKET', ']]', 2);
+		}
+
 		// Single character tokens
 		return this.scanSingleChar();
 	}
@@ -397,8 +419,9 @@ export class CustomTokenizer {
 	 * Rules:
 	 * - 42 -> NUMBER "42"
 	 * - 3.14 -> NUMBER "3.14"
-	 * - 3,14 -> NUMBER "3.14" (comma normalized to dot)
+	 * - 3,14 -> NUMBER "3.14" (comma normalized to dot) - BUT NOT inside matrices!
 	 * - Comma is only decimal if preceded AND followed by digits
+	 * - Inside matrices ([[...]]), comma is ALWAYS an element separator, never decimal
 	 */
 	private scanNumber(): CustomToken {
 		const startPos = this.position;
@@ -414,7 +437,9 @@ export class CustomTokenizer {
 		// Check for decimal separator (dot or comma)
 		if (this.position < this.length) {
 			const char = this.input[this.position];
-			if ((char === '.' || char === ',') && this.isDigitAt(this.position + 1)) {
+			// Comma is NOT a decimal separator inside matrices (matrixDepth > 0)
+			const isCommaDecimal = char === ',' && this.matrixDepth === 0;
+			if ((char === '.' || isCommaDecimal) && this.isDigitAt(this.position + 1)) {
 				// This is a decimal separator
 				value += '.'; // Normalize comma to dot
 				hasDecimal = true;
@@ -764,6 +789,10 @@ export function tokenTypeToString(type: CustomTokenType): string {
 			return "'['";
 		case 'RBRACKET':
 			return "']'";
+		case 'DOUBLE_LBRACKET':
+			return "'[['";
+		case 'DOUBLE_RBRACKET':
+			return "']]'";
 		case 'EQUALS':
 			return "'='";
 		case 'LESS':
