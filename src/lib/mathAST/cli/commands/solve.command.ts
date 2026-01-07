@@ -216,11 +216,11 @@ function formatStepsSummarized(
 	const headerDescLen = headerPrefix.length + 2; // +2 for ": "
 	let maxEqPos = headerEqIndex !== -1 ? headerDescLen + headerEqIndex : 0;
 
-	// Calculate = position for each result line
+	// Calculate = position for each result line (with arrow prefix "→ ")
 	for (const step of steps) {
 		const eqIndex = getEqIndex(step.result);
 		if (eqIndex !== -1) {
-			const descLen = step.description.length + 2; // +2 for ": "
+			const descLen = 2 + step.description.length + 2; // "→ " + description + ": "
 			maxEqPos = Math.max(maxEqPos, descLen + eqIndex);
 		}
 	}
@@ -243,19 +243,19 @@ function formatStepsSummarized(
 			`<span class="text-cyan-400">${escapeHtml(formattedHeaderEq)}</span>`;
 	}
 
-	// Format step lines (description: result)
+	// Format step lines (→ description: result)
 	const textLines: string[] = [];
 	const htmlLines: string[] = [];
 
 	for (const step of steps) {
 		const eqIndexResult = getEqIndex(step.result);
-		const descPrefix = `${step.description}: `;
+		const descPrefix = `→ ${step.description}: `;
 
 		if (eqIndexResult === -1) {
 			// No = in result, fallback
 			textLines.push(`${descPrefix}${step.result}`);
 			htmlLines.push(
-				`<br><span class="text-muted-foreground">${escapeHtml(step.description)}:</span> ` +
+				`<br><span class="text-muted-foreground">→ ${escapeHtml(step.description)}:</span> ` +
 					`<span class="text-cyan-400">${escapeHtml(step.result)}</span>`
 			);
 			continue;
@@ -269,7 +269,7 @@ function formatStepsSummarized(
 
 		textLines.push(`${descPrefix}${paddingStr}${step.result}`);
 		htmlLines.push(
-			`<br><span class="text-muted-foreground">${escapeHtml(step.description)}:</span> ` +
+			`<br><span class="text-muted-foreground">→ ${escapeHtml(step.description)}:</span> ` +
 				`${htmlPadding}<span class="text-cyan-400">${escapeHtml(step.result)}</span>`
 		);
 	}
