@@ -40,8 +40,8 @@ const COMMAND_CATEGORIES: { name: string; commands: string[]; description: strin
 	},
 	{
 		name: 'Calcul',
-		description: 'Derivation et series',
-		commands: ['diff', 'taylor']
+		description: 'Derivation, equations et series',
+		commands: ['diff', 'solve', 'domain', 'taylor']
 	}
 ];
 
