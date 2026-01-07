@@ -48,6 +48,21 @@ export type SolvingRule =
 	| 'newton-iteration'
 	| 'convergence-achieved'
 	| 'convergence-failed'
+	// Polynomial (power equations)
+	| 'identify-power-equation'
+	| 'extract-nth-root'
+	| 'extract-nth-root-both-signs'
+	| 'even-negative-no-solution'
+	// Cubic (Cardano)
+	| 'identify-cubic'
+	| 'compute-depressed-cubic'
+	| 'compute-cubic-discriminant'
+	| 'discriminant-one-real'
+	| 'discriminant-triple-root'
+	| 'discriminant-three-real'
+	| 'apply-cardano-formula'
+	| 'apply-trigonometric-form'
+	| 'factor-common-root'
 	// General
 	| 'to-standard-form'
 	| 'simplify-expression'
@@ -94,6 +109,26 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	'newton-iteration': 'Iteration de Newton-Raphson',
 	'convergence-achieved': 'Convergence atteinte',
 	'convergence-failed': "La methode numerique n'a pas converge",
+
+	// Polynomial (power equations)
+	'identify-power-equation': "L'equation est de la forme x^n = k",
+	'extract-nth-root': 'On extrait la racine n-ieme des deux membres',
+	'extract-nth-root-both-signs':
+		'On extrait la racine n-ieme des deux membres (deux solutions: + et -)',
+	'even-negative-no-solution':
+		"Un exposant pair avec une constante negative n'a pas de solution reelle",
+
+	// Cubic (Cardano)
+	'identify-cubic': "L'equation est cubique (degre 3)",
+	'compute-depressed-cubic':
+		'On effectue la substitution pour obtenir la forme deprimee t³ + pt + q = 0',
+	'compute-cubic-discriminant': 'On calcule le discriminant cubique',
+	'discriminant-one-real': 'Le discriminant indique une seule racine reelle',
+	'discriminant-triple-root': 'Le discriminant est nul: racine(s) multiple(s)',
+	'discriminant-three-real': 'Le discriminant indique trois racines reelles distinctes',
+	'apply-cardano-formula': 'On applique la formule de Cardano',
+	'apply-trigonometric-form': 'On utilise la forme trigonometrique',
+	'factor-common-root': 'On factorise par la racine commune',
 
 	// General
 	'to-standard-form': "On met l'equation sous forme standard (... = 0)",
@@ -209,6 +244,90 @@ export function describeVerification(
 ): string {
 	const symbol = success ? '=' : '!=';
 	return `Verification: en substituant ${variable} = ${toCustom(value)}, on obtient ${leftResult} ${symbol} ${rightResult}`;
+}
+
+// =============================================================================
+// Polynomial (Power) Descriptions
+// =============================================================================
+
+/**
+ * Create a description for identifying a power equation x^n = k.
+ */
+export function describeIdentifyPowerEquation(variable: string, n: number, k: MathNode): string {
+	return `L'equation est de la forme ${variable}^${n} = ${toCustom(k)}`;
+}
+
+/**
+ * Create a description for extracting an nth root (odd exponent).
+ */
+export function describeExtractNthRoot(n: number): string {
+	if (n === 3) {
+		return 'On prend la racine cubique des deux membres';
+	}
+	return `On prend la racine ${n}-ieme des deux membres`;
+}
+
+/**
+ * Create a description for extracting an nth root (even exponent, two solutions).
+ */
+export function describeExtractNthRootBothSigns(n: number): string {
+	if (n === 2) {
+		return 'On prend la racine carree des deux membres (deux solutions: + et -)';
+	}
+	if (n === 4) {
+		return 'On prend la racine quatrieme des deux membres (deux solutions: + et -)';
+	}
+	return `On prend la racine ${n}-ieme des deux membres (deux solutions car ${n} est pair)`;
+}
+
+/**
+ * Create a description for no real solution (even exponent, negative constant).
+ */
+export function describeNoRealSolutionEvenNegative(n: number): string {
+	const rootName = n === 2 ? 'carree' : n === 4 ? 'quatrieme' : `${n}-ieme`;
+	return `Il n'y a pas de solution reelle: on ne peut pas extraire une racine ${rootName} d'un nombre negatif`;
+}
+
+// =============================================================================
+// Cubic (Cardano) Descriptions
+// =============================================================================
+
+/**
+ * Create a description for identifying a cubic equation.
+ */
+export function describeIdentifyCubic(a: MathNode, b: MathNode, c: MathNode, d: MathNode): string {
+	return `L'equation est cubique: ${toCustom(a)}x³ + ${toCustom(b)}x² + ${toCustom(c)}x + ${toCustom(d)} = 0`;
+}
+
+/**
+ * Create a description for the depressed cubic form.
+ */
+export function describeDepressedCubic(p: MathNode, q: MathNode): string {
+	return `Forme deprimee: t³ + (${toCustom(p)})t + (${toCustom(q)}) = 0`;
+}
+
+/**
+ * Create a description for cubic discriminant.
+ */
+export function describeCubicDiscriminant(delta: MathNode, numericValue?: number | null): string {
+	const deltaStr = toCustom(delta);
+	if (numericValue !== null && numericValue !== undefined) {
+		if (numericValue < 0) {
+			return `Discriminant Δ = ${deltaStr} < 0: une seule racine reelle (deux complexes conjuguees)`;
+		} else if (numericValue === 0) {
+			return `Discriminant Δ = ${deltaStr} = 0: racines multiples`;
+		} else {
+			return `Discriminant Δ = ${deltaStr} > 0: trois racines reelles distinctes`;
+		}
+	}
+	return `Discriminant Δ = ${deltaStr}`;
+}
+
+/**
+ * Create a description for factoring out a common root (x = 0).
+ */
+export function describeFactorCommonRoot(variable: string): string {
+	return `On factorise par ${variable} (racine evidente: ${variable} = 0)`;
 }
 
 // =============================================================================
