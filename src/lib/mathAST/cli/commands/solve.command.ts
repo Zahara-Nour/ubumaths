@@ -18,7 +18,7 @@ import { BaseCommand, type OptionDefinition } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
 import { parse } from '../core/pipeline';
-import { solve, type SolvingVerbosity, SolveError } from '../../solve';
+import { solve, type SolvingVerbosity, SolveError, shouldIncludeStep } from '../../solve';
 import { isRelation } from '../../guards';
 
 // =============================================================================
@@ -231,19 +231,23 @@ export class SolveCommand extends BaseCommand {
 			);
 		}
 
-		// Show steps if detailed mode
-		if (verbosity === 'detailed' && result.steps.length > 0) {
-			headerLines.push('');
-			headerLines.push('--- Etapes ---');
-			headerHtmlLines.push('<br><span class="text-muted-foreground">--- Etapes ---</span>');
-			for (const step of result.steps) {
-				headerLines.push(`[${step.rule}] ${step.description}`);
-				headerHtmlLines.push(
-					`<br><span class="text-yellow-400">[${step.rule}]</span> ${this.escapeHtml(step.description)}`
-				);
+		// Show steps filtered by verbosity level
+		if (verbosity !== 'result' && result.steps.length > 0) {
+			// Filter steps based on requested verbosity
+			const filteredSteps = result.steps.filter((step) =>
+				shouldIncludeStep(step.verbosityLevel, verbosity)
+			);
+
+			if (filteredSteps.length > 0) {
+				headerLines.push('');
+				headerHtmlLines.push('<br>');
+				for (const step of filteredSteps) {
+					headerLines.push(`[${step.rule}] ${step.description}`);
+					headerHtmlLines.push(
+						`<br><span class="text-yellow-400">[${step.rule}]</span> ${this.escapeHtml(step.description)}`
+					);
+				}
 			}
-			headerLines.push('--- Fin des etapes ---');
-			headerHtmlLines.push('<br><span class="text-muted-foreground">--- Fin des etapes ---</span>');
 		}
 
 		// Handle different result statuses
