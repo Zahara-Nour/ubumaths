@@ -184,27 +184,92 @@
 
 ## Files Modified
 
-| File                                                     | Action   |
-| -------------------------------------------------------- | -------- |
-| `src/lib/mathAST/solve/types.ts`                         | Created  |
-| `src/lib/mathAST/solve/descriptions-fr.ts`               | Modified |
-| `src/lib/mathAST/solve/step-recorder.ts`                 | Created  |
-| `src/lib/mathAST/solve/classify.ts`                      | Created  |
-| `src/lib/mathAST/solve/solvers/linear.ts`                | Created  |
-| `src/lib/mathAST/solve/solvers/quadratic.ts`             | Created  |
-| `src/lib/mathAST/solve/solvers/transcendental.ts`        | Created  |
-| `src/lib/mathAST/solve/solvers/index.ts`                 | Created  |
-| `src/lib/mathAST/solve/solve.ts`                         | Created  |
-| `src/lib/mathAST/solve/index.ts`                         | Created  |
-| `src/lib/mathAST/solve/__tests__/linear.test.ts`         | Created  |
-| `src/lib/mathAST/solve/__tests__/quadratic.test.ts`      | Created  |
-| `src/lib/mathAST/solve/__tests__/transcendental.test.ts` | Created  |
-| `src/lib/mathAST/solve/__tests__/integration.test.ts`    | Created  |
-| `src/lib/mathAST/cli/commands/solve.command.ts`          | Created  |
-| `src/lib/mathAST/cli/commands/index.ts`                  | Modified |
-| `src/lib/mathAST/exp.ts`                                 | Modified |
-| `src/lib/mathAST/index.ts`                               | Modified |
-| `docs/wip/equation-solver-progress.md`                   | Created  |
+| File                                                     | Action             |
+| -------------------------------------------------------- | ------------------ |
+| `src/lib/mathAST/solve/types.ts`                         | Created            |
+| `src/lib/mathAST/solve/descriptions-fr.ts`               | Modified           |
+| `src/lib/mathAST/solve/step-recorder.ts`                 | Created            |
+| `src/lib/mathAST/solve/classify.ts`                      | Created            |
+| `src/lib/mathAST/solve/solvers/linear.ts`                | Created            |
+| `src/lib/mathAST/solve/solvers/quadratic.ts`             | Created            |
+| `src/lib/mathAST/solve/solvers/transcendental.ts`        | Created            |
+| `src/lib/mathAST/solve/solvers/index.ts`                 | Created            |
+| `src/lib/mathAST/solve/solve.ts`                         | Created            |
+| `src/lib/mathAST/solve/index.ts`                         | Created            |
+| `src/lib/mathAST/solve/__tests__/linear.test.ts`         | Created            |
+| `src/lib/mathAST/solve/__tests__/quadratic.test.ts`      | Created            |
+| `src/lib/mathAST/solve/__tests__/transcendental.test.ts` | Created            |
+| `src/lib/mathAST/solve/__tests__/integration.test.ts`    | Created            |
+| `src/lib/mathAST/cli/commands/solve.command.ts`          | Created + Enhanced |
+| `src/lib/mathAST/cli/commands/index.ts`                  | Modified           |
+| `src/lib/components/cas/HistoryEntry.svelte`             | Modified           |
+| `src/lib/mathAST/exp.ts`                                 | Modified           |
+| `src/lib/mathAST/index.ts`                               | Modified           |
+| `docs/wip/equation-solver-progress.md`                   | Created            |
+
+---
+
+## Phase 7: Pedagogical Display Improvements
+
+**Status**: Complete
+**Date**: 2026-01-07
+
+### Implemented
+
+1. **Equations with Variables on Both Sides**
+
+   - Linear solver now handles equations like `-4-3x = 1+2x`
+   - Correctly moves variable terms from RHS to LHS first
+   - Then moves constants from LHS to RHS
+   - Finally divides by the combined coefficient
+
+2. **Three Verbosity Levels with Distinct Output**
+
+   | Mode       | Flag      | Output                                               |
+   | ---------- | --------- | ---------------------------------------------------- |
+   | Summarized | (default) | Header + step descriptions with results, aligned `=` |
+   | Detailed   | `-v`      | Full transformations + results, aligned `=`          |
+   | Quiet      | `-q`      | Solution only                                        |
+
+3. **Summarized Mode Output** (default)
+
+   ```
+   Equation lineaire:                  -4-3x = 1+2x
+   → On soustrait 2x aux deux membres: -5x-4 = 1
+   → On ajoute 4 aux deux membres:       -5x = 5
+   → On divise les deux membres par -5:    x = -1
+
+   x = -1
+   ```
+
+4. **Detailed Mode Output** (`-v`)
+
+   ```
+   Equation lineaire:                      -4-3x = 1+2x
+   On soustrait 2x aux deux membres:  -4-3x - 2x = 1+2x - 2x
+                                           -5x-4 = 1
+   On ajoute 4 aux deux membres:       -5x-4 + 4 = 1 + 4
+                                             -5x = 5
+   On divise les deux membres par -5: {-5x}/{-5} = 5/{-5}
+                                               x = -1
+
+   x = -1
+   ```
+
+5. **Display Improvements**
+
+   - Global `=` sign alignment across all steps
+   - Proper handling of double negatives (`--4` → `4`)
+   - Braces for division clarity (`{-3x}/{-3}`)
+   - Spaces around `=` in header equation
+   - Arrow prefix (→) for summarized steps
+   - Consistent cyan color for all equations
+   - Toggle button only shown when decimal approximation differs from exact
+
+6. **HTML Output**
+   - `&nbsp;` entities for alignment preservation
+   - Proper escaping with `escapeHtml()`
+   - Color classes: `text-cyan-400` for equations, `text-muted-foreground` for descriptions
 
 ---
 
@@ -212,9 +277,11 @@
 
 The equation solver module is now complete with:
 
-- **49 tests** passing
+- **49+ tests** passing
 - **3 solvers**: linear, quadratic, transcendental
-- **REPL integration**: `.solve` command
+- **Linear solver**: supports variables on both sides
+- **REPL integration**: `.solve` command with `-v` and `-q` options
 - **API integration**: `Exp.solve()` method
-- **French pedagogical output** at configurable verbosity levels
+- **French pedagogical output** at 3 verbosity levels
+- **Aligned display** with global `=` alignment
 - **Full exports** from main mathAST index
