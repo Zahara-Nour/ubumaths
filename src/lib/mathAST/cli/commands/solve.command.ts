@@ -104,8 +104,11 @@ function formatAllStepsGloballyAligned(
 	// Find position of = in each line to determine max
 	const getEqIndex = (s: string) => s.indexOf('=');
 
-	// Calculate = position for header: "Equation lineaire: -3x+4=1"
-	const headerEqIndex = getEqIndex(headerEquation);
+	// Format header equation with spaces around = (e.g., "-3x+4=1" -> "-3x+4 = 1")
+	const formattedHeaderEq = headerEquation.replace(/=/, ' = ');
+
+	// Calculate = position for header: "Equation lineaire: -3x+4 = 1"
+	const headerEqIndex = getEqIndex(formattedHeaderEq);
 	const headerDescLen = headerPrefix.length + 2; // +2 for ": "
 	let maxEqPos = headerEqIndex !== -1 ? headerDescLen + headerEqIndex : 0;
 
@@ -125,18 +128,18 @@ function formatAllStepsGloballyAligned(
 		const headerPadding = maxEqPos - headerDescLen - headerEqIndex;
 		const paddingStr = ' '.repeat(Math.max(0, headerPadding));
 		const htmlPadding = '&nbsp;'.repeat(Math.max(0, headerPadding));
-		headerText = `${headerPrefix}: ${paddingStr}${headerEquation}`;
+		headerText = `${headerPrefix}: ${paddingStr}${formattedHeaderEq}`;
 		headerHtml =
 			`<span class="text-muted-foreground">${escapeHtml(headerPrefix)}:</span> ` +
-			`${htmlPadding}<span class="text-cyan-400">${escapeHtml(headerEquation)}</span>`;
+			`${htmlPadding}<span class="text-cyan-400">${escapeHtml(formattedHeaderEq)}</span>`;
 	} else {
-		headerText = `${headerPrefix}: ${headerEquation}`;
+		headerText = `${headerPrefix}: ${formattedHeaderEq}`;
 		headerHtml =
 			`<span class="text-muted-foreground">${escapeHtml(headerPrefix)}:</span> ` +
-			`<span class="text-cyan-400">${escapeHtml(headerEquation)}</span>`;
+			`<span class="text-cyan-400">${escapeHtml(formattedHeaderEq)}</span>`;
 	}
 
-	// Format step lines
+	// Format step lines (all equations in cyan for consistency)
 	const textLines: string[] = [];
 	const htmlLines: string[] = [];
 
@@ -154,7 +157,7 @@ function formatAllStepsGloballyAligned(
 					`<span class="text-cyan-400">${escapeHtml(step.transformation)}</span>`
 			);
 			htmlLines.push(
-				`<br><span class="text-green-400">&nbsp;&nbsp;&nbsp;&nbsp;${escapeHtml(step.result)}</span>`
+				`<br><span class="text-cyan-400">&nbsp;&nbsp;&nbsp;&nbsp;${escapeHtml(step.result)}</span>`
 			);
 			continue;
 		}
@@ -171,7 +174,7 @@ function formatAllStepsGloballyAligned(
 				`${htmlPadding}<span class="text-cyan-400">${escapeHtml(step.transformation)}</span>`
 		);
 
-		// Format result line - align = to maxEqPos
+		// Format result line - align = to maxEqPos (same cyan color)
 		if (eqIndexResult !== -1) {
 			const resultPadding = maxEqPos - eqIndexResult;
 			const actualResultPadding = Math.max(4, resultPadding);
@@ -180,12 +183,12 @@ function formatAllStepsGloballyAligned(
 
 			textLines.push(`${resultPaddingStr}${step.result}`);
 			htmlLines.push(
-				`<br><span class="text-green-400">${htmlResultPadding}${escapeHtml(step.result)}</span>`
+				`<br><span class="text-cyan-400">${htmlResultPadding}${escapeHtml(step.result)}</span>`
 			);
 		} else {
 			textLines.push(`    ${step.result}`);
 			htmlLines.push(
-				`<br><span class="text-green-400">&nbsp;&nbsp;&nbsp;&nbsp;${escapeHtml(step.result)}</span>`
+				`<br><span class="text-cyan-400">&nbsp;&nbsp;&nbsp;&nbsp;${escapeHtml(step.result)}</span>`
 			);
 		}
 	}
