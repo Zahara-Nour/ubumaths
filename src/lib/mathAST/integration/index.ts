@@ -88,10 +88,18 @@ export {
 export { classifyIntegrand, detectVariable } from './classify';
 
 // =============================================================================
+// Pattern Matching
+// =============================================================================
+
+export type { USubstitutionMatch } from './patterns';
+export { findUCandidates, matchUSubstitution, findProportionalityConstant } from './patterns';
+
+// =============================================================================
 // Integrators
 // =============================================================================
 
 export { basicIntegrator } from './integrators/basic';
+export { uSubstitutionIntegrator, tryUSubstitution } from './integrators/u-substitution';
 export { ALL_INTEGRATORS, selectIntegrator } from './integrators';
 
 // =============================================================================
