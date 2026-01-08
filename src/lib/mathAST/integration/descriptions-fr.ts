@@ -23,6 +23,7 @@ export type IntegrationRule =
 	| 'constant-rule'
 	| 'constant-multiple'
 	| 'sum-rule'
+	| 'linearity-sum'
 	| 'exp-rule'
 	| 'ln-rule'
 	| 'sin-rule'
@@ -30,6 +31,7 @@ export type IntegrationRule =
 	| 'tan-rule'
 	| 'sec-squared-rule'
 	| 'csc-squared-rule'
+	| 'fundamental-theorem'
 	// U-substitution
 	| 'identify-substitution'
 	| 'apply-substitution'
@@ -72,6 +74,7 @@ const RULE_DESCRIPTIONS: Record<IntegrationRule, string> = {
 	'constant-rule': "L'intégrale d'une constante c est cx",
 	'constant-multiple': "On sort la constante de l'intégrale",
 	'sum-rule': "L'intégrale d'une somme est la somme des intégrales",
+	'linearity-sum': "On applique la linéarité de l'intégrale pour les sommes",
 	'exp-rule': "L'intégrale de e^x est e^x",
 	'ln-rule': "L'intégrale de 1/x est ln|x|",
 	'sin-rule': "L'intégrale de sin(x) est -cos(x)",
@@ -79,6 +82,7 @@ const RULE_DESCRIPTIONS: Record<IntegrationRule, string> = {
 	'tan-rule': "L'intégrale de tan(x) est -ln|cos(x)|",
 	'sec-squared-rule': "L'intégrale de 1/cos²(x) est tan(x)",
 	'csc-squared-rule': "L'intégrale de 1/sin²(x) est -cot(x)",
+	'fundamental-theorem': 'On applique le théorème fondamental du calcul intégral',
 
 	// U-substitution
 	'identify-substitution': 'On identifie une substitution appropriée',
