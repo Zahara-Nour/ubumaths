@@ -26,6 +26,7 @@ import type {
 	UnitNode,
 	CompositionNode,
 	MatrixNode,
+	ComplexNode,
 	MathSymbol,
 	RelationType,
 	GreekLetter,
@@ -383,6 +384,10 @@ export class LatexGenerator {
 				this.visitMatrixSpans(node);
 				break;
 
+			case 'complex':
+				this.visitComplexSpans(node);
+				break;
+
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
@@ -680,6 +685,45 @@ export class LatexGenerator {
 	}
 
 	/**
+	 * Emits spans for a complex number node.
+	 * Renders as: a + b\imaginaryI (with special cases for 0, 1)
+	 */
+	private visitComplexSpans(node: ComplexNode): void {
+		const isZero = (n: MathNode) => n.type === 'number' && n.value === '0';
+		const isOne = (n: MathNode) => n.type === 'number' && n.value === '1';
+
+		const realIsZero = isZero(node.real);
+		const imagIsZero = isZero(node.imaginary);
+		const imagIsOne = isOne(node.imaginary);
+
+		if (realIsZero && imagIsZero) {
+			// 0 + 0i = 0
+			this.emit('0', node.metadata);
+		} else if (realIsZero && imagIsOne) {
+			// 0 + 1i = i
+			this.emit('\\imaginaryI', node.metadata);
+		} else if (realIsZero) {
+			// 0 + bi = bi
+			this.visitWithSpans(node.imaginary);
+			this.emit('\\imaginaryI', node.metadata);
+		} else if (imagIsZero) {
+			// a + 0i = a
+			this.visitWithSpans(node.real);
+		} else if (imagIsOne) {
+			// a + 1i = a + i
+			this.visitWithSpans(node.real);
+			this.emit(' + ', node.metadata);
+			this.emit('\\imaginaryI', node.metadata);
+		} else {
+			// a + bi
+			this.visitWithSpans(node.real);
+			this.emit(' + ', node.metadata);
+			this.visitWithSpans(node.imaginary);
+			this.emit('\\imaginaryI', node.metadata);
+		}
+	}
+
+	/**
 	 * Visits a node with inherited metadata.
 	 * If the node has its own metadata, uses that; otherwise uses the inherited metadata.
 	 */
@@ -783,6 +827,9 @@ export class LatexGenerator {
 				break;
 			case 'matrix':
 				content = this.generateMatrix(node);
+				break;
+			case 'complex':
+				content = this.generateComplex(node);
 				break;
 			default: {
 				const exhaustive: never = node;
@@ -1050,6 +1097,39 @@ export class LatexGenerator {
 		const envName = this.getLatexMatrixEnv(node.matrixType);
 		const rows = node.rows.map((row) => row.map((elem) => this.generateNode(elem)).join(' & '));
 		return `\\begin{${envName}}${rows.join(' \\\\ ')}\\end{${envName}}`;
+	}
+
+	/**
+	 * Generates LaTeX for a complex number node.
+	 * Renders as: a + b\imaginaryI (with special cases for 0, 1)
+	 */
+	private generateComplex(node: ComplexNode): string {
+		const isZero = (n: MathNode) => n.type === 'number' && n.value === '0';
+		const isOne = (n: MathNode) => n.type === 'number' && n.value === '1';
+
+		const realIsZero = isZero(node.real);
+		const imagIsZero = isZero(node.imaginary);
+		const imagIsOne = isOne(node.imaginary);
+
+		if (realIsZero && imagIsZero) {
+			// 0 + 0i = 0
+			return '0';
+		} else if (realIsZero && imagIsOne) {
+			// 0 + 1i = i
+			return '\\imaginaryI';
+		} else if (realIsZero) {
+			// 0 + bi = bi
+			return `${this.generateNode(node.imaginary)}\\imaginaryI`;
+		} else if (imagIsZero) {
+			// a + 0i = a
+			return this.generateNode(node.real);
+		} else if (imagIsOne) {
+			// a + 1i = a + i
+			return `${this.generateNode(node.real)} + \\imaginaryI`;
+		} else {
+			// a + bi
+			return `${this.generateNode(node.real)} + ${this.generateNode(node.imaginary)}\\imaginaryI`;
+		}
 	}
 
 	private wrapWithMetadata(content: string, node: MathNode): string {
