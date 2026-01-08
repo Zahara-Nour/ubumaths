@@ -7,6 +7,7 @@
 
 import type {
 	AdditionNode,
+	ComplexNode,
 	CompositionNode,
 	DelimiterNode,
 	DelimiterSemantic,
@@ -1085,6 +1086,39 @@ export function compose(
 }
 
 // =============================================================================
+// Complex Number Factory
+// =============================================================================
+
+/**
+ * Creates a complex number node with real and imaginary parts.
+ *
+ * Both parts can be any MathNode, allowing symbolic complex numbers.
+ * The imaginary unit 'i' is implicit - the imaginary field is the coefficient.
+ *
+ * @param real - Real part (any MathNode)
+ * @param imaginary - Imaginary part coefficient (any MathNode)
+ * @param metadata - Optional rendering hints
+ *
+ * @example
+ * // 3 + 4i
+ * complex(number('3'), number('4'))
+ *
+ * // Pure imaginary: i
+ * complex(number('0'), number('1'))
+ *
+ * // Symbolic: √2 + √3i
+ * complex(sqrt(number('2')), sqrt(number('3')))
+ */
+export function complex(real: MathNode, imaginary: MathNode, metadata?: NodeMetadata): ComplexNode {
+	return {
+		type: 'complex',
+		real,
+		imaginary,
+		...(metadata && { metadata })
+	} as const;
+}
+
+// =============================================================================
 // Unit Factories
 // =============================================================================
 
@@ -1458,5 +1492,8 @@ export const MathAST = {
 	zeroMatrix,
 
 	// Composition
-	compose
+	compose,
+
+	// Complex numbers
+	complex
 } as const;

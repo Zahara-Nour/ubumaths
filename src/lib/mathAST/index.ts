@@ -70,6 +70,7 @@ export type {
 	RelationNode,
 	UnitNode,
 	MatrixNode,
+	ComplexNode,
 
 	// Union types
 	LiteralNode,
@@ -169,7 +170,10 @@ export {
 	rowVector,
 	columnVector,
 	identityMatrix,
-	zeroMatrix
+	zeroMatrix,
+
+	// Complex numbers
+	complex
 } from './factory';
 
 // Options types for extended metadata
@@ -240,6 +244,7 @@ export {
 	isRowVector,
 	isColumnVector,
 	isSquareMatrix,
+	isComplex,
 
 	// Utility predicates
 	hasDerivativeOrder,
