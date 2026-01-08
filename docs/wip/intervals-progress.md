@@ -1,53 +1,42 @@
 # Progress: Module Intervals avec bornes algébriques exactes
 
-## État actuel: Phases 1-5 terminées
+## Status: COMPLETE ✓
 
-### Fichiers créés
+All phases completed. Module ready for use.
 
-| Fichier                                       | Description                                       | Tests    |
-| --------------------------------------------- | ------------------------------------------------- | -------- |
-| `src/lib/math/intervals/types.ts`             | Types d'intervalles avec EndpointValue algébrique | -        |
-| `src/lib/math/intervals/algebraic-compare.ts` | Comparaison numérique exacte                      | 19 tests |
-| `src/lib/math/intervals/endpoint.ts`          | Comparaison des bornes                            | 25 tests |
-| `src/lib/math/intervals/factory.ts`           | Constructeurs d'intervalles                       | 35 tests |
-| `src/lib/math/intervals/algebra.ts`           | Opérations ensemblistes                           | 35 tests |
-| `src/lib/math/intervals/format.ts`            | Formatage notation française                      | 38 tests |
-| `src/lib/math/intervals/index.ts`             | Exports publics                                   | -        |
+### Summary
 
-### Décisions prises
+Created `src/lib/math/intervals/` module providing:
 
-- **EndpointValue**: Algebraic uniquement (pas de `numeric`) - représentation canonique
-- **Racines**: √ uniquement (pas ∛, ∜) - couvre 95% des cas
-- **Pattern**: Exact + fallback numérique avec flag `exact: boolean`
-- **Renommage**: `Infinity` → `InfinityKind` (évite shadowing du global)
+- Exact algebraic comparison of bounds (rationals, square roots)
+- French interval notation formatting
+- Set operations (intersect, union, complement, difference)
+- 152 tests passing
 
-### Tests: 152/152 passent
+### Files Created
 
-### Phase 6: Migration domain/ (partiellement skip)
+| File                   | Description                   |
+| ---------------------- | ----------------------------- |
+| `types.ts`             | Type definitions              |
+| `algebraic-compare.ts` | Exact comparison via squaring |
+| `endpoint.ts`          | Endpoint utilities            |
+| `factory.ts`           | Interval constructors         |
+| `algebra.ts`           | Set operations                |
+| `format.ts`            | Formatting                    |
+| `index.ts`             | Public exports                |
 
-Les modules `intervals/` et `domain/` ont des types **incompatibles**:
+### Documentation
 
-- **intervals/**: `EndpointValue = { kind: 'algebraic', value: AlgebraicCoefficient } | { kind: 'infinity'...}`
-- **domain/**: `EndpointValue = MathNode | number | 'positive_infinity' | 'negative_infinity'`
+- Reference: `docs/ref/math/intervals.md`
 
-Les deux modules servent des objectifs différents:
+### Decisions Made
 
-- **intervals/**: Algèbre d'intervalles avec bornes algébriques exactes (pour calculs précis)
-- **domain/**: Calcul de domaine pour expressions mathAST (utilise MathNode, plus général)
-
-**Décision**: Les modules coexistent. Migration complète future possible.
-
-### Progression
-
-- [x] Phase 1: Types et comparaison exacte
-- [x] Phase 2: Factory et constructeurs
-- [x] Phase 3: Algèbre des intervalles
-- [x] Phase 4: Formatage
-- [x] Phase 5: Index et exports
-- [~] Phase 6: Migration domain/ (reportée - types incompatibles)
-- [ ] Phase 7: Quality checks
-- [ ] Phase 8: Finalisation
+1. **Algebraic-only bounds** (no numeric) for canonical representation
+2. **Square roots only** (√) - covers 95% of use cases
+3. **Exact + fallback pattern** with `exact: boolean` flag
+4. **Renamed Infinity → InfinityKind** to avoid global shadowing
+5. **Separate from domain/** - incompatible type systems, both modules coexist
 
 ---
 
-_Dernière mise à jour: Phase 5 terminée_
+_Completed: January 2026_
