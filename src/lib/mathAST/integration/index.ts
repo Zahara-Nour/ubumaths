@@ -103,6 +103,13 @@ export { uSubstitutionIntegrator, tryUSubstitution } from './integrators/u-subst
 export { ALL_INTEGRATORS, selectIntegrator } from './integrators';
 
 // =============================================================================
+// Numeric Integration
+// =============================================================================
+
+export type { NumericResult, NumericIntegrateOptions } from './numeric';
+export { simpson, adaptiveSimpson, numericIntegrate } from './numeric';
+
+// =============================================================================
 // Main Functions
 // =============================================================================
 
