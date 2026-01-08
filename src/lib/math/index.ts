@@ -15,3 +15,6 @@ export {
 	isValidLatex,
 	evaluateWithModifiers
 } from './compute-engine';
+
+// Intervals (re-export for convenience)
+export * as intervals from './intervals';
