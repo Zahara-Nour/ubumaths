@@ -351,12 +351,14 @@ describe('evaluate - transcendental functions', () => {
 
 		it('throws on ln(0)', () => {
 			const ast = ln(number('0'));
-			expect(() => evaluate(ast)).toThrow('ln argument must be positive');
+			expect(() => evaluate(ast)).toThrow('ln(0) is undefined');
 		});
 
-		it('throws on ln(-1)', () => {
+		it('ln(-1) returns i*pi (complex logarithm)', () => {
 			const ast = ln(opposite(number('1')));
-			expect(() => evaluate(ast)).toThrow('ln argument must be positive');
+			const result = evaluate(ast);
+			// ln(-1) = i*pi (principal value)
+			expect(result.value).toEqual({ real: 0, imag: Math.PI });
 		});
 	});
 
