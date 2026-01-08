@@ -180,8 +180,8 @@ describe('Numeric Integration', () => {
 		it('should integrate polynomial 2x³ + 3x²', () => {
 			// ∫₀¹ (2x³ + 3x²) dx = [x⁴/2 + x³]₀¹ = 0.5 + 1 = 1.5
 			const expr = add(
-				multiply(number('2'), power(variable('x'), number('3'))),
-				multiply(number('3'), power(variable('x'), number('2')))
+				multiply(number('2'), power(variable('x'), number('3')), 'implicit'),
+				multiply(number('3'), power(variable('x'), number('2')), 'implicit')
 			);
 			const result = numericIntegrate(expr, 'x', 0, 1);
 
@@ -190,7 +190,7 @@ describe('Numeric Integration', () => {
 
 		it('should handle division (1/x)', () => {
 			// ∫₁² 1/x dx = [ln(x)]₁² = ln(2) ≈ 0.693
-			const expr = divide(number('1'), variable('x'));
+			const expr = divide(number('1'), variable('x'), 'fraction');
 			const result = numericIntegrate(expr, 'x', 1, 2);
 
 			expect(result.value).toBeCloseTo(Math.log(2), 5);
@@ -198,7 +198,7 @@ describe('Numeric Integration', () => {
 
 		it('should handle expressions with constants', () => {
 			// ∫₀^π sin(2x) dx = [-cos(2x)/2]₀^π = 0
-			const expr = sin(multiply(number('2'), variable('x')));
+			const expr = sin(multiply(number('2'), variable('x'), 'implicit'));
 			const result = numericIntegrate(expr, 'x', 0, Math.PI);
 
 			expect(result.value).toBeCloseTo(0, 5);
@@ -224,7 +224,7 @@ describe('Numeric Integration', () => {
 		});
 
 		it('should allow maxDepth option', () => {
-			const expr = sin(multiply(number('100'), variable('x'))); // Very oscillatory
+			const expr = sin(multiply(number('100'), variable('x'), 'implicit')); // Very oscillatory
 
 			// Should not throw even with low maxDepth
 			const result = numericIntegrate(expr, 'x', 0, Math.PI, { maxDepth: 3 });
@@ -318,8 +318,8 @@ describe('Numeric Integration', () => {
 			// ∫₀² (3x² + 2x + 1) dx = [x³ + x² + x]₀² = 8 + 4 + 2 = 14
 			const expr = add(
 				add(
-					multiply(number('3'), power(variable('x'), number('2'))),
-					multiply(number('2'), variable('x'))
+					multiply(number('3'), power(variable('x'), number('2')), 'implicit'),
+					multiply(number('2'), variable('x'), 'implicit')
 				),
 				number('1')
 			);
@@ -330,7 +330,7 @@ describe('Numeric Integration', () => {
 
 		it('should approximate transcendental integrals accurately', () => {
 			// ∫₀¹ e^(-x²) dx (Gaussian, no closed form, but can compute numerically)
-			const expr = exp(multiply(number('-1'), power(variable('x'), number('2'))));
+			const expr = exp(multiply(number('-1'), power(variable('x'), number('2')), 'implicit'));
 			const result = numericIntegrate(expr, 'x', 0, 1, { tolerance: 1e-6 });
 
 			// Reference value ≈ 0.746824

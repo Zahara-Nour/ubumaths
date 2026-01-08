@@ -12,9 +12,9 @@ import { basicIntegrator } from './basic';
 import { uSubstitutionIntegrator } from './u-substitution';
 import { partsIntegrator } from './parts';
 import { partialFractionsIntegrator } from './partial-fractions';
+import { trigSubstitutionIntegrator } from './trig-substitution';
 
-// TODO Phase 7+: Add other integrators as they are implemented
-// import { trigSubstitutionIntegrator } from './trig-substitution';
+// TODO Phase 8: Add numeric integrator
 // import { numericIntegrator } from './numeric';
 
 // =============================================================================
@@ -39,9 +39,9 @@ export const ALL_INTEGRATORS: readonly Integrator[] = [
 	basicIntegrator, // priority 0
 	uSubstitutionIntegrator, // priority 10
 	partsIntegrator, // priority 20
-	partialFractionsIntegrator // priority 30
-	// TODO Phase 7+: Add other integrators here in priority order
-	// trigSubstitutionIntegrator,   // priority 40
+	partialFractionsIntegrator, // priority 30
+	trigSubstitutionIntegrator // priority 40
+	// TODO Phase 8: Add numeric integrator here
 	// numericIntegrator             // priority 100
 ] as const;
 
@@ -88,3 +88,4 @@ export { basicIntegrator } from './basic';
 export { uSubstitutionIntegrator } from './u-substitution';
 export { partsIntegrator } from './parts';
 export { partialFractionsIntegrator } from './partial-fractions';
+export { trigSubstitutionIntegrator } from './trig-substitution';
