@@ -191,7 +191,9 @@ function negComplex(a: ComplexValue): ComplexValue {
  * Simplifies a complex result - if imaginary is 0, return real number.
  */
 function simplifyComplex(c: ComplexValue): IntermediateValue {
-	if (c.imag === 0) {
+	// Use small tolerance for floating-point comparison
+	const EPSILON = 1e-14;
+	if (Math.abs(c.imag) < EPSILON) {
 		return c.real;
 	}
 	return c;
@@ -224,6 +226,60 @@ function intPowComplex(base: ComplexValue, exp: number): ComplexValue {
 	}
 
 	return result;
+}
+
+/**
+ * Computes complex power: z^w = exp(w * ln(z))
+ * Works for any complex base and exponent.
+ */
+function complexPow(base: IntermediateValue, exp: IntermediateValue): IntermediateValue {
+	// Convert base to ComplexValue
+	let baseC: ComplexValue;
+	if (isComplexValue(base)) {
+		baseC = base;
+	} else if (isRational(base)) {
+		baseC = complexValue(rationalToNumber(base), 0);
+	} else {
+		baseC = complexValue(base, 0);
+	}
+
+	// Convert exp to ComplexValue
+	let expC: ComplexValue;
+	if (isComplexValue(exp)) {
+		expC = exp;
+	} else if (isRational(exp)) {
+		expC = complexValue(rationalToNumber(exp), 0);
+	} else {
+		expC = complexValue(exp, 0);
+	}
+
+	// Special cases
+	if (expC.real === 0 && expC.imag === 0) {
+		return complexValue(1, 0); // z^0 = 1
+	}
+	if (baseC.real === 0 && baseC.imag === 0) {
+		if (expC.real > 0) {
+			return complexValue(0, 0); // 0^n = 0 for n > 0
+		}
+		throw new Error('0^n is undefined for n <= 0');
+	}
+
+	// z^w = exp(w * ln(z))
+	// ln(z) = ln|z| + i*arg(z)
+	const modulus = Math.sqrt(baseC.real * baseC.real + baseC.imag * baseC.imag);
+	const theta = Math.atan2(baseC.imag, baseC.real);
+	const lnZ: ComplexValue = complexValue(Math.log(modulus), theta);
+
+	// w * ln(z) = (a + bi) * (c + di) = (ac - bd) + (ad + bc)i
+	const a = expC.real,
+		b = expC.imag;
+	const c = lnZ.real,
+		d = lnZ.imag;
+	const wLnZ: ComplexValue = complexValue(a * c - b * d, a * d + b * c);
+
+	// exp(wLnZ) = exp(re) * (cos(im) + i*sin(im))
+	const expRe = Math.exp(wLnZ.real);
+	return simplifyComplex(complexValue(expRe * Math.cos(wLnZ.imag), expRe * Math.sin(wLnZ.imag)));
 }
 
 /**
@@ -447,8 +503,23 @@ const SUPPORTED_FUNCTIONS: Record<
 
 	ln: (args) => {
 		if (args.length !== 1) throw new Error('ln requires exactly 1 argument');
-		const val = toNumber(args[0]);
-		if (val <= 0) throw new Error('ln argument must be positive');
+		const arg = args[0];
+
+		// Complex logarithm: ln(z) = ln|z| + i*arg(z) (principal value)
+		if (isComplexValue(arg)) {
+			const modulus = Math.sqrt(arg.real * arg.real + arg.imag * arg.imag);
+			if (modulus === 0) throw new Error('ln(0) is undefined');
+			const theta = Math.atan2(arg.imag, arg.real);
+			return complexValue(Math.log(modulus), theta);
+		}
+
+		// For negative real numbers, extend to complex domain
+		const val = toNumber(arg);
+		if (val === 0) throw new Error('ln(0) is undefined');
+		if (val < 0) {
+			// ln(-x) = ln(x) + i*pi for x > 0
+			return complexValue(Math.log(-val), Math.PI);
+		}
 		return Math.log(val);
 	},
 
@@ -467,6 +538,14 @@ const SUPPORTED_FUNCTIONS: Record<
 		// exp(0) = 1 exactly
 		if (isRational(arg) && isZeroRational(arg)) {
 			return exactMode ? ONE : 1;
+		}
+
+		// Complex exponential: exp(a + bi) = e^a * (cos(b) + i*sin(b))
+		if (isComplexValue(arg)) {
+			const a = arg.real;
+			const b = arg.imag;
+			const expA = Math.exp(a);
+			return complexValue(expA * Math.cos(b), expA * Math.sin(b));
 		}
 
 		return Math.exp(toNumber(arg));
@@ -685,6 +764,27 @@ const SUPPORTED_FUNCTIONS: Record<
 		// Real number: arg is 0 for positive, pi for negative
 		const num = toNumber(arg);
 		return num >= 0 ? 0 : Math.PI;
+	},
+
+	/**
+	 * cis(theta) = cos(theta) + i*sin(theta)
+	 * Shorthand for the unit circle complex exponential.
+	 */
+	cis: (args) => {
+		if (args.length !== 1) throw new Error('cis requires exactly 1 argument');
+		const theta = toNumber(args[0]);
+		return simplifyComplex(complexValue(Math.cos(theta), Math.sin(theta)));
+	},
+
+	/**
+	 * Creates a complex number from polar coordinates.
+	 * fromPolar(r, theta) = r * cis(theta) = r * (cos(theta) + i*sin(theta))
+	 */
+	frompolar: (args) => {
+		if (args.length !== 2) throw new Error('fromPolar requires exactly 2 arguments (r, theta)');
+		const r = toNumber(args[0]);
+		const theta = toNumber(args[1]);
+		return simplifyComplex(complexValue(r * Math.cos(theta), r * Math.sin(theta)));
 	}
 };
 
@@ -856,8 +956,21 @@ function evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedia
 			}
 		}
 
-		// Fall back to floating point
-		return Math.pow(toNumber(base), toNumber(exp));
+		// Complex power: z^w = exp(w * ln(z))
+		// This handles complex base, complex exponent, and negative base with non-integer exponent
+		if (isComplexValue(base) || isComplexValue(exp)) {
+			return complexPow(base, exp);
+		}
+
+		// Handle negative base with non-integer exponent (e.g., (-1)^0.5 = i)
+		const baseNum = toNumber(base);
+		const expNum = toNumber(exp);
+		if (baseNum < 0 && !Number.isInteger(expNum)) {
+			return complexPow(complexValue(baseNum, 0), complexValue(expNum, 0));
+		}
+
+		// Fall back to floating point for positive real base
+		return Math.pow(baseNum, expNum);
 	}
 
 	// FunctionNode

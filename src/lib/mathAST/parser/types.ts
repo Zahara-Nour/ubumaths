@@ -560,7 +560,14 @@ export const FUNCTION_COMMANDS: ReadonlySet<string> = new Set<string>([
 	'median',
 	'variance',
 	'stdev',
-	'sum'
+	'sum',
+	// Complex number functions
+	'cabs',
+	'conj',
+	'Re',
+	'Im',
+	'cis',
+	'frompolar'
 ]);
 
 /**
