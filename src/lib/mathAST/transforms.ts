@@ -9,6 +9,7 @@ import type { MathNode, NodeMetadata } from './types';
 
 import {
 	add,
+	complex,
 	compose,
 	delimiter,
 	divide,
@@ -212,6 +213,10 @@ export function getChildren(node: MathNode): MathNode[] {
 		// Matrix - flatten all elements in row-major order
 		case 'matrix':
 			return node.rows.flat();
+
+		// Complex number
+		case 'complex':
+			return [node.real, node.imaginary];
 	}
 }
 
@@ -372,6 +377,11 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 			});
 			break;
 		}
+
+		// Complex number
+		case 'complex':
+			transformedNode = complex(mapNode(node.real, fn), mapNode(node.imaginary, fn), node.metadata);
+			break;
 	}
 
 	// Then apply transformation to the parent
@@ -547,6 +557,14 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				metadata: transformedParent.metadata
 			});
 		}
+
+		// Complex number
+		case 'complex':
+			return complex(
+				mapNodeTopDown(transformedParent.real, fn),
+				mapNodeTopDown(transformedParent.imaginary, fn),
+				transformedParent.metadata
+			);
 	}
 }
 
@@ -755,6 +773,10 @@ export function cloneNode<T extends MathNode>(node: T): T {
 				metadata: node.metadata
 			}) as T;
 		}
+
+		// Complex number
+		case 'complex':
+			return complex(cloneNode(node.real), cloneNode(node.imaginary), node.metadata) as T;
 	}
 }
 

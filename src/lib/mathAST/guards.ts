@@ -26,6 +26,7 @@ import type {
 	UnitNode,
 	MatrixNode,
 	CompositionNode,
+	ComplexNode,
 	LiteralNode,
 	BinaryOperationNode,
 	UnaryOperationNode,
@@ -237,6 +238,13 @@ export function isMatrix(node: MathNode): node is MatrixNode {
 	return node.type === 'matrix';
 }
 
+/**
+ * Type guard for ComplexNode
+ */
+export function isComplex(node: MathNode): node is ComplexNode {
+	return node.type === 'complex';
+}
+
 // =============================================================================
 // Matrix Predicates
 // =============================================================================
@@ -301,6 +309,9 @@ export function hasChildren(node: MathNode): boolean {
 		return true;
 	}
 	if (isMatrix(node)) {
+		return true;
+	}
+	if (isComplex(node)) {
 		return true;
 	}
 	return false;
@@ -494,6 +505,9 @@ export function hasUnitDescendant(node: MathNode): boolean {
 
 		case 'matrix':
 			return node.rows.some((row) => row.some(hasUnitDescendant));
+
+		case 'complex':
+			return hasUnitDescendant(node.real) || hasUnitDescendant(node.imaginary);
 
 		default: {
 			const _exhaustive: never = node;

@@ -413,6 +413,26 @@ export interface MatrixNode extends BaseNode {
 }
 
 // =============================================================================
+// Complex Number Node
+// =============================================================================
+
+/**
+ * Represents a complex number with real and imaginary parts.
+ *
+ * Both parts are MathNodes, allowing symbolic expressions:
+ * - Simple: 3 + 4i → ComplexNode(NumberNode('3'), NumberNode('4'))
+ * - Symbolic: √2 + √3i → ComplexNode(sqrt(2), sqrt(3))
+ * - Variable: x + yi → ComplexNode(VariableNode('x'), VariableNode('y'))
+ *
+ * The imaginary unit 'i' is implicit - the imaginary field is the coefficient.
+ */
+export interface ComplexNode extends BaseNode {
+	readonly type: 'complex';
+	readonly real: MathNode;
+	readonly imaginary: MathNode;
+}
+
+// =============================================================================
 // Function Composition Node
 // =============================================================================
 
@@ -459,7 +479,8 @@ export type MathNode =
 	| RelationNode
 	| UnitNode
 	| MatrixNode
-	| CompositionNode;
+	| CompositionNode
+	| ComplexNode;
 
 // =============================================================================
 // Node Type Extraction
