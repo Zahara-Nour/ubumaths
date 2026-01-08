@@ -19,7 +19,7 @@ import type { MatrixType } from '../../matrix/types';
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { Tokenizer } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
-import { MathAST, compose, matrix } from '../../factory';
+import { MathAST, compose, matrix, complex } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
 import { SecurityError, checkInputLength, getEffectiveSecurityOptions } from '../security';
@@ -530,7 +530,8 @@ class PrattParser {
 					token.value === 'dfrac' ||
 					token.value === 'sqrt' ||
 					token.value === 'left' ||
-					token.value === 'begin'
+					token.value === 'begin' ||
+					token.value === 'imaginaryI'
 				) {
 					return BP.MULTIPLY;
 				}
@@ -789,6 +790,11 @@ class PrattParser {
 
 			case 'begin':
 				return this.parseEnvironment();
+
+			case 'imaginaryI':
+				// \imaginaryI represents the imaginary unit i = complex(0, 1)
+				this.advance();
+				return this.applyColor(complex(MathAST.number('0'), MathAST.number('1')));
 
 			default:
 				this.error(`Unknown command: \\${cmd}`, token.position, token.length, 'UNKNOWN_COMMAND');
@@ -1086,7 +1092,7 @@ class PrattParser {
 		}
 
 		// Tokens that CAN trigger implicit multiplication:
-		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt, \begin)
+		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt, \begin, \imaginaryI)
 		return (
 			token.type === 'NUMBER' ||
 			token.type === 'LETTER' ||
@@ -1099,7 +1105,8 @@ class PrattParser {
 					token.value === 'dfrac' ||
 					token.value === 'sqrt' ||
 					token.value === 'left' ||
-					token.value === 'begin'))
+					token.value === 'begin' ||
+					token.value === 'imaginaryI'))
 		);
 	}
 
