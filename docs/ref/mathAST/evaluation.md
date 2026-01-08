@@ -108,9 +108,14 @@ const result2 = evaluate(ast2, { variables: { x: 3 } });
 
 ```typescript
 interface EvalResult {
-	value: Rational | number; // Computed value
+	value: Rational | number | ComplexValue; // Computed value
 	node: MathNode; // Result as AST
 	exact: boolean; // True if no approximation
+}
+
+interface ComplexValue {
+	real: number;
+	imag: number;
 }
 
 const result = evaluate(parseLatex('1/3'));
@@ -180,6 +185,151 @@ x^n (for any n)
 
 // Other
 abs(x), floor(x), ceil(x), round(x)
+
+// Statistical
+mean(...), median(...), variance(...), stdev(...)
+min(...), max(...), sum(...)
+
+// Complex numbers (see below)
+cabs(z), conj(z), Re(z), Im(z), arg(z)
+cis(θ), frompolar(r, θ)
+rootofunity(n, k), nthroot(z, n, k), principalroot(z, n)
+```
+
+## Complex Number Evaluation
+
+The evaluator fully supports complex numbers with automatic promotion from reals.
+
+### Complex Arithmetic
+
+```typescript
+// Complex numbers are represented as a + bi
+const ast = parseLatex('(2 + 3\\imaginaryI) + (1 - \\imaginaryI)');
+const result = evaluate(ast);
+// result.value = { real: 3, imag: 2 }
+
+// All basic operations work
+evaluate(parseLatex('(2 + 3\\imaginaryI) \\cdot (1 - \\imaginaryI)'));
+// (2+3i)(1-i) = 2 - 2i + 3i - 3i² = 2 + i + 3 = 5 + i
+
+evaluate(parseLatex('\\frac{1}{\\imaginaryI}'));
+// 1/i = -i
+```
+
+### Complex Functions
+
+```typescript
+// Modulus (absolute value)
+cabs(z); // |a + bi| = √(a² + b²)
+
+// Conjugate
+conj(z); // conj(a + bi) = a - bi
+
+// Real and imaginary parts
+Re(z); // Re(a + bi) = a
+Im(z); // Im(a + bi) = b
+
+// Argument (phase angle)
+arg(z); // arg(a + bi) = atan2(b, a) ∈ (-π, π]
+```
+
+### Principal Argument Convention
+
+The argument function returns the **principal value** in the interval **(-π, π]**:
+
+| z                 | arg(z) |
+| ----------------- | ------ |
+| 1 (positive real) | 0      |
+| i                 | π/2    |
+| -1                | π      |
+| -i                | -π/2   |
+| 1+i               | π/4    |
+| -1-i              | -3π/4  |
+
+This convention is used consistently across all complex functions including logarithms and nth roots.
+
+### Polar/Exponential Form
+
+```typescript
+// cis function: cis(θ) = cos(θ) + i·sin(θ)
+evaluate(parseLatex('\\cis(\\frac{\\pi}{4})'));
+// √2/2 + i·√2/2
+
+// From polar: frompolar(r, θ) = r·cis(θ)
+evaluate(parseLatex('\\frompolar(2, \\frac{\\pi}{3})'));
+// 2·(cos(π/3) + i·sin(π/3)) = 1 + i√3
+
+// Complex exponential: exp(a + bi) = eᵃ·(cos(b) + i·sin(b))
+evaluate(parseLatex('\\exp(\\imaginaryI \\cdot \\pi)'));
+// e^(iπ) = -1 (Euler's identity)
+
+// Complex logarithm (principal value)
+evaluate(parseLatex('\\ln(-1)'));
+// ln(-1) = iπ
+
+evaluate(parseLatex('\\ln(\\imaginaryI)'));
+// ln(i) = iπ/2
+```
+
+### Complex Powers
+
+Complex exponentiation uses the formula z^w = exp(w·ln(z)):
+
+```typescript
+// Integer powers
+evaluate(parseLatex('\\imaginaryI^2')); // -1
+evaluate(parseLatex('\\imaginaryI^4')); // 1
+
+// Fractional powers (principal value)
+evaluate(parseLatex('(-1)^{0.5}')); // i
+evaluate(parseLatex('(-8)^{\\frac{1}{3}}')); // 1 + i√3 (principal cube root)
+
+// Complex exponent
+evaluate(parseLatex('\\imaginaryI^{\\imaginaryI}'));
+// i^i = e^(i·ln(i)) = e^(i·iπ/2) = e^(-π/2) ≈ 0.2079
+```
+
+### Nth Roots of Complex Numbers
+
+Three functions for computing nth roots (educational focus):
+
+```typescript
+// rootofunity(n, k) - k-th nth root of unity: e^{2πik/n}
+evaluate(parseLatex('\\rootofunity(4, 1)')); // e^{iπ/2} = i
+evaluate(parseLatex('\\rootofunity(3, 1)')); // e^{2πi/3} = -1/2 + i√3/2
+
+// nthroot(z, n, k) - k-th nth root of z
+// Formula: |z|^{1/n} · e^{i(arg(z) + 2πk)/n}
+evaluate(parseLatex('\\nthroot(8, 3, 0)')); // 2 (principal cube root)
+evaluate(parseLatex('\\nthroot(8, 3, 1)')); // -1 + i√3
+evaluate(parseLatex('\\nthroot(8, 3, 2)')); // -1 - i√3
+
+// principalroot(z, n) - convenience for k=0
+evaluate(parseLatex('\\principalroot(-1, 2)')); // i
+```
+
+#### Parameter Constraints
+
+| Function              | Parameters               | Constraints                         |
+| --------------------- | ------------------------ | ----------------------------------- |
+| `rootofunity(n, k)`   | n, k integers            | n > 0, k can be any integer (wraps) |
+| `nthroot(z, n, k)`    | z complex, n, k integers | n > 0, 0 ≤ k < n                    |
+| `principalroot(z, n)` | z complex, n integer     | n > 0                               |
+
+#### Mathematical Properties
+
+```typescript
+// All n roots of unity sum to 0 (for n > 1)
+// ω⁰ + ω¹ + ... + ω^{n-1} = 0
+evaluate(parseLatex('\\rootofunity(3,0) + \\rootofunity(3,1) + \\rootofunity(3,2)'));
+// 1 + (-1/2 + i√3/2) + (-1/2 - i√3/2) = 0
+
+// (k-th root)^n = original number
+// nthroot(z, n, k)^n = z
+evaluate(parseLatex('\\nthroot(8, 3, 1)^3')); // 8
+
+// ω^n = 1 for any root of unity
+evaluate(parseLatex('\\rootofunity(5, 2)^5')); // 1
 ```
 
 ## Variable Analysis
