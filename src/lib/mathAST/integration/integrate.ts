@@ -79,7 +79,7 @@ function simplifiedMultiply(left: MathNode, right: MathNode): MathNode {
 	// x * 1 = x
 	if (isNumber(right) && right.value === '1') return left;
 
-	return multiplyFactory(left, right);
+	return multiplyFactory(left, right, 'implicit');
 }
 
 // =============================================================================

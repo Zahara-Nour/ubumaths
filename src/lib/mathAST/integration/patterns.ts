@@ -1,0 +1,458 @@
+/**
+ * Pattern Matching for Integration Techniques
+ *
+ * Utilities for detecting integration patterns like u-substitution,
+ * integration by parts, etc.
+ *
+ * @module mathAST/integration/patterns
+ */
+
+import type { MathNode } from '../types';
+import { differentiate } from '../differentiation';
+import { containsVariable } from './rules';
+import { isNumber, isVariable, isDivision } from '../guards';
+import { hashMathNode } from '../normal/hash';
+
+// =============================================================================
+// Types
+// =============================================================================
+
+/**
+ * Result of u-substitution pattern matching
+ */
+export interface USubstitutionMatch {
+	/** The u expression (inner function) */
+	u: MathNode;
+
+	/** The du/dx expression (derivative of u) */
+	du: MathNode;
+
+	/** Constant factor if du appears with a constant multiple */
+	constantFactor?: number;
+}
+
+// =============================================================================
+// U-Candidate Extraction
+// =============================================================================
+
+/**
+ * Find potential u-substitution candidates in an expression.
+ *
+ * Extracts:
+ * - Function arguments: f(g(x)) → g(x)
+ * - Exponents: e^(g(x)) → g(x)
+ * - Bases with powers: [g(x)]^n → g(x)
+ * - Denominators: 1/g(x) → g(x)
+ *
+ * Does not include:
+ * - Simple variables (just x)
+ * - Constants
+ * - The entire expression itself
+ *
+ * @param expr - The expression to analyze
+ * @param variable - The variable of integration
+ * @returns Array of candidate u expressions
+ *
+ * @example
+ * ```typescript
+ * const expr = parseLatex('\\cos(x^2)');
+ * const candidates = findUCandidates(expr, 'x');
+ * // candidates includes x^2 (the function argument)
+ * ```
+ */
+export function findUCandidates(expr: MathNode, variable: string): MathNode[] {
+	const candidates: MathNode[] = [];
+	const seen = new Set<string>();
+
+	/**
+	 * Add a candidate if it's non-trivial and not already seen
+	 */
+	function addCandidate(node: MathNode): void {
+		// Skip if doesn't contain the variable
+		if (!containsVariable(node, variable)) {
+			return;
+		}
+
+		// Skip if it's just the variable itself
+		if (isVariable(node) && node.name === variable) {
+			return;
+		}
+
+		// Skip if it's a constant
+		if (isNumber(node)) {
+			return;
+		}
+
+		// Use hash to avoid duplicates
+		const hash = hashMathNode(node);
+		if (!seen.has(hash)) {
+			seen.add(hash);
+			candidates.push(node);
+		}
+	}
+
+	/**
+	 * Recursively traverse the expression tree
+	 */
+	function traverse(node: MathNode): void {
+		switch (node.type) {
+			case 'function':
+				// Function arguments are prime candidates
+				for (const arg of node.args) {
+					// Only add non-trivial arguments
+					if (!(isVariable(arg) && arg.name === variable)) {
+						addCandidate(arg);
+					}
+					traverse(arg);
+				}
+
+				// Also check power and base if present
+				if (node.power) traverse(node.power);
+				if (node.base) traverse(node.base);
+				break;
+
+			case 'superscript':
+				// Exponents are candidates (for e^u patterns)
+				if (!(isVariable(node.superscript) && node.superscript.name === variable)) {
+					addCandidate(node.superscript);
+				}
+
+				// Base is also a candidate (for [g(x)]^n patterns)
+				if (!(isVariable(node.base) && node.base.name === variable)) {
+					addCandidate(node.base);
+				}
+
+				traverse(node.base);
+				traverse(node.superscript);
+				break;
+
+			case 'division':
+				// Denominators are candidates (for 1/u patterns)
+				if (!(isVariable(node.denominator) && node.denominator.name === variable)) {
+					addCandidate(node.denominator);
+				}
+
+				// Also numerators can be composite
+				traverse(node.numerator);
+				traverse(node.denominator);
+				break;
+
+			case 'addition':
+			case 'subtraction':
+			case 'multiplication':
+				traverse(node.left);
+				traverse(node.right);
+				break;
+
+			case 'opposite':
+			case 'positive':
+				traverse(node.operand);
+				break;
+
+			case 'delimiter':
+				traverse(node.content);
+				break;
+
+			case 'subscript':
+				traverse(node.base);
+				traverse(node.subscript);
+				break;
+
+			case 'relation':
+				traverse(node.left);
+				traverse(node.right);
+				break;
+
+			case 'unit':
+				traverse(node.expression);
+				break;
+
+			case 'composition':
+				traverse(node.outer);
+				traverse(node.inner);
+				break;
+
+			case 'matrix':
+				for (const row of node.rows) {
+					for (const elem of row) {
+						traverse(elem);
+					}
+				}
+				break;
+
+			// Leaf nodes - nothing to traverse
+			case 'number':
+			case 'variable':
+			case 'symbol':
+			case 'greek':
+			case 'hole':
+				break;
+
+			default: {
+				const _exhaustive: never = node;
+				return _exhaustive;
+			}
+		}
+	}
+
+	traverse(expr);
+	return candidates;
+}
+
+// =============================================================================
+// U-Substitution Pattern Matching
+// =============================================================================
+
+/**
+ * Check if an expression matches the u-substitution pattern.
+ *
+ * The u-substitution pattern is: f(g(x)) * g'(x) or f(g(x)) * c*g'(x)
+ * where g(x) is a composite function and g'(x) (or a constant multiple)
+ * appears in the integrand.
+ *
+ * @param integrand - The expression to check
+ * @param variable - The variable of integration
+ * @returns Match object if pattern detected, null otherwise
+ *
+ * @example
+ * ```typescript
+ * // 2x*cos(x^2) matches with u = x^2, du = 2x
+ * const expr = parseLatex('2x\\cos(x^2)');
+ * const match = matchUSubstitution(expr, 'x');
+ * // match.u = x^2, match.du = 2x
+ * ```
+ */
+export function matchUSubstitution(
+	integrand: MathNode,
+	variable: string
+): USubstitutionMatch | null {
+	// Get all potential u candidates
+	const candidates = findUCandidates(integrand, variable);
+
+	// Try each candidate
+	for (const u of candidates) {
+		const match = tryUSubstitution(integrand, u, variable);
+		if (match) {
+			return match;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Try u-substitution with a specific u candidate.
+ *
+ * Checks if du/dx (or a constant multiple) appears in the integrand.
+ *
+ * @param integrand - The expression to integrate
+ * @param u - The candidate u expression
+ * @param variable - The variable of integration
+ * @returns Match object if successful, null otherwise
+ *
+ * @internal
+ */
+function tryUSubstitution(
+	integrand: MathNode,
+	u: MathNode,
+	variable: string
+): USubstitutionMatch | null {
+	// Compute du/dx
+	let du: MathNode;
+	try {
+		du = differentiate(u, { variable });
+	} catch {
+		// If differentiation fails, this candidate doesn't work
+		return null;
+	}
+
+	// Check if du appears in the integrand (exactly)
+	if (containsSubexpression(integrand, du)) {
+		return { u, du };
+	}
+
+	// Check if du appears with a constant factor
+	// For example: integrand has x, but du = 2x
+	// We need to check if du/c or c*du appears
+	const duHash = hashMathNode(du);
+
+	// Try to find du as a factor in multiplication
+	const factor = findConstantFactor(integrand, du);
+	if (factor !== null) {
+		return {
+			u,
+			du,
+			constantFactor: factor
+		};
+	}
+
+	// Check if the integrand itself equals du (up to constant factor)
+	const integrandHash = hashMathNode(integrand);
+	if (duHash === integrandHash) {
+		return { u, du };
+	}
+
+	return null;
+}
+
+// =============================================================================
+// Helper Functions
+// =============================================================================
+
+/**
+ * Check if an expression contains another expression as a subexpression.
+ *
+ * @param expr - The expression to search in
+ * @param target - The subexpression to find
+ * @returns True if target appears in expr
+ *
+ * @internal
+ */
+function containsSubexpression(expr: MathNode, target: MathNode): boolean {
+	const targetHash = hashMathNode(target);
+
+	function search(node: MathNode): boolean {
+		// Check if this node matches
+		if (hashMathNode(node) === targetHash) {
+			return true;
+		}
+
+		// Recursively search children
+		switch (node.type) {
+			case 'addition':
+			case 'subtraction':
+			case 'multiplication':
+				return search(node.left) || search(node.right);
+
+			case 'division':
+				return search(node.numerator) || search(node.denominator);
+
+			case 'superscript':
+				return search(node.base) || search(node.superscript);
+
+			case 'function':
+				return (
+					node.args.some(search) ||
+					(node.power !== undefined && search(node.power)) ||
+					(node.base !== undefined && search(node.base))
+				);
+
+			case 'opposite':
+			case 'positive':
+				return search(node.operand);
+
+			case 'delimiter':
+				return search(node.content);
+
+			case 'subscript':
+				return search(node.base) || search(node.subscript);
+
+			case 'relation':
+				return search(node.left) || search(node.right);
+
+			case 'unit':
+				return search(node.expression);
+
+			case 'composition':
+				return search(node.outer) || search(node.inner);
+
+			case 'matrix':
+				return node.rows.some((row) => row.some(search));
+
+			// Leaf nodes
+			case 'number':
+			case 'variable':
+			case 'symbol':
+			case 'greek':
+			case 'hole':
+				return false;
+
+			default: {
+				const _exhaustive: never = node;
+				return _exhaustive;
+			}
+		}
+	}
+
+	return search(expr);
+}
+
+/**
+ * Try to find the constant factor relating two expressions.
+ *
+ * If expr = c * target or expr = target / c for some constant c,
+ * returns c. Otherwise returns null.
+ *
+ * @param expr - The expression
+ * @param target - The target subexpression
+ * @returns Constant factor if found, null otherwise
+ *
+ * @internal
+ */
+function findConstantFactor(expr: MathNode, target: MathNode): number | null {
+	const targetHash = hashMathNode(target);
+
+	// Case 1: expr is a multiplication
+	if (expr.type === 'multiplication') {
+		const leftHash = hashMathNode(expr.left);
+		const rightHash = hashMathNode(expr.right);
+
+		// Check if left is constant and right is target
+		if (rightHash === targetHash && isNumber(expr.left)) {
+			return parseFloat(expr.left.value);
+		}
+
+		// Check if right is constant and left is target
+		if (leftHash === targetHash && isNumber(expr.right)) {
+			return parseFloat(expr.right.value);
+		}
+	}
+
+	// Case 2: expr is a division
+	if (isDivision(expr)) {
+		const numHash = hashMathNode(expr.numerator);
+
+		// Check if numerator is target and denominator is constant
+		if (numHash === targetHash && isNumber(expr.denominator)) {
+			return 1 / parseFloat(expr.denominator.value);
+		}
+	}
+
+	// Case 3: Check if expr and target differ by a constant factor
+	// This is more complex - we'd need to divide expr by target and simplify
+	// For now, we'll skip this case
+
+	return null;
+}
+
+/**
+ * Check if two expressions are equal up to a constant factor.
+ *
+ * Returns the constant c such that expr1 = c * expr2, or null if no such constant exists.
+ *
+ * @param expr1 - First expression
+ * @param expr2 - Second expression
+ * @returns Constant factor if expressions are proportional, null otherwise
+ *
+ * @internal
+ */
+export function findProportionalityConstant(expr1: MathNode, expr2: MathNode): number | null {
+	// Direct equality check
+	if (hashMathNode(expr1) === hashMathNode(expr2)) {
+		return 1;
+	}
+
+	// Check if expr1 = c * expr2
+	const factor1 = findConstantFactor(expr1, expr2);
+	if (factor1 !== null) {
+		return factor1;
+	}
+
+	// Check if expr2 = c * expr1 (then expr1 = (1/c) * expr2)
+	const factor2 = findConstantFactor(expr2, expr1);
+	if (factor2 !== null) {
+		return 1 / factor2;
+	}
+
+	return null;
+}

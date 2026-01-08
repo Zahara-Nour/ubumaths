@@ -48,7 +48,7 @@ describe('integrate() - basic usage', () => {
 
 	it('should use specified variable', () => {
 		// ∫ ax dx (treating a as constant, x as variable)
-		const expr = multiply(variable('a'), variable('x'));
+		const expr = multiply(variable('a'), variable('x'), 'implicit');
 		const result = integrate(expr, { variable: 'x' });
 
 		expect(result.status).toBe('exact');
@@ -112,7 +112,7 @@ describe('integrate() - linearity: sum rule', () => {
 describe('integrate() - linearity: constant multiple', () => {
 	it('should integrate constant times variable', () => {
 		// ∫ 3x dx = 3x²/2
-		const expr = multiply(number('3'), variable('x'));
+		const expr = multiply(number('3'), variable('x'), 'implicit');
 		const result = integrate(expr);
 
 		expect(result.status).toBe('exact');
@@ -121,7 +121,7 @@ describe('integrate() - linearity: constant multiple', () => {
 
 	it('should integrate constant times power', () => {
 		// ∫ 5x² dx = 5x³/3
-		const expr = multiply(number('5'), power(variable('x'), number('2')));
+		const expr = multiply(number('5'), power(variable('x'), number('2')), 'implicit');
 		const result = integrate(expr);
 
 		expect(result.status).toBe('exact');
@@ -130,7 +130,7 @@ describe('integrate() - linearity: constant multiple', () => {
 
 	it('should factor out constant multiplier', () => {
 		// ∫ 2x dx should factor out 2
-		const expr = multiply(number('2'), variable('x'));
+		const expr = multiply(number('2'), variable('x'), 'implicit');
 		const result = integrate(expr, { verbosity: 'detailed' });
 
 		// Should have steps showing constant being factored out
@@ -139,7 +139,7 @@ describe('integrate() - linearity: constant multiple', () => {
 
 	it('should handle negative constants', () => {
 		// ∫ -3x dx = -3x²/2
-		const expr = multiply(number('-3'), variable('x'));
+		const expr = multiply(number('-3'), variable('x'), 'implicit');
 		const result = integrate(expr);
 
 		expect(result.status).toBe('exact');
@@ -246,7 +246,7 @@ describe('integrate() - options', () => {
 describe('integrate() - error cases', () => {
 	it('should throw on multiple variables without specification', () => {
 		// ∫ x*y dx? or ∫ x*y dy? Must specify
-		const expr = multiply(variable('x'), variable('y'));
+		const expr = multiply(variable('x'), variable('y'), 'implicit');
 
 		expect(() => integrate(expr)).toThrow();
 	});
@@ -350,7 +350,7 @@ describe('integrateDefinite() - numeric fallback', () => {
 	it('should use numeric integration when symbolic fails', () => {
 		// Create an expression that symbolic integration cannot handle
 		// e^(-x²) is a Gaussian integral with no elementary antiderivative
-		const expr = exp(multiply(number('-1'), power(variable('x'), number('2'))));
+		const expr = exp(multiply(number('-1'), power(variable('x'), number('2')), 'implicit'));
 		const result = integrateDefinite(expr, number('0'), number('1'));
 
 		expect(result.status).toBe('approximate');
@@ -362,7 +362,7 @@ describe('integrateDefinite() - numeric fallback', () => {
 	});
 
 	it('should respect allowNumeric: false option', () => {
-		const expr = exp(multiply(number('-1'), power(variable('x'), number('2'))));
+		const expr = exp(multiply(number('-1'), power(variable('x'), number('2')), 'implicit'));
 		const result = integrateDefinite(expr, number('0'), number('1'), { allowNumeric: false });
 
 		expect(result.status).toBe('unsupported');
@@ -372,7 +372,7 @@ describe('integrateDefinite() - numeric fallback', () => {
 
 	it('should not use numeric fallback for symbolic bounds', () => {
 		// Even if symbolic integration fails, can't use numeric with symbolic bounds
-		const expr = exp(multiply(number('-1'), power(variable('x'), number('2'))));
+		const expr = exp(multiply(number('-1'), power(variable('x'), number('2')), 'implicit'));
 		const result = integrateDefinite(expr, number('0'), variable('a'));
 
 		expect(result.status).toBe('unsupported');
@@ -380,7 +380,7 @@ describe('integrateDefinite() - numeric fallback', () => {
 	});
 
 	it('should include numeric error estimate in steps', () => {
-		const expr = exp(multiply(number('-1'), power(variable('x'), number('2'))));
+		const expr = exp(multiply(number('-1'), power(variable('x'), number('2')), 'implicit'));
 		const result = integrateDefinite(expr, number('0'), number('1'), { verbosity: 'detailed' });
 
 		expect(result.status).toBe('approximate');

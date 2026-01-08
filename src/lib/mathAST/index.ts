@@ -534,6 +534,35 @@ export type {
 export { DEFAULT_SOLVE_OPTIONS } from './solve';
 
 // =============================================================================
+// Symbolic Integration
+// =============================================================================
+
+export { integrate, integrateDefinite, IntegrationError } from './integration';
+export { simpson, adaptiveSimpson, numericIntegrate } from './integration';
+export {
+	basicIntegrator,
+	uSubstitutionIntegrator,
+	ALL_INTEGRATORS,
+	selectIntegrator
+} from './integration';
+
+export type {
+	IntegrandType,
+	IntegrationTechnique,
+	IntegrationStatus,
+	IntegrationVerbosity,
+	IntegrateStep,
+	IntegrateResult,
+	DefiniteIntegrateResult,
+	IntegrateOptions,
+	Integrator,
+	NumericResult,
+	NumericIntegrateOptions
+} from './integration';
+
+export { DEFAULT_INTEGRATE_OPTIONS } from './integration';
+
+// =============================================================================
 // Domain of Definition
 // =============================================================================
 
