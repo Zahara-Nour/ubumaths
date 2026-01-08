@@ -133,12 +133,13 @@ export function hashRadicalArray(radicals: readonly SimplifiedRadical[]): string
  * Compares two algebraic terms for canonical ordering.
  *
  * Order:
- * 1. Pure rationals first (fewer radicals = simpler)
- * 2. By lexicographic comparison of radical arrays
- * 3. By rational coefficient value
+ * 1. Real terms before imaginary terms
+ * 2. Pure rationals first (fewer radicals = simpler)
+ * 3. By lexicographic comparison of radical arrays
+ * 4. By rational coefficient value
  *
  * This produces the canonical order for coefficients:
- * 3 < 5 < sqrt(2) < 2*sqrt(2) < sqrt(3) < sqrt(2)*sqrt(3)
+ * 3 < 5 < sqrt(2) < 2*sqrt(2) < sqrt(3) < 3i < 5i < sqrt(2)i
  *
  * @param a - First algebraic term
  * @param b - Second algebraic term
@@ -153,32 +154,48 @@ export function hashRadicalArray(radicals: readonly SimplifiedRadical[]): string
  *
  * // Different radicals: sqrt(2) < sqrt(3)
  * compareAlgebraicTerms({ rational: r1, radicals: [sqrt2] }, { rational: r1, radicals: [sqrt3] }) // -1
+ *
+ * // Real before imaginary: 3 < 3i
+ * compareAlgebraicTerms({ rational: r3, radicals: [] }, { rational: r3, radicals: [], hasImaginaryUnit: true }) // -1
  */
 export function compareAlgebraicTerms(a: AlgebraicTerm, b: AlgebraicTerm): ComparisonResult {
-	// 1. Compare by number of radicals (fewer = simpler = first)
+	// 1. Real terms before imaginary terms
+	const aHasI = a.hasImaginaryUnit === true;
+	const bHasI = b.hasImaginaryUnit === true;
+	if (aHasI !== bHasI) {
+		return aHasI ? 1 : -1; // Real (no i) comes first
+	}
+
+	// 2. Compare by number of radicals (fewer = simpler = first)
 	if (a.radicals.length !== b.radicals.length) {
 		return a.radicals.length < b.radicals.length ? -1 : 1;
 	}
 
-	// 2. Same number of radicals, compare lexicographically
+	// 3. Same number of radicals, compare lexicographically
 	const radicalCmp = compareRadicalArrays(a.radicals, b.radicals);
 	if (radicalCmp !== 0) return radicalCmp;
 
-	// 3. Same radicals, compare by rational coefficient
+	// 4. Same radicals, compare by rational coefficient
 	return compareRational(a.rational, b.rational);
 }
 
 /**
- * Checks if two algebraic terms have the same "radical signature".
+ * Checks if two algebraic terms have the same "signature".
  *
- * Two terms can be combined (added) if they have the same radical signature.
- * For example, 3*sqrt(2) + 2*sqrt(2) = 5*sqrt(2) because both have [sqrt(2)].
+ * Two terms can be combined (added) if they have the same signature,
+ * meaning identical radical parts AND same imaginary flag.
+ * For example, 3*sqrt(2) + 2*sqrt(2) = 5*sqrt(2) because both have [sqrt(2)] and no i.
+ * But 3*sqrt(2) + 2*sqrt(2)*i cannot be combined because they differ in imaginary flag.
  *
  * @param a - First algebraic term
  * @param b - Second algebraic term
- * @returns true if terms have identical radical parts
+ * @returns true if terms have identical radical parts and imaginary flag
  */
 export function sameRadicalSignature(a: AlgebraicTerm, b: AlgebraicTerm): boolean {
+	// Must have same imaginary flag
+	if ((a.hasImaginaryUnit === true) !== (b.hasImaginaryUnit === true)) {
+		return false;
+	}
 	return equalRadicalArrays(a.radicals, b.radicals);
 }
 
@@ -192,23 +209,35 @@ export function hashAlgebraicTerm(term: AlgebraicTerm): string {
 	const radicalHash = hashRadicalArray(term.radicals);
 	const rationalStr =
 		term.rational.d === 1n ? term.rational.n.toString() : `${term.rational.n}/${term.rational.d}`;
+	const hasI = term.hasImaginaryUnit === true;
 
-	if (radicalHash === '') {
-		return rationalStr;
+	let result = rationalStr;
+
+	if (radicalHash !== '') {
+		result = `${result}*${radicalHash}`;
 	}
 
-	return `${rationalStr}*${radicalHash}`;
+	if (hasI) {
+		result = result === '1' ? 'i' : `${result}*i`;
+	}
+
+	return result;
 }
 
 /**
- * Gets the "radical signature" of an algebraic term.
+ * Gets the "signature" of an algebraic term.
  * This is used as a key for grouping terms that can be combined.
+ * Includes both the radical part and the imaginary flag.
  *
  * @param term - An algebraic term
- * @returns The radical signature string
+ * @returns The signature string
  */
 export function getRadicalSignature(term: AlgebraicTerm): string {
-	return hashRadicalArray(term.radicals);
+	const radicalHash = hashRadicalArray(term.radicals);
+	if (term.hasImaginaryUnit === true) {
+		return radicalHash === '' ? 'i' : `${radicalHash}*i`;
+	}
+	return radicalHash;
 }
 
 // =============================================================================
@@ -365,6 +394,8 @@ function hashNodeForCompare(node: MathNode): string {
 			return `UNIT(${hashNodeForCompare(node.expression)})`;
 		case 'composition':
 			return `COMP(${hashNodeForCompare(node.outer)},${hashNodeForCompare(node.inner)})`;
+		case 'complex':
+			return `CMPLX(${hashNodeForCompare(node.real)},${hashNodeForCompare(node.imaginary)})`;
 		default:
 			return `UNKNOWN`;
 	}
@@ -545,9 +576,15 @@ function hashAlgebraicCoefficient(coef: import('./types').AlgebraicCoefficient):
 				term.rational.d === 1n
 					? term.rational.n.toString()
 					: `${term.rational.n}/${term.rational.d}`;
-			if (term.radicals.length === 0) return rStr;
-			const radStr = term.radicals.map((r) => `R${r.index}:${r.radicand}`).join('*');
-			return `${rStr}*${radStr}`;
+			let result = rStr;
+			if (term.radicals.length > 0) {
+				const radStr = term.radicals.map((r) => `R${r.index}:${r.radicand}`).join('*');
+				result = `${result}*${radStr}`;
+			}
+			if (term.hasImaginaryUnit === true) {
+				result = result === '1' ? 'i' : `${result}*i`;
+			}
+			return result;
 		})
 		.join('+');
 }

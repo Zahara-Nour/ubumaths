@@ -26,7 +26,12 @@ import {
 import { toCustom, getVariables, hasAllBindings, evaluate, substitute } from '../../index';
 import { normalize, normalFormsEquivalent } from '../../normal';
 import { evaluateWithUnits, DimensionalEvaluationError } from '../../eval/evaluate-with-units';
-import type { EvalResultWithUnit, UnitConversionMode } from '../../eval/types';
+import type {
+	EvalResultWithUnit,
+	UnitConversionMode,
+	EvalValue,
+	ComplexValueResult
+} from '../../eval/types';
 import { isUnit, isVariable } from '../../guards';
 import { parse as parseUnit } from '../../units/parser';
 import { getConversionFactor } from '../../units/conversion';
@@ -1268,25 +1273,54 @@ export class WebReplEngine {
 	// ===========================================================================
 
 	/**
-	 * Extract numeric value from Rational or number.
+	 * Type guard for complex value.
 	 */
-	private getNumericValue(value: { n: bigint; d: bigint } | number): number {
+	private isComplexValue(value: EvalValue): value is ComplexValueResult {
+		return typeof value === 'object' && 'real' in value && 'imag' in value;
+	}
+
+	/**
+	 * Type guard for Rational value.
+	 */
+	private isRationalValue(value: EvalValue): value is { n: bigint; d: bigint } {
+		return typeof value === 'object' && 'n' in value && 'd' in value;
+	}
+
+	/**
+	 * Extract numeric value from Rational, number, or ComplexValueResult.
+	 * Throws if value is complex with non-zero imaginary part.
+	 */
+	private getNumericValue(value: EvalValue): number {
 		if (typeof value === 'number') return value;
+		if (this.isComplexValue(value)) {
+			if (value.imag !== 0) {
+				throw new Error('Cannot convert complex number to real number');
+			}
+			return value.real;
+		}
+		// Rational
 		return Number(value.n) / Number(value.d);
 	}
 
 	/**
 	 * Format a value for display, preserving fraction format if exact mode.
 	 *
-	 * @param value - Rational or number to format
+	 * @param value - EvalValue (Rational, number, or ComplexValueResult) to format
 	 * @param preserveFraction - If true, format Rational as "n/d" instead of decimal
 	 */
-	private formatValueForDisplay(
-		value: { n: bigint; d: bigint } | number,
-		preserveFraction: boolean
-	): string {
+	private formatValueForDisplay(value: EvalValue, preserveFraction: boolean): string {
 		if (typeof value === 'number') {
 			return String(value);
+		}
+
+		// Complex value
+		if (this.isComplexValue(value)) {
+			const { real, imag } = value;
+			if (imag === 0) return String(real);
+			if (real === 0) return imag === 1 ? 'i' : imag === -1 ? '-i' : `${imag}i`;
+			const sign = imag >= 0 ? '+' : '';
+			const imagPart = imag === 1 ? 'i' : imag === -1 ? '-i' : `${imag}i`;
+			return `${real}${sign}${imagPart}`;
 		}
 
 		// It's a Rational { n, d }

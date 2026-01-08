@@ -1042,6 +1042,14 @@ function analyzeNode(
 			// Matrices don't have a single unit - return null
 			return null;
 
+		case 'complex':
+			// Complex numbers: analyze real and imaginary parts
+			// Both parts must be dimensionless (complex numbers with units aren't standard)
+			analyzeNode(node.real, context, errors, warnings);
+			analyzeNode(node.imaginary, context, errors, warnings);
+			// Complex numbers are dimensionless
+			return createDimensionlessUnit();
+
 		default: {
 			// TypeScript exhaustiveness check
 			const _exhaustive: never = node;

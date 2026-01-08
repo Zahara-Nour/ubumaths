@@ -30,6 +30,13 @@ import type { MathNode } from '../../types';
 // =============================================================================
 
 /**
+ * Helper to check if value is a Rational
+ */
+function isRational(value: unknown): value is { n: bigint; d: bigint } {
+	return typeof value === 'object' && value !== null && 'n' in value && 'd' in value;
+}
+
+/**
  * Evaluate a Taylor expansion at a point and compare with expected value.
  * Currently unused but kept for potential future tests.
  */
@@ -39,7 +46,11 @@ function _evaluateTaylor(taylor: MathNode, _x: number): number {
 		return result.value;
 	}
 	// Rational
-	return Number(result.value.n) / Number(result.value.d);
+	if (isRational(result.value)) {
+		return Number(result.value.n) / Number(result.value.d);
+	}
+	// Complex (shouldn't happen in Taylor tests)
+	throw new Error('Unexpected complex result');
 }
 
 /**
@@ -51,7 +62,11 @@ function evalAt(expr: MathNode, varName: string, value: number): number {
 	if (typeof result.value === 'number') {
 		return result.value;
 	}
-	return Number(result.value.n) / Number(result.value.d);
+	if (isRational(result.value)) {
+		return Number(result.value.n) / Number(result.value.d);
+	}
+	// Complex (shouldn't happen in Taylor tests)
+	throw new Error('Unexpected complex result');
 }
 
 // =============================================================================

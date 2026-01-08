@@ -319,6 +319,19 @@ function printNode(node: MathNode, ctx: PrintContext, prefix: string, childPrefi
 			printMatrix(node, ctx, prefix, childPrefix);
 			break;
 
+		// =========================================================================
+		// Complex
+		// =========================================================================
+		case 'complex': {
+			addLine(ctx, prefix, 'Complex', node.metadata);
+			const children = [
+				{ label: 'real', node: node.real },
+				{ label: 'imaginary', node: node.imaginary }
+			];
+			printChildren(children, ctx, childPrefix);
+			break;
+		}
+
 		default: {
 			// Exhaustive check
 			const _exhaustive: never = node;

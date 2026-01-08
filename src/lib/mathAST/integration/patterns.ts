@@ -188,6 +188,12 @@ export function findUCandidates(expr: MathNode, variable: string): MathNode[] {
 			case 'hole':
 				break;
 
+			// Complex nodes have real and imaginary parts
+			case 'complex':
+				traverse(node.real);
+				traverse(node.imaginary);
+				break;
+
 			default: {
 				const _exhaustive: never = node;
 				return _exhaustive;
@@ -358,6 +364,10 @@ function containsSubexpression(expr: MathNode, target: MathNode): boolean {
 
 			case 'matrix':
 				return node.rows.some((row) => row.some(search));
+
+			// Complex nodes
+			case 'complex':
+				return search(node.real) || search(node.imaginary);
 
 			// Leaf nodes
 			case 'number':

@@ -338,6 +338,9 @@ export function containsVariable(node: MathNode, varName: string): boolean {
 		case 'matrix':
 			return node.rows.some((row) => row.some((elem) => containsVariable(elem, varName)));
 
+		case 'complex':
+			return containsVariable(node.real, varName) || containsVariable(node.imaginary, varName);
+
 		default: {
 			const _exhaustive: never = node;
 			return _exhaustive;

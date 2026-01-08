@@ -14,6 +14,7 @@ import type { EvalModifiers } from '$lib/ubumark';
 import { parseLatex } from '$lib/mathAST/parser';
 import { evaluate } from './evaluate';
 import type { Rational } from '../normal/types';
+import type { EvalValue, ComplexValueResult } from './types';
 
 // =============================================================================
 // Helper Functions
@@ -22,8 +23,15 @@ import type { Rational } from '../normal/types';
 /**
  * Checks if a value is a Rational.
  */
-function isRational(value: Rational | number): value is Rational {
+function isRational(value: EvalValue): value is Rational {
 	return typeof value === 'object' && 'n' in value && 'd' in value;
+}
+
+/**
+ * Checks if a value is a ComplexValueResult.
+ */
+function isComplex(value: EvalValue): value is ComplexValueResult {
+	return typeof value === 'object' && 'real' in value && 'imag' in value;
 }
 
 /**
@@ -117,6 +125,9 @@ export function evaluateWithModifiers(latex: string, modifiers: EvalModifiers = 
 	let numValue: number;
 	if (isRational(result.value)) {
 		numValue = rationalToNumber(result.value);
+	} else if (isComplex(result.value)) {
+		// Complex values are not supported in this simple evaluation
+		throw new Error('Complex numbers are not supported in evaluateWithModifiers');
 	} else {
 		numValue = result.value;
 	}

@@ -125,6 +125,9 @@ export function hashMathNode(node: MathNode): string {
 		case 'composition':
 			return `C(${hashMathNode(node.outer)},${hashMathNode(node.inner)})`;
 
+		case 'complex':
+			return `CMPLX(${hashMathNode(node.real)},${hashMathNode(node.imaginary)})`;
+
 		default:
 			// Exhaustive check - should never reach
 			return 'UNKNOWN';
@@ -144,12 +147,20 @@ export function hashMathNode(node: MathNode): string {
 export function hashAlgebraicTerm(term: AlgebraicTerm): string {
 	const rationalHash = hashRational(term.rational);
 	const radicalHash = hashRadicalArray(term.radicals);
+	const hasI = term.hasImaginaryUnit === true;
 
-	if (radicalHash === '') {
-		return rationalHash;
+	// Build the hash: rational * radicals * i
+	let result = rationalHash;
+
+	if (radicalHash !== '') {
+		result = `${result}*${radicalHash}`;
 	}
 
-	return `${rationalHash}*${radicalHash}`;
+	if (hasI) {
+		result = result === '1' ? 'i' : `${result}*i`;
+	}
+
+	return result;
 }
 
 /**

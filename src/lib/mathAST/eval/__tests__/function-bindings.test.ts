@@ -28,6 +28,7 @@ import {
 } from '../../factory';
 import type { FunctionNode } from '../../types';
 import type { Rational } from '../../normal/types';
+import type { EvalValue } from '../types';
 
 // =============================================================================
 // Helper Functions
@@ -36,7 +37,7 @@ import type { Rational } from '../../normal/types';
 /**
  * Helper to check if a value is a Rational
  */
-function isRational(value: Rational | number): value is Rational {
+function isRational(value: EvalValue): value is Rational {
 	return typeof value === 'object' && 'n' in value && 'd' in value;
 }
 

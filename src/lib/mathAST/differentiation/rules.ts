@@ -649,6 +649,9 @@ export function containsVariable(node: MathNode, varName: string): boolean {
 			// Check all matrix elements for the variable
 			return node.rows.some((row) => row.some((elem) => containsVariable(elem, varName)));
 
+		case 'complex':
+			return containsVariable(node.real, varName) || containsVariable(node.imaginary, varName);
+
 		default: {
 			const _exhaustive: never = node;
 			return _exhaustive;
