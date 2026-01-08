@@ -30,7 +30,8 @@ import {
 	isUnit,
 	isComposition,
 	isDerivativeFunction,
-	isInverseFunction
+	isInverseFunction,
+	isComplex
 } from '../guards';
 import { substituteFunction } from './function-bindings';
 import {
@@ -52,10 +53,18 @@ import { number, divide } from '../factory';
 // =============================================================================
 
 /**
- * Internal type representing an intermediate evaluation result.
- * Can be either a Rational (exact) or number (decimal/transcendental).
+ * Represents a complex number during evaluation.
  */
-type IntermediateValue = Rational | number;
+interface ComplexValue {
+	readonly real: number;
+	readonly imag: number;
+}
+
+/**
+ * Internal type representing an intermediate evaluation result.
+ * Can be either a Rational (exact), number (decimal/transcendental), or ComplexValue.
+ */
+type IntermediateValue = Rational | number | ComplexValue;
 
 // =============================================================================
 // Constants
@@ -79,13 +88,142 @@ function isRational(value: IntermediateValue): value is Rational {
 }
 
 /**
+ * Checks if an intermediate value is a ComplexValue.
+ */
+function isComplexValue(value: IntermediateValue): value is ComplexValue {
+	return typeof value === 'object' && 'real' in value && 'imag' in value;
+}
+
+/**
+ * Creates a ComplexValue.
+ */
+function complexValue(real: number, imag: number): ComplexValue {
+	return { real, imag };
+}
+
+/**
  * Converts an intermediate value to a number.
+ * Throws if the value is complex with non-zero imaginary part.
  */
 function toNumber(value: IntermediateValue): number {
 	if (isRational(value)) {
 		return rationalToNumber(value);
 	}
+	if (isComplexValue(value)) {
+		if (value.imag !== 0) {
+			throw new Error('Cannot convert complex number with non-zero imaginary part to real number');
+		}
+		return value.real;
+	}
 	return value;
+}
+
+/**
+ * Converts an intermediate value to a real number, treating complex as real part only.
+ */
+function toRealPart(value: IntermediateValue): number {
+	if (isRational(value)) {
+		return rationalToNumber(value);
+	}
+	if (isComplexValue(value)) {
+		return value.real;
+	}
+	return value;
+}
+
+/**
+ * Converts a value to a ComplexValue (real numbers become complex with imag=0).
+ */
+function toComplexValue(value: IntermediateValue): ComplexValue {
+	if (isComplexValue(value)) {
+		return value;
+	}
+	return complexValue(toRealPart(value), 0);
+}
+
+// =============================================================================
+// Complex Arithmetic
+// =============================================================================
+
+/**
+ * Adds two complex numbers: (a+bi) + (c+di) = (a+c) + (b+d)i
+ */
+function addComplex(a: ComplexValue, b: ComplexValue): ComplexValue {
+	return complexValue(a.real + b.real, a.imag + b.imag);
+}
+
+/**
+ * Subtracts two complex numbers: (a+bi) - (c+di) = (a-c) + (b-d)i
+ */
+function subComplex(a: ComplexValue, b: ComplexValue): ComplexValue {
+	return complexValue(a.real - b.real, a.imag - b.imag);
+}
+
+/**
+ * Multiplies two complex numbers: (a+bi) * (c+di) = (ac-bd) + (ad+bc)i
+ */
+function mulComplex(a: ComplexValue, b: ComplexValue): ComplexValue {
+	return complexValue(a.real * b.real - a.imag * b.imag, a.real * b.imag + a.imag * b.real);
+}
+
+/**
+ * Divides two complex numbers: (a+bi) / (c+di) = ((ac+bd) + (bc-ad)i) / (c²+d²)
+ */
+function divComplex(a: ComplexValue, b: ComplexValue): ComplexValue {
+	const denom = b.real * b.real + b.imag * b.imag;
+	if (denom === 0) {
+		throw new Error('Division by zero');
+	}
+	return complexValue(
+		(a.real * b.real + a.imag * b.imag) / denom,
+		(a.imag * b.real - a.real * b.imag) / denom
+	);
+}
+
+/**
+ * Negates a complex number: -(a+bi) = -a - bi
+ */
+function negComplex(a: ComplexValue): ComplexValue {
+	return complexValue(-a.real, -a.imag);
+}
+
+/**
+ * Simplifies a complex result - if imaginary is 0, return real number.
+ */
+function simplifyComplex(c: ComplexValue): IntermediateValue {
+	if (c.imag === 0) {
+		return c.real;
+	}
+	return c;
+}
+
+/**
+ * Computes integer power of a complex number using repeated multiplication.
+ */
+function intPowComplex(base: ComplexValue, exp: number): ComplexValue {
+	if (exp === 0) return complexValue(1, 0);
+	if (exp === 1) return base;
+
+	if (exp < 0) {
+		// For negative exponent: (a+bi)^(-n) = 1/(a+bi)^n
+		const positive = intPowComplex(base, -exp);
+		return divComplex(complexValue(1, 0), positive);
+	}
+
+	// Repeated squaring for efficiency
+	let result = complexValue(1, 0);
+	let current = base;
+	let e = exp;
+
+	while (e > 0) {
+		if (e % 2 === 1) {
+			result = mulComplex(result, current);
+		}
+		current = mulComplex(current, current);
+		e = Math.floor(e / 2);
+	}
+
+	return result;
 }
 
 /**
@@ -210,6 +348,11 @@ function intPow(base: IntermediateValue, exp: number): IntermediateValue {
 			return intPowRational(inverted, -exp);
 		}
 		return intPowRational(base, exp);
+	}
+
+	// For complex base, use complex power
+	if (isComplexValue(base)) {
+		return simplifyComplex(intPowComplex(base, exp));
 	}
 
 	// For number base, use Math.pow
@@ -340,6 +483,12 @@ const SUPPORTED_FUNCTIONS: Record<
 			return arg;
 		}
 
+		if (isComplexValue(arg)) {
+			throw new Error(
+				'abs is not defined for complex numbers. Use cabs for complex absolute value.'
+			);
+		}
+
 		return Math.abs(arg);
 	},
 
@@ -362,6 +511,10 @@ const SUPPORTED_FUNCTIONS: Record<
 			}
 		}
 
+		if (isComplexValue(arg)) {
+			throw new Error('floor is not defined for complex numbers');
+		}
+
 		return Math.floor(arg);
 	},
 
@@ -380,6 +533,10 @@ const SUPPORTED_FUNCTIONS: Record<
 				// For negative, round toward zero
 				return fromInteger(-(-n / d));
 			}
+		}
+
+		if (isComplexValue(arg)) {
+			throw new Error('ceil is not defined for complex numbers');
 		}
 
 		return Math.ceil(arg);
@@ -442,6 +599,92 @@ const SUPPORTED_FUNCTIONS: Record<
 	sum: (args) => {
 		if (args.length === 0) throw new Error('sum requires at least 1 argument');
 		return args.map(toNumber).reduce((a, b) => a + b, 0);
+	},
+
+	// ==========================================================================
+	// Complex Number Functions
+	// ==========================================================================
+
+	/**
+	 * Returns the conjugate of a complex number.
+	 * conj(a + bi) = a - bi
+	 */
+	conj: (args) => {
+		if (args.length !== 1) throw new Error('conj requires exactly 1 argument');
+		const arg = args[0];
+
+		if (isComplexValue(arg)) {
+			return complexValue(arg.real, -arg.imag);
+		}
+
+		// Real number is its own conjugate
+		return arg;
+	},
+
+	/**
+	 * Returns the real part of a complex number.
+	 * Re(a + bi) = a
+	 */
+	re: (args) => {
+		if (args.length !== 1) throw new Error('Re requires exactly 1 argument');
+		const arg = args[0];
+
+		if (isComplexValue(arg)) {
+			return arg.real;
+		}
+
+		// Real number: return itself
+		return toNumber(arg);
+	},
+
+	/**
+	 * Returns the imaginary part of a complex number.
+	 * Im(a + bi) = b
+	 */
+	im: (args) => {
+		if (args.length !== 1) throw new Error('Im requires exactly 1 argument');
+		const arg = args[0];
+
+		if (isComplexValue(arg)) {
+			return arg.imag;
+		}
+
+		// Real number has no imaginary part
+		return 0;
+	},
+
+	/**
+	 * Returns the modulus (absolute value) of a complex number.
+	 * |a + bi| = sqrt(a² + b²)
+	 */
+	cabs: (args) => {
+		if (args.length !== 1) throw new Error('cabs requires exactly 1 argument');
+		const arg = args[0];
+
+		if (isComplexValue(arg)) {
+			return Math.sqrt(arg.real * arg.real + arg.imag * arg.imag);
+		}
+
+		// Real number: return absolute value
+		const num = toNumber(arg);
+		return Math.abs(num);
+	},
+
+	/**
+	 * Returns the argument (phase) of a complex number.
+	 * arg(a + bi) = atan2(b, a)
+	 */
+	arg: (args) => {
+		if (args.length !== 1) throw new Error('arg requires exactly 1 argument');
+		const arg = args[0];
+
+		if (isComplexValue(arg)) {
+			return Math.atan2(arg.imag, arg.real);
+		}
+
+		// Real number: arg is 0 for positive, pi for negative
+		const num = toNumber(arg);
+		return num >= 0 ? 0 : Math.PI;
 	}
 };
 
@@ -508,6 +751,11 @@ function evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedia
 		const left = evaluateNode(node.left, exactMode, depth + 1);
 		const right = evaluateNode(node.right, exactMode, depth + 1);
 
+		// Handle complex numbers
+		if (isComplexValue(left) || isComplexValue(right)) {
+			return simplifyComplex(addComplex(toComplexValue(left), toComplexValue(right)));
+		}
+
 		if (isRational(left) && isRational(right)) {
 			return addRational(left, right);
 		}
@@ -518,6 +766,11 @@ function evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedia
 	if (isSubtraction(node)) {
 		const left = evaluateNode(node.left, exactMode, depth + 1);
 		const right = evaluateNode(node.right, exactMode, depth + 1);
+
+		// Handle complex numbers
+		if (isComplexValue(left) || isComplexValue(right)) {
+			return simplifyComplex(subComplex(toComplexValue(left), toComplexValue(right)));
+		}
 
 		if (isRational(left) && isRational(right)) {
 			return subRational(left, right);
@@ -530,6 +783,11 @@ function evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedia
 		const left = evaluateNode(node.left, exactMode, depth + 1);
 		const right = evaluateNode(node.right, exactMode, depth + 1);
 
+		// Handle complex numbers
+		if (isComplexValue(left) || isComplexValue(right)) {
+			return simplifyComplex(mulComplex(toComplexValue(left), toComplexValue(right)));
+		}
+
 		if (isRational(left) && isRational(right)) {
 			return mulRational(left, right);
 		}
@@ -540,6 +798,11 @@ function evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedia
 	if (isDivision(node)) {
 		const num = evaluateNode(node.numerator, exactMode, depth + 1);
 		const den = evaluateNode(node.denominator, exactMode, depth + 1);
+
+		// Handle complex numbers
+		if (isComplexValue(num) || isComplexValue(den)) {
+			return simplifyComplex(divComplex(toComplexValue(num), toComplexValue(den)));
+		}
 
 		// Check for division by zero
 		if (isRational(den)) {
@@ -559,6 +822,11 @@ function evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedia
 	// OppositeNode (negation)
 	if (isOpposite(node)) {
 		const operand = evaluateNode(node.operand, exactMode, depth + 1);
+
+		// Handle complex numbers
+		if (isComplexValue(operand)) {
+			return simplifyComplex(negComplex(operand));
+		}
 
 		if (isRational(operand)) {
 			return negRational(operand);
@@ -646,6 +914,23 @@ function evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedia
 		return evaluateNode(node.expression, exactMode, depth + 1);
 	}
 
+	// ComplexNode - evaluate both parts and combine
+	if (isComplex(node)) {
+		const realVal = evaluateNode(node.real, exactMode, depth + 1);
+		const imagVal = evaluateNode(node.imaginary, exactMode, depth + 1);
+
+		// Convert to numbers for complex arithmetic
+		const real = toRealPart(realVal);
+		const imag = toRealPart(imagVal);
+
+		// If imaginary is 0, return just the real part
+		if (imag === 0) {
+			return realVal;
+		}
+
+		return complexValue(real, imag);
+	}
+
 	// CompositionNode - cannot evaluate directly without application
 	if (isComposition(node)) {
 		throw new Error(
@@ -671,7 +956,18 @@ function valueToNode(value: IntermediateValue): MathNode {
 		return divide(number(value.n.toString()), number(value.d.toString()), 'fraction');
 	}
 
-	// Number
+	if (isComplexValue(value)) {
+		// Complex number
+		const realNode = Number.isInteger(value.real)
+			? number(value.real.toString())
+			: number(value.real.toPrecision(15));
+		const imagNode = Number.isInteger(value.imag)
+			? number(value.imag.toString())
+			: number(value.imag.toPrecision(15));
+		return { type: 'complex', real: realNode, imaginary: imagNode };
+	}
+
+	// Number (plain number type)
 	if (Number.isInteger(value)) {
 		return number(value.toString());
 	}

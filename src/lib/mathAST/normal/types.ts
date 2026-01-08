@@ -96,6 +96,12 @@ export interface SimplifiedRadical {
 export interface AlgebraicTerm {
 	readonly rational: Rational;
 	readonly radicals: readonly SimplifiedRadical[];
+	/**
+	 * If true, this term includes the imaginary unit i.
+	 * Used for complex number support.
+	 * When multiplying: i × i = -1 (extracts -1 coefficient, removes flag)
+	 */
+	readonly hasImaginaryUnit?: boolean;
 }
 
 /**

@@ -120,9 +120,22 @@ export const DEFAULT_EVAL_OPTIONS: Required<EvalOptions> = {
 // =============================================================================
 
 /**
+ * Represents a complex number result from evaluation.
+ */
+export interface ComplexValueResult {
+	readonly real: number;
+	readonly imag: number;
+}
+
+/**
+ * The type of values that can result from evaluation.
+ */
+export type EvalValue = Rational | number | ComplexValueResult;
+
+/**
  * Result of evaluating a mathematical expression.
  *
- * Contains both the computed value (as Rational or number) and the
+ * Contains both the computed value (as Rational, number, or ComplexValueResult) and the
  * simplified AST representation of the result.
  *
  * @example
@@ -139,10 +152,17 @@ export const DEFAULT_EVAL_OPTIONS: Required<EvalOptions> = {
  *   node: number('0.75'),
  *   exact: false
  * };
+ *
+ * // Complex evaluation result
+ * const result: EvalResult = {
+ *   value: { real: 3, imag: 4 },  // 3 + 4i
+ *   node: complex(number('3'), number('4')),
+ *   exact: false
+ * };
  */
 export interface EvalResult {
-	/** The computed value as a Rational (exact mode) or number (decimal mode) */
-	readonly value: Rational | number;
+	/** The computed value as a Rational (exact mode), number (decimal mode), or ComplexValueResult */
+	readonly value: EvalValue;
 
 	/** The simplified AST node representing the result */
 	readonly node: MathNode;
@@ -239,8 +259,8 @@ export const DEFAULT_EVAL_WITH_UNITS_OPTIONS: Required<
  * };
  */
 export interface EvalResultWithUnit {
-	/** The computed value as a Rational (exact mode) or number (decimal mode) */
-	readonly value: Rational | number;
+	/** The computed value as a Rational (exact mode), number (decimal mode), or ComplexValueResult */
+	readonly value: EvalValue;
 
 	/** The simplified AST node representing the result */
 	readonly node: MathNode;

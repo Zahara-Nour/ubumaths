@@ -7,6 +7,7 @@ import { evaluateWithUnits, DimensionalEvaluationError } from '../evaluate-with-
 import { number, add, multiply, divide, func, withUnit } from '../../factory';
 import { UnitAST } from '../../units/factory';
 import type { Rational } from '../../normal/types';
+import type { EvalValue, ComplexValueResult } from '../types';
 
 // Helper to create quantity (number with unit)
 function quantity(value: string, unitStr: string) {
@@ -22,16 +23,29 @@ function quantity(value: string, unitStr: string) {
 /**
  * Helper to check if a value is a Rational
  */
-function isRational(value: Rational | number): value is Rational {
+function isRational(value: EvalValue): value is Rational {
 	return typeof value === 'object' && 'n' in value && 'd' in value;
 }
 
 /**
- * Get numeric value from Rational or number
+ * Helper to check if a value is Complex
  */
-function toNumber(value: Rational | number): number {
+function isComplex(value: EvalValue): value is ComplexValueResult {
+	return typeof value === 'object' && 'real' in value && 'imag' in value;
+}
+
+/**
+ * Get numeric value from EvalValue
+ */
+function toNumber(value: EvalValue): number {
 	if (isRational(value)) {
 		return Number(value.n) / Number(value.d);
+	}
+	if (isComplex(value)) {
+		if (value.imag !== 0) {
+			throw new Error('Cannot convert complex number to scalar');
+		}
+		return value.real;
 	}
 	return value;
 }

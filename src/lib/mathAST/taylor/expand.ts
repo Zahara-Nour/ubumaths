@@ -17,6 +17,7 @@ import type { MathNode } from '../types';
 import type { TaylorOptions } from './types';
 import type { FunctionBindings } from '../eval/function-bindings';
 import type { Rational } from '../normal/types';
+import type { EvalValue, ComplexValueResult } from '../eval/types';
 import { DEFAULT_TAYLOR_OPTIONS, MAX_TAYLOR_TERMS, TaylorError } from './types';
 import { differentiate } from '../differentiation';
 import { evaluate } from '../eval/evaluate';
@@ -60,18 +61,41 @@ function isEffectivelyZero(value: number, tolerance: number = 1e-15): boolean {
 }
 
 /**
+ * Type guard for Rational values.
+ */
+function isRational(value: EvalValue): value is Rational {
+	return typeof value === 'object' && 'n' in value && 'd' in value;
+}
+
+/**
+ * Type guard for ComplexValueResult.
+ */
+function isComplex(value: EvalValue): value is ComplexValueResult {
+	return typeof value === 'object' && 'real' in value && 'imag' in value;
+}
+
+/**
  * Convert evaluation result to a number.
- * Handles both Rational and number values.
+ * Handles Rational, number, and Complex values.
  *
  * @param value - Evaluation result value
  * @returns Numeric value
+ * @throws Error if value is complex with non-zero imaginary part
  */
-function valueToNumber(value: Rational | number): number {
+function valueToNumber(value: EvalValue): number {
 	if (typeof value === 'number') {
 		return value;
 	}
-	// Rational type
-	return rationalToNumber(value);
+	if (isRational(value)) {
+		return rationalToNumber(value);
+	}
+	if (isComplex(value)) {
+		if (value.imag !== 0) {
+			throw new Error('Cannot convert complex number with non-zero imaginary part to number');
+		}
+		return value.real;
+	}
+	throw new Error('Unknown value type');
 }
 
 /**

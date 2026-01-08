@@ -138,6 +138,17 @@ function rootNode(arg: MathNode, index: bigint): MathNode {
 	};
 }
 
+/**
+ * Creates the imaginary unit node i = complex(0, 1).
+ */
+function imaginaryUnitNode(): MathNode {
+	return {
+		type: 'complex',
+		real: { type: 'number', value: '0' },
+		imaginary: { type: 'number', value: '1' }
+	};
+}
+
 // =============================================================================
 // Denormalization Functions
 // =============================================================================
@@ -155,27 +166,38 @@ function denormalizeRadical(radical: SimplifiedRadical): MathNode {
 /**
  * Denormalizes an algebraic term to a MathNode.
  *
- * An algebraic term is: rational * product of radicals
+ * An algebraic term is: rational * product of radicals * (possibly i)
  *
  * @param term - The algebraic term
  * @returns A MathNode representing the term
  */
 function denormalizeAlgebraicTerm(term: AlgebraicTerm): MathNode {
-	const { rational, radicals } = term;
+	const { rational, radicals, hasImaginaryUnit } = term;
 
 	// Handle zero
 	if (isZeroRational(rational)) {
 		return numberNode(0n);
 	}
 
-	// Build the radical product
-	let radicalProduct: MathNode | null = null;
+	// Build the radical product (including imaginary unit if present)
+	let product: MathNode | null = null;
+
 	for (const radical of radicals) {
 		const radNode = denormalizeRadical(radical);
-		if (radicalProduct === null) {
-			radicalProduct = radNode;
+		if (product === null) {
+			product = radNode;
 		} else {
-			radicalProduct = multiplyNodes(radicalProduct, radNode);
+			product = multiplyNodes(product, radNode);
+		}
+	}
+
+	// Add imaginary unit if present
+	if (hasImaginaryUnit === true) {
+		const iNode = imaginaryUnitNode();
+		if (product === null) {
+			product = iNode;
+		} else {
+			product = multiplyNodes(product, iNode);
 		}
 	}
 
@@ -185,20 +207,20 @@ function denormalizeAlgebraicTerm(term: AlgebraicTerm): MathNode {
 
 	if (isOneRational(absRational)) {
 		// Coefficient is 1 or -1
-		if (radicalProduct === null) {
+		if (product === null) {
 			return maybeNegate(numberNode(1n), isNeg);
 		}
-		return maybeNegate(radicalProduct, isNeg);
+		return maybeNegate(product, isNeg);
 	}
 
 	// Non-unit coefficient
 	const coeffNode = rationalToNode(absRational);
 
-	if (radicalProduct === null) {
+	if (product === null) {
 		return maybeNegate(coeffNode, isNeg);
 	}
 
-	return maybeNegate(multiplyNodes(coeffNode, radicalProduct), isNeg);
+	return maybeNegate(multiplyNodes(coeffNode, product), isNeg);
 }
 
 /**

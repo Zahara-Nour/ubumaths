@@ -53,7 +53,7 @@ const colored = mapNode(ast, (node) =>
 
 ## Node Types
 
-MathAST supports 15 distinct node types organized into 4 categories:
+MathAST supports 16 distinct node types organized into 5 categories:
 
 | Category              | Nodes                                           | Purpose                                          |
 | --------------------- | ----------------------------------------------- | ------------------------------------------------ |
@@ -63,6 +63,7 @@ MathAST supports 15 distinct node types organized into 4 categories:
 | **Structural**        | Delimiter, Subscript, Superscript               | Structure and layout (parentheses, superscripts) |
 | **Function**          | Function                                        | Function application with optional power/base    |
 | **Relation**          | Relation                                        | Equations and inequalities (=, <, >, etc.)       |
+| **Complex**           | Complex                                         | Complex numbers with real and imaginary parts    |
 
 ### Literal Nodes
 
@@ -110,6 +111,15 @@ Display styles control how operations are rendered (e.g., `2x` for implicit, `2 
 | Node             | Type         | Purpose                    | Relations                                                                                          |
 | ---------------- | ------------ | -------------------------- | -------------------------------------------------------------------------------------------------- |
 | **RelationNode** | `'relation'` | Equations and inequalities | `'='`, `'<'`, `'>'`, `'<='`, `'>='`, `'!='`, `'≈'`, `'≡'`, `'∈'`, `'⊂'`, `'⟹'`, `'⟺'`, and 10 more |
+
+### Complex Node
+
+| Node            | Type        | Purpose                         | Structure                                           |
+| --------------- | ----------- | ------------------------------- | --------------------------------------------------- |
+| **ComplexNode** | `'complex'` | Complex numbers (a + bi format) | `real: MathNode`, `imaginary: MathNode` (both ASTs) |
+
+Complex numbers are represented structurally with `real` and `imaginary` parts as AST nodes.
+This allows for symbolic complex expressions like `(x + yi)` where `x` and `y` are variables.
 
 ---
 
@@ -171,6 +181,16 @@ parentheses(content: MathNode, metadata?: NodeMetadata): DelimiterNode
 subscript(base: MathNode, subscript: MathNode, metadata?: NodeMetadata): SubscriptNode
 superscript(base: MathNode, superscript: MathNode, metadata?: NodeMetadata): SuperscriptNode
 power(base: MathNode, exponent: MathNode, metadata?: NodeMetadata): SuperscriptNode // Alias for superscript
+```
+
+### Factory Functions - Complex Numbers
+
+```typescript
+// Create complex number (a + bi)
+complex(real: MathNode, imaginary: MathNode, metadata?: NodeMetadata): ComplexNode
+
+// Convenience: create imaginary unit 'i' (equivalent to complex(0, 1))
+imaginaryUnit(metadata?: NodeMetadata): ComplexNode
 ```
 
 ### Factory Functions - Relations
@@ -260,6 +280,9 @@ isSuperscript(node: MathNode): node is SuperscriptNode
 
 // Relations
 isRelation(node: MathNode): node is RelationNode
+
+// Complex
+isComplex(node: MathNode): node is ComplexNode
 ```
 
 ### Type Guards - Utility & Specific
@@ -333,6 +356,25 @@ const logarithm = MathAST.equals(
 	MathAST.log(MathAST.variable('x'), MathAST.number('2')),
 	MathAST.number('3')
 );
+```
+
+#### Complex Number: 3 + 4i
+
+```typescript
+const complexNum = MathAST.complex(MathAST.number('3'), MathAST.number('4'));
+```
+
+#### Imaginary Unit: i
+
+```typescript
+const i = MathAST.imaginaryUnit();
+// or explicitly: MathAST.complex(MathAST.number('0'), MathAST.number('1'))
+```
+
+#### Symbolic Complex: x + yi
+
+```typescript
+const symbolicComplex = MathAST.complex(MathAST.variable('x'), MathAST.variable('y'));
 ```
 
 ### Transforming Nodes

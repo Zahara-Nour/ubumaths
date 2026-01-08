@@ -30,6 +30,11 @@ export const ALGEBRAIC_ONE: AlgebraicCoefficient = {
 	terms: [{ rational: ONE, radicals: [] }]
 };
 
+/** Algebraic coefficient for imaginary unit i */
+export const ALGEBRAIC_IMAGINARY: AlgebraicCoefficient = {
+	terms: [{ rational: ONE, radicals: [], hasImaginaryUnit: true }]
+};
+
 // =============================================================================
 // Constructors
 // =============================================================================
@@ -122,7 +127,7 @@ export function hashRadicals(radicals: readonly SimplifiedRadical[]): string {
 }
 
 /**
- * Combines like terms (terms with same radical signature).
+ * Combines like terms (terms with same radical signature and imaginary flag).
  * Eliminates terms with zero coefficient.
  *
  * @param terms - Array of algebraic terms
@@ -131,19 +136,32 @@ export function hashRadicals(radicals: readonly SimplifiedRadical[]): string {
 function combineLikeTerms(terms: AlgebraicTerm[]): AlgebraicTerm[] {
 	if (terms.length === 0) return [];
 
-	// Group by radical signature
-	const groups = new Map<string, { rational: Rational; radicals: readonly SimplifiedRadical[] }>();
+	// Group by signature (radical + imaginary flag)
+	const groups = new Map<
+		string,
+		{ rational: Rational; radicals: readonly SimplifiedRadical[]; hasImaginaryUnit?: boolean }
+	>();
 
 	for (const term of terms) {
-		const sig = hashRadicals(term.radicals);
+		// Signature includes both radicals and imaginary flag
+		const radicalHash = hashRadicals(term.radicals);
+		const sig = term.hasImaginaryUnit === true ? `${radicalHash}*i` : radicalHash;
 		const existing = groups.get(sig);
 
 		if (existing) {
 			// Add rational coefficients
 			const newRational = addRational(existing.rational, term.rational);
-			groups.set(sig, { rational: newRational, radicals: existing.radicals });
+			groups.set(sig, {
+				rational: newRational,
+				radicals: existing.radicals,
+				...(term.hasImaginaryUnit === true && { hasImaginaryUnit: true })
+			});
 		} else {
-			groups.set(sig, { rational: term.rational, radicals: term.radicals });
+			groups.set(sig, {
+				rational: term.rational,
+				radicals: term.radicals,
+				...(term.hasImaginaryUnit === true && { hasImaginaryUnit: true })
+			});
 		}
 	}
 
@@ -151,7 +169,11 @@ function combineLikeTerms(terms: AlgebraicTerm[]): AlgebraicTerm[] {
 	const result: AlgebraicTerm[] = [];
 	for (const [, value] of groups) {
 		if (!isZeroRational(value.rational)) {
-			result.push({ rational: value.rational, radicals: value.radicals });
+			result.push({
+				rational: value.rational,
+				radicals: value.radicals,
+				...(value.hasImaginaryUnit === true && { hasImaginaryUnit: true })
+			});
 		}
 	}
 
@@ -229,7 +251,8 @@ export function negAlgebraic(a: AlgebraicCoefficient): AlgebraicCoefficient {
 
 	const negatedTerms = a.terms.map((term) => ({
 		rational: negRational(term.rational),
-		radicals: term.radicals
+		radicals: term.radicals,
+		...(term.hasImaginaryUnit === true && { hasImaginaryUnit: true as const })
 	}));
 
 	return { terms: negatedTerms };
@@ -255,11 +278,29 @@ function mulTerms(a: AlgebraicTerm, b: AlgebraicTerm): AlgebraicTerm {
 		return { rational: ZERO, radicals: [] };
 	}
 
+	// Handle imaginary unit multiplication: i × i = -1
+	const aHasI = a.hasImaginaryUnit === true;
+	const bHasI = b.hasImaginaryUnit === true;
+	let resultHasI: boolean;
+
+	if (aHasI && bHasI) {
+		// i × i = -1: multiply coefficient by -1, remove imaginary flag
+		rationalProduct = negRational(rationalProduct);
+		resultHasI = false;
+	} else {
+		// XOR: result has i only if exactly one term has i
+		resultHasI = aHasI || bHasI;
+	}
+
 	// Multiply radical products
 	// Group radicals by index and multiply within same index
 	const allRadicals = [...a.radicals, ...b.radicals];
 
 	if (allRadicals.length === 0) {
+		// Include hasImaginaryUnit only if true (keep objects clean)
+		if (resultHasI) {
+			return { rational: rationalProduct, radicals: [], hasImaginaryUnit: true };
+		}
 		return { rational: rationalProduct, radicals: [] };
 	}
 
@@ -302,6 +343,10 @@ function mulTerms(a: AlgebraicTerm, b: AlgebraicTerm): AlgebraicTerm {
 	// Sort radicals for canonical form
 	const sortedRadicals = sortRadicals(resultRadicals);
 
+	// Include hasImaginaryUnit only if true (keep objects clean)
+	if (resultHasI) {
+		return { rational: rationalProduct, radicals: sortedRadicals, hasImaginaryUnit: true };
+	}
 	return { rational: rationalProduct, radicals: sortedRadicals };
 }
 
@@ -374,7 +419,10 @@ export function isZeroAlgebraic(a: AlgebraicCoefficient): boolean {
 export function isOneAlgebraic(a: AlgebraicCoefficient): boolean {
 	if (a.terms.length !== 1) return false;
 	const term = a.terms[0];
-	return term.radicals.length === 0 && isOneRational(term.rational);
+	// Must have no radicals, no imaginary unit, and rational = 1
+	return (
+		term.radicals.length === 0 && term.hasImaginaryUnit !== true && isOneRational(term.rational)
+	);
 }
 
 /**

@@ -9,7 +9,13 @@
  */
 
 import { evaluate } from './evaluate';
-import type { EvalWithUnitsOptions, EvalResultWithUnit, UnitConversionMode } from './types';
+import type {
+	EvalWithUnitsOptions,
+	EvalResultWithUnit,
+	UnitConversionMode,
+	EvalValue,
+	ComplexValueResult
+} from './types';
 import { DEFAULT_EVAL_WITH_UNITS_OPTIONS } from './types';
 import { analyzeDimensions } from '../dimensional/analyzer';
 import type { DimensionalContext } from '../dimensional/types';
@@ -311,16 +317,32 @@ function transformToTargetUnit(node: MathNode, targetUnit: Unit): MathNode {
 /**
  * Type guard for Rational values.
  */
-function isRational(value: Rational | number): value is Rational {
+function isRational(value: EvalValue): value is Rational {
 	return typeof value === 'object' && 'n' in value && 'd' in value;
 }
 
 /**
- * Extract the numeric value from an EvalResult.
+ * Type guard for ComplexValueResult.
  */
-function getNumericValue(value: Rational | number): number {
+function isComplex(value: EvalValue): value is ComplexValueResult {
+	return typeof value === 'object' && 'real' in value && 'imag' in value;
+}
+
+/**
+ * Extract the numeric value from an EvalResult.
+ * Throws if value is complex with non-zero imaginary part.
+ */
+function getNumericValue(value: EvalValue): number {
 	if (isRational(value)) {
 		return Number(value.n) / Number(value.d);
+	}
+	if (isComplex(value)) {
+		if (value.imag !== 0) {
+			throw new Error(
+				'Cannot convert complex number with non-zero imaginary part to numeric value'
+			);
+		}
+		return value.real;
 	}
 	return value;
 }

@@ -41,6 +41,7 @@ import type {
 	UnitNode,
 	CompositionNode,
 	MatrixNode,
+	ComplexNode,
 	RelationType,
 	GreekLetter,
 	NodeMetadata
@@ -277,6 +278,7 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'unit':
 		case 'composition':
 		case 'matrix':
+		case 'complex':
 			return true;
 
 		default: {
@@ -442,11 +444,26 @@ export class CustomGenerator {
 				this.visitMatrixSpans(node);
 				break;
 
+			case 'complex':
+				this.visitComplexSpans(node);
+				break;
+
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
 			}
 		}
+	}
+
+	/**
+	 * Emits a complex number span.
+	 */
+	private visitComplexSpans(node: ComplexNode): void {
+		// Complex numbers are rendered as real + imaginary*i
+		this.visitWithSpans(node.real);
+		this.emit(' + ', undefined);
+		this.visitWithSpans(node.imaginary);
+		this.emit('i', undefined);
 	}
 
 	/**
@@ -844,6 +861,9 @@ export class CustomGenerator {
 			case 'matrix':
 				content = this.generateMatrix(node);
 				break;
+			case 'complex':
+				content = this.generateComplex(node);
+				break;
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
@@ -855,6 +875,12 @@ export class CustomGenerator {
 
 	private generateNumber(node: NumberNode): string {
 		return node.value;
+	}
+
+	private generateComplex(node: ComplexNode): string {
+		const real = this.generateNode(node.real);
+		const imag = this.generateNode(node.imaginary);
+		return `${real} + ${imag}i`;
 	}
 
 	private generateVariable(node: VariableNode): string {

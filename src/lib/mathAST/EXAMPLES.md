@@ -203,6 +203,48 @@ toLatex(MathAST.symbol('cdot')); // "\cdot"
 toLatex(MathAST.symbol('times')); // "\times"
 ```
 
+## Complex Numbers
+
+```typescript
+// Imaginary unit: i
+const i = MathAST.imaginaryUnit();
+toLatex(i); // "\imaginaryI"
+
+// Complex number: 3 + 4i
+const c = MathAST.complex(MathAST.number('3'), MathAST.number('4'));
+toLatex(c); // "3 + 4\imaginaryI"
+
+// Symbolic complex: x + yi
+const symbolic = MathAST.complex(MathAST.variable('x'), MathAST.variable('y'));
+toLatex(symbolic); // "x + y\imaginaryI"
+
+// Pure imaginary: 5i
+const pureImag = MathAST.complex(MathAST.number('0'), MathAST.number('5'));
+toLatex(pureImag); // "5\imaginaryI"
+```
+
+### Complex Number Evaluation
+
+```typescript
+import { evaluate, complex, number, add, multiply } from '$lib/mathAST';
+
+// Evaluate 3 + 4i
+const c1 = complex(number('3'), number('4'));
+const result1 = evaluate(c1);
+// result1.value = { real: 3, imag: 4 }
+
+// Complex arithmetic: (3+4i) + (1+2i) = 4+6i
+const c2 = complex(number('1'), number('2'));
+const sum = add(c1, c2);
+const result2 = evaluate(sum);
+// result2.value = { real: 4, imag: 6 }
+
+// Complex multiplication: (3+4i) * (1+2i) = -5+10i
+const product = multiply(c1, c2, 'implicit');
+const result3 = evaluate(product);
+// result3.value = { real: -5, imag: 10 }
+```
+
 ## Integration with ASCIIMath Transpiler
 
 ```typescript

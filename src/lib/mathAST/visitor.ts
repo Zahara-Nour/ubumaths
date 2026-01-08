@@ -31,11 +31,13 @@ import type {
 	SuperscriptNode,
 	RelationNode,
 	UnitNode,
-	CompositionNode
+	CompositionNode,
+	ComplexNode
 } from './types';
 
 import {
 	add,
+	complex,
 	compose,
 	delimiter,
 	divide,
@@ -160,6 +162,10 @@ export interface ASTVisitor {
 	// Composition callback
 	enterComposition?(node: CompositionNode, context: VisitorContext): EnterResult;
 	leaveComposition?(node: CompositionNode, context: VisitorContext): void;
+
+	// Complex callback
+	enterComplex?(node: ComplexNode, context: VisitorContext): EnterResult;
+	leaveComplex?(node: ComplexNode, context: VisitorContext): void;
 }
 
 // =============================================================================
@@ -229,6 +235,10 @@ export interface TransformVisitor {
 	// Composition callback
 	enterComposition?(node: CompositionNode, context: VisitorContext): TransformEnterResult;
 	leaveComposition?(node: CompositionNode, context: VisitorContext): TransformLeaveResult;
+
+	// Complex callback
+	enterComplex?(node: ComplexNode, context: VisitorContext): TransformEnterResult;
+	leaveComplex?(node: ComplexNode, context: VisitorContext): TransformLeaveResult;
 }
 
 // =============================================================================
@@ -254,7 +264,8 @@ const TYPE_TO_METHOD_NAME: Record<MathNode['type'], string> = {
 	relation: 'Relation',
 	unit: 'Unit',
 	composition: 'Composition',
-	matrix: 'Matrix'
+	matrix: 'Matrix',
+	complex: 'Complex'
 };
 
 // =============================================================================
@@ -280,6 +291,13 @@ function getChildrenWithPaths(node: MathNode): ChildInfo[] {
 		case 'symbol':
 		case 'hole':
 			return [];
+
+		// Complex has real and imaginary children
+		case 'complex':
+			return [
+				{ child: node.real, pathSegments: ['real'] },
+				{ child: node.imaginary, pathSegments: ['imaginary'] }
+			];
 
 		// Binary operations with left/right
 		case 'addition':
@@ -394,6 +412,14 @@ function reconstructNode(original: MathNode, transformedChildren: Map<string, Ma
 		case 'symbol':
 		case 'hole':
 			return original;
+
+		// Complex number
+		case 'complex':
+			return complex(
+				getChild('real', original.real),
+				getChild('imaginary', original.imaginary),
+				original.metadata
+			);
 
 		// Binary operations
 		case 'addition':

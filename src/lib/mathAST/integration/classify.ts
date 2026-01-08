@@ -98,6 +98,12 @@ export function detectVariable(expr: MathNode): string | null {
 				// These don't contain variables
 				break;
 
+			case 'complex':
+				// Complex nodes have real and imaginary parts
+				collect(node.real);
+				collect(node.imaginary);
+				break;
+
 			default: {
 				const _exhaustive: never = node;
 				return _exhaustive;

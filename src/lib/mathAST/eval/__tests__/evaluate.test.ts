@@ -29,6 +29,7 @@ import {
 	relation
 } from '../../factory';
 import type { Rational } from '../../normal/types';
+import type { EvalValue } from '../types';
 
 // =============================================================================
 // Helper Functions
@@ -37,14 +38,14 @@ import type { Rational } from '../../normal/types';
 /**
  * Helper to check if a value is a Rational
  */
-function isRational(value: Rational | number): value is Rational {
+function isRational(value: EvalValue): value is Rational {
 	return typeof value === 'object' && 'n' in value && 'd' in value;
 }
 
 /**
  * Helper to evaluate LaTeX and get the numeric value
  */
-function evalLatex(latex: string, mode: 'exact' | 'decimal' = 'exact'): Rational | number {
+function evalLatex(latex: string, mode: 'exact' | 'decimal' = 'exact'): EvalValue {
 	const ast = parseLatex(latex);
 	const result = evaluate(ast, { mode });
 	return result.value;

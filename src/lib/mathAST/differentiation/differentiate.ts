@@ -256,6 +256,15 @@ function differentiateNode(
 				'Matrix calculus is not yet implemented'
 			);
 
+		case 'complex':
+			// Complex differentiation: d/dx(a+bi) = da/dx + (db/dx)i
+			// For now, throw error as complex expressions with variables are not common
+			throw new DifferentiationError(
+				'Cannot differentiate complex nodes with variables',
+				'complex',
+				'Complex differentiation is not yet implemented'
+			);
+
 		default: {
 			const _exhaustive: never = node;
 			return _exhaustive;
