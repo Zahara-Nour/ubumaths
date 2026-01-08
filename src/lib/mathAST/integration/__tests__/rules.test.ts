@@ -57,13 +57,17 @@ describe('Integration Helper Functions', () => {
 		it('should create zero constant', () => {
 			const z = zero();
 			expect(z.type).toBe('number');
-			expect(z.value).toBe('0');
+			if (z.type === 'number') {
+				expect(z.value).toBe('0');
+			}
 		});
 
 		it('should create one constant', () => {
 			const o = one();
 			expect(o.type).toBe('number');
-			expect(o.value).toBe('1');
+			if (o.type === 'number') {
+				expect(o.value).toBe('1');
+			}
 		});
 	});
 
@@ -183,7 +187,9 @@ describe('Basic Integration Rules', () => {
 			if (result.type === 'division') {
 				expect(result.numerator.type).toBe('superscript');
 				expect(result.denominator.type).toBe('number');
-				expect(result.denominator.value).toBe('3');
+				if (result.denominator.type === 'number') {
+					expect(result.denominator.value).toBe('3');
+				}
 			}
 		});
 
@@ -202,7 +208,9 @@ describe('Basic Integration Rules', () => {
 			expect(result.type).toBe('division');
 			if (result.type === 'division') {
 				expect(result.numerator.type).toBe('superscript');
-				expect(result.denominator.value).toBe('2');
+				if (result.denominator.type === 'number') {
+					expect(result.denominator.value).toBe('2');
+				}
 			}
 		});
 
@@ -214,7 +222,7 @@ describe('Basic Integration Rules', () => {
 
 		it('should integrate x^(1/2) as (2/3)x^(3/2)', () => {
 			// ∫ sqrt(x) dx = ∫ x^(1/2) dx = x^(3/2) / (3/2)
-			const halfPower = divide(number('1'), number('2'));
+			const halfPower = divide(number('1'), number('2'), 'fraction');
 			const result = powerRule(variable('x'), halfPower, 'x');
 			expect(result.type).toBe('division');
 		});
@@ -227,7 +235,9 @@ describe('Basic Integration Rules', () => {
 			expect(result.type).toBe('multiplication');
 			if (result.type === 'multiplication') {
 				expect(result.left.type).toBe('number');
-				expect(result.left.value).toBe('5');
+				if (result.left.type === 'number') {
+					expect(result.left.value).toBe('5');
+				}
 				expect(result.right.type).toBe('variable');
 			}
 		});
@@ -279,7 +289,9 @@ describe('Basic Integration Rules', () => {
 			expect(result.type).toBe('division');
 			if (result.type === 'division') {
 				expect(result.numerator.type).toBe('function');
-				expect(result.denominator.value).toBe('2');
+				if (result.denominator.type === 'number') {
+					expect(result.denominator.value).toBe('2');
+				}
 			}
 		});
 	});
@@ -369,7 +381,7 @@ describe('Integrand Classification', () => {
 		});
 
 		it('should classify rational function', () => {
-			const expr = divide(number('1'), variable('x'));
+			const expr = divide(number('1'), variable('x'), 'fraction');
 			expect(classifyIntegrand(expr, 'x')).toBe('rational');
 		});
 
@@ -431,7 +443,9 @@ describe('basicIntegrator', () => {
 		});
 
 		it('should handle 1/x', () => {
-			expect(basicIntegrator.canIntegrate(divide(number('1'), variable('x')), 'x')).toBe(true);
+			expect(
+				basicIntegrator.canIntegrate(divide(number('1'), variable('x'), 'fraction'), 'x')
+			).toBe(true);
 		});
 
 		it('should handle exp(x)', () => {
@@ -481,7 +495,7 @@ describe('basicIntegrator', () => {
 
 	describe('integrate() - rational cases', () => {
 		it('should integrate 1/x', () => {
-			const expr = divide(number('1'), variable('x'));
+			const expr = divide(number('1'), variable('x'), 'fraction');
 			const result = basicIntegrator.integrate(expr, 'x', options, recorder, 0);
 			expect(result.status).toBe('exact');
 			expect(result.antiderivative?.type).toBe('function');

@@ -213,6 +213,32 @@ export interface IntegrateStepRecorder {
 		technicalNote?: string
 	): void;
 
+	/**
+	 * Record a step using a known rule (type-safe).
+	 * Uses the default description from descriptions-fr.ts.
+	 */
+	recordStepByRule(
+		rule: string,
+		before: MathNode,
+		after: MathNode,
+		verbosityLevel: IntegrationVerbosity,
+		operand?: MathNode,
+		technicalNote?: string
+	): void;
+
+	/**
+	 * Record a step with a custom rule name.
+	 * Uses a fallback description.
+	 */
+	recordCustomStep(
+		rule: string,
+		before: MathNode,
+		after: MathNode,
+		verbosityLevel: IntegrationVerbosity,
+		operand?: MathNode,
+		technicalNote?: string
+	): void;
+
 	/** Get all recorded steps */
 	getSteps(): readonly IntegrateStep[];
 
