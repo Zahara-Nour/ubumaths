@@ -59,3 +59,36 @@ export {
 	CONSTANT_OF_INTEGRATION_NOTE,
 	LIATE_RULE_DESCRIPTION
 } from './descriptions-fr';
+
+// =============================================================================
+// Rules and Classification
+// =============================================================================
+
+export {
+	zero,
+	one,
+	isZero,
+	isOne,
+	getNumericValue,
+	numericNode,
+	simplifiedAdd,
+	simplifiedMultiply,
+	simplifiedDivide,
+	simplifiedPower,
+	powerRule,
+	constantRule,
+	lnAbsRule,
+	expRule,
+	sinRule,
+	cosRule,
+	tanRule,
+	containsVariable
+} from './rules';
+
+export { classifyIntegrand, detectVariable } from './classify';
+
+// =============================================================================
+// Integrators
+// =============================================================================
+
+export { basicIntegrator } from './integrators/basic';

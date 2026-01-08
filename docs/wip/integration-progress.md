@@ -1,8 +1,8 @@
 # Integration Module - Progress
 
-## Current Status: Phase 1 Complete ✅
+## Current Status: Phase 2 Complete ✅
 
-**Last Updated**: Phase 1 terminée
+**Last Updated**: Phase 2 terminée
 
 ---
 
@@ -59,18 +59,78 @@
 - French descriptions for pedagogical output
 - Type-safe rule descriptions
 
+### Phase 2: Règles d'intégration de base ✅
+
+**Status**: Terminé
+
+**Files Created**:
+
+- `src/lib/mathAST/integration/rules.ts` (~340 lines)
+
+  - Helper functions: zero(), one(), isZero(), isOne(), getNumericValue(), numericNode()
+  - Simplified constructors: simplifiedAdd(), simplifiedMultiply(), simplifiedDivide(), simplifiedPower()
+  - Basic rules: powerRule(), constantRule(), lnAbsRule()
+  - Trig rules: expRule(), sinRule(), cosRule(), tanRule()
+  - containsVariable() utility
+
+- `src/lib/mathAST/integration/classify.ts` (~240 lines)
+
+  - detectVariable() - finds integration variable or throws on multiple
+  - classifyIntegrand() - returns IntegrandType for technique selection
+
+- `src/lib/mathAST/integration/integrators/basic.ts` (~330 lines)
+
+  - basicIntegrator: Integrator with priority 0
+  - Pattern matching helpers for each rule type
+  - canIntegrate() - checks if expression can be integrated by basic rules
+  - integrate() - applies appropriate rule and records steps
+
+- `src/lib/mathAST/integration/integrators/index.ts` (~15 lines)
+
+  - Registry for integrators (basic only for now)
+
+- `src/lib/mathAST/integration/__tests__/rules.test.ts` (~540 lines)
+  - 66 tests covering all helper functions, rules, classification, and integrator
+
+**Tests Coverage**:
+
+- ✅ Helper functions (zero, one, isZero, isOne) - 11 tests
+- ✅ Simplified constructors - 10 tests
+- ✅ Basic integration rules (power, constant, ln, exp, trig) - 15 tests
+- ✅ Classification (detectVariable, classifyIntegrand) - 12 tests
+- ✅ basicIntegrator (canIntegrate, integrate, step recording) - 18 tests
+
+**Decisions**:
+
+- Followed differentiation/rules.ts pattern exactly
+- Used simplified constructors to avoid redundant algebraic steps
+- lnAbsRule returns ln|x| with abs() wrapper for correctness
+- expRule detects coefficient in exponent (e^(ax) → e^(ax)/a)
+- basicIntegrator uses pattern matching helpers for clean code
+- All rules record steps with proper verbosity levels
+
+**Integration Rules Implemented**:
+
+1. ✅ Power rule: ∫ x^n dx = x^(n+1)/(n+1)
+2. ✅ Constant rule: ∫ c dx = cx
+3. ✅ Logarithm: ∫ 1/x dx = ln|x|
+4. ✅ Exponential: ∫ e^x dx = e^x, ∫ e^(ax) dx = e^(ax)/a
+5. ✅ Sine: ∫ sin(x) dx = -cos(x)
+6. ✅ Cosine: ∫ cos(x) dx = sin(x)
+7. ✅ Tangent: ∫ tan(x) dx = -ln|cos(x)|
+
 ---
 
-## Next Phase: Phase 2
+## Next Phase: Phase 3
 
-**Objective**: Rules d'integration de base
+**Objective**: Dispatcher principal et linéarité
 
 **Tasks**:
 
-1. Create `rules.ts` with helper functions and basic rules
-2. Create `integrators/basic.ts` with basicIntegrator
-3. Create `classify.ts` for integrand classification
-4. Write ~50 tests
+1. Create `integrate.ts` with main dispatcher
+2. Implement linearity (sum rule, constant multiple)
+3. Create integrator selector
+4. Write integration tests
 
 ---
 
@@ -82,9 +142,10 @@ None currently.
 
 ## Files Modified
 
-| Phase | Files Created/Modified                                                                                |
-| ----- | ----------------------------------------------------------------------------------------------------- |
-| 1     | integration/types.ts, step-recorder.ts, descriptions-fr.ts, index.ts, **tests**/step-recorder.test.ts |
+| Phase | Files Created/Modified                                                                                                     |
+| ----- | -------------------------------------------------------------------------------------------------------------------------- |
+| 1     | integration/types.ts, step-recorder.ts, descriptions-fr.ts, index.ts, **tests**/step-recorder.test.ts                      |
+| 2     | integration/rules.ts, classify.ts, integrators/basic.ts, integrators/index.ts, index.ts (updated), **tests**/rules.test.ts |
 
 ---
 
@@ -92,4 +153,6 @@ None currently.
 
 | Phase | Tests | Passing |
 | ----- | ----- | ------- |
-| 1     | 33    | 33 ✅   |
+| 1     | 35    | 35 ✅   |
+| 2     | 66    | 66 ✅   |
+| Total | 101   | 101 ✅  |
