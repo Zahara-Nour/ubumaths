@@ -12,9 +12,10 @@ import type { AlgebraicCoefficient } from '$lib/mathAST/normal/types';
 // =============================================================================
 
 /**
- * Special value representing positive or negative infinity
+ * Special value representing positive or negative infinity.
+ * Named InfinityKind to avoid shadowing the global Infinity constant.
  */
-export type Infinity = 'positive_infinity' | 'negative_infinity';
+export type InfinityKind = 'positive_infinity' | 'negative_infinity';
 
 // =============================================================================
 // Endpoint Types
@@ -29,7 +30,7 @@ export type Infinity = 'positive_infinity' | 'negative_infinity';
  */
 export type EndpointValue =
 	| { readonly kind: 'algebraic'; readonly value: AlgebraicCoefficient }
-	| { readonly kind: 'infinity'; readonly value: Infinity };
+	| { readonly kind: 'infinity'; readonly value: InfinityKind };
 
 /**
  * Type of endpoint for an interval bound
