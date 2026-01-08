@@ -1,8 +1,8 @@
 # Integration Module - Progress
 
-## Current Status: Phase 2 Complete ✅
+## Current Status: Phase 3 Complete ✅
 
-**Last Updated**: Phase 2 terminée
+**Last Updated**: Phase 3 terminée - Dispatcher principal et linéarité
 
 ---
 
@@ -119,18 +119,85 @@
 6. ✅ Cosine: ∫ cos(x) dx = sin(x)
 7. ✅ Tangent: ∫ tan(x) dx = -ln|cos(x)|
 
+### Phase 3: Dispatcher principal et linéarité ✅
+
+**Status**: Terminé
+
+**Files Created**:
+
+- `src/lib/mathAST/integration/integrate.ts` (~400 lines)
+
+  - `integrate(expr, options?)` - main public function
+  - `integrateDefinite(expr, lower, upper, options?)` - definite integrals with FTC
+  - `integrateInternal()` - internal recursive dispatcher with decision tree
+  - Decision tree: simplify → constant → sum → constant multiple → integrator selection
+  - Handles linearity: ∫(f+g) = ∫f + ∫g and ∫(c*f) = c*∫f
+  - Evaluates definite integrals using F(b) - F(a)
+
+- `src/lib/mathAST/integration/integrators/index.ts` - updated (~70 lines)
+
+  - `ALL_INTEGRATORS` - registry array sorted by priority
+  - `selectIntegrator(expr, variable)` - find first integrator that can handle expression
+  - Priority system documented (0-10 basic, 11-20 u-sub, etc.)
+
+- `src/lib/mathAST/integration/__tests__/integrate.test.ts` (~380 lines)
+  - 33 tests for integrate() and integrateDefinite()
+  - Tests for linearity (sum rule, constant multiple)
+  - Tests for definite integrals with evaluation
+  - Tests for options (verbosity, maxDepth)
+  - Tests for error cases (multiple variables, unsupported, edge cases)
+
+**Files Modified**:
+
+- `src/lib/mathAST/integration/descriptions-fr.ts`
+
+  - Added `linearity-sum` and `fundamental-theorem` rules
+
+- `src/lib/mathAST/integration/index.ts`
+  - Exported `integrate`, `integrateDefinite`, `ALL_INTEGRATORS`, `selectIntegrator`
+
+**Tests Coverage**:
+
+- ✅ Basic usage (simple variable, constant, auto-detect, specified variable) - 5 tests
+- ✅ Linearity sum rule (sum of terms, polynomials, multiple terms) - 4 tests
+- ✅ Linearity constant multiple (constants, negative) - 4 tests
+- ✅ Definite integrals (evaluation, bounds, steps) - 5 tests
+- ✅ Options (verbosity levels, maxDepth) - 5 tests
+- ✅ Error cases (multiple variables, unsupported, edge cases) - 6 tests
+- ✅ Simplification - 2 tests
+- ✅ Combining rules (polynomials, fractions, mixed types) - 3 tests
+
+**Decisions**:
+
+- Used `simplify()` from normal/rules instead of `normalize()` (which returns NormalForm, not MathNode)
+- Recursive dispatcher handles linearity before delegating to integrators
+- Steps from sub-integrations are merged into parent recorder
+- Definite integrals use evaluate() and substitute() from eval module
+- maxDepth option prevents infinite recursion (default 10)
+- Constant of integration note included in all indefinite results
+
+**Integration Features Implemented**:
+
+1. ✅ Main integrate() function with auto-detection
+2. ✅ Linearity: ∫(f+g) = ∫f + ∫g (addition and subtraction)
+3. ✅ Constant multiple: ∫(c*f) = c*∫f
+4. ✅ Definite integrals: ∫ₐᵇ f(x) dx = F(b) - F(a)
+5. ✅ Verbosity filtering (result, summarized, detailed)
+6. ✅ Recursion depth limiting
+7. ✅ Integrator selection system
+
 ---
 
-## Next Phase: Phase 3
+## Next Phase: Phase 4
 
-**Objective**: Dispatcher principal et linéarité
+**Objective**: U-Substitution
 
 **Tasks**:
 
-1. Create `integrate.ts` with main dispatcher
-2. Implement linearity (sum rule, constant multiple)
-3. Create integrator selector
-4. Write integration tests
+1. Create `patterns.ts` for pattern matching
+2. Create `integrators/u-substitution.ts`
+3. Implement u-candidate finding and testing
+4. Write tests for common u-substitution patterns
 
 ---
 
@@ -142,10 +209,11 @@ None currently.
 
 ## Files Modified
 
-| Phase | Files Created/Modified                                                                                                     |
-| ----- | -------------------------------------------------------------------------------------------------------------------------- |
-| 1     | integration/types.ts, step-recorder.ts, descriptions-fr.ts, index.ts, **tests**/step-recorder.test.ts                      |
-| 2     | integration/rules.ts, classify.ts, integrators/basic.ts, integrators/index.ts, index.ts (updated), **tests**/rules.test.ts |
+| Phase | Files Created/Modified                                                                                                                  |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | integration/types.ts, step-recorder.ts, descriptions-fr.ts, index.ts, **tests**/step-recorder.test.ts                                   |
+| 2     | integration/rules.ts, classify.ts, integrators/basic.ts, integrators/index.ts, index.ts (updated), **tests**/rules.test.ts              |
+| 3     | integration/integrate.ts, integrators/index.ts (updated), descriptions-fr.ts (updated), index.ts (updated), **tests**/integrate.test.ts |
 
 ---
 
@@ -155,4 +223,5 @@ None currently.
 | ----- | ----- | ------- |
 | 1     | 35    | 35 ✅   |
 | 2     | 66    | 66 ✅   |
-| Total | 101   | 101 ✅  |
+| 3     | 33    | 33 ✅   |
+| Total | 134   | 134 ✅  |

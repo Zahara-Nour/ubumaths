@@ -92,3 +92,10 @@ export { classifyIntegrand, detectVariable } from './classify';
 // =============================================================================
 
 export { basicIntegrator } from './integrators/basic';
+export { ALL_INTEGRATORS, selectIntegrator } from './integrators';
+
+// =============================================================================
+// Main Functions
+// =============================================================================
+
+export { integrate, integrateDefinite } from './integrate';
