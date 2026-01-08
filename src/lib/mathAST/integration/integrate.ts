@@ -24,6 +24,7 @@ import { isAddition, isSubtraction, isMultiplication, isNumber } from '../guards
 import { CONSTANT_OF_INTEGRATION_NOTE } from './descriptions-fr';
 import { evaluate } from '../eval/evaluate';
 import { substitute } from '../eval/substitute';
+import { numericIntegrate } from './numeric';
 
 // =============================================================================
 // Helper Functions
@@ -486,12 +487,68 @@ export function integrateDefinite(
 	upper: MathNode,
 	options?: IntegrateOptions
 ): DefiniteIntegrateResult {
+	// Merge options with defaults
+	const opts = {
+		...DEFAULT_INTEGRATE_OPTIONS,
+		...options
+	};
+
 	// First, find the indefinite integral
 	const indefiniteResult = integrate(expr, options);
 
 	if (indefiniteResult.status === 'unsupported' || !indefiniteResult.antiderivative) {
-		// If symbolic integration failed, we would use numeric integration here
-		// For now, return unsupported
+		// If symbolic integration failed and numeric fallback is enabled, try numeric integration
+		if (opts.allowNumeric && isNumber(lower) && isNumber(upper)) {
+			const variable = indefiniteResult.variable;
+
+			try {
+				const numericResult = numericIntegrate(
+					expr,
+					variable,
+					parseFloat(lower.value),
+					parseFloat(upper.value),
+					{
+						tolerance: 1e-6,
+						maxDepth: 15,
+						method: 'adaptive-simpson'
+					}
+				);
+
+				const recorder = createStepRecorder();
+				recorder.recordStep(
+					'numeric-simpson',
+					`Approximation numérique par la méthode de Simpson adaptative`,
+					expr,
+					number(numericResult.value.toString()),
+					'summarized',
+					undefined,
+					`Erreur estimée: ${numericResult.error.toExponential(2)}`
+				);
+
+				return {
+					...indefiniteResult,
+					status: 'approximate',
+					technique: 'numeric',
+					lowerBound: lower,
+					upperBound: upper,
+					value: number(numericResult.value.toString()),
+					approximate: numericResult.value,
+					steps: recorder.getStepsFiltered(opts.verbosity)
+				};
+			} catch (error) {
+				// Numeric integration also failed
+				return {
+					...indefiniteResult,
+					lowerBound: lower,
+					upperBound: upper,
+					value: null,
+					approximate: undefined,
+					error: `Impossible d'intégrer symboliquement ou numériquement: ${error instanceof Error ? error.message : String(error)}`
+				};
+			}
+		}
+
+		// Numeric fallback disabled or bounds are not numeric
 		return {
 			...indefiniteResult,
 			lowerBound: lower,

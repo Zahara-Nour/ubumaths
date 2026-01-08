@@ -591,9 +591,135 @@
 
 ---
 
-## Next Phase: Phase 8
+### Phase 8: Numeric Integration (Simpson's Rule) ✅
 
-**Objective**: Numeric Fallback (Simpson's Rule)
+**Status**: Complete
+
+**Files Created**:
+
+- `src/lib/mathAST/integration/numeric.ts` (~320 lines)
+
+  - `simpson(f, a, b, n)` - Classic Simpson's rule
+    - Exact for polynomials of degree ≤ 3
+    - Formula: (h/3)[f(x₀) + 4f(x₁) + 2f(x₂) + ... + f(xₙ)]
+    - Requires even number of subintervals
+  - `adaptiveSimpson(f, a, b, tolerance, maxDepth)` - Adaptive version
+    - Recursively subdivides until error < tolerance
+    - Error estimate: |S(a,m) + S(m,b) - S(a,b)| / 15
+    - Uses Richardson extrapolation for improved accuracy
+  - `numericIntegrate(expr, variable, a, b, options)` - MathNode wrapper
+    - Converts expression to function using evaluate()
+    - Returns { value, error, method }
+    - Supports tolerance, maxDepth, method, intervals options
+
+- `src/lib/mathAST/integration/__tests__/numeric.test.ts` (~340 lines)
+  - 34 tests covering all functionality
+  - Basic Simpson tests (polynomials, trig, exp, constants)
+  - Adaptive Simpson tests (convergence, oscillatory, difficult functions)
+  - MathNode wrapper tests (expressions, options, edge cases)
+  - Comparison with exact results
+
+**Files Modified**:
+
+- `src/lib/mathAST/integration/integrate.ts`
+
+  - Added import of numericIntegrate
+  - Updated integrateDefinite() to use numeric fallback
+  - When symbolic integration fails:
+    - If allowNumeric=true and bounds are numeric, tries adaptive Simpson
+    - Returns status='approximate', technique='numeric'
+    - Includes error estimate in technical note
+  - Records pedagogical step describing numeric approximation
+
+- `src/lib/mathAST/integration/index.ts`
+
+  - Exported NumericResult, NumericIntegrateOptions types
+  - Exported simpson, adaptiveSimpson, numericIntegrate functions
+
+- `src/lib/mathAST/integration/__tests__/integrate.test.ts`
+  - Added 4 tests for numeric fallback feature
+  - Tests e^(-x²) Gaussian integral (no elementary antiderivative)
+  - Tests allowNumeric option
+  - Tests symbolic bounds (should not use numeric)
+  - Tests error estimate in steps
+
+**Tests Coverage (34 tests, all passing)**:
+
+- ✅ Basic Simpson's rule - 8/8 tests
+  - Exact for polynomials ≤ degree 3
+  - sin(x), e^x, constants
+  - Negative bounds, small intervals
+  - Requires even n
+- ✅ Adaptive Simpson - 6/6 tests
+  - Convergence to tolerance
+  - Oscillatory functions
+  - Difficult/near-singular functions
+  - MaxDepth limit respected
+  - More accurate than basic Simpson
+- ✅ numericIntegrate wrapper - 10/10 tests
+  - MathNode expressions (x², sin, exp, polynomials)
+  - Division (1/x)
+  - Expressions with constants
+  - Error estimates
+  - Custom tolerance and maxDepth
+  - Basic Simpson option
+- ✅ Edge cases - 8/8 tests
+  - Reversed bounds (a > b)
+  - Zero width (a = b)
+  - NaN and Infinity detection
+  - Large intervals
+  - sqrt expressions
+  - Invalid variables
+  - Multiple operations
+- ✅ Comparison with exact results - 2/2 tests
+  - Polynomial integration matches exact
+  - Transcendental integrals (e^(-x²))
+
+**Integration with integrateDefinite()**:
+
+- When symbolic integration returns 'unsupported':
+  - Checks allowNumeric option (default: true)
+  - Checks if bounds are numeric (isNumber)
+  - Calls numericIntegrate with adaptive-simpson method
+  - Returns status='approximate', technique='numeric'
+  - Includes approximate value and error estimate
+- Falls back gracefully if:
+  - allowNumeric is false
+  - Bounds are symbolic (contain variables)
+  - Numeric integration throws error
+
+**Decisions**:
+
+- Simpson's rule exact for polynomials ≤ 3 (standard property)
+- Adaptive Simpson uses Richardson extrapolation (delta/15 correction)
+- Error estimate for basic Simpson: compare with half intervals
+- Error estimate for adaptive: use tolerance (conservative)
+- Default tolerance: 1e-6, maxDepth: 15
+- Used evaluate() in decimal mode for numeric conversion
+- Validated that expression contains only integration variable
+
+**Integration Patterns Supported**:
+
+1. ✅ Polynomials (exact with basic Simpson)
+2. ✅ Trigonometric functions (sin, cos, etc.)
+3. ✅ Exponential functions (e^x, e^(-x²))
+4. ✅ Rational functions (1/x, 1/(1+x²))
+5. ✅ Radicals (√x with singularity handling)
+6. ✅ Composite expressions (sums, products)
+7. ✅ Any expression without elementary antiderivative
+
+**Known Limitations**:
+
+- Requires numeric bounds (cannot integrate symbolically with numeric fallback)
+- Accuracy depends on function behavior and tolerance
+- Very oscillatory functions may need high maxDepth
+- Improper integrals with singularities at bounds need offset
+
+---
+
+## Next Phase: Phase 9
+
+**Objective**: CLI and exports
 
 ---
 
@@ -614,6 +740,7 @@ None currently.
 | 5     | integrators/parts.ts, integrators/index.ts (updated), **tests**/parts.test.ts                                                                |
 | 6     | integrators/partial-fractions.ts, integrators/index.ts (updated), **tests**/partial-fractions.test.ts                                        |
 | 7     | integrators/trig-substitution.ts (already existed), **tests**/trig-substitution.test.ts (import path fixed)                                  |
+| 8     | integration/numeric.ts, integrate.ts (updated), index.ts (updated), **tests**/numeric.test.ts, **tests**/integrate.test.ts (updated)         |
 
 ---
 
@@ -623,9 +750,10 @@ None currently.
 | ----- | ------------- | -------------------- |
 | 1     | 35            | 35 ✅                |
 | 2     | 66            | 66 ✅                |
-| 3     | 33            | 33 ✅                |
+| 3     | 37 (+4)       | 37 ✅                |
 | 4     | 33 (22+11 sk) | 22 ✅ (11 skipped)   |
 | 5     | 44            | 2 ✅ (42 failing)    |
 | 6     | 37            | 12 ✅ (25 skeleton)  |
 | 7     | 35            | 31 ✅ (4 need basic) |
-| Total | 283           | 201 ✅ (82 TODOs)    |
+| 8     | 34            | 34 ✅                |
+| Total | 321           | 239 ✅ (82 TODOs)    |

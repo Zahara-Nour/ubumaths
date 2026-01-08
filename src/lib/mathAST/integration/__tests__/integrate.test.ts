@@ -8,7 +8,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { integrate, integrateDefinite } from '../integrate';
-import { number, variable, add, multiply, power, divide } from '../../factory';
+import { number, variable, add, multiply, power, divide, exp } from '../../factory';
 import { parseLatex } from '../../parser';
 
 // =============================================================================
@@ -339,5 +339,56 @@ describe('integrate() - combining multiple rules', () => {
 
 		expect(result.status).toBe('exact');
 		expect(result.antiderivative).toBeTruthy();
+	});
+});
+
+// =============================================================================
+// Numeric Fallback (Phase 8)
+// =============================================================================
+
+describe('integrateDefinite() - numeric fallback', () => {
+	it('should use numeric integration when symbolic fails', () => {
+		// Create an expression that symbolic integration cannot handle
+		// e^(-x²) is a Gaussian integral with no elementary antiderivative
+		const expr = exp(multiply(number('-1'), power(variable('x'), number('2'))));
+		const result = integrateDefinite(expr, number('0'), number('1'));
+
+		expect(result.status).toBe('approximate');
+		expect(result.technique).toBe('numeric');
+		expect(result.approximate).toBeDefined();
+		// Reference value ≈ 0.746824
+		expect(result.approximate!).toBeCloseTo(0.746824, 4);
+		expect(result.value).toBeTruthy();
+	});
+
+	it('should respect allowNumeric: false option', () => {
+		const expr = exp(multiply(number('-1'), power(variable('x'), number('2'))));
+		const result = integrateDefinite(expr, number('0'), number('1'), { allowNumeric: false });
+
+		expect(result.status).toBe('unsupported');
+		expect(result.approximate).toBeUndefined();
+		expect(result.value).toBeNull();
+	});
+
+	it('should not use numeric fallback for symbolic bounds', () => {
+		// Even if symbolic integration fails, can't use numeric with symbolic bounds
+		const expr = exp(multiply(number('-1'), power(variable('x'), number('2'))));
+		const result = integrateDefinite(expr, number('0'), variable('a'));
+
+		expect(result.status).toBe('unsupported');
+		expect(result.approximate).toBeUndefined();
+	});
+
+	it('should include numeric error estimate in steps', () => {
+		const expr = exp(multiply(number('-1'), power(variable('x'), number('2'))));
+		const result = integrateDefinite(expr, number('0'), number('1'), { verbosity: 'detailed' });
+
+		expect(result.status).toBe('approximate');
+		expect(result.steps.length).toBeGreaterThan(0);
+
+		// Should have a step describing the numeric approximation
+		const numericStep = result.steps.find((step) => step.rule === 'numeric-simpson');
+		expect(numericStep).toBeDefined();
+		expect(numericStep?.technicalNote).toContain('Erreur estimée');
 	});
 });
