@@ -686,15 +686,26 @@ export class LatexGenerator {
 
 	/**
 	 * Emits spans for a complex number node.
-	 * Renders as: a + b\imaginaryI (with special cases for 0, 1)
+	 * Renders as: a + b\imaginaryI (with special cases for 0, 1, negative)
 	 */
 	private visitComplexSpans(node: ComplexNode): void {
 		const isZero = (n: MathNode) => n.type === 'number' && n.value === '0';
 		const isOne = (n: MathNode) => n.type === 'number' && n.value === '1';
+		const isNegOne = (n: MathNode) => n.type === 'number' && n.value === '-1';
+		const isNegative = (n: MathNode) =>
+			n.type === 'number' && n.value.startsWith('-') && n.value !== '0';
+		const absValue = (n: MathNode): MathNode => {
+			if (n.type === 'number' && n.value.startsWith('-')) {
+				return { ...n, value: n.value.slice(1) };
+			}
+			return n;
+		};
 
 		const realIsZero = isZero(node.real);
 		const imagIsZero = isZero(node.imaginary);
 		const imagIsOne = isOne(node.imaginary);
+		const imagIsNegOne = isNegOne(node.imaginary);
+		const imagIsNegative = isNegative(node.imaginary);
 
 		if (realIsZero && imagIsZero) {
 			// 0 + 0i = 0
@@ -702,8 +713,11 @@ export class LatexGenerator {
 		} else if (realIsZero && imagIsOne) {
 			// 0 + 1i = i
 			this.emit('\\imaginaryI', node.metadata);
+		} else if (realIsZero && imagIsNegOne) {
+			// 0 + (-1)i = -i
+			this.emit('-\\imaginaryI', node.metadata);
 		} else if (realIsZero) {
-			// 0 + bi = bi
+			// 0 + bi = bi (handles negative: 0 + (-4)i = -4i)
 			this.visitWithSpans(node.imaginary);
 			this.emit('\\imaginaryI', node.metadata);
 		} else if (imagIsZero) {
@@ -713,6 +727,17 @@ export class LatexGenerator {
 			// a + 1i = a + i
 			this.visitWithSpans(node.real);
 			this.emit(' + ', node.metadata);
+			this.emit('\\imaginaryI', node.metadata);
+		} else if (imagIsNegOne) {
+			// a + (-1)i = a - i
+			this.visitWithSpans(node.real);
+			this.emit(' - ', node.metadata);
+			this.emit('\\imaginaryI', node.metadata);
+		} else if (imagIsNegative) {
+			// a + (-b)i = a - bi
+			this.visitWithSpans(node.real);
+			this.emit(' - ', node.metadata);
+			this.visitWithSpans(absValue(node.imaginary));
 			this.emit('\\imaginaryI', node.metadata);
 		} else {
 			// a + bi
@@ -1106,10 +1131,21 @@ export class LatexGenerator {
 	private generateComplex(node: ComplexNode): string {
 		const isZero = (n: MathNode) => n.type === 'number' && n.value === '0';
 		const isOne = (n: MathNode) => n.type === 'number' && n.value === '1';
+		const isNegOne = (n: MathNode) => n.type === 'number' && n.value === '-1';
+		const isNegative = (n: MathNode) =>
+			n.type === 'number' && n.value.startsWith('-') && n.value !== '0';
+		const absValue = (n: MathNode): string => {
+			if (n.type === 'number' && n.value.startsWith('-')) {
+				return n.value.slice(1);
+			}
+			return this.generateNode(n);
+		};
 
 		const realIsZero = isZero(node.real);
 		const imagIsZero = isZero(node.imaginary);
 		const imagIsOne = isOne(node.imaginary);
+		const imagIsNegOne = isNegOne(node.imaginary);
+		const imagIsNegative = isNegative(node.imaginary);
 
 		if (realIsZero && imagIsZero) {
 			// 0 + 0i = 0
@@ -1117,8 +1153,11 @@ export class LatexGenerator {
 		} else if (realIsZero && imagIsOne) {
 			// 0 + 1i = i
 			return '\\imaginaryI';
+		} else if (realIsZero && imagIsNegOne) {
+			// 0 + (-1)i = -i
+			return '-\\imaginaryI';
 		} else if (realIsZero) {
-			// 0 + bi = bi
+			// 0 + bi = bi (handles negative: 0 + (-4)i = -4i)
 			return `${this.generateNode(node.imaginary)}\\imaginaryI`;
 		} else if (imagIsZero) {
 			// a + 0i = a
@@ -1126,6 +1165,12 @@ export class LatexGenerator {
 		} else if (imagIsOne) {
 			// a + 1i = a + i
 			return `${this.generateNode(node.real)} + \\imaginaryI`;
+		} else if (imagIsNegOne) {
+			// a + (-1)i = a - i
+			return `${this.generateNode(node.real)} - \\imaginaryI`;
+		} else if (imagIsNegative) {
+			// a + (-b)i = a - bi
+			return `${this.generateNode(node.real)} - ${absValue(node.imaginary)}\\imaginaryI`;
 		} else {
 			// a + bi
 			return `${this.generateNode(node.real)} + ${this.generateNode(node.imaginary)}\\imaginaryI`;
