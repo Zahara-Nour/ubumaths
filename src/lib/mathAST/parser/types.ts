@@ -567,7 +567,11 @@ export const FUNCTION_COMMANDS: ReadonlySet<string> = new Set<string>([
 	'Re',
 	'Im',
 	'cis',
-	'frompolar'
+	'frompolar',
+	// Nth roots
+	'rootofunity',
+	'nthroot',
+	'principalroot'
 ]);
 
 /**

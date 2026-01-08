@@ -785,6 +785,103 @@ const SUPPORTED_FUNCTIONS: Record<
 		const r = toNumber(args[0]);
 		const theta = toNumber(args[1]);
 		return simplifyComplex(complexValue(r * Math.cos(theta), r * Math.sin(theta)));
+	},
+
+	// ==========================================================================
+	// Nth Roots Functions
+	// ==========================================================================
+
+	/**
+	 * Returns the k-th nth root of unity: e^{2πik/n}
+	 * rootofunity(n, k) = cos(2πk/n) + i·sin(2πk/n)
+	 *
+	 * k can be any integer (wraps around via modulo n)
+	 */
+	rootofunity: (args) => {
+		if (args.length !== 2) throw new Error('rootofunity requires exactly 2 arguments (n, k)');
+		const n = toNumber(args[0]);
+		const k = toNumber(args[1]);
+
+		// Validate n is positive integer
+		if (!Number.isInteger(n) || n <= 0) {
+			throw new Error('rootofunity: n must be a positive integer');
+		}
+
+		// k can be any integer, we use modulo for the angle calculation
+		// This allows wrapping: k=n is same as k=0
+		const theta = (2 * Math.PI * k) / n;
+		return simplifyComplex(complexValue(Math.cos(theta), Math.sin(theta)));
+	},
+
+	/**
+	 * Returns the k-th nth root of a complex number z.
+	 * nthroot(z, n, k) = |z|^{1/n} · e^{i(arg(z) + 2πk)/n}
+	 *
+	 * @param z - Complex number to take root of
+	 * @param n - Positive integer (root degree)
+	 * @param k - Integer 0 ≤ k < n (which root to return)
+	 */
+	nthroot: (args) => {
+		if (args.length !== 3) throw new Error('nthroot requires exactly 3 arguments (z, n, k)');
+		const z = toComplexValue(args[0]);
+		const n = toNumber(args[1]);
+		const k = toNumber(args[2]);
+
+		// Validate n is positive integer
+		if (!Number.isInteger(n) || n <= 0) {
+			throw new Error('nthroot: n must be a positive integer');
+		}
+
+		// Validate k is integer in range [0, n-1]
+		if (!Number.isInteger(k)) {
+			throw new Error('nthroot: k must be an integer');
+		}
+		if (k < 0 || k >= n) {
+			throw new Error(`nthroot: k must be in range [0, ${n - 1}]`);
+		}
+
+		// Special case: z = 0
+		const modulus = Math.sqrt(z.real * z.real + z.imag * z.imag);
+		if (modulus === 0) {
+			return complexValue(0, 0);
+		}
+
+		// nth root formula: z^{1/n}_k = |z|^{1/n} · e^{i(arg(z) + 2πk)/n}
+		const rootModulus = Math.pow(modulus, 1 / n);
+		const theta = (Math.atan2(z.imag, z.real) + 2 * Math.PI * k) / n;
+
+		return simplifyComplex(
+			complexValue(rootModulus * Math.cos(theta), rootModulus * Math.sin(theta))
+		);
+	},
+
+	/**
+	 * Returns the principal (k=0) nth root of a complex number.
+	 * principalroot(z, n) = nthroot(z, n, 0)
+	 */
+	principalroot: (args) => {
+		if (args.length !== 2) throw new Error('principalroot requires exactly 2 arguments (z, n)');
+		const z = toComplexValue(args[0]);
+		const n = toNumber(args[1]);
+
+		// Validate n is positive integer
+		if (!Number.isInteger(n) || n <= 0) {
+			throw new Error('principalroot: n must be a positive integer');
+		}
+
+		// Special case: z = 0
+		const modulus = Math.sqrt(z.real * z.real + z.imag * z.imag);
+		if (modulus === 0) {
+			return complexValue(0, 0);
+		}
+
+		// Principal root (k=0): z^{1/n}_0 = |z|^{1/n} · e^{i·arg(z)/n}
+		const rootModulus = Math.pow(modulus, 1 / n);
+		const theta = Math.atan2(z.imag, z.real) / n;
+
+		return simplifyComplex(
+			complexValue(rootModulus * Math.cos(theta), rootModulus * Math.sin(theta))
+		);
 	}
 };
 
