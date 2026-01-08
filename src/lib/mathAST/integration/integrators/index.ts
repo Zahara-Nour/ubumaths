@@ -9,11 +9,11 @@
 import type { MathNode } from '../../types';
 import type { Integrator } from '../types';
 import { basicIntegrator } from './basic';
+import { uSubstitutionIntegrator } from './u-substitution';
+import { partsIntegrator } from './parts';
+import { partialFractionsIntegrator } from './partial-fractions';
 
-// TODO Phase 4+: Add other integrators as they are implemented
-// import { uSubstitutionIntegrator } from './u-substitution';
-// import { partsIntegrator } from './parts';
-// import { partialFractionsIntegrator } from './partial-fractions';
+// TODO Phase 7+: Add other integrators as they are implemented
 // import { trigSubstitutionIntegrator } from './trig-substitution';
 // import { numericIntegrator } from './numeric';
 
@@ -36,11 +36,11 @@ import { basicIntegrator } from './basic';
  * Higher priority integrators are tried last (more general/fallback).
  */
 export const ALL_INTEGRATORS: readonly Integrator[] = [
-	basicIntegrator
-	// TODO Phase 4+: Add other integrators here in priority order
-	// uSubstitutionIntegrator,     // priority 10
-	// partsIntegrator,              // priority 20
-	// partialFractionsIntegrator,   // priority 30
+	basicIntegrator, // priority 0
+	uSubstitutionIntegrator, // priority 10
+	partsIntegrator, // priority 20
+	partialFractionsIntegrator // priority 30
+	// TODO Phase 7+: Add other integrators here in priority order
 	// trigSubstitutionIntegrator,   // priority 40
 	// numericIntegrator             // priority 100
 ] as const;
@@ -85,3 +85,6 @@ export function selectIntegrator(expr: MathNode, variable: string): Integrator |
 // =============================================================================
 
 export { basicIntegrator } from './basic';
+export { uSubstitutionIntegrator } from './u-substitution';
+export { partsIntegrator } from './parts';
+export { partialFractionsIntegrator } from './partial-fractions';
