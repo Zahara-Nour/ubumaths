@@ -569,6 +569,46 @@ simplifyExp(parseLatex('e^0')); // → 1
 simplifyExp(parseLatex('\\exp(0)')); // → 1
 ```
 
+### Inverse Function Rules
+
+The normalizer recognizes exp and ln as inverse functions:
+
+```typescript
+// exp(ln(x)) = x
+normalize(parseLatex('\\exp(\\ln(x))')); // → x
+normalize(parseLatex('\\exp(\\ln(x+1))')); // → x+1
+normalize(parseLatex('\\exp(\\ln(x^2))')); // → x²
+
+// ln(exp(x)) = x
+normalize(parseLatex('\\ln(\\exp(x))')); // → x
+normalize(parseLatex('\\ln(\\exp(2))')); // → 2
+```
+
+### Logarithm Expansion Rules
+
+Logarithms are expanded into simpler forms during normalization:
+
+```typescript
+// ln(x^n) = n·ln(x)
+normalize(parseLatex('\\ln(x^2)')); // → 2·ln(x)
+normalize(parseLatex('\\ln(x^3)')); // → 3·ln(x)
+
+// ln(x·y) = ln(x) + ln(y)
+normalize(parseLatex('\\ln(xy)')); // → ln(x) + ln(y)
+normalize(parseLatex('\\ln(abc)')); // → ln(a) + ln(b) + ln(c)
+
+// ln(x/y) = ln(x) - ln(y)
+normalize(parseLatex('\\frac{\\ln(x)}{\\ln(y)}')); // unchanged (not a quotient inside ln)
+normalize(parseLatex('\\ln(\\frac{x}{y})')); // → ln(x) - ln(y)
+
+// ln(n) for integers → prime factorization
+normalize(parseLatex('\\ln(8)')); // → 3·ln(2)
+normalize(parseLatex('\\ln(12)')); // → 2·ln(2) + ln(3)
+
+// ln(n/d) for rationals
+normalize(parseLatex('\\ln(\\frac{2}{3})')); // → ln(2) - ln(3)
+```
+
 ### Exponential of Linear Combinations of Logarithms
 
 The normalizer detects linear combinations of logarithms inside `exp` and converts them to products of powers:
