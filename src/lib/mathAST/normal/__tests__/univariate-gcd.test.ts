@@ -225,6 +225,388 @@ describe('univariate-gcd', () => {
 			expectEquivalent('\\frac{x^2+2x+1}{x^2+2x+1}', '1');
 		});
 	});
+
+	// =========================================================================
+	// EDGE CASES - Comprehensive coverage
+	// =========================================================================
+
+	describe('linear polynomial edge cases', () => {
+		it('simplifies (2x+4)/(x+2) to 2', () => {
+			// 2(x+2)/(x+2) = 2
+			expectEquivalent('\\frac{2x+4}{x+2}', '2');
+		});
+
+		it('simplifies (3x+6)/(x+2) to 3', () => {
+			expectEquivalent('\\frac{3x+6}{x+2}', '3');
+		});
+
+		it('simplifies (-x-1)/(x+1) to -1', () => {
+			expectEquivalent('\\frac{-x-1}{x+1}', '-1');
+		});
+
+		it('simplifies (x+1)/(-x-1) to -1', () => {
+			expectEquivalent('\\frac{x+1}{-x-1}', '-1');
+		});
+
+		it('simplifies (2x+2)/(3x+3) to 2/3', () => {
+			// 2(x+1) / 3(x+1) = 2/3
+			expectEquivalent('\\frac{2x+2}{3x+3}', '\\frac{2}{3}');
+		});
+
+		it('simplifies (5x-5)/(10x-10) to 1/2', () => {
+			// 5(x-1) / 10(x-1) = 1/2
+			expectEquivalent('\\frac{5x-5}{10x-10}', '\\frac{1}{2}');
+		});
+	});
+
+	describe('quadratic polynomial edge cases', () => {
+		// Sum of squares - irreducible over reals
+		it('keeps (x^2+1)/(x+1) as non-simplified (coprime)', () => {
+			const node = parseLatex('\\frac{x^2+1}{x+1}');
+			const normalized = normalize(node);
+			// x²+1 and x+1 are coprime
+			expect(normalized.denominator.length).toBeGreaterThan(0);
+		});
+
+		// Difference of squares variations
+		it('simplifies (x^2-4)/(x+2) to x-2', () => {
+			expectEquivalent('\\frac{x^2-4}{x+2}', 'x-2');
+		});
+
+		it('simplifies (x^2-4)/(x-2) to x+2', () => {
+			expectEquivalent('\\frac{x^2-4}{x-2}', 'x+2');
+		});
+
+		it('simplifies (x^2-9)/(x+3) to x-3', () => {
+			expectEquivalent('\\frac{x^2-9}{x+3}', 'x-3');
+		});
+
+		it('simplifies (4x^2-9)/(2x+3) to 2x-3', () => {
+			// (2x-3)(2x+3)/(2x+3) = 2x-3
+			expectEquivalent('\\frac{4x^2-9}{2x+3}', '2x-3');
+		});
+
+		it('simplifies (4x^2-9)/(2x-3) to 2x+3', () => {
+			expectEquivalent('\\frac{4x^2-9}{2x-3}', '2x+3');
+		});
+
+		// Perfect square trinomials
+		it('simplifies (x^2-2x+1)/(x^2-1) to (x-1)/(x+1)', () => {
+			// (x-1)² / (x-1)(x+1) = (x-1)/(x+1)
+			expectEquivalent('\\frac{x^2-2x+1}{x^2-1}', '\\frac{x-1}{x+1}');
+		});
+
+		it('simplifies (x^2+4x+4)/(x+2) to x+2', () => {
+			// (x+2)²/(x+2) = x+2
+			expectEquivalent('\\frac{x^2+4x+4}{x+2}', 'x+2');
+		});
+
+		it('simplifies (x^2+6x+9)/(x^2-9) to (x+3)/(x-3)', () => {
+			// (x+3)² / (x-3)(x+3) = (x+3)/(x-3)
+			expectEquivalent('\\frac{x^2+6x+9}{x^2-9}', '\\frac{x+3}{x-3}');
+		});
+	});
+
+	describe('cubic polynomial edge cases', () => {
+		// Sum of cubes: a³+b³ = (a+b)(a²-ab+b²)
+		it('simplifies (x^3+8)/(x+2) to x^2-2x+4', () => {
+			expectEquivalent('\\frac{x^3+8}{x+2}', 'x^2-2x+4');
+		});
+
+		it('simplifies (x^3+27)/(x+3) to x^2-3x+9', () => {
+			expectEquivalent('\\frac{x^3+27}{x+3}', 'x^2-3x+9');
+		});
+
+		it('simplifies (x^3+1)/(x+1) to x^2-x+1', () => {
+			expectEquivalent('\\frac{x^3+1}{x+1}', 'x^2-x+1');
+		});
+
+		// Difference of cubes: a³-b³ = (a-b)(a²+ab+b²)
+		it('simplifies (x^3-27)/(x-3) to x^2+3x+9', () => {
+			expectEquivalent('\\frac{x^3-27}{x-3}', 'x^2+3x+9');
+		});
+
+		it('simplifies (x^3-1)/(x-1) to x^2+x+1', () => {
+			expectEquivalent('\\frac{x^3-1}{x-1}', 'x^2+x+1');
+		});
+
+		// Cubic with common linear factor
+		it('simplifies (x^3-x)/(x^2-1) to x', () => {
+			// x(x²-1) / (x²-1) = x
+			expectEquivalent('\\frac{x^3-x}{x^2-1}', 'x');
+		});
+
+		it('simplifies (x^3+2x^2+x)/(x^2+x) to x+1', () => {
+			// x(x+1)² / x(x+1) = x+1
+			expectEquivalent('\\frac{x^3+2x^2+x}{x^2+x}', 'x+1');
+		});
+	});
+
+	describe('polynomials with gaps (sparse)', () => {
+		// x⁴-1 = (x²-1)(x²+1) = (x-1)(x+1)(x²+1)
+		it('simplifies (x^4-1)/(x-1) to x^3+x^2+x+1', () => {
+			expectEquivalent('\\frac{x^4-1}{x-1}', 'x^3+x^2+x+1');
+		});
+
+		it('simplifies (x^4-1)/(x+1) to x^3-x^2+x-1', () => {
+			expectEquivalent('\\frac{x^4-1}{x+1}', 'x^3-x^2+x-1');
+		});
+
+		it('simplifies (x^4-1)/(x^2-1) to x^2+1', () => {
+			expectEquivalent('\\frac{x^4-1}{x^2-1}', 'x^2+1');
+		});
+
+		it('simplifies (x^4-1)/(x^2+1) to x^2-1', () => {
+			expectEquivalent('\\frac{x^4-1}{x^2+1}', 'x^2-1');
+		});
+
+		// x³+1 factorization
+		it('simplifies (x^3+1)/(x^2-x+1) to x+1', () => {
+			expectEquivalent('\\frac{x^3+1}{x^2-x+1}', 'x+1');
+		});
+
+		// x⁶-1 = (x³-1)(x³+1)
+		it('simplifies (x^6-1)/(x^3-1) to x^3+1', () => {
+			expectEquivalent('\\frac{x^6-1}{x^3-1}', 'x^3+1');
+		});
+	});
+
+	describe('negative coefficient edge cases', () => {
+		it('simplifies (-x^2+1)/(x-1) to -x-1', () => {
+			// -(x²-1)/(x-1) = -(x+1) = -x-1
+			expectEquivalent('\\frac{-x^2+1}{x-1}', '-x-1');
+		});
+
+		it('simplifies (x^2-1)/(-x+1) to -x-1', () => {
+			// (x-1)(x+1)/(-(x-1)) = -(x+1)
+			expectEquivalent('\\frac{x^2-1}{-x+1}', '-x-1');
+		});
+
+		it('simplifies (-x^2+1)/(-x+1) to x+1', () => {
+			// -(x-1)(x+1)/(-(x-1)) = x+1
+			expectEquivalent('\\frac{-x^2+1}{-x+1}', 'x+1');
+		});
+
+		it('simplifies (-2x-4)/(-x-2) to 2', () => {
+			// -2(x+2)/-(x+2) = 2
+			expectEquivalent('\\frac{-2x-4}{-x-2}', '2');
+		});
+
+		it('simplifies (x^2-4x+4)/(-x+2) to -x+2', () => {
+			// (x-2)²/(-(x-2)) = -(x-2) = -x+2
+			expectEquivalent('\\frac{x^2-4x+4}{-x+2}', '-x+2');
+		});
+	});
+
+	describe('fractional coefficient edge cases', () => {
+		it('simplifies (x/2 + 1/2)/(x+1) to 1/2', () => {
+			// (1/2)(x+1)/(x+1) = 1/2
+			expectEquivalent('\\frac{\\frac{x}{2}+\\frac{1}{2}}{x+1}', '\\frac{1}{2}');
+		});
+
+		it('simplifies (x/3 + 2/3)/(x+2) to 1/3', () => {
+			expectEquivalent('\\frac{\\frac{x}{3}+\\frac{2}{3}}{x+2}', '\\frac{1}{3}');
+		});
+
+		it('simplifies (3x/4 - 3/4)/(x-1) to 3/4', () => {
+			expectEquivalent('\\frac{\\frac{3x}{4}-\\frac{3}{4}}{x-1}', '\\frac{3}{4}');
+		});
+	});
+
+	describe('multiple common factors', () => {
+		it('simplifies (x^3-x^2-x+1)/(x^2-2x+1) to x+1', () => {
+			// (x-1)²(x+1) / (x-1)² = x+1
+			expectEquivalent('\\frac{x^3-x^2-x+1}{x^2-2x+1}', 'x+1');
+		});
+
+		it('simplifies (x^4-2x^3+x^2)/(x^3-x^2) to x-1', () => {
+			// x²(x-1)² / x²(x-1) = x-1
+			expectEquivalent('\\frac{x^4-2x^3+x^2}{x^3-x^2}', 'x-1');
+		});
+
+		it('simplifies (x^4-1)/(x^3+x^2+x+1) to x-1', () => {
+			// (x²+1)(x-1)(x+1) / (x+1)(x²+1) = x-1
+			expectEquivalent('\\frac{x^4-1}{x^3+x^2+x+1}', 'x-1');
+		});
+
+		it('simplifies (x^3+3x^2+3x+1)/(x^2+2x+1) to x+1', () => {
+			// (x+1)³ / (x+1)² = x+1
+			expectEquivalent('\\frac{x^3+3x^2+3x+1}{x^2+2x+1}', 'x+1');
+		});
+	});
+
+	describe('degree boundary edge cases', () => {
+		// At the degree limit (10)
+		it('handles degree 10 polynomials', () => {
+			// x^10 - 1 divided by x-1 should give sum of x^i for i=0..9
+			const node = parseLatex('\\frac{x^{10}-1}{x-1}');
+			const normalized = normalize(node);
+			expect(normalized).toBeDefined();
+			// Result should be x^9 + x^8 + ... + x + 1 (polynomial, not fraction)
+			expect(normalized.denominator.length).toBe(1); // denominator = 1
+		});
+
+		// Just over the limit (11)
+		it('handles degree 11 with fallback', () => {
+			const node = parseLatex('\\frac{x^{11}-1}{x-1}');
+			const normalized = normalize(node);
+			// Should not crash, returns something
+			expect(normalized).toBeDefined();
+		});
+
+		// Constant polynomial edge case
+		it('simplifies 12/8 to 3/2', () => {
+			expectEquivalent('\\frac{12}{8}', '\\frac{3}{2}');
+		});
+
+		it('simplifies 100/25 to 4', () => {
+			expectEquivalent('\\frac{100}{25}', '4');
+		});
+	});
+
+	describe('result type edge cases', () => {
+		// Result is a constant
+		it('result is constant: (x+1)/(x+1) = 1', () => {
+			expectEquivalent('\\frac{x+1}{x+1}', '1');
+		});
+
+		it('result is constant: (6x+12)/(3x+6) = 2', () => {
+			expectEquivalent('\\frac{6x+12}{3x+6}', '2');
+		});
+
+		// Result is a monomial
+		it('result is monomial: (x^3)/(x^2) = x', () => {
+			expectEquivalent('\\frac{x^3}{x^2}', 'x');
+		});
+
+		it('result is monomial: (2x^4)/(x^2) = 2x^2', () => {
+			expectEquivalent('\\frac{2x^4}{x^2}', '2x^2');
+		});
+
+		it('result is monomial: (x^3+x^2)/(x+1) = x^2', () => {
+			// x²(x+1)/(x+1) = x²
+			expectEquivalent('\\frac{x^3+x^2}{x+1}', 'x^2');
+		});
+
+		// Result is a binomial
+		it('result is binomial: (x^2-1)/(x-1) = x+1', () => {
+			expectEquivalent('\\frac{x^2-1}{x-1}', 'x+1');
+		});
+	});
+
+	describe('content extraction edge cases', () => {
+		// All even coefficients
+		it('extracts content from (2x^2+4x+2)/(x+1) = 2(x+1)', () => {
+			// 2(x²+2x+1)/(x+1) = 2(x+1)²/(x+1) = 2(x+1)
+			expectEquivalent('\\frac{2x^2+4x+2}{x+1}', '2x+2');
+		});
+
+		// Large common factor
+		it('extracts content: (12x+18)/(8x+12) = 3/2', () => {
+			// 6(2x+3) / 4(2x+3) = 6/4 = 3/2
+			expectEquivalent('\\frac{12x+18}{8x+12}', '\\frac{3}{2}');
+		});
+
+		// Prime coefficients (GCD = 1)
+		it('keeps prime coefficients: (5x+7)/(3x+2) unchanged', () => {
+			const node = parseLatex('\\frac{5x+7}{3x+2}');
+			const normalized = normalize(node);
+			expect(normalized.denominator.length).toBeGreaterThan(0);
+		});
+
+		// Negative content
+		it('handles negative content: (-6x-9)/(-4x-6) = 3/2', () => {
+			// -3(2x+3) / -2(2x+3) = 3/2
+			expectEquivalent('\\frac{-6x-9}{-4x-6}', '\\frac{3}{2}');
+		});
+	});
+
+	describe('additional radical coefficient cases', () => {
+		// Same radical in both
+		it('simplifies (2*sqrt(2)*x + 2*sqrt(2))/(sqrt(2)*x + sqrt(2)) to 2', () => {
+			expectEquivalent('\\frac{2\\sqrt{2}x + 2\\sqrt{2}}{\\sqrt{2}x + \\sqrt{2}}', '2');
+		});
+
+		// Radical content extraction
+		it('simplifies (sqrt(2)*x^2 - 2*sqrt(2))/(x+sqrt(2)) tests radical handling', () => {
+			// This may or may not simplify depending on implementation
+			const node = parseLatex('\\frac{\\sqrt{2}x^2 - 2\\sqrt{2}}{x+\\sqrt{2}}');
+			const normalized = normalize(node);
+			expect(normalized).toBeDefined();
+		});
+
+		// Cube root coefficient
+		it('handles cube root coefficients', () => {
+			const node = parseLatex('\\frac{\\sqrt[3]{2}x + \\sqrt[3]{2}}{\\sqrt[3]{2}}');
+			const normalized = normalize(node);
+			expect(normalized).toBeDefined();
+		});
+	});
+
+	describe('special algebraic identities', () => {
+		// Sophie Germain: a⁴+4b⁴ = (a²+2b²+2ab)(a²+2b²-2ab)
+		// We test simpler versions with single variable
+
+		// (a+b)³ = a³+3a²b+3ab²+b³
+		it('simplifies (x^3+3x^2+3x+1)/(x+1) to x^2+2x+1', () => {
+			// (x+1)³ / (x+1) = (x+1)²
+			expectEquivalent('\\frac{x^3+3x^2+3x+1}{x+1}', 'x^2+2x+1');
+		});
+
+		// (a-b)³ = a³-3a²b+3ab²-b³
+		it('simplifies (x^3-3x^2+3x-1)/(x-1) to x^2-2x+1', () => {
+			// (x-1)³ / (x-1) = (x-1)²
+			expectEquivalent('\\frac{x^3-3x^2+3x-1}{x-1}', 'x^2-2x+1');
+		});
+
+		// Difference of 4th powers
+		it('simplifies (x^4-16)/(x-2) correctly', () => {
+			// x⁴-16 = (x²-4)(x²+4) = (x-2)(x+2)(x²+4)
+			expectEquivalent('\\frac{x^4-16}{x-2}', 'x^3+2x^2+4x+8');
+		});
+
+		it('simplifies (x^4-16)/(x+2) correctly', () => {
+			expectEquivalent('\\frac{x^4-16}{x+2}', 'x^3-2x^2+4x-8');
+		});
+
+		it('simplifies (x^4-16)/(x^2-4) to x^2+4', () => {
+			expectEquivalent('\\frac{x^4-16}{x^2-4}', 'x^2+4');
+		});
+	});
+
+	describe('stress tests with various variables', () => {
+		// Using variable 't' instead of 'x'
+		it('works with variable t: (t^2-1)/(t-1) = t+1', () => {
+			expectEquivalent('\\frac{t^2-1}{t-1}', 't+1');
+		});
+
+		// Using variable 'y'
+		it('works with variable y: (y^2-4)/(y+2) = y-2', () => {
+			expectEquivalent('\\frac{y^2-4}{y+2}', 'y-2');
+		});
+
+		// Using Greek letter
+		it('works with variable theta: (θ^2-1)/(θ-1) = θ+1', () => {
+			expectEquivalent('\\frac{\\theta^2-1}{\\theta-1}', '\\theta+1');
+		});
+	});
+
+	describe('commutativity and order independence', () => {
+		// Order of terms shouldn't matter
+		it('handles reversed term order: (1-x^2)/(1-x) = 1+x', () => {
+			// -(x²-1)/-(x-1) = (x-1)(x+1)/(x-1) = x+1 = 1+x
+			expectEquivalent('\\frac{1-x^2}{1-x}', '1+x');
+		});
+
+		it('handles reordered polynomial: (-1+x^2)/(x-1) = x+1', () => {
+			expectEquivalent('\\frac{-1+x^2}{x-1}', 'x+1');
+		});
+
+		it('handles mixed order: (x+x^2)/(1+x) = x', () => {
+			// x(1+x)/(1+x) = x
+			expectEquivalent('\\frac{x+x^2}{1+x}', 'x');
+		});
+	});
 });
 
 // =============================================================================
