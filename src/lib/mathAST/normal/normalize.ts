@@ -1969,30 +1969,61 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 	// These checks must happen before canonicalization to avoid
 	// expanding squares like (x+1)² into x² + 2x + 1
 
-	// A1. √(a × a) = a — detect identical factors in multiplication
+	// A1. √(a × a) = |a| — detect identical factors in multiplication
+	// Mathematical correctness: √(a²) = |a|
 	if (originalArg.type === 'multiplication') {
 		const leftHash = hashMathNode(originalArg.left);
 		const rightHash = hashMathNode(originalArg.right);
 		if (leftHash === rightHash) {
-			const result = normalizeNode(originalArg.left, ctx);
+			// Wrap in absolute value
+			const absNode: MathNode = {
+				type: 'function',
+				name: 'abs',
+				args: [originalArg.left]
+			};
+			const result = normalizeNode(absNode, ctx);
 			recordNormalizationStep(ctx, 'sqrt-of-square', node, result, 'summarized');
 			return result;
 		}
 	}
 
-	// A2. √(a^{2n}) = a^n — detect even power exponent
+	// A2. √(a^{2n}) = |a^n| or a^n — detect even power exponent
+	// Mathematical correctness: √(x²) = |x|, not x
+	// √(x^{2k}) = |x^k| when k is odd, x^k when k is even (since x^k ≥ 0 for even k)
 	if (originalArg.type === 'superscript') {
 		const exp = getRationalExponent(originalArg.superscript);
 		if (exp && exp.d === 1n && exp.n >= 2n && exp.n % 2n === 0n) {
-			// Even integer exponent: √(a^{2k}) = a^k
+			// Even integer exponent: √(a^{2k}) = |a^k| or a^k
 			const halfExp: Rational = { n: exp.n / 2n, d: 1n };
+			const needsAbsoluteValue = halfExp.n % 2n === 1n; // k is odd
+
 			if (halfExp.n === 1n) {
-				// √(a²) = a
-				const result = normalizeNode(originalArg.base, ctx);
+				// √(a²) = |a|
+				const absNode: MathNode = {
+					type: 'function',
+					name: 'abs',
+					args: [originalArg.base]
+				};
+				const result = normalizeNode(absNode, ctx);
 				recordNormalizationStep(ctx, 'sqrt-of-square', node, result, 'summarized');
 				return result;
+			} else if (needsAbsoluteValue) {
+				// √(a^{2k}) = |a^k| where k > 1 and k is odd
+				const powerNode: MathNode = {
+					type: 'superscript',
+					base: originalArg.base,
+					superscript: { type: 'number', value: halfExp.n.toString() }
+				};
+				const absNode: MathNode = {
+					type: 'function',
+					name: 'abs',
+					args: [powerNode]
+				};
+				const result = normalizeNode(absNode, ctx);
+				recordNormalizationStep(ctx, 'sqrt-of-even-power', node, result, 'summarized');
+				return result;
 			} else {
-				// √(a^{2k}) = a^k where k > 1
+				// √(a^{2k}) = a^k where k > 1 and k is even (a^k ≥ 0 always)
 				const result = normalizeSymbolicPower(originalArg.base, halfExp, ctx);
 				recordNormalizationStep(ctx, 'sqrt-of-even-power', node, result, 'summarized');
 				return result;
@@ -2088,6 +2119,7 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 					// Extract even exponents from monomial
 					const extractedFactors: typeof monomial = [];
 					const remainingFactors: typeof monomial = [];
+					let hasOddExtractedExponent = false; // Track if any extracted exponent is odd
 
 					for (const factor of monomial) {
 						const { base, exponent } = factor;
@@ -2099,6 +2131,10 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 							if (halfExp >= 1n) {
 								// Extract x^halfExp from √(x^exponent)
 								extractedFactors.push(symbolicFactor(base, { n: halfExp, d: 1n }));
+								// Track if this extracted exponent is odd (needs abs)
+								if (halfExp % 2n === 1n) {
+									hasOddExtractedExponent = true;
+								}
 							}
 							if (remainderExp > 0n) {
 								// Remaining odd part stays under sqrt
@@ -2138,15 +2174,42 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 						const hasRemainingMonomial = remainingFactors.length > 0;
 
 						if (!hasRemainingCoeff && !hasRemainingMonomial) {
-							// Perfect square: √(4x²) = 2x
+							// Perfect square: √(4x²) = 2|x| or √(4x⁴) = 2x²
+							// Need abs if any extracted symbolic exponent is odd
+							let resultForm: NormalForm;
+							if (hasOddExtractedExponent && sortedExtracted.length > 0) {
+								// Build coefficient × |monomial| (e.g., 3|x| not |3x|)
+								// Build just the monomial part
+								const monomialTerm: NormalTerm = {
+									coefficient: ALGEBRAIC_ONE,
+									monomial: sortedExtracted
+								};
+								const monomialForm = normalFormFromPolynomial(polynomialFromTerm(monomialTerm));
+								const monomialNode = denormalize(monomialForm);
+								const absNode: MathNode = {
+									type: 'function',
+									name: 'abs',
+									args: [monomialNode]
+								};
+								const absForm = normalizeNode(absNode, ctx);
+								// Multiply by the coefficient
+								resultForm = mulNormalForms(
+									normalFormFromPolynomial(
+										polynomialFromTerm({ coefficient: extractedCoeff, monomial: EMPTY_MONOMIAL })
+									),
+									absForm
+								);
+							} else {
+								resultForm = extractedForm;
+							}
 							recordNormalizationStep(
 								ctx,
 								'sqrt-extract-perfect-square',
 								node,
-								extractedForm,
+								resultForm,
 								'summarized'
 							);
-							return extractedForm;
+							return resultForm;
 						}
 
 						// Build √(remaining)
@@ -2204,7 +2267,45 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 						}
 
 						// Combine: extracted * √(remaining)
-						const result = mulNormalForms(extractedForm, remainingForm);
+						// Check if abs is needed: only skip abs if the extracted variable
+						// also appears in remaining factors (implying domain restriction)
+						// E.g., √(x³) = x√x (x in remaining implies x ≥ 0, so no abs)
+						// E.g., √(4x²y) = 2|x|√y (only y in remaining, x can be negative)
+						let finalExtracted: NormalForm;
+						if (hasOddExtractedExponent && sortedExtracted.length > 0) {
+							// Check if all extracted variables with odd exponents appear in remaining
+							const remainingBases = new Set(remainingFactors.map((f) => f.base));
+							const needsAbs = sortedExtracted.some(
+								(f) => f.exponent.n % 2n === 1n && !remainingBases.has(f.base)
+							);
+
+							if (needsAbs) {
+								// Build coefficient × |monomial|
+								const monomialTerm: NormalTerm = {
+									coefficient: ALGEBRAIC_ONE,
+									monomial: sortedExtracted
+								};
+								const monomialForm = normalFormFromPolynomial(polynomialFromTerm(monomialTerm));
+								const monomialNode = denormalize(monomialForm);
+								const absNode: MathNode = {
+									type: 'function',
+									name: 'abs',
+									args: [monomialNode]
+								};
+								const absForm = normalizeNode(absNode, ctx);
+								finalExtracted = mulNormalForms(
+									normalFormFromPolynomial(
+										polynomialFromTerm({ coefficient: extractedCoeff, monomial: EMPTY_MONOMIAL })
+									),
+									absForm
+								);
+							} else {
+								finalExtracted = extractedForm;
+							}
+						} else {
+							finalExtracted = extractedForm;
+						}
+						const result = mulNormalForms(finalExtracted, remainingForm);
 						recordNormalizationStep(ctx, 'sqrt-extract-perfect-square', node, result, 'summarized');
 						return result;
 					}
@@ -2214,7 +2315,7 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 	}
 
 	// B5. √(a² ± 2ab + b²) = |a ± b| — perfect square trinomial
-	// For expressions like √(x² + 2x + 1) → x + 1
+	// For expressions like √(x² + 2x + 1) → |x + 1|
 	{
 		const argForm = normalizeNode(arg, ctx);
 
@@ -2226,8 +2327,16 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 		) {
 			const factored = tryFactorPerfectSquareTrinomial(argForm.numerator, ctx);
 			if (factored !== null) {
-				recordNormalizationStep(ctx, 'sqrt-perfect-square-trinomial', node, factored, 'summarized');
-				return factored;
+				// Wrap in absolute value: √((a±b)²) = |a±b|
+				const factoredNode = denormalize(factored);
+				const absNode: MathNode = {
+					type: 'function',
+					name: 'abs',
+					args: [factoredNode]
+				};
+				const result = normalizeNode(absNode, ctx);
+				recordNormalizationStep(ctx, 'sqrt-perfect-square-trinomial', node, result, 'summarized');
+				return result;
 			}
 		}
 	}
