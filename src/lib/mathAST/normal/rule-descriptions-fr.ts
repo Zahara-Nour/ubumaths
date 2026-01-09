@@ -52,6 +52,10 @@ export const RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'radical-of-radical': 'Radical de radical: √(√a) = a^(1/4)',
 	'sqrt-one': '√1 = 1',
 	'sqrt-zero': '√0 = 0',
+	'sqrt-of-square': 'Racine carrée de carré: √(a²) = a',
+	'sqrt-of-even-power': 'Racine carrée de puissance paire: √(a²ⁿ) = aⁿ',
+	'sqrt-to-half-power': 'Conversion en exposant fractionnaire: √a = a^(1/2)',
+	'sqrt-extract-perfect-square': 'Extraction des carrés parfaits: √(4x²y) = 2x√y',
 
 	// ==========================================================================
 	// Transcendental Functions
