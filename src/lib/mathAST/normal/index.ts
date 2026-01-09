@@ -92,6 +92,8 @@ export {
 	subAlgebraic,
 	negAlgebraic,
 	mulAlgebraic,
+	divAlgebraic,
+	gcdAlgebraic,
 	isZeroAlgebraic,
 	isOneAlgebraic,
 	isPureRational,
@@ -250,3 +252,26 @@ export {
 	simplifyWithSteps,
 	simplifyOnceWithSteps
 } from './step-recorder.js';
+
+// =============================================================================
+// Univariate Polynomial GCD
+// =============================================================================
+
+export {
+	checkUnivariate,
+	toUnivariateView,
+	fromUnivariateView,
+	divideUnivariate,
+	gcdUnivariate,
+	extractContent,
+	tryUnivariateGcd,
+	dividePolynomials,
+	MAX_GCD_DEGREE
+} from './univariate-gcd.js';
+
+export type {
+	UnivariateCheckResult,
+	UnivariateView,
+	DivisionResult,
+	ContentResult
+} from './univariate-gcd.js';

@@ -807,6 +807,83 @@ const onePass = simplifyOnce(ast);
 const { result, steps } = simplifyWithSteps(ast);
 ```
 
+### Univariate Polynomial GCD
+
+The normalizer uses the Euclidean algorithm to simplify fractions of univariate polynomials. This enables automatic factorization and cancellation of common polynomial factors.
+
+**Supported cases:**
+
+```typescript
+// Difference of squares: (x²-1)/(x-1) = (x-1)(x+1)/(x-1) = x+1
+normalize(parseLatex('\\frac{x^2-1}{x-1}')); // → x+1
+
+// Perfect square: (x²+2x+1)/(x+1) = (x+1)²/(x+1) = x+1
+normalize(parseLatex('\\frac{x^2+2x+1}{x+1}')); // → x+1
+
+// Difference of cubes: (x³-8)/(x-2) = (x-2)(x²+2x+4)/(x-2) = x²+2x+4
+normalize(parseLatex('\\frac{x^3-8}{x-2}')); // → x²+2x+4
+
+// Common factor: (2x²+4x)/(x+2) = 2x(x+2)/(x+2) = 2x
+normalize(parseLatex('\\frac{2x^2+4x}{x+2}')); // → 2x
+
+// Content extraction (numeric GCD of coefficients)
+// (6x+4)/(9x+6) = 2(3x+2)/3(3x+2) = 2/3
+normalize(parseLatex('\\frac{6x+4}{9x+6}')); // → 2/3
+
+// (4x²-4)/(6x-6) = 4(x-1)(x+1)/6(x-1) = 2(x+1)/3
+normalize(parseLatex('\\frac{4x^2-4}{6x-6}')); // → (2x+2)/3
+```
+
+**With radical coefficients:**
+
+```typescript
+// √2(x²-1)/(x-1) = √2·(x+1)
+normalize(parseLatex('\\frac{\\sqrt{2}x^2 - \\sqrt{2}}{x-1}')); // → √2·x + √2
+
+// (√3·x + √3)/√3 = x+1
+normalize(parseLatex('\\frac{\\sqrt{3}x + \\sqrt{3}}{\\sqrt{3}}')); // → x+1
+```
+
+**Algorithm:**
+
+1. Check if both numerator and denominator are univariate (same variable, integer exponents ≥ 0)
+2. Convert to dense coefficient array (UnivariateView)
+3. Extract content (numeric GCD of all coefficients) from both polynomials
+4. Apply Euclidean algorithm on primitive parts
+5. Make result monic (leading coefficient = 1)
+6. Divide both numerator and denominator by the GCD
+
+**Limits:**
+
+- Only univariate polynomials (single variable)
+- Degree ≤ 10 (falls back to monomial GCD for higher degrees)
+- Integer exponents only (fractional exponents treated as opaque)
+
+**API:**
+
+```typescript
+import {
+	tryUnivariateGcd,
+	dividePolynomials,
+	checkUnivariate,
+	toUnivariateView,
+	fromUnivariateView,
+	gcdUnivariate,
+	MAX_GCD_DEGREE
+} from '$lib/mathAST/normal';
+
+// Check if polynomial is univariate
+const check = checkUnivariate(terms);
+// { isUnivariate: true, variable: {type: 'variable', name: 'x'} }
+// or { isUnivariate: false, reason: 'multivariate' | 'non-integer-exponent' | 'negative-exponent' }
+
+// Compute GCD (returns null if not applicable)
+const gcd = tryUnivariateGcd(numeratorTerms, denominatorTerms);
+
+// Divide polynomials (exact division, returns null if remainder ≠ 0)
+const quotient = dividePolynomials(dividend, divisor);
+```
+
 ### Semantic Expression Checks
 
 Check if expressions evaluate to zero or one mathematically:
@@ -863,9 +940,11 @@ normalize(parseLatex('sqrt(sqrt(x))')); // √(√x), not x^(1/4)
 // Polynomial powers require integer exponents
 normalize(parseLatex('(x+1)^{1/2}')); // (x+1)^(1/2) as opaque, not expanded
 
-// Full polynomial GCD not implemented
-// Only monomial GCD is extracted from fractions
-normalize(parseLatex('(x^2-1)/(x-1)')); // Does NOT simplify to x+1
+// Multivariate polynomial GCD → only monomial GCD extracted
+normalize(parseLatex('(x^2-y^2)/(x-y)')); // Does NOT simplify to x+y
+
+// High-degree univariate polynomials (degree > 10) → falls back to monomial GCD
+// This is a performance limit to avoid expensive computations
 
 // exp(complex expression) → may remain opaque if not a linear combination of ln
 normalize(parseLatex('\\exp(\\ln(x)^2)')); // exp(ln(x)²), not simplified

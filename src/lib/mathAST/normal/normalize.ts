@@ -39,6 +39,7 @@ import { rational, fromInteger, ONE, isOne } from './rational';
 import { simplifyRadical } from './radical';
 import { simplify } from './rules/index.js';
 import { denormalize } from './denormalize';
+import { tryUnivariateGcd, dividePolynomials } from './univariate-gcd';
 
 // =============================================================================
 // Constants
@@ -105,17 +106,30 @@ function normalFormFromFraction(numerator: NormalTerm[], denominator: NormalTerm
 		return normalFormFromPolynomial(numerator);
 	}
 
-	// Reduce common monomial factors between numerator and denominator
-	const gcd = gcdPolynomials(numerator, denominator);
-
 	let reducedNumerator = numerator;
 	let reducedDenominator = denominator;
 
-	// If GCD is not 1, divide both by it
-	if (!isOnePolynomial(gcd) && gcd.length === 1) {
-		const gcdMonomial = gcd[0].monomial;
-		reducedNumerator = divPolynomialByMonomial(numerator, gcdMonomial);
-		reducedDenominator = divPolynomialByMonomial(denominator, gcdMonomial);
+	// Try univariate polynomial GCD first (for expressions like (x^2-1)/(x-1) = x+1)
+	const univariateGcd = tryUnivariateGcd(numerator, denominator);
+	if (univariateGcd !== null && !isOnePolynomial(univariateGcd)) {
+		// Divide both by the GCD
+		const newNumerator = dividePolynomials(numerator, univariateGcd);
+		const newDenominator = dividePolynomials(denominator, univariateGcd);
+
+		if (newNumerator !== null && newDenominator !== null) {
+			reducedNumerator = newNumerator;
+			reducedDenominator = newDenominator;
+		}
+	} else {
+		// Fall back to monomial GCD only
+		const gcd = gcdPolynomials(numerator, denominator);
+
+		// If GCD is not 1, divide both by it
+		if (!isOnePolynomial(gcd) && gcd.length === 1) {
+			const gcdMonomial = gcd[0].monomial;
+			reducedNumerator = divPolynomialByMonomial(numerator, gcdMonomial);
+			reducedDenominator = divPolynomialByMonomial(denominator, gcdMonomial);
+		}
 	}
 
 	// After reduction, check if denominator became 1
