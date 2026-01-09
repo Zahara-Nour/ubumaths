@@ -5,7 +5,9 @@
 import { describe, test, expect } from 'vitest';
 import type { MathNode } from '../../types';
 import { normalize } from '../normalize';
+import { denormalize } from '../denormalize';
 import { hashNormalForm, normalFormsEquivalent } from '../hash';
+import { toLatex } from '../../latex-generator';
 
 // =============================================================================
 // Helper Functions
@@ -2673,6 +2675,223 @@ describe('Log Expansion', () => {
 			const expr = fn('log', div(num('8'), num('27')));
 			const expanded = sub(mul(num('3'), fn('log', num('2'))), mul(num('3'), fn('log', num('3'))));
 			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+	});
+});
+
+// =============================================================================
+// Symbolic Sqrt and Fractional Exponents Tests
+// =============================================================================
+
+describe('Symbolic Sqrt Simplification', () => {
+	describe('√x × √x = x', () => {
+		test('sqrt(x) * sqrt(x) = x', () => {
+			const expr = mul(sqrt(variable('x')), sqrt(variable('x')));
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(y) * sqrt(y) = y', () => {
+			const expr = mul(sqrt(variable('y')), sqrt(variable('y')));
+			const expected = variable('y');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('(√x)² = x', () => {
+		test('(sqrt(x))^2 = x', () => {
+			const expr = power(sqrt(variable('x')), num('2'));
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('(sqrt(y))^2 = y', () => {
+			const expr = power(sqrt(variable('y')), num('2'));
+			const expected = variable('y');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('(sqrt(x))^4 = x^2', () => {
+			const expr = power(sqrt(variable('x')), num('4'));
+			const expected = power(variable('x'), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('√(x²) = x (positive assumption)', () => {
+		test('sqrt(x^2) = x', () => {
+			const expr = sqrt(power(variable('x'), num('2')));
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x^4) = x^2', () => {
+			const expr = sqrt(power(variable('x'), num('4')));
+			const expected = power(variable('x'), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x^6) = x^3', () => {
+			const expr = sqrt(power(variable('x'), num('6')));
+			const expected = power(variable('x'), num('3'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('√(a×a) = a before canonicalization', () => {
+		test('sqrt(x * x) = x', () => {
+			const expr = sqrt(mul(variable('x'), variable('x')));
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt((x+1) * (x+1)) = x+1', () => {
+			const xplus1 = add(variable('x'), num('1'));
+			const expr = sqrt(mul(xplus1, xplus1));
+			const expected = add(variable('x'), num('1'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt((2x) * (2x)) = 2x', () => {
+			const twox = mul(num('2'), variable('x'));
+			const expr = sqrt(mul(twox, twox));
+			const expected = mul(num('2'), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('√(x+1) × √(x+1) = x+1', () => {
+		test('sqrt(x+1) * sqrt(x+1) = x+1', () => {
+			const xplus1 = add(variable('x'), num('1'));
+			const expr = mul(sqrt(xplus1), sqrt(xplus1));
+			const expected = add(variable('x'), num('1'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(2x+3) * sqrt(2x+3) = 2x+3', () => {
+			const twoxplus3 = add(mul(num('2'), variable('x')), num('3'));
+			const expr = mul(sqrt(twoxplus3), sqrt(twoxplus3));
+			const expected = add(mul(num('2'), variable('x')), num('3'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('√x × √y = √(xy) via Phase 1', () => {
+		test('sqrt(x) * sqrt(y) equivalent to sqrt(x*y)', () => {
+			const expr1 = mul(sqrt(variable('x')), sqrt(variable('y')));
+			const expr2 = sqrt(mul(variable('x'), variable('y')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('sqrt(2) * sqrt(3) = sqrt(6)', () => {
+			const expr1 = mul(sqrt(num('2')), sqrt(num('3')));
+			const expr2 = sqrt(num('6'));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('sqrt(a) * sqrt(b) * sqrt(c) equivalent to sqrt(abc)', () => {
+			const expr1 = mul(mul(sqrt(variable('a')), sqrt(variable('b'))), sqrt(variable('c')));
+			const expr2 = sqrt(mul(mul(variable('a'), variable('b')), variable('c')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+	});
+
+	describe('Fractional exponents in monomials', () => {
+		test('x^{1/2} * x^{1/2} = x', () => {
+			// x^{1/2} represented as sqrt(x)
+			const xhalf = sqrt(variable('x'));
+			const expr = mul(xhalf, xhalf);
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('x * sqrt(x) * sqrt(x) = x^2', () => {
+			const expr = mul(mul(variable('x'), sqrt(variable('x'))), sqrt(variable('x')));
+			const expected = power(variable('x'), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x) * x = x^{3/2}', () => {
+			const expr = mul(sqrt(variable('x')), variable('x'));
+			// Check monomial has correct exponent
+			const result = normalize(expr);
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBe(1);
+			expect(result.numerator[0].monomial[0].exponent.n).toBe(3n);
+			expect(result.numerator[0].monomial[0].exponent.d).toBe(2n);
+		});
+
+		test('x^2 * sqrt(x) = x^{5/2}', () => {
+			const expr = mul(power(variable('x'), num('2')), sqrt(variable('x')));
+			const result = normalize(expr);
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBe(1);
+			expect(result.numerator[0].monomial[0].exponent.n).toBe(5n);
+			expect(result.numerator[0].monomial[0].exponent.d).toBe(2n);
+		});
+	});
+});
+
+// =============================================================================
+// Denormalization of Fractional Exponents Tests
+// =============================================================================
+
+describe('Denormalization of Fractional Exponents', () => {
+	describe('Display x^{3/2} as x√x', () => {
+		test('x^{3/2} displays as x√x', () => {
+			const expr = mul(sqrt(variable('x')), variable('x')); // = x^{3/2}
+			const normalized = normalize(expr);
+			const denormalized = denormalize(normalized);
+			const latex = toLatex(denormalized);
+			// Should display as x√x (x times sqrt(x))
+			expect(latex).toContain('x');
+			expect(latex).toContain('\\sqrt');
+		});
+
+		test('x^{5/2} displays as x²√x', () => {
+			const expr = mul(power(variable('x'), num('2')), sqrt(variable('x'))); // = x^{5/2}
+			const normalized = normalize(expr);
+			const denormalized = denormalize(normalized);
+			const latex = toLatex(denormalized);
+			// Should display as x^2√x
+			expect(latex).toContain('x');
+			expect(latex).toContain('\\sqrt');
+		});
+	});
+
+	describe('Display x^{1/2} as √x', () => {
+		test('x^{1/2} displays as √x', () => {
+			const expr = sqrt(variable('x'));
+			const normalized = normalize(expr);
+			const denormalized = denormalize(normalized);
+			const latex = toLatex(denormalized);
+			expect(latex).toBe('\\sqrt{x}');
+		});
+	});
+
+	describe('Roundtrip: normalize then denormalize', () => {
+		test('sqrt(x) roundtrips correctly', () => {
+			const expr = sqrt(variable('x'));
+			const normalized = normalize(expr);
+			const denormalized = denormalize(normalized);
+			const latex = toLatex(denormalized);
+			expect(latex).toBe('\\sqrt{x}');
+		});
+
+		test('sqrt(x) * sqrt(x) roundtrips to x', () => {
+			const expr = mul(sqrt(variable('x')), sqrt(variable('x')));
+			const normalized = normalize(expr);
+			const denormalized = denormalize(normalized);
+			const latex = toLatex(denormalized);
+			expect(latex).toBe('x');
+		});
+
+		test('(sqrt(x))^2 roundtrips to x', () => {
+			const expr = power(sqrt(variable('x')), num('2'));
+			const normalized = normalize(expr);
+			const denormalized = denormalize(normalized);
+			const latex = toLatex(denormalized);
+			expect(latex).toBe('x');
 		});
 	});
 });
