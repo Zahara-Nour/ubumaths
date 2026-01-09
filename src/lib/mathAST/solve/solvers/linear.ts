@@ -25,7 +25,7 @@ import {
 	equals,
 	variable as varNode
 } from '../../factory';
-import { simplify, denormalize, normalize, normalFormsEquivalent } from '../../normal';
+import { preprocess, denormalize, normalize, normalFormsEquivalent } from '../../normal';
 import { toLatex } from '../../latex-generator';
 import {
 	describeSubtract,
@@ -138,8 +138,8 @@ export const linearSolver: EquationSolver = {
 		},
 		recorder: SolveStepRecorder
 	): SolveResult {
-		// First simplify the expression
-		const simplified = simplify(expr);
+		// First preprocess the expression (Phase 1 radical rules)
+		const simplified = preprocess(expr);
 
 		// Record the simplification if different
 		if (toLatex(simplified) !== toLatex(expr)) {

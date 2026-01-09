@@ -21,7 +21,7 @@ import { parse } from '../core/pipeline';
 import { solve, type SolvingVerbosity, SolveError } from '../../solve';
 import { isRelation, isMultiplication, isOpposite, isVariable, isNumber } from '../../guards';
 import type { MathNode, RelationNode } from '../../types';
-import { simplify } from '../../normal';
+import { preprocess } from '../../normal';
 import { number, opposite, add } from '../../factory';
 
 import { flattenSumShallow, unflattenSum } from '../../flatten';
@@ -63,7 +63,7 @@ function evalSimplify(node: MathNode): MathNode {
 	} catch {
 		// Evaluation failed (e.g., contains variables), fall back to simplify
 	}
-	return simplify(node);
+	return preprocess(node);
 }
 
 /**
@@ -364,7 +364,7 @@ function extractLinearParts(expr: MathNode, variable: string): { a: MathNode; b:
 			: coefficients.length === 1
 				? coefficients[0]
 				: coefficients.reduce((acc, c) => add(acc, c));
-	a = simplify(a);
+	a = preprocess(a);
 
 	// Sum all constants
 	const b =
@@ -374,7 +374,7 @@ function extractLinearParts(expr: MathNode, variable: string): { a: MathNode; b:
 				? constantTerms[0]
 				: unflattenSum(constantTerms.map((t) => ({ sign: '+' as const, term: t })))!;
 
-	return { a, b: simplify(b) };
+	return { a, b: preprocess(b) };
 }
 
 /**
@@ -403,13 +403,13 @@ function generateLinearPedagogicalSteps(
 	let currentRhsStr = toCustom(rhs);
 
 	// Check if RHS has variable terms (a2 != 0)
-	const a2Str = toCustom(simplify(a2));
+	const a2Str = toCustom(preprocess(a2));
 	const hasVarOnRight = a2Str !== '0';
 
 	// Step 1: Move variable terms from RHS to LHS (if any)
 	// Subtract a2*x from both sides
 	if (hasVarOnRight) {
-		const a2Simplified = simplify(a2);
+		const a2Simplified = preprocess(a2);
 		const a2StrDisplay = toCustom(a2Simplified);
 		const isNegative = a2StrDisplay.startsWith('-');
 
@@ -447,7 +447,7 @@ function generateLinearPedagogicalSteps(
 		// New LHS: (a1-a2)*x + b1
 		const newLhsVarTerm =
 			newAStr === '1' ? variable : newAStr === '-1' ? `-${variable}` : `${newAStr}${variable}`;
-		const b1Str = toCustom(simplify(b1));
+		const b1Str = toCustom(preprocess(b1));
 		const newLhsStr =
 			b1Str === '0'
 				? newLhsVarTerm
@@ -455,7 +455,7 @@ function generateLinearPedagogicalSteps(
 					? `${newLhsVarTerm}${b1Str}`
 					: `${newLhsVarTerm}+${b1Str}`;
 		// New RHS: just b2
-		const newRhsStr = toCustom(simplify(b2));
+		const newRhsStr = toCustom(preprocess(b2));
 
 		steps.push({
 			description: operationDesc,
@@ -468,9 +468,9 @@ function generateLinearPedagogicalSteps(
 	}
 
 	// Get updated coefficient and constant after moving variables
-	const finalA = hasVarOnRight ? evalSimplify(add(a1, negate(a2))) : simplify(a1);
-	const finalB = simplify(b1);
-	const finalC = simplify(b2); // RHS constant
+	const finalA = hasVarOnRight ? evalSimplify(add(a1, negate(a2))) : preprocess(a1);
+	const finalB = preprocess(b1);
+	const finalC = preprocess(b2); // RHS constant
 	const finalAStr = toCustom(finalA);
 
 	// Step 2: Move constant from LHS to RHS (if any)

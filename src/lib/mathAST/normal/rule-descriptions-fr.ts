@@ -76,7 +76,7 @@ export const RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	// ==========================================================================
 	// Phase 2 - Normalization
 	// ==========================================================================
-	'pre-simplify': 'Pré-simplification (Phase 1)',
+	preprocess: 'Prétraitement (Phase 1)',
 	'combine-like-terms': 'Combinaison des termes semblables',
 	'simplify-fraction': 'Simplification de la fraction',
 	'expand-power': 'Développement de la puissance',

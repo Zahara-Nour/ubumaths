@@ -855,11 +855,11 @@ normalize(parseLatex('\\ln(\\frac{x}{\\exp(y)})')); // → ln(x) - y
 | `exp(-ln(x) + y) → exp(y)/x`   | `ln(exp(y)/x) → y - ln(x)`    |
 | `exp(2·ln(x) + y) → x²·exp(y)` | `ln(x²·exp(y)) → 2·ln(x) + y` |
 
-### Simplification Pipeline
+### Normalization Pipeline
 
 The normalization process has two phases:
 
-**Phase 1: Pre-simplification** (`simplify` function)
+**Phase 1: Preprocessing** (`preprocess` function)
 
 Applies radical rules that Phase 2 cannot handle efficiently:
 
@@ -937,16 +937,16 @@ nodesEqual(parseLatex('\\sqrt{4x^3}'), parseLatex('2x\\sqrt{x}')); // true
 **Pre-canonicalization detection**: To ensure `√((x+1)×(x+1)) = |x+1|` works correctly (and doesn't expand to `√(x²+2x+1)`), the normalizer checks for `√(a×a)` patterns BEFORE canonicalizing the argument.
 
 ```typescript
-import { simplify, simplifyOnce, simplifyWithSteps } from '$lib/mathAST/normal';
+import { preprocess, preprocessOnce, preprocessWithSteps } from '$lib/mathAST/normal';
 
-// Full simplification (iterates until fixed point)
-const simplified = simplify(ast);
+// Single pass (apply rules once)
+const onePass = preprocessOnce(ast);
 
-// Single pass (apply each rule set once)
-const onePass = simplifyOnce(ast);
+// Iterate until fixed point
+const preprocessed = preprocess(ast);
 
 // With step recording (for educational display)
-const { result, steps } = simplifyWithSteps(ast);
+const { result, steps } = preprocessWithSteps(ast);
 ```
 
 ### Univariate Polynomial GCD
@@ -1321,7 +1321,7 @@ recorder.clear();
 
 | Rule                            | Description                                         | Verbosity  |
 | ------------------------------- | --------------------------------------------------- | ---------- |
-| `pre-simplify`                  | Pré-simplification (Phase 1)                        | detailed   |
+| `preprocess`                    | Prétraitement (Phase 1)                             | detailed   |
 | `combine-like-terms`            | Combinaison des termes semblables                   | detailed   |
 | `simplify-fraction`             | Simplification de la fraction                       | summarized |
 | `rationalize-denominator`       | Rationalisation du dénominateur: 1/√x = √x/x        | summarized |

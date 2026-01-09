@@ -1,7 +1,7 @@
 /**
  * Step Recorder Tests
  *
- * Tests for the step recording functionality during Phase 1 simplification.
+ * Tests for the step recording functionality during Phase 1 preprocessing.
  *
  * Note: Phase 1 now only handles radical rules. Arithmetic and power rules
  * have been moved to Phase 2 (polynomial normalization).
@@ -11,8 +11,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
 	StepRecorder,
 	getRuleDescription,
-	simplifyWithSteps,
-	simplifyOnceWithSteps
+	preprocessWithSteps,
+	preprocessOnceWithSteps
 } from '../step-recorder';
 import type { MathNode } from '../../types';
 
@@ -208,10 +208,10 @@ describe('getRuleDescription', () => {
 // Simplify with Steps Tests (Phase 1 - Radicals only)
 // =============================================================================
 
-describe('simplifyWithSteps', () => {
+describe('preprocessWithSteps', () => {
 	it('should simplify sqrt(a) * sqrt(b) to sqrt(ab) and record steps', () => {
 		const expr = mul(sqrt(num('2')), sqrt(num('3')));
-		const { result, steps } = simplifyWithSteps(expr);
+		const { result, steps } = preprocessWithSteps(expr);
 
 		expect(result).toEqual(sqrt(mul(num('2'), num('3'))));
 		// Transformation should have been recorded
@@ -220,7 +220,7 @@ describe('simplifyWithSteps', () => {
 
 	it('should return empty steps when no simplification needed', () => {
 		const expr = variable('x');
-		const { result, steps } = simplifyWithSteps(expr);
+		const { result, steps } = preprocessWithSteps(expr);
 
 		expect(result).toEqual(expr);
 		expect(steps.length).toBe(0);
@@ -229,7 +229,7 @@ describe('simplifyWithSteps', () => {
 	it('should not simplify arithmetic expressions (now handled in Phase 2)', () => {
 		// 0 + x is NOT simplified in Phase 1 anymore
 		const expr = add(num('0'), variable('x'));
-		const { result, steps } = simplifyWithSteps(expr);
+		const { result, steps } = preprocessWithSteps(expr);
 
 		// Should remain unchanged
 		expect(result).toEqual(expr);
@@ -239,7 +239,7 @@ describe('simplifyWithSteps', () => {
 	it('should simplify nested sqrt expressions', () => {
 		// (sqrt(2) * sqrt(3)) + x should simplify the sqrt part
 		const expr = add(mul(sqrt(num('2')), sqrt(num('3'))), variable('x'));
-		const { result, steps } = simplifyWithSteps(expr);
+		const { result, steps } = preprocessWithSteps(expr);
 
 		expect(result.type).toBe('addition');
 		if (result.type === 'addition') {
@@ -257,7 +257,7 @@ describe('simplifyWithSteps', () => {
 describe('NormalizationStep format', () => {
 	it('should have all required fields', () => {
 		const before = mul(sqrt(num('2')), sqrt(num('3')));
-		const { steps } = simplifyWithSteps(before);
+		const { steps } = preprocessWithSteps(before);
 
 		if (steps.length > 0) {
 			const step = steps[0];
@@ -272,7 +272,7 @@ describe('NormalizationStep format', () => {
 
 	it('should have non-empty rule and description', () => {
 		const before = mul(sqrt(num('2')), sqrt(num('3')));
-		const { steps } = simplifyWithSteps(before);
+		const { steps } = preprocessWithSteps(before);
 
 		for (const step of steps) {
 			expect(step.rule.length).toBeGreaterThan(0);
@@ -283,13 +283,13 @@ describe('NormalizationStep format', () => {
 });
 
 // =============================================================================
-// simplifyOnceWithSteps Tests
+// preprocessOnceWithSteps Tests
 // =============================================================================
 
-describe('simplifyOnceWithSteps', () => {
+describe('preprocessOnceWithSteps', () => {
 	it('should apply simplification without recorder', () => {
 		const expr = mul(sqrt(num('2')), sqrt(num('3')));
-		const result = simplifyOnceWithSteps(expr);
+		const result = preprocessOnceWithSteps(expr);
 
 		expect(result).toEqual(sqrt(mul(num('2'), num('3'))));
 	});
@@ -297,7 +297,7 @@ describe('simplifyOnceWithSteps', () => {
 	it('should apply simplification with recorder', () => {
 		const recorder = new StepRecorder();
 		const expr = mul(sqrt(num('2')), sqrt(num('3')));
-		const result = simplifyOnceWithSteps(expr, recorder);
+		const result = preprocessOnceWithSteps(expr, recorder);
 
 		expect(result).toEqual(sqrt(mul(num('2'), num('3'))));
 		// Should have recorded the radical transformation
@@ -308,7 +308,7 @@ describe('simplifyOnceWithSteps', () => {
 		const recorder = new StepRecorder();
 		// This is arithmetic, not radical - should not be simplified
 		const expr = add(num('0'), variable('x'));
-		const result = simplifyOnceWithSteps(expr, recorder);
+		const result = preprocessOnceWithSteps(expr, recorder);
 
 		expect(result).toEqual(expr);
 		expect(recorder.length).toBe(0);

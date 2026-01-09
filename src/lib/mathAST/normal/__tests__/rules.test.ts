@@ -1,5 +1,5 @@
 /**
- * Tests for Phase 1 simplification rules (radicals only)
+ * Tests for Phase 1 preprocessing rules (radicals only)
  * and semantic expression checks (isZeroExpression, isOneExpression)
  *
  * Note: Arithmetic and power rules have been moved to Phase 2 (polynomial normalization)
@@ -8,7 +8,7 @@
 
 import { describe, test, expect } from 'vitest';
 import type { MathNode } from '../../types';
-import { applyRadicalRules, simplify } from '../rules/index';
+import { applyRadicalRules, preprocess } from '../rules/index';
 import { isZeroExpression, isOneExpression } from '../normalize';
 
 // =============================================================================
@@ -100,11 +100,11 @@ describe('Radical Rules (Phase 1)', () => {
 		});
 	});
 
-	describe('simplify (recursive)', () => {
+	describe('preprocess (recursive)', () => {
 		test('nested sqrt multiplication', () => {
-			// (sqrt(2) * sqrt(3)) + x should simplify inner part
+			// (sqrt(2) * sqrt(3)) + x should preprocess inner part
 			const node = add(mul(sqrt(num('2')), sqrt(num('3'))), variable('x'));
-			const result = simplify(node);
+			const result = preprocess(node);
 			expect(result.type).toBe('addition');
 			if (result.type === 'addition') {
 				expect(result.left).toEqual(sqrt(mul(num('2'), num('3'))));
@@ -114,7 +114,7 @@ describe('Radical Rules (Phase 1)', () => {
 
 		test('sqrt in division numerator', () => {
 			const node = div(mul(sqrt(num('2')), sqrt(num('3'))), variable('x'));
-			const result = simplify(node);
+			const result = preprocess(node);
 			expect(result.type).toBe('division');
 			if (result.type === 'division') {
 				expect(result.numerator).toEqual(sqrt(mul(num('2'), num('3'))));

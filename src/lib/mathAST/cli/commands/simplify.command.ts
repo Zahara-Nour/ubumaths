@@ -9,7 +9,7 @@ import chalk from 'chalk';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toLatex, toCustom } from '../../index';
-import { simplify } from '../../normal/rules';
+import { preprocess } from '../../normal/rules';
 import { normalize, denormalize, hashNormalForm } from '../../normal';
 
 // =============================================================================
@@ -47,8 +47,8 @@ export class SimplifyCommand extends BaseCommand {
 		}
 
 		try {
-			// First apply rule-based simplification
-			const simplified = simplify(ctx.ast);
+			// First apply Phase 1 preprocessing (radical rules)
+			const simplified = preprocess(ctx.ast);
 
 			// Then normalize and denormalize for canonical form
 			const normalForm = normalize(simplified);
