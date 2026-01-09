@@ -50,16 +50,21 @@ const enum BP {
 // =============================================================================
 
 /**
- * Maps constraint names from the tokenizer to P namespace constraint functions.
+ * Gets the constraint function for a given constraint name.
+ * Uses a function to avoid circular dependency issues with P namespace.
  */
-const CONSTRAINT_MAP: Record<WildcardConstraintName, () => PatternConstraint> = {
-	number: P.isNumber,
-	integer: P.isInteger,
-	positive: P.isPositive,
-	negative: P.isNegative,
-	nonzero: P.isNonzero,
-	variable: P.isVariable
-};
+function getConstraint(name: WildcardConstraintName): PatternConstraint {
+	// Access P lazily to avoid circular dependency at module load time
+	const constraintMap: Record<WildcardConstraintName, () => PatternConstraint> = {
+		number: P.isNumber,
+		integer: P.isInteger,
+		positive: P.isPositive,
+		negative: P.isNegative,
+		nonzero: P.isNonzero,
+		variable: P.isVariable
+	};
+	return constraintMap[name]();
+}
 
 // =============================================================================
 // Parser Error Class
@@ -298,8 +303,8 @@ export class PatternPrattParser {
 		const constraintName = token.constraintName;
 
 		if (constraintName) {
-			const constraintFn = CONSTRAINT_MAP[constraintName];
-			return P._(name, constraintFn());
+			const constraint = getConstraint(constraintName);
+			return P._(name, constraint);
 		}
 
 		return P._(name);
