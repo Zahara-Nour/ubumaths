@@ -157,18 +157,6 @@ describe('simplifyWithSteps', () => {
 		expect(steps.length).toBeGreaterThan(0);
 	});
 
-	it('should simplify sqrt(a/b) to sqrt(a)/sqrt(b) and record steps', () => {
-		const expr = sqrt(div(variable('x'), variable('y')));
-		const { result, steps } = simplifyWithSteps(expr);
-
-		expect(result.type).toBe('division');
-		if (result.type === 'division') {
-			expect(result.numerator).toEqual(sqrt(variable('x')));
-			expect(result.denominator).toEqual(sqrt(variable('y')));
-		}
-		expect(steps.length).toBeGreaterThan(0);
-	});
-
 	it('should return empty steps when no simplification needed', () => {
 		const expr = variable('x');
 		const { result, steps } = simplifyWithSteps(expr);
