@@ -38,10 +38,10 @@ import {
 	gcdPolynomials,
 	divPolynomialByMonomial
 } from './polynomial';
-import { ZERO_TERM } from './term';
-import { EMPTY_MONOMIAL, symbolicFactor, sortSymbolicFactors } from './monomial';
+import { ZERO_TERM, mulTerms } from './term';
+import { EMPTY_MONOMIAL, symbolicFactor, sortSymbolicFactors, hashMonomial } from './monomial';
 import { rational, fromInteger, ONE, isOne, gcd as gcdBigInt } from './rational';
-import { simplifyRadical } from './radical';
+import { simplifyRadical, integerNthRoot } from './radical';
 import { simplify } from './rules/index.js';
 import { denormalize } from './denormalize';
 import { tryUnivariateGcd, dividePolynomials } from './univariate-gcd';
@@ -133,6 +133,126 @@ function recordNormalizationStep(
 // =============================================================================
 // Helper Functions
 // =============================================================================
+
+// =============================================================================
+// Rationalization - Clearing fractional exponents from denominator
+// =============================================================================
+
+/**
+ * Computes the exponent needed to rationalize a fractional exponent.
+ *
+ * For p/q where p mod q != 0, returns (q - (p mod q)) / q
+ * which when added to p/q gives an integer.
+ *
+ * @param exp - A rational exponent (possibly fractional)
+ * @returns The complement exponent to add to get an integer, or null if already integer
+ *
+ * @example
+ * getRationalizingExponent(1/2) = 1/2  // 1/2 + 1/2 = 1
+ * getRationalizingExponent(2/3) = 1/3  // 2/3 + 1/3 = 1
+ * getRationalizingExponent(5/2) = 1/2  // 5/2 + 1/2 = 3
+ * getRationalizingExponent(2/1) = null // already integer
+ */
+function getRationalizingExponent(exp: Rational): Rational | null {
+	// If denominator is 1, exponent is already integer
+	if (exp.d === 1n) return null;
+
+	// p mod q (remainder)
+	// Handle negative numerators by taking absolute value for mod
+	const absN = exp.n < 0n ? -exp.n : exp.n;
+	const remainder = absN % exp.d;
+
+	// If no remainder, exponent is already integer
+	if (remainder === 0n) return null;
+
+	// Complement: (q - remainder) / q
+	const complementN = exp.d - remainder;
+	return rational(complementN, exp.d);
+}
+
+/**
+ * Computes the rationalizing monomial for a given denominator monomial.
+ *
+ * Returns a monomial that, when multiplied with the denominator monomial,
+ * produces a monomial with all integer exponents.
+ *
+ * @param monomial - The denominator monomial to rationalize
+ * @returns The rationalizing monomial, or null if no rationalization needed
+ *
+ * @example
+ * // For x^{1/2}, returns x^{1/2} (multiply both by sqrt(x) to get x)
+ * // For x^{1/2}y^{2/3}, returns x^{1/2}y^{1/3}
+ */
+function getRationalizingMonomial(
+	monomial: readonly import('./types').SymbolicFactor[]
+): import('./types').SymbolicFactor[] | null {
+	const factors: import('./types').SymbolicFactor[] = [];
+	let needsRationalization = false;
+
+	for (const factor of monomial) {
+		const complement = getRationalizingExponent(factor.exponent);
+		if (complement !== null) {
+			needsRationalization = true;
+			factors.push(symbolicFactor(factor.base, complement));
+		}
+	}
+
+	if (!needsRationalization) return null;
+	return factors.length > 0 ? sortSymbolicFactors(factors) : null;
+}
+
+/**
+ * Rationalizes a fraction by clearing fractional exponents from the denominator.
+ *
+ * For single-term denominators with fractional exponents like x^{1/2},
+ * multiplies both numerator and denominator by the appropriate factor
+ * to clear the fractional exponents.
+ *
+ * @example
+ * 1 / sqrt(x) = 1 / x^{1/2}
+ * Multiply by x^{1/2} / x^{1/2}:
+ * = x^{1/2} / x = sqrt(x) / x
+ *
+ * @param numerator - The numerator polynomial
+ * @param denominator - The denominator polynomial
+ * @returns Object with rationalized numerator and denominator, or originals if no change
+ */
+function rationalizeDenominator(
+	numerator: NormalTerm[],
+	denominator: NormalTerm[]
+): { numerator: NormalTerm[]; denominator: NormalTerm[] } {
+	// Only handle single-term denominators for now
+	// Multi-term denominators (like 1/(1+√2)) require conjugate multiplication
+	// which is more complex and not implemented here
+	if (denominator.length !== 1) {
+		return { numerator, denominator };
+	}
+
+	const denTerm = denominator[0];
+
+	// Skip if denominator has no symbolic factors (constant denominator)
+	if (denTerm.monomial.length === 0) {
+		return { numerator, denominator };
+	}
+
+	// Get the rationalizing monomial
+	const rationalizingMon = getRationalizingMonomial(denTerm.monomial);
+	if (rationalizingMon === null) {
+		return { numerator, denominator };
+	}
+
+	// Create the rationalizing term (coefficient = 1)
+	const rationalizingTerm: NormalTerm = {
+		coefficient: ALGEBRAIC_ONE,
+		monomial: rationalizingMon
+	};
+
+	// Multiply numerator and denominator by the rationalizing term
+	const newNumerator = mulPolynomials(numerator, [rationalizingTerm]);
+	const newDenominator = mulPolynomials(denominator, [rationalizingTerm]);
+
+	return { numerator: newNumerator, denominator: newDenominator };
+}
 
 /**
  * Creates a NormalForm from a polynomial (denominator = 1).
@@ -280,6 +400,17 @@ function normalFormFromFraction(numerator: NormalTerm[], denominator: NormalTerm
 		}
 	}
 
+	// Rationalize denominator: clear fractional exponents
+	// e.g., 1/sqrt(x) = 1/x^{1/2} → sqrt(x)/x = x^{1/2}/x
+	const rationalized = rationalizeDenominator(reducedNumerator, reducedDenominator);
+	reducedNumerator = rationalized.numerator;
+	reducedDenominator = rationalized.denominator;
+
+	// After rationalization, check if denominator became 1
+	if (isOnePolynomial(reducedDenominator)) {
+		return normalFormFromPolynomial(reducedNumerator);
+	}
+
 	const form: NormalForm = {
 		numerator: reducedNumerator,
 		denominator: reducedDenominator,
@@ -409,6 +540,158 @@ function getRationalExponent(node: MathNode): Rational | null {
 	}
 
 	return null;
+}
+
+// =============================================================================
+// Perfect Square Trinomial Helpers
+// =============================================================================
+
+/**
+ * Checks if a rational number is a perfect square (both n and d are perfect squares).
+ * Returns the square root if yes, null otherwise.
+ */
+function sqrtPerfectSquareRational(r: Rational): Rational | null {
+	if (r.n < 0n) return null; // Negative numbers don't have real square roots
+
+	const sqrtN = integerNthRoot(r.n, 2n);
+	const sqrtD = integerNthRoot(r.d, 2n);
+
+	if (sqrtN !== null && sqrtD !== null) {
+		return { n: sqrtN, d: sqrtD };
+	}
+	return null;
+}
+
+/**
+ * Checks if a NormalTerm is a perfect square.
+ * A term is a perfect square if:
+ * - Its coefficient is a pure rational that's a perfect square
+ * - All exponents in the monomial are even integers
+ */
+function isPerfectSquareTermForTrinomial(term: NormalTerm): boolean {
+	const { coefficient, monomial } = term;
+
+	// Check coefficient is a pure positive rational perfect square
+	if (!isPureRational(coefficient)) return false;
+	const ratValue = getRationalValue(coefficient);
+	if (ratValue === null || ratValue.n <= 0n) return false;
+	if (sqrtPerfectSquareRational(ratValue) === null) return false;
+
+	// Check all exponents are even integers
+	for (const factor of monomial) {
+		if (factor.exponent.d !== 1n) return false; // Must be integer exponent
+		if (factor.exponent.n % 2n !== 0n) return false; // Must be even
+	}
+
+	return true;
+}
+
+/**
+ * Takes the square root of a perfect square term.
+ * Returns null if the term is not a perfect square.
+ */
+function sqrtPerfectSquareTerm(term: NormalTerm): NormalTerm | null {
+	const { coefficient, monomial } = term;
+
+	// Get the rational coefficient
+	if (!isPureRational(coefficient)) return null;
+	const ratValue = getRationalValue(coefficient);
+	if (ratValue === null || ratValue.n <= 0n) return null;
+
+	// Take sqrt of coefficient
+	const sqrtRat = sqrtPerfectSquareRational(ratValue);
+	if (sqrtRat === null) return null;
+
+	// Halve all exponents in monomial
+	const newMonomial: typeof monomial = [];
+	for (const factor of monomial) {
+		if (factor.exponent.d !== 1n || factor.exponent.n % 2n !== 0n) return null;
+		newMonomial.push(symbolicFactor(factor.base, { n: factor.exponent.n / 2n, d: 1n }));
+	}
+
+	return {
+		coefficient: algebraicFromRational(sqrtRat),
+		monomial: sortSymbolicFactors(newMonomial)
+	};
+}
+
+/**
+ * Tries to factor a 3-term polynomial as a perfect square trinomial.
+ * Returns (a + b) or (a - b) if the polynomial equals (a ± b)², null otherwise.
+ *
+ * Pattern: a² ± 2ab + b² = (a ± b)²
+ *
+ * @param terms - Array of 3 NormalTerms (the polynomial)
+ * @returns The factored form as a NormalForm, or null
+ */
+function tryFactorPerfectSquareTrinomial(
+	terms: readonly NormalTerm[],
+	_ctx?: NormalizeContext
+): NormalForm | null {
+	if (terms.length !== 3) return null;
+
+	// Find the two "square" terms and the "middle" term
+	// In a perfect square trinomial a² ± 2ab + b²:
+	// - Two terms should be perfect squares (a² and b²)
+	// - The middle term should be ±2ab
+
+	const squareTermIndices: number[] = [];
+	for (let i = 0; i < 3; i++) {
+		if (isPerfectSquareTermForTrinomial(terms[i])) {
+			squareTermIndices.push(i);
+		}
+	}
+
+	// We need exactly 2 perfect square terms
+	if (squareTermIndices.length !== 2) return null;
+
+	const middleIndex = [0, 1, 2].find((i) => !squareTermIndices.includes(i))!;
+	const [sqIdx1, sqIdx2] = squareTermIndices;
+
+	const term1 = terms[sqIdx1]; // a²
+	const term2 = terms[sqIdx2]; // b²
+	const middleTerm = terms[middleIndex]; // ±2ab
+
+	// Take square roots
+	const a = sqrtPerfectSquareTerm(term1);
+	const b = sqrtPerfectSquareTerm(term2);
+	if (a === null || b === null) return null;
+
+	// Compute 2ab
+	// First multiply a and b
+	const twoAB = mulTerms(
+		{ coefficient: algebraicFromRational({ n: 2n, d: 1n }), monomial: EMPTY_MONOMIAL },
+		mulTerms(a, b)
+	);
+
+	// Check if middleTerm equals 2ab or -2ab
+	// Compare by checking if they have the same monomial and coefficients match
+	const middleCoeff = getRationalValue(middleTerm.coefficient);
+	const twoABCoeff = getRationalValue(twoAB.coefficient);
+
+	if (middleCoeff === null || twoABCoeff === null) return null;
+	if (!isPureRational(middleTerm.coefficient) || !isPureRational(twoAB.coefficient)) return null;
+
+	// Check monomials are equal
+	if (hashMonomial(middleTerm.monomial) !== hashMonomial(twoAB.monomial)) return null;
+
+	// Check coefficients: middle should be +2ab or -2ab
+	const isPositive = middleCoeff.n * twoABCoeff.d === twoABCoeff.n * middleCoeff.d;
+	const isNegative = middleCoeff.n * twoABCoeff.d === -twoABCoeff.n * middleCoeff.d;
+
+	if (!isPositive && !isNegative) return null;
+
+	// Success! Build the result: (a + b) or (a - b)
+	// As a NormalForm, this is the polynomial [a, b] or [a, -b]
+	if (isPositive) {
+		// (a + b)
+		const resultPoly = addPolynomials([a], [b]);
+		return normalFormFromPolynomial(resultPoly);
+	} else {
+		// (a - b)
+		const resultPoly = subPolynomials([a], [b]);
+		return normalFormFromPolynomial(resultPoly);
+	}
 }
 
 // =============================================================================
@@ -1796,7 +2079,26 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 		}
 	}
 
-	// B5. √(expression) = (expression)^{1/2}
+	// B5. √(a² ± 2ab + b²) = |a ± b| — perfect square trinomial
+	// For expressions like √(x² + 2x + 1) → x + 1
+	{
+		const argForm = normalizeNode(arg, ctx);
+
+		// Check if it's a 3-term polynomial (not a fraction)
+		if (
+			argForm.denominator.length === 1 &&
+			isOnePolynomial(argForm.denominator) &&
+			argForm.numerator.length === 3
+		) {
+			const factored = tryFactorPerfectSquareTrinomial(argForm.numerator, ctx);
+			if (factored !== null) {
+				recordNormalizationStep(ctx, 'sqrt-perfect-square-trinomial', node, factored, 'summarized');
+				return factored;
+			}
+		}
+	}
+
+	// B6. √(expression) = (expression)^{1/2}
 	// Unwrap delimiter if present, then create fractional power
 	const baseExpr = arg.type === 'delimiter' ? arg.content : arg;
 	const term = termFromSymbolicFactor(baseExpr, { n: 1n, d: 2n });

@@ -991,6 +991,51 @@ const gcd = tryUnivariateGcd(numeratorTerms, denominatorTerms);
 const quotient = dividePolynomials(dividend, divisor);
 ```
 
+### Denominator Rationalization
+
+The normalizer automatically rationalizes denominators by clearing fractional exponents. This converts expressions to their standard mathematical form with integer exponents in the denominator.
+
+**Examples:**
+
+```typescript
+// 1/√x → √x/x
+normalize(parseLatex('\\frac{1}{\\sqrt{x}}')); // → x^{1/2}/x
+
+// 2/√x → 2√x/x
+normalize(parseLatex('\\frac{2}{\\sqrt{x}}')); // → 2x^{1/2}/x
+
+// x/√y → x√y/y
+normalize(parseLatex('\\frac{x}{\\sqrt{y}}')); // → x·y^{1/2}/y
+
+// 1/x^{1/3} → x^{2/3}/x (cube root rationalization)
+normalize(parseLatex('\\frac{1}{x^{1/3}}')); // → x^{2/3}/x
+
+// 1/(√x·√y) → √x·√y/(xy)
+normalize(parseLatex('\\frac{1}{\\sqrt{x}\\sqrt{y}}')); // → x^{1/2}·y^{1/2}/(xy)
+```
+
+**Algorithm:**
+
+For a denominator term with monomial containing fractional exponents:
+
+1. For each factor `x^{p/q}` where `p mod q ≠ 0`, compute the complement exponent `(q - p mod q)/q`
+2. The complement multiplied by the original gives an integer exponent
+3. Multiply both numerator and denominator by the rationalizing monomial
+
+**Example computation:**
+
+```
+1/√x = 1/x^{1/2}
+Complement of 1/2 = (2-1)/2 = 1/2
+Multiply by x^{1/2}/x^{1/2}:
+= x^{1/2}/(x^{1/2} × x^{1/2}) = x^{1/2}/x^1 = √x/x
+```
+
+**Limits:**
+
+- Only single-term denominators (multi-term denominators like `1/(1+√2)` require conjugate multiplication, not implemented)
+- Constant denominators are not rationalized (already simplified via other rules)
+
 ### Semantic Expression Checks
 
 Check if expressions evaluate to zero or one mathematically:
@@ -1189,22 +1234,23 @@ recorder.clear();
 
 #### Phase 2 Rules (Normalization)
 
-| Rule                 | Description                               | Verbosity  |
-| -------------------- | ----------------------------------------- | ---------- |
-| `pre-simplify`       | Pré-simplification (Phase 1)              | detailed   |
-| `combine-like-terms` | Combinaison des termes semblables         | detailed   |
-| `simplify-fraction`  | Simplification de la fraction             | summarized |
-| `power-zero`         | Tout nombre à la puissance 0 vaut 1       | summarized |
-| `power-one`          | Un nombre à la puissance 1 reste inchangé | detailed   |
-| `expand-power`       | Développement de la puissance             | summarized |
-| `trig-known-value`   | Valeur trigonométrique remarquable        | summarized |
-| `exp-ln-inverse`     | exp(ln(x)) = x                            | summarized |
-| `ln-exp-inverse`     | ln(exp(x)) = x                            | summarized |
-| `exp-zero`           | e⁰ = 1                                    | detailed   |
-| `exp-one`            | e¹ = e                                    | detailed   |
-| `ln-one`             | ln(1) = 0                                 | detailed   |
-| `ln-e`               | ln(e) = 1                                 | detailed   |
-| `log-simplify`       | Simplification du logarithme              | summarized |
+| Rule                      | Description                                  | Verbosity  |
+| ------------------------- | -------------------------------------------- | ---------- |
+| `pre-simplify`            | Pré-simplification (Phase 1)                 | detailed   |
+| `combine-like-terms`      | Combinaison des termes semblables            | detailed   |
+| `simplify-fraction`       | Simplification de la fraction                | summarized |
+| `rationalize-denominator` | Rationalisation du dénominateur: 1/√x = √x/x | summarized |
+| `power-zero`              | Tout nombre à la puissance 0 vaut 1          | summarized |
+| `power-one`               | Un nombre à la puissance 1 reste inchangé    | detailed   |
+| `expand-power`            | Développement de la puissance                | summarized |
+| `trig-known-value`        | Valeur trigonométrique remarquable           | summarized |
+| `exp-ln-inverse`          | exp(ln(x)) = x                               | summarized |
+| `ln-exp-inverse`          | ln(exp(x)) = x                               | summarized |
+| `exp-zero`                | e⁰ = 1                                       | detailed   |
+| `exp-one`                 | e¹ = e                                       | detailed   |
+| `ln-one`                  | ln(1) = 0                                    | detailed   |
+| `ln-e`                    | ln(e) = 1                                    | detailed   |
+| `log-simplify`            | Simplification du logarithme                 | summarized |
 
 ### Educational Use
 

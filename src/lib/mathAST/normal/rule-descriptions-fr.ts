@@ -56,6 +56,7 @@ export const RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'sqrt-of-even-power': 'Racine carrée de puissance paire: √(a²ⁿ) = aⁿ',
 	'sqrt-to-half-power': 'Conversion en exposant fractionnaire: √a = a^(1/2)',
 	'sqrt-extract-perfect-square': 'Extraction des carrés parfaits: √(4x²y) = 2x√y',
+	'sqrt-perfect-square-trinomial': 'Trinôme carré parfait: √(a² ± 2ab + b²) = a ± b',
 
 	// ==========================================================================
 	// Transcendental Functions
@@ -83,6 +84,7 @@ export const RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'exp-ln-inverse': 'exp(ln(x)) = x',
 	'ln-exp-inverse': 'ln(exp(x)) = x',
 	'log-simplify': 'Simplification du logarithme',
+	'rationalize-denominator': 'Rationalisation du dénominateur: 1/√x = √x/x',
 
 	// ==========================================================================
 	// General Categories
