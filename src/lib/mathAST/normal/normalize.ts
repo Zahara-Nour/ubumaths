@@ -13,7 +13,7 @@
 
 import type { MathNode } from '../types';
 import type { NormalForm, NormalTerm, Rational, NormalizationStep } from './types';
-import type { Verbosity } from '../common/verbosity.js';
+import { type Verbosity, shouldIncludeStep } from '../common/verbosity.js';
 import { hashPolynomial, hashNormalForm, hashMathNode } from './hash';
 import { StepRecorder, getRuleDescription } from './step-recorder.js';
 import {
@@ -108,12 +108,7 @@ function recordNormalizationStep(
 
 	// Skip if this step's verbosity is higher than requested
 	// (detailed steps not shown when 'summarized' is requested)
-	const verbosityOrder: Record<Verbosity, number> = {
-		result: 0,
-		summarized: 1,
-		detailed: 2
-	};
-	if (verbosityOrder[stepVerbosity] > verbosityOrder[ctx.verbosity]) return;
+	if (!shouldIncludeStep(stepVerbosity, ctx.verbosity)) return;
 
 	// Denormalize result for the "after" display
 	const resultNode = denormalize(result);
