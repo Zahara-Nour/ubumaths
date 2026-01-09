@@ -3,7 +3,6 @@
  *
  * Only rules that Phase 2 (polynomial normalization) cannot handle efficiently:
  * - sqrt(a) * sqrt(b) = sqrt(ab) for symbolic radicals
- * - sqrt(a/b) = sqrt(a) / sqrt(b)
  *
  * All other radical simplifications (sqrt(0), sqrt(1), sqrt(n) perfect squares)
  * are handled in Phase 2 by normalizeFunction.
@@ -47,52 +46,29 @@ function sqrtNode(arg: MathNode): MathNode {
  *
  * Rules applied (Phase 1 only - what Phase 2 cannot do efficiently):
  * - sqrt(a) * sqrt(b) = sqrt(a*b) for symbolic radicals
- * - sqrt(a/b) = sqrt(a) / sqrt(b)
  *
  * @param node - The node to simplify
  * @returns Simplified node, or null if no rule applies
  */
 export function applyRadicalRules(node: MathNode): MathNode | null {
-	switch (node.type) {
-		case 'multiplication': {
-			// sqrt(a) * sqrt(b) = sqrt(a*b)
-			// Phase 2 cannot combine different sqrt bases in monomials
-			const leftArg = getSqrtArg(node.left);
-			const rightArg = getSqrtArg(node.right);
-
-			if (leftArg && rightArg) {
-				return sqrtNode({
-					type: 'multiplication',
-					left: leftArg,
-					right: rightArg,
-					displayStyle: 'implicit'
-				});
-			}
-			return null;
-		}
-
-		case 'function': {
-			if (node.name === 'sqrt' && node.args.length === 1) {
-				const arg = node.args[0];
-
-				// sqrt(a/b) = sqrt(a) / sqrt(b)
-				// Helps canonicalization by putting division in NormalForm structure
-				if (arg.type === 'division') {
-					return {
-						type: 'division',
-						numerator: sqrtNode(arg.numerator),
-						denominator: sqrtNode(arg.denominator),
-						displayStyle: arg.displayStyle
-					};
-				}
-			}
-
-			return null;
-		}
-
-		default:
-			return null;
+	if (node.type !== 'multiplication') {
+		return null;
 	}
+
+	// sqrt(a) * sqrt(b) = sqrt(a*b)
+	// Phase 2 cannot combine different sqrt bases in monomials
+	const leftArg = getSqrtArg(node.left);
+	const rightArg = getSqrtArg(node.right);
+
+	if (leftArg && rightArg) {
+		return sqrtNode({
+			type: 'multiplication',
+			left: leftArg,
+			right: rightArg,
+			displayStyle: 'implicit'
+		});
+	}
+	return null;
 }
 
 /**

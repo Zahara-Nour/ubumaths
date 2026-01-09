@@ -79,42 +79,6 @@ describe('Radical Rules (Phase 1)', () => {
 			});
 		});
 
-		describe('sqrt(a/b) = sqrt(a) / sqrt(b)', () => {
-			test('sqrt(x/y) = sqrt(x) / sqrt(y)', () => {
-				const node = sqrt(div(variable('x'), variable('y')));
-				const result = applyRadicalRules(node);
-				expect(result?.type).toBe('division');
-				if (result?.type === 'division') {
-					expect(result.numerator).toEqual(sqrt(variable('x')));
-					expect(result.denominator).toEqual(sqrt(variable('y')));
-				}
-			});
-
-			test('sqrt(2/3) = sqrt(2) / sqrt(3)', () => {
-				const node = sqrt(div(num('2'), num('3')));
-				const result = applyRadicalRules(node);
-				expect(result?.type).toBe('division');
-				if (result?.type === 'division') {
-					expect(result.numerator).toEqual(sqrt(num('2')));
-					expect(result.denominator).toEqual(sqrt(num('3')));
-				}
-			});
-
-			test('preserves displayStyle from original division', () => {
-				const node = sqrt({
-					type: 'division',
-					numerator: variable('x'),
-					denominator: variable('y'),
-					displayStyle: 'inline'
-				});
-				const result = applyRadicalRules(node);
-				expect(result?.type).toBe('division');
-				if (result?.type === 'division') {
-					expect(result.displayStyle).toBe('inline');
-				}
-			});
-		});
-
 		describe('no simplification cases', () => {
 			test('sqrt(x) returns null (no rule applies)', () => {
 				const node = sqrt(variable('x'));

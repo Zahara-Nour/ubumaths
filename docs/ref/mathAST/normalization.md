@@ -782,7 +782,7 @@ The normalization process has two phases:
 
 Applies radical rules that Phase 2 cannot handle efficiently:
 
-- **Radicals**: `√(a)·√(b)=√(ab)`, `√(a/b)=√a/√b`
+- **Radicals**: `√(a)·√(b)=√(ab)`
 
 **Phase 2: Polynomial normalization** (`normalizeNode` function)
 
