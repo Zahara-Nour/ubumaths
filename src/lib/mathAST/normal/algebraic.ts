@@ -451,6 +451,20 @@ export function divAlgebraic(
 		return algebraicFromRational(divRational(aRat, bRat));
 	}
 
+	// Case 1.5: Divisor is a pure rational - divide each term by the rational
+	// This handles cases like (√2 - √3) / (-1) = -√2 + √3
+	if (bRat !== null) {
+		const resultTerms: AlgebraicTerm[] = [];
+		for (const term of a.terms) {
+			resultTerms.push({
+				rational: divRational(term.rational, bRat),
+				radicals: term.radicals,
+				...(term.hasImaginaryUnit === true && { hasImaginaryUnit: true as const })
+			});
+		}
+		return algebraicCoefficient(resultTerms);
+	}
+
 	// Case 2: Single term division - can try to simplify radicals
 	if (a.terms.length === 1 && b.terms.length === 1) {
 		const termA = a.terms[0];

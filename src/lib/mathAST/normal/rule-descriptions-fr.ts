@@ -85,6 +85,7 @@ export const RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'ln-exp-inverse': 'ln(exp(x)) = x',
 	'log-simplify': 'Simplification du logarithme',
 	'rationalize-denominator': 'Rationalisation du dénominateur: 1/√x = √x/x',
+	'rationalize-conjugate': 'Rationalisation par conjugué: 1/(a+√b) = (a-√b)/(a²-b)',
 
 	// ==========================================================================
 	// General Categories
