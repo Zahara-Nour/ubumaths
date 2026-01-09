@@ -210,6 +210,27 @@ Descriptions en francais pour affichage educatif.
 
 ## Regles Transcendantales Avancees
 
+### Fonctions inverses exp/ln
+
+```
+exp(ln(x)) = x
+ln(exp(x)) = x
+```
+
+Ces regles sont appliquees AVANT la normalisation de l'argument pour eviter des expansions inutiles.
+
+### Expansion des logarithmes
+
+Les logarithmes sont expandes vers des formes plus simples :
+
+| Regle                   | Exemple   | Resultat        |
+| ----------------------- | --------- | --------------- |
+| `ln(x^n) = n·ln(x)`     | `ln(x²)`  | `2·ln(x)`       |
+| `ln(x·y) = ln(x)+ln(y)` | `ln(xy)`  | `ln(x) + ln(y)` |
+| `ln(x/y) = ln(x)-ln(y)` | `ln(x/y)` | `ln(x) - ln(y)` |
+| `ln(n)` factorisation   | `ln(8)`   | `3·ln(2)`       |
+| `ln(n/d)` rationnel     | `ln(2/3)` | `ln(2) - ln(3)` |
+
 ### exp(combinaison lineaire de ln) = produit de puissances
 
 La normalisation detecte les combinaisons lineaires de logarithmes dans l'argument de `exp` et les convertit en produits de puissances :
@@ -250,9 +271,8 @@ exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ
 ### Non documente
 
 1. **Support complexe** (`hasImaginaryUnit`) - Present dans le code
-2. **Regles transcendantales** - Simplification trig, log, exp
-3. **`simplifyOnce` et `simplifyOnceWithSteps`** - Exportes mais non documentes
-4. **Composition de fonctions** (`type: 'composition'`)
+2. **`simplifyOnce` et `simplifyOnceWithSteps`** - Exportes mais non documentes
+3. **Composition de fonctions** (`type: 'composition'`)
 
 ### Limitations non documentees
 
