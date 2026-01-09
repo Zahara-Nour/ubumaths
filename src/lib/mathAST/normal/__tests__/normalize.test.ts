@@ -476,3 +476,89 @@ describe('Expression Hash', () => {
 		expect(hashNormalForm(a)).not.toBe(hashNormalForm(b));
 	});
 });
+
+// =============================================================================
+// Function Argument Normalization Tests
+// =============================================================================
+
+function fn(name: string, ...args: MathNode[]): MathNode {
+	return { type: 'function', name, args };
+}
+
+function fnWithBase(name: string, base: MathNode, arg: MathNode): MathNode {
+	return { type: 'function', name, args: [arg], base };
+}
+
+describe('Function Argument Normalization', () => {
+	test('sin(x+x) and sin(2x) are equivalent', () => {
+		const expr1 = fn('sin', add(variable('x'), variable('x')));
+		const expr2 = fn('sin', mul(num('2'), variable('x')));
+		const norm1 = normalize(expr1);
+		const norm2 = normalize(expr2);
+		expect(norm1.hash).toBe(norm2.hash);
+	});
+
+	test('cos(2*3) and cos(6) are equivalent', () => {
+		const expr1 = fn('cos', mul(num('2'), num('3')));
+		const expr2 = fn('cos', num('6'));
+		const norm1 = normalize(expr1);
+		const norm2 = normalize(expr2);
+		expect(norm1.hash).toBe(norm2.hash);
+	});
+
+	test('sqrt(x+x) and sqrt(2x) are equivalent', () => {
+		const expr1 = sqrt(add(variable('x'), variable('x')));
+		const expr2 = sqrt(mul(num('2'), variable('x')));
+		const norm1 = normalize(expr1);
+		const norm2 = normalize(expr2);
+		expect(norm1.hash).toBe(norm2.hash);
+	});
+
+	test('log base normalization: log_2(4+4) and log_2(8) are equivalent', () => {
+		const expr1 = fnWithBase('log', num('2'), add(num('4'), num('4')));
+		const expr2 = fnWithBase('log', num('2'), num('8'));
+		const norm1 = normalize(expr1);
+		const norm2 = normalize(expr2);
+		expect(norm1.hash).toBe(norm2.hash);
+	});
+
+	test('nested function arguments are normalized: sin(cos(x+x)) and sin(cos(2x))', () => {
+		const expr1 = fn('sin', fn('cos', add(variable('x'), variable('x'))));
+		const expr2 = fn('sin', fn('cos', mul(num('2'), variable('x'))));
+		const norm1 = normalize(expr1);
+		const norm2 = normalize(expr2);
+		expect(norm1.hash).toBe(norm2.hash);
+	});
+
+	test('ln(1+1) and ln(2) are equivalent', () => {
+		const expr1 = fn('ln', add(num('1'), num('1')));
+		const expr2 = fn('ln', num('2'));
+		const norm1 = normalize(expr1);
+		const norm2 = normalize(expr2);
+		expect(norm1.hash).toBe(norm2.hash);
+	});
+
+	test('tan(x+0) and tan(x) are equivalent', () => {
+		const expr1 = fn('tan', add(variable('x'), num('0')));
+		const expr2 = fn('tan', variable('x'));
+		const norm1 = normalize(expr1);
+		const norm2 = normalize(expr2);
+		expect(norm1.hash).toBe(norm2.hash);
+	});
+
+	test('different function arguments produce different hashes', () => {
+		const expr1 = fn('sin', variable('x'));
+		const expr2 = fn('sin', variable('y'));
+		const norm1 = normalize(expr1);
+		const norm2 = normalize(expr2);
+		expect(norm1.hash).not.toBe(norm2.hash);
+	});
+
+	test('different functions with same argument produce different hashes', () => {
+		const expr1 = fn('sin', variable('x'));
+		const expr2 = fn('cos', variable('x'));
+		const norm1 = normalize(expr1);
+		const norm2 = normalize(expr2);
+		expect(norm1.hash).not.toBe(norm2.hash);
+	});
+});

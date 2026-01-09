@@ -38,6 +38,7 @@ import { EMPTY_MONOMIAL, symbolicFactor } from './monomial';
 import { rational, fromInteger, ONE } from './rational';
 import { simplifyRadical } from './radical';
 import { simplify } from './rules/index.js';
+import { denormalize } from './denormalize';
 
 // =============================================================================
 // Constants
@@ -410,14 +411,39 @@ function normalizeNode(node: MathNode): NormalForm {
 }
 
 /**
+ * Creates a canonical FunctionNode with normalized arguments.
+ * This ensures that sin(x+x) and sin(2x) produce the same hash.
+ */
+function canonicalizeFunctionNode(
+	node: MathNode & { type: 'function' }
+): MathNode & { type: 'function' } {
+	const normalizedArgs = node.args.map((arg) => denormalize(normalizeNode(arg)));
+
+	return {
+		type: 'function' as const,
+		name: node.name,
+		args: normalizedArgs,
+		...(node.power && { power: denormalize(normalizeNode(node.power)) }),
+		...(node.base && { base: denormalize(normalizeNode(node.base)) }),
+		...(node.derivativeOrder !== undefined && { derivativeOrder: node.derivativeOrder }),
+		...(node.isInverse !== undefined && { isInverse: node.isInverse })
+	};
+}
+
+/**
  * Normalizes a function call.
+ * Arguments are normalized first to ensure canonical representation.
  */
 function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
-	const { name, args } = node;
+	const { name } = node;
 
-	// Handle sqrt specially
-	if (name === 'sqrt' && args.length === 1) {
-		const arg = args[0];
+	// 1. Canonicalize arguments first
+	const canonicalNode = canonicalizeFunctionNode(node);
+	const canonicalArgs = canonicalNode.args;
+
+	// 2. Handle sqrt specially (with already normalized argument)
+	if (name === 'sqrt' && canonicalArgs.length === 1) {
+		const arg = canonicalArgs[0];
 
 		// sqrt of a positive integer - simplify the radical
 		if (arg.type === 'number') {
@@ -449,14 +475,12 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 			}
 		}
 
-		// sqrt of a variable or expression - treat as symbolic
-		// TODO: If arg normalizes to a simple polynomial, we might be able to simplify
-		// For now, treat sqrt(expr) as opaque
-		return normalizeOpaqueNode(node);
+		// sqrt of expression - opaque with normalized args
+		return normalizeOpaqueNode(canonicalNode);
 	}
 
-	// Other functions are treated as opaque
-	return normalizeOpaqueNode(node);
+	// 3. Other functions - opaque with normalized args
+	return normalizeOpaqueNode(canonicalNode);
 }
 
 /**
