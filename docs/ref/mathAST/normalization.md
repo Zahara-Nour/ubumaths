@@ -547,13 +547,47 @@ import {
 } from '$lib/mathAST/normal';
 
 // Trigonometric values (valeurs remarquables)
-// sin(0) = 0, sin(π/6) = 1/2, sin(π/4) = √2/2, sin(π/3) = √3/2, sin(π/2) = 1
-// cos(0) = 1, cos(π/6) = √3/2, cos(π/4) = √2/2, cos(π/3) = 1/2, cos(π/2) = 0
-// tan(0) = 0, tan(π/4) = 1, tan(π) = 0
-
 simplifyTrig(parseLatex('\\sin(0)')); // → 0
 simplifyTrig(parseLatex('\\cos(\\pi)')); // → -1
 simplifyTrig(parseLatex('\\sin(\\frac{\\pi}{6})')); // → 1/2
+```
+
+### Trigonometric Values (Complete Table)
+
+The normalizer evaluates sin, cos, and tan at all standard angles (multiples of π/6 and π/4):
+
+| Angle | sin   | cos   | tan       |
+| ----- | ----- | ----- | --------- |
+| 0     | 0     | 1     | 0         |
+| π/6   | 1/2   | √3/2  | √3/3      |
+| π/4   | √2/2  | √2/2  | 1         |
+| π/3   | √3/2  | 1/2   | √3        |
+| π/2   | 1     | 0     | undefined |
+| 2π/3  | √3/2  | -1/2  | -√3       |
+| 3π/4  | √2/2  | -√2/2 | -1        |
+| 5π/6  | 1/2   | -√3/2 | -√3/3     |
+| π     | 0     | -1    | 0         |
+| 7π/6  | -1/2  | -√3/2 | √3/3      |
+| 5π/4  | -√2/2 | -√2/2 | 1         |
+| 4π/3  | -√3/2 | -1/2  | √3        |
+| 3π/2  | -1    | 0     | undefined |
+| 5π/3  | -√3/2 | 1/2   | -√3       |
+| 7π/4  | -√2/2 | √2/2  | -1        |
+| 11π/6 | -1/2  | √3/2  | -√3/3     |
+| 2π    | 0     | 1     | 0         |
+
+**Features**:
+
+- Automatic periodic reduction (mod 2π)
+- Arguments normalized before lookup (e.g., `sin(x+x)` and `sin(2x)` produce same result)
+- Unknown angles remain as opaque symbolic factors
+
+```typescript
+// Examples
+normalize(parseLatex('\\sin(\\frac{\\pi}{4})')); // → √2/2
+normalize(parseLatex('\\cos(\\frac{2\\pi}{3})')); // → -1/2
+normalize(parseLatex('\\tan(\\frac{\\pi}{3})')); // → √3
+normalize(parseLatex('\\sin(\\frac{13\\pi}{6})')); // → 1/2 (reduced from 13π/6 to π/6)
 
 // Logarithm identities
 // ln(1) = 0, ln(e) = 1, log(1) = 0, log(10) = 1, log_b(b) = 1

@@ -210,6 +210,22 @@ Descriptions en francais pour affichage educatif.
 
 ## Regles Transcendantales Avancees
 
+### Valeurs trigonometriques remarquables
+
+La normalisation evalue sin, cos, tan aux angles standards (multiples de π/6 et π/4) :
+
+- **17 angles** : 0, π/6, π/4, π/3, π/2, 2π/3, 3π/4, 5π/6, π, 7π/6, 5π/4, 4π/3, 3π/2, 5π/3, 7π/4, 11π/6, 2π
+- **Reduction periodique** : mod 2π automatique (ex: sin(13π/6) = sin(π/6) = 1/2)
+- **Normalisation argument** : sin(x+x) et sin(2x) produisent le meme hash
+- **Angles inconnus** : restent opaques (ex: sin(x) → SymbolicFactor)
+
+**Algorithme** :
+
+1. Normaliser l'argument → NormalForm
+2. Extraire coefficient de π si possible (`extractPiMultiple`)
+3. Reduire mod 2 (periode 2π)
+4. Lookup dans table des valeurs remarquables
+
 ### Fonctions inverses exp/ln
 
 ```
