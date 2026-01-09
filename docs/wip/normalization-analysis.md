@@ -282,6 +282,56 @@ exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ
 - Termes qui s'annulent (`ln(x) - ln(x)`) : retourne `1` (exp(0) = 1)
 - Exposants negatifs : genere des divisions (`x^(-2)` -> `1/x²`)
 
+### Expansion des exponentielles
+
+La normalisation expande les exponentielles avec sommes ou coefficients scalaires :
+
+```
+exp(a + b) = exp(a)·exp(b)
+exp(n·a) = exp(a)^n
+```
+
+**Exemples** :
+
+| Expression       | Resultat        |
+| ---------------- | --------------- |
+| `exp(x + y)`     | `exp(x)·exp(y)` |
+| `exp(x - y)`     | `exp(x)/exp(y)` |
+| `exp(2x)`        | `exp(x)²`       |
+| `exp(-x)`        | `1/exp(x)`      |
+| `exp(x/2)`       | `exp(x)^(1/2)`  |
+| `exp(ln(x) + y)` | `x·exp(y)`      |
+
+**Algorithme** :
+
+1. `isSumForm()` : Detecte si l'argument est une somme (multiple termes, denominateur = 1)
+2. `expandExpSum()` : Expande `exp(a+b+...)` en `exp(a)·exp(b)·...` (recursif)
+3. `extractExpCoefficient()` : Extrait coefficient rationnel d'un terme unique
+4. `expandExpCoefficient()` : Cree `exp(base)^coeff` via `buildPowerNode`
+
+**Ordre des regles dans `normalizeFunction()`** :
+
+1. `exp(ln(x)) = x` (composition, AST brut)
+2. `exp(0) = 1`, `exp(1) = e` (valeurs speciales)
+3. `exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ` (combinaison lineaire de ln)
+4. `exp(a + b + ...) = exp(a)·exp(b)·...` (expansion somme)
+5. `exp(n·a) = exp(a)^n` (extraction coefficient)
+
+**Cas opaques** (non expandes) :
+
+- `exp(x/y)` : argument fraction (pas une somme)
+- `exp(√2·x)` : coefficient irrationnel
+- `exp(x·y)` : produit de variables (coefficient = 1)
+- `exp(5)` : constante pure (pas de variable a extraire)
+- `exp(-1)` : constante negative (pas simplifie en `1/e`)
+- `exp(x/y + z/w)` : normalise en fraction unique `(xw+yz)/(yw)`, pas une somme
+
+**Limitations connues** :
+
+- `exp(n)` avec n entier ≠ 0,1 reste opaque (pas simplifie en `e^n`)
+- `exp(x/n)^n ≠ exp(x)` : simplification puissances symboliques non implementee
+- `exp(-n) ≠ 1/exp(n)` : seul `exp(1) = e` est simplifie
+
 ## Ecarts Documentation vs Code
 
 ### Non documente

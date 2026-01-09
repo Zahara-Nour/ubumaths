@@ -671,6 +671,47 @@ normalize(parseLatex('\\exp(\\ln(x) - \\ln(x))')); // → 1
 normalize(parseLatex('\\exp(\\frac{1}{2}\\ln(x))')); // → √x
 ```
 
+### Exponential Expansion Rules
+
+The normalizer expands exponentials with sums or scalar coefficients:
+
+```
+exp(a + b) = exp(a)·exp(b)
+exp(n·a) = exp(a)^n
+```
+
+```typescript
+// Sum expansion
+normalize(parseLatex('\\exp(x + y)')); // → exp(x)·exp(y)
+normalize(parseLatex('\\exp(x - y)')); // → exp(x)/exp(y)
+normalize(parseLatex('\\exp(x + y + z)')); // → exp(x)·exp(y)·exp(z)
+
+// Coefficient extraction (integer)
+normalize(parseLatex('\\exp(2x)')); // → exp(x)²
+normalize(parseLatex('\\exp(3x)')); // → exp(x)³
+normalize(parseLatex('\\exp(-x)')); // → 1/exp(x)
+normalize(parseLatex('\\exp(-2x)')); // → 1/exp(x)²
+
+// Coefficient extraction (rational)
+normalize(parseLatex('\\exp(\\frac{x}{2})')); // → exp(x)^(1/2)
+normalize(parseLatex('\\exp(\\frac{2x}{3})')); // → exp(x)^(2/3)
+
+// Combined with ln rules
+normalize(parseLatex('\\exp(\\ln(x) + y)')); // → x·exp(y)
+normalize(parseLatex('\\exp(2\\ln(x) + y)')); // → x²·exp(y)
+
+// Composition preserved
+normalize(parseLatex('\\ln(\\exp(x + y))')); // → x + y (direct)
+normalize(parseLatex('\\ln(\\exp(x)\\cdot\\exp(y))')); // → x + y (via ln product)
+```
+
+**Edge cases that remain opaque:**
+
+- `exp(x/y)` - fraction argument (not a sum)
+- `exp(√2·x)` - irrational coefficient
+- `exp(x·y)` - product of variables (coefficient=1)
+- `exp(5)` - pure constant (no variable to extract)
+
 ### Simplification Pipeline
 
 The `simplify` function applies 4 rule sets iteratively:

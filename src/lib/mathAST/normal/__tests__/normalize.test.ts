@@ -1372,11 +1372,11 @@ describe('exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ', () => {
 	});
 
 	describe('Cases that should stay opaque', () => {
-		test('exp(ln(x) + 1) stays opaque (constant term)', () => {
+		test('exp(ln(x) + 1) = x·e (via sum expansion)', () => {
+			// With exp expansion: exp(ln(x) + 1) = exp(ln(x))·exp(1) = x·e
 			const expr = fn('exp', add(fn('ln', variable('x')), num('1')));
-			const result = normalize(expr);
-			// Should be opaque, not simplified
-			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+			const expected = mul(variable('x'), variable('e'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
 		test('exp(ln(x)·ln(y)) stays opaque (product of logs)', () => {
@@ -1624,6 +1624,654 @@ describe('exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ', () => {
 			const expr = fn('exp', fn('ln', div(ab, cd)));
 			const expected = div(ab, cd);
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+});
+
+// =============================================================================
+// Exp Expansion Rules Tests
+// =============================================================================
+
+describe('exp expansion rules', () => {
+	describe('sum expansion: exp(a+b) = exp(a)·exp(b)', () => {
+		test('exp(x + y) = exp(x)·exp(y)', () => {
+			const expr = fn('exp', add(variable('x'), variable('y')));
+			const expected = mul(fn('exp', variable('x')), fn('exp', variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(x + y + z) = exp(x)·exp(y)·exp(z)', () => {
+			const expr = fn('exp', add(add(variable('x'), variable('y')), variable('z')));
+			const expected = mul(
+				mul(fn('exp', variable('x')), fn('exp', variable('y'))),
+				fn('exp', variable('z'))
+			);
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(x - y) = exp(x)/exp(y)', () => {
+			const expr = fn('exp', sub(variable('x'), variable('y')));
+			const expected = div(fn('exp', variable('x')), fn('exp', variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(2x + 3y) = exp(x)²·exp(y)³', () => {
+			const expr = fn('exp', add(mul(num('2'), variable('x')), mul(num('3'), variable('y'))));
+			const expected = mul(
+				power(fn('exp', variable('x')), num('2')),
+				power(fn('exp', variable('y')), num('3'))
+			);
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(a + b + c + d) expands to product of 4 exp', () => {
+			const expr = fn(
+				'exp',
+				add(add(add(variable('a'), variable('b')), variable('c')), variable('d'))
+			);
+			const expected = mul(
+				mul(mul(fn('exp', variable('a')), fn('exp', variable('b'))), fn('exp', variable('c'))),
+				fn('exp', variable('d'))
+			);
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('coefficient extraction: exp(n·a) = exp(a)^n', () => {
+		test('exp(2x) = exp(x)²', () => {
+			const expr = fn('exp', mul(num('2'), variable('x')));
+			const expected = power(fn('exp', variable('x')), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(3x) = exp(x)³', () => {
+			const expr = fn('exp', mul(num('3'), variable('x')));
+			const expected = power(fn('exp', variable('x')), num('3'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(-x) = 1/exp(x)', () => {
+			const expr = fn('exp', opposite(variable('x')));
+			const expected = div(num('1'), fn('exp', variable('x')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(-2x) = 1/exp(x)²', () => {
+			const expr = fn('exp', mul(num('-2'), variable('x')));
+			const expected = div(num('1'), power(fn('exp', variable('x')), num('2')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(x/2) = exp(x)^(1/2)', () => {
+			const expr = fn('exp', div(variable('x'), num('2')));
+			const expected = power(fn('exp', variable('x')), div(num('1'), num('2')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp((2/3)·x) = exp(x)^(2/3)', () => {
+			const expr = fn('exp', mul(div(num('2'), num('3')), variable('x')));
+			const expected = power(fn('exp', variable('x')), div(num('2'), num('3')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp((-3/2)·x) = 1/exp(x)^(3/2)', () => {
+			const expr = fn('exp', mul(div(num('-3'), num('2')), variable('x')));
+			const expected = div(num('1'), power(fn('exp', variable('x')), div(num('3'), num('2'))));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(5) remains as exp(5) (no variable to extract)', () => {
+			const expr = fn('exp', num('5'));
+			const norm = normalize(expr);
+			// Should be opaque exp(5), not expanded
+			expect(norm.numerator.length).toBe(1);
+			expect(norm.numerator[0].monomial.length).toBe(1);
+		});
+	});
+
+	describe('composition preservation: ln(exp(...)) = ...', () => {
+		test('ln(exp(x + y)) = x + y (direct composition)', () => {
+			const expr = fn('ln', fn('exp', add(variable('x'), variable('y'))));
+			const expected = add(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('ln(exp(x)·exp(y)) = x + y (via ln product)', () => {
+			const expr = fn('ln', mul(fn('exp', variable('x')), fn('exp', variable('y'))));
+			const expected = add(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('ln(exp(x)²) = 2x (via ln power)', () => {
+			const expr = fn('ln', power(fn('exp', variable('x')), num('2')));
+			const expected = mul(num('2'), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('ln(exp(2x + 3y)) = 2x + 3y (direct composition)', () => {
+			const expr = fn(
+				'ln',
+				fn('exp', add(mul(num('2'), variable('x')), mul(num('3'), variable('y'))))
+			);
+			const expected = add(mul(num('2'), variable('x')), mul(num('3'), variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('ln(exp(x)²·exp(y)³) = 2x + 3y (roundtrip)', () => {
+			const expr = fn(
+				'ln',
+				mul(power(fn('exp', variable('x')), num('2')), power(fn('exp', variable('y')), num('3')))
+			);
+			const expected = add(mul(num('2'), variable('x')), mul(num('3'), variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('mixed cases: exp with ln terms', () => {
+		test('exp(ln(x) + y) = x·exp(y)', () => {
+			const expr = fn('exp', add(fn('ln', variable('x')), variable('y')));
+			const expected = mul(variable('x'), fn('exp', variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(2·ln(x) + y) = x²·exp(y)', () => {
+			const expr = fn('exp', add(mul(num('2'), fn('ln', variable('x'))), variable('y')));
+			const expected = mul(power(variable('x'), num('2')), fn('exp', variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(ln(x) + ln(y) + z) = x·y·exp(z)', () => {
+			const expr = fn(
+				'exp',
+				add(add(fn('ln', variable('x')), fn('ln', variable('y'))), variable('z'))
+			);
+			const expected = mul(mul(variable('x'), variable('y')), fn('exp', variable('z')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(x + 0) = exp(x)', () => {
+			const expr = fn('exp', add(variable('x'), num('0')));
+			const expected = fn('exp', variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(x - x) = 1', () => {
+			const expr = fn('exp', sub(variable('x'), variable('x')));
+			const expected = num('1');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(2x - x) = exp(x)', () => {
+			const expr = fn('exp', sub(mul(num('2'), variable('x')), variable('x')));
+			const expected = fn('exp', variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('edge cases - should remain opaque or handle correctly', () => {
+		test('exp(x/y) stays as single exp (fraction in argument)', () => {
+			const expr = fn('exp', div(variable('x'), variable('y')));
+			const norm = normalize(expr);
+			// Should remain as opaque exp(x/y), not expanded
+			expect(norm.numerator.length).toBe(1);
+			expect(norm.numerator[0].monomial.length).toBe(1);
+		});
+
+		test('exp(√2·x) stays opaque (irrational coefficient)', () => {
+			const expr = fn('exp', mul(sqrt(num('2')), variable('x')));
+			const norm = normalize(expr);
+			// Cannot extract √2 as rational exponent
+			expect(norm.numerator.length).toBe(1);
+		});
+
+		test('exp(x·y) stays opaque (product of variables)', () => {
+			const expr = fn('exp', mul(variable('x'), variable('y')));
+			const norm = normalize(expr);
+			// x·y is a single term, not a sum, coefficient is 1
+			expect(norm.numerator.length).toBe(1);
+		});
+
+		test('exp(x²) stays opaque (single term with power)', () => {
+			const expr = fn('exp', power(variable('x'), num('2')));
+			const norm = normalize(expr);
+			expect(norm.numerator.length).toBe(1);
+		});
+	});
+
+	describe('equivalence: different forms of same expression', () => {
+		test('exp(x+y) and exp(y+x) are equivalent', () => {
+			const expr1 = fn('exp', add(variable('x'), variable('y')));
+			const expr2 = fn('exp', add(variable('y'), variable('x')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('exp(x)·exp(y) and exp(y)·exp(x) are equivalent', () => {
+			const expr1 = mul(fn('exp', variable('x')), fn('exp', variable('y')));
+			const expr2 = mul(fn('exp', variable('y')), fn('exp', variable('x')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('exp(2x) and exp(x+x) are equivalent', () => {
+			const expr1 = fn('exp', mul(num('2'), variable('x')));
+			const expr2 = fn('exp', add(variable('x'), variable('x')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('exp(x)² and exp(x)·exp(x) are equivalent', () => {
+			const expr1 = power(fn('exp', variable('x')), num('2'));
+			const expr2 = mul(fn('exp', variable('x')), fn('exp', variable('x')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+	});
+
+	describe('edge cases: large and small coefficients', () => {
+		test('exp(10x) = exp(x)^10', () => {
+			const expr = fn('exp', mul(num('10'), variable('x')));
+			const expected = power(fn('exp', variable('x')), num('10'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(-10x) = 1/exp(x)^10', () => {
+			const expr = fn('exp', mul(num('-10'), variable('x')));
+			const expected = div(num('1'), power(fn('exp', variable('x')), num('10')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(100x) = exp(x)^100', () => {
+			const expr = fn('exp', mul(num('100'), variable('x')));
+			const expected = power(fn('exp', variable('x')), num('100'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(x/10) = exp(x)^(1/10)', () => {
+			const expr = fn('exp', div(variable('x'), num('10')));
+			const expected = power(fn('exp', variable('x')), div(num('1'), num('10')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(x/100) = exp(x)^(1/100)', () => {
+			const expr = fn('exp', div(variable('x'), num('100')));
+			const expected = power(fn('exp', variable('x')), div(num('1'), num('100')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp((7/11)x) = exp(x)^(7/11)', () => {
+			const expr = fn('exp', mul(div(num('7'), num('11')), variable('x')));
+			const expected = power(fn('exp', variable('x')), div(num('7'), num('11')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp((-5/7)x) = 1/exp(x)^(5/7)', () => {
+			const expr = fn('exp', mul(div(num('-5'), num('7')), variable('x')));
+			const expected = div(num('1'), power(fn('exp', variable('x')), div(num('5'), num('7'))));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('edge cases: zero and identity', () => {
+		test('exp(0) = 1', () => {
+			const expr = fn('exp', num('0'));
+			expect(normalize(expr).hash).toBe('1');
+		});
+
+		test('exp(x - x) = 1', () => {
+			const expr = fn('exp', sub(variable('x'), variable('x')));
+			expect(normalize(expr).hash).toBe('1');
+		});
+
+		test('exp(2x - 2x) = 1', () => {
+			const expr = fn('exp', sub(mul(num('2'), variable('x')), mul(num('2'), variable('x'))));
+			expect(normalize(expr).hash).toBe('1');
+		});
+
+		test('exp(x + y - x - y) = 1', () => {
+			const expr = fn(
+				'exp',
+				sub(sub(add(variable('x'), variable('y')), variable('x')), variable('y'))
+			);
+			expect(normalize(expr).hash).toBe('1');
+		});
+
+		test('exp(ln(1)) = 1', () => {
+			const expr = fn('exp', fn('ln', num('1')));
+			expect(normalize(expr).hash).toBe('1');
+		});
+
+		test('exp(0·x) = 1', () => {
+			const expr = fn('exp', mul(num('0'), variable('x')));
+			expect(normalize(expr).hash).toBe('1');
+		});
+	});
+
+	describe('edge cases: many terms', () => {
+		test('exp(a + b + c + d + e) = exp(a)·exp(b)·exp(c)·exp(d)·exp(e)', () => {
+			const expr = fn(
+				'exp',
+				add(
+					add(add(add(variable('a'), variable('b')), variable('c')), variable('d')),
+					variable('e')
+				)
+			);
+			const expected = mul(
+				mul(
+					mul(mul(fn('exp', variable('a')), fn('exp', variable('b'))), fn('exp', variable('c'))),
+					fn('exp', variable('d'))
+				),
+				fn('exp', variable('e'))
+			);
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(2a + 3b + 4c) = exp(a)²·exp(b)³·exp(c)⁴', () => {
+			const expr = fn(
+				'exp',
+				add(
+					add(mul(num('2'), variable('a')), mul(num('3'), variable('b'))),
+					mul(num('4'), variable('c'))
+				)
+			);
+			const expected = mul(
+				mul(power(fn('exp', variable('a')), num('2')), power(fn('exp', variable('b')), num('3'))),
+				power(fn('exp', variable('c')), num('4'))
+			);
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(-a - b - c) = 1/(exp(a)·exp(b)·exp(c))', () => {
+			const expr = fn('exp', sub(sub(opposite(variable('a')), variable('b')), variable('c')));
+			const expected = div(
+				num('1'),
+				mul(mul(fn('exp', variable('a')), fn('exp', variable('b'))), fn('exp', variable('c')))
+			);
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('edge cases: mixed positive and negative', () => {
+		test('exp(2x - 3y) = exp(x)²/exp(y)³', () => {
+			const expr = fn('exp', sub(mul(num('2'), variable('x')), mul(num('3'), variable('y'))));
+			const expected = div(
+				power(fn('exp', variable('x')), num('2')),
+				power(fn('exp', variable('y')), num('3'))
+			);
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(x - 2y + 3z) = exp(x)·exp(z)³/exp(y)²', () => {
+			const expr = fn(
+				'exp',
+				add(sub(variable('x'), mul(num('2'), variable('y'))), mul(num('3'), variable('z')))
+			);
+			const expected = div(
+				mul(fn('exp', variable('x')), power(fn('exp', variable('z')), num('3'))),
+				power(fn('exp', variable('y')), num('2'))
+			);
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(-x + y) = exp(y)/exp(x)', () => {
+			const expr = fn('exp', add(opposite(variable('x')), variable('y')));
+			const expected = div(fn('exp', variable('y')), fn('exp', variable('x')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('edge cases: double negation', () => {
+		test('exp(--x) = exp(x)', () => {
+			const expr = fn('exp', opposite(opposite(variable('x'))));
+			const expected = fn('exp', variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(-(-2x)) = exp(x)²', () => {
+			const expr = fn('exp', opposite(mul(num('-2'), variable('x'))));
+			const expected = power(fn('exp', variable('x')), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('edge cases: with constants', () => {
+		test('exp(x + 1) = exp(x)·e', () => {
+			const expr = fn('exp', add(variable('x'), num('1')));
+			const expected = mul(fn('exp', variable('x')), variable('e'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(x + 2) expands to exp(x)·exp(2)', () => {
+			// Note: exp(2) stays opaque (pure constant), not simplified to e²
+			const expr = fn('exp', add(variable('x'), num('2')));
+			const expected = mul(fn('exp', variable('x')), fn('exp', num('2')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(x - 1) expands to exp(x)·exp(-1)', () => {
+			// exp(-1) stays opaque (not simplified to 1/e)
+			// Note: exp(1) = e, but exp(-1) ≠ 1/e in current normalization
+			const expr = fn('exp', sub(variable('x'), num('1')));
+			const expected = mul(fn('exp', variable('x')), fn('exp', opposite(num('1'))));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(2x + 3) = exp(x)²·exp(3)', () => {
+			// Note: exp(3) stays opaque (pure constant), not simplified to e³
+			const expr = fn('exp', add(mul(num('2'), variable('x')), num('3')));
+			const expected = mul(power(fn('exp', variable('x')), num('2')), fn('exp', num('3')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('edge cases: with ln composition', () => {
+		test('exp(ln(x) - ln(y) + z) = (x/y)·exp(z)', () => {
+			const expr = fn(
+				'exp',
+				add(sub(fn('ln', variable('x')), fn('ln', variable('y'))), variable('z'))
+			);
+			const expected = mul(div(variable('x'), variable('y')), fn('exp', variable('z')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(2ln(x) + 3ln(y) + z) = x²·y³·exp(z)', () => {
+			const expr = fn(
+				'exp',
+				add(
+					add(mul(num('2'), fn('ln', variable('x'))), mul(num('3'), fn('ln', variable('y')))),
+					variable('z')
+				)
+			);
+			const expected = mul(
+				mul(power(variable('x'), num('2')), power(variable('y'), num('3'))),
+				fn('exp', variable('z'))
+			);
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(-ln(x) + y) = exp(y)/x', () => {
+			const expr = fn('exp', add(opposite(fn('ln', variable('x'))), variable('y')));
+			const expected = div(fn('exp', variable('y')), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(ln(x) + ln(y) - ln(z)) = x·y/z', () => {
+			const expr = fn(
+				'exp',
+				sub(add(fn('ln', variable('x')), fn('ln', variable('y'))), fn('ln', variable('z')))
+			);
+			const expected = div(mul(variable('x'), variable('y')), variable('z'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('edge cases: nested exp', () => {
+		test('exp(exp(0)) = e', () => {
+			const expr = fn('exp', fn('exp', num('0')));
+			const expected = variable('e');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('ln(exp(exp(x))) = exp(x)', () => {
+			const expr = fn('ln', fn('exp', fn('exp', variable('x'))));
+			const expected = fn('exp', variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(ln(exp(ln(x)))) = x', () => {
+			const expr = fn('exp', fn('ln', fn('exp', fn('ln', variable('x')))));
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('edge cases: should remain opaque', () => {
+		test('exp(sin(x)) stays opaque', () => {
+			const expr = fn('exp', fn('sin', variable('x')));
+			const norm = normalize(expr);
+			expect(norm.numerator.length).toBe(1);
+			expect(norm.numerator[0].monomial[0].base.type).toBe('function');
+		});
+
+		test('exp(x + sin(y)) expands but sin part stays opaque', () => {
+			const expr = fn('exp', add(variable('x'), fn('sin', variable('y'))));
+			const expected = mul(fn('exp', variable('x')), fn('exp', fn('sin', variable('y'))));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(x²) stays opaque (non-linear monomial)', () => {
+			const expr = fn('exp', power(variable('x'), num('2')));
+			const norm = normalize(expr);
+			expect(norm.numerator.length).toBe(1);
+			expect(norm.numerator[0].monomial[0].base.type).toBe('function');
+		});
+
+		test('exp(1/x) stays opaque (inverse)', () => {
+			const expr = fn('exp', div(num('1'), variable('x')));
+			const norm = normalize(expr);
+			expect(norm.numerator.length).toBe(1);
+		});
+
+		test('exp(x/y + z/w) stays opaque (normalized to single fraction)', () => {
+			// x/y + z/w normalizes to (xw + yz)/(yw), which is a fraction, not a sum
+			// So exp(fraction) remains opaque - no expansion possible
+			const expr = fn(
+				'exp',
+				add(div(variable('x'), variable('y')), div(variable('z'), variable('w')))
+			);
+			const norm = normalize(expr);
+			expect(norm.numerator.length).toBe(1);
+			expect(norm.numerator[0].monomial[0].base.type).toBe('function');
+		});
+
+		test('exp(π·x) stays opaque (irrational coefficient)', () => {
+			const expr = fn('exp', mul(greek('pi'), variable('x')));
+			const norm = normalize(expr);
+			expect(norm.numerator.length).toBe(1);
+		});
+	});
+
+	describe('edge cases: roundtrip consistency', () => {
+		test('ln(exp(a+b+c)) = a+b+c', () => {
+			const expr = fn('ln', fn('exp', add(add(variable('a'), variable('b')), variable('c'))));
+			const expected = add(add(variable('a'), variable('b')), variable('c'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('ln(exp(2x+3y)) = 2x+3y', () => {
+			const expr = fn(
+				'ln',
+				fn('exp', add(mul(num('2'), variable('x')), mul(num('3'), variable('y'))))
+			);
+			const expected = add(mul(num('2'), variable('x')), mul(num('3'), variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('ln(exp(x)·exp(y)·exp(z)) = x+y+z', () => {
+			const expr = fn(
+				'ln',
+				mul(mul(fn('exp', variable('x')), fn('exp', variable('y'))), fn('exp', variable('z')))
+			);
+			const expected = add(add(variable('x'), variable('y')), variable('z'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('ln(exp(x)³/exp(y)²) = 3x - 2y', () => {
+			const expr = fn(
+				'ln',
+				div(power(fn('exp', variable('x')), num('3')), power(fn('exp', variable('y')), num('2')))
+			);
+			const expected = sub(mul(num('3'), variable('x')), mul(num('2'), variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('edge cases: equivalence of expanded forms', () => {
+		test('exp(3x) = exp(x+x+x) = exp(x)³', () => {
+			const form1 = fn('exp', mul(num('3'), variable('x')));
+			const form2 = fn('exp', add(add(variable('x'), variable('x')), variable('x')));
+			const form3 = power(fn('exp', variable('x')), num('3'));
+			const hash1 = normalize(form1).hash;
+			expect(normalize(form2).hash).toBe(hash1);
+			expect(normalize(form3).hash).toBe(hash1);
+		});
+
+		test('exp(x-y) = exp(x)/exp(y) = exp(x)·exp(-y)', () => {
+			const form1 = fn('exp', sub(variable('x'), variable('y')));
+			const form2 = div(fn('exp', variable('x')), fn('exp', variable('y')));
+			const form3 = mul(fn('exp', variable('x')), fn('exp', opposite(variable('y'))));
+			const hash1 = normalize(form1).hash;
+			expect(normalize(form2).hash).toBe(hash1);
+			expect(normalize(form3).hash).toBe(hash1);
+		});
+
+		test('exp(x/2)² stays as exp(x)^(1/2)^2 (symbolic power not simplified)', () => {
+			// exp(x/2) = exp(x)^(1/2), then ^2 gives exp(x)^(1/2)^2
+			// Simplifying (1/2)*2 = 1 requires symbolic exponent arithmetic not yet implemented
+			const expr = power(fn('exp', div(variable('x'), num('2'))), num('2'));
+			const norm = normalize(expr);
+			// Just verify it normalizes without error and has expected structure
+			expect(norm.numerator.length).toBe(1);
+			expect(norm.denominator.length).toBe(1);
+		});
+
+		test('exp(x/3)³ stays as exp(x)^(1/3)^3 (symbolic power not simplified)', () => {
+			// Similar to above - exp(x/3) = exp(x)^(1/3), then ^3 gives exp(x)^(1/3)^3
+			const expr = power(fn('exp', div(variable('x'), num('3'))), num('3'));
+			const norm = normalize(expr);
+			expect(norm.numerator.length).toBe(1);
+			expect(norm.denominator.length).toBe(1);
+		});
+
+		test('(exp(x)·exp(y))² = exp(2x+2y)', () => {
+			const expr = power(mul(fn('exp', variable('x')), fn('exp', variable('y'))), num('2'));
+			const expected = fn('exp', add(mul(num('2'), variable('x')), mul(num('2'), variable('y'))));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('edge cases: special numeric values', () => {
+		test('exp(ln(2) + ln(3)) = 6', () => {
+			const expr = fn('exp', add(fn('ln', num('2')), fn('ln', num('3'))));
+			expect(normalize(expr).hash).toBe('6');
+		});
+
+		test('exp(ln(2) - ln(3)) = 2/3', () => {
+			const expr = fn('exp', sub(fn('ln', num('2')), fn('ln', num('3'))));
+			const expected = div(num('2'), num('3'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(3·ln(2)) = 8', () => {
+			const expr = fn('exp', mul(num('3'), fn('ln', num('2'))));
+			expect(normalize(expr).hash).toBe('8');
+		});
+
+		test('exp(-ln(2)) = 1/2', () => {
+			const expr = fn('exp', opposite(fn('ln', num('2'))));
+			const expected = div(num('1'), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(ln(4)/2) = 2 (sqrt(4))', () => {
+			const expr = fn('exp', div(fn('ln', num('4')), num('2')));
+			expect(normalize(expr).hash).toBe('2');
 		});
 	});
 });
