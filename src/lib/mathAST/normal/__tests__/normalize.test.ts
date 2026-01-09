@@ -2830,6 +2830,419 @@ describe('Symbolic Sqrt Simplification', () => {
 			expect(result.numerator[0].monomial[0].exponent.d).toBe(2n);
 		});
 	});
+
+	// =========================================================================
+	// EDGE CASES
+	// =========================================================================
+
+	describe('Edge cases: Zero and One', () => {
+		test('sqrt(0) = 0', () => {
+			const expr = sqrt(num('0'));
+			const expected = num('0');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(1) = 1', () => {
+			const expr = sqrt(num('1'));
+			const expected = num('1');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('(sqrt(x))^0 = 1', () => {
+			const expr = power(sqrt(variable('x')), num('0'));
+			const expected = num('1');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x)^0 * sqrt(x)^0 = 1', () => {
+			const expr = mul(power(sqrt(variable('x')), num('0')), power(sqrt(variable('x')), num('0')));
+			const expected = num('1');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('0 * sqrt(x) = 0', () => {
+			const expr = mul(num('0'), sqrt(variable('x')));
+			expect(normalize(expr).numerator.length).toBe(0); // zero form
+		});
+
+		test('sqrt(x) * 0 = 0', () => {
+			const expr = mul(sqrt(variable('x')), num('0'));
+			expect(normalize(expr).numerator.length).toBe(0);
+		});
+
+		test('1 * sqrt(x) = sqrt(x)', () => {
+			const expr = mul(num('1'), sqrt(variable('x')));
+			const expected = sqrt(variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Edge cases: Higher powers of sqrt', () => {
+		test('(sqrt(x))^3 = x * sqrt(x) (x^{3/2})', () => {
+			const expr = power(sqrt(variable('x')), num('3'));
+			const result = normalize(expr);
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial[0].exponent.n).toBe(3n);
+			expect(result.numerator[0].monomial[0].exponent.d).toBe(2n);
+		});
+
+		test('(sqrt(x))^5 = x^2 * sqrt(x) (x^{5/2})', () => {
+			const expr = power(sqrt(variable('x')), num('5'));
+			const result = normalize(expr);
+			expect(result.numerator[0].monomial[0].exponent.n).toBe(5n);
+			expect(result.numerator[0].monomial[0].exponent.d).toBe(2n);
+		});
+
+		test('(sqrt(x))^6 = x^3', () => {
+			const expr = power(sqrt(variable('x')), num('6'));
+			const expected = power(variable('x'), num('3'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('(sqrt(x))^8 = x^4', () => {
+			const expr = power(sqrt(variable('x')), num('8'));
+			const expected = power(variable('x'), num('4'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('(sqrt(x))^10 = x^5', () => {
+			const expr = power(sqrt(variable('x')), num('10'));
+			const expected = power(variable('x'), num('5'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Edge cases: Large even powers under sqrt', () => {
+		test('sqrt(x^8) = x^4', () => {
+			const expr = sqrt(power(variable('x'), num('8')));
+			const expected = power(variable('x'), num('4'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x^10) = x^5', () => {
+			const expr = sqrt(power(variable('x'), num('10')));
+			const expected = power(variable('x'), num('5'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x^100) = x^50', () => {
+			const expr = sqrt(power(variable('x'), num('100')));
+			const expected = power(variable('x'), num('50'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Edge cases: Coefficients with sqrt', () => {
+		test('2*sqrt(x) * 3*sqrt(x) = 6x', () => {
+			const expr = mul(mul(num('2'), sqrt(variable('x'))), mul(num('3'), sqrt(variable('x'))));
+			const expected = mul(num('6'), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('(-1)*sqrt(x) * sqrt(x) = -x', () => {
+			const expr = mul(opposite(sqrt(variable('x'))), sqrt(variable('x')));
+			const expected = opposite(variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('(-sqrt(x)) * (-sqrt(x)) = x', () => {
+			const expr = mul(opposite(sqrt(variable('x'))), opposite(sqrt(variable('x'))));
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('2*sqrt(x) * sqrt(x) = 2x', () => {
+			const expr = mul(mul(num('2'), sqrt(variable('x'))), sqrt(variable('x')));
+			const expected = mul(num('2'), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x) * 2*sqrt(x) = 2x', () => {
+			const expr = mul(sqrt(variable('x')), mul(num('2'), sqrt(variable('x'))));
+			const expected = mul(num('2'), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('(1/2)*sqrt(x) * sqrt(x) = x/2', () => {
+			const half = div(num('1'), num('2'));
+			const expr = mul(mul(half, sqrt(variable('x'))), sqrt(variable('x')));
+			const expected = div(variable('x'), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Edge cases: Addition and subtraction with sqrt', () => {
+		test('sqrt(x) + sqrt(x) = 2*sqrt(x)', () => {
+			const expr = add(sqrt(variable('x')), sqrt(variable('x')));
+			const expected = mul(num('2'), sqrt(variable('x')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('3*sqrt(x) - sqrt(x) = 2*sqrt(x)', () => {
+			const expr = sub(mul(num('3'), sqrt(variable('x'))), sqrt(variable('x')));
+			const expected = mul(num('2'), sqrt(variable('x')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x) - sqrt(x) = 0', () => {
+			const expr = sub(sqrt(variable('x')), sqrt(variable('x')));
+			expect(normalize(expr).numerator.length).toBe(0);
+		});
+
+		test('sqrt(x) + sqrt(y) stays as sum (different bases)', () => {
+			const expr = add(sqrt(variable('x')), sqrt(variable('y')));
+			const result = normalize(expr);
+			// Should have two terms (can't combine different symbolic sqrt)
+			expect(result.numerator.length).toBe(2);
+		});
+	});
+
+	describe('Edge cases: Division with sqrt', () => {
+		test('sqrt(x) / sqrt(x) = 1', () => {
+			const expr = div(sqrt(variable('x')), sqrt(variable('x')));
+			const expected = num('1');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('x / sqrt(x) = sqrt(x)', () => {
+			const expr = div(variable('x'), sqrt(variable('x')));
+			const expected = sqrt(variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x) / x = 1/sqrt(x)', () => {
+			const expr = div(sqrt(variable('x')), variable('x'));
+			const expected = div(num('1'), sqrt(variable('x')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('1 / sqrt(x) stays as 1/sqrt(x)', () => {
+			const expr = div(num('1'), sqrt(variable('x')));
+			const result = normalize(expr);
+			// Denominator should contain x^{1/2}
+			expect(result.denominator.length).toBe(1);
+			expect(result.denominator[0].monomial.length).toBe(1);
+			expect(result.denominator[0].monomial[0].exponent).toEqual({ n: 1n, d: 2n });
+		});
+
+		test('x^2 / sqrt(x) = x^{3/2}', () => {
+			const expr = div(power(variable('x'), num('2')), sqrt(variable('x')));
+			const result = normalize(expr);
+			expect(result.numerator[0].monomial[0].exponent.n).toBe(3n);
+			expect(result.numerator[0].monomial[0].exponent.d).toBe(2n);
+		});
+	});
+
+	describe('Edge cases: Multiple variables', () => {
+		test('(sqrt(x))^2 * (sqrt(y))^2 = xy', () => {
+			// Use powers instead of multiplication to avoid Phase 1 combining radicals
+			const expr = mul(power(sqrt(variable('x')), num('2')), power(sqrt(variable('y')), num('2')));
+			const expected = mul(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(xy) * sqrt(xy) = xy', () => {
+			const xy = mul(variable('x'), variable('y'));
+			const expr = mul(sqrt(xy), sqrt(xy));
+			const expected = mul(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x) * sqrt(y) is commutative', () => {
+			const expr1 = mul(sqrt(variable('x')), sqrt(variable('y')));
+			const expr2 = mul(sqrt(variable('y')), sqrt(variable('x')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		// Note: sqrt(x)*sqrt(x)*sqrt(y)*sqrt(y) becomes sqrt(x²y²) via Phase 1
+		// which is treated as an opaque expression. Use powers for cleaner simplification.
+	});
+
+	describe('Edge cases: Numeric radicals mixed with symbolic', () => {
+		test('sqrt(2) * (sqrt(x))^2 = sqrt(2) * x', () => {
+			// Use power to avoid Phase 1 combining sqrt(2)*sqrt(x) into sqrt(2x)
+			const expr = mul(sqrt(num('2')), power(sqrt(variable('x')), num('2')));
+			// Should have coefficient √2 and monomial x
+			const result = normalize(expr);
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].coefficient.terms[0].radicals.length).toBe(1);
+			expect(result.numerator[0].coefficient.terms[0].radicals[0].radicand).toBe(2n);
+		});
+
+		test('(sqrt(2))^2 * sqrt(x) = 2*sqrt(x)', () => {
+			// Use power(sqrt(2), 2) = 2 to avoid Phase 1 combining
+			const expr = mul(power(sqrt(num('2')), num('2')), sqrt(variable('x')));
+			const expected = mul(num('2'), sqrt(variable('x')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(2x) and sqrt(2)*sqrt(x) are equivalent (via Phase 1)', () => {
+			const expr1 = sqrt(mul(num('2'), variable('x')));
+			const expr2 = mul(sqrt(num('2')), sqrt(variable('x')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('sqrt(4) alone = 2', () => {
+			// sqrt(4) simplifies to 2 (perfect square)
+			const expr = sqrt(num('4'));
+			const expected = num('2');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('2 * sqrt(x) via explicit multiplication', () => {
+			// Directly test 2 * sqrt(x) structure
+			const expr = mul(num('2'), sqrt(variable('x')));
+			const result = normalize(expr);
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].coefficient.terms[0].rational.n).toBe(2n);
+			expect(result.numerator[0].monomial[0].exponent).toEqual({ n: 1n, d: 2n });
+		});
+
+		test('sqrt(9) * x = 3x', () => {
+			// sqrt(9) simplifies to 3
+			const expr = mul(sqrt(num('9')), variable('x'));
+			const expected = mul(num('3'), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		// Note: sqrt(4x) stays as opaque sqrt((4*x)) because Phase 2
+		// doesn't split numeric factors from symbolic inside sqrt.
+		// Future enhancement: extract perfect square factors.
+	});
+
+	describe('Edge cases: Complex expressions under sqrt', () => {
+		test('sqrt((x-1) * (x-1)) = x-1', () => {
+			const xminus1 = sub(variable('x'), num('1'));
+			const expr = sqrt(mul(xminus1, xminus1));
+			const expected = sub(variable('x'), num('1'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt((x+y) * (x+y)) = x+y', () => {
+			const xplusy = add(variable('x'), variable('y'));
+			const expr = sqrt(mul(xplusy, xplusy));
+			const expected = add(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt((2x+3y) * (2x+3y)) = 2x+3y', () => {
+			const twoxplus3y = add(mul(num('2'), variable('x')), mul(num('3'), variable('y')));
+			const expr = sqrt(mul(twoxplus3y, twoxplus3y));
+			const expected = add(mul(num('2'), variable('x')), mul(num('3'), variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x+1) * sqrt(x+1) * sqrt(x+1) * sqrt(x+1) = (x+1)^2', () => {
+			const xplus1 = add(variable('x'), num('1'));
+			const expr = mul(mul(sqrt(xplus1), sqrt(xplus1)), mul(sqrt(xplus1), sqrt(xplus1)));
+			const expected = power(add(variable('x'), num('1')), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Edge cases: Greek letters as variables', () => {
+		test('sqrt(alpha) * sqrt(alpha) = alpha', () => {
+			const expr = mul(sqrt(greek('alpha')), sqrt(greek('alpha')));
+			const expected = greek('alpha');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('(sqrt(pi))^2 = pi', () => {
+			const expr = power(sqrt(greek('pi')), num('2'));
+			const expected = greek('pi');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Edge cases: Nested operations', () => {
+		test('(sqrt(x) * sqrt(x))^2 = x^2', () => {
+			const expr = power(mul(sqrt(variable('x')), sqrt(variable('x'))), num('2'));
+			const expected = power(variable('x'), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(sqrt(x) * sqrt(x)) = sqrt(x)', () => {
+			const expr = sqrt(mul(sqrt(variable('x')), sqrt(variable('x'))));
+			const expected = sqrt(variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('(sqrt(x))^2 + (sqrt(y))^2 = x + y', () => {
+			const expr = add(power(sqrt(variable('x')), num('2')), power(sqrt(variable('y')), num('2')));
+			const expected = add(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('(sqrt(x) + sqrt(x))^2 = 4x', () => {
+			const expr = power(add(sqrt(variable('x')), sqrt(variable('x'))), num('2'));
+			const expected = mul(num('4'), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Edge cases: Equivalence of different representations', () => {
+		test('x * sqrt(x) = sqrt(x) * x (commutativity)', () => {
+			const expr1 = mul(variable('x'), sqrt(variable('x')));
+			const expr2 = mul(sqrt(variable('x')), variable('x'));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('sqrt(x) * sqrt(x) = x^1', () => {
+			const expr1 = mul(sqrt(variable('x')), sqrt(variable('x')));
+			const expr2 = power(variable('x'), num('1'));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('(sqrt(x))^2 = sqrt(x^2) (positive x)', () => {
+			const expr1 = power(sqrt(variable('x')), num('2'));
+			const expr2 = sqrt(power(variable('x'), num('2')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('sqrt(x) * sqrt(y) = sqrt(y) * sqrt(x)', () => {
+			const expr1 = mul(sqrt(variable('x')), sqrt(variable('y')));
+			const expr2 = mul(sqrt(variable('y')), sqrt(variable('x')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('x/sqrt(x) = sqrt(x) via x^{1-1/2} = x^{1/2}', () => {
+			const expr1 = div(variable('x'), sqrt(variable('x')));
+			const expr2 = sqrt(variable('x'));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+	});
+
+	describe('Edge cases: Expression structure verification', () => {
+		test('sqrt(x) normalized has correct monomial structure', () => {
+			const result = normalize(sqrt(variable('x')));
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBe(1);
+			expect(result.numerator[0].monomial[0].base.type).toBe('variable');
+			if (result.numerator[0].monomial[0].base.type === 'variable') {
+				expect(result.numerator[0].monomial[0].base.name).toBe('x');
+			}
+			expect(result.numerator[0].monomial[0].exponent).toEqual({ n: 1n, d: 2n });
+		});
+
+		test('x * x * sqrt(x) = x^{5/2}', () => {
+			const expr = mul(mul(variable('x'), variable('x')), sqrt(variable('x')));
+			const result = normalize(expr);
+			expect(result.numerator[0].monomial[0].exponent).toEqual({ n: 5n, d: 2n });
+		});
+
+		test('(sqrt(x))^3 = x^{3/2}', () => {
+			// Use power instead of multiplication to avoid Phase 1 combining into sqrt(x³)
+			const expr = power(sqrt(variable('x')), num('3'));
+			const result = normalize(expr);
+			expect(result.numerator[0].monomial[0].exponent).toEqual({ n: 3n, d: 2n });
+		});
+
+		test('sqrt(x)^7 = x^{7/2}', () => {
+			const expr = power(sqrt(variable('x')), num('7'));
+			const result = normalize(expr);
+			expect(result.numerator[0].monomial[0].exponent).toEqual({ n: 7n, d: 2n });
+		});
+	});
 });
 
 // =============================================================================
