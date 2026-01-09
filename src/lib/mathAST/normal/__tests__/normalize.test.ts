@@ -3134,6 +3134,93 @@ describe('Symbolic Sqrt Simplification', () => {
 		// which is treated as an opaque expression. Use powers for cleaner simplification.
 	});
 
+	describe('Repeated factors under sqrt: √(a×b×a×b) → ab', () => {
+		// Numeric cases
+		test('√(2×3×2×3) = 6', () => {
+			// 2*3*2*3 = 36, √36 = 6
+			const expr = sqrt(mul(mul(mul(num('2'), num('3')), num('2')), num('3')));
+			const expected = num('6');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(2×2×3×3) = 6', () => {
+			const expr = sqrt(mul(mul(mul(num('2'), num('2')), num('3')), num('3')));
+			const expected = num('6');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(5×5) = 5', () => {
+			const expr = sqrt(mul(num('5'), num('5')));
+			const expected = num('5');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		// Symbolic cases
+		test('√(x×x) = x', () => {
+			const expr = sqrt(mul(variable('x'), variable('x')));
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(x×y×x×y) = xy', () => {
+			const expr = sqrt(mul(mul(mul(variable('x'), variable('y')), variable('x')), variable('y')));
+			const expected = mul(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(x×x×y×y) = xy', () => {
+			const expr = sqrt(mul(mul(mul(variable('x'), variable('x')), variable('y')), variable('y')));
+			const expected = mul(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(a×b×c×a×b×c) = abc', () => {
+			const a = variable('a');
+			const b = variable('b');
+			const c = variable('c');
+			const expr = sqrt(mul(mul(mul(mul(mul(a, b), c), a), b), c));
+			const expected = mul(mul(a, b), c);
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		// Mixed cases (numeric and symbolic)
+		test('√(2×x×2×x) = 2x', () => {
+			const expr = sqrt(mul(mul(mul(num('2'), variable('x')), num('2')), variable('x')));
+			const expected = mul(num('2'), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(3×x×y×3×x×y) = 3xy', () => {
+			const expr = sqrt(
+				mul(
+					mul(mul(mul(mul(num('3'), variable('x')), variable('y')), num('3')), variable('x')),
+					variable('y')
+				)
+			);
+			const expected = mul(mul(num('3'), variable('x')), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		// Partial extraction (odd occurrences)
+		test('√(x×x×y) = x√y', () => {
+			const expr = sqrt(mul(mul(variable('x'), variable('x')), variable('y')));
+			const expected = mul(variable('x'), sqrt(variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(2×2×3) = 2√3', () => {
+			const expr = sqrt(mul(mul(num('2'), num('2')), num('3')));
+			const expected = mul(num('2'), sqrt(num('3')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(4×x×x×y) = 2x√y', () => {
+			const expr = sqrt(mul(mul(mul(num('4'), variable('x')), variable('x')), variable('y')));
+			const expected = mul(mul(num('2'), variable('x')), sqrt(variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
 	describe('Edge cases: Numeric radicals mixed with symbolic', () => {
 		test('sqrt(2) * (sqrt(x))^2 = sqrt(2) * x', () => {
 			// Use power to avoid Phase 1 combining sqrt(2)*sqrt(x) into sqrt(2x)
