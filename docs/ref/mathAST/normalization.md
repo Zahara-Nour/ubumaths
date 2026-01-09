@@ -441,6 +441,32 @@ normalize(parseLatex('\\sqrt{x} \\sqrt{x}'));
 // Monomial: [{ base: Variable('x'), exponent: { n: 1n, d: 1n } }]
 ```
 
+### Perfect Square Extraction
+
+When sqrt contains a product of numeric and symbolic factors, perfect squares are extracted:
+
+```typescript
+// √(4x) → 2√x
+normalize(parseLatex('\\sqrt{4x}'));
+// coefficient: 2, monomial: x^{1/2}
+
+// √(9x²) → 3x (complete extraction)
+normalize(parseLatex('\\sqrt{9x^2}'));
+// coefficient: 3, monomial: x^1
+
+// √(4x²y) → 2x√y (partial extraction)
+normalize(parseLatex('\\sqrt{4x^2y}'));
+// coefficient: 2, monomial: [x^1, y^{1/2}]
+
+// √(18x³) → 3√2 × x^{3/2} (separates numeric radical from symbolic)
+normalize(parseLatex('\\sqrt{18x^3}'));
+// coefficient: 3√2, monomial: x^{3/2}
+
+// Fraction denominators: √(x/4) → √x/2
+normalize(parseLatex('\\sqrt{\\frac{x}{4}}'));
+// coefficient: 1/2, monomial: x^{1/2}
+```
+
 See [Symbolic Radical Simplification](#symbolic-radical-simplification) for detailed examples.
 
 ## Monomial Operations

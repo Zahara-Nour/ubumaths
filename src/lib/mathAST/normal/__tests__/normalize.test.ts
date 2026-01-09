@@ -3308,3 +3308,202 @@ describe('Denormalization of Fractional Exponents', () => {
 		});
 	});
 });
+
+// =============================================================================
+// Perfect Square Extraction from sqrt Tests
+// =============================================================================
+
+describe('Perfect Square Extraction from sqrt', () => {
+	describe('√(n·x) extracts perfect squares from coefficient', () => {
+		test('√(4x) = 2√x', () => {
+			const expr = sqrt(mul(num('4'), variable('x')));
+			const result = normalize(expr);
+			const denormalized = denormalize(result);
+			const latex = toLatex(denormalized);
+			// Should extract 2 from √4
+			expect(latex).toContain('2');
+			expect(latex).toContain('\\sqrt');
+			expect(latex).toContain('x');
+		});
+
+		test('√(9x) = 3√x', () => {
+			const expr = sqrt(mul(num('9'), variable('x')));
+			const result = normalize(expr);
+			const denormalized = denormalize(result);
+			const latex = toLatex(denormalized);
+			expect(latex).toContain('3');
+			expect(latex).toContain('\\sqrt');
+		});
+
+		test('√(16x) = 4√x', () => {
+			const expr = sqrt(mul(num('16'), variable('x')));
+			const result = normalize(expr);
+			const denormalized = denormalize(result);
+			const latex = toLatex(denormalized);
+			expect(latex).toContain('4');
+			expect(latex).toContain('\\sqrt');
+		});
+
+		test('√(18x) = 3√(2x)', () => {
+			const expr = sqrt(mul(num('18'), variable('x')));
+			const result = normalize(expr);
+			const denormalized = denormalize(result);
+			const latex = toLatex(denormalized);
+			// 18 = 9*2, so √18 = 3√2
+			expect(latex).toContain('3');
+			expect(latex).toContain('\\sqrt');
+		});
+	});
+
+	describe('√(x^{2n}) extracts even powers', () => {
+		test('√(x²) = x', () => {
+			const expr = sqrt(power(variable('x'), num('2')));
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(x⁴) = x²', () => {
+			const expr = sqrt(power(variable('x'), num('4')));
+			const expected = power(variable('x'), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(x³) = x√x', () => {
+			const expr = sqrt(power(variable('x'), num('3')));
+			const result = normalize(expr);
+			const denormalized = denormalize(result);
+			const latex = toLatex(denormalized);
+			// x^3 = x^2 * x, so √(x³) = x√x
+			expect(latex).toContain('x');
+			expect(latex).toContain('\\sqrt');
+		});
+	});
+
+	describe('√(n·x²) combines both extractions', () => {
+		test('√(4x²) = 2x', () => {
+			const expr = sqrt(mul(num('4'), power(variable('x'), num('2'))));
+			const expected = mul(num('2'), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(9x²) = 3x', () => {
+			const expr = sqrt(mul(num('9'), power(variable('x'), num('2'))));
+			const expected = mul(num('3'), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(4x⁴) = 2x²', () => {
+			const expr = sqrt(mul(num('4'), power(variable('x'), num('4'))));
+			const expected = mul(num('2'), power(variable('x'), num('2')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('√(n·x²·y) partial extraction', () => {
+		test('√(4x²y) = 2x√y', () => {
+			const expr = sqrt(mul(mul(num('4'), power(variable('x'), num('2'))), variable('y')));
+			const result = normalize(expr);
+			const denormalized = denormalize(result);
+			const latex = toLatex(denormalized);
+			// Should have 2, x, and √y
+			expect(latex).toContain('2');
+			expect(latex).toContain('x');
+			expect(latex).toContain('\\sqrt');
+		});
+
+		test('√(9x²y²) = 3xy', () => {
+			const expr = sqrt(
+				mul(mul(num('9'), power(variable('x'), num('2'))), power(variable('y'), num('2')))
+			);
+			const expected = mul(mul(num('3'), variable('x')), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(x²y) = x√y', () => {
+			const expr = sqrt(mul(power(variable('x'), num('2')), variable('y')));
+			const result = normalize(expr);
+			const denormalized = denormalize(result);
+			const latex = toLatex(denormalized);
+			expect(latex).toContain('x');
+			expect(latex).toContain('\\sqrt');
+		});
+	});
+
+	describe('Edge cases: No extraction needed', () => {
+		test('√(2x) stays as √(2x) (no perfect square)', () => {
+			const expr = sqrt(mul(num('2'), variable('x')));
+			const result = normalize(expr);
+			// Should have coefficient with √2 and monomial with x^{1/2}
+			expect(result.numerator.length).toBe(1);
+		});
+
+		test('√(3x) stays as √3 * √x', () => {
+			const expr = sqrt(mul(num('3'), variable('x')));
+			const result = normalize(expr);
+			expect(result.numerator.length).toBe(1);
+		});
+
+		test('√x stays as x^{1/2}', () => {
+			const expr = sqrt(variable('x'));
+			const result = normalize(expr);
+			expect(result.numerator[0].monomial[0].exponent).toEqual({ n: 1n, d: 2n });
+		});
+	});
+
+	describe('Equivalence tests', () => {
+		test('√(4x) = 2√x equivalence', () => {
+			const expr1 = sqrt(mul(num('4'), variable('x')));
+			const expr2 = mul(num('2'), sqrt(variable('x')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('√(9x²) = 3x equivalence', () => {
+			const expr1 = sqrt(mul(num('9'), power(variable('x'), num('2'))));
+			const expr2 = mul(num('3'), variable('x'));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('√(4x²y) = 2x√y equivalence', () => {
+			const expr1 = sqrt(mul(mul(num('4'), power(variable('x'), num('2'))), variable('y')));
+			const expr2 = mul(mul(num('2'), variable('x')), sqrt(variable('y')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+
+		test('√(18x³) = 3√2·x^{3/2} (canonical: separates numeric from symbolic)', () => {
+			const expr1 = sqrt(mul(num('18'), power(variable('x'), num('3'))));
+			// Canonical form: 3 * √2 * x^{3/2}
+			// This is equivalent to 3x√(2x) but in a more canonical representation
+			const result = normalize(expr1);
+			const denormalized = denormalize(result);
+			const latex = toLatex(denormalized);
+			// Should have coefficient 3 with √2 and x^{3/2} = x·√x
+			expect(latex).toContain('3');
+			expect(latex).toContain('\\sqrt');
+			expect(latex).toContain('x');
+		});
+
+		test('√(8x²) = 2x√2 equivalence', () => {
+			// 8 = 4*2, so √8 = 2√2
+			// x² → x
+			// Result: 2√2 * x = 2x√2
+			const expr1 = sqrt(mul(num('8'), power(variable('x'), num('2'))));
+			// Build 2x√2 = 2 * x * √2
+			const expr2 = mul(mul(num('2'), variable('x')), sqrt(num('2')));
+			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+		});
+	});
+
+	describe('Fraction extraction', () => {
+		test('√(x/4) = √x/2', () => {
+			const expr = sqrt(div(variable('x'), num('4')));
+			const expected = div(sqrt(variable('x')), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(x/9) = √x/3', () => {
+			const expr = sqrt(div(variable('x'), num('9')));
+			const expected = div(sqrt(variable('x')), num('3'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+});

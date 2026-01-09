@@ -21,7 +21,9 @@ import {
 	algebraicFromRational,
 	mulAlgebraic,
 	algebraicFromRadical,
-	divAlgebraic
+	divAlgebraic,
+	isPureRational,
+	getRationalValue
 } from './algebraic';
 import {
 	ZERO_POLYNOMIAL,
@@ -1644,7 +1646,157 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 		return result;
 	}
 
-	// B4. √(expression) = (expression)^{1/2}
+	// B4. √(n·monomial) — extract perfect square factors
+	// For expressions like √(4x) → 2√x, √(9x²) → 3x, √(4x²y) → 2x√y
+	{
+		const argForm = normalizeNode(arg, ctx);
+
+		// Check if it's a single-term polynomial (not a sum, not a fraction)
+		if (
+			argForm.denominator.length === 1 &&
+			isOnePolynomial(argForm.denominator) &&
+			argForm.numerator.length === 1
+		) {
+			const singleTerm = argForm.numerator[0];
+			const { coefficient, monomial } = singleTerm;
+
+			// Check if coefficient is a pure positive rational
+			if (isPureRational(coefficient)) {
+				const ratValue = getRationalValue(coefficient);
+				if (ratValue !== null && ratValue.n > 0n && ratValue.d > 0n) {
+					// Extract perfect square from numerator and denominator
+					const numSimplified = simplifyRadical(ratValue.n, 2n);
+					const denSimplified = simplifyRadical(ratValue.d, 2n);
+
+					// Extract even exponents from monomial
+					const extractedFactors: typeof monomial = [];
+					const remainingFactors: typeof monomial = [];
+
+					for (const factor of monomial) {
+						const { base, exponent } = factor;
+						// Only process integer exponents >= 2
+						if (exponent.d === 1n && exponent.n >= 2n) {
+							const halfExp = exponent.n / 2n;
+							const remainderExp = exponent.n % 2n;
+
+							if (halfExp >= 1n) {
+								// Extract x^halfExp from √(x^exponent)
+								extractedFactors.push(symbolicFactor(base, { n: halfExp, d: 1n }));
+							}
+							if (remainderExp > 0n) {
+								// Remaining odd part stays under sqrt
+								remainingFactors.push(symbolicFactor(base, { n: remainderExp, d: 1n }));
+							}
+						} else if (exponent.d === 1n && exponent.n === 1n) {
+							// Exponent is 1: stays under sqrt entirely
+							remainingFactors.push(factor);
+						} else {
+							// Fractional exponents: stays under sqrt
+							remainingFactors.push(factor);
+						}
+					}
+
+					// Check if anything was extracted
+					const hasExtractedCoeff =
+						numSimplified.coefficient !== 1n || denSimplified.coefficient !== 1n;
+					const hasExtractedMonomial = extractedFactors.length > 0;
+
+					if (hasExtractedCoeff || hasExtractedMonomial) {
+						// Build the extracted coefficient: numCoeff / denCoeff
+						const extractedCoeff = algebraicFromRational(
+							rational(numSimplified.coefficient, denSimplified.coefficient)
+						);
+
+						// Build the extracted monomial term
+						const sortedExtracted = sortSymbolicFactors(extractedFactors);
+						const extractedTerm: NormalTerm = {
+							coefficient: extractedCoeff,
+							monomial: sortedExtracted
+						};
+						const extractedForm = normalFormFromPolynomial(polynomialFromTerm(extractedTerm));
+
+						// Build the remaining part under sqrt
+						const hasRemainingCoeff =
+							numSimplified.radicand !== 1n || denSimplified.radicand !== 1n;
+						const hasRemainingMonomial = remainingFactors.length > 0;
+
+						if (!hasRemainingCoeff && !hasRemainingMonomial) {
+							// Perfect square: √(4x²) = 2x
+							recordNormalizationStep(
+								ctx,
+								'sqrt-extract-perfect-square',
+								node,
+								extractedForm,
+								'summarized'
+							);
+							return extractedForm;
+						}
+
+						// Build √(remaining)
+						let remainingForm: NormalForm;
+
+						if (hasRemainingCoeff && !hasRemainingMonomial) {
+							// Only numeric remaining: √(radicand)
+							const radicalCoeff = mulAlgebraic(
+								algebraicFromRadical({ radicand: numSimplified.radicand, index: 2n }),
+								denSimplified.radicand !== 1n
+									? divAlgebraic(
+											ALGEBRAIC_ONE,
+											algebraicFromRadical({ radicand: denSimplified.radicand, index: 2n })
+										)
+									: ALGEBRAIC_ONE
+							);
+							const radicalTerm: NormalTerm = {
+								coefficient: radicalCoeff,
+								monomial: EMPTY_MONOMIAL
+							};
+							remainingForm = normalFormFromPolynomial(polynomialFromTerm(radicalTerm));
+						} else if (!hasRemainingCoeff && hasRemainingMonomial) {
+							// Only symbolic remaining: monomial^{1/2}
+							const sortedRemaining = sortSymbolicFactors(remainingFactors);
+							// Convert each factor: x^n → x^{n/2}
+							const halfPowFactors = sortedRemaining.map((f) =>
+								symbolicFactor(f.base, { n: f.exponent.n, d: f.exponent.d * 2n })
+							);
+							const remainingTerm: NormalTerm = {
+								coefficient: ALGEBRAIC_ONE,
+								monomial: halfPowFactors
+							};
+							remainingForm = normalFormFromPolynomial(polynomialFromTerm(remainingTerm));
+						} else {
+							// Both numeric and symbolic remaining
+							// Build √(numRadicand/denRadicand) * monomial^{1/2}
+							const radicalCoeff = mulAlgebraic(
+								algebraicFromRadical({ radicand: numSimplified.radicand, index: 2n }),
+								denSimplified.radicand !== 1n
+									? divAlgebraic(
+											ALGEBRAIC_ONE,
+											algebraicFromRadical({ radicand: denSimplified.radicand, index: 2n })
+										)
+									: ALGEBRAIC_ONE
+							);
+							const sortedRemaining = sortSymbolicFactors(remainingFactors);
+							const halfPowFactors = sortedRemaining.map((f) =>
+								symbolicFactor(f.base, { n: f.exponent.n, d: f.exponent.d * 2n })
+							);
+							const remainingTerm: NormalTerm = {
+								coefficient: radicalCoeff,
+								monomial: halfPowFactors
+							};
+							remainingForm = normalFormFromPolynomial(polynomialFromTerm(remainingTerm));
+						}
+
+						// Combine: extracted * √(remaining)
+						const result = mulNormalForms(extractedForm, remainingForm);
+						recordNormalizationStep(ctx, 'sqrt-extract-perfect-square', node, result, 'summarized');
+						return result;
+					}
+				}
+			}
+		}
+	}
+
+	// B5. √(expression) = (expression)^{1/2}
 	// Unwrap delimiter if present, then create fractional power
 	const baseExpr = arg.type === 'delimiter' ? arg.content : arg;
 	const term = termFromSymbolicFactor(baseExpr, { n: 1n, d: 2n });
