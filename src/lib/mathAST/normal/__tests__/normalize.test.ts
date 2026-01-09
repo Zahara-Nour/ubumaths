@@ -49,6 +49,11 @@ function sqrt(arg: MathNode): MathNode {
 	return { type: 'function', name: 'sqrt', args: [arg] };
 }
 
+// Note: cbrt() helper available if cbrt function normalization is implemented
+// function cbrt(arg: MathNode): MathNode {
+// 	return { type: 'function', name: 'cbrt', args: [arg] };
+// }
+
 function greek(letter: string): MathNode {
 	return { type: 'greek', letter: letter as 'pi' | 'alpha' };
 }
@@ -3016,13 +3021,18 @@ describe('Symbolic Sqrt Simplification', () => {
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('1 / sqrt(x) stays as 1/sqrt(x)', () => {
+		test('1 / sqrt(x) = sqrt(x) / x (rationalized)', () => {
 			const expr = div(num('1'), sqrt(variable('x')));
 			const result = normalize(expr);
-			// Denominator should contain x^{1/2}
+			// After rationalization: 1/sqrt(x) = sqrt(x)/x = x^{1/2}/x
+			// Numerator: x^{1/2}
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBe(1);
+			expect(result.numerator[0].monomial[0].exponent).toEqual({ n: 1n, d: 2n });
+			// Denominator: x (exponent = 1)
 			expect(result.denominator.length).toBe(1);
 			expect(result.denominator[0].monomial.length).toBe(1);
-			expect(result.denominator[0].monomial[0].exponent).toEqual({ n: 1n, d: 2n });
+			expect(result.denominator[0].monomial[0].exponent).toEqual({ n: 1n, d: 1n });
 		});
 
 		test('x^2 / sqrt(x) = x^{3/2}', () => {
@@ -3030,6 +3040,72 @@ describe('Symbolic Sqrt Simplification', () => {
 			const result = normalize(expr);
 			expect(result.numerator[0].monomial[0].exponent.n).toBe(3n);
 			expect(result.numerator[0].monomial[0].exponent.d).toBe(2n);
+		});
+	});
+
+	describe('Rationalization of denominators', () => {
+		test('2 / sqrt(x) = 2*sqrt(x) / x', () => {
+			const expr = div(num('2'), sqrt(variable('x')));
+			const result = normalize(expr);
+			// Numerator: 2*x^{1/2}
+			expect(result.numerator[0].coefficient.terms[0].rational.n).toBe(2n);
+			expect(result.numerator[0].monomial[0].exponent).toEqual({ n: 1n, d: 2n });
+			// Denominator: x
+			expect(result.denominator[0].monomial[0].exponent).toEqual({ n: 1n, d: 1n });
+		});
+
+		test('3 / sqrt(y) = 3*sqrt(y) / y', () => {
+			const expr = div(num('3'), sqrt(variable('y')));
+			const result = normalize(expr);
+			expect(result.numerator[0].coefficient.terms[0].rational.n).toBe(3n);
+			expect(result.numerator[0].monomial[0].exponent).toEqual({ n: 1n, d: 2n });
+			expect(result.denominator[0].monomial[0].exponent).toEqual({ n: 1n, d: 1n });
+		});
+
+		test('x / sqrt(y) = x*sqrt(y) / y', () => {
+			// x / sqrt(y) = x / y^{1/2} → multiply by y^{1/2} → x*y^{1/2} / y
+			const expr = div(variable('x'), sqrt(variable('y')));
+			const result = normalize(expr);
+			// Numerator: x * y^{1/2} (two factors)
+			expect(result.numerator[0].monomial.length).toBe(2);
+			// Denominator: y
+			expect(result.denominator[0].monomial.length).toBe(1);
+			expect(result.denominator[0].monomial[0].exponent).toEqual({ n: 1n, d: 1n });
+		});
+
+		// TODO: cbrt(x) function normalization not implemented yet - treated as opaque
+		// When implemented, 1/cbrt(x) should rationalize to cbrt(x²)/x
+
+		test('x^{1/3} denominator is rationalized', () => {
+			// x^{1/3} in denominator → multiply by x^{2/3} → x^{2/3} / x
+			const expr = div(num('1'), power(variable('x'), div(num('1'), num('3'))));
+			const result = normalize(expr);
+			// Numerator: x^{2/3}
+			expect(result.numerator[0].monomial[0].exponent).toEqual({ n: 2n, d: 3n });
+			// Denominator: x (exponent = 1)
+			expect(result.denominator[0].monomial[0].exponent).toEqual({ n: 1n, d: 1n });
+		});
+
+		test('1 / (sqrt(x) * sqrt(y)) rationalizes both', () => {
+			// 1 / (x^{1/2} * y^{1/2}) → multiply by x^{1/2}*y^{1/2} → x^{1/2}*y^{1/2} / xy
+			const expr = div(num('1'), mul(sqrt(variable('x')), sqrt(variable('y'))));
+			const result = normalize(expr);
+			// After rationalization, denominator should have integer exponents
+			expect(result.denominator[0].monomial.every((f) => f.exponent.d === 1n)).toBe(true);
+		});
+
+		test('integer denominator is not rationalized', () => {
+			const expr = div(num('1'), variable('x'));
+			const result = normalize(expr);
+			// Denominator: x (exponent = 1) - no change needed
+			expect(result.denominator[0].monomial[0].exponent).toEqual({ n: 1n, d: 1n });
+		});
+
+		test('constant denominator is not rationalized', () => {
+			const expr = div(variable('x'), num('3'));
+			const result = normalize(expr);
+			// Result should be x/3 (simplified to coefficient 1/3)
+			expect(result.numerator[0].coefficient.terms[0].rational).toEqual({ n: 1n, d: 3n });
 		});
 	});
 
@@ -3504,6 +3580,132 @@ describe('Perfect Square Extraction from sqrt', () => {
 			const expr = sqrt(div(variable('x'), num('9')));
 			const expected = div(sqrt(variable('x')), num('3'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+});
+
+// =============================================================================
+// Perfect Square Trinomial Tests
+// =============================================================================
+
+describe('Perfect Square Trinomial Detection', () => {
+	describe('Basic trinomials (a + b)²', () => {
+		test('√(x² + 2x + 1) = x + 1', () => {
+			// x² + 2x + 1 = (x + 1)²
+			const expr = sqrt(
+				add(add(power(variable('x'), num('2')), mul(num('2'), variable('x'))), num('1'))
+			);
+			const expected = add(variable('x'), num('1'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(x² + 4x + 4) = x + 2', () => {
+			// x² + 4x + 4 = (x + 2)²
+			const expr = sqrt(
+				add(add(power(variable('x'), num('2')), mul(num('4'), variable('x'))), num('4'))
+			);
+			const expected = add(variable('x'), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(x² + 6x + 9) = x + 3', () => {
+			// x² + 6x + 9 = (x + 3)²
+			const expr = sqrt(
+				add(add(power(variable('x'), num('2')), mul(num('6'), variable('x'))), num('9'))
+			);
+			const expected = add(variable('x'), num('3'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Trinomials (a - b)²', () => {
+		test('√(x² - 2x + 1) = x - 1', () => {
+			// x² - 2x + 1 = (x - 1)²
+			const expr = sqrt(
+				add(sub(power(variable('x'), num('2')), mul(num('2'), variable('x'))), num('1'))
+			);
+			const expected = sub(variable('x'), num('1'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(x² - 4x + 4) = x - 2', () => {
+			// x² - 4x + 4 = (x - 2)²
+			const expr = sqrt(
+				add(sub(power(variable('x'), num('2')), mul(num('4'), variable('x'))), num('4'))
+			);
+			const expected = sub(variable('x'), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Trinomials with coefficients', () => {
+		test('√(4x² + 4x + 1) = 2x + 1', () => {
+			// 4x² + 4x + 1 = (2x + 1)²
+			const expr = sqrt(
+				add(
+					add(mul(num('4'), power(variable('x'), num('2'))), mul(num('4'), variable('x'))),
+					num('1')
+				)
+			);
+			const expected = add(mul(num('2'), variable('x')), num('1'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(9x² + 6x + 1) = 3x + 1', () => {
+			// 9x² + 6x + 1 = (3x + 1)²
+			const expr = sqrt(
+				add(
+					add(mul(num('9'), power(variable('x'), num('2'))), mul(num('6'), variable('x'))),
+					num('1')
+				)
+			);
+			const expected = add(mul(num('3'), variable('x')), num('1'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Two-variable trinomials', () => {
+		test('√(x² + 2xy + y²) = x + y', () => {
+			// x² + 2xy + y² = (x + y)²
+			const expr = sqrt(
+				add(
+					add(power(variable('x'), num('2')), mul(num('2'), mul(variable('x'), variable('y')))),
+					power(variable('y'), num('2'))
+				)
+			);
+			const expected = add(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√(x² - 2xy + y²) = x - y', () => {
+			// x² - 2xy + y² = (x - y)²
+			const expr = sqrt(
+				add(
+					sub(power(variable('x'), num('2')), mul(num('2'), mul(variable('x'), variable('y')))),
+					power(variable('y'), num('2'))
+				)
+			);
+			const expected = sub(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Non-perfect square trinomials stay opaque', () => {
+		test('√(x² + 3x + 1) stays as sqrt (not factorable)', () => {
+			// x² + 3x + 1 is not a perfect square
+			const expr = sqrt(
+				add(add(power(variable('x'), num('2')), mul(num('3'), variable('x'))), num('1'))
+			);
+			const result = normalize(expr);
+			// Should be (x² + 3x + 1)^{1/2}, i.e., a single term with fractional exponent
+			expect(result.numerator.length).toBe(1);
+		});
+
+		test('√(x² + x + 1) stays as sqrt (not factorable)', () => {
+			// x² + x + 1 is not a perfect square
+			const expr = sqrt(add(add(power(variable('x'), num('2')), variable('x')), num('1')));
+			const result = normalize(expr);
+			expect(result.numerator.length).toBe(1);
 		});
 	});
 });
