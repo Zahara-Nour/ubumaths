@@ -262,6 +262,77 @@ export function denormalizeCoefficient(coef: AlgebraicCoefficient): MathNode {
 }
 
 /**
+ * Denormalizes a symbolic factor with fractional exponent.
+ *
+ * Examples:
+ * - x^{1/2} → √x
+ * - x^{3/2} → x√x (x^1 × x^{1/2})
+ * - x^{5/2} → x²√x (x^2 × x^{1/2})
+ * - x^{1/3} → ∛x
+ * - x^{4/3} → x∛x (x^1 × x^{1/3})
+ * - x^{2/3} → ∛(x²)
+ *
+ * @param base - The base node
+ * @param exponent - The fractional exponent
+ * @returns A MathNode representing base^exponent
+ */
+function denormalizeFractionalPower(base: MathNode, exponent: Rational): MathNode {
+	const { n, d } = exponent;
+
+	// Handle negative exponents: x^{-n/d} = 1 / x^{n/d}
+	if (n < 0n) {
+		const posExp: Rational = { n: -n, d };
+		const posNode = denormalizeFractionalPower(base, posExp);
+		return {
+			type: 'division',
+			numerator: numberNode(1n),
+			denominator: posNode,
+			displayStyle: 'fraction' as const
+		};
+	}
+
+	// Split into integer part and remainder
+	// n/d = intPart + remainder/d
+	const intPart = n / d; // Integer division
+	const remainder = n % d;
+
+	// Case: no remainder (should be integer, but just in case)
+	if (remainder === 0n) {
+		if (intPart === 1n) return base;
+		return powerNode(base, numberNode(intPart));
+	}
+
+	// Case: only fractional part (intPart = 0)
+	if (intPart === 0n) {
+		// x^{r/d} where r < d
+		// If r = 1: d-th root of x
+		if (remainder === 1n) {
+			return rootNode(base, d);
+		}
+		// If r > 1: d-th root of x^r
+		const innerPower = powerNode(base, numberNode(remainder));
+		return rootNode(innerPower, d);
+	}
+
+	// Case: both integer and fractional parts
+	// x^{intPart + remainder/d} = x^intPart × x^{remainder/d}
+	const intPartNode = intPart === 1n ? base : powerNode(base, numberNode(intPart));
+
+	// Fractional part
+	let fracPartNode: MathNode;
+	if (remainder === 1n) {
+		// x^{1/d} = d-th root of x
+		fracPartNode = rootNode(base, d);
+	} else {
+		// x^{r/d} = d-th root of x^r
+		const innerPower = powerNode(base, numberNode(remainder));
+		fracPartNode = rootNode(innerPower, d);
+	}
+
+	return multiplyNodes(intPartNode, fracPartNode);
+}
+
+/**
  * Denormalizes a monomial (array of symbolic factors) to a MathNode.
  *
  * @param monomial - The symbolic monomial
@@ -286,14 +357,8 @@ export function denormalizeMonomial(monomial: readonly SymbolicFactor[]): MathNo
 			// Integer exponent
 			factorNode = powerNode(base, numberNode(exponent.n));
 		} else {
-			// Fractional exponent
-			const expNode: MathNode = {
-				type: 'division',
-				numerator: numberNode(exponent.n),
-				denominator: numberNode(exponent.d),
-				displayStyle: 'fraction' as const
-			};
-			factorNode = powerNode(base, expNode);
+			// Fractional exponent: use smart rendering
+			factorNode = denormalizeFractionalPower(base, exponent);
 		}
 
 		if (result === null) {

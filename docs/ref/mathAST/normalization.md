@@ -253,6 +253,33 @@ const node = denormalize(normal);
 // Returns AST for: 3x
 ```
 
+#### Fractional Exponent Display
+
+Monomials with fractional exponents are displayed in a human-readable form:
+
+```typescript
+// x^{1/2} displays as √x
+const half = normalize(parseLatex('\\sqrt{x}'));
+toLatex(denormalize(half)); // "\\sqrt{x}"
+
+// x^{3/2} displays as x√x (x × √x)
+const threeHalves = normalize(parseLatex('x \\sqrt{x}'));
+toLatex(denormalize(threeHalves)); // "x \\sqrt{x}"
+
+// x^{5/2} displays as x²√x (x² × √x)
+const fiveHalves = normalize(parseLatex('x^2 \\sqrt{x}'));
+toLatex(denormalize(fiveHalves)); // "x^{2} \\sqrt{x}"
+
+// x^{2/3} displays as ∛(x²)
+const twoThirds = normalize(parseLatex('\\sqrt[3]{x^2}'));
+toLatex(denormalize(twoThirds)); // "\\sqrt[3]{x^{2}}"
+```
+
+The algorithm splits fractional exponents `n/d` into:
+
+- Integer part: `x^{intPart}` where `intPart = n ÷ d`
+- Fractional part: `d-th root of x^{remainder}` where `remainder = n mod d`
+
 ## Equivalence Checking
 
 ### `polynomialsEqual(a, b): boolean`
@@ -378,7 +405,9 @@ toDecimal(half); // 0.5
 
 ## Radical Simplification
 
-Simplify square roots:
+### Numeric Radicals
+
+Simplify square roots of integers:
 
 ```typescript
 import { simplifyRadical } from '$lib/mathAST/normal';
@@ -391,6 +420,28 @@ simplifyRadical(12n);
 simplifyRadical(9n);
 // { coefficient: 3n, radicand: 1n }
 ```
+
+### Symbolic Radicals
+
+Symbolic radicals are converted to fractional exponents during normalization:
+
+```typescript
+import { normalize } from '$lib/mathAST/normal';
+
+// √x → x^{1/2}
+normalize(parseLatex('\\sqrt{x}'));
+// Monomial: [{ base: Variable('x'), exponent: { n: 1n, d: 2n } }]
+
+// √x × x → x^{3/2}
+normalize(parseLatex('\\sqrt{x} \\cdot x'));
+// Monomial: [{ base: Variable('x'), exponent: { n: 3n, d: 2n } }]
+
+// √x × √x → x (automatic via monomial multiplication)
+normalize(parseLatex('\\sqrt{x} \\sqrt{x}'));
+// Monomial: [{ base: Variable('x'), exponent: { n: 1n, d: 1n } }]
+```
+
+See [Symbolic Radical Simplification](#symbolic-radical-simplification) for detailed examples.
 
 ## Monomial Operations
 
@@ -782,7 +833,7 @@ The normalization process has two phases:
 
 Applies radical rules that Phase 2 cannot handle efficiently:
 
-- **Radicals**: `√(a)·√(b)=√(ab)`
+- **Radicals**: `√(a)·√(b)=√(ab)` (combines radicals before canonicalization)
 
 **Phase 2: Polynomial normalization** (`normalizeNode` function)
 
@@ -791,8 +842,38 @@ Converts to canonical polynomial form and handles:
 - **Arithmetic**: `0+x=x`, `1·x=x`, `x^0=1`, `x/1=x`, constant folding
 - **Powers**: `x^a·x^b=x^(a+b)`, `(x^a)^b=x^(ab)`, via monomial arithmetic
 - **Radicals**: `√0=0`, `√1=1`, `√(n²)=n` via `normalizeFunction`
+- **Symbolic radicals**: `√x → x^{1/2}`, `√(x²) → x`, `√(a×a) → a`, `(√a)^n → a^{n/2}`
 - **Transcendental**: sin, cos, tan, ln, log, exp at known values
 - Arguments are normalized before evaluation (e.g., `sin(x+x)` = `sin(2x)`)
+
+### Symbolic Radical Simplification
+
+Symbolic radicals (√x, √(x+1), etc.) are converted to fractional exponents for automatic simplification:
+
+```typescript
+// √x becomes x^{1/2} in the monomial
+normalize(parseLatex('\\sqrt{x}'));
+// monomial: [{ base: x, exponent: { n: 1n, d: 2n } }]
+
+// √x × √x = x (via monomial multiplication: x^{1/2} × x^{1/2} = x^1)
+nodesEqual(parseLatex('\\sqrt{x} \\sqrt{x}'), parseLatex('x')); // true
+
+// (√x)² = x (via (√x)^n → x^{n/2} rule)
+nodesEqual(parseLatex('(\\sqrt{x})^2'), parseLatex('x')); // true
+
+// √(x²) = x (detected before canonicalization)
+nodesEqual(parseLatex('\\sqrt{x^2}'), parseLatex('x')); // true
+
+// √(x+1) × √(x+1) = x+1 (same base detection via hashing)
+nodesEqual(parseLatex('\\sqrt{x+1} \\sqrt{x+1}'), parseLatex('x+1')); // true
+
+// √x × √y = √(xy) (via Phase 1)
+nodesEqual(parseLatex('\\sqrt{x} \\sqrt{y}'), parseLatex('\\sqrt{xy}')); // true
+```
+
+**Note**: Variables are assumed positive for simplifications like `√(x²) = x`. This matches typical educational use cases.
+
+**Pre-canonicalization detection**: To ensure `√((x+1)×(x+1)) = x+1` works correctly (and doesn't expand to `√(x²+2x+1)`), the normalizer checks for `√(a×a)` patterns BEFORE canonicalizing the argument.
 
 ```typescript
 import { simplify, simplifyOnce, simplifyWithSteps } from '$lib/mathAST/normal';
