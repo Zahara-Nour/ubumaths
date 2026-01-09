@@ -643,6 +643,41 @@ normalize(parseLatex('\\ln(12)')); // → 2·ln(2) + ln(3)
 normalize(parseLatex('\\ln(\\frac{2}{3})')); // → ln(2) - ln(3)
 ```
 
+### Log Expansion Rules (Base 10 and Arbitrary Bases)
+
+The same expansion rules apply to `log` (base 10 by default, or any explicit base):
+
+```typescript
+// Inverse rule: log_b(b^x) = x
+normalize(parseLatex('\\log(10^x)')); // → x (base 10 default)
+normalize(parseLatex('\\log(10^2)')); // → 2
+normalize(parseLatex('\\log_2(2^x)')); // → x (explicit base)
+normalize(parseLatex('\\log_b(b^x)')); // → x (symbolic base)
+
+// Perfect power of base simplification
+normalize(parseLatex('\\log(100)')); // → 2 (100 = 10²)
+normalize(parseLatex('\\log(1000)')); // → 3 (1000 = 10³)
+normalize(parseLatex('\\log_2(8)')); // → 3 (8 = 2³)
+normalize(parseLatex('\\log_3(81)')); // → 4 (81 = 3⁴)
+
+// log(x^n) = n·log(x)
+normalize(parseLatex('\\log(x^2)')); // → 2·log(x)
+normalize(parseLatex('\\log_3(x^2)')); // → 2·log_3(x) (base preserved)
+
+// log(x·y) = log(x) + log(y)
+normalize(parseLatex('\\log(xy)')); // → log(x) + log(y)
+normalize(parseLatex('\\log_2(xy)')); // → log_2(x) + log_2(y) (base preserved)
+
+// log(x/y) = log(x) - log(y)
+normalize(parseLatex('\\log(\\frac{x}{y})')); // → log(x) - log(y)
+
+// Integer expansion (when not a perfect power of base)
+normalize(parseLatex('\\log(12)')); // → 2·log(2) + log(3) (12 = 2²·3)
+normalize(parseLatex('\\log_2(12)')); // → 2 + log_2(3) (log_2(2) = 1)
+```
+
+**Note**: Base is preserved through all expansion rules.
+
 ### Exponential of Linear Combinations of Logarithms
 
 The normalizer detects linear combinations of logarithms inside `exp` and converts them to products of powers:
