@@ -2488,3 +2488,191 @@ describe('exp expansion rules', () => {
 		});
 	});
 });
+
+// =============================================================================
+// Log Expansion Tests (base 10 and arbitrary bases)
+// =============================================================================
+
+describe('Log Expansion', () => {
+	describe('Inverse rule: log(base^x) = x', () => {
+		test('log(10^x) = x (base 10 default)', () => {
+			const expr = fn('log', power(num('10'), variable('x')));
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('log(10^2) = 2', () => {
+			const expr = fn('log', power(num('10'), num('2')));
+			expect(normalize(expr).hash).toBe(normalize(num('2')).hash);
+		});
+
+		test('log_2(2^x) = x (explicit base)', () => {
+			const expr = fnWithBase('log', num('2'), power(num('2'), variable('x')));
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('log_b(b^x) = x (symbolic base)', () => {
+			const expr = fnWithBase('log', variable('b'), power(variable('b'), variable('x')));
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Perfect power of base simplification', () => {
+		test('log(100) = 2 (100 = 10²)', () => {
+			const expr = fn('log', num('100'));
+			expect(normalize(expr).hash).toBe(normalize(num('2')).hash);
+		});
+
+		test('log(1000) = 3 (1000 = 10³)', () => {
+			const expr = fn('log', num('1000'));
+			expect(normalize(expr).hash).toBe(normalize(num('3')).hash);
+		});
+
+		test('log_2(8) = 3 (8 = 2³)', () => {
+			const expr = fnWithBase('log', num('2'), num('8'));
+			expect(normalize(expr).hash).toBe(normalize(num('3')).hash);
+		});
+
+		test('log_2(16) = 4 (16 = 2⁴)', () => {
+			const expr = fnWithBase('log', num('2'), num('16'));
+			expect(normalize(expr).hash).toBe(normalize(num('4')).hash);
+		});
+
+		test('log_3(81) = 4 (81 = 3⁴)', () => {
+			const expr = fnWithBase('log', num('3'), num('81'));
+			expect(normalize(expr).hash).toBe(normalize(num('4')).hash);
+		});
+
+		test('log_5(125) = 3 (125 = 5³)', () => {
+			const expr = fnWithBase('log', num('5'), num('125'));
+			expect(normalize(expr).hash).toBe(normalize(num('3')).hash);
+		});
+	});
+
+	describe('Integer expansion via prime factorization', () => {
+		test('log(12) = 2·log(2) + log(3) (12 = 2²·3)', () => {
+			const expr = fn('log', num('12'));
+			const expanded = add(mul(num('2'), fn('log', num('2'))), fn('log', num('3')));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+
+		test('log(50) = log(2) + 2·log(5) (50 = 2·5²)', () => {
+			const expr = fn('log', num('50'));
+			const expanded = add(fn('log', num('2')), mul(num('2'), fn('log', num('5'))));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+
+		test('log_2(12) = 2·log_2(2) + log_2(3) = 2 + log_2(3)', () => {
+			// log_2(2) = 1, so 2·log_2(2) = 2
+			const expr = fnWithBase('log', num('2'), num('12'));
+			const expanded = add(num('2'), fnWithBase('log', num('2'), num('3')));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+
+		test('log(2) stays as log(2) (prime)', () => {
+			const expr = fn('log', num('2'));
+			const result = normalize(expr);
+			// Should be opaque log(2) function
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+		});
+	});
+
+	describe('Power expansion: log(x^n) = n·log(x)', () => {
+		test('log(x^2) = 2·log(x)', () => {
+			const expr = fn('log', power(variable('x'), num('2')));
+			const expanded = mul(num('2'), fn('log', variable('x')));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+
+		test('log(x^3) = 3·log(x)', () => {
+			const expr = fn('log', power(variable('x'), num('3')));
+			const expanded = mul(num('3'), fn('log', variable('x')));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+
+		test('log_3(x^2) = 2·log_3(x) (base preserved)', () => {
+			const expr = fnWithBase('log', num('3'), power(variable('x'), num('2')));
+			const expanded = mul(num('2'), fnWithBase('log', num('3'), variable('x')));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+	});
+
+	describe('Product expansion: log(a·b) = log(a) + log(b)', () => {
+		test('log(x·y) = log(x) + log(y)', () => {
+			const expr = fn('log', mul(variable('x'), variable('y')));
+			const expanded = add(fn('log', variable('x')), fn('log', variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+
+		test('log_2(x·y) = log_2(x) + log_2(y) (base preserved)', () => {
+			const expr = fnWithBase('log', num('2'), mul(variable('x'), variable('y')));
+			const expanded = add(
+				fnWithBase('log', num('2'), variable('x')),
+				fnWithBase('log', num('2'), variable('y'))
+			);
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+	});
+
+	describe('Division expansion: log(a/b) = log(a) - log(b)', () => {
+		test('log(x/y) = log(x) - log(y)', () => {
+			const expr = fn('log', div(variable('x'), variable('y')));
+			const expanded = sub(fn('log', variable('x')), fn('log', variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+
+		test('log_2(x/y) = log_2(x) - log_2(y) (base preserved)', () => {
+			const expr = fnWithBase('log', num('2'), div(variable('x'), variable('y')));
+			const expanded = sub(
+				fnWithBase('log', num('2'), variable('x')),
+				fnWithBase('log', num('2'), variable('y'))
+			);
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+
+		test('log(2/3) = log(2) - log(3)', () => {
+			const expr = fn('log', div(num('2'), num('3')));
+			const expanded = sub(fn('log', num('2')), fn('log', num('3')));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+	});
+
+	describe('Existing rules still work', () => {
+		test('log(1) = 0', () => {
+			const expr = fn('log', num('1'));
+			expect(normalize(expr).hash).toBe('0');
+		});
+
+		test('log(10) = 1', () => {
+			const expr = fn('log', num('10'));
+			expect(normalize(expr).hash).toBe('1');
+		});
+
+		test('log_b(b) = 1', () => {
+			const expr = fnWithBase('log', variable('b'), variable('b'));
+			expect(normalize(expr).hash).toBe('1');
+		});
+
+		test('log_2(2) = 1', () => {
+			const expr = fnWithBase('log', num('2'), num('2'));
+			expect(normalize(expr).hash).toBe('1');
+		});
+	});
+
+	describe('Combined cases', () => {
+		test('log(x^2·y) = 2·log(x) + log(y)', () => {
+			const expr = fn('log', mul(power(variable('x'), num('2')), variable('y')));
+			const expanded = add(mul(num('2'), fn('log', variable('x'))), fn('log', variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+
+		test('log(8/27) = 3·log(2) - 3·log(3)', () => {
+			const expr = fn('log', div(num('8'), num('27')));
+			const expanded = sub(mul(num('3'), fn('log', num('2'))), mul(num('3'), fn('log', num('3'))));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+	});
+});

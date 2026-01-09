@@ -13,7 +13,7 @@
 
 import type { MathNode } from '../types';
 import type { NormalForm, NormalTerm, Rational } from './types';
-import { hashPolynomial, hashNormalForm } from './hash';
+import { hashPolynomial, hashNormalForm, hashMathNode } from './hash';
 import {
 	ALGEBRAIC_ONE,
 	algebraicFromRational,
@@ -1075,11 +1075,56 @@ function getTangentValue(coeff: Rational): NormalForm | null {
 // Logarithm Expansion Functions
 // =============================================================================
 
+/** Type for logarithm function names */
+type LogFunctionName = 'ln' | 'log';
+
 /**
- * Creates an opaque ln(arg) NormalForm.
+ * Checks if n is a perfect power of base (n = base^k).
+ * Returns k if found, null otherwise.
+ * Example: isPerfectPowerOf(100n, 10n) → 2n (because 100 = 10²)
  */
-function createOpaqueLn(arg: MathNode): NormalForm {
-	return normalizeOpaqueNode({ type: 'function', name: 'ln', args: [arg] });
+function isPerfectPowerOf(n: bigint, base: bigint): bigint | null {
+	if (base <= 1n || n <= 0n) return null;
+	if (n === 1n) return 0n; // base^0 = 1
+	if (n === base) return 1n; // base^1 = base
+
+	let power = 0n;
+	let current = 1n;
+	while (current < n) {
+		current *= base;
+		power++;
+		if (current === n) return power;
+	}
+	return null;
+}
+
+/**
+ * Gets the numeric base value from a MathNode, or 10 if not specified.
+ * Returns null for non-numeric bases (they need special handling).
+ */
+function getNumericBase(base: MathNode | undefined): bigint | null {
+	if (!base) return 10n; // Default base 10
+	if (base.type === 'number') {
+		const val = parseInt(base.value, 10);
+		if (Number.isInteger(val) && val > 1) return BigInt(val);
+	}
+	return null; // Non-numeric base
+}
+
+/**
+ * Creates an opaque logarithm function NormalForm.
+ * Works for both ln and log (with optional base).
+ */
+function createOpaqueLogFunction(
+	arg: MathNode,
+	logName: LogFunctionName,
+	base?: MathNode
+): NormalForm {
+	const node: MathNode & { type: 'function' } = { type: 'function', name: logName, args: [arg] };
+	if (base) {
+		(node as MathNode & { type: 'function'; base?: MathNode }).base = base;
+	}
+	return normalizeOpaqueNode(node);
 }
 
 /**
@@ -1097,32 +1142,54 @@ function isOneRational(r: Rational): boolean {
 }
 
 /**
- * Expands ln(n) where n is a positive integer > 1.
- * Uses prime factorization: ln(12) = ln(2²·3) = 2·ln(2) + ln(3)
+ * Expands log(n) where n is a positive integer > 1.
+ * Uses prime factorization: log(12) = log(2²·3) = 2·log(2) + log(3)
+ *
+ * For log with numeric base, first checks if n is a perfect power of the base.
+ * E.g., log_2(8) = 3 because 8 = 2³
  */
-function expandLnInteger(n: bigint): NormalForm {
+function expandLogInteger(n: bigint, logName: LogFunctionName, base?: MathNode): NormalForm {
+	// For log (not ln), check if n is a perfect power of the base first
+	if (logName === 'log') {
+		const numericBase = getNumericBase(base);
+		if (numericBase !== null) {
+			const power = isPerfectPowerOf(n, numericBase);
+			if (power !== null) {
+				return normalFormFromInteger(power);
+			}
+		}
+	}
+
 	const factors = primeFactorization(n);
 
 	// If no factors (n=1), this shouldn't happen but return 0
 	if (factors.length === 0) return ZERO_NORMAL_FORM;
 
-	// If single prime with exponent 1, just return ln(prime) opaque
+	// If single prime with exponent 1, just return log(prime) opaque
 	if (factors.length === 1 && factors[0][1] === 1n) {
 		const prime = factors[0][0];
-		return createOpaqueLn({ type: 'number', value: prime.toString() });
+		return createOpaqueLogFunction({ type: 'number', value: prime.toString() }, logName, base);
 	}
 
-	// Build: sum of (exp * ln(prime))
+	// Build: sum of (exp * log(prime))
 	let result = ZERO_NORMAL_FORM;
 
 	for (const [prime, exp] of factors) {
-		const lnPrime = createOpaqueLn({ type: 'number', value: prime.toString() });
+		// Use recursive normalization to handle log_b(b) = 1
+		const logPrimeNode: MathNode & { type: 'function'; base?: MathNode } = {
+			type: 'function',
+			name: logName,
+			args: [{ type: 'number', value: prime.toString() }]
+		};
+		if (base) logPrimeNode.base = base;
+
+		const logPrime = normalizeNode(logPrimeNode);
 
 		if (exp === 1n) {
-			result = addNormalForms(result, lnPrime);
+			result = addNormalForms(result, logPrime);
 		} else {
 			const expForm = normalFormFromInteger(exp);
-			const term = mulNormalForms(expForm, lnPrime);
+			const term = mulNormalForms(expForm, logPrime);
 			result = addNormalForms(result, term);
 		}
 	}
@@ -1131,68 +1198,119 @@ function expandLnInteger(n: bigint): NormalForm {
 }
 
 /**
- * Expands ln(x^n) = n·ln(x)
+ * Expands log(x^n) = n·log(x)
  * Uses recursive normalization to handle composition (e.g., ln(exp(x)) = x)
  */
-function expandLnPower(info: { base: MathNode; exponent: Rational }): NormalForm {
+function expandLogPower(
+	info: { base: MathNode; exponent: Rational },
+	logName: LogFunctionName,
+	logBase?: MathNode
+): NormalForm {
 	// Use normalizeNode to allow ln(exp(x)) = x composition rule
-	const lnBase = normalizeNode({ type: 'function', name: 'ln', args: [info.base] });
+	const logNode: MathNode & { type: 'function'; base?: MathNode } = {
+		type: 'function',
+		name: logName,
+		args: [info.base]
+	};
+	if (logBase) logNode.base = logBase;
+
+	const logBaseForm = normalizeNode(logNode);
 	const expForm = normalFormFromRational(info.exponent);
-	return mulNormalForms(expForm, lnBase);
+	return mulNormalForms(expForm, logBaseForm);
 }
 
 /**
- * Expands ln(a·b·c) = ln(a) + ln(b) + ln(c)
- * Uses recursive normalization to handle nested expansions (e.g., ln(x^2) in ln(x^2·y))
+ * Expands log(a·b·c) = log(a) + log(b) + log(c)
+ * Uses recursive normalization to handle nested expansions (e.g., log(x^2) in log(x^2·y))
  */
-function expandLnProduct(factors: MathNode[]): NormalForm {
+function expandLogProduct(
+	factors: MathNode[],
+	logName: LogFunctionName,
+	base?: MathNode
+): NormalForm {
 	if (factors.length === 0) return ZERO_NORMAL_FORM;
 
 	// Use recursive normalization to handle nested expansions
-	const normalizeLnFactor = (f: MathNode): NormalForm =>
-		normalizeNode({ type: 'function', name: 'ln', args: [f] });
+	const normalizeLogFactor = (f: MathNode): NormalForm => {
+		const logNode: MathNode & { type: 'function'; base?: MathNode } = {
+			type: 'function',
+			name: logName,
+			args: [f]
+		};
+		if (base) logNode.base = base;
+		return normalizeNode(logNode);
+	};
 
-	if (factors.length === 1) return normalizeLnFactor(factors[0]);
+	if (factors.length === 1) return normalizeLogFactor(factors[0]);
 
-	let result = normalizeLnFactor(factors[0]);
+	let result = normalizeLogFactor(factors[0]);
 	for (let i = 1; i < factors.length; i++) {
-		result = addNormalForms(result, normalizeLnFactor(factors[i]));
+		result = addNormalForms(result, normalizeLogFactor(factors[i]));
 	}
 	return result;
 }
 
 /**
- * Expands ln(n/d) where n and d are positive integers.
- * Uses: ln(n/d) = ln(n) - ln(d)
+ * Expands log(n/d) where n and d are positive integers.
+ * Uses: log(n/d) = log(n) - log(d)
  */
-function expandLnRational(n: bigint, d: bigint): NormalForm {
-	// Recursively normalize ln(n) and ln(d) to handle prime factorization
-	const lnN: NormalForm = normalizeNode({
+function expandLogRational(
+	n: bigint,
+	d: bigint,
+	logName: LogFunctionName,
+	base?: MathNode
+): NormalForm {
+	// Recursively normalize log(n) and log(d) to handle prime factorization
+	const logNNode: MathNode & { type: 'function'; base?: MathNode } = {
 		type: 'function',
-		name: 'ln',
+		name: logName,
 		args: [{ type: 'number', value: n.toString() }]
-	});
-	const lnD: NormalForm = normalizeNode({
+	};
+	if (base) logNNode.base = base;
+
+	const logDNode: MathNode & { type: 'function'; base?: MathNode } = {
 		type: 'function',
-		name: 'ln',
+		name: logName,
 		args: [{ type: 'number', value: d.toString() }]
-	});
-	return subNormalForms(lnN, lnD);
+	};
+	if (base) logDNode.base = base;
+
+	const logN: NormalForm = normalizeNode(logNNode);
+	const logD: NormalForm = normalizeNode(logDNode);
+	return subNormalForms(logN, logD);
 }
 
 /**
- * Expands ln(a/b) = ln(a) - ln(b)
+ * Expands log(a/b) = log(a) - log(b)
  */
-function expandLnDivision(form: NormalForm): NormalForm {
+function expandLogDivision(
+	form: NormalForm,
+	logName: LogFunctionName,
+	base?: MathNode
+): NormalForm {
 	const numNode = denormalize(normalFormFromFraction(form.numerator, ONE_POLYNOMIAL));
 	const denNode = denormalize(normalFormFromFraction(form.denominator, ONE_POLYNOMIAL));
 
-	// Recursively normalize ln(numerator) and ln(denominator)
-	// This handles cases like ln(12/9) = ln(12) - ln(9) = (2ln2 + ln3) - 2ln3
-	const lnNum: NormalForm = normalizeNode({ type: 'function', name: 'ln', args: [numNode] });
-	const lnDen: NormalForm = normalizeNode({ type: 'function', name: 'ln', args: [denNode] });
+	// Recursively normalize log(numerator) and log(denominator)
+	// This handles cases like log(12/9) = log(12) - log(9) = (2log2 + log3) - 2log3
+	const logNumNode: MathNode & { type: 'function'; base?: MathNode } = {
+		type: 'function',
+		name: logName,
+		args: [numNode]
+	};
+	if (base) logNumNode.base = base;
 
-	return subNormalForms(lnNum, lnDen);
+	const logDenNode: MathNode & { type: 'function'; base?: MathNode } = {
+		type: 'function',
+		name: logName,
+		args: [denNode]
+	};
+	if (base) logDenNode.base = base;
+
+	const logNum: NormalForm = normalizeNode(logNumNode);
+	const logDen: NormalForm = normalizeNode(logDenNode);
+
+	return subNormalForms(logNum, logDen);
 }
 
 // NOTE: Exp expansion functions (expandExpSum, extractExpCoefficient, expandExpCoefficient)
@@ -1307,6 +1425,26 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 			return normalizeNode(arg.args[0]);
 		}
 
+		// log(base^x) = x — inverse rule, check BEFORE normalizing
+		if (name === 'log' && arg.type === 'superscript') {
+			const expBase = arg.base;
+			const logBase = canonicalNode.base;
+			const numericLogBase = getNumericBase(logBase);
+
+			// Check if exp base matches log base (numeric case)
+			if (numericLogBase !== null && expBase.type === 'number') {
+				const expBaseVal = BigInt(expBase.value);
+				if (expBaseVal === numericLogBase) {
+					return normalizeNode(arg.superscript); // log_b(b^x) = x
+				}
+			}
+
+			// For symbolic bases: log_b(b^x) = x via hash comparison
+			if (logBase && hashMathNode(expBase) === hashMathNode(logBase)) {
+				return normalizeNode(arg.superscript);
+			}
+		}
+
 		const argForm = normalizeNode(arg);
 
 		// ln(1) = 0, log(1) = 0
@@ -1315,51 +1453,83 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 		// ln(e) = 1
 		if (name === 'ln' && isEulerNumber(argForm)) return ONE_NORMAL_FORM;
 
-		// === LN EXPANSION (only for ln, not log) ===
+		// === LN EXPANSION ===
 		if (name === 'ln') {
 			// ln(n) where n is integer > 1 → expand via prime factorization
 			const intVal = extractPositiveInteger(argForm);
 			if (intVal !== null && intVal > 1n && intVal <= FACTORIZATION_LIMIT) {
-				return expandLnInteger(intVal);
+				return expandLogInteger(intVal, 'ln');
 			}
 
 			// ln(n/d) where n/d is a positive rational → expand as ln(n) - ln(d)
 			const ratVal = extractPositiveRational(argForm);
 			if (ratVal !== null && ratVal.n <= FACTORIZATION_LIMIT && ratVal.d <= FACTORIZATION_LIMIT) {
-				return expandLnRational(ratVal.n, ratVal.d);
+				return expandLogRational(ratVal.n, ratVal.d, 'ln');
 			}
 
 			// ln(x^n) = n·ln(x) — but only if exponent != 1
 			const powerInfo = extractSimplePower(argForm);
 			if (powerInfo && !isOneRational(powerInfo.exponent)) {
-				return expandLnPower(powerInfo);
+				return expandLogPower(powerInfo, 'ln');
 			}
 
 			// ln(a·b·c) = ln(a) + ln(b) + ln(c)
 			const factors = extractProductFactors(argForm);
 			if (factors.length > 1) {
-				return expandLnProduct(factors);
+				return expandLogProduct(factors, 'ln');
 			}
 
 			// ln(a/b) = ln(a) - ln(b)
 			if (!isOnePolynomial(argForm.denominator)) {
-				return expandLnDivision(argForm);
+				return expandLogDivision(argForm, 'ln');
 			}
 		}
 
-		// log(10) = 1 (base 10)
-		if (name === 'log' && isIntegerValue(argForm, 10n)) {
-			// Check if base is 10 or not specified
-			const base = canonicalNode.base;
-			if (!base || (base.type === 'number' && base.value === '10')) {
-				return ONE_NORMAL_FORM;
-			}
-		}
+		// === LOG EXPANSION ===
+		if (name === 'log') {
+			const logBase = canonicalNode.base;
 
-		// log_b(b) = 1
-		if (name === 'log' && canonicalNode.base) {
-			const baseForm = normalizeNode(canonicalNode.base);
-			if (argForm.hash === baseForm.hash) return ONE_NORMAL_FORM;
+			// log(10) = 1 (base 10) - check before expansion
+			if (isIntegerValue(argForm, 10n)) {
+				if (!logBase || (logBase.type === 'number' && logBase.value === '10')) {
+					return ONE_NORMAL_FORM;
+				}
+			}
+
+			// log_b(b) = 1 - check before expansion
+			if (logBase) {
+				const baseForm = normalizeNode(logBase);
+				if (argForm.hash === baseForm.hash) return ONE_NORMAL_FORM;
+			}
+
+			// log(n) where n is integer > 1 → check perfect power of base OR expand via prime factorization
+			const intVal = extractPositiveInteger(argForm);
+			if (intVal !== null && intVal > 1n && intVal <= FACTORIZATION_LIMIT) {
+				return expandLogInteger(intVal, 'log', logBase);
+			}
+
+			// log(n/d) where n/d is a positive rational → expand as log(n) - log(d)
+			const ratVal = extractPositiveRational(argForm);
+			if (ratVal !== null && ratVal.n <= FACTORIZATION_LIMIT && ratVal.d <= FACTORIZATION_LIMIT) {
+				return expandLogRational(ratVal.n, ratVal.d, 'log', logBase);
+			}
+
+			// log(x^n) = n·log(x) — but only if exponent != 1
+			const powerInfo = extractSimplePower(argForm);
+			if (powerInfo && !isOneRational(powerInfo.exponent)) {
+				return expandLogPower(powerInfo, 'log', logBase);
+			}
+
+			// log(a·b·c) = log(a) + log(b) + log(c)
+			const factors = extractProductFactors(argForm);
+			if (factors.length > 1) {
+				return expandLogProduct(factors, 'log', logBase);
+			}
+
+			// log(a/b) = log(a) - log(b)
+			if (!isOnePolynomial(argForm.denominator)) {
+				return expandLogDivision(argForm, 'log', logBase);
+			}
 		}
 
 		return normalizeOpaqueNode(canonicalNode);
