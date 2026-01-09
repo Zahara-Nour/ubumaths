@@ -1,14 +1,12 @@
 /**
- * MathAST Normal Form - Radical Simplification Rules
+ * MathAST Normal Form - Radical Simplification Rules (Phase 1)
  *
- * Rules for simplifying expressions involving radicals/roots:
- * - sqrt(a^2*b) = a*sqrt(b) (already handled in radical.ts simplifyRadical)
- * - sqrt(a) * sqrt(b) = sqrt(ab) (already handled in radical.ts mulRadicalsSameIndex)
+ * Only rules that Phase 2 (polynomial normalization) cannot handle efficiently:
+ * - sqrt(a) * sqrt(b) = sqrt(ab) for symbolic radicals
  * - sqrt(a/b) = sqrt(a) / sqrt(b)
- * - root[n](a^n) = a
  *
- * These rules apply at the MathNode level during pre-normalization.
- * The algebraic radical operations in radical.ts handle the numeric computation.
+ * All other radical simplifications (sqrt(0), sqrt(1), sqrt(n) perfect squares)
+ * are handled in Phase 2 by normalizeFunction.
  */
 
 import type { MathNode } from '../../types';
@@ -28,19 +26,6 @@ function getSqrtArg(node: MathNode): MathNode | null {
 }
 
 /**
- * Gets the integer value from a number node.
- */
-function getIntegerValue(node: MathNode): number | null {
-	if (node.type === 'number') {
-		const val = parseFloat(node.value);
-		if (Number.isInteger(val)) {
-			return val;
-		}
-	}
-	return null;
-}
-
-/**
  * Creates a sqrt function node.
  */
 function sqrtNode(arg: MathNode): MathNode {
@@ -49,13 +34,6 @@ function sqrtNode(arg: MathNode): MathNode {
 		name: 'sqrt',
 		args: [arg]
 	};
-}
-
-/**
- * Creates a number node.
- */
-function numberNode(value: number): MathNode {
-	return { type: 'number', value: String(value) };
 }
 
 // =============================================================================
@@ -67,12 +45,9 @@ function numberNode(value: number): MathNode {
  *
  * Returns a simplified node if a rule applies, or null if no simplification is possible.
  *
- * Rules applied:
- * - sqrt(a) * sqrt(b) = sqrt(a*b)
+ * Rules applied (Phase 1 only - what Phase 2 cannot do efficiently):
+ * - sqrt(a) * sqrt(b) = sqrt(a*b) for symbolic radicals
  * - sqrt(a/b) = sqrt(a) / sqrt(b)
- * - sqrt(a^2) = |a| (simplified to a for positive a)
- * - sqrt(1) = 1
- * - sqrt(0) = 0
  *
  * @param node - The node to simplify
  * @returns Simplified node, or null if no rule applies
@@ -81,6 +56,7 @@ export function applyRadicalRules(node: MathNode): MathNode | null {
 	switch (node.type) {
 		case 'multiplication': {
 			// sqrt(a) * sqrt(b) = sqrt(a*b)
+			// Phase 2 cannot combine different sqrt bases in monomials
 			const leftArg = getSqrtArg(node.left);
 			const rightArg = getSqrtArg(node.right);
 
@@ -99,17 +75,8 @@ export function applyRadicalRules(node: MathNode): MathNode | null {
 			if (node.name === 'sqrt' && node.args.length === 1) {
 				const arg = node.args[0];
 
-				// sqrt(0) = 0
-				if (arg.type === 'number' && parseFloat(arg.value) === 0) {
-					return numberNode(0);
-				}
-
-				// sqrt(1) = 1
-				if (arg.type === 'number' && parseFloat(arg.value) === 1) {
-					return numberNode(1);
-				}
-
 				// sqrt(a/b) = sqrt(a) / sqrt(b)
+				// Helps canonicalization by putting division in NormalForm structure
 				if (arg.type === 'division') {
 					return {
 						type: 'division',
@@ -117,54 +84,6 @@ export function applyRadicalRules(node: MathNode): MathNode | null {
 						denominator: sqrtNode(arg.denominator),
 						displayStyle: arg.displayStyle
 					};
-				}
-
-				// sqrt(x^2) = |x| (we simplify to x for now, assuming positive)
-				if (arg.type === 'superscript') {
-					const exp = getIntegerValue(arg.superscript);
-					if (exp !== null && exp === 2) {
-						// For simplicity, return abs(base)
-						// In practice, this requires knowing the sign of base
-						return {
-							type: 'function',
-							name: 'abs',
-							args: [arg.base]
-						};
-					}
-				}
-
-				// sqrt(n) for perfect square integers
-				if (arg.type === 'number') {
-					const val = parseFloat(arg.value);
-					if (Number.isInteger(val) && val >= 0) {
-						const sqrt = Math.sqrt(val);
-						if (Number.isInteger(sqrt)) {
-							return numberNode(sqrt);
-						}
-					}
-				}
-			}
-
-			// root[n](a^n) = a
-			if (node.name === 'root' && node.args.length === 2) {
-				const [arg, indexNode] = node.args;
-				const index = getIntegerValue(indexNode);
-
-				if (index !== null && arg.type === 'superscript') {
-					const exp = getIntegerValue(arg.superscript);
-					if (exp !== null && exp === index) {
-						// For odd n, root[n](x^n) = x
-						// For even n, root[n](x^n) = |x|
-						if (index % 2 === 1) {
-							return arg.base;
-						} else {
-							return {
-								type: 'function',
-								name: 'abs',
-								args: [arg.base]
-							};
-						}
-					}
 				}
 			}
 

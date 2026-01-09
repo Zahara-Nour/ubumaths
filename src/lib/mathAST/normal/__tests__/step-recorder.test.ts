@@ -1,7 +1,10 @@
 /**
  * Step Recorder Tests
  *
- * Tests for the step recording functionality during normalization.
+ * Tests for the step recording functionality during Phase 1 simplification.
+ *
+ * Note: Phase 1 now only handles radical rules. Arithmetic and power rules
+ * have been moved to Phase 2 (polynomial normalization).
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -26,10 +29,21 @@ const mul = (left: MathNode, right: MathNode): MathNode => ({
 	right,
 	displayStyle: 'implicit'
 });
+const div = (numerator: MathNode, denominator: MathNode): MathNode => ({
+	type: 'division',
+	numerator,
+	denominator,
+	displayStyle: 'fraction'
+});
 const pow = (base: MathNode, exp: MathNode): MathNode => ({
 	type: 'superscript',
 	base,
 	superscript: exp
+});
+const sqrt = (arg: MathNode): MathNode => ({
+	type: 'function',
+	name: 'sqrt',
+	args: [arg]
 });
 
 // =============================================================================
@@ -45,16 +59,16 @@ describe('StepRecorder', () => {
 
 	describe('recordStep', () => {
 		it('should record step when transformation occurs', () => {
-			const before = add(num('0'), variable('x'));
-			const after = variable('x');
+			const before = mul(sqrt(num('2')), sqrt(num('3')));
+			const after = sqrt(mul(num('2'), num('3')));
 
-			const recorded = recorder.recordStep('additive-identity-left', before, after);
+			const recorded = recorder.recordStep('radical-product', before, after);
 
 			expect(recorded).toBe(true);
 			expect(recorder.length).toBe(1);
 
 			const steps = recorder.getSteps();
-			expect(steps[0].rule).toBe('additive-identity-left');
+			expect(steps[0].rule).toBe('radical-product');
 			expect(steps[0].before).toEqual(before);
 			expect(steps[0].after).toEqual(after);
 		});
@@ -69,10 +83,10 @@ describe('StepRecorder', () => {
 		});
 
 		it('should accumulate multiple steps', () => {
-			const step1Before = add(num('0'), variable('x'));
-			const step1After = variable('x');
-			const step2Before = mul(num('1'), variable('y'));
-			const step2After = variable('y');
+			const step1Before = mul(sqrt(num('2')), sqrt(num('3')));
+			const step1After = sqrt(mul(num('2'), num('3')));
+			const step2Before = sqrt(div(variable('x'), variable('y')));
+			const step2After = div(sqrt(variable('x')), sqrt(variable('y')));
 
 			recorder.recordStep('rule1', step1Before, step1After);
 			recorder.recordStep('rule2', step2Before, step2After);
@@ -95,8 +109,8 @@ describe('StepRecorder', () => {
 
 	describe('clear', () => {
 		it('should clear all recorded steps', () => {
-			const before = add(num('0'), variable('x'));
-			const after = variable('x');
+			const before = mul(sqrt(num('2')), sqrt(num('3')));
+			const after = sqrt(mul(num('2'), num('3')));
 
 			recorder.recordStep('rule', before, after);
 			expect(recorder.length).toBe(1);
@@ -120,9 +134,7 @@ describe('StepRecorder', () => {
 
 describe('getRuleDescription', () => {
 	it('should return description for known rules', () => {
-		expect(getRuleDescription('additive-identity-left')).toContain("L'addition de 0");
-		expect(getRuleDescription('multiplicative-zero-left')).toContain('0');
-		expect(getRuleDescription('power-zero')).toContain('puissance 0');
+		expect(getRuleDescription('radicals')).toContain('radicaux');
 	});
 
 	it('should return fallback for unknown rules', () => {
@@ -132,32 +144,28 @@ describe('getRuleDescription', () => {
 });
 
 // =============================================================================
-// Simplify with Steps Tests
+// Simplify with Steps Tests (Phase 1 - Radicals only)
 // =============================================================================
 
 describe('simplifyWithSteps', () => {
-	it('should simplify 0 + x to x and record steps', () => {
-		const expr = add(num('0'), variable('x'));
+	it('should simplify sqrt(a) * sqrt(b) to sqrt(ab) and record steps', () => {
+		const expr = mul(sqrt(num('2')), sqrt(num('3')));
 		const { result, steps } = simplifyWithSteps(expr);
 
-		expect(result).toEqual(variable('x'));
-		// At least one transformation should have been recorded
+		expect(result).toEqual(sqrt(mul(num('2'), num('3'))));
+		// Transformation should have been recorded
 		expect(steps.length).toBeGreaterThan(0);
 	});
 
-	it('should simplify x * 1 to x and record steps', () => {
-		const expr = mul(variable('x'), num('1'));
+	it('should simplify sqrt(a/b) to sqrt(a)/sqrt(b) and record steps', () => {
+		const expr = sqrt(div(variable('x'), variable('y')));
 		const { result, steps } = simplifyWithSteps(expr);
 
-		expect(result).toEqual(variable('x'));
-		expect(steps.length).toBeGreaterThan(0);
-	});
-
-	it('should simplify x^0 to 1 and record steps', () => {
-		const expr = pow(variable('x'), num('0'));
-		const { result, steps } = simplifyWithSteps(expr);
-
-		expect(result).toEqual(num('1'));
+		expect(result.type).toBe('division');
+		if (result.type === 'division') {
+			expect(result.numerator).toEqual(sqrt(variable('x')));
+			expect(result.denominator).toEqual(sqrt(variable('y')));
+		}
 		expect(steps.length).toBeGreaterThan(0);
 	});
 
@@ -169,13 +177,26 @@ describe('simplifyWithSteps', () => {
 		expect(steps.length).toBe(0);
 	});
 
-	it('should record multiple iterations when needed', () => {
-		// 0 + (1 * x) should simplify in multiple steps
-		const expr = add(num('0'), mul(num('1'), variable('x')));
+	it('should not simplify arithmetic expressions (now handled in Phase 2)', () => {
+		// 0 + x is NOT simplified in Phase 1 anymore
+		const expr = add(num('0'), variable('x'));
 		const { result, steps } = simplifyWithSteps(expr);
 
-		expect(result).toEqual(variable('x'));
-		// Should have recorded transformation steps
+		// Should remain unchanged
+		expect(result).toEqual(expr);
+		expect(steps.length).toBe(0);
+	});
+
+	it('should simplify nested sqrt expressions', () => {
+		// (sqrt(2) * sqrt(3)) + x should simplify the sqrt part
+		const expr = add(mul(sqrt(num('2')), sqrt(num('3'))), variable('x'));
+		const { result, steps } = simplifyWithSteps(expr);
+
+		expect(result.type).toBe('addition');
+		if (result.type === 'addition') {
+			expect(result.left).toEqual(sqrt(mul(num('2'), num('3'))));
+			expect(result.right).toEqual(variable('x'));
+		}
 		expect(steps.length).toBeGreaterThan(0);
 	});
 });
@@ -186,7 +207,7 @@ describe('simplifyWithSteps', () => {
 
 describe('NormalizationStep format', () => {
 	it('should have all required fields', () => {
-		const before = add(num('0'), variable('x'));
+		const before = mul(sqrt(num('2')), sqrt(num('3')));
 		const { steps } = simplifyWithSteps(before);
 
 		if (steps.length > 0) {
@@ -199,7 +220,7 @@ describe('NormalizationStep format', () => {
 	});
 
 	it('should have non-empty rule and description', () => {
-		const before = add(num('0'), variable('x'));
+		const before = mul(sqrt(num('2')), sqrt(num('3')));
 		const { steps } = simplifyWithSteps(before);
 
 		for (const step of steps) {
@@ -215,19 +236,29 @@ describe('NormalizationStep format', () => {
 
 describe('simplifyOnceWithSteps', () => {
 	it('should apply simplification without recorder', () => {
-		const expr = add(num('0'), variable('x'));
+		const expr = mul(sqrt(num('2')), sqrt(num('3')));
 		const result = simplifyOnceWithSteps(expr);
 
-		expect(result).toEqual(variable('x'));
+		expect(result).toEqual(sqrt(mul(num('2'), num('3'))));
 	});
 
 	it('should apply simplification with recorder', () => {
 		const recorder = new StepRecorder();
+		const expr = mul(sqrt(num('2')), sqrt(num('3')));
+		const result = simplifyOnceWithSteps(expr, recorder);
+
+		expect(result).toEqual(sqrt(mul(num('2'), num('3'))));
+		// Should have recorded the radical transformation
+		expect(recorder.length).toBeGreaterThan(0);
+	});
+
+	it('should not transform non-radical expressions', () => {
+		const recorder = new StepRecorder();
+		// This is arithmetic, not radical - should not be simplified
 		const expr = add(num('0'), variable('x'));
 		const result = simplifyOnceWithSteps(expr, recorder);
 
-		expect(result).toEqual(variable('x'));
-		// Should have recorded at least the arithmetic transformation
-		expect(recorder.length).toBeGreaterThan(0);
+		expect(result).toEqual(expr);
+		expect(recorder.length).toBe(0);
 	});
 });

@@ -237,12 +237,13 @@ function parseNumberToRational(value: string): Rational {
 }
 
 /**
- * Checks if an exponent is a positive integer.
+ * Checks if an exponent is a non-negative integer (0, 1, 2, ...).
+ * Returns the integer value or null if not a non-negative integer.
  */
-function getPositiveIntExponent(node: MathNode): number | null {
+function getNonNegativeIntExponent(node: MathNode): number | null {
 	if (node.type === 'number') {
 		const val = parseFloat(node.value);
-		if (Number.isInteger(val) && val > 0) {
+		if (Number.isInteger(val) && val >= 0) {
 			return val;
 		}
 	}
@@ -676,8 +677,8 @@ function normalizeNode(node: MathNode): NormalForm {
 
 			const baseForm = normalizeNode(node.base);
 
-			// Check for positive integer exponent
-			const intExp = getPositiveIntExponent(node.superscript);
+			// Check for non-negative integer exponent (handles x^0 = 1, x^1 = x, x^n)
+			const intExp = getNonNegativeIntExponent(node.superscript);
 			if (intExp !== null) {
 				return powNormalForm(baseForm, intExp);
 			}
@@ -2016,7 +2017,7 @@ function divNormalForms(a: NormalForm, b: NormalForm): NormalForm {
 }
 
 /**
- * Raises a normal form to a positive integer power.
+ * Raises a normal form to a non-negative integer power.
  */
 function powNormalForm(a: NormalForm, n: number): NormalForm {
 	if (n === 0) {
@@ -2031,4 +2032,38 @@ function powNormalForm(a: NormalForm, n: number): NormalForm {
 	const denominator = powPolynomial(a.denominator, n);
 
 	return normalFormFromFraction(numerator, denominator);
+}
+
+// =============================================================================
+// Semantic Expression Checks
+// =============================================================================
+
+/**
+ * Checks if a MathNode expression evaluates to zero.
+ * Uses full normalization for mathematical correctness.
+ *
+ * @example
+ * isZeroExpression(parse("0"))     // true
+ * isZeroExpression(parse("x-x"))   // true
+ * isZeroExpression(parse("0*x"))   // true
+ * isZeroExpression(parse("1"))     // false
+ */
+export function isZeroExpression(node: MathNode): boolean {
+	const form = normalize(node);
+	return form.numerator.length === 0;
+}
+
+/**
+ * Checks if a MathNode expression evaluates to one.
+ * Uses full normalization for mathematical correctness.
+ *
+ * @example
+ * isOneExpression(parse("1"))      // true
+ * isOneExpression(parse("x/x"))    // true (assuming x ≠ 0)
+ * isOneExpression(parse("2/2"))    // true
+ * isOneExpression(parse("0"))      // false
+ */
+export function isOneExpression(node: MathNode): boolean {
+	const form = normalize(node);
+	return isOnePolynomial(form.numerator) && isOnePolynomial(form.denominator);
 }

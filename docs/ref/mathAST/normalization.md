@@ -739,17 +739,18 @@ The normalization process has two phases:
 
 **Phase 1: Pre-simplification** (`simplify` function)
 
-Applies 3 rule sets iteratively until fixed point:
+Applies radical rules that Phase 2 cannot handle efficiently:
 
-1. **Arithmetic**: `0+x=x`, `1·x=x`, `x^0=1`, `x/1=x`, constant folding
-2. **Powers**: `x^a·x^b=x^(a+b)`, `(x^a)^b=x^(ab)`, `(xy)^n=x^n·y^n`
-3. **Radicals**: `√(a)·√(b)=√(ab)`, `√(n²)=n`, `√0=0`, `√1=1`
+- **Radicals**: `√(a)·√(b)=√(ab)`, `√(a/b)=√a/√b`
 
 **Phase 2: Polynomial normalization** (`normalizeNode` function)
 
-Converts to canonical polynomial form and evaluates:
+Converts to canonical polynomial form and handles:
 
-- Transcendental functions (sin, cos, tan, ln, log, exp) at known values
+- **Arithmetic**: `0+x=x`, `1·x=x`, `x^0=1`, `x/1=x`, constant folding
+- **Powers**: `x^a·x^b=x^(a+b)`, `(x^a)^b=x^(ab)`, via monomial arithmetic
+- **Radicals**: `√0=0`, `√1=1`, `√(n²)=n` via `normalizeFunction`
+- **Transcendental**: sin, cos, tan, ln, log, exp at known values
 - Arguments are normalized before evaluation (e.g., `sin(x+x)` = `sin(2x)`)
 
 ```typescript
@@ -764,6 +765,26 @@ const onePass = simplifyOnce(ast);
 // With step recording (for educational display)
 const { result, steps } = simplifyWithSteps(ast);
 ```
+
+### Semantic Expression Checks
+
+Check if expressions evaluate to zero or one mathematically:
+
+```typescript
+import { isZeroExpression, isOneExpression } from '$lib/mathAST/normal';
+
+// Check for zero (uses full normalization)
+isZeroExpression(parseLatex('0')); // true
+isZeroExpression(parseLatex('x - x')); // true
+isZeroExpression(parseLatex('0 \\cdot x')); // true
+
+// Check for one (uses full normalization)
+isOneExpression(parseLatex('1')); // true
+isOneExpression(parseLatex('x / x')); // true
+isOneExpression(parseLatex('x^0')); // true
+```
+
+**Note**: These are semantic checks using full normalization, not syntactic checks for literal "0" or "1".
 
 ## Limitations
 
