@@ -206,20 +206,13 @@ export {
 // Simplification Rules
 // =============================================================================
 
-export {
-	applyArithmeticRules,
-	simplifyArithmetic,
-	isZeroNode,
-	isOneNode,
-	zeroNode,
-	oneNode,
-	applyPowerRules,
-	simplifyPowers,
-	applyRadicalRules,
-	simplifyRadicals,
-	simplifyOnce,
-	simplify
-} from './rules/index.js';
+export { applyRadicalRules, simplifyRadicals, simplifyOnce, simplify } from './rules/index.js';
+
+// =============================================================================
+// Semantic Expression Checks
+// =============================================================================
+
+export { isZeroExpression, isOneExpression } from './normalize.js';
 
 // =============================================================================
 // Comparison and Ordering

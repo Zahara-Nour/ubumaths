@@ -177,43 +177,24 @@ export class StepRecorder {
 // Simplification with Step Recording
 // =============================================================================
 
-import { simplifyArithmetic } from './rules/arithmetic.js';
-import { simplifyPowers } from './rules/powers.js';
 import { simplifyRadicals } from './rules/radicals.js';
 
 /**
- * Applies all simplification rules once, recording steps.
+ * Applies Phase 1 simplification rules once, recording steps.
+ *
+ * Note: Arithmetic and power rules have been moved to Phase 2 (polynomial normalization).
+ * Phase 1 now only handles radical combination rules that Phase 2 cannot do efficiently.
  *
  * @param node - The node to simplify
  * @param recorder - Optional step recorder
  * @returns The simplified node
  */
 export function simplifyOnceWithSteps(node: MathNode, recorder?: StepRecorder): MathNode {
-	let result = node;
-
-	// Apply arithmetic rules
-	const afterArithmetic = simplifyArithmetic(result);
+	// Apply radical rules (Phase 1)
+	const result = simplifyRadicals(node);
 	if (recorder) {
-		recorder.recordStep('arithmetic', result, afterArithmetic);
+		recorder.recordStep('radicals', node, result);
 	}
-	result = afterArithmetic;
-
-	// Apply power rules
-	const afterPowers = simplifyPowers(result);
-	if (recorder) {
-		recorder.recordStep('powers', result, afterPowers);
-	}
-	result = afterPowers;
-
-	// Apply radical rules
-	const afterRadicals = simplifyRadicals(result);
-	if (recorder) {
-		recorder.recordStep('radicals', result, afterRadicals);
-	}
-	result = afterRadicals;
-
-	// Note: Transcendental functions (trig, log, exp) are handled in Phase 2
-	// (normalizeNode) where arguments are normalized before evaluation.
 
 	return result;
 }
