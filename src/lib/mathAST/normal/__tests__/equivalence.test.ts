@@ -91,19 +91,52 @@ describe('Exp.isEquivalent', () => {
 		});
 	});
 
-	// NOTE: Fraction reduction of polynomial quotients is not yet implemented
-	// These tests document expected future behavior
-	describe('Fraction equivalence (TODO: implement fraction reduction)', () => {
-		test.skip('6/9 is equivalent to 2/3', () => {
+	describe('Fraction equivalence', () => {
+		test('6/9 is equivalent to 2/3', () => {
 			const a = Exp.divide(Exp.number('6'), Exp.number('9'));
 			const b = Exp.divide(Exp.number('2'), Exp.number('3'));
 
 			expect(a.isEquivalent(b)).toBe(true);
 		});
 
-		test.skip('4/8 is equivalent to 1/2', () => {
+		test('4/8 is equivalent to 1/2', () => {
 			const a = Exp.divide(Exp.number('4'), Exp.number('8'));
 			const b = Exp.divide(Exp.number('1'), Exp.number('2'));
+
+			expect(a.isEquivalent(b)).toBe(true);
+		});
+
+		test('-6/9 is equivalent to -2/3', () => {
+			const a = Exp.divide(Exp.opposite(Exp.number('6')), Exp.number('9'));
+			const b = Exp.divide(Exp.opposite(Exp.number('2')), Exp.number('3'));
+
+			expect(a.isEquivalent(b)).toBe(true);
+		});
+
+		test('6/(-9) is equivalent to -2/3', () => {
+			const a = Exp.divide(Exp.number('6'), Exp.opposite(Exp.number('9')));
+			const b = Exp.divide(Exp.opposite(Exp.number('2')), Exp.number('3'));
+
+			expect(a.isEquivalent(b)).toBe(true);
+		});
+
+		test('(-6)/(-9) is equivalent to 2/3', () => {
+			const a = Exp.divide(Exp.opposite(Exp.number('6')), Exp.opposite(Exp.number('9')));
+			const b = Exp.divide(Exp.number('2'), Exp.number('3'));
+
+			expect(a.isEquivalent(b)).toBe(true);
+		});
+
+		test('-4/8 is equivalent to -1/2', () => {
+			const a = Exp.divide(Exp.opposite(Exp.number('4')), Exp.number('8'));
+			const b = Exp.divide(Exp.opposite(Exp.number('1')), Exp.number('2'));
+
+			expect(a.isEquivalent(b)).toBe(true);
+		});
+
+		test('15/(-25) is equivalent to -3/5', () => {
+			const a = Exp.divide(Exp.number('15'), Exp.opposite(Exp.number('25')));
+			const b = Exp.divide(Exp.opposite(Exp.number('3')), Exp.number('5'));
 
 			expect(a.isEquivalent(b)).toBe(true);
 		});

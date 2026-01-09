@@ -255,6 +255,161 @@ function getRationalExponent(node: MathNode): Rational | null {
 }
 
 // =============================================================================
+// Logarithm Expansion Helpers
+// =============================================================================
+
+/** Maximum integer to factorize for performance (10^6) */
+const FACTORIZATION_LIMIT = 1_000_000n;
+
+/**
+ * Factorizes an integer into prime factors.
+ * Returns array of [prime, exponent] pairs sorted by prime.
+ * Example: 12 → [[2, 2], [3, 1]]
+ */
+function primeFactorization(n: bigint): [bigint, bigint][] {
+	if (n <= 1n) return [];
+
+	const factors: [bigint, bigint][] = [];
+	let remaining = n;
+	let d = 2n;
+
+	while (d * d <= remaining) {
+		let count = 0n;
+		while (remaining % d === 0n) {
+			remaining = remaining / d;
+			count++;
+		}
+		if (count > 0n) factors.push([d, count]);
+		d++;
+	}
+
+	if (remaining > 1n) factors.push([remaining, 1n]);
+
+	return factors;
+}
+
+/**
+ * Extracts a pure positive integer from a NormalForm.
+ * Returns the integer value or null if not a pure positive integer.
+ */
+function extractPositiveInteger(form: NormalForm): bigint | null {
+	// Must be: single term, no denominator, no monomial
+	if (form.numerator.length !== 1) return null;
+	if (!isOnePolynomial(form.denominator)) return null;
+
+	const term = form.numerator[0];
+	if (term.monomial.length !== 0) return null;
+	if (term.coefficient.terms.length !== 1) return null;
+
+	const coeff = term.coefficient.terms[0];
+	if (coeff.radicals.length !== 0) return null;
+
+	// Must be a positive integer (n > 0, d = 1)
+	if (coeff.rational.d !== 1n) return null;
+	if (coeff.rational.n <= 0n) return null;
+
+	return coeff.rational.n;
+}
+
+/**
+ * Extracts a positive rational (non-integer) from a NormalForm.
+ * Returns { n: bigint, d: bigint } or null if not a pure positive rational or if it's an integer.
+ */
+function extractPositiveRational(form: NormalForm): { n: bigint; d: bigint } | null {
+	// Must be: single term, no denominator polynomial, no monomial
+	if (form.numerator.length !== 1) return null;
+	if (!isOnePolynomial(form.denominator)) return null;
+
+	const term = form.numerator[0];
+	if (term.monomial.length !== 0) return null;
+	if (term.coefficient.terms.length !== 1) return null;
+
+	const coeff = term.coefficient.terms[0];
+	if (coeff.radicals.length !== 0) return null;
+
+	// Must be positive and non-integer (d > 1)
+	if (coeff.rational.d === 1n) return null; // It's an integer
+	if (coeff.rational.n <= 0n) return null;
+
+	return { n: coeff.rational.n, d: coeff.rational.d };
+}
+
+/**
+ * Extracts power info from a NormalForm if it's a simple x^n pattern.
+ * Returns { base: MathNode, exponent: Rational } or null.
+ *
+ * Detects patterns like:
+ * - x^2 → { base: x, exponent: 2 }
+ * - (x^3) → { base: x, exponent: 3 }
+ */
+function extractSimplePower(form: NormalForm): { base: MathNode; exponent: Rational } | null {
+	// Must be: single term, no denominator, coefficient = 1
+	if (form.numerator.length !== 1) return null;
+	if (!isOnePolynomial(form.denominator)) return null;
+
+	const term = form.numerator[0];
+
+	// Coefficient must be 1
+	if (term.coefficient.terms.length !== 1) return null;
+	const coeff = term.coefficient.terms[0];
+	if (coeff.radicals.length !== 0) return null;
+	if (coeff.rational.n !== 1n || coeff.rational.d !== 1n) return null;
+
+	// Monomial must have exactly one factor
+	if (term.monomial.length !== 1) return null;
+
+	const factor = term.monomial[0];
+	return {
+		base: factor.base,
+		exponent: factor.exponent
+	};
+}
+
+/**
+ * Extracts all factors from a product NormalForm.
+ * Returns array of MathNodes representing each factor.
+ *
+ * For example, x*y*z returns [x, y, z]
+ */
+function extractProductFactors(form: NormalForm): MathNode[] {
+	// Must be: single term, no denominator
+	if (form.numerator.length !== 1) return [];
+	if (!isOnePolynomial(form.denominator)) return [];
+
+	const term = form.numerator[0];
+
+	// Coefficient must be 1
+	if (term.coefficient.terms.length !== 1) return [];
+	const coeff = term.coefficient.terms[0];
+	if (coeff.radicals.length !== 0) return [];
+	if (coeff.rational.n !== 1n || coeff.rational.d !== 1n) return [];
+
+	// Extract each factor from the monomial
+	const factors: MathNode[] = [];
+	for (const factor of term.monomial) {
+		// Convert back to MathNode with exponent
+		if (factor.exponent.n === 1n && factor.exponent.d === 1n) {
+			factors.push(factor.base);
+		} else {
+			// x^n → superscript node
+			factors.push({
+				type: 'superscript',
+				base: factor.base,
+				superscript: {
+					type: 'number',
+					value:
+						factor.exponent.d === 1n
+							? factor.exponent.n.toString()
+							: `${factor.exponent.n}/${factor.exponent.d}`
+				}
+			});
+		}
+	}
+
+	return factors;
+}
+
+// =============================================================================
 // Main Normalization Algorithm
 // =============================================================================
 
@@ -755,6 +910,128 @@ function getTangentValue(coeff: Rational): NormalForm | null {
 }
 
 // =============================================================================
+// Logarithm Expansion Functions
+// =============================================================================
+
+/**
+ * Creates an opaque ln(arg) NormalForm.
+ */
+function createOpaqueLn(arg: MathNode): NormalForm {
+	return normalizeOpaqueNode({ type: 'function', name: 'ln', args: [arg] });
+}
+
+/**
+ * Creates a NormalForm from a bigint integer.
+ */
+function normalFormFromInteger(n: bigint): NormalForm {
+	return normalFormFromRational(fromInteger(n));
+}
+
+/**
+ * Checks if a Rational equals 1.
+ */
+function isOneRational(r: Rational): boolean {
+	return r.n === 1n && r.d === 1n;
+}
+
+/**
+ * Expands ln(n) where n is a positive integer > 1.
+ * Uses prime factorization: ln(12) = ln(2²·3) = 2·ln(2) + ln(3)
+ */
+function expandLnInteger(n: bigint): NormalForm {
+	const factors = primeFactorization(n);
+
+	// If no factors (n=1), this shouldn't happen but return 0
+	if (factors.length === 0) return ZERO_NORMAL_FORM;
+
+	// If single prime with exponent 1, just return ln(prime) opaque
+	if (factors.length === 1 && factors[0][1] === 1n) {
+		const prime = factors[0][0];
+		return createOpaqueLn({ type: 'number', value: prime.toString() });
+	}
+
+	// Build: sum of (exp * ln(prime))
+	let result = ZERO_NORMAL_FORM;
+
+	for (const [prime, exp] of factors) {
+		const lnPrime = createOpaqueLn({ type: 'number', value: prime.toString() });
+
+		if (exp === 1n) {
+			result = addNormalForms(result, lnPrime);
+		} else {
+			const expForm = normalFormFromInteger(exp);
+			const term = mulNormalForms(expForm, lnPrime);
+			result = addNormalForms(result, term);
+		}
+	}
+
+	return result;
+}
+
+/**
+ * Expands ln(x^n) = n·ln(x)
+ */
+function expandLnPower(info: { base: MathNode; exponent: Rational }): NormalForm {
+	const lnBase = createOpaqueLn(info.base);
+	const expForm = normalFormFromRational(info.exponent);
+	return mulNormalForms(expForm, lnBase);
+}
+
+/**
+ * Expands ln(a·b·c) = ln(a) + ln(b) + ln(c)
+ * Uses recursive normalization to handle nested expansions (e.g., ln(x^2) in ln(x^2·y))
+ */
+function expandLnProduct(factors: MathNode[]): NormalForm {
+	if (factors.length === 0) return ZERO_NORMAL_FORM;
+
+	// Use recursive normalization to handle nested expansions
+	const normalizeLnFactor = (f: MathNode): NormalForm =>
+		normalizeNode({ type: 'function', name: 'ln', args: [f] });
+
+	if (factors.length === 1) return normalizeLnFactor(factors[0]);
+
+	let result = normalizeLnFactor(factors[0]);
+	for (let i = 1; i < factors.length; i++) {
+		result = addNormalForms(result, normalizeLnFactor(factors[i]));
+	}
+	return result;
+}
+
+/**
+ * Expands ln(n/d) where n and d are positive integers.
+ * Uses: ln(n/d) = ln(n) - ln(d)
+ */
+function expandLnRational(n: bigint, d: bigint): NormalForm {
+	// Recursively normalize ln(n) and ln(d) to handle prime factorization
+	const lnN: NormalForm = normalizeNode({
+		type: 'function',
+		name: 'ln',
+		args: [{ type: 'number', value: n.toString() }]
+	});
+	const lnD: NormalForm = normalizeNode({
+		type: 'function',
+		name: 'ln',
+		args: [{ type: 'number', value: d.toString() }]
+	});
+	return subNormalForms(lnN, lnD);
+}
+
+/**
+ * Expands ln(a/b) = ln(a) - ln(b)
+ */
+function expandLnDivision(form: NormalForm): NormalForm {
+	const numNode = denormalize(normalFormFromFraction(form.numerator, ONE_POLYNOMIAL));
+	const denNode = denormalize(normalFormFromFraction(form.denominator, ONE_POLYNOMIAL));
+
+	// Recursively normalize ln(numerator) and ln(denominator)
+	// This handles cases like ln(12/9) = ln(12) - ln(9) = (2ln2 + ln3) - 2ln3
+	const lnNum: NormalForm = normalizeNode({ type: 'function', name: 'ln', args: [numNode] });
+	const lnDen: NormalForm = normalizeNode({ type: 'function', name: 'ln', args: [denNode] });
+
+	return subNormalForms(lnNum, lnDen);
+}
+
+// =============================================================================
 // Function Node Canonicalization
 // =============================================================================
 
@@ -869,6 +1146,38 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 		// ln(e) = 1
 		if (name === 'ln' && isEulerNumber(argForm)) return ONE_NORMAL_FORM;
 
+		// === LN EXPANSION (only for ln, not log) ===
+		if (name === 'ln') {
+			// ln(n) where n is integer > 1 → expand via prime factorization
+			const intVal = extractPositiveInteger(argForm);
+			if (intVal !== null && intVal > 1n && intVal <= FACTORIZATION_LIMIT) {
+				return expandLnInteger(intVal);
+			}
+
+			// ln(n/d) where n/d is a positive rational → expand as ln(n) - ln(d)
+			const ratVal = extractPositiveRational(argForm);
+			if (ratVal !== null && ratVal.n <= FACTORIZATION_LIMIT && ratVal.d <= FACTORIZATION_LIMIT) {
+				return expandLnRational(ratVal.n, ratVal.d);
+			}
+
+			// ln(x^n) = n·ln(x) — but only if exponent != 1
+			const powerInfo = extractSimplePower(argForm);
+			if (powerInfo && !isOneRational(powerInfo.exponent)) {
+				return expandLnPower(powerInfo);
+			}
+
+			// ln(a·b·c) = ln(a) + ln(b) + ln(c)
+			const factors = extractProductFactors(argForm);
+			if (factors.length > 1) {
+				return expandLnProduct(factors);
+			}
+
+			// ln(a/b) = ln(a) - ln(b)
+			if (!isOnePolynomial(argForm.denominator)) {
+				return expandLnDivision(argForm);
+			}
+		}
+
 		// log(10) = 1 (base 10)
 		if (name === 'log' && isIntegerValue(argForm, 10n)) {
 			// Check if base is 10 or not specified
@@ -888,14 +1197,18 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 	}
 
 	// 5. Handle exponentials
-	if (name === 'exp' && canonicalArgs.length === 1) {
-		const arg = canonicalArgs[0];
-
-		// exp(ln(x)) = x — check BEFORE normalizing to avoid unnecessary work
-		if (arg.type === 'function' && arg.name === 'ln' && arg.args.length === 1) {
-			return normalizeNode(arg.args[0]);
+	if (name === 'exp' && node.args.length === 1) {
+		// exp(ln(x)) = x — check ORIGINAL arg BEFORE canonicalization to avoid ln expansion
+		const originalArg = node.args[0];
+		if (
+			originalArg.type === 'function' &&
+			originalArg.name === 'ln' &&
+			originalArg.args.length === 1
+		) {
+			return normalizeNode(originalArg.args[0]);
 		}
 
+		const arg = canonicalArgs[0];
 		const argForm = normalizeNode(arg);
 
 		// exp(0) = 1
