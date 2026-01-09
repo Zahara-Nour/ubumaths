@@ -109,23 +109,23 @@ export class StepRecorder extends StepRecorderBase<NormalizationStep, string> {
 }
 
 // =============================================================================
-// Simplification with Step Recording
+// Phase 1 Preprocessing with Step Recording
 // =============================================================================
 
 import { simplifyRadicals } from './rules/radicals.js';
 
 /**
- * Applies Phase 1 simplification rules once, recording steps.
+ * Applies Phase 1 preprocessing rules once, recording steps.
  *
  * Note: Arithmetic and power rules have been moved to Phase 2 (polynomial normalization).
  * Phase 1 now only handles radical combination rules that Phase 2 cannot do efficiently.
  *
- * @param node - The node to simplify
+ * @param node - The node to preprocess
  * @param recorder - Optional step recorder
  * @param verbosity - Verbosity level for recording (default: 'detailed')
- * @returns The simplified node
+ * @returns The preprocessed node
  */
-export function simplifyOnceWithSteps(
+export function preprocessOnceWithSteps(
 	node: MathNode,
 	recorder?: StepRecorder,
 	verbosity: Verbosity = 'detailed'
@@ -140,14 +140,14 @@ export function simplifyOnceWithSteps(
 }
 
 /**
- * Simplifies an expression to fixed point, recording all steps.
+ * Preprocesses an expression to fixed point, recording all steps.
  *
- * @param node - The node to simplify
+ * @param node - The node to preprocess
  * @param verbosity - Verbosity level for recording (default: 'summarized')
  * @param maxIterations - Maximum number of iterations (default 100)
- * @returns Object with simplified node and recorded steps
+ * @returns Object with preprocessed node and recorded steps
  */
-export function simplifyWithSteps(
+export function preprocessWithSteps(
 	node: MathNode,
 	verbosity: NormalizationVerbosity = 'summarized',
 	maxIterations: number = 100
@@ -157,7 +157,7 @@ export function simplifyWithSteps(
 	let currentHash = hashMathNode(current);
 
 	for (let i = 0; i < maxIterations; i++) {
-		const next = simplifyOnceWithSteps(current, recorder, verbosity);
+		const next = preprocessOnceWithSteps(current, recorder, verbosity);
 		const nextHash = hashMathNode(next);
 
 		// Fixed point reached

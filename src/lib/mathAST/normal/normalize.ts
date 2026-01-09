@@ -45,7 +45,7 @@ import { ZERO_TERM, mulTerms } from './term';
 import { EMPTY_MONOMIAL, symbolicFactor, sortSymbolicFactors, hashMonomial } from './monomial';
 import { rational, fromInteger, ONE, isOne, gcd as gcdBigInt } from './rational';
 import { simplifyRadical, integerNthRoot } from './radical';
-import { simplify } from './rules/index.js';
+import { preprocess } from './rules/index.js';
 import { denormalize } from './denormalize';
 import { tryUnivariateGcd, dividePolynomials } from './univariate-gcd';
 
@@ -1123,8 +1123,8 @@ function buildPowerNode(base: MathNode, exponent: Rational): MathNode {
  * @returns The canonical NormalForm
  */
 export function normalize(node: MathNode, ctx?: NormalizeContext): NormalForm {
-	// First, apply simplification rules (Phase 1)
-	const simplified = simplify(node);
+	// First, apply preprocessing rules (Phase 1)
+	const simplified = preprocess(node);
 
 	// Record pre-simplification step if anything changed
 	if (ctx && ctx.verbosity !== 'result') {
@@ -1132,8 +1132,8 @@ export function normalize(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		const afterHash = hashMathNode(simplified);
 		if (beforeHash !== afterHash) {
 			ctx.recorder.recordStep(
-				'pre-simplify',
-				getRuleDescription('pre-simplify'),
+				'preprocess',
+				getRuleDescription('preprocess'),
 				node,
 				simplified,
 				'detailed'

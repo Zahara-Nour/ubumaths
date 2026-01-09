@@ -18,7 +18,7 @@ import { detectVariable, classifyIntegrand } from './classify';
 import { createStepRecorder } from './step-recorder';
 import { selectIntegrator } from './integrators';
 import { containsVariable } from './rules';
-import { simplify } from '../normal/rules';
+import { preprocess } from '../normal/rules';
 import { number, add as addFactory, multiply as multiplyFactory, subtract } from '../factory';
 import { isAddition, isSubtraction, isMultiplication, isNumber } from '../guards';
 import { CONSTANT_OF_INTEGRATION_NOTE } from './descriptions-fr';
@@ -118,7 +118,7 @@ function integrateInternal(
 	}
 
 	// Step 1: Simplify expression
-	const simplified = options.simplify ? simplify(expr) : expr;
+	const simplified = options.simplify ? preprocess(expr) : expr;
 
 	// Step 2: Check if constant (doesn't contain variable)
 	if (!containsVariable(simplified, variable)) {

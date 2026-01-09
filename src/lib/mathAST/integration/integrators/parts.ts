@@ -32,7 +32,7 @@ import {
 import { integrate } from '../integrate';
 import { multiply, subtract, divide, number } from '../../factory';
 import { isMultiplication, isFunction, isVariable, isSuperscript } from '../../guards';
-import { simplify } from '../../normal/rules';
+import { preprocess } from '../../normal/rules';
 import { toCustom } from '../../custom-generator';
 import { hashMathNode } from '../../normal/hash';
 import { isPolynomialIn } from '../../solve/classify';
@@ -289,7 +289,7 @@ function applyPartsFormula(
 	);
 
 	// Step 3: Compute uv
-	const uv = options.simplify ? simplify(multiply(u, v, 'implicit')) : multiply(u, v, 'implicit');
+	const uv = options.simplify ? preprocess(multiply(u, v, 'implicit')) : multiply(u, v, 'implicit');
 
 	// Step 4: Compute ∫v du
 	const vdu = multiply(v, du, 'implicit');
@@ -326,7 +326,7 @@ function applyPartsFormula(
 
 	// Step 5: Compute uv - ∫v du
 	const result = options.simplify
-		? simplify(subtract(uv, vduResult.antiderivative))
+		? preprocess(subtract(uv, vduResult.antiderivative))
 		: subtract(uv, vduResult.antiderivative);
 
 	recorder.recordStep(
@@ -466,7 +466,7 @@ function solveCyclicCase(
 	// Heuristic solution: divide by 2
 	const numerator = subtract(uv, vduResult.antiderivative);
 	const result = options.simplify
-		? simplify(divide(numerator, number('2'), 'fraction'))
+		? preprocess(divide(numerator, number('2'), 'fraction'))
 		: divide(numerator, number('2'), 'fraction');
 
 	recorder.recordStep(

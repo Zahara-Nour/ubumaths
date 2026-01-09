@@ -205,10 +205,10 @@ export {
 } from './denormalize.js';
 
 // =============================================================================
-// Simplification Rules
+// Phase 1 Preprocessing Rules
 // =============================================================================
 
-export { applyRadicalRules, simplifyRadicals, simplifyOnce, simplify } from './rules/index.js';
+export { applyRadicalRules, simplifyRadicals, preprocess, preprocessOnce } from './rules/index.js';
 
 // =============================================================================
 // Semantic Expression Checks
@@ -249,8 +249,8 @@ export {
 export {
 	StepRecorder,
 	getRuleDescription,
-	simplifyWithSteps,
-	simplifyOnceWithSteps
+	preprocessWithSteps,
+	preprocessOnceWithSteps
 } from './step-recorder.js';
 
 // =============================================================================
