@@ -433,9 +433,7 @@ describe('Expression Equivalence', () => {
 		expect(normalFormsEquivalent(a, b)).toBe(true);
 	});
 
-	// NOTE: Fraction reduction of polynomial quotients is not yet implemented
-	// This test documents expected future behavior
-	test.skip('6/9 is equivalent to 2/3 (TODO: implement fraction reduction)', () => {
+	test('6/9 is equivalent to 2/3', () => {
 		const a = normalize(div(num('6'), num('9')));
 		const b = normalize(div(num('2'), num('3')));
 
@@ -852,5 +850,403 @@ describe('Exp/Ln Composition Simplification', () => {
 		expect(result.numerator.length).toBe(1);
 		expect(result.numerator[0].monomial.length).toBe(1);
 		expect((result.numerator[0].monomial[0].base as { name: string }).name).toBe('x');
+	});
+});
+
+// =============================================================================
+// Logarithm Expansion and Equivalence Tests
+// =============================================================================
+
+describe('Logarithm Expansion', () => {
+	describe('Integer expansion via prime factorization', () => {
+		test('ln(9) = 2·ln(3)', () => {
+			const ln9 = fn('ln', num('9'));
+			const twoLn3 = mul(num('2'), fn('ln', num('3')));
+			expect(normalize(ln9).hash).toBe(normalize(twoLn3).hash);
+		});
+
+		test('ln(8) = 3·ln(2)', () => {
+			const ln8 = fn('ln', num('8'));
+			const threeLn2 = mul(num('3'), fn('ln', num('2')));
+			expect(normalize(ln8).hash).toBe(normalize(threeLn2).hash);
+		});
+
+		test('ln(12) = 2·ln(2) + ln(3)', () => {
+			// 12 = 2² × 3
+			const ln12 = fn('ln', num('12'));
+			const expanded = add(mul(num('2'), fn('ln', num('2'))), fn('ln', num('3')));
+			expect(normalize(ln12).hash).toBe(normalize(expanded).hash);
+		});
+
+		test('ln(2) stays as ln(2) (prime)', () => {
+			const ln2 = fn('ln', num('2'));
+			const result = normalize(ln2);
+			// Should be opaque ln(2) function
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+		});
+
+		test('ln(1) = 0', () => {
+			const ln1 = fn('ln', num('1'));
+			const result = normalize(ln1);
+			expect(result.hash).toBe('0');
+		});
+	});
+
+	describe('Power expansion: ln(x^n) = n·ln(x)', () => {
+		test('ln(x^2) = 2·ln(x)', () => {
+			const lnX2 = fn('ln', power(variable('x'), num('2')));
+			const twoLnX = mul(num('2'), fn('ln', variable('x')));
+			expect(normalize(lnX2).hash).toBe(normalize(twoLnX).hash);
+		});
+
+		test('ln(x^3) = 3·ln(x)', () => {
+			const lnX3 = fn('ln', power(variable('x'), num('3')));
+			const threeLnX = mul(num('3'), fn('ln', variable('x')));
+			expect(normalize(lnX3).hash).toBe(normalize(threeLnX).hash);
+		});
+
+		test('ln(x^1) stays as ln(x) (no expansion needed)', () => {
+			const lnX = fn('ln', variable('x'));
+			const result = normalize(lnX);
+			// Should be opaque ln(x)
+			expect(result.numerator.length).toBe(1);
+		});
+	});
+
+	describe('Product expansion: ln(a·b) = ln(a) + ln(b)', () => {
+		test('ln(x·y) = ln(x) + ln(y)', () => {
+			const lnXY = fn('ln', mul(variable('x'), variable('y')));
+			const lnXPlusLnY = add(fn('ln', variable('x')), fn('ln', variable('y')));
+			expect(normalize(lnXY).hash).toBe(normalize(lnXPlusLnY).hash);
+		});
+
+		test('ln(x·y·z) = ln(x) + ln(y) + ln(z)', () => {
+			const lnXYZ = fn('ln', mul(mul(variable('x'), variable('y')), variable('z')));
+			const expanded = add(
+				add(fn('ln', variable('x')), fn('ln', variable('y'))),
+				fn('ln', variable('z'))
+			);
+			expect(normalize(lnXYZ).hash).toBe(normalize(expanded).hash);
+		});
+	});
+
+	describe('Division expansion: ln(a/b) = ln(a) - ln(b)', () => {
+		test('ln(x/y) = ln(x) - ln(y)', () => {
+			const lnXOverY = fn('ln', div(variable('x'), variable('y')));
+			const lnXMinusLnY = sub(fn('ln', variable('x')), fn('ln', variable('y')));
+			expect(normalize(lnXOverY).hash).toBe(normalize(lnXMinusLnY).hash);
+		});
+
+		test('ln(8/27) = 3·ln(2) - 3·ln(3)', () => {
+			// 8 = 2³, 27 = 3³
+			const ln8Over27 = fn('ln', div(num('8'), num('27')));
+			const expanded = sub(mul(num('3'), fn('ln', num('2'))), mul(num('3'), fn('ln', num('3'))));
+			expect(normalize(ln8Over27).hash).toBe(normalize(expanded).hash);
+		});
+	});
+
+	describe('Combined cases', () => {
+		test('ln(x^2·y) = 2·ln(x) + ln(y)', () => {
+			const expr = fn('ln', mul(power(variable('x'), num('2')), variable('y')));
+			const expanded = add(mul(num('2'), fn('ln', variable('x'))), fn('ln', variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+
+		test('exp(ln(x)) still works after expansion changes', () => {
+			// Verify that exp(ln(x)) = x still works
+			const expr = fn('exp', fn('ln', variable('x')));
+			const result = normalize(expr);
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial[0].base.type).toBe('variable');
+		});
+
+		test('exp(ln(9)) = 9 (composition before ln expansion)', () => {
+			// Critical: exp(ln(9)) should simplify to 9, not stay as exp(2·ln(3))
+			const expr = fn('exp', fn('ln', num('9')));
+			expect(normalize(expr).hash).toBe(normalize(num('9')).hash);
+		});
+
+		test('exp(ln(12)) = 12', () => {
+			const expr = fn('exp', fn('ln', num('12')));
+			expect(normalize(expr).hash).toBe(normalize(num('12')).hash);
+		});
+	});
+});
+
+// =============================================================================
+// Comprehensive Edge Cases for Exp/Ln Interactions After Ln Expansion
+// =============================================================================
+
+describe('Exp/Ln Robustness After Ln Expansion Changes', () => {
+	describe('exp(ln(...)) must simplify BEFORE ln expansion triggers', () => {
+		test('exp(ln(x)) = x (variable)', () => {
+			const expr = fn('exp', fn('ln', variable('x')));
+			const expected = variable('x');
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(ln(2)) = 2 (prime - no expansion)', () => {
+			const expr = fn('exp', fn('ln', num('2')));
+			expect(normalize(expr).hash).toBe(normalize(num('2')).hash);
+		});
+
+		test('exp(ln(4)) = 4 (would expand to 2·ln(2))', () => {
+			const expr = fn('exp', fn('ln', num('4')));
+			expect(normalize(expr).hash).toBe(normalize(num('4')).hash);
+		});
+
+		test('exp(ln(8)) = 8 (would expand to 3·ln(2))', () => {
+			const expr = fn('exp', fn('ln', num('8')));
+			expect(normalize(expr).hash).toBe(normalize(num('8')).hash);
+		});
+
+		test('exp(ln(100)) = 100 (would expand to 2·ln(2) + 2·ln(5))', () => {
+			const expr = fn('exp', fn('ln', num('100')));
+			expect(normalize(expr).hash).toBe(normalize(num('100')).hash);
+		});
+
+		test('exp(ln(x^2)) = x^2 (would expand to 2·ln(x))', () => {
+			const expr = fn('exp', fn('ln', power(variable('x'), num('2'))));
+			const expected = power(variable('x'), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(ln(x^3)) = x^3 (would expand to 3·ln(x))', () => {
+			const expr = fn('exp', fn('ln', power(variable('x'), num('3'))));
+			const expected = power(variable('x'), num('3'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(ln(x*y)) = x*y (would expand to ln(x)+ln(y))', () => {
+			const expr = fn('exp', fn('ln', mul(variable('x'), variable('y'))));
+			const expected = mul(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(ln(x/y)) = x/y (would expand to ln(x)-ln(y))', () => {
+			const expr = fn('exp', fn('ln', div(variable('x'), variable('y'))));
+			const expected = div(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('exp(ln(8/27)) = 8/27 (fraction with expandable integers)', () => {
+			const expr = fn('exp', fn('ln', div(num('8'), num('27'))));
+			const expected = div(num('8'), num('27'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('ln(exp(...)) must also work correctly', () => {
+		test('ln(exp(x)) = x', () => {
+			const expr = fn('ln', fn('exp', variable('x')));
+			expect(normalize(expr).hash).toBe(normalize(variable('x')).hash);
+		});
+
+		test('ln(exp(9)) = 9', () => {
+			const expr = fn('ln', fn('exp', num('9')));
+			expect(normalize(expr).hash).toBe(normalize(num('9')).hash);
+		});
+
+		test('ln(exp(x+y)) = x+y', () => {
+			const expr = fn('ln', fn('exp', add(variable('x'), variable('y'))));
+			const expected = add(variable('x'), variable('y'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('ln(exp(x^2)) = x^2', () => {
+			const expr = fn('ln', fn('exp', power(variable('x'), num('2'))));
+			const expected = power(variable('x'), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+	});
+
+	describe('Deeply nested exp/ln combinations', () => {
+		test('exp(ln(exp(ln(x)))) = x', () => {
+			const expr = fn('exp', fn('ln', fn('exp', fn('ln', variable('x')))));
+			expect(normalize(expr).hash).toBe(normalize(variable('x')).hash);
+		});
+
+		test('ln(exp(ln(exp(x)))) = x', () => {
+			const expr = fn('ln', fn('exp', fn('ln', fn('exp', variable('x')))));
+			expect(normalize(expr).hash).toBe(normalize(variable('x')).hash);
+		});
+
+		test('exp(ln(exp(ln(9)))) = 9', () => {
+			const expr = fn('exp', fn('ln', fn('exp', fn('ln', num('9')))));
+			expect(normalize(expr).hash).toBe(normalize(num('9')).hash);
+		});
+
+		test('ln(exp(ln(exp(8)))) = 8', () => {
+			const expr = fn('ln', fn('exp', fn('ln', fn('exp', num('8')))));
+			expect(normalize(expr).hash).toBe(normalize(num('8')).hash);
+		});
+	});
+
+	describe('Special values and boundaries', () => {
+		test('exp(ln(1)) = 1 (ln(1)=0, but exp(ln(1)) should short-circuit)', () => {
+			const expr = fn('exp', fn('ln', num('1')));
+			expect(normalize(expr).hash).toBe(normalize(num('1')).hash);
+		});
+
+		test('ln(exp(0)) = 0', () => {
+			const expr = fn('ln', fn('exp', num('0')));
+			expect(normalize(expr).hash).toBe(normalize(num('0')).hash);
+		});
+
+		test('exp(ln(e)) = e', () => {
+			const expr = fn('exp', fn('ln', variable('e')));
+			expect(normalize(expr).hash).toBe(normalize(variable('e')).hash);
+		});
+
+		test('ln(exp(1)) = 1', () => {
+			const expr = fn('ln', fn('exp', num('1')));
+			expect(normalize(expr).hash).toBe(normalize(num('1')).hash);
+		});
+	});
+
+	describe('Ln expansion algebraic consistency', () => {
+		test('ln(9) + ln(3) = 3·ln(3) (2·ln(3) + ln(3))', () => {
+			const left = add(fn('ln', num('9')), fn('ln', num('3')));
+			const right = mul(num('3'), fn('ln', num('3')));
+			expect(normalize(left).hash).toBe(normalize(right).hash);
+		});
+
+		test('ln(9) - ln(3) = ln(3) (2·ln(3) - ln(3))', () => {
+			const left = sub(fn('ln', num('9')), fn('ln', num('3')));
+			const right = fn('ln', num('3'));
+			expect(normalize(left).hash).toBe(normalize(right).hash);
+		});
+
+		test('2·ln(9) = 4·ln(3)', () => {
+			const left = mul(num('2'), fn('ln', num('9')));
+			const right = mul(num('4'), fn('ln', num('3')));
+			expect(normalize(left).hash).toBe(normalize(right).hash);
+		});
+
+		test('ln(4) + ln(9) = 2·ln(2) + 2·ln(3) = ln(36)', () => {
+			const sum = add(fn('ln', num('4')), fn('ln', num('9')));
+			const ln36 = fn('ln', num('36'));
+			expect(normalize(sum).hash).toBe(normalize(ln36).hash);
+		});
+
+		test('ln(8) - ln(4) = 3·ln(2) - 2·ln(2) = ln(2)', () => {
+			const diff = sub(fn('ln', num('8')), fn('ln', num('4')));
+			const ln2 = fn('ln', num('2'));
+			expect(normalize(diff).hash).toBe(normalize(ln2).hash);
+		});
+
+		test('ln(2) + ln(3) = ln(6)', () => {
+			const sum = add(fn('ln', num('2')), fn('ln', num('3')));
+			const ln6 = fn('ln', num('6'));
+			expect(normalize(sum).hash).toBe(normalize(ln6).hash);
+		});
+
+		test('ln(x) + ln(y) = ln(x·y) (symbolic)', () => {
+			const sum = add(fn('ln', variable('x')), fn('ln', variable('y')));
+			const lnProd = fn('ln', mul(variable('x'), variable('y')));
+			expect(normalize(sum).hash).toBe(normalize(lnProd).hash);
+		});
+
+		test('ln(x) - ln(y) = ln(x/y) (symbolic)', () => {
+			const diff = sub(fn('ln', variable('x')), fn('ln', variable('y')));
+			const lnDiv = fn('ln', div(variable('x'), variable('y')));
+			expect(normalize(diff).hash).toBe(normalize(lnDiv).hash);
+		});
+
+		test('2·ln(x) = ln(x^2) (symbolic)', () => {
+			const left = mul(num('2'), fn('ln', variable('x')));
+			const right = fn('ln', power(variable('x'), num('2')));
+			expect(normalize(left).hash).toBe(normalize(right).hash);
+		});
+
+		test('3·ln(2) = ln(8)', () => {
+			const left = mul(num('3'), fn('ln', num('2')));
+			const right = fn('ln', num('8'));
+			expect(normalize(left).hash).toBe(normalize(right).hash);
+		});
+	});
+
+	describe('Operations with exp(ln(...)) results', () => {
+		test('exp(ln(x)) + exp(ln(y)) = x + y', () => {
+			const left = add(fn('exp', fn('ln', variable('x'))), fn('exp', fn('ln', variable('y'))));
+			const right = add(variable('x'), variable('y'));
+			expect(normalize(left).hash).toBe(normalize(right).hash);
+		});
+
+		test('exp(ln(x)) * exp(ln(y)) = x * y', () => {
+			const left = mul(fn('exp', fn('ln', variable('x'))), fn('exp', fn('ln', variable('y'))));
+			const right = mul(variable('x'), variable('y'));
+			expect(normalize(left).hash).toBe(normalize(right).hash);
+		});
+
+		test('exp(ln(x)) / exp(ln(y)) = x / y', () => {
+			const left = div(fn('exp', fn('ln', variable('x'))), fn('exp', fn('ln', variable('y'))));
+			const right = div(variable('x'), variable('y'));
+			expect(normalize(left).hash).toBe(normalize(right).hash);
+		});
+
+		test('exp(ln(4)) + exp(ln(5)) = 9', () => {
+			const left = add(fn('exp', fn('ln', num('4'))), fn('exp', fn('ln', num('5'))));
+			expect(normalize(left).hash).toBe(normalize(num('9')).hash);
+		});
+
+		test('exp(ln(6)) * exp(ln(7)) = 42', () => {
+			const left = mul(fn('exp', fn('ln', num('6'))), fn('exp', fn('ln', num('7'))));
+			expect(normalize(left).hash).toBe(normalize(num('42')).hash);
+		});
+	});
+
+	describe('Edge cases that should NOT simplify (stay opaque)', () => {
+		test('exp(2·ln(x)) stays opaque (not x^2 - future feature)', () => {
+			const expr = fn('exp', mul(num('2'), fn('ln', variable('x'))));
+			// Should be opaque, not equal to x^2
+			const x2 = power(variable('x'), num('2'));
+			expect(normalize(expr).hash).not.toBe(normalize(x2).hash);
+		});
+
+		test('exp(ln(x) + ln(y)) stays opaque (not x*y - future feature)', () => {
+			const expr = fn('exp', add(fn('ln', variable('x')), fn('ln', variable('y'))));
+			// Should be opaque, not equal to x*y
+			const xy = mul(variable('x'), variable('y'));
+			expect(normalize(expr).hash).not.toBe(normalize(xy).hash);
+		});
+
+		test('ln(x+y) stays opaque (cannot expand sum)', () => {
+			const expr = fn('ln', add(variable('x'), variable('y')));
+			const result = normalize(expr);
+			// Should be single opaque term
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+		});
+
+		test('ln(-x) stays opaque (negative argument)', () => {
+			const expr = fn('ln', opposite(variable('x')));
+			const result = normalize(expr);
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+		});
+	});
+
+	describe('Large integers near factorization limit', () => {
+		test('ln(999983) stays opaque (prime near limit)', () => {
+			// 999983 is a prime number
+			const expr = fn('ln', num('999983'));
+			const result = normalize(expr);
+			// Should be opaque ln(999983), not expanded
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+		});
+
+		test('ln(1000000) expands (at limit: 2^6 * 5^6)', () => {
+			const expr = fn('ln', num('1000000'));
+			const expanded = add(mul(num('6'), fn('ln', num('2'))), mul(num('6'), fn('ln', num('5'))));
+			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
+		});
+
+		test('exp(ln(999999)) = 999999 (just under limit)', () => {
+			const expr = fn('exp', fn('ln', num('999999')));
+			expect(normalize(expr).hash).toBe(normalize(num('999999')).hash);
+		});
 	});
 });
