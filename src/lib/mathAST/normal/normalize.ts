@@ -1408,7 +1408,7 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 		}
 
 		// Also check for arg = 0 (sin(0) = 0, cos(0) = 1, tan(0) = 0)
-		if (isIntegerValue(argForm, 0n)) {
+		if (isZeroNormalForm(argForm)) {
 			if (name === 'sin' || name === 'tan') return ZERO_NORMAL_FORM;
 			if (name === 'cos') return ONE_NORMAL_FORM;
 		}
