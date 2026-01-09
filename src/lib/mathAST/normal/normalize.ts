@@ -442,51 +442,72 @@ function extractProductFactors(form: NormalForm): MathNode[] {
 // =============================================================================
 
 /**
- * Extracts a linear combination of logarithms from a NormalForm.
- * Returns array of { base: MathNode, coeff: Rational } or null if not a pure linear combination.
- *
- * For example, 2·ln(x) + 3·ln(y) → [{ base: x, coeff: 2 }, { base: y, coeff: 3 }]
- *
- * This is used for the rule: exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ
+ * Tries to extract a single ln term from a NormalTerm.
+ * Returns { base, coeff } if the term is of the form: rational * ln(something)^1
+ * Returns null if the term is not a valid ln term.
  */
-function extractLinearCombinationOfLn(
-	form: NormalForm
-): { base: MathNode; coeff: Rational }[] | null {
-	// Denominator must be 1
-	if (!isOnePolynomial(form.denominator)) return null;
+function tryExtractLnTerm(term: NormalTerm): { base: MathNode; coeff: Rational } | null {
+	// Coefficient must be pure rational (no radicals, no imaginary)
+	if (term.coefficient.terms.length !== 1) return null;
+	const coeffTerm = term.coefficient.terms[0];
+	if (coeffTerm.radicals.length !== 0) return null;
+	if (coeffTerm.hasImaginaryUnit) return null;
 
-	// Empty numerator = 0, which is valid (exp(0) = 1)
-	if (form.numerator.length === 0) return [];
+	// Monomial must have exactly one factor with exponent 1
+	if (term.monomial.length !== 1) return null;
+	const factor = term.monomial[0];
+	if (factor.exponent.n !== 1n || factor.exponent.d !== 1n) return null;
 
-	const result: { base: MathNode; coeff: Rational }[] = [];
+	// The base must be a ln function
+	const base = factor.base;
+	if (base.type !== 'function') return null;
+	if ((base as { name?: string }).name !== 'ln') return null;
+	const args = (base as { args?: MathNode[] }).args;
+	if (!args || args.length !== 1) return null;
 
-	for (const term of form.numerator) {
-		// Coefficient must be pure rational (no radicals, no imaginary)
-		if (term.coefficient.terms.length !== 1) return null;
-		const coeffTerm = term.coefficient.terms[0];
-		if (coeffTerm.radicals.length !== 0) return null;
-		if (coeffTerm.hasImaginaryUnit) return null;
+	// Extract the argument of ln and the coefficient
+	return {
+		base: args[0],
+		coeff: coeffTerm.rational
+	};
+}
 
-		// Monomial must have exactly one factor with exponent 1
-		if (term.monomial.length !== 1) return null;
-		const factor = term.monomial[0];
-		if (factor.exponent.n !== 1n || factor.exponent.d !== 1n) return null;
-
-		// The base must be a ln function
-		const base = factor.base;
-		if (base.type !== 'function') return null;
-		if ((base as { name?: string }).name !== 'ln') return null;
-		const args = (base as { args?: MathNode[] }).args;
-		if (!args || args.length !== 1) return null;
-
-		// Extract the argument of ln and the coefficient
-		result.push({
-			base: args[0],
-			coeff: coeffTerm.rational
-		});
+/**
+ * Extracts ln terms from a NormalForm, separating them from non-ln terms.
+ * Returns both the extracted ln terms and the remainder.
+ *
+ * For example, 2·ln(x) + y → { lnTerms: [{ base: x, coeff: 2 }], remainder: y }
+ *
+ * This enables partial extraction for exp: exp(2·ln(x) + y) = x² · exp(y)
+ */
+function extractPartialLinearCombinationOfLn(form: NormalForm): {
+	lnTerms: { base: MathNode; coeff: Rational }[];
+	remainder: NormalForm;
+} {
+	// If there's a denominator, we can't extract ln terms
+	if (!isOnePolynomial(form.denominator)) {
+		return { lnTerms: [], remainder: form };
 	}
 
-	return result;
+	// Empty numerator = 0
+	if (form.numerator.length === 0) {
+		return { lnTerms: [], remainder: ZERO_NORMAL_FORM };
+	}
+
+	const lnTerms: { base: MathNode; coeff: Rational }[] = [];
+	const remainderTerms: NormalTerm[] = [];
+
+	for (const term of form.numerator) {
+		const extracted = tryExtractLnTerm(term);
+		if (extracted !== null) {
+			lnTerms.push(extracted);
+		} else {
+			remainderTerms.push(term);
+		}
+	}
+
+	const remainder = normalFormFromPolynomial(remainderTerms);
+	return { lnTerms, remainder };
 }
 
 /**
@@ -1359,38 +1380,45 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 		const arg = canonicalArgs[0];
 		const argForm = normalizeNode(arg);
 
-		// exp(0) = 1
-		if (isIntegerValue(argForm, 0n)) return ONE_NORMAL_FORM;
+		// exp(0) = 1 (use isZeroNormalForm to handle both ZERO_NORMAL_FORM and explicit 0)
+		if (isZeroNormalForm(argForm)) return ONE_NORMAL_FORM;
 
 		// exp(1) = e
 		if (isIntegerValue(argForm, 1n)) {
 			return normalizeNode({ type: 'variable', name: 'e' });
 		}
 
-		// exp(linear combination of ln) = product of powers
-		// exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ
-		const lnTerms = extractLinearCombinationOfLn(argForm);
-		if (lnTerms !== null) {
-			// All terms cancelled out: exp(0) = 1
-			if (lnTerms.length === 0) {
-				return ONE_NORMAL_FORM;
-			}
+		// Partial extraction of ln terms: exp(Σ aᵢ·ln(xᵢ) + remainder) = Π xᵢ^aᵢ · exp(remainder)
+		const { lnTerms, remainder } = extractPartialLinearCombinationOfLn(argForm);
+
+		if (lnTerms.length > 0) {
+			// Build product: Π xᵢ^aᵢ
 			let result = ONE_NORMAL_FORM;
 			for (const { base, coeff } of lnTerms) {
 				const powerNode = buildPowerNode(base, coeff);
 				const powerForm = normalizeNode(powerNode);
 				result = mulNormalForms(result, powerForm);
 			}
+
+			// If there's a non-zero remainder, multiply by exp(remainder)
+			if (!isZeroNormalForm(remainder)) {
+				const remainderNode = denormalize(remainder);
+				const expRemainderNode: MathNode = { type: 'function', name: 'exp', args: [remainderNode] };
+				// Recursively normalize exp(remainder) - this handles exp(0)=1, exp(1)=e, etc.
+				const expRemainderForm = normalizeNode(expRemainderNode);
+				result = mulNormalForms(result, expRemainderForm);
+			}
+
 			return result;
 		}
 
 		// === EXP COMBINATION APPROACH ===
+		// No ln terms to extract - treat exp as opaque.
 		// Canonical form: exp(polynomial)
 		// Combination happens in:
 		// - mulNormalForms: exp(a)·exp(b) → exp(a+b)
 		// - combineExpAcrossFraction: exp(a)/exp(b) → exp(a-b)
 		// - powNormalForm: exp(a)^n → exp(n·a)
-		// exp(arg) is kept as-is here; the argument is already normalized.
 
 		return normalizeOpaqueNode(canonicalNode);
 	}

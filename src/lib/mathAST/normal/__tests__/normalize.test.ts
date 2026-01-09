@@ -1372,12 +1372,11 @@ describe('exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ', () => {
 	});
 
 	describe('Cases that should stay opaque', () => {
-		test('exp(ln(x) + 1) stays opaque (mixed ln and non-ln terms)', () => {
-			// With combination approach: no partial ln extraction, stays opaque
+		test('exp(ln(x) + 1) = e·x (partial extraction with exp(1)=e)', () => {
+			// Partial ln extraction: exp(ln(x) + 1) = x · exp(1) = x · e = e·x
 			const expr = fn('exp', add(fn('ln', variable('x')), num('1')));
-			const result = normalize(expr);
-			// Should be opaque exp(ln(x) + 1)
-			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+			const expected = mul(variable('e'), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
 		test('exp(ln(x)·ln(y)) stays opaque (product of logs)', () => {
@@ -1768,29 +1767,28 @@ describe('exp expansion rules', () => {
 		});
 	});
 
-	describe('mixed cases: exp with ln terms (combination approach)', () => {
-		// NOTE: With combination approach, partial ln extraction is NOT performed.
-		// exp(ln(x) + y) stays opaque, it does NOT simplify to x·exp(y)
-		test('exp(ln(x) + y) stays opaque (no partial ln extraction)', () => {
+	describe('mixed cases: exp with ln terms (partial extraction)', () => {
+		// With partial ln extraction, mixed terms are handled:
+		// exp(ln(x) + y) = x·exp(y)
+		test('exp(ln(x) + y) = x·exp(y) (partial ln extraction)', () => {
 			const expr = fn('exp', add(fn('ln', variable('x')), variable('y')));
-			const result = normalize(expr);
-			// Should stay as opaque exp(...)
-			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+			const expected = mul(variable('x'), fn('exp', variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('exp(2·ln(x) + y) stays opaque (no partial ln extraction)', () => {
+		test('exp(2·ln(x) + y) = x²·exp(y) (partial ln extraction)', () => {
 			const expr = fn('exp', add(mul(num('2'), fn('ln', variable('x'))), variable('y')));
-			const result = normalize(expr);
-			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+			const expected = mul(power(variable('x'), num('2')), fn('exp', variable('y')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('exp(ln(x) + ln(y) + z) stays opaque (no partial ln extraction)', () => {
+		test('exp(ln(x) + ln(y) + z) = x·y·exp(z) (partial ln extraction)', () => {
 			const expr = fn(
 				'exp',
 				add(add(fn('ln', variable('x')), fn('ln', variable('y'))), variable('z'))
 			);
-			const result = normalize(expr);
-			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+			const expected = mul(mul(variable('x'), variable('y')), fn('exp', variable('z')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
 		test('exp(x + 0) = exp(x)', () => {
@@ -2062,19 +2060,19 @@ describe('exp expansion rules', () => {
 		});
 	});
 
-	describe('edge cases: with ln composition (combination approach)', () => {
-		// NOTE: With combination approach, partial ln extraction is NOT performed.
-		// exp(ln(x) + z) stays opaque, it does NOT simplify to x·exp(z)
-		test('exp(ln(x) - ln(y) + z) stays opaque (no partial ln extraction)', () => {
+	describe('edge cases: with ln composition (partial extraction)', () => {
+		// With partial ln extraction, mixed terms are handled:
+		// exp(ln(x) - ln(y) + z) = (x/y)·exp(z)
+		test('exp(ln(x) - ln(y) + z) = (x/y)·exp(z) (partial ln extraction)', () => {
 			const expr = fn(
 				'exp',
 				add(sub(fn('ln', variable('x')), fn('ln', variable('y'))), variable('z'))
 			);
-			const result = normalize(expr);
-			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+			const expected = mul(div(variable('x'), variable('y')), fn('exp', variable('z')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('exp(2ln(x) + 3ln(y) + z) stays opaque (no partial ln extraction)', () => {
+		test('exp(2ln(x) + 3ln(y) + z) = x²·y³·exp(z) (partial ln extraction)', () => {
 			const expr = fn(
 				'exp',
 				add(
@@ -2082,14 +2080,17 @@ describe('exp expansion rules', () => {
 					variable('z')
 				)
 			);
-			const result = normalize(expr);
-			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+			const expected = mul(
+				mul(power(variable('x'), num('2')), power(variable('y'), num('3'))),
+				fn('exp', variable('z'))
+			);
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('exp(-ln(x) + y) stays opaque (no partial ln extraction)', () => {
+		test('exp(-ln(x) + y) = exp(y)/x (partial ln extraction)', () => {
 			const expr = fn('exp', add(opposite(fn('ln', variable('x'))), variable('y')));
-			const result = normalize(expr);
-			expect(result.numerator[0].monomial[0].base.type).toBe('function');
+			const expected = div(fn('exp', variable('y')), variable('x'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
 		// This test SHOULD pass because ALL terms are ln terms (no non-ln term mixed in)
