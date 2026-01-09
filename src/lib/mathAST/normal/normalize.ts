@@ -18,9 +18,7 @@ import {
 	ALGEBRAIC_ONE,
 	algebraicFromRational,
 	mulAlgebraic,
-	algebraicFromRadical,
-	isPureRational,
-	getRationalValue
+	algebraicFromRadical
 } from './algebraic';
 import {
 	ZERO_POLYNOMIAL,
@@ -36,7 +34,7 @@ import {
 	divPolynomialByMonomial
 } from './polynomial';
 import { ZERO_TERM } from './term';
-import { EMPTY_MONOMIAL, symbolicFactor } from './monomial';
+import { EMPTY_MONOMIAL, symbolicFactor, sortSymbolicFactors } from './monomial';
 import { rational, fromInteger, ONE } from './rational';
 import { simplifyRadical } from './radical';
 import { simplify } from './rules/index.js';
@@ -93,6 +91,16 @@ function normalFormFromFraction(numerator: NormalTerm[], denominator: NormalTerm
 	}
 
 	// Handle denominator = 1
+	if (isOnePolynomial(denominator)) {
+		return normalFormFromPolynomial(numerator);
+	}
+
+	// Combine exp factors across numerator/denominator: exp(a)/exp(b) → exp(a-b)
+	const combined = combineExpAcrossFraction(numerator, denominator);
+	numerator = combined.numerator;
+	denominator = combined.denominator;
+
+	// Re-check if denominator became 1 after exp combination
 	if (isOnePolynomial(denominator)) {
 		return normalFormFromPolynomial(numerator);
 	}
@@ -252,7 +260,25 @@ function getRationalExponent(node: MathNode): Rational | null {
 		}
 	}
 
-	// TODO: Handle fraction nodes for rational exponents
+	// Handle opposite nodes (e.g., -1, -2)
+	if (node.type === 'opposite' && node.operand.type === 'number') {
+		const val = parseFloat(node.operand.value);
+		if (Number.isInteger(val)) {
+			return fromInteger(-val);
+		}
+	}
+
+	// Handle fraction nodes (e.g., 1/2, 2/3)
+	if (node.type === 'division') {
+		if (node.numerator.type === 'number' && node.denominator.type === 'number') {
+			const num = parseInt(node.numerator.value, 10);
+			const den = parseInt(node.denominator.value, 10);
+			if (Number.isInteger(num) && Number.isInteger(den) && den !== 0) {
+				return rational(BigInt(num), BigInt(den));
+			}
+		}
+	}
+
 	return null;
 }
 
@@ -617,6 +643,16 @@ function normalizeNode(node: MathNode): NormalForm {
 		}
 
 		case 'superscript': {
+			// Special case: exp(arg)^n → exp(n*arg) (combination approach)
+			const ratExp = getRationalExponent(node.superscript);
+			if (ratExp !== null && isExpFunction(node.base)) {
+				// exp(arg)^(n/d) → exp((n/d)*arg)
+				const expArg = getExpArg(node.base);
+				const scaledArg = scaleNodeByRational(expArg, ratExp);
+				const newExpNode: MathNode = { type: 'function', name: 'exp', args: [scaledArg] };
+				return normalizeNode(newExpNode);
+			}
+
 			const baseForm = normalizeNode(node.base);
 
 			// Check for positive integer exponent
@@ -625,8 +661,7 @@ function normalizeNode(node: MathNode): NormalForm {
 				return powNormalForm(baseForm, intExp);
 			}
 
-			// Check for rational exponent
-			const ratExp = getRationalExponent(node.superscript);
+			// Check for rational exponent (already checked above for exp case)
 			if (ratExp !== null) {
 				// For non-integer rational exponent, treat as symbolic
 				return normalizeSymbolicPower(node.base, ratExp);
@@ -1139,101 +1174,10 @@ function expandLnDivision(form: NormalForm): NormalForm {
 	return subNormalForms(lnNum, lnDen);
 }
 
-// =============================================================================
-// Exp Expansion Helpers
-// =============================================================================
-
-/**
- * Checks if a NormalForm represents a sum (multiple terms, no fraction).
- * Used to detect when exp(a+b+...) can be expanded.
- */
-function isSumForm(form: NormalForm): boolean {
-	return isOnePolynomial(form.denominator) && form.numerator.length > 1;
-}
-
-/**
- * Expands exp(a + b + c + ...) = exp(a) · exp(b) · exp(c) · ...
- * Each term is recursively normalized, which triggers coefficient extraction.
- */
-function expandExpSum(form: NormalForm): NormalForm {
-	let result = ONE_NORMAL_FORM;
-
-	for (const term of form.numerator) {
-		// Convert single term back to NormalForm, then to MathNode
-		const termForm = normalFormFromPolynomial([term]);
-		const termNode = denormalize(termForm);
-
-		// Create exp(term) and normalize recursively
-		const expTerm = normalizeNode({ type: 'function', name: 'exp', args: [termNode] });
-		result = mulNormalForms(result, expTerm);
-	}
-
-	return result;
-}
-
-/**
- * Extracts rational coefficient from single-term form for exp expansion.
- * Returns { coeff, base } where exp(coeff*base) = exp(base)^coeff
- * Returns null if extraction not possible.
- */
-function extractExpCoefficient(form: NormalForm): { coeff: Rational; base: MathNode } | null {
-	// Must be single term with no fraction
-	if (form.numerator.length !== 1 || !isOnePolynomial(form.denominator)) {
-		return null;
-	}
-
-	const term = form.numerator[0];
-
-	// Coefficient must be pure rational (no radicals, no imaginary)
-	if (!isPureRational(term.coefficient)) {
-		return null;
-	}
-
-	// Also check hasImaginaryUnit (isPureRational doesn't check this)
-	if (term.coefficient.terms.length > 0 && term.coefficient.terms[0].hasImaginaryUnit === true) {
-		return null;
-	}
-
-	const coeff = getRationalValue(term.coefficient);
-	if (coeff === null) {
-		return null;
-	}
-
-	// Skip if coefficient is 1 or 0 (no extraction needed)
-	if ((coeff.n === 1n && coeff.d === 1n) || coeff.n === 0n) {
-		return null;
-	}
-
-	// Must have non-empty monomial (otherwise exp(n) stays as is)
-	if (term.monomial.length === 0) {
-		return null;
-	}
-
-	// Create base with coefficient = 1
-	const baseForm = normalFormFromPolynomial([
-		{
-			coefficient: ALGEBRAIC_ONE,
-			monomial: term.monomial
-		}
-	]);
-
-	return { coeff, base: denormalize(baseForm) };
-}
-
-/**
- * Expands exp(n·a) into exp(a)^n using buildPowerNode.
- * Handles both integer and rational exponents.
- */
-function expandExpCoefficient(coeff: Rational, base: MathNode): NormalForm {
-	// Create exp(base)
-	const expBaseNode: MathNode = { type: 'function', name: 'exp', args: [base] };
-
-	// Create exp(base)^coeff using buildPowerNode (handles negative exponents)
-	const powerNode = buildPowerNode(expBaseNode, coeff);
-
-	// Normalize the result
-	return normalizeNode(powerNode);
-}
+// NOTE: Exp expansion functions (expandExpSum, extractExpCoefficient, expandExpCoefficient)
+// have been removed in favor of the combination approach.
+// Canonical form for exp is now exp(polynomial), not product of exp terms.
+// See combineExpInMonomial, combineExpInPolynomial, combineExpAcrossFraction.
 
 // =============================================================================
 // Function Node Canonicalization
@@ -1440,18 +1384,13 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 			return result;
 		}
 
-		// === EXP EXPANSION RULES ===
-
-		// exp(a + b + ...) = exp(a)·exp(b)·...
-		if (isSumForm(argForm)) {
-			return expandExpSum(argForm);
-		}
-
-		// exp(n·a) = exp(a)^n (coefficient extraction)
-		const coeffExtract = extractExpCoefficient(argForm);
-		if (coeffExtract !== null) {
-			return expandExpCoefficient(coeffExtract.coeff, coeffExtract.base);
-		}
+		// === EXP COMBINATION APPROACH ===
+		// Canonical form: exp(polynomial)
+		// Combination happens in:
+		// - mulNormalForms: exp(a)·exp(b) → exp(a+b)
+		// - combineExpAcrossFraction: exp(a)/exp(b) → exp(a-b)
+		// - powNormalForm: exp(a)^n → exp(n·a)
+		// exp(arg) is kept as-is here; the argument is already normalized.
 
 		return normalizeOpaqueNode(canonicalNode);
 	}
@@ -1464,6 +1403,23 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
  * Normalizes a node with a symbolic (non-integer) power.
  */
 function normalizeSymbolicPower(base: MathNode, exponent: Rational): NormalForm {
+	// Handle negative integer exponents: base^(-n) = 1/base^n
+	if (exponent.n < 0n && exponent.d === 1n) {
+		const posExp: Rational = { n: -exponent.n, d: 1n };
+		const baseForm = normalizeNode(base);
+
+		// Create the positive power in denominator
+		if (posExp.n === 1n) {
+			// base^(-1) = 1/base
+			return normalFormFromFraction(ONE_POLYNOMIAL, baseForm.numerator);
+		} else {
+			// base^(-n) = 1/base^n
+			const posIntExp = Number(posExp.n);
+			const poweredBase = powNormalForm(baseForm, posIntExp);
+			return normalFormFromFraction(ONE_POLYNOMIAL, poweredBase.numerator);
+		}
+	}
+
 	// Normalize the base first
 	const baseForm = normalizeNode(base);
 
@@ -1555,6 +1511,263 @@ function subNormalForms(a: NormalForm, b: NormalForm): NormalForm {
 	return normalFormFromFraction(numerator, denominator);
 }
 
+// =============================================================================
+// Exp Combination
+// =============================================================================
+
+/**
+ * Checks if a MathNode is an exp function call.
+ */
+function isExpFunction(node: MathNode): node is MathNode & { type: 'function'; name: 'exp' } {
+	return node.type === 'function' && node.name === 'exp';
+}
+
+/**
+ * Gets the argument of an exp function.
+ */
+function getExpArg(node: MathNode & { type: 'function'; name: 'exp' }): MathNode {
+	return node.args[0];
+}
+
+/**
+ * Scales a MathNode by a rational exponent.
+ * Returns exp * node where exp is represented as a MathNode.
+ */
+function scaleNodeByRational(node: MathNode, exp: Rational): MathNode {
+	// exp = 1 → just return node
+	if (exp.n === 1n && exp.d === 1n) {
+		return node;
+	}
+
+	// exp = -1 → return -node
+	if (exp.n === -1n && exp.d === 1n) {
+		return { type: 'opposite', operand: node };
+	}
+
+	// exp = 0 → return 0
+	if (exp.n === 0n) {
+		return { type: 'number', value: '0' };
+	}
+
+	// General case: create exp * node
+	const expNode: MathNode =
+		exp.d === 1n
+			? { type: 'number', value: exp.n.toString() }
+			: {
+					type: 'division',
+					numerator: { type: 'number', value: exp.n.toString() },
+					denominator: { type: 'number', value: exp.d.toString() },
+					displayStyle: 'fraction'
+				};
+
+	return { type: 'multiplication', left: expNode, right: node, displayStyle: 'implicit' };
+}
+
+/**
+ * Combines multiple exp factors in a monomial into a single exp(sum).
+ * exp(a)^m * exp(b)^n → exp(m*a + n*b)
+ *
+ * This ensures canonical form for exponentials:
+ * - exp(2) * exp(3) → exp(5)
+ * - exp(x) * exp(y) → exp(x+y)
+ */
+function combineExpInMonomial(
+	monomial: readonly import('./types').SymbolicFactor[]
+): import('./types').SymbolicFactor[] {
+	const expFactors: Array<{ arg: MathNode; exp: Rational }> = [];
+	const otherFactors: import('./types').SymbolicFactor[] = [];
+
+	// Separate exp factors from other factors
+	for (const factor of monomial) {
+		if (isExpFunction(factor.base)) {
+			expFactors.push({ arg: getExpArg(factor.base), exp: factor.exponent });
+		} else {
+			otherFactors.push(factor);
+		}
+	}
+
+	// Nothing to combine if 0 or 1 exp factors
+	if (expFactors.length <= 1) {
+		return [...monomial];
+	}
+
+	// Combine exp factors: sum of (exponent * argument)
+	// Build the sum AST node
+	let sumNode: MathNode = scaleNodeByRational(expFactors[0].arg, expFactors[0].exp);
+
+	for (let i = 1; i < expFactors.length; i++) {
+		const scaledArg = scaleNodeByRational(expFactors[i].arg, expFactors[i].exp);
+		sumNode = { type: 'addition', left: sumNode, right: scaledArg };
+	}
+
+	// Normalize the sum to get canonical form (e.g., 2+3 → 5)
+	const sumForm = normalizeNode(sumNode);
+
+	// Check if result is zero: exp(0) = 1, so no factor needed
+	if (isZeroNormalForm(sumForm)) {
+		return sortSymbolicFactors(otherFactors);
+	}
+
+	// Convert back to MathNode
+	const normalizedSum = denormalize(sumForm);
+
+	// Create the combined exp factor
+	const combinedExpNode: MathNode = { type: 'function', name: 'exp', args: [normalizedSum] };
+	otherFactors.push(symbolicFactor(combinedExpNode, ONE));
+
+	return sortSymbolicFactors(otherFactors);
+}
+
+/**
+ * Checks if a NormalForm represents zero.
+ */
+function isZeroNormalForm(form: NormalForm): boolean {
+	return form.numerator.length === 0 || form.hash === '0';
+}
+
+/**
+ * Combines exp factors in all terms of a polynomial.
+ */
+function combineExpInPolynomial(terms: NormalTerm[]): NormalTerm[] {
+	let changed = false;
+	const result: NormalTerm[] = [];
+
+	for (const term of terms) {
+		// Check if monomial has 2+ exp factors
+		const expCount = term.monomial.filter((f) => isExpFunction(f.base)).length;
+
+		if (expCount >= 2) {
+			const newMonomial = combineExpInMonomial(term.monomial);
+			result.push({ coefficient: term.coefficient, monomial: newMonomial });
+			changed = true;
+		} else {
+			result.push(term);
+		}
+	}
+
+	return changed ? result : terms;
+}
+
+/**
+ * Combines exp factors across numerator and denominator.
+ * exp(a)/exp(b) → exp(a-b)/1
+ *
+ * This handles cases like exp(5)/exp(2) → exp(3).
+ * Works when both numerator and denominator are single terms with exp factors.
+ */
+function combineExpAcrossFraction(
+	numerator: NormalTerm[],
+	denominator: NormalTerm[]
+): { numerator: NormalTerm[]; denominator: NormalTerm[] } {
+	// Only handle single-term cases for simplicity
+	if (numerator.length !== 1 || denominator.length !== 1) {
+		return { numerator, denominator };
+	}
+
+	const numTerm = numerator[0];
+	const denTerm = denominator[0];
+
+	// Collect exp factors from numerator
+	const numExpFactors: Array<{ arg: MathNode; exp: Rational }> = [];
+	const numOtherFactors: import('./types').SymbolicFactor[] = [];
+
+	for (const factor of numTerm.monomial) {
+		if (isExpFunction(factor.base)) {
+			numExpFactors.push({ arg: getExpArg(factor.base), exp: factor.exponent });
+		} else {
+			numOtherFactors.push(factor);
+		}
+	}
+
+	// Collect exp factors from denominator
+	const denExpFactors: Array<{ arg: MathNode; exp: Rational }> = [];
+	const denOtherFactors: import('./types').SymbolicFactor[] = [];
+
+	for (const factor of denTerm.monomial) {
+		if (isExpFunction(factor.base)) {
+			denExpFactors.push({ arg: getExpArg(factor.base), exp: factor.exponent });
+		} else {
+			denOtherFactors.push(factor);
+		}
+	}
+
+	// No combination needed if no exp factors at all
+	if (numExpFactors.length === 0 && denExpFactors.length === 0) {
+		return { numerator, denominator };
+	}
+
+	// If only denominator has exp factors (e.g., 1/exp(x) → exp(-x))
+	// we still want to combine - this is handled below by the sumNode logic
+
+	// Build combined argument: sum of (num_exp * arg) - sum of (den_exp * arg)
+	// Start with numerator exp factors
+	let sumNode: MathNode | null = null;
+
+	for (const { arg, exp } of numExpFactors) {
+		const scaledArg = scaleNodeByRational(arg, exp);
+		if (sumNode === null) {
+			sumNode = scaledArg;
+		} else {
+			sumNode = { type: 'addition', left: sumNode, right: scaledArg };
+		}
+	}
+
+	// Subtract denominator exp factors (negate the exponents)
+	for (const { arg, exp } of denExpFactors) {
+		const negExp: Rational = { n: -exp.n, d: exp.d };
+		const scaledArg = scaleNodeByRational(arg, negExp);
+		if (sumNode === null) {
+			sumNode = scaledArg;
+		} else {
+			sumNode = { type: 'addition', left: sumNode, right: scaledArg };
+		}
+	}
+
+	if (sumNode === null) {
+		return { numerator, denominator };
+	}
+
+	// Normalize the combined argument
+	const sumForm = normalizeNode(sumNode);
+
+	// Check if result is zero: exp(0) = 1
+	if (isZeroNormalForm(sumForm)) {
+		// exp factors cancel out completely
+		const newNumTerm: NormalTerm = {
+			coefficient: numTerm.coefficient,
+			monomial: sortSymbolicFactors(numOtherFactors)
+		};
+		const newDenTerm: NormalTerm = {
+			coefficient: denTerm.coefficient,
+			monomial: sortSymbolicFactors(denOtherFactors)
+		};
+		return {
+			numerator: [newNumTerm],
+			denominator: [newDenTerm]
+		};
+	}
+
+	// Create combined exp(sum) and put it in numerator
+	const normalizedSum = denormalize(sumForm);
+	const combinedExpNode: MathNode = { type: 'function', name: 'exp', args: [normalizedSum] };
+
+	const newNumMonomial = [...numOtherFactors, symbolicFactor(combinedExpNode, ONE)];
+	const newNumTerm: NormalTerm = {
+		coefficient: numTerm.coefficient,
+		monomial: sortSymbolicFactors(newNumMonomial)
+	};
+
+	const newDenTerm: NormalTerm = {
+		coefficient: denTerm.coefficient,
+		monomial: sortSymbolicFactors(denOtherFactors)
+	};
+
+	return {
+		numerator: [newNumTerm],
+		denominator: [newDenTerm]
+	};
+}
+
 /**
  * Negates a normal form.
  */
@@ -1567,10 +1780,16 @@ function negNormalForm(a: NormalForm): NormalForm {
  * Multiplies two normal forms.
  *
  * (a/b) * (c/d) = ac / bd
+ *
+ * Also combines exp factors: exp(a) * exp(b) → exp(a+b)
  */
 function mulNormalForms(a: NormalForm, b: NormalForm): NormalForm {
-	const numerator = mulPolynomials(a.numerator, b.numerator);
-	const denominator = mulPolynomials(a.denominator, b.denominator);
+	let numerator = mulPolynomials(a.numerator, b.numerator);
+	let denominator = mulPolynomials(a.denominator, b.denominator);
+
+	// Combine exp factors in the result
+	numerator = combineExpInPolynomial(numerator);
+	denominator = combineExpInPolynomial(denominator);
 
 	return normalFormFromFraction(numerator, denominator);
 }
@@ -1579,6 +1798,8 @@ function mulNormalForms(a: NormalForm, b: NormalForm): NormalForm {
  * Divides two normal forms.
  *
  * (a/b) / (c/d) = ad / bc
+ *
+ * Also combines exp factors: exp(a) / exp(b) → exp(a-b)
  */
 function divNormalForms(a: NormalForm, b: NormalForm): NormalForm {
 	// Division by zero check
@@ -1586,8 +1807,12 @@ function divNormalForms(a: NormalForm, b: NormalForm): NormalForm {
 		throw new Error('normalize: division by zero');
 	}
 
-	const numerator = mulPolynomials(a.numerator, b.denominator);
-	const denominator = mulPolynomials(a.denominator, b.numerator);
+	let numerator = mulPolynomials(a.numerator, b.denominator);
+	let denominator = mulPolynomials(a.denominator, b.numerator);
+
+	// Combine exp factors in the result
+	numerator = combineExpInPolynomial(numerator);
+	denominator = combineExpInPolynomial(denominator);
 
 	return normalFormFromFraction(numerator, denominator);
 }
