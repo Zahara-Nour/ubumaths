@@ -784,3 +784,73 @@ describe('Exponential Remarkable Values', () => {
 		expect((result.numerator[0].monomial[0].base as { name: string }).name).toBe('e');
 	});
 });
+
+// =============================================================================
+// Exp/Ln Composition Tests
+// =============================================================================
+
+describe('Exp/Ln Composition Simplification', () => {
+	test('exp(ln(x)) = x', () => {
+		const expr = fn('exp', fn('ln', variable('x')));
+		const result = normalize(expr);
+		// Should be just x
+		expect(result.numerator.length).toBe(1);
+		expect(result.numerator[0].monomial.length).toBe(1);
+		expect(result.numerator[0].monomial[0].base.type).toBe('variable');
+		expect((result.numerator[0].monomial[0].base as { name: string }).name).toBe('x');
+	});
+
+	test('ln(exp(x)) = x', () => {
+		const expr = fn('ln', fn('exp', variable('x')));
+		const result = normalize(expr);
+		// Should be just x
+		expect(result.numerator.length).toBe(1);
+		expect(result.numerator[0].monomial.length).toBe(1);
+		expect(result.numerator[0].monomial[0].base.type).toBe('variable');
+		expect((result.numerator[0].monomial[0].base as { name: string }).name).toBe('x');
+	});
+
+	test('exp(ln(2x)) = 2x', () => {
+		const expr = fn('exp', fn('ln', mul(num('2'), variable('x'))));
+		const result = normalize(expr);
+		// Should be 2x
+		expect(result.numerator.length).toBe(1);
+		expect(result.numerator[0].coefficient.terms[0].rational.n).toBe(2n);
+		expect(result.numerator[0].monomial.length).toBe(1);
+	});
+
+	test('ln(exp(x+y)) = x+y', () => {
+		const expr = fn('ln', fn('exp', add(variable('x'), variable('y'))));
+		const result = normalize(expr);
+		// Should be x + y (2 terms)
+		expect(result.numerator.length).toBe(2);
+	});
+
+	test('exp(ln(x) + 0) = x (with argument normalization)', () => {
+		// This tests that canonicalization happens before composition check
+		const expr = fn('exp', add(fn('ln', variable('x')), num('0')));
+		const result = normalize(expr);
+		// Should simplify to x because ln(x) + 0 = ln(x), then exp(ln(x)) = x
+		expect(result.numerator.length).toBe(1);
+		expect(result.numerator[0].monomial.length).toBe(1);
+		expect((result.numerator[0].monomial[0].base as { name: string }).name).toBe('x');
+	});
+
+	test('nested: exp(ln(exp(ln(x)))) = x', () => {
+		const expr = fn('exp', fn('ln', fn('exp', fn('ln', variable('x')))));
+		const result = normalize(expr);
+		// Should simplify to x through recursive simplification
+		expect(result.numerator.length).toBe(1);
+		expect(result.numerator[0].monomial.length).toBe(1);
+		expect((result.numerator[0].monomial[0].base as { name: string }).name).toBe('x');
+	});
+
+	test('ln(exp(ln(exp(x)))) = x', () => {
+		const expr = fn('ln', fn('exp', fn('ln', fn('exp', variable('x')))));
+		const result = normalize(expr);
+		// Should simplify to x through recursive simplification
+		expect(result.numerator.length).toBe(1);
+		expect(result.numerator[0].monomial.length).toBe(1);
+		expect((result.numerator[0].monomial[0].base as { name: string }).name).toBe('x');
+	});
+});
