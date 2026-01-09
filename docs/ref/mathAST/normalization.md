@@ -733,6 +733,47 @@ normalize(parseLatex('\\ln(\\exp(x)\\cdot\\exp(y))')); // → x + y (via ln prod
 - `exp(x·y)` - product of variables (coefficient=1)
 - `exp(5)` - pure constant (no variable to extract)
 
+### Logarithm of Products with Exponentials (Dual)
+
+The normalizer also handles the dual case: extracting `exp` terms from inside `ln`. This emerges naturally from the existing logarithm expansion rules:
+
+```
+ln(a · exp(b)) = ln(a) + b
+ln(exp(a) / b) = a - ln(b)
+```
+
+```typescript
+// Basic extraction
+normalize(parseLatex('\\ln(x \\cdot \\exp(y))')); // → ln(x) + y
+normalize(parseLatex('\\ln(\\exp(x) \\cdot y)')); // → x + ln(y)
+
+// With coefficients
+normalize(parseLatex('\\ln(x \\cdot \\exp(2y))')); // → ln(x) + 2y
+normalize(parseLatex('\\ln(x^2 \\cdot \\exp(y))')); // → 2·ln(x) + y
+
+// Multiple factors
+normalize(parseLatex('\\ln(x \\cdot y \\cdot \\exp(z))')); // → ln(x) + ln(y) + z
+
+// Division cases
+normalize(parseLatex('\\ln(\\frac{\\exp(x)}{y})')); // → x - ln(y)
+normalize(parseLatex('\\ln(\\frac{x}{\\exp(y)})')); // → ln(x) - y
+```
+
+**How it works**: This is not a separate implementation but emerges from the combination of:
+
+1. `ln(a·b) → ln(a) + ln(b)` (product expansion)
+2. `ln(a/b) → ln(a) - ln(b)` (quotient expansion)
+3. `ln(exp(x)) → x` (inverse function rule)
+
+**Symmetry with exp extraction**:
+
+| exp (partial ln extraction)    | ln (partial exp extraction)   |
+| ------------------------------ | ----------------------------- |
+| `exp(ln(x) + y) → x·exp(y)`    | `ln(x·exp(y)) → ln(x) + y`    |
+| `exp(ln(x) - y) → x/exp(y)`    | `ln(x/exp(y)) → ln(x) - y`    |
+| `exp(-ln(x) + y) → exp(y)/x`   | `ln(exp(y)/x) → y - ln(x)`    |
+| `exp(2·ln(x) + y) → x²·exp(y)` | `ln(x²·exp(y)) → 2·ln(x) + y` |
+
 ### Simplification Pipeline
 
 The normalization process has two phases:
