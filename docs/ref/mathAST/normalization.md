@@ -450,17 +450,21 @@ When sqrt contains a product of numeric and symbolic factors, perfect squares ar
 normalize(parseLatex('\\sqrt{4x}'));
 // coefficient: 2, monomial: x^{1/2}
 
-// √(9x²) → 3x (complete extraction)
+// √(9x²) → 3|x| (complete extraction with abs)
 normalize(parseLatex('\\sqrt{9x^2}'));
-// coefficient: 3, monomial: x^1
+// Result: 3|x| (coefficient: 3, abs wrapping x)
 
-// √(4x²y) → 2x√y (partial extraction)
+// √(4x²y) → 2|x|√y (partial extraction, abs on x because only y in remaining)
 normalize(parseLatex('\\sqrt{4x^2y}'));
-// coefficient: 2, monomial: [x^1, y^{1/2}]
+// Result: 2|x|√y
 
-// √(18x³) → 3√2 × x^{3/2} (separates numeric radical from symbolic)
+// √(4x³) → 2x√x (no abs, x appears in remaining √x)
+normalize(parseLatex('\\sqrt{4x^3}'));
+// Result: 2x√x
+
+// √(18x³) → 3√2 × x√x (separates numeric radical, no abs on x)
 normalize(parseLatex('\\sqrt{18x^3}'));
-// coefficient: 3√2, monomial: x^{3/2}
+// coefficient: 3√2, monomial: x^{3/2} displayed as x√x
 
 // Fraction denominators: √(x/4) → √x/2
 normalize(parseLatex('\\sqrt{\\frac{x}{4}}'));
@@ -881,25 +885,56 @@ Symbolic radicals (√x, √(x+1), etc.) are converted to fractional exponents f
 normalize(parseLatex('\\sqrt{x}'));
 // monomial: [{ base: x, exponent: { n: 1n, d: 2n } }]
 
-// √x × √x = x (via monomial multiplication: x^{1/2} × x^{1/2} = x^1)
-nodesEqual(parseLatex('\\sqrt{x} \\sqrt{x}'), parseLatex('x')); // true
-
 // (√x)² = x (via (√x)^n → x^{n/2} rule)
 nodesEqual(parseLatex('(\\sqrt{x})^2'), parseLatex('x')); // true
 
-// √(x²) = x (detected before canonicalization)
-nodesEqual(parseLatex('\\sqrt{x^2}'), parseLatex('x')); // true
+// √(x²) = |x| (absolute value for mathematical correctness)
+nodesEqual(parseLatex('\\sqrt{x^2}'), parseLatex('|x|')); // true
 
-// √(x+1) × √(x+1) = x+1 (same base detection via hashing)
-nodesEqual(parseLatex('\\sqrt{x+1} \\sqrt{x+1}'), parseLatex('x+1')); // true
+// √(x⁴) = x² (no abs needed, x² ≥ 0 always)
+nodesEqual(parseLatex('\\sqrt{x^4}'), parseLatex('x^2')); // true
+
+// √(x⁶) = |x³| (abs needed, x³ can be negative)
+nodesEqual(parseLatex('\\sqrt{x^6}'), parseLatex('|x^3|')); // true
+
+// √(x+1) × √(x+1) = |x+1| (same base detection via hashing)
+nodesEqual(parseLatex('\\sqrt{x+1} \\sqrt{x+1}'), parseLatex('|x+1|')); // true
 
 // √x × √y = √(xy) (via Phase 1)
 nodesEqual(parseLatex('\\sqrt{x} \\sqrt{y}'), parseLatex('\\sqrt{xy}')); // true
 ```
 
-**Note**: Variables are assumed positive for simplifications like `√(x²) = x`. This matches typical educational use cases.
+### Absolute Value Rules for Sqrt
 
-**Pre-canonicalization detection**: To ensure `√((x+1)×(x+1)) = x+1` works correctly (and doesn't expand to `√(x²+2x+1)`), the normalizer checks for `√(a×a)` patterns BEFORE canonicalizing the argument.
+The normalizer applies absolute value correctly based on mathematical rigor:
+
+**Rule for √(x^{2k}):**
+
+- If k is odd: `√(x^{2k}) = |x^k|` (since x^k can be negative)
+- If k is even: `√(x^{2k}) = x^k` (since x^k ≥ 0 always)
+
+**Domain-aware optimization for partial extraction:**
+
+When extracting from expressions with remaining sqrt factors, abs may be omitted if the domain already restricts the variable to non-negative values:
+
+```typescript
+// √(x³) = x√x (not |x|√x)
+// Because √x requires x ≥ 0, so |x| = x
+nodesEqual(parseLatex('\\sqrt{x^3}'), parseLatex('x\\sqrt{x}')); // true
+
+// √(x⁵) = x²√x (no abs needed, domain implies x ≥ 0)
+nodesEqual(parseLatex('\\sqrt{x^5}'), parseLatex('x^2\\sqrt{x}')); // true
+
+// √(4x²y) = 2|x|√y (abs needed on x, because √y only restricts y ≥ 0)
+nodesEqual(parseLatex('\\sqrt{4x^2y}'), parseLatex('2|x|\\sqrt{y}')); // true
+
+// √(4x³) = 2x√x (no abs, √x restricts x ≥ 0)
+nodesEqual(parseLatex('\\sqrt{4x^3}'), parseLatex('2x\\sqrt{x}')); // true
+```
+
+**Summary:** Abs is only skipped when the extracted variable also appears in the remaining sqrt factor (implying domain x ≥ 0).
+
+**Pre-canonicalization detection**: To ensure `√((x+1)×(x+1)) = |x+1|` works correctly (and doesn't expand to `√(x²+2x+1)`), the normalizer checks for `√(a×a)` patterns BEFORE canonicalizing the argument.
 
 ```typescript
 import { simplify, simplifyOnce, simplifyWithSteps } from '$lib/mathAST/normal';
@@ -1284,23 +1319,27 @@ recorder.clear();
 
 #### Phase 2 Rules (Normalization)
 
-| Rule                      | Description                                  | Verbosity  |
-| ------------------------- | -------------------------------------------- | ---------- |
-| `pre-simplify`            | Pré-simplification (Phase 1)                 | detailed   |
-| `combine-like-terms`      | Combinaison des termes semblables            | detailed   |
-| `simplify-fraction`       | Simplification de la fraction                | summarized |
-| `rationalize-denominator` | Rationalisation du dénominateur: 1/√x = √x/x | summarized |
-| `power-zero`              | Tout nombre à la puissance 0 vaut 1          | summarized |
-| `power-one`               | Un nombre à la puissance 1 reste inchangé    | detailed   |
-| `expand-power`            | Développement de la puissance                | summarized |
-| `trig-known-value`        | Valeur trigonométrique remarquable           | summarized |
-| `exp-ln-inverse`          | exp(ln(x)) = x                               | summarized |
-| `ln-exp-inverse`          | ln(exp(x)) = x                               | summarized |
-| `exp-zero`                | e⁰ = 1                                       | detailed   |
-| `exp-one`                 | e¹ = e                                       | detailed   |
-| `ln-one`                  | ln(1) = 0                                    | detailed   |
-| `ln-e`                    | ln(e) = 1                                    | detailed   |
-| `log-simplify`            | Simplification du logarithme                 | summarized |
+| Rule                            | Description                                         | Verbosity  |
+| ------------------------------- | --------------------------------------------------- | ---------- |
+| `pre-simplify`                  | Pré-simplification (Phase 1)                        | detailed   |
+| `combine-like-terms`            | Combinaison des termes semblables                   | detailed   |
+| `simplify-fraction`             | Simplification de la fraction                       | summarized |
+| `rationalize-denominator`       | Rationalisation du dénominateur: 1/√x = √x/x        | summarized |
+| `sqrt-of-square`                | Racine carrée de carré: √(a²) = \|a\|               | summarized |
+| `sqrt-of-even-power`            | √(a²ⁿ) = \|aⁿ\| si n impair, aⁿ si n pair           | summarized |
+| `sqrt-extract-perfect-square`   | Extraction des carrés parfaits: √(4x²) = 2\|x\|     | summarized |
+| `sqrt-perfect-square-trinomial` | Trinôme carré parfait: √(a² ± 2ab + b²) = \|a ± b\| | summarized |
+| `power-zero`                    | Tout nombre à la puissance 0 vaut 1                 | summarized |
+| `power-one`                     | Un nombre à la puissance 1 reste inchangé           | detailed   |
+| `expand-power`                  | Développement de la puissance                       | summarized |
+| `trig-known-value`              | Valeur trigonométrique remarquable                  | summarized |
+| `exp-ln-inverse`                | exp(ln(x)) = x                                      | summarized |
+| `ln-exp-inverse`                | ln(exp(x)) = x                                      | summarized |
+| `exp-zero`                      | e⁰ = 1                                              | detailed   |
+| `exp-one`                       | e¹ = e                                              | detailed   |
+| `ln-one`                        | ln(1) = 0                                           | detailed   |
+| `ln-e`                          | ln(e) = 1                                           | detailed   |
+| `log-simplify`                  | Simplification du logarithme                        | summarized |
 
 ### Educational Use
 

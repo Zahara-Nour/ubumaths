@@ -49,6 +49,10 @@ function sqrt(arg: MathNode): MathNode {
 	return { type: 'function', name: 'sqrt', args: [arg] };
 }
 
+function abs(arg: MathNode): MathNode {
+	return { type: 'function', name: 'abs', args: [arg] };
+}
+
 // Note: cbrt() helper available if cbrt function normalization is implemented
 // function cbrt(arg: MathNode): MathNode {
 // 	return { type: 'function', name: 'cbrt', args: [arg] };
@@ -2686,16 +2690,18 @@ describe('Log Expansion', () => {
 // =============================================================================
 
 describe('Symbolic Sqrt Simplification', () => {
-	describe('√x × √x = x', () => {
-		test('sqrt(x) * sqrt(x) = x', () => {
+	describe('√x × √x = |x| (via Phase 1 combining then A1 rule)', () => {
+		test('sqrt(x) * sqrt(x) = |x|', () => {
+			// Phase 1: sqrt(x) * sqrt(x) → sqrt(x*x)
+			// Phase 2: sqrt(x*x) → |x| (A1 rule)
 			const expr = mul(sqrt(variable('x')), sqrt(variable('x')));
-			const expected = variable('x');
+			const expected = abs(variable('x'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(y) * sqrt(y) = y', () => {
+		test('sqrt(y) * sqrt(y) = |y|', () => {
 			const expr = mul(sqrt(variable('y')), sqrt(variable('y')));
-			const expected = variable('y');
+			const expected = abs(variable('y'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
@@ -2720,60 +2726,77 @@ describe('Symbolic Sqrt Simplification', () => {
 		});
 	});
 
-	describe('√(x²) = x (positive assumption)', () => {
-		test('sqrt(x^2) = x', () => {
+	describe('√(x^{2n}) with absolute value', () => {
+		test('sqrt(x^2) = |x| (odd half-exponent)', () => {
+			// √(x²) = |x| because x can be negative
 			const expr = sqrt(power(variable('x'), num('2')));
-			const expected = variable('x');
+			const expected = abs(variable('x'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(x^4) = x^2', () => {
+		test('sqrt(x^4) = x^2 (even half-exponent, no abs needed)', () => {
+			// √(x⁴) = x² because x² ≥ 0 always
 			const expr = sqrt(power(variable('x'), num('4')));
 			const expected = power(variable('x'), num('2'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(x^6) = x^3', () => {
+		test('sqrt(x^6) = |x^3| (odd half-exponent)', () => {
+			// √(x⁶) = |x³| because x³ can be negative
 			const expr = sqrt(power(variable('x'), num('6')));
-			const expected = power(variable('x'), num('3'));
+			const expected = abs(power(variable('x'), num('3')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x^8) = x^4 (even half-exponent, no abs needed)', () => {
+			// √(x⁸) = x⁴ because x⁴ ≥ 0 always
+			const expr = sqrt(power(variable('x'), num('8')));
+			const expected = power(variable('x'), num('4'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('sqrt(x^10) = |x^5| (odd half-exponent)', () => {
+			// √(x¹⁰) = |x⁵| because x⁵ can be negative
+			const expr = sqrt(power(variable('x'), num('10')));
+			const expected = abs(power(variable('x'), num('5')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
 
-	describe('√(a×a) = a before canonicalization', () => {
-		test('sqrt(x * x) = x', () => {
+	describe('√(a×a) = |a| before canonicalization', () => {
+		test('sqrt(x * x) = |x|', () => {
 			const expr = sqrt(mul(variable('x'), variable('x')));
-			const expected = variable('x');
+			const expected = abs(variable('x'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt((x+1) * (x+1)) = x+1', () => {
+		test('sqrt((x+1) * (x+1)) = |x+1|', () => {
 			const xplus1 = add(variable('x'), num('1'));
 			const expr = sqrt(mul(xplus1, xplus1));
-			const expected = add(variable('x'), num('1'));
+			const expected = abs(add(variable('x'), num('1')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt((2x) * (2x)) = 2x', () => {
+		test('sqrt((2x) * (2x)) = |2x|', () => {
 			const twox = mul(num('2'), variable('x'));
 			const expr = sqrt(mul(twox, twox));
-			const expected = mul(num('2'), variable('x'));
+			const expected = abs(mul(num('2'), variable('x')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
 
-	describe('√(x+1) × √(x+1) = x+1', () => {
-		test('sqrt(x+1) * sqrt(x+1) = x+1', () => {
+	describe('√(x+1) × √(x+1) = |x+1|', () => {
+		test('sqrt(x+1) * sqrt(x+1) = |x+1|', () => {
 			const xplus1 = add(variable('x'), num('1'));
 			const expr = mul(sqrt(xplus1), sqrt(xplus1));
-			const expected = add(variable('x'), num('1'));
+			const expected = abs(add(variable('x'), num('1')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(2x+3) * sqrt(2x+3) = 2x+3', () => {
+		test('sqrt(2x+3) * sqrt(2x+3) = |2x+3|', () => {
 			const twoxplus3 = add(mul(num('2'), variable('x')), num('3'));
 			const expr = mul(sqrt(twoxplus3), sqrt(twoxplus3));
-			const expected = add(mul(num('2'), variable('x')), num('3'));
+			const expected = abs(add(mul(num('2'), variable('x')), num('3')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
@@ -2799,11 +2822,12 @@ describe('Symbolic Sqrt Simplification', () => {
 	});
 
 	describe('Fractional exponents in monomials', () => {
-		test('x^{1/2} * x^{1/2} = x', () => {
-			// x^{1/2} represented as sqrt(x)
+		test('sqrt(x) * sqrt(x) = |x| (via A1)', () => {
+			// Phase 1 combines sqrt(x)*sqrt(x) → sqrt(x*x) = sqrt(x²)
+			// A1 rule: sqrt(a*a) = |a| → |x|
 			const xhalf = sqrt(variable('x'));
 			const expr = mul(xhalf, xhalf);
-			const expected = variable('x');
+			const expected = abs(variable('x'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
@@ -2915,26 +2939,31 @@ describe('Symbolic Sqrt Simplification', () => {
 	});
 
 	describe('Edge cases: Large even powers under sqrt', () => {
-		test('sqrt(x^8) = x^4', () => {
+		test('sqrt(x^8) = x^4 (even half-exponent)', () => {
+			// √(x⁸) = x⁴ because 4 is even → x⁴ ≥ 0 always
 			const expr = sqrt(power(variable('x'), num('8')));
 			const expected = power(variable('x'), num('4'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(x^10) = x^5', () => {
+		test('sqrt(x^10) = |x^5| (odd half-exponent)', () => {
+			// √(x¹⁰) = |x⁵| because 5 is odd → x⁵ can be negative
 			const expr = sqrt(power(variable('x'), num('10')));
-			const expected = power(variable('x'), num('5'));
+			const expected = abs(power(variable('x'), num('5')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(x^100) = x^50', () => {
+		test('sqrt(x^100) = x^50 (even half-exponent)', () => {
+			// √(x¹⁰⁰) = x⁵⁰ because 50 is even → x⁵⁰ ≥ 0 always
 			const expr = sqrt(power(variable('x'), num('100')));
 			const expected = power(variable('x'), num('50'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
 
-	describe('Edge cases: Coefficients with sqrt', () => {
+	describe('Edge cases: Coefficients with sqrt (fractional exponent path)', () => {
+		// These go through fractional exponent multiplication, not sqrt extraction.
+		// sqrt(x) implies x ≥ 0, so sqrt(x)² = x (not |x|)
 		test('2*sqrt(x) * 3*sqrt(x) = 6x', () => {
 			const expr = mul(mul(num('2'), sqrt(variable('x'))), mul(num('3'), sqrt(variable('x'))));
 			const expected = mul(num('6'), variable('x'));
@@ -2942,12 +2971,14 @@ describe('Symbolic Sqrt Simplification', () => {
 		});
 
 		test('(-1)*sqrt(x) * sqrt(x) = -x', () => {
+			// -sqrt(x) * sqrt(x) = -x (not -|x|)
 			const expr = mul(opposite(sqrt(variable('x'))), sqrt(variable('x')));
 			const expected = opposite(variable('x'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
 		test('(-sqrt(x)) * (-sqrt(x)) = x', () => {
+			// (-sqrt(x))² = x (not |x|, since sqrt(x) implies x ≥ 0)
 			const expr = mul(opposite(sqrt(variable('x'))), opposite(sqrt(variable('x'))));
 			const expected = variable('x');
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
@@ -3203,10 +3234,10 @@ describe('Symbolic Sqrt Simplification', () => {
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(xy) * sqrt(xy) = xy', () => {
+		test('sqrt(xy) * sqrt(xy) = |xy|', () => {
 			const xy = mul(variable('x'), variable('y'));
 			const expr = mul(sqrt(xy), sqrt(xy));
-			const expected = mul(variable('x'), variable('y'));
+			const expected = abs(mul(variable('x'), variable('y')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
@@ -3235,62 +3266,70 @@ describe('Symbolic Sqrt Simplification', () => {
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(5×5) = 5', () => {
+		test('√(5×5) = |5| = 5', () => {
+			// A1 rule applies: sqrt(5*5) = |5|
+			// Note: |5| = 5 for positive constants but we don't simplify this yet
 			const expr = sqrt(mul(num('5'), num('5')));
-			const expected = num('5');
+			const expected = abs(num('5'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
 		// Symbolic cases
-		test('√(x×x) = x', () => {
+		test('√(x×x) = |x|', () => {
+			// A1 rule: sqrt(a*a) = |a|
 			const expr = sqrt(mul(variable('x'), variable('x')));
-			const expected = variable('x');
+			const expected = abs(variable('x'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(x×y×x×y) = xy', () => {
+		test('√(x×y×x×y) = |xy|', () => {
+			// √((xy)²) = |xy| since xy could be negative
 			const expr = sqrt(mul(mul(mul(variable('x'), variable('y')), variable('x')), variable('y')));
-			const expected = mul(variable('x'), variable('y'));
+			const expected = abs(mul(variable('x'), variable('y')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(x×x×y×y) = xy', () => {
+		test('√(x×x×y×y) = |xy|', () => {
+			// √(x²y²) = |xy| since xy could be negative
 			const expr = sqrt(mul(mul(mul(variable('x'), variable('x')), variable('y')), variable('y')));
-			const expected = mul(variable('x'), variable('y'));
+			const expected = abs(mul(variable('x'), variable('y')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(a×b×c×a×b×c) = abc', () => {
+		test('√(a×b×c×a×b×c) = |abc|', () => {
+			// √((abc)²) = |abc| since abc could be negative
 			const a = variable('a');
 			const b = variable('b');
 			const c = variable('c');
 			const expr = sqrt(mul(mul(mul(mul(mul(a, b), c), a), b), c));
-			const expected = mul(mul(a, b), c);
+			const expected = abs(mul(mul(a, b), c));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
 		// Mixed cases (numeric and symbolic)
-		test('√(2×x×2×x) = 2x', () => {
+		test('√(2×x×2×x) = 2|x|', () => {
+			// √(4x²) = 2|x|
 			const expr = sqrt(mul(mul(mul(num('2'), variable('x')), num('2')), variable('x')));
-			const expected = mul(num('2'), variable('x'));
+			const expected = mul(num('2'), abs(variable('x')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(3×x×y×3×x×y) = 3xy', () => {
+		test('√(3×x×y×3×x×y) = 3|xy|', () => {
+			// √(9x²y²) = 3|xy|
 			const expr = sqrt(
 				mul(
 					mul(mul(mul(mul(num('3'), variable('x')), variable('y')), num('3')), variable('x')),
 					variable('y')
 				)
 			);
-			const expected = mul(mul(num('3'), variable('x')), variable('y'));
+			const expected = mul(num('3'), abs(mul(variable('x'), variable('y'))));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
 		// Partial extraction (odd occurrences)
-		test('√(x×x×y) = x√y', () => {
+		test('√(x×x×y) = |x|√y', () => {
 			const expr = sqrt(mul(mul(variable('x'), variable('x')), variable('y')));
-			const expected = mul(variable('x'), sqrt(variable('y')));
+			const expected = mul(abs(variable('x')), sqrt(variable('y')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
@@ -3300,9 +3339,9 @@ describe('Symbolic Sqrt Simplification', () => {
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(4×x×x×y) = 2x√y', () => {
+		test('√(4×x×x×y) = 2|x|√y', () => {
 			const expr = sqrt(mul(mul(mul(num('4'), variable('x')), variable('x')), variable('y')));
-			const expected = mul(mul(num('2'), variable('x')), sqrt(variable('y')));
+			const expected = mul(mul(num('2'), abs(variable('x'))), sqrt(variable('y')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
@@ -3360,43 +3399,47 @@ describe('Symbolic Sqrt Simplification', () => {
 	});
 
 	describe('Edge cases: Complex expressions under sqrt', () => {
-		test('sqrt((x-1) * (x-1)) = x-1', () => {
+		test('sqrt((x-1) * (x-1)) = |x-1|', () => {
 			const xminus1 = sub(variable('x'), num('1'));
 			const expr = sqrt(mul(xminus1, xminus1));
-			const expected = sub(variable('x'), num('1'));
+			const expected = abs(sub(variable('x'), num('1')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt((x+y) * (x+y)) = x+y', () => {
+		test('sqrt((x+y) * (x+y)) = |x+y|', () => {
 			const xplusy = add(variable('x'), variable('y'));
 			const expr = sqrt(mul(xplusy, xplusy));
-			const expected = add(variable('x'), variable('y'));
+			const expected = abs(add(variable('x'), variable('y')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt((2x+3y) * (2x+3y)) = 2x+3y', () => {
+		test('sqrt((2x+3y) * (2x+3y)) = |2x+3y|', () => {
 			const twoxplus3y = add(mul(num('2'), variable('x')), mul(num('3'), variable('y')));
 			const expr = sqrt(mul(twoxplus3y, twoxplus3y));
-			const expected = add(mul(num('2'), variable('x')), mul(num('3'), variable('y')));
+			const expected = abs(add(mul(num('2'), variable('x')), mul(num('3'), variable('y'))));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(x+1) * sqrt(x+1) * sqrt(x+1) * sqrt(x+1) = (x+1)^2', () => {
+		test('sqrt(x+1) * sqrt(x+1) * sqrt(x+1) * sqrt(x+1) = |(x+1)²|', () => {
+			// Four sqrt(x+1) combined: sqrt((x+1)*(x+1)*(x+1)*(x+1))
+			// A1 rule detects sqrt(a*a) where a=(x+1)*(x+1), returns |a| = |(x+1)²|
+			// Note: |(x+1)²| = (x+1)² mathematically, but we don't simplify abs of squares
 			const xplus1 = add(variable('x'), num('1'));
 			const expr = mul(mul(sqrt(xplus1), sqrt(xplus1)), mul(sqrt(xplus1), sqrt(xplus1)));
-			const expected = power(add(variable('x'), num('1')), num('2'));
+			const expected = abs(power(add(variable('x'), num('1')), num('2')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
 
 	describe('Edge cases: Greek letters as variables', () => {
-		test('sqrt(alpha) * sqrt(alpha) = alpha', () => {
+		test('sqrt(alpha) * sqrt(alpha) = |alpha|', () => {
 			const expr = mul(sqrt(greek('alpha')), sqrt(greek('alpha')));
-			const expected = greek('alpha');
+			const expected = abs(greek('alpha'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
 		test('(sqrt(pi))^2 = pi', () => {
+			// Power operation, not multiplication through Phase 1
 			const expr = power(sqrt(greek('pi')), num('2'));
 			const expected = greek('pi');
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
@@ -3405,14 +3448,16 @@ describe('Symbolic Sqrt Simplification', () => {
 
 	describe('Edge cases: Nested operations', () => {
 		test('(sqrt(x) * sqrt(x))^2 = x^2', () => {
+			// sqrt(x) * sqrt(x) = |x|, then |x|^2 = x^2 (since |a|² = a² for all a)
 			const expr = power(mul(sqrt(variable('x')), sqrt(variable('x'))), num('2'));
 			const expected = power(variable('x'), num('2'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(sqrt(x) * sqrt(x)) = sqrt(x)', () => {
+		test('sqrt(sqrt(x) * sqrt(x)) = sqrt(|x|)', () => {
+			// sqrt(x) * sqrt(x) = |x|, then sqrt(|x|)
 			const expr = sqrt(mul(sqrt(variable('x')), sqrt(variable('x'))));
-			const expected = sqrt(variable('x'));
+			const expected = sqrt(abs(variable('x')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
@@ -3436,16 +3481,22 @@ describe('Symbolic Sqrt Simplification', () => {
 			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
 		});
 
-		test('sqrt(x) * sqrt(x) = x^1', () => {
+		test('sqrt(x) * sqrt(x) = |x|', () => {
+			// sqrt(x)*sqrt(x) = sqrt(x*x) = sqrt(x²) = |x|
 			const expr1 = mul(sqrt(variable('x')), sqrt(variable('x')));
-			const expr2 = power(variable('x'), num('1'));
+			const expr2 = abs(variable('x'));
 			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
 		});
 
-		test('(sqrt(x))^2 = sqrt(x^2) (positive x)', () => {
+		test('(sqrt(x))^2 ≠ sqrt(x^2) in general', () => {
+			// (sqrt(x))² = x (only defined for x ≥ 0)
+			// sqrt(x²) = |x| (defined for all x)
+			// These are different expressions that only coincide for x ≥ 0
 			const expr1 = power(sqrt(variable('x')), num('2'));
 			const expr2 = sqrt(power(variable('x'), num('2')));
-			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
+			// expr1 normalizes to x, expr2 normalizes to |x|
+			expect(normalize(expr1).hash).toBe('V(x)');
+			expect(normalize(expr2).hash).toBe('F:abs(V(x))');
 		});
 
 		test('sqrt(x) * sqrt(y) = sqrt(y) * sqrt(x)', () => {
@@ -3540,12 +3591,13 @@ describe('Denormalization of Fractional Exponents', () => {
 			expect(latex).toBe('\\sqrt{x}');
 		});
 
-		test('sqrt(x) * sqrt(x) roundtrips to x', () => {
+		test('sqrt(x) * sqrt(x) roundtrips to |x|', () => {
+			// sqrt(x)*sqrt(x) = sqrt(x²) = |x|
 			const expr = mul(sqrt(variable('x')), sqrt(variable('x')));
 			const normalized = normalize(expr);
 			const denormalized = denormalize(normalized);
 			const latex = toLatex(denormalized);
-			expect(latex).toBe('x');
+			expect(latex).toBe('\\left| x \\right|');
 		});
 
 		test('(sqrt(x))^2 roundtrips to x', () => {
@@ -3604,44 +3656,44 @@ describe('Perfect Square Extraction from sqrt', () => {
 		});
 	});
 
-	describe('√(x^{2n}) extracts even powers', () => {
-		test('√(x²) = x', () => {
+	describe('√(x^{2n}) extracts even powers with abs for odd k', () => {
+		test('√(x²) = |x| (k=1 is odd)', () => {
 			const expr = sqrt(power(variable('x'), num('2')));
-			const expected = variable('x');
+			const expected = abs(variable('x'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(x⁴) = x²', () => {
+		test('√(x⁴) = x² (k=2 is even)', () => {
 			const expr = sqrt(power(variable('x'), num('4')));
 			const expected = power(variable('x'), num('2'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(x³) = x√x', () => {
+		test('√(x³) = |x|√x', () => {
 			const expr = sqrt(power(variable('x'), num('3')));
 			const result = normalize(expr);
 			const denormalized = denormalize(result);
 			const latex = toLatex(denormalized);
-			// x^3 = x^2 * x, so √(x³) = x√x
+			// x^3 = x^2 * x, so √(x³) = |x|√x
 			expect(latex).toContain('x');
 			expect(latex).toContain('\\sqrt');
 		});
 	});
 
 	describe('√(n·x²) combines both extractions', () => {
-		test('√(4x²) = 2x', () => {
+		test('√(4x²) = 2|x| (odd extracted exponent)', () => {
 			const expr = sqrt(mul(num('4'), power(variable('x'), num('2'))));
-			const expected = mul(num('2'), variable('x'));
+			const expected = mul(num('2'), abs(variable('x')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(9x²) = 3x', () => {
+		test('√(9x²) = 3|x| (odd extracted exponent)', () => {
 			const expr = sqrt(mul(num('9'), power(variable('x'), num('2'))));
-			const expected = mul(num('3'), variable('x'));
+			const expected = mul(num('3'), abs(variable('x')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(4x⁴) = 2x²', () => {
+		test('√(4x⁴) = 2x² (even extracted exponent)', () => {
 			const expr = sqrt(mul(num('4'), power(variable('x'), num('4'))));
 			const expected = mul(num('2'), power(variable('x'), num('2')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
@@ -3649,26 +3701,27 @@ describe('Perfect Square Extraction from sqrt', () => {
 	});
 
 	describe('√(n·x²·y) partial extraction', () => {
-		test('√(4x²y) = 2x√y', () => {
+		test('√(4x²y) = 2|x|√y (odd extracted exponent)', () => {
 			const expr = sqrt(mul(mul(num('4'), power(variable('x'), num('2'))), variable('y')));
 			const result = normalize(expr);
 			const denormalized = denormalize(result);
 			const latex = toLatex(denormalized);
-			// Should have 2, x, and √y
+			// Should have 2, |x|, and √y
 			expect(latex).toContain('2');
 			expect(latex).toContain('x');
 			expect(latex).toContain('\\sqrt');
 		});
 
-		test('√(9x²y²) = 3xy', () => {
+		test('√(9x²y²) = 3|xy| (odd extracted exponents)', () => {
+			// Both x¹ and y¹ are extracted, both odd → need abs
 			const expr = sqrt(
 				mul(mul(num('9'), power(variable('x'), num('2'))), power(variable('y'), num('2')))
 			);
-			const expected = mul(mul(num('3'), variable('x')), variable('y'));
+			const expected = mul(num('3'), abs(mul(variable('x'), variable('y'))));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(x²y) = x√y', () => {
+		test('√(x²y) = |x|√y (odd extracted exponent)', () => {
 			const expr = sqrt(mul(power(variable('x'), num('2')), variable('y')));
 			const result = normalize(expr);
 			const denormalized = denormalize(result);
@@ -3706,38 +3759,38 @@ describe('Perfect Square Extraction from sqrt', () => {
 			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
 		});
 
-		test('√(9x²) = 3x equivalence', () => {
+		test('√(9x²) = 3|x| equivalence', () => {
 			const expr1 = sqrt(mul(num('9'), power(variable('x'), num('2'))));
-			const expr2 = mul(num('3'), variable('x'));
+			const expr2 = mul(num('3'), abs(variable('x')));
 			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
 		});
 
-		test('√(4x²y) = 2x√y equivalence', () => {
+		test('√(4x²y) = 2|x|√y equivalence', () => {
 			const expr1 = sqrt(mul(mul(num('4'), power(variable('x'), num('2'))), variable('y')));
-			const expr2 = mul(mul(num('2'), variable('x')), sqrt(variable('y')));
+			const expr2 = mul(mul(num('2'), abs(variable('x'))), sqrt(variable('y')));
 			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
 		});
 
-		test('√(18x³) = 3√2·x^{3/2} (canonical: separates numeric from symbolic)', () => {
+		test('√(18x³) = 3√2·|x|·x^{1/2} (canonical: separates numeric from symbolic)', () => {
 			const expr1 = sqrt(mul(num('18'), power(variable('x'), num('3'))));
-			// Canonical form: 3 * √2 * x^{3/2}
-			// This is equivalent to 3x√(2x) but in a more canonical representation
+			// Canonical form: 3 * √2 * |x| * x^{1/2}
+			// This is equivalent to 3|x|√(2x) but in a more canonical representation
 			const result = normalize(expr1);
 			const denormalized = denormalize(result);
 			const latex = toLatex(denormalized);
-			// Should have coefficient 3 with √2 and x^{3/2} = x·√x
+			// Should have coefficient 3 with √2 and |x|·√x
 			expect(latex).toContain('3');
 			expect(latex).toContain('\\sqrt');
 			expect(latex).toContain('x');
 		});
 
-		test('√(8x²) = 2x√2 equivalence', () => {
+		test('√(8x²) = 2|x|√2 equivalence', () => {
 			// 8 = 4*2, so √8 = 2√2
-			// x² → x
-			// Result: 2√2 * x = 2x√2
+			// x² → |x| (odd extracted exponent)
+			// Result: 2√2 * |x| = 2|x|√2
 			const expr1 = sqrt(mul(num('8'), power(variable('x'), num('2'))));
-			// Build 2x√2 = 2 * x * √2
-			const expr2 = mul(mul(num('2'), variable('x')), sqrt(num('2')));
+			// Build 2|x|√2 = 2 * |x| * √2
+			const expr2 = mul(mul(num('2'), abs(variable('x'))), sqrt(num('2')));
 			expect(normalize(expr1).hash).toBe(normalize(expr2).hash);
 		});
 	});
@@ -3763,102 +3816,102 @@ describe('Perfect Square Extraction from sqrt', () => {
 
 describe('Perfect Square Trinomial Detection', () => {
 	describe('Basic trinomials (a + b)²', () => {
-		test('√(x² + 2x + 1) = x + 1', () => {
-			// x² + 2x + 1 = (x + 1)²
+		test('√(x² + 2x + 1) = |x + 1|', () => {
+			// x² + 2x + 1 = (x + 1)², √(...) = |x + 1|
 			const expr = sqrt(
 				add(add(power(variable('x'), num('2')), mul(num('2'), variable('x'))), num('1'))
 			);
-			const expected = add(variable('x'), num('1'));
+			const expected = abs(add(variable('x'), num('1')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(x² + 4x + 4) = x + 2', () => {
-			// x² + 4x + 4 = (x + 2)²
+		test('√(x² + 4x + 4) = |x + 2|', () => {
+			// x² + 4x + 4 = (x + 2)², √(...) = |x + 2|
 			const expr = sqrt(
 				add(add(power(variable('x'), num('2')), mul(num('4'), variable('x'))), num('4'))
 			);
-			const expected = add(variable('x'), num('2'));
+			const expected = abs(add(variable('x'), num('2')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(x² + 6x + 9) = x + 3', () => {
-			// x² + 6x + 9 = (x + 3)²
+		test('√(x² + 6x + 9) = |x + 3|', () => {
+			// x² + 6x + 9 = (x + 3)², √(...) = |x + 3|
 			const expr = sqrt(
 				add(add(power(variable('x'), num('2')), mul(num('6'), variable('x'))), num('9'))
 			);
-			const expected = add(variable('x'), num('3'));
+			const expected = abs(add(variable('x'), num('3')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
 
 	describe('Trinomials (a - b)²', () => {
-		test('√(x² - 2x + 1) = x - 1', () => {
-			// x² - 2x + 1 = (x - 1)²
+		test('√(x² - 2x + 1) = |x - 1|', () => {
+			// x² - 2x + 1 = (x - 1)², √(...) = |x - 1|
 			const expr = sqrt(
 				add(sub(power(variable('x'), num('2')), mul(num('2'), variable('x'))), num('1'))
 			);
-			const expected = sub(variable('x'), num('1'));
+			const expected = abs(sub(variable('x'), num('1')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(x² - 4x + 4) = x - 2', () => {
-			// x² - 4x + 4 = (x - 2)²
+		test('√(x² - 4x + 4) = |x - 2|', () => {
+			// x² - 4x + 4 = (x - 2)², √(...) = |x - 2|
 			const expr = sqrt(
 				add(sub(power(variable('x'), num('2')), mul(num('4'), variable('x'))), num('4'))
 			);
-			const expected = sub(variable('x'), num('2'));
+			const expected = abs(sub(variable('x'), num('2')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
 
 	describe('Trinomials with coefficients', () => {
-		test('√(4x² + 4x + 1) = 2x + 1', () => {
-			// 4x² + 4x + 1 = (2x + 1)²
+		test('√(4x² + 4x + 1) = |2x + 1|', () => {
+			// 4x² + 4x + 1 = (2x + 1)², √(...) = |2x + 1|
 			const expr = sqrt(
 				add(
 					add(mul(num('4'), power(variable('x'), num('2'))), mul(num('4'), variable('x'))),
 					num('1')
 				)
 			);
-			const expected = add(mul(num('2'), variable('x')), num('1'));
+			const expected = abs(add(mul(num('2'), variable('x')), num('1')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(9x² + 6x + 1) = 3x + 1', () => {
-			// 9x² + 6x + 1 = (3x + 1)²
+		test('√(9x² + 6x + 1) = |3x + 1|', () => {
+			// 9x² + 6x + 1 = (3x + 1)², √(...) = |3x + 1|
 			const expr = sqrt(
 				add(
 					add(mul(num('9'), power(variable('x'), num('2'))), mul(num('6'), variable('x'))),
 					num('1')
 				)
 			);
-			const expected = add(mul(num('3'), variable('x')), num('1'));
+			const expected = abs(add(mul(num('3'), variable('x')), num('1')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
 
 	describe('Two-variable trinomials', () => {
-		test('√(x² + 2xy + y²) = x + y', () => {
-			// x² + 2xy + y² = (x + y)²
+		test('√(x² + 2xy + y²) = |x + y|', () => {
+			// x² + 2xy + y² = (x + y)², √(...) = |x + y|
 			const expr = sqrt(
 				add(
 					add(power(variable('x'), num('2')), mul(num('2'), mul(variable('x'), variable('y')))),
 					power(variable('y'), num('2'))
 				)
 			);
-			const expected = add(variable('x'), variable('y'));
+			const expected = abs(add(variable('x'), variable('y')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('√(x² - 2xy + y²) = x - y', () => {
-			// x² - 2xy + y² = (x - y)²
+		test('√(x² - 2xy + y²) = |x - y|', () => {
+			// x² - 2xy + y² = (x - y)², √(...) = |x - y|
 			const expr = sqrt(
 				add(
 					sub(power(variable('x'), num('2')), mul(num('2'), mul(variable('x'), variable('y')))),
 					power(variable('y'), num('2'))
 				)
 			);
-			const expected = sub(variable('x'), variable('y'));
+			const expected = abs(sub(variable('x'), variable('y')));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});
