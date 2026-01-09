@@ -50,13 +50,15 @@ export type SolutionStatus =
 // Verbosity Levels
 // =============================================================================
 
+import type { Verbosity } from '../common/verbosity.js';
+
 /**
  * Verbosity levels for step recording.
- * - 'detailed': Every algebraic step
- * - 'summarized': Key transformations only
- * - 'result': Just the solution, no steps
+ * Alias to the common Verbosity type for backwards compatibility.
+ *
+ * @see Verbosity in common/verbosity.ts
  */
-export type SolvingVerbosity = 'detailed' | 'summarized' | 'result';
+export type SolvingVerbosity = Verbosity;
 
 // =============================================================================
 // Solution Types

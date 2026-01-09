@@ -55,13 +55,15 @@ export type IntegrationStatus =
 // Verbosity Levels
 // =============================================================================
 
+import type { Verbosity } from '../common/verbosity.js';
+
 /**
  * Verbosity levels for step recording.
- * - 'detailed': Every algebraic step
- * - 'summarized': Key transformations only
- * - 'result': Just the antiderivative, no steps
+ * Alias to the common Verbosity type for backwards compatibility.
+ *
+ * @see Verbosity in common/verbosity.ts
  */
-export type IntegrationVerbosity = 'detailed' | 'summarized' | 'result';
+export type IntegrationVerbosity = Verbosity;
 
 // =============================================================================
 // Step Types

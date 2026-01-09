@@ -968,29 +968,82 @@ Record transformation steps for educational display and debugging.
 ### Basic Usage
 
 ```typescript
-import { simplifyWithSteps, StepRecorder } from '$lib/mathAST';
+import { normalizeWithSteps, simplifyExpressionWithSteps } from '$lib/mathAST/normal';
+import { parseLatex, toLatex } from '$lib/mathAST';
 
-const ast = parseLatex('x + 0 + x');
-const { result, steps } = simplifyWithSteps(ast);
+const ast = parseLatex('x + x');
+const { result, steps } = normalizeWithSteps(ast);
 
 // Display steps
 steps.forEach((step) => {
-	console.log(`Rule: ${step.rule}`);
+	console.log(`#${step.id} - Rule: ${step.rule}`);
 	console.log(`Description: ${step.description}`);
 	console.log(`Before: ${toLatex(step.before)}`);
 	console.log(`After: ${toLatex(step.after)}`);
+	console.log(`Verbosity: ${step.verbosityLevel}`);
 	console.log('---');
 });
+```
+
+### API Functions
+
+#### `normalizeWithSteps(node, verbosity?)`
+
+Normalize an expression and record transformation steps:
+
+```typescript
+import { normalizeWithSteps } from '$lib/mathAST/normal';
+
+const { result, steps } = normalizeWithSteps(parseLatex('x + x'), 'summarized');
+// result: NormalForm for 2x
+// steps: [{ id: 1, rule: 'combine-like-terms', before: x+x, after: 2x, ... }]
+```
+
+#### `simplifyExpressionWithSteps(node, verbosity?)`
+
+Like `normalizeWithSteps` but returns a MathNode instead of NormalForm:
+
+```typescript
+import { simplifyExpressionWithSteps } from '$lib/mathAST/normal';
+
+const { result, steps } = simplifyExpressionWithSteps(parseLatex('x + x'));
+// result: MathNode for 2x (ready for display)
+```
+
+### Verbosity Levels
+
+Control which steps are recorded and returned:
+
+| Level          | Description                               | Use Case                     |
+| -------------- | ----------------------------------------- | ---------------------------- |
+| `'result'`     | No steps recorded (fastest)               | Production/performance       |
+| `'summarized'` | Important transformations only (default)  | Educational display          |
+| `'detailed'`   | All transformations including micro-steps | Debugging/deep understanding |
+
+```typescript
+// No steps (fastest)
+const { result } = normalizeWithSteps(expr, 'result');
+// result.steps.length === 0
+
+// Important steps only (default)
+const { steps: summarized } = normalizeWithSteps(expr, 'summarized');
+// Only 'summarized' level steps included
+
+// All steps
+const { steps: detailed } = normalizeWithSteps(expr, 'detailed');
+// Both 'summarized' and 'detailed' level steps included
 ```
 
 ### Step Interface
 
 ```typescript
 interface NormalizationStep {
-	readonly rule: string; // Rule identifier (e.g., 'additive-identity')
+	readonly id: number; // Unique step ID (incrementing)
+	readonly rule: string; // Rule identifier (e.g., 'combine-like-terms')
 	readonly description: string; // Human-readable (French)
 	readonly before: MathNode; // AST before transformation
 	readonly after: MathNode; // AST after transformation
+	readonly verbosityLevel: Verbosity; // 'summarized' | 'detailed'
 }
 ```
 
@@ -999,15 +1052,20 @@ interface NormalizationStep {
 For more control over step recording:
 
 ```typescript
-import { StepRecorder, applyRules } from '$lib/mathAST';
+import { StepRecorder, normalize } from '$lib/mathAST/normal';
+import type { NormalizeContext } from '$lib/mathAST/normal';
 
 const recorder = new StepRecorder();
+const ctx: NormalizeContext = { recorder, verbosity: 'detailed' };
 
-// Record individual steps
-recorder.recordStep('combine-like-terms', beforeAst, afterAst);
+// Normalize with context
+const form = normalize(ast, ctx);
 
 // Get all recorded steps
-const steps = recorder.getSteps();
+const allSteps = recorder.getSteps();
+
+// Get filtered steps
+const filteredSteps = recorder.getStepsFiltered('summarized');
 
 // Clear for reuse
 recorder.clear();
@@ -1015,39 +1073,55 @@ recorder.clear();
 
 ### Rule Descriptions (French)
 
-| Rule                  | Description                          |
-| --------------------- | ------------------------------------ |
-| `additive-identity`   | Suppression de l'élément neutre (+0) |
-| `multiplicative-one`  | Suppression du facteur 1             |
-| `multiply-by-zero`    | Multiplication par zéro              |
-| `combine-like-terms`  | Regroupement des termes semblables   |
-| `simplify-fraction`   | Simplification de la fraction        |
-| `distribute`          | Distribution                         |
-| `factor-common`       | Factorisation du facteur commun      |
-| `power-of-power`      | Puissance de puissance               |
-| `simplify-double-neg` | Simplification de la double négation |
+#### Phase 1 Rules (Radicals)
+
+| Rule               | Description                 | Verbosity  |
+| ------------------ | --------------------------- | ---------- |
+| `radicals`         | Simplification des radicaux | summarized |
+| `radical-simplify` | Simplification de radical   | summarized |
+
+#### Phase 2 Rules (Normalization)
+
+| Rule                 | Description                               | Verbosity  |
+| -------------------- | ----------------------------------------- | ---------- |
+| `pre-simplify`       | Pré-simplification (Phase 1)              | detailed   |
+| `combine-like-terms` | Combinaison des termes semblables         | detailed   |
+| `simplify-fraction`  | Simplification de la fraction             | summarized |
+| `power-zero`         | Tout nombre à la puissance 0 vaut 1       | summarized |
+| `power-one`          | Un nombre à la puissance 1 reste inchangé | detailed   |
+| `expand-power`       | Développement de la puissance             | summarized |
+| `trig-known-value`   | Valeur trigonométrique remarquable        | summarized |
+| `exp-ln-inverse`     | exp(ln(x)) = x                            | summarized |
+| `ln-exp-inverse`     | ln(exp(x)) = x                            | summarized |
+| `exp-zero`           | e⁰ = 1                                    | detailed   |
+| `exp-one`            | e¹ = e                                    | detailed   |
+| `ln-one`             | ln(1) = 0                                 | detailed   |
+| `ln-e`               | ln(e) = 1                                 | detailed   |
+| `log-simplify`       | Simplification du logarithme              | summarized |
 
 ### Educational Use
 
 ```svelte
 <script lang="ts">
-	import { simplifyWithSteps } from '$lib/mathAST';
+	import { normalizeWithSteps } from '$lib/mathAST/normal';
+	import { parseLatex, toLatex } from '$lib/mathAST';
+	import type { NormalizationStep } from '$lib/mathAST/normal/types';
 
-	let expression = $state('x + x + 0');
+	let expression = $state('x + x');
 	let steps = $state<NormalizationStep[]>([]);
 
 	function simplify() {
 		const ast = parseLatex(expression);
-		const result = simplifyWithSteps(ast);
-		steps = result.steps;
+		const result = normalizeWithSteps(ast, 'summarized');
+		steps = [...result.steps];
 	}
 </script>
 
 <button onclick={simplify}>Simplifier</button>
 
-{#each steps as step, i}
+{#each steps as step}
 	<div class="step">
-		<h4>Étape {i + 1}: {step.description}</h4>
+		<h4>Étape {step.id}: {step.description}</h4>
 		<p>
 			<Katex formula={toLatex(step.before)} /> → <Katex formula={toLatex(step.after)} />
 		</p>
