@@ -410,6 +410,354 @@ function normalizeNode(node: MathNode): NormalForm {
 	}
 }
 
+// =============================================================================
+// Transcendental Function Simplification (Phase 2)
+// =============================================================================
+
+/**
+ * Checks if a NormalForm represents a multiple of π.
+ * Returns the coefficient k such that value = k*π, or null if not a multiple of π.
+ */
+function getPiCoefficient(form: NormalForm): Rational | null {
+	// Must be: single term, coefficient rational only, monomial = [π^1]
+	if (form.numerator.length !== 1) return null;
+	if (!isOnePolynomial(form.denominator)) return null;
+
+	const term = form.numerator[0];
+	// Coefficient must be pure rational (no radicals)
+	if (term.coefficient.terms.length !== 1) return null;
+	if (term.coefficient.terms[0].radicals.length !== 0) return null;
+
+	// Monomial must be exactly π^1
+	if (term.monomial.length !== 1) return null;
+	const factor = term.monomial[0];
+	if (factor.base.type !== 'greek' || factor.base.letter !== 'pi') return null;
+	if (factor.exponent.n !== 1n || factor.exponent.d !== 1n) return null;
+
+	return term.coefficient.terms[0].rational;
+}
+
+/**
+ * Checks if a NormalForm represents 'e' (Euler's number).
+ */
+function isEulerNumber(form: NormalForm): boolean {
+	if (form.numerator.length !== 1) return false;
+	if (!isOnePolynomial(form.denominator)) return false;
+
+	const term = form.numerator[0];
+	// Coefficient must be 1
+	if (term.coefficient.terms.length !== 1) return false;
+	const coeff = term.coefficient.terms[0];
+	if (coeff.radicals.length !== 0) return false;
+	if (coeff.rational.n !== 1n || coeff.rational.d !== 1n) return false;
+
+	// Monomial must be exactly e^1
+	if (term.monomial.length !== 1) return false;
+	const factor = term.monomial[0];
+	if (factor.base.type !== 'variable' || factor.base.name !== 'e') return false;
+	if (factor.exponent.n !== 1n || factor.exponent.d !== 1n) return false;
+
+	return true;
+}
+
+/**
+ * Checks if a NormalForm represents a specific integer.
+ */
+function isIntegerValue(form: NormalForm, value: bigint): boolean {
+	if (form.numerator.length !== 1) return false;
+	if (!isOnePolynomial(form.denominator)) return false;
+
+	const term = form.numerator[0];
+	if (term.monomial.length !== 0) return false;
+	if (term.coefficient.terms.length !== 1) return false;
+
+	const coeff = term.coefficient.terms[0];
+	if (coeff.radicals.length !== 0) return false;
+
+	return coeff.rational.n === value && coeff.rational.d === 1n;
+}
+
+/**
+ * Creates a NormalForm from a Rational value.
+ */
+function normalFormFromRational(r: Rational): NormalForm {
+	const term = termFromRational(r);
+	return normalFormFromPolynomial(polynomialFromTerm(term));
+}
+
+/**
+ * Creates NormalForm for √2/2
+ * Uses fraction form: √2 / 2 (to match canonical representation)
+ */
+function normalFormSqrt2Over2(): NormalForm {
+	// Numerator: 1*√2
+	const numTerm: NormalTerm = {
+		coefficient: {
+			terms: [
+				{
+					rational: rational(1n, 1n),
+					radicals: [{ radicand: 2n, index: 2n }]
+				}
+			]
+		},
+		monomial: EMPTY_MONOMIAL
+	};
+	// Denominator: 2
+	const denTerm: NormalTerm = {
+		coefficient: algebraicFromRational(rational(2n, 1n)),
+		monomial: EMPTY_MONOMIAL
+	};
+	return normalFormFromFraction([numTerm], [denTerm]);
+}
+
+/**
+ * Creates NormalForm for √3/2
+ * Uses fraction form: √3 / 2 (to match canonical representation)
+ */
+function normalFormSqrt3Over2(): NormalForm {
+	// Numerator: 1*√3
+	const numTerm: NormalTerm = {
+		coefficient: {
+			terms: [
+				{
+					rational: rational(1n, 1n),
+					radicals: [{ radicand: 3n, index: 2n }]
+				}
+			]
+		},
+		monomial: EMPTY_MONOMIAL
+	};
+	// Denominator: 2
+	const denTerm: NormalTerm = {
+		coefficient: algebraicFromRational(rational(2n, 1n)),
+		monomial: EMPTY_MONOMIAL
+	};
+	return normalFormFromFraction([numTerm], [denTerm]);
+}
+
+/**
+ * Normalizes a Rational to canonical form (reduced, positive denominator).
+ */
+function normalizeRational(r: Rational): Rational {
+	return rational(r.n, r.d);
+}
+
+/**
+ * Reduces angle coefficient to [0, 2) range for periodic functions.
+ * Returns the reduced coefficient.
+ */
+function reduceAngleCoefficient(coeff: Rational): Rational {
+	// Reduce n/d mod 2 (since sin/cos have period 2π)
+	// Result should be in [0, 2)
+	let n = coeff.n;
+	const d = coeff.d;
+
+	// Handle negative coefficients
+	if (n < 0n) {
+		// Add multiples of 2d to make positive
+		const periods = -n / (2n * d) + 1n;
+		n = n + periods * 2n * d;
+	}
+
+	// Reduce to [0, 2d)
+	n = n % (2n * d);
+
+	return normalizeRational(rational(n, d));
+}
+
+/**
+ * Gets sine value for angle = coeff * π
+ * Returns null if not a known remarkable value.
+ */
+function getSineValue(coeff: Rational): NormalForm | null {
+	const reduced = reduceAngleCoefficient(coeff);
+	const n = reduced.n;
+	const d = reduced.d;
+
+	// sin(0) = 0
+	if (n === 0n) return ZERO_NORMAL_FORM;
+
+	// sin(π/6) = 1/2
+	if (n === 1n && d === 6n) return normalFormFromRational(rational(1n, 2n));
+
+	// sin(π/4) = √2/2
+	if (n === 1n && d === 4n) return normalFormSqrt2Over2();
+
+	// sin(π/3) = √3/2
+	if (n === 1n && d === 3n) return normalFormSqrt3Over2();
+
+	// sin(π/2) = 1
+	if (n === 1n && d === 2n) return ONE_NORMAL_FORM;
+
+	// sin(2π/3) = √3/2
+	if (n === 2n && d === 3n) return normalFormSqrt3Over2();
+
+	// sin(3π/4) = √2/2
+	if (n === 3n && d === 4n) return normalFormSqrt2Over2();
+
+	// sin(5π/6) = 1/2
+	if (n === 5n && d === 6n) return normalFormFromRational(rational(1n, 2n));
+
+	// sin(π) = 0
+	if (n === 1n && d === 1n) return ZERO_NORMAL_FORM;
+
+	// sin(7π/6) = -1/2
+	if (n === 7n && d === 6n) return normalFormFromRational(rational(-1n, 2n));
+
+	// sin(5π/4) = -√2/2
+	if (n === 5n && d === 4n) return negNormalForm(normalFormSqrt2Over2());
+
+	// sin(4π/3) = -√3/2
+	if (n === 4n && d === 3n) return negNormalForm(normalFormSqrt3Over2());
+
+	// sin(3π/2) = -1
+	if (n === 3n && d === 2n) return negNormalForm(ONE_NORMAL_FORM);
+
+	// sin(5π/3) = -√3/2
+	if (n === 5n && d === 3n) return negNormalForm(normalFormSqrt3Over2());
+
+	// sin(7π/4) = -√2/2
+	if (n === 7n && d === 4n) return negNormalForm(normalFormSqrt2Over2());
+
+	// sin(11π/6) = -1/2
+	if (n === 11n && d === 6n) return normalFormFromRational(rational(-1n, 2n));
+
+	// sin(2π) = 0
+	if (n === 2n && d === 1n) return ZERO_NORMAL_FORM;
+
+	return null;
+}
+
+/**
+ * Gets cosine value for angle = coeff * π
+ * Returns null if not a known remarkable value.
+ */
+function getCosineValue(coeff: Rational): NormalForm | null {
+	const reduced = reduceAngleCoefficient(coeff);
+	const n = reduced.n;
+	const d = reduced.d;
+
+	// cos(0) = 1
+	if (n === 0n) return ONE_NORMAL_FORM;
+
+	// cos(π/6) = √3/2
+	if (n === 1n && d === 6n) return normalFormSqrt3Over2();
+
+	// cos(π/4) = √2/2
+	if (n === 1n && d === 4n) return normalFormSqrt2Over2();
+
+	// cos(π/3) = 1/2
+	if (n === 1n && d === 3n) return normalFormFromRational(rational(1n, 2n));
+
+	// cos(π/2) = 0
+	if (n === 1n && d === 2n) return ZERO_NORMAL_FORM;
+
+	// cos(2π/3) = -1/2
+	if (n === 2n && d === 3n) return normalFormFromRational(rational(-1n, 2n));
+
+	// cos(3π/4) = -√2/2
+	if (n === 3n && d === 4n) return negNormalForm(normalFormSqrt2Over2());
+
+	// cos(5π/6) = -√3/2
+	if (n === 5n && d === 6n) return negNormalForm(normalFormSqrt3Over2());
+
+	// cos(π) = -1
+	if (n === 1n && d === 1n) return negNormalForm(ONE_NORMAL_FORM);
+
+	// cos(7π/6) = -√3/2
+	if (n === 7n && d === 6n) return negNormalForm(normalFormSqrt3Over2());
+
+	// cos(5π/4) = -√2/2
+	if (n === 5n && d === 4n) return negNormalForm(normalFormSqrt2Over2());
+
+	// cos(4π/3) = -1/2
+	if (n === 4n && d === 3n) return normalFormFromRational(rational(-1n, 2n));
+
+	// cos(3π/2) = 0
+	if (n === 3n && d === 2n) return ZERO_NORMAL_FORM;
+
+	// cos(5π/3) = 1/2
+	if (n === 5n && d === 3n) return normalFormFromRational(rational(1n, 2n));
+
+	// cos(7π/4) = √2/2
+	if (n === 7n && d === 4n) return normalFormSqrt2Over2();
+
+	// cos(11π/6) = √3/2
+	if (n === 11n && d === 6n) return normalFormSqrt3Over2();
+
+	// cos(2π) = 1
+	if (n === 2n && d === 1n) return ONE_NORMAL_FORM;
+
+	return null;
+}
+
+/**
+ * Gets tangent value for angle = coeff * π
+ * Returns null if not a known remarkable value or if undefined (π/2, 3π/2).
+ */
+function getTangentValue(coeff: Rational): NormalForm | null {
+	const reduced = reduceAngleCoefficient(coeff);
+	const n = reduced.n;
+	const d = reduced.d;
+
+	// tan(0) = 0
+	if (n === 0n) return ZERO_NORMAL_FORM;
+
+	// tan(π/6) = √3/3 = 1/√3
+	if (n === 1n && d === 6n) {
+		// √3/3
+		const term: NormalTerm = {
+			coefficient: {
+				terms: [
+					{
+						rational: rational(1n, 3n),
+						radicals: [{ radicand: 3n, index: 2n }]
+					}
+				]
+			},
+			monomial: EMPTY_MONOMIAL
+		};
+		return normalFormFromPolynomial([term]);
+	}
+
+	// tan(π/4) = 1
+	if (n === 1n && d === 4n) return ONE_NORMAL_FORM;
+
+	// tan(π/3) = √3
+	if (n === 1n && d === 3n) {
+		const term: NormalTerm = {
+			coefficient: {
+				terms: [
+					{
+						rational: rational(1n, 1n),
+						radicals: [{ radicand: 3n, index: 2n }]
+					}
+				]
+			},
+			monomial: EMPTY_MONOMIAL
+		};
+		return normalFormFromPolynomial([term]);
+	}
+
+	// tan(π/2) = undefined (return null)
+	if (n === 1n && d === 2n) return null;
+
+	// tan(π) = 0
+	if (n === 1n && d === 1n) return ZERO_NORMAL_FORM;
+
+	// tan(3π/2) = undefined (return null)
+	if (n === 3n && d === 2n) return null;
+
+	// tan(2π) = 0
+	if (n === 2n && d === 1n) return ZERO_NORMAL_FORM;
+
+	return null;
+}
+
+// =============================================================================
+// Function Node Canonicalization
+// =============================================================================
+
 /**
  * Creates a canonical FunctionNode with normalized arguments.
  * This ensures that sin(x+x) and sin(2x) produce the same hash.
@@ -479,7 +827,75 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 		return normalizeOpaqueNode(canonicalNode);
 	}
 
-	// 3. Other functions - opaque with normalized args
+	// 3. Handle trigonometric functions
+	if ((name === 'sin' || name === 'cos' || name === 'tan') && canonicalArgs.length === 1) {
+		const argForm = normalizeNode(canonicalArgs[0]);
+
+		// Check for argument = k*π
+		const piCoeff = getPiCoefficient(argForm);
+		if (piCoeff !== null) {
+			const result =
+				name === 'sin'
+					? getSineValue(piCoeff)
+					: name === 'cos'
+						? getCosineValue(piCoeff)
+						: getTangentValue(piCoeff);
+			if (result !== null) return result;
+		}
+
+		// Also check for arg = 0 (sin(0) = 0, cos(0) = 1, tan(0) = 0)
+		if (isIntegerValue(argForm, 0n)) {
+			if (name === 'sin' || name === 'tan') return ZERO_NORMAL_FORM;
+			if (name === 'cos') return ONE_NORMAL_FORM;
+		}
+
+		return normalizeOpaqueNode(canonicalNode);
+	}
+
+	// 4. Handle logarithms
+	if ((name === 'ln' || name === 'log') && canonicalArgs.length === 1) {
+		const argForm = normalizeNode(canonicalArgs[0]);
+
+		// ln(1) = 0, log(1) = 0
+		if (isIntegerValue(argForm, 1n)) return ZERO_NORMAL_FORM;
+
+		// ln(e) = 1
+		if (name === 'ln' && isEulerNumber(argForm)) return ONE_NORMAL_FORM;
+
+		// log(10) = 1 (base 10)
+		if (name === 'log' && isIntegerValue(argForm, 10n)) {
+			// Check if base is 10 or not specified
+			const base = canonicalNode.base;
+			if (!base || (base.type === 'number' && base.value === '10')) {
+				return ONE_NORMAL_FORM;
+			}
+		}
+
+		// log_b(b) = 1
+		if (name === 'log' && canonicalNode.base) {
+			const baseForm = normalizeNode(canonicalNode.base);
+			if (argForm.hash === baseForm.hash) return ONE_NORMAL_FORM;
+		}
+
+		return normalizeOpaqueNode(canonicalNode);
+	}
+
+	// 5. Handle exponentials
+	if (name === 'exp' && canonicalArgs.length === 1) {
+		const argForm = normalizeNode(canonicalArgs[0]);
+
+		// exp(0) = 1
+		if (isIntegerValue(argForm, 0n)) return ONE_NORMAL_FORM;
+
+		// exp(1) = e
+		if (isIntegerValue(argForm, 1n)) {
+			return normalizeNode({ type: 'variable', name: 'e' });
+		}
+
+		return normalizeOpaqueNode(canonicalNode);
+	}
+
+	// 6. Other functions - opaque with normalized args
 	return normalizeOpaqueNode(canonicalNode);
 }
 

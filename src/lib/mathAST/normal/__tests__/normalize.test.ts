@@ -562,3 +562,225 @@ describe('Function Argument Normalization', () => {
 		expect(norm1.hash).not.toBe(norm2.hash);
 	});
 });
+
+// =============================================================================
+// Transcendental Function Remarkable Values Tests
+// =============================================================================
+
+// Helper for π multiples
+function piTimes(n: MathNode, d?: MathNode): MathNode {
+	if (d) {
+		return div(mul(n, greek('pi')), d);
+	}
+	return mul(n, greek('pi'));
+}
+
+describe('Sine Remarkable Values', () => {
+	test('sin(0) = 0', () => {
+		const result = normalize(fn('sin', num('0')));
+		expect(result.hash).toBe('0');
+	});
+
+	test('sin(π/6) = 1/2', () => {
+		const result = normalize(fn('sin', div(greek('pi'), num('6'))));
+		expect(result.numerator.length).toBe(1);
+		const coef = result.numerator[0].coefficient.terms[0].rational;
+		expect(coef.n).toBe(1n);
+		expect(coef.d).toBe(2n);
+	});
+
+	test('sin(π/4) = √2/2', () => {
+		const result = normalize(fn('sin', div(greek('pi'), num('4'))));
+		// √2/2 is represented as √2 / 2 (fraction form)
+		expect(result.numerator.length).toBe(1);
+		const numTerm = result.numerator[0].coefficient.terms[0];
+		expect(numTerm.rational.n).toBe(1n);
+		expect(numTerm.rational.d).toBe(1n);
+		expect(numTerm.radicals.length).toBe(1);
+		expect(numTerm.radicals[0].radicand).toBe(2n);
+		expect(numTerm.radicals[0].index).toBe(2n);
+		// Denominator is 2
+		expect(result.denominator.length).toBe(1);
+		const denTerm = result.denominator[0].coefficient.terms[0];
+		expect(denTerm.rational.n).toBe(2n);
+		expect(denTerm.rational.d).toBe(1n);
+	});
+
+	test('sin(π/3) = √3/2', () => {
+		const result = normalize(fn('sin', div(greek('pi'), num('3'))));
+		// √3/2 is represented as √3 / 2 (fraction form)
+		expect(result.numerator.length).toBe(1);
+		const numTerm = result.numerator[0].coefficient.terms[0];
+		expect(numTerm.rational.n).toBe(1n);
+		expect(numTerm.rational.d).toBe(1n);
+		expect(numTerm.radicals.length).toBe(1);
+		expect(numTerm.radicals[0].radicand).toBe(3n);
+		// Denominator is 2
+		expect(result.denominator.length).toBe(1);
+		const denTerm = result.denominator[0].coefficient.terms[0];
+		expect(denTerm.rational.n).toBe(2n);
+	});
+
+	test('sin(π/2) = 1', () => {
+		const result = normalize(fn('sin', div(greek('pi'), num('2'))));
+		expect(result.numerator.length).toBe(1);
+		const coef = result.numerator[0].coefficient.terms[0].rational;
+		expect(coef.n).toBe(1n);
+		expect(coef.d).toBe(1n);
+	});
+
+	test('sin(π) = 0', () => {
+		const result = normalize(fn('sin', greek('pi')));
+		expect(result.hash).toBe('0');
+	});
+
+	test('sin(2π/4) = sin(π/2) = 1 (normalized argument)', () => {
+		const result = normalize(fn('sin', div(piTimes(num('2')), num('4'))));
+		expect(result.numerator.length).toBe(1);
+		const coef = result.numerator[0].coefficient.terms[0].rational;
+		expect(coef.n).toBe(1n);
+		expect(coef.d).toBe(1n);
+	});
+
+	test('sin(3π/2) = -1', () => {
+		const result = normalize(fn('sin', div(piTimes(num('3')), num('2'))));
+		expect(result.numerator.length).toBe(1);
+		const coef = result.numerator[0].coefficient.terms[0].rational;
+		expect(coef.n).toBe(-1n);
+		expect(coef.d).toBe(1n);
+	});
+
+	test('sin(2π) = 0', () => {
+		const result = normalize(fn('sin', piTimes(num('2'))));
+		expect(result.hash).toBe('0');
+	});
+});
+
+describe('Cosine Remarkable Values', () => {
+	test('cos(0) = 1', () => {
+		const result = normalize(fn('cos', num('0')));
+		expect(result.numerator.length).toBe(1);
+		const coef = result.numerator[0].coefficient.terms[0].rational;
+		expect(coef.n).toBe(1n);
+		expect(coef.d).toBe(1n);
+	});
+
+	test('cos(π/6) = √3/2', () => {
+		const result = normalize(fn('cos', div(greek('pi'), num('6'))));
+		// √3/2 is represented as √3 / 2 (fraction form)
+		expect(result.numerator.length).toBe(1);
+		const numTerm = result.numerator[0].coefficient.terms[0];
+		expect(numTerm.rational.n).toBe(1n);
+		expect(numTerm.rational.d).toBe(1n);
+		expect(numTerm.radicals.length).toBe(1);
+		expect(numTerm.radicals[0].radicand).toBe(3n);
+		// Denominator is 2
+		expect(result.denominator.length).toBe(1);
+		expect(result.denominator[0].coefficient.terms[0].rational.n).toBe(2n);
+	});
+
+	test('cos(π/4) = √2/2', () => {
+		const result = normalize(fn('cos', div(greek('pi'), num('4'))));
+		// √2/2 is represented as √2 / 2 (fraction form)
+		expect(result.numerator.length).toBe(1);
+		const numTerm = result.numerator[0].coefficient.terms[0];
+		expect(numTerm.rational.d).toBe(1n);
+		expect(numTerm.radicals.length).toBe(1);
+		expect(numTerm.radicals[0].radicand).toBe(2n);
+		// Denominator is 2
+		expect(result.denominator.length).toBe(1);
+		expect(result.denominator[0].coefficient.terms[0].rational.n).toBe(2n);
+	});
+
+	test('cos(π/3) = 1/2', () => {
+		const result = normalize(fn('cos', div(greek('pi'), num('3'))));
+		expect(result.numerator.length).toBe(1);
+		const coef = result.numerator[0].coefficient.terms[0].rational;
+		expect(coef.n).toBe(1n);
+		expect(coef.d).toBe(2n);
+	});
+
+	test('cos(π/2) = 0', () => {
+		const result = normalize(fn('cos', div(greek('pi'), num('2'))));
+		expect(result.hash).toBe('0');
+	});
+
+	test('cos(π) = -1', () => {
+		const result = normalize(fn('cos', greek('pi')));
+		expect(result.numerator.length).toBe(1);
+		const coef = result.numerator[0].coefficient.terms[0].rational;
+		expect(coef.n).toBe(-1n);
+		expect(coef.d).toBe(1n);
+	});
+
+	test('cos(2π) = 1', () => {
+		const result = normalize(fn('cos', piTimes(num('2'))));
+		expect(result.numerator.length).toBe(1);
+		const coef = result.numerator[0].coefficient.terms[0].rational;
+		expect(coef.n).toBe(1n);
+		expect(coef.d).toBe(1n);
+	});
+});
+
+describe('Tangent Remarkable Values', () => {
+	test('tan(0) = 0', () => {
+		const result = normalize(fn('tan', num('0')));
+		expect(result.hash).toBe('0');
+	});
+
+	test('tan(π/4) = 1', () => {
+		const result = normalize(fn('tan', div(greek('pi'), num('4'))));
+		expect(result.numerator.length).toBe(1);
+		const coef = result.numerator[0].coefficient.terms[0].rational;
+		expect(coef.n).toBe(1n);
+		expect(coef.d).toBe(1n);
+	});
+
+	test('tan(π) = 0', () => {
+		const result = normalize(fn('tan', greek('pi')));
+		expect(result.hash).toBe('0');
+	});
+
+	test('tan(2π) = 0', () => {
+		const result = normalize(fn('tan', piTimes(num('2'))));
+		expect(result.hash).toBe('0');
+	});
+});
+
+describe('Logarithm Remarkable Values', () => {
+	test('ln(1) = 0', () => {
+		const result = normalize(fn('ln', num('1')));
+		expect(result.hash).toBe('0');
+	});
+
+	test('ln(e) = 1', () => {
+		const result = normalize(fn('ln', variable('e')));
+		expect(result.numerator.length).toBe(1);
+		const coef = result.numerator[0].coefficient.terms[0].rational;
+		expect(coef.n).toBe(1n);
+		expect(coef.d).toBe(1n);
+	});
+
+	test('log(1) = 0', () => {
+		const result = normalize(fn('log', num('1')));
+		expect(result.hash).toBe('0');
+	});
+});
+
+describe('Exponential Remarkable Values', () => {
+	test('exp(0) = 1', () => {
+		const result = normalize(fn('exp', num('0')));
+		expect(result.numerator.length).toBe(1);
+		const coef = result.numerator[0].coefficient.terms[0].rational;
+		expect(coef.n).toBe(1n);
+		expect(coef.d).toBe(1n);
+	});
+
+	test('exp(1) = e', () => {
+		const result = normalize(fn('exp', num('1')));
+		expect(result.numerator.length).toBe(1);
+		expect(result.numerator[0].monomial.length).toBe(1);
+		expect(result.numerator[0].monomial[0].base.type).toBe('variable');
+		expect((result.numerator[0].monomial[0].base as { name: string }).name).toBe('e');
+	});
+});
