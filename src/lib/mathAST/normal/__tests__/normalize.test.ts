@@ -596,34 +596,31 @@ describe('Sine Remarkable Values', () => {
 
 	test('sin(π/4) = √2/2', () => {
 		const result = normalize(fn('sin', div(greek('pi'), num('4'))));
-		// √2/2 is represented as √2 / 2 (fraction form)
+		// √2/2 is now normalized as (1/2)√2 with no denominator
 		expect(result.numerator.length).toBe(1);
 		const numTerm = result.numerator[0].coefficient.terms[0];
 		expect(numTerm.rational.n).toBe(1n);
-		expect(numTerm.rational.d).toBe(1n);
+		expect(numTerm.rational.d).toBe(2n); // Coefficient is 1/2
 		expect(numTerm.radicals.length).toBe(1);
 		expect(numTerm.radicals[0].radicand).toBe(2n);
 		expect(numTerm.radicals[0].index).toBe(2n);
-		// Denominator is 2
+		// Denominator is 1 (simplified)
 		expect(result.denominator.length).toBe(1);
-		const denTerm = result.denominator[0].coefficient.terms[0];
-		expect(denTerm.rational.n).toBe(2n);
-		expect(denTerm.rational.d).toBe(1n);
+		expect(result.denominator[0].coefficient.terms[0].rational.n).toBe(1n);
 	});
 
 	test('sin(π/3) = √3/2', () => {
 		const result = normalize(fn('sin', div(greek('pi'), num('3'))));
-		// √3/2 is represented as √3 / 2 (fraction form)
+		// √3/2 is now normalized as (1/2)√3 with no denominator
 		expect(result.numerator.length).toBe(1);
 		const numTerm = result.numerator[0].coefficient.terms[0];
 		expect(numTerm.rational.n).toBe(1n);
-		expect(numTerm.rational.d).toBe(1n);
+		expect(numTerm.rational.d).toBe(2n); // Coefficient is 1/2
 		expect(numTerm.radicals.length).toBe(1);
 		expect(numTerm.radicals[0].radicand).toBe(3n);
-		// Denominator is 2
+		// Denominator is 1 (simplified)
 		expect(result.denominator.length).toBe(1);
-		const denTerm = result.denominator[0].coefficient.terms[0];
-		expect(denTerm.rational.n).toBe(2n);
+		expect(result.denominator[0].coefficient.terms[0].rational.n).toBe(1n);
 	});
 
 	test('sin(π/2) = 1', () => {
@@ -672,29 +669,29 @@ describe('Cosine Remarkable Values', () => {
 
 	test('cos(π/6) = √3/2', () => {
 		const result = normalize(fn('cos', div(greek('pi'), num('6'))));
-		// √3/2 is represented as √3 / 2 (fraction form)
+		// √3/2 is now normalized as (1/2)√3 with no denominator
 		expect(result.numerator.length).toBe(1);
 		const numTerm = result.numerator[0].coefficient.terms[0];
 		expect(numTerm.rational.n).toBe(1n);
-		expect(numTerm.rational.d).toBe(1n);
+		expect(numTerm.rational.d).toBe(2n); // Coefficient is 1/2
 		expect(numTerm.radicals.length).toBe(1);
 		expect(numTerm.radicals[0].radicand).toBe(3n);
-		// Denominator is 2
+		// Denominator is 1 (simplified)
 		expect(result.denominator.length).toBe(1);
-		expect(result.denominator[0].coefficient.terms[0].rational.n).toBe(2n);
+		expect(result.denominator[0].coefficient.terms[0].rational.n).toBe(1n);
 	});
 
 	test('cos(π/4) = √2/2', () => {
 		const result = normalize(fn('cos', div(greek('pi'), num('4'))));
-		// √2/2 is represented as √2 / 2 (fraction form)
+		// √2/2 is now normalized as (1/2)√2 with no denominator
 		expect(result.numerator.length).toBe(1);
 		const numTerm = result.numerator[0].coefficient.terms[0];
-		expect(numTerm.rational.d).toBe(1n);
+		expect(numTerm.rational.d).toBe(2n); // Coefficient is 1/2
 		expect(numTerm.radicals.length).toBe(1);
 		expect(numTerm.radicals[0].radicand).toBe(2n);
-		// Denominator is 2
+		// Denominator is 1 (simplified)
 		expect(result.denominator.length).toBe(1);
-		expect(result.denominator[0].coefficient.terms[0].rational.n).toBe(2n);
+		expect(result.denominator[0].coefficient.terms[0].rational.n).toBe(1n);
 	});
 
 	test('cos(π/3) = 1/2', () => {
@@ -3106,6 +3103,95 @@ describe('Symbolic Sqrt Simplification', () => {
 			const result = normalize(expr);
 			// Result should be x/3 (simplified to coefficient 1/3)
 			expect(result.numerator[0].coefficient.terms[0].rational).toEqual({ n: 1n, d: 3n });
+		});
+	});
+
+	describe('Rationalization by conjugate: 1/(a+b√n) → (a-b√n)/(a²-b²n)', () => {
+		test('1/(1+√2) = √2-1', () => {
+			// Conjugate: (1-√2), Product: 1-2 = -1
+			// Result: (1-√2)/(-1) = √2-1
+			const expr = div(num('1'), add(num('1'), sqrt(num('2'))));
+			const expected = sub(sqrt(num('2')), num('1'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('1/(1-√2) = -1-√2', () => {
+			// Conjugate: (1+√2), Product: 1-2 = -1
+			// Result: (1+√2)/(-1) = -1-√2
+			const expr = div(num('1'), sub(num('1'), sqrt(num('2'))));
+			const expected = opposite(add(num('1'), sqrt(num('2'))));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('1/(√3-√2) = √3+√2', () => {
+			// Conjugate: (√3+√2), Product: 3-2 = 1
+			// Result: √3+√2
+			const expr = div(num('1'), sub(sqrt(num('3')), sqrt(num('2'))));
+			const expected = add(sqrt(num('3')), sqrt(num('2')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('1/(√2+√3) = √3-√2', () => {
+			// Conjugate: (√2-√3), Product: 2-3 = -1
+			// Result: (√2-√3)/(-1) = √3-√2
+			const expr = div(num('1'), add(sqrt(num('2')), sqrt(num('3'))));
+			const expected = sub(sqrt(num('3')), sqrt(num('2')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('2/(3+√5) = (3-√5)/2', () => {
+			// Conjugate: (3-√5), Product: 9-5 = 4
+			// Result: 2(3-√5)/4 = (3-√5)/2
+			const expr = div(num('2'), add(num('3'), sqrt(num('5'))));
+			const expected = div(sub(num('3'), sqrt(num('5'))), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('x/(1+√2) = x(√2-1)', () => {
+			// x(1-√2)/(1-2) = x(1-√2)/(-1) = x(√2-1)
+			const expr = div(variable('x'), add(num('1'), sqrt(num('2'))));
+			const expected = mul(variable('x'), sub(sqrt(num('2')), num('1')));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('(x+1)/(√3-√2) = (x+1)(√3+√2)', () => {
+			// Conjugate: (√3+√2), Product: 3-2 = 1
+			const expr = div(add(variable('x'), num('1')), sub(sqrt(num('3')), sqrt(num('2'))));
+			const expected = mul(add(variable('x'), num('1')), add(sqrt(num('3')), sqrt(num('2'))));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('√2/(1+√3) = (√6-√2)/2', () => {
+			// √2(1-√3)/(-2) = √2(√3-1)/2 = (√6-√2)/2
+			const expr = div(sqrt(num('2')), add(num('1'), sqrt(num('3'))));
+			const expected = div(sub(sqrt(num('6')), sqrt(num('2'))), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		test('3/(2-√2) = (3(2+√2))/2 = 3+3√2/2', () => {
+			// Conjugate: (2+√2), Product: 4-2 = 2
+			// Result: 3(2+√2)/2 = (6+3√2)/2
+			const expr = div(num('3'), sub(num('2'), sqrt(num('2'))));
+			const expected = div(add(num('6'), mul(num('3'), sqrt(num('2')))), num('2'));
+			expect(normalize(expr).hash).toBe(normalize(expected).hash);
+		});
+
+		// Edge cases that should NOT be rationalized
+		test('1/(x+√2) stays as fraction (variable in denominator)', () => {
+			const expr = div(num('1'), add(variable('x'), sqrt(num('2'))));
+			const result = normalize(expr);
+			// Should still have non-trivial denominator with 2 terms
+			expect(result.denominator.length).toBe(2);
+		});
+
+		test('1/(1+√2+√3) stays as fraction (3 terms)', () => {
+			const expr = div(num('1'), add(add(num('1'), sqrt(num('2'))), sqrt(num('3'))));
+			const result = normalize(expr);
+			// Should still have non-trivial denominator (contains radicals, not simplified to 1)
+			// The denominator is a single NormalTerm with 3 AlgebraicTerms in its coefficient
+			const denTerm = result.denominator[0];
+			expect(denTerm.coefficient.terms.length).toBe(3); // 1, √2, √3
+			expect(denTerm.coefficient.terms.some((t) => t.radicals.length > 0)).toBe(true);
 		});
 	});
 

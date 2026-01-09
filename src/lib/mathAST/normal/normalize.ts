@@ -19,6 +19,9 @@ import { StepRecorder, getRuleDescription } from './step-recorder.js';
 import {
 	ALGEBRAIC_ONE,
 	algebraicFromRational,
+	addAlgebraic,
+	subAlgebraic,
+	negAlgebraic,
 	mulAlgebraic,
 	algebraicFromRadical,
 	divAlgebraic,
@@ -254,6 +257,124 @@ function rationalizeDenominator(
 	return { numerator: newNumerator, denominator: newDenominator };
 }
 
+// =============================================================================
+// Rationalization by Conjugate - For binomial denominators with radicals
+// =============================================================================
+
+/**
+ * Checks if an AlgebraicCoefficient is a pure rational (no radicals, no imaginary).
+ */
+function isPureRationalCoeff(coeff: import('./types').AlgebraicCoefficient): boolean {
+	if (coeff.terms.length === 0) return true; // Zero is rational
+	if (coeff.terms.length !== 1) return false;
+	const term = coeff.terms[0];
+	return term.radicals.length === 0 && term.hasImaginaryUnit !== true;
+}
+
+/**
+ * Attempts to rationalize a binomial denominator containing square roots
+ * by multiplying by the conjugate.
+ *
+ * For denominator (a + b) where a and/or b contain √:
+ * - Conjugate: (a - b)
+ * - Product: (a + b)(a - b) = a² - b²
+ *
+ * Works when the result a² - b² is rational (no remaining radicals).
+ *
+ * @example
+ * 1/(1 + √2):
+ *   Conjugate = (1 - √2)
+ *   Product = 1² - (√2)² = 1 - 2 = -1
+ *   Result = (1 - √2)/(-1) = √2 - 1
+ *
+ * 1/(√3 - √2):
+ *   Conjugate = (√3 + √2)
+ *   Product = (√3)² - (√2)² = 3 - 2 = 1
+ *   Result = √3 + √2
+ *
+ * @param numerator - The numerator polynomial
+ * @param denominator - The denominator polynomial
+ * @returns Rationalized fraction, or null if not applicable
+ */
+function rationalizeByConjugate(
+	numerator: NormalTerm[],
+	denominator: NormalTerm[]
+): { numerator: NormalTerm[]; denominator: NormalTerm[] } | null {
+	// The denominator must be a single NormalTerm with empty monomial (pure algebraic)
+	// and its coefficient must have exactly 2 AlgebraicTerms (binomial like 1+√2)
+	if (denominator.length !== 1) return null;
+
+	const denTerm = denominator[0];
+
+	// Must have empty monomial (no variables)
+	if (denTerm.monomial.length !== 0) return null;
+
+	// Must have exactly 2 AlgebraicTerms in the coefficient
+	if (denTerm.coefficient.terms.length !== 2) return null;
+
+	const [algTerm1, algTerm2] = denTerm.coefficient.terms;
+
+	// At least one must contain radicals
+	const hasRadical1 = algTerm1.radicals.length > 0;
+	const hasRadical2 = algTerm2.radicals.length > 0;
+
+	if (!hasRadical1 && !hasRadical2) {
+		return null; // Both pure rational - not applicable here
+	}
+
+	// All radicals must be square roots (index = 2)
+	for (const radical of algTerm1.radicals) {
+		if (radical.index !== 2n) return null;
+	}
+	for (const radical of algTerm2.radicals) {
+		if (radical.index !== 2n) return null;
+	}
+
+	// Wrap each AlgebraicTerm in an AlgebraicCoefficient for computation
+	const coeff1: import('./types').AlgebraicCoefficient = { terms: [algTerm1] };
+	const coeff2: import('./types').AlgebraicCoefficient = { terms: [algTerm2] };
+
+	// Compute conjugate: (coeff1 - coeff2)
+	const negCoeff2 = negAlgebraic(coeff2);
+	const conjugateCoeff = addAlgebraic(coeff1, negCoeff2);
+
+	// Compute product: coeff1² - coeff2² = (a+b)(a-b) formula result
+	const coeff1Squared = mulAlgebraic(coeff1, coeff1);
+	const coeff2Squared = mulAlgebraic(coeff2, coeff2);
+	const newDenomCoeff = subAlgebraic(coeff1Squared, coeff2Squared);
+
+	// Verify result is pure rational
+	if (!isPureRationalCoeff(newDenomCoeff)) {
+		return null; // Rationalization didn't eliminate all radicals
+	}
+
+	// Check for zero denominator (shouldn't happen with valid input)
+	if (newDenomCoeff.terms.length === 0) {
+		return null; // Would be division by zero
+	}
+
+	// Build conjugate polynomial (single term with conjugate coefficient)
+	const conjugatePoly: NormalTerm[] = [
+		{
+			coefficient: conjugateCoeff,
+			monomial: EMPTY_MONOMIAL
+		}
+	];
+
+	// Multiply numerator by conjugate
+	const newNumerator = mulPolynomials(numerator, conjugatePoly);
+
+	// New denominator is single rational term
+	const newDenominator: NormalTerm[] = [
+		{
+			coefficient: newDenomCoeff,
+			monomial: EMPTY_MONOMIAL
+		}
+	];
+
+	return { numerator: newNumerator, denominator: newDenominator };
+}
+
 /**
  * Creates a NormalForm from a polynomial (denominator = 1).
  */
@@ -409,6 +530,19 @@ function normalFormFromFraction(numerator: NormalTerm[], denominator: NormalTerm
 	// After rationalization, check if denominator became 1
 	if (isOnePolynomial(reducedDenominator)) {
 		return normalFormFromPolynomial(reducedNumerator);
+	}
+
+	// Rationalize by conjugate: clear radicals from binomial denominators
+	// e.g., 1/(1+√2) → (1-√2)/(1-2) = √2-1
+	const conjugateRationalized = rationalizeByConjugate(reducedNumerator, reducedDenominator);
+	if (conjugateRationalized !== null) {
+		// After rationalization, the denominator is now a pure rational (no radicals)
+		// Recursively call normalFormFromFraction to apply remaining simplifications
+		// like division by constant denominator and GCD reduction
+		return normalFormFromFraction(
+			conjugateRationalized.numerator,
+			conjugateRationalized.denominator
+		);
 	}
 
 	const form: NormalForm = {
