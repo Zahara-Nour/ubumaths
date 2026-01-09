@@ -75,12 +75,14 @@ interface SimplifiedRadical {
 	readonly index: bigint; // e.g., 2n for square root, 3n for cube root
 }
 
-// Algebraic term: rational coefficient × product of radicals
+// Algebraic term: rational coefficient × product of radicals × optional i
 // Example: 3√2 = { rational: 3, radicals: [√2] }
 // Example: √6 = { rational: 1, radicals: [√6] } (result of √2 × √3)
+// Example: 3i = { rational: 3, radicals: [], hasImaginaryUnit: true }
 interface AlgebraicTerm {
 	readonly rational: Rational;
 	readonly radicals: readonly SimplifiedRadical[];
+	readonly hasImaginaryUnit?: boolean; // Support for complex numbers
 }
 
 // Algebraic coefficient: SUM of algebraic terms
@@ -174,6 +176,33 @@ Terms with different radicals but same monomial are combined:
 // 3√2·x + 2√2·x = 5√2·x
 // Same radical signature → coefficients are added
 ```
+
+### Complex Number Support
+
+The `hasImaginaryUnit` field enables complex number arithmetic:
+
+```typescript
+// 3i as an AlgebraicTerm
+{ rational: { n: 3n, d: 1n }, radicals: [], hasImaginaryUnit: true }
+
+// √2·i
+{ rational: { n: 1n, d: 1n }, radicals: [{ radicand: 2n, index: 2n }], hasImaginaryUnit: true }
+
+// Multiplication: i × i = -1
+mulAlgebraic(i_coeff, i_coeff);
+// Result: { terms: [{ rational: { n: -1n, d: 1n }, radicals: [] }] }
+
+// Real and imaginary parts stay separate
+// 3 + 2i is represented as two AlgebraicTerms in one coefficient:
+{
+  terms: [
+    { rational: { n: 3n, d: 1n }, radicals: [] },                    // real: 3
+    { rational: { n: 2n, d: 1n }, radicals: [], hasImaginaryUnit: true } // imag: 2i
+  ]
+}
+```
+
+**Note**: Terms with different `hasImaginaryUnit` flags cannot be combined (different signatures).
 
 ## Normalization API
 
@@ -501,20 +530,148 @@ simplify('2a + 3b - a'); // "a + 3b"
 simplify('(x+1)^2 - x^2'); // "2x + 1"
 ```
 
-## Limitations
+## Pre-Simplification Rules
 
-Not all expressions can be normalized:
+Before normalization, expressions are simplified using rule sets applied iteratively until a fixed point.
+
+### Transcendental Simplification
+
+Known values for trigonometric, logarithmic, and exponential functions:
 
 ```typescript
-// Works: polynomials, rational expressions
+import {
+	simplifyTranscendental,
+	simplifyTrig,
+	simplifyLog,
+	simplifyExp
+} from '$lib/mathAST/normal';
+
+// Trigonometric values (valeurs remarquables)
+// sin(0) = 0, sin(π/6) = 1/2, sin(π/4) = √2/2, sin(π/3) = √3/2, sin(π/2) = 1
+// cos(0) = 1, cos(π/6) = √3/2, cos(π/4) = √2/2, cos(π/3) = 1/2, cos(π/2) = 0
+// tan(0) = 0, tan(π/4) = 1, tan(π) = 0
+
+simplifyTrig(parseLatex('\\sin(0)')); // → 0
+simplifyTrig(parseLatex('\\cos(\\pi)')); // → -1
+simplifyTrig(parseLatex('\\sin(\\frac{\\pi}{6})')); // → 1/2
+
+// Logarithm identities
+// ln(1) = 0, ln(e) = 1, log(1) = 0, log(10) = 1, log_b(b) = 1
+
+simplifyLog(parseLatex('\\ln(1)')); // → 0
+simplifyLog(parseLatex('\\ln(e)')); // → 1
+simplifyLog(parseLatex('\\log(10)')); // → 1
+
+// Exponential identities
+// exp(0) = 1, exp(1) = e, e^0 = 1, e^1 = e
+
+simplifyExp(parseLatex('e^0')); // → 1
+simplifyExp(parseLatex('\\exp(0)')); // → 1
+```
+
+### Exponential of Linear Combinations of Logarithms
+
+The normalizer detects linear combinations of logarithms inside `exp` and converts them to products of powers:
+
+```
+exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ
+```
+
+```typescript
+// Basic scalar multiples
+normalize(parseLatex('\\exp(2\\ln(x))')); // → x²
+normalize(parseLatex('\\exp(3\\ln(2))')); // → 8
+
+// Sums and differences
+normalize(parseLatex('\\exp(\\ln(x) + \\ln(y))')); // → xy
+normalize(parseLatex('\\exp(\\ln(x) - \\ln(y))')); // → x/y
+
+// Negative exponents become divisions
+normalize(parseLatex('\\exp(-\\ln(x))')); // → 1/x
+normalize(parseLatex('\\exp(-2\\ln(x))')); // → 1/x²
+
+// Self-cancellation
+normalize(parseLatex('\\exp(\\ln(x) - \\ln(x))')); // → 1
+
+// Fractional exponents (if supported)
+normalize(parseLatex('\\exp(\\frac{1}{2}\\ln(x))')); // → √x
+```
+
+### Simplification Pipeline
+
+The `simplify` function applies 4 rule sets iteratively:
+
+```typescript
+import { simplify, simplifyOnce, simplifyWithSteps } from '$lib/mathAST/normal';
+
+// Full simplification (iterates until fixed point)
+const simplified = simplify(ast);
+
+// Single pass (apply each rule set once)
+const onePass = simplifyOnce(ast);
+
+// With step recording (for educational display)
+const { result, steps } = simplifyWithSteps(ast);
+```
+
+Rule application order:
+
+1. **Arithmetic**: `0+x=x`, `1·x=x`, `x^0=1`, `x/1=x`, constant folding
+2. **Powers**: `x^a·x^b=x^(a+b)`, `(x^a)^b=x^(ab)`, `(xy)^n=x^n·y^n`
+3. **Radicals**: `√(a)·√(b)=√(ab)`, `√(n²)=n`, `√0=0`, `√1=1`
+4. **Transcendental**: Trig values, log identities, exp identities
+
+## Limitations
+
+### What Works
+
+```typescript
+// Polynomials
 normalize(parseLatex('x^2 + 2x + 1')); // OK
+
+// Rational expressions
 normalize(parseLatex('(x+1)/(x-1)')); // OK
 
-// Limited: transcendental functions
-normalize(parseLatex('sin(x)')); // treated as variable
+// Radicals with numeric radicands
+normalize(parseLatex('\\sqrt{18}')); // → 3√2
 
-// Complex: nested radicals
-normalize(parseLatex('sqrt(sqrt(x))')); // limited simplification
+// Complex numbers
+normalize(parseLatex('(1+i)(1-i)')); // → 2
+
+// Transcendental at known values
+normalize(parseLatex('\\sin(0) + 1')); // → 1
+```
+
+### Current Limitations
+
+```typescript
+// Transcendental functions at unknown values → treated as opaque
+normalize(parseLatex('sin(x)')); // sin(x) as SymbolicFactor, not simplified
+
+// Function composition (f ∘ g) → treated as opaque SymbolicFactor
+// Node type 'composition' is supported but not algebraically simplified
+
+// Nested radicals → limited simplification
+normalize(parseLatex('sqrt(sqrt(x))')); // √(√x), not x^(1/4)
+
+// Polynomial powers require integer exponents
+normalize(parseLatex('(x+1)^{1/2}')); // (x+1)^(1/2) as opaque, not expanded
+
+// Full polynomial GCD not implemented
+// Only monomial GCD is extracted from fractions
+normalize(parseLatex('(x^2-1)/(x-1)')); // Does NOT simplify to x+1
+
+// exp(complex expression) → may remain opaque if not a linear combination of ln
+normalize(parseLatex('\\exp(\\ln(x)^2)')); // exp(ln(x)²), not simplified
+```
+
+**Note**: Numeric fraction equivalence IS supported:
+
+```typescript
+// Numeric fractions are properly reduced
+nodesEqual(parseLatex('6/9'), parseLatex('2/3')); // true
+nodesEqual(parseLatex('-4/8'), parseLatex('-1/2')); // true
+nodesEqual(parseLatex('15/-25'), parseLatex('-3/5')); // true
 ```
 
 For symbolic manipulation beyond polynomials, use [Pattern Matching](./patterns.md).

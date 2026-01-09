@@ -208,6 +208,43 @@ const { result, steps } = simplifyWithSteps(ast);
 
 Descriptions en francais pour affichage educatif.
 
+## Regles Transcendantales Avancees
+
+### exp(combinaison lineaire de ln) = produit de puissances
+
+La normalisation detecte les combinaisons lineaires de logarithmes dans l'argument de `exp` et les convertit en produits de puissances :
+
+```
+exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ
+```
+
+**Exemples** :
+
+| Expression           | Resultat |
+| -------------------- | -------- |
+| `exp(2·ln(x))`       | `x²`     |
+| `exp(ln(x) + ln(y))` | `x·y`    |
+| `exp(ln(x) - ln(y))` | `x/y`    |
+| `exp(-ln(x))`        | `1/x`    |
+| `exp(3·ln(2))`       | `8`      |
+| `exp(ln(x) - ln(x))` | `1`      |
+| `exp((1/2)·ln(x))`   | `√x`     |
+
+**Algorithme** (`extractLinearCombinationOfLn`) :
+
+1. Verifier que `denominator = 1`
+2. Pour chaque terme du numerator :
+   - Coefficient = rationnel pur (pas de radicaux, pas d'imaginaire)
+   - Monomial = exactement un facteur avec exposant 1
+   - Base du facteur = fonction `ln(...)`
+3. Si tous les criteres sont satisfaits, extraire `(aᵢ, xᵢ)` pour chaque terme
+4. Construire `Π xᵢ^aᵢ` via `buildPowerNode` (gere les exposants negatifs -> divisions)
+
+**Cas speciaux** :
+
+- Termes qui s'annulent (`ln(x) - ln(x)`) : retourne `1` (exp(0) = 1)
+- Exposants negatifs : genere des divisions (`x^(-2)` -> `1/x²`)
+
 ## Ecarts Documentation vs Code
 
 ### Non documente

@@ -410,6 +410,110 @@ function extractProductFactors(form: NormalForm): MathNode[] {
 }
 
 // =============================================================================
+// Exponential of Linear Combination of Logarithms
+// =============================================================================
+
+/**
+ * Extracts a linear combination of logarithms from a NormalForm.
+ * Returns array of { base: MathNode, coeff: Rational } or null if not a pure linear combination.
+ *
+ * For example, 2·ln(x) + 3·ln(y) → [{ base: x, coeff: 2 }, { base: y, coeff: 3 }]
+ *
+ * This is used for the rule: exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ
+ */
+function extractLinearCombinationOfLn(
+	form: NormalForm
+): { base: MathNode; coeff: Rational }[] | null {
+	// Denominator must be 1
+	if (!isOnePolynomial(form.denominator)) return null;
+
+	// Empty numerator = 0, which is valid (exp(0) = 1)
+	if (form.numerator.length === 0) return [];
+
+	const result: { base: MathNode; coeff: Rational }[] = [];
+
+	for (const term of form.numerator) {
+		// Coefficient must be pure rational (no radicals, no imaginary)
+		if (term.coefficient.terms.length !== 1) return null;
+		const coeffTerm = term.coefficient.terms[0];
+		if (coeffTerm.radicals.length !== 0) return null;
+		if (coeffTerm.hasImaginaryUnit) return null;
+
+		// Monomial must have exactly one factor with exponent 1
+		if (term.monomial.length !== 1) return null;
+		const factor = term.monomial[0];
+		if (factor.exponent.n !== 1n || factor.exponent.d !== 1n) return null;
+
+		// The base must be a ln function
+		const base = factor.base;
+		if (base.type !== 'function') return null;
+		if ((base as { name?: string }).name !== 'ln') return null;
+		const args = (base as { args?: MathNode[] }).args;
+		if (!args || args.length !== 1) return null;
+
+		// Extract the argument of ln and the coefficient
+		result.push({
+			base: args[0],
+			coeff: coeffTerm.rational
+		});
+	}
+
+	return result;
+}
+
+/**
+ * Builds a MathNode representing base^(n/d).
+ * For negative exponents, creates 1/base^|n/d| to ensure proper normalization.
+ */
+function buildPowerNode(base: MathNode, exponent: Rational): MathNode {
+	// x^0 = 1
+	if (exponent.n === 0n) {
+		return { type: 'number', value: '1' };
+	}
+
+	// x^1 = x
+	if (exponent.n === 1n && exponent.d === 1n) {
+		return base;
+	}
+
+	// x^(-1) = 1/x
+	if (exponent.n === -1n && exponent.d === 1n) {
+		return {
+			type: 'division',
+			numerator: { type: 'number', value: '1' },
+			denominator: base
+		};
+	}
+
+	// For negative exponents: x^(-n/d) = 1 / x^(n/d)
+	if (exponent.n < 0n) {
+		const positiveExp: Rational = { n: -exponent.n, d: exponent.d };
+		const positivePower = buildPowerNode(base, positiveExp);
+		return {
+			type: 'division',
+			numerator: { type: 'number', value: '1' },
+			denominator: positivePower
+		};
+	}
+
+	// Build exponent node for positive exponents
+	const expNode: MathNode =
+		exponent.d === 1n
+			? { type: 'number', value: exponent.n.toString() }
+			: {
+					type: 'division',
+					numerator: { type: 'number', value: exponent.n.toString() },
+					denominator: { type: 'number', value: exponent.d.toString() }
+				};
+
+	return {
+		type: 'superscript',
+		base: base,
+		superscript: expNode
+	};
+}
+
+// =============================================================================
 // Main Normalization Algorithm
 // =============================================================================
 
@@ -1217,6 +1321,23 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 		// exp(1) = e
 		if (isIntegerValue(argForm, 1n)) {
 			return normalizeNode({ type: 'variable', name: 'e' });
+		}
+
+		// exp(linear combination of ln) = product of powers
+		// exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ
+		const lnTerms = extractLinearCombinationOfLn(argForm);
+		if (lnTerms !== null) {
+			// All terms cancelled out: exp(0) = 1
+			if (lnTerms.length === 0) {
+				return ONE_NORMAL_FORM;
+			}
+			let result = ONE_NORMAL_FORM;
+			for (const { base, coeff } of lnTerms) {
+				const powerNode = buildPowerNode(base, coeff);
+				const powerForm = normalizeNode(powerNode);
+				result = mulNormalForms(result, powerForm);
+			}
+			return result;
 		}
 
 		return normalizeOpaqueNode(canonicalNode);
