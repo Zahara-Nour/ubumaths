@@ -530,27 +530,9 @@ simplify('2a + 3b - a'); // "a + 3b"
 simplify('(x+1)^2 - x^2'); // "2x + 1"
 ```
 
-## Pre-Simplification Rules
+## Transcendental Functions
 
-Before normalization, expressions are simplified using rule sets applied iteratively until a fixed point.
-
-### Transcendental Simplification
-
-Known values for trigonometric, logarithmic, and exponential functions:
-
-```typescript
-import {
-	simplifyTranscendental,
-	simplifyTrig,
-	simplifyLog,
-	simplifyExp
-} from '$lib/mathAST/normal';
-
-// Trigonometric values (valeurs remarquables)
-simplifyTrig(parseLatex('\\sin(0)')); // → 0
-simplifyTrig(parseLatex('\\cos(\\pi)')); // → -1
-simplifyTrig(parseLatex('\\sin(\\frac{\\pi}{6})')); // → 1/2
-```
+Transcendental functions (sin, cos, tan, ln, log, exp) are evaluated during normalization when their arguments are recognized patterns.
 
 ### Trigonometric Values (Complete Table)
 
@@ -588,19 +570,23 @@ normalize(parseLatex('\\sin(\\frac{\\pi}{4})')); // → √2/2
 normalize(parseLatex('\\cos(\\frac{2\\pi}{3})')); // → -1/2
 normalize(parseLatex('\\tan(\\frac{\\pi}{3})')); // → √3
 normalize(parseLatex('\\sin(\\frac{13\\pi}{6})')); // → 1/2 (reduced from 13π/6 to π/6)
+```
 
-// Logarithm identities
+### Logarithm Identities
+
+```typescript
 // ln(1) = 0, ln(e) = 1, log(1) = 0, log(10) = 1, log_b(b) = 1
+normalize(parseLatex('\\ln(1)')); // → 0
+normalize(parseLatex('\\ln(e)')); // → 1
+normalize(parseLatex('\\log(10)')); // → 1
+```
 
-simplifyLog(parseLatex('\\ln(1)')); // → 0
-simplifyLog(parseLatex('\\ln(e)')); // → 1
-simplifyLog(parseLatex('\\log(10)')); // → 1
+### Exponential Identities
 
-// Exponential identities
+```typescript
 // exp(0) = 1, exp(1) = e, e^0 = 1, e^1 = e
-
-simplifyExp(parseLatex('e^0')); // → 1
-simplifyExp(parseLatex('\\exp(0)')); // → 1
+normalize(parseLatex('e^0')); // → 1
+normalize(parseLatex('\\exp(0)')); // → 1
 ```
 
 ### Inverse Function Rules
@@ -749,7 +735,22 @@ normalize(parseLatex('\\ln(\\exp(x)\\cdot\\exp(y))')); // → x + y (via ln prod
 
 ### Simplification Pipeline
 
-The `simplify` function applies 4 rule sets iteratively:
+The normalization process has two phases:
+
+**Phase 1: Pre-simplification** (`simplify` function)
+
+Applies 3 rule sets iteratively until fixed point:
+
+1. **Arithmetic**: `0+x=x`, `1·x=x`, `x^0=1`, `x/1=x`, constant folding
+2. **Powers**: `x^a·x^b=x^(a+b)`, `(x^a)^b=x^(ab)`, `(xy)^n=x^n·y^n`
+3. **Radicals**: `√(a)·√(b)=√(ab)`, `√(n²)=n`, `√0=0`, `√1=1`
+
+**Phase 2: Polynomial normalization** (`normalizeNode` function)
+
+Converts to canonical polynomial form and evaluates:
+
+- Transcendental functions (sin, cos, tan, ln, log, exp) at known values
+- Arguments are normalized before evaluation (e.g., `sin(x+x)` = `sin(2x)`)
 
 ```typescript
 import { simplify, simplifyOnce, simplifyWithSteps } from '$lib/mathAST/normal';
@@ -763,13 +764,6 @@ const onePass = simplifyOnce(ast);
 // With step recording (for educational display)
 const { result, steps } = simplifyWithSteps(ast);
 ```
-
-Rule application order:
-
-1. **Arithmetic**: `0+x=x`, `1·x=x`, `x^0=1`, `x/1=x`, constant folding
-2. **Powers**: `x^a·x^b=x^(a+b)`, `(x^a)^b=x^(ab)`, `(xy)^n=x^n·y^n`
-3. **Radicals**: `√(a)·√(b)=√(ab)`, `√(n²)=n`, `√0=0`, `√1=1`
-4. **Transcendental**: Trig values, log identities, exp identities
 
 ## Limitations
 

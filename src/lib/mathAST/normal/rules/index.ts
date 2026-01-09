@@ -18,13 +18,10 @@ export { applyPowerRules, simplifyPowers } from './powers.js';
 
 export { applyRadicalRules, simplifyRadicals } from './radicals.js';
 
-export { applyTranscendentalRules, simplifyTranscendental } from './transcendental.js';
-
 import type { MathNode } from '../../types';
 import { simplifyArithmetic } from './arithmetic.js';
 import { simplifyPowers } from './powers.js';
 import { simplifyRadicals } from './radicals.js';
-import { simplifyTranscendental } from './transcendental.js';
 import { hashMathNode } from '../hash.js';
 
 // =============================================================================
@@ -38,7 +35,9 @@ import { hashMathNode } from '../hash.js';
  * 1. Arithmetic rules (identity elements)
  * 2. Power rules (exponent manipulation)
  * 3. Radical rules (root simplification)
- * 4. Transcendental rules (trig, log, exp simplification)
+ *
+ * Note: Transcendental functions (trig, log, exp) are handled in Phase 2
+ * (normalizeNode) where arguments are normalized before evaluation.
  *
  * @param node - The node to simplify
  * @returns The simplified node
@@ -50,7 +49,6 @@ export function simplifyOnce(node: MathNode): MathNode {
 	result = simplifyArithmetic(result);
 	result = simplifyPowers(result);
 	result = simplifyRadicals(result);
-	result = simplifyTranscendental(result);
 
 	return result;
 }

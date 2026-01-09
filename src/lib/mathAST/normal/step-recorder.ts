@@ -180,7 +180,6 @@ export class StepRecorder {
 import { simplifyArithmetic } from './rules/arithmetic.js';
 import { simplifyPowers } from './rules/powers.js';
 import { simplifyRadicals } from './rules/radicals.js';
-import { simplifyTranscendental } from './rules/transcendental.js';
 
 /**
  * Applies all simplification rules once, recording steps.
@@ -213,12 +212,8 @@ export function simplifyOnceWithSteps(node: MathNode, recorder?: StepRecorder): 
 	}
 	result = afterRadicals;
 
-	// Apply transcendental rules
-	const afterTranscendental = simplifyTranscendental(result);
-	if (recorder) {
-		recorder.recordStep('transcendental', result, afterTranscendental);
-	}
-	result = afterTranscendental;
+	// Note: Transcendental functions (trig, log, exp) are handled in Phase 2
+	// (normalizeNode) where arguments are normalized before evaluation.
 
 	return result;
 }
