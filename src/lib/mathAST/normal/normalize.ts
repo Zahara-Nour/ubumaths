@@ -18,7 +18,8 @@ import {
 	ALGEBRAIC_ONE,
 	algebraicFromRational,
 	mulAlgebraic,
-	algebraicFromRadical
+	algebraicFromRadical,
+	divAlgebraic
 } from './algebraic';
 import {
 	ZERO_POLYNOMIAL,
@@ -135,6 +136,49 @@ function normalFormFromFraction(numerator: NormalTerm[], denominator: NormalTerm
 	// After reduction, check if denominator became 1
 	if (isOnePolynomial(reducedDenominator)) {
 		return normalFormFromPolynomial(reducedNumerator);
+	}
+
+	// Handle constant denominator: polynomial / constant → divide each term by constant
+	// This handles cases like (4x-6)/2 → 2x-3 or (x+1)/(-1) → -x-1
+	if (reducedDenominator.length === 1 && reducedDenominator[0].monomial.length === 0) {
+		const denCoeff = reducedDenominator[0].coefficient;
+		const denRational = getPureRationalCoeff(denCoeff);
+
+		if (denRational) {
+			// Try to divide all numerator terms by the constant denominator
+			const dividedTerms: NormalTerm[] = [];
+			let canDivideAll = true;
+
+			for (const term of reducedNumerator) {
+				const numRational = getPureRationalCoeff(term.coefficient);
+				if (numRational) {
+					// Pure rational coefficient: divide the rationals
+					const resultN = numRational.n * denRational.d;
+					const resultD = numRational.d * denRational.n;
+					const newCoeff = algebraicFromRational(rational(resultN, resultD));
+					dividedTerms.push({
+						coefficient: newCoeff,
+						monomial: term.monomial
+					});
+				} else {
+					// Has radicals - try divAlgebraic
+					const divided = divAlgebraic(term.coefficient, denCoeff);
+					if (divided !== null) {
+						dividedTerms.push({
+							coefficient: divided,
+							monomial: term.monomial
+						});
+					} else {
+						canDivideAll = false;
+						break;
+					}
+				}
+			}
+
+			if (canDivideAll) {
+				return normalFormFromPolynomial(dividedTerms);
+			}
+		}
 	}
 
 	// Special case: single term numerator and single term constant denominator
