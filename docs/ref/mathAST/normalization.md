@@ -1033,8 +1033,58 @@ Multiply by x^{1/2}/x^{1/2}:
 
 **Limits:**
 
-- Only single-term denominators (multi-term denominators like `1/(1+√2)` require conjugate multiplication, not implemented)
+- For fractional exponents, only single-term denominators are handled
 - Constant denominators are not rationalized (already simplified via other rules)
+
+### Rationalization by Conjugate
+
+For binomial denominators containing square roots, the normalizer multiplies by the conjugate to eliminate radicals:
+
+```
+1/(a + b√n) → (a - b√n)/(a² - b²n)
+```
+
+**Examples:**
+
+```typescript
+// 1/(1+√2) → √2-1
+// Conjugate: (1-√2), Product: 1-2 = -1
+// Result: (1-√2)/(-1) = √2-1
+normalize(parseLatex('\\frac{1}{1+\\sqrt{2}}')); // → √2-1
+
+// 1/(√3-√2) → √3+√2
+// Conjugate: (√3+√2), Product: 3-2 = 1
+normalize(parseLatex('\\frac{1}{\\sqrt{3}-\\sqrt{2}}')); // → √3+√2
+
+// x/(1+√2) → x(√2-1)
+// Numerator with variables: multiply by conjugate
+normalize(parseLatex('\\frac{x}{1+\\sqrt{2}}')); // → x(√2-1)
+
+// √2/(1+√3) → (√6-√2)/2
+// Radical numerator × conjugate
+normalize(parseLatex('\\frac{\\sqrt{2}}{1+\\sqrt{3}}')); // → (√6-√2)/2
+
+// 2/(3+√5) → (3-√5)/2
+// With GCD reduction: 2(3-√5)/4 = (3-√5)/2
+normalize(parseLatex('\\frac{2}{3+\\sqrt{5}}')); // → (3-√5)/2
+```
+
+**Algorithm:**
+
+1. Check denominator is a single NormalTerm with empty monomial (no variables)
+2. Check coefficient has exactly 2 AlgebraicTerms (binomial)
+3. Verify at least one term contains radicals, all radicals are square roots (index=2)
+4. Compute conjugate: `(a - b)` from `(a + b)`
+5. Compute product: `a² - b²` (must be pure rational for success)
+6. Multiply numerator by conjugate, set denominator to product
+7. Recursively simplify (handles division by resulting constant)
+
+**Limits:**
+
+- Only binomial denominators (exactly 2 terms)
+- No variables in denominator (monomial must be empty)
+- Only square roots (index=2), not cube roots or higher
+- Product `a² - b²` must be a pure rational (no remaining radicals)
 
 ### Semantic Expression Checks
 
