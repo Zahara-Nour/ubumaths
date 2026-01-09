@@ -10,28 +10,22 @@ import type { MathNode } from '../types';
 import type { IntegrateStep, IntegrateStepRecorder, IntegrationVerbosity } from './types';
 import type { IntegrationRule } from './descriptions-fr';
 import { getRuleDescription, describeCustomRule } from './descriptions-fr';
+import { StepRecorderBase } from '../common/step-recorder-base.js';
+import { shouldIncludeStep as baseIncludeStep } from '../common/verbosity.js';
 
 // =============================================================================
-// Verbosity Level Utilities
+// Verbosity Level Utilities (re-exported for backwards compatibility)
 // =============================================================================
-
-/**
- * Verbosity level ordering for filtering.
- */
-const VERBOSITY_ORDER: Record<IntegrationVerbosity, number> = {
-	result: 0,
-	summarized: 1,
-	detailed: 2
-};
 
 /**
  * Check if a step should be included at a given verbosity level.
+ * @deprecated Use shouldIncludeStep from '../common/verbosity' instead
  */
 export function shouldIncludeStep(
 	stepVerbosity: IntegrationVerbosity,
 	requestedVerbosity: IntegrationVerbosity
 ): boolean {
-	return VERBOSITY_ORDER[stepVerbosity] <= VERBOSITY_ORDER[requestedVerbosity];
+	return baseIncludeStep(stepVerbosity, requestedVerbosity);
 }
 
 // =============================================================================
@@ -41,6 +35,9 @@ export function shouldIncludeStep(
 /**
  * Records steps during integration.
  *
+ * Extends StepRecorderBase for common functionality (ID generation,
+ * step storage, verbosity filtering).
+ *
  * @example
  * ```typescript
  * const recorder = new IntegrationStepRecorderImpl();
@@ -48,10 +45,10 @@ export function shouldIncludeStep(
  * const steps = recorder.getStepsFiltered('summarized');
  * ```
  */
-export class IntegrationStepRecorderImpl implements IntegrateStepRecorder {
-	private steps: IntegrateStep[] = [];
-	private nextId = 1;
-
+export class IntegrationStepRecorderImpl
+	extends StepRecorderBase<IntegrateStep, string>
+	implements IntegrateStepRecorder
+{
 	/**
 	 * Record an integration step.
 	 *
@@ -72,7 +69,7 @@ export class IntegrationStepRecorderImpl implements IntegrateStepRecorder {
 		operand?: MathNode,
 		technicalNote?: string
 	): void {
-		const step: IntegrateStep = {
+		this.pushStep({
 			id: this.nextId++,
 			rule,
 			description,
@@ -81,9 +78,7 @@ export class IntegrationStepRecorderImpl implements IntegrateStepRecorder {
 			verbosityLevel,
 			operand,
 			technicalNote
-		};
-
-		this.steps.push(step);
+		});
 	}
 
 	/**
@@ -130,39 +125,6 @@ export class IntegrationStepRecorderImpl implements IntegrateStepRecorder {
 			operand,
 			technicalNote
 		);
-	}
-
-	/**
-	 * Get all recorded steps.
-	 */
-	getSteps(): readonly IntegrateStep[] {
-		return this.steps;
-	}
-
-	/**
-	 * Get steps filtered by verbosity level.
-	 */
-	getStepsFiltered(verbosity: IntegrationVerbosity): readonly IntegrateStep[] {
-		if (verbosity === 'result') {
-			return [];
-		}
-
-		return this.steps.filter((step) => shouldIncludeStep(step.verbosityLevel, verbosity));
-	}
-
-	/**
-	 * Clear all recorded steps.
-	 */
-	clear(): void {
-		this.steps = [];
-		this.nextId = 1;
-	}
-
-	/**
-	 * Get the number of recorded steps.
-	 */
-	get length(): number {
-		return this.steps.length;
 	}
 }
 

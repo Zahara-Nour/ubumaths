@@ -9,28 +9,22 @@
 import type { MathNode } from '../types';
 import type { SolveStep, SolveStepRecorder, SolvingVerbosity } from './types';
 import { getRuleDescription } from './descriptions-fr';
+import { StepRecorderBase } from '../common/step-recorder-base.js';
+import { shouldIncludeStep as baseIncludeStep } from '../common/verbosity.js';
 
 // =============================================================================
-// Verbosity Level Utilities
+// Verbosity Level Utilities (re-exported for backwards compatibility)
 // =============================================================================
-
-/**
- * Verbosity level ordering for filtering.
- */
-const VERBOSITY_ORDER: Record<SolvingVerbosity, number> = {
-	result: 0,
-	summarized: 1,
-	detailed: 2
-};
 
 /**
  * Check if a step should be included at a given verbosity level.
+ * @deprecated Use shouldIncludeStep from '../common/verbosity' instead
  */
 export function shouldIncludeStep(
 	stepVerbosity: SolvingVerbosity,
 	requestedVerbosity: SolvingVerbosity
 ): boolean {
-	return VERBOSITY_ORDER[stepVerbosity] <= VERBOSITY_ORDER[requestedVerbosity];
+	return baseIncludeStep(stepVerbosity, requestedVerbosity);
 }
 
 // =============================================================================
@@ -40,6 +34,9 @@ export function shouldIncludeStep(
 /**
  * Records steps during equation solving.
  *
+ * Extends StepRecorderBase for common functionality (ID generation,
+ * step storage, verbosity filtering).
+ *
  * @example
  * ```typescript
  * const recorder = new SolvingStepRecorderImpl();
@@ -47,10 +44,10 @@ export function shouldIncludeStep(
  * const steps = recorder.getStepsFiltered('summarized');
  * ```
  */
-export class SolvingStepRecorderImpl implements SolveStepRecorder {
-	private steps: SolveStep[] = [];
-	private nextId = 1;
-
+export class SolvingStepRecorderImpl
+	extends StepRecorderBase<SolveStep, string>
+	implements SolveStepRecorder
+{
 	/**
 	 * Record a solving step.
 	 *
@@ -71,7 +68,7 @@ export class SolvingStepRecorderImpl implements SolveStepRecorder {
 		operand?: MathNode,
 		domainNote?: string
 	): void {
-		const step: SolveStep = {
+		this.pushStep({
 			id: this.nextId++,
 			rule,
 			description,
@@ -80,9 +77,7 @@ export class SolvingStepRecorderImpl implements SolveStepRecorder {
 			verbosityLevel,
 			operand,
 			domainNote
-		};
-
-		this.steps.push(step);
+		});
 	}
 
 	/**
@@ -105,39 +100,6 @@ export class SolvingStepRecorderImpl implements SolveStepRecorder {
 			operand,
 			domainNote
 		);
-	}
-
-	/**
-	 * Get all recorded steps.
-	 */
-	getSteps(): readonly SolveStep[] {
-		return this.steps;
-	}
-
-	/**
-	 * Get steps filtered by verbosity level.
-	 */
-	getStepsFiltered(verbosity: SolvingVerbosity): readonly SolveStep[] {
-		if (verbosity === 'result') {
-			return [];
-		}
-
-		return this.steps.filter((step) => shouldIncludeStep(step.verbosityLevel, verbosity));
-	}
-
-	/**
-	 * Clear all recorded steps.
-	 */
-	clear(): void {
-		this.steps = [];
-		this.nextId = 1;
-	}
-
-	/**
-	 * Get the number of recorded steps.
-	 */
-	get length(): number {
-		return this.steps.length;
 	}
 }
 

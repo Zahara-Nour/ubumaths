@@ -261,6 +261,14 @@ export type ComparisonResult = -1 | 0 | 1;
 // Step Recording Types
 // =============================================================================
 
+import type { Verbosity } from '../common/verbosity.js';
+
+/**
+ * Verbosity levels for normalization step recording.
+ * Alias to the common Verbosity type for backwards compatibility.
+ */
+export type NormalizationVerbosity = Verbosity;
+
 /**
  * Represents a single normalization/simplification step.
  *
@@ -270,13 +278,18 @@ export type ComparisonResult = -1 | 0 | 1;
  * @example
  * // Step: 0 + x → x
  * {
+ *   id: 1,
  *   rule: 'additive-identity',
  *   description: 'L\'addition de 0 est l\'élément neutre',
  *   before: { type: 'addition', left: { type: 'number', value: '0' }, right: x },
- *   after: x
+ *   after: x,
+ *   verbosityLevel: 'detailed'
  * }
  */
 export interface NormalizationStep {
+	/** Unique step ID */
+	readonly id: number;
+
 	/** Name of the rule applied */
 	readonly rule: string;
 
@@ -288,14 +301,17 @@ export interface NormalizationStep {
 
 	/** AST after the transformation */
 	readonly after: MathNode;
+
+	/** Minimum verbosity level to show this step */
+	readonly verbosityLevel: Verbosity;
 }
 
 /**
  * Options for normalization with step recording.
  */
 export interface NormalizeOptions {
-	/** Whether to record transformation steps (default: false) */
-	readonly recordSteps?: boolean;
+	/** Verbosity level for step recording (default: 'result' = no steps) */
+	readonly verbosity?: Verbosity;
 
 	/** Maximum simplification iterations (default: 100) */
 	readonly maxIterations?: number;
@@ -308,6 +324,6 @@ export interface NormalizeResult {
 	/** The final normalized form */
 	readonly form: NormalForm;
 
-	/** Optional transformation steps (only if recordSteps was true) */
-	readonly steps?: readonly NormalizationStep[];
+	/** Transformation steps (empty if verbosity was 'result') */
+	readonly steps: readonly NormalizationStep[];
 }

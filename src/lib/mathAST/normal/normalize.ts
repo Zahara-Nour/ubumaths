@@ -12,8 +12,10 @@
  */
 
 import type { MathNode } from '../types';
-import type { NormalForm, NormalTerm, Rational } from './types';
+import type { NormalForm, NormalTerm, Rational, NormalizationStep } from './types';
+import type { Verbosity } from '../common/verbosity.js';
 import { hashPolynomial, hashNormalForm, hashMathNode } from './hash';
+import { StepRecorder, getRuleDescription } from './step-recorder.js';
 import {
 	ALGEBRAIC_ONE,
 	algebraicFromRational,
@@ -59,6 +61,77 @@ export const ONE_NORMAL_FORM: NormalForm = {
 	denominator: ONE_POLYNOMIAL,
 	hash: '1'
 };
+
+// =============================================================================
+// Normalization Context (Step Recording)
+// =============================================================================
+
+/**
+ * Context for normalization with optional step recording.
+ *
+ * Pass this to normalize() to record transformation steps for pedagogical display.
+ *
+ * @example
+ * const recorder = new StepRecorder();
+ * const ctx: NormalizeContext = { recorder, verbosity: 'summarized' };
+ * const form = normalize(expr, ctx);
+ * const steps = recorder.getSteps();
+ */
+export interface NormalizeContext {
+	/** Step recorder instance */
+	readonly recorder: StepRecorder;
+	/** Verbosity level for filtering */
+	readonly verbosity: Verbosity;
+}
+
+/**
+ * Helper to record a normalization step if conditions are met:
+ * - Context exists
+ * - Verbosity is not 'result'
+ * - before and after are actually different
+ *
+ * @param ctx - Normalization context (may be undefined)
+ * @param rule - Rule name (e.g., 'combine-like-terms')
+ * @param originalNode - The original MathNode before transformation
+ * @param result - The NormalForm result after transformation
+ * @param stepVerbosity - Minimum verbosity level for this step
+ */
+function recordNormalizationStep(
+	ctx: NormalizeContext | undefined,
+	rule: string,
+	originalNode: MathNode,
+	result: NormalForm,
+	stepVerbosity: Verbosity
+): void {
+	// Fast path: no recording needed
+	if (!ctx || ctx.verbosity === 'result') return;
+
+	// Skip if this step's verbosity is higher than requested
+	// (detailed steps not shown when 'summarized' is requested)
+	const verbosityOrder: Record<Verbosity, number> = {
+		result: 0,
+		summarized: 1,
+		detailed: 2
+	};
+	if (verbosityOrder[stepVerbosity] > verbosityOrder[ctx.verbosity]) return;
+
+	// Denormalize result for the "after" display
+	const resultNode = denormalize(result);
+
+	// Use hash comparison to check if transformation actually occurred
+	const beforeHash = hashMathNode(originalNode);
+	const afterHash = hashMathNode(resultNode);
+
+	if (beforeHash !== afterHash) {
+		ctx.recorder.recordStep(
+			rule,
+			getRuleDescription(rule),
+			originalNode,
+			resultNode,
+			stepVerbosity
+		);
+	}
+}
 
 // =============================================================================
 // Helper Functions
@@ -632,20 +705,36 @@ function buildPowerNode(base: MathNode, exponent: Rational): MathNode {
  * according to the algebraic structure.
  *
  * @param node - The MathNode to normalize
+ * @param ctx - Optional context for step recording
  * @returns The canonical NormalForm
  */
-export function normalize(node: MathNode): NormalForm {
-	// First, apply simplification rules
+export function normalize(node: MathNode, ctx?: NormalizeContext): NormalForm {
+	// First, apply simplification rules (Phase 1)
 	const simplified = simplify(node);
 
-	// Then normalize
-	return normalizeNode(simplified);
+	// Record pre-simplification step if anything changed
+	if (ctx && ctx.verbosity !== 'result') {
+		const beforeHash = hashMathNode(node);
+		const afterHash = hashMathNode(simplified);
+		if (beforeHash !== afterHash) {
+			ctx.recorder.recordStep(
+				'pre-simplify',
+				getRuleDescription('pre-simplify'),
+				node,
+				simplified,
+				'detailed'
+			);
+		}
+	}
+
+	// Then normalize (Phase 2)
+	return normalizeNode(simplified, ctx);
 }
 
 /**
  * Internal normalization of a simplified node.
  */
-function normalizeNode(node: MathNode): NormalForm {
+function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 	switch (node.type) {
 		case 'number': {
 			const r = parseNumberToRational(node.value);
@@ -689,37 +778,49 @@ function normalizeNode(node: MathNode): NormalForm {
 		}
 
 		case 'addition': {
-			const leftForm = normalizeNode(node.left);
-			const rightForm = normalizeNode(node.right);
-			return addNormalForms(leftForm, rightForm);
+			const leftForm = normalizeNode(node.left, ctx);
+			const rightForm = normalizeNode(node.right, ctx);
+			const result = addNormalForms(leftForm, rightForm);
+			// Record combine-like-terms step
+			recordNormalizationStep(ctx, 'combine-like-terms', node, result, 'detailed');
+			return result;
 		}
 
 		case 'subtraction': {
-			const leftForm = normalizeNode(node.left);
-			const rightForm = normalizeNode(node.right);
-			return subNormalForms(leftForm, rightForm);
+			const leftForm = normalizeNode(node.left, ctx);
+			const rightForm = normalizeNode(node.right, ctx);
+			const result = subNormalForms(leftForm, rightForm);
+			// Record combine-like-terms step
+			recordNormalizationStep(ctx, 'combine-like-terms', node, result, 'detailed');
+			return result;
 		}
 
 		case 'positive': {
 			// Positive sign is identity
-			return normalizeNode(node.operand);
+			return normalizeNode(node.operand, ctx);
 		}
 
 		case 'opposite': {
-			const form = normalizeNode(node.operand);
+			const form = normalizeNode(node.operand, ctx);
 			return negNormalForm(form);
 		}
 
 		case 'multiplication': {
-			const leftForm = normalizeNode(node.left);
-			const rightForm = normalizeNode(node.right);
-			return mulNormalForms(leftForm, rightForm);
+			const leftForm = normalizeNode(node.left, ctx);
+			const rightForm = normalizeNode(node.right, ctx);
+			const result = mulNormalForms(leftForm, rightForm);
+			// Record combine-like-terms step (for coefficient multiplication)
+			recordNormalizationStep(ctx, 'combine-like-terms', node, result, 'detailed');
+			return result;
 		}
 
 		case 'division': {
-			const numForm = normalizeNode(node.numerator);
-			const denForm = normalizeNode(node.denominator);
-			return divNormalForms(numForm, denForm);
+			const numForm = normalizeNode(node.numerator, ctx);
+			const denForm = normalizeNode(node.denominator, ctx);
+			const result = divNormalForms(numForm, denForm);
+			// Record simplify-fraction step
+			recordNormalizationStep(ctx, 'simplify-fraction', node, result, 'summarized');
+			return result;
 		}
 
 		case 'superscript': {
@@ -730,21 +831,30 @@ function normalizeNode(node: MathNode): NormalForm {
 				const expArg = getExpArg(node.base);
 				const scaledArg = scaleNodeByRational(expArg, ratExp);
 				const newExpNode: MathNode = { type: 'function', name: 'exp', args: [scaledArg] };
-				return normalizeNode(newExpNode);
+				return normalizeNode(newExpNode, ctx);
 			}
 
-			const baseForm = normalizeNode(node.base);
+			const baseForm = normalizeNode(node.base, ctx);
 
 			// Check for non-negative integer exponent (handles x^0 = 1, x^1 = x, x^n)
 			const intExp = getNonNegativeIntExponent(node.superscript);
 			if (intExp !== null) {
-				return powNormalForm(baseForm, intExp);
+				const result = powNormalForm(baseForm, intExp);
+				// Record power step based on exponent value
+				if (intExp === 0) {
+					recordNormalizationStep(ctx, 'power-zero', node, result, 'summarized');
+				} else if (intExp === 1) {
+					recordNormalizationStep(ctx, 'power-one', node, result, 'detailed');
+				} else {
+					recordNormalizationStep(ctx, 'expand-power', node, result, 'summarized');
+				}
+				return result;
 			}
 
 			// Check for rational exponent (already checked above for exp case)
 			if (ratExp !== null) {
 				// For non-integer rational exponent, treat as symbolic
-				return normalizeSymbolicPower(node.base, ratExp);
+				return normalizeSymbolicPower(node.base, ratExp, ctx);
 			}
 
 			// General case: treat as opaque term
@@ -752,12 +862,12 @@ function normalizeNode(node: MathNode): NormalForm {
 		}
 
 		case 'function': {
-			return normalizeFunction(node);
+			return normalizeFunction(node, ctx);
 		}
 
 		case 'delimiter': {
 			// Delimiters (parentheses) just normalize their content
-			return normalizeNode(node.content);
+			return normalizeNode(node.content, ctx);
 		}
 
 		case 'subscript': {
@@ -773,7 +883,7 @@ function normalizeNode(node: MathNode): NormalForm {
 		case 'unit': {
 			// Unit nodes: normalize the expression part
 			// The unit is not part of algebraic normalization
-			return normalizeNode(node.expression);
+			return normalizeNode(node.expression, ctx);
 		}
 
 		case 'composition':
@@ -1386,16 +1496,17 @@ function expandLogDivision(
  * This ensures that sin(x+x) and sin(2x) produce the same hash.
  */
 function canonicalizeFunctionNode(
-	node: MathNode & { type: 'function' }
+	node: MathNode & { type: 'function' },
+	ctx?: NormalizeContext
 ): MathNode & { type: 'function' } {
-	const normalizedArgs = node.args.map((arg) => denormalize(normalizeNode(arg)));
+	const normalizedArgs = node.args.map((arg) => denormalize(normalizeNode(arg, ctx)));
 
 	return {
 		type: 'function' as const,
 		name: node.name,
 		args: normalizedArgs,
-		...(node.power && { power: denormalize(normalizeNode(node.power)) }),
-		...(node.base && { base: denormalize(normalizeNode(node.base)) }),
+		...(node.power && { power: denormalize(normalizeNode(node.power, ctx)) }),
+		...(node.base && { base: denormalize(normalizeNode(node.base, ctx)) }),
 		...(node.derivativeOrder !== undefined && { derivativeOrder: node.derivativeOrder }),
 		...(node.isInverse !== undefined && { isInverse: node.isInverse })
 	};
@@ -1405,11 +1516,14 @@ function canonicalizeFunctionNode(
  * Normalizes a function call.
  * Arguments are normalized first to ensure canonical representation.
  */
-function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
+function normalizeFunction(
+	node: MathNode & { type: 'function' },
+	ctx?: NormalizeContext
+): NormalForm {
 	const { name } = node;
 
 	// 1. Canonicalize arguments first
-	const canonicalNode = canonicalizeFunctionNode(node);
+	const canonicalNode = canonicalizeFunctionNode(node, ctx);
 	const canonicalArgs = canonicalNode.args;
 
 	// 2. Handle sqrt specially (with already normalized argument)
@@ -1421,12 +1535,22 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 			const val = parseFloat(arg.value);
 			if (Number.isInteger(val) && val >= 0) {
 				const n = BigInt(Math.floor(val));
+
+				// sqrt(0) = 0
+				if (n === 0n) {
+					recordNormalizationStep(ctx, 'radical-simplify', node, ZERO_NORMAL_FORM, 'summarized');
+					return ZERO_NORMAL_FORM;
+				}
+
 				const simplified = simplifyRadical(n, 2n);
 
 				if (simplified.radicand === 1n) {
 					// Perfect square: sqrt(n) = coefficient
 					const term = termFromRational(fromInteger(simplified.coefficient));
-					return normalFormFromPolynomial(polynomialFromTerm(term));
+					const result = normalFormFromPolynomial(polynomialFromTerm(term));
+					// Record radical simplification
+					recordNormalizationStep(ctx, 'radical-simplify', node, result, 'summarized');
+					return result;
 				}
 
 				// Not a perfect square: coefficient * sqrt(radicand)
@@ -1442,7 +1566,12 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 					monomial: EMPTY_MONOMIAL
 				};
 
-				return normalFormFromPolynomial(polynomialFromTerm(term));
+				const result = normalFormFromPolynomial(polynomialFromTerm(term));
+				// Record radical simplification (if coefficient extracted)
+				if (simplified.coefficient !== 1n) {
+					recordNormalizationStep(ctx, 'radical-simplify', node, result, 'summarized');
+				}
+				return result;
 			}
 		}
 
@@ -1452,7 +1581,7 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 
 	// 3. Handle trigonometric functions
 	if ((name === 'sin' || name === 'cos' || name === 'tan') && canonicalArgs.length === 1) {
-		const argForm = normalizeNode(canonicalArgs[0]);
+		const argForm = normalizeNode(canonicalArgs[0], ctx);
 
 		// Check for argument = k*π
 		const piCoeff = getPiCoefficient(argForm);
@@ -1463,13 +1592,23 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 					: name === 'cos'
 						? getCosineValue(piCoeff)
 						: getTangentValue(piCoeff);
-			if (result !== null) return result;
+			if (result !== null) {
+				// Record trig known value step
+				recordNormalizationStep(ctx, 'trig-known-value', node, result, 'summarized');
+				return result;
+			}
 		}
 
 		// Also check for arg = 0 (sin(0) = 0, cos(0) = 1, tan(0) = 0)
 		if (isZeroNormalForm(argForm)) {
-			if (name === 'sin' || name === 'tan') return ZERO_NORMAL_FORM;
-			if (name === 'cos') return ONE_NORMAL_FORM;
+			if (name === 'sin' || name === 'tan') {
+				recordNormalizationStep(ctx, 'trig-known-value', node, ZERO_NORMAL_FORM, 'summarized');
+				return ZERO_NORMAL_FORM;
+			}
+			if (name === 'cos') {
+				recordNormalizationStep(ctx, 'trig-known-value', node, ONE_NORMAL_FORM, 'summarized');
+				return ONE_NORMAL_FORM;
+			}
 		}
 
 		return normalizeOpaqueNode(canonicalNode);
@@ -1481,7 +1620,10 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 
 		// ln(exp(x)) = x — check BEFORE normalizing to avoid unnecessary work
 		if (name === 'ln' && arg.type === 'function' && arg.name === 'exp' && arg.args.length === 1) {
-			return normalizeNode(arg.args[0]);
+			const result = normalizeNode(arg.args[0], ctx);
+			// Record ln-exp-inverse step
+			recordNormalizationStep(ctx, 'ln-exp-inverse', node, result, 'summarized');
+			return result;
 		}
 
 		// log(base^x) = x — inverse rule, check BEFORE normalizing
@@ -1494,23 +1636,33 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 			if (numericLogBase !== null && expBase.type === 'number') {
 				const expBaseVal = BigInt(expBase.value);
 				if (expBaseVal === numericLogBase) {
-					return normalizeNode(arg.superscript); // log_b(b^x) = x
+					const result = normalizeNode(arg.superscript, ctx);
+					recordNormalizationStep(ctx, 'log-simplify', node, result, 'summarized');
+					return result; // log_b(b^x) = x
 				}
 			}
 
 			// For symbolic bases: log_b(b^x) = x via hash comparison
 			if (logBase && hashMathNode(expBase) === hashMathNode(logBase)) {
-				return normalizeNode(arg.superscript);
+				const result = normalizeNode(arg.superscript, ctx);
+				recordNormalizationStep(ctx, 'log-simplify', node, result, 'summarized');
+				return result;
 			}
 		}
 
-		const argForm = normalizeNode(arg);
+		const argForm = normalizeNode(arg, ctx);
 
 		// ln(1) = 0, log(1) = 0
-		if (isIntegerValue(argForm, 1n)) return ZERO_NORMAL_FORM;
+		if (isIntegerValue(argForm, 1n)) {
+			recordNormalizationStep(ctx, 'ln-one', node, ZERO_NORMAL_FORM, 'detailed');
+			return ZERO_NORMAL_FORM;
+		}
 
 		// ln(e) = 1
-		if (name === 'ln' && isEulerNumber(argForm)) return ONE_NORMAL_FORM;
+		if (name === 'ln' && isEulerNumber(argForm)) {
+			recordNormalizationStep(ctx, 'ln-e', node, ONE_NORMAL_FORM, 'detailed');
+			return ONE_NORMAL_FORM;
+		}
 
 		// === LN EXPANSION ===
 		if (name === 'ln') {
@@ -1603,18 +1755,26 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 			originalArg.name === 'ln' &&
 			originalArg.args.length === 1
 		) {
-			return normalizeNode(originalArg.args[0]);
+			const result = normalizeNode(originalArg.args[0], ctx);
+			// Record exp-ln-inverse step
+			recordNormalizationStep(ctx, 'exp-ln-inverse', node, result, 'summarized');
+			return result;
 		}
 
 		const arg = canonicalArgs[0];
-		const argForm = normalizeNode(arg);
+		const argForm = normalizeNode(arg, ctx);
 
 		// exp(0) = 1 (use isZeroNormalForm to handle both ZERO_NORMAL_FORM and explicit 0)
-		if (isZeroNormalForm(argForm)) return ONE_NORMAL_FORM;
+		if (isZeroNormalForm(argForm)) {
+			recordNormalizationStep(ctx, 'exp-zero', node, ONE_NORMAL_FORM, 'detailed');
+			return ONE_NORMAL_FORM;
+		}
 
 		// exp(1) = e
 		if (isIntegerValue(argForm, 1n)) {
-			return normalizeNode({ type: 'variable', name: 'e' });
+			const eForm = normalizeNode({ type: 'variable', name: 'e' }, ctx);
+			recordNormalizationStep(ctx, 'exp-one', node, eForm, 'detailed');
+			return eForm;
 		}
 
 		// Partial extraction of ln terms: exp(Σ aᵢ·ln(xᵢ) + remainder) = Π xᵢ^aᵢ · exp(remainder)
@@ -1625,7 +1785,7 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 			let result = ONE_NORMAL_FORM;
 			for (const { base, coeff } of lnTerms) {
 				const powerNode = buildPowerNode(base, coeff);
-				const powerForm = normalizeNode(powerNode);
+				const powerForm = normalizeNode(powerNode, ctx);
 				result = mulNormalForms(result, powerForm);
 			}
 
@@ -1634,10 +1794,12 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 				const remainderNode = denormalize(remainder);
 				const expRemainderNode: MathNode = { type: 'function', name: 'exp', args: [remainderNode] };
 				// Recursively normalize exp(remainder) - this handles exp(0)=1, exp(1)=e, etc.
-				const expRemainderForm = normalizeNode(expRemainderNode);
+				const expRemainderForm = normalizeNode(expRemainderNode, ctx);
 				result = mulNormalForms(result, expRemainderForm);
 			}
 
+			// Record exp-ln-inverse for partial extraction
+			recordNormalizationStep(ctx, 'exp-ln-inverse', node, result, 'summarized');
 			return result;
 		}
 
@@ -1659,11 +1821,15 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 /**
  * Normalizes a node with a symbolic (non-integer) power.
  */
-function normalizeSymbolicPower(base: MathNode, exponent: Rational): NormalForm {
+function normalizeSymbolicPower(
+	base: MathNode,
+	exponent: Rational,
+	ctx?: NormalizeContext
+): NormalForm {
 	// Handle negative integer exponents: base^(-n) = 1/base^n
 	if (exponent.n < 0n && exponent.d === 1n) {
 		const posExp: Rational = { n: -exponent.n, d: 1n };
-		const baseForm = normalizeNode(base);
+		const baseForm = normalizeNode(base, ctx);
 
 		// Create the positive power in denominator
 		if (posExp.n === 1n) {
@@ -1678,7 +1844,7 @@ function normalizeSymbolicPower(base: MathNode, exponent: Rational): NormalForm 
 	}
 
 	// Normalize the base first
-	const baseForm = normalizeNode(base);
+	const baseForm = normalizeNode(base, ctx);
 
 	// If base is a single variable, we can create a symbolic factor
 	if (
@@ -2138,4 +2304,63 @@ export function isZeroExpression(node: MathNode): boolean {
 export function isOneExpression(node: MathNode): boolean {
 	const form = normalize(node);
 	return isOnePolynomial(form.numerator) && isOnePolynomial(form.denominator);
+}
+
+// =============================================================================
+// Normalization with Step Recording (Public API)
+// =============================================================================
+
+/**
+ * Normalizes a MathNode and records all transformation steps.
+ *
+ * This is the main API for pedagogical display of normalization.
+ *
+ * @param node - The MathNode to normalize
+ * @param verbosity - Verbosity level for step filtering (default: 'summarized')
+ * @returns Object with normalized form and recorded steps
+ *
+ * @example
+ * const { result, steps } = normalizeWithSteps(parseLatex('x + x'), 'summarized');
+ * // result: NormalForm for 2x
+ * // steps: [{ rule: 'combine-like-terms', before: x+x, after: 2x, ... }]
+ */
+export function normalizeWithSteps(
+	node: MathNode,
+	verbosity: Verbosity = 'summarized'
+): { result: NormalForm; steps: readonly NormalizationStep[] } {
+	const recorder = new StepRecorder();
+	const ctx: NormalizeContext = { recorder, verbosity };
+
+	const result = normalize(node, ctx);
+
+	return {
+		result,
+		steps: recorder.getStepsFiltered(verbosity)
+	};
+}
+
+/**
+ * Simplifies a MathNode and records all transformation steps.
+ *
+ * Returns a MathNode (via denormalize) instead of NormalForm,
+ * convenient for display purposes.
+ *
+ * @param node - The MathNode to simplify
+ * @param verbosity - Verbosity level for step filtering (default: 'summarized')
+ * @returns Object with simplified MathNode and recorded steps
+ *
+ * @example
+ * const { result, steps } = simplifyExpressionWithSteps(parseLatex('x + x'));
+ * // result: MathNode for 2x
+ * // steps: [{ rule: 'combine-like-terms', ... }]
+ */
+export function simplifyExpressionWithSteps(
+	node: MathNode,
+	verbosity: Verbosity = 'summarized'
+): { result: MathNode; steps: readonly NormalizationStep[] } {
+	const { result: form, steps } = normalizeWithSteps(node, verbosity);
+	return {
+		result: denormalize(form),
+		steps
+	};
 }

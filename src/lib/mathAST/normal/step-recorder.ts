@@ -8,8 +8,10 @@
  */
 
 import type { MathNode } from '../types';
-import type { NormalizationStep } from './types';
+import type { NormalizationStep, NormalizationVerbosity } from './types';
 import { hashMathNode } from './hash';
+import { StepRecorderBase } from '../common/step-recorder-base.js';
+import type { Verbosity } from '../common/verbosity.js';
 
 // =============================================================================
 // Rule Descriptions (French)
@@ -67,6 +69,16 @@ const RULE_DESCRIPTIONS: Record<string, string> = {
 	'sin-pi': 'sin(π) = 0',
 	'cos-pi': 'cos(π) = -1',
 
+	// Phase 2 - Normalization
+	'pre-simplify': 'Pré-simplification (Phase 1)',
+	'combine-like-terms': 'Combinaison des termes semblables',
+	'simplify-fraction': 'Simplification de la fraction',
+	'expand-power': 'Développement de la puissance',
+	'trig-known-value': 'Valeur trigonométrique remarquable',
+	'exp-ln-inverse': 'exp(ln(x)) = x',
+	'ln-exp-inverse': 'ln(exp(x)) = x',
+	'log-simplify': 'Simplification du logarithme',
+
 	// General
 	simplification: 'Simplification',
 	arithmetic: 'Simplification arithmétique',
@@ -89,50 +101,37 @@ export function getRuleDescription(rule: string): string {
 /**
  * Records normalization/simplification steps.
  *
+ * Extends StepRecorderBase for common functionality (ID generation,
+ * step storage, verbosity filtering).
+ *
+ * Features unique to NormalizationStepRecorder:
+ * - Hash-based deduplication (only records if before !== after)
+ * - Auto-description lookup from RULE_DESCRIPTIONS
+ *
  * @example
  * const recorder = new StepRecorder();
- * recorder.recordStep('additive-identity', before, after);
+ * recorder.recordStep('additive-identity', 'desc', before, after, 'detailed');
  * const steps = recorder.getSteps();
  */
-export class StepRecorder {
-	private steps: NormalizationStep[] = [];
-
+export class StepRecorder extends StepRecorderBase<NormalizationStep, string> {
 	/**
-	 * Records a step if a transformation occurred.
+	 * Records a step with explicit verbosity level.
 	 *
 	 * Compares before and after using hash - only records if different.
 	 *
 	 * @param rule - Name of the rule applied
+	 * @param description - Human-readable description in French
 	 * @param before - AST before transformation
 	 * @param after - AST after transformation
+	 * @param verbosityLevel - Minimum verbosity to show this step
 	 * @returns true if a step was recorded (transformation occurred)
 	 */
-	recordStep(rule: string, before: MathNode, after: MathNode): boolean {
-		const beforeHash = hashMathNode(before);
-		const afterHash = hashMathNode(after);
-
-		if (beforeHash === afterHash) {
-			return false;
-		}
-
-		this.steps.push({
-			rule,
-			description: getRuleDescription(rule),
-			before,
-			after
-		});
-
-		return true;
-	}
-
-	/**
-	 * Records a step with custom description.
-	 */
-	recordStepWithDescription(
+	recordStep(
 		rule: string,
 		description: string,
 		before: MathNode,
-		after: MathNode
+		after: MathNode,
+		verbosityLevel: Verbosity = 'detailed'
 	): boolean {
 		const beforeHash = hashMathNode(before);
 		const afterHash = hashMathNode(after);
@@ -141,35 +140,48 @@ export class StepRecorder {
 			return false;
 		}
 
-		this.steps.push({
+		this.pushStep({
+			id: this.nextId++,
 			rule,
 			description,
 			before,
-			after
+			after,
+			verbosityLevel
 		});
 
 		return true;
 	}
 
 	/**
-	 * Gets all recorded steps.
+	 * Records a step using auto-lookup description.
+	 *
+	 * @param rule - Name of the rule applied
+	 * @param before - AST before transformation
+	 * @param after - AST after transformation
+	 * @param verbosityLevel - Minimum verbosity to show this step (default: 'detailed')
+	 * @returns true if a step was recorded (transformation occurred)
 	 */
-	getSteps(): readonly NormalizationStep[] {
-		return this.steps;
+	recordStepByRule(
+		rule: string,
+		before: MathNode,
+		after: MathNode,
+		verbosityLevel: Verbosity = 'detailed'
+	): boolean {
+		return this.recordStep(rule, getRuleDescription(rule), before, after, verbosityLevel);
 	}
 
 	/**
-	 * Clears all recorded steps.
+	 * Records a step with custom description.
+	 * @deprecated Use recordStep with explicit description instead
 	 */
-	clear(): void {
-		this.steps = [];
-	}
-
-	/**
-	 * Gets the number of recorded steps.
-	 */
-	get length(): number {
-		return this.steps.length;
+	recordStepWithDescription(
+		rule: string,
+		description: string,
+		before: MathNode,
+		after: MathNode,
+		verbosityLevel: Verbosity = 'detailed'
+	): boolean {
+		return this.recordStep(rule, description, before, after, verbosityLevel);
 	}
 }
 
@@ -187,13 +199,18 @@ import { simplifyRadicals } from './rules/radicals.js';
  *
  * @param node - The node to simplify
  * @param recorder - Optional step recorder
+ * @param verbosity - Verbosity level for recording (default: 'detailed')
  * @returns The simplified node
  */
-export function simplifyOnceWithSteps(node: MathNode, recorder?: StepRecorder): MathNode {
+export function simplifyOnceWithSteps(
+	node: MathNode,
+	recorder?: StepRecorder,
+	verbosity: Verbosity = 'detailed'
+): MathNode {
 	// Apply radical rules (Phase 1)
 	const result = simplifyRadicals(node);
-	if (recorder) {
-		recorder.recordStep('radicals', node, result);
+	if (recorder && verbosity !== 'result') {
+		recorder.recordStepByRule('radicals', node, result, verbosity);
 	}
 
 	return result;
@@ -203,11 +220,13 @@ export function simplifyOnceWithSteps(node: MathNode, recorder?: StepRecorder): 
  * Simplifies an expression to fixed point, recording all steps.
  *
  * @param node - The node to simplify
+ * @param verbosity - Verbosity level for recording (default: 'summarized')
  * @param maxIterations - Maximum number of iterations (default 100)
  * @returns Object with simplified node and recorded steps
  */
 export function simplifyWithSteps(
 	node: MathNode,
+	verbosity: NormalizationVerbosity = 'summarized',
 	maxIterations: number = 100
 ): { result: MathNode; steps: readonly NormalizationStep[] } {
 	const recorder = new StepRecorder();
@@ -215,7 +234,7 @@ export function simplifyWithSteps(
 	let currentHash = hashMathNode(current);
 
 	for (let i = 0; i < maxIterations; i++) {
-		const next = simplifyOnceWithSteps(current, recorder);
+		const next = simplifyOnceWithSteps(current, recorder, verbosity);
 		const nextHash = hashMathNode(next);
 
 		// Fixed point reached
@@ -229,6 +248,6 @@ export function simplifyWithSteps(
 
 	return {
 		result: current,
-		steps: recorder.getSteps()
+		steps: recorder.getStepsFiltered(verbosity)
 	};
 }

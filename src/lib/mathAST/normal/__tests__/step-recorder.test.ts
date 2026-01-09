@@ -62,7 +62,13 @@ describe('StepRecorder', () => {
 			const before = mul(sqrt(num('2')), sqrt(num('3')));
 			const after = sqrt(mul(num('2'), num('3')));
 
-			const recorded = recorder.recordStep('radical-product', before, after);
+			const recorded = recorder.recordStep(
+				'radical-product',
+				'Description',
+				before,
+				after,
+				'detailed'
+			);
 
 			expect(recorded).toBe(true);
 			expect(recorder.length).toBe(1);
@@ -71,27 +77,46 @@ describe('StepRecorder', () => {
 			expect(steps[0].rule).toBe('radical-product');
 			expect(steps[0].before).toEqual(before);
 			expect(steps[0].after).toEqual(after);
+			expect(steps[0].id).toBe(1);
+			expect(steps[0].verbosityLevel).toBe('detailed');
 		});
 
 		it('should not record step when no transformation occurs', () => {
 			const node = variable('x');
 
-			const recorded = recorder.recordStep('some-rule', node, node);
+			const recorded = recorder.recordStep('some-rule', 'Description', node, node, 'detailed');
 
 			expect(recorded).toBe(false);
 			expect(recorder.length).toBe(0);
 		});
 
-		it('should accumulate multiple steps', () => {
+		it('should accumulate multiple steps with incrementing IDs', () => {
 			const step1Before = mul(sqrt(num('2')), sqrt(num('3')));
 			const step1After = sqrt(mul(num('2'), num('3')));
 			const step2Before = sqrt(div(variable('x'), variable('y')));
 			const step2After = div(sqrt(variable('x')), sqrt(variable('y')));
 
-			recorder.recordStep('rule1', step1Before, step1After);
-			recorder.recordStep('rule2', step2Before, step2After);
+			recorder.recordStep('rule1', 'Desc 1', step1Before, step1After, 'detailed');
+			recorder.recordStep('rule2', 'Desc 2', step2Before, step2After, 'summarized');
 
 			expect(recorder.length).toBe(2);
+			const steps = recorder.getSteps();
+			expect(steps[0].id).toBe(1);
+			expect(steps[1].id).toBe(2);
+		});
+	});
+
+	describe('recordStepByRule', () => {
+		it('should record step with auto-lookup description', () => {
+			const before = mul(sqrt(num('2')), sqrt(num('3')));
+			const after = sqrt(mul(num('2'), num('3')));
+
+			const recorded = recorder.recordStepByRule('radicals', before, after, 'summarized');
+
+			expect(recorded).toBe(true);
+			const steps = recorder.getSteps();
+			expect(steps[0].description).toContain('radicaux');
+			expect(steps[0].verbosityLevel).toBe('summarized');
 		});
 	});
 
@@ -100,10 +125,17 @@ describe('StepRecorder', () => {
 			const before = pow(num('2'), num('3'));
 			const after = num('8');
 
-			recorder.recordStepWithDescription('custom', 'Description personnalisée', before, after);
+			recorder.recordStepWithDescription(
+				'custom',
+				'Description personnalisée',
+				before,
+				after,
+				'detailed'
+			);
 
 			const steps = recorder.getSteps();
 			expect(steps[0].description).toBe('Description personnalisée');
+			expect(steps[0].verbosityLevel).toBe('detailed');
 		});
 	});
 
@@ -112,7 +144,7 @@ describe('StepRecorder', () => {
 			const before = mul(sqrt(num('2')), sqrt(num('3')));
 			const after = sqrt(mul(num('2'), num('3')));
 
-			recorder.recordStep('rule', before, after);
+			recorder.recordStep('rule', 'Description', before, after, 'detailed');
 			expect(recorder.length).toBe(1);
 
 			recorder.clear();
@@ -124,6 +156,35 @@ describe('StepRecorder', () => {
 		it('should return readonly steps array', () => {
 			const steps = recorder.getSteps();
 			expect(Array.isArray(steps)).toBe(true);
+		});
+	});
+
+	describe('getStepsFiltered', () => {
+		beforeEach(() => {
+			const before1 = mul(sqrt(num('2')), sqrt(num('3')));
+			const after1 = sqrt(mul(num('2'), num('3')));
+			const before2 = pow(num('2'), num('3'));
+			const after2 = num('8');
+
+			// Record one detailed step and one summarized step
+			recorder.recordStep('rule1', 'Detailed step', before1, after1, 'detailed');
+			recorder.recordStep('rule2', 'Summarized step', before2, after2, 'summarized');
+		});
+
+		it('should return all steps for detailed verbosity', () => {
+			const steps = recorder.getStepsFiltered('detailed');
+			expect(steps.length).toBe(2);
+		});
+
+		it('should filter out detailed steps for summarized verbosity', () => {
+			const steps = recorder.getStepsFiltered('summarized');
+			expect(steps.length).toBe(1);
+			expect(steps[0].verbosityLevel).toBe('summarized');
+		});
+
+		it('should return empty for result verbosity', () => {
+			const steps = recorder.getStepsFiltered('result');
+			expect(steps.length).toBe(0);
 		});
 	});
 });
@@ -200,10 +261,12 @@ describe('NormalizationStep format', () => {
 
 		if (steps.length > 0) {
 			const step = steps[0];
+			expect(step).toHaveProperty('id');
 			expect(step).toHaveProperty('rule');
 			expect(step).toHaveProperty('description');
 			expect(step).toHaveProperty('before');
 			expect(step).toHaveProperty('after');
+			expect(step).toHaveProperty('verbosityLevel');
 		}
 	});
 
@@ -214,6 +277,7 @@ describe('NormalizationStep format', () => {
 		for (const step of steps) {
 			expect(step.rule.length).toBeGreaterThan(0);
 			expect(step.description.length).toBeGreaterThan(0);
+			expect(step.id).toBeGreaterThan(0);
 		}
 	});
 });
