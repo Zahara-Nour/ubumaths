@@ -35,7 +35,7 @@ import {
 } from './polynomial';
 import { ZERO_TERM } from './term';
 import { EMPTY_MONOMIAL, symbolicFactor, sortSymbolicFactors } from './monomial';
-import { rational, fromInteger, ONE } from './rational';
+import { rational, fromInteger, ONE, isOne } from './rational';
 import { simplifyRadical } from './radical';
 import { simplify } from './rules/index.js';
 import { denormalize } from './denormalize';
@@ -1785,8 +1785,14 @@ function combineExpInMonomial(
 		}
 	}
 
-	// Nothing to combine if 0 or 1 exp factors
-	if (expFactors.length <= 1) {
+	// Nothing to do if no exp factors
+	if (expFactors.length === 0) {
+		return [...monomial];
+	}
+
+	// Single exp factor with exponent 1: nothing to transform
+	// But exp(x)^n with n ≠ 1 should become exp(n*x)
+	if (expFactors.length === 1 && isOne(expFactors[0].exp)) {
 		return [...monomial];
 	}
 
@@ -1832,10 +1838,14 @@ function combineExpInPolynomial(terms: NormalTerm[]): NormalTerm[] {
 	const result: NormalTerm[] = [];
 
 	for (const term of terms) {
-		// Check if monomial has 2+ exp factors
-		const expCount = term.monomial.filter((f) => isExpFunction(f.base)).length;
+		// Check if monomial needs exp combination:
+		// - 2+ exp factors: exp(a) * exp(b) → exp(a+b)
+		// - 1 exp factor with exponent ≠ 1: exp(x)^n → exp(n*x)
+		const expFactors = term.monomial.filter((f) => isExpFunction(f.base));
+		const needsCombination =
+			expFactors.length >= 2 || (expFactors.length === 1 && !isOne(expFactors[0].exponent));
 
-		if (expCount >= 2) {
+		if (needsCombination) {
 			const newMonomial = combineExpInMonomial(term.monomial);
 			result.push({ coefficient: term.coefficient, monomial: newMonomial });
 			changed = true;
@@ -2028,8 +2038,12 @@ function powNormalForm(a: NormalForm, n: number): NormalForm {
 		return a;
 	}
 
-	const numerator = powPolynomial(a.numerator, n);
-	const denominator = powPolynomial(a.denominator, n);
+	let numerator = powPolynomial(a.numerator, n);
+	let denominator = powPolynomial(a.denominator, n);
+
+	// Combine exp factors: exp(x)^n → exp(n*x)
+	numerator = combineExpInPolynomial(numerator);
+	denominator = combineExpInPolynomial(denominator);
 
 	return normalFormFromFraction(numerator, denominator);
 }
