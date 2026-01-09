@@ -18,7 +18,9 @@ import {
 	ALGEBRAIC_ONE,
 	algebraicFromRational,
 	mulAlgebraic,
-	algebraicFromRadical
+	algebraicFromRadical,
+	isPureRational,
+	getRationalValue
 } from './algebraic';
 import {
 	ZERO_POLYNOMIAL,
@@ -1074,9 +1076,11 @@ function expandLnInteger(n: bigint): NormalForm {
 
 /**
  * Expands ln(x^n) = n·ln(x)
+ * Uses recursive normalization to handle composition (e.g., ln(exp(x)) = x)
  */
 function expandLnPower(info: { base: MathNode; exponent: Rational }): NormalForm {
-	const lnBase = createOpaqueLn(info.base);
+	// Use normalizeNode to allow ln(exp(x)) = x composition rule
+	const lnBase = normalizeNode({ type: 'function', name: 'ln', args: [info.base] });
 	const expForm = normalFormFromRational(info.exponent);
 	return mulNormalForms(expForm, lnBase);
 }
@@ -1133,6 +1137,102 @@ function expandLnDivision(form: NormalForm): NormalForm {
 	const lnDen: NormalForm = normalizeNode({ type: 'function', name: 'ln', args: [denNode] });
 
 	return subNormalForms(lnNum, lnDen);
+}
+
+// =============================================================================
+// Exp Expansion Helpers
+// =============================================================================
+
+/**
+ * Checks if a NormalForm represents a sum (multiple terms, no fraction).
+ * Used to detect when exp(a+b+...) can be expanded.
+ */
+function isSumForm(form: NormalForm): boolean {
+	return isOnePolynomial(form.denominator) && form.numerator.length > 1;
+}
+
+/**
+ * Expands exp(a + b + c + ...) = exp(a) · exp(b) · exp(c) · ...
+ * Each term is recursively normalized, which triggers coefficient extraction.
+ */
+function expandExpSum(form: NormalForm): NormalForm {
+	let result = ONE_NORMAL_FORM;
+
+	for (const term of form.numerator) {
+		// Convert single term back to NormalForm, then to MathNode
+		const termForm = normalFormFromPolynomial([term]);
+		const termNode = denormalize(termForm);
+
+		// Create exp(term) and normalize recursively
+		const expTerm = normalizeNode({ type: 'function', name: 'exp', args: [termNode] });
+		result = mulNormalForms(result, expTerm);
+	}
+
+	return result;
+}
+
+/**
+ * Extracts rational coefficient from single-term form for exp expansion.
+ * Returns { coeff, base } where exp(coeff*base) = exp(base)^coeff
+ * Returns null if extraction not possible.
+ */
+function extractExpCoefficient(form: NormalForm): { coeff: Rational; base: MathNode } | null {
+	// Must be single term with no fraction
+	if (form.numerator.length !== 1 || !isOnePolynomial(form.denominator)) {
+		return null;
+	}
+
+	const term = form.numerator[0];
+
+	// Coefficient must be pure rational (no radicals, no imaginary)
+	if (!isPureRational(term.coefficient)) {
+		return null;
+	}
+
+	// Also check hasImaginaryUnit (isPureRational doesn't check this)
+	if (term.coefficient.terms.length > 0 && term.coefficient.terms[0].hasImaginaryUnit === true) {
+		return null;
+	}
+
+	const coeff = getRationalValue(term.coefficient);
+	if (coeff === null) {
+		return null;
+	}
+
+	// Skip if coefficient is 1 or 0 (no extraction needed)
+	if ((coeff.n === 1n && coeff.d === 1n) || coeff.n === 0n) {
+		return null;
+	}
+
+	// Must have non-empty monomial (otherwise exp(n) stays as is)
+	if (term.monomial.length === 0) {
+		return null;
+	}
+
+	// Create base with coefficient = 1
+	const baseForm = normalFormFromPolynomial([
+		{
+			coefficient: ALGEBRAIC_ONE,
+			monomial: term.monomial
+		}
+	]);
+
+	return { coeff, base: denormalize(baseForm) };
+}
+
+/**
+ * Expands exp(n·a) into exp(a)^n using buildPowerNode.
+ * Handles both integer and rational exponents.
+ */
+function expandExpCoefficient(coeff: Rational, base: MathNode): NormalForm {
+	// Create exp(base)
+	const expBaseNode: MathNode = { type: 'function', name: 'exp', args: [base] };
+
+	// Create exp(base)^coeff using buildPowerNode (handles negative exponents)
+	const powerNode = buildPowerNode(expBaseNode, coeff);
+
+	// Normalize the result
+	return normalizeNode(powerNode);
 }
 
 // =============================================================================
@@ -1338,6 +1438,19 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 				result = mulNormalForms(result, powerForm);
 			}
 			return result;
+		}
+
+		// === EXP EXPANSION RULES ===
+
+		// exp(a + b + ...) = exp(a)·exp(b)·...
+		if (isSumForm(argForm)) {
+			return expandExpSum(argForm);
+		}
+
+		// exp(n·a) = exp(a)^n (coefficient extraction)
+		const coeffExtract = extractExpCoefficient(argForm);
+		if (coeffExtract !== null) {
+			return expandExpCoefficient(coeffExtract.coeff, coeffExtract.base);
 		}
 
 		return normalizeOpaqueNode(canonicalNode);
