@@ -9,11 +9,13 @@ import type { AlgebraicTerm, AlgebraicCoefficient, Rational, SimplifiedRadical }
 import {
 	addRational,
 	mulRational,
+	divRational,
 	negRational,
 	isZero as isZeroRational,
 	isOne as isOneRational,
 	ONE,
-	ZERO
+	ZERO,
+	gcd as gcdBigInt
 } from './rational';
 import { simplifyRadical } from './radical';
 import { sortAlgebraicTerms, hashRadicalArray, equalRadicalArrays, sortRadicals } from './compare';
@@ -394,6 +396,243 @@ export function mulAlgebraic(
 
 	// Combine like terms and sort
 	return algebraicCoefficient(products);
+}
+
+/**
+ * Divides two algebraic coefficients.
+ *
+ * For polynomial GCD, we primarily need exact division of coefficients.
+ * This function returns null if the division cannot be expressed exactly
+ * in the algebraic coefficient domain.
+ *
+ * Supported cases:
+ * 1. Division by zero: throws Error
+ * 2. Zero dividend: returns zero
+ * 3. Divisor is 1: returns dividend
+ * 4. Pure rationals: exact division
+ * 5. Same radical structure: rational coefficient division
+ * 6. Divisor is scalar multiple of dividend: returns scalar
+ *
+ * @param a - Dividend (numerator)
+ * @param b - Divisor (denominator)
+ * @returns a / b as AlgebraicCoefficient, or null if not exactly representable
+ * @throws {Error} If b is zero (division by zero)
+ *
+ * @example
+ * divAlgebraic(algebraicFromRational({ n: 6n, d: 1n }), algebraicFromRational({ n: 3n, d: 1n }))
+ * // => algebraicFromRational({ n: 2n, d: 1n })
+ *
+ * // 3*sqrt(2) / sqrt(2) = 3
+ * // sqrt(6) / sqrt(2) = sqrt(3)
+ */
+export function divAlgebraic(
+	a: AlgebraicCoefficient,
+	b: AlgebraicCoefficient
+): AlgebraicCoefficient | null {
+	// Division by zero
+	if (isZeroAlgebraic(b)) {
+		throw new Error('Division by zero in algebraic coefficient');
+	}
+
+	// Zero dividend
+	if (isZeroAlgebraic(a)) {
+		return ALGEBRAIC_ZERO;
+	}
+
+	// Divisor is one
+	if (isOneAlgebraic(b)) {
+		return a;
+	}
+
+	// Case 1: Both are pure rationals
+	const aRat = getRationalValue(a);
+	const bRat = getRationalValue(b);
+	if (aRat !== null && bRat !== null) {
+		return algebraicFromRational(divRational(aRat, bRat));
+	}
+
+	// Case 2: Single term division - can try to simplify radicals
+	if (a.terms.length === 1 && b.terms.length === 1) {
+		const termA = a.terms[0];
+		const termB = b.terms[0];
+
+		// Handle imaginary unit
+		if (termA.hasImaginaryUnit !== termB.hasImaginaryUnit) {
+			// One has i, the other doesn't - result will have i or 1/i = -i
+			// For simplicity, we handle same-imaginary cases first
+			if (termB.hasImaginaryUnit && !termA.hasImaginaryUnit) {
+				// a / (b*i) = a*(-i) / (b*i*(-i)) = -a*i / b
+				// Multiply by -i/(-i) to clear i from denominator
+				// For now, return null for this complex case
+				return null;
+			}
+		}
+
+		// Same imaginary structure
+		const resultHasI =
+			termA.hasImaginaryUnit === true && termB.hasImaginaryUnit !== true ? true : undefined;
+
+		// If same radical structure, just divide rational coefficients
+		if (equalRadicalArrays(termA.radicals, termB.radicals)) {
+			const resultRational = divRational(termA.rational, termB.rational);
+			if (resultHasI) {
+				return { terms: [{ rational: resultRational, radicals: [], hasImaginaryUnit: true }] };
+			}
+			return algebraicFromRational(resultRational);
+		}
+
+		// Try to simplify radical division
+		// sqrt(a) / sqrt(b) = sqrt(a/b) if a is divisible by b
+		if (termA.radicals.length === 1 && termB.radicals.length === 1) {
+			const radA = termA.radicals[0];
+			const radB = termB.radicals[0];
+
+			// Same index - can potentially simplify
+			if (radA.index === radB.index) {
+				// Check if radicand division is exact
+				if (radA.radicand % radB.radicand === 0n) {
+					const quotientRadicand = radA.radicand / radB.radicand;
+					const simplified = simplifyRadical(quotientRadicand, radA.index);
+
+					// Divide rational coefficients
+					const ratQuotient = divRational(termA.rational, termB.rational);
+					const finalRational = mulRational(ratQuotient, {
+						n: simplified.coefficient,
+						d: 1n
+					});
+
+					if (simplified.radicand === 1n) {
+						// Result is pure rational
+						return algebraicFromRational(finalRational);
+					}
+
+					// Result has a radical
+					return {
+						terms: [
+							{
+								rational: finalRational,
+								radicals: [{ radicand: simplified.radicand, index: radA.index }]
+							}
+						]
+					};
+				}
+			}
+		}
+
+		// For a radical-free numerator divided by a radical denominator
+		// (rationalization of denominator) - complex case
+		if (termA.radicals.length === 0 && termB.radicals.length === 1) {
+			// a / sqrt(b) = a*sqrt(b) / b
+			const radB = termB.radicals[0];
+			if (radB.index === 2n) {
+				// Square root - multiply by sqrt(radicand)/sqrt(radicand)
+				// Result: (a * sqrt(radicand)) / radicand
+				const rationalPart = divRational(
+					termA.rational,
+					mulRational(termB.rational, { n: radB.radicand, d: 1n })
+				);
+				return {
+					terms: [
+						{
+							rational: rationalPart,
+							radicals: [radB]
+						}
+					]
+				};
+			}
+		}
+	}
+
+	// Multi-term cases or complex radical combinations
+	// For polynomial GCD, we may need to handle sum divisions
+	// Check if a = k * b for some scalar k
+	if (b.terms.length === 1 && a.terms.length > 0) {
+		// Try to divide each term of a by the single term of b
+		const termB = b.terms[0];
+		const dividedTerms: AlgebraicTerm[] = [];
+
+		for (const termA of a.terms) {
+			// Each term must have compatible radical structure
+			if (!equalRadicalArrays(termA.radicals, termB.radicals)) {
+				// Radicals don't match - can't divide exactly
+				return null;
+			}
+
+			// Imaginary unit handling
+			if (termA.hasImaginaryUnit !== termB.hasImaginaryUnit) {
+				return null;
+			}
+
+			// Divide rational coefficients
+			const quotient = divRational(termA.rational, termB.rational);
+			dividedTerms.push({ rational: quotient, radicals: [] });
+		}
+
+		return algebraicCoefficient(dividedTerms);
+	}
+
+	// Cannot express quotient exactly in our domain
+	return null;
+}
+
+/**
+ * Computes the GCD of two algebraic coefficients.
+ *
+ * For pure rationals, this is the rational GCD (gcd of numerators / lcm of denominators).
+ * For algebraic numbers with radicals, returns 1 if they don't share structure.
+ *
+ * @param a - First coefficient
+ * @param b - Second coefficient
+ * @returns GCD of a and b
+ */
+export function gcdAlgebraic(
+	a: AlgebraicCoefficient,
+	b: AlgebraicCoefficient
+): AlgebraicCoefficient {
+	// Handle zeros
+	if (isZeroAlgebraic(a)) return b;
+	if (isZeroAlgebraic(b)) return a;
+
+	// Both pure rationals
+	const aRat = getRationalValue(a);
+	const bRat = getRationalValue(b);
+
+	if (aRat !== null && bRat !== null) {
+		// GCD of rationals: gcd(n1, n2) / lcm(d1, d2)
+		const gcdNum = gcdBigInt(aRat.n < 0n ? -aRat.n : aRat.n, bRat.n < 0n ? -bRat.n : bRat.n);
+		const lcmDen = (aRat.d * bRat.d) / gcdBigInt(aRat.d, bRat.d);
+		return algebraicFromRational({ n: gcdNum, d: lcmDen });
+	}
+
+	// For coefficients with radicals, finding the true GCD is complex
+	// For polynomial GCD purposes, if structures don't match, return 1
+	if (a.terms.length === 1 && b.terms.length === 1) {
+		const termA = a.terms[0];
+		const termB = b.terms[0];
+
+		// Same radical structure
+		if (equalRadicalArrays(termA.radicals, termB.radicals)) {
+			// GCD of the rational parts, keep the radical
+			const gcdNum = gcdBigInt(
+				termA.rational.n < 0n ? -termA.rational.n : termA.rational.n,
+				termB.rational.n < 0n ? -termB.rational.n : termB.rational.n
+			);
+			const lcmDen =
+				(termA.rational.d * termB.rational.d) / gcdBigInt(termA.rational.d, termB.rational.d);
+
+			return {
+				terms: [
+					{
+						rational: { n: gcdNum, d: lcmDen },
+						radicals: termA.radicals
+					}
+				]
+			};
+		}
+	}
+
+	// Default: GCD is 1
+	return ALGEBRAIC_ONE;
 }
 
 // =============================================================================
