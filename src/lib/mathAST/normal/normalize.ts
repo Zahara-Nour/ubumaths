@@ -854,7 +854,14 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 
 	// 4. Handle logarithms
 	if ((name === 'ln' || name === 'log') && canonicalArgs.length === 1) {
-		const argForm = normalizeNode(canonicalArgs[0]);
+		const arg = canonicalArgs[0];
+
+		// ln(exp(x)) = x — check BEFORE normalizing to avoid unnecessary work
+		if (name === 'ln' && arg.type === 'function' && arg.name === 'exp' && arg.args.length === 1) {
+			return normalizeNode(arg.args[0]);
+		}
+
+		const argForm = normalizeNode(arg);
 
 		// ln(1) = 0, log(1) = 0
 		if (isIntegerValue(argForm, 1n)) return ZERO_NORMAL_FORM;
@@ -882,7 +889,14 @@ function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
 
 	// 5. Handle exponentials
 	if (name === 'exp' && canonicalArgs.length === 1) {
-		const argForm = normalizeNode(canonicalArgs[0]);
+		const arg = canonicalArgs[0];
+
+		// exp(ln(x)) = x — check BEFORE normalizing to avoid unnecessary work
+		if (arg.type === 'function' && arg.name === 'ln' && arg.args.length === 1) {
+			return normalizeNode(arg.args[0]);
+		}
+
+		const argForm = normalizeNode(arg);
 
 		// exp(0) = 1
 		if (isIntegerValue(argForm, 0n)) return ONE_NORMAL_FORM;
