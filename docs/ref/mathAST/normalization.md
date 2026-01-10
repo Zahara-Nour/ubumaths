@@ -908,6 +908,52 @@ normalize(parseLatex('\\round(-3.5)')); // → -4 (away from 0)
 
 **Note**: These functions throw errors when differentiated (not differentiable at integer points).
 
+### Absolute Value Function (abs)
+
+The absolute value function is **evaluated during normalization** when the argument is purely numeric. Symbolic arguments remain opaque.
+
+**Behavior:**
+
+- For rational arguments: uses exact BigInt arithmetic (absRational)
+- For irrational arguments (radicals, transcendental functions): evaluates sign numerically
+- For symbolic arguments: remains opaque with normalized argument
+
+```typescript
+// Numeric arguments are evaluated during normalization
+normalize(parseLatex('|3|')); // → 3
+normalize(parseLatex('|-3|')); // → 3
+normalize(parseLatex('|0|')); // → 0
+
+// Rational arguments use exact BigInt arithmetic
+normalize(parseLatex('|-\\frac{7}{2}|')); // → 7/2 (exact)
+normalize(parseLatex('|\\frac{-5}{3}|')); // → 5/3 (exact)
+
+// Radical arguments preserve the radical structure
+normalize(parseLatex('|\\sqrt{2}|')); // → √2 (positive, unchanged)
+normalize(parseLatex('|-\\sqrt{2}|')); // → √2 (negated to positive)
+
+// Opaque functions are evaluated to determine sign
+normalize(parseLatex('|\\sin(1)|')); // → sin(1) (sin(1) ≈ 0.841 > 0)
+normalize(parseLatex('|\\sin(4)|')); // → -sin(4) (sin(4) ≈ -0.757 < 0)
+normalize(parseLatex('|\\ln(2)|')); // → ln(2) (ln(2) ≈ 0.693 > 0)
+normalize(parseLatex('|\\ln(0.5)|')); // → -ln(0.5) (ln(0.5) ≈ -0.693 < 0)
+
+// Symbolic arguments remain opaque
+normalize(parseLatex('|x|')); // → opaque: abs(x)^1
+normalize(parseLatex('|x + 1|')); // → opaque: abs(x + 1)^1
+normalize(parseLatex('|\\sin(x)|')); // → opaque: abs(sin(x))^1
+```
+
+**Expression evaluation:**
+
+```typescript
+// Expressions are normalized first, then abs is applied
+normalize(parseLatex('|3 - 5|')); // → 2 (|−2| = 2)
+normalize(parseLatex('|-3 + 5|')); // → 2
+normalize(parseLatex('|2 \\cdot (-3)|')); // → 6
+normalize(parseLatex('|\\frac{-2}{4}|')); // → 1/2
+```
+
 ### Normalization Pipeline
 
 The normalization process has two phases:

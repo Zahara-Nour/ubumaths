@@ -51,6 +51,7 @@ import {
 	isOne,
 	gcd as gcdBigInt,
 	negRational,
+	absRational,
 	floorRational,
 	ceilRational,
 	roundRational
@@ -2781,7 +2782,52 @@ function normalizeFunction(
 		return normalizeOpaqueNode(canonicalNode);
 	}
 
-	// 6. Handle rounding functions (floor, ceil, round)
+	// 6. Handle absolute value function (abs)
+	if (name === 'abs' && canonicalArgs.length === 1) {
+		const argForm = normalizeNode(canonicalArgs[0], ctx);
+
+		// Try exact rational computation first (preferred for precision)
+		const rationalArg = extractPureRational(argForm);
+		if (rationalArg !== null) {
+			const result = normalFormFromRational(absRational(rationalArg));
+			recordNormalizationStep(ctx, 'abs-function', node, result, 'summarized');
+			return result;
+		}
+
+		// Fall back to numeric evaluation (handles radicals, opaque functions like sin(1), etc.)
+		try {
+			const argNode = denormalize(argForm);
+			const numericArg = evaluateNodeToApproximatedNumber(argNode);
+			if (Number.isFinite(numericArg)) {
+				const resultValue = Math.abs(numericArg);
+				// Convert back to rational - use floatToRational for non-integer results
+				if (Number.isInteger(resultValue)) {
+					const result = normalFormFromRational(fromInteger(BigInt(resultValue)));
+					recordNormalizationStep(ctx, 'abs-function', node, result, 'summarized');
+					return result;
+				} else {
+					// For non-integer results like abs(√2), re-normalize the absolute value
+					// Since we're dealing with numeric evaluation, the result is positive
+					// Re-normalize the argument - if it was negative, negate it
+					if (numericArg < 0) {
+						const negatedForm = negNormalForm(argForm);
+						recordNormalizationStep(ctx, 'abs-function', node, negatedForm, 'summarized');
+						return negatedForm;
+					} else {
+						recordNormalizationStep(ctx, 'abs-function', node, argForm, 'summarized');
+						return argForm;
+					}
+				}
+			}
+		} catch {
+			// Evaluation failed (free variables, etc.) - treat as opaque
+		}
+
+		// Contains variables or evaluation failed - treat as opaque
+		return normalizeOpaqueNode(canonicalNode);
+	}
+
+	// 7. Handle rounding functions (floor, ceil, round)
 	if ((name === 'floor' || name === 'ceil' || name === 'round') && canonicalArgs.length === 1) {
 		const argForm = normalizeNode(canonicalArgs[0], ctx);
 
@@ -2834,7 +2880,7 @@ function normalizeFunction(
 		return normalizeOpaqueNode(canonicalNode);
 	}
 
-	// 7. Other functions - opaque with normalized args
+	// 8. Other functions - opaque with normalized args
 	return normalizeOpaqueNode(canonicalNode);
 }
 
