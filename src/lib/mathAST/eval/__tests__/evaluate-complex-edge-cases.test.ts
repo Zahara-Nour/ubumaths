@@ -130,13 +130,11 @@ describe('Powers of imaginary unit i', () => {
 	});
 
 	describe('negative integer powers', () => {
-		// Note: Complex denominator rationalization is not yet implemented
-		// i^(-n) = 1/i^n is mathematically correct but not fully simplified
-		it('i^(-1) = 1/i (not rationalized)', () => {
+		// Complex denominator rationalization is now implemented
+		it('i^(-1) = -i (rationalized)', () => {
 			const expr = power(i(), number('-1'));
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect '-\\imaginaryI'
-			expectLatex(result, '\\dfrac{1}{\\imaginaryI}');
+			expectLatex(result, '-\\imaginaryI');
 		});
 
 		it('i^(-2) = -1', () => {
@@ -145,11 +143,10 @@ describe('Powers of imaginary unit i', () => {
 			expectLatex(result, '-1');
 		});
 
-		it('i^(-3) = 1/(-i) (not rationalized)', () => {
+		it('i^(-3) = i (rationalized)', () => {
 			const expr = power(i(), number('-3'));
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect '\\imaginaryI'
-			expectLatex(result, '\\dfrac{1}{-\\imaginaryI}');
+			expectLatex(result, '\\imaginaryI');
 		});
 
 		it('i^(-4) = 1', () => {
@@ -158,11 +155,10 @@ describe('Powers of imaginary unit i', () => {
 			expectLatex(result, '1');
 		});
 
-		it('i^(-5) = 1/i (not rationalized)', () => {
+		it('i^(-5) = -i (rationalized)', () => {
 			const expr = power(i(), number('-5'));
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect '-\\imaginaryI'
-			expectLatex(result, '\\dfrac{1}{\\imaginaryI}');
+			expectLatex(result, '-\\imaginaryI');
 		});
 	});
 
@@ -228,51 +224,46 @@ describe('Complex division edge cases', () => {
 			expectLatex(result, '-3 - 4 \\imaginaryI');
 		});
 
-		// Note: Complex denominator rationalization is not yet implemented
-		it('z / i stays as fraction (not rationalized)', () => {
-			// (3+4i)/i would be 4 - 3i if rationalized
+		// Complex denominator rationalization is now implemented
+		it('z / i = 4 - 3i (rationalized)', () => {
+			// (3+4i)/i = (3+4i) * (-i) = -3i + 4 = 4 - 3i
 			const z = c(3, 4);
 			const expr = divide(z, i(), 'fraction');
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect '4 - 3 \\imaginaryI'
-			expectLatex(result, '\\dfrac{3 + 4 \\imaginaryI}{\\imaginaryI}');
+			expectLatex(result, '4 - 3 \\imaginaryI');
 		});
 
-		it('z / (-i) stays as fraction (not rationalized)', () => {
-			// (3+4i)/(-i) would be -4 + 3i if rationalized
+		it('z / (-i) = -4 + 3i (rationalized)', () => {
+			// (3+4i)/(-i) = (3+4i) * i = 3i - 4 = -4 + 3i
 			const z = c(3, 4);
 			const minusI = c(0, -1);
 			const expr = divide(z, minusI, 'fraction');
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect '-4 + 3 \\imaginaryI'
-			expectLatex(result, '\\dfrac{3 + 4 \\imaginaryI}{-\\imaginaryI}');
+			expectLatex(result, '-4 + 3 \\imaginaryI');
 		});
 	});
 
 	describe('self-division', () => {
-		// Note: Complex denominator rationalization is not yet implemented
-		// Self-division with complex denominators stays as fraction
-		it('z / z stays as fraction (not rationalized)', () => {
+		// Complex denominator rationalization is now implemented
+		// Self-division with complex denominators simplifies to 1
+		it('z / z = 1 (rationalized)', () => {
 			const z = c(3, 4);
 			const expr = divide(z, c(3, 4), 'fraction');
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect '1'
-			expectLatex(result, '\\dfrac{3 + 4 \\imaginaryI}{3 + 4 \\imaginaryI}');
+			expectLatex(result, '1');
 		});
 
-		it('i / i stays as fraction (not rationalized)', () => {
+		it('i / i = 1 (rationalized)', () => {
 			const expr = divide(i(), i(), 'fraction');
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect '1'
-			expectLatex(result, '\\dfrac{\\imaginaryI}{\\imaginaryI}');
+			expectLatex(result, '1');
 		});
 
-		it('(1+i) / (1+i) stays as fraction (not rationalized)', () => {
+		it('(1+i) / (1+i) = 1 (rationalized)', () => {
 			const z = c(1, 1);
 			const expr = divide(z, c(1, 1), 'fraction');
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect '1'
-			expectLatex(result, '\\dfrac{1 + \\imaginaryI}{1 + \\imaginaryI}');
+			expectLatex(result, '1');
 		});
 	});
 
@@ -291,37 +282,33 @@ describe('Complex division edge cases', () => {
 	});
 
 	describe('reciprocals', () => {
-		// Note: Complex denominator rationalization is not yet implemented
-		it('1 / (3+4i) stays as fraction (not rationalized)', () => {
-			// Would be (3-4i)/25 if rationalized
+		// Complex denominator rationalization is now implemented
+		it('1 / (3+4i) = (3-4i)/25 (rationalized)', () => {
+			// 1/(3+4i) * (3-4i)/(3-4i) = (3-4i)/(9+16) = (3-4i)/25
 			const expr = divide(number('1'), c(3, 4), 'fraction');
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect fraction with 3-4i and 25
-			expectLatex(result, '\\dfrac{1}{3 + 4 \\imaginaryI}');
+			expectLatex(result, '\\dfrac{3}{25} - \\dfrac{4}{25} \\imaginaryI');
 		});
 
-		it('1 / (1+i) stays as fraction (not rationalized)', () => {
+		it('1 / (1+i) = (1-i)/2 (rationalized)', () => {
 			const expr = divide(number('1'), c(1, 1), 'fraction');
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect (1-i)/2
-			expectLatex(result, '\\dfrac{1}{1 + \\imaginaryI}');
+			expectLatex(result, '\\dfrac{1}{2} - \\dfrac{1}{2} \\imaginaryI');
 		});
 	});
 
 	describe('pure imaginary division', () => {
-		// Note: Complex denominator rationalization is not yet implemented
-		it('(0+4i) / (0+2i) stays as fraction (not rationalized)', () => {
+		// Complex denominator rationalization is now implemented
+		it('(0+4i) / (0+2i) = 2 (rationalized)', () => {
 			const expr = divide(c(0, 4), c(0, 2), 'fraction');
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect '2'
-			expectLatex(result, '\\dfrac{2 \\imaginaryI}{\\imaginaryI}');
+			expectLatex(result, '2');
 		});
 
-		it('(3+0i) / (0+1i) stays as fraction (not rationalized)', () => {
+		it('(3+0i) / (0+1i) = -3i (rationalized)', () => {
 			const expr = divide(c(3, 0), c(0, 1), 'fraction');
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect '-3 \\imaginaryI'
-			expectLatex(result, '\\dfrac{3}{\\imaginaryI}');
+			expectLatex(result, '-3 \\imaginaryI');
 		});
 	});
 });
@@ -515,13 +502,12 @@ describe('Mixed real and complex operations', () => {
 	});
 
 	describe('division order', () => {
-		// Note: Complex denominator rationalization is not yet implemented
-		it('10 / (1+i) stays as fraction (not rationalized)', () => {
-			// Would be 5 - 5i if rationalized
+		// Complex denominator rationalization is now implemented
+		it('10 / (1+i) = 5 - 5i (rationalized)', () => {
+			// 10/(1+i) * (1-i)/(1-i) = 10(1-i)/(1+1) = 10(1-i)/2 = 5 - 5i
 			const expr = divide(number('10'), c(1, 1), 'fraction');
 			const result = evaluate(expr);
-			// TODO: When complex rationalization is implemented, expect '5 - 5 \\imaginaryI'
-			expectLatex(result, '\\dfrac{10}{1 + \\imaginaryI}');
+			expectLatex(result, '5 - 5 \\imaginaryI');
 		});
 
 		it('(6+8i) / 2 = 3+4i', () => {

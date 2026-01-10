@@ -768,3 +768,130 @@ describe('evaluate - floor, ceil, round', () => {
 		expect(result.value).toBe(3);
 	});
 });
+
+// =============================================================================
+// Rational Arithmetic Precision Tests
+// =============================================================================
+
+describe('evaluate - Rational arithmetic avoids floating-point errors', () => {
+	describe('decimal mode with Rational internals', () => {
+		it('avoids float precision errors: 0.1 + 0.2 = 0.3 exactly', () => {
+			// In JavaScript: 0.1 + 0.2 = 0.30000000000000004
+			// With Rational arithmetic: 1/10 + 2/10 = 3/10 = 0.3 exactly
+			const result = evaluate(parseLatex('0.1 + 0.2'), { mode: 'decimal' });
+			expect(result.value).toBe(0.3);
+		});
+
+		it('avoids float precision errors: 1/3 + 1/3 + 1/3 = 1 exactly', () => {
+			// In JavaScript: 1/3 + 1/3 + 1/3 = 0.9999999999999999
+			// With Rational arithmetic: exact 1
+			const result = evaluate(parseLatex('\\frac{1}{3} + \\frac{1}{3} + \\frac{1}{3}'), {
+				mode: 'decimal'
+			});
+			expect(result.value).toBe(1);
+		});
+
+		it('avoids float precision errors: 0.1 * 10 = 1 exactly', () => {
+			const result = evaluate(parseLatex('0.1 \\cdot 10'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+
+		it('avoids float precision errors: 0.7 + 0.1 = 0.8 exactly', () => {
+			// In JavaScript: 0.7 + 0.1 = 0.7999999999999999
+			const result = evaluate(parseLatex('0.7 + 0.1'), { mode: 'decimal' });
+			expect(result.value).toBe(0.8);
+		});
+
+		it('avoids float precision errors: 1.0 - 0.9 = 0.1 exactly', () => {
+			// In JavaScript: 1.0 - 0.9 = 0.09999999999999998
+			const result = evaluate(parseLatex('1.0 - 0.9'), { mode: 'decimal' });
+			expect(result.value).toBe(0.1);
+		});
+
+		it('handles 1/7 * 7 = 1 exactly in decimal mode', () => {
+			const result = evaluate(parseLatex('\\frac{1}{7} \\cdot 7'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+
+		it('handles complex fraction chain exactly', () => {
+			// (1/2 + 1/3) * 6 = (5/6) * 6 = 5
+			const result = evaluate(parseLatex('\\left(\\frac{1}{2} + \\frac{1}{3}\\right) \\cdot 6'), {
+				mode: 'decimal'
+			});
+			expect(result.value).toBe(5);
+		});
+	});
+
+	describe('transcendental functions use Rational for subsequent operations', () => {
+		it('sin(0) + 1/2 = 0.5 exactly', () => {
+			const result = evaluate(parseLatex('\\sin(0) + \\frac{1}{2}'), { mode: 'decimal' });
+			expect(result.value).toBe(0.5);
+		});
+
+		it('cos(0) * 1/3 = 1/3 exactly', () => {
+			const result = evaluate(parseLatex('\\cos(0) \\cdot \\frac{1}{3}'), { mode: 'decimal' });
+			expect(Math.abs((result.value as number) - 1 / 3)).toBeLessThan(1e-15);
+		});
+	});
+});
+
+// =============================================================================
+// Precision Option Tests
+// =============================================================================
+
+describe('evaluate - precision options', () => {
+	it('rounds to 2 decimal places', () => {
+		const result = evaluate(parseLatex('\\sqrt{2}'), {
+			mode: 'decimal',
+			precision: { type: 'decimal', digits: 2 }
+		});
+		expect(result.value).toBe(1.41);
+	});
+
+	it('rounds to 4 decimal places', () => {
+		const result = evaluate(parseLatex('\\sqrt{2}'), {
+			mode: 'decimal',
+			precision: { type: 'decimal', digits: 4 }
+		});
+		expect(result.value).toBe(1.4142);
+	});
+
+	it('rounds pi to 3 decimal places', () => {
+		const result = evaluate(parseLatex('\\pi'), {
+			mode: 'decimal',
+			precision: { type: 'decimal', digits: 3 }
+		});
+		expect(result.value).toBe(3.142);
+	});
+
+	it('uses full precision by default', () => {
+		const result = evaluate(parseLatex('\\sqrt{2}'), { mode: 'decimal' });
+		// Due to Rational conversion, there's a tiny precision difference
+		expect(Math.abs((result.value as number) - Math.sqrt(2))).toBeLessThan(1e-14);
+	});
+
+	it('rounds to significant figures', () => {
+		const result = evaluate(parseLatex('1234.5'), {
+			mode: 'decimal',
+			precision: { type: 'significant', digits: 3 }
+		});
+		expect(result.value).toBe(1230);
+	});
+
+	it('rounds to magnitude', () => {
+		const result = evaluate(parseLatex('12345'), {
+			mode: 'decimal',
+			precision: { type: 'magnitude', digits: 2 }
+		});
+		expect(result.value).toBe(12300);
+	});
+
+	it('tolerance type does not affect value', () => {
+		const result = evaluate(parseLatex('\\sqrt{2}'), {
+			mode: 'decimal',
+			precision: { type: 'tolerance', value: 0.01 }
+		});
+		// Due to Rational conversion, there's a tiny precision difference
+		expect(Math.abs((result.value as number) - Math.sqrt(2))).toBeLessThan(1e-14);
+	});
+});
