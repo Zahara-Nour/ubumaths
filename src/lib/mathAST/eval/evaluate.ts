@@ -50,6 +50,7 @@ import {
 	isInteger as isIntegerRational,
 	floatToRational
 } from '../normal/rational';
+import { integerNthRoot } from '../normal/radical';
 import { number, divide } from '../factory';
 import { normalize } from '../normal/normalize';
 import { denormalize } from '../normal/denormalize';
@@ -221,17 +222,23 @@ function parseNumberToRational(value: string): Rational {
 /**
  * Evaluates a function node to a Rational by computing via Math.*
  * and converting the result back to Rational.
+ *
+ * @param name - Function name (e.g., 'sqrt', 'sin', 'cos')
+ * @param args - Function arguments
+ * @param depth - Recursion depth for stack overflow protection
+ * @param base - Optional root index for nth roots (e.g., base=3 for cube root)
  */
 function evaluateFunctionToRational(
 	name: string,
 	args: readonly MathNode[],
-	depth: number
+	depth: number,
+	base?: MathNode
 ): Rational {
-	// Evaluate arguments to numbers (converting from Rational)
-	const numArgs = args.map((arg) => {
-		const r = evaluateToRational(arg, depth + 1);
-		return rationalToNumber(r);
-	});
+	// Evaluate arguments to Rationals first (for exact computation where possible)
+	const rationalArgs = args.map((arg) => evaluateToRational(arg, depth + 1));
+
+	// Evaluate arguments to numbers (for transcendental functions)
+	const numArgs = rationalArgs.map((r) => rationalToNumber(r));
 
 	let result: number;
 
@@ -280,19 +287,53 @@ function evaluateFunctionToRational(
 			if (numArgs[0] <= 0) throw new Error('log argument must be positive');
 			result = Math.log10(numArgs[0]);
 			break;
-		case 'sqrt':
+		case 'sqrt': {
 			if (numArgs.length !== 1) throw new Error('sqrt requires exactly 1 argument');
 			if (numArgs[0] < 0) throw new Error('sqrt argument must be non-negative');
-			result = Math.sqrt(numArgs[0]);
+
+			// Handle nth root: sqrt with base property means n-th root
+			// e.g., \sqrt[3]{8} has base=3, args=[8]
+			const index = base ? evaluateToRational(base, depth + 1) : fromInteger(2);
+			const radicand = rationalArgs[0];
+
+			// Only try exact computation for integer radicand and index
+			if (isIntegerRational(index) && isIntegerRational(radicand) && radicand.n >= 0n) {
+				const indexBigInt = index.n;
+				const radicandBigInt = radicand.n;
+
+				// Try exact integer nth root
+				const exactRoot = integerNthRoot(radicandBigInt, indexBigInt);
+				if (exactRoot !== null) {
+					return fromInteger(exactRoot);
+				}
+			}
+
+			// Fall back to floating point
+			const indexNum = base ? rationalToNumber(index) : 2;
+			result = Math.pow(numArgs[0], 1 / indexNum);
 			break;
+		}
 		case 'cbrt':
 			if (numArgs.length !== 1) throw new Error('cbrt requires exactly 1 argument');
+			// Try exact integer cube root first
+			if (isIntegerRational(rationalArgs[0])) {
+				const radicandBigInt = rationalArgs[0].n;
+				const exactRoot = integerNthRoot(
+					radicandBigInt < 0n ? -radicandBigInt : radicandBigInt,
+					3n
+				);
+				if (exactRoot !== null) {
+					return fromInteger(radicandBigInt < 0n ? -exactRoot : exactRoot);
+				}
+			}
 			result = Math.cbrt(numArgs[0]);
 			break;
-		case 'abs':
+		case 'abs': {
 			if (numArgs.length !== 1) throw new Error('abs requires exactly 1 argument');
-			result = Math.abs(numArgs[0]);
-			break;
+			// Exact computation for abs
+			const absArg = rationalArgs[0];
+			return absArg.n < 0n ? { n: -absArg.n, d: absArg.d } : absArg;
+		}
 		case 'floor':
 			if (numArgs.length !== 1) throw new Error('floor requires exactly 1 argument');
 			result = Math.floor(numArgs[0]);
@@ -451,6 +492,24 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 			}
 		}
 
+		// For fractional exponent p/q (where base is a non-negative integer):
+		// Try to compute exact nth root first
+		// x^{p/q} = (x^{1/q})^p = (q-th root of x)^p
+		if (isIntegerRational(base) && base.n >= 0n && exp.d !== 1n) {
+			const p = exp.n; // numerator of exponent
+			const q = exp.d; // denominator of exponent (the root index)
+
+			// Try exact q-th root of base
+			const exactRoot = integerNthRoot(base.n, q);
+			if (exactRoot !== null) {
+				// x^{p/q} = (exactRoot)^p
+				const pNum = Number(p);
+				if (Number.isSafeInteger(pNum) && Math.abs(pNum) <= 1000) {
+					return powRational(fromInteger(exactRoot), pNum);
+				}
+			}
+		}
+
 		// For non-integer exponent, compute via floating point
 		const baseNum = rationalToNumber(base);
 		const expNum = rationalToNumber(exp);
@@ -467,6 +526,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 	if (isFunction(node)) {
 		const funcName = node.name;
 		const funcArgs = node.args; // Capture before narrowing
+		const funcBase = node.base; // For nth roots: sqrt[n]{x} has base=n
 
 		// Check for derivative or inverse functions
 		if (isDerivativeFunction(node)) {
@@ -478,7 +538,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 			);
 		}
 
-		return evaluateFunctionToRational(funcName, funcArgs, depth);
+		return evaluateFunctionToRational(funcName, funcArgs, depth, funcBase);
 	}
 
 	// DelimiterNode (parentheses)

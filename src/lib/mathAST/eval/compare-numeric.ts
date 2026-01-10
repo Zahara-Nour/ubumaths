@@ -47,7 +47,14 @@ export function compareNumericNodes(a: MathNode, b: MathNode): ComparisonResult 
 		const exactResult = evaluate(diff, { mode: 'exact' });
 
 		// Step 3: Check for exact zero
-		if (isNumber(exactResult.value) && exactResult.value.value === '0') {
+		// In exact mode, value is always a MathNode (not number or ComplexValueResult)
+		const exactValue = exactResult.value;
+		if (
+			typeof exactValue === 'object' &&
+			'type' in exactValue &&
+			isNumber(exactValue) &&
+			exactValue.value === '0'
+		) {
 			return 0;
 		}
 
