@@ -1538,6 +1538,203 @@ describe('evaluate - extended precision: precision options edge cases', () => {
 			expect(result.value).toBe(1200000);
 		});
 	});
+
+	describe('type none - full precision', () => {
+		it('returns full precision with type none', () => {
+			const result = evaluate(parseLatex('\\frac{1}{3}'), {
+				mode: 'decimal',
+				precision: { type: 'none' }
+			});
+			expect(Math.abs((result.value as number) - 1 / 3)).toBeLessThan(1e-15);
+		});
+
+		it('returns full precision for sqrt(2) with type none', () => {
+			const result = evaluate(parseLatex('\\sqrt{2}'), {
+				mode: 'decimal',
+				precision: { type: 'none' }
+			});
+			expect(Math.abs((result.value as number) - Math.sqrt(2))).toBeLessThan(1e-14);
+		});
+
+		it('returns full precision for pi with type none', () => {
+			const result = evaluate(parseLatex('\\pi'), {
+				mode: 'decimal',
+				precision: { type: 'none' }
+			});
+			expect(result.value).toBe(Math.PI);
+		});
+	});
+
+	describe('tolerance mode', () => {
+		it('tolerance absolute does not affect value', () => {
+			const result = evaluate(parseLatex('\\sqrt{2}'), {
+				mode: 'decimal',
+				precision: { type: 'tolerance', tolerance: 0.1, mode: 'absolute' }
+			});
+			expect(Math.abs((result.value as number) - Math.sqrt(2))).toBeLessThan(1e-14);
+		});
+
+		it('tolerance relative does not affect value', () => {
+			const result = evaluate(parseLatex('\\sqrt{2}'), {
+				mode: 'decimal',
+				precision: { type: 'tolerance', tolerance: 0.05, mode: 'relative' }
+			});
+			expect(Math.abs((result.value as number) - Math.sqrt(2))).toBeLessThan(1e-14);
+		});
+
+		it('tolerance with small value still returns full precision', () => {
+			const result = evaluate(parseLatex('0.001'), {
+				mode: 'decimal',
+				precision: { type: 'tolerance', tolerance: 0.0001, mode: 'absolute' }
+			});
+			expect(result.value).toBe(0.001);
+		});
+
+		it('tolerance with large value still returns full precision', () => {
+			const result = evaluate(parseLatex('1234567'), {
+				mode: 'decimal',
+				precision: { type: 'tolerance', tolerance: 100, mode: 'absolute' }
+			});
+			expect(result.value).toBe(1234567);
+		});
+	});
+
+	describe('negative numbers with precision', () => {
+		it('rounds negative to decimal places: -1.234 → -1.23', () => {
+			const result = evaluate(parseLatex('-1.234'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 2 }
+			});
+			expect(result.value).toBe(-1.23);
+		});
+
+		it('rounds negative to significant figures: -0.001234 → -0.00123', () => {
+			const result = evaluate(parseLatex('-0.001234'), {
+				mode: 'decimal',
+				precision: { type: 'significant', digits: 3 }
+			});
+			expect(Math.abs((result.value as number) - -0.00123)).toBeLessThan(1e-10);
+		});
+
+		it('rounds negative to magnitude: -555 → -600', () => {
+			const result = evaluate(parseLatex('-555'), {
+				mode: 'decimal',
+				precision: { type: 'magnitude', digits: 2 }
+			});
+			expect(result.value).toBe(-600);
+		});
+	});
+
+	describe('zero handling with precision', () => {
+		it('zero stays zero with decimal precision', () => {
+			const result = evaluate(parseLatex('0'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 5 }
+			});
+			expect(result.value).toBe(0);
+		});
+
+		it('zero stays zero with significant figures', () => {
+			const result = evaluate(parseLatex('0'), {
+				mode: 'decimal',
+				precision: { type: 'significant', digits: 3 }
+			});
+			expect(result.value).toBe(0);
+		});
+
+		it('very small number rounds to zero with low precision', () => {
+			const result = evaluate(parseLatex('0.0001'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 2 }
+			});
+			expect(result.value).toBe(0);
+		});
+	});
+
+	describe('boundary cases', () => {
+		it('exactly 0.5 rounds up with 0 decimal places', () => {
+			const result = evaluate(parseLatex('0.5'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 0 }
+			});
+			expect(result.value).toBe(1);
+		});
+
+		it('exactly 1.5 rounds up with 0 decimal places', () => {
+			const result = evaluate(parseLatex('1.5'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 0 }
+			});
+			expect(result.value).toBe(2);
+		});
+
+		it('exactly 2.5 rounds up with 0 decimal places', () => {
+			const result = evaluate(parseLatex('2.5'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 0 }
+			});
+			expect(result.value).toBe(3);
+		});
+
+		it('-0.5 rounds to -1 with 0 decimal places (half rounds away from zero)', () => {
+			const result = evaluate(parseLatex('-0.5'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 0 }
+			});
+			// toFixed rounds half away from zero for negative numbers
+			expect(result.value).toBe(-1);
+		});
+
+		it('rounds 0.555 to 0.56 with 2 decimal places', () => {
+			const result = evaluate(parseLatex('0.555'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 2 }
+			});
+			expect(result.value).toBe(0.56);
+		});
+
+		it('rounds 0.545 to 0.55 with 2 decimal places', () => {
+			const result = evaluate(parseLatex('0.545'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 2 }
+			});
+			expect(result.value).toBe(0.55);
+		});
+	});
+
+	describe('precision with expressions', () => {
+		it('applies precision after full evaluation: (1/3 + 1/3) with 2 decimals = 0.67', () => {
+			const result = evaluate(parseLatex('\\frac{1}{3} + \\frac{1}{3}'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 2 }
+			});
+			expect(result.value).toBe(0.67);
+		});
+
+		it('applies precision after sqrt: sqrt(2) with 1 decimal = 1.4', () => {
+			const result = evaluate(parseLatex('\\sqrt{2}'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 1 }
+			});
+			expect(result.value).toBe(1.4);
+		});
+
+		it('applies precision after sin: sin(1) with 2 decimals = 0.84', () => {
+			const result = evaluate(parseLatex('\\sin(1)'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 2 }
+			});
+			expect(result.value).toBe(0.84);
+		});
+
+		it('precision after complex expression: (pi * 2) with 3 sig figs = 6.28', () => {
+			const result = evaluate(parseLatex('\\pi \\cdot 2'), {
+				mode: 'decimal',
+				precision: { type: 'significant', digits: 3 }
+			});
+			expect(result.value).toBe(6.28);
+		});
+	});
 });
 
 // =============================================================================
