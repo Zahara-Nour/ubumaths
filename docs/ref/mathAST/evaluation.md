@@ -179,6 +179,44 @@ evaluate(parseLatex('12345'), {
 // Returns 12300
 ```
 
+#### Exact Rounding on Rationals
+
+Precision rounding is performed **on the exact Rational value** before converting to float.
+This ensures correct rounding at boundary values (0.5, 0.15, etc.) that can't be exactly
+represented in IEEE 754:
+
+```typescript
+// 0.15 = 15/100 = 3/20 exactly as Rational
+// Rounding is done on the exact value, not the float approximation
+evaluate(parseLatex('0.15'), {
+	mode: 'decimal',
+	precision: { type: 'decimal', digits: 1 }
+});
+// Returns 0.2 (correct!)
+// NOT 0.1 (which would happen if rounding on float 0.14999999...)
+
+// All x.x5 values round correctly (half away from zero)
+evaluate(parseLatex('0.35'), {
+	mode: 'decimal',
+	precision: { type: 'decimal', digits: 1 }
+});
+// Returns 0.4
+
+evaluate(parseLatex('0.85'), {
+	mode: 'decimal',
+	precision: { type: 'decimal', digits: 1 }
+});
+// Returns 0.9
+```
+
+The rounding algorithm uses BigInt arithmetic:
+
+1. Multiply the Rational by 10^digits
+2. Round to nearest integer (half away from zero) using BigInt
+3. Divide by 10^digits to get the final Number
+
+This eliminates the classic JavaScript rounding issues at boundary values.
+
 ### Rational Arithmetic (No Float Errors)
 
 Internally, decimal mode uses BigInt-based Rational arithmetic to avoid
