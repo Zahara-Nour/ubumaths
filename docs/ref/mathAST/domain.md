@@ -6,11 +6,14 @@ The domain system computes, validates, and displays the domain of definition for
 
 The domain module provides:
 
-- **Domain types**: Empty, Universal, Interval, and Condition-based domains
-- **Domain algebra**: Intersection, union, complement operations
+- **Domain types**: Empty, Universal, IntervalSet, and Condition-based domains
+- **Domain algebra**: Intersection, union, complement, difference operations
+- **Symbolic bounds**: Support for π, e, √2, √3, and other symbolic endpoints
 - **Automatic computation**: Computes domains for composed expressions with preimage solving
 - **Validation**: Runtime checks with pedagogical French error messages
 - **French notation**: Standard French interval notation (]a, b[ for open intervals)
+
+> **Architecture**: The domain module delegates interval representation and algebra to `$lib/math/intervals/`, keeping domain-specific features (compute, validate, builtins, ConditionDomain) local.
 
 ## Quick Start
 
@@ -61,9 +64,9 @@ const real = universalDomain();
 formatDomainInterval(real); // "ℝ"
 ```
 
-### IntervalDomain
+### IntervalSet
 
-Union of intervals with optional excluded points.
+Union of intervals with optional excluded points. Endpoint values are `MathNode` (use `fromNumber()` for numeric values).
 
 ```typescript
 import {
@@ -74,7 +77,10 @@ import {
 	unitInterval,
 	greaterThan,
 	lessThanOrEqual,
-	excludedPoint
+	excludedPoint,
+	domainFromNumber,
+	pi,
+	sqrt2
 } from '$lib/mathAST';
 
 // Common domains
@@ -83,35 +89,51 @@ nonNegativeReals(); // [0, +∞[
 nonZeroReals(); // ℝ \ {0}
 unitInterval(); // [-1, 1]
 
-// Custom intervals
-intervalDomain([greaterThan(2)]); // ]2, +∞[
-intervalDomain([lessThanOrEqual(-2), greaterThan(2)]); // ]-∞, -2] ∪ ]2, +∞[
+// Custom intervals (use domainFromNumber for numeric bounds)
+intervalDomain([greaterThan(domainFromNumber(2))]); // ]2, +∞[
+intervalDomain([lessThanOrEqual(domainFromNumber(-2)), greaterThan(domainFromNumber(2))]); // ]-∞, -2] ∪ ]2, +∞[
+
+// Symbolic bounds
+intervalDomain([closedInterval(domainFromNumber(0), pi())]); // [0, π]
+intervalDomain([closedInterval(domainFromNumber(0), sqrt2())]); // [0, √2]
 
 // Excluded points
-intervalDomain([greaterThan(0)], [excludedPoint(1)]); // ]0, +∞[ \ {1}
+intervalDomain([greaterThan(domainFromNumber(0))], [excludedPoint(domainFromNumber(1))]); // ]0, +∞[ \ {1}
 ```
+
+> **Note**: `IntervalDomain` is a deprecated alias for `IntervalSet`. The `kind` property is `'interval_set'`.
 
 ### ConditionDomain
 
 Condition-based representation for complex constraints.
 
 ```typescript
-import { conditionDomain } from '$lib/mathAST';
+import { conditionDomain, comparison, domainFromNumber } from '$lib/mathAST';
 
 // x > 0 AND x < 10
 const cond = conditionDomain(
-	[
-		{ kind: 'comparison', variable: 'x', op: '>', bound: 0 },
-		{ kind: 'comparison', variable: 'x', op: '<', bound: 10 }
-	],
+	[comparison('x', '>', domainFromNumber(0)), comparison('x', '<', domainFromNumber(10))],
 	'and'
 );
+
+// x != 5
+const notFive = conditionDomain([comparison('x', '!=', domainFromNumber(5))]);
 ```
+
+> **Note**: ConditionDomain algebra operations (intersect, union, complement) return safe fallbacks since full condition analysis is not implemented.
 
 ## Domain Algebra
 
 ```typescript
-import { domainIntersect, domainUnion, domainComplement, domainIsEmpty } from '$lib/mathAST';
+import {
+	domainIntersect,
+	domainUnion,
+	domainComplement,
+	domainDifference,
+	domainIsEmpty,
+	domainIsUniversal,
+	containsValue
+} from '$lib/mathAST';
 
 const a = positiveReals(); // ]0, +∞[
 const b = unitInterval(); // [-1, 1]
@@ -119,8 +141,21 @@ const b = unitInterval(); // [-1, 1]
 domainIntersect(a, b); // ]0, 1]
 domainUnion(a, b); // [-1, +∞[
 domainComplement(positiveReals()); // ]-∞, 0]
+domainDifference(a, b); // ]1, +∞[
 domainIsEmpty(emptyDomain()); // true
+domainIsUniversal(universalDomain()); // true
+containsValue(positiveReals(), 5); // true
+containsValue(positiveReals(), -1); // false
 ```
+
+### Algebra Properties
+
+The domain algebra satisfies standard set-theoretic properties:
+
+- **Associativity**: `(A ∩ B) ∩ C = A ∩ (B ∩ C)` and `(A ∪ B) ∪ C = A ∪ (B ∪ C)`
+- **De Morgan**: `complement(A ∪ B) = complement(A) ∩ complement(B)`
+- **Double complement**: `complement(complement(D)) = D`
+- **Idempotence**: `D ∪ D = D` and `D ∩ D = D`
 
 ## Domain Computation
 
@@ -285,7 +320,39 @@ Defined: g(x) = sqrt(x) + ln(x)
 ### Types
 
 ```typescript
-type Domain = EmptyDomain | UniversalDomain | IntervalDomain | ConditionDomain;
+// Core types (from intervals module)
+type EndpointValue = MathNode; // Symbolic or numeric bound
+type EndpointType = 'open' | 'closed';
+interface Endpoint {
+	value: EndpointValue;
+	type: EndpointType;
+}
+interface Interval {
+	kind: 'interval';
+	lower: Endpoint;
+	upper: Endpoint;
+}
+
+// Domain types
+type EmptySet = { kind: 'empty' };
+type UniversalSet = { kind: 'universal' };
+type IntervalSet = {
+	kind: 'interval_set';
+	intervals: Interval[];
+	excludedPoints: ExcludedPoint[];
+};
+type ConditionDomain = {
+	kind: 'condition_domain';
+	conditions: Condition[];
+	combinator: 'and' | 'or';
+};
+
+type Domain = EmptySet | UniversalSet | IntervalSet | ConditionDomain;
+
+// Backward compatibility aliases
+type EmptyDomain = EmptySet; // @deprecated
+type UniversalDomain = UniversalSet; // @deprecated
+type IntervalDomain = IntervalSet; // @deprecated
 
 interface DomainResult {
 	domain: Domain;
@@ -305,37 +372,48 @@ interface DomainViolation {
 
 ### Functions
 
-| Function                | Description                             |
-| ----------------------- | --------------------------------------- |
-| `computeDomain`         | Compute domain for an expression        |
-| `isInDomain`            | Check if bindings are in domain         |
-| `getDomainViolations`   | Get detailed violations                 |
-| `formatDomainInterval`  | Format as French interval notation      |
-| `formatDomainCondition` | Format as condition (x > 0)             |
-| `formatDomainFull`      | Get both interval and condition formats |
-| `domainIntersect`       | Intersect two domains                   |
-| `domainUnion`           | Union of two domains                    |
-| `domainComplement`      | Complement of a domain                  |
-| `domainIsEmpty`         | Check if domain is empty                |
-| `containsValue`         | Check if value is in domain             |
-| `getBuiltinDomain`      | Get domain for a builtin function       |
-| `hasRestrictedDomain`   | Check if function has restricted domain |
+| Function                    | Description                             |
+| --------------------------- | --------------------------------------- |
+| `computeDomain`             | Compute domain for an expression        |
+| `isInDomain`                | Check if bindings are in domain         |
+| `getDomainViolations`       | Get detailed violations                 |
+| `formatDomainInterval`      | Format as French interval notation      |
+| `formatDomainCondition`     | Format as condition (x > 0)             |
+| `formatDomainFull`          | Get both interval and condition formats |
+| `domainFromNumber`          | Create MathNode bound from number       |
+| `domainIntersect`           | Intersect two domains                   |
+| `domainUnion`               | Union of two domains                    |
+| `domainComplement`          | Complement of a domain                  |
+| `domainDifference`          | Difference of two domains (A \\ B)      |
+| `domainIsEmpty`             | Check if domain is empty                |
+| `domainIsUniversal`         | Check if domain is universal (ℝ)        |
+| `containsValue`             | Check if numeric value is in domain     |
+| `domainExcludePoints`       | Add excluded points to domain           |
+| `domainFormatEndpointValue` | Format symbolic endpoint (π, √2, etc.)  |
+| `getBuiltinDomain`          | Get domain for a builtin function       |
+| `hasRestrictedDomain`       | Check if function has restricted domain |
 
 ## File Structure
 
 ```
 src/lib/mathAST/domain/
-├── types.ts       # Domain type definitions
-├── factory.ts     # Factory functions
-├── algebra.ts     # Domain algebra operations
+├── types.ts       # Domain type definitions (re-exports from intervals)
+├── factory.ts     # Factory functions (re-exports from intervals)
+├── algebra.ts     # Domain algebra (delegates to intervals)
 ├── builtins.ts    # Built-in function domains
 ├── compute.ts     # Domain computation
 ├── preimage.ts    # Inequality solving
 ├── validate.ts    # Validation functions
-├── format.ts      # Formatting functions
+├── format.ts      # Formatting functions (delegates to intervals)
 ├── errors.ts      # DomainError class
 ├── index.ts       # Public exports
-└── __tests__/     # 209 tests
+└── __tests__/     # 312 tests (comprehensive edge cases)
+
+src/lib/math/intervals/  (upstream module)
+├── types.ts       # EndpointValue = MathNode, IntervalSet
+├── factory.ts     # fromNumber(), interval factories
+├── algebra.ts     # intersect, union, complement, etc.
+└── format.ts      # formatEndpointValue, formatDomainInterval
 ```
 
 ## See Also
