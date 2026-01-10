@@ -1463,6 +1463,34 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 
 			// Check for rational exponent (already checked above for exp case)
 			if (ratExp !== null) {
+				// Special case: n^{p/q} where n is a positive integer
+				// Try to compute exact q-th root if n is a perfect q-th power
+				if (node.base.type === 'number' && ratExp.n > 0n && ratExp.d > 1n) {
+					const baseVal = parseFloat(node.base.value);
+					if (Number.isInteger(baseVal) && baseVal >= 0) {
+						const baseBigInt = BigInt(Math.floor(baseVal));
+						// Try to extract the q-th root
+						const exactRoot = integerNthRoot(baseBigInt, ratExp.d);
+						if (exactRoot !== null) {
+							// n^{p/q} = (n^{1/q})^p = exactRoot^p
+							const rootForm = normalFormFromPolynomial(
+								polynomialFromTerm(termFromRational(fromInteger(exactRoot)))
+							);
+							const pNum = Number(ratExp.n);
+							if (Number.isSafeInteger(pNum) && pNum <= 1000) {
+								const result = powNormalForm(rootForm, pNum);
+								recordNormalizationStep(
+									ctx,
+									'fractional-power-simplify',
+									node,
+									result,
+									'summarized'
+								);
+								return result;
+							}
+						}
+					}
+				}
 				// For non-integer rational exponent, treat as symbolic
 				return normalizeSymbolicPower(node.base, ratExp, ctx);
 			}
@@ -2135,13 +2163,24 @@ function canonicalizeFunctionNode(
 function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeContext): NormalForm {
 	const originalArg = node.args[0];
 
+	// Get the root index from node.base (defaults to 2 for sqrt)
+	// For \sqrt[3]{x}, base contains the index 3
+	let rootIndex = 2n;
+	if (node.base && node.base.type === 'number') {
+		const indexVal = parseFloat(node.base.value);
+		if (Number.isInteger(indexVal) && indexVal >= 2) {
+			rootIndex = BigInt(Math.floor(indexVal));
+		}
+	}
+
 	// ════════ PHASE A: Check BEFORE canonicalization ════════
 	// These checks must happen before canonicalization to avoid
 	// expanding squares like (x+1)² into x² + 2x + 1
 
 	// A1. √(a × a) = |a| — detect identical factors in multiplication
+	// Only applies to square roots (index 2)
 	// Mathematical correctness: √(a²) = |a|
-	if (originalArg.type === 'multiplication') {
+	if (rootIndex === 2n && originalArg.type === 'multiplication') {
 		const leftHash = hashMathNode(originalArg.left);
 		const rightHash = hashMathNode(originalArg.right);
 		if (leftHash === rightHash) {
@@ -2158,9 +2197,10 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 	}
 
 	// A2. √(a^{2n}) = |a^n| or a^n — detect even power exponent
+	// Only applies to square roots (index 2)
 	// Mathematical correctness: √(x²) = |x|, not x
 	// √(x^{2k}) = |x^k| when k is odd, x^k when k is even (since x^k ≥ 0 for even k)
-	if (originalArg.type === 'superscript') {
+	if (rootIndex === 2n && originalArg.type === 'superscript') {
 		const exp = getRationalExponent(originalArg.superscript);
 		if (exp && exp.d === 1n && exp.n >= 2n && exp.n % 2n === 0n) {
 			// Even integer exponent: √(a^{2k}) = |a^k| or a^k
@@ -2205,7 +2245,7 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 	const canonicalNode = canonicalizeFunctionNode(node, ctx);
 	const arg = canonicalNode.args[0];
 
-	// B1. √n for positive integer — use AlgebraicCoefficient (existing logic)
+	// B1. √[n]{m} for positive integer m — use AlgebraicCoefficient (existing logic)
 	if (arg.type === 'number') {
 		const val = parseFloat(arg.value);
 		if (Number.isInteger(val) && val >= 0) {
@@ -2217,21 +2257,21 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 				return ZERO_NORMAL_FORM;
 			}
 
-			const simplified = simplifyRadical(n, 2n);
+			const simplified = simplifyRadical(n, rootIndex);
 
 			if (simplified.radicand === 1n) {
-				// Perfect square: √n = coefficient
+				// Perfect power: √[k]{n} = coefficient
 				const term = termFromRational(fromInteger(simplified.coefficient));
 				const result = normalFormFromPolynomial(polynomialFromTerm(term));
 				recordNormalizationStep(ctx, 'radical-simplify', node, result, 'summarized');
 				return result;
 			}
 
-			// Not a perfect square: coefficient × √(radicand)
+			// Not a perfect power: coefficient × √[k]{radicand}
 			const coeffTerm = algebraicFromRational(fromInteger(simplified.coefficient));
 			const radicalCoeff = algebraicFromRadical({
 				radicand: simplified.radicand,
-				index: 2n
+				index: rootIndex
 			});
 			const combined = mulAlgebraic(coeffTerm, radicalCoeff);
 
@@ -2248,17 +2288,17 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 		}
 	}
 
-	// B2. √(variable) = variable^{1/2}
+	// B2. √[n](variable) = variable^{1/n}
 	if (arg.type === 'variable') {
-		const term = termFromSymbolicFactor(arg, { n: 1n, d: 2n });
+		const term = termFromSymbolicFactor(arg, { n: 1n, d: rootIndex });
 		const result = normalFormFromPolynomial(polynomialFromTerm(term));
 		recordNormalizationStep(ctx, 'sqrt-to-half-power', node, result, 'detailed');
 		return result;
 	}
 
-	// B3. √(greek like π, e) = symbol^{1/2}
+	// B3. √[n](greek like π, e) = symbol^{1/n}
 	if (arg.type === 'greek') {
-		const term = termFromSymbolicFactor(arg, { n: 1n, d: 2n });
+		const term = termFromSymbolicFactor(arg, { n: 1n, d: rootIndex });
 		const result = normalFormFromPolynomial(polynomialFromTerm(term));
 		recordNormalizationStep(ctx, 'sqrt-to-half-power', node, result, 'detailed');
 		return result;
