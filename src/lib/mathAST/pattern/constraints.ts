@@ -37,6 +37,7 @@ function containsVariable(node: MathNode, varName: string): boolean {
 		case 'greek':
 		case 'symbol':
 		case 'hole':
+		case 'constant':
 			return false;
 
 		case 'variable':

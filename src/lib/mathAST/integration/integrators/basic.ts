@@ -13,7 +13,7 @@ import type {
 	IntegrateOptions,
 	IntegrateStepRecorder
 } from '../types';
-import { isNumber, isVariable } from '../../guards';
+import { isNumber, isVariable, isEulerConstant } from '../../guards';
 import { number, power } from '../../factory';
 import {
 	powerRule,
@@ -76,9 +76,14 @@ function isOneOverX(expr: MathNode, variable: string): boolean {
 }
 
 /**
- * Check if expression is exp(u) where u contains only the variable
+ * Check if expression is exp(u) or e^u where u contains only the variable.
+ *
+ * Handles both:
+ * - exp(x), exp(ax) - function notation
+ * - e^x, e^(ax) - power notation with Euler constant
  */
 function isExponential(expr: MathNode, variable: string): { arg: MathNode } | null {
+	// Case 1: exp(x) function notation
 	if (expr.type === 'function' && expr.name === 'exp') {
 		const arg = expr.args[0];
 		// Simple case: exp(x) or exp(ax)
@@ -96,6 +101,26 @@ function isExponential(expr: MathNode, variable: string): { arg: MathNode } | nu
 		}
 		return null;
 	}
+
+	// Case 2: e^x power notation with Euler constant as base
+	if (expr.type === 'superscript' && isEulerConstant(expr.base)) {
+		const arg = expr.superscript;
+		// e^x
+		if (isVariable(arg) && arg.name === variable) {
+			return { arg };
+		}
+		// e^(ax)
+		if (arg.type === 'multiplication') {
+			if (isNumber(arg.left) && isVariable(arg.right) && arg.right.name === variable) {
+				return { arg };
+			}
+			if (isNumber(arg.right) && isVariable(arg.left) && arg.left.name === variable) {
+				return { arg };
+			}
+		}
+		return null;
+	}
+
 	return null;
 }
 

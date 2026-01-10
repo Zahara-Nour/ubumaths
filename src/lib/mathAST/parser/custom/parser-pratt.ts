@@ -25,7 +25,7 @@ import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } fr
 import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
-import { MathAST, compose, matrix } from '../../factory';
+import { MathAST, compose, matrix, euler, complex } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
 import {
 	SecurityError,
@@ -590,12 +590,26 @@ class CustomPrattParser {
 	/**
 	 * Parse a variable (single letter) or generic function if configured.
 	 *
+	 * Reserved constants:
+	 * - 'e' -> MathConstantNode('euler') - Euler's number
+	 * - 'i' -> ComplexNode(0, 1) - imaginary unit
+	 *
 	 * When genericFunctions option is set and the letter matches a configured name,
 	 * we parse it as a function call with optional derivatives, inverse, and composition.
 	 */
 	private parseVariable(): MathNode {
 		const token = this.currentToken;
 		const letter = token.value;
+
+		// Reserved constants: 'e' for Euler's number, 'i' for imaginary unit
+		if (letter === 'e') {
+			this.advance();
+			return this.applyColor(euler());
+		}
+		if (letter === 'i') {
+			this.advance();
+			return this.applyColor(complex(MathAST.number('0'), MathAST.number('1')));
+		}
 
 		// Check if this is a generic function name
 		if (this.isGenericFunctionName(letter)) {

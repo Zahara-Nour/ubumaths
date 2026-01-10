@@ -37,7 +37,7 @@ import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } fr
 import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
-import { MathAST } from '../../factory';
+import { MathAST, euler, complex } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
 import {
 	SecurityError,
@@ -661,10 +661,24 @@ class CustomRDParser {
 
 	/**
 	 * Parse a variable (single letter)
+	 *
+	 * Reserved constants:
+	 * - 'e' -> MathConstantNode('euler') - Euler's number
+	 * - 'i' -> ComplexNode(0, 1) - imaginary unit
 	 */
 	private parseVariable(): MathNode {
 		const token = this.advance();
-		return this.applyColor(MathAST.variable(token.value));
+		const letter = token.value;
+
+		// Reserved constants: 'e' for Euler's number, 'i' for imaginary unit
+		if (letter === 'e') {
+			return this.applyColor(euler());
+		}
+		if (letter === 'i') {
+			return this.applyColor(complex(MathAST.number('0'), MathAST.number('1')));
+		}
+
+		return this.applyColor(MathAST.variable(letter));
 	}
 
 	/**

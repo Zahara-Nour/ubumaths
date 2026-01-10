@@ -19,6 +19,7 @@ import type {
 	GreekLetterNode,
 	SymbolNode,
 	HoleNode,
+	MathConstantNode,
 	AdditionNode,
 	SubtractionNode,
 	MultiplicationNode,
@@ -124,6 +125,8 @@ export interface ASTVisitor {
 	leaveSymbol?(node: SymbolNode, context: VisitorContext): void;
 	enterHole?(node: HoleNode, context: VisitorContext): EnterResult;
 	leaveHole?(node: HoleNode, context: VisitorContext): void;
+	enterConstant?(node: MathConstantNode, context: VisitorContext): EnterResult;
+	leaveConstant?(node: MathConstantNode, context: VisitorContext): void;
 
 	// Binary operation callbacks
 	enterAddition?(node: AdditionNode, context: VisitorContext): EnterResult;
@@ -205,6 +208,8 @@ export interface TransformVisitor {
 	leaveSymbol?(node: SymbolNode, context: VisitorContext): TransformLeaveResult;
 	enterHole?(node: HoleNode, context: VisitorContext): TransformEnterResult;
 	leaveHole?(node: HoleNode, context: VisitorContext): TransformLeaveResult;
+	enterConstant?(node: MathConstantNode, context: VisitorContext): TransformEnterResult;
+	leaveConstant?(node: MathConstantNode, context: VisitorContext): TransformLeaveResult;
 
 	// Binary operation callbacks
 	enterAddition?(node: AdditionNode, context: VisitorContext): TransformEnterResult;
@@ -271,6 +276,7 @@ const TYPE_TO_METHOD_NAME: Record<MathNode['type'], string> = {
 	greek: 'Greek',
 	symbol: 'Symbol',
 	hole: 'Hole',
+	constant: 'Constant',
 	addition: 'Addition',
 	subtraction: 'Subtraction',
 	multiplication: 'Multiplication',
@@ -312,6 +318,7 @@ function getChildrenWithPaths(node: MathNode): ChildInfo[] {
 		case 'greek':
 		case 'symbol':
 		case 'hole':
+		case 'constant':
 			return [];
 
 		// Complex has real and imaginary children
@@ -444,6 +451,7 @@ function reconstructNode(original: MathNode, transformedChildren: Map<string, Ma
 		case 'greek':
 		case 'symbol':
 		case 'hole':
+		case 'constant':
 			return original;
 
 		// Complex number

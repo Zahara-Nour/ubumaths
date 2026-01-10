@@ -42,6 +42,10 @@ export type {
 	// Symbols
 	MathSymbol,
 
+	// Mathematical constants
+	MathConstant,
+	MathConstantNode,
+
 	// Display styles
 	MultiplicationDisplayStyle,
 	DivisionDisplayStyle,
@@ -97,6 +101,11 @@ export {
 	greek,
 	symbol,
 	hole,
+
+	// Mathematical constants
+	mathConstant,
+	euler,
+	piConstant,
 
 	// Binary operations
 	add,
@@ -225,6 +234,9 @@ export {
 	isGreek,
 	isSymbol,
 	isHole,
+	isMathConstant,
+	isEulerConstant,
+	isPiConstant,
 	isAddition,
 	isSubtraction,
 	isMultiplication,

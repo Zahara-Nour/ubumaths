@@ -153,7 +153,9 @@ function differentiateNode(
 			return constantRule();
 
 		case 'hole':
-			// Holes are treated as constants (they're placeholders)
+		case 'constant':
+			// Holes and mathematical constants are treated as constants
+			// Note: d/dx(e) = 0 and d/dx(π) = 0
 			return constantRule();
 
 		case 'addition': {

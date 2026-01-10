@@ -9,7 +9,7 @@
 import type { MathNode } from '../types';
 import type { IntegrandType } from './types';
 import { IntegrationError } from './types';
-import { isNumber, isVariable } from '../guards';
+import { isNumber, isVariable, isEulerConstant } from '../guards';
 import { containsVariable } from './rules';
 
 // =============================================================================
@@ -95,6 +95,7 @@ export function detectVariable(expr: MathNode): string | null {
 			case 'greek':
 			case 'symbol':
 			case 'hole':
+			case 'constant':
 				// These don't contain variables
 				break;
 
@@ -167,7 +168,11 @@ export function classifyIntegrand(expr: MathNode, variable: string): IntegrandTy
 			return 'polynomial';
 
 		case 'superscript':
-			// Power: x^n or f(x)^n
+			// Power: x^n or f(x)^n or e^x
+			// Check for e^x (Euler constant as base)
+			if (isEulerConstant(expr.base)) {
+				return 'exponential';
+			}
 			if (isVariable(expr.base) && expr.base.name === variable) {
 				// x^n is polynomial (including fractional exponents -> radical)
 				if (isNumber(expr.superscript)) {

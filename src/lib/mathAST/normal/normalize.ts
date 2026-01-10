@@ -1120,7 +1120,7 @@ function tryExtractLnTerm(term: NormalTerm): { base: MathNode; coeff: Rational }
 	const base = factor.base;
 	if (base.type !== 'function') return null;
 	if ((base as { name?: string }).name !== 'ln') return null;
-	const args = (base as { args?: MathNode[] }).args;
+	const args = (base as { args?: readonly MathNode[] }).args;
 	if (!args || args.length !== 1) return null;
 
 	// Extract the argument of ln and the coefficient
@@ -1188,7 +1188,8 @@ function buildPowerNode(base: MathNode, exponent: Rational): MathNode {
 		return {
 			type: 'division',
 			numerator: { type: 'number', value: '1' },
-			denominator: base
+			denominator: base,
+			displayStyle: 'fraction'
 		};
 	}
 
@@ -1199,7 +1200,8 @@ function buildPowerNode(base: MathNode, exponent: Rational): MathNode {
 		return {
 			type: 'division',
 			numerator: { type: 'number', value: '1' },
-			denominator: positivePower
+			denominator: positivePower,
+			displayStyle: 'fraction'
 		};
 	}
 
@@ -1210,7 +1212,8 @@ function buildPowerNode(base: MathNode, exponent: Rational): MathNode {
 			: {
 					type: 'division',
 					numerator: { type: 'number', value: exponent.n.toString() },
-					denominator: { type: 'number', value: exponent.d.toString() }
+					denominator: { type: 'number', value: exponent.d.toString() },
+					displayStyle: 'fraction'
 				};
 
 	return {
@@ -3067,7 +3070,7 @@ function combineExpAcrossFraction(
 
 	// No combination needed if no exp factors at all
 	if (numExpFactors.length === 0 && denExpFactors.length === 0) {
-		return { numerator, denominator };
+		return { numerator: [...numerator], denominator: [...denominator] };
 	}
 
 	// If only denominator has exp factors (e.g., 1/exp(x) → exp(-x))
@@ -3098,7 +3101,7 @@ function combineExpAcrossFraction(
 	}
 
 	if (sumNode === null) {
-		return { numerator, denominator };
+		return { numerator: [...numerator], denominator: [...denominator] };
 	}
 
 	// Normalize the combined argument

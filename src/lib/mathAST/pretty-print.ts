@@ -227,6 +227,10 @@ function printNode(node: MathNode, ctx: PrintContext, prefix: string, childPrefi
 			addLine(ctx, prefix, `Hole: ?${node.index}`, node.metadata);
 			break;
 
+		case 'constant':
+			addLine(ctx, prefix, `Constant: ${node.constant}`, node.metadata);
+			break;
+
 		// =========================================================================
 		// Binary Operations
 		// =========================================================================

@@ -179,7 +179,8 @@ function needsBracesForPower(node: MathNode): boolean {
 			return node.symbol !== 'infinity';
 
 		case 'hole':
-			// Holes are atoms, don't need braces
+		case 'constant':
+			// Holes and constants are atoms, don't need braces
 			return false;
 
 		case 'opposite':
@@ -222,7 +223,8 @@ function needsBracesForSubscript(node: MathNode): boolean {
 			return true;
 
 		case 'hole':
-			// Holes are atoms, don't need braces
+		case 'constant':
+			// Holes and constants are atoms, don't need braces
 			return false;
 
 		default:
@@ -257,6 +259,7 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'greek':
 		case 'symbol':
 		case 'hole':
+		case 'constant':
 		case 'infinity':
 			return false;
 
@@ -438,6 +441,11 @@ export class CustomGenerator {
 
 			case 'hole':
 				this.emit('?', node.metadata);
+				break;
+
+			case 'constant':
+				// In custom syntax, use \euler or \pi
+				this.emit(node.constant === 'euler' ? '\\euler' : '\\pi', node.metadata);
 				break;
 
 			case 'composition':
@@ -829,6 +837,9 @@ export class CustomGenerator {
 			case 'hole':
 				this.emit('?', effectiveMeta);
 				break;
+			case 'constant':
+				this.emit(node.constant === 'euler' ? '\\euler' : '\\pi', effectiveMeta);
+				break;
 			default:
 				// For complex nodes, use normal visitWithSpans
 				this.visitWithSpans(node);
@@ -893,6 +904,9 @@ export class CustomGenerator {
 				break;
 			case 'hole':
 				content = this.generateHole(node);
+				break;
+			case 'constant':
+				content = node.constant === 'euler' ? '\\euler' : '\\pi';
 				break;
 			case 'composition':
 				content = this.generateComposition(node);

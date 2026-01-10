@@ -342,6 +342,7 @@ export function containsVariable(node: MathNode, varName: string): boolean {
 			return containsVariable(node.real, varName) || containsVariable(node.imaginary, varName);
 
 		case 'infinity':
+		case 'constant':
 			return false;
 
 		case 'limit':
