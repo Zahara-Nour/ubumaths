@@ -26,6 +26,10 @@ import {
 	absRational,
 	reciprocal,
 	powRational,
+	// Rounding
+	floorRational,
+	ceilRational,
+	roundRational,
 	// Comparison
 	compareRational,
 	equalRational,
@@ -533,6 +537,92 @@ describe('rational', () => {
 			const b = rational(10n ** 10n, 10n ** 15n);
 			const product = mulRational(a, b);
 			expect(product).toEqual(ONE);
+		});
+	});
+
+	// ===========================================================================
+	// Rounding Functions
+	// ===========================================================================
+
+	describe('floorRational', () => {
+		it('floor of positive integer returns same', () => {
+			expect(floorRational(rational(5n, 1n))).toBe(5n);
+		});
+
+		it('floor of positive fraction rounds down', () => {
+			expect(floorRational(rational(7n, 2n))).toBe(3n); // 3.5 -> 3
+			expect(floorRational(rational(7n, 3n))).toBe(2n); // 2.33 -> 2
+			expect(floorRational(rational(10n, 3n))).toBe(3n); // 3.33 -> 3
+		});
+
+		it('floor of negative integer returns same', () => {
+			expect(floorRational(rational(-5n, 1n))).toBe(-5n);
+		});
+
+		it('floor of negative fraction rounds toward -∞', () => {
+			expect(floorRational(rational(-7n, 2n))).toBe(-4n); // -3.5 -> -4
+			expect(floorRational(rational(-7n, 3n))).toBe(-3n); // -2.33 -> -3
+			expect(floorRational(rational(-1n, 2n))).toBe(-1n); // -0.5 -> -1
+		});
+
+		it('floor of zero is zero', () => {
+			expect(floorRational(ZERO)).toBe(0n);
+		});
+	});
+
+	describe('ceilRational', () => {
+		it('ceil of positive integer returns same', () => {
+			expect(ceilRational(rational(5n, 1n))).toBe(5n);
+		});
+
+		it('ceil of positive fraction rounds up', () => {
+			expect(ceilRational(rational(7n, 2n))).toBe(4n); // 3.5 -> 4
+			expect(ceilRational(rational(7n, 3n))).toBe(3n); // 2.33 -> 3
+			expect(ceilRational(rational(1n, 2n))).toBe(1n); // 0.5 -> 1
+		});
+
+		it('ceil of negative integer returns same', () => {
+			expect(ceilRational(rational(-5n, 1n))).toBe(-5n);
+		});
+
+		it('ceil of negative fraction rounds toward +∞', () => {
+			expect(ceilRational(rational(-7n, 2n))).toBe(-3n); // -3.5 -> -3
+			expect(ceilRational(rational(-7n, 3n))).toBe(-2n); // -2.33 -> -2
+			expect(ceilRational(rational(-1n, 2n))).toBe(0n); // -0.5 -> 0
+		});
+
+		it('ceil of zero is zero', () => {
+			expect(ceilRational(ZERO)).toBe(0n);
+		});
+	});
+
+	describe('roundRational', () => {
+		it('round of integer returns same', () => {
+			expect(roundRational(rational(5n, 1n))).toBe(5n);
+			expect(roundRational(rational(-5n, 1n))).toBe(-5n);
+		});
+
+		it('round rounds to nearest integer', () => {
+			expect(roundRational(rational(7n, 3n))).toBe(2n); // 2.33 -> 2
+			expect(roundRational(rational(8n, 3n))).toBe(3n); // 2.67 -> 3
+		});
+
+		it('round at 0.5 rounds away from zero (half-up)', () => {
+			expect(roundRational(rational(1n, 2n))).toBe(1n); // 0.5 -> 1
+			expect(roundRational(rational(3n, 2n))).toBe(2n); // 1.5 -> 2
+			expect(roundRational(rational(5n, 2n))).toBe(3n); // 2.5 -> 3
+			expect(roundRational(rational(7n, 2n))).toBe(4n); // 3.5 -> 4
+		});
+
+		it('round negative at 0.5 rounds away from zero', () => {
+			expect(roundRational(rational(-1n, 2n))).toBe(-1n); // -0.5 -> -1
+			expect(roundRational(rational(-3n, 2n))).toBe(-2n); // -1.5 -> -2
+			expect(roundRational(rational(-5n, 2n))).toBe(-3n); // -2.5 -> -3
+			expect(roundRational(rational(-7n, 2n))).toBe(-4n); // -3.5 -> -4
+		});
+
+		it('round of zero is zero', () => {
+			expect(roundRational(ZERO)).toBe(0n);
 		});
 	});
 });

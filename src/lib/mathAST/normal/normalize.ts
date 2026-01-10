@@ -44,11 +44,22 @@ import {
 } from './polynomial';
 import { ZERO_TERM, mulTerms } from './term';
 import { EMPTY_MONOMIAL, symbolicFactor, sortSymbolicFactors, hashMonomial } from './monomial';
-import { rational, fromInteger, ONE, isOne, gcd as gcdBigInt, negRational } from './rational';
+import {
+	rational,
+	fromInteger,
+	ONE,
+	isOne,
+	gcd as gcdBigInt,
+	negRational,
+	floorRational,
+	ceilRational,
+	roundRational
+} from './rational';
 import { simplifyRadical, integerNthRoot } from './radical';
 import { preprocess } from './rules/index.js';
 import { denormalize } from './denormalize';
 import { tryUnivariateGcd, dividePolynomials } from './univariate-gcd';
+import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
 // =============================================================================
 // Constants
@@ -1018,6 +1029,25 @@ function extractPositiveRational(form: NormalForm): { n: bigint; d: bigint } | n
 	if (coeff.rational.n <= 0n) return null;
 
 	return { n: coeff.rational.n, d: coeff.rational.d };
+}
+
+/**
+ * Extracts a pure rational (exact, no radicals) from a NormalForm.
+ * Returns the Rational or null if the form contains variables or radicals.
+ */
+function extractPureRational(form: NormalForm): Rational | null {
+	// Must be: single term, no denominator polynomial, no monomial, no radicals
+	if (form.numerator.length !== 1) return null;
+	if (!isOnePolynomial(form.denominator)) return null;
+
+	const term = form.numerator[0];
+	if (term.monomial.length !== 0) return null; // Has variables
+	if (term.coefficient.terms.length !== 1) return null;
+
+	const coeff = term.coefficient.terms[0];
+	if (coeff.radicals.length !== 0) return null; // Has radicals
+
+	return coeff.rational;
 }
 
 /**
@@ -2751,7 +2781,60 @@ function normalizeFunction(
 		return normalizeOpaqueNode(canonicalNode);
 	}
 
-	// 6. Other functions - opaque with normalized args
+	// 6. Handle rounding functions (floor, ceil, round)
+	if ((name === 'floor' || name === 'ceil' || name === 'round') && canonicalArgs.length === 1) {
+		const argForm = normalizeNode(canonicalArgs[0], ctx);
+
+		// Try exact rational computation first (preferred for precision)
+		const rationalArg = extractPureRational(argForm);
+		if (rationalArg !== null) {
+			let resultValue: bigint;
+			switch (name) {
+				case 'floor':
+					resultValue = floorRational(rationalArg);
+					break;
+				case 'ceil':
+					resultValue = ceilRational(rationalArg);
+					break;
+				case 'round':
+					resultValue = roundRational(rationalArg);
+					break;
+			}
+			const result = normalFormFromRational(fromInteger(resultValue));
+			recordNormalizationStep(ctx, 'rounding-function', node, result, 'summarized');
+			return result;
+		}
+
+		// Fall back to numeric evaluation (handles radicals, opaque functions like sin(1), etc.)
+		try {
+			const argNode = denormalize(argForm);
+			const numericArg = evaluateNodeToApproximatedNumber(argNode);
+			if (Number.isFinite(numericArg)) {
+				let resultValue: number;
+				switch (name) {
+					case 'floor':
+						resultValue = Math.floor(numericArg);
+						break;
+					case 'ceil':
+						resultValue = Math.ceil(numericArg);
+						break;
+					case 'round':
+						resultValue = Math.round(numericArg);
+						break;
+				}
+				const result = normalFormFromRational(fromInteger(BigInt(resultValue)));
+				recordNormalizationStep(ctx, 'rounding-function', node, result, 'summarized');
+				return result;
+			}
+		} catch {
+			// Evaluation failed (free variables, etc.) - treat as opaque
+		}
+
+		// Contains variables or evaluation failed - treat as opaque
+		return normalizeOpaqueNode(canonicalNode);
+	}
+
+	// 7. Other functions - opaque with normalized args
 	return normalizeOpaqueNode(canonicalNode);
 }
 

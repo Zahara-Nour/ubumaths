@@ -3935,3 +3935,221 @@ describe('Perfect Square Trinomial Detection', () => {
 		});
 	});
 });
+
+// =============================================================================
+// Rounding Functions Tests
+// =============================================================================
+
+describe('Rounding Functions Normalization', () => {
+	describe('floor() - greatest integer ≤ x', () => {
+		test('floor(3) = 3 (integer)', () => {
+			const result = normalize(fn('floor', num('3')));
+			expect(result.hash).toBe('3');
+		});
+
+		test('floor(3.7) = 3', () => {
+			const result = normalize(fn('floor', num('3.7')));
+			expect(result.hash).toBe('3');
+		});
+
+		test('floor(3.2) = 3', () => {
+			const result = normalize(fn('floor', num('3.2')));
+			expect(result.hash).toBe('3');
+		});
+
+		test('floor(-3.2) = -4 (rounds toward -∞)', () => {
+			const result = normalize(fn('floor', opposite(num('3.2'))));
+			expect(result.hash).toBe('-4');
+		});
+
+		test('floor(-3.7) = -4', () => {
+			const result = normalize(fn('floor', opposite(num('3.7'))));
+			expect(result.hash).toBe('-4');
+		});
+
+		test('floor(7/2) = 3 (rational)', () => {
+			const result = normalize(fn('floor', div(num('7'), num('2'))));
+			expect(result.hash).toBe('3');
+		});
+
+		test('floor(-7/2) = -4 (negative rational)', () => {
+			const result = normalize(fn('floor', opposite(div(num('7'), num('2')))));
+			expect(result.hash).toBe('-4');
+		});
+
+		test('floor(√2) = 1 (irrational)', () => {
+			const result = normalize(fn('floor', sqrt(num('2'))));
+			expect(result.hash).toBe('1');
+		});
+
+		test('floor(x) stays opaque (symbolic)', () => {
+			const result = normalize(fn('floor', variable('x')));
+			// Should have a monomial (symbolic factor)
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBeGreaterThan(0);
+		});
+	});
+
+	describe('ceil() - smallest integer ≥ x', () => {
+		test('ceil(3) = 3 (integer)', () => {
+			const result = normalize(fn('ceil', num('3')));
+			expect(result.hash).toBe('3');
+		});
+
+		test('ceil(3.2) = 4', () => {
+			const result = normalize(fn('ceil', num('3.2')));
+			expect(result.hash).toBe('4');
+		});
+
+		test('ceil(3.7) = 4', () => {
+			const result = normalize(fn('ceil', num('3.7')));
+			expect(result.hash).toBe('4');
+		});
+
+		test('ceil(-3.2) = -3 (rounds toward +∞)', () => {
+			const result = normalize(fn('ceil', opposite(num('3.2'))));
+			expect(result.hash).toBe('-3');
+		});
+
+		test('ceil(-3.7) = -3', () => {
+			const result = normalize(fn('ceil', opposite(num('3.7'))));
+			expect(result.hash).toBe('-3');
+		});
+
+		test('ceil(7/2) = 4 (rational)', () => {
+			const result = normalize(fn('ceil', div(num('7'), num('2'))));
+			expect(result.hash).toBe('4');
+		});
+
+		test('ceil(-7/2) = -3 (negative rational)', () => {
+			const result = normalize(fn('ceil', opposite(div(num('7'), num('2')))));
+			expect(result.hash).toBe('-3');
+		});
+
+		test('ceil(√2) = 2 (irrational)', () => {
+			const result = normalize(fn('ceil', sqrt(num('2'))));
+			expect(result.hash).toBe('2');
+		});
+
+		test('ceil(x) stays opaque (symbolic)', () => {
+			const result = normalize(fn('ceil', variable('x')));
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBeGreaterThan(0);
+		});
+	});
+
+	describe('round() - nearest integer (half-up)', () => {
+		test('round(3) = 3 (integer)', () => {
+			const result = normalize(fn('round', num('3')));
+			expect(result.hash).toBe('3');
+		});
+
+		test('round(3.2) = 3', () => {
+			const result = normalize(fn('round', num('3.2')));
+			expect(result.hash).toBe('3');
+		});
+
+		test('round(3.7) = 4', () => {
+			const result = normalize(fn('round', num('3.7')));
+			expect(result.hash).toBe('4');
+		});
+
+		test('round(3.5) = 4 (half rounds up)', () => {
+			const result = normalize(fn('round', num('3.5')));
+			expect(result.hash).toBe('4');
+		});
+
+		test('round(2.5) = 3 (half rounds up)', () => {
+			const result = normalize(fn('round', num('2.5')));
+			expect(result.hash).toBe('3');
+		});
+
+		test('round(-3.5) = -4 (rounds away from zero)', () => {
+			const result = normalize(fn('round', opposite(num('3.5'))));
+			expect(result.hash).toBe('-4');
+		});
+
+		test('round(7/2) = 4 (rational)', () => {
+			const result = normalize(fn('round', div(num('7'), num('2'))));
+			expect(result.hash).toBe('4');
+		});
+
+		test('round(5/2) = 3 (2.5 rounds up)', () => {
+			const result = normalize(fn('round', div(num('5'), num('2'))));
+			expect(result.hash).toBe('3');
+		});
+
+		test('round(√2) = 1 (irrational, √2 ≈ 1.414)', () => {
+			const result = normalize(fn('round', sqrt(num('2'))));
+			expect(result.hash).toBe('1');
+		});
+
+		test('round(x) stays opaque (symbolic)', () => {
+			const result = normalize(fn('round', variable('x')));
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBeGreaterThan(0);
+		});
+	});
+
+	describe('Rounding with expressions', () => {
+		test('floor(x + x) normalizes arg but stays opaque', () => {
+			// floor(x + x) = floor(2x), still opaque
+			const result = normalize(fn('floor', add(variable('x'), variable('x'))));
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBeGreaterThan(0);
+		});
+
+		test('floor(1 + 2) = 3 (evaluates constant expression)', () => {
+			const result = normalize(fn('floor', add(num('1'), num('2'))));
+			expect(result.hash).toBe('3');
+		});
+
+		test('ceil(√3 + √2) = 4 (√3 + √2 ≈ 3.146)', () => {
+			const result = normalize(fn('ceil', add(sqrt(num('3')), sqrt(num('2')))));
+			expect(result.hash).toBe('4');
+		});
+	});
+
+	describe('Rounding with opaque functions (sin, ln, etc.)', () => {
+		test('floor(sin(1)) = 0 (sin(1) ≈ 0.841)', () => {
+			const result = normalize(fn('floor', fn('sin', num('1'))));
+			expect(result.hash).toBe('0');
+		});
+
+		test('ceil(sin(1)) = 1 (sin(1) ≈ 0.841)', () => {
+			const result = normalize(fn('ceil', fn('sin', num('1'))));
+			expect(result.hash).toBe('1');
+		});
+
+		test('round(sin(1)) = 1 (sin(1) ≈ 0.841, rounds to nearest)', () => {
+			const result = normalize(fn('round', fn('sin', num('1'))));
+			expect(result.hash).toBe('1');
+		});
+
+		test('floor(ln(2)) = 0 (ln(2) ≈ 0.693)', () => {
+			const result = normalize(fn('floor', fn('ln', num('2'))));
+			expect(result.hash).toBe('0');
+		});
+
+		test('ceil(ln(10)) = 3 (ln(10) ≈ 2.303)', () => {
+			const result = normalize(fn('ceil', fn('ln', num('10'))));
+			expect(result.hash).toBe('3');
+		});
+
+		test('floor(exp(1)) = 2 (e ≈ 2.718)', () => {
+			const result = normalize(fn('floor', fn('exp', num('1'))));
+			expect(result.hash).toBe('2');
+		});
+
+		test('floor(sin(1) + cos(1)) = 1 (≈ 0.841 + 0.540 = 1.381)', () => {
+			const result = normalize(fn('floor', add(fn('sin', num('1')), fn('cos', num('1')))));
+			expect(result.hash).toBe('1');
+		});
+
+		test('floor(sin(x)) stays opaque (has variable)', () => {
+			const result = normalize(fn('floor', fn('sin', variable('x'))));
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBeGreaterThan(0);
+		});
+	});
+});

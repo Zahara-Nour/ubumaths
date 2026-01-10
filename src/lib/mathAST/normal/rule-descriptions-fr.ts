@@ -74,6 +74,11 @@ export const RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'cos-pi': 'cos(π) = -1',
 
 	// ==========================================================================
+	// Rounding Functions
+	// ==========================================================================
+	'rounding-function': "Évaluation de fonction d'arrondi (floor, ceil, round)",
+
+	// ==========================================================================
 	// Phase 2 - Normalization
 	// ==========================================================================
 	preprocess: 'Prétraitement (Phase 1)',
