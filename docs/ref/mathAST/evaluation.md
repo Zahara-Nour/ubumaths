@@ -227,8 +227,8 @@ evaluate(parseLatex('(1 + \\imaginaryI)^2'), { mode: 'exact' });
 // toLatex(result.node) = '2 \\imaginaryI'
 ```
 
-**Note**: Complex denominator rationalization (e.g., `1/i = -i`) is not yet implemented.
-Expressions like `1/i` stay as `1/i` in exact mode.
+**Note**: Complex denominator rationalization is implemented. Expressions like `1/i` are reduced to `-i`,
+and complex fractions like `(2+3i)/(1-i)` are reduced to the form `a + bi`.
 
 ### Complex Functions
 

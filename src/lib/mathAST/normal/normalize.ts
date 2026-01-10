@@ -44,7 +44,7 @@ import {
 } from './polynomial';
 import { ZERO_TERM, mulTerms } from './term';
 import { EMPTY_MONOMIAL, symbolicFactor, sortSymbolicFactors, hashMonomial } from './monomial';
-import { rational, fromInteger, ONE, isOne, gcd as gcdBigInt } from './rational';
+import { rational, fromInteger, ONE, isOne, gcd as gcdBigInt, negRational } from './rational';
 import { simplifyRadical, integerNthRoot } from './radical';
 import { preprocess } from './rules/index.js';
 import { denormalize } from './denormalize';
@@ -376,6 +376,104 @@ function rationalizeByConjugate(
 	return { numerator: newNumerator, denominator: newDenominator };
 }
 
+// =============================================================================
+// Rationalization by Complex Conjugate - For denominators with imaginary terms
+// =============================================================================
+
+/**
+ * Checks if a polynomial contains any imaginary terms.
+ */
+function hasImaginaryTerms(terms: NormalTerm[]): boolean {
+	for (const term of terms) {
+		for (const algTerm of term.coefficient.terms) {
+			if (algTerm.hasImaginaryUnit === true) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/**
+ * Computes the complex conjugate of a polynomial.
+ * For each term with hasImaginaryUnit, negates the rational coefficient.
+ * This transforms a+bi to a-bi.
+ */
+function complexConjugate(terms: NormalTerm[]): NormalTerm[] {
+	return terms.map((term) => {
+		const conjugatedCoeff: import('./types').AlgebraicCoefficient = {
+			terms: term.coefficient.terms.map((algTerm) => {
+				if (algTerm.hasImaginaryUnit === true) {
+					return {
+						rational: negRational(algTerm.rational),
+						radicals: algTerm.radicals,
+						hasImaginaryUnit: true as const
+					};
+				}
+				return algTerm;
+			})
+		};
+		return {
+			coefficient: conjugatedCoeff,
+			monomial: term.monomial
+		};
+	});
+}
+
+/**
+ * Attempts to rationalize a complex denominator by multiplying by the complex conjugate.
+ *
+ * For denominator (a + bi):
+ * - Conjugate: (a - bi)
+ * - Product: (a + bi)(a - bi) = a² + b²
+ *
+ * @example
+ * 1/i:
+ *   Conjugate = -i
+ *   Product = i × (-i) = -i² = 1
+ *   Result = -i/1 = -i
+ *
+ * 1/(1 + i):
+ *   Conjugate = (1 - i)
+ *   Product = 1² + 1² = 2
+ *   Result = (1 - i)/2
+ *
+ * (2 + 3i)/(1 - i):
+ *   Conjugate = (1 + i)
+ *   Product = 1² + 1² = 2
+ *   Numerator = (2 + 3i)(1 + i) = 2 + 2i + 3i + 3i² = 2 + 5i - 3 = -1 + 5i
+ *   Result = (-1 + 5i)/2 = -1/2 + (5/2)i
+ *
+ * @param numerator - The numerator polynomial
+ * @param denominator - The denominator polynomial
+ * @returns Rationalized fraction, or null if not applicable
+ */
+function rationalizeComplexDenominator(
+	numerator: NormalTerm[],
+	denominator: NormalTerm[]
+): { numerator: NormalTerm[]; denominator: NormalTerm[] } | null {
+	// Check if denominator has any imaginary terms
+	if (!hasImaginaryTerms(denominator)) {
+		return null; // Nothing to rationalize
+	}
+
+	// Compute complex conjugate of denominator
+	const conjugate = complexConjugate(denominator);
+
+	// Multiply numerator by conjugate
+	const newNumerator = mulPolynomials(numerator, conjugate);
+
+	// Multiply denominator by conjugate: (a+bi)(a-bi) = a² + b²
+	const newDenominator = mulPolynomials(denominator, conjugate);
+
+	// Verify the denominator is now real (no imaginary terms)
+	if (hasImaginaryTerms(newDenominator)) {
+		return null; // Rationalization failed (shouldn't happen for simple complex numbers)
+	}
+
+	return { numerator: newNumerator, denominator: newDenominator };
+}
+
 /**
  * Creates a NormalForm from a polynomial (denominator = 1).
  */
@@ -544,6 +642,15 @@ function normalFormFromFraction(numerator: NormalTerm[], denominator: NormalTerm
 			conjugateRationalized.numerator,
 			conjugateRationalized.denominator
 		);
+	}
+
+	// Rationalize complex denominator: clear imaginary terms from denominator
+	// e.g., 1/i → -i, 1/(1+i) → (1-i)/2, (2+3i)/(1-i) → (-1+5i)/2
+	const complexRationalized = rationalizeComplexDenominator(reducedNumerator, reducedDenominator);
+	if (complexRationalized !== null) {
+		// After rationalization, the denominator is now real (no imaginary terms)
+		// Recursively call normalFormFromFraction to apply remaining simplifications
+		return normalFormFromFraction(complexRationalized.numerator, complexRationalized.denominator);
 	}
 
 	const form: NormalForm = {
