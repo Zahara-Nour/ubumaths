@@ -503,6 +503,70 @@ describe('Delimiters', () => {
 			expect(node.args).toHaveLength(1);
 			expectType(node.args[0], 'variable');
 		});
+
+		it('should parse \\left\\lfloor \\right\\rfloor as floor function', () => {
+			const node = parse('\\left\\lfloor x \\right\\rfloor');
+			expectType(node, 'function');
+			expect(node.name).toBe('floor');
+			expect(node.args).toHaveLength(1);
+			expectType(node.args[0], 'variable');
+		});
+
+		it('should parse \\left\\lceil \\right\\rceil as ceil function', () => {
+			const node = parse('\\left\\lceil x \\right\\rceil');
+			expectType(node, 'function');
+			expect(node.name).toBe('ceil');
+			expect(node.args).toHaveLength(1);
+			expectType(node.args[0], 'variable');
+		});
+	});
+
+	describe('Floor and ceil delimiters', () => {
+		it('should parse \\lfloor x \\rfloor as floor function', () => {
+			const node = parse('\\lfloor x \\rfloor');
+			expectType(node, 'function');
+			expect(node.name).toBe('floor');
+			expect(node.args).toHaveLength(1);
+			expectType(node.args[0], 'variable');
+		});
+
+		it('should parse \\lceil x \\rceil as ceil function', () => {
+			const node = parse('\\lceil x \\rceil');
+			expectType(node, 'function');
+			expect(node.name).toBe('ceil');
+			expect(node.args).toHaveLength(1);
+			expectType(node.args[0], 'variable');
+		});
+
+		it('should parse floor with expression', () => {
+			const node = parse('\\lfloor a + b \\rfloor');
+			expectType(node, 'function');
+			expect(node.name).toBe('floor');
+			expectType(node.args[0], 'addition');
+		});
+
+		it('should parse ceil with expression', () => {
+			const node = parse('\\lceil x^2 \\rceil');
+			expectType(node, 'function');
+			expect(node.name).toBe('ceil');
+			expectType(node.args[0], 'superscript');
+		});
+
+		it('should support implicit multiplication: 2\\lfloor x \\rfloor', () => {
+			const node = parse('2\\lfloor x \\rfloor');
+			expectType(node, 'multiplication');
+			expectType(node.left, 'number');
+			expectType(node.right, 'function');
+			expect(node.right.name).toBe('floor');
+		});
+
+		it('should support implicit multiplication: \\lfloor x \\rfloor y', () => {
+			const node = parse('\\lfloor x \\rfloor y');
+			expectType(node, 'multiplication');
+			expectType(node.left, 'function');
+			expect(node.left.name).toBe('floor');
+			expectType(node.right, 'variable');
+		});
 	});
 
 	describe('Absolute value', () => {

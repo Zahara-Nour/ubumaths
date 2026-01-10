@@ -488,6 +488,8 @@ export class LatexGenerator {
 	 * Emits spans for a function node.
 	 * Special cases:
 	 * - abs(x) is rendered as |x| using \left| \right|
+	 * - floor(x) is rendered as \lfloor x \rfloor
+	 * - ceil(x) is rendered as \lceil x \rceil
 	 * - sqrt(x) is rendered as \sqrt{x} (not sqrt\left( x \right))
 	 * - cbrt(x) is rendered as \sqrt[3]{x}
 	 * - root(x, n) is rendered as \sqrt[n]{x}
@@ -501,6 +503,26 @@ export class LatexGenerator {
 			this.emit('\\left| ', leftMeta);
 			this.visitWithSpans(node.args[0]);
 			this.emit(' \\right|', rightMeta);
+			return;
+		}
+
+		// Special case: floor function renders as \lfloor x \rfloor
+		if (node.name === 'floor' && node.args.length === 1 && !node.power && !node.base) {
+			const leftMeta = getLeftDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
+			const rightMeta = getRightDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
+			this.emit('\\lfloor ', leftMeta);
+			this.visitWithSpans(node.args[0]);
+			this.emit(' \\rfloor', rightMeta);
+			return;
+		}
+
+		// Special case: ceil function renders as \lceil x \rceil
+		if (node.name === 'ceil' && node.args.length === 1 && !node.power && !node.base) {
+			const leftMeta = getLeftDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
+			const rightMeta = getRightDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
+			this.emit('\\lceil ', leftMeta);
+			this.visitWithSpans(node.args[0]);
+			this.emit(' \\rceil', rightMeta);
 			return;
 		}
 
@@ -1009,6 +1031,8 @@ export class LatexGenerator {
 	 * Generates LaTeX for a function node.
 	 * Special cases:
 	 * - abs(x) is rendered as |x| using \left| \right|
+	 * - floor(x) is rendered as \lfloor x \rfloor
+	 * - ceil(x) is rendered as \lceil x \rceil
 	 * - sqrt(x) is rendered as \sqrt{x} (not sqrt\left( x \right))
 	 * - cbrt(x) is rendered as \sqrt[3]{x}
 	 * - root(x, n) is rendered as \sqrt[n]{x}
@@ -1019,6 +1043,18 @@ export class LatexGenerator {
 		if (node.name === 'abs' && node.args.length === 1 && !node.power && !node.base) {
 			const content = this.generateNode(node.args[0]);
 			return `\\left| ${content} \\right|`;
+		}
+
+		// Special case: floor function renders as \lfloor x \rfloor
+		if (node.name === 'floor' && node.args.length === 1 && !node.power && !node.base) {
+			const content = this.generateNode(node.args[0]);
+			return `\\lfloor ${content} \\rfloor`;
+		}
+
+		// Special case: ceil function renders as \lceil x \rceil
+		if (node.name === 'ceil' && node.args.length === 1 && !node.power && !node.base) {
+			const content = this.generateNode(node.args[0]);
+			return `\\lceil ${content} \\rceil`;
 		}
 
 		// Special case: sqrt, cbrt, root functions use \sqrt{} syntax instead of function call syntax.
