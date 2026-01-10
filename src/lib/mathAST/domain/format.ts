@@ -11,13 +11,14 @@
  * - Condition notation: x > 0
  */
 
-import type { Domain, ConditionDomain } from './types';
+import type { Domain, ConditionDomain, PeriodicExclusion } from './types';
 import {
 	formatDomainInterval as intervalsFormatInterval,
 	formatDomainCondition as intervalsFormatCondition,
 	formatDomainFull as intervalsFormatFull,
 	formatEndpointValue
 } from '$lib/math/intervals/format';
+import { toCustom } from '../custom-generator';
 
 // =============================================================================
 // Re-export from intervals
@@ -43,6 +44,9 @@ export function formatDomainInterval(domain: Domain): string {
 	if (domain.kind === 'condition_domain') {
 		return formatConditionDomain(domain);
 	}
+	if (domain.kind === 'periodic_exclusion') {
+		return formatPeriodicExclusionInterval(domain);
+	}
 	return intervalsFormatInterval(domain);
 }
 
@@ -56,6 +60,9 @@ export function formatDomainInterval(domain: Domain): string {
 export function formatDomainCondition(domain: Domain, variable: string = 'x'): string {
 	if (domain.kind === 'condition_domain') {
 		return formatConditionDomainAsCondition(domain, variable);
+	}
+	if (domain.kind === 'periodic_exclusion') {
+		return formatPeriodicExclusionCondition(domain, variable);
 	}
 	return intervalsFormatCondition(domain, variable);
 }
@@ -74,6 +81,12 @@ export function formatDomainFull(
 		return {
 			interval: formatConditionDomain(domain),
 			condition: formatConditionDomainAsCondition(domain, variable)
+		};
+	}
+	if (domain.kind === 'periodic_exclusion') {
+		return {
+			interval: formatPeriodicExclusionInterval(domain),
+			condition: formatPeriodicExclusionCondition(domain, variable)
 		};
 	}
 	return intervalsFormatFull(domain, variable);
@@ -119,4 +132,55 @@ function formatComparisonOp(op: string): string {
 		default:
 			return op;
 	}
+}
+
+// =============================================================================
+// PeriodicExclusion Formatting (domain-specific)
+// =============================================================================
+
+/**
+ * Format a MathNode for display in domain context.
+ */
+function formatMathNode(node: import('../types').MathNode): string {
+	return toCustom(node);
+}
+
+/**
+ * Format a periodic exclusion as interval notation.
+ * Example: "ℝ \ {π/2 + kπ : k ∈ ℤ}"
+ */
+function formatPeriodicExclusionInterval(pe: PeriodicExclusion): string {
+	const baseStr = formatMathNode(pe.basePoint);
+	const periodStr = formatMathNode(pe.period);
+
+	// Check if base is 0
+	const isZeroBase = pe.basePoint.type === 'number' && pe.basePoint.value === '0';
+
+	if (isZeroBase) {
+		// ℝ \ {kπ : k ∈ ℤ}
+		return `ℝ \\ {k·${periodStr} : k ∈ ℤ}`;
+	}
+
+	// ℝ \ {base + k·period : k ∈ ℤ}
+	return `ℝ \\ {${baseStr} + k·${periodStr} : k ∈ ℤ}`;
+}
+
+/**
+ * Format a periodic exclusion as condition notation.
+ * Example: "x ≠ π/2 + kπ, k ∈ ℤ"
+ */
+function formatPeriodicExclusionCondition(pe: PeriodicExclusion, variable: string): string {
+	const baseStr = formatMathNode(pe.basePoint);
+	const periodStr = formatMathNode(pe.period);
+
+	// Check if base is 0
+	const isZeroBase = pe.basePoint.type === 'number' && pe.basePoint.value === '0';
+
+	if (isZeroBase) {
+		// x ≠ kπ, k ∈ ℤ
+		return `${variable} ≠ k·${periodStr}, k ∈ ℤ`;
+	}
+
+	// x ≠ base + kπ, k ∈ ℤ
+	return `${variable} ≠ ${baseStr} + k·${periodStr}, k ∈ ℤ`;
 }

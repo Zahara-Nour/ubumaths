@@ -32,6 +32,7 @@ export type {
 	// Domain-specific types
 	Domain,
 	ConditionDomain,
+	PeriodicExclusion,
 	Condition,
 	ComparisonCondition,
 	ComparisonOp,
@@ -95,7 +96,13 @@ export {
 	unitInterval,
 	// Domain-specific factories (conditions)
 	conditionDomain,
-	comparison
+	comparison,
+	// Periodic exclusion factories
+	periodicExclusion,
+	tanDomain,
+	cotDomain,
+	secDomain,
+	cscDomain
 } from './factory';
 
 // =============================================================================
@@ -111,7 +118,8 @@ export {
 	complement,
 	difference,
 	excludePoints,
-	excludeNumericPoints
+	excludeNumericPoints,
+	tryConvertConditionToInterval
 } from './algebra';
 
 // =============================================================================
