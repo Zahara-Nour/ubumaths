@@ -414,12 +414,13 @@ export class CustomTokenizer {
 	}
 
 	/**
-	 * Scans a number (integer or decimal with dot or comma).
+	 * Scans a number (integer, decimal, or scientific notation).
 	 *
 	 * Rules:
 	 * - 42 -> NUMBER "42"
 	 * - 3.14 -> NUMBER "3.14"
 	 * - 3,14 -> NUMBER "3.14" (comma normalized to dot) - BUT NOT inside matrices!
+	 * - 1e10, 1E10, 1.5e-10, 3,14e10 -> Scientific notation
 	 * - Comma is only decimal if preceded AND followed by digits
 	 * - Inside matrices ([[...]]), comma is ALWAYS an element separator, never decimal
 	 */
@@ -454,6 +455,42 @@ export class CustomTokenizer {
 				// Trailing dot (e.g., "42.")
 				value += '.';
 				this.position++;
+			}
+		}
+
+		// Check for exponent part (scientific notation)
+		if (this.position < this.length) {
+			const expChar = this.input[this.position];
+			if (expChar === 'e' || expChar === 'E') {
+				// Look ahead to validate exponent format
+				let expStart = this.position + 1;
+
+				// Check for optional sign
+				if (
+					expStart < this.length &&
+					(this.input[expStart] === '+' || this.input[expStart] === '-')
+				) {
+					expStart++;
+				}
+
+				// Must have at least one digit after e/E or e+/e-
+				if (expStart < this.length && this.isDigit(this.input[expStart])) {
+					// Valid scientific notation - consume it all
+					value += this.input[this.position]; // 'e' or 'E'
+					this.position++;
+
+					// Consume optional sign
+					if (this.input[this.position] === '+' || this.input[this.position] === '-') {
+						value += this.input[this.position];
+						this.position++;
+					}
+
+					// Consume exponent digits
+					while (this.position < this.length && this.isDigit(this.input[this.position])) {
+						value += this.input[this.position];
+						this.position++;
+					}
+				}
 			}
 		}
 

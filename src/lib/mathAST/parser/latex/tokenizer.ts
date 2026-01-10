@@ -194,7 +194,8 @@ export class Tokenizer {
 	}
 
 	/**
-	 * Scans a number (integer or decimal).
+	 * Scans a number (integer, decimal, or scientific notation).
+	 * Supports: 42, 3.14, .5, 1e10, 1E10, 1.5e-10, 1.5e+10
 	 */
 	private scanNumber(): Token {
 		const startPos = this.position;
@@ -222,6 +223,42 @@ export class Tokenizer {
 				this.position++;
 			} else {
 				break;
+			}
+		}
+
+		// Check for exponent part (scientific notation)
+		if (this.position < this.length) {
+			const expChar = this.input[this.position];
+			if (expChar === 'e' || expChar === 'E') {
+				// Look ahead to validate exponent format
+				let expStart = this.position + 1;
+
+				// Check for optional sign
+				if (
+					expStart < this.length &&
+					(this.input[expStart] === '+' || this.input[expStart] === '-')
+				) {
+					expStart++;
+				}
+
+				// Must have at least one digit after e/E or e+/e-
+				if (expStart < this.length && this.isDigit(this.input[expStart])) {
+					// Valid scientific notation - consume it all
+					value += this.input[this.position]; // 'e' or 'E'
+					this.position++;
+
+					// Consume optional sign
+					if (this.input[this.position] === '+' || this.input[this.position] === '-') {
+						value += this.input[this.position];
+						this.position++;
+					}
+
+					// Consume exponent digits
+					while (this.position < this.length && this.isDigit(this.input[this.position])) {
+						value += this.input[this.position];
+						this.position++;
+					}
+				}
 			}
 		}
 

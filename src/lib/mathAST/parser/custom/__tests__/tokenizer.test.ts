@@ -169,6 +169,307 @@ describe('Number tokenization', () => {
 			expect(tokens[2].type).toBe('LETTER');
 		});
 	});
+
+	describe('Scientific notation', () => {
+		it('should tokenize simple scientific notation', () => {
+			const tokens = tokenize('1e10');
+			expect(tokens[0]).toEqual({
+				type: 'NUMBER',
+				value: '1e10',
+				position: 0,
+				length: 4
+			});
+		});
+
+		it('should tokenize scientific notation with uppercase E', () => {
+			const tokens = tokenize('1E10');
+			expect(tokens[0].value).toBe('1E10');
+		});
+
+		it('should tokenize decimal with exponent', () => {
+			const tokens = tokenize('3.14e10');
+			expect(tokens[0].value).toBe('3.14e10');
+		});
+
+		it('should tokenize negative exponent', () => {
+			const tokens = tokenize('1.5e-10');
+			expect(tokens[0].value).toBe('1.5e-10');
+		});
+
+		it('should tokenize positive exponent with explicit sign', () => {
+			const tokens = tokenize('1.5e+10');
+			expect(tokens[0].value).toBe('1.5e+10');
+		});
+
+		it('should tokenize zero exponent', () => {
+			const tokens = tokenize('1e0');
+			expect(tokens[0].value).toBe('1e0');
+		});
+
+		it('should tokenize French comma decimal with exponent', () => {
+			const tokens = tokenize('3,14e10');
+			expect(tokens[0].value).toBe('3.14e10'); // comma normalized to dot
+		});
+
+		it('should tokenize French comma decimal with negative exponent', () => {
+			const tokens = tokenize('1,5e-6');
+			expect(tokens[0].value).toBe('1.5e-6');
+		});
+
+		it('should NOT include e without digits in number token', () => {
+			// '1e' should be NUMBER("1") + LETTER("e")
+			const tokens = tokenize('1e');
+			expect(tokens[0]).toEqual({
+				type: 'NUMBER',
+				value: '1',
+				position: 0,
+				length: 1
+			});
+			expect(tokens[1]).toEqual({
+				type: 'LETTER',
+				value: 'e',
+				position: 1,
+				length: 1
+			});
+		});
+
+		it('should NOT include e followed by letter in number token', () => {
+			// '1ex' should be NUMBER("1") + LETTER("e") + LETTER("x")
+			const tokens = tokenize('1ex');
+			expect(tokens[0].value).toBe('1');
+			expect(tokens[1].value).toBe('e');
+			expect(tokens[2].value).toBe('x');
+		});
+
+		it('should NOT include e- without digits in number token', () => {
+			// '1e-' should be NUMBER("1") + LETTER("e") + MINUS("-")
+			const tokens = tokenize('1e-');
+			expect(tokens[0].value).toBe('1');
+			expect(tokens[1].value).toBe('e');
+			expect(tokens[2].type).toBe('MINUS');
+		});
+
+		it('should NOT include e+ without digits in number token', () => {
+			// '1e+' should be NUMBER("1") + LETTER("e") + PLUS("+")
+			const tokens = tokenize('1e+');
+			expect(tokens[0].value).toBe('1');
+			expect(tokens[1].value).toBe('e');
+			expect(tokens[2].type).toBe('PLUS');
+		});
+
+		it('should correctly tokenize scientific notation followed by operator', () => {
+			const tokens = tokenize('2e3+1');
+			expect(tokens[0].value).toBe('2e3');
+			expect(tokens[1].type).toBe('PLUS');
+			expect(tokens[2].value).toBe('1');
+		});
+
+		it('should correctly tokenize scientific notation followed by letter', () => {
+			const tokens = tokenize('1e10x');
+			expect(tokens[0].value).toBe('1e10');
+			expect(tokens[1].value).toBe('x');
+		});
+
+		it('should NOT treat variable e followed by number as scientific notation', () => {
+			// 'xe10' should be LETTER("x") + LETTER("e") + NUMBER("10")
+			const tokens = tokenize('xe10');
+			expect(tokens[0]).toEqual({ type: 'LETTER', value: 'x', position: 0, length: 1 });
+			expect(tokens[1]).toEqual({ type: 'LETTER', value: 'e', position: 1, length: 1 });
+			expect(tokens[2]).toEqual({ type: 'NUMBER', value: '10', position: 2, length: 2 });
+		});
+
+		// Additional edge cases
+		it('should tokenize zero mantissa with exponent', () => {
+			const tokens = tokenize('0e10');
+			expect(tokens[0].value).toBe('0e10');
+		});
+
+		it('should tokenize very large exponent', () => {
+			const tokens = tokenize('1e999');
+			expect(tokens[0].value).toBe('1e999');
+		});
+
+		it('should tokenize very small (negative) exponent', () => {
+			const tokens = tokenize('1e-999');
+			expect(tokens[0].value).toBe('1e-999');
+		});
+
+		it('should tokenize multi-digit exponent', () => {
+			const tokens = tokenize('1.5e123');
+			expect(tokens[0].value).toBe('1.5e123');
+		});
+
+		it('should tokenize exponent with leading zeros', () => {
+			const tokens = tokenize('1e007');
+			expect(tokens[0].value).toBe('1e007');
+		});
+
+		it('should tokenize trailing dot with exponent', () => {
+			const tokens = tokenize('1.e10');
+			expect(tokens[0].value).toBe('1.e10');
+		});
+
+		it('should tokenize zero decimal with exponent', () => {
+			const tokens = tokenize('0.0e5');
+			expect(tokens[0].value).toBe('0.0e5');
+		});
+
+		it('should correctly handle e-x pattern (not scientific)', () => {
+			// '1e-x' should be NUMBER("1") + LETTER("e") + MINUS + LETTER("x")
+			const tokens = tokenize('1e-x');
+			expect(tokens[0].value).toBe('1');
+			expect(tokens[1].value).toBe('e');
+			expect(tokens[2].type).toBe('MINUS');
+			expect(tokens[3].value).toBe('x');
+		});
+
+		it('should correctly handle e+x pattern (not scientific)', () => {
+			// '1e+x' should be NUMBER("1") + LETTER("e") + PLUS + LETTER("x")
+			const tokens = tokenize('1e+x');
+			expect(tokens[0].value).toBe('1');
+			expect(tokens[1].value).toBe('e');
+			expect(tokens[2].type).toBe('PLUS');
+			expect(tokens[3].value).toBe('x');
+		});
+
+		it('should tokenize scientific notation followed by subtraction', () => {
+			const tokens = tokenize('1e10-5');
+			expect(tokens[0].value).toBe('1e10');
+			expect(tokens[1].type).toBe('MINUS');
+			expect(tokens[2].value).toBe('5');
+		});
+
+		it('should tokenize scientific notation followed by multiplication', () => {
+			const tokens = tokenize('1e10*2');
+			expect(tokens[0].value).toBe('1e10');
+			expect(tokens[1].type).toBe('STAR');
+			expect(tokens[2].value).toBe('2');
+		});
+
+		it('should tokenize scientific notation followed by division', () => {
+			const tokens = tokenize('1e10/2');
+			expect(tokens[0].value).toBe('1e10');
+			expect(tokens[1].type).toBe('SLASH');
+			expect(tokens[2].value).toBe('2');
+		});
+
+		it('should tokenize scientific notation followed by caret', () => {
+			const tokens = tokenize('1e10^2');
+			expect(tokens[0].value).toBe('1e10');
+			expect(tokens[1].type).toBe('CARET');
+			expect(tokens[2].value).toBe('2');
+		});
+
+		it('should tokenize scientific notation followed by parenthesis', () => {
+			const tokens = tokenize('1e10(x)');
+			expect(tokens[0].value).toBe('1e10');
+			expect(tokens[1].type).toBe('LPAREN');
+		});
+
+		it('should tokenize two consecutive scientific notation numbers', () => {
+			const tokens = tokenize('1e10 2e5');
+			expect(tokens[0].value).toBe('1e10');
+			expect(tokens[1].value).toBe('2e5');
+		});
+
+		it('should NOT consume e when followed by equals', () => {
+			const tokens = tokenize('1e=');
+			expect(tokens[0].value).toBe('1');
+			expect(tokens[1].value).toBe('e');
+			expect(tokens[2].type).toBe('EQUALS');
+		});
+
+		it('should NOT consume e when followed by less-than', () => {
+			const tokens = tokenize('1e<');
+			expect(tokens[0].value).toBe('1');
+			expect(tokens[1].value).toBe('e');
+			expect(tokens[2].type).toBe('LESS');
+		});
+
+		it('should handle single digit mantissa and exponent', () => {
+			const tokens = tokenize('5e2');
+			expect(tokens[0].value).toBe('5e2');
+		});
+
+		it('should handle E after decimal point', () => {
+			const tokens = tokenize('1.E5');
+			expect(tokens[0].value).toBe('1.E5');
+		});
+
+		it('should NOT treat ee as scientific notation', () => {
+			const tokens = tokenize('1ee2');
+			expect(tokens[0].value).toBe('1');
+			expect(tokens[1].value).toBe('e');
+			expect(tokens[2].value).toBe('e');
+			expect(tokens[3].value).toBe('2');
+		});
+
+		it('should NOT treat eE as scientific notation', () => {
+			const tokens = tokenize('1eE2');
+			expect(tokens[0].value).toBe('1');
+			expect(tokens[1].value).toBe('e');
+			expect(tokens[2].value).toBe('E');
+			expect(tokens[3].value).toBe('2');
+		});
+
+		it('should handle scientific notation at end of input', () => {
+			const tokens = tokenize('3.14e2');
+			expect(tokens[0].value).toBe('3.14e2');
+			expect(tokens[1].type).toBe('EOF');
+		});
+
+		it('should correctly track position and length for scientific notation', () => {
+			const tokens = tokenize('x+1.5e-10+y');
+			const sciToken = tokens[2]; // After x, +
+			expect(sciToken.value).toBe('1.5e-10');
+			expect(sciToken.position).toBe(2);
+			expect(sciToken.length).toBe(7);
+		});
+
+		// French comma-specific edge cases
+		it('should tokenize French comma decimal with very large exponent', () => {
+			const tokens = tokenize('3,14e100');
+			expect(tokens[0].value).toBe('3.14e100');
+		});
+
+		it('should tokenize French comma decimal with negative exponent', () => {
+			const tokens = tokenize('2,5e-3');
+			expect(tokens[0].value).toBe('2.5e-3');
+		});
+
+		it('should tokenize French comma decimal with positive exponent sign', () => {
+			const tokens = tokenize('1,23e+4');
+			expect(tokens[0].value).toBe('1.23e+4');
+		});
+
+		it('should NOT treat comma after exponent as decimal', () => {
+			// '1e10,2' should be NUMBER("1e10") + COMMA + NUMBER("2")
+			const tokens = tokenize('1e10,2');
+			expect(tokens[0].value).toBe('1e10');
+			expect(tokens[1].type).toBe('COMMA');
+			expect(tokens[2].value).toBe('2');
+		});
+
+		it('should handle French notation in function arguments', () => {
+			// In function args, comma is separator, not decimal
+			const tokens = tokenize('sin(1,5e2, 2,3e-1)');
+			// sin ( 1.5e2 , 2.3e-1 ) - but the second comma after 1,5e2 is COMMA
+			expect(tokens[0].type).toBe('FUNC');
+			expect(tokens[2].value).toBe('1.5e2');
+			expect(tokens[3].type).toBe('COMMA');
+			expect(tokens[4].value).toBe('2.3e-1');
+		});
+
+		it('should handle zero French comma decimal with exponent', () => {
+			const tokens = tokenize('0,0e5');
+			expect(tokens[0].value).toBe('0.0e5');
+		});
+
+		it('should handle scientific notation with uppercase E and French comma', () => {
+			const tokens = tokenize('1,5E10');
+			expect(tokens[0].value).toBe('1.5E10');
+		});
+	});
 });
 
 // =============================================================================
