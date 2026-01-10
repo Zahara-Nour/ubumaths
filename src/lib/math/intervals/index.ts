@@ -1,20 +1,21 @@
 /**
- * Intervals Module - Mathematical Intervals with Algebraic Bounds
+ * Intervals Module - Mathematical Intervals with Symbolic Bounds
  *
  * Provides a complete system for representing and manipulating mathematical intervals
- * on the real line with exact algebraic bounds (rationals, radicals).
+ * on the real line with symbolic bounds using MathNode from mathAST.
+ *
+ * Supports any symbolic expression as bounds: π, √2, ln(3), e^x, etc.
  *
  * @example
- * // Create intervals with exact algebraic bounds
- * import { closedInterval, radicalBound, fromNumber, formatDomainInterval } from '$lib/math/intervals';
+ * // Create intervals with symbolic bounds
+ * import { closedInterval, sqrt2, fromNumber, formatDomainInterval } from '$lib/math/intervals';
  *
- * const sqrt2 = radicalBound(2n);
- * const domain = intervalSet([closedInterval(fromNumber(0), sqrt2)]);
+ * const domain = intervalSet([closedInterval(fromNumber(0), sqrt2())]);
  * console.log(formatDomainInterval(domain)); // "[0, √2]"
  *
  * @example
  * // Perform set operations
- * import { intersect, union, complement, positiveReals, nonZeroReals } from '$lib/math/intervals';
+ * import { intersect, union, complement, positiveReals, unitInterval } from '$lib/math/intervals';
  *
  * const result = intersect(positiveReals(), unitInterval());
  * // result = ]0, 1]
@@ -26,7 +27,6 @@ export type {
 	EndpointValue,
 	EndpointType,
 	Endpoint,
-	InfinityKind,
 	// Interval types
 	Interval,
 	ExcludedPoint,
@@ -37,23 +37,35 @@ export type {
 	IntervalDomain,
 	// Comparison types
 	CompareResult,
-	AlgebraicCompareResult
+	CompareOutcome
 } from './types';
 
-// Algebraic comparison
-export { compareAlgebraicNumerically } from './algebraic-compare';
-
-// Endpoint utilities
+// Comparison functions
 export {
 	compareEndpointValues,
-	endpointToNumber,
+	compare,
+	endpointLessThan,
 	endpointEquals,
-	isPositiveInfinity,
-	isNegativeInfinity
-} from './endpoint';
+	endpointLessThanOrEqual,
+	endpointGreaterThan,
+	endpointGreaterThanOrEqual
+} from './compare';
+
+// Endpoint utilities
+export { isInfinite, isPositiveInfinity, isNegativeInfinity, endpointToNumber } from './endpoint';
 
 // Factory functions - Endpoint values
-export { fromNumber, rationalBound, radicalBound, infinityBound, algebraic } from './factory';
+export {
+	fromNumber,
+	rationalBound,
+	radicalBound,
+	positiveInfinity,
+	negativeInfinity,
+	pi,
+	e,
+	sqrt2,
+	sqrt3
+} from './factory';
 
 // Factory functions - Endpoints
 export { endpoint, openEndpoint, closedEndpoint, negInfinity, posInfinity } from './factory';

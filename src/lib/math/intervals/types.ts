@@ -1,36 +1,28 @@
 /**
  * Interval Types for Mathematical Domain Operations
  *
- * Types for representing intervals with exact algebraic bounds.
- * Supports rationals (3/2) and radicals (sqrt(2)) for precise domain computation.
+ * Types for representing intervals with symbolic MathNode bounds.
+ * Supports any MathNode: numbers, rationals, radicals, pi, ln(2), etc.
  */
 
-import type { AlgebraicCoefficient } from '$lib/mathAST/normal/types';
-
-// =============================================================================
-// Infinity Types
-// =============================================================================
-
-/**
- * Special value representing positive or negative infinity.
- * Named InfinityKind to avoid shadowing the global Infinity constant.
- */
-export type InfinityKind = 'positive_infinity' | 'negative_infinity';
+import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
 // Endpoint Types
 // =============================================================================
 
 /**
- * An endpoint value can be:
- * - An algebraic coefficient (for exact bounds like 3/2, sqrt(2))
- * - Infinity
+ * An endpoint value is a MathNode.
  *
- * Decision: No numeric (number) type - all values are algebraic for canonical representation.
+ * This includes:
+ * - NumberNode: 0, 1, -5, 3.14
+ * - InfinityNode: +∞, -∞
+ * - GreekLetterNode: π, e
+ * - FunctionNode: sqrt(2), ln(3), sin(π/4)
+ * - DivisionNode: 1/2, 3/4
+ * - Any other symbolic expression
  */
-export type EndpointValue =
-	| { readonly kind: 'algebraic'; readonly value: AlgebraicCoefficient }
-	| { readonly kind: 'infinity'; readonly value: InfinityKind };
+export type EndpointValue = MathNode;
 
 /**
  * Type of endpoint for an interval bound
@@ -60,15 +52,20 @@ export interface Endpoint {
  * - ]a, b] or [a, b[ = half-open intervals
  *
  * @example
- * // ]0, +infinity[ represents x > 0
+ * // ]0, +∞[ represents x > 0
  * { kind: 'interval',
- *   lower: { value: { kind: 'algebraic', value: zero }, type: 'open' },
- *   upper: { value: { kind: 'infinity', value: 'positive_infinity' }, type: 'open' } }
+ *   lower: { value: number('0'), type: 'open' },
+ *   upper: { value: infinity('positive'), type: 'open' } }
  *
  * // [-1, 1] represents -1 <= x <= 1
  * { kind: 'interval',
- *   lower: { value: { kind: 'algebraic', value: minusOne }, type: 'closed' },
- *   upper: { value: { kind: 'algebraic', value: one }, type: 'closed' } }
+ *   lower: { value: number('-1'), type: 'closed' },
+ *   upper: { value: number('1'), type: 'closed' } }
+ *
+ * // [0, π] represents 0 <= x <= π
+ * { kind: 'interval',
+ *   lower: { value: number('0'), type: 'closed' },
+ *   upper: { value: greek('pi'), type: 'closed' } }
  */
 export interface Interval {
 	readonly kind: 'interval';
@@ -106,9 +103,10 @@ export interface UniversalSet {
  * An interval-based domain (union of intervals with optional excluded points)
  *
  * Represents domains like:
- * - ]0, +infinity[
- * - ]-infinity, 0[ union ]0, +infinity[ (R \ {0})
+ * - ]0, +∞[
+ * - ]-∞, 0[ ∪ ]0, +∞[ (ℝ \ {0})
  * - [-1, 1]
+ * - [0, π]
  */
 export interface IntervalSet {
 	readonly kind: 'interval_set';
@@ -126,18 +124,19 @@ export type IntervalDomain = EmptySet | UniversalSet | IntervalSet;
 // =============================================================================
 
 /**
- * Result of comparing two algebraic values numerically.
- * -1: a < b, 0: a = b, 1: a > b
+ * Result of comparing two endpoint values.
+ * Maps directly to compareNumericNodes() return type:
+ * - -1: a < b
+ * - 0: a = b
+ * - 1: a > b
+ * - undefined: cannot compare (e.g., contains variables)
  */
-export type CompareResult = -1 | 0 | 1;
+export type CompareOutcome = -1 | 0 | 1 | undefined;
 
 /**
- * Result of algebraic comparison with exactness flag.
- * Following mathAST pattern for exact vs fallback computation.
+ * Result of endpoint comparison.
+ * Structure kept for future extensibility.
  */
-export interface AlgebraicCompareResult {
-	/** The comparison result: -1 (less), 0 (equal), 1 (greater) */
-	readonly result: CompareResult;
-	/** True if comparison was exact, false if numeric fallback was used */
-	readonly exact: boolean;
+export interface CompareResult {
+	readonly outcome: CompareOutcome;
 }

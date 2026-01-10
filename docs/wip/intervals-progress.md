@@ -1,41 +1,49 @@
-# Progress: Module Intervals avec bornes algébriques exactes
+# Progress: Module Intervals - Refactoring MathNode
 
-## Status: COMPLETE ✓
+## Status: COMPLETE
 
-All phases completed. Module ready for use.
+Refactored intervals module to use MathNode from mathAST for symbolic bounds.
 
 ### Summary
 
-Created `src/lib/math/intervals/` module providing:
+Migrated `src/lib/math/intervals/` from AlgebraicCoefficient-based bounds to MathNode-based bounds:
 
-- Exact algebraic comparison of bounds (rationals, square roots)
-- French interval notation formatting
-- Set operations (intersect, union, complement, difference)
-- 152 tests passing
+- **Before**: `EndpointValue = { kind: 'algebraic', value: AlgebraicCoefficient } | { kind: 'infinity', value: InfinityKind }`
+- **After**: `EndpointValue = MathNode` (simplified, since InfinityNode is part of MathNode union)
 
-### Files Created
+### Changes Made
 
-| File                   | Description                   |
-| ---------------------- | ----------------------------- |
-| `types.ts`             | Type definitions              |
-| `algebraic-compare.ts` | Exact comparison via squaring |
-| `endpoint.ts`          | Endpoint utilities            |
-| `factory.ts`           | Interval constructors         |
-| `algebra.ts`           | Set operations                |
-| `format.ts`            | Formatting                    |
-| `index.ts`             | Public exports                |
+| File                                  | Change                                                                                |
+| ------------------------------------- | ------------------------------------------------------------------------------------- |
+| `types.ts`                            | Simplified `EndpointValue = MathNode`, `CompareOutcome = -1 \| 0 \| 1 \| undefined`   |
+| `compare.ts`                          | **New** - Wrapper around `compareNumericNodes` from mathAST                           |
+| `endpoint.ts`                         | Uses mathAST guards, re-exports from compare.ts                                       |
+| `factory.ts`                          | Uses mathAST factory functions (`number`, `infinity`, `fraction`, `implicitMultiply`) |
+| `algebra.ts`                          | Updated to use `compare()` with proper undefined handling                             |
+| `format.ts`                           | Handles MathNode formatting with special cases for sqrt, division, multiplication     |
+| `index.ts`                            | Updated exports                                                                       |
+| `algebraic-compare.ts`                | **Deleted** (replaced by compare.ts)                                                  |
+| `__tests__/algebraic-compare.test.ts` | **Deleted** (obsolete)                                                                |
+
+### Key Decisions
+
+1. **EndpointValue = MathNode**: Simplified from discriminated union since `InfinityNode` is already in the `MathNode` union type
+
+2. **Delegate to compareNumericNodes**: All comparison logic delegated to mathAST's existing exact comparison function
+
+3. **Conservative undefined handling**: When comparison returns `undefined` (incomparable expressions with variables), algebra operations assume non-empty intervals and preserve original order
+
+4. **Formatting**: Custom formatting for common patterns (sqrt, fractions) with fallback to `toCustom`
+
+### Test Results
+
+- 143 tests passing
+- Type check: 0 errors
+- Code review: 9/10 (Excellent)
 
 ### Documentation
 
-- Reference: `docs/ref/math/intervals.md`
-
-### Decisions Made
-
-1. **Algebraic-only bounds** (no numeric) for canonical representation
-2. **Square roots only** (√) - covers 95% of use cases
-3. **Exact + fallback pattern** with `exact: boolean` flag
-4. **Renamed Infinity → InfinityKind** to avoid global shadowing
-5. **Separate from domain/** - incompatible type systems, both modules coexist
+- Updated: `docs/ref/math/intervals.md`
 
 ---
 

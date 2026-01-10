@@ -2,6 +2,7 @@
  * Tests for format.ts
  *
  * Tests interval and domain formatting functions.
+ * Uses MathNode-based endpoints from mathAST.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -15,6 +16,7 @@ import {
 	fromNumber,
 	rationalBound,
 	radicalBound,
+	pi,
 	closedInterval,
 	openInterval,
 	greaterThan,
@@ -30,26 +32,27 @@ import {
 	nonZeroReals,
 	unitInterval
 } from '../factory';
+import { infinity, func, number, implicitMultiply } from '$lib/mathAST/factory';
 
 describe('formatEndpointValue', () => {
 	it('formats positive infinity', () => {
-		const inf = { kind: 'infinity' as const, value: 'positive_infinity' as const };
+		const inf = infinity('positive');
 		expect(formatEndpointValue(inf)).toBe('+∞');
 	});
 
 	it('formats negative infinity', () => {
-		const inf = { kind: 'infinity' as const, value: 'negative_infinity' as const };
+		const inf = infinity('negative');
 		expect(formatEndpointValue(inf)).toBe('-∞');
 	});
 
-	it('formats integer algebraic values', () => {
+	it('formats integer values', () => {
 		expect(formatEndpointValue(fromNumber(0))).toBe('0');
 		expect(formatEndpointValue(fromNumber(1))).toBe('1');
 		expect(formatEndpointValue(fromNumber(-5))).toBe('-5');
 		expect(formatEndpointValue(fromNumber(42))).toBe('42');
 	});
 
-	it('formats rational algebraic values', () => {
+	it('formats rational values', () => {
 		expect(formatEndpointValue(rationalBound(3n, 2n))).toBe('3/2');
 		expect(formatEndpointValue(rationalBound(-1n, 3n))).toBe('-1/3');
 	});
@@ -60,16 +63,22 @@ describe('formatEndpointValue', () => {
 	});
 
 	it('formats negative square roots', () => {
-		expect(formatEndpointValue(radicalBound(2n, -1n))).toBe('-√2');
+		const negSqrt2 = implicitMultiply(number('-1'), func('sqrt', [number('2')]));
+		expect(formatEndpointValue(negSqrt2)).toBe('-1*√2');
 	});
 
 	it('formats coefficients with square roots', () => {
-		expect(formatEndpointValue(radicalBound(2n, 2n))).toBe('2√2');
-		expect(formatEndpointValue(radicalBound(3n, 3n))).toBe('3√3');
+		const twoSqrt2 = radicalBound(2n, 2n);
+		expect(formatEndpointValue(twoSqrt2)).toBe('2*√2');
 	});
 
 	it('formats rational coefficients with square roots', () => {
-		expect(formatEndpointValue(radicalBound(2n, 1n, 2n))).toBe('(1/2)√2');
+		const halfSqrt2 = radicalBound(2n, 1n, 2n);
+		expect(formatEndpointValue(halfSqrt2)).toBe('1/2*√2');
+	});
+
+	it('formats pi', () => {
+		expect(formatEndpointValue(pi())).toBe('π');
 	});
 });
 
@@ -128,7 +137,7 @@ describe('formatDomainInterval', () => {
 		expect(formatDomainInterval(nonZeroReals())).toBe('ℝ \\ {0}');
 	});
 
-	it('formats interval with algebraic bounds', () => {
+	it('formats interval with symbolic bounds', () => {
 		const sqrt2 = radicalBound(2n);
 		const sqrt3 = radicalBound(3n);
 		const domain = intervalSet([closedInterval(sqrt2, sqrt3)]);
@@ -204,7 +213,7 @@ describe('formatDomainCondition', () => {
 		expect(formatDomainCondition(domain)).toBe('0 ≤ x ≤ 1 ou 2 ≤ x ≤ 3');
 	});
 
-	it('formats with algebraic bounds', () => {
+	it('formats with symbolic bounds', () => {
 		const sqrt2 = radicalBound(2n);
 		const domain = intervalSet([greaterThan(sqrt2)]);
 		expect(formatDomainCondition(domain)).toBe('x > √2');
@@ -225,7 +234,7 @@ describe('formatDomainFull', () => {
 		expect(result.condition).toBe('t > 0');
 	});
 
-	it('handles algebraic bounds', () => {
+	it('handles symbolic bounds', () => {
 		const sqrt2 = radicalBound(2n);
 		const domain = intervalSet([closedInterval(fromNumber(0), sqrt2)]);
 		const result = formatDomainFull(domain);

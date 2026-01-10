@@ -2,6 +2,7 @@
  * Tests for factory.ts
  *
  * Tests interval and endpoint factory functions.
+ * Uses MathNode-based endpoints from mathAST.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -9,7 +10,12 @@ import {
 	fromNumber,
 	rationalBound,
 	radicalBound,
-	infinityBound,
+	positiveInfinity,
+	negativeInfinity,
+	pi,
+	e,
+	sqrt2,
+	sqrt3,
 	openEndpoint,
 	closedEndpoint,
 	negInfinity,
@@ -33,114 +39,146 @@ import {
 	unitInterval
 } from '../factory';
 import { endpointToNumber } from '../endpoint';
-import { algebraicToNumber } from '$lib/mathAST/normal/algebraic';
+import {
+	isNumber,
+	isInfinity,
+	isGreek,
+	isVariable,
+	isFunction,
+	isDivision
+} from '$lib/mathAST/guards';
 
 describe('bound value constructors', () => {
 	describe('fromNumber', () => {
-		it('creates algebraic 0', () => {
+		it('creates NumberNode for 0', () => {
 			const zero = fromNumber(0);
-			expect(zero.kind).toBe('algebraic');
-			if (zero.kind === 'algebraic') {
-				expect(algebraicToNumber(zero.value)).toBe(0);
+			expect(isNumber(zero)).toBe(true);
+			if (isNumber(zero)) {
+				expect(zero.value).toBe('0');
 			}
 		});
 
-		it('creates algebraic 1', () => {
+		it('creates NumberNode for 1', () => {
 			const one = fromNumber(1);
-			expect(one.kind).toBe('algebraic');
-			if (one.kind === 'algebraic') {
-				expect(algebraicToNumber(one.value)).toBe(1);
+			expect(isNumber(one)).toBe(true);
+			if (isNumber(one)) {
+				expect(one.value).toBe('1');
 			}
 		});
 
-		it('creates algebraic -1', () => {
+		it('creates NumberNode for -1', () => {
 			const minusOne = fromNumber(-1);
-			expect(minusOne.kind).toBe('algebraic');
-			if (minusOne.kind === 'algebraic') {
-				expect(algebraicToNumber(minusOne.value)).toBe(-1);
+			expect(isNumber(minusOne)).toBe(true);
+			if (isNumber(minusOne)) {
+				expect(minusOne.value).toBe('-1');
 			}
 		});
 
-		it('creates algebraic from integer', () => {
+		it('creates NumberNode from integer', () => {
 			const five = fromNumber(5);
-			expect(five.kind).toBe('algebraic');
-			if (five.kind === 'algebraic') {
-				expect(algebraicToNumber(five.value)).toBe(5);
+			expect(isNumber(five)).toBe(true);
+			if (isNumber(five)) {
+				expect(five.value).toBe('5');
 			}
 		});
 
-		it('creates algebraic from decimal', () => {
+		it('creates NumberNode from decimal', () => {
 			const oneAndHalf = fromNumber(1.5);
-			expect(oneAndHalf.kind).toBe('algebraic');
-			if (oneAndHalf.kind === 'algebraic') {
-				expect(algebraicToNumber(oneAndHalf.value)).toBe(1.5);
+			expect(isNumber(oneAndHalf)).toBe(true);
+			if (isNumber(oneAndHalf)) {
+				expect(oneAndHalf.value).toBe('1.5');
 			}
 		});
 	});
 
 	describe('rationalBound', () => {
-		it('creates exact 3/2', () => {
+		it('creates exact 3/2 as DivisionNode', () => {
 			const threeHalves = rationalBound(3n, 2n);
-			expect(threeHalves.kind).toBe('algebraic');
-			if (threeHalves.kind === 'algebraic') {
-				expect(algebraicToNumber(threeHalves.value)).toBe(1.5);
-			}
+			expect(isDivision(threeHalves)).toBe(true);
+			expect(endpointToNumber(threeHalves)).toBe(1.5);
 		});
 
-		it('creates exact integer', () => {
+		it('creates exact integer as NumberNode', () => {
 			const five = rationalBound(5n);
-			expect(five.kind).toBe('algebraic');
-			if (five.kind === 'algebraic') {
-				expect(algebraicToNumber(five.value)).toBe(5);
-			}
+			expect(isNumber(five)).toBe(true);
+			expect(endpointToNumber(five)).toBe(5);
 		});
 	});
 
 	describe('radicalBound', () => {
-		it('creates sqrt(2)', () => {
-			const sqrt2 = radicalBound(2n);
-			expect(sqrt2.kind).toBe('algebraic');
-			if (sqrt2.kind === 'algebraic') {
-				expect(algebraicToNumber(sqrt2.value)).toBeCloseTo(Math.sqrt(2));
+		it('creates sqrt(2) as FunctionNode', () => {
+			const sqrt2Val = radicalBound(2n);
+			expect(isFunction(sqrt2Val)).toBe(true);
+			if (isFunction(sqrt2Val)) {
+				expect(sqrt2Val.name).toBe('sqrt');
 			}
+			expect(endpointToNumber(sqrt2Val)).toBeCloseTo(Math.sqrt(2));
 		});
 
-		it('creates 2*sqrt(3)', () => {
+		it('creates 2*sqrt(3) as MultiplyNode', () => {
 			const twoSqrt3 = radicalBound(3n, 2n);
-			expect(twoSqrt3.kind).toBe('algebraic');
-			if (twoSqrt3.kind === 'algebraic') {
-				expect(algebraicToNumber(twoSqrt3.value)).toBeCloseTo(2 * Math.sqrt(3));
-			}
+			expect(endpointToNumber(twoSqrt3)).toBeCloseTo(2 * Math.sqrt(3));
 		});
 
 		it('creates (1/2)*sqrt(2)', () => {
 			const halfSqrt2 = radicalBound(2n, 1n, 2n);
-			expect(halfSqrt2.kind).toBe('algebraic');
-			if (halfSqrt2.kind === 'algebraic') {
-				expect(algebraicToNumber(halfSqrt2.value)).toBeCloseTo(Math.sqrt(2) / 2);
-			}
+			expect(endpointToNumber(halfSqrt2)).toBeCloseTo(Math.sqrt(2) / 2);
 		});
 
 		it('handles sqrt(1) = 1', () => {
 			const sqrt1 = radicalBound(1n);
-			expect(sqrt1.kind).toBe('algebraic');
-			if (sqrt1.kind === 'algebraic') {
-				expect(algebraicToNumber(sqrt1.value)).toBe(1);
+			// sqrt(1) simplifies to the coefficient
+			expect(endpointToNumber(sqrt1)).toBe(1);
+		});
+	});
+
+	describe('infinity constructors', () => {
+		it('creates positive infinity', () => {
+			const inf = positiveInfinity();
+			expect(isInfinity(inf)).toBe(true);
+			if (isInfinity(inf)) {
+				expect(inf.sign).toBe('positive');
+			}
+		});
+
+		it('creates negative infinity', () => {
+			const inf = negativeInfinity();
+			expect(isInfinity(inf)).toBe(true);
+			if (isInfinity(inf)) {
+				expect(inf.sign).toBe('negative');
 			}
 		});
 	});
 
-	describe('infinityBound', () => {
-		it('creates positive infinity', () => {
-			const inf = infinityBound('positive_infinity');
-			expect(inf.kind).toBe('infinity');
-			expect(inf.value).toBe('positive_infinity');
+	describe('symbolic constant constructors', () => {
+		it('creates pi as GreekNode', () => {
+			const piVal = pi();
+			expect(isGreek(piVal)).toBe(true);
+			if (isGreek(piVal)) {
+				expect(piVal.letter).toBe('pi');
+			}
+			expect(endpointToNumber(piVal)).toBeCloseTo(Math.PI);
 		});
 
-		it('creates negative infinity', () => {
-			const inf = infinityBound('negative_infinity');
-			expect(inf.kind).toBe('infinity');
-			expect(inf.value).toBe('negative_infinity');
+		it('creates e as VariableNode', () => {
+			const eVal = e();
+			expect(isVariable(eVal)).toBe(true);
+			if (isVariable(eVal)) {
+				expect(eVal.name).toBe('e');
+			}
+			expect(endpointToNumber(eVal)).toBeCloseTo(Math.E);
+		});
+
+		it('creates sqrt(2) as FunctionNode', () => {
+			const sqrt2Val = sqrt2();
+			expect(isFunction(sqrt2Val)).toBe(true);
+			expect(endpointToNumber(sqrt2Val)).toBeCloseTo(Math.sqrt(2));
+		});
+
+		it('creates sqrt(3) as FunctionNode', () => {
+			const sqrt3Val = sqrt3();
+			expect(isFunction(sqrt3Val)).toBe(true);
+			expect(endpointToNumber(sqrt3Val)).toBeCloseTo(Math.sqrt(3));
 		});
 	});
 });
@@ -233,10 +271,10 @@ describe('interval factories', () => {
 		expect(endpointToNumber(int.upper.value)).toBe(Infinity);
 	});
 
-	it('creates interval with algebraic bounds', () => {
-		const sqrt2 = radicalBound(2n);
-		const sqrt3 = radicalBound(3n);
-		const int = closedInterval(sqrt2, sqrt3);
+	it('creates interval with symbolic bounds', () => {
+		const s2 = radicalBound(2n);
+		const s3 = radicalBound(3n);
+		const int = closedInterval(s2, s3);
 		expect(int.kind).toBe('interval');
 		expect(endpointToNumber(int.lower.value)).toBeCloseTo(Math.sqrt(2));
 		expect(endpointToNumber(int.upper.value)).toBeCloseTo(Math.sqrt(3));

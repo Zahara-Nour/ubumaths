@@ -4,12 +4,22 @@
  * Formats intervals for display using:
  * - French interval notation: ]a, b[
  * - Mathematical symbols: ℝ, ∪, ∞
- * - Exact algebraic bounds: √2, 3/2
+ * - Symbolic bounds: √2, π, ln(2)
  * - Condition notation: x > 0
  */
 
 import type { IntervalDomain, Interval, EndpointValue, IntervalSet } from './types';
-import { algebraicToNumber } from '$lib/mathAST/normal/algebraic';
+import { toCustom } from '$lib/mathAST/custom-generator';
+import {
+	isInfinity,
+	isPositiveInfinity,
+	isNegativeInfinity,
+	isNumber,
+	isGreek,
+	isFunction,
+	isDivision,
+	isMultiplication
+} from '$lib/mathAST/guards';
 import { isUniversal } from './algebra';
 
 // =============================================================================
@@ -114,64 +124,87 @@ function formatInterval(interval: Interval): string {
  * Format an endpoint value as a string.
  *
  * - Infinity: "-∞" or "+∞"
- * - Algebraic: Formatted with algebraicToLatex (simplified for text)
+ * - Number: "0", "1.5", "-2"
+ * - Greek: "π"
+ * - Function: "√2", "ln(3)"
+ * - Other: Uses toCustom for general MathNode formatting
  *
  * @example
- * formatEndpointValue({ kind: 'infinity', value: 'positive_infinity' }) // → "+∞"
- * formatEndpointValue({ kind: 'algebraic', value: ... }) // → "√2" or "3/2"
+ * formatEndpointValue(infinity('positive')) // → "+∞"
+ * formatEndpointValue(number('5')) // → "5"
+ * formatEndpointValue(greek('pi')) // → "π"
+ * formatEndpointValue(func('sqrt', [number('2')])) // → "√2"
  */
 export function formatEndpointValue(value: EndpointValue): string {
-	if (value.kind === 'infinity') {
-		return value.value === 'negative_infinity' ? '-∞' : '+∞';
+	// Handle infinity
+	if (isInfinity(value)) {
+		return value.sign === 'positive' ? '+∞' : '-∞';
 	}
 
-	// Algebraic value - try to format nicely
-	const alg = value.value;
+	// Handle numbers
+	if (isNumber(value)) {
+		return value.value;
+	}
 
-	// Simple case: single rational term (no radicals)
-	if (alg.terms.length === 1) {
-		const term = alg.terms[0];
-		if (term.radicals.length === 0) {
-			// Pure rational
-			const { n, d } = term.rational;
-			if (d === 1n) {
-				return String(n);
-			}
-			return `${n}/${d}`;
+	// Handle Greek letters with nice Unicode
+	if (isGreek(value)) {
+		const greekMap: Record<string, string> = {
+			pi: 'π',
+			alpha: 'α',
+			beta: 'β',
+			gamma: 'γ',
+			theta: 'θ',
+			delta: 'δ',
+			epsilon: 'ε',
+			lambda: 'λ',
+			mu: 'μ',
+			sigma: 'σ',
+			omega: 'ω',
+			phi: 'φ',
+			psi: 'ψ'
+		};
+		return greekMap[value.letter] ?? value.letter;
+	}
+
+	// Handle sqrt with nice √ symbol
+	if (isFunction(value) && value.name === 'sqrt' && value.args.length === 1) {
+		const arg = value.args[0];
+		if (isNumber(arg)) {
+			return `√${arg.value}`;
 		}
+		return `√(${formatEndpointValue(arg)})`;
+	}
 
-		// Single radical term: c * sqrt(r)
-		if (term.radicals.length === 1 && term.radicals[0].index === 2n) {
-			const { n, d } = term.rational;
-			const radicand = term.radicals[0].radicand;
+	// Handle other functions
+	if (isFunction(value)) {
+		const args = value.args.map(formatEndpointValue).join(', ');
+		return `${value.name}(${args})`;
+	}
 
-			// sqrt(r) with coefficient 1
-			if (n === 1n && d === 1n) {
-				return `√${radicand}`;
+	// Handle division: a/b
+	if (isDivision(value)) {
+		return `${formatEndpointValue(value.numerator)}/${formatEndpointValue(value.denominator)}`;
+	}
+
+	// Handle multiplication: a*b
+	if (isMultiplication(value)) {
+		// Check if it's coefficient * sqrt(n) pattern for nice display
+		if (isFunction(value.right) && value.right.name === 'sqrt' && value.right.args.length === 1) {
+			const arg = value.right.args[0];
+			if (isNumber(arg)) {
+				return `${formatEndpointValue(value.left)}*√${arg.value}`;
 			}
-
-			// -sqrt(r)
-			if (n === -1n && d === 1n) {
-				return `-√${radicand}`;
-			}
-
-			// c * sqrt(r) where c is integer
-			if (d === 1n) {
-				return `${n}√${radicand}`;
-			}
-
-			// (n/d) * sqrt(r)
-			return `(${n}/${d})√${radicand}`;
 		}
+		return `${formatEndpointValue(value.left)}*${formatEndpointValue(value.right)}`;
 	}
 
-	// Complex case: fall back to numeric approximation
-	const num = algebraicToNumber(alg);
-	if (Number.isInteger(num)) {
-		return String(num);
+	// Fallback: use toCustom for general MathNode formatting
+	try {
+		return toCustom(value);
+	} catch {
+		// If toCustom fails (e.g., missing styles), return a simple representation
+		return String(value);
 	}
-	// Format with reasonable precision
-	return num.toFixed(4).replace(/\.?0+$/, '');
 }
 
 // =============================================================================
@@ -224,8 +257,8 @@ function formatIntervalAsCondition(interval: Interval, variable: string): string
 	const lower = interval.lower;
 	const upper = interval.upper;
 
-	const isLowerInf = lower.value.kind === 'infinity' && lower.value.value === 'negative_infinity';
-	const isUpperInf = upper.value.kind === 'infinity' && upper.value.value === 'positive_infinity';
+	const isLowerInf = isNegativeInfinity(lower.value);
+	const isUpperInf = isPositiveInfinity(upper.value);
 
 	if (isLowerInf && isUpperInf) {
 		return `${variable} ∈ ℝ`;
