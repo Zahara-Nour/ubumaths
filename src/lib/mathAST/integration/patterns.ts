@@ -194,6 +194,16 @@ export function findUCandidates(expr: MathNode, variable: string): MathNode[] {
 				traverse(node.imaginary);
 				break;
 
+			// Infinity is a leaf node
+			case 'infinity':
+				break;
+
+			// Limit has expression and approach
+			case 'limit':
+				traverse(node.expression);
+				traverse(node.approach);
+				break;
+
 			default: {
 				const _exhaustive: never = node;
 				return _exhaustive;
@@ -375,7 +385,12 @@ function containsSubexpression(expr: MathNode, target: MathNode): boolean {
 			case 'symbol':
 			case 'greek':
 			case 'hole':
+			case 'infinity':
 				return false;
+
+			// Limit nodes
+			case 'limit':
+				return search(node.expression) || search(node.approach);
 
 			default: {
 				const _exhaustive: never = node;

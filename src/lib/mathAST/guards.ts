@@ -27,6 +27,8 @@ import type {
 	MatrixNode,
 	CompositionNode,
 	ComplexNode,
+	InfinityNode,
+	LimitNode,
 	LiteralNode,
 	BinaryOperationNode,
 	UnaryOperationNode,
@@ -245,6 +247,62 @@ export function isComplex(node: MathNode): node is ComplexNode {
 	return node.type === 'complex';
 }
 
+/**
+ * Type guard for InfinityNode
+ */
+export function isInfinity(node: MathNode): node is InfinityNode {
+	return node.type === 'infinity';
+}
+
+/**
+ * Type guard for LimitNode
+ */
+export function isLimit(node: MathNode): node is LimitNode {
+	return node.type === 'limit';
+}
+
+/**
+ * Returns true if node is positive infinity (+∞)
+ */
+export function isPositiveInfinity(node: MathNode): node is InfinityNode {
+	return isInfinity(node) && node.sign === 'positive';
+}
+
+/**
+ * Returns true if node is negative infinity (-∞)
+ */
+export function isNegativeInfinity(node: MathNode): node is InfinityNode {
+	return isInfinity(node) && node.sign === 'negative';
+}
+
+/**
+ * Returns true if the limit is a two-sided limit (direction='both')
+ */
+export function isTwoSidedLimit(node: MathNode): node is LimitNode {
+	return isLimit(node) && node.direction === 'both';
+}
+
+/**
+ * Returns true if the limit is a right limit (direction='right')
+ */
+export function isRightLimit(node: MathNode): node is LimitNode {
+	return isLimit(node) && node.direction === 'right';
+}
+
+/**
+ * Returns true if the limit is a left limit (direction='left')
+ */
+export function isLeftLimit(node: MathNode): node is LimitNode {
+	return isLimit(node) && node.direction === 'left';
+}
+
+/**
+ * Returns true if the limit approaches infinity (positive or negative)
+ */
+export function isLimitAtInfinity(node: MathNode): node is LimitNode {
+	return isLimit(node) && isInfinity(node.approach);
+}
+
 // =============================================================================
 // Matrix Predicates
 // =============================================================================
@@ -314,6 +372,10 @@ export function hasChildren(node: MathNode): boolean {
 	if (isComplex(node)) {
 		return true;
 	}
+	if (isLimit(node)) {
+		return true; // Has expression and approach as children
+	}
+	// InfinityNode has no children (leaf node)
 	return false;
 }
 
@@ -508,6 +570,14 @@ export function hasUnitDescendant(node: MathNode): boolean {
 
 		case 'complex':
 			return hasUnitDescendant(node.real) || hasUnitDescendant(node.imaginary);
+
+		case 'infinity':
+			// Infinity is a leaf node, no children to check
+			return false;
+
+		case 'limit':
+			// Check expression and approach for unit descendants
+			return hasUnitDescendant(node.expression) || hasUnitDescendant(node.approach);
 
 		default: {
 			const _exhaustive: never = node;

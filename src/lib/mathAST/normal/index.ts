@@ -55,6 +55,7 @@ export {
 	rationalToNumber,
 	rationalToString,
 	parseRational,
+	floatToRational,
 	gcd,
 	lcm,
 	absBigInt

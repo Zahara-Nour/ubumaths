@@ -19,7 +19,7 @@ import { substitute } from '../../eval/substitute';
 import { classifyIntegrand } from '../classify';
 import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
 import { createStepRecorder } from '../step-recorder';
-import { selectIntegrator } from './index';
+import { selectIntegrator } from './select';
 import { variable as variableFactory } from '../../factory';
 import { simplifiedMultiply } from '../../differentiation/rules';
 import { toCustom } from '../../custom-generator';

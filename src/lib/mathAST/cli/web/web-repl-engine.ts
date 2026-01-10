@@ -23,7 +23,8 @@ import {
 	escapeWithLabel,
 	formatTreeHtml
 } from './output-formatter-web';
-import { toCustom, getVariables, hasAllBindings, evaluate, substitute } from '../../index';
+import { toCustom, getVariables, hasAllBindings, evaluate, substitute, toLatex } from '../../index';
+import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { normalize, normalFormsEquivalent } from '../../normal';
 import { evaluateWithUnits, DimensionalEvaluationError } from '../../eval/evaluate-with-units';
 import type {
@@ -1280,14 +1281,14 @@ export class WebReplEngine {
 	}
 
 	/**
-	 * Type guard for Rational value.
+	 * Type guard for MathNode value.
 	 */
-	private isRationalValue(value: EvalValue): value is { n: bigint; d: bigint } {
-		return typeof value === 'object' && 'n' in value && 'd' in value;
+	private isMathNodeValue(value: EvalValue): value is MathNode {
+		return typeof value === 'object' && 'type' in value;
 	}
 
 	/**
-	 * Extract numeric value from Rational, number, or ComplexValueResult.
+	 * Extract numeric value from MathNode, number, or ComplexValueResult.
 	 * Throws if value is complex with non-zero imaginary part.
 	 */
 	private getNumericValue(value: EvalValue): number {
@@ -1298,17 +1299,17 @@ export class WebReplEngine {
 			}
 			return value.real;
 		}
-		// Rational
-		return Number(value.n) / Number(value.d);
+		// MathNode - evaluate to number
+		return evaluateNodeToApproximatedNumber(value);
 	}
 
 	/**
-	 * Format a value for display, preserving fraction format if exact mode.
+	 * Format a value for display, preserving exact form if exact mode.
 	 *
-	 * @param value - EvalValue (Rational, number, or ComplexValueResult) to format
-	 * @param preserveFraction - If true, format Rational as "n/d" instead of decimal
+	 * @param value - EvalValue (MathNode, number, or ComplexValueResult) to format
+	 * @param preserveExact - If true, format MathNode as LaTeX instead of decimal
 	 */
-	private formatValueForDisplay(value: EvalValue, preserveFraction: boolean): string {
+	private formatValueForDisplay(value: EvalValue, preserveExact: boolean): string {
 		if (typeof value === 'number') {
 			return String(value);
 		}
@@ -1323,18 +1324,14 @@ export class WebReplEngine {
 			return `${real}${sign}${imagPart}`;
 		}
 
-		// It's a Rational { n, d }
-		if (preserveFraction && value.d !== 1n) {
-			// Format as fraction "n/d"
-			return `${value.n}/${value.d}`;
+		// It's a MathNode
+		if (preserveExact) {
+			// Format as LaTeX for exact representation
+			return toLatex(value);
 		}
 
-		// Format as integer or decimal
-		if (value.d === 1n) {
-			return String(value.n);
-		}
-
-		return String(Number(value.n) / Number(value.d));
+		// Convert to number
+		return String(evaluateNodeToApproximatedNumber(value));
 	}
 
 	/**

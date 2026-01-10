@@ -479,9 +479,11 @@ describe('LatexGenerator - Edge Cases', () => {
 		expect(toLatex(MathAST.number('3.14159'))).toBe('3.14159');
 	});
 
-	it('handles empty function arguments', () => {
+	it('handles empty function arguments (renders as bare name for derivative notation)', () => {
+		// Functions with no arguments are rendered without parentheses
+		// to support derivative notation like f', f^{-1}, f^{(n)}
 		const expr = MathAST.func('f', []);
-		expect(toLatex(expr)).toBe('f\\left(  \\right)');
+		expect(toLatex(expr)).toBe('f');
 	});
 
 	it('handles deeply nested expressions', () => {

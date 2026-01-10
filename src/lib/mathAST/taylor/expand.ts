@@ -16,14 +16,12 @@
 import type { MathNode } from '../types';
 import type { TaylorOptions } from './types';
 import type { FunctionBindings } from '../eval/function-bindings';
-import type { Rational } from '../normal/types';
 import type { EvalValue, ComplexValueResult } from '../eval/types';
 import { DEFAULT_TAYLOR_OPTIONS, MAX_TAYLOR_TERMS, TaylorError } from './types';
 import { differentiate } from '../differentiation';
-import { evaluate } from '../eval/evaluate';
+import { evaluate, evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { substitute } from '../eval/substitute';
 import { number, variable, add, multiply, power, opposite, divide } from '../factory';
-import { rationalToNumber } from '../normal/rational';
 
 // =============================================================================
 // Helper Functions
@@ -61,10 +59,10 @@ function isEffectivelyZero(value: number, tolerance: number = 1e-15): boolean {
 }
 
 /**
- * Type guard for Rational values.
+ * Type guard for MathNode values.
  */
-function isRational(value: EvalValue): value is Rational {
-	return typeof value === 'object' && 'n' in value && 'd' in value;
+function isMathNode(value: EvalValue): value is MathNode {
+	return typeof value === 'object' && 'type' in value;
 }
 
 /**
@@ -76,7 +74,7 @@ function isComplex(value: EvalValue): value is ComplexValueResult {
 
 /**
  * Convert evaluation result to a number.
- * Handles Rational, number, and Complex values.
+ * Handles MathNode, number, and Complex values.
  *
  * @param value - Evaluation result value
  * @returns Numeric value
@@ -86,14 +84,14 @@ function valueToNumber(value: EvalValue): number {
 	if (typeof value === 'number') {
 		return value;
 	}
-	if (isRational(value)) {
-		return rationalToNumber(value);
-	}
 	if (isComplex(value)) {
 		if (value.imag !== 0) {
 			throw new Error('Cannot convert complex number with non-zero imaginary part to number');
 		}
 		return value.real;
+	}
+	if (isMathNode(value)) {
+		return evaluateNodeToApproximatedNumber(value);
 	}
 	throw new Error('Unknown value type');
 }

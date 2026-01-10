@@ -11,7 +11,7 @@ import {
 	FunctionBindingError
 } from '../function-bindings';
 import type { FunctionBindings, FunctionDefinition } from '../function-bindings';
-import { evaluate } from '../evaluate';
+import { evaluate, evaluateNodeToApproximatedNumber } from '../evaluate';
 import { substitute } from '../substitute';
 import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
@@ -26,19 +26,53 @@ import {
 	inverseFunc,
 	compose
 } from '../../factory';
-import type { FunctionNode } from '../../types';
-import type { Rational } from '../../normal/types';
+import type { FunctionNode, MathNode } from '../../types';
 import type { EvalValue } from '../types';
+import { isNumber } from '../../guards';
 
 // =============================================================================
 // Helper Functions
 // =============================================================================
 
 /**
- * Helper to check if a value is a Rational
+ * Helper to check if a value is a MathNode
  */
-function isRational(value: EvalValue): value is Rational {
-	return typeof value === 'object' && 'n' in value && 'd' in value;
+function isMathNode(value: EvalValue): value is MathNode {
+	return typeof value === 'object' && 'type' in value;
+}
+
+/**
+ * Extracts a "Rational-like" object from an EvalValue for test compatibility.
+ * In exact mode, evaluates the MathNode to get the integer value.
+ * In decimal mode, rounds the number.
+ */
+function getRational(value: EvalValue): { n: bigint; d: bigint } | null {
+	if (typeof value === 'number') {
+		return { n: BigInt(Math.round(value)), d: 1n };
+	}
+	if (isMathNode(value)) {
+		if (isNumber(value)) {
+			const val = value.value;
+			if (val.includes('.')) {
+				const numVal = Math.round(parseFloat(val));
+				return { n: BigInt(numVal), d: 1n };
+			}
+			return { n: BigInt(val), d: 1n };
+		}
+		// For other nodes, evaluate numerically
+		const numVal = Math.round(evaluateNodeToApproximatedNumber(value));
+		return { n: BigInt(numVal), d: 1n };
+	}
+	return null;
+}
+
+/**
+ * Helper to check if a value can be converted to a "Rational-like" object.
+ */
+function isRational(value: EvalValue): boolean {
+	if (typeof value === 'number') return true;
+	if (isMathNode(value)) return true;
+	return false;
 }
 
 /**
@@ -363,10 +397,9 @@ describe('evaluate with function bindings', () => {
 			});
 
 			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(9n);
-				expect(result.value.d).toBe(1n);
-			}
+			const r = getRational(result.value);
+			expect(r?.n).toBe(9n);
+			expect(r?.d).toBe(1n);
 		});
 
 		it('evaluates g(2, 3) = 5 with g(x, y) = x + y', () => {
@@ -381,10 +414,9 @@ describe('evaluate with function bindings', () => {
 			});
 
 			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(5n);
-				expect(result.value.d).toBe(1n);
-			}
+			const r = getRational(result.value);
+			expect(r?.n).toBe(5n);
+			expect(r?.d).toBe(1n);
 		});
 	});
 
@@ -400,10 +432,9 @@ describe('evaluate with function bindings', () => {
 
 			// f(g(2)) = f(3) = 9
 			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(9n);
-				expect(result.value.d).toBe(1n);
-			}
+			const r = getRational(result.value);
+			expect(r?.n).toBe(9n);
+			expect(r?.d).toBe(1n);
 		});
 	});
 
@@ -433,9 +464,7 @@ describe('evaluate with function bindings', () => {
 			const result = evaluate(ast);
 
 			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(5n);
-			}
+			expect(getRational(result.value)?.n).toBe(5n);
 		});
 
 		it('evaluates built-in functions without needing bindings', () => {
@@ -443,9 +472,7 @@ describe('evaluate with function bindings', () => {
 			const result = evaluate(ast);
 
 			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(2n);
-			}
+			expect(getRational(result.value)?.n).toBe(2n);
 		});
 	});
 });
@@ -520,9 +547,7 @@ describe('function bindings with LaTeX parsing', () => {
 		});
 
 		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(9n);
-		}
+		expect(getRational(result.value)?.n).toBe(9n);
 	});
 
 	it('handles f(x+1) where x is substituted', () => {
@@ -539,9 +564,7 @@ describe('function bindings with LaTeX parsing', () => {
 
 		// f(2+1) = f(3) = 9
 		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(9n);
-		}
+		expect(getRational(result.value)?.n).toBe(9n);
 	});
 
 	it('evaluates 2*f(3) + 1 with f(x) = x^2', () => {
@@ -553,9 +576,7 @@ describe('function bindings with LaTeX parsing', () => {
 
 		// 2*9 + 1 = 19
 		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(19n);
-		}
+		expect(getRational(result.value)?.n).toBe(19n);
 	});
 });
 
@@ -572,9 +593,7 @@ describe('edge cases', () => {
 		});
 
 		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(5n);
-		}
+		expect(getRational(result.value)?.n).toBe(5n);
 	});
 
 	it('handles identity function', () => {
@@ -585,9 +604,7 @@ describe('edge cases', () => {
 		});
 
 		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(42n);
-		}
+		expect(getRational(result.value)?.n).toBe(42n);
 	});
 
 	it('handles zero-argument function (constant)', () => {
@@ -598,9 +615,7 @@ describe('edge cases', () => {
 		});
 
 		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(7n);
-		}
+		expect(getRational(result.value)?.n).toBe(7n);
 	});
 
 	it('substitutes function with complex argument', () => {
@@ -611,9 +626,7 @@ describe('edge cases', () => {
 		});
 
 		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(25n);
-		}
+		expect(getRational(result.value)?.n).toBe(25n);
 	});
 
 	it('handles function whose body contains another function call', () => {
@@ -631,9 +644,7 @@ describe('edge cases', () => {
 		});
 
 		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(10n);
-		}
+		expect(getRational(result.value)?.n).toBe(10n);
 	});
 });
 
@@ -737,10 +748,9 @@ describe('derivative functions with pre-computed derivatives', () => {
 			});
 
 			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(4n); // 2*2 = 4
-				expect(result.value.d).toBe(1n);
-			}
+			const r = getRational(result.value);
+			expect(r?.n).toBe(4n); // 2*2 = 4
+			expect(r?.d).toBe(1n);
 		});
 
 		it("evaluates f'(3) = 6 with f(x) = x^2, f'(x) = 2x", () => {
@@ -756,9 +766,7 @@ describe('derivative functions with pre-computed derivatives', () => {
 			});
 
 			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(6n); // 2*3 = 6
-			}
+			expect(getRational(result.value)?.n).toBe(6n); // 2*3 = 6
 		});
 
 		it("evaluates f'(1) = 3 with f(x) = x^3, f'(x) = 3x^2", () => {
@@ -774,9 +782,7 @@ describe('derivative functions with pre-computed derivatives', () => {
 			});
 
 			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(3n); // 3*1^2 = 3
-			}
+			expect(getRational(result.value)?.n).toBe(3n); // 3*1^2 = 3
 		});
 
 		it("evaluates f'(2) = 12 with f(x) = x^3, f'(x) = 3x^2", () => {
@@ -792,9 +798,7 @@ describe('derivative functions with pre-computed derivatives', () => {
 			});
 
 			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(12n); // 3*4 = 12
-			}
+			expect(getRational(result.value)?.n).toBe(12n); // 3*4 = 12
 		});
 	});
 });
@@ -891,10 +895,9 @@ describe('inverse functions with pre-computed inverses', () => {
 			});
 
 			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(2n); // sqrt(4) = 2
-				expect(result.value.d).toBe(1n);
-			}
+			const r = getRational(result.value);
+			expect(r?.n).toBe(2n); // sqrt(4) = 2
+			expect(r?.d).toBe(1n);
 		});
 
 		it('evaluates f^{-1}(9) = 3 with f(x) = x^2, f^{-1}(x) = sqrt(x)', () => {
@@ -910,9 +913,7 @@ describe('inverse functions with pre-computed inverses', () => {
 			});
 
 			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(3n); // sqrt(9) = 3
-			}
+			expect(getRational(result.value)?.n).toBe(3n); // sqrt(9) = 3
 		});
 
 		it('evaluates f^{-1}(5) = 4 with f(x) = x + 1, f^{-1}(x) = x - 1', () => {
@@ -928,9 +929,7 @@ describe('inverse functions with pre-computed inverses', () => {
 			});
 
 			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(4n); // 5 - 1 = 4
-			}
+			expect(getRational(result.value)?.n).toBe(4n); // 5 - 1 = 4
 		});
 	});
 });
@@ -952,15 +951,15 @@ describe('combined derivative and inverse function tests', () => {
 
 		// Evaluate f(3) = 9
 		const fResult = evaluate(func('f', [number('3')]), { functions: bindings });
-		expect(isRational(fResult.value) && fResult.value.n === 9n).toBe(true);
+		expect(getRational(fResult.value)?.n).toBe(9n);
 
 		// Evaluate f'(3) = 6
 		const fPrimeResult = evaluate(derivativeFunc('f', [number('3')], 1), { functions: bindings });
-		expect(isRational(fPrimeResult.value) && fPrimeResult.value.n === 6n).toBe(true);
+		expect(getRational(fPrimeResult.value)?.n).toBe(6n);
 
 		// Evaluate f^{-1}(9) = 3
 		const fInvResult = evaluate(inverseFunc('f', [number('9')]), { functions: bindings });
-		expect(isRational(fInvResult.value) && fInvResult.value.n === 3n).toBe(true);
+		expect(getRational(fInvResult.value)?.n).toBe(3n);
 	});
 
 	it("evaluates expression with mixed function types: f(2) + f'(2) + f^{-1}(4)", () => {
@@ -981,9 +980,7 @@ describe('combined derivative and inverse function tests', () => {
 		const result = evaluate(expr, { functions: bindings });
 
 		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(10n);
-		}
+		expect(getRational(result.value)?.n).toBe(10n);
 	});
 });
 

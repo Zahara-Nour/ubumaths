@@ -92,37 +92,37 @@ substitute(
 ### Basic Evaluation
 
 ```typescript
-import { evaluate } from '$lib/mathAST';
+import { evaluate, toLatex } from '$lib/mathAST';
 
 const ast = parseLatex('2 + 3 * 4');
 const result = evaluate(ast);
-// result.value = 14
+// result.value is the simplified MathNode
+// toLatex(result.node) = '14'
 
-// With variables
+// With substitution before evaluation
 const ast2 = parseLatex('x^2 + 1');
-const result2 = evaluate(ast2, { variables: { x: 3 } });
-// result2.value = 10
+const substituted = substitute(ast2, { x: 3 });
+const result2 = evaluate(substituted);
+// toLatex(result2.node) = '10'
 ```
 
 ### Evaluation Result
 
 ```typescript
 interface EvalResult {
-	value: Rational | number | ComplexValue; // Computed value
-	node: MathNode; // Result as AST
-	exact: boolean; // True if no approximation
+	value: MathNode | number | ComplexValueResult; // Computed value
+	node: MathNode; // Simplified AST representation
+	exact: boolean; // True if exact mode
 }
 
-interface ComplexValue {
-	real: number;
-	imag: number;
-}
-
-const result = evaluate(parseLatex('1/3'));
-// result.value = Rational { n: 1n, d: 3n }
+// Exact mode (default): value is a simplified MathNode
+const result = evaluate(parseLatex('1/3 + 1/6'));
+// result.value is MathNode for 1/2
+// toLatex(result.node) = '\\dfrac{1}{2}'
 // result.exact = true
 
-const result2 = evaluate(parseLatex('sin(1)'));
+// Decimal mode: value is a number
+const result2 = evaluate(parseLatex('sin(1)'), { mode: 'decimal' });
 // result2.value = 0.8414709848...
 // result2.exact = false
 ```
@@ -132,37 +132,43 @@ const result2 = evaluate(parseLatex('sin(1)'));
 ```typescript
 interface EvalOptions {
 	mode?: 'exact' | 'decimal';
-	variables?: Record<string, number | MathNode>;
 	functions?: FunctionBindings;
 }
 
-// Exact mode (default) - uses rationals
+// Exact mode (default) - returns simplified MathNode
 evaluate(parseLatex('1/3 + 1/6'), { mode: 'exact' });
-// Returns Rational { n: 1n, d: 2n } = 1/2
+// Returns MathNode representing 1/2
 
-// Decimal mode - uses floats
+// Decimal mode - returns number
 evaluate(parseLatex('1/3 + 1/6'), { mode: 'decimal' });
 // Returns 0.5
 ```
 
-### Exact Arithmetic
+### Exact Symbolic Evaluation
 
-Uses BigInt-based rationals for precision:
+In exact mode, `evaluate` uses the normalization system to produce truly exact results:
 
 ```typescript
-interface Rational {
-	n: bigint; // Numerator
-	d: bigint; // Denominator (always positive)
-}
+// Fractions are kept exact
+const result = evaluate(parseLatex('1/3 * 3'));
+// toLatex(result.node) = '1'
 
-// Operations preserve exactness
-evaluate(parseLatex('1/3 * 3'));
-// Returns Rational { n: 1n, d: 1n } = 1 (exactly!)
+// Radicals are preserved symbolically
+const result2 = evaluate(parseLatex('\\sqrt{2}'));
+// toLatex(result2.node) = '\\sqrt{2}'
+// result2.exact = true (truly exact!)
 
-// Irrational operations switch to decimal
-evaluate(parseLatex('sqrt(2)'));
-// Returns 1.4142135... (not exact)
+// Radicals are simplified when possible
+const result3 = evaluate(parseLatex('\\sqrt{4}'));
+// toLatex(result3.node) = '2'
+
+const result4 = evaluate(parseLatex('\\sqrt{18}'));
+// toLatex(result4.node) = '3 \\sqrt{2}'
 ```
+
+This is a significant improvement over the previous implementation which would approximate
+irrational values. Now `evaluate` with `mode: 'exact'` returns **true exact values** via
+the normalization/denormalization pipeline.
 
 ### Supported Functions
 
@@ -186,9 +192,8 @@ x^n (for any n)
 // Other
 abs(x), floor(x), ceil(x), round(x)
 
-// Statistical
-mean(...), median(...), variance(...), stdev(...)
-min(...), max(...), sum(...)
+// Statistical (min/max only - others via .stats command in REPL)
+min(...), max(...)
 
 // Complex numbers (see below)
 cabs(z), conj(z), Re(z), Im(z), arg(z)
@@ -200,37 +205,50 @@ rootofunity(n, k), nthroot(z, n, k), principalroot(z, n)
 
 The evaluator fully supports complex numbers with automatic promotion from reals.
 
-### Complex Arithmetic
+### Complex Arithmetic (Exact Mode)
+
+In exact mode, complex arithmetic is performed symbolically:
 
 ```typescript
-// Complex numbers are represented as a + bi
+// Complex numbers are represented symbolically
 const ast = parseLatex('(2 + 3\\imaginaryI) + (1 - \\imaginaryI)');
-const result = evaluate(ast);
-// result.value = { real: 3, imag: 2 }
+const result = evaluate(ast, { mode: 'exact' });
+// toLatex(result.node) = '3 + 2 \\imaginaryI'
 
-// All basic operations work
-evaluate(parseLatex('(2 + 3\\imaginaryI) \\cdot (1 - \\imaginaryI)'));
-// (2+3i)(1-i) = 2 - 2i + 3i - 3i² = 2 + i + 3 = 5 + i
+// Powers of i are simplified
+evaluate(parseLatex('\\imaginaryI^2'), { mode: 'exact' });
+// toLatex(result.node) = '-1'
 
-evaluate(parseLatex('\\frac{1}{\\imaginaryI}'));
-// 1/i = -i
+evaluate(parseLatex('\\imaginaryI^4'), { mode: 'exact' });
+// toLatex(result.node) = '1'
+
+// Multiplication works symbolically
+evaluate(parseLatex('(1 + \\imaginaryI)^2'), { mode: 'exact' });
+// toLatex(result.node) = '2 \\imaginaryI'
 ```
+
+**Note**: Complex denominator rationalization (e.g., `1/i = -i`) is not yet implemented.
+Expressions like `1/i` stay as `1/i` in exact mode.
 
 ### Complex Functions
 
+In exact mode, complex functions stay as function nodes (symbolic):
+
 ```typescript
-// Modulus (absolute value)
-cabs(z); // |a + bi| = √(a² + b²)
+// These functions stay symbolic in exact mode
+cabs(z); // Modulus: |a + bi| = √(a² + b²)
+conj(z); // Conjugate: conj(a + bi) = a - bi
+Re(z); // Real part
+Im(z); // Imaginary part
+arg(z); // Argument (phase angle)
 
-// Conjugate
-conj(z); // conj(a + bi) = a - bi
+// Example: functions stay as nodes
+const result = evaluate(parseLatex('\\cabs(3 + 4\\imaginaryI)'), { mode: 'exact' });
+// result.node.type = 'function', result.node.name = 'cabs'
 
-// Real and imaginary parts
-Re(z); // Re(a + bi) = a
-Im(z); // Im(a + bi) = b
-
-// Argument (phase angle)
-arg(z); // arg(a + bi) = atan2(b, a) ∈ (-π, π]
+// In decimal mode, they evaluate numerically
+const result2 = evaluate(parseLatex('\\cabs(3 + 4\\imaginaryI)'), { mode: 'decimal' });
+// result2.value = 5 (√(9 + 16))
 ```
 
 ### Principal Argument Convention
@@ -291,21 +309,30 @@ evaluate(parseLatex('\\imaginaryI^{\\imaginaryI}'));
 
 ### Nth Roots of Complex Numbers
 
-Three functions for computing nth roots (educational focus):
+Three functions for computing nth roots (educational focus).
+
+**Note**: In exact mode, these functions stay as function nodes because computing
+nth roots of complex numbers requires trigonometric evaluation. Use decimal mode
+for numeric results.
 
 ```typescript
+// In exact mode, functions stay symbolic
+const result = evaluate(parseLatex('\\rootofunity(4, 1)'), { mode: 'exact' });
+// result.node.type = 'function', result.node.name = 'rootofunity'
+
+// In decimal mode, they evaluate numerically
 // rootofunity(n, k) - k-th nth root of unity: e^{2πik/n}
-evaluate(parseLatex('\\rootofunity(4, 1)')); // e^{iπ/2} = i
-evaluate(parseLatex('\\rootofunity(3, 1)')); // e^{2πi/3} = -1/2 + i√3/2
+evaluate(parseLatex('\\rootofunity(4, 1)'), { mode: 'decimal' }); // e^{iπ/2} = i
+evaluate(parseLatex('\\rootofunity(3, 1)'), { mode: 'decimal' }); // e^{2πi/3} = -1/2 + i√3/2
 
 // nthroot(z, n, k) - k-th nth root of z
 // Formula: |z|^{1/n} · e^{i(arg(z) + 2πk)/n}
-evaluate(parseLatex('\\nthroot(8, 3, 0)')); // 2 (principal cube root)
-evaluate(parseLatex('\\nthroot(8, 3, 1)')); // -1 + i√3
-evaluate(parseLatex('\\nthroot(8, 3, 2)')); // -1 - i√3
+evaluate(parseLatex('\\nthroot(8, 3, 0)'), { mode: 'decimal' }); // 2 (principal cube root)
+evaluate(parseLatex('\\nthroot(8, 3, 1)'), { mode: 'decimal' }); // -1 + i√3
+evaluate(parseLatex('\\nthroot(8, 3, 2)'), { mode: 'decimal' }); // -1 - i√3
 
 // principalroot(z, n) - convenience for k=0
-evaluate(parseLatex('\\principalroot(-1, 2)')); // i
+evaluate(parseLatex('\\principalroot(-1, 2)'), { mode: 'decimal' }); // i
 ```
 
 #### Parameter Constraints

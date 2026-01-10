@@ -7,9 +7,10 @@
  */
 
 import type { MathNode } from '../types';
-import type { Rational } from '../normal/types';
+// Rational type removed - no longer needed after refactoring
 import type { FunctionBindings } from './function-bindings';
 import type { Unit } from '../units/types';
+import type { PrecisionType } from '$lib/questions/types';
 
 // =============================================================================
 // Binding Types
@@ -95,8 +96,13 @@ export interface EvalOptions {
 	/** Evaluation mode: 'exact' for rational arithmetic, 'decimal' for floating-point */
 	readonly mode?: EvalMode;
 
-	/** Decimal precision (significant digits). Only used when mode is 'decimal'. Default: 15 */
-	readonly precision?: number;
+	/**
+	 * Precision specification for decimal mode.
+	 * Supports various precision types: none, decimal, significant, magnitude, tolerance.
+	 * Only used when mode is 'decimal'.
+	 * Default: { type: 'none' } (full precision)
+	 */
+	readonly precision?: PrecisionType;
 
 	/**
 	 * Function bindings for generic functions (f, g, h, etc.).
@@ -111,7 +117,7 @@ export interface EvalOptions {
  */
 export const DEFAULT_EVAL_OPTIONS: Required<EvalOptions> = {
 	mode: 'exact',
-	precision: 15,
+	precision: { type: 'none' },
 	functions: {}
 } as const;
 
@@ -129,27 +135,30 @@ export interface ComplexValueResult {
 
 /**
  * The type of values that can result from evaluation.
+ *
+ * - MathNode: In exact mode, the simplified AST (e.g., sqrt(2), cos(3))
+ * - number: In decimal mode, the numeric approximation
+ * - ComplexValueResult: For complex number results
  */
-export type EvalValue = Rational | number | ComplexValueResult;
+export type EvalValue = MathNode | number | ComplexValueResult;
 
 /**
  * Result of evaluating a mathematical expression.
  *
- * Contains both the computed value (as Rational, number, or ComplexValueResult) and the
- * simplified AST representation of the result.
+ * Contains both the computed value and the simplified AST representation.
  *
  * @example
- * // Exact evaluation result
+ * // Exact evaluation result (mode: 'exact')
  * const result: EvalResult = {
- *   value: { n: 3n, d: 4n },  // 3/4
- *   node: divide(number('3'), number('4'), 'fraction'),
+ *   value: sqrt(number('2')),  // MathNode for sqrt(2)
+ *   node: sqrt(number('2')),
  *   exact: true
  * };
  *
- * // Decimal evaluation result
+ * // Decimal evaluation result (mode: 'decimal')
  * const result: EvalResult = {
- *   value: 0.75,
- *   node: number('0.75'),
+ *   value: 1.4142135623730951,
+ *   node: number('1.4142135623730951'),
  *   exact: false
  * };
  *
@@ -161,7 +170,7 @@ export type EvalValue = Rational | number | ComplexValueResult;
  * };
  */
 export interface EvalResult {
-	/** The computed value as a Rational (exact mode), number (decimal mode), or ComplexValueResult */
+	/** The computed value: MathNode (exact mode), number (decimal mode), or ComplexValueResult */
 	readonly value: EvalValue;
 
 	/** The simplified AST node representing the result */
@@ -229,7 +238,7 @@ export const DEFAULT_EVAL_WITH_UNITS_OPTIONS: Required<
 	variableUnits: ReadonlyMap<string, Unit>;
 } = {
 	mode: 'exact',
-	precision: 15,
+	precision: { type: 'none' },
 	functions: {},
 	conversionMode: 'first',
 	variableUnits: new Map()

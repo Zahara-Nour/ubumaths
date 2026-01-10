@@ -249,7 +249,8 @@ export function isOnePolynomial(p: readonly NormalTerm[]): boolean {
 		term.coefficient.terms.length === 1 &&
 		term.coefficient.terms[0].radicals.length === 0 &&
 		term.coefficient.terms[0].rational.n === 1n &&
-		term.coefficient.terms[0].rational.d === 1n
+		term.coefficient.terms[0].rational.d === 1n &&
+		!term.coefficient.terms[0].hasImaginaryUnit
 	);
 }
 

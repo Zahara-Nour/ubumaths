@@ -18,6 +18,10 @@ import type {
 	GreekLetter,
 	GreekLetterNode,
 	HoleNode,
+	InfinityNode,
+	InfinitySign,
+	LimitDirection,
+	LimitNode,
 	MathNode,
 	MathSymbol,
 	MatrixNode,
@@ -1119,6 +1123,188 @@ export function complex(real: MathNode, imaginary: MathNode, metadata?: NodeMeta
 }
 
 // =============================================================================
+// Infinity Factories
+// =============================================================================
+
+/**
+ * Creates an infinity node with specified sign.
+ *
+ * This is a proper AST node representing positive or negative infinity,
+ * distinct from the unsigned 'infinity' symbol. Essential for:
+ * - Limits: lim_{x→+∞} vs lim_{x→-∞}
+ * - One-sided limit results: lim_{x→0⁺} 1/x = +∞
+ *
+ * @param sign - 'positive' for +∞, 'negative' for -∞
+ * @param metadata - Optional rendering hints
+ *
+ * @example
+ * infinity('positive')  // +∞
+ * infinity('negative')  // -∞
+ */
+export function infinity(sign: InfinitySign, metadata?: NodeMetadata): InfinityNode {
+	return {
+		type: 'infinity',
+		sign,
+		...(metadata && { metadata })
+	} as const;
+}
+
+/**
+ * Creates positive infinity (+∞).
+ *
+ * @param metadata - Optional rendering hints
+ *
+ * @example
+ * positiveInfinity()  // +∞
+ */
+export function positiveInfinity(metadata?: NodeMetadata): InfinityNode {
+	return infinity('positive', metadata);
+}
+
+/**
+ * Creates negative infinity (-∞).
+ *
+ * @param metadata - Optional rendering hints
+ *
+ * @example
+ * negativeInfinity()  // -∞
+ */
+export function negativeInfinity(metadata?: NodeMetadata): InfinityNode {
+	return infinity('negative', metadata);
+}
+
+// =============================================================================
+// Limit Factories
+// =============================================================================
+
+/**
+ * Creates a limit node: lim_{x → a} f(x)
+ *
+ * @param expression - The expression being evaluated (f(x))
+ * @param variableName - Variable approaching the limit point (x)
+ * @param approach - Value being approached (a, or infinity)
+ * @param direction - 'left', 'right', or 'both' (default: 'both')
+ * @param metadata - Optional rendering hints
+ *
+ * @example
+ * // lim_{x → 0} sin(x)/x
+ * limit(
+ *   divide(func('sin', [variable('x')]), variable('x')),
+ *   'x',
+ *   number('0')
+ * )
+ *
+ * // lim_{x → 0⁺} 1/x
+ * limit(
+ *   divide(number('1'), variable('x')),
+ *   'x',
+ *   number('0'),
+ *   'right'
+ * )
+ *
+ * // lim_{x → +∞} 1/x
+ * limit(
+ *   divide(number('1'), variable('x')),
+ *   'x',
+ *   positiveInfinity()
+ * )
+ */
+export function limit(
+	expression: MathNode,
+	variableName: string,
+	approach: MathNode,
+	direction: LimitDirection = 'both',
+	metadata?: NodeMetadata
+): LimitNode {
+	return {
+		type: 'limit',
+		expression,
+		variable: variableName,
+		approach,
+		direction,
+		...(metadata && { metadata })
+	} as const;
+}
+
+/**
+ * Creates a two-sided limit (shorthand for limit with direction='both').
+ *
+ * @example
+ * // lim_{x → a} f(x)
+ * twoSidedLimit(expression, 'x', number('0'))
+ */
+export function twoSidedLimit(
+	expression: MathNode,
+	variableName: string,
+	approach: MathNode,
+	metadata?: NodeMetadata
+): LimitNode {
+	return limit(expression, variableName, approach, 'both', metadata);
+}
+
+/**
+ * Creates a right limit (approaching from above): lim_{x → a⁺}
+ *
+ * @example
+ * // lim_{x → 0⁺} 1/x = +∞
+ * rightLimit(divide(number('1'), variable('x')), 'x', number('0'))
+ */
+export function rightLimit(
+	expression: MathNode,
+	variableName: string,
+	approach: MathNode,
+	metadata?: NodeMetadata
+): LimitNode {
+	return limit(expression, variableName, approach, 'right', metadata);
+}
+
+/**
+ * Creates a left limit (approaching from below): lim_{x → a⁻}
+ *
+ * @example
+ * // lim_{x → 0⁻} 1/x = -∞
+ * leftLimit(divide(number('1'), variable('x')), 'x', number('0'))
+ */
+export function leftLimit(
+	expression: MathNode,
+	variableName: string,
+	approach: MathNode,
+	metadata?: NodeMetadata
+): LimitNode {
+	return limit(expression, variableName, approach, 'left', metadata);
+}
+
+/**
+ * Creates a limit at positive infinity: lim_{x → +∞}
+ *
+ * @example
+ * // lim_{x → +∞} 1/x = 0
+ * limitAtInfinity(divide(number('1'), variable('x')), 'x')
+ */
+export function limitAtInfinity(
+	expression: MathNode,
+	variableName: string,
+	metadata?: NodeMetadata
+): LimitNode {
+	return limit(expression, variableName, positiveInfinity(), 'both', metadata);
+}
+
+/**
+ * Creates a limit at negative infinity: lim_{x → -∞}
+ *
+ * @example
+ * // lim_{x → -∞} e^x = 0
+ * limitAtNegativeInfinity(func('exp', [variable('x')]), 'x')
+ */
+export function limitAtNegativeInfinity(
+	expression: MathNode,
+	variableName: string,
+	metadata?: NodeMetadata
+): LimitNode {
+	return limit(expression, variableName, negativeInfinity(), 'both', metadata);
+}
+
+// =============================================================================
 // Unit Factories
 // =============================================================================
 
@@ -1495,5 +1681,18 @@ export const MathAST = {
 	compose,
 
 	// Complex numbers
-	complex
+	complex,
+
+	// Infinity
+	infinity,
+	positiveInfinity,
+	negativeInfinity,
+
+	// Limits
+	limit,
+	twoSidedLimit,
+	rightLimit,
+	leftLimit,
+	limitAtInfinity,
+	limitAtNegativeInfinity
 } as const;

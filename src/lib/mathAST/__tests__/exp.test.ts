@@ -4,6 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Exp, isVariable, isNumber, number, variable, MathAST } from '../index';
+import type { MathNode } from '../types';
 
 // =============================================================================
 // Output Getters
@@ -629,36 +630,45 @@ describe('Exp - Complex Usage Scenarios', () => {
 // =============================================================================
 
 describe('Exp - Evaluation Methods', () => {
+	// Helper to verify exact result is a MathNode with expected LaTeX
+	function expectExactValue(
+		result: { value: unknown; node: unknown; exact: boolean },
+		expectedLatex: string
+	) {
+		expect(result.exact).toBe(true);
+		expect(result.node).toBeDefined();
+		expect(typeof result.value).toBe('object');
+		expect(result.value).not.toBeNull();
+		const node = result.value as { type?: string };
+		expect(node.type).toBeDefined(); // It's a MathNode
+		const latex = Exp.from(result.value as MathNode).latex;
+		expect(latex).toBe(expectedLatex);
+	}
+
 	describe('eval()', () => {
 		it('evaluates simple expression', () => {
 			const result = Exp.parse('2+3').eval();
-			expect(result.exact).toBe(true);
-			// Check that result.value is Rational(5n, 1n)
-			expect(result.value).toEqual({ n: 5n, d: 1n });
+			expectExactValue(result, '5');
 		});
 
 		it('evaluates expression with multiplication', () => {
 			const result = Exp.parse('2 \\cdot 3').eval();
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: 6n, d: 1n });
+			expectExactValue(result, '6');
 		});
 
 		it('evaluates expression with division (exact fraction)', () => {
 			const result = Exp.parse('\\frac{1}{2}').eval();
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: 1n, d: 2n });
+			expectExactValue(result, '\\dfrac{1}{2}');
 		});
 
 		it('evaluates complex expression: 1/3 + 1/3 + 1/3 = 1', () => {
 			const result = Exp.parse('\\frac{1}{3}+\\frac{1}{3}+\\frac{1}{3}').eval();
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: 1n, d: 1n });
+			expectExactValue(result, '1');
 		});
 
 		it('evaluates perfect square root exactly', () => {
 			const result = Exp.parse('\\sqrt{4}').eval();
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: 2n, d: 1n });
+			expectExactValue(result, '2');
 		});
 
 		it('evaluates non-perfect square root with decimal mode', () => {
@@ -687,23 +697,21 @@ describe('Exp - Evaluation Methods', () => {
 		});
 
 		it('throws on unsubstituted variables', () => {
-			expect(() => Exp.parse('x+1').eval()).toThrow(/unsubstituted/);
+			expect(() => Exp.parse('x+1').eval()).toThrow(/variable/i);
 		});
 
 		it('throws on multiple unsubstituted variables', () => {
-			expect(() => Exp.parse('x+y').eval()).toThrow(/unsubstituted/);
+			expect(() => Exp.parse('x+y').eval()).toThrow(/variable/i);
 		});
 
 		it('evaluates power with integer exponent exactly', () => {
 			const result = Exp.parse('2^3').eval();
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: 8n, d: 1n });
+			expectExactValue(result, '8');
 		});
 
 		it('evaluates negative numbers', () => {
 			const result = Exp.parse('-5').eval();
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: -5n, d: 1n });
+			expectExactValue(result, '-5');
 		});
 
 		it('returns node representation of result', () => {
@@ -716,36 +724,31 @@ describe('Exp - Evaluation Methods', () => {
 	describe('evalWith()', () => {
 		it('substitutes and evaluates simple expression', () => {
 			const result = Exp.parse('x+1').evalWith({ x: 5 });
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: 6n, d: 1n });
+			expectExactValue(result, '6');
 		});
 
 		it('substitutes multiple variables', () => {
 			const result = Exp.parse('x \\cdot y + z').evalWith({ x: 2, y: 3, z: 5 });
 			// 2 * 3 + 5 = 11
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: 11n, d: 1n });
+			expectExactValue(result, '11');
 		});
 
 		it('handles string bindings (parsed as LaTeX)', () => {
 			const result = Exp.parse('x+1').evalWith({ x: '2+3' });
 			// (2+3) + 1 = 6
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: 6n, d: 1n });
+			expectExactValue(result, '6');
 		});
 
 		it('handles power with substitution: x^2 with x = 3', () => {
 			const result = Exp.parse('x^2').evalWith({ x: 3 });
 			// 3^2 = 9
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: 9n, d: 1n });
+			expectExactValue(result, '9');
 		});
 
 		it('handles Greek letter substitution', () => {
 			const result = Exp.parse('\\alpha^2 + \\beta').evalWith({ alpha: 5, beta: 3 });
 			// 5^2 + 3 = 28
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: 28n, d: 1n });
+			expectExactValue(result, '28');
 		});
 
 		it('evaluates with decimal mode option', () => {
@@ -759,15 +762,13 @@ describe('Exp - Evaluation Methods', () => {
 		it('handles complex expression with multiple operations', () => {
 			const result = Exp.parse('\\frac{x+y}{2}').evalWith({ x: 1, y: 3 });
 			// (1+3)/2 = 2
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: 2n, d: 1n });
+			expectExactValue(result, '2');
 		});
 
 		it('handles nested substitutions', () => {
 			const result = Exp.parse('(x+1)^2').evalWith({ x: 2 });
 			// (2+1)^2 = 9
-			expect(result.exact).toBe(true);
-			expect(result.value).toEqual({ n: 9n, d: 1n });
+			expectExactValue(result, '9');
 		});
 	});
 
@@ -840,7 +841,7 @@ describe('Exp - Evaluation Methods', () => {
 		it('can be evaluated after substitution', () => {
 			const substituted = Exp.parse('x+1').substitute({ x: 5 });
 			const result = substituted.eval();
-			expect(result.value).toEqual({ n: 6n, d: 1n });
+			expectExactValue(result, '6');
 		});
 	});
 });

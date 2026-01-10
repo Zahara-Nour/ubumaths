@@ -88,6 +88,12 @@ function containsVariable(node: MathNode, varName: string): boolean {
 		case 'complex':
 			return containsVariable(node.real, varName) || containsVariable(node.imaginary, varName);
 
+		case 'infinity':
+			return false;
+
+		case 'limit':
+			return containsVariable(node.expression, varName) || containsVariable(node.approach, varName);
+
 		default: {
 			// Exhaustive check
 			const _exhaustive: never = node;

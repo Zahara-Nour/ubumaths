@@ -332,6 +332,30 @@ function printNode(node: MathNode, ctx: PrintContext, prefix: string, childPrefi
 			break;
 		}
 
+		// =========================================================================
+		// Infinity
+		// =========================================================================
+		case 'infinity': {
+			const sign = node.sign === 'positive' ? '+∞' : '-∞';
+			addLine(ctx, prefix, `Infinity(${sign})`, node.metadata);
+			break;
+		}
+
+		// =========================================================================
+		// Limit
+		// =========================================================================
+		case 'limit': {
+			let header = 'Limit';
+			header += ` [${node.variable} → ${node.direction}]`;
+			addLine(ctx, prefix, header, node.metadata);
+			const children = [
+				{ label: 'approach', node: node.approach },
+				{ label: 'expression', node: node.expression }
+			];
+			printChildren(children, ctx, childPrefix);
+			break;
+		}
+
 		default: {
 			// Exhaustive check
 			const _exhaustive: never = node;
