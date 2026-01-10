@@ -855,6 +855,59 @@ normalize(parseLatex('\\ln(\\frac{x}{\\exp(y)})')); // → ln(x) - y
 | `exp(-ln(x) + y) → exp(y)/x`   | `ln(exp(y)/x) → y - ln(x)`    |
 | `exp(2·ln(x) + y) → x²·exp(y)` | `ln(x²·exp(y)) → 2·ln(x) + y` |
 
+### Rounding Functions (floor, ceil, round)
+
+Rounding functions are **evaluated during normalization** when their arguments are purely numeric (no variables). Symbolic arguments remain opaque.
+
+**Behavior:**
+
+- For numeric arguments: evaluated exactly using BigInt rational arithmetic
+- For irrational arguments (like √2): evaluated using floating-point approximation
+- For symbolic arguments: remain opaque with normalized arguments
+
+```typescript
+// Numeric arguments are evaluated during normalization
+normalize(parseLatex('\\floor(3.7)')); // → 3
+normalize(parseLatex('\\ceil(3.2)')); // → 4
+normalize(parseLatex('\\round(3.5)')); // → 4
+
+// Rational arguments use exact BigInt arithmetic
+normalize(parseLatex('\\floor(\\frac{7}{2})')); // → 3 (exact: floor(3.5))
+normalize(parseLatex('\\ceil(\\frac{7}{2})')); // → 4 (exact: ceil(3.5))
+
+// Irrational arguments are evaluated
+normalize(parseLatex('\\floor(\\sqrt{2})')); // → 1 (√2 ≈ 1.414)
+normalize(parseLatex('\\ceil(\\sqrt{3} + \\sqrt{2})')); // → 4 (≈ 3.146)
+
+// Opaque functions (sin, ln, exp, etc.) are evaluated numerically
+normalize(parseLatex('\\floor(\\sin(1))')); // → 0 (sin(1) ≈ 0.841)
+normalize(parseLatex('\\ceil(\\ln(10))')); // → 3 (ln(10) ≈ 2.303)
+normalize(parseLatex('\\floor(\\exp(1))')); // → 2 (e ≈ 2.718)
+normalize(parseLatex('\\floor(\\sin(1) + \\cos(1))')); // → 1 (≈ 1.381)
+
+// Symbolic arguments remain opaque
+normalize(parseLatex('\\floor(x)')); // → opaque: floor(x)^1
+normalize(parseLatex('\\ceil(2x + 1)')); // → opaque: ceil(2x + 1)^1
+normalize(parseLatex('\\floor(\\sin(x))')); // → opaque: floor(sin(x))^1
+```
+
+**Rounding rules:**
+
+| Function | Behavior                                  |
+| -------- | ----------------------------------------- |
+| floor    | Greatest integer ≤ x (rounds toward -∞)   |
+| ceil     | Smallest integer ≥ x (rounds toward +∞)   |
+| round    | Nearest integer (half rounds away from 0) |
+
+```typescript
+// Negative number rounding
+normalize(parseLatex('\\floor(-3.5)')); // → -4 (toward -∞)
+normalize(parseLatex('\\ceil(-3.5)')); // → -3 (toward +∞)
+normalize(parseLatex('\\round(-3.5)')); // → -4 (away from 0)
+```
+
+**Note**: These functions throw errors when differentiated (not differentiable at integer points).
+
 ### Normalization Pipeline
 
 The normalization process has two phases:
@@ -1167,6 +1220,10 @@ normalize(parseLatex('\\sin(0) + 1')); // → 1
 ```typescript
 // Transcendental functions at unknown values → treated as opaque
 normalize(parseLatex('sin(x)')); // sin(x) as SymbolicFactor, not simplified
+
+// Rounding functions with variables → treated as opaque
+normalize(parseLatex('floor(x)')); // floor(x) as SymbolicFactor
+// Note: Numeric arguments ARE evaluated: floor(3.7) → 3
 
 // Function composition (f ∘ g) → treated as opaque SymbolicFactor
 // Node type 'composition' is supported but not algebraically simplified

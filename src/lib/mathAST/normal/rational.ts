@@ -263,6 +263,82 @@ export function absRational(r: Rational): Rational {
 }
 
 /**
+ * Computes the floor of a rational (greatest integer ≤ r).
+ *
+ * @param r - A rational
+ * @returns floor(r) as a bigint
+ *
+ * @example
+ * floorRational({ n: 7n, d: 2n })   // 3n  (floor(3.5) = 3)
+ * floorRational({ n: -7n, d: 2n })  // -4n (floor(-3.5) = -4)
+ * floorRational({ n: 6n, d: 2n })   // 3n  (floor(3) = 3)
+ */
+export function floorRational(r: Rational): bigint {
+	if (r.n >= 0n) {
+		// For positive: BigInt division truncates toward zero = floor
+		return r.n / r.d;
+	} else {
+		// For negative: need to round down (more negative)
+		// floor(-7/2) = floor(-3.5) = -4
+		const quotient = r.n / r.d;
+		const remainder = r.n % r.d;
+		return remainder !== 0n ? quotient - 1n : quotient;
+	}
+}
+
+/**
+ * Computes the ceiling of a rational (smallest integer ≥ r).
+ *
+ * @param r - A rational
+ * @returns ceil(r) as a bigint
+ *
+ * @example
+ * ceilRational({ n: 7n, d: 2n })   // 4n  (ceil(3.5) = 4)
+ * ceilRational({ n: -7n, d: 2n })  // -3n (ceil(-3.5) = -3)
+ * ceilRational({ n: 6n, d: 2n })   // 3n  (ceil(3) = 3)
+ */
+export function ceilRational(r: Rational): bigint {
+	if (r.n <= 0n) {
+		// For negative or zero: BigInt division truncates toward zero = ceil
+		return r.n / r.d;
+	} else {
+		// For positive: need to round up
+		// ceil(7/2) = ceil(3.5) = 4
+		const quotient = r.n / r.d;
+		const remainder = r.n % r.d;
+		return remainder !== 0n ? quotient + 1n : quotient;
+	}
+}
+
+/**
+ * Rounds a rational to the nearest integer (half-up rounding).
+ *
+ * @param r - A rational
+ * @returns round(r) as a bigint
+ *
+ * @example
+ * roundRational({ n: 7n, d: 2n })   // 4n  (round(3.5) = 4)
+ * roundRational({ n: 5n, d: 2n })   // 3n  (round(2.5) = 3)
+ * roundRational({ n: -7n, d: 2n })  // -4n (round(-3.5) = -4)
+ * roundRational({ n: 3n, d: 2n })   // 2n  (round(1.5) = 2)
+ */
+export function roundRational(r: Rational): bigint {
+	// Round half-up: round(n/d) = floor(n/d + 0.5) = floor((2n + d) / (2d))
+	// For negative: round(-3.5) = -4 (rounds away from zero at .5)
+	const quotient = r.n / r.d;
+	const remainder = absBigInt(r.n % r.d);
+
+	// Check if |remainder| >= d/2, i.e., 2*|remainder| >= d
+	const shouldRoundAway = 2n * remainder >= r.d;
+
+	if (r.n >= 0n) {
+		return shouldRoundAway ? quotient + 1n : quotient;
+	} else {
+		return shouldRoundAway ? quotient - 1n : quotient;
+	}
+}
+
+/**
  * Computes the reciprocal (inverse) of a rational.
  *
  * @param r - A rational (must not be zero)
