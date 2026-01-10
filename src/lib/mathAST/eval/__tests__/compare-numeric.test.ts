@@ -544,23 +544,24 @@ describe('compareNumericNodes', () => {
 	// Tests: Rounding Functions
 	// =============================================================================
 
-	// Note: Rounding functions (floor, ceil, round) work in the evaluator
-	// but the parser doesn't support the LaTeX syntax (\lfloor x \rfloor, etc.)
-	// TODO: Implement parser support for \lfloor, \rfloor, \lceil, \rceil
-	// See plan: /Users/david/.claude/plans/abstract-prancing-iverson.md Phase 2
 	describe('rounding functions', () => {
-		it.skip('should handle floor function (parser support needed)', () => {
+		it('should handle floor function', () => {
 			expect(compareLatex('\\lfloor 3.7 \\rfloor', '3')).toBe(0);
 			expect(compareLatex('\\lfloor 3.2 \\rfloor', '3')).toBe(0);
 		});
 
-		it.skip('should handle ceiling function (parser support needed)', () => {
+		it('should handle ceiling function', () => {
 			expect(compareLatex('\\lceil 3.2 \\rceil', '4')).toBe(0);
 			expect(compareLatex('\\lceil 3.7 \\rceil', '4')).toBe(0);
 		});
 
-		it.skip('should compare floor and ceil (parser support needed)', () => {
+		it('should compare floor and ceil', () => {
 			expect(compareLatex('\\lfloor 3.5 \\rfloor', '\\lceil 3.5 \\rceil')).toBe(-1);
+		});
+
+		it('should handle \\left\\lfloor ... \\right\\rfloor syntax', () => {
+			expect(compareLatex('\\left\\lfloor 3.7 \\right\\rfloor', '3')).toBe(0);
+			expect(compareLatex('\\left\\lceil 3.2 \\right\\rceil', '4')).toBe(0);
 		});
 	});
 

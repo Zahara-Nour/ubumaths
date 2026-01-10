@@ -144,6 +144,16 @@ describe('LatexGenerator - Delimiters', () => {
 		const expr = MathAST.abs(MathAST.variable('x'));
 		expect(toLatex(expr)).toBe('\\left| x \\right|');
 	});
+
+	it('generates floor function as \\lfloor ... \\rfloor', () => {
+		const expr = MathAST.func('floor', [MathAST.variable('x')]);
+		expect(toLatex(expr)).toBe('\\lfloor x \\rfloor');
+	});
+
+	it('generates ceil function as \\lceil ... \\rceil', () => {
+		const expr = MathAST.func('ceil', [MathAST.variable('x')]);
+		expect(toLatex(expr)).toBe('\\lceil x \\rceil');
+	});
 });
 
 describe('LatexGenerator - Subscript/Superscript', () => {
