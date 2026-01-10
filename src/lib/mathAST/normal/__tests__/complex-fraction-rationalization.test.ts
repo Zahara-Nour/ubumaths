@@ -3,12 +3,17 @@
  *
  * Verifies that fractions with complex denominators are reduced to the form a+bi.
  * For example: 1/i → -i, 1/(1+i) → (1-i)/2, (2+3i)/(1-i) → (-1+5i)/2
+ *
+ * Note: Uses \imaginaryI (MathLive standard notation) for the imaginary unit in input.
  */
 import { describe, it, expect } from 'vitest';
 import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
 import { normalize } from '../normalize';
 import { denormalize } from '../denormalize';
+
+/** Shorthand for imaginary unit in LaTeX (MathLive notation) */
+const I = '\\imaginaryI';
 
 /**
  * Helper to simplify an expression via normalize/denormalize
@@ -42,19 +47,19 @@ function expectLatex(actual: string, ...expected: string[]): void {
 describe('Complex fraction rationalization', () => {
 	describe('Simple cases: 1/i', () => {
 		it('reduces 1/i to -i', () => {
-			expectLatex(simplify('\\frac{1}{i}'), '-i');
+			expectLatex(simplify(`\\frac{1}{${I}}`), '-i');
 		});
 
 		it('reduces 2/i to -2i', () => {
-			expectLatex(simplify('\\frac{2}{i}'), '-2i');
+			expectLatex(simplify(`\\frac{2}{${I}}`), '-2i');
 		});
 
 		it('reduces -1/i to i', () => {
-			expectLatex(simplify('\\frac{-1}{i}'), 'i');
+			expectLatex(simplify(`\\frac{-1}{${I}}`), 'i');
 		});
 
 		it('reduces i/i to 1', () => {
-			expect(simplify('\\frac{i}{i}')).toBe('1');
+			expect(simplify(`\\frac{${I}}{${I}}`)).toBe('1');
 		});
 	});
 
@@ -62,7 +67,7 @@ describe('Complex fraction rationalization', () => {
 		it('reduces 1/(1+i) to (1-i)/2', () => {
 			// 1/(1+i) × (1-i)/(1-i) = (1-i)/(1+1) = (1-i)/2 = 1/2 - i/2
 			expectLatex(
-				simplify('\\frac{1}{1+i}'),
+				simplify(`\\frac{1}{1+${I}}`),
 				'\\frac{1}{2}-\\frac{1}{2}i',
 				'\\frac{1}{2}-\\frac{i}{2}',
 				'\\frac{1-i}{2}'
@@ -71,7 +76,7 @@ describe('Complex fraction rationalization', () => {
 
 		it('reduces 1/(1-i) to (1+i)/2', () => {
 			expectLatex(
-				simplify('\\frac{1}{1-i}'),
+				simplify(`\\frac{1}{1-${I}}`),
 				'\\frac{1}{2}+\\frac{1}{2}i',
 				'\\frac{1}{2}+\\frac{i}{2}',
 				'\\frac{1+i}{2}'
@@ -80,13 +85,13 @@ describe('Complex fraction rationalization', () => {
 
 		it('reduces 2/(1+i) to 1-i', () => {
 			// 2/(1+i) × (1-i)/(1-i) = 2(1-i)/2 = 1-i
-			expectLatex(simplify('\\frac{2}{1+i}'), '1-i');
+			expectLatex(simplify(`\\frac{2}{1+${I}}`), '1-i');
 		});
 
 		it('reduces 1/(2+i) to (2-i)/5', () => {
 			// 1/(2+i) × (2-i)/(2-i) = (2-i)/(4+1) = (2-i)/5
 			expectLatex(
-				simplify('\\frac{1}{2+i}'),
+				simplify(`\\frac{1}{2+${I}}`),
 				'\\frac{2}{5}-\\frac{1}{5}i',
 				'\\frac{2}{5}-\\frac{i}{5}',
 				'\\frac{2-i}{5}'
@@ -97,18 +102,18 @@ describe('Complex fraction rationalization', () => {
 	describe('Complex numerator and denominator', () => {
 		it('reduces (1+i)/(1-i) to i', () => {
 			// (1+i)/(1-i) × (1+i)/(1+i) = (1+i)²/2 = (1+2i-1)/2 = 2i/2 = i
-			expectLatex(simplify('\\frac{1+i}{1-i}'), 'i');
+			expectLatex(simplify(`\\frac{1+${I}}{1-${I}}`), 'i');
 		});
 
 		it('reduces (1-i)/(1+i) to -i', () => {
-			expectLatex(simplify('\\frac{1-i}{1+i}'), '-i');
+			expectLatex(simplify(`\\frac{1-${I}}{1+${I}}`), '-i');
 		});
 
 		it('reduces (2+3i)/(1-i) to -1/2 + 5/2 i', () => {
 			// (2+3i)/(1-i) × (1+i)/(1+i) = (2+3i)(1+i)/2
 			// = (2+2i+3i+3i²)/2 = (2+5i-3)/2 = (-1+5i)/2
 			expectLatex(
-				simplify('\\frac{2+3i}{1-i}'),
+				simplify(`\\frac{2+3${I}}{1-${I}}`),
 				'-\\frac{1}{2}+\\frac{5}{2}i',
 				'-\\frac{1}{2}+\\frac{5i}{2}',
 				'\\frac{-1+5i}{2}'
@@ -119,7 +124,7 @@ describe('Complex fraction rationalization', () => {
 			// (3+4i)/(3-4i) × (3+4i)/(3+4i) = (3+4i)²/(9+16)
 			// = (9+24i-16)/25 = (-7+24i)/25
 			expectLatex(
-				simplify('\\frac{3+4i}{3-4i}'),
+				simplify(`\\frac{3+4${I}}{3-4${I}}`),
 				'-\\frac{7}{25}+\\frac{24}{25}i',
 				'-\\frac{7}{25}+\\frac{24i}{25}',
 				'\\frac{-7+24i}{25}'
@@ -129,17 +134,17 @@ describe('Complex fraction rationalization', () => {
 
 	describe('Pure imaginary denominators', () => {
 		it('reduces 1/(2i) to -i/2', () => {
-			expectLatex(simplify('\\frac{1}{2i}'), '-\\frac{1}{2}i', '-\\frac{i}{2}', '\\frac{-i}{2}');
+			expectLatex(simplify(`\\frac{1}{2${I}}`), '-\\frac{1}{2}i', '-\\frac{i}{2}', '\\frac{-i}{2}');
 		});
 
 		it('reduces i/(2i) to 1/2', () => {
-			expectLatex(simplify('\\frac{i}{2i}'), '\\frac{1}{2}');
+			expectLatex(simplify(`\\frac{${I}}{2${I}}`), '\\frac{1}{2}');
 		});
 
 		it('reduces (1+i)/(2i) to 1/2 - i/2', () => {
 			// (1+i)/(2i) × (-i)/(-i) = (1+i)(-i)/2 = (-i-i²)/2 = (-i+1)/2 = (1-i)/2
 			expectLatex(
-				simplify('\\frac{1+i}{2i}'),
+				simplify(`\\frac{1+${I}}{2${I}}`),
 				'\\frac{1}{2}-\\frac{1}{2}i',
 				'\\frac{1}{2}-\\frac{i}{2}',
 				'\\frac{1-i}{2}'
@@ -149,13 +154,13 @@ describe('Complex fraction rationalization', () => {
 
 	describe('With radicals and complex', () => {
 		it('reduces sqrt(2)/i to -sqrt(2)i', () => {
-			expectLatex(simplify('\\frac{\\sqrt{2}}{i}'), '-\\sqrt{2}i');
+			expectLatex(simplify(`\\frac{\\sqrt{2}}{${I}}`), '-\\sqrt{2}i');
 		});
 
 		it('reduces 1/(sqrt(2)+i) to (sqrt(2)-i)/3', () => {
 			// 1/(√2+i) × (√2-i)/(√2-i) = (√2-i)/(2+1) = (√2-i)/3
 			expectLatex(
-				simplify('\\frac{1}{\\sqrt{2}+i}'),
+				simplify(`\\frac{1}{\\sqrt{2}+${I}}`),
 				'\\frac{\\sqrt{2}}{3}-\\frac{1}{3}i',
 				'\\frac{\\sqrt{2}}{3}-\\frac{i}{3}',
 				'\\frac{\\sqrt{2}-i}{3}',
@@ -167,17 +172,17 @@ describe('Complex fraction rationalization', () => {
 	describe('Edge cases', () => {
 		it('handles i² = -1 in denominator', () => {
 			// i² = -1, so 1/i² = 1/(-1) = -1
-			expect(simplify('\\frac{1}{i^2}')).toBe('-1');
+			expect(simplify(`\\frac{1}{${I}^2}`)).toBe('-1');
 		});
 
 		it('handles (i+1)(i-1) = i²-1 = -2 in denominator', () => {
 			// (i+1)(i-1) = i²-1 = -1-1 = -2
-			expect(simplify('\\frac{2}{(i+1)(i-1)}')).toBe('-1');
+			expect(simplify(`\\frac{2}{(${I}+1)(${I}-1)}`)).toBe('-1');
 		});
 
 		it('preserves real denominators unchanged', () => {
 			expectLatex(
-				simplify('\\frac{1+i}{2}'),
+				simplify(`\\frac{1+${I}}{2}`),
 				'\\frac{1}{2}+\\frac{1}{2}i',
 				'\\frac{1}{2}+\\frac{i}{2}',
 				'\\frac{1+i}{2}'
