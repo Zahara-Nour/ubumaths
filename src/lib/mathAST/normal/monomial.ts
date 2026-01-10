@@ -447,7 +447,7 @@ export function monomialsEqual(
  * @param factors - Array of factors to sort
  * @returns A new sorted array
  */
-export function sortSymbolicFactors(factors: SymbolicFactor[]): SymbolicFactor[] {
+export function sortSymbolicFactors(factors: readonly SymbolicFactor[]): SymbolicFactor[] {
 	return [...factors].sort(compareSymbolicFactors);
 }
 

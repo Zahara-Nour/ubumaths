@@ -12,7 +12,7 @@
  */
 
 import type { MathNode } from '../types';
-import type { NormalForm, NormalTerm, Rational, NormalizationStep } from './types';
+import type { NormalForm, NormalTerm, Rational, NormalizationStep, SymbolicFactor } from './types';
 import { type Verbosity, shouldIncludeStep } from '../common/verbosity.js';
 import { hashPolynomial, hashNormalForm, hashMathNode } from './hash';
 import { StepRecorder, getRuleDescription } from './step-recorder.js';
@@ -477,12 +477,12 @@ function rationalizeComplexDenominator(
 /**
  * Creates a NormalForm from a polynomial (denominator = 1).
  */
-function normalFormFromPolynomial(terms: NormalTerm[]): NormalForm {
+function normalFormFromPolynomial(terms: readonly NormalTerm[]): NormalForm {
 	if (terms.length === 0) {
 		return ZERO_NORMAL_FORM;
 	}
 
-	const numerator = terms;
+	const numerator = [...terms];
 	const denominator = ONE_POLYNOMIAL;
 
 	return {
@@ -496,7 +496,10 @@ function normalFormFromPolynomial(terms: NormalTerm[]): NormalForm {
  * Creates a NormalForm from numerator and denominator polynomials.
  * Automatically reduces common monomial factors and numeric coefficients.
  */
-function normalFormFromFraction(numerator: NormalTerm[], denominator: NormalTerm[]): NormalForm {
+function normalFormFromFraction(
+	numerator: readonly NormalTerm[],
+	denominator: readonly NormalTerm[]
+): NormalForm {
 	// Handle zero numerator
 	if (numerator.length === 0) {
 		return ZERO_NORMAL_FORM;
@@ -509,23 +512,23 @@ function normalFormFromFraction(numerator: NormalTerm[], denominator: NormalTerm
 
 	// Combine exp factors across numerator/denominator: exp(a)/exp(b) → exp(a-b)
 	const combined = combineExpAcrossFraction(numerator, denominator);
-	numerator = combined.numerator;
-	denominator = combined.denominator;
+	const workingNumerator = combined.numerator;
+	const workingDenominator = combined.denominator;
 
 	// Re-check if denominator became 1 after exp combination
-	if (isOnePolynomial(denominator)) {
-		return normalFormFromPolynomial(numerator);
+	if (isOnePolynomial(workingDenominator)) {
+		return normalFormFromPolynomial(workingNumerator);
 	}
 
-	let reducedNumerator = numerator;
-	let reducedDenominator = denominator;
+	let reducedNumerator = workingNumerator;
+	let reducedDenominator = workingDenominator;
 
 	// Try univariate polynomial GCD first (for expressions like (x^2-1)/(x-1) = x+1)
-	const univariateGcd = tryUnivariateGcd(numerator, denominator);
+	const univariateGcd = tryUnivariateGcd(workingNumerator, workingDenominator);
 	if (univariateGcd !== null && !isOnePolynomial(univariateGcd)) {
 		// Divide both by the GCD
-		const newNumerator = dividePolynomials(numerator, univariateGcd);
-		const newDenominator = dividePolynomials(denominator, univariateGcd);
+		const newNumerator = dividePolynomials(workingNumerator, univariateGcd);
+		const newDenominator = dividePolynomials(workingDenominator, univariateGcd);
 
 		if (newNumerator !== null && newDenominator !== null) {
 			reducedNumerator = newNumerator;
@@ -533,13 +536,13 @@ function normalFormFromFraction(numerator: NormalTerm[], denominator: NormalTerm
 		}
 	} else {
 		// Fall back to monomial GCD only
-		const gcd = gcdPolynomials(numerator, denominator);
+		const gcd = gcdPolynomials(workingNumerator, workingDenominator);
 
 		// If GCD is not 1, divide both by it
 		if (!isOnePolynomial(gcd) && gcd.length === 1) {
 			const gcdMonomial = gcd[0].monomial;
-			reducedNumerator = divPolynomialByMonomial(numerator, gcdMonomial);
-			reducedDenominator = divPolynomialByMonomial(denominator, gcdMonomial);
+			reducedNumerator = divPolynomialByMonomial(workingNumerator, gcdMonomial);
+			reducedDenominator = divPolynomialByMonomial(workingDenominator, gcdMonomial);
 		}
 	}
 
@@ -846,7 +849,7 @@ function sqrtPerfectSquareTerm(term: NormalTerm): NormalTerm | null {
 	if (sqrtRat === null) return null;
 
 	// Halve all exponents in monomial
-	const newMonomial: typeof monomial = [];
+	const newMonomial: SymbolicFactor[] = [];
 	for (const factor of monomial) {
 		if (factor.exponent.d !== 1n || factor.exponent.n % 2n !== 0n) return null;
 		newMonomial.push(symbolicFactor(factor.base, { n: factor.exponent.n / 2n, d: 1n }));
@@ -2250,8 +2253,8 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 					const denSimplified = simplifyRadical(ratValue.d, 2n);
 
 					// Extract even exponents from monomial
-					const extractedFactors: typeof monomial = [];
-					const remainingFactors: typeof monomial = [];
+					const extractedFactors: SymbolicFactor[] = [];
+					const remainingFactors: SymbolicFactor[] = [];
 					let hasOddExtractedExponent = false; // Track if any extracted exponent is odd
 
 					for (const factor of monomial) {
@@ -2350,14 +2353,19 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 
 						if (hasRemainingCoeff && !hasRemainingMonomial) {
 							// Only numeric remaining: √(radicand)
-							const radicalCoeff = mulAlgebraic(
-								algebraicFromRadical({ radicand: numSimplified.radicand, index: 2n }),
+							const denRadicalCoeff =
 								denSimplified.radicand !== 1n
 									? divAlgebraic(
 											ALGEBRAIC_ONE,
 											algebraicFromRadical({ radicand: denSimplified.radicand, index: 2n })
 										)
-									: ALGEBRAIC_ONE
+									: ALGEBRAIC_ONE;
+							// If division fails, this optimization is not applicable
+							// TypeScript: denRadicalCoeff is guaranteed non-null due to ALGEBRAIC_ONE fallback
+							// In practice, divAlgebraic(1, sqrt(n)) should always succeed
+							const radicalCoeff = mulAlgebraic(
+								algebraicFromRadical({ radicand: numSimplified.radicand, index: 2n }),
+								denRadicalCoeff ?? ALGEBRAIC_ONE
 							);
 							const radicalTerm: NormalTerm = {
 								coefficient: radicalCoeff,
@@ -2379,14 +2387,17 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 						} else {
 							// Both numeric and symbolic remaining
 							// Build √(numRadicand/denRadicand) * monomial^{1/2}
-							const radicalCoeff = mulAlgebraic(
-								algebraicFromRadical({ radicand: numSimplified.radicand, index: 2n }),
+							const denRadicalCoeff2 =
 								denSimplified.radicand !== 1n
 									? divAlgebraic(
 											ALGEBRAIC_ONE,
 											algebraicFromRadical({ radicand: denSimplified.radicand, index: 2n })
 										)
-									: ALGEBRAIC_ONE
+									: ALGEBRAIC_ONE;
+							// In practice, divAlgebraic(1, sqrt(n)) should always succeed
+							const radicalCoeff = mulAlgebraic(
+								algebraicFromRadical({ radicand: numSimplified.radicand, index: 2n }),
+								denRadicalCoeff2 ?? ALGEBRAIC_ONE
 							);
 							const sortedRemaining = sortSymbolicFactors(remainingFactors);
 							const halfPowFactors = sortedRemaining.map((f) =>
@@ -3019,12 +3030,12 @@ function combineExpInPolynomial(terms: NormalTerm[]): NormalTerm[] {
  * Works when both numerator and denominator are single terms with exp factors.
  */
 function combineExpAcrossFraction(
-	numerator: NormalTerm[],
-	denominator: NormalTerm[]
+	numerator: readonly NormalTerm[],
+	denominator: readonly NormalTerm[]
 ): { numerator: NormalTerm[]; denominator: NormalTerm[] } {
 	// Only handle single-term cases for simplicity
 	if (numerator.length !== 1 || denominator.length !== 1) {
-		return { numerator, denominator };
+		return { numerator: [...numerator], denominator: [...denominator] };
 	}
 
 	const numTerm = numerator[0];

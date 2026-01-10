@@ -1343,8 +1343,8 @@ function _evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedi
 
 	// AdditionNode
 	if (isAddition(node)) {
-		const left = evaluateNode(node.left, exactMode, depth + 1);
-		const right = evaluateNode(node.right, exactMode, depth + 1);
+		const left = _evaluateNode(node.left, exactMode, depth + 1);
+		const right = _evaluateNode(node.right, exactMode, depth + 1);
 
 		// Handle complex numbers
 		if (isComplexValue(left) || isComplexValue(right)) {
@@ -1359,8 +1359,8 @@ function _evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedi
 
 	// SubtractionNode
 	if (isSubtraction(node)) {
-		const left = evaluateNode(node.left, exactMode, depth + 1);
-		const right = evaluateNode(node.right, exactMode, depth + 1);
+		const left = _evaluateNode(node.left, exactMode, depth + 1);
+		const right = _evaluateNode(node.right, exactMode, depth + 1);
 
 		// Handle complex numbers
 		if (isComplexValue(left) || isComplexValue(right)) {
@@ -1375,8 +1375,8 @@ function _evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedi
 
 	// MultiplicationNode
 	if (isMultiplication(node)) {
-		const left = evaluateNode(node.left, exactMode, depth + 1);
-		const right = evaluateNode(node.right, exactMode, depth + 1);
+		const left = _evaluateNode(node.left, exactMode, depth + 1);
+		const right = _evaluateNode(node.right, exactMode, depth + 1);
 
 		// Handle complex numbers
 		if (isComplexValue(left) || isComplexValue(right)) {
@@ -1391,8 +1391,8 @@ function _evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedi
 
 	// DivisionNode
 	if (isDivision(node)) {
-		const num = evaluateNode(node.numerator, exactMode, depth + 1);
-		const den = evaluateNode(node.denominator, exactMode, depth + 1);
+		const num = _evaluateNode(node.numerator, exactMode, depth + 1);
+		const den = _evaluateNode(node.denominator, exactMode, depth + 1);
 
 		// Handle complex numbers
 		if (isComplexValue(num) || isComplexValue(den)) {
@@ -1416,7 +1416,7 @@ function _evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedi
 
 	// OppositeNode (negation)
 	if (isOpposite(node)) {
-		const operand = evaluateNode(node.operand, exactMode, depth + 1);
+		const operand = _evaluateNode(node.operand, exactMode, depth + 1);
 
 		// Handle complex numbers
 		if (isComplexValue(operand)) {
@@ -1431,13 +1431,13 @@ function _evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedi
 
 	// PositiveNode
 	if (isPositive(node)) {
-		return evaluateNode(node.operand, exactMode, depth + 1);
+		return _evaluateNode(node.operand, exactMode, depth + 1);
 	}
 
 	// SuperscriptNode (power)
 	if (isSuperscript(node)) {
-		const base = evaluateNode(node.base, exactMode, depth + 1);
-		const exp = evaluateNode(node.superscript, exactMode, depth + 1);
+		const base = _evaluateNode(node.base, exactMode, depth + 1);
+		const exp = _evaluateNode(node.superscript, exactMode, depth + 1);
 
 		// Check for integer exponent for exact evaluation
 		if (isRational(exp) && isExactInteger(exp)) {
@@ -1497,14 +1497,14 @@ function _evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedi
 		}
 
 		// Evaluate all arguments
-		const evaluatedArgs = node.args.map((arg) => evaluateNode(arg, exactMode, depth + 1));
+		const evaluatedArgs = node.args.map((arg) => _evaluateNode(arg, exactMode, depth + 1));
 
 		return handler(evaluatedArgs, exactMode);
 	}
 
 	// DelimiterNode (parentheses)
 	if (isDelimiter(node)) {
-		return evaluateNode(node.content, exactMode, depth + 1);
+		return _evaluateNode(node.content, exactMode, depth + 1);
 	}
 
 	// SubscriptNode - cannot evaluate numerically
@@ -1519,13 +1519,13 @@ function _evaluateNode(node: MathNode, exactMode: boolean, depth = 0): Intermedi
 
 	// UnitNode - evaluate the expression part (ignore the unit)
 	if (isUnit(node)) {
-		return evaluateNode(node.expression, exactMode, depth + 1);
+		return _evaluateNode(node.expression, exactMode, depth + 1);
 	}
 
 	// ComplexNode - evaluate both parts and combine
 	if (isComplex(node)) {
-		const realVal = evaluateNode(node.real, exactMode, depth + 1);
-		const imagVal = evaluateNode(node.imaginary, exactMode, depth + 1);
+		const realVal = _evaluateNode(node.real, exactMode, depth + 1);
+		const imagVal = _evaluateNode(node.imaginary, exactMode, depth + 1);
 
 		// Convert to numbers for complex arithmetic
 		const real = toRealPart(realVal);
