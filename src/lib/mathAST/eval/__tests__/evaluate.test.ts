@@ -895,3 +895,762 @@ describe('evaluate - precision options', () => {
 		expect(Math.abs((result.value as number) - Math.sqrt(2))).toBeLessThan(1e-14);
 	});
 });
+
+// =============================================================================
+// Extended Precision Tests - Classic Floating-Point Pitfalls
+// =============================================================================
+
+describe('evaluate - extended precision: classic float pitfalls', () => {
+	describe('addition precision', () => {
+		it('0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 = 1', () => {
+			// In JS: 0.9999999999999999
+			const result = evaluate(parseLatex('0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1'), {
+				mode: 'decimal'
+			});
+			expect(result.value).toBe(1);
+		});
+
+		it('0.3 - 0.1 = 0.2 exactly', () => {
+			// In JS: 0.19999999999999998
+			const result = evaluate(parseLatex('0.3 - 0.1'), { mode: 'decimal' });
+			expect(result.value).toBe(0.2);
+		});
+
+		it('0.6 + 0.1 = 0.7 exactly', () => {
+			const result = evaluate(parseLatex('0.6 + 0.1'), { mode: 'decimal' });
+			expect(result.value).toBe(0.7);
+		});
+
+		it('0.2 + 0.4 = 0.6 exactly', () => {
+			// In JS: 0.6000000000000001
+			const result = evaluate(parseLatex('0.2 + 0.4'), { mode: 'decimal' });
+			expect(result.value).toBe(0.6);
+		});
+
+		it('0.1 + 0.2 + 0.3 = 0.6 exactly', () => {
+			const result = evaluate(parseLatex('0.1 + 0.2 + 0.3'), { mode: 'decimal' });
+			expect(result.value).toBe(0.6);
+		});
+
+		it('1.1 + 2.2 = 3.3 exactly', () => {
+			// In JS: 3.3000000000000003
+			const result = evaluate(parseLatex('1.1 + 2.2'), { mode: 'decimal' });
+			expect(result.value).toBe(3.3);
+		});
+	});
+
+	describe('subtraction precision', () => {
+		it('1.0 - 0.1 = 0.9 exactly', () => {
+			const result = evaluate(parseLatex('1.0 - 0.1'), { mode: 'decimal' });
+			expect(result.value).toBe(0.9);
+		});
+
+		it('1.0 - 0.7 = 0.3 exactly', () => {
+			// In JS: 0.30000000000000004
+			const result = evaluate(parseLatex('1.0 - 0.7'), { mode: 'decimal' });
+			expect(result.value).toBe(0.3);
+		});
+
+		it('0.3 - 0.2 - 0.1 = 0 exactly', () => {
+			const result = evaluate(parseLatex('0.3 - 0.2 - 0.1'), { mode: 'decimal' });
+			expect(result.value).toBe(0);
+		});
+
+		it('10.0 - 9.9 = 0.1 exactly', () => {
+			// In JS: 0.09999999999999964
+			const result = evaluate(parseLatex('10.0 - 9.9'), { mode: 'decimal' });
+			expect(result.value).toBe(0.1);
+		});
+	});
+
+	describe('multiplication precision', () => {
+		it('0.1 * 0.2 = 0.02 exactly', () => {
+			// In JS: 0.020000000000000004
+			const result = evaluate(parseLatex('0.1 \\cdot 0.2'), { mode: 'decimal' });
+			expect(result.value).toBe(0.02);
+		});
+
+		it('3 * 0.1 = 0.3 exactly', () => {
+			const result = evaluate(parseLatex('3 \\cdot 0.1'), { mode: 'decimal' });
+			expect(result.value).toBe(0.3);
+		});
+
+		it('0.1 * 0.1 = 0.01 exactly', () => {
+			const result = evaluate(parseLatex('0.1 \\cdot 0.1'), { mode: 'decimal' });
+			expect(result.value).toBe(0.01);
+		});
+
+		it('33.33 * 3 = 99.99 exactly', () => {
+			const result = evaluate(parseLatex('33.33 \\cdot 3'), { mode: 'decimal' });
+			expect(result.value).toBe(99.99);
+		});
+	});
+
+	describe('division precision', () => {
+		it('0.3 / 0.1 = 3 exactly', () => {
+			// In JS: 2.9999999999999996
+			const result = evaluate(parseLatex('0.3 / 0.1'), { mode: 'decimal' });
+			expect(result.value).toBe(3);
+		});
+
+		it('1 / 0.1 = 10 exactly', () => {
+			const result = evaluate(parseLatex('1 / 0.1'), { mode: 'decimal' });
+			expect(result.value).toBe(10);
+		});
+
+		it('0.6 / 0.2 = 3 exactly', () => {
+			const result = evaluate(parseLatex('0.6 / 0.2'), { mode: 'decimal' });
+			expect(result.value).toBe(3);
+		});
+
+		it('0.5 / 0.5 = 1 exactly', () => {
+			const result = evaluate(parseLatex('0.5 / 0.5'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+	});
+});
+
+// =============================================================================
+// Extended Precision Tests - Fraction Arithmetic
+// =============================================================================
+
+describe('evaluate - extended precision: fraction arithmetic', () => {
+	describe('fraction sums equal to 1', () => {
+		it('1/2 + 1/2 = 1', () => {
+			const result = evaluate(parseLatex('\\frac{1}{2} + \\frac{1}{2}'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+
+		it('1/4 + 1/4 + 1/4 + 1/4 = 1', () => {
+			const result = evaluate(
+				parseLatex('\\frac{1}{4} + \\frac{1}{4} + \\frac{1}{4} + \\frac{1}{4}'),
+				{ mode: 'decimal' }
+			);
+			expect(result.value).toBe(1);
+		});
+
+		it('1/5 + 1/5 + 1/5 + 1/5 + 1/5 = 1', () => {
+			const result = evaluate(
+				parseLatex('\\frac{1}{5}+\\frac{1}{5}+\\frac{1}{5}+\\frac{1}{5}+\\frac{1}{5}'),
+				{ mode: 'decimal' }
+			);
+			expect(result.value).toBe(1);
+		});
+
+		it('1/7 + 1/7 + 1/7 + 1/7 + 1/7 + 1/7 + 1/7 = 1', () => {
+			const result = evaluate(
+				parseLatex(
+					'\\frac{1}{7}+\\frac{1}{7}+\\frac{1}{7}+\\frac{1}{7}+\\frac{1}{7}+\\frac{1}{7}+\\frac{1}{7}'
+				),
+				{ mode: 'decimal' }
+			);
+			expect(result.value).toBe(1);
+		});
+
+		it('1/2 + 1/3 + 1/6 = 1', () => {
+			const result = evaluate(parseLatex('\\frac{1}{2} + \\frac{1}{3} + \\frac{1}{6}'), {
+				mode: 'decimal'
+			});
+			expect(result.value).toBe(1);
+		});
+
+		it('1/2 + 1/4 + 1/8 + 1/8 = 1', () => {
+			const result = evaluate(
+				parseLatex('\\frac{1}{2} + \\frac{1}{4} + \\frac{1}{8} + \\frac{1}{8}'),
+				{ mode: 'decimal' }
+			);
+			expect(result.value).toBe(1);
+		});
+
+		it('1/3 + 2/3 = 1', () => {
+			const result = evaluate(parseLatex('\\frac{1}{3} + \\frac{2}{3}'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+
+		it('1/10 + 2/10 + 3/10 + 4/10 = 1', () => {
+			const result = evaluate(
+				parseLatex('\\frac{1}{10} + \\frac{2}{10} + \\frac{3}{10} + \\frac{4}{10}'),
+				{ mode: 'decimal' }
+			);
+			expect(result.value).toBe(1);
+		});
+	});
+
+	describe('fraction subtraction', () => {
+		it('1/2 - 1/3 = 1/6 exactly', () => {
+			const result = evaluate(parseLatex('\\frac{1}{2} - \\frac{1}{3}'), { mode: 'decimal' });
+			expect(Math.abs((result.value as number) - 1 / 6)).toBeLessThan(1e-15);
+		});
+
+		it('3/4 - 1/4 = 1/2 exactly', () => {
+			const result = evaluate(parseLatex('\\frac{3}{4} - \\frac{1}{4}'), { mode: 'decimal' });
+			expect(result.value).toBe(0.5);
+		});
+
+		it('5/6 - 1/2 = 1/3 exactly', () => {
+			const result = evaluate(parseLatex('\\frac{5}{6} - \\frac{1}{2}'), { mode: 'decimal' });
+			expect(Math.abs((result.value as number) - 1 / 3)).toBeLessThan(1e-15);
+		});
+	});
+
+	describe('fraction multiplication identity', () => {
+		it('1/3 * 3 = 1', () => {
+			const result = evaluate(parseLatex('\\frac{1}{3} \\cdot 3'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+
+		it('1/9 * 9 = 1', () => {
+			const result = evaluate(parseLatex('\\frac{1}{9} \\cdot 9'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+
+		it('1/11 * 11 = 1', () => {
+			const result = evaluate(parseLatex('\\frac{1}{11} \\cdot 11'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+
+		it('1/13 * 13 = 1', () => {
+			const result = evaluate(parseLatex('\\frac{1}{13} \\cdot 13'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+
+		it('1/17 * 17 = 1', () => {
+			const result = evaluate(parseLatex('\\frac{1}{17} \\cdot 17'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+
+		it('1/97 * 97 = 1', () => {
+			const result = evaluate(parseLatex('\\frac{1}{97} \\cdot 97'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+
+		it('2/3 * 3/2 = 1', () => {
+			const result = evaluate(parseLatex('\\frac{2}{3} \\cdot \\frac{3}{2}'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+
+		it('5/7 * 7/5 = 1', () => {
+			const result = evaluate(parseLatex('\\frac{5}{7} \\cdot \\frac{7}{5}'), { mode: 'decimal' });
+			expect(result.value).toBe(1);
+		});
+
+		it('11/13 * 13/11 = 1', () => {
+			const result = evaluate(parseLatex('\\frac{11}{13} \\cdot \\frac{13}{11}'), {
+				mode: 'decimal'
+			});
+			expect(result.value).toBe(1);
+		});
+	});
+
+	describe('fraction division identity', () => {
+		it('(1/3) / (1/3) = 1', () => {
+			const result = evaluate(parseLatex('\\frac{\\frac{1}{3}}{\\frac{1}{3}}'), {
+				mode: 'decimal'
+			});
+			expect(result.value).toBe(1);
+		});
+
+		it('(2/7) / (2/7) = 1', () => {
+			const result = evaluate(parseLatex('\\frac{\\frac{2}{7}}{\\frac{2}{7}}'), {
+				mode: 'decimal'
+			});
+			expect(result.value).toBe(1);
+		});
+	});
+
+	describe('fraction chain products', () => {
+		it('1/2 * 2/3 * 3/4 * 4/5 * 5/6 * 6/7 * 7/8 * 8/9 * 9/10 = 1/10', () => {
+			const result = evaluate(
+				parseLatex(
+					'\\frac{1}{2} \\cdot \\frac{2}{3} \\cdot \\frac{3}{4} \\cdot \\frac{4}{5} \\cdot \\frac{5}{6} \\cdot \\frac{6}{7} \\cdot \\frac{7}{8} \\cdot \\frac{8}{9} \\cdot \\frac{9}{10}'
+				),
+				{ mode: 'decimal' }
+			);
+			expect(result.value).toBe(0.1);
+		});
+
+		it('1/2 * 2/3 * 3/4 = 1/4', () => {
+			const result = evaluate(parseLatex('\\frac{1}{2} \\cdot \\frac{2}{3} \\cdot \\frac{3}{4}'), {
+				mode: 'decimal'
+			});
+			expect(result.value).toBe(0.25);
+		});
+	});
+});
+
+// =============================================================================
+// Extended Precision Tests - Decimal to Fraction Conversions
+// =============================================================================
+
+describe('evaluate - extended precision: decimal conversions', () => {
+	it('0.5 + 0.5 = 1', () => {
+		const result = evaluate(parseLatex('0.5 + 0.5'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+
+	it('0.25 + 0.75 = 1', () => {
+		const result = evaluate(parseLatex('0.25 + 0.75'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+
+	it('0.125 + 0.875 = 1', () => {
+		const result = evaluate(parseLatex('0.125 + 0.875'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+
+	it('0.0625 + 0.9375 = 1', () => {
+		const result = evaluate(parseLatex('0.0625 + 0.9375'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+
+	it('0.2 * 5 = 1', () => {
+		const result = evaluate(parseLatex('0.2 \\cdot 5'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+
+	it('0.04 * 25 = 1', () => {
+		const result = evaluate(parseLatex('0.04 \\cdot 25'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+
+	it('0.01 * 100 = 1', () => {
+		const result = evaluate(parseLatex('0.01 \\cdot 100'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+
+	it('0.001 * 1000 = 1', () => {
+		const result = evaluate(parseLatex('0.001 \\cdot 1000'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+});
+
+// =============================================================================
+// Extended Precision Tests - Negative Numbers
+// =============================================================================
+
+describe('evaluate - extended precision: negative fractions', () => {
+	it('-1/3 + -1/3 + -1/3 = -1', () => {
+		const result = evaluate(parseLatex('-\\frac{1}{3} + -\\frac{1}{3} + -\\frac{1}{3}'), {
+			mode: 'decimal'
+		});
+		expect(result.value).toBe(-1);
+	});
+
+	it('-1/2 + 3/2 = 1', () => {
+		const result = evaluate(parseLatex('-\\frac{1}{2} + \\frac{3}{2}'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+
+	it('1/3 - 2/3 + 1/3 = 0', () => {
+		const result = evaluate(parseLatex('\\frac{1}{3} - \\frac{2}{3} + \\frac{1}{3}'), {
+			mode: 'decimal'
+		});
+		expect(result.value).toBe(0);
+	});
+
+	it('-0.1 - 0.2 = -0.3 exactly', () => {
+		const result = evaluate(parseLatex('-0.1 - 0.2'), { mode: 'decimal' });
+		expect(result.value).toBe(-0.3);
+	});
+
+	it('(-1/7) * (-7) = 1', () => {
+		const result = evaluate(parseLatex('\\left(-\\frac{1}{7}\\right) \\cdot \\left(-7\\right)'), {
+			mode: 'decimal'
+		});
+		expect(result.value).toBe(1);
+	});
+});
+
+// =============================================================================
+// Extended Precision Tests - Powers and Roots
+// =============================================================================
+
+describe('evaluate - extended precision: powers and roots', () => {
+	it('(1/2)^2 = 0.25 exactly', () => {
+		const result = evaluate(parseLatex('\\left(\\frac{1}{2}\\right)^2'), { mode: 'decimal' });
+		expect(result.value).toBe(0.25);
+	});
+
+	it('(1/3)^2 = 1/9 exactly', () => {
+		const result = evaluate(parseLatex('\\left(\\frac{1}{3}\\right)^2'), { mode: 'decimal' });
+		expect(Math.abs((result.value as number) - 1 / 9)).toBeLessThan(1e-15);
+	});
+
+	it('(2/3)^3 = 8/27 exactly', () => {
+		const result = evaluate(parseLatex('\\left(\\frac{2}{3}\\right)^3'), { mode: 'decimal' });
+		expect(Math.abs((result.value as number) - 8 / 27)).toBeLessThan(1e-15);
+	});
+
+	it('0.5^2 = 0.25 exactly', () => {
+		const result = evaluate(parseLatex('0.5^2'), { mode: 'decimal' });
+		expect(result.value).toBe(0.25);
+	});
+
+	it('0.1^2 = 0.01 exactly', () => {
+		const result = evaluate(parseLatex('0.1^2'), { mode: 'decimal' });
+		expect(result.value).toBe(0.01);
+	});
+
+	it('0.2^3 = 0.008 exactly', () => {
+		const result = evaluate(parseLatex('0.2^3'), { mode: 'decimal' });
+		expect(result.value).toBe(0.008);
+	});
+
+	it('sqrt(0.25) = 0.5 exactly', () => {
+		const result = evaluate(parseLatex('\\sqrt{0.25}'), { mode: 'decimal' });
+		expect(result.value).toBe(0.5);
+	});
+
+	it('sqrt(0.01) = 0.1 exactly', () => {
+		const result = evaluate(parseLatex('\\sqrt{0.01}'), { mode: 'decimal' });
+		expect(result.value).toBe(0.1);
+	});
+
+	it('sqrt(1/4) = 0.5 exactly', () => {
+		const result = evaluate(parseLatex('\\sqrt{\\frac{1}{4}}'), { mode: 'decimal' });
+		expect(result.value).toBe(0.5);
+	});
+});
+
+// =============================================================================
+// Extended Precision Tests - Associativity and Distributivity
+// =============================================================================
+
+describe('evaluate - extended precision: algebraic properties', () => {
+	describe('addition associativity', () => {
+		it('(0.1 + 0.2) + 0.3 = 0.1 + (0.2 + 0.3)', () => {
+			const left = evaluate(parseLatex('(0.1 + 0.2) + 0.3'), { mode: 'decimal' });
+			const right = evaluate(parseLatex('0.1 + (0.2 + 0.3)'), { mode: 'decimal' });
+			expect(left.value).toBe(right.value);
+			expect(left.value).toBe(0.6);
+		});
+
+		it('(1/3 + 1/4) + 1/6 = 1/3 + (1/4 + 1/6)', () => {
+			const left = evaluate(
+				parseLatex('\\left(\\frac{1}{3} + \\frac{1}{4}\\right) + \\frac{1}{6}'),
+				{ mode: 'decimal' }
+			);
+			const right = evaluate(
+				parseLatex('\\frac{1}{3} + \\left(\\frac{1}{4} + \\frac{1}{6}\\right)'),
+				{ mode: 'decimal' }
+			);
+			expect(left.value).toBe(right.value);
+		});
+	});
+
+	describe('multiplication associativity', () => {
+		it('(0.1 * 0.2) * 0.5 = 0.1 * (0.2 * 0.5)', () => {
+			const left = evaluate(parseLatex('(0.1 \\cdot 0.2) \\cdot 0.5'), { mode: 'decimal' });
+			const right = evaluate(parseLatex('0.1 \\cdot (0.2 \\cdot 0.5)'), { mode: 'decimal' });
+			expect(left.value).toBe(right.value);
+			expect(left.value).toBe(0.01);
+		});
+	});
+
+	describe('distributivity', () => {
+		it('0.5 * (0.2 + 0.4) = 0.5*0.2 + 0.5*0.4', () => {
+			const left = evaluate(parseLatex('0.5 \\cdot (0.2 + 0.4)'), { mode: 'decimal' });
+			const right = evaluate(parseLatex('0.5 \\cdot 0.2 + 0.5 \\cdot 0.4'), { mode: 'decimal' });
+			expect(left.value).toBe(right.value);
+			expect(left.value).toBe(0.3);
+		});
+
+		it('(1/3) * (1/2 + 1/4) = 1/3*1/2 + 1/3*1/4', () => {
+			const left = evaluate(
+				parseLatex('\\frac{1}{3} \\cdot \\left(\\frac{1}{2} + \\frac{1}{4}\\right)'),
+				{ mode: 'decimal' }
+			);
+			const right = evaluate(
+				parseLatex('\\frac{1}{3} \\cdot \\frac{1}{2} + \\frac{1}{3} \\cdot \\frac{1}{4}'),
+				{ mode: 'decimal' }
+			);
+			expect(left.value).toBe(right.value);
+		});
+	});
+});
+
+// =============================================================================
+// Extended Precision Tests - Scientific Notation (via AST)
+// =============================================================================
+
+describe('evaluate - extended precision: scientific notation', () => {
+	it('0.1 + 0.2 = 0.3 (same as 1e-1 + 2e-1)', () => {
+		// Since LaTeX parser doesn't handle 1e-1 syntax, we use decimal equivalents
+		const result = evaluate(parseLatex('0.1 + 0.2'), { mode: 'decimal' });
+		expect(result.value).toBe(0.3);
+	});
+
+	it('1.5 + 0.5 = 2', () => {
+		const result = evaluate(parseLatex('1.5 + 0.5'), { mode: 'decimal' });
+		expect(result.value).toBe(2);
+	});
+
+	it('0.05 * 2 = 0.1 exactly', () => {
+		const result = evaluate(parseLatex('0.05 \\cdot 2'), { mode: 'decimal' });
+		expect(result.value).toBe(0.1);
+	});
+
+	it('scientific notation via factory: 5e-2 * 2 = 0.1', () => {
+		// Test scientific notation via direct AST construction
+		const ast = multiply(number('5e-2'), number('2'), 'dot');
+		const result = evaluate(ast, { mode: 'decimal' });
+		expect(result.value).toBe(0.1);
+	});
+
+	it('scientific notation via factory: 1e-1 + 2e-1 = 0.3', () => {
+		const ast = add(number('1e-1'), number('2e-1'));
+		const result = evaluate(ast, { mode: 'decimal' });
+		expect(result.value).toBe(0.3);
+	});
+});
+
+// =============================================================================
+// Extended Precision Tests - Transcendental + Rational
+// =============================================================================
+
+describe('evaluate - extended precision: transcendental with rational follow-up', () => {
+	it('sin(0) + 1/3 + 1/3 + 1/3 = 1', () => {
+		const result = evaluate(parseLatex('\\sin(0) + \\frac{1}{3} + \\frac{1}{3} + \\frac{1}{3}'), {
+			mode: 'decimal'
+		});
+		expect(result.value).toBe(1);
+	});
+
+	it('cos(0) - 1/2 = 0.5 exactly', () => {
+		const result = evaluate(parseLatex('\\cos(0) - \\frac{1}{2}'), { mode: 'decimal' });
+		expect(result.value).toBe(0.5);
+	});
+
+	it('exp(0) + 0.1 + 0.2 = 1.3 exactly', () => {
+		const result = evaluate(parseLatex('\\exp(0) + 0.1 + 0.2'), { mode: 'decimal' });
+		expect(result.value).toBe(1.3);
+	});
+
+	it('ln(1) + 0.1 + 0.2 = 0.3 exactly', () => {
+		const result = evaluate(parseLatex('\\ln(1) + 0.1 + 0.2'), { mode: 'decimal' });
+		expect(result.value).toBe(0.3);
+	});
+
+	it('(sin(0) + cos(0)) * 1/3 preserves rational precision', () => {
+		// sin(0) = 0, cos(0) = 1, so (0+1) * 1/3 = 1/3
+		const result = evaluate(parseLatex('\\left(\\sin(0) + \\cos(0)\\right) \\cdot \\frac{1}{3}'), {
+			mode: 'decimal'
+		});
+		expect(Math.abs((result.value as number) - 1 / 3)).toBeLessThan(1e-15);
+	});
+});
+
+// =============================================================================
+// Extended Precision Tests - Precision Options Edge Cases
+// =============================================================================
+
+describe('evaluate - extended precision: precision options edge cases', () => {
+	describe('decimal places edge cases', () => {
+		it('rounds 0.5 up to 1 with 0 decimal places', () => {
+			const result = evaluate(parseLatex('0.5'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 0 }
+			});
+			expect(result.value).toBe(1);
+		});
+
+		it('rounds 0.499 down to 0 with 0 decimal places', () => {
+			const result = evaluate(parseLatex('0.499'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 0 }
+			});
+			expect(result.value).toBe(0);
+		});
+
+		it('rounds 1.995 to 2.00 with 2 decimal places', () => {
+			const result = evaluate(parseLatex('1.995'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 2 }
+			});
+			expect(result.value).toBe(2);
+		});
+
+		it('rounds 1.994 to 1.99 with 2 decimal places', () => {
+			const result = evaluate(parseLatex('1.994'), {
+				mode: 'decimal',
+				precision: { type: 'decimal', digits: 2 }
+			});
+			expect(result.value).toBe(1.99);
+		});
+	});
+
+	describe('significant figures edge cases', () => {
+		it('rounds 0.001234 to 0.00123 with 3 significant figures', () => {
+			const result = evaluate(parseLatex('0.001234'), {
+				mode: 'decimal',
+				precision: { type: 'significant', digits: 3 }
+			});
+			expect(Math.abs((result.value as number) - 0.00123)).toBeLessThan(1e-10);
+		});
+
+		it('rounds 9999 to 10000 with 1 significant figure', () => {
+			const result = evaluate(parseLatex('9999'), {
+				mode: 'decimal',
+				precision: { type: 'significant', digits: 1 }
+			});
+			expect(result.value).toBe(10000);
+		});
+
+		it('rounds 0.09999 to 0.1 with 1 significant figure', () => {
+			const result = evaluate(parseLatex('0.09999'), {
+				mode: 'decimal',
+				precision: { type: 'significant', digits: 1 }
+			});
+			expect(Math.abs((result.value as number) - 0.1)).toBeLessThan(1e-10);
+		});
+	});
+
+	describe('magnitude rounding edge cases', () => {
+		it('rounds 555 to 600 with magnitude 2', () => {
+			const result = evaluate(parseLatex('555'), {
+				mode: 'decimal',
+				precision: { type: 'magnitude', digits: 2 }
+			});
+			expect(result.value).toBe(600);
+		});
+
+		it('rounds 555 to 560 with magnitude 1', () => {
+			const result = evaluate(parseLatex('555'), {
+				mode: 'decimal',
+				precision: { type: 'magnitude', digits: 1 }
+			});
+			expect(result.value).toBe(560);
+		});
+
+		it('rounds 555 to 555 with magnitude 0', () => {
+			const result = evaluate(parseLatex('555'), {
+				mode: 'decimal',
+				precision: { type: 'magnitude', digits: 0 }
+			});
+			expect(result.value).toBe(555);
+		});
+
+		it('rounds 1234567 to 1200000 with magnitude 5', () => {
+			const result = evaluate(parseLatex('1234567'), {
+				mode: 'decimal',
+				precision: { type: 'magnitude', digits: 5 }
+			});
+			expect(result.value).toBe(1200000);
+		});
+	});
+});
+
+// =============================================================================
+// Extended Precision Tests - Large Numbers
+// =============================================================================
+
+describe('evaluate - extended precision: large numbers', () => {
+	it('handles large integer arithmetic exactly', () => {
+		// 999999999 + 1 = 1000000000
+		const result = evaluate(parseLatex('999999999 + 1'), { mode: 'decimal' });
+		expect(result.value).toBe(1000000000);
+	});
+
+	it('handles large fraction exactly: 1000000/1000000 = 1', () => {
+		const result = evaluate(parseLatex('\\frac{1000000}{1000000}'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+
+	it('handles large multiplication: 100000 * 0.00001 = 1', () => {
+		const result = evaluate(parseLatex('100000 \\cdot 0.00001'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+
+	it('handles repeated small additions without drift', () => {
+		// 0.001 * 1000 = 1 (testing many implicit additions)
+		const result = evaluate(parseLatex('0.001 \\cdot 1000'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+
+	it('handles very small fractions exactly', () => {
+		// 1/10000 * 10000 = 1
+		const result = evaluate(parseLatex('\\frac{1}{10000} \\cdot 10000'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+});
+
+// =============================================================================
+// Extended Precision Tests - Mixed Operations
+// =============================================================================
+
+describe('evaluate - extended precision: complex mixed operations', () => {
+	it('(1/2 + 0.25) * 4 = 3 exactly', () => {
+		const result = evaluate(parseLatex('\\left(\\frac{1}{2} + 0.25\\right) \\cdot 4'), {
+			mode: 'decimal'
+		});
+		expect(result.value).toBe(3);
+	});
+
+	it('0.1 + 1/10 = 0.2 exactly', () => {
+		const result = evaluate(parseLatex('0.1 + \\frac{1}{10}'), { mode: 'decimal' });
+		expect(result.value).toBe(0.2);
+	});
+
+	it('(0.5 + 1/2) / 2 = 0.5 exactly', () => {
+		const result = evaluate(parseLatex('\\frac{0.5 + \\frac{1}{2}}{2}'), { mode: 'decimal' });
+		expect(result.value).toBe(0.5);
+	});
+
+	it('sqrt(1/4) + sqrt(0.25) = 1 exactly', () => {
+		const result = evaluate(parseLatex('\\sqrt{\\frac{1}{4}} + \\sqrt{0.25}'), { mode: 'decimal' });
+		expect(result.value).toBe(1);
+	});
+
+	it('(1 + 1/3) * (1 - 1/3) = 8/9 exactly', () => {
+		// (4/3) * (2/3) = 8/9
+		const result = evaluate(
+			parseLatex('\\left(1 + \\frac{1}{3}\\right) \\cdot \\left(1 - \\frac{1}{3}\\right)'),
+			{ mode: 'decimal' }
+		);
+		expect(Math.abs((result.value as number) - 8 / 9)).toBeLessThan(1e-15);
+	});
+
+	it('(1/2)^2 + (1/2)^2 + (1/2)^2 + (1/2)^2 = 1', () => {
+		const result = evaluate(
+			parseLatex(
+				'\\left(\\frac{1}{2}\\right)^2 + \\left(\\frac{1}{2}\\right)^2 + \\left(\\frac{1}{2}\\right)^2 + \\left(\\frac{1}{2}\\right)^2'
+			),
+			{ mode: 'decimal' }
+		);
+		expect(result.value).toBe(1);
+	});
+});
+
+// =============================================================================
+// Extended Precision Tests - Exact Mode Verification
+// =============================================================================
+
+describe('evaluate - extended precision: exact mode fraction preservation', () => {
+	it('1/3 + 1/3 = 2/3 exactly in exact mode', () => {
+		expectRational('\\frac{1}{3} + \\frac{1}{3}', 2n, 3n);
+	});
+
+	it('1/7 + 2/7 = 3/7 exactly in exact mode', () => {
+		expectRational('\\frac{1}{7} + \\frac{2}{7}', 3n, 7n);
+	});
+
+	it('5/6 - 1/3 = 1/2 exactly in exact mode', () => {
+		expectRational('\\frac{5}{6} - \\frac{1}{3}', 1n, 2n);
+	});
+
+	it('2/5 * 5/3 = 2/3 exactly in exact mode', () => {
+		expectRational('\\frac{2}{5} \\cdot \\frac{5}{3}', 2n, 3n);
+	});
+
+	it('(1/2) / (3/4) = 2/3 exactly in exact mode', () => {
+		expectRational('\\frac{\\frac{1}{2}}{\\frac{3}{4}}', 2n, 3n);
+	});
+
+	it('(1/2 + 1/3) simplifies to 5/6 in exact mode', () => {
+		expectRational('\\frac{1}{2} + \\frac{1}{3}', 5n, 6n);
+	});
+
+	it('(1/2 * 2/3 * 3/4) = 1/4 in exact mode', () => {
+		expectRational('\\frac{1}{2} \\cdot \\frac{2}{3} \\cdot \\frac{3}{4}', 1n, 4n);
+	});
+});
