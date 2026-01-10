@@ -115,8 +115,12 @@ parseLatex('u(x) + v(y)', {
 ```latex
 42                  % Integer
 3.14                % Decimal
+.5                  % Leading decimal
 -5                  % Negative
-1.5e10              % Scientific notation
+1e10                % Scientific notation
+1.5e-10             % Scientific with negative exponent
+1.5e+10             % Scientific with explicit positive exponent
+1.5E10              % Uppercase E also supported
 x                   % Single variable
 velocity            % Multi-character (auto-mathit)
 ```
@@ -302,8 +306,19 @@ const result = parseCustomSafe('sin(x) + cos(y)');
 ```
 42                  # Integer
 3.14                # Decimal
+3,14                # French decimal (normalized to 3.14)
 x                   # Variable
 velocity            # Multi-character variable
+```
+
+**Scientific Notation:**
+
+```
+1e10                # Scientific notation
+1.5e-10             # Negative exponent
+1.5e+10             # Explicit positive exponent
+1.5E10              # Uppercase E
+3,14e10             # French decimal with exponent (-> 3.14e10)
 ```
 
 **Greek Letters (5 supported):**
