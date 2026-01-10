@@ -1953,41 +1953,23 @@ describe('evaluate - edge cases: rounding boundaries', () => {
 		});
 	});
 
-	describe('at x.x5 boundaries (float representation affects rounding)', () => {
-		// Note: Some x.x5 values can't be exactly represented in IEEE 754 float.
-		// When converting Rational to Number before toFixed, precision is lost.
-		// 0.15, 0.35, 0.85, 0.95 become slightly less than x.x5 and round down.
-		// 0.25, 0.75 are exactly representable (powers of 2) and round up.
-		// This is documented behavior of JavaScript's toFixed on boundary values.
-
-		// These round UP because they're exactly representable or slightly above
-		const roundUpCases = [
-			{ input: '\\frac{1}{20}', display: '0.05', expected: 0.1 }, // 0.05 rounds up
-			{ input: '\\frac{1}{4}', display: '0.25', expected: 0.3 }, // exact: 0.25 = 1/4
-			{ input: '\\frac{9}{20}', display: '0.45', expected: 0.5 }, // 0.45 rounds up
-			{ input: '\\frac{11}{20}', display: '0.55', expected: 0.6 }, // 0.55 rounds up
-			{ input: '\\frac{13}{20}', display: '0.65', expected: 0.7 }, // 0.65 rounds up
-			{ input: '\\frac{3}{4}', display: '0.75', expected: 0.8 } // exact: 0.75 = 3/4
+	describe('exactly at x.x5 boundaries (Rational precision)', () => {
+		// With Rational arithmetic, rounding is done on exact values before float conversion.
+		// All x.x5 values correctly round up (half away from zero).
+		const cases = [
+			{ input: '0.05', expected: 0.1 },
+			{ input: '0.15', expected: 0.2 },
+			{ input: '0.25', expected: 0.3 },
+			{ input: '0.35', expected: 0.4 },
+			{ input: '0.45', expected: 0.5 },
+			{ input: '0.55', expected: 0.6 },
+			{ input: '0.65', expected: 0.7 },
+			{ input: '0.75', expected: 0.8 },
+			{ input: '0.85', expected: 0.9 },
+			{ input: '0.95', expected: 1.0 }
 		];
-		roundUpCases.forEach(({ input, display, expected }) => {
-			it(`rounds ${display} to ${expected} with 1 decimal`, () => {
-				const result = evaluate(parseLatex(input), {
-					mode: 'decimal',
-					precision: { type: 'decimal', digits: 1 }
-				});
-				expect(result.value).toBe(expected);
-			});
-		});
-
-		// These round DOWN due to float representation (slightly below x.x5)
-		const roundDownCases = [
-			{ input: '\\frac{3}{20}', display: '0.15', expected: 0.1 },
-			{ input: '\\frac{7}{20}', display: '0.35', expected: 0.3 },
-			{ input: '\\frac{17}{20}', display: '0.85', expected: 0.8 },
-			{ input: '\\frac{19}{20}', display: '0.95', expected: 0.9 }
-		];
-		roundDownCases.forEach(({ input, display, expected }) => {
-			it(`rounds ${display} to ${expected} with 1 decimal (float representation edge case)`, () => {
+		cases.forEach(({ input, expected }) => {
+			it(`rounds ${input} to ${expected} with 1 decimal (half away from zero)`, () => {
 				const result = evaluate(parseLatex(input), {
 					mode: 'decimal',
 					precision: { type: 'decimal', digits: 1 }
@@ -2017,35 +1999,35 @@ describe('evaluate - edge cases: rounding boundaries', () => {
 	});
 
 	describe('cascading rounding', () => {
-		it('rounds values at different precision levels', () => {
-			// Note: 0.5555 = 5555/10000 = 1111/2000 can't be exactly represented in float
-			// It becomes ~0.5554999... which affects rounding at the 3-decimal boundary
-			const r4 = evaluate(parseLatex('\\frac{5555}{10000}'), {
+		it('rounds 0.5555 correctly at each precision level', () => {
+			// With Rational arithmetic, 0.5555 is exactly represented as 5555/10000
+			// and rounding is done on the exact value (half away from zero)
+			const r4 = evaluate(parseLatex('0.5555'), {
 				mode: 'decimal',
 				precision: { type: 'decimal', digits: 4 }
 			});
 			expect(r4.value).toBe(0.5555);
 
-			// Due to float representation, this rounds down to 0.555 not up to 0.556
-			const r3 = evaluate(parseLatex('\\frac{5555}{10000}'), {
+			// 0.5555 rounded to 3 decimals = 0.556 (0.0005 rounds up)
+			const r3 = evaluate(parseLatex('0.5555'), {
 				mode: 'decimal',
 				precision: { type: 'decimal', digits: 3 }
 			});
-			expect(r3.value).toBe(0.555);
+			expect(r3.value).toBe(0.556);
 
-			const r2 = evaluate(parseLatex('\\frac{5555}{10000}'), {
+			const r2 = evaluate(parseLatex('0.5555'), {
 				mode: 'decimal',
 				precision: { type: 'decimal', digits: 2 }
 			});
 			expect(r2.value).toBe(0.56);
 
-			const r1 = evaluate(parseLatex('\\frac{5555}{10000}'), {
+			const r1 = evaluate(parseLatex('0.5555'), {
 				mode: 'decimal',
 				precision: { type: 'decimal', digits: 1 }
 			});
 			expect(r1.value).toBe(0.6);
 
-			const r0 = evaluate(parseLatex('\\frac{5555}{10000}'), {
+			const r0 = evaluate(parseLatex('0.5555'), {
 				mode: 'decimal',
 				precision: { type: 'decimal', digits: 0 }
 			});
@@ -2246,13 +2228,14 @@ describe('evaluate - edge cases: significant figures', () => {
 			expect(Math.abs((result.value as number) - 0.1)).toBeLessThan(1e-10);
 		});
 
-		it('3/20 (0.15) with 1 sig fig = 0.1 (float representation edge case)', () => {
-			// 0.15 as float is slightly below 0.15, so rounds down to 0.1
-			const result = evaluate(parseLatex('\\frac{3}{20}'), {
+		it('0.15 with 1 sig fig = 0.2 (Rational precision preserves exact value)', () => {
+			// With Rational arithmetic, 0.15 is exactly 15/100 = 3/20
+			// Rounding is done on the exact value: 0.15 rounds to 0.2
+			const result = evaluate(parseLatex('0.15'), {
 				mode: 'decimal',
 				precision: { type: 'significant', digits: 1 }
 			});
-			expect(Math.abs((result.value as number) - 0.1)).toBeLessThan(1e-10);
+			expect(Math.abs((result.value as number) - 0.2)).toBeLessThan(1e-10);
 		});
 	});
 });
@@ -2941,16 +2924,16 @@ describe('evaluate - edge cases: magnitude rounding extended', () => {
 	});
 
 	describe('magnitude behavior with small numbers', () => {
-		// Note: magnitude rounding is designed for integers - it rounds to a power of 10.
+		// Magnitude rounding rounds to a power of 10 (nearest 10, 100, etc.)
 		// For magnitude=1, numbers are rounded to nearest 10.
 		// Small decimals get rounded to 0 because round(x/10)*10 = 0 for x < 5.
 
-		it('0.555 with magnitude 0 stays 0.555 (rounded to units)', () => {
-			const result = evaluate(parseLatex('\\frac{111}{200}'), {
+		it('0.555 with magnitude 0 = 1 (rounds to nearest unit)', () => {
+			const result = evaluate(parseLatex('0.555'), {
 				mode: 'decimal',
 				precision: { type: 'magnitude', digits: 0 }
 			});
-			expect(result.value).toBe(1); // rounds 0.555 to nearest 1 = 1
+			expect(result.value).toBe(1); // round(0.555) = 1
 		});
 
 		it('4.5 with magnitude 1 = 0 (rounds to nearest 10)', () => {

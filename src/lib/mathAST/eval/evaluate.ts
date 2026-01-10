@@ -69,42 +69,119 @@ const MAX_EVAL_DEPTH = 100;
 // =============================================================================
 
 /**
- * Applies precision formatting to a number.
+ * Rounds a Rational to a specified number of decimal places.
+ * This preserves exact arithmetic until the final conversion to Number.
  *
- * @param value - The number to format
- * @param precision - The precision specification
- * @returns The formatted number
+ * Algorithm:
+ * 1. Multiply by 10^digits to shift decimal point
+ * 2. Round to nearest integer (half away from zero)
+ * 3. Divide by 10^digits
+ *
+ * @param r - The Rational to round
+ * @param digits - Number of decimal places
+ * @returns The rounded value as a number
  */
-function applyPrecision(value: number, precision?: PrecisionType): number {
+function roundRationalToDecimalPlaces(r: Rational, digits: number): number {
+	// scale = 10^digits as BigInt
+	const scale = 10n ** BigInt(digits);
+
+	// Multiply rational by scale: (n * scale) / d
+	const scaledNum = r.n * scale;
+
+	// Perform integer division with rounding (half away from zero)
+	// quotient = floor((scaledNum + d/2) / d) for positive
+	// For negative, we need to handle sign properly
+	const isNegative = scaledNum < 0n;
+	const absScaledNum = isNegative ? -scaledNum : scaledNum;
+
+	// Round half away from zero
+	let roundedInt: bigint;
+	const remainder = absScaledNum % r.d;
+	const quotient = absScaledNum / r.d;
+
+	if (remainder * 2n >= r.d) {
+		// Round up (away from zero)
+		roundedInt = quotient + 1n;
+	} else {
+		roundedInt = quotient;
+	}
+
+	if (isNegative) {
+		roundedInt = -roundedInt;
+	}
+
+	// Convert to number and divide by scale
+	return Number(roundedInt) / Number(scale);
+}
+
+/**
+ * Rounds a Rational to a specified number of significant figures.
+ * Uses the float approximation for determining magnitude, then rounds the Rational.
+ */
+function roundRationalToSignificantFigures(r: Rational, digits: number): number {
+	// Get approximate value for magnitude calculation
+	const approx = rationalToNumber(r);
+	if (approx === 0) return 0;
+
+	const magnitude = Math.floor(Math.log10(Math.abs(approx)));
+	const decimalPlaces = digits - magnitude - 1;
+
+	if (decimalPlaces >= 0) {
+		return roundRationalToDecimalPlaces(r, decimalPlaces);
+	} else {
+		// For large numbers, round to magnitude
+		const scale = 10n ** BigInt(-decimalPlaces);
+		const scaledNum = r.n;
+		const scaledDenom = r.d * scale;
+
+		// Round (n / (d * scale)) to nearest integer, then multiply by scale
+		const isNegative = scaledNum < 0n;
+		const absNum = isNegative ? -scaledNum : scaledNum;
+
+		let roundedInt: bigint;
+		const remainder = absNum % scaledDenom;
+		const quotient = absNum / scaledDenom;
+
+		if (remainder * 2n >= scaledDenom) {
+			roundedInt = quotient + 1n;
+		} else {
+			roundedInt = quotient;
+		}
+
+		if (isNegative) {
+			roundedInt = -roundedInt;
+		}
+
+		return Number(roundedInt) * Number(scale);
+	}
+}
+
+/**
+ * Applies precision to a Rational and returns the result as a number.
+ * This preserves exact arithmetic until the final step.
+ */
+function applyPrecisionToRational(r: Rational, precision?: PrecisionType): number {
 	if (!precision || precision.type === 'none') {
-		return value;
+		return rationalToNumber(r);
 	}
 
 	switch (precision.type) {
 		case 'decimal':
-			return Number(value.toFixed(precision.digits));
+			return roundRationalToDecimalPlaces(r, precision.digits);
 		case 'significant':
-			return toSignificantFigures(value, precision.digits);
+			return roundRationalToSignificantFigures(r, precision.digits);
 		case 'magnitude':
-			return roundToMagnitude(value, precision.digits);
+			// Magnitude rounding works on integers, use float conversion
+			return roundToMagnitude(rationalToNumber(r), precision.digits);
 		case 'tolerance':
 			// Tolerance doesn't affect the value, only comparison
-			return value;
+			return rationalToNumber(r);
 	}
 }
 
 /**
- * Rounds a number to a specified number of significant figures.
- */
-function toSignificantFigures(num: number, digits: number): number {
-	if (num === 0) return 0;
-	const magnitude = Math.floor(Math.log10(Math.abs(num)));
-	const scale = Math.pow(10, magnitude - digits + 1);
-	return Math.round(num / scale) * scale;
-}
-
-/**
  * Rounds a number to a specified order of magnitude.
+ * This is for integer-scale rounding (nearest 10, 100, etc.)
  */
 function roundToMagnitude(num: number, magnitude: number): number {
 	const scale = Math.pow(10, magnitude);
@@ -446,8 +523,8 @@ export function evaluateNodeToApproximatedNumber(
 	precision?: PrecisionType
 ): number {
 	const rationalResult = evaluateToRational(node, 0);
-	const numericResult = rationalToNumber(rationalResult);
-	return applyPrecision(numericResult, precision);
+	// Apply precision directly to the Rational to preserve exact arithmetic
+	return applyPrecisionToRational(rationalResult, precision);
 }
 
 // =============================================================================
