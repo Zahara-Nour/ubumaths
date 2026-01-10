@@ -1,13 +1,18 @@
 /**
- * Factory functions for creating Interval types with algebraic bounds
+ * Factory functions for creating Interval types with MathNode bounds
  *
- * All bounds are represented as AlgebraicCoefficients for canonical form.
- * Helper functions convert numbers to exact rationals.
+ * All bounds are MathNodes from mathAST, supporting symbolic expressions.
  */
 
-import type { AlgebraicCoefficient, SimplifiedRadical } from '$lib/mathAST/normal/types';
-import { algebraicFromRational } from '$lib/mathAST/normal/algebraic';
-import { rational, fromInteger, ZERO, ONE, MINUS_ONE } from '$lib/mathAST/normal/rational';
+import {
+	number,
+	infinity,
+	greek,
+	func,
+	fraction,
+	implicitMultiply,
+	variable
+} from '$lib/mathAST/factory';
 import type {
 	Endpoint,
 	EndpointValue,
@@ -16,8 +21,7 @@ import type {
 	ExcludedPoint,
 	EmptySet,
 	UniversalSet,
-	IntervalSet,
-	InfinityKind
+	IntervalSet
 } from './types';
 
 // =============================================================================
@@ -25,70 +29,45 @@ import type {
 // =============================================================================
 
 /**
- * Creates an algebraic endpoint value from a number.
- * The number is converted to an exact rational.
+ * Creates an endpoint value from a number.
  *
- * @param n - A number (will be converted to rational, may lose precision for non-integers)
- * @returns An algebraic EndpointValue
+ * @param n - A number
+ * @returns A NumberNode EndpointValue
  *
  * @example
- * fromNumber(0)    // Algebraic 0
- * fromNumber(1.5)  // Algebraic 3/2
- * fromNumber(-2)   // Algebraic -2
+ * fromNumber(0)    // NumberNode '0'
+ * fromNumber(1.5)  // NumberNode '1.5'
+ * fromNumber(-2)   // NumberNode '-2'
  */
 export function fromNumber(n: number): EndpointValue {
-	// Handle special cases
-	if (n === 0) {
-		return algebraic(algebraicFromRational(ZERO));
-	}
-	if (n === 1) {
-		return algebraic(algebraicFromRational(ONE));
-	}
-	if (n === -1) {
-		return algebraic(algebraicFromRational(MINUS_ONE));
-	}
-
-	// Convert to rational via string parsing to handle decimals
-	if (Number.isInteger(n)) {
-		return algebraic(algebraicFromRational(fromInteger(n)));
-	}
-
-	// For decimals, convert to fraction
-	// This is an approximation - use rationalBound for exact values
-	const str = n.toString();
-	const decimalIndex = str.indexOf('.');
-	if (decimalIndex === -1) {
-		return algebraic(algebraicFromRational(fromInteger(n)));
-	}
-
-	const decimals = str.length - decimalIndex - 1;
-	const denominator = BigInt(10 ** decimals);
-	const numerator = BigInt(Math.round(n * Number(denominator)));
-	return algebraic(algebraicFromRational(rational(numerator, denominator)));
+	return number(n.toString());
 }
 
 /**
- * Creates an algebraic endpoint value from a rational (exact).
+ * Creates an endpoint value from a rational (exact fraction).
  *
  * @param n - Numerator
  * @param d - Denominator (default 1)
- * @returns An algebraic EndpointValue with exact rational value
+ * @returns A MathNode representing n/d (or just n if d=1)
  *
  * @example
- * rationalBound(3n, 2n)  // Exact 3/2
- * rationalBound(5n)      // Exact 5
+ * rationalBound(3n, 2n)  // 3/2
+ * rationalBound(5n)      // 5
  */
 export function rationalBound(n: bigint, d: bigint = 1n): EndpointValue {
-	return algebraic(algebraicFromRational(rational(n, d)));
+	if (d === 1n) {
+		return number(n.toString());
+	}
+	return fraction(number(n.toString()), number(d.toString()));
 }
 
 /**
- * Creates an algebraic endpoint value from a square root (exact).
+ * Creates an endpoint value from a square root (exact).
  *
  * @param radicand - The value under the radical (must be positive)
  * @param coefN - Coefficient numerator (default 1)
  * @param coefD - Coefficient denominator (default 1)
- * @returns An algebraic EndpointValue for coef * sqrt(radicand)
+ * @returns A MathNode for (coefN/coefD) * sqrt(radicand)
  *
  * @example
  * radicalBound(2n)         // sqrt(2)
@@ -102,34 +81,63 @@ export function radicalBound(
 ): EndpointValue {
 	if (radicand === 1n) {
 		// sqrt(1) = 1, so just return the coefficient
-		return algebraic(algebraicFromRational(rational(coefN, coefD)));
+		return rationalBound(coefN, coefD);
 	}
 
-	const rad: SimplifiedRadical = { radicand, index: 2n };
-	const coef: AlgebraicCoefficient = {
-		terms: [{ rational: { n: coefN, d: coefD }, radicals: [rad] }]
-	};
-	return algebraic(coef);
+	const sqrtNode = func('sqrt', [number(radicand.toString())]);
+
+	if (coefN === 1n && coefD === 1n) {
+		return sqrtNode;
+	}
+
+	const coef =
+		coefD === 1n
+			? number(coefN.toString())
+			: fraction(number(coefN.toString()), number(coefD.toString()));
+
+	return implicitMultiply(coef, sqrtNode);
 }
 
 /**
- * Creates an infinity endpoint value.
- *
- * @param inf - 'positive_infinity' or 'negative_infinity'
- * @returns An infinity EndpointValue
+ * Creates a positive infinity endpoint value.
  */
-export function infinityBound(inf: InfinityKind): EndpointValue {
-	return { kind: 'infinity', value: inf };
+export function positiveInfinity(): EndpointValue {
+	return infinity('positive');
 }
 
 /**
- * Creates an algebraic endpoint value from an AlgebraicCoefficient.
- *
- * @param coef - An AlgebraicCoefficient
- * @returns An algebraic EndpointValue
+ * Creates a negative infinity endpoint value.
  */
-export function algebraic(coef: AlgebraicCoefficient): EndpointValue {
-	return { kind: 'algebraic', value: coef };
+export function negativeInfinity(): EndpointValue {
+	return infinity('negative');
+}
+
+/**
+ * Creates a pi endpoint value.
+ */
+export function pi(): EndpointValue {
+	return greek('pi');
+}
+
+/**
+ * Creates an 'e' (Euler's number) endpoint value.
+ */
+export function e(): EndpointValue {
+	return variable('e');
+}
+
+/**
+ * Creates a sqrt(2) endpoint value.
+ */
+export function sqrt2(): EndpointValue {
+	return func('sqrt', [number('2')]);
+}
+
+/**
+ * Creates a sqrt(3) endpoint value.
+ */
+export function sqrt3(): EndpointValue {
+	return func('sqrt', [number('3')]);
 }
 
 // =============================================================================
@@ -161,14 +169,14 @@ export function closedEndpoint(value: EndpointValue): Endpoint {
  * Creates negative infinity endpoint (always open).
  */
 export function negInfinity(): Endpoint {
-	return openEndpoint(infinityBound('negative_infinity'));
+	return openEndpoint(negativeInfinity());
 }
 
 /**
  * Creates positive infinity endpoint (always open).
  */
 export function posInfinity(): Endpoint {
-	return openEndpoint(infinityBound('positive_infinity'));
+	return openEndpoint(positiveInfinity());
 }
 
 // =============================================================================

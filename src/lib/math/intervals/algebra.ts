@@ -2,7 +2,7 @@
  * Interval Algebra - Set operations on intervals
  *
  * Operations: isEmpty, containsValue, intersect, union, complement, difference
- * Uses exact algebraic comparison when possible.
+ * Uses mathAST's compareNumericNodes for exact symbolic comparison.
  */
 
 import type {
@@ -24,12 +24,7 @@ import {
 	EMPTY_SET,
 	UNIVERSAL_SET
 } from './factory';
-import {
-	compareEndpointValues,
-	endpointToNumber,
-	isNegativeInfinity,
-	isPositiveInfinity
-} from './endpoint';
+import { compare, endpointToNumber, isNegativeInfinity, isPositiveInfinity } from './endpoint';
 
 // =============================================================================
 // Helper Functions
@@ -54,9 +49,13 @@ function valueInInterval(value: number, int: Interval): boolean {
 
 /**
  * Check if an interval is empty (degenerate or inverted).
+ * Returns undefined if comparison is not possible.
  */
 function isIntervalEmpty(int: Interval): boolean {
-	const { result: cmp } = compareEndpointValues(int.lower.value, int.upper.value);
+	const cmp = compare(int.lower.value, int.upper.value);
+
+	// If comparison is undefined, assume not empty (conservative)
+	if (cmp === undefined) return false;
 
 	if (cmp > 0) return true; // Inverted: lower > upper
 	if (cmp === 0) {
@@ -146,9 +145,11 @@ export function containsValue(d: IntervalDomain, value: number): boolean {
  */
 function intersectIntervals(a: Interval, b: Interval): Interval | null {
 	// Find the max of lower bounds
-	const { result: cmpLower } = compareEndpointValues(a.lower.value, b.lower.value);
+	const cmpLower = compare(a.lower.value, b.lower.value);
+
+	// If comparison is undefined, keep interval a's lower (conservative)
 	let lower: Endpoint;
-	if (cmpLower > 0) {
+	if (cmpLower === undefined || cmpLower > 0) {
 		lower = a.lower;
 	} else if (cmpLower < 0) {
 		lower = b.lower;
@@ -159,9 +160,10 @@ function intersectIntervals(a: Interval, b: Interval): Interval | null {
 	}
 
 	// Find the min of upper bounds
-	const { result: cmpUpper } = compareEndpointValues(a.upper.value, b.upper.value);
+	const cmpUpper = compare(a.upper.value, b.upper.value);
+
 	let upper: Endpoint;
-	if (cmpUpper < 0) {
+	if (cmpUpper === undefined || cmpUpper < 0) {
 		upper = a.upper;
 	} else if (cmpUpper > 0) {
 		upper = b.upper;
@@ -225,8 +227,11 @@ export function intersect(a: IntervalDomain, b: IntervalDomain): IntervalDomain 
  * Check if two intervals overlap or are adjacent.
  */
 function intervalsOverlapOrAdjacent(a: Interval, b: Interval): boolean {
-	const { result: cmp1 } = compareEndpointValues(a.upper.value, b.lower.value);
-	const { result: cmp2 } = compareEndpointValues(b.upper.value, a.lower.value);
+	const cmp1 = compare(a.upper.value, b.lower.value);
+	const cmp2 = compare(b.upper.value, a.lower.value);
+
+	// If comparison is undefined, assume they don't overlap (conservative)
+	if (cmp1 === undefined || cmp2 === undefined) return false;
 
 	// They don't overlap if one is entirely before the other
 	if (cmp1 < 0) return false; // a entirely before b
@@ -248,9 +253,9 @@ function intervalsOverlapOrAdjacent(a: Interval, b: Interval): boolean {
  */
 function mergeIntervals(a: Interval, b: Interval): Interval {
 	// Take min of lower bounds
-	const { result: cmpLower } = compareEndpointValues(a.lower.value, b.lower.value);
+	const cmpLower = compare(a.lower.value, b.lower.value);
 	let lower: Endpoint;
-	if (cmpLower < 0) {
+	if (cmpLower === undefined || cmpLower < 0) {
 		lower = a.lower;
 	} else if (cmpLower > 0) {
 		lower = b.lower;
@@ -261,9 +266,9 @@ function mergeIntervals(a: Interval, b: Interval): Interval {
 	}
 
 	// Take max of upper bounds
-	const { result: cmpUpper } = compareEndpointValues(a.upper.value, b.upper.value);
+	const cmpUpper = compare(a.upper.value, b.upper.value);
 	let upper: Endpoint;
-	if (cmpUpper > 0) {
+	if (cmpUpper === undefined || cmpUpper > 0) {
 		upper = a.upper;
 	} else if (cmpUpper < 0) {
 		upper = b.upper;
@@ -283,8 +288,9 @@ function normalizeIntervals(intervals: Interval[]): Interval[] {
 
 	// Sort by lower bound
 	const sorted = [...intervals].sort((a, b) => {
-		const { result } = compareEndpointValues(a.lower.value, b.lower.value);
-		return result;
+		const cmp = compare(a.lower.value, b.lower.value);
+		// If comparison is undefined, keep original order
+		return cmp ?? 0;
 	});
 
 	const result: Interval[] = [sorted[0]];
@@ -450,8 +456,8 @@ function deduplicateExcludedPoints(points: readonly ExcludedPoint[]): ExcludedPo
 			seen.add(val);
 			result.push(p);
 		} else if (Number.isNaN(val)) {
-			// For algebraic values that can't be converted to numbers,
-			// we keep all of them (may result in duplicates for complex algebraic expressions)
+			// For symbolic values that can't be converted to numbers,
+			// we keep all of them (may result in duplicates for complex expressions)
 			result.push(p);
 		}
 	}
