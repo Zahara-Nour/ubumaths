@@ -62,6 +62,17 @@
  *   functions: { f: fWithDerivative }
  * });
  * // invResult.value = { n: 3n, d: 1n } (equals 3 = sqrt(9))
+ *
+ * // Compare numeric values
+ * import { compareNumericNodes } from '$lib/mathAST/eval';
+ * const cmp = compareNumericNodes(parseLatex('\\pi'), parseLatex('3'));
+ * // cmp = 1 (π > 3)
+ *
+ * const equal = compareNumericNodes(parseLatex('\\sqrt{2}'), parseLatex('\\sqrt{2}'));
+ * // equal = 0 (detected via exact symbolic equality)
+ *
+ * const precision = compareNumericNodes(parseLatex('0.1 + 0.2'), parseLatex('0.3'));
+ * // precision = 0 (exact arithmetic avoids floating-point issues)
  * ```
  */
 
@@ -124,6 +135,12 @@ export type { SubstituteAllOptions } from './substitute';
 export { evaluate } from './evaluate';
 
 export { evaluateWithModifiers } from './evaluate-with-modifiers';
+
+// =============================================================================
+// Numeric Comparison
+// =============================================================================
+
+export { compareNumericNodes } from './compare-numeric';
 
 // =============================================================================
 // Unit-Aware Evaluation
