@@ -170,6 +170,9 @@ log(arg: MathNode, base?: MathNode, metadata?: NodeMetadata): FunctionNode
 exp(arg: MathNode, metadata?: NodeMetadata): FunctionNode
 sqrt(arg: MathNode, metadata?: NodeMetadata): FunctionNode
 abs(arg: MathNode, metadata?: NodeMetadata): FunctionNode
+floor(arg: MathNode, metadata?: NodeMetadata): FunctionNode
+ceil(arg: MathNode, metadata?: NodeMetadata): FunctionNode
+round(arg: MathNode, metadata?: NodeMetadata): FunctionNode
 ```
 
 ### Factory Functions - Structural
