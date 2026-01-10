@@ -7,7 +7,17 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { isEmpty, intersect, union, complement, excludePoints, containsValue } from '../algebra';
+import {
+	isEmpty,
+	intersect,
+	union,
+	complement,
+	excludePoints,
+	containsValue,
+	difference,
+	isUniversal,
+	tryConvertConditionToInterval
+} from '../algebra';
 import {
 	emptyDomain,
 	universalDomain,
@@ -24,7 +34,9 @@ import {
 	closedInterval,
 	realLine,
 	excludedPoint,
-	fromNumber
+	fromNumber,
+	conditionDomain,
+	comparison
 } from '../factory';
 import { isNumber, isNegativeInfinity } from '$lib/mathAST/guards';
 
@@ -331,6 +343,245 @@ describe('containsValue()', () => {
 			const d = intervalDomain([realLine()], [excludedPoint(fromNumber(5))]);
 			expect(containsValue(d, 0)).toBe(true);
 			expect(containsValue(d, 5)).toBe(false);
+		});
+	});
+});
+
+// =============================================================================
+// ConditionDomain Conversion Tests
+// =============================================================================
+
+describe('tryConvertConditionToInterval()', () => {
+	describe('single comparison conditions', () => {
+		it('converts x > 0 to ]0, +∞[', () => {
+			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]);
+			const result = tryConvertConditionToInterval(cd);
+
+			expect(result).not.toBeNull();
+			expect(result!.kind).toBe('interval_set');
+			expect(containsValue(result!, 1)).toBe(true);
+			expect(containsValue(result!, 0)).toBe(false);
+			expect(containsValue(result!, -1)).toBe(false);
+		});
+
+		it('converts x >= 0 to [0, +∞[', () => {
+			const cd = conditionDomain([comparison('x', '>=', fromNumber(0))]);
+			const result = tryConvertConditionToInterval(cd);
+
+			expect(result).not.toBeNull();
+			expect(containsValue(result!, 0)).toBe(true);
+			expect(containsValue(result!, 1)).toBe(true);
+			expect(containsValue(result!, -1)).toBe(false);
+		});
+
+		it('converts x < 5 to ]-∞, 5[', () => {
+			const cd = conditionDomain([comparison('x', '<', fromNumber(5))]);
+			const result = tryConvertConditionToInterval(cd);
+
+			expect(result).not.toBeNull();
+			expect(containsValue(result!, 4)).toBe(true);
+			expect(containsValue(result!, 5)).toBe(false);
+			expect(containsValue(result!, 6)).toBe(false);
+		});
+
+		it('converts x <= 5 to ]-∞, 5]', () => {
+			const cd = conditionDomain([comparison('x', '<=', fromNumber(5))]);
+			const result = tryConvertConditionToInterval(cd);
+
+			expect(result).not.toBeNull();
+			expect(containsValue(result!, 4)).toBe(true);
+			expect(containsValue(result!, 5)).toBe(true);
+			expect(containsValue(result!, 6)).toBe(false);
+		});
+
+		it('converts x != 5 to ℝ \\ {5}', () => {
+			const cd = conditionDomain([comparison('x', '!=', fromNumber(5))]);
+			const result = tryConvertConditionToInterval(cd);
+
+			expect(result).not.toBeNull();
+			expect(result!.kind).toBe('interval_set');
+			expect(containsValue(result!, 0)).toBe(true);
+			expect(containsValue(result!, 5)).toBe(false);
+			expect(containsValue(result!, 10)).toBe(true);
+		});
+
+		it('converts x = 5 to {5}', () => {
+			const cd = conditionDomain([comparison('x', '=', fromNumber(5))]);
+			const result = tryConvertConditionToInterval(cd);
+
+			expect(result).not.toBeNull();
+			expect(containsValue(result!, 5)).toBe(true);
+			expect(containsValue(result!, 4)).toBe(false);
+			expect(containsValue(result!, 6)).toBe(false);
+		});
+	});
+
+	describe('AND conditions', () => {
+		it('converts x > 0 AND x < 10 to ]0, 10[', () => {
+			const cd = conditionDomain(
+				[comparison('x', '>', fromNumber(0)), comparison('x', '<', fromNumber(10))],
+				'and'
+			);
+			const result = tryConvertConditionToInterval(cd);
+
+			expect(result).not.toBeNull();
+			expect(containsValue(result!, 5)).toBe(true);
+			expect(containsValue(result!, 0)).toBe(false);
+			expect(containsValue(result!, 10)).toBe(false);
+			expect(containsValue(result!, -1)).toBe(false);
+		});
+
+		it('converts x >= -1 AND x <= 1 to [-1, 1]', () => {
+			const cd = conditionDomain(
+				[comparison('x', '>=', fromNumber(-1)), comparison('x', '<=', fromNumber(1))],
+				'and'
+			);
+			const result = tryConvertConditionToInterval(cd);
+
+			expect(result).not.toBeNull();
+			expect(containsValue(result!, -1)).toBe(true);
+			expect(containsValue(result!, 0)).toBe(true);
+			expect(containsValue(result!, 1)).toBe(true);
+			expect(containsValue(result!, 2)).toBe(false);
+		});
+
+		it('returns empty for contradictory conditions x > 5 AND x < 3', () => {
+			const cd = conditionDomain(
+				[comparison('x', '>', fromNumber(5)), comparison('x', '<', fromNumber(3))],
+				'and'
+			);
+			const result = tryConvertConditionToInterval(cd);
+
+			expect(result).not.toBeNull();
+			expect(isEmpty(result!)).toBe(true);
+		});
+	});
+
+	describe('OR conditions', () => {
+		it('converts x < 0 OR x > 5 to ]-∞, 0[ ∪ ]5, +∞[', () => {
+			const cd = conditionDomain(
+				[comparison('x', '<', fromNumber(0)), comparison('x', '>', fromNumber(5))],
+				'or'
+			);
+			const result = tryConvertConditionToInterval(cd);
+
+			expect(result).not.toBeNull();
+			expect(containsValue(result!, -1)).toBe(true);
+			expect(containsValue(result!, 0)).toBe(false);
+			expect(containsValue(result!, 3)).toBe(false);
+			expect(containsValue(result!, 5)).toBe(false);
+			expect(containsValue(result!, 6)).toBe(true);
+		});
+
+		it('converts x <= -1 OR x >= 1 to ]-∞, -1] ∪ [1, +∞[', () => {
+			const cd = conditionDomain(
+				[comparison('x', '<=', fromNumber(-1)), comparison('x', '>=', fromNumber(1))],
+				'or'
+			);
+			const result = tryConvertConditionToInterval(cd);
+
+			expect(result).not.toBeNull();
+			expect(containsValue(result!, -2)).toBe(true);
+			expect(containsValue(result!, -1)).toBe(true);
+			expect(containsValue(result!, 0)).toBe(false);
+			expect(containsValue(result!, 1)).toBe(true);
+			expect(containsValue(result!, 2)).toBe(true);
+		});
+	});
+
+	describe('empty conditions', () => {
+		it('returns universal for empty conditions', () => {
+			const cd = conditionDomain([], 'and');
+			const result = tryConvertConditionToInterval(cd);
+
+			expect(result).not.toBeNull();
+			expect(isUniversal(result!)).toBe(true);
+		});
+	});
+});
+
+describe('ConditionDomain algebra operations', () => {
+	describe('containsValue with ConditionDomain', () => {
+		it('containsValue works after conversion for x > 0', () => {
+			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]);
+			expect(containsValue(cd, 1)).toBe(true);
+			expect(containsValue(cd, 0)).toBe(false);
+			expect(containsValue(cd, -1)).toBe(false);
+		});
+	});
+
+	describe('intersect with ConditionDomain', () => {
+		it('intersects condition with interval domain', () => {
+			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]); // x > 0
+			const interval = intervalDomain([lessThan(fromNumber(10))]); // x < 10
+			const result = intersect(cd, interval);
+
+			expect(result.kind).toBe('interval_set');
+			expect(containsValue(result, 5)).toBe(true);
+			expect(containsValue(result, 0)).toBe(false);
+			expect(containsValue(result, 10)).toBe(false);
+		});
+
+		it('intersects two condition domains', () => {
+			const cd1 = conditionDomain([comparison('x', '>', fromNumber(0))]);
+			const cd2 = conditionDomain([comparison('x', '<', fromNumber(10))]);
+			const result = intersect(cd1, cd2);
+
+			expect(result.kind).toBe('interval_set');
+			expect(containsValue(result, 5)).toBe(true);
+		});
+	});
+
+	describe('union with ConditionDomain', () => {
+		it('unions condition with interval domain', () => {
+			const cd = conditionDomain([comparison('x', '<', fromNumber(0))]); // x < 0
+			const interval = positiveReals(); // x > 0
+			const result = union(cd, interval);
+
+			expect(result.kind).toBe('interval_set');
+			expect(containsValue(result, -5)).toBe(true);
+			expect(containsValue(result, 5)).toBe(true);
+			expect(containsValue(result, 0)).toBe(false); // 0 excluded from both
+		});
+	});
+
+	describe('complement with ConditionDomain', () => {
+		it('complements x > 0 to ]-∞, 0]', () => {
+			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]);
+			const result = complement(cd);
+
+			expect(result.kind).toBe('interval_set');
+			expect(containsValue(result, 0)).toBe(true);
+			expect(containsValue(result, -1)).toBe(true);
+			expect(containsValue(result, 1)).toBe(false);
+		});
+	});
+
+	describe('difference with ConditionDomain', () => {
+		it('computes difference with condition domain', () => {
+			const all = universalDomain();
+			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]);
+			const result = difference(all, cd);
+
+			expect(result.kind).toBe('interval_set');
+			expect(containsValue(result, 0)).toBe(true);
+			expect(containsValue(result, -1)).toBe(true);
+			expect(containsValue(result, 1)).toBe(false);
+		});
+	});
+
+	describe('isEmpty/isUniversal with ConditionDomain', () => {
+		it('isEmpty correctly identifies empty conditions', () => {
+			const cd = conditionDomain(
+				[comparison('x', '>', fromNumber(5)), comparison('x', '<', fromNumber(3))],
+				'and'
+			);
+			expect(isEmpty(cd)).toBe(true);
+		});
+
+		it('isUniversal returns false for non-universal conditions', () => {
+			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]);
+			expect(isUniversal(cd)).toBe(false);
 		});
 	});
 });

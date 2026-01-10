@@ -98,6 +98,33 @@ export interface ConditionDomain {
 }
 
 // =============================================================================
+// Periodic Exclusion Types (for tan, cot, sec, csc)
+// =============================================================================
+
+import type { MathNode } from '../types';
+
+/**
+ * Represents a domain with periodic exclusions.
+ * Used for functions like tan (excludes π/2 + kπ for all integers k).
+ *
+ * The excluded points form an infinite set: basePoint + k * period for all k ∈ ℤ
+ *
+ * @example
+ * // tan: ℝ \ {π/2 + kπ : k ∈ ℤ}
+ * { kind: 'periodic_exclusion', basePoint: π/2, period: π }
+ *
+ * // cot, csc: ℝ \ {kπ : k ∈ ℤ}
+ * { kind: 'periodic_exclusion', basePoint: 0, period: π }
+ */
+export interface PeriodicExclusion {
+	readonly kind: 'periodic_exclusion';
+	/** The base exclusion point (smallest positive excluded value or 0) */
+	readonly basePoint: MathNode;
+	/** The period between consecutive excluded points */
+	readonly period: MathNode;
+}
+
+// =============================================================================
 // Domain Union Type
 // =============================================================================
 
@@ -109,8 +136,9 @@ export interface ConditionDomain {
  * - UniversalSet: all real numbers (kind: 'universal')
  * - IntervalSet: union of intervals with excluded points (kind: 'interval_set')
  * - ConditionDomain: condition-based representation (kind: 'condition_domain')
+ * - PeriodicExclusion: real line with periodic point exclusions (kind: 'periodic_exclusion')
  */
-export type Domain = EmptySet | UniversalSet | IntervalSet | ConditionDomain;
+export type Domain = EmptySet | UniversalSet | IntervalSet | ConditionDomain | PeriodicExclusion;
 
 // =============================================================================
 // Domain Result Types (for domain operations)

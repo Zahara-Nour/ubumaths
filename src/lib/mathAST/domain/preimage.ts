@@ -32,6 +32,7 @@ export type ExpressionKind =
 	| { kind: 'constant'; value: number }
 	| { kind: 'linear'; a: number; b: number } // a*x + b
 	| { kind: 'quadratic'; a: number; b: number; c: number } // a*x² + b*x + c
+	| { kind: 'cubic'; a: number; b: number; c: number; d: number } // a*x³ + b*x² + c*x + d
 	| { kind: 'complex' }; // Cannot classify
 
 /**
@@ -87,13 +88,30 @@ function classifyExpressionRec(expr: MathNode, variable: string): ExpressionKind
 		}
 
 		case 'superscript': {
-			// x^2 case
+			// x^2 and x^3 cases
 			const base = classifyExpressionRec(expr.base, variable);
 			const exp = classifyExpressionRec(expr.superscript, variable);
 
 			// Only handle constant exponents
 			if (exp.kind !== 'constant') {
 				return { kind: 'complex' };
+			}
+
+			if (exp.value === 3 && base.kind === 'linear') {
+				// (ax + b)³ = a³x³ + 3a²bx² + 3ab²x + b³
+				const a = base.a;
+				const b = base.b;
+				const a2 = a * a;
+				const a3 = a2 * a;
+				const b2 = b * b;
+				const b3 = b2 * b;
+				return {
+					kind: 'cubic',
+					a: a3,
+					b: 3 * a2 * b,
+					c: 3 * a * b2,
+					d: b3
+				};
 			}
 
 			if (exp.value === 2 && base.kind === 'linear') {
@@ -138,6 +156,8 @@ function negateClassified(expr: ExpressionKind): ExpressionKind {
 			return { kind: 'linear', a: -expr.a, b: -expr.b };
 		case 'quadratic':
 			return { kind: 'quadratic', a: -expr.a, b: -expr.b, c: -expr.c };
+		case 'cubic':
+			return { kind: 'cubic', a: -expr.a, b: -expr.b, c: -expr.c, d: -expr.d };
 		case 'complex':
 			return { kind: 'complex' };
 	}
@@ -192,6 +212,65 @@ function addClassified(left: ExpressionKind, right: ExpressionKind): ExpressionK
 		};
 	}
 
+	// Cubic cases
+	if (left.kind === 'constant' && right.kind === 'cubic') {
+		return { kind: 'cubic', a: right.a, b: right.b, c: right.c, d: left.value + right.d };
+	}
+
+	if (left.kind === 'cubic' && right.kind === 'constant') {
+		return { kind: 'cubic', a: left.a, b: left.b, c: left.c, d: left.d + right.value };
+	}
+
+	if (left.kind === 'linear' && right.kind === 'cubic') {
+		return {
+			kind: 'cubic',
+			a: right.a,
+			b: right.b,
+			c: left.a + right.c,
+			d: left.b + right.d
+		};
+	}
+
+	if (left.kind === 'cubic' && right.kind === 'linear') {
+		return {
+			kind: 'cubic',
+			a: left.a,
+			b: left.b,
+			c: left.c + right.a,
+			d: left.d + right.b
+		};
+	}
+
+	if (left.kind === 'quadratic' && right.kind === 'cubic') {
+		return {
+			kind: 'cubic',
+			a: right.a,
+			b: left.a + right.b,
+			c: left.b + right.c,
+			d: left.c + right.d
+		};
+	}
+
+	if (left.kind === 'cubic' && right.kind === 'quadratic') {
+		return {
+			kind: 'cubic',
+			a: left.a,
+			b: left.b + right.a,
+			c: left.c + right.b,
+			d: left.d + right.c
+		};
+	}
+
+	if (left.kind === 'cubic' && right.kind === 'cubic') {
+		return {
+			kind: 'cubic',
+			a: left.a + right.a,
+			b: left.b + right.b,
+			c: left.c + right.c,
+			d: left.d + right.d
+		};
+	}
+
 	return { kind: 'complex' };
 }
 
@@ -215,6 +294,9 @@ function multiplyClassified(left: ExpressionKind, right: ExpressionKind): Expres
 		if (right.kind === 'quadratic') {
 			return { kind: 'quadratic', a: k * right.a, b: k * right.b, c: k * right.c };
 		}
+		if (right.kind === 'cubic') {
+			return { kind: 'cubic', a: k * right.a, b: k * right.b, c: k * right.c, d: k * right.d };
+		}
 	}
 
 	if (right.kind === 'constant') {
@@ -224,6 +306,9 @@ function multiplyClassified(left: ExpressionKind, right: ExpressionKind): Expres
 		}
 		if (left.kind === 'quadratic') {
 			return { kind: 'quadratic', a: k * left.a, b: k * left.b, c: k * left.c };
+		}
+		if (left.kind === 'cubic') {
+			return { kind: 'cubic', a: k * left.a, b: k * left.b, c: k * left.c, d: k * left.d };
 		}
 	}
 
@@ -235,6 +320,31 @@ function multiplyClassified(left: ExpressionKind, right: ExpressionKind): Expres
 			a: left.a * right.a,
 			b: left.a * right.b + left.b * right.a,
 			c: left.b * right.b
+		};
+	}
+
+	// linear * quadratic = cubic
+	if (left.kind === 'linear' && right.kind === 'quadratic') {
+		// (a1*x + b1) * (a2*x² + b2*x + c2)
+		// = a1*a2*x³ + a1*b2*x² + a1*c2*x + b1*a2*x² + b1*b2*x + b1*c2
+		// = a1*a2*x³ + (a1*b2 + b1*a2)*x² + (a1*c2 + b1*b2)*x + b1*c2
+		return {
+			kind: 'cubic',
+			a: left.a * right.a,
+			b: left.a * right.b + left.b * right.a,
+			c: left.a * right.c + left.b * right.b,
+			d: left.b * right.c
+		};
+	}
+
+	if (left.kind === 'quadratic' && right.kind === 'linear') {
+		// Symmetric case
+		return {
+			kind: 'cubic',
+			a: left.a * right.a,
+			b: left.a * right.b + left.b * right.a,
+			c: left.b * right.b + left.c * right.a,
+			d: left.c * right.b
 		};
 	}
 
@@ -446,6 +556,10 @@ export function findZeros(expr: MathNode, variable: string): number[] {
 			// a*x² + b*x + c = 0
 			return solveQuadraticZeros(classified.a, classified.b, classified.c);
 
+		case 'cubic':
+			// a*x³ + b*x² + c*x + d = 0
+			return solveCubicZeros(classified.a, classified.b, classified.c, classified.d);
+
 		case 'complex':
 			// Cannot find zeros analytically
 			return [];
@@ -476,4 +590,242 @@ function solveQuadraticZeros(a: number, b: number, c: number): number[] {
 
 	const sqrtD = Math.sqrt(discriminant);
 	return [(-b - sqrtD) / (2 * a), (-b + sqrtD) / (2 * a)];
+}
+
+/**
+ * Solve a*x³ + b*x² + c*x + d = 0 using Cardano's formula.
+ *
+ * Uses the depressed cubic method:
+ * 1. Substitute x = t - b/(3a) to get t³ + pt + q = 0
+ * 2. Apply Cardano's formula based on discriminant
+ *
+ * @returns Array of real roots (1 to 3 roots)
+ */
+function solveCubicZeros(a: number, b: number, c: number, d: number): number[] {
+	if (Math.abs(a) < 1e-10) {
+		// Not really cubic, delegate to quadratic
+		return solveQuadraticZeros(b, c, d);
+	}
+
+	// Normalize to monic form: x³ + (b/a)x² + (c/a)x + (d/a) = 0
+	const b1 = b / a;
+	const c1 = c / a;
+	const d1 = d / a;
+
+	// Substitute x = t - b1/3 to get depressed cubic t³ + pt + q = 0
+	const b1_3 = b1 / 3;
+	const p = c1 - (b1 * b1) / 3;
+	const q = d1 - (b1 * c1) / 3 + (2 * b1 * b1 * b1) / 27;
+
+	// Discriminant: Δ = -4p³ - 27q²
+	// Equivalently: Δ = (q/2)² + (p/3)³ for Cardano
+	const halfQ = q / 2;
+	const thirdP = p / 3;
+	const discriminant = halfQ * halfQ + thirdP * thirdP * thirdP;
+
+	const roots: number[] = [];
+
+	if (Math.abs(discriminant) < 1e-10) {
+		// Discriminant ≈ 0: one or two real roots
+		if (Math.abs(q) < 1e-10) {
+			// Triple root at t = 0
+			roots.push(-b1_3);
+		} else {
+			// One single root and one double root
+			const cubeRoot = Math.cbrt(-halfQ);
+			roots.push(2 * cubeRoot - b1_3);
+			roots.push(-cubeRoot - b1_3);
+		}
+	} else if (discriminant > 0) {
+		// One real root (and two complex conjugates)
+		const sqrtDelta = Math.sqrt(discriminant);
+		const u = Math.cbrt(-halfQ + sqrtDelta);
+		const v = Math.cbrt(-halfQ - sqrtDelta);
+		roots.push(u + v - b1_3);
+	} else {
+		// Three distinct real roots (trigonometric solution)
+		const r = Math.sqrt(-thirdP * thirdP * thirdP);
+		const theta = Math.acos(-halfQ / r);
+		const twoSqrtMinusP3 = 2 * Math.sqrt(-thirdP);
+
+		roots.push(twoSqrtMinusP3 * Math.cos(theta / 3) - b1_3);
+		roots.push(twoSqrtMinusP3 * Math.cos((theta + 2 * Math.PI) / 3) - b1_3);
+		roots.push(twoSqrtMinusP3 * Math.cos((theta + 4 * Math.PI) / 3) - b1_3);
+	}
+
+	// Sort roots and remove near-duplicates
+	roots.sort((x, y) => x - y);
+	const uniqueRoots: number[] = [];
+	for (const root of roots) {
+		if (uniqueRoots.length === 0 || Math.abs(root - uniqueRoots[uniqueRoots.length - 1]) > 1e-8) {
+			uniqueRoots.push(root);
+		}
+	}
+
+	return uniqueRoots;
+}
+
+/**
+ * Solve a cubic inequality: a*x³ + b*x² + c*x + d >= bound or a*x³ + b*x² + c*x + d <= bound
+ *
+ * @param a - Coefficient of x³
+ * @param b - Coefficient of x²
+ * @param c - Coefficient of x
+ * @param d - Constant term
+ * @param op - '>=' or '<='
+ * @param bound - The bound value (right side)
+ * @param strict - If true, use > or < instead of >= or <=
+ * @param variable - Variable name (for documentation)
+ * @returns The solution domain
+ */
+export function solveCubicInequality(
+	a: number,
+	b: number,
+	c: number,
+	d: number,
+	op: '>=' | '<=',
+	bound: number,
+	strict: boolean,
+	variable: string
+): Domain {
+	// a*x³ + b*x² + c*x + d >= bound => a*x³ + b*x² + c*x + (d - bound) >= 0
+	const newD = d - bound;
+
+	if (Math.abs(a) < 1e-10) {
+		// Not really cubic, delegate to quadratic
+		return solveQuadraticInequality(b, c, newD, op, 0, strict, variable);
+	}
+
+	// Find the roots of the cubic
+	const roots = solveCubicZeros(a, b, c, newD);
+
+	if (roots.length === 0) {
+		// No real roots - sign is constant
+		// Evaluate at x=0 to determine sign
+		const signAtZero = newD;
+		if (a > 0) {
+			// Cubic goes from -∞ to +∞, so if no roots, it must be one sign everywhere
+			// But wait, cubics always have at least one real root, so this shouldn't happen
+			// unless numerical issues. Check value at 0.
+			return signAtZero >= 0 === (op === '>=') ? universalDomain() : emptyDomain();
+		} else {
+			return signAtZero >= 0 === (op === '>=') ? universalDomain() : emptyDomain();
+		}
+	}
+
+	if (roots.length === 1) {
+		// One real root r
+		const r = roots[0];
+		const rValue = fromNumber(r);
+
+		// For a > 0: f(x) < 0 when x < r, f(x) > 0 when x > r
+		// For a < 0: f(x) > 0 when x < r, f(x) < 0 when x > r
+		if (a > 0) {
+			if (op === '>=') {
+				// f(x) >= 0 when x >= r
+				return intervalDomain([strict ? greaterThan(rValue) : greaterThanOrEqual(rValue)]);
+			} else {
+				// f(x) <= 0 when x <= r
+				return intervalDomain([strict ? lessThan(rValue) : lessThanOrEqual(rValue)]);
+			}
+		} else {
+			// a < 0
+			if (op === '>=') {
+				// f(x) >= 0 when x <= r
+				return intervalDomain([strict ? lessThan(rValue) : lessThanOrEqual(rValue)]);
+			} else {
+				// f(x) <= 0 when x >= r
+				return intervalDomain([strict ? greaterThan(rValue) : greaterThanOrEqual(rValue)]);
+			}
+		}
+	}
+
+	if (roots.length === 2) {
+		// Two real roots (one simple, one double)
+		const r1 = roots[0];
+		const r2 = roots[1];
+		const r1Value = fromNumber(r1);
+		const r2Value = fromNumber(r2);
+
+		// The sign pattern depends on which root is the double root
+		// For simplicity, handle like three roots case with middle behavior adjusted
+		if (a > 0) {
+			if (op === '>=') {
+				// f(x) >= 0: x = r1 (if double) or x >= r2
+				return intervalDomain([
+					strict ? lessThan(r1Value) : lessThanOrEqual(r1Value),
+					strict ? greaterThan(r2Value) : greaterThanOrEqual(r2Value)
+				]);
+			} else {
+				// f(x) <= 0: r1 <= x <= r2
+				if (strict) {
+					return intervalDomain([openInterval(r1Value, r2Value)]);
+				} else {
+					return intervalDomain([closedInterval(r1Value, r2Value)]);
+				}
+			}
+		} else {
+			if (op === '>=') {
+				// f(x) >= 0: r1 <= x <= r2
+				if (strict) {
+					return intervalDomain([openInterval(r1Value, r2Value)]);
+				} else {
+					return intervalDomain([closedInterval(r1Value, r2Value)]);
+				}
+			} else {
+				// f(x) <= 0: x <= r1 or x >= r2
+				return intervalDomain([
+					strict ? lessThan(r1Value) : lessThanOrEqual(r1Value),
+					strict ? greaterThan(r2Value) : greaterThanOrEqual(r2Value)
+				]);
+			}
+		}
+	}
+
+	// Three distinct real roots r1 < r2 < r3
+	const r1 = roots[0];
+	const r2 = roots[1];
+	const r3 = roots[2];
+	const r1Value = fromNumber(r1);
+	const r2Value = fromNumber(r2);
+	const r3Value = fromNumber(r3);
+
+	// For a > 0: f(x) < 0 when x < r1 or r2 < x < r3
+	//            f(x) > 0 when r1 < x < r2 or x > r3
+	// For a < 0: opposite signs
+
+	if (a > 0) {
+		if (op === '>=') {
+			// f(x) >= 0: r1 <= x <= r2 or x >= r3
+			if (strict) {
+				return intervalDomain([openInterval(r1Value, r2Value), greaterThan(r3Value)]);
+			} else {
+				return intervalDomain([closedInterval(r1Value, r2Value), greaterThanOrEqual(r3Value)]);
+			}
+		} else {
+			// f(x) <= 0: x <= r1 or r2 <= x <= r3
+			if (strict) {
+				return intervalDomain([lessThan(r1Value), openInterval(r2Value, r3Value)]);
+			} else {
+				return intervalDomain([lessThanOrEqual(r1Value), closedInterval(r2Value, r3Value)]);
+			}
+		}
+	} else {
+		// a < 0: signs are flipped
+		if (op === '>=') {
+			// f(x) >= 0: x <= r1 or r2 <= x <= r3
+			if (strict) {
+				return intervalDomain([lessThan(r1Value), openInterval(r2Value, r3Value)]);
+			} else {
+				return intervalDomain([lessThanOrEqual(r1Value), closedInterval(r2Value, r3Value)]);
+			}
+		} else {
+			// f(x) <= 0: r1 <= x <= r2 or x >= r3
+			if (strict) {
+				return intervalDomain([openInterval(r1Value, r2Value), greaterThan(r3Value)]);
+			} else {
+				return intervalDomain([closedInterval(r1Value, r2Value), greaterThanOrEqual(r3Value)]);
+			}
+		}
+	}
 }

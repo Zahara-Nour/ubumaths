@@ -6,7 +6,7 @@ The domain system computes, validates, and displays the domain of definition for
 
 The domain module provides:
 
-- **Domain types**: Empty, Universal, IntervalSet, and Condition-based domains
+- **Domain types**: Empty, Universal, IntervalSet, ConditionDomain, and PeriodicExclusion domains
 - **Domain algebra**: Intersection, union, complement, difference operations
 - **Symbolic bounds**: Support for π, e, √2, √3, and other symbolic endpoints
 - **Automatic computation**: Computes domains for composed expressions with preimage solving
@@ -120,7 +120,24 @@ const cond = conditionDomain(
 const notFive = conditionDomain([comparison('x', '!=', domainFromNumber(5))]);
 ```
 
-> **Note**: ConditionDomain algebra operations (intersect, union, complement) return safe fallbacks since full condition analysis is not implemented.
+> **Note**: Simple ConditionDomain constraints (like `x > 0`, `x != 5`, `x > 0 AND x < 10`) are automatically converted to IntervalSet when possible via `tryConvertConditionToInterval()`.
+
+### PeriodicExclusion
+
+Represents domains with periodic excluded points, used for trigonometric functions like tan, cot, sec, csc.
+
+```typescript
+import { tanDomain, cotDomain, secDomain, cscDomain, periodicExclusion } from '$lib/mathAST';
+
+// Predefined trig domains
+tanDomain(); // ℝ \ {π/2 + kπ : k ∈ ℤ}
+cotDomain(); // ℝ \ {kπ : k ∈ ℤ}
+secDomain(); // ℝ \ {π/2 + kπ : k ∈ ℤ}
+cscDomain(); // ℝ \ {kπ : k ∈ ℤ}
+
+// Custom periodic exclusion
+periodicExclusion(pi(), multiply(number('2'), pi())); // ℝ \ {π + 2kπ : k ∈ ℤ}
+```
 
 ## Domain Algebra
 
@@ -166,6 +183,16 @@ The `computeDomain` function automatically computes domains for complex expressi
 3. Finding zeros for division (1/(x-1) excludes x = 1)
 4. Intersecting all constraints
 
+### Preimage Solving
+
+The system solves preimages for linear, quadratic, and cubic polynomial arguments:
+
+- **Linear**: `sqrt(2x - 4)` → solve `2x - 4 >= 0` → `x >= 2`
+- **Quadratic**: `sqrt(4 - x²)` → solve `4 - x² >= 0` → `[-2, 2]`
+- **Cubic**: `sqrt(x³ - x)` → solve `x³ - x >= 0` → `[-1, 0] ∪ [1, +∞[`
+
+It also handles function compositions (e.g., `sqrt(ln(x))`, `ln(sqrt(x))`) by analyzing inner function output ranges.
+
 ```typescript
 import { computeDomain } from '$lib/mathAST';
 
@@ -200,15 +227,18 @@ result.steps; // Array of computation steps for pedagogical display
 
 The system knows domains for standard mathematical functions:
 
-| Function       | Domain  | Constraint   |
-| -------------- | ------- | ------------ |
-| sqrt           | [0, +∞[ | x >= 0       |
-| ln, log        | ]0, +∞[ | x > 0        |
-| arcsin, arccos | [-1, 1] | -1 <= x <= 1 |
-| arctan         | ℝ       | (none)       |
-| exp, sin, cos  | ℝ       | (none)       |
-| arccosh        | [1, +∞[ | x >= 1       |
-| arctanh        | ]-1, 1[ | -1 < x < 1   |
+| Function       | Domain             | Constraint   |
+| -------------- | ------------------ | ------------ |
+| sqrt           | [0, +∞[            | x >= 0       |
+| ln, log        | ]0, +∞[            | x > 0        |
+| arcsin, arccos | [-1, 1]            | -1 <= x <= 1 |
+| arctan, arccot | ℝ                  | (none)       |
+| exp, sin, cos  | ℝ                  | (none)       |
+| tan, sec       | ℝ \ {π/2 + kπ}     | x ≠ π/2 + kπ |
+| cot, csc       | ℝ \ {kπ}           | x ≠ kπ       |
+| arccosh        | [1, +∞[            | x >= 1       |
+| arctanh        | ]-1, 1[            | -1 < x < 1   |
+| arcsec, arccsc | ]-∞, -1] ∪ [1, +∞[ | \|x\| >= 1   |
 
 ```typescript
 import { getBuiltinDomain, hasRestrictedDomain } from '$lib/mathAST';
@@ -346,8 +376,13 @@ type ConditionDomain = {
 	conditions: Condition[];
 	combinator: 'and' | 'or';
 };
+type PeriodicExclusion = {
+	kind: 'periodic_exclusion';
+	basePoint: MathNode; // e.g., π/2
+	period: MathNode; // e.g., π
+};
 
-type Domain = EmptySet | UniversalSet | IntervalSet | ConditionDomain;
+type Domain = EmptySet | UniversalSet | IntervalSet | ConditionDomain | PeriodicExclusion;
 
 // Backward compatibility aliases
 type EmptyDomain = EmptySet; // @deprecated
@@ -407,7 +442,7 @@ src/lib/mathAST/domain/
 ├── format.ts      # Formatting functions (delegates to intervals)
 ├── errors.ts      # DomainError class
 ├── index.ts       # Public exports
-└── __tests__/     # 312 tests (comprehensive edge cases)
+└── __tests__/     # 405 tests (comprehensive edge cases)
 
 src/lib/math/intervals/  (upstream module)
 ├── types.ts       # EndpointValue = MathNode, IntervalSet

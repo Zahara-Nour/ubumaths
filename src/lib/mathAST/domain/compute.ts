@@ -12,15 +12,225 @@
 import type { MathNode } from '../types';
 import type { Domain, DomainResult, DomainStep, IntervalSet } from './types';
 import { universalDomain, intervalDomain, greaterThanOrEqual, fromNumber } from './factory';
-import { intersect, excludePoints } from './algebra';
+import { intersect, excludePoints, union, isEmpty } from './algebra';
 import { getBuiltinDomain, hasRestrictedDomain } from './builtins';
 import { isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
 import {
 	solveLinearInequality,
 	solveQuadraticInequality,
+	solveCubicInequality,
 	findZeros,
 	classifyExpression
 } from './preimage';
+
+// =============================================================================
+// Builtin Function Ranges
+// =============================================================================
+
+/**
+ * Output ranges for builtin functions.
+ * Used for composition analysis: if outer function needs input > 0,
+ * and inner function outputs [0, +∞[, we need to exclude where inner = 0.
+ */
+interface FunctionRange {
+	/** Lower bound of output range (null = -∞) */
+	lower: number | null;
+	/** Whether lower bound is included */
+	lowerInclusive: boolean;
+	/** Upper bound of output range (null = +∞) */
+	upper: number | null;
+	/** Whether upper bound is included */
+	upperInclusive: boolean;
+}
+
+const BUILTIN_RANGES: Record<string, FunctionRange> = {
+	// Functions with [0, +∞[ range
+	sqrt: { lower: 0, lowerInclusive: true, upper: null, upperInclusive: false },
+	abs: { lower: 0, lowerInclusive: true, upper: null, upperInclusive: false },
+	exp: { lower: 0, lowerInclusive: false, upper: null, upperInclusive: false },
+
+	// Functions with ]-∞, +∞[ range
+	ln: { lower: null, lowerInclusive: false, upper: null, upperInclusive: false },
+	log: { lower: null, lowerInclusive: false, upper: null, upperInclusive: false },
+	log10: { lower: null, lowerInclusive: false, upper: null, upperInclusive: false },
+	log2: { lower: null, lowerInclusive: false, upper: null, upperInclusive: false },
+
+	// Trig functions with [-1, 1] range
+	sin: { lower: -1, lowerInclusive: true, upper: 1, upperInclusive: true },
+	cos: { lower: -1, lowerInclusive: true, upper: 1, upperInclusive: true },
+
+	// Inverse trig with specific ranges
+	asin: { lower: -Math.PI / 2, lowerInclusive: true, upper: Math.PI / 2, upperInclusive: true },
+	acos: { lower: 0, lowerInclusive: true, upper: Math.PI, upperInclusive: true },
+	atan: { lower: -Math.PI / 2, lowerInclusive: false, upper: Math.PI / 2, upperInclusive: false },
+
+	// Hyperbolic functions
+	sinh: { lower: null, lowerInclusive: false, upper: null, upperInclusive: false },
+	cosh: { lower: 1, lowerInclusive: true, upper: null, upperInclusive: false },
+	tanh: { lower: -1, lowerInclusive: false, upper: 1, upperInclusive: false }
+};
+
+/**
+ * Check if a function's output range includes zero.
+ */
+function _rangeIncludesZero(funcName: string): boolean {
+	const range = BUILTIN_RANGES[funcName];
+	if (!range) return true; // Unknown function, assume includes zero
+
+	const lowerOk =
+		range.lower === null || range.lower < 0 || (range.lower === 0 && range.lowerInclusive);
+	const upperOk =
+		range.upper === null || range.upper > 0 || (range.upper === 0 && range.upperInclusive);
+	return lowerOk && upperOk;
+}
+
+/**
+ * Check if a function's output range has a finite lower bound at a specific value.
+ */
+function rangeHasLowerBound(
+	funcName: string,
+	bound: number
+): { hasBound: boolean; inclusive: boolean } {
+	const range = BUILTIN_RANGES[funcName];
+	if (!range || range.lower === null) return { hasBound: false, inclusive: false };
+
+	if (Math.abs(range.lower - bound) < 1e-10) {
+		return { hasBound: true, inclusive: range.lowerInclusive };
+	}
+	return { hasBound: false, inclusive: false };
+}
+
+/**
+ * Get the outer function's domain requirement (what it needs from its input).
+ * Returns null if no specific requirement.
+ */
+function getOuterFunctionRequirement(
+	funcName: string
+): { needsPositive: boolean; needsNonNegative: boolean; lowerBound?: number } | null {
+	switch (funcName) {
+		case 'ln':
+		case 'log':
+		case 'log10':
+		case 'log2':
+			// Logarithms need input > 0
+			return { needsPositive: true, needsNonNegative: false };
+		case 'sqrt':
+			// Square root needs input >= 0
+			return { needsPositive: false, needsNonNegative: true, lowerBound: 0 };
+		case 'asin':
+		case 'acos':
+			// Inverse trig needs input in [-1, 1] - handled by preimage already
+			return null;
+		case 'acosh':
+			// acosh needs input >= 1
+			return { needsPositive: false, needsNonNegative: false, lowerBound: 1 };
+		case 'atanh':
+			// atanh needs input in ]-1, 1[ - handled by preimage already
+			return null;
+		default:
+			return null;
+	}
+}
+
+/**
+ * Analyze a function composition and apply additional constraints.
+ *
+ * Generic approach:
+ * 1. Determine what outer function needs (e.g., ln needs > 0, sqrt needs >= 0)
+ * 2. Check inner function's range
+ * 3. If inner's range boundary matches outer's requirement, apply stricter constraint
+ *
+ * Examples:
+ * - ln(sqrt(x)): outer needs > 0, inner range [0,+∞[, so exclude where sqrt = 0 → x = 0
+ * - sqrt(ln(x)): outer needs >= 0, inner range ]-∞,+∞[, so need ln(x) >= 0 → x >= 1
+ * - ln(exp(x)): outer needs > 0, inner range ]0,+∞[, no additional constraint needed
+ *
+ * @param outerFunc - Name of outer function
+ * @param innerNode - The inner function node
+ * @param variable - Variable name
+ * @param currentDomain - Domain computed so far
+ * @param steps - Step recorder
+ * @param options - Computation options
+ * @returns Updated domain
+ */
+function analyzeComposition(
+	outerFunc: string,
+	innerNode: { name: string; args: readonly MathNode[] },
+	variable: string,
+	currentDomain: Domain,
+	_steps: DomainStep[],
+	_options: ComputeDomainOptions
+): Domain {
+	let domain = currentDomain;
+
+	const outerReq = getOuterFunctionRequirement(outerFunc);
+	if (!outerReq) {
+		return domain;
+	}
+
+	const innerRange = BUILTIN_RANGES[innerNode.name];
+	const innerArg = innerNode.args[0];
+
+	// Case 1: Outer needs positive (> 0), inner range has 0 as lower bound (inclusive)
+	// e.g., ln(sqrt(x)), ln(abs(x))
+	if (outerReq.needsPositive) {
+		const lowerBoundCheck = rangeHasLowerBound(innerNode.name, 0);
+		if (lowerBoundCheck.hasBound && lowerBoundCheck.inclusive) {
+			// Inner function can output 0, but outer needs > 0
+			// Exclude x values where inner function = 0
+			const zeros = findZeros(innerArg, variable);
+			if (zeros.length > 0) {
+				domain = excludePoints(
+					domain,
+					zeros.map((z) => fromNumber(z))
+				);
+			}
+		}
+	}
+
+	// Case 2: Outer needs non-negative (>= 0), inner range is unbounded below
+	// e.g., sqrt(ln(x)) - need ln(x) >= 0
+	if (outerReq.needsNonNegative && outerReq.lowerBound !== undefined) {
+		if (!innerRange || innerRange.lower === null || innerRange.lower < outerReq.lowerBound) {
+			// Inner can produce values below the required bound
+			// Need to compute preimage for inner(x) >= lowerBound
+
+			// For ln/log, ln(x) >= 0 means x >= 1
+			if (
+				(innerNode.name === 'ln' || innerNode.name === 'log') &&
+				Math.abs(outerReq.lowerBound) < 1e-10
+			) {
+				// ln(expr) >= 0 means expr >= 1
+				const constraintDomain = intervalDomain([greaterThanOrEqual(fromNumber(1))]);
+				const preimage = computePreimage(innerArg, constraintDomain, variable);
+				if (preimage) {
+					domain = intersect(domain, preimage);
+				}
+			} else {
+				// For other functions, construct the inner node and compute preimage
+				const innerExpr: MathNode = { type: 'function', name: innerNode.name, args: [innerArg] };
+				const constraintDomain = intervalDomain([
+					greaterThanOrEqual(fromNumber(outerReq.lowerBound))
+				]);
+				const preimage = computePreimage(innerExpr, constraintDomain, variable);
+				if (preimage) {
+					domain = intersect(domain, preimage);
+				}
+			}
+		}
+	}
+
+	// Case 3: Outer needs >= specific bound (like acosh needs >= 1)
+	if (outerReq.lowerBound !== undefined && outerReq.lowerBound !== 0) {
+		const constraintDomain = intervalDomain([greaterThanOrEqual(fromNumber(outerReq.lowerBound))]);
+		const preimage = computePreimage(innerArg, constraintDomain, variable);
+		if (preimage) {
+			domain = intersect(domain, preimage);
+		}
+	}
+
+	return domain;
+}
 
 // =============================================================================
 // Options and Result Types
@@ -212,43 +422,9 @@ function computeFunctionDomain(
 		domain = intersect(domain, preimage);
 	}
 
-	// Special handling for nested functions:
-	// If arg is a function call, we need stricter constraints
-	// e.g., ln(sqrt(x)): sqrt(x) needs to be > 0 (not >= 0), so x > 0
-	if (arg.type === 'function') {
-		// Check if inner function's range includes the boundary
-		// For sqrt(x) -> [0, +inf[, if outer needs > 0, exclude where sqrt = 0
-		if (
-			node.name === 'ln' ||
-			node.name === 'log' ||
-			node.name === 'log10' ||
-			node.name === 'log2'
-		) {
-			// ln needs arg > 0, so if arg is sqrt(x), sqrt(x) > 0 means x > 0
-			// Find where inner function = 0 and exclude those x values
-			if (arg.name === 'sqrt' && arg.args.length > 0) {
-				const innerArg = arg.args[0];
-				const zeros = findZeros(innerArg, variable);
-				if (zeros.length > 0) {
-					domain = excludePoints(
-						domain,
-						zeros.map((z) => fromNumber(z))
-					);
-				}
-			}
-		}
-
-		// sqrt(ln(x)): need ln(x) >= 0, which means x >= 1
-		if (node.name === 'sqrt' && (arg.name === 'ln' || arg.name === 'log') && arg.args.length > 0) {
-			const innerArg = arg.args[0];
-			// ln(expr) >= 0 means expr >= 1
-			// Solve expr >= 1 by computing preimage of [1, +inf[
-			const lnGeqZeroDomain = intervalDomain([greaterThanOrEqual(fromNumber(1))]);
-			const lnPreimage = computePreimage(innerArg, lnGeqZeroDomain, variable);
-			if (lnPreimage) {
-				domain = intersect(domain, lnPreimage);
-			}
-		}
+	// Handle nested function compositions using range analysis
+	if (arg.type === 'function' && arg.args.length > 0) {
+		domain = analyzeComposition(node.name, arg, variable, domain, steps, options);
 	}
 
 	return domain;
@@ -331,9 +507,40 @@ function computePreimage(expr: MathNode, targetDomain: Domain, variable: string)
 
 	// Handle based on expression structure and interval type
 	const intervals = intDomain.intervals;
+
+	if (intervals.length === 0) {
+		return { kind: 'empty' };
+	}
+
+	// For multiple intervals, compute preimage for each and union results
+	if (intervals.length > 1) {
+		let combinedDomain: Domain = { kind: 'empty' };
+		for (const interval of intervals) {
+			const singleDomain = intervalDomain([interval], intDomain.excludedPoints);
+			const preimage = computePreimageForSingleInterval(expr, singleDomain, variable);
+			if (preimage && !isEmpty(preimage)) {
+				combinedDomain = union(combinedDomain, preimage);
+			}
+		}
+		return isEmpty(combinedDomain) ? null : combinedDomain;
+	}
+
+	// Single interval - delegate to helper
+	return computePreimageForSingleInterval(expr, intDomain, variable);
+}
+
+/**
+ * Compute preimage for a single interval domain.
+ * Helper for computePreimage that handles one interval at a time.
+ */
+function computePreimageForSingleInterval(
+	expr: MathNode,
+	targetDomain: IntervalSet,
+	variable: string
+): Domain | null {
+	const intervals = targetDomain.intervals;
 	if (intervals.length !== 1) {
-		// Multiple intervals - handle each separately and union
-		return null; // Simplification for now
+		return null;
 	}
 
 	const interval = intervals[0];
@@ -368,7 +575,7 @@ function computePreimage(expr: MathNode, targetDomain: Domain, variable: string)
 	}
 
 	// Handle excluded points
-	for (const ep of intDomain.excludedPoints) {
+	for (const ep of targetDomain.excludedPoints) {
 		const val = tryEvaluateConstant(ep.value);
 		if (val !== null) {
 			const zeros = findZeros(subtractConstant(expr, val), variable);
@@ -408,6 +615,19 @@ function solveInequalityForPreimage(
 				exprType.a,
 				exprType.b,
 				exprType.c,
+				op,
+				bound,
+				strict,
+				variable
+			);
+
+		case 'cubic':
+			// expr = a*x³ + b*x² + c*x + d, solve inequality
+			return solveCubicInequality(
+				exprType.a,
+				exprType.b,
+				exprType.c,
+				exprType.d,
 				op,
 				bound,
 				strict,

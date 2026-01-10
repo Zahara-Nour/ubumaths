@@ -68,33 +68,49 @@ describe('ConditionDomain edge cases', () => {
 			expect(isUniversal(condX_gt_0)).toBe(false);
 		});
 
-		it('intersect with ConditionDomain returns empty (safe fallback)', () => {
+		it('intersect with ConditionDomain converts and computes correctly', () => {
 			const result = intersect(condX_gt_0, positiveReals());
-			expect(result.kind).toBe('empty');
+			// condX_gt_0 converts to ]0, +∞[, intersection with ]0, +∞[ is ]0, +∞[
+			expect(result.kind).toBe('interval_set');
+			expect(containsValue(result, 1)).toBe(true);
+			expect(containsValue(result, 0)).toBe(false);
 		});
 
-		it('union with ConditionDomain returns the ConditionDomain', () => {
+		it('union with ConditionDomain converts and computes correctly', () => {
 			const result = union(condX_gt_0, positiveReals());
-			expect(result.kind).toBe('condition_domain');
+			// Both are ]0, +∞[, union is ]0, +∞[
+			expect(result.kind).toBe('interval_set');
+			expect(containsValue(result, 1)).toBe(true);
 		});
 
-		it('complement of ConditionDomain returns empty (safe fallback)', () => {
+		it('complement of ConditionDomain converts and computes correctly', () => {
 			const result = complement(condX_gt_0);
-			expect(result.kind).toBe('empty');
+			// condX_gt_0 is ]0, +∞[, complement is ]-∞, 0]
+			expect(result.kind).toBe('interval_set');
+			expect(containsValue(result, 0)).toBe(true);
+			expect(containsValue(result, -1)).toBe(true);
+			expect(containsValue(result, 1)).toBe(false);
 		});
 
-		it('difference with ConditionDomain returns empty', () => {
+		it('difference with ConditionDomain converts and computes correctly', () => {
 			const result = difference(condX_gt_0, positiveReals());
+			// ]0, +∞[ \ ]0, +∞[ = empty
 			expect(result.kind).toBe('empty');
 		});
 
-		it('excludePoints on ConditionDomain returns unchanged', () => {
+		it('excludePoints on ConditionDomain converts and excludes correctly', () => {
 			const result = excludePoints(condX_gt_0, [fromNumber(5)]);
-			expect(result.kind).toBe('condition_domain');
+			// ]0, +∞[ \ {5}
+			expect(result.kind).toBe('interval_set');
+			expect(containsValue(result, 1)).toBe(true);
+			expect(containsValue(result, 5)).toBe(false);
+			expect(containsValue(result, 10)).toBe(true);
 		});
 
-		it('containsValue on ConditionDomain returns false (conservative)', () => {
-			expect(containsValue(condX_gt_0, 5)).toBe(false);
+		it('containsValue on ConditionDomain converts and checks correctly', () => {
+			expect(containsValue(condX_gt_0, 5)).toBe(true);
+			expect(containsValue(condX_gt_0, 0)).toBe(false);
+			expect(containsValue(condX_gt_0, -1)).toBe(false);
 		});
 	});
 
@@ -298,21 +314,21 @@ describe('Symbolic bounds edge cases', () => {
 
 	describe('radicalBound for arbitrary radicals', () => {
 		it('creates √5 bound', () => {
-			const sqrt5 = radicalBound(5, 2);
+			const sqrt5 = radicalBound(5n, 2n);
 			const d = intervalDomain([closedInterval(fromNumber(0), sqrt5)]);
-			// radicalBound(5, 2) creates 2*√5 representation
+			// radicalBound(5n, 2n) creates 2*√5 representation
 			expect(formatDomainInterval(d)).toContain('√5');
 		});
 
 		it('creates ∛2 (cube root of 2) bound', () => {
-			const cbrt2 = radicalBound(2, 3);
+			const cbrt2 = radicalBound(2n, 3n);
 			const d = intervalDomain([closedInterval(fromNumber(0), cbrt2)]);
-			// radicalBound(2, 3) creates 3*√2 representation
+			// radicalBound(2n, 3n) creates 3*√2 representation
 			expect(formatDomainInterval(d)).toContain('√2');
 		});
 
 		it('creates ⁴√3 (fourth root of 3) bound', () => {
-			const root4_3 = radicalBound(3, 4);
+			const root4_3 = radicalBound(3n, 4n);
 			const d = intervalDomain([closedInterval(fromNumber(0), root4_3)]);
 			expect(d.kind).toBe('interval_set');
 		});

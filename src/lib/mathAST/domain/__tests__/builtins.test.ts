@@ -259,6 +259,123 @@ describe('hasRestrictedDomain()', () => {
 	});
 });
 
+describe('atanh domain: ]-1, 1[', () => {
+	it('returns open interval domain', () => {
+		const domain = getBuiltinDomain('atanh');
+		expect(domain).toBeDefined();
+		expect(domain?.kind).toBe('interval_set');
+	});
+
+	it('contains values strictly between -1 and 1', () => {
+		const domain = getBuiltinDomain('atanh')!;
+		expect(containsValue(domain, 0)).toBe(true);
+		expect(containsValue(domain, 0.5)).toBe(true);
+		expect(containsValue(domain, -0.5)).toBe(true);
+		expect(containsValue(domain, 0.999)).toBe(true);
+	});
+
+	it('does not contain -1 or 1 (open endpoints)', () => {
+		const domain = getBuiltinDomain('atanh')!;
+		expect(containsValue(domain, -1)).toBe(false);
+		expect(containsValue(domain, 1)).toBe(false);
+	});
+
+	it('does not contain values outside ]-1, 1[', () => {
+		const domain = getBuiltinDomain('atanh')!;
+		expect(containsValue(domain, -2)).toBe(false);
+		expect(containsValue(domain, 2)).toBe(false);
+		expect(containsValue(domain, -1.01)).toBe(false);
+		expect(containsValue(domain, 1.01)).toBe(false);
+	});
+
+	it('has constraint description', () => {
+		const constraint = getBuiltinConstraintDescription('atanh');
+		expect(constraint).toBe('-1 < x < 1');
+	});
+
+	it('arctanh is alias for atanh', () => {
+		const atanhDomain = getBuiltinDomain('atanh');
+		const arctanhDomain = getBuiltinDomain('arctanh');
+		expect(atanhDomain).toEqual(arctanhDomain);
+	});
+});
+
+describe('sec, csc, cot domains', () => {
+	it('sec has universal domain (periodic exclusions deferred)', () => {
+		const domain = getBuiltinDomain('sec');
+		expect(domain?.kind).toBe('universal');
+	});
+
+	it('csc has universal domain (periodic exclusions deferred)', () => {
+		const domain = getBuiltinDomain('csc');
+		expect(domain?.kind).toBe('universal');
+	});
+
+	it('cot has universal domain (periodic exclusions deferred)', () => {
+		const domain = getBuiltinDomain('cot');
+		expect(domain?.kind).toBe('universal');
+	});
+});
+
+describe('asec/acsc domain: |x| >= 1', () => {
+	it('asec returns multi-interval domain', () => {
+		const domain = getBuiltinDomain('asec');
+		expect(domain).toBeDefined();
+		expect(domain?.kind).toBe('interval_set');
+	});
+
+	it('contains values where |x| >= 1', () => {
+		const domain = getBuiltinDomain('asec')!;
+		expect(containsValue(domain, 1)).toBe(true);
+		expect(containsValue(domain, -1)).toBe(true);
+		expect(containsValue(domain, 2)).toBe(true);
+		expect(containsValue(domain, -2)).toBe(true);
+		expect(containsValue(domain, 10)).toBe(true);
+		expect(containsValue(domain, -10)).toBe(true);
+	});
+
+	it('does not contain values where |x| < 1', () => {
+		const domain = getBuiltinDomain('asec')!;
+		expect(containsValue(domain, 0)).toBe(false);
+		expect(containsValue(domain, 0.5)).toBe(false);
+		expect(containsValue(domain, -0.5)).toBe(false);
+		expect(containsValue(domain, 0.999)).toBe(false);
+		expect(containsValue(domain, -0.999)).toBe(false);
+	});
+
+	it('arcsec is alias for asec', () => {
+		expect(getBuiltinDomain('arcsec')).toEqual(getBuiltinDomain('asec'));
+	});
+
+	it('acsc has same domain as asec', () => {
+		const asecDomain = getBuiltinDomain('asec')!;
+		const acscDomain = getBuiltinDomain('acsc')!;
+		expect(containsValue(acscDomain, 0)).toBe(containsValue(asecDomain, 0));
+		expect(containsValue(acscDomain, 1)).toBe(containsValue(asecDomain, 1));
+		expect(containsValue(acscDomain, 2)).toBe(containsValue(asecDomain, 2));
+	});
+
+	it('arccsc is alias for acsc', () => {
+		expect(getBuiltinDomain('arccsc')).toEqual(getBuiltinDomain('acsc'));
+	});
+
+	it('has constraint description', () => {
+		expect(getBuiltinConstraintDescription('asec')).toBe('|x| >= 1');
+		expect(getBuiltinConstraintDescription('acsc')).toBe('|x| >= 1');
+	});
+});
+
+describe('acot domain', () => {
+	it('acot has universal domain', () => {
+		const domain = getBuiltinDomain('acot');
+		expect(domain?.kind).toBe('universal');
+	});
+
+	it('arccot is alias for acot', () => {
+		expect(getBuiltinDomain('arccot')).toEqual(getBuiltinDomain('acot'));
+	});
+});
+
 describe('getBuiltinConstraintDescription()', () => {
 	it('returns French description for sqrt', () => {
 		const desc = getBuiltinConstraintDescription('sqrt');

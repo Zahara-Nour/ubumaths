@@ -224,6 +224,46 @@ describe('computeDomain()', () => {
 		});
 	});
 
+	describe('multi-interval preimage', () => {
+		it('asec(x) has domain |x| >= 1', () => {
+			// asec needs |x| >= 1, i.e., x <= -1 OR x >= 1
+			const expr = func('asec', [variable('x')]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('interval_set');
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(true);
+			expect(containsValue(result.domain, 2)).toBe(true);
+			expect(containsValue(result.domain, -2)).toBe(true);
+			expect(containsValue(result.domain, 0)).toBe(false);
+			expect(containsValue(result.domain, 0.5)).toBe(false);
+			expect(containsValue(result.domain, -0.5)).toBe(false);
+		});
+
+		it('asec(2x) has domain |2x| >= 1, i.e., |x| >= 0.5', () => {
+			// asec needs 2x <= -1 OR 2x >= 1
+			// So x <= -0.5 OR x >= 0.5
+			const expr = func('asec', [multiply(number('2'), variable('x'), 'implicit')]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('interval_set');
+			expect(containsValue(result.domain, 0.5)).toBe(true);
+			expect(containsValue(result.domain, -0.5)).toBe(true);
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(true);
+			expect(containsValue(result.domain, 0)).toBe(false);
+			expect(containsValue(result.domain, 0.25)).toBe(false);
+			expect(containsValue(result.domain, -0.25)).toBe(false);
+		});
+
+		it('acsc(x) has domain |x| >= 1', () => {
+			const expr = func('acsc', [variable('x')]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('interval_set');
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(true);
+			expect(containsValue(result.domain, 0)).toBe(false);
+		});
+	});
+
 	describe('options', () => {
 		it('respects variable option', () => {
 			// sqrt(y) with respect to x should be universal (no x in expression)

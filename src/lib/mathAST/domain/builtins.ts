@@ -14,6 +14,8 @@ import {
 	universalDomain,
 	intervalDomain,
 	greaterThanOrEqual,
+	lessThanOrEqual,
+	openInterval,
 	fromNumber
 } from './factory';
 
@@ -65,7 +67,61 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	['tanh', { domain: universalDomain() }],
 	['asinh', { domain: universalDomain() }],
 	['arcsinh', { domain: universalDomain() }],
-	['atanh', { domain: universalDomain() }], // Note: actually ]-1, 1[, but complex for now
+
+	// atanh/arctanh: strictly between -1 and 1 (open interval ]-1, 1[)
+	[
+		'atanh',
+		{
+			domain: intervalDomain([openInterval(fromNumber(-1), fromNumber(1))]),
+			constraint: '-1 < x < 1'
+		}
+	],
+	[
+		'arctanh',
+		{
+			domain: intervalDomain([openInterval(fromNumber(-1), fromNumber(1))]),
+			constraint: '-1 < x < 1'
+		}
+	],
+
+	// Reciprocal trig functions (periodic exclusions deferred to PeriodicExclusion type)
+	['sec', { domain: universalDomain() }], // Note: actually ℝ \ {π/2 + kπ}
+	['csc', { domain: universalDomain() }], // Note: actually ℝ \ {kπ}
+	['cot', { domain: universalDomain() }], // Note: actually ℝ \ {kπ}
+
+	// Inverse reciprocal trig: |x| >= 1 means ]-∞, -1] ∪ [1, +∞[
+	[
+		'asec',
+		{
+			domain: intervalDomain([lessThanOrEqual(fromNumber(-1)), greaterThanOrEqual(fromNumber(1))]),
+			constraint: '|x| >= 1'
+		}
+	],
+	[
+		'arcsec',
+		{
+			domain: intervalDomain([lessThanOrEqual(fromNumber(-1)), greaterThanOrEqual(fromNumber(1))]),
+			constraint: '|x| >= 1'
+		}
+	],
+	[
+		'acsc',
+		{
+			domain: intervalDomain([lessThanOrEqual(fromNumber(-1)), greaterThanOrEqual(fromNumber(1))]),
+			constraint: '|x| >= 1'
+		}
+	],
+	[
+		'arccsc',
+		{
+			domain: intervalDomain([lessThanOrEqual(fromNumber(-1)), greaterThanOrEqual(fromNumber(1))]),
+			constraint: '|x| >= 1'
+		}
+	],
+
+	// Inverse cotangent has universal domain
+	['acot', { domain: universalDomain() }],
+	['arccot', { domain: universalDomain() }],
 
 	// Absolute value and floor/ceiling
 	['abs', { domain: universalDomain() }],
