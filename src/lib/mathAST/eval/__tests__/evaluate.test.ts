@@ -889,7 +889,7 @@ describe('evaluate - precision options', () => {
 	it('tolerance type does not affect value', () => {
 		const result = evaluate(parseLatex('\\sqrt{2}'), {
 			mode: 'decimal',
-			precision: { type: 'tolerance', value: 0.01 }
+			precision: { type: 'tolerance', tolerance: 0.01, mode: 'absolute' }
 		});
 		// Due to Rational conversion, there's a tiny precision difference
 		expect(Math.abs((result.value as number) - Math.sqrt(2))).toBeLessThan(1e-14);
