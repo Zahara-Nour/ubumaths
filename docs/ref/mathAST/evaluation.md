@@ -132,6 +132,7 @@ const result2 = evaluate(parseLatex('sin(1)'), { mode: 'decimal' });
 ```typescript
 interface EvalOptions {
 	mode?: 'exact' | 'decimal';
+	precision?: PrecisionType; // For decimal mode
 	functions?: FunctionBindings;
 }
 
@@ -143,6 +144,64 @@ evaluate(parseLatex('1/3 + 1/6'), { mode: 'exact' });
 evaluate(parseLatex('1/3 + 1/6'), { mode: 'decimal' });
 // Returns 0.5
 ```
+
+### Precision Options (Decimal Mode)
+
+Control numeric precision in decimal mode:
+
+```typescript
+type PrecisionType =
+	| { type: 'none' } // Full precision (default)
+	| { type: 'decimal'; digits: number } // Decimal places
+	| { type: 'significant'; digits: number } // Significant figures
+	| { type: 'magnitude'; digits: number } // Round to power of 10
+	| { type: 'tolerance'; tolerance: number; mode: 'absolute' | 'relative' };
+
+// Round to 2 decimal places
+evaluate(parseLatex('\\sqrt{2}'), {
+	mode: 'decimal',
+	precision: { type: 'decimal', digits: 2 }
+});
+// Returns 1.41
+
+// Round to 3 significant figures
+evaluate(parseLatex('1234.567'), {
+	mode: 'decimal',
+	precision: { type: 'significant', digits: 3 }
+});
+// Returns 1230
+
+// Round to magnitude (power of 10)
+evaluate(parseLatex('12345'), {
+	mode: 'decimal',
+	precision: { type: 'magnitude', digits: 2 }
+});
+// Returns 12300
+```
+
+### Rational Arithmetic (No Float Errors)
+
+Internally, decimal mode uses BigInt-based Rational arithmetic to avoid
+floating-point precision errors:
+
+```typescript
+// Classic JavaScript problem: 0.1 + 0.2 = 0.30000000000000004
+// With Rational arithmetic:
+evaluate(parseLatex('0.1 + 0.2'), { mode: 'decimal' });
+// Returns exactly 0.3
+
+// 1/3 + 1/3 + 1/3 = 1 (not 0.9999999999...)
+evaluate(parseLatex('\\frac{1}{3} + \\frac{1}{3} + \\frac{1}{3}'), { mode: 'decimal' });
+// Returns exactly 1
+
+// Complex fraction chains remain exact
+evaluate(parseLatex('\\left(\\frac{1}{2} + \\frac{1}{3}\\right) \\cdot 6'), { mode: 'decimal' });
+// Returns exactly 5
+```
+
+**Note**: Transcendental functions (sin, cos, exp, ln, etc.) are evaluated via
+`Math.*` and converted back to Rational for subsequent operations. This means
+operations after a transcendental call remain exact.
 
 ### Exact Symbolic Evaluation
 
