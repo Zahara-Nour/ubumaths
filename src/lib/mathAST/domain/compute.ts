@@ -10,10 +10,11 @@
  */
 
 import type { MathNode } from '../types';
-import type { Domain, DomainResult, DomainStep, IntervalDomain } from './types';
-import { universalDomain, intervalDomain, greaterThanOrEqual } from './factory';
+import type { Domain, DomainResult, DomainStep, IntervalSet } from './types';
+import { universalDomain, intervalDomain, greaterThanOrEqual, fromNumber } from './factory';
 import { intersect, excludePoints } from './algebra';
 import { getBuiltinDomain, hasRestrictedDomain } from './builtins';
+import { isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
 import {
 	solveLinearInequality,
 	solveQuadraticInequality,
@@ -166,9 +167,12 @@ function computeDivisionDomain(
 	// Combine domains
 	let domain = intersect(numDomain, denDomain);
 
-	// Exclude zeros
+	// Exclude zeros (convert to EndpointValue[])
 	if (zeros.length > 0) {
-		domain = excludePoints(domain, zeros);
+		domain = excludePoints(
+			domain,
+			zeros.map((z) => fromNumber(z))
+		);
 	}
 
 	return domain;
@@ -226,7 +230,10 @@ function computeFunctionDomain(
 				const innerArg = arg.args[0];
 				const zeros = findZeros(innerArg, variable);
 				if (zeros.length > 0) {
-					domain = excludePoints(domain, zeros);
+					domain = excludePoints(
+						domain,
+						zeros.map((z) => fromNumber(z))
+					);
 				}
 			}
 		}
@@ -236,7 +243,7 @@ function computeFunctionDomain(
 			const innerArg = arg.args[0];
 			// ln(expr) >= 0 means expr >= 1
 			// Solve expr >= 1 by computing preimage of [1, +inf[
-			const lnGeqZeroDomain = intervalDomain([greaterThanOrEqual(1)]);
+			const lnGeqZeroDomain = intervalDomain([greaterThanOrEqual(fromNumber(1))]);
 			const lnPreimage = computePreimage(innerArg, lnGeqZeroDomain, variable);
 			if (lnPreimage) {
 				domain = intersect(domain, lnPreimage);
@@ -267,7 +274,10 @@ function computePowerDomain(
 		// base^(-n) requires base != 0
 		const zeros = findZeros(node.base, variable);
 		if (zeros.length > 0) {
-			domain = excludePoints(domain, zeros);
+			domain = excludePoints(
+				domain,
+				zeros.map((z) => fromNumber(z))
+			);
 		}
 	}
 
@@ -279,13 +289,7 @@ function computePowerDomain(
 			// Even root requires base >= 0
 			const preimage = computePreimage(
 				node.base,
-				intervalDomain([
-					{
-						kind: 'interval',
-						lower: { value: 0, type: 'closed' },
-						upper: { value: 'positive_infinity', type: 'open' }
-					}
-				]),
+				intervalDomain([greaterThanOrEqual(fromNumber(0))]),
 				variable
 			);
 			if (preimage) {
@@ -319,11 +323,11 @@ function computePreimage(expr: MathNode, targetDomain: Domain, variable: string)
 		return targetDomain;
 	}
 
-	if (targetDomain.kind !== 'interval_domain') {
+	if (targetDomain.kind !== 'interval_set') {
 		return null;
 	}
 
-	const intDomain = targetDomain as IntervalDomain;
+	const intDomain = targetDomain as IntervalSet;
 
 	// Handle based on expression structure and interval type
 	const intervals = intDomain.intervals;
@@ -337,8 +341,8 @@ function computePreimage(expr: MathNode, targetDomain: Domain, variable: string)
 
 	// Check lower bound constraint
 	const lowerValue = interval.lower.value;
-	if (lowerValue !== 'negative_infinity' && lowerValue !== 'positive_infinity') {
-		const bound = typeof lowerValue === 'number' ? lowerValue : tryEvaluateConstant(lowerValue);
+	if (!isNegativeInfinity(lowerValue) && !isPositiveInfinity(lowerValue)) {
+		const bound = tryEvaluateConstant(lowerValue);
 
 		if (bound !== null) {
 			const strict = interval.lower.type === 'open';
@@ -351,8 +355,8 @@ function computePreimage(expr: MathNode, targetDomain: Domain, variable: string)
 
 	// Check upper bound constraint
 	const upperValue = interval.upper.value;
-	if (upperValue !== 'positive_infinity' && upperValue !== 'negative_infinity') {
-		const bound = typeof upperValue === 'number' ? upperValue : tryEvaluateConstant(upperValue);
+	if (!isPositiveInfinity(upperValue) && !isNegativeInfinity(upperValue)) {
+		const bound = tryEvaluateConstant(upperValue);
 
 		if (bound !== null) {
 			const strict = interval.upper.type === 'open';
@@ -365,11 +369,14 @@ function computePreimage(expr: MathNode, targetDomain: Domain, variable: string)
 
 	// Handle excluded points
 	for (const ep of intDomain.excludedPoints) {
-		const val = typeof ep.value === 'number' ? ep.value : tryEvaluateConstant(ep.value as MathNode);
+		const val = tryEvaluateConstant(ep.value);
 		if (val !== null) {
 			const zeros = findZeros(subtractConstant(expr, val), variable);
 			if (zeros.length > 0) {
-				resultDomain = excludePoints(resultDomain, zeros);
+				resultDomain = excludePoints(
+					resultDomain,
+					zeros.map((z) => fromNumber(z))
+				);
 			}
 		}
 	}

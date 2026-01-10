@@ -2,11 +2,13 @@
  * Domain System
  *
  * Provides comprehensive domain of definition handling for mathematical expressions:
- * - Domain types (empty, universal, interval, condition)
- * - Domain algebra (intersect, union, complement)
+ * - Domain types (empty, universal, interval set, condition)
+ * - Domain algebra (intersect, union, complement, difference)
  * - Automatic domain computation for expressions
  * - Validation at evaluation time
  * - French interval notation formatting
+ *
+ * Uses the intervals module for interval representation and algebra.
  *
  * @module mathAST/domain
  */
@@ -16,20 +18,30 @@
 // =============================================================================
 
 export type {
-	Domain,
-	EmptyDomain,
-	UniversalDomain,
-	IntervalDomain,
-	ConditionDomain,
-	Interval,
-	Endpoint,
+	// Core interval types (from intervals module via types.ts)
 	EndpointValue,
+	EndpointType,
+	Endpoint,
+	Interval,
 	ExcludedPoint,
+	EmptySet,
+	UniversalSet,
+	IntervalSet,
+	CompareOutcome,
+	CompareResult,
+	// Domain-specific types
+	Domain,
+	ConditionDomain,
 	Condition,
 	ComparisonCondition,
+	ComparisonOp,
 	DomainViolation,
 	DomainResult,
-	DomainStep
+	DomainStep,
+	// Backward compatibility aliases
+	EmptyDomain,
+	UniversalDomain,
+	IntervalDomain
 } from './types';
 
 // =============================================================================
@@ -37,37 +49,70 @@ export type {
 // =============================================================================
 
 export {
+	// Bound value constructors (from intervals)
+	fromNumber,
+	rationalBound,
+	radicalBound,
+	positiveInfinity,
+	negativeInfinity,
+	pi,
+	e,
+	sqrt2,
+	sqrt3,
+	// Endpoint factories
+	endpoint,
+	openEndpoint,
+	closedEndpoint,
+	negInfinity,
+	posInfinity,
+	// Interval factories
+	interval,
+	openInterval,
+	closedInterval,
+	leftClosedInterval,
+	rightClosedInterval,
+	lessThan,
+	lessThanOrEqual,
+	greaterThan,
+	greaterThanOrEqual,
+	realLine,
+	// Domain constants
+	EMPTY_SET,
+	UNIVERSAL_SET,
+	EMPTY_DOMAIN,
+	UNIVERSAL_DOMAIN,
 	// Domain factories
+	emptySet,
+	universalSet,
 	emptyDomain,
 	universalDomain,
 	intervalDomain,
-	conditionDomain,
-	// Interval factories
-	closedInterval,
-	openInterval,
-	leftClosedInterval,
-	rightClosedInterval,
-	// Endpoint factories
-	openEndpoint,
-	closedEndpoint,
-	// Common domain factories
+	excludedPoint,
+	// Common domain shortcuts
 	positiveReals,
 	nonNegativeReals,
 	nonZeroReals,
 	unitInterval,
-	// Constraint factories (for building domains)
-	greaterThan,
-	greaterThanOrEqual,
-	lessThan,
-	lessThanOrEqual,
-	excludedPoint
+	// Domain-specific factories (conditions)
+	conditionDomain,
+	comparison
 } from './factory';
 
 // =============================================================================
 // Algebra Operations
 // =============================================================================
 
-export { isEmpty, containsValue, intersect, union, complement, excludePoints } from './algebra';
+export {
+	isEmpty,
+	isUniversal,
+	containsValue,
+	intersect,
+	union,
+	complement,
+	difference,
+	excludePoints,
+	excludeNumericPoints
+} from './algebra';
 
 // =============================================================================
 // Domain Computation
@@ -87,13 +132,23 @@ export type { Bindings } from './validate';
 // Formatting
 // =============================================================================
 
-export { formatDomainInterval, formatDomainCondition, formatDomainFull } from './format';
+export {
+	formatDomainInterval,
+	formatDomainCondition,
+	formatDomainFull,
+	formatEndpointValue
+} from './format';
 
 // =============================================================================
 // Built-in Function Domains
 // =============================================================================
 
-export { getBuiltinDomain, hasRestrictedDomain, getBuiltinConstraintDescription } from './builtins';
+export {
+	getBuiltinDomain,
+	hasRestrictedDomain,
+	getBuiltinConstraintDescription,
+	getRestrictedFunctions
+} from './builtins';
 
 // =============================================================================
 // Errors

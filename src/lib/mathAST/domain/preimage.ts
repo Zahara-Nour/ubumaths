@@ -18,8 +18,10 @@ import {
 	lessThan,
 	lessThanOrEqual,
 	closedInterval,
+	openInterval,
 	realLine,
-	excludedPoint
+	excludedPoint,
+	fromNumber
 } from './factory';
 
 // =============================================================================
@@ -276,21 +278,26 @@ export function solveLinearInequality(
 	}
 
 	const solution = rhs / a;
+	const solutionValue = fromNumber(solution);
 
 	// If a > 0, inequality direction is preserved
 	// If a < 0, inequality direction is flipped
 	if (a > 0) {
 		if (op === '>=') {
-			return intervalDomain([strict ? greaterThan(solution) : greaterThanOrEqual(solution)]);
+			return intervalDomain([
+				strict ? greaterThan(solutionValue) : greaterThanOrEqual(solutionValue)
+			]);
 		} else {
-			return intervalDomain([strict ? lessThan(solution) : lessThanOrEqual(solution)]);
+			return intervalDomain([strict ? lessThan(solutionValue) : lessThanOrEqual(solutionValue)]);
 		}
 	} else {
 		// a < 0, flip inequality
 		if (op === '>=') {
-			return intervalDomain([strict ? lessThan(solution) : lessThanOrEqual(solution)]);
+			return intervalDomain([strict ? lessThan(solutionValue) : lessThanOrEqual(solutionValue)]);
 		} else {
-			return intervalDomain([strict ? greaterThan(solution) : greaterThanOrEqual(solution)]);
+			return intervalDomain([
+				strict ? greaterThan(solutionValue) : greaterThanOrEqual(solutionValue)
+			]);
 		}
 	}
 }
@@ -341,19 +348,24 @@ export function solveQuadraticInequality(
 	if (Math.abs(discriminant) < 1e-10) {
 		// One root (tangent to axis)
 		const root = -b / (2 * a);
+		const rootValue = fromNumber(root);
 		if (a > 0) {
 			// Parabola opens up, touches 0 at root
 			if (op === '>=') {
-				return strict ? intervalDomain([realLine()], [excludedPoint(root)]) : universalDomain();
+				return strict
+					? intervalDomain([realLine()], [excludedPoint(rootValue)])
+					: universalDomain();
 			} else {
-				return strict ? emptyDomain() : intervalDomain([closedInterval(root, root)]);
+				return strict ? emptyDomain() : intervalDomain([closedInterval(rootValue, rootValue)]);
 			}
 		} else {
 			// Parabola opens down, touches 0 at root
 			if (op === '<=') {
-				return strict ? intervalDomain([realLine()], [excludedPoint(root)]) : universalDomain();
+				return strict
+					? intervalDomain([realLine()], [excludedPoint(rootValue)])
+					: universalDomain();
 			} else {
-				return strict ? emptyDomain() : intervalDomain([closedInterval(root, root)]);
+				return strict ? emptyDomain() : intervalDomain([closedInterval(rootValue, rootValue)]);
 			}
 		}
 	}
@@ -364,28 +376,24 @@ export function solveQuadraticInequality(
 	const root2 = (-b + sqrtD) / (2 * a);
 	const minRoot = Math.min(root1, root2);
 	const maxRoot = Math.max(root1, root2);
+	const minRootValue = fromNumber(minRoot);
+	const maxRootValue = fromNumber(maxRoot);
 
 	if (a > 0) {
 		// Parabola opens up: negative between roots, positive outside
 		if (op === '>=') {
 			// Want where >= 0: x <= minRoot OR x >= maxRoot
 			if (strict) {
-				return intervalDomain([lessThan(minRoot), greaterThan(maxRoot)]);
+				return intervalDomain([lessThan(minRootValue), greaterThan(maxRootValue)]);
 			} else {
-				return intervalDomain([lessThanOrEqual(minRoot), greaterThanOrEqual(maxRoot)]);
+				return intervalDomain([lessThanOrEqual(minRootValue), greaterThanOrEqual(maxRootValue)]);
 			}
 		} else {
 			// Want where <= 0: minRoot <= x <= maxRoot
 			if (strict) {
-				return intervalDomain([
-					{
-						kind: 'interval',
-						lower: { value: minRoot, type: 'open' },
-						upper: { value: maxRoot, type: 'open' }
-					}
-				]);
+				return intervalDomain([openInterval(minRootValue, maxRootValue)]);
 			} else {
-				return intervalDomain([closedInterval(minRoot, maxRoot)]);
+				return intervalDomain([closedInterval(minRootValue, maxRootValue)]);
 			}
 		}
 	} else {
@@ -393,22 +401,16 @@ export function solveQuadraticInequality(
 		if (op === '>=') {
 			// Want where >= 0: minRoot <= x <= maxRoot
 			if (strict) {
-				return intervalDomain([
-					{
-						kind: 'interval',
-						lower: { value: minRoot, type: 'open' },
-						upper: { value: maxRoot, type: 'open' }
-					}
-				]);
+				return intervalDomain([openInterval(minRootValue, maxRootValue)]);
 			} else {
-				return intervalDomain([closedInterval(minRoot, maxRoot)]);
+				return intervalDomain([closedInterval(minRootValue, maxRootValue)]);
 			}
 		} else {
 			// Want where <= 0: x <= minRoot OR x >= maxRoot
 			if (strict) {
-				return intervalDomain([lessThan(minRoot), greaterThan(maxRoot)]);
+				return intervalDomain([lessThan(minRootValue), greaterThan(maxRootValue)]);
 			} else {
-				return intervalDomain([lessThanOrEqual(minRoot), greaterThanOrEqual(maxRoot)]);
+				return intervalDomain([lessThanOrEqual(minRootValue), greaterThanOrEqual(maxRootValue)]);
 			}
 		}
 	}

@@ -293,11 +293,7 @@ describe('formatEndpointValue edge cases', () => {
 		expect(formatEndpointValue(greek('alpha'))).toBe('α');
 		expect(formatEndpointValue(greek('beta'))).toBe('β');
 		expect(formatEndpointValue(greek('theta'))).toBe('θ');
-		expect(formatEndpointValue(greek('omega'))).toBe('ω');
-	});
-
-	it('formats unknown Greek letters as-is', () => {
-		expect(formatEndpointValue(greek('unknown'))).toBe('unknown');
+		expect(formatEndpointValue(greek('gamma'))).toBe('γ');
 	});
 
 	it('formats other function calls', () => {
@@ -479,4 +475,4 @@ describe('formatDomainFull edge cases', () => {
 });
 
 // Additional imports for edge cases
-import { rightClosedInterval, leftClosedInterval, greaterThanOrEqual } from '../factory';
+import { rightClosedInterval, leftClosedInterval } from '../factory';

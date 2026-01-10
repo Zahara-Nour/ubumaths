@@ -584,6 +584,8 @@ export { DEFAULT_INTEGRATE_OPTIONS } from './integration';
 // =============================================================================
 
 export {
+	// Value constructors
+	fromNumber as domainFromNumber,
 	// Factory functions
 	emptyDomain,
 	universalDomain,
@@ -595,10 +597,12 @@ export {
 	unitInterval,
 	// Algebra (renamed to avoid conflicts with factory exports)
 	isEmpty as domainIsEmpty,
+	isUniversal as domainIsUniversal,
 	containsValue,
 	intersect as domainIntersect,
 	union as domainUnion,
 	complement as domainComplement,
+	difference as domainDifference,
 	excludePoints as domainExcludePoints,
 	// Computation
 	computeDomain,
@@ -609,6 +613,7 @@ export {
 	formatDomainInterval,
 	formatDomainCondition,
 	formatDomainFull,
+	formatEndpointValue as domainFormatEndpointValue,
 	// Builtins
 	getBuiltinDomain,
 	hasRestrictedDomain,
@@ -619,9 +624,15 @@ export {
 
 export type {
 	Domain,
+	// New types (intervals module)
+	EmptySet,
+	UniversalSet,
+	IntervalSet,
+	// Backward compatibility aliases
 	EmptyDomain,
 	UniversalDomain,
 	IntervalDomain,
+	// Domain-specific types
 	ConditionDomain,
 	Interval,
 	Endpoint,
