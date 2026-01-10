@@ -770,6 +770,12 @@ class RDParser {
 				// \unit{...} as a standalone command - parse the unit
 				return this.parseUnitCommand();
 
+			case 'lfloor':
+				return this.parseFloorCeil('floor', 'rfloor');
+
+			case 'lceil':
+				return this.parseFloorCeil('ceil', 'rceil');
+
 			default:
 				this.error(`Unknown command: \\${cmd}`, token.position, token.length, 'UNKNOWN_COMMAND');
 		}
@@ -818,12 +824,18 @@ class RDParser {
 
 		// Get the opening delimiter
 		const openToken = this.currentToken;
-		let isAbsolute = false;
+		let delimiterType: 'paren' | 'abs' | 'floor' | 'ceil' = 'paren';
 
 		if (openToken.type === 'LPAREN' || (openToken.type === 'COMMAND' && openToken.value === '(')) {
 			this.advance();
 		} else if (openToken.type === 'PIPE') {
-			isAbsolute = true;
+			delimiterType = 'abs';
+			this.advance();
+		} else if (openToken.type === 'COMMAND' && openToken.value === 'lfloor') {
+			delimiterType = 'floor';
+			this.advance();
+		} else if (openToken.type === 'COMMAND' && openToken.value === 'lceil') {
+			delimiterType = 'ceil';
 			this.advance();
 		} else {
 			this.error(
@@ -848,37 +860,89 @@ class RDParser {
 		}
 		this.advance(); // consume \right
 
-		// Get the closing delimiter
+		// Get and validate the closing delimiter
 		const closeToken = this.currentToken;
-		if (!isAbsolute) {
-			if (
-				closeToken.type !== 'RPAREN' &&
-				!(closeToken.type === 'COMMAND' && closeToken.value === ')')
-			) {
-				this.error(
-					`Expected ')' after \\right, got ${closeToken.value || closeToken.type}`,
-					closeToken.position,
-					closeToken.length,
-					'MISSING_DELIMITER'
-				);
-			}
-		} else {
-			if (closeToken.type !== 'PIPE') {
-				this.error(
-					`Expected '|' after \\right, got ${closeToken.value || closeToken.type}`,
-					closeToken.position,
-					closeToken.length,
-					'MISSING_DELIMITER'
-				);
-			}
+		switch (delimiterType) {
+			case 'paren':
+				if (
+					closeToken.type !== 'RPAREN' &&
+					!(closeToken.type === 'COMMAND' && closeToken.value === ')')
+				) {
+					this.error(
+						`Expected ')' after \\right, got ${closeToken.value || closeToken.type}`,
+						closeToken.position,
+						closeToken.length,
+						'MISSING_DELIMITER'
+					);
+				}
+				break;
+			case 'abs':
+				if (closeToken.type !== 'PIPE') {
+					this.error(
+						`Expected '|' after \\right, got ${closeToken.value || closeToken.type}`,
+						closeToken.position,
+						closeToken.length,
+						'MISSING_DELIMITER'
+					);
+				}
+				break;
+			case 'floor':
+				if (!(closeToken.type === 'COMMAND' && closeToken.value === 'rfloor')) {
+					this.error(
+						`Expected '\\rfloor' after \\right, got ${closeToken.value || closeToken.type}`,
+						closeToken.position,
+						closeToken.length,
+						'MISSING_DELIMITER'
+					);
+				}
+				break;
+			case 'ceil':
+				if (!(closeToken.type === 'COMMAND' && closeToken.value === 'rceil')) {
+					this.error(
+						`Expected '\\rceil' after \\right, got ${closeToken.value || closeToken.type}`,
+						closeToken.position,
+						closeToken.length,
+						'MISSING_DELIMITER'
+					);
+				}
+				break;
 		}
 		this.advance();
 
-		// Return abs() for absolute value, delimiter for parentheses
-		if (isAbsolute) {
-			return this.applyColor(MathAST.abs(content));
+		// Return appropriate node based on delimiter type
+		switch (delimiterType) {
+			case 'abs':
+				return this.applyColor(MathAST.abs(content));
+			case 'floor':
+				return this.applyColor(MathAST.func('floor', [content]));
+			case 'ceil':
+				return this.applyColor(MathAST.func('ceil', [content]));
+			default:
+				return this.applyColor(MathAST.delimiter('parentheses', content, 'grouping'));
 		}
-		return this.applyColor(MathAST.delimiter('parentheses', content, 'grouping'));
+	}
+
+	/**
+	 * Parse floor/ceil delimiters: \lfloor x \rfloor or \lceil x \rceil
+	 */
+	private parseFloorCeil(funcName: 'floor' | 'ceil', closeCmd: string): MathNode {
+		this.advance(); // consume \lfloor or \lceil
+
+		// Parse content until we see the closing delimiter
+		const content = this.parseExpression();
+
+		// Expect closing delimiter (\rfloor or \rceil)
+		if (!this.checkCommand(closeCmd)) {
+			this.error(
+				`Expected \\${closeCmd} to close \\${funcName === 'floor' ? 'lfloor' : 'lceil'}`,
+				this.currentToken.position,
+				this.currentToken.length,
+				'MISSING_DELIMITER'
+			);
+		}
+		this.advance(); // consume closing delimiter
+
+		return this.applyColor(MathAST.func(funcName, [content]));
 	}
 
 	// =========================================================================
