@@ -27,6 +27,8 @@ import type {
 	CompositionNode,
 	MatrixNode,
 	ComplexNode,
+	InfinityNode,
+	LimitNode,
 	MathSymbol,
 	RelationType,
 	GreekLetter,
@@ -386,6 +388,14 @@ export class LatexGenerator {
 
 			case 'complex':
 				this.visitComplexSpans(node);
+				break;
+
+			case 'infinity':
+				this.visitInfinitySpans(node);
+				break;
+
+			case 'limit':
+				this.visitLimitSpans(node);
 				break;
 
 			default: {
@@ -749,6 +759,34 @@ export class LatexGenerator {
 	}
 
 	/**
+	 * Emits spans for an infinity node.
+	 * Renders as: +\infty or -\infty
+	 */
+	private visitInfinitySpans(node: InfinityNode): void {
+		const sign = node.sign === 'positive' ? '+' : '-';
+		this.emit(`${sign}\\infty`, node.metadata);
+	}
+
+	/**
+	 * Emits spans for a limit node.
+	 * Renders as: \lim_{x \to a} f(x)
+	 * With direction: \lim_{x \to a^+} or \lim_{x \to a^-}
+	 */
+	private visitLimitSpans(node: LimitNode): void {
+		this.emit('\\lim_{', node.metadata);
+		this.emit(node.variable, node.metadata);
+		this.emit(' \\to ', node.metadata);
+		this.visitWithSpans(node.approach);
+		if (node.direction === 'right') {
+			this.emit('^{+}', node.metadata);
+		} else if (node.direction === 'left') {
+			this.emit('^{-}', node.metadata);
+		}
+		this.emit('} ', node.metadata);
+		this.visitWithSpans(node.expression);
+	}
+
+	/**
 	 * Visits a node with inherited metadata.
 	 * If the node has its own metadata, uses that; otherwise uses the inherited metadata.
 	 */
@@ -855,6 +893,12 @@ export class LatexGenerator {
 				break;
 			case 'complex':
 				content = this.generateComplex(node);
+				break;
+			case 'infinity':
+				content = this.generateInfinity(node);
+				break;
+			case 'limit':
+				content = this.generateLimit(node);
 				break;
 			default: {
 				const exhaustive: never = node;
@@ -1122,6 +1166,34 @@ export class LatexGenerator {
 		const envName = this.getLatexMatrixEnv(node.matrixType);
 		const rows = node.rows.map((row) => row.map((elem) => this.generateNode(elem)).join(' & '));
 		return `\\begin{${envName}}${rows.join(' \\\\ ')}\\end{${envName}}`;
+	}
+
+	/**
+	 * Generates LaTeX for an infinity node.
+	 * Renders as: +\infty or -\infty
+	 */
+	private generateInfinity(node: InfinityNode): string {
+		return node.sign === 'positive' ? '+\\infty' : '-\\infty';
+	}
+
+	/**
+	 * Generates LaTeX for a limit node.
+	 * Renders as: \lim_{x \to a} f(x)
+	 * With direction: \lim_{x \to a^+} or \lim_{x \to a^-}
+	 */
+	private generateLimit(node: LimitNode): string {
+		const approach = this.generateNode(node.approach);
+		let directionSuperscript = '';
+		if (node.direction === 'right') {
+			directionSuperscript = '^{+}';
+		} else if (node.direction === 'left') {
+			directionSuperscript = '^{-}';
+		}
+
+		const subscript = `${node.variable} \\to ${approach}${directionSuperscript}`;
+		const expression = this.generateNode(node.expression);
+
+		return `\\lim_{${subscript}} ${expression}`;
 	}
 
 	/**

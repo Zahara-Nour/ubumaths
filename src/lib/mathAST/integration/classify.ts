@@ -104,6 +104,16 @@ export function detectVariable(expr: MathNode): string | null {
 				collect(node.imaginary);
 				break;
 
+			case 'infinity':
+				// Infinity doesn't contain variables
+				break;
+
+			case 'limit':
+				// Limit has expression and approach that may contain variables
+				collect(node.expression);
+				collect(node.approach);
+				break;
+
 			default: {
 				const _exhaustive: never = node;
 				return _exhaustive;

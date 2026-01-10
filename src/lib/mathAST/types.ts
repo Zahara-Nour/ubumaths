@@ -433,6 +433,92 @@ export interface ComplexNode extends BaseNode {
 }
 
 // =============================================================================
+// Infinity Node
+// =============================================================================
+
+/**
+ * Sign of infinity: positive (+∞) or negative (-∞)
+ */
+export type InfinitySign = 'positive' | 'negative';
+
+/**
+ * Represents positive or negative infinity as a proper AST node.
+ *
+ * This is distinct from the 'infinity' MathSymbol which is unsigned.
+ * InfinityNode has explicit sign tracking, essential for:
+ * - Limits: lim_{x→+∞} vs lim_{x→-∞}
+ * - One-sided limits: lim_{x→0⁺} 1/x = +∞ vs lim_{x→0⁻} 1/x = -∞
+ * - Arithmetic with infinities: +∞ + 1 = +∞, -∞ × (-1) = +∞
+ *
+ * @example
+ * // Positive infinity
+ * { type: 'infinity', sign: 'positive' }  // +∞
+ *
+ * // Negative infinity
+ * { type: 'infinity', sign: 'negative' }  // -∞
+ */
+export interface InfinityNode extends BaseNode {
+	readonly type: 'infinity';
+	readonly sign: InfinitySign;
+}
+
+// =============================================================================
+// Limit Node
+// =============================================================================
+
+/**
+ * Direction of approach for a limit:
+ * - 'left': approaching from below (x → a⁻)
+ * - 'right': approaching from above (x → a⁺)
+ * - 'both': two-sided limit (x → a)
+ */
+export type LimitDirection = 'left' | 'right' | 'both';
+
+/**
+ * Represents a mathematical limit expression: lim_{x → a} f(x)
+ *
+ * Supports:
+ * - Two-sided limits: lim_{x → a} f(x)
+ * - One-sided limits: lim_{x → a⁺} f(x), lim_{x → a⁻} f(x)
+ * - Limits at infinity: lim_{x → ∞} f(x), lim_{x → -∞} f(x)
+ *
+ * @example
+ * // lim_{x → 0} sin(x)/x
+ * {
+ *   type: 'limit',
+ *   expression: divide(func('sin', [variable('x')]), variable('x')),
+ *   variable: 'x',
+ *   approach: number('0'),
+ *   direction: 'both'
+ * }
+ *
+ * // lim_{x → 0⁺} 1/x = +∞
+ * {
+ *   type: 'limit',
+ *   expression: divide(number('1'), variable('x')),
+ *   variable: 'x',
+ *   approach: number('0'),
+ *   direction: 'right'
+ * }
+ *
+ * // lim_{x → +∞} 1/x = 0
+ * {
+ *   type: 'limit',
+ *   expression: divide(number('1'), variable('x')),
+ *   variable: 'x',
+ *   approach: { type: 'infinity', sign: 'positive' },
+ *   direction: 'both'
+ * }
+ */
+export interface LimitNode extends BaseNode {
+	readonly type: 'limit';
+	readonly expression: MathNode;
+	readonly variable: string;
+	readonly approach: MathNode;
+	readonly direction: LimitDirection;
+}
+
+// =============================================================================
 // Function Composition Node
 // =============================================================================
 
@@ -480,7 +566,9 @@ export type MathNode =
 	| UnitNode
 	| MatrixNode
 	| CompositionNode
-	| ComplexNode;
+	| ComplexNode
+	| InfinityNode
+	| LimitNode;
 
 // =============================================================================
 // Node Type Extraction

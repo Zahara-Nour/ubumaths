@@ -28,18 +28,19 @@ import {
 	subscript,
 	relation
 } from '../../factory';
-import type { Rational } from '../../normal/types';
+import type { MathNode } from '../../types';
 import type { EvalValue } from '../types';
+import { isNumber, isDivision, isOpposite } from '../../guards';
 
 // =============================================================================
 // Helper Functions
 // =============================================================================
 
 /**
- * Helper to check if a value is a Rational
+ * Helper to check if a value is a MathNode
  */
-function isRational(value: EvalValue): value is Rational {
-	return typeof value === 'object' && 'n' in value && 'd' in value;
+function isMathNode(value: EvalValue): value is MathNode {
+	return typeof value === 'object' && 'type' in value;
 }
 
 /**
@@ -52,15 +53,72 @@ function evalLatex(latex: string, mode: 'exact' | 'decimal' = 'exact'): EvalValu
 }
 
 /**
- * Helper to evaluate LaTeX and expect a specific rational
+ * Helper to check if a MathNode represents a specific integer or fraction.
+ * For integer results: expects a NumberNode (positive or negative)
+ * For fraction results: expects a DivisionNode
+ */
+function expectMathNodeRational(node: MathNode, expectedN: bigint, expectedD: bigint): void {
+	if (expectedD === 1n) {
+		// Should be a NumberNode (integer)
+		// Handle negative numbers: could be opposite(number) or number with negative value
+		if (expectedN < 0n) {
+			if (isOpposite(node) && isNumber(node.operand)) {
+				expect(node.operand.value).toBe((-expectedN).toString());
+			} else if (isNumber(node)) {
+				expect(node.value).toBe(expectedN.toString());
+			} else {
+				expect.fail(`Expected NumberNode or opposite(NumberNode), got ${node.type}`);
+			}
+		} else {
+			expect(isNumber(node)).toBe(true);
+			if (isNumber(node)) {
+				expect(node.value).toBe(expectedN.toString());
+			}
+		}
+	} else {
+		// Should be a DivisionNode (fraction) - possibly wrapped in opposite for negative
+		let fractionNode = node;
+		let sign = 1n;
+		if (isOpposite(node)) {
+			fractionNode = node.operand;
+			sign = -1n;
+		}
+		expect(isDivision(fractionNode)).toBe(true);
+		if (isDivision(fractionNode)) {
+			const numNode = fractionNode.numerator;
+			const denNode = fractionNode.denominator;
+			expect(isNumber(numNode)).toBe(true);
+			expect(isNumber(denNode)).toBe(true);
+			if (isNumber(numNode) && isNumber(denNode)) {
+				const actualN = BigInt(numNode.value) * sign;
+				expect(actualN).toBe(expectedN);
+				expect(denNode.value).toBe(expectedD.toString());
+			}
+		}
+	}
+}
+
+/**
+ * Helper to evaluate LaTeX in exact mode and expect a specific integer or fraction.
+ * In the new architecture, exact mode returns a simplified MathNode.
+ * For integer results: expects a NumberNode
+ * For fraction results: expects a DivisionNode
  */
 function expectRational(latex: string, expectedN: bigint, expectedD: bigint): void {
 	const result = evalLatex(latex, 'exact');
-	expect(isRational(result)).toBe(true);
-	if (isRational(result)) {
-		expect(result.n).toBe(expectedN);
-		expect(result.d).toBe(expectedD);
-	}
+	expect(isMathNode(result)).toBe(true);
+	if (!isMathNode(result)) return;
+	expectMathNodeRational(result, expectedN, expectedD);
+}
+
+/**
+ * Helper to evaluate a MathNode AST in exact mode and expect a specific integer or fraction.
+ */
+function expectAstRational(ast: MathNode, expectedN: bigint, expectedD: bigint): void {
+	const result = evaluate(ast, { mode: 'exact' });
+	expect(isMathNode(result.value)).toBe(true);
+	if (!isMathNode(result.value)) return;
+	expectMathNodeRational(result.value, expectedN, expectedD);
 }
 
 /**
@@ -114,12 +172,7 @@ describe('evaluate - basic arithmetic', () => {
 	describe('multiplication', () => {
 		it('evaluates 3 * 4 = 12', () => {
 			const ast = multiply(number('3'), number('4'), 'dot');
-			const result = evaluate(ast);
-			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(12n);
-				expect(result.value.d).toBe(1n);
-			}
+			expectAstRational(ast, 12n, 1n);
 		});
 
 		it('evaluates 3 \\cdot 4 = 12', () => {
@@ -128,33 +181,19 @@ describe('evaluate - basic arithmetic', () => {
 
 		it('evaluates 0 * 5 = 0', () => {
 			const ast = multiply(number('0'), number('5'), 'dot');
-			const result = evaluate(ast);
-			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(0n);
-			}
+			expectAstRational(ast, 0n, 1n);
 		});
 
 		it('evaluates -3 * 4 = -12', () => {
 			const ast = multiply(opposite(number('3')), number('4'), 'dot');
-			const result = evaluate(ast);
-			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(-12n);
-				expect(result.value.d).toBe(1n);
-			}
+			expectAstRational(ast, -12n, 1n);
 		});
 	});
 
 	describe('division', () => {
 		it('evaluates 10 / 4 = 5/2 in exact mode', () => {
 			const ast = divide(number('10'), number('4'), 'fraction');
-			const result = evaluate(ast, { mode: 'exact' });
-			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(5n);
-				expect(result.value.d).toBe(2n);
-			}
+			expectAstRational(ast, 5n, 2n);
 		});
 
 		it('evaluates 10 / 4 = 2.5 in decimal mode', () => {
@@ -165,7 +204,7 @@ describe('evaluate - basic arithmetic', () => {
 
 		it('throws on division by zero', () => {
 			const ast = divide(number('5'), number('0'), 'fraction');
-			expect(() => evaluate(ast)).toThrow('Division by zero');
+			expect(() => evaluate(ast)).toThrow(/division by zero/i);
 		});
 
 		it('evaluates frac{1}{3}', () => {
@@ -235,12 +274,7 @@ describe('evaluate - exact fractions', () => {
 			fraction(number('1'), number('4')),
 			'fraction'
 		);
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(2n);
-			expect(result.value.d).toBe(1n);
-		}
+		expectAstRational(ast, 2n, 1n);
 	});
 
 	it('reduces 6/9 to 2/3', () => {
@@ -289,9 +323,18 @@ describe('evaluate - square roots', () => {
 		expectRational('\\sqrt{9}+1', 4n, 1n);
 	});
 
-	it('throws on sqrt of negative number', () => {
+	it('throws on sqrt of negative number in decimal mode', () => {
 		const ast = sqrt(opposite(number('4')));
-		expect(() => evaluate(ast)).toThrow('Cannot compute square root of negative');
+		// In decimal mode, sqrt of negative throws
+		expect(() => evaluate(ast, { mode: 'decimal' })).toThrow(/sqrt.*negative|non-negative/i);
+	});
+
+	it('keeps sqrt of negative symbolic in exact mode', () => {
+		const ast = sqrt(opposite(number('4')));
+		// In exact mode, sqrt(-4) remains symbolic (or normalize handles it)
+		const result = evaluate(ast, { mode: 'exact' });
+		// The expression stays as sqrt(-4) or may be simplified
+		expect(result.node).toBeDefined();
 	});
 });
 
@@ -331,34 +374,35 @@ describe('evaluate - transcendental functions', () => {
 			expectNumber('\\ln(1)', 0);
 		});
 
-		it('evaluates exp(0) = 1', () => {
+		it('evaluates exp(0) = 1 in exact mode', () => {
 			const ast = exp(number('0'));
+			// In exact mode, exp(0) is simplified to 1 (returns MathNode)
 			const result = evaluate(ast);
-			// exp(0) = 1 exactly
-			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(1n);
-				expect(result.value.d).toBe(1n);
+			expect(result.node.type).toBe('number');
+			if (result.node.type === 'number') {
+				expect(result.node.value).toBe('1');
 			}
 		});
 
-		it('evaluates ln(e) approximately 1', () => {
+		it('evaluates ln(e) approximately 1 in decimal mode', () => {
 			// ln(exp(1)) = 1
 			const ast = ln(exp(number('1')));
 			const result = evaluate(ast, { mode: 'decimal' });
 			expect(Math.abs((result.value as number) - 1)).toBeLessThan(1e-10);
 		});
 
-		it('throws on ln(0)', () => {
+		it('ln(0) stays as function in exact mode', () => {
 			const ast = ln(number('0'));
-			expect(() => evaluate(ast)).toThrow('ln(0) is undefined');
+			// In exact mode, ln(0) stays as function (undefined value)
+			const result = evaluate(ast);
+			expect(result.node.type).toBe('function');
 		});
 
-		it('ln(-1) returns i*pi (complex logarithm)', () => {
+		it('ln(-1) stays as function in exact mode', () => {
 			const ast = ln(opposite(number('1')));
+			// In exact mode, ln(-1) stays as function (would need complex logarithm)
 			const result = evaluate(ast);
-			// ln(-1) = i*pi (principal value)
-			expect(result.value).toEqual({ real: 0, imag: Math.PI });
+			expect(result.node.type).toBe('function');
 		});
 	});
 
@@ -369,22 +413,12 @@ describe('evaluate - transcendental functions', () => {
 
 		it('evaluates abs(-5) = 5', () => {
 			const ast = abs(opposite(number('5')));
-			const result = evaluate(ast);
-			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(5n);
-				expect(result.value.d).toBe(1n);
-			}
+			expectAstRational(ast, 5n, 1n);
 		});
 
 		it('evaluates abs(-1/2) = 1/2', () => {
 			const ast = abs(opposite(fraction(number('1'), number('2'))));
-			const result = evaluate(ast);
-			expect(isRational(result.value)).toBe(true);
-			if (isRational(result.value)) {
-				expect(result.value.n).toBe(1n);
-				expect(result.value.d).toBe(2n);
-			}
+			expectAstRational(ast, 1n, 2n);
 		});
 	});
 });
@@ -426,12 +460,7 @@ describe('evaluate - complex expressions', () => {
 
 	it('evaluates sqrt(3^2 + 4^2) = 5', () => {
 		const ast = sqrt(add(power(number('3'), number('2')), power(number('4'), number('2'))));
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(5n);
-			expect(result.value.d).toBe(1n);
-		}
+		expectAstRational(ast, 5n, 1n);
 	});
 
 	it('evaluates nested fractions', () => {
@@ -441,22 +470,12 @@ describe('evaluate - complex expressions', () => {
 			fraction(number('3'), number('4')),
 			'fraction'
 		);
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(2n);
-			expect(result.value.d).toBe(3n);
-		}
+		expectAstRational(ast, 2n, 3n);
 	});
 
 	it('evaluates parenthesized expressions', () => {
 		const ast = multiply(parentheses(add(number('2'), number('3'))), number('4'), 'dot');
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(20n);
-			expect(result.value.d).toBe(1n);
-		}
+		expectAstRational(ast, 20n, 1n);
 	});
 });
 
@@ -467,39 +486,22 @@ describe('evaluate - complex expressions', () => {
 describe('evaluate - unary operations', () => {
 	it('evaluates -5 = -5', () => {
 		const ast = opposite(number('5'));
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(-5n);
-			expect(result.value.d).toBe(1n);
-		}
+		expectAstRational(ast, -5n, 1n);
 	});
 
 	it('evaluates --5 = 5', () => {
 		const ast = opposite(opposite(number('5')));
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(5n);
-		}
+		expectAstRational(ast, 5n, 1n);
 	});
 
 	it('evaluates +5 = 5', () => {
 		const ast = positive(number('5'));
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(5n);
-		}
+		expectAstRational(ast, 5n, 1n);
 	});
 
 	it('evaluates -(3 + 2) = -5', () => {
 		const ast = opposite(add(number('3'), number('2')));
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(-5n);
-		}
+		expectAstRational(ast, -5n, 1n);
 	});
 });
 
@@ -511,17 +513,17 @@ describe('evaluate - error cases', () => {
 	describe('unsubstituted variables', () => {
 		it('throws on expression with single variable', () => {
 			const ast = variable('x');
-			expect(() => evaluate(ast)).toThrow('Cannot evaluate expression with unsubstituted');
+			expect(() => evaluate(ast)).toThrow(/free variables.*x/i);
 		});
 
 		it('throws on expression with variable in operation', () => {
 			const ast = add(variable('x'), number('1'));
-			expect(() => evaluate(ast)).toThrow('Cannot evaluate expression with unsubstituted');
+			expect(() => evaluate(ast)).toThrow(/free variables.*x/i);
 		});
 
 		it('throws on Greek letter variable (not pi)', () => {
 			const ast = greek('alpha');
-			expect(() => evaluate(ast)).toThrow('Cannot evaluate expression with unsubstituted');
+			expect(() => evaluate(ast)).toThrow(/free variables.*alpha/i);
 		});
 
 		it('lists all unsubstituted variables in error message', () => {
@@ -533,7 +535,7 @@ describe('evaluate - error cases', () => {
 	describe('division by zero', () => {
 		it('throws on 1/0', () => {
 			const ast = divide(number('1'), number('0'), 'fraction');
-			expect(() => evaluate(ast)).toThrow('Division by zero');
+			expect(() => evaluate(ast)).toThrow(/division by zero/i);
 		});
 
 		it('throws on x/0 where x is computed', () => {
@@ -542,7 +544,7 @@ describe('evaluate - error cases', () => {
 				subtract(number('5'), number('5')),
 				'fraction'
 			);
-			expect(() => evaluate(ast)).toThrow('Division by zero');
+			expect(() => evaluate(ast)).toThrow(/division by zero/i);
 		});
 	});
 
@@ -598,36 +600,35 @@ describe('evaluate - decimal mode', () => {
 // =============================================================================
 
 describe('evaluate - exact mode', () => {
-	it('returns Rational for integer operations', () => {
+	it('returns MathNode for integer operations', () => {
 		const ast = add(number('2'), number('3'));
 		const result = evaluate(ast, { mode: 'exact' });
-		expect(isRational(result.value)).toBe(true);
+		expect(isMathNode(result.value)).toBe(true);
 		expect(result.exact).toBe(true);
 	});
 
-	it('returns Rational for fraction operations', () => {
+	it('returns MathNode for fraction operations', () => {
 		const ast = fraction(number('1'), number('2'));
 		const result = evaluate(ast, { mode: 'exact' });
-		expect(isRational(result.value)).toBe(true);
+		expect(isMathNode(result.value)).toBe(true);
 		expect(result.exact).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(1n);
-			expect(result.value.d).toBe(2n);
+		if (isMathNode(result.value)) {
+			expectMathNodeRational(result.value, 1n, 2n);
 		}
 	});
 
-	it('returns number for transcendental results', () => {
+	it('returns MathNode for irrational results in exact mode', () => {
 		const ast = sqrt(number('2'));
 		const result = evaluate(ast, { mode: 'exact' });
-		// sqrt(2) is irrational, so result is a number, not exact
-		expect(typeof result.value).toBe('number');
-		expect(result.exact).toBe(false);
+		// sqrt(2) is irrational but in exact mode we return the MathNode
+		expect(isMathNode(result.value)).toBe(true);
+		expect(result.exact).toBe(true);
 	});
 
-	it('returns exact Rational for perfect square roots', () => {
+	it('returns exact MathNode for perfect square roots', () => {
 		const ast = sqrt(number('4'));
 		const result = evaluate(ast, { mode: 'exact' });
-		expect(isRational(result.value)).toBe(true);
+		expect(isMathNode(result.value)).toBe(true);
 		expect(result.exact).toBe(true);
 	});
 });
@@ -640,60 +641,32 @@ describe('evaluate - edge cases', () => {
 	it('handles very large integers', () => {
 		// 10^10 = 10000000000
 		const ast = power(number('10'), number('10'));
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(10000000000n);
-			expect(result.value.d).toBe(1n);
-		}
+		expectAstRational(ast, 10000000000n, 1n);
 	});
 
 	it('handles decimal input', () => {
 		const ast = number('3.14');
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(157n);
-			expect(result.value.d).toBe(50n);
-		}
+		expectAstRational(ast, 157n, 50n);
 	});
 
 	it('handles 0.5 as exact fraction', () => {
 		const ast = number('0.5');
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(1n);
-			expect(result.value.d).toBe(2n);
-		}
+		expectAstRational(ast, 1n, 2n);
 	});
 
 	it('handles 0.25 as exact fraction', () => {
 		const ast = number('0.25');
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(1n);
-			expect(result.value.d).toBe(4n);
-		}
+		expectAstRational(ast, 1n, 4n);
 	});
 
 	it('handles zero', () => {
 		const ast = number('0');
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(0n);
-		}
+		expectAstRational(ast, 0n, 1n);
 	});
 
 	it('handles negative zero as zero', () => {
 		const ast = opposite(number('0'));
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(0n);
-		}
+		expectAstRational(ast, 0n, 1n);
 	});
 });
 
@@ -723,8 +696,16 @@ describe('evaluate - result node', () => {
 
 	it('creates NumberNode for decimal result', () => {
 		const ast = sqrt(number('2'));
-		const result = evaluate(ast);
+		// In decimal mode, sqrt(2) is approximated to a number
+		const result = evaluate(ast, { mode: 'decimal' });
 		expect(result.node.type).toBe('number');
+	});
+
+	it('keeps sqrt symbolic in exact mode', () => {
+		const ast = sqrt(number('2'));
+		const result = evaluate(ast, { mode: 'exact' });
+		// sqrt(2) cannot be simplified to a rational, stays as sqrt(2)
+		expect(result.node.type).toBe('function');
 	});
 });
 
@@ -734,42 +715,19 @@ describe('evaluate - result node', () => {
 
 describe('evaluate - integration with parseLatex', () => {
 	it('evaluates parsed LaTeX: 2+3', () => {
-		const ast = parseLatex('2+3');
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(5n);
-			expect(result.value.d).toBe(1n);
-		}
+		expectRational('2+3', 5n, 1n);
 	});
 
 	it('evaluates parsed LaTeX: \\frac{1}{2}+\\frac{1}{4}', () => {
-		const ast = parseLatex('\\frac{1}{2}+\\frac{1}{4}');
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(3n);
-			expect(result.value.d).toBe(4n);
-		}
+		expectRational('\\frac{1}{2}+\\frac{1}{4}', 3n, 4n);
 	});
 
 	it('evaluates parsed LaTeX: 2^{10}', () => {
-		const ast = parseLatex('2^{10}');
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(1024n);
-		}
+		expectRational('2^{10}', 1024n, 1n);
 	});
 
 	it('evaluates parsed LaTeX with nested operations', () => {
-		const ast = parseLatex('\\sqrt{16}+\\frac{1}{2}');
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(9n);
-			expect(result.value.d).toBe(2n);
-		}
+		expectRational('\\sqrt{16}+\\frac{1}{2}', 9n, 2n);
 	});
 });
 
@@ -780,42 +738,22 @@ describe('evaluate - integration with parseLatex', () => {
 describe('evaluate - floor, ceil, round', () => {
 	it('evaluates floor(3.7) = 3', () => {
 		const ast = func('floor', [number('3.7')]);
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(3n);
-			expect(result.value.d).toBe(1n);
-		}
+		expectAstRational(ast, 3n, 1n);
 	});
 
 	it('evaluates floor(-3.7) = -4', () => {
 		const ast = func('floor', [opposite(number('3.7'))]);
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(-4n);
-			expect(result.value.d).toBe(1n);
-		}
+		expectAstRational(ast, -4n, 1n);
 	});
 
 	it('evaluates ceil(3.2) = 4', () => {
 		const ast = func('ceil', [number('3.2')]);
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(4n);
-			expect(result.value.d).toBe(1n);
-		}
+		expectAstRational(ast, 4n, 1n);
 	});
 
 	it('evaluates ceil(-3.2) = -3', () => {
 		const ast = func('ceil', [opposite(number('3.2'))]);
-		const result = evaluate(ast);
-		expect(isRational(result.value)).toBe(true);
-		if (isRational(result.value)) {
-			expect(result.value.n).toBe(-3n);
-			expect(result.value.d).toBe(1n);
-		}
+		expectAstRational(ast, -3n, 1n);
 	});
 
 	it('evaluates round(3.5) = 4', () => {

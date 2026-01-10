@@ -484,3 +484,37 @@ export function parseRational(s: string): Rational {
 
 	return fromInteger(BigInt(trimmed));
 }
+
+/**
+ * Converts a floating-point number to a Rational.
+ *
+ * Used to convert results from transcendental functions (Math.*)
+ * back to Rational for continued exact BigInt arithmetic.
+ *
+ * The conversion uses a decimal scale factor to represent the float
+ * as a fraction, then reduces it.
+ *
+ * @param x - Floating-point number to convert
+ * @param precision - Number of decimal places to preserve (default: 15)
+ * @returns A Rational approximating the float
+ * @throws Error if x is not finite (NaN, Infinity, -Infinity)
+ *
+ * @example
+ * floatToRational(0.5)     // { n: 1n, d: 2n }
+ * floatToRational(Math.PI) // Rational approximation of π
+ * floatToRational(0)       // { n: 0n, d: 1n }
+ */
+export function floatToRational(x: number, precision: number = 15): Rational {
+	if (!Number.isFinite(x)) {
+		throw new Error(`Cannot convert ${x} to Rational`);
+	}
+
+	if (x === 0) return ZERO;
+
+	// Convert to fraction with denominator 10^precision
+	const scale = 10n ** BigInt(precision);
+	const numerator = BigInt(Math.round(x * Number(scale)));
+
+	// rational() will automatically reduce the fraction
+	return rational(numerator, scale);
+}

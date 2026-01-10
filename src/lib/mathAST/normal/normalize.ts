@@ -18,6 +18,7 @@ import { hashPolynomial, hashNormalForm, hashMathNode } from './hash';
 import { StepRecorder, getRuleDescription } from './step-recorder.js';
 import {
 	ALGEBRAIC_ONE,
+	ALGEBRAIC_IMAGINARY,
 	algebraicFromRational,
 	addAlgebraic,
 	subAlgebraic,
@@ -566,6 +567,7 @@ function getPureRationalCoeff(coeff: import('./types').AlgebraicCoefficient): Ra
 	if (coeff.terms.length !== 1) return null;
 	const term = coeff.terms[0];
 	if (term.radicals.length !== 0) return null;
+	if (term.hasImaginaryUnit) return null;
 	return term.rational;
 }
 
@@ -1160,6 +1162,14 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		}
 
 		case 'variable': {
+			// Special case: 'i' is the imaginary unit
+			if (node.name === 'i') {
+				const term: NormalTerm = {
+					coefficient: ALGEBRAIC_IMAGINARY,
+					monomial: []
+				};
+				return normalFormFromPolynomial(polynomialFromTerm(term));
+			}
 			const term = termFromVariable(node.name);
 			return normalFormFromPolynomial(polynomialFromTerm(term));
 		}
@@ -1189,6 +1199,22 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 				monomial: [symbolicFactor(node, ONE)]
 			};
 			return normalFormFromPolynomial(polynomialFromTerm(term));
+		}
+
+		case 'complex': {
+			// ComplexNode { real, imaginary } -> real + imaginary * i
+			const realForm = normalizeNode(node.real, ctx);
+			const imagForm = normalizeNode(node.imaginary, ctx);
+			// Create imaginary unit term
+			const iTerm: NormalTerm = {
+				coefficient: ALGEBRAIC_IMAGINARY,
+				monomial: []
+			};
+			const iForm = normalFormFromPolynomial(polynomialFromTerm(iTerm));
+			// imaginary * i
+			const imagTimesI = mulNormalForms(imagForm, iForm);
+			// real + imaginary * i
+			return addNormalForms(realForm, imagTimesI);
 		}
 
 		case 'addition': {

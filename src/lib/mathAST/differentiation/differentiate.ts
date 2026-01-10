@@ -265,6 +265,18 @@ function differentiateNode(
 				'Complex differentiation is not yet implemented'
 			);
 
+		case 'infinity':
+			// Infinity is a constant - derivative is 0
+			return number('0');
+
+		case 'limit':
+			// Differentiation of limits is complex - would need L'Hôpital's rule in many cases
+			throw new DifferentiationError(
+				'Cannot differentiate limit expressions directly',
+				'limit',
+				'Limit differentiation is not yet implemented'
+			);
+
 		default: {
 			const _exhaustive: never = node;
 			return _exhaustive;

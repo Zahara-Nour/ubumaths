@@ -763,6 +763,10 @@ class PrattParser {
 
 		// Function commands
 		if (FUNCTION_COMMANDS.has(cmd)) {
+			// Special handling for \lim to create LimitNode
+			if (cmd === 'lim') {
+				return this.parseLimit();
+			}
 			return this.parseFunction();
 		}
 
@@ -1519,6 +1523,82 @@ class PrattParser {
 		}
 
 		return items;
+	}
+
+	/**
+	 * Parse \lim_{x \to a} f(x) or \lim_{x \to a^+} f(x) or \lim_{x \to a^-} f(x)
+	 * Creates a LimitNode with variable, approach value, and direction.
+	 */
+	private parseLimit(): MathNode {
+		this.advance(); // consume \lim
+
+		let variableName = 'x'; // default variable
+		let approach: MathNode = MathAST.number('0'); // default approach
+		let direction: 'left' | 'right' | 'both' = 'both';
+
+		// Check for subscript: _{x \to a}
+		if (this.check('UNDERSCORE')) {
+			this.advance(); // consume _
+
+			// Parse the subscript content
+			if (this.check('LBRACE')) {
+				this.advance(); // consume {
+
+				// Parse variable name (should be a letter)
+				if (this.check('LETTER')) {
+					variableName = this.advance().value;
+				}
+
+				// Expect \to
+				if (this.checkCommand('to') || this.checkCommand('rightarrow')) {
+					this.advance(); // consume \to or \rightarrow
+				} else {
+					this.error(
+						'Expected \\to in limit subscript',
+						this.currentToken.position,
+						this.currentToken.length,
+						'UNEXPECTED_TOKEN'
+					);
+				}
+
+				// Parse approach value - use BP.POWER to stop before ^ (direction indicator)
+				approach = this.parseExpression(BP.POWER);
+
+				// Check for direction superscript within the subscript: a^+ or a^-
+				if (this.check('CARET')) {
+					this.advance(); // consume ^
+					if (this.check('LBRACE')) {
+						this.advance(); // consume {
+						if (this.check('PLUS')) {
+							this.advance();
+							direction = 'right';
+						} else if (this.check('MINUS')) {
+							this.advance();
+							direction = 'left';
+						}
+						this.expect('RBRACE', "Expected '}' after direction");
+					} else if (this.check('PLUS')) {
+						this.advance();
+						direction = 'right';
+					} else if (this.check('MINUS')) {
+						this.advance();
+						direction = 'left';
+					}
+				}
+
+				this.expect('RBRACE', "Expected '}' after limit subscript");
+			} else {
+				// Simple subscript without braces (e.g., _x)
+				if (this.check('LETTER')) {
+					variableName = this.advance().value;
+				}
+			}
+		}
+
+		// Parse the expression that the limit is applied to
+		const expression = this.parseExpression(BP.UNARY);
+
+		return this.applyColor(MathAST.limit(expression, variableName, approach, direction));
 	}
 
 	// =========================================================================

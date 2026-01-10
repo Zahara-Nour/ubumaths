@@ -8,7 +8,7 @@
  * @module mathAST/eval/evaluate-with-units
  */
 
-import { evaluate } from './evaluate';
+import { evaluate, evaluateNodeToApproximatedNumber } from './evaluate';
 import type {
 	EvalWithUnitsOptions,
 	EvalResultWithUnit,
@@ -24,7 +24,6 @@ import { getConversionFactor, normalizeToBase } from '../units/conversion';
 import { getUnitFamily } from '../units/definitions';
 import { UnitAST } from '../units/factory';
 import type { MathNode } from '../types';
-import type { Rational } from '../normal/types';
 import { isUnit } from '../guards';
 import { number, withUnit } from '../factory';
 import { mapNode } from '../transforms';
@@ -315,10 +314,10 @@ function transformToTargetUnit(node: MathNode, targetUnit: Unit): MathNode {
 }
 
 /**
- * Type guard for Rational values.
+ * Type guard for MathNode.
  */
-function isRational(value: EvalValue): value is Rational {
-	return typeof value === 'object' && 'n' in value && 'd' in value;
+function isMathNode(value: EvalValue): value is MathNode {
+	return typeof value === 'object' && 'type' in value;
 }
 
 /**
@@ -333,9 +332,6 @@ function isComplex(value: EvalValue): value is ComplexValueResult {
  * Throws if value is complex with non-zero imaginary part.
  */
 function getNumericValue(value: EvalValue): number {
-	if (isRational(value)) {
-		return Number(value.n) / Number(value.d);
-	}
 	if (isComplex(value)) {
 		if (value.imag !== 0) {
 			throw new Error(
@@ -343,6 +339,10 @@ function getNumericValue(value: EvalValue): number {
 			);
 		}
 		return value.real;
+	}
+	if (isMathNode(value)) {
+		// For MathNode values (from exact mode), evaluate numerically
+		return evaluateNodeToApproximatedNumber(value);
 	}
 	return value;
 }

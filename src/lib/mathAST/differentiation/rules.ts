@@ -652,6 +652,14 @@ export function containsVariable(node: MathNode, varName: string): boolean {
 		case 'complex':
 			return containsVariable(node.real, varName) || containsVariable(node.imaginary, varName);
 
+		case 'infinity':
+			// Infinity doesn't contain variables
+			return false;
+
+		case 'limit':
+			// Check expression and approach for the variable
+			return containsVariable(node.expression, varName) || containsVariable(node.approach, varName);
+
 		default: {
 			const _exhaustive: never = node;
 			return _exhaustive;

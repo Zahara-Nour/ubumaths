@@ -16,6 +16,8 @@ import {
 	func,
 	greek,
 	hole,
+	infinity,
+	limit,
 	matrix,
 	multiply,
 	number,
@@ -217,6 +219,14 @@ export function getChildren(node: MathNode): MathNode[] {
 		// Complex number
 		case 'complex':
 			return [node.real, node.imaginary];
+
+		// Infinity has no children (leaf node)
+		case 'infinity':
+			return [];
+
+		// Limit has expression and approach as children
+		case 'limit':
+			return [node.expression, node.approach];
 	}
 }
 
@@ -381,6 +391,22 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 		// Complex number
 		case 'complex':
 			transformedNode = complex(mapNode(node.real, fn), mapNode(node.imaginary, fn), node.metadata);
+			break;
+
+		// Infinity - no children, return as-is
+		case 'infinity':
+			transformedNode = node;
+			break;
+
+		// Limit - transform expression and approach
+		case 'limit':
+			transformedNode = limit(
+				mapNode(node.expression, fn),
+				node.variable,
+				mapNode(node.approach, fn),
+				node.direction,
+				node.metadata
+			);
 			break;
 	}
 
@@ -563,6 +589,20 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 			return complex(
 				mapNodeTopDown(transformedParent.real, fn),
 				mapNodeTopDown(transformedParent.imaginary, fn),
+				transformedParent.metadata
+			);
+
+		// Infinity - no children
+		case 'infinity':
+			return transformedParent;
+
+		// Limit
+		case 'limit':
+			return limit(
+				mapNodeTopDown(transformedParent.expression, fn),
+				transformedParent.variable,
+				mapNodeTopDown(transformedParent.approach, fn),
+				transformedParent.direction,
 				transformedParent.metadata
 			);
 	}
@@ -777,6 +817,20 @@ export function cloneNode<T extends MathNode>(node: T): T {
 		// Complex number
 		case 'complex':
 			return complex(cloneNode(node.real), cloneNode(node.imaginary), node.metadata) as T;
+
+		// Infinity
+		case 'infinity':
+			return infinity(node.sign, node.metadata) as T;
+
+		// Limit
+		case 'limit':
+			return limit(
+				cloneNode(node.expression),
+				node.variable,
+				cloneNode(node.approach),
+				node.direction,
+				node.metadata
+			) as T;
 	}
 }
 

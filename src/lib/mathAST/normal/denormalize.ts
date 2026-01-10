@@ -482,6 +482,7 @@ export function denormalize(form: NormalForm): MathNode {
 		form.denominator[0].monomial.length === 0 &&
 		form.denominator[0].coefficient.terms.length === 1 &&
 		form.denominator[0].coefficient.terms[0].radicals.length === 0 &&
+		!form.denominator[0].coefficient.terms[0].hasImaginaryUnit &&
 		isOneRational(form.denominator[0].coefficient.terms[0].rational)
 	) {
 		return numNode;

@@ -12,8 +12,8 @@
 
 import type { EvalModifiers } from '$lib/ubumark';
 import { parseLatex } from '$lib/mathAST/parser';
-import { evaluate } from './evaluate';
-import type { Rational } from '../normal/types';
+import { evaluate, evaluateNodeToApproximatedNumber } from './evaluate';
+import type { MathNode } from '../types';
 import type { EvalValue, ComplexValueResult } from './types';
 
 // =============================================================================
@@ -21,10 +21,10 @@ import type { EvalValue, ComplexValueResult } from './types';
 // =============================================================================
 
 /**
- * Checks if a value is a Rational.
+ * Checks if a value is a MathNode.
  */
-function isRational(value: EvalValue): value is Rational {
-	return typeof value === 'object' && 'n' in value && 'd' in value;
+function isMathNode(value: EvalValue): value is MathNode {
+	return typeof value === 'object' && 'type' in value;
 }
 
 /**
@@ -32,13 +32,6 @@ function isRational(value: EvalValue): value is Rational {
  */
 function isComplex(value: EvalValue): value is ComplexValueResult {
 	return typeof value === 'object' && 'real' in value && 'imag' in value;
-}
-
-/**
- * Converts a Rational to a number.
- */
-function rationalToNumber(r: Rational): number {
-	return Number(r.n) / Number(r.d);
 }
 
 /**
@@ -115,56 +108,39 @@ export function evaluateWithModifiers(latex: string, modifiers: EvalModifiers = 
 	// Parse the LaTeX expression
 	const ast = parseLatex(latex);
 
-	// Determine evaluation mode based on decimal modifier
-	const mode = modifiers.decimal ? 'decimal' : 'exact';
+	// Always use decimal mode internally to get a numeric value
+	// This simplifies the logic and avoids having to interpret MathNode structures
+	const result = evaluate(ast, { mode: 'decimal' });
 
-	// Evaluate the expression
-	const result = evaluate(ast, { mode });
-
-	// Convert to numeric value
+	// Get the numeric value
 	let numValue: number;
-	if (isRational(result.value)) {
-		numValue = rationalToNumber(result.value);
-	} else if (isComplex(result.value)) {
-		// Complex values are not supported in this simple evaluation
+	if (isComplex(result.value)) {
 		throw new Error('Complex numbers are not supported in evaluateWithModifiers');
+	} else if (isMathNode(result.value)) {
+		// In case we somehow got a MathNode (shouldn't happen in decimal mode)
+		numValue = evaluateNodeToApproximatedNumber(result.value);
 	} else {
 		numValue = result.value;
 	}
 
 	// Format the output
-	let output: string;
-
-	// For exact mode with rational result, format as fraction if not integer
-	if (!modifiers.decimal && isRational(result.value)) {
-		const r = result.value;
-		if (r.d === 1n) {
-			// Integer result
-			output = r.n.toString();
-		} else {
-			// Fraction result - convert to decimal for string output
-			// (The caller expects a numeric string, not LaTeX fraction notation)
-			output = formatNumber(numValue);
-		}
-	} else {
-		// Decimal mode or non-rational result
-		output = formatNumber(numValue);
-	}
+	const output = formatNumber(numValue);
+	let formattedOutput = output;
 
 	// Apply formatting modifiers
 	if (modifiers.addPositive && numValue > 0) {
 		// Add + sign for positive numbers
-		if (!output.startsWith('+')) {
-			output = '+' + output;
+		if (!formattedOutput.startsWith('+')) {
+			formattedOutput = '+' + formattedOutput;
 		}
 	}
 
 	if (modifiers.bracketNegative && numValue < 0) {
 		// Wrap negative numbers in parentheses
-		if (!output.startsWith('(')) {
-			output = '(' + output + ')';
+		if (!formattedOutput.startsWith('(')) {
+			formattedOutput = '(' + formattedOutput + ')';
 		}
 	}
 
-	return output;
+	return formattedOutput;
 }

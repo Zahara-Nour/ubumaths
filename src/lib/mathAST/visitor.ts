@@ -32,7 +32,9 @@ import type {
 	RelationNode,
 	UnitNode,
 	CompositionNode,
-	ComplexNode
+	ComplexNode,
+	InfinityNode,
+	LimitNode
 } from './types';
 
 import {
@@ -42,6 +44,8 @@ import {
 	delimiter,
 	divide,
 	func,
+	infinity,
+	limit,
 	matrix,
 	multiply,
 	opposite,
@@ -166,6 +170,14 @@ export interface ASTVisitor {
 	// Complex callback
 	enterComplex?(node: ComplexNode, context: VisitorContext): EnterResult;
 	leaveComplex?(node: ComplexNode, context: VisitorContext): void;
+
+	// Infinity callback
+	enterInfinity?(node: InfinityNode, context: VisitorContext): EnterResult;
+	leaveInfinity?(node: InfinityNode, context: VisitorContext): void;
+
+	// Limit callback
+	enterLimit?(node: LimitNode, context: VisitorContext): EnterResult;
+	leaveLimit?(node: LimitNode, context: VisitorContext): void;
 }
 
 // =============================================================================
@@ -239,6 +251,14 @@ export interface TransformVisitor {
 	// Complex callback
 	enterComplex?(node: ComplexNode, context: VisitorContext): TransformEnterResult;
 	leaveComplex?(node: ComplexNode, context: VisitorContext): TransformLeaveResult;
+
+	// Infinity callback
+	enterInfinity?(node: InfinityNode, context: VisitorContext): TransformEnterResult;
+	leaveInfinity?(node: InfinityNode, context: VisitorContext): TransformLeaveResult;
+
+	// Limit callback
+	enterLimit?(node: LimitNode, context: VisitorContext): TransformEnterResult;
+	leaveLimit?(node: LimitNode, context: VisitorContext): TransformLeaveResult;
 }
 
 // =============================================================================
@@ -265,7 +285,9 @@ const TYPE_TO_METHOD_NAME: Record<MathNode['type'], string> = {
 	unit: 'Unit',
 	composition: 'Composition',
 	matrix: 'Matrix',
-	complex: 'Complex'
+	complex: 'Complex',
+	infinity: 'Infinity',
+	limit: 'Limit'
 };
 
 // =============================================================================
@@ -387,6 +409,17 @@ function getChildrenWithPaths(node: MathNode): ChildInfo[] {
 			});
 			return children;
 		}
+
+		// Infinity is a leaf node (no children)
+		case 'infinity':
+			return [];
+
+		// Limit has expression and approach as children
+		case 'limit':
+			return [
+				{ child: node.expression, pathSegments: ['expression'] },
+				{ child: node.approach, pathSegments: ['approach'] }
+			];
 	}
 }
 
@@ -582,6 +615,20 @@ function reconstructNode(original: MathNode, transformedChildren: Map<string, Ma
 				metadata: original.metadata
 			});
 		}
+
+		// Infinity - no children, return as-is
+		case 'infinity':
+			return infinity(original.sign, original.metadata);
+
+		// Limit - reconstruct with transformed expression and approach
+		case 'limit':
+			return limit(
+				getChild('expression', original.expression),
+				original.variable,
+				getChild('approach', original.approach),
+				original.direction,
+				original.metadata
+			);
 	}
 }
 

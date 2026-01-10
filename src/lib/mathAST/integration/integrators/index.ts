@@ -6,13 +6,13 @@
  * @module mathAST/integration/integrators
  */
 
-import type { MathNode } from '../../types';
 import type { Integrator } from '../types';
 import { basicIntegrator } from './basic';
 import { uSubstitutionIntegrator } from './u-substitution';
 import { partsIntegrator } from './parts';
 import { partialFractionsIntegrator } from './partial-fractions';
 import { trigSubstitutionIntegrator } from './trig-substitution';
+import { registerIntegrators } from './select';
 
 // TODO Phase 8: Add numeric integrator
 // import { numericIntegrator } from './numeric';
@@ -45,40 +45,16 @@ export const ALL_INTEGRATORS: readonly Integrator[] = [
 	// numericIntegrator             // priority 100
 ] as const;
 
+// Register integrators in the global registry to avoid circular dependencies
+// This must be done after ALL_INTEGRATORS is defined
+registerIntegrators(ALL_INTEGRATORS);
+
 // =============================================================================
 // Integrator Selection
 // =============================================================================
 
-/**
- * Select the first integrator that can handle the given expression.
- *
- * Integrators are tried in order of priority (lowest first).
- * Returns the first integrator whose canIntegrate() returns true.
- *
- * @param expr - The expression to integrate
- * @param variable - The variable of integration
- * @returns The selected integrator, or null if none can handle the expression
- *
- * @example
- * ```typescript
- * const integrator = selectIntegrator(parseLatex('x^2'), 'x');
- * // Returns basicIntegrator (can handle power rule)
- * ```
- */
-export function selectIntegrator(expr: MathNode, variable: string): Integrator | null {
-	// Sort integrators by priority (ascending - lowest priority first)
-	const sorted = [...ALL_INTEGRATORS].sort((a, b) => a.priority - b.priority);
-
-	// Find the first integrator that can handle this expression
-	for (const integrator of sorted) {
-		if (integrator.canIntegrate(expr, variable)) {
-			return integrator;
-		}
-	}
-
-	// No integrator found
-	return null;
-}
+// Re-export selectIntegrator from separate file to avoid circular dependencies
+export { selectIntegrator } from './select';
 
 // =============================================================================
 // Exports

@@ -687,7 +687,7 @@ export function isOneAlgebraic(a: AlgebraicCoefficient): boolean {
 export function isPureRational(a: AlgebraicCoefficient): boolean {
 	if (a.terms.length === 0) return true; // Zero is rational
 	if (a.terms.length > 1) return false;
-	return a.terms[0].radicals.length === 0;
+	return a.terms[0].radicals.length === 0 && !a.terms[0].hasImaginaryUnit;
 }
 
 /**
@@ -700,6 +700,7 @@ export function getRationalValue(a: AlgebraicCoefficient): Rational | null {
 	if (a.terms.length === 0) return ZERO;
 	if (a.terms.length > 1) return null;
 	if (a.terms[0].radicals.length > 0) return null;
+	if (a.terms[0].hasImaginaryUnit) return null;
 	return a.terms[0].rational;
 }
 

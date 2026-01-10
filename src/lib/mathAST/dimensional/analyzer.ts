@@ -1050,6 +1050,14 @@ function analyzeNode(
 			// Complex numbers are dimensionless
 			return createDimensionlessUnit();
 
+		case 'infinity':
+			// Infinity is dimensionless
+			return createDimensionlessUnit();
+
+		case 'limit':
+			// The result of a limit has the same dimension as the expression
+			return analyzeNode(node.expression, context, errors, warnings);
+
 		default: {
 			// TypeScript exhaustiveness check
 			const _exhaustive: never = node;

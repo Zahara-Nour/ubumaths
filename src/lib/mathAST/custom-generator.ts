@@ -42,6 +42,8 @@ import type {
 	CompositionNode,
 	MatrixNode,
 	ComplexNode,
+	InfinityNode,
+	LimitNode,
 	RelationType,
 	GreekLetter,
 	NodeMetadata
@@ -255,6 +257,7 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'greek':
 		case 'symbol':
 		case 'hole':
+		case 'infinity':
 			return false;
 
 		// Functions: have their own parentheses
@@ -279,6 +282,7 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'composition':
 		case 'matrix':
 		case 'complex':
+		case 'limit':
 			return true;
 
 		default: {
@@ -448,11 +452,46 @@ export class CustomGenerator {
 				this.visitComplexSpans(node);
 				break;
 
+			case 'infinity':
+				this.visitInfinitySpans(node);
+				break;
+
+			case 'limit':
+				this.visitLimitSpans(node);
+				break;
+
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
 			}
 		}
+	}
+
+	/**
+	 * Emits an infinity span.
+	 */
+	private visitInfinitySpans(node: InfinityNode): void {
+		const sign = node.sign === 'positive' ? '+' : '-';
+		this.emit(`${sign}∞`, node.metadata);
+	}
+
+	/**
+	 * Emits a limit span.
+	 */
+	private visitLimitSpans(node: LimitNode): void {
+		this.emit('lim', node.metadata);
+		this.emit('[', undefined);
+		this.emit(node.variable, undefined);
+		this.emit('→', undefined);
+		this.visitWithSpans(node.approach);
+		if (node.direction === 'right') {
+			this.emit('⁺', undefined);
+		} else if (node.direction === 'left') {
+			this.emit('⁻', undefined);
+		}
+		this.emit(']', undefined);
+		this.emit(' ', undefined);
+		this.visitWithSpans(node.expression);
 	}
 
 	/**
@@ -864,6 +903,12 @@ export class CustomGenerator {
 			case 'complex':
 				content = this.generateComplex(node);
 				break;
+			case 'infinity':
+				content = this.generateInfinity(node);
+				break;
+			case 'limit':
+				content = this.generateLimit(node);
+				break;
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
@@ -875,6 +920,23 @@ export class CustomGenerator {
 
 	private generateNumber(node: NumberNode): string {
 		return node.value;
+	}
+
+	private generateInfinity(node: InfinityNode): string {
+		const sign = node.sign === 'positive' ? '+' : '-';
+		return `${sign}∞`;
+	}
+
+	private generateLimit(node: LimitNode): string {
+		const approach = this.generateNode(node.approach);
+		let direction = '';
+		if (node.direction === 'right') {
+			direction = '⁺';
+		} else if (node.direction === 'left') {
+			direction = '⁻';
+		}
+		const expression = this.generateNode(node.expression);
+		return `lim[${node.variable}→${approach}${direction}] ${expression}`;
 	}
 
 	private generateComplex(node: ComplexNode): string {

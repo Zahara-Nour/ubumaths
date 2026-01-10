@@ -1151,7 +1151,14 @@ src/lib/mathAST/limits/
 └── step-recorder.ts      # Pedagogical step recording
 ```
 
-**Full roadmap:** See `/Users/david/.claude/plans/inherited-marinating-pudding.md`
+**Integration with Intervals Module (`$lib/math/intervals/`):**
+
+The intervals module provides infrastructure to reuse:
+
+- `InfinityKind` for infinity representation (with converters to/from `InfinityNode`)
+- `EndpointValue` / `AlgebraicCoefficient` for exact limit results (rationals, radicals)
+- `intersect`, `union`, `complement`, `containsValue` for continuity analysis
+- `positiveReals()`, `nonZeroReals()` for domain checking
 
 **Effort:** Very High | **Impact:** High
 
