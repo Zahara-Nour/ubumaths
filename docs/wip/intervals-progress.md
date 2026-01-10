@@ -37,9 +37,18 @@ Migrated `src/lib/math/intervals/` from AlgebraicCoefficient-based bounds to Mat
 
 ### Test Results
 
-- 143 tests passing
+- **293 tests passing** (150 edge cases added)
 - Type check: 0 errors
 - Code review: 9/10 (Excellent)
+
+### Edge Cases Added
+
+| Test File          | Tests | Edge Case Categories                                                        |
+| ------------------ | ----- | --------------------------------------------------------------------------- |
+| `endpoint.test.ts` | 79    | Symbolic equality, variables, π/e, nested functions, powers, extreme values |
+| `algebra.test.ts`  | 70    | Single points, touching intervals, containment, half-lines, complements     |
+| `factory.test.ts`  | 68    | Extreme numbers, negative coefficients, perfect squares, inverted intervals |
+| `format.test.ts`   | 76    | Greek letters, nested expressions, multiple excluded points, mixed bounds   |
 
 ### Documentation
 

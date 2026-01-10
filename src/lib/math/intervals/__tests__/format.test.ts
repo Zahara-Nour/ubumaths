@@ -242,3 +242,241 @@ describe('formatDomainFull', () => {
 		expect(result.condition).toBe('0 ≤ x ≤ √2');
 	});
 });
+
+// =============================================================================
+// Edge Cases
+// =============================================================================
+
+import { variable, greek } from '$lib/mathAST/factory';
+import { excludedPoint } from '../factory';
+
+describe('formatEndpointValue edge cases', () => {
+	it('formats integer zero', () => {
+		expect(formatEndpointValue(fromNumber(0))).toBe('0');
+	});
+
+	it('formats negative integers', () => {
+		expect(formatEndpointValue(fromNumber(-10))).toBe('-10');
+		expect(formatEndpointValue(fromNumber(-1))).toBe('-1');
+	});
+
+	it('formats decimal numbers', () => {
+		expect(formatEndpointValue(fromNumber(1.5))).toBe('1.5');
+		expect(formatEndpointValue(fromNumber(0.001))).toBe('0.001');
+	});
+
+	it('formats negative rational values', () => {
+		expect(formatEndpointValue(rationalBound(-3n, 4n))).toBe('-3/4');
+	});
+
+	it('formats large denominators', () => {
+		expect(formatEndpointValue(rationalBound(1n, 1000n))).toBe('1/1000');
+	});
+
+	it('formats sqrt of large numbers', () => {
+		expect(formatEndpointValue(radicalBound(1000n))).toBe('√1000');
+	});
+
+	it('formats negative coefficients with sqrt', () => {
+		const negTwoSqrt3 = radicalBound(3n, -2n, 1n);
+		expect(formatEndpointValue(negTwoSqrt3)).toBe('-2*√3');
+	});
+
+	it('formats sqrt with parentheses for complex radicand', () => {
+		// sqrt(a+b) should format as √(a+b) but we only have numeric radicands
+		// This tests the branch with non-number arguments
+		const sqrtPi = func('sqrt', [greek('pi')]);
+		expect(formatEndpointValue(sqrtPi)).toBe('√(π)');
+	});
+
+	it('formats other Greek letters', () => {
+		expect(formatEndpointValue(greek('alpha'))).toBe('α');
+		expect(formatEndpointValue(greek('beta'))).toBe('β');
+		expect(formatEndpointValue(greek('theta'))).toBe('θ');
+		expect(formatEndpointValue(greek('omega'))).toBe('ω');
+	});
+
+	it('formats unknown Greek letters as-is', () => {
+		expect(formatEndpointValue(greek('unknown'))).toBe('unknown');
+	});
+
+	it('formats other function calls', () => {
+		const ln2 = func('ln', [number('2')]);
+		expect(formatEndpointValue(ln2)).toBe('ln(2)');
+
+		const sin0 = func('sin', [number('0')]);
+		expect(formatEndpointValue(sin0)).toBe('sin(0)');
+
+		const exp1 = func('exp', [number('1')]);
+		expect(formatEndpointValue(exp1)).toBe('exp(1)');
+	});
+
+	it('formats functions with multiple arguments', () => {
+		const log = func('log', [number('10'), number('100')]);
+		expect(formatEndpointValue(log)).toBe('log(10, 100)');
+	});
+
+	it('formats multiplication without sqrt', () => {
+		const twoTimesThree = implicitMultiply(number('2'), number('3'));
+		expect(formatEndpointValue(twoTimesThree)).toBe('2*3');
+	});
+
+	it('formats variable e', () => {
+		expect(() => formatEndpointValue(variable('e'))).not.toThrow();
+	});
+
+	it('formats nested expressions', () => {
+		// 2 * sqrt(sqrt(2))
+		const nestedSqrt = implicitMultiply(number('2'), func('sqrt', [func('sqrt', [number('2')])]));
+		expect(formatEndpointValue(nestedSqrt)).toBe('2*√(√2)');
+	});
+});
+
+describe('formatDomainInterval edge cases', () => {
+	it('formats multiple excluded points', () => {
+		const domain = intervalSet(
+			[realLine()],
+			[excludedPoint(fromNumber(0)), excludedPoint(fromNumber(1)), excludedPoint(fromNumber(2))]
+		);
+		expect(formatDomainInterval(domain)).toBe('ℝ \\ {0, 1, 2}');
+	});
+
+	it('formats excluded symbolic points', () => {
+		const sqrt2 = radicalBound(2n);
+		const domain = intervalSet([realLine()], [excludedPoint(sqrt2)]);
+		expect(formatDomainInterval(domain)).toBe('ℝ \\ {√2}');
+	});
+
+	it('formats mixed open/closed bounds', () => {
+		// ]0, 1]
+		const domain = intervalSet([rightClosedInterval(fromNumber(0), fromNumber(1))]);
+		expect(formatDomainInterval(domain)).toBe(']0, 1]');
+	});
+
+	it('formats left-closed interval [a, b[', () => {
+		const domain = intervalSet([leftClosedInterval(fromNumber(0), fromNumber(1))]);
+		expect(formatDomainInterval(domain)).toBe('[0, 1[');
+	});
+
+	it('formats single point [a, a]', () => {
+		const domain = intervalSet([closedInterval(fromNumber(5), fromNumber(5))]);
+		expect(formatDomainInterval(domain)).toBe('[5, 5]');
+	});
+
+	it('formats three disjoint intervals', () => {
+		const domain = intervalSet([
+			closedInterval(fromNumber(0), fromNumber(1)),
+			closedInterval(fromNumber(3), fromNumber(4)),
+			closedInterval(fromNumber(6), fromNumber(7))
+		]);
+		expect(formatDomainInterval(domain)).toBe('[0, 1] ∪ [3, 4] ∪ [6, 7]');
+	});
+
+	it('formats interval with excluded point inside', () => {
+		const domain = intervalSet(
+			[closedInterval(fromNumber(0), fromNumber(10))],
+			[excludedPoint(fromNumber(5))]
+		);
+		expect(formatDomainInterval(domain)).toBe('[0, 10] \\ {5}');
+	});
+
+	it('formats negative bounds', () => {
+		const domain = intervalSet([closedInterval(fromNumber(-10), fromNumber(-5))]);
+		expect(formatDomainInterval(domain)).toBe('[-10, -5]');
+	});
+
+	it('formats bounds spanning zero', () => {
+		const domain = intervalSet([closedInterval(fromNumber(-5), fromNumber(5))]);
+		expect(formatDomainInterval(domain)).toBe('[-5, 5]');
+	});
+});
+
+describe('formatDomainCondition edge cases', () => {
+	it('formats mixed interval as double inequality', () => {
+		// ]0, 1]
+		const domain = intervalSet([rightClosedInterval(fromNumber(0), fromNumber(1))]);
+		expect(formatDomainCondition(domain)).toBe('0 < x ≤ 1');
+	});
+
+	it('formats left-closed interval as double inequality', () => {
+		// [0, 1[
+		const domain = intervalSet([leftClosedInterval(fromNumber(0), fromNumber(1))]);
+		expect(formatDomainCondition(domain)).toBe('0 ≤ x < 1');
+	});
+
+	it('formats with Greek variable name', () => {
+		const domain = positiveReals();
+		expect(formatDomainCondition(domain, 'θ')).toBe('θ > 0');
+	});
+
+	it('formats with numeric variable name', () => {
+		const domain = positiveReals();
+		expect(formatDomainCondition(domain, 'x₁')).toBe('x₁ > 0');
+	});
+
+	it('formats three disjoint intervals with ou', () => {
+		const domain = intervalSet([
+			closedInterval(fromNumber(0), fromNumber(1)),
+			closedInterval(fromNumber(3), fromNumber(4)),
+			closedInterval(fromNumber(6), fromNumber(7))
+		]);
+		expect(formatDomainCondition(domain)).toBe('0 ≤ x ≤ 1 ou 3 ≤ x ≤ 4 ou 6 ≤ x ≤ 7');
+	});
+
+	it('formats multiple excluded points with et', () => {
+		const domain = intervalSet(
+			[realLine()],
+			[excludedPoint(fromNumber(0)), excludedPoint(fromNumber(1))]
+		);
+		expect(formatDomainCondition(domain)).toBe('x ∈ ℝ et x ≠ 0 et x ≠ 1');
+	});
+
+	it('formats symbolic bound in condition', () => {
+		const sqrt3 = radicalBound(3n);
+		const domain = intervalSet([greaterThanOrEqual(sqrt3)]);
+		expect(formatDomainCondition(domain)).toBe('x ≥ √3');
+	});
+
+	it('formats pi in condition', () => {
+		const piVal = pi();
+		const domain = intervalSet([lessThan(piVal)]);
+		expect(formatDomainCondition(domain)).toBe('x < π');
+	});
+
+	it('formats negative bounds in condition', () => {
+		const domain = intervalSet([closedInterval(fromNumber(-5), fromNumber(-1))]);
+		expect(formatDomainCondition(domain)).toBe('-5 ≤ x ≤ -1');
+	});
+});
+
+describe('formatDomainFull edge cases', () => {
+	it('returns both formats for complex domain', () => {
+		const sqrt2 = radicalBound(2n);
+		const domain = intervalSet([greaterThan(sqrt2)]);
+		const result = formatDomainFull(domain, 'y');
+		expect(result.interval).toBe(']√2, +∞[');
+		expect(result.condition).toBe('y > √2');
+	});
+
+	it('handles empty set in both formats', () => {
+		const result = formatDomainFull(emptySet());
+		expect(result.interval).toBe('∅');
+		expect(result.condition).toBe('aucune valeur');
+	});
+
+	it('handles universal set in both formats', () => {
+		const result = formatDomainFull(universalSet(), 'z');
+		expect(result.interval).toBe('ℝ');
+		expect(result.condition).toBe('z ∈ ℝ');
+	});
+
+	it('handles excluded points in both formats', () => {
+		const domain = nonZeroReals();
+		const result = formatDomainFull(domain);
+		expect(result.interval).toBe('ℝ \\ {0}');
+		expect(result.condition).toBe('x ∈ ℝ et x ≠ 0');
+	});
+});
+
+// Additional imports for edge cases
+import { rightClosedInterval, leftClosedInterval, greaterThanOrEqual } from '../factory';
