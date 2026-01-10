@@ -138,6 +138,11 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'log',
 	'exp',
 	'sqrt',
+	// Rounding functions
+	'floor',
+	'ceil',
+	'round',
+	'abs',
 	// Statistical functions
 	'mean',
 	'median',
@@ -156,8 +161,11 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 	'variance', // 8 chars
 	'median', // 6 chars
 	'stdev', // 5 chars
+	'floor', // 5 chars
+	'round', // 5 chars
 	'sqrt', // 4 chars
 	'mean', // 4 chars
+	'ceil', // 4 chars
 	'sin', // 3 chars
 	'cos', // 3 chars
 	'tan', // 3 chars
@@ -166,6 +174,7 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 	'min', // 3 chars
 	'max', // 3 chars
 	'sum', // 3 chars
+	'abs', // 3 chars
 	'ln' // 2 chars
 ];
 
