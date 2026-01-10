@@ -4,79 +4,59 @@
  * Types for representing mathematical domains: sets of valid input values
  * for functions. Supports interval notation, condition-based constraints,
  * and domain algebra operations.
- */
-
-import type { MathNode } from '../types';
-
-// =============================================================================
-// Endpoint Types (for intervals)
-// =============================================================================
-
-/**
- * Type of endpoint for an interval bound
- * - 'closed': includes the endpoint (<=, >=)
- * - 'open': excludes the endpoint (<, >)
- */
-export type EndpointType = 'open' | 'closed';
-
-/**
- * Special value representing positive or negative infinity
- */
-export type Infinity = 'positive_infinity' | 'negative_infinity';
-
-/**
- * An endpoint value can be:
- * - A MathNode (for symbolic bounds like pi, sqrt(2))
- * - A number (for numeric bounds)
- * - Infinity
- */
-export type EndpointValue = MathNode | number | Infinity;
-
-/**
- * Represents one end of an interval
- */
-export interface Endpoint {
-	readonly value: EndpointValue;
-	readonly type: EndpointType;
-}
-
-// =============================================================================
-// Interval Types
-// =============================================================================
-
-/**
- * Represents a single continuous interval on the real line.
  *
- * French notation conventions:
- * - ]a, b[ = open interval (a, b) in English notation
- * - [a, b] = closed interval
- * - ]a, b] or [a, b[ = half-open intervals
- *
- * @example
- * // ]0, +infinity[ represents x > 0
- * { lower: { value: 0, type: 'open' },
- *   upper: { value: 'positive_infinity', type: 'open' } }
- *
- * // [-1, 1] represents -1 <= x <= 1
- * { lower: { value: -1, type: 'closed' },
- *   upper: { value: 1, type: 'closed' } }
+ * Core interval types are imported from $lib/math/intervals.
+ * This module adds domain-specific types like ConditionDomain.
  */
-export interface Interval {
-	readonly kind: 'interval';
-	readonly lower: Endpoint;
-	readonly upper: Endpoint;
-}
-
-/**
- * Represents a single excluded point (e.g., x != 0)
- */
-export interface ExcludedPoint {
-	readonly kind: 'excluded_point';
-	readonly value: EndpointValue;
-}
 
 // =============================================================================
-// Condition Types (Constraint-based representation)
+// Re-export core types from intervals module
+// =============================================================================
+
+// Endpoint types
+export type {
+	EndpointValue,
+	EndpointType,
+	Endpoint,
+	// Interval types
+	Interval,
+	ExcludedPoint,
+	// Domain types (interval-based)
+	EmptySet,
+	UniversalSet,
+	IntervalSet,
+	// Comparison types
+	CompareOutcome,
+	CompareResult
+} from '$lib/math/intervals/types';
+
+// Import for use in this file
+import type { EndpointValue, EmptySet, UniversalSet, IntervalSet } from '$lib/math/intervals/types';
+
+// =============================================================================
+// Backward compatibility aliases
+// =============================================================================
+
+/**
+ * Alias for EmptySet for backward compatibility.
+ * @deprecated Use EmptySet instead
+ */
+export type EmptyDomain = EmptySet;
+
+/**
+ * Alias for UniversalSet for backward compatibility.
+ * @deprecated Use UniversalSet instead
+ */
+export type UniversalDomain = UniversalSet;
+
+/**
+ * Alias for IntervalSet for backward compatibility.
+ * @deprecated Use IntervalSet instead
+ */
+export type IntervalDomain = IntervalSet;
+
+// =============================================================================
+// Condition Types (Domain-specific, not in intervals)
 // =============================================================================
 
 /**
@@ -103,38 +83,6 @@ export interface ComparisonCondition {
  */
 export type Condition = ComparisonCondition;
 
-// =============================================================================
-// Domain Types
-// =============================================================================
-
-/**
- * The empty domain (no valid values)
- */
-export interface EmptyDomain {
-	readonly kind: 'empty';
-}
-
-/**
- * The universal domain (all real numbers)
- */
-export interface UniversalDomain {
-	readonly kind: 'universal';
-}
-
-/**
- * An interval-based domain (union of intervals with optional excluded points)
- *
- * Represents domains like:
- * - ]0, +infinity[
- * - ]-infinity, 0[ union ]0, +infinity[ (R \ {0})
- * - [-1, 1]
- */
-export interface IntervalDomain {
-	readonly kind: 'interval_domain';
-	readonly intervals: readonly Interval[];
-	readonly excludedPoints: readonly ExcludedPoint[];
-}
-
 /**
  * A condition-based domain (conjunction or disjunction of conditions)
  *
@@ -149,10 +97,20 @@ export interface ConditionDomain {
 	readonly combinator: 'and' | 'or';
 }
 
+// =============================================================================
+// Domain Union Type
+// =============================================================================
+
 /**
- * Union of all domain types
+ * Union of all domain types.
+ *
+ * Includes:
+ * - EmptySet: no valid values (kind: 'empty')
+ * - UniversalSet: all real numbers (kind: 'universal')
+ * - IntervalSet: union of intervals with excluded points (kind: 'interval_set')
+ * - ConditionDomain: condition-based representation (kind: 'condition_domain')
  */
-export type Domain = EmptyDomain | UniversalDomain | IntervalDomain | ConditionDomain;
+export type Domain = EmptySet | UniversalSet | IntervalSet | ConditionDomain;
 
 // =============================================================================
 // Domain Result Types (for domain operations)

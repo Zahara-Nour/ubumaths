@@ -16,7 +16,8 @@ import {
 	greaterThanOrEqual,
 	lessThan,
 	lessThanOrEqual,
-	excludedPoint
+	excludedPoint,
+	fromNumber
 } from '../factory';
 
 describe('formatDomainInterval()', () => {
@@ -48,41 +49,47 @@ describe('formatDomainInterval()', () => {
 		});
 
 		it('formats ]-∞, 0[', () => {
-			const d = intervalDomain([lessThan(0)]);
+			const d = intervalDomain([lessThan(fromNumber(0))]);
 			expect(formatDomainInterval(d)).toBe(']-∞, 0[');
 		});
 
 		it('formats ]-∞, 0]', () => {
-			const d = intervalDomain([lessThanOrEqual(0)]);
+			const d = intervalDomain([lessThanOrEqual(fromNumber(0))]);
 			expect(formatDomainInterval(d)).toBe(']-∞, 0]');
 		});
 
 		it('formats ]1, +∞[', () => {
-			const d = intervalDomain([greaterThan(1)]);
+			const d = intervalDomain([greaterThan(fromNumber(1))]);
 			expect(formatDomainInterval(d)).toBe(']1, +∞[');
 		});
 
 		it('formats [1, +∞[', () => {
-			const d = intervalDomain([greaterThanOrEqual(1)]);
+			const d = intervalDomain([greaterThanOrEqual(fromNumber(1))]);
 			expect(formatDomainInterval(d)).toBe('[1, +∞[');
 		});
 	});
 
 	describe('union of intervals', () => {
 		it('formats ]-∞, -2] ∪ [2, +∞[', () => {
-			const d = intervalDomain([lessThanOrEqual(-2), greaterThanOrEqual(2)]);
+			const d = intervalDomain([
+				lessThanOrEqual(fromNumber(-2)),
+				greaterThanOrEqual(fromNumber(2))
+			]);
 			expect(formatDomainInterval(d)).toBe(']-∞, -2] ∪ [2, +∞[');
 		});
 	});
 
 	describe('excluded points', () => {
 		it('formats interval with excluded point', () => {
-			const d = intervalDomain([greaterThan(0)], [excludedPoint(1)]);
+			const d = intervalDomain([greaterThan(fromNumber(0))], [excludedPoint(fromNumber(1))]);
 			expect(formatDomainInterval(d)).toBe(']0, +∞[ \\ {1}');
 		});
 
 		it('formats interval with multiple excluded points', () => {
-			const d = intervalDomain([greaterThan(0)], [excludedPoint(1), excludedPoint(2)]);
+			const d = intervalDomain(
+				[greaterThan(fromNumber(0))],
+				[excludedPoint(fromNumber(1)), excludedPoint(fromNumber(2))]
+			);
 			expect(formatDomainInterval(d)).toBe(']0, +∞[ \\ {1, 2}');
 		});
 	});
@@ -123,12 +130,12 @@ describe('formatDomainCondition()', () => {
 		});
 
 		it('formats x < 0', () => {
-			const d = intervalDomain([lessThan(0)]);
+			const d = intervalDomain([lessThan(fromNumber(0))]);
 			expect(formatDomainCondition(d)).toBe('x < 0');
 		});
 
 		it('formats x ≤ 0', () => {
-			const d = intervalDomain([lessThanOrEqual(0)]);
+			const d = intervalDomain([lessThanOrEqual(fromNumber(0))]);
 			expect(formatDomainCondition(d)).toBe('x ≤ 0');
 		});
 	});
@@ -141,7 +148,10 @@ describe('formatDomainCondition()', () => {
 
 	describe('union conditions', () => {
 		it('formats x ≤ -2 ou x ≥ 2', () => {
-			const d = intervalDomain([lessThanOrEqual(-2), greaterThanOrEqual(2)]);
+			const d = intervalDomain([
+				lessThanOrEqual(fromNumber(-2)),
+				greaterThanOrEqual(fromNumber(2))
+			]);
 			expect(formatDomainCondition(d)).toBe('x ≤ -2 ou x ≥ 2');
 		});
 	});

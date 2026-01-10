@@ -13,7 +13,8 @@ import {
 	unitInterval,
 	universalDomain,
 	intervalDomain,
-	greaterThanOrEqual
+	greaterThanOrEqual,
+	fromNumber
 } from './factory';
 
 // =============================================================================
@@ -46,8 +47,11 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	['arccos', { domain: unitInterval(), constraint: '-1 <= x <= 1' }],
 
 	// Inverse hyperbolic with restricted domains
-	['acosh', { domain: intervalDomain([greaterThanOrEqual(1)]), constraint: 'x >= 1' }],
-	['arccosh', { domain: intervalDomain([greaterThanOrEqual(1)]), constraint: 'x >= 1' }],
+	['acosh', { domain: intervalDomain([greaterThanOrEqual(fromNumber(1))]), constraint: 'x >= 1' }],
+	[
+		'arccosh',
+		{ domain: intervalDomain([greaterThanOrEqual(fromNumber(1))]), constraint: 'x >= 1' }
+	],
 
 	// Universal domain functions
 	['exp', { domain: universalDomain() }],

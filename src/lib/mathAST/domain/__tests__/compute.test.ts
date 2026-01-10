@@ -35,7 +35,7 @@ describe('computeDomain()', () => {
 		it('sqrt(x) has domain [0, +inf[', () => {
 			const expr = sqrt(variable('x'));
 			const result = computeDomain(expr, 'x');
-			expect(result.domain.kind).toBe('interval_domain');
+			expect(result.domain.kind).toBe('interval_set');
 			expect(containsValue(result.domain, 0)).toBe(true);
 			expect(containsValue(result.domain, 4)).toBe(true);
 			expect(containsValue(result.domain, -1)).toBe(false);
@@ -44,7 +44,7 @@ describe('computeDomain()', () => {
 		it('ln(x) has domain ]0, +inf[', () => {
 			const expr = ln(variable('x'));
 			const result = computeDomain(expr, 'x');
-			expect(result.domain.kind).toBe('interval_domain');
+			expect(result.domain.kind).toBe('interval_set');
 			expect(containsValue(result.domain, 0)).toBe(false);
 			expect(containsValue(result.domain, 1)).toBe(true);
 			expect(containsValue(result.domain, -1)).toBe(false);
@@ -53,7 +53,7 @@ describe('computeDomain()', () => {
 		it('1/x has domain R \\ {0}', () => {
 			const expr = fraction(number('1'), variable('x'));
 			const result = computeDomain(expr, 'x');
-			expect(result.domain.kind).toBe('interval_domain');
+			expect(result.domain.kind).toBe('interval_set');
 			expect(containsValue(result.domain, 1)).toBe(true);
 			expect(containsValue(result.domain, -1)).toBe(true);
 			expect(containsValue(result.domain, 0)).toBe(false);
@@ -62,7 +62,7 @@ describe('computeDomain()', () => {
 		it('arcsin(x) has domain [-1, 1]', () => {
 			const expr = func('asin', [variable('x')]);
 			const result = computeDomain(expr, 'x');
-			expect(result.domain.kind).toBe('interval_domain');
+			expect(result.domain.kind).toBe('interval_set');
 			expect(containsValue(result.domain, 0)).toBe(true);
 			expect(containsValue(result.domain, 1)).toBe(true);
 			expect(containsValue(result.domain, -1)).toBe(true);

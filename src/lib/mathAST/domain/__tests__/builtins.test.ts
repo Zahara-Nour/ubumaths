@@ -48,7 +48,7 @@ describe('getBuiltinDomain()', () => {
 		it('returns non-negative reals domain', () => {
 			const domain = getBuiltinDomain('sqrt');
 			expect(domain).toBeDefined();
-			expect(domain?.kind).toBe('interval_domain');
+			expect(domain?.kind).toBe('interval_set');
 		});
 
 		it('contains 0', () => {

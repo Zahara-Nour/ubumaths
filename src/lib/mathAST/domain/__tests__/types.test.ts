@@ -1,43 +1,47 @@
 /**
  * Tests for domain types
+ *
+ * Updated for MathNode-based endpoint values.
  */
 
 import { describe, it, expect } from 'vitest';
 import type {
 	Endpoint,
 	Interval,
-	EmptyDomain,
-	UniversalDomain,
-	IntervalDomain,
+	EmptySet,
+	UniversalSet,
+	IntervalSet,
 	ConditionDomain,
 	ExcludedPoint,
 	ComparisonCondition,
 	Domain
 } from '../types';
+import { fromNumber, positiveInfinity, negativeInfinity } from '../factory';
+import { isNumber, isPositiveInfinity, isNegativeInfinity } from '$lib/mathAST/guards';
 
 describe('Domain Types', () => {
 	describe('Endpoint', () => {
 		it('can represent an open endpoint with numeric value', () => {
-			const endpoint: Endpoint = { value: 0, type: 'open' };
-			expect(endpoint.value).toBe(0);
+			const endpoint: Endpoint = { value: fromNumber(0), type: 'open' };
+			expect(isNumber(endpoint.value)).toBe(true);
 			expect(endpoint.type).toBe('open');
 		});
 
 		it('can represent a closed endpoint with numeric value', () => {
-			const endpoint: Endpoint = { value: 1, type: 'closed' };
-			expect(endpoint.value).toBe(1);
+			const endpoint: Endpoint = { value: fromNumber(1), type: 'closed' };
+			expect(isNumber(endpoint.value)).toBe(true);
 			expect(endpoint.type).toBe('closed');
 		});
 
 		it('can represent positive infinity', () => {
-			const endpoint: Endpoint = { value: 'positive_infinity', type: 'open' };
-			expect(endpoint.value).toBe('positive_infinity');
+			const endpoint: Endpoint = { value: positiveInfinity(), type: 'open' };
+			expect(isPositiveInfinity(endpoint.value)).toBe(true);
 			expect(endpoint.type).toBe('open');
 		});
 
 		it('can represent negative infinity', () => {
-			const endpoint: Endpoint = { value: 'negative_infinity', type: 'open' };
-			expect(endpoint.value).toBe('negative_infinity');
+			const endpoint: Endpoint = { value: negativeInfinity(), type: 'open' };
+			expect(isNegativeInfinity(endpoint.value)).toBe(true);
 			expect(endpoint.type).toBe('open');
 		});
 	});
@@ -46,21 +50,21 @@ describe('Domain Types', () => {
 		it('can represent an open interval ]0, 1[', () => {
 			const interval: Interval = {
 				kind: 'interval',
-				lower: { value: 0, type: 'open' },
-				upper: { value: 1, type: 'open' }
+				lower: { value: fromNumber(0), type: 'open' },
+				upper: { value: fromNumber(1), type: 'open' }
 			};
 			expect(interval.kind).toBe('interval');
-			expect(interval.lower.value).toBe(0);
+			expect(isNumber(interval.lower.value)).toBe(true);
 			expect(interval.lower.type).toBe('open');
-			expect(interval.upper.value).toBe(1);
+			expect(isNumber(interval.upper.value)).toBe(true);
 			expect(interval.upper.type).toBe('open');
 		});
 
 		it('can represent a closed interval [-1, 1]', () => {
 			const interval: Interval = {
 				kind: 'interval',
-				lower: { value: -1, type: 'closed' },
-				upper: { value: 1, type: 'closed' }
+				lower: { value: fromNumber(-1), type: 'closed' },
+				upper: { value: fromNumber(1), type: 'closed' }
 			};
 			expect(interval.lower.type).toBe('closed');
 			expect(interval.upper.type).toBe('closed');
@@ -69,72 +73,72 @@ describe('Domain Types', () => {
 		it('can represent ]0, +infinity[', () => {
 			const interval: Interval = {
 				kind: 'interval',
-				lower: { value: 0, type: 'open' },
-				upper: { value: 'positive_infinity', type: 'open' }
+				lower: { value: fromNumber(0), type: 'open' },
+				upper: { value: positiveInfinity(), type: 'open' }
 			};
-			expect(interval.upper.value).toBe('positive_infinity');
+			expect(isPositiveInfinity(interval.upper.value)).toBe(true);
 		});
 
 		it('can represent ]-infinity, 0]', () => {
 			const interval: Interval = {
 				kind: 'interval',
-				lower: { value: 'negative_infinity', type: 'open' },
-				upper: { value: 0, type: 'closed' }
+				lower: { value: negativeInfinity(), type: 'open' },
+				upper: { value: fromNumber(0), type: 'closed' }
 			};
-			expect(interval.lower.value).toBe('negative_infinity');
+			expect(isNegativeInfinity(interval.lower.value)).toBe(true);
 			expect(interval.upper.type).toBe('closed');
 		});
 	});
 
 	describe('ExcludedPoint', () => {
 		it('can represent an excluded point', () => {
-			const excluded: ExcludedPoint = { kind: 'excluded_point', value: 0 };
+			const excluded: ExcludedPoint = { kind: 'excluded_point', value: fromNumber(0) };
 			expect(excluded.kind).toBe('excluded_point');
-			expect(excluded.value).toBe(0);
+			expect(isNumber(excluded.value)).toBe(true);
 		});
 	});
 
 	describe('Domain types', () => {
 		it('can represent an empty domain', () => {
-			const domain: EmptyDomain = { kind: 'empty' };
+			const domain: EmptySet = { kind: 'empty' };
 			expect(domain.kind).toBe('empty');
 		});
 
 		it('can represent the universal domain (R)', () => {
-			const domain: UniversalDomain = { kind: 'universal' };
+			const domain: UniversalSet = { kind: 'universal' };
 			expect(domain.kind).toBe('universal');
 		});
 
 		it('can represent an interval domain', () => {
-			const domain: IntervalDomain = {
-				kind: 'interval_domain',
+			const domain: IntervalSet = {
+				kind: 'interval_set',
 				intervals: [
 					{
 						kind: 'interval',
-						lower: { value: 0, type: 'open' },
-						upper: { value: 'positive_infinity', type: 'open' }
+						lower: { value: fromNumber(0), type: 'open' },
+						upper: { value: positiveInfinity(), type: 'open' }
 					}
 				],
 				excludedPoints: []
 			};
-			expect(domain.kind).toBe('interval_domain');
+			expect(domain.kind).toBe('interval_set');
 			expect(domain.intervals).toHaveLength(1);
 		});
 
 		it('can represent R \\ {0} with excluded points', () => {
-			const domain: IntervalDomain = {
-				kind: 'interval_domain',
+			const domain: IntervalSet = {
+				kind: 'interval_set',
 				intervals: [
 					{
 						kind: 'interval',
-						lower: { value: 'negative_infinity', type: 'open' },
-						upper: { value: 'positive_infinity', type: 'open' }
+						lower: { value: negativeInfinity(), type: 'open' },
+						upper: { value: positiveInfinity(), type: 'open' }
 					}
 				],
-				excludedPoints: [{ kind: 'excluded_point', value: 0 }]
+				excludedPoints: [{ kind: 'excluded_point', value: fromNumber(0) }]
 			};
 			expect(domain.excludedPoints).toHaveLength(1);
-			expect(domain.excludedPoints[0].value).toBe(0);
+			expect(isNumber(domain.excludedPoints[0].value)).toBe(true);
 		});
 
 		it('can represent a condition domain', () => {
@@ -142,7 +146,7 @@ describe('Domain Types', () => {
 				kind: 'comparison',
 				variable: 'x',
 				op: '>',
-				bound: 0
+				bound: fromNumber(0)
 			};
 			const domain: ConditionDomain = {
 				kind: 'condition_domain',
@@ -161,7 +165,7 @@ describe('Domain Types', () => {
 				{ kind: 'empty' },
 				{ kind: 'universal' },
 				{
-					kind: 'interval_domain',
+					kind: 'interval_set',
 					intervals: [],
 					excludedPoints: []
 				},
