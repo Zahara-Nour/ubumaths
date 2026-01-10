@@ -2,7 +2,7 @@
 
 > **Purpose**: Track LaTeX features that cannot be converted to custom syntax, to guide future mathAST improvements.
 >
-> **Updated**: 2025-12-10
+> **Updated**: 2026-01-10
 >
 > **Related**: `src/lib/ubumark/importers/latex/converters/math-to-custom.ts`
 
@@ -28,30 +28,34 @@
 
 ### Operations
 
-| Operation                 | LaTeX         | Custom Syntax          |
-| ------------------------- | ------------- | ---------------------- |
-| Addition                  | `a + b`       | `a+b`                  |
-| Subtraction               | `a - b`       | `a-b`                  |
-| Multiplication (implicit) | `ab`          | `ab`                   |
-| Multiplication (explicit) | `a \cdot b`   | `a*b`                  |
-| Division/Fraction         | `\frac{a}{b}` | `a/b` or `{a+b}/{c+d}` |
-| Power                     | `x^2`         | `x^2`                  |
-| Subscript                 | `x_1`         | `x_1`                  |
-| Square root               | `\sqrt{x}`    | `sqrt(x)`              |
-| Nth root                  | `\sqrt[n]{x}` | `sqrt[n](x)`           |
+| Operation                 | LaTeX             | Custom Syntax          |
+| ------------------------- | ----------------- | ---------------------- |
+| Addition                  | `a + b`           | `a+b`                  |
+| Subtraction               | `a - b`           | `a-b`                  |
+| Multiplication (implicit) | `ab`              | `ab`                   |
+| Multiplication (explicit) | `a \cdot b`       | `a*b`                  |
+| Division/Fraction         | `\frac{a}{b}`     | `a/b` or `{a+b}/{c+d}` |
+| Power                     | `x^2`             | `x^2`                  |
+| Subscript                 | `x_1`             | `x_1`                  |
+| Square root               | `\sqrt{x}`        | `sqrt(x)`              |
+| Nth root                  | `\sqrt[n]{x}`     | `sqrt[n](x)`           |
+| Fractional exponent       | `x^{\frac{1}{n}}` | `x^{1/n}`              |
 
 ### Functions
 
-| Function      | LaTeX       | Custom Syntax |
-| ------------- | ----------- | ------------- | --------- | ------- | --- | --- | --- | --- |
-| sin           | `\sin(x)`   | `sin(x)`      |
-| cos           | `\cos(x)`   | `cos(x)`      |
-| tan           | `\tan(x)`   | `tan(x)`      |
-| log           | `\log(x)`   | `log(x)`      |
-| log with base | `\log_2(x)` | `log_2(x)`    |
-| ln            | `\ln(x)`    | `ln(x)`       |
-| exp           | `\exp(x)`   | `exp(x)`      |
-| abs           | `           | x             | `or`\left | x\right | `   | `   | x   | `   |
+| Function      | LaTeX                         | Custom Syntax |
+| ------------- | ----------------------------- | ------------- |
+| sin           | `\sin(x)`                     | `sin(x)`      |
+| cos           | `\cos(x)`                     | `cos(x)`      |
+| tan           | `\tan(x)`                     | `tan(x)`      |
+| log           | `\log(x)`                     | `log(x)`      |
+| log with base | `\log_2(x)`                   | `log_2(x)`    |
+| ln            | `\ln(x)`                      | `ln(x)`       |
+| exp           | `\exp(x)`                     | `exp(x)`      |
+| abs           | `\|x\|` or `\left\|x\right\|` | `abs(x)`      |
+| floor         | `\lfloor x \rfloor`           | `floor(x)`    |
+| ceil          | `\lceil x \rceil`             | `ceil(x)`     |
+| round         | `\operatorname{round}(x)`     | `round(x)`    |
 
 ### Relations
 
