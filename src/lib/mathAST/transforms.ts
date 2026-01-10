@@ -18,6 +18,7 @@ import {
 	hole,
 	infinity,
 	limit,
+	mathConstant,
 	matrix,
 	multiply,
 	number,
@@ -166,6 +167,7 @@ export function getChildren(node: MathNode): MathNode[] {
 		case 'greek':
 		case 'symbol':
 		case 'hole':
+		case 'constant':
 			return [];
 
 		// Binary operations
@@ -251,6 +253,7 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 		case 'greek':
 		case 'symbol':
 		case 'hole':
+		case 'constant':
 			transformedNode = node;
 			break;
 
@@ -432,6 +435,7 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 		case 'greek':
 		case 'symbol':
 		case 'hole':
+		case 'constant':
 			return transformedParent;
 
 		// Binary operations
@@ -711,6 +715,9 @@ export function cloneNode<T extends MathNode>(node: T): T {
 
 		case 'hole':
 			return hole(node.index, node.placeholder, node.metadata) as T;
+
+		case 'constant':
+			return mathConstant(node.constant, node.metadata) as T;
 
 		// Binary operations
 		case 'addition':

@@ -19,7 +19,7 @@ import type { MatrixType } from '../../matrix/types';
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { Tokenizer } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
-import { MathAST, compose, matrix, complex } from '../../factory';
+import { MathAST, compose, matrix, complex, euler } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
 import { SecurityError, checkInputLength, getEffectiveSecurityOptions } from '../security';
@@ -531,7 +531,8 @@ class PrattParser {
 					token.value === 'sqrt' ||
 					token.value === 'left' ||
 					token.value === 'begin' ||
-					token.value === 'imaginaryI'
+					token.value === 'imaginaryI' ||
+					token.value === 'exponentialE'
 				) {
 					return BP.MULTIPLY;
 				}
@@ -799,6 +800,11 @@ class PrattParser {
 				// \imaginaryI represents the imaginary unit i = complex(0, 1)
 				this.advance();
 				return this.applyColor(complex(MathAST.number('0'), MathAST.number('1')));
+
+			case 'exponentialE':
+				// \exponentialE represents Euler's number e
+				this.advance();
+				return this.applyColor(euler());
 
 			default:
 				this.error(`Unknown command: \\${cmd}`, token.position, token.length, 'UNKNOWN_COMMAND');
@@ -1096,7 +1102,7 @@ class PrattParser {
 		}
 
 		// Tokens that CAN trigger implicit multiplication:
-		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt, \begin, \imaginaryI)
+		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt, \begin, \imaginaryI, \exponentialE)
 		return (
 			token.type === 'NUMBER' ||
 			token.type === 'LETTER' ||
@@ -1110,7 +1116,8 @@ class PrattParser {
 					token.value === 'sqrt' ||
 					token.value === 'left' ||
 					token.value === 'begin' ||
-					token.value === 'imaginaryI'))
+					token.value === 'imaginaryI' ||
+					token.value === 'exponentialE'))
 		);
 	}
 

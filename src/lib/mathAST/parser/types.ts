@@ -365,6 +365,8 @@ export type KnownCommand =
 	| 'ominus'
 	| 'otimes'
 	| 'odot'
+	// Constants
+	| 'exponentialE' // Euler's number e
 	// Symbols
 	| 'infty'
 	| 'emptyset'
@@ -490,6 +492,8 @@ export const KNOWN_COMMANDS: ReadonlySet<string> = new Set<string>([
 	'ominus',
 	'otimes',
 	'odot',
+	// Constants
+	'exponentialE', // Euler's number e
 	// Symbols
 	'infty',
 	'emptyset',

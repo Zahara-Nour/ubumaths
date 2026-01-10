@@ -78,8 +78,7 @@ const opposite = (operand: MathNode): MathNode => ({ type: 'opposite', operand }
 const positive = (operand: MathNode): MathNode => ({ type: 'positive', operand });
 const delimiter = (content: MathNode): MathNode => ({
 	type: 'delimiter',
-	open: '(',
-	close: ')',
+	delimiters: 'parentheses',
 	content
 });
 

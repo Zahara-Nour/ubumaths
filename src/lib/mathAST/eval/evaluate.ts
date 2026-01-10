@@ -5,7 +5,7 @@
  * Supports both exact (Rational) and decimal (number) evaluation modes.
  */
 
-import type { MathNode } from '../types';
+import type { MathNode, FunctionNode } from '../types';
 import type { EvalOptions, EvalResult } from './types';
 import type { Rational } from '../normal/types';
 import type { PrecisionType } from '$lib/questions/types';
@@ -16,6 +16,7 @@ import {
 	isVariable,
 	isGreek,
 	isSymbol,
+	isMathConstant,
 	isAddition,
 	isSubtraction,
 	isMultiplication,
@@ -370,6 +371,16 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		throw new Error(`Cannot evaluate expression with unsubstituted Greek letter: ${node.letter}`);
 	}
 
+	// MathConstantNode - handle mathematical constants (euler, pi)
+	if (isMathConstant(node)) {
+		switch (node.constant) {
+			case 'euler':
+				return floatToRational(Math.E);
+			case 'pi':
+				return floatToRational(Math.PI);
+		}
+	}
+
 	// SymbolNode - handle known constants
 	if (isSymbol(node)) {
 		switch (node.symbol) {
@@ -592,28 +603,31 @@ const KNOWN_FUNCTIONS = new Set([
  */
 function validateEvaluable(node: MathNode): void {
 	if (isFunction(node)) {
-		const funcName = node.name.toLowerCase();
+		// Use type assertion to prevent TypeScript control flow narrowing issues
+		// with isDerivativeFunction/isInverseFunction type guards on already-narrowed FunctionNode
+		const fn = node as FunctionNode;
+		const funcName = fn.name.toLowerCase();
 		// Check for derivative or inverse functions
-		if (isDerivativeFunction(node)) {
+		if (fn.derivativeOrder !== undefined && fn.derivativeOrder > 0) {
 			throw new Error(
-				`Cannot evaluate derivative function '${node.name}'(x) without a definition. ` +
+				`Cannot evaluate derivative function '${fn.name}'(x) without a definition. ` +
 					'Derivative functions remain symbolic and require differentiation rules.'
 			);
 		}
-		if (isInverseFunction(node)) {
+		if (fn.isInverse === true) {
 			throw new Error(
-				`Cannot evaluate inverse function '${node.name}^{-1}(x)' without a definition. ` +
+				`Cannot evaluate inverse function '${fn.name}^{-1}(x)' without a definition. ` +
 					'Inverse functions remain symbolic.'
 			);
 		}
 		if (!KNOWN_FUNCTIONS.has(funcName)) {
 			throw new Error(
-				`Unknown function: ${node.name}. ` +
+				`Unknown function: ${fn.name}. ` +
 					'If this is a generic function (like f, g, h), provide its definition in EvalOptions.functions'
 			);
 		}
 		// Validate arguments recursively
-		for (const arg of node.args) {
+		for (const arg of fn.args) {
 			validateEvaluable(arg);
 		}
 		return;
@@ -654,7 +668,7 @@ function validateEvaluable(node: MathNode): void {
 		validateEvaluable(node.real);
 		validateEvaluable(node.imaginary);
 	}
-	// NumberNode, VariableNode, GreekLetterNode, SymbolNode, HoleNode are leaf nodes
+	// NumberNode, VariableNode, GreekLetterNode, SymbolNode, HoleNode, MathConstantNode are leaf nodes
 }
 
 // =============================================================================

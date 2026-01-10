@@ -378,6 +378,10 @@ export class LatexGenerator {
 				this.emit(`\\placeholder[${node.index}]{}`, node.metadata);
 				break;
 
+			case 'constant':
+				this.emit(node.constant === 'euler' ? '\\exponentialE' : '\\pi', node.metadata);
+				break;
+
 			case 'composition':
 				this.visitCompositionSpans(node);
 				break;
@@ -819,6 +823,9 @@ export class LatexGenerator {
 			case 'hole':
 				this.emit(`\\placeholder[${node.index}]{}`, effectiveMeta);
 				break;
+			case 'constant':
+				this.emit(node.constant === 'euler' ? '\\exponentialE' : '\\pi', effectiveMeta);
+				break;
 			default:
 				// For complex nodes, use normal visitWithSpans
 				// (they will handle their own metadata)
@@ -884,6 +891,9 @@ export class LatexGenerator {
 				break;
 			case 'hole':
 				content = this.generateHole(node);
+				break;
+			case 'constant':
+				content = node.constant === 'euler' ? '\\exponentialE' : '\\pi';
 				break;
 			case 'composition':
 				content = this.generateComposition(node);

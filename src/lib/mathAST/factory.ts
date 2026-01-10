@@ -22,6 +22,8 @@ import type {
 	InfinitySign,
 	LimitDirection,
 	LimitNode,
+	MathConstant,
+	MathConstantNode,
 	MathNode,
 	MathSymbol,
 	MatrixNode,
@@ -298,6 +300,35 @@ export function hole(index: number, placeholder?: string, metadata?: NodeMetadat
 		...(placeholder && { placeholder }),
 		...(metadata && { metadata })
 	} as const;
+}
+
+/**
+ * Creates a mathematical constant node (e or π)
+ * @param constant - The constant type ('euler' or 'pi')
+ * @param metadata - Optional rendering hints
+ */
+export function mathConstant(constant: MathConstant, metadata?: NodeMetadata): MathConstantNode {
+	return {
+		type: 'constant',
+		constant,
+		...(metadata && { metadata })
+	} as const;
+}
+
+/**
+ * Creates Euler's number e ≈ 2.71828...
+ * @param metadata - Optional rendering hints
+ */
+export function euler(metadata?: NodeMetadata): MathConstantNode {
+	return mathConstant('euler', metadata);
+}
+
+/**
+ * Creates the constant π ≈ 3.14159...
+ * @param metadata - Optional rendering hints
+ */
+export function piConstant(metadata?: NodeMetadata): MathConstantNode {
+	return mathConstant('pi', metadata);
 }
 
 // =============================================================================
@@ -1603,6 +1634,11 @@ export const MathAST = {
 	greek,
 	symbol,
 	hole,
+
+	// Mathematical constants
+	mathConstant,
+	euler,
+	piConstant,
 
 	// Binary operations
 	add,

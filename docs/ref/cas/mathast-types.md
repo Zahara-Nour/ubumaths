@@ -13,6 +13,7 @@ MathNode
 │   ├── VariableNode      # Variables (x, y, abc)
 │   ├── GreekLetterNode   # Greek letters (pi, alpha, beta, gamma, theta)
 │   ├── SymbolNode        # Mathematical symbols (infinity, partial, etc.)
+│   ├── MathConstantNode  # Mathematical constants (euler, pi)
 │   └── HoleNode          # Placeholders for fill-in-the-blank
 │
 ├── Binary Operation Nodes
@@ -137,6 +138,31 @@ interface HoleNode extends BaseNode {
 // Example: Fill-in-the-blank question
 { type: 'hole', index: 1, placeholder: '?' }
 ```
+
+#### MathConstantNode
+
+```typescript
+type MathConstant = 'euler' | 'pi';
+
+interface MathConstantNode extends BaseNode {
+    readonly type: 'constant';
+    readonly constant: MathConstant;
+}
+
+// Examples:
+{ type: 'constant', constant: 'euler' }  // Euler's number e ≈ 2.71828
+{ type: 'constant', constant: 'pi' }     // Pi π ≈ 3.14159
+```
+
+**Note**: `MathConstantNode` is distinct from `GreekLetterNode`. While `GreekLetterNode` represents Greek letters as symbols (for display), `MathConstantNode` represents mathematical constants with semantic meaning for evaluation and integration.
+
+**Parser behavior**:
+
+- LaTeX parser: `\exponentialE` → `MathConstantNode('euler')`
+- Custom parser: `e` is reserved → `MathConstantNode('euler')`
+- Custom parser: `i` is reserved → `ComplexNode(0, 1)` (imaginary unit)
+
+**Integration**: Both `exp(x)` and `e^x` are recognized as exponential functions and integrate correctly to `exp(x)`.
 
 ### Binary Operation Nodes
 
@@ -391,6 +417,8 @@ import {
 	greek,
 	symbol,
 	hole,
+	euler, // Euler's number e
+	pi, // Mathematical constant pi (as MathConstantNode)
 
 	// Binary operations
 	add,
@@ -462,6 +490,8 @@ import {
 	isGreekLetter,
 	isSymbol,
 	isHole,
+	isMathConstant,
+	isEulerConstant,
 	isAddition,
 	isSubtraction,
 	isMultiplication,

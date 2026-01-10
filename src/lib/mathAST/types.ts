@@ -18,10 +18,27 @@ import type { MatrixType } from './matrix/types';
  * This is a limited set of Greek letters supported by both LaTeX and Custom parsers.
  * Only these letters can be used in mathematical expressions.
  *
+ * Note: 'pi' is now represented as MathConstantNode('pi'), not GreekLetterNode.
+ * The other Greek letters (alpha, beta, gamma, theta) remain as variables.
+ *
  * Supported: pi, alpha, beta, gamma, theta
  * Not supported: All other Greek letters (omega, sigma, delta, epsilon, etc.)
  */
 export type GreekLetter = 'pi' | 'alpha' | 'beta' | 'gamma' | 'theta';
+
+// =============================================================================
+// Mathematical Constants
+// =============================================================================
+
+/**
+ * Mathematical constants that have special meaning.
+ *
+ * - 'euler': Euler's number e ≈ 2.71828...
+ * - 'pi': π ≈ 3.14159...
+ *
+ * Note: The imaginary unit 'i' is represented as ComplexNode(0, 1), not as a MathConstant.
+ */
+export type MathConstant = 'euler' | 'pi';
 
 // =============================================================================
 // Mathematical Symbols
@@ -158,9 +175,30 @@ export interface HoleNode extends BaseNode {
 }
 
 /**
+ * Represents a mathematical constant (e or π).
+ *
+ * This node type distinguishes mathematical constants from regular variables,
+ * enabling proper handling in integration (e^x), evaluation (Math.E, Math.PI),
+ * and symbolic manipulation.
+ *
+ * Note: The imaginary unit 'i' is NOT represented as MathConstantNode.
+ * It is represented as ComplexNode(0, 1) for proper complex arithmetic.
+ */
+export interface MathConstantNode extends BaseNode {
+	readonly type: 'constant';
+	readonly constant: MathConstant;
+}
+
+/**
  * Union of all literal node types
  */
-export type LiteralNode = NumberNode | VariableNode | GreekLetterNode | SymbolNode | HoleNode;
+export type LiteralNode =
+	| NumberNode
+	| VariableNode
+	| GreekLetterNode
+	| SymbolNode
+	| HoleNode
+	| MathConstantNode;
 
 // =============================================================================
 // Binary Operation Nodes
@@ -552,6 +590,7 @@ export type MathNode =
 	| GreekLetterNode
 	| SymbolNode
 	| HoleNode
+	| MathConstantNode
 	| AdditionNode
 	| SubtractionNode
 	| MultiplicationNode

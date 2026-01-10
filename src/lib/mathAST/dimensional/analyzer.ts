@@ -1018,7 +1018,8 @@ function analyzeNode(
 			return analyzeUnit(node, context, errors, warnings);
 
 		case 'hole':
-			// Holes are dimensionless placeholders - they have no inherent dimension
+		case 'constant':
+			// Holes and mathematical constants (e, π) are dimensionless
 			return createDimensionlessUnit();
 
 		case 'composition':

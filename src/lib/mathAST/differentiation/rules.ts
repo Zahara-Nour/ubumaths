@@ -598,6 +598,7 @@ export function containsVariable(node: MathNode, varName: string): boolean {
 		case 'number':
 		case 'symbol':
 		case 'hole':
+		case 'constant':
 			return false;
 
 		case 'variable':

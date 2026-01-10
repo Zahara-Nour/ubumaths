@@ -12,6 +12,7 @@ import type {
 	GreekLetterNode,
 	SymbolNode,
 	HoleNode,
+	MathConstantNode,
 	AdditionNode,
 	SubtractionNode,
 	MultiplicationNode,
@@ -49,7 +50,8 @@ export function isLiteralNode(node: MathNode): node is LiteralNode {
 		node.type === 'variable' ||
 		node.type === 'greek' ||
 		node.type === 'symbol' ||
-		node.type === 'hole'
+		node.type === 'hole' ||
+		node.type === 'constant'
 	);
 }
 
@@ -116,6 +118,27 @@ export function isSymbol(node: MathNode): node is SymbolNode {
  */
 export function isHole(node: MathNode): node is HoleNode {
 	return node.type === 'hole';
+}
+
+/**
+ * Type guard for MathConstantNode
+ */
+export function isMathConstant(node: MathNode): node is MathConstantNode {
+	return node.type === 'constant';
+}
+
+/**
+ * Type guard for Euler's constant (e ≈ 2.71828...)
+ */
+export function isEulerConstant(node: MathNode): node is MathConstantNode {
+	return isMathConstant(node) && node.constant === 'euler';
+}
+
+/**
+ * Type guard for π constant (≈ 3.14159...)
+ */
+export function isPiConstant(node: MathNode): node is MathConstantNode {
+	return isMathConstant(node) && node.constant === 'pi';
 }
 
 /**
@@ -529,6 +552,7 @@ export function hasUnitDescendant(node: MathNode): boolean {
 		case 'greek':
 		case 'symbol':
 		case 'hole':
+		case 'constant':
 			return false;
 
 		case 'addition':
