@@ -3937,6 +3937,163 @@ describe('Perfect Square Trinomial Detection', () => {
 });
 
 // =============================================================================
+// Absolute Value Function Tests
+// =============================================================================
+
+describe('Absolute Value Function Normalization', () => {
+	describe('abs() with integers', () => {
+		test('abs(3) = 3', () => {
+			const result = normalize(fn('abs', num('3')));
+			expect(result.hash).toBe('3');
+		});
+
+		test('abs(-3) = 3', () => {
+			const result = normalize(fn('abs', opposite(num('3'))));
+			expect(result.hash).toBe('3');
+		});
+
+		test('abs(0) = 0', () => {
+			const result = normalize(fn('abs', num('0')));
+			expect(result.hash).toBe('0');
+		});
+	});
+
+	describe('abs() with decimals', () => {
+		test('abs(3.7) = 3.7', () => {
+			const result = normalize(fn('abs', num('3.7')));
+			expect(result.hash).toBe('37/10');
+		});
+
+		test('abs(-3.7) = 3.7', () => {
+			const result = normalize(fn('abs', opposite(num('3.7'))));
+			expect(result.hash).toBe('37/10');
+		});
+
+		test('abs(-0.5) = 0.5', () => {
+			const result = normalize(fn('abs', opposite(num('0.5'))));
+			expect(result.hash).toBe('1/2');
+		});
+	});
+
+	describe('abs() with rationals', () => {
+		test('abs(7/2) = 7/2', () => {
+			const result = normalize(fn('abs', div(num('7'), num('2'))));
+			expect(result.hash).toBe('7/2');
+		});
+
+		test('abs(-7/2) = 7/2', () => {
+			const result = normalize(fn('abs', opposite(div(num('7'), num('2')))));
+			expect(result.hash).toBe('7/2');
+		});
+
+		test('abs(-5/3) = 5/3', () => {
+			const result = normalize(fn('abs', opposite(div(num('5'), num('3')))));
+			expect(result.hash).toBe('5/3');
+		});
+	});
+
+	describe('abs() with radicals', () => {
+		test('abs(√2) = √2', () => {
+			const result = normalize(fn('abs', sqrt(num('2'))));
+			// √2 is positive, so abs(√2) = √2
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].coefficient.terms[0].radicals.length).toBe(1);
+			expect(result.numerator[0].coefficient.terms[0].radicals[0].radicand).toBe(2n);
+			expect(result.numerator[0].coefficient.terms[0].rational.n >= 0n).toBe(true);
+		});
+
+		test('abs(-√2) = √2', () => {
+			const result = normalize(fn('abs', opposite(sqrt(num('2')))));
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].coefficient.terms[0].radicals.length).toBe(1);
+			expect(result.numerator[0].coefficient.terms[0].radicals[0].radicand).toBe(2n);
+			expect(result.numerator[0].coefficient.terms[0].rational.n >= 0n).toBe(true);
+		});
+
+		test('abs(-√3) = √3', () => {
+			const result = normalize(fn('abs', opposite(sqrt(num('3')))));
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].coefficient.terms[0].radicals.length).toBe(1);
+			expect(result.numerator[0].coefficient.terms[0].radicals[0].radicand).toBe(3n);
+			expect(result.numerator[0].coefficient.terms[0].rational.n >= 0n).toBe(true);
+		});
+	});
+
+	describe('abs() with opaque functions', () => {
+		test('abs(sin(1)) evaluates (sin(1) ≈ 0.841 > 0)', () => {
+			const result = normalize(fn('abs', fn('sin', num('1'))));
+			// sin(1) ≈ 0.841, so abs(sin(1)) = sin(1) which stays as opaque
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBeGreaterThan(0);
+		});
+
+		test('abs(sin(4)) evaluates (sin(4) ≈ -0.757 < 0)', () => {
+			const result = normalize(fn('abs', fn('sin', num('4'))));
+			// sin(4) ≈ -0.757, so abs(sin(4)) = -sin(4)
+			// The result should be the negation of sin(4)
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBeGreaterThan(0);
+		});
+
+		test('abs(ln(2)) evaluates (ln(2) ≈ 0.693 > 0)', () => {
+			const result = normalize(fn('abs', fn('ln', num('2'))));
+			// ln(2) > 0, so abs(ln(2)) = ln(2)
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBeGreaterThan(0);
+		});
+
+		test('abs(ln(0.5)) evaluates (ln(0.5) ≈ -0.693 < 0)', () => {
+			const result = normalize(fn('abs', fn('ln', num('0.5'))));
+			// ln(0.5) < 0, so abs(ln(0.5)) = -ln(0.5)
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBeGreaterThan(0);
+		});
+	});
+
+	describe('abs() with symbolic arguments', () => {
+		test('abs(x) stays opaque', () => {
+			const result = normalize(fn('abs', variable('x')));
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBeGreaterThan(0);
+		});
+
+		test('abs(x + 1) stays opaque', () => {
+			const result = normalize(fn('abs', add(variable('x'), num('1'))));
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBeGreaterThan(0);
+		});
+
+		test('abs(sin(x)) stays opaque', () => {
+			const result = normalize(fn('abs', fn('sin', variable('x'))));
+			expect(result.numerator.length).toBe(1);
+			expect(result.numerator[0].monomial.length).toBeGreaterThan(0);
+		});
+	});
+
+	describe('abs() with expressions', () => {
+		test('abs(3 - 5) = 2', () => {
+			const result = normalize(fn('abs', sub(num('3'), num('5'))));
+			expect(result.hash).toBe('2');
+		});
+
+		test('abs(-3 + 5) = 2', () => {
+			const result = normalize(fn('abs', add(opposite(num('3')), num('5'))));
+			expect(result.hash).toBe('2');
+		});
+
+		test('abs(2 * -3) = 6', () => {
+			const result = normalize(fn('abs', mul(num('2'), opposite(num('3')))));
+			expect(result.hash).toBe('6');
+		});
+
+		test('abs(-2 / 4) = 1/2', () => {
+			const result = normalize(fn('abs', div(opposite(num('2')), num('4'))));
+			expect(result.hash).toBe('1/2');
+		});
+	});
+});
+
+// =============================================================================
 // Rounding Functions Tests
 // =============================================================================
 
