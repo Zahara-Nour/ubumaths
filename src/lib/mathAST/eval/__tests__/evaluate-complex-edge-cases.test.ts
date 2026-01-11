@@ -318,26 +318,26 @@ describe('Complex division edge cases', () => {
 // =============================================================================
 
 describe('Conjugate mathematical properties', () => {
-	describe('conjugate function stays unevaluated in exact mode', () => {
-		it('conj(3+4i) stays as function', () => {
+	describe('conjugate function evaluates exactly in exact mode', () => {
+		it('conj(3+4i) = 3-4i', () => {
 			const z = c(3, 4);
 			const expr = func('conj', [z]);
 			const result = evaluate(expr);
-			expectFunction(result, 'conj');
+			expectLatex(result, '3 - 4 \\imaginaryI');
 		});
 
-		it('conj(i) stays as function', () => {
+		it('conj(i) = -i', () => {
 			const expr = func('conj', [i()]);
 			const result = evaluate(expr);
-			expectFunction(result, 'conj');
+			expectLatex(result, '-\\imaginaryI');
 		});
 
-		it('nested conj stays as function', () => {
+		it('conj(conj(3+4i)) = 3+4i (nested conj)', () => {
 			const z = c(3, 4);
 			const expr = func('conj', [func('conj', [z])]);
 			const result = evaluate(expr);
-			// Outer conj should stay as function
-			expectFunction(result, 'conj');
+			// conj(conj(z)) = z
+			expectLatex(result, '3 + 4 \\imaginaryI');
 		});
 	});
 });
@@ -347,23 +347,23 @@ describe('Conjugate mathematical properties', () => {
 // =============================================================================
 
 describe('Modulus mathematical properties', () => {
-	describe('cabs function stays unevaluated in exact mode', () => {
-		it('cabs(3+4i) stays as function', () => {
+	describe('cabs function evaluates exactly in exact mode', () => {
+		it('cabs(3+4i) = 5', () => {
 			const expr = func('cabs', [c(3, 4)]);
 			const result = evaluate(expr);
-			expectFunction(result, 'cabs');
+			expectLatex(result, '5');
 		});
 
-		it('cabs(i) stays as function', () => {
+		it('cabs(i) = 1', () => {
 			const expr = func('cabs', [i()]);
 			const result = evaluate(expr);
-			expectFunction(result, 'cabs');
+			expectLatex(result, '1');
 		});
 
-		it('cabs(0) stays as function', () => {
+		it('cabs(0) = 0', () => {
 			const expr = func('cabs', [c(0, 0)]);
 			const result = evaluate(expr);
-			expectFunction(result, 'cabs');
+			expectLatex(result, '0');
 		});
 	});
 });
@@ -427,43 +427,43 @@ describe('Numerical precision and stability', () => {
 // =============================================================================
 
 describe('Re and Im function edge cases', () => {
-	describe('Re function stays unevaluated in exact mode', () => {
-		it('Re(0) stays as function', () => {
+	describe('Re function evaluates exactly in exact mode', () => {
+		it('Re(0) = 0', () => {
 			const expr = func('Re', [number('0')]);
 			const result = evaluate(expr);
-			expectFunction(result, 'Re');
+			expectLatex(result, '0');
 		});
 
-		it('Re(5i) stays as function', () => {
+		it('Re(5i) = 0', () => {
 			const expr = func('Re', [c(0, 5)]);
 			const result = evaluate(expr);
-			expectFunction(result, 'Re');
+			expectLatex(result, '0');
 		});
 
-		it('Re(-3-4i) stays as function', () => {
+		it('Re(-3-4i) = -3', () => {
 			const expr = func('Re', [c(-3, -4)]);
 			const result = evaluate(expr);
-			expectFunction(result, 'Re');
+			expectLatex(result, '-3');
 		});
 	});
 
-	describe('Im function stays unevaluated in exact mode', () => {
-		it('Im(0) stays as function', () => {
+	describe('Im function evaluates exactly in exact mode', () => {
+		it('Im(0) = 0', () => {
 			const expr = func('Im', [number('0')]);
 			const result = evaluate(expr);
-			expectFunction(result, 'Im');
+			expectLatex(result, '0');
 		});
 
-		it('Im(5) stays as function', () => {
+		it('Im(5) = 0', () => {
 			const expr = func('Im', [number('5')]);
 			const result = evaluate(expr);
-			expectFunction(result, 'Im');
+			expectLatex(result, '0');
 		});
 
-		it('Im(-3-4i) stays as function', () => {
+		it('Im(-3-4i) = -4', () => {
 			const expr = func('Im', [c(-3, -4)]);
 			const result = evaluate(expr);
-			expectFunction(result, 'Im');
+			expectLatex(result, '-4');
 		});
 	});
 });

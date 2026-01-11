@@ -329,24 +329,54 @@ and complex fractions like `(2+3i)/(1-i)` are reduced to the form `a + bi`.
 
 ### Complex Functions
 
-In exact mode, complex functions stay as function nodes (symbolic):
+Complex functions are **only available in exact mode**. In decimal mode, they are rejected
+because the Rational-based decimal arithmetic cannot represent complex numbers.
 
 ```typescript
-// These functions stay symbolic in exact mode
+// Available complex functions (exact mode only):
 cabs(z); // Modulus: |a + bi| = √(a² + b²)
 conj(z); // Conjugate: conj(a + bi) = a - bi
 Re(z); // Real part
 Im(z); // Imaginary part
-arg(z); // Argument (phase angle)
+arg(z); // Argument (phase angle in (-π, π])
 
-// Example: functions stay as nodes
-const result = evaluate(parseLatex('\\cabs(3 + 4\\imaginaryI)'), { mode: 'exact' });
-// result.node.type = 'function', result.node.name = 'cabs'
+// Polar/exponential form:
+cis(θ); // cos(θ) + i·sin(θ)
+frompolar(r, θ); // r·cis(θ) = r·(cos(θ) + i·sin(θ))
 
-// In decimal mode, they evaluate numerically
-const result2 = evaluate(parseLatex('\\cabs(3 + 4\\imaginaryI)'), { mode: 'decimal' });
-// result2.value = 5 (√(9 + 16))
+// Nth roots:
+rootofunity(n, k); // k-th nth root of unity: e^{2πik/n}
+nthroot(z, n, k); // k-th nth root of z
+principalroot(z, n); // Principal nth root (k=0)
 ```
+
+In exact mode, these functions evaluate exactly when possible:
+
+```typescript
+// cabs evaluates exactly for Pythagorean triples
+const result = evaluate(parseLatex('\\cabs(3 + 4\\imaginaryI)'), { mode: 'exact' });
+// toLatex(result.node) = '5' (since √(9+16) = √25 = 5)
+
+// cabs produces simplified radicals when not a perfect square
+const result2 = evaluate(parseLatex('\\cabs(1 + \\imaginaryI)'), { mode: 'exact' });
+// toLatex(result2.node) = '\\sqrt{2}'
+
+// conj evaluates to the conjugate
+const result3 = evaluate(parseLatex('\\conj(3 + 4\\imaginaryI)'), { mode: 'exact' });
+// toLatex(result3.node) = '3 - 4 \\imaginaryI'
+
+// Re and Im extract real/imaginary parts
+const result4 = evaluate(parseLatex('\\Re(3 + 4\\imaginaryI)'), { mode: 'exact' });
+// toLatex(result4.node) = '3'
+
+// Decimal mode rejects complex functions
+evaluate(parseLatex('\\cabs(3 + 4\\imaginaryI)'), { mode: 'decimal' });
+// Throws: "Function not supported in decimal mode: cabs"
+```
+
+**Note**: Complex arithmetic (addition, multiplication, powers) works in exact mode
+because it uses the normalization system with `ALGEBRAIC_IMAGINARY`. Only the
+specialized complex functions listed above are restricted.
 
 ### Principal Argument Convention
 
@@ -408,28 +438,26 @@ evaluate(parseLatex('\\imaginaryI^{\\imaginaryI}'));
 
 Three functions for computing nth roots (educational focus).
 
-**Note**: In exact mode, these functions stay as function nodes because computing
-nth roots of complex numbers requires trigonometric evaluation. Use decimal mode
-for numeric results.
+**Note**: These functions only work in exact mode and stay as symbolic function nodes.
+Decimal mode rejects them because it cannot represent complex results.
 
 ```typescript
 // In exact mode, functions stay symbolic
 const result = evaluate(parseLatex('\\rootofunity(4, 1)'), { mode: 'exact' });
 // result.node.type = 'function', result.node.name = 'rootofunity'
 
-// In decimal mode, they evaluate numerically
 // rootofunity(n, k) - k-th nth root of unity: e^{2πik/n}
-evaluate(parseLatex('\\rootofunity(4, 1)'), { mode: 'decimal' }); // e^{iπ/2} = i
-evaluate(parseLatex('\\rootofunity(3, 1)'), { mode: 'decimal' }); // e^{2πi/3} = -1/2 + i√3/2
+// rootofunity(4, 1) represents e^{iπ/2} = i
+// rootofunity(3, 1) represents e^{2πi/3} = -1/2 + i√3/2
 
 // nthroot(z, n, k) - k-th nth root of z
 // Formula: |z|^{1/n} · e^{i(arg(z) + 2πk)/n}
-evaluate(parseLatex('\\nthroot(8, 3, 0)'), { mode: 'decimal' }); // 2 (principal cube root)
-evaluate(parseLatex('\\nthroot(8, 3, 1)'), { mode: 'decimal' }); // -1 + i√3
-evaluate(parseLatex('\\nthroot(8, 3, 2)'), { mode: 'decimal' }); // -1 - i√3
+// nthroot(8, 3, 0) represents 2 (principal cube root)
+// nthroot(8, 3, 1) represents -1 + i√3
+// nthroot(8, 3, 2) represents -1 - i√3
 
 // principalroot(z, n) - convenience for k=0
-evaluate(parseLatex('\\principalroot(-1, 2)'), { mode: 'decimal' }); // i
+// principalroot(-1, 2) represents i
 ```
 
 #### Parameter Constraints

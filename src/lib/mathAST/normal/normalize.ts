@@ -2920,7 +2920,106 @@ function normalizeFunction(
 		return normalizeOpaqueNode(canonicalNode);
 	}
 
-	// 8. Other functions - opaque with normalized args
+	// 8. Complex number functions: Re, Im, conj, cabs
+	if (
+		(name === 'Re' || name === 'Im' || name === 'conj' || name === 'cabs') &&
+		canonicalArgs.length === 1
+	) {
+		const argForm = normalizeNode(canonicalArgs[0], ctx);
+
+		// Extract real and imaginary parts from the normalized form
+		const { realPart, imagPart } = extractComplexParts(argForm);
+
+		if (realPart !== null && imagPart !== null) {
+			// Re(a + bi) = a
+			if (name === 'Re') {
+				const result = realPart;
+				recordNormalizationStep(ctx, 'complex-re', node, result, 'summarized');
+				return result;
+			}
+
+			// Im(a + bi) = b
+			if (name === 'Im') {
+				const result = imagPart;
+				recordNormalizationStep(ctx, 'complex-im', node, result, 'summarized');
+				return result;
+			}
+
+			// conj(a + bi) = a - bi
+			if (name === 'conj') {
+				const negImagPart = negNormalForm(imagPart);
+				// Create a - bi by combining realPart + (-b)*i
+				const result = addNormalFormsWithImaginary(realPart, negImagPart);
+				recordNormalizationStep(ctx, 'complex-conj', node, result, 'summarized');
+				return result;
+			}
+
+			// cabs(a + bi) = √(a² + b²)
+			if (name === 'cabs') {
+				// For pure real numbers, cabs reduces to abs
+				if (isZeroNormalForm(imagPart)) {
+					// cabs(a) = |a| for real a
+					const absResult = computeAbsoluteValue(realPart, node, ctx);
+					if (absResult !== null) {
+						return absResult;
+					}
+				}
+
+				// Compute a² + b²
+				const aSquared = mulNormalForms(realPart, realPart);
+				const bSquared = mulNormalForms(imagPart, imagPart);
+				const sumSquares = addNormalForms(aSquared, bSquared);
+
+				// Check if result is a perfect square (rational with perfect square numerator/denominator)
+				const rationalSum = extractPureRational(sumSquares);
+				if (rationalSum !== null && rationalSum.n >= 0n) {
+					// Try to compute exact sqrt
+					const sqrtNum = integerNthRoot(rationalSum.n, 2n);
+					const sqrtDen = integerNthRoot(rationalSum.d, 2n);
+
+					if (sqrtNum !== null && sqrtDen !== null) {
+						// Perfect square! cabs(3+4i) = 5
+						const result = normalFormFromRational(rational(sqrtNum, sqrtDen));
+						recordNormalizationStep(ctx, 'complex-cabs', node, result, 'summarized');
+						return result;
+					}
+
+					// Not a perfect square but rational - return √(sum) as simplified radical
+					const simplifiedSqrt = simplifyRadical(rationalSum.n, 2n);
+					// √(n/d) = √n / √d = (coefficient * √radicand) / √d
+					// We need to handle the denominator too
+					const denSqrt = simplifyRadical(rationalSum.d, 2n);
+					if (denSqrt.radicand === 1n) {
+						// Denominator is a perfect square
+						const coeff = rational(simplifiedSqrt.coefficient, denSqrt.coefficient);
+						if (simplifiedSqrt.radicand === 1n) {
+							// Perfect square overall
+							const result = normalFormFromRational(coeff);
+							recordNormalizationStep(ctx, 'complex-cabs', node, result, 'summarized');
+							return result;
+						}
+						// Has a radical: coeff * √(radicand)
+						const term: NormalTerm = {
+							coefficient: {
+								terms: [
+									{ rational: coeff, radicals: [{ radicand: simplifiedSqrt.radicand, index: 2n }] }
+								]
+							},
+							monomial: EMPTY_MONOMIAL
+						};
+						const result = normalFormFromPolynomial([term]);
+						recordNormalizationStep(ctx, 'complex-cabs', node, result, 'summarized');
+						return result;
+					}
+				}
+			}
+		}
+
+		// Complex extraction failed or couldn't simplify - treat as opaque
+		return normalizeOpaqueNode(canonicalNode);
+	}
+
+	// 9. Other functions - opaque with normalized args
 	return normalizeOpaqueNode(canonicalNode);
 }
 
@@ -3165,6 +3264,156 @@ function combineExpInMonomial(
  */
 function isZeroNormalForm(form: NormalForm): boolean {
 	return form.numerator.length === 0 || form.hash === '0';
+}
+
+// =============================================================================
+// Complex Number Helper Functions
+// =============================================================================
+
+/**
+ * Extracts real and imaginary parts from a NormalForm.
+ *
+ * For a complex number a + bi:
+ * - realPart contains terms without hasImaginaryUnit
+ * - imagPart contains coefficients of terms with hasImaginaryUnit (without the i)
+ *
+ * Only works for single-term numerator and denominator = 1.
+ *
+ * @returns { realPart, imagPart } or { null, null } if extraction failed
+ */
+function extractComplexParts(form: NormalForm): {
+	realPart: NormalForm | null;
+	imagPart: NormalForm | null;
+} {
+	// Must have denominator = 1 for clean extraction
+	if (!isOnePolynomial(form.denominator)) {
+		return { realPart: null, imagPart: null };
+	}
+
+	// Must have no symbolic monomial factors (only pure algebraic coefficients)
+	for (const term of form.numerator) {
+		if (term.monomial.length > 0) {
+			return { realPart: null, imagPart: null };
+		}
+	}
+
+	// Separate real and imaginary algebraic terms
+	const realTerms: NormalTerm[] = [];
+	const imagTerms: NormalTerm[] = [];
+
+	for (const term of form.numerator) {
+		const realAlgTerms: import('./types').AlgebraicTerm[] = [];
+		const imagAlgTerms: import('./types').AlgebraicTerm[] = [];
+
+		for (const algTerm of term.coefficient.terms) {
+			if (algTerm.hasImaginaryUnit === true) {
+				// Imaginary term: extract coefficient without the i
+				imagAlgTerms.push({
+					rational: algTerm.rational,
+					radicals: algTerm.radicals
+					// Note: no hasImaginaryUnit here - we're extracting the coefficient
+				});
+			} else {
+				realAlgTerms.push(algTerm);
+			}
+		}
+
+		if (realAlgTerms.length > 0) {
+			realTerms.push({
+				coefficient: { terms: realAlgTerms },
+				monomial: EMPTY_MONOMIAL
+			});
+		}
+		if (imagAlgTerms.length > 0) {
+			imagTerms.push({
+				coefficient: { terms: imagAlgTerms },
+				monomial: EMPTY_MONOMIAL
+			});
+		}
+	}
+
+	// Combine like terms in each part
+	const realPoly = realTerms.length > 0 ? addPolynomials(realTerms, []) : ZERO_POLYNOMIAL;
+	const imagPoly = imagTerms.length > 0 ? addPolynomials(imagTerms, []) : ZERO_POLYNOMIAL;
+
+	return {
+		realPart: normalFormFromPolynomial(realPoly),
+		imagPart: normalFormFromPolynomial(imagPoly)
+	};
+}
+
+/**
+ * Combines a real part with an imaginary part: realPart + imagPart * i
+ */
+function addNormalFormsWithImaginary(realPart: NormalForm, imagPart: NormalForm): NormalForm {
+	// imagPart should be multiplied by i to become the imaginary component
+	// Create imagPart * i
+	const imagTerms: NormalTerm[] = [];
+	for (const term of imagPart.numerator) {
+		const newAlgTerms: import('./types').AlgebraicTerm[] = [];
+		for (const algTerm of term.coefficient.terms) {
+			if (algTerm.hasImaginaryUnit === true) {
+				// Already has i: i * i = -1, so negate the coefficient
+				newAlgTerms.push({
+					rational: negRational(algTerm.rational),
+					radicals: algTerm.radicals
+					// No hasImaginaryUnit - became real
+				});
+			} else {
+				// Multiply by i
+				newAlgTerms.push({
+					rational: algTerm.rational,
+					radicals: algTerm.radicals,
+					hasImaginaryUnit: true
+				});
+			}
+		}
+		imagTerms.push({
+			coefficient: { terms: newAlgTerms },
+			monomial: term.monomial
+		});
+	}
+
+	const imagForm = normalFormFromFraction(imagTerms, [...imagPart.denominator]);
+	return addNormalForms(realPart, imagForm);
+}
+
+/**
+ * Computes absolute value of a normal form.
+ * Returns null if computation is not possible (e.g., contains variables).
+ */
+function computeAbsoluteValue(
+	form: NormalForm,
+	originalNode: MathNode,
+	ctx?: NormalizeContext
+): NormalForm | null {
+	// Try exact rational computation first
+	const rationalArg = extractPureRational(form);
+	if (rationalArg !== null) {
+		const result = normalFormFromRational(absRational(rationalArg));
+		recordNormalizationStep(ctx, 'abs-function', originalNode, result, 'summarized');
+		return result;
+	}
+
+	// Try numeric evaluation for radicals
+	try {
+		const argNode = denormalize(form);
+		const numericArg = evaluateNodeToApproximatedNumber(argNode);
+		if (Number.isFinite(numericArg)) {
+			if (numericArg >= 0) {
+				recordNormalizationStep(ctx, 'abs-function', originalNode, form, 'summarized');
+				return form;
+			} else {
+				const result = negNormalForm(form);
+				recordNormalizationStep(ctx, 'abs-function', originalNode, result, 'summarized');
+				return result;
+			}
+		}
+	} catch {
+		// Evaluation failed
+	}
+
+	return null;
 }
 
 /**
