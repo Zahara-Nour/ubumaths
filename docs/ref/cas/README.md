@@ -22,6 +22,8 @@ Both systems share fundamental concepts but MathAST provides a cleaner, more mod
 | **Step Recording**   | Record and display simplification steps (French)           |
 | **Auto-Completion**  | IDE-like completion API for functions, variables, commands |
 | **Equation Solving** | Linear, quadratic, transcendental equations with steps     |
+| **Sign Analysis**    | Determine sign of expressions over intervals               |
+| **Variation Study**  | Monotonicity, critical points, extrema analysis            |
 
 See [mathAST Improvements](../mathAST/improvements.md) for implementation details.
 
@@ -35,6 +37,7 @@ See [mathAST Improvements](../mathAST/improvements.md) for implementation detail
 | [normalization.md](./normalization.md)     | Canonical form and simplification algorithms    |
 | [differentiation.md](./differentiation.md) | Symbolic differentiation engine                 |
 | [evaluation.md](./evaluation.md)           | Numeric and symbolic evaluation                 |
+| [variations.md](./variations.md)           | Sign analysis and variation study               |
 | [cli-repl.md](./cli-repl.md)               | Interactive REPL and command system             |
 | [tinycas-legacy.md](./tinycas-legacy.md)   | TinyCAS architecture reference                  |
 

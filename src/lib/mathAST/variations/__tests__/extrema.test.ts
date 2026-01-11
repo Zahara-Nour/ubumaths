@@ -24,7 +24,7 @@ import {
 	getExtremumLabel
 } from '../extrema';
 import type { CriticalPointInfo, MonotonicInterval, ExtremumInfo } from '../types';
-import type { Domain } from '../../domain/types';
+import type { Domain, IntervalSet } from '../../domain/types';
 import { parseLatex } from '../../parser';
 import { number } from '../../factory';
 import {
