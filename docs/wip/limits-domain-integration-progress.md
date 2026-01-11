@@ -13,8 +13,8 @@ Integrer les modules domain et intervals dans le module limits pour :
 | Phase | Description                              | Statut   |
 | ----- | ---------------------------------------- | -------- |
 | 1     | Elimination code duplique (`evaluateAt`) | Complete |
-| 2     | Detection asymetrie avec domaine         | En cours |
-| 3     | Validation domaine dans evaluate.ts      | A faire  |
+| 2     | Detection asymetrie avec domaine         | Complete |
+| 3     | Validation domaine dans evaluate.ts      | En cours |
 | 4     | Validation domaine dans algebraic.ts     | A faire  |
 | 5     | Validation domaine dans indeterminate.ts | A faire  |
 | 6     | Quality checks finaux                    | A faire  |
@@ -78,12 +78,47 @@ Remplacer les checks hardcodes dans `hasAsymmetricBehavior()` par une analyse de
 - [x] Code modifie
 - [x] Tests passent (104/104)
 - [x] Code review effectue (Good to Excellent)
-- [ ] Commit cree
+- [x] Commit cree (31ab5aca)
 
 ### Ameliorations appliquees suite au code review
 
 - Ajout de `mayHaveRestrictedDomain()` pour optimiser les performances
 - Test supplementaire pour domaine imbrique (1/sqrt(x) at x=0)
+
+---
+
+## Phase 3 : Validation domaine dans evaluate.ts
+
+**Debut** : 2026-01-11
+**Agent** : typescript-expert (Opus)
+
+### Objectif
+
+Detection precoce des problemes de domaine avec messages pedagogiques en francais.
+
+### Fichier modifie
+
+- `src/lib/mathAST/limits/evaluate.ts`
+
+### Changements prevus
+
+1. Ajouter imports domain dans evaluate.ts
+2. Creer helper `isApproachInDomain()`
+3. Ajouter validation apres extraction info LimitNode
+4. Retourner messages pedagogiques francais
+
+### Etat actuel
+
+- [x] Code modifie
+- [x] Tests passent (108/108)
+- [x] Code review effectue (Good)
+- [ ] Commit cree
+
+### Ameliorations appliquees suite au code review
+
+- Ajout validation domaine dans `evaluateLimitInternal()` pour coherence
+- Documentation du epsilon constant
+- Test supplementaire pour direction='left'
 
 ---
 
@@ -93,6 +128,8 @@ Remplacer les checks hardcodes dans `hasAsymmetricBehavior()` par une analyse de
 | ---------------------------------------------------- | ----- | --------------------------------------------------------- |
 | `src/lib/mathAST/limits/one-sided.ts`                | 1, 2  | Suppression evaluateAt, ajout wrapper, domain integration |
 | `src/lib/mathAST/limits/__tests__/one-sided.test.ts` | 2     | Ajout 3 tests domain-based                                |
+| `src/lib/mathAST/limits/evaluate.ts`                 | 3     | Validation domaine, messages FR                           |
+| `src/lib/mathAST/limits/__tests__/evaluate.test.ts`  | 3     | Ajout 4 tests validation domaine                          |
 
 ---
 

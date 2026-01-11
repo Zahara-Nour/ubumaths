@@ -35,6 +35,8 @@ import { trySqueeze } from './squeeze';
 import { evaluateOneSidedLimits, needsOneSidedAnalysis, recordOneSidedSteps } from './one-sided';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeDomain } from '../domain/compute';
+import { containsValue } from '../domain/algebra';
 
 // =============================================================================
 // Default Options
@@ -68,6 +70,95 @@ function getNumericValue(node: MathNode): number | null {
  */
 function substituteValue(expr: MathNode, varName: string, value: MathNode): MathNode {
 	return substitute(expr, { [varName]: value });
+}
+
+// =============================================================================
+// Domain Validation
+// =============================================================================
+
+/**
+ * French pedagogical messages for domain issues.
+ */
+const DOMAIN_MESSAGES = {
+	'approach-outside-domain':
+		"Le point d'approche n'est pas dans le domaine de definition de l'expression",
+	'left-undefined': "La fonction n'est pas definie a gauche du point d'approche",
+	'right-undefined': "La fonction n'est pas definie a droite du point d'approche",
+	'both-undefined': "La fonction n'est pas definie au voisinage du point d'approche"
+} as const;
+
+/**
+ * Result of domain validation.
+ */
+interface DomainValidation {
+	readonly valid: boolean;
+	readonly leftDefined: boolean;
+	readonly rightDefined: boolean;
+	readonly message?: string;
+}
+
+/**
+ * Validate that the approach point is accessible from the domain.
+ *
+ * Returns information about whether the limit can be evaluated from
+ * the left, right, or both sides based on the expression's domain.
+ */
+function validateApproachInDomain(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): DomainValidation {
+	// Skip validation for infinity approach (handled differently)
+	if (isInfinity(approach)) {
+		return { valid: true, leftDefined: true, rightDefined: true };
+	}
+
+	const approachVal = getNumericValue(approach);
+	if (approachVal === null) {
+		return { valid: true, leftDefined: true, rightDefined: true };
+	}
+
+	try {
+		const { domain } = computeDomain(expr, varName);
+		// Small offset to check domain membership near the approach point
+		// We check at approach ± epsilon to determine left/right accessibility
+		const epsilon = 1e-10;
+
+		const leftDefined = containsValue(domain, approachVal - epsilon);
+		const rightDefined = containsValue(domain, approachVal + epsilon);
+
+		// Check based on direction
+		if (direction === 'left' && !leftDefined) {
+			return {
+				valid: false,
+				leftDefined,
+				rightDefined,
+				message: DOMAIN_MESSAGES['left-undefined']
+			};
+		}
+		if (direction === 'right' && !rightDefined) {
+			return {
+				valid: false,
+				leftDefined,
+				rightDefined,
+				message: DOMAIN_MESSAGES['right-undefined']
+			};
+		}
+		if (direction === 'both' && !leftDefined && !rightDefined) {
+			return {
+				valid: false,
+				leftDefined,
+				rightDefined,
+				message: DOMAIN_MESSAGES['both-undefined']
+			};
+		}
+
+		return { valid: true, leftDefined, rightDefined };
+	} catch {
+		// If domain computation fails, assume valid (conservative)
+		return { valid: true, leftDefined: true, rightDefined: true };
+	}
 }
 
 // =============================================================================
@@ -124,6 +215,23 @@ export function evaluateLimit(
 		varName = variable;
 		approachPoint = approach;
 		dir = direction;
+	}
+
+	// Validate domain accessibility
+	const domainValidation = validateApproachInDomain(expression, varName, approachPoint, dir);
+	if (!domainValidation.valid) {
+		return createResult(
+			null,
+			varName,
+			approachPoint,
+			dir,
+			'does-not-exist',
+			'none',
+			'direct-substitution',
+			recorder,
+			opts,
+			domainValidation.message
+		);
 	}
 
 	// Verify variable is used in expression
@@ -338,6 +446,23 @@ function evaluateLimitInternal(
 ): LimitResult {
 	const opts: Required<LimitOptions> = { ...DEFAULT_OPTIONS, ...options };
 	const recorder = new LimitStepRecorderImpl();
+
+	// Validate domain accessibility (consistent with main evaluateLimit)
+	const domainValidation = validateApproachInDomain(expr, varName, approach, direction);
+	if (!domainValidation.valid) {
+		return createResult(
+			null,
+			varName,
+			approach,
+			direction,
+			'does-not-exist',
+			'none',
+			'direct-substitution',
+			recorder,
+			opts,
+			domainValidation.message
+		);
+	}
 
 	// Verify variable is used in expression
 	if (!containsVariable(expr, varName)) {

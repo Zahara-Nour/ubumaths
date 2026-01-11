@@ -256,6 +256,40 @@ describe('evaluateLimit', () => {
 		});
 	});
 
+	describe('domain validation', () => {
+		it('allows ln(x) at x=0 with direction=right', () => {
+			// ln(x) is defined for x > 0, so right-sided limit exists
+			const expr = func('ln', [variable('x')]);
+			const result = evaluateLimit(expr, 'x', number('0'), 'right');
+			// Should not return domain error since right side is defined
+			expect(result.status).not.toBe('does-not-exist');
+		});
+
+		it('returns pedagogical error for ln(x) at x=0 with direction=left', () => {
+			// ln(x) is not defined for x <= 0, left-sided limit does not exist
+			const expr = func('ln', [variable('x')]);
+			const result = evaluateLimit(expr, 'x', number('0'), 'left');
+			expect(result.status).toBe('does-not-exist');
+			expect(result.error).toContain('gauche');
+		});
+
+		it('returns pedagogical error for sqrt(x) at x=-1', () => {
+			// sqrt(x) is not defined for x < 0 (neither side accessible)
+			const expr = func('sqrt', [variable('x')]);
+			const result = evaluateLimit(expr, 'x', number('-1'), 'both');
+			expect(result.status).toBe('does-not-exist');
+			expect(result.error).toContain('definie');
+		});
+
+		it('returns pedagogical error for ln(x) at x=-1', () => {
+			// ln(x) is not defined for x <= 0 (neither side accessible)
+			const expr = func('ln', [variable('x')]);
+			const result = evaluateLimit(expr, 'x', number('-1'), 'both');
+			expect(result.status).toBe('does-not-exist');
+			expect(result.error).toContain('definie');
+		});
+	});
+
 	describe('findKnownLimit', () => {
 		it('finds known limit entry', () => {
 			const expr = divide(func('sin', [variable('x')]), variable('x'), 'fraction');
