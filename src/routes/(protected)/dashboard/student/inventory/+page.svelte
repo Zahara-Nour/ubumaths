@@ -1,12 +1,14 @@
 <!--
-	VIP Cards Collection Page
-	=========================
+	Student Inventory Page
+	======================
 
-	Displays student's complete VIP card collection with:
-	- All available card templates organized by rarity
+	Displays student's complete inventory with:
+	- VIP card collection organized by rarity
 	- Visual distinction between owned, history, and never-obtained cards
 	- Collection statistics
 	- Action buttons for owned cards with actions
+
+	Future: Will include other item types when inventory system is expanded.
 -->
 
 <script lang="ts">
@@ -25,13 +27,13 @@
 	// Rarity configuration for sections
 	const rarityConfig = {
 		legendary: {
-			label: 'Légendaire',
+			label: 'Legendaire',
 			color: 'text-orange-500 dark:text-orange-400',
 			bgColor: 'bg-orange-500/10 dark:bg-orange-400/10',
 			borderColor: 'border-orange-500/20 dark:border-orange-400/20'
 		},
 		epic: {
-			label: 'Épique',
+			label: 'Epique',
 			color: 'text-purple-500 dark:text-purple-400',
 			bgColor: 'bg-purple-500/10 dark:bg-purple-400/10',
 			borderColor: 'border-purple-500/20 dark:border-purple-400/20'
@@ -62,9 +64,9 @@
 	}
 
 	/**
-	 * Group cards by rarity and sort by rarity (Legendary → Common)
+	 * Group cards by rarity and sort by rarity (Legendary -> Common)
 	 */
-	const collectionByRarity = $derived(() => {
+	const collectionByRarity = $derived.by(() => {
 		// Initialize groups with proper typing
 		const grouped: Record<
 			RarityKey,
@@ -97,8 +99,8 @@
 	 * 1. Update cache immediately (activationRequestedAt = now)
 	 * 2. Update local data.ownedCards for instant UI feedback
 	 * 3. Make API call
-	 * 4. Success: Cache and local state already correct ✅
-	 * 5. Error: Rollback both cache and local state ❌
+	 * 4. Success: Cache and local state already correct
+	 * 5. Error: Rollback both cache and local state
 	 */
 	async function handleUseCard(cardId: string) {
 		// Find the first unused instance of this card
@@ -156,52 +158,37 @@
 
 			const result = await response.json();
 
-			// 3. SUCCESS: Cache and local state already correct ✅
+			// 3. SUCCESS: Cache and local state already correct
 			toaster.success(
-				`Demande d'activation envoyée ! Ton enseignant recevra la demande pour : ${result.cardName}`
+				`Demande d'activation envoyee ! Ton enseignant recevra la demande pour : ${result.cardName}`
 			);
 		} catch (err) {
-			// 4. ERROR: Rollback optimistic update ❌
+			// 4. ERROR: Rollback optimistic update
 			syncVipCards({ type: 'student' }, currentVipCards);
 			data.ownedCards = currentVipCards;
 
 			const message = err instanceof Error ? err.message : 'Une erreur est survenue';
-			console.error('[collection] Error requesting activation:', err);
+			console.error('[inventory] Error requesting activation:', err);
 			toaster.error(message);
 		}
-	}
-
-	/**
-	 * Format date for display
-	 * Currently unused but kept for future use when history cards are displayed
-	 */
-	function _formatDate(isoString: string): string {
-		const date = new Date(isoString);
-		return date.toLocaleDateString('fr-FR', {
-			day: 'numeric',
-			month: 'long',
-			year: 'numeric'
-		});
 	}
 </script>
 
 <svelte:head>
-	<title>Ma Collection VIP - UbuMaths</title>
+	<title>Mon Inventaire - UbuMaths</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl space-y-6 p-4 sm:p-6">
 	<!-- Page Header -->
 	<div class="space-y-2">
-		<h1 class="text-3xl font-bold tracking-tight">Ma Collection VIP</h1>
-		<p class="text-muted-foreground">
-			Découvre toutes les cartes VIP et consulte ta collection complète
-		</p>
+		<h1 class="text-3xl font-bold tracking-tight">Mon Inventaire</h1>
+		<p class="text-muted-foreground">Tous tes objets et recompenses en un seul endroit</p>
 
 		<!-- Collection Stats -->
 		<div class="flex flex-wrap gap-3 pt-2">
 			<Badge variant="default" class="gap-1.5 text-sm">
 				<Trophy class="h-4 w-4" />
-				{data.collectionStats.ownedCards} / {data.collectionStats.totalCards} possédées
+				{data.collectionStats.ownedCards} / {data.collectionStats.totalCards} cartes VIP
 			</Badge>
 			<Badge variant="secondary" class="gap-1.5 text-sm">
 				<Sparkles class="h-4 w-4" />
@@ -209,15 +196,15 @@
 			</Badge>
 			<Badge variant="outline" class="gap-1.5 text-sm">
 				<Lock class="h-4 w-4" />
-				{data.collectionStats.neverObtainedCards} à découvrir
+				{data.collectionStats.neverObtainedCards} a decouvrir
 			</Badge>
 		</div>
 	</div>
 
-	<!-- Rarity Sections -->
+	<!-- VIP Cards Section -->
 	<div class="space-y-8">
 		{#each ['legendary', 'epic', 'rare', 'common'] as rarity (rarity)}
-			{@const cards = collectionByRarity()[rarity as RarityKey]}
+			{@const cards = collectionByRarity[rarity as RarityKey]}
 			{@const config = rarityConfig[rarity as RarityKey]}
 
 			{#if cards.length > 0}
@@ -275,22 +262,6 @@
 										onUse={() => handleUseCard(template.id)}
 									/>
 
-									<!-- Status Badge Overlay -->
-									<!-- <div class="absolute top-2 right-2 z-20 flex flex-col gap-1">
-										{#if status === 'history'}
-											<Badge
-												variant="secondary"
-												class="bg-amber-500/90 text-white backdrop-blur-sm"
-											>
-												Utilisée
-											</Badge>
-										{:else if status === 'never'}
-											<Badge variant="secondary" class="bg-gray-500/90 text-white backdrop-blur-sm">
-												Non obtenue
-											</Badge>
-										{/if}
-									</div> -->
-
 									<!-- Lock Icon for Never Obtained -->
 									{#if status === 'never'}
 										<div
@@ -302,20 +273,6 @@
 										</div>
 									{/if}
 								</div>
-
-								<!-- Card Info Below (for history cards) -->
-								<!-- {#if status === 'history' && collectionStatus.firstEarnedAt}
-									<div class="mt-2 text-center text-xs text-muted-foreground">
-										Obtenue le {_formatDate(collectionStatus.firstEarnedAt)}
-									</div>
-								{/if} -->
-
-								<!-- Card Info Below (for owned cards with multiple instances) -->
-								<!-- {#if status === 'owned' && count > 1}
-									<div class="mt-2 text-center text-xs text-muted-foreground">
-										{count} exemplaires possédés
-									</div>
-								{/if} -->
 							</div>
 						{/each}
 					</div>

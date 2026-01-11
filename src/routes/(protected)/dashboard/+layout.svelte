@@ -145,17 +145,12 @@
 				...commonLinks,
 				{ href: '/dashboard/student/cours', label: 'Cours', icon: Book },
 				{ href: '/dashboard/student/worksheets', label: 'Mes Fiches', icon: FileSpreadsheet },
-				// { href: '/dashboard/friends', label: 'Amis', icon: Users },
-				// { href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
+				{ href: '/dashboard/friends', label: 'Amis', icon: Users },
+				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle }
 				// { href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
 				// { href: '/dashboard/student/assessments', label: 'Évaluations', icon: ClipboardList },
 				// { href: '/dashboard/student/devoirs', label: 'Devoirs', icon: BookOpen },
 				// { href: '/dashboard/student/materials', label: 'Matériel', icon: FileText },
-				{
-					href: '/dashboard/student/vip-cards/collection',
-					label: 'Collection VIP',
-					icon: Sparkles
-				}
 			];
 
 			// Only show marketplace if enabled for the student's class
