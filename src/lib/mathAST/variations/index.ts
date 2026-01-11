@@ -112,8 +112,15 @@ export {
 export type { BoundaryPoint } from './boundary-limits';
 
 // =============================================================================
-// Formatting Functions (TODO: Implement)
+// Formatting Functions
 // =============================================================================
 
-// TODO: Implement variation table formatting
-// export { formatVariationTable } from './format';
+export {
+	formatVariationTable,
+	formatCriticalPoints,
+	formatMonotonicIntervals,
+	formatExtrema,
+	formatBoundaryLimits,
+	formatVariationSummary,
+	getDerivativeSignSymbol
+} from './format';
