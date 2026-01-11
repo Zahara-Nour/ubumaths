@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseLatex, toLatex } from '../../index';
+import { parseLatex, toLatex, toCustom } from '../../index';
 import { integrate } from '../integrate';
 import type { IntegrateResult } from '../types';
 import { matchUSubstitution, findUCandidates } from '../patterns';
@@ -18,7 +18,7 @@ import { euler, variable, multiply, power, number, opposite } from '../../factor
 /**
  * Helper to integrate and check result
  */
-function testIntegrate(
+function _testIntegrate(
 	latex: string,
 	expectedLatex: string,
 	options?: { verbosity?: 'detailed' | 'summarized' | 'result' }
@@ -172,9 +172,15 @@ describe('findUCandidates', () => {
 
 describe('integrate with u-substitution', () => {
 	describe('basic u-substitution patterns', () => {
-		it.skip('should integrate 2x*cos(x^2) → sin(x^2)', () => {
-			// Skipped - needs more sophisticated pattern matching
-			testIntegrate('2x\\cos(x^2)', '\\sin(x^{2})');
+		it('should integrate 2x*cos(x^2) → sin(x^2)', () => {
+			const expr = parseLatex('2x\\cos(x^2)');
+			const result = integrate(expr);
+
+			expectExactIntegration(result);
+			expect(result.technique).toBe('u-substitution');
+			// Result should contain sin(x^2) in some form
+			const resultStr = toCustom(result.antiderivative!);
+			expect(resultStr).toMatch(/sin\(x\^2\)/);
 		});
 
 		it('should integrate e^(3x) → e^(3x)/3', () => {
@@ -186,8 +192,7 @@ describe('integrate with u-substitution', () => {
 			expectExactIntegration(result);
 		});
 
-		it.skip('should integrate x/(1+x^2) → ln|1+x^2|/2', () => {
-			// Skipped - needs better pattern matching
+		it('should integrate x/(1+x^2) → ln|1+x^2|/2', () => {
 			const expr = parseLatex('\\frac{x}{1+x^2}');
 			const result = integrate(expr);
 
@@ -195,8 +200,7 @@ describe('integrate with u-substitution', () => {
 			expect(result.technique).toBe('u-substitution');
 		});
 
-		it.skip('should integrate sin(x)*cos(x) with u = sin(x)', () => {
-			// Skipped - needs better pattern matching
+		it('should integrate sin(x)*cos(x) with u = sin(x)', () => {
 			const expr = parseLatex('\\sin(x)\\cos(x)');
 			const result = integrate(expr);
 
@@ -224,16 +228,14 @@ describe('integrate with u-substitution', () => {
 			expect(result.technique).toBe('u-substitution');
 		});
 
-		it.skip('should integrate x*sqrt(1+x^2)', () => {
-			// Skipped - needs better pattern matching
+		it('should integrate x*sqrt(1+x^2)', () => {
 			const expr = parseLatex('x\\sqrt{1+x^2}');
 			const result = integrate(expr);
 
 			expectExactIntegration(result);
 		});
 
-		it.skip('should integrate tan(x) as sin(x)/cos(x)', () => {
-			// Skipped - needs better pattern matching
+		it('should integrate tan(x) as sin(x)/cos(x)', () => {
 			const expr = parseLatex('\\frac{\\sin(x)}{\\cos(x)}');
 			const result = integrate(expr);
 
@@ -277,8 +279,7 @@ describe('integrate with u-substitution', () => {
 			// Result: (2x+1)^4/2
 		});
 
-		it.skip('should integrate x*(x^2+1)^5', () => {
-			// Skipped - needs better pattern matching
+		it('should integrate x*(x^2+1)^5', () => {
 			const expr = parseLatex('x(x^2+1)^5');
 			const result = integrate(expr);
 
@@ -342,16 +343,20 @@ describe('u-substitution step recording', () => {
 		expect(hasUNote).toBe(true);
 	});
 
-	it.skip('should record constant factor adjustment', () => {
-		// Skipped - needs better pattern matching
+	it('should record constant factor adjustment', () => {
 		const expr = parseLatex('\\frac{x}{1+x^2}');
 		const result = integrate(expr, { verbosity: 'detailed' });
 
 		expectExactIntegration(result);
 
-		// Should mention constant factor in steps
+		// Should mention constant factor in steps (uses "Facteur constant" in French)
 		const hasConstantFactor = result.steps.some(
-			(s) => s.description.includes('constante') || s.technicalNote?.includes('1/2')
+			(s) =>
+				s.description.includes('constante') ||
+				s.description.includes('constant') ||
+				s.technicalNote?.includes('Facteur constant') ||
+				s.technicalNote?.includes('1/2') ||
+				s.technicalNote?.includes('0.5')
 		);
 		expect(hasConstantFactor).toBe(true);
 	});

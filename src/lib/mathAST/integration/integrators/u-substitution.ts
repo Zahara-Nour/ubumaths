@@ -20,7 +20,7 @@ import { classifyIntegrand } from '../classify';
 import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
 import { createStepRecorder } from '../step-recorder';
 import { selectIntegrator } from './select';
-import { variable as variableFactory, number, divide } from '../../factory';
+import { variable as variableFactory, number, divide, power, fraction } from '../../factory';
 import { simplifiedMultiply } from '../../differentiation/rules';
 import { toCustom } from '../../custom-generator';
 import { hashMathNode } from '../../normal/hash';
@@ -33,6 +33,66 @@ import {
 } from '../../guards';
 import { findProportionalityConstant } from '../patterns';
 import { isEulerConstant } from '../../guards';
+import { mapNode } from '../../transforms';
+
+// =============================================================================
+// Structural Substitution Helper
+// =============================================================================
+
+/**
+ * Replace all occurrences of a subexpression with another expression.
+ * Uses hash comparison for structural matching.
+ *
+ * @param expr - The expression to transform
+ * @param target - The subexpression to replace
+ * @param replacement - The replacement expression
+ * @returns New expression with all occurrences replaced
+ */
+function structuralSubstitute(expr: MathNode, target: MathNode, replacement: MathNode): MathNode {
+	const targetHash = hashMathNode(target);
+
+	return mapNode(expr, (node) => {
+		if (hashMathNode(node) === targetHash) {
+			return replacement;
+		}
+		return node;
+	});
+}
+
+// =============================================================================
+// Expression Normalization for Integration
+// =============================================================================
+
+/**
+ * Normalize expressions for basic integrator compatibility:
+ * - Convert sqrt(expr) to expr^(1/2)
+ * - Convert 1/x^n to x^(-n)
+ * - Convert 1/sqrt(x) to x^(-1/2)
+ * The basic integrator handles x^n but not division forms.
+ */
+function normalizeForIntegration(expr: MathNode): MathNode {
+	return mapNode(expr, (node) => {
+		// sqrt(x) -> x^(1/2)
+		if (isFunction(node) && node.name === 'sqrt' && node.args.length === 1) {
+			return power(node.args[0], fraction(number('1'), number('2')));
+		}
+
+		// 1/x^n -> x^(-n)
+		if (
+			isDivision(node) &&
+			isNumberGuard(node.numerator) &&
+			node.numerator.value === '1' &&
+			isSuperscript(node.denominator)
+		) {
+			const base = node.denominator.base;
+			const exp = node.denominator.superscript;
+			// Negate the exponent: x^n -> x^(-n)
+			return power(base, { type: 'opposite', operand: exp } as MathNode);
+		}
+
+		return node;
+	});
+}
 
 // =============================================================================
 // Pattern Detection Helpers
@@ -242,9 +302,12 @@ function performUSubstitution(
 	const uRecorder = createStepRecorder();
 	const uVariable = 'u';
 
+	// Normalize for integration: sqrt(u) -> u^(1/2), 1/u^n -> u^(-n)
+	const normalizedIntegrand = normalizeForIntegration(transformedIntegrand);
+
 	// Use the general integration function recursively
 	// We need to import or call the integrator selection
-	const uIntegrator = selectIntegrator(transformedIntegrand, uVariable);
+	const uIntegrator = selectIntegrator(normalizedIntegrand, uVariable);
 
 	if (!uIntegrator) {
 		return {
@@ -259,7 +322,7 @@ function performUSubstitution(
 	}
 
 	const uResult = uIntegrator.integrate(
-		transformedIntegrand,
+		normalizedIntegrand,
 		uVariable,
 		options,
 		uRecorder,
@@ -368,8 +431,8 @@ function tryFactorDu(
 	const uVar = variableFactory('u');
 	const uHash = hashMathNode(u);
 
-	// Special case: Division patterns like x/(1+x²)
-	// If denominator is u and numerator is proportional to du, result is c/u
+	// Special case: Division patterns like x/(1+x²) or x/sqrt(1-x²)
+	// If numerator is proportional to du, transform denominator
 	if (isDivision(integrand)) {
 		const denomHash = hashMathNode(integrand.denominator);
 		if (denomHash === uHash) {
@@ -380,10 +443,22 @@ function tryFactorDu(
 			if (propConst !== null) {
 				// Transform to 1/u with constant factor
 				return {
-					transformedIntegrand: divide(number('1'), uVar),
+					transformedIntegrand: divide(number('1'), uVar, 'fraction'),
 					constantFactor: propConst
 				};
 			}
+		}
+
+		// Check if numerator is proportional to du and denominator contains u
+		// Example: x/sqrt(1-x²) with u = 1-x², du = -2x → -0.5 * 1/sqrt(u)
+		const propConst = matchedConstantFactor ?? findProportionalityConstant(integrand.numerator, du);
+		if (propConst !== null) {
+			// Transform denominator by substituting u, result is 1/transformedDenom
+			const denomTransformed = structuralSubstitute(integrand.denominator, u, uVar);
+			return {
+				transformedIntegrand: divide(number('1'), denomTransformed, 'fraction'),
+				constantFactor: propConst
+			};
 		}
 	}
 
@@ -401,7 +476,7 @@ function tryFactorDu(
 				const propConst = matchedConstantFactor ?? findProportionalityConstant(integrand.left, du);
 				if (propConst !== null) {
 					return {
-						transformedIntegrand: divide(number('1'), uVar),
+						transformedIntegrand: divide(number('1'), uVar, 'fraction'),
 						constantFactor: propConst
 					};
 				}
@@ -419,7 +494,7 @@ function tryFactorDu(
 				const propConst = matchedConstantFactor ?? findProportionalityConstant(integrand.right, du);
 				if (propConst !== null) {
 					return {
-						transformedIntegrand: divide(number('1'), uVar),
+						transformedIntegrand: divide(number('1'), uVar, 'fraction'),
 						constantFactor: propConst
 					};
 				}
@@ -432,49 +507,31 @@ function tryFactorDu(
 		// Right = e^(x²) transforms to e^u
 		const leftProp = findProportionalityConstant(integrand.left, du);
 		if (leftProp !== null) {
-			// Transform the right factor by substituting u
-			try {
-				const uLatex = toCustom(u);
-				const rightTransformed = substitute(integrand.right, { [uLatex]: uVar });
-				return {
-					transformedIntegrand: rightTransformed,
-					constantFactor: leftProp
-				};
-			} catch {
-				// Fall through to default case
-			}
+			// Transform the right factor by substituting u structurally
+			const rightTransformed = structuralSubstitute(integrand.right, u, uVar);
+			return {
+				transformedIntegrand: rightTransformed,
+				constantFactor: leftProp
+			};
 		}
 
 		const rightProp = findProportionalityConstant(integrand.right, du);
 		if (rightProp !== null) {
-			// Transform the left factor by substituting u
-			try {
-				const uLatex = toCustom(u);
-				const leftTransformed = substitute(integrand.left, { [uLatex]: uVar });
-				return {
-					transformedIntegrand: leftTransformed,
-					constantFactor: rightProp
-				};
-			} catch {
-				// Fall through to default case
-			}
+			// Transform the left factor by substituting u structurally
+			const leftTransformed = structuralSubstitute(integrand.left, u, uVar);
+			return {
+				transformedIntegrand: leftTransformed,
+				constantFactor: rightProp
+			};
 		}
 	}
 
-	// Default: simple substitution replacing u expression with u variable
-	try {
-		const uLatex = toCustom(u);
-		const result = substitute(integrand, { [uLatex]: uVar });
-		return {
-			transformedIntegrand: result,
-			constantFactor: matchedConstantFactor ?? null
-		};
-	} catch {
-		return {
-			transformedIntegrand: uVar,
-			constantFactor: matchedConstantFactor ?? null
-		};
-	}
+	// Default: structural substitution replacing u expression with u variable
+	const result = structuralSubstitute(integrand, u, uVar);
+	return {
+		transformedIntegrand: result,
+		constantFactor: matchedConstantFactor ?? null
+	};
 }
 
 /**
