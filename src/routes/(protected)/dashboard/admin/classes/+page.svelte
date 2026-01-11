@@ -450,8 +450,9 @@
 						return async ({ result, update }) => {
 							await update();
 							if (result.type === 'success') {
+								const wasEditing = !!editingClass;
 								closeModal();
-								if (editingClass) {
+								if (wasEditing) {
 									toaster.success('Classe mise à jour avec succès');
 								} else {
 									toaster.success('Classe créée avec succès');
