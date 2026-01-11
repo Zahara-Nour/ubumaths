@@ -119,7 +119,9 @@
 					Ajoutez des camarades de classe ou recherchez d'autres utilisateurs
 				</Dialog.Description>
 			</Dialog.Header>
-			<AddFriend />
+			{#if addFriendModalOpen}
+				<AddFriend />
+			{/if}
 		</Dialog.Content>
 	</Dialog.Root>
 </div>
