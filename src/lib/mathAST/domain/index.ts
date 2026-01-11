@@ -163,8 +163,14 @@ export {
 // Built-in Function Ranges (output ranges)
 // =============================================================================
 
-export { getBuiltinRange, hasRestrictedRange } from './builtins';
-export type { BuiltinRangeEntry } from './builtins';
+export {
+	getBuiltinRange,
+	hasRestrictedRange,
+	applyFunctionToRange,
+	getBoundsFromDomain,
+	domainFromBounds
+} from './builtins';
+export type { BuiltinRangeEntry, Monotonicity, MonotonicInterval, Bounds } from './builtins';
 
 // =============================================================================
 // Range Computation
