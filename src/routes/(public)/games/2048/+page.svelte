@@ -6,6 +6,7 @@
 	import Game2048 from './Game2048.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	import { Trophy } from 'lucide-svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -40,9 +41,15 @@
 		<Game2048 serverBestScore={data.serverBestScore} canSaveScore={data.canSaveScore} />
 	</div>
 
-	<!-- Rules Section (Collapsible) -->
+	<!-- Actions -->
 	<div class="rules-section mx-auto max-w-md">
-		<div class="mb-4 text-center">
+		<div class="mb-4 flex justify-center gap-3">
+			<a href="/leaderboards/2048">
+				<Button variant="outline" size="sm">
+					<Trophy class="mr-2 h-4 w-4" />
+					Classement
+				</Button>
+			</a>
 			<Button onclick={() => (showRules = !showRules)} variant="outline" size="sm">
 				{showRules ? 'Masquer les règles' : 'Afficher les règles'}
 			</Button>
