@@ -135,3 +135,27 @@ export {
 	type DiscontinuityInfo,
 	type SignAnalysis
 } from './one-sided';
+
+// =============================================================================
+// Composition Limits
+// =============================================================================
+
+export { tryCompositionLimit, type CompositionResult } from './composition';
+
+// =============================================================================
+// Sign Tracking
+// =============================================================================
+
+export {
+	classifyWithSign,
+	reciprocalSign,
+	negateSign,
+	lnSign,
+	expSign,
+	sqrtSign,
+	powerSign,
+	signedValueToInfinity,
+	isSignedInfinity,
+	isSignedZero,
+	type SignedLimitValue
+} from './sign-tracking';

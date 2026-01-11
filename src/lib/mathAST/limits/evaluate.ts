@@ -33,6 +33,7 @@ import { applyLhopital, isLhopitalApplicable } from './lhopital';
 import { tryAlgebraicSimplification } from './algebraic';
 import { trySqueeze } from './squeeze';
 import { evaluateOneSidedLimits, needsOneSidedAnalysis, recordOneSidedSteps } from './one-sided';
+import { tryCompositionLimit } from './composition';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { computeDomain } from '../domain/compute';
@@ -292,6 +293,22 @@ export function evaluateLimit(
 		}
 	}
 
+	// Strategy 2.5: Try composition limits (for infinity, function compositions, divisions by zero)
+	const compositionResult = tryCompositionLimit(expression, varName, approachPoint, dir, recorder);
+	if (compositionResult.success && compositionResult.value) {
+		return createResult(
+			compositionResult.value,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(compositionResult.value) ? 'infinite' : 'exact',
+			'none',
+			compositionResult.technique ?? 'composition',
+			recorder,
+			opts
+		);
+	}
+
 	// Detect indeterminate form for subsequent strategies
 	const indeterminateForm = detectIndeterminateForm(expression, varName, approachPoint, dir);
 
@@ -520,6 +537,22 @@ function evaluateLimitInternal(
 				opts
 			);
 		}
+	}
+
+	// Try composition limits
+	const compositionResult = tryCompositionLimit(expr, varName, approach, direction, recorder);
+	if (compositionResult.success && compositionResult.value) {
+		return createResult(
+			compositionResult.value,
+			varName,
+			approach,
+			direction,
+			isInfinity(compositionResult.value) ? 'infinite' : 'exact',
+			'none',
+			compositionResult.technique ?? 'composition',
+			recorder,
+			opts
+		);
 	}
 
 	const indeterminateForm = detectIndeterminateForm(expr, varName, approach, direction);
