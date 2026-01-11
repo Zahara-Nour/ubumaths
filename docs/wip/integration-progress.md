@@ -2,7 +2,24 @@
 
 ## Current Status: Phase 10 Complete + Bug Fixes ✅
 
-**Last Updated**: 2026-01-11 - Test improvements (245 → 271 → 275 → 280 passing)
+**Last Updated**: 2026-01-11 - Test improvements (245 → 271 → 275 → 280 → 286 passing)
+
+### Recent Session Progress
+
+**Fixes Applied in Latest Session**:
+
+1. ✅ Phase 4: Polynomial long division - Implemented using normalization framework
+
+   - Added imports for normalize/denormalize utilities
+   - Use divideUnivariate for actual division
+   - Convert results back to MathNode
+
+2. ✅ Phase 5: Repeated factor coefficient solving
+   - Extended solveCoefficients for repeated factors
+   - Added createCoeffNode helper
+   - Added solveRepeatedFactors for mixed factor cases
+   - Fixed isPolynomial to recognize (polynomial)^n patterns
+   - Fixed getPolynomialDegree for (polynomial)^n patterns
 
 ---
 
