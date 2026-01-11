@@ -4,16 +4,28 @@
  * Computes the output range (image) for an expression given an input domain.
  * This is the dual of domain computation: while `computeDomain` finds valid inputs,
  * `computeRange` finds possible outputs.
+ *
+ * Features:
+ * - Composition propagation: f(g(x)) correctly chains ranges
+ * - Monotonicity-based restriction: uses function properties for accuracy
+ * - Endpoint type preservation: maintains open/closed status
+ * - Pattern recognition: handles common forms like a*f(x)+b
+ * - Fractional/negative powers: x^(1/2), x^(-1), etc.
+ * - Pedagogical steps: optional step-by-step explanation
  */
 
 import type { MathNode } from '../types';
 import type { Domain, RangeResult, RangeStep } from './types';
 import { universalDomain, intervalDomain, fromNumber, closedInterval } from './factory';
 import { containsValue } from './algebra';
-import { getBuiltinRange } from './builtins';
+import {
+	getBuiltinRange,
+	applyFunctionToRange,
+	getBoundsFromDomain,
+	domainFromBounds
+} from './builtins';
 import { computeDomain } from './compute';
-import { isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { formatInterval } from './format';
 
 // =============================================================================
 // Types
@@ -51,8 +63,9 @@ export interface ComputeRangeOptions {
  * computeRange(parseLatex('x^2'), 'x', { domain: positiveReals() });  // → ]0, +∞[
  *
  * @example
- * // Compositions
- * computeRange(parseLatex('\\sin{x}^2'), 'x');  // → [0, 1]
+ * // Compositions with accurate range propagation
+ * computeRange(parseLatex('\\sqrt{x}'), 'x', { domain: closedInterval(4, 9) });  // → [2, 3]
+ * computeRange(parseLatex('\\sin{x}'), 'x', { domain: closedInterval(0, π/2) }); // → [0, 1]
  */
 export function computeRange(
 	expr: MathNode,
@@ -66,6 +79,13 @@ export function computeRange(
 
 	// If input domain is empty, range is empty
 	if (inputDomain.kind === 'empty') {
+		if (options.showSteps) {
+			steps.push({
+				expression: nodeToString(expr),
+				rangeDescription: '∅',
+				explanation: "Le domaine de définition est vide, donc l'image est vide."
+			});
+		}
 		return {
 			range: { kind: 'empty' },
 			variable,
@@ -101,16 +121,10 @@ function computeRangeNode(
 ): Domain {
 	switch (node.type) {
 		case 'number':
-			// Constant: range is single point
-			return singlePoint(parseFloat(node.value));
+			return computeConstantRange(node, steps, options);
 
 		case 'variable':
-			// Variable: range equals input domain
-			if (node.name === variable) {
-				return inputDomain;
-			}
-			// Other variable: treated as constant (universal range)
-			return universalDomain();
+			return computeVariableRange(node, variable, inputDomain, steps, options);
 
 		case 'function':
 			return computeFunctionRange(node, variable, inputDomain, steps, options);
@@ -133,6 +147,10 @@ function computeRangeNode(
 		case 'superscript':
 			return computePowerRange(node, variable, inputDomain, steps, options);
 
+		case 'greek':
+			// π, e are constants
+			return computeGreekConstantRange(node, steps, options);
+
 		default:
 			// Unknown node type: return universal (safe fallback)
 			return universalDomain();
@@ -140,11 +158,108 @@ function computeRangeNode(
 }
 
 // =============================================================================
-// Builtin Function Range
+// Constant and Variable Range
 // =============================================================================
 
 /**
- * Compute range for a function call.
+ * Compute range for a numeric constant: single point.
+ */
+function computeConstantRange(
+	node: MathNode & { type: 'number' },
+	steps: RangeStep[],
+	options: ComputeRangeOptions
+): Domain {
+	const value = parseFloat(node.value);
+	const range = singlePoint(value);
+
+	if (options.showSteps) {
+		steps.push({
+			expression: node.value,
+			rangeDescription: `{${node.value}}`,
+			explanation: `La constante ${node.value} a pour image le singleton {${node.value}}.`
+		});
+	}
+
+	return range;
+}
+
+/**
+ * Compute range for a Greek letter constant (π, e).
+ */
+function computeGreekConstantRange(
+	node: MathNode & { type: 'greek' },
+	steps: RangeStep[],
+	options: ComputeRangeOptions
+): Domain {
+	let value: number;
+	switch (node.letter) {
+		case 'pi':
+			value = Math.PI;
+			break;
+		case 'e':
+			value = Math.E;
+			break;
+		default:
+			// Unknown Greek letter: treat as variable → universal
+			return universalDomain();
+	}
+
+	const range = singlePoint(value);
+
+	if (options.showSteps) {
+		const name = node.letter === 'pi' ? 'π' : 'e';
+		steps.push({
+			expression: name,
+			rangeDescription: `{${name}}`,
+			explanation: `La constante ${name} a pour image le singleton {${name}}.`
+		});
+	}
+
+	return range;
+}
+
+/**
+ * Compute range for a variable: equals input domain.
+ */
+function computeVariableRange(
+	node: MathNode & { type: 'variable' },
+	variable: string,
+	inputDomain: Domain,
+	steps: RangeStep[],
+	options: ComputeRangeOptions
+): Domain {
+	if (node.name === variable) {
+		if (options.showSteps) {
+			steps.push({
+				expression: variable,
+				rangeDescription: formatInterval(inputDomain),
+				explanation: `La variable ${variable} prend ses valeurs dans son domaine de définition.`
+			});
+		}
+		return inputDomain;
+	}
+
+	// Other variable: treated as unknown constant (universal range)
+	if (options.showSteps) {
+		steps.push({
+			expression: node.name,
+			rangeDescription: 'ℝ',
+			explanation: `La variable ${node.name} est considérée comme un paramètre libre.`
+		});
+	}
+	return universalDomain();
+}
+
+// =============================================================================
+// Function Range with Composition Propagation
+// =============================================================================
+
+/**
+ * Compute range for a function call with composition propagation.
+ *
+ * For f(g(x)):
+ * 1. Compute range of g(x) on input domain → R_g
+ * 2. Apply f to R_g using monotonicity analysis
  */
 function computeFunctionRange(
 	node: MathNode & { type: 'function' },
@@ -153,15 +268,22 @@ function computeFunctionRange(
 	steps: RangeStep[],
 	options: ComputeRangeOptions
 ): Domain {
-	// Get builtin range if known
-	const builtinRange = getBuiltinRange(node.name);
+	const funcName = node.name.toLowerCase();
 
+	// No arguments: return builtin range
 	if (node.args.length === 0) {
-		// No arguments: just return builtin range or universal
-		return builtinRange ?? universalDomain();
+		const range = getBuiltinRange(funcName) ?? universalDomain();
+		if (options.showSteps) {
+			steps.push({
+				expression: `${node.name}()`,
+				rangeDescription: formatInterval(range),
+				explanation: `La fonction ${node.name} sans argument retourne sa valeur par défaut.`
+			});
+		}
+		return range;
 	}
 
-	// Compute range of the argument
+	// Step 1: Compute range of the argument
 	const argRange = computeRangeNode(node.args[0], variable, inputDomain, steps, options);
 
 	// If argument range is empty, function range is empty
@@ -169,25 +291,29 @@ function computeFunctionRange(
 		return { kind: 'empty' };
 	}
 
-	// For builtin functions, compose the range
-	if (builtinRange) {
-		// The function's range is its builtin range
-		// (In a more complete implementation, we would intersect with what's
-		// actually reachable given the argument's range)
-		return builtinRange;
+	// Step 2: Apply function to argument range using monotonicity
+	const range = applyFunctionToRange(funcName, argRange);
+
+	if (options.showSteps) {
+		const argRangeStr = formatInterval(argRange);
+		const resultRangeStr = formatInterval(range);
+		steps.push({
+			expression: `${node.name}(...)`,
+			rangeDescription: resultRangeStr,
+			explanation: `${node.name} appliquée à ${argRangeStr} donne ${resultRangeStr}.`
+		});
 	}
 
-	// Unknown function: return universal
-	return universalDomain();
+	return range;
 }
 
 // =============================================================================
-// Arithmetic Operations Range
+// Arithmetic Operations Range with Endpoint Preservation
 // =============================================================================
 
 /**
  * Compute range for addition: f(x) + g(x)
- * Range is Minkowski sum of individual ranges.
+ * Range is Minkowski sum of individual ranges with endpoint preservation.
  */
 function computeAdditionRange(
 	node: MathNode & { type: 'addition' },
@@ -199,12 +325,22 @@ function computeAdditionRange(
 	const leftRange = computeRangeNode(node.left, variable, inputDomain, steps, options);
 	const rightRange = computeRangeNode(node.right, variable, inputDomain, steps, options);
 
-	return minkowskiSum(leftRange, rightRange);
+	const result = minkowskiSum(leftRange, rightRange);
+
+	if (options.showSteps) {
+		steps.push({
+			expression: `(...) + (...)`,
+			rangeDescription: formatInterval(result),
+			explanation: `Somme de Minkowski: ${formatInterval(leftRange)} + ${formatInterval(rightRange)} = ${formatInterval(result)}.`
+		});
+	}
+
+	return result;
 }
 
 /**
  * Compute range for subtraction: f(x) - g(x)
- * Range is Minkowski difference.
+ * Range is Minkowski difference with endpoint preservation.
  */
 function computeSubtractionRange(
 	node: MathNode & { type: 'subtraction' },
@@ -216,12 +352,22 @@ function computeSubtractionRange(
 	const leftRange = computeRangeNode(node.left, variable, inputDomain, steps, options);
 	const rightRange = computeRangeNode(node.right, variable, inputDomain, steps, options);
 
-	// a - b where a ∈ [a1, a2] and b ∈ [b1, b2] gives [a1 - b2, a2 - b1]
-	return minkowskiDifference(leftRange, rightRange);
+	const result = minkowskiDifference(leftRange, rightRange);
+
+	if (options.showSteps) {
+		steps.push({
+			expression: `(...) - (...)`,
+			rangeDescription: formatInterval(result),
+			explanation: `Différence de Minkowski: ${formatInterval(leftRange)} - ${formatInterval(rightRange)} = ${formatInterval(result)}.`
+		});
+	}
+
+	return result;
 }
 
 /**
  * Compute range for multiplication: f(x) * g(x)
+ * Handles pattern recognition for a*f(x) form.
  */
 function computeMultiplicationRange(
 	node: MathNode & { type: 'multiplication' },
@@ -230,10 +376,37 @@ function computeMultiplicationRange(
 	steps: RangeStep[],
 	options: ComputeRangeOptions
 ): Domain {
+	// Pattern recognition: constant * expression
+	const leftConst = extractConstant(node.left);
+	const rightConst = extractConstant(node.right);
+
+	if (leftConst !== null) {
+		// a * f(x) → scale the range of f(x)
+		const rightRange = computeRangeNode(node.right, variable, inputDomain, steps, options);
+		return scaleRange(rightRange, leftConst, options.showSteps ? steps : undefined, node);
+	}
+
+	if (rightConst !== null) {
+		// f(x) * a → scale the range of f(x)
+		const leftRange = computeRangeNode(node.left, variable, inputDomain, steps, options);
+		return scaleRange(leftRange, rightConst, options.showSteps ? steps : undefined, node);
+	}
+
+	// General case: interval multiplication
 	const leftRange = computeRangeNode(node.left, variable, inputDomain, steps, options);
 	const rightRange = computeRangeNode(node.right, variable, inputDomain, steps, options);
 
-	return intervalMultiply(leftRange, rightRange);
+	const result = intervalMultiply(leftRange, rightRange);
+
+	if (options.showSteps) {
+		steps.push({
+			expression: `(...) × (...)`,
+			rangeDescription: formatInterval(result),
+			explanation: `Produit d'intervalles: ${formatInterval(leftRange)} × ${formatInterval(rightRange)} = ${formatInterval(result)}.`
+		});
+	}
+
+	return result;
 }
 
 /**
@@ -251,10 +424,27 @@ function computeDivisionRange(
 
 	// Division by a range that includes 0 can give any value
 	if (rangeContainsZero(denRange)) {
+		if (options.showSteps) {
+			steps.push({
+				expression: `(...) / (...)`,
+				rangeDescription: 'ℝ',
+				explanation: `Le dénominateur peut s'annuler, donc l'image est ℝ.`
+			});
+		}
 		return universalDomain();
 	}
 
-	return intervalDivide(numRange, denRange);
+	const result = intervalDivide(numRange, denRange);
+
+	if (options.showSteps) {
+		steps.push({
+			expression: `(...) / (...)`,
+			rangeDescription: formatInterval(result),
+			explanation: `Division d'intervalles: ${formatInterval(numRange)} / ${formatInterval(denRange)} = ${formatInterval(result)}.`
+		});
+	}
+
+	return result;
 }
 
 /**
@@ -268,11 +458,22 @@ function computeOppositeRange(
 	options: ComputeRangeOptions
 ): Domain {
 	const operandRange = computeRangeNode(node.operand, variable, inputDomain, steps, options);
-	return negateRange(operandRange);
+	const result = negateRange(operandRange);
+
+	if (options.showSteps) {
+		steps.push({
+			expression: `-(...)`,
+			rangeDescription: formatInterval(result),
+			explanation: `Opposé: -${formatInterval(operandRange)} = ${formatInterval(result)}.`
+		});
+	}
+
+	return result;
 }
 
 /**
  * Compute range for power: base^exponent
+ * Handles integer, fractional, and negative powers.
  */
 function computePowerRange(
 	node: MathNode & { type: 'superscript' },
@@ -284,41 +485,132 @@ function computePowerRange(
 	const baseRange = computeRangeNode(node.base, variable, inputDomain, steps, options);
 
 	// Check if exponent is a constant
-	if (node.superscript.type === 'number') {
-		const exp = parseFloat(node.superscript.value);
+	const expValue = extractConstant(node.superscript);
 
-		// x^2 on ℝ gives [0, +∞[
-		if (exp === 2) {
-			return squareRange(baseRange);
-		}
-
-		// x^0 = 1 (constant)
-		if (exp === 0) {
-			return singlePoint(1);
-		}
-
-		// x^1 = x
-		if (exp === 1) {
-			return baseRange;
-		}
-
-		// Even positive integer powers
-		if (Number.isInteger(exp) && exp > 0 && exp % 2 === 0) {
-			return evenPowerRange(baseRange, exp);
-		}
-
-		// Odd positive integer powers preserve monotonicity
-		if (Number.isInteger(exp) && exp > 0 && exp % 2 === 1) {
-			return oddPowerRange(baseRange, exp);
-		}
+	if (expValue !== null) {
+		const result = computePowerRangeWithExponent(baseRange, expValue, steps, options);
+		return result;
 	}
 
-	// Complex exponent: return universal as safe fallback
+	// Variable exponent: check for special cases
+	// For now, return universal as safe fallback
+	if (options.showSteps) {
+		steps.push({
+			expression: `(...)^(...)`,
+			rangeDescription: 'ℝ',
+			explanation: `L'exposant est variable, l'image est ℝ par défaut.`
+		});
+	}
 	return universalDomain();
 }
 
+/**
+ * Compute power range with known exponent.
+ */
+function computePowerRangeWithExponent(
+	baseRange: Domain,
+	exp: number,
+	steps: RangeStep[],
+	options: ComputeRangeOptions
+): Domain {
+	// x^0 = 1 (constant)
+	if (exp === 0) {
+		const result = singlePoint(1);
+		if (options.showSteps) {
+			steps.push({
+				expression: `(...)^0`,
+				rangeDescription: '{1}',
+				explanation: `Toute expression non nulle élevée à la puissance 0 vaut 1.`
+			});
+		}
+		return result;
+	}
+
+	// x^1 = x
+	if (exp === 1) {
+		return baseRange;
+	}
+
+	// Integer exponents
+	if (Number.isInteger(exp)) {
+		if (exp > 0) {
+			// Positive integer power
+			if (exp % 2 === 0) {
+				const result = evenPowerRange(baseRange, exp);
+				if (options.showSteps) {
+					steps.push({
+						expression: `(...)^${exp}`,
+						rangeDescription: formatInterval(result),
+						explanation: `Puissance paire: ${formatInterval(baseRange)}^${exp} = ${formatInterval(result)}.`
+					});
+				}
+				return result;
+			} else {
+				const result = oddPowerRange(baseRange, exp);
+				if (options.showSteps) {
+					steps.push({
+						expression: `(...)^${exp}`,
+						rangeDescription: formatInterval(result),
+						explanation: `Puissance impaire: ${formatInterval(baseRange)}^${exp} = ${formatInterval(result)}.`
+					});
+				}
+				return result;
+			}
+		} else {
+			// Negative integer power: x^(-n) = 1/x^n
+			const result = negativePowerRange(baseRange, exp);
+			if (options.showSteps) {
+				steps.push({
+					expression: `(...)^${exp}`,
+					rangeDescription: formatInterval(result),
+					explanation: `Puissance négative: ${formatInterval(baseRange)}^${exp} = ${formatInterval(result)}.`
+				});
+			}
+			return result;
+		}
+	}
+
+	// Fractional exponents
+	if (exp === 0.5) {
+		// x^(1/2) = sqrt(x)
+		const result = applyFunctionToRange('sqrt', baseRange);
+		if (options.showSteps) {
+			steps.push({
+				expression: `(...)^(1/2)`,
+				rangeDescription: formatInterval(result),
+				explanation: `Racine carrée: √${formatInterval(baseRange)} = ${formatInterval(result)}.`
+			});
+		}
+		return result;
+	}
+
+	if (exp === 1 / 3) {
+		// x^(1/3) = cube root, defined for all reals
+		const result = computeCubeRootRange(baseRange);
+		if (options.showSteps) {
+			steps.push({
+				expression: `(...)^(1/3)`,
+				rangeDescription: formatInterval(result),
+				explanation: `Racine cubique: ∛${formatInterval(baseRange)} = ${formatInterval(result)}.`
+			});
+		}
+		return result;
+	}
+
+	// General fractional power
+	const result = fractionalPowerRange(baseRange, exp);
+	if (options.showSteps) {
+		steps.push({
+			expression: `(...)^${exp}`,
+			rangeDescription: formatInterval(result),
+			explanation: `Puissance fractionnaire: ${formatInterval(baseRange)}^${exp} = ${formatInterval(result)}.`
+		});
+	}
+	return result;
+}
+
 // =============================================================================
-// Interval Arithmetic Helpers
+// Interval Arithmetic Helpers with Endpoint Preservation
 // =============================================================================
 
 /**
@@ -338,80 +630,32 @@ function rangeContainsZero(range: Domain): boolean {
 }
 
 /**
- * Get bounds of a domain as [lower, upper] or null if unbounded.
+ * Extract a constant value from a node if it's a constant.
  */
-function getBounds(domain: Domain): { lower: number | null; upper: number | null } | null {
-	if (domain.kind === 'empty') return null;
-	if (domain.kind === 'universal') return { lower: null, upper: null };
-
-	if (domain.kind === 'interval_set') {
-		const intervals = domain.intervals;
-		if (intervals.length === 0) return null;
-
-		// Get overall bounds
-		const firstInterval = intervals[0];
-		const lastInterval = intervals[intervals.length - 1];
-
-		const lower = isNegativeInfinity(firstInterval.lower.value)
-			? null
-			: endpointToNumber(firstInterval.lower.value);
-
-		const upper = isPositiveInfinity(lastInterval.upper.value)
-			? null
-			: endpointToNumber(lastInterval.upper.value);
-
-		return { lower, upper };
+function extractConstant(node: MathNode): number | null {
+	if (node.type === 'number') {
+		return parseFloat(node.value);
 	}
-
-	// For other domain types, return universal bounds
-	return { lower: null, upper: null };
+	if (node.type === 'greek') {
+		if (node.letter === 'pi') return Math.PI;
+		if (node.letter === 'e') return Math.E;
+	}
+	if (node.type === 'opposite' && node.operand.type === 'number') {
+		return -parseFloat(node.operand.value);
+	}
+	return null;
 }
 
 /**
- * Create domain from bounds.
- */
-function domainFromBounds(lower: number | null, upper: number | null): Domain {
-	if (lower === null && upper === null) {
-		return universalDomain();
-	}
-
-	if (lower !== null && upper !== null) {
-		if (lower > upper) {
-			return { kind: 'empty' };
-		}
-		return intervalDomain([closedInterval(fromNumber(lower), fromNumber(upper))]);
-	}
-
-	if (lower !== null) {
-		return intervalDomain([
-			{
-				kind: 'interval',
-				lower: { value: fromNumber(lower), type: 'closed' },
-				upper: { value: { type: 'infinity', sign: 'positive' }, type: 'open' }
-			}
-		]);
-	}
-
-	// upper !== null
-	return intervalDomain([
-		{
-			kind: 'interval',
-			lower: { value: { type: 'infinity', sign: 'negative' }, type: 'open' },
-			upper: { value: fromNumber(upper!), type: 'closed' }
-		}
-	]);
-}
-
-/**
- * Minkowski sum of two ranges: [a, b] + [c, d] = [a+c, b+d]
+ * Minkowski sum with endpoint preservation: [a, b] + [c, d] = [a+c, b+d]
  */
 function minkowskiSum(a: Domain, b: Domain): Domain {
 	if (a.kind === 'empty' || b.kind === 'empty') {
 		return { kind: 'empty' };
 	}
 
-	const boundsA = getBounds(a);
-	const boundsB = getBounds(b);
+	const boundsA = getBoundsFromDomain(a);
+	const boundsB = getBoundsFromDomain(b);
 
 	if (!boundsA || !boundsB) {
 		return universalDomain();
@@ -423,19 +667,23 @@ function minkowskiSum(a: Domain, b: Domain): Domain {
 	const upper =
 		boundsA.upper !== null && boundsB.upper !== null ? boundsA.upper + boundsB.upper : null;
 
-	return domainFromBounds(lower, upper);
+	// Endpoint types: closed + closed = closed, otherwise open
+	const lowerInclusive = boundsA.lowerInclusive && boundsB.lowerInclusive;
+	const upperInclusive = boundsA.upperInclusive && boundsB.upperInclusive;
+
+	return domainFromBounds({ lower, lowerInclusive, upper, upperInclusive });
 }
 
 /**
- * Minkowski difference: [a, b] - [c, d] = [a-d, b-c]
+ * Minkowski difference with endpoint preservation: [a, b] - [c, d] = [a-d, b-c]
  */
 function minkowskiDifference(a: Domain, b: Domain): Domain {
 	if (a.kind === 'empty' || b.kind === 'empty') {
 		return { kind: 'empty' };
 	}
 
-	const boundsA = getBounds(a);
-	const boundsB = getBounds(b);
+	const boundsA = getBoundsFromDomain(a);
+	const boundsB = getBoundsFromDomain(b);
 
 	if (!boundsA || !boundsB) {
 		return universalDomain();
@@ -447,23 +695,82 @@ function minkowskiDifference(a: Domain, b: Domain): Domain {
 	const upper =
 		boundsA.upper !== null && boundsB.lower !== null ? boundsA.upper - boundsB.lower : null;
 
-	return domainFromBounds(lower, upper);
+	// Endpoint types for subtraction
+	const lowerInclusive = boundsA.lowerInclusive && boundsB.upperInclusive;
+	const upperInclusive = boundsA.upperInclusive && boundsB.lowerInclusive;
+
+	return domainFromBounds({ lower, lowerInclusive, upper, upperInclusive });
 }
 
 /**
- * Negate a range: -[a, b] = [-b, -a]
+ * Negate a range with endpoint preservation: -[a, b] = [-b, -a]
  */
 function negateRange(domain: Domain): Domain {
 	if (domain.kind === 'empty') return { kind: 'empty' };
 	if (domain.kind === 'universal') return universalDomain();
 
-	const bounds = getBounds(domain);
+	const bounds = getBoundsFromDomain(domain);
 	if (!bounds) return universalDomain();
 
-	const newLower = bounds.upper !== null ? -bounds.upper : null;
-	const newUpper = bounds.lower !== null ? -bounds.lower : null;
+	return domainFromBounds({
+		lower: bounds.upper !== null ? -bounds.upper : null,
+		lowerInclusive: bounds.upperInclusive,
+		upper: bounds.lower !== null ? -bounds.lower : null,
+		upperInclusive: bounds.lowerInclusive
+	});
+}
 
-	return domainFromBounds(newLower, newUpper);
+/**
+ * Scale a range by a constant: a * [b, c]
+ */
+function scaleRange(
+	range: Domain,
+	scalar: number,
+	steps: RangeStep[] | undefined,
+	node: MathNode
+): Domain {
+	if (range.kind === 'empty') return { kind: 'empty' };
+	if (range.kind === 'universal') return universalDomain();
+	if (scalar === 0) return singlePoint(0);
+
+	const bounds = getBoundsFromDomain(range);
+	if (!bounds) return universalDomain();
+
+	let newLower: number | null;
+	let newUpper: number | null;
+	let newLowerInclusive: boolean;
+	let newUpperInclusive: boolean;
+
+	if (scalar > 0) {
+		// Positive scalar preserves order
+		newLower = bounds.lower !== null ? bounds.lower * scalar : null;
+		newUpper = bounds.upper !== null ? bounds.upper * scalar : null;
+		newLowerInclusive = bounds.lowerInclusive;
+		newUpperInclusive = bounds.upperInclusive;
+	} else {
+		// Negative scalar reverses order
+		newLower = bounds.upper !== null ? bounds.upper * scalar : null;
+		newUpper = bounds.lower !== null ? bounds.lower * scalar : null;
+		newLowerInclusive = bounds.upperInclusive;
+		newUpperInclusive = bounds.lowerInclusive;
+	}
+
+	const result = domainFromBounds({
+		lower: newLower,
+		lowerInclusive: newLowerInclusive,
+		upper: newUpper,
+		upperInclusive: newUpperInclusive
+	});
+
+	if (steps) {
+		steps.push({
+			expression: nodeToString(node),
+			rangeDescription: formatInterval(result),
+			explanation: `Multiplication par ${scalar}: ${scalar} × ${formatInterval(range)} = ${formatInterval(result)}.`
+		});
+	}
+
+	return result;
 }
 
 /**
@@ -475,8 +782,8 @@ function intervalMultiply(a: Domain, b: Domain): Domain {
 		return { kind: 'empty' };
 	}
 
-	const boundsA = getBounds(a);
-	const boundsB = getBounds(b);
+	const boundsA = getBoundsFromDomain(a);
+	const boundsB = getBoundsFromDomain(b);
 
 	if (!boundsA || !boundsB) {
 		return universalDomain();
@@ -493,13 +800,37 @@ function intervalMultiply(a: Domain, b: Domain): Domain {
 	}
 
 	const products = [
-		boundsA.lower * boundsB.lower,
-		boundsA.lower * boundsB.upper,
-		boundsA.upper * boundsB.lower,
-		boundsA.upper * boundsB.upper
+		{
+			value: boundsA.lower * boundsB.lower,
+			aInc: boundsA.lowerInclusive,
+			bInc: boundsB.lowerInclusive
+		},
+		{
+			value: boundsA.lower * boundsB.upper,
+			aInc: boundsA.lowerInclusive,
+			bInc: boundsB.upperInclusive
+		},
+		{
+			value: boundsA.upper * boundsB.lower,
+			aInc: boundsA.upperInclusive,
+			bInc: boundsB.lowerInclusive
+		},
+		{
+			value: boundsA.upper * boundsB.upper,
+			aInc: boundsA.upperInclusive,
+			bInc: boundsB.upperInclusive
+		}
 	];
 
-	return domainFromBounds(Math.min(...products), Math.max(...products));
+	const minProduct = products.reduce((min, p) => (p.value < min.value ? p : min));
+	const maxProduct = products.reduce((max, p) => (p.value > max.value ? p : max));
+
+	return domainFromBounds({
+		lower: minProduct.value,
+		lowerInclusive: minProduct.aInc && minProduct.bInc,
+		upper: maxProduct.value,
+		upperInclusive: maxProduct.aInc && maxProduct.bInc
+	});
 }
 
 /**
@@ -510,8 +841,8 @@ function intervalDivide(a: Domain, b: Domain): Domain {
 		return { kind: 'empty' };
 	}
 
-	const boundsA = getBounds(a);
-	const boundsB = getBounds(b);
+	const boundsA = getBoundsFromDomain(a);
+	const boundsB = getBoundsFromDomain(b);
 
 	if (!boundsA || !boundsB) {
 		return universalDomain();
@@ -532,24 +863,53 @@ function intervalDivide(a: Domain, b: Domain): Domain {
 	}
 
 	const quotients = [
-		boundsA.lower / boundsB.lower,
-		boundsA.lower / boundsB.upper,
-		boundsA.upper / boundsB.lower,
-		boundsA.upper / boundsB.upper
+		{
+			value: boundsA.lower / boundsB.lower,
+			aInc: boundsA.lowerInclusive,
+			bInc: boundsB.lowerInclusive
+		},
+		{
+			value: boundsA.lower / boundsB.upper,
+			aInc: boundsA.lowerInclusive,
+			bInc: boundsB.upperInclusive
+		},
+		{
+			value: boundsA.upper / boundsB.lower,
+			aInc: boundsA.upperInclusive,
+			bInc: boundsB.lowerInclusive
+		},
+		{
+			value: boundsA.upper / boundsB.upper,
+			aInc: boundsA.upperInclusive,
+			bInc: boundsB.upperInclusive
+		}
 	];
 
-	return domainFromBounds(Math.min(...quotients), Math.max(...quotients));
+	const minQuotient = quotients.reduce((min, q) => (q.value < min.value ? q : min));
+	const maxQuotient = quotients.reduce((max, q) => (q.value > max.value ? q : max));
+
+	return domainFromBounds({
+		lower: minQuotient.value,
+		lowerInclusive: minQuotient.aInc && minQuotient.bInc,
+		upper: maxQuotient.value,
+		upperInclusive: maxQuotient.aInc && maxQuotient.bInc
+	});
 }
 
+// =============================================================================
+// Power Range Helpers
+// =============================================================================
+
 /**
- * Square range: x^2 on [a, b]
- * If [a, b] contains 0: [0, max(a^2, b^2)]
- * Otherwise: [min(a^2, b^2), max(a^2, b^2)]
+ * Even power range: x^n on [a, b] where n is even
+ * If [a, b] contains 0: [0, max(|a|^n, |b|^n)]
+ * Otherwise: [min(a^n, b^n), max(a^n, b^n)]
  */
-function squareRange(domain: Domain): Domain {
+function evenPowerRange(domain: Domain, n: number): Domain {
 	if (domain.kind === 'empty') return { kind: 'empty' };
-	if (domain.kind === 'universal') {
-		// x^2 on ℝ gives [0, +∞[
+
+	const bounds = getBoundsFromDomain(domain);
+	if (!bounds) {
 		return intervalDomain([
 			{
 				kind: 'interval',
@@ -559,10 +919,6 @@ function squareRange(domain: Domain): Domain {
 		]);
 	}
 
-	const bounds = getBounds(domain);
-	if (!bounds) return universalDomain();
-
-	// Unbounded domain: x^2 on ]-∞, a] or [b, +∞[ gives [0, +∞[ or [min^2, +∞[
 	if (bounds.lower === null || bounds.upper === null) {
 		return intervalDomain([
 			{
@@ -576,48 +932,32 @@ function squareRange(domain: Domain): Domain {
 	const a = bounds.lower;
 	const b = bounds.upper;
 
-	// Check if interval contains 0
 	if (a <= 0 && b >= 0) {
 		// Contains 0: minimum is 0
-		const maxSq = Math.max(a * a, b * b);
-		return domainFromBounds(0, maxSq);
+		const maxPow = Math.max(Math.pow(Math.abs(a), n), Math.pow(Math.abs(b), n));
+		return domainFromBounds({
+			lower: 0,
+			lowerInclusive: true,
+			upper: maxPow,
+			upperInclusive: bounds.lowerInclusive || bounds.upperInclusive
+		});
 	}
 
 	// Doesn't contain 0: both endpoints have same sign
-	const minSq = Math.min(a * a, b * b);
-	const maxSq = Math.max(a * a, b * b);
-	return domainFromBounds(minSq, maxSq);
-}
+	const aPow = Math.pow(a, n);
+	const bPow = Math.pow(b, n);
+	const minPow = Math.min(aPow, bPow);
+	const maxPow = Math.max(aPow, bPow);
 
-/**
- * Even power range: x^n on [a, b] where n is even
- */
-function evenPowerRange(domain: Domain, n: number): Domain {
-	// Even powers behave like x^2 but with different values
-	if (domain.kind === 'empty') return { kind: 'empty' };
+	// The minimum occurs at the endpoint closer to 0
+	const minAtA = aPow === minPow;
 
-	const bounds = getBounds(domain);
-	if (!bounds || bounds.lower === null || bounds.upper === null) {
-		return intervalDomain([
-			{
-				kind: 'interval',
-				lower: { value: fromNumber(0), type: 'closed' },
-				upper: { value: { type: 'infinity', sign: 'positive' }, type: 'open' }
-			}
-		]);
-	}
-
-	const a = bounds.lower;
-	const b = bounds.upper;
-
-	if (a <= 0 && b >= 0) {
-		const maxPow = Math.max(Math.pow(a, n), Math.pow(b, n));
-		return domainFromBounds(0, maxPow);
-	}
-
-	const minPow = Math.min(Math.pow(a, n), Math.pow(b, n));
-	const maxPow = Math.max(Math.pow(a, n), Math.pow(b, n));
-	return domainFromBounds(minPow, maxPow);
+	return domainFromBounds({
+		lower: minPow,
+		lowerInclusive: minAtA ? bounds.lowerInclusive : bounds.upperInclusive,
+		upper: maxPow,
+		upperInclusive: minAtA ? bounds.upperInclusive : bounds.lowerInclusive
+	});
 }
 
 /**
@@ -628,11 +968,178 @@ function oddPowerRange(domain: Domain, n: number): Domain {
 	if (domain.kind === 'empty') return { kind: 'empty' };
 	if (domain.kind === 'universal') return universalDomain();
 
-	const bounds = getBounds(domain);
+	const bounds = getBoundsFromDomain(domain);
 	if (!bounds) return universalDomain();
 
-	const lower = bounds.lower !== null ? Math.pow(bounds.lower, n) : null;
-	const upper = bounds.upper !== null ? Math.pow(bounds.upper, n) : null;
+	return domainFromBounds({
+		lower: bounds.lower !== null ? Math.pow(bounds.lower, n) : null,
+		lowerInclusive: bounds.lowerInclusive,
+		upper: bounds.upper !== null ? Math.pow(bounds.upper, n) : null,
+		upperInclusive: bounds.upperInclusive
+	});
+}
 
-	return domainFromBounds(lower, upper);
+/**
+ * Negative power range: x^(-n) = 1/x^n
+ */
+function negativePowerRange(domain: Domain, n: number): Domain {
+	if (domain.kind === 'empty') return { kind: 'empty' };
+
+	const bounds = getBoundsFromDomain(domain);
+	if (!bounds) return universalDomain();
+
+	// If range contains 0, result is unbounded
+	if (
+		(bounds.lower === null || bounds.lower <= 0) &&
+		(bounds.upper === null || bounds.upper >= 0)
+	) {
+		return universalDomain();
+	}
+
+	if (bounds.lower === null || bounds.upper === null) {
+		return universalDomain();
+	}
+
+	// x^n first, then 1/...
+	const absN = Math.abs(n);
+	const isEven = absN % 2 === 0;
+
+	if (isEven) {
+		// 1/x^2 is always positive, decreasing on (0, +∞), increasing on (-∞, 0)
+		if (bounds.lower > 0) {
+			// Positive interval: 1/x^n is decreasing
+			const lower = 1 / Math.pow(bounds.upper, absN);
+			const upper = 1 / Math.pow(bounds.lower, absN);
+			return domainFromBounds({
+				lower,
+				lowerInclusive: bounds.upperInclusive,
+				upper,
+				upperInclusive: bounds.lowerInclusive
+			});
+		} else if (bounds.upper < 0) {
+			// Negative interval
+			const lower = 1 / Math.pow(bounds.lower, absN);
+			const upper = 1 / Math.pow(bounds.upper, absN);
+			return domainFromBounds({
+				lower,
+				lowerInclusive: bounds.lowerInclusive,
+				upper,
+				upperInclusive: bounds.upperInclusive
+			});
+		}
+	} else {
+		// Odd negative power: 1/x^n, monotonically decreasing everywhere
+		if (bounds.lower > 0 || bounds.upper < 0) {
+			const lower = 1 / Math.pow(bounds.upper, absN);
+			const upper = 1 / Math.pow(bounds.lower, absN);
+			return domainFromBounds({
+				lower,
+				lowerInclusive: bounds.upperInclusive,
+				upper,
+				upperInclusive: bounds.lowerInclusive
+			});
+		}
+	}
+
+	return universalDomain();
+}
+
+/**
+ * Cube root range: x^(1/3) is defined for all reals and monotonically increasing.
+ */
+function computeCubeRootRange(domain: Domain): Domain {
+	if (domain.kind === 'empty') return { kind: 'empty' };
+	if (domain.kind === 'universal') return universalDomain();
+
+	const bounds = getBoundsFromDomain(domain);
+	if (!bounds) return universalDomain();
+
+	return domainFromBounds({
+		lower: bounds.lower !== null ? Math.cbrt(bounds.lower) : null,
+		lowerInclusive: bounds.lowerInclusive,
+		upper: bounds.upper !== null ? Math.cbrt(bounds.upper) : null,
+		upperInclusive: bounds.upperInclusive
+	});
+}
+
+/**
+ * General fractional power range.
+ */
+function fractionalPowerRange(domain: Domain, exp: number): Domain {
+	if (domain.kind === 'empty') return { kind: 'empty' };
+
+	const bounds = getBoundsFromDomain(domain);
+	if (!bounds) return universalDomain();
+
+	// For positive fractional exponents on positive base
+	if (exp > 0) {
+		if (bounds.lower !== null && bounds.lower < 0) {
+			// Negative values with fractional exponent: complex
+			return universalDomain();
+		}
+
+		const lower = bounds.lower !== null && bounds.lower >= 0 ? Math.pow(bounds.lower, exp) : null;
+		const upper = bounds.upper !== null && bounds.upper >= 0 ? Math.pow(bounds.upper, exp) : null;
+
+		return domainFromBounds({
+			lower: lower ?? 0,
+			lowerInclusive: bounds.lowerInclusive,
+			upper,
+			upperInclusive: bounds.upperInclusive
+		});
+	}
+
+	// Negative fractional exponent: 1/x^|exp|
+	if (bounds.lower !== null && bounds.lower <= 0) {
+		return universalDomain(); // Includes 0 or negatives
+	}
+
+	if (bounds.lower === null || bounds.upper === null) {
+		return universalDomain();
+	}
+
+	// Both bounds positive, exp < 0
+	const lower = Math.pow(bounds.upper, exp);
+	const upper = Math.pow(bounds.lower, exp);
+
+	return domainFromBounds({
+		lower,
+		lowerInclusive: bounds.upperInclusive,
+		upper,
+		upperInclusive: bounds.lowerInclusive
+	});
+}
+
+// =============================================================================
+// Utilities
+// =============================================================================
+
+/**
+ * Convert a node to a simple string representation.
+ */
+function nodeToString(node: MathNode): string {
+	switch (node.type) {
+		case 'number':
+			return node.value;
+		case 'variable':
+			return node.name;
+		case 'greek':
+			return node.letter === 'pi' ? 'π' : node.letter;
+		case 'function':
+			return `${node.name}(...)`;
+		case 'addition':
+			return '(...) + (...)';
+		case 'subtraction':
+			return '(...) - (...)';
+		case 'multiplication':
+			return '(...) × (...)';
+		case 'division':
+			return '(...) / (...)';
+		case 'opposite':
+			return '-(...)';
+		case 'superscript':
+			return '(...)^(...)';
+		default:
+			return '...';
+	}
 }

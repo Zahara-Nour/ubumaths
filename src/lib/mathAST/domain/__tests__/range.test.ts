@@ -209,9 +209,11 @@ describe('computeRange()', () => {
 				expect(containsValue(result.range, -1)).toBe(false);
 			});
 
-			it('sqrt(constant 4) still uses builtin range', () => {
+			it('sqrt(constant 4) evaluates to {2}', () => {
 				const result = computeRange(func('sqrt', [number('4')]), 'x');
-				expect(containsValue(result.range, 0)).toBe(true);
+				// With composition propagation, sqrt(4) = 2 (single point)
+				expect(containsValue(result.range, 2)).toBe(true);
+				expect(containsValue(result.range, 0)).toBe(false);
 				expect(containsValue(result.range, -1)).toBe(false);
 			});
 		});
@@ -252,17 +254,26 @@ describe('computeRange()', () => {
 
 			it('ln(x) has range ]-infinity, +infinity[', () => {
 				const result = computeRange(func('ln', [variable('x')]), 'x');
-				expect(result.range.kind).toBe('universal');
+				// Range is unbounded in both directions
+				expect(containsValue(result.range, 0)).toBe(true);
+				expect(containsValue(result.range, 100)).toBe(true);
+				expect(containsValue(result.range, -100)).toBe(true);
 			});
 
 			it('log(x) has range ]-infinity, +infinity[', () => {
 				const result = computeRange(func('log', [variable('x')]), 'x');
-				expect(result.range.kind).toBe('universal');
+				// Range is unbounded in both directions
+				expect(containsValue(result.range, 0)).toBe(true);
+				expect(containsValue(result.range, 100)).toBe(true);
+				expect(containsValue(result.range, -100)).toBe(true);
 			});
 
 			it('log10(x) has range ]-infinity, +infinity[', () => {
 				const result = computeRange(func('log10', [variable('x')]), 'x');
-				expect(result.range.kind).toBe('universal');
+				// Range is unbounded in both directions
+				expect(containsValue(result.range, 0)).toBe(true);
+				expect(containsValue(result.range, 100)).toBe(true);
+				expect(containsValue(result.range, -100)).toBe(true);
 			});
 		});
 
@@ -365,12 +376,16 @@ describe('computeRange()', () => {
 			expect(containsValue(result.range, -1)).toBe(false);
 		});
 
-		it('sin(cos(x)) has range [-1, 1]', () => {
+		it('sin(cos(x)) has range ≈ [-0.84, 0.84] (sin applied to [-1, 1])', () => {
 			const expr = func('sin', [func('cos', [variable('x')])]);
 			const result = computeRange(expr, 'x');
+			// cos(x) ∈ [-1, 1], then sin([-1, 1]) = [sin(-1), sin(1)] ≈ [-0.8414, 0.8414]
 			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(true);
+			expect(containsValue(result.range, 0.8)).toBe(true);
+			expect(containsValue(result.range, -0.8)).toBe(true);
+			// 1 and -1 are NOT in the range (sin(1) ≈ 0.8414)
+			expect(containsValue(result.range, 1)).toBe(false);
+			expect(containsValue(result.range, -1)).toBe(false);
 			expect(containsValue(result.range, 2)).toBe(false);
 		});
 
@@ -381,10 +396,13 @@ describe('computeRange()', () => {
 			expect(containsValue(result.range, 1)).toBe(true);
 		});
 
-		it('ln(exp(x)) uses ln range (universal)', () => {
+		it('ln(exp(x)) has range ]-infinity, +infinity[', () => {
 			const expr = func('ln', [func('exp', [variable('x')])]);
 			const result = computeRange(expr, 'x');
-			expect(result.range.kind).toBe('universal');
+			// exp(x) ∈ ]0, +∞[, ln(]0, +∞[) = ]-∞, +∞[
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 100)).toBe(true);
+			expect(containsValue(result.range, -100)).toBe(true);
 		});
 
 		it('sqrt(abs(x)) has range [0, +infinity[', () => {
