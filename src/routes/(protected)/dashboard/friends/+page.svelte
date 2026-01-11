@@ -7,7 +7,11 @@
 	import FriendRequests from '$lib/components/FriendRequests.svelte';
 	import AddFriend from '$lib/components/AddFriend.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { Users, UserPlus, Bell } from 'lucide-svelte';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { Button } from '$lib/components/ui/button';
+	import { Users, Bell, Plus } from 'lucide-svelte';
+
+	let addFriendModalOpen = $state(false);
 
 	let { data } = $props();
 
@@ -38,7 +42,13 @@
 <div class="container mx-auto max-w-4xl p-6">
 	<!-- Header -->
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold">Amis</h1>
+		<div class="flex items-center gap-3">
+			<h1 class="text-3xl font-bold">Amis</h1>
+			<Button size="icon" class="size-10 rounded-full" onclick={() => (addFriendModalOpen = true)}>
+				<Plus class="size-5" />
+				<span class="sr-only">Ajouter un ami</span>
+			</Button>
+		</div>
 		<p class="mt-1 text-muted-foreground">Gérez vos amis et restez connecté avec vos camarades</p>
 	</div>
 
@@ -57,7 +67,7 @@
 
 	<!-- Tabs -->
 	<Tabs.Root value="friends" class="space-y-4">
-		<Tabs.List class="grid w-full grid-cols-3">
+		<Tabs.List class="grid w-full grid-cols-2">
 			<Tabs.Trigger value="friends" class="flex items-center gap-2">
 				<Users class="size-4" />
 				Mes amis
@@ -76,11 +86,6 @@
 						{pendingIncomingCount}
 					</span>
 				{/if}
-			</Tabs.Trigger>
-
-			<Tabs.Trigger value="add" class="flex items-center gap-2">
-				<UserPlus class="size-4" />
-				Ajouter
 			</Tabs.Trigger>
 		</Tabs.List>
 
@@ -103,9 +108,18 @@
 				<FriendRequests />
 			{/if}
 		</Tabs.Content>
-
-		<Tabs.Content value="add">
-			<AddFriend />
-		</Tabs.Content>
 	</Tabs.Root>
+
+	<!-- Add Friend Modal -->
+	<Dialog.Root bind:open={addFriendModalOpen}>
+		<Dialog.Content class="max-h-[85vh] max-w-2xl overflow-y-auto">
+			<Dialog.Header>
+				<Dialog.Title>Ajouter un ami</Dialog.Title>
+				<Dialog.Description>
+					Ajoutez des camarades de classe ou recherchez d'autres utilisateurs
+				</Dialog.Description>
+			</Dialog.Header>
+			<AddFriend />
+		</Dialog.Content>
+	</Dialog.Root>
 </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { friendsManager, type ClassWithClassmates } from '$lib/stores/friends.svelte';
+	import { onMount } from 'svelte';
+	import { friendsManager, type ClassmateInfo } from '$lib/stores/friends.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import MySelect from '$lib/components/MySelect.svelte';
@@ -26,30 +27,51 @@
 	let isSearching = $state(false);
 	let selectedFriendshipType = $state<FriendshipRelationType>('classmate');
 
-	// Classmates state
-	let classesWithClassmates = $state<ClassWithClassmates[]>([]);
-	let isLoadingClassmates = $state(true);
-	let classmatesLoaded = $state(false);
+	// Classes and students state
+	let allClasses = $state<Array<{ id: string; name: string }>>([]);
+	let studentsInClass = $state<ClassmateInfo[]>([]);
+	let isLoadingClasses = $state(true);
+	let isLoadingStudents = $state(false);
+	let selectedClassId = $state<string>('');
 
 	// Track which users are being added (for loading state)
 	let sendingRequestTo = $state<Set<string>>(new Set());
 
-	// Load classmates when friendsManager is initialized
-	$effect(() => {
-		if (friendsManager.initialized && !classmatesLoaded) {
-			loadClassmates();
+	// Derived: items for class selector
+	const classSelectItems = $derived(
+		allClasses.map((c) => ({
+			value: c.id,
+			label: c.name
+		}))
+	);
+
+	onMount(async () => {
+		isLoadingClasses = true;
+		allClasses = await friendsManager.getClassesByUserGrade();
+		// Set default to first class and load its students
+		if (allClasses.length > 0) {
+			selectedClassId = allClasses[0].id;
+			await loadStudentsInClass(allClasses[0].id);
 		}
+		isLoadingClasses = false;
 	});
 
-	async function loadClassmates() {
-		isLoadingClassmates = true;
-		classesWithClassmates = await friendsManager.getClassmates();
-		isLoadingClassmates = false;
-		classmatesLoaded = true;
+	async function loadStudentsInClass(classId: string) {
+		isLoadingStudents = true;
+		studentsInClass = await friendsManager.getStudentsInClass(classId);
+		isLoadingStudents = false;
 	}
 
-	async function refreshClassmates() {
-		classesWithClassmates = await friendsManager.getClassmates();
+	// Handler for class selection change (UI event -> handler -> state update)
+	function handleClassChange(classId: string) {
+		selectedClassId = classId;
+		loadStudentsInClass(classId);
+	}
+
+	async function refreshStudents() {
+		if (selectedClassId) {
+			studentsInClass = await friendsManager.getStudentsInClass(selectedClassId);
+		}
 	}
 
 	// Items for MySelect
@@ -79,9 +101,9 @@
 			const success = await friendsManager.sendFriendRequest(userId, selectedFriendshipType);
 			if (success) {
 				toaster.success(`Demande d'ami envoyée à ${userName}`);
-				// Refresh search results and classmates to update status
+				// Refresh search results and students to update status
 				searchResults = await friendsManager.searchUsers(searchQuery);
-				await refreshClassmates();
+				await refreshStudents();
 			} else {
 				toaster.error("Impossible d'envoyer la demande");
 			}
@@ -97,7 +119,7 @@
 			const success = await friendsManager.sendFriendRequest(userId, 'classmate');
 			if (success) {
 				toaster.success(`Demande d'ami envoyée à ${userName}`);
-				await refreshClassmates();
+				await refreshStudents();
 			} else {
 				toaster.error("Impossible d'envoyer la demande");
 			}
@@ -145,87 +167,95 @@
 </script>
 
 <div class="space-y-6">
-	<!-- Classmates Section -->
-	{#if isLoadingClassmates}
+	<!-- Classes Section -->
+	{#if isLoadingClasses}
 		<div class="rounded-lg border border-border bg-card p-6 text-center">
-			<p class="text-muted-foreground">Chargement des camarades de classe...</p>
+			<p class="text-muted-foreground">Chargement des classes...</p>
 		</div>
-	{:else if classesWithClassmates.length > 0}
+	{:else if allClasses.length > 0}
 		<div class="space-y-4">
-			<div class="flex items-center gap-2">
-				<Users class="size-5 text-primary" />
-				<h2 class="text-lg font-semibold">Mes camarades de classe</h2>
+			<!-- Header with class selector -->
+			<div class="flex flex-wrap items-center gap-3">
+				<div class="flex items-center gap-2">
+					<Users class="size-5 text-primary" />
+					<h2 class="text-lg font-semibold">Élèves de</h2>
+				</div>
+				<MySelect
+					type="single"
+					value={selectedClassId}
+					onValueChange={handleClassChange}
+					items={classSelectItems}
+					placeholder="Sélectionner une classe"
+					triggerClass="h-9 min-w-48 rounded-md border border-input bg-background px-3 text-sm font-medium"
+				/>
 			</div>
 
-			{#each classesWithClassmates as classData (classData.class_id)}
-				<div class="space-y-2">
-					<!-- Class name header -->
-					<h3 class="border-b border-border pb-1 text-sm font-medium text-muted-foreground">
-						{classData.class_name}
-					</h3>
-
-					{#if classData.classmates.length === 0}
-						<p class="py-2 text-sm text-muted-foreground italic">
-							Aucun autre élève dans cette classe
-						</p>
-					{:else}
-						<div class="space-y-2">
-							{#each classData.classmates as classmate (classmate.id)}
-								{@const displayName =
-									classmate.full_name ||
-									`${classmate.firstname || ''} ${classmate.lastname || ''}`.trim() ||
-									'Utilisateur inconnu'}
-								{@const badge = getStatusBadge(classmate.friendship_status ?? null)}
-								<div
-									class="flex items-center justify-between rounded-lg border border-border bg-card p-3"
-								>
-									<div class="flex items-center gap-3">
-										<!-- Avatar -->
-										<Avatar.Root class="size-9">
-											<Avatar.Image src={getAvatarUrl(classmate)} alt={displayName} />
-											<Avatar.Fallback>
-												{displayName.charAt(0).toUpperCase()}
-											</Avatar.Fallback>
-										</Avatar.Root>
-
-										<!-- Name -->
-										<p class="font-medium">{displayName}</p>
-									</div>
-
-									<!-- Action or Status -->
-									<div>
-										{#if classmate.friendship_status}
-											<div
-												class="flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium {badge.class}"
-											>
-												{#if badge.icon}
-													<badge.icon class="size-4" />
-												{/if}
-												{badge.label}
-											</div>
-										{:else}
-											{@const isLoading = sendingRequestTo.has(classmate.id)}
-											<Button
-												size="sm"
-												disabled={isLoading}
-												onclick={() => handleSendRequestToClassmate(classmate.id, displayName)}
-											>
-												{#if isLoading}
-													<Loader2 class="mr-1 size-4 animate-spin" />
-													Envoi...
-												{:else}
-													<UserPlus class="mr-1 size-4" />
-													Ajouter
-												{/if}
-											</Button>
-										{/if}
-									</div>
-								</div>
-							{/each}
-						</div>
-					{/if}
+			<!-- Students list for selected class -->
+			{#if isLoadingStudents}
+				<div class="py-4 text-center">
+					<Loader2 class="mx-auto size-6 animate-spin text-muted-foreground" />
+					<p class="mt-2 text-sm text-muted-foreground">Chargement des élèves...</p>
 				</div>
-			{/each}
+			{:else if studentsInClass.length === 0}
+				<p class="py-4 text-center text-sm text-muted-foreground italic">
+					Aucun élève dans cette classe
+				</p>
+			{:else}
+				<div class="space-y-2">
+					{#each studentsInClass as classmate (classmate.id)}
+						{@const displayName =
+							classmate.full_name ||
+							`${classmate.firstname || ''} ${classmate.lastname || ''}`.trim() ||
+							'Utilisateur inconnu'}
+						{@const badge = getStatusBadge(classmate.friendship_status ?? null)}
+						<div
+							class="flex items-center justify-between rounded-lg border border-border bg-card p-3"
+						>
+							<div class="flex items-center gap-3">
+								<!-- Avatar -->
+								<Avatar.Root class="size-9">
+									<Avatar.Image src={getAvatarUrl(classmate)} alt={displayName} />
+									<Avatar.Fallback>
+										{displayName.charAt(0).toUpperCase()}
+									</Avatar.Fallback>
+								</Avatar.Root>
+
+								<!-- Name -->
+								<p class="font-medium">{displayName}</p>
+							</div>
+
+							<!-- Action or Status -->
+							<div>
+								{#if classmate.friendship_status}
+									<div
+										class="flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium {badge.class}"
+									>
+										{#if badge.icon}
+											<badge.icon class="size-4" />
+										{/if}
+										{badge.label}
+									</div>
+								{:else}
+									{@const isLoading = sendingRequestTo.has(classmate.id)}
+									<Button
+										size="sm"
+										disabled={isLoading}
+										onclick={() => handleSendRequestToClassmate(classmate.id, displayName)}
+									>
+										{#if isLoading}
+											<Loader2 class="mr-1 size-4 animate-spin" />
+											Envoi...
+										{:else}
+											<UserPlus class="mr-1 size-4" />
+											Ajouter
+										{/if}
+									</Button>
+								{/if}
+							</div>
+						</div>
+					{/each}
+				</div>
+			{/if}
 		</div>
 
 		<!-- Separator -->
