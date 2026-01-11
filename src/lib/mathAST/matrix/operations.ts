@@ -18,9 +18,28 @@
  */
 
 import type { MathNode, MatrixNode, NumberNode } from '../types';
+import type { MatrixOperationOptions, MatrixOperationResult } from './types';
+import type { Verbosity } from '../common/verbosity';
 import { matrix, number } from '../factory';
 import { MatrixDimensionError, MatrixOperationError } from './types';
 import { isNumber } from '../guards';
+import { MatrixStepRecorderImpl, createMatrixStepRecorder } from './step-recorder';
+import {
+	describeMatrixSize,
+	describeDet2x2,
+	describeCofactorExpansion,
+	describeMinor,
+	describeCofactor,
+	describeSumCofactors,
+	describeDetResult,
+	describeCheckDet,
+	describeInverse2x2,
+	describeAugmentedMatrix,
+	describeRowSwap,
+	describeRowScale,
+	describeRowAdd,
+	describeExtractInverse
+} from './descriptions-fr';
 
 // =============================================================================
 // Dimension Helpers
@@ -256,15 +275,32 @@ export function trace(m: MatrixNode): MathNode {
 // =============================================================================
 
 /**
+ * Compute the determinant of a square matrix (without steps)
+ */
+export function determinant(m: MatrixNode): MathNode;
+/**
+ * Compute the determinant with pedagogical steps
+ */
+export function determinant(
+	m: MatrixNode,
+	options: MatrixOperationOptions
+): MatrixOperationResult<MathNode>;
+/**
  * Compute the determinant of a square matrix
  *
  * Uses:
  * - Direct formula for 1x1 and 2x2
  * - Cofactor expansion for larger matrices
  *
+ * @param m - The square matrix
+ * @param options - Optional settings including verbosity for step recording
+ * @returns The determinant value, or an object with result and steps if options provided
  * @throws MatrixOperationError if matrix is not square
  */
-export function determinant(m: MatrixNode): MathNode {
+export function determinant(
+	m: MatrixNode,
+	options?: MatrixOperationOptions
+): MathNode | MatrixOperationResult<MathNode> {
 	if (!isSquare(m)) {
 		const dim = getDimensions(m);
 		throw new MatrixOperationError(
@@ -274,6 +310,26 @@ export function determinant(m: MatrixNode): MathNode {
 		);
 	}
 
+	// If no options, just return the result (backward compatible)
+	if (!options) {
+		return computeDeterminant(m);
+	}
+
+	// With options, record steps
+	const recorder = createMatrixStepRecorder();
+	const verbosity = options.verbosity ?? 'summarized';
+	const result = computeDeterminantWithSteps(m, recorder, verbosity);
+
+	return {
+		result,
+		steps: recorder.getStepsFiltered(verbosity)
+	};
+}
+
+/**
+ * Compute determinant without step recording (internal)
+ */
+function computeDeterminant(m: MatrixNode): MathNode {
 	const n = m.rows.length;
 
 	// 1x1 case
@@ -292,6 +348,171 @@ export function determinant(m: MatrixNode): MathNode {
 
 	// General case: cofactor expansion along first row
 	return fromNumber(det(toNumericMatrix(m)));
+}
+
+/**
+ * Compute determinant with step recording (internal)
+ */
+function computeDeterminantWithSteps(
+	m: MatrixNode,
+	recorder: MatrixStepRecorderImpl,
+	verbosity: Verbosity
+): MathNode {
+	const n = m.rows.length;
+	const dim = getDimensions(m);
+
+	// Step: identify matrix size (summarized)
+	recorder.recordStep(
+		'identify-matrix-size',
+		describeMatrixSize(dim.rows, dim.cols),
+		m,
+		m,
+		'summarized'
+	);
+
+	// 1x1 case
+	if (n === 1) {
+		const result = m.rows[0][0];
+		recorder.recordStep(
+			'det-1x1',
+			`det(A) = ${formatNumber(toNumber(result))}`,
+			m,
+			result,
+			'summarized'
+		);
+		return result;
+	}
+
+	// 2x2 case: ad - bc
+	if (n === 2) {
+		const a = toNumber(m.rows[0][0]);
+		const b = toNumber(m.rows[0][1]);
+		const c = toNumber(m.rows[1][0]);
+		const d = toNumber(m.rows[1][1]);
+		const detValue = a * d - b * c;
+		const result = fromNumber(detValue);
+
+		// Step: apply 2x2 formula (summarized)
+		recorder.recordStep(
+			'det-2x2-formula',
+			describeDet2x2(formatNumber(a), formatNumber(b), formatNumber(c), formatNumber(d)),
+			m,
+			result,
+			'summarized'
+		);
+
+		// Step: detailed computation (detailed only)
+		if (verbosity === 'detailed') {
+			const ad = a * d;
+			const bc = b * c;
+			recorder.recordStep(
+				'det-result',
+				`det = ${formatNumber(a)} x ${formatNumber(d)} - ${formatNumber(b)} x ${formatNumber(c)} = ${formatNumber(ad)} - ${formatNumber(bc)} = ${formatNumber(detValue)}`,
+				m,
+				result,
+				'detailed'
+			);
+		}
+
+		return result;
+	}
+
+	// General case: cofactor expansion
+	return computeDeterminantCofactorWithSteps(m, recorder, verbosity);
+}
+
+/**
+ * Compute determinant using cofactor expansion with step recording
+ */
+function computeDeterminantCofactorWithSteps(
+	m: MatrixNode,
+	recorder: MatrixStepRecorderImpl,
+	verbosity: Verbosity
+): MathNode {
+	const n = m.rows.length;
+	const numMatrix = toNumericMatrix(m);
+
+	// Step: cofactor expansion announcement (summarized)
+	recorder.recordStep('det-cofactor-expansion', describeCofactorExpansion(n), m, m, 'summarized');
+
+	// Compute each cofactor
+	const cofactorTerms: string[] = [];
+	let detValue = 0;
+
+	for (let j = 0; j < n; j++) {
+		const sign = j % 2 === 0 ? 1 : -1;
+		const signStr = sign === 1 ? '+' : '-';
+		const element = numMatrix[0][j];
+		const minorMatrix = getMinor(numMatrix, 0, j);
+		const minorValue = det(minorMatrix);
+		const cofactorValue = sign * minorValue;
+		const termValue = element * cofactorValue;
+
+		detValue += termValue;
+
+		// Build term string for display
+		const absMinor = Math.abs(minorValue);
+		cofactorTerms.push(
+			`${signStr === '-' ? '-' : j > 0 ? '+' : ''}${formatNumber(element)} x ${formatNumber(absMinor)}`
+		);
+
+		// Step: compute minor (detailed only)
+		if (verbosity === 'detailed') {
+			recorder.recordStep(
+				'compute-minor',
+				describeMinor(0, j) + ` = ${formatNumber(minorValue)}`,
+				m,
+				fromNumber(minorValue),
+				'detailed'
+			);
+
+			recorder.recordStep(
+				'compute-cofactor',
+				describeCofactor(0, j, formatNumber(cofactorValue)) +
+					` => terme: ${formatNumber(element)} x ${formatNumber(cofactorValue)} = ${formatNumber(termValue)}`,
+				m,
+				fromNumber(termValue),
+				'detailed'
+			);
+		}
+	}
+
+	const result = fromNumber(detValue);
+
+	// Step: sum cofactors (summarized)
+	recorder.recordStep(
+		'sum-cofactors',
+		describeSumCofactors(cofactorTerms) + ` = ${formatNumber(detValue)}`,
+		m,
+		result,
+		'summarized'
+	);
+
+	// Step: final result (summarized)
+	recorder.recordStep(
+		'det-result',
+		describeDetResult(formatNumber(detValue)),
+		m,
+		result,
+		'summarized'
+	);
+
+	return result;
+}
+
+/**
+ * Format a number for display (avoid ugly decimals)
+ */
+function formatNumber(n: number): string {
+	if (Number.isInteger(n)) {
+		return n.toString();
+	}
+	// Round to 6 decimal places to avoid floating point noise
+	const rounded = Math.round(n * 1e6) / 1e6;
+	if (Number.isInteger(rounded)) {
+		return rounded.toString();
+	}
+	return rounded.toString();
 }
 
 /**
@@ -348,15 +569,32 @@ function getMinor(m: number[][], rowToRemove: number, colToRemove: number): numb
 // =============================================================================
 
 /**
+ * Compute the inverse of a square matrix (without steps)
+ */
+export function inverse(m: MatrixNode): MatrixNode;
+/**
+ * Compute the inverse with pedagogical steps
+ */
+export function inverse(
+	m: MatrixNode,
+	options: MatrixOperationOptions
+): MatrixOperationResult<MatrixNode>;
+/**
  * Compute the inverse of a square matrix
  *
  * Uses:
  * - Direct formula for 2x2
  * - Gauss-Jordan elimination for larger matrices
  *
+ * @param m - The square matrix
+ * @param options - Optional settings including verbosity for step recording
+ * @returns The inverse matrix, or an object with result and steps if options provided
  * @throws MatrixOperationError if matrix is singular or not square
  */
-export function inverse(m: MatrixNode): MatrixNode {
+export function inverse(
+	m: MatrixNode,
+	options?: MatrixOperationOptions
+): MatrixNode | MatrixOperationResult<MatrixNode> {
 	if (!isSquare(m)) {
 		const dim = getDimensions(m);
 		throw new MatrixOperationError(
@@ -366,6 +604,26 @@ export function inverse(m: MatrixNode): MatrixNode {
 		);
 	}
 
+	// If no options, just return the result (backward compatible)
+	if (!options) {
+		return computeInverse(m);
+	}
+
+	// With options, record steps
+	const recorder = createMatrixStepRecorder();
+	const verbosity = options.verbosity ?? 'summarized';
+	const result = computeInverseWithSteps(m, recorder, verbosity);
+
+	return {
+		result,
+		steps: recorder.getStepsFiltered(verbosity)
+	};
+}
+
+/**
+ * Compute inverse without step recording (internal)
+ */
+function computeInverse(m: MatrixNode): MatrixNode {
 	const n = m.rows.length;
 	const numMatrix = toNumericMatrix(m);
 	const d = det(numMatrix);
@@ -401,7 +659,253 @@ export function inverse(m: MatrixNode): MatrixNode {
 }
 
 /**
- * Compute matrix inverse using Gauss-Jordan elimination
+ * Compute inverse with step recording (internal)
+ */
+function computeInverseWithSteps(
+	m: MatrixNode,
+	recorder: MatrixStepRecorderImpl,
+	verbosity: Verbosity
+): MatrixNode {
+	const n = m.rows.length;
+	const numMatrix = toNumericMatrix(m);
+	const d = det(numMatrix);
+
+	// Step: check determinant (summarized)
+	recorder.recordStep('check-determinant', describeCheckDet(formatNumber(d)), m, m, 'summarized');
+
+	if (Math.abs(d) < 1e-10) {
+		throw new MatrixOperationError(
+			'Matrix is singular (determinant = 0), inverse does not exist',
+			'inverse',
+			'Singular matrix'
+		);
+	}
+
+	// 2x2 case: direct formula
+	if (n === 2) {
+		return computeInverse2x2WithSteps(m, numMatrix, d, recorder, verbosity);
+	}
+
+	// General case: Gauss-Jordan elimination
+	return computeInverseGaussJordanWithSteps(m, numMatrix, recorder, verbosity);
+}
+
+/**
+ * Compute 2x2 inverse with steps
+ */
+function computeInverse2x2WithSteps(
+	m: MatrixNode,
+	numMatrix: number[][],
+	d: number,
+	recorder: MatrixStepRecorderImpl,
+	verbosity: Verbosity
+): MatrixNode {
+	const a = numMatrix[0][0];
+	const b = numMatrix[0][1];
+	const c = numMatrix[1][0];
+	const dVal = numMatrix[1][1];
+
+	// Step: apply 2x2 formula (summarized)
+	recorder.recordStep(
+		'inverse-2x2-formula',
+		describeInverse2x2(formatNumber(d)),
+		m,
+		m,
+		'summarized'
+	);
+
+	const resultRows: MathNode[][] = [
+		[fromNumber(dVal / d), fromNumber(-b / d)],
+		[fromNumber(-c / d), fromNumber(a / d)]
+	];
+
+	const result = matrix(resultRows, { matrixType: m.matrixType });
+
+	// Step: show result (detailed)
+	if (verbosity === 'detailed') {
+		recorder.recordStep(
+			'inverse-result',
+			`A^{-1} = (1/${formatNumber(d)}) x [[${formatNumber(dVal)}, ${formatNumber(-b)}], [${formatNumber(-c)}, ${formatNumber(a)}]]`,
+			m,
+			result,
+			'detailed'
+		);
+	}
+
+	return result;
+}
+
+/**
+ * Compute inverse using Gauss-Jordan with steps
+ */
+function computeInverseGaussJordanWithSteps(
+	m: MatrixNode,
+	numMatrix: number[][],
+	recorder: MatrixStepRecorderImpl,
+	verbosity: Verbosity
+): MatrixNode {
+	const n = numMatrix.length;
+
+	// Create augmented matrix [m | I]
+	const augmented: number[][] = [];
+	for (let i = 0; i < n; i++) {
+		const row: number[] = [...numMatrix[i]];
+		for (let j = 0; j < n; j++) {
+			row.push(i === j ? 1 : 0);
+		}
+		augmented.push(row);
+	}
+
+	// Step: form augmented matrix (summarized)
+	recorder.recordStep('augment-identity', describeAugmentedMatrix(n), m, m, 'summarized');
+
+	// Show initial augmented matrix (detailed)
+	if (verbosity === 'detailed') {
+		recorder.recordStep(
+			'augment-identity',
+			'Matrice augmentee initiale [A|I]:',
+			m,
+			m,
+			'detailed',
+			formatAugmentedMatrix(augmented, n)
+		);
+	}
+
+	// Forward elimination with partial pivoting
+	for (let col = 0; col < n; col++) {
+		// Find pivot
+		let maxRow = col;
+		for (let row = col + 1; row < n; row++) {
+			if (Math.abs(augmented[row][col]) > Math.abs(augmented[maxRow][col])) {
+				maxRow = row;
+			}
+		}
+
+		// Swap rows if needed
+		if (maxRow !== col) {
+			[augmented[col], augmented[maxRow]] = [augmented[maxRow], augmented[col]];
+
+			// Step: row swap (summarized)
+			recorder.recordStep('row-swap', describeRowSwap(col, maxRow), m, m, 'summarized');
+
+			// Show matrix after swap (detailed)
+			if (verbosity === 'detailed') {
+				recorder.recordStep(
+					'row-swap',
+					`Apres ${describeRowSwap(col, maxRow)}:`,
+					m,
+					m,
+					'detailed',
+					formatAugmentedMatrix(augmented, n)
+				);
+			}
+		}
+
+		const pivot = augmented[col][col];
+		if (Math.abs(pivot) < 1e-10) {
+			throw new MatrixOperationError(
+				'Matrix is singular during Gauss-Jordan elimination',
+				'inverse',
+				'Zero pivot encountered'
+			);
+		}
+
+		// Scale pivot row
+		if (Math.abs(pivot - 1) > 1e-10) {
+			const scaleFactor = 1 / pivot;
+			for (let j = 0; j < 2 * n; j++) {
+				augmented[col][j] *= scaleFactor;
+			}
+
+			// Step: row scale (summarized)
+			recorder.recordStep(
+				'row-scale',
+				describeRowScale(col, formatNumber(scaleFactor)),
+				m,
+				m,
+				'summarized'
+			);
+
+			// Show matrix after scale (detailed)
+			if (verbosity === 'detailed') {
+				recorder.recordStep(
+					'row-scale',
+					`Apres ${describeRowScale(col, formatNumber(scaleFactor))}:`,
+					m,
+					m,
+					'detailed',
+					formatAugmentedMatrix(augmented, n)
+				);
+			}
+		}
+
+		// Eliminate column
+		for (let row = 0; row < n; row++) {
+			if (row !== col && Math.abs(augmented[row][col]) > 1e-10) {
+				const factor = -augmented[row][col];
+				for (let j = 0; j < 2 * n; j++) {
+					augmented[row][j] += factor * augmented[col][j];
+				}
+
+				// Step: row add (summarized)
+				recorder.recordStep(
+					'row-add',
+					describeRowAdd(row, col, formatNumber(factor)),
+					m,
+					m,
+					'summarized'
+				);
+
+				// Show matrix after row add (detailed)
+				if (verbosity === 'detailed') {
+					recorder.recordStep(
+						'row-add',
+						`Apres ${describeRowAdd(row, col, formatNumber(factor))}:`,
+						m,
+						m,
+						'detailed',
+						formatAugmentedMatrix(augmented, n)
+					);
+				}
+			}
+		}
+	}
+
+	// Extract inverse (right half of augmented matrix)
+	const resultNumeric: number[][] = [];
+	for (let i = 0; i < n; i++) {
+		resultNumeric.push(augmented[i].slice(n));
+	}
+
+	const resultRows: MathNode[][] = resultNumeric.map((row) => row.map((val) => fromNumber(val)));
+	const result = matrix(resultRows, { matrixType: m.matrixType });
+
+	// Step: extract inverse (summarized)
+	recorder.recordStep('extract-inverse', describeExtractInverse(), m, result, 'summarized');
+
+	return result;
+}
+
+/**
+ * Format augmented matrix as LaTeX string for display
+ */
+function formatAugmentedMatrix(augmented: number[][], n: number): string {
+	const rows = augmented.map((row) => {
+		const left = row
+			.slice(0, n)
+			.map((v) => formatNumber(v))
+			.join(' & ');
+		const right = row
+			.slice(n)
+			.map((v) => formatNumber(v))
+			.join(' & ');
+		return `${left} & | & ${right}`;
+	});
+	return `\\begin{pmatrix} ${rows.join(' \\\\ ')} \\end{pmatrix}`;
+}
+
+/**
+ * Compute matrix inverse using Gauss-Jordan elimination (no steps)
  */
 function gaussJordanInverse(m: number[][]): number[][] {
 	const n = m.length;

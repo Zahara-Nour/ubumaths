@@ -187,12 +187,63 @@ console.log(toCustom(A)); // [[1,2],[3,4]]
 
 ---
 
+## Pedagogical Steps (2026-01-11)
+
+Step-by-step output is now available for `determinant()` and `inverse()` operations.
+
+### API
+
+```typescript
+import { determinant, inverse } from '$lib/mathAST';
+
+// Without options: returns result only
+const det = determinant(M); // MathNode
+
+// With options: returns result + steps
+const result = determinant(M, { verbosity: 'summarized' });
+// { result: MathNode, steps: MatrixStep[] }
+
+const invResult = inverse(M, { verbosity: 'detailed' });
+// { result: MatrixNode, steps: MatrixStep[] }
+```
+
+### Verbosity Levels
+
+| Level        | Determinant               | Inverse                    |
+| ------------ | ------------------------- | -------------------------- |
+| `result`     | Empty steps array         | Empty steps array          |
+| `summarized` | Size, formula, result     | Det check, row ops, result |
+| `detailed`   | + minors, cofactors, sums | + augmented matrix states  |
+
+### Step Types
+
+**Determinant:**
+
+- `identify-matrix-size`, `det-1x1`, `det-2x2-formula`
+- `det-cofactor-expansion`, `compute-minor`, `compute-cofactor`
+- `sum-cofactors`, `det-result`
+
+**Inverse:**
+
+- `check-determinant`, `inverse-2x2-formula`, `augment-identity`
+- `row-swap`, `row-scale`, `row-add`
+- `extract-inverse`, `inverse-result`
+
+### Files Added
+
+| File                             | Purpose             |
+| -------------------------------- | ------------------- |
+| `matrix/descriptions-fr.ts`      | French descriptions |
+| `matrix/step-recorder.ts`        | Step recording      |
+| `matrix/__tests__/steps.test.ts` | Tests (29)          |
+
+---
+
 ## Limitations
 
 1. **Numeric only**: Current operations work only with numeric matrices
 2. **Size limit**: Practical for matrices up to 5x5 (cofactor expansion is O(n!))
-3. **No pedagogical steps**: Step-by-step output not yet implemented (future enhancement)
-4. **No symbolic operations**: Symbolic matrix algebra not yet implemented
+3. **No symbolic operations**: Symbolic matrix algebra not yet implemented
 
 ---
 
