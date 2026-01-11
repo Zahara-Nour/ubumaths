@@ -98,7 +98,7 @@
 {#snippet selectContent()}
 	<Select.Portal>
 		<Select.Content
-			class="z-50 max-h-96 w-[var(--bits-select-anchor-width)] overflow-hidden rounded-md border bg-popover p-1 shadow-md"
+			class="z-[200] max-h-96 w-[var(--bits-select-anchor-width)] overflow-hidden rounded-md border bg-popover p-1 shadow-md"
 			sideOffset={4}
 			{...contentProps}
 		>

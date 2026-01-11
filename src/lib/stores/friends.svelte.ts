@@ -383,6 +383,7 @@ class FriendsManager {
 
 	/**
 	 * Get all active classes matching the user's grade level
+	 * Falls back to user's own classes if no grade is defined
 	 */
 	async getClassesByUserGrade(): Promise<Array<{ id: string; name: string }>> {
 		if (!this.supabase || !this.currentUserId) {
@@ -415,11 +416,15 @@ class FriendsManager {
 				)
 			];
 
+			// 3. If no grades defined, return only user's own classes
 			if (userGrades.length === 0) {
-				return [];
+				return userClasses
+					.map((uc) => uc.classes as { id: string; name: string; grade: string | null })
+					.filter((c): c is { id: string; name: string; grade: string | null } => c !== null)
+					.map((c) => ({ id: c.id, name: c.name }));
 			}
 
-			// 3. Get all active classes with matching grades
+			// 4. Get all active classes with matching grades
 			const { data, error } = await this.supabase
 				.from('classes')
 				.select('id, name')

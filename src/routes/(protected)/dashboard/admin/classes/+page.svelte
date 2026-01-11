@@ -81,8 +81,8 @@
 		}))
 	]);
 
-	// Grade items for the selector
-	let gradeItems = [
+	// Grade items for the selector (static, never changes)
+	const gradeItems = [
 		{ value: '', label: 'Aucun niveau' },
 		...GRADE_CODES.map((code) => ({
 			value: code,
