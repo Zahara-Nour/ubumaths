@@ -10,7 +10,7 @@
 import type { MathNode } from '../types';
 import { differentiate } from '../differentiation';
 import { containsVariable } from './rules';
-import { isNumber, isVariable, isDivision } from '../guards';
+import { isNumber, isVariable, isDivision, isMultiplication } from '../guards';
 import { hashMathNode } from '../normal/hash';
 
 // =============================================================================
@@ -333,6 +333,63 @@ function tryUSubstitution(
 		// This handles cases like ∫(x-1)^3 dx where u = x-1
 		if (!isExactlyPowerOfU(integrand, u)) {
 			return null;
+		}
+	}
+
+	// Special case: division where denominator is u or contains u
+	// and numerator is proportional to du
+	// Example: x/(1+x²) with u = 1+x², du = 2x, numerator = x = 0.5 * du
+	if (isDivision(integrand)) {
+		const num = integrand.numerator;
+		const denom = integrand.denominator;
+		const uHash = hashMathNode(u);
+
+		// Check if denominator is or contains u
+		const denomHash = hashMathNode(denom);
+		if (denomHash === uHash || containsSubexpression(denom, u)) {
+			// Check if numerator is proportional to du
+			const propConst = findProportionalityConstant(num, du);
+			if (propConst !== null) {
+				return { u, du, constantFactor: propConst };
+			}
+		}
+	}
+
+	// Special case: multiplication where one factor is 1/u
+	// and other factor is proportional to du
+	// Example: x * (1/(1+x²)) with u = 1+x², du = 2x
+	// This is equivalent to x/(1+x²)
+	if (isMultiplication(integrand)) {
+		const uHash = hashMathNode(u);
+
+		// Check if right is 1/u and left is proportional to du
+		if (
+			isDivision(integrand.right) &&
+			isNumber(integrand.right.numerator) &&
+			integrand.right.numerator.value === '1'
+		) {
+			const denomHash = hashMathNode(integrand.right.denominator);
+			if (denomHash === uHash) {
+				const propConst = findProportionalityConstant(integrand.left, du);
+				if (propConst !== null) {
+					return { u, du, constantFactor: propConst };
+				}
+			}
+		}
+
+		// Check if left is 1/u and right is proportional to du
+		if (
+			isDivision(integrand.left) &&
+			isNumber(integrand.left.numerator) &&
+			integrand.left.numerator.value === '1'
+		) {
+			const denomHash = hashMathNode(integrand.left.denominator);
+			if (denomHash === uHash) {
+				const propConst = findProportionalityConstant(integrand.right, du);
+				if (propConst !== null) {
+					return { u, du, constantFactor: propConst };
+				}
+			}
 		}
 	}
 

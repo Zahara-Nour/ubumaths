@@ -444,8 +444,11 @@ export function integrate(expr: MathNode, options?: IntegrateOptions): Integrate
 	// Create step recorder
 	const recorder = createStepRecorder();
 
+	// Use _depth from options if provided (for recursive calls from integrators)
+	const startDepth = opts._depth ?? 0;
+
 	// Run the integration
-	const result = integrateInternal(expr, variable, opts, recorder, 0);
+	const result = integrateInternal(expr, variable, opts, recorder, startDepth);
 
 	// Filter steps by verbosity
 	return {

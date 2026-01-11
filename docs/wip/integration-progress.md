@@ -2,7 +2,7 @@
 
 ## Current Status: Phase 10 Complete + Bug Fixes ✅
 
-**Last Updated**: 2026-01-11 - Test improvements (245 → 271 → 275 passing)
+**Last Updated**: 2026-01-11 - Test improvements (245 → 271 → 275 → 280 passing)
 
 ---
 
@@ -878,6 +878,37 @@ None - all phases complete.
 | 8     | 34           | 34 ✅                          |
 | 9     | 0            | N/A (CLI command)              |
 | 10    | 0            | N/A (validation)               |
-| Total | 324          | 271 ✅ (46 failing, 7 skipped) |
+| Total | 324          | 280 ✅ (37 failing, 7 skipped) |
 
-**Progress**: 245 → 271 passing (+26 tests, +8% pass rate)
+**Progress**: 245 → 271 → 275 → 280 passing (+35 tests from baseline)
+
+---
+
+## Recent Fixes (2026-01-11 Session 2)
+
+### Phase 3 Improvements: Arctan/Arcsin Integration Fixed
+
+1. **Depth tracking across integrate() calls**
+
+   - Added `_depth` internal option to IntegrateOptions
+   - Parts integrator now passes depth to recursive integrate() calls
+   - Prevents infinite recursion when integrating arctan(x), arcsin(x)
+
+2. **U-substitution pattern matching for `x * (1/u)` patterns**
+
+   - Extended `matchUSubstitution` to recognize multiplication containing division
+   - Pattern `x * (1/(1+x²))` now matches with u = 1+x², du = 2x
+   - Added corresponding handling in `tryFactorDu` for proper transformation
+
+3. **Files Modified**:
+
+   - `src/lib/mathAST/integration/types.ts` - Added `_depth` option
+   - `src/lib/mathAST/integration/integrate.ts` - Use `_depth` for recursion
+   - `src/lib/mathAST/integration/integrators/parts.ts` - Pass `_depth` to integrate() calls
+   - `src/lib/mathAST/integration/patterns.ts` - Handle `factor * (1/u)` patterns
+   - `src/lib/mathAST/integration/integrators/u-substitution.ts` - Handle multiplication in tryFactorDu
+
+4. **Tests Fixed**:
+   - arctan(x) integration now works: x·arctan(x) - 0.5·ln|1+x²|
+   - x/(1+x²) integration: 0.5·ln|1+x²|
+   - x·(1/(1+x²)) integration: 0.5·ln|1+x²|

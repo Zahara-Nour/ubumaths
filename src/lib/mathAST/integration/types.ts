@@ -173,17 +173,27 @@ export interface IntegrateOptions {
 
 	/** Whether to simplify the result (default: true) */
 	readonly simplify?: boolean;
+
+	/**
+	 * Internal parameter to track recursion depth across integrate() calls.
+	 * Used by integrators that call integrate() recursively.
+	 * @internal
+	 */
+	readonly _depth?: number;
 }
 
 /**
  * Default integration options.
  */
-export const DEFAULT_INTEGRATE_OPTIONS: Required<Omit<IntegrateOptions, 'variable'>> = {
+export const DEFAULT_INTEGRATE_OPTIONS: Required<Omit<IntegrateOptions, 'variable' | '_depth'>> & {
+	_depth: number | undefined;
+} = {
 	verbosity: 'summarized',
 	maxDepth: 10,
 	allowNumeric: true,
 	simpsonIntervals: 100,
-	simplify: true
+	simplify: true,
+	_depth: undefined
 };
 
 // =============================================================================
