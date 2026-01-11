@@ -82,15 +82,19 @@ function isOneOverX(expr: MathNode, variable: string): boolean {
  * Check if expression is exp(u) or e^u where u contains only the variable.
  *
  * Handles both:
- * - exp(x), exp(ax) - function notation
- * - e^x, e^(ax) - power notation with Euler constant
+ * - exp(x), exp(ax), exp(-x) - function notation
+ * - e^x, e^(ax), e^(-x) - power notation with Euler constant
  */
 function isExponential(expr: MathNode, variable: string): { arg: MathNode } | null {
 	// Case 1: exp(x) function notation
 	if (expr.type === 'function' && expr.name === 'exp') {
 		const arg = expr.args[0];
-		// Simple case: exp(x) or exp(ax)
+		// Simple case: exp(x)
 		if (isVariable(arg) && arg.name === variable) {
+			return { arg };
+		}
+		// exp(-x)
+		if (arg.type === 'opposite' && isVariable(arg.operand) && arg.operand.name === variable) {
 			return { arg };
 		}
 		if (arg.type === 'multiplication') {
@@ -110,6 +114,10 @@ function isExponential(expr: MathNode, variable: string): { arg: MathNode } | nu
 		const arg = expr.superscript;
 		// e^x
 		if (isVariable(arg) && arg.name === variable) {
+			return { arg };
+		}
+		// e^(-x)
+		if (arg.type === 'opposite' && isVariable(arg.operand) && arg.operand.name === variable) {
 			return { arg };
 		}
 		// e^(ax)

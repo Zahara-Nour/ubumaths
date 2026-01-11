@@ -234,6 +234,13 @@ export function expRule(exponent: MathNode): MathNode {
 		return simplifiedDivide(expFunc, a);
 	}
 
+	// Check if exponent is -x (opposite node)
+	if (exponent.type === 'opposite' && isVariable(exponent.operand)) {
+		// ∫ e^(-x) dx = e^(-x)/(-1) = -e^(-x)
+		const expFunc = func('exp', [exponent]);
+		return opposite(expFunc);
+	}
+
 	// Check if exponent is just the variable: e^x
 	if (isVariable(exponent)) {
 		// ∫ e^x dx = e^x

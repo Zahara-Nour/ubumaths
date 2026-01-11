@@ -24,8 +24,42 @@ import { variable as variableFactory, number, divide } from '../../factory';
 import { simplifiedMultiply } from '../../differentiation/rules';
 import { toCustom } from '../../custom-generator';
 import { hashMathNode } from '../../normal/hash';
-import { isDivision, isMultiplication, isNumber as isNumberGuard } from '../../guards';
+import {
+	isDivision,
+	isMultiplication,
+	isNumber as isNumberGuard,
+	isFunction,
+	isSuperscript
+} from '../../guards';
 import { findProportionalityConstant } from '../patterns';
+import { isEulerConstant } from '../../guards';
+
+// =============================================================================
+// Pattern Detection Helpers
+// =============================================================================
+
+/**
+ * Check if expression is e^(ax)·trig(bx) pattern.
+ * These should be handled by integration by parts (cyclic case), not u-substitution.
+ */
+function isExpTrigProduct(expr: MathNode): boolean {
+	if (!isMultiplication(expr)) {
+		return false;
+	}
+
+	const left = expr.left;
+	const right = expr.right;
+
+	// Check for exp * trig or trig * exp patterns
+	const isExpPart = (node: MathNode): boolean =>
+		(isFunction(node) && node.name === 'exp') ||
+		(isSuperscript(node) && isEulerConstant(node.base));
+
+	const isTrigPart = (node: MathNode): boolean =>
+		isFunction(node) && (node.name === 'sin' || node.name === 'cos');
+
+	return (isExpPart(left) && isTrigPart(right)) || (isTrigPart(left) && isExpPart(right));
+}
 
 // =============================================================================
 // U-Substitution Integrator
@@ -48,6 +82,11 @@ export const uSubstitutionIntegrator: Integrator = {
 	priority: 10,
 
 	canIntegrate(expr: MathNode, variable: string): boolean {
+		// Reject e^(ax)·trig(bx) patterns - these should go to parts (cyclic case)
+		if (isExpTrigProduct(expr)) {
+			return false;
+		}
+
 		// Check if u-substitution pattern is detected
 		const match = matchUSubstitution(expr, variable);
 		return match !== null;
@@ -384,6 +423,40 @@ function tryFactorDu(
 						constantFactor: propConst
 					};
 				}
+			}
+		}
+
+		// Check if one factor is proportional to du and other is f(u)
+		// Example: x * e^(x²) with u = x², du = 2x
+		// Left = x is proportional to du with factor 1/2
+		// Right = e^(x²) transforms to e^u
+		const leftProp = findProportionalityConstant(integrand.left, du);
+		if (leftProp !== null) {
+			// Transform the right factor by substituting u
+			try {
+				const uLatex = toCustom(u);
+				const rightTransformed = substitute(integrand.right, { [uLatex]: uVar });
+				return {
+					transformedIntegrand: rightTransformed,
+					constantFactor: leftProp
+				};
+			} catch {
+				// Fall through to default case
+			}
+		}
+
+		const rightProp = findProportionalityConstant(integrand.right, du);
+		if (rightProp !== null) {
+			// Transform the left factor by substituting u
+			try {
+				const uLatex = toCustom(u);
+				const leftTransformed = substitute(integrand.left, { [uLatex]: uVar });
+				return {
+					transformedIntegrand: leftTransformed,
+					constantFactor: rightProp
+				};
+			} catch {
+				// Fall through to default case
 			}
 		}
 	}

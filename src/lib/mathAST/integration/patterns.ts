@@ -97,7 +97,10 @@ export function findUCandidates(expr: MathNode, variable: string): MathNode[] {
 	function traverse(node: MathNode): void {
 		switch (node.type) {
 			case 'function':
-				// Function arguments are prime candidates
+				// The function itself is a candidate (e.g., sin(x) for ∫sin(x)cos(x)dx)
+				addCandidate(node);
+
+				// Function arguments are also prime candidates
 				for (const arg of node.args) {
 					// Only add non-trivial arguments
 					if (!(isVariable(arg) && arg.name === variable)) {
@@ -391,11 +394,94 @@ function tryUSubstitution(
 				}
 			}
 		}
+
+		// Check if one factor is f(u) and other is proportional to du
+		// Example: x * e^(x²) with u = x², du = 2x
+		// Left = x (proportional to du = 2x with factor 1/2)
+		// Right = e^(x²) = e^u (function of u only)
+		const leftProp = findProportionalityConstant(integrand.left, du);
+		if (leftProp !== null && containsSubexpression(integrand.right, u)) {
+			// Check that right only contains u (not x directly outside u)
+			// by verifying that replacing u with a constant leaves no x
+			const rightContainsUOnly = containsSubexpression(integrand.right, u);
+			if (rightContainsUOnly) {
+				return { u, du, constantFactor: leftProp };
+			}
+		}
+
+		const rightProp = findProportionalityConstant(integrand.right, du);
+		if (rightProp !== null && containsSubexpression(integrand.left, u)) {
+			return { u, du, constantFactor: rightProp };
+		}
 	}
 
 	// Check if du appears in the integrand (exactly)
+	// But only if the remaining part can be expressed in terms of u
 	if (containsSubexpression(integrand, du)) {
-		return { u, du };
+		// For multiplication: f(u) * du pattern
+		// We need to verify that the other factor only contains u (not the variable directly)
+		if (isMultiplication(integrand)) {
+			const duHash = hashMathNode(du);
+			const leftHash = hashMathNode(integrand.left);
+			const rightHash = hashMathNode(integrand.right);
+
+			if (leftHash === duHash) {
+				// left = du, right should be expressible in terms of u
+				// Check that right doesn't contain the variable except through u
+				if (
+					containsSubexpression(integrand.right, u) ||
+					!containsVariable(integrand.right, variable)
+				) {
+					return { u, du };
+				}
+			} else if (rightHash === duHash) {
+				// right = du, left should be expressible in terms of u
+				if (
+					containsSubexpression(integrand.left, u) ||
+					!containsVariable(integrand.left, variable)
+				) {
+					return { u, du };
+				}
+			}
+		}
+		// For function nodes like f(u): e.g., e^(3x) with u = 3x
+		// The entire function IS f(u) if its argument equals u
+		else if (integrand.type === 'function' && integrand.args.length === 1) {
+			const argHash = hashMathNode(integrand.args[0]);
+			const uHash = hashMathNode(u);
+			if (argHash === uHash) {
+				return { u, du };
+			}
+		}
+		// For superscript nodes there are two patterns:
+		// 1. e^u (base is constant, exponent is u): e.g., e^(3x) with u = 3x
+		// 2. u^n (base is u, exponent is constant): e.g., (2x+1)^3 with u = 2x+1
+		else if (integrand.type === 'superscript') {
+			const uHash = hashMathNode(u);
+			// Pattern 1: e^u (exponent equals u)
+			const expHash = hashMathNode(integrand.superscript);
+			if (expHash === uHash) {
+				return { u, du };
+			}
+			// Pattern 2: u^n (base equals u)
+			const baseHash = hashMathNode(integrand.base);
+			if (baseHash === uHash && !containsVariable(integrand.superscript, variable)) {
+				return { u, du };
+			}
+		}
+		// For division nodes like 1/u or f(u)/g(u): e.g., 1/(2x+1) with u = 2x+1
+		else if (isDivision(integrand)) {
+			const uHash = hashMathNode(u);
+			const denomHash = hashMathNode(integrand.denominator);
+			// If denominator is u and numerator is constant → 1/u pattern
+			if (denomHash === uHash && !containsVariable(integrand.numerator, variable)) {
+				return { u, du };
+			}
+		}
+		// For non-multiplication cases, still allow if du matches exactly
+		else if (hashMathNode(integrand) === hashMathNode(du)) {
+			return { u, du };
+		}
 	}
 
 	// Check if du appears with a constant factor
@@ -528,6 +614,24 @@ function containsSubexpression(expr: MathNode, target: MathNode): boolean {
  */
 function findConstantFactor(expr: MathNode, target: MathNode): number | null {
 	const targetHash = hashMathNode(target);
+
+	// Case 0: Handle opposite (negation) nodes
+	// If target = -expr, then expr = -1 * target (factor = -1)
+	// If target = opposite(inner), check if expr relates to inner
+	if (target.type === 'opposite') {
+		const innerFactor = findConstantFactor(expr, target.operand);
+		if (innerFactor !== null) {
+			return -innerFactor;
+		}
+	}
+
+	// If expr = opposite(inner), check if inner relates to target
+	if (expr.type === 'opposite') {
+		const innerFactor = findConstantFactor(expr.operand, target);
+		if (innerFactor !== null) {
+			return -innerFactor;
+		}
+	}
 
 	// Case 1: expr is a multiplication
 	if (expr.type === 'multiplication') {

@@ -30,8 +30,14 @@ import {
 	describeApplyPartsFormula
 } from '../descriptions-fr';
 import { integrate } from '../integrate';
-import { multiply, subtract, divide, number } from '../../factory';
-import { isMultiplication, isFunction, isSuperscript, isEulerConstant } from '../../guards';
+import { multiply, subtract, divide, number, add, func, opposite } from '../../factory';
+import {
+	isMultiplication,
+	isFunction,
+	isSuperscript,
+	isEulerConstant,
+	isOpposite
+} from '../../guards';
 import { preprocess } from '../../normal/rules';
 import { toCustom } from '../../custom-generator';
 import { hashMathNode } from '../../normal/hash';
@@ -102,6 +108,59 @@ function simplifyProductWithCancellation(expr: MathNode, variable: string): Math
 		}
 	}
 
+	// Pattern 4: (a/b) * (1/x) where a contains x
+	// Example: (x²/2) * (1/x) = x/2
+	// This is a common pattern from integration by parts with ln(x)
+	if (isDivision(left) && isDivision(right)) {
+		// Check if right is 1/x
+		if (
+			isNumber(right.numerator) &&
+			right.numerator.value === '1' &&
+			isVariable(right.denominator) &&
+			right.denominator.name === variable
+		) {
+			// Check if left numerator is x^n (superscript)
+			if (isSuperscript(left.numerator)) {
+				const base = left.numerator.base;
+				const exp = left.numerator.superscript;
+
+				if (
+					isVariable(base) &&
+					base.name === variable &&
+					isNumber(exp) &&
+					parseFloat(exp.value) >= 1
+				) {
+					const newExp = parseFloat(exp.value) - 1;
+					// x^n / (c*x) = x^(n-1) / c
+					if (newExp === 0) {
+						// x^1 / (c*x) = 1/c
+						return divide(number('1'), left.denominator, 'fraction');
+					} else if (newExp === 1) {
+						// x^2 / (c*x) = x / c
+						return divide({ type: 'variable', name: variable }, left.denominator, 'fraction');
+					} else {
+						// x^n / (c*x) = x^(n-1) / c
+						return divide(
+							{
+								type: 'superscript',
+								base: { type: 'variable', name: variable },
+								superscript: number(newExp.toString())
+							},
+							left.denominator,
+							'fraction'
+						);
+					}
+				}
+			}
+
+			// Check if left numerator is just x
+			if (isVariable(left.numerator) && left.numerator.name === variable) {
+				// (x/c) * (1/x) = 1/c
+				return divide(number('1'), left.denominator, 'fraction');
+			}
+		}
+	}
+
 	return expr;
 }
 
@@ -136,9 +195,15 @@ function getLIATECategory(
 	expr: MathNode,
 	variable: string
 ): { category: LIATECategory; priority: number } | null {
-	// Check if expression contains the variable
+	// Constants should not be LIATE categorized - they should be absorbed
+	// into other factors. Return null so they're filtered out.
 	if (!containsVariable(expr, variable)) {
-		return { category: 'algebraic', priority: LIATE_PRIORITY.algebraic };
+		return null;
+	}
+
+	// Handle opposite/positive wrapper: categorize the inner operand
+	if (expr.type === 'opposite' || expr.type === 'positive') {
+		return getLIATECategory(expr.operand, variable);
 	}
 
 	// L - Logarithmic
@@ -266,29 +331,43 @@ function chooseUAndDv(expr: MathNode, variable: string): { u: MathNode; dv: Math
 		return null;
 	}
 
-	// Categorize each factor
-	const categorized = factors
-		.map((factor) => ({
-			factor,
-			category: getLIATECategory(factor, variable)
-		}))
-		.filter((item) => item.category !== null) as Array<{
+	// Separate constant factors (no variable) from variable factors
+	const constantFactors: MathNode[] = [];
+	const variableFactors: Array<{
 		factor: MathNode;
 		category: { category: LIATECategory; priority: number };
-	}>;
+	}> = [];
 
-	if (categorized.length < 2) {
+	for (const factor of factors) {
+		const category = getLIATECategory(factor, variable);
+		if (category === null) {
+			// This is a constant factor
+			constantFactors.push(factor);
+		} else {
+			variableFactors.push({ factor, category });
+		}
+	}
+
+	if (variableFactors.length < 2) {
+		// Need at least 2 non-constant factors for integration by parts
+		// Unless we have 1 variable factor and some constants
+		if (variableFactors.length === 1 && constantFactors.length > 0) {
+			// The constant can be factored out, no need for parts
+			return null;
+		}
 		return null;
 	}
 
 	// Sort by priority (descending - highest priority first)
-	categorized.sort((a, b) => b.category.priority - a.category.priority);
+	variableFactors.sort((a, b) => b.category.priority - a.category.priority);
 
-	// u = highest priority factor
-	const u = categorized[0].factor;
+	// u = highest priority factor combined with constant factors
+	// (constants become part of u, e.g., 2x becomes u)
+	const uFactors = [variableFactors[0].factor, ...constantFactors];
+	const u = reconstructProduct(uFactors);
 
-	// dv = product of remaining factors
-	const dvFactors = categorized.slice(1).map((item) => item.factor);
+	// dv = product of remaining variable factors
+	const dvFactors = variableFactors.slice(1).map((item) => item.factor);
 	const dv = reconstructProduct(dvFactors);
 
 	return { u, dv };
@@ -342,7 +421,7 @@ function applyPartsFormula(
 
 	const v = vResult.antiderivative;
 
-	// Record computation of du and v
+	// Record computation of du and v (include u and dv as well for clarity)
 	recorder.recordStep(
 		'choose-u-dv',
 		describeComputeUV(du, v),
@@ -350,7 +429,7 @@ function applyPartsFormula(
 		multiply(u, dv, 'implicit'),
 		'detailed',
 		undefined,
-		`du = ${toCustom(du)} dx, v = ${toCustom(v)}`
+		`u = ${toCustom(u)}, dv = ${toCustom(dv)} dx → du = ${toCustom(du)} dx, v = ${toCustom(v)}`
 	);
 
 	// Step 3: Compute uv
@@ -423,6 +502,255 @@ function applyPartsFormula(
 // =============================================================================
 
 /**
+ * Extract e^(ax)·trig(bx) pattern components from an expression.
+ * Used for detecting cyclic integration cases.
+ *
+ * @param expr - Expression to analyze
+ * @param variable - Variable of integration
+ * @returns Pattern components or null if not matching
+ */
+function extractExpTrigPattern(
+	expr: MathNode,
+	variable: string
+): { a: string; b: string; trigFunc: 'sin' | 'cos' } | null {
+	if (!isMultiplication(expr)) {
+		return null;
+	}
+
+	let expPart: MathNode | null = null;
+	let trigPart: MathNode | null = null;
+
+	// Check both orderings: exp*trig or trig*exp
+	const left = expr.left;
+	const right = expr.right;
+
+	// Check left for exp
+	if (isExpPattern(left)) {
+		expPart = left;
+		if (isTrigPattern(right)) {
+			trigPart = right;
+		}
+	}
+	// Check right for exp
+	if (isExpPattern(right)) {
+		expPart = right;
+		if (isTrigPattern(left)) {
+			trigPart = left;
+		}
+	}
+
+	if (!expPart || !trigPart) {
+		return null;
+	}
+
+	// Extract coefficient 'a' from e^(ax)
+	const a = extractExpCoefficient(expPart, variable);
+	if (a === null) return null;
+
+	// Extract coefficient 'b' and trig function type
+	const trigInfo = extractTrigInfo(trigPart, variable);
+	if (!trigInfo) return null;
+
+	return { a, b: trigInfo.b, trigFunc: trigInfo.func };
+}
+
+/**
+ * Check if node is exp(something)
+ */
+function isExpPattern(node: MathNode): boolean {
+	// Function notation: exp(x)
+	if (isFunction(node) && node.name === 'exp') {
+		return true;
+	}
+	// Power notation: e^x
+	if (isSuperscript(node) && isEulerConstant(node.base)) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Check if node is sin or cos
+ */
+function isTrigPattern(node: MathNode): boolean {
+	return isFunction(node) && (node.name === 'sin' || node.name === 'cos');
+}
+
+/**
+ * Extract coefficient from exp(ax) or e^(ax)
+ * Returns the coefficient as a string, or null if not matching
+ */
+function extractExpCoefficient(node: MathNode, variable: string): string | null {
+	let arg: MathNode | undefined;
+
+	if (isFunction(node) && node.name === 'exp') {
+		arg = node.args[0];
+	} else if (isSuperscript(node) && isEulerConstant(node.base)) {
+		arg = node.superscript;
+	} else {
+		return null;
+	}
+
+	// Safety check: arg must exist
+	if (!arg) {
+		return null;
+	}
+
+	// Simple case: just x (coefficient = 1)
+	if (isVariable(arg) && arg.name === variable) {
+		return '1';
+	}
+
+	// Case: a*x
+	if (isMultiplication(arg)) {
+		if (isNumber(arg.left) && isVariable(arg.right) && arg.right.name === variable) {
+			return arg.left.value;
+		}
+		if (isNumber(arg.right) && isVariable(arg.left) && arg.left.name === variable) {
+			return arg.right.value;
+		}
+	}
+
+	// Case: -x (coefficient = -1)
+	if (isOpposite(arg) && isVariable(arg.operand) && arg.operand.name === variable) {
+		return '-1';
+	}
+
+	return null;
+}
+
+/**
+ * Extract info from sin(bx) or cos(bx)
+ */
+function extractTrigInfo(
+	node: MathNode,
+	variable: string
+): { func: 'sin' | 'cos'; b: string } | null {
+	if (!isFunction(node)) return null;
+	if (node.name !== 'sin' && node.name !== 'cos') return null;
+
+	const arg = node.args[0];
+
+	// Simple case: just x (coefficient = 1)
+	if (isVariable(arg) && arg.name === variable) {
+		return { func: node.name as 'sin' | 'cos', b: '1' };
+	}
+
+	// Case: b*x
+	if (isMultiplication(arg)) {
+		if (isNumber(arg.left) && isVariable(arg.right) && arg.right.name === variable) {
+			return { func: node.name as 'sin' | 'cos', b: arg.left.value };
+		}
+		if (isNumber(arg.right) && isVariable(arg.left) && arg.left.name === variable) {
+			return { func: node.name as 'sin' | 'cos', b: arg.right.value };
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Integrate e^(ax)·sin(bx) or e^(ax)·cos(bx) directly using known formulas.
+ *
+ * Formulas:
+ * ∫e^(ax)·sin(bx) dx = e^(ax) / (a² + b²) · (a·sin(bx) - b·cos(bx))
+ * ∫e^(ax)·cos(bx) dx = e^(ax) / (a² + b²) · (a·cos(bx) + b·sin(bx))
+ *
+ * @param expr - Expression to integrate
+ * @param variable - Variable of integration
+ * @param pattern - Extracted pattern components
+ * @param options - Integration options
+ * @param recorder - Step recorder
+ * @returns Integration result
+ */
+function integrateExpTrigPattern(
+	expr: MathNode,
+	variable: string,
+	pattern: { a: string; b: string; trigFunc: 'sin' | 'cos' },
+	options: Required<Omit<IntegrateOptions, 'variable'>>,
+	recorder: IntegrateStepRecorder
+): IntegrateResult {
+	const { a, b, trigFunc } = pattern;
+	const aNum = parseFloat(a);
+	const bNum = parseFloat(b);
+	const denominator = aNum * aNum + bNum * bNum;
+
+	// Build the variable node
+	const x = { type: 'variable' as const, name: variable };
+
+	// Build e^(ax)
+	let expArg: MathNode;
+	if (aNum === 1) {
+		expArg = x;
+	} else if (aNum === -1) {
+		expArg = opposite(x);
+	} else {
+		expArg = multiply(number(a), x, 'implicit');
+	}
+	const expTerm = func('exp', [expArg]);
+
+	// Build bx for trig argument
+	let trigArg: MathNode;
+	if (bNum === 1) {
+		trigArg = x;
+	} else {
+		trigArg = multiply(number(b), x, 'implicit');
+	}
+
+	// Build the result based on trig function
+	let innerExpr: MathNode;
+	if (trigFunc === 'sin') {
+		// a·sin(bx) - b·cos(bx)
+		const sinTerm = multiply(number(a), func('sin', [trigArg]), 'implicit');
+		const cosTerm = multiply(number(b), func('cos', [trigArg]), 'implicit');
+		innerExpr = subtract(sinTerm, cosTerm);
+	} else {
+		// a·cos(bx) + b·sin(bx)
+		const cosTerm = multiply(number(a), func('cos', [trigArg]), 'implicit');
+		const sinTerm = multiply(number(b), func('sin', [trigArg]), 'implicit');
+		innerExpr = add(cosTerm, sinTerm);
+	}
+
+	// e^(ax) · (inner) / (a² + b²)
+	const numeratorExpr = multiply(expTerm, innerExpr, 'implicit');
+	const result = divide(numeratorExpr, number(denominator.toString()), 'fraction');
+	const simplified = options.simplify ? preprocess(result) : result;
+
+	// Record steps
+	recorder.recordStep(
+		'cyclic-solve',
+		'Cas cyclique e^(ax)·trig(bx) reconnu',
+		expr,
+		expr,
+		'detailed',
+		undefined,
+		`Forme: e^(${a}x)·${trigFunc}(${b}x)`
+	);
+
+	recorder.recordStep(
+		'cyclic-solve',
+		'Application de la formule cyclique',
+		expr,
+		simplified,
+		'summarized',
+		undefined,
+		trigFunc === 'sin'
+			? `∫e^(ax)sin(bx)dx = e^(ax)/(a²+b²)·(a·sin(bx) - b·cos(bx))`
+			: `∫e^(ax)cos(bx)dx = e^(ax)/(a²+b²)·(a·cos(bx) + b·sin(bx))`
+	);
+
+	return {
+		variable,
+		status: 'exact',
+		antiderivative: simplified,
+		integrandType: classifyIntegrand(expr, variable),
+		technique: 'parts',
+		steps: recorder.getSteps(),
+		constantNote: CONSTANT_OF_INTEGRATION_NOTE
+	};
+}
+
+/**
  * Check if two expressions contain a cyclic pattern.
  *
  * @param original - Original integral expression
@@ -483,7 +811,7 @@ function solveCyclicCase(
 	variable: string,
 	options: Required<Omit<IntegrateOptions, 'variable'>>,
 	recorder: IntegrateStepRecorder,
-	_depth: number
+	depth: number
 ): IntegrateResult {
 	// Compute ∫v du recursively once more to get the full expression
 	const vdu = multiply(v, du, 'implicit');
@@ -715,6 +1043,13 @@ export const partsIntegrator: Integrator = {
 
 		// Record that we're using integration by parts
 		recorder.recordStepByRule('identify-parts', expr, expr, 'detailed');
+
+		// Check for cyclic e^(ax)·trig(bx) pattern FIRST (before regular parts)
+		// These would cause infinite recursion with standard parts
+		const cyclicPattern = extractExpTrigPattern(expr, variable);
+		if (cyclicPattern) {
+			return integrateExpTrigPattern(expr, variable, cyclicPattern, options, recorder);
+		}
 
 		// Check if suitable for tabular method
 		if (isSuitableForTabular(expr, variable)) {
