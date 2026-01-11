@@ -589,12 +589,14 @@ describe('computeRange()', () => {
 			expect(containsValue(result.range, 10)).toBe(false);
 		});
 
-		it('x * x on [-2, 3] spans [0, 9] (includes products of opposite signs)', () => {
+		it('x * x on [-2, 3] is x² so range is [0, 9]', () => {
+			// x * x where x is the same variable = x² (quadratic, not interval multiplication)
 			const expr = multiply(variable('x'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, 3) });
-			// [-2, 3] * [-2, 3] = min(4, -6, -6, 9), max(4, -6, -6, 9) = [-6, 9]
-			expect(containsValue(result.range, -6)).toBe(true);
+			// x² on [-2, 3]: minimum at x=0 → 0, maximum at x=3 → 9
+			expect(containsValue(result.range, 0)).toBe(true);
 			expect(containsValue(result.range, 9)).toBe(true);
+			expect(containsValue(result.range, -1)).toBe(false); // x² is never negative
 		});
 
 		it('positive * positive range on [1, 2] * [3, 4] = [3, 8]', () => {
@@ -1124,6 +1126,266 @@ describe('computeRange()', () => {
 			const unknownNode = { type: 'unknown_type' } as unknown as MathNode;
 			const result = computeRange(unknownNode, 'x');
 			expect(result.range.kind).toBe('universal');
+		});
+	});
+
+	// =========================================================================
+	// Algebraic Abs Handling (not sampling)
+	// =========================================================================
+
+	describe('algebraic abs handling', () => {
+		it('abs(x) on [-3, 2] has range [0, 3] (algebraic)', () => {
+			const expr = func('abs', [variable('x')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-3, 2) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 3)).toBe(true);
+			expect(containsValue(result.range, -1)).toBe(false);
+			// Max should be 3 (from |-3|)
+			expect(containsValue(result.range, 3.5)).toBe(false);
+		});
+
+		it('abs(x) on [2, 5] has range [2, 5] (all positive)', () => {
+			const expr = func('abs', [variable('x')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(2, 5) });
+			expect(containsValue(result.range, 2)).toBe(true);
+			expect(containsValue(result.range, 5)).toBe(true);
+			expect(containsValue(result.range, 1)).toBe(false);
+		});
+
+		it('abs(x) on [-5, -2] has range [2, 5] (all negative)', () => {
+			const expr = func('abs', [variable('x')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-5, -2) });
+			expect(containsValue(result.range, 2)).toBe(true);
+			expect(containsValue(result.range, 5)).toBe(true);
+			expect(containsValue(result.range, 1)).toBe(false);
+		});
+
+		it('abs(x) on [-1, 1] has range [0, 1]', () => {
+			const expr = func('abs', [variable('x')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-1, 1) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 1)).toBe(true);
+			expect(containsValue(result.range, 1.5)).toBe(false);
+		});
+
+		it('abs(x-2) on [0, 5] gives correct range', () => {
+			// x-2 on [0,5] → [-2, 3], abs([-2,3]) → [0, 3]
+			const expr = func('abs', [subtract(variable('x'), number('2'))]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 3)).toBe(true);
+			expect(containsValue(result.range, 3.5)).toBe(false);
+		});
+	});
+
+	// =========================================================================
+	// Min/Max Function Support
+	// =========================================================================
+
+	describe('min/max functions', () => {
+		it('min(x, 0) on [-5, 5] has range [-5, 0]', () => {
+			const expr = func('min', [variable('x'), number('0')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-5, 5) });
+			expect(containsValue(result.range, -5)).toBe(true);
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 1)).toBe(false);
+		});
+
+		it('max(x, 0) on [-5, 5] has range [0, 5]', () => {
+			const expr = func('max', [variable('x'), number('0')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-5, 5) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 5)).toBe(true);
+			expect(containsValue(result.range, -1)).toBe(false);
+		});
+
+		it('min(x, 10) on [0, 5] has range [0, 5] (all below 10)', () => {
+			const expr = func('min', [variable('x'), number('10')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 5)).toBe(true);
+			expect(containsValue(result.range, 6)).toBe(false);
+		});
+
+		it('max(x, -10) on [0, 5] has range [0, 5] (all above -10)', () => {
+			const expr = func('max', [variable('x'), number('-10')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 5)).toBe(true);
+			expect(containsValue(result.range, -1)).toBe(false);
+		});
+
+		it('min(x, x+1) on [0, 5] has range [0, 5] (min is always x)', () => {
+			const expr = func('min', [variable('x'), add(variable('x'), number('1'))]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 5)).toBe(true);
+			expect(containsValue(result.range, 6)).toBe(false);
+		});
+	});
+
+	// =========================================================================
+	// Quadratic Vertex Detection
+	// =========================================================================
+
+	describe('quadratic vertex detection', () => {
+		it('x² on [-2, 2] has range [0, 4] (vertex at 0)', () => {
+			const expr = power(variable('x'), number('2'));
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, 2) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 4)).toBe(true);
+			expect(containsValue(result.range, -1)).toBe(false);
+			expect(containsValue(result.range, 5)).toBe(false);
+		});
+
+		it('x² - 4x + 3 on [0, 5] has range [-1, 8] (vertex at x=2)', () => {
+			// f(x) = x² - 4x + 3, vertex at x = 2, f(2) = -1
+			// f(0) = 3, f(5) = 8
+			const expr = add(
+				subtract(power(variable('x'), number('2')), multiply(number('4'), variable('x'))),
+				number('3')
+			);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
+			expect(containsValue(result.range, -1)).toBe(true);
+			expect(containsValue(result.range, 8)).toBe(true);
+			expect(containsValue(result.range, -2)).toBe(false);
+			expect(containsValue(result.range, 9)).toBe(false);
+		});
+
+		it('-x² on [-2, 2] has range [-4, 0] (downward parabola)', () => {
+			const expr = opposite(power(variable('x'), number('2')));
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, 2) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, -4)).toBe(true);
+			expect(containsValue(result.range, 1)).toBe(false);
+		});
+
+		it('x² on [1, 3] has range [1, 9] (vertex outside domain)', () => {
+			const expr = power(variable('x'), number('2'));
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(1, 3) });
+			expect(containsValue(result.range, 1)).toBe(true);
+			expect(containsValue(result.range, 9)).toBe(true);
+			expect(containsValue(result.range, 0)).toBe(false);
+		});
+
+		it('2x² + 3 on [-1, 2] has range [3, 11]', () => {
+			// f(x) = 2x² + 3, vertex at x=0, f(0)=3, f(-1)=5, f(2)=11
+			const expr = add(multiply(number('2'), power(variable('x'), number('2'))), number('3'));
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-1, 2) });
+			expect(containsValue(result.range, 3)).toBe(true);
+			expect(containsValue(result.range, 11)).toBe(true);
+			expect(containsValue(result.range, 2)).toBe(false);
+		});
+	});
+
+	// =========================================================================
+	// Rational Power Detection (x^(p/q))
+	// =========================================================================
+
+	describe('rational power detection', () => {
+		it('x^(1/2) = sqrt(x) on [4, 9] has range [2, 3]', () => {
+			const expr = power(variable('x'), divide(number('1'), number('2')));
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(4, 9) });
+			expect(containsValue(result.range, 2)).toBe(true);
+			expect(containsValue(result.range, 3)).toBe(true);
+			expect(containsValue(result.range, 1)).toBe(false);
+			expect(containsValue(result.range, 4)).toBe(false);
+		});
+
+		it('x^(1/3) (cube root) on [-8, 8] has range [-2, 2]', () => {
+			const expr = power(variable('x'), divide(number('1'), number('3')));
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-8, 8) });
+			expect(containsValue(result.range, -2)).toBe(true);
+			expect(containsValue(result.range, 2)).toBe(true);
+		});
+
+		it('x^(2/3) on [0, 8] has range [0, 4]', () => {
+			const expr = power(variable('x'), divide(number('2'), number('3')));
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 8) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 4)).toBe(true);
+			expect(containsValue(result.range, -1)).toBe(false);
+		});
+
+		it('x^(-1/2) on [1, 4] has range [0.5, 1]', () => {
+			const expr = power(variable('x'), divide(opposite(number('1')), number('2')));
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(1, 4) });
+			expect(containsValue(result.range, 0.5)).toBe(true);
+			expect(containsValue(result.range, 1)).toBe(true);
+			expect(containsValue(result.range, 0.4)).toBe(false);
+			expect(containsValue(result.range, 1.1)).toBe(false);
+		});
+	});
+
+	// =========================================================================
+	// Periodic Function Optimization
+	// =========================================================================
+
+	describe('periodic function optimization', () => {
+		it('sin(x) on [0, 10] (> 2π) returns full range [-1, 1]', () => {
+			// Input spans more than 2π ≈ 6.28
+			const expr = func('sin', [variable('x')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 10) });
+			expect(containsValue(result.range, -1)).toBe(true);
+			expect(containsValue(result.range, 1)).toBe(true);
+		});
+
+		it('cos(x) on [-5, 5] (> 2π) returns full range [-1, 1]', () => {
+			const expr = func('cos', [variable('x')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-5, 5) });
+			expect(containsValue(result.range, -1)).toBe(true);
+			expect(containsValue(result.range, 1)).toBe(true);
+		});
+
+		it('sin(x) on [0, π/2] returns [0, 1] (less than full period)', () => {
+			const expr = func('sin', [variable('x')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, Math.PI / 2) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 1)).toBe(true);
+			expect(containsValue(result.range, -1)).toBe(false);
+		});
+
+		it('tan(x) on [0, 5] (> π) returns universal (full period span)', () => {
+			// tan period is π ≈ 3.14, [0, 5] spans more than π
+			const expr = func('tan', [variable('x')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
+			expect(result.range.kind).toBe('universal');
+		});
+	});
+
+	// =========================================================================
+	// Combined Improvements
+	// =========================================================================
+
+	describe('combined improvements', () => {
+		it('abs(x² - 4) on [-3, 3] uses both quadratic and abs', () => {
+			// x² - 4 on [-3, 3] has range [-4, 5] (vertex at x=0, value=-4)
+			// abs of that = [0, 5]
+			const expr = func('abs', [subtract(power(variable('x'), number('2')), number('4'))]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-3, 3) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 5)).toBe(true);
+			expect(containsValue(result.range, -1)).toBe(false);
+		});
+
+		it('min(x², 4) on [-3, 3] uses quadratic and min', () => {
+			// x² on [-3, 3] has range [0, 9]
+			// min with 4 gives [0, 4]
+			const expr = func('min', [power(variable('x'), number('2')), number('4')]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-3, 3) });
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 4)).toBe(true);
+			expect(containsValue(result.range, 5)).toBe(false);
+		});
+
+		it('sqrt(x² + 1) on [-2, 2] correctly handles composition', () => {
+			// x² + 1 on [-2, 2] has range [1, 5]
+			// sqrt([1, 5]) = [1, sqrt(5)] ≈ [1, 2.236]
+			const expr = func('sqrt', [add(power(variable('x'), number('2')), number('1'))]);
+			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, 2) });
+			expect(containsValue(result.range, 1)).toBe(true);
+			expect(containsValue(result.range, Math.sqrt(5))).toBe(true);
+			expect(containsValue(result.range, 0.9)).toBe(false);
 		});
 	});
 });
