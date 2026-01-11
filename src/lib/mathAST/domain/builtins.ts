@@ -15,7 +15,9 @@ import {
 	intervalDomain,
 	greaterThanOrEqual,
 	lessThanOrEqual,
+	greaterThan,
 	openInterval,
+	closedInterval,
 	fromNumber
 } from './factory';
 
@@ -196,4 +198,196 @@ export function getRestrictedFunctions(): string[] {
 		}
 	}
 	return result;
+}
+
+// =============================================================================
+// Range (Output) Definitions
+// =============================================================================
+
+/**
+ * Entry for a builtin function's output range.
+ */
+export interface BuiltinRangeEntry {
+	/** Lower bound of output range (null = -∞) */
+	lower: number | null;
+	/** Whether lower bound is included */
+	lowerInclusive: boolean;
+	/** Upper bound of output range (null = +∞) */
+	upper: number | null;
+	/** Whether upper bound is included */
+	upperInclusive: boolean;
+}
+
+/**
+ * Registry of builtin function output ranges.
+ * Key is the lowercase function name.
+ *
+ * Used for:
+ * - Computing the range/image of expressions
+ * - Analyzing function compositions
+ */
+export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
+	// Functions with [0, +∞[ range
+	['sqrt', { lower: 0, lowerInclusive: true, upper: null, upperInclusive: false }],
+	['abs', { lower: 0, lowerInclusive: true, upper: null, upperInclusive: false }],
+	['exp', { lower: 0, lowerInclusive: false, upper: null, upperInclusive: false }],
+
+	// Functions with ]-∞, +∞[ range (unbounded)
+	['ln', { lower: null, lowerInclusive: false, upper: null, upperInclusive: false }],
+	['log', { lower: null, lowerInclusive: false, upper: null, upperInclusive: false }],
+	['log10', { lower: null, lowerInclusive: false, upper: null, upperInclusive: false }],
+	['log2', { lower: null, lowerInclusive: false, upper: null, upperInclusive: false }],
+
+	// Trig functions with [-1, 1] range
+	['sin', { lower: -1, lowerInclusive: true, upper: 1, upperInclusive: true }],
+	['cos', { lower: -1, lowerInclusive: true, upper: 1, upperInclusive: true }],
+
+	// Inverse trig with specific ranges
+	['asin', { lower: -Math.PI / 2, lowerInclusive: true, upper: Math.PI / 2, upperInclusive: true }],
+	[
+		'arcsin',
+		{ lower: -Math.PI / 2, lowerInclusive: true, upper: Math.PI / 2, upperInclusive: true }
+	],
+	['acos', { lower: 0, lowerInclusive: true, upper: Math.PI, upperInclusive: true }],
+	['arccos', { lower: 0, lowerInclusive: true, upper: Math.PI, upperInclusive: true }],
+	[
+		'atan',
+		{ lower: -Math.PI / 2, lowerInclusive: false, upper: Math.PI / 2, upperInclusive: false }
+	],
+	[
+		'arctan',
+		{ lower: -Math.PI / 2, lowerInclusive: false, upper: Math.PI / 2, upperInclusive: false }
+	],
+
+	// Hyperbolic functions
+	['sinh', { lower: null, lowerInclusive: false, upper: null, upperInclusive: false }],
+	['cosh', { lower: 1, lowerInclusive: true, upper: null, upperInclusive: false }],
+	['tanh', { lower: -1, lowerInclusive: false, upper: 1, upperInclusive: false }],
+
+	// Inverse hyperbolic
+	['asinh', { lower: null, lowerInclusive: false, upper: null, upperInclusive: false }],
+	['arcsinh', { lower: null, lowerInclusive: false, upper: null, upperInclusive: false }],
+	['acosh', { lower: 0, lowerInclusive: true, upper: null, upperInclusive: false }],
+	['arccosh', { lower: 0, lowerInclusive: true, upper: null, upperInclusive: false }],
+	['atanh', { lower: null, lowerInclusive: false, upper: null, upperInclusive: false }],
+	['arctanh', { lower: null, lowerInclusive: false, upper: null, upperInclusive: false }],
+
+	// Other functions
+	['floor', { lower: null, lowerInclusive: false, upper: null, upperInclusive: false }],
+	['ceil', { lower: null, lowerInclusive: false, upper: null, upperInclusive: false }],
+	['round', { lower: null, lowerInclusive: false, upper: null, upperInclusive: false }],
+	['sign', { lower: -1, lowerInclusive: true, upper: 1, upperInclusive: true }]
+]);
+
+// =============================================================================
+// Range API Functions
+// =============================================================================
+
+/**
+ * Convert a BuiltinRangeEntry to a Domain.
+ */
+function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
+	const { lower, lowerInclusive, upper, upperInclusive } = entry;
+
+	// Unbounded: ]-∞, +∞[
+	if (lower === null && upper === null) {
+		return universalDomain();
+	}
+
+	// Only lower bound: [a, +∞[ or ]a, +∞[
+	if (upper === null) {
+		if (lowerInclusive) {
+			return intervalDomain([greaterThanOrEqual(fromNumber(lower!))]);
+		} else {
+			return intervalDomain([greaterThan(fromNumber(lower!))]);
+		}
+	}
+
+	// Only upper bound: ]-∞, b] or ]-∞, b[
+	if (lower === null) {
+		if (upperInclusive) {
+			return intervalDomain([lessThanOrEqual(fromNumber(upper))]);
+		} else {
+			// lessThan is not exported, use openInterval with -∞
+			return intervalDomain([
+				{
+					kind: 'interval',
+					lower: { value: { type: 'infinity', sign: 'negative' }, type: 'open' },
+					upper: { value: fromNumber(upper), type: 'open' }
+				}
+			]);
+		}
+	}
+
+	// Both bounds
+	if (lowerInclusive && upperInclusive) {
+		return intervalDomain([closedInterval(fromNumber(lower), fromNumber(upper))]);
+	} else if (!lowerInclusive && !upperInclusive) {
+		return intervalDomain([openInterval(fromNumber(lower), fromNumber(upper))]);
+	} else if (lowerInclusive && !upperInclusive) {
+		// [a, b[
+		return intervalDomain([
+			{
+				kind: 'interval',
+				lower: { value: fromNumber(lower), type: 'closed' },
+				upper: { value: fromNumber(upper), type: 'open' }
+			}
+		]);
+	} else {
+		// ]a, b]
+		return intervalDomain([
+			{
+				kind: 'interval',
+				lower: { value: fromNumber(lower), type: 'open' },
+				upper: { value: fromNumber(upper), type: 'closed' }
+			}
+		]);
+	}
+}
+
+/**
+ * Get the output range for a builtin function.
+ *
+ * @param name - Function name (case-insensitive)
+ * @returns The range as a Domain, or undefined if unknown
+ *
+ * @example
+ * getBuiltinRange('sqrt') // → [0, +∞[
+ * getBuiltinRange('sin')  // → [-1, 1]
+ * getBuiltinRange('exp')  // → ]0, +∞[
+ * getBuiltinRange('ln')   // → ℝ (unbounded)
+ */
+export function getBuiltinRange(name: string): Domain | undefined {
+	const entry = BUILTIN_RANGES.get(name.toLowerCase());
+	if (!entry) return undefined;
+	return rangeEntryToDomain(entry);
+}
+
+/**
+ * Get the raw range entry for a builtin function.
+ * Used internally for composition analysis.
+ *
+ * @param name - Function name (case-insensitive)
+ * @returns The range entry, or undefined if unknown
+ */
+export function getBuiltinRangeEntry(name: string): BuiltinRangeEntry | undefined {
+	return BUILTIN_RANGES.get(name.toLowerCase());
+}
+
+/**
+ * Check if a builtin function has a restricted (non-universal) output range.
+ *
+ * @param name - Function name (case-insensitive)
+ * @returns true if the function has bounded output, false otherwise
+ *
+ * @example
+ * hasRestrictedRange('sqrt') // → true (bounded below by 0)
+ * hasRestrictedRange('sin')  // → true (bounded to [-1, 1])
+ * hasRestrictedRange('ln')   // → false (unbounded)
+ * hasRestrictedRange('exp')  // → true (bounded below by 0)
+ */
+export function hasRestrictedRange(name: string): boolean {
+	const entry = BUILTIN_RANGES.get(name.toLowerCase());
+	if (!entry) return false;
+	return entry.lower !== null || entry.upper !== null;
 }

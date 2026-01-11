@@ -179,3 +179,26 @@ export interface DomainViolation {
 	/** English technical message */
 	readonly messageEn: string;
 }
+
+// =============================================================================
+// Range Result Types (for range/image operations)
+// =============================================================================
+
+/**
+ * A step in the range computation (for pedagogical display)
+ */
+export interface RangeStep {
+	readonly expression: string;
+	readonly rangeDescription: string;
+	readonly explanation: string;
+}
+
+/**
+ * Result of a range computation
+ */
+export interface RangeResult {
+	readonly range: Domain;
+	readonly variable: string;
+	readonly inputDomain?: Domain;
+	readonly steps?: readonly RangeStep[];
+}

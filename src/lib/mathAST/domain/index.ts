@@ -39,6 +39,9 @@ export type {
 	DomainViolation,
 	DomainResult,
 	DomainStep,
+	// Range types
+	RangeResult,
+	RangeStep,
 	// Backward compatibility aliases
 	EmptyDomain,
 	UniversalDomain,
@@ -137,15 +140,13 @@ export { isInDomain, getDomainViolations } from './validate';
 export type { Bindings } from './validate';
 
 // =============================================================================
-// Formatting
+// Formatting (new names)
 // =============================================================================
 
-export {
-	formatDomainInterval,
-	formatDomainCondition,
-	formatDomainFull,
-	formatEndpointValue
-} from './format';
+export { formatInterval, formatCondition, formatDomainFull, formatEndpointValue } from './format';
+
+// Formatting (deprecated aliases for backward compatibility)
+export { formatDomainInterval, formatDomainCondition } from './format';
 
 // =============================================================================
 // Built-in Function Domains
@@ -157,6 +158,20 @@ export {
 	getBuiltinConstraintDescription,
 	getRestrictedFunctions
 } from './builtins';
+
+// =============================================================================
+// Built-in Function Ranges (output ranges)
+// =============================================================================
+
+export { getBuiltinRange, hasRestrictedRange } from './builtins';
+export type { BuiltinRangeEntry } from './builtins';
+
+// =============================================================================
+// Range Computation
+// =============================================================================
+
+export { computeRange } from './range';
+export type { ComputeRangeOptions } from './range';
 
 // =============================================================================
 // Errors

@@ -7,7 +7,10 @@ import {
 	BUILTIN_DOMAINS,
 	getBuiltinDomain,
 	hasRestrictedDomain,
-	getBuiltinConstraintDescription
+	getBuiltinConstraintDescription,
+	BUILTIN_RANGES,
+	getBuiltinRange,
+	hasRestrictedRange
 } from '../builtins';
 import { containsValue } from '../algebra';
 
@@ -404,5 +407,292 @@ describe('getBuiltinConstraintDescription()', () => {
 
 	it('returns undefined for unknown functions', () => {
 		expect(getBuiltinConstraintDescription('unknown')).toBeUndefined();
+	});
+});
+
+// =============================================================================
+// Range (Output) Tests
+// =============================================================================
+
+describe('BUILTIN_RANGES registry', () => {
+	it('has range for sqrt', () => {
+		expect(BUILTIN_RANGES.has('sqrt')).toBe(true);
+	});
+
+	it('has range for sin', () => {
+		expect(BUILTIN_RANGES.has('sin')).toBe(true);
+	});
+
+	it('has range for cos', () => {
+		expect(BUILTIN_RANGES.has('cos')).toBe(true);
+	});
+
+	it('has range for exp', () => {
+		expect(BUILTIN_RANGES.has('exp')).toBe(true);
+	});
+
+	it('has range for ln', () => {
+		expect(BUILTIN_RANGES.has('ln')).toBe(true);
+	});
+});
+
+describe('getBuiltinRange()', () => {
+	describe('sqrt range: [0, +infinity[', () => {
+		it('returns non-negative reals range', () => {
+			const range = getBuiltinRange('sqrt');
+			expect(range).toBeDefined();
+			expect(range?.kind).toBe('interval_set');
+		});
+
+		it('contains 0 (closed lower bound)', () => {
+			const range = getBuiltinRange('sqrt')!;
+			expect(containsValue(range, 0)).toBe(true);
+		});
+
+		it('contains positive values', () => {
+			const range = getBuiltinRange('sqrt')!;
+			expect(containsValue(range, 1)).toBe(true);
+			expect(containsValue(range, 100)).toBe(true);
+		});
+
+		it('does not contain negative values', () => {
+			const range = getBuiltinRange('sqrt')!;
+			expect(containsValue(range, -1)).toBe(false);
+			expect(containsValue(range, -0.001)).toBe(false);
+		});
+	});
+
+	describe('exp range: ]0, +infinity[', () => {
+		it('returns positive reals range (open at 0)', () => {
+			const range = getBuiltinRange('exp');
+			expect(range).toBeDefined();
+			expect(range?.kind).toBe('interval_set');
+		});
+
+		it('does not contain 0 (open lower bound)', () => {
+			const range = getBuiltinRange('exp')!;
+			expect(containsValue(range, 0)).toBe(false);
+		});
+
+		it('contains positive values', () => {
+			const range = getBuiltinRange('exp')!;
+			expect(containsValue(range, 0.001)).toBe(true);
+			expect(containsValue(range, 1)).toBe(true);
+			expect(containsValue(range, 100)).toBe(true);
+		});
+
+		it('does not contain negative values', () => {
+			const range = getBuiltinRange('exp')!;
+			expect(containsValue(range, -1)).toBe(false);
+		});
+	});
+
+	describe('sin range: [-1, 1]', () => {
+		it('returns closed unit interval', () => {
+			const range = getBuiltinRange('sin');
+			expect(range).toBeDefined();
+			expect(range?.kind).toBe('interval_set');
+		});
+
+		it('contains -1, 0, 1 (closed bounds)', () => {
+			const range = getBuiltinRange('sin')!;
+			expect(containsValue(range, -1)).toBe(true);
+			expect(containsValue(range, 0)).toBe(true);
+			expect(containsValue(range, 1)).toBe(true);
+		});
+
+		it('contains values in between', () => {
+			const range = getBuiltinRange('sin')!;
+			expect(containsValue(range, 0.5)).toBe(true);
+			expect(containsValue(range, -0.5)).toBe(true);
+		});
+
+		it('does not contain values outside [-1, 1]', () => {
+			const range = getBuiltinRange('sin')!;
+			expect(containsValue(range, -1.01)).toBe(false);
+			expect(containsValue(range, 1.01)).toBe(false);
+			expect(containsValue(range, 2)).toBe(false);
+		});
+	});
+
+	describe('cos range: [-1, 1]', () => {
+		it('has same range as sin', () => {
+			const sinRange = getBuiltinRange('sin')!;
+			const cosRange = getBuiltinRange('cos')!;
+			expect(containsValue(cosRange, 0)).toBe(containsValue(sinRange, 0));
+			expect(containsValue(cosRange, 1)).toBe(containsValue(sinRange, 1));
+			expect(containsValue(cosRange, 2)).toBe(containsValue(sinRange, 2));
+		});
+	});
+
+	describe('ln range: ]-infinity, +infinity[', () => {
+		it('returns universal range', () => {
+			const range = getBuiltinRange('ln');
+			expect(range).toBeDefined();
+			expect(range?.kind).toBe('universal');
+		});
+	});
+
+	describe('tanh range: ]-1, 1[', () => {
+		it('returns open interval (-1, 1)', () => {
+			const range = getBuiltinRange('tanh');
+			expect(range).toBeDefined();
+			expect(range?.kind).toBe('interval_set');
+		});
+
+		it('does not contain -1 or 1 (open bounds)', () => {
+			const range = getBuiltinRange('tanh')!;
+			expect(containsValue(range, -1)).toBe(false);
+			expect(containsValue(range, 1)).toBe(false);
+		});
+
+		it('contains values strictly between -1 and 1', () => {
+			const range = getBuiltinRange('tanh')!;
+			expect(containsValue(range, 0)).toBe(true);
+			expect(containsValue(range, 0.5)).toBe(true);
+			expect(containsValue(range, -0.5)).toBe(true);
+			expect(containsValue(range, 0.999)).toBe(true);
+		});
+	});
+
+	describe('cosh range: [1, +infinity[', () => {
+		it('returns [1, +infinity[', () => {
+			const range = getBuiltinRange('cosh');
+			expect(range).toBeDefined();
+			expect(range?.kind).toBe('interval_set');
+		});
+
+		it('contains 1 (minimum value)', () => {
+			const range = getBuiltinRange('cosh')!;
+			expect(containsValue(range, 1)).toBe(true);
+		});
+
+		it('contains values > 1', () => {
+			const range = getBuiltinRange('cosh')!;
+			expect(containsValue(range, 2)).toBe(true);
+			expect(containsValue(range, 100)).toBe(true);
+		});
+
+		it('does not contain values < 1', () => {
+			const range = getBuiltinRange('cosh')!;
+			expect(containsValue(range, 0)).toBe(false);
+			expect(containsValue(range, 0.999)).toBe(false);
+			expect(containsValue(range, -1)).toBe(false);
+		});
+	});
+
+	describe('asin range: [-pi/2, pi/2]', () => {
+		it('contains 0', () => {
+			const range = getBuiltinRange('asin')!;
+			expect(containsValue(range, 0)).toBe(true);
+		});
+
+		it('contains ±pi/2', () => {
+			const range = getBuiltinRange('asin')!;
+			expect(containsValue(range, Math.PI / 2)).toBe(true);
+			expect(containsValue(range, -Math.PI / 2)).toBe(true);
+		});
+
+		it('does not contain values outside [-pi/2, pi/2]', () => {
+			const range = getBuiltinRange('asin')!;
+			expect(containsValue(range, 2)).toBe(false);
+			expect(containsValue(range, -2)).toBe(false);
+		});
+	});
+
+	describe('acos range: [0, pi]', () => {
+		it('contains 0 and pi', () => {
+			const range = getBuiltinRange('acos')!;
+			expect(containsValue(range, 0)).toBe(true);
+			expect(containsValue(range, Math.PI)).toBe(true);
+		});
+
+		it('does not contain negative values', () => {
+			const range = getBuiltinRange('acos')!;
+			expect(containsValue(range, -0.1)).toBe(false);
+		});
+
+		it('does not contain values > pi', () => {
+			const range = getBuiltinRange('acos')!;
+			expect(containsValue(range, Math.PI + 0.1)).toBe(false);
+		});
+	});
+
+	describe('atan range: ]-pi/2, pi/2[', () => {
+		it('contains 0', () => {
+			const range = getBuiltinRange('atan')!;
+			expect(containsValue(range, 0)).toBe(true);
+		});
+
+		it('does not contain ±pi/2 (open bounds)', () => {
+			const range = getBuiltinRange('atan')!;
+			expect(containsValue(range, Math.PI / 2)).toBe(false);
+			expect(containsValue(range, -Math.PI / 2)).toBe(false);
+		});
+
+		it('contains values just inside bounds', () => {
+			const range = getBuiltinRange('atan')!;
+			expect(containsValue(range, Math.PI / 2 - 0.01)).toBe(true);
+			expect(containsValue(range, -Math.PI / 2 + 0.01)).toBe(true);
+		});
+	});
+
+	describe('case insensitivity', () => {
+		it('SQRT returns same as sqrt', () => {
+			expect(getBuiltinRange('SQRT')).toEqual(getBuiltinRange('sqrt'));
+		});
+
+		it('SIN returns same as sin', () => {
+			expect(getBuiltinRange('SIN')).toEqual(getBuiltinRange('sin'));
+		});
+	});
+
+	describe('unknown functions', () => {
+		it('returns undefined for unknown function', () => {
+			expect(getBuiltinRange('unknown_func')).toBeUndefined();
+		});
+	});
+});
+
+describe('hasRestrictedRange()', () => {
+	it('returns true for sqrt (bounded below)', () => {
+		expect(hasRestrictedRange('sqrt')).toBe(true);
+	});
+
+	it('returns true for sin (bounded both sides)', () => {
+		expect(hasRestrictedRange('sin')).toBe(true);
+	});
+
+	it('returns true for cos (bounded both sides)', () => {
+		expect(hasRestrictedRange('cos')).toBe(true);
+	});
+
+	it('returns true for exp (bounded below)', () => {
+		expect(hasRestrictedRange('exp')).toBe(true);
+	});
+
+	it('returns true for tanh (bounded both sides)', () => {
+		expect(hasRestrictedRange('tanh')).toBe(true);
+	});
+
+	it('returns true for cosh (bounded below)', () => {
+		expect(hasRestrictedRange('cosh')).toBe(true);
+	});
+
+	it('returns false for ln (unbounded)', () => {
+		expect(hasRestrictedRange('ln')).toBe(false);
+	});
+
+	it('returns false for sinh (unbounded)', () => {
+		expect(hasRestrictedRange('sinh')).toBe(false);
+	});
+
+	it('returns false for unknown function', () => {
+		expect(hasRestrictedRange('unknown_func')).toBe(false);
+	});
+
+	it('is case insensitive', () => {
+		expect(hasRestrictedRange('SQRT')).toBe(true);
+		expect(hasRestrictedRange('LN')).toBe(false);
 	});
 });
