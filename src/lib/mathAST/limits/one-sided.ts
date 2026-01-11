@@ -13,6 +13,8 @@ import type { LimitStepRecorder } from './step-recorder';
 import { isNumber, isInfinity } from '../guards';
 import { classifyLimitValue } from './indeterminate';
 import { structurallyEqual } from './known-limits';
+import { substitute } from '../eval/substitute';
+import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
 // =============================================================================
 // One-Sided Limit Evaluation
@@ -305,11 +307,11 @@ export function analyzeSign(expr: MathNode, varName: string, approach: MathNode)
 	const epsilon = 1e-10;
 
 	// Evaluate just to the left
-	const leftValue = evaluateAt(expr, varName, approachVal - epsilon);
+	const leftValue = evaluateAtValue(expr, varName, approachVal - epsilon);
 	const leftSign = getSign(leftValue);
 
 	// Evaluate just to the right
-	const rightValue = evaluateAt(expr, varName, approachVal + epsilon);
+	const rightValue = evaluateAtValue(expr, varName, approachVal + epsilon);
 	const rightSign = getSign(rightValue);
 
 	return { leftSign, rightSign };
@@ -329,78 +331,24 @@ function getSign(value: number | null): 'positive' | 'negative' | 'zero' | 'unkn
 }
 
 /**
- * Simple numeric evaluation.
+ * Evaluate an expression at a specific numeric value.
+ *
+ * Uses the eval module's substitute and evaluateNodeToApproximatedNumber
+ * for consistent numeric evaluation across the codebase.
+ *
+ * @param expr - The expression to evaluate
+ * @param varName - The variable to substitute
+ * @param value - The numeric value to substitute
+ * @returns The numeric result or null if evaluation fails
  */
-function evaluateAt(expr: MathNode, varName: string, value: number): number | null {
-	switch (expr.type) {
-		case 'number':
-			return parseFloat(expr.value);
-
-		case 'variable':
-			return expr.name === varName ? value : null;
-
-		case 'addition': {
-			const l = evaluateAt(expr.left, varName, value);
-			const r = evaluateAt(expr.right, varName, value);
-			return l !== null && r !== null ? l + r : null;
-		}
-
-		case 'subtraction': {
-			const l = evaluateAt(expr.left, varName, value);
-			const r = evaluateAt(expr.right, varName, value);
-			return l !== null && r !== null ? l - r : null;
-		}
-
-		case 'multiplication': {
-			const l = evaluateAt(expr.left, varName, value);
-			const r = evaluateAt(expr.right, varName, value);
-			return l !== null && r !== null ? l * r : null;
-		}
-
-		case 'division': {
-			const n = evaluateAt(expr.numerator, varName, value);
-			const d = evaluateAt(expr.denominator, varName, value);
-			return n !== null && d !== null && d !== 0 ? n / d : null;
-		}
-
-		case 'opposite': {
-			const o = evaluateAt(expr.operand, varName, value);
-			return o !== null ? -o : null;
-		}
-
-		case 'superscript': {
-			const b = evaluateAt(expr.base, varName, value);
-			const e = evaluateAt(expr.superscript, varName, value);
-			return b !== null && e !== null ? Math.pow(b, e) : null;
-		}
-
-		case 'function': {
-			if (expr.args.length === 1) {
-				const arg = evaluateAt(expr.args[0], varName, value);
-				if (arg === null) return null;
-				const name = expr.name.toLowerCase();
-				switch (name) {
-					case 'sin':
-						return Math.sin(arg);
-					case 'cos':
-						return Math.cos(arg);
-					case 'exp':
-						return Math.exp(arg);
-					case 'ln':
-						return arg > 0 ? Math.log(arg) : null;
-					case 'sqrt':
-						return arg >= 0 ? Math.sqrt(arg) : null;
-					case 'abs':
-						return Math.abs(arg);
-					default:
-						return null;
-				}
-			}
-			return null;
-		}
-
-		default:
-			return null;
+function evaluateAtValue(expr: MathNode, varName: string, value: number): number | null {
+	try {
+		const valueNode: MathNode = { type: 'number', value: String(value) };
+		const substituted = substitute(expr, { [varName]: valueNode });
+		const result = evaluateNodeToApproximatedNumber(substituted);
+		return Number.isFinite(result) ? result : null;
+	} catch {
+		return null;
 	}
 }
 
