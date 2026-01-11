@@ -75,6 +75,7 @@ mathAST/
 │   │   └── step-recorder.ts # Step-by-step recording
 │   ├── differentiation/  # Symbolic derivatives
 │   ├── taylor/           # Taylor series expansion
+│   ├── limits/           # Symbolic limit evaluation
 │   └── domain/           # Domain of definition
 │
 ├── Pattern Matching
@@ -103,6 +104,7 @@ mathAST/
 | [Pattern Matching](./patterns.md)               | Pattern matching and rule-based transformations |
 | [Normalization](./normalization.md)             | Canonical forms and equivalence                 |
 | [Differentiation & Taylor](./calculus.md)       | Symbolic differentiation and series             |
+| [Limits](./limits.md)                           | Symbolic limit evaluation                       |
 | [Domain of Definition](./domain.md)             | Domain computation and validation               |
 | [Physical Units](./units.md)                    | Unit system with dimensional analysis           |
 | [CLI & REPL](./cli.md)                          | Command-line interface and web REPL             |
