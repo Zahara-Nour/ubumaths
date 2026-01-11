@@ -382,6 +382,134 @@ class FriendsManager {
 	}
 
 	/**
+	 * Get all active classes matching the user's grade level
+	 */
+	async getClassesByUserGrade(): Promise<Array<{ id: string; name: string }>> {
+		if (!this.supabase || !this.currentUserId) {
+			console.error('Friends manager not initialized');
+			return [];
+		}
+
+		try {
+			// 1. Get the user's classes to find their grade(s)
+			const { data: userClasses, error: userClassesError } = await this.supabase
+				.from('class_members')
+				.select('classes(id, name, grade)')
+				.eq('student_id', this.currentUserId)
+				.eq('status', 'active');
+
+			if (userClassesError) {
+				throw userClassesError;
+			}
+
+			if (!userClasses || userClasses.length === 0) {
+				return [];
+			}
+
+			// 2. Extract unique grades from user's classes
+			const userGrades = [
+				...new Set(
+					userClasses
+						.map((uc) => (uc.classes as { id: string; name: string; grade: string | null })?.grade)
+						.filter((g): g is string => g !== null)
+				)
+			];
+
+			if (userGrades.length === 0) {
+				return [];
+			}
+
+			// 3. Get all active classes with matching grades
+			const { data, error } = await this.supabase
+				.from('classes')
+				.select('id, name')
+				.eq('is_active', true)
+				.in('grade', userGrades)
+				.order('name');
+
+			if (error) {
+				throw error;
+			}
+
+			return data ?? [];
+		} catch (err) {
+			console.error('Error fetching classes by grade:', err);
+			return [];
+		}
+	}
+
+	/**
+	 * Get students in a specific class (excludes current user)
+	 */
+	async getStudentsInClass(classId: string): Promise<ClassmateInfo[]> {
+		if (!this.supabase || !this.currentUserId) {
+			console.error('Friends manager not initialized');
+			return [];
+		}
+
+		try {
+			// Get all active members of this class (excluding current user)
+			const { data: members, error: membersError } = await this.supabase
+				.from('class_members')
+				.select('student_id')
+				.eq('class_id', classId)
+				.eq('status', 'active')
+				.neq('student_id', this.currentUserId);
+
+			if (membersError) {
+				throw membersError;
+			}
+
+			if (!members || members.length === 0) {
+				return [];
+			}
+
+			const studentIds = members.map((m) => m.student_id);
+
+			// Fetch profiles
+			const { data: profiles, error: profilesError } = await this.supabase
+				.from('profiles')
+				.select('id, full_name, firstname, lastname, avatar_url, role')
+				.in('id', studentIds);
+
+			if (profilesError) {
+				throw profilesError;
+			}
+
+			// Get existing friendships
+			const { data: existingFriendships, error: friendshipsError } = await this.supabase
+				.from('friendships')
+				.select('addressee_id, requester_id, status')
+				.or(`requester_id.eq.${this.currentUserId},addressee_id.eq.${this.currentUserId}`);
+
+			if (friendshipsError) {
+				console.warn('Error fetching existing friendships:', friendshipsError);
+			}
+
+			// Create friendship map
+			const friendshipMap = new Map<string, 'pending' | 'accepted' | 'rejected'>();
+			existingFriendships?.forEach((f) => {
+				const friendId = f.requester_id === this.currentUserId ? f.addressee_id : f.requester_id;
+				friendshipMap.set(friendId, f.status as 'pending' | 'accepted' | 'rejected');
+			});
+
+			// Build result
+			return (profiles ?? []).map((profile) => ({
+				id: profile.id,
+				full_name: profile.full_name,
+				firstname: profile.firstname,
+				lastname: profile.lastname,
+				avatar_url: profile.avatar_url,
+				role: profile.role as 'student' | 'teacher' | 'admin',
+				friendship_status: friendshipMap.get(profile.id) ?? null
+			}));
+		} catch (err) {
+			console.error('Error fetching students in class:', err);
+			return [];
+		}
+	}
+
+	/**
 	 * Get classmates grouped by class for the current user
 	 * Only returns students (not teachers), excludes current user
 	 */
