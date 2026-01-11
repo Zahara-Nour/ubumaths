@@ -258,6 +258,39 @@ export function matchUSubstitution(
 }
 
 /**
+ * Check if integrand is exactly u^n for some n.
+ *
+ * This is useful for detecting cases like ∫(x-1)^3 dx where u = x-1 and du = 1.
+ * In such cases, u-substitution trivially works: ∫u^n du = u^(n+1)/(n+1).
+ *
+ * @param integrand - The expression to check
+ * @param u - The u expression
+ * @returns True if integrand = u^n
+ *
+ * @internal
+ */
+function isExactlyPowerOfU(integrand: MathNode, u: MathNode): boolean {
+	const uHash = hashMathNode(u);
+
+	// Case 1: integrand is exactly u (i.e., u^1)
+	if (hashMathNode(integrand) === uHash) {
+		return true;
+	}
+
+	// Case 2: integrand is u^n
+	if (integrand.type === 'superscript') {
+		if (hashMathNode(integrand.base) === uHash) {
+			// Check if exponent is a number (positive integer)
+			if (isNumber(integrand.superscript)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+/**
  * Try u-substitution with a specific u candidate.
  *
  * Checks if du/dx (or a constant multiple) appears in the integrand.
@@ -281,6 +314,26 @@ function tryUSubstitution(
 	} catch {
 		// If differentiation fails, this candidate doesn't work
 		return null;
+	}
+
+	// If du is a constant (doesn't contain the variable), u-substitution is not useful
+	// because we can't factor out du from the integrand to simplify
+	// Exception: if the integrand is exactly a function of u (handled below)
+	const duContainsVar = containsVariable(du, variable);
+	if (!duContainsVar && !isNumber(du)) {
+		// du = constant, but not a simple number
+		// This case is tricky - reject for now
+		return null;
+	}
+
+	// If du = 1 (trivial derivative), u-substitution doesn't help for rational functions
+	// because we can't simplify the integrand by factoring out du
+	if (isNumber(du) && du.value === '1') {
+		// Only accept if the integrand is exactly u^n for some n
+		// This handles cases like ∫(x-1)^3 dx where u = x-1
+		if (!isExactlyPowerOfU(integrand, u)) {
+			return null;
+		}
 	}
 
 	// Check if du appears in the integrand (exactly)
