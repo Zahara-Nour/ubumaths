@@ -180,6 +180,32 @@ export { computeRange } from './range';
 export type { ComputeRangeOptions } from './range';
 
 // =============================================================================
+// Range Helpers (advanced pattern matching and analysis)
+// =============================================================================
+
+export {
+	// Pattern detection
+	extractQuadratic,
+	extractRationalPower,
+	// Piecewise function ranges
+	computeAbsRange,
+	computeMinRange,
+	computeMaxRange,
+	// Polynomial ranges
+	computeQuadraticRange,
+	computeLinearRange,
+	// Power ranges
+	computeRationalPowerRange,
+	// Critical point analysis
+	findCriticalPoints,
+	computeRangeWithCriticalPoints,
+	// Periodic optimization
+	spansFullPeriod,
+	getFunctionPeriod
+} from './range-helpers';
+export type { QuadraticForm, LinearForm, RationalPower } from './range-helpers';
+
+// =============================================================================
 // Errors
 // =============================================================================
 

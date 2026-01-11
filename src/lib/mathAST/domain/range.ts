@@ -10,7 +10,11 @@
  * - Monotonicity-based restriction: uses function properties for accuracy
  * - Endpoint type preservation: maintains open/closed status
  * - Pattern recognition: handles common forms like a*f(x)+b
- * - Fractional/negative powers: x^(1/2), x^(-1), etc.
+ * - Quadratic detection: uses vertex formula for ax² + bx + c
+ * - Rational powers: x^(p/q) with proper domain handling
+ * - Piecewise functions: algebraic abs, min, max handling
+ * - Critical point analysis: derivative-based extrema finding
+ * - Periodic optimization: detects full periods for sin/cos/tan
  * - Pedagogical steps: optional step-by-step explanation
  */
 
@@ -26,6 +30,18 @@ import {
 } from './builtins';
 import { computeDomain } from './compute';
 import { formatInterval } from './format';
+import {
+	extractQuadratic,
+	extractRationalPower,
+	computeQuadraticRange,
+	computeAbsRange,
+	computeMinRange,
+	computeMaxRange,
+	computeRationalPowerRange,
+	computeRangeWithCriticalPoints,
+	spansFullPeriod,
+	getFunctionPeriod
+} from './range-helpers';
 
 // =============================================================================
 // Types
@@ -111,6 +127,11 @@ export function computeRange(
 
 /**
  * Compute range for a single node.
+ *
+ * Strategy:
+ * 1. Try quadratic pattern matching first (for ax² + bx + c)
+ * 2. Fall back to type-specific computation
+ * 3. For complex expressions with bounded domain, try critical point analysis
  */
 function computeRangeNode(
 	node: MathNode,
@@ -119,6 +140,24 @@ function computeRangeNode(
 	steps: RangeStep[],
 	options: ComputeRangeOptions
 ): Domain {
+	// Try quadratic pattern matching first (handles ax² + bx + c more precisely)
+	const quadratic = extractQuadratic(node, variable);
+	if (quadratic && quadratic.a !== 0) {
+		const result = computeQuadraticRange(quadratic, inputDomain);
+		if (options.showSteps) {
+			const { a, b, c } = quadratic;
+			const vertexX = -b / (2 * a);
+			const vertexY = c - (b * b) / (4 * a);
+			steps.push({
+				expression: `${a}${variable}² + ${b}${variable} + ${c}`,
+				rangeDescription: formatInterval(result),
+				explanation: `Fonction quadratique avec sommet en (${vertexX.toFixed(2)}, ${vertexY.toFixed(2)}).`
+			});
+		}
+		return result;
+	}
+
+	// Type-specific computation
 	switch (node.type) {
 		case 'number':
 			return computeConstantRange(node, steps, options);
@@ -151,9 +190,29 @@ function computeRangeNode(
 			// π, e are constants
 			return computeGreekConstantRange(node, steps, options);
 
-		default:
-			// Unknown node type: return universal (safe fallback)
+		case 'delimiter':
+			// Parentheses: compute range of content
+			return computeRangeNode(node.content, variable, inputDomain, steps, options);
+
+		default: {
+			// Unknown node type: try critical point analysis if domain is bounded
+			const bounds = getBoundsFromDomain(inputDomain);
+			if (bounds && bounds.lower !== null && bounds.upper !== null) {
+				const criticalResult = computeRangeWithCriticalPoints(node, variable, inputDomain);
+				if (criticalResult && criticalResult.kind !== 'universal') {
+					if (options.showSteps) {
+						steps.push({
+							expression: '...',
+							rangeDescription: formatInterval(criticalResult),
+							explanation: `Analyse des points critiques.`
+						});
+					}
+					return criticalResult;
+				}
+			}
+			// Safe fallback
 			return universalDomain();
+		}
 	}
 }
 
@@ -192,12 +251,11 @@ function computeGreekConstantRange(
 	options: ComputeRangeOptions
 ): Domain {
 	let value: number;
+	let name: string;
 	switch (node.letter) {
 		case 'pi':
 			value = Math.PI;
-			break;
-		case 'e':
-			value = Math.E;
+			name = 'π';
 			break;
 		default:
 			// Unknown Greek letter: treat as variable → universal
@@ -207,7 +265,6 @@ function computeGreekConstantRange(
 	const range = singlePoint(value);
 
 	if (options.showSteps) {
-		const name = node.letter === 'pi' ? 'π' : 'e';
 		steps.push({
 			expression: name,
 			rangeDescription: `{${name}}`,
@@ -260,6 +317,11 @@ function computeVariableRange(
  * For f(g(x)):
  * 1. Compute range of g(x) on input domain → R_g
  * 2. Apply f to R_g using monotonicity analysis
+ *
+ * Special handling for:
+ * - abs: algebraic approach (no sampling)
+ * - min/max: proper interval min/max computation
+ * - Periodic functions: optimization when input spans full period
  */
 function computeFunctionRange(
 	node: MathNode & { type: 'function' },
@@ -283,12 +345,86 @@ function computeFunctionRange(
 		return range;
 	}
 
+	// Special handling for abs (algebraic, not sampling)
+	if (funcName === 'abs') {
+		const argRange = computeRangeNode(node.args[0], variable, inputDomain, steps, options);
+		if (argRange.kind === 'empty') return { kind: 'empty' };
+
+		const range = computeAbsRange(argRange);
+
+		if (options.showSteps) {
+			steps.push({
+				expression: `|...|`,
+				rangeDescription: formatInterval(range),
+				explanation: `Valeur absolue de ${formatInterval(argRange)} = ${formatInterval(range)}.`
+			});
+		}
+		return range;
+	}
+
+	// Special handling for min (2 arguments)
+	if (funcName === 'min' && node.args.length >= 2) {
+		const aRange = computeRangeNode(node.args[0], variable, inputDomain, steps, options);
+		const bRange = computeRangeNode(node.args[1], variable, inputDomain, steps, options);
+
+		if (aRange.kind === 'empty' || bRange.kind === 'empty') return { kind: 'empty' };
+
+		const range = computeMinRange(aRange, bRange);
+
+		if (options.showSteps) {
+			steps.push({
+				expression: `min(...)`,
+				rangeDescription: formatInterval(range),
+				explanation: `min(${formatInterval(aRange)}, ${formatInterval(bRange)}) = ${formatInterval(range)}.`
+			});
+		}
+		return range;
+	}
+
+	// Special handling for max (2 arguments)
+	if (funcName === 'max' && node.args.length >= 2) {
+		const aRange = computeRangeNode(node.args[0], variable, inputDomain, steps, options);
+		const bRange = computeRangeNode(node.args[1], variable, inputDomain, steps, options);
+
+		if (aRange.kind === 'empty' || bRange.kind === 'empty') return { kind: 'empty' };
+
+		const range = computeMaxRange(aRange, bRange);
+
+		if (options.showSteps) {
+			steps.push({
+				expression: `max(...)`,
+				rangeDescription: formatInterval(range),
+				explanation: `max(${formatInterval(aRange)}, ${formatInterval(bRange)}) = ${formatInterval(range)}.`
+			});
+		}
+		return range;
+	}
+
 	// Step 1: Compute range of the argument
 	const argRange = computeRangeNode(node.args[0], variable, inputDomain, steps, options);
 
 	// If argument range is empty, function range is empty
 	if (argRange.kind === 'empty') {
 		return { kind: 'empty' };
+	}
+
+	// Periodic function optimization: if input spans full period, return full range
+	const period = getFunctionPeriod(funcName);
+	if (period !== null) {
+		const argBounds = getBoundsFromDomain(argRange);
+		if (argBounds && spansFullPeriod(argBounds, period)) {
+			const fullRange = getBuiltinRange(funcName);
+			if (fullRange) {
+				if (options.showSteps) {
+					steps.push({
+						expression: `${node.name}(...)`,
+						rangeDescription: formatInterval(fullRange),
+						explanation: `L'argument couvre une période complète, donc ${node.name} atteint toutes ses valeurs.`
+					});
+				}
+				return fullRange;
+			}
+		}
 	}
 
 	// Step 2: Apply function to argument range using monotonicity
@@ -473,7 +609,7 @@ function computeOppositeRange(
 
 /**
  * Compute range for power: base^exponent
- * Handles integer, fractional, and negative powers.
+ * Handles integer, fractional, negative powers, and rational powers (p/q).
  */
 function computePowerRange(
 	node: MathNode & { type: 'superscript' },
@@ -484,7 +620,26 @@ function computePowerRange(
 ): Domain {
 	const baseRange = computeRangeNode(node.base, variable, inputDomain, steps, options);
 
-	// Check if exponent is a constant
+	// Try to extract rational power (p/q) from division node or decimal
+	const rationalPower = extractRationalPower(node.superscript);
+
+	if (rationalPower !== null) {
+		// Use the more accurate rational power computation
+		const result = computeRationalPowerRange(baseRange, rationalPower);
+
+		if (options.showSteps) {
+			const { numerator: p, denominator: q } = rationalPower;
+			const expStr = q === 1 ? `${p}` : `${p}/${q}`;
+			steps.push({
+				expression: `(...)^(${expStr})`,
+				rangeDescription: formatInterval(result),
+				explanation: `Puissance ${expStr}: ${formatInterval(baseRange)}^(${expStr}) = ${formatInterval(result)}.`
+			});
+		}
+		return result;
+	}
+
+	// Check if exponent is a constant (fallback for non-rational powers)
 	const expValue = extractConstant(node.superscript);
 
 	if (expValue !== null) {
@@ -638,7 +793,10 @@ function extractConstant(node: MathNode): number | null {
 	}
 	if (node.type === 'greek') {
 		if (node.letter === 'pi') return Math.PI;
-		if (node.letter === 'e') return Math.E;
+	}
+	// Handle constant 'e' (Euler's number) - check if it's a symbol or constant type
+	if (node.type === 'constant' && 'name' in node && node.name === 'e') {
+		return Math.E;
 	}
 	if (node.type === 'opposite' && node.operand.type === 'number') {
 		return -parseFloat(node.operand.value);

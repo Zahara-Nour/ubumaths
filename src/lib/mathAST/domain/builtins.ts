@@ -130,7 +130,11 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	['floor', { domain: universalDomain() }],
 	['ceil', { domain: universalDomain() }],
 	['round', { domain: universalDomain() }],
-	['sign', { domain: universalDomain() }]
+	['sign', { domain: universalDomain() }],
+
+	// Min/max functions
+	['min', { domain: universalDomain() }],
+	['max', { domain: universalDomain() }]
 ]);
 
 // =============================================================================
@@ -241,6 +245,8 @@ export interface BuiltinRangeEntry {
 	evaluate?: (x: number) => number;
 	/** Whether output is always an integer (floor, ceil, round, sign) */
 	integerOutput?: boolean;
+	/** Whether function requires special range handling (min, max, etc.) */
+	requiresSpecialHandling?: boolean;
 }
 
 /**
@@ -739,6 +745,34 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 			evaluate: Math.trunc,
 			integerOutput: true
 		}
+	],
+
+	// ==========================================================================
+	// Min/Max Functions (special handling required - see range-helpers.ts)
+	// ==========================================================================
+	[
+		'min',
+		{
+			lower: null,
+			lowerInclusive: false,
+			upper: null,
+			upperInclusive: false,
+			monotonicity: 'none', // Not globally monotonic, requires special handling
+			evaluate: Math.min,
+			requiresSpecialHandling: true
+		}
+	],
+	[
+		'max',
+		{
+			lower: null,
+			lowerInclusive: false,
+			upper: null,
+			upperInclusive: false,
+			monotonicity: 'none', // Not globally monotonic, requires special handling
+			evaluate: Math.max,
+			requiresSpecialHandling: true
+		}
 	]
 ]);
 
@@ -1041,7 +1075,12 @@ export function applyFunctionToRange(name: string, inputRange: Domain): Domain {
  * Apply a monotonic function to bounded input.
  */
 function applyMonotonicFunction(entry: BuiltinRangeEntry, inputBounds: Bounds): Domain {
-	return applyMonotonicFunctionWithEntry(entry, inputBounds, entry.monotonicity!);
+	const monotonicity = entry.monotonicity;
+	if (monotonicity === 'increasing' || monotonicity === 'decreasing') {
+		return applyMonotonicFunctionWithEntry(entry, inputBounds, monotonicity);
+	}
+	// Fallback for non-monotonic or undefined monotonicity
+	return applyNonMonotonicFunction(entry, inputBounds);
 }
 
 /**
