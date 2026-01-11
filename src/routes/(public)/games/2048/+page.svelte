@@ -6,6 +6,9 @@
 	import Game2048 from './Game2048.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
 
 	// Toggle for rules visibility
 	let showRules = $state(false);
@@ -34,7 +37,7 @@
 
 	<!-- Game Component -->
 	<div class="mb-8">
-		<Game2048 />
+		<Game2048 serverBestScore={data.serverBestScore} canSaveScore={data.canSaveScore} />
 	</div>
 
 	<!-- Rules Section (Collapsible) -->

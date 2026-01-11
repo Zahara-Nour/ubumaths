@@ -43,20 +43,25 @@
 			</Card>
 		</a>
 
-		<!-- 2048 - Coming soon -->
-		<Card class="p-6 opacity-50">
-			<div class="flex items-center gap-4">
-				<div
-					class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-2xl"
-				>
-					🎮
+		<!-- 2048 -->
+		<a href="/leaderboards/2048" class="block">
+			<Card
+				class="p-6 transition-all hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary/20"
+			>
+				<div class="flex items-center gap-4">
+					<div
+						class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-2xl"
+					>
+						🎮
+					</div>
+					<div class="flex-1">
+						<h2 class="text-xl font-bold text-foreground">2048</h2>
+						<p class="text-sm text-muted-foreground">Meilleurs scores</p>
+					</div>
+					<Button variant="ghost" size="sm">Voir</Button>
 				</div>
-				<div class="flex-1">
-					<h2 class="text-xl font-bold text-foreground">2048</h2>
-					<p class="text-sm text-muted-foreground">Bientôt disponible</p>
-				</div>
-			</div>
-		</Card>
+			</Card>
+		</a>
 
 		<!-- Trio - Coming soon -->
 		<Card class="p-6 opacity-50">
