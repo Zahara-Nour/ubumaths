@@ -23,7 +23,10 @@ import {
 	sinRule,
 	cosRule,
 	tanRule,
-	containsVariable
+	arctanRule,
+	arcsinRule,
+	containsVariable,
+	getNumericValue
 } from '../rules';
 import { classifyIntegrand } from '../classify';
 import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
@@ -163,6 +166,186 @@ function isTangent(expr: MathNode, variable: string): { arg: MathNode } | null {
 	return null;
 }
 
+/**
+ * Check if expression matches 1/(a²+x²) pattern for arctan integration.
+ *
+ * Matches:
+ * - 1/(1+x²) → { a: null } (a=1)
+ * - 1/(a²+x²) → { a: MathNode }
+ * - 1/(x²+a²) → { a: MathNode }
+ */
+function isArctanPattern(
+	expr: MathNode,
+	variable: string
+): { a: MathNode | null; varNode: MathNode } | null {
+	// Must be a division with numerator = 1
+	if (expr.type !== 'division') return null;
+	if (!isNumber(expr.numerator) || expr.numerator.value !== '1') return null;
+
+	const denom = expr.denominator;
+
+	// Check for (1 + x²) or (x² + 1)
+	if (denom.type === 'addition') {
+		const { left, right } = denom;
+
+		// Pattern: 1 + x²
+		if (isNumber(left) && left.value === '1') {
+			if (right.type === 'superscript') {
+				if (isVariable(right.base) && right.base.name === variable) {
+					if (isNumber(right.superscript) && right.superscript.value === '2') {
+						return { a: null, varNode: right.base };
+					}
+				}
+			}
+		}
+
+		// Pattern: x² + 1
+		if (isNumber(right) && right.value === '1') {
+			if (left.type === 'superscript') {
+				if (isVariable(left.base) && left.base.name === variable) {
+					if (isNumber(left.superscript) && left.superscript.value === '2') {
+						return { a: null, varNode: left.base };
+					}
+				}
+			}
+		}
+
+		// Pattern: a² + x² or x² + a²
+		// Check if one term is x² and other is constant²
+		let xSquared: MathNode | null = null;
+		let aSquared: MathNode | null = null;
+
+		for (const term of [left, right]) {
+			if (term.type === 'superscript') {
+				if (isVariable(term.base) && term.base.name === variable) {
+					if (isNumber(term.superscript) && term.superscript.value === '2') {
+						xSquared = term;
+					}
+				} else if (!containsVariable(term.base, variable)) {
+					if (isNumber(term.superscript) && term.superscript.value === '2') {
+						aSquared = term;
+					}
+				}
+			} else if (!containsVariable(term, variable)) {
+				// Could be just a number (like 4 = 2²)
+				const val = getNumericValue(term);
+				if (val !== null && val > 0) {
+					// Treat as a² where a = √val
+					aSquared = term;
+				}
+			}
+		}
+
+		if (xSquared && aSquared) {
+			// Extract 'a' from a²
+			if (aSquared.type === 'superscript') {
+				return { a: aSquared.base, varNode: (xSquared as { base: MathNode }).base };
+			} else {
+				// It's a number, so a = √number
+				const val = getNumericValue(aSquared);
+				if (val !== null) {
+					const sqrtVal = Math.sqrt(val);
+					if (Number.isInteger(sqrtVal)) {
+						return {
+							a: number(sqrtVal.toString()),
+							varNode: (xSquared as { base: MathNode }).base
+						};
+					}
+				}
+			}
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Check if expression matches 1/√(a²-x²) pattern for arcsin integration.
+ *
+ * Matches:
+ * - 1/√(1-x²) → { a: null } (a=1)
+ * - 1/√(a²-x²) → { a: MathNode }
+ */
+function isArcsinPattern(
+	expr: MathNode,
+	variable: string
+): { a: MathNode | null; varNode: MathNode } | null {
+	// Must be a division with numerator = 1
+	if (expr.type !== 'division') return null;
+	if (!isNumber(expr.numerator) || expr.numerator.value !== '1') return null;
+
+	const denom = expr.denominator;
+
+	// Check for sqrt(...) or (...)^(1/2) or (...)^0.5
+	let sqrtArg: MathNode | null = null;
+
+	if (denom.type === 'function' && denom.name === 'sqrt') {
+		sqrtArg = denom.args[0];
+	} else if (denom.type === 'superscript') {
+		// Check for (...)^(1/2) or (...)^0.5
+		const exp = denom.superscript;
+		if (isNumber(exp) && exp.value === '0.5') {
+			sqrtArg = denom.base;
+		} else if (exp.type === 'division') {
+			if (isNumber(exp.numerator) && exp.numerator.value === '1') {
+				if (isNumber(exp.denominator) && exp.denominator.value === '2') {
+					sqrtArg = denom.base;
+				}
+			}
+		}
+	}
+
+	if (!sqrtArg) return null;
+
+	// Now check for (1 - x²) or (a² - x²)
+	if (sqrtArg.type === 'subtraction') {
+		const { left, right } = sqrtArg;
+
+		// Pattern: 1 - x²
+		if (isNumber(left) && left.value === '1') {
+			if (right.type === 'superscript') {
+				if (isVariable(right.base) && right.base.name === variable) {
+					if (isNumber(right.superscript) && right.superscript.value === '2') {
+						return { a: null, varNode: right.base };
+					}
+				}
+			}
+		}
+
+		// Pattern: a² - x²
+		if (left.type === 'superscript' && !containsVariable(left.base, variable)) {
+			if (isNumber(left.superscript) && left.superscript.value === '2') {
+				if (right.type === 'superscript') {
+					if (isVariable(right.base) && right.base.name === variable) {
+						if (isNumber(right.superscript) && right.superscript.value === '2') {
+							return { a: left.base, varNode: right.base };
+						}
+					}
+				}
+			}
+		}
+
+		// Pattern: number - x² where number = a²
+		if (!containsVariable(left, variable)) {
+			const val = getNumericValue(left);
+			if (val !== null && val > 0) {
+				if (right.type === 'superscript') {
+					if (isVariable(right.base) && right.base.name === variable) {
+						if (isNumber(right.superscript) && right.superscript.value === '2') {
+							const sqrtVal = Math.sqrt(val);
+							if (Number.isInteger(sqrtVal)) {
+								return { a: number(sqrtVal.toString()), varNode: right.base };
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return null;
+}
+
 // =============================================================================
 // Basic Integrator
 // =============================================================================
@@ -177,6 +360,7 @@ function isTangent(expr: MathNode, variable: string): { arg: MathNode } | null {
  * - Logarithm: ∫ 1/x dx = ln|x|
  * - Exponential: ∫ e^x dx = e^x
  * - Trig: ∫ sin(x) dx = -cos(x), ∫ cos(x) dx = sin(x), ∫ tan(x) dx = -ln|cos(x)|
+ * - Inverse trig: ∫ 1/(1+x²) dx = arctan(x), ∫ 1/√(1-x²) dx = arcsin(x)
  *
  * Priority: 0 (lowest - used as fallback for basic rules)
  */
@@ -212,6 +396,15 @@ export const basicIntegrator: Integrator = {
 
 		// Trig functions
 		if (isSine(expr, variable) || isCosine(expr, variable) || isTangent(expr, variable)) {
+			return true;
+		}
+
+		// Inverse trig patterns
+		if (isArctanPattern(expr, variable)) {
+			return true;
+		}
+
+		if (isArcsinPattern(expr, variable)) {
 			return true;
 		}
 
@@ -370,6 +563,44 @@ export const basicIntegrator: Integrator = {
 				status: 'exact',
 				antiderivative,
 				integrandType: 'trigonometric',
+				technique: 'basic-rule',
+				steps: recorder.getSteps(),
+				constantNote: CONSTANT_OF_INTEGRATION_NOTE
+			};
+		}
+
+		// Case 9: 1/(a²+x²) → arctan
+		const arctanMatch = isArctanPattern(expr, variable);
+		if (arctanMatch) {
+			const { a, varNode } = arctanMatch;
+			recorder.recordStepByRule('arctan-rule', expr, expr, 'detailed');
+			antiderivative = arctanRule(varNode, a);
+			recorder.recordStepByRule('arctan-rule', expr, antiderivative, 'summarized');
+
+			return {
+				variable,
+				status: 'exact',
+				antiderivative,
+				integrandType: 'rational',
+				technique: 'basic-rule',
+				steps: recorder.getSteps(),
+				constantNote: CONSTANT_OF_INTEGRATION_NOTE
+			};
+		}
+
+		// Case 10: 1/√(a²-x²) → arcsin
+		const arcsinMatch = isArcsinPattern(expr, variable);
+		if (arcsinMatch) {
+			const { a, varNode } = arcsinMatch;
+			recorder.recordStepByRule('arcsin-rule', expr, expr, 'detailed');
+			antiderivative = arcsinRule(varNode, a);
+			recorder.recordStepByRule('arcsin-rule', expr, antiderivative, 'summarized');
+
+			return {
+				variable,
+				status: 'exact',
+				antiderivative,
+				integrandType: 'irrational',
 				technique: 'basic-rule',
 				steps: recorder.getSteps(),
 				constantNote: CONSTANT_OF_INTEGRATION_NOTE

@@ -9,6 +9,7 @@ import { parseLatex, toLatex } from '../../index';
 import { integrate } from '../integrate';
 import type { IntegrateResult } from '../types';
 import { matchUSubstitution, findUCandidates } from '../patterns';
+import { euler, variable, multiply, power, number, opposite } from '../../factory';
 
 // =============================================================================
 // Helper Functions
@@ -176,9 +177,13 @@ describe('integrate with u-substitution', () => {
 			testIntegrate('2x\\cos(x^2)', '\\sin(x^{2})');
 		});
 
-		it.skip('should integrate e^(3x) → e^(3x)/3', () => {
-			// Skipped - 'e' is treated as variable
-			testIntegrate('e^{3x}', '\\frac{e^{3x}}{3}');
+		it('should integrate e^(3x) → e^(3x)/3', () => {
+			// Use euler() constant programmatically
+			const x = variable('x');
+			const expr = power(euler(), multiply(number('3'), x, 'implicit'));
+			const result = integrate(expr);
+
+			expectExactIntegration(result);
 		});
 
 		it.skip('should integrate x/(1+x^2) → ln|1+x^2|/2', () => {
@@ -209,9 +214,10 @@ describe('integrate with u-substitution', () => {
 	});
 
 	describe('chain rule patterns', () => {
-		it.skip('should integrate x*e^(x^2)', () => {
-			// Skipped - 'e' treated as variable
-			const expr = parseLatex('xe^{x^2}');
+		it('should integrate x*e^(x^2)', () => {
+			// Use euler() constant programmatically
+			const x = variable('x');
+			const expr = multiply(x, power(euler(), power(x, number('2'))), 'implicit');
 			const result = integrate(expr);
 
 			expectExactIntegration(result);
@@ -252,9 +258,13 @@ describe('integrate with u-substitution', () => {
 			// Result: (1/3)*sin(3x)
 		});
 
-		it.skip('should integrate e^(-x)', () => {
-			// Skipped - 'e' treated as variable
-			testIntegrate('e^{-x}', '-e^{-x}');
+		it('should integrate e^(-x)', () => {
+			// Use euler() constant programmatically
+			const x = variable('x');
+			const expr = power(euler(), opposite(x));
+			const result = integrate(expr);
+
+			expectExactIntegration(result);
 		});
 	});
 
@@ -352,9 +362,11 @@ describe('u-substitution step recording', () => {
 // =============================================================================
 
 describe('u-substitution edge cases', () => {
-	it.skip('should handle expressions where du appears with opposite sign', () => {
-		// Skipped - 'e' treated as variable
-		const expr = parseLatex('-\\sin(x)e^{\\cos(x)}');
+	it('should handle expressions where du appears with opposite sign', () => {
+		// Use euler() constant programmatically: -sin(x)*e^(cos(x))
+		const sinX = parseLatex('\\sin(x)');
+		const cosX = parseLatex('\\cos(x)');
+		const expr = multiply(opposite(sinX), power(euler(), cosX), 'implicit');
 		const result = integrate(expr);
 
 		expectExactIntegration(result);

@@ -31,7 +31,7 @@ import {
 } from '../descriptions-fr';
 import { integrate } from '../integrate';
 import { multiply, subtract, divide, number } from '../../factory';
-import { isMultiplication, isFunction, isVariable, isSuperscript } from '../../guards';
+import { isMultiplication, isFunction, isSuperscript, isEulerConstant } from '../../guards';
 import { preprocess } from '../../normal/rules';
 import { toCustom } from '../../custom-generator';
 import { hashMathNode } from '../../normal/hash';
@@ -112,12 +112,8 @@ function getLIATECategory(
 
 	// E - Exponential (e^x pattern)
 	if (isSuperscript(expr)) {
-		// Check for e^(...) pattern
-		if (
-			isVariable(expr.base) &&
-			expr.base.name === 'e' &&
-			containsVariable(expr.superscript, variable)
-		) {
+		// Check for e^(...) pattern with Euler constant
+		if (isEulerConstant(expr.base) && containsVariable(expr.superscript, variable)) {
 			return { category: 'exponential', priority: LIATE_PRIORITY.exponential };
 		}
 

@@ -31,6 +31,8 @@ export type IntegrationRule =
 	| 'tan-rule'
 	| 'sec-squared-rule'
 	| 'csc-squared-rule'
+	| 'arctan-rule'
+	| 'arcsin-rule'
 	| 'fundamental-theorem'
 	// U-substitution
 	| 'identify-substitution'
@@ -82,6 +84,8 @@ const RULE_DESCRIPTIONS: Record<IntegrationRule, string> = {
 	'tan-rule': "L'intégrale de tan(x) est -ln|cos(x)|",
 	'sec-squared-rule': "L'intégrale de 1/cos²(x) est tan(x)",
 	'csc-squared-rule': "L'intégrale de 1/sin²(x) est -cot(x)",
+	'arctan-rule': "L'intégrale de 1/(1+x²) est arctan(x)",
+	'arcsin-rule': "L'intégrale de 1/√(1-x²) est arcsin(x)",
 	'fundamental-theorem': 'On applique le théorème fondamental du calcul intégral',
 
 	// U-substitution
