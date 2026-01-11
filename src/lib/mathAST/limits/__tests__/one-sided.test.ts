@@ -40,6 +40,24 @@ describe('One-Sided Limits', () => {
 			const expr = func('ln', [variable('x')]);
 			expect(needsOneSidedAnalysis(expr, 'x', number('0'))).toBe(true);
 		});
+
+		it('detects sqrt(x+5) at x=1 does NOT need one-sided analysis', () => {
+			// sqrt(x+5) is defined on both sides of x=1 (domain: x >= -5)
+			const expr = func('sqrt', [{ type: 'addition', left: variable('x'), right: number('5') }]);
+			expect(needsOneSidedAnalysis(expr, 'x', number('1'))).toBe(false);
+		});
+
+		it('detects ln(x-3) at x=3 needs right-sided only', () => {
+			// ln(x-3) only defined for x > 3
+			const expr = func('ln', [{ type: 'subtraction', left: variable('x'), right: number('3') }]);
+			expect(needsOneSidedAnalysis(expr, 'x', number('3'))).toBe(true);
+		});
+
+		it('detects 1/sqrt(x) at x=0 needs one-sided analysis', () => {
+			// Domain restriction in denominator: sqrt(x) requires x >= 0
+			const expr = divide(number('1'), func('sqrt', [variable('x')]), 'fraction');
+			expect(needsOneSidedAnalysis(expr, 'x', number('0'))).toBe(true);
+		});
 	});
 
 	describe('one-sided limit evaluation', () => {
