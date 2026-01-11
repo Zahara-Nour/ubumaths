@@ -13,8 +13,8 @@
 
 import type { Domain, ConditionDomain, PeriodicExclusion } from './types';
 import {
-	formatDomainInterval as intervalsFormatInterval,
-	formatDomainCondition as intervalsFormatCondition,
+	formatInterval as intervalsFormatInterval,
+	formatCondition as intervalsFormatCondition,
 	formatDomainFull as intervalsFormatFull,
 	formatEndpointValue
 } from '$lib/math/intervals/format';
@@ -36,13 +36,13 @@ export { formatEndpointValue } from '$lib/math/intervals/format';
  * Uses French notation: ]a, b[ for open intervals.
  *
  * @example
- * formatDomainInterval(positiveReals()) // → "]0, +∞["
- * formatDomainInterval(unitInterval()) // → "[-1, 1]"
- * formatDomainInterval(nonZeroReals()) // → "ℝ \\ {0}"
+ * formatInterval(positiveReals()) // → "]0, +∞["
+ * formatInterval(unitInterval()) // → "[-1, 1]"
+ * formatInterval(nonZeroReals()) // → "ℝ \\ {0}"
  */
-export function formatDomainInterval(domain: Domain): string {
+export function formatInterval(domain: Domain): string {
 	if (domain.kind === 'condition_domain') {
-		return formatConditionDomain(domain);
+		return formatConditionDomainInterval(domain);
 	}
 	if (domain.kind === 'periodic_exclusion') {
 		return formatPeriodicExclusionInterval(domain);
@@ -54,10 +54,10 @@ export function formatDomainInterval(domain: Domain): string {
  * Format a domain as a condition string.
  *
  * @example
- * formatDomainCondition(positiveReals(), 'x') // → "x > 0"
- * formatDomainCondition(unitInterval(), 'x') // → "-1 ≤ x ≤ 1"
+ * formatCondition(positiveReals(), 'x') // → "x > 0"
+ * formatCondition(unitInterval(), 'x') // → "-1 ≤ x ≤ 1"
  */
-export function formatDomainCondition(domain: Domain, variable: string = 'x'): string {
+export function formatCondition(domain: Domain, variable: string = 'x'): string {
 	if (domain.kind === 'condition_domain') {
 		return formatConditionDomainAsCondition(domain, variable);
 	}
@@ -79,7 +79,7 @@ export function formatDomainFull(
 } {
 	if (domain.kind === 'condition_domain') {
 		return {
-			interval: formatConditionDomain(domain),
+			interval: formatConditionDomainInterval(domain),
 			condition: formatConditionDomainAsCondition(domain, variable)
 		};
 	}
@@ -93,10 +93,20 @@ export function formatDomainFull(
 }
 
 // =============================================================================
+// Deprecated Aliases (backward compatibility)
+// =============================================================================
+
+/** @deprecated Use formatInterval instead */
+export const formatDomainInterval = formatInterval;
+
+/** @deprecated Use formatCondition instead */
+export const formatDomainCondition = formatCondition;
+
+// =============================================================================
 // ConditionDomain Formatting (domain-specific)
 // =============================================================================
 
-function formatConditionDomain(domain: ConditionDomain): string {
+function formatConditionDomainInterval(domain: ConditionDomain): string {
 	const conditions = domain.conditions.map((c) => {
 		if (c.kind === 'comparison') {
 			return `${c.variable} ${formatComparisonOp(c.op)} ${formatEndpointValue(c.bound)}`;

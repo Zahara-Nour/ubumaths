@@ -13,7 +13,7 @@ import type { MathNode } from '../types';
 import type { Domain, DomainResult, DomainStep, IntervalSet } from './types';
 import { universalDomain, intervalDomain, greaterThanOrEqual, fromNumber } from './factory';
 import { intersect, excludePoints, union, isEmpty } from './algebra';
-import { getBuiltinDomain, hasRestrictedDomain } from './builtins';
+import { getBuiltinDomain, hasRestrictedDomain, getBuiltinRangeEntry } from './builtins';
 import { isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
 import {
 	solveLinearInequality,
@@ -24,65 +24,8 @@ import {
 } from './preimage';
 
 // =============================================================================
-// Builtin Function Ranges
+// Range Helper Functions (use builtin range registry)
 // =============================================================================
-
-/**
- * Output ranges for builtin functions.
- * Used for composition analysis: if outer function needs input > 0,
- * and inner function outputs [0, +∞[, we need to exclude where inner = 0.
- */
-interface FunctionRange {
-	/** Lower bound of output range (null = -∞) */
-	lower: number | null;
-	/** Whether lower bound is included */
-	lowerInclusive: boolean;
-	/** Upper bound of output range (null = +∞) */
-	upper: number | null;
-	/** Whether upper bound is included */
-	upperInclusive: boolean;
-}
-
-const BUILTIN_RANGES: Record<string, FunctionRange> = {
-	// Functions with [0, +∞[ range
-	sqrt: { lower: 0, lowerInclusive: true, upper: null, upperInclusive: false },
-	abs: { lower: 0, lowerInclusive: true, upper: null, upperInclusive: false },
-	exp: { lower: 0, lowerInclusive: false, upper: null, upperInclusive: false },
-
-	// Functions with ]-∞, +∞[ range
-	ln: { lower: null, lowerInclusive: false, upper: null, upperInclusive: false },
-	log: { lower: null, lowerInclusive: false, upper: null, upperInclusive: false },
-	log10: { lower: null, lowerInclusive: false, upper: null, upperInclusive: false },
-	log2: { lower: null, lowerInclusive: false, upper: null, upperInclusive: false },
-
-	// Trig functions with [-1, 1] range
-	sin: { lower: -1, lowerInclusive: true, upper: 1, upperInclusive: true },
-	cos: { lower: -1, lowerInclusive: true, upper: 1, upperInclusive: true },
-
-	// Inverse trig with specific ranges
-	asin: { lower: -Math.PI / 2, lowerInclusive: true, upper: Math.PI / 2, upperInclusive: true },
-	acos: { lower: 0, lowerInclusive: true, upper: Math.PI, upperInclusive: true },
-	atan: { lower: -Math.PI / 2, lowerInclusive: false, upper: Math.PI / 2, upperInclusive: false },
-
-	// Hyperbolic functions
-	sinh: { lower: null, lowerInclusive: false, upper: null, upperInclusive: false },
-	cosh: { lower: 1, lowerInclusive: true, upper: null, upperInclusive: false },
-	tanh: { lower: -1, lowerInclusive: false, upper: 1, upperInclusive: false }
-};
-
-/**
- * Check if a function's output range includes zero.
- */
-function _rangeIncludesZero(funcName: string): boolean {
-	const range = BUILTIN_RANGES[funcName];
-	if (!range) return true; // Unknown function, assume includes zero
-
-	const lowerOk =
-		range.lower === null || range.lower < 0 || (range.lower === 0 && range.lowerInclusive);
-	const upperOk =
-		range.upper === null || range.upper > 0 || (range.upper === 0 && range.upperInclusive);
-	return lowerOk && upperOk;
-}
 
 /**
  * Check if a function's output range has a finite lower bound at a specific value.
@@ -91,7 +34,7 @@ function rangeHasLowerBound(
 	funcName: string,
 	bound: number
 ): { hasBound: boolean; inclusive: boolean } {
-	const range = BUILTIN_RANGES[funcName];
+	const range = getBuiltinRangeEntry(funcName);
 	if (!range || range.lower === null) return { hasBound: false, inclusive: false };
 
 	if (Math.abs(range.lower - bound) < 1e-10) {
@@ -168,7 +111,7 @@ function analyzeComposition(
 		return domain;
 	}
 
-	const innerRange = BUILTIN_RANGES[innerNode.name];
+	const innerRange = getBuiltinRangeEntry(innerNode.name);
 	const innerArg = innerNode.args[0];
 
 	// Case 1: Outer needs positive (> 0), inner range has 0 as lower bound (inclusive)

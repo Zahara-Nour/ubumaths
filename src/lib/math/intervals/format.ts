@@ -27,16 +27,16 @@ import { isUniversal } from './algebra';
 // =============================================================================
 
 /**
- * Format a domain as an interval notation string.
+ * Format an interval domain as an interval notation string.
  *
  * Uses French notation: ]a, b[ for open intervals.
  *
  * @example
- * formatDomainInterval(positiveReals()) // → "]0, +∞["
- * formatDomainInterval(unitInterval()) // → "[-1, 1]"
- * formatDomainInterval(nonZeroReals()) // → "ℝ \\ {0}"
+ * formatInterval(positiveReals()) // → "]0, +∞["
+ * formatInterval(unitInterval()) // → "[-1, 1]"
+ * formatInterval(nonZeroReals()) // → "ℝ \\ {0}"
  */
-export function formatDomainInterval(domain: IntervalDomain): string {
+export function formatInterval(domain: IntervalDomain): string {
 	switch (domain.kind) {
 		case 'empty':
 			return '∅';
@@ -48,13 +48,13 @@ export function formatDomainInterval(domain: IntervalDomain): string {
 }
 
 /**
- * Format a domain as a condition string.
+ * Format an interval domain as a condition string.
  *
  * @example
- * formatDomainCondition(positiveReals(), 'x') // → "x > 0"
- * formatDomainCondition(unitInterval(), 'x') // → "-1 ≤ x ≤ 1"
+ * formatCondition(positiveReals(), 'x') // → "x > 0"
+ * formatCondition(unitInterval(), 'x') // → "-1 ≤ x ≤ 1"
  */
-export function formatDomainCondition(domain: IntervalDomain, variable: string = 'x'): string {
+export function formatCondition(domain: IntervalDomain, variable: string = 'x'): string {
 	switch (domain.kind) {
 		case 'empty':
 			return 'aucune valeur';
@@ -64,6 +64,16 @@ export function formatDomainCondition(domain: IntervalDomain, variable: string =
 			return formatIntervalSetAsCondition(domain, variable);
 	}
 }
+
+// =============================================================================
+// Deprecated Aliases (backward compatibility)
+// =============================================================================
+
+/** @deprecated Use formatInterval instead */
+export const formatDomainInterval = formatInterval;
+
+/** @deprecated Use formatCondition instead */
+export const formatDomainCondition = formatCondition;
 
 /**
  * Format both interval and condition representations.
@@ -76,8 +86,8 @@ export function formatDomainFull(
 	condition: string;
 } {
 	return {
-		interval: formatDomainInterval(domain),
-		condition: formatDomainCondition(domain, variable)
+		interval: formatInterval(domain),
+		condition: formatCondition(domain, variable)
 	};
 }
 
@@ -90,7 +100,7 @@ function formatIntervalSet(domain: IntervalSet): string {
 		return '∅';
 	}
 
-	const intervalStrs = domain.intervals.map(formatInterval);
+	const intervalStrs = domain.intervals.map(formatSingleInterval);
 
 	// Check for full real line
 	if (intervalStrs.length === 1 && intervalStrs[0] === ']-∞, +∞[') {
@@ -111,7 +121,7 @@ function formatIntervalSet(domain: IntervalSet): string {
 	return result;
 }
 
-function formatInterval(interval: Interval): string {
+function formatSingleInterval(interval: Interval): string {
 	const leftBracket = interval.lower.type === 'closed' ? '[' : ']';
 	const rightBracket = interval.upper.type === 'closed' ? ']' : '[';
 	const lower = formatEndpointValue(interval.lower.value);

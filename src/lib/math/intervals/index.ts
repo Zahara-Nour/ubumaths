@@ -109,10 +109,8 @@ export {
 	excludePoints
 } from './algebra';
 
-// Formatting
-export {
-	formatDomainInterval,
-	formatDomainCondition,
-	formatDomainFull,
-	formatEndpointValue
-} from './format';
+// Formatting (new names)
+export { formatInterval, formatCondition, formatDomainFull, formatEndpointValue } from './format';
+
+// Formatting (deprecated aliases for backward compatibility)
+export { formatDomainInterval, formatDomainCondition } from './format';

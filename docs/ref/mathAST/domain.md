@@ -1,6 +1,6 @@
 # Domain System
 
-The domain system computes, validates, and displays the domain of definition for mathematical expressions.
+The domain system computes, validates, and displays the domain of definition and range (image) for mathematical expressions.
 
 ## Overview
 
@@ -10,6 +10,7 @@ The domain module provides:
 - **Domain algebra**: Intersection, union, complement, difference operations
 - **Symbolic bounds**: Support for π, e, √2, √3, and other symbolic endpoints
 - **Automatic computation**: Computes domains for composed expressions with preimage solving
+- **Range computation**: Computes output range (image) of expressions
 - **Validation**: Runtime checks with pedagogical French error messages
 - **French notation**: Standard French interval notation (]a, b[ for open intervals)
 
@@ -20,16 +21,26 @@ The domain module provides:
 ```typescript
 import {
 	computeDomain,
-	formatDomainInterval,
-	formatDomainCondition,
+	computeRange,
+	formatInterval,
+	formatCondition,
 	isInDomain,
-	getDomainViolations
+	getDomainViolations,
+	getBuiltinRange
 } from '$lib/mathAST';
 
 // Compute domain of sqrt(x-2)
 const result = computeDomain(parseLatex('\\sqrt{x-2}'), 'x');
-formatDomainInterval(result.domain); // "[2, +∞["
-formatDomainCondition(result.domain, 'x'); // "x >= 2"
+formatInterval(result.domain); // "[2, +∞["
+formatCondition(result.domain, 'x'); // "x >= 2"
+
+// Compute range (image) of an expression
+const rangeResult = computeRange(parseLatex('\\sin{x}'), 'x');
+formatInterval(rangeResult.range); // "[-1, 1]"
+
+// Get builtin function range
+getBuiltinRange('sqrt'); // [0, +∞[
+getBuiltinRange('sin'); // [-1, 1]
 
 // Validate a value
 isInDomain(parseLatex('\\sqrt{x}'), { x: 4 }); // true
@@ -50,7 +61,7 @@ Represents the empty set (no valid values).
 import { emptyDomain } from '$lib/mathAST';
 
 const empty = emptyDomain();
-formatDomainInterval(empty); // "∅"
+formatInterval(empty); // "∅"
 ```
 
 ### UniversalDomain
@@ -61,7 +72,7 @@ Represents all real numbers.
 import { universalDomain } from '$lib/mathAST';
 
 const real = universalDomain();
-formatDomainInterval(real); // "ℝ"
+formatInterval(real); // "ℝ"
 ```
 
 ### IntervalSet
@@ -249,6 +260,67 @@ hasRestrictedDomain('sqrt'); // true
 hasRestrictedDomain('sin'); // false
 ```
 
+## Range Computation
+
+The `computeRange` function computes the output range (image) of mathematical expressions using interval arithmetic.
+
+### Built-in Function Ranges
+
+| Function | Range       | Description       |
+| -------- | ----------- | ----------------- |
+| sqrt     | [0, +∞[     | Non-negative      |
+| abs      | [0, +∞[     | Non-negative      |
+| exp      | ]0, +∞[     | Strictly positive |
+| ln, log  | ℝ           | All reals         |
+| sin, cos | [-1, 1]     | Bounded           |
+| tan      | ℝ           | Unbounded         |
+| asin     | [-π/2, π/2] | Bounded           |
+| acos     | [0, π]      | Bounded           |
+| atan     | ]-π/2, π/2[ | Open bounded      |
+| sinh     | ℝ           | Unbounded         |
+| cosh     | [1, +∞[     | Minimum at 1      |
+| tanh     | ]-1, 1[     | Open bounded      |
+
+```typescript
+import { getBuiltinRange, hasRestrictedRange, computeRange } from '$lib/mathAST';
+
+// Lookup builtin ranges
+getBuiltinRange('sqrt'); // [0, +∞[
+getBuiltinRange('sin'); // [-1, 1]
+getBuiltinRange('exp'); // ]0, +∞[
+hasRestrictedRange('sin'); // true (bounded)
+hasRestrictedRange('ln'); // false (unbounded)
+
+// Compute range of expressions
+computeRange(parseLatex('x^2'), 'x').range; // [0, +∞[
+computeRange(parseLatex('\\sin{x}'), 'x').range; // [-1, 1]
+computeRange(parseLatex('\\sqrt{x} + 1'), 'x').range; // [1, +∞[
+
+// Compute range on restricted input domain
+import { positiveReals } from '$lib/mathAST';
+computeRange(parseLatex('x^2'), 'x', { domain: positiveReals() }).range; // ]0, +∞[
+```
+
+### Interval Arithmetic
+
+The range computation uses interval arithmetic for operations:
+
+- **Addition/Subtraction**: Minkowski sum/difference of intervals
+- **Multiplication/Division**: Interval multiplication/division with sign analysis
+- **Powers**: Even powers → non-negative, odd powers preserve sign structure
+- **Composition**: Range of outer function applied to range of inner
+
+```typescript
+// x + 1 on [0, +∞[ → [1, +∞[
+computeRange(parseLatex('x + 1'), 'x', { domain: nonNegativeReals() });
+
+// x^2 on ℝ → [0, +∞[ (even power)
+computeRange(parseLatex('x^2'), 'x');
+
+// sin(x^2) → [-1, 1] (composition)
+computeRange(parseLatex('\\sin{x^2}'), 'x');
+```
+
 ## Validation
 
 ### Simple Check
@@ -294,16 +366,18 @@ The system uses standard French interval notation:
 | ℝ \\ {0} | ℝ \\ {0} | Excluded point  |
 
 ```typescript
-import { formatDomainInterval, formatDomainCondition } from '$lib/mathAST';
+import { formatInterval, formatCondition } from '$lib/mathAST';
 
-formatDomainInterval(positiveReals()); // "]0, +∞["
-formatDomainInterval(nonZeroReals()); // "ℝ \\ {0}"
-formatDomainInterval(unitInterval()); // "[-1, 1]"
+formatInterval(positiveReals()); // "]0, +∞["
+formatInterval(nonZeroReals()); // "ℝ \\ {0}"
+formatInterval(unitInterval()); // "[-1, 1]"
 
-formatDomainCondition(positiveReals(), 'x'); // "x > 0"
-formatDomainCondition(nonZeroReals(), 'x'); // "x ≠ 0"
-formatDomainCondition(unitInterval(), 'x'); // "-1 ≤ x ≤ 1"
+formatCondition(positiveReals(), 'x'); // "x > 0"
+formatCondition(nonZeroReals(), 'x'); // "x ≠ 0"
+formatCondition(unitInterval(), 'x'); // "-1 ≤ x ≤ 1"
 ```
+
+> **Note**: `formatDomainInterval` and `formatDomainCondition` are deprecated aliases for `formatInterval` and `formatCondition`.
 
 ## CLI Integration
 
@@ -395,6 +469,19 @@ interface DomainResult {
 	steps?: DomainStep[];
 }
 
+interface RangeResult {
+	range: Domain;
+	variable: string;
+	inputDomain?: Domain;
+	steps?: RangeStep[];
+}
+
+interface RangeStep {
+	expression: string;
+	rangeDescription: string;
+	explanation: string;
+}
+
 interface DomainViolation {
 	source: string;
 	parameter: string;
@@ -407,26 +494,31 @@ interface DomainViolation {
 
 ### Functions
 
-| Function                    | Description                             |
-| --------------------------- | --------------------------------------- |
-| `computeDomain`             | Compute domain for an expression        |
-| `isInDomain`                | Check if bindings are in domain         |
-| `getDomainViolations`       | Get detailed violations                 |
-| `formatDomainInterval`      | Format as French interval notation      |
-| `formatDomainCondition`     | Format as condition (x > 0)             |
-| `formatDomainFull`          | Get both interval and condition formats |
-| `domainFromNumber`          | Create MathNode bound from number       |
-| `domainIntersect`           | Intersect two domains                   |
-| `domainUnion`               | Union of two domains                    |
-| `domainComplement`          | Complement of a domain                  |
-| `domainDifference`          | Difference of two domains (A \\ B)      |
-| `domainIsEmpty`             | Check if domain is empty                |
-| `domainIsUniversal`         | Check if domain is universal (ℝ)        |
-| `containsValue`             | Check if numeric value is in domain     |
-| `domainExcludePoints`       | Add excluded points to domain           |
-| `domainFormatEndpointValue` | Format symbolic endpoint (π, √2, etc.)  |
-| `getBuiltinDomain`          | Get domain for a builtin function       |
-| `hasRestrictedDomain`       | Check if function has restricted domain |
+| Function              | Description                                      |
+| --------------------- | ------------------------------------------------ |
+| `computeDomain`       | Compute domain for an expression                 |
+| `computeRange`        | Compute range (image) for an expression          |
+| `isInDomain`          | Check if bindings are in domain                  |
+| `getDomainViolations` | Get detailed violations                          |
+| `formatInterval`      | Format as French interval notation               |
+| `formatCondition`     | Format as condition (x > 0)                      |
+| `formatDomainFull`    | Get both interval and condition formats          |
+| `formatEndpointValue` | Format symbolic endpoint (π, √2, etc.)           |
+| `domainFromNumber`    | Create MathNode bound from number                |
+| `domainIntersect`     | Intersect two domains                            |
+| `domainUnion`         | Union of two domains                             |
+| `domainComplement`    | Complement of a domain                           |
+| `domainDifference`    | Difference of two domains (A \\ B)               |
+| `domainIsEmpty`       | Check if domain is empty                         |
+| `domainIsUniversal`   | Check if domain is universal (ℝ)                 |
+| `containsValue`       | Check if numeric value is in domain              |
+| `domainExcludePoints` | Add excluded points to domain                    |
+| `getBuiltinDomain`    | Get domain for a builtin function                |
+| `getBuiltinRange`     | Get range for a builtin function                 |
+| `hasRestrictedDomain` | Check if function has restricted domain          |
+| `hasRestrictedRange`  | Check if function has restricted (bounded) range |
+
+> **Deprecated**: `formatDomainInterval` → use `formatInterval`, `formatDomainCondition` → use `formatCondition`
 
 ## File Structure
 
@@ -435,20 +527,21 @@ src/lib/mathAST/domain/
 ├── types.ts       # Domain type definitions (re-exports from intervals)
 ├── factory.ts     # Factory functions (re-exports from intervals)
 ├── algebra.ts     # Domain algebra (delegates to intervals)
-├── builtins.ts    # Built-in function domains
+├── builtins.ts    # Built-in function domains and ranges
 ├── compute.ts     # Domain computation
+├── range.ts       # Range (image) computation
 ├── preimage.ts    # Inequality solving
 ├── validate.ts    # Validation functions
 ├── format.ts      # Formatting functions (delegates to intervals)
 ├── errors.ts      # DomainError class
 ├── index.ts       # Public exports
-└── __tests__/     # 405 tests (comprehensive edge cases)
+└── __tests__/     # 574 tests (comprehensive edge cases)
 
 src/lib/math/intervals/  (upstream module)
 ├── types.ts       # EndpointValue = MathNode, IntervalSet
 ├── factory.ts     # fromNumber(), interval factories
 ├── algebra.ts     # intersect, union, complement, etc.
-└── format.ts      # formatEndpointValue, formatDomainInterval
+└── format.ts      # formatEndpointValue, formatInterval
 ```
 
 ## See Also
