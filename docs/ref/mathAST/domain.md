@@ -309,6 +309,8 @@ The range computation uses interval arithmetic for operations:
 - **Multiplication/Division**: Interval multiplication/division with sign analysis
 - **Powers**: Even powers → non-negative, odd powers preserve sign structure
 - **Composition**: Range of outer function applied to range of inner
+- **Monotonicity**: Uses function properties for accurate bounds
+- **Endpoint preservation**: Open/closed status maintained through operations
 
 ```typescript
 // x + 1 on [0, +∞[ → [1, +∞[
@@ -319,6 +321,46 @@ computeRange(parseLatex('x^2'), 'x');
 
 // sin(x^2) → [-1, 1] (composition)
 computeRange(parseLatex('\\sin{x^2}'), 'x');
+```
+
+### Composition Propagation
+
+For composed functions `f(g(x))`, the system correctly chains ranges:
+
+```typescript
+// sin(cos(x)): cos(x) → [-1, 1], then sin([-1, 1]) → [-0.84, 0.84]
+computeRange(parseLatex('\\sin{\\cos{x}}'), 'x');
+
+// sqrt(4): evaluates to single point {2}
+computeRange(parseLatex('\\sqrt{4}'), 'x');
+
+// ln(exp(x)): exp(x) → ]0, +∞[, then ln(]0, +∞[) → ℝ
+computeRange(parseLatex('\\ln{e^x}'), 'x');
+```
+
+### Endpoint Type Preservation
+
+Arithmetic operations preserve open/closed endpoint types:
+
+```typescript
+// ]0, 1] + [1, 2[ = ]1, 3[
+// Open + Open = Open, Open + Closed = Open, Closed + Closed = Closed
+```
+
+The intervals module provides these arithmetic operations:
+
+```typescript
+import { add, subtract, multiply, divide, negate, scale } from '$lib/math/intervals';
+
+const a = closedInterval(fromNumber(1), fromNumber(3)); // [1, 3]
+const b = closedInterval(fromNumber(2), fromNumber(4)); // [2, 4]
+
+add(a, b); // [3, 7] - Minkowski sum
+subtract(a, b); // [-3, 1] - Minkowski difference
+multiply(a, b); // [2, 12] - Four-corners multiplication
+divide(a, b); // [0.25, 1.5] - Four-corners division
+negate(a); // [-3, -1] - Negation
+scale(a, 2); // [2, 6] - Scalar multiplication
 ```
 
 ## Validation
