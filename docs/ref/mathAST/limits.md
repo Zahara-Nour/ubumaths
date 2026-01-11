@@ -6,7 +6,7 @@ Symbolic limit evaluation for MathAST expressions.
 
 The limits module provides comprehensive symbolic limit evaluation with:
 
-- **Multiple evaluation strategies**: Known limits, direct substitution, L'Hopital, algebraic simplification, squeeze theorem
+- **Multiple evaluation strategies**: Known limits, direct substitution, composition limits, L'Hopital, algebraic simplification, squeeze theorem
 - **One-sided limit analysis**: Left and right limits, discontinuity detection
 - **Domain validation**: Automatic detection of domain restrictions with French pedagogical messages
 - **Step-by-step recording**: Detailed pedagogical output for teaching
@@ -204,7 +204,68 @@ const result = evaluateLimit(add(variable('x'), number('1')), 'x', number('2'));
 // result.technique === 'direct-substitution'
 ```
 
-### 3. L'Hopital's Rule
+### 3. Composition Limits
+
+Evaluates limits of composed functions using sign tracking to distinguish 0+ vs 0-.
+
+**Elementary functions at infinity:**
+
+```typescript
+// x as x → +∞
+evaluateLimit(variable('x'), 'x', positiveInfinity());
+// result.value = positiveInfinity()
+
+// x² as x → -∞ (even power → +∞)
+evaluateLimit(power(variable('x'), number('2')), 'x', negativeInfinity());
+// result.value = positiveInfinity()
+
+// x³ as x → -∞ (odd power → -∞)
+evaluateLimit(power(variable('x'), number('3')), 'x', negativeInfinity());
+// result.value = negativeInfinity()
+```
+
+**Division by zero with sign tracking:**
+
+```typescript
+// 1/sqrt(x) as x → 0⁺ → +∞ (sqrt(0⁺) = 0⁺, 1/0⁺ = +∞)
+evaluateLimit(
+	divide(number('1'), func('sqrt', [variable('x')]), 'fraction'),
+	'x',
+	number('0'),
+	'right'
+);
+// result.value = positiveInfinity()
+
+// 1/(x-2) as x → 2⁺ → +∞
+// 1/(x-2) as x → 2⁻ → -∞
+```
+
+**Logarithm composition:**
+
+```typescript
+// ln(x) as x → 0⁺ → -∞
+evaluateLimit(func('ln', [variable('x')]), 'x', number('0'), 'right');
+// result.value = negativeInfinity()
+
+// 1/ln(x) as x → 1⁺ → +∞ (ln(1⁺) = 0⁺)
+evaluateLimit(
+	divide(number('1'), func('ln', [variable('x')]), 'fraction'),
+	'x',
+	number('1'),
+	'right'
+);
+// result.value = positiveInfinity()
+```
+
+**Negation of infinite limits:**
+
+```typescript
+// -1/x as x → 0⁺ → -∞
+evaluateLimit(opposite(divide(number('1'), variable('x'), 'fraction')), 'x', number('0'), 'right');
+// result.value = negativeInfinity()
+```
+
+### 4. L'Hopital's Rule
 
 Applied for 0/0 or ∞/∞ indeterminate forms.
 
@@ -227,7 +288,7 @@ const result = evaluateLimit(expr, 'x', number('0'), 'both', {
 });
 ```
 
-### 4. Algebraic Simplification
+### 5. Algebraic Simplification
 
 Factorization and rationalization to resolve indeterminate forms.
 
@@ -276,7 +337,7 @@ const result = evaluateLimit(
 // result.value = number('2')
 ```
 
-### 5. Squeeze Theorem
+### 6. Squeeze Theorem
 
 For bounded oscillating functions multiplied by terms going to zero.
 
@@ -292,7 +353,7 @@ const result = evaluateLimit(expr, 'x', number('0'));
 // result.technique === 'squeeze'
 ```
 
-### 6. One-Sided Analysis
+### 7. One-Sided Analysis
 
 Automatic detection of asymmetric behavior at domain boundaries.
 
@@ -442,6 +503,8 @@ src/lib/mathAST/limits/
 ├── types.ts           # Type definitions
 ├── evaluate.ts        # Main evaluation logic
 ├── known-limits.ts    # Known limits database
+├── composition.ts     # Composition limits (f(g(x)))
+├── sign-tracking.ts   # Sign tracking (0+, 0-, ±∞)
 ├── one-sided.ts       # One-sided limit handling
 ├── indeterminate.ts   # Indeterminate form detection
 ├── lhopital.ts        # L'Hopital's rule
@@ -454,26 +517,25 @@ src/lib/mathAST/limits/
 
 The module has comprehensive test coverage:
 
-| Test File           | Tests | Description                        |
-| ------------------- | ----- | ---------------------------------- |
-| `evaluate.test.ts`  | 26    | Main evaluation API                |
-| `one-sided.test.ts` | 20    | One-sided limits, discontinuities  |
-| `known-limits.test` | 26    | Known limit patterns               |
-| `algebraic.test.ts` | 9     | Factorization, rationalization     |
-| `lhopital.test.ts`  | 14    | L'Hopital's rule                   |
-| `squeeze.test.ts`   | 13    | Squeeze theorem                    |
-| `edge-cases.test`   | 126   | Comprehensive edge cases (87 pass) |
-| **Total**           | 234   | 195 passing, 39 skipped (future)   |
+| Test File           | Tests | Description                         |
+| ------------------- | ----- | ----------------------------------- |
+| `evaluate.test.ts`  | 26    | Main evaluation API                 |
+| `one-sided.test.ts` | 20    | One-sided limits, discontinuities   |
+| `known-limits.test` | 26    | Known limit patterns                |
+| `algebraic.test.ts` | 9     | Factorization, rationalization      |
+| `lhopital.test.ts`  | 14    | L'Hopital's rule                    |
+| `squeeze.test.ts`   | 13    | Squeeze theorem                     |
+| `edge-cases.test`   | 126   | Comprehensive edge cases (111 pass) |
+| **Total**           | 234   | 219 passing, 15 skipped (future)    |
 
 ## Limitations
 
 **Not yet implemented (documented in edge-cases.test.ts):**
 
-- Simple polynomial limits at infinity (`x → +∞`)
-- Exponential/logarithmic limits at infinity (`e^x → +∞`, `ln(x) → +∞`)
-- Composition limits to infinity (`1/sqrt(x) → +∞` as `x → 0⁺`)
 - Absolute value limits (`|x|/x` at `x = 0`)
 - Squeeze theorem at infinity
+- Complex rational limits like `x/(x²-1)` at `x = 1`
+- Multi-variable compositions
 
 **Supported but limited:**
 
