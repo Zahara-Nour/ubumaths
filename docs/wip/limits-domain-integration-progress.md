@@ -14,10 +14,22 @@ Integrer les modules domain et intervals dans le module limits pour :
 | ----- | ---------------------------------------- | -------- |
 | 1     | Elimination code duplique (`evaluateAt`) | Complete |
 | 2     | Detection asymetrie avec domaine         | Complete |
-| 3     | Validation domaine dans evaluate.ts      | En cours |
-| 4     | Validation domaine dans algebraic.ts     | A faire  |
-| 5     | Validation domaine dans indeterminate.ts | A faire  |
-| 6     | Quality checks finaux                    | A faire  |
+| 3     | Validation domaine dans evaluate.ts      | Complete |
+| 4     | Validation domaine dans algebraic.ts     | Skip     |
+| 5     | Validation domaine dans indeterminate.ts | Skip     |
+| 6     | Quality checks finaux                    | Complete |
+
+### Note sur Phases 4 et 5
+
+Les phases 4 et 5 ont ete evaluees comme non necessaires :
+
+- **Phase 4** : Les simplifications algebriques (factorisation, rationalisation) sont concues
+  pour RESOUDRE les formes indeterminees en "comblant" les trous du domaine. Ce n'est pas
+  un probleme mais le but recherche.
+
+- **Phase 5** : La validation de domaine dans `indeterminate.ts` est couverte par la
+  validation a l'entree dans `evaluateLimit()`. Si le point d'approche n'est pas accessible,
+  l'erreur est detectee avant d'atteindre la classification des formes indeterminees.
 
 ---
 
@@ -112,7 +124,7 @@ Detection precoce des problemes de domaine avec messages pedagogiques en francai
 - [x] Code modifie
 - [x] Tests passent (108/108)
 - [x] Code review effectue (Good)
-- [ ] Commit cree
+- [x] Commit cree (d04e8613)
 
 ### Ameliorations appliquees suite au code review
 
@@ -137,3 +149,32 @@ Detection precoce des problemes de domaine avec messages pedagogiques en francai
 
 - Les 17 tests de `one-sided.test.ts` doivent passer apres chaque modification
 - Le module eval utilise BigInt Rational, le wrapper retourne un number ou null
+
+---
+
+## Resume Final
+
+**Integration terminee le** : 2026-01-11
+
+### Metriques
+
+| Metrique                         | Avant | Apres |
+| -------------------------------- | ----- | ----- |
+| Lignes `evaluateAt()` dupliquees | 70    | 0     |
+| Checks hardcodes (sqrt, ln)      | 4     | 0     |
+| Messages pedagogiques FR         | 0     | 4     |
+| Validation domaine               | Non   | Oui   |
+| Tests limits                     | 101   | 108   |
+
+### Commits
+
+1. `222f2429` - refactor(limits): replace evaluateAt with eval module wrapper
+2. `31ab5aca` - refactor(limits): use domain analysis for asymmetric behavior detection
+3. `d04e8613` - feat(limits): add domain validation with French pedagogical messages
+
+### Benefices
+
+- **Elimination duplication** : Plus de 100 lignes de code duplique supprimees
+- **Extensibilite** : Nouvelles fonctions avec domaine restreint fonctionnent automatiquement
+- **Pedagogie** : Messages en francais expliquant pourquoi la limite n'existe pas
+- **Robustesse** : Detection precoce des problemes de domaine
