@@ -324,6 +324,16 @@ function differentiateFunctionNode(
 	// Most functions have exactly one argument
 	if (nodeArgs.length === 1) {
 		const u = nodeArgs[0];
+
+		// Special case: ln(abs(v)) has derivative v'/v (same as ln(v))
+		// This handles the absolute value that appears in integration results
+		// Must be checked before computing du since abs throws an error
+		if (funcName === 'ln' && u.type === 'function' && u.name === 'abs' && u.args.length === 1) {
+			const inner = u.args[0];
+			const innerDu = differentiateNode(inner, variable, simplify, functions);
+			return lnRule(inner, innerDu, simplify);
+		}
+
 		const du = differentiateNode(u, variable, simplify, functions);
 
 		switch (funcName) {

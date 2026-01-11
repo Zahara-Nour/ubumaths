@@ -36,6 +36,74 @@ import { preprocess } from '../../normal/rules';
 import { toCustom } from '../../custom-generator';
 import { hashMathNode } from '../../normal/hash';
 import { isPolynomialIn } from '../../solve/classify';
+import { isNumber, isVariable, isDivision } from '../../guards';
+
+// =============================================================================
+// Product Simplification Helpers
+// =============================================================================
+
+/**
+ * Simplify products that cancel out, like x * (1/x) = 1.
+ *
+ * This is essential for integration by parts to work correctly.
+ * When v*du simplifies to a constant, we can integrate directly.
+ *
+ * @param expr - Expression to try to simplify
+ * @param variable - Variable name
+ * @returns Simplified expression, or original if no simplification applies
+ */
+function simplifyProductWithCancellation(expr: MathNode, variable: string): MathNode {
+	if (!isMultiplication(expr)) {
+		return expr;
+	}
+
+	const left = expr.left;
+	const right = expr.right;
+
+	// Pattern 1: x * (1/x) = 1
+	if (
+		isVariable(left) &&
+		left.name === variable &&
+		isDivision(right) &&
+		isNumber(right.numerator) &&
+		right.numerator.value === '1' &&
+		isVariable(right.denominator) &&
+		right.denominator.name === variable
+	) {
+		return number('1');
+	}
+
+	// Pattern 2: (1/x) * x = 1
+	if (
+		isVariable(right) &&
+		right.name === variable &&
+		isDivision(left) &&
+		isNumber(left.numerator) &&
+		left.numerator.value === '1' &&
+		isVariable(left.denominator) &&
+		left.denominator.name === variable
+	) {
+		return number('1');
+	}
+
+	// Pattern 3: a*x * (b/x) = a*b (constants with x cancellation)
+	// This handles cases like 2x * (3/x) = 6
+	if (isMultiplication(left) && isDivision(right)) {
+		const innerLeft = left.right;
+		const innerRight = right.denominator;
+		if (
+			isVariable(innerLeft) &&
+			innerLeft.name === variable &&
+			isVariable(innerRight) &&
+			innerRight.name === variable
+		) {
+			// (a * x) * (b / x) = a * b
+			return multiply(left.left, right.numerator, 'implicit');
+		}
+	}
+
+	return expr;
+}
 
 // =============================================================================
 // LIATE Categories
@@ -288,7 +356,11 @@ function applyPartsFormula(
 	const uv = options.simplify ? preprocess(multiply(u, v, 'implicit')) : multiply(u, v, 'implicit');
 
 	// Step 4: Compute ∫v du
-	const vdu = multiply(v, du, 'implicit');
+	// First try to simplify products that cancel out (e.g., x·(1/x) → 1)
+	// Then preprocess for other simplifications
+	const vduRaw = multiply(v, du, 'implicit');
+	const vduSimplified = simplifyProductWithCancellation(vduRaw, variable);
+	const vdu = options.simplify ? preprocess(vduSimplified) : vduSimplified;
 	const vduResult: IntegrateResult = integrate(vdu, {
 		variable,
 		...options,
