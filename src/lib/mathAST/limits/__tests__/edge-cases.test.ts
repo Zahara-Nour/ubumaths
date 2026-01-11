@@ -170,8 +170,7 @@ describe('Domain Boundary Cases', () => {
 	});
 
 	describe('logarithm domain boundaries', () => {
-		// TODO: ln(x) at x=0 right-sided should return -∞ but composition limits not fully implemented
-		it.skip('ln(x) at x=0 right-sided is -∞', () => {
+		it('ln(x) at x=0 right-sided is -∞', () => {
 			const expr = func('ln', [variable('x')]);
 			const result = evaluateLimit(expr, 'x', number('0'), 'right');
 			expectNegInfinity(result);
@@ -183,8 +182,7 @@ describe('Domain Boundary Cases', () => {
 			expect(result.status).toBe('does-not-exist');
 		});
 
-		// TODO: Composition limits at boundary not fully implemented
-		it.skip('ln(x-3) at x=3 right-sided is -∞', () => {
+		it('ln(x-3) at x=3 right-sided is -∞', () => {
 			const expr = func('ln', [xMinus('3')]);
 			const result = evaluateLimit(expr, 'x', number('3'), 'right');
 			expectNegInfinity(result);
@@ -216,30 +214,26 @@ describe('Domain Boundary Cases', () => {
 			expectNumber(result, 0);
 		});
 
-		// TODO: Composition limits to infinity not fully implemented
-		it.skip('ln(sqrt(x)) at x=0 right-sided is -∞', () => {
+		it('ln(sqrt(x)) at x=0 right-sided is -∞', () => {
 			const expr = func('ln', [func('sqrt', [variable('x')])]);
 			const result = evaluateLimit(expr, 'x', number('0'), 'right');
 			expectNegInfinity(result);
 		});
 
-		// TODO: Division by function approaching zero not fully implemented
-		it.skip('1/sqrt(x) at x=0 right-sided is +∞', () => {
+		it('1/sqrt(x) at x=0 right-sided is +∞', () => {
 			const expr = divide(number('1'), func('sqrt', [variable('x')]), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('0'), 'right');
 			expectPosInfinity(result);
 		});
 
-		// TODO: Division by ln approaching zero not fully implemented
-		it.skip('1/ln(x) at x=1 right-sided is +∞', () => {
+		it('1/ln(x) at x=1 right-sided is +∞', () => {
 			// ln(x) → 0⁺ as x → 1⁺, so 1/ln(x) → +∞
 			const expr = divide(number('1'), func('ln', [variable('x')]), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('1'), 'right');
 			expectPosInfinity(result);
 		});
 
-		// TODO: Division by ln approaching zero not fully implemented
-		it.skip('1/ln(x) at x=1 left-sided is -∞', () => {
+		it('1/ln(x) at x=1 left-sided is -∞', () => {
 			// ln(x) → 0⁻ as x → 1⁻, so 1/ln(x) → -∞
 			const expr = divide(number('1'), func('ln', [variable('x')]), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('1'), 'left');
@@ -272,29 +266,25 @@ describe('One-Sided Limits with Sign Changes', () => {
 			expect(result.status).toBe('does-not-exist');
 		});
 
-		// TODO: Even power denominator limits not fully implemented
-		it.skip('1/x² at x=0 both-sided is +∞', () => {
+		it('1/x² at x=0 both-sided is +∞', () => {
 			const expr = divide(number('1'), xPow('2'), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('0'));
 			expectPosInfinity(result);
 		});
 
-		// TODO: Even power denominator limits not fully implemented
-		it.skip('-1/x² at x=0 both-sided is -∞', () => {
+		it('-1/x² at x=0 both-sided is -∞', () => {
 			const expr = opposite(divide(number('1'), xPow('2'), 'fraction'));
 			const result = evaluateLimit(expr, 'x', number('0'));
 			expectNegInfinity(result);
 		});
 
-		// TODO: Composition limits 1/(x-a) not fully implemented
-		it.skip('1/(x-2) at x=2 right-sided is +∞', () => {
+		it('1/(x-2) at x=2 right-sided is +∞', () => {
 			const expr = divide(number('1'), xMinus('2'), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('2'), 'right');
 			expectPosInfinity(result);
 		});
 
-		// TODO: Composition limits 1/(x-a) not fully implemented
-		it.skip('1/(x-2) at x=2 left-sided is -∞', () => {
+		it('1/(x-2) at x=2 left-sided is -∞', () => {
 			const expr = divide(number('1'), xMinus('2'), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('2'), 'left');
 			expectNegInfinity(result);
@@ -443,15 +433,13 @@ describe('Indeterminate Forms', () => {
 	});
 
 	describe('∞/∞ forms', () => {
-		// TODO: Polynomial division at infinity not fully implemented
-		it.skip('x²/x at x→+∞ equals +∞', () => {
+		it('x²/x at x→+∞ equals +∞', () => {
 			const expr = divide(xPow('2'), variable('x'), 'fraction');
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectPosInfinity(result);
 		});
 
-		// TODO: Polynomial division at infinity not fully implemented
-		it.skip('x/x² at x→+∞ equals 0', () => {
+		it('x/x² at x→+∞ equals 0', () => {
 			const expr = divide(variable('x'), xPow('2'), 'fraction');
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectNumber(result, 0);
@@ -473,8 +461,7 @@ describe('Indeterminate Forms', () => {
 			expectNumber(result, 1.5);
 		});
 
-		// TODO: L'Hôpital-type limits not fully implemented
-		it.skip('ln(x)/x at x→+∞ equals 0', () => {
+		it('ln(x)/x at x→+∞ equals 0', () => {
 			const expr = divide(func('ln', [variable('x')]), variable('x'), 'fraction');
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectNumber(result, 0);
@@ -502,32 +489,27 @@ describe('Indeterminate Forms', () => {
 
 describe('Infinity Limits', () => {
 	describe('polynomials at infinity', () => {
-		// TODO: Simple polynomial limits at infinity not fully implemented
-		it.skip('x at x→+∞ is +∞', () => {
+		it('x at x→+∞ is +∞', () => {
 			const result = evaluateLimit(variable('x'), 'x', positiveInfinity());
 			expectPosInfinity(result);
 		});
 
-		// TODO: Simple polynomial limits at infinity not fully implemented
-		it.skip('x at x→-∞ is -∞', () => {
+		it('x at x→-∞ is -∞', () => {
 			const result = evaluateLimit(variable('x'), 'x', negativeInfinity());
 			expectNegInfinity(result);
 		});
 
-		// TODO: Simple polynomial limits at infinity not fully implemented
-		it.skip('x² at x→-∞ is +∞', () => {
+		it('x² at x→-∞ is +∞', () => {
 			const result = evaluateLimit(xPow('2'), 'x', negativeInfinity());
 			expectPosInfinity(result);
 		});
 
-		// TODO: Simple polynomial limits at infinity not fully implemented
-		it.skip('x³ at x→-∞ is -∞', () => {
+		it('x³ at x→-∞ is -∞', () => {
 			const result = evaluateLimit(power(variable('x'), number('3')), 'x', negativeInfinity());
 			expectNegInfinity(result);
 		});
 
-		// TODO: Polynomial sum limits at infinity not fully implemented
-		it.skip('-x² + x at x→+∞ is -∞', () => {
+		it('-x² + x at x→+∞ is -∞', () => {
 			const expr = add(opposite(xPow('2')), variable('x'));
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectNegInfinity(result);
@@ -563,29 +545,25 @@ describe('Infinity Limits', () => {
 	});
 
 	describe('exponential and logarithmic at infinity', () => {
-		// TODO: Exponential limits at infinity not fully implemented
-		it.skip('e^x at x→+∞ is +∞', () => {
+		it('e^x at x→+∞ is +∞', () => {
 			const expr = func('exp', [variable('x')]);
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectPosInfinity(result);
 		});
 
-		// TODO: Exponential limits at infinity not fully implemented
-		it.skip('e^x at x→-∞ equals 0', () => {
+		it('e^x at x→-∞ equals 0', () => {
 			const expr = func('exp', [variable('x')]);
 			const result = evaluateLimit(expr, 'x', negativeInfinity());
 			expectNumber(result, 0);
 		});
 
-		// TODO: Exponential limits at infinity not fully implemented
-		it.skip('e^(-x) at x→+∞ equals 0', () => {
+		it('e^(-x) at x→+∞ equals 0', () => {
 			const expr = func('exp', [opposite(variable('x'))]);
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectNumber(result, 0);
 		});
 
-		// TODO: Logarithm limits at infinity not fully implemented
-		it.skip('ln(x) at x→+∞ is +∞', () => {
+		it('ln(x) at x→+∞ is +∞', () => {
 			const expr = func('ln', [variable('x')]);
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectPosInfinity(result);
@@ -1041,15 +1019,13 @@ describe('Negative Number Edge Cases', () => {
 		expectNumber(result, 4);
 	});
 
-	// TODO: Negation of limit expression not fully implemented
-	it.skip('-1/x at x=0 right-sided is -∞', () => {
+	it('-1/x at x=0 right-sided is -∞', () => {
 		const expr = opposite(divide(number('1'), variable('x'), 'fraction'));
 		const result = evaluateLimit(expr, 'x', number('0'), 'right');
 		expectNegInfinity(result);
 	});
 
-	// TODO: Negation of limit expression not fully implemented
-	it.skip('-1/x at x=0 left-sided is +∞', () => {
+	it('-1/x at x=0 left-sided is +∞', () => {
 		const expr = opposite(divide(number('1'), variable('x'), 'fraction'));
 		const result = evaluateLimit(expr, 'x', number('0'), 'left');
 		expectPosInfinity(result);
