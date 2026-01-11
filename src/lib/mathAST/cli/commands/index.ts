@@ -47,6 +47,9 @@ export { SolveCommand } from './solve.command';
 // Integration
 export { IntegrateCommand } from './integrate.command';
 
+// Variations (monotonicity study)
+export { VariationsCommand } from './variations.command';
+
 // =============================================================================
 // Default Registry Factory
 // =============================================================================
@@ -77,6 +80,7 @@ import { TaylorCommand } from './taylor.command';
 import { DomainCommand } from './domain.command';
 import { SolveCommand } from './solve.command';
 import { IntegrateCommand } from './integrate.command';
+import { VariationsCommand } from './variations.command';
 
 /**
  * Create a command registry with all default commands registered.
@@ -148,6 +152,9 @@ export function createDefaultRegistry(): CommandRegistry {
 
 	// Integration
 	registry.register(new IntegrateCommand());
+
+	// Variations (monotonicity study)
+	registry.register(new VariationsCommand());
 
 	// Set registry reference for help command after registration
 	helpCmd.setRegistry(registry);

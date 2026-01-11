@@ -87,5 +87,17 @@ export type { ExpressionStructure, SamplingOptions } from './helpers';
 
 export { analyzeSign } from './analyze';
 
-// TODO: Implement formatSignTable
-// export { formatSignTable } from './format';
+// =============================================================================
+// Formatting Functions
+// =============================================================================
+
+export {
+	formatSignAnalysis,
+	formatSignTable,
+	formatSignedIntervalsAsConditions,
+	formatZeros,
+	getSignSymbol,
+	getSignDescription,
+	signToCondition,
+	formatSignSummary
+} from './format';
