@@ -20,7 +20,7 @@ import { selectIntegrator } from './integrators';
 import { containsVariable } from './rules';
 import { preprocess } from '../normal/rules';
 import { number, add as addFactory, multiply as multiplyFactory, subtract } from '../factory';
-import { isAddition, isSubtraction, isMultiplication, isNumber } from '../guards';
+import { isAddition, isSubtraction, isMultiplication, isNumber, isDelimiter } from '../guards';
 import { CONSTANT_OF_INTEGRATION_NOTE } from './descriptions-fr';
 import { evaluate } from '../eval/evaluate';
 import { substitute } from '../eval/substitute';
@@ -133,7 +133,13 @@ function integrateInternal(
 	}
 
 	// Step 1: Simplify expression
-	const simplified = options.simplify ? preprocess(expr) : expr;
+	let simplified = options.simplify ? preprocess(expr) : expr;
+
+	// Step 1b: Unwrap grouping delimiters
+	// (ln(x)) should integrate the same as ln(x)
+	while (isDelimiter(simplified) && simplified.semantic === 'grouping') {
+		simplified = simplified.content;
+	}
 
 	// Step 2: Check if constant (doesn't contain variable)
 	if (!containsVariable(simplified, variable)) {

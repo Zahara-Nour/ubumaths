@@ -29,13 +29,10 @@ import {
 	ONE_POLYNOMIAL
 } from '../../normal';
 
-// Import integrate function for recursive calls (circular dependency handled at runtime)
-import type { integrate as integrateType } from '../integrate';
-let integrate: typeof integrateType;
-// Lazy load to avoid circular dependency
-import('../integrate').then((mod) => {
-	integrate = mod.integrate;
-});
+// Import integrate function for recursive calls
+// This circular dependency is resolved at runtime since both modules are fully loaded
+// before any actual integration occurs
+import { integrate } from '../integrate';
 
 // =============================================================================
 // Type Definitions
@@ -290,6 +287,33 @@ function factorDenominator(poly: MathNode, variable: string): PolynomialFactor[]
 	// Unwrap delimiter (parentheses) first
 	poly = unwrapDelimiter(poly);
 
+	// Handle constant multiple case: c * f(x) where c is constant
+	// For c * (x²+a²), we need to handle this specially
+	// Note: The constant factor doesn't affect factorization, but we need to track it
+	if (poly.type === 'multiplication') {
+		const left = unwrapDelimiter(poly.left);
+		const right = unwrapDelimiter(poly.right);
+
+		// Check if left is constant and right is factorable
+		if (!containsVariable(left, variable)) {
+			const rightFactors = factorDenominator(right, variable);
+			if (rightFactors) {
+				// Add the constant as a separate factor that will be handled during integration
+				// For now, we just return the factors of the non-constant part
+				// The constant will be absorbed during coefficient solving
+				return rightFactors;
+			}
+		}
+
+		// Check if right is constant and left is factorable
+		if (!containsVariable(right, variable)) {
+			const leftFactors = factorDenominator(left, variable);
+			if (leftFactors) {
+				return leftFactors;
+			}
+		}
+	}
+
 	// Handle simple cases first
 
 	// Case 1: Single variable (x) → linear factor with root 0
@@ -386,11 +410,12 @@ function factorDenominator(poly: MathNode, variable: string): PolynomialFactor[]
 	}
 
 	// Case 5: x^2 + a (irreducible quadratic if a > 0)
+	// Also handles a + x^2 (constant first)
 	if (poly.type === 'addition') {
 		const left = poly.left;
 		const right = poly.right;
 
-		// Check for x^2
+		// Check for x^2 on left side
 		let isLeftSquare = false;
 		if (
 			left.type === 'superscript' &&
@@ -399,6 +424,18 @@ function factorDenominator(poly: MathNode, variable: string): PolynomialFactor[]
 		) {
 			if (isVariable(left.base) && left.base.name === variable) {
 				isLeftSquare = true;
+			}
+		}
+
+		// Check for x^2 on right side (handles a + x^2 form)
+		let isRightSquare = false;
+		if (
+			right.type === 'superscript' &&
+			isNumber(right.superscript) &&
+			right.superscript.value === '2'
+		) {
+			if (isVariable(right.base) && right.base.name === variable) {
+				isRightSquare = true;
 			}
 		}
 
@@ -411,6 +448,20 @@ function factorDenominator(poly: MathNode, variable: string): PolynomialFactor[]
 						type: 'quadratic',
 						multiplicity: 1,
 						quadraticCoeffs: { a: number('1'), b: number('0'), c: right }
+					}
+				];
+			}
+		}
+
+		// n + x^2 where n > 0 → irreducible (handles 1+x^2 form)
+		if (isRightSquare && isNumber(left)) {
+			const n = parseFloat(left.value);
+			if (n > 0) {
+				return [
+					{
+						type: 'quadratic',
+						multiplicity: 1,
+						quadraticCoeffs: { a: number('1'), b: number('0'), c: left }
 					}
 				];
 			}
@@ -692,8 +743,22 @@ function solveCoefficients(
 
 	// Check if all factors are linear
 	const allLinear = terms.every((t) => t.factor.type === 'linear');
+
+	// Handle special case: single irreducible quadratic factor
+	// For constant/(x²+a²), the coefficient is just the constant
+	if (!allLinear && terms.length === 1 && terms[0].factor.type === 'quadratic') {
+		// Check if numerator is a constant
+		if (!containsVariable(numerator, variable)) {
+			// Numerator is constant, use it as coefficient
+			return [{ ...terms[0], coefficient: numerator }];
+		}
+		// For (Ax+B)/(x²+a²), we need to split into A*x/(x²+a²) + B/(x²+a²)
+		// For now, fall back to placeholder
+		return terms;
+	}
+
 	if (!allLinear) {
-		// Fall back to placeholder - quadratic factors need different handling
+		// Mixed linear and quadratic factors need more complex handling
 		return terms;
 	}
 
@@ -813,7 +878,7 @@ function solveCoefficients(
 		const coeffValue = numValue / denomProduct;
 
 		// Convert to MathNode (fraction if not integer)
-		let coeffNode: MathNode;
+		let coeffNode: MathNode = number(coeffValue.toFixed(6)); // Default fallback
 		if (Number.isInteger(coeffValue)) {
 			if (coeffValue >= 0) {
 				coeffNode = number(coeffValue.toString());
@@ -904,11 +969,20 @@ function integratePartialFraction(
 			const a = coeffs.c;
 			const sqrtA = Math.sqrt(parseFloat(a.value));
 
-			// Integral of 1/(x^2 + a^2) = (1/a) * arctan(x/a)
+			// Integral of C/(x^2 + a^2) = (C/a) * arctan(x/a)
 			const xVar = { type: 'variable', name: variable } as MathNode;
-			const atanArg = divide(xVar, number(sqrtA.toString()), 'fraction');
-			const atanTerm = func('arctan', [atanArg]);
-			return divide(atanTerm, number(sqrtA.toString()), 'fraction');
+
+			// For a = 1 (i.e., 1/(x²+1)), simplify to just arctan(x)
+			let atanTerm: MathNode;
+			if (sqrtA === 1) {
+				atanTerm = func('arctan', [xVar]);
+			} else {
+				const atanArg = divide(xVar, number(sqrtA.toString()), 'fraction');
+				atanTerm = divide(func('arctan', [atanArg]), number(sqrtA.toString()), 'fraction');
+			}
+
+			// Multiply by the coefficient (handles cases like -1/(x²+1) → -arctan(x))
+			return implicitMultiply(term.coefficient, atanTerm);
 		}
 
 		// More complex cases need full implementation
@@ -999,6 +1073,109 @@ export const partialFractionsIntegrator: Integrator = {
 			remainder = divResult.remainder;
 		}
 
+		// Step 1b: Handle (Ax+B)/(x²+c) pattern by splitting
+		// This pattern is common and should be split into Ax/(x²+c) + B/(x²+c)
+		if (
+			getPolynomialDegree(remainder, variable) === 1 &&
+			getPolynomialDegree(denominator, variable) === 2
+		) {
+			// Check if denominator is x² + c (irreducible quadratic)
+			const tempFactors = factorDenominator(denominator, variable);
+			if (
+				tempFactors &&
+				tempFactors.length === 1 &&
+				tempFactors[0].type === 'quadratic' &&
+				tempFactors[0].quadraticCoeffs
+			) {
+				const coeffs = tempFactors[0].quadraticCoeffs;
+				if (
+					isNumber(coeffs.a) &&
+					coeffs.a.value === '1' &&
+					isNumber(coeffs.b) &&
+					coeffs.b.value === '0'
+				) {
+					// Split (Ax+B)/(x²+c) into Ax/(x²+c) + B/(x²+c)
+					// Extract A and B from the numerator
+					let xCoeff: MathNode | null = null;
+					let constTerm: MathNode | null = null;
+
+					if (remainder.type === 'addition') {
+						// Check both orders: Ax + B or B + Ax
+						if (
+							remainder.left.type === 'multiplication' &&
+							containsVariable(remainder.left, variable) &&
+							!containsVariable(remainder.right, variable)
+						) {
+							// Ax + B
+							xCoeff = !containsVariable(remainder.left.left, variable)
+								? remainder.left.left
+								: remainder.left.right;
+							constTerm = remainder.right;
+						} else if (
+							remainder.right.type === 'multiplication' &&
+							containsVariable(remainder.right, variable) &&
+							!containsVariable(remainder.left, variable)
+						) {
+							// B + Ax
+							xCoeff = !containsVariable(remainder.right.left, variable)
+								? remainder.right.left
+								: remainder.right.right;
+							constTerm = remainder.left;
+						}
+					}
+
+					if (xCoeff && constTerm) {
+						recorder.recordCustomStep(
+							'split-numerator',
+							expr,
+							expr,
+							'detailed',
+							undefined,
+							'Séparation du numérateur linéaire: (Ax+B)/(x²+c) = Ax/(x²+c) + B/(x²+c)'
+						);
+
+						// Build Ax/(x²+c)
+						const xVar: MathNode = { type: 'variable', name: variable };
+						const axTerm = implicitMultiply(xCoeff, xVar);
+						const part1 = divide(axTerm, denominator, 'fraction');
+
+						// Build B/(x²+c)
+						const part2 = divide(constTerm, denominator, 'fraction');
+
+						// Integrate both parts
+						const result1 = integrate(part1, { variable, ...options, _depth: depth + 1 });
+						const result2 = integrate(part2, { variable, ...options, _depth: depth + 1 });
+
+						if (result1.status === 'exact' && result2.status === 'exact') {
+							let antiderivative = add(result1.antiderivative!, result2.antiderivative!);
+
+							// Add quotient integral if needed
+							if (quotient && !isZero(quotient)) {
+								const quotientResult = integrate(quotient, {
+									variable,
+									...options,
+									_depth: depth + 1
+								});
+								if (quotientResult.status === 'exact' && quotientResult.antiderivative) {
+									antiderivative = add(antiderivative, quotientResult.antiderivative);
+								}
+							}
+
+							return {
+								variable,
+								status: 'exact',
+								antiderivative,
+								integrandType: 'rational',
+								technique: 'partial-fractions',
+								steps: recorder.getSteps(),
+								constantNote: CONSTANT_OF_INTEGRATION_NOTE
+							};
+						}
+					}
+				}
+			}
+		}
+
 		// Step 2: Factor the denominator
 		recorder.recordCustomStep(
 			'factor-denominator',
@@ -1080,18 +1257,6 @@ export const partialFractionsIntegrator: Integrator = {
 		// Step 6: Add quotient integral if polynomial division was performed
 		if (quotient && !isZero(quotient)) {
 			// Integrate the quotient (polynomial) using recursive call
-			if (!integrate) {
-				return {
-					variable,
-					status: 'unsupported',
-					antiderivative: null,
-					integrandType: 'rational',
-					technique: 'partial-fractions',
-					steps: recorder.getSteps(),
-					error: 'Integration module not fully loaded'
-				};
-			}
-
 			const quotientResult = integrate(quotient, { variable, ...options });
 			if (quotientResult.status === 'exact' && quotientResult.antiderivative) {
 				result = result

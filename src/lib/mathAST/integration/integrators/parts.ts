@@ -49,6 +49,25 @@ import { isNumber, isVariable, isDivision } from '../../guards';
 // =============================================================================
 
 /**
+ * Flatten a multiplication tree into an array of factors.
+ */
+function flattenMultiplication(expr: MathNode): MathNode[] {
+	if (isMultiplication(expr)) {
+		return [...flattenMultiplication(expr.left), ...flattenMultiplication(expr.right)];
+	}
+	return [expr];
+}
+
+/**
+ * Reconstruct a multiplication from an array of factors.
+ */
+function buildProduct(factors: MathNode[]): MathNode {
+	if (factors.length === 0) return number('1');
+	if (factors.length === 1) return factors[0];
+	return factors.reduce((acc, f) => multiply(acc, f, 'implicit'));
+}
+
+/**
  * Simplify products that cancel out, like x * (1/x) = 1.
  *
  * This is essential for integration by parts to work correctly.
@@ -63,6 +82,40 @@ function simplifyProductWithCancellation(expr: MathNode, variable: string): Math
 		return expr;
 	}
 
+	// Flatten the multiplication tree to find all factors
+	const factors = flattenMultiplication(expr);
+
+	// Look for x and 1/x that can cancel
+	let xIndex = -1;
+	let oneOverXIndex = -1;
+
+	for (let i = 0; i < factors.length; i++) {
+		const f = factors[i];
+		if (isVariable(f) && f.name === variable && xIndex === -1) {
+			xIndex = i;
+		} else if (
+			isDivision(f) &&
+			isNumber(f.numerator) &&
+			f.numerator.value === '1' &&
+			isVariable(f.denominator) &&
+			f.denominator.name === variable &&
+			oneOverXIndex === -1
+		) {
+			oneOverXIndex = i;
+		}
+	}
+
+	// If we found both x and 1/x, cancel them
+	if (xIndex !== -1 && oneOverXIndex !== -1) {
+		// Remove both factors (replace with 1 effectively by removing them)
+		const newFactors = factors.filter((_, i) => i !== xIndex && i !== oneOverXIndex);
+		if (newFactors.length === 0) {
+			return number('1');
+		}
+		return buildProduct(newFactors);
+	}
+
+	// Fall back to the original direct pattern matching
 	const left = expr.left;
 	const right = expr.right;
 
@@ -159,6 +212,13 @@ function simplifyProductWithCancellation(expr: MathNode, variable: string): Math
 				return divide(number('1'), left.denominator, 'fraction');
 			}
 		}
+
+		// Pattern 5: (a/b) * (c/d) = (a*c)/(b*d) for general fraction multiplication
+		// This handles cases like (x²/2) * (1/(1+x²)) → x²/(2(1+x²))
+		// Build the combined fraction
+		const newNumerator = multiply(left.numerator, right.numerator, 'implicit');
+		const newDenominator = multiply(left.denominator, right.denominator, 'implicit');
+		return divide(newNumerator, newDenominator, 'fraction');
 	}
 
 	return expr;
@@ -253,6 +313,30 @@ function getLIATECategory(
 		// Check for a^x where a is constant
 		if (!containsVariable(expr.base, variable) && containsVariable(expr.superscript, variable)) {
 			return { category: 'exponential', priority: LIATE_PRIORITY.exponential };
+		}
+
+		// Check for (ln(x))^n or (log(x))^n - powers of logarithms are still logarithmic
+		// Unwrap delimiter (parentheses) if present
+		let baseExpr = expr.base;
+		if (baseExpr.type === 'delimiter') {
+			baseExpr = baseExpr.content;
+		}
+		if (isFunction(baseExpr)) {
+			const baseFuncName = baseExpr.name.toLowerCase();
+			if (baseFuncName === 'ln' || baseFuncName === 'log') {
+				return { category: 'logarithmic', priority: LIATE_PRIORITY.logarithmic };
+			}
+			// Check for powers of inverse-trig functions
+			if (
+				baseFuncName === 'arcsin' ||
+				baseFuncName === 'arccos' ||
+				baseFuncName === 'arctan' ||
+				baseFuncName === 'asin' ||
+				baseFuncName === 'acos' ||
+				baseFuncName === 'atan'
+			) {
+				return { category: 'inverse-trig', priority: LIATE_PRIORITY['inverse-trig'] };
+			}
 		}
 	}
 
