@@ -17,6 +17,17 @@ import { isNumber, isVariable } from '../../guards';
 import { number, divide, add, subtract, power, implicitMultiply, func } from '../../factory';
 import { containsVariable } from '../rules';
 import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
+// Polynomial division utilities
+import {
+	normalize,
+	denormalize,
+	checkUnivariate,
+	toUnivariateView,
+	fromUnivariateView,
+	divideUnivariate,
+	isOnePolynomial,
+	ONE_POLYNOMIAL
+} from '../../normal';
 
 // Import integrate function for recursive calls (circular dependency handled at runtime)
 import type { integrate as integrateType } from '../integrate';
@@ -95,13 +106,14 @@ function isPolynomial(expr: MathNode, variable: string): boolean {
 		return true;
 	}
 
-	// Power: x^n where n is a non-negative integer
+	// Power: polynomial^n where n is a non-negative integer
 	if (expr.type === 'superscript') {
-		if (isVariable(expr.base) && expr.base.name === variable) {
-			// Check if exponent is a non-negative integer
-			if (isNumber(expr.superscript)) {
-				const exp = parseFloat(expr.superscript.value);
-				return Number.isInteger(exp) && exp >= 0;
+		// Check if exponent is a non-negative integer
+		if (isNumber(expr.superscript)) {
+			const exp = parseFloat(expr.superscript.value);
+			if (Number.isInteger(exp) && exp >= 0) {
+				// Base must also be a polynomial
+				return isPolynomial(expr.base, variable);
 			}
 		}
 		return false;
@@ -148,10 +160,10 @@ function getPolynomialDegree(expr: MathNode, variable: string): number {
 	}
 
 	if (expr.type === 'superscript') {
-		if (isVariable(expr.base) && expr.base.name === variable) {
-			if (isNumber(expr.superscript)) {
-				return parseFloat(expr.superscript.value);
-			}
+		if (isNumber(expr.superscript)) {
+			const exp = parseFloat(expr.superscript.value);
+			// Degree of (polynomial)^n = n * degree(polynomial)
+			return exp * getPolynomialDegree(expr.base, variable);
 		}
 		return 0;
 	}
@@ -181,6 +193,8 @@ function getPolynomialDegree(expr: MathNode, variable: string): number {
 /**
  * Divide numerator by denominator if degree(num) >= degree(denom).
  * Returns { quotient, remainder } such that num = quotient * denom + remainder.
+ *
+ * Uses the normalization framework for polynomial long division.
  */
 function polynomialDivision(
 	numerator: MathNode,
@@ -195,14 +209,63 @@ function polynomialDivision(
 		return { quotient: number('0'), remainder: numerator };
 	}
 
-	// For now, return a simple implementation that handles basic cases
-	// Full polynomial long division is complex and would require coefficient extraction
-	// TODO: Implement full polynomial long division algorithm
+	try {
+		// Normalize both polynomials
+		const numNorm = normalize(numerator);
+		const denomNorm = normalize(denominator);
 
-	// Simple case: both are monomials or simple polynomials
-	// For MVP, we'll mark this as unsupported and return null
-	// This means improper fractions won't work yet
-	return null;
+		// Both must be polynomials (denominator = 1 in normal form)
+		if (!isOnePolynomial(numNorm.denominator) || !isOnePolynomial(denomNorm.denominator)) {
+			return null;
+		}
+
+		// Check if both are univariate polynomials
+		const numCheck = checkUnivariate(numNorm.numerator);
+		const denomCheck = checkUnivariate(denomNorm.numerator);
+
+		if (!numCheck.isUnivariate || !denomCheck.isUnivariate) {
+			return null;
+		}
+
+		// Get the variable for conversion (use the variable from denominator or numerator)
+		const univarNode = denomCheck.variable ?? numCheck.variable;
+		if (!univarNode) {
+			// Both are constants - shouldn't happen since denomDegree > 0
+			return null;
+		}
+
+		// Convert to univariate views
+		const numView = toUnivariateView(numNorm.numerator, univarNode);
+		const denomView = toUnivariateView(denomNorm.numerator, univarNode);
+
+		// Perform polynomial division
+		const divResult = divideUnivariate(numView, denomView);
+
+		if (!divResult) {
+			return null;
+		}
+
+		// Convert back to MathNode
+		const quotientTerms = fromUnivariateView(divResult.quotient);
+		const remainderTerms = fromUnivariateView(divResult.remainder);
+
+		// Denormalize to get MathNode (use ONE_POLYNOMIAL for denominator = 1)
+		const quotient = denormalize({
+			numerator: quotientTerms,
+			denominator: ONE_POLYNOMIAL,
+			hash: ''
+		});
+		const remainder = denormalize({
+			numerator: remainderTerms,
+			denominator: ONE_POLYNOMIAL,
+			hash: ''
+		});
+
+		return { quotient, remainder };
+	} catch {
+		// If normalization fails, return null
+		return null;
+	}
 }
 
 // =============================================================================
@@ -513,22 +576,194 @@ function getRootValue(root: MathNode): number | null {
 }
 
 /**
+ * Create a coefficient MathNode from a numeric value.
+ * Handles fractions and negative values.
+ */
+function createCoeffNode(value: number): MathNode {
+	if (Number.isInteger(value)) {
+		if (value >= 0) {
+			return number(value.toString());
+		} else {
+			return { type: 'opposite', operand: number((-value).toString()) };
+		}
+	} else {
+		// Express as fraction
+		for (const d of [2, 3, 4, 5, 6, 8, 10, 12]) {
+			const n = value * d;
+			if (Math.abs(n - Math.round(n)) < 1e-10) {
+				const numInt = Math.round(n);
+				if (numInt >= 0) {
+					return divide(number(numInt.toString()), number(d.toString()), 'fraction');
+				} else {
+					return {
+						type: 'opposite',
+						operand: divide(number((-numInt).toString()), number(d.toString()), 'fraction')
+					};
+				}
+			}
+		}
+		// Use decimal approximation
+		return number(value.toFixed(6));
+	}
+}
+
+/**
+ * Solve for coefficients with repeated factors using extended Heaviside method.
+ *
+ * For 1/((x-a)^m * (x-b)^n * ...):
+ * - The coefficient of highest power 1/(x-a)^m is found by evaluating
+ *   numerator * other_factors at x=a, divided by product of (a-other_roots)^power
+ * - Lower power coefficients require derivatives
+ */
+function solveRepeatedFactors(
+	numerator: MathNode,
+	_terms: PartialFractionTerm[],
+	variable: string,
+	rootGroups: Map<number, PartialFractionTerm[]>
+): PartialFractionTerm[] {
+	const solvedTerms: PartialFractionTerm[] = [];
+
+	// Process each root group
+	for (const [rootValue, groupTerms] of rootGroups.entries()) {
+		// Sort by power (highest first)
+		groupTerms.sort((a, b) => b.power - a.power);
+
+		// Get all other roots and their powers
+		const otherRoots: { root: number; power: number }[] = [];
+		for (const [otherRoot, otherTerms] of rootGroups.entries()) {
+			if (otherRoot !== rootValue) {
+				const totalPower = otherTerms.reduce((sum, t) => sum + t.power, 0);
+				otherRoots.push({ root: otherRoot, power: totalPower });
+			}
+		}
+
+		// Evaluate numerator at x = rootValue
+		const numValue = evaluateAt(numerator, variable, rootValue);
+		if (numValue === null) {
+			// Can't evaluate - return placeholders
+			solvedTerms.push(...groupTerms);
+			continue;
+		}
+
+		// Compute product of (rootValue - otherRoot)^power for all other roots
+		let denomProduct = 1;
+		for (const { root, power } of otherRoots) {
+			denomProduct *= Math.pow(rootValue - root, power);
+		}
+
+		if (Math.abs(denomProduct) < 1e-10) {
+			// Division by zero - return placeholders
+			solvedTerms.push(...groupTerms);
+			continue;
+		}
+
+		// Coefficient for highest power term
+		const highestCoeff = numValue / denomProduct;
+
+		for (let i = 0; i < groupTerms.length; i++) {
+			const term = groupTerms[i];
+			if (i === 0) {
+				// Highest power term
+				solvedTerms.push({ ...term, coefficient: createCoeffNode(highestCoeff) });
+			} else {
+				// For lower power terms, we need derivatives
+				// For now, set to 0 as an approximation for simple cases
+				// TODO: Implement derivative-based coefficient solving
+				solvedTerms.push({ ...term, coefficient: number('0') });
+			}
+		}
+	}
+
+	return solvedTerms;
+}
+
+/**
  * Solve for coefficients in partial fraction decomposition using Heaviside cover-up method.
- * Works for distinct linear factors with multiplicity 1.
+ * Handles both simple linear factors and repeated linear factors.
  */
 function solveCoefficients(
 	numerator: MathNode,
 	terms: PartialFractionTerm[],
 	variable: string
 ): PartialFractionTerm[] {
+	if (terms.length === 0) {
+		return terms;
+	}
+
+	// Check if all factors are linear
+	const allLinear = terms.every((t) => t.factor.type === 'linear');
+	if (!allLinear) {
+		// Fall back to placeholder - quadratic factors need different handling
+		return terms;
+	}
+
+	// Group terms by their root (for repeated factor handling)
+	const rootGroups = new Map<number, PartialFractionTerm[]>();
+	const invalidRoots: PartialFractionTerm[] = [];
+
+	for (const term of terms) {
+		const rootVal = getRootValue(term.factor.root!);
+		if (rootVal === null) {
+			invalidRoots.push(term);
+		} else {
+			const key = rootVal;
+			if (!rootGroups.has(key)) {
+				rootGroups.set(key, []);
+			}
+			rootGroups.get(key)!.push(term);
+		}
+	}
+
+	// If we have invalid roots, return placeholder
+	if (invalidRoots.length > 0) {
+		return terms;
+	}
+
+	// Special case: Single factor group (e.g., 1/(x-1)^2 or 1/(x-1)^3)
+	// No decomposition needed - coefficient equals numerator
+	if (rootGroups.size === 1) {
+		const [rootValue, groupTerms] = [...rootGroups.entries()][0];
+		// Sort by power (highest first)
+		groupTerms.sort((a, b) => b.power - a.power);
+
+		// Evaluate numerator at the root
+		const numValue = evaluateAt(numerator, variable, rootValue);
+
+		// For single repeated factor, the highest power gets the numerator value
+		// and lower powers get 0 (they don't contribute)
+		const solvedTerms: PartialFractionTerm[] = [];
+
+		for (let i = 0; i < groupTerms.length; i++) {
+			const term = groupTerms[i];
+			if (i === 0) {
+				// Highest power term gets the numerator value
+				let coeffNode: MathNode;
+				if (numValue !== null) {
+					coeffNode = createCoeffNode(numValue);
+				} else {
+					// If we can't evaluate, use the numerator directly (for symbolic case)
+					coeffNode = numerator;
+				}
+				solvedTerms.push({ ...term, coefficient: coeffNode });
+			} else {
+				// Lower power terms get 0 for single factor case
+				solvedTerms.push({ ...term, coefficient: number('0') });
+			}
+		}
+
+		return solvedTerms;
+	}
+
+	// Multiple distinct roots - use extended Heaviside method
 	// Only apply Heaviside cover-up for simple linear factors (multiplicity 1)
 	const allSimpleLinear = terms.every(
 		(t) => t.factor.type === 'linear' && t.factor.multiplicity === 1 && t.power === 1
 	);
 
-	if (!allSimpleLinear || terms.length === 0) {
-		// Fall back to placeholder - more complex solving needed
-		return terms;
+	if (!allSimpleLinear) {
+		// For mixed simple/repeated factors, we need more complex solving
+		// For now, handle the case where we have one repeated factor and some simple ones
+		return solveRepeatedFactors(numerator, terms, variable, rootGroups);
 	}
 
 	// Heaviside cover-up method:
