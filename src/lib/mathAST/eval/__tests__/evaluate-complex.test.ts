@@ -153,38 +153,36 @@ describe('Complex number evaluation', () => {
 	});
 
 	describe('complex functions', () => {
-		// Complex functions (conj, Re, Im, cabs, arg) are not simplified by normalize/denormalize
-		// They remain as function nodes in exact mode
+		// Complex functions are now evaluated exactly when possible
 		describe('conj (conjugate)', () => {
-			it('keeps conj unevaluated in exact mode', () => {
+			it('evaluates conj(3+4i) to 3-4i in exact mode', () => {
 				const node = func('conj', [complex(number('3'), number('4'))]);
 				const result = evaluate(node);
-				// In exact mode, conj is not evaluated - it stays as a function
-				expect(result.node.type).toBe('function');
+				expect(toLatex(result.node)).toBe('3 - 4 \\imaginaryI');
 			});
 		});
 
 		describe('Re (real part)', () => {
-			it('keeps Re unevaluated in exact mode', () => {
+			it('evaluates Re(3+4i) to 3 in exact mode', () => {
 				const node = func('Re', [complex(number('3'), number('4'))]);
 				const result = evaluate(node);
-				expect(result.node.type).toBe('function');
+				expect(toLatex(result.node)).toBe('3');
 			});
 		});
 
 		describe('Im (imaginary part)', () => {
-			it('keeps Im unevaluated in exact mode', () => {
+			it('evaluates Im(3+4i) to 4 in exact mode', () => {
 				const node = func('Im', [complex(number('3'), number('4'))]);
 				const result = evaluate(node);
-				expect(result.node.type).toBe('function');
+				expect(toLatex(result.node)).toBe('4');
 			});
 		});
 
 		describe('cabs (complex absolute value)', () => {
-			it('keeps cabs unevaluated in exact mode', () => {
+			it('evaluates cabs(3+4i) to 5 in exact mode', () => {
 				const node = func('cabs', [complex(number('3'), number('4'))]);
 				const result = evaluate(node);
-				expect(result.node.type).toBe('function');
+				expect(toLatex(result.node)).toBe('5');
 			});
 		});
 
@@ -192,6 +190,7 @@ describe('Complex number evaluation', () => {
 			it('keeps arg unevaluated in exact mode', () => {
 				const node = func('arg', [parsePratt('\\imaginaryI')]);
 				const result = evaluate(node);
+				// arg requires trigonometric evaluation, stays as function
 				expect(result.node.type).toBe('function');
 			});
 		});
