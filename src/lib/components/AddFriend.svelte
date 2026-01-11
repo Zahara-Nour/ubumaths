@@ -169,7 +169,8 @@
 <div class="space-y-6">
 	<!-- Classes Section -->
 	{#if isLoadingClasses}
-		<div class="rounded-lg border border-border bg-card p-6 text-center">
+		<div class="flex items-center justify-center gap-2 py-6">
+			<Loader2 class="size-5 animate-spin text-muted-foreground" />
 			<p class="text-muted-foreground">Chargement des classes...</p>
 		</div>
 	{:else if allClasses.length > 0}

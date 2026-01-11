@@ -383,6 +383,7 @@ class FriendsManager {
 
 	/**
 	 * Get all active classes matching the user's grade level
+	 * Uses RPC function to bypass RLS restrictions
 	 * Falls back to user's own classes if no grade is defined
 	 */
 	async getClassesByUserGrade(): Promise<Array<{ id: string; name: string }>> {
@@ -392,51 +393,14 @@ class FriendsManager {
 		}
 
 		try {
-			// 1. Get the user's classes to find their grade(s)
-			const { data: userClasses, error: userClassesError } = await this.supabase
-				.from('class_members')
-				.select('classes(id, name, grade)')
-				.eq('student_id', this.currentUserId)
-				.eq('status', 'active');
-
-			if (userClassesError) {
-				throw userClassesError;
-			}
-
-			if (!userClasses || userClasses.length === 0) {
-				return [];
-			}
-
-			// 2. Extract unique grades from user's classes
-			const userGrades = [
-				...new Set(
-					userClasses
-						.map((uc) => (uc.classes as { id: string; name: string; grade: string | null })?.grade)
-						.filter((g): g is string => g !== null)
-				)
-			];
-
-			// 3. If no grades defined, return only user's own classes
-			if (userGrades.length === 0) {
-				return userClasses
-					.map((uc) => uc.classes as { id: string; name: string; grade: string | null })
-					.filter((c): c is { id: string; name: string; grade: string | null } => c !== null)
-					.map((c) => ({ id: c.id, name: c.name }));
-			}
-
-			// 4. Get all active classes with matching grades
-			const { data, error } = await this.supabase
-				.from('classes')
-				.select('id, name')
-				.eq('is_active', true)
-				.in('grade', userGrades)
-				.order('name');
+			// Use RPC function that bypasses RLS to get classes by grade
+			const { data, error } = await this.supabase.rpc('get_classes_by_user_grade');
 
 			if (error) {
 				throw error;
 			}
 
-			return data ?? [];
+			return (data ?? []) as Array<{ id: string; name: string }>;
 		} catch (err) {
 			console.error('Error fetching classes by grade:', err);
 			return [];
@@ -445,6 +409,7 @@ class FriendsManager {
 
 	/**
 	 * Get students in a specific class (excludes current user)
+	 * Uses RPC function to bypass RLS restrictions for classes of the same grade
 	 */
 	async getStudentsInClass(classId: string): Promise<ClassmateInfo[]> {
 		if (!this.supabase || !this.currentUserId) {
@@ -453,61 +418,35 @@ class FriendsManager {
 		}
 
 		try {
-			// Get all active members of this class (excluding current user)
-			const { data: members, error: membersError } = await this.supabase
-				.from('class_members')
-				.select('student_id')
-				.eq('class_id', classId)
-				.eq('status', 'active')
-				.neq('student_id', this.currentUserId);
-
-			if (membersError) {
-				throw membersError;
-			}
-
-			if (!members || members.length === 0) {
-				return [];
-			}
-
-			const studentIds = members.map((m) => m.student_id);
-
-			// Fetch profiles
-			const { data: profiles, error: profilesError } = await this.supabase
-				.from('profiles')
-				.select('id, full_name, firstname, lastname, avatar_url, role')
-				.in('id', studentIds);
-
-			if (profilesError) {
-				throw profilesError;
-			}
-
-			// Get existing friendships
-			const { data: existingFriendships, error: friendshipsError } = await this.supabase
-				.from('friendships')
-				.select('addressee_id, requester_id, status')
-				.or(`requester_id.eq.${this.currentUserId},addressee_id.eq.${this.currentUserId}`);
-
-			if (friendshipsError) {
-				console.warn('Error fetching existing friendships:', friendshipsError);
-			}
-
-			// Create friendship map
-			const friendshipMap = new Map<string, 'pending' | 'accepted' | 'rejected'>();
-			existingFriendships?.forEach((f) => {
-				const friendId = f.requester_id === this.currentUserId ? f.addressee_id : f.requester_id;
-				friendshipMap.set(friendId, f.status as 'pending' | 'accepted' | 'rejected');
+			// Use RPC function that bypasses RLS to get students by grade
+			const { data, error } = await this.supabase.rpc('get_students_in_class_by_grade', {
+				target_class_id: classId
 			});
 
-			// Build result
-			return (profiles ?? []).map((profile) => ({
-				id: profile.id,
-				full_name: profile.full_name,
-				firstname: profile.firstname,
-				lastname: profile.lastname,
-				avatar_url: profile.avatar_url,
-				role: profile.role as 'student' | 'teacher' | 'admin',
-				friendship_status: friendshipMap.get(profile.id) ?? null
-			}));
+			if (error) {
+				throw error;
+			}
+
+			// Map the result to ClassmateInfo format
+			return (data ?? []).map(
+				(student: {
+					id: string;
+					full_name: string | null;
+					firstname: string | null;
+					lastname: string | null;
+					avatar_url: string | null;
+					role: string;
+					friendship_status: string | null;
+				}) => ({
+					id: student.id,
+					full_name: student.full_name,
+					firstname: student.firstname,
+					lastname: student.lastname,
+					avatar_url: student.avatar_url,
+					role: student.role as 'student' | 'teacher' | 'admin',
+					friendship_status: student.friendship_status as 'pending' | 'accepted' | 'rejected' | null
+				})
+			);
 		} catch (err) {
 			console.error('Error fetching students in class:', err);
 			return [];
