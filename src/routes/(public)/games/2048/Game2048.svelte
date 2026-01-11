@@ -2,6 +2,7 @@
 	/**
 	 * Main 2048 game component
 	 * Manages game state, controls, and UI
+	 * Syncs scores to server for authenticated students
 	 */
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -12,6 +13,13 @@
 	import { initializeBoard, move } from './game-logic';
 	import type { GameState, Direction, GameMode, Tile, GhostTile } from './types';
 	import { browser } from '$app/environment';
+
+	// Props from page load
+	interface Props {
+		serverBestScore: number | null;
+		canSaveScore: boolean;
+	}
+	let { serverBestScore, canSaveScore }: Props = $props();
 
 	// Game mode options
 	const modeOptions = [
@@ -30,12 +38,24 @@
 	let gameState = $state<GameState>(initializeBoard(selectedMode));
 	let bestScore = $state(0);
 
-	// Restore game state and best score from localStorage on init
+	// Track milestones for server sync
+	let reached2048 = $state(false);
+	let reached4096 = $state(false);
+	let scoreSavedToServer = $state(false);
+
+	// Initialize best score: server > localStorage > 0
 	if (browser) {
-		// Restore best score
-		const savedBestScore = localStorage.getItem(STORAGE_KEY_BEST_SCORE);
-		if (savedBestScore) {
-			bestScore = parseInt(savedBestScore);
+		// Server score takes priority if available
+		if (serverBestScore !== null && serverBestScore > 0) {
+			bestScore = serverBestScore;
+			// Also update localStorage to keep in sync
+			localStorage.setItem(STORAGE_KEY_BEST_SCORE, serverBestScore.toString());
+		} else {
+			// Fall back to localStorage
+			const savedBestScore = localStorage.getItem(STORAGE_KEY_BEST_SCORE);
+			if (savedBestScore) {
+				bestScore = parseInt(savedBestScore);
+			}
 		}
 
 		// Try to restore game state
@@ -74,10 +94,66 @@
 	// Memoize active tiles to avoid redundant array operations on every render
 	let activeTiles = $derived(gameState.board.flat().filter((t): t is Tile => t !== null));
 
-	// Derive dialog states from game state
+	// Check for 2048/4096 tiles in the board
+	let has2048Tile = $derived(activeTiles.some((t) => t.value === 2048));
+	let has4096Tile = $derived(activeTiles.some((t) => t.value === 4096));
+
+	// Track milestones when tiles appear
+	$effect(() => {
+		if (has2048Tile && !reached2048) {
+			reached2048 = true;
+		}
+	});
+
+	$effect(() => {
+		if (has4096Tile && !reached4096) {
+			reached4096 = true;
+		}
+	});
+
+	/**
+	 * Saves the current game score to the server (for authenticated students only)
+	 */
+	async function saveScoreToServer() {
+		// Only save if user can save scores (authenticated student) and in classic mode
+		if (!canSaveScore || selectedMode !== 'classic' || scoreSavedToServer) {
+			return;
+		}
+
+		try {
+			const response = await fetch('/api/games/2048/scores', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					score: gameState.score,
+					reached_2048: reached2048,
+					reached_4096: reached4096,
+					mode: 'classic'
+				})
+			});
+
+			if (response.ok) {
+				scoreSavedToServer = true;
+				const data = await response.json();
+				// Update best score if server returns a higher one
+				if (data.best_score > bestScore) {
+					bestScore = data.best_score;
+					if (browser) {
+						localStorage.setItem(STORAGE_KEY_BEST_SCORE, bestScore.toString());
+					}
+				}
+			}
+		} catch {
+			// Silent failure - localStorage still has the score
+		}
+	}
+
+	// Derive dialog states from game state and trigger server save on game over
 	$effect(() => {
 		if (gameState.gameOver && !showGameOverDialog) {
 			showGameOverDialog = true;
+			// Save score to server when game ends
+			saveScoreToServer();
 		}
 		if (gameState.won && !victoryCelebrated) {
 			showVictoryDialog = true;
@@ -141,6 +217,11 @@
 		showGameOverDialog = false;
 		showVictoryDialog = false;
 		victoryCelebrated = false;
+
+		// Reset milestone tracking for new game
+		reached2048 = false;
+		reached4096 = false;
+		scoreSavedToServer = false;
 
 		// Clear saved game state when starting fresh
 		if (browser) {
