@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { matrix, number } from '../../factory';
-import type { MatrixNode, NumberNode } from '../../types';
+import type { MatrixNode, NumberNode, MathNode } from '../../types';
 import {
 	getDimensions,
 	matrixAdd,
@@ -19,6 +19,7 @@ import {
 	inverse
 } from '../operations';
 import { MatrixDimensionError, MatrixOperationError } from '../types';
+import { evaluate } from '../../eval/evaluate';
 
 // Helper to create a numeric matrix
 function numMatrix(rows: number[][]): MatrixNode {
@@ -28,16 +29,18 @@ function numMatrix(rows: number[][]): MatrixNode {
 	);
 }
 
+// Helper to convert a MathNode to a number using evaluate
+function toNum(node: MathNode): number {
+	const result = evaluate(node, { mode: 'decimal' });
+	if (typeof result.value !== 'number') {
+		throw new Error(`Expected numeric result, got ${typeof result.value}`);
+	}
+	return result.value;
+}
+
 // Helper to extract numeric values from a matrix node
 function extractValues(m: MatrixNode): number[][] {
-	return m.rows.map((row) =>
-		row.map((node) => {
-			if (node.type === 'number') {
-				return parseFloat(node.value);
-			}
-			throw new Error(`Expected number, got ${node.type}`);
-		})
-	);
+	return m.rows.map((row) => row.map((node) => toNum(node)));
 }
 
 describe('Matrix Dimensions', () => {
@@ -323,7 +326,7 @@ describe('Determinant', () => {
 	it('computes determinant of 1x1 matrix', () => {
 		const m = numMatrix([[5]]);
 		const result = determinant(m);
-		expect((result as NumberNode).value).toBe('5');
+		expect(toNum(result)).toBe(5);
 	});
 
 	it('computes determinant of 2x2 matrix', () => {
@@ -333,7 +336,7 @@ describe('Determinant', () => {
 		]);
 		const result = determinant(m);
 		// det = 1*4 - 2*3 = -2
-		expect((result as NumberNode).value).toBe('-2');
+		expect(toNum(result)).toBe(-2);
 	});
 
 	it('computes determinant of identity matrix', () => {
@@ -342,7 +345,7 @@ describe('Determinant', () => {
 			[0, 1]
 		]);
 		const result = determinant(m);
-		expect((result as NumberNode).value).toBe('1');
+		expect(toNum(result)).toBe(1);
 	});
 
 	it('computes determinant of 3x3 matrix', () => {
@@ -353,7 +356,7 @@ describe('Determinant', () => {
 		]);
 		const result = determinant(m);
 		// This matrix is singular, det = 0
-		expect((result as NumberNode).value).toBe('0');
+		expect(toNum(result)).toBe(0);
 	});
 
 	it('computes determinant of non-singular 3x3', () => {
@@ -366,7 +369,7 @@ describe('Determinant', () => {
 		// det = 1*(1*0-4*6) - 2*(0*0-4*5) + 3*(0*6-1*5)
 		// = 1*(-24) - 2*(-20) + 3*(-5)
 		// = -24 + 40 - 15 = 1
-		expect((result as NumberNode).value).toBe('1');
+		expect(toNum(result)).toBe(1);
 	});
 
 	it('throws on non-square matrix', () => {
