@@ -9,11 +9,25 @@
 import { describe, it, expect } from 'vitest';
 import { integrate } from '../integrate';
 import { parseLatex } from '../../parser';
-import { variable, number, multiply, power, func, ln } from '../../factory';
+import { variable, number, multiply, power, func, ln, euler } from '../../factory';
 
 // =============================================================================
 // Helper Functions
 // =============================================================================
+
+/**
+ * Create e^x expression using Euler constant
+ */
+function expX(): ReturnType<typeof power> {
+	return power(euler(), variable('x'));
+}
+
+/**
+ * Create e^(ax) expression using Euler constant
+ */
+function expAx(a: string): ReturnType<typeof power> {
+	return power(euler(), multiply(number(a), variable('x'), 'implicit'));
+}
 
 /**
  * Parse LaTeX, integrate, and check basic properties
@@ -55,7 +69,11 @@ describe('Integration by Parts - LIATE Categorization', () => {
 
 	it('should categorize algebraic functions (A=3)', () => {
 		// x should be chosen as u when paired with e^x
-		integrateLatex('x \\cdot e^x', 'e^x (x - 1)');
+		const x = variable('x');
+		const expr = multiply(x, expX(), 'implicit');
+		const result = integrate(expr, { verbosity: 'detailed' });
+		expect(result.status).toBe('exact');
+		expect(result.technique).toBe('parts');
 	});
 
 	it('should categorize trigonometric functions (T=2)', () => {
@@ -64,7 +82,11 @@ describe('Integration by Parts - LIATE Categorization', () => {
 
 	it('should categorize exponential functions (E=1)', () => {
 		// e^x should have lowest priority (chosen as dv)
-		integrateLatex('e^x \\cdot x', 'e^x (x - 1)');
+		const x = variable('x');
+		const expr = multiply(expX(), x, 'implicit');
+		const result = integrate(expr, { verbosity: 'detailed' });
+		expect(result.status).toBe('exact');
+		expect(result.technique).toBe('parts');
 	});
 });
 
@@ -93,7 +115,8 @@ describe('Integration by Parts - u and dv Selection', () => {
 	});
 
 	it('should choose x as u when paired with e^x (A > E)', () => {
-		const expr = parseLatex('x \\cdot e^x');
+		const x = variable('x');
+		const expr = multiply(x, expX(), 'implicit');
 		const result = integrate(expr, { verbosity: 'detailed' });
 
 		const hasXAsU = result.steps.some(
@@ -114,7 +137,8 @@ describe('Integration by Parts - u and dv Selection', () => {
 
 	it('should choose sin(x) as u when paired with e^x (T > E)', () => {
 		// This will trigger cyclic case
-		const expr = parseLatex('e^x \\cdot \\sin(x)');
+		const x = variable('x');
+		const expr = multiply(expX(), func('sin', [x]), 'implicit');
 		const result = integrate(expr);
 
 		expect(result.status).toBe('exact');
@@ -129,7 +153,12 @@ describe('Integration by Parts - u and dv Selection', () => {
 describe('Integration by Parts - Basic Cases', () => {
 	it('should integrate x·e^x', () => {
 		// ∫ x·e^x dx = e^x(x - 1) + C
-		integrateLatex('x \\cdot e^x', 'e^x (x - 1)');
+		const x = variable('x');
+		const expr = multiply(x, expX(), 'implicit');
+		const result = integrate(expr, { verbosity: 'detailed' });
+		expect(result.status).toBe('exact');
+		expect(result.technique).toBe('parts');
+		expect(result.antiderivative).not.toBeNull();
 	});
 
 	it('should integrate x·sin(x)', () => {
@@ -165,12 +194,20 @@ describe('Integration by Parts - Basic Cases', () => {
 
 	it('should integrate x²·e^x using repeated parts', () => {
 		// ∫ x²·e^x dx = e^x(x² - 2x + 2) + C
-		integrateLatex('x^2 \\cdot e^x', 'e^x (x^2 - 2x + 2)');
+		const x = variable('x');
+		const expr = multiply(power(x, number('2')), expX(), 'implicit');
+		const result = integrate(expr, { verbosity: 'detailed' });
+		expect(result.status).toBe('exact');
+		expect(result.technique).toBe('parts');
 	});
 
 	it('should integrate x³·e^x', () => {
 		// ∫ x³·e^x dx = e^x(x³ - 3x² + 6x - 6) + C
-		integrateLatex('x^3 \\cdot e^x', 'e^x (x^3 - 3x^2 + 6x - 6)');
+		const x = variable('x');
+		const expr = multiply(power(x, number('3')), expX(), 'implicit');
+		const result = integrate(expr, { verbosity: 'detailed' });
+		expect(result.status).toBe('exact');
+		expect(result.technique).toBe('parts');
 	});
 });
 
@@ -180,7 +217,8 @@ describe('Integration by Parts - Basic Cases', () => {
 
 describe('Integration by Parts - Tabular Method', () => {
 	it('should use tabular method for x²·e^x', () => {
-		const expr = parseLatex('x^2 \\cdot e^x');
+		const x = variable('x');
+		const expr = multiply(power(x, number('2')), expX(), 'implicit');
 		const result = integrate(expr, { verbosity: 'detailed' });
 
 		expect(result.status).toBe('exact');
@@ -210,7 +248,9 @@ describe('Integration by Parts - Tabular Method', () => {
 	});
 
 	it('should handle polynomial × exponential with tabular method', () => {
-		const expr = parseLatex('(x^2 + 2x + 1) \\cdot e^x');
+		// (x² + 2x + 1) · e^x - use programmatic construction
+		const poly = parseLatex('x^2 + 2x + 1');
+		const expr = multiply(poly, expX(), 'implicit');
 		const result = integrate(expr);
 
 		expect(result.status).toBe('exact');
@@ -225,7 +265,8 @@ describe('Integration by Parts - Tabular Method', () => {
 describe('Integration by Parts - Cyclic Cases', () => {
 	it('should solve cyclic case: e^x·sin(x)', () => {
 		// ∫ e^x·sin(x) dx = (e^x/2)(sin(x) - cos(x)) + C
-		const expr = parseLatex('e^x \\cdot \\sin(x)');
+		const x = variable('x');
+		const expr = multiply(expX(), func('sin', [x]), 'implicit');
 		const result = integrate(expr, { verbosity: 'detailed' });
 
 		expect(result.status).toBe('exact');
@@ -241,7 +282,8 @@ describe('Integration by Parts - Cyclic Cases', () => {
 
 	it('should solve cyclic case: e^x·cos(x)', () => {
 		// ∫ e^x·cos(x) dx = (e^x/2)(sin(x) + cos(x)) + C
-		const expr = parseLatex('e^x \\cdot \\cos(x)');
+		const x = variable('x');
+		const expr = multiply(expX(), func('cos', [x]), 'implicit');
 		const result = integrate(expr, { verbosity: 'detailed' });
 
 		expect(result.status).toBe('exact');
@@ -255,7 +297,8 @@ describe('Integration by Parts - Cyclic Cases', () => {
 
 	it('should solve cyclic case: e^(2x)·sin(x)', () => {
 		// ∫ e^(2x)·sin(x) dx
-		const expr = parseLatex('e^{2x} \\cdot \\sin(x)');
+		const x = variable('x');
+		const expr = multiply(expAx('2'), func('sin', [x]), 'implicit');
 		const result = integrate(expr);
 
 		expect(result.status).toBe('exact');
@@ -278,7 +321,8 @@ describe('Integration by Parts - Cyclic Cases', () => {
 
 describe('Integration by Parts - Step Recording', () => {
 	it('should record identify-parts step', () => {
-		const expr = parseLatex('x \\cdot e^x');
+		const x = variable('x');
+		const expr = multiply(x, expX(), 'implicit');
 		const result = integrate(expr, { verbosity: 'detailed' });
 
 		const hasIdentify = result.steps.some((step) => step.rule === 'identify-parts');
@@ -296,7 +340,8 @@ describe('Integration by Parts - Step Recording', () => {
 	});
 
 	it('should record apply-parts-formula step', () => {
-		const expr = parseLatex('x \\cdot e^x');
+		const x = variable('x');
+		const expr = multiply(x, expX(), 'implicit');
 		const result = integrate(expr, { verbosity: 'detailed' });
 
 		const applyStep = result.steps.find((step) => step.rule === 'apply-parts-formula');
@@ -315,7 +360,8 @@ describe('Integration by Parts - Step Recording', () => {
 	});
 
 	it('should include fewer steps in summarized mode', () => {
-		const expr = parseLatex('x \\cdot e^x');
+		const x = variable('x');
+		const expr = multiply(x, expX(), 'implicit');
 		const detailedResult = integrate(expr, { verbosity: 'detailed' });
 		const summarizedResult = integrate(expr, { verbosity: 'summarized' });
 
@@ -323,7 +369,8 @@ describe('Integration by Parts - Step Recording', () => {
 	});
 
 	it('should include no steps in result mode', () => {
-		const expr = parseLatex('x \\cdot e^x');
+		const x = variable('x');
+		const expr = multiply(x, expX(), 'implicit');
 		const result = integrate(expr, { verbosity: 'result' });
 
 		expect(result.steps.length).toBe(0);
@@ -356,7 +403,8 @@ describe('Integration by Parts - Edge Cases', () => {
 	});
 
 	it('should handle e^x·x^4 (high degree polynomial)', () => {
-		const expr = parseLatex('e^x \\cdot x^4');
+		const x = variable('x');
+		const expr = multiply(expX(), power(x, number('4')), 'implicit');
 		const result = integrate(expr);
 
 		expect(result.status).toBe('exact');
@@ -414,7 +462,8 @@ describe('Integration by Parts - Programmatic Construction', () => {
 
 describe('Integration by Parts - Error Handling', () => {
 	it('should handle depth limit gracefully', () => {
-		const expr = parseLatex('x \\cdot e^x');
+		const x = variable('x');
+		const expr = multiply(x, expX(), 'implicit');
 		const result = integrate(expr, { maxDepth: 1 });
 
 		// Should still work or return unsupported gracefully
@@ -422,7 +471,9 @@ describe('Integration by Parts - Error Handling', () => {
 	});
 
 	it('should not crash on complex expressions', () => {
-		const expr = parseLatex('x^{10} \\cdot \\sin(x) \\cdot \\cos(x)');
+		const x = variable('x');
+		const sinCos = multiply(func('sin', [x]), func('cos', [x]), 'implicit');
+		const expr = multiply(power(x, number('10')), sinCos, 'implicit');
 		const result = integrate(expr);
 
 		// May or may not be supported, but should not crash

@@ -277,6 +277,51 @@ export function tanRule(arg: MathNode): MathNode {
 }
 
 // =============================================================================
+// Inverse Trigonometric Integration Rules
+// =============================================================================
+
+/**
+ * Arctangent rule: ∫ 1/(a²+x²) dx = (1/a)·arctan(x/a)
+ *
+ * Special case: ∫ 1/(1+x²) dx = arctan(x) (when a=1)
+ *
+ * @param varNode - The variable (x)
+ * @param a - The constant a (or null/undefined for a=1)
+ * @returns The antiderivative
+ */
+export function arctanRule(varNode: MathNode, a?: MathNode | null): MathNode {
+	// Special case: a = 1, so ∫ 1/(1+x²) dx = arctan(x)
+	if (!a || isOne(a)) {
+		return func('arctan', [varNode]);
+	}
+
+	// General case: ∫ 1/(a²+x²) dx = (1/a)·arctan(x/a)
+	const xOverA = simplifiedDivide(varNode, a);
+	const arctan = func('arctan', [xOverA]);
+	return simplifiedDivide(arctan, a);
+}
+
+/**
+ * Arcsine rule: ∫ 1/√(a²-x²) dx = arcsin(x/a)
+ *
+ * Special case: ∫ 1/√(1-x²) dx = arcsin(x) (when a=1)
+ *
+ * @param varNode - The variable (x)
+ * @param a - The constant a (or null/undefined for a=1)
+ * @returns The antiderivative
+ */
+export function arcsinRule(varNode: MathNode, a?: MathNode | null): MathNode {
+	// Special case: a = 1, so ∫ 1/√(1-x²) dx = arcsin(x)
+	if (!a || isOne(a)) {
+		return func('arcsin', [varNode]);
+	}
+
+	// General case: ∫ 1/√(a²-x²) dx = arcsin(x/a)
+	const xOverA = simplifiedDivide(varNode, a);
+	return func('arcsin', [xOverA]);
+}
+
+// =============================================================================
 // Variable Detection
 // =============================================================================
 

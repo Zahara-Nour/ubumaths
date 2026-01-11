@@ -80,6 +80,11 @@ function isRationalFunction(expr: MathNode, variable: string): boolean {
  * Check if expression is a polynomial in the given variable.
  */
 function isPolynomial(expr: MathNode, variable: string): boolean {
+	// Unwrap delimiters (parentheses)
+	if (expr.type === 'delimiter') {
+		return isPolynomial(expr.content, variable);
+	}
+
 	// Constants are polynomials
 	if (!containsVariable(expr, variable)) {
 		return true;
@@ -129,6 +134,11 @@ function isPolynomial(expr: MathNode, variable: string): boolean {
  * Get the degree of a polynomial.
  */
 function getPolynomialDegree(expr: MathNode, variable: string): number {
+	// Unwrap delimiters (parentheses)
+	if (expr.type === 'delimiter') {
+		return getPolynomialDegree(expr.content, variable);
+	}
+
 	if (!containsVariable(expr, variable)) {
 		return 0; // Constant
 	}
@@ -200,10 +210,23 @@ function polynomialDivision(
 // =============================================================================
 
 /**
+ * Unwrap delimiter (parentheses) nodes to get the actual content.
+ */
+function unwrapDelimiter(node: MathNode): MathNode {
+	if (node.type === 'delimiter') {
+		return unwrapDelimiter(node.content);
+	}
+	return node;
+}
+
+/**
  * Factor a polynomial into linear and irreducible quadratic factors.
  * This is a simplified implementation that handles common cases.
  */
 function factorDenominator(poly: MathNode, variable: string): PolynomialFactor[] | null {
+	// Unwrap delimiter (parentheses) first
+	poly = unwrapDelimiter(poly);
+
 	// Handle simple cases first
 
 	// Case 1: Single variable (x) → linear factor with root 0
@@ -211,9 +234,29 @@ function factorDenominator(poly: MathNode, variable: string): PolynomialFactor[]
 		return [{ type: 'linear', root: number('0'), multiplicity: 1 }];
 	}
 
+	// Case 1b: Linear factor (x - a)
+	if (poly.type === 'subtraction') {
+		if (isVariable(poly.left) && poly.left.name === variable) {
+			return [{ type: 'linear', root: poly.right, multiplicity: 1 }];
+		}
+	}
+
+	// Case 1c: Linear factor (x + a) → x - (-a)
+	if (poly.type === 'addition') {
+		if (isVariable(poly.left) && poly.left.name === variable) {
+			return [
+				{
+					type: 'linear',
+					root: { type: 'opposite', operand: poly.right } as MathNode,
+					multiplicity: 1
+				}
+			];
+		}
+	}
+
 	// Case 2: (x - a)^n
 	if (poly.type === 'superscript') {
-		const base = poly.base;
+		const base = unwrapDelimiter(poly.base);
 		const exp = poly.superscript;
 
 		if (isNumber(exp)) {
@@ -392,17 +435,189 @@ function decomposePartialFractions(
 }
 
 /**
- * Solve for coefficients in partial fraction decomposition.
- * This is a placeholder that needs full implementation.
+ * Evaluate a polynomial expression at a specific numeric value.
+ * Returns null if evaluation fails (non-numeric result).
+ */
+function evaluateAt(expr: MathNode, variable: string, value: number): number | null {
+	switch (expr.type) {
+		case 'delimiter':
+			return evaluateAt(expr.content, variable, value);
+
+		case 'number':
+			return parseFloat(expr.value);
+
+		case 'variable':
+			if (expr.name === variable) {
+				return value;
+			}
+			// Other variable - can't evaluate
+			return null;
+
+		case 'addition': {
+			const left = evaluateAt(expr.left, variable, value);
+			const right = evaluateAt(expr.right, variable, value);
+			if (left === null || right === null) return null;
+			return left + right;
+		}
+
+		case 'subtraction': {
+			const left = evaluateAt(expr.left, variable, value);
+			const right = evaluateAt(expr.right, variable, value);
+			if (left === null || right === null) return null;
+			return left - right;
+		}
+
+		case 'multiplication': {
+			const left = evaluateAt(expr.left, variable, value);
+			const right = evaluateAt(expr.right, variable, value);
+			if (left === null || right === null) return null;
+			return left * right;
+		}
+
+		case 'division': {
+			const num = evaluateAt(expr.numerator, variable, value);
+			const denom = evaluateAt(expr.denominator, variable, value);
+			if (num === null || denom === null || denom === 0) return null;
+			return num / denom;
+		}
+
+		case 'superscript': {
+			const base = evaluateAt(expr.base, variable, value);
+			const exp = evaluateAt(expr.superscript, variable, value);
+			if (base === null || exp === null) return null;
+			return Math.pow(base, exp);
+		}
+
+		case 'opposite': {
+			const operand = evaluateAt(expr.operand, variable, value);
+			if (operand === null) return null;
+			return -operand;
+		}
+
+		default:
+			return null;
+	}
+}
+
+/**
+ * Get numeric value from a MathNode root.
+ */
+function getRootValue(root: MathNode): number | null {
+	if (isNumber(root)) {
+		return parseFloat(root.value);
+	}
+	if (root.type === 'opposite' && isNumber(root.operand)) {
+		return -parseFloat(root.operand.value);
+	}
+	return null;
+}
+
+/**
+ * Solve for coefficients in partial fraction decomposition using Heaviside cover-up method.
+ * Works for distinct linear factors with multiplicity 1.
  */
 function solveCoefficients(
-	_numerator: MathNode,
+	numerator: MathNode,
 	terms: PartialFractionTerm[],
-	_variable: string
+	variable: string
 ): PartialFractionTerm[] {
-	// TODO: Implement coefficient solving using system of equations
-	// For now, return terms with placeholder coefficients
-	return terms;
+	// Only apply Heaviside cover-up for simple linear factors (multiplicity 1)
+	const allSimpleLinear = terms.every(
+		(t) => t.factor.type === 'linear' && t.factor.multiplicity === 1 && t.power === 1
+	);
+
+	if (!allSimpleLinear || terms.length === 0) {
+		// Fall back to placeholder - more complex solving needed
+		return terms;
+	}
+
+	// Heaviside cover-up method:
+	// For 1/((x-a)(x-b)(x-c)...) = A/(x-a) + B/(x-b) + C/(x-c) + ...
+	// A = numerator evaluated at x=a, divided by product of (a-b)(a-c)...
+
+	const solvedTerms: PartialFractionTerm[] = [];
+
+	for (let i = 0; i < terms.length; i++) {
+		const currentTerm = terms[i];
+		const currentRoot = getRootValue(currentTerm.factor.root!);
+
+		if (currentRoot === null) {
+			// Can't get numeric root value
+			solvedTerms.push(currentTerm);
+			continue;
+		}
+
+		// Evaluate numerator at x = root
+		const numValue = evaluateAt(numerator, variable, currentRoot);
+		if (numValue === null) {
+			solvedTerms.push(currentTerm);
+			continue;
+		}
+
+		// Evaluate product of other (root - otherRoot) terms
+		let denomProduct = 1;
+		let valid = true;
+
+		for (let j = 0; j < terms.length; j++) {
+			if (i === j) continue;
+
+			const otherRoot = getRootValue(terms[j].factor.root!);
+			if (otherRoot === null) {
+				valid = false;
+				break;
+			}
+			denomProduct *= currentRoot - otherRoot;
+		}
+
+		if (!valid || denomProduct === 0) {
+			solvedTerms.push(currentTerm);
+			continue;
+		}
+
+		// Coefficient = numerator / denomProduct
+		const coeffValue = numValue / denomProduct;
+
+		// Convert to MathNode (fraction if not integer)
+		let coeffNode: MathNode;
+		if (Number.isInteger(coeffValue)) {
+			if (coeffValue >= 0) {
+				coeffNode = number(coeffValue.toString());
+			} else {
+				coeffNode = { type: 'opposite', operand: number((-coeffValue).toString()) };
+			}
+		} else {
+			// Express as fraction
+			// Find a reasonable denominator (try small integers)
+			let found = false;
+			for (const d of [2, 3, 4, 5, 6, 8, 10, 12]) {
+				const n = coeffValue * d;
+				if (Math.abs(n - Math.round(n)) < 1e-10) {
+					const numInt = Math.round(n);
+					if (numInt >= 0) {
+						coeffNode = divide(number(numInt.toString()), number(d.toString()), 'fraction');
+					} else {
+						coeffNode = {
+							type: 'opposite',
+							operand: divide(number((-numInt).toString()), number(d.toString()), 'fraction')
+						};
+					}
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				// Use decimal approximation
+				coeffNode = number(coeffValue.toFixed(6));
+			}
+		}
+
+		solvedTerms.push({
+			...currentTerm,
+			coefficient: coeffNode
+		});
+	}
+
+	return solvedTerms;
 }
 
 // =============================================================================
