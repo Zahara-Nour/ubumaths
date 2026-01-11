@@ -97,7 +97,7 @@ export {
 // Factory functions - Common domain shortcuts
 export { positiveReals, nonNegativeReals, nonZeroReals, unitInterval } from './factory';
 
-// Algebra operations
+// Algebra operations (set theory)
 export {
 	isEmpty,
 	isUniversal,
@@ -108,6 +108,19 @@ export {
 	difference,
 	excludePoints
 } from './algebra';
+
+// Interval arithmetic operations
+export {
+	add,
+	subtract,
+	multiply,
+	divide,
+	negate,
+	scale,
+	getBoundsFromDomain,
+	domainFromBounds
+} from './algebra';
+export type { Bounds } from './algebra';
 
 // Formatting (new names)
 export { formatInterval, formatCondition, formatDomainFull, formatEndpointValue } from './format';

@@ -22,7 +22,8 @@ import {
 	realLine,
 	excludedPoint as createExcludedPoint,
 	EMPTY_SET,
-	UNIVERSAL_SET
+	UNIVERSAL_SET,
+	fromNumber
 } from './factory';
 import { compare, endpointToNumber, isNegativeInfinity, isPositiveInfinity } from './endpoint';
 
@@ -483,4 +484,374 @@ export function excludePoints(d: IntervalDomain, values: EndpointValue[]): Inter
 	}
 
 	return d;
+}
+
+// =============================================================================
+// Interval Arithmetic
+// =============================================================================
+
+/**
+ * Interface representing numeric bounds for interval arithmetic.
+ */
+export interface Bounds {
+	lower: number | null; // null = -∞
+	upper: number | null; // null = +∞
+	lowerInclusive: boolean;
+	upperInclusive: boolean;
+}
+
+/**
+ * Extract numeric bounds from an IntervalDomain.
+ * Returns null if domain is empty or has multiple disjoint intervals.
+ */
+export function getBoundsFromDomain(domain: IntervalDomain): Bounds | null {
+	if (domain.kind === 'empty') return null;
+
+	if (domain.kind === 'universal') {
+		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
+	}
+
+	if (domain.kind === 'interval_set') {
+		if (domain.intervals.length === 0) return null;
+		if (domain.intervals.length > 1) {
+			// Multiple disjoint intervals - can't represent as single bounds
+			// Return convex hull (min lower, max upper) for approximation
+			let lower: number | null = null;
+			let upper: number | null = null;
+			let lowerInclusive = false;
+			let upperInclusive = false;
+
+			for (const int of domain.intervals) {
+				const l = endpointToNumber(int.lower.value);
+				const u = endpointToNumber(int.upper.value);
+
+				if (l === -Infinity) {
+					lower = null;
+					lowerInclusive = false;
+				} else if (lower === null || l < lower) {
+					lower = l;
+					lowerInclusive = int.lower.type === 'closed';
+				} else if (l === lower && int.lower.type === 'closed') {
+					lowerInclusive = true;
+				}
+
+				if (u === Infinity) {
+					upper = null;
+					upperInclusive = false;
+				} else if (upper === null || u > upper) {
+					upper = u;
+					upperInclusive = int.upper.type === 'closed';
+				} else if (u === upper && int.upper.type === 'closed') {
+					upperInclusive = true;
+				}
+			}
+
+			return { lower, upper, lowerInclusive, upperInclusive };
+		}
+
+		const int = domain.intervals[0];
+		const lower = endpointToNumber(int.lower.value);
+		const upper = endpointToNumber(int.upper.value);
+
+		return {
+			lower: lower === -Infinity ? null : lower,
+			upper: upper === Infinity ? null : upper,
+			lowerInclusive: int.lower.type === 'closed',
+			upperInclusive: int.upper.type === 'closed'
+		};
+	}
+
+	return null;
+}
+
+/**
+ * Create an IntervalDomain from numeric bounds.
+ */
+export function domainFromBounds(bounds: Bounds): IntervalDomain {
+	const { lower, lowerInclusive, upper, upperInclusive } = bounds;
+
+	if (lower === null && upper === null) {
+		return universalSet();
+	}
+
+	if (lower !== null && upper !== null && lower > upper) {
+		return EMPTY_SET;
+	}
+
+	if (lower !== null && upper !== null) {
+		if (lowerInclusive && upperInclusive) {
+			return intervalSet([
+				interval(
+					{ value: fromNumber(lower), type: 'closed' },
+					{ value: fromNumber(upper), type: 'closed' }
+				)
+			]);
+		} else if (!lowerInclusive && !upperInclusive) {
+			return intervalSet([
+				interval(
+					{ value: fromNumber(lower), type: 'open' },
+					{ value: fromNumber(upper), type: 'open' }
+				)
+			]);
+		} else if (lowerInclusive && !upperInclusive) {
+			return intervalSet([
+				interval(
+					{ value: fromNumber(lower), type: 'closed' },
+					{ value: fromNumber(upper), type: 'open' }
+				)
+			]);
+		} else {
+			return intervalSet([
+				interval(
+					{ value: fromNumber(lower), type: 'open' },
+					{ value: fromNumber(upper), type: 'closed' }
+				)
+			]);
+		}
+	}
+
+	if (lower !== null) {
+		if (lowerInclusive) {
+			return intervalSet([interval({ value: fromNumber(lower), type: 'closed' }, posInfinity())]);
+		} else {
+			return intervalSet([interval({ value: fromNumber(lower), type: 'open' }, posInfinity())]);
+		}
+	}
+
+	// upper !== null
+	if (upperInclusive) {
+		return intervalSet([interval(negInfinity(), { value: fromNumber(upper!), type: 'closed' })]);
+	} else {
+		return intervalSet([interval(negInfinity(), { value: fromNumber(upper!), type: 'open' })]);
+	}
+}
+
+/**
+ * Minkowski sum of two interval domains: A + B = { a + b | a ∈ A, b ∈ B }
+ * With endpoint type preservation.
+ */
+export function add(a: IntervalDomain, b: IntervalDomain): IntervalDomain {
+	if (a.kind === 'empty' || b.kind === 'empty') return EMPTY_SET;
+	if (a.kind === 'universal' || b.kind === 'universal') return universalSet();
+
+	const boundsA = getBoundsFromDomain(a);
+	const boundsB = getBoundsFromDomain(b);
+
+	if (!boundsA || !boundsB) return EMPTY_SET;
+
+	// [a, b] + [c, d] = [a+c, b+d]
+	const lower =
+		boundsA.lower === null || boundsB.lower === null ? null : boundsA.lower + boundsB.lower;
+	const upper =
+		boundsA.upper === null || boundsB.upper === null ? null : boundsA.upper + boundsB.upper;
+
+	// Open + Open = Open, Open + Closed = Open, Closed + Closed = Closed
+	const lowerInclusive = boundsA.lowerInclusive && boundsB.lowerInclusive;
+	const upperInclusive = boundsA.upperInclusive && boundsB.upperInclusive;
+
+	return domainFromBounds({ lower, lowerInclusive, upper, upperInclusive });
+}
+
+/**
+ * Minkowski difference of two interval domains: A - B = { a - b | a ∈ A, b ∈ B }
+ * With endpoint type preservation.
+ */
+export function subtract(a: IntervalDomain, b: IntervalDomain): IntervalDomain {
+	if (a.kind === 'empty' || b.kind === 'empty') return EMPTY_SET;
+	if (a.kind === 'universal' || b.kind === 'universal') return universalSet();
+
+	const boundsA = getBoundsFromDomain(a);
+	const boundsB = getBoundsFromDomain(b);
+
+	if (!boundsA || !boundsB) return EMPTY_SET;
+
+	// [a, b] - [c, d] = [a-d, b-c]
+	const lower =
+		boundsA.lower === null || boundsB.upper === null ? null : boundsA.lower - boundsB.upper;
+	const upper =
+		boundsA.upper === null || boundsB.lower === null ? null : boundsA.upper - boundsB.lower;
+
+	const lowerInclusive = boundsA.lowerInclusive && boundsB.upperInclusive;
+	const upperInclusive = boundsA.upperInclusive && boundsB.lowerInclusive;
+
+	return domainFromBounds({ lower, lowerInclusive, upper, upperInclusive });
+}
+
+/**
+ * Negate an interval domain: -A = { -a | a ∈ A }
+ */
+export function negate(domain: IntervalDomain): IntervalDomain {
+	if (domain.kind === 'empty') return EMPTY_SET;
+	if (domain.kind === 'universal') return universalSet();
+
+	const bounds = getBoundsFromDomain(domain);
+	if (!bounds) return EMPTY_SET;
+
+	// -[a, b] = [-b, -a]
+	const lower = bounds.upper === null ? null : -bounds.upper;
+	const upper = bounds.lower === null ? null : -bounds.lower;
+
+	return domainFromBounds({
+		lower,
+		lowerInclusive: bounds.upperInclusive,
+		upper,
+		upperInclusive: bounds.lowerInclusive
+	});
+}
+
+/**
+ * Scale an interval domain by a constant: k * A = { k * a | a ∈ A }
+ * If k < 0, the interval is reversed.
+ */
+export function scale(domain: IntervalDomain, k: number): IntervalDomain {
+	if (domain.kind === 'empty') return EMPTY_SET;
+	if (k === 0) {
+		// 0 * anything = {0}
+		return intervalSet([
+			interval({ value: fromNumber(0), type: 'closed' }, { value: fromNumber(0), type: 'closed' })
+		]);
+	}
+	if (domain.kind === 'universal') return universalSet();
+
+	const bounds = getBoundsFromDomain(domain);
+	if (!bounds) return EMPTY_SET;
+
+	if (k > 0) {
+		// k * [a, b] = [k*a, k*b]
+		const lower = bounds.lower === null ? null : k * bounds.lower;
+		const upper = bounds.upper === null ? null : k * bounds.upper;
+		return domainFromBounds({
+			lower,
+			lowerInclusive: bounds.lowerInclusive,
+			upper,
+			upperInclusive: bounds.upperInclusive
+		});
+	} else {
+		// k < 0: k * [a, b] = [k*b, k*a] (reversed)
+		const lower = bounds.upper === null ? null : k * bounds.upper;
+		const upper = bounds.lower === null ? null : k * bounds.lower;
+		return domainFromBounds({
+			lower,
+			lowerInclusive: bounds.upperInclusive,
+			upper,
+			upperInclusive: bounds.lowerInclusive
+		});
+	}
+}
+
+/**
+ * Multiply two interval domains: A * B = { a * b | a ∈ A, b ∈ B }
+ * Uses the four-corners approach for bounded intervals.
+ */
+export function multiply(a: IntervalDomain, b: IntervalDomain): IntervalDomain {
+	if (a.kind === 'empty' || b.kind === 'empty') return EMPTY_SET;
+
+	const boundsA = getBoundsFromDomain(a);
+	const boundsB = getBoundsFromDomain(b);
+
+	if (!boundsA || !boundsB) return EMPTY_SET;
+
+	// If either bound is unbounded, result is universal (for non-zero intervals)
+	if (
+		boundsA.lower === null ||
+		boundsA.upper === null ||
+		boundsB.lower === null ||
+		boundsB.upper === null
+	) {
+		return universalSet();
+	}
+
+	// Compute all four products with their endpoint types
+	const products = [
+		{
+			value: boundsA.lower * boundsB.lower,
+			aInc: boundsA.lowerInclusive,
+			bInc: boundsB.lowerInclusive
+		},
+		{
+			value: boundsA.lower * boundsB.upper,
+			aInc: boundsA.lowerInclusive,
+			bInc: boundsB.upperInclusive
+		},
+		{
+			value: boundsA.upper * boundsB.lower,
+			aInc: boundsA.upperInclusive,
+			bInc: boundsB.lowerInclusive
+		},
+		{
+			value: boundsA.upper * boundsB.upper,
+			aInc: boundsA.upperInclusive,
+			bInc: boundsB.upperInclusive
+		}
+	];
+
+	const minProduct = products.reduce((min, p) => (p.value < min.value ? p : min));
+	const maxProduct = products.reduce((max, p) => (p.value > max.value ? p : max));
+
+	return domainFromBounds({
+		lower: minProduct.value,
+		lowerInclusive: minProduct.aInc && minProduct.bInc,
+		upper: maxProduct.value,
+		upperInclusive: maxProduct.aInc && maxProduct.bInc
+	});
+}
+
+/**
+ * Divide two interval domains: A / B = { a / b | a ∈ A, b ∈ B }
+ * Returns universal if B contains 0.
+ */
+export function divide(a: IntervalDomain, b: IntervalDomain): IntervalDomain {
+	if (a.kind === 'empty' || b.kind === 'empty') return EMPTY_SET;
+
+	const boundsA = getBoundsFromDomain(a);
+	const boundsB = getBoundsFromDomain(b);
+
+	if (!boundsA || !boundsB) return EMPTY_SET;
+
+	// Check if denominator contains 0
+	const bContainsZero =
+		(boundsB.lower === null || boundsB.lower <= 0) &&
+		(boundsB.upper === null || boundsB.upper >= 0);
+
+	if (bContainsZero) {
+		return universalSet();
+	}
+
+	// Bounded case
+	if (boundsA.lower === null || boundsA.upper === null) {
+		return universalSet();
+	}
+
+	const quotients = [
+		{
+			value: boundsA.lower / boundsB.lower!,
+			aInc: boundsA.lowerInclusive,
+			bInc: boundsB.lowerInclusive
+		},
+		{
+			value: boundsA.lower / boundsB.upper!,
+			aInc: boundsA.lowerInclusive,
+			bInc: boundsB.upperInclusive
+		},
+		{
+			value: boundsA.upper / boundsB.lower!,
+			aInc: boundsA.upperInclusive,
+			bInc: boundsB.lowerInclusive
+		},
+		{
+			value: boundsA.upper / boundsB.upper!,
+			aInc: boundsA.upperInclusive,
+			bInc: boundsB.upperInclusive
+		}
+	];
+
+	const minQuotient = quotients.reduce((min, q) => (q.value < min.value ? q : min));
+	const maxQuotient = quotients.reduce((max, q) => (q.value > max.value ? q : max));
+
+	return domainFromBounds({
+		lower: minQuotient.value,
+		lowerInclusive: minQuotient.aInc && minQuotient.bInc,
+		upper: maxQuotient.value,
+		upperInclusive: maxQuotient.aInc && maxQuotient.bInc
+	});
 }
