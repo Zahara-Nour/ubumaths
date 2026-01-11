@@ -12,6 +12,8 @@ import { differentiate } from '../differentiation';
 import { containsVariable } from './rules';
 import { isNumber, isVariable, isDivision, isMultiplication } from '../guards';
 import { hashMathNode } from '../normal/hash';
+import { normalize } from '../normal/normalize';
+import type { NormalForm, NormalTerm, SymbolicFactor, AlgebraicCoefficient } from '../normal/types';
 
 // =============================================================================
 // Types
@@ -29,6 +31,198 @@ export interface USubstitutionMatch {
 
 	/** Constant factor if du appears with a constant multiple */
 	constantFactor?: number;
+}
+
+// =============================================================================
+// Normalization Cache
+// =============================================================================
+
+const normalFormCache = new Map<string, NormalForm>();
+const MAX_CACHE_SIZE = 100;
+
+/**
+ * Get normalized form with caching.
+ * Avoids re-normalizing the same expression multiple times.
+ */
+function getCachedNormalForm(expr: MathNode): NormalForm {
+	const hash = hashMathNode(expr);
+
+	const cached = normalFormCache.get(hash);
+	if (cached) return cached;
+
+	const form = normalize(expr);
+
+	// Simple LRU: remove oldest when full
+	if (normalFormCache.size >= MAX_CACHE_SIZE) {
+		const firstKey = normalFormCache.keys().next().value;
+		if (firstKey) normalFormCache.delete(firstKey);
+	}
+
+	normalFormCache.set(hash, form);
+	return form;
+}
+
+// =============================================================================
+// NormalForm Analysis Helpers
+// =============================================================================
+
+/**
+ * Check if NormalForm represents a single term (not a sum).
+ * Example: 2x is single term, x+1 is not.
+ */
+function isSingleTerm(form: NormalForm): boolean {
+	return form.numerator.length === 1;
+}
+
+/**
+ * Check if denominator is a pure constant (no variables).
+ * Allows: 1, 2, 1/2
+ * Rejects: x, x+1
+ */
+function hasConstantDenominator(form: NormalForm): boolean {
+	return form.denominator.every((term) => term.monomial.length === 0);
+}
+
+/**
+ * Compare two monomials for equality.
+ * Monomials are sorted canonically, so element-by-element comparison works.
+ */
+function monomialsEqual(m1: readonly SymbolicFactor[], m2: readonly SymbolicFactor[]): boolean {
+	if (m1.length !== m2.length) return false;
+
+	for (let i = 0; i < m1.length; i++) {
+		const f1 = m1[i];
+		const f2 = m2[i];
+
+		// Compare bases using hash (canonical comparison)
+		if (hashMathNode(f1.base) !== hashMathNode(f2.base)) {
+			return false;
+		}
+
+		// Compare exponents (exact rational comparison)
+		if (f1.exponent.n !== f2.exponent.n || f1.exponent.d !== f2.exponent.d) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/**
+ * Extract pure rational value from AlgebraicCoefficient.
+ * Returns null if coefficient contains radicals (e.g., sqrt(2)).
+ */
+function getPureRational(coeff: AlgebraicCoefficient): { n: bigint; d: bigint } | null {
+	// Must be single term with no radicals
+	if (coeff.terms.length !== 1) return null;
+
+	const term = coeff.terms[0];
+	if (term.radicals.length > 0) return null;
+	if (term.hasImaginaryUnit) return null;
+
+	return term.rational;
+}
+
+/**
+ * Get constant value from denominator polynomial.
+ * Returns the product of all constant terms.
+ */
+function getDenominatorConstant(denom: readonly NormalTerm[]): { n: bigint; d: bigint } | null {
+	let n = 1n;
+	let d = 1n;
+
+	for (const term of denom) {
+		if (term.monomial.length > 0) return null; // Has variables
+
+		const rat = getPureRational(term.coefficient);
+		if (!rat) return null; // Has radicals
+
+		n *= rat.n;
+		d *= rat.d;
+	}
+
+	return { n, d };
+}
+
+/**
+ * Compute ratio of two coefficients as a number.
+ * Returns (coeff1/denom1) / (coeff2/denom2).
+ */
+function computeCoefficientRatio(
+	coeff1: AlgebraicCoefficient,
+	denom1: readonly NormalTerm[],
+	coeff2: AlgebraicCoefficient,
+	denom2: readonly NormalTerm[]
+): number | null {
+	const r1 = getPureRational(coeff1);
+	const r2 = getPureRational(coeff2);
+	const d1 = getDenominatorConstant(denom1);
+	const d2 = getDenominatorConstant(denom2);
+
+	if (!r1 || !r2 || !d1 || !d2) return null;
+	if (r2.n === 0n) return null; // Division by zero
+
+	// (r1.n/r1.d / d1.n/d1.d) / (r2.n/r2.d / d2.n/d2.d)
+	// Simplified: (r1.n * d1.d * r2.d * d2.n) / (r1.d * d1.n * r2.n * d2.d)
+	const numerator = r1.n * d1.d * r2.d * d2.n;
+	const denominator = r1.d * d1.n * r2.n * d2.d;
+
+	if (denominator === 0n) return null;
+
+	return Number(numerator) / Number(denominator);
+}
+
+// =============================================================================
+// Normalization-Based Proportionality Detection
+// =============================================================================
+
+/**
+ * Find proportionality constant using normalization.
+ *
+ * If expr1 = c * expr2 for some constant c, returns c.
+ * Uses canonical normalization to handle all structural variations.
+ *
+ * Examples:
+ * - findProportionalityConstantNormalized(2x, x) -> 2
+ * - findProportionalityConstantNormalized(x, 2x) -> 0.5
+ * - findProportionalityConstantNormalized(-x, x) -> -1
+ * - findProportionalityConstantNormalized(x/2, x) -> 0.5
+ * - findProportionalityConstantNormalized(x, y) -> null (different monomials)
+ * - findProportionalityConstantNormalized(x+1, x) -> null (multi-term)
+ */
+function findProportionalityConstantNormalized(expr1: MathNode, expr2: MathNode): number | null {
+	try {
+		const form1 = getCachedNormalForm(expr1);
+		const form2 = getCachedNormalForm(expr2);
+
+		// Both must be single terms (not sums like x+1)
+		if (!isSingleTerm(form1) || !isSingleTerm(form2)) {
+			return null;
+		}
+
+		// Both must have constant denominators
+		if (!hasConstantDenominator(form1) || !hasConstantDenominator(form2)) {
+			return null;
+		}
+
+		const term1 = form1.numerator[0];
+		const term2 = form2.numerator[0];
+
+		// Monomials must match exactly (same variables, same exponents)
+		if (!monomialsEqual(term1.monomial, term2.monomial)) {
+			return null;
+		}
+
+		// Compute coefficient ratio
+		return computeCoefficientRatio(
+			term1.coefficient,
+			form1.denominator,
+			term2.coefficient,
+			form2.denominator
+		);
+	} catch {
+		return null; // Normalization failed
+	}
 }
 
 // =============================================================================
@@ -671,29 +865,22 @@ function findConstantFactor(expr: MathNode, target: MathNode): number | null {
  *
  * Returns the constant c such that expr1 = c * expr2, or null if no such constant exists.
  *
+ * Uses normalization to handle all structural variations:
+ * - 2*x vs x*2 vs 2x -> all equivalent
+ * - x vs 2x -> factor 0.5
+ * - -x vs x -> factor -1
+ * - x/2 vs x -> factor 0.5
+ *
  * @param expr1 - First expression
  * @param expr2 - Second expression
  * @returns Constant factor if expressions are proportional, null otherwise
- *
- * @internal
  */
 export function findProportionalityConstant(expr1: MathNode, expr2: MathNode): number | null {
-	// Direct equality check
+	// Fast path: identical expressions
 	if (hashMathNode(expr1) === hashMathNode(expr2)) {
 		return 1;
 	}
 
-	// Check if expr1 = c * expr2
-	const factor1 = findConstantFactor(expr1, expr2);
-	if (factor1 !== null) {
-		return factor1;
-	}
-
-	// Check if expr2 = c * expr1 (then expr1 = (1/c) * expr2)
-	const factor2 = findConstantFactor(expr2, expr1);
-	if (factor2 !== null) {
-		return 1 / factor2;
-	}
-
-	return null;
+	// Use normalization for all other cases
+	return findProportionalityConstantNormalized(expr1, expr2);
 }
