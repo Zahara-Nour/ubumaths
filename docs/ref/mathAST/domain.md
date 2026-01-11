@@ -270,6 +270,8 @@ The `computeRange` function computes the output range (image) of mathematical ex
 | -------- | ----------- | ----------------- |
 | sqrt     | [0, +∞[     | Non-negative      |
 | abs      | [0, +∞[     | Non-negative      |
+| min      | ℝ           | Piecewise         |
+| max      | ℝ           | Piecewise         |
 | exp      | ]0, +∞[     | Strictly positive |
 | ln, log  | ℝ           | All reals         |
 | sin, cos | [-1, 1]     | Bounded           |
@@ -345,6 +347,70 @@ Arithmetic operations preserve open/closed endpoint types:
 ```typescript
 // ]0, 1] + [1, 2[ = ]1, 3[
 // Open + Open = Open, Open + Closed = Open, Closed + Closed = Closed
+```
+
+### Advanced Range Analysis
+
+The range computation includes several advanced features for accurate results:
+
+#### Quadratic Detection
+
+Expressions of the form `ax² + bx + c` are detected and analyzed using the vertex formula:
+
+```typescript
+// x² on [-2, 3]: vertex at x=0, range is [0, max(4, 9)] = [0, 9]
+computeRange(parseLatex('x^2'), 'x', { domain: closedInterval(-2, 3) });
+
+// x² - 4x + 3 on [0, 4]: vertex at x=2, y=-1
+computeRange(parseLatex('x^2 - 4x + 3'), 'x', { domain: closedInterval(0, 4) });
+```
+
+#### Piecewise Function Handling
+
+Functions like `abs`, `min`, and `max` are handled algebraically (not by sampling):
+
+```typescript
+// |x| on [-3, 2]: range is [0, 3]
+computeRange(parseLatex('|x|'), 'x', { domain: closedInterval(-3, 2) });
+
+// min(x, 2) on [0, 5]: range is [0, 2]
+computeRange(parseLatex('\\min(x, 2)'), 'x', { domain: closedInterval(0, 5) });
+
+// max(x², 1) on [-2, 2]: range is [1, 4]
+computeRange(parseLatex('\\max(x^2, 1)'), 'x', { domain: closedInterval(-2, 2) });
+```
+
+#### Rational Powers
+
+Expressions like `x^(p/q)` are detected and handled with proper domain restrictions:
+
+```typescript
+// x^(1/2) = √x on [0, 4]: range is [0, 2]
+computeRange(parseLatex('x^{1/2}'), 'x', { domain: closedInterval(0, 4) });
+
+// x^(2/3) on [-8, 27]: range is [0, 9]
+computeRange(parseLatex('x^{2/3}'), 'x', { domain: closedInterval(-8, 27) });
+```
+
+#### Periodic Function Optimization
+
+For trigonometric functions, if the input domain spans at least one full period, the full range is returned:
+
+```typescript
+// sin(x) on [0, 2π]: full period → range is [-1, 1]
+computeRange(parseLatex('\\sin{x}'), 'x', { domain: closedInterval(0, 2 * Math.PI) });
+
+// tan(x) on [0, π]: full period → range is ℝ
+computeRange(parseLatex('\\tan{x}'), 'x', { domain: closedInterval(0, Math.PI) });
+```
+
+#### Critical Point Analysis
+
+For complex expressions on bounded domains, derivatives are used to find extrema:
+
+```typescript
+// Uses critical points when algebraic patterns aren't detected
+// Evaluates at domain endpoints and critical points within the domain
 ```
 
 The intervals module provides these arithmetic operations:
@@ -560,24 +626,41 @@ interface DomainViolation {
 | `hasRestrictedDomain` | Check if function has restricted domain          |
 | `hasRestrictedRange`  | Check if function has restricted (bounded) range |
 
+### Range Helpers (Advanced)
+
+| Function                         | Description                             |
+| -------------------------------- | --------------------------------------- |
+| `extractQuadratic`               | Detect ax² + bx + c pattern             |
+| `extractRationalPower`           | Detect x^(p/q) pattern                  |
+| `computeQuadraticRange`          | Range using vertex formula              |
+| `computeAbsRange`                | Algebraic \|f(x)\| range                |
+| `computeMinRange`                | Piecewise min(a, b) range               |
+| `computeMaxRange`                | Piecewise max(a, b) range               |
+| `computeRationalPowerRange`      | Range for x^(p/q) expressions           |
+| `findCriticalPoints`             | Find derivative zeros                   |
+| `computeRangeWithCriticalPoints` | Range using critical point analysis     |
+| `spansFullPeriod`                | Check if domain covers full trig period |
+| `getFunctionPeriod`              | Get period of trigonometric function    |
+
 > **Deprecated**: `formatDomainInterval` → use `formatInterval`, `formatDomainCondition` → use `formatCondition`
 
 ## File Structure
 
 ```
 src/lib/mathAST/domain/
-├── types.ts       # Domain type definitions (re-exports from intervals)
-├── factory.ts     # Factory functions (re-exports from intervals)
-├── algebra.ts     # Domain algebra (delegates to intervals)
-├── builtins.ts    # Built-in function domains and ranges
-├── compute.ts     # Domain computation
-├── range.ts       # Range (image) computation
-├── preimage.ts    # Inequality solving
-├── validate.ts    # Validation functions
-├── format.ts      # Formatting functions (delegates to intervals)
-├── errors.ts      # DomainError class
-├── index.ts       # Public exports
-└── __tests__/     # 574 tests (comprehensive edge cases)
+├── types.ts         # Domain type definitions (re-exports from intervals)
+├── factory.ts       # Factory functions (re-exports from intervals)
+├── algebra.ts       # Domain algebra (delegates to intervals)
+├── builtins.ts      # Built-in function domains and ranges
+├── compute.ts       # Domain computation
+├── range.ts         # Range (image) computation
+├── range-helpers.ts # Advanced range analysis (quadratic, piecewise, critical points)
+├── preimage.ts      # Inequality solving
+├── validate.ts      # Validation functions
+├── format.ts        # Formatting functions (delegates to intervals)
+├── errors.ts        # DomainError class
+├── index.ts         # Public exports
+└── __tests__/       # 750+ tests (comprehensive edge cases)
 
 src/lib/math/intervals/  (upstream module)
 ├── types.ts       # EndpointValue = MathNode, IntervalSet
