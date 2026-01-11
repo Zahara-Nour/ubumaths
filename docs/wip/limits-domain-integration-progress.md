@@ -18,6 +18,7 @@ Integrer les modules domain et intervals dans le module limits pour :
 | 4     | Validation domaine dans algebraic.ts     | Skip     |
 | 5     | Validation domaine dans indeterminate.ts | Skip     |
 | 6     | Quality checks finaux                    | Complete |
+| 7     | Edge cases tests exhaustifs              | Complete |
 
 ### Note sur Phases 4 et 5
 
@@ -136,12 +137,13 @@ Detection precoce des problemes de domaine avec messages pedagogiques en francai
 
 ## Fichiers modifies (cumul)
 
-| Fichier                                              | Phase | Type de modification                                      |
-| ---------------------------------------------------- | ----- | --------------------------------------------------------- |
-| `src/lib/mathAST/limits/one-sided.ts`                | 1, 2  | Suppression evaluateAt, ajout wrapper, domain integration |
-| `src/lib/mathAST/limits/__tests__/one-sided.test.ts` | 2     | Ajout 3 tests domain-based                                |
-| `src/lib/mathAST/limits/evaluate.ts`                 | 3     | Validation domaine, messages FR                           |
-| `src/lib/mathAST/limits/__tests__/evaluate.test.ts`  | 3     | Ajout 4 tests validation domaine                          |
+| Fichier                                               | Phase | Type de modification                                      |
+| ----------------------------------------------------- | ----- | --------------------------------------------------------- |
+| `src/lib/mathAST/limits/one-sided.ts`                 | 1, 2  | Suppression evaluateAt, ajout wrapper, domain integration |
+| `src/lib/mathAST/limits/__tests__/one-sided.test.ts`  | 2     | Ajout 3 tests domain-based                                |
+| `src/lib/mathAST/limits/evaluate.ts`                  | 3     | Validation domaine, messages FR                           |
+| `src/lib/mathAST/limits/__tests__/evaluate.test.ts`   | 3     | Ajout 4 tests validation domaine                          |
+| `src/lib/mathAST/limits/__tests__/edge-cases.test.ts` | 7     | 126 tests edge cases (87 pass, 39 skip)                   |
 
 ---
 
@@ -149,6 +151,57 @@ Detection precoce des problemes de domaine avec messages pedagogiques en francai
 
 - Les 17 tests de `one-sided.test.ts` doivent passer apres chaque modification
 - Le module eval utilise BigInt Rational, le wrapper retourne un number ou null
+
+---
+
+## Phase 7 : Edge cases tests exhaustifs
+
+**Date** : 2026-01-11
+
+### Objectif
+
+Ajouter une suite de tests exhaustive pour documenter le comportement du module et identifier les fonctionnalites a implementer.
+
+### Fichier cree
+
+- `src/lib/mathAST/limits/__tests__/edge-cases.test.ts`
+
+### Categories de tests
+
+| Categorie                | Pass   | Skip   | Description                                  |
+| ------------------------ | ------ | ------ | -------------------------------------------- |
+| Domain Boundary Cases    | 14     | 6      | sqrt, ln, compositions aux frontieres        |
+| One-Sided Limits         | 5      | 11     | Asymptotes verticales, valeur absolue        |
+| Indeterminate Forms      | 13     | 5      | 0/0, ∞/∞                                     |
+| Infinity Limits          | 6      | 12     | Polynomes, exp, ln a l'infini                |
+| Trigonometric Edge Cases | 13     | 0      | sin/x, tan/x, cos-1                          |
+| Special Values           | 5      | 1      | Constantes e, π                              |
+| Algebraic Simplification | 7      | 1      | Factorisation, rationalisation               |
+| Squeeze Theorem          | 2      | 2      | x²·sin(1/x), theoreme des gendarmes          |
+| Direction-Specific       | 9      | 0      | analyzeOneSidedLimits, needsOneSidedAnalysis |
+| Complex Compositions     | 6      | 0      | sin(ln(x)), exp(sin(x))                      |
+| Error and Edge Cases     | 5      | 0      | Messages FR, expressions sans variable       |
+| Negative Numbers         | 3      | 2      | -1/x, (-x)²                                  |
+| Fractional Powers        | 4      | 0      | x^(1/2), x^(1/3)                             |
+| Multiple Terms           | 3      | 2      | x + 1/x, x·(1/x)                             |
+| **Total**                | **87** | **39** |                                              |
+
+### Tests skipped (fonctionnalites a implementer)
+
+Les 39 tests skipped documentent les fonctionnalites futures :
+
+- Limites de fonctions simples a l'infini (`x→+∞`, `ln(x)→+∞`, `e^x→+∞`)
+- Limites de compositions vers l'infini (`1/sqrt(x)→+∞`, `1/ln(x)→±∞`)
+- Theoreme des gendarmes a l'infini (`sin(x)/x→0` quand `x→+∞`)
+- Limites avec valeur absolue (`|x|/x`)
+- Negation de limites (`-1/x`)
+
+### Etat actuel
+
+- [x] 126 tests ecrits
+- [x] 87 tests passent
+- [x] 39 tests skipped (TODO documentes)
+- [x] Commit cree (4f46d7c1)
 
 ---
 
@@ -164,13 +217,16 @@ Detection precoce des problemes de domaine avec messages pedagogiques en francai
 | Checks hardcodes (sqrt, ln)      | 4     | 0     |
 | Messages pedagogiques FR         | 0     | 4     |
 | Validation domaine               | Non   | Oui   |
-| Tests limits                     | 101   | 108   |
+| Tests limits (total)             | 101   | 234   |
+| Tests limits (passants)          | 101   | 195   |
+| Tests limits (skipped)           | 0     | 39    |
 
 ### Commits
 
 1. `222f2429` - refactor(limits): replace evaluateAt with eval module wrapper
 2. `31ab5aca` - refactor(limits): use domain analysis for asymmetric behavior detection
 3. `d04e8613` - feat(limits): add domain validation with French pedagogical messages
+4. `4f46d7c1` - test(limits): add comprehensive edge case test suite
 
 ### Benefices
 
@@ -178,3 +234,4 @@ Detection precoce des problemes de domaine avec messages pedagogiques en francai
 - **Extensibilite** : Nouvelles fonctions avec domaine restreint fonctionnent automatiquement
 - **Pedagogie** : Messages en francais expliquant pourquoi la limite n'existe pas
 - **Robustesse** : Detection precoce des problemes de domaine
+- **Documentation** : 126 edge cases documentent le comportement attendu et les fonctionnalites futures
