@@ -324,7 +324,8 @@ function applyPartsFormula(
 	const vResult: IntegrateResult = integrate(dv, {
 		variable,
 		...options,
-		verbosity: 'result' // Don't pollute steps with sub-integration
+		verbosity: 'result', // Don't pollute steps with sub-integration
+		_depth: depth + 1 // Track recursion depth
 	});
 
 	if (vResult.status === 'unsupported' || !vResult.antiderivative) {
@@ -364,7 +365,8 @@ function applyPartsFormula(
 	const vduResult: IntegrateResult = integrate(vdu, {
 		variable,
 		...options,
-		verbosity: 'result'
+		verbosity: 'result',
+		_depth: depth + 1 // Track recursion depth
 	});
 
 	// Check for cyclic case: ∫v du leads back to original integral
@@ -488,7 +490,8 @@ function solveCyclicCase(
 	const vduResult: IntegrateResult = integrate(vdu, {
 		variable,
 		...options,
-		verbosity: 'result'
+		verbosity: 'result',
+		_depth: depth + 1 // Track recursion depth
 	});
 
 	if (vduResult.status !== 'exact' || !vduResult.antiderivative) {
