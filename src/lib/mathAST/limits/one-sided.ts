@@ -15,6 +15,8 @@ import { classifyLimitValue } from './indeterminate';
 import { structurallyEqual } from './known-limits';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeDomain } from '../domain/compute';
+import { containsValue } from '../domain/algebra';
 
 // =============================================================================
 // One-Sided Limit Evaluation
@@ -210,7 +212,40 @@ export function needsOneSidedAnalysis(
 }
 
 /**
+ * Check if an expression may have a restricted domain.
+ * Used as a performance optimization to avoid expensive domain computation
+ * for simple arithmetic expressions with universal domain.
+ */
+function mayHaveRestrictedDomain(expr: MathNode): boolean {
+	switch (expr.type) {
+		case 'function':
+			// Functions like sqrt, ln, log, asin, acos, etc. have restricted domains
+			return true;
+		case 'superscript':
+			// Powers with fractional exponents (like x^(1/2)) have restricted domains
+			return true;
+		case 'division':
+			// Division may have zeros in denominator
+			return true;
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return mayHaveRestrictedDomain(expr.left) || mayHaveRestrictedDomain(expr.right);
+		case 'opposite':
+		case 'positive':
+			return mayHaveRestrictedDomain(expr.operand);
+		case 'delimiter':
+			return mayHaveRestrictedDomain(expr.content);
+		default:
+			return false;
+	}
+}
+
+/**
  * Check if expression has asymmetric behavior around a point.
+ *
+ * Uses domain analysis to detect if the approach point is on a domain boundary
+ * (e.g., sqrt(x) at x=0, ln(x-3) at x=3) instead of hardcoded function checks.
  */
 function hasAsymmetricBehavior(expr: MathNode, varName: string, approach: MathNode): boolean {
 	// Division by variable (potential sign change)
@@ -221,62 +256,50 @@ function hasAsymmetricBehavior(expr: MathNode, varName: string, approach: MathNo
 		}
 	}
 
-	// Absolute value or sign function
+	// Domain-based check: if approach point is on domain boundary
+	// Only compute domain for expressions that may have restricted domains
+	// (functions like sqrt/ln, powers with fractional exponents, divisions)
+	if (isNumber(approach) && mayHaveRestrictedDomain(expr)) {
+		const approachVal = parseFloat(approach.value);
+		const epsilon = 1e-10;
+
+		try {
+			const { domain } = computeDomain(expr, varName);
+
+			const leftInDomain = containsValue(domain, approachVal - epsilon);
+			const rightInDomain = containsValue(domain, approachVal + epsilon);
+
+			// Asymmetric behavior if exactly one side is in domain
+			if (leftInDomain !== rightInDomain) {
+				return true;
+			}
+		} catch {
+			// If domain computation fails, fall back to conservative behavior
+			// (continue with other checks below)
+		}
+	}
+
+	// Absolute value or sign function - check if argument changes sign
+	// (domain is ℝ for these functions, but behavior changes at 0)
 	if (expr.type === 'function') {
 		const name = expr.name.toLowerCase();
 		if (name === 'abs' || name === 'sign' || name === 'sgn') {
-			// Check if argument contains the variable approaching 0
-			if (isNumber(approach) && parseFloat(approach.value) === 0) {
-				return true;
+			if (isNumber(approach) && expr.args.length === 1) {
+				const approachVal = parseFloat(approach.value);
+				const epsilon = 1e-10;
+
+				const argAtLeft = evaluateAtValue(expr.args[0], varName, approachVal - epsilon);
+				const argAtRight = evaluateAtValue(expr.args[0], varName, approachVal + epsilon);
+
+				// If argument changes sign near approach point, one-sided analysis needed
+				if (argAtLeft !== null && argAtRight !== null && argAtLeft * argAtRight < 0) {
+					return true;
+				}
 			}
 		}
 	}
 
-	// Square root (domain issue for negative values)
-	if (expr.type === 'function' && expr.name.toLowerCase() === 'sqrt') {
-		return true;
-	}
-
-	// Logarithm (domain issue for non-positive values)
-	if (expr.type === 'function' && expr.name.toLowerCase() === 'ln') {
-		return true;
-	}
-
-	// Recursively check children
-	switch (expr.type) {
-		case 'addition':
-		case 'subtraction':
-		case 'multiplication':
-			return (
-				hasAsymmetricBehavior(expr.left, varName, approach) ||
-				hasAsymmetricBehavior(expr.right, varName, approach)
-			);
-
-		case 'division':
-			return (
-				hasAsymmetricBehavior(expr.numerator, varName, approach) ||
-				hasAsymmetricBehavior(expr.denominator, varName, approach)
-			);
-
-		case 'opposite':
-		case 'positive':
-			return hasAsymmetricBehavior(expr.operand, varName, approach);
-
-		case 'superscript':
-			return (
-				hasAsymmetricBehavior(expr.base, varName, approach) ||
-				hasAsymmetricBehavior(expr.superscript, varName, approach)
-			);
-
-		case 'function':
-			return expr.args.some((arg) => hasAsymmetricBehavior(arg, varName, approach));
-
-		case 'delimiter':
-			return hasAsymmetricBehavior(expr.content, varName, approach);
-
-		default:
-			return false;
-	}
+	return false;
 }
 
 // =============================================================================
