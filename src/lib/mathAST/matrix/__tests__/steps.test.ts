@@ -7,8 +7,9 @@
 import { describe, it, expect } from 'vitest';
 import { matrix, number } from '../../factory';
 import { determinant, inverse } from '../operations';
-import type { MatrixNode } from '../../types';
+import type { MatrixNode, MathNode } from '../../types';
 import type { MatrixOperationResult } from '../types';
+import { evaluate } from '../../eval/evaluate';
 
 // =============================================================================
 // Helper Functions
@@ -19,6 +20,17 @@ import type { MatrixOperationResult } from '../types';
  */
 function createMatrix(values: number[][]): MatrixNode {
 	return matrix(values.map((row) => row.map((v) => number(v.toString()))));
+}
+
+/**
+ * Convert a MathNode to a number using evaluate
+ */
+function toNum(node: MathNode): number {
+	const result = evaluate(node, { mode: 'decimal' });
+	if (typeof result.value !== 'number') {
+		throw new Error(`Expected numeric result, got ${typeof result.value}`);
+	}
+	return result.value;
 }
 
 /**
@@ -78,8 +90,7 @@ describe('determinant with pedagogical steps', () => {
 
 			if (isResultWithSteps(result)) {
 				// det = 1*4 - 2*3 = -2
-				expect(result.result.type).toBe('number');
-				expect((result.result as { value: string }).value).toBe('-2');
+				expect(toNum(result.result)).toBe(-2);
 			}
 		});
 
@@ -299,9 +310,8 @@ describe('inverse with pedagogical steps', () => {
 				// det = 24 - 14 = 10
 				// inv = (1/10) * [[6, -7], [-2, 4]]
 				const inv = result.result;
-				expect(inv.rows[0][0].type).toBe('number');
-				expect(parseFloat((inv.rows[0][0] as { value: string }).value)).toBeCloseTo(0.6);
-				expect(parseFloat((inv.rows[0][1] as { value: string }).value)).toBeCloseTo(-0.7);
+				expect(toNum(inv.rows[0][0])).toBeCloseTo(0.6);
+				expect(toNum(inv.rows[0][1])).toBeCloseTo(-0.7);
 			}
 		});
 	});
