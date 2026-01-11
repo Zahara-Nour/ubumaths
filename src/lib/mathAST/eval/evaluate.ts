@@ -638,7 +638,14 @@ const KNOWN_FUNCTIONS = new Set([
 	'mean',
 	'median',
 	'variance',
-	'stdev',
+	'stdev'
+]);
+
+/**
+ * Additional functions supported in exact mode only (via normalization).
+ * These handle complex numbers symbolically.
+ */
+const EXACT_MODE_FUNCTIONS = new Set([
 	'conj',
 	're',
 	'im',
@@ -659,9 +666,10 @@ const KNOWN_FUNCTIONS = new Set([
  * - Other non-evaluable constructs
  *
  * @param node - The MathNode to validate
+ * @param exactMode - If true, also allows EXACT_MODE_FUNCTIONS (complex functions)
  * @throws Error if the expression cannot be evaluated
  */
-function validateEvaluable(node: MathNode): void {
+function validateEvaluable(node: MathNode, exactMode: boolean = false): void {
 	if (isFunction(node)) {
 		// Use type assertion to prevent TypeScript control flow narrowing issues
 		// with isDerivativeFunction/isInverseFunction type guards on already-narrowed FunctionNode
@@ -680,7 +688,10 @@ function validateEvaluable(node: MathNode): void {
 					'Inverse functions remain symbolic.'
 			);
 		}
-		if (!KNOWN_FUNCTIONS.has(funcName)) {
+		// Check if function is known (include exact-mode functions if in exact mode)
+		const isKnown =
+			KNOWN_FUNCTIONS.has(funcName) || (exactMode && EXACT_MODE_FUNCTIONS.has(funcName));
+		if (!isKnown) {
 			throw new Error(
 				`Unknown function: ${fn.name}. ` +
 					'If this is a generic function (like f, g, h), provide its definition in EvalOptions.functions'
@@ -688,7 +699,7 @@ function validateEvaluable(node: MathNode): void {
 		}
 		// Validate arguments recursively
 		for (const arg of fn.args) {
-			validateEvaluable(arg);
+			validateEvaluable(arg, exactMode);
 		}
 		return;
 	}
@@ -710,23 +721,23 @@ function validateEvaluable(node: MathNode): void {
 
 	// Recursively validate children
 	if (isAddition(node) || isSubtraction(node) || isMultiplication(node)) {
-		validateEvaluable(node.left);
-		validateEvaluable(node.right);
+		validateEvaluable(node.left, exactMode);
+		validateEvaluable(node.right, exactMode);
 	} else if (isDivision(node)) {
-		validateEvaluable(node.numerator);
-		validateEvaluable(node.denominator);
+		validateEvaluable(node.numerator, exactMode);
+		validateEvaluable(node.denominator, exactMode);
 	} else if (isOpposite(node) || isPositive(node)) {
-		validateEvaluable(node.operand);
+		validateEvaluable(node.operand, exactMode);
 	} else if (isSuperscript(node)) {
-		validateEvaluable(node.base);
-		validateEvaluable(node.superscript);
+		validateEvaluable(node.base, exactMode);
+		validateEvaluable(node.superscript, exactMode);
 	} else if (isDelimiter(node)) {
-		validateEvaluable(node.content);
+		validateEvaluable(node.content, exactMode);
 	} else if (isUnit(node)) {
-		validateEvaluable(node.expression);
+		validateEvaluable(node.expression, exactMode);
 	} else if (isComplex(node)) {
-		validateEvaluable(node.real);
-		validateEvaluable(node.imaginary);
+		validateEvaluable(node.real, exactMode);
+		validateEvaluable(node.imaginary, exactMode);
 	}
 	// NumberNode, VariableNode, GreekLetterNode, SymbolNode, HoleNode, MathConstantNode are leaf nodes
 }
@@ -893,11 +904,9 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 		throw new Error(`Cannot evaluate: free variables: ${freeVars.join(', ')}`);
 	}
 
-	// 3. Validate the expression is evaluable (no unknown functions, relations, etc.)
-	validateEvaluable(processedNode);
-
-	// 4. Mode exact: use normalize/denormalize for exact symbolic simplification
+	// 3. Mode exact: validate and use normalize/denormalize for exact symbolic simplification
 	if (opts.mode === 'exact') {
+		validateEvaluable(processedNode, true); // Allow complex functions in exact mode
 		const normalForm = normalize(processedNode);
 		let simplifiedNode = denormalize(normalForm);
 
@@ -912,7 +921,8 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 		};
 	}
 
-	// 5. Mode decimal: evaluate numerically with Rational arithmetic
+	// 4. Mode decimal: validate and evaluate numerically with Rational arithmetic
+	validateEvaluable(processedNode);
 	const numericValue = evaluateNodeToApproximatedNumber(processedNode, opts.precision);
 
 	// Create a MathNode for the numeric result
