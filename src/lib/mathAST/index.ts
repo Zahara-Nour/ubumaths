@@ -742,3 +742,116 @@ export {
 	determinant,
 	inverse
 } from './matrix';
+
+// =============================================================================
+// Sign Analysis
+// =============================================================================
+
+export { analyzeSign, SignAnalysisError, DEFAULT_SIGN_OPTIONS } from './sign';
+export {
+	// Rules
+	signOfProduct,
+	signOfProductMultiple,
+	signOfQuotient,
+	signOfSum,
+	allSameSign,
+	signOfDifference,
+	negateSign,
+	signOfPower,
+	signOfIntegerPower,
+	extractRationalExponent,
+	signOfFunction,
+	signOfMultiArgFunction,
+	getBuiltinSignInfo,
+	// Helpers
+	findZeros,
+	sortZerosByValue,
+	getUniqueZeros,
+	determineSignOnInterval,
+	analyzeExpressionStructure,
+	sampleSignOnInterval,
+	getSamplePoints,
+	getSamplePoint,
+	signFromNumber,
+	// Formatting
+	formatSignAnalysis,
+	formatSignTable,
+	formatSignedIntervalsAsConditions,
+	formatZeros,
+	getSignSymbol,
+	getSignDescription,
+	signToCondition,
+	formatSignSummary
+} from './sign';
+
+export type {
+	Sign as SignAnalysisSign,
+	SignedInterval,
+	ZeroInfo,
+	SignAnalysisResult,
+	SignAnalysisStep,
+	SignAnalysisOptions
+} from './sign';
+
+// =============================================================================
+// Variation Study (Monotonicity)
+// =============================================================================
+
+export {
+	computeVariations,
+	getVariationSummary,
+	VariationError,
+	DEFAULT_VARIATION_OPTIONS
+} from './variations';
+export {
+	// Critical points
+	findCriticalPoints,
+	classifyCriticalPoint,
+	evaluateAtCriticalPoint,
+	sortCriticalPoints,
+	// Monotonicity
+	signToMonotonicity,
+	monotonicityToSign,
+	buildMonotonicIntervals,
+	mergeMonotonicIntervals,
+	getMonotonicityDescription,
+	getDerivativeSignDescription,
+	getMonotonicitySymbol,
+	// Extrema
+	findExtrema,
+	classifyExtremum,
+	findAdjacentIntervals,
+	classifyGlobalExtrema,
+	isGlobalExtremum,
+	getExtremumDescription,
+	getExtremumLabel,
+	// Boundary limits
+	computeBoundaryLimits,
+	getDomainBoundaries,
+	convertLimitResult,
+	getLimitDescription,
+	getCompactLimitDescription,
+	isFiniteLimit,
+	isVerticalAsymptote,
+	isHorizontalAsymptote,
+	// Formatting
+	formatVariationTable,
+	formatMonotonicIntervals,
+	formatExtrema,
+	formatCriticalPoints
+} from './variations';
+
+export type {
+	Monotonicity,
+	MonotonicInterval,
+	ExtremumType,
+	ExtremumInfo,
+	CriticalPointNature,
+	CriticalPointInfo,
+	LimitValue,
+	BoundaryLimit,
+	VariationPhase,
+	VariationStep,
+	VariationResult,
+	VariationOptions
+} from './variations';
