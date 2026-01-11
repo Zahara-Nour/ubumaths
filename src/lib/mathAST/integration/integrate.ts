@@ -50,6 +50,21 @@ function extractConstantMultiplier(
 		}
 	}
 
+	// Check for division by constant: f(x)/c = (1/c) * f(x)
+	if (expr.type === 'division') {
+		if (!containsVariable(expr.denominator, variable)) {
+			// expr = numerator / denominator where denominator is constant
+			// This is equivalent to (1/denominator) * numerator
+			const constant: MathNode = {
+				type: 'division',
+				numerator: number('1'),
+				denominator: expr.denominator,
+				displayStyle: 'fraction'
+			};
+			return { constant, rest: expr.numerator };
+		}
+	}
+
 	// No constant multiplier
 	return { constant: null, rest: expr };
 }
@@ -295,6 +310,62 @@ function integrateInternal(
 		const antiderivative = subtract(leftResult.antiderivative!, rightResult.antiderivative!);
 
 		recorder.recordStepByRule('linearity-sum', simplified, antiderivative, 'summarized');
+
+		return {
+			variable,
+			status: 'exact',
+			antiderivative,
+			integrandType: classifyIntegrand(simplified, variable),
+			technique: 'basic-rule',
+			steps: recorder.getSteps(),
+			constantNote: CONSTANT_OF_INTEGRATION_NOTE
+		};
+	}
+
+	// Handle opposite (negation): ∫-f = -∫f
+	if (simplified.type === 'opposite') {
+		recorder.recordStepByRule(
+			'linearity-opposite',
+			simplified,
+			simplified,
+			'detailed',
+			undefined,
+			'Application de la linéarité: ∫(-f) = -∫f'
+		);
+
+		// Integrate the operand
+		const innerRecorder = createStepRecorder();
+		const innerResult = integrateInternal(
+			simplified.operand,
+			variable,
+			options,
+			innerRecorder,
+			depth + 1
+		);
+
+		if (innerResult.status === 'unsupported') {
+			return innerResult;
+		}
+
+		// Merge steps
+		innerRecorder.getSteps().forEach((step) => {
+			recorder.recordStep(
+				step.rule,
+				step.description,
+				step.before,
+				step.after,
+				'detailed',
+				step.operand,
+				step.technicalNote
+			);
+		});
+
+		// Negate the result
+		const antiderivative = options.simplify
+			? preprocess({ type: 'opposite', operand: innerResult.antiderivative! })
+			: { type: 'opposite' as const, operand: innerResult.antiderivative! };
+
+		recorder.recordStepByRule('linearity-opposite', simplified, antiderivative, 'summarized');
 
 		return {
 			variable,

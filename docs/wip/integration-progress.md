@@ -1,25 +1,45 @@
 # Integration Module - Progress
 
-## Current Status: Phase 10 Complete + Bug Fixes ✅
+## Current Status: Phase 11 - Pattern Matching Improvements ✅
 
-**Last Updated**: 2026-01-11 - Test improvements (245 → 271 → 275 → 280 → 286 passing)
+**Last Updated**: 2026-01-11 - Test improvements (298 → 308 passing, 95% pass rate)
 
-### Recent Session Progress
+### Session Progress (2026-01-11 Evening)
 
-**Fixes Applied in Latest Session**:
+**Fixes Applied**:
+
+1. ✅ **Cyclic Integration by Parts** (e^x·sin(x), e^x·cos(x), e^(2x)·sin(x))
+
+   - Added `extractExpTrigPattern()` to detect e^(ax)·trig(bx) patterns
+   - Added `integrateExpTrigPattern()` using known formulas
+   - Fixed u-substitution to reject exp·trig patterns
+   - Fixed bug in solveCyclicCase (depth vs \_depth parameter)
+   - Fixed superscript node property (`.superscript` not `.exponent`)
+
+2. ✅ **Step Recording Format**
+
+   - Updated technical note format to include both `u = ..., dv = ... dx` and `du = ..., v = ...`
+
+3. ✅ **sin(x)·cos(x) Integration**
+
+   - Added function nodes as u-substitution candidates in `findUCandidates()`
+   - Fixed pattern matching to properly handle f(u)·du patterns
+
+4. ✅ **U-Substitution Pattern Matching Improvements**
+   - Added opposite node handling in `findConstantFactor()` for negative coefficients
+   - Added function node pattern: f(u) with u = arg (e.g., e^(3x))
+   - Added superscript patterns: e^u (exponent = u) and u^n (base = u)
+   - Added division pattern: 1/u (e.g., 1/(2x+1))
+   - Improved multiplication pattern to verify remaining factor is expressible in terms of u
+
+### Previous Session Fixes
 
 1. ✅ Phase 4: Polynomial long division - Implemented using normalization framework
-
-   - Added imports for normalize/denormalize utilities
-   - Use divideUnivariate for actual division
-   - Convert results back to MathNode
 
 2. ✅ Phase 5: Repeated factor coefficient solving
    - Extended solveCoefficients for repeated factors
    - Added createCoeffNode helper
    - Added solveRepeatedFactors for mixed factor cases
-   - Fixed isPolynomial to recognize (polynomial)^n patterns
-   - Fixed getPolynomialDegree for (polynomial)^n patterns
 
 ---
 
