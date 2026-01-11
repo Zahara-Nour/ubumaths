@@ -11,8 +11,10 @@ export type {
 	MatrixType,
 	MatrixOptions,
 	MatrixVerbosity,
+	MatrixRule,
 	MatrixStep,
-	MatrixOperationOptions
+	MatrixOperationOptions,
+	MatrixOperationResult
 } from './types';
 export { MatrixDimensionError, MatrixOperationError } from './types';
 
@@ -30,3 +32,7 @@ export {
 } from './operations';
 
 export type { MatrixDimensions } from './operations';
+
+// Step Recorder
+export { createMatrixStepRecorder, MatrixStepRecorderImpl } from './step-recorder';
+export type { MatrixStepRecorder } from './step-recorder';

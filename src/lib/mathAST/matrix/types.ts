@@ -5,6 +5,8 @@
  */
 
 import type { NodeMetadata } from '../types';
+import type { Verbosity } from '../common/verbosity';
+import type { BaseStep } from '../common/step-recorder-base';
 
 // =============================================================================
 // Matrix Display Type
@@ -87,25 +89,57 @@ export class MatrixOperationError extends Error {
 
 /**
  * Verbosity levels for pedagogical step output.
+ * Alias to the common Verbosity type for backwards compatibility.
  */
-export type MatrixVerbosity = 'result' | 'summarized' | 'detailed';
+export type MatrixVerbosity = Verbosity;
+
+/**
+ * Rule identifiers for matrix operations.
+ * Used to identify the type of step in pedagogical output.
+ */
+export type MatrixRule =
+	// Determinant rules
+	| 'identify-matrix-size'
+	| 'det-1x1'
+	| 'det-2x2-formula'
+	| 'det-cofactor-expansion'
+	| 'compute-minor'
+	| 'compute-cofactor'
+	| 'sum-cofactors'
+	| 'det-result'
+	// Inverse rules
+	| 'check-determinant'
+	| 'inverse-2x2-formula'
+	| 'augment-identity'
+	| 'row-swap'
+	| 'row-scale'
+	| 'row-add'
+	| 'extract-inverse'
+	| 'inverse-result';
 
 /**
  * A single step in a matrix operation.
+ * Extends BaseStep with optional matrix state for visualizing intermediate results.
  */
-export interface MatrixStep {
-	readonly id: number;
-	readonly rule: string;
-	readonly description: string; // French
-	readonly before: string; // LaTeX representation
-	readonly after: string; // LaTeX representation
-	readonly verbosityLevel: MatrixVerbosity;
-	readonly detail?: string; // Additional computation detail
+export interface MatrixStep extends BaseStep<MatrixRule> {
+	/**
+	 * LaTeX representation of the matrix state at this step.
+	 * Used for inverse operations to show the augmented matrix [A|I].
+	 */
+	readonly matrixState?: string;
+}
+
+/**
+ * Result of a matrix operation with pedagogical steps.
+ */
+export interface MatrixOperationResult<T> {
+	readonly result: T;
+	readonly steps: readonly MatrixStep[];
 }
 
 /**
  * Options for matrix operations with step recording.
  */
 export interface MatrixOperationOptions {
-	verbosity?: MatrixVerbosity;
+	readonly verbosity?: Verbosity;
 }

@@ -1304,7 +1304,7 @@ interface SystemNode {
 | Complex Numbers         | High      | Medium    | **P3**   | Pending         |
 | Limits                  | Very High | High      | **P3**   | **ROADMAP**     |
 | Summations              | Very High | High      | **P3**   | Pending         |
-| Matrix Operations       | Very High | High      | **P3**   | Pending         |
+| Matrix Operations       | Very High | High      | **P3**   | **IMPLEMENTED** |
 | Symbolic Integration    | Very High | High      | **P3**   | Pending         |
 | WASM Acceleration       | Very High | High      | **P4**   | Pending         |
 
