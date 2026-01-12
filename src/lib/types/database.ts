@@ -13018,6 +13018,13 @@ export type Database = {
 					rarity: string;
 				}[];
 			};
+			get_classes_by_user_grade: {
+				Args: Record<PropertyKey, never>;
+				Returns: {
+					id: string;
+					name: string;
+				}[];
+			};
 			get_conversation_participants: {
 				Args: { p_conversation_id: string };
 				Returns: {
@@ -13326,6 +13333,18 @@ export type Database = {
 				Args: { class_uuid: string };
 				Returns: {
 					student_id: string;
+				}[];
+			};
+			get_students_in_class_by_grade: {
+				Args: { target_class_id: string };
+				Returns: {
+					id: string;
+					full_name: string | null;
+					firstname: string | null;
+					lastname: string | null;
+					avatar_url: string | null;
+					role: string;
+					friendship_status: string | null;
 				}[];
 			};
 			get_teacher_assignment_stats: {

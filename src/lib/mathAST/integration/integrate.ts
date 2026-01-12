@@ -11,7 +11,8 @@ import type {
 	IntegrateResult,
 	DefiniteIntegrateResult,
 	IntegrateOptions,
-	IntegrateStepRecorder
+	IntegrateStepRecorder,
+	ResolvedIntegrateOptions
 } from './types';
 import { DEFAULT_INTEGRATE_OPTIONS } from './types';
 import { detectVariable, classifyIntegrand } from './classify';
@@ -19,6 +20,7 @@ import { createStepRecorder } from './step-recorder';
 import { selectIntegrator } from './integrators';
 import { containsVariable } from './rules';
 import { preprocess } from '../normal/rules';
+import { normalize, denormalize } from '../normal';
 import { number, add as addFactory, multiply as multiplyFactory, subtract } from '../factory';
 import { isAddition, isSubtraction, isMultiplication, isNumber, isDelimiter } from '../guards';
 import { CONSTANT_OF_INTEGRATION_NOTE } from './descriptions-fr';
@@ -97,6 +99,28 @@ function simplifiedMultiply(left: MathNode, right: MathNode): MathNode {
 	return multiplyFactory(left, right, 'implicit');
 }
 
+/**
+ * Normalize an antiderivative using normalize/denormalize for algebraic simplification.
+ * This applies comprehensive simplification including:
+ * - Combining like terms
+ * - Simplifying trigonometric values at remarkable angles
+ * - Expanding/simplifying logarithms
+ * - Combining exponential factors
+ * - Rationalizing denominators
+ *
+ * @param expr - The antiderivative to normalize
+ * @returns The normalized expression
+ */
+function normalizeAntiderivative(expr: MathNode): MathNode {
+	try {
+		const normalForm = normalize(expr);
+		return denormalize(normalForm);
+	} catch {
+		// If normalization fails, return the original expression
+		return expr;
+	}
+}
+
 // =============================================================================
 // Internal Integration Function (Recursive)
 // =============================================================================
@@ -115,7 +139,7 @@ function simplifiedMultiply(left: MathNode, right: MathNode): MathNode {
 function integrateInternal(
 	expr: MathNode,
 	variable: string,
-	options: Required<Omit<IntegrateOptions, 'variable'>>,
+	options: ResolvedIntegrateOptions,
 	recorder: IntegrateStepRecorder,
 	depth: number
 ): IntegrateResult {
@@ -503,7 +527,12 @@ export function integrate(expr: MathNode, options?: IntegrateOptions): Integrate
 
 		// ∫ c dx requires a variable name - use 'x' as default
 		const defaultVar = 'x';
-		const antiderivative = simplifiedMultiply(expr, { type: 'variable', name: defaultVar });
+		let antiderivative = simplifiedMultiply(expr, { type: 'variable', name: defaultVar });
+
+		// Apply normalization if enabled
+		if (opts.normalizeResult) {
+			antiderivative = normalizeAntiderivative(antiderivative);
+		}
 
 		recorder.recordStepByRule('constant-rule', expr, antiderivative, 'summarized');
 
@@ -527,9 +556,23 @@ export function integrate(expr: MathNode, options?: IntegrateOptions): Integrate
 	// Run the integration
 	const result = integrateInternal(expr, variable, opts, recorder, startDepth);
 
+	// Apply final normalization if enabled and integration was successful
+	// IMPORTANT: Only normalize at the top level (startDepth === 0) to avoid
+	// corrupting intermediate results during recursive integration
+	let finalAntiderivative = result.antiderivative;
+	if (
+		opts.normalizeResult &&
+		result.status === 'exact' &&
+		finalAntiderivative &&
+		startDepth === 0
+	) {
+		finalAntiderivative = normalizeAntiderivative(finalAntiderivative);
+	}
+
 	// Filter steps by verbosity
 	return {
 		...result,
+		antiderivative: finalAntiderivative,
 		steps: recorder.getStepsFiltered(opts.verbosity)
 	};
 }

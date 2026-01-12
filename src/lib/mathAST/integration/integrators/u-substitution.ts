@@ -10,8 +10,8 @@ import type { MathNode } from '../../types';
 import type {
 	Integrator,
 	IntegrateResult,
-	IntegrateOptions,
-	IntegrateStepRecorder
+	IntegrateStepRecorder,
+	ResolvedIntegrateOptions
 } from '../types';
 import { matchUSubstitution } from '../patterns';
 import { differentiate } from '../../differentiation';
@@ -155,7 +155,7 @@ export const uSubstitutionIntegrator: Integrator = {
 	integrate(
 		expr: MathNode,
 		variable: string,
-		options: Required<Omit<IntegrateOptions, 'variable'>>,
+		options: ResolvedIntegrateOptions,
 		recorder: IntegrateStepRecorder,
 		depth: number
 	): IntegrateResult {
@@ -214,7 +214,7 @@ function performUSubstitution(
 	integrand: MathNode,
 	u: MathNode,
 	variable: string,
-	options: Required<Omit<IntegrateOptions, 'variable'>>,
+	options: ResolvedIntegrateOptions,
 	recorder: IntegrateStepRecorder,
 	depth: number,
 	matchedConstantFactor?: number
@@ -562,7 +562,8 @@ export function tryUSubstitution(
 			maxDepth: 10,
 			allowNumeric: true,
 			simpsonIntervals: 100,
-			simplify: true
+			simplify: true,
+			normalizeResult: true
 		},
 		recorder,
 		0

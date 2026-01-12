@@ -101,10 +101,6 @@
   2608:13  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
   2609:17  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
 
-/Users/david/Coding/js/ubumaths/src/lib/server/tests/cleanup-all.test.ts
-  38:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
-  40:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
-
 /Users/david/Coding/js/ubumaths/src/lib/shared/blockly/execution/js-executor.svelte.ts
   153:29  warning  Found a mutable instance of the built-in URL class. Use SvelteURL instead  svelte/prefer-svelte-reactivity
 
@@ -121,8 +117,8 @@
 
 /Users/david/Coding/js/ubumaths/src/lib/stores/friends.svelte.ts
   367:26  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
-  461:26  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
-  468:21  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  533:26  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  540:21  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
 
 /Users/david/Coding/js/ubumaths/src/lib/stores/marketplace.svelte.ts
   233:19  warning  Found a mutable instance of the built-in URLSearchParams class. Use SvelteURLSearchParams instead  svelte/prefer-svelte-reactivity
@@ -263,6 +259,5 @@
 /Users/david/Coding/js/ubumaths/src/routes/(public)/games/mathemo/+page.svelte
   154:37  warning  Found a mutable instance of the built-in Set class. Use SvelteSet instead  svelte/prefer-svelte-reactivity
 
-✖ 114 problems (0 errors, 114 warnings)
-  0 errors and 2 warnings potentially fixable with the `--fix` option.
+✖ 112 problems (0 errors, 112 warnings)
 
