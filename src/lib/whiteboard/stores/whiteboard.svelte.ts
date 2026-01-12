@@ -44,9 +44,9 @@ import {
 	markAsModified,
 	shouldAutoSync,
 	type SyncState,
-	type SyncStatus,
-	AUTO_SYNC_DELAY
+	type SyncStatus
 } from '../utils/sync-state';
+import { driveSyncService } from '../services/drive-sync';
 
 // =============================================================================
 // Constants
@@ -291,7 +291,6 @@ function createWhiteboardStore() {
 
 	// === Autosave ===
 	let autosaveTimeout: ReturnType<typeof setTimeout> | null = null;
-	let autoSyncTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// === Derived State ===
 	const currentPage = $derived(document?.pages[document.currentPageIndex] ?? null);
@@ -381,18 +380,23 @@ function createWhiteboardStore() {
 
 	function scheduleAutoSync(): void {
 		if (!browser) return;
+		if (!document) return;
 		if (!shouldAutoSync(syncState)) return;
 
-		// Clear existing timeout
-		if (autoSyncTimeout) {
-			clearTimeout(autoSyncTimeout);
-		}
-
-		// Schedule auto-sync
-		autoSyncTimeout = setTimeout(() => {
-			// This will be called by UI to trigger actual sync
-			// The store just marks it ready for sync
-		}, AUTO_SYNC_DELAY);
+		// Use the drive sync service's debounced auto-sync
+		driveSyncService.scheduleAutoSync(
+			document,
+			document.title || 'Sans titre',
+			syncState.driveFileId || undefined,
+			(result) => {
+				if (result.success && result.fileId) {
+					syncState = updateSyncStateAfterSync(syncState, result.fileId, result.modifiedTime);
+					hasUnsavedChanges = false;
+				} else if (!result.success && result.error) {
+					syncState = updateSyncStateOnError(syncState, result.error);
+				}
+			}
+		);
 	}
 
 	function updateCurrentPage(updater: (page: Page) => Page): void {
@@ -2135,8 +2139,8 @@ function createWhiteboardStore() {
 		/**
 		 * Update sync state after successful sync
 		 */
-		setSyncSuccess(fileId: string): void {
-			syncState = updateSyncStateAfterSync(syncState, fileId);
+		setSyncSuccess(fileId: string, modifiedTime?: string): void {
+			syncState = updateSyncStateAfterSync(syncState, fileId, modifiedTime);
 			hasUnsavedChanges = false;
 		},
 
@@ -2165,10 +2169,7 @@ function createWhiteboardStore() {
 		 */
 		disconnectFromDrive(): void {
 			syncState = createInitialSyncState();
-			if (autoSyncTimeout) {
-				clearTimeout(autoSyncTimeout);
-				autoSyncTimeout = null;
-			}
+			driveSyncService.cancelAutoSync();
 		},
 
 		/**
@@ -2187,9 +2188,8 @@ function createWhiteboardStore() {
 			if (autosaveTimeout) {
 				clearTimeout(autosaveTimeout);
 			}
-			if (autoSyncTimeout) {
-				clearTimeout(autoSyncTimeout);
-			}
+			// Cancel any pending Drive auto-sync
+			driveSyncService.cancelAutoSync();
 			// Final save before destroy
 			if (hasUnsavedChanges) {
 				saveToLocalStorage();

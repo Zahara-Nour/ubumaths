@@ -103,11 +103,15 @@ export function createConnectedSyncState(
 /**
  * Update sync state after successful sync
  */
-export function updateSyncStateAfterSync(state: SyncState, fileId: string): SyncState {
+export function updateSyncStateAfterSync(
+	state: SyncState,
+	fileId: string,
+	modifiedTime?: string
+): SyncState {
 	return {
 		...state,
 		status: 'synced',
-		lastSyncAt: new Date().toISOString(),
+		lastSyncAt: modifiedTime || new Date().toISOString(),
 		driveFileId: fileId,
 		error: null
 	};

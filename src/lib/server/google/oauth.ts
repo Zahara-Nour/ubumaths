@@ -20,9 +20,24 @@ export const GOOGLE_CLASSROOM_SCOPES = [
 	'https://www.googleapis.com/auth/classroom.topics.readonly', // Topics/Rubriques (added 2025-11-15)
 	'https://www.googleapis.com/auth/classroom.coursework.students.readonly', // Graded coursework and submissions
 	'https://www.googleapis.com/auth/classroom.courseworkmaterials.readonly', // Non-graded materials (added 2025-11-15)
-	'https://www.googleapis.com/auth/drive.readonly', // Drive files
+	'https://www.googleapis.com/auth/drive.file', // Drive files (app-created only)
 	'https://www.googleapis.com/auth/gmail.send' // Send emails via Gmail (added 2025-12-29)
 ] as const;
+
+/**
+ * Required Drive scope for whiteboard sync
+ */
+export const REQUIRED_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+
+/**
+ * Check if user has the required Drive scope for whiteboard sync
+ * @param scopes - Array of scopes granted to the user
+ * @returns true if user has drive.file scope
+ */
+export function hasRequiredDriveScope(scopes: string[] | null): boolean {
+	if (!scopes) return false;
+	return scopes.includes(REQUIRED_DRIVE_SCOPE);
+}
 
 /**
  * Google OAuth endpoints
