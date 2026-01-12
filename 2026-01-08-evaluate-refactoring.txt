@@ -1,0 +1,1125 @@
+
+ * ▐▛███▜▌ *   Claude Code v2.0.76
+* ▝▜█████▛▘ *  Opus 4.5 · Claude Max
+ *  ▘▘ ▝▝  *   ~/Coding/js/ubumaths
+
+> dans mathAST, quelles fonctions a-t-ton pour comparer des MathNode, de 
+manière exacte ou de manière numérique ? ultrathink
+
+⏺ Je vais explorer le codebase mathAST pour identifier les fonctions de comparaison disponibles.
+
+⏺ Explore(Find MathNode comparison functions)
+  ⎿  Done (29 tool uses · 88.5k tokens · 1m 41s)                           
+
+⏺ Fonctions de comparaison MathNode dans mathAST
+
+  1. Égalité exacte (structurelle)
+
+  | Fonction             | Fichier                | Description                                     |
+  |----------------------|------------------------|-------------------------------------------------|
+  | nodesEqual(a, b)     | pattern/match.ts:39    | Compare via hash - identité structurelle exacte |
+  | monomialsEqual(a, b) | normal/monomial.ts:426 | Vérifie si deux monômes sont identiques         |
+  | termsEqual(a, b)     | normal/term.ts:306     | Vérifie si deux NormalTerm sont identiques      |
+  | equalRational(a, b)  | normal/rational.ts:367 | Égalité de rationnels                           |
+  | equalRadicals(a, b)  | normal/radical.ts:382  | Égalité de radicaux simplifiés                  |
+  | sameBase(a, b)       | normal/monomial.ts:270 | Vérifie si deux facteurs ont la même base       |
+
+  2. Équivalence symbolique/mathématique
+
+  | Fonction                    | Fichier            | Description                                             |
+  |-----------------------------|--------------------|---------------------------------------------------------|
+  | Exp.isEquivalent(other)     | exp.ts:628         | Principale - équivalence mathématique via normalisation |
+  | normalFormsEquivalent(a, b) | normal/hash.ts:308 | Compare les hashes canoniques des formes normales       |
+
+  // Exemple d'usage
+  const a = Exp.parse('2x + 3x');
+  const b = Exp.parse('5x');
+  a.isEquivalent(b); // true
+
+  const c = Exp.parse('x + y');
+  const d = Exp.parse('y + x');
+  c.isEquivalent(d); // true (commutativité)
+
+  3. Comparaison numérique
+
+  | Fonction                            | Fichier          | Description                  |
+  |-------------------------------------|------------------|------------------------------|
+  | evaluate(node, bindings?, options?) | eval/evaluate.ts | Évalue numériquement un nœud |
+
+  Pour comparer numériquement, il faut évaluer les deux expressions puis comparer les résultats :
+  const result1 = evaluate(node1, {x: 5});
+  const result2 = evaluate(node2, {x: 5});
+  // Comparer result1 et result2
+
+  4. Pattern matching (structure)
+
+  | Fonction               | Fichier              | Description                        |
+  |------------------------|----------------------|------------------------------------|
+  | match(pattern, node)   | pattern/match.ts:99  | Match avec extraction des bindings |
+  | matches(pattern, node) | pattern/match.ts:468 | Boolean simple                     |
+  | Exp.matches(pattern)   | exp.ts:664           | Méthode d'instance                 |
+
+  5. Comparaison pour tri canonique
+
+  | Fonction                 | Fichier                | Description                  |
+  |--------------------------|------------------------|------------------------------|
+  | compareNodes(a, b)       | normal/compare.ts:416  | Ordre canonique des nœuds    |
+  | compareMonomials(a, b)   | normal/compare.ts:542  | Ordre lexicographique gradué |
+  | compareNormalTerms(a, b) | normal/compare.ts:610  | Ordre des termes normalisés  |
+  | compareRational(a, b)    | normal/rational.ts:350 | Ordre des rationnels         |
+
+  6. Hashing (identité canonique)
+
+  | Fonction            | Fichier            | Description                  |
+  |---------------------|--------------------|------------------------------|
+  | hashMathNode(node)  | normal/hash.ts:67  | Hash structurel              |
+  | canonicalHash(form) | normal/hash.ts:297 | Hash canonique (équivalence) |
+
+  ---
+  Architecture clé : La comparaison se fait à deux niveaux :
+  1. Structurel (exact) via nodesEqual / hashMathNode
+  2. Mathématique (équivalence) via normalisation + canonicalHash / isEquivalent
+
+> si je veux comparer la valeur numérique de deux MathNode, comment je peux 
+faire ? 
+
+⏺ Je vais regarder la fonction evaluate pour te montrer comment faire.
+
+⏺ Read(src/lib/mathAST/eval/evaluate.ts)
+  ⎿  Read 1274 lines
+
+⏺ Search(pattern: "src/lib/mathAST/eval/**/*.ts")
+  ⎿  Found 18 files (ctrl+o to expand)
+
+⏺ Read(src/lib/mathAST/eval/types.ts)
+  ⎿  Read 310 lines
+
+⏺ Read(src/lib/mathAST/eval/substitute.ts)
+  ⎿  Read 400 lines
+
+⏺ Voyons si Exp expose des méthodes pour la comparaison numérique :
+
+⏺ Search(pattern: "numeric|compare.*value|evaluat", path:
+        "src/lib/mathAST/exp.ts", output_mode: "content")
+  ⎿  Found 14 lines (ctrl+o to expand)
+
+⏺ Je vais vérifier s'il existe une fonction utilitaire pour comparer les résultats :
+
+⏺ Search(pattern: "compareValue|numericEqual|approxEqual|closeEnough", path:
+        "src/lib/mathAST")
+  ⎿  Found 0 files 
+
+⏺ Comparaison numérique de deux MathNode
+
+  Il n'y a pas de fonction dédiée pour comparer numériquement deux MathNode. Tu dois :
+
+  1. Évaluer puis comparer manuellement
+
+  import { evaluate } from '$lib/mathAST/eval';
+  import type { MathNode } from '$lib/mathAST/types';
+  import type { Rational } from '$lib/mathAST/normal/types';
+  import { rationalToNumber } from '$lib/mathAST/normal/rational';
+
+  // Évaluer les deux nœuds
+  const result1 = evaluate(node1, { mode: 'decimal' });
+  const result2 = evaluate(node2, { mode: 'decimal' });
+
+  // Comparer (mode décimal = number)
+  const areEqual = result1.value === result2.value;
+
+  // Ou avec tolérance pour les flottants
+  const EPSILON = 1e-10;
+  const areClose = Math.abs((result1.value as number) - (result2.value as number)) < EPSILON;
+
+  2. Avec Exp (plus ergonomique)
+
+  import { Exp } from '$lib/mathAST/exp';
+
+  const a = Exp.parse('2 + 3');
+  const b = Exp.parse('10/2');
+
+  const evalA = a.eval({ mode: 'decimal' });
+  const evalB = b.eval({ mode: 'decimal' });
+
+  // Comparer
+  evalA.value === evalB.value; // true (5 === 5)
+
+  3. Avec variables (substitution)
+
+  const expr1 = Exp.parse('x^2');
+  const expr2 = Exp.parse('x * x');
+
+  const val1 = expr1.evalWith({ x: 3 }, { mode: 'decimal' });
+  const val2 = expr2.evalWith({ x: 3 }, { mode: 'decimal' });
+
+  val1.value === val2.value; // true (9 === 9)
+
+  4. Mode exact (Rational)
+
+  import { equalRational } from '$lib/mathAST/normal/rational';
+
+  const result1 = evaluate(node1, { mode: 'exact' });
+  const result2 = evaluate(node2, { mode: 'exact' });
+
+  if (result1.exact && result2.exact) {
+    // Comparer les rationnels exactement
+    const areEqual = equalRational(result1.value as Rational, result2.value as Rational);
+  }
+
+  ---
+  Résumé : Pas de compareNumerically(a, b) - il faut utiliser evaluate() ou Exp.eval()/Exp.evalWith() puis comparer les .value manuellement (avec tolérance si mode décimal).
+
+> est-ce que evaluate en mode exact retourne la valeur exacte sous forme 
+normale ? 
+
+⏺ Non, evaluate en mode exact retourne un Rational (fraction {n: bigint, d: bigint}), pas une NormalForm.
+
+  Voyons la différence :
+
+⏺ Read(src/lib/mathAST/normal/types.ts)
+  ⎿  Read 150 lines
+
+⏺ Read(src/lib/mathAST/normal/types.ts)
+  ⎿  Read 165 lines
+
+⏺ Différence entre evaluate et NormalForm
+
+  | Aspect             | evaluate() mode exact             | Exp.normal (NormalForm)           |
+  |--------------------|-----------------------------------|-----------------------------------|
+  | Retourne           | Rational ({n: bigint, d: bigint}) | NormalForm (structure symbolique) |
+  | Gère les variables | ❌ Erreur si variables présentes  | ✅ Conserve les variables         |
+  | Gère les radicaux  | ❌ Convertit en number            | ✅ Conserve exactement (√2)       |
+  | Gère les symboles  | ❌ Erreur (sauf π)                | ✅ Conserve (x, sin(x), etc.)     |
+  | Usage              | Calcul numérique pur              | Équivalence symbolique            |
+
+  Exemples
+
+  // evaluate() - calcul numérique uniquement
+  const result = evaluate(parseLatex('\\frac{1}{2} + \\frac{1}{3}'), { mode: 'exact' });
+  // result.value = { n: 5n, d: 6n }  ← Rational
+
+  // Mais:
+  evaluate(parseLatex('\\sqrt{2}'));
+  // → mode exact : value = 1.4142... (number, pas exact)
+
+  evaluate(parseLatex('x + 1'));
+  // → Error: Cannot evaluate expression with unsubstituted variables: x
+
+  // NormalForm - représentation symbolique exacte
+  const expr = Exp.parse('x^2 + 2x + 1');
+  const normal = expr.normal;
+  // normal = {
+  //   numerator: [term(1, x²), term(2, x), term(1)],
+  //   denominator: [term(1)],
+  //   hash: "..."
+  // }
+
+  const expr2 = Exp.parse('(x+1)^2');
+  expr.isEquivalent(expr2); // true (même NormalForm)
+
+  Pour obtenir une valeur exacte symbolique
+
+  import { Exp } from '$lib/mathAST/exp';
+
+  const a = Exp.parse('\\sqrt{2} + \\sqrt{3}');
+  const b = Exp.parse('\\sqrt{3} + \\sqrt{2}');
+
+  // Comparaison symbolique exacte via NormalForm
+  a.isEquivalent(b); // true
+
+  // Accès à la forme normale
+  const normal = a.normal; // NormalForm avec AlgebraicCoefficient contenant √2 et √3
+
+  ---
+  Résumé :
+  - evaluate({ mode: 'exact' }) → Rational (fractions exactes, mais pas de radicaux/variables)
+  - Exp.normal → NormalForm (représentation symbolique complète avec radicaux, variables, etc.)
+
+  Pour une comparaison vraiment exacte incluant les irrationnels comme √2, utilise Exp.isEquivalent() qui compare les NormalForm.
+
+> je ne comprends pas il me semblait que evaluate avec un parametre pour 
+passer la valeur des variables 
+  ⎿  Interrupted · What should Claude do instead?
+
+> je ne comprends pas il me semblait que evaluate avit un parametre pour 
+passer la valeur des variables 
+  ⎿  Interrupted · What should Claude do instead?
+
+> je ne comprends pas il me semblait que evaluate avait un parametre pour 
+passer la valeur des variables 
+
+⏺ Tu as raison de demander. Voici la distinction :
+
+  | Fonction                        | Bindings pour variables      |
+  |---------------------------------|------------------------------|
+  | evaluate(node, options)         | ❌ Non, pas directement      |
+  | substitute(node, bindings)      | ✅ Oui, retourne un MathNode |
+  | Exp.evalWith(bindings, options) | ✅ Oui, combine les deux     |
+
+  En pratique
+
+  // Option 1 : substitute + evaluate (deux étapes)
+  import { substitute, evaluate } from '$lib/mathAST/eval';
+
+  const substituted = substitute(node, { x: 5, y: 3 });
+  const result = evaluate(substituted, { mode: 'exact' });
+
+  // Option 2 : Exp.evalWith (une seule étape, plus simple)
+  import { Exp } from '$lib/mathAST/exp';
+
+  const expr = Exp.parse('x^2 + y');
+  const result = expr.evalWith({ x: 5, y: 3 }, { mode: 'exact' });
+  // result.value = { n: 28n, d: 1n }  (25 + 3)
+
+  Exp.evalWith() fait exactement substitute puis evaluate en interne (ligne 786 de exp.ts).
+
+> ok. je ne comprends pas  : evaluate était censé retourner les valeurs 
+exactes de n'importe quelle expression numérique. ultrathink
+
+⏺ Tu as raison, c'est une limitation actuelle. Regardons le code de sqrt dans evaluate.ts :
+
+  sqrt: (args, exactMode) => {
+      if (args.length !== 1) throw new Error('sqrt requires exactly 1 argument');
+      const arg = args[0];
+
+      // Try exact evaluation first
+      if (exactMode && isRational(arg)) {
+          const exact = exactSqrt(arg);
+          if (exact !== null) {
+              return exact;  // ← Seulement si carré parfait !
+          }
+      }
+
+      // Fall back to decimal
+      const num = toNumber(arg);
+      return Math.sqrt(num);  // ← Sinon, approximation flottante
+  },
+
+  Le problème
+
+  | Expression        | Mode exact      | Résultat                |
+  |-------------------|-----------------|-------------------------|
+  | 1/3 + 1/3 + 1/3   | ✅ Exact        | Rational {n: 1n, d: 1n} |
+  | sqrt(4)           | ✅ Exact        | Rational {n: 2n, d: 1n} |
+  | sqrt(2)           | ❌ Approximatif | number 1.4142...        |
+  | sqrt(2) + sqrt(3) | ❌ Approximatif | number 3.146...         |
+
+  Pourquoi ?
+
+  evaluate ne peut retourner que :
+  - Rational (fractions BigInt exactes)
+  - number (flottants approximatifs)
+  - ComplexValueResult
+
+  Il ne peut pas retourner une structure comme AlgebraicCoefficient qui représenterait exactement √2 ou √2 + √3.
+
+  Ce qui existe pour les valeurs exactes irrationnelles
+
+  C'est dans NormalForm via AlgebraicTerm :
+
+  // √2 + √3 représenté exactement dans NormalForm
+  {
+    terms: [
+      { rational: {n: 1n, d: 1n}, radicals: [{radicand: 2n, index: 2n}] },  // √2
+      { rational: {n: 1n, d: 1n}, radicals: [{radicand: 3n, index: 2n}] }   // √3
+    ]
+  }
+
+  Mais cette structure n'est pas accessible via evaluate, seulement via Exp.normal.
+
+  Conclusion
+
+  C'est effectivement un gap dans l'API :
+  - evaluate promettait des valeurs exactes mais ne gère exactement que les rationnels
+  - Les irrationnels algébriques (√2, √3, etc.) sont représentables exactement dans NormalForm mais pas accessibles via une fonction d'évaluation
+
+  Veux-tu que je propose une amélioration pour avoir une fonction qui retourne des valeurs exactes incluant les irrationnels algébriques ?
+
+> Donc , si je comprends bien, on a une fonction evaluate, qui en mode 
+exact, ne renvoie pas des valeurs exactes ????? 
+
+⏺ Oui, exactement. C'est incohérent.
+
+  Le mode exact signifie en réalité : "utilise l'arithmétique rationnelle BigInt quand c'est possible" — pas "retourne une valeur exacte".
+
+  evaluate(parseLatex('\\sqrt{2}'), { mode: 'exact' })
+  // Retourne : { value: 1.4142135623730951, exact: false }
+  //                                          ^^^^^^^^^^^
+  //            Le système SAIT que c'est approximatif !
+
+  C'est un problème de naming/design. Le flag exact: false dans le résultat indique que la valeur n'est PAS exacte, mais alors pourquoi appeler le mode "exact" ?
+
+  Options pour corriger :
+
+  1. Renommer le mode exact → rational (plus honnête)
+  2. Étendre evaluate pour retourner AlgebraicCoefficient quand nécessaire :
+  evaluate(parseLatex('\\sqrt{2}'), { mode: 'exact' })
+  // Devrait retourner :
+  // { 
+  //   value: { terms: [{ rational: {n:1n,d:1n}, radicals: [{radicand:2n,index:2n}] }] },
+  //   exact: true
+  // }
+  3. Créer une nouvelle fonction evaluateExact() qui garantit une valeur exacte ou échoue
+
+  Qu'est-ce que tu préfères ?
+
+> A quoi servent les Rational alors ????? 
+
+⏺ Les Rational servent à éviter les erreurs d'arrondi des flottants pour les fractions :
+
+  // Avec des flottants (mode decimal)
+  0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1
+  // = 0.9999999999999999 ❌
+
+  // Avec Rational (mode exact)
+  1/10 + 1/10 + ... (10 fois)
+  // = { n: 1n, d: 1n } = 1 ✅
+
+  // Autre exemple
+  1/3 + 1/3 + 1/3
+  // Flottant : 0.9999999999999999 ❌
+  // Rational : { n: 1n, d: 1n } = 1 ✅
+
+  Donc Rational c'est utile, mais limité aux fractions.
+
+  ---
+  Le vrai problème c'est qu'on a deux systèmes parallèles qui ne communiquent pas :
+
+  | Système              | Représente exactement               | Utilisé par |
+  |----------------------|-------------------------------------|-------------|
+  | Rational             | Fractions (1/3, 5/7, ...)           | evaluate()  |
+  | AlgebraicCoefficient | Fractions + Radicaux (√2, 3√5, ...) | NormalForm  |
+
+  AlgebraicCoefficient inclut Rational (c'est un cas particulier où radicals: []), donc c'est le type le plus général.
+
+  La solution logique : evaluate en mode exact devrait retourner AlgebraicCoefficient, pas Rational.
+
+> où la fonction evaluate est-elle utilisée ? 
+
+⏺ Search(pattern: "evaluate\(", path: "src", glob: "*.ts", output_mode:
+        "content")
+  ⎿  Found 267 lines (ctrl+o to expand)
+
+⏺ Filtrons pour voir les usages en production (pas les tests) :
+
+⏺ Search(pattern: "evaluate\(", path: "src", glob: "*.ts", output_mode:
+        "content")
+  ⎿  Found 267 lines (ctrl+o to expand)
+
+⏺ Filtrons pour exclure les tests :
+
+⏺ Bash(grep -rn "evaluate(" /Users/david/Coding/js/ubumaths/src/lib/mathAST
+      --include="*.ts" | grep -v "__tests__" | grep -v "\.test\." | head -30)
+  ⎿ /Users/david/Coding/js/ubumaths/src/lib/mathAST/step-generator/index.ts
+    :75:		const evalResult = evaluate(ast);
+    /Users/david/Coding/js/ubumaths/src/lib/mathAST/step-generator/index.ts
+    … +62 lines (ctrl+o to expand)
+
+
+
+⏺ Usages en production de evaluate (mathAST)
+
+  | Fichier                             | Mode         | Usage                        |
+  |-------------------------------------|--------------|------------------------------|
+  | integration/integrate.ts:580-590    | exact        | Calcul d'intégrales définies |
+  | integration/numeric.ts:285          | decimal      | Intégration numérique        |
+  | step-generator/index.ts:75          | default      | Génération d'étapes          |
+  | cli/repl.ts:386                     | configurable | REPL terminal                |
+  | cli/web/web-repl-engine.ts:658-836  | both         | REPL web                     |
+  | cli/commands/solve.command.ts:59    | default      | Résolution d'équations       |
+  | eval/evaluate-with-units.ts:440-477 | configurable | Évaluation avec unités       |
+
+  Regardons le cas critique - l'intégration :
+
+⏺ Read(src/lib/mathAST/integration/integrate.ts)
+  ⎿  Read 40 lines
+
+⏺ Voilà le problème concret :
+
+  // integrate.ts:580-590
+  const upperEval = evaluate(upperSubstituted, { mode: 'exact' });
+  // ...
+  const valueEval = evaluate(difference, { mode: 'exact' });
+
+  return {
+      value: valueEval.node,
+      approximate: typeof valueEval.value === 'number' ? valueEval.value : undefined,
+      //           ^^^ Si c'est un number, c'est une approximation !
+  };
+
+  Exemple problématique :
+  ∫₀¹ 1/√(1-x²) dx = π/2  ← Résultat exact possible avec Rational
+
+  ∫₀¹ 1/√x dx = 2         ← OK, rationnel
+
+  ∫₀^√2 x dx = 1          ← OK, rationnel
+
+  ∫₀¹ √x dx = 2/3         ← OK, rationnel
+
+  ∫₀¹ e^x dx = e - 1      ← PROBLÈME : e est irrationnel transcendant
+                             evaluate retourne ≈ 1.718... (number)
+
+  Résumé du problème architectural
+
+  Rational sert à éviter les erreurs d'arrondi des flottants pour les fractions, mais le mode "exact" est mal nommé car il ne gère pas les irrationnels algébriques (√2, √3, ...) ni les transcendants (e, π, ...).
+
+  La structure AlgebraicCoefficient dans NormalForm pourrait gérer les irrationnels algébriques, mais elle n'est pas connectée à evaluate.
+
+  Solution possible : créer evaluateAlgebraic() qui retourne AlgebraicCoefficient au lieu de Rational.
+
+> quelle est la forme normale de srt 
+  ⎿  Interrupted · What should Claude do instead?
+
+> quelle est la forme normale de sqrt(4) 
+
+⏺ Bash(cat << 'EOF' | npx tsx --eval "$(cat)"
+      import { Exp } from './src/lib/mathAST/exp';…)
+  ⎿  Interrupted · What should Claude do instead?
+
+> allo ? 
+
+⏺ Oui, la commande précédente a été interrompue. Je peux te répondre directement :
+
+  sqrt(4) en forme normale devrait être :
+
+  {
+    numerator: [{
+      coefficient: {
+        terms: [{ rational: { n: 2n, d: 1n }, radicals: [] }]  // = 2
+      },
+      monomial: []  // pas de variables
+    }],
+    denominator: [{ coefficient: { terms: [{ rational: { n: 1n, d: 1n }, radicals: [] }] }, monomial: [] }],
+    hash: "2"
+  }
+
+  Autrement dit : 2 (le radical est simplifié car 4 est un carré parfait).
+
+  Par contre, sqrt(2) donnerait :
+
+  {
+    numerator: [{
+      coefficient: {
+        terms: [{ rational: { n: 1n, d: 1n }, radicals: [{ radicand: 2n, index: 2n }] }]  // = √2
+      },
+      monomial: []
+    }],
+    // ...
+  }
+
+  C'est-à-dire : √2 exactement (pas d'approximation).
+
+  ---
+  C'est là tout le paradoxe : NormalForm sait représenter √2 exactement, mais evaluate({ mode: 'exact' }) ne le fait pas.
+
+> a quel moment est fait la simplificationde sqrt(4) en 2 dans la forme 
+normale ? 
+
+⏺ Search(pattern: "sqrt|radical|simplif", path: "src/lib/mathAST/normal")
+  ⎿  Found 28 files (ctrl+o to expand)
+
+⏺ Read(src/lib/mathAST/normal/radical.ts)
+  ⎿  Read 421 lines
+
+⏺ Trouvé ! La simplification se fait dans simplifyRadical (radical.ts:171-194) :
+
+  export function simplifyRadical(n: bigint, index: bigint): SimplifiedRadicalResult {
+      // ...
+
+      // Check if n is itself a perfect power
+      const exactRoot = integerNthRoot(n, index);
+      if (exactRoot !== null) {
+          return { coefficient: exactRoot, radicand: 1n };  // ← sqrt(4) → coef=2, radicand=1
+      }
+      // ...
+  }
+
+  Quand radicand === 1n, le radical disparaît et devient un rationnel pur.
+
+  Maintenant, voyons où cette fonction est appelée lors de la normalisation :
+
+⏺ Search(pattern: "simplifyRadical|sqrt|FunctionNode.*sqrt", path:
+        "src/lib/mathAST/normal/normalize.ts", output_mode: "content")
+  ⎿  Found 9 lines (ctrl+o to expand)
+
+⏺ Read(src/lib/mathAST/normal/normalize.ts)
+  ⎿  Read 60 lines
+
+⏺ Réponse complète
+
+  La simplification de sqrt(4) → 2 se fait dans normalize.ts:419-449 :
+
+  function normalizeFunction(node: MathNode & { type: 'function' }): NormalForm {
+      const { name, args } = node;
+
+      // Handle sqrt specially
+      if (name === 'sqrt' && args.length === 1) {
+          const arg = args[0];
+
+          // sqrt of a positive integer - simplify the radical
+          if (arg.type === 'number') {
+              const val = parseFloat(arg.value);
+              if (Number.isInteger(val) && val >= 0) {
+                  const n = BigInt(Math.floor(val));
+                  const simplified = simplifyRadical(n, 2n);  // ← Appel ici
+
+                  if (simplified.radicand === 1n) {
+                      // Perfect square: sqrt(n) = coefficient   ← sqrt(4) passe ici
+                      const term = termFromRational(fromInteger(simplified.coefficient));
+                      return normalFormFromPolynomial(polynomialFromTerm(term));
+                  }
+
+                  // Not a perfect square: coefficient * sqrt(radicand)  ← sqrt(18) → 3√2
+                  // ...
+              }
+          }
+      }
+  }
+
+  Flux pour sqrt(4) :
+
+  1. normalizeFunction reçoit { type: 'function', name: 'sqrt', args: [{ type: 'number', value: '4' }] }
+  2. simplifyRadical(4n, 2n) → { coefficient: 2n, radicand: 1n }
+  3. radicand === 1n → carré parfait !
+  4. Retourne une NormalForm avec juste le rationnel 2
+
+  Flux pour sqrt(2) :
+
+  1. simplifyRadical(2n, 2n) → { coefficient: 1n, radicand: 2n }
+  2. radicand !== 1n → pas un carré parfait
+  3. Crée un AlgebraicCoefficient avec radicals: [{ radicand: 2n, index: 2n }]
+  4. Retourne une NormalForm avec √2 exact
+
+> quelle est la forme normale de cos(pi/6) ? 
+
+⏺ D'après le code que j'ai vu, cos est traité comme "opaque" (ligne 458-459 de normalize.ts):
+
+  // Other functions are treated as opaque
+  return normalizeOpaqueNode(node);
+
+  Donc cos(π/6) ne serait PAS simplifié en √3/2, mais gardé tel quel comme nœud symbolique.
+
+  Vérifions s'il y a des règles spéciales pour les fonctions trigonométriques :
+
+⏺ Read(src/lib/mathAST/normal/rules/transcendental.ts)
+  ⎿  Read 577 lines
+
+⏺ Il y a des règles ! Dans transcendental.ts, ligne 210-212 :
+
+  const COSINE_VALUES: Map<string, MathNode> = new Map([
+      // ...
+      ['1/6', divisionNode(sqrtNode(numberNode(3)), numberNode(2))], // cos(π/6) = √3/2
+      // ...
+  ]);
+
+  Vérifions si ces règles sont appliquées lors de la normalisation :
+
+⏺ Search(pattern:
+        "simplifyTranscendental|applyTranscendentalRules|transcendental", path:
+        "src/lib/mathAST/normal/normalize.ts", output_mode: "content")
+  ⎿  Found 0 lines 
+
+⏺ Les règles transcendantales ne sont PAS appelées dans normalize.ts ! Vérifions où elles sont utilisées :
+
+⏺ Search(pattern: "simplifyTranscendental|applyTranscendentalRules", path:
+        "src/lib/mathAST", output_mode: "content")
+  ⎿  Found 76 lines (ctrl+o to expand)
+
+⏺ Read(src/lib/mathAST/normal/rules/index.ts)
+  ⎿  Read 87 lines
+
+⏺ Search(pattern: "import.*simplify|from.*rules", path:
+        "src/lib/mathAST/normal/normalize.ts", output_mode: "content")
+  ⎿  Found 2 lines (ctrl+o to expand)
+
+⏺ Search(pattern: "simplify\(", path: "src/lib/mathAST/normal/normalize.ts",
+        output_mode: "content")
+  ⎿  Found 1 line (ctrl+o to expand)
+
+⏺ Read(src/lib/mathAST/normal/normalize.ts)
+  ⎿  Read 30 lines
+
+⏺ Réponse : cos(π/6) est bien simplifié !
+
+  Le flux de normalisation est :
+
+  normalize(node)
+      │
+      ├─→ simplify(node)                    // ligne 271
+      │       │
+      │       ├─→ simplifyArithmetic()
+      │       ├─→ simplifyPowers()
+      │       ├─→ simplifyRadicals()
+      │       └─→ simplifyTranscendental()   // ← cos(π/6) → √3/2
+      │
+      └─→ normalizeNode(simplified)          // normalise √3/2
+
+  Donc pour cos(π/6) :
+
+  1. simplifyTranscendental reconnaît l'angle π/6 et remplace cos(π/6) par le MathNode √3/2
+  2. normalizeNode normalise √3/2 en :
+
+  {
+    numerator: [{
+      coefficient: {
+        terms: [{
+          rational: { n: 1n, d: 2n },           // 1/2
+          radicals: [{ radicand: 3n, index: 2n }]  // √3
+        }]
+      },
+      monomial: []
+    }],
+    denominator: [/* 1 */],
+    hash: "..."
+  }
+
+  Forme normale de cos(π/6) = (1/2)√3 = √3/2 exactement.
+
+  ---
+  C'est cohérent : la NormalForm peut représenter exactement les valeurs trigonométriques remarquables (√2/2, √3/2, 1/2, etc.) car elles sont des nombres algébriques.
+
+> quelle est le forme normale de cos(3)+cos(3) ? 
+
+⏺ 3 n'est pas un angle remarquable (pas un multiple de π), donc cos(3) reste opaque.
+
+  La forme normale de cos(3) + cos(3) devrait être 2·cos(3).
+
+  Vérifions comment les nœuds opaques sont combinés :
+
+⏺ Search(pattern: "normalizeOpaqueNode|opaque", path:
+        "src/lib/mathAST/normal/normalize.ts", output_mode: "content")
+  ⎿  Found 78 lines (ctrl+o to expand)
+
+⏺ Read(src/lib/mathAST/normal/normalize.ts)
+  ⎿  Read 30 lines
+
+⏺ Regardons comment addPolynomials combine les termes :
+
+⏺ Search(pattern: "addPolynomials|combineTerms", path:
+        "src/lib/mathAST/normal/polynomial.ts", output_mode: "content")
+  ⎿  Found 45 lines (ctrl+o to expand)
+
+⏺ Search(pattern: "collectLikeTerms", path:
+        "src/lib/mathAST/normal/polynomial.ts", output_mode: "content")
+  ⎿  Found 132 lines (ctrl+o to expand)
+
+⏺ Forme normale de cos(3) + cos(3)
+
+  Le processus :
+
+  1. cos(3) n'est pas un angle remarquable → reste opaque
+  2. normalizeOpaqueNode(cos(3)) crée :
+  {
+    coefficient: { terms: [{ rational: {n: 1n, d: 1n}, radicals: [] }] },  // = 1
+    monomial: [{ base: cos(3), exponent: {n: 1n, d: 1n} }]  // = cos(3)^1
+  }
+  3. cos(3) + cos(3) → addPolynomials → collectLikeTerms
+    - Même signature de monomial (cos(3)^1)
+    - Coefficients additionnés : 1 + 1 = 2
+  4. Résultat :
+  {
+    numerator: [{
+      coefficient: { terms: [{ rational: {n: 2n, d: 1n}, radicals: [] }] },  // = 2
+      monomial: [{ base: cos(3), exponent: {n: 1n, d: 1n} }]  // = cos(3)^1
+    }],
+    denominator: [/* 1 */],
+    hash: "2*cos(3)"
+  }
+
+  Forme normale : 2·cos(3) — le cos(3) reste symbolique (opaque), seul le coefficient est combiné.
+
+  ---
+  C'est cohérent : les termes "semblables" (même monomial) sont regroupés, exactement comme x + x = 2x.
+
+> donc finalement ça veut dire que la valeur  exacte d'une expression 
+numérique, c'est tout simplement sa forme normale ! 
+
+⏺ Exactement ! 🎯
+
+  La NormalForm EST la valeur exacte d'une expression.
+
+  | Expression        | NormalForm                     | "Valeur exacte" |
+  |-------------------|--------------------------------|-----------------|
+  | 1/3 + 1/3 + 1/3   | 1 (Rational)                   | 1               |
+  | sqrt(4)           | 2 (Rational)                   | 2               |
+  | sqrt(2)           | √2 (AlgebraicTerm)             | √2              |
+  | sqrt(2) + sqrt(3) | √2 + √3 (AlgebraicCoefficient) | √2 + √3         |
+  | cos(π/6)          | (1/2)√3                        | √3/2            |
+  | cos(3)            | cos(3) (opaque)                | cos(3)          |
+  | e                 | e (opaque)                     | e               |
+
+  ---
+  Ce que ça révèle sur evaluate
+
+  evaluate({ mode: 'exact' }) est redondant et incomplet :
+  - Il tente de calculer une "valeur exacte" mais ne peut retourner que Rational
+  - La vraie valeur exacte est déjà dans NormalForm
+
+  La bonne API serait :
+
+  // Au lieu de :
+  evaluate(node, { mode: 'exact' })  // → Rational (limité)
+
+  // Utiliser :
+  normalize(node)  // → NormalForm (complet)
+
+  // Ou pour Exp :
+  expr.normal  // → NormalForm (valeur exacte complète)
+
+  evaluate ne devrait exister que pour le mode décimal (approximation numérique).
+
+> je veux réécrire evaluate avec la meme signature mais :
+- elle vérifie d'abord que l'expression est numérique. Décider : que faire 
+si l'expression n'est pas numérique ?
+- elle calcule la forme normale de l'expression.
+- si le mode est exact : on retourne le MathNode correspondant à cette forme
+ normale
+- sinon : on évalue numériquement la forme normale. comment est implémentée 
+l'évaluation numérique pour l'instant ? quelles sont les précisions
+possibles ?
+ultrathink
+
+⏺ Excellente idée de refactoring ! Explorons les éléments nécessaires.
+
+⏺ Search(pattern: "getVariables|hasVariable|isNumeric", path: "src/lib/mathAST")
+  ⎿  Found 15 files (ctrl+o to expand)
+
+⏺ Read(src/lib/mathAST/normal/denormalize.ts)
+  ⎿  Read 435 lines
+
+⏺ Maintenant regardons comment vérifier si une expression est numérique et l'évaluation numérique actuelle :
+
+⏺ Read(src/lib/mathAST/eval/types.ts)
+  ⎿  Read 50 lines
+
+⏺ Search(pattern: "toNumber|ToNumber|numeric|Numeric", path:
+        "src/lib/mathAST/normal", output_mode: "content")
+  ⎿  Found 35 lines (ctrl+o to expand)
+
+⏺ Read(src/lib/mathAST/normal/algebraic.ts)
+  ⎿  Read 21 lines
+
+⏺ Search(pattern:
+        "normalFormToNumber|evaluateNormalForm|termToNumber|polynomialToNumber",
+         path: "src/lib/mathAST/normal", output_mode: "content")
+  ⎿  Found 0 lines 
+
+⏺ Search(pattern: "isNumeric|hasSymbolic|monomial.*length|isEmpty", path:
+        "src/lib/mathAST/normal", glob: "*.ts", output_mode: "content",
+        head_limit: 30)
+  ⎿  Found 30 lines (ctrl+o to expand)
+
+⏺ Read(src/lib/mathAST/normal/polynomial.ts)
+  ⎿  Read 40 lines
+
+⏺ Regardons aussi comment détecter si une NormalForm contient des variables :
+
+⏺ Read(src/lib/mathAST/normal/term.ts)
+  ⎿  Read 30 lines
+
+⏺ Résumé de l'analyse
+
+  1. Vérifier si une expression est numérique
+
+  Problème : Il y a deux niveaux de "numérique" :
+
+  | Type                   | Exemple     | monomial  | Évaluation                       |
+  |------------------------|-------------|-----------|----------------------------------|
+  | Algébrique pur         | √2 + 3      | [] (vide) | algebraicToNumber(coef)          |
+  | Numérique avec opaques | cos(3) + √2 | [cos(3)]  | Nécessite evaluate sur les bases |
+  | Symbolique             | x + √2      | [x]       | ❌ Pas évaluable                 |
+
+  Solution : Utiliser getVariables(node) sur le MathNode original :
+  const vars = getVariables(node);
+  const isNumeric = vars.size === 0 || (vars.size === 1 && vars.has('pi'));
+
+  2. Fonctions existantes pour l'évaluation numérique
+
+  // Déjà implémentées dans normal/
+  rationalToNumber(r: Rational): number           // 1/3 → 0.333...
+  radicalToNumber(r: SimplifiedRadical): number   // √2 → 1.414...
+  algebraicToNumber(a: AlgebraicCoefficient): number  // √2+√3 → 3.146...
+
+  // Manquant :
+  normalFormToNumber(form: NormalForm): number    // À créer !
+
+  3. Précision actuelle
+
+  // types.ts:98-99
+  readonly precision?: number;  // Default: 15
+
+  // Mais en pratique : JavaScript double (IEEE 754)
+  // ~15-17 chiffres significatifs, pas configurable
+
+  4. Proposition de nouvelle evaluate
+
+  export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
+      const { mode = 'exact', precision = 15, functions } = options ?? {};
+
+      // 1. Substituer les fonctions si nécessaire
+      let processedNode = node;
+      if (functions && Object.keys(functions).length > 0) {
+          processedNode = substituteFunction(node, functions);
+      }
+
+      // 2. Vérifier que l'expression est numérique
+      const vars = getVariables(processedNode);
+      const freeVars = [...vars].filter(v => v !== 'pi');
+      if (freeVars.length > 0) {
+          throw new Error(`Cannot evaluate: unsubstituted variables: ${freeVars.join(', ')}`);
+      }
+
+      // 3. Calculer la forme normale
+      const normalForm = normalize(processedNode);
+
+      // 4. Mode exact : retourner le MathNode simplifié
+      if (mode === 'exact') {
+          return {
+              value: normalForm,  // ou extraire Rational/AlgebraicCoefficient ?
+              node: denormalize(normalForm),
+              exact: true
+          };
+      }
+
+      // 5. Mode décimal : évaluer numériquement
+      const numericValue = normalFormToNumber(normalForm);  // À implémenter
+      return {
+          value: numericValue,
+          node: { type: 'number', value: numericValue.toPrecision(precision) },
+          exact: false
+      };
+  }
+
+  Questions de design à trancher
+
+  1. Que retourner en mode exact ?
+    - Option A : NormalForm (structure complète)
+    - Option B : AlgebraicCoefficient (si purement algébrique)
+    - Option C : MathNode via denormalize (rétrocompatible)
+  2. Que faire si expression non numérique ?
+    - Option A : Throw error (actuel)
+    - Option B : Retourner la forme normale symbolique quand même ?
+  3. Comment évaluer les opaques numériquement ?
+    - Besoin de normalFormToNumber qui appelle l'ancien evaluateNode pour les bases des symbolic factors
+
+  Qu'est-ce que tu préfères pour chaque question ?
+
+> Pour vérifier si c'est une expression numérique , il faut penser à toutes 
+les constantes mathématiques : pi, mais aussi e et i. En mode exact on
+retourne MathNode via denormalize. sinon on retourne une évaluation
+numérique de ce meme MathNode obtenu par denormalize. Pour l'évaluation
+numérique je suis persuadé qu'on avait plusieurs mode de présision (arrondi,
+ chiffres significatifs, relatif, absolu - il faut que tu cherches). si
+l'expression n'est pas numérique, on throw une erreur. Pour les opaques ,
+fais moi la liste des cas possibles (j'imagine que ce sont des fonctions
+transcendantes qu'il faut calculer à l'aide des fonctions javascripts
+natives). ultrathink
+
+⏺ Search(pattern:
+        "precision|round|significant|relative|absolute|toFixed|toPrecision",
+        path: "src/lib/mathAST", glob: "*.ts", output_mode: "content",
+        head_limit: 50)
+  ⎿  Found 50 lines (ctrl+o to expand)
+
+⏺ Search(pattern: "DecimalMode|RoundingMode|PrecisionMode|significantDigits|deci
+        malPlaces", path: "src/lib", output_mode: "content")
+  ⎿  Found 0 lines 
+
+⏺ Search(pattern:
+        "tolerance|Tolerance|epsilon|Epsilon|compare.*number|numeric.*compare",
+        path: "src/lib/mathAST", output_mode: "content")
+  ⎿  Found 108 lines (ctrl+o to expand)
+
+⏺ Search(pattern:
+        "CompareMode|ValidationMode|AnswerType|checkAnswer|validateAnswer",
+        path: "src/lib")
+  ⎿  Found 8 files (ctrl+o to expand)
+
+⏺ Read(src/lib/utils/answer-validator.ts)
+  ⎿  Read 591 lines
+
+⏺ J'ai trouvé ! Regardons le type PrecisionType :
+
+⏺ Search(pattern: "PrecisionType|type PrecisionType|interface Precision", path:
+        "src/lib", output_mode: "content")
+  ⎿  Found 226 lines (ctrl+o to expand)
+
+⏺ Maintenant listons les cas opaques (fonctions qui doivent être évaluées numériquement) :
+
+⏺ Search(pattern:
+        "Math\.|'sin'|'cos'|'tan'|'exp'|'log'|'ln'|'sqrt'|'abs'|'floor'|'ceil'",
+         path: "src/lib/mathAST/eval/evaluate.ts", output_mode: "content",
+        head_limit: 80)
+  ⎿  Found 54 lines (ctrl+o to expand)
+
+⏺ Résumé complet
+
+  1. Constantes mathématiques (à traiter comme numériques)
+
+  | Constante | Type de nœud              | Valeur           |
+  |-----------|---------------------------|------------------|
+  | π         | greek: 'pi'               | Math.PI          |
+  | e         | variable: 'e'             | Math.E           |
+  | i         | complex: {real:0, imag:1} | Unité imaginaire |
+
+  2. Modes de précision (PrecisionType)
+
+  type PrecisionType =
+      | { type: 'none' }                                    // Valeur exacte
+      | { type: 'decimal'; digits: number }                 // n décimales
+      | { type: 'significant'; digits: number }             // n chiffres significatifs
+      | { type: 'magnitude'; digits: number }               // Ordre de grandeur 10^n
+      | { type: 'tolerance'; tolerance: number; mode: 'absolute' | 'relative' };
+
+  3. Fonctions opaques (à évaluer via JavaScript)
+
+  Trigonométriques :
+  | Fonction | JavaScript   |
+  |----------|--------------|
+  | sin(x)   | Math.sin(x)  |
+  | cos(x)   | Math.cos(x)  |
+  | tan(x)   | Math.tan(x)  |
+  | asin(x)  | Math.asin(x) |
+  | acos(x)  | Math.acos(x) |
+  | atan(x)  | Math.atan(x) |
+
+  Exponentielles/Logarithmiques :
+  | Fonction          | JavaScript    |
+  |-------------------|---------------|
+  | exp(x)            | Math.exp(x)   |
+  | ln(x)             | Math.log(x)   |
+  | log(x) / log10(x) | Math.log10(x) |
+
+  Racines (si non simplifiables) :
+  | Fonction   | JavaScript       |
+  |------------|------------------|
+  | sqrt(x)    | Math.sqrt(x)     |
+  | root[n](x) | Math.pow(x, 1/n) |
+
+  Autres :
+  | Fonction | JavaScript    |
+  |----------|---------------|
+  | abs(x)   | Math.abs(x)   |
+  | floor(x) | Math.floor(x) |
+  | ceil(x)  | Math.ceil(x)  |
+  | round(x) | Math.round(x) |
+  | min(...) | Math.min(...) |
+  | max(...) | Math.max(...) |
+
+  Complexes :
+  | Fonction        | Calcul            |
+  |-----------------|-------------------|
+  | modulus(z)      | √(re² + im²)      |
+  | arg(z)          | atan2(im, re)     |
+  | cis(θ)          | cos(θ) + i·sin(θ) |
+  | fromPolar(r, θ) | r·cis(θ)          |
+  | nthRoot(z, n)   | Racines complexes |
+
+  Statistiques :
+  - mean, median, stddev
+
+  ---
+  4. Architecture proposée pour evaluate
+
+  export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
+      const { mode = 'exact', precision } = options ?? {};
+
+      // 1. Vérifier que l'expression est numérique
+      const vars = getVariables(node);
+      const freeVars = [...vars].filter(v => !['pi', 'e', 'i'].includes(v));
+      if (freeVars.length > 0) {
+          throw new Error(`Cannot evaluate: free variables: ${freeVars.join(', ')}`);
+      }
+
+      // 2. Normaliser l'expression
+      const normalForm = normalize(node);
+
+      // 3. Dénormaliser pour obtenir le MathNode simplifié
+      const simplifiedNode = denormalize(normalForm);
+
+      // 4. Mode exact : retourner le MathNode simplifié
+      if (mode === 'exact') {
+          return {
+              value: normalForm,  // Pour accès aux structures internes si besoin
+              node: simplifiedNode,
+              exact: true
+          };
+      }
+
+      // 5. Mode décimal : évaluer numériquement le MathNode simplifié
+      const numericValue = evaluateNodeNumeric(simplifiedNode);  // Utilise Math.*
+      const formattedValue = formatWithPrecision(numericValue, precision);
+
+      return {
+          value: numericValue,
+          node: { type: 'number', value: formattedValue },
+          exact: false
+      };
+  }
+
+  Note importante : Pour l'évaluation numérique des opaques, on peut réutiliser le code existant dans evaluate.ts (les handlers de fonctions qui utilisent Math.*) mais appliqué au MathNode simplifié par denormalize.
+
+> /context 
+  ⎿  
+      Context Usage
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   claude-opus-4-5-20251101 · 181k/200k tokens (91%)
+     ⛁ ⛁ ⛁ ⛁ ⛀ ⛁ ⛁ ⛁ ⛁ ⛁ 
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   ⛁ System prompt: 3.5k tokens (1.7%)
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   ⛁ System tools: 21.8k tokens (10.9%)
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   ⛁ MCP tools: 3.3k tokens (1.7%)
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   ⛁ Custom agents: 5.6k tokens (2.8%)
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛶   ⛁ Memory files: 3.6k tokens (1.8%)
+     ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛝ ⛝ ⛝   ⛁ Messages: 98.2k tokens (49.1%)
+     ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝   ⛶ Free space: 19k (9.5%)
+     ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝   ⛝ Autocompact buffer: 45.0k tokens (22.5%)
+     
+     MCP tools · /mcp
+     └ mcp__svelte__get-documentation: 822 tokens
+     └ mcp__svelte__list-sections: 819 tokens
+     └ mcp__svelte__playground-link: 841 tokens
+     └ mcp__svelte__svelte-autofixer: 854 tokens
+     
+     Custom agents · /agents
+     
+     Project
+     └ frontend-developer: 493 tokens
+     └ performance-optimizer: 439 tokens
+     └ fullstack-developer: 411 tokens
+     └ code-reviewer: 393 tokens
+     └ commit-manager: 377 tokens
+     └ svelte-expert: 372 tokens
+     └ supabase-expert: 370 tokens
+     └ documentation-writer: 367 tokens
+     └ security-auditor: 354 tokens
+     └ backend-developer: 332 tokens
+     └ javascript-expert: 322 tokens
+     └ test-automator: 287 tokens
+     └ debugger: 274 tokens
+     └ typescript-expert: 264 tokens
+     └ accessibility-tester: 262 tokens
+     └ api-designer: 259 tokens
+     
+     Memory files · /memory
+     └ CLAUDE.md: 3.6k tokens
+     
+     Skills and slash commands · /skills
+     
+     Project
+     └ test: 2.1k tokens
+     └ new-api: 1.6k tokens
+     └ perf: 1.4k tokens
+     └ migration: 1.3k tokens
+     └ new-component: 1.2k tokens
+     └ security: 1.2k tokens
+     └ db-sync: 1.1k tokens
+     └ cleanup: 1.1k tokens
+     └ check: 905 tokens
+     └ commit: 806 tokens
+     └ feature: 802 tokens
+     └ pr: 793 tokens
+     └ fix: 673 tokens
+     
+     
+
+
+

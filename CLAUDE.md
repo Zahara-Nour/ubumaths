@@ -23,14 +23,14 @@ pnpm dev -- --port 5175    # TOUJOURS utiliser port 5175 (Claude)
 pnpm build                 # Build production
 
 # Quality checks
-pnpm check                 # Type checking (full)
+# pnpm check                 # Type checking (full)
 pnpm check:fast            # TypeScript only (incremental, faster)
-pnpm lint                  # ESLint (cached)
+# pnpm lint                  # ESLint (cached)
 pnpm format                # Prettier
 
 # Tests
-pnpm test:unit             # All unit tests (both projects, watch mode, NOT for specific files !)
-pnpm test:unit -- --run    # All unit tests (single run, NOT for specific files !)
+# pnpm test:unit             # All unit tests (both projects, watch mode, NOT for specific files !)
+# pnpm test:unit -- --run    # All unit tests (single run, NOT for specific files !)
 pnpm test:server <path>    # Server tests only (for specific files)
 pnpm test:client <path>    # Client tests only (*.svelte.test.ts)
 pnpm test:triggers         # Database triggers (Docker required)
@@ -46,16 +46,6 @@ pnpm release               # Create release (main branch only)
 **Ports** : 5175 (Claude) | 5173 (User - NE PAS UTILISER) | 54321 (Supabase local)
 
 ---
-
-## Code Quality Status
-
-| Check      | Status                         |
-| ---------- | ------------------------------ |
-| Build      | 0 errors                       |
-| ESLint     | 0 errors (29 warnings)         |
-| TypeScript | 0 errors                       |
-| Tests      | 2,430/2,454 (99.0%)            |
-| Security   | CSRF, XSS, 100% Zod validation |
 
 **Standard** : Maintenir 0 errors obligatoire.
 
@@ -103,10 +93,8 @@ if (!validation.success) throw error(400, validation.error.issues[0].message);
 ### 3. Svelte 5 Runes Only
 
 ```svelte
-let count = $state(0);              // NOT: let count = 0
-let doubled = $derived(count * 2);  // NOT: $: doubled = count * 2
-let { title } = $props();           // NOT: export let title
-$effect(() => { /* ... */ });       // NOT: $: { /* ... */ }
+let count = $state(0); // NOT: let count = 0 let doubled = $derived(count * 2); // NOT: $: doubled =
+count * 2 let {title} = $props(); // NOT: export let title
 ```
 
 **Réactivité** La réactivité doit être gérée de cette manière : UI event -> handler -> update reactive state -> trigger update DOM. $effect ne doit être utilisé que dans des cas particuliers(side, effects,...)
@@ -133,7 +121,7 @@ Use proper types, `unknown` with type guards, or Database types from `$lib/types
 **INTERDIT aux agents** :
 
 - Lancer `pnpm test:unit` ou des tests en masse pour "comprendre" un bug
-- Lancer des builds/checks sans raison explicite
+- Lancer des builds/checks : pnpm check et pnpm lint INTERDITS !
 - Tourner > 5 minutes sans produire de resultat concret
 
 ### Quand utiliser un agent
@@ -208,7 +196,7 @@ Use proper types, `unknown` with type guards, or Database types from `$lib/types
 4. **Commit** apres validation du code reviewer (direct ou agent selon complexite)
 5. **Security Audit** si auth/API sensible
 6. **Performance Audit** si requetes DB lourdes
-7. **Quality Checks** (`pnpm lint`, `pnpm check`) a la FIN du plan UNIQUEMENT
+7. **Quality Checks** (eslint UNIQUEMENT sur les fichiers modifés, `pnpm check:fast`) a la FIN du plan UNIQUEMENT
 8. **Documentation de progression** tout au long de l'implementation pour crash recovery
 
 **IMPORTANT** : Les agents ne doivent PAS executer de commandes build/lint/format/check. Ces verifications sont faites une seule fois a la fin du plan.
@@ -231,11 +219,11 @@ Format suggere : `docs/wip/<feature>-progress.md`
 - Utiliser `debugger` agent avec Opus si erreur persistante (>2 tentatives)
 - Continuer jusqu'a completion totale
 
-### Checklist de validation (avant de terminer une phase)
+### Checklist de validation (avant de passer à la phase suivante)
 
 - [ ] Code fonctionnel
 - [ ] Tests passent
-- [ ] Code review effectué (PAS de lint)
+- [ ] Code review effectué (PAS de lint, ni de build, ni de check)
 - [ ] Security/Performance audit si applicable
 - [ ] Documentation de progression écrite
 - [ ] Commit créé
