@@ -13,8 +13,8 @@ import type { MathNode } from '../../types';
 import type {
 	Integrator,
 	IntegrateResult,
-	IntegrateOptions,
-	IntegrateStepRecorder
+	IntegrateStepRecorder,
+	ResolvedIntegrateOptions
 } from '../types';
 import { isNumber, isVariable } from '../../guards';
 import { number } from '../../factory';
@@ -318,7 +318,7 @@ export const trigSubstitutionIntegrator: Integrator = {
 	integrate(
 		expr: MathNode,
 		variable: string,
-		options: Required<Omit<IntegrateOptions, 'variable'>>,
+		options: ResolvedIntegrateOptions,
 		recorder: IntegrateStepRecorder,
 		_depth: number
 	): IntegrateResult {

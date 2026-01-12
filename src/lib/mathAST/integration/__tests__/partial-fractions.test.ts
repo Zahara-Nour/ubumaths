@@ -207,8 +207,9 @@ describe('Repeated Linear Factors', () => {
 		expect(result.technique).toBe('partial-fractions');
 
 		// Direct power rule: ∫(x-1)^(-2) dx = -(x-1)^(-1) = -1/(x-1)
+		// After normalization, may appear as 1/(-x+1) which is equivalent
 		const customStr = toCustomString(result);
-		expect(customStr).toMatch(/x-1|x\s*-\s*1/);
+		expect(customStr).toMatch(/x-1|x\s*-\s*1|-x\+1|-x\s*\+\s*1/);
 	});
 
 	it('should integrate 1/((x-1)^2(x+1))', () => {
@@ -289,9 +290,11 @@ describe('Mixed Cases', () => {
 		expect(result.technique).toBe('partial-fractions');
 
 		// Decompose: 1/(x(x^2+1)) = A/x + (Bx+C)/(x^2+1)
+		// A = 1 (Heaviside at x=0), B = -1, C = 0 (from coefficient matching)
+		// Result: ln|x| - (1/2)ln(x^2+1)
+		// Note: No arctan because C=0
 		const customStr = toCustomString(result);
 		expect(customStr).toMatch(/ln/);
-		expect(customStr).toMatch(/arctan|atan/);
 	});
 
 	it('should integrate (x^2+2x+1)/((x+1)(x^2+1))', () => {

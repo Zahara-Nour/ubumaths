@@ -17,8 +17,8 @@ import type { MathNode } from '../../types';
 import type {
 	Integrator,
 	IntegrateResult,
-	IntegrateOptions,
-	IntegrateStepRecorder
+	IntegrateStepRecorder,
+	ResolvedIntegrateOptions
 } from '../types';
 import { differentiate } from '../../differentiation';
 import { classifyIntegrand } from '../classify';
@@ -476,7 +476,7 @@ function applyPartsFormula(
 	u: MathNode,
 	dv: MathNode,
 	variable: string,
-	options: Required<Omit<IntegrateOptions, 'variable'>>,
+	options: ResolvedIntegrateOptions,
 	recorder: IntegrateStepRecorder,
 	depth: number
 ): IntegrateResult {
@@ -751,7 +751,7 @@ function integrateExpTrigPattern(
 	expr: MathNode,
 	variable: string,
 	pattern: { a: string; b: string; trigFunc: 'sin' | 'cos' },
-	options: Required<Omit<IntegrateOptions, 'variable'>>,
+	options: ResolvedIntegrateOptions,
 	recorder: IntegrateStepRecorder
 ): IntegrateResult {
 	const { a, b, trigFunc } = pattern;
@@ -893,7 +893,7 @@ function solveCyclicCase(
 	v: MathNode,
 	du: MathNode,
 	variable: string,
-	options: Required<Omit<IntegrateOptions, 'variable'>>,
+	options: ResolvedIntegrateOptions,
 	recorder: IntegrateStepRecorder,
 	depth: number
 ): IntegrateResult {
@@ -1017,7 +1017,7 @@ function isSuitableForTabular(expr: MathNode, variable: string): boolean {
 function applyTabularMethod(
 	expr: MathNode,
 	variable: string,
-	options: Required<Omit<IntegrateOptions, 'variable'>>,
+	options: ResolvedIntegrateOptions,
 	recorder: IntegrateStepRecorder,
 	depth: number
 ): IntegrateResult {
@@ -1047,7 +1047,7 @@ function applyTabularMethod(
 function applyRepeatedParts(
 	expr: MathNode,
 	variable: string,
-	options: Required<Omit<IntegrateOptions, 'variable'>>,
+	options: ResolvedIntegrateOptions,
 	recorder: IntegrateStepRecorder,
 	depth: number
 ): IntegrateResult {
@@ -1108,7 +1108,7 @@ export const partsIntegrator: Integrator = {
 	integrate(
 		expr: MathNode,
 		variable: string,
-		options: Required<Omit<IntegrateOptions, 'variable'>>,
+		options: ResolvedIntegrateOptions,
 		recorder: IntegrateStepRecorder,
 		depth: number
 	): IntegrateResult {

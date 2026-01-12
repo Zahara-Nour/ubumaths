@@ -25,7 +25,7 @@ import {
 	func,
 	add,
 	subtract,
-	multiply,
+	implicitMultiply as multiply,
 	power,
 	opposite,
 	positiveInfinity,

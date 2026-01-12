@@ -10,8 +10,8 @@ import type { MathNode } from '../../types';
 import type {
 	Integrator,
 	IntegrateResult,
-	IntegrateOptions,
-	IntegrateStepRecorder
+	IntegrateStepRecorder,
+	ResolvedIntegrateOptions
 } from '../types';
 import { isNumber, isVariable } from '../../guards';
 import { number, divide, add, subtract, power, implicitMultiply, func } from '../../factory';
@@ -711,21 +711,242 @@ function solveRepeatedFactors(
 		// Coefficient for highest power term
 		const highestCoeff = numValue / denomProduct;
 
-		for (let i = 0; i < groupTerms.length; i++) {
-			const term = groupTerms[i];
-			if (i === 0) {
-				// Highest power term
-				solvedTerms.push({ ...term, coefficient: createCoeffNode(highestCoeff) });
-			} else {
-				// For lower power terms, we need derivatives
-				// For now, set to 0 as an approximation for simple cases
-				// TODO: Implement derivative-based coefficient solving
-				solvedTerms.push({ ...term, coefficient: number('0') });
+		// For single factor case with power >= 2: P(x)/(x-r)^n = A_n/(x-r)^n + A_{n-1}/(x-r)^{n-1} + ... + A_1/(x-r)
+		// We need to find all coefficients via polynomial expansion
+		// P(x) = A_n + A_{n-1}(x-r) + A_{n-2}(x-r)^2 + ... + A_1(x-r)^{n-1}
+
+		if (groupTerms.length === 2 && otherRoots.length === 0) {
+			// Common case: two terms from one repeated factor, e.g., A/(x+1) + B/(x+1)^2
+			// For P(x)/(x-r)^2: P(x) = B + A(x-r)
+			// B = P(r), and A is the coefficient of (x-r) in the expansion
+
+			// Extract polynomial coefficients from numerator
+			const p0 = evaluateAt(numerator, variable, 0) ?? 0;
+			const p1 = evaluateAt(numerator, variable, 1) ?? 0;
+
+			// For linear numerator P(x) = ax + b:
+			// p0 = b, p1 = a + b => a = p1 - p0
+			const constCoeff = p0;
+			const linearCoeff = p1 - p0;
+
+			// P(x) = linearCoeff * x + constCoeff
+			// P(x) = A(x - root) + B where:
+			// - linearCoeff * x + constCoeff = Ax - A*root + B
+			// - linearCoeff = A => A = linearCoeff
+			// - constCoeff = -A*root + B => B = constCoeff + A*root = constCoeff + linearCoeff*root
+			const A = linearCoeff;
+			const B = constCoeff + linearCoeff * rootValue;
+
+			// groupTerms[0] is power 2, groupTerms[1] is power 1
+			solvedTerms.push({ ...groupTerms[0], coefficient: createCoeffNode(B) }); // /(x-r)^2
+			solvedTerms.push({ ...groupTerms[1], coefficient: createCoeffNode(A) }); // /(x-r)
+		} else {
+			// General case: use Heaviside for highest, set others to 0 (TODO: implement derivatives)
+			for (let i = 0; i < groupTerms.length; i++) {
+				const term = groupTerms[i];
+				if (i === 0) {
+					// Highest power term
+					solvedTerms.push({ ...term, coefficient: createCoeffNode(highestCoeff) });
+				} else {
+					// For lower power terms, we need derivatives
+					// For now, set to 0 as an approximation
+					solvedTerms.push({ ...term, coefficient: number('0') });
+				}
 			}
 		}
 	}
 
 	return solvedTerms;
+}
+
+/**
+ * Solve coefficients for mixed linear and quadratic factors.
+ *
+ * For decomposition like A/x + (Bx+C)/(x^2+c):
+ * 1. Solve linear factors using Heaviside cover-up
+ * 2. Compute quadratic coefficients by matching
+ *
+ * Algorithm for 1/(x(x^2+c)):
+ * - A = 1/(0^2+c) = 1/c (Heaviside at root 0)
+ * - Then (Bx+C)/(x^2+c) = 1/(x(x^2+c)) - A/x
+ * - Multiply: (Bx+C)x = 1 - A(x^2+c) = 1 - (x^2+c)/c = (c - x^2 - c)/c = -x^2/c
+ * - So Bx+C = -x/c (dividing by x)
+ * - Thus B = -1/c, C = 0
+ */
+function solveMixedFactors(
+	numerator: MathNode,
+	terms: PartialFractionTerm[],
+	variable: string
+): PartialFractionTerm[] {
+	// Separate linear and quadratic terms
+	const linearTerms: PartialFractionTerm[] = [];
+	const quadraticTerms: PartialFractionTerm[] = [];
+
+	for (const term of terms) {
+		if (term.factor.type === 'linear') {
+			linearTerms.push(term);
+		} else {
+			quadraticTerms.push(term);
+		}
+	}
+
+	// If no linear terms, we can't use Heaviside
+	if (linearTerms.length === 0) {
+		return terms;
+	}
+
+	// Solve linear factors using Heaviside cover-up
+	const solvedTerms: PartialFractionTerm[] = [];
+
+	for (const linearTerm of linearTerms) {
+		const rootVal = getRootValue(linearTerm.factor.root!);
+		if (rootVal === null) {
+			solvedTerms.push(linearTerm);
+			continue;
+		}
+
+		// Evaluate numerator at x = root
+		const numValue = evaluateAt(numerator, variable, rootVal);
+		if (numValue === null) {
+			solvedTerms.push(linearTerm);
+			continue;
+		}
+
+		// Evaluate the "rest of denominator" at x = root
+		// For 1/(x(x^2+1)), at x=0: rest = 0^2+1 = 1
+		// For 1/((x-1)(x^2+1)), at x=1: rest = 1^2+1 = 2
+		let restValue = 1;
+
+		// Product of other linear factors
+		for (const otherLinear of linearTerms) {
+			if (otherLinear === linearTerm) continue;
+			const otherRoot = getRootValue(otherLinear.factor.root!);
+			if (otherRoot === null) {
+				restValue = NaN;
+				break;
+			}
+			restValue *= Math.pow(rootVal - otherRoot, otherLinear.power);
+		}
+
+		// Product of quadratic factors evaluated at root
+		for (const quadTerm of quadraticTerms) {
+			if (quadTerm.factor.quadraticCoeffs) {
+				// ax^2 + bx + c evaluated at root
+				const { a, b, c } = quadTerm.factor.quadraticCoeffs;
+				const aVal = evaluateAt(a, variable, rootVal) ?? 1;
+				const bVal = evaluateAt(b, variable, rootVal) ?? 0;
+				const cVal = evaluateAt(c, variable, rootVal) ?? 0;
+				const quadVal = aVal * rootVal * rootVal + bVal * rootVal + cVal;
+				restValue *= Math.pow(quadVal, quadTerm.power);
+			} else {
+				// Assume x^2 + c form (from factorDenominator)
+				// Need to determine c from the structure
+				// Since we don't have explicit c, try to infer
+				// For now, assume we have x^2 + positive constant
+				// This is a limitation - we'll enhance this later
+				restValue = NaN;
+				break;
+			}
+		}
+
+		if (isNaN(restValue) || Math.abs(restValue) < 1e-10) {
+			solvedTerms.push(linearTerm);
+			continue;
+		}
+
+		const coeff = numValue / restValue;
+		solvedTerms.push({
+			...linearTerm,
+			coefficient: createCoeffNode(coeff)
+		});
+	}
+
+	// Now handle quadratic terms
+	// For each quadratic (Bx+C)/(x^2+c), we need to find B and C
+	// Use coefficient matching from the equation:
+	// numerator = sum of (coefficient_i * product of other factors)
+
+	for (const quadTerm of quadraticTerms) {
+		// For simple cases like 1/(x(x^2+1)), after finding A for linear term,
+		// we can compute the quadratic coefficient by coefficient matching.
+		//
+		// 1/(x(x^2+1)) = A/x + (Bx+C)/(x^2+1)
+		// Multiply by x(x^2+1): 1 = A(x^2+1) + (Bx+C)x
+		//
+		// If A = 1: 1 = x^2+1 + Bx^2 + Cx
+		//          0 = x^2 + Bx^2 + Cx
+		//          0 = (1+B)x^2 + Cx
+		// So B = -1, C = 0
+
+		if (linearTerms.length === 1 && quadraticTerms.length === 1) {
+			// Simple case: one linear, one quadratic
+			const linearCoeff = getNumericValue(solvedTerms[0]?.coefficient);
+			if (linearCoeff === null) {
+				solvedTerms.push(quadTerm);
+				continue;
+			}
+
+			const linearRoot = getRootValue(linearTerms[0].factor.root!) ?? 0;
+
+			// Extract polynomial coefficients from numerator: P(x) = p₂x² + p₁x + p₀
+			// Using evaluation at 3 points: P(0), P(1), P(-1)
+			const p0 = evaluateAt(numerator, variable, 0) ?? 0;
+			const p1 = evaluateAt(numerator, variable, 1) ?? 0;
+			const pn1 = evaluateAt(numerator, variable, -1) ?? 0;
+
+			// Solve for polynomial coefficients p₂, p₁
+			const p2Coeff = (p1 + pn1 - 2 * p0) / 2;
+			const p1Coeff = (p1 - pn1) / 2;
+
+			// For P(x)/((x-r)(x²+c)) = A/(x-r) + (Bx+C)/(x²+c)
+			// Multiply: P(x) = A(x²+c) + (Bx+C)(x-r)
+			//         = Ax² + Ac + Bx² - Brx + Cx - Cr
+			//         = (A+B)x² + (C-Br)x + (Ac-Cr)
+			// Matching coefficients with P(x) = p₂x² + p₁x + p₀:
+			//   x²: A + B = p₂       => B = p₂ - A
+			//   x¹: C - Br = p₁      => C = p₁ + Br = p₁ + (p₂-A)r
+			//   x⁰: Ac - Cr = p₀     (for verification)
+
+			const A = linearCoeff;
+			const B = p2Coeff - A;
+			const C = p1Coeff + B * linearRoot;
+
+			// Store both B and C in a special format
+			// We use 'xCoeff' and 'constCoeff' properties (extended term)
+			solvedTerms.push({
+				...quadTerm,
+				coefficient: number('0'), // placeholder
+				// Store B and C for later use
+				xCoeff: B,
+				constCoeff: C
+			} as PartialFractionTerm & { xCoeff: number; constCoeff: number });
+		} else {
+			// More complex case - multiple factors
+			// Fall back to placeholder for now
+			solvedTerms.push(quadTerm);
+		}
+	}
+
+	return solvedTerms;
+}
+
+/**
+ * Get numeric value from a coefficient MathNode.
+ */
+function getNumericValue(node: MathNode | undefined): number | null {
+	if (!node) return null;
+	if (isNumber(node)) return parseFloat(node.value);
+	if (node.type === 'opposite' && isNumber(node.operand)) {
+		return -parseFloat(node.operand.value);
+	}
+	if (node.type === 'division') {
+		const num = getNumericValue(node.numerator);
+		const den = getNumericValue(node.denominator);
+		if (num !== null && den !== null && den !== 0) {
+			return num / den;
+		}
+	}
+	return null;
 }
 
 /**
@@ -758,8 +979,8 @@ function solveCoefficients(
 	}
 
 	if (!allLinear) {
-		// Mixed linear and quadratic factors need more complex handling
-		return terms;
+		// Mixed linear and quadratic factors
+		return solveMixedFactors(numerator, terms, variable);
 	}
 
 	// Group terms by their root (for repeated factor handling)
@@ -784,8 +1005,9 @@ function solveCoefficients(
 		return terms;
 	}
 
-	// Special case: Single factor group (e.g., 1/(x-1)^2 or 1/(x-1)^3)
-	// No decomposition needed - coefficient equals numerator
+	// Special case: Single factor group (e.g., 1/(x-1)^2 or x/(x+1)^2)
+	// For P(x)/(x-r)^n = A_1/(x-r) + A_2/(x-r)^2 + ... + A_n/(x-r)^n
+	// We expand: P(x) = A_n + A_{n-1}(x-r) + A_{n-2}(x-r)^2 + ... + A_1(x-r)^{n-1}
 	if (rootGroups.size === 1) {
 		const [rootValue, groupTerms] = [...rootGroups.entries()][0];
 		// Sort by power (highest first)
@@ -794,25 +1016,52 @@ function solveCoefficients(
 		// Evaluate numerator at the root
 		const numValue = evaluateAt(numerator, variable, rootValue);
 
-		// For single repeated factor, the highest power gets the numerator value
-		// and lower powers get 0 (they don't contribute)
 		const solvedTerms: PartialFractionTerm[] = [];
 
-		for (let i = 0; i < groupTerms.length; i++) {
-			const term = groupTerms[i];
-			if (i === 0) {
-				// Highest power term gets the numerator value
-				let coeffNode: MathNode;
-				if (numValue !== null) {
-					coeffNode = createCoeffNode(numValue);
-				} else {
-					// If we can't evaluate, use the numerator directly (for symbolic case)
-					coeffNode = numerator;
-				}
-				solvedTerms.push({ ...term, coefficient: coeffNode });
+		if (groupTerms.length === 1) {
+			// Single power term - just use the numerator value
+			const term = groupTerms[0];
+			let coeffNode: MathNode;
+			if (numValue !== null) {
+				coeffNode = createCoeffNode(numValue);
 			} else {
-				// Lower power terms get 0 for single factor case
-				solvedTerms.push({ ...term, coefficient: number('0') });
+				coeffNode = numerator;
+			}
+			solvedTerms.push({ ...term, coefficient: coeffNode });
+		} else if (groupTerms.length === 2) {
+			// Two terms: A/(x-r) + B/(x-r)^2
+			// P(x) = B + A(x-r) = B + Ax - Ar
+			// For P(x) = px + q: A = p, B = q + Ar = q + pr
+
+			// Extract polynomial coefficients from numerator: P(x) = px + q
+			const p0 = evaluateAt(numerator, variable, 0) ?? 0;
+			const p1 = evaluateAt(numerator, variable, 1) ?? 0;
+
+			const constCoeff = p0;
+			const linearCoeff = p1 - p0;
+
+			// A = linearCoeff, B = constCoeff + linearCoeff * rootValue
+			const A = linearCoeff;
+			const B = constCoeff + linearCoeff * rootValue;
+
+			// groupTerms[0] is power 2, groupTerms[1] is power 1
+			solvedTerms.push({ ...groupTerms[0], coefficient: createCoeffNode(B) }); // /(x-r)^2
+			solvedTerms.push({ ...groupTerms[1], coefficient: createCoeffNode(A) }); // /(x-r)
+		} else {
+			// More than 2 powers - fall back to simple approach (highest gets value, others 0)
+			for (let i = 0; i < groupTerms.length; i++) {
+				const term = groupTerms[i];
+				if (i === 0) {
+					let coeffNode: MathNode;
+					if (numValue !== null) {
+						coeffNode = createCoeffNode(numValue);
+					} else {
+						coeffNode = numerator;
+					}
+					solvedTerms.push({ ...term, coefficient: coeffNode });
+				} else {
+					solvedTerms.push({ ...term, coefficient: number('0') });
+				}
 			}
 		}
 
@@ -930,7 +1179,7 @@ function solveCoefficients(
 function integratePartialFraction(
 	term: PartialFractionTerm,
 	variable: string,
-	_options: Required<Omit<IntegrateOptions, 'variable'>>,
+	_options: ResolvedIntegrateOptions,
 	_recorder: IntegrateStepRecorder,
 	_depth: number
 ): MathNode | null {
@@ -955,7 +1204,6 @@ function integratePartialFraction(
 		// Irreducible quadratic: (Ax+B)/(x^2+px+q)
 		// This involves arctan and ln terms
 		// For x^2 + a^2: integral is arctan(x/a) / a
-		// For now, simplified handling
 		const coeffs = term.factor.quadraticCoeffs!;
 
 		// Check if it's x^2 + a^2 form
@@ -966,19 +1214,62 @@ function integratePartialFraction(
 			coeffs.b.value === '0' &&
 			isNumber(coeffs.c)
 		) {
-			const a = coeffs.c;
-			const sqrtA = Math.sqrt(parseFloat(a.value));
+			const cValue = parseFloat(coeffs.c.value);
+			const sqrtC = Math.sqrt(cValue);
+			const xVar: MathNode = { type: 'variable', name: variable };
 
-			// Integral of C/(x^2 + a^2) = (C/a) * arctan(x/a)
-			const xVar = { type: 'variable', name: variable } as MathNode;
+			// Check if we have extended coefficients (xCoeff, constCoeff) from solveMixedFactors
+			const extendedTerm = term as PartialFractionTerm & { xCoeff?: number; constCoeff?: number };
+			if (extendedTerm.xCoeff !== undefined || extendedTerm.constCoeff !== undefined) {
+				// Handle (Bx + C)/(x² + c) = Bx/(x² + c) + C/(x² + c)
+				const B = extendedTerm.xCoeff ?? 0;
+				const C = extendedTerm.constCoeff ?? 0;
 
-			// For a = 1 (i.e., 1/(x²+1)), simplify to just arctan(x)
+				let result: MathNode | null = null;
+
+				// Part 1: Bx/(x² + c) integrates to (B/2) * ln(x² + c)
+				if (Math.abs(B) > 1e-10) {
+					// Build x² + c
+					const xSquaredPlusC = add(power(xVar, number('2')), coeffs.c);
+					const lnTerm = func('ln', [xSquaredPlusC]);
+
+					// (B/2) * ln(x² + c)
+					const halfB = B / 2;
+					const lnPart = implicitMultiply(createCoeffNode(halfB), lnTerm);
+					result = lnPart;
+				}
+
+				// Part 2: C/(x² + c) integrates to (C/sqrt(c)) * arctan(x/sqrt(c))
+				if (Math.abs(C) > 1e-10) {
+					let atanPart: MathNode;
+					if (sqrtC === 1) {
+						atanPart = func('arctan', [xVar]);
+					} else {
+						const atanArg = divide(xVar, number(sqrtC.toString()), 'fraction');
+						atanPart = divide(func('arctan', [atanArg]), number(sqrtC.toString()), 'fraction');
+					}
+					atanPart = implicitMultiply(createCoeffNode(C), atanPart);
+
+					if (result) {
+						result = add(result, atanPart);
+					} else {
+						result = atanPart;
+					}
+				}
+
+				return result ?? number('0');
+			}
+
+			// Standard case: coefficient is just C (constant numerator)
+			// Integral of C/(x^2 + c) = (C/sqrt(c)) * arctan(x/sqrt(c))
+
+			// For c = 1 (i.e., 1/(x²+1)), simplify to just arctan(x)
 			let atanTerm: MathNode;
-			if (sqrtA === 1) {
+			if (sqrtC === 1) {
 				atanTerm = func('arctan', [xVar]);
 			} else {
-				const atanArg = divide(xVar, number(sqrtA.toString()), 'fraction');
-				atanTerm = divide(func('arctan', [atanArg]), number(sqrtA.toString()), 'fraction');
+				const atanArg = divide(xVar, number(sqrtC.toString()), 'fraction');
+				atanTerm = divide(func('arctan', [atanArg]), number(sqrtC.toString()), 'fraction');
 			}
 
 			// Multiply by the coefficient (handles cases like -1/(x²+1) → -arctan(x))
@@ -1018,7 +1309,7 @@ export const partialFractionsIntegrator: Integrator = {
 	integrate(
 		expr: MathNode,
 		variable: string,
-		options: Required<Omit<IntegrateOptions, 'variable'>>,
+		options: ResolvedIntegrateOptions,
 		recorder: IntegrateStepRecorder,
 		depth: number
 	): IntegrateResult {

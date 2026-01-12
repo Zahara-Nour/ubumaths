@@ -10,8 +10,8 @@ import type { MathNode } from '../../types';
 import type {
 	Integrator,
 	IntegrateResult,
-	IntegrateOptions,
-	IntegrateStepRecorder
+	IntegrateStepRecorder,
+	ResolvedIntegrateOptions
 } from '../types';
 import { isNumber, isVariable, isEulerConstant } from '../../guards';
 import { number, power } from '../../factory';
@@ -422,7 +422,7 @@ export const basicIntegrator: Integrator = {
 	integrate(
 		expr: MathNode,
 		variable: string,
-		options: Required<Omit<IntegrateOptions, 'variable'>>,
+		options: ResolvedIntegrateOptions,
 		recorder: IntegrateStepRecorder,
 		_depth: number
 	): IntegrateResult {
@@ -608,7 +608,7 @@ export const basicIntegrator: Integrator = {
 				variable,
 				status: 'exact',
 				antiderivative,
-				integrandType: 'irrational',
+				integrandType: 'radical',
 				technique: 'basic-rule',
 				steps: recorder.getSteps(),
 				constantNote: CONSTANT_OF_INTEGRATION_NOTE

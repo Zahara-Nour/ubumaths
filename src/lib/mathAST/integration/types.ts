@@ -175,6 +175,18 @@ export interface IntegrateOptions {
 	readonly simplify?: boolean;
 
 	/**
+	 * Whether to normalize the final result using normalize/denormalize.
+	 * This applies algebraic simplification including:
+	 * - Combining like terms
+	 * - Simplifying trigonometric values at remarkable angles
+	 * - Expanding/simplifying logarithms
+	 * - Combining exponential factors
+	 * - Rationalizing denominators
+	 * Default: true
+	 */
+	readonly normalizeResult?: boolean;
+
+	/**
 	 * Internal parameter to track recursion depth across integrate() calls.
 	 * Used by integrators that call integrate() recursively.
 	 * @internal
@@ -183,17 +195,24 @@ export interface IntegrateOptions {
 }
 
 /**
+ * Resolved options type used internally by integrators.
+ * This type has all optional fields resolved to their defaults,
+ * except for `_depth` which remains optional since it's set per-recursion.
+ */
+export type ResolvedIntegrateOptions = Required<Omit<IntegrateOptions, 'variable' | '_depth'>> & {
+	readonly _depth?: number;
+};
+
+/**
  * Default integration options.
  */
-export const DEFAULT_INTEGRATE_OPTIONS: Required<Omit<IntegrateOptions, 'variable' | '_depth'>> & {
-	_depth: number | undefined;
-} = {
+export const DEFAULT_INTEGRATE_OPTIONS: ResolvedIntegrateOptions = {
 	verbosity: 'summarized',
 	maxDepth: 10,
 	allowNumeric: true,
 	simpsonIntervals: 100,
 	simplify: true,
-	_depth: undefined
+	normalizeResult: true
 };
 
 // =============================================================================
@@ -298,7 +317,7 @@ export interface Integrator {
 	integrate(
 		expr: MathNode,
 		variable: string,
-		options: Required<Omit<IntegrateOptions, 'variable'>>,
+		options: ResolvedIntegrateOptions,
 		recorder: IntegrateStepRecorder,
 		depth: number
 	): IntegrateResult;
