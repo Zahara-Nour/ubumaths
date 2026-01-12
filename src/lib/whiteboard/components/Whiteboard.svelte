@@ -499,7 +499,7 @@
 		>
 			<!-- Canvas wrapper with shadow -->
 			<div
-				class="whiteboard-page-wrapper relative shadow-lg"
+				class="whiteboard-page-wrapper relative shrink-0 shadow-lg"
 				class:transition-transform={!isPanning}
 				style="width: {canvasWidth}px; height: {canvasHeight}px; transform: translate({panX}px, {panY}px);"
 			>
