@@ -4,7 +4,8 @@
 		Home,
 		Gamepad2,
 		FileSpreadsheet,
-		BookOpen
+		BookOpen,
+		PenTool
 		// Calculator,
 		// Terminal,
 		// CalculatorIcon,
@@ -44,6 +45,12 @@
 				href: '/dashboard/student/cahier-texte',
 				icon: BookOpen,
 				roles: ['student']
+			},
+			{
+				label: 'Whiteboard',
+				href: '/whiteboard',
+				icon: PenTool,
+				roles: ['teacher']
 			}
 			// { label: 'Automaths', href: '/automaths', icon: Calculator },
 			// { label: 'CAS', href: '/cas', icon: Terminal },

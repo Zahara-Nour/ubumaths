@@ -7,6 +7,7 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import WhiteboardCanvas from './WhiteboardCanvas.svelte';
 	import WhiteboardToolbar from './WhiteboardToolbar.svelte';
@@ -69,6 +70,9 @@
 
 	/** Context menu reference (must be outside transformed area for correct positioning) */
 	let contextMenuRef: ContextMenu | null = $state(null);
+
+	/** Fullscreen state */
+	let isFullscreen = $state(false);
 
 	// ==========================================================================
 	// Derived State
@@ -144,6 +148,10 @@
 		zoomLevel = 1;
 		panX = 0;
 		panY = 0;
+	}
+
+	function toggleFullscreen() {
+		isFullscreen = !isFullscreen;
 	}
 
 	function clampPan() {
@@ -248,6 +256,20 @@
 		whiteboardStore.destroy();
 	});
 
+	// Handle body scroll when fullscreen
+	$effect(() => {
+		if (!browser || !document.body) return;
+
+		document.body.style.overflow = isFullscreen ? 'hidden' : '';
+
+		// Cleanup on unmount
+		return () => {
+			if (document.body) {
+				document.body.style.overflow = '';
+			}
+		};
+	});
+
 	// ==========================================================================
 	// Keyboard Shortcuts
 	// ==========================================================================
@@ -338,8 +360,13 @@
 			}
 		}
 
-		// Escape - clear selection
+		// Escape - exit fullscreen or clear selection
 		if (e.key === 'Escape') {
+			if (isFullscreen) {
+				e.preventDefault();
+				isFullscreen = false;
+				return;
+			}
 			if (whiteboardStore.hasSelection) {
 				e.preventDefault();
 				whiteboardStore.clearSelection();
@@ -431,7 +458,9 @@
 
 <div
 	bind:this={containerEl}
-	class="whiteboard-container grid grid-rows-[auto_1fr_auto] bg-gray-200 {className}"
+	class={isFullscreen
+		? 'fixed inset-0 z-50 grid grid-rows-[auto_1fr_auto] bg-gray-200'
+		: `whiteboard-container grid grid-rows-[auto_1fr_auto] bg-gray-200 ${className}`}
 	onwheel={handleWheel}
 >
 	<!-- Status bar -->
@@ -492,6 +521,8 @@
 		onZoomIn={zoomIn}
 		onZoomOut={zoomOut}
 		onZoomToFit={zoomToFit}
+		{isFullscreen}
+		onToggleFullscreen={toggleFullscreen}
 	/>
 </div>
 
