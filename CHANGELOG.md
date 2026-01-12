@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.0...v0.6.1) (2026-01-12)
+
+### 📚 Documentation
+
+- add WIP prompts and code reviews, update CLAUDE.md guidelines ([957a3f8](https://github.com/Zahara-Nour/ubumaths/commit/957a3f8a843f62383bb6492c82d9ef52f48d827d))
+
+### 🐛 Bug Fixes
+
+- **gidouilles:** add missing classId to API request ([3c848ab](https://github.com/Zahara-Nour/ubumaths/commit/3c848ab560ec1de68c94a64f693339eb61f1efc0))
+- **teacher-dashboard:** display academic period instead of time period ([2862b85](https://github.com/Zahara-Nour/ubumaths/commit/2862b850fd9856e8a3723ddd8f538552600f957c))
+- **teacher-dashboard:** multiple VIP card and schedule fixes ([caa8f6a](https://github.com/Zahara-Nour/ubumaths/commit/caa8f6aeaf347e01938e477bb04dd450f9b40e9b))
+- **teacher-dashboard:** resolve 401 errors and warnings display issues ([8cfd7b3](https://github.com/Zahara-Nour/ubumaths/commit/8cfd7b3e643cd1b1576adb11dd45c02ddf3a86fc))
+- **ui:** resolve tabs content height rendering bug ([3595a2a](https://github.com/Zahara-Nour/ubumaths/commit/3595a2a703c54d50d81d67d6501899232a59c2ba))
+
 ## [0.6.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.23...v0.6.0) (2026-01-12)
 
 ### ⚠ BREAKING CHANGES
