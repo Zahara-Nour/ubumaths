@@ -71,7 +71,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Clock, Target, BookOpen, Users, Sparkles } from 'lucide-svelte';
+	import { Calendar, Clock, Target, BookOpen, Users, Sparkles } from 'lucide-svelte';
 	import type { StudentVipCards, VipCardInstance } from '$lib/types/vip-card';
 	import Wheel from '$lib/components/Wheel.svelte';
 	import StudentQuickActionsTable from '$lib/components/teacher/StudentQuickActionsTable.svelte';
@@ -90,14 +90,7 @@
 		getNoClassMessage,
 		isWeekend
 	} from '$lib/utils/timeMatching';
-	import { findCurrentPeriod } from '$lib/utils/academic-period';
-	import {
-		getCurrentTimePeriod,
-		getNextTimePeriod,
-		formatPeriodName,
-		formatPeriodTimes,
-		type SchoolTimetable
-	} from '$lib/utils/timetable';
+	import { findCurrentPeriod, getPeriodName } from '$lib/utils/academic-period';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 
 	// ============================================================================
@@ -154,39 +147,16 @@
 	});
 
 	// ============================================================================
-	// CURRENT TIME PERIOD (from school timetable)
+	// CURRENT ACADEMIC PERIOD
 	// ============================================================================
 
 	/**
-	 * Current time for period calculation (updates every minute)
+	 * Current academic period object (derived from currentPeriodId)
+	 * Contains name, start_date, end_date, color, etc.
 	 */
-	let now = $state(new Date());
-
-	/**
-	 * Current time period based on school timetable
-	 * Recalculates when 'now' changes
-	 */
-	const currentTimePeriod = $derived(
-		getCurrentTimePeriod(data.schoolTimetable as SchoolTimetable | null, now)
+	const currentAcademicPeriod = $derived(
+		data.academicPeriods?.find((p) => p.id === currentPeriodId) ?? null
 	);
-
-	/**
-	 * Next upcoming period (when not currently in a period)
-	 */
-	const nextTimePeriod = $derived(
-		getNextTimePeriod(data.schoolTimetable as SchoolTimetable | null, now)
-	);
-
-	/**
-	 * Update 'now' every minute to keep period display current
-	 */
-	$effect(() => {
-		const interval = setInterval(() => {
-			now = new Date();
-		}, 60000); // Update every minute
-
-		return () => clearInterval(interval);
-	});
 
 	// ============================================================================
 	// WHEEL OF FORTUNE MODAL STATE
@@ -701,26 +671,22 @@
 
 <div class="space-y-6">
 	<!--
-		HEADER WITH PERIOD BADGE
-		========================
-		Simple badge showing current period + time
+		HEADER WITH ACADEMIC PERIOD BADGE
+		==================================
+		Shows current academic period (trimester, semester, etc.)
 	-->
-	{#if data.schoolTimetable}
-		<div class="flex items-center justify-end gap-3">
-			{#if currentTimePeriod}
-				<Badge variant="secondary" class="px-3 py-1 text-sm">
-					<Clock class="mr-1.5 h-3.5 w-3.5" />
-					{formatPeriodName(currentTimePeriod)} ({formatPeriodTimes(currentTimePeriod)})
-				</Badge>
-			{:else if nextTimePeriod}
-				<Badge variant="outline" class="px-3 py-1 text-sm">
-					<Clock class="mr-1.5 h-3.5 w-3.5" />
-					Prochaine : {formatPeriodName(nextTimePeriod.period)} dans {nextTimePeriod.minutesUntil} min
-				</Badge>
-			{/if}
-			<span class="text-sm text-muted-foreground">
-				{now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-			</span>
+	{#if currentAcademicPeriod}
+		<div class="flex items-center justify-end">
+			<Badge
+				variant="secondary"
+				class="px-3 py-1 text-sm"
+				style={currentAcademicPeriod.color
+					? `background-color: ${currentAcademicPeriod.color}20; border-color: ${currentAcademicPeriod.color}`
+					: ''}
+			>
+				<Calendar class="mr-1.5 h-3.5 w-3.5" />
+				{getPeriodName(currentAcademicPeriod as AcademicPeriod)}
+			</Badge>
 		</div>
 	{/if}
 
