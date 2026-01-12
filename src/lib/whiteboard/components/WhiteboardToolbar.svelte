@@ -53,9 +53,11 @@
 		Star,
 		Grid3x3,
 		Maximize2,
-		Minimize2
+		Minimize2,
+		GraduationCap
 	} from 'lucide-svelte';
 	import ExportDialog from './ExportDialog.svelte';
+	import ExportToClassroomDialog from './ExportToClassroomDialog.svelte';
 	import DriveFilePicker from './DriveFilePicker.svelte';
 	import SaveAsDialog from './SaveAsDialog.svelte';
 	import { goto } from '$app/navigation';
@@ -186,6 +188,9 @@
 
 	/** Export dialog state */
 	let exportDialogOpen = $state(false);
+
+	/** Export to Classroom dialog state */
+	let exportToClassroomDialogOpen = $state(false);
 
 	/** Drive dialogs state */
 	let driveFilePickerOpen = $state(false);
@@ -1354,6 +1359,17 @@
 								<FolderOpen class="h-4 w-4" />
 								<span>Ouvrir depuis Drive</span>
 							</Button>
+							<div class="my-1 h-px bg-border"></div>
+							<Button
+								type="button"
+								variant="ghost"
+								size="sm"
+								onclick={() => (exportToClassroomDialogOpen = true)}
+								class="justify-start gap-2"
+							>
+								<GraduationCap class="h-4 w-4" />
+								<span>Publier sur Classroom</span>
+							</Button>
 						{:else}
 							<Button
 								type="button"
@@ -1927,6 +1943,9 @@
 
 <!-- Export Dialog -->
 <ExportDialog bind:open={exportDialogOpen} />
+
+<!-- Export to Classroom Dialog -->
+<ExportToClassroomDialog bind:open={exportToClassroomDialogOpen} />
 
 <!-- Drive File Picker Dialog -->
 <DriveFilePicker
