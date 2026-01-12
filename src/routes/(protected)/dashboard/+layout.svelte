@@ -639,7 +639,8 @@
 		<!-- This is where child routes are rendered -->
 		<!-- For /dashboard, this renders +page.svelte which shows role-specific dashboards -->
 		<!-- For /dashboard/classes, this would render classes/+page.svelte, etc. -->
-		<main class="dashboard-content flex-1 overflow-y-auto bg-background">
+		<!-- NOTE: min-h-0 is required for overflow-y-auto to work in a flex container -->
+		<main class="dashboard-content min-h-0 flex-1 overflow-y-auto bg-background">
 			<!-- Notification Banner (sticky at top) -->
 			{#if !isFullWidthRoute}
 				<NotificationBanner />
