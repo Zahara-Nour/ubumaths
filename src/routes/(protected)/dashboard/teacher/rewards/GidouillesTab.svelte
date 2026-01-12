@@ -136,21 +136,21 @@
 		grantingCard = studentId;
 
 		try {
-			const response = await fetch('/api/teacher/rewards/grant-vip-card', {
+			const response = await fetch('/api/teacher/rewards/grant-specific-vip-card', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					studentId,
-					classId: selectedClassId,
 					cardId: selectedCardFilter
 				})
 			});
 
 			if (response.ok) {
 				const result = await response.json();
-				// Update cache optimistically
+				// Update cache optimistically - use first granted card from response
+				const grantedCard = result.cards?.[0];
 				teacherCache.addVipCardOptimistic(selectedClassId, studentId, {
-					id: result.instanceId,
+					id: grantedCard?.instanceId || crypto.randomUUID(),
 					card_id: selectedCardFilter,
 					status: 'active',
 					granted_at: new Date().toISOString()

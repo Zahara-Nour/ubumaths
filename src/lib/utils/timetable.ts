@@ -248,3 +248,80 @@ export function createDefaultTimetable(): SchoolTimetable {
 		]
 	};
 }
+
+/**
+ * Get the current time period based on the current time
+ *
+ * Finds the period that matches the current time of day.
+ * Returns null if no period matches (e.g., during breaks or outside school hours).
+ *
+ * @param timetable - School timetable containing periods
+ * @param now - Optional Date object for testing (defaults to current time)
+ * @returns Current period or null if not in any period
+ *
+ * @example
+ * const period = getCurrentTimePeriod(school.timetable);
+ * if (period) {
+ *   console.log(`Currently in: ${formatPeriodName(period)}`);
+ * }
+ */
+export function getCurrentTimePeriod(
+	timetable: SchoolTimetable | null,
+	now: Date = new Date()
+): SchoolPeriod | null {
+	if (!timetable || !timetable.periods || timetable.periods.length === 0) {
+		return null;
+	}
+
+	// Get current time in minutes since midnight
+	const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+	// Find period where current time falls between start and end
+	for (const period of timetable.periods) {
+		const startMinutes = timeToMinutes(period.start_time);
+		const endMinutes = timeToMinutes(period.end_time);
+
+		if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
+			return period;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Get the next upcoming period based on the current time
+ *
+ * Finds the next period that will start after the current time.
+ * Useful for showing "Next: Period X in Y minutes".
+ *
+ * @param timetable - School timetable containing periods
+ * @param now - Optional Date object for testing (defaults to current time)
+ * @returns Next period and minutes until it starts, or null if no more periods today
+ */
+export function getNextTimePeriod(
+	timetable: SchoolTimetable | null,
+	now: Date = new Date()
+): { period: SchoolPeriod; minutesUntil: number } | null {
+	if (!timetable || !timetable.periods || timetable.periods.length === 0) {
+		return null;
+	}
+
+	const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+	// Sort periods by start time and find the first one that starts after now
+	const sortedPeriods = sortPeriods(timetable.periods);
+
+	for (const period of sortedPeriods) {
+		const startMinutes = timeToMinutes(period.start_time);
+
+		if (startMinutes > currentMinutes) {
+			return {
+				period,
+				minutesUntil: startMinutes - currentMinutes
+			};
+		}
+	}
+
+	return null;
+}

@@ -57,9 +57,11 @@ export const getClassStudentsSchema = z.object({
 const dayOfWeekSchema = z.number().int().min(0).max(4);
 
 /**
- * Time format HH:MM
+ * Time format HH:MM or HH:MM:SS
  */
-const timeSchema = z.string().regex(/^\d{2}:\d{2}$/, 'Format invalide (attendu: HH:MM)');
+const timeSchema = z
+	.string()
+	.regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Format invalide (attendu: HH:MM ou HH:MM:SS)');
 
 /**
  * Create schedule entry schema
