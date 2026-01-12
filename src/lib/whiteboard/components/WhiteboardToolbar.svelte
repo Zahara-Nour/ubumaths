@@ -50,7 +50,8 @@
 		Hexagon,
 		Star,
 		Grid3x3,
-		Maximize2
+		Maximize2,
+		Minimize2
 	} from 'lucide-svelte';
 	import ExportDialog from './ExportDialog.svelte';
 	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
@@ -140,6 +141,10 @@
 		onZoomOut?: () => void;
 		/** Callback to reset zoom to fit */
 		onZoomToFit?: () => void;
+		/** Whether fullscreen mode is active */
+		isFullscreen?: boolean;
+		/** Callback to toggle fullscreen */
+		onToggleFullscreen?: () => void;
 	}
 
 	let {
@@ -147,7 +152,9 @@
 		zoomPercent = 100,
 		onZoomIn,
 		onZoomOut,
-		onZoomToFit
+		onZoomToFit,
+		isFullscreen = false,
+		onToggleFullscreen
 	}: Props = $props();
 
 	// ==========================================================================
@@ -1386,6 +1393,21 @@
 				class="text-destructive hover:bg-destructive/10 hover:text-destructive"
 			>
 				<Trash2 class="h-4 w-4" />
+			</Button>
+			<div class="mx-1 h-6 w-px bg-border"></div>
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={onToggleFullscreen}
+				title={isFullscreen ? 'Quitter le plein écran (Echap)' : 'Plein écran'}
+				aria-label={isFullscreen ? 'Quitter le plein écran' : 'Plein écran'}
+			>
+				{#if isFullscreen}
+					<Minimize2 class="h-4 w-4" />
+				{:else}
+					<Maximize2 class="h-4 w-4" />
+				{/if}
 			</Button>
 		</div>
 	</div>
