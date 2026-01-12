@@ -86,35 +86,21 @@ export const load: PageServerLoad = async ({ locals }) => {
 		}> | null;
 	}> = [];
 
-	// School timetable for teachers (used to display current period)
-	let schoolTimetable: {
-		periods: Array<{ number: number; name: string | null; start_time: string; end_time: string }>;
-	} | null = null;
-
 	if (profile.role === 'teacher' && profile.school_id) {
-		// Fetch school timetable and academic periods in parallel
-		const [schoolData, schoolYearData] = await Promise.all([
-			// Fetch school timetable
-			supabase.from('schools').select('timetable').eq('id', profile.school_id).single(),
-			// Get current school year for academic periods
-			supabase
-				.from('school_years')
-				.select('id')
-				.eq('school_id', profile.school_id)
-				.order('start_date', { ascending: false })
-				.limit(1)
-				.maybeSingle()
-		]);
+		// Fetch current school year for academic periods
+		const { data: schoolYearData } = await supabase
+			.from('school_years')
+			.select('id')
+			.eq('school_id', profile.school_id)
+			.order('start_date', { ascending: false })
+			.limit(1)
+			.maybeSingle();
 
-		if (schoolData.data?.timetable) {
-			schoolTimetable = schoolData.data.timetable as typeof schoolTimetable;
-		}
-
-		if (schoolYearData.data) {
+		if (schoolYearData) {
 			const { data: periods } = await supabase
 				.from('academic_periods')
 				.select('id, name, start_date, end_date, school_year_id, period_order, type, color')
-				.eq('school_year_id', schoolYearData.data.id)
+				.eq('school_year_id', schoolYearData.id)
 				.order('start_date', { ascending: false });
 
 			academicPeriods = (periods || []) as typeof academicPeriods;
@@ -239,7 +225,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		riddlesSolved,
 		recentExercises,
 		academicPeriods,
-		schoolTimetable,
 		minesweeperAchievements: null,
 		achievementStats: null
 	};
