@@ -28,6 +28,21 @@ import { sleep, calculateBackoff } from './utils';
 const DRIVE_API_BASE = 'https://www.googleapis.com/drive/v3';
 
 /**
+ * Google Drive Upload API base URL
+ */
+const DRIVE_UPLOAD_BASE = 'https://www.googleapis.com/upload/drive/v3';
+
+/**
+ * MIME type for Google Drive folders
+ */
+const DRIVE_FOLDER_MIME = 'application/vnd.google-apps.folder';
+
+/**
+ * Default folder name for whiteboard documents
+ */
+const WHITEBOARD_FOLDER_NAME = 'UbuMaths Whiteboards';
+
+/**
  * Maximum number of retry attempts for rate limit errors
  */
 const MAX_RETRIES = 3;
@@ -43,13 +58,41 @@ export interface DriveFileMetadata {
 	/** MIME type */
 	mimeType: string;
 	/** Web view link (for viewing in browser) */
-	webViewLink: string;
+	webViewLink?: string;
 	/** Web content link (for downloading) */
 	webContentLink?: string;
 	/** Thumbnail link */
 	thumbnailLink?: string;
 	/** Icon link */
-	iconLink: string;
+	iconLink?: string;
+	/** Last modified time (ISO 8601) */
+	modifiedTime?: string;
+	/** Created time (ISO 8601) */
+	createdTime?: string;
+}
+
+/**
+ * Options for creating a file on Google Drive
+ */
+export interface CreateFileOptions {
+	/** File name */
+	name: string;
+	/** File content as string */
+	content: string;
+	/** MIME type of the content */
+	mimeType: string;
+	/** Parent folder ID */
+	folderId: string;
+	/** Optional description */
+	description?: string;
+}
+
+/**
+ * Response from Drive API files.list
+ */
+interface DriveListResponse {
+	files: DriveFileMetadata[];
+	nextPageToken?: string;
 }
 
 /**
@@ -205,6 +248,227 @@ export class GoogleDriveClient {
 	}
 
 	/**
+	 * Make a request to Google Drive Upload API
+	 *
+	 * @param endpoint - API endpoint path
+	 * @param body - Request body
+	 * @param contentType - Content-Type header
+	 * @param retryCount - Current retry attempt
+	 * @returns Response data
+	 */
+	private async requestUpload<T>(
+		endpoint: string,
+		body: string,
+		contentType: string,
+		retryCount = 0
+	): Promise<T> {
+		const url = `${DRIVE_UPLOAD_BASE}${endpoint}`;
+
+		try {
+			const response = await fetch(url, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${this.accessToken}`,
+					'Content-Type': contentType
+				},
+				body
+			});
+
+			if (response.ok) {
+				return (await response.json()) as T;
+			}
+
+			// Handle errors similar to request()
+			const errorData = await response.json();
+			const errorValidation = googleAPIErrorSchema.safeParse(errorData);
+
+			if (errorValidation.success) {
+				const error = errorValidation.data.error;
+
+				switch (response.status) {
+					case 401:
+						throw new GoogleTokenExpiredError();
+					case 403:
+						throw new GoogleInsufficientPermissionsError(error.message);
+					case 404:
+						throw new GoogleNotFoundError(error.message);
+					case 429: {
+						if (retryCount < MAX_RETRIES) {
+							const retryAfter = this.getRetryAfter(response);
+							const delay = retryAfter || calculateBackoff(retryCount);
+							console.warn(
+								`[GoogleDriveClient] Rate limit hit. Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
+							);
+							await sleep(delay);
+							return this.requestUpload<T>(endpoint, body, contentType, retryCount + 1);
+						}
+						throw new GoogleRateLimitError(this.getRetryAfter(response));
+					}
+					default:
+						throw new GoogleAPIError(error.message, response.status, error.status);
+				}
+			}
+
+			throw new GoogleAPIError(
+				`Google API error: ${response.statusText}`,
+				response.status,
+				'UNKNOWN_ERROR'
+			);
+		} catch (error) {
+			if (error instanceof GoogleAPIError) {
+				throw error;
+			}
+			if (error instanceof Error) {
+				throw new GoogleAPIError(`Network error: ${error.message}`, 0, 'NETWORK_ERROR');
+			}
+			throw new GoogleAPIError('Unknown error occurred', 0, 'UNKNOWN_ERROR');
+		}
+	}
+
+	/**
+	 * Make a request that returns text content (for file downloads)
+	 *
+	 * @param endpoint - API endpoint path
+	 * @returns Response text
+	 */
+	private async requestText(endpoint: string, retryCount = 0): Promise<string> {
+		const url = `${DRIVE_API_BASE}${endpoint}`;
+
+		try {
+			const response = await fetch(url, {
+				headers: {
+					Authorization: `Bearer ${this.accessToken}`
+				}
+			});
+
+			if (response.ok) {
+				return await response.text();
+			}
+
+			// Handle errors
+			const errorData = await response.json();
+			const errorValidation = googleAPIErrorSchema.safeParse(errorData);
+
+			if (errorValidation.success) {
+				const error = errorValidation.data.error;
+
+				switch (response.status) {
+					case 401:
+						throw new GoogleTokenExpiredError();
+					case 403:
+						throw new GoogleInsufficientPermissionsError(error.message);
+					case 404:
+						throw new GoogleNotFoundError(error.message);
+					case 429: {
+						if (retryCount < MAX_RETRIES) {
+							const retryAfter = this.getRetryAfter(response);
+							const delay = retryAfter || calculateBackoff(retryCount);
+							console.warn(
+								`[GoogleDriveClient] Rate limit hit. Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
+							);
+							await sleep(delay);
+							return this.requestText(endpoint, retryCount + 1);
+						}
+						throw new GoogleRateLimitError(this.getRetryAfter(response));
+					}
+					default:
+						throw new GoogleAPIError(error.message, response.status, error.status);
+				}
+			}
+
+			throw new GoogleAPIError(
+				`Google API error: ${response.statusText}`,
+				response.status,
+				'UNKNOWN_ERROR'
+			);
+		} catch (error) {
+			if (error instanceof GoogleAPIError) {
+				throw error;
+			}
+			if (error instanceof Error) {
+				throw new GoogleAPIError(`Network error: ${error.message}`, 0, 'NETWORK_ERROR');
+			}
+			throw new GoogleAPIError('Unknown error occurred', 0, 'UNKNOWN_ERROR');
+		}
+	}
+
+	/**
+	 * Make a PATCH request to Google Drive Upload API
+	 *
+	 * @param endpoint - API endpoint path
+	 * @param body - Request body
+	 * @param contentType - Content-Type header
+	 * @returns Response data
+	 */
+	private async requestPatch<T>(
+		endpoint: string,
+		body: string,
+		contentType: string,
+		retryCount = 0
+	): Promise<T> {
+		const url = `${DRIVE_UPLOAD_BASE}${endpoint}`;
+
+		try {
+			const response = await fetch(url, {
+				method: 'PATCH',
+				headers: {
+					Authorization: `Bearer ${this.accessToken}`,
+					'Content-Type': contentType
+				},
+				body
+			});
+
+			if (response.ok) {
+				return (await response.json()) as T;
+			}
+
+			const errorData = await response.json();
+			const errorValidation = googleAPIErrorSchema.safeParse(errorData);
+
+			if (errorValidation.success) {
+				const error = errorValidation.data.error;
+
+				switch (response.status) {
+					case 401:
+						throw new GoogleTokenExpiredError();
+					case 403:
+						throw new GoogleInsufficientPermissionsError(error.message);
+					case 404:
+						throw new GoogleNotFoundError(error.message);
+					case 429: {
+						if (retryCount < MAX_RETRIES) {
+							const retryAfter = this.getRetryAfter(response);
+							const delay = retryAfter || calculateBackoff(retryCount);
+							console.warn(
+								`[GoogleDriveClient] Rate limit hit. Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
+							);
+							await sleep(delay);
+							return this.requestPatch<T>(endpoint, body, contentType, retryCount + 1);
+						}
+						throw new GoogleRateLimitError(this.getRetryAfter(response));
+					}
+					default:
+						throw new GoogleAPIError(error.message, response.status, error.status);
+				}
+			}
+
+			throw new GoogleAPIError(
+				`Google API error: ${response.statusText}`,
+				response.status,
+				'UNKNOWN_ERROR'
+			);
+		} catch (error) {
+			if (error instanceof GoogleAPIError) {
+				throw error;
+			}
+			if (error instanceof Error) {
+				throw new GoogleAPIError(`Network error: ${error.message}`, 0, 'NETWORK_ERROR');
+			}
+			throw new GoogleAPIError('Unknown error occurred', 0, 'UNKNOWN_ERROR');
+		}
+	}
+
+	/**
 	 * Get file metadata from Google Drive
 	 *
 	 * @param fileId - Google Drive file ID
@@ -287,6 +551,10 @@ export class GoogleDriveClient {
 	 */
 	async getFileUrl(fileId: string): Promise<string> {
 		const metadata = await this.getFileMetadata(fileId);
+		if (!metadata.webViewLink) {
+			// Construct default URL if not provided
+			return `https://drive.google.com/file/d/${fileId}/view`;
+		}
 		return metadata.webViewLink;
 	}
 
@@ -354,5 +622,262 @@ export class GoogleDriveClient {
 			// Re-throw unexpected errors
 			throw error;
 		}
+	}
+
+	// =========================================================================
+	// Write Operations (require drive.file scope)
+	// =========================================================================
+
+	/**
+	 * Find a folder by name
+	 *
+	 * @param name - Folder name to search for
+	 * @param parentId - Optional parent folder ID (defaults to root)
+	 * @returns Folder ID if found, null otherwise
+	 *
+	 * @example
+	 * ```typescript
+	 * const folderId = await client.findFolder('UbuMaths Whiteboards');
+	 * if (folderId) {
+	 *   console.log('Found folder:', folderId);
+	 * }
+	 * ```
+	 */
+	async findFolder(name: string, parentId?: string): Promise<string | null> {
+		if (!name) {
+			throw new Error('Folder name is required');
+		}
+
+		// Build query: find folder by name, not trashed
+		let query = `name='${name}' and mimeType='${DRIVE_FOLDER_MIME}' and trashed=false`;
+		if (parentId) {
+			query += ` and '${parentId}' in parents`;
+		}
+
+		const endpoint = `/files?q=${encodeURIComponent(query)}&fields=files(id,name)`;
+		const response = await this.request<DriveListResponse>(endpoint);
+
+		if (response.files && response.files.length > 0) {
+			return response.files[0].id;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Create a new folder
+	 *
+	 * @param name - Folder name
+	 * @param parentId - Optional parent folder ID (defaults to root)
+	 * @returns Created folder ID
+	 *
+	 * @example
+	 * ```typescript
+	 * const folderId = await client.createFolder('My Documents');
+	 * console.log('Created folder:', folderId);
+	 * ```
+	 */
+	async createFolder(name: string, parentId?: string): Promise<string> {
+		if (!name) {
+			throw new Error('Folder name is required');
+		}
+
+		const metadata: Record<string, unknown> = {
+			name,
+			mimeType: DRIVE_FOLDER_MIME
+		};
+
+		if (parentId) {
+			metadata.parents = [parentId];
+		}
+
+		const response = await this.request<DriveFileMetadata>('/files', {
+			method: 'POST',
+			body: JSON.stringify(metadata)
+		});
+
+		return response.id;
+	}
+
+	/**
+	 * Get or create the app's whiteboard folder
+	 * Creates "UbuMaths Whiteboards" folder if it doesn't exist
+	 *
+	 * @returns Folder ID
+	 *
+	 * @example
+	 * ```typescript
+	 * const folderId = await client.getOrCreateAppFolder();
+	 * // Always returns a valid folder ID
+	 * ```
+	 */
+	async getOrCreateAppFolder(): Promise<string> {
+		// First, try to find existing folder
+		const existingId = await this.findFolder(WHITEBOARD_FOLDER_NAME);
+		if (existingId) {
+			return existingId;
+		}
+
+		// Create new folder
+		return this.createFolder(WHITEBOARD_FOLDER_NAME);
+	}
+
+	/**
+	 * Create a new file on Google Drive
+	 *
+	 * @param options - File creation options
+	 * @returns Created file metadata
+	 *
+	 * @example
+	 * ```typescript
+	 * const file = await client.createFile({
+	 *   name: 'whiteboard.ubw',
+	 *   content: JSON.stringify(document),
+	 *   mimeType: 'application/vnd.ubumaths.whiteboard+json',
+	 *   folderId: 'folder123'
+	 * });
+	 * console.log('Created file:', file.id);
+	 * ```
+	 */
+	async createFile(options: CreateFileOptions): Promise<DriveFileMetadata> {
+		const { name, content, mimeType, folderId, description } = options;
+
+		if (!name || !content || !mimeType || !folderId) {
+			throw new Error('name, content, mimeType, and folderId are required');
+		}
+
+		// Build multipart request
+		const boundary = '-------ubumaths-multipart-boundary';
+		const metadata: Record<string, unknown> = {
+			name,
+			mimeType,
+			parents: [folderId]
+		};
+
+		if (description) {
+			metadata.description = description;
+		}
+
+		const body = [
+			`--${boundary}`,
+			'Content-Type: application/json; charset=UTF-8',
+			'',
+			JSON.stringify(metadata),
+			`--${boundary}`,
+			`Content-Type: ${mimeType}`,
+			'',
+			content,
+			`--${boundary}--`
+		].join('\r\n');
+
+		const endpoint = `/files?uploadType=multipart&fields=id,name,mimeType,modifiedTime,createdTime`;
+
+		return this.requestUpload<DriveFileMetadata>(
+			endpoint,
+			body,
+			`multipart/related; boundary=${boundary}`
+		);
+	}
+
+	/**
+	 * Update an existing file's content
+	 *
+	 * @param fileId - File ID to update
+	 * @param content - New file content
+	 * @param newName - Optional new name for the file
+	 * @returns Updated file metadata
+	 *
+	 * @example
+	 * ```typescript
+	 * const file = await client.updateFile('file123', JSON.stringify(document));
+	 * console.log('Updated at:', file.modifiedTime);
+	 * ```
+	 */
+	async updateFile(fileId: string, content: string, newName?: string): Promise<DriveFileMetadata> {
+		if (!fileId || !content) {
+			throw new Error('fileId and content are required');
+		}
+
+		let endpoint = `/files/${fileId}?uploadType=media&fields=id,name,mimeType,modifiedTime`;
+
+		// If renaming, we need to use multipart upload
+		if (newName) {
+			const boundary = '-------ubumaths-multipart-boundary';
+			const metadata = { name: newName };
+
+			const body = [
+				`--${boundary}`,
+				'Content-Type: application/json; charset=UTF-8',
+				'',
+				JSON.stringify(metadata),
+				`--${boundary}`,
+				'Content-Type: application/octet-stream',
+				'',
+				content,
+				`--${boundary}--`
+			].join('\r\n');
+
+			endpoint = `/files/${fileId}?uploadType=multipart&fields=id,name,mimeType,modifiedTime`;
+			return this.requestPatch<DriveFileMetadata>(
+				endpoint,
+				body,
+				`multipart/related; boundary=${boundary}`
+			);
+		}
+
+		// Simple media upload for content-only update
+		return this.requestPatch<DriveFileMetadata>(endpoint, content, 'application/octet-stream');
+	}
+
+	/**
+	 * List files in a folder
+	 *
+	 * @param folderId - Parent folder ID
+	 * @param mimeType - Optional MIME type filter
+	 * @returns Array of file metadata
+	 *
+	 * @example
+	 * ```typescript
+	 * const files = await client.listFiles(folderId, 'application/vnd.ubumaths.whiteboard+json');
+	 * files.forEach(f => console.log(f.name, f.modifiedTime));
+	 * ```
+	 */
+	async listFiles(folderId: string, mimeType?: string): Promise<DriveFileMetadata[]> {
+		if (!folderId) {
+			throw new Error('folderId is required');
+		}
+
+		// Build query
+		let query = `'${folderId}' in parents and trashed=false`;
+		if (mimeType) {
+			query += ` and mimeType='${mimeType}'`;
+		}
+
+		const fields = 'files(id,name,mimeType,modifiedTime,createdTime)';
+		const endpoint = `/files?q=${encodeURIComponent(query)}&fields=${fields}&orderBy=modifiedTime desc`;
+
+		const response = await this.request<DriveListResponse>(endpoint);
+		return response.files || [];
+	}
+
+	/**
+	 * Get file content as text
+	 *
+	 * @param fileId - File ID to download
+	 * @returns File content as string
+	 *
+	 * @example
+	 * ```typescript
+	 * const content = await client.getFileContent('file123');
+	 * const document = JSON.parse(content);
+	 * ```
+	 */
+	async getFileContent(fileId: string): Promise<string> {
+		if (!fileId) {
+			throw new Error('fileId is required');
+		}
+
+		const endpoint = `/files/${fileId}?alt=media`;
+		return this.requestText(endpoint);
 	}
 }

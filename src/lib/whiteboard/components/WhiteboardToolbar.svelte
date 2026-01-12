@@ -40,6 +40,8 @@
 		FilePlus,
 		Cloud,
 		CloudOff,
+		CloudUpload,
+		LogIn,
 		Loader2,
 		Download,
 		MousePointer2,
@@ -54,7 +56,11 @@
 		Minimize2
 	} from 'lucide-svelte';
 	import ExportDialog from './ExportDialog.svelte';
+	import DriveFilePicker from './DriveFilePicker.svelte';
+	import SaveAsDialog from './SaveAsDialog.svelte';
+	import { goto } from '$app/navigation';
 	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
+	import { driveSyncService } from '../services/drive-sync';
 	import {
 		INSTRUMENT_LABELS,
 		STROKE_STYLE_LABELS,
@@ -181,6 +187,11 @@
 	/** Export dialog state */
 	let exportDialogOpen = $state(false);
 
+	/** Drive dialogs state */
+	let driveFilePickerOpen = $state(false);
+	let saveAsDialogOpen = $state(false);
+	let isSavingToDrive = $state(false);
+
 	/** Draggable stroke panel state (independent floating panel, not using Popover) */
 	let strokePanelOpen = $state(false);
 	let strokePanelPosition = $state({ x: 100, y: 100 });
@@ -215,6 +226,7 @@
 	let instruments = $derived(whiteboardStore.instruments);
 	let syncState = $derived(whiteboardStore.syncState);
 	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
+	let isGoogleConnected = $derived(syncState.status !== 'disconnected');
 
 	/** Current drawing tool icon for the button */
 	let currentDrawingTool = $derived(
@@ -745,6 +757,104 @@
 			input.value = '';
 		}
 	}
+
+	// ==========================================================================
+	// Google Drive Handlers
+	// ==========================================================================
+
+	async function handleSaveToDrive() {
+		const doc = whiteboardStore.document;
+		if (!doc) return;
+
+		isSavingToDrive = true;
+		filePopoverOpen = false;
+
+		try {
+			const result = await driveSyncService.saveToDrive({
+				document: doc,
+				fileName: doc.title || 'Sans titre',
+				fileId: syncState.driveFileId || undefined
+			});
+
+			if (result.success) {
+				whiteboardStore.setSyncSuccess(result.fileId!, result.modifiedTime!);
+				toaster.success('Document sauvegardé sur Google Drive');
+			} else {
+				whiteboardStore.setSyncError(result.error || 'Erreur de sauvegarde');
+				toaster.error(result.error || 'Erreur de sauvegarde');
+			}
+		} finally {
+			isSavingToDrive = false;
+		}
+	}
+
+	function handleSaveAsToDrive() {
+		filePopoverOpen = false;
+		saveAsDialogOpen = true;
+	}
+
+	async function handleSaveAsConfirm(fileName: string) {
+		const doc = whiteboardStore.document;
+		if (!doc) return;
+
+		isSavingToDrive = true;
+
+		try {
+			const result = await driveSyncService.saveToDrive({
+				document: doc,
+				fileName,
+				fileId: undefined // Force new file
+			});
+
+			if (result.success) {
+				// Update title and connect to new file
+				whiteboardStore.setTitle(fileName.replace(/\.ubw$/, ''));
+				whiteboardStore.connectToDrive(result.fileId, syncState.driveFolderId || undefined);
+				whiteboardStore.setSyncSuccess(result.fileId!, result.modifiedTime!);
+				toaster.success('Document créé sur Google Drive');
+				saveAsDialogOpen = false;
+			} else {
+				toaster.error(result.error || 'Erreur de sauvegarde');
+			}
+		} finally {
+			isSavingToDrive = false;
+		}
+	}
+
+	function handleOpenFromDrive() {
+		filePopoverOpen = false;
+		driveFilePickerOpen = true;
+	}
+
+	async function handleDriveFileSelect(fileId: string, _fileName: string) {
+		if (hasUnsavedChanges) {
+			if (!confirm('Vous avez des modifications non sauvegardées. Voulez-vous continuer ?')) {
+				return;
+			}
+		}
+
+		driveFilePickerOpen = false;
+
+		try {
+			const result = await driveSyncService.loadFromDrive(fileId);
+
+			if (result.success && result.document) {
+				whiteboardStore.loadFromJson(result.document);
+				whiteboardStore.connectToDrive(fileId);
+				whiteboardStore.setSyncSuccess(fileId, result.modifiedTime!);
+				toaster.success('Document chargé depuis Google Drive');
+			} else {
+				toaster.error(result.error || 'Erreur de chargement');
+			}
+		} catch (_e) {
+			toaster.error('Erreur lors du chargement');
+		}
+	}
+
+	function handleConnectGoogle() {
+		filePopoverOpen = false;
+		goto('/settings');
+	}
 </script>
 
 <svelte:window onclick={closePanelsOnClickOutside} />
@@ -1205,6 +1315,57 @@
 							<span>Exporter</span>
 							<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">Ctrl+E</kbd>
 						</Button>
+						<div class="my-1 h-px bg-border"></div>
+						<!-- Google Drive Options -->
+						{#if isGoogleConnected}
+							<Button
+								type="button"
+								variant="ghost"
+								size="sm"
+								onclick={handleSaveToDrive}
+								disabled={isSavingToDrive}
+								class="justify-start gap-2"
+							>
+								{#if isSavingToDrive}
+									<Loader2 class="h-4 w-4 animate-spin" />
+								{:else}
+									<CloudUpload class="h-4 w-4" />
+								{/if}
+								<span>Enregistrer sur Drive</span>
+							</Button>
+							<Button
+								type="button"
+								variant="ghost"
+								size="sm"
+								onclick={handleSaveAsToDrive}
+								disabled={isSavingToDrive}
+								class="justify-start gap-2"
+							>
+								<FilePlus class="h-4 w-4" />
+								<span>Enregistrer sous... (Drive)</span>
+							</Button>
+							<Button
+								type="button"
+								variant="ghost"
+								size="sm"
+								onclick={handleOpenFromDrive}
+								class="justify-start gap-2"
+							>
+								<FolderOpen class="h-4 w-4" />
+								<span>Ouvrir depuis Drive</span>
+							</Button>
+						{:else}
+							<Button
+								type="button"
+								variant="ghost"
+								size="sm"
+								onclick={handleConnectGoogle}
+								class="justify-start gap-2"
+							>
+								<LogIn class="h-4 w-4" />
+								<span>Se connecter à Google</span>
+							</Button>
+						{/if}
 						<div class="my-1 h-px bg-border"></div>
 						<!-- Sync Status -->
 						<div
@@ -1766,6 +1927,22 @@
 
 <!-- Export Dialog -->
 <ExportDialog bind:open={exportDialogOpen} />
+
+<!-- Drive File Picker Dialog -->
+<DriveFilePicker
+	bind:open={driveFilePickerOpen}
+	onSelect={handleDriveFileSelect}
+	onClose={() => (driveFilePickerOpen = false)}
+/>
+
+<!-- Save As Dialog -->
+<SaveAsDialog
+	bind:open={saveAsDialogOpen}
+	defaultName={whiteboardStore.document?.title || 'Sans titre'}
+	saving={isSavingToDrive}
+	onSave={handleSaveAsConfirm}
+	onClose={() => (saveAsDialogOpen = false)}
+/>
 
 <style>
 	.whiteboard-toolbar {
