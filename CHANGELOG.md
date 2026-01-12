@@ -2,6 +2,232 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.23...v0.6.0) (2026-01-12)
+
+### ⚠ BREAKING CHANGES
+
+- **units:** questions/units now re-exports from mathAST/units
+
+Migration eliminates ~750 lines of duplicated code by establishing
+mathAST/units as the single source of truth for unit definitions
+and operations.
+
+Architecture:
+
+- mathAST/units/ = immutable core (ReadonlyMap, functional)
+- questions/units/ = consumer layer with backward-compatible aliases
+
+Changes to mathAST/units/definitions.ts:
+
+- Add missing time units: semaine, mois, an
+- Extend UNIT_ALIASES: euros, litres, mins, heures, jours, etc.
+
+Changes to questions/units/:
+
+- types.ts: re-exports from mathAST, adds MutableUnit helpers
+- definitions.ts: re-exports with ReadonlyMap→Record conversion
+- operations.ts: re-exports with aliases (multiplyUnits = multiply)
+
+Test fixes:
+
+- Update 'metre' to 'mètre' (French accent in mathAST)
+- Update rad test (now BASE_UNIT, not SPECIAL_UNITS)
+
+All 767 unit tests pass.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### ♻️ Code Refactoring
+
+- **units:** unify questions/units to use mathAST/units as source of truth ([81cc8f7](https://github.com/Zahara-Nour/ubumaths/commit/81cc8f7b6c8af3fc3a0a21f49b75a1f0ec3ae01d))
+
+### 📚 Documentation
+
+- **calculator:** update progress to COMPLETE ([b7059e7](https://github.com/Zahara-Nour/ubumaths/commit/b7059e72cf785f11d92857545d1f87b1d3a4864b))
+- **cas:** add equation solving documentation ([39fae73](https://github.com/Zahara-Nour/ubumaths/commit/39fae73e5256384213b6df24bd401e5c82fe68ef))
+- **cas:** update CLI/REPL documentation ([c4ec2bc](https://github.com/Zahara-Nour/ubumaths/commit/c4ec2bcf1b9f56d20639070bcdf4b3b25f69e647))
+- **domain:** add interval arithmetic and composition propagation sections ([c71d561](https://github.com/Zahara-Nour/ubumaths/commit/c71d5614e04b5b4fc589ea120b8390ed2b3dace0))
+- **domain:** document range computation improvements ([d513f19](https://github.com/Zahara-Nour/ubumaths/commit/d513f19c748f4b58cf9e883b29aa15082bf3d8e0))
+- **domain:** update documentation for intervals integration ([037c616](https://github.com/Zahara-Nour/ubumaths/commit/037c616fbe015ee6a7bf6c35a6102c793e214588))
+- **grades:** add comprehensive technical documentation ([b19250e](https://github.com/Zahara-Nour/ubumaths/commit/b19250e89d693f65b87ac8e27805ab2907293250))
+- **intervals:** add reference documentation (Phase 8) ([c115c89](https://github.com/Zahara-Nour/ubumaths/commit/c115c89a16cd961aafcd9e0b343d901dc2c65139))
+- **intervals:** update progress documentation ([f3a5437](https://github.com/Zahara-Nour/ubumaths/commit/f3a5437b162fbb9b7442dcb1548e2e6a92573cb9))
+- **limits:** complete domain integration progress documentation ([c4c60cb](https://github.com/Zahara-Nour/ubumaths/commit/c4c60cba79bb61c796244286a21582c3b788dcc2))
+- **limits:** update progress with edge cases phase ([7c9dbfc](https://github.com/Zahara-Nour/ubumaths/commit/7c9dbfc6faf43f8ae01c3d0f1cffe05dd8e960cc))
+- mark equation solver as IMPLEMENTED ([87384fb](https://github.com/Zahara-Nour/ubumaths/commit/87384fbee701098436f3dd361f65f818729c7886))
+- **mathAST/limits:** update documentation for composition limits ([d0a7972](https://github.com/Zahara-Nour/ubumaths/commit/d0a79722454de4c8c96773953f3bde18ef5224bc))
+- **mathAST:** add complete trigonometric values table ([d49251d](https://github.com/Zahara-Nour/ubumaths/commit/d49251d485425cb06eaea0d12b85c59f9317d960))
+- **mathAST:** add complex number evaluation documentation ([379a5c6](https://github.com/Zahara-Nour/ubumaths/commit/379a5c6aceeb09a76ffeceffc6522b95c1bcfb1a))
+- **mathAST:** add comprehensive integration module reference ([f49bc45](https://github.com/Zahara-Nour/ubumaths/commit/f49bc4530cdd00b5d46a8e3bd6573a8fa296e428))
+- **mathAST:** add comprehensive limits module technical guide ([07b1cd5](https://github.com/Zahara-Nour/ubumaths/commit/07b1cd5d318f1156d90fac1e313be738d8087f5e))
+- **mathAST:** add comprehensive matrix module technical guide ([e6c89d2](https://github.com/Zahara-Nour/ubumaths/commit/e6c89d2f26a60679542dee1cb363da8c99607cde))
+- **mathAST:** add evaluateWithUnits documentation ([c9c7345](https://github.com/Zahara-Nour/ubumaths/commit/c9c734526717a1abef789f08d9dcace03ab27046))
+- **mathAST:** add floor/ceil/round and fractional exponents to documentation ([4a0d67e](https://github.com/Zahara-Nour/ubumaths/commit/4a0d67ef93c853fbe0fa5ac843dbc27c157f42a8))
+- **mathAST:** add missing Phase 2 normalization rules ([bb064af](https://github.com/Zahara-Nour/ubumaths/commit/bb064af1a190a28b4f03cd4d12c723dc669a3a82))
+- **mathAST:** add precision options and Rational arithmetic documentation ([88d4164](https://github.com/Zahara-Nour/ubumaths/commit/88d4164e9e913d2de6776b7093ac089400887c07))
+- **mathAST:** add sign analysis and variation study documentation ([042ea7b](https://github.com/Zahara-Nour/ubumaths/commit/042ea7bfa42e6ef790685bdfc802fac1e4a00c6a))
+- **mathAST:** add visitor pattern documentation ([fc18975](https://github.com/Zahara-Nour/ubumaths/commit/fc18975af2107a11b2fd35c65ce218fbfe9c4b87))
+- **mathAST:** document exact rounding on Rationals for precision ([4077c92](https://github.com/Zahara-Nour/ubumaths/commit/4077c92f7a4e2516f094fb0336477d4d2256591d))
+- **mathAST:** document ln partial exp extraction (dual of exp/ln) ([62ee529](https://github.com/Zahara-Nour/ubumaths/commit/62ee529060f454435611e92135c330ad17d4bca3))
+- **mathAST:** document rationalization by conjugate ([3f7aff2](https://github.com/Zahara-Nour/ubumaths/commit/3f7aff260c735ae695f076571165a0d662825194))
+- **mathAST:** improve transformToTargetUnit documentation ([88dd8d0](https://github.com/Zahara-Nour/ubumaths/commit/88dd8d03106d406ee7fb89d3eba5cccaaa22d84f))
+- **solve:** update progress with Phase 7 pedagogical improvements ([ad03230](https://github.com/Zahara-Nour/ubumaths/commit/ad0323064db2a5d175c9c786c697fcec240ada1d))
+- **units:** add comprehensive technical documentation ([e602d89](https://github.com/Zahara-Nour/ubumaths/commit/e602d8968451e4b89a0896f6f24ba5ab946346fc))
+- update CLI commands to match .help output ([481d630](https://github.com/Zahara-Nour/ubumaths/commit/481d6308265dc4cb6ee5320cf78ffbfa71af9c89))
+- **wip:** mark visitor pattern phases as completed ([ff39817](https://github.com/Zahara-Nour/ubumaths/commit/ff39817a2d00fa8a8cc26e45cbf365f4a24124f7))
+
+### ✨ Features
+
+- **2048:** add leaderboard link to game page ([712af57](https://github.com/Zahara-Nour/ubumaths/commit/712af57d9edd51f53bbe4f9d84510c76af428ccd))
+- **2048:** save scores to server and display in leaderboard ([51e35ef](https://github.com/Zahara-Nour/ubumaths/commit/51e35ef32f1b3d94be4988461bc50436f3367fb6))
+- **auth:** add loading spinners to login buttons ([6a3f0c9](https://github.com/Zahara-Nour/ubumaths/commit/6a3f0c9ad729fdd0d6446ab48f8192d1b283eb6d))
+- **calculator:** add pedagogical step generation (Phase 5) ([5e4c76b](https://github.com/Zahara-Nour/ubumaths/commit/5e4c76bc960f228d7000340839bb862c58bcd797))
+- **calculator:** add sharing, export, and security hardening (Phase 6) ([a81f292](https://github.com/Zahara-Nour/ubumaths/commit/a81f292dca8515c1d31b53799e62b98b1996120c))
+- **calculator:** add statistical functions and commands (Phase 4) ([4a0c069](https://github.com/Zahara-Nour/ubumaths/commit/4a0c069ae24b4f106e83664776cbe9124e37de68))
+- **calculator:** implement Phase 1 - base calculator with MathLive input ([c1fe3d7](https://github.com/Zahara-Nour/ubumaths/commit/c1fe3d7a1b0f0dd8d9d893acc57502c86c7a78ce))
+- **calculator:** implement Phase 2 - unit-aware evaluation ([9c66b61](https://github.com/Zahara-Nour/ubumaths/commit/9c66b61faa3a4602e4d719a59c8f208719905a25))
+- **calculator:** implement Phase 3 - Grapheur integration ([f6bdea0](https://github.com/Zahara-Nour/ubumaths/commit/f6bdea04766e9727e9751035c430185267fbf09a))
+- **cas:** add := and <- assignment operators, function lookup ([d55aaa5](https://github.com/Zahara-Nour/ubumaths/commit/d55aaa502b2e094a1a83cf4b2ca1dc5ef642c0e4))
+- **cas:** add .export command for JSON history export ([ea39ad8](https://github.com/Zahara-Nour/ubumaths/commit/ea39ad85fe612eed85a9ed02e393efaa2f78f05f))
+- **cas:** add exact/decimal toggle for REPL results ([c9fb1fe](https://github.com/Zahara-Nour/ubumaths/commit/c9fb1fef735977239afc25916324fcb5a38d0617))
+- **cas:** add export modal for copy/download ([85c912c](https://github.com/Zahara-Nour/ubumaths/commit/85c912caa6858d794a3f515cf075593243521466))
+- **cas:** add pedagogical step display for linear equations ([4ee5a76](https://github.com/Zahara-Nour/ubumaths/commit/4ee5a76ce0b4c189454b9585f2bca41b10f3f810))
+- **cas:** align = signs vertically in pedagogical steps ([6071b08](https://github.com/Zahara-Nour/ubumaths/commit/6071b0860eb601dbde87de3af9887f90e3bcac54))
+- **cas:** global = sign alignment across all pedagogical steps ([8d388c0](https://github.com/Zahara-Nour/ubumaths/commit/8d388c00dabc8a7b2d2d430d54ee838bd27d5804))
+- **cas:** improve REPL UX and add comprehensive docs ([fc3c390](https://github.com/Zahara-Nour/ubumaths/commit/fc3c390076f3fc08588ffa73d9fc7313913b7f66))
+- **complex:** add polar/exponential form support ([32ec5bb](https://github.com/Zahara-Nour/ubumaths/commit/32ec5bb54a90dce8d6888f5d46bfdf87a48464ed))
+- **domain:** add 7 major improvements to domain system ([0d9d87e](https://github.com/Zahara-Nour/ubumaths/commit/0d9d87eb90cb62fcb6df5bffbbfcd8c976ab2e6c))
+- **domain:** add 7 major improvements to range computation ([e6e8e12](https://github.com/Zahara-Nour/ubumaths/commit/e6e8e129a917bb6a3cc43eee3b54e8803671341d))
+- **domain:** add 7 major improvements to range computation ([4a1fa1a](https://github.com/Zahara-Nour/ubumaths/commit/4a1fa1a8cb0e03724b16cf014000492086a908a1))
+- **domain:** add algebra operations ([a0b9970](https://github.com/Zahara-Nour/ubumaths/commit/a0b9970bd767eaf8582eccd4238951c4548ce110))
+- **domain:** add base types and factories ([0012a69](https://github.com/Zahara-Nour/ubumaths/commit/0012a691b85d343a0e7e63d71f67a3052b3ffa63))
+- **domain:** add builtin function domains registry ([bd83fea](https://github.com/Zahara-Nour/ubumaths/commit/bd83feaac51c8082d377486b2a78e8bd59b4fea0))
+- **domain:** add domain computation with preimage resolution ([eec582b](https://github.com/Zahara-Nour/ubumaths/commit/eec582b543c2f97d79f7b38c20e1cdbf1c1ae770))
+- **domain:** add domain validation functions ([cd2ff06](https://github.com/Zahara-Nour/ubumaths/commit/cd2ff067628cc4f5ab861975ddf0f68898a4637b))
+- **domain:** add range computation with interval arithmetic ([725b4c3](https://github.com/Zahara-Nour/ubumaths/commit/725b4c3ab717b6909e9dea404665ab246a65cf4c))
+- **domain:** complete domain system with formatting, REPL, and def integration ([611f64c](https://github.com/Zahara-Nour/ubumaths/commit/611f64c66098911f43350f4b33b115b586c5d113))
+- **eval:** add nth roots of complex numbers ([b1033d1](https://github.com/Zahara-Nour/ubumaths/commit/b1033d1fb20790c048cca385c97c5c2da9c0c838))
+- **friends:** add cross-class friend discovery by grade level ([fe96310](https://github.com/Zahara-Nour/ubumaths/commit/fe9631078088b0040f2e060c41734d5e2b5f9554))
+- **friends:** replace Add tab with modal and class selector ([de3ddb6](https://github.com/Zahara-Nour/ubumaths/commit/de3ddb6ebfa22439ecb428cba5d47172b5c5f096))
+- **integrate:** implement Phase 3 - main dispatcher with linearity ([075cdc6](https://github.com/Zahara-Nour/ubumaths/commit/075cdc66ae5b08306af3b12b1c954c3999bd2ba6))
+- **integration:** complete integration module with CLI and exports ([e716ff7](https://github.com/Zahara-Nour/ubumaths/commit/e716ff7405c45324c1a6557fa52b180dd6032f7a))
+- **integration:** complete Phase 7 trig substitution skeleton ([bfbeae2](https://github.com/Zahara-Nour/ubumaths/commit/bfbeae2b3a800e6b347350c2c3f48c1f50067df3))
+- **integration:** implement Phase 2 - basic rules and integrator ([7d16abe](https://github.com/Zahara-Nour/ubumaths/commit/7d16abe29ce4a78295f6cc46715e8fdecc486fa3))
+- **integration:** implement Phase 6 partial fractions integrator (skeleton) ([c87fb60](https://github.com/Zahara-Nour/ubumaths/commit/c87fb60fb1a8ded8c5bcbb563073e48548298e77))
+- **integration:** implement Phase 8 numeric integration (Simpson's rule) ([94f1325](https://github.com/Zahara-Nour/ubumaths/commit/94f1325f94e398ccec03e54308addefed4d2b9f3))
+- **intervals:** add factory and algebra modules (Phases 2-3) ([a3308a9](https://github.com/Zahara-Nour/ubumaths/commit/a3308a9cec8bca379b6c68d31c4c0fad01d04d9a))
+- **intervals:** add format module (Phase 4) ([1575aaa](https://github.com/Zahara-Nour/ubumaths/commit/1575aaa665bc82d75abde896cf9b71f373cb1646))
+- **intervals:** add index and exports (Phase 5) ([27a16fe](https://github.com/Zahara-Nour/ubumaths/commit/27a16fe0b1895243ddf10b981ff4b0764eea070f))
+- **intervals:** add interval arithmetic operations ([da1d544](https://github.com/Zahara-Nour/ubumaths/commit/da1d5442cc209a2117e1741dec323ba2e6ad09d2))
+- **intervals:** add types and exact algebraic comparison (Phase 1) ([6980b87](https://github.com/Zahara-Nour/ubumaths/commit/6980b876b7ae5b4129f4290b294704b830f67148))
+- **latex:** add ComplexNode LaTeX generation (Phase 3) ([126ce32](https://github.com/Zahara-Nour/ubumaths/commit/126ce32abb358fdc8c3feb49b60f0d0316fd7652))
+- **limits:** add domain validation with French pedagogical messages ([d04e861](https://github.com/Zahara-Nour/ubumaths/commit/d04e86139aa5c6bebd4ca6b0eff95d7bcb7890ff))
+- **mathAST/cli:** add .variations command for monotonicity study ([2432bcb](https://github.com/Zahara-Nour/ubumaths/commit/2432bcb885c32c726b601830eeee7123f12fed27))
+- **mathAST/integration:** implement polynomial division and repeated factors ([3b69c8d](https://github.com/Zahara-Nour/ubumaths/commit/3b69c8d951201c3aaca13763f6b265a0bd06b5f4))
+- **mathAST/limits:** implement composition limits with sign tracking ([b7b117c](https://github.com/Zahara-Nour/ubumaths/commit/b7b117cfcddb7a2193f3f8c30a54e24c4becf55d))
+- **mathAST/matrix:** add pedagogical steps for determinant and inverse ([5053aba](https://github.com/Zahara-Nour/ubumaths/commit/5053abab56ced660cf58cb0b5ad6e38e48753bc7))
+- **mathAST:** add absolute value for sqrt of even powers ([1eb2a27](https://github.com/Zahara-Nour/ubumaths/commit/1eb2a27e6b0b412c4b79918ddf5c9301063c981e))
+- **mathAST:** add compareNumericNodes for numeric value comparison ([f6c37b1](https://github.com/Zahara-Nour/ubumaths/commit/f6c37b177d4497192b0e58f8b9aefc8457deaf12))
+- **mathAST:** add complex denominator rationalization in normalize ([008c91b](https://github.com/Zahara-Nour/ubumaths/commit/008c91bbbf600a52f8b7830ba007378da115a001))
+- **mathAST:** add ComplexNode type for complex numbers (Phase 1) ([07904b7](https://github.com/Zahara-Nour/ubumaths/commit/07904b787e65bdd419e99a215f5b29b99a93a15a))
+- **mathAST:** add custom syntax matrix parsing [[...]] (Phase 3) ([0d4ea99](https://github.com/Zahara-Nour/ubumaths/commit/0d4ea9990597cb92e4d3237e1e371fa0b4a7e7e2))
+- **mathAST:** add equation solver module with linear solver ([a0b61aa](https://github.com/Zahara-Nour/ubumaths/commit/a0b61aa5a943267136d998eb3e4ef00628a42ef9))
+- **mathAST:** add exact evaluation of complex functions cabs, conj, Re, Im ([0e6c21c](https://github.com/Zahara-Nour/ubumaths/commit/0e6c21cd059aa3abb4597a89e6d4e378ded82538))
+- **mathAST:** add exact fractional exponent and nth root evaluation ([0b2ff51](https://github.com/Zahara-Nour/ubumaths/commit/0b2ff51bb55b77814ae754886c7a0a346918a2c4))
+- **mathAST:** add exp expansion rules for normalization ([4322aa6](https://github.com/Zahara-Nour/ubumaths/commit/4322aa6455d71ba204533a87a6f7d59656a965a5))
+- **mathAST:** add exp(ln(x))=x and ln(exp(x))=x simplifications ([1a332b2](https://github.com/Zahara-Nour/ubumaths/commit/1a332b2ae279f04c4de663c69a6dbaa44ace04ba))
+- **mathAST:** add exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ normalization rule ([252243c](https://github.com/Zahara-Nour/ubumaths/commit/252243cd334c8772474d3f8837552b194f9060af))
+- **mathAST:** add floor/ceil to parser-rd and custom parser ([6915efe](https://github.com/Zahara-Nour/ubumaths/commit/6915efe7999c08111bf10e5a16daf113b21a2e47))
+- **mathAST:** add integration module infrastructure (Phase 1) ([6e282b7](https://github.com/Zahara-Nour/ubumaths/commit/6e282b7d3e800b6e71149b49980e675c341e7341))
+- **mathAST:** add LaTeX matrix environment parsing (Phase 2) ([649d872](https://github.com/Zahara-Nour/ubumaths/commit/649d8723d517309a12c1c9916d7c7b3b3f0db10e))
+- **mathAST:** add logarithm expansion and fix fraction equivalence ([4082884](https://github.com/Zahara-Nour/ubumaths/commit/4082884182f64e76db8e1a5dc8f847fb0f196f2a))
+- **mathAST:** add MathConstantNode for Euler's number and pi ([4b3c6a7](https://github.com/Zahara-Nour/ubumaths/commit/4b3c6a7b78b505f3824d0d3a44dcca5a766184c0))
+- **mathAST:** add matrix generator tests and fix plain type mapping (Phase 4) ([1a73768](https://github.com/Zahara-Nour/ubumaths/commit/1a73768c47f43c4d6b4f2e13a9b6eafb2b62e387))
+- **mathAST:** add matrix operations (Phase 5) ([9fab803](https://github.com/Zahara-Nour/ubumaths/commit/9fab803aac5cdf8b70367f254f5568e4e9092f98))
+- **mathAST:** add MatrixNode types and factory (Phase 1) ([aa78047](https://github.com/Zahara-Nour/ubumaths/commit/aa78047e46e05c84dba8c36273c4e32e21d254a6))
+- **mathAST:** add P0/P1 improvements and auto-completion UI ([7f6c9cd](https://github.com/Zahara-Nour/ubumaths/commit/7f6c9cdc2fff1a45a8837925301299713cde1110))
+- **mathAST:** add parser support for \lfloor, \lceil delimiters ([4c4a841](https://github.com/Zahara-Nour/ubumaths/commit/4c4a841c91356e009e793f8a68108a1b0feb66f3))
+- **mathAST:** add partial ln extraction for exp normalization ([1216ca3](https://github.com/Zahara-Nour/ubumaths/commit/1216ca3e3105cd97ba7747fcd69cc0058bd8e152))
+- **mathAST:** add quadratic equation solver ([81c264d](https://github.com/Zahara-Nour/ubumaths/commit/81c264d49348e7a30e7c589f36e361eec361039e))
+- **mathAST:** add rationalization by conjugate for binomial denominators ([883576e](https://github.com/Zahara-Nour/ubumaths/commit/883576e9c9a228ae23a640c02597f9a918946bea))
+- **mathAST:** add scientific notation support to tokenizers ([b9bc56d](https://github.com/Zahara-Nour/ubumaths/commit/b9bc56d19e30bcefdf723d394b21527d8e7a95b9))
+- **mathAST:** add sign analysis module ([146afbd](https://github.com/Zahara-Nour/ubumaths/commit/146afbd8f77b5562b84bcbb15ef265f1161a0568))
+- **mathAST:** add solve command and Exp.solve() API ([581f956](https://github.com/Zahara-Nour/ubumaths/commit/581f95644f999d78fb13e596b80ccd2c248dd00e))
+- **mathAST:** add step recording for Phase 2 normalization ([842df2f](https://github.com/Zahara-Nour/ubumaths/commit/842df2f4194d533d1011e6ad16fd9cae93804c45))
+- **mathAST:** add symbolic limit evaluation module ([6368b94](https://github.com/Zahara-Nour/ubumaths/commit/6368b94d9039a5a9c7c8101d4cf3bff38486b4aa))
+- **mathAST:** add symbolic sqrt simplification and fractional exponents ([f46b713](https://github.com/Zahara-Nour/ubumaths/commit/f46b713d2a8ddd2ec6b5832d88abfb15ab203ce6))
+- **mathAST:** add transcendental equation solver ([9131290](https://github.com/Zahara-Nour/ubumaths/commit/91312909fad9291028f6b214a04e028b7134ad12))
+- **mathAST:** add trinomial detection and denominator rationalization ([d0b7339](https://github.com/Zahara-Nour/ubumaths/commit/d0b7339ae1825d62a6548ac61f49e2d516fa57af))
+- **mathAST:** add unit-aware expression evaluation ([aee1e22](https://github.com/Zahara-Nour/ubumaths/commit/aee1e222398ae04449da5ca9c71920dc66b54aed))
+- **mathAST:** add univariate polynomial GCD for fraction simplification ([ba4316b](https://github.com/Zahara-Nour/ubumaths/commit/ba4316b0b94761a3ca37009ff500736e5f34b8bd))
+- **mathAST:** add variation study module ([4b39fe0](https://github.com/Zahara-Nour/ubumaths/commit/4b39fe04f57ab038d421bfe6ca68145363d09a7c))
+- **mathAST:** add visitor pattern with enter/leave hooks ([d7a6f1e](https://github.com/Zahara-Nour/ubumaths/commit/d7a6f1ef58e62b3dba9d31619ef3b2fc71107e23))
+- **mathAST:** complete matrix integration and exports (Phase 6) ([76e685d](https://github.com/Zahara-Nour/ubumaths/commit/76e685d1e73c8f43af8d3d5b4a663f913fe2549d))
+- **mathAST:** evaluate abs function during normalization ([56a0ff6](https://github.com/Zahara-Nour/ubumaths/commit/56a0ff6d8cab5439bc5ffad96f02acd1b887975b))
+- **mathAST:** evaluate rounding functions during normalization ([907e952](https://github.com/Zahara-Nour/ubumaths/commit/907e952cc91633bef98c942377d3c7d8ece34146))
+- **mathAST:** export solve module from main index ([bac91a4](https://github.com/Zahara-Nour/ubumaths/commit/bac91a4694ef033e20aa43fda9b77edfa71a29d0))
+- **mathAST:** extend ln expansion rules to log function ([e7d0ce3](https://github.com/Zahara-Nour/ubumaths/commit/e7d0ce3b7db04f2d8e1bab0637cf43b99e797c1f))
+- **mathAST:** extract perfect squares from sqrt arguments ([ed9ba06](https://github.com/Zahara-Nour/ubumaths/commit/ed9ba061f009f7338456e600a97cab21bdea440b))
+- **mathAST:** implement complex number evaluation (Phases 4-10) ([e3ae09c](https://github.com/Zahara-Nour/ubumaths/commit/e3ae09c60371c7f03a05ede5a8d819952d6d326d))
+- **mathAST:** move transcendental simplifications to Phase 2 normalization ([bd81ccc](https://github.com/Zahara-Nour/ubumaths/commit/bd81ccc70e955c7eb01fe50dcc8d6d7a09bf0e29))
+- **notifications:** implement optimistic UI for mark-as-read with granular rollback ([c3150c8](https://github.com/Zahara-Nour/ubumaths/commit/c3150c821274fceebba2c1e4ec695df7f56dc412))
+- **parser:** add LaTeX parsing for \imaginaryI command (Phase 2) ([86fe5ba](https://github.com/Zahara-Nour/ubumaths/commit/86fe5ba1633e459b305e62918748d4e73a642571))
+- **repl:** use = for algebraic equivalence testing ([3e50c6c](https://github.com/Zahara-Nour/ubumaths/commit/3e50c6c2149555bb4fe115d63fdb8a3de8d699dd))
+- **solve:** add exact/decimal toggle support like eval ([b362003](https://github.com/Zahara-Nour/ubumaths/commit/b3620034cb46bd8fd5b78cd914facc9b94802b3c))
+- **solve:** add pedagogical steps for quadratic equations ([30499d2](https://github.com/Zahara-Nour/ubumaths/commit/30499d283230ad845e130eaefaac2b2886c0ee29))
+- **solve:** add summarized verbosity with step descriptions ([16eed4b](https://github.com/Zahara-Nour/ubumaths/commit/16eed4babc73f327ae75c6f9ac5592246df1f7e4))
+- **solve:** handle equations with variables on both sides ([40b13f4](https://github.com/Zahara-Nour/ubumaths/commit/40b13f403020894d8a004084455010029d830a95))
+- **solve:** implement Cardano solver for cubic equations ([bfdb10c](https://github.com/Zahara-Nour/ubumaths/commit/bfdb10cd2c3b1065a14619f4f6d8b062c6ba5c76))
+- **solve:** show aligned results in summarized mode ([3d80b40](https://github.com/Zahara-Nour/ubumaths/commit/3d80b407646b45a5a71b4d4cd19e2ca520dc8fa5))
+- **ui:** move VIP cards collection to unified inventory page ([bc30632](https://github.com/Zahara-Nour/ubumaths/commit/bc30632fed5c29737e0c2d336f7964e05e8cf7d0))
+
+### 🐛 Bug Fixes
+
+- **ai:** improve Ubu personality prompt clarity ([3cd176f](https://github.com/Zahara-Nour/ubumaths/commit/3cd176fd05e102d112909653c56e092b067712bb))
+- **calculator:** harden security with input validation and DoS prevention ([705f719](https://github.com/Zahara-Nour/ubumaths/commit/705f71916e015b2bc4ebe11e1accb4a2a58fc046))
+- **cas:** add braces around division terms to avoid ambiguity ([505ea3a](https://github.com/Zahara-Nour/ubumaths/commit/505ea3a3d0f756d59d217ab87ce3e0c405ece67f))
+- **cas:** add spaces around = in header, use consistent cyan color ([d346658](https://github.com/Zahara-Nour/ubumaths/commit/d3466582d5fe3bd4d9768b9550deb3ea5dbf11f8))
+- **cas:** fix export modal layout overflow ([da10ec0](https://github.com/Zahara-Nour/ubumaths/commit/da10ec0cc5496cfe027797b7c40ba60473281e46))
+- **cas:** fix pedagogical step display double negatives and simplification ([3b32e6c](https://github.com/Zahara-Nour/ubumaths/commit/3b32e6cd1f6266e359feb94b05650c47a12f116b))
+- **cas:** include header in global = alignment, fix padding position ([15b70b6](https://github.com/Zahara-Nour/ubumaths/commit/15b70b639d61617dc6a021da1f9b40bdd7230b78))
+- **cas:** only show toggle when decimal approximation is useful ([9eb6c49](https://github.com/Zahara-Nour/ubumaths/commit/9eb6c495db903386a6dbdcf4e76719b92d57411c))
+- **cas:** pass user-defined functions to evaluate() ([45228fb](https://github.com/Zahara-Nour/ubumaths/commit/45228fbe58f78b5277e4075682b24f3aecdaeab4))
+- **cas:** position toggle button inline at end of last line ([32838b4](https://github.com/Zahara-Nour/ubumaths/commit/32838b4db7439c4eaa40c6f0d101c9f404f62ec6))
+- **cas:** prevent solve results from using dim/muted styling ([243b068](https://github.com/Zahara-Nour/ubumaths/commit/243b0684e6fdb02a1b5be2483cbe6f0e31d9c799))
+- **cas:** remove blank line after header in solve output ([b5e8c35](https://github.com/Zahara-Nour/ubumaths/commit/b5e8c353c5997f155e6eb2840417d40585fe58a8))
+- **cas:** respect decimal mode and use custom syntax in solve steps ([bb61009](https://github.com/Zahara-Nour/ubumaths/commit/bb61009f606c463a2c2682e77e6505e87822f479))
+- **cas:** respect eval mode in solve command output ([a1ced53](https://github.com/Zahara-Nour/ubumaths/commit/a1ced53ecf26b734af141a3f2799b25b3b5d1e58))
+- **cas:** show summarized steps in default solve output ([48c0e2a](https://github.com/Zahara-Nour/ubumaths/commit/48c0e2a080d5560fd25d8eb6ed8643714271fd8c))
+- **cas:** show toggle button for solve command results ([b5aed6e](https://github.com/Zahara-Nour/ubumaths/commit/b5aed6efb6599e3fe4f93564f6053be6a169ae34))
+- **cas:** simplify output for expressions with unbound variables ([886eb51](https://github.com/Zahara-Nour/ubumaths/commit/886eb518fcf3d827d6d211d8f2429829cd20e0b5))
+- **cas:** strip ANSI codes from export output ([b68661a](https://github.com/Zahara-Nour/ubumaths/commit/b68661a45770d78b139c128a6a1fbc58b3f465d2))
+- **cas:** use &nbsp; for HTML alignment in pedagogical steps ([2487173](https://github.com/Zahara-Nour/ubumaths/commit/248717312a5f1cc00f77f64b2e2ba339fe8d6756))
+- **eval:** separate complex functions validation for exact/decimal modes ([ff641f3](https://github.com/Zahara-Nour/ubumaths/commit/ff641f3d62f281bf6286e9de9c1b7b4ce534ea85))
+- **friends:** fix modal timing and grade selector issues ([3096a24](https://github.com/Zahara-Nour/ubumaths/commit/3096a24b4044fa8185a803ebb09d3e646bab62ae))
+- **grades:** add missing migration and strengthen query validation ([a99ed32](https://github.com/Zahara-Nour/ubumaths/commit/a99ed32b009a68366953049c67fade5cfa72c7ba))
+- **integration:** add missing interface methods and fix test type guards ([8b230fa](https://github.com/Zahara-Nour/ubumaths/commit/8b230fae4f4caeffd250919578d083f04a0643e5))
+- **mathAST/integration:** fix arctan/arcsin integration with depth tracking ([e519018](https://github.com/Zahara-Nour/ubumaths/commit/e519018c592eef85a37a7aca054a769ffb2d0767))
+- **mathAST/integration:** fix ln(x) integration and u-substitution overmatch ([9b8781f](https://github.com/Zahara-Nour/ubumaths/commit/9b8781fa256579b7cbf58706ee74999464c685df))
+- **mathAST/integration:** fix partial fractions and parts edge cases ([7890c65](https://github.com/Zahara-Nour/ubumaths/commit/7890c65fdcee3f92d218ee1aac0411cf1b4fb5fb))
+- **mathAST/integration:** improve cyclic parts and u-sub patterns ([df41fca](https://github.com/Zahara-Nour/ubumaths/commit/df41fca597c615f175306e33f5efafc891eca67f))
+- **mathAST/integration:** improve test coverage with arctan/arcsin rules and euler detection ([6fab667](https://github.com/Zahara-Nour/ubumaths/commit/6fab667c9399f2cb55e88fed9c0a2109e5cae4c9))
+- **mathAST/integration:** improve u-substitution with normalization-based pattern matching ([5eca018](https://github.com/Zahara-Nour/ubumaths/commit/5eca018de12219422f276ddf40c3b3f9df03a083))
+- **mathAST/solve:** resolve TypeScript errors in equation solvers ([dc3750e](https://github.com/Zahara-Nour/ubumaths/commit/dc3750ed3178807ab7b15bf5ed089d57ed0ab2b6))
+- **mathAST:** apply precision rounding on Rational before float conversion ([16091f7](https://github.com/Zahara-Nour/ubumaths/commit/16091f70dec43be72122ec24d06ef1eb2f863953))
+- **mathAST:** fix readonly array type errors in normalize and evaluate ([89ef449](https://github.com/Zahara-Nour/ubumaths/commit/89ef44988a479a88f0abe24e58baa4ddc3096279))
+- **mathAST:** handle exp(x)^n → exp(n\*x) transformation in Phase 2 ([2d10226](https://github.com/Zahara-Nour/ubumaths/commit/2d102266258d720e0175309d800a15a43212fff1))
+- **mathAST:** normalize function arguments before creating opaque nodes ([2dda787](https://github.com/Zahara-Nour/ubumaths/commit/2dda787bd14e8ac7729152e4f9fd487c4e782b95))
+- **mathAST:** resolve circular dependency in pattern-parser ([1228e63](https://github.com/Zahara-Nour/ubumaths/commit/1228e633cdc133bed15094bbb12fc21026f479c0))
+- resolve all TypeScript errors and migrate Exercise type structure ([bf85c49](https://github.com/Zahara-Nour/ubumaths/commit/bf85c496404e07db32d1e2442322449ddbe432b6))
+- **rewards:** prevent row content truncation with overflow-x-auto ([9847b9d](https://github.com/Zahara-Nour/ubumaths/commit/9847b9dd8112625caf8982fd966120032b247ddd))
+- **solve:** only show pedagogical steps in verbose mode ([5f67220](https://github.com/Zahara-Nour/ubumaths/commit/5f67220fdd61617dc326a39cc07cab9d2633cd09))
+- **solve:** use = for terminating decimals, ≈ for approximations ([4202887](https://github.com/Zahara-Nour/ubumaths/commit/420288708f39d3838c5d761ed6ceac87c19c88a5))
+- **teacher:** count only unused VIP cards in quick actions table ([ea99a67](https://github.com/Zahara-Nour/ubumaths/commit/ea99a6714e1789499c468e8b14de20a43637ae06))
+- **types:** resolve TypeScript errors in integration module and database types ([4e21a49](https://github.com/Zahara-Nour/ubumaths/commit/4e21a49e08da1b261309b94215a647d2eed63c0d))
+- **welcome-email:** prevent duplicate email sends by using reactive state ([be08d4f](https://github.com/Zahara-Nour/ubumaths/commit/be08d4fb9d7627c5a576444ad955ce3ed9d54272))
+
 ### [0.5.23](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.22...v0.5.23) (2026-01-05)
 
 ### 📚 Documentation
