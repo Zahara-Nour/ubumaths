@@ -260,6 +260,7 @@
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({
 							studentId,
+							classId,
 							amount: actualChange
 						})
 					});
