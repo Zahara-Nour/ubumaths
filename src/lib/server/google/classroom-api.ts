@@ -18,7 +18,9 @@ import type {
 	GoogleCourseList,
 	GoogleCourseworkList,
 	GoogleTopicList,
-	GoogleCourseWorkMaterialList
+	GoogleCourseWorkMaterialList,
+	GoogleCourseWorkMaterial,
+	CreateCourseWorkMaterialRequest
 } from '$lib/types/google';
 import {
 	googleCourseSchema,
@@ -27,7 +29,9 @@ import {
 	googleCourseworkListSchema,
 	googleTopicListSchema,
 	googleCourseWorkMaterialListSchema,
-	googleAPIErrorSchema
+	googleCourseWorkMaterialSchema,
+	googleAPIErrorSchema,
+	createCourseWorkMaterialRequestSchema
 } from './schemas';
 import {
 	GoogleAPIError,
@@ -587,5 +591,66 @@ export class GoogleClassroomClient {
 		}
 
 		return validation.data;
+	}
+
+	/**
+	 * Create a course work material (non-graded educational content)
+	 *
+	 * @param courseId - The Google Classroom course ID
+	 * @param material - The material to create
+	 * @returns The created course work material
+	 *
+	 * @example
+	 * ```typescript
+	 * const material = await client.createCourseWorkMaterial('123456', {
+	 *   title: 'Math Worksheet',
+	 *   description: 'Practice problems for chapter 5',
+	 *   topicId: '789',
+	 *   state: 'PUBLISHED',
+	 *   materials: [{
+	 *     driveFile: {
+	 *       driveFile: { id: 'abc123', title: 'worksheet.pdf' },
+	 *       shareMode: 'VIEW'
+	 *     }
+	 *   }]
+	 * });
+	 * console.log(material.alternateLink); // Link to Classroom
+	 * ```
+	 */
+	async createCourseWorkMaterial(
+		courseId: string,
+		material: CreateCourseWorkMaterialRequest
+	): Promise<GoogleCourseWorkMaterial> {
+		if (!courseId) {
+			throw new Error('Course ID is required');
+		}
+
+		// Validate request body
+		const requestValidation = createCourseWorkMaterialRequestSchema.safeParse(material);
+		if (!requestValidation.success) {
+			throw new GoogleAPIError(
+				`Invalid course work material request: ${requestValidation.error.message}`,
+				400,
+				'VALIDATION_ERROR'
+			);
+		}
+
+		const endpoint = `/courses/${courseId}/courseWorkMaterials`;
+		const data = await this.request<GoogleCourseWorkMaterial>(endpoint, {
+			method: 'POST',
+			body: JSON.stringify(requestValidation.data)
+		});
+
+		// Validate response
+		const responseValidation = googleCourseWorkMaterialSchema.safeParse(data);
+		if (!responseValidation.success) {
+			throw new GoogleAPIError(
+				`Invalid course work material response: ${responseValidation.error.message}`,
+				0,
+				'VALIDATION_ERROR'
+			);
+		}
+
+		return responseValidation.data;
 	}
 }
