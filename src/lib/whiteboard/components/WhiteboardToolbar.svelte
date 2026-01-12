@@ -409,28 +409,30 @@
 		}
 	}
 
-	function handleGridSpacingChange(value: number[]) {
-		if (value.length > 0) {
-			const page = whiteboardStore.currentPage;
-			if (!page || page.background.type !== 'plain') return;
+	function handleGridSpacingChange(value: number[] | number) {
+		const spacing = Array.isArray(value) ? value[0] : value;
+		if (spacing === undefined) return;
 
-			whiteboardStore.setPageBackground({
-				...page.background,
-				gridSpacing: value[0]
-			});
-		}
+		const page = whiteboardStore.currentPage;
+		if (!page || page.background.type !== 'plain') return;
+
+		whiteboardStore.setPageBackground({
+			...page.background,
+			gridSpacing: spacing
+		});
 	}
 
-	function handleGridOpacityChange(value: number[]) {
-		if (value.length > 0) {
-			const page = whiteboardStore.currentPage;
-			if (!page || page.background.type !== 'plain') return;
+	function handleGridOpacityChange(value: number[] | number) {
+		const opacity = Array.isArray(value) ? value[0] : value;
+		if (opacity === undefined) return;
 
-			whiteboardStore.setPageBackground({
-				...page.background,
-				gridOpacity: value[0]
-			});
-		}
+		const page = whiteboardStore.currentPage;
+		if (!page || page.background.type !== 'plain') return;
+
+		whiteboardStore.setPageBackground({
+			...page.background,
+			gridOpacity: opacity
+		});
 	}
 
 	function handlePageFormatChange(format: PageFormatKey) {
