@@ -12,7 +12,7 @@ import { z } from 'zod';
 
 const schema = z.object({
 	studentId: z.string().uuid(),
-	cardId: z.string().uuid()
+	cardId: z.string().min(1).max(50) // Template ID like "batman", not a UUID
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {

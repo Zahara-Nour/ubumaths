@@ -200,7 +200,7 @@
 	async function createMathsEntry(classId: string, day: number, time: string) {
 		// Find the period that starts at this time
 		const timetable = data.school?.timetable as
-			| { periods?: Array<{ start_time: string; end_time: string; period_number: number }> }
+			| { periods?: Array<{ start_time: string; end_time: string; number: number }> }
 			| undefined;
 		const period = timetable?.periods?.find((p: { start_time: string }) => p.start_time === time);
 
@@ -241,7 +241,7 @@
 		const formData = new FormData();
 		formData.append('class_id', classId);
 		formData.append('day_of_week', day.toString());
-		formData.append('period_number', period.period_number.toString());
+		formData.append('period_number', period.number.toString());
 		formData.append('start_time', period.start_time);
 		formData.append('end_time', period.end_time);
 		formData.append('subject', 'Maths');

@@ -323,15 +323,22 @@ export async function getPendingActivationRequests(
 				usedAt: string | null;
 				activationRequestedAt?: string | null;
 				activationRequestedBy?: string | null;
+				activationApprovedAt?: string | null;
 			}
 		>;
 
 		for (const [instanceId, instance] of Object.entries(vipCards)) {
 			// Only include if:
 			// 1. Has pending activation request
-			// 2. Not yet used
-			// 3. Card template exists
-			if (instance.activationRequestedAt && !instance.usedAt && templateMap.has(instance.cardId)) {
+			// 2. Not yet approved (activationApprovedAt is null)
+			// 3. Not yet used
+			// 4. Card template exists
+			if (
+				instance.activationRequestedAt &&
+				!instance.activationApprovedAt &&
+				!instance.usedAt &&
+				templateMap.has(instance.cardId)
+			) {
 				const template = templateMap.get(instance.cardId)!;
 
 				pendingRequests.push({

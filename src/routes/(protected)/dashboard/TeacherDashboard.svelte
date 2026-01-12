@@ -69,8 +69,10 @@
 
 	// UI Components
 	import { Button } from '$lib/components/ui/button';
+	import { Badge } from '$lib/components/ui/badge';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Clock, Target, BookOpen } from 'lucide-svelte';
+	import { Clock, Target, BookOpen, Users, Sparkles } from 'lucide-svelte';
+	import type { StudentVipCards, VipCardInstance } from '$lib/types/vip-card';
 	import Wheel from '$lib/components/Wheel.svelte';
 	import StudentQuickActionsTable from '$lib/components/teacher/StudentQuickActionsTable.svelte';
 
@@ -89,6 +91,13 @@
 		isWeekend
 	} from '$lib/utils/timeMatching';
 	import { findCurrentPeriod } from '$lib/utils/academic-period';
+	import {
+		getCurrentTimePeriod,
+		getNextTimePeriod,
+		formatPeriodName,
+		formatPeriodTimes,
+		type SchoolTimetable
+	} from '$lib/utils/timetable';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 
 	// ============================================================================
@@ -145,6 +154,41 @@
 	});
 
 	// ============================================================================
+	// CURRENT TIME PERIOD (from school timetable)
+	// ============================================================================
+
+	/**
+	 * Current time for period calculation (updates every minute)
+	 */
+	let now = $state(new Date());
+
+	/**
+	 * Current time period based on school timetable
+	 * Recalculates when 'now' changes
+	 */
+	const currentTimePeriod = $derived(
+		getCurrentTimePeriod(data.schoolTimetable as SchoolTimetable | null, now)
+	);
+
+	/**
+	 * Next upcoming period (when not currently in a period)
+	 */
+	const nextTimePeriod = $derived(
+		getNextTimePeriod(data.schoolTimetable as SchoolTimetable | null, now)
+	);
+
+	/**
+	 * Update 'now' every minute to keep period display current
+	 */
+	$effect(() => {
+		const interval = setInterval(() => {
+			now = new Date();
+		}, 60000); // Update every minute
+
+		return () => clearInterval(interval);
+	});
+
+	// ============================================================================
 	// WHEEL OF FORTUNE MODAL STATE
 	// ============================================================================
 
@@ -174,6 +218,37 @@
 	 * Loading state while fetching periods
 	 */
 	let isLoadingPeriods = $state(false);
+
+	// ============================================================================
+	// BATMAN & ROBIN MODAL STATE
+	// ============================================================================
+
+	/**
+	 * Batman & Robin modal visibility
+	 */
+	let batmanModalOpen = $state(false);
+
+	/**
+	 * Students who have an unused "batman" VIP card
+	 */
+	let batmanStudents = $state<
+		Array<{
+			id: string;
+			firstname: string;
+			lastname?: string;
+			avatar_url?: string;
+		}>
+	>([]);
+
+	/**
+	 * Loading state for Batman modal
+	 */
+	let isLoadingBatman = $state(false);
+
+	/**
+	 * Currently using a Batman card (for button loading state)
+	 */
+	let isUsingBatmanCard = $state(false);
 
 	// ============================================================================
 	// CACHE HYDRATION
@@ -452,6 +527,115 @@
 	}
 
 	// ============================================================================
+	// BATMAN & ROBIN HANDLERS
+	// ============================================================================
+
+	/**
+	 * Open Batman & Robin modal
+	 * Fetches students who have an unused "batman" VIP card
+	 */
+	async function handleOpenBatman() {
+		if (!selectedClassId) {
+			toaster.error('Veuillez sélectionner une classe');
+			return;
+		}
+
+		try {
+			isLoadingBatman = true;
+			batmanModalOpen = true;
+
+			// Get rewards data from cache (should be already loaded)
+			const rewards = await teacherCache.getStudentRewards(selectedClassId);
+			const basicStudents = await teacherCache.getStudentBasic(selectedClassId);
+
+			// Find students with unused "batman" card
+			const studentsWithBatman: typeof batmanStudents = [];
+
+			for (const [studentId, studentRewards] of rewards) {
+				const vipCards = studentRewards.vip_cards as StudentVipCards | undefined;
+				if (!vipCards) continue;
+
+				// Check if student has at least one unused batman card
+				const hasBatmanCard = Object.values(vipCards).some((instance) => {
+					const cardInstance = instance as VipCardInstance;
+					return cardInstance.cardId === 'batman' && !cardInstance.usedAt;
+				});
+
+				if (hasBatmanCard) {
+					const student = basicStudents.find((s) => s.id === studentId);
+					if (student) {
+						studentsWithBatman.push({
+							id: studentId,
+							firstname: student.firstname,
+							lastname: student.lastname ?? undefined,
+							avatar_url: student.avatar_url ?? undefined
+						});
+					}
+				}
+			}
+
+			batmanStudents = studentsWithBatman;
+		} catch (error) {
+			console.error('Failed to fetch Batman students:', error);
+			toaster.error('Erreur lors du chargement');
+			batmanModalOpen = false;
+		} finally {
+			isLoadingBatman = false;
+		}
+	}
+
+	/**
+	 * Use a student's Batman card
+	 */
+	async function handleUseBatmanCard(studentId: string) {
+		try {
+			isUsingBatmanCard = true;
+
+			const response = await fetch('/api/teacher/rewards/use-vip-card', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					studentId,
+					cardId: 'batman' // Template ID, RPC uses FIFO to pick the oldest instance
+				})
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.message || "Erreur lors de l'utilisation de la carte");
+			}
+
+			// Remove student from list
+			batmanStudents = batmanStudents.filter((s) => s.id !== studentId);
+
+			// Invalidate rewards cache
+			if (selectedClassId) {
+				teacherCache.invalidateRewards(selectedClassId);
+			}
+
+			toaster.success('Carte Batman & Robin utilisée !');
+
+			// Close modal if no more students
+			if (batmanStudents.length === 0) {
+				batmanModalOpen = false;
+			}
+		} catch (error) {
+			console.error('Failed to use Batman card:', error);
+			toaster.error(error instanceof Error ? error.message : 'Erreur');
+		} finally {
+			isUsingBatmanCard = false;
+		}
+	}
+
+	/**
+	 * Close Batman modal
+	 */
+	function handleCloseBatman() {
+		batmanModalOpen = false;
+		batmanStudents = [];
+	}
+
+	// ============================================================================
 	// REACTIVE EFFECTS
 	// ============================================================================
 
@@ -517,102 +701,102 @@
 
 <div class="space-y-6">
 	<!--
-		CLASS SELECTOR SECTION
-		======================
+		HEADER WITH PERIOD BADGE
+		========================
+		Simple badge showing current period + time
+	-->
+	{#if data.schoolTimetable}
+		<div class="flex items-center justify-end gap-3">
+			{#if currentTimePeriod}
+				<Badge variant="secondary" class="px-3 py-1 text-sm">
+					<Clock class="mr-1.5 h-3.5 w-3.5" />
+					{formatPeriodName(currentTimePeriod)} ({formatPeriodTimes(currentTimePeriod)})
+				</Badge>
+			{:else if nextTimePeriod}
+				<Badge variant="outline" class="px-3 py-1 text-sm">
+					<Clock class="mr-1.5 h-3.5 w-3.5" />
+					Prochaine : {formatPeriodName(nextTimePeriod.period)} dans {nextTimePeriod.minutesUntil} min
+				</Badge>
+			{/if}
+			<span class="text-sm text-muted-foreground">
+				{now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+			</span>
+		</div>
+	{/if}
 
-		Displays a dropdown for manual class selection and a button for automatic
-		detection of current class based on schedule.
-
-		Features:
-		- Native HTML <select> dropdown (better accessibility than custom component)
-		- Selection persists to localStorage via selectedClass store
-		- "Find Current Class" button with Clock icon
-		- Displays selected class info: name, description, student count
-
-		Only visible when teacher has at least one class.
+	<!--
+		CLASS SELECTOR SECTION (Unified)
+		=================================
+		Single card with class selection and action buttons
 	-->
 	{#if classes.length > 0}
 		<div class="rounded-lg bg-card p-6 shadow">
-			<h3 class="mb-4 text-lg font-semibold text-foreground">Sélection de Classe</h3>
+			<!-- Header row: Title + Period badge (mobile) -->
+			<div class="mb-4 flex items-center justify-between">
+				<h3 class="text-lg font-semibold text-foreground">Ma Classe</h3>
+				{#if selectedClass}
+					<Badge variant="outline" class="text-sm">
+						<Users class="mr-1.5 h-3.5 w-3.5" />
+						{selectedClass.student_count || 0} élève{(selectedClass.student_count || 0) > 1
+							? 's'
+							: ''}
+					</Badge>
+				{/if}
+			</div>
 
-			<!-- Class selector and "Find Current Class" button (responsive flex layout) -->
-			<div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-				<!-- Native HTML select dropdown (accessible and performant) -->
-				<div class="w-full flex-1">
+			<!-- Class selector row -->
+			<div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+				<!-- Dropdown -->
+				<div class="flex-1">
 					<select
 						value={selectedClassId || ''}
 						onchange={handleClassChange}
-						class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-ring focus:ring-2 focus:ring-ring focus:outline-none"
+						class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium focus:border-ring focus:ring-2 focus:ring-ring focus:outline-none"
 					>
-						<!-- Placeholder option (disabled, should never be visible due to auto-select) -->
 						<option value="" disabled>Sélectionner une classe...</option>
-
-						<!-- Loop through all teacher's classes -->
 						{#each classes as cls (cls.id)}
 							<option value={cls.id}>{cls.name}</option>
 						{/each}
 					</select>
 				</div>
 
-				<!-- "Find Current Class" button (auto-detection based on schedule) -->
-				<Button
-					onclick={handleFindCurrentClass}
-					variant="secondary"
-					class="w-full whitespace-nowrap sm:w-auto"
-				>
+				<!-- Find current class button -->
+				<Button onclick={handleFindCurrentClass} variant="outline" size="sm">
 					<Clock class="mr-2 h-4 w-4" />
-					Trouver ma classe actuelle
+					Auto-détecter
 				</Button>
 			</div>
 
-			<!-- Selected class information card (conditional rendering) -->
+			<!-- Action buttons row -->
 			{#if selectedClass}
-				<div class="mt-4 rounded-lg bg-muted p-4">
-					<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-						<div class="flex-1">
-							<!-- Label -->
-							<p class="mb-1 text-sm text-muted-foreground">Classe sélectionnée :</p>
+				<div class="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+					<!-- Wheel of Fortune -->
+					<Button
+						onclick={handleOpenWheel}
+						variant="secondary"
+						size="sm"
+						disabled={!selectedClassId || (selectedClass.student_count || 0) === 0}
+					>
+						<Target class="mr-2 h-4 w-4" />
+						Roue de la fortune
+					</Button>
 
-							<!-- Class name (always present) -->
-							<p class="text-lg font-semibold text-foreground">{selectedClass.name}</p>
-
-							<!-- Class description (optional) -->
-							{#if selectedClass.description}
-								<p class="mt-1 text-sm text-muted-foreground">{selectedClass.description}</p>
-							{/if}
-
-							<!-- Student count with proper French pluralization -->
-							<p class="mt-2 text-sm text-muted-foreground">
-								{selectedClass.student_count || 0} élève{(selectedClass.student_count || 0) > 1
-									? 's'
-									: ''}
-							</p>
-						</div>
-
-						<!-- Wheel of Fortune Button -->
-						<div class="flex-shrink-0">
-							<Button
-								onclick={handleOpenWheel}
-								disabled={!selectedClassId || (selectedClass.student_count || 0) === 0}
-								class="bg-gradient-to-r from-purple-500 to-pink-500 font-semibold text-white shadow-lg transition-all duration-200 hover:from-purple-600 hover:to-pink-600 hover:shadow-xl disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-500 disabled:opacity-50"
-								title={!selectedClassId
-									? 'Sélectionnez une classe'
-									: (selectedClass.student_count || 0) === 0
-										? 'Aucun élève dans cette classe'
-										: 'Choisir un élève aléatoirement'}
-							>
-								<Target class="mr-2 h-5 w-5" />
-								Choisir un élève
-							</Button>
-						</div>
-					</div>
+					<!-- Batman & Robin -->
+					<Button
+						onclick={handleOpenBatman}
+						variant="secondary"
+						size="sm"
+						disabled={!selectedClassId}
+					>
+						<Sparkles class="mr-2 h-4 w-4" />
+						Batman & Robin
+					</Button>
 				</div>
 			{/if}
 		</div>
 	{/if}
 
 	<!-- STUDENT QUICK ACTIONS TABLE -->
-	<!-- Displays student list with quick action buttons when class is selected -->
 	{#if selectedClassId && currentPeriodId}
 		<div class="rounded-lg bg-card p-6 shadow">
 			<h3 class="mb-4 text-lg font-semibold text-foreground">Actions Rapides - Élèves</h3>
@@ -621,7 +805,6 @@
 	{/if}
 
 	<!-- SRS DECKS SECTION -->
-	<!-- Manage SRS flashcard decks for spaced repetition -->
 	<div class="rounded-lg bg-card p-6 shadow">
 		<div class="flex items-center justify-between">
 			<div>
@@ -650,8 +833,8 @@
 	>
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2 text-2xl">
-				<Target class="h-6 w-6 text-purple-500" />
-				Choisir un élève
+				<Target class="h-6 w-6 text-primary" />
+				Roue de la fortune
 			</Dialog.Title>
 			<Dialog.Description>
 				{#if selectedClass}
@@ -666,7 +849,7 @@
 			{#if isLoadingStudents}
 				<!-- Loading state -->
 				<div class="flex flex-col items-center justify-center py-16">
-					<div class="mb-4 h-16 w-16 animate-spin rounded-full border-b-4 border-purple-500"></div>
+					<div class="mb-4 h-16 w-16 animate-spin rounded-full border-b-4 border-primary"></div>
 					<p class="text-muted-foreground">Chargement des élèves...</p>
 				</div>
 			{:else if wheelStudents.length === 0}
@@ -683,6 +866,71 @@
 						showConfetti={true}
 						confettiZIndex={100}
 					/>
+				</div>
+			{/if}
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- ============================================================================
+     BATMAN & ROBIN MODAL
+     ============================================================================ -->
+
+<Dialog.Root bind:open={batmanModalOpen} onOpenChange={(open) => !open && handleCloseBatman()}>
+	<Dialog.Content class="sm:max-w-md">
+		<Dialog.Header>
+			<Dialog.Title class="flex items-center gap-2">
+				<Sparkles class="h-5 w-5 text-amber-500" />
+				Batman & Robin
+			</Dialog.Title>
+			<Dialog.Description>
+				Sélectionnez un élève pour utiliser sa carte VIP "Batman & Robin"
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<div class="mt-4">
+			{#if isLoadingBatman}
+				<div class="flex flex-col items-center justify-center py-8">
+					<div class="mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-primary"></div>
+					<p class="text-sm text-muted-foreground">Recherche des élèves...</p>
+				</div>
+			{:else if batmanStudents.length === 0}
+				<div class="py-8 text-center">
+					<Sparkles class="mx-auto mb-3 h-12 w-12 text-muted-foreground/50" />
+					<p class="text-muted-foreground">Aucun élève n'a de carte "Batman & Robin" disponible.</p>
+				</div>
+			{:else}
+				<div class="space-y-2">
+					{#each batmanStudents as student (student.id)}
+						<button
+							onclick={() => handleUseBatmanCard(student.id)}
+							disabled={isUsingBatmanCard}
+							class="flex w-full items-center gap-3 rounded-lg border border-border p-3 text-left transition-colors hover:bg-muted disabled:opacity-50"
+						>
+							<!-- Avatar -->
+							{#if student.avatar_url}
+								<img src={student.avatar_url} alt="" class="h-10 w-10 rounded-full object-cover" />
+							{:else}
+								<div
+									class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary"
+								>
+									{student.firstname.charAt(0)}
+								</div>
+							{/if}
+
+							<!-- Name -->
+							<div class="flex-1">
+								<p class="font-medium text-foreground">
+									{student.firstname}
+									{student.lastname || ''}
+								</p>
+								<p class="text-xs text-muted-foreground">Carte VIP disponible</p>
+							</div>
+
+							<!-- Action indicator -->
+							<Sparkles class="h-4 w-4 text-amber-500" />
+						</button>
+					{/each}
 				</div>
 			{/if}
 		</div>
