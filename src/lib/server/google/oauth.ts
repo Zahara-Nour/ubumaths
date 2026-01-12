@@ -19,7 +19,7 @@ export const GOOGLE_CLASSROOM_SCOPES = [
 	'https://www.googleapis.com/auth/classroom.courses.readonly', // Courses
 	'https://www.googleapis.com/auth/classroom.topics.readonly', // Topics/Rubriques (added 2025-11-15)
 	'https://www.googleapis.com/auth/classroom.coursework.students.readonly', // Graded coursework and submissions
-	'https://www.googleapis.com/auth/classroom.courseworkmaterials.readonly', // Non-graded materials (added 2025-11-15)
+	'https://www.googleapis.com/auth/classroom.courseworkmaterials', // Non-graded materials read/write (updated for export)
 	'https://www.googleapis.com/auth/drive.file', // Drive files (app-created only)
 	'https://www.googleapis.com/auth/gmail.send' // Send emails via Gmail (added 2025-12-29)
 ] as const;
