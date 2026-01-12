@@ -669,7 +669,9 @@ export class TeacherDashboardCache {
 	 */
 	private async fetchStudentBasic(classId: string): Promise<BasicStudent[]> {
 		try {
-			const response = await fetch(`/api/classes/${classId}/students`);
+			const response = await fetch(`/api/classes/${classId}/students`, {
+				credentials: 'include'
+			});
 			if (!response.ok) {
 				throw new Error(`Failed to fetch students: ${response.statusText}`);
 			}
@@ -688,7 +690,9 @@ export class TeacherDashboardCache {
 	 */
 	private async fetchStudentRewards(classId: string): Promise<SvelteMap<string, StudentRewards>> {
 		try {
-			const response = await fetch(`/api/classes/${classId}/gidouilles`);
+			const response = await fetch(`/api/classes/${classId}/gidouilles`, {
+				credentials: 'include'
+			});
 			if (!response.ok) {
 				throw new Error(`Failed to fetch rewards: ${response.statusText}`);
 			}
@@ -720,7 +724,9 @@ export class TeacherDashboardCache {
 		periodId: string
 	): Promise<SvelteMap<string, StudentWarningCounts>> {
 		try {
-			const response = await fetch(`/api/classes/${classId}/warnings?period_id=${periodId}`);
+			const response = await fetch(`/api/classes/${classId}/warnings?period_id=${periodId}`, {
+				credentials: 'include'
+			});
 			if (!response.ok) {
 				throw new Error(`Failed to fetch warnings: ${response.statusText}`);
 			}

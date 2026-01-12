@@ -86,7 +86,7 @@
 	import { openVipCardsModal } from '$lib/utils/vip-card-modals';
 	import { openBonusReasonModal } from '$lib/utils/bonus-modals';
 	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
-	import { Star } from 'lucide-svelte';
+	import { Star, Loader2 } from 'lucide-svelte';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { getTotalUnusedCards } from '$lib/utils/vip-cards';
@@ -135,6 +135,9 @@
 	// ============================================================================
 	// CACHE DATA ACCESS (Reactive via $derived)
 	// ============================================================================
+
+	// Check if students are cached (for loading state detection)
+	let isLoading = $derived(!teacherCache.hasStudentsCached(classId));
 
 	// Get students from cache (reactively updates when cache changes)
 	let students = $derived(teacherCache.getStudentsSync(classId));
@@ -258,6 +261,7 @@
 					const response = await fetch('/api/rewards/gidouilles', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
+						credentials: 'include',
 						body: JSON.stringify({
 							studentId,
 							classId,
@@ -311,6 +315,7 @@
 				const response = await fetch('/api/rewards/vip-cards/remove', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
 					body: JSON.stringify({
 						studentId,
 						cardId: randomCard.cardId
@@ -355,6 +360,7 @@
 				const response = await fetch('/api/warnings', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
 					body: JSON.stringify({
 						student_id: studentId,
 						warning_type: 'C',
@@ -417,6 +423,7 @@
 				const response = await fetch('/api/rewards/gidouilles', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
 					body: JSON.stringify({
 						studentId,
 						classId,
@@ -468,6 +475,7 @@
 					const response = await fetch('/api/teacher/rewards/update-student-bonus', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
+						credentials: 'include',
 						body: JSON.stringify({
 							studentId,
 							classId,
@@ -509,7 +517,13 @@
 <!-- ============================================================================ -->
 
 <div class="rounded-md border">
-	{#if studentsData.length === 0}
+	{#if isLoading}
+		<!-- Loading State -->
+		<div class="flex flex-col items-center justify-center p-8 text-center">
+			<Loader2 class="h-8 w-8 animate-spin text-primary" />
+			<p class="mt-2 text-sm text-muted-foreground">Chargement des élèves...</p>
+		</div>
+	{:else if studentsData.length === 0}
 		<!-- Empty State -->
 		<div class="flex flex-col items-center justify-center p-8 text-center">
 			<p class="text-muted-foreground">Aucun élève dans cette classe</p>

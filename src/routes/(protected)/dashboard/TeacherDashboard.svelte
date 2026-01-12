@@ -129,20 +129,26 @@
 	);
 
 	/**
-	 * Current academic period ID (auto-detected from date range)
+	 * Selected academic period ID
 	 * Used by StudentQuickActionsTable to filter warnings by period
-	 * Updates automatically when data.academicPeriods changes
+	 * Auto-detected on mount, then synced with store for consistency
 	 */
-	let currentPeriodId = $state<string | null>(null);
+	let selectedPeriodId = $state<string | null>(null);
 
 	/**
-	 * Update current period when academic periods change
-	 * Uses findCurrentPeriod() to determine active period based on today's date
+	 * Auto-detect and set current period when academic periods load
+	 * Always uses findCurrentPeriod() to ensure correct period based on today's date
 	 */
 	$effect(() => {
 		if (data.academicPeriods && data.academicPeriods.length > 0) {
-			// data.academicPeriods has partial fields but includes id, start_date, end_date which are needed
-			currentPeriodId = findCurrentPeriod(data.academicPeriods as unknown as AcademicPeriod[]);
+			// Auto-detect current period based on today's date
+			const detectedPeriodId = findCurrentPeriod(
+				data.academicPeriods as unknown as AcademicPeriod[]
+			);
+			if (detectedPeriodId) {
+				selectedPeriodId = detectedPeriodId;
+				setSelectedPeriod(detectedPeriodId);
+			}
 		}
 	});
 
@@ -151,11 +157,11 @@
 	// ============================================================================
 
 	/**
-	 * Current academic period object (derived from currentPeriodId)
+	 * Current academic period object (derived from selectedPeriodId)
 	 * Contains name, start_date, end_date, color, etc.
 	 */
 	const currentAcademicPeriod = $derived(
-		data.academicPeriods?.find((p) => p.id === currentPeriodId) ?? null
+		data.academicPeriods?.find((p) => p.id === selectedPeriodId) ?? null
 	);
 
 	// ============================================================================
@@ -246,7 +252,9 @@
 		isLoadingClasses = true;
 
 		try {
-			const response = await fetch('/api/teacher/classes');
+			const response = await fetch('/api/teacher/classes', {
+				credentials: 'include'
+			});
 
 			if (!response.ok) {
 				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -324,7 +332,9 @@
 		isLoadingPeriods = true;
 
 		try {
-			const response = await fetch('/api/teacher/periods');
+			const response = await fetch('/api/teacher/periods', {
+				credentials: 'include'
+			});
 
 			if (!response.ok) {
 				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -459,7 +469,9 @@
 			wheelModalOpen = true; // Open modal to show loading state
 
 			// Fetch students from API
-			const response = await fetch(`/api/classes/${selectedClassId}/students`);
+			const response = await fetch(`/api/classes/${selectedClassId}/students`, {
+				credentials: 'include'
+			});
 
 			if (!response.ok) {
 				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -564,6 +576,7 @@
 			const response = await fetch('/api/teacher/rewards/use-vip-card', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
 				body: JSON.stringify({
 					studentId,
 					cardId: 'batman' // Template ID, RPC uses FIFO to pick the oldest instance
@@ -763,10 +776,10 @@
 	{/if}
 
 	<!-- STUDENT QUICK ACTIONS TABLE -->
-	{#if selectedClassId && currentPeriodId}
+	{#if selectedClassId && selectedPeriodId}
 		<div class="rounded-lg bg-card p-6 shadow">
 			<h3 class="mb-4 text-lg font-semibold text-foreground">Actions Rapides - Élèves</h3>
-			<StudentQuickActionsTable classId={selectedClassId} periodId={currentPeriodId} />
+			<StudentQuickActionsTable classId={selectedClassId} periodId={selectedPeriodId} />
 		</div>
 	{/if}
 
