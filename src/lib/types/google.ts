@@ -296,6 +296,37 @@ export interface GoogleAPIError {
 }
 
 /**
+ * Request body for creating a CourseWorkMaterial
+ * POST /v1/courses/{courseId}/courseWorkMaterials
+ */
+export interface CreateCourseWorkMaterialRequest {
+	/** Title of the course work material */
+	title: string;
+	/** Optional description */
+	description?: string;
+	/** Topic ID to organize the material */
+	topicId?: string;
+	/** State of the material (PUBLISHED or DRAFT) */
+	state: 'PUBLISHED' | 'DRAFT';
+	/**
+	 * Materials attached (Drive files)
+	 * Note: Google API requires this nested driveFile structure:
+	 * - Outer driveFile: identifies material type
+	 * - Inner driveFile: contains file metadata (id, title)
+	 */
+	materials: Array<{
+		driveFile: {
+			driveFile: {
+				id: string;
+				title?: string;
+			};
+			/** How the file is shared with students. Defaults to 'VIEW' via Zod validation */
+			shareMode: 'VIEW' | 'EDIT' | 'STUDENT_COPY';
+		};
+	}>;
+}
+
+/**
  * Material type enum for easier type checking
  */
 export type MaterialType = 'DRIVE_FILE' | 'YOUTUBE_VIDEO' | 'LINK' | 'FORM';

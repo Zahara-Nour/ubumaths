@@ -259,3 +259,37 @@ export const googleDriveFileMetadataSchema = z.object({
 	thumbnailLink: z.string().url().max(2048).optional(),
 	iconLink: z.string().url().max(2048)
 });
+
+/**
+ * Schema for creating a CourseWorkMaterial Drive file attachment
+ *
+ * Note: Google API requires this nested driveFile structure:
+ * - Outer driveFile: identifies the material type
+ * - Inner driveFile: contains file metadata (id, title)
+ * - shareMode: how the file is shared with students
+ */
+export const createCourseWorkMaterialDriveFileSchema = z.object({
+	driveFile: z.object({
+		// Inner driveFile contains the actual file metadata
+		driveFile: z.object({
+			id: z.string().min(1, 'Drive file ID is required'),
+			title: z.string().max(500).optional()
+		}),
+		shareMode: z.enum(['VIEW', 'EDIT', 'STUDENT_COPY']).default('VIEW')
+	})
+});
+
+/**
+ * Schema for creating a CourseWorkMaterial
+ * POST /v1/courses/{courseId}/courseWorkMaterials
+ */
+export const createCourseWorkMaterialRequestSchema = z.object({
+	title: z.string().min(1, 'Title is required').max(500, 'Title cannot exceed 500 characters'),
+	description: z.string().max(30000, 'Description cannot exceed 30000 characters').optional(),
+	topicId: z.string().optional(),
+	state: z.enum(['PUBLISHED', 'DRAFT']),
+	materials: z
+		.array(createCourseWorkMaterialDriveFileSchema)
+		.min(1, 'At least one material (Drive file) must be attached')
+		.max(20, 'Maximum 20 materials can be attached')
+});
