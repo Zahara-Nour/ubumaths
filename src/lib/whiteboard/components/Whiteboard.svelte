@@ -12,7 +12,10 @@
 	import WhiteboardCanvas from './WhiteboardCanvas.svelte';
 	import WhiteboardToolbar from './WhiteboardToolbar.svelte';
 	import PageThumbnails from './PageThumbnails.svelte';
+	import FileDrawer from './FileDrawer.svelte';
 	import ContextMenu from './ContextMenu.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { Undo2, Redo2 } from 'lucide-svelte';
 	import type { PageFormatKey } from '../types/document';
 
 	// ==========================================================================
@@ -35,6 +38,7 @@
 	// ==========================================================================
 
 	const SIDEBAR_WIDTH = 180;
+	const FILE_DRAWER_WIDTH = 220;
 	const MIN_ZOOM = 0.25; // 25%
 	const MAX_ZOOM = 4; // 400%
 	const ZOOM_STEP = 0.1; // 10% per step
@@ -94,13 +98,21 @@
 	/** Sidebar visibility */
 	let sidebarVisible = $derived(whiteboardStore.sidebarVisible);
 
+	/** File drawer visibility */
+	let fileDrawerVisible = $derived(whiteboardStore.fileDrawerVisible);
+
+	/** Sync state for status indicator */
+	let syncState = $derived(whiteboardStore.syncState);
+	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
+
 	/** Calculate base scale to fit page in container */
 	let fitScale = $derived.by(() => {
 		if (containerWidth === 0 || containerHeight === 0) return 1;
 
 		const padding = 40;
-		const sidebarOffset = sidebarVisible ? SIDEBAR_WIDTH : 0;
-		const availableWidth = containerWidth - padding * 2 - sidebarOffset;
+		const leftOffset = fileDrawerVisible ? FILE_DRAWER_WIDTH : 0;
+		const rightOffset = sidebarVisible ? SIDEBAR_WIDTH : 0;
+		const availableWidth = containerWidth - padding * 2 - leftOffset - rightOffset;
 		const availableHeight = containerHeight - padding * 2;
 
 		const scaleX = availableWidth / pageWidth;
@@ -124,6 +136,22 @@
 
 	/** Can pan (zoomed in beyond container) */
 	let canPan = $derived(zoomLevel > 1);
+
+	/** Undo/Redo state */
+	let canUndo = $derived(whiteboardStore.canUndo);
+	let canRedo = $derived(whiteboardStore.canRedo);
+
+	// ==========================================================================
+	// Undo/Redo Methods
+	// ==========================================================================
+
+	function handleUndo() {
+		whiteboardStore.undo();
+	}
+
+	function handleRedo() {
+		whiteboardStore.redo();
+	}
 
 	// ==========================================================================
 	// Zoom Methods
@@ -162,8 +190,9 @@
 		}
 
 		// Calculate max pan range based on how much the canvas exceeds the viewport
-		const sidebarOffset = sidebarVisible ? SIDEBAR_WIDTH : 0;
-		const viewportWidth = containerWidth - sidebarOffset;
+		const leftOffset = fileDrawerVisible ? FILE_DRAWER_WIDTH : 0;
+		const rightOffset = sidebarVisible ? SIDEBAR_WIDTH : 0;
+		const viewportWidth = containerWidth - leftOffset - rightOffset;
 		const viewportHeight = containerHeight - 80; // Account for status bar and toolbar
 
 		const maxPanX = Math.max(0, (canvasWidth - viewportWidth) / 2 + 20);
@@ -465,6 +494,11 @@
 >
 	<!-- Status bar -->
 	<div class="whiteboard-status flex items-center gap-4 px-3 py-2 text-xs text-gray-600">
+		<!-- Sync indicator (orange asterisk when unsaved) -->
+		{#if hasUnsavedChanges || syncState.status === 'modified'}
+			<span class="text-lg font-bold text-orange-500" title="Modifications non sauvegardées">*</span
+			>
+		{/if}
 		<span class="font-medium">{document?.title ?? 'Sans titre'}</span>
 		<span>
 			Page {(whiteboardStore.document?.currentPageIndex ?? 0) + 1} / {document?.pages.length ?? 1}
@@ -481,15 +515,51 @@
 		<span class="ml-auto">{zoomPercent}%</span>
 	</div>
 
-	<!-- Main content area with sidebar -->
+	<!-- Main content area with sidebars -->
 	<div class="whiteboard-main relative min-h-0 overflow-hidden">
+		<!-- File Drawer (left) -->
+		<FileDrawer />
+
+		<!-- Floating Undo/Redo buttons (top-left, offset when drawer open) -->
+		<div
+			class="absolute top-2 z-10 flex gap-1 transition-all duration-200"
+			style="left: {fileDrawerVisible ? FILE_DRAWER_WIDTH + 8 : 8}px;"
+		>
+			<Button
+				type="button"
+				variant="secondary"
+				size="sm"
+				onclick={handleUndo}
+				disabled={!canUndo}
+				title="Annuler (Ctrl+Z)"
+				aria-label="Annuler"
+				class="h-8 w-8 rounded-full p-0 shadow-md"
+			>
+				<Undo2 class="h-4 w-4" />
+			</Button>
+			<Button
+				type="button"
+				variant="secondary"
+				size="sm"
+				onclick={handleRedo}
+				disabled={!canRedo}
+				title="Rétablir (Ctrl+Shift+Z)"
+				aria-label="Rétablir"
+				class="h-8 w-8 rounded-full p-0 shadow-md"
+			>
+				<Redo2 class="h-4 w-4" />
+			</Button>
+		</div>
+
 		<!-- Canvas area -->
 		<div
 			bind:this={canvasAreaEl}
 			class="whiteboard-canvas-area flex h-full items-center justify-center transition-all duration-200"
 			class:cursor-grab={isPanToolActive && canPan && !isPanning}
 			class:cursor-grabbing={isPanning}
-			style="margin-right: {sidebarVisible ? SIDEBAR_WIDTH : 0}px;"
+			style="margin-left: {fileDrawerVisible
+				? FILE_DRAWER_WIDTH
+				: 0}px; margin-right: {sidebarVisible ? SIDEBAR_WIDTH : 0}px;"
 			onpointerdown={handlePanStart}
 			onpointermove={handlePanMove}
 			onpointerup={handlePanEnd}

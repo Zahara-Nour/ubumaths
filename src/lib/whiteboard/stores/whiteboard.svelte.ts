@@ -279,6 +279,7 @@ function createWhiteboardStore() {
 	let hasUnsavedChanges = $state(false);
 	const isLoading = $state(false);
 	let sidebarVisible = $state(true);
+	let fileDrawerVisible = $state(false);
 
 	// === Selection State ===
 	let selectedIds = $state<Set<string>>(new Set());
@@ -447,6 +448,9 @@ function createWhiteboardStore() {
 		},
 		get sidebarVisible() {
 			return sidebarVisible;
+		},
+		get fileDrawerVisible() {
+			return fileDrawerVisible;
 		},
 		get currentPageIndex() {
 			return document?.currentPageIndex ?? 0;
@@ -685,6 +689,20 @@ function createWhiteboardStore() {
 		 */
 		setSidebarVisible(visible: boolean): void {
 			sidebarVisible = visible;
+		},
+
+		/**
+		 * Toggle file drawer visibility
+		 */
+		toggleFileDrawer(): void {
+			fileDrawerVisible = !fileDrawerVisible;
+		},
+
+		/**
+		 * Set file drawer visibility
+		 */
+		setFileDrawerVisible(visible: boolean): void {
+			fileDrawerVisible = visible;
 		},
 
 		// === Element Operations ===

@@ -47,7 +47,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { document, fileName, fileId } = validation.data;
+	const { document, fileName, fileId, thumbnail } = validation.data;
 
 	// Validate document structure
 	const documentJson = JSON.stringify(document);
@@ -70,18 +70,57 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Ensure filename has .ubw extension
 		const finalFileName = fileName.endsWith('.ubw') ? fileName : `${fileName}.ubw`;
 
+		// Handle thumbnail upload if provided
+		let thumbnailFileId: string | undefined;
+		if (thumbnail) {
+			// Extract base64 data and mime type from data URL
+			const match = thumbnail.match(/^data:image\/(webp|jpeg|png);base64,(.+)$/);
+			if (match) {
+				const [, imageType, base64Data] = match;
+				const thumbFileName = finalFileName.replace('.ubw', `_thumb.${imageType}`);
+				const thumbMimeType = `image/${imageType}`;
+
+				try {
+					const thumbResult = await driveClient.createFile({
+						name: thumbFileName,
+						content: base64Data,
+						mimeType: thumbMimeType,
+						folderId,
+						isBase64: true,
+						description: `Thumbnail for ${finalFileName}`
+					});
+					thumbnailFileId = thumbResult.id;
+					console.log(`[Whiteboard Drive] Created thumbnail ${thumbResult.id}`);
+				} catch (thumbErr) {
+					// Log but don't fail if thumbnail creation fails
+					console.warn('[Whiteboard Drive] Failed to create thumbnail:', thumbErr);
+				}
+			}
+		}
+
 		let result;
 		if (fileId) {
 			// Update existing file
 			result = await driveClient.updateFile(fileId, content);
 			console.log(`[Whiteboard Drive] Updated file ${fileId} for teacher ${user.id}`);
+
+			// Update appProperties with thumbnail ID if we have a new one
+			if (thumbnailFileId) {
+				await driveClient.updateFileMetadata(fileId, { thumbnailFileId });
+			}
 		} else {
-			// Create new file
+			// Create new file with thumbnail reference in appProperties
+			const appProperties: Record<string, string> = {};
+			if (thumbnailFileId) {
+				appProperties.thumbnailFileId = thumbnailFileId;
+			}
+
 			result = await driveClient.createFile({
 				name: finalFileName,
 				content,
 				mimeType: DRIVE_MIME_TYPE,
-				folderId
+				folderId,
+				appProperties: Object.keys(appProperties).length > 0 ? appProperties : undefined
 			});
 			console.log(`[Whiteboard Drive] Created file ${result.id} for teacher ${user.id}`);
 		}

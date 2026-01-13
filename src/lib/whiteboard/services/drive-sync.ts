@@ -28,6 +28,8 @@ export interface DriveFile {
 	id: string;
 	name: string;
 	modifiedTime: string;
+	/** Thumbnail data URL (WebP or JPEG) */
+	thumbnailUrl?: string;
 }
 
 export interface LoadResult {
@@ -57,6 +59,8 @@ class DriveSyncService {
 		document: WhiteboardDocument;
 		fileName: string;
 		fileId?: string;
+		/** Optional thumbnail data URL (WebP/JPEG) to save alongside the document */
+		thumbnail?: string;
 	}): Promise<SyncResult> {
 		if (this.isSyncing) {
 			return { success: false, error: 'Synchronisation déjà en cours' };
@@ -71,7 +75,8 @@ class DriveSyncService {
 				body: JSON.stringify({
 					document: options.document,
 					fileName: options.fileName,
-					fileId: options.fileId
+					fileId: options.fileId,
+					thumbnail: options.thumbnail
 				})
 			});
 

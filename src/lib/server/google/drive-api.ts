@@ -87,6 +87,8 @@ export interface CreateFileOptions {
 	description?: string;
 	/** If true, content is base64 encoded and will use Content-Transfer-Encoding: base64 */
 	isBase64?: boolean;
+	/** Custom app properties (key-value pairs, max 124 chars each) */
+	appProperties?: Record<string, string>;
 }
 
 /**
@@ -742,7 +744,7 @@ export class GoogleDriveClient {
 	 * ```
 	 */
 	async createFile(options: CreateFileOptions): Promise<DriveFileMetadata> {
-		const { name, content, mimeType, folderId, description, isBase64 } = options;
+		const { name, content, mimeType, folderId, description, isBase64, appProperties } = options;
 
 		if (!name || !content || !mimeType || !folderId) {
 			throw new Error('name, content, mimeType, and folderId are required');
@@ -758,6 +760,10 @@ export class GoogleDriveClient {
 
 		if (description) {
 			metadata.description = description;
+		}
+
+		if (appProperties) {
+			metadata.appProperties = appProperties;
 		}
 
 		// Build content part with optional base64 encoding header
@@ -844,6 +850,7 @@ export class GoogleDriveClient {
 	 *
 	 * @param folderId - Parent folder ID
 	 * @param mimeType - Optional MIME type filter
+	 * @param includeAppProperties - Include appProperties in response
 	 * @returns Array of file metadata
 	 *
 	 * @example
@@ -852,7 +859,11 @@ export class GoogleDriveClient {
 	 * files.forEach(f => console.log(f.name, f.modifiedTime));
 	 * ```
 	 */
-	async listFiles(folderId: string, mimeType?: string): Promise<DriveFileMetadata[]> {
+	async listFiles(
+		folderId: string,
+		mimeType?: string,
+		includeAppProperties = false
+	): Promise<(DriveFileMetadata & { appProperties?: Record<string, string> })[]> {
 		if (!folderId) {
 			throw new Error('folderId is required');
 		}
@@ -863,11 +874,40 @@ export class GoogleDriveClient {
 			query += ` and mimeType='${mimeType}'`;
 		}
 
-		const fields = 'files(id,name,mimeType,modifiedTime,createdTime)';
+		let fields = 'files(id,name,mimeType,modifiedTime,createdTime)';
+		if (includeAppProperties) {
+			fields = 'files(id,name,mimeType,modifiedTime,createdTime,appProperties)';
+		}
 		const endpoint = `/files?q=${encodeURIComponent(query)}&fields=${fields}&orderBy=modifiedTime desc`;
 
-		const response = await this.request<DriveListResponse>(endpoint);
+		const response = await this.request<
+			DriveListResponse & {
+				files: (DriveFileMetadata & { appProperties?: Record<string, string> })[];
+			}
+		>(endpoint);
 		return response.files || [];
+	}
+
+	/**
+	 * Update file metadata (appProperties only)
+	 *
+	 * @param fileId - File ID to update
+	 * @param appProperties - New appProperties (merged with existing)
+	 * @returns Updated file metadata
+	 */
+	async updateFileMetadata(
+		fileId: string,
+		appProperties: Record<string, string>
+	): Promise<DriveFileMetadata> {
+		if (!fileId) {
+			throw new Error('fileId is required');
+		}
+
+		const endpoint = `/files/${fileId}?fields=id,name,mimeType,modifiedTime,appProperties`;
+		return this.request<DriveFileMetadata>(endpoint, {
+			method: 'PATCH',
+			body: JSON.stringify({ appProperties })
+		});
 	}
 
 	/**
