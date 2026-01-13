@@ -57,6 +57,7 @@
 
 	/** Operation states */
 	let isSavingToDrive = $state(false);
+	let loadingFileId = $state<string | null>(null);
 
 	/** File input reference */
 	let ubwInputRef: HTMLInputElement | null = null;
@@ -142,6 +143,8 @@
 			}
 		}
 
+		loadingFileId = file.id;
+
 		try {
 			const result = await driveSyncService.loadFromDrive(file.id);
 
@@ -156,6 +159,8 @@
 			}
 		} catch {
 			toaster.error('Erreur lors du chargement');
+		} finally {
+			loadingFileId = null;
 		}
 	}
 
@@ -451,13 +456,22 @@
 						{#each driveFiles.slice(0, 6) as file (file.id)}
 							<button
 								type="button"
-								class="flex aspect-[3/4] flex-col overflow-hidden rounded border bg-white transition-all hover:border-primary"
-								class:ring-2={selectedFileId === file.id}
-								class:ring-primary={selectedFileId === file.id}
+								class="relative flex aspect-[3/4] flex-col overflow-hidden rounded border bg-white transition-all hover:border-primary"
+								class:ring-2={selectedFileId === file.id || loadingFileId === file.id}
+								class:ring-primary={selectedFileId === file.id && loadingFileId !== file.id}
+								class:ring-blue-500={loadingFileId === file.id}
+								class:opacity-75={loadingFileId && loadingFileId !== file.id}
 								onclick={() => handleSelectFile(file)}
 								ondblclick={() => handleOpenFile(file)}
+								disabled={loadingFileId !== null}
 								title="{file.name}\nDouble-clic pour ouvrir"
 							>
+								<!-- Loading overlay -->
+								{#if loadingFileId === file.id}
+									<div class="absolute inset-0 z-10 flex items-center justify-center bg-white/80">
+										<Loader2 class="h-6 w-6 animate-spin text-blue-500" />
+									</div>
+								{/if}
 								<!-- Thumbnail or fallback icon -->
 								<div class="flex flex-1 items-center justify-center overflow-hidden bg-gray-50">
 									{#if file.thumbnailUrl}
@@ -488,13 +502,19 @@
 							type="button"
 							variant="default"
 							size="sm"
+							disabled={loadingFileId !== null}
 							onclick={() => {
 								const file = driveFiles.find((f) => f.id === selectedFileId);
 								if (file) handleOpenFile(file);
 							}}
 							class="mt-2 w-full"
 						>
-							Ouvrir
+							{#if loadingFileId === selectedFileId}
+								<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+								Chargement...
+							{:else}
+								Ouvrir
+							{/if}
 						</Button>
 					{/if}
 				{/if}
