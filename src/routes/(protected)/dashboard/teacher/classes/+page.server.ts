@@ -42,6 +42,24 @@ import {
 	updateScheduleEntrySchema,
 	deleteScheduleEntrySchema
 } from '$lib/server/validation';
+import { requireRole } from '$lib/server/middleware/auth';
+import { z } from 'zod';
+import { formDataTransforms } from '$lib/server/validation/common';
+
+/**
+ * Schema for associating a Google Classroom course with a class
+ */
+const associateCourseSchema = z.object({
+	classId: formDataTransforms.uuid,
+	courseId: formDataTransforms.optionalString.pipe(
+		z
+			.string()
+			.nullable()
+			.refine((val) => val === null || z.string().uuid().safeParse(val).success, {
+				message: 'UUID invalide'
+			})
+	)
+});
 
 /**
  * Load function - Fetches teacher's classes with student counts and schedules
@@ -182,10 +200,29 @@ export const load: PageServerLoad = async ({ locals }) => {
 		}
 	}
 
+	// Fetch teacher's Google Classroom courses
+	const { data: googleCourses } = await supabase
+		.from('google_classroom_courses')
+		.select('id, name, section, course_state')
+		.eq('teacher_id', user.id)
+		.eq('course_state', 'ACTIVE')
+		.order('name');
+
+	// Fetch which courses are already associated with classes (for filtering)
+	const { data: associatedCourseIds } = await supabase
+		.from('classes')
+		.select('google_classroom_course_id')
+		.eq('teacher_id', user.id)
+		.not('google_classroom_course_id', 'is', null);
+
 	return {
 		classes: classesWithData,
 		school,
-		classStudentsMap
+		classStudentsMap,
+		googleCourses: googleCourses || [],
+		associatedCourseIds: (associatedCourseIds || [])
+			.map((c) => c.google_classroom_course_id)
+			.filter((id): id is string => id !== null)
 	};
 };
 
@@ -399,5 +436,78 @@ export const actions: Actions = {
 		}
 
 		return { success: true, message: 'Créneau supprimé avec succès' };
+	},
+
+	/**
+	 * Associate a Google Classroom course with a class
+	 *
+	 * SECURITY:
+	 * - Verifies user is authenticated teacher
+	 * - Validates class belongs to teacher
+	 * - Validates course belongs to teacher (if provided)
+	 *
+	 * PROCESS:
+	 * 1. Extract and validate classId and courseId from form data
+	 * 2. Verify class ownership
+	 * 3. Verify course ownership (if courseId provided)
+	 * 4. Update class with google_classroom_course_id
+	 */
+	associateCourse: async ({ request, locals }) => {
+		const { user } = await requireRole(locals, 'teacher');
+
+		const formData = await request.formData();
+
+		const validation = validateFormData(associateCourseSchema, formData);
+		if (!validation.success) {
+			return fail(400, { errors: validation.errors });
+		}
+
+		const { classId, courseId } = validation.data;
+
+		// Verify teacher owns this class
+		const { data: classData, error: classError } = await locals.supabase
+			.from('classes')
+			.select('teacher_id')
+			.eq('id', classId)
+			.single();
+
+		if (classError || !classData) {
+			return fail(404, { message: 'Classe introuvable' });
+		}
+
+		if (classData.teacher_id !== user.id) {
+			return fail(403, { message: 'Vous ne possédez pas cette classe' });
+		}
+
+		// If courseId provided, verify teacher owns this course
+		if (courseId) {
+			const { data: courseData, error: courseError } = await locals.supabase
+				.from('google_classroom_courses')
+				.select('teacher_id')
+				.eq('id', courseId)
+				.single();
+
+			if (courseError || !courseData) {
+				return fail(404, { message: 'Cours Google Classroom introuvable' });
+			}
+
+			if (courseData.teacher_id !== user.id) {
+				return fail(403, { message: 'Vous ne possédez pas ce cours' });
+			}
+		}
+
+		// Update the class
+		const { error: updateError } = await locals.supabase
+			.from('classes')
+			.update({ google_classroom_course_id: courseId })
+			.eq('id', classId)
+			.eq('teacher_id', user.id);
+
+		if (updateError) {
+			console.error('Error updating class association:', updateError);
+			return fail(500, { message: "Erreur lors de la mise à jour de l'association" });
+		}
+
+		return { success: true };
 	}
 };
