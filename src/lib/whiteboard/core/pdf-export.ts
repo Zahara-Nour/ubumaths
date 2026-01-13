@@ -903,6 +903,124 @@ export async function exportPageToPng(
 }
 
 // =============================================================================
+// Thumbnail Generation (WebP)
+// =============================================================================
+
+/** Default thumbnail width in pixels */
+const THUMBNAIL_WIDTH = 200;
+
+/** Default thumbnail quality (0-1) */
+const THUMBNAIL_QUALITY = 0.7;
+
+export interface ThumbnailOptions {
+	/** Target width in pixels (height calculated from aspect ratio) */
+	width?: number;
+	/** WebP quality (0-1), default 0.7 */
+	quality?: number;
+}
+
+export interface ThumbnailResult {
+	success: boolean;
+	/** WebP data URL */
+	dataUrl?: string;
+	/** Width in pixels */
+	width?: number;
+	/** Height in pixels */
+	height?: number;
+	/** Approximate size in bytes */
+	sizeBytes?: number;
+	error?: string;
+}
+
+/**
+ * Generate a WebP thumbnail of the first page
+ * Optimized for small file size while maintaining decent quality
+ */
+export async function generateThumbnail(
+	page: Page,
+	document: WhiteboardDocument,
+	options: ThumbnailOptions = {}
+): Promise<ThumbnailResult> {
+	try {
+		const targetWidth = options.width ?? THUMBNAIL_WIDTH;
+		const quality = options.quality ?? THUMBNAIL_QUALITY;
+
+		// Calculate dimensions maintaining aspect ratio
+		const aspectRatio = page.height / page.width;
+		const width = Math.round(targetWidth);
+		const height = Math.round(targetWidth * aspectRatio);
+
+		// Create SVG at original size (we'll scale via canvas)
+		const svgString = exportPageToSvg(page, document, {
+			format: 'png', // Not actually used, but required
+			includeInstruments: false
+		});
+
+		// Convert SVG to WebP via canvas
+		const canvas = window.document.createElement('canvas');
+		canvas.width = width;
+		canvas.height = height;
+
+		const ctx = canvas.getContext('2d');
+		if (!ctx) {
+			return { success: false, error: 'Impossible de créer le contexte canvas' };
+		}
+
+		// Create image from SVG
+		const img = new Image();
+		const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+		const url = URL.createObjectURL(svgBlob);
+
+		return new Promise((resolve) => {
+			img.onload = () => {
+				// Draw scaled image
+				ctx.drawImage(img, 0, 0, width, height);
+				URL.revokeObjectURL(url);
+
+				// Try WebP first, fallback to JPEG if not supported
+				let dataUrl = canvas.toDataURL('image/webp', quality);
+
+				// Check if WebP is actually supported (some browsers return PNG)
+				if (!dataUrl.startsWith('data:image/webp')) {
+					// Fallback to JPEG
+					dataUrl = canvas.toDataURL('image/jpeg', quality);
+				}
+
+				// Estimate size (base64 is ~33% larger than binary)
+				const base64Length = dataUrl.split(',')[1]?.length ?? 0;
+				const sizeBytes = Math.round((base64Length * 3) / 4);
+
+				// Clear canvas for GC
+				canvas.width = 0;
+				canvas.height = 0;
+
+				resolve({
+					success: true,
+					dataUrl,
+					width,
+					height,
+					sizeBytes
+				});
+			};
+
+			img.onerror = () => {
+				URL.revokeObjectURL(url);
+				canvas.width = 0;
+				canvas.height = 0;
+				resolve({ success: false, error: 'Échec du rendu SVG' });
+			};
+
+			img.src = url;
+		});
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : 'Échec de la génération du thumbnail'
+		};
+	}
+}
+
+// =============================================================================
 // SVG Export (public)
 // =============================================================================
 

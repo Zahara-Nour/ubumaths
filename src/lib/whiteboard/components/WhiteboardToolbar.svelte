@@ -2,16 +2,19 @@
 	/**
 	 * WhiteboardToolbar - Horizontal bottom toolbar with popup menus
 	 *
-	 * Sections in popups:
-	 * - Drawing: pen, highlighter, eraser, text
-	 * - Shapes: line, rectangle, circle, arrow
+	 * Sections:
+	 * - Action tools: select, pan
+	 * - Drawing tools: pen, marker, highlighter, eraser, text
+	 * - Shapes: line, rectangle, circle, arrow, pentagon, hexagon, star
 	 * - Instruments: ruler, protractor, set square
 	 * - Import: image, PDF
-	 * - File: new, save, open, export
-	 * - Color picker + stroke width slider
+	 * - Background/Format page settings
+	 * - Stroke/Fill properties panels
+	 * - Zoom controls
+	 *
+	 * Note: File operations (save, open, export) are now in FileDrawer component.
 	 */
 
-	import { onMount } from 'svelte';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import type { Tool } from '../stores/whiteboard.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -27,8 +30,6 @@
 		Square,
 		Circle,
 		MoveRight,
-		Undo2,
-		Redo2,
 		Trash2,
 		Ruler,
 		Compass,
@@ -36,15 +37,7 @@
 		Image,
 		FileText,
 		Upload,
-		Save,
-		FolderOpen,
-		FilePlus,
-		Cloud,
-		CloudOff,
-		CloudUpload,
-		LogIn,
 		Loader2,
-		Download,
 		MousePointer2,
 		Hand,
 		ZoomIn,
@@ -54,16 +47,8 @@
 		Star,
 		Grid3x3,
 		Maximize2,
-		Minimize2,
-		GraduationCap
+		Minimize2
 	} from 'lucide-svelte';
-	import ExportDialog from './ExportDialog.svelte';
-	import ExportToClassroomDialog from './ExportToClassroomDialog.svelte';
-	import DriveFilePicker from './DriveFilePicker.svelte';
-	import SaveAsDialog from './SaveAsDialog.svelte';
-	import { goto } from '$app/navigation';
-	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
-	import { driveSyncService } from '../services/drive-sync';
 	import {
 		INSTRUMENT_LABELS,
 		STROKE_STYLE_LABELS,
@@ -96,15 +81,6 @@
 	/** Stroke width constraints */
 	const STROKE_WIDTH_MIN = 1;
 	const STROKE_WIDTH_MAX = 20;
-
-	/** Tool definitions with icons and shortcuts */
-	const DRAWING_TOOLS: { id: Tool; icon: typeof Pen; shortcut: string; label: string }[] = [
-		{ id: 'pen', icon: Pen, shortcut: 'P', label: 'Stylo (pression)' },
-		{ id: 'marker', icon: Pencil, shortcut: 'M', label: 'Feutre' },
-		{ id: 'highlighter', icon: Highlighter, shortcut: 'H', label: 'Surligneur' },
-		{ id: 'eraser', icon: Eraser, shortcut: 'E', label: 'Gomme' },
-		{ id: 'text', icon: Type, shortcut: 'T', label: 'Texte' }
-	];
 
 	const SHAPE_TOOLS: { id: Tool; icon: typeof Minus; shortcut: string; label: string }[] = [
 		{ id: 'line', icon: Minus, shortcut: 'L', label: 'Ligne' },
@@ -171,35 +147,18 @@
 	// ==========================================================================
 
 	/** Popover open states */
-	let drawingPopoverOpen = $state(false);
 	let shapesPopoverOpen = $state(false);
 	let instrumentsPopoverOpen = $state(false);
 	let importPopoverOpen = $state(false);
-	let filePopoverOpen = $state(false);
 	let backgroundPopoverOpen = $state(false);
 	let pageFormatPopoverOpen = $state(false);
 
-	/** File input references (plain variables, no reactivity needed for bind:this) */
+	/** File input references for import (plain variables, no reactivity needed for bind:this) */
 	let imageInputRef: HTMLInputElement | null = null;
 	let pdfInputRef: HTMLInputElement | null = null;
-	let ubwInputRef: HTMLInputElement | null = null;
 
 	/** Import loading state */
 	let isImporting = $state(false);
-
-	/** Export dialog state */
-	let exportDialogOpen = $state(false);
-
-	/** Export to Classroom dialog state */
-	let exportToClassroomDialogOpen = $state(false);
-
-	/** Drive dialogs state */
-	let driveFilePickerOpen = $state(false);
-	let saveAsDialogOpen = $state(false);
-	let isSavingToDrive = $state(false);
-
-	/** Google account connection status (fetched from API) */
-	let googleConnected = $state(false);
 
 	/** Draggable stroke panel state (independent floating panel, not using Popover) */
 	let strokePanelOpen = $state(false);
@@ -222,8 +181,6 @@
 	// ==========================================================================
 
 	let toolState = $derived(whiteboardStore.toolState);
-	let canUndo = $derived(whiteboardStore.canUndo);
-	let canRedo = $derived(whiteboardStore.canRedo);
 	let currentColor = $derived(toolState.color);
 	let currentStrokeWidth = $derived(toolState.strokeWidth);
 	let currentOpacity = $derived(toolState.opacity);
@@ -233,22 +190,11 @@
 	let currentFillColor = $derived(toolState.fillColor);
 	let currentFillOpacity = $derived(toolState.fillOpacity);
 	let instruments = $derived(whiteboardStore.instruments);
-	let syncState = $derived(whiteboardStore.syncState);
-	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
-	let isGoogleConnected = $derived(googleConnected);
-
-	/** Current drawing tool icon for the button */
-	let currentDrawingTool = $derived(
-		DRAWING_TOOLS.find((t) => t.id === toolState.toolType) || DRAWING_TOOLS[0]
-	);
 
 	/** Current shape tool icon for the button */
 	let currentShapeTool = $derived(
 		SHAPE_TOOLS.find((t) => t.id === toolState.toolType) || SHAPE_TOOLS[0]
 	);
-
-	/** Check if current tool is a drawing tool */
-	let isDrawingToolActive = $derived(DRAWING_TOOLS.some((t) => t.id === toolState.toolType));
 
 	/** Check if current tool is a shape tool */
 	let isShapeToolActive = $derived(SHAPE_TOOLS.some((t) => t.id === toolState.toolType));
@@ -336,34 +282,12 @@
 	});
 
 	// ==========================================================================
-	// Lifecycle
-	// ==========================================================================
-
-	onMount(async () => {
-		// Fetch Google connection status
-		try {
-			const response = await fetch('/api/google/auth/status');
-			if (response.ok) {
-				const data = await response.json();
-				googleConnected = data.connected === true;
-				// If connected, update sync state to allow auto-sync
-				if (googleConnected && syncState.status === 'disconnected') {
-					whiteboardStore.connectToDrive();
-				}
-			}
-		} catch (e) {
-			console.warn('[WhiteboardToolbar] Failed to fetch Google status:', e);
-		}
-	});
-
-	// ==========================================================================
 	// Handlers
 	// ==========================================================================
 
 	function handleToolSelect(tool: Tool) {
 		whiteboardStore.setTool(tool);
-		// Close the relevant popover
-		drawingPopoverOpen = false;
+		// Close the shape popover if open
 		shapesPopoverOpen = false;
 	}
 
@@ -611,14 +535,6 @@
 		}
 	}
 
-	function handleUndo() {
-		whiteboardStore.undo();
-	}
-
-	function handleRedo() {
-		whiteboardStore.redo();
-	}
-
 	function handleClear() {
 		const page = whiteboardStore.currentPage;
 		if (page && page.elements.length > 0) {
@@ -707,184 +623,6 @@
 			input.value = '';
 		}
 	}
-
-	// ==========================================================================
-	// File Operations Handlers
-	// ==========================================================================
-
-	function handleNewDocument() {
-		if (hasUnsavedChanges) {
-			if (!confirm('Vous avez des modifications non sauvegardées. Voulez-vous continuer ?')) {
-				return;
-			}
-		}
-
-		// Ask for document title
-		const title = prompt('Nom du nouveau document:', 'Sans titre');
-		if (title === null) return; // User cancelled
-
-		whiteboardStore.createNew(title || 'Sans titre');
-		toaster.success('Nouveau document créé');
-		filePopoverOpen = false;
-	}
-
-	function handleSaveDocument() {
-		const doc = whiteboardStore.document;
-		if (!doc) return;
-
-		// If document has never been saved, ask for filename
-		if (doc.title === 'Sans titre' || !doc.title) {
-			const title = prompt('Nom du document:', doc.title || 'Sans titre');
-			if (title === null) return; // User cancelled
-			if (title) {
-				whiteboardStore.setTitle(title);
-			}
-		}
-
-		const result = whiteboardStore.saveToFile();
-		if (result.success) {
-			toaster.success('Document sauvegardé');
-		} else {
-			toaster.error(result.error || 'Erreur lors de la sauvegarde');
-		}
-		filePopoverOpen = false;
-	}
-
-	function handleOpenDocument() {
-		ubwInputRef?.click();
-		filePopoverOpen = false;
-	}
-
-	function handleExportClick() {
-		exportDialogOpen = true;
-		filePopoverOpen = false;
-	}
-
-	async function handleUbwFileSelect(e: Event) {
-		const input = e.target as HTMLInputElement;
-		const file = input.files?.[0];
-		if (!file) return;
-
-		if (hasUnsavedChanges) {
-			if (!confirm('Vous avez des modifications non sauvegardées. Voulez-vous continuer ?')) {
-				input.value = '';
-				return;
-			}
-		}
-
-		try {
-			const result = await whiteboardStore.loadFromFile(file);
-
-			if (result.success) {
-				toaster.success('Document chargé');
-			} else {
-				toaster.error(result.error || 'Erreur lors du chargement');
-			}
-		} catch (error) {
-			console.error('File load error:', error);
-			toaster.error('Erreur lors du chargement du fichier');
-		} finally {
-			input.value = '';
-		}
-	}
-
-	// ==========================================================================
-	// Google Drive Handlers
-	// ==========================================================================
-
-	async function handleSaveToDrive() {
-		const doc = whiteboardStore.document;
-		if (!doc) return;
-
-		isSavingToDrive = true;
-		filePopoverOpen = false;
-
-		try {
-			const result = await driveSyncService.saveToDrive({
-				document: doc,
-				fileName: doc.title || 'Sans titre',
-				fileId: syncState.driveFileId || undefined
-			});
-
-			if (result.success) {
-				whiteboardStore.setSyncSuccess(result.fileId!, result.modifiedTime!);
-				toaster.success('Document sauvegardé sur Google Drive');
-			} else {
-				whiteboardStore.setSyncError(result.error || 'Erreur de sauvegarde');
-				toaster.error(result.error || 'Erreur de sauvegarde');
-			}
-		} finally {
-			isSavingToDrive = false;
-		}
-	}
-
-	function handleSaveAsToDrive() {
-		filePopoverOpen = false;
-		saveAsDialogOpen = true;
-	}
-
-	async function handleSaveAsConfirm(fileName: string) {
-		const doc = whiteboardStore.document;
-		if (!doc) return;
-
-		isSavingToDrive = true;
-
-		try {
-			const result = await driveSyncService.saveToDrive({
-				document: doc,
-				fileName,
-				fileId: undefined // Force new file
-			});
-
-			if (result.success) {
-				// Update title and connect to new file
-				whiteboardStore.setTitle(fileName.replace(/\.ubw$/, ''));
-				whiteboardStore.connectToDrive(result.fileId, syncState.driveFolderId || undefined);
-				whiteboardStore.setSyncSuccess(result.fileId!, result.modifiedTime!);
-				toaster.success('Document créé sur Google Drive');
-				saveAsDialogOpen = false;
-			} else {
-				toaster.error(result.error || 'Erreur de sauvegarde');
-			}
-		} finally {
-			isSavingToDrive = false;
-		}
-	}
-
-	function handleOpenFromDrive() {
-		filePopoverOpen = false;
-		driveFilePickerOpen = true;
-	}
-
-	async function handleDriveFileSelect(fileId: string, _fileName: string) {
-		if (hasUnsavedChanges) {
-			if (!confirm('Vous avez des modifications non sauvegardées. Voulez-vous continuer ?')) {
-				return;
-			}
-		}
-
-		driveFilePickerOpen = false;
-
-		try {
-			const result = await driveSyncService.loadFromDrive(fileId);
-
-			if (result.success && result.document) {
-				whiteboardStore.loadDocument(result.document);
-				whiteboardStore.connectToDrive(fileId);
-				whiteboardStore.setSyncSuccess(fileId, result.modifiedTime!);
-				toaster.success('Document chargé depuis Google Drive');
-			} else {
-				toaster.error(result.error || 'Erreur de chargement');
-			}
-		} catch (_e) {
-			toaster.error('Erreur lors du chargement');
-		}
-	}
-
-	function handleConnectGoogle() {
-		filePopoverOpen = false;
-		goto('/dashboard/teacher/settings/google');
-	}
 </script>
 
 <svelte:window onclick={closePanelsOnClickOutside} />
@@ -922,41 +660,76 @@
 			<!-- Separator -->
 			<div class="mx-1 h-6 w-px bg-border"></div>
 
-			<!-- Drawing Tools Popover -->
-			<Popover.Root bind:open={drawingPopoverOpen}>
-				<Popover.Trigger>
-					{#snippet child({ props })}
-						<button
-							{...props}
-							type="button"
-							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors {isDrawingToolActive
-								? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-1'
-								: 'hover:bg-accent'}"
-							aria-label="Outils de dessin"
-							title="Dessin"
-						>
-							<currentDrawingTool.icon class="h-4 w-4" />
-						</button>
-					{/snippet}
-				</Popover.Trigger>
-				<Popover.Content class="w-auto p-2" side="top" align="start">
-					<div class="flex flex-col gap-1">
-						{#each DRAWING_TOOLS as tool (tool.id)}
-							<Button
-								type="button"
-								variant={toolState.toolType === tool.id ? 'secondary' : 'ghost'}
-								size="sm"
-								onclick={() => handleToolSelect(tool.id)}
-								class="justify-start gap-2"
-							>
-								<tool.icon class="h-4 w-4" />
-								<span>{tool.label}</span>
-								<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">{tool.shortcut}</kbd>
-							</Button>
-						{/each}
-					</div>
-				</Popover.Content>
-			</Popover.Root>
+			<!-- Pen Tool -->
+			<Button
+				type="button"
+				variant={toolState.toolType === 'pen' ? 'default' : 'ghost'}
+				size="sm"
+				onclick={() => handleToolSelect('pen')}
+				title="Stylo (P)"
+				aria-label="Stylo"
+				class={toolState.toolType === 'pen' ? 'ring-2 ring-primary ring-offset-1' : ''}
+			>
+				<Pen class="h-4 w-4" />
+			</Button>
+
+			<!-- Marker Tool -->
+			<Button
+				type="button"
+				variant={toolState.toolType === 'marker' ? 'default' : 'ghost'}
+				size="sm"
+				onclick={() => handleToolSelect('marker')}
+				title="Feutre (M)"
+				aria-label="Feutre"
+				class={toolState.toolType === 'marker' ? 'ring-2 ring-primary ring-offset-1' : ''}
+			>
+				<Pencil class="h-4 w-4" />
+			</Button>
+
+			<!-- Highlighter Tool -->
+			<Button
+				type="button"
+				variant={toolState.toolType === 'highlighter' ? 'default' : 'ghost'}
+				size="sm"
+				onclick={() => handleToolSelect('highlighter')}
+				title="Surligneur (H)"
+				aria-label="Surligneur"
+				class={toolState.toolType === 'highlighter' ? 'ring-2 ring-primary ring-offset-1' : ''}
+			>
+				<Highlighter class="h-4 w-4" />
+			</Button>
+
+			<!-- Separator -->
+			<div class="mx-1 h-6 w-px bg-border"></div>
+
+			<!-- Eraser Tool -->
+			<Button
+				type="button"
+				variant={toolState.toolType === 'eraser' ? 'default' : 'ghost'}
+				size="sm"
+				onclick={() => handleToolSelect('eraser')}
+				title="Gomme (E)"
+				aria-label="Gomme"
+				class={toolState.toolType === 'eraser' ? 'ring-2 ring-primary ring-offset-1' : ''}
+			>
+				<Eraser class="h-4 w-4" />
+			</Button>
+
+			<!-- Text Tool -->
+			<Button
+				type="button"
+				variant={toolState.toolType === 'text' ? 'default' : 'ghost'}
+				size="sm"
+				onclick={() => handleToolSelect('text')}
+				title="Texte (T)"
+				aria-label="Texte"
+				class={toolState.toolType === 'text' ? 'ring-2 ring-primary ring-offset-1' : ''}
+			>
+				<Type class="h-4 w-4" />
+			</Button>
+
+			<!-- Separator -->
+			<div class="mx-1 h-6 w-px bg-border"></div>
 
 			<!-- Shape Tools Popover -->
 			<Popover.Root bind:open={shapesPopoverOpen}>
@@ -1277,157 +1050,6 @@
 				</Popover.Content>
 			</Popover.Root>
 
-			<!-- File Popover -->
-			<Popover.Root bind:open={filePopoverOpen}>
-				<Popover.Trigger>
-					{#snippet child({ props })}
-						<button
-							{...props}
-							type="button"
-							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
-							aria-label="Fichier"
-							title="Fichier"
-						>
-							<Save class="h-4 w-4" />
-							{#if hasUnsavedChanges}
-								<span class="h-2 w-2 rounded-full bg-yellow-500"></span>
-							{/if}
-						</button>
-					{/snippet}
-				</Popover.Trigger>
-				<Popover.Content class="w-auto p-2" side="top" align="start">
-					<div class="flex flex-col gap-1">
-						<Button
-							type="button"
-							variant="ghost"
-							size="sm"
-							onclick={handleNewDocument}
-							class="justify-start gap-2"
-						>
-							<FilePlus class="h-4 w-4" />
-							<span>Nouveau</span>
-							<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">Ctrl+N</kbd>
-						</Button>
-						<Button
-							type="button"
-							variant="ghost"
-							size="sm"
-							onclick={handleSaveDocument}
-							class="justify-start gap-2"
-						>
-							<Save class="h-4 w-4" />
-							<span>Sauvegarder</span>
-							{#if hasUnsavedChanges}
-								<span class="h-2 w-2 rounded-full bg-yellow-500"></span>
-							{/if}
-							<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">Ctrl+S</kbd>
-						</Button>
-						<Button
-							type="button"
-							variant="ghost"
-							size="sm"
-							onclick={handleOpenDocument}
-							class="justify-start gap-2"
-						>
-							<FolderOpen class="h-4 w-4" />
-							<span>Ouvrir</span>
-							<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">Ctrl+O</kbd>
-						</Button>
-						<div class="my-1 h-px bg-border"></div>
-						<Button
-							type="button"
-							variant="ghost"
-							size="sm"
-							onclick={handleExportClick}
-							class="justify-start gap-2"
-						>
-							<Download class="h-4 w-4" />
-							<span>Exporter</span>
-							<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">Ctrl+E</kbd>
-						</Button>
-						<div class="my-1 h-px bg-border"></div>
-						<!-- Google Drive Options -->
-						{#if isGoogleConnected}
-							<Button
-								type="button"
-								variant="ghost"
-								size="sm"
-								onclick={handleSaveToDrive}
-								disabled={isSavingToDrive}
-								class="justify-start gap-2"
-							>
-								{#if isSavingToDrive}
-									<Loader2 class="h-4 w-4 animate-spin" />
-								{:else}
-									<CloudUpload class="h-4 w-4" />
-								{/if}
-								<span>Enregistrer sur Drive</span>
-							</Button>
-							<Button
-								type="button"
-								variant="ghost"
-								size="sm"
-								onclick={handleSaveAsToDrive}
-								disabled={isSavingToDrive}
-								class="justify-start gap-2"
-							>
-								<FilePlus class="h-4 w-4" />
-								<span>Enregistrer sous... (Drive)</span>
-							</Button>
-							<Button
-								type="button"
-								variant="ghost"
-								size="sm"
-								onclick={handleOpenFromDrive}
-								class="justify-start gap-2"
-							>
-								<FolderOpen class="h-4 w-4" />
-								<span>Ouvrir depuis Drive</span>
-							</Button>
-							<div class="my-1 h-px bg-border"></div>
-							<Button
-								type="button"
-								variant="ghost"
-								size="sm"
-								onclick={() => (exportToClassroomDialogOpen = true)}
-								class="justify-start gap-2"
-							>
-								<GraduationCap class="h-4 w-4" />
-								<span>Publier sur Classroom</span>
-							</Button>
-						{:else}
-							<Button
-								type="button"
-								variant="ghost"
-								size="sm"
-								onclick={handleConnectGoogle}
-								class="justify-start gap-2"
-							>
-								<LogIn class="h-4 w-4" />
-								<span>Se connecter à Google</span>
-							</Button>
-						{/if}
-						<div class="my-1 h-px bg-border"></div>
-						<!-- Sync Status -->
-						<div
-							class="flex items-center gap-2 px-3 py-1.5 text-sm {getSyncStatusColor(syncState)}"
-						>
-							{#if syncState.status === 'syncing'}
-								<Loader2 class="h-4 w-4 animate-spin" />
-							{:else if syncState.status === 'disconnected'}
-								<CloudOff class="h-4 w-4" />
-							{:else}
-								<Cloud class="h-4 w-4" />
-							{/if}
-							<span>{getSyncStatusLabel(syncState)}</span>
-						</div>
-					</div>
-				</Popover.Content>
-			</Popover.Root>
-
-			<!-- Separator -->
-			<div class="mx-2 h-6 w-px bg-border"></div>
-
 			<!-- Stroke Properties Button (opens floating panel) -->
 			<button
 				type="button"
@@ -1564,29 +1186,6 @@
 
 		<!-- Right: Actions -->
 		<div class="flex items-center gap-1">
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={handleUndo}
-				disabled={!canUndo}
-				title="Annuler (Ctrl+Z)"
-				aria-label="Annuler"
-			>
-				<Undo2 class="h-4 w-4" />
-			</Button>
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={handleRedo}
-				disabled={!canRedo}
-				title="Rétablir (Ctrl+Shift+Z)"
-				aria-label="Rétablir"
-			>
-				<Redo2 class="h-4 w-4" />
-			</Button>
-			<div class="mx-1 h-6 w-px bg-border"></div>
 			<Button
 				type="button"
 				variant="ghost"
@@ -1955,37 +1554,6 @@
 	onchange={handlePdfFileSelect}
 	class="hidden"
 	aria-hidden="true"
-/>
-
-<input
-	bind:this={ubwInputRef}
-	type="file"
-	accept=".ubw"
-	onchange={handleUbwFileSelect}
-	class="hidden"
-	aria-hidden="true"
-/>
-
-<!-- Export Dialog -->
-<ExportDialog bind:open={exportDialogOpen} />
-
-<!-- Export to Classroom Dialog -->
-<ExportToClassroomDialog bind:open={exportToClassroomDialogOpen} />
-
-<!-- Drive File Picker Dialog -->
-<DriveFilePicker
-	bind:open={driveFilePickerOpen}
-	onSelect={handleDriveFileSelect}
-	onClose={() => (driveFilePickerOpen = false)}
-/>
-
-<!-- Save As Dialog -->
-<SaveAsDialog
-	bind:open={saveAsDialogOpen}
-	defaultName={whiteboardStore.document?.title || 'Sans titre'}
-	saving={isSavingToDrive}
-	onSave={handleSaveAsConfirm}
-	onClose={() => (saveAsDialogOpen = false)}
 />
 
 <style>

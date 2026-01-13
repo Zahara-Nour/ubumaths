@@ -16,6 +16,12 @@ const DRIVE_FILE_ID_REGEX = /^[a-zA-Z0-9_-]{10,50}$/;
 // SAVE TO DRIVE SCHEMAS
 // ============================================================================
 
+/** Data URL regex pattern for images */
+const DATA_URL_IMAGE_REGEX = /^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+/]+=*$/;
+
+/** Maximum thumbnail size (100KB in base64 ~ 75KB binary) */
+const MAX_THUMBNAIL_BASE64_LENGTH = 150000;
+
 /**
  * Schema for saving whiteboard to Google Drive
  * POST /api/whiteboard/drive/save
@@ -30,7 +36,13 @@ export const saveToDriveRequestSchema = z.object({
 		.max(255, 'File name cannot exceed 255 characters')
 		.transform((val) => val.trim()),
 	/** Existing file ID to update (optional - creates new if not provided) */
-	fileId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid Google Drive file ID').optional()
+	fileId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid Google Drive file ID').optional(),
+	/** Optional thumbnail data URL (WebP/JPEG/PNG) */
+	thumbnail: z
+		.string()
+		.regex(DATA_URL_IMAGE_REGEX, 'Invalid thumbnail data URL format')
+		.max(MAX_THUMBNAIL_BASE64_LENGTH, 'Thumbnail too large (max 100KB)')
+		.optional()
 });
 
 export type SaveToDriveRequest = z.infer<typeof saveToDriveRequestSchema>;

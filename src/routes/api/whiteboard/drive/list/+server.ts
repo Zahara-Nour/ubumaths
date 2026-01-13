@@ -23,6 +23,15 @@ import { getTeacherAccessToken } from '$lib/server/google/sync';
 import { DRIVE_MIME_TYPE } from '$lib/whiteboard/utils/sync-state';
 
 /**
+ * Construct proxy URL for thumbnail
+ * Uses our proxy endpoint instead of direct Drive URL
+ * because direct URLs require OAuth which <img> tags can't provide
+ */
+function getThumbnailUrl(fileId: string): string {
+	return `/api/whiteboard/drive/thumbnail/${fileId}`;
+}
+
+/**
  * List whiteboard files from Google Drive
  *
  * Returns array of file metadata sorted by modification time
@@ -39,17 +48,21 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Get or create the app folder
 		const folderId = await driveClient.getOrCreateAppFolder();
 
-		// List files with our MIME type
-		const files = await driveClient.listFiles(folderId, DRIVE_MIME_TYPE);
+		// List files with our MIME type, including appProperties for thumbnail IDs
+		const files = await driveClient.listFiles(folderId, DRIVE_MIME_TYPE, true);
 
 		console.log(`[Whiteboard Drive] Listed ${files.length} files for teacher ${user.id}`);
 
 		return json({
-			files: files.map((f) => ({
-				id: f.id,
-				name: f.name,
-				modifiedTime: f.modifiedTime || ''
-			}))
+			files: files.map((f) => {
+				const thumbnailFileId = f.appProperties?.thumbnailFileId;
+				return {
+					id: f.id,
+					name: f.name,
+					modifiedTime: f.modifiedTime || '',
+					thumbnailUrl: thumbnailFileId ? getThumbnailUrl(thumbnailFileId) : undefined
+				};
+			})
 		});
 	} catch (err) {
 		// Re-throw SvelteKit errors
