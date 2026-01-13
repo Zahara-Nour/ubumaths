@@ -1588,6 +1588,7 @@ export type Database = {
 				Row: {
 					created_at: string;
 					description: string | null;
+					google_classroom_course_id: string | null;
 					grade: string | null;
 					id: string;
 					is_active: boolean;
@@ -1601,6 +1602,7 @@ export type Database = {
 				Insert: {
 					created_at?: string;
 					description?: string | null;
+					google_classroom_course_id?: string | null;
 					grade?: string | null;
 					id?: string;
 					is_active?: boolean;
@@ -1614,6 +1616,7 @@ export type Database = {
 				Update: {
 					created_at?: string;
 					description?: string | null;
+					google_classroom_course_id?: string | null;
 					grade?: string | null;
 					id?: string;
 					is_active?: boolean;
@@ -1625,6 +1628,13 @@ export type Database = {
 					updated_at?: string;
 				};
 				Relationships: [
+					{
+						foreignKeyName: 'classes_google_classroom_course_id_fkey';
+						columns: ['google_classroom_course_id'];
+						isOneToOne: false;
+						referencedRelation: 'google_classroom_courses';
+						referencedColumns: ['id'];
+					},
 					{
 						foreignKeyName: 'classes_school_id_fkey';
 						columns: ['school_id'];
@@ -10966,6 +10976,41 @@ export type Database = {
 					}
 				];
 			};
+			whiteboard_export_counters: {
+				Row: {
+					class_id: string;
+					counter: number;
+					created_at: string;
+					export_date: string;
+					id: string;
+					updated_at: string;
+				};
+				Insert: {
+					class_id: string;
+					counter?: number;
+					created_at?: string;
+					export_date: string;
+					id?: string;
+					updated_at?: string;
+				};
+				Update: {
+					class_id?: string;
+					counter?: number;
+					created_at?: string;
+					export_date?: string;
+					id?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'whiteboard_export_counters_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			worksheet_assignment_classes: {
 				Row: {
 					assignment_id: string;
@@ -13019,7 +13064,7 @@ export type Database = {
 				}[];
 			};
 			get_classes_by_user_grade: {
-				Args: Record<PropertyKey, never>;
+				Args: never;
 				Returns: {
 					id: string;
 					name: string;
@@ -13223,6 +13268,10 @@ export type Database = {
 					variations: Json;
 				}[];
 			};
+			get_next_export_counter: {
+				Args: { p_class_id: string; p_export_date: string };
+				Returns: number;
+			};
 			get_next_riddle_attempt_number: {
 				Args: { p_riddle_id: string; p_student_id: string };
 				Returns: number;
@@ -13338,13 +13387,13 @@ export type Database = {
 			get_students_in_class_by_grade: {
 				Args: { target_class_id: string };
 				Returns: {
+					avatar_url: string;
+					firstname: string;
+					friendship_status: string;
+					full_name: string;
 					id: string;
-					full_name: string | null;
-					firstname: string | null;
-					lastname: string | null;
-					avatar_url: string | null;
+					lastname: string;
 					role: string;
-					friendship_status: string | null;
 				}[];
 			};
 			get_teacher_assignment_stats: {
@@ -14289,68 +14338,3 @@ export const Constants = {
 		}
 	}
 } as const;
-
-// ============================================================================
-// Custom Type Exports (for convenience, derived from database types)
-// ============================================================================
-
-/** User role enum */
-export type UserRole = Database['public']['Enums']['user_role'];
-
-/** Gender type (string from database, typically 'male' | 'female' | null) */
-export type Gender = 'male' | 'female' | null;
-
-/** Friendship status type */
-export type FriendshipStatus = 'pending' | 'accepted' | 'rejected';
-
-/** Friendship relation type */
-export type FriendshipRelationType = string;
-
-/** Class type alias */
-export type Class = Tables<'classes'>;
-
-/** Class schedule (for timetable matching) */
-export type ClassSchedule = {
-	day: number; // 0-6 (Sunday-Saturday)
-	day_of_week?: number; // Alias for day (0-6)
-	start_time: string; // HH:MM format
-	end_time: string; // HH:MM format
-	subject?: string; // Subject name (optional)
-	room?: string; // Room number/name (optional)
-};
-
-/** Friendship with profile data */
-export type FriendshipWithProfile = {
-	id: string;
-	status: FriendshipStatus;
-	friendship_type: FriendshipRelationType;
-	created_at: string;
-	updated_at: string;
-	requester_id: string;
-	addressee_id: string;
-	friend_profile?: {
-		id: string;
-		full_name: string | null;
-		firstname: string | null;
-		lastname: string | null;
-		avatar_url: string | null;
-		role: UserRole;
-		gender: Gender;
-		presence?: {
-			is_online: boolean;
-			last_seen: string | null;
-		};
-	};
-};
-
-/** Gidouilles history row type */
-export type GidouillesHistoryRow = {
-	id: string;
-	user_id: string;
-	event_type: Database['public']['Enums']['reward_event_type'];
-	amount: number;
-	balance_after: number;
-	description: string | null;
-	metadata: Json | null;
-	created_at: string;
-};

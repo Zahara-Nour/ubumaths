@@ -47,14 +47,16 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Label } from '$lib/components/ui/label';
 	import ClassStatsCard from '$lib/components/ClassStatsCard.svelte';
 	import ClassScheduleGrid from '$lib/components/ClassScheduleGrid.svelte';
 	import ScheduleEntryModal from '$lib/components/ScheduleEntryModal.svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { getAvatarUrl } from '$lib/utils/avatar';
-	import { Mail, CheckCircle2, BookOpen } from 'lucide-svelte';
+	import { Mail, CheckCircle2, BookOpen, GraduationCap, Loader2 } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -93,6 +95,69 @@
 			);
 		}
 	});
+
+	// ============================================================================
+	// Google Classroom Association State
+	// ============================================================================
+
+	// Track which classes are currently updating their course association
+	let isUpdatingAssociation = $state<Record<string, boolean>>({});
+
+	/**
+	 * Get available courses for dropdown
+	 * Excludes already associated courses (except current class's course)
+	 */
+	function getAvailableCourseItems(currentClassId: string) {
+		const currentClass = data.classes.find((c) => c.id === currentClassId);
+		const currentCourseId = currentClass?.google_classroom_course_id;
+
+		return [
+			{ value: '', label: 'Aucun cours associé' },
+			...data.googleCourses
+				.filter((course) => {
+					// Include if not associated to any class, or if associated to current class
+					const isAssociated = data.associatedCourseIds.includes(course.id);
+					return !isAssociated || course.id === currentCourseId;
+				})
+				.map((course) => ({
+					value: course.id,
+					label: course.section ? `${course.name} - ${course.section}` : course.name
+				}))
+		];
+	}
+
+	/**
+	 * Handle course association change
+	 * Updates the class's google_classroom_course_id
+	 */
+	async function handleAssociateCourse(classId: string, courseId: string) {
+		isUpdatingAssociation[classId] = true;
+
+		const formData = new FormData();
+		formData.append('classId', classId);
+		formData.append('courseId', courseId);
+
+		try {
+			const response = await fetch('?/associateCourse', {
+				method: 'POST',
+				body: formData,
+				headers: { 'x-sveltekit-action': 'true' }
+			});
+
+			if (response.ok) {
+				await invalidateAll();
+				toaster.success(courseId ? 'Cours associé' : 'Association supprimée');
+			} else {
+				const result = await response.json();
+				toaster.error(result?.message || "Erreur lors de l'association");
+			}
+		} catch (error) {
+			console.error('Error associating course:', error);
+			toaster.error('Une erreur est survenue');
+		} finally {
+			isUpdatingAssociation[classId] = false;
+		}
+	}
 
 	// ============================================================================
 	// Modal State Management
@@ -475,6 +540,43 @@
 								<BookOpen class="mr-2 h-4 w-4" />
 								Cahier de Texte
 							</Button>
+						</div>
+					</div>
+
+					<!-- Google Classroom Association -->
+					<div class="rounded-lg border border-border bg-muted/30 p-4">
+						<div class="flex items-center justify-between gap-4">
+							<div class="flex-1 space-y-2">
+								<Label class="flex items-center gap-2 text-base">
+									<GraduationCap class="h-4 w-4" />
+									Cours Google Classroom
+								</Label>
+								{#if data.googleCourses.length === 0}
+									<p class="text-sm text-muted-foreground">
+										Aucun cours Google Classroom synchronisé.
+										<a
+											href="/dashboard/teacher/settings/google"
+											class="text-primary hover:underline"
+										>
+											Connecter votre compte Google
+										</a>
+									</p>
+								{:else}
+									<div class="flex items-center gap-2">
+										<MySelect
+											type="single"
+											value={classItem.google_classroom_course_id || ''}
+											items={getAvailableCourseItems(classItem.id)}
+											onValueChange={(v) => handleAssociateCourse(classItem.id, v)}
+											placeholder="Aucun cours associé"
+											triggerClass="w-64"
+										/>
+										{#if isUpdatingAssociation[classItem.id]}
+											<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
+										{/if}
+									</div>
+								{/if}
+							</div>
 						</div>
 					</div>
 

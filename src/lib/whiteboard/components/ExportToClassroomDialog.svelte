@@ -1,9 +1,13 @@
 <script lang="ts">
 	/**
-	 * ExportToClassroomDialog - Export whiteboard to Google Classroom
+	 * ExportToClassroomDialog V2 - Simplified Export to Google Classroom
 	 *
-	 * Allows exporting the current whiteboard as a PDF to a Google Classroom course.
-	 * The PDF is uploaded to Google Drive and attached as a CourseWorkMaterial.
+	 * Simplified workflow:
+	 * - Select a class (auto-detected based on current schedule)
+	 * - Select a date (default: today)
+	 * - Title is auto-generated: French date format (e.g., "12 janvier 2026")
+	 * - Topic is always "Notes de cours" (error if not found)
+	 * - Filename: "JOIN_CODE - YYYY-MM-DD - NN.pdf"
 	 */
 
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
@@ -11,28 +15,38 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { GraduationCap, Loader2, ExternalLink, AlertCircle } from 'lucide-svelte';
+	import {
+		GraduationCap,
+		Loader2,
+		ExternalLink,
+		AlertCircle,
+		Calendar,
+		Sparkles
+	} from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { exportToPdf, generateExportFilename } from '../core/pdf-export';
+	import { exportToPdf } from '../core/pdf-export';
 
 	// ==========================================================================
 	// Types
 	// ==========================================================================
 
-	interface Course {
+	interface ClassSchedule {
 		id: string;
-		googleCourseId: string;
-		name: string;
-		section: string | null;
-		courseState: string;
+		day_of_week: number;
+		start_time: string;
+		end_time: string;
+		period_number: number | null;
+		subject: string | null;
+		room: string | null;
 	}
 
-	interface Topic {
+	interface ClassWithCourse {
 		id: string;
-		googleTopicId: string;
 		name: string;
+		join_code: string;
+		google_classroom_course_id: string;
+		schedules: ClassSchedule[];
 	}
 
 	// ==========================================================================
@@ -50,23 +64,16 @@
 	// State
 	// ==========================================================================
 
-	let selectedCourseId = $state<string>('');
-	let selectedTopicId = $state<string>('');
-	let title = $state('');
-	let description = $state('');
-
-	let courses = $state<Course[]>([]);
-	let topics = $state<Topic[]>([]);
-
-	let isLoadingCourses = $state(false);
-	let isLoadingTopics = $state(false);
+	let selectedClassId = $state<string>('');
+	let selectedDate = $state(getTodayString());
+	let classesWithCourse = $state<ClassWithCourse[]>([]);
+	let isLoadingClasses = $state(false);
 	let isExporting = $state(false);
-
-	let coursesError = $state<string | null>(null);
-	let topicsError = $state<string | null>(null);
+	let classesError = $state<string | null>(null);
+	let wasAutoDetected = $state(false);
 
 	let successLink = $state<string | null>(null);
-	let successCourseName = $state<string | null>(null);
+	let successClassName = $state<string | null>(null);
 
 	// ==========================================================================
 	// Derived
@@ -74,26 +81,39 @@
 
 	const document = $derived(whiteboardStore.document);
 
-	const activeCourses = $derived(courses.filter((c) => c.courseState === 'ACTIVE'));
-
-	const courseItems = $derived(
-		activeCourses.map((c) => ({
+	const classItems = $derived(
+		classesWithCourse.map((c) => ({
 			value: c.id,
-			label: c.section ? `${c.name} - ${c.section}` : c.name
+			label: c.name
 		}))
 	);
 
-	const topicItems = $derived([
-		{ value: '', label: 'Aucune rubrique (racine)' },
-		...topics.map((t) => ({
-			value: t.id,
-			label: t.name
-		}))
-	]);
+	const selectedClass = $derived(classesWithCourse.find((c) => c.id === selectedClassId));
 
-	const canExport = $derived(
-		selectedCourseId && title.trim() && !isExporting && !isLoadingCourses && !isLoadingTopics
-	);
+	/**
+	 * Generate title from date in French format
+	 * Example: "12 janvier 2026"
+	 */
+	const generatedTitle = $derived(() => {
+		if (!selectedDate) return '';
+		const date = new Date(selectedDate + 'T12:00:00'); // Add time to avoid timezone issues
+		return date.toLocaleDateString('fr-FR', {
+			day: 'numeric',
+			month: 'long',
+			year: 'numeric'
+		});
+	});
+
+	/**
+	 * Generate filename preview
+	 * Example: "6AWB - 2026-01-12 - XX.pdf"
+	 */
+	const filenamePreview = $derived(() => {
+		if (!selectedClass || !selectedDate) return '';
+		return `${selectedClass.join_code} - ${selectedDate} - XX.pdf`;
+	});
+
+	const canExport = $derived(selectedClassId && selectedDate && !isExporting && !isLoadingClasses);
 
 	// ==========================================================================
 	// Effects
@@ -103,24 +123,12 @@
 		if (open) {
 			// Reset state when dialog opens
 			successLink = null;
-			successCourseName = null;
+			successClassName = null;
+			selectedDate = getTodayString();
+			wasAutoDetected = false;
 
-			// Pre-fill title with document title
-			if (document) {
-				title = document.title || 'Sans titre';
-			}
-
-			// Fetch courses
-			fetchCourses();
-		}
-	});
-
-	$effect(() => {
-		if (selectedCourseId) {
-			// Fetch topics when course changes
-			fetchTopics(selectedCourseId);
-		} else {
-			topics = [];
+			// Fetch classes
+			fetchClasses();
 		}
 	});
 
@@ -128,73 +136,105 @@
 	// Handlers
 	// ==========================================================================
 
-	async function fetchCourses() {
-		isLoadingCourses = true;
-		coursesError = null;
+	async function fetchClasses() {
+		isLoadingClasses = true;
+		classesError = null;
+		selectedClassId = '';
 
 		try {
-			const response = await fetch('/api/google/courses');
+			const response = await fetch('/api/whiteboard/classes-with-course');
 
 			if (!response.ok) {
 				if (response.status === 401) {
-					coursesError = 'Veuillez reconnecter votre compte Google dans les Paramètres.';
+					classesError = 'Veuillez vous connecter.';
 				} else {
-					coursesError = 'Impossible de charger les cours.';
+					classesError = 'Impossible de charger les classes.';
 				}
 				return;
 			}
 
 			const data = await response.json();
-			courses = data.courses || [];
+			classesWithCourse = data.classes || [];
 
-			if (courses.length === 0) {
-				coursesError = 'Aucun cours Google Classroom synchronisé.';
-			}
-		} catch (err) {
-			console.error('[ExportToClassroom] Failed to fetch courses:', err);
-			coursesError = 'Erreur de connexion.';
-		} finally {
-			isLoadingCourses = false;
-		}
-	}
-
-	async function fetchTopics(courseId: string) {
-		isLoadingTopics = true;
-		topicsError = null;
-		topics = [];
-		selectedTopicId = '';
-
-		try {
-			const response = await fetch(`/api/google/courses/${courseId}`);
-
-			if (!response.ok) {
-				topicsError = 'Impossible de charger les rubriques.';
+			if (classesWithCourse.length === 0) {
+				classesError = "Aucune classe n'est associée à un cours Google Classroom.";
 				return;
 			}
 
-			const data = await response.json();
-			topics = data.topics || [];
+			// Try auto-detection
+			const detected = findCurrentSchedule(classesWithCourse);
+			if (detected) {
+				selectedClassId = detected.class.id;
+				wasAutoDetected = true;
+			}
 		} catch (err) {
-			console.error('[ExportToClassroom] Failed to fetch topics:', err);
-			topicsError = 'Erreur de connexion.';
+			console.error('[ExportToClassroom] Failed to fetch classes:', err);
+			classesError = 'Erreur de connexion.';
 		} finally {
-			isLoadingTopics = false;
+			isLoadingClasses = false;
 		}
 	}
 
-	function handleCourseChange(value: string) {
-		selectedCourseId = value;
+	/**
+	 * Find current class based on schedule (adapted from timeMatching.ts)
+	 */
+	function findCurrentSchedule(classes: ClassWithCourse[]): { class: ClassWithCourse } | null {
+		const now = new Date();
+		const day = now.getDay();
+		const hours = now.getHours().toString().padStart(2, '0');
+		const minutes = now.getMinutes().toString().padStart(2, '0');
+		const currentTime = `${hours}:${minutes}:00`;
+
+		// Only school days (Sunday=0 to Thursday=4)
+		if (day < 0 || day > 4) {
+			return null;
+		}
+
+		for (const cls of classes) {
+			if (!cls.schedules || cls.schedules.length === 0) {
+				continue;
+			}
+
+			const matchingSchedule = cls.schedules.find(
+				(schedule) =>
+					schedule.day_of_week === day &&
+					isWithinTimeRange(schedule.start_time, schedule.end_time, currentTime)
+			);
+
+			if (matchingSchedule) {
+				return { class: cls };
+			}
+		}
+
+		return null;
 	}
 
-	function handleTopicChange(value: string) {
-		selectedTopicId = value;
+	/**
+	 * Check if current time is within schedule time range
+	 */
+	function isWithinTimeRange(startTime: string, endTime: string, currentTime: string): boolean {
+		const timeToMinutes = (time: string): number => {
+			const parts = time.split(':');
+			return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+		};
+
+		const current = timeToMinutes(currentTime);
+		const start = timeToMinutes(startTime);
+		const end = timeToMinutes(endTime);
+
+		return current >= start && current < end;
+	}
+
+	function handleClassChange(value: string) {
+		selectedClassId = value;
+		wasAutoDetected = false;
 	}
 
 	// Maximum PDF size in bytes (3MB → ~4MB in base64, under Vercel's 4.5MB limit)
 	const MAX_PDF_SIZE = 3 * 1024 * 1024;
 
 	async function handleExport() {
-		if (!document || !canExport) return;
+		if (!document || !canExport || !selectedClass) return;
 
 		isExporting = true;
 
@@ -226,14 +266,11 @@
 			// Convert blob to base64
 			const pdfBase64 = await blobToBase64(pdfResult.blob);
 
-			// Prepare request body
+			// Prepare request body - simplified API
 			const body = {
 				pdfBase64,
-				filename: generateExportFilename(document, 'pdf'),
-				courseId: selectedCourseId,
-				topicId: selectedTopicId || undefined,
-				title: title.trim(),
-				description: description.trim() || undefined
+				classId: selectedClassId,
+				date: selectedDate
 			};
 
 			// Call export API
@@ -254,7 +291,7 @@
 
 			// Show success state
 			successLink = result.alternateLink;
-			successCourseName = result.courseName;
+			successClassName = selectedClass.name;
 			toaster.success('Document publié sur Google Classroom');
 		} catch (err) {
 			console.error('[ExportToClassroom] Export failed:', err);
@@ -279,6 +316,14 @@
 	// Helpers
 	// ==========================================================================
 
+	function getTodayString(): string {
+		const now = new Date();
+		const year = now.getFullYear();
+		const month = (now.getMonth() + 1).toString().padStart(2, '0');
+		const day = now.getDate().toString().padStart(2, '0');
+		return `${year}-${month}-${day}`;
+	}
+
 	function blobToBase64(blob: Blob): Promise<string> {
 		return new Promise((resolve, reject) => {
 			const reader = new FileReader();
@@ -299,7 +344,9 @@
 				<GraduationCap class="h-5 w-5" />
 				Publier sur Classroom
 			</Dialog.Title>
-			<Dialog.Description>Exportez ce document vers un cours Google Classroom.</Dialog.Description>
+			<Dialog.Description>
+				Publiez ce document dans la rubrique "Notes de cours" d'un cours Google Classroom.
+			</Dialog.Description>
 		</Dialog.Header>
 
 		{#if successLink}
@@ -312,9 +359,9 @@
 					<p class="font-medium text-green-800 dark:text-green-200">
 						Document publié avec succès !
 					</p>
-					{#if successCourseName}
+					{#if successClassName}
 						<p class="mt-1 text-sm text-green-600 dark:text-green-400">
-							Dans : {successCourseName}
+							Classe : {successClassName}
 						</p>
 					{/if}
 				</div>
@@ -331,73 +378,79 @@
 		{:else}
 			<!-- Form State -->
 			<div class="space-y-4 py-4">
-				<!-- Course Selection -->
+				<!-- Class Selection -->
 				<div class="space-y-2">
-					<Label for="course">Cours</Label>
-					{#if isLoadingCourses}
+					<Label for="class">Classe</Label>
+					{#if isLoadingClasses}
 						<div class="flex items-center gap-2 text-sm text-muted-foreground">
 							<Loader2 class="h-4 w-4 animate-spin" />
-							Chargement des cours...
+							Chargement des classes...
 						</div>
-					{:else if coursesError}
-						<div class="flex items-center gap-2 text-sm text-destructive">
-							<AlertCircle class="h-4 w-4" />
-							{coursesError}
+					{:else if classesError}
+						<div class="space-y-2">
+							<div class="flex items-center gap-2 text-sm text-destructive">
+								<AlertCircle class="h-4 w-4" />
+								{classesError}
+							</div>
+							<p class="text-xs text-muted-foreground">
+								Pour utiliser cette fonctionnalité, associez d'abord un cours Google Classroom à vos
+								classes dans
+								<a href="/dashboard/teacher/classes" class="text-primary hover:underline">
+									Mes Classes
+								</a>.
+							</p>
 						</div>
 					{:else}
-						<MySelect
-							type="single"
-							value={selectedCourseId}
-							items={courseItems}
-							onValueChange={handleCourseChange}
-							placeholder="Sélectionnez un cours"
-						/>
+						<div class="space-y-2">
+							<div class="flex items-center gap-2">
+								<div class="flex-1">
+									<MySelect
+										type="single"
+										value={selectedClassId}
+										items={classItems}
+										onValueChange={handleClassChange}
+										placeholder="Sélectionnez une classe"
+									/>
+								</div>
+								{#if wasAutoDetected && selectedClass}
+									<div class="flex items-center gap-1 text-xs text-primary">
+										<Sparkles class="h-3 w-3" />
+										Auto
+									</div>
+								{/if}
+							</div>
+						</div>
 					{/if}
 				</div>
 
-				<!-- Topic Selection -->
-				{#if selectedCourseId}
+				<!-- Date Selection -->
+				{#if !classesError && classesWithCourse.length > 0}
 					<div class="space-y-2">
-						<Label for="topic">Rubrique (optionnel)</Label>
-						{#if isLoadingTopics}
-							<div class="flex items-center gap-2 text-sm text-muted-foreground">
-								<Loader2 class="h-4 w-4 animate-spin" />
-								Chargement des rubriques...
-							</div>
-						{:else if topicsError}
-							<div class="flex items-center gap-2 text-sm text-destructive">
-								<AlertCircle class="h-4 w-4" />
-								{topicsError}
-							</div>
-						{:else}
-							<MySelect
-								type="single"
-								value={selectedTopicId}
-								items={topicItems}
-								onValueChange={handleTopicChange}
-								placeholder="Aucune rubrique"
-							/>
-						{/if}
+						<Label for="date" class="flex items-center gap-2">
+							<Calendar class="h-4 w-4" />
+							Date
+						</Label>
+						<Input id="date" type="date" bind:value={selectedDate} class="w-full" />
 					</div>
+
+					<!-- Preview -->
+					{#if selectedClass && selectedDate}
+						<div class="space-y-2 rounded-lg border border-border bg-muted/30 p-3">
+							<div class="text-sm">
+								<span class="text-muted-foreground">Titre dans Classroom :</span>
+								<span class="ml-2 font-medium">{generatedTitle()}</span>
+							</div>
+							<div class="text-sm">
+								<span class="text-muted-foreground">Nom du fichier :</span>
+								<span class="ml-2 font-mono text-xs">{filenamePreview()}</span>
+							</div>
+							<div class="text-sm">
+								<span class="text-muted-foreground">Rubrique :</span>
+								<span class="ml-2">Notes de cours</span>
+							</div>
+						</div>
+					{/if}
 				{/if}
-
-				<!-- Title -->
-				<div class="space-y-2">
-					<Label for="title">Titre</Label>
-					<Input id="title" bind:value={title} placeholder="Titre du document" maxlength={500} />
-				</div>
-
-				<!-- Description -->
-				<div class="space-y-2">
-					<Label for="description">Description (optionnelle)</Label>
-					<Textarea
-						id="description"
-						bind:value={description}
-						placeholder="Ajouter une description..."
-						rows={3}
-						maxlength={5000}
-					/>
-				</div>
 			</div>
 
 			<Dialog.Footer>

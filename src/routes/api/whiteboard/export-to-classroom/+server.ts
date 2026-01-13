@@ -1,22 +1,23 @@
 /**
- * Export Whiteboard to Google Classroom Endpoint
- * ================================================
+ * Export Whiteboard to Google Classroom Endpoint (V2 - Simplified)
+ * =================================================================
  *
  * Endpoint: POST /api/whiteboard/export-to-classroom
  * Purpose: Export a whiteboard PDF to Google Classroom as a CourseWorkMaterial
  *
- * Flow:
- * 1. Validate inputs
- * 2. Verify teacher role and Google integration
- * 3. Get course details and verify ownership
- * 4. Upload PDF to Google Drive
- * 5. Create CourseWorkMaterial in Google Classroom
- * 6. Return links to the created material
+ * Simplified Flow:
+ * 1. Validate inputs (classId, date, pdfBase64)
+ * 2. Get class and verify ownership + google_classroom_course_id
+ * 3. Find "Notes de cours" topic for the course
+ * 4. Get next export counter from DB (atomic increment)
+ * 5. Generate title (French date) and filename
+ * 6. Upload PDF to Google Drive
+ * 7. Create CourseWorkMaterial in Google Classroom
+ * 8. Return links to the created material
  *
  * Security:
  * - Teacher role required
- * - Course ownership verified
- * - Course must be ACTIVE
+ * - Class ownership verified
  * - PDF content validated (magic bytes)
  * - Google integration with drive.file scope required
  */
@@ -30,31 +31,39 @@ import { GoogleClassroomClient } from '$lib/server/google/classroom-api';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
 
 /**
- * Request body schema
- * - pdfBase64: PDF file encoded as base64 (max ~15MB after encoding)
- * - filename: Name for the file (will be used in Drive)
- * - courseId: Internal course UUID (from google_classroom_courses table)
- * - topicId: Optional topic ID to organize the material
- * - title: Title for the CourseWorkMaterial
- * - description: Optional description
+ * Request body schema - Simplified
+ * - pdfBase64: PDF file encoded as base64 (max ~5MB after encoding)
+ * - classId: Internal class UUID (from classes table)
+ * - date: Export date in YYYY-MM-DD format
  */
 const exportToClassroomRequestSchema = z.object({
 	pdfBase64: z
 		.string()
 		.min(100, 'PDF data appears to be invalid or empty')
-		.max(20_000_000, 'PDF file is too large (max 15MB)'),
-	filename: z
-		.string()
-		.min(1, 'Filename is required')
-		.max(200, 'Filename is too long')
-		.regex(/^[^<>:"/\\|?*]+$/, 'Filename contains invalid characters')
-		.refine((s) => s.trim() === s, 'Filename cannot start or end with spaces')
-		.refine((s) => !s.includes('..'), 'Filename cannot contain path traversal'),
-	courseId: z.string().uuid('Invalid course ID'),
-	topicId: z.string().uuid('Invalid topic ID').optional(),
-	title: z.string().min(1, 'Title is required').max(500, 'Title is too long'),
-	description: z.string().max(5000, 'Description is too long (max 5000 characters)').optional()
+		.max(5_000_000, 'PDF file is too large (max 3MB)'),
+	classId: z.string().uuid('Invalid class ID'),
+	date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
 });
+
+/**
+ * Generate French date title (e.g., "12 janvier 2026")
+ */
+function generateFrenchTitle(dateString: string): string {
+	const date = new Date(dateString + 'T12:00:00'); // Add time to avoid timezone issues
+	return date.toLocaleDateString('fr-FR', {
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric'
+	});
+}
+
+/**
+ * Generate filename (e.g., "6AWB - 2026-01-12 - 01.pdf")
+ */
+function generateFilename(joinCode: string, date: string, counter: number): string {
+	const paddedCounter = counter.toString().padStart(2, '0');
+	return `${joinCode} - ${date} - ${paddedCounter}.pdf`;
+}
 
 /**
  * Export whiteboard PDF to Google Classroom
@@ -77,46 +86,92 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { pdfBase64, filename, courseId, topicId, title, description } = validation.data;
+	const { pdfBase64, classId, date } = validation.data;
 
 	try {
-		// Verify course ownership, state and get Google course ID
-		const { data: course, error: courseError } = await locals.supabase
-			.from('google_classroom_courses')
-			.select('id, google_course_id, name, course_state')
-			.eq('id', courseId)
+		// Step 1: Get class and verify ownership + google_classroom_course_id
+		const { data: classData, error: classError } = await locals.supabase
+			.from('classes')
+			.select(
+				`
+				id,
+				name,
+				join_code,
+				google_classroom_course_id,
+				google_classroom_courses!classes_google_classroom_course_id_fkey (
+					id,
+					google_course_id,
+					name,
+					course_state
+				)
+			`
+			)
+			.eq('id', classId)
 			.eq('teacher_id', user.id)
-			.eq('course_state', 'ACTIVE')
 			.single();
 
-		if (courseError) {
-			if (courseError.code === 'PGRST116') {
-				throw error(404, 'Cours introuvable, archivé ou accès refusé');
+		if (classError) {
+			if (classError.code === 'PGRST116') {
+				throw error(404, 'Classe introuvable ou accès refusé');
 			}
-			console.error('[Export to Classroom] Course lookup error:', courseError);
-			throw error(500, 'Échec de la vérification du cours');
+			console.error('[Export to Classroom] Class lookup error:', classError);
+			throw error(500, 'Échec de la vérification de la classe');
 		}
 
-		// If topicId provided, verify it belongs to this course and get google_topic_id
-		let googleTopicId: string | undefined;
-		if (topicId) {
-			// SECURITY: topicId validated as UUID by Zod schema
-			// Supabase PostgREST uses parameterized queries, preventing SQL injection
-			const { data: topic, error: topicError } = await locals.supabase
-				.from('google_classroom_topics')
-				.select('id, google_topic_id')
-				.eq('id', topicId)
-				.eq('google_course_id', course.id)
-				.single();
-
-			if (topicError || !topic) {
-				throw error(400, "Rubrique invalide ou n'appartient pas à ce cours");
-			}
-
-			googleTopicId = topic.google_topic_id;
+		// Step 2: Verify class has a Google Classroom course associated
+		if (!classData.google_classroom_course_id) {
+			throw error(
+				400,
+				"Cette classe n'est pas associée à un cours Google Classroom. Associez d'abord un cours dans Mes Classes."
+			);
 		}
 
-		// Get access token (with automatic refresh if needed)
+		const course = classData.google_classroom_courses;
+		if (!course || (Array.isArray(course) && course.length === 0)) {
+			throw error(400, 'Le cours Google Classroom associé est introuvable.');
+		}
+
+		// Handle both single object and array (Supabase may return either)
+		const courseData = Array.isArray(course) ? course[0] : course;
+
+		if (courseData.course_state !== 'ACTIVE') {
+			throw error(400, 'Le cours Google Classroom est archivé ou inactif.');
+		}
+
+		// Step 3: Find "Notes de cours" topic
+		const { data: topic, error: topicError } = await locals.supabase
+			.from('google_classroom_topics')
+			.select('id, google_topic_id')
+			.eq('google_course_id', courseData.id)
+			.eq('name', 'Notes de cours')
+			.single();
+
+		if (topicError || !topic) {
+			throw error(
+				400,
+				`Le topic "Notes de cours" n'existe pas dans le cours "${courseData.name}". Créez-le d'abord dans Google Classroom.`
+			);
+		}
+
+		// Step 4: Get next export counter (atomic increment)
+		const { data: counter, error: counterError } = await locals.supabase.rpc(
+			'get_next_export_counter',
+			{
+				p_class_id: classId,
+				p_export_date: date
+			}
+		);
+
+		if (counterError) {
+			console.error('[Export to Classroom] Counter error:', counterError);
+			throw error(500, "Erreur lors de la génération du numéro d'export");
+		}
+
+		// Step 5: Generate title and filename
+		const title = generateFrenchTitle(date);
+		const filename = generateFilename(classData.join_code, date, counter);
+
+		// Step 6: Get access token and initialize clients
 		const accessToken = await getTeacherAccessToken(user.id, locals.supabase);
 		const driveClient = new GoogleDriveClient(accessToken);
 		const classroomClient = new GoogleClassroomClient(accessToken, user.id);
@@ -128,7 +183,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			pdfBase64Content = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
 
 			// Validate by decoding a small portion to check PDF magic bytes
-			// We decode just enough to verify the file starts with %PDF-
 			const testDecode = atob(pdfBase64Content.slice(0, 20));
 			if (!testDecode.startsWith('%PDF-')) {
 				throw error(400, 'Fichier invalide: le contenu ne semble pas être un PDF');
@@ -145,35 +199,31 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Get or create the app folder in Google Drive
 		const folderId = await driveClient.getOrCreateAppFolder();
 
-		// Ensure filename has .pdf extension
-		const finalFilename = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
-
-		// Upload PDF to Google Drive (using base64 to preserve binary data)
+		// Step 7: Upload PDF to Google Drive
 		const driveFile = await driveClient.createFile({
-			name: finalFilename,
+			name: filename,
 			content: pdfBase64Content,
 			mimeType: 'application/pdf',
 			folderId,
-			description: `Exported from UbuMaths Whiteboard: ${title}`,
+			description: `Notes de cours - ${classData.name} - ${title}`,
 			isBase64: true
 		});
 
 		console.log(
-			`[Export to Classroom] Uploaded PDF ${driveFile.id} for teacher ${user.id} to folder ${folderId}`
+			`[Export to Classroom] Uploaded PDF ${driveFile.id} (${filename}) for teacher ${user.id}`
 		);
 
-		// Create CourseWorkMaterial in Google Classroom
-		const material = await classroomClient.createCourseWorkMaterial(course.google_course_id, {
+		// Step 8: Create CourseWorkMaterial in Google Classroom
+		const material = await classroomClient.createCourseWorkMaterial(courseData.google_course_id, {
 			title,
-			description,
-			topicId: googleTopicId,
+			topicId: topic.google_topic_id,
 			state: 'PUBLISHED',
 			materials: [
 				{
 					driveFile: {
 						driveFile: {
 							id: driveFile.id,
-							title: finalFilename
+							title: filename
 						},
 						shareMode: 'VIEW'
 					}
@@ -182,7 +232,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 		console.log(
-			`[Export to Classroom] Created material ${material.id} in course ${course.google_course_id} for teacher ${user.id}`
+			`[Export to Classroom] Created material ${material.id} in course ${courseData.google_course_id} for class ${classData.name}`
 		);
 
 		return json({
@@ -190,7 +240,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			materialId: material.id,
 			alternateLink: material.alternateLink,
 			driveFileId: driveFile.id,
-			courseName: course.name
+			className: classData.name,
+			filename
 		});
 	} catch (err) {
 		// Re-throw SvelteKit errors
