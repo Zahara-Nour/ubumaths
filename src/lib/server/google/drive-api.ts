@@ -77,7 +77,7 @@ export interface DriveFileMetadata {
 export interface CreateFileOptions {
 	/** File name */
 	name: string;
-	/** File content as string */
+	/** File content as string (or base64 if isBase64 is true) */
 	content: string;
 	/** MIME type of the content */
 	mimeType: string;
@@ -85,6 +85,8 @@ export interface CreateFileOptions {
 	folderId: string;
 	/** Optional description */
 	description?: string;
+	/** If true, content is base64 encoded and will use Content-Transfer-Encoding: base64 */
+	isBase64?: boolean;
 }
 
 /**
@@ -740,7 +742,7 @@ export class GoogleDriveClient {
 	 * ```
 	 */
 	async createFile(options: CreateFileOptions): Promise<DriveFileMetadata> {
-		const { name, content, mimeType, folderId, description } = options;
+		const { name, content, mimeType, folderId, description, isBase64 } = options;
 
 		if (!name || !content || !mimeType || !folderId) {
 			throw new Error('name, content, mimeType, and folderId are required');
@@ -758,15 +760,23 @@ export class GoogleDriveClient {
 			metadata.description = description;
 		}
 
+		// Build content part with optional base64 encoding header
+		const contentPart = isBase64
+			? [
+					`--${boundary}`,
+					`Content-Type: ${mimeType}`,
+					'Content-Transfer-Encoding: base64',
+					'',
+					content
+				]
+			: [`--${boundary}`, `Content-Type: ${mimeType}`, '', content];
+
 		const body = [
 			`--${boundary}`,
 			'Content-Type: application/json; charset=UTF-8',
 			'',
 			JSON.stringify(metadata),
-			`--${boundary}`,
-			`Content-Type: ${mimeType}`,
-			'',
-			content,
+			...contentPart,
 			`--${boundary}--`
 		].join('\r\n');
 
