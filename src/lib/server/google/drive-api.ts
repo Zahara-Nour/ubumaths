@@ -43,6 +43,14 @@ const DRIVE_FOLDER_MIME = 'application/vnd.google-apps.folder';
 const WHITEBOARD_FOLDER_NAME = 'UbuMaths Whiteboards';
 
 /**
+ * Escape single quotes for Google Drive API queries
+ * Prevents query failures and injection issues with special characters
+ */
+function escapeQueryValue(value: string): string {
+	return value.replace(/'/g, "\\'");
+}
+
+/**
  * Maximum number of retry attempts for rate limit errors
  */
 const MAX_RETRIES = 3;
@@ -653,7 +661,7 @@ export class GoogleDriveClient {
 		}
 
 		// Build query: find folder by name, not trashed
-		let query = `name='${name}' and mimeType='${DRIVE_FOLDER_MIME}' and trashed=false`;
+		let query = `name='${escapeQueryValue(name)}' and mimeType='${DRIVE_FOLDER_MIME}' and trashed=false`;
 		if (parentId) {
 			query += ` and '${parentId}' in parents`;
 		}
@@ -929,5 +937,80 @@ export class GoogleDriveClient {
 
 		const endpoint = `/files/${fileId}?alt=media`;
 		return this.requestText(endpoint);
+	}
+
+	/**
+	 * List subfolders in a folder
+	 *
+	 * @param folderId - Parent folder ID
+	 * @returns Array of folder metadata
+	 *
+	 * @example
+	 * ```typescript
+	 * const folders = await client.listFolders(parentFolderId);
+	 * folders.forEach(f => console.log(f.name));
+	 * ```
+	 */
+	async listFolders(folderId: string): Promise<DriveFileMetadata[]> {
+		if (!folderId) {
+			throw new Error('folderId is required');
+		}
+
+		const query = `'${folderId}' in parents and mimeType='${DRIVE_FOLDER_MIME}' and trashed=false`;
+		const fields = 'files(id,name,mimeType,modifiedTime,createdTime)';
+		const endpoint = `/files?q=${encodeURIComponent(query)}&fields=${fields}&orderBy=name`;
+
+		const response = await this.request<DriveListResponse>(endpoint);
+		return response.files || [];
+	}
+
+	/**
+	 * Get or create a class folder inside the app folder
+	 *
+	 * @param folderName - Full folder name (e.g., "6AWB - Mathematiques 6A")
+	 * @returns Folder ID
+	 *
+	 * @example
+	 * ```typescript
+	 * const folderId = await client.getOrCreateClassFolder('6AWB - Math 6A');
+	 * ```
+	 */
+	async getOrCreateClassFolder(folderName: string): Promise<string> {
+		if (!folderName) {
+			throw new Error('Folder name is required');
+		}
+
+		// Get app folder first
+		const appFolderId = await this.getOrCreateAppFolder();
+
+		// Try to find existing class folder
+		const existingId = await this.findFolder(folderName, appFolderId);
+		if (existingId) {
+			return existingId;
+		}
+
+		// Create new class folder
+		return this.createFolder(folderName, appFolderId);
+	}
+
+	/**
+	 * Get parent folder ID for a given folder
+	 *
+	 * @param folderId - Folder ID to get parent of
+	 * @returns Parent folder ID or null if root
+	 */
+	async getParentFolderId(folderId: string): Promise<string | null> {
+		if (!folderId) {
+			throw new Error('folderId is required');
+		}
+
+		const endpoint = `/files/${folderId}?fields=parents`;
+		const response = await this.request<{ parents?: string[] }>(endpoint);
+
+		if (response.parents && response.parents.length > 0) {
+			return response.parents[0];
+		}
+
+		return null;
 	}
 }

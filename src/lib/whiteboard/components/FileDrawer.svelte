@@ -4,6 +4,7 @@
 	 *
 	 * Features:
 	 * - Google Drive file gallery with recent documents
+	 * - Class-based folder organization
 	 * - Save/Load to Google Drive
 	 * - Local file operations (new, save, open, export)
 	 * - Export to Google Classroom
@@ -17,6 +18,8 @@
 	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
 	import { generateThumbnail } from '../core/pdf-export';
 	import { Button } from '$lib/components/ui/button';
+	import { Label } from '$lib/components/ui/label';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		ChevronLeft,
@@ -31,11 +34,18 @@
 		Loader2,
 		LogIn,
 		GraduationCap,
-		RefreshCw
+		RefreshCw,
+		Folder,
+		FolderPlus,
+		ArrowLeft,
+		Sparkles
 	} from 'lucide-svelte';
 	import ExportDialog from './ExportDialog.svelte';
 	import ExportToClassroomDialog from './ExportToClassroomDialog.svelte';
 	import SaveAsDialog from './SaveAsDialog.svelte';
+	import CreateFolderDialog from './CreateFolderDialog.svelte';
+	import type { ClassForDrawer, DriveFolder } from '../types/drive';
+	import { findCurrentSchedule } from '$lib/utils/timeMatching';
 
 	// ==========================================================================
 	// State
@@ -54,13 +64,26 @@
 	let exportDialogOpen = $state(false);
 	let exportToClassroomDialogOpen = $state(false);
 	let saveAsDialogOpen = $state(false);
+	let createFolderDialogOpen = $state(false);
 
 	/** Operation states */
 	let isSavingToDrive = $state(false);
 	let loadingFileId = $state<string | null>(null);
+	let isCreatingFolder = $state(false);
 
 	/** File input reference */
 	let ubwInputRef: HTMLInputElement | null = null;
+
+	/** Class selection state */
+	let classes = $state<ClassForDrawer[]>([]);
+	let selectedClassId = $state<string | null>(null);
+	let wasAutoDetected = $state(false);
+
+	/** Folder navigation state */
+	let folders = $state<DriveFolder[]>([]);
+	let currentFolderId = $state<string | null>(null);
+	let parentFolderId = $state<string | null>(null);
+	let currentSubfolderName = $state<string | null>(null);
 
 	// ==========================================================================
 	// Derived State
@@ -70,6 +93,26 @@
 	let syncState = $derived(whiteboardStore.syncState);
 	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
 
+	/** Class items for MySelect */
+	const classItems = $derived([
+		{ value: '', label: 'Toutes les classes' },
+		...classes.map((c) => ({
+			value: c.id,
+			label: c.name
+		}))
+	]);
+
+	/** Selected class object */
+	const selectedClass = $derived(classes.find((c) => c.id === selectedClassId));
+
+	/** Check if we're in a subfolder (inside a class folder) */
+	const isInSubfolder = $derived(currentFolderId !== null && parentFolderId !== null);
+
+	/** Check if we can create subfolders (only in class folders, not in subfolders) */
+	const canCreateSubfolder = $derived(
+		selectedClassId !== null && currentFolderId !== null && !isInSubfolder
+	);
+
 	// ==========================================================================
 	// Lifecycle
 	// ==========================================================================
@@ -78,10 +121,15 @@
 		checkGoogleConnection();
 	});
 
-	// Load files when drawer opens
+	// Load classes and files when drawer opens and connected
 	$effect(() => {
-		if (fileDrawerVisible && googleConnected && driveFiles.length === 0) {
-			loadDriveFiles();
+		if (fileDrawerVisible && googleConnected) {
+			if (classes.length === 0) {
+				loadClasses();
+			}
+			if (driveFiles.length === 0 && !isLoadingFiles) {
+				loadDriveFiles();
+			}
 		}
 	});
 
@@ -111,6 +159,65 @@
 	}
 
 	// ==========================================================================
+	// Classes
+	// ==========================================================================
+
+	async function loadClasses() {
+		try {
+			const response = await fetch('/api/whiteboard/classes-for-drawer');
+			if (!response.ok) {
+				throw new Error('Failed to load classes');
+			}
+			const data = await response.json();
+			classes = data.classes || [];
+
+			// Auto-detect current class based on schedule
+			if (classes.length > 0) {
+				const detected = findCurrentSchedule(classes);
+				if (detected) {
+					selectedClassId = detected.class.id;
+					wasAutoDetected = true;
+					// Load class folder
+					await loadClassFolder(detected.class);
+				}
+			}
+		} catch (e) {
+			console.error('Failed to load classes:', e);
+		}
+	}
+
+	async function loadClassFolder(cls: ClassForDrawer) {
+		isLoadingFiles = true;
+		try {
+			const folderId = await driveSyncService.getOrCreateClassFolder(cls.join_code, cls.name);
+			currentFolderId = folderId;
+			currentSubfolderName = null;
+			await loadDriveFilesFromFolder(folderId);
+		} catch (e) {
+			console.error('Failed to load class folder:', e);
+			toaster.error('Erreur lors du chargement du dossier');
+		} finally {
+			isLoadingFiles = false;
+		}
+	}
+
+	async function handleClassChange(value: string) {
+		selectedClassId = value || null;
+		wasAutoDetected = false;
+		currentSubfolderName = null;
+
+		if (value && selectedClass) {
+			// Load class folder
+			await loadClassFolder(selectedClass);
+		} else {
+			// Load root folder (all classes)
+			currentFolderId = null;
+			parentFolderId = null;
+			await loadDriveFiles();
+		}
+	}
+
+	// ==========================================================================
 	// Drive Files
 	// ==========================================================================
 
@@ -119,7 +226,10 @@
 
 		isLoadingFiles = true;
 		try {
-			driveFiles = await driveSyncService.listFiles();
+			const result = await driveSyncService.listFiles(currentFolderId || undefined);
+			driveFiles = result.files;
+			folders = result.folders;
+			parentFolderId = result.parentFolderId;
 		} catch (e) {
 			console.error('Failed to load drive files:', e);
 			toaster.error('Impossible de charger les fichiers');
@@ -128,8 +238,77 @@
 		}
 	}
 
+	async function loadDriveFilesFromFolder(folderId: string) {
+		try {
+			const result = await driveSyncService.listFiles(folderId);
+			driveFiles = result.files;
+			folders = result.folders;
+			currentFolderId = result.currentFolderId;
+			parentFolderId = result.parentFolderId;
+		} catch (e) {
+			console.error('Failed to load drive files:', e);
+			toaster.error('Impossible de charger les fichiers');
+		}
+	}
+
 	async function handleRefreshFiles() {
 		await loadDriveFiles();
+	}
+
+	// ==========================================================================
+	// Folder Navigation
+	// ==========================================================================
+
+	async function handleOpenFolder(folder: DriveFolder) {
+		isLoadingFiles = true;
+		currentSubfolderName = folder.name;
+		try {
+			await loadDriveFilesFromFolder(folder.id);
+		} finally {
+			isLoadingFiles = false;
+		}
+	}
+
+	async function handleGoBack() {
+		if (!selectedClassId || !selectedClass) {
+			// Go back to root
+			currentFolderId = null;
+			parentFolderId = null;
+			currentSubfolderName = null;
+			await loadDriveFiles();
+		} else {
+			// Go back to class folder
+			isLoadingFiles = true;
+			currentSubfolderName = null;
+			try {
+				const classFolderId = await driveSyncService.getOrCreateClassFolder(
+					selectedClass.join_code,
+					selectedClass.name
+				);
+				await loadDriveFilesFromFolder(classFolderId);
+			} finally {
+				isLoadingFiles = false;
+			}
+		}
+	}
+
+	async function handleCreateFolder(name: string) {
+		if (!currentFolderId) return;
+
+		isCreatingFolder = true;
+		try {
+			const result = await driveSyncService.createFolder(name, currentFolderId);
+			if (result.success) {
+				toaster.success(`Dossier "${name}" créé`);
+				createFolderDialogOpen = false;
+				// Refresh to show new folder
+				await loadDriveFiles();
+			} else {
+				toaster.error(result.error || 'Erreur de création');
+			}
+		} finally {
+			isCreatingFolder = false;
+		}
 	}
 
 	function handleSelectFile(file: DriveFile) {
@@ -190,6 +369,7 @@
 				document: doc,
 				fileName: doc.title || 'Sans titre',
 				fileId: syncState.driveFileId || undefined,
+				folderId: currentFolderId || undefined,
 				thumbnail: thumbnailDataUrl
 			});
 
@@ -232,12 +412,13 @@
 				document: doc,
 				fileName,
 				fileId: undefined, // Force new file
+				folderId: currentFolderId || undefined,
 				thumbnail: thumbnailDataUrl
 			});
 
 			if (result.success) {
 				whiteboardStore.setTitle(fileName.replace(/\.ubw$/, ''));
-				whiteboardStore.connectToDrive(result.fileId, syncState.driveFolderId || undefined);
+				whiteboardStore.connectToDrive(result.fileId, currentFolderId || undefined);
 				whiteboardStore.setSyncSuccess(result.fileId!, result.modifiedTime!);
 				toaster.success('Document créé sur Drive');
 				saveAsDialogOpen = false;
@@ -413,6 +594,45 @@
 				<span class="truncate text-xs">{getSyncStatusLabel(syncState)}</span>
 			</div>
 
+			<!-- Class Selector -->
+			{#if classes.length > 0}
+				<div class="border-b border-border px-3 py-2">
+					<Label class="mb-1 block text-xs text-muted-foreground">Classe</Label>
+					<div class="flex items-center gap-2">
+						<div class="flex-1">
+							<MySelect
+								type="single"
+								value={selectedClassId ?? ''}
+								items={classItems}
+								onValueChange={handleClassChange}
+								placeholder="Toutes les classes"
+							/>
+						</div>
+						{#if wasAutoDetected && selectedClassId}
+							<div class="flex items-center gap-1 text-xs text-primary" title="Auto-détecté">
+								<Sparkles class="h-3 w-3" />
+							</div>
+						{/if}
+					</div>
+				</div>
+			{/if}
+
+			<!-- Subfolder Breadcrumb -->
+			{#if isInSubfolder && currentSubfolderName}
+				<div class="flex items-center gap-1 border-b border-border px-3 py-1.5 text-xs">
+					<button
+						type="button"
+						onclick={handleGoBack}
+						class="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+						title="Retour"
+					>
+						<ArrowLeft class="h-3 w-3" />
+					</button>
+					<Folder class="h-3 w-3 text-muted-foreground" />
+					<span class="truncate">{currentSubfolderName}</span>
+				</div>
+			{/if}
+
 			<!-- Drive Actions -->
 			<div class="flex flex-col gap-1 border-b border-border px-3 py-2">
 				<Button
@@ -442,9 +662,53 @@
 				</Button>
 			</div>
 
+			<!-- Folders Grid -->
+			{#if folders.length > 0 && !isInSubfolder}
+				<div class="border-b border-border px-3 py-2">
+					<span class="mb-2 block text-xs text-muted-foreground">Dossiers</span>
+					<div class="grid grid-cols-2 gap-2">
+						{#each folders as folder (folder.id)}
+							<button
+								type="button"
+								class="flex items-center gap-2 rounded border border-border bg-white p-2 text-left transition-colors hover:border-primary hover:bg-accent"
+								ondblclick={() => handleOpenFolder(folder)}
+								title="Double-clic pour ouvrir"
+							>
+								<Folder class="h-4 w-4 shrink-0 text-muted-foreground" />
+								<span class="truncate text-[10px]">{folder.name}</span>
+							</button>
+						{/each}
+					</div>
+				</div>
+			{/if}
+
+			<!-- Create Folder Button -->
+			{#if canCreateSubfolder}
+				<div class="border-b border-border px-3 py-2">
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						onclick={() => (createFolderDialogOpen = true)}
+						class="h-7 w-full justify-start gap-2 text-xs"
+					>
+						<FolderPlus class="h-3 w-3" />
+						<span>Nouveau dossier</span>
+					</Button>
+				</div>
+			{/if}
+
 			<!-- Gallery Preview -->
 			<div class="px-3 py-2">
-				<span class="mb-2 block text-xs text-muted-foreground">Documents récents</span>
+				<span class="mb-2 block text-xs text-muted-foreground">
+					{#if selectedClassId && !isInSubfolder}
+						Documents de la classe
+					{:else if isInSubfolder}
+						Documents du dossier
+					{:else}
+						Documents récents
+					{/if}
+				</span>
 				{#if isLoadingFiles}
 					<div class="flex items-center justify-center py-4">
 						<Loader2 class="h-5 w-5 animate-spin text-muted-foreground" />
@@ -516,6 +780,11 @@
 								Ouvrir
 							{/if}
 						</Button>
+					{/if}
+					{#if driveFiles.length > 6}
+						<p class="mt-2 text-center text-xs text-muted-foreground">
+							+{driveFiles.length - 6} autres documents
+						</p>
 					{/if}
 				{/if}
 			</div>
@@ -620,6 +889,11 @@
 	saving={isSavingToDrive}
 	onSave={handleSaveAsConfirm}
 	onClose={() => (saveAsDialogOpen = false)}
+/>
+<CreateFolderDialog
+	bind:open={createFolderDialogOpen}
+	isCreating={isCreatingFolder}
+	onFolderCreated={handleCreateFolder}
 />
 
 <style>

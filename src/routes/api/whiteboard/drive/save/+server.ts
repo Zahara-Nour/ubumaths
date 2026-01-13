@@ -47,7 +47,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { document, fileName, fileId, thumbnail } = validation.data;
+	const { document, fileName, fileId, folderId: requestedFolderId, thumbnail } = validation.data;
 
 	// Validate document structure
 	const documentJson = JSON.stringify(document);
@@ -61,8 +61,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const accessToken = await getTeacherAccessToken(user.id, locals.supabase);
 		const driveClient = new GoogleDriveClient(accessToken);
 
-		// Get or create the app folder
-		const folderId = await driveClient.getOrCreateAppFolder();
+		// Use requested folder or fall back to app root folder
+		const folderId = requestedFolderId || (await driveClient.getOrCreateAppFolder());
 
 		// Serialize document for storage
 		const content = serializeDocument(docValidation.document!);

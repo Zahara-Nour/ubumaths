@@ -4,6 +4,7 @@
  *
  * Features:
  * - Save/load documents to/from Drive
+ * - Folder navigation and creation
  * - Auto-sync with debouncing
  * - Error handling with user feedback
  * - Sync state management
@@ -12,6 +13,7 @@
 import { toaster } from '$lib/stores/toaster.svelte';
 import { AUTO_SYNC_DELAY } from '../utils/sync-state';
 import type { WhiteboardDocument } from '../types/document';
+import type { DriveFolder, ListFilesResponse } from '../types/drive';
 
 // ============================================================================
 // Types
@@ -41,6 +43,21 @@ export interface LoadResult {
 	error?: string;
 }
 
+export interface ListFilesResult {
+	files: DriveFile[];
+	folders: DriveFolder[];
+	currentFolderId: string | null;
+	parentFolderId: string | null;
+	appFolderId: string;
+}
+
+export interface CreateFolderResult {
+	success: boolean;
+	folderId?: string;
+	name?: string;
+	error?: string;
+}
+
 // ============================================================================
 // Drive Sync Service
 // ============================================================================
@@ -59,6 +76,8 @@ class DriveSyncService {
 		document: WhiteboardDocument;
 		fileName: string;
 		fileId?: string;
+		/** Optional folder ID to save into (defaults to app root) */
+		folderId?: string;
 		/** Optional thumbnail data URL (WebP/JPEG) to save alongside the document */
 		thumbnail?: string;
 	}): Promise<SyncResult> {
@@ -76,6 +95,7 @@ class DriveSyncService {
 					document: options.document,
 					fileName: options.fileName,
 					fileId: options.fileId,
+					folderId: options.folderId,
 					thumbnail: options.thumbnail
 				})
 			});
@@ -100,20 +120,92 @@ class DriveSyncService {
 	}
 
 	/**
-	 * List whiteboard files from Google Drive
+	 * List whiteboard files and folders from Google Drive
 	 *
-	 * @returns Array of file metadata
+	 * @param folderId - Optional folder ID to list from (defaults to app root)
+	 * @returns Files, folders, and navigation info
 	 */
-	async listFiles(): Promise<DriveFile[]> {
-		const response = await fetch('/api/whiteboard/drive/list');
+	async listFiles(folderId?: string): Promise<ListFilesResult> {
+		const url = folderId
+			? `/api/whiteboard/drive/list?folderId=${folderId}`
+			: '/api/whiteboard/drive/list';
+
+		const response = await fetch(url);
 
 		if (!response.ok) {
 			const error = await response.json().catch(() => ({ message: 'Erreur de chargement' }));
 			throw new Error(error.message || `Erreur ${response.status}`);
 		}
 
-		const data = await response.json();
-		return data.files;
+		const data: ListFilesResponse = await response.json();
+		return {
+			files: data.files,
+			folders: data.folders,
+			currentFolderId: data.currentFolderId,
+			parentFolderId: data.parentFolderId,
+			appFolderId: data.appFolderId
+		};
+	}
+
+	/**
+	 * Create a subfolder in Google Drive
+	 *
+	 * @param name - Folder name
+	 * @param parentFolderId - Parent folder ID
+	 * @returns Create folder result
+	 */
+	async createFolder(name: string, parentFolderId: string): Promise<CreateFolderResult> {
+		try {
+			const response = await fetch('/api/whiteboard/drive/folder', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ name, parentFolderId })
+			});
+
+			if (!response.ok) {
+				const error = await response.json().catch(() => ({ message: 'Erreur de création' }));
+				throw new Error(error.message || `Erreur ${response.status}`);
+			}
+
+			const result = await response.json();
+			return {
+				success: true,
+				folderId: result.folderId,
+				name: result.name
+			};
+		} catch (e) {
+			const errorMsg = e instanceof Error ? e.message : 'Erreur inconnue';
+			return { success: false, error: errorMsg };
+		}
+	}
+
+	/**
+	 * Get or create a class folder
+	 *
+	 * @param joinCode - Class join code
+	 * @param className - Class name
+	 * @returns Folder ID
+	 */
+	async getOrCreateClassFolder(joinCode: string, className: string): Promise<string> {
+		const folderName = `${joinCode} - ${className}`;
+
+		// First, list files at root to get appFolderId
+		const rootList = await this.listFiles();
+		const appFolderId = rootList.appFolderId;
+
+		// Check if class folder already exists
+		const existingFolder = rootList.folders.find((f) => f.name === folderName);
+		if (existingFolder) {
+			return existingFolder.id;
+		}
+
+		// Create the class folder
+		const result = await this.createFolder(folderName, appFolderId);
+		if (!result.success || !result.folderId) {
+			throw new Error(result.error || 'Failed to create class folder');
+		}
+
+		return result.folderId;
 	}
 
 	/**
