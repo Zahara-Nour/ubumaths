@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.2...v0.6.3) (2026-01-13)
+
+### ✨ Features
+
+- **classroom:** add PDF to existing material instead of creating duplicate ([b08bbf1](https://github.com/Zahara-Nour/ubumaths/commit/b08bbf1a6c3a3f49ba22b3f5dfa591e29021479a))
+- **classroom:** simplify whiteboard export workflow ([535ad8e](https://github.com/Zahara-Nour/ubumaths/commit/535ad8ef51264a119f09b6a7aededa72ade34ca4))
+
+### 🐛 Bug Fixes
+
+- **classroom:** include google_classroom_course_id in RPC function ([6bdf36b](https://github.com/Zahara-Nour/ubumaths/commit/6bdf36be2b1312fda3cb037b979e59c585b63946))
+- **classroom:** revert material merge - API limitation ([d891294](https://github.com/Zahara-Nour/ubumaths/commit/d8912941817c9d0c3071e49faab4f3c74a0a2400))
+- **whiteboard:** add client-side PDF size validation for Classroom export ([299a0b2](https://github.com/Zahara-Nour/ubumaths/commit/299a0b2333fe01ed192a1e69f6afd652efc60d85))
+- **whiteboard:** drastically reduce PDF export size ([9d50642](https://github.com/Zahara-Nour/ubumaths/commit/9d506425427f94605ce426cbd2003353ce185546))
+
 ### [0.6.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.1...v0.6.2) (2026-01-13)
 
 ### ✨ Features
