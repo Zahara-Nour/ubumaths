@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.1...v0.6.2) (2026-01-13)
+
+### ✨ Features
+
+- **google:** add write scope for coursework materials ([d91db8e](https://github.com/Zahara-Nour/ubumaths/commit/d91db8e8c89e4ae1ccf743a3cc2a6ec0474f57ad))
+- **google:** implement createCourseWorkMaterial API method ([a7722a6](https://github.com/Zahara-Nour/ubumaths/commit/a7722a652298549a5f16299e9cd10e3792239dd4))
+- **whiteboard:** add export to classroom UI ([69d920e](https://github.com/Zahara-Nour/ubumaths/commit/69d920e46fd71d673d2d7c5823de96f31773a093))
+- **whiteboard:** add export-to-classroom API endpoint ([fc7c217](https://github.com/Zahara-Nour/ubumaths/commit/fc7c21723a8fb4f20208388c396792bfcfd36fb5))
+- **whiteboard:** add Google Drive synchronization ([9752cbf](https://github.com/Zahara-Nour/ubumaths/commit/9752cbf9ea6b5b08ec111774ab49e94e214fc74f))
+- **whiteboard:** add sidebar link for teachers and fullscreen mode ([eb12fdc](https://github.com/Zahara-Nour/ubumaths/commit/eb12fdc036b59d7de0c0217ef85f36dde91671b9))
+
+### 🐛 Bug Fixes
+
+- **whiteboard:** allow zoom beyond 100% viewport size ([cdb8ec2](https://github.com/Zahara-Nour/ubumaths/commit/cdb8ec23e505cfcf06d1e2d6fee97ae862836310))
+- **whiteboard:** correct Google settings navigation path ([aa9e68a](https://github.com/Zahara-Nour/ubumaths/commit/aa9e68a33c166406ff6037a4e4bcd62c3e4be468))
+- **whiteboard:** fetch Google connection status from API ([85982c9](https://github.com/Zahara-Nour/ubumaths/commit/85982c98263b74139572ae095189452528905b9b))
+- **whiteboard:** fix PDF corruption when exporting to Classroom ([526289f](https://github.com/Zahara-Nour/ubumaths/commit/526289f2fde57b4363cafe76af4650e5c60c6b94))
+- **whiteboard:** handle slider value type correctly for grid settings ([c5ab54f](https://github.com/Zahara-Nour/ubumaths/commit/c5ab54f4d97a1270aa509fe0c6868fea4589cd4f))
+- **whiteboard:** increase PDF export resolution for better anti-aliasing ([677d0c7](https://github.com/Zahara-Nour/ubumaths/commit/677d0c796362b41cc49a95eb748c2d21cac8e793))
+- **whiteboard:** load documents from Drive correctly ([a536611](https://github.com/Zahara-Nour/ubumaths/commit/a536611bb3eee75a9b00ecb872646595888b5103))
+- **whiteboard:** remove auto-selection after drawing strokes and shapes ([1687ed0](https://github.com/Zahara-Nour/ubumaths/commit/1687ed020b8854a67934d03bbaccb17f5085a005))
+- **whiteboard:** remove overly strict base64 regex validation ([5f76600](https://github.com/Zahara-Nour/ubumaths/commit/5f76600d8247a7f403ab77458c423d00fe3e32b9))
+- **whiteboard:** use smooth stroke rendering in PDF export ([dc3f45f](https://github.com/Zahara-Nour/ubumaths/commit/dc3f45f6c4fcbfb90f7696df96c5ab09ed9f3936))
+
 ### [0.6.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.0...v0.6.1) (2026-01-12)
 
 ### 📚 Documentation
