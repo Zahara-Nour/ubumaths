@@ -1011,11 +1011,22 @@ export async function exportToPdf(
 	}
 }
 
-/** Resolution multiplier for PDF export (higher = better quality, larger file) */
-const PDF_RESOLUTION_MULTIPLIER = 4;
+/**
+ * Resolution multiplier for PDF export
+ * 2x provides good quality while keeping file sizes reasonable
+ * (4x was causing 80MB+ PDFs due to uncompressed PNG)
+ */
+const PDF_RESOLUTION_MULTIPLIER = 2;
+
+/**
+ * JPEG quality for PDF export (0-1)
+ * 0.85 provides good visual quality with significant compression
+ */
+const PDF_JPEG_QUALITY = 0.85;
 
 /**
  * Add SVG content to PDF page
+ * Uses JPEG compression to reduce file size dramatically
  */
 async function addSvgToPdfPage(
 	pdf: InstanceType<typeof import('jspdf').jsPDF>,
@@ -1035,6 +1046,10 @@ async function addSvgToPdfPage(
 			return;
 		}
 
+		// Fill white background (JPEG doesn't support transparency)
+		ctx.fillStyle = '#ffffff';
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+
 		const img = new Image();
 		const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
 		const url = URL.createObjectURL(svgBlob);
@@ -1044,10 +1059,11 @@ async function addSvgToPdfPage(
 			ctx.drawImage(img, 0, 0);
 			URL.revokeObjectURL(url);
 
-			const dataUrl = canvas.toDataURL('image/png');
+			// Use JPEG with compression instead of PNG (much smaller file size)
+			const dataUrl = canvas.toDataURL('image/jpeg', PDF_JPEG_QUALITY);
 
 			// Add image to PDF
-			pdf.addImage(dataUrl, 'PNG', 0, 0, width, height);
+			pdf.addImage(dataUrl, 'JPEG', 0, 0, width, height);
 
 			// Clear canvas for GC
 			canvas.width = 0;
