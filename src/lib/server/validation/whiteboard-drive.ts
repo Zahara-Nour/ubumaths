@@ -10,7 +10,7 @@ import { z } from 'zod';
 // ============================================================================
 
 /** Google Drive file ID pattern: alphanumeric with dashes and underscores, 10-50 chars */
-const DRIVE_FILE_ID_REGEX = /^[a-zA-Z0-9_-]{10,50}$/;
+export const DRIVE_FILE_ID_REGEX = /^[a-zA-Z0-9_-]{10,50}$/;
 
 // ============================================================================
 // SAVE TO DRIVE SCHEMAS
@@ -37,6 +37,8 @@ export const saveToDriveRequestSchema = z.object({
 		.transform((val) => val.trim()),
 	/** Existing file ID to update (optional - creates new if not provided) */
 	fileId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid Google Drive file ID').optional(),
+	/** Target folder ID (optional - uses app root folder if not provided) */
+	folderId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid folder ID').optional(),
 	/** Optional thumbnail data URL (WebP/JPEG/PNG) */
 	thumbnail: z
 		.string()
@@ -94,3 +96,39 @@ export interface LoadFromDriveResponse {
 	name: string;
 	modifiedTime: string;
 }
+
+// ============================================================================
+// LIST FILES SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for list files query params
+ * GET /api/whiteboard/drive/list?folderId=xxx
+ */
+export const listFilesQuerySchema = z.object({
+	/** Optional folder ID to list files from (defaults to app root) */
+	folderId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid folder ID').optional()
+});
+
+export type ListFilesQuery = z.infer<typeof listFilesQuerySchema>;
+
+// ============================================================================
+// CREATE FOLDER SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for creating a folder
+ * POST /api/whiteboard/drive/folder
+ */
+export const createFolderRequestSchema = z.object({
+	/** Folder name */
+	name: z
+		.string()
+		.min(1, 'Folder name is required')
+		.max(255, 'Folder name cannot exceed 255 characters')
+		.transform((val) => val.trim()),
+	/** Parent folder ID */
+	parentFolderId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid parent folder ID')
+});
+
+export type CreateFolderRequest = z.infer<typeof createFolderRequestSchema>;
