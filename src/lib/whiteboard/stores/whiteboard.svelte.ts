@@ -501,6 +501,17 @@ function createWhiteboardStore() {
 		},
 
 		/**
+		 * Load a pre-validated document object directly
+		 * Used when loading from APIs that already return parsed documents
+		 */
+		loadDocument(doc: WhiteboardDocument): void {
+			document = doc;
+			history = createHistoryManager(document);
+			hasUnsavedChanges = false;
+			selectedIds = new Set();
+		},
+
+		/**
 		 * Load from localStorage autosave if available
 		 */
 		loadFromAutosave(): boolean {
