@@ -167,9 +167,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, "Erreur lors de la génération du numéro d'export");
 		}
 
+		if (counter === null || counter === undefined) {
+			console.error('[Export to Classroom] Counter is null/undefined');
+			throw error(500, "Erreur: compteur d'export invalide");
+		}
+
 		// Step 5: Generate title and filename
 		const title = generateFrenchTitle(date);
 		const filename = generateFilename(classData.join_code, date, counter);
+		console.log(`[Export to Classroom] Generated filename: ${filename} (counter: ${counter})`);
 
 		// Step 6: Get access token and initialize clients
 		const accessToken = await getTeacherAccessToken(user.id, locals.supabase);
@@ -213,27 +219,47 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			`[Export to Classroom] Uploaded PDF ${driveFile.id} (${filename}) for teacher ${user.id}`
 		);
 
-		// Step 8: Create CourseWorkMaterial in Google Classroom
-		const material = await classroomClient.createCourseWorkMaterial(courseData.google_course_id, {
-			title,
-			topicId: topic.google_topic_id,
-			state: 'PUBLISHED',
-			materials: [
-				{
-					driveFile: {
-						driveFile: {
-							id: driveFile.id,
-							title: filename
-						},
-						shareMode: 'VIEW'
-					}
-				}
-			]
-		});
+		// Step 8: Find existing CourseWorkMaterial or create new one
+		const newDriveFileMaterial = {
+			driveFile: {
+				driveFile: {
+					id: driveFile.id,
+					title: filename
+				},
+				shareMode: 'VIEW' as const
+			}
+		};
 
-		console.log(
-			`[Export to Classroom] Created material ${material.id} in course ${courseData.google_course_id} for class ${classData.name}`
+		// Check if a material with the same title already exists in this topic
+		const existingMaterial = await classroomClient.findCourseWorkMaterialByTitle(
+			courseData.google_course_id,
+			topic.google_topic_id,
+			title
 		);
+
+		let material;
+		if (existingMaterial) {
+			// Add the new PDF to the existing material
+			material = await classroomClient.addMaterialsToCourseWorkMaterial(
+				courseData.google_course_id,
+				existingMaterial.id,
+				[newDriveFileMaterial]
+			);
+			console.log(
+				`[Export to Classroom] Added PDF to existing material ${material.id} in course ${courseData.google_course_id}`
+			);
+		} else {
+			// Create a new material
+			material = await classroomClient.createCourseWorkMaterial(courseData.google_course_id, {
+				title,
+				topicId: topic.google_topic_id,
+				state: 'PUBLISHED',
+				materials: [newDriveFileMaterial]
+			});
+			console.log(
+				`[Export to Classroom] Created new material ${material.id} in course ${courseData.google_course_id} for class ${classData.name}`
+			);
+		}
 
 		return json({
 			success: true,
