@@ -11,6 +11,7 @@
 	 * - Color picker + stroke width slider
 	 */
 
+	import { onMount } from 'svelte';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import type { Tool } from '../stores/whiteboard.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -197,6 +198,9 @@
 	let saveAsDialogOpen = $state(false);
 	let isSavingToDrive = $state(false);
 
+	/** Google account connection status (fetched from API) */
+	let googleConnected = $state(false);
+
 	/** Draggable stroke panel state (independent floating panel, not using Popover) */
 	let strokePanelOpen = $state(false);
 	let strokePanelPosition = $state({ x: 100, y: 100 });
@@ -231,7 +235,7 @@
 	let instruments = $derived(whiteboardStore.instruments);
 	let syncState = $derived(whiteboardStore.syncState);
 	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
-	let isGoogleConnected = $derived(syncState.status !== 'disconnected');
+	let isGoogleConnected = $derived(googleConnected);
 
 	/** Current drawing tool icon for the button */
 	let currentDrawingTool = $derived(
@@ -329,6 +333,27 @@
 		const page = whiteboardStore.currentPage;
 		if (!page) return { width: 794, height: 1123 };
 		return { width: page.width, height: page.height };
+	});
+
+	// ==========================================================================
+	// Lifecycle
+	// ==========================================================================
+
+	onMount(async () => {
+		// Fetch Google connection status
+		try {
+			const response = await fetch('/api/google/auth/status');
+			if (response.ok) {
+				const data = await response.json();
+				googleConnected = data.connected === true;
+				// If connected, update sync state to allow auto-sync
+				if (googleConnected && syncState.status === 'disconnected') {
+					whiteboardStore.connectToDrive();
+				}
+			}
+		} catch (e) {
+			console.warn('[WhiteboardToolbar] Failed to fetch Google status:', e);
+		}
 	});
 
 	// ==========================================================================
