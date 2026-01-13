@@ -190,6 +190,9 @@
 		selectedTopicId = value;
 	}
 
+	// Maximum PDF size in bytes (3MB → ~4MB in base64, under Vercel's 4.5MB limit)
+	const MAX_PDF_SIZE = 3 * 1024 * 1024;
+
 	async function handleExport() {
 		if (!document || !canExport) return;
 
@@ -205,6 +208,18 @@
 
 			if (!pdfResult.success || !pdfResult.blob) {
 				toaster.error(pdfResult.error || "Échec de l'export PDF");
+				return;
+			}
+
+			// Check PDF size before upload
+			const pdfSize = pdfResult.blob.size;
+			console.log(`[ExportToClassroom] PDF size: ${(pdfSize / 1024 / 1024).toFixed(2)} MB`);
+
+			if (pdfSize > MAX_PDF_SIZE) {
+				const sizeMB = (pdfSize / 1024 / 1024).toFixed(1);
+				toaster.error(
+					`Le PDF est trop volumineux (${sizeMB} Mo). Maximum: 3 Mo. Essayez de réduire le nombre de pages.`
+				);
 				return;
 			}
 
