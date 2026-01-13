@@ -219,47 +219,29 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			`[Export to Classroom] Uploaded PDF ${driveFile.id} (${filename}) for teacher ${user.id}`
 		);
 
-		// Step 8: Find existing CourseWorkMaterial or create new one
-		const newDriveFileMaterial = {
-			driveFile: {
-				driveFile: {
-					id: driveFile.id,
-					title: filename
-				},
-				shareMode: 'VIEW' as const
-			}
-		};
+		// Step 8: Create CourseWorkMaterial in Google Classroom
+		// Note: Google Classroom API doesn't allow adding materials to existing CourseWorkMaterials,
+		// so each export creates a new entry. To group by date, we use a consistent title.
+		const material = await classroomClient.createCourseWorkMaterial(courseData.google_course_id, {
+			title,
+			topicId: topic.google_topic_id,
+			state: 'PUBLISHED',
+			materials: [
+				{
+					driveFile: {
+						driveFile: {
+							id: driveFile.id,
+							title: filename
+						},
+						shareMode: 'VIEW'
+					}
+				}
+			]
+		});
 
-		// Check if a material with the same title already exists in this topic
-		const existingMaterial = await classroomClient.findCourseWorkMaterialByTitle(
-			courseData.google_course_id,
-			topic.google_topic_id,
-			title
+		console.log(
+			`[Export to Classroom] Created material ${material.id} in course ${courseData.google_course_id} for class ${classData.name}`
 		);
-
-		let material;
-		if (existingMaterial) {
-			// Add the new PDF to the existing material
-			material = await classroomClient.addMaterialsToCourseWorkMaterial(
-				courseData.google_course_id,
-				existingMaterial.id,
-				[newDriveFileMaterial]
-			);
-			console.log(
-				`[Export to Classroom] Added PDF to existing material ${material.id} in course ${courseData.google_course_id}`
-			);
-		} else {
-			// Create a new material
-			material = await classroomClient.createCourseWorkMaterial(courseData.google_course_id, {
-				title,
-				topicId: topic.google_topic_id,
-				state: 'PUBLISHED',
-				materials: [newDriveFileMaterial]
-			});
-			console.log(
-				`[Export to Classroom] Created new material ${material.id} in course ${courseData.google_course_id} for class ${classData.name}`
-			);
-		}
 
 		return json({
 			success: true,
