@@ -121,29 +121,29 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const driveClient = new GoogleDriveClient(accessToken);
 		const classroomClient = new GoogleClassroomClient(accessToken, user.id);
 
-		// Decode and validate base64 PDF
-		let pdfContent: string;
+		// Validate and extract base64 PDF content
+		let pdfBase64Content: string;
 		try {
 			// Remove data URL prefix if present (data:application/pdf;base64,)
-			const base64Data = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
-			// Decode from base64 to binary string
-			pdfContent = atob(base64Data);
+			pdfBase64Content = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
 
-			// Validate PDF magic bytes (%PDF-)
-			if (!pdfContent.startsWith('%PDF-')) {
+			// Validate by decoding a small portion to check PDF magic bytes
+			// We decode just enough to verify the file starts with %PDF-
+			const testDecode = atob(pdfBase64Content.slice(0, 20));
+			if (!testDecode.startsWith('%PDF-')) {
 				throw error(400, 'Fichier invalide: le contenu ne semble pas être un PDF');
 			}
 
-			// Validate PDF has EOF marker
-			if (!pdfContent.includes('%%EOF')) {
-				throw error(400, 'Fichier PDF invalide: marqueur de fin manquant');
+			// Check if base64 appears valid (only valid base64 characters)
+			if (!/^[A-Za-z0-9+/=]+$/.test(pdfBase64Content)) {
+				throw error(400, 'Données PDF invalides: encodage base64 incorrect');
 			}
 		} catch (err) {
 			// Re-throw SvelteKit errors
 			if (err && typeof err === 'object' && 'status' in err) {
 				throw err;
 			}
-			console.error('[Export to Classroom] Base64 decode error:', err);
+			console.error('[Export to Classroom] Base64 validation error:', err);
 			throw error(400, 'Données PDF invalides: encodage base64 incorrect');
 		}
 
@@ -153,13 +153,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Ensure filename has .pdf extension
 		const finalFilename = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
 
-		// Upload PDF to Google Drive
+		// Upload PDF to Google Drive (using base64 to preserve binary data)
 		const driveFile = await driveClient.createFile({
 			name: finalFilename,
-			content: pdfContent,
+			content: pdfBase64Content,
 			mimeType: 'application/pdf',
 			folderId,
-			description: `Exported from UbuMaths Whiteboard: ${title}`
+			description: `Exported from UbuMaths Whiteboard: ${title}`,
+			isBase64: true
 		});
 
 		console.log(
