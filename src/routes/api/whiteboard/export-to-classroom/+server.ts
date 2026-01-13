@@ -133,11 +133,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			if (!testDecode.startsWith('%PDF-')) {
 				throw error(400, 'Fichier invalide: le contenu ne semble pas être un PDF');
 			}
-
-			// Check if base64 appears valid (only valid base64 characters)
-			if (!/^[A-Za-z0-9+/=]+$/.test(pdfBase64Content)) {
-				throw error(400, 'Données PDF invalides: encodage base64 incorrect');
-			}
 		} catch (err) {
 			// Re-throw SvelteKit errors
 			if (err && typeof err === 'object' && 'status' in err) {
