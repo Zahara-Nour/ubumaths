@@ -1011,6 +1011,9 @@ export async function exportToPdf(
 	}
 }
 
+/** Resolution multiplier for PDF export (higher = better quality, larger file) */
+const PDF_RESOLUTION_MULTIPLIER = 4;
+
 /**
  * Add SVG content to PDF page
  */
@@ -1021,9 +1024,10 @@ async function addSvgToPdfPage(
 	height: number
 ): Promise<void> {
 	return new Promise((resolve, reject) => {
+		const scale = PDF_RESOLUTION_MULTIPLIER;
 		const canvas = window.document.createElement('canvas');
-		canvas.width = width * 2; // 2x for quality
-		canvas.height = height * 2;
+		canvas.width = width * scale;
+		canvas.height = height * scale;
 
 		const ctx = canvas.getContext('2d');
 		if (!ctx) {
@@ -1036,7 +1040,7 @@ async function addSvgToPdfPage(
 		const url = URL.createObjectURL(svgBlob);
 
 		img.onload = () => {
-			ctx.scale(2, 2);
+			ctx.scale(scale, scale);
 			ctx.drawImage(img, 0, 0);
 			URL.revokeObjectURL(url);
 
