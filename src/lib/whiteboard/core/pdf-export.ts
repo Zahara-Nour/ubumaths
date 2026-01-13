@@ -8,6 +8,7 @@
  */
 
 import type { WhiteboardDocument, Page } from '../types/document';
+import { smoothStroke, pointsToSvgPath, getToolOptions } from './stroke-smoothing';
 
 // =============================================================================
 // Constants
@@ -501,15 +502,37 @@ function renderElementToSvg(element: Page['elements'][number]): string {
 
 /**
  * Render stroke element to SVG
+ * Uses the same smoothing algorithm as the canvas for consistent rendering
  */
 function renderStrokeToSvg(element: Extract<Page['elements'][number], { type: 'stroke' }>): string {
-	if (element.points.length < 2) return '';
-
-	const pathData = element.points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+	if (element.points.length === 0) return '';
 
 	const opacity = element.toolType === 'highlighter' ? element.opacity : 1;
 
-	return `<path d="${pathData}" stroke="${element.color}" stroke-width="${element.width}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${opacity}"/>`;
+	// For single point, render a small circle
+	if (element.points.length === 1) {
+		const p = element.points[0];
+		const r = element.width / 2;
+		return `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${element.color}" opacity="${opacity}"/>`;
+	}
+
+	// Get smoothing options for this tool type (same as canvas rendering)
+	const smoothingOptions = getToolOptions(element.toolType, element.width, element.color, opacity);
+
+	// Generate smooth outline points using perfect-freehand algorithm
+	const outlinePoints = smoothStroke([...element.points], smoothingOptions);
+
+	if (outlinePoints.length === 0) {
+		// Fallback to simple line if smoothing fails
+		const pathData = element.points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+		return `<path d="${pathData}" stroke="${element.color}" stroke-width="${element.width}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${opacity}"/>`;
+	}
+
+	// Convert outline points to SVG path with quadratic Bezier curves
+	const pathData = pointsToSvgPath(outlinePoints);
+
+	// Render as filled shape (same as canvas)
+	return `<path d="${pathData}" fill="${element.color}" opacity="${opacity}"/>`;
 }
 
 /**
