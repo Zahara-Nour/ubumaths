@@ -869,7 +869,7 @@
 			const result = await driveSyncService.loadFromDrive(fileId);
 
 			if (result.success && result.document) {
-				whiteboardStore.loadFromJson(result.document);
+				whiteboardStore.loadDocument(result.document);
 				whiteboardStore.connectToDrive(fileId);
 				whiteboardStore.setSyncSuccess(fileId, result.modifiedTime!);
 				toaster.success('Document chargé depuis Google Drive');
