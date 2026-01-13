@@ -858,7 +858,7 @@
 
 	function handleConnectGoogle() {
 		filePopoverOpen = false;
-		goto('/settings');
+		goto('/dashboard/teacher/settings/google');
 	}
 </script>
 
