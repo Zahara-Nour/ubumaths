@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.4](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.3...v0.6.4) (2026-01-14)
+
+### ✨ Features
+
+- **exercice:** rename variation labels to gaming theme ([e951a84](https://github.com/Zahara-Nour/ubumaths/commit/e951a84570990de2494d129206d8b4ef4e1575fe))
+- **exercice:** replace variation dropdown with difficulty slider ([c3382c4](https://github.com/Zahara-Nour/ubumaths/commit/c3382c4eb06b3245173f14b7431a25c276004f39))
+- **whiteboard:** add FileDrawer with Drive gallery and WebP thumbnails ([d83e53c](https://github.com/Zahara-Nour/ubumaths/commit/d83e53c6cad0dcec7ea24556352791a7cd79f1fb))
+- **whiteboard:** add loading feedback when opening Drive file ([58e492c](https://github.com/Zahara-Nour/ubumaths/commit/58e492ce589baa7cb23ae6dd9a8e2cdf0ba2019c))
+- **whiteboard:** organize Drive files by class folders in FileDrawer ([f3ad12b](https://github.com/Zahara-Nour/ubumaths/commit/f3ad12b3ee7cf54f6217a75bd51e9bcd98bb8c0b))
+
 ### [0.6.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.2...v0.6.3) (2026-01-13)
 
 ### ✨ Features
