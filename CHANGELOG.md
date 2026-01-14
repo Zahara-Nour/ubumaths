@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.4...v0.6.5) (2026-01-14)
+
+### ✨ Features
+
+- **exercice:** use Lora font and remove font selector ([c399e85](https://github.com/Zahara-Nour/ubumaths/commit/c399e855e9d63b2a2869f51ec2459efcd0262030))
+
 ### [0.6.4](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.3...v0.6.4) (2026-01-14)
 
 ### ✨ Features
