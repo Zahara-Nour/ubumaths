@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.6](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.5...v0.6.6) (2026-01-14)
+
+### ✨ Features
+
+- **exercice:** add AI tutor for authenticated students ([a5e19f4](https://github.com/Zahara-Nour/ubumaths/commit/a5e19f4b5835b8f3be260f24e0abc558ced25373))
+
 ### [0.6.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.4...v0.6.5) (2026-01-14)
 
 ### ✨ Features
