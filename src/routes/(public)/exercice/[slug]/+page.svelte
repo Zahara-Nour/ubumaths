@@ -61,9 +61,9 @@
 	 * French display labels for variation types
 	 */
 	const VARIATION_LABELS: Record<string, string> = {
-		autonomous: 'Autonome',
-		intermediate: 'Intermédiaire',
-		guided: 'Guidée'
+		autonomous: 'Boss',
+		intermediate: 'Scout',
+		guided: 'Rookie'
 	};
 
 	const hasVariations = $derived(isVariationsExercise(data.exercise));
