@@ -145,7 +145,8 @@ const exerciseContextSchema = z.object({
 export const tutorRequestSchema = chatRequestSchema.extend({
 	tutorMode: z.boolean().default(false),
 	exerciseContext: exerciseContextSchema.optional(),
-	conversationId: z.string().uuid('ID conversation invalide').optional(),
+	// Use nullish() to accept both null and undefined (null comes from JSON.stringify when conversationId is null)
+	conversationId: z.string().uuid('ID conversation invalide').nullish(),
 	helpLevel: z
 		.number()
 		.int("Niveau d'aide doit être un entier")

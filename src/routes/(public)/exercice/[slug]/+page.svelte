@@ -8,7 +8,9 @@
 	 * - Copy link button with current state
 	 * - PDF export via Typst
 	 * - Show/hide solution toggle
+	 * - AI Tutor for authenticated students (split layout on desktop, drawer on mobile)
 	 */
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -16,12 +18,18 @@
 	import { Slider } from '$lib/components/ui/slider';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
 	import { isVariationsExercise, getExerciseContentSafe } from '$lib/exercises/types';
+	import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
 	import { formatGradeForDisplay } from '$lib/utils/grades';
 	import type { GradeCode } from '$lib/types/grades';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { generateExerciseTypst } from '$lib/exercises/typst/exercise-typst-generator';
 	import { getTypstService, PRIORITY } from '$lib/typst/service';
 	import type { PageData } from './$types';
+
+	// Tutor components
+	import TutorChat from '$lib/components/tutor/TutorChat.svelte';
+	import TutorFAB from '$lib/components/student/worksheets/TutorFAB.svelte';
+	import TutorDrawer from '$lib/components/student/worksheets/TutorDrawer.svelte';
 
 	// Icons
 	import Check from 'lucide-svelte/icons/check';
@@ -42,6 +50,36 @@
 	let linkCopied = $state(false);
 	let isPdfLoading = $state(false);
 	let showPdfDialog = $state(false);
+
+	// ============================================================================
+	// TUTOR (for authenticated students)
+	// ============================================================================
+
+	// Check if user is authenticated (inherited from root layout)
+	let isAuthenticated = $derived(!!data.user);
+
+	// Mobile tutor drawer state
+	let tutorDrawerOpen = $state(false);
+
+	// Viewport detection to mount only ONE TutorChat instance at a time
+	// This prevents race conditions between desktop and mobile instances
+	let isDesktop = $state(browser ? window.matchMedia('(min-width: 1024px)').matches : true);
+
+	$effect(() => {
+		if (!browser) return;
+
+		const mediaQuery = window.matchMedia('(min-width: 1024px)');
+		const handler = (e: MediaQueryListEvent) => {
+			isDesktop = e.matches;
+			// Close drawer when switching to desktop
+			if (e.matches) {
+				tutorDrawerOpen = false;
+			}
+		};
+
+		mediaQuery.addEventListener('change', handler);
+		return () => mediaQuery.removeEventListener('change', handler);
+	});
 
 	// ============================================================================
 	// VARIATION LOGIC
@@ -118,6 +156,30 @@
 
 	// Map slider position to actual variation index
 	const selectedVariationIndex = $derived(sortedVariations[sliderValue[0]]?.originalIndex ?? 0);
+
+	// ============================================================================
+	// TUTOR CONTEXT
+	// ============================================================================
+
+	/**
+	 * Generate exercise instance to get resolved statement for tutor context.
+	 * The statement already contains the variation-specific content with resolved variables.
+	 */
+	let tutorContext = $derived.by(() => {
+		if (!isAuthenticated) return undefined;
+
+		const result = generateExerciseInstance(data.exercise, {
+			seed: currentSeed,
+			variationIndex: selectedVariationIndex
+		});
+
+		if (!result.success || !result.instance) return undefined;
+
+		return {
+			exerciseId: data.exercise.id,
+			statement: result.instance.statement_md
+		};
+	});
 
 	// ============================================================================
 	// SHAREABLE LINK
@@ -276,156 +338,514 @@
 	<meta name="description" content={metaDescription} />
 </svelte:head>
 
-<div class="container mx-auto max-w-4xl px-4 py-8">
-	<!-- Header -->
-	<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-		<Button variant="ghost" href="/" class="self-start">
-			<ArrowLeft class="h-4 w-4 sm:mr-2" />
-			<span class="sr-only sm:not-sr-only">Retour à l'accueil</span>
-		</Button>
+{#if isAuthenticated}
+	<!-- ========================================================================== -->
+	<!-- AUTHENTICATED USER: Split layout on desktop, FAB+Drawer on mobile          -->
+	<!-- ========================================================================== -->
 
-		<!-- Action buttons -->
-		<div class="flex flex-wrap items-center gap-2">
-			{#if hasVariables}
-				<Button
-					onclick={regenerate}
-					variant="outline"
-					size="sm"
-					title="Générer de nouvelles valeurs"
-				>
-					<RefreshCw class="h-4 w-4 sm:mr-2" />
-					<span class="sr-only sm:not-sr-only">Régénérer</span>
-				</Button>
-			{/if}
-			<Button
-				onclick={() => (showPdfDialog = true)}
-				variant="outline"
-				size="sm"
-				title="Télécharger en PDF"
-				disabled={isPdfLoading}
-			>
-				{#if isPdfLoading}
-					<Loader2 class="h-4 w-4 animate-spin sm:mr-2" />
-					<span class="sr-only sm:not-sr-only">Génération...</span>
-				{:else}
-					<Download class="h-4 w-4 sm:mr-2" />
-					<span class="sr-only sm:not-sr-only">PDF</span>
-				{/if}
-			</Button>
-			<Button onclick={copyLink} variant="outline" size="sm" title="Copier le lien partageable">
-				{#if linkCopied}
-					<Check class="h-4 w-4 text-green-600 sm:mr-2" />
-					<span class="sr-only sm:not-sr-only">Copié !</span>
-				{:else}
-					<Link class="h-4 w-4 sm:mr-2" />
-					<span class="sr-only sm:not-sr-only">Copier</span>
-				{/if}
-			</Button>
-		</div>
-	</div>
+	<!-- DESKTOP LAYOUT: Split 60/40 -->
+	<div class="hidden h-full lg:flex">
+		<!-- Exercise Panel (60%) -->
+		<div class="w-[60%] overflow-y-auto border-r border-border">
+			<div class="mx-auto max-w-3xl px-6 py-8">
+				<!-- Header -->
+				<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+					<Button variant="ghost" href="/" class="self-start">
+						<ArrowLeft class="h-4 w-4 sm:mr-2" />
+						<span class="sr-only sm:not-sr-only">Retour à l'accueil</span>
+					</Button>
 
-	<!-- Exercise Card -->
-	<Card.Root>
-		<Card.Header>
-			<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-				<div class="flex-1">
-					<Card.Title class="text-2xl">{data.exercise.title || 'Exercice'}</Card.Title>
-
-					<!-- Exercise metadata -->
-					<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
-						{#if data.exercise.grades && data.exercise.grades.length > 0}
-							<span
-								>Niveaux : {data.exercise.grades
-									.map((g) => formatGradeForDisplay(g as GradeCode))
-									.join(', ')}</span
+					<!-- Action buttons -->
+					<div class="flex flex-wrap items-center gap-2">
+						{#if hasVariables}
+							<Button
+								onclick={regenerate}
+								variant="outline"
+								size="sm"
+								title="Générer de nouvelles valeurs"
 							>
+								<RefreshCw class="h-4 w-4 sm:mr-2" />
+								<span class="sr-only sm:not-sr-only">Régénérer</span>
+							</Button>
 						{/if}
+						<Button
+							onclick={() => (showPdfDialog = true)}
+							variant="outline"
+							size="sm"
+							title="Télécharger en PDF"
+							disabled={isPdfLoading}
+						>
+							{#if isPdfLoading}
+								<Loader2 class="h-4 w-4 animate-spin sm:mr-2" />
+								<span class="sr-only sm:not-sr-only">Génération...</span>
+							{:else}
+								<Download class="h-4 w-4 sm:mr-2" />
+								<span class="sr-only sm:not-sr-only">PDF</span>
+							{/if}
+						</Button>
+						<Button
+							onclick={copyLink}
+							variant="outline"
+							size="sm"
+							title="Copier le lien partageable"
+						>
+							{#if linkCopied}
+								<Check class="h-4 w-4 text-green-600 sm:mr-2" />
+								<span class="sr-only sm:not-sr-only">Copié !</span>
+							{:else}
+								<Link class="h-4 w-4 sm:mr-2" />
+								<span class="sr-only sm:not-sr-only">Copier</span>
+							{/if}
+						</Button>
 					</div>
 				</div>
 
-				<!-- Variation slider -->
-				{#if hasVariations && sortedVariations.length > 1}
-					<div class="w-full sm:w-72">
-						<div class="relative">
-							<Slider
-								bind:value={sliderValue}
-								min={0}
-								max={sortedVariations.length - 1}
-								step={1}
-								class="w-full"
-							/>
-							<!-- Tick marks -->
-							<div
-								class="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-between px-[6px]"
-							>
-								{#each sortedVariations as _, i (i)}
+				<!-- Exercise Card -->
+				<Card.Root>
+					<Card.Header>
+						<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+							<div class="flex-1">
+								<Card.Title class="text-2xl">{data.exercise.title || 'Exercice'}</Card.Title>
+
+								<!-- Exercise metadata -->
+								<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
+									{#if data.exercise.grades && data.exercise.grades.length > 0}
+										<span
+											>Niveaux : {data.exercise.grades
+												.map((g) => formatGradeForDisplay(g as GradeCode))
+												.join(', ')}</span
+										>
+									{/if}
+								</div>
+							</div>
+
+							<!-- Variation slider -->
+							{#if hasVariations && sortedVariations.length > 1}
+								<div class="w-full sm:w-72">
+									<div class="relative">
+										<Slider
+											bind:value={sliderValue}
+											min={0}
+											max={sortedVariations.length - 1}
+											step={1}
+											class="w-full"
+										/>
+										<!-- Tick marks -->
+										<div
+											class="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-between px-[6px]"
+										>
+											{#each sortedVariations as _, i (i)}
+												<div
+													class="h-2 w-0.5 rounded-full {sliderValue[0] === i
+														? 'bg-primary'
+														: 'bg-muted-foreground/30'}"
+												></div>
+											{/each}
+										</div>
+									</div>
+									<!-- Labels for each level -->
+									<div class="mt-2 flex justify-between">
+										{#each sortedVariations as variation, i (i)}
+											<button
+												type="button"
+												onclick={() => (sliderValue = [i])}
+												class="text-xs transition-colors {sliderValue[0] === i
+													? 'font-semibold text-primary'
+													: 'text-muted-foreground hover:text-foreground'}"
+											>
+												{variation.displayLabel}
+											</button>
+										{/each}
+									</div>
+								</div>
+							{/if}
+						</div>
+					</Card.Header>
+
+					<Card.Content>
+						<!-- Exercise content with variation and seed control -->
+						<ExerciseDisplay
+							exercise={data.exercise}
+							mode="instance"
+							bind:showSolution
+							variationIndex={selectedVariationIndex}
+							seed={currentSeed}
+						/>
+					</Card.Content>
+				</Card.Root>
+
+				<!-- Share info footer -->
+				<div class="mt-6 text-center">
+					<p class="text-sm text-muted-foreground">
+						{#if data.hasToken}
+							<span class="inline-flex items-center gap-1">
+								<span
+									class="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+								>
+									Accès via lien partagé
+								</span>
+							</span>
+						{:else if data.exercise.is_public}
+							<span class="inline-flex items-center gap-1">
+								<span
+									class="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-200"
+								>
+									Exercice public
+								</span>
+							</span>
+						{/if}
+					</p>
+					{#if isParameterized}
+						<p class="mt-2 text-xs text-muted-foreground/70">
+							Seed: {currentSeed}
+						</p>
+					{/if}
+				</div>
+			</div>
+		</div>
+
+		<!-- Tutor Panel (40%) - Only mount TutorChat on desktop to avoid dual instances -->
+		<div class="flex w-[40%] flex-col overflow-hidden bg-muted/30">
+			{#if isDesktop && tutorContext}
+				<!-- Key forces remount when exercise/variation/seed changes -->
+				{#key `${tutorContext.exerciseId}-${selectedVariationIndex}-${currentSeed}`}
+					<TutorChat exerciseContext={tutorContext} />
+				{/key}
+			{:else if isDesktop}
+				<div class="flex h-full items-center justify-center text-muted-foreground">
+					<p>Chargement du tuteur...</p>
+				</div>
+			{/if}
+		</div>
+	</div>
+
+	<!-- MOBILE LAYOUT: Full exercise + FAB + Drawer -->
+	<div class="lg:hidden">
+		<div class="container mx-auto max-w-4xl px-4 py-8">
+			<!-- Header -->
+			<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+				<Button variant="ghost" href="/" class="self-start">
+					<ArrowLeft class="h-4 w-4 sm:mr-2" />
+					<span class="sr-only sm:not-sr-only">Retour à l'accueil</span>
+				</Button>
+
+				<!-- Action buttons -->
+				<div class="flex flex-wrap items-center gap-2">
+					{#if hasVariables}
+						<Button
+							onclick={regenerate}
+							variant="outline"
+							size="sm"
+							title="Générer de nouvelles valeurs"
+						>
+							<RefreshCw class="h-4 w-4 sm:mr-2" />
+							<span class="sr-only sm:not-sr-only">Régénérer</span>
+						</Button>
+					{/if}
+					<Button
+						onclick={() => (showPdfDialog = true)}
+						variant="outline"
+						size="sm"
+						title="Télécharger en PDF"
+						disabled={isPdfLoading}
+					>
+						{#if isPdfLoading}
+							<Loader2 class="h-4 w-4 animate-spin sm:mr-2" />
+							<span class="sr-only sm:not-sr-only">Génération...</span>
+						{:else}
+							<Download class="h-4 w-4 sm:mr-2" />
+							<span class="sr-only sm:not-sr-only">PDF</span>
+						{/if}
+					</Button>
+					<Button onclick={copyLink} variant="outline" size="sm" title="Copier le lien partageable">
+						{#if linkCopied}
+							<Check class="h-4 w-4 text-green-600 sm:mr-2" />
+							<span class="sr-only sm:not-sr-only">Copié !</span>
+						{:else}
+							<Link class="h-4 w-4 sm:mr-2" />
+							<span class="sr-only sm:not-sr-only">Copier</span>
+						{/if}
+					</Button>
+				</div>
+			</div>
+
+			<!-- Exercise Card -->
+			<Card.Root>
+				<Card.Header>
+					<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+						<div class="flex-1">
+							<Card.Title class="text-2xl">{data.exercise.title || 'Exercice'}</Card.Title>
+
+							<!-- Exercise metadata -->
+							<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
+								{#if data.exercise.grades && data.exercise.grades.length > 0}
+									<span
+										>Niveaux : {data.exercise.grades
+											.map((g) => formatGradeForDisplay(g as GradeCode))
+											.join(', ')}</span
+									>
+								{/if}
+							</div>
+						</div>
+
+						<!-- Variation slider -->
+						{#if hasVariations && sortedVariations.length > 1}
+							<div class="w-full sm:w-72">
+								<div class="relative">
+									<Slider
+										bind:value={sliderValue}
+										min={0}
+										max={sortedVariations.length - 1}
+										step={1}
+										class="w-full"
+									/>
+									<!-- Tick marks -->
 									<div
-										class="h-2 w-0.5 rounded-full {sliderValue[0] === i
-											? 'bg-primary'
-											: 'bg-muted-foreground/30'}"
-									></div>
+										class="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-between px-[6px]"
+									>
+										{#each sortedVariations as _, i (i)}
+											<div
+												class="h-2 w-0.5 rounded-full {sliderValue[0] === i
+													? 'bg-primary'
+													: 'bg-muted-foreground/30'}"
+											></div>
+										{/each}
+									</div>
+								</div>
+								<!-- Labels for each level -->
+								<div class="mt-2 flex justify-between">
+									{#each sortedVariations as variation, i (i)}
+										<button
+											type="button"
+											onclick={() => (sliderValue = [i])}
+											class="text-xs transition-colors {sliderValue[0] === i
+												? 'font-semibold text-primary'
+												: 'text-muted-foreground hover:text-foreground'}"
+										>
+											{variation.displayLabel}
+										</button>
+									{/each}
+								</div>
+							</div>
+						{/if}
+					</div>
+				</Card.Header>
+
+				<Card.Content>
+					<!-- Exercise content with variation and seed control -->
+					<ExerciseDisplay
+						exercise={data.exercise}
+						mode="instance"
+						bind:showSolution
+						variationIndex={selectedVariationIndex}
+						seed={currentSeed}
+					/>
+				</Card.Content>
+			</Card.Root>
+
+			<!-- Share info footer -->
+			<div class="mt-6 text-center">
+				<p class="text-sm text-muted-foreground">
+					{#if data.hasToken}
+						<span class="inline-flex items-center gap-1">
+							<span
+								class="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+							>
+								Accès via lien partagé
+							</span>
+						</span>
+					{:else if data.exercise.is_public}
+						<span class="inline-flex items-center gap-1">
+							<span
+								class="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-200"
+							>
+								Exercice public
+							</span>
+						</span>
+					{/if}
+				</p>
+				{#if isParameterized}
+					<p class="mt-2 text-xs text-muted-foreground/70">
+						Seed: {currentSeed}
+					</p>
+				{/if}
+			</div>
+		</div>
+
+		<!-- Tutor FAB - Only show on mobile -->
+		{#if !isDesktop}
+			<TutorFAB onclick={() => (tutorDrawerOpen = true)} />
+
+			<!-- Tutor Drawer - Only mount TutorChat on mobile to avoid dual instances -->
+			<TutorDrawer open={tutorDrawerOpen} onClose={() => (tutorDrawerOpen = false)}>
+				{#if tutorContext}
+					<!-- Key forces remount when exercise/variation/seed changes -->
+					{#key `${tutorContext.exerciseId}-${selectedVariationIndex}-${currentSeed}`}
+						<TutorChat exerciseContext={tutorContext} />
+					{/key}
+				{:else}
+					<div class="flex h-full items-center justify-center text-muted-foreground">
+						<p>Chargement du tuteur...</p>
+					</div>
+				{/if}
+			</TutorDrawer>
+		{/if}
+	</div>
+{:else}
+	<!-- ========================================================================== -->
+	<!-- NON-AUTHENTICATED USER: Standard layout without tutor                      -->
+	<!-- ========================================================================== -->
+	<div class="container mx-auto max-w-4xl px-4 py-8">
+		<!-- Header -->
+		<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+			<Button variant="ghost" href="/" class="self-start">
+				<ArrowLeft class="h-4 w-4 sm:mr-2" />
+				<span class="sr-only sm:not-sr-only">Retour à l'accueil</span>
+			</Button>
+
+			<!-- Action buttons -->
+			<div class="flex flex-wrap items-center gap-2">
+				{#if hasVariables}
+					<Button
+						onclick={regenerate}
+						variant="outline"
+						size="sm"
+						title="Générer de nouvelles valeurs"
+					>
+						<RefreshCw class="h-4 w-4 sm:mr-2" />
+						<span class="sr-only sm:not-sr-only">Régénérer</span>
+					</Button>
+				{/if}
+				<Button
+					onclick={() => (showPdfDialog = true)}
+					variant="outline"
+					size="sm"
+					title="Télécharger en PDF"
+					disabled={isPdfLoading}
+				>
+					{#if isPdfLoading}
+						<Loader2 class="h-4 w-4 animate-spin sm:mr-2" />
+						<span class="sr-only sm:not-sr-only">Génération...</span>
+					{:else}
+						<Download class="h-4 w-4 sm:mr-2" />
+						<span class="sr-only sm:not-sr-only">PDF</span>
+					{/if}
+				</Button>
+				<Button onclick={copyLink} variant="outline" size="sm" title="Copier le lien partageable">
+					{#if linkCopied}
+						<Check class="h-4 w-4 text-green-600 sm:mr-2" />
+						<span class="sr-only sm:not-sr-only">Copié !</span>
+					{:else}
+						<Link class="h-4 w-4 sm:mr-2" />
+						<span class="sr-only sm:not-sr-only">Copier</span>
+					{/if}
+				</Button>
+			</div>
+		</div>
+
+		<!-- Exercise Card -->
+		<Card.Root>
+			<Card.Header>
+				<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+					<div class="flex-1">
+						<Card.Title class="text-2xl">{data.exercise.title || 'Exercice'}</Card.Title>
+
+						<!-- Exercise metadata -->
+						<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
+							{#if data.exercise.grades && data.exercise.grades.length > 0}
+								<span
+									>Niveaux : {data.exercise.grades
+										.map((g) => formatGradeForDisplay(g as GradeCode))
+										.join(', ')}</span
+								>
+							{/if}
+						</div>
+					</div>
+
+					<!-- Variation slider -->
+					{#if hasVariations && sortedVariations.length > 1}
+						<div class="w-full sm:w-72">
+							<div class="relative">
+								<Slider
+									bind:value={sliderValue}
+									min={0}
+									max={sortedVariations.length - 1}
+									step={1}
+									class="w-full"
+								/>
+								<!-- Tick marks -->
+								<div
+									class="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-between px-[6px]"
+								>
+									{#each sortedVariations as _, i (i)}
+										<div
+											class="h-2 w-0.5 rounded-full {sliderValue[0] === i
+												? 'bg-primary'
+												: 'bg-muted-foreground/30'}"
+										></div>
+									{/each}
+								</div>
+							</div>
+							<!-- Labels for each level -->
+							<div class="mt-2 flex justify-between">
+								{#each sortedVariations as variation, i (i)}
+									<button
+										type="button"
+										onclick={() => (sliderValue = [i])}
+										class="text-xs transition-colors {sliderValue[0] === i
+											? 'font-semibold text-primary'
+											: 'text-muted-foreground hover:text-foreground'}"
+									>
+										{variation.displayLabel}
+									</button>
 								{/each}
 							</div>
 						</div>
-						<!-- Labels for each level -->
-						<div class="mt-2 flex justify-between">
-							{#each sortedVariations as variation, i (i)}
-								<button
-									type="button"
-									onclick={() => (sliderValue = [i])}
-									class="text-xs transition-colors {sliderValue[0] === i
-										? 'font-semibold text-primary'
-										: 'text-muted-foreground hover:text-foreground'}"
-								>
-									{variation.displayLabel}
-								</button>
-							{/each}
-						</div>
-					</div>
+					{/if}
+				</div>
+			</Card.Header>
+
+			<Card.Content>
+				<!-- Exercise content with variation and seed control -->
+				<ExerciseDisplay
+					exercise={data.exercise}
+					mode="instance"
+					bind:showSolution
+					variationIndex={selectedVariationIndex}
+					seed={currentSeed}
+				/>
+			</Card.Content>
+		</Card.Root>
+
+		<!-- Share info footer -->
+		<div class="mt-6 text-center">
+			<p class="text-sm text-muted-foreground">
+				{#if data.hasToken}
+					<span class="inline-flex items-center gap-1">
+						<span
+							class="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+						>
+							Accès via lien partagé
+						</span>
+					</span>
+				{:else if data.exercise.is_public}
+					<span class="inline-flex items-center gap-1">
+						<span
+							class="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-200"
+						>
+							Exercice public
+						</span>
+					</span>
 				{/if}
-			</div>
-		</Card.Header>
-
-		<Card.Content>
-			<!-- Exercise content with variation and seed control -->
-			<ExerciseDisplay
-				exercise={data.exercise}
-				mode="instance"
-				bind:showSolution
-				variationIndex={selectedVariationIndex}
-				seed={currentSeed}
-			/>
-		</Card.Content>
-	</Card.Root>
-
-	<!-- Share info footer -->
-	<div class="mt-6 text-center">
-		<p class="text-sm text-muted-foreground">
-			{#if data.hasToken}
-				<span class="inline-flex items-center gap-1">
-					<span
-						class="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-700 dark:bg-blue-900 dark:text-blue-200"
-					>
-						Accès via lien partagé
-					</span>
-				</span>
-			{:else if data.exercise.is_public}
-				<span class="inline-flex items-center gap-1">
-					<span
-						class="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-200"
-					>
-						Exercice public
-					</span>
-				</span>
-			{/if}
-		</p>
-		{#if isParameterized}
-			<p class="mt-2 text-xs text-muted-foreground/70">
-				Seed: {currentSeed}
 			</p>
-		{/if}
+			{#if isParameterized}
+				<p class="mt-2 text-xs text-muted-foreground/70">
+					Seed: {currentSeed}
+				</p>
+			{/if}
+		</div>
 	</div>
-</div>
+{/if}
 
 <!-- PDF Download Dialog -->
 <Dialog.Root bind:open={showPdfDialog}>
