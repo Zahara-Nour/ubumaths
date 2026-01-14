@@ -13,10 +13,11 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import { Slider } from '$lib/components/ui/slider';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
-	import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
 	import { isVariationsExercise, getExerciseContentSafe } from '$lib/exercises/types';
+	import { formatGradeForDisplay } from '$lib/utils/grades';
+	import type { GradeCode } from '$lib/types/grades';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { generateExerciseTypst } from '$lib/exercises/typst/exercise-typst-generator';
 	import { getTypstService, PRIORITY } from '$lib/typst/service';
@@ -37,7 +38,6 @@
 	// ============================================================================
 
 	let showSolution = $state(false);
-	let selectedVariationIndex = $state(getDefaultVariationIndex());
 	let currentSeed = $state(data.initialSeed ?? Math.floor(Math.random() * 1000000));
 	let linkCopied = $state(false);
 	let isPdfLoading = $state(false);
@@ -47,8 +47,26 @@
 	// VARIATION LOGIC
 	// ============================================================================
 
+	/**
+	 * Difficulty order: hardest first (autonomous > intermediate > guided)
+	 * Unknown labels are placed at the end
+	 */
+	const DIFFICULTY_ORDER: Record<string, number> = {
+		autonomous: 0,
+		intermediate: 1,
+		guided: 2
+	};
+
+	/**
+	 * French display labels for variation types
+	 */
+	const VARIATION_LABELS: Record<string, string> = {
+		autonomous: 'Autonome',
+		intermediate: 'Intermédiaire',
+		guided: 'Guidée'
+	};
+
 	const hasVariations = $derived(isVariationsExercise(data.exercise));
-	const variationOptions = $derived(getVariationOptions());
 	const hasVariables = $derived(data.exercise.variables && data.exercise.variables.length > 0);
 	// isParameterized is true if there are variables OR variations (affects link sharing)
 	const isParameterized = $derived(hasVariables || hasVariations);
@@ -59,52 +77,47 @@
 	);
 
 	/**
-	 * Get default variation index based on priority order
-	 * Priority: URL param > autonomous > intermediate > guided > index 0
+	 * Sort variations by difficulty (hardest first)
 	 */
-	function getDefaultVariationIndex(): number {
+	function getSortedVariations() {
+		if (!data.exercise.variations?.length) return [];
+
+		return data.exercise.variations
+			.map((v, originalIndex) => ({
+				label: v.label,
+				displayLabel: VARIATION_LABELS[v.label] || v.label,
+				originalIndex,
+				difficulty: DIFFICULTY_ORDER[v.label] ?? 999
+			}))
+			.sort((a, b) => a.difficulty - b.difficulty);
+	}
+
+	/**
+	 * Get default slider position based on URL param or default to hardest (0)
+	 */
+	function getDefaultSliderPosition(): number {
 		if (!data.exercise.variations?.length) return 0;
 
-		// Priority order for automatic selection
-		const priorityOrder = ['autonomous', 'intermediate', 'guided'];
+		const sorted = getSortedVariations();
 
-		// If URL param provided, use it
+		// If URL param provided, find its position in sorted list
 		if (data.initialVariation) {
-			const idx = data.exercise.variations.findIndex((v) => v.label === data.initialVariation);
-			if (idx !== -1) return idx;
+			const pos = sorted.findIndex((v) => v.label === data.initialVariation);
+			if (pos !== -1) return pos;
 		}
 
-		// Find highest priority available
-		for (const label of priorityOrder) {
-			const idx = data.exercise.variations.findIndex((v) => v.label === label);
-			if (idx !== -1) return idx;
-		}
-
+		// Default to hardest (first position = 0)
 		return 0;
 	}
 
-	/**
-	 * Build variation options for select component
-	 */
-	function getVariationOptions(): { value: string; label: string }[] {
-		if (!hasVariations || !data.exercise.variations) return [];
-		return data.exercise.variations.map((v, i) => ({
-			value: i.toString(),
-			label: getVariationDisplayLabel(v.label)
-		}));
-	}
+	// Sorted variations with original indices (hardest first)
+	const sortedVariations = $derived(getSortedVariations());
 
-	/**
-	 * Convert variation label to French display text
-	 */
-	function getVariationDisplayLabel(label: string): string {
-		const labels: Record<string, string> = {
-			autonomous: 'Version Autonome',
-			intermediate: 'Version Intermédiaire',
-			guided: 'Version Guidée'
-		};
-		return labels[label] || label;
-	}
+	// Slider position (0 = hardest, max = easiest)
+	let sliderValue = $state<number[]>([getDefaultSliderPosition()]);
+
+	// Map slider position to actual variation index
+	const selectedVariationIndex = $derived(sortedVariations[sliderValue[0]]?.originalIndex ?? 0);
 
 	// ============================================================================
 	// SHAREABLE LINK
@@ -115,6 +128,7 @@
 	 */
 	function getShareableLink(): string {
 		const base = page.url.origin + page.url.pathname;
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- non-reactive context
 		const params = new URLSearchParams();
 
 		// Add variation param if exercise has variations
@@ -165,17 +179,17 @@
 	}
 
 	/**
-	 * Handle variation change
+	 * Update URL when slider position changes
 	 */
-	function handleVariationChange(value: string) {
-		selectedVariationIndex = parseInt(value, 10);
-		// Update URL
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+		const variation = sortedVariations[sliderValue[0]];
+		if (!variation) return;
+
 		const url = new URL(window.location.href);
-		if (data.exercise.variations?.[selectedVariationIndex]) {
-			url.searchParams.set('variation', data.exercise.variations[selectedVariationIndex].label);
-		}
+		url.searchParams.set('variation', variation.label);
 		history.replaceState({}, '', url.toString());
-	}
+	});
 
 	// ============================================================================
 	// PDF DOWNLOAD
@@ -255,38 +269,6 @@
 			isPdfLoading = false;
 		}
 	}
-
-	// ============================================================================
-	// DERIVED EXERCISE DATA
-	// ============================================================================
-
-	/**
-	 * Build effective exercise for display
-	 * Handles variation selection and variable resolution
-	 */
-	const effectiveExercise = $derived.by(() => {
-		if (!hasVariations || !data.exercise.variations) {
-			return data.exercise;
-		}
-
-		// Generate instance with selected variation and seed
-		const result = generateExerciseInstance(data.exercise, {
-			seed: currentSeed,
-			variationIndex: selectedVariationIndex
-		});
-
-		if (result.success && result.instance) {
-			// Return a modified exercise with resolved content
-			return {
-				...data.exercise,
-				statement_md: result.instance.statement_md,
-				solution_md: result.instance.solution_md
-			};
-		}
-
-		// Fallback to base exercise if generation fails
-		return data.exercise;
-	});
 </script>
 
 <svelte:head>
@@ -349,66 +331,70 @@
 				<div class="flex-1">
 					<Card.Title class="text-2xl">{data.exercise.title || 'Exercice'}</Card.Title>
 
-					{#if data.exercise.topic}
-						<p class="mt-1 text-sm text-muted-foreground">{data.exercise.topic}</p>
-					{/if}
-
-					{#if data.exercise.tags && data.exercise.tags.length > 0}
-						<div class="mt-2 flex flex-wrap gap-1">
-							{#each data.exercise.tags as tag, idx (idx)}
-								<span class="rounded bg-secondary px-2 py-1 text-xs">{tag}</span>
-							{/each}
-						</div>
-					{/if}
-
 					<!-- Exercise metadata -->
 					<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
-						<span>
-							Difficulté :
-							{#if data.exercise.difficulty === 1}
-								Facile
-							{:else if data.exercise.difficulty === 2}
-								Moyen
-							{:else}
-								Difficile
-							{/if}
-						</span>
-
 						{#if data.exercise.grades && data.exercise.grades.length > 0}
-							<span>Niveaux : {data.exercise.grades.join(', ')}</span>
-						{/if}
-
-						{#if data.exercise.source}
-							<span>Source : {data.exercise.source}</span>
+							<span
+								>Niveaux : {data.exercise.grades
+									.map((g) => formatGradeForDisplay(g as GradeCode))
+									.join(', ')}</span
+							>
 						{/if}
 					</div>
 				</div>
 
-				<!-- Variation selector -->
-				{#if hasVariations && variationOptions.length > 1}
-					<div class="w-full sm:w-auto sm:min-w-48">
-						<label class="mb-1 block text-sm font-medium text-muted-foreground">Version</label>
-						<MySelect
-							type="single"
-							value={selectedVariationIndex.toString()}
-							items={variationOptions}
-							onValueChange={handleVariationChange}
-							placeholder="Sélectionner une version"
-						/>
+				<!-- Variation slider -->
+				{#if hasVariations && sortedVariations.length > 1}
+					<div class="w-full sm:w-72">
+						<div class="relative">
+							<Slider
+								bind:value={sliderValue}
+								min={0}
+								max={sortedVariations.length - 1}
+								step={1}
+								class="w-full"
+							/>
+							<!-- Tick marks -->
+							<div
+								class="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-between px-[6px]"
+							>
+								{#each sortedVariations as _, i (i)}
+									<div
+										class="h-2 w-0.5 rounded-full {sliderValue[0] === i
+											? 'bg-primary'
+											: 'bg-muted-foreground/30'}"
+									></div>
+								{/each}
+							</div>
+						</div>
+						<!-- Labels for each level -->
+						<div class="mt-2 flex justify-between">
+							{#each sortedVariations as variation, i (i)}
+								<button
+									type="button"
+									onclick={() => (sliderValue = [i])}
+									class="text-xs transition-colors {sliderValue[0] === i
+										? 'font-semibold text-primary'
+										: 'text-muted-foreground hover:text-foreground'}"
+								>
+									{variation.displayLabel}
+								</button>
+							{/each}
+						</div>
 					</div>
 				{/if}
 			</div>
 		</Card.Header>
 
 		<Card.Content>
-			<!-- Exercise content -->
-			{#if hasVariations}
-				<!-- For variations exercises, we use the effective exercise with resolved variation -->
-				<ExerciseDisplay exercise={effectiveExercise} mode="instance" bind:showSolution />
-			{:else}
-				<!-- Standard exercise display -->
-				<ExerciseDisplay exercise={data.exercise} mode="instance" bind:showSolution />
-			{/if}
+			<!-- Exercise content with variation and seed control -->
+			<ExerciseDisplay
+				exercise={data.exercise}
+				mode="instance"
+				bind:showSolution
+				variationIndex={selectedVariationIndex}
+				seed={currentSeed}
+			/>
 		</Card.Content>
 	</Card.Root>
 
