@@ -36,7 +36,6 @@
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import FontSelector from '$lib/components/FontSelector.svelte';
 
 	interface Props {
 		exercise: Exercise;
@@ -174,9 +173,6 @@
 	// Hints from resolved variation (if available)
 	let displayHints = $derived(currentInstance?.resolvedHints);
 
-	// Variation label (if exercise uses variations)
-	let variationLabel = $derived(currentInstance?.selectedVariationLabel);
-
 	/**
 	 * Build GenericFunctionConfig from exercise.generic_functions.
 	 *
@@ -258,16 +254,6 @@
 	</div>
 {:else}
 	<!-- ============================================================================ -->
-	<!-- VARIATION LABEL (if present) -->
-	<!-- ============================================================================ -->
-	{#if variationLabel}
-		<div class="mb-3 text-sm text-muted-foreground">
-			<span class="font-medium">Variation :</span>
-			<span class="capitalize">{variationLabel}</span>
-		</div>
-	{/if}
-
-	<!-- ============================================================================ -->
 	<!-- STATEMENT -->
 	<!-- ============================================================================ -->
 	<div class="exercise-statement exercise-content">
@@ -279,15 +265,12 @@
 	</div>
 
 	<!-- ============================================================================ -->
-	<!-- SOLUTION TOGGLE & FONT SELECTOR -->
+	<!-- SOLUTION TOGGLE -->
 	<!-- ============================================================================ -->
 	<div class="mt-6 flex items-center justify-between border-t border-border pt-4">
-		<div class="flex items-center gap-2">
-			<Button onclick={() => (showSolution = !showSolution)} variant="secondary" size="sm">
-				{showSolution ? 'Masquer' : 'Afficher'} la solution
-			</Button>
-			<FontSelector />
-		</div>
+		<Button onclick={() => (showSolution = !showSolution)} variant="secondary" size="sm">
+			{showSolution ? 'Masquer' : 'Afficher'} la solution
+		</Button>
 
 		{#if mode === 'template' && currentInstance && exercise.variables && exercise.variables.length > 0}
 			<details class="text-sm">
@@ -325,7 +308,9 @@
 	{/if}
 {/if}
 
-<!--
-	Styles are now handled by MarkdownRenderer and its node components.
-	No additional CSS required here.
--->
+<style>
+	/* Use Lora serif font for exercise content */
+	.exercise-content {
+		font-family: 'Lora', Georgia, 'Times New Roman', serif;
+	}
+</style>
