@@ -44,6 +44,10 @@
 		userId?: string;
 		groupId?: string;
 		showSolution?: boolean;
+		/** Explicit variation index (for exercises with variations) */
+		variationIndex?: number;
+		/** Explicit seed for parameterized exercises */
+		seed?: number;
 	}
 
 	let {
@@ -51,7 +55,9 @@
 		mode = 'instance',
 		userId = undefined,
 		groupId = undefined,
-		showSolution = $bindable(false)
+		showSolution = $bindable(false),
+		variationIndex = undefined,
+		seed = undefined
 	}: Props = $props();
 
 	// ============================================================================
@@ -75,37 +81,33 @@
 	 * Generate a new exercise instance with resolved variables
 	 *
 	 * Determines appropriate seed based on mode and distribution:
+	 * - Explicit seed prop: Use that seed directly
 	 * - Template mode: Random seed for preview
 	 * - Instance mode + per_student: Deterministic seed from userId
 	 * - Instance mode + per_group: Deterministic seed from groupId
 	 * - Instance mode + on_demand: Random seed (unless userId/groupId provided)
 	 */
 	function generateInstance() {
-		// Check if exercise is parameterized
-		if (!exercise.variables || exercise.variables.length === 0) {
-			// Non-parameterized exercise - no need to generate instance
-			currentInstance = null;
-			generationError = null;
-			return;
-		}
+		// Determine seed based on distribution mode or explicit prop
+		let effectiveSeed: number | undefined;
 
-		// Determine seed based on distribution mode
-		let seed: number | undefined;
-
-		if (mode === 'template') {
+		if (seed !== undefined) {
+			// Explicit seed from prop takes precedence
+			effectiveSeed = seed;
+		} else if (mode === 'template') {
 			// Teacher preview - use random seed for demonstration
-			seed = Math.floor(Math.random() * 1000000);
+			effectiveSeed = Math.floor(Math.random() * 1000000);
 		} else {
 			// Student view - use appropriate seeding strategy
 			if (exercise.distribution_mode === 'per_student' && userId) {
 				// Each student gets consistent values
-				seed = generateStudentSeed(exercise.id, userId);
+				effectiveSeed = generateStudentSeed(exercise.id, userId);
 			} else if (exercise.distribution_mode === 'per_group' && groupId) {
 				// All students in group see same values
-				seed = generateGroupSeed(exercise.id, groupId);
+				effectiveSeed = generateGroupSeed(exercise.id, groupId);
 			} else if (exercise.distribution_mode === 'on_demand') {
 				// Random each time (undefined seed)
-				seed = undefined;
+				effectiveSeed = undefined;
 			} else {
 				// Fallback: warn if missing required IDs
 				if (exercise.distribution_mode === 'per_student' && !userId) {
@@ -118,12 +120,15 @@
 					currentInstance = null;
 					return;
 				}
-				seed = undefined;
+				effectiveSeed = undefined;
 			}
 		}
 
-		// Generate instance
-		const result = generateExerciseInstance(exercise, { seed });
+		// Generate instance with variation index if provided
+		const result = generateExerciseInstance(exercise, {
+			seed: effectiveSeed,
+			variationIndex: variationIndex
+		});
 
 		if (result.success && result.instance) {
 			currentInstance = result.instance;
@@ -134,8 +139,16 @@
 		}
 	}
 
-	// Auto-generate instance when exercise changes or on mount
+	// Auto-generate instance when exercise, variationIndex, or seed changes
 	$effect(() => {
+		// Track dependencies explicitly
+		const _exercise = exercise;
+		const _variationIndex = variationIndex;
+		const _seed = seed;
+		void _exercise;
+		void _variationIndex;
+		void _seed;
+
 		if (mode === 'instance') {
 			generateInstance();
 		}
@@ -146,7 +159,8 @@
 	// ============================================================================
 
 	// Get content from variations (single source of truth)
-	let exerciseContent = $derived(getExerciseContentSafe(exercise));
+	// Use variationIndex if provided, otherwise default to 0
+	let exerciseContent = $derived(getExerciseContentSafe(exercise, variationIndex ?? 0));
 
 	// Determine which content to display (instance or template)
 	let displayStatementMd = $derived(
