@@ -118,7 +118,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 							topic: topicValue,
 							gradeCode,
 							chapter: exerciseContext.domain,
-							skills: []
+							skills: [],
+							// Pass solution as correctAnswer (never revealed to student)
+							correctAnswer: exerciseContext.solution
 						}
 					: undefined,
 				helpLevel,

@@ -117,6 +117,7 @@ export const createConversationSchema = z.object({
 const exerciseContextSchema = z.object({
 	exerciseId: z.string().uuid('ID exercice invalide').optional(),
 	statement: z.string().max(5000, 'Énoncé trop long (max 5000 caractères)'),
+	solution: z.string().max(10000, 'Correction trop longue (max 10000 caractères)').optional(),
 	topic: z.string().max(100, 'Sujet trop long (max 100 caractères)').optional(),
 	domain: z.string().max(100, 'Domaine trop long (max 100 caractères)').optional(),
 	level: z.number().int().min(1).max(5).optional(),

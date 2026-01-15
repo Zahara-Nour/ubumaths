@@ -162,8 +162,9 @@
 	// ============================================================================
 
 	/**
-	 * Generate exercise instance to get resolved statement for tutor context.
-	 * The statement already contains the variation-specific content with resolved variables.
+	 * Generate exercise instance to get resolved statement and solution for tutor context.
+	 * The statement and solution contain variation-specific content with resolved variables.
+	 * The solution is passed to the tutor as internal context (never revealed to student).
 	 */
 	let tutorContext = $derived.by(() => {
 		if (!isAuthenticated) return undefined;
@@ -177,7 +178,8 @@
 
 		return {
 			exerciseId: data.exercise.id,
-			statement: result.instance.statement_md
+			statement: result.instance.statement_md,
+			solution: result.instance.solution_md
 		};
 	});
 
