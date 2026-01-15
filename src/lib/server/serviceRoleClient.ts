@@ -40,7 +40,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'.test.ts',
 	// Cleanup endpoints
 	'/api/cleanup/',
-	'/api/errors/cleanup'
+	'/api/errors/cleanup',
+	// GDPR account deletion (requires auth.admin.deleteUser)
+	'/api/account/delete'
 ] as const;
 
 /**
