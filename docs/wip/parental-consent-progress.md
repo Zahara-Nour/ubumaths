@@ -2,7 +2,7 @@
 
 > **Feature**: RGPD Article 8 compliance for minors under 15
 > **Started**: 2026-01-15
-> **Status**: Phase 1 in progress
+> **Status**: Phase 2 completed
 
 ---
 
@@ -75,13 +75,39 @@ pending_students (modified)
 
 ---
 
+## Phase 2: Consent Utilities & Middleware - COMPLETED
+
+### Files Created
+
+1. `src/lib/utils/consent.ts`
+
+   - `GRADES_REQUIRING_CONSENT` constant
+   - `requiresParentalConsent(grade)` - check if grade needs consent
+   - `hasValidConsent(profile)` - check if student has valid consent
+   - `isInGracePeriod(profile)` - check if in grace period
+   - `getConsentStatus(profile)` - get status object for UI
+
+2. `src/lib/server/middleware/consent.ts`
+
+   - `RestrictedAction` type for action types
+   - `canPerformAction(profile, action)` - check permission
+   - `requireConsent(profile, action)` - throw 403 if unauthorized
+   - `hasConsentFields(profile)` - type guard
+
+3. `src/lib/utils/consent.test.ts`
+   - 73 comprehensive unit tests
+   - All edge cases covered
+   - Integration scenarios validated
+
+---
+
 ## Next Steps
 
-### Phase 2: Consent Utilities & Middleware
+### Phase 3: Access Control Integration
 
-- [ ] Create `src/lib/utils/consent.ts`
-- [ ] Create `src/lib/server/middleware/consent.ts`
-- [ ] Write unit tests
+- [ ] Modify `(protected)/+layout.server.ts`
+- [ ] Add `requireConsent()` to restricted APIs
+- [ ] Security Audit (Opus)
 
 ---
 
@@ -93,3 +119,6 @@ pending_students (modified)
 | `supabase/migrations/20260115140001_*.sql` | Created  |
 | `supabase/migrations/20260115140002_*.sql` | Created  |
 | `src/lib/types/database.ts`                | Modified |
+| `src/lib/utils/consent.ts`                 | Created  |
+| `src/lib/server/middleware/consent.ts`     | Created  |
+| `src/lib/utils/consent.test.ts`            | Created  |
