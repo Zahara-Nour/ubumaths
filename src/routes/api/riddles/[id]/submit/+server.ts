@@ -5,6 +5,7 @@ import { validateRiddleAnswer } from '$lib/utils/riddle-validator';
 import { createRiddleValidationMessage, getRiddleTeacherId } from '$lib/server/riddle-messages';
 import { riddleAnswerSchema } from '$lib/server/validation/riddles';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { requireConsent } from '$lib/server/middleware/consent';
 import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
@@ -12,7 +13,8 @@ import { validateUuidParam } from '$lib/server/validation/params';
  * POST /api/riddles/[id]/submit
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
-	const { user } = await requireAuth(locals);
+	const { user, profile } = await requireAuth(locals);
+	requireConsent(profile, 'submit_exercise');
 	const riddleId = validateUuidParam(params.id, 'riddleId');
 
 	// ✅ SECURITY: Validate input with Zod

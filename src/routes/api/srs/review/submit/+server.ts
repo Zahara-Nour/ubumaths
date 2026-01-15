@@ -15,6 +15,7 @@ import { FSRS } from '$lib/srs/fsrs';
 import { DEFAULT_FSRS_PARAMS } from '$lib/srs/config';
 import { submitReviewSchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { requireConsent } from '$lib/server/middleware/consent';
 
 /**
  * POST /api/srs/review/submit
@@ -38,7 +39,8 @@ import { requireAuth } from '$lib/server/middleware/auth';
  * @returns Updated card statistics and next review date
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireAuth(locals);
+	const { user, profile } = await requireAuth(locals);
+	requireConsent(profile, 'submit_exercise');
 	const supabase = locals.supabase;
 
 	try {

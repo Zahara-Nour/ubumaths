@@ -63,6 +63,7 @@ import {
 	get2048ScoreResponseSchema,
 	gameModeSchema
 } from '$lib/server/validation/games';
+import { requireConsent } from '$lib/server/middleware/consent';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 
 // ============================================================================
@@ -150,6 +151,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (profile.role !== 'student') {
 		throw error(403, 'This endpoint is only accessible to students');
 	}
+
+	requireConsent(profile, 'play_games');
 
 	try {
 		// ✅ SECURITY: Validate input with Zod

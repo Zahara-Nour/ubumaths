@@ -2,7 +2,7 @@
 
 > **Feature**: RGPD Article 8 compliance for minors under 15
 > **Started**: 2026-01-15
-> **Status**: Phase 2 completed
+> **Status**: Phase 3 completed
 
 ---
 

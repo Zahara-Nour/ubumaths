@@ -25,6 +25,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
+import { requireConsent } from '$lib/server/middleware/consent';
 import { useConsumableBodySchema } from '$lib/server/validation/vip-cards';
 
 // ============================================================================
@@ -51,7 +52,8 @@ interface UseConsumableResult {
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	// Require authentication (students only)
-	const { user } = await requireRole(locals, 'student');
+	const { user, profile } = await requireRole(locals, 'student');
+	requireConsent(profile, 'purchase_items');
 	const supabase = locals.supabase;
 
 	// Parse and validate request body

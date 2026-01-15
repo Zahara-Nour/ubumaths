@@ -12,6 +12,7 @@ import {
 	type SubmitExerciseInput
 } from '$lib/server/validation/python-exercises';
 import type { Database } from '$lib/types/database';
+import { requireConsent } from '$lib/server/middleware/consent';
 import { validateUuidParam } from '$lib/server/validation/params';
 
 type ZodIssue = { path: (string | number)[]; message: string };
@@ -37,16 +38,18 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(401, 'Non authentifié');
 	}
 
-	// Verify student role
+	// Verify student role and check consent
 	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
-		.select('role')
+		.select('role, consent_required, consent_granted_at, consent_grace_period_ends')
 		.eq('id', user.id)
 		.single();
 
 	if (profileError || !profile || profile.role !== 'student') {
 		throw error(403, 'Seuls les étudiants peuvent soumettre des solutions');
 	}
+
+	requireConsent(profile, 'submit_exercise');
 
 	// Parse and validate request body
 	const body = await request.json();

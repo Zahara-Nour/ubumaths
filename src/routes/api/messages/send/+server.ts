@@ -2,13 +2,15 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { sendMessageSchema } from '$lib/server/validation/messages';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { requireConsent } from '$lib/server/middleware/consent';
 
 /**
  * POST /api/messages/send
  * Send a private message
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireAuth(locals);
+	const { user, profile } = await requireAuth(locals);
+	requireConsent(profile, 'send_message');
 
 	try {
 		// ✅ SECURITY: Validate input with Zod
