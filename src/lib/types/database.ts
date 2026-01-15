@@ -58,6 +58,45 @@ export type Database = {
 					}
 				];
 			};
+			account_deletion_audit: {
+				Row: {
+					cleanup_result: Json | null;
+					completed_at: string | null;
+					email_hash: string;
+					error_message: string | null;
+					id: string;
+					ip_address: unknown;
+					requested_at: string;
+					status: string;
+					user_agent: string | null;
+					user_id: string | null;
+				};
+				Insert: {
+					cleanup_result?: Json | null;
+					completed_at?: string | null;
+					email_hash: string;
+					error_message?: string | null;
+					id?: string;
+					ip_address?: unknown;
+					requested_at?: string;
+					status: string;
+					user_agent?: string | null;
+					user_id?: string | null;
+				};
+				Update: {
+					cleanup_result?: Json | null;
+					completed_at?: string | null;
+					email_hash?: string;
+					error_message?: string | null;
+					id?: string;
+					ip_address?: unknown;
+					requested_at?: string;
+					status?: string;
+					user_agent?: string | null;
+					user_id?: string | null;
+				};
+				Relationships: [];
+			};
 			achievement_events: {
 				Row: {
 					created_at: string;
@@ -7122,65 +7161,6 @@ export type Database = {
 					}
 				];
 			};
-			parental_consents: {
-				Row: {
-					consent_given_at: string | null;
-					consent_ip: string | null;
-					consent_token: string;
-					consent_user_agent: string | null;
-					created_at: string;
-					email_count: number;
-					expires_at: string;
-					id: string;
-					last_email_sent_at: string | null;
-					parent_email: string;
-					parent_name: string | null;
-					status: Database['public']['Enums']['consent_status'];
-					student_id: string;
-					updated_at: string;
-				};
-				Insert: {
-					consent_given_at?: string | null;
-					consent_ip?: string | null;
-					consent_token?: string;
-					consent_user_agent?: string | null;
-					created_at?: string;
-					email_count?: number;
-					expires_at?: string;
-					id?: string;
-					last_email_sent_at?: string | null;
-					parent_email: string;
-					parent_name?: string | null;
-					status?: Database['public']['Enums']['consent_status'];
-					student_id: string;
-					updated_at?: string;
-				};
-				Update: {
-					consent_given_at?: string | null;
-					consent_ip?: string | null;
-					consent_token?: string;
-					consent_user_agent?: string | null;
-					created_at?: string;
-					email_count?: number;
-					expires_at?: string;
-					id?: string;
-					last_email_sent_at?: string | null;
-					parent_email?: string;
-					parent_name?: string | null;
-					status?: Database['public']['Enums']['consent_status'];
-					student_id?: string;
-					updated_at?: string;
-				};
-				Relationships: [
-					{
-						foreignKeyName: 'parental_consents_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'profiles';
-						referencedColumns: ['id'];
-					}
-				];
-			};
 			pending_students: {
 				Row: {
 					activated_at: string | null;
@@ -7192,7 +7172,6 @@ export type Database = {
 					id: string;
 					is_activated: boolean | null;
 					lastname: string;
-					parent_email: string | null;
 					school_id: string | null;
 					updated_at: string | null;
 				};
@@ -7206,7 +7185,6 @@ export type Database = {
 					id?: string;
 					is_activated?: boolean | null;
 					lastname: string;
-					parent_email?: string | null;
 					school_id?: string | null;
 					updated_at?: string | null;
 				};
@@ -7220,7 +7198,6 @@ export type Database = {
 					id?: string;
 					is_activated?: boolean | null;
 					lastname?: string;
-					parent_email?: string | null;
 					school_id?: string | null;
 					updated_at?: string | null;
 				};
@@ -7337,8 +7314,8 @@ export type Database = {
 					avatar_url: string | null;
 					bonus: number;
 					class_ids: string[] | null;
-					consent_grace_period_ends: string | null;
 					consent_granted_at: string | null;
+					consent_grace_period_ends: string | null;
 					consent_required: boolean;
 					created_at: string;
 					email: string;
@@ -7364,8 +7341,8 @@ export type Database = {
 					avatar_url?: string | null;
 					bonus?: number;
 					class_ids?: string[] | null;
-					consent_grace_period_ends?: string | null;
 					consent_granted_at?: string | null;
+					consent_grace_period_ends?: string | null;
 					consent_required?: boolean;
 					created_at?: string;
 					email: string;
@@ -7391,8 +7368,8 @@ export type Database = {
 					avatar_url?: string | null;
 					bonus?: number;
 					class_ids?: string[] | null;
-					consent_grace_period_ends?: string | null;
 					consent_granted_at?: string | null;
+					consent_grace_period_ends?: string | null;
 					consent_required?: boolean;
 					created_at?: string;
 					email?: string;
@@ -12816,6 +12793,7 @@ export type Database = {
 			check_match_status: { Args: never; Returns: Json };
 			check_profanity_simple: { Args: { p_text: string }; Returns: boolean };
 			cleanup_abandoned_minesweeper_games: { Args: never; Returns: number };
+			cleanup_account_deletion_audit: { Args: never; Returns: number };
 			cleanup_expired_cache: {
 				Args: never;
 				Returns: {
@@ -12906,6 +12884,7 @@ export type Database = {
 			};
 			delete_all_resolved_errors: { Args: never; Returns: number };
 			delete_attachment: { Args: { p_attachment_id: string }; Returns: string };
+			delete_user_account: { Args: { p_user_id: string }; Returns: Json };
 			draw_multiple_vip_cards: {
 				Args: {
 					p_count: number;
@@ -13134,10 +13113,6 @@ export type Database = {
 					id: string;
 					name: string;
 				}[];
-			};
-			get_consent_info: {
-				Args: { p_token: string };
-				Returns: Json;
 			};
 			get_conversation_participants: {
 				Args: { p_conversation_id: string };
@@ -13706,10 +13681,6 @@ export type Database = {
 				Args: { user_id: string };
 				Returns: Database['public']['Enums']['user_status'];
 			};
-			grant_parental_consent: {
-				Args: { p_token: string; p_ip?: string; p_user_agent?: string };
-				Returns: Json;
-			};
 			grant_specific_vip_card: {
 				Args: { p_card_id: string; p_count?: number; p_student_id: string };
 				Returns: Json;
@@ -13980,6 +13951,7 @@ export type Database = {
 				Returns: undefined;
 			};
 			run_cleanup_all: { Args: never; Returns: undefined };
+			run_cleanup_expired_data: { Args: never; Returns: undefined };
 			run_daily_summaries: { Args: never; Returns: undefined };
 			run_recalculate_minesweeper_ref_times: { Args: never; Returns: undefined };
 			run_weekly_best_bonuses: { Args: never; Returns: undefined };
@@ -14414,3 +14386,57 @@ export const Constants = {
 		}
 	}
 } as const;
+
+// ============================================================================
+// CUSTOM TYPE EXPORTS
+// ============================================================================
+
+/**
+ * Alias for classes table row
+ */
+export type Class = Tables<'classes'>;
+
+/**
+ * Alias for class_schedules table row
+ */
+export type ClassSchedule = Tables<'class_schedules'>;
+
+/**
+ * Friendship status enum
+ */
+export type FriendshipStatus = 'pending' | 'accepted' | 'rejected';
+
+/**
+ * Friendship relation type enum
+ */
+export type FriendshipRelationType = 'classmate' | 'friend' | 'family';
+
+/**
+ * Friend profile with presence information
+ */
+export interface FriendProfile {
+	id: string;
+	full_name: string | null;
+	firstname: string | null;
+	lastname: string | null;
+	avatar_url: string | null;
+	role: 'student' | 'teacher' | 'admin';
+	presence?: {
+		is_online: boolean;
+		last_seen: string | null;
+	};
+}
+
+/**
+ * Friendship with enriched profile data
+ */
+export interface FriendshipWithProfile {
+	id: string;
+	status: FriendshipStatus;
+	friendship_type: FriendshipRelationType;
+	created_at: string;
+	updated_at: string;
+	requester_id: string;
+	addressee_id: string;
+	friend_profile: FriendProfile;
+}

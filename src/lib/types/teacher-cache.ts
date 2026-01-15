@@ -71,6 +71,7 @@ export interface ClassInfo {
 	is_active: boolean;
 	created_at: string;
 	updated_at: string;
+	google_classroom_course_id: string | null;
 	student_count: number;
 	schedules: ClassSchedule[];
 }

@@ -382,6 +382,7 @@ export class TeacherDashboardCache {
 				is_active: cached.classInfo.is_active,
 				created_at: cached.classInfo.created_at,
 				updated_at: cached.classInfo.updated_at,
+				google_classroom_course_id: cached.classInfo.google_classroom_course_id,
 				student_count: cached.classInfo.student_count,
 				schedules: cached.classInfo.schedules
 			});
