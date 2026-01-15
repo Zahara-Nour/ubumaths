@@ -1,8 +1,8 @@
 # Audit de Conformite RGPD - UbuMaths
 
 > **Date d'audit** : 2026-01-15
-> **Version** : 1.4
-> **Statut global** : PARTIELLEMENT CONFORME (7/10)
+> **Version** : 1.5
+> **Statut global** : PARTIELLEMENT CONFORME (8/10)
 
 ---
 
@@ -29,11 +29,11 @@
 | Authentification & Autorisation | 9/10     | Excellent               |
 | Chiffrement & Securite          | 8/10     | Bon                     |
 | Minimisation des donnees        | 9/10     | Excellent               |
-| Retention des donnees           | 2/10     | **CRITIQUE**            |
+| Retention des donnees           | 8/10     | Bon (v1.5)              |
 | Droits utilisateur              | 9/10     | Excellent (v1.4)        |
 | Documentation legale            | 7/10     | Bon (v1.2)              |
 | Consentement mineurs            | 0/10     | **Manquant**            |
-| **GLOBAL**                      | **7/10** | **PARTIELLEMENT CONF.** |
+| **GLOBAL**                      | **8/10** | **PARTIELLEMENT CONF.** |
 
 ### Risques legaux
 
@@ -264,23 +264,22 @@ CRON_SECRET                   # Secret taches planifiees
 
 ## 5. Lacunes critiques
 
-### 5.1 CRITIQUE - Pas de politique de retention
+### 5.1 ~~CRITIQUE - Pas de politique de retention~~ **CORRIGE** (2026-01-15)
 
-**Article RGPD viole** : Art. 5(1)(e) - Limitation de la conservation
+**Article RGPD** : Art. 5(1)(e) - Limitation de la conservation
 
 **Situation actuelle** :
 
-- `profiles` : Conservation indefinie
-- `student_attempts` : Conservation indefinie
-- `student_progress` : Conservation indefinie
-- `messages` : Conservation indefinie
-- `private_messages` : Soft delete uniquement
+- ~~`profiles` : Conservation indefinie~~ Profils actifs conserves, donnees nettoyees apres inactivite
+- ~~`student_attempts` : Conservation indefinie~~ **5 ans + user inactif 2 ans**
+- ~~`student_progress` : Conservation indefinie~~ **5 ans + user inactif 2 ans**
+- ~~`messages` : Conservation indefinie~~ **3 ans (HARD delete)**
+- ~~`private_messages` : Soft delete uniquement~~ **3 ans (HARD delete)**
+- `user_presence` : **30 jours**
+- `friendships` (rejected) : **2 ans**
+- `error_logs` : **90 jours** (resolved)
 
-**Seule exception** :
-
-- `error_logs` : 90 jours (cleanup automatique)
-
-**Impact** : Les donnees pedagogiques des eleves sont conservees a vie sans justification legale.
+> **Amelioration 2026-01-15** : Implementation de la politique de retention via pg_cron. Job hebdomadaire `rgpd-retention-cleanup` (dimanche 03:00 UTC) nettoie automatiquement les donnees expirees. Audit complet dans `background_job_runs` avec compteurs par table pour preuve de conformite. Messages en HARD delete (pas soft delete) conformement a l'Art. 17.
 
 ---
 
@@ -852,7 +851,7 @@ docs/legal/
 
 - [ ] Registre des traitements a jour (Art. 30)
 - [ ] DPA signes avec tous les sous-traitants
-- [ ] Jobs de cleanup automatiques actifs
+- [x] Jobs de cleanup automatiques actifs (v1.5 - pg_cron rgpd-retention-cleanup)
 - [ ] Audit trail operationnel
 - [ ] Formation des equipes (sensibilisation RGPD)
 
@@ -889,6 +888,7 @@ docs/legal/
 
 | Date       | Version | Modifications                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------------- |
+| 2026-01-15 | 1.5     | Politique de retention pg_cron (Art. 5(1)(e) - limitation conservation)      |
 | 2026-01-15 | 1.4     | API export donnees (Art. 20 - portabilite)                                   |
 | 2026-01-15 | 1.3     | UI suppression compte (Art. 17 complet), rate limiting, audit table          |
 | 2026-01-15 | 1.2     | API suppression compte (Art. 17), Documentation legale (Art. 13-14, CGU, ML) |
