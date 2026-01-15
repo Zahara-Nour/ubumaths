@@ -116,6 +116,7 @@ function createMockClassInfo(): ClassInfo {
 		is_active: true,
 		created_at: new Date().toISOString(),
 		updated_at: new Date().toISOString(),
+		google_classroom_course_id: null,
 		student_count: 25,
 		schedules: [
 			{

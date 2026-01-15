@@ -60,7 +60,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Fetch student's VIP cards
-	const { data: profile, error: fetchError } = await supabase
+	const { data: studentData, error: fetchError } = await supabase
 		.from('profiles')
 		.select('vip_cards')
 		.eq('id', studentId)
@@ -71,7 +71,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, `Failed to fetch student profile: ${fetchError.message}`);
 	}
 
-	const vipCards = (profile.vip_cards || {}) as unknown as StudentVipCards;
+	const vipCards = (studentData.vip_cards || {}) as unknown as StudentVipCards;
 
 	// Verify that the instance exists and belongs to the student
 	const instance = vipCards[instanceId];
