@@ -5,6 +5,7 @@ import { checkTutorRateLimit, incrementTutorUsage } from '$lib/server/tutor/tuto
 import { getEnv } from '$lib/server/env';
 import { chatRequestSchema, tutorRequestSchema } from '$lib/server/validation/chat';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { requireConsent } from '$lib/server/middleware/consent';
 import { buildTutorPrompt, type HelpMethodId, type MathTopic } from '$lib/config/tutor-prompts';
 import { selectHelpMethod } from '$lib/config/tutor-help-methods';
 import { getAdaptationForGrade } from '$lib/config/tutor-grade-adaptations';
@@ -21,7 +22,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// ====================================================================
 		// SECURITY: Authentication Check
 		// ====================================================================
-		const { user } = await requireAuth(locals);
+		const { user, profile } = await requireAuth(locals);
+		requireConsent(profile, 'send_message');
 
 		// ====================================================================
 		// SECURITY: Parse request body to determine mode

@@ -10,6 +10,7 @@ import {
 	createMarketplaceNotification,
 	getStudentGidouilles
 } from '$lib/server/marketplace/helpers';
+import { requireConsent, hasConsentFields } from '$lib/server/middleware/consent';
 import { z } from 'zod';
 
 // Query schema - use union with null because url.searchParams.get() returns null, not undefined
@@ -162,6 +163,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (!userId) {
 		throw error(401, 'Non authentifié');
+	}
+
+	// Check consent for students (teachers/admins can trade without consent)
+	if (locals.profile && hasConsentFields(locals.profile)) {
+		requireConsent(locals.profile, 'purchase_items');
 	}
 
 	// Validate request body

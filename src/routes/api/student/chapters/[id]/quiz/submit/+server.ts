@@ -41,6 +41,7 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { requireConsent } from '$lib/server/middleware/consent';
 import { submitQuizAnswer } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
 
@@ -72,7 +73,8 @@ const bodySchema = z.object({
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// Authenticate user
-	const { user } = await requireAuth(locals);
+	const { user, profile } = await requireAuth(locals);
+	requireConsent(profile, 'submit_exercise');
 
 	// Validate chapter ID parameter (for context, though main validation is on quizQuestionId)
 	const paramsValidation = paramsSchema.safeParse(params);

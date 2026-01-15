@@ -51,6 +51,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/auth';
 import { createLogger } from '$lib/utils/logger';
 import { logError } from '$lib/server/errorMonitoring';
+import { getConsentStatus, type ConsentProfile } from '$lib/utils/consent';
 
 const logger = createLogger('(protected)/+layout.server.ts');
 
@@ -113,10 +114,20 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		throw redirect(303, '/login?error=' + encodeURIComponent('Accès refusé.'));
 	}
 
-	// Return user and profile to child routes
+	// Get consent status for students (RGPD Article 8)
+	// This is passed to child routes for UI display and client-side checks
+	const consentStatus = getConsentStatus({
+		role: profile.role,
+		consent_required: profile.consent_required ?? false,
+		consent_granted_at: profile.consent_granted_at ?? null,
+		consent_grace_period_ends: profile.consent_grace_period_ends ?? null
+	} as ConsentProfile);
+
+	// Return user, profile, and consent status to child routes
 	// Child routes can access this via locals or parent()
 	return {
 		user,
-		profile
+		profile,
+		consentStatus
 	};
 };

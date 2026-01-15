@@ -9,6 +9,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { markExerciseAsComplete, markExerciseAsIncomplete } from '$lib/server/exercise-assignments';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { requireConsent } from '$lib/server/middleware/consent';
 import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
@@ -21,7 +22,8 @@ import { validateUuidParam } from '$lib/server/validation/params';
  */
 export const POST: RequestHandler = async ({ params, locals }) => {
 	const exerciseId = validateUuidParam(params.id);
-	const { user } = await requireAuth(locals);
+	const { user, profile } = await requireAuth(locals);
+	requireConsent(profile, 'submit_exercise');
 
 	// Mark exercise as complete
 	const { data: completion, error: completeError } = await markExerciseAsComplete(
@@ -48,7 +50,8 @@ export const POST: RequestHandler = async ({ params, locals }) => {
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const exerciseId = validateUuidParam(params.id);
-	const { user } = await requireAuth(locals);
+	const { user, profile } = await requireAuth(locals);
+	requireConsent(profile, 'submit_exercise');
 
 	// Unmark exercise as complete
 	const { data: completion, error: incompleteError } = await markExerciseAsIncomplete(

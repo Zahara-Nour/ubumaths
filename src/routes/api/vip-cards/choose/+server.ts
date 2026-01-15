@@ -29,6 +29,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { requireConsent } from '$lib/server/middleware/consent';
 import { chooseCardsSchema } from '$lib/server/validation/choose-cards';
 import type { StudentVipCards } from '$lib/types/vip-card';
 import { getRarityPoints } from '$lib/types/vip-card';
@@ -73,6 +74,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	} else if (!isStudent) {
 		// Neither teacher nor the student themselves
 		throw error(403, 'You can only choose cards for yourself or your students');
+	} else {
+		// Student flow: check consent
+		requireConsent(profile, 'purchase_items');
 	}
 	// If isStudent, authorization check will happen after fetching the card (approval required)
 

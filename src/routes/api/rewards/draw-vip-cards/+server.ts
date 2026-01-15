@@ -1,6 +1,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { drawVipCardsSchema } from '$lib/server/validation/draw-vip-cards';
+import { requireConsent, hasConsentFields } from '$lib/server/middleware/consent';
 
 /**
  * Draw multiple VIP cards for a student
@@ -50,6 +51,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// 1. Authentication check
 	if (!locals.user) {
 		throw error(401, 'Authentication required');
+	}
+
+	// Check consent for students (teachers/admins can draw cards without consent)
+	if (locals.profile && hasConsentFields(locals.profile)) {
+		requireConsent(locals.profile, 'earn_rewards');
 	}
 
 	const supabase = locals.supabase;

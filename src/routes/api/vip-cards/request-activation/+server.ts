@@ -21,6 +21,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { requireConsent } from '$lib/server/middleware/consent';
 import type { StudentVipCards, VipCardAction } from '$lib/types/vip-card';
 import { getTemplateById } from '$lib/server/vip-card-queries';
 
@@ -39,7 +40,8 @@ const requestActivationSchema = z.object({
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	// Require authentication
-	const { user } = await requireAuth(locals);
+	const { user, profile } = await requireAuth(locals);
+	requireConsent(profile, 'purchase_items');
 	const supabase = locals.supabase;
 
 	// Parse and validate request body
