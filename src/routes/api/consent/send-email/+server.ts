@@ -100,7 +100,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const schoolName = (classInfo?.classes as { schools?: { name?: string } })?.schools?.name ?? null;
 
-	// 6. Check existing consent record or create new one
+	// 6. Check total emails sent for this student (across ALL consent records)
+	const { data: allConsents } = await supabase
+		.from('parental_consents')
+		.select('email_count')
+		.eq('student_id', student_id);
+
+	const totalEmailsSent = (allConsents || []).reduce((sum, c) => sum + (c.email_count || 0), 0);
+
+	if (totalEmailsSent >= MAX_EMAILS_PER_STUDENT) {
+		throw error(
+			400,
+			`Limite de ${MAX_EMAILS_PER_STUDENT} emails atteinte pour cet élève. Contactez l'administrateur.`
+		);
+	}
+
+	// 7. Check existing consent record or create new one
 	const { data: existingConsent } = await supabase
 		.from('parental_consents')
 		.select('id, email_count, status, consent_token, expires_at')
@@ -113,14 +128,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	let expiresAt: Date;
 
 	if (existingConsent && existingConsent.status === 'pending') {
-		// Check email limit
-		if (existingConsent.email_count >= MAX_EMAILS_PER_STUDENT) {
-			throw error(
-				400,
-				`Limite de ${MAX_EMAILS_PER_STUDENT} emails atteinte pour cet élève. Contactez l'administrateur.`
-			);
-		}
-
 		// Check if token is expired
 		if (new Date(existingConsent.expires_at) < new Date()) {
 			// Create new consent record with fresh token

@@ -191,6 +191,34 @@ pending_students (modified)
 
 ---
 
+## Phase 5: Teacher Dashboard - COMPLETED
+
+### Files Created
+
+1. `src/routes/(protected)/dashboard/teacher/consent/+page.server.ts`
+
+   - Load function fetches students requiring consent by class
+   - Calculates consent status (granted, pending, grace_period, expired)
+   - Includes stats for dashboard overview
+   - Form action for updating parent email with teacher-student verification
+
+2. `src/routes/(protected)/dashboard/teacher/consent/+page.svelte`
+
+   - Tabbed interface by class
+   - Status badges with color coding
+   - Inline parent email editing
+   - Send/resend consent email buttons
+   - Email count tracking (n/5)
+   - RGPD compliance help section
+
+### Security Fixes Applied
+
+- Added `verifyTeacherStudent()` check in updateParentEmail action
+- Fixed cumulative email limit check across all consent records
+- Email normalization (lowercase, trim)
+
+---
+
 ## Files Modified Summary
 
 | File                                          | Action   |
@@ -210,3 +238,4 @@ pending_students (modified)
 | `src/routes/(public)/consent/[token]/*`       | Created  |
 | `src/routes/(public)/consent/success/*`       | Created  |
 | `src/routes/api/consent/send-email/*`         | Created  |
+| `src/routes/(protected)/.../consent/*`        | Created  |
