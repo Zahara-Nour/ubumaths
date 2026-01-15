@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.7](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.6...v0.6.7) (2026-01-15)
+
+### ✨ Features
+
+- **tutor:** pass solution to tutor context for better guidance ([9699ace](https://github.com/Zahara-Nour/ubumaths/commit/9699acedd089f8d27f67bff83c9c7f76d8dee7fd))
+
 ### [0.6.6](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.5...v0.6.6) (2026-01-14)
 
 ### ✨ Features
