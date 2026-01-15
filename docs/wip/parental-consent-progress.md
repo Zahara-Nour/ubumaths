@@ -2,7 +2,7 @@
 
 > **Feature**: RGPD Article 8 compliance for minors under 15
 > **Started**: 2026-01-15
-> **Status**: Phase 3 completed
+> **Status**: Phase 4 in progress
 
 ---
 
@@ -101,24 +101,112 @@ pending_students (modified)
 
 ---
 
-## Next Steps
+## Phase 3: Access Control Integration - COMPLETED
 
-### Phase 3: Access Control Integration
+### Changes Made
 
-- [ ] Modify `(protected)/+layout.server.ts`
-- [ ] Add `requireConsent()` to restricted APIs
-- [ ] Security Audit (Opus)
+1. `src/routes/(protected)/+layout.server.ts`
+
+   - Added consent status to layout return data
+   - Passes `consentStatus` object to child routes for UI display
+
+2. **15+ API Endpoints Modified** (added `requireConsent()` checks):
+
+   - `/api/exercises/[id]/complete` - submit_exercise
+   - `/api/student/chapters/[id]/quiz/submit` - submit_exercise
+   - `/api/python-exercises/[id]/submit` - submit_exercise
+   - `/api/riddles/[id]/submit` - submit_exercise
+   - `/api/srs/review/submit` - submit_exercise
+   - `/api/chat` - send_message
+   - `/api/messages/send` - send_message
+   - `/api/games/2048/scores` - play_games
+   - `/api/games/minesweeper/start` - play_games
+   - `/api/vip-cards/choose` - earn_rewards
+   - `/api/vip-cards/purchase` - purchase_items
+   - `/api/vip-cards/request-activation` - purchase_items
+   - `/api/vip-cards/use-consumable` - purchase_items
+   - `/api/rewards/draw-vip-cards` - earn_rewards
+   - `/api/marketplace/trades` - purchase_items
+
+3. **Security Audit (Opus)** - Passed
+   - Validated consent checking logic
+   - Identified need for SECURITY DEFINER function (Phase 4)
+   - No critical vulnerabilities found
+
+---
+
+## Phase 4: Parent Consent Flow - IN PROGRESS
+
+### Files Created
+
+1. `src/lib/email-templates/parental-consent.ts`
+
+   - `CONSENT_EMAIL_SUBJECT` - email subject line
+   - `getConsentEmailText()` - plain text version
+   - `getConsentEmailHtml()` - styled HTML version
+   - `getConsentLink()` - builds consent URL with token
+
+2. `supabase/migrations/20260115141821_add_consent_verification_function.sql`
+
+   - `grant_parental_consent(token, ip, user_agent)` - SECURITY DEFINER function
+   - `get_consent_info(token)` - returns student info for consent page
+   - Anonymous access granted for parents without authentication
+
+3. `src/routes/(public)/consent/[token]/+page.server.ts`
+
+   - Load function calls `get_consent_info()` RPC
+   - Form action calls `grant_parental_consent()` RPC
+   - Handles token validation, expiry, already-granted cases
+
+4. `src/routes/(public)/consent/[token]/+page.svelte`
+
+   - Displays student info (name, grade, school, teacher)
+   - Shows RGPD explanation
+   - "J'autorise l'acces" button to grant consent
+   - Error states for expired/invalid tokens
+
+5. `src/routes/(public)/consent/success/+page.svelte`
+
+   - Success confirmation page after consent granted
+   - Lists what student can now do
+
+6. `src/routes/api/consent/send-email/+server.ts`
+
+   - Teacher-only endpoint
+   - Creates/updates parental_consents record
+   - Sends email via Gmail API
+   - Respects 5 email limit per student
+
+7. `src/lib/server/google/gmail.ts`
+
+   - Added `sendConsentEmail()` function
+
+8. `src/lib/types/database.ts`
+   - Added `get_consent_info` function type
+   - Added `grant_parental_consent` function type
+
+### Remaining for Phase 4
+
+- [ ] Write tests for consent flow
 
 ---
 
 ## Files Modified Summary
 
-| File                                       | Action   |
-| ------------------------------------------ | -------- |
-| `supabase/migrations/20260115140000_*.sql` | Created  |
-| `supabase/migrations/20260115140001_*.sql` | Created  |
-| `supabase/migrations/20260115140002_*.sql` | Created  |
-| `src/lib/types/database.ts`                | Modified |
-| `src/lib/utils/consent.ts`                 | Created  |
-| `src/lib/server/middleware/consent.ts`     | Created  |
-| `src/lib/utils/consent.test.ts`            | Created  |
+| File                                          | Action   |
+| --------------------------------------------- | -------- |
+| `supabase/migrations/20260115140000_*.sql`    | Created  |
+| `supabase/migrations/20260115140001_*.sql`    | Created  |
+| `supabase/migrations/20260115140002_*.sql`    | Created  |
+| `supabase/migrations/20260115141821_*.sql`    | Created  |
+| `src/lib/types/database.ts`                   | Modified |
+| `src/lib/utils/consent.ts`                    | Created  |
+| `src/lib/server/middleware/consent.ts`        | Created  |
+| `src/lib/utils/consent.test.ts`               | Created  |
+| `src/routes/(protected)/+layout.server.ts`    | Modified |
+| `src/routes/api/.../+server.ts` (15+ files)   | Modified |
+| `src/lib/email-templates/parental-consent.ts` | Created  |
+| `src/lib/server/google/gmail.ts`              | Modified |
+| `src/routes/(public)/consent/[token]/*`       | Created  |
+| `src/routes/(public)/consent/success/*`       | Created  |
+| `src/routes/api/consent/send-email/*`         | Created  |

@@ -13135,6 +13135,10 @@ export type Database = {
 					name: string;
 				}[];
 			};
+			get_consent_info: {
+				Args: { p_token: string };
+				Returns: Json;
+			};
 			get_conversation_participants: {
 				Args: { p_conversation_id: string };
 				Returns: {
@@ -13701,6 +13705,10 @@ export type Database = {
 			get_user_status: {
 				Args: { user_id: string };
 				Returns: Database['public']['Enums']['user_status'];
+			};
+			grant_parental_consent: {
+				Args: { p_token: string; p_ip?: string; p_user_agent?: string };
+				Returns: Json;
 			};
 			grant_specific_vip_card: {
 				Args: { p_card_id: string; p_count?: number; p_student_id: string };

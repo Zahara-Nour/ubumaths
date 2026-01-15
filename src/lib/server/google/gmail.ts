@@ -233,3 +233,39 @@ export async function sendWelcomeEmail(
 
 	return sendEmail(accessToken, toEmail, fromEmail, subject, htmlBody);
 }
+
+/**
+ * Send a parental consent email via Gmail API
+ *
+ * Sends a consent request email to a parent for RGPD Article 8 compliance.
+ * Contains a unique link for the parent to grant consent for their child.
+ *
+ * @param accessToken - Decrypted Google OAuth access token
+ * @param toEmail - Parent's email address
+ * @param fromEmail - Teacher's email address (for the From header)
+ * @param data - Consent email data (student info, token, etc.)
+ * @returns Email send result
+ */
+export async function sendConsentEmail(
+	accessToken: string,
+	toEmail: string,
+	fromEmail: string,
+	data: {
+		studentFirstname: string | null;
+		studentLastname: string | null;
+		studentGrade: string | null;
+		schoolName: string | null;
+		teacherName: string | null;
+		consentToken: string;
+		expiresAt: Date;
+	}
+): Promise<EmailSendResult> {
+	const { CONSENT_EMAIL_SUBJECT, getConsentEmailHtml } = await import(
+		'$lib/email-templates/parental-consent'
+	);
+
+	const subject = CONSENT_EMAIL_SUBJECT;
+	const htmlBody = getConsentEmailHtml(data);
+
+	return sendEmail(accessToken, toEmail, fromEmail, subject, htmlBody);
+}
