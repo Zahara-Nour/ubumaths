@@ -4,6 +4,7 @@
 	 * ==================================
 	 *
 	 * Hydrates the student cache with server-loaded data for instant access.
+	 * Also hydrates consent store for RGPD compliance UI.
 	 *
 	 * HYDRATION PROCESS:
 	 * This component receives data from +layout.server.ts and populates the
@@ -27,6 +28,11 @@
 	 * - Reactive updates with Svelte 5 $state
 	 * - Automatic TTL-based expiration
 	 *
+	 * CONSENT INTEGRATION (RGPD Article 8):
+	 * - Consent status is passed from protected layout
+	 * - ConsentBanner shows warning for students without consent
+	 * - consent store enables UI disabling across child components
+	 *
 	 * @example
 	 * // Example usage in child page
 	 * import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
@@ -34,9 +40,11 @@
 	 */
 
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+	import { consent } from '$lib/stores/consent.svelte';
+	import ConsentBanner from '$lib/components/ConsentBanner.svelte';
 	import { onMount } from 'svelte';
 
-	// Get server data
+	// Get server data (includes consentStatus from parent protected layout)
 	let { data, children } = $props();
 
 	/**
@@ -57,7 +65,17 @@
 		if (data.rewards) {
 			studentCache.hydrateRewards(data.rewards);
 		}
+
+		// Hydrate consent store for UI disabling
+		if (data.consentStatus) {
+			consent.set(data.consentStatus);
+		}
 	});
 </script>
+
+<!-- Consent Banner (shows warning for students without parental consent) -->
+{#if data.consentStatus}
+	<ConsentBanner consentStatus={data.consentStatus} />
+{/if}
 
 {@render children()}

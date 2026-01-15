@@ -3,6 +3,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
+	import ConsentButton from '$lib/components/ConsentButton.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import {
 		ChevronLeft,
@@ -220,12 +221,12 @@
 							<ChevronLeft class="h-4 w-4" />
 						</Button>
 
-						<!-- Mastery status buttons -->
+						<!-- Mastery status buttons (requires parental consent) -->
 						<div class="flex items-center gap-1">
 							{#if isSavingMastery}
 								<Loader2 class="mr-1 h-4 w-4 animate-spin text-muted-foreground" />
 							{/if}
-							<Button
+							<ConsentButton
 								variant={masteryStatus === 'not_worked' ? 'default' : 'outline'}
 								size="sm"
 								class="h-8 gap-1 px-2 text-xs"
@@ -236,8 +237,8 @@
 							>
 								<Circle class="h-3.5 w-3.5" />
 								<span class="hidden sm:inline">Non fait</span>
-							</Button>
-							<Button
+							</ConsentButton>
+							<ConsentButton
 								variant={masteryStatus === 'mastered' ? 'default' : 'outline'}
 								size="sm"
 								class="h-8 gap-1 px-2 text-xs"
@@ -248,8 +249,8 @@
 							>
 								<CheckCircle class="h-3.5 w-3.5" />
 								<span class="hidden sm:inline">OK</span>
-							</Button>
-							<Button
+							</ConsentButton>
+							<ConsentButton
 								variant={masteryStatus === 'needs_review' ? 'default' : 'outline'}
 								size="sm"
 								class="h-8 gap-1 px-2 text-xs {masteryStatus === 'needs_review'
@@ -262,7 +263,7 @@
 							>
 								<AlertCircle class="h-3.5 w-3.5" />
 								<span class="hidden sm:inline">A revoir</span>
-							</Button>
+							</ConsentButton>
 						</div>
 
 						<!-- Pagination + Navigation next -->
@@ -390,12 +391,12 @@
 						<ChevronLeft class="h-4 w-4" />
 					</Button>
 
-					<!-- Mastery status buttons -->
+					<!-- Mastery status buttons (requires parental consent) -->
 					<div class="flex items-center gap-1">
 						{#if isSavingMastery}
 							<Loader2 class="h-3 w-3 animate-spin text-muted-foreground" />
 						{/if}
-						<Button
+						<ConsentButton
 							variant={masteryStatus === 'not_worked' ? 'default' : 'outline'}
 							size="sm"
 							class="h-8 px-2"
@@ -405,8 +406,8 @@
 							aria-pressed={masteryStatus === 'not_worked'}
 						>
 							<Circle class="h-4 w-4" />
-						</Button>
-						<Button
+						</ConsentButton>
+						<ConsentButton
 							variant={masteryStatus === 'mastered' ? 'default' : 'outline'}
 							size="sm"
 							class="h-8 px-2"
@@ -416,8 +417,8 @@
 							aria-pressed={masteryStatus === 'mastered'}
 						>
 							<CheckCircle class="h-4 w-4" />
-						</Button>
-						<Button
+						</ConsentButton>
+						<ConsentButton
 							variant={masteryStatus === 'needs_review' ? 'default' : 'outline'}
 							size="sm"
 							class="h-8 px-2 {masteryStatus === 'needs_review'
@@ -429,7 +430,7 @@
 							aria-pressed={masteryStatus === 'needs_review'}
 						>
 							<AlertCircle class="h-4 w-4" />
-						</Button>
+						</ConsentButton>
 					</div>
 
 					<!-- Pagination + Navigation next -->

@@ -33,7 +33,7 @@
 	import { validateRiddleAnswer, isAnswerComplete } from '$lib/utils/riddle-validator';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
+	import ConsentButton from '$lib/components/ConsentButton.svelte';
 	import RiddleNumericalInput from '$lib/components/riddles/inputs/RiddleNumericalInput.svelte';
 	import RiddleTextInput from '$lib/components/riddles/inputs/RiddleTextInput.svelte';
 	import RiddleQcmInput from '$lib/components/riddles/inputs/RiddleQcmInput.svelte';
@@ -252,16 +252,16 @@
 						<RiddleManualInput bind:value={manualAnswer} />
 					{/if}
 
-					<!-- Submit Button -->
+					<!-- Submit Button (requires parental consent) -->
 					<div class="mt-4 flex justify-center">
-						<Button onclick={handleSubmit} disabled={!canSubmit || loading} size="lg">
+						<ConsentButton onclick={handleSubmit} disabled={!canSubmit || loading} size="lg">
 							<Send class="mr-2 h-4 w-4" />
 							{loading
 								? 'Envoi en cours...'
 								: hasAnswer
 									? 'Valider ma réponse'
 									: 'Demander validation'}
-						</Button>
+						</ConsentButton>
 					</div>
 				</div>
 			{/if}
