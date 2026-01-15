@@ -102,9 +102,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Fetch parental consents for these students
+	// m.student may be an array or object depending on Supabase typing
 	const studentIds =
-		memberships?.map((m) => (m.student as { id: string })?.id).filter((id): id is string => !!id) ||
-		[];
+		memberships
+			?.map((m) => {
+				const student = Array.isArray(m.student) ? m.student[0] : m.student;
+				return (student as { id: string } | null)?.id;
+			})
+			.filter((id): id is string => !!id) || [];
 
 	const { data: consents } = await supabase
 		.from('parental_consents')
@@ -138,7 +143,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const classStudentMap = new Map<string, StudentConsentInfo[]>();
 
 	for (const membership of memberships || []) {
-		const student = membership.student as {
+		// m.student may be an array or object depending on Supabase typing
+		const studentRaw = Array.isArray(membership.student)
+			? membership.student[0]
+			: membership.student;
+		const student = studentRaw as {
 			id: string;
 			firstname: string | null;
 			lastname: string | null;

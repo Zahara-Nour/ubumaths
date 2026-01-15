@@ -5,10 +5,20 @@
  * The email contains a unique link for the parent to grant consent.
  */
 
-import { PUBLIC_APP_URL } from '$env/static/public';
-
 export const CONSENT_EMAIL_SUBJECT = 'Consentement parental requis - UbuMaths';
-export const SITE_URL = PUBLIC_APP_URL || 'https://ubumaths-6op8.vercel.app';
+
+/**
+ * Get the base URL for consent links.
+ * Uses VERCEL_URL in production, falls back to default for dev.
+ */
+export function getSiteUrl(): string {
+	// In Vercel environment
+	if (typeof process !== 'undefined' && process.env?.VERCEL_URL) {
+		return `https://${process.env.VERCEL_URL}`;
+	}
+	// Fallback to production URL
+	return 'https://ubumaths-6op8.vercel.app';
+}
 
 /**
  * Escape HTML entities to prevent XSS in emails
@@ -83,7 +93,7 @@ function getStudentName(data: ConsentEmailData): string {
  * Get the consent link URL
  */
 export function getConsentLink(token: string): string {
-	return `${SITE_URL}/consent/${token}`;
+	return `${getSiteUrl()}/consent/${token}`;
 }
 
 /**

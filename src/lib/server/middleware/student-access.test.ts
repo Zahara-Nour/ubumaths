@@ -102,7 +102,11 @@ const mockTeacherProfile: Profile = {
 	rejection_reason: null,
 	status: 'approved',
 	status_changed_at: null,
-	status_changed_by: null
+	status_changed_by: null,
+	// Consent fields (RGPD Article 8)
+	consent_required: false,
+	consent_granted_at: null,
+	consent_grace_period_ends: null
 };
 
 const mockAdminProfile: Profile = {
