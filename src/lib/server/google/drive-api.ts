@@ -56,6 +56,11 @@ function escapeQueryValue(value: string): string {
 const MAX_RETRIES = 3;
 
 /**
+ * Maximum number of retry attempts for server errors (5xx)
+ */
+const MAX_SERVER_ERROR_RETRIES = 2;
+
+/**
  * Google Drive file metadata interface
  */
 export interface DriveFileMetadata {
@@ -208,12 +213,21 @@ export class GoogleDriveClient {
 					case 502:
 					case 503:
 					case 504:
-						// Server errors - retry once
-						if (retryCount === 0) {
-							console.warn(`[GoogleDriveClient] Server error ${response.status}. Retrying once...`);
-							await sleep(2000);
+						// Server errors - retry with backoff
+						if (retryCount < MAX_SERVER_ERROR_RETRIES) {
+							const delay = calculateBackoff(retryCount);
+							console.warn(
+								`[GoogleDriveClient] Server error ${response.status}. ` +
+									`Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_SERVER_ERROR_RETRIES}). ` +
+									`Endpoint: ${endpoint.substring(0, 100)}...`
+							);
+							await sleep(delay);
 							return this.request<T>(endpoint, options, retryCount + 1);
 						}
+						console.error(
+							`[GoogleDriveClient] Server error ${response.status} after ${MAX_SERVER_ERROR_RETRIES} retries. ` +
+								`Endpoint: ${endpoint.substring(0, 100)}...`
+						);
 						throw new GoogleAPIError(error.message, response.status, error.status);
 
 					default:
@@ -1012,5 +1026,43 @@ export class GoogleDriveClient {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Move a file to a different folder
+	 *
+	 * @param fileId - File ID to move
+	 * @param newFolderId - Destination folder ID
+	 * @returns Updated file metadata
+	 *
+	 * @example
+	 * ```typescript
+	 * // Move file to a different folder
+	 * await client.moveFile('file123', 'newFolder456');
+	 * ```
+	 */
+	async moveFile(fileId: string, newFolderId: string): Promise<DriveFileMetadata> {
+		if (!fileId || !newFolderId) {
+			throw new Error('fileId and newFolderId are required');
+		}
+
+		// Get current parent(s)
+		const currentParent = await this.getParentFolderId(fileId);
+
+		if (currentParent === newFolderId) {
+			// Already in the right folder, just return current metadata
+			const endpoint = `/files/${fileId}?fields=id,name,mimeType,modifiedTime`;
+			return this.request<DriveFileMetadata>(endpoint);
+		}
+
+		// Move file by updating parents
+		let endpoint = `/files/${fileId}?addParents=${newFolderId}&fields=id,name,mimeType,modifiedTime`;
+		if (currentParent) {
+			endpoint += `&removeParents=${currentParent}`;
+		}
+
+		return this.request<DriveFileMetadata>(endpoint, {
+			method: 'PATCH'
+		});
 	}
 }

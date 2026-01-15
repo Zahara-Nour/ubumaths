@@ -122,7 +122,11 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			}
 		}
 
-		console.error('[Whiteboard Drive] List error:', err);
+		console.error('[Whiteboard Drive] List error:', {
+			error: err,
+			requestedFolderId,
+			userId: user.id
+		});
 		const message = err instanceof Error ? err.message : 'Unknown error';
 		throw error(500, `Failed to list Drive files: ${message}`);
 	}

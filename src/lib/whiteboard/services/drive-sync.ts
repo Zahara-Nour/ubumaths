@@ -244,18 +244,28 @@ class DriveSyncService {
 	 * @param document - Document to save
 	 * @param fileName - File name
 	 * @param fileId - Existing file ID (for updates)
+	 * @param folderId - Optional folder ID (not needed for updates - file stays in place)
 	 * @param onSyncComplete - Callback when sync completes
 	 */
 	scheduleAutoSync(
 		document: WhiteboardDocument,
 		fileName: string,
 		fileId: string | undefined,
+		folderId: string | undefined,
 		onSyncComplete?: (result: SyncResult) => void
 	): void {
 		this.cancelAutoSync();
 
 		this.autoSyncTimeout = setTimeout(async () => {
-			const result = await this.saveToDrive({ document, fileName, fileId });
+			// Note: For existing files (fileId provided), we intentionally don't pass folderId
+			// to prevent moving the file during auto-save. The file stays where it is.
+			// folderId is only used for new files (no fileId) to specify initial location.
+			const result = await this.saveToDrive({
+				document,
+				fileName,
+				fileId,
+				folderId: fileId ? undefined : folderId // Only pass folderId for new files
+			});
 
 			if (result.success) {
 				// Silent success for auto-sync

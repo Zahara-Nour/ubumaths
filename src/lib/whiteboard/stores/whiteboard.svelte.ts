@@ -55,6 +55,9 @@ import { driveSyncService } from '../services/drive-sync';
 /** LocalStorage key for autosave */
 const AUTOSAVE_KEY = 'ubumaths-whiteboard-autosave';
 
+/** LocalStorage key for sync state (Drive file/folder IDs) */
+const SYNC_STATE_KEY = 'ubumaths-whiteboard-sync-state';
+
 /** Autosave delay in milliseconds (1 minute) */
 const AUTOSAVE_DELAY_MS = 60_000;
 
@@ -348,15 +351,49 @@ function createWhiteboardStore() {
 		try {
 			const json = serialize(document);
 			localStorage.setItem(AUTOSAVE_KEY, json);
+
+			// Also save sync state if connected to Drive
+			if (syncState.driveFileId) {
+				const syncStateData = {
+					driveFileId: syncState.driveFileId,
+					driveFolderId: syncState.driveFolderId
+				};
+				localStorage.setItem(SYNC_STATE_KEY, JSON.stringify(syncStateData));
+			}
+
 			console.debug('[Whiteboard] Autosaved to localStorage');
 		} catch (error) {
 			// Handle quota exceeded or other errors gracefully
 			console.warn('[Whiteboard] Autosave failed:', error);
-			// TODO Phase 2: Notify user if autosave fails due to quota
-			// if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-			//     toaster.warning('Espace de stockage insuffisant');
-			// }
 		}
+	}
+
+	function loadSyncStateFromLocalStorage(): {
+		driveFileId: string | null;
+		driveFolderId: string | null;
+	} | null {
+		if (!browser) return null;
+
+		try {
+			const saved = localStorage.getItem(SYNC_STATE_KEY);
+			if (!saved) return null;
+
+			const data = JSON.parse(saved);
+			if (data && typeof data.driveFileId === 'string') {
+				return {
+					driveFileId: data.driveFileId,
+					driveFolderId: data.driveFolderId || null
+				};
+			}
+		} catch {
+			// Ignore parse errors
+		}
+		return null;
+	}
+
+	function clearSyncStateFromLocalStorage(): void {
+		if (!browser) return;
+		localStorage.removeItem(SYNC_STATE_KEY);
 	}
 
 	function updateDocument(updater: (doc: WhiteboardDocument) => WhiteboardDocument): void {
@@ -389,6 +426,7 @@ function createWhiteboardStore() {
 			document,
 			document.title || 'Sans titre',
 			syncState.driveFileId || undefined,
+			syncState.driveFolderId || undefined,
 			(result) => {
 				if (result.success && result.fileId) {
 					syncState = updateSyncStateAfterSync(syncState, result.fileId, result.modifiedTime);
@@ -484,6 +522,9 @@ function createWhiteboardStore() {
 			history = createHistoryManager(document);
 			hasUnsavedChanges = false;
 			selectedIds = new Set();
+			// Reset sync state for new document
+			syncState = createInitialSyncState();
+			clearSyncStateFromLocalStorage();
 		},
 
 		/**
@@ -517,6 +558,7 @@ function createWhiteboardStore() {
 
 		/**
 		 * Load from localStorage autosave if available
+		 * Also restores sync state (Drive file/folder IDs) if present
 		 */
 		loadFromAutosave(): boolean {
 			if (!browser) return false;
@@ -527,6 +569,18 @@ function createWhiteboardStore() {
 
 				const result = this.loadFromJson(saved);
 				if (result.success) {
+					// Also restore sync state if available
+					const savedSyncState = loadSyncStateFromLocalStorage();
+					if (savedSyncState && savedSyncState.driveFileId) {
+						syncState = {
+							status: 'synced',
+							lastSyncAt: new Date().toISOString(),
+							driveFileId: savedSyncState.driveFileId,
+							driveFolderId: savedSyncState.driveFolderId,
+							error: null
+						};
+						console.debug('[Whiteboard] Restored sync state:', savedSyncState.driveFileId);
+					}
 					console.debug('[Whiteboard] Restored from autosave');
 					return true;
 				}
@@ -543,6 +597,7 @@ function createWhiteboardStore() {
 		clearAutosave(): void {
 			if (!browser) return;
 			localStorage.removeItem(AUTOSAVE_KEY);
+			clearSyncStateFromLocalStorage();
 		},
 
 		/**
@@ -2136,6 +2191,7 @@ function createWhiteboardStore() {
 			history = createHistoryManager(document);
 			hasUnsavedChanges = false;
 			syncState = createInitialSyncState(); // Reset sync state
+			clearSyncStateFromLocalStorage();
 
 			return { success: true };
 		},
@@ -2171,6 +2227,16 @@ function createWhiteboardStore() {
 		setSyncSuccess(fileId: string, modifiedTime?: string): void {
 			syncState = updateSyncStateAfterSync(syncState, fileId, modifiedTime);
 			hasUnsavedChanges = false;
+			// Persist fileId to localStorage
+			if (browser) {
+				localStorage.setItem(
+					SYNC_STATE_KEY,
+					JSON.stringify({
+						driveFileId: fileId,
+						driveFolderId: syncState.driveFolderId
+					})
+				);
+			}
 		},
 
 		/**
@@ -2191,6 +2257,13 @@ function createWhiteboardStore() {
 				driveFolderId: folderId || null,
 				error: null
 			};
+			// Persist to localStorage if we have a fileId
+			if (fileId && browser) {
+				localStorage.setItem(
+					SYNC_STATE_KEY,
+					JSON.stringify({ driveFileId: fileId, driveFolderId: folderId || null })
+				);
+			}
 		},
 
 		/**
@@ -2198,6 +2271,7 @@ function createWhiteboardStore() {
 		 */
 		disconnectFromDrive(): void {
 			syncState = createInitialSyncState();
+			clearSyncStateFromLocalStorage();
 			driveSyncService.cancelAutoSync();
 		},
 

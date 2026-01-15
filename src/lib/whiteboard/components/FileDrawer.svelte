@@ -1,6 +1,6 @@
 <script lang="ts">
 	/**
-	 * FileDrawer - Left sidebar for file management
+	 * FileDrawer - Sheet overlay for file management
 	 *
 	 * Features:
 	 * - Google Drive file gallery with recent documents
@@ -8,7 +8,7 @@
 	 * - Save/Load to Google Drive
 	 * - Local file operations (new, save, open, export)
 	 * - Export to Google Classroom
-	 * - Collapsible sidebar
+	 * - Full-width overlay sheet for better UX
 	 */
 
 	import { onMount } from 'svelte';
@@ -19,11 +19,10 @@
 	import { generateThumbnail } from '../core/pdf-export';
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
+	import * as Sheet from '$lib/components/ui/sheet';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
-		ChevronLeft,
-		ChevronRight,
 		Cloud,
 		CloudOff,
 		Save,
@@ -38,7 +37,8 @@
 		Folder,
 		FolderPlus,
 		ArrowLeft,
-		Sparkles
+		Sparkles,
+		PanelLeftOpen
 	} from 'lucide-svelte';
 	import ExportDialog from './ExportDialog.svelte';
 	import ExportToClassroomDialog from './ExportToClassroomDialog.svelte';
@@ -85,6 +85,9 @@
 	let parentFolderId = $state<string | null>(null);
 	let currentSubfolderName = $state<string | null>(null);
 
+	/** Track if initial load has been done (to avoid infinite loop on empty folders) */
+	let initialLoadDone = $state(false);
+
 	// ==========================================================================
 	// Derived State
 	// ==========================================================================
@@ -121,18 +124,6 @@
 		checkGoogleConnection();
 	});
 
-	// Load classes and files when drawer opens and connected
-	$effect(() => {
-		if (fileDrawerVisible && googleConnected) {
-			if (classes.length === 0) {
-				loadClasses();
-			}
-			if (driveFiles.length === 0 && !isLoadingFiles) {
-				loadDriveFiles();
-			}
-		}
-	});
-
 	// ==========================================================================
 	// Connection Check
 	// ==========================================================================
@@ -147,6 +138,11 @@
 				// If connected, update sync state to allow auto-sync
 				if (googleConnected && syncState.status === 'disconnected') {
 					whiteboardStore.connectToDrive();
+				}
+				// If drawer is already open, trigger initial load now
+				// (handles case where user opened drawer before connection check completed)
+				if (googleConnected && fileDrawerVisible) {
+					triggerInitialLoadIfNeeded();
 				}
 			} else {
 				googleConnected = false;
@@ -179,10 +175,16 @@
 					wasAutoDetected = true;
 					// Load class folder
 					await loadClassFolder(detected.class);
+					return;
 				}
 			}
+
+			// No auto-detection, load root folder
+			await loadDriveFiles();
 		} catch (e) {
 			console.error('Failed to load classes:', e);
+			// Still try to load files on error
+			await loadDriveFiles();
 		}
 	}
 
@@ -196,7 +198,6 @@
 		} catch (e) {
 			console.error('Failed to load class folder:', e);
 			toaster.error('Erreur lors du chargement du dossier');
-		} finally {
 			isLoadingFiles = false;
 		}
 	}
@@ -239,6 +240,7 @@
 	}
 
 	async function loadDriveFilesFromFolder(folderId: string) {
+		isLoadingFiles = true;
 		try {
 			const result = await driveSyncService.listFiles(folderId);
 			driveFiles = result.files;
@@ -248,6 +250,8 @@
 		} catch (e) {
 			console.error('Failed to load drive files:', e);
 			toaster.error('Impossible de charger les fichiers');
+		} finally {
+			isLoadingFiles = false;
 		}
 	}
 
@@ -260,35 +264,24 @@
 	// ==========================================================================
 
 	async function handleOpenFolder(folder: DriveFolder) {
-		isLoadingFiles = true;
 		currentSubfolderName = folder.name;
-		try {
-			await loadDriveFilesFromFolder(folder.id);
-		} finally {
-			isLoadingFiles = false;
-		}
+		await loadDriveFilesFromFolder(folder.id);
 	}
 
 	async function handleGoBack() {
+		currentSubfolderName = null;
 		if (!selectedClassId || !selectedClass) {
 			// Go back to root
 			currentFolderId = null;
 			parentFolderId = null;
-			currentSubfolderName = null;
 			await loadDriveFiles();
 		} else {
 			// Go back to class folder
-			isLoadingFiles = true;
-			currentSubfolderName = null;
-			try {
-				const classFolderId = await driveSyncService.getOrCreateClassFolder(
-					selectedClass.join_code,
-					selectedClass.name
-				);
-				await loadDriveFilesFromFolder(classFolderId);
-			} finally {
-				isLoadingFiles = false;
-			}
+			const classFolderId = await driveSyncService.getOrCreateClassFolder(
+				selectedClass.join_code,
+				selectedClass.name
+			);
+			await loadDriveFilesFromFolder(classFolderId);
 		}
 	}
 
@@ -329,10 +322,13 @@
 
 			if (result.success && result.document) {
 				whiteboardStore.loadDocument(result.document);
-				whiteboardStore.connectToDrive(file.id);
+				// Pass currentFolderId so auto-sync knows where the file is located
+				whiteboardStore.connectToDrive(file.id, currentFolderId || undefined);
 				whiteboardStore.setSyncSuccess(file.id, result.modifiedTime!);
 				toaster.success('Document chargé');
 				selectedFileId = null;
+				// Close drawer after loading
+				whiteboardStore.toggleFileDrawer();
 			} else {
 				toaster.error(result.error || 'Erreur de chargement');
 			}
@@ -353,6 +349,15 @@
 
 		isSavingToDrive = true;
 
+		// Debug: log what we're about to save
+		console.log('[FileDrawer] handleSaveToDrive called:', {
+			'syncState.driveFileId': syncState.driveFileId,
+			'syncState.driveFolderId': syncState.driveFolderId,
+			'syncState.status': syncState.status,
+			currentFolderId,
+			docTitle: doc.title
+		});
+
 		try {
 			// Generate thumbnail of first page
 			let thumbnailDataUrl: string | undefined;
@@ -365,11 +370,15 @@
 				}
 			}
 
+			const fileIdToUse = syncState.driveFileId || undefined;
+			const folderIdToUse = currentFolderId || undefined;
+			console.log('[FileDrawer] Calling saveToDrive with:', { fileIdToUse, folderIdToUse });
+
 			const result = await driveSyncService.saveToDrive({
 				document: doc,
 				fileName: doc.title || 'Sans titre',
-				fileId: syncState.driveFileId || undefined,
-				folderId: currentFolderId || undefined,
+				fileId: fileIdToUse,
+				folderId: folderIdToUse,
 				thumbnail: thumbnailDataUrl
 			});
 
@@ -448,6 +457,8 @@
 
 		whiteboardStore.createNew(title || 'Sans titre');
 		toaster.success('Nouveau document créé');
+		// Close drawer
+		whiteboardStore.toggleFileDrawer();
 	}
 
 	function handleSaveDocument() {
@@ -491,6 +502,8 @@
 
 			if (result.success) {
 				toaster.success('Document chargé');
+				// Close drawer
+				whiteboardStore.toggleFileDrawer();
 			} else {
 				toaster.error(result.error || 'Erreur lors du chargement');
 			}
@@ -510,8 +523,41 @@
 		goto('/dashboard/teacher/settings/google');
 	}
 
-	function toggleDrawer() {
+	/**
+	 * Handle drawer open/close from Sheet component
+	 * Follows: UI event → handler → side effect (explicit flow)
+	 */
+	function handleOpenChange(open: boolean) {
+		if (open !== fileDrawerVisible) {
+			whiteboardStore.toggleFileDrawer();
+		}
+		// When opening, trigger initial load
+		if (open) {
+			triggerInitialLoadIfNeeded();
+		}
+	}
+
+	/**
+	 * Handle drawer toggle from external button
+	 * Follows: UI event → handler → side effect (explicit flow)
+	 */
+	function handleToggleDrawer() {
+		const willOpen = !fileDrawerVisible;
 		whiteboardStore.toggleFileDrawer();
+		// When opening, trigger initial load
+		if (willOpen) {
+			triggerInitialLoadIfNeeded();
+		}
+	}
+
+	/**
+	 * Trigger initial data load (classes + files) if not already done
+	 */
+	function triggerInitialLoadIfNeeded() {
+		if (googleConnected && !initialLoadDone) {
+			initialLoadDone = true;
+			loadClasses();
+		}
 	}
 
 	// ==========================================================================
@@ -528,347 +574,334 @@
 	}
 </script>
 
-<!-- Toggle button (left side) -->
+<!-- Toggle button (always visible) -->
 <button
 	type="button"
-	class="file-drawer-toggle absolute top-1/2 left-0 z-10 -translate-y-1/2 rounded-r-md border border-l-0 border-border bg-background p-1 shadow-sm transition-transform hover:bg-accent"
-	class:translate-x-0={!fileDrawerVisible}
-	class:translate-x-[220px]={fileDrawerVisible}
-	onclick={toggleDrawer}
-	aria-label={fileDrawerVisible ? 'Masquer les fichiers' : 'Afficher les fichiers'}
-	aria-expanded={fileDrawerVisible}
+	class="absolute top-1/2 left-2 z-10 -translate-y-1/2 rounded-md border border-border bg-background p-2 shadow-sm transition-all hover:bg-accent"
+	onclick={handleToggleDrawer}
+	aria-label="Ouvrir les fichiers"
 >
-	{#if fileDrawerVisible}
-		<ChevronLeft class="h-4 w-4" />
-	{:else}
-		<ChevronRight class="h-4 w-4" />
-	{/if}
+	<PanelLeftOpen class="h-5 w-5" />
 </button>
 
-<!-- File Drawer -->
-<aside
-	class="file-drawer absolute top-0 bottom-0 left-0 flex w-[220px] flex-col border-r border-border bg-muted/30 transition-transform duration-200"
-	class:translate-x-0={fileDrawerVisible}
-	class:-translate-x-full={!fileDrawerVisible}
-	aria-label="Gestion des fichiers"
->
-	<!-- Header -->
-	<div class="flex items-center justify-between border-b border-border px-3 py-2">
-		<span class="text-sm font-medium">Fichiers</span>
-		{#if googleConnected && !isLoadingFiles}
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={handleRefreshFiles}
-				title="Actualiser"
-				aria-label="Actualiser la liste"
-				class="h-7 w-7 p-0"
-			>
-				<RefreshCw class="h-4 w-4" />
-			</Button>
-		{/if}
-	</div>
-
-	<!-- Main content (scrollable) -->
-	<div class="flex-1 overflow-y-auto">
-		{#if isCheckingConnection}
-			<!-- Loading connection status -->
-			<div class="flex items-center justify-center py-8">
-				<Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
-			</div>
-		{:else if googleConnected}
-			<!-- Sync Status -->
-			<div
-				class="flex items-center gap-2 border-b border-border px-3 py-2 text-sm {getSyncStatusColor(
-					syncState
-				)}"
-			>
-				{#if syncState.status === 'syncing'}
-					<Loader2 class="h-4 w-4 animate-spin" />
-				{:else if syncState.status === 'disconnected'}
-					<CloudOff class="h-4 w-4" />
-				{:else}
-					<Cloud class="h-4 w-4" />
-				{/if}
-				<span class="truncate text-xs">{getSyncStatusLabel(syncState)}</span>
-			</div>
-
-			<!-- Class Selector -->
-			{#if classes.length > 0}
-				<div class="border-b border-border px-3 py-2">
-					<Label class="mb-1 block text-xs text-muted-foreground">Classe</Label>
-					<div class="flex items-center gap-2">
-						<div class="flex-1">
-							<MySelect
-								type="single"
-								value={selectedClassId ?? ''}
-								items={classItems}
-								onValueChange={handleClassChange}
-								placeholder="Toutes les classes"
-							/>
-						</div>
-						{#if wasAutoDetected && selectedClassId}
-							<div class="flex items-center gap-1 text-xs text-primary" title="Auto-détecté">
-								<Sparkles class="h-3 w-3" />
-							</div>
-						{/if}
-					</div>
-				</div>
-			{/if}
-
-			<!-- Subfolder Breadcrumb -->
-			{#if isInSubfolder && currentSubfolderName}
-				<div class="flex items-center gap-1 border-b border-border px-3 py-1.5 text-xs">
-					<button
+<!-- File Drawer Sheet -->
+<Sheet.Root open={fileDrawerVisible} onOpenChange={handleOpenChange}>
+	<Sheet.Content side="left" class="w-[450px] sm:max-w-[450px]">
+		<Sheet.Header class="border-b pb-4">
+			<div class="flex items-center justify-between pr-8">
+				<Sheet.Title class="text-lg">Fichiers</Sheet.Title>
+				{#if googleConnected && !isLoadingFiles}
+					<Button
 						type="button"
-						onclick={handleGoBack}
-						class="flex items-center gap-1 text-muted-foreground hover:text-foreground"
-						title="Retour"
+						variant="ghost"
+						size="sm"
+						onclick={handleRefreshFiles}
+						title="Actualiser"
+						aria-label="Actualiser la liste"
+						class="h-8 w-8 p-0"
 					>
-						<ArrowLeft class="h-3 w-3" />
-					</button>
-					<Folder class="h-3 w-3 text-muted-foreground" />
-					<span class="truncate">{currentSubfolderName}</span>
-				</div>
-			{/if}
+						<RefreshCw class="h-4 w-4" />
+					</Button>
+				{/if}
+			</div>
+		</Sheet.Header>
 
-			<!-- Drive Actions -->
-			<div class="flex flex-col gap-1 border-b border-border px-3 py-2">
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={handleSaveToDrive}
-					disabled={isSavingToDrive}
-					class="h-8 justify-start gap-2"
+		<!-- Main content (scrollable) -->
+		<div class="flex h-[calc(100vh-180px)] flex-col overflow-y-auto py-4">
+			{#if isCheckingConnection}
+				<!-- Loading connection status -->
+				<div class="flex items-center justify-center py-12">
+					<Loader2 class="h-8 w-8 animate-spin text-muted-foreground" />
+				</div>
+			{:else if googleConnected}
+				<!-- Sync Status -->
+				<div
+					class="mb-4 flex items-center gap-2 rounded-lg border px-4 py-2 {getSyncStatusColor(
+						syncState
+					)}"
 				>
-					{#if isSavingToDrive}
+					{#if syncState.status === 'syncing'}
 						<Loader2 class="h-4 w-4 animate-spin" />
+					{:else if syncState.status === 'disconnected'}
+						<CloudOff class="h-4 w-4" />
 					{:else}
 						<Cloud class="h-4 w-4" />
 					{/if}
-					<span>Sauvegarder</span>
-				</Button>
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={handleSaveAsToDrive}
-					class="h-8 justify-start gap-2"
-				>
-					<Save class="h-4 w-4" />
-					<span>Enregistrer sous...</span>
-				</Button>
-			</div>
-
-			<!-- Folders Grid -->
-			{#if folders.length > 0 && !isInSubfolder}
-				<div class="border-b border-border px-3 py-2">
-					<span class="mb-2 block text-xs text-muted-foreground">Dossiers</span>
-					<div class="grid grid-cols-2 gap-2">
-						{#each folders as folder (folder.id)}
-							<button
-								type="button"
-								class="flex items-center gap-2 rounded border border-border bg-white p-2 text-left transition-colors hover:border-primary hover:bg-accent"
-								ondblclick={() => handleOpenFolder(folder)}
-								title="Double-clic pour ouvrir"
-							>
-								<Folder class="h-4 w-4 shrink-0 text-muted-foreground" />
-								<span class="truncate text-[10px]">{folder.name}</span>
-							</button>
-						{/each}
-					</div>
+					<span class="text-sm">{getSyncStatusLabel(syncState)}</span>
 				</div>
-			{/if}
 
-			<!-- Create Folder Button -->
-			{#if canCreateSubfolder}
-				<div class="border-b border-border px-3 py-2">
+				<!-- Class Selector -->
+				{#if classes.length > 0}
+					<div class="mb-4">
+						<Label class="mb-2 block text-sm text-muted-foreground">Classe</Label>
+						<div class="flex items-center gap-3">
+							<div class="flex-1">
+								<MySelect
+									type="single"
+									value={selectedClassId ?? ''}
+									items={classItems}
+									onValueChange={handleClassChange}
+									placeholder="Toutes les classes"
+								/>
+							</div>
+							{#if wasAutoDetected && selectedClassId}
+								<div
+									class="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs text-primary"
+									title="Classe auto-détectée selon l'horaire"
+								>
+									<Sparkles class="h-3 w-3" />
+									<span>Auto</span>
+								</div>
+							{/if}
+						</div>
+					</div>
+				{/if}
+
+				<!-- Subfolder Breadcrumb -->
+				{#if isInSubfolder && currentSubfolderName}
+					<div class="mb-4 flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm">
+						<button
+							type="button"
+							onclick={handleGoBack}
+							class="flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+							title="Retour"
+						>
+							<ArrowLeft class="h-4 w-4" />
+						</button>
+						<Folder class="h-4 w-4 text-muted-foreground" />
+						<span class="font-medium">{currentSubfolderName}</span>
+					</div>
+				{/if}
+
+				<!-- Drive Actions -->
+				<div class="mb-4 grid grid-cols-2 gap-2">
 					<Button
 						type="button"
 						variant="outline"
-						size="sm"
-						onclick={() => (createFolderDialogOpen = true)}
-						class="h-7 w-full justify-start gap-2 text-xs"
+						onclick={handleSaveToDrive}
+						disabled={isSavingToDrive}
+						class="h-10 gap-2"
 					>
-						<FolderPlus class="h-3 w-3" />
-						<span>Nouveau dossier</span>
+						{#if isSavingToDrive}
+							<Loader2 class="h-4 w-4 animate-spin" />
+						{:else}
+							<Cloud class="h-4 w-4" />
+						{/if}
+						<span>Sauvegarder</span>
+					</Button>
+					<Button type="button" variant="outline" onclick={handleSaveAsToDrive} class="h-10 gap-2">
+						<Save class="h-4 w-4" />
+						<span>Enregistrer sous...</span>
+					</Button>
+				</div>
+
+				<!-- Folders Grid -->
+				{#if folders.length > 0 && !isInSubfolder}
+					<div class="mb-4">
+						<span class="mb-2 block text-sm text-muted-foreground">Dossiers</span>
+						<div class="grid grid-cols-3 gap-2">
+							{#each folders as folder (folder.id)}
+								<button
+									type="button"
+									class="flex items-center gap-2 rounded-lg border border-border bg-card p-3 text-left transition-colors hover:border-primary hover:bg-accent active:scale-95"
+									onclick={() => handleOpenFolder(folder)}
+									title="Ouvrir le dossier"
+								>
+									<Folder class="h-5 w-5 shrink-0 text-amber-500" />
+									<span class="truncate text-xs font-medium">{folder.name}</span>
+								</button>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
+				<!-- Create Folder Button -->
+				{#if canCreateSubfolder}
+					<div class="mb-4">
+						<Button
+							type="button"
+							variant="outline"
+							size="sm"
+							onclick={() => (createFolderDialogOpen = true)}
+							class="h-9 w-full gap-2"
+						>
+							<FolderPlus class="h-4 w-4" />
+							<span>Nouveau dossier</span>
+						</Button>
+					</div>
+				{/if}
+
+				<!-- Gallery Preview -->
+				<div class="flex-1">
+					<span class="mb-3 block text-sm text-muted-foreground">
+						{#if selectedClassId && !isInSubfolder}
+							Documents de la classe
+						{:else if isInSubfolder}
+							Documents du dossier
+						{:else}
+							Documents récents
+						{/if}
+					</span>
+					{#if isLoadingFiles}
+						<div class="flex items-center justify-center py-8">
+							<Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
+						</div>
+					{:else if driveFiles.length === 0}
+						<p class="py-8 text-center text-sm text-muted-foreground">Aucun document</p>
+					{:else}
+						<div class="grid grid-cols-3 gap-3">
+							{#each driveFiles.slice(0, 9) as file (file.id)}
+								<button
+									type="button"
+									class="relative flex aspect-[3/4] flex-col overflow-hidden rounded-lg border bg-card transition-all hover:border-primary hover:shadow-md"
+									class:ring-2={selectedFileId === file.id || loadingFileId === file.id}
+									class:ring-primary={selectedFileId === file.id && loadingFileId !== file.id}
+									class:ring-blue-500={loadingFileId === file.id}
+									class:opacity-75={loadingFileId && loadingFileId !== file.id}
+									onclick={() => handleSelectFile(file)}
+									ondblclick={() => handleOpenFile(file)}
+									disabled={loadingFileId !== null}
+									title="{file.name}\nDouble-clic pour ouvrir"
+								>
+									<!-- Loading overlay -->
+									{#if loadingFileId === file.id}
+										<div class="absolute inset-0 z-10 flex items-center justify-center bg-white/80">
+											<Loader2 class="h-8 w-8 animate-spin text-blue-500" />
+										</div>
+									{/if}
+									<!-- Thumbnail or fallback icon -->
+									<div class="flex flex-1 items-center justify-center overflow-hidden bg-gray-50">
+										{#if file.thumbnailUrl}
+											<img
+												src={file.thumbnailUrl}
+												alt={file.name}
+												class="h-full w-full object-contain"
+												loading="lazy"
+											/>
+										{:else}
+											<FileText class="h-10 w-10 text-muted-foreground" />
+										{/if}
+									</div>
+									<!-- File info -->
+									<div class="w-full border-t bg-card p-2">
+										<span class="block w-full truncate text-center text-xs font-medium">
+											{file.name.replace(/\.ubw$/, '')}
+										</span>
+										<span class="block text-center text-[10px] text-muted-foreground">
+											{formatDate(file.modifiedTime)}
+										</span>
+									</div>
+								</button>
+							{/each}
+						</div>
+						{#if selectedFileId}
+							<Button
+								type="button"
+								variant="default"
+								disabled={loadingFileId !== null}
+								onclick={() => {
+									const file = driveFiles.find((f) => f.id === selectedFileId);
+									if (file) handleOpenFile(file);
+								}}
+								class="mt-4 w-full"
+							>
+								{#if loadingFileId === selectedFileId}
+									<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+									Chargement...
+								{:else}
+									Ouvrir le document
+								{/if}
+							</Button>
+						{/if}
+						{#if driveFiles.length > 9}
+							<p class="mt-3 text-center text-sm text-muted-foreground">
+								+{driveFiles.length - 9} autres documents
+							</p>
+						{/if}
+					{/if}
+				</div>
+
+				<!-- Export Classroom -->
+				<div class="mt-4 border-t pt-4">
+					<Button
+						type="button"
+						variant="secondary"
+						onclick={() => (exportToClassroomDialogOpen = true)}
+						class="h-10 w-full gap-2"
+					>
+						<GraduationCap class="h-4 w-4" />
+						<span>Publier sur Classroom</span>
+					</Button>
+				</div>
+			{:else}
+				<!-- Not connected to Google -->
+				<div class="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+					<CloudOff class="h-12 w-12 text-muted-foreground" />
+					<div>
+						<p class="mb-1 font-medium">Google Drive non connecté</p>
+						<p class="text-sm text-muted-foreground">
+							Connectez votre compte pour synchroniser vos documents
+						</p>
+					</div>
+					<Button type="button" variant="default" onclick={handleConnectGoogle} class="gap-2">
+						<LogIn class="h-4 w-4" />
+						<span>Se connecter</span>
 					</Button>
 				</div>
 			{/if}
+		</div>
 
-			<!-- Gallery Preview -->
-			<div class="px-3 py-2">
-				<span class="mb-2 block text-xs text-muted-foreground">
-					{#if selectedClassId && !isInSubfolder}
-						Documents de la classe
-					{:else if isInSubfolder}
-						Documents du dossier
-					{:else}
-						Documents récents
-					{/if}
-				</span>
-				{#if isLoadingFiles}
-					<div class="flex items-center justify-center py-4">
-						<Loader2 class="h-5 w-5 animate-spin text-muted-foreground" />
-					</div>
-				{:else if driveFiles.length === 0}
-					<p class="py-4 text-center text-xs text-muted-foreground">Aucun document</p>
-				{:else}
-					<div class="grid grid-cols-2 gap-2">
-						{#each driveFiles.slice(0, 6) as file (file.id)}
-							<button
-								type="button"
-								class="relative flex aspect-[3/4] flex-col overflow-hidden rounded border bg-white transition-all hover:border-primary"
-								class:ring-2={selectedFileId === file.id || loadingFileId === file.id}
-								class:ring-primary={selectedFileId === file.id && loadingFileId !== file.id}
-								class:ring-blue-500={loadingFileId === file.id}
-								class:opacity-75={loadingFileId && loadingFileId !== file.id}
-								onclick={() => handleSelectFile(file)}
-								ondblclick={() => handleOpenFile(file)}
-								disabled={loadingFileId !== null}
-								title="{file.name}\nDouble-clic pour ouvrir"
-							>
-								<!-- Loading overlay -->
-								{#if loadingFileId === file.id}
-									<div class="absolute inset-0 z-10 flex items-center justify-center bg-white/80">
-										<Loader2 class="h-6 w-6 animate-spin text-blue-500" />
-									</div>
-								{/if}
-								<!-- Thumbnail or fallback icon -->
-								<div class="flex flex-1 items-center justify-center overflow-hidden bg-gray-50">
-									{#if file.thumbnailUrl}
-										<img
-											src={file.thumbnailUrl}
-											alt={file.name}
-											class="h-full w-full object-contain"
-											loading="lazy"
-										/>
-									{:else}
-										<FileText class="h-6 w-6 text-muted-foreground" />
-									{/if}
-								</div>
-								<!-- File info -->
-								<div class="w-full border-t bg-white p-1">
-									<span class="block w-full truncate text-center text-[9px]">
-										{file.name.replace(/\.ubw$/, '')}
-									</span>
-									<span class="block text-center text-[8px] text-muted-foreground">
-										{formatDate(file.modifiedTime)}
-									</span>
-								</div>
-							</button>
-						{/each}
-					</div>
-					{#if selectedFileId}
-						<Button
-							type="button"
-							variant="default"
-							size="sm"
-							disabled={loadingFileId !== null}
-							onclick={() => {
-								const file = driveFiles.find((f) => f.id === selectedFileId);
-								if (file) handleOpenFile(file);
-							}}
-							class="mt-2 w-full"
-						>
-							{#if loadingFileId === selectedFileId}
-								<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-								Chargement...
-							{:else}
-								Ouvrir
-							{/if}
-						</Button>
-					{/if}
-					{#if driveFiles.length > 6}
-						<p class="mt-2 text-center text-xs text-muted-foreground">
-							+{driveFiles.length - 6} autres documents
-						</p>
-					{/if}
-				{/if}
-			</div>
-
-			<!-- Export Classroom -->
-			<div class="border-t border-border px-3 py-2">
+		<!-- Footer - Local operations -->
+		<Sheet.Footer class="border-t pt-4">
+			<div class="grid w-full grid-cols-4 gap-2">
 				<Button
 					type="button"
 					variant="ghost"
 					size="sm"
-					onclick={() => (exportToClassroomDialogOpen = true)}
-					class="h-8 w-full justify-start gap-2"
+					onclick={handleNewDocument}
+					class="h-9 flex-col gap-1 p-1"
+					title="Nouveau document"
 				>
-					<GraduationCap class="h-4 w-4" />
-					<span>Publier sur Classroom</span>
+					<FilePlus class="h-4 w-4" />
+					<span class="text-[10px]">Nouveau</span>
 				</Button>
-			</div>
-		{:else}
-			<!-- Not connected to Google -->
-			<div class="flex flex-col items-center gap-3 px-3 py-6 text-center">
-				<CloudOff class="h-8 w-8 text-muted-foreground" />
-				<p class="text-xs text-muted-foreground">
-					Connectez Google Drive pour synchroniser vos documents
-				</p>
 				<Button
 					type="button"
-					variant="default"
+					variant="ghost"
 					size="sm"
-					onclick={handleConnectGoogle}
-					class="gap-2"
+					onclick={handleSaveDocument}
+					class="h-9 flex-col gap-1 p-1"
+					title="Enregistrer localement"
 				>
-					<LogIn class="h-4 w-4" />
-					<span>Se connecter</span>
+					<Save class="h-4 w-4" />
+					<span class="text-[10px]">Local</span>
+				</Button>
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={handleOpenDocument}
+					class="h-9 flex-col gap-1 p-1"
+					title="Ouvrir un fichier local"
+				>
+					<FolderOpen class="h-4 w-4" />
+					<span class="text-[10px]">Ouvrir</span>
+				</Button>
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={() => (exportDialogOpen = true)}
+					class="h-9 flex-col gap-1 p-1"
+					title="Exporter (PDF, image...)"
+				>
+					<Download class="h-4 w-4" />
+					<span class="text-[10px]">Export</span>
 				</Button>
 			</div>
-		{/if}
-	</div>
-
-	<!-- Local Section (footer) -->
-	<div class="border-t border-border px-3 py-2">
-		<div class="flex flex-col gap-1">
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={handleNewDocument}
-				class="h-8 justify-start gap-2"
-			>
-				<FilePlus class="h-4 w-4" />
-				<span>Nouveau</span>
-			</Button>
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={handleSaveDocument}
-				class="h-8 justify-start gap-2"
-			>
-				<Save class="h-4 w-4" />
-				<span>Enregistrer (.ubw)</span>
-			</Button>
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={handleOpenDocument}
-				class="h-8 justify-start gap-2"
-			>
-				<FolderOpen class="h-4 w-4" />
-				<span>Ouvrir (.ubw)</span>
-			</Button>
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={() => (exportDialogOpen = true)}
-				class="h-8 justify-start gap-2"
-			>
-				<Download class="h-4 w-4" />
-				<span>Exporter...</span>
-			</Button>
-		</div>
-	</div>
-</aside>
+		</Sheet.Footer>
+	</Sheet.Content>
+</Sheet.Root>
 
 <!-- Hidden file input -->
 <input
@@ -895,15 +928,3 @@
 	isCreating={isCreatingFolder}
 	onFolderCreated={handleCreateFolder}
 />
-
-<style>
-	.file-drawer {
-		/* Ensure drawer stays above canvas but below modals */
-		z-index: 20;
-	}
-
-	.file-drawer-toggle {
-		/* Ensure toggle button is above drawer */
-		z-index: 21;
-	}
-</style>

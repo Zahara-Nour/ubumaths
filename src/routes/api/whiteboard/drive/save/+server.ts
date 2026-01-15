@@ -49,6 +49,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const { document, fileName, fileId, folderId: requestedFolderId, thumbnail } = validation.data;
 
+	// Debug: log what we received
+	console.log('[Whiteboard Drive Save] Request received:', {
+		fileId: fileId || 'undefined (will create new)',
+		requestedFolderId: requestedFolderId || 'undefined (will use root)',
+		fileName,
+		hasThumbnail: !!thumbnail
+	});
+
 	// Validate document structure
 	const documentJson = JSON.stringify(document);
 	const docValidation = validateUbwFile(documentJson);
@@ -100,9 +108,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		let result;
 		if (fileId) {
-			// Update existing file
+			// Update existing file content
 			result = await driveClient.updateFile(fileId, content);
 			console.log(`[Whiteboard Drive] Updated file ${fileId} for teacher ${user.id}`);
+
+			// Only move file if folderId was EXPLICITLY provided in the request
+			// This prevents auto-save (which doesn't send folderId) from moving files
+			if (requestedFolderId) {
+				const currentParent = await driveClient.getParentFolderId(fileId);
+				if (currentParent !== requestedFolderId) {
+					await driveClient.moveFile(fileId, requestedFolderId);
+					console.log(`[Whiteboard Drive] Moved file ${fileId} to folder ${requestedFolderId}`);
+				}
+			}
 
 			// Update appProperties with thumbnail ID if we have a new one
 			if (thumbnailFileId) {
