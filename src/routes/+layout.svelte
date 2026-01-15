@@ -25,6 +25,7 @@
 	import { toaster as _toaster } from '$lib/stores/toaster.svelte';
 	import { initializeTemplates } from '$lib/stores/vipCardTemplates.svelte';
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import { navigating } from '$app/stores';
 	import type { LayoutData } from './$types';
 	import { Toaster } from 'svelte-sonner';
@@ -138,10 +139,22 @@
 	{#if !isDashboardRoute && !isWhiteboardRoute}
 		<footer class="border-t border-border bg-background py-4">
 			<div
-				class="container mx-auto flex items-center justify-between px-4 text-sm text-muted-foreground"
+				class="container mx-auto flex flex-col items-center justify-between gap-2 px-4 text-sm text-muted-foreground sm:flex-row"
 			>
-				<p>&copy; {new Date().getFullYear()} UbuMaths. Tous droits réservés.</p>
-				<p class="text-xs">{getVersion()}</p>
+				<p>&copy; {new Date().getFullYear()} UbuMaths. Tous droits reserves.</p>
+				<nav class="flex items-center gap-4">
+					<a href={resolve('/legal/confidentialite')} class="hover:text-foreground hover:underline">
+						Confidentialite
+					</a>
+					<a href={resolve('/legal/cgu')} class="hover:text-foreground hover:underline"> CGU </a>
+					<a
+						href={resolve('/legal/mentions-legales')}
+						class="hover:text-foreground hover:underline"
+					>
+						Mentions legales
+					</a>
+					<span class="text-xs">{getVersion()}</span>
+				</nav>
 			</div>
 		</footer>
 	{/if}
