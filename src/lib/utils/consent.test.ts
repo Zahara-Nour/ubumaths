@@ -413,8 +413,9 @@ describe('Parental Consent Utilities', () => {
 				expect(status.required).toBe(true);
 				expect(status.granted).toBe(false);
 				expect(status.inGracePeriod).toBe(true);
-				expect(status.gracePeriodEnds).toBeInstanceOf(Date);
-				expect(status.gracePeriodEnds?.getTime()).toBe(futureDate.getTime());
+				// gracePeriodEnds is now ISO string, not Date
+				expect(typeof status.gracePeriodEnds).toBe('string');
+				expect(status.gracePeriodEnds).toBe(futureDate.toISOString());
 				expect(status.hasFullAccess).toBe(true);
 			});
 
@@ -474,8 +475,8 @@ describe('Parental Consent Utilities', () => {
 			});
 		});
 
-		describe('grace period date conversion', () => {
-			it('converts grace period string to Date object', () => {
+		describe('grace period date handling', () => {
+			it('preserves grace period as ISO string', () => {
 				const dateString = '2025-12-31T23:59:59.000Z';
 
 				const studentProfile: ConsentProfile = {
@@ -487,8 +488,9 @@ describe('Parental Consent Utilities', () => {
 
 				const status = getConsentStatus(studentProfile);
 
-				expect(status.gracePeriodEnds).toBeInstanceOf(Date);
-				expect(status.gracePeriodEnds?.toISOString()).toBe(dateString);
+				// gracePeriodEnds is now kept as ISO string for SvelteKit serialization
+				expect(typeof status.gracePeriodEnds).toBe('string');
+				expect(status.gracePeriodEnds).toBe(dateString);
 			});
 
 			it('returns null when grace period ends is null', () => {
