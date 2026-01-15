@@ -1,7 +1,7 @@
 # Audit de Conformite RGPD - UbuMaths
 
 > **Date d'audit** : 2026-01-15
-> **Version** : 1.2
+> **Version** : 1.3
 > **Statut global** : PARTIELLEMENT CONFORME (6/10)
 
 ---
@@ -30,7 +30,7 @@
 | Chiffrement & Securite          | 8/10     | Bon                     |
 | Minimisation des donnees        | 9/10     | Excellent               |
 | Retention des donnees           | 2/10     | **CRITIQUE**            |
-| Droits utilisateur              | 6/10     | Partiel (v1.2)          |
+| Droits utilisateur              | 7/10     | Bon (v1.3)              |
 | Documentation legale            | 7/10     | Bon (v1.2)              |
 | Consentement mineurs            | 0/10     | **Manquant**            |
 | **GLOBAL**                      | **6/10** | **PARTIELLEMENT CONF.** |
@@ -291,10 +291,10 @@ CRON_SECRET                   # Secret taches planifiees
 **Situation actuelle** :
 
 - ~~Aucune API pour supprimer un compte utilisateur~~ **API implementee** (`DELETE /api/account/delete`)
-- Aucune interface utilisateur pour demander la suppression (a implementer)
+- ~~Aucune interface utilisateur pour demander la suppression~~ **UI implementee** (menu utilisateur)
 - ~~Soft deletes sur les messages (contenu reste accessible)~~ **Hard delete avec anonymisation des audits**
 
-> **Amelioration 2026-01-15** : Implementation de l'API de suppression de compte conforme RGPD Art. 17. La fonction `delete_user_account` anonymise les tables d'audit (preservant l'integrite des logs), supprime les messages/notifications, et prepare la suppression CASCADE. Confirmation explicite requise ("SUPPRIMER MON COMPTE").
+> **Amelioration 2026-01-15** : Implementation complete de la suppression de compte conforme RGPD Art. 17. Comprend : API avec rate limiting (1/24h), table d'audit, fonction SQL d'anonymisation, et interface utilisateur avec confirmation en deux etapes. Accessible via le menu utilisateur dans le dashboard.
 
 ---
 
@@ -887,6 +887,7 @@ docs/legal/
 
 | Date       | Version | Modifications                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------------- |
+| 2026-01-15 | 1.3     | UI suppression compte (Art. 17 complet), rate limiting, audit table          |
 | 2026-01-15 | 1.2     | API suppression compte (Art. 17), Documentation legale (Art. 13-14, CGU, ML) |
 | 2026-01-15 | 1.1     | Suppression champ `gender` (Art. 5(1)(c) - minimisation)                     |
 | 2026-01-15 | 1.0     | Audit initial                                                                |

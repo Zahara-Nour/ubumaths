@@ -67,7 +67,8 @@
 		Layers,
 		FileSpreadsheet,
 		ShieldAlert,
-		Package
+		Package,
+		Trash2
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -91,6 +92,7 @@
 	import BugReportFAB from '$lib/components/bug-reports/BugReportFAB.svelte';
 	import BugReportDialog from '$lib/components/bug-reports/BugReportDialog.svelte';
 	import FreezeReportPrompt from '$lib/components/bug-reports/FreezeReportPrompt.svelte';
+	import AccountDeletionDialog from '$lib/components/account/AccountDeletionDialog.svelte';
 	import {
 		setFreezePromptCallback,
 		setAutoReportCallback,
@@ -117,6 +119,9 @@
 
 	// Bug report dialog state
 	let bugReportDialogOpen = $state(false);
+
+	// Account deletion dialog state
+	let accountDeletionDialogOpen = $state(false);
 
 	// Freeze prompt state
 	let freezePromptOpen = $state(false);
@@ -532,6 +537,16 @@
 							<DropdownMenu.Separator />
 						</div>
 
+						<DropdownMenu.Item
+							onclick={() => (accountDeletionDialogOpen = true)}
+							class="text-destructive focus:text-destructive"
+						>
+							<Trash2 class="mr-2 h-4 w-4" />
+							Supprimer mon compte
+						</DropdownMenu.Item>
+
+						<DropdownMenu.Separator />
+
 						<DropdownMenu.Item onclick={handleLogout}>
 							<LogOut class="mr-2 h-4 w-4" />
 							Déconnexion
@@ -702,4 +717,10 @@
 	bind:open={freezePromptOpen}
 	freezeDuration={freezePromptDuration}
 	onOpenChange={(open) => (freezePromptOpen = open)}
+/>
+
+<!-- Account Deletion Dialog (GDPR Art. 17) -->
+<AccountDeletionDialog
+	bind:open={accountDeletionDialogOpen}
+	onOpenChange={(open) => (accountDeletionDialogOpen = open)}
 />
