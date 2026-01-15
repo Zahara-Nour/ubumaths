@@ -1,8 +1,8 @@
 # Audit de Conformite RGPD - UbuMaths
 
 > **Date d'audit** : 2026-01-15
-> **Version** : 1.1
-> **Statut global** : NON CONFORME (5/10)
+> **Version** : 1.2
+> **Statut global** : PARTIELLEMENT CONFORME (6/10)
 
 ---
 
@@ -24,16 +24,16 @@
 
 ### Etat de conformite par categorie
 
-| Categorie                       | Score    | Statut           |
-| ------------------------------- | -------- | ---------------- |
-| Authentification & Autorisation | 9/10     | Excellent        |
-| Chiffrement & Securite          | 8/10     | Bon              |
-| Minimisation des donnees        | 9/10     | Excellent        |
-| Retention des donnees           | 2/10     | **CRITIQUE**     |
-| Droits utilisateur              | 3/10     | **CRITIQUE**     |
-| Documentation legale            | 0/10     | **Manquant**     |
-| Consentement mineurs            | 0/10     | **Manquant**     |
-| **GLOBAL**                      | **5/10** | **NON CONFORME** |
+| Categorie                       | Score    | Statut                  |
+| ------------------------------- | -------- | ----------------------- |
+| Authentification & Autorisation | 9/10     | Excellent               |
+| Chiffrement & Securite          | 8/10     | Bon                     |
+| Minimisation des donnees        | 9/10     | Excellent               |
+| Retention des donnees           | 2/10     | **CRITIQUE**            |
+| Droits utilisateur              | 6/10     | Partiel (v1.2)          |
+| Documentation legale            | 7/10     | Bon (v1.2)              |
+| Consentement mineurs            | 0/10     | **Manquant**            |
+| **GLOBAL**                      | **6/10** | **PARTIELLEMENT CONF.** |
 
 ### Risques legaux
 
@@ -284,17 +284,17 @@ CRON_SECRET                   # Secret taches planifiees
 
 ---
 
-### 5.2 CRITIQUE - Pas de droit a l'oubli
+### 5.2 ~~CRITIQUE - Pas de droit a l'oubli~~ **CORRIGE** (2026-01-15)
 
-**Article RGPD viole** : Art. 17 - Droit a l'effacement
+**Article RGPD** : Art. 17 - Droit a l'effacement
 
 **Situation actuelle** :
 
-- Aucune API pour supprimer un compte utilisateur
-- Aucune interface utilisateur pour demander la suppression
-- Soft deletes sur les messages (contenu reste accessible)
+- ~~Aucune API pour supprimer un compte utilisateur~~ **API implementee** (`DELETE /api/account/delete`)
+- Aucune interface utilisateur pour demander la suppression (a implementer)
+- ~~Soft deletes sur les messages (contenu reste accessible)~~ **Hard delete avec anonymisation des audits**
 
-**Impact** : Un utilisateur ne peut pas exercer son droit a l'effacement.
+> **Amelioration 2026-01-15** : Implementation de l'API de suppression de compte conforme RGPD Art. 17. La fonction `delete_user_account` anonymise les tables d'audit (preservant l'integrite des logs), supprime les messages/notifications, et prepare la suppression CASCADE. Confirmation explicite requise ("SUPPRIMER MON COMPTE").
 
 ---
 
@@ -315,18 +315,18 @@ CRON_SECRET                   # Secret taches planifiees
 
 ---
 
-### 5.4 CRITIQUE - Pas de politique de confidentialite
+### 5.4 ~~CRITIQUE - Pas de politique de confidentialite~~ **CORRIGE** (2026-01-15)
 
-**Article RGPD viole** : Art. 13-14 - Droit a l'information
+**Article RGPD** : Art. 13-14 - Droit a l'information
 
 **Situation actuelle** :
 
-- Aucun document de politique de confidentialite
-- Aucunes mentions legales
-- Aucunes CGU
-- Aucun bandeau de consentement cookies
+- ~~Aucun document de politique de confidentialite~~ **Cree** (`/legal/confidentialite`)
+- ~~Aucunes mentions legales~~ **Cree** (`/legal/mentions-legales`)
+- ~~Aucunes CGU~~ **Cree** (`/legal/cgu`)
+- Aucun bandeau de consentement cookies (a implementer si cookies non-essentiels)
 
-**Impact** : Les utilisateurs ne sont pas informes du traitement de leurs donnees.
+> **Amelioration 2026-01-15** : Creation de la documentation legale complete accessible via le footer : Politique de Confidentialite (Art. 13-14), Conditions Generales d'Utilisation, et Mentions Legales. Documents sources dans `docs/legal/`.
 
 ---
 
@@ -885,10 +885,11 @@ docs/legal/
 
 ### C. Historique des modifications
 
-| Date       | Version | Modifications                                            |
-| ---------- | ------- | -------------------------------------------------------- |
-| 2026-01-15 | 1.1     | Suppression champ `gender` (Art. 5(1)(c) - minimisation) |
-| 2026-01-15 | 1.0     | Audit initial                                            |
+| Date       | Version | Modifications                                                                |
+| ---------- | ------- | ---------------------------------------------------------------------------- |
+| 2026-01-15 | 1.2     | API suppression compte (Art. 17), Documentation legale (Art. 13-14, CGU, ML) |
+| 2026-01-15 | 1.1     | Suppression champ `gender` (Art. 5(1)(c) - minimisation)                     |
+| 2026-01-15 | 1.0     | Audit initial                                                                |
 
 ---
 
