@@ -101,7 +101,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		avatar_url: profile.avatar_url,
 		class_ids: profile.class_ids,
 		grade: profile.grade,
-		gender: profile.gender,
 		created_at: profile.created_at,
 		updated_at: profile.updated_at
 	};

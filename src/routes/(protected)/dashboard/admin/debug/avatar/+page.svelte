@@ -10,8 +10,7 @@
 			data.profile
 				? {
 						avatar_url: data.profile.avatar_url,
-						role: data.profile.role,
-						gender: data.profile.gender
+						role: data.profile.role
 					}
 				: { avatar_url: null },
 			data.user
@@ -41,7 +40,7 @@
 					<strong>user_metadata.avatar_url</strong> - Other OAuth providers (fallback field)
 				</li>
 				<li>
-					<strong>Role/gender fallback</strong> - Default avatar based on user role and gender
+					<strong>Role fallback</strong> - Default avatar based on user role (admin, teacher, student)
 				</li>
 				<li><strong>Initials</strong> - First/last name initials or email initial</li>
 			</ol>
@@ -126,10 +125,6 @@
 				<li>
 					<strong>Profile role:</strong>
 					{data.profile?.role || '(null/empty)'}
-				</li>
-				<li>
-					<strong>Profile gender:</strong>
-					{data.profile?.gender || '(null/empty)'}
 				</li>
 			</ul>
 		</div>

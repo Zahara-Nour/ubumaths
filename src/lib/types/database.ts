@@ -7129,7 +7129,6 @@ export type Database = {
 					created_at: string | null;
 					email: string;
 					firstname: string;
-					gender: string | null;
 					grade: string | null;
 					id: string;
 					is_activated: boolean | null;
@@ -7143,7 +7142,6 @@ export type Database = {
 					created_at?: string | null;
 					email: string;
 					firstname: string;
-					gender?: string | null;
 					grade?: string | null;
 					id?: string;
 					is_activated?: boolean | null;
@@ -7157,7 +7155,6 @@ export type Database = {
 					created_at?: string | null;
 					email?: string;
 					firstname?: string;
-					gender?: string | null;
 					grade?: string | null;
 					id?: string;
 					is_activated?: boolean | null;
@@ -7282,7 +7279,6 @@ export type Database = {
 					email: string;
 					firstname: string | null;
 					full_name: string | null;
-					gender: string | null;
 					gidouilles: number;
 					grade: string | null;
 					id: string;
@@ -7307,7 +7303,6 @@ export type Database = {
 					email: string;
 					firstname?: string | null;
 					full_name?: string | null;
-					gender?: string | null;
 					gidouilles?: number;
 					grade?: string | null;
 					id: string;
@@ -7332,7 +7327,6 @@ export type Database = {
 					email?: string;
 					firstname?: string | null;
 					full_name?: string | null;
-					gender?: string | null;
 					gidouilles?: number;
 					grade?: string | null;
 					id?: string;
@@ -13421,6 +13415,7 @@ export type Database = {
 				Returns: {
 					created_at: string;
 					description: string;
+					google_classroom_course_id: string;
 					id: string;
 					is_active: boolean;
 					join_code: string;

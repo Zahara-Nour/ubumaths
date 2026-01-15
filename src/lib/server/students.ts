@@ -55,7 +55,6 @@ export interface StudentFull extends Student {
 	gidouilles: number;
 	vip_cards: Record<string, number>;
 	role: string | null;
-	gender: string | null;
 	is_test: boolean;
 }
 
@@ -171,7 +170,6 @@ export async function getClassStudents(
 				gidouilles,
 				vip_cards,
 				role,
-				gender,
 				is_test
 			)
 		`
@@ -215,7 +213,6 @@ export async function getClassStudents(
 					gidouilles: profile.gidouilles || 0,
 					vip_cards: profile.vip_cards || {},
 					role: profile.role || null,
-					gender: profile.gender || null,
 					is_test: profile.is_test || false
 				} as StudentFull;
 			} else {

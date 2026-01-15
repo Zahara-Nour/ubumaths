@@ -34,7 +34,6 @@ type ExtendedProfile = Profile & {
  *   firstname?: string | null,
  *   lastname?: string | null,
  *   email?: string,
- *   gender?: 'boy' | 'girl' | null,
  *   role?: 'admin' | 'teacher' | 'student',
  *   school_id?: string | null,  // UUID
  *   is_test?: boolean
@@ -105,7 +104,6 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		if (data.firstname !== undefined) updateData.firstname = data.firstname;
 		if (data.lastname !== undefined) updateData.lastname = data.lastname;
-		if (data.gender !== undefined) updateData.gender = data.gender;
 		if (data.role !== undefined) updateData.role = data.role;
 		if (data.school_id !== undefined) updateData.school_id = data.school_id;
 		if (data.is_test !== undefined) updateData.is_test = data.is_test;

@@ -518,7 +518,6 @@ describe('refetchProfile', () => {
 			lastname: null,
 			full_name: 'Test Student',
 			avatar_url: null,
-			gender: null,
 			grade: null,
 			is_test: false,
 			school_id: null,

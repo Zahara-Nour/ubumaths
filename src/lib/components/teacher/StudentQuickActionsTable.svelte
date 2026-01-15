@@ -113,7 +113,6 @@
 		lastname?: string | null;
 		avatar_url?: string | null;
 		role?: string | null;
-		gender?: string | null;
 		gidouilles: number;
 		bonus: number;
 		vipCards: StudentVipCards;
@@ -160,7 +159,6 @@
 					lastname: student.lastname,
 					avatar_url: student.avatar_url,
 					role: student.role,
-					gender: student.gender,
 					gidouilles: rewards?.gidouilles ?? 0,
 					bonus: rewards?.bonus ?? 0,
 					vipCards: rewards?.vip_cards ?? {},
@@ -579,9 +577,7 @@
 									<Avatar.Image
 										src={getAvatarUrl({
 											avatar_url: student.avatar_url,
-											role: (student.role as 'student' | 'teacher' | 'admin') || 'student',
-											gender:
-												student.gender === 'boy' ? 'M' : student.gender === 'girl' ? 'F' : null
+											role: (student.role as 'student' | 'teacher' | 'admin') || 'student'
 										})}
 										alt={student.firstname}
 									/>

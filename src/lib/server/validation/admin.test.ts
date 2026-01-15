@@ -190,7 +190,6 @@ describe('admin validation schemas', () => {
 				role: 'student',
 				school_id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
 				avatar_url: 'https://example.com/avatar.jpg',
-				gender: 'boy',
 				is_test: 'true' // FormData sends boolean as string
 			};
 
@@ -206,15 +205,13 @@ describe('admin validation schemas', () => {
 				email: 'test@example.com',
 				role: 'teacher',
 				school_id: null,
-				avatar_url: null,
-				gender: ''
+				avatar_url: null
 			};
 
 			const result = updateProfileFormSchema.safeParse(data);
 			expect(result.success).toBe(true);
 			if (result.success) {
 				expect(result.data.firstname).toBe(null);
-				expect(result.data.gender).toBe(null);
 			}
 		});
 
@@ -226,8 +223,7 @@ describe('admin validation schemas', () => {
 				email: 'not-an-email',
 				role: 'student',
 				school_id: null,
-				avatar_url: null,
-				gender: 'boy'
+				avatar_url: null
 			};
 
 			const result = updateProfileFormSchema.safeParse(data);
@@ -242,43 +238,7 @@ describe('admin validation schemas', () => {
 				email: 'test@example.com',
 				role: 'superadmin',
 				school_id: null,
-				avatar_url: null,
-				gender: 'boy'
-			};
-
-			const result = updateProfileFormSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should accept valid genders', () => {
-			const genders = ['boy', 'girl', ''];
-			genders.forEach((gender) => {
-				const data = {
-					user_id: '550e8400-e29b-41d4-a716-446655440000',
-					firstname: 'Test',
-					lastname: 'User',
-					email: 'test@example.com',
-					role: 'student',
-					school_id: null,
-					avatar_url: null,
-					gender
-				};
-
-				const result = updateProfileFormSchema.safeParse(data);
-				expect(result.success).toBe(true);
-			});
-		});
-
-		it('should reject invalid gender', () => {
-			const data = {
-				user_id: '550e8400-e29b-41d4-a716-446655440000',
-				firstname: 'Test',
-				lastname: 'User',
-				email: 'test@example.com',
-				role: 'student',
-				school_id: null,
-				avatar_url: null,
-				gender: 'other'
+				avatar_url: null
 			};
 
 			const result = updateProfileFormSchema.safeParse(data);
@@ -294,7 +254,6 @@ describe('admin validation schemas', () => {
 				role: 'student',
 				school_id: null,
 				avatar_url: null,
-				gender: '',
 				is_test: 'true'
 			};
 

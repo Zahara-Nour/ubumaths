@@ -132,7 +132,6 @@ export const actions: Actions = {
 					firstname: s.firstname.trim(),
 					lastname: s.lastname.trim(),
 					grade: s.grade || null,
-					gender: s.gender || null,
 					school_id: schoolId,
 					class_ids: classIds
 				};
@@ -177,11 +176,10 @@ export const actions: Actions = {
 								`Profile exists for ${student.email}, updating profile and class memberships...`
 							);
 
-							// Update the student's profile with school_id, grade, and gender from import
+							// Update the student's profile with school_id and grade from import
 							const profileUpdates: {
 								school_id: string;
 								grade?: string | null;
-								gender?: string | null;
 							} = {
 								school_id: student.school_id
 							};
@@ -189,11 +187,6 @@ export const actions: Actions = {
 							// Only update grade if provided in import
 							if (student.grade) {
 								profileUpdates.grade = student.grade;
-							}
-
-							// Only update gender if provided in import
-							if (student.gender) {
-								profileUpdates.gender = student.gender;
 							}
 
 							const { error: profileUpdateError } = await supabase

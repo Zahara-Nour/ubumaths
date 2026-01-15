@@ -213,8 +213,7 @@
 										profile
 											? {
 													avatar_url: profile.avatar_url,
-													role: profile.role,
-													gender: profile.gender
+													role: profile.role
 												}
 											: { avatar_url: null },
 										user

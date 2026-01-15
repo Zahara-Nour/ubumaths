@@ -40,7 +40,6 @@
 		full_name: string | null;
 		avatar_url: string | null;
 		role: string | null;
-		gender: string | null;
 	}
 
 	interface Props {

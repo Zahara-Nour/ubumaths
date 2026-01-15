@@ -1,38 +1,30 @@
-import type { Gender, UserRole } from '$lib/types/database';
-
-export type { Gender };
-
-// Avatar image imports
+// Avatar image imports - using neutral avatars per role (GDPR: removed gender-based selection)
 import avatarAdmin from '$lib/assets/images/avatars/avatar-admin.jpg';
-import avatarStudentBoy from '$lib/assets/images/avatars/avatar-student-boy.jpg';
-import avatarStudentGirl from '$lib/assets/images/avatars/avatar-student-girl.jpg';
-import avatarTeacherBoy from '$lib/assets/images/avatars/avatar-teacher-boy.jpg';
-import avatarTeacherGirl from '$lib/assets/images/avatars/avatar-teacher-girl.jpg';
+import avatarStudent from '$lib/assets/images/avatars/avatar-student-boy.jpg';
+import avatarTeacher from '$lib/assets/images/avatars/avatar-teacher-boy.jpg';
+
+/** User role type for avatar selection */
+export type UserRole = 'student' | 'teacher' | 'admin';
 
 /**
- * Get the appropriate fallback avatar image based on user's role and gender
+ * Get the appropriate fallback avatar image based on user's role
+ *
+ * GDPR Compliance: Gender field removed to minimize personal data collection on minors.
+ * Now uses neutral role-based avatars only.
  *
  * @param role - User's role (student, teacher, admin)
- * @param gender - User's gender (boy, girl, or null)
  * @returns Path to the appropriate avatar image
  */
-export function getAvatarFallback(role: UserRole, gender: Gender | null): string {
-	// Admin always gets the admin avatar
-	if (role === 'admin') {
-		return avatarAdmin;
+export function getAvatarFallback(role: UserRole): string {
+	switch (role) {
+		case 'admin':
+			return avatarAdmin;
+		case 'teacher':
+			return avatarTeacher;
+		case 'student':
+		default:
+			return avatarStudent;
 	}
-
-	// For students and teachers, use gender-specific avatars
-	if (role === 'student') {
-		return gender === 'female' ? avatarStudentGirl : avatarStudentBoy;
-	}
-
-	if (role === 'teacher') {
-		return gender === 'female' ? avatarTeacherGirl : avatarTeacherBoy;
-	}
-
-	// Fallback to student boy if role is unknown
-	return avatarStudentBoy;
 }
 
 /**
@@ -55,14 +47,16 @@ export function getAvatarInitials(firstname: string | null, lastname: string | n
  * 1. profile.avatar_url - Stored in database (primary source, saved on login)
  * 2. user.user_metadata.picture - Google OAuth session data (Google's standard field)
  * 3. user.user_metadata.avatar_url - Other OAuth providers (fallback field)
- * 4. Role/gender-based default avatar - Static fallback images based on user role and gender
+ * 4. Role-based default avatar - Static fallback images based on user role
  * 5. Empty string - Triggers Avatar.Fallback to show initials
  *
  * IMPORTANT: Google OAuth stores avatars in 'picture' field, not 'avatar_url'
  * See: src/routes/(public)/auth/callback/+server.ts for avatar saving logic
  * See: supabase/migrations/061_fix_google_avatar_picture_field.sql for database trigger
  *
- * @param profile - User profile with avatar_url, role, and gender
+ * GDPR: Gender field removed - now uses role-only fallback
+ *
+ * @param profile - User profile with avatar_url and role
  * @param user - Optional Supabase user object with OAuth metadata
  * @returns Avatar URL string or empty string for fallback to initials
  */
@@ -71,7 +65,6 @@ export function getAvatarUrl(
 	profile: Record<string, any> & {
 		avatar_url?: string | null;
 		role?: string | null;
-		gender?: string | null;
 	},
 	user?: {
 		user_metadata?: {
@@ -95,10 +88,9 @@ export function getAvatarUrl(
 		return user.user_metadata.avatar_url;
 	}
 
-	// 4. Role/gender-based default avatar
-	// Cast to expected types - runtime validation done by getAvatarFallback
-	if (profile.role && profile.gender !== undefined) {
-		return getAvatarFallback(profile.role as UserRole, profile.gender as Gender | null);
+	// 4. Role-based default avatar
+	if (profile.role) {
+		return getAvatarFallback(profile.role as UserRole);
 	}
 
 	// 5. Empty string (triggers Avatar.Fallback for initials)

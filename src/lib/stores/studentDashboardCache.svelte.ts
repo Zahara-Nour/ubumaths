@@ -691,7 +691,6 @@ export class StudentDashboardCache {
 				lastname: null,
 				full_name: null,
 				avatar_url: null,
-				gender: null,
 				grade: null,
 				is_test: false,
 				school_id: null,
