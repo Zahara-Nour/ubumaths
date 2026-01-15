@@ -38,7 +38,6 @@
 	// ==========================================================================
 
 	const SIDEBAR_WIDTH = 180;
-	const FILE_DRAWER_WIDTH = 220;
 	const MIN_ZOOM = 0.25; // 25%
 	const MAX_ZOOM = 4; // 400%
 	const ZOOM_STEP = 0.1; // 10% per step
@@ -98,9 +97,6 @@
 	/** Sidebar visibility */
 	let sidebarVisible = $derived(whiteboardStore.sidebarVisible);
 
-	/** File drawer visibility */
-	let fileDrawerVisible = $derived(whiteboardStore.fileDrawerVisible);
-
 	/** Sync state for status indicator */
 	let syncState = $derived(whiteboardStore.syncState);
 	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
@@ -110,9 +106,8 @@
 		if (containerWidth === 0 || containerHeight === 0) return 1;
 
 		const padding = 40;
-		const leftOffset = fileDrawerVisible ? FILE_DRAWER_WIDTH : 0;
 		const rightOffset = sidebarVisible ? SIDEBAR_WIDTH : 0;
-		const availableWidth = containerWidth - padding * 2 - leftOffset - rightOffset;
+		const availableWidth = containerWidth - padding * 2 - rightOffset;
 		const availableHeight = containerHeight - padding * 2;
 
 		const scaleX = availableWidth / pageWidth;
@@ -190,9 +185,8 @@
 		}
 
 		// Calculate max pan range based on how much the canvas exceeds the viewport
-		const leftOffset = fileDrawerVisible ? FILE_DRAWER_WIDTH : 0;
 		const rightOffset = sidebarVisible ? SIDEBAR_WIDTH : 0;
-		const viewportWidth = containerWidth - leftOffset - rightOffset;
+		const viewportWidth = containerWidth - rightOffset;
 		const viewportHeight = containerHeight - 80; // Account for status bar and toolbar
 
 		const maxPanX = Math.max(0, (canvasWidth - viewportWidth) / 2 + 20);
@@ -264,8 +258,11 @@
 	// ==========================================================================
 
 	onMount(() => {
-		// Create new document on mount
-		whiteboardStore.createNew(title, format);
+		// Try to restore from autosave first, otherwise create new document
+		const restoredFromAutosave = whiteboardStore.loadFromAutosave();
+		if (!restoredFromAutosave) {
+			whiteboardStore.createNew(title, format);
+		}
 
 		// Setup resize observer
 		if (containerEl) {
@@ -520,11 +517,8 @@
 		<!-- File Drawer (left) -->
 		<FileDrawer />
 
-		<!-- Floating Undo/Redo buttons (top-left, offset when drawer open) -->
-		<div
-			class="absolute top-2 z-10 flex gap-1 transition-all duration-200"
-			style="left: {fileDrawerVisible ? FILE_DRAWER_WIDTH + 8 : 8}px;"
-		>
+		<!-- Floating Undo/Redo buttons (top-left) -->
+		<div class="absolute top-2 left-14 z-10 flex gap-1">
 			<Button
 				type="button"
 				variant="secondary"
@@ -557,9 +551,7 @@
 			class="whiteboard-canvas-area flex h-full items-center justify-center transition-all duration-200"
 			class:cursor-grab={isPanToolActive && canPan && !isPanning}
 			class:cursor-grabbing={isPanning}
-			style="margin-left: {fileDrawerVisible
-				? FILE_DRAWER_WIDTH
-				: 0}px; margin-right: {sidebarVisible ? SIDEBAR_WIDTH : 0}px;"
+			style="margin-right: {sidebarVisible ? SIDEBAR_WIDTH : 0}px;"
 			onpointerdown={handlePanStart}
 			onpointermove={handlePanMove}
 			onpointerup={handlePanEnd}
