@@ -1,7 +1,7 @@
 # Audit de Conformite RGPD - UbuMaths
 
 > **Date d'audit** : 2026-01-15
-> **Version** : 1.6
+> **Version** : 1.7
 > **Statut global** : PARTIELLEMENT CONFORME (8/10)
 
 ---
@@ -30,7 +30,7 @@
 | Chiffrement & Securite          | 8/10     | Bon                     |
 | Minimisation des donnees        | 9/10     | Excellent               |
 | Retention des donnees           | 8/10     | Bon (v1.5)              |
-| Droits utilisateur              | 9/10     | Excellent (v1.4)        |
+| Droits utilisateur              | 10/10    | Excellent (v1.6)        |
 | Documentation legale            | 7/10     | Bon (v1.2)              |
 | Consentement mineurs            | 0/10     | **Manquant**            |
 | **GLOBAL**                      | **8/10** | **PARTIELLEMENT CONF.** |
@@ -423,144 +423,148 @@ CRON_SECRET                   # Secret taches planifiees
 
 ### 7.1 Politique de retention
 
+**Implementation** : `supabase/migrations/20260115100000_pg_cron_rgpd_retention_cleanup.sql`
+
 ```sql
--- Migration: add_retention_policies.sql
-
--- Fonction de nettoyage des anciennes donnees
-CREATE OR REPLACE FUNCTION cleanup_expired_data()
-RETURNS void AS $$
+-- Fonction principale de nettoyage RGPD (implementee)
+CREATE OR REPLACE FUNCTION public.run_cleanup_expired_data()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_run_id UUID;
+    -- Compteurs pour audit trail
+    v_error_logs_deleted INTEGER := 0;
+    v_presence_deleted INTEGER := 0;
+    v_friendships_deleted INTEGER := 0;
+    v_messages_deleted INTEGER := 0;
+    v_private_messages_deleted INTEGER := 0;
+    v_attempts_deleted INTEGER := 0;
+    v_progress_deleted INTEGER := 0;
 BEGIN
-    -- Donnees pedagogiques: 5 ans apres fin d'annee scolaire
-    DELETE FROM student_attempts
-    WHERE created_at < NOW() - INTERVAL '5 years'
-    AND student_id IN (
-        SELECT id FROM profiles
-        WHERE updated_at < NOW() - INTERVAL '5 years'
-    );
+    v_run_id := start_job_run('retention_cleanup', jsonb_build_object(
+        'retention_periods', jsonb_build_object(
+            'error_logs_days', 90,
+            'presence_days', 30,
+            'friendships_years', 2,
+            'messages_years', 3,
+            'pedagogical_years', 5,
+            'inactive_threshold_years', 2
+        )
+    ));
 
-    -- Messages: 3 ans
-    DELETE FROM messages
-    WHERE created_at < NOW() - INTERVAL '3 years';
+    -- 1. Error logs (90 jours, resolved seulement)
+    -- 2. User presence (30 jours)
+    -- 3. Friendships rejected (2 ans)
+    -- 4. Messages chat (3 ans) - HARD delete
+    -- 5. Private messages (3 ans) - CASCADE inbox/attachments
+    -- 6. Student attempts (5 ans + user inactif 2 ans)
+    -- 7. Student progress (5 ans + user inactif 2 ans)
 
-    DELETE FROM private_messages
-    WHERE sent_at < NOW() - INTERVAL '3 years';
-
-    -- Presence: 30 jours
-    DELETE FROM user_presence
-    WHERE updated_at < NOW() - INTERVAL '30 days';
-
-    -- Friendships inactives: 2 ans
-    DELETE FROM friendships
-    WHERE status = 'rejected'
-    AND updated_at < NOW() - INTERVAL '2 years';
+    -- Complete job avec metadata audit
+    PERFORM complete_job_run(v_run_id, 'success', NULL, jsonb_build_object(
+        'total_deleted', v_total_deleted,
+        'rgpd_compliance', 'Art. 5(1)(e) - Storage limitation'
+    ));
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
--- Job CRON (a configurer dans Supabase)
-SELECT cron.schedule(
-    'cleanup-expired-data',
-    '0 3 * * 0',  -- Dimanche 3h du matin
-    'SELECT cleanup_expired_data()'
-);
+-- Job pg_cron schedule (dimanche 03:00 UTC)
+-- Nom: 'rgpd-retention-cleanup'
+-- Cron: '0 3 * * 0'
+```
+
+**Verification** :
+
+```sql
+-- Voir le job schedule
+SELECT * FROM cron.job WHERE jobname = 'rgpd-retention-cleanup';
+
+-- Voir les resultats
+SELECT job_name, status, metadata FROM background_job_runs
+WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
 ```
 
 ### 7.2 Droit a l'oubli
 
+**Implementation** : `src/routes/api/account/delete/+server.ts`
+
+Fonctionnalites implementees :
+
+- **Rate limiting** : 1 demande par 24h par utilisateur
+- **Audit table** : `account_deletion_requests` pour tracabilite
+- **Fonction SQL** : `delete_user_account_rgpd(uuid)` pour anonymisation complete
+- **UI** : Confirmation en 2 etapes (dialogue + saisie "SUPPRIMER")
+
 ```typescript
-// src/routes/api/account/delete/+server.ts
-
-import { error, json } from '@sveltejs/kit';
-import { z } from 'zod';
-import type { RequestHandler } from './$types';
-
+// Points cles de l'implementation
 const deleteSchema = z.object({
-	confirmation: z.literal('DELETE MY ACCOUNT'),
-	password: z.string().optional()
+	confirmation: z.literal('SUPPRIMER') // Confirmation explicite FR
 });
 
-export const DELETE: RequestHandler = async ({ locals, request }) => {
-	const user = locals.user;
-	if (!user) throw error(401, 'Non authentifie');
+// Rate limiting: 1 per 24h
+rateLimit(`account_delete:${userId}`, 1, 24 * 60 * 60 * 1000);
 
-	const validation = deleteSchema.safeParse(await request.json());
-	if (!validation.success) {
-		throw error(400, 'Confirmation requise');
-	}
+// Audit trail avant suppression
+await supabase.from('account_deletion_requests').insert({
+	user_id: userId,
+	email: user.email,
+	requested_at: new Date().toISOString(),
+	status: 'completed'
+});
 
-	const supabase = locals.supabase;
-
-	// 1. Supprimer toutes les donnees utilisateur (cascade)
-	// Les FK ON DELETE CASCADE gerent la plupart des suppressions
-
-	// 2. Supprimer les messages (hard delete, pas soft delete)
-	await supabase.from('private_messages').delete().eq('sender_id', user.id);
-
-	await supabase.from('messages').delete().eq('sender_id', user.id);
-
-	// 3. Supprimer le profil
-	await supabase.from('profiles').delete().eq('id', user.id);
-
-	// 4. Supprimer l'utilisateur Supabase Auth
-	const { error: authError } = await supabase.auth.admin.deleteUser(user.id);
-
-	if (authError) {
-		throw error(500, 'Erreur lors de la suppression');
-	}
-
-	return json({ success: true, message: 'Compte supprime' });
-};
+// Suppression via fonction SQL (anonymise messages, supprime donnees)
+await supabase.rpc('delete_user_account_rgpd', { p_user_id: userId });
 ```
+
+**UI** : Menu utilisateur > "Supprimer mon compte"
 
 ### 7.3 Export de donnees
 
-```typescript
-// src/routes/api/account/export/+server.ts
+**Implementation** : `src/routes/api/account/export/+server.ts`
 
-import { error, json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+Fonctionnalites implementees :
 
-export const GET: RequestHandler = async ({ locals, url }) => {
-	const user = locals.user;
-	if (!user) throw error(401, 'Non authentifie');
+- **Rate limiting** : 1 export par heure par utilisateur
+- **Format** : JSON structure avec categories
+- **Headers** : Content-Disposition pour telechargement automatique
+- **Securite** : Exclusion des tokens OAuth sensibles
 
-	const format = url.searchParams.get('format') || 'json';
-	const supabase = locals.supabase;
+**Categories exportees** :
+| Categorie | Tables | Limite |
+|-----------|--------|--------|
+| `profile` | profiles | - |
+| `learning.attempts` | student_attempts | 1000 derniers |
+| `learning.progress` | student_progress | tout |
+| `learning.submissions` | assignment_submissions | tout |
+| `learning.flashcards` | srs_cards | tout |
+| `communications.messages_sent` | messages | 500 derniers |
+| `communications.private_messages_sent` | private_messages | 500 derniers |
+| `communications.notifications` | notifications | 200 derniers |
+| `social.friendships` | friendships | tout |
+| `gaming.player_stats` | game_players | - |
+| `rewards.inventory` | student_item_inventory | tout |
+| `rewards.gidouilles_history` | gidouilles_history | 500 derniers |
+| `rewards.bonus_history` | bonus_history | 500 derniers |
+| `rewards.purchases` | shop_purchase_history | 200 derniers |
+| `classes.memberships` | class_members | tout |
 
-	// Collecter toutes les donnees personnelles
-	const [profile, attempts, progress, messages, friendships] = await Promise.all([
-		supabase.from('profiles').select('*').eq('id', user.id).single(),
-		supabase.from('student_attempts').select('*').eq('student_id', user.id),
-		supabase.from('student_progress').select('*').eq('student_id', user.id),
-		supabase.from('private_messages').select('*').eq('sender_id', user.id),
-		supabase
-			.from('friendships')
-			.select('*')
-			.or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
-	]);
+**Metadata incluses** :
 
-	const exportData = {
-		exported_at: new Date().toISOString(),
-		user_id: user.id,
-		profile: profile.data,
-		student_attempts: attempts.data,
-		student_progress: progress.data,
-		messages_sent: messages.data,
-		friendships: friendships.data
-	};
-
-	if (format === 'csv') {
-		// Conversion CSV (simplifiee)
-		return new Response(JSON.stringify(exportData, null, 2), {
-			headers: {
-				'Content-Type': 'application/json',
-				'Content-Disposition': `attachment; filename="ubumaths-export-${user.id}.json"`
-			}
-		});
+```json
+{
+	"_metadata": {
+		"exported_at": "ISO timestamp",
+		"user_id": "UUID",
+		"format_version": "1.0",
+		"gdpr_article": "Article 20 - Droit a la portabilite"
 	}
-
-	return json(exportData);
-};
+}
 ```
+
+**UI** : Menu utilisateur > "Exporter mes donnees"
 
 ### 7.4 Consentement parental
 
@@ -888,6 +892,7 @@ docs/legal/
 
 | Date       | Version | Modifications                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------------- |
+| 2026-01-15 | 1.7     | Mise a jour doc technique (section 7) avec implementations reelles           |
 | 2026-01-15 | 1.6     | UI export donnees (Art. 20 complet - menu utilisateur)                       |
 | 2026-01-15 | 1.5     | Politique de retention pg_cron (Art. 5(1)(e) - limitation conservation)      |
 | 2026-01-15 | 1.4     | API export donnees (Art. 20 - portabilite)                                   |
