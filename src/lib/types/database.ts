@@ -7161,6 +7161,86 @@ export type Database = {
 					}
 				];
 			};
+			parental_consents: {
+				Row: {
+					consent_given_at: string | null;
+					consent_ip: unknown;
+					consent_token: string;
+					consent_user_agent: string | null;
+					created_at: string;
+					email_count: number;
+					expires_at: string;
+					id: string;
+					last_email_sent_at: string | null;
+					parent_email: string;
+					parent_name: string | null;
+					status: Database['public']['Enums']['consent_status'];
+					student_id: string;
+					updated_at: string;
+				};
+				Insert: {
+					consent_given_at?: string | null;
+					consent_ip?: unknown;
+					consent_token?: string;
+					consent_user_agent?: string | null;
+					created_at?: string;
+					email_count?: number;
+					expires_at?: string;
+					id?: string;
+					last_email_sent_at?: string | null;
+					parent_email: string;
+					parent_name?: string | null;
+					status?: Database['public']['Enums']['consent_status'];
+					student_id: string;
+					updated_at?: string;
+				};
+				Update: {
+					consent_given_at?: string | null;
+					consent_ip?: unknown;
+					consent_token?: string;
+					consent_user_agent?: string | null;
+					created_at?: string;
+					email_count?: number;
+					expires_at?: string;
+					id?: string;
+					last_email_sent_at?: string | null;
+					parent_email?: string;
+					parent_name?: string | null;
+					status?: Database['public']['Enums']['consent_status'];
+					student_id?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'parental_consents_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'parental_consents_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'parental_consents_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'parental_consents_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			pending_students: {
 				Row: {
 					activated_at: string | null;
@@ -7172,6 +7252,7 @@ export type Database = {
 					id: string;
 					is_activated: boolean | null;
 					lastname: string;
+					parent_email: string | null;
 					school_id: string | null;
 					updated_at: string | null;
 				};
@@ -7185,6 +7266,7 @@ export type Database = {
 					id?: string;
 					is_activated?: boolean | null;
 					lastname: string;
+					parent_email?: string | null;
 					school_id?: string | null;
 					updated_at?: string | null;
 				};
@@ -7198,6 +7280,7 @@ export type Database = {
 					id?: string;
 					is_activated?: boolean | null;
 					lastname?: string;
+					parent_email?: string | null;
 					school_id?: string | null;
 					updated_at?: string | null;
 				};
@@ -7314,8 +7397,8 @@ export type Database = {
 					avatar_url: string | null;
 					bonus: number;
 					class_ids: string[] | null;
-					consent_granted_at: string | null;
 					consent_grace_period_ends: string | null;
+					consent_granted_at: string | null;
 					consent_required: boolean;
 					created_at: string;
 					email: string;
@@ -7341,8 +7424,8 @@ export type Database = {
 					avatar_url?: string | null;
 					bonus?: number;
 					class_ids?: string[] | null;
-					consent_granted_at?: string | null;
 					consent_grace_period_ends?: string | null;
+					consent_granted_at?: string | null;
 					consent_required?: boolean;
 					created_at?: string;
 					email: string;
@@ -7368,8 +7451,8 @@ export type Database = {
 					avatar_url?: string | null;
 					bonus?: number;
 					class_ids?: string[] | null;
-					consent_granted_at?: string | null;
 					consent_grace_period_ends?: string | null;
+					consent_granted_at?: string | null;
 					consent_required?: boolean;
 					created_at?: string;
 					email?: string;
@@ -13114,6 +13197,7 @@ export type Database = {
 					name: string;
 				}[];
 			};
+			get_consent_info: { Args: { p_token: string }; Returns: Json };
 			get_conversation_participants: {
 				Args: { p_conversation_id: string };
 				Returns: {
@@ -13680,6 +13764,10 @@ export type Database = {
 			get_user_status: {
 				Args: { user_id: string };
 				Returns: Database['public']['Enums']['user_status'];
+			};
+			grant_parental_consent: {
+				Args: { p_ip?: unknown; p_token: string; p_user_agent?: string };
+				Returns: Json;
 			};
 			grant_specific_vip_card: {
 				Args: { p_card_id: string; p_count?: number; p_student_id: string };
