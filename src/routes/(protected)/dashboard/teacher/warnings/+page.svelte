@@ -444,9 +444,7 @@
 											<Avatar.Image
 												src={getAvatarUrl({
 													avatar_url: student.avatar_url,
-													role: (student.role as 'student' | 'teacher' | 'admin') || 'student',
-													gender:
-														student.gender === 'boy' ? 'M' : student.gender === 'girl' ? 'F' : null
+													role: (student.role as 'student' | 'teacher' | 'admin') || 'student'
 												})}
 												alt={getFullName(student.firstname, student.lastname, student.full_name)}
 											/>

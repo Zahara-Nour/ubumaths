@@ -1,11 +1,13 @@
 /**
- * Script to update user profiles with guessed firstname, lastname, and gender
+ * Script to update user profiles with guessed firstname and lastname
  *
  * This script:
  * 1. Fetches all users from the database
  * 2. For users missing firstname/lastname, guesses from full_name or email
- * 3. Guesses gender based on French first names
- * 4. Updates the profiles in the database
+ * 3. Updates the profiles in the database
+ *
+ * Note: Gender field was removed in January 2026 for GDPR compliance
+ * (data minimization principle - minors' data protection).
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -30,134 +32,6 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 		persistSession: false
 	}
 });
-
-/**
- * Common French boy names for gender guessing
- */
-const boyNames = new Set([
-	'jean',
-	'pierre',
-	'louis',
-	'jacques',
-	'claude',
-	'michel',
-	'paul',
-	'andré',
-	'marc',
-	'nicolas',
-	'thomas',
-	'david',
-	'julien',
-	'antoine',
-	'maxime',
-	'alexandre',
-	'françois',
-	'laurent',
-	'olivier',
-	'vincent',
-	'stéphane',
-	'benjamin',
-	'lucas',
-	'gabriel',
-	'mathis',
-	'hugo',
-	'théo',
-	'léo',
-	'raphael',
-	'nathan',
-	'arthur',
-	'baptiste',
-	'clément',
-	'romain',
-	'simon',
-	'matthieu',
-	'adrien',
-	'florian',
-	'quentin',
-	'jordan',
-	'yann',
-	'loïc',
-	'anthony',
-	'kévin',
-	'dylan',
-	'enzo',
-	'yanis',
-	'maxence',
-	'morgan',
-	'evan',
-	'tom',
-	'adam',
-	'noah',
-	'liam',
-	'victor',
-	'd',
-	'prof',
-	'monsieur',
-	'm'
-]);
-
-/**
- * Common French girl names for gender guessing
- */
-const girlNames = new Set([
-	'marie',
-	'jeanne',
-	'louise',
-	'sophie',
-	'catherine',
-	'isabelle',
-	'nathalie',
-	'sylvie',
-	'christine',
-	'françoise',
-	'martine',
-	'monique',
-	'jacqueline',
-	'claire',
-	'valérie',
-	'sandrine',
-	'céline',
-	'laurence',
-	'caroline',
-	'stéphanie',
-	'émilie',
-	'julie',
-	'laura',
-	'sarah',
-	'chloé',
-	'camille',
-	'léa',
-	'manon',
-	'océane',
-	'mathilde',
-	'clara',
-	'emma',
-	'jade',
-	'alice',
-	'lola',
-	'zoé',
-	'inès',
-	'lisa',
-	'lucie',
-	'anaïs',
-	'pauline',
-	'marine',
-	'elisa',
-	'margaux',
-	'amélie',
-	'charlotte',
-	'juliette',
-	'morgane',
-	'marion',
-	'clémence',
-	'mélanie',
-	'aurélie',
-	'laure',
-	'mme',
-	'madame',
-	'prof',
-	'professeur'
-]);
 
 /**
  * Parse full name into firstname and lastname
@@ -216,42 +90,20 @@ function capitalize(str: string): string {
 }
 
 /**
- * Guess gender based on first name
- */
-function guessGender(firstname: string): 'boy' | 'girl' | null {
-	if (!firstname) return null;
-
-	const normalized = firstname.toLowerCase().trim();
-
-	// Check against known names
-	if (boyNames.has(normalized)) return 'boy';
-	if (girlNames.has(normalized)) return 'girl';
-
-	// French name patterns
-	// Names ending in -e, -ie, -ine, -elle, -ette are often feminine
-	if (normalized.match(/(elle|ette|ine|ie)$/)) return 'girl';
-
-	// Names ending in common masculine patterns
-	if (normalized.match(/(ier|ain|ois|bert|andre)$/)) return 'boy';
-
-	return null;
-}
-
-/**
  * Main function to update profiles
  */
 async function updateProfiles() {
-	console.log('🔍 Fetching all profiles from database...\n');
+	console.log('Fetching all profiles from database...\n');
 
 	// Fetch all profiles
 	const { data: profiles, error } = await supabase
 		.from('profiles')
-		.select('id, email, full_name, firstname, lastname, role, gender')
+		.select('id, email, full_name, firstname, lastname, role')
 		.order('role', { ascending: true })
 		.order('email', { ascending: true });
 
 	if (error) {
-		console.error('❌ Error fetching profiles:', error);
+		console.error('Error fetching profiles:', error);
 		process.exit(1);
 	}
 
@@ -261,7 +113,7 @@ async function updateProfiles() {
 	}
 
 	console.log(`Found ${profiles.length} profiles\n`);
-	console.log('═══════════════════════════════════════════════════════════════\n');
+	console.log('===============================================================\n');
 
 	let updatedCount = 0;
 
@@ -269,10 +121,8 @@ async function updateProfiles() {
 		const updates: Record<string, unknown> = {};
 		let needsUpdate = false;
 
-		console.log(`\n📧 ${profile.email} (${profile.role})`);
-		console.log(
-			`   Current: firstname="${profile.firstname}", lastname="${profile.lastname}", gender="${profile.gender}"`
-		);
+		console.log(`\nEmail: ${profile.email} (${profile.role})`);
+		console.log(`   Current: firstname="${profile.firstname}", lastname="${profile.lastname}"`);
 
 		// Guess firstname/lastname if missing
 		if (!profile.firstname || !profile.lastname) {
@@ -280,10 +130,10 @@ async function updateProfiles() {
 
 			if (profile.full_name) {
 				guessedName = parseFullName(profile.full_name);
-				console.log(`   → Parsed from full_name: "${profile.full_name}"`);
+				console.log(`   -> Parsed from full_name: "${profile.full_name}"`);
 			} else if (profile.email) {
 				guessedName = parseEmail(profile.email);
-				console.log(`   → Parsed from email: "${profile.email}"`);
+				console.log(`   -> Parsed from email: "${profile.email}"`);
 			}
 
 			if (!profile.firstname && guessedName.firstname) {
@@ -297,23 +147,9 @@ async function updateProfiles() {
 			}
 		}
 
-		// Guess gender if missing
-		if (!profile.gender) {
-			const firstnameToUse = updates.firstname || profile.firstname;
-			const guessedGender = guessGender(firstnameToUse);
-
-			if (guessedGender) {
-				updates.gender = guessedGender;
-				needsUpdate = true;
-				console.log(`   → Guessed gender: ${guessedGender}`);
-			} else {
-				console.log(`   → Could not guess gender from "${firstnameToUse}"`);
-			}
-		}
-
 		// Update the profile if needed
 		if (needsUpdate) {
-			console.log(`   ✏️  Updating:`, updates);
+			console.log(`   Updating:`, updates);
 
 			const { error: updateError } = await supabase
 				.from('profiles')
@@ -321,18 +157,18 @@ async function updateProfiles() {
 				.eq('id', profile.id);
 
 			if (updateError) {
-				console.error(`   ❌ Error updating profile:`, updateError);
+				console.error(`   Error updating profile:`, updateError);
 			} else {
-				console.log(`   ✅ Updated successfully`);
+				console.log(`   Updated successfully`);
 				updatedCount++;
 			}
 		} else {
-			console.log(`   ⏭️  No updates needed`);
+			console.log(`   No updates needed`);
 		}
 	}
 
-	console.log('\n═══════════════════════════════════════════════════════════════');
-	console.log(`\n✨ Done! Updated ${updatedCount} out of ${profiles.length} profiles.\n`);
+	console.log('\n===============================================================');
+	console.log(`\nDone! Updated ${updatedCount} out of ${profiles.length} profiles.\n`);
 }
 
 // Run the script

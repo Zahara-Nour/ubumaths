@@ -51,7 +51,6 @@ async function checkAdminProfile() {
 		console.log('📛 Last name:', admin.lastname);
 		console.log('📛 Full name:', admin.full_name);
 		console.log('🎭 Role:', admin.role);
-		console.log('⚧️  Gender:', admin.gender);
 		console.log('🖼️  Avatar URL:', admin.avatar_url);
 		console.log('🏫 School ID:', admin.school_id);
 		console.log('═══════════════════════════════════════════════════════════════\n');

@@ -35,7 +35,6 @@
 		firstname: string;
 		lastname: string;
 		grade: string | null;
-		gender: string | null;
 		class_codes: string[];
 	};
 
@@ -96,15 +95,13 @@
 
 		const students = dataLines.map((line) => {
 			const parts = parseLine(line);
-			const [email = '', firstname = '', lastname = '', grade = '', gender = '', ...classCodes] =
-				parts;
+			const [email = '', firstname = '', lastname = '', grade = '', ...classCodes] = parts;
 
 			return {
 				email: email.trim(),
 				firstname: firstname.trim(),
 				lastname: lastname.trim(),
 				grade: grade.trim() || null,
-				gender: gender === 'boy' || gender === 'girl' ? gender : null,
 				class_codes: classCodes.map((c) => c.trim().toUpperCase()).filter((c) => c.length > 0) // Remove empty codes
 			};
 		});
@@ -322,7 +319,7 @@
 			<Card.Title>Importer des données</Card.Title>
 			<Card.Description>
 				Collez depuis un tableur, glissez un fichier CSV, ou cliquez pour parcourir.<br />
-				Format: email, prénom, nom, niveau, genre (boy/girl), code_classe1, code_classe2, ...
+				Format: email, prénom, nom, niveau, code_classe1, code_classe2, ...
 			</Card.Description>
 		</Card.Header>
 		<Card.Content class="space-y-4">
@@ -368,7 +365,7 @@
 							<Textarea
 								id="drop-zone"
 								bind:value={pasteText}
-								placeholder="✍️ Tapez ou collez vos données ici&#10;📋 Copiez-collez (Ctrl+V) depuis Excel/Google Sheets&#10;📁 Ou glissez-déposez un fichier CSV&#10;&#10;Format: email, prénom, nom, niveau, genre, code_classe1, code_classe2, ...&#10;&#10;Exemple:&#10;alice@school.com, Alice, Dupont, 6ème, girl, MATH6A&#10;bob@school.com, Bob, Martin, 6ème, boy, MATH6A, MATH6B"
+								placeholder="✍️ Tapez ou collez vos données ici&#10;📋 Copiez-collez (Ctrl+V) depuis Excel/Google Sheets&#10;📁 Ou glissez-déposez un fichier CSV&#10;&#10;Format: email, prénom, nom, niveau, code_classe1, code_classe2, ...&#10;&#10;Exemple:&#10;alice@school.com, Alice, Dupont, 6ème, MATH6A&#10;bob@school.com, Bob, Martin, 6ème, MATH6A, MATH6B"
 								class="min-h-[200px] cursor-text resize-none border-0 bg-transparent font-mono text-sm focus:ring-0 focus-visible:ring-0"
 								disabled={isProcessing}
 							/>
@@ -416,7 +413,6 @@
 										<th class="p-2 text-left">Prénom</th>
 										<th class="p-2 text-left">Nom</th>
 										<th class="p-2 text-left">Niveau</th>
-										<th class="p-2 text-left">Genre</th>
 										<th class="p-2 text-left">Classes</th>
 									</tr>
 								</thead>
@@ -427,7 +423,6 @@
 											<td class="p-2">{student.firstname}</td>
 											<td class="p-2">{student.lastname}</td>
 											<td class="p-2">{student.grade || '-'}</td>
-											<td class="p-2">{student.gender || '-'}</td>
 											<td class="p-2">
 												{#if student.class_codes.length > 0}
 													<div class="flex flex-wrap gap-1">

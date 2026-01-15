@@ -32,11 +32,6 @@ export const searchUsersSchema = z.object({
 // ============================================================================
 
 /**
- * Gender enum (empty string allowed)
- */
-const genderSchema = z.enum(['boy', 'girl', '']);
-
-/**
  * Update profile form schema (admin)
  */
 export const updateProfileFormSchema = z.object({
@@ -47,7 +42,6 @@ export const updateProfileFormSchema = z.object({
 	role: roleSchema,
 	school_id: formDataTransforms.optionalUuid.nullable(),
 	avatar_url: formDataTransforms.optionalString.nullable(),
-	gender: genderSchema.transform((val) => (val === '' ? null : val)),
 	is_test: formDataTransforms.boolean.optional()
 });
 
@@ -127,10 +121,6 @@ export const updateUserFieldsSchema = z
 			.nullable()
 			.optional(),
 		lastname: z.string().min(1, 'Nom invalide').max(100, 'Nom trop long').nullable().optional(),
-		gender: z
-			.enum(['boy', 'girl'], { message: 'Le genre doit être "boy" ou "girl"' })
-			.nullable()
-			.optional(),
 		role: z.enum(['admin', 'teacher', 'student'], { message: 'Rôle invalide' }).optional(),
 		school_id: z.string().uuid('ID école invalide').nullable().optional(),
 		is_test: z.boolean({ message: 'is_test doit être un booléen' }).optional()
@@ -179,10 +169,6 @@ export const updateUserStatusSchema = z.object({
 		.nullable()
 		.optional(),
 	lastname: z.string().min(1, 'Nom invalide').max(100, 'Nom trop long').nullable().optional(),
-	gender: z
-		.enum(['boy', 'girl'], { message: 'Le genre doit être "boy" ou "girl"' })
-		.nullable()
-		.optional(),
 	school_id: z.string().uuid('ID école invalide').nullable().optional(),
 	is_test: z.boolean({ message: 'is_test doit être un booléen' }).optional()
 });

@@ -94,7 +94,6 @@ const mockTeacherProfile: Profile = {
 	bonus: 0,
 	class_ids: null,
 	full_name: 'John Doe',
-	gender: null,
 	gidouilles: 0,
 	grade: null,
 	vip_cards: {},

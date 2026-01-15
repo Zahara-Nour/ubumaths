@@ -472,8 +472,7 @@
 								src={getAvatarUrl(
 									{
 										avatar_url: data.profile.avatar_url,
-										role: data.profile.role,
-										gender: data.profile.gender
+										role: data.profile.role
 									},
 									data.user ?? undefined
 								)}

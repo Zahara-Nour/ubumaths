@@ -241,11 +241,6 @@
 				</div>
 				<Separator />
 				<div class="flex justify-between">
-					<span class="text-muted-foreground">Gender:</span>
-					<span>{data.profileData.gender || '(none)'}</span>
-				</div>
-				<Separator />
-				<div class="flex justify-between">
 					<span class="text-muted-foreground">Grade:</span>
 					<span>{data.profileData.grade || '(none)'}</span>
 				</div>

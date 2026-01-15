@@ -21,7 +21,7 @@ import { requireRole } from '$lib/server/middleware/auth';
  *
  * RETURNS:
  * Object with users array: { users: [...] }
- * Each user has: id, firstname, lastname, email, role, gender, avatar_url, schools, class_members, class_ids
+ * Each user has: id, firstname, lastname, email, role, avatar_url, schools, class_members, class_ids
  *
  * @example
  * fetch('/api/admin/class-students?class_id=abc-123')
@@ -64,7 +64,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					email,
 					avatar_url,
 					role,
-					gender,
 					school_id,
 					is_test,
 					schools (name),

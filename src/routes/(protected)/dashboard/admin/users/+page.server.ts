@@ -4,7 +4,7 @@
  * This server file provides:
  * - Loading classes and schools data for selectors
  * - Count of pending user approvals
- * - Profile update action (name, email, role, school, gender, avatar)
+ * - Profile update action (name, email, role, school, avatar)
  *
  * ACCESS: Admin and Teacher roles
  * - Teachers can only see pending users (due to RLS policies)
@@ -101,7 +101,6 @@ export const actions: Actions = {
 			role: validation.data.role,
 			school_id: validation.data.school_id,
 			avatar_url: validation.data.avatar_url,
-			gender: validation.data.gender,
 			is_test: validation.data.is_test ?? false
 		};
 

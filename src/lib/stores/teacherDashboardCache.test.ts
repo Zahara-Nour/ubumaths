@@ -74,7 +74,6 @@ function createMockStudents(count: number): BasicStudent[] {
 		full_name: `Student${i} Last${i}`,
 		avatar_url: `https://example.com/avatar${i}.png`,
 		role: 'student',
-		gender: i % 2 === 0 ? 'male' : 'female',
 		is_test: false
 	}));
 }
@@ -439,7 +438,6 @@ describe('Cache 1: Student Basic Info', () => {
 					full_name: null,
 					avatar_url: null,
 					role: null,
-					gender: null,
 					is_test: false
 				}
 			];

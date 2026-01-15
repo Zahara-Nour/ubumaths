@@ -42,7 +42,6 @@ const uuidSchema = z.string().uuid('Invalid user ID format');
  *   // Optional profile fields (typically used when approving):
  *   firstname?: string | null,
  *   lastname?: string | null,
- *   gender?: 'boy' | 'girl' | null,
  *   school_id?: string | null,
  *   is_test?: boolean
  * }
@@ -82,8 +81,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			throw error(400, validation.error.issues[0].message);
 		}
 
-		const { status, rejection_reason, firstname, lastname, gender, school_id, is_test } =
-			validation.data;
+		const { status, rejection_reason, firstname, lastname, school_id, is_test } = validation.data;
 
 		// Check if user exists and get current data
 		const { data: existingUser, error: checkError } = await supabase
@@ -113,7 +111,6 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		// Add profile fields if provided (typically when approving)
 		if (firstname !== undefined) updateData.firstname = firstname;
 		if (lastname !== undefined) updateData.lastname = lastname;
-		if (gender !== undefined) updateData.gender = gender;
 		if (school_id !== undefined) updateData.school_id = school_id;
 		if (is_test !== undefined) updateData.is_test = is_test;
 

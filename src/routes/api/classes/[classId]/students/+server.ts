@@ -19,7 +19,7 @@ import { requireRole } from '$lib/server/middleware/auth';
  *
  * RETURNS:
  * Object with students array: { students: [...] }
- * Each student has: id, firstname, lastname, avatar_url, role, gender
+ * Each student has: id, firstname, lastname, avatar_url, role
  *
  * @example
  * fetch('/api/classes/abc-123/students')
@@ -76,7 +76,6 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 					lastname,
 					avatar_url,
 					role,
-					gender,
 					is_test
 				)
 			`
@@ -101,8 +100,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 					firstname: profile.firstname,
 					lastname: profile.lastname ?? undefined,
 					avatar_url: profile.avatar_url ?? undefined,
-					role: profile.role ?? undefined,
-					gender: profile.gender ?? undefined
+					role: profile.role ?? undefined
 				};
 			})
 			.filter(
@@ -114,7 +112,6 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 					lastname: string | undefined;
 					avatar_url: string | undefined;
 					role: string | undefined;
-					gender: string | undefined;
 				} => s !== null
 			)
 			.sort((a, b) => (a?.firstname || '').localeCompare(b?.firstname || '')); // Sort alphabetically by firstname

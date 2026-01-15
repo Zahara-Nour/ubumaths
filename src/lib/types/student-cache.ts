@@ -67,8 +67,6 @@ export interface StudentProfile {
 	full_name: string | null;
 	/** URL to student's avatar image (Supabase Storage or Gravatar) */
 	avatar_url: string | null;
-	/** Student's gender (for avatar generation) */
-	gender: string | null;
 	/** Student's grade level (e.g., "6ème", "5ème") */
 	grade: string | null;
 	/** Whether this is a test account (for development) */

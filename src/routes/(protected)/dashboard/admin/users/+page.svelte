@@ -73,10 +73,9 @@
 	let editingClasses = $state(false);
 
 	// Temporary values (edited but not saved)
-	// Note: tempGender and tempSchoolId use empty string ('') to represent null for MySelect compatibility
+	// Note: tempSchoolId uses empty string ('') to represent null for MySelect compatibility
 	let tempFirstname = $state<string>('');
 	let tempLastname = $state<string>('');
-	let tempGender = $state<string>(''); // '' | 'boy' | 'girl' ('' represents null)
 	let tempRole = $state<'admin' | 'teacher' | 'student'>('student');
 	let tempSchoolId = $state<string>(''); // '' represents null
 	let tempIsTest = $state<boolean>(false);
@@ -85,12 +84,11 @@
 	let isSavingAll = $state(false);
 
 	// Derived: detect if any changes made
-	// Note: tempGender and tempSchoolId use '' for null, so convert for comparison
+	// Note: tempSchoolId uses '' for null, so convert for comparison
 	const hasChanges = $derived(
 		selectedUser &&
 			(tempFirstname !== (selectedUser.firstname || '') ||
 				tempLastname !== (selectedUser.lastname || '') ||
-				(tempGender || null) !== selectedUser.gender ||
 				tempRole !== selectedUser.role ||
 				(tempSchoolId || null) !== selectedUser.school_id ||
 				tempIsTest !== selectedUser.is_test)
@@ -102,7 +100,6 @@
 		const fields = new Set<string>();
 		if (tempFirstname !== (selectedUser.firstname || '')) fields.add('firstname');
 		if (tempLastname !== (selectedUser.lastname || '')) fields.add('lastname');
-		if ((tempGender || null) !== selectedUser.gender) fields.add('gender');
 		if (tempRole !== selectedUser.role) fields.add('role');
 		if ((tempSchoolId || null) !== selectedUser.school_id) fields.add('school');
 		if (tempIsTest !== selectedUser.is_test) fields.add('is_test');
@@ -130,16 +127,6 @@
 			return `${user.firstname} ${user.lastname}`;
 		}
 		return user.full_name || user.email || 'Unknown User';
-	}
-
-	/**
-	 * Convert database gender string to Gender type for avatar function
-	 */
-	function toGender(gender: string | null | undefined): 'M' | 'F' | null {
-		if (!gender) return null;
-		if (gender === 'boy') return 'M';
-		if (gender === 'girl') return 'F';
-		return null;
 	}
 
 	/**
@@ -375,7 +362,6 @@
 				// Include profile fields (convert empty strings back to null for API)
 				firstname: tempFirstname || null,
 				lastname: tempLastname || null,
-				gender: (tempGender || null) as 'boy' | 'girl' | null,
 				school_id: tempSchoolId || null,
 				is_test: tempIsTest
 			};
@@ -503,12 +489,11 @@
 
 	/**
 	 * Initialize temp values when user is selected
-	 * Note: Convert null to '' for gender and schoolId (MySelect compatibility)
+	 * Note: Convert null to '' for schoolId (MySelect compatibility)
 	 */
 	function initTempValues(user: ExtendedProfile) {
 		tempFirstname = user.firstname || '';
 		tempLastname = user.lastname || '';
-		tempGender = user.gender || ''; // null -> ''
 		tempRole = user.role;
 		tempSchoolId = user.school_id || ''; // null -> ''
 		tempIsTest = !!user.is_test; // Force boolean conversion
@@ -604,11 +589,10 @@
 		isSavingAll = true;
 
 		try {
-			// Convert empty strings back to null for gender and school_id (API expects null, not '')
+			// Convert empty strings back to null for school_id (API expects null, not '')
 			const updates = {
 				firstname: tempFirstname || null,
 				lastname: tempLastname || null,
-				gender: (tempGender || null) as 'boy' | 'girl' | null,
 				role: tempRole,
 				school_id: tempSchoolId || null,
 				is_test: tempIsTest
@@ -909,8 +893,7 @@
 												<Avatar.Image
 													src={getAvatarUrl({
 														avatar_url: user.avatar_url,
-														role: user.role,
-														gender: toGender(user.gender)
+														role: user.role
 													})}
 													alt={getFullName(user)}
 												/>
@@ -967,15 +950,13 @@
 							<!-- Avatar -->
 							{#if selectedUser}
 								{@const role = selectedUser.role || 'student'}
-								{@const gender = toGender(selectedUser.gender)}
 								<div class="flex justify-between">
 									<div class="flex items-center gap-4">
 										<Avatar.Root class="h-20 w-20">
 											<Avatar.Image
 												src={getAvatarUrl({
 													avatar_url: selectedUser.avatar_url,
-													role: role,
-													gender: gender
+													role: role
 												})}
 												alt={getFullName(selectedUser)}
 											/>
@@ -1160,27 +1141,6 @@
 									<p class="text-base text-muted-foreground">
 										{selectedUser.email || '—'}
 									</p>
-								</div>
-
-								<!-- Gender -->
-								<div class="space-y-2">
-									<div class="flex items-center gap-2">
-										<Label class="text-sm font-medium text-muted-foreground">Genre</Label>
-										{#if isSavingAll && changedFields.has('gender')}
-											<Loader2 class="h-3 w-3 animate-spin text-muted-foreground" />
-										{/if}
-									</div>
-									<MySelect
-										type="single"
-										bind:value={tempGender}
-										items={[
-											// { value: '', label: 'Non spécifié' },
-											{ value: 'boy', label: 'Garçon' },
-											{ value: 'girl', label: 'Fille' }
-										]}
-										placeholder="Genre"
-										variant="invisible"
-									/>
 								</div>
 
 								<!-- Role -->

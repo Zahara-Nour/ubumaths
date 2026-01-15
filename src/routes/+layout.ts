@@ -273,7 +273,7 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 		supabase,
 		// Verified user from server (safe to use)
 		user: data.user,
-		// User profile from server (includes role, gender, etc.)
+		// User profile from server (includes role, grade, etc.)
 		profile: data.profile,
 		// VIP card templates from server (for client-side store)
 		vipCardTemplates: data.vipCardTemplates
