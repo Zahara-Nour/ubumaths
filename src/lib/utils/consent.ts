@@ -106,6 +106,9 @@ export function isInGracePeriod(profile: ConsentProfile): boolean {
 
 /**
  * Consent status object for UI display
+ *
+ * NOTE: gracePeriodEnds is an ISO string (not Date) because SvelteKit
+ * serializes dates when passing from server to client.
  */
 export interface ConsentStatus {
 	/** Whether this student requires parental consent */
@@ -114,8 +117,8 @@ export interface ConsentStatus {
 	granted: boolean;
 	/** Whether student is in grace period (full access, consent pending) */
 	inGracePeriod: boolean;
-	/** When grace period ends (null if not in grace period) */
-	gracePeriodEnds: Date | null;
+	/** When grace period ends as ISO string (null if not in grace period) */
+	gracePeriodEnds: string | null;
 	/** Whether student has full access (granted OR in grace period) */
 	hasFullAccess: boolean;
 }
@@ -133,9 +136,8 @@ export function getConsentStatus(profile: ConsentProfile): ConsentStatus {
 		required: profile.role === 'student' && profile.consent_required,
 		granted: !!profile.consent_granted_at,
 		inGracePeriod,
-		gracePeriodEnds: profile.consent_grace_period_ends
-			? new Date(profile.consent_grace_period_ends)
-			: null,
+		// Keep as ISO string for SvelteKit serialization
+		gracePeriodEnds: profile.consent_grace_period_ends ?? null,
 		hasFullAccess: hasValidConsent(profile)
 	};
 }

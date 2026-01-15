@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import ConsentButton from '$lib/components/ConsentButton.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -154,15 +155,15 @@
 					</div>
 				</div>
 
-				<!-- Completion toggle -->
+				<!-- Completion toggle (requires consent) -->
 				<div class="flex gap-2">
-					<Button
+					<ConsentButton
 						variant={isCompleted ? 'default' : 'outline'}
 						onclick={toggleCompletion}
 						disabled={loading}
 					>
 						{loading ? '...' : isCompleted ? '✓ Complété' : 'Marquer comme complété'}
-					</Button>
+					</ConsentButton>
 				</div>
 			</div>
 		</Card.Header>

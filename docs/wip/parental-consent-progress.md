@@ -2,7 +2,7 @@
 
 > **Feature**: RGPD Article 8 compliance for minors under 15
 > **Started**: 2026-01-15
-> **Status**: Phase 4 in progress
+> **Status**: Phase 7 in progress
 
 ---
 
@@ -219,23 +219,80 @@ pending_students (modified)
 
 ---
 
+## Phase 6: UI Read-Only Mode - COMPLETED
+
+### Files Created
+
+1. `src/lib/components/ConsentBanner.svelte`
+
+   - Warning banner for students in grace period
+   - Error banner for students without consent (read-only mode)
+   - Shows days remaining in grace period
+
+2. `src/lib/stores/consent.svelte.ts`
+
+   - Client-side consent store using Svelte 5 runes
+   - Exports `hasFullAccess`, `isReadOnly`, `isInGracePeriod`
+   - `getDisabledTooltip()` for button tooltip text
+
+3. `src/lib/components/ConsentButton.svelte`
+   - Consent-aware button wrapper
+   - Automatically disables when `consent.isReadOnly` is true
+   - Shows tooltip explaining why action is disabled
+
+### Files Modified
+
+1. `src/routes/(protected)/dashboard/student/+layout.svelte`
+
+   - Added ConsentBanner integration
+   - Hydrates consent store on mount
+
+2. `src/routes/(protected)/dashboard/student/exercises/[id]/+page.svelte`
+
+   - Completion toggle uses ConsentButton
+
+3. `src/routes/(protected)/dashboard/student/marketplace/+page.svelte`
+
+   - "Nouvelle annonce" button uses ConsentButton
+
+4. `src/lib/components/riddles/RiddleCard.svelte`
+
+   - Submit button uses ConsentButton
+
+5. `src/lib/components/vip-cards/VipCardShopSection.svelte`
+
+   - Purchase buttons use ConsentButton
+   - Card click disabled when consent missing
+
+6. `src/lib/components/student/worksheets/ExerciseModal.svelte`
+   - Mastery status buttons (desktop + mobile) use ConsentButton
+
+---
+
 ## Files Modified Summary
 
-| File                                          | Action   |
-| --------------------------------------------- | -------- |
-| `supabase/migrations/20260115140000_*.sql`    | Created  |
-| `supabase/migrations/20260115140001_*.sql`    | Created  |
-| `supabase/migrations/20260115140002_*.sql`    | Created  |
-| `supabase/migrations/20260115141821_*.sql`    | Created  |
-| `src/lib/types/database.ts`                   | Modified |
-| `src/lib/utils/consent.ts`                    | Created  |
-| `src/lib/server/middleware/consent.ts`        | Created  |
-| `src/lib/utils/consent.test.ts`               | Created  |
-| `src/routes/(protected)/+layout.server.ts`    | Modified |
-| `src/routes/api/.../+server.ts` (15+ files)   | Modified |
-| `src/lib/email-templates/parental-consent.ts` | Created  |
-| `src/lib/server/google/gmail.ts`              | Modified |
-| `src/routes/(public)/consent/[token]/*`       | Created  |
-| `src/routes/(public)/consent/success/*`       | Created  |
-| `src/routes/api/consent/send-email/*`         | Created  |
-| `src/routes/(protected)/.../consent/*`        | Created  |
+| File                                                         | Action   |
+| ------------------------------------------------------------ | -------- |
+| `supabase/migrations/20260115140000_*.sql`                   | Created  |
+| `supabase/migrations/20260115140001_*.sql`                   | Created  |
+| `supabase/migrations/20260115140002_*.sql`                   | Created  |
+| `supabase/migrations/20260115141821_*.sql`                   | Created  |
+| `src/lib/types/database.ts`                                  | Modified |
+| `src/lib/utils/consent.ts`                                   | Created  |
+| `src/lib/server/middleware/consent.ts`                       | Created  |
+| `src/lib/utils/consent.test.ts`                              | Created  |
+| `src/routes/(protected)/+layout.server.ts`                   | Modified |
+| `src/routes/api/.../+server.ts` (15+ files)                  | Modified |
+| `src/lib/email-templates/parental-consent.ts`                | Created  |
+| `src/lib/server/google/gmail.ts`                             | Modified |
+| `src/routes/(public)/consent/[token]/*`                      | Created  |
+| `src/routes/(public)/consent/success/*`                      | Created  |
+| `src/routes/api/consent/send-email/*`                        | Created  |
+| `src/routes/(protected)/.../consent/*`                       | Created  |
+| `src/lib/components/ConsentBanner.svelte`                    | Created  |
+| `src/lib/stores/consent.svelte.ts`                           | Created  |
+| `src/lib/components/ConsentButton.svelte`                    | Created  |
+| `src/routes/(protected)/dashboard/student/+layout.svelte`    | Modified |
+| `src/lib/components/riddles/RiddleCard.svelte`               | Modified |
+| `src/lib/components/vip-cards/VipCardShopSection.svelte`     | Modified |
+| `src/lib/components/student/worksheets/ExerciseModal.svelte` | Modified |

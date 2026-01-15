@@ -2,7 +2,7 @@
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
+	import ConsentButton from '$lib/components/ConsentButton.svelte';
 	import { Plus, ShoppingBag, Package, ArrowLeftRight, Store } from 'lucide-svelte';
 
 	// Import components
@@ -109,7 +109,7 @@
 						> échanges
 					</span>
 				</div>
-				<Button
+				<ConsentButton
 					size="sm"
 					onclick={() => (showCreateModal = true)}
 					disabled={!canCreateListing}
@@ -117,7 +117,7 @@
 				>
 					<Plus class="h-4 w-4" />
 					Nouvelle annonce
-				</Button>
+				</ConsentButton>
 			</div>
 
 			<!-- Nested tabs for exchanges -->

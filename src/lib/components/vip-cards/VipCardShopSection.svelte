@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
+	import ConsentButton from '$lib/components/ConsentButton.svelte';
 	import { Skeleton } from '$lib/components/ui/skeleton';
+	import { consent } from '$lib/stores/consent.svelte';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import { Search, ShoppingCart, Sparkles, Gem } from 'lucide-svelte';
 	import gidouilleImage from '$lib/assets/images/gidouille.png';
@@ -305,13 +307,15 @@
 							{#each rarityCards as card (card.id)}
 								{@const price = getCardPrice(card)}
 								{@const canAfford = gidouillesBalance >= price}
+								{@const canPurchase = canAfford && !consent.isReadOnly}
 								<button
 									type="button"
-									class="group relative flex flex-col overflow-hidden rounded-xl border-3 bg-card transition-all hover:shadow-lg {canAfford
+									class="group relative flex flex-col overflow-hidden rounded-xl border-3 bg-card transition-all hover:shadow-lg {canPurchase
 										? 'cursor-pointer'
 										: 'cursor-not-allowed opacity-75'}"
 									onclick={() => handlePurchaseClick(card)}
-									disabled={!canAfford}
+									disabled={!canPurchase}
+									title={consent.isReadOnly ? consent.getDisabledTooltip() : undefined}
 								>
 									<!-- Card Image -->
 									<div class="relative aspect-[4/5] w-full overflow-hidden bg-muted">
@@ -394,7 +398,7 @@
 												<img src={gidouilleImage} alt="Gidouille" class="h-3.5 w-3.5" />
 												<span class="text-sm font-bold">{price}</span>
 											</div>
-											<Button
+											<ConsentButton
 												size="sm"
 												variant={canAfford ? 'default' : 'secondary'}
 												disabled={!canAfford}
@@ -402,7 +406,7 @@
 											>
 												<ShoppingCart class="h-3 w-3" />
 												{canAfford ? 'Acheter' : 'Insuffisant'}
-											</Button>
+											</ConsentButton>
 										</div>
 									</div>
 								</button>
