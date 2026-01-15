@@ -1,8 +1,8 @@
 # Audit de Conformite RGPD - UbuMaths
 
 > **Date d'audit** : 2026-01-15
-> **Version** : 1.3
-> **Statut global** : PARTIELLEMENT CONFORME (6/10)
+> **Version** : 1.4
+> **Statut global** : PARTIELLEMENT CONFORME (7/10)
 
 ---
 
@@ -30,10 +30,10 @@
 | Chiffrement & Securite          | 8/10     | Bon                     |
 | Minimisation des donnees        | 9/10     | Excellent               |
 | Retention des donnees           | 2/10     | **CRITIQUE**            |
-| Droits utilisateur              | 7/10     | Bon (v1.3)              |
+| Droits utilisateur              | 9/10     | Excellent (v1.4)        |
 | Documentation legale            | 7/10     | Bon (v1.2)              |
 | Consentement mineurs            | 0/10     | **Manquant**            |
-| **GLOBAL**                      | **6/10** | **PARTIELLEMENT CONF.** |
+| **GLOBAL**                      | **7/10** | **PARTIELLEMENT CONF.** |
 
 ### Risques legaux
 
@@ -330,14 +330,16 @@ CRON_SECRET                   # Secret taches planifiees
 
 ---
 
-### 5.5 IMPORTANT - Pas d'export de donnees
+### 5.5 ~~IMPORTANT - Pas d'export de donnees~~ **CORRIGE** (2026-01-15)
 
-**Article RGPD viole** : Art. 20 - Droit a la portabilite
+**Article RGPD** : Art. 20 - Droit a la portabilite
 
 **Situation actuelle** :
 
-- Aucune API pour exporter ses donnees
-- Aucune interface utilisateur pour telecharger ses donnees
+- ~~Aucune API pour exporter ses donnees~~ **API implementee** (`GET /api/account/export`)
+- Interface utilisateur a implementer (accessible via menu utilisateur)
+
+> **Amelioration 2026-01-15** : Implementation de l'API d'export de donnees conforme RGPD Art. 20. L'endpoint exporte toutes les donnees personnelles en JSON structure : profil, donnees pedagogiques (tentatives, progression, soumissions, flashcards), communications (messages, notifications), donnees sociales (amities), gaming, recompenses, et appartenance aux classes. Rate limiting (1/heure), headers de telechargement, et exclusion des tokens OAuth sensibles.
 
 ---
 
@@ -839,12 +841,12 @@ docs/legal/
 
 ### Avant mise en production
 
-- [ ] Politique de confidentialite publiee et accessible
-- [ ] CGU publiees et acceptees lors de l'inscription
-- [ ] Mentions legales publiees
+- [x] Politique de confidentialite publiee et accessible (v1.2)
+- [x] CGU publiees et acceptees lors de l'inscription (v1.2)
+- [x] Mentions legales publiees (v1.2)
 - [ ] Mecanisme de consentement parental operationnel
-- [ ] API de suppression de compte fonctionnelle
-- [ ] API d'export de donnees fonctionnelle
+- [x] API de suppression de compte fonctionnelle (v1.3)
+- [x] API d'export de donnees fonctionnelle (v1.4)
 
 ### Obligations continues
 
@@ -887,6 +889,7 @@ docs/legal/
 
 | Date       | Version | Modifications                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------------- |
+| 2026-01-15 | 1.4     | API export donnees (Art. 20 - portabilite)                                   |
 | 2026-01-15 | 1.3     | UI suppression compte (Art. 17 complet), rate limiting, audit table          |
 | 2026-01-15 | 1.2     | API suppression compte (Art. 17), Documentation legale (Art. 13-14, CGU, ML) |
 | 2026-01-15 | 1.1     | Suppression champ `gender` (Art. 5(1)(c) - minimisation)                     |
