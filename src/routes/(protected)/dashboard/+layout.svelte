@@ -68,7 +68,9 @@
 		FileSpreadsheet,
 		ShieldAlert,
 		Package,
-		Trash2
+		Trash2,
+		Download,
+		Loader2
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -122,6 +124,9 @@
 
 	// Account deletion dialog state
 	let accountDeletionDialogOpen = $state(false);
+
+	// Data export state (GDPR Art. 20)
+	let isExporting = $state(false);
 
 	// Freeze prompt state
 	let freezePromptOpen = $state(false);
@@ -297,6 +302,51 @@
 		form.action = '/auth/logout';
 		document.body.appendChild(form);
 		form.submit();
+	}
+
+	// Handle data export (GDPR Art. 20 - Data Portability)
+	async function handleExport() {
+		if (isExporting) return;
+
+		isExporting = true;
+		try {
+			const response = await fetch('/api/account/export');
+
+			if (!response.ok) {
+				if (response.status === 429) {
+					toaster.error('Export limité à 1 fois par heure. Réessayez plus tard.');
+				} else {
+					toaster.error("Erreur lors de l'export des données");
+				}
+				return;
+			}
+
+			// Get the filename from Content-Disposition header or generate one
+			const contentDisposition = response.headers.get('Content-Disposition');
+			let filename = 'ubumaths-export.json';
+			if (contentDisposition) {
+				const match = contentDisposition.match(/filename="(.+)"/);
+				if (match) filename = match[1];
+			}
+
+			// Download the file
+			const blob = await response.blob();
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = filename;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+
+			toaster.success('Données exportées avec succès');
+		} catch (err) {
+			console.error('Export failed:', err);
+			toaster.error("Erreur lors de l'export des données");
+		} finally {
+			isExporting = false;
+		}
 	}
 
 	// Fetch initial activity data when dashboard loads
@@ -536,6 +586,16 @@
 
 							<DropdownMenu.Separator />
 						</div>
+
+						<DropdownMenu.Item onclick={handleExport} disabled={isExporting}>
+							{#if isExporting}
+								<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+								Export en cours...
+							{:else}
+								<Download class="mr-2 h-4 w-4" />
+								Exporter mes données
+							{/if}
+						</DropdownMenu.Item>
 
 						<DropdownMenu.Item
 							onclick={() => (accountDeletionDialogOpen = true)}

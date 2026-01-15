@@ -1,7 +1,7 @@
 # Audit de Conformite RGPD - UbuMaths
 
 > **Date d'audit** : 2026-01-15
-> **Version** : 1.5
+> **Version** : 1.6
 > **Statut global** : PARTIELLEMENT CONFORME (8/10)
 
 ---
@@ -336,9 +336,9 @@ CRON_SECRET                   # Secret taches planifiees
 **Situation actuelle** :
 
 - ~~Aucune API pour exporter ses donnees~~ **API implementee** (`GET /api/account/export`)
-- Interface utilisateur a implementer (accessible via menu utilisateur)
+- ~~Interface utilisateur a implementer~~ **UI implementee** (menu utilisateur > "Exporter mes donnees")
 
-> **Amelioration 2026-01-15** : Implementation de l'API d'export de donnees conforme RGPD Art. 20. L'endpoint exporte toutes les donnees personnelles en JSON structure : profil, donnees pedagogiques (tentatives, progression, soumissions, flashcards), communications (messages, notifications), donnees sociales (amities), gaming, recompenses, et appartenance aux classes. Rate limiting (1/heure), headers de telechargement, et exclusion des tokens OAuth sensibles.
+> **Amelioration 2026-01-15** : Implementation complete de l'export de donnees conforme RGPD Art. 20. L'endpoint exporte toutes les donnees personnelles en JSON structure : profil, donnees pedagogiques (tentatives, progression, soumissions, flashcards), communications (messages, notifications), donnees sociales (amities), gaming, recompenses, et appartenance aux classes. Rate limiting (1/heure), headers de telechargement, et exclusion des tokens OAuth sensibles. UI accessible via le menu utilisateur dans le dashboard.
 
 ---
 
@@ -888,6 +888,7 @@ docs/legal/
 
 | Date       | Version | Modifications                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------------- |
+| 2026-01-15 | 1.6     | UI export donnees (Art. 20 complet - menu utilisateur)                       |
 | 2026-01-15 | 1.5     | Politique de retention pg_cron (Art. 5(1)(e) - limitation conservation)      |
 | 2026-01-15 | 1.4     | API export donnees (Art. 20 - portabilite)                                   |
 | 2026-01-15 | 1.3     | UI suppression compte (Art. 17 complet), rate limiting, audit table          |
