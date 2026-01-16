@@ -92,7 +92,10 @@
 			{/snippet}
 		</Popover.Trigger>
 
-		<Popover.Content class="w-80 max-w-[90vw]" align="start">
+		<Popover.Content
+			class="w-80 max-w-[90vw] border-2 border-primary/20 shadow-lg dark:border-primary/40 dark:bg-card"
+			align="start"
+		>
 			<div class="space-y-2">
 				<!-- Header with title -->
 				<div class="flex items-center gap-2">
