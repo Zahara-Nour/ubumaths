@@ -85,11 +85,13 @@
 	});
 
 	// Tutor context derived from current exercise
+	// Includes solution for internal tutor guidance (never revealed to student)
 	let tutorContext = $derived(
 		exercise
 			? {
 					exerciseId: exercise.exercise_id,
-					statement: exercise.statement
+					statement: exercise.statement,
+					solution: exercise.correction ?? undefined
 				}
 			: undefined
 	);
