@@ -15,7 +15,6 @@
 	import { goto } from '$app/navigation';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import { driveSyncService, type DriveFile } from '../services/drive-sync';
-	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
 	import { generateThumbnail, exportToPdf } from '../core/pdf-export';
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
@@ -828,46 +827,28 @@
 					<Loader2 class="h-8 w-8 animate-spin text-muted-foreground" />
 				</div>
 			{:else if googleConnected}
-				<!-- Sync Status -->
-				<div
-					class="mb-4 flex items-center gap-2 rounded-lg border px-4 py-2 {getSyncStatusColor(
-						syncState
-					)}"
-				>
-					{#if syncState.status === 'syncing'}
-						<Loader2 class="h-4 w-4 animate-spin" />
-					{:else if syncState.status === 'disconnected'}
-						<CloudOff class="h-4 w-4" />
-					{:else}
-						<Cloud class="h-4 w-4" />
-					{/if}
-					<span class="text-sm">{getSyncStatusLabel(syncState)}</span>
-				</div>
-
 				<!-- Class Selector -->
 				{#if classes.length > 0}
-					<div class="mb-4">
-						<Label class="mb-2 block text-sm text-muted-foreground">Classe</Label>
-						<div class="flex items-center gap-3">
-							<div class="flex-1">
-								<MySelect
-									type="single"
-									value={selectedClassId ?? ''}
-									items={classItems}
-									onValueChange={handleClassChange}
-									placeholder="Toutes les classes"
-								/>
-							</div>
-							{#if wasAutoDetected && selectedClassId}
-								<div
-									class="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs text-primary"
-									title="Classe auto-détectée selon l'horaire"
-								>
-									<Sparkles class="h-3 w-3" />
-									<span>Auto</span>
-								</div>
-							{/if}
+					<div class="mb-4 flex items-center gap-3">
+						<Label class="shrink-0 text-sm text-muted-foreground">Classe</Label>
+						<div class="flex-1">
+							<MySelect
+								type="single"
+								value={selectedClassId ?? ''}
+								items={classItems}
+								onValueChange={handleClassChange}
+								placeholder="Toutes les classes"
+							/>
 						</div>
+						{#if wasAutoDetected && selectedClassId}
+							<div
+								class="flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs text-primary"
+								title="Classe auto-détectée selon l'horaire"
+							>
+								<Sparkles class="h-3 w-3" />
+								<span>Auto</span>
+							</div>
+						{/if}
 					</div>
 				{/if}
 
@@ -887,45 +868,6 @@
 					</div>
 				{/if}
 
-				<!-- Drive Actions -->
-				<div class="mb-4 grid grid-cols-2 gap-2">
-					<Button
-						type="button"
-						variant="outline"
-						onclick={handleSaveToDrive}
-						disabled={isSavingToDrive}
-						class="h-10 gap-2"
-					>
-						{#if isSavingToDrive}
-							<Loader2 class="h-4 w-4 animate-spin" />
-						{:else}
-							<Cloud class="h-4 w-4" />
-						{/if}
-						<span>Sauvegarder</span>
-					</Button>
-					<Button type="button" variant="outline" onclick={handleSaveAsToDrive} class="h-10 gap-2">
-						<Save class="h-4 w-4" />
-						<span>Enregistrer sous...</span>
-					</Button>
-				</div>
-
-				<!-- Export to Classroom -->
-				<Button
-					type="button"
-					variant="secondary"
-					onclick={handleExportToClassroom}
-					disabled={isExportingToClassroom}
-					class="mb-4 h-10 w-full gap-2"
-				>
-					{#if isExportingToClassroom}
-						<Loader2 class="h-4 w-4 animate-spin" />
-						<span>Publication...</span>
-					{:else}
-						<GraduationCap class="h-4 w-4" />
-						<span>Publier sur Classroom</span>
-					{/if}
-				</Button>
-
 				<!-- Folders Grid -->
 				{#if folders.length > 0 && !isInSubfolder}
 					<div class="mb-4">
@@ -943,22 +885,6 @@
 								</button>
 							{/each}
 						</div>
-					</div>
-				{/if}
-
-				<!-- Create Folder Button -->
-				{#if canCreateSubfolder}
-					<div class="mb-4">
-						<Button
-							type="button"
-							variant="outline"
-							size="sm"
-							onclick={() => (createFolderDialogOpen = true)}
-							class="h-9 w-full gap-2"
-						>
-							<FolderPlus class="h-4 w-4" />
-							<span>Nouveau dossier</span>
-						</Button>
 					</div>
 				{/if}
 
@@ -1069,53 +995,117 @@
 			{/if}
 		</div>
 
-		<!-- Footer - Local operations -->
+		<!-- Footer - All file operations -->
 		<Sheet.Footer class="border-t pt-4">
-			<div class="grid w-full grid-cols-4 gap-2">
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={handleNewDocument}
-					class="h-9 flex-col gap-1 p-1"
-					title="Nouveau document"
-				>
-					<FilePlus class="h-4 w-4" />
-					<span class="text-[10px]">Nouveau</span>
-				</Button>
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={handleSaveDocument}
-					class="h-9 flex-col gap-1 p-1"
-					title="Enregistrer localement"
-				>
-					<Save class="h-4 w-4" />
-					<span class="text-[10px]">Local</span>
-				</Button>
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={handleOpenDocument}
-					class="h-9 flex-col gap-1 p-1"
-					title="Ouvrir un fichier local"
-				>
-					<FolderOpen class="h-4 w-4" />
-					<span class="text-[10px]">Ouvrir</span>
-				</Button>
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={() => (exportDialogOpen = true)}
-					class="h-9 flex-col gap-1 p-1"
-					title="Exporter (PDF, image...)"
-				>
-					<Download class="h-4 w-4" />
-					<span class="text-[10px]">Export</span>
-				</Button>
+			<div class="flex w-full flex-col gap-2">
+				<!-- Row 1: Primary actions -->
+				<div class="grid grid-cols-4 gap-2">
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={handleNewDocument}
+						class="h-9 flex-col gap-1 p-1"
+						title="Nouveau document"
+					>
+						<FilePlus class="h-4 w-4" />
+						<span class="text-[10px]">Nouveau</span>
+					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={handleSaveToDrive}
+						disabled={isSavingToDrive}
+						class="h-9 flex-col gap-1 p-1"
+						title="Sauvegarder sur Drive"
+					>
+						{#if isSavingToDrive}
+							<Loader2 class="h-4 w-4 animate-spin" />
+						{:else}
+							<Cloud class="h-4 w-4" />
+						{/if}
+						<span class="text-[10px]">Drive</span>
+					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={handleExportToClassroom}
+						disabled={isExportingToClassroom}
+						class="h-9 flex-col gap-1 p-1"
+						title="Publier sur Classroom"
+					>
+						{#if isExportingToClassroom}
+							<Loader2 class="h-4 w-4 animate-spin" />
+						{:else}
+							<GraduationCap class="h-4 w-4" />
+						{/if}
+						<span class="text-[10px]">Classroom</span>
+					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={() => (exportDialogOpen = true)}
+						class="h-9 flex-col gap-1 p-1"
+						title="Exporter (PDF, image...)"
+					>
+						<Download class="h-4 w-4" />
+						<span class="text-[10px]">Export</span>
+					</Button>
+				</div>
+				<!-- Row 2: Secondary actions -->
+				<div class="grid grid-cols-4 gap-2">
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={handleSaveAsToDrive}
+						class="h-9 flex-col gap-1 p-1"
+						title="Enregistrer sous un nouveau nom sur Drive"
+					>
+						<Save class="h-4 w-4" />
+						<span class="text-[10px]">Enr. sous</span>
+					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={handleSaveDocument}
+						class="h-9 flex-col gap-1 p-1"
+						title="Enregistrer localement"
+					>
+						<Download class="h-4 w-4" />
+						<span class="text-[10px]">Local</span>
+					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={handleOpenDocument}
+						class="h-9 flex-col gap-1 p-1"
+						title="Ouvrir un fichier local"
+					>
+						<FolderOpen class="h-4 w-4" />
+						<span class="text-[10px]">Ouvrir</span>
+					</Button>
+					{#if canCreateSubfolder}
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onclick={() => (createFolderDialogOpen = true)}
+							class="h-9 flex-col gap-1 p-1"
+							title="Nouveau dossier"
+						>
+							<FolderPlus class="h-4 w-4" />
+							<span class="text-[10px]">Dossier</span>
+						</Button>
+					{:else}
+						<div></div>
+					{/if}
+				</div>
 			</div>
 		</Sheet.Footer>
 	</Sheet.Content>
