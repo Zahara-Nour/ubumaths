@@ -302,6 +302,7 @@ function createWhiteboardStore() {
 	let liveResizes = $state<
 		Map<string, { scaleX: number; scaleY: number; originX: number; originY: number }>
 	>(new Map());
+	let livePositions = $state<Map<string, { dx: number; dy: number }>>(new Map());
 
 	// === Autosave ===
 	let autosaveTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -533,6 +534,9 @@ function createWhiteboardStore() {
 		},
 		get liveResizes() {
 			return liveResizes;
+		},
+		get livePositions() {
+			return livePositions;
 		},
 
 		// === Document Operations ===
@@ -1770,6 +1774,96 @@ function createWhiteboardStore() {
 			const newMap = new Map(liveResizes);
 			newMap.delete(elementId);
 			liveResizes = newMap;
+		},
+
+		// === Live Position Methods ===
+
+		/**
+		 * Set a live (preview) position offset for an element during drag.
+		 * This doesn't update the actual element - use commitLivePosition to apply.
+		 * @param elementId - Element to set live position for
+		 * @param dx - Horizontal offset from original position
+		 * @param dy - Vertical offset from original position
+		 */
+		setLivePosition(elementId: string, dx: number, dy: number): void {
+			const newMap = new Map(livePositions);
+			newMap.set(elementId, { dx, dy });
+			livePositions = newMap;
+		},
+
+		/**
+		 * Set live position for multiple elements at once (for group dragging).
+		 * @param elementIds - Elements to set live position for
+		 * @param dx - Horizontal offset from original position
+		 * @param dy - Vertical offset from original position
+		 */
+		setLivePositionBatch(elementIds: string[], dx: number, dy: number): void {
+			const newMap = new Map(livePositions);
+			for (const id of elementIds) {
+				newMap.set(id, { dx, dy });
+			}
+			livePositions = newMap;
+		},
+
+		/**
+		 * Commit the live position to the actual element and clear live state.
+		 * @param elementId - Element to commit position for
+		 */
+		commitLivePosition(elementId: string): void {
+			const livePos = livePositions.get(elementId);
+			if (!livePos) return;
+
+			// Find the element and update its position
+			const element = currentPage?.elements.find((e) => e.id === elementId);
+			if (!element) return;
+
+			// Move the element by the offset
+			this.moveElements([elementId], livePos.dx, livePos.dy);
+
+			// Clear the live position
+			const newMap = new Map(livePositions);
+			newMap.delete(elementId);
+			livePositions = newMap;
+		},
+
+		/**
+		 * Commit live positions for multiple elements and clear live state.
+		 * @param elementIds - Elements to commit positions for
+		 */
+		commitLivePositionBatch(elementIds: string[]): void {
+			// Get the offset from the first element (all should have the same offset)
+			const firstPos = livePositions.get(elementIds[0]);
+			if (!firstPos) return;
+
+			// Move all elements by the offset
+			this.moveElements(elementIds, firstPos.dx, firstPos.dy);
+
+			// Clear all live positions
+			const newMap = new Map(livePositions);
+			for (const id of elementIds) {
+				newMap.delete(id);
+			}
+			livePositions = newMap;
+		},
+
+		/**
+		 * Clear live position without committing (e.g., on cancel).
+		 * @param elementId - Element to clear live position for
+		 */
+		clearLivePosition(elementId: string): void {
+			if (!livePositions.has(elementId)) return;
+
+			const newMap = new Map(livePositions);
+			newMap.delete(elementId);
+			livePositions = newMap;
+		},
+
+		/**
+		 * Clear all live positions (e.g., after commit or cancel).
+		 */
+		clearAllLivePositions(): void {
+			if (livePositions.size === 0) return;
+			livePositions = new Map();
 		},
 
 		/**
