@@ -30,14 +30,9 @@
 		Square,
 		Circle,
 		MoveRight,
-		Trash2,
 		Ruler,
 		Compass,
 		Triangle,
-		Image,
-		FileText,
-		Upload,
-		Loader2,
 		MousePointer2,
 		Hand,
 		ZoomIn,
@@ -47,7 +42,8 @@
 		Star,
 		Grid3x3,
 		Maximize2,
-		Minimize2
+		Minimize2,
+		Palette
 	} from 'lucide-svelte';
 	import {
 		INSTRUMENT_LABELS,
@@ -60,9 +56,6 @@
 		type BackgroundStyle,
 		type PageFormatKey
 	} from '../types/document';
-	import { importImageFile } from '../utils/image-loader';
-	import { importPdfFile } from '../utils/pdf-loader';
-	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// ==========================================================================
 	// Constants
@@ -149,32 +142,10 @@
 	/** Popover open states */
 	let shapesPopoverOpen = $state(false);
 	let instrumentsPopoverOpen = $state(false);
-	let importPopoverOpen = $state(false);
-	let backgroundPopoverOpen = $state(false);
-	let pageFormatPopoverOpen = $state(false);
+	let pagePopoverOpen = $state(false);
 
-	/** File input references for import (plain variables, no reactivity needed for bind:this) */
-	let imageInputRef: HTMLInputElement | null = null;
-	let pdfInputRef: HTMLInputElement | null = null;
-
-	/** Import loading state */
-	let isImporting = $state(false);
-
-	/** Draggable stroke panel state (independent floating panel, not using Popover) */
-	let strokePanelOpen = $state(false);
-	let strokePanelPosition = $state({ x: 100, y: 100 });
-	let isDraggingStrokePanel = $state(false);
-	let strokePanelRef: HTMLDivElement | null = $state(null);
-
-	/** Draggable fill panel state */
-	let fillPanelOpen = $state(false);
-	let fillPanelPosition = $state({ x: 150, y: 100 });
-	let isDraggingFillPanel = $state(false);
-	let fillPanelRef: HTMLDivElement | null = $state(null);
-
-	/** Shared drag state */
-	let dragStartPos = $state({ x: 0, y: 0 });
-	let dragStartOffset = $state({ x: 0, y: 0 });
+	/** Responsive state - style section collapsed on tablet */
+	let styleExpanded = $state(true);
 
 	// ==========================================================================
 	// Derived State
@@ -422,226 +393,10 @@
 		pageFormatPopoverOpen = false;
 	}
 
-	// ==========================================================================
-	// Stroke Panel Drag Handlers
-	// ==========================================================================
-
-	function handleStrokePanelDragStart(e: PointerEvent) {
-		e.preventDefault();
-		isDraggingStrokePanel = true;
-		dragStartPos = { x: e.clientX, y: e.clientY };
-		dragStartOffset = { ...strokePanelPosition };
-
-		// Add window listeners for drag
-		window.addEventListener('pointermove', handleStrokePanelDragMove);
-		window.addEventListener('pointerup', handleStrokePanelDragEnd);
-	}
-
-	function handleStrokePanelDragMove(e: PointerEvent) {
-		if (!isDraggingStrokePanel) return;
-		const dx = e.clientX - dragStartPos.x;
-		const dy = e.clientY - dragStartPos.y;
-
-		// Calculate new position with bounds checking
-		const newX = dragStartOffset.x + dx;
-		const newY = dragStartOffset.y + dy;
-
-		// Keep panel within viewport
-		const panelWidth = 256; // w-64 = 16rem = 256px
-		const panelHeight = 350; // approximate height
-		const maxX = window.innerWidth - panelWidth - 10;
-		const maxY = window.innerHeight - panelHeight - 10;
-
-		strokePanelPosition = {
-			x: Math.max(10, Math.min(maxX, newX)),
-			y: Math.max(10, Math.min(maxY, newY))
-		};
-	}
-
-	function handleStrokePanelDragEnd() {
-		isDraggingStrokePanel = false;
-		window.removeEventListener('pointermove', handleStrokePanelDragMove);
-		window.removeEventListener('pointerup', handleStrokePanelDragEnd);
-	}
-
-	function toggleStrokePanel(e: MouseEvent) {
-		if (strokePanelOpen) {
-			strokePanelOpen = false;
-		} else {
-			// Position panel near the button
-			const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-			strokePanelPosition = {
-				x: rect.left,
-				y: rect.top - 360 // Above the toolbar
-			};
-			strokePanelOpen = true;
-		}
-	}
-
-	function closePanelsOnClickOutside(e: MouseEvent) {
-		// Close stroke panel if clicking outside
-		if (
-			strokePanelOpen &&
-			strokePanelRef &&
-			!strokePanelRef.contains(e.target as Node) &&
-			!(e.target as HTMLElement).closest('[data-stroke-panel-trigger]')
-		) {
-			strokePanelOpen = false;
-		}
-		// Close fill panel if clicking outside
-		if (
-			fillPanelOpen &&
-			fillPanelRef &&
-			!fillPanelRef.contains(e.target as Node) &&
-			!(e.target as HTMLElement).closest('[data-fill-panel-trigger]')
-		) {
-			fillPanelOpen = false;
-		}
-	}
-
-	// ==========================================================================
-	// Fill Panel Drag Handlers
-	// ==========================================================================
-
-	function handleFillPanelDragStart(e: PointerEvent) {
-		e.preventDefault();
-		isDraggingFillPanel = true;
-		dragStartPos = { x: e.clientX, y: e.clientY };
-		dragStartOffset = { ...fillPanelPosition };
-
-		window.addEventListener('pointermove', handleFillPanelDragMove);
-		window.addEventListener('pointerup', handleFillPanelDragEnd);
-	}
-
-	function handleFillPanelDragMove(e: PointerEvent) {
-		if (!isDraggingFillPanel) return;
-		const dx = e.clientX - dragStartPos.x;
-		const dy = e.clientY - dragStartPos.y;
-
-		const newX = dragStartOffset.x + dx;
-		const newY = dragStartOffset.y + dy;
-
-		const panelWidth = 256;
-		const panelHeight = 400;
-		const maxX = window.innerWidth - panelWidth - 10;
-		const maxY = window.innerHeight - panelHeight - 10;
-
-		fillPanelPosition = {
-			x: Math.max(10, Math.min(maxX, newX)),
-			y: Math.max(10, Math.min(maxY, newY))
-		};
-	}
-
-	function handleFillPanelDragEnd() {
-		isDraggingFillPanel = false;
-		window.removeEventListener('pointermove', handleFillPanelDragMove);
-		window.removeEventListener('pointerup', handleFillPanelDragEnd);
-	}
-
-	function toggleFillPanel(e: MouseEvent) {
-		if (fillPanelOpen) {
-			fillPanelOpen = false;
-		} else {
-			const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-			fillPanelPosition = {
-				x: rect.left,
-				y: rect.top - 420
-			};
-			fillPanelOpen = true;
-		}
-	}
-
-	function handleClear() {
-		const page = whiteboardStore.currentPage;
-		if (page && page.elements.length > 0) {
-			// Confirmation before destructive action
-			if (confirm('Voulez-vous vraiment effacer tous les éléments de cette page ?')) {
-				whiteboardStore.clearPage();
-			}
-		}
-	}
-
 	function handleInstrumentToggle(type: InstrumentType) {
 		whiteboardStore.toggleInstrument(type);
 	}
-
-	function handleImageImportClick() {
-		imageInputRef?.click();
-		importPopoverOpen = false;
-	}
-
-	function handlePdfImportClick() {
-		pdfInputRef?.click();
-		importPopoverOpen = false;
-	}
-
-	async function handleImageFileSelect(e: Event) {
-		const input = e.target as HTMLInputElement;
-		const file = input.files?.[0];
-		if (!file) return;
-
-		isImporting = true;
-		try {
-			const page = whiteboardStore.currentPage;
-			if (!page) return;
-
-			// Center the image on the page
-			const position = {
-				x: page.width / 2 - 200,
-				y: page.height / 2 - 150
-			};
-
-			const result = await importImageFile(file, position);
-
-			if (result.success && result.element) {
-				whiteboardStore.addImage(
-					result.element.position,
-					result.element.width,
-					result.element.height,
-					result.element.src,
-					result.element.originalFilename
-				);
-				toaster.success('Image importée');
-			} else {
-				toaster.error(result.error || "Erreur lors de l'import");
-			}
-		} catch (error) {
-			console.error('Image import error:', error);
-			toaster.error("Erreur lors de l'import de l'image");
-		} finally {
-			isImporting = false;
-			// Reset input to allow re-selecting same file
-			input.value = '';
-		}
-	}
-
-	async function handlePdfFileSelect(e: Event) {
-		const input = e.target as HTMLInputElement;
-		const file = input.files?.[0];
-		if (!file) return;
-
-		isImporting = true;
-		try {
-			const result = await importPdfFile(file, { fitMode: 'fit' });
-
-			if (result.success && result.pages && result.pages.length > 0) {
-				whiteboardStore.addPagesFromPdf(result.pages);
-				toaster.success(`${result.pages.length} page(s) importée(s) du PDF`);
-			} else {
-				toaster.error(result.error || "Erreur lors de l'import du PDF");
-			}
-		} catch (error) {
-			console.error('PDF import error:', error);
-			toaster.error("Erreur lors de l'import du PDF");
-		} finally {
-			isImporting = false;
-			// Reset input to allow re-selecting same file
-			input.value = '';
-		}
-	}
 </script>
-
-<svelte:window onclick={closePanelsOnClickOutside} />
 
 <div class="whiteboard-toolbar border-t border-border bg-muted/95 backdrop-blur-sm">
 	<div class="flex items-center justify-between gap-2 px-3 py-2">
@@ -819,83 +574,63 @@
 				</Popover.Content>
 			</Popover.Root>
 
-			<!-- Import Popover -->
-			<Popover.Root bind:open={importPopoverOpen}>
+			<!-- Page Settings Popover (Background + Format) -->
+			<Popover.Root bind:open={pagePopoverOpen}>
 				<Popover.Trigger>
 					{#snippet child({ props })}
 						<button
 							{...props}
 							type="button"
 							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
-							aria-label="Importer"
-							title="Import"
-							disabled={isImporting}
-						>
-							{#if isImporting}
-								<Loader2 class="h-4 w-4 animate-spin" />
-							{:else}
-								<Upload class="h-4 w-4" />
-							{/if}
-						</button>
-					{/snippet}
-				</Popover.Trigger>
-				<Popover.Content class="w-auto p-2" side="top" align="start">
-					<div class="flex flex-col gap-1">
-						<Button
-							type="button"
-							variant="ghost"
-							size="sm"
-							onclick={handleImageImportClick}
-							disabled={isImporting}
-							class="justify-start gap-2"
-						>
-							<Image class="h-4 w-4" />
-							<span>Image (PNG, JPG, SVG)</span>
-						</Button>
-						<Button
-							type="button"
-							variant="ghost"
-							size="sm"
-							onclick={handlePdfImportClick}
-							disabled={isImporting}
-							class="justify-start gap-2"
-						>
-							<FileText class="h-4 w-4" />
-							<span>PDF comme pages</span>
-						</Button>
-					</div>
-				</Popover.Content>
-			</Popover.Root>
-
-			<!-- Page Background Popover -->
-			<Popover.Root bind:open={backgroundPopoverOpen}>
-				<Popover.Trigger>
-					{#snippet child({ props })}
-						<button
-							{...props}
-							type="button"
-							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
-							aria-label="Fond de page"
-							title="Fond de page"
+							aria-label="Parametres de page"
+							title="Page"
 						>
 							<Grid3x3 class="h-4 w-4" />
+							<span class="text-xs text-muted-foreground">
+								{currentPageFormat
+									? PAGE_FORMATS[currentPageFormat].label
+									: `${currentPageDimensions.width}×${currentPageDimensions.height}`}
+							</span>
 						</button>
 					{/snippet}
 				</Popover.Trigger>
-				<Popover.Content class="w-56 p-3" side="top" align="start">
-					<div class="flex flex-col gap-3">
+				<Popover.Content class="w-64 p-3" side="top" align="start">
+					<div class="flex flex-col gap-4">
+						<!-- Format section -->
 						<div>
-							<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Style</span>
-							<div class="flex flex-col gap-1">
-								{#each Object.entries(BACKGROUND_STYLE_LABELS) as [style, label] (style)}
+							<span class="mb-2 block text-xs font-medium text-muted-foreground">Format</span>
+							<div class="grid grid-cols-2 gap-1">
+								{#each Object.entries(PAGE_FORMATS) as [key, format] (key)}
 									<Button
 										type="button"
-										variant={currentBackgroundStyle === style ? 'secondary' : 'ghost'}
+										variant={currentPageFormat === key ? 'secondary' : 'ghost'}
 										size="sm"
-										onclick={() => handleBackgroundStyleChange(style as BackgroundStyle)}
-										class="justify-start gap-3"
+										onclick={() => handlePageFormatChange(key as PageFormatKey)}
+										class="h-7 justify-start px-2 text-xs"
 									>
-										<!-- Background preview icon -->
+										{format.label}
+									</Button>
+								{/each}
+							</div>
+						</div>
+
+						<div class="h-px bg-border"></div>
+
+						<!-- Background section -->
+						<div>
+							<span class="mb-2 block text-xs font-medium text-muted-foreground">Fond</span>
+							<div class="grid grid-cols-4 gap-1">
+								{#each Object.entries(BACKGROUND_STYLE_LABELS) as [style, label] (style)}
+									<button
+										type="button"
+										onclick={() => handleBackgroundStyleChange(style as BackgroundStyle)}
+										class="flex h-9 w-9 items-center justify-center rounded-md border transition-colors {currentBackgroundStyle ===
+										style
+											? 'border-primary bg-secondary'
+											: 'border-border hover:bg-accent'}"
+										title={label}
+										aria-label={label}
+									>
 										<svg class="h-5 w-5" viewBox="0 0 20 20">
 											<rect
 												x="1"
@@ -908,18 +643,15 @@
 												stroke-width="1"
 											/>
 											{#if style === 'grid'}
-												<!-- Grid pattern -->
 												<line x1="7" y1="1" x2="7" y2="19" stroke="#ddd" stroke-width="0.5" />
 												<line x1="13" y1="1" x2="13" y2="19" stroke="#ddd" stroke-width="0.5" />
 												<line x1="1" y1="7" x2="19" y2="7" stroke="#ddd" stroke-width="0.5" />
 												<line x1="1" y1="13" x2="19" y2="13" stroke="#ddd" stroke-width="0.5" />
 											{:else if style === 'ruled'}
-												<!-- Ruled lines -->
 												<line x1="1" y1="5" x2="19" y2="5" stroke="#ddd" stroke-width="0.5" />
 												<line x1="1" y1="10" x2="19" y2="10" stroke="#ddd" stroke-width="0.5" />
 												<line x1="1" y1="15" x2="19" y2="15" stroke="#ddd" stroke-width="0.5" />
 											{:else if style === 'dotted'}
-												<!-- Dots pattern -->
 												<circle cx="5" cy="5" r="0.8" fill="#ccc" />
 												<circle cx="10" cy="5" r="0.8" fill="#ccc" />
 												<circle cx="15" cy="5" r="0.8" fill="#ccc" />
@@ -930,24 +662,17 @@
 												<circle cx="10" cy="15" r="0.8" fill="#ccc" />
 												<circle cx="15" cy="15" r="0.8" fill="#ccc" />
 											{:else if style === 'triangular'}
-												<!-- Triangular grid -->
 												<path
 													d="M 4 15 L 10 4 L 16 15 Z"
 													fill="none"
 													stroke="#ddd"
 													stroke-width="0.5"
 												/>
-												<path d="M 1 15 L 4 15 M 16 15 L 19 15" stroke="#ddd" stroke-width="0.5" />
-												<path d="M 7 10 L 13 10" stroke="#ddd" stroke-width="0.5" />
 											{:else if style === 'triangular-dotted'}
-												<!-- Triangular dots -->
 												<circle cx="10" cy="4" r="1" fill="#ccc" />
 												<circle cx="4" cy="15" r="1" fill="#ccc" />
 												<circle cx="16" cy="15" r="1" fill="#ccc" />
-												<circle cx="7" cy="9.5" r="0.8" fill="#ccc" />
-												<circle cx="13" cy="9.5" r="0.8" fill="#ccc" />
 											{:else if style === 'hexagonal'}
-												<!-- Hexagonal grid -->
 												<path
 													d="M 6 4 L 14 4 L 17 10 L 14 16 L 6 16 L 3 10 Z"
 													fill="none"
@@ -955,7 +680,6 @@
 													stroke-width="0.5"
 												/>
 											{:else if style === 'hexagonal-dotted'}
-												<!-- Hexagonal dots -->
 												<circle cx="6" cy="4" r="1" fill="#ccc" />
 												<circle cx="14" cy="4" r="1" fill="#ccc" />
 												<circle cx="17" cy="10" r="1" fill="#ccc" />
@@ -964,21 +688,15 @@
 												<circle cx="3" cy="10" r="1" fill="#ccc" />
 											{/if}
 										</svg>
-										<span>{label}</span>
-									</Button>
+									</button>
 								{/each}
 							</div>
 						</div>
 
 						{#if showGridControls}
-							<div class="h-px bg-border"></div>
-
-							<!-- Grid spacing slider -->
-							<div>
-								<span class="mb-1.5 block text-xs font-medium text-muted-foreground"
-									>Espacement</span
-								>
+							<div class="flex flex-col gap-2">
 								<div class="flex items-center gap-2">
+									<span class="w-20 text-xs text-muted-foreground">Espacement</span>
 									<Slider
 										type="single"
 										value={[currentGridSpacing]}
@@ -987,19 +705,14 @@
 										max={100}
 										step={1}
 										class="flex-1"
-										aria-label="Espacement de la grille: {currentGridSpacing}px"
+										aria-label="Espacement: {currentGridSpacing}px"
 									/>
-									<span class="min-w-[3rem] text-right text-xs text-muted-foreground"
+									<span class="w-10 text-right text-xs text-muted-foreground"
 										>{currentGridSpacing}px</span
 									>
 								</div>
-							</div>
-
-							<!-- Grid opacity slider -->
-							<div>
-								<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Intensité</span
-								>
 								<div class="flex items-center gap-2">
+									<span class="w-20 text-xs text-muted-foreground">Intensite</span>
 									<Slider
 										type="single"
 										value={[currentGridOpacity]}
@@ -1008,9 +721,9 @@
 										max={1}
 										step={0.05}
 										class="flex-1"
-										aria-label="Intensité de la grille: {Math.round(currentGridOpacity * 100)}%"
+										aria-label="Intensite: {Math.round(currentGridOpacity * 100)}%"
 									/>
-									<span class="min-w-[3rem] text-right text-xs text-muted-foreground"
+									<span class="w-10 text-right text-xs text-muted-foreground"
 										>{Math.round(currentGridOpacity * 100)}%</span
 									>
 								</div>
@@ -1020,150 +733,295 @@
 				</Popover.Content>
 			</Popover.Root>
 
-			<!-- Page Format Popover -->
-			<Popover.Root bind:open={pageFormatPopoverOpen}>
-				<Popover.Trigger>
-					{#snippet child({ props })}
-						<button
-							{...props}
-							type="button"
-							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
-							aria-label="Format de page"
-							title="Format de page"
-						>
-							<Maximize2 class="h-4 w-4" />
-							<span class="text-xs text-muted-foreground">
-								{currentPageFormat
-									? PAGE_FORMATS[currentPageFormat].label
-									: `${currentPageDimensions.width}×${currentPageDimensions.height}`}
-							</span>
-						</button>
-					{/snippet}
-				</Popover.Trigger>
-				<Popover.Content class="w-56 p-3" side="top" align="start">
-					<div class="flex flex-col gap-2">
-						<span class="text-xs font-medium text-muted-foreground">Format de page</span>
-						<div class="flex flex-col gap-1">
-							{#each Object.entries(PAGE_FORMATS) as [key, format] (key)}
-								<Button
-									type="button"
-									variant={currentPageFormat === key ? 'secondary' : 'ghost'}
-									size="sm"
-									onclick={() => handlePageFormatChange(key as PageFormatKey)}
-									class="justify-between"
-								>
-									<span>{format.label}</span>
-									<span class="text-xs text-muted-foreground">{format.width}×{format.height}</span>
-								</Button>
-							{/each}
-						</div>
-						{#if !currentPageFormat}
-							<div class="mt-1 rounded bg-muted px-2 py-1 text-xs text-muted-foreground">
-								Dimensions actuelles : {currentPageDimensions.width}×{currentPageDimensions.height}px
-							</div>
-						{/if}
-					</div>
-				</Popover.Content>
-			</Popover.Root>
+			<!-- Separator before style section -->
+			<div class="mx-2 h-6 w-px bg-border"></div>
 
-			<!-- Stroke Properties Button (opens floating panel) -->
+			<!-- Style toggle button (visible on tablet only) -->
 			<button
 				type="button"
-				class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent {strokePanelOpen
-					? 'bg-secondary'
-					: ''}"
-				aria-label="Propriétés du trait"
-				title="Trait"
-				data-stroke-panel-trigger
-				onclick={toggleStrokePanel}
+				onclick={() => (styleExpanded = !styleExpanded)}
+				class="flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent md:hidden"
+				class:bg-secondary={styleExpanded}
+				title={styleExpanded ? 'Masquer les styles' : 'Afficher les styles'}
+				aria-label={styleExpanded ? 'Masquer les styles' : 'Afficher les styles'}
+				aria-expanded={styleExpanded}
 			>
-				<!-- Button shows a line preview with current color, width, and style -->
-				<svg class="h-6 w-10" viewBox="0 0 40 24">
-					<line
-						x1="2"
-						y1="12"
-						x2="38"
-						y2="12"
-						stroke={currentColor}
-						stroke-width={Math.max(Math.min(currentStrokeWidth, 6), 2)}
-						stroke-linecap="round"
-						stroke-dasharray={currentStrokeStyle === 'solid'
-							? undefined
-							: currentStrokeStyle === 'dashed'
-								? '8 4'
-								: currentStrokeStyle === 'dotted'
-									? '1 4'
-									: '8 3 2 3'}
-						opacity={currentOpacity}
-					/>
-				</svg>
+				<Palette class="h-4 w-4" />
 			</button>
 
-			<!-- Fill Mode Button (opens floating panel, show when fillable shape tool active OR fillable shape is selected) -->
-			{#if showFillSelector}
-				<button
-					type="button"
-					class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent {fillPanelOpen
-						? 'bg-secondary'
-						: ''}"
-					aria-label="Mode de remplissage"
-					title="Remplissage"
-					data-fill-panel-trigger
-					onclick={toggleFillPanel}
-				>
-					<svg class="h-5 w-5" viewBox="0 0 20 20">
-						{#if currentFillMode === 'none'}
-							<rect
-								x="2"
-								y="2"
-								width="16"
-								height="16"
-								rx="2"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.5"
-							/>
-						{:else if currentFillMode === 'solid'}
-							<rect
-								x="2"
-								y="2"
-								width="16"
-								height="16"
-								rx="2"
-								fill={currentFillColor}
-								stroke="currentColor"
-								stroke-width="1.5"
-								opacity={currentFillOpacity}
-							/>
-						{:else}
-							<defs>
-								<pattern
-									id="toolbar-hatch"
-									patternUnits="userSpaceOnUse"
-									width="4"
-									height="4"
-									patternTransform="rotate(45)"
-								>
-									<line x1="0" y1="0" x2="0" y2="4" stroke={currentFillColor} stroke-width="1" />
-								</pattern>
-							</defs>
-							<rect
-								x="2"
-								y="2"
-								width="16"
-								height="16"
-								rx="2"
-								fill="url(#toolbar-hatch)"
-								stroke="currentColor"
-								stroke-width="1.5"
-								opacity={currentFillOpacity}
-							/>
-						{/if}
-					</svg>
-				</button>
-			{/if}
+			<!-- Inline Style Section (hidden on tablet when collapsed, always visible on desktop) -->
+			<div
+				class="items-center gap-2 {styleExpanded ? 'flex' : 'hidden'} md:flex"
+				role="group"
+				aria-label="Styles de dessin"
+			>
+				<!-- Color swatches -->
+				<div class="flex items-center gap-0.5">
+					{#each COLOR_PRESETS as color (color.value)}
+						<button
+							type="button"
+							onclick={() => {
+								whiteboardStore.setColor(color.value);
+								if (whiteboardStore.hasSelection) {
+									whiteboardStore.updateSelectedStyles({ color: color.value });
+								}
+							}}
+							class="h-6 w-6 rounded-sm border transition-transform hover:scale-110 {currentColor ===
+							color.value
+								? 'border-primary ring-1 ring-primary'
+								: 'border-border'}"
+							style="background-color: {color.value}"
+							title={color.name}
+							aria-label="{color.name}{currentColor === color.value ? ' (actif)' : ''}"
+						></button>
+					{/each}
+					<input
+						type="color"
+						value={currentColor}
+						oninput={(e) => {
+							whiteboardStore.setColor(e.currentTarget.value);
+							if (whiteboardStore.hasSelection) {
+								whiteboardStore.updateSelectedStyles({ color: e.currentTarget.value });
+							}
+						}}
+						class="ml-0.5 h-6 w-6 cursor-pointer rounded-sm border-0 p-0"
+						title="Couleur personnalisee"
+						aria-label="Couleur personnalisee"
+					/>
+				</div>
 
-			<!-- Separator -->
+				<div class="h-6 w-px bg-border"></div>
+
+				<!-- Stroke width slider -->
+				<div class="flex w-24 items-center gap-1">
+					<Slider
+						type="single"
+						value={[currentStrokeWidth]}
+						onValueChange={handleStrokeWidthChange}
+						onValueCommit={handleSliderCommit}
+						min={STROKE_WIDTH_MIN}
+						max={STROKE_WIDTH_MAX}
+						step={1}
+						class="flex-1"
+						aria-label="Epaisseur: {currentStrokeWidth}px"
+					/>
+					<span class="w-6 text-right text-[10px] text-muted-foreground">{currentStrokeWidth}</span>
+				</div>
+
+				<!-- Stroke style toggles -->
+				<div class="flex items-center gap-0.5">
+					{#each Object.entries(STROKE_STYLE_LABELS) as [style, _label] (style)}
+						<button
+							type="button"
+							onclick={() => handleStrokeStyleChange(style as StrokeStyle)}
+							class="flex h-7 w-7 items-center justify-center rounded-sm transition-colors {currentStrokeStyle ===
+							style
+								? 'bg-secondary'
+								: 'hover:bg-accent'}"
+							title={_label}
+							aria-label={_label}
+						>
+							<svg class="h-5 w-5" viewBox="0 0 20 10">
+								<line
+									x1="2"
+									y1="5"
+									x2="18"
+									y2="5"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-dasharray={style === 'solid'
+										? undefined
+										: style === 'dashed'
+											? '4 2'
+											: style === 'dotted'
+												? '1 2'
+												: '4 1 1 1'}
+								/>
+							</svg>
+						</button>
+					{/each}
+				</div>
+
+				<!-- Opacity (compact) -->
+				<div class="flex w-16 items-center gap-1">
+					<Slider
+						type="single"
+						value={[currentOpacity]}
+						onValueChange={handleOpacityChange}
+						onValueCommit={handleSliderCommit}
+						min={0.1}
+						max={1}
+						step={0.1}
+						class="flex-1"
+						aria-label="Opacite: {Math.round(currentOpacity * 100)}%"
+					/>
+					<span class="w-6 text-right text-[10px] text-muted-foreground"
+						>{Math.round(currentOpacity * 100)}%</span
+					>
+				</div>
+
+				<!-- Fill popover (conditional) -->
+				{#if showFillSelector}
+					<Popover.Root>
+						<Popover.Trigger>
+							{#snippet child({ props })}
+								<button
+									{...props}
+									type="button"
+									class="flex h-7 w-7 items-center justify-center rounded-sm border border-border transition-colors hover:bg-accent"
+									title="Remplissage"
+									aria-label="Remplissage"
+								>
+									<svg class="h-4 w-4" viewBox="0 0 16 16">
+										{#if currentFillMode === 'none'}
+											<rect
+												x="2"
+												y="2"
+												width="12"
+												height="12"
+												rx="1"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="1.5"
+											/>
+										{:else if currentFillMode === 'solid'}
+											<rect
+												x="2"
+												y="2"
+												width="12"
+												height="12"
+												rx="1"
+												fill={currentFillColor}
+												stroke="currentColor"
+												stroke-width="1"
+												opacity={currentFillOpacity}
+											/>
+										{:else}
+											<defs>
+												<pattern
+													id="inline-hatch"
+													patternUnits="userSpaceOnUse"
+													width="3"
+													height="3"
+													patternTransform="rotate(45)"
+												>
+													<line
+														x1="0"
+														y1="0"
+														x2="0"
+														y2="3"
+														stroke={currentFillColor}
+														stroke-width="1"
+													/>
+												</pattern>
+											</defs>
+											<rect
+												x="2"
+												y="2"
+												width="12"
+												height="12"
+												rx="1"
+												fill="url(#inline-hatch)"
+												stroke="currentColor"
+												stroke-width="1"
+												opacity={currentFillOpacity}
+											/>
+										{/if}
+									</svg>
+								</button>
+							{/snippet}
+						</Popover.Trigger>
+						<Popover.Content class="w-48 p-3" side="top" align="start">
+							<div class="flex flex-col gap-3">
+								<div>
+									<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Mode</span>
+									<div class="flex gap-1">
+										{#each Object.entries(FILL_MODE_LABELS) as [mode, label] (mode)}
+											<button
+												type="button"
+												onclick={() => handleFillModeChange(mode as FillMode)}
+												class="flex h-8 flex-1 items-center justify-center rounded-md border text-xs transition-colors {currentFillMode ===
+												mode
+													? 'border-primary bg-secondary'
+													: 'border-border hover:bg-accent'}"
+												title={label}
+											>
+												{label}
+											</button>
+										{/each}
+									</div>
+								</div>
+								{#if currentFillMode !== 'none'}
+									<div>
+										<span class="mb-1.5 block text-xs font-medium text-muted-foreground"
+											>Couleur</span
+										>
+										<div class="flex items-center gap-1">
+											{#each COLOR_PRESETS as color (color.value)}
+												<button
+													type="button"
+													onclick={() => handleFillColorChange(color.value)}
+													class="h-5 w-5 rounded-sm border transition-transform hover:scale-110 {currentFillColor ===
+													color.value
+														? 'border-primary ring-1 ring-primary'
+														: 'border-border'}"
+													style="background-color: {color.value}"
+													title={color.name}
+												></button>
+											{/each}
+										</div>
+									</div>
+									<div>
+										<span class="mb-1.5 block text-xs font-medium text-muted-foreground"
+											>Opacite</span
+										>
+										<div class="flex items-center gap-2">
+											<Slider
+												type="single"
+												value={[currentFillOpacity]}
+												onValueChange={handleFillOpacityChange}
+												onValueCommit={handleSliderCommit}
+												min={0.1}
+												max={1}
+												step={0.1}
+												class="flex-1"
+											/>
+											<span class="w-8 text-right text-xs text-muted-foreground"
+												>{Math.round(currentFillOpacity * 100)}%</span
+											>
+										</div>
+									</div>
+								{/if}
+								{#if showCornerRadiusSlider}
+									<div>
+										<span class="mb-1.5 block text-xs font-medium text-muted-foreground"
+											>Arrondi</span
+										>
+										<div class="flex items-center gap-2">
+											<Slider
+												type="single"
+												value={[currentCornerRadius]}
+												onValueChange={handleCornerRadiusChange}
+												onValueCommit={handleSliderCommit}
+												min={0}
+												max={50}
+												step={1}
+												class="flex-1"
+											/>
+											<span class="w-8 text-right text-xs text-muted-foreground"
+												>{currentCornerRadius}px</span
+											>
+										</div>
+									</div>
+								{/if}
+							</div>
+						</Popover.Content>
+					</Popover.Root>
+				{/if}
+			</div>
+
+			<!-- Separator before actions -->
 			<div class="mx-2 h-6 w-px bg-border"></div>
 
 			<!-- Zoom Controls -->
@@ -1206,18 +1064,6 @@
 				type="button"
 				variant="ghost"
 				size="sm"
-				onclick={handleClear}
-				title="Effacer tout"
-				aria-label="Effacer tout"
-				class="text-destructive hover:bg-destructive/10 hover:text-destructive"
-			>
-				<Trash2 class="h-4 w-4" />
-			</Button>
-			<div class="mx-1 h-6 w-px bg-border"></div>
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
 				onclick={onToggleFullscreen}
 				title={isFullscreen ? 'Quitter le plein écran (Echap)' : 'Plein écran'}
 				aria-label={isFullscreen ? 'Quitter le plein écran' : 'Plein écran'}
@@ -1231,350 +1077,6 @@
 		</div>
 	</div>
 </div>
-
-<!-- Floating Stroke Properties Panel -->
-{#if strokePanelOpen}
-	<div
-		bind:this={strokePanelRef}
-		class="fixed z-50 w-64 rounded-md border border-border bg-popover shadow-lg"
-		style="left: {strokePanelPosition.x}px; top: {strokePanelPosition.y}px;"
-		role="dialog"
-		aria-label="Propriétés du trait"
-	>
-		<!-- Drag handle header -->
-		<div
-			class="flex cursor-move items-center justify-between rounded-t-md border-b border-border bg-muted/50 px-3 py-1.5"
-			class:cursor-grabbing={isDraggingStrokePanel}
-			onpointerdown={handleStrokePanelDragStart}
-			role="button"
-			tabindex="-1"
-			aria-label="Déplacer le panneau"
-		>
-			<span class="text-xs font-medium text-muted-foreground">Trait</span>
-			<svg class="h-3 w-3 text-muted-foreground/50" viewBox="0 0 12 12">
-				<circle cx="3" cy="3" r="1" fill="currentColor" />
-				<circle cx="9" cy="3" r="1" fill="currentColor" />
-				<circle cx="3" cy="9" r="1" fill="currentColor" />
-				<circle cx="9" cy="9" r="1" fill="currentColor" />
-			</svg>
-		</div>
-		<div class="flex flex-col gap-3 p-3">
-			<!-- Stroke color -->
-			<div>
-				<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Couleur</span>
-				<div class="grid grid-cols-6 gap-1.5">
-					{#each COLOR_PRESETS as color (color.value)}
-						<button
-							type="button"
-							onclick={() => {
-								whiteboardStore.setColor(color.value);
-								if (whiteboardStore.hasSelection) {
-									whiteboardStore.updateSelectedStyles({ color: color.value });
-								}
-							}}
-							class="h-7 w-7 rounded border-2 transition-transform hover:scale-110 {currentColor ===
-							color.value
-								? 'border-primary ring-1 ring-primary ring-offset-1'
-								: 'border-border'}"
-							style="background-color: {color.value}"
-							title={color.name}
-							aria-label="{color.name}{currentColor === color.value ? ' (sélectionné)' : ''}"
-						></button>
-					{/each}
-				</div>
-				<div class="mt-1.5 flex items-center gap-2">
-					<input
-						type="color"
-						value={currentColor}
-						oninput={(e) => {
-							whiteboardStore.setColor(e.currentTarget.value);
-							if (whiteboardStore.hasSelection) {
-								whiteboardStore.updateSelectedStyles({ color: e.currentTarget.value });
-							}
-						}}
-						class="h-7 w-7 cursor-pointer rounded border-0 p-0"
-						aria-label="Couleur personnalisée"
-					/>
-					<span class="text-xs text-muted-foreground">Personnalisé</span>
-				</div>
-			</div>
-
-			<!-- Stroke width -->
-			<div>
-				<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Épaisseur</span>
-				<div class="flex items-center gap-2">
-					<Slider
-						type="single"
-						value={[currentStrokeWidth]}
-						onValueChange={handleStrokeWidthChange}
-						onValueCommit={handleSliderCommit}
-						min={STROKE_WIDTH_MIN}
-						max={STROKE_WIDTH_MAX}
-						step={1}
-						class="flex-1"
-						aria-label="Épaisseur du trait: {currentStrokeWidth} pixels"
-					/>
-					<span class="min-w-[2.5rem] text-right text-xs text-muted-foreground"
-						>{currentStrokeWidth}px</span
-					>
-				</div>
-			</div>
-
-			<!-- Opacity -->
-			<div>
-				<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Opacité</span>
-				<div class="flex items-center gap-2">
-					<Slider
-						type="single"
-						value={[currentOpacity]}
-						onValueChange={handleOpacityChange}
-						onValueCommit={handleSliderCommit}
-						min={0.1}
-						max={1}
-						step={0.1}
-						class="flex-1"
-						aria-label="Opacité: {Math.round(currentOpacity * 100)}%"
-					/>
-					<span class="min-w-[2.5rem] text-right text-xs text-muted-foreground"
-						>{Math.round(currentOpacity * 100)}%</span
-					>
-				</div>
-			</div>
-
-			<!-- Stroke style -->
-			<div>
-				<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Style de trait</span>
-				<div class="flex flex-col gap-1">
-					{#each Object.entries(STROKE_STYLE_LABELS) as [style, label] (style)}
-						<Button
-							type="button"
-							variant={currentStrokeStyle === style ? 'secondary' : 'ghost'}
-							size="sm"
-							onclick={() => handleStrokeStyleChange(style as StrokeStyle)}
-							class="justify-start gap-3"
-						>
-							<svg class="h-4 w-10" viewBox="0 0 40 8">
-								<line
-									x1="2"
-									y1="4"
-									x2="38"
-									y2="4"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-dasharray={style === 'solid'
-										? undefined
-										: style === 'dashed'
-											? '6 3'
-											: style === 'dotted'
-												? '2 3'
-												: '6 2 2 2'}
-								/>
-							</svg>
-							<span>{label}</span>
-						</Button>
-					{/each}
-				</div>
-			</div>
-		</div>
-	</div>
-{/if}
-
-<!-- Floating Fill Properties Panel -->
-{#if fillPanelOpen}
-	<div
-		bind:this={fillPanelRef}
-		class="fixed z-50 w-64 rounded-md border border-border bg-popover shadow-lg"
-		style="left: {fillPanelPosition.x}px; top: {fillPanelPosition.y}px;"
-		role="dialog"
-		aria-label="Propriétés de remplissage"
-	>
-		<!-- Drag handle header -->
-		<div
-			class="flex cursor-move items-center justify-between rounded-t-md border-b border-border bg-muted/50 px-3 py-1.5"
-			class:cursor-grabbing={isDraggingFillPanel}
-			onpointerdown={handleFillPanelDragStart}
-			role="button"
-			tabindex="-1"
-			aria-label="Déplacer le panneau"
-		>
-			<span class="text-xs font-medium text-muted-foreground">Remplissage</span>
-			<svg class="h-3 w-3 text-muted-foreground/50" viewBox="0 0 12 12">
-				<circle cx="3" cy="3" r="1" fill="currentColor" />
-				<circle cx="9" cy="3" r="1" fill="currentColor" />
-				<circle cx="3" cy="9" r="1" fill="currentColor" />
-				<circle cx="9" cy="9" r="1" fill="currentColor" />
-			</svg>
-		</div>
-		<div class="flex flex-col gap-3 p-3">
-			<!-- Fill mode -->
-			<div>
-				<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Mode</span>
-				<div class="flex flex-col gap-1">
-					{#each Object.entries(FILL_MODE_LABELS) as [mode, label] (mode)}
-						<Button
-							type="button"
-							variant={currentFillMode === mode ? 'secondary' : 'ghost'}
-							size="sm"
-							onclick={() => handleFillModeChange(mode as FillMode)}
-							class="justify-start gap-3"
-						>
-							<svg class="h-5 w-5" viewBox="0 0 20 20">
-								{#if mode === 'none'}
-									<rect
-										x="2"
-										y="2"
-										width="16"
-										height="16"
-										rx="2"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="1.5"
-									/>
-								{:else if mode === 'solid'}
-									<rect
-										x="2"
-										y="2"
-										width="16"
-										height="16"
-										rx="2"
-										fill={currentFillColor}
-										stroke="currentColor"
-										stroke-width="1.5"
-									/>
-								{:else}
-									<defs>
-										<pattern
-											id="fill-panel-hatch-{mode}"
-											patternUnits="userSpaceOnUse"
-											width="4"
-											height="4"
-											patternTransform="rotate(45)"
-										>
-											<line
-												x1="0"
-												y1="0"
-												x2="0"
-												y2="4"
-												stroke={currentFillColor}
-												stroke-width="1"
-											/>
-										</pattern>
-									</defs>
-									<rect
-										x="2"
-										y="2"
-										width="16"
-										height="16"
-										rx="2"
-										fill="url(#fill-panel-hatch-{mode})"
-										stroke="currentColor"
-										stroke-width="1.5"
-									/>
-								{/if}
-							</svg>
-							<span>{label}</span>
-						</Button>
-					{/each}
-				</div>
-			</div>
-
-			<!-- Fill color and opacity (only when fill is not 'none') -->
-			{#if currentFillMode !== 'none'}
-				<div>
-					<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Couleur</span>
-					<div class="grid grid-cols-6 gap-1.5">
-						{#each COLOR_PRESETS as color (color.value)}
-							<button
-								type="button"
-								onclick={() => handleFillColorChange(color.value)}
-								class="h-7 w-7 rounded border-2 transition-transform hover:scale-110 {currentFillColor ===
-								color.value
-									? 'border-primary ring-1 ring-primary ring-offset-1'
-									: 'border-border'}"
-								style="background-color: {color.value}"
-								title={color.name}
-								aria-label="{color.name}{currentFillColor === color.value ? ' (sélectionné)' : ''}"
-							></button>
-						{/each}
-					</div>
-					<div class="mt-1.5 flex items-center gap-2">
-						<input
-							type="color"
-							value={currentFillColor}
-							oninput={(e) => handleFillColorChange(e.currentTarget.value)}
-							class="h-7 w-7 cursor-pointer rounded border-0 p-0"
-							aria-label="Couleur de remplissage personnalisée"
-						/>
-						<span class="text-xs text-muted-foreground">Personnalisé</span>
-					</div>
-				</div>
-
-				<div>
-					<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Opacité</span>
-					<div class="flex items-center gap-2">
-						<Slider
-							type="single"
-							value={[currentFillOpacity]}
-							onValueChange={handleFillOpacityChange}
-							onValueCommit={handleSliderCommit}
-							min={0.1}
-							max={1}
-							step={0.1}
-							class="flex-1"
-							aria-label="Opacité du remplissage: {Math.round(currentFillOpacity * 100)}%"
-						/>
-						<span class="min-w-[2.5rem] text-right text-xs text-muted-foreground"
-							>{Math.round(currentFillOpacity * 100)}%</span
-						>
-					</div>
-				</div>
-			{/if}
-
-			<!-- Corner radius slider (only for shapes with corners) -->
-			{#if showCornerRadiusSlider}
-				<div>
-					<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Arrondi</span>
-					<div class="flex items-center gap-2">
-						<Slider
-							type="single"
-							value={[currentCornerRadius]}
-							onValueChange={handleCornerRadiusChange}
-							onValueCommit={handleSliderCommit}
-							min={0}
-							max={50}
-							step={1}
-							class="flex-1"
-							aria-label="Rayon des coins: {currentCornerRadius}px"
-						/>
-						<span class="min-w-[2.5rem] text-right text-xs text-muted-foreground"
-							>{currentCornerRadius}px</span
-						>
-					</div>
-				</div>
-			{/if}
-		</div>
-	</div>
-{/if}
-
-<!-- Hidden file inputs -->
-<input
-	bind:this={imageInputRef}
-	type="file"
-	accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
-	onchange={handleImageFileSelect}
-	class="hidden"
-	aria-hidden="true"
-/>
-
-<input
-	bind:this={pdfInputRef}
-	type="file"
-	accept="application/pdf"
-	onchange={handlePdfFileSelect}
-	class="hidden"
-	aria-hidden="true"
-/>
 
 <style>
 	.whiteboard-toolbar {
