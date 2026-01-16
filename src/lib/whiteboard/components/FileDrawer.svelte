@@ -37,8 +37,13 @@
 		FolderPlus,
 		ArrowLeft,
 		Sparkles,
-		PanelLeftOpen
+		PanelLeftOpen,
+		Image,
+		Upload,
+		Trash2
 	} from 'lucide-svelte';
+	import { importImageFile } from '../utils/image-loader';
+	import { importPdfFile } from '../utils/pdf-loader';
 	import ExportDialog from './ExportDialog.svelte';
 	import ExportToClassroomDialog from './ExportToClassroomDialog.svelte';
 	import SaveAsDialog from './SaveAsDialog.svelte';
@@ -79,8 +84,13 @@
 	let isCreatingFolder = $state(false);
 	let isExportingToClassroom = $state(false);
 
-	/** File input reference */
+	/** File input references */
 	let ubwInputRef: HTMLInputElement | null = null;
+	let imageInputRef: HTMLInputElement | null = null;
+	let pdfInputRef: HTMLInputElement | null = null;
+
+	/** Import state */
+	let isImporting = $state(false);
 
 	/** Class selection state */
 	let classes = $state<ClassForDrawer[]>([]);
@@ -693,6 +703,93 @@
 	}
 
 	// ==========================================================================
+	// Import handlers
+	// ==========================================================================
+
+	function handleImageImportClick() {
+		imageInputRef?.click();
+	}
+
+	function handlePdfImportClick() {
+		pdfInputRef?.click();
+	}
+
+	async function handleImageFileSelect(e: Event) {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		isImporting = true;
+		try {
+			const page = whiteboardStore.currentPage;
+			if (!page) return;
+
+			// Center the image on the page
+			const position = {
+				x: page.width / 2 - 200,
+				y: page.height / 2 - 150
+			};
+
+			const result = await importImageFile(file, position);
+
+			if (result.success && result.element) {
+				whiteboardStore.addImage(
+					result.element.position,
+					result.element.width,
+					result.element.height,
+					result.element.src,
+					result.element.originalFilename
+				);
+				toaster.success('Image importée');
+			} else {
+				toaster.error(result.error || "Erreur lors de l'import");
+			}
+		} catch (error) {
+			console.error('Image import error:', error);
+			toaster.error("Erreur lors de l'import de l'image");
+		} finally {
+			isImporting = false;
+			input.value = '';
+		}
+	}
+
+	async function handlePdfFileSelect(e: Event) {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		isImporting = true;
+		try {
+			const result = await importPdfFile(file, { fitMode: 'fit' });
+
+			if (result.success && result.pages && result.pages.length > 0) {
+				whiteboardStore.addPagesFromPdf(result.pages);
+				toaster.success(`${result.pages.length} page(s) importée(s) du PDF`);
+			} else {
+				toaster.error(result.error || "Erreur lors de l'import du PDF");
+			}
+		} catch (error) {
+			console.error('PDF import error:', error);
+			toaster.error("Erreur lors de l'import du PDF");
+		} finally {
+			isImporting = false;
+			input.value = '';
+		}
+	}
+
+	function handleClearPage() {
+		const page = whiteboardStore.currentPage;
+		if (page && page.elements.length > 0) {
+			if (confirm('Voulez-vous vraiment effacer tous les éléments de cette page ?')) {
+				whiteboardStore.clearPage();
+				toaster.success('Page effacée');
+			}
+		} else {
+			toaster.info('La page est déjà vide');
+		}
+	}
+
+	// ==========================================================================
 	// Navigation
 	// ==========================================================================
 
@@ -1019,7 +1116,7 @@
 						<span class="text-[10px]">Export</span>
 					</Button>
 				</div>
-				<!-- Row 2: Local actions -->
+				<!-- Row 2: Local + Import -->
 				<div class="grid grid-cols-4 gap-2">
 					<Button
 						type="button"
@@ -1043,6 +1140,41 @@
 						<FolderOpen class="h-4 w-4" />
 						<span class="text-[10px]">Ouvrir</span>
 					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={handleImageImportClick}
+						disabled={isImporting}
+						class="h-9 flex-col gap-1 p-1"
+						title="Importer une image (PNG, JPG, SVG)"
+					>
+						{#if isImporting}
+							<Loader2 class="h-4 w-4 animate-spin" />
+						{:else}
+							<Image class="h-4 w-4" />
+						{/if}
+						<span class="text-[10px]">Image</span>
+					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={handlePdfImportClick}
+						disabled={isImporting}
+						class="h-9 flex-col gap-1 p-1"
+						title="Importer un PDF comme pages"
+					>
+						{#if isImporting}
+							<Loader2 class="h-4 w-4 animate-spin" />
+						{:else}
+							<Upload class="h-4 w-4" />
+						{/if}
+						<span class="text-[10px]">PDF</span>
+					</Button>
+				</div>
+				<!-- Row 3: Dossier + Clear -->
+				<div class="grid grid-cols-4 gap-2">
 					{#if canCreateSubfolder}
 						<Button
 							type="button"
@@ -1055,20 +1187,50 @@
 							<FolderPlus class="h-4 w-4" />
 							<span class="text-[10px]">Dossier</span>
 						</Button>
+					{:else}
+						<div></div>
 					{/if}
 					<div></div>
+					<div></div>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={handleClearPage}
+						class="h-9 flex-col gap-1 p-1 text-destructive hover:bg-destructive/10 hover:text-destructive"
+						title="Effacer tous les elements de la page"
+					>
+						<Trash2 class="h-4 w-4" />
+						<span class="text-[10px]">Effacer</span>
+					</Button>
 				</div>
 			</div>
 		</Sheet.Footer>
 	</Sheet.Content>
 </Sheet.Root>
 
-<!-- Hidden file input -->
+<!-- Hidden file inputs -->
 <input
 	bind:this={ubwInputRef}
 	type="file"
 	accept=".ubw"
 	onchange={handleUbwFileSelect}
+	class="hidden"
+	aria-hidden="true"
+/>
+<input
+	bind:this={imageInputRef}
+	type="file"
+	accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+	onchange={handleImageFileSelect}
+	class="hidden"
+	aria-hidden="true"
+/>
+<input
+	bind:this={pdfInputRef}
+	type="file"
+	accept="application/pdf"
+	onchange={handlePdfFileSelect}
 	class="hidden"
 	aria-hidden="true"
 />
