@@ -491,11 +491,17 @@
 >
 	<!-- Status bar -->
 	<div class="whiteboard-status flex items-center gap-4 px-3 py-2 text-xs text-gray-600">
-		<!-- Sync indicator (orange asterisk when unsaved) -->
-		{#if hasUnsavedChanges || syncState.status === 'modified'}
-			<span class="text-lg font-bold text-orange-500" title="Modifications non sauvegardées">*</span
-			>
-		{/if}
+		<!-- Sync indicator (orange dot when unsaved) - fixed width to prevent layout shift -->
+		<span
+			class="inline-flex w-3 items-center justify-center"
+			title={hasUnsavedChanges || syncState.status === 'modified'
+				? 'Modifications non sauvegardées'
+				: ''}
+		>
+			{#if hasUnsavedChanges || syncState.status === 'modified'}
+				<span class="h-2 w-2 rounded-full bg-orange-500"></span>
+			{/if}
+		</span>
 		<span class="font-medium">{document?.title ?? 'Sans titre'}</span>
 		<span>
 			Page {(whiteboardStore.document?.currentPageIndex ?? 0) + 1} / {document?.pages.length ?? 1}
