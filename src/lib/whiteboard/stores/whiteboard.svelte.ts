@@ -1868,7 +1868,7 @@ function createWhiteboardStore() {
 
 		/**
 		 * Update style properties (color, strokeWidth, strokeStyle, cornerRadius) for selected elements
-		 * Works with stroke and shape elements
+		 * Works with stroke, shape, and group elements (recursively updates group children)
 		 * @param style - Properties to update
 		 */
 		updateSelectedStyles(style: {
@@ -1883,35 +1883,45 @@ function createWhiteboardStore() {
 		}): void {
 			if (selectedIds.size === 0) return;
 
+			// Helper function to apply style to a single element
+			const applyStyleToElement = (element: WhiteboardElement): WhiteboardElement => {
+				switch (element.type) {
+					case 'stroke':
+						return {
+							...element,
+							...(style.color !== undefined && { color: style.color }),
+							...(style.strokeWidth !== undefined && { width: style.strokeWidth }),
+							...(style.opacity !== undefined && { opacity: style.opacity }),
+							...(style.strokeStyle !== undefined && { strokeStyle: style.strokeStyle })
+						};
+					case 'shape':
+						return {
+							...element,
+							...(style.color !== undefined && { color: style.color }),
+							...(style.strokeWidth !== undefined && { strokeWidth: style.strokeWidth }),
+							...(style.opacity !== undefined && { opacity: style.opacity }),
+							...(style.strokeStyle !== undefined && { strokeStyle: style.strokeStyle }),
+							...(style.cornerRadius !== undefined && { cornerRadius: style.cornerRadius }),
+							...(style.fillMode !== undefined && { fillMode: style.fillMode }),
+							...(style.fill !== undefined && { fill: style.fill }),
+							...(style.fillOpacity !== undefined && { fillOpacity: style.fillOpacity })
+						};
+					case 'group':
+						// Recursively apply style to group children
+						return {
+							...element,
+							children: element.children.map(applyStyleToElement)
+						};
+					default:
+						return element;
+				}
+			};
+
 			updateCurrentPage((page) => ({
 				...page,
 				elements: page.elements.map((element) => {
 					if (!selectedIds.has(element.id)) return element;
-
-					switch (element.type) {
-						case 'stroke':
-							return {
-								...element,
-								...(style.color !== undefined && { color: style.color }),
-								...(style.strokeWidth !== undefined && { width: style.strokeWidth }),
-								...(style.opacity !== undefined && { opacity: style.opacity }),
-								...(style.strokeStyle !== undefined && { strokeStyle: style.strokeStyle })
-							};
-						case 'shape':
-							return {
-								...element,
-								...(style.color !== undefined && { color: style.color }),
-								...(style.strokeWidth !== undefined && { strokeWidth: style.strokeWidth }),
-								...(style.opacity !== undefined && { opacity: style.opacity }),
-								...(style.strokeStyle !== undefined && { strokeStyle: style.strokeStyle }),
-								...(style.cornerRadius !== undefined && { cornerRadius: style.cornerRadius }),
-								...(style.fillMode !== undefined && { fillMode: style.fillMode }),
-								...(style.fill !== undefined && { fill: style.fill }),
-								...(style.fillOpacity !== undefined && { fillOpacity: style.fillOpacity })
-							};
-						default:
-							return element;
-					}
+					return applyStyleToElement(element);
 				})
 			}));
 		},

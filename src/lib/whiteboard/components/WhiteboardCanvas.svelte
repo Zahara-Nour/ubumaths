@@ -196,20 +196,42 @@
 		const element = elements.find((el) => el.id === elementId);
 		if (!element) return;
 
-		if (element.type === 'stroke') {
+		// Helper to find first stroke or shape in a group (recursive)
+		function findFirstStylableChild(el: WhiteboardElement): StrokeElement | ShapeElement | null {
+			if (el.type === 'stroke') return el;
+			if (el.type === 'shape') return el;
+			if (el.type === 'group') {
+				for (const child of el.children) {
+					const found = findFirstStylableChild(child);
+					if (found) return found;
+				}
+			}
+			return null;
+		}
+
+		let targetElement: WhiteboardElement | null = element;
+
+		// For groups, find the first stroke or shape child
+		if (element.type === 'group') {
+			targetElement = findFirstStylableChild(element);
+		}
+
+		if (!targetElement) return;
+
+		if (targetElement.type === 'stroke') {
 			whiteboardStore.syncToolbarFromElement({
-				color: element.color,
-				strokeWidth: element.width,
-				opacity: element.opacity,
-				strokeStyle: element.strokeStyle
+				color: targetElement.color,
+				strokeWidth: targetElement.width,
+				opacity: targetElement.opacity,
+				strokeStyle: targetElement.strokeStyle
 			});
-		} else if (element.type === 'shape') {
+		} else if (targetElement.type === 'shape') {
 			whiteboardStore.syncToolbarFromElement({
-				color: element.color,
-				strokeWidth: element.strokeWidth,
-				opacity: element.opacity,
-				strokeStyle: element.strokeStyle,
-				cornerRadius: element.cornerRadius
+				color: targetElement.color,
+				strokeWidth: targetElement.strokeWidth,
+				opacity: targetElement.opacity,
+				strokeStyle: targetElement.strokeStyle,
+				cornerRadius: targetElement.cornerRadius
 			});
 		}
 	}
