@@ -1224,15 +1224,19 @@
 			{#each strokeElements as stroke (stroke.id)}
 				{@const liveRot = whiteboardStore.liveRotations.get(stroke.id)}
 				{@const strokeRotation = liveRot ?? stroke.rotation ?? 0}
+				{@const liveResize = whiteboardStore.liveResizes.get(stroke.id)}
 				{@const strokeBounds = getElementBounds(stroke)}
 				{@const strokeCenter = getBoundsCenter(strokeBounds)}
 				{@const strokeStyle = stroke.strokeStyle ?? 'solid'}
 				{@const isDashedStroke = strokeStyle !== 'solid'}
-				<g
-					transform={strokeRotation !== 0
+				{@const rotateTransform =
+					strokeRotation !== 0
 						? `rotate(${strokeRotation}, ${strokeCenter.x}, ${strokeCenter.y})`
-						: undefined}
-				>
+						: ''}
+				{@const scaleTransform = liveResize
+					? `translate(${liveResize.originX}, ${liveResize.originY}) scale(${liveResize.scaleX}, ${liveResize.scaleY}) translate(${-liveResize.originX}, ${-liveResize.originY})`
+					: ''}
+				<g transform={`${scaleTransform} ${rotateTransform}`.trim() || undefined}>
 					{#if isDashedStroke}
 						<!-- Dashed/dotted stroke: use simple path with stroke -->
 						<path
@@ -1268,6 +1272,7 @@
 				{@const dashArray = getStrokeDashArray(shape.strokeStyle ?? 'solid', shape.strokeWidth)}
 				{@const liveRot = whiteboardStore.liveRotations.get(shape.id)}
 				{@const shapeRotation = liveRot ?? shape.rotation ?? 0}
+				{@const liveResize = whiteboardStore.liveResizes.get(shape.id)}
 				{@const shapeBounds = getElementBounds(shape)}
 				{@const shapeCenter = getBoundsCenter(shapeBounds)}
 				{@const shapeFill =
@@ -1276,11 +1281,12 @@
 						: shape.fillMode === 'hatched'
 							? `url(#hatch-${shape.id})`
 							: (shape.fill ?? 'none')}
-				<g
-					transform={shapeRotation !== 0
-						? `rotate(${shapeRotation}, ${shapeCenter.x}, ${shapeCenter.y})`
-						: undefined}
-				>
+				{@const rotateTransform =
+					shapeRotation !== 0 ? `rotate(${shapeRotation}, ${shapeCenter.x}, ${shapeCenter.y})` : ''}
+				{@const scaleTransform = liveResize
+					? `translate(${liveResize.originX}, ${liveResize.originY}) scale(${liveResize.scaleX}, ${liveResize.scaleY}) translate(${-liveResize.originX}, ${-liveResize.originY})`
+					: ''}
+				<g transform={`${scaleTransform} ${rotateTransform}`.trim() || undefined}>
 					{#if props.type === 'line'}
 						<line
 							x1={props.x1}
@@ -1354,10 +1360,16 @@
 				{@const groupCenter = cached?.center ?? { x: 0, y: 0 }}
 				{@const liveRot = whiteboardStore.liveRotations.get(group.id)}
 				{@const groupRotation = liveRot ?? group.rotation ?? 0}
+				{@const liveResize = whiteboardStore.liveResizes.get(group.id)}
+				{@const rotateTransform =
+					groupRotation !== 0 ? `rotate(${groupRotation} ${groupCenter.x} ${groupCenter.y})` : ''}
+				{@const scaleTransform = liveResize
+					? `translate(${liveResize.originX}, ${liveResize.originY}) scale(${liveResize.scaleX}, ${liveResize.scaleY}) translate(${-liveResize.originX}, ${-liveResize.originY})`
+					: ''}
 				<g
 					class="whiteboard-group"
 					data-group-id={group.id}
-					transform={`rotate(${groupRotation} ${groupCenter.x} ${groupCenter.y})`}
+					transform={`${scaleTransform} ${rotateTransform}`.trim() || undefined}
 				>
 					{@render renderGroupChildren(group.children)}
 				</g>
@@ -1474,8 +1486,16 @@
 				{selectedElements}
 				{scale}
 				{hoveredElementId}
-				onResize={(elementId, handle, dx, dy, constrainAspectRatio) =>
-					whiteboardStore.resizeElement(elementId, handle, dx, dy, constrainAspectRatio)}
+				onResizeLive={(elementId, scaleX, scaleY, originX, originY) =>
+					whiteboardStore.setLiveResize(elementId, scaleX, scaleY, originX, originY)}
+				onResizeEnd={(elementId, handle, totalDx, totalDy, constrainAspectRatio) =>
+					whiteboardStore.commitLiveResize(
+						elementId,
+						handle,
+						totalDx,
+						totalDy,
+						constrainAspectRatio
+					)}
 				onRotate={(elementId, rotation) => whiteboardStore.setLiveRotation(elementId, rotation)}
 				onRotateEnd={(elementId) => whiteboardStore.commitLiveRotation(elementId)}
 			/>

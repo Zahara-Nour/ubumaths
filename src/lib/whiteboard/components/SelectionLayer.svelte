@@ -50,12 +50,20 @@
 		scale: number;
 		/** ID of element currently hovered (for hover feedback) */
 		hoveredElementId: string | null;
-		/** Callback when an element is resized via handles */
-		onResize?: (
+		/** Callback for live resize preview (scale factors + origin) */
+		onResizeLive?: (
+			elementId: string,
+			scaleX: number,
+			scaleY: number,
+			originX: number,
+			originY: number
+		) => void;
+		/** Callback when resize is finished (commit with total delta) */
+		onResizeEnd?: (
 			elementId: string,
 			handle: HandlePosition,
-			dx: number,
-			dy: number,
+			totalDx: number,
+			totalDy: number,
 			constrainAspectRatio: boolean
 		) => void;
 		/** Callback when an element is being rotated (live preview) */
@@ -64,8 +72,15 @@
 		onRotateEnd?: (elementId: string) => void;
 	}
 
-	let { selectedElements, scale, hoveredElementId, onResize, onRotate, onRotateEnd }: Props =
-		$props();
+	let {
+		selectedElements,
+		scale,
+		hoveredElementId,
+		onResizeLive,
+		onResizeEnd,
+		onRotate,
+		onRotateEnd
+	}: Props = $props();
 
 	// ==========================================================================
 	// Resize State
@@ -83,6 +98,12 @@
 	/** Start position of resize in client coordinates */
 	let resizeStartX = $state(0);
 	let resizeStartY = $state(0);
+
+	/** Initial bounds of element when resize started */
+	let initialBounds = $state<{ x: number; y: number; width: number; height: number } | null>(null);
+
+	/** Track if shift was held during resize (for commit) */
+	let resizeConstrainAspectRatio = $state(false);
 
 	// ==========================================================================
 	// Rotation State
@@ -237,6 +258,34 @@
 	// ==========================================================================
 
 	/**
+	 * Get the origin point for resize transform based on handle position.
+	 * The origin is the opposite corner/edge that stays fixed.
+	 */
+	function getResizeOrigin(
+		handle: HandlePosition,
+		bounds: { x: number; y: number; width: number; height: number }
+	): { x: number; y: number } {
+		switch (handle) {
+			case 'nw':
+				return { x: bounds.x + bounds.width, y: bounds.y + bounds.height };
+			case 'ne':
+				return { x: bounds.x, y: bounds.y + bounds.height };
+			case 'sw':
+				return { x: bounds.x + bounds.width, y: bounds.y };
+			case 'se':
+				return { x: bounds.x, y: bounds.y };
+			case 'n':
+				return { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height };
+			case 's':
+				return { x: bounds.x + bounds.width / 2, y: bounds.y };
+			case 'w':
+				return { x: bounds.x + bounds.width, y: bounds.y + bounds.height / 2 };
+			case 'e':
+				return { x: bounds.x, y: bounds.y + bounds.height / 2 };
+		}
+	}
+
+	/**
 	 * Handle pointer down on resize handle - start resizing
 	 */
 	function handleHandlePointerDown(e: PointerEvent) {
@@ -247,43 +296,88 @@
 		const handle = target.dataset.handle as HandlePosition;
 		const elementId = target.dataset.elementId!;
 
+		// Find the element and get its bounds
+		const element = selectedElements.find((el) => el.id === elementId);
+		if (!element) return;
+
+		const bounds = boundsCache.get(elementId)?.bounds;
+		if (!bounds) return;
+
 		isResizing = true;
 		resizeHandle = handle;
 		resizeElementId = elementId;
 		resizeStartX = e.clientX;
 		resizeStartY = e.clientY;
+		initialBounds = { ...bounds };
+		resizeConstrainAspectRatio = e.shiftKey;
 
 		target.setPointerCapture(e.pointerId);
 	}
 
 	/**
-	 * Handle pointer move during resize - calculate delta and resize element
+	 * Handle pointer move during resize - calculate scale factors for live preview
 	 */
 	function handleHandlePointerMove(e: PointerEvent) {
-		if (!isResizing || !resizeHandle || !resizeElementId) return;
+		if (!isResizing || !resizeHandle || !resizeElementId || !initialBounds) return;
 
-		const dx = (e.clientX - resizeStartX) / scale;
-		const dy = (e.clientY - resizeStartY) / scale;
+		// Calculate total delta from start position
+		const totalDx = (e.clientX - resizeStartX) / scale;
+		const totalDy = (e.clientY - resizeStartY) / scale;
 
-		// Safeguard against invalid transformations (scale = 0 or NaN)
-		if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
+		// Safeguard against invalid transformations
+		if (!Number.isFinite(totalDx) || !Number.isFinite(totalDy)) return;
 
-		// Update resize start for incremental delta calculation
-		resizeStartX = e.clientX;
-		resizeStartY = e.clientY;
+		// Update aspect ratio constraint based on current shift state
+		resizeConstrainAspectRatio = e.shiftKey;
 
-		// Pass shiftKey to constrain aspect ratio
-		onResize?.(resizeElementId, resizeHandle, dx, dy, e.shiftKey);
+		// Calculate new dimensions based on handle
+		let newWidth = initialBounds.width;
+		let newHeight = initialBounds.height;
+
+		// Apply delta to appropriate dimension(s)
+		if (resizeHandle.includes('e')) newWidth += totalDx;
+		if (resizeHandle.includes('w')) newWidth -= totalDx;
+		if (resizeHandle.includes('s')) newHeight += totalDy;
+		if (resizeHandle.includes('n')) newHeight -= totalDy;
+
+		// Prevent negative/zero dimensions
+		newWidth = Math.max(10, newWidth);
+		newHeight = Math.max(10, newHeight);
+
+		// Calculate scale factors
+		let scaleX = newWidth / initialBounds.width;
+		let scaleY = newHeight / initialBounds.height;
+
+		// Handle aspect ratio constraint for corner handles
+		if (resizeConstrainAspectRatio && ['nw', 'ne', 'sw', 'se'].includes(resizeHandle)) {
+			const uniformScale = Math.max(scaleX, scaleY);
+			scaleX = uniformScale;
+			scaleY = uniformScale;
+		}
+
+		// Get the fixed point (opposite corner/edge)
+		const origin = getResizeOrigin(resizeHandle, initialBounds);
+
+		onResizeLive?.(resizeElementId, scaleX, scaleY, origin.x, origin.y);
 	}
 
 	/**
-	 * Handle pointer up - end resizing
+	 * Handle pointer up - end resizing and commit
 	 */
 	function handleHandlePointerUp(e: PointerEvent) {
-		if (isResizing) {
+		if (isResizing && resizeElementId && resizeHandle) {
+			// Calculate total delta for commit
+			const totalDx = (e.clientX - resizeStartX) / scale;
+			const totalDy = (e.clientY - resizeStartY) / scale;
+
+			// Commit the resize
+			onResizeEnd?.(resizeElementId, resizeHandle, totalDx, totalDy, resizeConstrainAspectRatio);
+
 			isResizing = false;
 			resizeHandle = null;
 			resizeElementId = null;
+			initialBounds = null;
+			resizeConstrainAspectRatio = false;
 			(e.currentTarget as SVGElement).releasePointerCapture(e.pointerId);
 		}
 	}
@@ -416,13 +510,15 @@
 		{@const liveRot = whiteboardStore.liveRotations.get(element.id)}
 		{@const storedRot = getElementRotation(element)}
 		{@const elementRotation = liveRot ?? storedRot}
+		{@const liveResize = whiteboardStore.liveResizes.get(element.id)}
+		{@const rotateTransform =
+			elementRotation !== 0 ? `rotate(${elementRotation}, ${center.x}, ${center.y})` : ''}
+		{@const scaleTransform = liveResize
+			? `translate(${liveResize.originX}, ${liveResize.originY}) scale(${liveResize.scaleX}, ${liveResize.scaleY}) translate(${-liveResize.originX}, ${-liveResize.originY})`
+			: ''}
 
-		<!-- Group that rotates selection UI with the element -->
-		<g
-			transform={elementRotation !== 0
-				? `rotate(${elementRotation}, ${center.x}, ${center.y})`
-				: undefined}
-		>
+		<!-- Group that transforms selection UI with the element -->
+		<g transform={`${scaleTransform} ${rotateTransform}`.trim() || undefined}>
 			<!-- Selection rectangle (dashed border) for individual element -->
 			<rect
 				x={bounds.x}

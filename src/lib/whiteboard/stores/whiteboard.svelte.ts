@@ -299,6 +299,9 @@ function createWhiteboardStore() {
 
 	// === Live Transform State (for smooth dragging/rotating without full re-render) ===
 	let liveRotations = $state<Map<string, number>>(new Map());
+	let liveResizes = $state<
+		Map<string, { scaleX: number; scaleY: number; originX: number; originY: number }>
+	>(new Map());
 
 	// === Autosave ===
 	let autosaveTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -527,6 +530,9 @@ function createWhiteboardStore() {
 		},
 		get liveRotations() {
 			return liveRotations;
+		},
+		get liveResizes() {
+			return liveResizes;
 		},
 
 		// === Document Operations ===
@@ -1687,6 +1693,83 @@ function createWhiteboardStore() {
 		 */
 		hasLiveRotation(elementId: string): boolean {
 			return liveRotations.has(elementId);
+		},
+
+		// === Live Resize Methods ===
+
+		/**
+		 * Set a live (preview) resize for an element during drag.
+		 * This doesn't update the actual element - use commitLiveResize to apply.
+		 * @param elementId - Element to set live resize for
+		 * @param scaleX - Horizontal scale factor
+		 * @param scaleY - Vertical scale factor
+		 * @param originX - Transform origin X (fixed point during resize)
+		 * @param originY - Transform origin Y (fixed point during resize)
+		 */
+		setLiveResize(
+			elementId: string,
+			scaleX: number,
+			scaleY: number,
+			originX: number,
+			originY: number
+		): void {
+			const newMap = new Map(liveResizes);
+			newMap.set(elementId, { scaleX, scaleY, originX, originY });
+			liveResizes = newMap;
+		},
+
+		/**
+		 * Get the live resize for an element (if any).
+		 * @param elementId - Element to get live resize for
+		 */
+		getLiveResize(
+			elementId: string
+		): { scaleX: number; scaleY: number; originX: number; originY: number } | undefined {
+			return liveResizes.get(elementId);
+		},
+
+		/**
+		 * Commit the live resize to the actual element and clear live state.
+		 * @param elementId - Element to commit resize for
+		 * @param handle - The resize handle used
+		 * @param totalDx - Total horizontal delta from start
+		 * @param totalDy - Total vertical delta from start
+		 * @param constrainAspectRatio - Whether to maintain aspect ratio
+		 */
+		commitLiveResize(
+			elementId: string,
+			handle: string,
+			totalDx: number,
+			totalDy: number,
+			constrainAspectRatio: boolean
+		): void {
+			if (!liveResizes.has(elementId)) return;
+
+			// Apply the resize to the actual element
+			this.resizeElement(
+				elementId,
+				handle as Parameters<typeof this.resizeElement>[1],
+				totalDx,
+				totalDy,
+				constrainAspectRatio
+			);
+
+			// Clear the live resize
+			const newMap = new Map(liveResizes);
+			newMap.delete(elementId);
+			liveResizes = newMap;
+		},
+
+		/**
+		 * Clear live resize without committing (e.g., on cancel).
+		 * @param elementId - Element to clear live resize for
+		 */
+		clearLiveResize(elementId: string): void {
+			if (!liveResizes.has(elementId)) return;
+
+			const newMap = new Map(liveResizes);
+			newMap.delete(elementId);
+			liveResizes = newMap;
 		},
 
 		/**
