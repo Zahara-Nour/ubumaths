@@ -16,6 +16,8 @@
   - [template_audit_log](#template_audit_log)
   - [moderation_logs](#moderation_logs)
   - [error_logs](#error_logs)
+- [RGPD Compliance Audit](#rgpd-compliance-audit)
+  - [audit_logs](#audit_logs)
 - [Enum Types](#enum-types)
 
 ---
@@ -367,6 +369,91 @@ CHECK (severity IN ('info', 'warning', 'error', 'critical'))
 
 ---
 
+## RGPD Compliance Audit
+
+### audit_logs
+
+**Migration**: `supabase/migrations/20260116100000_create_audit_trail.sql`
+
+Generic audit trail for RGPD compliance (Art. 5(2) accountability). Tracks all modifications to sensitive tables via database triggers. Enables answering "who accessed my child's data?" requests.
+
+#### Columns
+
+| Column       | Type          | Nullable | Default             | Description                                      |
+| ------------ | ------------- | -------- | ------------------- | ------------------------------------------------ |
+| `id`         | `UUID`        | NOT NULL | `gen_random_uuid()` | Primary key                                      |
+| `user_id`    | `UUID`        | NULL     | -                   | FK → `auth.users(id)` - who performed the action |
+| `action`     | `TEXT`        | NOT NULL | -                   | CHECK IN (`INSERT`, `UPDATE`, `DELETE`)          |
+| `table_name` | `TEXT`        | NOT NULL | -                   | Source table name                                |
+| `record_id`  | `UUID`        | NULL     | -                   | ID of affected record                            |
+| `old_values` | `JSONB`       | NULL     | -                   | Previous values (UPDATE/DELETE)                  |
+| `new_values` | `JSONB`       | NULL     | -                   | New values (INSERT/UPDATE)                       |
+| `ip_address` | `TEXT`        | NULL     | -                   | Client IP (app layer, if available)              |
+| `user_agent` | `TEXT`        | NULL     | -                   | Client user agent (app layer, if available)      |
+| `created_at` | `TIMESTAMPTZ` | NOT NULL | `now()`             | Timestamp                                        |
+
+#### Indexes
+
+| Name                          | Columns                   | Purpose                         |
+| ----------------------------- | ------------------------- | ------------------------------- |
+| `idx_audit_logs_user_id`      | `(user_id)`               | Filter by actor                 |
+| `idx_audit_logs_table_name`   | `(table_name)`            | Filter by table                 |
+| `idx_audit_logs_created_at`   | `(created_at DESC)`       | Chronological queries           |
+| `idx_audit_logs_record_id`    | `(record_id)`             | Find all changes to one record  |
+| `idx_audit_logs_table_record` | `(table_name, record_id)` | "Who touched this user's data?" |
+
+#### Triggers
+
+Automatic triggers capture all changes on sensitive tables:
+
+| Table                      | Trigger Name                     | Events                 |
+| -------------------------- | -------------------------------- | ---------------------- |
+| `profiles`                 | `audit_profiles`                 | INSERT, UPDATE, DELETE |
+| `exercise_completions`     | `audit_exercise_completions`     | INSERT, UPDATE, DELETE |
+| `student_exercise_mastery` | `audit_student_exercise_mastery` | INSERT, UPDATE, DELETE |
+
+#### RLS Policies
+
+| Policy                                          | Role          | Access |
+| ----------------------------------------------- | ------------- | ------ |
+| Admins can view all audit logs                  | admin         | SELECT |
+| Users can view audit logs for their own data    | authenticated | SELECT |
+| Teachers can view audit logs for their students | teacher       | SELECT |
+
+**Note**: No INSERT/UPDATE/DELETE policies - audit logs are write-only via trigger.
+
+#### Example Queries
+
+```sql
+-- Who accessed/modified this student's profile?
+SELECT * FROM audit_logs
+WHERE table_name = 'profiles' AND record_id = $student_id
+ORDER BY created_at DESC;
+
+-- All actions by a specific user
+SELECT * FROM audit_logs
+WHERE user_id = $user_id
+ORDER BY created_at DESC;
+
+-- Recent changes to student progress for a specific student
+SELECT * FROM audit_logs
+WHERE table_name IN ('exercise_completions', 'student_exercise_mastery')
+AND (old_values->>'student_id')::UUID = $student_id
+   OR (new_values->>'student_id')::UUID = $student_id
+ORDER BY created_at DESC;
+```
+
+#### Retention
+
+Default retention: 2 years. Use `cleanup_old_audit_logs(retention_days)` function for cleanup:
+
+```sql
+-- Cleanup logs older than 2 years (730 days)
+SELECT cleanup_old_audit_logs(730);
+```
+
+---
+
 ## Enum Types
 
 ### reward_type
@@ -436,5 +523,9 @@ profiles (id)
     │
     ├──< moderation_logs (moderator_id)
     │
-    └──< error_logs (user_id, resolved_by)
+    ├──< error_logs (user_id, resolved_by)
+    │
+    └──< audit_logs (user_id) [RGPD Art. 5(2)]
+              │
+              └── Triggered by: profiles, exercise_completions, student_exercise_mastery
 ```

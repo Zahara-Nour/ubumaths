@@ -500,6 +500,45 @@ export type Database = {
 					}
 				];
 			};
+			audit_logs: {
+				Row: {
+					action: string;
+					created_at: string;
+					id: string;
+					ip_address: string | null;
+					new_values: Json | null;
+					old_values: Json | null;
+					record_id: string | null;
+					table_name: string;
+					user_agent: string | null;
+					user_id: string | null;
+				};
+				Insert: {
+					action: string;
+					created_at?: string;
+					id?: string;
+					ip_address?: string | null;
+					new_values?: Json | null;
+					old_values?: Json | null;
+					record_id?: string | null;
+					table_name: string;
+					user_agent?: string | null;
+					user_id?: string | null;
+				};
+				Update: {
+					action?: string;
+					created_at?: string;
+					id?: string;
+					ip_address?: string | null;
+					new_values?: Json | null;
+					old_values?: Json | null;
+					record_id?: string | null;
+					table_name?: string;
+					user_agent?: string | null;
+					user_id?: string | null;
+				};
+				Relationships: [];
+			};
 			background_job_runs: {
 				Row: {
 					completed_at: string | null;
@@ -12884,6 +12923,10 @@ export type Database = {
 				}[];
 			};
 			cleanup_expired_rate_limits: { Args: never; Returns: undefined };
+			cleanup_old_audit_logs: {
+				Args: { retention_days?: number };
+				Returns: number;
+			};
 			cleanup_old_errors: { Args: { p_days_old?: number }; Returns: number };
 			cleanup_old_job_runs: {
 				Args: never;
@@ -14474,57 +14517,3 @@ export const Constants = {
 		}
 	}
 } as const;
-
-// ============================================================================
-// CUSTOM TYPE EXPORTS
-// ============================================================================
-
-/**
- * Alias for classes table row
- */
-export type Class = Tables<'classes'>;
-
-/**
- * Alias for class_schedules table row
- */
-export type ClassSchedule = Tables<'class_schedules'>;
-
-/**
- * Friendship status enum
- */
-export type FriendshipStatus = 'pending' | 'accepted' | 'rejected';
-
-/**
- * Friendship relation type enum
- */
-export type FriendshipRelationType = 'classmate' | 'friend' | 'family';
-
-/**
- * Friend profile with presence information
- */
-export interface FriendProfile {
-	id: string;
-	full_name: string | null;
-	firstname: string | null;
-	lastname: string | null;
-	avatar_url: string | null;
-	role: 'student' | 'teacher' | 'admin';
-	presence?: {
-		is_online: boolean;
-		last_seen: string | null;
-	};
-}
-
-/**
- * Friendship with enriched profile data
- */
-export interface FriendshipWithProfile {
-	id: string;
-	status: FriendshipStatus;
-	friendship_type: FriendshipRelationType;
-	created_at: string;
-	updated_at: string;
-	requester_id: string;
-	addressee_id: string;
-	friend_profile: FriendProfile;
-}

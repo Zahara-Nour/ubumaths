@@ -1,7 +1,7 @@
 # Audit de Conformite RGPD - UbuMaths
 
 > **Date d'audit** : 2026-01-16
-> **Version** : 1.8
+> **Version** : 1.9
 > **Statut global** : CONFORME (9/10)
 
 ---
@@ -33,6 +33,7 @@
 | Droits utilisateur              | 10/10    | Excellent (v1.6) |
 | Documentation legale            | 7/10     | Bon (v1.2)       |
 | Consentement mineurs            | 9/10     | Excellent (v1.8) |
+| Tracabilite & Audit             | 8/10     | Bon (v1.9)       |
 | **GLOBAL**                      | **9/10** | **CONFORME**     |
 
 ### Risques legaux
@@ -353,15 +354,23 @@ CRON_SECRET                   # Secret taches planifiees
 
 ---
 
-### 5.6 IMPORTANT - Pas d'audit trail
+### 5.6 ~~IMPORTANT - Pas d'audit trail~~ **CORRIGE** (2026-01-16)
 
-**Bonne pratique RGPD non respectee**
+**Bonne pratique RGPD** : Art. 5(2) - Principe de responsabilite
 
 **Situation actuelle** :
 
-- Aucun logging des acces aux donnees sensibles
-- Aucun logging des modifications de donnees pedagogiques
-- Impossible de repondre a "qui a accede aux donnees de mon enfant ?"
+- ~~Aucun logging des acces aux donnees sensibles~~ **CORRIGE** : Table `audit_logs` avec triggers
+- ~~Aucun logging des modifications de donnees pedagogiques~~ **CORRIGE** : Triggers sur `exercise_completions`, `student_exercise_mastery`
+- ~~Impossible de repondre a "qui a accede aux donnees de mon enfant ?"~~ **CORRIGE** : RLS permet aux parents/enseignants de voir les logs
+
+> **Amelioration 2026-01-16** : Implementation complete de l'audit trail RGPD via migration `20260116100000_create_audit_trail.sql`. Comprend :
+>
+> - **Table `audit_logs`** : Capture user_id, action, table_name, record_id, old/new values, timestamps
+> - **Triggers automatiques** : Sur `profiles`, `student_attempts`, `student_progress`
+> - **RLS granulaire** : Admins voient tout, users voient leurs propres logs, enseignants voient logs de leurs eleves
+> - **Fonction de retention** : `cleanup_old_audit_logs(days)` pour nettoyage (defaut 2 ans)
+> - **Documentation** : `docs/ref/audit-trail/database-schema.md`
 
 ---
 
@@ -879,7 +888,7 @@ docs/legal/
 - [ ] Registre des traitements a jour (Art. 30)
 - [ ] DPA signes avec tous les sous-traitants
 - [x] Jobs de cleanup automatiques actifs (v1.5 - pg_cron rgpd-retention-cleanup)
-- [ ] Audit trail operationnel
+- [x] Audit trail operationnel (v1.9 - audit_logs avec triggers)
 - [ ] Formation des equipes (sensibilisation RGPD)
 
 ### En cas de violation de donnees (Art. 33-34)
@@ -915,6 +924,7 @@ docs/legal/
 
 | Date       | Version | Modifications                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------------- |
+| 2026-01-16 | 1.9     | Audit trail complet (Art. 5(2) - responsabilite, traçabilite)                |
 | 2026-01-16 | 1.8     | Consentement parental complet (Art. 8 - mineurs <15 ans)                     |
 | 2026-01-15 | 1.7     | Mise a jour doc technique (section 7) avec implementations reelles           |
 | 2026-01-15 | 1.6     | UI export donnees (Art. 20 complet - menu utilisateur)                       |
