@@ -69,7 +69,7 @@ const variableSchema = z.object({
  */
 const exerciseHintSchema = z.object({
 	id: z.string(),
-	type: z.enum(['video', 'pdf', 'text']),
+	type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image', 'ubumark']),
 	url: z.string().optional(),
 	title: z.string(),
 	description: z.string().optional(),
