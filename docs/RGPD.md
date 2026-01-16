@@ -1,8 +1,8 @@
 # Audit de Conformite RGPD - UbuMaths
 
-> **Date d'audit** : 2026-01-15
-> **Version** : 1.7
-> **Statut global** : PARTIELLEMENT CONFORME (8/10)
+> **Date d'audit** : 2026-01-16
+> **Version** : 1.8
+> **Statut global** : CONFORME (9/10)
 
 ---
 
@@ -24,16 +24,16 @@
 
 ### Etat de conformite par categorie
 
-| Categorie                       | Score    | Statut                  |
-| ------------------------------- | -------- | ----------------------- |
-| Authentification & Autorisation | 9/10     | Excellent               |
-| Chiffrement & Securite          | 8/10     | Bon                     |
-| Minimisation des donnees        | 9/10     | Excellent               |
-| Retention des donnees           | 8/10     | Bon (v1.5)              |
-| Droits utilisateur              | 10/10    | Excellent (v1.6)        |
-| Documentation legale            | 7/10     | Bon (v1.2)              |
-| Consentement mineurs            | 0/10     | **Manquant**            |
-| **GLOBAL**                      | **8/10** | **PARTIELLEMENT CONF.** |
+| Categorie                       | Score    | Statut           |
+| ------------------------------- | -------- | ---------------- |
+| Authentification & Autorisation | 9/10     | Excellent        |
+| Chiffrement & Securite          | 8/10     | Bon              |
+| Minimisation des donnees        | 9/10     | Excellent        |
+| Retention des donnees           | 8/10     | Bon (v1.5)       |
+| Droits utilisateur              | 10/10    | Excellent (v1.6) |
+| Documentation legale            | 7/10     | Bon (v1.2)       |
+| Consentement mineurs            | 9/10     | Excellent (v1.8) |
+| **GLOBAL**                      | **9/10** | **CONFORME**     |
 
 ### Risques legaux
 
@@ -297,20 +297,31 @@ CRON_SECRET                   # Secret taches planifiees
 
 ---
 
-### 5.3 CRITIQUE - Pas de consentement parental pour mineurs
+### 5.3 ~~CRITIQUE - Pas de consentement parental pour mineurs~~ **CORRIGE** (2026-01-16)
 
-**Article RGPD viole** : Art. 8 - Conditions applicables au consentement des enfants
+**Article RGPD** : Art. 8 - Conditions applicables au consentement des enfants
 
 **Situation actuelle** :
 
-- Aucune verification d'age
-- Aucun mecanisme de consentement parental
+- ~~Aucune verification d'age~~ **CORRIGE** : Detection automatique par niveau scolaire (6eme-2nde = <15 ans)
+- ~~Aucun mecanisme de consentement parental~~ **CORRIGE** : Systeme complet implemente
 - ~~Collecte de `gender` (donnee sensible) sans consentement~~ **CORRIGE** (2026-01-15)
-- Eleves de 11-15 ans concernes
+- Eleves de 11-15 ans concernes (grades 6, 5, 4, 3, 2)
 
-**Impact** : Collecte de donnees d'enfants < 15 ans sans consentement parental (exige par la CNIL).
+> **Amelioration 2026-01-15** : Le champ `gender` a ete supprime des tables `profiles` et `pending_students` conformement au principe de minimisation des donnees (Art. 5(1)(c)).
 
-> **Amelioration 2026-01-15** : Le champ `gender` a ete supprime des tables `profiles` et `pending_students` conformement au principe de minimisation des donnees (Art. 5(1)(c)). Ce champ n'etait utilise que pour la selection d'avatars, ce qui ne justifiait pas la collecte de cette donnee sensible sur des mineurs.
+> **Amelioration 2026-01-16** : Implementation complete du systeme de consentement parental :
+>
+> - **Detection automatique** : Eleves en 6eme-2nde (grades '6','5','4','3','2') necessitent consentement
+> - **Mode lecture seule** : Sans consentement, eleves peuvent consulter mais pas soumettre/jouer/acheter
+> - **Periode de grace** : 30 jours pour les eleves existants
+> - **Workflow enseignant** : Dashboard `/dashboard/teacher/consent` pour gerer les emails parents
+> - **Verification par email** : Token unique, expiration 7 jours, limite 5 emails/eleve
+> - **Page de consentement** : `/consent/[token]` publique pour parents (sans authentification)
+> - **Audit** : IP et user-agent enregistres lors du consentement
+>
+> **Tables creees** : `parental_consents` avec RLS
+> **Champs ajoutes** : `profiles.consent_required`, `profiles.consent_granted_at`, `profiles.consent_grace_period_ends` > **Fonctions SQL** : `get_consent_info()`, `grant_parental_consent()` (SECURITY DEFINER)
 
 ---
 
@@ -568,76 +579,88 @@ Fonctionnalites implementees :
 
 ### 7.4 Consentement parental
 
-```sql
--- Migration: add_parental_consent.sql
+**Implementation** : Systeme complet implemente (2026-01-16)
 
+#### Schema de base de donnees
+
+```sql
+-- Champs ajoutes a profiles
+ALTER TABLE profiles ADD COLUMN consent_required BOOLEAN DEFAULT FALSE;
+ALTER TABLE profiles ADD COLUMN consent_granted_at TIMESTAMPTZ;
+ALTER TABLE profiles ADD COLUMN consent_grace_period_ends TIMESTAMPTZ;
+
+-- Table parental_consents
 CREATE TABLE parental_consents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     student_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
     parent_email TEXT NOT NULL,
-    parent_name TEXT NOT NULL,
-    consent_given BOOLEAN NOT NULL DEFAULT FALSE,
+    parent_name TEXT,
+    status consent_status DEFAULT 'pending', -- 'pending' | 'granted' | 'expired'
     consent_token UUID UNIQUE DEFAULT gen_random_uuid(),
+    expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
     consent_given_at TIMESTAMPTZ,
-    consent_ip TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days')
+    consent_ip INET,
+    consent_user_agent TEXT,
+    email_count INTEGER DEFAULT 0, -- Max 5 emails par eleve
+    last_email_sent_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Index pour recherche par token
-CREATE INDEX idx_parental_consents_token ON parental_consents(consent_token);
+-- Fonctions SECURITY DEFINER pour acces anonyme des parents
+CREATE FUNCTION get_consent_info(p_token UUID)
+RETURNS TABLE(student_name TEXT, grade TEXT, school_name TEXT, teacher_name TEXT, status TEXT);
 
--- RLS
-ALTER TABLE parental_consents ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Admins manage consents"
-ON parental_consents FOR ALL
-USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
-);
+CREATE FUNCTION grant_parental_consent(p_token UUID, p_ip INET, p_user_agent TEXT)
+RETURNS BOOLEAN;
 ```
 
-```typescript
-// src/routes/api/consent/verify/[token]/+server.ts
+#### Fichiers implementes
 
-import { error, json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+| Fichier                                                         | Description                                                                         |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `src/lib/utils/consent.ts`                                      | Utilitaires: `requiresParentalConsent()`, `hasValidConsent()`, `getConsentStatus()` |
+| `src/lib/server/middleware/consent.ts`                          | Middleware: `requireConsent()` pour endpoints API                                   |
+| `src/routes/(public)/consent/[token]/+page.svelte`              | Page publique de consentement parent                                                |
+| `src/routes/(protected)/dashboard/teacher/consent/+page.svelte` | Dashboard enseignant                                                                |
+| `src/routes/api/consent/send-email/+server.ts`                  | API envoi email via Gmail                                                           |
+| `src/lib/email-templates/parental-consent.ts`                   | Template email HTML/texte                                                           |
+| `src/lib/components/ConsentBanner.svelte`                       | Banniere d'avertissement eleve                                                      |
+| `src/lib/components/ConsentButton.svelte`                       | Bouton desactive si pas de consentement                                             |
+| `src/lib/stores/consent.svelte.ts`                              | Store client-side pour etat consentement                                            |
 
-export const POST: RequestHandler = async ({ params, locals, getClientAddress }) => {
-	const { token } = params;
-	const supabase = locals.supabaseAdmin; // Service role pour cette operation
+#### Endpoints proteges par `requireConsent()`
 
-	// Verifier le token
-	const { data: consent, error: fetchError } = await supabase
-		.from('parental_consents')
-		.select('*')
-		.eq('consent_token', token)
-		.gt('expires_at', new Date().toISOString())
-		.single();
+- `/api/exercises/[id]/complete` - Soumission exercices
+- `/api/student/chapters/[id]/quiz/submit` - Soumission quiz
+- `/api/python-exercises/[id]/submit` - Exercices Python
+- `/api/riddles/[id]/submit` - Enigmes
+- `/api/srs/review/submit` - Flashcards
+- `/api/chat` - Messages IA
+- `/api/messages/send` - Messagerie
+- `/api/games/2048/scores` - Scores jeux
+- `/api/games/minesweeper/start` - Demarrage jeux
+- `/api/vip-cards/*` - Cartes VIP (achat, utilisation)
+- `/api/rewards/draw-vip-cards` - Tirage cartes
+- `/api/marketplace/trades` - Marketplace
 
-	if (fetchError || !consent) {
-		throw error(404, 'Lien de consentement invalide ou expire');
-	}
+#### Workflow
 
-	// Enregistrer le consentement
-	const { error: updateError } = await supabase
-		.from('parental_consents')
-		.update({
-			consent_given: true,
-			consent_given_at: new Date().toISOString(),
-			consent_ip: getClientAddress()
-		})
-		.eq('id', consent.id);
-
-	if (updateError) {
-		throw error(500, "Erreur lors de l'enregistrement du consentement");
-	}
-
-	// Activer le compte eleve
-	await supabase.from('profiles').update({ is_active: true }).eq('id', consent.student_id);
-
-	return json({ success: true, message: 'Consentement enregistre' });
-};
+```
+1. Enseignant importe eleves (CSV ou manuel)
+   ↓
+2. Systeme detecte grade ∈ ['6','5','4','3','2'] → consent_required = TRUE
+   ↓
+3. Eleve se connecte → Mode lecture seule + banniere d'avertissement
+   ↓
+4. Enseignant va sur /dashboard/teacher/consent
+   ↓
+5. Enseignant ajoute email parent + envoie demande
+   ↓
+6. Parent recoit email avec lien /consent/[token]
+   ↓
+7. Parent clique "J'autorise" → consent_granted_at = NOW()
+   ↓
+8. Eleve a acces complet
 ```
 
 ### 7.5 Audit trail
@@ -847,7 +870,7 @@ docs/legal/
 - [x] Politique de confidentialite publiee et accessible (v1.2)
 - [x] CGU publiees et acceptees lors de l'inscription (v1.2)
 - [x] Mentions legales publiees (v1.2)
-- [ ] Mecanisme de consentement parental operationnel
+- [x] Mecanisme de consentement parental operationnel (v1.8)
 - [x] API de suppression de compte fonctionnelle (v1.3)
 - [x] API d'export de donnees fonctionnelle (v1.4)
 
@@ -892,6 +915,7 @@ docs/legal/
 
 | Date       | Version | Modifications                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------------- |
+| 2026-01-16 | 1.8     | Consentement parental complet (Art. 8 - mineurs <15 ans)                     |
 | 2026-01-15 | 1.7     | Mise a jour doc technique (section 7) avec implementations reelles           |
 | 2026-01-15 | 1.6     | UI export donnees (Art. 20 complet - menu utilisateur)                       |
 | 2026-01-15 | 1.5     | Politique de retention pg_cron (Art. 5(1)(e) - limitation conservation)      |
@@ -903,5 +927,5 @@ docs/legal/
 
 ---
 
-**Document genere le** : 2026-01-15
-**Prochaine revue** : 2026-04-15 (trimestrielle)
+**Document genere le** : 2026-01-16
+**Prochaine revue** : 2026-04-16 (trimestrielle)
