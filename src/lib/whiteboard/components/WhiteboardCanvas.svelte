@@ -393,18 +393,14 @@
 		if (isSelectionDragging) {
 			e.preventDefault(); // Prevent browser defaults during drag
 
+			// Calculate total offset from drag start (not incremental)
 			const dx = (e.clientX - selectionDragStartX) / scale;
 			const dy = (e.clientY - selectionDragStartY) / scale;
 
-			// Only move if distance exceeds threshold (prevents jitter from mouse micro-movements)
-			if (
-				Number.isFinite(dx) &&
-				Number.isFinite(dy) &&
-				(Math.abs(dx) >= MIN_DRAG_DISTANCE || Math.abs(dy) >= MIN_DRAG_DISTANCE)
-			) {
-				selectionDragStartX = e.clientX;
-				selectionDragStartY = e.clientY;
-				whiteboardStore.moveElements(dx, dy);
+			// Apply live position to all selected elements
+			if (Number.isFinite(dx) && Number.isFinite(dy)) {
+				const selectedIds = selectedElements.map((el) => el.id);
+				whiteboardStore.setLivePositionBatch(selectedIds, dx, dy);
 			}
 			return;
 		}
@@ -479,6 +475,12 @@
 
 		// End selection dragging
 		if (isSelectionDragging) {
+			// Commit live positions to actual element positions
+			const selectedIds = selectedElements.map((el) => el.id);
+			if (selectedIds.length > 0) {
+				whiteboardStore.commitLivePositionBatch(selectedIds);
+			}
+
 			isSelectionDragging = false;
 			selectionDragStartX = 0;
 			selectionDragStartY = 0;
@@ -528,6 +530,9 @@
 
 		// Cancel selection dragging
 		if (isSelectionDragging) {
+			// Clear live positions without committing (cancel)
+			whiteboardStore.clearAllLivePositions();
+
 			isSelectionDragging = false;
 			selectionDragStartX = 0;
 			selectionDragStartY = 0;
@@ -1225,10 +1230,12 @@
 				{@const liveRot = whiteboardStore.liveRotations.get(stroke.id)}
 				{@const strokeRotation = liveRot ?? stroke.rotation ?? 0}
 				{@const liveResize = whiteboardStore.liveResizes.get(stroke.id)}
+				{@const livePos = whiteboardStore.livePositions.get(stroke.id)}
 				{@const strokeBounds = getElementBounds(stroke)}
 				{@const strokeCenter = getBoundsCenter(strokeBounds)}
 				{@const strokeStyle = stroke.strokeStyle ?? 'solid'}
 				{@const isDashedStroke = strokeStyle !== 'solid'}
+				{@const translateTransform = livePos ? `translate(${livePos.dx}, ${livePos.dy})` : ''}
 				{@const rotateTransform =
 					strokeRotation !== 0
 						? `rotate(${strokeRotation}, ${strokeCenter.x}, ${strokeCenter.y})`
@@ -1236,7 +1243,10 @@
 				{@const scaleTransform = liveResize
 					? `translate(${liveResize.originX}, ${liveResize.originY}) scale(${liveResize.scaleX}, ${liveResize.scaleY}) translate(${-liveResize.originX}, ${-liveResize.originY})`
 					: ''}
-				<g transform={`${scaleTransform} ${rotateTransform}`.trim() || undefined}>
+				<g
+					transform={`${translateTransform} ${scaleTransform} ${rotateTransform}`.trim() ||
+						undefined}
+				>
 					{#if isDashedStroke}
 						<!-- Dashed/dotted stroke: use simple path with stroke -->
 						<path
@@ -1273,6 +1283,7 @@
 				{@const liveRot = whiteboardStore.liveRotations.get(shape.id)}
 				{@const shapeRotation = liveRot ?? shape.rotation ?? 0}
 				{@const liveResize = whiteboardStore.liveResizes.get(shape.id)}
+				{@const livePos = whiteboardStore.livePositions.get(shape.id)}
 				{@const shapeBounds = getElementBounds(shape)}
 				{@const shapeCenter = getBoundsCenter(shapeBounds)}
 				{@const shapeFill =
@@ -1281,12 +1292,16 @@
 						: shape.fillMode === 'hatched'
 							? `url(#hatch-${shape.id})`
 							: (shape.fill ?? 'none')}
+				{@const translateTransform = livePos ? `translate(${livePos.dx}, ${livePos.dy})` : ''}
 				{@const rotateTransform =
 					shapeRotation !== 0 ? `rotate(${shapeRotation}, ${shapeCenter.x}, ${shapeCenter.y})` : ''}
 				{@const scaleTransform = liveResize
 					? `translate(${liveResize.originX}, ${liveResize.originY}) scale(${liveResize.scaleX}, ${liveResize.scaleY}) translate(${-liveResize.originX}, ${-liveResize.originY})`
 					: ''}
-				<g transform={`${scaleTransform} ${rotateTransform}`.trim() || undefined}>
+				<g
+					transform={`${translateTransform} ${scaleTransform} ${rotateTransform}`.trim() ||
+						undefined}
+				>
 					{#if props.type === 'line'}
 						<line
 							x1={props.x1}
@@ -1361,6 +1376,8 @@
 				{@const liveRot = whiteboardStore.liveRotations.get(group.id)}
 				{@const groupRotation = liveRot ?? group.rotation ?? 0}
 				{@const liveResize = whiteboardStore.liveResizes.get(group.id)}
+				{@const livePos = whiteboardStore.livePositions.get(group.id)}
+				{@const translateTransform = livePos ? `translate(${livePos.dx}, ${livePos.dy})` : ''}
 				{@const rotateTransform =
 					groupRotation !== 0 ? `rotate(${groupRotation} ${groupCenter.x} ${groupCenter.y})` : ''}
 				{@const scaleTransform = liveResize
@@ -1369,7 +1386,8 @@
 				<g
 					class="whiteboard-group"
 					data-group-id={group.id}
-					transform={`${scaleTransform} ${rotateTransform}`.trim() || undefined}
+					transform={`${translateTransform} ${scaleTransform} ${rotateTransform}`.trim() ||
+						undefined}
 				>
 					{@render renderGroupChildren(group.children)}
 				</g>

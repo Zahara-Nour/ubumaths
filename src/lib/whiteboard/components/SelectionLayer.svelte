@@ -511,6 +511,8 @@
 		{@const storedRot = getElementRotation(element)}
 		{@const elementRotation = liveRot ?? storedRot}
 		{@const liveResize = whiteboardStore.liveResizes.get(element.id)}
+		{@const livePos = whiteboardStore.livePositions.get(element.id)}
+		{@const translateTransform = livePos ? `translate(${livePos.dx}, ${livePos.dy})` : ''}
 		{@const rotateTransform =
 			elementRotation !== 0 ? `rotate(${elementRotation}, ${center.x}, ${center.y})` : ''}
 		{@const scaleTransform = liveResize
@@ -518,7 +520,7 @@
 			: ''}
 
 		<!-- Group that transforms selection UI with the element -->
-		<g transform={`${scaleTransform} ${rotateTransform}`.trim() || undefined}>
+		<g transform={`${translateTransform} ${scaleTransform} ${rotateTransform}`.trim() || undefined}>
 			<!-- Selection rectangle (dashed border) for individual element -->
 			<rect
 				x={bounds.x}
