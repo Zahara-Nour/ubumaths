@@ -1,7 +1,7 @@
 # Audit de Conformite RGPD - UbuMaths
 
 > **Date d'audit** : 2026-01-16
-> **Version** : 1.11
+> **Version** : 1.12
 > **Statut global** : CONFORME (9/10)
 
 ---
@@ -396,11 +396,22 @@ CRON_SECRET                   # Secret taches planifiees
 
 ---
 
-### 5.8 MOYEN - Scopes Google trop larges
+### 5.8 ~~MOYEN - Scopes Google trop larges~~ **CORRIGE** (2026-01-16)
 
-**Probleme** : Le scope `gmail.send` permet d'envoyer des emails au nom de l'utilisateur.
+**Article RGPD** : Art. 5(1)(c) - Minimisation des donnees
 
-**Question** : Est-ce vraiment necessaire ? Si non, reduire les scopes.
+**Situation actuelle** :
+
+- ~~Le scope `gmail.send` permet d'envoyer des emails au nom de l'utilisateur~~ **SUPPRIME**
+- Emails maintenant envoyes via Brevo (service francais)
+
+> **Amelioration 2026-01-16** : Migration de Gmail API vers Brevo pour l'envoi d'emails.
+>
+> - Scope `gmail.send` supprime des permissions Google OAuth
+> - Nouveau service : Brevo (entreprise francaise, RGPD natif)
+> - Emails envoyes depuis `noreply@ubumaths.fr`
+> - Variables d'environnement : `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`
+> - Implementation : `src/lib/server/email/brevo.ts`
 
 ---
 
@@ -932,6 +943,7 @@ docs/legal/
 
 | Date       | Version | Modifications                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------------- |
+| 2026-01-16 | 1.12    | Migration emails vers Brevo, suppression scope gmail.send (Art. 5(1)(c))     |
 | 2026-01-16 | 1.11    | Registre des traitements complet (Art. 30)                                   |
 | 2026-01-16 | 1.10    | Registre des sous-traitants (Art. 28 - DPA documentes)                       |
 | 2026-01-16 | 1.9     | Audit trail complet (Art. 5(2) - responsabilite, traçabilite)                |
