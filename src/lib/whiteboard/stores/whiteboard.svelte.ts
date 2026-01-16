@@ -19,12 +19,14 @@ import {
 	type WhiteboardElement,
 	type TextBlockElement,
 	type ImageElement,
+	type GroupElement,
 	type PageFormatKey,
 	type InstrumentType,
 	type InstrumentState,
 	type StrokeStyle,
 	type FillMode
 } from '../types/document';
+import { getElementBounds } from '../core/hit-testing';
 import { createHistoryManager, type HistoryManager } from '../core/history.svelte';
 import { serialize, deserialize } from '../core/serialization';
 import {
@@ -295,6 +297,9 @@ function createWhiteboardStore() {
 	// === Sync State ===
 	let syncState = $state<SyncState>(createInitialSyncState());
 
+	// === Live Transform State (for smooth dragging/rotating without full re-render) ===
+	let liveRotations = $state<Map<string, number>>(new Map());
+
 	// === Autosave ===
 	let autosaveTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -519,6 +524,9 @@ function createWhiteboardStore() {
 		},
 		get hasClipboard() {
 			return clipboard.length > 0;
+		},
+		get liveRotations() {
+			return liveRotations;
 		},
 
 		// === Document Operations ===
@@ -925,8 +933,8 @@ function createWhiteboardStore() {
 		paste(offset: number = 20): void {
 			if (clipboard.length === 0 || !currentPage) return;
 
-			// Create new elements with new IDs and offset
-			const newElements: WhiteboardElement[] = clipboard.map((el) => {
+			// Helper to offset an element recursively (for groups)
+			const offsetElement = (el: WhiteboardElement, off: number): WhiteboardElement => {
 				const newId = crypto.randomUUID();
 
 				switch (el.type) {
@@ -936,16 +944,16 @@ function createWhiteboardStore() {
 							id: newId,
 							points: el.points.map((p) => ({
 								...p,
-								x: p.x + offset,
-								y: p.y + offset
+								x: p.x + off,
+								y: p.y + off
 							}))
 						};
 					case 'shape':
 						return {
 							...el,
 							id: newId,
-							start: { x: el.start.x + offset, y: el.start.y + offset },
-							end: { x: el.end.x + offset, y: el.end.y + offset }
+							start: { x: el.start.x + off, y: el.start.y + off },
+							end: { x: el.end.x + off, y: el.end.y + off }
 						};
 					case 'image':
 					case 'textblock':
@@ -953,12 +961,21 @@ function createWhiteboardStore() {
 							...el,
 							id: newId,
 							position: {
-								x: el.position.x + offset,
-								y: el.position.y + offset
+								x: el.position.x + off,
+								y: el.position.y + off
 							}
 						};
+					case 'group':
+						return {
+							...el,
+							id: newId,
+							children: el.children.map((child) => offsetElement(child, off))
+						};
 				}
-			});
+			};
+
+			// Create new elements with new IDs and offset
+			const newElements: WhiteboardElement[] = clipboard.map((el) => offsetElement(el, offset));
 
 			// Add all new elements
 			updateCurrentPage((page) => ({
@@ -970,48 +987,143 @@ function createWhiteboardStore() {
 			selectedIds = new Set(newElements.map((el) => el.id));
 		},
 
+		// === Group Operations ===
+
+		/**
+		 * Group selected elements into a single group element.
+		 * Requires 2+ elements selected. Nested groups are flattened.
+		 */
+		groupSelected(): void {
+			if (selectedIds.size < 2 || !currentPage) return;
+
+			// Get elements to group, preserving z-order
+			const elementsToGroup: WhiteboardElement[] = [];
+			for (const element of currentPage.elements) {
+				if (selectedIds.has(element.id)) {
+					// Flatten nested groups
+					if (element.type === 'group') {
+						elementsToGroup.push(...element.children);
+					} else {
+						elementsToGroup.push(element);
+					}
+				}
+			}
+
+			if (elementsToGroup.length < 2) return;
+
+			const groupId = crypto.randomUUID();
+			const group: GroupElement = {
+				id: groupId,
+				type: 'group',
+				children: elementsToGroup
+			};
+
+			// Remove individual elements, add group at the position of the last selected element
+			updateCurrentPage((page) => ({
+				...page,
+				elements: [...page.elements.filter((e) => !selectedIds.has(e.id)), group]
+			}));
+
+			// Select the new group
+			selectedIds = new Set([groupId]);
+		},
+
+		/**
+		 * Ungroup selected group(s) back to individual elements.
+		 */
+		ungroupSelected(): void {
+			if (!currentPage) return;
+
+			const groupsToUngroup = currentPage.elements.filter(
+				(e) => selectedIds.has(e.id) && e.type === 'group'
+			) as GroupElement[];
+
+			if (groupsToUngroup.length === 0) return;
+
+			const newElements: WhiteboardElement[] = [];
+			const childIds: string[] = [];
+
+			for (const group of groupsToUngroup) {
+				newElements.push(...group.children);
+				childIds.push(...group.children.map((c) => c.id));
+			}
+
+			updateCurrentPage((page) => ({
+				...page,
+				elements: [
+					...page.elements.filter((e) => !(selectedIds.has(e.id) && e.type === 'group')),
+					...newElements
+				]
+			}));
+
+			// Select the ungrouped children
+			selectedIds = new Set(childIds);
+		},
+
+		/**
+		 * Check if any selected element is a group (for context menu)
+		 */
+		get hasSelectedGroups(): boolean {
+			if (!currentPage) return false;
+			return currentPage.elements.some((e) => selectedIds.has(e.id) && e.type === 'group');
+		},
+
+		/**
+		 * Check if selection can be grouped (2+ elements)
+		 */
+		get canGroup(): boolean {
+			return selectedIds.size >= 2;
+		},
+
 		/**
 		 * Move selected elements by a delta
-		 * Supports all element types: stroke, shape, image, textblock
+		 * Supports all element types: stroke, shape, image, textblock, group
 		 * @param dx - Horizontal delta in canvas coordinates
 		 * @param dy - Vertical delta in canvas coordinates
 		 */
 		moveElements(dx: number, dy: number): void {
 			if (selectedIds.size === 0) return;
 
+			// Helper to move an element recursively (for groups)
+			const moveElement = (element: WhiteboardElement): WhiteboardElement => {
+				switch (element.type) {
+					case 'stroke':
+						return {
+							...element,
+							points: element.points.map((p) => ({
+								...p,
+								x: p.x + dx,
+								y: p.y + dy
+							}))
+						};
+					case 'shape':
+						return {
+							...element,
+							start: { x: element.start.x + dx, y: element.start.y + dy },
+							end: { x: element.end.x + dx, y: element.end.y + dy }
+						};
+					case 'image':
+					case 'textblock':
+						return {
+							...element,
+							position: {
+								x: element.position.x + dx,
+								y: element.position.y + dy
+							}
+						};
+					case 'group':
+						return {
+							...element,
+							children: element.children.map(moveElement)
+						};
+				}
+			};
+
 			updateCurrentPage((page) => ({
 				...page,
 				elements: page.elements.map((element) => {
 					if (!selectedIds.has(element.id)) return element;
-
-					switch (element.type) {
-						case 'stroke':
-							return {
-								...element,
-								points: element.points.map((p) => ({
-									...p,
-									x: p.x + dx,
-									y: p.y + dy
-								}))
-							};
-						case 'shape':
-							return {
-								...element,
-								start: { x: element.start.x + dx, y: element.start.y + dy },
-								end: { x: element.end.x + dx, y: element.end.y + dy }
-							};
-						case 'image':
-						case 'textblock':
-							return {
-								...element,
-								position: {
-									x: element.position.x + dx,
-									y: element.position.y + dy
-								}
-							};
-						default:
-							return element;
-					}
+					return moveElement(element);
 				})
 			}));
 		},
@@ -1338,6 +1450,127 @@ function createWhiteboardStore() {
 						};
 					}
 
+					if (element.type === 'group') {
+						// Groups: scale all children proportionally
+						const bounds = getElementBounds(element);
+						const currentWidth = bounds.width;
+						const currentHeight = bounds.height;
+
+						if (currentWidth < 1 || currentHeight < 1) return element;
+
+						let left = bounds.x,
+							right = bounds.x + bounds.width,
+							top = bounds.y,
+							bottom = bounds.y + bounds.height;
+
+						// Adjust deltas to maintain aspect ratio if constrained (always for groups)
+						let adjustedDx = dx;
+						let adjustedDy = dy;
+						const aspectRatio = currentWidth / currentHeight;
+
+						// Always maintain aspect ratio for groups
+						if (isCornerHandle(handle)) {
+							if (Math.abs(dx) * currentHeight >= Math.abs(dy) * currentWidth) {
+								adjustedDy = dx / aspectRatio;
+								if (affectsTop(handle) && affectsRight(handle)) adjustedDy = -Math.abs(adjustedDy);
+								if (affectsTop(handle) && affectsLeft(handle))
+									adjustedDy = dx > 0 ? Math.abs(adjustedDy) : -Math.abs(adjustedDy);
+								if (affectsBottom(handle) && affectsLeft(handle)) adjustedDy = -adjustedDy;
+							} else {
+								adjustedDx = dy * aspectRatio;
+								if (affectsLeft(handle) && affectsBottom(handle))
+									adjustedDx = -Math.abs(adjustedDx);
+								if (affectsLeft(handle) && affectsTop(handle))
+									adjustedDx = dy > 0 ? Math.abs(adjustedDx) : -Math.abs(adjustedDx);
+								if (affectsRight(handle) && affectsTop(handle)) adjustedDx = -adjustedDx;
+							}
+						} else {
+							if (handle === 'n' || handle === 's') {
+								adjustedDx = dy * aspectRatio * (handle === 'n' ? -1 : 1);
+							} else {
+								adjustedDy = (dx / aspectRatio) * (handle === 'w' ? -1 : 1);
+							}
+						}
+
+						// Apply deltas to bounding box edges based on handle
+						if (affectsLeft(handle)) left += adjustedDx;
+						if (affectsRight(handle)) right += adjustedDx;
+						if (affectsTop(handle)) top += adjustedDy;
+						if (affectsBottom(handle)) bottom += adjustedDy;
+
+						// For edge handles, also expand in perpendicular direction (centered)
+						if (!isCornerHandle(handle)) {
+							if (handle === 'n' || handle === 's') {
+								const widthChange = Math.abs(adjustedDx);
+								left -= widthChange / 2;
+								right += widthChange / 2;
+							} else {
+								const heightChange = Math.abs(adjustedDy);
+								top -= heightChange / 2;
+								bottom += heightChange / 2;
+							}
+						}
+
+						// Enforce minimum size
+						const newWidth = right - left;
+						const newHeight = bottom - top;
+						if (newWidth < MIN_SIZE || newHeight < MIN_SIZE) return element;
+
+						// Calculate scale factors
+						const scaleX = newWidth / currentWidth;
+						const scaleY = newHeight / currentHeight;
+
+						// Helper to scale a single element
+						const scaleElement = (el: WhiteboardElement): WhiteboardElement => {
+							switch (el.type) {
+								case 'stroke':
+									return {
+										...el,
+										points: el.points.map((p) => ({
+											x: left + (p.x - bounds.x) * scaleX,
+											y: top + (p.y - bounds.y) * scaleY,
+											pressure: p.pressure
+										})),
+										width: el.width * Math.min(scaleX, scaleY)
+									};
+								case 'shape':
+									return {
+										...el,
+										start: {
+											x: left + (el.start.x - bounds.x) * scaleX,
+											y: top + (el.start.y - bounds.y) * scaleY
+										},
+										end: {
+											x: left + (el.end.x - bounds.x) * scaleX,
+											y: top + (el.end.y - bounds.y) * scaleY
+										},
+										strokeWidth: el.strokeWidth * Math.min(scaleX, scaleY)
+									};
+								case 'image':
+								case 'textblock':
+									return {
+										...el,
+										position: {
+											x: left + (el.position.x - bounds.x) * scaleX,
+											y: top + (el.position.y - bounds.y) * scaleY
+										},
+										width: el.width * scaleX,
+										height: el.height * scaleY
+									};
+								case 'group':
+									return {
+										...el,
+										children: el.children.map(scaleElement)
+									};
+							}
+						};
+
+						return {
+							...element,
+							children: element.children.map(scaleElement)
+						};
+					}
+
 					return element;
 				})
 			}));
@@ -1358,8 +1591,8 @@ function createWhiteboardStore() {
 				elements: page.elements.map((element) => {
 					if (element.id !== elementId) return element;
 
-					// Only shapes and strokes support rotation
-					if (element.type === 'shape' || element.type === 'stroke') {
+					// Shapes, strokes, and groups support rotation
+					if (element.type === 'shape' || element.type === 'stroke' || element.type === 'group') {
 						return { ...element, rotation: normalizedRotation };
 					}
 
@@ -1380,8 +1613,8 @@ function createWhiteboardStore() {
 				elements: page.elements.map((element) => {
 					if (!selectedIds.has(element.id)) return element;
 
-					// Only shapes and strokes support rotation
-					if (element.type === 'shape' || element.type === 'stroke') {
+					// Shapes, strokes, and groups support rotation
+					if (element.type === 'shape' || element.type === 'stroke' || element.type === 'group') {
 						const currentRotation = element.rotation ?? 0;
 						let newRotation = (currentRotation + deltaAngle) % 360;
 						if (newRotation < 0) newRotation += 360;
@@ -1391,6 +1624,69 @@ function createWhiteboardStore() {
 					return element;
 				})
 			}));
+		},
+
+		/**
+		 * Set a live (preview) rotation for an element during drag.
+		 * This doesn't update the actual element - use commitLiveRotation to apply.
+		 * @param elementId - Element to set live rotation for
+		 * @param rotation - Preview rotation angle in degrees
+		 */
+		setLiveRotation(elementId: string, rotation: number): void {
+			// Normalize angle to 0-360
+			let normalizedRotation = rotation % 360;
+			if (normalizedRotation < 0) normalizedRotation += 360;
+
+			// Create a new Map to trigger reactivity
+			const newMap = new Map(liveRotations);
+			newMap.set(elementId, normalizedRotation);
+			liveRotations = newMap;
+		},
+
+		/**
+		 * Get the live rotation for an element (if any).
+		 * @param elementId - Element to get live rotation for
+		 * @returns Live rotation or undefined if none
+		 */
+		getLiveRotation(elementId: string): number | undefined {
+			return liveRotations.get(elementId);
+		},
+
+		/**
+		 * Commit the live rotation to the actual element and clear live state.
+		 * @param elementId - Element to commit rotation for
+		 */
+		commitLiveRotation(elementId: string): void {
+			const liveRotation = liveRotations.get(elementId);
+			if (liveRotation === undefined) return;
+
+			// Apply the rotation to the actual element
+			this.rotateElement(elementId, liveRotation);
+
+			// Clear the live rotation
+			const newMap = new Map(liveRotations);
+			newMap.delete(elementId);
+			liveRotations = newMap;
+		},
+
+		/**
+		 * Clear live rotation without committing (e.g., on cancel).
+		 * @param elementId - Element to clear live rotation for
+		 */
+		clearLiveRotation(elementId: string): void {
+			if (!liveRotations.has(elementId)) return;
+
+			const newMap = new Map(liveRotations);
+			newMap.delete(elementId);
+			liveRotations = newMap;
+		},
+
+		/**
+		 * Check if an element has a live rotation.
+		 * @param elementId - Element to check
+		 */
+		hasLiveRotation(elementId: string): boolean {
+			return liveRotations.has(elementId);
 		},
 
 		/**

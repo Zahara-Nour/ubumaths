@@ -13,7 +13,8 @@ import type {
 	StrokeElement,
 	ShapeElement,
 	ImageElement,
-	TextBlockElement
+	TextBlockElement,
+	GroupElement
 } from '../types/document';
 import { calculateShapeBounds } from './shapes';
 
@@ -299,6 +300,41 @@ export function hitTestTextBlock(
 }
 
 /**
+ * Test if a point hits a group element.
+ *
+ * Tests all children and returns true if any child is hit.
+ */
+export function hitTestGroup(
+	point: Point,
+	group: GroupElement,
+	tolerance: number = DEFAULT_TOLERANCE
+): boolean {
+	// Test each child element
+	for (const child of group.children) {
+		let hit = false;
+		switch (child.type) {
+			case 'stroke':
+				hit = hitTestStroke(point, child, tolerance);
+				break;
+			case 'shape':
+				hit = hitTestShape(point, child, tolerance);
+				break;
+			case 'image':
+				hit = hitTestImage(point, child, tolerance);
+				break;
+			case 'textblock':
+				hit = hitTestTextBlock(point, child, tolerance);
+				break;
+			case 'group':
+				hit = hitTestGroup(point, child, tolerance);
+				break;
+		}
+		if (hit) return true;
+	}
+	return false;
+}
+
+/**
  * Test a point against all elements and return the topmost hit.
  *
  * Elements are tested in reverse order (last element first) because
@@ -326,6 +362,9 @@ export function hitTestElements(
 				break;
 			case 'textblock':
 				hit = hitTestTextBlock(point, element, tolerance);
+				break;
+			case 'group':
+				hit = hitTestGroup(point, element, tolerance);
 				break;
 		}
 
@@ -357,6 +396,8 @@ export function getElementBounds(element: WhiteboardElement): BoundingBox {
 			return getImageBounds(element);
 		case 'textblock':
 			return getTextBlockBounds(element);
+		case 'group':
+			return getGroupBounds(element);
 	}
 }
 
@@ -430,6 +471,39 @@ function getTextBlockBounds(textblock: TextBlockElement): BoundingBox {
 		y: textblock.position.y,
 		width: textblock.width,
 		height: textblock.height
+	};
+}
+
+/**
+ * Calculate bounding box for a group element.
+ * Returns the smallest box that contains all children.
+ */
+function getGroupBounds(group: GroupElement): BoundingBox {
+	if (group.children.length === 0) {
+		return { x: 0, y: 0, width: 0, height: 0 };
+	}
+
+	// Get bounds of first child
+	const firstBounds = getElementBounds(group.children[0]);
+	let minX = firstBounds.x;
+	let minY = firstBounds.y;
+	let maxX = firstBounds.x + firstBounds.width;
+	let maxY = firstBounds.y + firstBounds.height;
+
+	// Expand to include all other children
+	for (let i = 1; i < group.children.length; i++) {
+		const childBounds = getElementBounds(group.children[i]);
+		minX = Math.min(minX, childBounds.x);
+		minY = Math.min(minY, childBounds.y);
+		maxX = Math.max(maxX, childBounds.x + childBounds.width);
+		maxY = Math.max(maxY, childBounds.y + childBounds.height);
+	}
+
+	return {
+		x: minX,
+		y: minY,
+		width: maxX - minX,
+		height: maxY - minY
 	};
 }
 

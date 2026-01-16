@@ -14,7 +14,9 @@
 		Trash2,
 		Copy,
 		Scissors,
-		ClipboardPaste
+		ClipboardPaste,
+		Group,
+		Ungroup
 	} from 'lucide-svelte';
 
 	// ==========================================================================
@@ -28,6 +30,8 @@
 	let selectedIds = $derived(Array.from(whiteboardStore.selectedIds));
 	let hasSelection = $derived(selectedIds.length > 0);
 	let hasClipboard = $derived(whiteboardStore.hasClipboard);
+	let canGroup = $derived(whiteboardStore.canGroup);
+	let hasSelectedGroups = $derived(whiteboardStore.hasSelectedGroups);
 
 	// ==========================================================================
 	// Methods
@@ -39,7 +43,7 @@
 
 		// Menu dimensions (approximate)
 		const menuWidth = 180;
-		const menuHeight = 320; // Increased for additional items
+		const menuHeight = 400; // Increased for group operations
 		const padding = 8;
 
 		// Adjust position to keep menu within viewport
@@ -116,6 +120,20 @@
 
 	function handleDelete() {
 		whiteboardStore.deleteSelected();
+		hide();
+	}
+
+	// ==========================================================================
+	// Group Handlers
+	// ==========================================================================
+
+	function handleGroup() {
+		whiteboardStore.groupSelected();
+		hide();
+	}
+
+	function handleUngroup() {
+		whiteboardStore.ungroupSelected();
 		hide();
 	}
 
@@ -216,6 +234,35 @@
 			>
 				<ArrowDownToLine class="h-4 w-4" />
 				<span>Arriere-plan</span>
+			</button>
+
+			<div class="my-1 h-px bg-border"></div>
+
+			<!-- Group operations -->
+			<button
+				type="button"
+				class="context-menu-item flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm {canGroup
+					? 'hover:bg-accent'
+					: 'cursor-not-allowed opacity-50'}"
+				onclick={handleGroup}
+				disabled={!canGroup}
+			>
+				<Group class="h-4 w-4" />
+				<span class="flex-1">Grouper</span>
+				<span class="text-xs text-muted-foreground">Ctrl+G</span>
+			</button>
+
+			<button
+				type="button"
+				class="context-menu-item flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm {hasSelectedGroups
+					? 'hover:bg-accent'
+					: 'cursor-not-allowed opacity-50'}"
+				onclick={handleUngroup}
+				disabled={!hasSelectedGroups}
+			>
+				<Ungroup class="h-4 w-4" />
+				<span class="flex-1">Degrouper</span>
+				<span class="text-xs text-muted-foreground">Ctrl+Shift+G</span>
 			</button>
 
 			<div class="my-1 h-px bg-border"></div>
