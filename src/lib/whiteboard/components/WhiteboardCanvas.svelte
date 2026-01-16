@@ -321,6 +321,8 @@
 		// Handle text tool - create new text block
 		if (isTextTool) {
 			e.preventDefault();
+			// Clear selection when creating new text
+			whiteboardStore.clearSelection();
 			textBlockLayerRef?.createBlockAtPosition(point.x, point.y);
 			return;
 		}
@@ -329,6 +331,9 @@
 		if (isShapeTool) {
 			e.preventDefault();
 			(e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
+
+			// Clear selection when starting to draw
+			whiteboardStore.clearSelection();
 
 			isDrawing = true;
 			shapeStartPoint = point;
@@ -340,6 +345,9 @@
 		if (isDrawingTool) {
 			e.preventDefault();
 			(e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
+
+			// Clear selection when starting to draw
+			whiteboardStore.clearSelection();
 
 			isDrawing = true;
 			currentPoints = [point];
