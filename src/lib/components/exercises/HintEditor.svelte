@@ -51,10 +51,12 @@
 	}
 
 	/**
-	 * Validate hint ID format (alphanumeric + dashes)
+	 * Validate hint ID format.
+	 * Must start with a letter, can contain letters, numbers, dashes, underscores.
+	 * This MUST match the server-side validation regex in exercises.ts
 	 */
 	function isValidHintId(id: string): boolean {
-		return /^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]$|^[a-zA-Z0-9]$/.test(id);
+		return /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(id);
 	}
 
 	/**
@@ -65,10 +67,11 @@
 	}
 
 	/**
-	 * Generate a unique hint ID from title
+	 * Generate a unique hint ID from title.
+	 * The ID must start with a letter (a-z) to match server validation.
 	 */
 	function generateHintId(title: string): string {
-		const base = title
+		let base = title
 			.toLowerCase()
 			.normalize('NFD')
 			.replace(/[\u0300-\u036f]/g, '') // Remove accents
@@ -76,7 +79,10 @@
 			.replace(/^-+|-+$/g, '')
 			.slice(0, 20);
 
-		if (!base) return `hint-${Date.now().toString(36)}`;
+		// Ensure ID starts with a letter (required by server validation)
+		if (!base || !/^[a-z]/.test(base)) {
+			base = `hint-${base || Date.now().toString(36)}`;
+		}
 
 		let candidate = base;
 		let counter = 1;
@@ -118,7 +124,9 @@
 
 		// Validate
 		if (!isValidHintId(finalId)) {
-			toaster.error("L'ID doit contenir uniquement des lettres, chiffres et tirets");
+			toaster.error(
+				"L'ID doit commencer par une lettre et contenir uniquement lettres, chiffres, tirets et underscores"
+			);
 			return;
 		}
 
@@ -202,7 +210,9 @@
 
 		// Validate
 		if (!isValidHintId(editId)) {
-			toaster.error("L'ID doit contenir uniquement des lettres, chiffres et tirets");
+			toaster.error(
+				"L'ID doit commencer par une lettre et contenir uniquement lettres, chiffres, tirets et underscores"
+			);
 			return;
 		}
 
