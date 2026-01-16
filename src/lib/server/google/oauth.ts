@@ -20,8 +20,8 @@ export const GOOGLE_CLASSROOM_SCOPES = [
 	'https://www.googleapis.com/auth/classroom.topics.readonly', // Topics/Rubriques (added 2025-11-15)
 	'https://www.googleapis.com/auth/classroom.coursework.students.readonly', // Graded coursework and submissions
 	'https://www.googleapis.com/auth/classroom.courseworkmaterials', // Non-graded materials read/write (updated for export)
-	'https://www.googleapis.com/auth/drive.file', // Drive files (app-created only)
-	'https://www.googleapis.com/auth/gmail.send' // Send emails via Gmail (added 2025-12-29)
+	'https://www.googleapis.com/auth/drive.file' // Drive files (app-created only)
+	// gmail.send removed 2026-01-16 - emails now sent via Brevo (RGPD compliance)
 ] as const;
 
 /**

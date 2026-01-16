@@ -2,7 +2,7 @@
 
 > **Article RGPD** : Art. 28 - Sous-traitant
 > **Derniere mise a jour** : 2026-01-16
-> **Version** : 1.0
+> **Version** : 1.1
 
 ---
 
@@ -31,13 +31,14 @@ Conformement a l'article 28 du RGPD, UbuMaths documente tous les sous-traitants 
 
 ## 2. Liste des sous-traitants
 
-| Sous-traitant    | Fonction                       | Donnees traitees         | Localisation   | DPA       |
-| ---------------- | ------------------------------ | ------------------------ | -------------- | --------- |
-| **Supabase**     | Base de donnees, Auth          | Toutes les donnees       | UE (Frankfurt) | Oui       |
-| **Vercel**       | Hebergement, CDN               | Logs, cookies session    | USA + UE       | Oui       |
-| **Google Cloud** | OAuth, Classroom, Drive, Gmail | Tokens, emails, fichiers | USA + UE       | Oui       |
-| **Groq**         | API LLM (tuteur IA)            | Messages tuteur          | USA            | Oui       |
-| **Sentry**       | Monitoring erreurs             | Logs erreurs, user_id    | USA + UE       | Optionnel |
+| Sous-traitant    | Fonction                | Donnees traitees      | Localisation   | DPA       |
+| ---------------- | ----------------------- | --------------------- | -------------- | --------- |
+| **Supabase**     | Base de donnees, Auth   | Toutes les donnees    | UE (Frankfurt) | Oui       |
+| **Vercel**       | Hebergement, CDN        | Logs, cookies session | USA + UE       | Oui       |
+| **Google Cloud** | OAuth, Classroom, Drive | Tokens, fichiers      | USA + UE       | Oui       |
+| **Brevo**        | Emails transactionnels  | Emails destinataires  | UE (France)    | Oui       |
+| **Groq**         | API LLM (tuteur IA)     | Messages tuteur       | USA            | Oui       |
+| **Sentry**       | Monitoring erreurs      | Logs erreurs, user_id | USA + UE       | Optionnel |
 
 ---
 
@@ -181,11 +182,55 @@ gmail.send
 
 - [x] DPA Google Cloud accepte
 - [ ] Verifier les parametres de localisation des donnees
-- [ ] Evaluer la reduction du scope `gmail.send`
+- [x] Scope `gmail.send` supprime (2026-01-16) - emails via Brevo
 
 ---
 
-### 3.4 Groq Inc.
+### 3.4 Brevo (ex-Sendinblue)
+
+| Attribut           | Valeur                                       |
+| ------------------ | -------------------------------------------- |
+| **Raison sociale** | Brevo (anciennement Sendinblue)              |
+| **Adresse**        | 106 boulevard Haussmann, 75008 Paris, France |
+| **Site web**       | https://www.brevo.com                        |
+| **DPA**            | https://www.brevo.com/legal/termsofuse/      |
+| **Certifications** | ISO 27001, RGPD natif (entreprise francaise) |
+
+#### Donnees traitees
+
+- Adresses email des destinataires (parents, eleves)
+- Contenu des emails transactionnels
+- Logs d'envoi (deliverabilite, ouvertures)
+
+#### Localisation des donnees
+
+- **Region** : France / Union Europeenne
+- **Pas de transfert hors UE**
+
+#### Finalites
+
+- Envoi d'emails de consentement parental (Art. 8 RGPD)
+- Envoi d'emails de bienvenue aux eleves
+
+#### Mesures de securite
+
+- Chiffrement TLS pour l'envoi
+- Pas de stockage long terme du contenu des emails
+- Authentification SPF/DKIM/DMARC
+
+#### Lien DPA
+
+DPA disponible sur demande via le dashboard Brevo.
+
+**Actions requises** :
+
+- [x] Compte cree et API key configuree
+- [ ] Verifier le domaine d'envoi (SPF/DKIM)
+- [ ] Configurer l'adresse d'envoi verifiee
+
+---
+
+### 3.5 Groq Inc.
 
 | Attribut           | Valeur                                                 |
 | ------------------ | ------------------------------------------------------ |
@@ -221,7 +266,7 @@ gmail.send
 
 ---
 
-### 3.5 Sentry (Functional Software Inc.)
+### 3.6 Sentry (Functional Software Inc.)
 
 | Attribut           | Valeur                                                     |
 | ------------------ | ---------------------------------------------------------- |
@@ -265,6 +310,7 @@ Conformement au Chapitre V du RGPD, les transferts vers des pays tiers sont enca
 | Supabase      | Region UE (pas de transfert) | -                      |
 | Vercel        | SCCs + DPA                   | Art. 46(2)(c)          |
 | Google        | SCCs + DPA + BCRs            | Art. 46(2)(c), Art. 47 |
+| Brevo         | France (pas de transfert)    | -                      |
 | Groq          | SCCs (a verifier)            | Art. 46(2)(c)          |
 | Sentry        | SCCs + DPA                   | Art. 46(2)(c)          |
 
@@ -294,9 +340,10 @@ La Commission europeenne a reconnu un niveau de protection adequat pour :
 
 ### Historique des modifications
 
-| Date       | Version | Modification                  |
-| ---------- | ------- | ----------------------------- |
-| 2026-01-16 | 1.0     | Creation initiale du registre |
+| Date       | Version | Modification                                  |
+| ---------- | ------- | --------------------------------------------- |
+| 2026-01-16 | 1.1     | Ajout Brevo, suppression gmail.send de Google |
+| 2026-01-16 | 1.0     | Creation initiale du registre                 |
 
 ---
 
