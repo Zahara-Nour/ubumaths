@@ -452,55 +452,11 @@
 	// Drive Operations
 	// ==========================================================================
 
-	async function handleSaveToDrive() {
-		const doc = whiteboardStore.document;
-		if (!doc) return;
-
-		isSavingToDrive = true;
-
-		try {
-			// Generate thumbnail of first page
-			let thumbnailDataUrl: string | undefined;
-			const firstPage = doc.pages[0];
-			if (firstPage) {
-				const thumbResult = await generateThumbnail(firstPage, doc, { width: 200, quality: 0.7 });
-				if (thumbResult.success && thumbResult.dataUrl) {
-					thumbnailDataUrl = thumbResult.dataUrl;
-				}
-			}
-
-			const fileIdToUse = syncState.driveFileId || undefined;
-			const folderIdToUse = currentFolderId || undefined;
-
-			const result = await driveSyncService.saveToDrive({
-				document: doc,
-				fileName: doc.title || 'Sans titre',
-				fileId: fileIdToUse,
-				folderId: folderIdToUse,
-				thumbnail: thumbnailDataUrl
-			});
-
-			if (result.success) {
-				whiteboardStore.setSyncSuccess(result.fileId!, result.modifiedTime!);
-				toaster.success('Sauvegardé sur Drive');
-				// Delete autosave file (user has manually saved, autosave no longer needed)
-				await whiteboardStore.deleteAutosaveIfExists();
-				// Refresh file list to show updated time and thumbnail
-				await loadDriveFiles();
-			} else {
-				whiteboardStore.setSyncError(result.error || 'Erreur de sauvegarde');
-				toaster.error(result.error || 'Erreur de sauvegarde');
-			}
-		} finally {
-			isSavingToDrive = false;
-		}
-	}
-
-	function handleSaveAsToDrive() {
+	function handleSaveToDrive() {
 		saveAsDialogOpen = true;
 	}
 
-	async function handleSaveAsConfirm(fileName: string) {
+	async function handleSaveConfirm(fileName: string) {
 		const doc = whiteboardStore.document;
 		if (!doc) return;
 
@@ -516,21 +472,29 @@
 					thumbnailDataUrl = thumbResult.dataUrl;
 				}
 			}
+
+			// Check if we're updating existing file or creating new
+			const currentTitle = doc.title || 'Sans titre';
+			const isUpdating = fileName === currentTitle && syncState.driveFileId;
+			const fileIdToUse = isUpdating ? syncState.driveFileId : undefined;
 
 			const result = await driveSyncService.saveToDrive({
 				document: doc,
 				fileName,
-				fileId: undefined, // Force new file
+				fileId: fileIdToUse,
 				folderId: currentFolderId || undefined,
 				thumbnail: thumbnailDataUrl
 			});
 
 			if (result.success) {
-				whiteboardStore.setTitle(fileName.replace(/\.ubw$/, ''));
-				whiteboardStore.connectToDrive(result.fileId, currentFolderId || undefined);
+				if (!isUpdating) {
+					// New file: update title and connect
+					whiteboardStore.setTitle(fileName.replace(/\.ubw$/, ''));
+					whiteboardStore.connectToDrive(result.fileId, currentFolderId || undefined);
+				}
 				whiteboardStore.setSyncSuccess(result.fileId!, result.modifiedTime!);
-				toaster.success('Document créé sur Drive');
-				// Delete any previous autosave (new file, fresh start)
+				toaster.success(isUpdating ? 'Sauvegardé sur Drive' : 'Document créé sur Drive');
+				// Delete autosave file
 				await whiteboardStore.deleteAutosaveIfExists();
 				saveAsDialogOpen = false;
 				// Refresh file list
@@ -1055,19 +1019,8 @@
 						<span class="text-[10px]">Export</span>
 					</Button>
 				</div>
-				<!-- Row 2: Secondary actions -->
+				<!-- Row 2: Local actions -->
 				<div class="grid grid-cols-4 gap-2">
-					<Button
-						type="button"
-						variant="ghost"
-						size="sm"
-						onclick={handleSaveAsToDrive}
-						class="h-9 flex-col gap-1 p-1"
-						title="Enregistrer sous un nouveau nom sur Drive"
-					>
-						<Save class="h-4 w-4" />
-						<span class="text-[10px]">Enr. sous</span>
-					</Button>
 					<Button
 						type="button"
 						variant="ghost"
@@ -1076,7 +1029,7 @@
 						class="h-9 flex-col gap-1 p-1"
 						title="Enregistrer localement"
 					>
-						<Download class="h-4 w-4" />
+						<Save class="h-4 w-4" />
 						<span class="text-[10px]">Local</span>
 					</Button>
 					<Button
@@ -1102,9 +1055,8 @@
 							<FolderPlus class="h-4 w-4" />
 							<span class="text-[10px]">Dossier</span>
 						</Button>
-					{:else}
-						<div></div>
 					{/if}
+					<div></div>
 				</div>
 			</div>
 		</Sheet.Footer>
@@ -1132,7 +1084,7 @@
 	bind:open={saveAsDialogOpen}
 	defaultName={whiteboardStore.document?.title || 'Sans titre'}
 	saving={isSavingToDrive}
-	onSave={handleSaveAsConfirm}
+	onSave={handleSaveConfirm}
 	onClose={() => (saveAsDialogOpen = false)}
 />
 <CreateFolderDialog

@@ -98,8 +98,10 @@
 <Dialog.Root bind:open onOpenChange={(o) => !o && handleClose()}>
 	<Dialog.Content class="max-w-sm">
 		<Dialog.Header>
-			<Dialog.Title>Enregistrer sous</Dialog.Title>
-			<Dialog.Description>Entrez le nom du fichier pour Google Drive</Dialog.Description>
+			<Dialog.Title>Sauvegarder sur Drive</Dialog.Title>
+			<Dialog.Description>
+				Gardez le même nom pour mettre à jour, ou changez-le pour créer un nouveau fichier
+			</Dialog.Description>
 		</Dialog.Header>
 
 		<div class="py-4">
