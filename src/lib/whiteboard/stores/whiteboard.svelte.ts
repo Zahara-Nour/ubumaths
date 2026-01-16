@@ -43,6 +43,8 @@ import {
 	updateSyncStateToSyncing,
 	markAsModified,
 	shouldAutoSync,
+	updateAutosaveFileId,
+	clearAutosaveFileId,
 	type SyncState,
 	type SyncStatus
 } from '../utils/sync-state';
@@ -356,7 +358,8 @@ function createWhiteboardStore() {
 			if (syncState.driveFileId) {
 				const syncStateData = {
 					driveFileId: syncState.driveFileId,
-					driveFolderId: syncState.driveFolderId
+					driveFolderId: syncState.driveFolderId,
+					autosaveFileId: syncState.autosaveFileId
 				};
 				localStorage.setItem(SYNC_STATE_KEY, JSON.stringify(syncStateData));
 			}
@@ -371,6 +374,7 @@ function createWhiteboardStore() {
 	function loadSyncStateFromLocalStorage(): {
 		driveFileId: string | null;
 		driveFolderId: string | null;
+		autosaveFileId: string | null;
 	} | null {
 		if (!browser) return null;
 
@@ -382,7 +386,8 @@ function createWhiteboardStore() {
 			if (data && typeof data.driveFileId === 'string') {
 				return {
 					driveFileId: data.driveFileId,
-					driveFolderId: data.driveFolderId || null
+					driveFolderId: data.driveFolderId || null,
+					autosaveFileId: data.autosaveFileId || null
 				};
 			}
 		} catch {
@@ -422,15 +427,19 @@ function createWhiteboardStore() {
 		if (!shouldAutoSync(syncState)) return;
 
 		// Use the drive sync service's debounced auto-sync
+		// Auto-sync saves to a SEPARATE autosave file (not the original) to preserve user's manual saves
 		driveSyncService.scheduleAutoSync(
 			document,
 			document.title || 'Sans titre',
-			syncState.driveFileId || undefined,
+			syncState.driveFileId || undefined, // Original file ID
+			syncState.autosaveFileId || undefined, // Existing autosave file ID (to update instead of creating new)
 			syncState.driveFolderId || undefined,
 			(result) => {
 				if (result.success && result.fileId) {
-					syncState = updateSyncStateAfterSync(syncState, result.fileId, result.modifiedTime);
-					hasUnsavedChanges = false;
+					// Store the autosave file ID for subsequent auto-syncs
+					syncState = updateAutosaveFileId(syncState, result.fileId);
+					// Keep status as modified (user hasn't manually saved yet)
+					console.log('[Whiteboard] Auto-sync completed, autosave fileId:', result.fileId);
 				} else if (!result.success && result.error) {
 					syncState = updateSyncStateOnError(syncState, result.error);
 				}
@@ -577,6 +586,7 @@ function createWhiteboardStore() {
 							lastSyncAt: new Date().toISOString(),
 							driveFileId: savedSyncState.driveFileId,
 							driveFolderId: savedSyncState.driveFolderId,
+							autosaveFileId: savedSyncState.autosaveFileId,
 							error: null
 						};
 						console.debug('[Whiteboard] Restored sync state:', savedSyncState.driveFileId);
@@ -2255,13 +2265,18 @@ function createWhiteboardStore() {
 				lastSyncAt: fileId ? new Date().toISOString() : null,
 				driveFileId: fileId || null,
 				driveFolderId: folderId || null,
+				autosaveFileId: null, // Reset autosave when connecting to a new file
 				error: null
 			};
 			// Persist to localStorage if we have a fileId
 			if (fileId && browser) {
 				localStorage.setItem(
 					SYNC_STATE_KEY,
-					JSON.stringify({ driveFileId: fileId, driveFolderId: folderId || null })
+					JSON.stringify({
+						driveFileId: fileId,
+						driveFolderId: folderId || null,
+						autosaveFileId: null
+					})
 				);
 			}
 		},
@@ -2280,6 +2295,76 @@ function createWhiteboardStore() {
 		 */
 		shouldTriggerAutoSync(): boolean {
 			return shouldAutoSync(syncState);
+		},
+
+		/**
+		 * Delete autosave file from Drive and clear autosaveFileId
+		 * Called after a successful manual save to clean up the autosave
+		 */
+		async deleteAutosaveIfExists(): Promise<void> {
+			if (!syncState.driveFileId) return;
+
+			try {
+				const result = await driveSyncService.deleteAutosave(syncState.driveFileId);
+				if (result.success && result.deleted) {
+					console.log('[Whiteboard] Deleted autosave file:', result.deletedFileId);
+				}
+			} catch (error) {
+				console.warn('[Whiteboard] Failed to delete autosave:', error);
+			}
+
+			// Clear autosaveFileId from state regardless of API result
+			syncState = clearAutosaveFileId(syncState);
+
+			// Update localStorage
+			if (browser && syncState.driveFileId) {
+				localStorage.setItem(
+					SYNC_STATE_KEY,
+					JSON.stringify({
+						driveFileId: syncState.driveFileId,
+						driveFolderId: syncState.driveFolderId,
+						autosaveFileId: null
+					})
+				);
+			}
+		},
+
+		/**
+		 * Get autosaveFileId (for checking if autosave exists)
+		 */
+		get autosaveFileId(): string | null {
+			return syncState.autosaveFileId;
+		},
+
+		/**
+		 * Connect to Drive with an existing autosave
+		 * Used when loading an autosave - keeps the document marked as 'modified'
+		 * so the user knows they need to save manually
+		 */
+		connectToDriveWithAutosave(
+			fileId: string,
+			folderId: string | undefined,
+			autosaveFileId: string
+		): void {
+			syncState = {
+				status: 'modified', // Keep as modified since autosave differs from original
+				lastSyncAt: null,
+				driveFileId: fileId,
+				driveFolderId: folderId || null,
+				autosaveFileId: autosaveFileId, // Preserve autosave file ID
+				error: null
+			};
+			// Persist to localStorage
+			if (browser) {
+				localStorage.setItem(
+					SYNC_STATE_KEY,
+					JSON.stringify({
+						driveFileId: fileId,
+						driveFolderId: folderId || null,
+						autosaveFileId: autosaveFileId
+					})
+				);
+			}
 		},
 
 		// === Cleanup ===

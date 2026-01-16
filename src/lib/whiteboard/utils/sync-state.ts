@@ -18,8 +18,8 @@ export const DRIVE_MIME_TYPE = 'application/vnd.ubumaths.whiteboard+json';
 /** Folder name for whiteboard documents on Drive */
 export const DRIVE_FOLDER_NAME = 'UbuMaths Whiteboards';
 
-/** Auto-sync debounce delay in milliseconds */
-export const AUTO_SYNC_DELAY = 5000;
+/** Auto-sync debounce delay in milliseconds (1 minute) */
+export const AUTO_SYNC_DELAY = 60_000;
 
 // =============================================================================
 // Types
@@ -32,6 +32,8 @@ export interface SyncState {
 	lastSyncAt: string | null;
 	driveFileId: string | null;
 	driveFolderId: string | null;
+	/** Autosave file ID (separate file for auto-sync) */
+	autosaveFileId: string | null;
 	error: string | null;
 }
 
@@ -76,6 +78,7 @@ export function createInitialSyncState(): SyncState {
 		lastSyncAt: null,
 		driveFileId: null,
 		driveFolderId: null,
+		autosaveFileId: null,
 		error: null
 	};
 }
@@ -92,6 +95,7 @@ export function createConnectedSyncState(
 		lastSyncAt: fileId ? new Date().toISOString() : null,
 		driveFileId: fileId,
 		driveFolderId: folderId,
+		autosaveFileId: null,
 		error: null
 	};
 }
@@ -151,6 +155,26 @@ export function markAsModified(state: SyncState): SyncState {
 }
 
 /**
+ * Update autosave file ID after successful autosave
+ */
+export function updateAutosaveFileId(state: SyncState, autosaveFileId: string): SyncState {
+	return {
+		...state,
+		autosaveFileId
+	};
+}
+
+/**
+ * Clear autosave file ID (after manual save or deletion)
+ */
+export function clearAutosaveFileId(state: SyncState): SyncState {
+	return {
+		...state,
+		autosaveFileId: null
+	};
+}
+
+/**
  * Disconnect from Drive
  */
 export function disconnect(state: SyncState): SyncState {
@@ -159,6 +183,7 @@ export function disconnect(state: SyncState): SyncState {
 		status: 'disconnected',
 		driveFileId: null,
 		driveFolderId: null,
+		autosaveFileId: null,
 		error: null
 	};
 }

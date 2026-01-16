@@ -165,6 +165,10 @@ export class GoogleDriveClient {
 
 			// Handle successful response
 			if (response.ok) {
+				// Handle 204 No Content (e.g., DELETE requests)
+				if (response.status === 204 || response.headers.get('content-length') === '0') {
+					return undefined as T;
+				}
 				const data = await response.json();
 				return data as T;
 			}
@@ -1063,6 +1067,68 @@ export class GoogleDriveClient {
 
 		return this.request<DriveFileMetadata>(endpoint, {
 			method: 'PATCH'
+		});
+	}
+
+	/**
+	 * Find autosave file for a given original file
+	 *
+	 * @param originalFileId - The original file ID to find autosave for
+	 * @returns Autosave file metadata or null if not found
+	 *
+	 * @example
+	 * ```typescript
+	 * const autosave = await client.findAutosaveForFile('originalFile123');
+	 * if (autosave) {
+	 *   console.log('Found autosave:', autosave.id, autosave.modifiedTime);
+	 * }
+	 * ```
+	 */
+	async findAutosaveForFile(
+		originalFileId: string
+	): Promise<(DriveFileMetadata & { appProperties?: Record<string, string> }) | null> {
+		if (!originalFileId) {
+			throw new Error('originalFileId is required');
+		}
+
+		// Search for files with appProperties.originalFileId matching our file
+		// Note: Google Drive API allows querying by appProperties
+		const query = `appProperties has { key='originalFileId' and value='${originalFileId}' } and appProperties has { key='isAutosave' and value='true' } and trashed=false`;
+		const fields = 'files(id,name,mimeType,modifiedTime,createdTime,appProperties)';
+		const endpoint = `/files?q=${encodeURIComponent(query)}&fields=${fields}`;
+
+		const response = await this.request<{
+			files: (DriveFileMetadata & { appProperties?: Record<string, string> })[];
+		}>(endpoint);
+
+		if (response.files && response.files.length > 0) {
+			// Return the most recent autosave
+			return response.files.sort(
+				(a, b) => new Date(b.modifiedTime || 0).getTime() - new Date(a.modifiedTime || 0).getTime()
+			)[0];
+		}
+
+		return null;
+	}
+
+	/**
+	 * Delete a file from Google Drive
+	 *
+	 * @param fileId - File ID to delete
+	 *
+	 * @example
+	 * ```typescript
+	 * await client.deleteFile('file123');
+	 * ```
+	 */
+	async deleteFile(fileId: string): Promise<void> {
+		if (!fileId) {
+			throw new Error('fileId is required');
+		}
+
+		const endpoint = `/files/${fileId}`;
+		await this.request<void>(endpoint, {
+			method: 'DELETE'
 		});
 	}
 }

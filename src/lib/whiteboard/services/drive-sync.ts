@@ -58,6 +58,24 @@ export interface CreateFolderResult {
 	error?: string;
 }
 
+export interface AutosaveInfo {
+	found: boolean;
+	autosave: {
+		id: string;
+		name: string;
+		modifiedTime: string;
+	} | null;
+	isMoreRecent: boolean;
+	originalModifiedTime?: string;
+}
+
+export interface DeleteAutosaveResult {
+	success: boolean;
+	deleted: boolean;
+	deletedFileId?: string;
+	error?: string;
+}
+
 // ============================================================================
 // Drive Sync Service
 // ============================================================================
@@ -80,6 +98,10 @@ class DriveSyncService {
 		folderId?: string;
 		/** Optional thumbnail data URL (WebP/JPEG) to save alongside the document */
 		thumbnail?: string;
+		/** Mark this save as an autosave (creates separate hidden file) */
+		isAutosave?: boolean;
+		/** Original file ID this autosave is for */
+		originalFileId?: string;
 	}): Promise<SyncResult> {
 		if (this.isSyncing) {
 			return { success: false, error: 'Synchronisation déjà en cours' };
@@ -96,7 +118,9 @@ class DriveSyncService {
 					fileName: options.fileName,
 					fileId: options.fileId,
 					folderId: options.folderId,
-					thumbnail: options.thumbnail
+					thumbnail: options.thumbnail,
+					isAutosave: options.isAutosave,
+					originalFileId: options.originalFileId
 				})
 			});
 
@@ -238,38 +262,87 @@ class DriveSyncService {
 	}
 
 	/**
+	 * Find autosave for a given original file
+	 *
+	 * @param originalFileId - Original file ID to find autosave for
+	 * @returns Autosave info or null if error
+	 */
+	async findAutosave(originalFileId: string): Promise<AutosaveInfo | null> {
+		try {
+			const response = await fetch(`/api/whiteboard/drive/autosave/${originalFileId}`);
+
+			if (!response.ok) {
+				const error = await response.json().catch(() => ({ message: 'Erreur' }));
+				throw new Error(error.message || `Erreur ${response.status}`);
+			}
+
+			return await response.json();
+		} catch (e) {
+			console.error('[DriveSyncService] Failed to find autosave:', e);
+			return null;
+		}
+	}
+
+	/**
+	 * Delete autosave for a given original file
+	 *
+	 * @param originalFileId - Original file ID to delete autosave for
+	 * @returns Delete result
+	 */
+	async deleteAutosave(originalFileId: string): Promise<DeleteAutosaveResult> {
+		try {
+			const response = await fetch(`/api/whiteboard/drive/autosave/${originalFileId}`, {
+				method: 'DELETE'
+			});
+
+			if (!response.ok) {
+				const error = await response.json().catch(() => ({ message: 'Erreur de suppression' }));
+				throw new Error(error.message || `Erreur ${response.status}`);
+			}
+
+			return await response.json();
+		} catch (e) {
+			const errorMsg = e instanceof Error ? e.message : 'Erreur inconnue';
+			return { success: false, deleted: false, error: errorMsg };
+		}
+	}
+
+	/**
 	 * Schedule auto-sync with debouncing
-	 * Cancels any pending auto-sync and schedules a new one
+	 * Saves to a SEPARATE autosave file (not the original) to preserve user's manual saves
 	 *
 	 * @param document - Document to save
 	 * @param fileName - File name
-	 * @param fileId - Existing file ID (for updates)
-	 * @param folderId - Optional folder ID (not needed for updates - file stays in place)
+	 * @param originalFileId - Original file ID (the autosave will reference this)
+	 * @param autosaveFileId - Existing autosave file ID (to update instead of creating new)
+	 * @param folderId - Folder ID where the original file is located
 	 * @param onSyncComplete - Callback when sync completes
 	 */
 	scheduleAutoSync(
 		document: WhiteboardDocument,
 		fileName: string,
-		fileId: string | undefined,
+		originalFileId: string | undefined,
+		autosaveFileId: string | undefined,
 		folderId: string | undefined,
 		onSyncComplete?: (result: SyncResult) => void
 	): void {
 		this.cancelAutoSync();
 
 		this.autoSyncTimeout = setTimeout(async () => {
-			// Note: For existing files (fileId provided), we intentionally don't pass folderId
-			// to prevent moving the file during auto-save. The file stays where it is.
-			// folderId is only used for new files (no fileId) to specify initial location.
+			// Save to a SEPARATE autosave file, not the original
+			// This preserves the user's manual saves while still having recovery available
 			const result = await this.saveToDrive({
 				document,
 				fileName,
-				fileId,
-				folderId: fileId ? undefined : folderId // Only pass folderId for new files
+				fileId: autosaveFileId, // Update existing autosave if we have one
+				folderId,
+				isAutosave: true,
+				originalFileId: originalFileId
 			});
 
 			if (result.success) {
 				// Silent success for auto-sync
-				console.log('[DriveSyncService] Auto-sync completed:', result.fileId);
+				console.log('[DriveSyncService] Auto-sync completed to autosave file:', result.fileId);
 			} else {
 				// Show error toast for auto-sync failures
 				toaster.error(`Erreur de synchronisation: ${result.error}`);

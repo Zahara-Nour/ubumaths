@@ -47,14 +47,24 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { document, fileName, fileId, folderId: requestedFolderId, thumbnail } = validation.data;
+	const {
+		document,
+		fileName,
+		fileId,
+		folderId: requestedFolderId,
+		thumbnail,
+		isAutosave,
+		originalFileId
+	} = validation.data;
 
 	// Debug: log what we received
 	console.log('[Whiteboard Drive Save] Request received:', {
 		fileId: fileId || 'undefined (will create new)',
 		requestedFolderId: requestedFolderId || 'undefined (will use root)',
 		fileName,
-		hasThumbnail: !!thumbnail
+		hasThumbnail: !!thumbnail,
+		isAutosave: isAutosave || false,
+		originalFileId: originalFileId || 'none'
 	});
 
 	// Validate document structure
@@ -76,11 +86,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const content = serializeDocument(docValidation.document!);
 
 		// Ensure filename has .ubw extension
-		const finalFileName = fileName.endsWith('.ubw') ? fileName : `${fileName}.ubw`;
+		// For autosaves, add _autosave suffix before extension
+		let finalFileName = fileName.endsWith('.ubw') ? fileName : `${fileName}.ubw`;
+		if (isAutosave) {
+			finalFileName = finalFileName.replace('.ubw', '_autosave.ubw');
+		}
 
-		// Handle thumbnail upload if provided
+		// Handle thumbnail upload if provided (skip for autosaves to save space)
 		let thumbnailFileId: string | undefined;
-		if (thumbnail) {
+		if (thumbnail && !isAutosave) {
 			// Extract base64 data and mime type from data URL
 			const match = thumbnail.match(/^data:image\/(webp|jpeg|png);base64,(.+)$/);
 			if (match) {
@@ -127,10 +141,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				await driveClient.updateFileMetadata(fileId, { thumbnailFileId });
 			}
 		} else {
-			// Create new file with thumbnail reference in appProperties
+			// Create new file with thumbnail reference and autosave info in appProperties
 			const appProperties: Record<string, string> = {};
 			if (thumbnailFileId) {
 				appProperties.thumbnailFileId = thumbnailFileId;
+			}
+			// Mark as autosave with reference to original file
+			if (isAutosave) {
+				appProperties.isAutosave = 'true';
+				if (originalFileId) {
+					appProperties.originalFileId = originalFileId;
+				}
 			}
 
 			result = await driveClient.createFile({
@@ -140,7 +161,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				folderId,
 				appProperties: Object.keys(appProperties).length > 0 ? appProperties : undefined
 			});
-			console.log(`[Whiteboard Drive] Created file ${result.id} for teacher ${user.id}`);
+			console.log(
+				`[Whiteboard Drive] Created ${isAutosave ? 'autosave' : 'file'} ${result.id} for teacher ${user.id}`
+			);
 		}
 
 		return json({
