@@ -291,64 +291,75 @@
 		shapesPopoverOpen = false;
 	}
 
+	// Helper to extract value from Bits UI slider (handles both single and array)
+	function getSliderValue(value: number[] | number): number | undefined {
+		return Array.isArray(value) ? value[0] : value;
+	}
+
+	// Commit handler for all slider changes - pushes to history when drag ends
+	function handleSliderCommit() {
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.commitLiveChanges();
+		}
+	}
+
 	function handleStrokeWidthChange(value: number[] | number) {
-		// Bits UI type="single" passes a number, type="multiple" passes an array
-		const actualValue = Array.isArray(value) ? value[0] : value;
+		const actualValue = getSliderValue(value);
 		if (actualValue === undefined) return;
 
 		whiteboardStore.setStrokeWidth(actualValue);
-		// Apply to selected elements if any
+		// Apply to selected elements (live mode for smooth preview)
 		if (whiteboardStore.hasSelection) {
-			whiteboardStore.updateSelectedStyles({ strokeWidth: actualValue });
+			whiteboardStore.updateSelectedStyles({ strokeWidth: actualValue }, true);
 		}
 	}
 
 	function handleOpacityChange(value: number[] | number) {
-		const actualValue = Array.isArray(value) ? value[0] : value;
+		const actualValue = getSliderValue(value);
 		if (actualValue === undefined) return;
 
 		whiteboardStore.setOpacity(actualValue);
-		// Apply to selected elements if any
+		// Apply to selected elements (live mode for smooth preview)
 		if (whiteboardStore.hasSelection) {
-			whiteboardStore.updateSelectedStyles({ opacity: actualValue });
+			whiteboardStore.updateSelectedStyles({ opacity: actualValue }, true);
 		}
 	}
 
 	function handleStrokeStyleChange(style: StrokeStyle) {
 		whiteboardStore.setStrokeStyle(style);
-		// Apply to selected shapes if any
+		// Apply to selected shapes (not a slider, commit immediately)
 		if (whiteboardStore.hasSelection) {
 			whiteboardStore.updateSelectedStyles({ strokeStyle: style });
 		}
 	}
 
 	function handleCornerRadiusChange(value: number[] | number) {
-		const actualValue = Array.isArray(value) ? value[0] : value;
+		const actualValue = getSliderValue(value);
 		if (actualValue === undefined) return;
 
 		whiteboardStore.setCornerRadius(actualValue);
-		// Apply to selected shapes if any
+		// Apply to selected shapes (live mode for smooth preview)
 		if (whiteboardStore.hasSelection) {
-			whiteboardStore.updateSelectedStyles({ cornerRadius: actualValue });
+			whiteboardStore.updateSelectedStyles({ cornerRadius: actualValue }, true);
 		}
 	}
 
 	function handleFillModeChange(mode: FillMode) {
 		whiteboardStore.setFillMode(mode);
-		// Apply to selected shapes if any
+		// Apply to selected shapes (not a slider, commit immediately)
 		if (whiteboardStore.hasSelection) {
 			whiteboardStore.updateSelectedStyles({ fillMode: mode });
 		}
 	}
 
 	function handleFillOpacityChange(value: number[] | number) {
-		const actualValue = Array.isArray(value) ? value[0] : value;
+		const actualValue = getSliderValue(value);
 		if (actualValue === undefined) return;
 
 		whiteboardStore.setFillOpacity(actualValue);
-		// Apply to selected shapes if any
+		// Apply to selected shapes (live mode for smooth preview)
 		if (whiteboardStore.hasSelection) {
-			whiteboardStore.updateSelectedStyles({ fillOpacity: actualValue });
+			whiteboardStore.updateSelectedStyles({ fillOpacity: actualValue }, true);
 		}
 	}
 
@@ -1296,6 +1307,7 @@
 						type="single"
 						value={[currentStrokeWidth]}
 						onValueChange={handleStrokeWidthChange}
+						onValueCommit={handleSliderCommit}
 						min={STROKE_WIDTH_MIN}
 						max={STROKE_WIDTH_MAX}
 						step={1}
@@ -1316,6 +1328,7 @@
 						type="single"
 						value={[currentOpacity]}
 						onValueChange={handleOpacityChange}
+						onValueCommit={handleSliderCommit}
 						min={0.1}
 						max={1}
 						step={0.1}
@@ -1504,6 +1517,7 @@
 							type="single"
 							value={[currentFillOpacity]}
 							onValueChange={handleFillOpacityChange}
+							onValueCommit={handleSliderCommit}
 							min={0.1}
 							max={1}
 							step={0.1}
@@ -1526,6 +1540,7 @@
 							type="single"
 							value={[currentCornerRadius]}
 							onValueChange={handleCornerRadiusChange}
+							onValueCommit={handleSliderCommit}
 							min={0}
 							max={50}
 							step={1}
