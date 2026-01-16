@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.0...v0.7.1) (2026-01-16)
+
+### 📚 Documentation
+
+- **rgpd:** add record of processing activities ([e092f5a](https://github.com/Zahara-Nour/ubumaths/commit/e092f5aae38fa6a0ea81553b2c5f2a2668f0a332))
+- **rgpd:** add subprocessor registry for DPA compliance ([e1f3083](https://github.com/Zahara-Nour/ubumaths/commit/e1f30834ad9c331594fd186175942868a1f0b63c))
+- **rgpd:** update to v1.8 with parental consent implementation ([d1a484b](https://github.com/Zahara-Nour/ubumaths/commit/d1a484bebf3af04cb2651253248098500b3a89c2))
+
+### ✨ Features
+
+- **email:** replace Gmail API with Brevo for transactional emails ([afb6e69](https://github.com/Zahara-Nour/ubumaths/commit/afb6e6943f1794ac004a223a10ebece9672da97c))
+- **exercises:** add ubumark hint type with inline content ([a1b23a8](https://github.com/Zahara-Nour/ubumaths/commit/a1b23a8e587be2b44603dda3e0889b5411ca95be))
+- **rgpd:** implement audit trail for RGPD compliance ([98bb91d](https://github.com/Zahara-Nour/ubumaths/commit/98bb91d07ecab3174e74c87537d77951a9557bbb))
+- **whiteboard:** add element grouping with smooth rotation ([aa5fc34](https://github.com/Zahara-Nour/ubumaths/commit/aa5fc34299468ea39a6828094b8ae1633b532e80))
+- **whiteboard:** add separate autosave system with recovery dialog ([33d507c](https://github.com/Zahara-Nour/ubumaths/commit/33d507c708fa6eae0b11c9bf9f88341ccafe090d))
+- **whiteboard:** add smooth live move for elements and groups ([53e6077](https://github.com/Zahara-Nour/ubumaths/commit/53e6077e641c1fea75ba77e36fc3a0bb1b2f0121))
+- **whiteboard:** add smooth live resize for elements and groups ([235ab30](https://github.com/Zahara-Nour/ubumaths/commit/235ab30dea99974c52776461a625a359b1c97884))
+
+### 🐛 Bug Fixes
+
+- **exercises:** align client-side hint ID validation with server ([424779d](https://github.com/Zahara-Nour/ubumaths/commit/424779dff00fcc53cc386acfe74e54fb22400f41))
+- **exercises:** update Zod schemas for ubumark hint type ([0a5e170](https://github.com/Zahara-Nour/ubumaths/commit/0a5e1707dd4473c73aefdd2f5dd25da8f9c6c625))
+- **whiteboard:** clear selection when starting to draw ([6f88d64](https://github.com/Zahara-Nour/ubumaths/commit/6f88d6435d37e2862d887209c50e2fb23c1cfee9))
+- **whiteboard:** fix slider style updates for selected elements ([2482467](https://github.com/Zahara-Nour/ubumaths/commit/248246790dd017eb465801eb806f10a961d6d31f))
+- **whiteboard:** fix smooth slider updates and NaN point validation ([4680541](https://github.com/Zahara-Nour/ubumaths/commit/46805415998099232dd51868108f52f3f1e65c75))
+- **whiteboard:** pass selected class from FileDrawer to Classroom export ([8b65a18](https://github.com/Zahara-Nour/ubumaths/commit/8b65a18675d4f2c8a2bbe89a1007c93db8db5b6f))
+- **whiteboard:** replace asterisk with small dot to prevent layout shift ([793533c](https://github.com/Zahara-Nour/ubumaths/commit/793533c1c55102923ed02781124c1385e7dd5ffb))
+
 ## [0.7.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.7...v0.7.0) (2026-01-16)
 
 ### ⚠ BREAKING CHANGES
