@@ -2,7 +2,7 @@
 
 > **Feature**: RGPD Article 8 compliance for minors under 15
 > **Started**: 2026-01-15
-> **Status**: Phase 7 in progress
+> **Status**: COMPLETED
 
 ---
 
@@ -269,6 +269,38 @@ pending_students (modified)
 
 ---
 
+## Phase 7: Retroactive Migration - COMPLETED
+
+### Files Created
+
+1. `supabase/migrations/20260115144849_retroactive_consent_grace_period.sql`
+   - Sets `consent_required = TRUE` for existing students in grades 6-2
+   - Grants 30-day grace period for consent collection
+   - One-time migration for existing students
+
+---
+
+## Phase 8: Quality Checks - COMPLETED
+
+### Checks Performed
+
+1. **TypeScript Check** (`pnpm check:fast`)
+
+   - Fixed `gracePeriodEnds` type to `string | null` (SvelteKit serialization)
+   - Fixed consent tests to expect ISO strings
+   - Fixed Supabase array typing in teacher consent page
+   - Fixed missing consent fields in test mocks
+
+2. **ESLint**
+
+   - Removed unused `AlertTriangle` import
+   - All staged files pass lint
+
+3. **Unit Tests** (`pnpm test:server`)
+   - 73 consent tests pass
+
+---
+
 ## Files Modified Summary
 
 | File                                                         | Action   |
@@ -296,3 +328,30 @@ pending_students (modified)
 | `src/lib/components/riddles/RiddleCard.svelte`               | Modified |
 | `src/lib/components/vip-cards/VipCardShopSection.svelte`     | Modified |
 | `src/lib/components/student/worksheets/ExerciseModal.svelte` | Modified |
+| `src/routes/(protected)/dashboard/student/exercises/[id]/*`  | Modified |
+| `src/routes/(protected)/dashboard/student/marketplace/*`     | Modified |
+| `supabase/migrations/20260115144849_*.sql`                   | Created  |
+
+---
+
+## Verification Checklist
+
+- [x] Database migrations created and tested
+- [x] Consent utilities with 73 unit tests
+- [x] Access control middleware integrated
+- [x] Parent consent flow (email, page, API)
+- [x] Teacher dashboard for consent management
+- [x] UI read-only mode with ConsentButton
+- [x] Retroactive migration for existing students
+- [x] TypeScript errors fixed
+- [x] ESLint passes
+- [x] All consent tests pass
+
+---
+
+## Next Steps (For Deployment)
+
+1. Run `pnpm db:migrate` to apply new migrations
+2. Teachers need to collect parent emails
+3. Monitor grace period expirations (30 days from migration)
+4. Update RGPD documentation (`docs/RGPD.md`)
