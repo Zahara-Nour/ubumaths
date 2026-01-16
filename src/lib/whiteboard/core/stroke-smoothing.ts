@@ -53,6 +53,31 @@ export interface BoundingBox {
 }
 
 // =============================================================================
+// Validation Helpers
+// =============================================================================
+
+/**
+ * Check if a Point has valid finite coordinates
+ */
+function isValidInputPoint(p: Point): boolean {
+	return Number.isFinite(p.x) && Number.isFinite(p.y);
+}
+
+/**
+ * Check if an outline point [x, y] has valid finite coordinates
+ */
+function isValidOutlinePoint(p: unknown): p is [number, number] {
+	return (
+		Array.isArray(p) &&
+		p.length >= 2 &&
+		typeof p[0] === 'number' &&
+		typeof p[1] === 'number' &&
+		Number.isFinite(p[0]) &&
+		Number.isFinite(p[1])
+	);
+}
+
+// =============================================================================
 // Stroke Smoothing
 // =============================================================================
 
@@ -68,12 +93,19 @@ export function smoothStroke(points: Point[], options: SmoothingOptions): number
 		return [];
 	}
 
-	// Limit points to prevent performance issues
-	const limitedPoints = points.length > MAX_POINTS ? points.slice(0, MAX_POINTS) : points;
+	// Filter out invalid points (NaN, Infinity, etc.) and limit count
+	const validPoints = points.filter(isValidInputPoint);
+	if (validPoints.length === 0) {
+		console.warn('[stroke-smoothing] No valid points in stroke');
+		return [];
+	}
+
+	const limitedPoints =
+		validPoints.length > MAX_POINTS ? validPoints.slice(0, MAX_POINTS) : validPoints;
 
 	// Convert to format expected by perfect-freehand: [x, y, pressure?]
 	const inputPoints = limitedPoints.map((p) => {
-		if (p.pressure !== undefined) {
+		if (p.pressure !== undefined && Number.isFinite(p.pressure)) {
 			return [p.x, p.y, p.pressure];
 		}
 		return [p.x, p.y];
@@ -185,14 +217,21 @@ export function pointsToSvgPath(outlinePoints: number[][]): string {
 		return '';
 	}
 
-	if (outlinePoints.length === 1) {
+	// Filter to only valid points (handles NaN, Infinity, malformed data)
+	const validPoints = outlinePoints.filter(isValidOutlinePoint);
+	if (validPoints.length === 0) {
+		console.warn('[stroke-smoothing] No valid outline points');
+		return '';
+	}
+
+	if (validPoints.length === 1) {
 		// Single point - create a small circle
-		const [x, y] = outlinePoints[0];
+		const [x, y] = validPoints[0];
 		return `M ${x} ${y} L ${x} ${y} Z`;
 	}
 
 	// Build path using quadratic bezier curves for smoothness
-	const [first, ...rest] = outlinePoints;
+	const [first, ...rest] = validPoints;
 
 	let path = `M ${first[0].toFixed(2)} ${first[1].toFixed(2)}`;
 
@@ -240,16 +279,27 @@ export function getBoundingBox(points: Point[], strokeWidth: number = 0): Boundi
 	let minY = Infinity;
 	let maxX = -Infinity;
 	let maxY = -Infinity;
+	let hasValidPoint = false;
 
 	for (const p of points) {
+		// Skip invalid points (NaN, Infinity)
+		if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) {
+			continue;
+		}
+		hasValidPoint = true;
 		if (p.x < minX) minX = p.x;
 		if (p.y < minY) minY = p.y;
 		if (p.x > maxX) maxX = p.x;
 		if (p.y > maxY) maxY = p.y;
 	}
 
+	// If no valid points, return zero bbox
+	if (!hasValidPoint) {
+		return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+	}
+
 	// Expand by half stroke width on each side
-	const halfWidth = strokeWidth / 2;
+	const halfWidth = Number.isFinite(strokeWidth) ? strokeWidth / 2 : 0;
 
 	return {
 		minX: minX - halfWidth,

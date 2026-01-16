@@ -430,6 +430,15 @@ function createWhiteboardStore() {
 		}
 	}
 
+	/**
+	 * Update document without adding to history or triggering autosave.
+	 * Used for live preview during drag operations (sliders, etc.)
+	 */
+	function updateDocumentLive(updater: (doc: WhiteboardDocument) => WhiteboardDocument): void {
+		if (!document) return;
+		document = updater(document);
+	}
+
 	function scheduleAutoSync(): void {
 		if (!browser) return;
 		if (!document) return;
@@ -460,6 +469,18 @@ function createWhiteboardStore() {
 		if (!document || !currentPage) return;
 
 		updateDocument((doc) => ({
+			...doc,
+			pages: doc.pages.map((p, i) => (i === doc.currentPageIndex ? updater(p) : p))
+		}));
+	}
+
+	/**
+	 * Update current page without history/autosave (for live preview)
+	 */
+	function updateCurrentPageLive(updater: (page: Page) => Page): void {
+		if (!document || !currentPage) return;
+
+		updateDocumentLive((doc) => ({
 			...doc,
 			pages: doc.pages.map((p, i) => (i === doc.currentPageIndex ? updater(p) : p))
 		}));
@@ -1086,13 +1107,31 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Move selected elements by a delta
+		 * Move elements by a delta
 		 * Supports all element types: stroke, shape, image, textblock, group
-		 * @param dx - Horizontal delta in canvas coordinates
-		 * @param dy - Vertical delta in canvas coordinates
+		 * @param elementIdsOrDx - Either element IDs to move, or dx if no IDs specified
+		 * @param dxOrDy - dx if elementIds provided, otherwise dy
+		 * @param dyOptional - dy if elementIds provided
 		 */
-		moveElements(dx: number, dy: number): void {
-			if (selectedIds.size === 0) return;
+		moveElements(elementIdsOrDx: string[] | number, dxOrDy: number, dyOptional?: number): void {
+			// Handle overloaded signature
+			let idsToMove: Set<string>;
+			let dx: number;
+			let dy: number;
+
+			if (Array.isArray(elementIdsOrDx)) {
+				// Called as moveElements(elementIds, dx, dy)
+				idsToMove = new Set(elementIdsOrDx);
+				dx = dxOrDy;
+				dy = dyOptional ?? 0;
+			} else {
+				// Called as moveElements(dx, dy) - use selected elements
+				idsToMove = selectedIds;
+				dx = elementIdsOrDx;
+				dy = dxOrDy;
+			}
+
+			if (idsToMove.size === 0) return;
 
 			// Helper to move an element recursively (for groups)
 			const moveElement = (element: WhiteboardElement): WhiteboardElement => {
@@ -1132,7 +1171,7 @@ function createWhiteboardStore() {
 			updateCurrentPage((page) => ({
 				...page,
 				elements: page.elements.map((element) => {
-					if (!selectedIds.has(element.id)) return element;
+					if (!idsToMove.has(element.id)) return element;
 					return moveElement(element);
 				})
 			}));
@@ -1867,20 +1906,39 @@ function createWhiteboardStore() {
 		},
 
 		/**
+		 * Commit current document state to history.
+		 * Call this after a series of live updates (e.g., when slider drag ends).
+		 */
+		commitLiveChanges(): void {
+			if (!document) return;
+			history?.push(document);
+			hasUnsavedChanges = true;
+			scheduleAutosave();
+			if (syncState.status !== 'disconnected') {
+				syncState = markAsModified(syncState);
+				scheduleAutoSync();
+			}
+		},
+
+		/**
 		 * Update style properties (color, strokeWidth, strokeStyle, cornerRadius) for selected elements
 		 * Works with stroke, shape, and group elements (recursively updates group children)
 		 * @param style - Properties to update
+		 * @param live - If true, skip history/autosave for smooth live preview (default: false)
 		 */
-		updateSelectedStyles(style: {
-			color?: string;
-			strokeWidth?: number;
-			opacity?: number;
-			strokeStyle?: StrokeStyle;
-			cornerRadius?: number;
-			fillMode?: FillMode;
-			fill?: string;
-			fillOpacity?: number;
-		}): void {
+		updateSelectedStyles(
+			style: {
+				color?: string;
+				strokeWidth?: number;
+				opacity?: number;
+				strokeStyle?: StrokeStyle;
+				cornerRadius?: number;
+				fillMode?: FillMode;
+				fill?: string;
+				fillOpacity?: number;
+			},
+			live: boolean = false
+		): void {
 			if (selectedIds.size === 0) return;
 
 			// Helper function to apply style to a single element
@@ -1917,13 +1975,19 @@ function createWhiteboardStore() {
 				}
 			};
 
-			updateCurrentPage((page) => ({
+			const updater = (page: Page) => ({
 				...page,
 				elements: page.elements.map((element) => {
 					if (!selectedIds.has(element.id)) return element;
 					return applyStyleToElement(element);
 				})
-			}));
+			});
+
+			if (live) {
+				updateCurrentPageLive(updater);
+			} else {
+				updateCurrentPage(updater);
+			}
 		},
 
 		// === Z-Order Operations ===

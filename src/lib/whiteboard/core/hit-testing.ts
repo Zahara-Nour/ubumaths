@@ -107,23 +107,32 @@ export function snapAngle(angle: number, increment: number): number {
  */
 function getStrokeBoundsInternal(stroke: StrokeElement): BoundingBox {
 	const { points, width } = stroke;
-	const padding = width / 2;
+	const padding = Number.isFinite(width) ? width / 2 : 0;
 
 	if (points.length === 0) {
 		return { x: 0, y: 0, width: 0, height: 0 };
 	}
 
-	let minX = points[0].x;
-	let minY = points[0].y;
-	let maxX = points[0].x;
-	let maxY = points[0].y;
+	let minX = Infinity;
+	let minY = Infinity;
+	let maxX = -Infinity;
+	let maxY = -Infinity;
+	let hasValidPoint = false;
 
-	for (let i = 1; i < points.length; i++) {
-		const p = points[i];
+	for (const p of points) {
+		// Skip invalid points (NaN, Infinity)
+		if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) {
+			continue;
+		}
+		hasValidPoint = true;
 		if (p.x < minX) minX = p.x;
 		if (p.y < minY) minY = p.y;
 		if (p.x > maxX) maxX = p.x;
 		if (p.y > maxY) maxY = p.y;
+	}
+
+	if (!hasValidPoint) {
+		return { x: 0, y: 0, width: 0, height: 0 };
 	}
 
 	return {
@@ -406,25 +415,34 @@ export function getElementBounds(element: WhiteboardElement): BoundingBox {
  */
 function getStrokeBounds(stroke: StrokeElement): BoundingBox {
 	const { points, width } = stroke;
-	const padding = width / 2;
+	const padding = Number.isFinite(width) ? width / 2 : 0;
 
 	// Handle empty stroke
 	if (points.length === 0) {
 		return { x: 0, y: 0, width: 0, height: 0 };
 	}
 
-	// Find min/max coordinates
-	let minX = points[0].x;
-	let minY = points[0].y;
-	let maxX = points[0].x;
-	let maxY = points[0].y;
+	// Find min/max coordinates, skipping invalid points
+	let minX = Infinity;
+	let minY = Infinity;
+	let maxX = -Infinity;
+	let maxY = -Infinity;
+	let hasValidPoint = false;
 
-	for (let i = 1; i < points.length; i++) {
-		const p = points[i];
+	for (const p of points) {
+		// Skip invalid points (NaN, Infinity)
+		if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) {
+			continue;
+		}
+		hasValidPoint = true;
 		if (p.x < minX) minX = p.x;
 		if (p.y < minY) minY = p.y;
 		if (p.x > maxX) maxX = p.x;
 		if (p.y > maxY) maxY = p.y;
+	}
+
+	if (!hasValidPoint) {
+		return { x: 0, y: 0, width: 0, height: 0 };
 	}
 
 	// Apply padding for stroke width
