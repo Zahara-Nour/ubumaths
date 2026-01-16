@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.7...v0.7.0) (2026-01-16)
+
+### ⚠ BREAKING CHANGES
+
+- **gdpr:** Avatar selection no longer considers gender.
+  All roles now use single neutral avatar per role.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### 🐛 Bug Fixes
+
+- **consent:** resolve TypeScript errors in consent implementation ([1f24c51](https://github.com/Zahara-Nour/ubumaths/commit/1f24c51e5587a376749daf52dc0413d23f4fee87))
+- **db:** set missing class grades and sync to student profiles ([d4db60a](https://github.com/Zahara-Nour/ubumaths/commit/d4db60a93a4773ece6aa479011e4f87ce128cf48))
+- **types:** resolve TypeScript errors and regenerate database types ([32494ff](https://github.com/Zahara-Nour/ubumaths/commit/32494ff75f67789d1bf400793d0bebb8e43130b7))
+
+### 📚 Documentation
+
+- **consent:** update progress document to completed status ([9953440](https://github.com/Zahara-Nour/ubumaths/commit/99534408f3aea30d2c2b5f9b16a05c7fe2707c56))
+- **rgpd:** update technical sections with actual implementations ([ad06359](https://github.com/Zahara-Nour/ubumaths/commit/ad0635920813a9ad569fc6db20b9c52cca69f669))
+
+### ✨ Features
+
+- **consent:** implement UI read-only mode and retroactive migration ([6abf932](https://github.com/Zahara-Nour/ubumaths/commit/6abf932d63735cc043fb06a5c6e8aff82c4a83f1))
+- **gdpr:** add account deletion UI in user menu ([e7391a9](https://github.com/Zahara-Nour/ubumaths/commit/e7391a9a631b0aade58b46d5497935457d6efb4d))
+- **gdpr:** add data export API for GDPR Art. 20 compliance ([52add71](https://github.com/Zahara-Nour/ubumaths/commit/52add71e138c43223801004af131f651c31c1dc6))
+- **gdpr:** add data export UI button in user menu ([394cd07](https://github.com/Zahara-Nour/ubumaths/commit/394cd07eb9dcf2cd33482c8ce5f3615a2937507a))
+- **gdpr:** add data retention policy with pg_cron cleanup ([3d8fb81](https://github.com/Zahara-Nour/ubumaths/commit/3d8fb814dc61648162c293b28054e1c4926ac996))
+- **gdpr:** add rate limiting, audit logging, and tests for account deletion ([e32d88d](https://github.com/Zahara-Nour/ubumaths/commit/e32d88df7aaccd44c2303f5efb77c5ed5dc85b0a))
+- **gdpr:** implement GDPR Art. 17 account deletion API ([54a8d99](https://github.com/Zahara-Nour/ubumaths/commit/54a8d99f1fce6f6610f1ecf47c37b8d86aa5d516))
+- **gdpr:** remove gender field for data minimization compliance ([407e0f9](https://github.com/Zahara-Nour/ubumaths/commit/407e0f9e41dd681372b63417b898533bb8a2be6b))
+- **legal:** add GDPR-compliant legal pages ([340ef22](https://github.com/Zahara-Nour/ubumaths/commit/340ef22abdfe5f513979f2f80e478e0a0459ab28))
+- **rgpd:** add consent utilities and middleware ([4148e7f](https://github.com/Zahara-Nour/ubumaths/commit/4148e7febc6488bf21d38b4fdf384fd41b4d7091))
+- **rgpd:** add parental consent database schema ([da4f95c](https://github.com/Zahara-Nour/ubumaths/commit/da4f95cf7dcb25fd5d73129f2c5b701c7cfaa109))
+- **rgpd:** add parental consent flow for RGPD Article 8 ([a9dcfe9](https://github.com/Zahara-Nour/ubumaths/commit/a9dcfe94a63e80ceac50e96e062fba81e7bd1052))
+- **rgpd:** add teacher consent management dashboard ([e28290a](https://github.com/Zahara-Nour/ubumaths/commit/e28290a9c9840b45a0a52dd6cadc35b9384966d7))
+- **rgpd:** integrate consent checks into protected routes and APIs ([782c22c](https://github.com/Zahara-Nour/ubumaths/commit/782c22c3fe58b23db004e1668612c903f04dbe84))
+- **tutor:** add solution to worksheet tutor context ([f6d32fa](https://github.com/Zahara-Nour/ubumaths/commit/f6d32fa4d70c027818d9ec31ef6d1e364b297e3a))
+- **whiteboard:** improve Drive API error handling and file management ([683cc52](https://github.com/Zahara-Nour/ubumaths/commit/683cc520c7525df63d91627f5ee0df0d8398bdd7))
+
 ### [0.6.7](https://github.com/Zahara-Nour/ubumaths/compare/v0.6.6...v0.6.7) (2026-01-15)
 
 ### ✨ Features
