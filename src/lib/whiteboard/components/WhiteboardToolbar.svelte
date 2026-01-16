@@ -291,23 +291,26 @@
 		shapesPopoverOpen = false;
 	}
 
-	function handleStrokeWidthChange(value: number[]) {
-		if (value.length > 0) {
-			whiteboardStore.setStrokeWidth(value[0]);
-			// Apply to selected elements if any
-			if (whiteboardStore.hasSelection) {
-				whiteboardStore.updateSelectedStyles({ strokeWidth: value[0] });
-			}
+	function handleStrokeWidthChange(value: number[] | number) {
+		// Bits UI type="single" passes a number, type="multiple" passes an array
+		const actualValue = Array.isArray(value) ? value[0] : value;
+		if (actualValue === undefined) return;
+
+		whiteboardStore.setStrokeWidth(actualValue);
+		// Apply to selected elements if any
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ strokeWidth: actualValue });
 		}
 	}
 
-	function handleOpacityChange(value: number[]) {
-		if (value.length > 0) {
-			whiteboardStore.setOpacity(value[0]);
-			// Apply to selected elements if any
-			if (whiteboardStore.hasSelection) {
-				whiteboardStore.updateSelectedStyles({ opacity: value[0] });
-			}
+	function handleOpacityChange(value: number[] | number) {
+		const actualValue = Array.isArray(value) ? value[0] : value;
+		if (actualValue === undefined) return;
+
+		whiteboardStore.setOpacity(actualValue);
+		// Apply to selected elements if any
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ opacity: actualValue });
 		}
 	}
 
@@ -319,13 +322,14 @@
 		}
 	}
 
-	function handleCornerRadiusChange(value: number[]) {
-		if (value.length > 0) {
-			whiteboardStore.setCornerRadius(value[0]);
-			// Apply to selected shapes if any
-			if (whiteboardStore.hasSelection) {
-				whiteboardStore.updateSelectedStyles({ cornerRadius: value[0] });
-			}
+	function handleCornerRadiusChange(value: number[] | number) {
+		const actualValue = Array.isArray(value) ? value[0] : value;
+		if (actualValue === undefined) return;
+
+		whiteboardStore.setCornerRadius(actualValue);
+		// Apply to selected shapes if any
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ cornerRadius: actualValue });
 		}
 	}
 
@@ -337,13 +341,14 @@
 		}
 	}
 
-	function handleFillOpacityChange(value: number[]) {
-		if (value.length > 0) {
-			whiteboardStore.setFillOpacity(value[0]);
-			// Apply to selected shapes if any
-			if (whiteboardStore.hasSelection) {
-				whiteboardStore.updateSelectedStyles({ fillOpacity: value[0] });
-			}
+	function handleFillOpacityChange(value: number[] | number) {
+		const actualValue = Array.isArray(value) ? value[0] : value;
+		if (actualValue === undefined) return;
+
+		whiteboardStore.setFillOpacity(actualValue);
+		// Apply to selected shapes if any
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ fillOpacity: actualValue });
 		}
 	}
 
