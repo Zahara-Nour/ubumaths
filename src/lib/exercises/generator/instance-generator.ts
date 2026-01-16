@@ -328,7 +328,19 @@ function generateVariationsInstance(
 		}
 	}
 
-	// 7. Construct instance with variation info
+	// 7. Resolve variables in ubumark hints
+	// Note: Only ubumark hints have inline content that needs variable resolution
+	const resolvedHints = resolvedVariation.hints?.map((hint) => {
+		if (hint.type === 'ubumark' && hint.content) {
+			return {
+				...hint,
+				content: resolveText(hint.content, resolvedVariables)
+			};
+		}
+		return hint;
+	});
+
+	// 8. Construct instance with variation info
 	const instance: ExerciseInstance = {
 		// Metadata from template
 		exerciseId: exercise.id,
@@ -358,7 +370,7 @@ function generateVariationsInstance(
 		// Variation tracking
 		selectedVariationIndex: variationIndex,
 		selectedVariationLabel: selectedVariation.label,
-		resolvedHints: resolvedVariation.hints
+		resolvedHints
 	};
 
 	return {

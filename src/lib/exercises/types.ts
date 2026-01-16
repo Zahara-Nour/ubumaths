@@ -62,8 +62,15 @@ export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/ubumark';
 
 /**
  * Type of supplementary resource
+ *
+ * - video: YouTube or external video link
+ * - pdf: PDF document link
+ * - link: Generic external link
+ * - geogebra: GeoGebra interactive resource
+ * - image: Image file
+ * - ubumark: Inline ubumark content (markdown with math formulas and variables)
  */
-export type ExerciseResourceType = 'video' | 'pdf' | 'link' | 'geogebra' | 'image';
+export type ExerciseResourceType = 'video' | 'pdf' | 'link' | 'geogebra' | 'image' | 'ubumark';
 
 /**
  * Supplementary resource attached to an exercise
@@ -429,6 +436,17 @@ export type GuidanceLabel = 'guided' | 'intermediate' | 'autonomous';
  *   title: 'Schéma du triangle'
  * };
  * ```
+ *
+ * @example Ubumark hint (inline content with formulas and variables)
+ * ```typescript
+ * const hint: ExerciseHint = {
+ *   id: 'formule-pythagore',
+ *   type: 'ubumark',
+ *   content: 'Dans un triangle rectangle: $a^2 + b^2 = c^2$\n\nIci: ${{a}}^2 + {{b}}^2 = {{c}}^2$',
+ *   title: 'Rappel de la formule'
+ * };
+ * // Variables {{a}}, {{b}}, {{c}} are resolved at instance generation time
+ * ```
  */
 export interface ExerciseHint {
 	/** Unique ID for {{hint:id}} reference in markdown */
@@ -437,8 +455,11 @@ export interface ExerciseHint {
 	/** Resource type for display handling (icon, viewer, etc.) */
 	type: ExerciseResourceType;
 
-	/** URL to the hint resource */
-	url: string;
+	/** URL to the hint resource (required for all types except 'ubumark') */
+	url?: string;
+
+	/** Inline ubumark content (only for type='ubumark'). Supports formulas and variables. */
+	content?: string;
 
 	/** Display title shown on hint button/tooltip */
 	title: string;
