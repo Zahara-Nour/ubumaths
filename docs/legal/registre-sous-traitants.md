@@ -2,7 +2,7 @@
 
 > **Article RGPD** : Art. 28 - Sous-traitant
 > **Derniere mise a jour** : 2026-01-16
-> **Version** : 1.1
+> **Version** : 1.2
 
 ---
 
@@ -140,12 +140,12 @@ Le DPA Vercel est disponible a : https://vercel.com/legal/dpa
 
 #### Services utilises
 
-| Service              | Usage             | Donnees                      |
-| -------------------- | ----------------- | ---------------------------- |
-| Google OAuth         | Authentification  | Email, nom, photo profil     |
-| Google Classroom API | Sync classes      | Cours, eleves, devoirs       |
-| Google Drive API     | Stockage fichiers | Documents partages           |
-| Gmail API            | Envoi emails      | Emails consentement parental |
+| Service              | Usage             | Donnees                  |
+| -------------------- | ----------------- | ------------------------ |
+| Google OAuth         | Authentification  | Email, nom, photo profil |
+| Google Classroom API | Sync classes      | Cours, eleves, devoirs   |
+| Google Drive API     | Stockage fichiers | Documents partages       |
+| Gmail API            | Envoi emails      | Emails bienvenue eleves  |
 
 #### Donnees traitees
 
@@ -166,7 +166,7 @@ drive.file
 gmail.send
 ```
 
-> **Note** : Le scope `gmail.send` est utilise uniquement pour l'envoi d'emails de consentement parental. A revoir si une alternative existe.
+> **Note** : Le scope `gmail.send` est utilise uniquement pour l'envoi d'emails de bienvenue aux eleves. Necessaire car les emails scolaires (@ecole.fr) bloquent souvent les emails externes (Brevo). Les emails de consentement parental sont envoyes via Brevo (emails personnels des parents).
 
 #### Localisation des donnees
 
@@ -182,7 +182,7 @@ gmail.send
 
 - [x] DPA Google Cloud accepte
 - [ ] Verifier les parametres de localisation des donnees
-- [x] Scope `gmail.send` supprime (2026-01-16) - emails via Brevo
+- [x] Scope `gmail.send` documente - utilise pour emails bienvenue (emails scolaires)
 
 ---
 
@@ -198,7 +198,7 @@ gmail.send
 
 #### Donnees traitees
 
-- Adresses email des destinataires (parents, eleves)
+- Adresses email des destinataires (parents uniquement)
 - Contenu des emails transactionnels
 - Logs d'envoi (deliverabilite, ouvertures)
 
@@ -210,7 +210,8 @@ gmail.send
 #### Finalites
 
 - Envoi d'emails de consentement parental (Art. 8 RGPD)
-- Envoi d'emails de bienvenue aux eleves
+
+> **Note** : Les emails de bienvenue aux eleves sont envoyes via Gmail du professeur car les emails scolaires bloquent souvent les expediteurs externes.
 
 #### Mesures de securite
 
@@ -340,10 +341,11 @@ La Commission europeenne a reconnu un niveau de protection adequat pour :
 
 ### Historique des modifications
 
-| Date       | Version | Modification                                  |
-| ---------- | ------- | --------------------------------------------- |
-| 2026-01-16 | 1.1     | Ajout Brevo, suppression gmail.send de Google |
-| 2026-01-16 | 1.0     | Creation initiale du registre                 |
+| Date       | Version | Modification                                        |
+| ---------- | ------- | --------------------------------------------------- |
+| 2026-01-16 | 1.2     | Strategie hybride: Brevo (parents) + Gmail (eleves) |
+| 2026-01-16 | 1.1     | Ajout Brevo pour emails consentement parental       |
+| 2026-01-16 | 1.0     | Creation initiale du registre                       |
 
 ---
 

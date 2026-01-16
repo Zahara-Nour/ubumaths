@@ -85,7 +85,7 @@
 - `classroom.courses.readonly` - Cours Google Classroom
 - `classroom.coursework.students.readonly` - Notes et travaux
 - `drive.file` - Fichiers Google Drive
-- `gmail.send` - Envoi d'emails (**A revoir - trop large**)
+- `gmail.send` - Envoi emails bienvenue eleves (necessaire pour emails scolaires)
 
 ### 2.3 Donnees pre-enregistrees (`pending_students`)
 
@@ -402,16 +402,17 @@ CRON_SECRET                   # Secret taches planifiees
 
 **Situation actuelle** :
 
-- ~~Le scope `gmail.send` permet d'envoyer des emails au nom de l'utilisateur~~ **SUPPRIME**
-- Emails maintenant envoyes via Brevo (service francais)
+- Scope `gmail.send` conserve pour emails de bienvenue aux eleves (emails scolaires)
+- Emails de consentement parental envoyes via Brevo (emails personnels parents)
 
-> **Amelioration 2026-01-16** : Migration de Gmail API vers Brevo pour l'envoi d'emails.
+> **Amelioration 2026-01-16** : Strategie hybride pour l'envoi d'emails.
 >
-> - Scope `gmail.send` supprime des permissions Google OAuth
-> - Nouveau service : Brevo (entreprise francaise, RGPD natif)
-> - Emails envoyes depuis `noreply@ubumaths.fr`
-> - Variables d'environnement : `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`
-> - Implementation : `src/lib/server/email/brevo.ts`
+> - **Brevo** (service francais RGPD natif) pour emails consentement parental
+>   - Variables : `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`
+>   - Implementation : `src/lib/server/email/brevo.ts`
+> - **Gmail API** (scope `gmail.send`) pour emails bienvenue eleves
+>   - Necessaire car emails scolaires (@ecole.fr) bloquent expediteurs externes
+>   - Email envoye depuis le compte du professeur (meilleure delivrabilite)
 
 ---
 
@@ -448,13 +449,13 @@ CRON_SECRET                   # Secret taches planifiees
 
 ### Phase 3 - MOYEN TERME (1-3 mois)
 
-| Action                       | Priorite | Effort  | Article RGPD   |
-| ---------------------------- | -------- | ------- | -------------- |
-| Audit trail complet          | MOYENNE  | 5 jours | Bonne pratique |
-| Reduire scopes Google        | MOYENNE  | 2 jours | Art. 5(1)(c)   |
-| Sanitization error logs      | MOYENNE  | 2 jours | Art. 5(1)(c)   |
-| Jobs de cleanup automatiques | MOYENNE  | 3 jours | Art. 5(1)(e)   |
-| DPIA (Analyse d'impact)      | MOYENNE  | 5 jours | Art. 35        |
+| Action                       | Priorite    | Effort      | Article RGPD                 |
+| ---------------------------- | ----------- | ----------- | ---------------------------- |
+| Audit trail complet          | MOYENNE     | 5 jours     | Bonne pratique               |
+| ~~Reduire scopes Google~~    | ~~MOYENNE~~ | ~~2 jours~~ | **FAIT** (strategie hybride) |
+| Sanitization error logs      | MOYENNE     | 2 jours     | Art. 5(1)(c)                 |
+| Jobs de cleanup automatiques | MOYENNE     | 3 jours     | Art. 5(1)(e)                 |
+| DPIA (Analyse d'impact)      | MOYENNE     | 5 jours     | Art. 35                      |
 
 ---
 
@@ -943,7 +944,7 @@ docs/legal/
 
 | Date       | Version | Modifications                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------------- |
-| 2026-01-16 | 1.12    | Migration emails vers Brevo, suppression scope gmail.send (Art. 5(1)(c))     |
+| 2026-01-16 | 1.12    | Strategie hybride emails: Brevo (parents) + Gmail (eleves scolaires)         |
 | 2026-01-16 | 1.11    | Registre des traitements complet (Art. 30)                                   |
 | 2026-01-16 | 1.10    | Registre des sous-traitants (Art. 28 - DPA documentes)                       |
 | 2026-01-16 | 1.9     | Audit trail complet (Art. 5(2) - responsabilite, traçabilite)                |
