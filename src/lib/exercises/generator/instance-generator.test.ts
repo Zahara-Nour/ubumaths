@@ -762,6 +762,94 @@ describe('Variations System', () => {
 		}
 	});
 
+	it('should resolve variables in ubumark hint content', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			shared: {
+				variables: [
+					{ name: 'a', expression: '5' },
+					{ name: 'b', expression: '3' },
+					{ name: 'result', expression: '{{eval:a*a + b*b}}' }
+				]
+			},
+			variations: [
+				{
+					label: 'guided',
+					statement_md: 'Problem {{hint:formula}}',
+					solution_md: 'Done',
+					hints: [
+						{
+							id: 'formula',
+							type: 'ubumark',
+							content: 'La formule: ${{a}}^2 + {{b}}^2 = {{result}}$',
+							title: 'Rappel formule'
+						}
+					]
+				}
+			]
+		});
+
+		const result = generateExerciseInstance(exercise, { seed: 0 });
+
+		expect(result.success).toBe(true);
+		if (result.success && result.instance) {
+			expect(result.instance.resolvedHints).toBeDefined();
+			expect(result.instance.resolvedHints).toHaveLength(1);
+			const hint = result.instance.resolvedHints![0];
+			expect(hint.type).toBe('ubumark');
+			expect(hint.content).toBe('La formule: $5^2 + 3^2 = 34$');
+			expect(hint.title).toBe('Rappel formule');
+			// url should not be present for ubumark hints
+			expect(hint.url).toBeUndefined();
+		}
+	});
+
+	it('should not modify non-ubumark hints', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			shared: {
+				variables: [{ name: 'a', expression: '5' }]
+			},
+			variations: [
+				{
+					label: 'guided',
+					statement_md: 'Problem {{hint:video}} {{hint:formula}}',
+					solution_md: 'Done',
+					hints: [
+						{
+							id: 'video',
+							type: 'video',
+							url: 'https://example.com/video',
+							title: 'Video about {{a}}'
+						},
+						{
+							id: 'formula',
+							type: 'ubumark',
+							content: 'Value is {{a}}',
+							title: 'Formula'
+						}
+					]
+				}
+			]
+		});
+
+		const result = generateExerciseInstance(exercise, { seed: 0 });
+
+		expect(result.success).toBe(true);
+		if (result.success && result.instance) {
+			expect(result.instance.resolvedHints).toHaveLength(2);
+			// Video hint: url stays unchanged, title not resolved (it's metadata)
+			const videoHint = result.instance.resolvedHints!.find((h) => h.id === 'video');
+			expect(videoHint?.url).toBe('https://example.com/video');
+			expect(videoHint?.title).toBe('Video about {{a}}'); // title is not resolved
+			// Ubumark hint: content is resolved
+			const ubumarkHint = result.instance.resolvedHints!.find((h) => h.id === 'formula');
+			expect(ubumarkHint?.content).toBe('Value is 5');
+		}
+	});
+
 	it('should handle variation without variables (use shared only)', () => {
 		const exercise = createExercise({
 			statement_md: 'Default',

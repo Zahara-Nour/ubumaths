@@ -21,13 +21,15 @@
 		{ value: 'pdf', label: 'PDF' },
 		{ value: 'link', label: 'Lien' },
 		{ value: 'geogebra', label: 'GeoGebra' },
-		{ value: 'image', label: 'Image' }
+		{ value: 'image', label: 'Image' },
+		{ value: 'ubumark', label: 'Contenu Ubumark' }
 	];
 
 	// New hint form state
 	let newId = $state('');
 	let newType = $state<ExerciseResourceType>('video');
 	let newUrl = $state('');
+	let newContent = $state('');
 	let newTitle = $state('');
 	let newDescription = $state('');
 
@@ -36,6 +38,7 @@
 	let editId = $state('');
 	let editType = $state<ExerciseResourceType>('video');
 	let editUrl = $state('');
+	let editContent = $state('');
 	let editTitle = $state('');
 	let editDescription = $state('');
 
@@ -124,9 +127,21 @@
 			return;
 		}
 
-		if (!newUrl.trim()) {
-			toaster.error("L'URL est requise");
-			return;
+		// Validate URL or content based on type
+		if (newType === 'ubumark') {
+			if (!newContent.trim()) {
+				toaster.error('Le contenu est requis');
+				return;
+			}
+			if (newContent.trim().length > 5000) {
+				toaster.error('Le contenu est trop long (max 5000 caracteres)');
+				return;
+			}
+		} else {
+			if (!newUrl.trim()) {
+				toaster.error("L'URL est requise");
+				return;
+			}
 		}
 
 		if (!newTitle.trim()) {
@@ -134,13 +149,22 @@
 			return;
 		}
 
-		const newHint: ExerciseHint = {
-			id: finalId,
-			type: newType,
-			url: newUrl.trim(),
-			title: newTitle.trim(),
-			description: newDescription.trim() || undefined
-		};
+		const newHint: ExerciseHint =
+			newType === 'ubumark'
+				? {
+						id: finalId,
+						type: newType,
+						content: newContent.trim(),
+						title: newTitle.trim(),
+						description: newDescription.trim() || undefined
+					}
+				: {
+						id: finalId,
+						type: newType,
+						url: newUrl.trim(),
+						title: newTitle.trim(),
+						description: newDescription.trim() || undefined
+					};
 
 		hints = [...hints, newHint];
 		onchange?.();
@@ -148,6 +172,7 @@
 		// Reset form
 		newId = '';
 		newUrl = '';
+		newContent = '';
 		newTitle = '';
 		newDescription = '';
 		newType = 'video';
@@ -163,7 +188,8 @@
 		editingIndex = index;
 		editId = hint.id;
 		editType = hint.type;
-		editUrl = hint.url;
+		editUrl = hint.url ?? '';
+		editContent = hint.content ?? '';
 		editTitle = hint.title;
 		editDescription = hint.description ?? '';
 	}
@@ -185,9 +211,21 @@
 			return;
 		}
 
-		if (!editUrl.trim()) {
-			toaster.error("L'URL est requise");
-			return;
+		// Validate URL or content based on type
+		if (editType === 'ubumark') {
+			if (!editContent.trim()) {
+				toaster.error('Le contenu est requis');
+				return;
+			}
+			if (editContent.trim().length > 5000) {
+				toaster.error('Le contenu est trop long (max 5000 caracteres)');
+				return;
+			}
+		} else {
+			if (!editUrl.trim()) {
+				toaster.error("L'URL est requise");
+				return;
+			}
 		}
 
 		if (!editTitle.trim()) {
@@ -195,13 +233,22 @@
 			return;
 		}
 
-		const updatedHint: ExerciseHint = {
-			id: editId.trim(),
-			type: editType,
-			url: editUrl.trim(),
-			title: editTitle.trim(),
-			description: editDescription.trim() || undefined
-		};
+		const updatedHint: ExerciseHint =
+			editType === 'ubumark'
+				? {
+						id: editId.trim(),
+						type: editType,
+						content: editContent.trim(),
+						title: editTitle.trim(),
+						description: editDescription.trim() || undefined
+					}
+				: {
+						id: editId.trim(),
+						type: editType,
+						url: editUrl.trim(),
+						title: editTitle.trim(),
+						description: editDescription.trim() || undefined
+					};
 
 		hints = hints.map((h, i) => (i === editingIndex ? updatedHint : h));
 		onchange?.();
@@ -217,6 +264,7 @@
 		editId = '';
 		editType = 'video';
 		editUrl = '';
+		editContent = '';
 		editTitle = '';
 		editDescription = '';
 	}
@@ -244,6 +292,8 @@
 				return '📐';
 			case 'image':
 				return '🖼️';
+			case 'ubumark':
+				return '📝';
 			default:
 				return '📎';
 		}
@@ -298,16 +348,32 @@
 									class="h-9"
 								/>
 							</div>
-							<div class="space-y-1">
-								<Label for="edit-hint-url" class="text-xs">URL</Label>
-								<Input
-									id="edit-hint-url"
-									type="url"
-									placeholder="https://..."
-									bind:value={editUrl}
-									class="h-9"
-								/>
-							</div>
+							{#if editType === 'ubumark'}
+								<div class="space-y-1">
+									<Label for="edit-hint-content" class="text-xs">Contenu Ubumark</Label>
+									<Textarea
+										id="edit-hint-content"
+										placeholder={'Formules: $x^2$ Variables: {{a}}'}
+										bind:value={editContent}
+										rows={4}
+										class="resize-none font-mono text-sm"
+									/>
+									<p class="text-xs text-muted-foreground">
+										Supporte les formules LaTeX et les variables de l'exercice
+									</p>
+								</div>
+							{:else}
+								<div class="space-y-1">
+									<Label for="edit-hint-url" class="text-xs">URL</Label>
+									<Input
+										id="edit-hint-url"
+										type="url"
+										placeholder="https://..."
+										bind:value={editUrl}
+										class="h-9"
+									/>
+								</div>
+							{/if}
 							<div class="space-y-1">
 								<Label for="edit-hint-description" class="text-xs">Description (optionnel)</Label>
 								<Textarea
@@ -353,14 +419,20 @@
 									<span class="text-xs text-amber-600" title="Non utilise">⚠️</span>
 								{/if}
 							</div>
-							<a
-								href={hint.url}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="font-medium hover:underline"
-							>
-								{hint.title}
-							</a>
+							{#if hint.type === 'ubumark'}
+								<span class="font-medium">{hint.title}</span>
+							{:else if hint.url}
+								<a
+									href={hint.url}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="font-medium hover:underline"
+								>
+									{hint.title}
+								</a>
+							{:else}
+								<span class="font-medium">{hint.title}</span>
+							{/if}
 							{#if hint.description}
 								<p class="truncate text-xs text-muted-foreground">{hint.description}</p>
 							{/if}
@@ -425,16 +497,32 @@
 					class="h-9"
 				/>
 			</div>
-			<div class="space-y-1">
-				<Label for="new-hint-url" class="text-xs">URL</Label>
-				<Input
-					id="new-hint-url"
-					type="url"
-					placeholder="https://..."
-					bind:value={newUrl}
-					class="h-9"
-				/>
-			</div>
+			{#if newType === 'ubumark'}
+				<div class="space-y-1">
+					<Label for="new-hint-content" class="text-xs">Contenu Ubumark</Label>
+					<Textarea
+						id="new-hint-content"
+						placeholder={'Formules: $x^2$ Variables: {{a}}'}
+						bind:value={newContent}
+						rows={4}
+						class="resize-none font-mono text-sm"
+					/>
+					<p class="text-xs text-muted-foreground">
+						Supporte les formules LaTeX et les variables de l'exercice
+					</p>
+				</div>
+			{:else}
+				<div class="space-y-1">
+					<Label for="new-hint-url" class="text-xs">URL</Label>
+					<Input
+						id="new-hint-url"
+						type="url"
+						placeholder="https://..."
+						bind:value={newUrl}
+						class="h-9"
+					/>
+				</div>
+			{/if}
 			<div class="space-y-1">
 				<Label for="new-hint-description" class="text-xs">Description (optionnel)</Label>
 				<Textarea
@@ -450,7 +538,9 @@
 				variant="outline"
 				size="sm"
 				onclick={addHint}
-				disabled={!newUrl.trim() || !newTitle.trim() || hints.length >= MAX_HINTS}
+				disabled={(newType === 'ubumark' ? !newContent.trim() : !newUrl.trim()) ||
+					!newTitle.trim() ||
+					hints.length >= MAX_HINTS}
 			>
 				+ Ajouter
 			</Button>
