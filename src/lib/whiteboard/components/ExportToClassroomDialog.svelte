@@ -1,11 +1,16 @@
 <script lang="ts">
 	/**
-	 * ExportToClassroomDialog V2 - Simplified Export to Google Classroom
+	 * ExportToClassroomDialog - Unified dialog for document creation and Classroom export
+	 *
+	 * Two modes:
+	 * - 'create': Create a new document with auto-generated or custom name
+	 * - 'export': Export current document to Google Classroom
 	 *
 	 * Simplified workflow:
 	 * - Select a class (auto-detected based on current schedule)
 	 * - Select a date (default: today)
-	 * - Title is auto-generated: French date format (e.g., "12 janvier 2026")
+	 * - Name is auto-generated: "JOIN_CODE - YYYY-MM-DD" (editable in create mode)
+	 * - Title for Classroom: French date format (e.g., "12 janvier 2026")
 	 * - Topic is always "Notes de cours" (error if not found)
 	 * - Filename: "JOIN_CODE - YYYY-MM-DD - NN.pdf"
 	 */
@@ -16,13 +21,15 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import {
 		GraduationCap,
 		Loader2,
 		ExternalLink,
 		AlertCircle,
 		Calendar,
-		Sparkles
+		Sparkles,
+		FilePlus
 	} from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { exportToPdf } from '../core/pdf-export';
@@ -58,9 +65,16 @@
 		onOpenChange?: (open: boolean) => void;
 		/** Pre-selected class ID from parent (e.g., FileDrawer) */
 		preselectedClassId?: string | null;
+		/** Dialog mode: 'create' for new document, 'export' for Classroom export */
+		mode?: 'create' | 'export';
 	}
 
-	let { open = $bindable(false), onOpenChange, preselectedClassId = null }: Props = $props();
+	let {
+		open = $bindable(false),
+		onOpenChange,
+		preselectedClassId = null,
+		mode = 'export'
+	}: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -71,17 +85,23 @@
 	let classesWithCourse = $state<ClassWithCourse[]>([]);
 	let isLoadingClasses = $state(false);
 	let isExporting = $state(false);
+	let isCreating = $state(false);
 	let classesError = $state<string | null>(null);
 	let wasAutoDetected = $state(false);
 
 	let successLink = $state<string | null>(null);
 	let successClassName = $state<string | null>(null);
 
+	// Create mode state
+	let customName = $state('');
+	let useCustomName = $state(false);
+
 	// ==========================================================================
 	// Derived
 	// ==========================================================================
 
 	const document = $derived(whiteboardStore.document);
+	const hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
 
 	const classItems = $derived(
 		classesWithCourse.map((c) => ({
@@ -107,6 +127,30 @@
 	});
 
 	/**
+	 * Generate document name from class and date
+	 * Example: "6AWB - 2026-01-12"
+	 */
+	const generatedName = $derived(() => {
+		if (!selectedClass || !selectedDate) return 'Sans titre';
+		return `${selectedClass.join_code} - ${selectedDate}`;
+	});
+
+	/**
+	 * Final document name based on mode and user choice
+	 */
+	const documentName = $derived(() => {
+		if (mode === 'export') {
+			// Export mode: use existing document title
+			return document?.title || 'Sans titre';
+		}
+		// Create mode: use custom name if enabled and non-empty, otherwise generated name
+		if (useCustomName && customName.trim()) {
+			return customName.trim();
+		}
+		return generatedName();
+	});
+
+	/**
 	 * Generate filename preview
 	 * Example: "6AWB - 2026-01-12 - XX.pdf"
 	 */
@@ -116,6 +160,9 @@
 	});
 
 	const canExport = $derived(selectedClassId && selectedDate && !isExporting && !isLoadingClasses);
+	const canCreate = $derived(
+		selectedClassId && selectedDate && !isCreating && !isLoadingClasses && documentName()
+	);
 
 	// ==========================================================================
 	// Effects
@@ -128,6 +175,10 @@
 			successClassName = null;
 			selectedDate = getTodayString();
 			wasAutoDetected = false;
+
+			// Reset create mode state
+			customName = '';
+			useCustomName = false;
 
 			// Fetch classes
 			fetchClasses();
@@ -242,6 +293,43 @@
 		wasAutoDetected = false;
 	}
 
+	/**
+	 * Handle document creation (create mode)
+	 */
+	async function handleCreate() {
+		const name = documentName();
+		if (!name) {
+			toaster.error('Veuillez entrer un nom de document');
+			return;
+		}
+
+		// Check unsaved changes in current document
+		if (hasUnsavedChanges) {
+			if (!confirm('Vous avez des modifications non sauvegardées. Continuer ?')) {
+				return;
+			}
+		}
+
+		isCreating = true;
+
+		try {
+			// Create new document with the name
+			whiteboardStore.createNew(name);
+			toaster.success('Nouveau document créé');
+
+			// Close dialog
+			open = false;
+			onOpenChange?.(false);
+
+			// Close file drawer if open
+			if (whiteboardStore.isFileDrawerOpen) {
+				whiteboardStore.toggleFileDrawer();
+			}
+		} finally {
+			isCreating = false;
+		}
+	}
+
 	// Maximum PDF size in bytes (3MB → ~4MB in base64, under Vercel's 4.5MB limit)
 	const MAX_PDF_SIZE = 3 * 1024 * 1024;
 
@@ -353,11 +441,20 @@
 	<Dialog.Content class="sm:max-w-md">
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
-				<GraduationCap class="h-5 w-5" />
-				Publier sur Classroom
+				{#if mode === 'create'}
+					<FilePlus class="h-5 w-5" />
+					Nouveau document
+				{:else}
+					<GraduationCap class="h-5 w-5" />
+					Publier sur Classroom
+				{/if}
 			</Dialog.Title>
 			<Dialog.Description>
-				Publiez ce document dans la rubrique "Notes de cours" d'un cours Google Classroom.
+				{#if mode === 'create'}
+					Créez un nouveau document avec un nom basé sur la classe et la date.
+				{:else}
+					Publiez ce document dans la rubrique "Notes de cours" d'un cours Google Classroom.
+				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -445,39 +542,85 @@
 						<Input id="date" type="date" bind:value={selectedDate} class="w-full" />
 					</div>
 
+					<!-- Document Name (create mode only) -->
+					{#if mode === 'create' && selectedClass && selectedDate}
+						<div class="space-y-2">
+							<Label>Nom du document</Label>
+
+							<MyCheckbox bind:checked={useCustomName} label="Nom personnalisé" />
+
+							{#if useCustomName}
+								<Input
+									type="text"
+									bind:value={customName}
+									placeholder="Entrez un nom..."
+									class="w-full"
+								/>
+							{:else}
+								<div class="rounded-md bg-muted p-2 text-sm font-medium">
+									{generatedName()}
+								</div>
+							{/if}
+						</div>
+					{/if}
+
 					<!-- Preview -->
 					{#if selectedClass && selectedDate}
 						<div class="space-y-2 rounded-lg border border-border bg-muted/30 p-3">
-							<div class="text-sm">
-								<span class="text-muted-foreground">Titre dans Classroom :</span>
-								<span class="ml-2 font-medium">{generatedTitle()}</span>
-							</div>
-							<div class="text-sm">
-								<span class="text-muted-foreground">Nom du fichier :</span>
-								<span class="ml-2 font-mono text-xs">{filenamePreview()}</span>
-							</div>
-							<div class="text-sm">
-								<span class="text-muted-foreground">Rubrique :</span>
-								<span class="ml-2">Notes de cours</span>
-							</div>
+							{#if mode === 'create'}
+								<div class="text-sm">
+									<span class="text-muted-foreground">Nom :</span>
+									<span class="ml-2 font-medium">{documentName()}</span>
+								</div>
+							{:else}
+								<div class="text-sm">
+									<span class="text-muted-foreground">Titre dans Classroom :</span>
+									<span class="ml-2 font-medium">{generatedTitle()}</span>
+								</div>
+								<div class="text-sm">
+									<span class="text-muted-foreground">Nom du fichier :</span>
+									<span class="ml-2 font-mono text-xs">{filenamePreview()}</span>
+								</div>
+								<div class="text-sm">
+									<span class="text-muted-foreground">Rubrique :</span>
+									<span class="ml-2">Notes de cours</span>
+								</div>
+							{/if}
 						</div>
 					{/if}
 				{/if}
 			</div>
 
 			<Dialog.Footer>
-				<Button type="button" variant="outline" onclick={handleClose} disabled={isExporting}>
+				<Button
+					type="button"
+					variant="outline"
+					onclick={handleClose}
+					disabled={isExporting || isCreating}
+				>
 					Annuler
 				</Button>
-				<Button type="button" onclick={handleExport} disabled={!canExport} class="gap-2">
-					{#if isExporting}
-						<Loader2 class="h-4 w-4 animate-spin" />
-						Publication...
-					{:else}
-						<GraduationCap class="h-4 w-4" />
-						Publier
-					{/if}
-				</Button>
+				{#if mode === 'create'}
+					<Button type="button" onclick={handleCreate} disabled={!canCreate} class="gap-2">
+						{#if isCreating}
+							<Loader2 class="h-4 w-4 animate-spin" />
+							Création...
+						{:else}
+							<FilePlus class="h-4 w-4" />
+							Créer
+						{/if}
+					</Button>
+				{:else}
+					<Button type="button" onclick={handleExport} disabled={!canExport} class="gap-2">
+						{#if isExporting}
+							<Loader2 class="h-4 w-4 animate-spin" />
+							Publication...
+						{:else}
+							<GraduationCap class="h-4 w-4" />
+							Publier
+						{/if}
+					</Button>
+				{/if}
 			</Dialog.Footer>
 		{/if}
 	</Dialog.Content>

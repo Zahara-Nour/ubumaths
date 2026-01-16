@@ -16,7 +16,7 @@
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import { driveSyncService, type DriveFile } from '../services/drive-sync';
 	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
-	import { generateThumbnail } from '../core/pdf-export';
+	import { generateThumbnail, exportToPdf } from '../core/pdf-export';
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
 	import * as Sheet from '$lib/components/ui/sheet';
@@ -64,7 +64,7 @@
 
 	/** Dialog states */
 	let exportDialogOpen = $state(false);
-	let exportToClassroomDialogOpen = $state(false);
+	let createDocumentDialogOpen = $state(false);
 	let saveAsDialogOpen = $state(false);
 	let createFolderDialogOpen = $state(false);
 	let autosaveRecoveryDialogOpen = $state(false);
@@ -78,6 +78,7 @@
 	let isSavingToDrive = $state(false);
 	let loadingFileId = $state<string | null>(null);
 	let isCreatingFolder = $state(false);
+	let isExportingToClassroom = $state(false);
 
 	/** File input reference */
 	let ubwInputRef: HTMLInputElement | null = null;
@@ -458,15 +459,6 @@
 
 		isSavingToDrive = true;
 
-		// Debug: log what we're about to save
-		console.log('[FileDrawer] handleSaveToDrive called:', {
-			'syncState.driveFileId': syncState.driveFileId,
-			'syncState.driveFolderId': syncState.driveFolderId,
-			'syncState.status': syncState.status,
-			currentFolderId,
-			docTitle: doc.title
-		});
-
 		try {
 			// Generate thumbnail of first page
 			let thumbnailDataUrl: string | undefined;
@@ -475,13 +467,11 @@
 				const thumbResult = await generateThumbnail(firstPage, doc, { width: 200, quality: 0.7 });
 				if (thumbResult.success && thumbResult.dataUrl) {
 					thumbnailDataUrl = thumbResult.dataUrl;
-					console.log(`[FileDrawer] Generated thumbnail: ${thumbResult.sizeBytes} bytes`);
 				}
 			}
 
 			const fileIdToUse = syncState.driveFileId || undefined;
 			const folderIdToUse = currentFolderId || undefined;
-			console.log('[FileDrawer] Calling saveToDrive with:', { fileIdToUse, folderIdToUse });
 
 			const result = await driveSyncService.saveToDrive({
 				document: doc,
@@ -559,19 +549,130 @@
 	// ==========================================================================
 
 	function handleNewDocument() {
-		if (hasUnsavedChanges) {
-			if (!confirm('Vous avez des modifications non sauvegardées. Voulez-vous continuer ?')) {
-				return;
-			}
+		// Open the create document dialog
+		createDocumentDialogOpen = true;
+	}
+
+	/**
+	 * Parse document name to extract class join code and date
+	 * Expected format: "{JOIN_CODE} - {YYYY-MM-DD}" or "{JOIN_CODE} - {YYYY-MM-DD} - ..."
+	 * @returns { joinCode, date } or null if parsing fails
+	 */
+	function parseDocumentName(title: string): { joinCode: string; date: string } | null {
+		// Pattern: "anything - YYYY-MM-DD" - capture everything before the date
+		const match = title.match(/^(.+?)\s*-\s*(\d{4}-\d{2}-\d{2})/);
+		if (!match) return null;
+		return {
+			joinCode: match[1].trim(),
+			date: match[2]
+		};
+	}
+
+	/**
+	 * Direct export to Classroom without modal
+	 * Parses document name to extract class and date, then exports directly
+	 */
+	async function handleExportToClassroom() {
+		const doc = whiteboardStore.document;
+		if (!doc) {
+			toaster.error('Aucun document à exporter');
+			return;
 		}
 
-		const title = prompt('Nom du nouveau document:', 'Sans titre');
-		if (title === null) return;
+		// Parse document name
+		const parsed = parseDocumentName(doc.title);
+		if (!parsed) {
+			toaster.error(
+				'Le nom du document doit être au format "CODE - YYYY-MM-DD" (ex: 6AWB - 2026-01-17)'
+			);
+			return;
+		}
 
-		whiteboardStore.createNew(title || 'Sans titre');
-		toaster.success('Nouveau document créé');
-		// Close drawer
-		whiteboardStore.toggleFileDrawer();
+		isExportingToClassroom = true;
+
+		try {
+			// Fetch classes to find the matching one
+			const classesResponse = await fetch('/api/whiteboard/classes-with-course');
+			if (!classesResponse.ok) {
+				if (classesResponse.status === 401) {
+					toaster.error('Veuillez vous connecter');
+				} else {
+					toaster.error('Impossible de charger les classes');
+				}
+				return;
+			}
+
+			const classesData = await classesResponse.json();
+			const classesWithCourse = classesData.classes || [];
+
+			// Find class by join code
+			const matchingClass = classesWithCourse.find(
+				(c: { join_code: string }) => c.join_code.toUpperCase() === parsed.joinCode
+			);
+
+			if (!matchingClass) {
+				toaster.error(`Classe "${parsed.joinCode}" non trouvée ou non associée à Classroom`);
+				return;
+			}
+
+			// Export to PDF
+			const pdfResult = await exportToPdf(doc, {
+				format: 'pdf',
+				pages: 'all',
+				includeInstruments: true
+			});
+
+			if (!pdfResult.success || !pdfResult.blob) {
+				toaster.error(pdfResult.error || "Échec de l'export PDF");
+				return;
+			}
+
+			// Check PDF size (max 3MB)
+			const MAX_PDF_SIZE = 3 * 1024 * 1024;
+			if (pdfResult.blob.size > MAX_PDF_SIZE) {
+				const sizeMB = (pdfResult.blob.size / 1024 / 1024).toFixed(1);
+				toaster.error(`Le PDF est trop volumineux (${sizeMB} Mo). Maximum: 3 Mo.`);
+				return;
+			}
+
+			// Convert to base64
+			const pdfBase64 = await new Promise<string>((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onloadend = () => resolve(reader.result as string);
+				reader.onerror = reject;
+				reader.readAsDataURL(pdfResult.blob!);
+			});
+
+			// Call export API
+			const response = await fetch('/api/whiteboard/export-to-classroom', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					pdfBase64,
+					classId: matchingClass.id,
+					date: parsed.date
+				})
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				toaster.error(errorData.message || `Erreur ${response.status}`);
+				return;
+			}
+
+			const result = await response.json();
+			toaster.success('Document publié sur Google Classroom');
+
+			// Open in new tab
+			if (result.alternateLink) {
+				window.open(result.alternateLink, '_blank', 'noopener,noreferrer');
+			}
+		} catch (err) {
+			console.error('[FileDrawer] Export to Classroom failed:', err);
+			toaster.error("Une erreur est survenue lors de l'export");
+		} finally {
+			isExportingToClassroom = false;
+		}
 	}
 
 	function handleSaveDocument() {
@@ -808,6 +909,23 @@
 					</Button>
 				</div>
 
+				<!-- Export to Classroom -->
+				<Button
+					type="button"
+					variant="secondary"
+					onclick={handleExportToClassroom}
+					disabled={isExportingToClassroom}
+					class="mb-4 h-10 w-full gap-2"
+				>
+					{#if isExportingToClassroom}
+						<Loader2 class="h-4 w-4 animate-spin" />
+						<span>Publication...</span>
+					{:else}
+						<GraduationCap class="h-4 w-4" />
+						<span>Publier sur Classroom</span>
+					{/if}
+				</Button>
+
 				<!-- Folders Grid -->
 				{#if folders.length > 0 && !isInSubfolder}
 					<div class="mb-4">
@@ -933,19 +1051,6 @@
 						{/if}
 					{/if}
 				</div>
-
-				<!-- Export Classroom -->
-				<div class="mt-4 border-t pt-4">
-					<Button
-						type="button"
-						variant="secondary"
-						onclick={() => (exportToClassroomDialogOpen = true)}
-						class="h-10 w-full gap-2"
-					>
-						<GraduationCap class="h-4 w-4" />
-						<span>Publier sur Classroom</span>
-					</Button>
-				</div>
 			{:else}
 				<!-- Not connected to Google -->
 				<div class="flex flex-1 flex-col items-center justify-center gap-4 text-center">
@@ -1029,7 +1134,8 @@
 <!-- Dialogs -->
 <ExportDialog bind:open={exportDialogOpen} />
 <ExportToClassroomDialog
-	bind:open={exportToClassroomDialogOpen}
+	bind:open={createDocumentDialogOpen}
+	mode="create"
 	preselectedClassId={selectedClassId}
 />
 <SaveAsDialog
