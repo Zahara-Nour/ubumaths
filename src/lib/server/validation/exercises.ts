@@ -64,25 +64,41 @@ export const variableSchema = z.object({
 });
 
 /**
- * Schema for exercise hints (videos, PDFs, links, GeoGebra, images)
+ * Schema for exercise hints (videos, PDFs, links, GeoGebra, images, ubumark)
+ *
+ * - For ubumark hints: `content` is required, `url` is not used
+ * - For other hints: `url` is required, `content` is not used
  */
-export const exerciseHintSchema = z.object({
-	id: z
-		.string()
-		.trim()
-		.min(1, 'Hint ID is required')
-		.max(50, 'Hint ID too long')
-		.regex(
-			/^[a-zA-Z][a-zA-Z0-9_-]*$/,
-			'Hint ID must start with a letter and contain only letters, numbers, dashes, and underscores'
-		),
-	type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image'], {
-		message: 'Hint type must be video, pdf, link, geogebra, or image'
-	}),
-	url: z.string().url('Invalid URL').max(2000, 'URL too long'),
-	title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long'),
-	description: z.string().trim().max(500, 'Description too long').optional()
-});
+export const exerciseHintSchema = z
+	.object({
+		id: z
+			.string()
+			.trim()
+			.min(1, 'Hint ID is required')
+			.max(50, 'Hint ID too long')
+			.regex(
+				/^[a-zA-Z][a-zA-Z0-9_-]*$/,
+				'Hint ID must start with a letter and contain only letters, numbers, dashes, and underscores'
+			),
+		type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image', 'ubumark'], {
+			message: 'Hint type must be video, pdf, link, geogebra, image, or ubumark'
+		}),
+		url: z.string().url('Invalid URL').max(2000, 'URL too long').optional(),
+		content: z.string().trim().max(5000, 'Content too long').optional(),
+		title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long'),
+		description: z.string().trim().max(500, 'Description too long').optional()
+	})
+	.refine(
+		(data) => {
+			if (data.type === 'ubumark') {
+				return data.content && data.content.trim().length > 0;
+			}
+			return data.url && data.url.trim().length > 0;
+		},
+		{
+			message: 'URL is required for non-ubumark hints, content is required for ubumark hints'
+		}
+	);
 
 /**
  * Schema for exercise variations (alternative versions of an exercise)
