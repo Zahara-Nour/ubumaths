@@ -1,7 +1,7 @@
 # Audit de Conformite RGPD - UbuMaths
 
 > **Date d'audit** : 2026-01-16
-> **Version** : 1.10
+> **Version** : 1.11
 > **Statut global** : CONFORME (9/10)
 
 ---
@@ -893,7 +893,7 @@ docs/legal/
 
 ### Obligations continues
 
-- [ ] Registre des traitements a jour (Art. 30)
+- [x] Registre des traitements a jour (v1.11 - registre-traitements.md)
 - [x] DPA documentes avec sous-traitants (v1.10 - registre-sous-traitants.md)
 - [x] Jobs de cleanup automatiques actifs (v1.5 - pg_cron rgpd-retention-cleanup)
 - [x] Audit trail operationnel (v1.9 - audit_logs avec triggers)
@@ -932,6 +932,7 @@ docs/legal/
 
 | Date       | Version | Modifications                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------------- |
+| 2026-01-16 | 1.11    | Registre des traitements complet (Art. 30)                                   |
 | 2026-01-16 | 1.10    | Registre des sous-traitants (Art. 28 - DPA documentes)                       |
 | 2026-01-16 | 1.9     | Audit trail complet (Art. 5(2) - responsabilite, traçabilite)                |
 | 2026-01-16 | 1.8     | Consentement parental complet (Art. 8 - mineurs <15 ans)                     |
