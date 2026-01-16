@@ -1028,7 +1028,10 @@
 
 <!-- Dialogs -->
 <ExportDialog bind:open={exportDialogOpen} />
-<ExportToClassroomDialog bind:open={exportToClassroomDialogOpen} />
+<ExportToClassroomDialog
+	bind:open={exportToClassroomDialogOpen}
+	preselectedClassId={selectedClassId}
+/>
 <SaveAsDialog
 	bind:open={saveAsDialogOpen}
 	defaultName={whiteboardStore.document?.title || 'Sans titre'}
