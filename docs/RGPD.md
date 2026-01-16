@@ -1,7 +1,7 @@
 # Audit de Conformite RGPD - UbuMaths
 
 > **Date d'audit** : 2026-01-16
-> **Version** : 1.9
+> **Version** : 1.10
 > **Statut global** : CONFORME (9/10)
 
 ---
@@ -374,17 +374,25 @@ CRON_SECRET                   # Secret taches planifiees
 
 ---
 
-### 5.7 IMPORTANT - Pas de DPA avec sous-traitants
+### 5.7 ~~IMPORTANT - Pas de DPA avec sous-traitants~~ **DOCUMENTE** (2026-01-16)
 
-**Article RGPD viole** : Art. 28 - Sous-traitant
+**Article RGPD** : Art. 28 - Sous-traitant
 
-**Sous-traitants identifies sans DPA documente** :
+**Sous-traitants identifies et documentes** :
 
-- Google (OAuth, Classroom, Drive, Gmail)
-- Supabase (hebergement, BDD)
-- Groq (LLM API si active)
-- Vercel (deploiement)
-- Sentry (monitoring, optionnel)
+- Google (OAuth, Classroom, Drive, Gmail) - DPA disponible
+- Supabase (hebergement, BDD) - DPA disponible, region UE
+- Groq (LLM API) - A verifier
+- Vercel (deploiement) - DPA disponible
+- Sentry (monitoring) - Optionnel, non utilise
+
+> **Amelioration 2026-01-16** : Creation du registre des sous-traitants `docs/legal/registre-sous-traitants.md` conformement a l'Art. 28. Documente tous les sous-traitants, leurs DPAs, les donnees traitees, et les mecanismes de transfert hors UE (SCCs).
+>
+> **Actions restantes** :
+>
+> - Conserver copies signees des DPAs
+> - Verifier politique zero-retention de Groq
+> - Configurer regions UE pour Vercel si possible
 
 ---
 
@@ -886,7 +894,7 @@ docs/legal/
 ### Obligations continues
 
 - [ ] Registre des traitements a jour (Art. 30)
-- [ ] DPA signes avec tous les sous-traitants
+- [x] DPA documentes avec sous-traitants (v1.10 - registre-sous-traitants.md)
 - [x] Jobs de cleanup automatiques actifs (v1.5 - pg_cron rgpd-retention-cleanup)
 - [x] Audit trail operationnel (v1.9 - audit_logs avec triggers)
 - [ ] Formation des equipes (sensibilisation RGPD)
@@ -924,6 +932,7 @@ docs/legal/
 
 | Date       | Version | Modifications                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------------- |
+| 2026-01-16 | 1.10    | Registre des sous-traitants (Art. 28 - DPA documentes)                       |
 | 2026-01-16 | 1.9     | Audit trail complet (Art. 5(2) - responsabilite, traçabilite)                |
 | 2026-01-16 | 1.8     | Consentement parental complet (Art. 8 - mineurs <15 ans)                     |
 | 2026-01-15 | 1.7     | Mise a jour doc technique (section 7) avec implementations reelles           |
