@@ -56,9 +56,11 @@
 	interface Props {
 		open?: boolean;
 		onOpenChange?: (open: boolean) => void;
+		/** Pre-selected class ID from parent (e.g., FileDrawer) */
+		preselectedClassId?: string | null;
 	}
 
-	let { open = $bindable(false), onOpenChange }: Props = $props();
+	let { open = $bindable(false), onOpenChange, preselectedClassId = null }: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -161,7 +163,17 @@
 				return;
 			}
 
-			// Try auto-detection
+			// Use preselected class if provided and valid
+			if (preselectedClassId) {
+				const preselected = classesWithCourse.find((c) => c.id === preselectedClassId);
+				if (preselected) {
+					selectedClassId = preselected.id;
+					wasAutoDetected = false; // Not auto-detected, explicitly selected
+					return;
+				}
+			}
+
+			// Otherwise, try auto-detection based on schedule
 			const detected = findCurrentSchedule(classesWithCourse);
 			if (detected) {
 				selectedClassId = detected.class.id;
