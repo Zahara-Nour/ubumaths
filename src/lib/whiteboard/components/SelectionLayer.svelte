@@ -18,7 +18,12 @@
 		type BoundingBox
 	} from '../core/hit-testing';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
-	import type { WhiteboardElement, ShapeElement, StrokeElement } from '../types/document';
+	import type {
+		WhiteboardElement,
+		ShapeElement,
+		StrokeElement,
+		GroupElement
+	} from '../types/document';
 
 	// ==========================================================================
 	// Types
@@ -53,11 +58,14 @@
 			dy: number,
 			constrainAspectRatio: boolean
 		) => void;
-		/** Callback when an element is rotated */
+		/** Callback when an element is being rotated (live preview) */
 		onRotate?: (elementId: string, rotation: number) => void;
+		/** Callback when rotation is finished (commit the rotation) */
+		onRotateEnd?: (elementId: string) => void;
 	}
 
-	let { selectedElements, scale, hoveredElementId, onResize, onRotate }: Props = $props();
+	let { selectedElements, scale, hoveredElementId, onResize, onRotate, onRotateEnd }: Props =
+		$props();
 
 	// ==========================================================================
 	// Resize State
@@ -174,11 +182,25 @@
 	/** Stroke width adjusted for current scale (constant visual width) */
 	let strokeWidth = $derived(1 / scale);
 
+	/** Cached bounds for selected elements (only recalculates when selection or element structure changes) */
+	let boundsCache = $derived.by(() => {
+		const cache = new Map<
+			string,
+			{ bounds: ReturnType<typeof getElementBounds>; center: { x: number; y: number } }
+		>();
+		for (const element of selectedElements) {
+			const bounds = getElementBounds(element);
+			const center = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 };
+			cache.set(element.id, { bounds, center });
+		}
+		return cache;
+	});
+
 	/** Element types that support resize handles */
-	const RESIZABLE_TYPES = ['shape', 'image', 'stroke'] as const;
+	const RESIZABLE_TYPES = ['shape', 'image', 'stroke', 'group'] as const;
 
 	/** Element types that support rotation */
-	const ROTATABLE_TYPES = ['shape', 'stroke'] as const;
+	const ROTATABLE_TYPES = ['shape', 'stroke', 'group'] as const;
 
 	/** Check if an element type supports resize handles */
 	function isResizable(type: WhiteboardElement['type']): boolean {
@@ -190,10 +212,13 @@
 		return ROTATABLE_TYPES.includes(type as (typeof ROTATABLE_TYPES)[number]);
 	}
 
-	/** Get current rotation of an element */
+	/** Get stored rotation of an element (not live rotation) */
 	function getElementRotation(element: WhiteboardElement): number {
 		if (element.type === 'shape' || element.type === 'stroke') {
 			return (element as ShapeElement | StrokeElement).rotation ?? 0;
+		}
+		if (element.type === 'group') {
+			return (element as GroupElement).rotation ?? 0;
 		}
 		return 0;
 	}
@@ -351,7 +376,10 @@
 	 * Handle pointer up - end rotating
 	 */
 	function handleRotationPointerUp(e: PointerEvent) {
-		if (isRotating) {
+		if (isRotating && rotateElementId) {
+			// Commit the live rotation
+			onRotateEnd?.(rotateElementId);
+
 			isRotating = false;
 			rotateElementId = null;
 			initialElementRotation = 0;
@@ -380,11 +408,14 @@
 
 	<!-- Individual element selection rectangles (dashed borders) -->
 	{#each selectedElements as element (element.id)}
-		{@const bounds = getElementBounds(element)}
+		{@const cached = boundsCache.get(element.id)}
+		{@const bounds = cached?.bounds ?? { x: 0, y: 0, width: 0, height: 0 }}
+		{@const center = cached?.center ?? { x: 0, y: 0 }}
 		{@const showHandles = isResizable(element.type)}
 		{@const showRotation = isRotatable(element.type)}
-		{@const elementRotation = getElementRotation(element)}
-		{@const center = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }}
+		{@const liveRot = whiteboardStore.liveRotations.get(element.id)}
+		{@const storedRot = getElementRotation(element)}
+		{@const elementRotation = liveRot ?? storedRot}
 
 		<!-- Group that rotates selection UI with the element -->
 		<g

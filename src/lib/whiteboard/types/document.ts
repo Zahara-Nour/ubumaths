@@ -152,8 +152,22 @@ export interface ImageElement {
 	readonly rotation?: number; // Rotation in degrees (0-360)
 }
 
+/** Group element - collection of elements that move/select as one unit */
+export interface GroupElement {
+	readonly id: string;
+	readonly type: 'group';
+	readonly children: readonly WhiteboardElement[];
+	/** Rotation angle in degrees (0-360), default 0 */
+	readonly rotation?: number;
+}
+
 /** Union of all element types */
-export type WhiteboardElement = StrokeElement | ShapeElement | TextBlockElement | ImageElement;
+export type WhiteboardElement =
+	| StrokeElement
+	| ShapeElement
+	| TextBlockElement
+	| ImageElement
+	| GroupElement;
 
 // =============================================================================
 // Background Types

@@ -376,6 +376,24 @@
 			return;
 		}
 
+		// Group: Ctrl+G
+		if (isCtrl && e.key === 'g' && !e.shiftKey) {
+			if (whiteboardStore.canGroup) {
+				e.preventDefault();
+				whiteboardStore.groupSelected();
+				return;
+			}
+		}
+
+		// Ungroup: Ctrl+Shift+G
+		if (isCtrl && e.key === 'g' && e.shiftKey) {
+			if (whiteboardStore.hasSelectedGroups) {
+				e.preventDefault();
+				whiteboardStore.ungroupSelected();
+				return;
+			}
+		}
+
 		// Selection shortcuts (no modifier needed)
 		// Delete selected elements
 		if (e.key === 'Delete' || e.key === 'Backspace') {

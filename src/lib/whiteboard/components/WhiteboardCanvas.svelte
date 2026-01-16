@@ -33,7 +33,9 @@
 		type StrokeElement,
 		type ShapeElement,
 		type ShapeType,
-		type ImageElement
+		type ImageElement,
+		type GroupElement,
+		type WhiteboardElement
 	} from '../types/document';
 
 	// ==========================================================================
@@ -114,6 +116,23 @@
 
 	/** Only image elements for rendering */
 	let imageElements = $derived(elements.filter((el): el is ImageElement => el.type === 'image'));
+
+	/** Only group elements for rendering */
+	let groupElements = $derived(elements.filter((el): el is GroupElement => el.type === 'group'));
+
+	/** Cached bounds for groups (only recalculates when group structure changes, not on rotation) */
+	let groupBoundsCache = $derived.by(() => {
+		const cache = new Map<
+			string,
+			{ bounds: ReturnType<typeof getElementBounds>; center: ReturnType<typeof getBoundsCenter> }
+		>();
+		for (const group of groupElements) {
+			const bounds = getElementBounds(group);
+			const center = getBoundsCenter(bounds);
+			cache.set(group.id, { bounds, center });
+		}
+		return cache;
+	});
 
 	/** Selected elements from store */
 	let selectedElements = $derived(whiteboardStore.selectedElements);
@@ -754,6 +773,145 @@
 	}
 </script>
 
+<!-- Snippet to render group children recursively -->
+{#snippet renderGroupChildren(children: WhiteboardElement[])}
+	{#each children as child (child.id)}
+		{#if child.type === 'stroke'}
+			{@const strokeRotation = child.rotation ?? 0}
+			{@const strokeBounds = getElementBounds(child)}
+			{@const strokeCenter = getBoundsCenter(strokeBounds)}
+			{@const strokeStyle = child.strokeStyle ?? 'solid'}
+			{@const isDashedStroke = strokeStyle !== 'solid'}
+			<g
+				transform={strokeRotation !== 0
+					? `rotate(${strokeRotation}, ${strokeCenter.x}, ${strokeCenter.y})`
+					: undefined}
+			>
+				{#if isDashedStroke}
+					<path
+						d={getSimpleStrokePath(child.points)}
+						fill="none"
+						stroke={child.color}
+						stroke-width={child.width}
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-dasharray={getStrokeDashArray(strokeStyle, child.width)}
+						opacity={child.opacity}
+					/>
+				{:else}
+					<path
+						d={getStrokePath(child)}
+						fill={child.color}
+						fill-opacity={child.opacity}
+						stroke="none"
+					/>
+				{/if}
+			</g>
+		{:else if child.type === 'shape'}
+			{@const props = getShapeSvgProps(
+				child.shapeType,
+				child.start,
+				child.end,
+				child.cornerRadius ?? 0
+			)}
+			{@const dashArray = getStrokeDashArray(child.strokeStyle ?? 'solid', child.strokeWidth)}
+			{@const shapeRotation = child.rotation ?? 0}
+			{@const shapeBounds = getElementBounds(child)}
+			{@const shapeCenter = getBoundsCenter(shapeBounds)}
+			{@const shapeFill =
+				child.fillMode === 'none' || !child.fillMode
+					? 'none'
+					: child.fillMode === 'hatched'
+						? `url(#hatch-${child.id})`
+						: (child.fill ?? 'none')}
+			<g
+				transform={shapeRotation !== 0
+					? `rotate(${shapeRotation}, ${shapeCenter.x}, ${shapeCenter.y})`
+					: undefined}
+			>
+				{#if props.type === 'line'}
+					<line
+						x1={props.x1}
+						y1={props.y1}
+						x2={props.x2}
+						y2={props.y2}
+						stroke={child.color}
+						stroke-width={child.strokeWidth}
+						stroke-linecap="round"
+						stroke-dasharray={dashArray}
+						opacity={child.opacity}
+						marker-end={props.hasArrowMarker ? `url(#arrow-marker-${child.id})` : undefined}
+					/>
+				{:else if props.type === 'rect'}
+					<rect
+						x={props.x}
+						y={props.y}
+						width={props.width}
+						height={props.height}
+						rx={props.cornerRadius}
+						ry={props.cornerRadius}
+						stroke={child.color}
+						stroke-width={child.strokeWidth}
+						stroke-dasharray={dashArray}
+						stroke-opacity={child.opacity}
+						fill={shapeFill}
+						fill-opacity={child.fillOpacity ?? 1}
+					/>
+				{:else if props.type === 'ellipse'}
+					<ellipse
+						cx={props.cx}
+						cy={props.cy}
+						rx={props.rx}
+						ry={props.ry}
+						stroke={child.color}
+						stroke-width={child.strokeWidth}
+						stroke-dasharray={dashArray}
+						stroke-opacity={child.opacity}
+						fill={shapeFill}
+						fill-opacity={child.fillOpacity ?? 1}
+					/>
+				{:else if props.type === 'polygon'}
+					<polygon
+						points={props.points}
+						stroke={child.color}
+						stroke-width={child.strokeWidth}
+						stroke-linejoin="round"
+						stroke-dasharray={dashArray}
+						stroke-opacity={child.opacity}
+						fill={shapeFill}
+						fill-opacity={child.fillOpacity ?? 1}
+					/>
+				{:else if props.type === 'path'}
+					<path
+						d={props.d}
+						stroke={child.color}
+						stroke-width={child.strokeWidth}
+						stroke-linejoin="round"
+						stroke-dasharray={dashArray}
+						stroke-opacity={child.opacity}
+						fill={shapeFill}
+						fill-opacity={child.fillOpacity ?? 1}
+					/>
+				{/if}
+			</g>
+		{:else if child.type === 'group'}
+			<!-- Nested group -->
+			{@const nestedGroup = child as GroupElement}
+			{@const nestedRotation = nestedGroup.rotation ?? 0}
+			{@const nestedBounds = getElementBounds(nestedGroup)}
+			{@const nestedCenter = getBoundsCenter(nestedBounds)}
+			<g
+				class="whiteboard-group"
+				data-group-id={child.id}
+				data-rotation={nestedRotation}
+				transform={`rotate(${nestedRotation} ${nestedCenter.x} ${nestedCenter.y})`}
+			>
+				{@render renderGroupChildren(nestedGroup.children)}
+			</g>
+		{/if}
+	{/each}
+{/snippet}
+
 <div class="whiteboard-canvas-container relative overflow-hidden bg-gray-100 {className}">
 	<svg
 		class="whiteboard-svg"
@@ -1064,7 +1222,8 @@
 		<g class="layer-content">
 			<!-- Strokes -->
 			{#each strokeElements as stroke (stroke.id)}
-				{@const strokeRotation = stroke.rotation ?? 0}
+				{@const liveRot = whiteboardStore.liveRotations.get(stroke.id)}
+				{@const strokeRotation = liveRot ?? stroke.rotation ?? 0}
 				{@const strokeBounds = getElementBounds(stroke)}
 				{@const strokeCenter = getBoundsCenter(strokeBounds)}
 				{@const strokeStyle = stroke.strokeStyle ?? 'solid'}
@@ -1107,7 +1266,8 @@
 					shape.cornerRadius ?? 0
 				)}
 				{@const dashArray = getStrokeDashArray(shape.strokeStyle ?? 'solid', shape.strokeWidth)}
-				{@const shapeRotation = shape.rotation ?? 0}
+				{@const liveRot = whiteboardStore.liveRotations.get(shape.id)}
+				{@const shapeRotation = liveRot ?? shape.rotation ?? 0}
 				{@const shapeBounds = getElementBounds(shape)}
 				{@const shapeCenter = getBoundsCenter(shapeBounds)}
 				{@const shapeFill =
@@ -1185,6 +1345,21 @@
 							fill-opacity={shape.fillOpacity ?? 1}
 						/>
 					{/if}
+				</g>
+			{/each}
+
+			<!-- Groups -->
+			{#each groupElements as group (group.id)}
+				{@const cached = groupBoundsCache.get(group.id)}
+				{@const groupCenter = cached?.center ?? { x: 0, y: 0 }}
+				{@const liveRot = whiteboardStore.liveRotations.get(group.id)}
+				{@const groupRotation = liveRot ?? group.rotation ?? 0}
+				<g
+					class="whiteboard-group"
+					data-group-id={group.id}
+					transform={`rotate(${groupRotation} ${groupCenter.x} ${groupCenter.y})`}
+				>
+					{@render renderGroupChildren(group.children)}
 				</g>
 			{/each}
 		</g>
@@ -1301,7 +1476,8 @@
 				{hoveredElementId}
 				onResize={(elementId, handle, dx, dy, constrainAspectRatio) =>
 					whiteboardStore.resizeElement(elementId, handle, dx, dy, constrainAspectRatio)}
-				onRotate={(elementId, rotation) => whiteboardStore.rotateElement(elementId, rotation)}
+				onRotate={(elementId, rotation) => whiteboardStore.setLiveRotation(elementId, rotation)}
+				onRotateEnd={(elementId) => whiteboardStore.commitLiveRotation(elementId)}
 			/>
 		</g>
 
