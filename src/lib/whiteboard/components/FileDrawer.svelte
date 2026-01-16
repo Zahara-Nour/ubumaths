@@ -44,7 +44,9 @@
 	import ExportToClassroomDialog from './ExportToClassroomDialog.svelte';
 	import SaveAsDialog from './SaveAsDialog.svelte';
 	import CreateFolderDialog from './CreateFolderDialog.svelte';
+	import AutosaveRecoveryDialog from './AutosaveRecoveryDialog.svelte';
 	import type { ClassForDrawer, DriveFolder } from '../types/drive';
+	import type { AutosaveInfo } from '../services/drive-sync';
 	import { findCurrentSchedule } from '$lib/utils/timeMatching';
 
 	// ==========================================================================
@@ -65,6 +67,12 @@
 	let exportToClassroomDialogOpen = $state(false);
 	let saveAsDialogOpen = $state(false);
 	let createFolderDialogOpen = $state(false);
+	let autosaveRecoveryDialogOpen = $state(false);
+
+	/** Autosave recovery state */
+	let pendingFileToLoad = $state<DriveFile | null>(null);
+	let pendingAutosaveInfo = $state<AutosaveInfo | null>(null);
+	let isLoadingRecovery = $state(false);
 
 	/** Operation states */
 	let isSavingToDrive = $state(false);
@@ -318,6 +326,36 @@
 		loadingFileId = file.id;
 
 		try {
+			// Check for autosave before loading
+			const autosaveInfo = await driveSyncService.findAutosave(file.id);
+
+			if (
+				autosaveInfo &&
+				autosaveInfo.found &&
+				autosaveInfo.isMoreRecent &&
+				autosaveInfo.autosave
+			) {
+				// Autosave exists and is more recent - ask user what to do
+				pendingFileToLoad = file;
+				pendingAutosaveInfo = autosaveInfo;
+				autosaveRecoveryDialogOpen = true;
+				loadingFileId = null; // Reset loading state, dialog will handle it
+				return;
+			}
+
+			// No autosave or original is more recent - load directly
+			await loadFileDirectly(file);
+		} catch {
+			toaster.error('Erreur lors du chargement');
+			loadingFileId = null;
+		}
+	}
+
+	/**
+	 * Load file directly without autosave check (used after user choice)
+	 */
+	async function loadFileDirectly(file: DriveFile) {
+		try {
 			const result = await driveSyncService.loadFromDrive(file.id);
 
 			if (result.success && result.document) {
@@ -332,11 +370,82 @@
 			} else {
 				toaster.error(result.error || 'Erreur de chargement');
 			}
-		} catch {
-			toaster.error('Erreur lors du chargement');
 		} finally {
 			loadingFileId = null;
 		}
+	}
+
+	/**
+	 * Handle user choice to load original file (not autosave)
+	 */
+	async function handleLoadOriginal() {
+		if (!pendingFileToLoad) return;
+
+		isLoadingRecovery = true;
+		const file = pendingFileToLoad;
+
+		try {
+			await loadFileDirectly(file);
+			// DON'T delete the autosave here - user might want to load it later
+			// Autosave will only be deleted when user manually saves
+			autosaveRecoveryDialogOpen = false;
+		} finally {
+			isLoadingRecovery = false;
+			pendingFileToLoad = null;
+			pendingAutosaveInfo = null;
+		}
+	}
+
+	/**
+	 * Handle user choice to load autosave
+	 */
+	async function handleLoadAutosave() {
+		if (!pendingFileToLoad || !pendingAutosaveInfo?.autosave) return;
+
+		isLoadingRecovery = true;
+		const originalFile = pendingFileToLoad;
+		const autosaveFileId = pendingAutosaveInfo.autosave.id;
+
+		try {
+			// Load the autosave content
+			const result = await driveSyncService.loadFromDrive(autosaveFileId);
+
+			if (result.success && result.document) {
+				whiteboardStore.loadDocument(result.document);
+				// Connect to the ORIGINAL file but preserve the autosave file ID
+				// This way:
+				// 1. Manual saves go to the original file
+				// 2. Auto-sync updates the existing autosave (not create new)
+				// 3. Status stays 'modified' so user knows to save
+				whiteboardStore.connectToDriveWithAutosave(
+					originalFile.id,
+					currentFolderId || undefined,
+					autosaveFileId
+				);
+				toaster.success(
+					'Autosave récupéré - pensez à sauvegarder pour conserver les modifications'
+				);
+				selectedFileId = null;
+				autosaveRecoveryDialogOpen = false;
+				// Close drawer after loading
+				whiteboardStore.toggleFileDrawer();
+			} else {
+				toaster.error(result.error || 'Erreur de chargement');
+			}
+		} finally {
+			isLoadingRecovery = false;
+			pendingFileToLoad = null;
+			pendingAutosaveInfo = null;
+		}
+	}
+
+	/**
+	 * Handle cancel of autosave recovery dialog
+	 */
+	function handleCancelRecovery() {
+		autosaveRecoveryDialogOpen = false;
+		pendingFileToLoad = null;
+		pendingAutosaveInfo = null;
 	}
 
 	// ==========================================================================
@@ -385,6 +494,8 @@
 			if (result.success) {
 				whiteboardStore.setSyncSuccess(result.fileId!, result.modifiedTime!);
 				toaster.success('Sauvegardé sur Drive');
+				// Delete autosave file (user has manually saved, autosave no longer needed)
+				await whiteboardStore.deleteAutosaveIfExists();
 				// Refresh file list to show updated time and thumbnail
 				await loadDriveFiles();
 			} else {
@@ -430,6 +541,8 @@
 				whiteboardStore.connectToDrive(result.fileId, currentFolderId || undefined);
 				whiteboardStore.setSyncSuccess(result.fileId!, result.modifiedTime!);
 				toaster.success('Document créé sur Drive');
+				// Delete any previous autosave (new file, fresh start)
+				await whiteboardStore.deleteAutosaveIfExists();
 				saveAsDialogOpen = false;
 				// Refresh file list
 				await loadDriveFiles();
@@ -928,3 +1041,15 @@
 	isCreating={isCreatingFolder}
 	onFolderCreated={handleCreateFolder}
 />
+{#if pendingFileToLoad && pendingAutosaveInfo?.autosave}
+	<AutosaveRecoveryDialog
+		bind:open={autosaveRecoveryDialogOpen}
+		originalFileName={pendingFileToLoad.name.replace(/\.ubw$/, '')}
+		originalModifiedTime={pendingAutosaveInfo.originalModifiedTime || ''}
+		autosaveModifiedTime={pendingAutosaveInfo.autosave.modifiedTime}
+		loading={isLoadingRecovery}
+		onLoadOriginal={handleLoadOriginal}
+		onLoadAutosave={handleLoadAutosave}
+		onCancel={handleCancelRecovery}
+	/>
+{/if}

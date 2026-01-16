@@ -88,8 +88,11 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			`[Whiteboard Drive] Listed ${files.length} files and ${folders.length} folders for teacher ${user.id}`
 		);
 
+		// Filter out autosave files from the gallery
+		const visibleFiles = files.filter((f) => f.appProperties?.isAutosave !== 'true');
+
 		return json({
-			files: files.map((f) => {
+			files: visibleFiles.map((f) => {
 				const thumbnailFileId = f.appProperties?.thumbnailFileId;
 				return {
 					id: f.id,

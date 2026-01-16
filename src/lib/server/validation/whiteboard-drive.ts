@@ -44,7 +44,11 @@ export const saveToDriveRequestSchema = z.object({
 		.string()
 		.regex(DATA_URL_IMAGE_REGEX, 'Invalid thumbnail data URL format')
 		.max(MAX_THUMBNAIL_BASE64_LENGTH, 'Thumbnail too large (max 100KB)')
-		.optional()
+		.optional(),
+	/** Mark this save as an autosave (hidden from gallery) */
+	isAutosave: z.boolean().optional(),
+	/** Original file ID this autosave is for (required if isAutosave is true) */
+	originalFileId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid original file ID').optional()
 });
 
 export type SaveToDriveRequest = z.infer<typeof saveToDriveRequestSchema>;
