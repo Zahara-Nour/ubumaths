@@ -136,3 +136,62 @@ export function updateBoundArrowsForShapes(
 
 	return { updatedArrows, updatedElementIds };
 }
+
+// =============================================================================
+// Clearing Bindings for Deleted Shapes
+// =============================================================================
+
+/**
+ * Clears bindings from arrows that point to deleted shapes.
+ * Called when shapes are being removed to maintain data integrity.
+ *
+ * @param deletedShapeIds - IDs of shapes being deleted
+ * @param elements - Current state of all elements (before deletion)
+ * @returns Updated arrows with bindings cleared and their IDs
+ */
+export function clearBindingsForDeletedShapes(
+	deletedShapeIds: string[],
+	elements: readonly WhiteboardElement[]
+): UpdateResult {
+	if (deletedShapeIds.length === 0) {
+		return { updatedArrows: [], updatedElementIds: [] };
+	}
+
+	const deletedIdSet = new Set(deletedShapeIds);
+	const arrowUpdates = new Map<string, ArrowElement>();
+
+	for (const element of elements) {
+		if (!isArrowElement(element)) continue;
+
+		const arrow = element as ArrowElement;
+		let needsUpdate = false;
+		let updatedArrow = arrow;
+
+		// Check if start binding points to a deleted shape
+		if (arrow.startBinding && deletedIdSet.has(arrow.startBinding.elementId)) {
+			updatedArrow = {
+				...updatedArrow,
+				startBinding: null
+			};
+			needsUpdate = true;
+		}
+
+		// Check if end binding points to a deleted shape
+		if (arrow.endBinding && deletedIdSet.has(arrow.endBinding.elementId)) {
+			updatedArrow = {
+				...updatedArrow,
+				endBinding: null
+			};
+			needsUpdate = true;
+		}
+
+		if (needsUpdate) {
+			arrowUpdates.set(arrow.id, updatedArrow);
+		}
+	}
+
+	const updatedArrows = Array.from(arrowUpdates.values());
+	const updatedElementIds = updatedArrows.map((a) => a.id);
+
+	return { updatedArrows, updatedElementIds };
+}

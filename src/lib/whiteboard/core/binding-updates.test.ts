@@ -5,7 +5,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { getBoundArrows, updateBoundArrowsForShapes } from './binding-updates';
+import {
+	getBoundArrows,
+	updateBoundArrowsForShapes,
+	clearBindingsForDeletedShapes
+} from './binding-updates';
 import type { Point, ShapeElement, ArrowElement, WhiteboardElement } from '../types/document';
 
 // =============================================================================
@@ -821,5 +825,301 @@ describe('updateBoundArrowsForShapes', () => {
 
 			expect(result.updatedElementIds).toContain('arrow1');
 		});
+	});
+});
+
+// =============================================================================
+// clearBindingsForDeletedShapes Tests
+// =============================================================================
+
+describe('clearBindingsForDeletedShapes', () => {
+	it('returns empty when no shapes are specified', () => {
+		const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'rect1' });
+		const arrow = createArrow(
+			{ x: 204, y: 150 },
+			{ x: 300, y: 150 },
+			{
+				id: 'arrow1',
+				startBinding: {
+					elementId: 'rect1',
+					normalizedPosition: { x: 1, y: 0.5 },
+					perimeterPoint: { x: 1, y: 0.5 },
+					gap: 4
+				}
+			}
+		);
+		const elements: WhiteboardElement[] = [rect, arrow];
+
+		const result = clearBindingsForDeletedShapes([], elements);
+
+		expect(result.updatedArrows).toHaveLength(0);
+	});
+
+	it('clears startBinding when target shape is deleted', () => {
+		const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'rect1' });
+		const arrow = createArrow(
+			{ x: 204, y: 150 },
+			{ x: 300, y: 150 },
+			{
+				id: 'arrow1',
+				startBinding: {
+					elementId: 'rect1',
+					normalizedPosition: { x: 1, y: 0.5 },
+					perimeterPoint: { x: 1, y: 0.5 },
+					gap: 4
+				},
+				endBinding: null
+			}
+		);
+		const elements: WhiteboardElement[] = [rect, arrow];
+
+		const result = clearBindingsForDeletedShapes(['rect1'], elements);
+
+		expect(result.updatedArrows).toHaveLength(1);
+		expect(result.updatedArrows[0].startBinding).toBeNull();
+		expect(result.updatedArrows[0].endBinding).toBeNull();
+	});
+
+	it('clears endBinding when target shape is deleted', () => {
+		const rect = createShape('rectangle', { x: 200, y: 100 }, { x: 300, y: 200 }, { id: 'rect1' });
+		const arrow = createArrow(
+			{ x: 100, y: 150 },
+			{ x: 196, y: 150 },
+			{
+				id: 'arrow1',
+				startBinding: null,
+				endBinding: {
+					elementId: 'rect1',
+					normalizedPosition: { x: 0, y: 0.5 },
+					perimeterPoint: { x: 0, y: 0.5 },
+					gap: 4
+				}
+			}
+		);
+		const elements: WhiteboardElement[] = [rect, arrow];
+
+		const result = clearBindingsForDeletedShapes(['rect1'], elements);
+
+		expect(result.updatedArrows).toHaveLength(1);
+		expect(result.updatedArrows[0].startBinding).toBeNull();
+		expect(result.updatedArrows[0].endBinding).toBeNull();
+	});
+
+	it('clears both bindings when both target shapes are deleted', () => {
+		const rect1 = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'rect1' });
+		const rect2 = createShape('rectangle', { x: 300, y: 100 }, { x: 400, y: 200 }, { id: 'rect2' });
+		const arrow = createArrow(
+			{ x: 204, y: 150 },
+			{ x: 296, y: 150 },
+			{
+				id: 'arrow1',
+				startBinding: {
+					elementId: 'rect1',
+					normalizedPosition: { x: 1, y: 0.5 },
+					perimeterPoint: { x: 1, y: 0.5 },
+					gap: 4
+				},
+				endBinding: {
+					elementId: 'rect2',
+					normalizedPosition: { x: 0, y: 0.5 },
+					perimeterPoint: { x: 0, y: 0.5 },
+					gap: 4
+				}
+			}
+		);
+		const elements: WhiteboardElement[] = [rect1, rect2, arrow];
+
+		const result = clearBindingsForDeletedShapes(['rect1', 'rect2'], elements);
+
+		expect(result.updatedArrows).toHaveLength(1);
+		expect(result.updatedArrows[0].startBinding).toBeNull();
+		expect(result.updatedArrows[0].endBinding).toBeNull();
+	});
+
+	it('preserves binding when target shape is NOT deleted', () => {
+		const rect1 = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'rect1' });
+		const rect2 = createShape('rectangle', { x: 300, y: 100 }, { x: 400, y: 200 }, { id: 'rect2' });
+		const arrow = createArrow(
+			{ x: 204, y: 150 },
+			{ x: 296, y: 150 },
+			{
+				id: 'arrow1',
+				startBinding: {
+					elementId: 'rect1',
+					normalizedPosition: { x: 1, y: 0.5 },
+					perimeterPoint: { x: 1, y: 0.5 },
+					gap: 4
+				},
+				endBinding: {
+					elementId: 'rect2',
+					normalizedPosition: { x: 0, y: 0.5 },
+					perimeterPoint: { x: 0, y: 0.5 },
+					gap: 4
+				}
+			}
+		);
+		const elements: WhiteboardElement[] = [rect1, rect2, arrow];
+
+		// Only delete rect1, keep rect2
+		const result = clearBindingsForDeletedShapes(['rect1'], elements);
+
+		expect(result.updatedArrows).toHaveLength(1);
+		expect(result.updatedArrows[0].startBinding).toBeNull();
+		expect(result.updatedArrows[0].endBinding).not.toBeNull();
+		expect(result.updatedArrows[0].endBinding?.elementId).toBe('rect2');
+	});
+
+	it('handles multiple arrows bound to same shape', () => {
+		const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'rect1' });
+		const arrow1 = createArrow(
+			{ x: 204, y: 120 },
+			{ x: 300, y: 120 },
+			{
+				id: 'arrow1',
+				startBinding: {
+					elementId: 'rect1',
+					normalizedPosition: { x: 1, y: 0.2 },
+					perimeterPoint: { x: 1, y: 0.2 },
+					gap: 4
+				}
+			}
+		);
+		const arrow2 = createArrow(
+			{ x: 204, y: 180 },
+			{ x: 300, y: 180 },
+			{
+				id: 'arrow2',
+				startBinding: {
+					elementId: 'rect1',
+					normalizedPosition: { x: 1, y: 0.8 },
+					perimeterPoint: { x: 1, y: 0.8 },
+					gap: 4
+				}
+			}
+		);
+		const elements: WhiteboardElement[] = [rect, arrow1, arrow2];
+
+		const result = clearBindingsForDeletedShapes(['rect1'], elements);
+
+		expect(result.updatedArrows).toHaveLength(2);
+		expect(result.updatedArrows.every((a) => a.startBinding === null)).toBe(true);
+	});
+
+	it('does not modify arrows without bindings to deleted shapes', () => {
+		const rect1 = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'rect1' });
+		const rect2 = createShape('rectangle', { x: 300, y: 100 }, { x: 400, y: 200 }, { id: 'rect2' });
+		const arrow = createArrow(
+			{ x: 404, y: 150 },
+			{ x: 500, y: 150 },
+			{
+				id: 'arrow1',
+				startBinding: {
+					elementId: 'rect2',
+					normalizedPosition: { x: 1, y: 0.5 },
+					perimeterPoint: { x: 1, y: 0.5 },
+					gap: 4
+				}
+			}
+		);
+		const elements: WhiteboardElement[] = [rect1, rect2, arrow];
+
+		// Delete rect1, which arrow is NOT bound to
+		const result = clearBindingsForDeletedShapes(['rect1'], elements);
+
+		expect(result.updatedArrows).toHaveLength(0);
+	});
+
+	it('preserves arrow position and style properties', () => {
+		const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'rect1' });
+		const arrow = createArrow(
+			{ x: 204, y: 150 },
+			{ x: 300, y: 150 },
+			{
+				id: 'arrow1',
+				color: '#ff0000',
+				strokeWidth: 5,
+				opacity: 0.8,
+				strokeStyle: 'dashed',
+				startBinding: {
+					elementId: 'rect1',
+					normalizedPosition: { x: 1, y: 0.5 },
+					perimeterPoint: { x: 1, y: 0.5 },
+					gap: 4
+				}
+			}
+		);
+		const elements: WhiteboardElement[] = [rect, arrow];
+
+		const result = clearBindingsForDeletedShapes(['rect1'], elements);
+
+		const updatedArrow = result.updatedArrows[0];
+		expect(updatedArrow.start).toEqual({ x: 204, y: 150 });
+		expect(updatedArrow.end).toEqual({ x: 300, y: 150 });
+		expect(updatedArrow.color).toBe('#ff0000');
+		expect(updatedArrow.strokeWidth).toBe(5);
+		expect(updatedArrow.opacity).toBe(0.8);
+		expect(updatedArrow.strokeStyle).toBe('dashed');
+	});
+
+	it('returns correct updatedElementIds', () => {
+		const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'rect1' });
+		const arrow = createArrow(
+			{ x: 204, y: 150 },
+			{ x: 300, y: 150 },
+			{
+				id: 'arrow1',
+				startBinding: {
+					elementId: 'rect1',
+					normalizedPosition: { x: 1, y: 0.5 },
+					perimeterPoint: { x: 1, y: 0.5 },
+					gap: 4
+				}
+			}
+		);
+		const elements: WhiteboardElement[] = [rect, arrow];
+
+		const result = clearBindingsForDeletedShapes(['rect1'], elements);
+
+		expect(result.updatedElementIds).toContain('arrow1');
+	});
+
+	it('handles arrow bound at both ends to the same deleted shape', () => {
+		const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 300, y: 300 }, { id: 'rect1' });
+		const arrow = createArrow(
+			{ x: 96, y: 150 },
+			{ x: 304, y: 250 },
+			{
+				id: 'arrow1',
+				startBinding: {
+					elementId: 'rect1',
+					normalizedPosition: { x: 0, y: 0.25 },
+					perimeterPoint: { x: 0, y: 0.25 },
+					gap: 4
+				},
+				endBinding: {
+					elementId: 'rect1',
+					normalizedPosition: { x: 1, y: 0.75 },
+					perimeterPoint: { x: 1, y: 0.75 },
+					gap: 4
+				}
+			}
+		);
+		const elements: WhiteboardElement[] = [rect, arrow];
+
+		const result = clearBindingsForDeletedShapes(['rect1'], elements);
+
+		expect(result.updatedArrows).toHaveLength(1);
+		expect(result.updatedArrows[0].startBinding).toBeNull();
+		expect(result.updatedArrows[0].endBinding).toBeNull();
+	});
+
+	it('ignores non-arrow elements', () => {
+		const rect1 = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'rect1' });
+		const rect2 = createShape('rectangle', { x: 300, y: 100 }, { x: 400, y: 200 }, { id: 'rect2' });
+		const elements: WhiteboardElement[] = [rect1, rect2];
+
+		const result = clearBindingsForDeletedShapes(['rect1'], elements);
+
+		expect(result.updatedArrows).toHaveLength(0);
 	});
 });
