@@ -21,6 +21,24 @@ export const pointSchema = z.object({
 });
 
 // =============================================================================
+// Binding Schemas
+// =============================================================================
+
+/** Point schema for normalized coordinates (typically 0-1 range, but can exceed for external points) */
+const normalizedPointSchema = z.object({
+	x: z.number().finite(),
+	y: z.number().finite()
+});
+
+/** Schema for binding anchor - connects arrow endpoints to shapes */
+export const bindingAnchorSchema = z.object({
+	elementId: z.string().uuid(),
+	normalizedPosition: normalizedPointSchema,
+	perimeterPoint: normalizedPointSchema,
+	gap: z.number().min(0).max(50).default(4)
+});
+
+// =============================================================================
 // Element Schemas
 // =============================================================================
 
@@ -53,7 +71,10 @@ const shapeElementSchema = z.object({
 	fillOpacity: z.number().min(0).max(1).optional(),
 	cornerRadius: z.number().min(0).max(100).optional(),
 	rotation: z.number().min(0).max(360).optional(),
-	labelMarkdown: z.string().max(1000).optional()
+	labelMarkdown: z.string().max(1000).optional(),
+	// Binding fields (only used for arrow shapes)
+	startBinding: bindingAnchorSchema.nullable().optional(),
+	endBinding: bindingAnchorSchema.nullable().optional()
 });
 
 const textBlockElementSchema = z.object({
