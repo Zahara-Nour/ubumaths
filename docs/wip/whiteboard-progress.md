@@ -593,16 +593,11 @@ Excalidraw est un editeur de diagrammes collaboratif avec style "hand-drawn". No
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Double Layer (Static/Interactive)** | Notre systeme "live transforms" (livePositions, liveRotations, liveResizes) resout deja ce probleme de performance. Le double layer est critique pour Canvas (redraw complet) mais pas pour SVG (mise a jour partielle native du DOM). |
 | **Actions centralisees**              | Over-engineering. Le code actuel (~80 lignes de switch/case) est simple, lisible, et teste via le store. Utile pour 50+ actions, command palette, plugins - aucun de ces cas ne s'applique ici.                                        |
+| **Frames**                            | Le multi-pages existant couvre 95% du besoin d'organisation. Les frames seraient utiles pour voir plusieurs zones cote a cote, mais ce cas d'usage est rare pour un whiteboard educatif.                                               |
 | **Collaboration temps reel**          | Hors scope - pas d'objectif collaboratif.                                                                                                                                                                                              |
 | **Style hand-drawn (roughjs)**        | Le style "propre" est plus adapte aux mathematiques.                                                                                                                                                                                   |
 
 ### Idees RETENUES
-
-#### Priorite Haute
-
-| Idee       | Description                                                                                                                                                 | Effort | Impact |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| **Frames** | Conteneurs visuels nommes (different des Groups). Permet d'organiser "Exercice 1", "Exercice 2" sur une page, avec export individuel et clipping optionnel. | Moyen  | Fort   |
 
 #### Priorite Moyenne
 
@@ -620,16 +615,7 @@ Excalidraw est un editeur de diagrammes collaboratif avec style "hand-drawn". No
 
 ### Plan d'implementation suggere
 
-**Phase A : Frames**
-
-1. Ajouter type `FrameElement` dans `document.ts`
-2. Schema Zod dans `file-format.ts`
-3. Rendu frame avec titre et bordure dans `WhiteboardCanvas.svelte`
-4. Logique de clipping (elements avec frameId)
-5. Export individuel par frame dans `pdf-export.ts`
-6. UI pour creer/nommer/supprimer frames dans toolbar
-
-**Phase B : BoundElements inverse**
+**Phase A : BoundElements inverse**
 
 1. Ajouter `boundElements?: readonly { id: string; type: 'arrow' }[]` aux shapes
 2. Mettre a jour `createArrowWithBindings()` pour enregistrer la liaison bidirectionnelle
@@ -639,8 +625,6 @@ Excalidraw est un editeur de diagrammes collaboratif avec style "hand-drawn". No
 ### Notes techniques
 
 - **Pourquoi pas le double layer?** Le systeme "live transforms" d'UbuMaths (Maps `livePositions`, `liveRotations`, `liveResizes`) applique des transforms CSS/SVG pendant les interactions sans modifier les elements du store. Cela evite les re-renders couteux de la meme maniere que le double layer, mais de facon idiomatique pour Svelte + SVG.
-
-- **Difference Frame vs Group** : Un Group est une selection logique (deplacement/rotation ensemble). Un Frame est un conteneur visuel avec nom, bordure, et possibilite de clipper le contenu debordant.
 
 ---
 
