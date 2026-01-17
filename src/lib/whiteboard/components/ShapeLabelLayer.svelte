@@ -29,6 +29,9 @@
 	/** ID of the shape whose label is currently being edited */
 	let editingShapeId = $state<string | null>(null);
 
+	/** Initial character to prepend when starting edit (from keyboard shortcut) */
+	let initialChar = $state<string | null>(null);
+
 	// ==========================================================================
 	// Derived
 	// ==========================================================================
@@ -52,6 +55,7 @@
 
 	function handleEndEdit() {
 		editingShapeId = null;
+		initialChar = null;
 	}
 
 	function handleContentChange(shapeId: string, content: string) {
@@ -65,9 +69,12 @@
 	/**
 	 * Start editing a shape's label
 	 * Called from parent component when text tool clicks on a shape
+	 * @param shapeId - The shape to edit
+	 * @param char - Optional initial character to prepend (from keyboard shortcut)
 	 */
-	export function startEditingShape(shapeId: string): void {
+	export function startEditingShape(shapeId: string, char?: string): void {
 		editingShapeId = shapeId;
+		initialChar = char ?? null;
 	}
 
 	/**
@@ -97,6 +104,7 @@
 		<ShapeLabel
 			element={shape}
 			isEditing={editingShapeId === shape.id}
+			initialChar={editingShapeId === shape.id ? initialChar : null}
 			liveOffset={whiteboardStore.livePositions.get(shape.id)}
 			liveRotation={whiteboardStore.liveRotations.get(shape.id)}
 			liveResize={whiteboardStore.liveResizes.get(shape.id)}

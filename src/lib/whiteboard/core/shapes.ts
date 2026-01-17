@@ -422,6 +422,35 @@ export function getShapeSvgProps(
 // =============================================================================
 
 /**
+ * Calculate the angle of a line in degrees (-180 to 180)
+ * 0° = pointing right, 90° = pointing down, -90° = pointing up
+ */
+export function calculateLineAngle(start: Point, end: Point): number {
+	const dx = end.x - start.x;
+	const dy = end.y - start.y;
+	return (Math.atan2(dy, dx) * 180) / Math.PI;
+}
+
+/**
+ * Calculate the length of a line in pixels
+ */
+export function calculateLineLength(start: Point, end: Point): number {
+	const dx = end.x - start.x;
+	const dy = end.y - start.y;
+	return Math.sqrt(dx * dx + dy * dy);
+}
+
+/**
+ * Normalize an angle to keep text readable (-90 to 90)
+ * Flips angles outside this range so text is never upside down
+ */
+export function normalizeAngleForText(angle: number): number {
+	if (angle > 90) return angle - 180;
+	if (angle < -90) return angle + 180;
+	return angle;
+}
+
+/**
  * Calculate bounding box for a shape
  */
 export function calculateShapeBounds(

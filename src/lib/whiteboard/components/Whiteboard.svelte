@@ -418,7 +418,9 @@
 				// Check if key is a printable character or Enter
 				if (e.key.length === 1 || e.key === 'Enter') {
 					e.preventDefault();
-					canvasRef?.startEditingShapeLabel(selectedId);
+					// Pass the character if it's printable (not Enter)
+					const initialChar = e.key.length === 1 ? e.key : undefined;
+					canvasRef?.startEditingShapeLabel(selectedId, initialChar);
 					return;
 				}
 			}

@@ -11,8 +11,18 @@
 
 	import type { ShapeElement } from '../types/document';
 	import { getElementBounds, getBoundsCenter } from '../core/hit-testing';
+	import { calculateLineAngle, calculateLineLength, normalizeAngleForText } from '../core/shapes';
 	import { parseLabelToInline } from '../utils/label-parser';
 	import InlineRenderer from '$lib/components/markdown/InlineRenderer.svelte';
+
+	// ==========================================================================
+	// Constants for line/arrow label layout
+	// ==========================================================================
+
+	/** Estimated width per character in pixels */
+	const CHAR_WIDTH_ESTIMATE = 7;
+	/** Vertical offset from line center in pixels */
+	const VERTICAL_OFFSET = 8;
 
 	// ==========================================================================
 	// Props
@@ -25,6 +35,8 @@
 		scale?: number;
 		/** Whether this label is currently being edited */
 		isEditing: boolean;
+		/** Initial character to prepend when entering edit mode (from keyboard shortcut) */
+		initialChar?: string | null;
 		/** Live position offset during drag (from livePositions) */
 		liveOffset?: { dx: number; dy: number } | null;
 		/** Live rotation override during rotation (from liveRotations) */
@@ -41,6 +53,7 @@
 		element,
 		scale = 1,
 		isEditing,
+		initialChar = null,
 		liveOffset = null,
 		liveRotation = null,
 		liveResize = null,
@@ -57,6 +70,9 @@
 
 	/** Reference to textarea for focus */
 	let textareaRef: HTMLTextAreaElement | null = $state(null);
+
+	/** Track if we've already initialized for this edit session */
+	let hasInitializedEdit = $state(false);
 
 	// ==========================================================================
 	// Derived
@@ -91,11 +107,74 @@
 		return { x: cx, y: cy };
 	});
 
-	/** Shape rotation (use live rotation if during rotation drag) */
-	let rotation = $derived(liveRotation ?? element.rotation ?? 0);
+	/** Is this a line or arrow shape? */
+	let isLineOrArrow = $derived(element.shapeType === 'line' || element.shapeType === 'arrow');
 
-	/** Parsed inline nodes for rendering */
+	/** Shape rotation - auto-calculate for lines/arrows to align text along the line */
+	let rotation = $derived.by(() => {
+		// Use live rotation during drag if provided
+		if (liveRotation !== null) return liveRotation;
+
+		// Use explicit rotation if set
+		if (element.rotation) return element.rotation;
+
+		// Auto-calculate rotation for lines/arrows
+		if (isLineOrArrow) {
+			const angle = calculateLineAngle(element.start, element.end);
+			return normalizeAngleForText(angle);
+		}
+
+		return 0;
+	});
+
+	/** Line length in pixels (for lines/arrows only) */
+	let lineLength = $derived(
+		isLineOrArrow ? calculateLineLength(element.start, element.end) : Infinity
+	);
+
+	/** Split label text for lines/arrows when text is too long */
+	let labelParts = $derived.by(() => {
+		const text = element.labelMarkdown ?? '';
+		if (!text || !isLineOrArrow) {
+			return { above: text, below: null as string | null };
+		}
+
+		const maxCharsPerLine = Math.floor(lineLength / CHAR_WIDTH_ESTIMATE);
+
+		// Short text: all above the line
+		if (text.length <= maxCharsPerLine) {
+			return { above: text, below: null as string | null };
+		}
+
+		// Medium/long text: split at space nearest to middle
+		const midPoint = Math.floor(text.length / 2);
+		let splitIndex = text.lastIndexOf(' ', midPoint);
+		if (splitIndex === -1) splitIndex = text.indexOf(' ', midPoint);
+		if (splitIndex === -1) splitIndex = midPoint; // No space found, split at middle
+
+		let above = text.slice(0, splitIndex).trim();
+		let below = text.slice(splitIndex).trim();
+
+		// Truncate if text is too long (> 2x line length)
+		const maxTotal = maxCharsPerLine * 2;
+		if (text.length > maxTotal) {
+			const maxBelow = Math.max(maxCharsPerLine - 3, 1); // -3 for "...", minimum 1
+			if (below.length > maxBelow) {
+				below = below.slice(0, maxBelow) + '...';
+			}
+		}
+
+		return { above, below };
+	});
+
+	/** Parsed inline nodes for rendering (standard mode) */
 	let inlineNodes = $derived(parseLabelToInline(element.labelMarkdown ?? ''));
+
+	/** Parsed inline nodes for above part (line/arrow mode) */
+	let aboveNodes = $derived(parseLabelToInline(labelParts.above));
+
+	/** Parsed inline nodes for below part (line/arrow mode) */
+	let belowNodes = $derived(labelParts.below ? parseLabelToInline(labelParts.below) : []);
 
 	/** Has content to display */
 	let hasContent = $derived(inlineNodes.length > 0 || isEditing);
@@ -104,18 +183,30 @@
 	// Effects
 	// ==========================================================================
 
-	// Sync content when element changes (external update)
+	// Sync content when element changes (external update) and reset init flag
 	$effect(() => {
 		if (!isEditing) {
 			editContent = element.labelMarkdown ?? '';
+			hasInitializedEdit = false;
 		}
 	});
 
-	// Focus textarea when entering edit mode
+	// Focus textarea when entering edit mode and handle initial character (once)
 	$effect(() => {
-		if (isEditing && textareaRef) {
-			textareaRef.focus();
-			textareaRef.select();
+		if (isEditing && textareaRef && !hasInitializedEdit) {
+			hasInitializedEdit = true;
+
+			// If there's an initial character, append it to the existing content
+			if (initialChar) {
+				editContent = (element.labelMarkdown ?? '') + initialChar;
+				// Place cursor at end (after the initial char)
+				textareaRef.focus();
+				textareaRef.setSelectionRange(editContent.length, editContent.length);
+			} else {
+				// No initial char - select all for easy replacement
+				textareaRef.focus();
+				textareaRef.select();
+			}
 		}
 	});
 
@@ -163,18 +254,17 @@
 </script>
 
 {#if hasContent}
-	<div
-		class="shape-label absolute"
-		class:editing={isEditing}
-		style="
-			left: {center.x * scale}px;
-			top: {center.y * scale}px;
-			transform: translate(-50%, -50%) rotate({rotation}deg);
-			pointer-events: {isEditing ? 'auto' : 'none'};
-		"
-	>
-		{#if isEditing}
-			<!-- EDIT Mode: Simple textarea -->
+	{#if isEditing}
+		<!-- EDIT Mode: Simple textarea (always centered on shape) -->
+		<div
+			class="shape-label editing absolute"
+			style="
+				left: {center.x * scale}px;
+				top: {center.y * scale}px;
+				transform: translate(-50%, -50%) rotate({rotation}deg);
+				pointer-events: auto;
+			"
+		>
 			<textarea
 				bind:this={textareaRef}
 				value={editContent}
@@ -184,13 +274,51 @@
 				rows="1"
 				placeholder="Label..."
 			></textarea>
-		{:else}
-			<!-- VIEW Mode: Rendered inline content -->
+		</div>
+	{:else if isLineOrArrow && labelParts.below}
+		<!-- VIEW Mode: Line/Arrow with TWO lines (above + below) -->
+		<div
+			class="shape-label absolute"
+			style="
+				left: {center.x * scale}px;
+				top: {center.y * scale}px;
+				transform: translate(-50%, -50%) rotate({rotation}deg);
+				pointer-events: none;
+			"
+		>
+			<div class="label-line-container">
+				<div
+					class="label-above text-sm whitespace-nowrap"
+					style="transform: translateY(-{VERTICAL_OFFSET}px);"
+				>
+					<InlineRenderer children={aboveNodes} />
+				</div>
+				<div
+					class="label-below text-sm whitespace-nowrap"
+					style="transform: translateY({VERTICAL_OFFSET}px);"
+				>
+					<InlineRenderer children={belowNodes} />
+				</div>
+			</div>
+		</div>
+	{:else}
+		<!-- VIEW Mode: Standard (single line, offset above for lines/arrows) -->
+		<div
+			class="shape-label absolute"
+			style="
+				left: {center.x * scale}px;
+				top: {center.y * scale}px;
+				transform: translate(-50%, -50%) rotate({rotation}deg) translateY({isLineOrArrow
+				? -VERTICAL_OFFSET
+				: 0}px);
+				pointer-events: none;
+			"
+		>
 			<div class="label-view text-sm whitespace-nowrap">
 				<InlineRenderer children={inlineNodes} />
 			</div>
-		{/if}
-	</div>
+		</div>
+	{/if}
 {/if}
 
 <style>
@@ -217,5 +345,20 @@
 		max-width: 300px;
 		/* Center text in textarea */
 		text-align: center;
+	}
+
+	/* Line/arrow label container for two-line layout */
+	.label-line-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0;
+	}
+
+	.label-above,
+	.label-below {
+		overflow: visible;
+		text-align: center;
+		font-family: inherit;
 	}
 </style>

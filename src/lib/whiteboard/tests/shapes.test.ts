@@ -3,7 +3,14 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { createShapeElement, getShapeSvgProps, calculateShapeBounds } from '../core/shapes';
+import {
+	createShapeElement,
+	getShapeSvgProps,
+	calculateShapeBounds,
+	calculateLineAngle,
+	calculateLineLength,
+	normalizeAngleForText
+} from '../core/shapes';
 import type { Point, ShapeType } from '../types/document';
 
 describe('Shape Creation', () => {
@@ -218,5 +225,110 @@ describe('Shape Types', () => {
 
 		expect(props).toBeDefined();
 		expect(props.type).toBeDefined();
+	});
+});
+
+describe('Line Geometry Utilities', () => {
+	describe('calculateLineAngle', () => {
+		it('returns 0° for horizontal line pointing right', () => {
+			const angle = calculateLineAngle({ x: 0, y: 0 }, { x: 100, y: 0 });
+			expect(angle).toBeCloseTo(0);
+		});
+
+		it('returns 180° for horizontal line pointing left', () => {
+			const angle = calculateLineAngle({ x: 100, y: 0 }, { x: 0, y: 0 });
+			expect(angle).toBeCloseTo(180);
+		});
+
+		it('returns 90° for vertical line pointing down', () => {
+			const angle = calculateLineAngle({ x: 0, y: 0 }, { x: 0, y: 100 });
+			expect(angle).toBeCloseTo(90);
+		});
+
+		it('returns -90° for vertical line pointing up', () => {
+			const angle = calculateLineAngle({ x: 0, y: 100 }, { x: 0, y: 0 });
+			expect(angle).toBeCloseTo(-90);
+		});
+
+		it('returns 45° for diagonal line (down-right)', () => {
+			const angle = calculateLineAngle({ x: 0, y: 0 }, { x: 100, y: 100 });
+			expect(angle).toBeCloseTo(45);
+		});
+
+		it('returns -45° for diagonal line (up-right)', () => {
+			const angle = calculateLineAngle({ x: 0, y: 100 }, { x: 100, y: 0 });
+			expect(angle).toBeCloseTo(-45);
+		});
+
+		it('returns 135° for diagonal line (down-left)', () => {
+			const angle = calculateLineAngle({ x: 100, y: 0 }, { x: 0, y: 100 });
+			expect(angle).toBeCloseTo(135);
+		});
+
+		it('returns -135° for diagonal line (up-left)', () => {
+			const angle = calculateLineAngle({ x: 100, y: 100 }, { x: 0, y: 0 });
+			expect(angle).toBeCloseTo(-135);
+		});
+	});
+
+	describe('calculateLineLength', () => {
+		it('calculates horizontal line length', () => {
+			const length = calculateLineLength({ x: 0, y: 0 }, { x: 100, y: 0 });
+			expect(length).toBe(100);
+		});
+
+		it('calculates vertical line length', () => {
+			const length = calculateLineLength({ x: 0, y: 0 }, { x: 0, y: 50 });
+			expect(length).toBe(50);
+		});
+
+		it('calculates diagonal line length (3-4-5 triangle)', () => {
+			const length = calculateLineLength({ x: 0, y: 0 }, { x: 30, y: 40 });
+			expect(length).toBe(50);
+		});
+
+		it('handles negative direction (length is always positive)', () => {
+			const length = calculateLineLength({ x: 100, y: 50 }, { x: 0, y: 0 });
+			expect(length).toBeGreaterThan(0);
+		});
+
+		it('returns 0 for point (start equals end)', () => {
+			const length = calculateLineLength({ x: 50, y: 50 }, { x: 50, y: 50 });
+			expect(length).toBe(0);
+		});
+	});
+
+	describe('normalizeAngleForText', () => {
+		it('keeps angles in range -90 to 90 unchanged', () => {
+			expect(normalizeAngleForText(0)).toBe(0);
+			expect(normalizeAngleForText(45)).toBe(45);
+			expect(normalizeAngleForText(-45)).toBe(-45);
+			expect(normalizeAngleForText(90)).toBe(90);
+			expect(normalizeAngleForText(-90)).toBe(-90);
+		});
+
+		it('flips angles > 90° by subtracting 180°', () => {
+			expect(normalizeAngleForText(91)).toBeCloseTo(-89);
+			expect(normalizeAngleForText(135)).toBeCloseTo(-45);
+			expect(normalizeAngleForText(180)).toBeCloseTo(0);
+		});
+
+		it('flips angles < -90° by adding 180°', () => {
+			expect(normalizeAngleForText(-91)).toBeCloseTo(89);
+			expect(normalizeAngleForText(-135)).toBeCloseTo(45);
+			expect(normalizeAngleForText(-180)).toBeCloseTo(0);
+		});
+
+		it('ensures text is never upside down for common angles', () => {
+			// Line pointing left (180°) should become 0°
+			const angle180 = normalizeAngleForText(180);
+			expect(angle180).toBeGreaterThanOrEqual(-90);
+			expect(angle180).toBeLessThanOrEqual(90);
+
+			// Line pointing up-left (-135°) should become 45°
+			const angleMinus135 = normalizeAngleForText(-135);
+			expect(angleMinus135).toBeGreaterThanOrEqual(-90);
+			expect(angleMinus135).toBeLessThanOrEqual(90);
+		});
 	});
 });
