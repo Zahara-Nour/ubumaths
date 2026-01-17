@@ -74,6 +74,9 @@
 	/** Context menu reference (must be outside transformed area for correct positioning) */
 	let contextMenuRef: ContextMenu | null = $state(null);
 
+	/** WhiteboardCanvas reference (for keyboard shortcuts) */
+	let canvasRef: WhiteboardCanvas | null = $state(null);
+
 	/** Fullscreen state */
 	let isFullscreen = $state(false);
 
@@ -404,6 +407,23 @@
 			}
 		}
 
+		// Start typing to edit shape label when a single shape is selected
+		// Triggers on printable characters (length 1) or Enter
+		if (!isCtrl && !e.altKey && whiteboardStore.selectedIds.size === 1) {
+			const selectedId = [...whiteboardStore.selectedIds][0];
+			const selectedElement = whiteboardStore.currentPage?.elements.find(
+				(el) => el.id === selectedId
+			);
+			if (selectedElement?.type === 'shape') {
+				// Check if key is a printable character or Enter
+				if (e.key.length === 1 || e.key === 'Enter') {
+					e.preventDefault();
+					canvasRef?.startEditingShapeLabel(selectedId);
+					return;
+				}
+			}
+		}
+
 		// Escape - exit fullscreen or clear selection
 		if (e.key === 'Escape') {
 			if (isFullscreen) {
@@ -589,7 +609,12 @@
 				class:transition-transform={!isPanning}
 				style="width: {canvasWidth}px; height: {canvasHeight}px; transform: translate({panX}px, {panY}px);"
 			>
-				<WhiteboardCanvas class="h-full w-full" scale={effectiveScale} {contextMenuRef} />
+				<WhiteboardCanvas
+					bind:this={canvasRef}
+					class="h-full w-full"
+					scale={effectiveScale}
+					{contextMenuRef}
+				/>
 			</div>
 		</div>
 

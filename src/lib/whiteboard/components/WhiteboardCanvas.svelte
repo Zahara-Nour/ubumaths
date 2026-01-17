@@ -24,6 +24,7 @@
 	} from '../core/hit-testing';
 	import InstrumentLayer from './InstrumentLayer.svelte';
 	import TextBlockLayer from './TextBlockLayer.svelte';
+	import ShapeLabelLayer from './ShapeLabelLayer.svelte';
 	import ImageLayer from './ImageLayer.svelte';
 	import SelectionLayer from './SelectionLayer.svelte';
 	import type ContextMenu from './ContextMenu.svelte';
@@ -72,6 +73,9 @@
 
 	/** TextBlockLayer reference */
 	let textBlockLayerRef: TextBlockLayer | null = $state(null);
+
+	/** ShapeLabelLayer reference */
+	let shapeLabelLayerRef: ShapeLabelLayer | null = $state(null);
 
 	/** Hovered element ID (for select tool hover feedback) */
 	let hoveredElementId = $state<string | null>(null);
@@ -359,10 +363,19 @@
 			return;
 		}
 
-		// Handle text tool - create new text block
+		// Handle text tool - edit shape label OR create new text block
 		if (isTextTool) {
 			e.preventDefault();
-			// Clear selection when creating new text
+
+			// Check if clicking on a shape - if so, edit its label
+			const hitResult = hitTestElements(point, elements);
+			if (hitResult && hitResult.elementType === 'shape') {
+				whiteboardStore.clearSelection();
+				shapeLabelLayerRef?.startEditingShape(hitResult.elementId);
+				return;
+			}
+
+			// Otherwise create new text block
 			whiteboardStore.clearSelection();
 			textBlockLayerRef?.createBlockAtPosition(point.x, point.y);
 			return;
@@ -797,6 +810,25 @@
 		}
 		const [first, ...rest] = points;
 		return `M ${first.x} ${first.y} ${rest.map((p) => `L ${p.x} ${p.y}`).join(' ')}`;
+	}
+
+	// ==========================================================================
+	// Public API
+	// ==========================================================================
+
+	/**
+	 * Start editing a shape's label
+	 * Called from parent Whiteboard when user starts typing with a shape selected
+	 */
+	export function startEditingShapeLabel(shapeId: string): void {
+		shapeLabelLayerRef?.startEditingShape(shapeId);
+	}
+
+	/**
+	 * Check if shape label is being edited
+	 */
+	export function isEditingShapeLabel(): boolean {
+		return shapeLabelLayerRef?.isEditing() ?? false;
 	}
 </script>
 
@@ -1560,6 +1592,9 @@
 
 	<!-- TextBlock Layer (HTML overlay on SVG) -->
 	<TextBlockLayer bind:this={textBlockLayerRef} {scale} />
+
+	<!-- Shape Labels Layer (HTML overlay on SVG) -->
+	<ShapeLabelLayer bind:this={shapeLabelLayerRef} {scale} />
 </div>
 
 <style>

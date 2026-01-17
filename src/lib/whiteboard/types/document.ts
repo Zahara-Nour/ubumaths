@@ -128,6 +128,8 @@ export interface ShapeElement {
 	readonly cornerRadius?: number;
 	/** Rotation angle in degrees (0-360), default 0 */
 	readonly rotation?: number;
+	/** Optional markdown label centered on the shape (supports math: $x^2$, bold, italic) */
+	readonly labelMarkdown?: string;
 }
 
 /** Text block element - rich text with markdown */
