@@ -594,37 +594,23 @@ Excalidraw est un editeur de diagrammes collaboratif avec style "hand-drawn". No
 | **Double Layer (Static/Interactive)** | Notre systeme "live transforms" (livePositions, liveRotations, liveResizes) resout deja ce probleme de performance. Le double layer est critique pour Canvas (redraw complet) mais pas pour SVG (mise a jour partielle native du DOM). |
 | **Actions centralisees**              | Over-engineering. Le code actuel (~80 lignes de switch/case) est simple, lisible, et teste via le store. Utile pour 50+ actions, command palette, plugins - aucun de ces cas ne s'applique ici.                                        |
 | **Frames**                            | Le multi-pages existant couvre 95% du besoin d'organisation. Les frames seraient utiles pour voir plusieurs zones cote a cote, mais ce cas d'usage est rare pour un whiteboard educatif.                                               |
+| **BoundElements inverse**             | Optimisation prematuree. Le parcours O(n) actuel prend ~0.01ms pour 30 elements, ~2ms pour 5000. Imperceptible. La complexite ajoutee (coherence bidirectionnelle) > le gain.                                                          |
+| **Conteneurs de texte**               | Les labels sur shapes + TextBlocks couvrent deja les besoins. Ajouter du texte "contenu" dans une forme ajouterait de la complexite pour un gain marginal.                                                                             |
+| **History optimisee (deltas)**        | Les 50 snapshots actuels suffisent. Probleme de memoire uniquement pour documents avec beaucoup d'images - cas rare. Complexite elevee pour gain marginal.                                                                             |
+| **Elbow arrows**                      | Cas d'usage rare pour un whiteboard educatif (organigrammes, ERD). Les fleches droites suffisent pour les maths.                                                                                                                       |
 | **Collaboration temps reel**          | Hors scope - pas d'objectif collaboratif.                                                                                                                                                                                              |
 | **Style hand-drawn (roughjs)**        | Le style "propre" est plus adapte aux mathematiques.                                                                                                                                                                                   |
 
-### Idees RETENUES
+### Conclusion
 
-#### Priorite Moyenne
+L'analyse comparative avec Excalidraw revele que **le whiteboard UbuMaths est deja bien concu pour son usage educatif**. Les patterns d'Excalidraw (double layer, actions centralisees, frames, etc.) repondent a des besoins differents :
 
-| Idee                      | Description                                                                                                                                                           | Effort | Impact |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| **BoundElements inverse** | Chaque shape stocke les IDs des fleches attachees. Optimise les mises a jour lors du deplacement/suppression d'une forme (pas besoin de parcourir tous les elements). | Faible | Moyen  |
-| **Conteneurs de texte**   | Le texte peut etre "contenu" dans une forme avec auto-resize et word-wrap. Meilleure UX pour diagrammes annotes.                                                      | Moyen  | Moyen  |
+- **Excalidraw** : Application collaborative grand public, 50+ actions, plugins, style sketch
+- **UbuMaths** : Outil educatif mono-utilisateur, ~20 actions, style propre pour les maths
 
-#### Priorite Basse (si besoin)
+Les optimisations envisagees (BoundElements inverse, history deltas) sont des optimisations prematurees pour des problemes qui n'existent pas en pratique.
 
-| Idee                  | Description                                                                                                                                   | Effort | Impact |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| **History optimisee** | Passer de snapshots complets a des deltas ou structural sharing pour reduire la memoire. Utile seulement pour gros documents avec images/PDF. | Eleve  | Moyen  |
-| **Elbow arrows**      | Fleches avec segments a 90° et routage automatique. Pour organigrammes, arbres de decision.                                                   | Eleve  | Faible |
-
-### Plan d'implementation suggere
-
-**Phase A : BoundElements inverse**
-
-1. Ajouter `boundElements?: readonly { id: string; type: 'arrow' }[]` aux shapes
-2. Mettre a jour `createArrowWithBindings()` pour enregistrer la liaison bidirectionnelle
-3. Optimiser `updateBoundArrowsForShapes()` pour utiliser cette info
-4. Migration des documents existants (ajouter boundElements manquants)
-
-### Notes techniques
-
-- **Pourquoi pas le double layer?** Le systeme "live transforms" d'UbuMaths (Maps `livePositions`, `liveRotations`, `liveResizes`) applique des transforms CSS/SVG pendant les interactions sans modifier les elements du store. Cela evite les re-renders couteux de la meme maniere que le double layer, mais de facon idiomatique pour Svelte + SVG.
+**Aucune modification du whiteboard n'est necessaire suite a cette analyse.**
 
 ---
 
