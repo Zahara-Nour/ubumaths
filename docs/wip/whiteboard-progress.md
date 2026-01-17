@@ -573,10 +573,82 @@ Toutes les phases sont terminees :
 ### Ameliorations futures potentielles
 
 1. **Google Drive integration** : Implementer sauvegarde cloud (necessite changement scope OAuth)
-2. **Collaboration temps reel** : WebSockets pour edition collaborative
-3. **Compas** : Ajouter instrument compas (via Compass.svelte existant)
-4. **Touch support** : Gestes pinch-to-zoom pour tablettes
-5. **Undo/Redo gesturel** : Swipe gauche/droite pour undo/redo
+2. **Compas** : Ajouter instrument compas (via Compass.svelte existant)
+3. **Touch support** : Gestes pinch-to-zoom pour tablettes
+4. **Undo/Redo gesturel** : Swipe gauche/droite pour undo/redo
+
+---
+
+## Idees inspirees d'Excalidraw
+
+> Analyse comparative realisee le 2026-01-17. Voir `docs/ref/excalidraw.md` pour la documentation technique d'Excalidraw.
+
+### Contexte
+
+Excalidraw est un editeur de diagrammes collaboratif avec style "hand-drawn". Notre whiteboard utilise SVG (vs Canvas pour Excalidraw) et Svelte 5 runes (vs Jotai). Ces differences architecturales rendent certaines idees d'Excalidraw non pertinentes pour notre cas.
+
+### Idees NON retenues
+
+| Idee                                  | Raison du rejet                                                                                                                                                                                                                        |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Double Layer (Static/Interactive)** | Notre systeme "live transforms" (livePositions, liveRotations, liveResizes) resout deja ce probleme de performance. Le double layer est critique pour Canvas (redraw complet) mais pas pour SVG (mise a jour partielle native du DOM). |
+| **Collaboration temps reel**          | Hors scope - pas d'objectif collaboratif.                                                                                                                                                                                              |
+| **Style hand-drawn (roughjs)**        | Le style "propre" est plus adapte aux mathematiques.                                                                                                                                                                                   |
+
+### Idees RETENUES
+
+#### Priorite Haute
+
+| Idee                     | Description                                                                                                                                                                 | Effort | Impact |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| **Actions centralisees** | Registre d'actions avec raccourcis clavier declaratifs, conditions d'activation (predicate), reutilisables depuis menu/clavier/API. Ameliore maintenabilite et testabilite. | Moyen  | Fort   |
+| **Frames**               | Conteneurs visuels nommes (different des Groups). Permet d'organiser "Exercice 1", "Exercice 2" sur une page, avec export individuel et clipping optionnel.                 | Moyen  | Fort   |
+
+#### Priorite Moyenne
+
+| Idee                      | Description                                                                                                                                                           | Effort | Impact |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| **BoundElements inverse** | Chaque shape stocke les IDs des fleches attachees. Optimise les mises a jour lors du deplacement/suppression d'une forme (pas besoin de parcourir tous les elements). | Faible | Moyen  |
+| **Conteneurs de texte**   | Le texte peut etre "contenu" dans une forme avec auto-resize et word-wrap. Meilleure UX pour diagrammes annotes.                                                      | Moyen  | Moyen  |
+
+#### Priorite Basse (si besoin)
+
+| Idee                  | Description                                                                                                                                   | Effort | Impact |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| **History optimisee** | Passer de snapshots complets a des deltas ou structural sharing pour reduire la memoire. Utile seulement pour gros documents avec images/PDF. | Eleve  | Moyen  |
+| **Elbow arrows**      | Fleches avec segments a 90° et routage automatique. Pour organigrammes, arbres de decision.                                                   | Eleve  | Faible |
+
+### Plan d'implementation suggere
+
+**Phase A : Actions centralisees**
+
+1. Creer `src/lib/whiteboard/core/actions/registry.ts`
+2. Definir interface Action (name, perform, keyTest, predicate, trackEvent)
+3. Migrer actions existantes (delete, copy, paste, group, undo, redo, etc.)
+4. Centraliser les raccourcis clavier dans le registre
+5. Tests unitaires pour chaque action
+
+**Phase B : Frames**
+
+1. Ajouter type `FrameElement` dans `document.ts`
+2. Schema Zod dans `file-format.ts`
+3. Rendu frame avec titre et bordure dans `WhiteboardCanvas.svelte`
+4. Logique de clipping (elements avec frameId)
+5. Export individuel par frame dans `pdf-export.ts`
+6. UI pour creer/nommer/supprimer frames dans toolbar
+
+**Phase C : BoundElements inverse**
+
+1. Ajouter `boundElements?: readonly { id: string; type: 'arrow' }[]` aux shapes
+2. Mettre a jour `createArrowWithBindings()` pour enregistrer la liaison bidirectionnelle
+3. Optimiser `updateBoundArrowsForShapes()` pour utiliser cette info
+4. Migration des documents existants (ajouter boundElements manquants)
+
+### Notes techniques
+
+- **Pourquoi pas le double layer?** Le systeme "live transforms" d'UbuMaths (Maps `livePositions`, `liveRotations`, `liveResizes`) applique des transforms CSS/SVG pendant les interactions sans modifier les elements du store. Cela evite les re-renders couteux de la meme maniere que le double layer, mais de facon idiomatique pour Svelte + SVG.
+
+- **Difference Frame vs Group** : Un Group est une selection logique (deplacement/rotation ensemble). Un Frame est un conteneur visuel avec nom, bordure, et possibilite de clipper le contenu debordant.
 
 ---
 
