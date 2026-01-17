@@ -99,6 +99,7 @@
 			isEditing={editingShapeId === shape.id}
 			liveOffset={whiteboardStore.livePositions.get(shape.id)}
 			liveRotation={whiteboardStore.liveRotations.get(shape.id)}
+			liveResize={whiteboardStore.liveResizes.get(shape.id)}
 			onEndEdit={handleEndEdit}
 			onContentChange={(content) => handleContentChange(shape.id, content)}
 			{scale}

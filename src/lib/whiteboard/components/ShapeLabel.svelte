@@ -29,6 +29,8 @@
 		liveOffset?: { dx: number; dy: number } | null;
 		/** Live rotation override during rotation (from liveRotations) */
 		liveRotation?: number | null;
+		/** Live resize transform during resize (from liveResizes) */
+		liveResize?: { scaleX: number; scaleY: number; originX: number; originY: number } | null;
 		/** Callback when edit mode should end */
 		onEndEdit: () => void;
 		/** Callback when content changes */
@@ -41,6 +43,7 @@
 		isEditing,
 		liveOffset = null,
 		liveRotation = null,
+		liveResize = null,
 		onEndEdit,
 		onContentChange
 	}: Props = $props();
@@ -63,10 +66,29 @@
 	let bounds = $derived(getElementBounds(element));
 	let baseCenter = $derived(getBoundsCenter(bounds));
 
-	/** Effective center including live position offset during drag */
-	let center = $derived({
-		x: baseCenter.x + (liveOffset?.dx ?? 0),
-		y: baseCenter.y + (liveOffset?.dy ?? 0)
+	/**
+	 * Effective center including all live transforms:
+	 * 1. Apply resize (scale around origin)
+	 * 2. Apply position offset (translate)
+	 */
+	let center = $derived.by(() => {
+		let cx = baseCenter.x;
+		let cy = baseCenter.y;
+
+		// Apply live resize: scale around origin point
+		// Formula: newPos = origin + (pos - origin) * scale
+		if (liveResize) {
+			cx = liveResize.originX + (cx - liveResize.originX) * liveResize.scaleX;
+			cy = liveResize.originY + (cy - liveResize.originY) * liveResize.scaleY;
+		}
+
+		// Apply live position offset
+		if (liveOffset) {
+			cx += liveOffset.dx;
+			cy += liveOffset.dy;
+		}
+
+		return { x: cx, y: cy };
 	});
 
 	/** Shape rotation (use live rotation if during rotation drag) */
