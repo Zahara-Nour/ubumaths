@@ -592,6 +592,7 @@ Excalidraw est un editeur de diagrammes collaboratif avec style "hand-drawn". No
 | Idee                                  | Raison du rejet                                                                                                                                                                                                                        |
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Double Layer (Static/Interactive)** | Notre systeme "live transforms" (livePositions, liveRotations, liveResizes) resout deja ce probleme de performance. Le double layer est critique pour Canvas (redraw complet) mais pas pour SVG (mise a jour partielle native du DOM). |
+| **Actions centralisees**              | Over-engineering. Le code actuel (~80 lignes de switch/case) est simple, lisible, et teste via le store. Utile pour 50+ actions, command palette, plugins - aucun de ces cas ne s'applique ici.                                        |
 | **Collaboration temps reel**          | Hors scope - pas d'objectif collaboratif.                                                                                                                                                                                              |
 | **Style hand-drawn (roughjs)**        | Le style "propre" est plus adapte aux mathematiques.                                                                                                                                                                                   |
 
@@ -599,10 +600,9 @@ Excalidraw est un editeur de diagrammes collaboratif avec style "hand-drawn". No
 
 #### Priorite Haute
 
-| Idee                     | Description                                                                                                                                                                 | Effort | Impact |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| **Actions centralisees** | Registre d'actions avec raccourcis clavier declaratifs, conditions d'activation (predicate), reutilisables depuis menu/clavier/API. Ameliore maintenabilite et testabilite. | Moyen  | Fort   |
-| **Frames**               | Conteneurs visuels nommes (different des Groups). Permet d'organiser "Exercice 1", "Exercice 2" sur une page, avec export individuel et clipping optionnel.                 | Moyen  | Fort   |
+| Idee       | Description                                                                                                                                                 | Effort | Impact |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| **Frames** | Conteneurs visuels nommes (different des Groups). Permet d'organiser "Exercice 1", "Exercice 2" sur une page, avec export individuel et clipping optionnel. | Moyen  | Fort   |
 
 #### Priorite Moyenne
 
@@ -620,15 +620,7 @@ Excalidraw est un editeur de diagrammes collaboratif avec style "hand-drawn". No
 
 ### Plan d'implementation suggere
 
-**Phase A : Actions centralisees**
-
-1. Creer `src/lib/whiteboard/core/actions/registry.ts`
-2. Definir interface Action (name, perform, keyTest, predicate, trackEvent)
-3. Migrer actions existantes (delete, copy, paste, group, undo, redo, etc.)
-4. Centraliser les raccourcis clavier dans le registre
-5. Tests unitaires pour chaque action
-
-**Phase B : Frames**
+**Phase A : Frames**
 
 1. Ajouter type `FrameElement` dans `document.ts`
 2. Schema Zod dans `file-format.ts`
@@ -637,7 +629,7 @@ Excalidraw est un editeur de diagrammes collaboratif avec style "hand-drawn". No
 5. Export individuel par frame dans `pdf-export.ts`
 6. UI pour creer/nommer/supprimer frames dans toolbar
 
-**Phase C : BoundElements inverse**
+**Phase B : BoundElements inverse**
 
 1. Ajouter `boundElements?: readonly { id: string; type: 'arrow' }[]` aux shapes
 2. Mettre a jour `createArrowWithBindings()` pour enregistrer la liaison bidirectionnelle
