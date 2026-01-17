@@ -133,6 +133,19 @@ export interface ShapeElement {
 }
 
 // =============================================================================
+// Elbow Arrow Types
+// =============================================================================
+
+/** Direction of the first segment for elbow arrows */
+export type ElbowDirection = 'horizontal-first' | 'vertical-first';
+
+/** Elbow direction labels for UI */
+export const ELBOW_DIRECTION_LABELS: Record<ElbowDirection, string> = {
+	'horizontal-first': "Horizontal d'abord",
+	'vertical-first': "Vertical d'abord"
+};
+
+// =============================================================================
 // Binding Types (Arrow-to-Shape connections)
 // =============================================================================
 
@@ -167,6 +180,10 @@ export interface ArrowElement extends ShapeElement {
 	readonly startBinding?: BindingAnchor | null;
 	/** Binding for the end point of the arrow (optional) */
 	readonly endBinding?: BindingAnchor | null;
+	/** If true, arrow bends at 90 degree angles (elbow arrow) */
+	readonly elbowed?: boolean;
+	/** Direction of first segment for elbow arrows (default: horizontal-first) */
+	readonly elbowDirection?: ElbowDirection;
 }
 
 /** Text block element - rich text with markdown */

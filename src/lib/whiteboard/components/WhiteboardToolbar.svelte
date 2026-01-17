@@ -49,12 +49,14 @@
 		INSTRUMENT_LABELS,
 		STROKE_STYLE_LABELS,
 		FILL_MODE_LABELS,
+		ELBOW_DIRECTION_LABELS,
 		PAGE_FORMATS,
 		type InstrumentType,
 		type StrokeStyle,
 		type FillMode,
 		type BackgroundStyle,
-		type PageFormatKey
+		type PageFormatKey,
+		type ElbowDirection
 	} from '../types/document';
 
 	// ==========================================================================
@@ -208,6 +210,21 @@
 	/** Show fill selector when fillable shape tool active OR fillable shape is selected */
 	let showFillSelector = $derived(isFillableToolActive || hasSelectedFillableShape);
 
+	/** Check if arrow tool is active */
+	let isArrowToolActive = $derived(toolState.toolType === 'arrow');
+
+	/** Check if an arrow is selected */
+	let hasSelectedArrow = $derived(
+		whiteboardStore.selectedElements.some((el) => el.type === 'shape' && el.shapeType === 'arrow')
+	);
+
+	/** Show elbow controls when arrow tool active OR arrow is selected */
+	let showElbowControls = $derived(isArrowToolActive || hasSelectedArrow);
+
+	/** Current elbow state from toolbar/selection */
+	let currentElbowed = $derived(toolState.elbowed);
+	let currentElbowDirection = $derived(toolState.elbowDirection);
+
 	/** Current page background style */
 	let currentBackgroundStyle = $derived.by(() => {
 		const page = whiteboardStore.currentPage;
@@ -339,6 +356,22 @@
 		// Apply to selected shapes if any
 		if (whiteboardStore.hasSelection) {
 			whiteboardStore.updateSelectedStyles({ fill: color });
+		}
+	}
+
+	function handleElbowedChange(elbowed: boolean) {
+		whiteboardStore.setElbowed(elbowed);
+		// Apply to selected arrows if any
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ elbowed });
+		}
+	}
+
+	function handleElbowDirectionChange(direction: ElbowDirection) {
+		whiteboardStore.setElbowDirection(direction);
+		// Apply to selected arrows if any
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ elbowDirection: direction });
 		}
 	}
 
@@ -1018,6 +1051,35 @@
 							</div>
 						</Popover.Content>
 					</Popover.Root>
+				{/if}
+
+				<!-- Elbow Arrow Controls (conditional) -->
+				{#if showElbowControls}
+					<div class="flex items-center gap-2 border-l border-border pl-2">
+						<label class="flex items-center gap-1.5 text-xs">
+							<input
+								type="checkbox"
+								checked={currentElbowed}
+								onchange={(e) => handleElbowedChange((e.target as HTMLInputElement).checked)}
+								class="h-3.5 w-3.5 rounded border-border"
+							/>
+							<span class="text-muted-foreground">Coudée</span>
+						</label>
+						{#if currentElbowed}
+							<select
+								value={currentElbowDirection}
+								onchange={(e) =>
+									handleElbowDirectionChange(
+										(e.target as HTMLSelectElement).value as ElbowDirection
+									)}
+								class="h-7 rounded-md border border-border bg-background px-1.5 text-xs"
+							>
+								{#each Object.entries(ELBOW_DIRECTION_LABELS) as [value, label] (value)}
+									<option {value}>{label}</option>
+								{/each}
+							</select>
+						{/if}
+					</div>
 				{/if}
 			</div>
 

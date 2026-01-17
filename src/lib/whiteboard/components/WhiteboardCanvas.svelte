@@ -23,6 +23,7 @@
 		getBoundsCenter,
 		type BoundingBox
 	} from '../core/hit-testing';
+	import { calculateElbowPath } from '../core/elbow-path';
 	import InstrumentLayer from './InstrumentLayer.svelte';
 	import TextBlockLayer from './TextBlockLayer.svelte';
 	import ShapeLabelLayer from './ShapeLabelLayer.svelte';
@@ -816,7 +817,9 @@
 				color: toolState.color,
 				strokeWidth: toolState.strokeWidth,
 				opacity: toolState.opacity,
-				strokeStyle: toolState.strokeStyle
+				strokeStyle: toolState.strokeStyle,
+				elbowed: toolState.elbowed,
+				elbowDirection: toolState.elbowDirection
 			});
 			whiteboardStore.addElement(arrow);
 		} else {
@@ -1542,18 +1545,37 @@
 						undefined}
 				>
 					{#if props.type === 'line'}
-						<line
-							x1={props.x1}
-							y1={props.y1}
-							x2={props.x2}
-							y2={props.y2}
-							stroke={shape.color}
-							stroke-width={shape.strokeWidth}
-							stroke-linecap="round"
-							stroke-dasharray={dashArray}
-							opacity={shape.opacity}
-							marker-end={props.hasArrowMarker ? `url(#arrow-marker-${shape.id})` : undefined}
-						/>
+						{#if arrowShape?.elbowed}
+							{@const elbowResult = calculateElbowPath(
+								adjustedStart,
+								adjustedEnd,
+								arrowShape.elbowDirection ?? 'horizontal-first'
+							)}
+							<path
+								d={elbowResult.path}
+								stroke={shape.color}
+								stroke-width={shape.strokeWidth}
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-dasharray={dashArray}
+								opacity={shape.opacity}
+								fill="none"
+								marker-end={props.hasArrowMarker ? `url(#arrow-marker-${shape.id})` : undefined}
+							/>
+						{:else}
+							<line
+								x1={props.x1}
+								y1={props.y1}
+								x2={props.x2}
+								y2={props.y2}
+								stroke={shape.color}
+								stroke-width={shape.strokeWidth}
+								stroke-linecap="round"
+								stroke-dasharray={dashArray}
+								opacity={shape.opacity}
+								marker-end={props.hasArrowMarker ? `url(#arrow-marker-${shape.id})` : undefined}
+							/>
+						{/if}
 					{:else if props.type === 'rect'}
 						<rect
 							x={props.x}
@@ -1666,18 +1688,37 @@
 							? 'url(#hatch-preview)'
 							: toolState.fillColor}
 				{#if previewProps.type === 'line'}
-					<line
-						x1={previewProps.x1}
-						y1={previewProps.y1}
-						x2={previewProps.x2}
-						y2={previewProps.y2}
-						stroke={toolState.color}
-						stroke-width={toolState.strokeWidth}
-						stroke-dasharray={previewDashArray}
-						stroke-linecap="round"
-						opacity={toolState.opacity}
-						marker-end={previewProps.hasArrowMarker ? 'url(#arrow-marker-preview)' : undefined}
-					/>
+					{#if toolState.toolType === 'arrow' && toolState.elbowed}
+						{@const previewElbowResult = calculateElbowPath(
+							shapeStartPoint,
+							shapeEndPoint,
+							toolState.elbowDirection ?? 'horizontal-first'
+						)}
+						<path
+							d={previewElbowResult.path}
+							stroke={toolState.color}
+							stroke-width={toolState.strokeWidth}
+							stroke-dasharray={previewDashArray}
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							fill="none"
+							opacity={toolState.opacity}
+							marker-end={previewProps.hasArrowMarker ? 'url(#arrow-marker-preview)' : undefined}
+						/>
+					{:else}
+						<line
+							x1={previewProps.x1}
+							y1={previewProps.y1}
+							x2={previewProps.x2}
+							y2={previewProps.y2}
+							stroke={toolState.color}
+							stroke-width={toolState.strokeWidth}
+							stroke-dasharray={previewDashArray}
+							stroke-linecap="round"
+							opacity={toolState.opacity}
+							marker-end={previewProps.hasArrowMarker ? 'url(#arrow-marker-preview)' : undefined}
+						/>
+					{/if}
 				{:else if previewProps.type === 'rect'}
 					<rect
 						x={previewProps.x}

@@ -2,10 +2,69 @@
 
 ## Etat actuel
 
-**Phase completee** : Phase 11 - Route + Integration (WHITEBOARD COMPLETE)
-**Date** : 2025-12-17
-**Commit** : `e2683681`
+**Phase completee** : Phase 12 - Elbow Arrows
+**Date** : 2026-01-17
+**Commit** : `286dc50a`
 **Statut** : ✅ IMPLEMENTATION TERMINEE
+
+---
+
+## Phase 12 : Elbow Arrows
+
+### Fichiers crees
+
+| Fichier                                      | Description                             |
+| -------------------------------------------- | --------------------------------------- |
+| `src/lib/whiteboard/core/elbow-path.ts`      | Calcul path SVG et midpoint pour coudes |
+| `src/lib/whiteboard/core/elbow-path.test.ts` | Tests elbow path (16 tests)             |
+
+### Fichiers modifies
+
+| Fichier                                                  | Modifications                                         |
+| -------------------------------------------------------- | ----------------------------------------------------- |
+| `src/lib/whiteboard/types/document.ts`                   | ElbowDirection type, elbowed/elbowDirection sur Arrow |
+| `src/lib/whiteboard/types/file-format.ts`                | Schema Zod pour validation elbow properties           |
+| `src/lib/whiteboard/components/WhiteboardCanvas.svelte`  | Rendu `<path>` pour elbow arrows + preview            |
+| `src/lib/whiteboard/components/SelectionLayer.svelte`    | Hover highlight pour elbow arrows                     |
+| `src/lib/whiteboard/components/ShapeLabel.svelte`        | Position label au milieu du coude                     |
+| `src/lib/whiteboard/components/WhiteboardToolbar.svelte` | Toggle "Coudee" + select direction                    |
+| `src/lib/whiteboard/stores/whiteboard.svelte.ts`         | elbowed/elbowDirection dans toolSettings + methodes   |
+| `src/lib/whiteboard/core/binding.ts`                     | ArrowOptions avec elbowed/elbowDirection              |
+
+### Tests crees
+
+| Fichier                                      | Tests    |
+| -------------------------------------------- | -------- |
+| `src/lib/whiteboard/core/elbow-path.test.ts` | 16 tests |
+
+**Total Phase 12 : 16 nouveaux tests**
+**Total cumule : 548 tests**
+
+### Fonctionnalites implementees
+
+1. **ElbowDirection type** : `'horizontal-first' | 'vertical-first'`
+2. **Path SVG calculation** : `M start L elbow L end` avec un coude a 90 degres
+3. **Midpoint calculation** : Position label au centre du path total
+4. **Rendu conditionnel** : `<path>` pour elbow, `<line>` pour straight
+5. **Preview pendant dessin** : Shape preview supporte elbow
+6. **Hover highlight** : SelectionLayer adapte pour elbow paths
+7. **Label positioning** : Angle correct selon segment (horizontal/vertical)
+8. **UI Toolbar** : Checkbox "Coudee" + select direction quand arrow actif
+9. **Store methods** : `setElbowed()`, `setElbowDirection()`
+10. **Binding support** : Elbow properties passees lors creation arrow
+
+### Decisions techniques
+
+1. **Simple L-shape** : 1 seul coude (pas de routage complexe comme Excalidraw)
+2. **Par fleche** : Propriete toggleable, pas globale
+3. **Direction utilisateur** : L'utilisateur choisit horizontal-first ou vertical-first
+4. **Cas degenere** : Si meme X ou Y, la fleche reste droite (pas de coude)
+
+### Code Review
+
+- **Score** : Good
+- **Tests** : 16 tests passent (4 describes, tous les cas couverts)
+- **Issues** : Aucune
 
 ---
 
@@ -657,6 +716,7 @@ src/lib/whiteboard/
 │   ├── TextBlock.svelte
 │   └── TextBlockLayer.svelte
 ├── core/
+│   ├── elbow-path.ts                # NEW Phase 12
 │   ├── history.svelte.ts
 │   ├── pdf-export.ts                # NEW Phase 10
 │   ├── serialization.ts

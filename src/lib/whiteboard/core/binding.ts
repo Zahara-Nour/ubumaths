@@ -12,7 +12,8 @@ import type {
 	ShapeElement,
 	ArrowElement,
 	BindingAnchor,
-	WhiteboardElement
+	WhiteboardElement,
+	ElbowDirection
 } from '../types/document';
 import {
 	getShapeBounds,
@@ -236,6 +237,10 @@ export interface ArrowOptions {
 	strokeWidth: number;
 	opacity: number;
 	strokeStyle?: 'solid' | 'dashed' | 'dotted' | 'dashdot';
+	/** If true, arrow bends at 90 degree angles (elbow arrow) */
+	elbowed?: boolean;
+	/** Direction of first segment for elbow arrows */
+	elbowDirection?: ElbowDirection;
 }
 
 /** Result of arrow creation with potential bindings */
@@ -300,7 +305,9 @@ export function createArrowWithBindings(
 		opacity: options.opacity,
 		strokeStyle: options.strokeStyle,
 		startBinding,
-		endBinding
+		endBinding,
+		elbowed: options.elbowed,
+		elbowDirection: options.elbowDirection
 	};
 
 	return {
