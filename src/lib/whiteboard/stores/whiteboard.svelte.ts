@@ -2876,6 +2876,10 @@ function createWhiteboardStore() {
 		 * Called after a successful manual save to clean up the autosave
 		 */
 		async deleteAutosaveIfExists(): Promise<void> {
+			// Always cancel any pending autosave first to prevent race conditions
+			// where the autosave fires after the file is deleted
+			driveSyncService.cancelAutoSync();
+
 			if (!syncState.driveFileId) return;
 
 			try {
