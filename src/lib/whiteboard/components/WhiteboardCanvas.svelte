@@ -75,6 +75,9 @@
 	/** Binding candidate IDs during arrow drawing (for visual feedback) */
 	let bindingCandidateIds = $state<Set<string>>(new Set());
 
+	/** Snap points during arrow drawing (shows exact connection points) */
+	let snapPoints = $state<{ point: Point; end: 'start' | 'end' }[]>([]);
+
 	/** TextBlockLayer reference */
 	let textBlockLayerRef: TextBlockLayer | null = $state(null);
 
@@ -473,11 +476,13 @@
 			if (toolState.toolType === 'arrow' && shapeStartPoint) {
 				const excludeIds = new Set<string>();
 				const candidates = new Set<string>();
+				const newSnapPoints: { point: Point; end: 'start' | 'end' }[] = [];
 
 				// Check start point
 				const startCandidate = findBindingCandidate(shapeStartPoint, elements, excludeIds);
 				if (startCandidate) {
 					candidates.add(startCandidate.element.id);
+					newSnapPoints.push({ point: startCandidate.perimeterPoint, end: 'start' });
 				}
 
 				// Check end point
@@ -485,9 +490,11 @@
 				const endCandidate = findBindingCandidate(endPoint, elements, excludeIds);
 				if (endCandidate) {
 					candidates.add(endCandidate.element.id);
+					newSnapPoints.push({ point: endCandidate.perimeterPoint, end: 'end' });
 				}
 
 				bindingCandidateIds = candidates;
+				snapPoints = newSnapPoints;
 			}
 
 			return;
@@ -822,6 +829,7 @@
 		shapeStartPoint = null;
 		shapeEndPoint = null;
 		bindingCandidateIds = new Set();
+		snapPoints = [];
 	}
 
 	// ==========================================================================
@@ -1428,6 +1436,34 @@
 								opacity="0.8"
 							/>
 						{/if}
+					</g>
+				{/each}
+			{/if}
+
+			<!-- Snap point indicators (during arrow drawing) -->
+			{#if snapPoints.length > 0}
+				{#each snapPoints as snap (snap.end)}
+					<g class="snap-point-indicator">
+						<!-- Outer ring -->
+						<circle
+							cx={snap.point.x}
+							cy={snap.point.y}
+							r="8"
+							fill="none"
+							stroke="#3b82f6"
+							stroke-width="2"
+							opacity="0.9"
+						/>
+						<!-- Inner filled circle -->
+						<circle
+							cx={snap.point.x}
+							cy={snap.point.y}
+							r="4"
+							fill="#3b82f6"
+							stroke="white"
+							stroke-width="1.5"
+							opacity="0.9"
+						/>
 					</g>
 				{/each}
 			{/if}
