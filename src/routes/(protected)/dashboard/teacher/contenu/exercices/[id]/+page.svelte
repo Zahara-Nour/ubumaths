@@ -27,6 +27,11 @@
 	} from 'lucide-svelte';
 	import { generateExerciseTypst } from '$lib/exercises/typst/exercise-typst-generator';
 	import { getTypstService, PRIORITY } from '$lib/typst/service';
+	import {
+		clearTrackedExternalImages,
+		getTrackedExternalImages
+	} from '$lib/ubumark/generators/typst-generator';
+	import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
 	import CodeViewer from '$lib/components/CodeViewer.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { Database } from '$lib/types/database';
@@ -326,7 +331,10 @@
 			// Use a random seed for this PDF generation
 			const seed = Math.floor(Math.random() * 1000000);
 
-			// Generate Typst content
+			// Clear tracked images before generation
+			clearTrackedExternalImages();
+
+			// Generate Typst content (this will track external image URLs)
 			const typstResult = await generateExerciseTypst({
 				exercise: data.exercise as import('$lib/exercises/types').Exercise,
 				variationIndex,
@@ -340,15 +348,35 @@
 				return;
 			}
 
-			// Compile to PDF using TypstService
+			// Get external images that need to be fetched
+			const externalImageUrls = getTrackedExternalImages();
+
+			// Initialize TypstService
 			const service = getTypstService();
 			await service.initialize();
 
+			// Fetch and map external images if any
+			if (externalImageUrls.length > 0) {
+				console.log('[PDF] Fetching external images:', externalImageUrls.length);
+				const imageData = await fetchExternalImages(externalImageUrls);
+
+				// Map images to virtual file system
+				for (const [url, data] of imageData) {
+					const virtualPath = urlToVirtualPath(url);
+					service.mapShadow(virtualPath, data);
+				}
+				console.log('[PDF] Mapped', imageData.size, 'images to virtual file system');
+			}
+
+			// Compile to PDF
 			const compileResult = await service.compileWithPriority(
 				typstResult.typstContent,
 				{ format: 'pdf' },
 				PRIORITY.URGENT
 			);
+
+			// Clean up virtual file system after compilation
+			service.resetShadow();
 
 			if (!compileResult.success || !compileResult.data) {
 				toaster.error(compileResult.error || 'Erreur lors de la compilation PDF');

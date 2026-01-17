@@ -990,8 +990,9 @@ describe('Image Generation - Path Resolution', () => {
 		expect(result).toContain('/images/subdir/image.png');
 	});
 
-	it('should generate placeholder for external URL images', () => {
-		// Typst WASM compiler cannot access external URLs, so we generate a placeholder
+	it('should use virtual paths for external URL images', () => {
+		// External images are mapped to virtual paths for Typst WASM compatibility
+		// The caller must fetch the images and map them using mapShadow
 		const options: Required<TypstTranspilerOptions> = {
 			paperSize: 'a4',
 			fontSize: 11,
@@ -1010,13 +1011,18 @@ describe('Image Generation - Path Resolution', () => {
 
 		const result = transpileImage(node, options);
 
-		// Should generate a placeholder box, not try to load the URL
-		expect(result).toContain('Image : Remote Image');
-		expect(result).toContain('#box');
-		expect(result).not.toContain('#image');
+		// Should use virtual path and generate figure with caption
+		expect(result).toContain('/virtual/images/');
+		expect(result).toContain('.png');
+		expect(result).toContain('image(');
+		expect(result).toContain('Remote Image');
 	});
 
-	it('should use alt text for placeholder when no caption', () => {
+	it('should track external image URLs for later fetching', async () => {
+		const { clearTrackedExternalImages, getTrackedExternalImages } = await import(
+			'../typst-generator'
+		);
+
 		const options: Required<TypstTranspilerOptions> = {
 			paperSize: 'a4',
 			fontSize: 11,
@@ -1027,18 +1033,22 @@ describe('Image Generation - Path Resolution', () => {
 			author: ''
 		};
 
+		// Clear before test
+		clearTrackedExternalImages();
+
 		const node: ImageNode = {
 			type: 'image',
-			src: 'https://example.com/image.png',
-			alt: 'Description of image'
+			src: 'https://example.com/tracked-image.png'
 		};
 
-		const result = transpileImage(node, options);
+		transpileImage(node, options);
 
-		expect(result).toContain('Image : Description of image');
+		// Should have tracked the URL
+		const tracked = getTrackedExternalImages();
+		expect(tracked).toContain('https://example.com/tracked-image.png');
 	});
 
-	it('should generate inline placeholder for external inline images', () => {
+	it('should generate inline image with virtual path for external images', () => {
 		const options: Required<TypstTranspilerOptions> = {
 			paperSize: 'a4',
 			fontSize: 11,
@@ -1052,14 +1062,15 @@ describe('Image Generation - Path Resolution', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'https://example.com/icon.png',
-			sizeClass: 'inline',
-			alt: 'Icon'
+			sizeClass: 'inline'
 		};
 
 		const result = transpileImage(node, options);
 
-		// Inline placeholder should be simpler
-		expect(result).toBe('[_Icon_]');
+		// Inline images should use box with virtual path
+		expect(result).toContain('#box');
+		expect(result).toContain('/virtual/images/');
+		expect(result).toContain('#image');
 	});
 });
 

@@ -58,8 +58,52 @@ import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import type { VariationTableNode } from '../types/variation-table';
 import type { ProbabilityTreeNode } from '../types/probability-tree';
 import { createLogger } from '$lib/utils/logger';
+import { urlToVirtualPath, isExternalUrl as checkExternalUrl } from '$lib/typst/image-loader';
 
 const logger = createLogger('typst-generator');
+
+// ============================================================================
+// EXTERNAL IMAGE TRACKING
+// ============================================================================
+
+/**
+ * Module-level set to track external image URLs during Typst generation.
+ *
+ * Call `clearTrackedExternalImages()` before generating content,
+ * then `getTrackedExternalImages()` after to get the list of URLs
+ * that need to be fetched and mapped to the virtual file system.
+ */
+const trackedExternalImages = new Set<string>();
+
+/**
+ * Clear the tracked external images set
+ *
+ * Call this before starting a new Typst generation to reset the tracking.
+ */
+export function clearTrackedExternalImages(): void {
+	trackedExternalImages.clear();
+}
+
+/**
+ * Get all tracked external image URLs
+ *
+ * Call this after generating Typst content to get the list of external
+ * images that need to be fetched and mapped to the virtual file system.
+ *
+ * @returns Array of external image URLs
+ */
+export function getTrackedExternalImages(): string[] {
+	return Array.from(trackedExternalImages);
+}
+
+/**
+ * Track an external image URL
+ *
+ * @param url - External URL to track
+ */
+function trackExternalImage(url: string): void {
+	trackedExternalImages.add(url);
+}
 
 // ============================================================================
 // DEFAULT OPTIONS
@@ -781,14 +825,39 @@ ${gridRows.join(',\n')}
  * ```
  */
 export function transpileImage(node: ImageNode, options: Required<TypstTranspilerOptions>): string {
-	const imagePath = resolveImagePath(node.src, options.imageBasePath);
 	const isInline = node.sizeClass === 'inline';
 
-	// IMPORTANT: Typst WASM compiler cannot access external URLs
-	// Generate a placeholder for external images instead of failing
-	if (isExternalUrl(node.src)) {
-		return buildExternalImagePlaceholder(node, isInline);
+	// Handle external URLs: use virtual paths for Typst WASM compatibility
+	// The caller must fetch these images and map them to the virtual file system
+	if (checkExternalUrl(node.src)) {
+		// Track this URL so caller knows which images to fetch
+		trackExternalImage(node.src);
+
+		// Convert to virtual path
+		const virtualPath = urlToVirtualPath(node.src);
+
+		// Get dimensions from the service
+		const dimensions = getDimensionsForFormat(node, 'typst');
+
+		// Build the image command with virtual path
+		const imageCommand = buildImageCommand(node, virtualPath, dimensions, isInline);
+
+		// Inline images: wrap in box for text alignment
+		if (isInline) {
+			return `#box(height: 1em)[#image("${virtualPath}")]`;
+		}
+
+		// Images with caption: use figure function
+		if (node.caption) {
+			return buildFigure(node, virtualPath, dimensions);
+		}
+
+		// Block images without caption: use alignment wrapper
+		return buildAlignedImage(node, imageCommand);
 	}
+
+	// Local images: use resolved path
+	const imagePath = resolveImagePath(node.src, options.imageBasePath);
 
 	// Get dimensions from the service
 	const dimensions = getDimensionsForFormat(node, 'typst');
@@ -808,55 +877,6 @@ export function transpileImage(node: ImageNode, options: Required<TypstTranspile
 
 	// Block images without caption: use alignment wrapper
 	return buildAlignedImage(node, imageCommand);
-}
-
-/**
- * Check if a URL is external (http/https)
- *
- * External URLs cannot be loaded by Typst WASM compiler in browser
- *
- * @param src - Image source URL or path
- * @returns True if external URL
- */
-function isExternalUrl(src: string): boolean {
-	return src.startsWith('http://') || src.startsWith('https://');
-}
-
-/**
- * Build a placeholder for external images that cannot be loaded by Typst WASM
- *
- * The Typst WASM compiler runs in a sandboxed environment and cannot
- * access external URLs. This generates a styled placeholder box that
- * shows the image caption or alt text.
- *
- * @param node - Image node with caption/alt
- * @param isInline - Whether this is an inline image
- * @returns Typst placeholder code
- */
-function buildExternalImagePlaceholder(node: ImageNode, isInline: boolean): string {
-	const caption = node.caption || node.alt || 'Image externe';
-	const escapedCaption = escapeTypstBrackets(caption);
-
-	if (isInline) {
-		// Inline placeholder: simple text in brackets
-		return `[_${escapedCaption}_]`;
-	}
-
-	// Block placeholder: styled box with caption
-	// Use a gray box with italic text to indicate missing image
-	return `#align(center)[
-  #box(
-    width: 70%,
-    stroke: 0.5pt + gray,
-    radius: 4pt,
-    inset: 1em,
-    fill: rgb("#f5f5f5")
-  )[
-    #align(center)[
-      #text(fill: gray)[_Image : ${escapedCaption}_]
-    ]
-  ]
-]`;
 }
 
 /**

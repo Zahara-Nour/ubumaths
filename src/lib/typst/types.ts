@@ -61,6 +61,38 @@ export interface TypstCompiler {
 	 * @returns Promise resolving to PDF as Uint8Array
 	 */
 	pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
+
+	/**
+	 * Map a virtual file path to binary content (for images, fonts, etc.)
+	 *
+	 * This creates a shadow file system that Typst can access during compilation.
+	 * Use this to provide images that would otherwise require network access.
+	 *
+	 * @param path - Virtual file path (e.g., '/images/photo.png')
+	 * @param content - Binary content as Uint8Array
+	 *
+	 * @example
+	 * ```typescript
+	 * const imageData = await fetch(url).then(r => r.arrayBuffer());
+	 * typst.mapShadow('/images/photo.png', new Uint8Array(imageData));
+	 * ```
+	 */
+	mapShadow: (path: string, content: Uint8Array) => void;
+
+	/**
+	 * Add a text source file to the virtual file system
+	 *
+	 * @param path - Virtual file path (e.g., '/template.typ')
+	 * @param content - Text content
+	 */
+	addSource: (path: string, content: string) => void;
+
+	/**
+	 * Reset/clear all shadow mappings and source files
+	 *
+	 * Call this after compilation to free memory from mapped files.
+	 */
+	resetShadow: () => void;
 }
 
 /**
