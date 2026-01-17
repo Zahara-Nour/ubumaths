@@ -12,6 +12,6 @@
 <TabsPrimitive.Content
 	bind:ref
 	data-slot="tabs-content"
-	class={cn('outline-none', className)}
+	class={cn('mt-2 outline-none', className)}
 	{...restProps}
 />
