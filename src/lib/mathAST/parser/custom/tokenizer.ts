@@ -138,6 +138,24 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'log',
 	'exp',
 	'sqrt',
+	// Inverse trigonometric functions
+	'arcsin',
+	'arccos',
+	'arctan',
+	'asin',
+	'acos',
+	'atan',
+	// Hyperbolic functions
+	'sinh',
+	'cosh',
+	'tanh',
+	// Inverse hyperbolic functions
+	'arcsinh',
+	'arccosh',
+	'arctanh',
+	'asinh',
+	'acosh',
+	'atanh',
 	// Rounding functions
 	'floor',
 	'ceil',
@@ -159,10 +177,25 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
  */
 const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 	'variance', // 8 chars
+	'arcsinh', // 7 chars
+	'arccosh', // 7 chars
+	'arctanh', // 7 chars
+	'arcsin', // 6 chars
+	'arccos', // 6 chars
+	'arctan', // 6 chars
 	'median', // 6 chars
+	'asinh', // 5 chars
+	'acosh', // 5 chars
+	'atanh', // 5 chars
 	'stdev', // 5 chars
 	'floor', // 5 chars
 	'round', // 5 chars
+	'sinh', // 4 chars
+	'cosh', // 4 chars
+	'tanh', // 4 chars
+	'asin', // 4 chars
+	'acos', // 4 chars
+	'atan', // 4 chars
 	'sqrt', // 4 chars
 	'mean', // 4 chars
 	'ceil', // 4 chars

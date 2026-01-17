@@ -578,7 +578,35 @@ describe('Symbol tokenization', () => {
 // =============================================================================
 
 describe('Function tokenization', () => {
-	const functions = ['sin', 'cos', 'tan', 'ln', 'log', 'exp', 'sqrt'];
+	const functions = [
+		// Basic trigonometric
+		'sin',
+		'cos',
+		'tan',
+		// Inverse trigonometric
+		'arcsin',
+		'arccos',
+		'arctan',
+		'asin',
+		'acos',
+		'atan',
+		// Hyperbolic
+		'sinh',
+		'cosh',
+		'tanh',
+		// Inverse hyperbolic
+		'arcsinh',
+		'arccosh',
+		'arctanh',
+		'asinh',
+		'acosh',
+		'atanh',
+		// Other
+		'ln',
+		'log',
+		'exp',
+		'sqrt'
+	];
 
 	it.each(functions)('should tokenize %s as FUNC', (func) => {
 		const tokens = tokenize(func);
