@@ -279,36 +279,33 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(400, `Some exercises do not belong to this worksheet: ${invalidIds.join(', ')}`);
 	}
 
-	// Update positions in a batch
-	// Note: Supabase doesn't support batch updates natively, so we use individual updates
-	// For production with many exercises, consider using a database function
-	let updatedCount = 0;
-
-	for (const exercise of exercises) {
-		const { error: updateError } = await locals.supabase
-			.from('worksheet_exercises')
-			.update({
-				position: exercise.position,
-				section_id: exercise.section_id ?? null
-			})
-			.eq('id', exercise.id)
-			.eq('worksheet_id', params.id);
-
-		if (updateError) {
-			console.error('Failed to update exercise position:', updateError);
-			// Continue with other updates, log the failure
-		} else {
-			updatedCount++;
+	// Use RPC for atomic update in a single transaction
+	// This avoids unique constraint conflicts and is much more efficient
+	const { data: updatedCount, error: rpcError } = await locals.supabase.rpc(
+		'reorder_worksheet_exercises',
+		{
+			p_worksheet_id: params.id,
+			p_exercises: exercises.map((e) => ({
+				id: e.id,
+				new_position: e.position,
+				new_section_id: e.section_id ?? null
+			}))
 		}
+	);
+
+	if (rpcError) {
+		console.error('Failed to reorder exercises:', rpcError);
+		throw error(500, rpcError.message || 'Failed to reorder exercises');
 	}
 
 	// Validate response
+	const count = updatedCount ?? exercises.length;
 	const validated = validateJsonResponse(
 		reorderExercisesResponseSchema,
 		{
 			success: true as const,
-			message: `Reordered ${updatedCount} exercises`,
-			updated_count: updatedCount
+			message: `Reordered ${count} exercises`,
+			updated_count: count
 		},
 		'PUT /api/worksheets/[id]/exercises'
 	);

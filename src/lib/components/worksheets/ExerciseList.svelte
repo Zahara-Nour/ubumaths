@@ -167,12 +167,17 @@
 	/**
 	 * Handle drop
 	 */
-	async function handleDrop(e: DragEvent, targetSectionId: string | null, targetIndex?: number) {
+	async function handleDrop(e: DragEvent, dropSectionId: string | null) {
 		e.preventDefault();
 		if (readonly || !draggedExercise) return;
 
 		const exercise = draggedExercise;
 		const sourceSectionId = exercise.section_id;
+		// Use dragOverSectionId if available (more accurate), fallback to dropSectionId
+		const targetSectionId = dragOverSectionId ?? dropSectionId;
+		// Use dragOverIndex from state (set by handleDragOverExercise)
+		const targetIndex = dragOverIndex;
+
 		const sourceGroup = groupedExercises.get(sourceSectionId) ?? [];
 		const targetGroup =
 			sourceSectionId === targetSectionId
@@ -186,7 +191,7 @@
 		const isSameSection = sourceSectionId === targetSectionId;
 		if (isSameSection) {
 			// Same section: check if position actually changes
-			if (targetIndex === undefined) {
+			if (targetIndex === null) {
 				// Dropping at end - only move if not already at end
 				if (sourceIndex === sourceGroup.length - 1) {
 					resetDragState();
@@ -209,7 +214,7 @@
 			newOrder.splice(sourceIndex, 1);
 			// Insert at new position
 			const insertIndex =
-				targetIndex === undefined
+				targetIndex === null
 					? newOrder.length
 					: targetIndex > sourceIndex
 						? targetIndex - 1
@@ -242,7 +247,7 @@
 
 			// 2. Insert into target and renumber
 			const newTargetOrder = [...targetGroup];
-			const insertIndex = targetIndex === undefined ? newTargetOrder.length : targetIndex;
+			const insertIndex = targetIndex === null ? newTargetOrder.length : targetIndex;
 			newTargetOrder.splice(insertIndex, 0, exercise);
 
 			newTargetOrder.forEach((ex, idx) => {
