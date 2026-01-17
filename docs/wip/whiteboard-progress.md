@@ -597,20 +597,48 @@ Excalidraw est un editeur de diagrammes collaboratif avec style "hand-drawn". No
 | **BoundElements inverse**             | Optimisation prematuree. Le parcours O(n) actuel prend ~0.01ms pour 30 elements, ~2ms pour 5000. Imperceptible. La complexite ajoutee (coherence bidirectionnelle) > le gain.                                                          |
 | **Conteneurs de texte**               | Les labels sur shapes + TextBlocks couvrent deja les besoins. Ajouter du texte "contenu" dans une forme ajouterait de la complexite pour un gain marginal.                                                                             |
 | **History optimisee (deltas)**        | Les 50 snapshots actuels suffisent. Probleme de memoire uniquement pour documents avec beaucoup d'images - cas rare. Complexite elevee pour gain marginal.                                                                             |
-| **Elbow arrows**                      | Cas d'usage rare pour un whiteboard educatif (organigrammes, ERD). Les fleches droites suffisent pour les maths.                                                                                                                       |
 | **Collaboration temps reel**          | Hors scope - pas d'objectif collaboratif.                                                                                                                                                                                              |
 | **Style hand-drawn (roughjs)**        | Le style "propre" est plus adapte aux mathematiques.                                                                                                                                                                                   |
 
+### Idees RETENUES
+
+| Idee             | Description                                                                                                           | Effort | Impact |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| **Elbow arrows** | Fleches avec segments a 90°. Utile pour arbres de probabilite, organigrammes d'algorithmes, diagrammes hierarchiques. | Moyen  | Fort   |
+
+### Plan d'implementation : Elbow Arrows
+
+**Cas d'usage cibles** : Arbres de probabilite, organigrammes d'algorithmes
+
+**Approche simplifiee** (vs Excalidraw) :
+
+- Pas de routage automatique complexe (evitement d'obstacles)
+- 1 a 2 coudes maximum (suffisant pour arbres)
+- L'utilisateur choisit le type de coude (horizontal-first ou vertical-first)
+
+**Etapes** :
+
+1. **Types** : Ajouter `elbowed?: boolean` et `elbowDirection?: 'horizontal-first' | 'vertical-first'` a ArrowElement
+2. **Rendu SVG** : Calculer le path avec coude(s) au lieu d'une ligne droite
+3. **UI** : Toggle dans toolbar pour activer le mode elbow sur les fleches
+4. **Bindings** : Adapter le calcul des endpoints pour les fleches coudees
+5. **Labels** : Positionner le label au milieu du segment horizontal/vertical principal
+
+**Schema** :
+
+```
+Horizontal-first:          Vertical-first:
+    A                          A
+    |                          |
+    +-----> B                  |
+                               +-----> B
+```
+
 ### Conclusion
 
-L'analyse comparative avec Excalidraw revele que **le whiteboard UbuMaths est deja bien concu pour son usage educatif**. Les patterns d'Excalidraw (double layer, actions centralisees, frames, etc.) repondent a des besoins differents :
+L'analyse comparative avec Excalidraw revele que le whiteboard UbuMaths est globalement bien concu. La plupart des patterns d'Excalidraw (double layer, actions centralisees, frames) repondent a des besoins differents.
 
-- **Excalidraw** : Application collaborative grand public, 50+ actions, plugins, style sketch
-- **UbuMaths** : Outil educatif mono-utilisateur, ~20 actions, style propre pour les maths
-
-Les optimisations envisagees (BoundElements inverse, history deltas) sont des optimisations prematurees pour des problemes qui n'existent pas en pratique.
-
-**Aucune modification du whiteboard n'est necessaire suite a cette analyse.**
+**Une seule fonctionnalite retenue** : Elbow arrows, pour les diagrammes mathematiques (arbres de probabilite, algorithmes).
 
 ---
 
