@@ -52,7 +52,8 @@ const shapeElementSchema = z.object({
 		.optional(),
 	fillOpacity: z.number().min(0).max(1).optional(),
 	cornerRadius: z.number().min(0).max(100).optional(),
-	rotation: z.number().min(0).max(360).optional()
+	rotation: z.number().min(0).max(360).optional(),
+	labelMarkdown: z.string().max(1000).optional()
 });
 
 const textBlockElementSchema = z.object({
