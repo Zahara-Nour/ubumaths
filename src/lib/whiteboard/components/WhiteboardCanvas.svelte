@@ -1486,6 +1486,7 @@
 			<!-- Shapes -->
 			{#each shapeElements as shape (shape.id)}
 				{@const isArrowShape = shape.shapeType === 'arrow'}
+				{@const isLineOrArrow = shape.shapeType === 'line' || shape.shapeType === 'arrow'}
 				{@const arrowShape = isArrowShape ? (shape as ArrowElement) : null}
 				{@const startBindingLivePos = arrowShape?.startBinding
 					? whiteboardStore.livePositions.get(arrowShape.startBinding.elementId)
@@ -1493,12 +1494,22 @@
 				{@const endBindingLivePos = arrowShape?.endBinding
 					? whiteboardStore.livePositions.get(arrowShape.endBinding.elementId)
 					: null}
-				{@const adjustedStart = startBindingLivePos
-					? { x: shape.start.x + startBindingLivePos.dx, y: shape.start.y + startBindingLivePos.dy }
-					: shape.start}
-				{@const adjustedEnd = endBindingLivePos
-					? { x: shape.end.x + endBindingLivePos.dx, y: shape.end.y + endBindingLivePos.dy }
-					: shape.end}
+				{@const liveEndpoint = isLineOrArrow ? whiteboardStore.liveEndpoints.get(shape.id) : null}
+				{@const adjustedStart =
+					liveEndpoint?.endpoint === 'start'
+						? { x: liveEndpoint.x, y: liveEndpoint.y }
+						: startBindingLivePos
+							? {
+									x: shape.start.x + startBindingLivePos.dx,
+									y: shape.start.y + startBindingLivePos.dy
+								}
+							: shape.start}
+				{@const adjustedEnd =
+					liveEndpoint?.endpoint === 'end'
+						? { x: liveEndpoint.x, y: liveEndpoint.y }
+						: endBindingLivePos
+							? { x: shape.end.x + endBindingLivePos.dx, y: shape.end.y + endBindingLivePos.dy }
+							: shape.end}
 				{@const props = getShapeSvgProps(
 					shape.shapeType,
 					adjustedStart,
@@ -1742,6 +1753,10 @@
 					)}
 				onRotate={(elementId, rotation) => whiteboardStore.setLiveRotation(elementId, rotation)}
 				onRotateEnd={(elementId) => whiteboardStore.commitLiveRotation(elementId)}
+				onEndpointDrag={(elementId, endpoint, x, y) =>
+					whiteboardStore.setLiveEndpoint(elementId, endpoint, x, y)}
+				onEndpointDragEnd={(elementId, endpoint, x, y) =>
+					whiteboardStore.commitLiveEndpoint(elementId, endpoint, x, y)}
 			/>
 		</g>
 

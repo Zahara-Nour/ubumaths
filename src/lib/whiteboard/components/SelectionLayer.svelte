@@ -32,6 +32,9 @@
 	/** Resize handle position identifiers */
 	export type HandlePosition = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
 
+	/** Endpoint handle identifiers for lines/arrows */
+	export type EndpointPosition = 'start' | 'end';
+
 	/** Handle configuration with position and cursor */
 	interface HandleConfig {
 		position: HandlePosition;
@@ -70,6 +73,15 @@
 		onRotate?: (elementId: string, rotation: number) => void;
 		/** Callback when rotation is finished (commit the rotation) */
 		onRotateEnd?: (elementId: string) => void;
+		/** Callback when an endpoint is being dragged (live preview) */
+		onEndpointDrag?: (elementId: string, endpoint: EndpointPosition, x: number, y: number) => void;
+		/** Callback when endpoint drag is finished (commit the position) */
+		onEndpointDragEnd?: (
+			elementId: string,
+			endpoint: EndpointPosition,
+			x: number,
+			y: number
+		) => void;
 	}
 
 	let {
@@ -79,7 +91,9 @@
 		onResizeLive,
 		onResizeEnd,
 		onRotate,
-		onRotateEnd
+		onRotateEnd,
+		onEndpointDrag,
+		onEndpointDragEnd
 	}: Props = $props();
 
 	// ==========================================================================
@@ -123,6 +137,19 @@
 
 	/** Center of the element being rotated (in canvas coordinates) */
 	let rotationCenter = $state<{ x: number; y: number }>({ x: 0, y: 0 });
+
+	// ==========================================================================
+	// Endpoint Drag State (for lines/arrows)
+	// ==========================================================================
+
+	/** Whether user is currently dragging an endpoint */
+	let isDraggingEndpoint = $state(false);
+
+	/** Which endpoint is being dragged */
+	let draggingEndpoint = $state<EndpointPosition | null>(null);
+
+	/** Element ID whose endpoint is being dragged */
+	let endpointElementId = $state<string | null>(null);
 
 	// ==========================================================================
 	// Constants
@@ -231,6 +258,15 @@
 	/** Check if an element type supports rotation */
 	function isRotatable(type: WhiteboardElement['type']): boolean {
 		return ROTATABLE_TYPES.includes(type as (typeof ROTATABLE_TYPES)[number]);
+	}
+
+	/** Check if element is a line or arrow (uses endpoint handles instead of bounding box) */
+	function isLineOrArrow(element: WhiteboardElement): element is ShapeElement {
+		return (
+			element.type === 'shape' &&
+			((element as ShapeElement).shapeType === 'line' ||
+				(element as ShapeElement).shapeType === 'arrow')
+		);
 	}
 
 	/** Get stored rotation of an element (not live rotation) */
@@ -481,6 +517,57 @@
 			(e.currentTarget as SVGElement).releasePointerCapture(e.pointerId);
 		}
 	}
+
+	// ==========================================================================
+	// Endpoint Drag Handlers (for lines/arrows)
+	// ==========================================================================
+
+	/**
+	 * Handle pointer down on endpoint handle - start dragging endpoint
+	 */
+	function handleEndpointPointerDown(
+		e: PointerEvent,
+		elementId: string,
+		endpoint: EndpointPosition
+	) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		isDraggingEndpoint = true;
+		draggingEndpoint = endpoint;
+		endpointElementId = elementId;
+
+		(e.currentTarget as SVGElement).setPointerCapture(e.pointerId);
+	}
+
+	/**
+	 * Handle pointer move during endpoint drag
+	 */
+	function handleEndpointPointerMove(e: PointerEvent) {
+		if (!isDraggingEndpoint || !draggingEndpoint || !endpointElementId) return;
+
+		const coords = clientToSvgCoords(e);
+		if (!coords) return;
+
+		onEndpointDrag?.(endpointElementId, draggingEndpoint, coords.x, coords.y);
+	}
+
+	/**
+	 * Handle pointer up - end endpoint drag
+	 */
+	function handleEndpointPointerUp(e: PointerEvent) {
+		if (isDraggingEndpoint && endpointElementId && draggingEndpoint) {
+			const coords = clientToSvgCoords(e);
+			if (coords) {
+				onEndpointDragEnd?.(endpointElementId, draggingEndpoint, coords.x, coords.y);
+			}
+
+			isDraggingEndpoint = false;
+			draggingEndpoint = null;
+			endpointElementId = null;
+			(e.currentTarget as SVGElement).releasePointerCapture(e.pointerId);
+		}
+	}
 </script>
 
 <svg class="selection-layer pointer-events-none absolute inset-0 h-full w-full overflow-visible">
@@ -505,8 +592,9 @@
 		{@const cached = boundsCache.get(element.id)}
 		{@const bounds = cached?.bounds ?? { x: 0, y: 0, width: 0, height: 0 }}
 		{@const center = cached?.center ?? { x: 0, y: 0 }}
-		{@const showHandles = isResizable(element.type)}
-		{@const showRotation = isRotatable(element.type)}
+		{@const isEndpointElement = isLineOrArrow(element)}
+		{@const showHandles = !isEndpointElement && isResizable(element.type)}
+		{@const showRotation = !isEndpointElement && isRotatable(element.type)}
 		{@const liveRot = whiteboardStore.liveRotations.get(element.id)}
 		{@const storedRot = getElementRotation(element)}
 		{@const elementRotation = liveRot ?? storedRot}
@@ -519,97 +607,171 @@
 			? `translate(${liveResize.originX}, ${liveResize.originY}) scale(${liveResize.scaleX}, ${liveResize.scaleY}) translate(${-liveResize.originX}, ${-liveResize.originY})`
 			: ''}
 
-		<!-- Group that transforms selection UI with the element -->
-		<g transform={`${translateTransform} ${scaleTransform} ${rotateTransform}`.trim() || undefined}>
-			<!-- Selection rectangle (dashed border) for individual element -->
-			<rect
-				x={bounds.x}
-				y={bounds.y}
-				width={bounds.width}
-				height={bounds.height}
-				fill="none"
-				stroke={SELECTION_STROKE_COLOR}
-				stroke-width={strokeWidth}
-				stroke-dasharray={`${4 / scale} ${4 / scale}`}
-			/>
+		<!-- Lines/Arrows: endpoint handles only (no bounding box) -->
+		{#if isEndpointElement}
+			{@const lineElement = element as ShapeElement}
+			{@const liveEndpoint = whiteboardStore.liveEndpoints.get(element.id)}
+			{@const startX =
+				liveEndpoint?.endpoint === 'start'
+					? liveEndpoint.x
+					: lineElement.start.x + (livePos?.dx ?? 0)}
+			{@const startY =
+				liveEndpoint?.endpoint === 'start'
+					? liveEndpoint.y
+					: lineElement.start.y + (livePos?.dy ?? 0)}
+			{@const endX =
+				liveEndpoint?.endpoint === 'end' ? liveEndpoint.x : lineElement.end.x + (livePos?.dx ?? 0)}
+			{@const endY =
+				liveEndpoint?.endpoint === 'end' ? liveEndpoint.y : lineElement.end.y + (livePos?.dy ?? 0)}
+			{@const endpointRadius = handleSize / 2}
+			{@const hitRadius = hitAreaSize / 2}
 
-			<!-- Resize handles (only for shapes and images) -->
-			{#if showHandles}
-				{#each HANDLE_CONFIGS as handle (handle.position)}
-					{@const coords = handle.getCoords(bounds)}
-
-					<!-- Invisible larger hit area -->
-					<rect
-						class="pointer-events-auto"
-						x={coords.x - hitAreaSize / 2}
-						y={coords.y - hitAreaSize / 2}
-						width={hitAreaSize}
-						height={hitAreaSize}
-						fill="transparent"
-						style="cursor: {handle.cursor};"
-						data-handle={handle.position}
-						data-element-id={element.id}
-						onpointerdown={handleHandlePointerDown}
-						onpointermove={handleHandlePointerMove}
-						onpointerup={handleHandlePointerUp}
-						onpointercancel={handleHandlePointerUp}
-					/>
-
-					<!-- Visible handle -->
-					<rect
-						x={coords.x - handleSize / 2}
-						y={coords.y - handleSize / 2}
-						width={handleSize}
-						height={handleSize}
-						fill="white"
-						stroke={SELECTION_STROKE_COLOR}
-						stroke-width={strokeWidth}
-					/>
-				{/each}
-			{/if}
-
-			<!-- Rotation handle (only for shapes and strokes) -->
-			{#if showRotation}
-				{@const centerX = bounds.x + bounds.width / 2}
-				{@const topY = bounds.y}
-				{@const handleOffset = ROTATION_HANDLE_OFFSET / scale}
-				{@const handleRadius = ROTATION_HANDLE_RADIUS / scale}
-				{@const hitRadius = HANDLE_HIT_SIZE / scale / 2}
-
-				<!-- Connecting line from selection box to rotation handle -->
-				<line
-					x1={centerX}
-					y1={topY}
-					x2={centerX}
-					y2={topY - handleOffset}
-					stroke={SELECTION_STROKE_COLOR}
-					stroke-width={strokeWidth}
-				/>
-
-				<!-- Invisible larger hit area for rotation handle -->
+			<!-- Start endpoint handle -->
+			<g>
+				<!-- Invisible hit area -->
 				<circle
 					class="pointer-events-auto"
-					cx={centerX}
-					cy={topY - handleOffset}
+					cx={startX}
+					cy={startY}
 					r={hitRadius}
 					fill="transparent"
-					style="cursor: grab;"
-					onpointerdown={(e) => handleRotationPointerDown(e, element)}
-					onpointermove={handleRotationPointerMove}
-					onpointerup={handleRotationPointerUp}
-					onpointercancel={handleRotationPointerUp}
+					style="cursor: move;"
+					onpointerdown={(e) => handleEndpointPointerDown(e, element.id, 'start')}
+					onpointermove={handleEndpointPointerMove}
+					onpointerup={handleEndpointPointerUp}
+					onpointercancel={handleEndpointPointerUp}
 				/>
-
-				<!-- Visible rotation handle (circle) -->
+				<!-- Visible handle (circle) -->
 				<circle
-					cx={centerX}
-					cy={topY - handleOffset}
-					r={handleRadius}
+					cx={startX}
+					cy={startY}
+					r={endpointRadius}
 					fill="white"
 					stroke={SELECTION_STROKE_COLOR}
 					stroke-width={strokeWidth}
 				/>
-			{/if}
-		</g>
+			</g>
+
+			<!-- End endpoint handle -->
+			<g>
+				<!-- Invisible hit area -->
+				<circle
+					class="pointer-events-auto"
+					cx={endX}
+					cy={endY}
+					r={hitRadius}
+					fill="transparent"
+					style="cursor: move;"
+					onpointerdown={(e) => handleEndpointPointerDown(e, element.id, 'end')}
+					onpointermove={handleEndpointPointerMove}
+					onpointerup={handleEndpointPointerUp}
+					onpointercancel={handleEndpointPointerUp}
+				/>
+				<!-- Visible handle (circle) -->
+				<circle
+					cx={endX}
+					cy={endY}
+					r={endpointRadius}
+					fill="white"
+					stroke={SELECTION_STROKE_COLOR}
+					stroke-width={strokeWidth}
+				/>
+			</g>
+		{:else}
+			<!-- Group that transforms selection UI with the element -->
+			<g
+				transform={`${translateTransform} ${scaleTransform} ${rotateTransform}`.trim() || undefined}
+			>
+				<!-- Selection rectangle (dashed border) for individual element -->
+				<rect
+					x={bounds.x}
+					y={bounds.y}
+					width={bounds.width}
+					height={bounds.height}
+					fill="none"
+					stroke={SELECTION_STROKE_COLOR}
+					stroke-width={strokeWidth}
+					stroke-dasharray={`${4 / scale} ${4 / scale}`}
+				/>
+
+				<!-- Resize handles (only for shapes and images) -->
+				{#if showHandles}
+					{#each HANDLE_CONFIGS as handle (handle.position)}
+						{@const coords = handle.getCoords(bounds)}
+
+						<!-- Invisible larger hit area -->
+						<rect
+							class="pointer-events-auto"
+							x={coords.x - hitAreaSize / 2}
+							y={coords.y - hitAreaSize / 2}
+							width={hitAreaSize}
+							height={hitAreaSize}
+							fill="transparent"
+							style="cursor: {handle.cursor};"
+							data-handle={handle.position}
+							data-element-id={element.id}
+							onpointerdown={handleHandlePointerDown}
+							onpointermove={handleHandlePointerMove}
+							onpointerup={handleHandlePointerUp}
+							onpointercancel={handleHandlePointerUp}
+						/>
+
+						<!-- Visible handle -->
+						<rect
+							x={coords.x - handleSize / 2}
+							y={coords.y - handleSize / 2}
+							width={handleSize}
+							height={handleSize}
+							fill="white"
+							stroke={SELECTION_STROKE_COLOR}
+							stroke-width={strokeWidth}
+						/>
+					{/each}
+				{/if}
+
+				<!-- Rotation handle (only for shapes and strokes) -->
+				{#if showRotation}
+					{@const centerX = bounds.x + bounds.width / 2}
+					{@const topY = bounds.y}
+					{@const handleOffset = ROTATION_HANDLE_OFFSET / scale}
+					{@const handleRadius = ROTATION_HANDLE_RADIUS / scale}
+					{@const hitRadius = HANDLE_HIT_SIZE / scale / 2}
+
+					<!-- Connecting line from selection box to rotation handle -->
+					<line
+						x1={centerX}
+						y1={topY}
+						x2={centerX}
+						y2={topY - handleOffset}
+						stroke={SELECTION_STROKE_COLOR}
+						stroke-width={strokeWidth}
+					/>
+
+					<!-- Invisible larger hit area for rotation handle -->
+					<circle
+						class="pointer-events-auto"
+						cx={centerX}
+						cy={topY - handleOffset}
+						r={hitRadius}
+						fill="transparent"
+						style="cursor: grab;"
+						onpointerdown={(e) => handleRotationPointerDown(e, element)}
+						onpointermove={handleRotationPointerMove}
+						onpointerup={handleRotationPointerUp}
+						onpointercancel={handleRotationPointerUp}
+					/>
+
+					<!-- Visible rotation handle (circle) -->
+					<circle
+						cx={centerX}
+						cy={topY - handleOffset}
+						r={handleRadius}
+						fill="white"
+						stroke={SELECTION_STROKE_COLOR}
+						stroke-width={strokeWidth}
+					/>
+				{/if}
+			</g>
+		{/if}
 	{/each}
 </svg>
