@@ -2,6 +2,65 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.1...v0.7.2) (2026-01-17)
+
+### 📚 Documentation
+
+- **whiteboard:** add Elbow arrows to roadmap ([b503c6b](https://github.com/Zahara-Nour/ubumaths/commit/b503c6bf2eed4d90c1869d466e7a4cb02375d5d2))
+- **whiteboard:** add Excalidraw comparative analysis and roadmap ([768a534](https://github.com/Zahara-Nour/ubumaths/commit/768a53416215a7c50f0672b0f4b3762c06a5fa7a))
+- **whiteboard:** conclude Excalidraw analysis - no changes needed ([9e76b2f](https://github.com/Zahara-Nour/ubumaths/commit/9e76b2f4333ecd21f8bf60d540ebf42829540418))
+- **whiteboard:** remove centralized actions from roadmap ([9e88f68](https://github.com/Zahara-Nour/ubumaths/commit/9e88f68b0f987f4da1ac1dff0abe8f255881aec2))
+- **whiteboard:** remove Frames from roadmap ([af67ff8](https://github.com/Zahara-Nour/ubumaths/commit/af67ff869acf9bb386b6cd43c1feb4cced18678b))
+- **wip:** add sidebar navigation redesign analysis ([f0c1b92](https://github.com/Zahara-Nour/ubumaths/commit/f0c1b92b2828e457fb8c968339c6145a56e98546))
+
+### ✨ Features
+
+- **mathAST:** add differentiation rules for inverse hyperbolic functions ([583c180](https://github.com/Zahara-Nour/ubumaths/commit/583c180d098d0323b27cbff087d6ed5ee79c9d2b))
+- **typst:** add external image and textcolor support for worksheets ([ff05645](https://github.com/Zahara-Nour/ubumaths/commit/ff05645487e635810de6ba034a6a027f91964475))
+- **typst:** add external image support for WASM compilation ([bffff21](https://github.com/Zahara-Nour/ubumaths/commit/bffff210f1103546dfdbe9e2211f9e4117977e46))
+- **typst:** add PDF download button and fix LaTeX to Typst conversion ([d533154](https://github.com/Zahara-Nour/ubumaths/commit/d533154680dd25a4f29547254cfa32e76b24ec41))
+- **whiteboard:** add arrow-to-shape binding system (phases 1 & 2) ([6e259c4](https://github.com/Zahara-Nour/ubumaths/commit/6e259c4a26a5de37df02a9c97a29211469594d38))
+- **whiteboard:** add binding update propagation (Phase 3) ([4dbe62f](https://github.com/Zahara-Nour/ubumaths/commit/4dbe62f75ec59d3353e520be03f580abeb8128d8))
+- **whiteboard:** add endpoint handles for lines and arrows ([be5cc63](https://github.com/Zahara-Nour/ubumaths/commit/be5cc63eb643b4018b8d03c6fb92c793ab2e4c5b))
+- **whiteboard:** add hand-drawn sketch style with roughjs ([4dfaf59](https://github.com/Zahara-Nour/ubumaths/commit/4dfaf597902240e1d7bb8549125c2782685f5617))
+- **whiteboard:** add markdown labels to shapes ([730ee94](https://github.com/Zahara-Nour/ubumaths/commit/730ee9474c975b722ede1b214173305fe7da1635))
+- **whiteboard:** add snap point preview during arrow drawing ([3870334](https://github.com/Zahara-Nour/ubumaths/commit/3870334a16e41199084d97d0c826c9cf1a68aade))
+- **whiteboard:** add visual feedback for binding candidates ([d56e469](https://github.com/Zahara-Nour/ubumaths/commit/d56e469c395b3c4ff80b80301fc223219f50056d))
+- **whiteboard:** align labels along lines/arrows with smart text wrapping ([489f028](https://github.com/Zahara-Nour/ubumaths/commit/489f0282bc744483e18c50aed278ea27781e4200))
+- **whiteboard:** arrows follow shapes during live drag ([62f4c4a](https://github.com/Zahara-Nour/ubumaths/commit/62f4c4a34c4c3d2cb2dffb048a9dc7dd1119a4d2))
+- **whiteboard:** clear bindings when shapes are deleted ([944c823](https://github.com/Zahara-Nour/ubumaths/commit/944c8232c29cf18f4c6c4d37478614520ce9167a))
+- **whiteboard:** implement elbow arrows with 90-degree bends ([8252220](https://github.com/Zahara-Nour/ubumaths/commit/8252220e5598768756610b5596a5629007c0c2e7))
+- **whiteboard:** integrate binding detection in arrow tool ([5b9f62f](https://github.com/Zahara-Nour/ubumaths/commit/5b9f62fa15e30898aa9903f4df74977d88044c4c))
+- **whiteboard:** integrate binding updates with store operations ([9b153cc](https://github.com/Zahara-Nour/ubumaths/commit/9b153ccfb44412560181ad61ee8c6d6ae4e57b98))
+- **whiteboard:** show binding highlights on arrow tool hover ([b8d8c45](https://github.com/Zahara-Nour/ubumaths/commit/b8d8c4570fec142facfd3eb103b8c86969d2e840))
+- **whiteboard:** unify document creation and Classroom export ([7e4c308](https://github.com/Zahara-Nour/ubumaths/commit/7e4c308d633460cb130bc40eeb4e17ef37eceac0))
+- **worksheets:** add optimistic UI for exercise reordering ([b0ef9bc](https://github.com/Zahara-Nour/ubumaths/commit/b0ef9bc41fc136d22eb9ff1ecc0fbbfc452461c8))
+
+### 🐛 Bug Fixes
+
+- **dashboard:** add scroll to sidebar when content exceeds viewport ([f9025b0](https://github.com/Zahara-Nour/ubumaths/commit/f9025b032101740fd5dcabc21ed7baa51b98b690))
+- **layout:** prevent nested scroll containers on dashboard routes ([999ca4f](https://github.com/Zahara-Nour/ubumaths/commit/999ca4f967029b9fb48b6d4074eb116c6fd7a187))
+- **parser:** add hyperbolic and inverse trig functions to custom tokenizer ([c26085c](https://github.com/Zahara-Nour/ubumaths/commit/c26085c5d929fa687d8604de03d3eb0e7dc64283))
+- **typst:** add missing logger import in typst-service ([a26ba23](https://github.com/Zahara-Nour/ubumaths/commit/a26ba237d773d2732dd14e0f2a4fa4fb6a919ca0))
+- **typst:** add trailing comma for single-element tuples in vartable ([b69a71d](https://github.com/Zahara-Nour/ubumaths/commit/b69a71d8607f00c8addca24d0bb0be7cd94ddfc7))
+- **typst:** convert WebP images to PNG for Typst compatibility ([f25c3a1](https://github.com/Zahara-Nour/ubumaths/commit/f25c3a1b6e16931d0c5dd4fc10fa00bc0bdf62db))
+- **typst:** update vartable to 0.2.3 and fix label/position format ([ebf4272](https://github.com/Zahara-Nour/ubumaths/commit/ebf42720a658d22b708bca8575a00d15dc6c3c28))
+- **ubumark:** add LaTeX long arrow conversions and prevent variable fusion ([a6d6a4b](https://github.com/Zahara-Nour/ubumaths/commit/a6d6a4b9ccac2a8d19e37d6c3fd768f3fc637302))
+- **ubumark:** generate placeholder for external images in Typst ([6fed84e](https://github.com/Zahara-Nour/ubumaths/commit/6fed84ed931a188194cd14a9dcaba9ad63dd50cb))
+- **ui:** remove flex from card root to prevent content clipping ([5b36e52](https://github.com/Zahara-Nour/ubumaths/commit/5b36e528c25ef403b1eaf051510e7b6a6f6a9bb6))
+- **ui:** remove flex from tabs root to prevent content clipping ([cb52584](https://github.com/Zahara-Nour/ubumaths/commit/cb52584f7990be1cbe05450c3810c87cebe07078))
+- **whiteboard:** allow binding from inside shapes ([15fb1fb](https://github.com/Zahara-Nour/ubumaths/commit/15fb1fb98ae0375459c3b894e9aca4da0b7e3de3))
+- **whiteboard:** apply rotation to hover highlight ([7f134f7](https://github.com/Zahara-Nour/ubumaths/commit/7f134f7658105c1bdc927f11a12165e263df6a33))
+- **whiteboard:** cancel pending autosave before deleting ([c4a4540](https://github.com/Zahara-Nour/ubumaths/commit/c4a4540f2942eddee8604bfce3c3cc670305cfa4))
+- **whiteboard:** increase binding threshold to 30px ([62e0852](https://github.com/Zahara-Nour/ubumaths/commit/62e08527fc911beb8284ee4f9f31704cd30e12e1))
+- **whiteboard:** persist shape labels in file format ([8ff709d](https://github.com/Zahara-Nour/ubumaths/commit/8ff709dca344474f28881c649f1295400a52a30c))
+- **whiteboard:** sync shape labels with live resize ([58dbcca](https://github.com/Zahara-Nour/ubumaths/commit/58dbccaa54d95d240694d1a7906ab2da1b77e262))
+- **whiteboard:** sync shape labels with live transforms ([f259ea0](https://github.com/Zahara-Nour/ubumaths/commit/f259ea0fed47cf4be90f3bbead6caab1e4bf7c85))
+- **whiteboard:** update label position during endpoint drag ([18e4569](https://github.com/Zahara-Nour/ubumaths/commit/18e45698a8edaa29080f3ae2d6966aaf155fd9f0))
+- **whiteboard:** use line highlight for arrow/line hover ([c35eb4a](https://github.com/Zahara-Nour/ubumaths/commit/c35eb4a5ba3d171ef93e8da9cffdc4ff829de8b4))
+- **worksheets:** fix exercise reordering not persisting ([859e144](https://github.com/Zahara-Nour/ubumaths/commit/859e14416d07e0fa37e0e9e3773d8bcb6c9cb228))
+- **worksheets:** use RPC for atomic exercise reordering ([40bceb6](https://github.com/Zahara-Nour/ubumaths/commit/40bceb637c4f81db4211a1499b36412d74fb47e3))
+
 ### [0.7.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.0...v0.7.1) (2026-01-16)
 
 ### 📚 Documentation
