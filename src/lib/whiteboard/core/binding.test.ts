@@ -150,17 +150,33 @@ describe('findBindingCandidate', () => {
 
 	it('returns the closest shape when multiple are within threshold', () => {
 		const rect1 = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'rect1' });
+		const rect2 = createShape('rectangle', { x: 250, y: 100 }, { x: 350, y: 200 }, { id: 'rect2' });
+		// Point is between the two rectangles (outside both), closer to rect2
+		const point: Point = { x: 225, y: 150 };
+		const elements = [rect1, rect2];
+
+		const result = findBindingCandidate(point, elements, new Set());
+
+		expect(result).not.toBeNull();
+		// rect1's right edge is at x=200, distance = 25px
+		// rect2's left edge is at x=250, distance = 25px (equal, but rect1 is first in array)
+		// Actually: point at 225, rect2 at 250 -> 25px, rect1 at 200 -> 25px
+		// Since they're equal, returns first found (rect1)
+		expect(result!.element.id).toBe('rect1');
+	});
+
+	it('binds to shape containing the point (even if closer to another edge)', () => {
+		const rect1 = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'rect1' });
 		const rect2 = createShape('rectangle', { x: 195, y: 100 }, { x: 295, y: 200 }, { id: 'rect2' });
-		// Point is between the two rectangles, closer to rect2
+		// Point is inside rect1 but closer to rect2's edge
 		const point: Point = { x: 193, y: 150 };
 		const elements = [rect1, rect2];
 
 		const result = findBindingCandidate(point, elements, new Set());
 
 		expect(result).not.toBeNull();
-		// rect2's left edge is at x=195, distance = 2px
-		// rect1's right edge is at x=200, distance = 7px
-		expect(result!.element.id).toBe('rect2');
+		// Point is inside rect1, so it binds to rect1 (not the closer edge of rect2)
+		expect(result!.element.id).toBe('rect1');
 	});
 
 	it('excludes elements in the excludeIds set', () => {
@@ -278,16 +294,17 @@ describe('findBindingCandidate', () => {
 			expect(result!.element.id).toBe(rect.id);
 		});
 
-		it('handles point inside a shape (should still find candidate)', () => {
+		it('handles point inside a shape (binds to containing shape)', () => {
 			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
 			const point: Point = { x: 150, y: 150 }; // Center of rectangle
 			const elements = [rect];
 
 			const result = findBindingCandidate(point, elements, new Set());
 
-			// Point is inside, but we should still find the shape if within threshold
-			// The distance to perimeter from center is 50px which exceeds 15px threshold
-			expect(result).toBeNull();
+			// Point is inside the shape, so it should bind to that shape
+			// This allows starting arrows from inside shapes
+			expect(result).not.toBeNull();
+			expect(result!.element.id).toBe(rect.id);
 		});
 
 		it('handles point just inside threshold from perimeter', () => {
@@ -1092,7 +1109,7 @@ describe('createArrowWithBindings', () => {
 			expect(Number.isFinite(result.arrow.start.x)).toBe(true);
 		});
 
-		it('handles start inside a shape', () => {
+		it('handles start inside a shape (binds to containing shape)', () => {
 			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
 			const start: Point = { x: 150, y: 150 }; // Center of rectangle
 			const end: Point = { x: 300, y: 150 };
@@ -1101,11 +1118,12 @@ describe('createArrowWithBindings', () => {
 
 			const result = createArrowWithBindings(start, end, elements, options);
 
-			// Start is far from perimeter (50px), so no binding
-			expect(result.arrow.startBinding).toBeNull();
+			// Start is inside the shape, so it binds to that shape
+			expect(result.arrow.startBinding).not.toBeNull();
+			expect(result.arrow.startBinding!.elementId).toBe(rect.id);
 		});
 
-		it('handles end inside a shape', () => {
+		it('handles end inside a shape (binds to containing shape)', () => {
 			const rect = createShape('rectangle', { x: 200, y: 100 }, { x: 300, y: 200 });
 			const start: Point = { x: 100, y: 150 };
 			const end: Point = { x: 250, y: 150 }; // Center of rectangle
@@ -1114,11 +1132,12 @@ describe('createArrowWithBindings', () => {
 
 			const result = createArrowWithBindings(start, end, elements, options);
 
-			// End is far from perimeter (50px), so no binding
-			expect(result.arrow.endBinding).toBeNull();
+			// End is inside the shape, so it binds to that shape
+			expect(result.arrow.endBinding).not.toBeNull();
+			expect(result.arrow.endBinding!.elementId).toBe(rect.id);
 		});
 
-		it('handles both endpoints inside the same shape', () => {
+		it('handles both endpoints inside the same shape (both bind)', () => {
 			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 300, y: 300 });
 			const start: Point = { x: 150, y: 200 }; // Inside
 			const end: Point = { x: 250, y: 200 }; // Inside
@@ -1127,9 +1146,11 @@ describe('createArrowWithBindings', () => {
 
 			const result = createArrowWithBindings(start, end, elements, options);
 
-			// Both inside and far from perimeter, no bindings
-			expect(result.arrow.startBinding).toBeNull();
-			expect(result.arrow.endBinding).toBeNull();
+			// Both endpoints are inside the shape, so both bind to it
+			expect(result.arrow.startBinding).not.toBeNull();
+			expect(result.arrow.startBinding!.elementId).toBe(rect.id);
+			expect(result.arrow.endBinding).not.toBeNull();
+			expect(result.arrow.endBinding!.elementId).toBe(rect.id);
 		});
 
 		it('handles arrow between shapes that overlap', () => {
