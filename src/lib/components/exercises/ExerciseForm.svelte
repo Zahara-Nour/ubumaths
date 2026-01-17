@@ -906,7 +906,9 @@
 
 	<!-- Actions -->
 	<div class="flex justify-end gap-4">
-		<Button type="button" variant="outline" href="/dashboard/teacher/exercises">Annuler</Button>
+		<Button type="button" variant="outline" href="/dashboard/teacher/contenu/exercices"
+			>Annuler</Button
+		>
 		<Button type="submit" disabled={submitting}>
 			{submitting ? 'Enregistrement...' : exercise ? 'Mettre a jour' : "Creer l'exercice"}
 		</Button>

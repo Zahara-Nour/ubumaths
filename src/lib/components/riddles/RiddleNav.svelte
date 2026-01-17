@@ -28,31 +28,31 @@
 
 	const teacherLinks = [
 		{
-			href: '/dashboard/teacher/riddles',
+			href: '/dashboard/teacher/contenu/enigmes',
 			label: 'Mes énigmes',
 			icon: BookOpen,
 			description: 'Gérer mes énigmes'
 		},
 		{
-			href: '/dashboard/teacher/riddles/new',
+			href: '/dashboard/teacher/contenu/enigmes/new',
 			label: 'Nouvelle énigme',
 			icon: Plus,
 			description: 'Créer une énigme'
 		},
 		{
-			href: '/dashboard/teacher/riddles/of-the-day',
+			href: '/dashboard/teacher/contenu/enigmes/of-the-day',
 			label: 'Énigme du jour',
 			icon: Sparkles,
 			description: "Gérer l'énigme quotidienne"
 		},
 		{
-			href: '/dashboard/teacher/riddles/validations',
+			href: '/dashboard/teacher/contenu/enigmes/validations',
 			label: 'Validations',
 			icon: FileCheck,
 			description: 'Valider les réponses'
 		},
 		{
-			href: '/dashboard/teacher/riddles/stats',
+			href: '/dashboard/teacher/contenu/enigmes/stats',
 			label: 'Statistiques',
 			icon: BarChart3,
 			description: 'Voir les stats'

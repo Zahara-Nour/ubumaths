@@ -48,16 +48,83 @@ const requestIdHandle: Handle = async ({ event, resolve }) => {
 /**
  * URL Redirect Handle
  * Handles deprecated route redirects to maintain backwards compatibility
- * Currently redirects /edit pages to their parent pages
+ * Includes navigation restructure redirects (2026-01)
  */
 const redirectHandle: Handle = async ({ event, resolve }) => {
-	const { pathname } = event.url;
+	const { pathname, search } = event.url;
 
-	// Redirect deprecated /edit pages to parent worksheet page (307 temporary redirect)
-	// Pattern: /dashboard/teacher/worksheets/[uuid]/edit -> /dashboard/teacher/worksheets/[uuid]
-	if (pathname.match(/^\/dashboard\/teacher\/worksheets\/[a-f0-9-]+\/edit$/)) {
-		const worksheetId = pathname.split('/')[5];
-		throw redirect(307, `/dashboard/teacher/worksheets/${worksheetId}`);
+	// === NAVIGATION RESTRUCTURE REDIRECTS (308 Permanent) ===
+
+	// Contenu group redirects
+	if (pathname.startsWith('/dashboard/teacher/templates')) {
+		const newPath = pathname.replace(
+			'/dashboard/teacher/templates',
+			'/dashboard/teacher/contenu/templates'
+		);
+		throw redirect(308, newPath + search);
+	}
+	if (pathname.startsWith('/dashboard/teacher/exercises')) {
+		const newPath = pathname.replace(
+			'/dashboard/teacher/exercises',
+			'/dashboard/teacher/contenu/exercices'
+		);
+		throw redirect(308, newPath + search);
+	}
+	if (pathname.startsWith('/dashboard/teacher/riddles')) {
+		const newPath = pathname.replace(
+			'/dashboard/teacher/riddles',
+			'/dashboard/teacher/contenu/enigmes'
+		);
+		throw redirect(308, newPath + search);
+	}
+	if (pathname.startsWith('/dashboard/teacher/worksheets')) {
+		const newPath = pathname.replace(
+			'/dashboard/teacher/worksheets',
+			'/dashboard/teacher/contenu/worksheets'
+		);
+		throw redirect(308, newPath + search);
+	}
+
+	// Gamification group redirects
+	if (pathname.startsWith('/dashboard/teacher/rewards')) {
+		const newPath = pathname.replace(
+			'/dashboard/teacher/rewards',
+			'/dashboard/teacher/gamification/rewards'
+		);
+		throw redirect(308, newPath + search);
+	}
+	if (pathname.startsWith('/dashboard/teacher/vip-cards')) {
+		const newPath = pathname.replace(
+			'/dashboard/teacher/vip-cards',
+			'/dashboard/teacher/gamification/vip-cards'
+		);
+		throw redirect(308, newPath + search);
+	}
+	if (pathname.startsWith('/dashboard/teacher/marketplace')) {
+		const newPath = pathname.replace(
+			'/dashboard/teacher/marketplace',
+			'/dashboard/teacher/gamification/marketplace'
+		);
+		throw redirect(308, newPath + search);
+	}
+
+	// Moderation group redirects
+	if (pathname.startsWith('/dashboard/teacher/warnings')) {
+		const newPath = pathname.replace(
+			'/dashboard/teacher/warnings',
+			'/dashboard/teacher/moderation/avertissements'
+		);
+		throw redirect(308, newPath + search);
+	}
+
+	// Google Classroom redirect to existing settings/google page
+	if (pathname === '/dashboard/teacher/google') {
+		throw redirect(308, '/dashboard/teacher/settings/google' + search);
+	}
+
+	// Students redirect (now accessed via Classes)
+	if (pathname === '/dashboard/students') {
+		throw redirect(308, '/dashboard/teacher/classes');
 	}
 
 	return resolve(event);

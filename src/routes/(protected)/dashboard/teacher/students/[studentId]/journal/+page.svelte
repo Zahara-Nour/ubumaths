@@ -109,7 +109,7 @@
 	<!-- Breadcrumb Navigation -->
 	<nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
 		<a
-			href="/dashboard/teacher/rewards"
+			href="/dashboard/teacher/gamification/rewards"
 			class="flex items-center gap-1 transition-colors hover:text-foreground"
 		>
 			<Users class="h-4 w-4" />
@@ -126,7 +126,12 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-4">
 				<!-- Back Button -->
-				<Button variant="ghost" size="icon" href="/dashboard/teacher/rewards" class="shrink-0">
+				<Button
+					variant="ghost"
+					size="icon"
+					href="/dashboard/teacher/gamification/rewards"
+					class="shrink-0"
+				>
 					<ChevronLeft class="h-5 w-5" />
 					<span class="sr-only">Retour</span>
 				</Button>

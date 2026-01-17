@@ -19,7 +19,7 @@
 	// Navigate to the report review page
 	function handleReview() {
 		goto(
-			`/dashboard/teacher/worksheets/${worksheetId}/assignments/${report.assignment_id}/reports/${report.id}`
+			`/dashboard/teacher/contenu/worksheets/${worksheetId}/assignments/${report.assignment_id}/reports/${report.id}`
 		);
 	}
 
