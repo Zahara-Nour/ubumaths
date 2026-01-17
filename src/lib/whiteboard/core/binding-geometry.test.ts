@@ -108,6 +108,58 @@ describe('normalizePoint', () => {
 		expect(result.x).toBe(0); // (100 - 100) / 1 = 0
 		expect(result.y).toBe(0); // (100 - 100) / 1 = 0
 	});
+
+	it('handles negative coordinates', () => {
+		const point: Point = { x: -50, y: -25 };
+		const bounds = createBounds(-100, -100, 200, 200);
+
+		const result = normalizePoint(point, bounds);
+
+		expect(result.x).toBe(0.25); // (-50 - (-100)) / 200 = 50/200 = 0.25
+		expect(result.y).toBe(0.375); // (-25 - (-100)) / 200 = 75/200 = 0.375
+	});
+
+	it('handles very large coordinates', () => {
+		const point: Point = { x: 1e10, y: 1e10 };
+		const bounds = createBounds(0, 0, 1e10, 1e10);
+
+		const result = normalizePoint(point, bounds);
+
+		expect(result.x).toBeCloseTo(1, 5);
+		expect(result.y).toBeCloseTo(1, 5);
+	});
+
+	it('handles extremely small but non-zero bounds', () => {
+		const point: Point = { x: 100.0001, y: 100.0001 };
+		const bounds = createBounds(100, 100, 0.001, 0.001);
+
+		const result = normalizePoint(point, bounds);
+
+		expect(Number.isFinite(result.x)).toBe(true);
+		expect(Number.isFinite(result.y)).toBe(true);
+		expect(result.x).toBeCloseTo(0.1, 1);
+		expect(result.y).toBeCloseTo(0.1, 1);
+	});
+
+	it('handles extreme aspect ratios (very wide)', () => {
+		const point: Point = { x: 5000, y: 101 };
+		const bounds = createBounds(0, 100, 10000, 2);
+
+		const result = normalizePoint(point, bounds);
+
+		expect(result.x).toBe(0.5);
+		expect(result.y).toBe(0.5);
+	});
+
+	it('handles extreme aspect ratios (very tall)', () => {
+		const point: Point = { x: 101, y: 5000 };
+		const bounds = createBounds(100, 0, 2, 10000);
+
+		const result = normalizePoint(point, bounds);
+
+		expect(result.x).toBe(0.5);
+		expect(result.y).toBe(0.5);
+	});
 });
 
 // =============================================================================
@@ -153,6 +205,52 @@ describe('denormalizePoint', () => {
 		const denormalized = denormalizePoint(normalized, bounds);
 
 		expectPointClose(denormalized, originalPoint);
+	});
+
+	it('handles negative normalized values', () => {
+		const normalized: Point = { x: -0.5, y: -0.5 };
+		const bounds = createBounds(100, 100, 200, 200);
+
+		const result = denormalizePoint(normalized, bounds);
+
+		expect(result.x).toBe(0); // 100 + (-0.5 * 200) = 0
+		expect(result.y).toBe(0);
+	});
+
+	it('handles values greater than 1', () => {
+		const normalized: Point = { x: 1.5, y: 2 };
+		const bounds = createBounds(100, 100, 100, 100);
+
+		const result = denormalizePoint(normalized, bounds);
+
+		expect(result.x).toBe(250); // 100 + (1.5 * 100) = 250
+		expect(result.y).toBe(300); // 100 + (2 * 100) = 300
+	});
+
+	it('handles zero-dimension bounds gracefully', () => {
+		const normalized: Point = { x: 0.5, y: 0.5 };
+		const bounds = createBounds(100, 100, 0, 0);
+
+		const result = denormalizePoint(normalized, bounds);
+
+		expect(Number.isFinite(result.x)).toBe(true);
+		expect(Number.isFinite(result.y)).toBe(true);
+	});
+
+	it('roundtrip with extreme values', () => {
+		const bounds = createBounds(-1000, -1000, 5000, 5000);
+		const testPoints: Point[] = [
+			{ x: -1000, y: -1000 },
+			{ x: 4000, y: 4000 },
+			{ x: 1500, y: 1500 },
+			{ x: -500, y: 2000 }
+		];
+
+		for (const originalPoint of testPoints) {
+			const normalized = normalizePoint(originalPoint, bounds);
+			const denormalized = denormalizePoint(normalized, bounds);
+			expectPointClose(denormalized, originalPoint);
+		}
 	});
 });
 
@@ -227,6 +325,74 @@ describe('rotatePointAroundCenter', () => {
 		const result = rotatePointAroundCenter(point, center, 360);
 
 		expectPointClose(result, point);
+	});
+
+	it('handles negative rotation angles', () => {
+		const point: Point = { x: 150, y: 100 }; // 50 units right of center
+		const center: Point = { x: 100, y: 100 };
+
+		const result = rotatePointAroundCenter(point, center, -90);
+
+		// -90° (counterclockwise) should put point above center
+		expectPointClose(result, { x: 100, y: 50 });
+	});
+
+	it('handles angles greater than 360', () => {
+		const point: Point = { x: 150, y: 100 };
+		const center: Point = { x: 100, y: 100 };
+
+		const result = rotatePointAroundCenter(point, center, 450); // 360 + 90
+
+		// Should be same as 90 degree rotation
+		expectPointClose(result, { x: 100, y: 150 });
+	});
+
+	it('handles very small rotation amounts', () => {
+		const point: Point = { x: 150, y: 100 };
+		const center: Point = { x: 100, y: 100 };
+
+		const result = rotatePointAroundCenter(point, center, 0.001);
+
+		// Should be very close to original point
+		expect(Math.abs(result.x - point.x)).toBeLessThan(0.01);
+		expect(Math.abs(result.y - point.y)).toBeLessThan(0.01);
+	});
+
+	it('handles point very far from center', () => {
+		const point: Point = { x: 1000000, y: 0 };
+		const center: Point = { x: 0, y: 0 };
+
+		const result = rotatePointAroundCenter(point, center, 90);
+
+		expectPointClose(result, { x: 0, y: 1000000 });
+	});
+
+	it('handles negative coordinates', () => {
+		const point: Point = { x: -50, y: -100 };
+		const center: Point = { x: -100, y: -100 };
+
+		const result = rotatePointAroundCenter(point, center, 180);
+
+		expectPointClose(result, { x: -150, y: -100 });
+	});
+
+	it('handles multiple full rotations', () => {
+		const point: Point = { x: 150, y: 120 };
+		const center: Point = { x: 100, y: 100 };
+
+		const result = rotatePointAroundCenter(point, center, 720); // 2 full rotations
+
+		expectPointClose(result, point);
+	});
+
+	it('handles large negative angles', () => {
+		const point: Point = { x: 150, y: 100 };
+		const center: Point = { x: 100, y: 100 };
+
+		const result = rotatePointAroundCenter(point, center, -270);
+
+		// -270° = +90° equivalent
+		expectPointClose(result, { x: 100, y: 150 });
 	});
 });
 
@@ -322,6 +488,87 @@ describe('getRectanglePerimeterPoint', () => {
 
 			// Should be on the right edge, not affected by corner radius
 			expectPointClose(result, { x: 300, y: 150 });
+		});
+	});
+
+	describe('edge cases', () => {
+		it('handles very thin rectangle (width >> height)', () => {
+			const thinBounds = createBounds(0, 100, 1000, 10);
+			const fromPoint: Point = { x: 500, y: 0 }; // Above center
+
+			const result = getRectanglePerimeterPoint(thinBounds, fromPoint);
+
+			expect(result.y).toBeCloseTo(100, 0); // Top edge
+			expect(result.x).toBeGreaterThanOrEqual(0);
+			expect(result.x).toBeLessThanOrEqual(1000);
+		});
+
+		it('handles very tall rectangle (height >> width)', () => {
+			const tallBounds = createBounds(100, 0, 10, 1000);
+			const fromPoint: Point = { x: 200, y: 500 }; // To the right
+
+			const result = getRectanglePerimeterPoint(tallBounds, fromPoint);
+
+			expect(result.x).toBeCloseTo(110, 0); // Right edge
+		});
+
+		it('handles very small rectangle', () => {
+			const smallBounds = createBounds(100, 100, 1, 1);
+			const fromPoint: Point = { x: 200, y: 100.5 };
+
+			const result = getRectanglePerimeterPoint(smallBounds, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles point exactly on a corner', () => {
+			const fromPoint: Point = { x: 400, y: 50 }; // Diagonal toward top-right corner
+			// Direction toward (300, 100) corner
+			const result = getRectanglePerimeterPoint(bounds, fromPoint);
+
+			// Should be near or at the corner
+			expect(result.x).toBeGreaterThanOrEqual(290);
+			expect(result.y).toBeLessThanOrEqual(110);
+		});
+
+		it('handles point exactly on an edge (collinear)', () => {
+			const fromPoint: Point = { x: 500, y: 150 }; // Directly to the right, same y as center
+
+			const result = getRectanglePerimeterPoint(bounds, fromPoint);
+
+			expect(result.x).toBeCloseTo(300, 0);
+			expect(result.y).toBeCloseTo(150, 0);
+		});
+
+		it('handles corner radius larger than half the smallest dimension', () => {
+			const smallBounds = createBounds(100, 100, 40, 20);
+			const largeRadius = 15; // Larger than half of height (10)
+			const fromPoint: Point = { x: 200, y: 50 };
+
+			const result = getRectanglePerimeterPoint(smallBounds, fromPoint, largeRadius);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles negative coordinates in bounds', () => {
+			const negBounds = createBounds(-200, -200, 100, 100);
+			const fromPoint: Point = { x: 0, y: -150 };
+
+			const result = getRectanglePerimeterPoint(negBounds, fromPoint);
+
+			expect(result.x).toBeCloseTo(-100, 0); // Right edge at -100
+		});
+
+		it('handles zero-area rectangle gracefully', () => {
+			const zeroBounds = createBounds(100, 100, 0, 0);
+			const fromPoint: Point = { x: 200, y: 100 };
+
+			const result = getRectanglePerimeterPoint(zeroBounds, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
 		});
 	});
 });
@@ -423,6 +670,92 @@ describe('getEllipsePerimeterPoint', () => {
 
 				expect(ellipseValue).toBeCloseTo(1, 1);
 			}
+		});
+	});
+
+	describe('edge cases', () => {
+		it('handles very flat ellipse (extreme horizontal aspect ratio)', () => {
+			const flatBounds = createBounds(0, 95, 1000, 10); // Very wide, thin ellipse
+			const fromPoint: Point = { x: 500, y: 0 };
+
+			const result = getEllipsePerimeterPoint(flatBounds, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+			expect(result.y).toBeCloseTo(95, 0); // Top of ellipse
+		});
+
+		it('handles very tall ellipse (extreme vertical aspect ratio)', () => {
+			const tallBounds = createBounds(95, 0, 10, 1000);
+			const fromPoint: Point = { x: 200, y: 500 };
+
+			const result = getEllipsePerimeterPoint(tallBounds, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles point exactly at center', () => {
+			const bounds = createBounds(100, 100, 100, 100);
+			const center: Point = { x: 150, y: 150 };
+
+			const result = getEllipsePerimeterPoint(bounds, center);
+
+			// Should return some point on perimeter (default direction)
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles point very close to center', () => {
+			const bounds = createBounds(100, 100, 100, 100);
+			const nearCenter: Point = { x: 150.0001, y: 150.0001 };
+
+			const result = getEllipsePerimeterPoint(bounds, nearCenter);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles very small ellipse', () => {
+			const tinyBounds = createBounds(100, 100, 0.1, 0.1);
+			const fromPoint: Point = { x: 200, y: 100 };
+
+			const result = getEllipsePerimeterPoint(tinyBounds, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles zero-size ellipse gracefully', () => {
+			const zeroBounds = createBounds(100, 100, 0, 0);
+			const fromPoint: Point = { x: 200, y: 100 };
+
+			const result = getEllipsePerimeterPoint(zeroBounds, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles negative coordinates', () => {
+			const negBounds = createBounds(-200, -200, 100, 100);
+			const fromPoint: Point = { x: 0, y: -150 };
+
+			const result = getEllipsePerimeterPoint(negBounds, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles point inside ellipse', () => {
+			const bounds = createBounds(100, 100, 100, 100);
+			const insidePoint: Point = { x: 140, y: 150 }; // Inside the circle
+
+			const result = getEllipsePerimeterPoint(bounds, insidePoint);
+
+			// Should still find perimeter point in that direction
+			const center: Point = { x: 150, y: 150 };
+			const dist = Math.sqrt(Math.pow(result.x - center.x, 2) + Math.pow(result.y - center.y, 2));
+			expect(dist).toBeCloseTo(50, 0); // Radius is 50
 		});
 	});
 });
@@ -550,6 +883,142 @@ describe('getPolygonPerimeterPoint', () => {
 			expect(onAnyEdge).toBe(true);
 		});
 	});
+
+	describe('edge cases', () => {
+		it('handles collinear vertices (degenerate polygon)', () => {
+			// All points on a line
+			const collinearVertices: Point[] = [
+				{ x: 100, y: 100 },
+				{ x: 150, y: 100 },
+				{ x: 200, y: 100 }
+			];
+			const center: Point = { x: 150, y: 100 };
+			const fromPoint: Point = { x: 150, y: 0 };
+
+			const result = getPolygonPerimeterPoint(collinearVertices, center, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles very small polygon', () => {
+			const tinyVertices: Point[] = [
+				{ x: 100, y: 100 },
+				{ x: 100.01, y: 100 },
+				{ x: 100.005, y: 100.01 }
+			];
+			const center: Point = { x: 100.005, y: 100.003 };
+			const fromPoint: Point = { x: 200, y: 100 };
+
+			const result = getPolygonPerimeterPoint(tinyVertices, center, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles point inside polygon', () => {
+			const vertices: Point[] = [
+				{ x: 100, y: 100 },
+				{ x: 200, y: 100 },
+				{ x: 200, y: 200 },
+				{ x: 100, y: 200 }
+			];
+			const center: Point = { x: 150, y: 150 };
+			const insidePoint: Point = { x: 140, y: 150 };
+
+			const result = getPolygonPerimeterPoint(vertices, center, insidePoint);
+
+			// Should find perimeter point in that direction (left)
+			expect(result.x).toBeCloseTo(100, 0);
+		});
+
+		it('handles point exactly at center', () => {
+			const vertices: Point[] = [
+				{ x: 100, y: 100 },
+				{ x: 200, y: 100 },
+				{ x: 200, y: 200 },
+				{ x: 100, y: 200 }
+			];
+			const center: Point = { x: 150, y: 150 };
+
+			const result = getPolygonPerimeterPoint(vertices, center, center);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles polygon with only 2 vertices (line segment)', () => {
+			const lineVertices: Point[] = [
+				{ x: 100, y: 100 },
+				{ x: 200, y: 200 }
+			];
+			const center: Point = { x: 150, y: 150 };
+			const fromPoint: Point = { x: 200, y: 100 };
+
+			const result = getPolygonPerimeterPoint(lineVertices, center, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles polygon with 1 vertex (point)', () => {
+			const singleVertex: Point[] = [{ x: 100, y: 100 }];
+			const center: Point = { x: 100, y: 100 };
+			const fromPoint: Point = { x: 200, y: 100 };
+
+			const result = getPolygonPerimeterPoint(singleVertex, center, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles empty vertices array', () => {
+			const emptyVertices: Point[] = [];
+			const center: Point = { x: 150, y: 150 };
+			const fromPoint: Point = { x: 200, y: 100 };
+
+			const result = getPolygonPerimeterPoint(emptyVertices, center, fromPoint);
+
+			// Should return center as fallback
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles negative coordinates', () => {
+			const vertices: Point[] = [
+				{ x: -200, y: -200 },
+				{ x: -100, y: -200 },
+				{ x: -100, y: -100 },
+				{ x: -200, y: -100 }
+			];
+			const center: Point = { x: -150, y: -150 };
+			const fromPoint: Point = { x: 0, y: -150 };
+
+			const result = getPolygonPerimeterPoint(vertices, center, fromPoint);
+
+			expect(result.x).toBeCloseTo(-100, 0); // Right edge
+		});
+
+		it('handles very large polygon', () => {
+			// Generate a polygon with many vertices
+			const center: Point = { x: 0, y: 0 };
+			const vertices: Point[] = [];
+			for (let i = 0; i < 100; i++) {
+				const angle = (i * 2 * Math.PI) / 100;
+				vertices.push({
+					x: 1000 * Math.cos(angle),
+					y: 1000 * Math.sin(angle)
+				});
+			}
+			const fromPoint: Point = { x: 2000, y: 0 };
+
+			const result = getPolygonPerimeterPoint(vertices, center, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+			expect(result.x).toBeCloseTo(1000, -1); // Approximately at the right edge
+		});
+	});
 });
 
 // =============================================================================
@@ -660,6 +1129,120 @@ describe('getClosestPerimeterPoint', () => {
 
 		// Arrows don't support binding, return center
 		expectPointClose(result, { x: 150, y: 150 });
+	});
+
+	describe('edge cases', () => {
+		it('handles negative gap values (treated as 0)', () => {
+			const shape = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const fromPoint: Point = { x: 300, y: 150 };
+
+			const result = getClosestPerimeterPoint(shape, fromPoint, -10);
+
+			// Should be on the perimeter (gap clamped to 0 or handled gracefully)
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles very large gap values', () => {
+			const shape = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const fromPoint: Point = { x: 300, y: 150 };
+
+			const result = getClosestPerimeterPoint(shape, fromPoint, 1000);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(result.x).toBeGreaterThan(1000); // Far from shape
+		});
+
+		it('handles extremely small shapes', () => {
+			const shape = createShape('rectangle', { x: 100, y: 100 }, { x: 100.001, y: 100.001 });
+			const fromPoint: Point = { x: 200, y: 100 };
+
+			const result = getClosestPerimeterPoint(shape, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles shape with 180° rotation', () => {
+			const shape = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, 180);
+			const fromPoint: Point = { x: 300, y: 150 };
+
+			const result = getClosestPerimeterPoint(shape, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles shape with negative rotation', () => {
+			const shape = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, -45);
+			const fromPoint: Point = { x: 300, y: 150 };
+
+			const result = getClosestPerimeterPoint(shape, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles inverted bounds (end < start)', () => {
+			const shape = createShape('rectangle', { x: 200, y: 200 }, { x: 100, y: 100 });
+			const fromPoint: Point = { x: 300, y: 150 };
+
+			const result = getClosestPerimeterPoint(shape, fromPoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles shape at origin', () => {
+			const shape = createShape('rectangle', { x: 0, y: 0 }, { x: 100, y: 100 });
+			const fromPoint: Point = { x: 200, y: 50 };
+
+			const result = getClosestPerimeterPoint(shape, fromPoint);
+
+			expect(result.x).toBeCloseTo(100, 0);
+			expect(result.y).toBeCloseTo(50, 0);
+		});
+
+		it('handles shape spanning negative to positive coordinates', () => {
+			const shape = createShape('rectangle', { x: -50, y: -50 }, { x: 50, y: 50 });
+			const fromPoint: Point = { x: 100, y: 0 };
+
+			const result = getClosestPerimeterPoint(shape, fromPoint);
+
+			expect(result.x).toBeCloseTo(50, 0);
+			expect(result.y).toBeCloseTo(0, 0);
+		});
+
+		it('handles all bindable shape types with gap', () => {
+			const shapeTypes: ShapeElement['shapeType'][] = [
+				'rectangle',
+				'circle',
+				'pentagon',
+				'hexagon',
+				'star'
+			];
+			const gap = 5;
+
+			for (const shapeType of shapeTypes) {
+				const shape = createShape(shapeType, { x: 100, y: 100 }, { x: 200, y: 200 });
+				const fromPoint: Point = { x: 300, y: 150 };
+
+				const resultWithGap = getClosestPerimeterPoint(shape, fromPoint, gap);
+				const resultNoGap = getClosestPerimeterPoint(shape, fromPoint, 0);
+
+				expect(Number.isFinite(resultWithGap.x)).toBe(true);
+				expect(Number.isFinite(resultWithGap.y)).toBe(true);
+				// Result with gap should be further from center than without gap
+				const center = { x: 150, y: 150 };
+				const distWithGap = Math.sqrt(
+					Math.pow(resultWithGap.x - center.x, 2) + Math.pow(resultWithGap.y - center.y, 2)
+				);
+				const distNoGap = Math.sqrt(
+					Math.pow(resultNoGap.x - center.x, 2) + Math.pow(resultNoGap.y - center.y, 2)
+				);
+				expect(distWithGap).toBeGreaterThan(distNoGap);
+			}
+		});
 	});
 });
 

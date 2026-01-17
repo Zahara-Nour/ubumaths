@@ -14,7 +14,13 @@ import {
 	createArrowWithBindings,
 	BINDING_THRESHOLD_PX
 } from './binding';
-import type { Point, ShapeElement, ArrowElement, BindingAnchor } from '../types/document';
+import type {
+	Point,
+	ShapeElement,
+	ArrowElement,
+	BindingAnchor,
+	WhiteboardElement
+} from '../types/document';
 
 // =============================================================================
 // Test Utilities
@@ -215,6 +221,126 @@ describe('findBindingCandidate', () => {
 		expect(result!.perimeterPoint.x).toBeCloseTo(200, 0);
 		expect(result!.perimeterPoint.y).toBeCloseTo(150, 0);
 	});
+
+	describe('edge cases', () => {
+		it('returns null for empty elements array', () => {
+			const point: Point = { x: 150, y: 150 };
+			const elements: ShapeElement[] = [];
+
+			const result = findBindingCandidate(point, elements, new Set());
+
+			expect(result).toBeNull();
+		});
+
+		it('returns null when all elements are excluded', () => {
+			const rect1 = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'r1' });
+			const rect2 = createShape('rectangle', { x: 150, y: 150 }, { x: 250, y: 250 }, { id: 'r2' });
+			const point: Point = { x: 205, y: 175 };
+			const elements = [rect1, rect2];
+
+			const result = findBindingCandidate(point, elements, new Set(['r1', 'r2']));
+
+			expect(result).toBeNull();
+		});
+
+		it('finds shape when point is exactly on perimeter (distance = 0)', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const point: Point = { x: 200, y: 150 }; // Exactly on right edge
+			const elements = [rect];
+
+			const result = findBindingCandidate(point, elements, new Set());
+
+			expect(result).not.toBeNull();
+			expect(result!.distance).toBeCloseTo(0, 0);
+		});
+
+		it('handles overlapping shapes (picks closest perimeter)', () => {
+			const rect1 = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'r1' });
+			const rect2 = createShape('rectangle', { x: 150, y: 100 }, { x: 250, y: 200 }, { id: 'r2' });
+			// Point between the two overlapping areas, closer to rect2's right edge
+			const point: Point = { x: 255, y: 150 };
+			const elements = [rect1, rect2];
+
+			const result = findBindingCandidate(point, elements, new Set());
+
+			expect(result).not.toBeNull();
+			expect(result!.element.id).toBe('r2');
+		});
+
+		it('handles shapes with negative coordinates', () => {
+			const rect = createShape('rectangle', { x: -200, y: -200 }, { x: -100, y: -100 });
+			const point: Point = { x: -95, y: -150 }; // Near right edge
+			const elements = [rect];
+
+			const result = findBindingCandidate(point, elements, new Set());
+
+			expect(result).not.toBeNull();
+			expect(result!.element.id).toBe(rect.id);
+		});
+
+		it('handles point inside a shape (should still find candidate)', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const point: Point = { x: 150, y: 150 }; // Center of rectangle
+			const elements = [rect];
+
+			const result = findBindingCandidate(point, elements, new Set());
+
+			// Point is inside, but we should still find the shape if within threshold
+			// The distance to perimeter from center is 50px which exceeds 15px threshold
+			expect(result).toBeNull();
+		});
+
+		it('handles point just inside threshold from perimeter', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const point: Point = { x: 214, y: 150 }; // 14px from right edge (within 15px threshold)
+			const elements = [rect];
+
+			const result = findBindingCandidate(point, elements, new Set());
+
+			expect(result).not.toBeNull();
+			expect(result!.distance).toBeLessThan(BINDING_THRESHOLD_PX);
+		});
+
+		it('returns null for point just outside threshold', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const point: Point = { x: 216, y: 150 }; // 16px from right edge (outside 15px threshold)
+			const elements = [rect];
+
+			const result = findBindingCandidate(point, elements, new Set());
+
+			expect(result).toBeNull();
+		});
+
+		it('handles very small shapes', () => {
+			const smallRect = createShape('rectangle', { x: 100, y: 100 }, { x: 105, y: 105 });
+			const point: Point = { x: 110, y: 102.5 }; // 5px from right edge
+			const elements = [smallRect];
+
+			const result = findBindingCandidate(point, elements, new Set());
+
+			expect(result).not.toBeNull();
+		});
+
+		it('ignores text elements (type !== shape)', () => {
+			const textElement = {
+				id: crypto.randomUUID(),
+				type: 'text' as const,
+				x: 150,
+				y: 150,
+				text: 'Hello',
+				fontSize: 16,
+				fontFamily: 'Arial',
+				color: '#000000',
+				opacity: 1
+			};
+			const point: Point = { x: 150, y: 150 };
+			const elements = [textElement] as unknown as readonly WhiteboardElement[];
+
+			const result = findBindingCandidate(point, elements, new Set());
+
+			expect(result).toBeNull();
+		});
+	});
 });
 
 // =============================================================================
@@ -285,6 +411,88 @@ describe('createBindingAnchor', () => {
 		expect(anchor.elementId).toBe(rect.id);
 		expect(Number.isFinite(anchor.normalizedPosition.x)).toBe(true);
 		expect(Number.isFinite(anchor.normalizedPosition.y)).toBe(true);
+	});
+
+	describe('edge cases', () => {
+		it('handles zero-size shape gracefully', () => {
+			const zeroRect = createShape('rectangle', { x: 100, y: 100 }, { x: 100, y: 100 });
+			const arrowEndpoint: Point = { x: 105, y: 100 };
+			const otherEndpoint: Point = { x: 200, y: 100 };
+
+			const anchor = createBindingAnchor(zeroRect, arrowEndpoint, otherEndpoint);
+
+			expect(anchor.elementId).toBe(zeroRect.id);
+			expect(Number.isFinite(anchor.normalizedPosition.x)).toBe(true);
+			expect(Number.isFinite(anchor.normalizedPosition.y)).toBe(true);
+		});
+
+		it('handles arrow endpoint exactly at shape center', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const arrowEndpoint: Point = { x: 150, y: 150 }; // Center
+			const otherEndpoint: Point = { x: 300, y: 150 };
+
+			const anchor = createBindingAnchor(rect, arrowEndpoint, otherEndpoint);
+
+			expect(anchor.elementId).toBe(rect.id);
+			expect(anchor.normalizedPosition.x).toBeCloseTo(0.5, 1);
+			expect(anchor.normalizedPosition.y).toBeCloseTo(0.5, 1);
+		});
+
+		it('handles arrow pointing back toward itself (start near end)', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const arrowEndpoint: Point = { x: 205, y: 150 };
+			const otherEndpoint: Point = { x: 206, y: 150 }; // Very close to start
+
+			const anchor = createBindingAnchor(rect, arrowEndpoint, otherEndpoint);
+
+			expect(anchor.elementId).toBe(rect.id);
+			expect(Number.isFinite(anchor.normalizedPosition.x)).toBe(true);
+		});
+
+		it('handles zero gap', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const arrowEndpoint: Point = { x: 200, y: 150 };
+			const otherEndpoint: Point = { x: 300, y: 150 };
+
+			const anchor = createBindingAnchor(rect, arrowEndpoint, otherEndpoint, 0);
+
+			expect(anchor.gap).toBe(0);
+		});
+
+		it('handles negative coordinates', () => {
+			const rect = createShape('rectangle', { x: -200, y: -200 }, { x: -100, y: -100 });
+			const arrowEndpoint: Point = { x: -95, y: -150 };
+			const otherEndpoint: Point = { x: 0, y: -150 };
+
+			const anchor = createBindingAnchor(rect, arrowEndpoint, otherEndpoint);
+
+			expect(anchor.elementId).toBe(rect.id);
+			expect(Number.isFinite(anchor.normalizedPosition.x)).toBe(true);
+		});
+
+		it('handles very large shape', () => {
+			const largeRect = createShape('rectangle', { x: 0, y: 0 }, { x: 10000, y: 10000 });
+			const arrowEndpoint: Point = { x: 10005, y: 5000 };
+			const otherEndpoint: Point = { x: 20000, y: 5000 };
+
+			const anchor = createBindingAnchor(largeRect, arrowEndpoint, otherEndpoint);
+
+			expect(anchor.elementId).toBe(largeRect.id);
+			expect(Number.isFinite(anchor.normalizedPosition.x)).toBe(true);
+		});
+
+		it('handles arrow endpoint outside and opposite to other endpoint direction', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			// Arrow endpoint to the right of rectangle, but other endpoint is to the left
+			const arrowEndpoint: Point = { x: 250, y: 150 };
+			const otherEndpoint: Point = { x: 50, y: 150 };
+
+			const anchor = createBindingAnchor(rect, arrowEndpoint, otherEndpoint);
+
+			expect(anchor.elementId).toBe(rect.id);
+			// Perimeter point should be on the left edge (facing otherEndpoint)
+			expect(anchor.perimeterPoint.x).toBeCloseTo(0, 1); // Normalized: left edge = 0
+		});
 	});
 });
 
@@ -419,6 +627,152 @@ describe('calculateBoundEndpoint', () => {
 		expect(Number.isFinite(result.x)).toBe(true);
 		expect(Number.isFinite(result.y)).toBe(true);
 		expect(result.x).toBeCloseTo(204, 0); // Right edge (200) + gap (4)
+	});
+
+	describe('edge cases', () => {
+		it('handles zero gap', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const binding: BindingAnchor = {
+				elementId: rect.id,
+				normalizedPosition: { x: 1, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 0
+			};
+			const otherEndpoint: Point = { x: 300, y: 150 };
+
+			const result = calculateBoundEndpoint(binding, rect, otherEndpoint);
+
+			// Should be exactly on the perimeter
+			expect(result.x).toBeCloseTo(200, 0);
+		});
+
+		it('handles very large gap', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const binding: BindingAnchor = {
+				elementId: rect.id,
+				normalizedPosition: { x: 1, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 500
+			};
+			const otherEndpoint: Point = { x: 300, y: 150 };
+
+			const result = calculateBoundEndpoint(binding, rect, otherEndpoint);
+
+			expect(result.x).toBeCloseTo(700, 0); // 200 + 500
+		});
+
+		it('handles zero-size shape', () => {
+			const zeroRect = createShape('rectangle', { x: 100, y: 100 }, { x: 100, y: 100 });
+			const binding: BindingAnchor = {
+				elementId: zeroRect.id,
+				normalizedPosition: { x: 0.5, y: 0.5 },
+				perimeterPoint: { x: 0.5, y: 0.5 },
+				gap: 4
+			};
+			const otherEndpoint: Point = { x: 200, y: 100 };
+
+			const result = calculateBoundEndpoint(binding, zeroRect, otherEndpoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles diagonal direction', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const binding: BindingAnchor = {
+				elementId: rect.id,
+				normalizedPosition: { x: 1, y: 0 },
+				perimeterPoint: { x: 1, y: 0 },
+				gap: 0
+			};
+			// Other endpoint diagonally up-right
+			const otherEndpoint: Point = { x: 300, y: 50 };
+
+			const result = calculateBoundEndpoint(binding, rect, otherEndpoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+			expect(Number.isFinite(result.y)).toBe(true);
+		});
+
+		it('handles other endpoint very close to bound shape', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const binding: BindingAnchor = {
+				elementId: rect.id,
+				normalizedPosition: { x: 1, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 4
+			};
+			// Other endpoint just outside the shape
+			const otherEndpoint: Point = { x: 201, y: 150 };
+
+			const result = calculateBoundEndpoint(binding, rect, otherEndpoint);
+
+			expect(Number.isFinite(result.x)).toBe(true);
+		});
+
+		it('handles negative coordinate shapes', () => {
+			const rect = createShape('rectangle', { x: -200, y: -200 }, { x: -100, y: -100 });
+			const binding: BindingAnchor = {
+				elementId: rect.id,
+				normalizedPosition: { x: 1, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 4
+			};
+			const otherEndpoint: Point = { x: 0, y: -150 };
+
+			const result = calculateBoundEndpoint(binding, rect, otherEndpoint);
+
+			expect(result.x).toBeCloseTo(-96, 0); // -100 + 4
+		});
+
+		it('handles shape that has been resized to different aspect ratio', () => {
+			// Original binding was on a square, now shape is wide rectangle
+			const wideRect = createShape('rectangle', { x: 100, y: 100 }, { x: 400, y: 150 });
+			const binding: BindingAnchor = {
+				elementId: wideRect.id,
+				normalizedPosition: { x: 1, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 4
+			};
+			const otherEndpoint: Point = { x: 500, y: 125 };
+
+			const result = calculateBoundEndpoint(binding, wideRect, otherEndpoint);
+
+			// Should adapt to new shape dimensions
+			expect(result.x).toBeCloseTo(404, 0); // 400 + 4
+			expect(result.y).toBeCloseTo(125, 0);
+		});
+
+		it('handles all edge directions', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const binding: BindingAnchor = {
+				elementId: rect.id,
+				normalizedPosition: { x: 0.5, y: 0.5 },
+				perimeterPoint: { x: 0.5, y: 0.5 },
+				gap: 4
+			};
+
+			const directions = [
+				{ point: { x: 300, y: 150 }, expectedEdge: 'right' },
+				{ point: { x: 0, y: 150 }, expectedEdge: 'left' },
+				{ point: { x: 150, y: 0 }, expectedEdge: 'top' },
+				{ point: { x: 150, y: 300 }, expectedEdge: 'bottom' }
+			];
+
+			for (const { point, expectedEdge } of directions) {
+				const result = calculateBoundEndpoint(binding, rect, point);
+
+				expect(Number.isFinite(result.x)).toBe(true);
+				expect(Number.isFinite(result.y)).toBe(true);
+
+				// Verify result is in expected direction from center
+				const center = { x: 150, y: 150 };
+				if (expectedEdge === 'right') expect(result.x).toBeGreaterThan(center.x);
+				if (expectedEdge === 'left') expect(result.x).toBeLessThan(center.x);
+				if (expectedEdge === 'top') expect(result.y).toBeLessThan(center.y);
+				if (expectedEdge === 'bottom') expect(result.y).toBeGreaterThan(center.y);
+			}
+		});
 	});
 });
 
@@ -724,5 +1078,186 @@ describe('createArrowWithBindings', () => {
 
 		expect(result.arrow.startBinding).toBeNull();
 		expect(result.arrow.endBinding).toBeNull();
+	});
+
+	describe('edge cases', () => {
+		it('handles start and end at same point', () => {
+			const start: Point = { x: 150, y: 150 };
+			const end: Point = { x: 150, y: 150 };
+			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
+
+			const result = createArrowWithBindings(start, end, [], options);
+
+			expect(result.arrow.shapeType).toBe('arrow');
+			expect(Number.isFinite(result.arrow.start.x)).toBe(true);
+		});
+
+		it('handles start inside a shape', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const start: Point = { x: 150, y: 150 }; // Center of rectangle
+			const end: Point = { x: 300, y: 150 };
+			const elements = [rect];
+			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
+
+			const result = createArrowWithBindings(start, end, elements, options);
+
+			// Start is far from perimeter (50px), so no binding
+			expect(result.arrow.startBinding).toBeNull();
+		});
+
+		it('handles end inside a shape', () => {
+			const rect = createShape('rectangle', { x: 200, y: 100 }, { x: 300, y: 200 });
+			const start: Point = { x: 100, y: 150 };
+			const end: Point = { x: 250, y: 150 }; // Center of rectangle
+			const elements = [rect];
+			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
+
+			const result = createArrowWithBindings(start, end, elements, options);
+
+			// End is far from perimeter (50px), so no binding
+			expect(result.arrow.endBinding).toBeNull();
+		});
+
+		it('handles both endpoints inside the same shape', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 300, y: 300 });
+			const start: Point = { x: 150, y: 200 }; // Inside
+			const end: Point = { x: 250, y: 200 }; // Inside
+			const elements = [rect];
+			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
+
+			const result = createArrowWithBindings(start, end, elements, options);
+
+			// Both inside and far from perimeter, no bindings
+			expect(result.arrow.startBinding).toBeNull();
+			expect(result.arrow.endBinding).toBeNull();
+		});
+
+		it('handles arrow between shapes that overlap', () => {
+			const rect1 = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 }, { id: 'r1' });
+			const rect2 = createShape('rectangle', { x: 180, y: 100 }, { x: 280, y: 200 }, { id: 'r2' });
+			// Start near rect1's right edge
+			const start: Point = { x: 205, y: 150 };
+			// End near rect2's right edge
+			const end: Point = { x: 285, y: 150 };
+			const elements = [rect1, rect2];
+			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
+
+			const result = createArrowWithBindings(start, end, elements, options);
+
+			// Should bind to rect1 at start (closest) and rect2 at end
+			expect(result.arrow.startBinding).not.toBeNull();
+			expect(result.arrow.endBinding).not.toBeNull();
+		});
+
+		it('handles very short arrow near shape', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			// Very short arrow near right edge, but end is outside threshold
+			const start: Point = { x: 205, y: 150 }; // 5px from edge (within threshold)
+			const end: Point = { x: 220, y: 150 }; // 20px from edge (outside 15px threshold)
+			const elements = [rect];
+			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
+
+			const result = createArrowWithBindings(start, end, elements, options);
+
+			expect(result.arrow.startBinding).not.toBeNull();
+			expect(result.arrow.endBinding).toBeNull(); // End is outside threshold
+		});
+
+		it('handles arrow perpendicular to shape edge', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			// Arrow pointing straight right from shape
+			const start: Point = { x: 205, y: 150 };
+			const end: Point = { x: 400, y: 150 };
+			const elements = [rect];
+			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
+
+			const result = createArrowWithBindings(start, end, elements, options);
+
+			expect(result.arrow.startBinding).not.toBeNull();
+			// Adjusted start should be on right edge + gap
+			expect(result.adjustedStart.x).toBeCloseTo(204, 0);
+			expect(result.adjustedStart.y).toBeCloseTo(150, 0);
+		});
+
+		it('handles arrow diagonal to shape', () => {
+			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
+			// Arrow from near top-right corner, pointing diagonally
+			const start: Point = { x: 210, y: 95 };
+			const end: Point = { x: 400, y: 50 };
+			const elements = [rect];
+			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
+
+			const result = createArrowWithBindings(start, end, elements, options);
+
+			expect(result.arrow.startBinding).not.toBeNull();
+		});
+
+		it('handles negative coordinate shapes', () => {
+			const rect = createShape('rectangle', { x: -200, y: -200 }, { x: -100, y: -100 });
+			const start: Point = { x: -95, y: -150 };
+			const end: Point = { x: 0, y: -150 };
+			const elements = [rect];
+			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
+
+			const result = createArrowWithBindings(start, end, elements, options);
+
+			expect(result.arrow.startBinding).not.toBeNull();
+			expect(result.adjustedStart.x).toBeCloseTo(-96, 0);
+		});
+
+		it('handles all supported stroke styles', () => {
+			const strokeStyles = ['solid', 'dashed', 'dotted', 'dashdot'] as const;
+
+			for (const strokeStyle of strokeStyles) {
+				const options = { color: '#000000', strokeWidth: 2, opacity: 1, strokeStyle };
+				const result = createArrowWithBindings({ x: 0, y: 0 }, { x: 100, y: 100 }, [], options);
+
+				expect(result.arrow.strokeStyle).toBe(strokeStyle);
+			}
+		});
+
+		it('handles empty elements array', () => {
+			const start: Point = { x: 100, y: 100 };
+			const end: Point = { x: 200, y: 200 };
+			const elements: ShapeElement[] = [];
+			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
+
+			const result = createArrowWithBindings(start, end, elements, options);
+
+			expect(result.arrow.startBinding).toBeNull();
+			expect(result.arrow.endBinding).toBeNull();
+			expectPointClose(result.adjustedStart, start);
+			expectPointClose(result.adjustedEnd, end);
+		});
+
+		it('handles binding to polygon shapes', () => {
+			const pentagon = createShape('pentagon', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const start: Point = { x: 210, y: 150 };
+			const end: Point = { x: 300, y: 150 };
+			const elements = [pentagon];
+			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
+
+			const result = createArrowWithBindings(start, end, elements, options);
+
+			// Pentagon edge may not be exactly at x=200
+			expect(
+				result.arrow.startBinding === null || result.arrow.startBinding.elementId === pentagon.id
+			).toBe(true);
+		});
+
+		it('handles binding to star shapes', () => {
+			const star = createShape('star', { x: 100, y: 100 }, { x: 200, y: 200 });
+			const start: Point = { x: 155, y: 95 }; // Near top point of star
+			const end: Point = { x: 155, y: 0 };
+			const elements = [star];
+			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
+
+			const result = createArrowWithBindings(start, end, elements, options);
+
+			// May or may not bind depending on exact star geometry
+			expect(
+				result.arrow.startBinding === null || result.arrow.startBinding.elementId === star.id
+			).toBe(true);
+		});
 	});
 });

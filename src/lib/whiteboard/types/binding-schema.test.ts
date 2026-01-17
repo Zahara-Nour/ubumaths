@@ -129,6 +129,193 @@ describe('bindingAnchorSchema', () => {
 
 		expect(result.success).toBe(false);
 	});
+
+	describe('edge cases', () => {
+		it('accepts zero gap value', () => {
+			const anchorWithZeroGap = {
+				elementId: '550e8400-e29b-41d4-a716-446655440000',
+				normalizedPosition: { x: 0.5, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 0
+			};
+
+			const result = bindingAnchorSchema.safeParse(anchorWithZeroGap);
+
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.gap).toBe(0);
+			}
+		});
+
+		it('accepts maximum valid gap (50)', () => {
+			const anchorWithMaxGap = {
+				elementId: '550e8400-e29b-41d4-a716-446655440000',
+				normalizedPosition: { x: 0.5, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 50
+			};
+
+			const result = bindingAnchorSchema.safeParse(anchorWithMaxGap);
+
+			expect(result.success).toBe(true);
+		});
+
+		it('rejects empty string for elementId', () => {
+			const invalidAnchor = {
+				elementId: '',
+				normalizedPosition: { x: 0.5, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 4
+			};
+
+			const result = bindingAnchorSchema.safeParse(invalidAnchor);
+
+			expect(result.success).toBe(false);
+		});
+
+		it('handles very large coordinate values', () => {
+			const anchorWithLargeCoords = {
+				elementId: '550e8400-e29b-41d4-a716-446655440000',
+				normalizedPosition: { x: 1e10, y: 1e10 },
+				perimeterPoint: { x: 1e10, y: 1e10 },
+				gap: 4
+			};
+
+			const result = bindingAnchorSchema.safeParse(anchorWithLargeCoords);
+
+			expect(result.success).toBe(true);
+		});
+
+		it('handles very small coordinate values', () => {
+			const anchorWithSmallCoords = {
+				elementId: '550e8400-e29b-41d4-a716-446655440000',
+				normalizedPosition: { x: 1e-10, y: 1e-10 },
+				perimeterPoint: { x: 1e-10, y: 1e-10 },
+				gap: 4
+			};
+
+			const result = bindingAnchorSchema.safeParse(anchorWithSmallCoords);
+
+			expect(result.success).toBe(true);
+		});
+
+		it('rejects null values for required fields', () => {
+			const invalidAnchor = {
+				elementId: '550e8400-e29b-41d4-a716-446655440000',
+				normalizedPosition: null,
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 4
+			};
+
+			const result = bindingAnchorSchema.safeParse(invalidAnchor);
+
+			expect(result.success).toBe(false);
+		});
+
+		it('rejects array instead of object for position', () => {
+			const invalidAnchor = {
+				elementId: '550e8400-e29b-41d4-a716-446655440000',
+				normalizedPosition: [0.5, 0.5],
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 4
+			};
+
+			const result = bindingAnchorSchema.safeParse(invalidAnchor);
+
+			expect(result.success).toBe(false);
+		});
+
+		it('rejects string type for gap', () => {
+			const invalidAnchor = {
+				elementId: '550e8400-e29b-41d4-a716-446655440000',
+				normalizedPosition: { x: 0.5, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: '4'
+			};
+
+			const result = bindingAnchorSchema.safeParse(invalidAnchor);
+
+			expect(result.success).toBe(false);
+		});
+
+		it('rejects -Infinity coordinate values', () => {
+			const invalidAnchor = {
+				elementId: '550e8400-e29b-41d4-a716-446655440000',
+				normalizedPosition: { x: -Infinity, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 4
+			};
+
+			const result = bindingAnchorSchema.safeParse(invalidAnchor);
+
+			expect(result.success).toBe(false);
+		});
+
+		it('handles decimal gap values', () => {
+			const anchorWithDecimalGap = {
+				elementId: '550e8400-e29b-41d4-a716-446655440000',
+				normalizedPosition: { x: 0.5, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 4.5
+			};
+
+			const result = bindingAnchorSchema.safeParse(anchorWithDecimalGap);
+
+			expect(result.success).toBe(true);
+		});
+
+		it('rejects missing x coordinate in position', () => {
+			const invalidAnchor = {
+				elementId: '550e8400-e29b-41d4-a716-446655440000',
+				normalizedPosition: { y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 4
+			};
+
+			const result = bindingAnchorSchema.safeParse(invalidAnchor);
+
+			expect(result.success).toBe(false);
+		});
+
+		it('rejects missing y coordinate in position', () => {
+			const invalidAnchor = {
+				elementId: '550e8400-e29b-41d4-a716-446655440000',
+				normalizedPosition: { x: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 4
+			};
+
+			const result = bindingAnchorSchema.safeParse(invalidAnchor);
+
+			expect(result.success).toBe(false);
+		});
+
+		it('accepts all lowercase uuid', () => {
+			const validAnchor = {
+				elementId: 'abcdef01-2345-6789-abcd-ef0123456789',
+				normalizedPosition: { x: 0.5, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 4
+			};
+
+			const result = bindingAnchorSchema.safeParse(validAnchor);
+
+			expect(result.success).toBe(true);
+		});
+
+		it('rejects uuid with extra characters', () => {
+			const invalidAnchor = {
+				elementId: '550e8400-e29b-41d4-a716-446655440000-extra',
+				normalizedPosition: { x: 0.5, y: 0.5 },
+				perimeterPoint: { x: 1, y: 0.5 },
+				gap: 4
+			};
+
+			const result = bindingAnchorSchema.safeParse(invalidAnchor);
+
+			expect(result.success).toBe(false);
+		});
+	});
 });
 
 describe('shapeElementSchema with bindings', () => {
