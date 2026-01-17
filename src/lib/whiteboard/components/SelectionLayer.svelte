@@ -590,6 +590,12 @@
 			/>
 		{:else}
 			{@const bounds = getElementBounds(hoveredElement)}
+			{@const hoverCenter = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }}
+			{@const hoverRotation = getElementRotation(hoveredElement)}
+			{@const hoverRotateTransform =
+				hoverRotation !== 0
+					? `rotate(${hoverRotation}, ${hoverCenter.x}, ${hoverCenter.y})`
+					: undefined}
 			<rect
 				x={bounds.x}
 				y={bounds.y}
@@ -599,6 +605,7 @@
 				stroke="#93c5fd"
 				stroke-width={strokeWidth}
 				stroke-dasharray={`${3 / scale} ${3 / scale}`}
+				transform={hoverRotateTransform}
 				class="pointer-events-none"
 			/>
 		{/if}
