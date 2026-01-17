@@ -14,7 +14,7 @@
 		doStrokesIntersect
 	} from '../core/stroke-smoothing';
 	import { createShapeElement, getShapeSvgProps } from '../core/shapes';
-	import { createArrowWithBindings } from '../core/binding';
+	import { createArrowWithBindings, findBindingCandidate } from '../core/binding';
 	import {
 		hitTestElements,
 		getElementsInRect,
@@ -71,6 +71,9 @@
 	/** Shape drawing state */
 	let shapeStartPoint: Point | null = $state(null);
 	let shapeEndPoint: Point | null = $state(null);
+
+	/** Binding candidate IDs during arrow drawing (for visual feedback) */
+	let bindingCandidateIds = $state<Set<string>>(new Set());
 
 	/** TextBlockLayer reference */
 	let textBlockLayerRef: TextBlockLayer | null = $state(null);
@@ -465,6 +468,28 @@
 			} else {
 				shapeEndPoint = point;
 			}
+
+			// Detect binding candidates for arrow tool (visual feedback)
+			if (toolState.toolType === 'arrow' && shapeStartPoint) {
+				const excludeIds = new Set<string>();
+				const candidates = new Set<string>();
+
+				// Check start point
+				const startCandidate = findBindingCandidate(shapeStartPoint, elements, excludeIds);
+				if (startCandidate) {
+					candidates.add(startCandidate.element.id);
+				}
+
+				// Check end point
+				const endPoint = shapeEndPoint ?? point;
+				const endCandidate = findBindingCandidate(endPoint, elements, excludeIds);
+				if (endCandidate) {
+					candidates.add(endCandidate.element.id);
+				}
+
+				bindingCandidateIds = candidates;
+			}
+
 			return;
 		}
 
@@ -796,6 +821,7 @@
 		isDrawing = false;
 		shapeStartPoint = null;
 		shapeEndPoint = null;
+		bindingCandidateIds = new Set();
 	}
 
 	// ==========================================================================
@@ -1336,6 +1362,75 @@
 					{/if}
 				</g>
 			{/each}
+
+			<!-- Binding candidate highlights (during arrow drawing) -->
+			{#if bindingCandidateIds.size > 0}
+				{#each shapeElements.filter((s) => bindingCandidateIds.has(s.id)) as shape (shape.id)}
+					{@const props = getShapeSvgProps(
+						shape.shapeType,
+						shape.start,
+						shape.end,
+						shape.cornerRadius ?? 0
+					)}
+					{@const shapeBounds = getElementBounds(shape)}
+					{@const shapeCenter = getBoundsCenter(shapeBounds)}
+					{@const shapeRotation = shape.rotation ?? 0}
+					{@const rotateTransform =
+						shapeRotation !== 0
+							? `rotate(${shapeRotation}, ${shapeCenter.x}, ${shapeCenter.y})`
+							: ''}
+					<g transform={rotateTransform || undefined} class="binding-highlight">
+						{#if props.type === 'rect'}
+							<rect
+								x={props.x - 4}
+								y={props.y - 4}
+								width={props.width + 8}
+								height={props.height + 8}
+								rx={(props.cornerRadius ?? 0) + 4}
+								ry={(props.cornerRadius ?? 0) + 4}
+								stroke="#3b82f6"
+								stroke-width="3"
+								stroke-dasharray="6 4"
+								fill="none"
+								opacity="0.8"
+							/>
+						{:else if props.type === 'ellipse'}
+							<ellipse
+								cx={props.cx}
+								cy={props.cy}
+								rx={props.rx + 4}
+								ry={props.ry + 4}
+								stroke="#3b82f6"
+								stroke-width="3"
+								stroke-dasharray="6 4"
+								fill="none"
+								opacity="0.8"
+							/>
+						{:else if props.type === 'polygon'}
+							<!-- For polygons, draw the same polygon with offset stroke -->
+							<polygon
+								points={props.points}
+								stroke="#3b82f6"
+								stroke-width="6"
+								stroke-linejoin="round"
+								stroke-dasharray="6 4"
+								fill="none"
+								opacity="0.8"
+							/>
+						{:else if props.type === 'path'}
+							<path
+								d={props.d}
+								stroke="#3b82f6"
+								stroke-width="6"
+								stroke-linejoin="round"
+								stroke-dasharray="6 4"
+								fill="none"
+								opacity="0.8"
+							/>
+						{/if}
+					</g>
+				{/each}
+			{/if}
 
 			<!-- Shapes -->
 			{#each shapeElements as shape (shape.id)}
