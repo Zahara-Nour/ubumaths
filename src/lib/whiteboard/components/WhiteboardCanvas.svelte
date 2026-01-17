@@ -454,6 +454,20 @@
 			return;
 		}
 
+		// Track binding candidates for arrow tool on hover (before drawing starts)
+		if (toolState.toolType === 'arrow' && !isDrawing) {
+			const excludeIds = new Set<string>();
+			const candidate = findBindingCandidate(point, elements, excludeIds);
+			if (candidate) {
+				bindingCandidateIds = new Set([candidate.element.id]);
+				snapPoints = [{ point: candidate.perimeterPoint, end: 'end' }];
+			} else {
+				bindingCandidateIds = new Set();
+				snapPoints = [];
+			}
+			return;
+		}
+
 		if (!isDrawing) return;
 
 		e.preventDefault();
