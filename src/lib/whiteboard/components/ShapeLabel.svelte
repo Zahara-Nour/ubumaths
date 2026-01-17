@@ -25,13 +25,25 @@
 		scale?: number;
 		/** Whether this label is currently being edited */
 		isEditing: boolean;
+		/** Live position offset during drag (from livePositions) */
+		liveOffset?: { dx: number; dy: number } | null;
+		/** Live rotation override during rotation (from liveRotations) */
+		liveRotation?: number | null;
 		/** Callback when edit mode should end */
 		onEndEdit: () => void;
 		/** Callback when content changes */
 		onContentChange: (content: string) => void;
 	}
 
-	let { element, scale = 1, isEditing, onEndEdit, onContentChange }: Props = $props();
+	let {
+		element,
+		scale = 1,
+		isEditing,
+		liveOffset = null,
+		liveRotation = null,
+		onEndEdit,
+		onContentChange
+	}: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -49,10 +61,16 @@
 
 	/** Shape bounds and center */
 	let bounds = $derived(getElementBounds(element));
-	let center = $derived(getBoundsCenter(bounds));
+	let baseCenter = $derived(getBoundsCenter(bounds));
 
-	/** Shape rotation */
-	let rotation = $derived(element.rotation ?? 0);
+	/** Effective center including live position offset during drag */
+	let center = $derived({
+		x: baseCenter.x + (liveOffset?.dx ?? 0),
+		y: baseCenter.y + (liveOffset?.dy ?? 0)
+	});
+
+	/** Shape rotation (use live rotation if during rotation drag) */
+	let rotation = $derived(liveRotation ?? element.rotation ?? 0);
 
 	/** Parsed inline nodes for rendering */
 	let inlineNodes = $derived(parseLabelToInline(element.labelMarkdown ?? ''));
