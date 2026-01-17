@@ -586,6 +586,57 @@ export function tanhRule(u: MathNode, du: MathNode, simplify: boolean): MathNode
 }
 
 // =============================================================================
+// Inverse Hyperbolic Function Rules
+// =============================================================================
+
+/**
+ * Inverse hyperbolic sine rule: d/dx(asinh(u)) = u' / sqrt(u^2 + 1)
+ */
+export function asinhRule(u: MathNode, du: MathNode, simplify: boolean): MathNode {
+	const uSquared = simplify ? simplifiedPower(u, number('2')) : power(u, number('2'));
+	const uSquaredPlusOne = simplify ? simplifiedAdd(uSquared, one()) : add(uSquared, one());
+	const sqrtTerm = func('sqrt', [uSquaredPlusOne]);
+
+	if (simplify) {
+		return simplifiedDivide(du, sqrtTerm);
+	}
+	return divide(du, sqrtTerm, 'fraction');
+}
+
+/**
+ * Inverse hyperbolic cosine rule: d/dx(acosh(u)) = u' / sqrt(u^2 - 1)
+ * Note: Only valid for u > 1
+ */
+export function acoshRule(u: MathNode, du: MathNode, simplify: boolean): MathNode {
+	const uSquared = simplify ? simplifiedPower(u, number('2')) : power(u, number('2'));
+	const uSquaredMinusOne = simplify
+		? simplifiedSubtract(uSquared, one())
+		: subtract(uSquared, one());
+	const sqrtTerm = func('sqrt', [uSquaredMinusOne]);
+
+	if (simplify) {
+		return simplifiedDivide(du, sqrtTerm);
+	}
+	return divide(du, sqrtTerm, 'fraction');
+}
+
+/**
+ * Inverse hyperbolic tangent rule: d/dx(atanh(u)) = u' / (1 - u^2)
+ * Note: Only valid for |u| < 1
+ */
+export function atanhRule(u: MathNode, du: MathNode, simplify: boolean): MathNode {
+	const uSquared = simplify ? simplifiedPower(u, number('2')) : power(u, number('2'));
+	const oneMinusUSquared = simplify
+		? simplifiedSubtract(one(), uSquared)
+		: subtract(one(), uSquared);
+
+	if (simplify) {
+		return simplifiedDivide(du, oneMinusUSquared);
+	}
+	return divide(du, oneMinusUSquared, 'fraction');
+}
+
+// =============================================================================
 // Check if expression contains variable
 // =============================================================================
 

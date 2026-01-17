@@ -357,6 +357,86 @@ describe('differentiate', () => {
 			const latex = toLatex(result);
 			expect(latex).toContain('\\sinh');
 		});
+
+		it('d/dx(tanh(x)) = 1/cosh^2(x)', () => {
+			const expr = func('tanh', [variable('x')]);
+			const result = differentiate(expr);
+			const latex = toLatex(result);
+			expect(latex).toContain('\\cosh');
+		});
+	});
+
+	describe('inverse hyperbolic functions', () => {
+		it('d/dx(asinh(x)) = 1/sqrt(x^2 + 1)', () => {
+			const expr = func('asinh', [variable('x')]);
+			const result = differentiate(expr);
+			const latex = toLatex(result);
+			expect(latex).toContain('sqrt');
+			expect(latex).toContain('x');
+		});
+
+		it('d/dx(arcsinh(x)) = 1/sqrt(x^2 + 1)', () => {
+			const expr = func('arcsinh', [variable('x')]);
+			const result = differentiate(expr);
+			const latex = toLatex(result);
+			expect(latex).toContain('sqrt');
+		});
+
+		it('d/dx(acosh(x)) = 1/sqrt(x^2 - 1)', () => {
+			const expr = func('acosh', [variable('x')]);
+			const result = differentiate(expr);
+			const latex = toLatex(result);
+			expect(latex).toContain('sqrt');
+			expect(latex).toContain('x');
+		});
+
+		it('d/dx(arccosh(x)) = 1/sqrt(x^2 - 1)', () => {
+			const expr = func('arccosh', [variable('x')]);
+			const result = differentiate(expr);
+			const latex = toLatex(result);
+			expect(latex).toContain('sqrt');
+		});
+
+		it('d/dx(atanh(x)) = 1/(1 - x^2)', () => {
+			const expr = func('atanh', [variable('x')]);
+			const result = differentiate(expr);
+			const latex = toLatex(result);
+			expect(latex).toContain('x');
+			// Should contain 1 - x^2 in the denominator
+		});
+
+		it('d/dx(arctanh(x)) = 1/(1 - x^2)', () => {
+			const expr = func('arctanh', [variable('x')]);
+			const result = differentiate(expr);
+			const latex = toLatex(result);
+			expect(latex).toContain('x');
+		});
+
+		it('d/dx(asinh(x^2)) = 2x/sqrt(x^4 + 1) (chain rule)', () => {
+			const expr = func('asinh', [power(variable('x'), number('2'))]);
+			const result = differentiate(expr);
+			const latex = toLatex(result);
+			expect(latex).toContain('sqrt');
+			expect(latex).toContain('2');
+			expect(latex).toContain('x');
+		});
+
+		it('d/dx(acosh(2x)) = 2/sqrt(4x^2 - 1) (chain rule)', () => {
+			const expr = func('acosh', [multiply(number('2'), variable('x'), 'implicit')]);
+			const result = differentiate(expr);
+			const latex = toLatex(result);
+			expect(latex).toContain('sqrt');
+			expect(latex).toContain('2');
+			expect(latex).toContain('x');
+		});
+
+		it('d/dx(atanh(3x)) = 3/(1 - 9x^2) (chain rule)', () => {
+			const expr = func('atanh', [multiply(number('3'), variable('x'), 'implicit')]);
+			const result = differentiate(expr);
+			const latex = toLatex(result);
+			expect(latex).toContain('3');
+			expect(latex).toContain('x');
+		});
 	});
 
 	describe('generic functions with bindings', () => {
