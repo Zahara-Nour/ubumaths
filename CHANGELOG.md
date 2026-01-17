@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.2...v0.7.3) (2026-01-17)
+
+### 🐛 Bug Fixes
+
+- **hooks:** defer url.search access for prerendered pages ([4a2fa96](https://github.com/Zahara-Nour/ubumaths/commit/4a2fa966bbc9b53f62c558935b307858836db6ab))
+
 ### [0.7.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.1...v0.7.2) (2026-01-17)
 
 ### 📚 Documentation
