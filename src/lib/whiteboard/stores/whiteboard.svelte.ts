@@ -52,8 +52,14 @@ import {
 } from '../utils/sync-state';
 import { driveSyncService } from '../services/drive-sync';
 import { updateBoundArrowsForShapes, clearBindingsForDeletedShapes } from '../core/binding-updates';
-import { isBindableShape, isArrowElement } from '../core/binding';
-import type { ShapeElement } from '../types/document';
+import {
+	isBindableShape,
+	isArrowElement,
+	findBindingCandidate,
+	createBindingAnchor,
+	calculateBoundEndpoint
+} from '../core/binding';
+import type { ShapeElement, ArrowElement, BindingAnchor, Point } from '../types/document';
 
 // =============================================================================
 // Constants
@@ -306,6 +312,9 @@ function createWhiteboardStore() {
 		Map<string, { scaleX: number; scaleY: number; originX: number; originY: number }>
 	>(new Map());
 	let livePositions = $state<Map<string, { dx: number; dy: number }>>(new Map());
+	let liveEndpoints = $state<Map<string, { endpoint: 'start' | 'end'; x: number; y: number }>>(
+		new Map()
+	);
 
 	// === Autosave ===
 	let autosaveTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -561,6 +570,11 @@ function createWhiteboardStore() {
 		},
 		get livePositions() {
 			return livePositions;
+		},
+
+		/** Live endpoint positions for lines/arrows during drag */
+		get liveEndpoints() {
+			return liveEndpoints;
 		},
 
 		// === Document Operations ===
@@ -2058,6 +2072,131 @@ function createWhiteboardStore() {
 		clearAllLivePositions(): void {
 			if (livePositions.size === 0) return;
 			livePositions = new Map();
+		},
+
+		// === Live Endpoint Methods (for lines/arrows) ===
+
+		/**
+		 * Set a live (preview) endpoint position for a line/arrow during drag.
+		 * This doesn't update the actual element - use commitLiveEndpoint to apply.
+		 * @param elementId - Element to set live endpoint for
+		 * @param endpoint - Which endpoint ('start' or 'end')
+		 * @param x - New X coordinate
+		 * @param y - New Y coordinate
+		 */
+		setLiveEndpoint(elementId: string, endpoint: 'start' | 'end', x: number, y: number): void {
+			const newMap = new Map(liveEndpoints);
+			newMap.set(elementId, { endpoint, x, y });
+			liveEndpoints = newMap;
+		},
+
+		/**
+		 * Get the live endpoint for an element (if any).
+		 * @param elementId - Element to get live endpoint for
+		 */
+		getLiveEndpoint(
+			elementId: string
+		): { endpoint: 'start' | 'end'; x: number; y: number } | undefined {
+			return liveEndpoints.get(elementId);
+		},
+
+		/**
+		 * Commit the live endpoint to the actual element and clear live state.
+		 * Also handles binding detection and updates.
+		 * @param elementId - Element to commit endpoint for
+		 * @param endpoint - Which endpoint ('start' or 'end')
+		 * @param x - Final X coordinate
+		 * @param y - Final Y coordinate
+		 */
+		commitLiveEndpoint(elementId: string, endpoint: 'start' | 'end', x: number, y: number): void {
+			// Clear the live endpoint first
+			if (liveEndpoints.has(elementId)) {
+				const newMap = new Map(liveEndpoints);
+				newMap.delete(elementId);
+				liveEndpoints = newMap;
+			}
+
+			// Update the element's endpoint
+			this.updateElementEndpoint(elementId, endpoint, { x, y });
+		},
+
+		/**
+		 * Clear live endpoint without committing (e.g., on cancel).
+		 * @param elementId - Element to clear live endpoint for
+		 */
+		clearLiveEndpoint(elementId: string): void {
+			if (!liveEndpoints.has(elementId)) return;
+
+			const newMap = new Map(liveEndpoints);
+			newMap.delete(elementId);
+			liveEndpoints = newMap;
+		},
+
+		/**
+		 * Update a single endpoint of a line/arrow element.
+		 * Handles binding detection and updates bindings accordingly.
+		 * @param elementId - Element to update
+		 * @param endpoint - Which endpoint to update ('start' or 'end')
+		 * @param position - New position for the endpoint
+		 */
+		updateElementEndpoint(elementId: string, endpoint: 'start' | 'end', position: Point): void {
+			const page = currentPage;
+			if (!page) return;
+
+			const element = page.elements.find((e) => e.id === elementId);
+			if (!element || element.type !== 'shape') return;
+
+			const shape = element as ShapeElement;
+			if (shape.shapeType !== 'line' && shape.shapeType !== 'arrow') return;
+
+			// Check for binding at new position
+			const excludeIds = new Set([elementId]);
+			const candidate = findBindingCandidate(position, page.elements, excludeIds);
+
+			// Calculate the other endpoint for binding direction
+			const otherEndpoint = endpoint === 'start' ? shape.end : shape.start;
+
+			// If it's an arrow, handle bindings
+			if (shape.shapeType === 'arrow') {
+				let newBinding: BindingAnchor | null = null;
+				let adjustedPosition = position;
+
+				if (candidate) {
+					// Create binding and snap to perimeter
+					newBinding = createBindingAnchor(candidate.element, position, otherEndpoint);
+					adjustedPosition = calculateBoundEndpoint(newBinding, candidate.element, otherEndpoint);
+				}
+
+				// Update the arrow with new endpoint and binding
+				this.updateElement(elementId, (el) => {
+					if (el.type !== 'shape' || (el as ShapeElement).shapeType !== 'arrow') return el;
+					const a = el as ArrowElement;
+					if (endpoint === 'start') {
+						return {
+							...a,
+							start: adjustedPosition,
+							startBinding: newBinding
+						};
+					} else {
+						return {
+							...a,
+							end: adjustedPosition,
+							endBinding: newBinding
+						};
+					}
+				});
+			} else {
+				// For lines, just update the endpoint (no bindings)
+				this.updateElement(elementId, (el) => {
+					if (el.type !== 'shape') return el;
+					const s = el as ShapeElement;
+					if (endpoint === 'start') {
+						return { ...s, start: position };
+					} else {
+						return { ...s, end: position };
+					}
+				});
+			}
 		},
 
 		/**
