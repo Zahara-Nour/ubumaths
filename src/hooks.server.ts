@@ -51,9 +51,11 @@ const requestIdHandle: Handle = async ({ event, resolve }) => {
  * Includes navigation restructure redirects (2026-01)
  */
 const redirectHandle: Handle = async ({ event, resolve }) => {
-	const { pathname, search } = event.url;
+	const pathname = event.url.pathname;
 
 	// === NAVIGATION RESTRUCTURE REDIRECTS (308 Permanent) ===
+	// Note: We access event.url.search only when performing actual redirects
+	// to avoid "Cannot access url.search on a page with prerendering enabled" errors
 
 	// Contenu group redirects
 	if (pathname.startsWith('/dashboard/teacher/templates')) {
@@ -61,28 +63,28 @@ const redirectHandle: Handle = async ({ event, resolve }) => {
 			'/dashboard/teacher/templates',
 			'/dashboard/teacher/contenu/templates'
 		);
-		throw redirect(308, newPath + search);
+		throw redirect(308, newPath + event.url.search);
 	}
 	if (pathname.startsWith('/dashboard/teacher/exercises')) {
 		const newPath = pathname.replace(
 			'/dashboard/teacher/exercises',
 			'/dashboard/teacher/contenu/exercices'
 		);
-		throw redirect(308, newPath + search);
+		throw redirect(308, newPath + event.url.search);
 	}
 	if (pathname.startsWith('/dashboard/teacher/riddles')) {
 		const newPath = pathname.replace(
 			'/dashboard/teacher/riddles',
 			'/dashboard/teacher/contenu/enigmes'
 		);
-		throw redirect(308, newPath + search);
+		throw redirect(308, newPath + event.url.search);
 	}
 	if (pathname.startsWith('/dashboard/teacher/worksheets')) {
 		const newPath = pathname.replace(
 			'/dashboard/teacher/worksheets',
 			'/dashboard/teacher/contenu/worksheets'
 		);
-		throw redirect(308, newPath + search);
+		throw redirect(308, newPath + event.url.search);
 	}
 
 	// Gamification group redirects
@@ -91,21 +93,21 @@ const redirectHandle: Handle = async ({ event, resolve }) => {
 			'/dashboard/teacher/rewards',
 			'/dashboard/teacher/gamification/rewards'
 		);
-		throw redirect(308, newPath + search);
+		throw redirect(308, newPath + event.url.search);
 	}
 	if (pathname.startsWith('/dashboard/teacher/vip-cards')) {
 		const newPath = pathname.replace(
 			'/dashboard/teacher/vip-cards',
 			'/dashboard/teacher/gamification/vip-cards'
 		);
-		throw redirect(308, newPath + search);
+		throw redirect(308, newPath + event.url.search);
 	}
 	if (pathname.startsWith('/dashboard/teacher/marketplace')) {
 		const newPath = pathname.replace(
 			'/dashboard/teacher/marketplace',
 			'/dashboard/teacher/gamification/marketplace'
 		);
-		throw redirect(308, newPath + search);
+		throw redirect(308, newPath + event.url.search);
 	}
 
 	// Moderation group redirects
@@ -114,12 +116,12 @@ const redirectHandle: Handle = async ({ event, resolve }) => {
 			'/dashboard/teacher/warnings',
 			'/dashboard/teacher/moderation/avertissements'
 		);
-		throw redirect(308, newPath + search);
+		throw redirect(308, newPath + event.url.search);
 	}
 
 	// Google Classroom redirect to existing settings/google page
 	if (pathname === '/dashboard/teacher/google') {
-		throw redirect(308, '/dashboard/teacher/settings/google' + search);
+		throw redirect(308, '/dashboard/teacher/settings/google' + event.url.search);
 	}
 
 	// Students redirect (now accessed via Classes)
