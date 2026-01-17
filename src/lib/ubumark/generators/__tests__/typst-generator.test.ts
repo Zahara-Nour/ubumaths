@@ -1859,6 +1859,13 @@ describe('convertLatexToTypstMath - Operators with spacing', () => {
 		expect(convertLatexToTypstMath('x \\rightarrow y')).toBe('x -> y');
 		expect(convertLatexToTypstMath('x \\Leftrightarrow y')).toBe('x <=> y');
 	});
+
+	it('should convert Long double arrows', () => {
+		// Long versions should produce the same output as short versions in Typst
+		expect(convertLatexToTypstMath('x \\Longleftrightarrow y')).toBe('x <=> y');
+		expect(convertLatexToTypstMath('x \\Longrightarrow y')).toBe('x => y');
+		expect(convertLatexToTypstMath('x \\Longleftarrow y')).toBe('x <= y');
+	});
 });
 
 describe('convertLatexToTypstMath - Brace handling', () => {
@@ -2345,7 +2352,9 @@ describe('convertLatexToTypstMath - MathLive Special Constants', () => {
 	});
 
 	it('should convert complex number z = a + b\\imaginaryI', () => {
-		expect(convertLatexToTypstMath('z = a + b\\imaginaryI')).toBe('z = a + bi');
+		// Space IS needed before 'i' when preceded by letter to prevent
+		// Typst from interpreting "bi" as an unknown variable instead of "b*i"
+		expect(convertLatexToTypstMath('z = a + b\\imaginaryI')).toBe('z = a + b i');
 	});
 
 	it('should handle exponential equation from exercise', () => {
@@ -2356,8 +2365,9 @@ describe('convertLatexToTypstMath - MathLive Special Constants', () => {
 
 	it('should handle exponential with product', () => {
 		const input = '2x\\exponentialE^x-6\\exponentialE^x=0';
-		// No space needed - Typst handles implicit multiplication
-		expect(convertLatexToTypstMath(input)).toBe('2xe^x-6e^x=0');
+		// Space IS needed before 'e' when preceded by letter/digit to prevent
+		// Typst from interpreting "xe" as an unknown variable instead of "x*e"
+		expect(convertLatexToTypstMath(input)).toBe('2x e^x-6e^x=0');
 	});
 });
 
