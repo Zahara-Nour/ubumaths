@@ -43,6 +43,8 @@
 		liveRotation?: number | null;
 		/** Live resize transform during resize (from liveResizes) */
 		liveResize?: { scaleX: number; scaleY: number; originX: number; originY: number } | null;
+		/** Live endpoint position during endpoint drag (from liveEndpoints) */
+		liveEndpoint?: { endpoint: 'start' | 'end'; x: number; y: number } | null;
 		/** Callback when edit mode should end */
 		onEndEdit: () => void;
 		/** Callback when content changes */
@@ -57,6 +59,7 @@
 		liveOffset = null,
 		liveRotation = null,
 		liveResize = null,
+		liveEndpoint = null,
 		onEndEdit,
 		onContentChange
 	}: Props = $props();
@@ -82,14 +85,43 @@
 	let bounds = $derived(getElementBounds(element));
 	let baseCenter = $derived(getBoundsCenter(bounds));
 
+	/** Is this a line or arrow shape? */
+	let isLineOrArrow = $derived(element.shapeType === 'line' || element.shapeType === 'arrow');
+
+	/** Effective start point (considering liveEndpoint during drag) */
+	let effectiveStart = $derived.by(() => {
+		if (liveEndpoint?.endpoint === 'start') {
+			return { x: liveEndpoint.x, y: liveEndpoint.y };
+		}
+		return element.start;
+	});
+
+	/** Effective end point (considering liveEndpoint during drag) */
+	let effectiveEnd = $derived.by(() => {
+		if (liveEndpoint?.endpoint === 'end') {
+			return { x: liveEndpoint.x, y: liveEndpoint.y };
+		}
+		return element.end;
+	});
+
 	/**
 	 * Effective center including all live transforms:
-	 * 1. Apply resize (scale around origin)
-	 * 2. Apply position offset (translate)
+	 * 1. For lines/arrows with liveEndpoint: use effective points
+	 * 2. Apply resize (scale around origin)
+	 * 3. Apply position offset (translate)
 	 */
 	let center = $derived.by(() => {
-		let cx = baseCenter.x;
-		let cy = baseCenter.y;
+		let cx: number;
+		let cy: number;
+
+		// For lines/arrows, calculate center from effective endpoints
+		if (isLineOrArrow && liveEndpoint) {
+			cx = (effectiveStart.x + effectiveEnd.x) / 2;
+			cy = (effectiveStart.y + effectiveEnd.y) / 2;
+		} else {
+			cx = baseCenter.x;
+			cy = baseCenter.y;
+		}
 
 		// Apply live resize: scale around origin point
 		// Formula: newPos = origin + (pos - origin) * scale
@@ -107,9 +139,6 @@
 		return { x: cx, y: cy };
 	});
 
-	/** Is this a line or arrow shape? */
-	let isLineOrArrow = $derived(element.shapeType === 'line' || element.shapeType === 'arrow');
-
 	/** Shape rotation - auto-calculate for lines/arrows to align text along the line */
 	let rotation = $derived.by(() => {
 		// Use live rotation during drag if provided
@@ -118,18 +147,18 @@
 		// Use explicit rotation if set
 		if (element.rotation) return element.rotation;
 
-		// Auto-calculate rotation for lines/arrows
+		// Auto-calculate rotation for lines/arrows (use effective points for live updates)
 		if (isLineOrArrow) {
-			const angle = calculateLineAngle(element.start, element.end);
+			const angle = calculateLineAngle(effectiveStart, effectiveEnd);
 			return normalizeAngleForText(angle);
 		}
 
 		return 0;
 	});
 
-	/** Line length in pixels (for lines/arrows only) */
+	/** Line length in pixels (for lines/arrows only, use effective points) */
 	let lineLength = $derived(
-		isLineOrArrow ? calculateLineLength(element.start, element.end) : Infinity
+		isLineOrArrow ? calculateLineLength(effectiveStart, effectiveEnd) : Infinity
 	);
 
 	/** Split label text for lines/arrows when text is too long */
