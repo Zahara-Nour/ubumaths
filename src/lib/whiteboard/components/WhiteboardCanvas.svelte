@@ -14,6 +14,7 @@
 		doStrokesIntersect
 	} from '../core/stroke-smoothing';
 	import { createShapeElement, getShapeSvgProps } from '../core/shapes';
+	import { createArrowWithBindings } from '../core/binding';
 	import {
 		hitTestElements,
 		getElementsInRect,
@@ -762,18 +763,29 @@
 		}
 
 		// Create and add the shape element
-		const shape = createShapeElement(currentTool as ShapeType, start, end, {
-			color: toolState.color,
-			strokeWidth: toolState.strokeWidth,
-			opacity: toolState.opacity,
-			strokeStyle: toolState.strokeStyle,
-			fillMode: toolState.fillMode,
-			fill: toolState.fillColor,
-			fillOpacity: toolState.fillOpacity,
-			cornerRadius: toolState.cornerRadius
-		});
-
-		whiteboardStore.addElement(shape);
+		if (currentTool === 'arrow') {
+			// For arrows, use binding-aware creation
+			const { arrow } = createArrowWithBindings(start, end, elements, {
+				color: toolState.color,
+				strokeWidth: toolState.strokeWidth,
+				opacity: toolState.opacity,
+				strokeStyle: toolState.strokeStyle
+			});
+			whiteboardStore.addElement(arrow);
+		} else {
+			// For other shapes, use standard creation
+			const shape = createShapeElement(currentTool as ShapeType, start, end, {
+				color: toolState.color,
+				strokeWidth: toolState.strokeWidth,
+				opacity: toolState.opacity,
+				strokeStyle: toolState.strokeStyle,
+				fillMode: toolState.fillMode,
+				fill: toolState.fillColor,
+				fillOpacity: toolState.fillOpacity,
+				cornerRadius: toolState.cornerRadius
+			});
+			whiteboardStore.addElement(shape);
+		}
 		resetShapeState();
 	}
 
