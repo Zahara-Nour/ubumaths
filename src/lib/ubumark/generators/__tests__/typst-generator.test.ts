@@ -2311,3 +2311,111 @@ describe('Transposed Tables', () => {
 		expect(typst).toContain('[*Y*]');
 	});
 });
+
+// ============================================================================
+// MATHLIVE SPECIAL CONSTANTS (\\exponentialE, \\imaginaryI)
+// ============================================================================
+describe('convertLatexToTypstMath - MathLive Special Constants', () => {
+	it('should convert \\exponentialE to e (Euler number)', () => {
+		expect(convertLatexToTypstMath('\\exponentialE')).toBe('e');
+	});
+
+	it('should convert \\exponentialE^x to e^x', () => {
+		expect(convertLatexToTypstMath('\\exponentialE^x')).toBe('e^x');
+	});
+
+	it('should convert \\exponentialE^{2x} to e^(2x)', () => {
+		expect(convertLatexToTypstMath('\\exponentialE^{2x}')).toBe('e^(2x)');
+	});
+
+	it('should convert 2\\exponentialE to 2e', () => {
+		expect(convertLatexToTypstMath('2\\exponentialE')).toBe('2e');
+	});
+
+	it('should convert \\frac{1}{\\exponentialE} to frac(1, e)', () => {
+		expect(convertLatexToTypstMath('\\frac{1}{\\exponentialE}')).toBe('frac(1, e)');
+	});
+
+	it('should convert \\exponentialE^{-x} = \\exponentialE^{3} correctly', () => {
+		expect(convertLatexToTypstMath('\\exponentialE^{-x}=\\exponentialE^{3}')).toBe('e^(-x)=e^(3)');
+	});
+
+	it('should convert \\imaginaryI to i (imaginary unit)', () => {
+		expect(convertLatexToTypstMath('\\imaginaryI')).toBe('i');
+	});
+
+	it('should convert complex number z = a + b\\imaginaryI', () => {
+		expect(convertLatexToTypstMath('z = a + b\\imaginaryI')).toBe('z = a + bi');
+	});
+
+	it('should handle exponential equation from exercise', () => {
+		// This is exactly the kind of input causing the bug
+		const input = '\\exponentialE^{x^2}=\\exponentialE^9';
+		expect(convertLatexToTypstMath(input)).toBe('e^(x^2)=e^9');
+	});
+
+	it('should handle exponential with product', () => {
+		const input = '2x\\exponentialE^x-6\\exponentialE^x=0';
+		// No space needed - Typst handles implicit multiplication
+		expect(convertLatexToTypstMath(input)).toBe('2xe^x-6e^x=0');
+	});
+});
+
+// ============================================================================
+// N-TH ROOT CONVERSION (\\sqrt[n]{x})
+// ============================================================================
+describe('convertLatexToTypstMath - N-th Root', () => {
+	it('should convert \\sqrt[3]{e} to root(3, e)', () => {
+		expect(convertLatexToTypstMath('\\sqrt[3]{e}')).toBe('root(3, e)');
+	});
+
+	it('should convert \\sqrt[3]{e^4} to root(3, e^4)', () => {
+		expect(convertLatexToTypstMath('\\sqrt[3]{e^4}')).toBe('root(3, e^4)');
+	});
+
+	it('should convert \\sqrt[n]{x} to root(n, x)', () => {
+		expect(convertLatexToTypstMath('\\sqrt[n]{x}')).toBe('root(n, x)');
+	});
+
+	it('should handle expression with multiple n-th roots', () => {
+		const input = '\\sqrt[3]{e^4}*(\\sqrt[3]{e})^2';
+		const result = convertLatexToTypstMath(input);
+		expect(result).toContain('root(3, e^4)');
+		expect(result).toContain('root(3, e)');
+	});
+
+	it('should handle simple square root \\sqrt{x}', () => {
+		expect(convertLatexToTypstMath('\\sqrt{x}')).toBe('sqrt(x)');
+	});
+
+	it('should handle mixed roots in expression', () => {
+		const input = '\\frac{e\\sqrt{e}}{e^2\\sqrt[3]{e}}';
+		const result = convertLatexToTypstMath(input);
+		expect(result).toContain('sqrt(e)');
+		expect(result).toContain('root(3, e)');
+	});
+
+	it('should handle n-th root with nested braces', () => {
+		expect(convertLatexToTypstMath('\\sqrt[4]{x^{2n}}')).toBe('root(4, x^(2n))');
+	});
+
+	it('should add space before sqrt when preceded by letter', () => {
+		// "esqrt" would be parsed as unknown variable - need space
+		expect(convertLatexToTypstMath('e\\sqrt{e}')).toBe('e sqrt(e)');
+	});
+
+	it('should add space before root when preceded by letter', () => {
+		expect(convertLatexToTypstMath('e\\sqrt[3]{e}')).toBe('e root(3, e)');
+	});
+
+	it('should add space before sqrt when preceded by closing paren', () => {
+		expect(convertLatexToTypstMath('(x+1)\\sqrt{x}')).toBe('(x+1) sqrt(x)');
+	});
+
+	it('should handle the full fraction expression from exercise', () => {
+		const input = '\\frac{e\\sqrt{e}}{e^2\\sqrt[3]{e}}';
+		const result = convertLatexToTypstMath(input);
+		// Should have space before sqrt and root to prevent "esqrt" fusion
+		expect(result).toBe('frac(e sqrt(e), e^2 root(3, e))');
+	});
+});
