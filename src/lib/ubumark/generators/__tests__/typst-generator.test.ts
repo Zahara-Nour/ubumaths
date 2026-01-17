@@ -990,7 +990,8 @@ describe('Image Generation - Path Resolution', () => {
 		expect(result).toContain('/images/subdir/image.png');
 	});
 
-	it('should handle URL image paths', () => {
+	it('should generate placeholder for external URL images', () => {
+		// Typst WASM compiler cannot access external URLs, so we generate a placeholder
 		const options: Required<TypstTranspilerOptions> = {
 			paperSize: 'a4',
 			fontSize: 11,
@@ -1003,13 +1004,62 @@ describe('Image Generation - Path Resolution', () => {
 
 		const node: ImageNode = {
 			type: 'image',
-			src: 'https://example.com/path/to/remote-image.png'
+			src: 'https://example.com/path/to/remote-image.png',
+			caption: 'Remote Image'
 		};
 
 		const result = transpileImage(node, options);
 
-		// Typst can handle URLs directly
-		expect(result).toContain('https://example.com/path/to/remote-image.png');
+		// Should generate a placeholder box, not try to load the URL
+		expect(result).toContain('Image : Remote Image');
+		expect(result).toContain('#box');
+		expect(result).not.toContain('#image');
+	});
+
+	it('should use alt text for placeholder when no caption', () => {
+		const options: Required<TypstTranspilerOptions> = {
+			paperSize: 'a4',
+			fontSize: 11,
+			language: 'fr',
+			imageBasePath: '',
+			includeSetup: false,
+			title: '',
+			author: ''
+		};
+
+		const node: ImageNode = {
+			type: 'image',
+			src: 'https://example.com/image.png',
+			alt: 'Description of image'
+		};
+
+		const result = transpileImage(node, options);
+
+		expect(result).toContain('Image : Description of image');
+	});
+
+	it('should generate inline placeholder for external inline images', () => {
+		const options: Required<TypstTranspilerOptions> = {
+			paperSize: 'a4',
+			fontSize: 11,
+			language: 'fr',
+			imageBasePath: '',
+			includeSetup: false,
+			title: '',
+			author: ''
+		};
+
+		const node: ImageNode = {
+			type: 'image',
+			src: 'https://example.com/icon.png',
+			sizeClass: 'inline',
+			alt: 'Icon'
+		};
+
+		const result = transpileImage(node, options);
+
+		// Inline placeholder should be simpler
+		expect(result).toBe('[_Icon_]');
 	});
 });
 

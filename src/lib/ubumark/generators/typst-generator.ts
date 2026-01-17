@@ -784,6 +784,12 @@ export function transpileImage(node: ImageNode, options: Required<TypstTranspile
 	const imagePath = resolveImagePath(node.src, options.imageBasePath);
 	const isInline = node.sizeClass === 'inline';
 
+	// IMPORTANT: Typst WASM compiler cannot access external URLs
+	// Generate a placeholder for external images instead of failing
+	if (isExternalUrl(node.src)) {
+		return buildExternalImagePlaceholder(node, isInline);
+	}
+
 	// Get dimensions from the service
 	const dimensions = getDimensionsForFormat(node, 'typst');
 
@@ -802,6 +808,55 @@ export function transpileImage(node: ImageNode, options: Required<TypstTranspile
 
 	// Block images without caption: use alignment wrapper
 	return buildAlignedImage(node, imageCommand);
+}
+
+/**
+ * Check if a URL is external (http/https)
+ *
+ * External URLs cannot be loaded by Typst WASM compiler in browser
+ *
+ * @param src - Image source URL or path
+ * @returns True if external URL
+ */
+function isExternalUrl(src: string): boolean {
+	return src.startsWith('http://') || src.startsWith('https://');
+}
+
+/**
+ * Build a placeholder for external images that cannot be loaded by Typst WASM
+ *
+ * The Typst WASM compiler runs in a sandboxed environment and cannot
+ * access external URLs. This generates a styled placeholder box that
+ * shows the image caption or alt text.
+ *
+ * @param node - Image node with caption/alt
+ * @param isInline - Whether this is an inline image
+ * @returns Typst placeholder code
+ */
+function buildExternalImagePlaceholder(node: ImageNode, isInline: boolean): string {
+	const caption = node.caption || node.alt || 'Image externe';
+	const escapedCaption = escapeTypstBrackets(caption);
+
+	if (isInline) {
+		// Inline placeholder: simple text in brackets
+		return `[_${escapedCaption}_]`;
+	}
+
+	// Block placeholder: styled box with caption
+	// Use a gray box with italic text to indicate missing image
+	return `#align(center)[
+  #box(
+    width: 70%,
+    stroke: 0.5pt + gray,
+    radius: 4pt,
+    inset: 1em,
+    fill: rgb("#f5f5f5")
+  )[
+    #align(center)[
+      #text(fill: gray)[_Image : ${escapedCaption}_]
+    ]
+  ]
+]`;
 }
 
 /**
@@ -1895,12 +1950,16 @@ export function escapeTypstBrackets(text: string): string {
  *
  * Converts relative paths to absolute or keeps URL as-is.
  *
+ * NOTE: External URLs (http/https) are kept as-is here, but the Typst WASM
+ * compiler cannot actually load them. The transpileImage function handles
+ * this by generating a placeholder for external URLs instead.
+ *
  * @param src - Image source (relative path or URL)
  * @param basePath - Base path for relative images
  * @returns Resolved image path for Typst
  */
 export function resolveImagePath(src: string, basePath: string): string {
-	// If it's a URL, keep as-is (Typst can handle URLs)
+	// Keep URLs as-is (handled specially in transpileImage for WASM compatibility)
 	if (src.startsWith('http://') || src.startsWith('https://')) {
 		return src;
 	}
