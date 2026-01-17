@@ -51,6 +51,9 @@ import {
 	type SyncStatus
 } from '../utils/sync-state';
 import { driveSyncService } from '../services/drive-sync';
+import { updateBoundArrowsForShapes } from '../core/binding-updates';
+import { isBindableShape, isArrowElement } from '../core/binding';
+import type { ShapeElement } from '../types/document';
 
 // =============================================================================
 // Constants
@@ -1168,13 +1171,49 @@ function createWhiteboardStore() {
 				}
 			};
 
-			updateCurrentPage((page) => ({
-				...page,
-				elements: page.elements.map((element) => {
+			updateCurrentPage((page) => {
+				// First pass: move the elements
+				const movedElements = page.elements.map((element) => {
 					if (!idsToMove.has(element.id)) return element;
 					return moveElement(element);
-				})
-			}));
+				});
+
+				// Second pass: update bound arrows
+				// Identify which moved elements are bindable shapes
+				const movedShapeIds: string[] = [];
+				for (const id of idsToMove) {
+					const element = movedElements.find((el) => el.id === id);
+					if (
+						element?.type === 'shape' &&
+						isBindableShape(element as ShapeElement) &&
+						!isArrowElement(element)
+					) {
+						movedShapeIds.push(id);
+					}
+				}
+
+				// Update arrows bound to the moved shapes
+				if (movedShapeIds.length > 0) {
+					const { updatedArrows, updatedElementIds } = updateBoundArrowsForShapes(
+						movedShapeIds,
+						movedElements
+					);
+
+					if (updatedArrows.length > 0) {
+						const updatedIds = new Set(updatedElementIds);
+						return {
+							...page,
+							elements: movedElements.map((el) => {
+								if (!updatedIds.has(el.id)) return el;
+								const updated = updatedArrows.find((a) => a.id === el.id);
+								return updated ?? el;
+							})
+						};
+					}
+				}
+
+				return { ...page, elements: movedElements };
+			});
 		},
 
 		/**
@@ -1200,9 +1239,9 @@ function createWhiteboardStore() {
 			const affectsBottom = (h: string) => h === 'sw' || h === 's' || h === 'se';
 			const isCornerHandle = (h: string) => h === 'nw' || h === 'ne' || h === 'sw' || h === 'se';
 
-			updateCurrentPage((page) => ({
-				...page,
-				elements: page.elements.map((element) => {
+			updateCurrentPage((page) => {
+				// First pass: resize the element
+				const resizedElements = page.elements.map((element) => {
 					if (element.id !== elementId) return element;
 
 					if (element.type === 'shape') {
@@ -1621,8 +1660,35 @@ function createWhiteboardStore() {
 					}
 
 					return element;
-				})
-			}));
+				});
+
+				// Second pass: update bound arrows if this is a bindable shape
+				const element = resizedElements.find((el) => el.id === elementId);
+				if (
+					element?.type === 'shape' &&
+					isBindableShape(element as ShapeElement) &&
+					!isArrowElement(element)
+				) {
+					const { updatedArrows, updatedElementIds } = updateBoundArrowsForShapes(
+						[elementId],
+						resizedElements
+					);
+
+					if (updatedArrows.length > 0) {
+						const updatedIds = new Set(updatedElementIds);
+						return {
+							...page,
+							elements: resizedElements.map((el) => {
+								if (!updatedIds.has(el.id)) return el;
+								const updated = updatedArrows.find((a) => a.id === el.id);
+								return updated ?? el;
+							})
+						};
+					}
+				}
+
+				return { ...page, elements: resizedElements };
+			});
 		},
 
 		/**
@@ -1635,9 +1701,9 @@ function createWhiteboardStore() {
 			let normalizedRotation = rotation % 360;
 			if (normalizedRotation < 0) normalizedRotation += 360;
 
-			updateCurrentPage((page) => ({
-				...page,
-				elements: page.elements.map((element) => {
+			updateCurrentPage((page) => {
+				// First pass: rotate the element
+				const rotatedElements = page.elements.map((element) => {
 					if (element.id !== elementId) return element;
 
 					// Shapes, strokes, and groups support rotation
@@ -1646,8 +1712,35 @@ function createWhiteboardStore() {
 					}
 
 					return element;
-				})
-			}));
+				});
+
+				// Second pass: update bound arrows if this is a bindable shape
+				const element = rotatedElements.find((el) => el.id === elementId);
+				if (
+					element?.type === 'shape' &&
+					isBindableShape(element as ShapeElement) &&
+					!isArrowElement(element)
+				) {
+					const { updatedArrows, updatedElementIds } = updateBoundArrowsForShapes(
+						[elementId],
+						rotatedElements
+					);
+
+					if (updatedArrows.length > 0) {
+						const updatedIds = new Set(updatedElementIds);
+						return {
+							...page,
+							elements: rotatedElements.map((el) => {
+								if (!updatedIds.has(el.id)) return el;
+								const updated = updatedArrows.find((a) => a.id === el.id);
+								return updated ?? el;
+							})
+						};
+					}
+				}
+
+				return { ...page, elements: rotatedElements };
+			});
 		},
 
 		/**
@@ -1657,9 +1750,9 @@ function createWhiteboardStore() {
 		rotateSelected(deltaAngle: number): void {
 			if (selectedIds.size === 0) return;
 
-			updateCurrentPage((page) => ({
-				...page,
-				elements: page.elements.map((element) => {
+			updateCurrentPage((page) => {
+				// First pass: rotate the selected elements
+				const rotatedElements = page.elements.map((element) => {
 					if (!selectedIds.has(element.id)) return element;
 
 					// Shapes, strokes, and groups support rotation
@@ -1671,8 +1764,42 @@ function createWhiteboardStore() {
 					}
 
 					return element;
-				})
-			}));
+				});
+
+				// Second pass: update bound arrows for rotated bindable shapes
+				const rotatedShapeIds: string[] = [];
+				for (const id of selectedIds) {
+					const element = rotatedElements.find((el) => el.id === id);
+					if (
+						element?.type === 'shape' &&
+						isBindableShape(element as ShapeElement) &&
+						!isArrowElement(element)
+					) {
+						rotatedShapeIds.push(id);
+					}
+				}
+
+				if (rotatedShapeIds.length > 0) {
+					const { updatedArrows, updatedElementIds } = updateBoundArrowsForShapes(
+						rotatedShapeIds,
+						rotatedElements
+					);
+
+					if (updatedArrows.length > 0) {
+						const updatedIds = new Set(updatedElementIds);
+						return {
+							...page,
+							elements: rotatedElements.map((el) => {
+								if (!updatedIds.has(el.id)) return el;
+								const updated = updatedArrows.find((a) => a.id === el.id);
+								return updated ?? el;
+							})
+						};
+					}
+				}
+
+				return { ...page, elements: rotatedElements };
+			});
 		},
 
 		/**
