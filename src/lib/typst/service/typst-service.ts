@@ -47,6 +47,9 @@ import type {
 import { DEFAULT_SERVICE_CONFIG } from '../types';
 import { TypstCache } from '../cache';
 import { getTypstCompiler } from '../compiler';
+import { createLogger } from '$lib/utils/logger';
+
+const logger = createLogger('typst-service');
 
 // ============================================================================
 // CONSTANTS
