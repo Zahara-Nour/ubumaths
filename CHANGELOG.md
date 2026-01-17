@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.4](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.3...v0.7.4) (2026-01-17)
+
+### 🐛 Bug Fixes
+
+- **db:** remove non-existent gender column from get_teacher_classes_with_students ([c29a6f5](https://github.com/Zahara-Nour/ubumaths/commit/c29a6f5f9260fc987d0c78d197e185e829b99cdb))
+- **moderation:** use locals.supabase instead of destructuring from requireRole ([2f1271c](https://github.com/Zahara-Nour/ubumaths/commit/2f1271cdea9a466b9289b96490b9cdc4e8ea5d9a))
+
 ### [0.7.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.2...v0.7.3) (2026-01-17)
 
 ### 🐛 Bug Fixes
