@@ -21,8 +21,12 @@
 		Trash2,
 		Link,
 		Clock,
-		Globe
+		Globe,
+		Download,
+		Loader2
 	} from 'lucide-svelte';
+	import { generateExerciseTypst } from '$lib/exercises/typst/exercise-typst-generator';
+	import { getTypstService, PRIORITY } from '$lib/typst/service';
 	import CodeViewer from '$lib/components/CodeViewer.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { Database } from '$lib/types/database';
@@ -70,6 +74,10 @@
 	let copiedTokenId = $state<string | null>(null);
 	let revokingTokenId = $state<string | null>(null);
 	let copiedPublicLink = $state(false);
+
+	// PDF download state
+	let isPdfLoading = $state(false);
+	let showPdfDialog = $state(false);
 
 	// Expiration options for token creation
 	const expirationOptions = [
@@ -294,6 +302,79 @@
 			loadShareTokens();
 		}
 	}
+
+	/**
+	 * Get variation index from label
+	 */
+	function getVariationIndex(label: string): number {
+		const variations = data.exercise.variations;
+		if (!variations || variations.length === 0) return 0;
+		const index = variations.findIndex((v) => v.label === label);
+		return index >= 0 ? index : 0;
+	}
+
+	/**
+	 * Download exercise as PDF
+	 */
+	async function downloadPdf(includeSolution: boolean) {
+		showPdfDialog = false;
+		isPdfLoading = true;
+
+		try {
+			// Use current variation from URL or default to 'guided'
+			const variationIndex = getVariationIndex(initialVariation);
+			// Use a random seed for this PDF generation
+			const seed = Math.floor(Math.random() * 1000000);
+
+			// Generate Typst content
+			const typstResult = await generateExerciseTypst({
+				exercise: data.exercise as import('$lib/exercises/types').Exercise,
+				variationIndex,
+				seed,
+				includeSolution,
+				includeMetadata: true
+			});
+
+			if (!typstResult.success || !typstResult.typstContent) {
+				toaster.error(typstResult.error || 'Erreur lors de la génération du PDF');
+				return;
+			}
+
+			// Compile to PDF using TypstService
+			const service = getTypstService();
+			await service.initialize();
+
+			const compileResult = await service.compileWithPriority(
+				typstResult.typstContent,
+				{ format: 'pdf' },
+				PRIORITY.URGENT
+			);
+
+			if (!compileResult.success || !compileResult.data) {
+				toaster.error(compileResult.error || 'Erreur lors de la compilation PDF');
+				return;
+			}
+
+			// Download the PDF
+			const pdfData = compileResult.data as Uint8Array;
+			const blob = new Blob([new Uint8Array(pdfData)], { type: 'application/pdf' });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = `${data.exercise.slug || data.exercise.id}.pdf`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+
+			toaster.success('PDF téléchargé !');
+		} catch (error) {
+			console.error('[PDF] Error during PDF generation:', error);
+			toaster.error('Erreur lors de la génération du PDF');
+		} finally {
+			isPdfLoading = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -336,6 +417,21 @@
 				class="text-muted-foreground hover:text-foreground"
 			>
 				<FileText class="h-5 w-5" />
+			</Button>
+			<!-- PDF Download Button -->
+			<Button
+				variant="ghost"
+				size="icon"
+				onclick={() => (showPdfDialog = true)}
+				title="Télécharger en PDF"
+				disabled={isPdfLoading}
+				class="text-muted-foreground hover:text-foreground"
+			>
+				{#if isPdfLoading}
+					<Loader2 class="h-5 w-5 animate-spin" />
+				{:else}
+					<Download class="h-5 w-5" />
+				{/if}
 			</Button>
 		</div>
 
@@ -651,5 +747,21 @@
 				Aucun lien de partage créé pour cet exercice.
 			</div>
 		{/if}
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- PDF Download Dialog -->
+<Dialog.Root bind:open={showPdfDialog}>
+	<Dialog.Content class="sm:max-w-md">
+		<Dialog.Header>
+			<Dialog.Title>Télécharger en PDF</Dialog.Title>
+			<Dialog.Description>Voulez-vous inclure la correction dans le PDF ?</Dialog.Description>
+		</Dialog.Header>
+		<Dialog.Footer class="flex-col gap-2 sm:flex-row">
+			<Button variant="outline" onclick={() => downloadPdf(false)} class="w-full sm:w-auto">
+				Sans correction
+			</Button>
+			<Button onclick={() => downloadPdf(true)} class="w-full sm:w-auto">Avec correction</Button>
+		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

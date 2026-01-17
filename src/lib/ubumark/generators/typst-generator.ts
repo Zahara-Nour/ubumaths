@@ -1074,6 +1074,54 @@ function convertTextCommand(str: string): string {
 }
 
 /**
+ * Convert LaTeX \sqrt[n]{x} (n-th root) to Typst root(n, x)
+ * Uses balanced brace matching to handle nested braces in the argument
+ *
+ * @param str - Input string
+ * @returns String with n-th roots converted
+ *
+ * @example
+ * convertLatexNthRoot('\\sqrt[3]{e^4}') // Returns 'root(3, e^4)'
+ * convertLatexNthRoot('\\sqrt[3]{e}') // Returns 'root(3, e)'
+ */
+function convertLatexNthRoot(str: string): string {
+	let result = str;
+	// Pattern: \sqrt followed by optional whitespace, [n], optional whitespace, {
+	const pattern = /\\sqrt\s*\[([^\]]*)\]\s*\{/g;
+	let match;
+
+	let changed = true;
+	while (changed) {
+		changed = false;
+		pattern.lastIndex = 0;
+
+		while ((match = pattern.exec(result)) !== null) {
+			const startIndex = match.index;
+			const nthRoot = match[1]; // The 'n' in \sqrt[n]
+			const openBraceIndex = result.indexOf('{', match.index + match[0].length - 1);
+
+			if (openBraceIndex === -1) continue;
+
+			// Find matching closing brace
+			const closeIndex = findMatchingBrace(result, openBraceIndex);
+			if (closeIndex === -1) continue;
+
+			const content = result.slice(openBraceIndex + 1, closeIndex);
+
+			// Replace \sqrt[n]{...} with root(n, ...)
+			const replacement = `root(${nthRoot}, ${content})`;
+			result = result.slice(0, startIndex) + replacement + result.slice(closeIndex + 1);
+
+			changed = true;
+			pattern.lastIndex = 0;
+			break;
+		}
+	}
+
+	return result;
+}
+
+/**
  * Convert LaTeX subscript/superscript braces to Typst parentheses
  * Handles nested braces properly (e.g., P_{\overline{R_{n}}} -> P_(overline(R_(n))))
  *
@@ -1362,13 +1410,17 @@ export function convertLatexToTypstMath(latex: string): string {
 		return 'cases(' + lines.map((line: string) => `display(${line})`).join(', ') + ')';
 	});
 
+	// Convert \sqrt[n]{x} to root(n, x) - MUST be done BEFORE simple \sqrt conversion
+	// Uses balanced brace matching to handle nested braces in the argument
+	result = convertLatexNthRoot(result);
+
 	// Convert \sqrt{x} to sqrt(x) - use balanced brace matching
 	result = convertLatexOneArgCommand(result, 'sqrt', 'sqrt');
 
-	// Convert \sqrt[n]{x} to root(n, x) - handle separately (two arguments)
-	// This must be done AFTER the simple \sqrt conversion
-	// Note: we use a simplified pattern here as nested braces in the optional arg are rare
-	result = result.replace(/sqrt\s*\[([^\]]*)\]\s*\(([^()]*)\)/g, 'root($1, $2)');
+	// Add space before sqrt and root when preceded by letter/digit to prevent
+	// variable fusion like "esqrt" being parsed as unknown variable
+	result = result.replace(/([a-zA-Z0-9)])sqrt\(/g, '$1 sqrt(');
+	result = result.replace(/([a-zA-Z0-9)])root\(/g, '$1 root(');
 
 	// Convert known functions: \sin, \cos, \tan, \log, \ln, \exp, etc.
 	// Remove backslash - Typst recognizes these directly
@@ -1577,6 +1629,12 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\Z(?![a-zA-Z])/g, 'ZZ');
 	result = result.replace(/\\Q(?![a-zA-Z])/g, 'QQ');
 	result = result.replace(/\\C(?![a-zA-Z])/g, 'CC');
+
+	// MathLive special constants
+	// \exponentialE -> Euler's number e (used by MathLive for proper semantic markup)
+	// \imaginaryI -> imaginary unit i
+	result = result.replace(/\\exponentialE/g, 'e');
+	result = result.replace(/\\imaginaryI/g, 'i');
 
 	// 5. Math text styles (1 argument) - use balanced brace matching for nested content
 	result = convertLatexOneArgCommand(result, 'mathbf', 'bold');
