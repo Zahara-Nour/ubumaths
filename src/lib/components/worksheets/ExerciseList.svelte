@@ -174,68 +174,88 @@
 		const exercise = draggedExercise;
 		const sourceSectionId = exercise.section_id;
 		const sourceGroup = groupedExercises.get(sourceSectionId) ?? [];
-		const targetGroup = groupedExercises.get(targetSectionId) ?? [];
+		const targetGroup =
+			sourceSectionId === targetSectionId
+				? sourceGroup
+				: (groupedExercises.get(targetSectionId) ?? []);
 
-		// Calculate new position
-		let newPosition: number;
-		if (targetIndex !== undefined && targetIndex >= 0) {
-			// Insert at specific index
-			if (targetGroup.length === 0) {
-				newPosition = 1;
-			} else if (targetIndex >= targetGroup.length) {
-				newPosition = targetGroup[targetGroup.length - 1].position + 1;
-			} else {
-				newPosition = targetGroup[targetIndex].position;
-			}
-		} else {
-			// Append to end
-			newPosition = targetGroup.length > 0 ? targetGroup[targetGroup.length - 1].position + 1 : 1;
-		}
+		// Find current index of dragged exercise in source group
+		const sourceIndex = sourceGroup.findIndex((ex) => ex.id === exercise.id);
 
 		// Check if anything changed
-		if (sourceSectionId === targetSectionId && exercise.position === newPosition) {
-			resetDragState();
-			return;
+		const isSameSection = sourceSectionId === targetSectionId;
+		if (isSameSection) {
+			// Same section: check if position actually changes
+			if (targetIndex === undefined) {
+				// Dropping at end - only move if not already at end
+				if (sourceIndex === sourceGroup.length - 1) {
+					resetDragState();
+					return;
+				}
+			} else if (targetIndex === sourceIndex || targetIndex === sourceIndex + 1) {
+				// Dropping at same position or immediately after (no actual move)
+				resetDragState();
+				return;
+			}
 		}
 
-		// Build updates array
+		// Build updates array with normalized positions (1, 2, 3, ...)
 		const updates: { id: string; position: number; section_id: string | null }[] = [];
 
-		// Moving to a different section or different position
-		if (sourceSectionId !== targetSectionId || targetIndex !== undefined) {
-			// Update dragged exercise
-			updates.push({
-				id: exercise.id,
-				position: newPosition,
-				section_id: targetSectionId
-			});
+		if (isSameSection) {
+			// Reorder within same section
+			const newOrder = [...sourceGroup];
+			// Remove from old position
+			newOrder.splice(sourceIndex, 1);
+			// Insert at new position
+			const insertIndex =
+				targetIndex === undefined
+					? newOrder.length
+					: targetIndex > sourceIndex
+						? targetIndex - 1
+						: targetIndex;
+			newOrder.splice(insertIndex, 0, exercise);
 
-			// Reorder other exercises in target section (shift positions)
-			if (targetIndex !== undefined && targetIndex < targetGroup.length) {
-				for (let i = targetIndex; i < targetGroup.length; i++) {
-					const ex = targetGroup[i];
-					if (ex.id !== exercise.id) {
-						updates.push({
-							id: ex.id,
-							position: ex.position + 1,
-							section_id: targetSectionId
-						});
-					}
-				}
-			}
-
-			// Reorder exercises in source section (close gap)
-			if (sourceSectionId !== targetSectionId) {
-				const sourceIndex = sourceGroup.findIndex((ex) => ex.id === exercise.id);
-				for (let i = sourceIndex + 1; i < sourceGroup.length; i++) {
-					const ex = sourceGroup[i];
+			// Update all positions
+			newOrder.forEach((ex, idx) => {
+				if (ex.position !== idx + 1) {
 					updates.push({
 						id: ex.id,
-						position: ex.position - 1,
+						position: idx + 1,
+						section_id: targetSectionId
+					});
+				}
+			});
+		} else {
+			// Moving to different section
+			// 1. Remove from source and renumber
+			const newSourceOrder = sourceGroup.filter((ex) => ex.id !== exercise.id);
+			newSourceOrder.forEach((ex, idx) => {
+				if (ex.position !== idx + 1) {
+					updates.push({
+						id: ex.id,
+						position: idx + 1,
 						section_id: sourceSectionId
 					});
 				}
-			}
+			});
+
+			// 2. Insert into target and renumber
+			const newTargetOrder = [...targetGroup];
+			const insertIndex = targetIndex === undefined ? newTargetOrder.length : targetIndex;
+			newTargetOrder.splice(insertIndex, 0, exercise);
+
+			newTargetOrder.forEach((ex, idx) => {
+				const newPosition = idx + 1;
+				const newSectionId = targetSectionId;
+				if (ex.id === exercise.id || ex.position !== newPosition) {
+					updates.push({
+						id: ex.id,
+						position: newPosition,
+						section_id: newSectionId
+					});
+				}
+			});
 		}
 
 		resetDragState();
