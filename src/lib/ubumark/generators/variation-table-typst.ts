@@ -100,7 +100,7 @@ export function generateVariationTableTypst(
 	}
 
 	try {
-		const importStatement = '#import "@preview/vartable:0.2.1": tabvar\n\n';
+		const importStatement = '#import "@preview/vartable:0.2.3": tabvar\n\n';
 		const variable = formatVariable(node.variable);
 		const domain = generateDomain(node.domain);
 		const labels = generateLabels(node.rows);
@@ -203,9 +203,8 @@ function generateLabels(rows: (SignRow | VariationRow)[]): string {
 		const converted = convertLatexToTypstMath(row.label);
 		const rowType = row.type === 'sign' ? 's' : 'v';
 		// Use content blocks [...] for labels, with embedded math
-		// Sign rows get smaller height (1cm) than variation rows (2cm)
-		const height = row.type === 'sign' ? '1cm' : '2cm';
-		return `([$${converted}$], ${height}, "${rowType}")`;
+		// vartable 0.2.3 format: ([label], "type") - no height parameter
+		return `([$${converted}$], "${rowType}")`;
 	});
 
 	return formatTypstTuple(labels);
@@ -376,11 +375,17 @@ function generateVariationRow(row: VariationRow, domain: DomainPoint[]): string 
 /**
  * Format a variation point for vartable
  *
+ * vartable 0.2.3 format:
+ * - (top, $value$) for maximum
+ * - (bottom, $value$) for minimum
+ * - () for intermediate points (no value displayed)
+ * - "||" for asymptotes
+ *
  * @param value - Value at the domain point
  * @returns Formatted point tuple
  */
 function formatPointVariation(value: VariationValue | undefined): string {
-	// Handle missing values
+	// Handle missing values - empty tuple for intermediate points
 	if (!value) {
 		return '()';
 	}
@@ -392,20 +397,20 @@ function formatPointVariation(value: VariationValue | undefined): string {
 			const [leftLimit, rightLimit] = value.limits;
 			const leftExpr = formatMathExpression(leftLimit.expression);
 			const rightExpr = formatMathExpression(rightLimit.expression);
-			const leftPos = convertPosition(leftLimit.position) || 'center';
-			const rightPos = convertPosition(rightLimit.position) || 'center';
+			const leftPos = convertPositionForVartable(leftLimit.position);
+			const rightPos = convertPositionForVartable(rightLimit.position);
 			return `(${leftPos}, ${rightPos}, "||", $${leftExpr}$, $${rightExpr}$)`;
 		}
 		// For single-limit asymptote (left side): show limit then asymptote bar
 		if (value.limitSide === 'left') {
 			const limitExpr = formatMathExpression(value.expression);
-			const limitPos = convertPosition(value.position) || 'center';
+			const limitPos = convertPositionForVartable(value.position);
 			return `(${limitPos}, "||", $${limitExpr}$)`;
 		}
 		// For single-limit asymptote (right side): asymptote bar then limit
 		if (value.limitSide === 'right') {
 			const limitExpr = formatMathExpression(value.expression);
-			const limitPos = convertPosition(value.position) || 'center';
+			const limitPos = convertPositionForVartable(value.position);
 			return `("||", ${limitPos}, $${limitExpr}$)`;
 		}
 		// For asymptote without explicit limits: just the marker
@@ -414,17 +419,19 @@ function formatPointVariation(value: VariationValue | undefined): string {
 
 	// Normal value: (position, $value$)
 	const expr = formatMathExpression(value.expression);
-	const pos = convertPosition(value.position) || 'center';
+	const pos = convertPositionForVartable(value.position);
 	return `(${pos}, $${expr}$)`;
 }
 
 /**
  * Convert position to vartable format
  *
+ * vartable supports 'top', 'bottom', and 'center' positions.
+ *
  * @param position - Position from AST
- * @returns Position string for vartable (top, bottom, or empty for middle)
+ * @returns Position string for vartable (top, bottom, or center)
  */
-function convertPosition(position: string): string {
+function convertPositionForVartable(position: string | undefined): string {
 	switch (position) {
 		case 'top':
 		case 'limit-top':
@@ -434,7 +441,8 @@ function convertPosition(position: string): string {
 			return 'bottom';
 		case 'center':
 		default:
-			return ''; // Default/middle position
+			// Default to center for intermediate values
+			return 'center';
 	}
 }
 

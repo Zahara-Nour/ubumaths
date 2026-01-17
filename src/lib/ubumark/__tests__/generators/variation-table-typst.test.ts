@@ -52,7 +52,7 @@ describe('generateVariationTableTypst - Basic Structure', () => {
 		const node = createBasicNode();
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain('#import "@preview/vartable:0.2.1": tabvar');
+		expect(typst).toContain('#import "@preview/vartable:0.2.3": tabvar');
 	});
 
 	it('should generate tabvar function call', () => {
@@ -86,7 +86,7 @@ describe('generateVariationTableTypst - Basic Structure', () => {
 
 		// Labels use content blocks [...] with embedded math
 		// Single-element tuples need trailing comma in Typst: (element,)
-		expect(typst).toContain('label: (([$f\'(x)$], 1cm, "s"),)');
+		expect(typst).toContain('label: (([$f\'(x)$], "s"),)');
 	});
 });
 
@@ -298,7 +298,7 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 		// Point format: n elements for n domain points
 		// Each element: (position, $value$)
 		expect(typst).toContain('(bottom, $-infinity$)'); // -inf point
-		expect(typst).toContain('(top, $3$)'); // 0 point
+		expect(typst).toContain('(top, $3$)'); // 0 point (position: 'top' in test data)
 		// Last point also (bottom, $-infinity$) - same as first
 	});
 
@@ -456,7 +456,7 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 
 		// Point format: each point gets (position, $value$)
 		expect(typst).toContain('(bottom, $2$)'); // limit-bottom maps to bottom
-		expect(typst).toContain('(top, $5$)');
+		expect(typst).toContain('(top, $5$)'); // top maps to top
 	});
 });
 
@@ -537,7 +537,7 @@ describe('generateVariationTableTypst - Labels', () => {
 		const typst = generateVariationTableTypst(node);
 
 		// Labels use content blocks [...] with embedded math
-		expect(typst).toContain('label: (([$f\'(x)$], 1cm, "s"), ([$f(x)$], 2cm, "v"))');
+		expect(typst).toContain('label: (([$f\'(x)$], "s"), ([$f(x)$], "v"))');
 	});
 
 	it('should convert LaTeX in labels to Typst', () => {
@@ -607,7 +607,7 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 		const typst = generateVariationTableTypst(node);
 
 		// Verify structure
-		expect(typst).toContain('#import "@preview/vartable:0.2.1": tabvar');
+		expect(typst).toContain('#import "@preview/vartable:0.2.3": tabvar');
 		expect(typst).toContain('#tabvar(');
 
 		// Verify variable
@@ -617,7 +617,7 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 		expect(typst).toContain('domain: ($-infinity$, $-1$, $0$, $1$, $+infinity$)');
 
 		// Verify labels with content blocks
-		expect(typst).toContain('label: (([$f\'(x)$], 1cm, "s"), ([$f(x)$], 2cm, "v"))');
+		expect(typst).toContain('label: (([$f\'(x)$], "s"), ([$f(x)$], "v"))');
 
 		// Verify sign row - interval-based format with markers combined
 		// Domain: 5 points -> 4 intervals
@@ -627,9 +627,9 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 		// Verify variation row (point format)
 		// 5 points for 5 domain points: each point gets (position, $value$)
 		expect(typst).toContain('(bottom, $-infinity$)'); // -inf
-		expect(typst).toContain('(top, $3$)'); // -1
+		expect(typst).toContain('(top, $3$)'); // -1 (position: 'top' in test data)
 		expect(typst).toContain('(bottom, $0$)'); // 0
-		expect(typst).toContain('(top, $2$)'); // 1
+		expect(typst).toContain('(top, $2$)'); // 1 (position: 'top' in test data)
 		// +inf also has (bottom, $-infinity$) - same as first point
 	});
 
@@ -795,7 +795,7 @@ describe('generateVariationTableTypst - Single Limit Asymptotes', () => {
 		const typst = generateVariationTableTypst(node);
 
 		// Point format: first point is normal, second is left asymptote
-		expect(typst).toContain('(top, $0$)'); // -inf point
+		expect(typst).toContain('(top, $0$)'); // -inf point (position: 'top' in test data)
 		// Left asymptote: (position, "||", $value$)
 		expect(typst).toContain('(bottom, "||", $-infinity$)');
 	});
