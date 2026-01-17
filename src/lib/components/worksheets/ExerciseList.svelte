@@ -123,7 +123,10 @@
 	 * Handle drag start
 	 */
 	function handleDragStart(e: DragEvent, exercise: WorksheetExerciseWithExercise) {
-		if (readonly) return;
+		if (readonly || isSaving) {
+			e.preventDefault();
+			return;
+		}
 		draggedExercise = exercise;
 		if (e.dataTransfer) {
 			e.dataTransfer.effectAllowed = 'move';
@@ -267,15 +270,27 @@
 
 		if (updates.length === 0) return;
 
-		// Save to server
-		await saveExerciseOrder(updates);
+		// Optimistic UI: save current state for rollback, then apply changes immediately
+		const previousExercises = [...exercises];
+		const newExercises = exercises.map((ex) => {
+			const update = updates.find((u) => u.id === ex.id);
+			if (update) {
+				return { ...ex, position: update.position, section_id: update.section_id };
+			}
+			return ex;
+		});
+		onExercisesChange?.(newExercises);
+
+		// Save to server (rollback on error)
+		await saveExerciseOrder(updates, previousExercises);
 	}
 
 	/**
-	 * Save exercise order to server
+	 * Save exercise order to server with rollback on error
 	 */
 	async function saveExerciseOrder(
-		updates: { id: string; position: number; section_id: string | null }[]
+		updates: { id: string; position: number; section_id: string | null }[],
+		previousExercises: WorksheetExerciseWithExercise[]
 	) {
 		isSaving = true;
 
@@ -290,19 +305,10 @@
 				const error = await response.json().catch(() => ({}));
 				throw new Error(error.message || 'Erreur lors de la sauvegarde');
 			}
-
-			// Update local state
-			const newExercises = exercises.map((ex) => {
-				const update = updates.find((u) => u.id === ex.id);
-				if (update) {
-					return { ...ex, position: update.position, section_id: update.section_id };
-				}
-				return ex;
-			});
-
-			onExercisesChange?.(newExercises);
 		} catch (err) {
 			console.error('Error saving exercise order:', err);
+			// Rollback to previous state
+			onExercisesChange?.(previousExercises);
 			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
 		} finally {
 			isSaving = false;
@@ -457,10 +463,10 @@
 										<div
 											class="group flex items-center gap-2 rounded-md border bg-card p-2 transition-all {isDragging
 												? 'opacity-50'
-												: 'hover:bg-muted/50'} {!readonly
+												: 'hover:bg-muted/50'} {!readonly && !isSaving
 												? 'cursor-grab active:cursor-grabbing'
-												: ''}"
-											draggable={!readonly}
+												: ''} {isSaving ? 'cursor-not-allowed opacity-70' : ''}"
+											draggable={!readonly && !isSaving}
 											role="listitem"
 											aria-label="Exercice {exercise.exercise?.title || 'sans titre'}"
 											ondragstart={(e) => handleDragStart(e, exercise)}
