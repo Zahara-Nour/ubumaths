@@ -106,6 +106,20 @@ export function findBindingCandidate(
 		const perimeterPoint = getClosestPerimeterPoint(shape, point, 0);
 		const distance = getDistance(point, perimeterPoint);
 
+		// Check if point is inside the shape (use non-expanded bounds as approximation)
+		const isInsideShape = isPointInBounds(point, bounds);
+
+		// If point is inside this shape, immediately return it as the candidate
+		// (clicking inside a shape means you want to bind to THAT shape)
+		if (isInsideShape) {
+			return {
+				element: shape,
+				perimeterPoint,
+				distance
+			};
+		}
+
+		// Otherwise, use normal threshold-based selection
 		if (distance < bestDistance) {
 			bestDistance = distance;
 			bestCandidate = {
