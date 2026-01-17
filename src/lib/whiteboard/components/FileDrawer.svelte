@@ -504,7 +504,7 @@
 				}
 				whiteboardStore.setSyncSuccess(result.fileId!, result.modifiedTime!);
 				toaster.success(isUpdating ? 'Sauvegardé sur Drive' : 'Document créé sur Drive');
-				// Delete autosave file
+				// Delete autosave file (also cancels any pending autosave)
 				await whiteboardStore.deleteAutosaveIfExists();
 				saveAsDialogOpen = false;
 				// Refresh file list
