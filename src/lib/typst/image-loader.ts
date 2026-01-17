@@ -62,9 +62,16 @@ export type ImageDataMap = Map<string, Uint8Array>;
 const VIRTUAL_IMAGE_DIR = '/virtual/images';
 
 /**
- * Supported image extensions
+ * Image extensions we can handle (including webp which we'll convert)
  */
 const SUPPORTED_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'];
+
+/**
+ * Formats that need conversion to PNG for Typst compatibility
+ * Typst WASM supports: PNG, JPEG, GIF, SVG
+ * WebP and other formats must be converted to PNG
+ */
+const FORMATS_NEEDING_CONVERSION = ['.webp'];
 
 // ============================================================================
 // URL UTILITIES
@@ -99,7 +106,12 @@ export function urlToVirtualPath(url: string): string {
 	// Extract file extension from URL
 	const urlObj = new URL(url);
 	const pathname = urlObj.pathname;
-	const extension = getFileExtension(pathname) || '.png';
+	let extension = getFileExtension(pathname) || '.png';
+
+	// Convert unsupported formats to PNG for Typst compatibility
+	if (FORMATS_NEEDING_CONVERSION.includes(extension)) {
+		extension = '.png';
+	}
 
 	// Create a simple hash from the URL
 	const hash = simpleHash(url);
@@ -147,15 +159,92 @@ function simpleHash(str: string): string {
 }
 
 // ============================================================================
+// IMAGE CONVERSION
+// ============================================================================
+
+/**
+ * Check if an image format needs conversion for Typst compatibility
+ *
+ * @param url - Image URL
+ * @returns True if the format needs conversion to PNG
+ */
+function needsConversion(url: string): boolean {
+	const extension = getFileExtension(new URL(url).pathname);
+	return extension !== null && FORMATS_NEEDING_CONVERSION.includes(extension);
+}
+
+/**
+ * Convert image data to PNG format using Canvas API
+ *
+ * This is used to convert WebP and other unsupported formats to PNG,
+ * which Typst can read.
+ *
+ * @param imageData - Original image data
+ * @param mimeType - MIME type of the original image
+ * @returns PNG data as Uint8Array
+ */
+async function convertToPng(imageData: Uint8Array, mimeType: string): Promise<Uint8Array> {
+	// Create a blob from the image data
+	const blob = new Blob([imageData], { type: mimeType });
+	const imageUrl = URL.createObjectURL(blob);
+
+	try {
+		// Load the image
+		const img = new Image();
+		await new Promise<void>((resolve, reject) => {
+			img.onload = () => resolve();
+			img.onerror = () => reject(new Error('Failed to load image for conversion'));
+			img.src = imageUrl;
+		});
+
+		// Draw to canvas
+		const canvas = document.createElement('canvas');
+		canvas.width = img.naturalWidth;
+		canvas.height = img.naturalHeight;
+
+		const ctx = canvas.getContext('2d');
+		if (!ctx) {
+			throw new Error('Failed to get canvas context');
+		}
+
+		ctx.drawImage(img, 0, 0);
+
+		// Convert to PNG blob
+		const pngBlob = await new Promise<Blob>((resolve, reject) => {
+			canvas.toBlob(
+				(blob) => {
+					if (blob) {
+						resolve(blob);
+					} else {
+						reject(new Error('Failed to convert to PNG'));
+					}
+				},
+				'image/png',
+				1.0
+			);
+		});
+
+		// Convert blob to Uint8Array
+		const arrayBuffer = await pngBlob.arrayBuffer();
+		return new Uint8Array(arrayBuffer);
+	} finally {
+		URL.revokeObjectURL(imageUrl);
+	}
+}
+
+// ============================================================================
 // IMAGE FETCHING
 // ============================================================================
 
 /**
  * Fetch a single image as Uint8Array
  *
+ * If the image is in a format not supported by Typst (e.g., WebP),
+ * it will be automatically converted to PNG.
+ *
  * @param url - Image URL to fetch
  * @param timeout - Timeout in milliseconds (default: 10000)
- * @returns Image data or throws on error
+ * @returns Image data (possibly converted to PNG) or throws on error
  */
 export async function fetchImageAsBytes(url: string, timeout = 10000): Promise<Uint8Array> {
 	const controller = new AbortController();
@@ -173,7 +262,23 @@ export async function fetchImageAsBytes(url: string, timeout = 10000): Promise<U
 		}
 
 		const arrayBuffer = await response.arrayBuffer();
-		return new Uint8Array(arrayBuffer);
+		let imageData = new Uint8Array(arrayBuffer);
+
+		// Convert unsupported formats to PNG
+		if (needsConversion(url)) {
+			const contentType = response.headers.get('content-type') || 'image/webp';
+			logger.info('Converting image to PNG for Typst compatibility', {
+				url: url.slice(0, 60),
+				originalFormat: contentType
+			});
+			imageData = await convertToPng(imageData, contentType);
+			logger.info('Image converted to PNG', {
+				originalSize: arrayBuffer.byteLength,
+				convertedSize: imageData.length
+			});
+		}
+
+		return imageData;
 	} finally {
 		clearTimeout(timeoutId);
 	}
