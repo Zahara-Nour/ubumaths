@@ -880,9 +880,11 @@
 	/**
 	 * Start editing a shape's label
 	 * Called from parent Whiteboard when user starts typing with a shape selected
+	 * @param shapeId - The shape to edit
+	 * @param initialChar - Optional initial character to prepend (from keyboard shortcut)
 	 */
-	export function startEditingShapeLabel(shapeId: string): void {
-		shapeLabelLayerRef?.startEditingShape(shapeId);
+	export function startEditingShapeLabel(shapeId: string, initialChar?: string): void {
+		shapeLabelLayerRef?.startEditingShape(shapeId, initialChar);
 	}
 
 	/**
