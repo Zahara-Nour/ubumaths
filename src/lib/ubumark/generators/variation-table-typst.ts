@@ -38,14 +38,22 @@ interface VariationTableTypstOptions {
 /**
  * Format an array of elements as a Typst tuple
  *
- * In Typst, single-element tuples require a trailing comma: (x,)
- * Without it, (x) is just parentheses around a value, not a tuple.
+ * CRITICAL - Typst single-element tuple syntax:
+ * In Typst, `(x)` is just parentheses around `x`, NOT a tuple with one element.
+ * To create a single-element tuple, you MUST add a trailing comma: `(x,)`.
+ *
+ * This is a common source of bugs when generating Typst code:
+ * - `(foo)` = parentheses = just `foo`
+ * - `(foo,)` = tuple with one element = `(foo,)`
+ *
+ * Without the trailing comma, code like `tuple.at(0)` or `tuple.last()` will
+ * operate on `foo` directly instead of on a tuple, causing type errors.
  *
  * @param elements - Array of stringified elements
- * @returns Properly formatted Typst tuple
+ * @returns Properly formatted Typst tuple with trailing comma for single elements
  *
  * @example
- * formatTypstTuple(['$-$'])  // Returns "($-$,)"
+ * formatTypstTuple(['$-$'])  // Returns "($-$,)" - note the trailing comma!
  * formatTypstTuple(['$+$', '$-$'])  // Returns "($+$, $-$)"
  */
 function formatTypstTuple(elements: string[]): string {
@@ -53,7 +61,8 @@ function formatTypstTuple(elements: string[]): string {
 		return '()';
 	}
 	if (elements.length === 1) {
-		return `(${elements[0]},)`; // Trailing comma for single element
+		// CRITICAL: Trailing comma required for single-element tuples in Typst!
+		return `(${elements[0]},)`;
 	}
 	return `(${elements.join(', ')})`;
 }
@@ -100,7 +109,7 @@ export function generateVariationTableTypst(
 	}
 
 	try {
-		const importStatement = '#import "@preview/vartable:0.2.3": tabvar\n\n';
+		const importStatement = '#import "@preview/vartable:0.2.1": tabvar\n\n';
 		const variable = formatVariable(node.variable);
 		const domain = generateDomain(node.domain);
 		const labels = generateLabels(node.rows);
@@ -217,7 +226,19 @@ function generateLabels(rows: (SignRow | VariationRow)[]): string {
 /**
  * Generate content array for tabvar
  *
- * Each row becomes a tuple in the content array
+ * Each row becomes a tuple in the content array.
+ *
+ * IMPORTANT - Typst single-element tuple syntax:
+ * In Typst, `(x)` is just parentheses around `x`, NOT a tuple with one element.
+ * To create a single-element tuple, you MUST add a trailing comma: `(x,)`.
+ *
+ * Without the trailing comma, vartable receives `x` directly instead of a tuple
+ * containing `x`, which causes "type alignment has no method `last`" errors
+ * when vartable tries to iterate over the contents.
+ *
+ * Example:
+ * - `((top, $0$))` = parentheses around a tuple = just `(top, $0$)` (WRONG)
+ * - `((top, $0$),)` = tuple containing one tuple = correct single-row contents
  *
  * @param node - Variation table node
  * @returns Content rows indented and formatted
@@ -229,12 +250,17 @@ function generateContent(node: VariationTableNode): string {
 		const row = node.rows[i];
 		const isLast = i === node.rows.length - 1;
 
+		// IMPORTANT: For single-element tuples in Typst, we MUST add a trailing comma.
+		// Without it, `(row)` is just parentheses, not a tuple containing `row`.
+		// This causes vartable to fail with "type alignment has no method `last`".
+		const needsComma = node.rows.length === 1 || !isLast;
+
 		if (row.type === 'sign') {
 			const line = generateSignRow(row, node.domain);
-			lines.push(`    ${line}${isLast ? '' : ','}`);
+			lines.push(`    ${line}${needsComma ? ',' : ''}`);
 		} else {
 			const line = generateVariationRow(row, node.domain);
-			lines.push(`    ${line}${isLast ? '' : ','}`);
+			lines.push(`    ${line}${needsComma ? ',' : ''}`);
 		}
 	}
 
