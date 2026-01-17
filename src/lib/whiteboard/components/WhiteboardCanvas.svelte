@@ -34,6 +34,7 @@
 		type Point,
 		type StrokeElement,
 		type ShapeElement,
+		type ArrowElement,
 		type ShapeType,
 		type ImageElement,
 		type GroupElement,
@@ -1484,10 +1485,24 @@
 
 			<!-- Shapes -->
 			{#each shapeElements as shape (shape.id)}
+				{@const isArrowShape = shape.shapeType === 'arrow'}
+				{@const arrowShape = isArrowShape ? (shape as ArrowElement) : null}
+				{@const startBindingLivePos = arrowShape?.startBinding
+					? whiteboardStore.livePositions.get(arrowShape.startBinding.elementId)
+					: null}
+				{@const endBindingLivePos = arrowShape?.endBinding
+					? whiteboardStore.livePositions.get(arrowShape.endBinding.elementId)
+					: null}
+				{@const adjustedStart = startBindingLivePos
+					? { x: shape.start.x + startBindingLivePos.dx, y: shape.start.y + startBindingLivePos.dy }
+					: shape.start}
+				{@const adjustedEnd = endBindingLivePos
+					? { x: shape.end.x + endBindingLivePos.dx, y: shape.end.y + endBindingLivePos.dy }
+					: shape.end}
 				{@const props = getShapeSvgProps(
 					shape.shapeType,
-					shape.start,
-					shape.end,
+					adjustedStart,
+					adjustedEnd,
 					shape.cornerRadius ?? 0
 				)}
 				{@const dashArray = getStrokeDashArray(shape.strokeStyle ?? 'solid', shape.strokeWidth)}
