@@ -74,7 +74,10 @@ const shapeElementSchema = z.object({
 	labelMarkdown: z.string().max(1000).optional(),
 	// Binding fields (only used for arrow shapes)
 	startBinding: bindingAnchorSchema.nullable().optional(),
-	endBinding: bindingAnchorSchema.nullable().optional()
+	endBinding: bindingAnchorSchema.nullable().optional(),
+	// Elbow arrow fields (only used for arrow shapes)
+	elbowed: z.boolean().optional(),
+	elbowDirection: z.enum(['horizontal-first', 'vertical-first']).optional()
 });
 
 const textBlockElementSchema = z.object({

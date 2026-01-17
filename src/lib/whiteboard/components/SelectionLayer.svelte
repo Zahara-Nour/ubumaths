@@ -17,10 +17,12 @@
 		snapAngle,
 		type BoundingBox
 	} from '../core/hit-testing';
+	import { calculateElbowPath } from '../core/elbow-path';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import type {
 		WhiteboardElement,
 		ShapeElement,
+		ArrowElement,
 		StrokeElement,
 		GroupElement
 	} from '../types/document';
@@ -576,18 +578,37 @@
 		{@const isHoveredLineOrArrow = isLineOrArrow(hoveredElement)}
 		{#if isHoveredLineOrArrow}
 			{@const lineEl = hoveredElement as ShapeElement}
+			{@const arrowEl = lineEl.shapeType === 'arrow' ? (lineEl as ArrowElement) : null}
 			<!-- Line/Arrow hover: highlight the line itself -->
-			<line
-				x1={lineEl.start.x}
-				y1={lineEl.start.y}
-				x2={lineEl.end.x}
-				y2={lineEl.end.y}
-				stroke="#93c5fd"
-				stroke-width={Math.max(lineEl.strokeWidth + 4, 8) / scale}
-				stroke-linecap="round"
-				opacity="0.5"
-				class="pointer-events-none"
-			/>
+			{#if arrowEl?.elbowed}
+				{@const elbowResult = calculateElbowPath(
+					lineEl.start,
+					lineEl.end,
+					arrowEl.elbowDirection ?? 'horizontal-first'
+				)}
+				<path
+					d={elbowResult.path}
+					stroke="#93c5fd"
+					stroke-width={Math.max(lineEl.strokeWidth + 4, 8) / scale}
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					fill="none"
+					opacity="0.5"
+					class="pointer-events-none"
+				/>
+			{:else}
+				<line
+					x1={lineEl.start.x}
+					y1={lineEl.start.y}
+					x2={lineEl.end.x}
+					y2={lineEl.end.y}
+					stroke="#93c5fd"
+					stroke-width={Math.max(lineEl.strokeWidth + 4, 8) / scale}
+					stroke-linecap="round"
+					opacity="0.5"
+					class="pointer-events-none"
+				/>
+			{/if}
 		{:else}
 			{@const bounds = getElementBounds(hoveredElement)}
 			{@const hoverCenter = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }}
