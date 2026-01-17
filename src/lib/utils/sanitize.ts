@@ -227,6 +227,28 @@ export function transformMathHtml(html: string): string {
 }
 
 /**
+ * Sanitize a URL to prevent javascript: and other dangerous protocols
+ *
+ * @param url - URL string to sanitize
+ * @returns Sanitized URL or '#' if dangerous
+ */
+export function sanitizeUrl(url: string | undefined): string {
+	if (!url || typeof url !== 'string') {
+		return '#';
+	}
+
+	const trimmed = url.trim().toLowerCase();
+
+	// Block dangerous protocols
+	const dangerousProtocols = ['javascript:', 'data:', 'vbscript:'];
+	if (dangerousProtocols.some((p) => trimmed.startsWith(p))) {
+		return '#';
+	}
+
+	return url;
+}
+
+/**
  * Check if string contains potentially dangerous HTML
  * Use for validation before sanitization
  *

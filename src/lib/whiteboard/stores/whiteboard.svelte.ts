@@ -2162,6 +2162,33 @@ function createWhiteboardStore() {
 			});
 		},
 
+		// === Shape Label Operations ===
+
+		/**
+		 * Update or add a label to a shape element
+		 * @param elementId - The shape element ID
+		 * @param labelMarkdown - The markdown content (empty string to remove)
+		 */
+		updateShapeLabel(elementId: string, labelMarkdown: string): void {
+			this.updateElement(elementId, (el) => {
+				if (el.type !== 'shape') return el;
+				// Remove label property if empty
+				if (!labelMarkdown.trim()) {
+					const { labelMarkdown: _, ...rest } = el;
+					return rest as typeof el;
+				}
+				return { ...el, labelMarkdown };
+			});
+		},
+
+		/**
+		 * Remove label from a shape element
+		 * @param elementId - The shape element ID
+		 */
+		removeShapeLabel(elementId: string): void {
+			this.updateShapeLabel(elementId, '');
+		},
+
 		// === Image Operations ===
 
 		/**
