@@ -676,7 +676,10 @@
 
 	<div class="flex h-[calc(100vh-65px)] md:h-[calc(100vh-73px)]">
 		<!-- RAIL SIDEBAR - Vertical icon navigation (hidden on mobile) -->
-		<div class="hidden w-20 border-r border-border bg-card/50 shadow-sm md:block dark:bg-card">
+		<!-- overflow-y-auto allows scrolling when many nav items exceed viewport height -->
+		<div
+			class="hidden w-20 overflow-y-auto border-r border-border bg-card/50 shadow-sm md:block dark:bg-card"
+		>
 			<nav class="flex flex-col items-center gap-1 py-4">
 				{#each getNavLinks(data.profile.role, data.pendingVipRequestsCount, data.marketplaceEnabled) as link (link.href)}
 					<a
