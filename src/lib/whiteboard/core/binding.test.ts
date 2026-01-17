@@ -303,7 +303,7 @@ describe('findBindingCandidate', () => {
 
 		it('returns null for point just outside threshold', () => {
 			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
-			const point: Point = { x: 216, y: 150 }; // 16px from right edge (outside 15px threshold)
+			const point: Point = { x: 231, y: 150 }; // 31px from right edge (outside 30px threshold)
 			const elements = [rect];
 
 			const result = findBindingCandidate(point, elements, new Set());
@@ -1153,7 +1153,7 @@ describe('createArrowWithBindings', () => {
 			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
 			// Very short arrow near right edge, but end is outside threshold
 			const start: Point = { x: 205, y: 150 }; // 5px from edge (within threshold)
-			const end: Point = { x: 220, y: 150 }; // 20px from edge (outside 15px threshold)
+			const end: Point = { x: 235, y: 150 }; // 35px from edge (outside 30px threshold)
 			const elements = [rect];
 			const options = { color: '#000000', strokeWidth: 2, opacity: 1 };
 

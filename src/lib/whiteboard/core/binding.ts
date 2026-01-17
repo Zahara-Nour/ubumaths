@@ -27,7 +27,7 @@ import {
 // =============================================================================
 
 /** Distance threshold for binding detection (in pixels) */
-export const BINDING_THRESHOLD_PX = 15;
+export const BINDING_THRESHOLD_PX = 30;
 
 /** Default gap between arrow tip and shape perimeter (in pixels) */
 export const DEFAULT_BINDING_GAP = 4;
