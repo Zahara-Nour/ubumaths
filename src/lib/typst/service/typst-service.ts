@@ -422,6 +422,77 @@ export class TypstService {
 	}
 
 	// =========================================================================
+	// Virtual File System (for external images)
+	// =========================================================================
+
+	/**
+	 * Map a virtual file path to binary content
+	 *
+	 * Use this to make external images available to the Typst compiler.
+	 * The compiler runs in WASM and cannot access external URLs directly,
+	 * so images must be fetched and mapped to virtual paths.
+	 *
+	 * @param path - Virtual file path (e.g., '/virtual/images/abc123.png')
+	 * @param content - Binary content as Uint8Array
+	 *
+	 * @example
+	 * ```typescript
+	 * const imageData = await fetch(url).then(r => r.arrayBuffer());
+	 * service.mapShadow('/virtual/images/photo.png', new Uint8Array(imageData));
+	 * ```
+	 */
+	mapShadow(path: string, content: Uint8Array): void {
+		if (!this.compiler) {
+			logger.warn('Cannot map shadow: compiler not initialized');
+			return;
+		}
+
+		try {
+			this.compiler.mapShadow(path, content);
+			logger.info('Mapped virtual file', { path, size: content.length });
+		} catch (error) {
+			logger.error('Failed to map shadow file', {
+				path,
+				error: error instanceof Error ? error.message : String(error)
+			});
+		}
+	}
+
+	/**
+	 * Map multiple virtual files at once
+	 *
+	 * Convenience method for mapping multiple images.
+	 *
+	 * @param files - Map of virtual path to binary content
+	 */
+	mapShadowBatch(files: Map<string, Uint8Array>): void {
+		for (const [path, content] of files) {
+			this.mapShadow(path, content);
+		}
+	}
+
+	/**
+	 * Reset/clear all shadow mappings
+	 *
+	 * Call this after compilation to free memory from mapped files.
+	 * Note: This also clears any files added via addSource.
+	 */
+	resetShadow(): void {
+		if (!this.compiler) {
+			return;
+		}
+
+		try {
+			this.compiler.resetShadow();
+			logger.info('Reset shadow file system');
+		} catch (error) {
+			logger.warn('Failed to reset shadow', {
+				error: error instanceof Error ? error.message : String(error)
+			});
+		}
+	}
+
+	// =========================================================================
 	// Cleanup
 	// =========================================================================
 
@@ -434,6 +505,7 @@ export class TypstService {
 	dispose(): void {
 		this.queue = [];
 		this.cache.clear();
+		this.resetShadow();
 		this.compiler = null;
 		this.setState('idle');
 		this.stateListeners.clear();
