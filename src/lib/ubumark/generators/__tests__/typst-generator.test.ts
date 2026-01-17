@@ -2017,8 +2017,15 @@ describe('convertLatexToTypstMath - Unknown LaTeX commands', () => {
 		expect(convertLatexToTypstMath('\\mathbb{N}')).toBe('NN');
 	});
 
-	it('should convert \textcolor to text (unsupported command)', () => {
-		expect(convertLatexToTypstMath('\\textcolor{red}{x}')).toBe('"textcolor"{red}{x}');
+	it('should convert \\textcolor{color}{content} to Typst colored text', () => {
+		// \textcolor{red}{x} -> #text(fill: red)[x]
+		expect(convertLatexToTypstMath('\\textcolor{red}{x}')).toBe('#text(fill: red)[x]');
+		// With more complex content
+		expect(convertLatexToTypstMath('\\textcolor{blue}{a + b}')).toBe('#text(fill: blue)[a + b]');
+		// Nested in expression
+		expect(convertLatexToTypstMath('f(x) = \\textcolor{red}{error}')).toBe(
+			'f(x) = #text(fill: red)[error]'
+		);
 	});
 
 	it('should preserve known Typst spacing keywords', () => {
