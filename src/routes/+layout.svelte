@@ -104,10 +104,11 @@
 		{/if}
 
 		<!-- Main content -->
+		<!-- NOTE: Dashboard routes handle their own scroll via dashboard-content -->
 		<main
 			class="relative flex-1"
-			class:overflow-y-auto={!isWhiteboardRoute}
-			class:overflow-hidden={isWhiteboardRoute}
+			class:overflow-y-auto={!isWhiteboardRoute && !isDashboardRoute}
+			class:overflow-hidden={isWhiteboardRoute || isDashboardRoute}
 		>
 			<!-- Always render children so page can load -->
 			<div
