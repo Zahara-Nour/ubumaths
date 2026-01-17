@@ -39,6 +39,9 @@ import {
 	sinhRule,
 	coshRule,
 	tanhRule,
+	asinhRule,
+	acoshRule,
+	atanhRule,
 	simplifiedMultiply
 } from './rules';
 import { substitute } from '../eval/substitute';
@@ -381,6 +384,18 @@ function differentiateFunctionNode(
 
 			case 'tanh':
 				return tanhRule(u, du, simplify);
+
+			case 'asinh':
+			case 'arcsinh':
+				return asinhRule(u, du, simplify);
+
+			case 'acosh':
+			case 'arccosh':
+				return acoshRule(u, du, simplify);
+
+			case 'atanh':
+			case 'arctanh':
+				return atanhRule(u, du, simplify);
 
 			case 'abs':
 				// d/dx(|u|) = u'/|u| * u (for u != 0)
