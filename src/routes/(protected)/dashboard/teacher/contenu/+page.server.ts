@@ -2,5 +2,5 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
-	redirect(308, '/dashboard/teacher/moderation/avertissements');
+	redirect(308, '/dashboard/teacher/contenu/templates');
 };

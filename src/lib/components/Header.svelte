@@ -109,7 +109,7 @@
 			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
 			{
 				label: 'Worksheets',
-				href: '/dashboard/teacher/worksheets',
+				href: '/dashboard/teacher/contenu/worksheets',
 				icon: FileSpreadsheet,
 				roles: ['teacher']
 			},

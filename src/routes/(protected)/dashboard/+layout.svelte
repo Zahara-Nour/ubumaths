@@ -60,9 +60,7 @@
 		Bug,
 		MessageCircle,
 		BookOpen,
-		Lightbulb,
 		FileText,
-		AlertTriangle,
 		Book,
 		Layers,
 		FileSpreadsheet,
@@ -186,23 +184,14 @@
 				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 				{ href: '/dashboard/teacher/classes', label: 'Classes', icon: GraduationCap },
 				{ href: '/dashboard/teacher/cours', label: 'Cours', icon: Book },
-				{ href: '/dashboard/teacher/templates', label: 'Templates', icon: Layers },
-				{ href: '/dashboard/students', label: 'Students', icon: Users },
-				{ href: '/dashboard/teacher/riddles', label: 'Énigmes', icon: Lightbulb },
-				{ href: '/dashboard/teacher/exercises', label: 'Exercices', icon: BookOpen },
-				{ href: '/dashboard/teacher/worksheets', label: 'Worksheets', icon: FileSpreadsheet },
+				{ href: '/dashboard/teacher/contenu', label: 'Contenu', icon: Layers },
 				{
-					href: '/dashboard/teacher/rewards',
-					label: 'Rewards',
+					href: '/dashboard/teacher/gamification',
+					label: 'Gamification',
 					icon: Gift,
 					badge: pendingVipRequestsCount > 0 ? pendingVipRequestsCount : undefined
 				},
-				{ href: '/dashboard/teacher/vip-cards', label: 'VIP Cards', icon: Sparkles },
-				{ href: '/dashboard/teacher/marketplace', label: 'Marché', icon: ShoppingBag },
-				{ href: '/dashboard/teacher/google', label: 'Google Classroom', icon: School },
-				{ href: '/dashboard/teacher/warnings', label: 'Avertissements', icon: AlertTriangle },
-				{ href: '/dashboard/teacher/moderation', label: 'Modération', icon: ShieldAlert },
-				{ href: '/dashboard/bug-reports', label: 'Signalements', icon: Bug }
+				{ href: '/dashboard/teacher/moderation', label: 'Modération', icon: ShieldAlert }
 			];
 		} else if (role === 'admin') {
 			return [
@@ -232,13 +221,17 @@
 		if (href === '/dashboard/admin/docs') {
 			return page.url.pathname.startsWith('/dashboard/admin/docs');
 		}
-		// For templates pages, match any /dashboard/teacher/templates/* route
-		if (href === '/dashboard/teacher/templates') {
-			return page.url.pathname.startsWith('/dashboard/teacher/templates');
+		// For contenu pages (templates, exercices, enigmes, worksheets)
+		if (href === '/dashboard/teacher/contenu') {
+			return page.url.pathname.startsWith('/dashboard/teacher/contenu');
 		}
-		// For worksheets pages, match any /dashboard/teacher/worksheets/* route
-		if (href === '/dashboard/teacher/worksheets') {
-			return page.url.pathname.startsWith('/dashboard/teacher/worksheets');
+		// For gamification pages (rewards, vip-cards, marketplace)
+		if (href === '/dashboard/teacher/gamification') {
+			return page.url.pathname.startsWith('/dashboard/teacher/gamification');
+		}
+		// For moderation pages, match any /dashboard/teacher/moderation/* route
+		if (href === '/dashboard/teacher/moderation') {
+			return page.url.pathname.startsWith('/dashboard/teacher/moderation');
 		}
 		// For student worksheets pages, match any /dashboard/student/worksheets/* route
 		if (href === '/dashboard/student/worksheets') {
@@ -247,10 +240,6 @@
 		// For bug reports page, match /dashboard/bug-reports
 		if (href === '/dashboard/bug-reports') {
 			return page.url.pathname.startsWith('/dashboard/bug-reports');
-		}
-		// For moderation pages, match any /dashboard/teacher/moderation/* route
-		if (href === '/dashboard/teacher/moderation') {
-			return page.url.pathname.startsWith('/dashboard/teacher/moderation');
 		}
 		// For admin bug reports page
 		if (href === '/dashboard/admin/bug-reports') {
