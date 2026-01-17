@@ -1537,6 +1537,10 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'sim', 'tilde.eq');
 
 	// Double arrows - use placeholders (single arrows handled earlier)
+	// Long versions must come BEFORE short versions (longer pattern first)
+	result = result.replace(/\\Longleftrightarrow/g, '<<<ARROW_DOUBLE_LEFTRIGHT>>>');
+	result = result.replace(/\\Longrightarrow/g, '<<<ARROW_DOUBLE_RIGHT>>>');
+	result = result.replace(/\\Longleftarrow/g, '<<<ARROW_DOUBLE_LEFT>>>');
 	result = result.replace(/\\Rightarrow/g, '<<<ARROW_DOUBLE_RIGHT>>>');
 	result = result.replace(/\\Leftarrow/g, '<<<ARROW_DOUBLE_LEFT>>>');
 	result = result.replace(/\\Leftrightarrow/g, '<<<ARROW_DOUBLE_LEFTRIGHT>>>');
@@ -1633,7 +1637,12 @@ export function convertLatexToTypstMath(latex: string): string {
 	// MathLive special constants
 	// \exponentialE -> Euler's number e (used by MathLive for proper semantic markup)
 	// \imaginaryI -> imaginary unit i
+	// IMPORTANT: Add space before e/i when preceded by a LETTER to prevent
+	// variable fusion like "xe" being parsed as unknown variable (should be "x e")
+	// Digits before e/i are fine (Typst handles "2e" as implicit multiplication)
+	result = result.replace(/([a-zA-Z])\\exponentialE/g, '$1 e');
 	result = result.replace(/\\exponentialE/g, 'e');
+	result = result.replace(/([a-zA-Z])\\imaginaryI/g, '$1 i');
 	result = result.replace(/\\imaginaryI/g, 'i');
 
 	// 5. Math text styles (1 argument) - use balanced brace matching for nested content
