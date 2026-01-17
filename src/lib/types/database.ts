@@ -14056,6 +14056,10 @@ export type Database = {
 				Args: { p_card_id: string; p_student_id: string };
 				Returns: boolean;
 			};
+			reorder_worksheet_exercises: {
+				Args: { p_exercises: Json; p_worksheet_id: string };
+				Returns: number;
+			};
 			report_message: {
 				Args: { p_details?: string; p_message_id: string; p_reason: string };
 				Returns: string;
