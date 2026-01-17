@@ -25,7 +25,10 @@ export type {
 	ShapeType,
 	PageFormatKey,
 	InstrumentType,
-	InstrumentState
+	InstrumentState,
+	RenderStyle,
+	FillMode,
+	StrokeStyle
 } from './types/document';
 
 export {
@@ -36,7 +39,10 @@ export {
 	DEFAULT_PAGE_FORMAT,
 	UBW_FILE_VERSION,
 	DEFAULT_INSTRUMENTS,
-	INSTRUMENT_LABELS
+	INSTRUMENT_LABELS,
+	RENDER_STYLE_LABELS,
+	FILL_MODE_LABELS,
+	STROKE_STYLE_LABELS
 } from './types/document';
 
 // File format validation
@@ -87,8 +93,19 @@ export {
 	createShapeElement,
 	getShapeSvgProps,
 	calculateShapeBounds,
-	isPointInShapeBounds
+	isPointInShapeBounds,
+	getPolygonVertices,
+	getStarVertices
 } from './core/shapes';
+
+// Rough renderer (for sketch/hand-drawn style)
+export type { RoughRenderResult } from './core/rough-renderer';
+export {
+	renderRoughShape,
+	renderRoughStroke,
+	renderRoughShapeToSvgString,
+	renderRoughStrokeToSvgString
+} from './core/rough-renderer';
 
 // Components
 export { default as Whiteboard } from './components/Whiteboard.svelte';

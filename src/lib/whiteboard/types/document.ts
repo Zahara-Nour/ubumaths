@@ -67,14 +67,26 @@ export const STROKE_STYLE_LABELS: Record<StrokeStyle, string> = {
 	dashdot: 'Mixte'
 };
 
-/** Fill mode for shapes */
-export type FillMode = 'none' | 'solid' | 'hatched';
+/** Render style: perfect (clean geometry) or sketch (hand-drawn with roughjs) */
+export type RenderStyle = 'perfect' | 'sketch';
+
+/** Render style labels for UI */
+export const RENDER_STYLE_LABELS: Record<RenderStyle, string> = {
+	perfect: 'Précis',
+	sketch: 'Main levée'
+};
+
+/** Fill mode for shapes (includes roughjs styles for sketch mode) */
+export type FillMode = 'none' | 'solid' | 'hatched' | 'hachure' | 'crosshatch' | 'zigzag';
 
 /** Fill mode labels for UI */
 export const FILL_MODE_LABELS: Record<FillMode, string> = {
 	none: 'Sans fond',
 	solid: 'Couleur unie',
-	hatched: 'Hachuré'
+	hatched: 'Hachuré (lignes)',
+	hachure: 'Hachures',
+	crosshatch: 'Croisé',
+	zigzag: 'Zigzag'
 };
 
 /**
@@ -107,6 +119,10 @@ export interface StrokeElement {
 	readonly strokeStyle?: StrokeStyle;
 	/** Rotation angle in degrees (0-360), default 0 */
 	readonly rotation?: number;
+	/** Render style: perfect (default) or sketch (hand-drawn with roughjs) */
+	readonly renderStyle?: RenderStyle;
+	/** Seed for deterministic roughjs rendering */
+	readonly roughSeed?: number;
 }
 
 /** Shape element - geometric shapes */
@@ -130,6 +146,12 @@ export interface ShapeElement {
 	readonly rotation?: number;
 	/** Optional markdown label centered on the shape (supports math: $x^2$, bold, italic) */
 	readonly labelMarkdown?: string;
+	/** Render style: perfect (default) or sketch (hand-drawn with roughjs) */
+	readonly renderStyle?: RenderStyle;
+	/** Seed for deterministic roughjs rendering */
+	readonly roughSeed?: number;
+	/** Roughness level for sketch mode (0-2, default 1) */
+	readonly roughness?: number;
 }
 
 // =============================================================================

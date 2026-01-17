@@ -50,7 +50,9 @@ const strokeElementSchema = z.object({
 	color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
 	width: z.number().positive().max(100),
 	opacity: z.number().min(0).max(1),
-	strokeStyle: z.enum(['solid', 'dashed', 'dotted', 'dashdot']).optional()
+	strokeStyle: z.enum(['solid', 'dashed', 'dotted', 'dashdot']).optional(),
+	renderStyle: z.enum(['perfect', 'sketch']).optional(),
+	roughSeed: z.number().int().positive().optional()
 });
 
 const shapeElementSchema = z.object({
@@ -63,7 +65,7 @@ const shapeElementSchema = z.object({
 	strokeWidth: z.number().positive().max(50),
 	opacity: z.number().min(0).max(1).optional(),
 	strokeStyle: z.enum(['solid', 'dashed', 'dotted', 'dashdot']).optional(),
-	fillMode: z.enum(['none', 'solid', 'hatched']).optional(),
+	fillMode: z.enum(['none', 'solid', 'hatched', 'hachure', 'crosshatch', 'zigzag']).optional(),
 	fill: z
 		.string()
 		.regex(/^#[0-9A-Fa-f]{6}$/)
@@ -77,7 +79,11 @@ const shapeElementSchema = z.object({
 	endBinding: bindingAnchorSchema.nullable().optional(),
 	// Elbow arrow fields (only used for arrow shapes)
 	elbowed: z.boolean().optional(),
-	elbowDirection: z.enum(['horizontal-first', 'vertical-first']).optional()
+	elbowDirection: z.enum(['horizontal-first', 'vertical-first']).optional(),
+	// Render style fields (for roughjs hand-drawn rendering)
+	renderStyle: z.enum(['perfect', 'sketch']).optional(),
+	roughSeed: z.number().int().positive().optional(),
+	roughness: z.number().min(0).max(3).optional()
 });
 
 const textBlockElementSchema = z.object({

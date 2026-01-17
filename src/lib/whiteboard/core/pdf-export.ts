@@ -9,6 +9,7 @@
 
 import type { WhiteboardDocument, Page } from '../types/document';
 import { smoothStroke, pointsToSvgPath, getToolOptions } from './stroke-smoothing';
+import { renderRoughShapeToSvgString, renderRoughStrokeToSvgString } from './rough-renderer';
 
 // =============================================================================
 // Constants
@@ -503,10 +504,17 @@ function renderElementToSvg(element: Page['elements'][number]): string {
 /**
  * Render stroke element to SVG
  * Uses the same smoothing algorithm as the canvas for consistent rendering
+ * Supports sketch-style rendering via roughjs
  */
 function renderStrokeToSvg(element: Extract<Page['elements'][number], { type: 'stroke' }>): string {
 	if (element.points.length === 0) return '';
 
+	// Use roughjs for sketch-style strokes
+	if (element.renderStyle === 'sketch') {
+		return renderRoughStrokeToSvgString(element);
+	}
+
+	// Perfect-style rendering (default)
 	const opacity = element.toolType === 'highlighter' ? element.opacity : 1;
 
 	// For single point, render a small circle
@@ -537,8 +545,15 @@ function renderStrokeToSvg(element: Extract<Page['elements'][number], { type: 's
 
 /**
  * Render shape element to SVG
+ * Supports sketch-style rendering via roughjs
  */
 function renderShapeToSvg(element: Extract<Page['elements'][number], { type: 'shape' }>): string {
+	// Use roughjs for sketch-style shapes
+	if (element.renderStyle === 'sketch') {
+		return renderRoughShapeToSvgString(element);
+	}
+
+	// Perfect-style rendering (default)
 	const {
 		shapeType,
 		start,
