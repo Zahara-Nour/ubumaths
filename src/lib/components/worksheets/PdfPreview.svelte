@@ -26,6 +26,11 @@
 		FileCode
 	} from 'lucide-svelte';
 	import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
+	import {
+		clearTrackedExternalImages,
+		getTrackedExternalImages
+	} from '$lib/ubumark/generators/typst-generator';
+	import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
 	import type {
 		WorksheetWithRelations,
 		InstanceData,
@@ -229,6 +234,9 @@
 			});
 			markdownContent = mdParts.join('\n');
 
+			// Clear tracked images before generating Typst
+			clearTrackedExternalImages();
+
 			// Generate Typst content
 			const generatedTypst = generateWorksheetTypst({
 				worksheet,
@@ -241,6 +249,18 @@
 			});
 			typstContent = generatedTypst;
 
+			// Fetch and map external images to virtual file system
+			const externalImageUrls = getTrackedExternalImages();
+			if (externalImageUrls.length > 0) {
+				console.log('[PdfPreview] Fetching external images:', externalImageUrls.length);
+				const imageData = await fetchExternalImages(externalImageUrls);
+				for (const [url, data] of imageData) {
+					const virtualPath = urlToVirtualPath(url);
+					typst.mapShadow(virtualPath, data);
+					console.log('[PdfPreview] Mapped image:', url.slice(0, 60), '->', virtualPath);
+				}
+			}
+
 			// Generate SVG for preview
 			const svg = await typst.svg({ mainContent: generatedTypst });
 			svgContent = svg;
@@ -249,6 +269,9 @@
 			const pdfData = await typst.pdf({ mainContent: typstContent });
 			pdfBlob = new Blob([pdfData as BlobPart], { type: 'application/pdf' });
 			pdfUrl = URL.createObjectURL(pdfBlob);
+
+			// Reset shadow file system to free memory
+			typst.resetShadow();
 
 			// Set filename
 			const safeName = studentName ? sanitizeFilename(studentName) : 'preview';
@@ -311,6 +334,33 @@
 				throw new Error('Failed to create zip folder');
 			}
 
+			// Pre-fetch external images by generating a sample Typst content first
+			batchCurrentStudent = 'Chargement des images...';
+			clearTrackedExternalImages();
+
+			// Generate sample Typst to collect external image URLs
+			const sampleInstance = generateSimpleInstance(worksheet, students[0].id);
+			generateWorksheetTypst({
+				worksheet,
+				instance: sampleInstance,
+				config: worksheet.config || {},
+				mode,
+				studentName: formatStudentName(students[0]),
+				className: classId ? 'Classe' : undefined,
+				template: worksheet.template
+			});
+
+			// Fetch and map external images once for all PDFs
+			const externalImageUrls = getTrackedExternalImages();
+			if (externalImageUrls.length > 0) {
+				console.log('[PdfPreview Batch] Fetching external images:', externalImageUrls.length);
+				const imageData = await fetchExternalImages(externalImageUrls);
+				for (const [url, data] of imageData) {
+					const virtualPath = urlToVirtualPath(url);
+					typst.mapShadow(virtualPath, data);
+				}
+			}
+
 			// Generate PDFs for each student
 			for (let i = 0; i < students.length; i++) {
 				const student = students[i];
@@ -320,6 +370,9 @@
 
 				// Generate instance for this student
 				const instanceData = generateSimpleInstance(worksheet, student.id);
+
+				// Clear tracked images (to avoid memory accumulation, images are already mapped)
+				clearTrackedExternalImages();
 
 				// Generate Typst content
 				const typstContent = generateWorksheetTypst({
@@ -332,7 +385,7 @@
 					template: worksheet.template
 				});
 
-				// Compile to PDF
+				// Compile to PDF (images already mapped to virtual file system)
 				const pdfData = await typst.pdf({ mainContent: typstContent });
 
 				// Add to zip
@@ -344,6 +397,7 @@
 			if (mode === 'correction') {
 				batchCurrentStudent = 'Correction generale...';
 				const masterInstance = generateSimpleInstance(worksheet);
+				clearTrackedExternalImages();
 				const masterTypst = generateWorksheetTypst({
 					worksheet,
 					instance: masterInstance,
@@ -384,6 +438,8 @@
 			console.error('Batch PDF generation error:', err);
 			toaster.error('Erreur lors de la generation des PDFs en lot');
 		} finally {
+			// Reset shadow file system to free memory
+			typst.resetShadow();
 			isBatchGenerating = false;
 			batchProgress = 0;
 			batchCurrentStudent = '';

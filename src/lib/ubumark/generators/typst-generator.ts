@@ -1077,6 +1077,62 @@ function convertLatexOneArgCommand(str: string, latexCmd: string, typstFunc: str
 }
 
 /**
+ * Convert LaTeX \textcolor{color}{content} to Typst text(fill: color, content)
+ *
+ * In Typst math mode, colored text/math can be done with:
+ * text(fill: red, content) where content can be math or text
+ *
+ * @param str - Input string containing \textcolor commands
+ * @returns String with \textcolor commands converted
+ */
+function convertTextcolorCommand(str: string): string {
+	let result = str;
+	const pattern = /\\textcolor\s*\{/g;
+	let match;
+
+	let changed = true;
+	while (changed) {
+		changed = false;
+		pattern.lastIndex = 0;
+
+		while ((match = pattern.exec(result)) !== null) {
+			const startIndex = match.index;
+			const colorOpenBrace = match.index + match[0].length - 1;
+
+			// Find closing brace for color argument
+			const colorCloseIndex = findMatchingBrace(result, colorOpenBrace);
+			if (colorCloseIndex === -1) continue;
+
+			const color = result.slice(colorOpenBrace + 1, colorCloseIndex).trim();
+
+			// Look for the second argument (content) immediately after
+			const afterColor = result.slice(colorCloseIndex + 1);
+			const contentMatch = afterColor.match(/^\s*\{/);
+			if (!contentMatch) continue;
+
+			const contentOpenBrace =
+				colorCloseIndex + 1 + contentMatch.index! + contentMatch[0].length - 1;
+			const contentCloseIndex = findMatchingBrace(result, contentOpenBrace);
+			if (contentCloseIndex === -1) continue;
+
+			const content = result.slice(contentOpenBrace + 1, contentCloseIndex);
+
+			// Convert to Typst: text(fill: color, content)
+			// Note: In Typst math, we need to use the hash prefix to call content-mode functions
+			// But text() in math mode works directly with fill parameter
+			const replacement = `#text(fill: ${color})[${content}]`;
+			result = result.slice(0, startIndex) + replacement + result.slice(contentCloseIndex + 1);
+
+			changed = true;
+			pattern.lastIndex = 0;
+			break;
+		}
+	}
+
+	return result;
+}
+
+/**
  * Convert LaTeX \text{...} commands to Typst, handling nested math expressions.
  *
  * In LaTeX, \text{car $x-1<0$} contains text "car " and math "$x-1<0$".
@@ -1651,6 +1707,8 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = convertTextCommand(result);
 	result = result.replace(/\\textbf\s*{([^{}]*)}/g, 'bold("$1")');
 	result = result.replace(/\\textit\s*{([^{}]*)}/g, 'italic("$1")');
+	// Convert \textcolor{color}{content} -> #text(fill: color)[content]
+	result = convertTextcolorCommand(result);
 
 	// ========================================================================
 	// NEW CONVERSIONS - Must be BEFORE the catch-all
