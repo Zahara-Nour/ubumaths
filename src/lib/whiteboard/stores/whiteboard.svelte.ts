@@ -51,7 +51,7 @@ import {
 	type SyncStatus
 } from '../utils/sync-state';
 import { driveSyncService } from '../services/drive-sync';
-import { updateBoundArrowsForShapes } from '../core/binding-updates';
+import { updateBoundArrowsForShapes, clearBindingsForDeletedShapes } from '../core/binding-updates';
 import { isBindableShape, isArrowElement } from '../core/binding';
 import type { ShapeElement } from '../types/document';
 
@@ -826,12 +826,26 @@ function createWhiteboardStore() {
 
 		/**
 		 * Remove an element by ID
+		 * Clears any bindings from arrows that point to the deleted element
 		 */
 		removeElement(elementId: string): void {
-			updateCurrentPage((page) => ({
-				...page,
-				elements: page.elements.filter((e) => e.id !== elementId)
-			}));
+			updateCurrentPage((page) => {
+				// Clear bindings from arrows pointing to the deleted element
+				const { updatedArrows, updatedElementIds } = clearBindingsForDeletedShapes(
+					[elementId],
+					page.elements
+				);
+
+				// Build a map for quick lookup of updated arrows
+				const updatedArrowMap = new Map(updatedArrows.map((a) => [a.id, a]));
+
+				// Filter out the deleted element and update affected arrows
+				const newElements = page.elements
+					.filter((e) => e.id !== elementId)
+					.map((e) => (updatedElementIds.includes(e.id) ? updatedArrowMap.get(e.id)! : e));
+
+				return { ...page, elements: newElements };
+			});
 		},
 
 		/**
@@ -922,16 +936,30 @@ function createWhiteboardStore() {
 
 		/**
 		 * Delete all selected elements from the current page
+		 * Clears any bindings from arrows that point to deleted elements
 		 * Supports undo via saveToHistory
 		 */
 		deleteSelected(): void {
 			if (selectedIds.size === 0) return;
 
 			const idsToDelete = new Set(selectedIds);
-			updateCurrentPage((page) => ({
-				...page,
-				elements: page.elements.filter((e) => !idsToDelete.has(e.id))
-			}));
+			updateCurrentPage((page) => {
+				// Clear bindings from arrows pointing to deleted elements
+				const { updatedArrows, updatedElementIds } = clearBindingsForDeletedShapes(
+					Array.from(idsToDelete),
+					page.elements
+				);
+
+				// Build a map for quick lookup of updated arrows
+				const updatedArrowMap = new Map(updatedArrows.map((a) => [a.id, a]));
+
+				// Filter out deleted elements and update affected arrows
+				const newElements = page.elements
+					.filter((e) => !idsToDelete.has(e.id))
+					.map((e) => (updatedElementIds.includes(e.id) ? updatedArrowMap.get(e.id)! : e));
+
+				return { ...page, elements: newElements };
+			});
 
 			// Clear selection after deletion
 			selectedIds = new Set();
