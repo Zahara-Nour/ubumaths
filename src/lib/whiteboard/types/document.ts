@@ -132,6 +132,43 @@ export interface ShapeElement {
 	readonly labelMarkdown?: string;
 }
 
+// =============================================================================
+// Binding Types (Arrow-to-Shape connections)
+// =============================================================================
+
+/**
+ * Anchor point for binding an arrow endpoint to a shape.
+ * Uses normalized coordinates (0-1) for position independence.
+ */
+export interface BindingAnchor {
+	/** ID of the target shape element */
+	readonly elementId: string;
+	/**
+	 * Position in normalized coordinates (0-1) within the target's bounding box.
+	 * (0,0) = top-left, (1,1) = bottom-right, (0.5, 0.5) = center
+	 */
+	readonly normalizedPosition: Point;
+	/**
+	 * Point on the shape perimeter in normalized coordinates.
+	 * Different from normalizedPosition as it follows the actual contour.
+	 */
+	readonly perimeterPoint: Point;
+	/** Gap between arrow tip and shape perimeter in pixels (default: 4) */
+	readonly gap: number;
+}
+
+/**
+ * Arrow element with optional bindings to shapes.
+ * When bound, the arrow endpoint automatically follows shape transformations.
+ */
+export interface ArrowElement extends ShapeElement {
+	readonly shapeType: 'arrow';
+	/** Binding for the start point of the arrow (optional) */
+	readonly startBinding?: BindingAnchor | null;
+	/** Binding for the end point of the arrow (optional) */
+	readonly endBinding?: BindingAnchor | null;
+}
+
 /** Text block element - rich text with markdown */
 export interface TextBlockElement {
 	readonly id: string;
