@@ -43,20 +43,24 @@
 		Grid3x3,
 		Maximize2,
 		Minimize2,
-		Palette
+		Palette,
+		Sparkles,
+		PencilLine
 	} from 'lucide-svelte';
 	import {
 		INSTRUMENT_LABELS,
 		STROKE_STYLE_LABELS,
 		FILL_MODE_LABELS,
 		ELBOW_DIRECTION_LABELS,
+		RENDER_STYLE_LABELS,
 		PAGE_FORMATS,
 		type InstrumentType,
 		type StrokeStyle,
 		type FillMode,
 		type BackgroundStyle,
 		type PageFormatKey,
-		type ElbowDirection
+		type ElbowDirection,
+		type RenderStyle
 	} from '../types/document';
 
 	// ==========================================================================
@@ -162,6 +166,8 @@
 	let currentFillMode = $derived(toolState.fillMode);
 	let currentFillColor = $derived(toolState.fillColor);
 	let currentFillOpacity = $derived(toolState.fillOpacity);
+	let currentRenderStyle = $derived(toolState.renderStyle);
+	let currentRoughness = $derived(toolState.roughness);
 	let instruments = $derived(whiteboardStore.instruments);
 
 	/** Current shape tool icon for the button */
@@ -428,6 +434,16 @@
 
 	function handleInstrumentToggle(type: InstrumentType) {
 		whiteboardStore.toggleInstrument(type);
+	}
+
+	function handleRenderStyleChange(style: RenderStyle) {
+		whiteboardStore.setRenderStyle(style);
+	}
+
+	function handleRoughnessChange(value: number[] | number) {
+		const actualValue = getSliderValue(value);
+		if (actualValue === undefined) return;
+		whiteboardStore.setRoughness(actualValue);
 	}
 </script>
 
@@ -765,6 +781,51 @@
 					</div>
 				</Popover.Content>
 			</Popover.Root>
+
+			<!-- Separator before render style -->
+			<div class="mx-2 h-6 w-px bg-border"></div>
+
+			<!-- Render Style Toggle (Perfect vs Sketch) -->
+			<div class="flex items-center gap-0.5 rounded-md border border-border p-0.5">
+				<Button
+					type="button"
+					variant={currentRenderStyle === 'perfect' ? 'secondary' : 'ghost'}
+					size="sm"
+					onclick={() => handleRenderStyleChange('perfect')}
+					title={RENDER_STYLE_LABELS.perfect}
+					aria-label={RENDER_STYLE_LABELS.perfect}
+					class="h-7 w-7 p-0"
+				>
+					<Sparkles class="h-4 w-4" />
+				</Button>
+				<Button
+					type="button"
+					variant={currentRenderStyle === 'sketch' ? 'secondary' : 'ghost'}
+					size="sm"
+					onclick={() => handleRenderStyleChange('sketch')}
+					title={RENDER_STYLE_LABELS.sketch}
+					aria-label={RENDER_STYLE_LABELS.sketch}
+					class="h-7 w-7 p-0"
+				>
+					<PencilLine class="h-4 w-4" />
+				</Button>
+			</div>
+
+			<!-- Roughness slider (only visible in sketch mode) -->
+			{#if currentRenderStyle === 'sketch'}
+				<div class="flex w-20 items-center gap-1">
+					<Slider
+						type="single"
+						value={[currentRoughness]}
+						onValueChange={handleRoughnessChange}
+						min={0}
+						max={2}
+						step={0.1}
+						class="flex-1"
+						aria-label="Rugosité: {currentRoughness}"
+					/>
+				</div>
+			{/if}
 
 			<!-- Separator before style section -->
 			<div class="mx-2 h-6 w-px bg-border"></div>

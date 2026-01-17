@@ -25,7 +25,8 @@ import {
 	type InstrumentState,
 	type StrokeStyle,
 	type FillMode,
-	type ElbowDirection
+	type ElbowDirection,
+	type RenderStyle
 } from '../types/document';
 import { getElementBounds } from '../core/hit-testing';
 import { createHistoryManager, type HistoryManager } from '../core/history.svelte';
@@ -131,6 +132,10 @@ export interface ToolSettings {
 	elbowed: boolean;
 	/** For arrows: direction of first segment */
 	elbowDirection: ElbowDirection;
+	/** Render style: perfect (clean) or sketch (hand-drawn with roughjs) */
+	renderStyle: RenderStyle;
+	/** Roughness level for sketch mode (0-2, default 1) */
+	roughness: number;
 }
 
 /** Default color and width (shared across all configurable tools) */
@@ -158,6 +163,12 @@ const DEFAULT_ELBOWED = false;
 /** Default elbow direction */
 const DEFAULT_ELBOW_DIRECTION: ElbowDirection = 'horizontal-first';
 
+/** Default render style (perfect = clean geometry) */
+const DEFAULT_RENDER_STYLE: RenderStyle = 'perfect';
+
+/** Default roughness for sketch mode (0-2) */
+const DEFAULT_ROUGHNESS = 1;
+
 /** Default settings per tool (color/width are global, opacity is per-tool) */
 const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 	// Drawing tools (strokeStyle/cornerRadius/fill not used for freehand)
@@ -171,7 +182,9 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
 		elbowed: DEFAULT_ELBOWED,
-		elbowDirection: DEFAULT_ELBOW_DIRECTION
+		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		renderStyle: DEFAULT_RENDER_STYLE,
+		roughness: DEFAULT_ROUGHNESS
 	},
 	marker: {
 		color: DEFAULT_COLOR,
@@ -183,7 +196,9 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
 		elbowed: DEFAULT_ELBOWED,
-		elbowDirection: DEFAULT_ELBOW_DIRECTION
+		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		renderStyle: DEFAULT_RENDER_STYLE,
+		roughness: DEFAULT_ROUGHNESS
 	},
 	highlighter: {
 		color: DEFAULT_COLOR,
@@ -195,7 +210,9 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
 		elbowed: DEFAULT_ELBOWED,
-		elbowDirection: DEFAULT_ELBOW_DIRECTION
+		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		renderStyle: DEFAULT_RENDER_STYLE,
+		roughness: DEFAULT_ROUGHNESS
 	},
 	eraser: {
 		color: '#ffffff',
@@ -207,7 +224,9 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
 		elbowed: DEFAULT_ELBOWED,
-		elbowDirection: DEFAULT_ELBOW_DIRECTION
+		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		renderStyle: DEFAULT_RENDER_STYLE,
+		roughness: DEFAULT_ROUGHNESS
 	},
 	// Shape tools (strokeStyle, cornerRadius, fillMode apply here)
 	line: {
@@ -220,7 +239,9 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
 		elbowed: DEFAULT_ELBOWED,
-		elbowDirection: DEFAULT_ELBOW_DIRECTION
+		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		renderStyle: DEFAULT_RENDER_STYLE,
+		roughness: DEFAULT_ROUGHNESS
 	},
 	rectangle: {
 		color: DEFAULT_COLOR,
@@ -232,7 +253,9 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
 		elbowed: DEFAULT_ELBOWED,
-		elbowDirection: DEFAULT_ELBOW_DIRECTION
+		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		renderStyle: DEFAULT_RENDER_STYLE,
+		roughness: DEFAULT_ROUGHNESS
 	},
 	circle: {
 		color: DEFAULT_COLOR,
@@ -244,7 +267,9 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
 		elbowed: DEFAULT_ELBOWED,
-		elbowDirection: DEFAULT_ELBOW_DIRECTION
+		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		renderStyle: DEFAULT_RENDER_STYLE,
+		roughness: DEFAULT_ROUGHNESS
 	},
 	arrow: {
 		color: DEFAULT_COLOR,
@@ -256,7 +281,9 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
 		elbowed: DEFAULT_ELBOWED,
-		elbowDirection: DEFAULT_ELBOW_DIRECTION
+		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		renderStyle: DEFAULT_RENDER_STYLE,
+		roughness: DEFAULT_ROUGHNESS
 	},
 	pentagon: {
 		color: DEFAULT_COLOR,
@@ -268,7 +295,9 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
 		elbowed: DEFAULT_ELBOWED,
-		elbowDirection: DEFAULT_ELBOW_DIRECTION
+		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		renderStyle: DEFAULT_RENDER_STYLE,
+		roughness: DEFAULT_ROUGHNESS
 	},
 	hexagon: {
 		color: DEFAULT_COLOR,
@@ -280,7 +309,9 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
 		elbowed: DEFAULT_ELBOWED,
-		elbowDirection: DEFAULT_ELBOW_DIRECTION
+		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		renderStyle: DEFAULT_RENDER_STYLE,
+		roughness: DEFAULT_ROUGHNESS
 	},
 	star: {
 		color: DEFAULT_COLOR,
@@ -292,7 +323,9 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
 		elbowed: DEFAULT_ELBOWED,
-		elbowDirection: DEFAULT_ELBOW_DIRECTION
+		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		renderStyle: DEFAULT_RENDER_STYLE,
+		roughness: DEFAULT_ROUGHNESS
 	}
 };
 
@@ -323,7 +356,9 @@ function createWhiteboardStore() {
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
 		elbowed: DEFAULT_ELBOWED,
-		elbowDirection: DEFAULT_ELBOW_DIRECTION as ElbowDirection
+		elbowDirection: DEFAULT_ELBOW_DIRECTION as ElbowDirection,
+		renderStyle: DEFAULT_RENDER_STYLE as RenderStyle,
+		roughness: DEFAULT_ROUGHNESS
 	});
 
 	// === UI State ===
@@ -378,7 +413,9 @@ function createWhiteboardStore() {
 			fillColor: settings.fillColor,
 			fillOpacity: settings.fillOpacity,
 			elbowed: settings.elbowed,
-			elbowDirection: settings.elbowDirection
+			elbowDirection: settings.elbowDirection,
+			renderStyle: userPreferences.renderStyle,
+			roughness: userPreferences.roughness
 		};
 	});
 
@@ -2929,6 +2966,39 @@ function createWhiteboardStore() {
 		},
 
 		/**
+		 * Set render style (perfect or sketch) for all tools
+		 * This is a global setting that affects all new elements
+		 */
+		setRenderStyle(style: RenderStyle): void {
+			// Always save to user preferences (global setting)
+			userPreferences = { ...userPreferences, renderStyle: style };
+
+			// Apply to ALL configurable tools
+			const updatedSettings = { ...toolSettings };
+			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
+				updatedSettings[tool] = { ...updatedSettings[tool], renderStyle: style };
+			}
+			toolSettings = updatedSettings;
+		},
+
+		/**
+		 * Set roughness level for sketch mode (0-2)
+		 * This is a global setting that affects all new elements in sketch mode
+		 */
+		setRoughness(value: number): void {
+			const clampedValue = Math.max(0, Math.min(2, value));
+			// Always save to user preferences (global setting)
+			userPreferences = { ...userPreferences, roughness: clampedValue };
+
+			// Apply to ALL configurable tools
+			const updatedSettings = { ...toolSettings };
+			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
+				updatedSettings[tool] = { ...updatedSettings[tool], roughness: clampedValue };
+			}
+			toolSettings = updatedSettings;
+		},
+
+		/**
 		 * Sync toolbar display from element properties (temporary, doesn't save to preferences)
 		 * Used when selecting an element to show its properties
 		 */
@@ -2943,6 +3013,8 @@ function createWhiteboardStore() {
 			fillOpacity?: number;
 			elbowed?: boolean;
 			elbowDirection?: ElbowDirection;
+			renderStyle?: RenderStyle;
+			roughness?: number;
 		}): void {
 			const updatedSettings = { ...toolSettings };
 			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
@@ -2961,7 +3033,10 @@ function createWhiteboardStore() {
 						fillOpacity: element.fillOpacity ?? currentToolSettings.fillOpacity,
 						// Elbow properties (only for arrows)
 						elbowed: element.elbowed ?? currentToolSettings.elbowed,
-						elbowDirection: element.elbowDirection ?? currentToolSettings.elbowDirection
+						elbowDirection: element.elbowDirection ?? currentToolSettings.elbowDirection,
+						// Render style properties
+						renderStyle: element.renderStyle ?? currentToolSettings.renderStyle,
+						roughness: element.roughness ?? currentToolSettings.roughness
 					};
 				}
 			}
@@ -2987,7 +3062,9 @@ function createWhiteboardStore() {
 						fillColor: userPreferences.fillColor,
 						fillOpacity: userPreferences.fillOpacity,
 						elbowed: userPreferences.elbowed,
-						elbowDirection: userPreferences.elbowDirection
+						elbowDirection: userPreferences.elbowDirection,
+						renderStyle: userPreferences.renderStyle,
+						roughness: userPreferences.roughness
 					};
 				}
 			}

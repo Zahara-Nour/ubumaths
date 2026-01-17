@@ -152,7 +152,7 @@ function generateStarPoints(
 /**
  * Get vertices as array of {x, y} for a regular polygon
  */
-function getPolygonVertices(
+export function getPolygonVertices(
 	cx: number,
 	cy: number,
 	rx: number,
@@ -174,7 +174,7 @@ function getPolygonVertices(
 /**
  * Get vertices as array of {x, y} for a star
  */
-function getStarVertices(
+export function getStarVertices(
 	cx: number,
 	cy: number,
 	rx: number,
