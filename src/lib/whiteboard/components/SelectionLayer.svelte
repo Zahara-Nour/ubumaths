@@ -573,18 +573,35 @@
 <svg class="selection-layer pointer-events-none absolute inset-0 h-full w-full overflow-visible">
 	<!-- Hover highlight (for non-selected elements) -->
 	{#if hoveredElement}
-		{@const bounds = getElementBounds(hoveredElement)}
-		<rect
-			x={bounds.x}
-			y={bounds.y}
-			width={bounds.width}
-			height={bounds.height}
-			fill="rgba(59, 130, 246, 0.08)"
-			stroke="#93c5fd"
-			stroke-width={strokeWidth}
-			stroke-dasharray={`${3 / scale} ${3 / scale}`}
-			class="pointer-events-none"
-		/>
+		{@const isHoveredLineOrArrow = isLineOrArrow(hoveredElement)}
+		{#if isHoveredLineOrArrow}
+			{@const lineEl = hoveredElement as ShapeElement}
+			<!-- Line/Arrow hover: highlight the line itself -->
+			<line
+				x1={lineEl.start.x}
+				y1={lineEl.start.y}
+				x2={lineEl.end.x}
+				y2={lineEl.end.y}
+				stroke="#93c5fd"
+				stroke-width={Math.max(lineEl.strokeWidth + 4, 8) / scale}
+				stroke-linecap="round"
+				opacity="0.5"
+				class="pointer-events-none"
+			/>
+		{:else}
+			{@const bounds = getElementBounds(hoveredElement)}
+			<rect
+				x={bounds.x}
+				y={bounds.y}
+				width={bounds.width}
+				height={bounds.height}
+				fill="rgba(59, 130, 246, 0.08)"
+				stroke="#93c5fd"
+				stroke-width={strokeWidth}
+				stroke-dasharray={`${3 / scale} ${3 / scale}`}
+				class="pointer-events-none"
+			/>
+		{/if}
 	{/if}
 
 	<!-- Individual element selection rectangles (dashed borders) -->
