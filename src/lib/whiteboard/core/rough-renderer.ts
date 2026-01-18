@@ -94,6 +94,122 @@ function getStrokeLineDash(
 	}
 }
 
+/** Default corner radius for elbow arrows (matches Excalidraw) */
+export const ELBOW_ARROW_CORNER_RADIUS = 16;
+
+/**
+ * Check if the direction from one point to another is horizontal.
+ * Used for elbow arrow corner calculation (like Excalidraw).
+ */
+function isHorizontalSegment(
+	from: { x: number; y: number },
+	to: { x: number; y: number }
+): boolean {
+	return Math.abs(from.x - to.x) > Math.abs(from.y - to.y);
+}
+
+/**
+ * Calculate distance between two points.
+ */
+function pointDistance(p1: { x: number; y: number }, p2: { x: number; y: number }): number {
+	const dx = p2.x - p1.x;
+	const dy = p2.y - p1.y;
+	return Math.sqrt(dx * dx + dy * dy);
+}
+
+/**
+ * Build an SVG path string for an elbow arrow with rounded corners.
+ * Uses quadratic bezier curves at 90-degree corners for smooth turns.
+ * Algorithm matches Excalidraw's generateElbowArrowShape.
+ *
+ * @param points - Array of points defining the elbow path
+ * @param radius - Radius for rounded corners (default: 16, like Excalidraw)
+ * @returns SVG path string
+ */
+export function buildElbowPathWithRoundedCorners(
+	points: readonly { x: number; y: number }[],
+	radius: number = ELBOW_ARROW_CORNER_RADIUS
+): string {
+	if (points.length < 2) return '';
+	if (points.length === 2) {
+		// Simple line, no corners
+		return `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y}`;
+	}
+
+	// Build subpoints for each corner (like Excalidraw)
+	// Each corner generates 3 subpoints: before, corner, after
+	const subpoints: [number, number][] = [];
+
+	for (let i = 1; i < points.length - 1; i++) {
+		const prev = points[i - 1];
+		const point = points[i];
+		const next = points[i + 1];
+
+		const prevIsHorizontal = isHorizontalSegment(prev, point);
+		const nextIsHorizontal = isHorizontalSegment(point, next);
+
+		// Calculate effective corner radius (limited by half segment length)
+		const corner = Math.min(radius, pointDistance(point, next) / 2, pointDistance(point, prev) / 2);
+
+		// Point before corner (along incoming segment)
+		if (prevIsHorizontal) {
+			if (prev.x < point.x) {
+				// Coming from LEFT
+				subpoints.push([point.x - corner, point.y]);
+			} else {
+				// Coming from RIGHT
+				subpoints.push([point.x + corner, point.y]);
+			}
+		} else {
+			if (prev.y < point.y) {
+				// Coming from UP
+				subpoints.push([point.x, point.y - corner]);
+			} else {
+				// Coming from DOWN
+				subpoints.push([point.x, point.y + corner]);
+			}
+		}
+
+		// Corner point (control point for quadratic bezier)
+		subpoints.push([point.x, point.y]);
+
+		// Point after corner (along outgoing segment)
+		if (nextIsHorizontal) {
+			if (next.x < point.x) {
+				// Going LEFT
+				subpoints.push([point.x - corner, point.y]);
+			} else {
+				// Going RIGHT
+				subpoints.push([point.x + corner, point.y]);
+			}
+		} else {
+			if (next.y < point.y) {
+				// Going UP
+				subpoints.push([point.x, point.y - corner]);
+			} else {
+				// Going DOWN
+				subpoints.push([point.x, point.y + corner]);
+			}
+		}
+	}
+
+	// Build the SVG path
+	const d: string[] = [`M ${points[0].x} ${points[0].y}`];
+
+	// Process subpoints in groups of 3 (before, corner, after)
+	for (let i = 0; i < subpoints.length; i += 3) {
+		d.push(`L ${subpoints[i][0]} ${subpoints[i][1]}`);
+		d.push(
+			`Q ${subpoints[i + 1][0]} ${subpoints[i + 1][1]}, ${subpoints[i + 2][0]} ${subpoints[i + 2][1]}`
+		);
+	}
+
+	// Line to last point
+	d.push(`L ${points[points.length - 1].x} ${points[points.length - 1].y}`);
+
+	return d.join(' ');
+}
+
 /**
  * Create roughjs options from a shape element
  */
@@ -233,81 +349,64 @@ function renderRoughArrow(
 			if (head) g.appendChild(head);
 		}
 	} else if (effectiveArrowType === 'elbow') {
-		// Elbow arrow: draw segments between all points
+		// Elbow arrow: draw path with rounded corners
 		if (points.length >= 2) {
-			// If only 2 points, calculate elbow point
+			// Get corner radius (default to 16, matching Excalidraw)
+			const cornerRadius = shape.cornerRadius ?? ELBOW_ARROW_CORNER_RADIUS;
+
+			// Build the points array for the path
+			let pathPoints: { x: number; y: number }[];
+
 			if (points.length === 2) {
+				// Only 2 points: calculate elbow point to create 3-point path
 				const direction = arrowShape.elbowDirection ?? 'horizontal-first';
 				const elbowX = direction === 'horizontal-first' ? shape.end.x : shape.start.x;
 				const elbowY = direction === 'horizontal-first' ? shape.start.y : shape.end.y;
-
-				const line1 = rc.line(shape.start.x, shape.start.y, elbowX, elbowY, options);
-				const line2 = rc.line(elbowX, elbowY, shape.end.x, shape.end.y, options);
-				g.appendChild(line1);
-				g.appendChild(line2);
-
-				// Start arrowhead
-				if (startArrowhead) {
-					const dx = shape.start.x - elbowX;
-					const dy = shape.start.y - elbowY;
-					const head = renderArrowhead(
-						rc,
-						shape.start.x,
-						shape.start.y,
-						dx,
-						dy,
-						startArrowhead,
-						options
-					);
-					if (head) g.appendChild(head);
-				}
-
-				// End arrowhead
-				if (endArrowhead) {
-					const dx = shape.end.x - elbowX;
-					const dy = shape.end.y - elbowY;
-					const head = renderArrowhead(rc, shape.end.x, shape.end.y, dx, dy, endArrowhead, options);
-					if (head) g.appendChild(head);
-				}
+				pathPoints = [shape.start, { x: elbowX, y: elbowY }, shape.end];
 			} else {
-				// Multi-point elbow: draw all segments
-				for (let i = 0; i < points.length - 1; i++) {
-					const line = rc.line(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, options);
-					g.appendChild(line);
-				}
+				// Multi-point elbow: use points directly
+				pathPoints = [...points];
+			}
 
-				// Start arrowhead (direction from second to first point)
-				if (startArrowhead) {
-					const dx = points[0].x - points[1].x;
-					const dy = points[0].y - points[1].y;
-					const head = renderArrowhead(
-						rc,
-						points[0].x,
-						points[0].y,
-						dx,
-						dy,
-						startArrowhead,
-						options
-					);
-					if (head) g.appendChild(head);
-				}
+			// Build path with rounded corners and render with roughjs
+			const pathString = buildElbowPathWithRoundedCorners(pathPoints, cornerRadius);
+			const pathElement = rc.path(pathString, {
+				...options,
+				preserveVertices: true
+			});
+			g.appendChild(pathElement);
 
-				// End arrowhead (direction from second-to-last to last point)
-				if (endArrowhead) {
-					const lastIdx = points.length - 1;
-					const dx = points[lastIdx].x - points[lastIdx - 1].x;
-					const dy = points[lastIdx].y - points[lastIdx - 1].y;
-					const head = renderArrowhead(
-						rc,
-						points[lastIdx].x,
-						points[lastIdx].y,
-						dx,
-						dy,
-						endArrowhead,
-						options
-					);
-					if (head) g.appendChild(head);
-				}
+			// Start arrowhead (direction from second to first point)
+			if (startArrowhead && pathPoints.length >= 2) {
+				const dx = pathPoints[0].x - pathPoints[1].x;
+				const dy = pathPoints[0].y - pathPoints[1].y;
+				const head = renderArrowhead(
+					rc,
+					pathPoints[0].x,
+					pathPoints[0].y,
+					dx,
+					dy,
+					startArrowhead,
+					options
+				);
+				if (head) g.appendChild(head);
+			}
+
+			// End arrowhead (direction from second-to-last to last point)
+			if (endArrowhead && pathPoints.length >= 2) {
+				const lastIdx = pathPoints.length - 1;
+				const dx = pathPoints[lastIdx].x - pathPoints[lastIdx - 1].x;
+				const dy = pathPoints[lastIdx].y - pathPoints[lastIdx - 1].y;
+				const head = renderArrowhead(
+					rc,
+					pathPoints[lastIdx].x,
+					pathPoints[lastIdx].y,
+					dx,
+					dy,
+					endArrowhead,
+					options
+				);
+				if (head) g.appendChild(head);
 			}
 		}
 	} else {
