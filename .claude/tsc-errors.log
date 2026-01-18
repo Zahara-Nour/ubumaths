@@ -1,0 +1,10 @@
+src/lib/stores/friends.svelte.ts(136,7): error TS2353: Object literal may only specify known properties, and 'friend_profile' does not exist in type 'FriendshipWithProfile'.
+src/lib/stores/friends.svelte.ts(161,19): error TS2339: Property 'friend_profile' does not exist on type 'FriendshipWithProfile'.
+src/lib/stores/friends.svelte.ts(311,18): error TS2339: Property 'friend_profile' does not exist on type 'FriendshipWithProfile'.
+src/lib/stores/friends.svelte.ts(581,15): error TS2339: Property 'friend_profile' does not exist on type 'FriendshipWithProfile'.
+src/lib/stores/friends.svelte.ts(584,14): error TS2339: Property 'friend_profile' does not exist on type 'FriendshipWithProfile'.
+src/lib/stores/friends.svelte.ts(585,18): error TS2339: Property 'friend_profile' does not exist on type 'FriendshipWithProfile'.
+src/lib/stores/friends.svelte.ts(587,14): error TS2339: Property 'friend_profile' does not exist on type 'FriendshipWithProfile'.
+src/lib/stores/friends.svelte.ts(587,49): error TS2339: Property 'friend_profile' does not exist on type 'FriendshipWithProfile'.
+src/lib/stores/friends.svelte.ts(588,21): error TS2339: Property 'friend_profile' does not exist on type 'FriendshipWithProfile'.
+src/lib/stores/friends.svelte.ts(588,62): error TS2339: Property 'friend_profile' does not exist on type 'FriendshipWithProfile'.

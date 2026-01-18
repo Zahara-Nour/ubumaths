@@ -52,6 +52,7 @@
 		STROKE_STYLE_LABELS,
 		FILL_MODE_LABELS,
 		ELBOW_DIRECTION_LABELS,
+		ARROW_TYPE_LABELS,
 		RENDER_STYLE_LABELS,
 		PAGE_FORMATS,
 		type InstrumentType,
@@ -60,6 +61,7 @@
 		type BackgroundStyle,
 		type PageFormatKey,
 		type ElbowDirection,
+		type ArrowType,
 		type RenderStyle
 	} from '../types/document';
 
@@ -224,11 +226,11 @@
 		whiteboardStore.selectedElements.some((el) => el.type === 'shape' && el.shapeType === 'arrow')
 	);
 
-	/** Show elbow controls when arrow tool active OR arrow is selected */
-	let showElbowControls = $derived(isArrowToolActive || hasSelectedArrow);
+	/** Show arrow type controls when arrow tool active OR arrow is selected */
+	let showArrowTypeControls = $derived(isArrowToolActive || hasSelectedArrow);
 
-	/** Current elbow state from toolbar/selection */
-	let currentElbowed = $derived(toolState.elbowed);
+	/** Current arrow type from toolbar/selection */
+	let currentArrowType = $derived(toolState.arrowType);
 	let currentElbowDirection = $derived(toolState.elbowDirection);
 
 	/** Current page background style */
@@ -365,11 +367,13 @@
 		}
 	}
 
-	function handleElbowedChange(elbowed: boolean) {
-		whiteboardStore.setElbowed(elbowed);
+	function handleArrowTypeChange(arrowType: ArrowType) {
+		whiteboardStore.setArrowType(arrowType);
 		// Apply to selected arrows if any
 		if (whiteboardStore.hasSelection) {
-			whiteboardStore.updateSelectedStyles({ elbowed });
+			// Also sync elbowed for backwards compatibility
+			const elbowed = arrowType === 'elbow';
+			whiteboardStore.updateSelectedStyles({ arrowType, elbowed });
 		}
 	}
 
@@ -1114,19 +1118,21 @@
 					</Popover.Root>
 				{/if}
 
-				<!-- Elbow Arrow Controls (conditional) -->
-				{#if showElbowControls}
+				<!-- Arrow Type Controls (conditional) -->
+				{#if showArrowTypeControls}
 					<div class="flex items-center gap-2 border-l border-border pl-2">
-						<label class="flex items-center gap-1.5 text-xs">
-							<input
-								type="checkbox"
-								checked={currentElbowed}
-								onchange={(e) => handleElbowedChange((e.target as HTMLInputElement).checked)}
-								class="h-3.5 w-3.5 rounded border-border"
-							/>
-							<span class="text-muted-foreground">Coudée</span>
-						</label>
-						{#if currentElbowed}
+						<span class="text-xs text-muted-foreground">Type:</span>
+						<select
+							value={currentArrowType}
+							onchange={(e) =>
+								handleArrowTypeChange((e.target as HTMLSelectElement).value as ArrowType)}
+							class="h-7 rounded-md border border-border bg-background px-1.5 text-xs"
+						>
+							{#each Object.entries(ARROW_TYPE_LABELS) as [value, label] (value)}
+								<option {value}>{label}</option>
+							{/each}
+						</select>
+						{#if currentArrowType === 'elbow'}
 							<select
 								value={currentElbowDirection}
 								onchange={(e) =>

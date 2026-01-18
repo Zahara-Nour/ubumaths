@@ -13,7 +13,9 @@ import type {
 	ArrowElement,
 	BindingAnchor,
 	WhiteboardElement,
-	ElbowDirection
+	ElbowDirection,
+	ArrowType,
+	ArrowWaypoint
 } from '../types/document';
 import {
 	getShapeBounds,
@@ -237,7 +239,14 @@ export interface ArrowOptions {
 	strokeWidth: number;
 	opacity: number;
 	strokeStyle?: 'solid' | 'dashed' | 'dotted' | 'dashdot';
-	/** If true, arrow bends at 90 degree angles (elbow arrow) */
+	/** Type of arrow: sharp (straight), curved (bezier), or elbow (90° angles) */
+	arrowType?: ArrowType;
+	/** Initial waypoints for curved arrows */
+	waypoints?: readonly ArrowWaypoint[];
+	/**
+	 * @deprecated Use arrowType: 'elbow' instead
+	 * If true, arrow bends at 90 degree angles (elbow arrow)
+	 */
 	elbowed?: boolean;
 	/** Direction of first segment for elbow arrows */
 	elbowDirection?: ElbowDirection;
@@ -294,6 +303,9 @@ export function createArrowWithBindings(
 		adjustedEnd = calculateBoundEndpoint(endBinding, endCandidate.element, start);
 	}
 
+	// Determine effective arrow type (handle legacy elbowed flag)
+	const effectiveArrowType: ArrowType = options.arrowType ?? (options.elbowed ? 'elbow' : 'sharp');
+
 	const arrow: ArrowElement = {
 		id: arrowId,
 		type: 'shape',
@@ -306,8 +318,11 @@ export function createArrowWithBindings(
 		strokeStyle: options.strokeStyle,
 		startBinding,
 		endBinding,
-		elbowed: options.elbowed,
-		elbowDirection: options.elbowDirection
+		arrowType: effectiveArrowType,
+		waypoints: effectiveArrowType === 'curved' ? (options.waypoints ?? []) : undefined,
+		// Keep elbowed for backwards compatibility during migration
+		elbowed: effectiveArrowType === 'elbow' ? true : undefined,
+		elbowDirection: effectiveArrowType === 'elbow' ? options.elbowDirection : undefined
 	};
 
 	return {

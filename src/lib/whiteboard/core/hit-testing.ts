@@ -14,9 +14,12 @@ import type {
 	ShapeElement,
 	ImageElement,
 	TextBlockElement,
-	GroupElement
+	GroupElement,
+	ArrowElement
 } from '../types/document';
 import { calculateShapeBounds } from './shapes';
+import { hitTestCurvedPath } from './curved-path';
+import { calculateElbowPath } from './elbow-path';
 
 // =============================================================================
 // Types
@@ -238,7 +241,8 @@ export function hitTestStroke(
 /**
  * Test if a point hits a shape element.
  *
- * Uses the shape's bounding box plus tolerance for hit detection.
+ * For lines and arrows, uses path-based hit testing along the actual path.
+ * For other shapes, uses bounding box plus tolerance.
  * For rotated shapes, transforms the test point into local coordinate space.
  */
 export function hitTestShape(
@@ -260,12 +264,100 @@ export function hitTestShape(
 		testPoint = rotatePoint(point, center, -rotation);
 	}
 
+	// For lines and arrows, use path-based hit testing
+	if (shape.shapeType === 'line' || shape.shapeType === 'arrow') {
+		// Adjust tolerance based on stroke width
+		const hitTolerance = Math.max(tolerance, shape.strokeWidth / 2 + 2);
+
+		// Check if this is an arrow with special path type
+		if (shape.shapeType === 'arrow') {
+			const arrowShape = shape as ArrowElement;
+			const effectiveArrowType = arrowShape.arrowType ?? (arrowShape.elbowed ? 'elbow' : 'sharp');
+
+			if (effectiveArrowType === 'curved') {
+				// Use curved path hit testing
+				return hitTestCurvedPath(
+					shape.start,
+					shape.end,
+					arrowShape.waypoints ?? [],
+					testPoint,
+					hitTolerance
+				);
+			} else if (effectiveArrowType === 'elbow') {
+				// Use elbow path hit testing
+				return hitTestElbowPath(
+					shape.start,
+					shape.end,
+					arrowShape.elbowDirection ?? 'horizontal-first',
+					testPoint,
+					hitTolerance
+				);
+			}
+		}
+
+		// Sharp/straight line - use simple line segment hit test
+		return hitTestLineSegment(shape.start, shape.end, testPoint, hitTolerance);
+	}
+
+	// For other shapes, use bounding box
 	return (
 		testPoint.x >= bounds.minX - tolerance &&
 		testPoint.x <= bounds.maxX + tolerance &&
 		testPoint.y >= bounds.minY - tolerance &&
 		testPoint.y <= bounds.maxY + tolerance
 	);
+}
+
+/**
+ * Test if a point is within tolerance of a line segment.
+ */
+function hitTestLineSegment(start: Point, end: Point, point: Point, tolerance: number): boolean {
+	const distance = distanceToLineSegment(point, start, end);
+	return distance <= tolerance;
+}
+
+/**
+ * Calculate the distance from a point to a line segment.
+ */
+function distanceToLineSegment(point: Point, lineStart: Point, lineEnd: Point): number {
+	const dx = lineEnd.x - lineStart.x;
+	const dy = lineEnd.y - lineStart.y;
+	const lengthSquared = dx * dx + dy * dy;
+
+	if (lengthSquared === 0) {
+		// Line segment is a point
+		return Math.sqrt((point.x - lineStart.x) ** 2 + (point.y - lineStart.y) ** 2);
+	}
+
+	// Project point onto line, clamped to [0, 1]
+	const t = Math.max(
+		0,
+		Math.min(1, ((point.x - lineStart.x) * dx + (point.y - lineStart.y) * dy) / lengthSquared)
+	);
+
+	const closestX = lineStart.x + t * dx;
+	const closestY = lineStart.y + t * dy;
+
+	return Math.sqrt((point.x - closestX) ** 2 + (point.y - closestY) ** 2);
+}
+
+/**
+ * Test if a point is within tolerance of an elbow path.
+ */
+function hitTestElbowPath(
+	start: Point,
+	end: Point,
+	direction: 'horizontal-first' | 'vertical-first',
+	point: Point,
+	tolerance: number
+): boolean {
+	const elbowResult = calculateElbowPath(start, end, direction);
+
+	// Test against both segments of the elbow
+	const distance1 = distanceToLineSegment(point, start, elbowResult.elbowPoint);
+	const distance2 = distanceToLineSegment(point, elbowResult.elbowPoint, end);
+
+	return Math.min(distance1, distance2) <= tolerance;
 }
 
 /**

@@ -25,6 +25,7 @@
 		type BoundingBox
 	} from '../core/hit-testing';
 	import { calculateElbowPath } from '../core/elbow-path';
+	import { calculateCurvedPath } from '../core/curved-path';
 	import InstrumentLayer from './InstrumentLayer.svelte';
 	import TextBlockLayer from './TextBlockLayer.svelte';
 	import ShapeLabelLayer from './ShapeLabelLayer.svelte';
@@ -110,6 +111,11 @@
 	let marqueeEnd = $state<Point | null>(null);
 	let marqueeAddToSelection = $state(false);
 	let marqueeIntersectionMode = $state(false); // Alt key = intersection mode
+
+	/** Multi-point drawing state (for curved arrows - click to add points) */
+	let isMultiPointDrawing = $state(false);
+	let multiPointPoints = $state<Point[]>([]);
+	let multiPointCurrentPos = $state<Point | null>(null);
 
 	/** Minimum drag distance before movement starts (prevents jitter) */
 	const MIN_DRAG_DISTANCE = 2;
@@ -201,6 +207,11 @@
 
 	/** Select tool active */
 	let isSelectTool = $derived(toolState.toolType === 'select');
+
+	/** Curved arrow tool active (uses multi-point click mode) */
+	let isCurvedArrowTool = $derived(
+		toolState.toolType === 'arrow' && toolState.arrowType === 'curved'
+	);
 
 	/** ViewBox for SVG */
 	let viewBox = $derived(`0 0 ${pageWidth} ${pageHeight}`);
@@ -295,6 +306,20 @@
 			}
 
 			sketchStrokesGroup.appendChild(element);
+		}
+	});
+
+	/**
+	 * Cancel multi-point drawing when tool changes
+	 */
+	$effect(() => {
+		// Track tool type to detect changes
+		const currentTool = toolState.toolType;
+		const currentArrowType = toolState.arrowType;
+
+		// If we're in multi-point mode but no longer using curved arrow tool, cancel
+		if (isMultiPointDrawing && !(currentTool === 'arrow' && currentArrowType === 'curved')) {
+			resetMultiPointState();
 		}
 	});
 
@@ -492,7 +517,24 @@
 			return;
 		}
 
-		// Handle shape tools
+		// Handle curved arrow tool (multi-point click mode)
+		if (isCurvedArrowTool) {
+			e.preventDefault();
+
+			if (!isMultiPointDrawing) {
+				// First click - start multi-point mode
+				whiteboardStore.clearSelection();
+				isMultiPointDrawing = true;
+				multiPointPoints = [point];
+				multiPointCurrentPos = point;
+			} else {
+				// Subsequent click - add point
+				multiPointPoints = [...multiPointPoints, point];
+			}
+			return;
+		}
+
+		// Handle shape tools (non-curved arrows use drag mode)
 		if (isShapeTool) {
 			e.preventDefault();
 			(e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
@@ -559,7 +601,24 @@
 		}
 
 		// Track binding candidates for arrow tool on hover (before drawing starts)
-		if (toolState.toolType === 'arrow' && !isDrawing) {
+		if (toolState.toolType === 'arrow' && !isDrawing && !isMultiPointDrawing) {
+			const excludeIds = new Set<string>();
+			const candidate = findBindingCandidate(point, elements, excludeIds);
+			if (candidate) {
+				bindingCandidateIds = new Set([candidate.element.id]);
+				snapPoints = [{ point: candidate.perimeterPoint, end: 'end' }];
+			} else {
+				bindingCandidateIds = new Set();
+				snapPoints = [];
+			}
+			return;
+		}
+
+		// Update current position for multi-point drawing preview
+		if (isMultiPointDrawing) {
+			multiPointCurrentPos = point;
+
+			// Track binding candidates for end point
 			const excludeIds = new Set<string>();
 			const candidate = findBindingCandidate(point, elements, excludeIds);
 			if (candidate) {
@@ -787,6 +846,46 @@
 		}
 	}
 
+	/**
+	 * Handle double-click - finalize multi-point arrow
+	 */
+	function handleDoubleClick(e: MouseEvent) {
+		if (isMultiPointDrawing) {
+			e.preventDefault();
+			// Don't add point - the two clicks of double-click already added points via pointerdown
+			// Remove duplicate last point (second click of double-click added same point)
+			if (multiPointPoints.length >= 2) {
+				const last = multiPointPoints[multiPointPoints.length - 1];
+				const secondLast = multiPointPoints[multiPointPoints.length - 2];
+				// If last two points are very close (same click position), remove the duplicate
+				const dist = Math.sqrt((last.x - secondLast.x) ** 2 + (last.y - secondLast.y) ** 2);
+				if (dist < 5) {
+					multiPointPoints = multiPointPoints.slice(0, -1);
+				}
+			}
+			finalizeMultiPointArrow();
+		}
+	}
+
+	/**
+	 * Handle keyboard events - Enter to finalize, Escape to cancel
+	 */
+	function handleKeyDown(e: KeyboardEvent) {
+		if (!isMultiPointDrawing) return;
+
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			// Finalize with current mouse position as last point
+			if (multiPointCurrentPos && multiPointPoints.length >= 1) {
+				multiPointPoints = [...multiPointPoints, multiPointCurrentPos];
+			}
+			finalizeMultiPointArrow();
+		} else if (e.key === 'Escape') {
+			e.preventDefault();
+			cancelMultiPointDrawing();
+		}
+	}
+
 	// ==========================================================================
 	// Stroke Processing
 	// ==========================================================================
@@ -928,6 +1027,7 @@
 				strokeWidth: toolState.strokeWidth,
 				opacity: toolState.opacity,
 				strokeStyle: toolState.strokeStyle,
+				arrowType: toolState.arrowType,
 				elbowed: toolState.elbowed,
 				elbowDirection: toolState.elbowDirection
 			});
@@ -960,6 +1060,74 @@
 		isDrawing = false;
 		shapeStartPoint = null;
 		shapeEndPoint = null;
+		bindingCandidateIds = new Set();
+		snapPoints = [];
+	}
+
+	/**
+	 * Finalize multi-point curved arrow
+	 */
+	function finalizeMultiPointArrow() {
+		// Need at least 2 points (start and end)
+		if (multiPointPoints.length < 2) {
+			resetMultiPointState();
+			return;
+		}
+
+		const points = multiPointPoints;
+		const start = points[0];
+		const end = points[points.length - 1];
+
+		// Check minimum length
+		const dx = Math.abs(end.x - start.x);
+		const dy = Math.abs(end.y - start.y);
+		if (dx < 5 && dy < 5) {
+			resetMultiPointState();
+			return;
+		}
+
+		// Build waypoints from intermediate points
+		const waypoints = points.slice(1, -1).map((p) => ({
+			id: crypto.randomUUID(),
+			position: p
+		}));
+
+		// Prepare sketch mode properties
+		const renderStyle = toolState.renderStyle;
+		const roughSeed = renderStyle === 'sketch' ? Math.floor(Math.random() * 2147483647) : undefined;
+		const roughness = renderStyle === 'sketch' ? toolState.roughness : undefined;
+
+		// Create arrow with bindings
+		const { arrow } = createArrowWithBindings(start, end, elements, {
+			color: toolState.color,
+			strokeWidth: toolState.strokeWidth,
+			opacity: toolState.opacity,
+			strokeStyle: toolState.strokeStyle,
+			arrowType: 'curved',
+			waypoints
+		});
+
+		// Add renderStyle properties
+		const arrowWithStyle = { ...arrow, renderStyle, roughSeed, roughness };
+		whiteboardStore.addElement(arrowWithStyle);
+
+		resetMultiPointState();
+	}
+
+	/**
+	 * Cancel multi-point drawing
+	 */
+	function cancelMultiPointDrawing() {
+		resetMultiPointState();
+	}
+
+	/**
+	 * Reset multi-point drawing state
+	 */
+	function resetMultiPointState() {
+		isMultiPointDrawing = false;
+		multiPointPoints = [];
+		multiPointCurrentPos = null;
 		bindingCandidateIds = new Set();
 		snapPoints = [];
 	}
@@ -1178,6 +1346,9 @@
 		onpointercancel={handlePointerCancel}
 		onpointerleave={handlePointerLeave}
 		oncontextmenu={handleContextMenu}
+		ondblclick={handleDoubleClick}
+		tabindex="0"
+		onkeydown={handleKeyDown}
 	>
 		<!-- Layer 1: Background -->
 		<g class="layer-background">
@@ -1666,11 +1837,28 @@
 						undefined}
 				>
 					{#if props.type === 'line'}
-						{#if arrowShape?.elbowed}
+						{@const effectiveArrowType =
+							arrowShape?.arrowType ?? (arrowShape?.elbowed ? 'elbow' : 'sharp')}
+						{@const liveWaypoints = whiteboardStore.liveWaypoints.get(shape.id)}
+						{@const waypoints = liveWaypoints ?? arrowShape?.waypoints ?? []}
+						{#if effectiveArrowType === 'curved'}
+							{@const curvedResult = calculateCurvedPath(adjustedStart, adjustedEnd, waypoints)}
+							<path
+								d={curvedResult.path}
+								stroke={shape.color}
+								stroke-width={shape.strokeWidth}
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-dasharray={dashArray}
+								opacity={shape.opacity}
+								fill="none"
+								marker-end={props.hasArrowMarker ? `url(#arrow-marker-${shape.id})` : undefined}
+							/>
+						{:else if effectiveArrowType === 'elbow'}
 							{@const elbowResult = calculateElbowPath(
 								adjustedStart,
 								adjustedEnd,
-								arrowShape.elbowDirection ?? 'horizontal-first'
+								arrowShape?.elbowDirection ?? 'horizontal-first'
 							)}
 							<path
 								d={elbowResult.path}
@@ -1684,6 +1872,7 @@
 								marker-end={props.hasArrowMarker ? `url(#arrow-marker-${shape.id})` : undefined}
 							/>
 						{:else}
+							<!-- Sharp (straight) arrow -->
 							<line
 								x1={props.x1}
 								y1={props.y1}
@@ -1809,7 +1998,22 @@
 							? 'url(#hatch-preview)'
 							: toolState.fillColor}
 				{#if previewProps.type === 'line'}
-					{#if toolState.toolType === 'arrow' && toolState.elbowed}
+					{@const effectivePreviewArrowType =
+						toolState.arrowType ?? (toolState.elbowed ? 'elbow' : 'sharp')}
+					{#if toolState.toolType === 'arrow' && effectivePreviewArrowType === 'curved'}
+						{@const previewCurvedResult = calculateCurvedPath(shapeStartPoint, shapeEndPoint, [])}
+						<path
+							d={previewCurvedResult.path}
+							stroke={toolState.color}
+							stroke-width={toolState.strokeWidth}
+							stroke-dasharray={previewDashArray}
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							fill="none"
+							opacity={toolState.opacity}
+							marker-end={previewProps.hasArrowMarker ? 'url(#arrow-marker-preview)' : undefined}
+						/>
+					{:else if toolState.toolType === 'arrow' && effectivePreviewArrowType === 'elbow'}
 						{@const previewElbowResult = calculateElbowPath(
 							shapeStartPoint,
 							shapeEndPoint,
@@ -1827,6 +2031,7 @@
 							marker-end={previewProps.hasArrowMarker ? 'url(#arrow-marker-preview)' : undefined}
 						/>
 					{:else}
+						<!-- Sharp arrow or line -->
 						<line
 							x1={previewProps.x1}
 							y1={previewProps.y1}
@@ -1892,6 +2097,67 @@
 					/>
 				{/if}
 			{/if}
+
+			<!-- Multi-point curved arrow preview -->
+			{#if isMultiPointDrawing && multiPointPoints.length >= 1 && multiPointCurrentPos}
+				{@const previewPoints = [...multiPointPoints, multiPointCurrentPos]}
+				{@const start = previewPoints[0]}
+				{@const end = previewPoints[previewPoints.length - 1]}
+				{@const waypoints = previewPoints.slice(1, -1).map((p, i) => ({
+					id: `preview-wp-${i}`,
+					position: p
+				}))}
+				{@const curvedResult = calculateCurvedPath(start, end, waypoints)}
+				{@const previewDashArray = getStrokeDashArray(toolState.strokeStyle, toolState.strokeWidth)}
+
+				<!-- The curved path -->
+				<path
+					d={curvedResult.path}
+					stroke={toolState.color}
+					stroke-width={toolState.strokeWidth}
+					stroke-dasharray={previewDashArray}
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					fill="none"
+					opacity={toolState.opacity}
+					marker-end="url(#arrow-marker-preview)"
+				/>
+
+				<!-- Point markers (show clickable points) -->
+				{#each multiPointPoints as point, i (i)}
+					<circle
+						cx={point.x}
+						cy={point.y}
+						r={4 / scale}
+						fill={i === 0 ? '#3b82f6' : 'white'}
+						stroke="#3b82f6"
+						stroke-width={1.5 / scale}
+					/>
+				{/each}
+
+				<!-- Current mouse position indicator -->
+				<circle
+					cx={multiPointCurrentPos.x}
+					cy={multiPointCurrentPos.y}
+					r={4 / scale}
+					fill="white"
+					stroke="#3b82f6"
+					stroke-width={1.5 / scale}
+					stroke-dasharray={`${2 / scale} ${2 / scale}`}
+				/>
+
+				<!-- Instructions hint -->
+				<text
+					x={multiPointCurrentPos.x + 10 / scale}
+					y={multiPointCurrentPos.y - 10 / scale}
+					font-size={12 / scale}
+					fill="#3b82f6"
+					opacity="0.8"
+					style="pointer-events: none; user-select: none;"
+				>
+					Clic pour ajouter · Double-clic ou Entrée pour terminer
+				</text>
+			{/if}
 		</g>
 
 		<!-- Layer 4: Instruments (ruler, protractor, etc.) -->
@@ -1921,6 +2187,14 @@
 					whiteboardStore.setLiveEndpoint(elementId, endpoint, x, y)}
 				onEndpointDragEnd={(elementId, endpoint, x, y) =>
 					whiteboardStore.commitLiveEndpoint(elementId, endpoint, x, y)}
+				onWaypointDrag={(arrowId, waypointId, x, y) =>
+					whiteboardStore.setLiveWaypointPosition(arrowId, waypointId, { x, y })}
+				onWaypointDragEnd={(arrowId, _waypointId, _x, _y) =>
+					whiteboardStore.commitLiveWaypoints(arrowId)}
+				onAddWaypoint={(arrowId, position, segmentIndex) =>
+					whiteboardStore.addWaypointToArrow(arrowId, position, segmentIndex)}
+				onRemoveWaypoint={(arrowId, waypointId) =>
+					whiteboardStore.removeWaypointFromArrow(arrowId, waypointId)}
 			/>
 		</g>
 
