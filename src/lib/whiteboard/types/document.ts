@@ -66,32 +66,20 @@ export const STROKE_STYLE_LABELS: Record<StrokeStyle, string> = {
 	dotted: 'Pointillé'
 };
 
-/** Render style: perfect (clean geometry) or sketch (hand-drawn with roughjs) */
-export type RenderStyle = 'perfect' | 'sketch';
-
-/** Render style labels for UI */
-export const RENDER_STYLE_LABELS: Record<RenderStyle, string> = {
-	perfect: 'Précis',
-	sketch: 'Main levée'
-};
-
-/** Sloppiness presets for shapes (like Excalidraw) */
+/** Sloppiness presets for shapes (like Excalidraw) - controls roughjs roughness */
 export type SloppinessPreset = 'architect' | 'artist' | 'cartoonist';
 
-/** Sloppiness preset configuration with render style, roughness value and label */
-export const SLOPPINESS_PRESETS: Record<
-	SloppinessPreset,
-	{ renderStyle: RenderStyle; roughness: number; label: string }
-> = {
-	architect: { renderStyle: 'perfect', roughness: 0, label: 'Architecte' },
-	artist: { renderStyle: 'sketch', roughness: 1, label: 'Artiste' },
-	cartoonist: { renderStyle: 'sketch', roughness: 2, label: 'Caricaturiste' }
+/** Sloppiness preset configuration with roughness value and label */
+export const SLOPPINESS_PRESETS: Record<SloppinessPreset, { roughness: number; label: string }> = {
+	architect: { roughness: 0, label: 'Architecte' },
+	artist: { roughness: 1, label: 'Artiste' },
+	cartoonist: { roughness: 2, label: 'Caricaturiste' }
 };
 
-/** Get sloppiness preset from render style and roughness value */
-export function getSloppinessPreset(renderStyle: RenderStyle, roughness: number): SloppinessPreset {
-	if (renderStyle === 'perfect') return 'architect';
-	if (roughness <= 1.3) return 'artist';
+/** Get sloppiness preset from roughness value */
+export function getSloppinessPreset(roughness: number): SloppinessPreset {
+	if (roughness <= 0.5) return 'architect';
+	if (roughness <= 1.5) return 'artist';
 	return 'cartoonist';
 }
 
@@ -177,10 +165,6 @@ export interface StrokeElement {
 	readonly strokeStyle?: StrokeStyle;
 	/** Rotation angle in degrees (0-360), default 0 */
 	readonly rotation?: number;
-	/** Render style: perfect (default) or sketch (hand-drawn with roughjs) */
-	readonly renderStyle?: RenderStyle;
-	/** Seed for deterministic roughjs rendering */
-	readonly roughSeed?: number;
 }
 
 /** Shape element - geometric shapes */
@@ -204,11 +188,9 @@ export interface ShapeElement {
 	readonly rotation?: number;
 	/** Optional markdown label centered on the shape (supports math: $x^2$, bold, italic) */
 	readonly labelMarkdown?: string;
-	/** Render style: perfect (default) or sketch (hand-drawn with roughjs) */
-	readonly renderStyle?: RenderStyle;
 	/** Seed for deterministic roughjs rendering */
 	readonly roughSeed?: number;
-	/** Roughness level for sketch mode (0-2, default 1) */
+	/** Roughness level for roughjs (0 = clean, 1 = sketchy, 2 = very sketchy) */
 	readonly roughness?: number;
 }
 

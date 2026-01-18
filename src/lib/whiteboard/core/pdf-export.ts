@@ -9,7 +9,7 @@
 
 import type { WhiteboardDocument, Page } from '../types/document';
 import { smoothStroke, pointsToSvgPath, getToolOptions } from './stroke-smoothing';
-import { renderRoughShapeToSvgString, renderRoughStrokeToSvgString } from './rough-renderer';
+import { renderRoughShapeToSvgString } from './rough-renderer';
 
 // =============================================================================
 // Constants
@@ -504,17 +504,11 @@ function renderElementToSvg(element: Page['elements'][number]): string {
 /**
  * Render stroke element to SVG
  * Uses the same smoothing algorithm as the canvas for consistent rendering
- * Supports sketch-style rendering via roughjs
+ * All strokes use perfect-freehand for natural handwriting look
  */
 function renderStrokeToSvg(element: Extract<Page['elements'][number], { type: 'stroke' }>): string {
 	if (element.points.length === 0) return '';
 
-	// Use roughjs for sketch-style strokes
-	if (element.renderStyle === 'sketch') {
-		return renderRoughStrokeToSvgString(element);
-	}
-
-	// Perfect-style rendering (default)
 	const opacity = element.toolType === 'highlighter' ? element.opacity : 1;
 
 	// For single point, render a small circle
@@ -545,174 +539,10 @@ function renderStrokeToSvg(element: Extract<Page['elements'][number], { type: 's
 
 /**
  * Render shape element to SVG
- * Supports sketch-style rendering via roughjs
+ * All shapes use roughjs for consistent hand-drawn look
  */
 function renderShapeToSvg(element: Extract<Page['elements'][number], { type: 'shape' }>): string {
-	// Use roughjs for sketch-style shapes
-	if (element.renderStyle === 'sketch') {
-		return renderRoughShapeToSvgString(element);
-	}
-
-	// Perfect-style rendering (default)
-	const {
-		shapeType,
-		start,
-		end,
-		color,
-		strokeWidth,
-		opacity,
-		strokeStyle,
-		fillMode,
-		fill,
-		fillOpacity,
-		cornerRadius,
-		rotation
-	} = element;
-
-	// Calculate bounding box
-	const x = Math.min(start.x, end.x);
-	const y = Math.min(start.y, end.y);
-	const width = Math.abs(end.x - start.x);
-	const height = Math.abs(end.y - start.y);
-	const cx = (start.x + end.x) / 2;
-	const cy = (start.y + end.y) / 2;
-
-	// Build fill attribute based on fillMode
-	let fillAttr = 'fill="none"';
-	let defsContent = '';
-	if (fillMode === 'solid' && fill) {
-		fillAttr = `fill="${fill}" fill-opacity="${fillOpacity ?? 1}"`;
-	} else if (fillMode === 'hatched' && fill) {
-		const patternId = `hatch-${element.id}`;
-		defsContent = `
-			<pattern id="${patternId}" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
-				<line x1="0" y1="0" x2="0" y2="8" stroke="${fill}" stroke-width="2" opacity="${fillOpacity ?? 1}"/>
-			</pattern>`;
-		fillAttr = `fill="url(#${patternId})"`;
-	}
-
-	// Build stroke-dasharray for stroke style
-	let dashAttr = '';
-	if (strokeStyle && strokeStyle !== 'solid') {
-		const dashArray =
-			strokeStyle === 'dashed'
-				? `${strokeWidth * 4} ${strokeWidth * 2}`
-				: strokeStyle === 'dotted'
-					? `${strokeWidth} ${strokeWidth * 2}`
-					: `${strokeWidth * 4} ${strokeWidth * 2} ${strokeWidth} ${strokeWidth * 2}`;
-		dashAttr = `stroke-dasharray="${dashArray}"`;
-	}
-
-	// Build opacity attribute
-	const opacityAttr = opacity !== undefined && opacity !== 1 ? `opacity="${opacity}"` : '';
-
-	// Build rotation transform
-	const rotationAttr = rotation ? `transform="rotate(${rotation} ${cx} ${cy})"` : '';
-
-	// Common stroke attributes
-	const strokeAttrs = `stroke="${color}" stroke-width="${strokeWidth}" ${dashAttr} ${opacityAttr}`;
-
-	let shapeContent = '';
-
-	switch (shapeType) {
-		case 'line':
-			shapeContent = `<line x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}" ${strokeAttrs} ${rotationAttr}/>`;
-			break;
-
-		case 'arrow': {
-			const markerId = `arrow-${element.id}`;
-			defsContent += `
-				<marker id="${markerId}" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-					<polygon points="0 0, 10 3.5, 0 7" fill="${color}"/>
-				</marker>`;
-			shapeContent = `<line x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}" ${strokeAttrs} marker-end="url(#${markerId})" ${rotationAttr}/>`;
-			break;
-		}
-
-		case 'rectangle': {
-			const rx = cornerRadius ?? 0;
-			shapeContent = `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${rx}" ${strokeAttrs} ${fillAttr} ${rotationAttr}/>`;
-			break;
-		}
-
-		case 'circle': {
-			const rx = width / 2;
-			const ry = height / 2;
-			shapeContent = `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" ${strokeAttrs} ${fillAttr} ${rotationAttr}/>`;
-			break;
-		}
-
-		case 'pentagon': {
-			const points = generatePolygonPoints(cx, cy, Math.min(width, height) / 2, 5, -90);
-			shapeContent = `<polygon points="${points}" ${strokeAttrs} ${fillAttr} ${rotationAttr}/>`;
-			break;
-		}
-
-		case 'hexagon': {
-			const points = generatePolygonPoints(cx, cy, Math.min(width, height) / 2, 6, -90);
-			shapeContent = `<polygon points="${points}" ${strokeAttrs} ${fillAttr} ${rotationAttr}/>`;
-			break;
-		}
-
-		case 'star': {
-			const points = generateStarPoints(cx, cy, Math.min(width, height) / 2, 5);
-			shapeContent = `<polygon points="${points}" ${strokeAttrs} ${fillAttr} ${rotationAttr}/>`;
-			break;
-		}
-
-		default:
-			return '';
-	}
-
-	// Wrap with defs if needed
-	if (defsContent) {
-		return `<g><defs>${defsContent}</defs>${shapeContent}</g>`;
-	}
-	return shapeContent;
-}
-
-/**
- * Generate polygon points for regular polygons
- */
-function generatePolygonPoints(
-	cx: number,
-	cy: number,
-	radius: number,
-	sides: number,
-	startAngle: number = 0
-): string {
-	const points: string[] = [];
-	const angleStep = (2 * Math.PI) / sides;
-	const startRad = (startAngle * Math.PI) / 180;
-
-	for (let i = 0; i < sides; i++) {
-		const angle = startRad + i * angleStep;
-		const x = cx + radius * Math.cos(angle);
-		const y = cy + radius * Math.sin(angle);
-		points.push(`${x},${y}`);
-	}
-
-	return points.join(' ');
-}
-
-/**
- * Generate star points
- */
-function generateStarPoints(cx: number, cy: number, radius: number, points: number): string {
-	const innerRadius = radius * 0.4;
-	const result: string[] = [];
-	const angleStep = Math.PI / points;
-	const startAngle = -Math.PI / 2;
-
-	for (let i = 0; i < points * 2; i++) {
-		const angle = startAngle + i * angleStep;
-		const r = i % 2 === 0 ? radius : innerRadius;
-		const x = cx + r * Math.cos(angle);
-		const y = cy + r * Math.sin(angle);
-		result.push(`${x},${y}`);
-	}
-
-	return result.join(' ');
+	return renderRoughShapeToSvgString(element);
 }
 
 /**

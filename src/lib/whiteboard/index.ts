@@ -26,7 +26,6 @@ export type {
 	PageFormatKey,
 	InstrumentType,
 	InstrumentState,
-	RenderStyle,
 	FillMode,
 	StrokeStyle,
 	SloppinessPreset
@@ -41,7 +40,6 @@ export {
 	UBW_FILE_VERSION,
 	DEFAULT_INSTRUMENTS,
 	INSTRUMENT_LABELS,
-	RENDER_STYLE_LABELS,
 	FILL_MODE_LABELS,
 	STROKE_STYLE_LABELS,
 	SLOPPINESS_PRESETS,
@@ -101,13 +99,9 @@ export {
 	getStarVertices
 } from './core/shapes';
 
-// Rough renderer (for sketch/hand-drawn style shapes only - strokes use perfect-freehand)
+// Rough renderer (for hand-drawn style shapes - all shapes use roughjs)
 export type { RoughRenderResult } from './core/rough-renderer';
-export {
-	renderRoughShape,
-	renderRoughShapeToSvgString,
-	renderRoughStrokeToSvgString // Kept for PDF export compatibility
-} from './core/rough-renderer';
+export { renderRoughShape, renderRoughShapeToSvgString } from './core/rough-renderer';
 
 // Components
 export { default as Whiteboard } from './components/Whiteboard.svelte';
