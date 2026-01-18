@@ -56,10 +56,20 @@ function mapFillStyle(fillMode: FillMode | undefined): string | undefined {
 }
 
 /**
- * Generate a random seed for roughjs if not provided
+ * Generate a deterministic seed for roughjs based on shape ID if not provided.
+ * This ensures shapes without explicit roughSeed render consistently across re-renders.
  */
-function getOrCreateSeed(seed: number | undefined): number {
-	return seed ?? Math.floor(Math.random() * 2147483647);
+function getOrCreateSeed(seed: number | undefined, shapeId: string): number {
+	if (seed !== undefined) return seed;
+
+	// Generate deterministic seed from shape ID using simple hash
+	let hash = 0;
+	for (let i = 0; i < shapeId.length; i++) {
+		const char = shapeId.charCodeAt(i);
+		hash = (hash << 5) - hash + char;
+		hash = hash & hash; // Convert to 32-bit integer
+	}
+	return Math.abs(hash);
 }
 
 // =============================================================================
@@ -600,7 +610,7 @@ export function renderRoughShape(
 	shape: ShapeElement
 ): RoughRenderResult {
 	const rc = rough.svg(svgElement);
-	const seed = getOrCreateSeed(shape.roughSeed);
+	const seed = getOrCreateSeed(shape.roughSeed, shape.id);
 	const roughness = shape.roughness ?? 1;
 	const options = createRoughOptions(shape, seed, roughness);
 
