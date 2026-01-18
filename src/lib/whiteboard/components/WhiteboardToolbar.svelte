@@ -43,9 +43,7 @@
 		Grid3x3,
 		Maximize2,
 		Minimize2,
-		Palette,
-		Sparkles,
-		PencilLine
+		Palette
 	} from 'lucide-svelte';
 	import {
 		INSTRUMENT_LABELS,
@@ -53,7 +51,6 @@
 		FILL_MODE_LABELS,
 		ELBOW_DIRECTION_LABELS,
 		ARROW_TYPE_LABELS,
-		RENDER_STYLE_LABELS,
 		SLOPPINESS_PRESETS,
 		getSloppinessPreset,
 		PAGE_FORMATS,
@@ -64,7 +61,6 @@
 		type PageFormatKey,
 		type ElbowDirection,
 		type ArrowType,
-		type RenderStyle,
 		type SloppinessPreset
 	} from '../types/document';
 
@@ -173,7 +169,7 @@
 	let currentFillOpacity = $derived(toolState.fillOpacity);
 	let currentRenderStyle = $derived(toolState.renderStyle);
 	let currentRoughness = $derived(toolState.roughness);
-	let currentSloppinessPreset = $derived(getSloppinessPreset(currentRoughness));
+	let currentSloppinessPreset = $derived(getSloppinessPreset(currentRenderStyle, currentRoughness));
 	let instruments = $derived(whiteboardStore.instruments);
 
 	/** Current shape tool icon for the button */
@@ -460,12 +456,9 @@
 		whiteboardStore.toggleInstrument(type);
 	}
 
-	function handleRenderStyleChange(style: RenderStyle) {
-		whiteboardStore.setRenderStyle(style);
-	}
-
 	function handleSloppinessPresetChange(preset: SloppinessPreset) {
-		const { roughness } = SLOPPINESS_PRESETS[preset];
+		const { renderStyle, roughness } = SLOPPINESS_PRESETS[preset];
+		whiteboardStore.setRenderStyle(renderStyle);
 		whiteboardStore.setRoughness(roughness);
 	}
 </script>
@@ -805,53 +798,25 @@
 				</Popover.Content>
 			</Popover.Root>
 
-			<!-- Render Style Toggle (Perfect vs Sketch) - Only for shapes, not strokes -->
+			<!-- Sloppiness presets for shapes (Architect/Artist/Cartoonist) -->
 			{#if showRenderStyleToggle}
 				<div class="mx-2 h-6 w-px bg-border"></div>
 
 				<div class="flex items-center gap-0.5 rounded-md border border-border p-0.5">
-					<Button
-						type="button"
-						variant={currentRenderStyle === 'perfect' ? 'secondary' : 'ghost'}
-						size="sm"
-						onclick={() => handleRenderStyleChange('perfect')}
-						title={RENDER_STYLE_LABELS.perfect}
-						aria-label={RENDER_STYLE_LABELS.perfect}
-						class="h-7 w-7 p-0"
-					>
-						<Sparkles class="h-4 w-4" />
-					</Button>
-					<Button
-						type="button"
-						variant={currentRenderStyle === 'sketch' ? 'secondary' : 'ghost'}
-						size="sm"
-						onclick={() => handleRenderStyleChange('sketch')}
-						title={RENDER_STYLE_LABELS.sketch}
-						aria-label={RENDER_STYLE_LABELS.sketch}
-						class="h-7 w-7 p-0"
-					>
-						<PencilLine class="h-4 w-4" />
-					</Button>
+					{#each Object.entries(SLOPPINESS_PRESETS) as [preset, config] (preset)}
+						<Button
+							type="button"
+							variant={currentSloppinessPreset === preset ? 'secondary' : 'ghost'}
+							size="sm"
+							onclick={() => handleSloppinessPresetChange(preset as SloppinessPreset)}
+							title={config.label}
+							aria-label={config.label}
+							class="h-7 px-2 text-xs"
+						>
+							{config.label.charAt(0)}
+						</Button>
+					{/each}
 				</div>
-
-				<!-- Sloppiness presets (only visible in sketch mode) -->
-				{#if currentRenderStyle === 'sketch'}
-					<div class="flex items-center gap-0.5 rounded-md border border-border p-0.5">
-						{#each Object.entries(SLOPPINESS_PRESETS) as [preset, config] (preset)}
-							<Button
-								type="button"
-								variant={currentSloppinessPreset === preset ? 'secondary' : 'ghost'}
-								size="sm"
-								onclick={() => handleSloppinessPresetChange(preset as SloppinessPreset)}
-								title={config.label}
-								aria-label={config.label}
-								class="h-7 px-2 text-xs"
-							>
-								{config.label.charAt(0)}
-							</Button>
-						{/each}
-					</div>
-				{/if}
 			{/if}
 
 			<!-- Separator before style section -->

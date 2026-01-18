@@ -76,19 +76,22 @@ export const RENDER_STYLE_LABELS: Record<RenderStyle, string> = {
 	sketch: 'Main levée'
 };
 
-/** Sloppiness presets for sketch mode (like Excalidraw) */
+/** Sloppiness presets for shapes (like Excalidraw) */
 export type SloppinessPreset = 'architect' | 'artist' | 'cartoonist';
 
-/** Sloppiness preset configuration with roughness value and label */
-export const SLOPPINESS_PRESETS: Record<SloppinessPreset, { roughness: number; label: string }> = {
-	architect: { roughness: 0, label: 'Architecte' },
-	artist: { roughness: 1, label: 'Artiste' },
-	cartoonist: { roughness: 2, label: 'Caricaturiste' }
+/** Sloppiness preset configuration with render style, roughness value and label */
+export const SLOPPINESS_PRESETS: Record<
+	SloppinessPreset,
+	{ renderStyle: RenderStyle; roughness: number; label: string }
+> = {
+	architect: { renderStyle: 'perfect', roughness: 0, label: 'Architecte' },
+	artist: { renderStyle: 'sketch', roughness: 1, label: 'Artiste' },
+	cartoonist: { renderStyle: 'sketch', roughness: 2, label: 'Caricaturiste' }
 };
 
-/** Get sloppiness preset from roughness value */
-export function getSloppinessPreset(roughness: number): SloppinessPreset {
-	if (roughness <= 0.3) return 'architect';
+/** Get sloppiness preset from render style and roughness value */
+export function getSloppinessPreset(renderStyle: RenderStyle, roughness: number): SloppinessPreset {
+	if (renderStyle === 'perfect') return 'architect';
 	if (roughness <= 1.3) return 'artist';
 	return 'cartoonist';
 }
