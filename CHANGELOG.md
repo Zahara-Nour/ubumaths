@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.6](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.5...v0.7.6) (2026-01-18)
+
+### ✨ Features
+
+- **worksheets:** add sections display in student/teacher views and PDF ([65bfd0d](https://github.com/Zahara-Nour/ubumaths/commit/65bfd0d43bbc40a91bb504c866c89a1dfe7bdf06))
+
 ### [0.7.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.4...v0.7.5) (2026-01-18)
 
 ### 🐛 Bug Fixes
