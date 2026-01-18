@@ -98,16 +98,18 @@ export const FILL_MODE_LABELS: Record<FillMode, string> = {
 
 /**
  * Get SVG stroke-dasharray value for a stroke style
- * Values are relative to stroke width for consistent appearance
+ * Uses Excalidraw's algorithm:
+ * - Dashed: fixed 8px dash, gap scales with strokeWidth (8 + strokeWidth)
+ * - Dotted: fixed 1.5px dot, gap scales with strokeWidth (6 + strokeWidth)
  */
 export function getStrokeDashArray(style: StrokeStyle, strokeWidth: number): string | undefined {
 	switch (style) {
 		case 'solid':
 			return undefined;
 		case 'dashed':
-			return `${strokeWidth * 4} ${strokeWidth * 2}`;
+			return `8 ${8 + strokeWidth}`;
 		case 'dotted':
-			return `${strokeWidth} ${strokeWidth * 2}`;
+			return `1.5 ${6 + strokeWidth}`;
 	}
 }
 
