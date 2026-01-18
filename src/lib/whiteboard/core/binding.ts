@@ -27,6 +27,8 @@ import {
 	normalizePoint,
 	type BoundingBox
 } from './binding-geometry';
+import { routeElbowArrow } from './elbow-routing';
+import { getExitHeading, getEntryHeading } from './heading';
 
 // =============================================================================
 // Constants
@@ -332,8 +334,42 @@ export function createArrowWithBindings(
 		intermediatePoints = options.waypoints.map((wp) => wp.position);
 	}
 
-	// Create the unified points[] array
-	const points = createArrowPoints(adjustedStart, adjustedEnd, intermediatePoints);
+	// Calculate points based on arrow type
+	let points: readonly Point[];
+	let calculatedStartHeading: Heading | null = options.startHeading ?? null;
+	let calculatedEndHeading: Heading | null = options.endHeading ?? null;
+
+	if (effectiveArrowType === 'elbow') {
+		// For elbow arrows, use A* routing to avoid obstacles
+
+		// Calculate headings from bindings (if bound to shapes)
+		if (startCandidate && !calculatedStartHeading) {
+			calculatedStartHeading = getExitHeading(startCandidate.element, adjustedEnd);
+		}
+		if (endCandidate && !calculatedEndHeading) {
+			calculatedEndHeading = getEntryHeading(endCandidate.element, adjustedStart);
+		}
+
+		// Get IDs to exclude from obstacle checking (the arrow itself and bound shapes)
+		const routeExcludeIds = new Set<string>([arrowId]);
+		if (startCandidate) routeExcludeIds.add(startCandidate.element.id);
+		if (endCandidate) routeExcludeIds.add(endCandidate.element.id);
+
+		// Route the elbow arrow using A* pathfinding
+		const routeResult = routeElbowArrow(
+			adjustedStart,
+			adjustedEnd,
+			calculatedStartHeading,
+			calculatedEndHeading,
+			elements,
+			routeExcludeIds
+		);
+
+		points = routeResult.points;
+	} else {
+		// For sharp and curved arrows, use simple point creation
+		points = createArrowPoints(adjustedStart, adjustedEnd, intermediatePoints);
+	}
 
 	// Build legacy waypoints for backwards compatibility (curved arrows only)
 	let waypoints: readonly ArrowWaypoint[] | undefined;
@@ -368,9 +404,9 @@ export function createArrowWithBindings(
 		// Arrowhead styles
 		startArrowhead: options.startArrowhead ?? null,
 		endArrowhead: options.endArrowhead ?? 'arrow',
-		// Heading for elbow routing
-		startHeading: effectiveArrowType === 'elbow' ? (options.startHeading ?? null) : undefined,
-		endHeading: effectiveArrowType === 'elbow' ? (options.endHeading ?? null) : undefined,
+		// Heading for elbow routing (use calculated values)
+		startHeading: effectiveArrowType === 'elbow' ? calculatedStartHeading : undefined,
+		endHeading: effectiveArrowType === 'elbow' ? calculatedEndHeading : undefined,
 		// Bindings
 		startBinding,
 		endBinding,
