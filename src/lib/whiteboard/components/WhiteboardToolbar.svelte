@@ -1079,39 +1079,60 @@
 										</div>
 									</div>
 								{/if}
-								{#if showCornerRadiusSlider}
-									<div>
-										<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Bords</span
-										>
-										<div class="flex gap-1">
-											<button
-												type="button"
-												onclick={() => handleCornerRadiusChange(0)}
-												class="flex h-8 flex-1 items-center justify-center rounded-md border text-xs transition-colors {currentCornerRadius ===
-												0
-													? 'border-primary bg-secondary'
-													: 'border-border hover:bg-accent'}"
-												title="Angles vifs"
-											>
-												Vif
-											</button>
-											<button
-												type="button"
-												onclick={() => handleCornerRadiusChange(16)}
-												class="flex h-8 flex-1 items-center justify-center rounded-md border text-xs transition-colors {currentCornerRadius >
-												0
-													? 'border-primary bg-secondary'
-													: 'border-border hover:bg-accent'}"
-												title="Angles arrondis"
-											>
-												Arrondi
-											</button>
-										</div>
-									</div>
-								{/if}
 							</div>
 						</Popover.Content>
 					</Popover.Root>
+				{/if}
+
+				<!-- Corner radius toggle (for shapes with corners) -->
+				{#if showCornerRadiusSlider}
+					<div class="flex items-center gap-0.5 rounded-md border border-border p-0.5">
+						<button
+							type="button"
+							onclick={() => handleCornerRadiusChange(0)}
+							class="flex h-7 w-7 items-center justify-center rounded-sm transition-colors {currentCornerRadius ===
+							0
+								? 'bg-secondary'
+								: 'hover:bg-accent'}"
+							title="Angles vifs"
+							aria-label="Angles vifs"
+						>
+							<svg class="h-4 w-4" viewBox="0 0 16 16">
+								<rect
+									x="2"
+									y="2"
+									width="12"
+									height="12"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+								/>
+							</svg>
+						</button>
+						<button
+							type="button"
+							onclick={() => handleCornerRadiusChange(16)}
+							class="flex h-7 w-7 items-center justify-center rounded-sm transition-colors {currentCornerRadius >
+							0
+								? 'bg-secondary'
+								: 'hover:bg-accent'}"
+							title="Angles arrondis"
+							aria-label="Angles arrondis"
+						>
+							<svg class="h-4 w-4" viewBox="0 0 16 16">
+								<rect
+									x="2"
+									y="2"
+									width="12"
+									height="12"
+									rx="3"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+								/>
+							</svg>
+						</button>
+					</div>
 				{/if}
 
 				<!-- Arrow Type Controls (conditional) -->
