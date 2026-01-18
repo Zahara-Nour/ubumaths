@@ -7,19 +7,19 @@
  * @module whiteboard/core/hit-testing
  */
 
-import type {
-	Point,
-	WhiteboardElement,
-	StrokeElement,
-	ShapeElement,
-	ImageElement,
-	TextBlockElement,
-	GroupElement,
-	ArrowElement
+import {
+	getArrowPoints,
+	type Point,
+	type WhiteboardElement,
+	type StrokeElement,
+	type ShapeElement,
+	type ImageElement,
+	type TextBlockElement,
+	type GroupElement,
+	type ArrowElement
 } from '../types/document';
 import { calculateShapeBounds } from './shapes';
 import { hitTestCurvedPath } from './curved-path';
-import { calculateElbowPath } from './elbow-path';
 
 // =============================================================================
 // Types
@@ -284,14 +284,9 @@ export function hitTestShape(
 					hitTolerance
 				);
 			} else if (effectiveArrowType === 'elbow') {
-				// Use elbow path hit testing
-				return hitTestElbowPath(
-					shape.start,
-					shape.end,
-					arrowShape.elbowDirection ?? 'horizontal-first',
-					testPoint,
-					hitTolerance
-				);
+				// Use actual points from A* routing for hit testing
+				const points = getArrowPoints(arrowShape);
+				return hitTestPolyline(points, testPoint, hitTolerance);
 			}
 		}
 
@@ -342,22 +337,20 @@ function distanceToLineSegment(point: Point, lineStart: Point, lineEnd: Point): 
 }
 
 /**
- * Test if a point is within tolerance of an elbow path.
+ * Test if a point is within tolerance of a polyline (array of points).
+ * Used for elbow arrows with A* routed paths.
  */
-function hitTestElbowPath(
-	start: Point,
-	end: Point,
-	direction: 'horizontal-first' | 'vertical-first',
-	point: Point,
-	tolerance: number
-): boolean {
-	const elbowResult = calculateElbowPath(start, end, direction);
+function hitTestPolyline(points: readonly Point[], testPoint: Point, tolerance: number): boolean {
+	if (points.length < 2) return false;
 
-	// Test against both segments of the elbow
-	const distance1 = distanceToLineSegment(point, start, elbowResult.elbowPoint);
-	const distance2 = distanceToLineSegment(point, elbowResult.elbowPoint, end);
+	for (let i = 0; i < points.length - 1; i++) {
+		const distance = distanceToLineSegment(testPoint, points[i], points[i + 1]);
+		if (distance <= tolerance) {
+			return true;
+		}
+	}
 
-	return Math.min(distance1, distance2) <= tolerance;
+	return false;
 }
 
 /**

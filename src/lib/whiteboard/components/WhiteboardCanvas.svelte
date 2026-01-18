@@ -1816,17 +1816,10 @@
 							{@const elbowPoints = arrowShape
 								? getArrowPoints(arrowShape)
 								: [adjustedStart, adjustedEnd]}
-							{@const elbowPath =
-								elbowPoints.length > 2
-									? `M ${elbowPoints[0].x} ${elbowPoints[0].y} ${elbowPoints
-											.slice(1)
-											.map((p) => `L ${p.x} ${p.y}`)
-											.join(' ')}`
-									: calculateElbowPath(
-											adjustedStart,
-											adjustedEnd,
-											arrowShape?.elbowDirection ?? 'horizontal-first'
-										).path}
+							{@const elbowPath = `M ${elbowPoints[0].x} ${elbowPoints[0].y} ${elbowPoints
+								.slice(1)
+								.map((p) => `L ${p.x} ${p.y}`)
+								.join(' ')}`}
 							<path
 								d={elbowPath}
 								stroke={shape.color}
