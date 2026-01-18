@@ -168,25 +168,8 @@ export function routeElbowArrow(
 		return getElbowArrowCornerPoints(removeElbowArrowShortSegments(points));
 	};
 
-	// First attempt: try with obstacle avoidance if we have shapes
-	if (hasShapes) {
-		const pathWithObstacles = astar(
-			startNode,
-			endNode,
-			grid,
-			data.startHeading,
-			data.endHeading,
-			data.dynamicAABBs
-		);
-
-		if (pathWithObstacles) {
-			return {
-				points: processPath(pathWithObstacles),
-				success: true
-			};
-		}
-
-		// Reset grid nodes for second attempt (A* modifies node state)
+	// Helper to reset grid nodes between A* attempts
+	const resetGrid = () => {
 		for (const node of grid.data) {
 			if (node) {
 				node.f = 0;
@@ -197,21 +180,64 @@ export function routeElbowArrow(
 				node.parent = null;
 			}
 		}
+	};
+
+	// First attempt: try with full dynamic AABBs (includes padding for nice routing)
+	if (hasShapes) {
+		const pathWithFullAABBs = astar(
+			startNode,
+			endNode,
+			grid,
+			data.startHeading,
+			data.endHeading,
+			data.dynamicAABBs
+		);
+
+		if (pathWithFullAABBs) {
+			return {
+				points: processPath(pathWithFullAABBs),
+				success: true
+			};
+		}
+
+		resetGrid();
+
+		// Second attempt: use minimal shape bounds (just avoid the actual shapes)
+		const minimalBounds: Bounds[] = [];
+		if (startElement) {
+			minimalBounds.push(boundsFromShape(startElement));
+		}
+		if (endElement) {
+			minimalBounds.push(boundsFromShape(endElement));
+		}
+
+		if (minimalBounds.length > 0) {
+			const pathWithMinimalBounds = astar(
+				startNode,
+				endNode,
+				grid,
+				data.startHeading,
+				data.endHeading,
+				minimalBounds
+			);
+
+			if (pathWithMinimalBounds) {
+				return {
+					points: processPath(pathWithMinimalBounds),
+					success: true
+				};
+			}
+
+			resetGrid();
+		}
 	}
 
-	// Second attempt: try without obstacles (shapes too close or first attempt failed)
-	const pathWithoutObstacles = astar(
-		startNode,
-		endNode,
-		grid,
-		data.startHeading,
-		data.endHeading,
-		[]
-	);
+	// Third attempt: no obstacles at all (shapes might be overlapping)
+	const pathNoObstacles = astar(startNode, endNode, grid, data.startHeading, data.endHeading, []);
 
-	if (pathWithoutObstacles) {
+	if (pathNoObstacles) {
 		return {
-			points: processPath(pathWithoutObstacles),
+			points: processPath(pathNoObstacles),
 			success: true
 		};
 	}
