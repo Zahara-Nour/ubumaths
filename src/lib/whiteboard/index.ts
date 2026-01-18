@@ -28,7 +28,8 @@ export type {
 	InstrumentState,
 	RenderStyle,
 	FillMode,
-	StrokeStyle
+	StrokeStyle,
+	SloppinessPreset
 } from './types/document';
 
 export {
@@ -42,7 +43,9 @@ export {
 	INSTRUMENT_LABELS,
 	RENDER_STYLE_LABELS,
 	FILL_MODE_LABELS,
-	STROKE_STYLE_LABELS
+	STROKE_STYLE_LABELS,
+	SLOPPINESS_PRESETS,
+	getSloppinessPreset
 } from './types/document';
 
 // File format validation
