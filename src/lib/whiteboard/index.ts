@@ -101,7 +101,12 @@ export {
 
 // Rough renderer (for hand-drawn style shapes - all shapes use roughjs)
 export type { RoughRenderResult } from './core/rough-renderer';
-export { renderRoughShape, renderRoughShapeToSvgString } from './core/rough-renderer';
+export {
+	renderRoughShape,
+	renderRoughShapeToSvgString,
+	buildElbowPathWithRoundedCorners,
+	ELBOW_ARROW_CORNER_RADIUS
+} from './core/rough-renderer';
 
 // Components
 export { default as Whiteboard } from './components/Whiteboard.svelte';

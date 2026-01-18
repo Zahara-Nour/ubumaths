@@ -20,7 +20,11 @@
 		createBindingAnchor,
 		calculateBoundEndpoint
 	} from '../core/binding';
-	import { renderRoughShape } from '../core/rough-renderer';
+	import {
+		renderRoughShape,
+		buildElbowPathWithRoundedCorners,
+		ELBOW_ARROW_CORNER_RADIUS
+	} from '../core/rough-renderer';
 	import {
 		hitTestElements,
 		getElementsInRect,
@@ -1919,10 +1923,10 @@
 							bindingStartShape,
 							bindingEndShape
 						)}
-						{@const previewElbowPath = `M ${previewElbowResult.points[0].x} ${previewElbowResult.points[0].y} ${previewElbowResult.points
-							.slice(1)
-							.map((p) => `L ${p.x} ${p.y}`)
-							.join(' ')}`}
+						{@const previewElbowPath = buildElbowPathWithRoundedCorners(
+							previewElbowResult.points,
+							toolState.cornerRadius ?? ELBOW_ARROW_CORNER_RADIUS
+						)}
 						<path
 							d={previewElbowPath}
 							stroke={toolState.color}
