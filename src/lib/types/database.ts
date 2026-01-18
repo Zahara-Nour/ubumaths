@@ -14521,3 +14521,43 @@ export const Constants = {
 		}
 	}
 } as const;
+
+// ============= Custom Type Aliases =============
+
+/** Friendship status type */
+export type FriendshipStatus = 'pending' | 'accepted' | 'rejected' | 'blocked';
+
+/** Friendship relation type */
+export type FriendshipRelationType = 'friend' | 'classmate' | 'best_friend';
+
+/** Profile info for friendship display */
+export type FriendProfile = {
+	id: string;
+	full_name: string | null;
+	firstname: string | null;
+	lastname: string | null;
+	avatar_url: string | null;
+	role: Database['public']['Enums']['user_role'];
+	presence?: {
+		is_online: boolean;
+		last_seen: string;
+	};
+};
+
+/** Friendship with profile info - contains the friend's profile (not requester/addressee separately) */
+export type FriendshipWithProfile = {
+	id: string;
+	status: FriendshipStatus;
+	friendship_type: FriendshipRelationType;
+	created_at: string;
+	updated_at: string;
+	requester_id: string;
+	addressee_id: string;
+	friend_profile: FriendProfile | null;
+};
+
+/** Class type alias */
+export type Class = Database['public']['Tables']['classes']['Row'];
+
+/** ClassSchedule type alias */
+export type ClassSchedule = Database['public']['Tables']['class_schedules']['Row'];

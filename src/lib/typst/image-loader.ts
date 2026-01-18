@@ -183,7 +183,10 @@ function needsConversion(url: string): boolean {
  * @param mimeType - MIME type of the original image
  * @returns PNG data as Uint8Array
  */
-async function convertToPng(imageData: Uint8Array, mimeType: string): Promise<Uint8Array> {
+async function convertToPng(
+	imageData: Uint8Array<ArrayBuffer>,
+	mimeType: string
+): Promise<Uint8Array<ArrayBuffer>> {
 	// Create a blob from the image data
 	const blob = new Blob([imageData], { type: mimeType });
 	const imageUrl = URL.createObjectURL(blob);
@@ -262,7 +265,7 @@ export async function fetchImageAsBytes(url: string, timeout = 10000): Promise<U
 		}
 
 		const arrayBuffer = await response.arrayBuffer();
-		let imageData = new Uint8Array(arrayBuffer);
+		let imageData: Uint8Array<ArrayBuffer> = new Uint8Array(arrayBuffer);
 
 		// Convert unsupported formats to PNG
 		if (needsConversion(url)) {

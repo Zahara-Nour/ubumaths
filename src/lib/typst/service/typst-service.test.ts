@@ -47,7 +47,10 @@ describe('TypstService', () => {
 			setCompilerInitOptions: vi.fn(),
 			setRendererInitOptions: vi.fn(),
 			svg: vi.fn().mockResolvedValue('<svg>test</svg>'),
-			pdf: vi.fn().mockResolvedValue(new Uint8Array([1, 2, 3, 4]))
+			pdf: vi.fn().mockResolvedValue(new Uint8Array([1, 2, 3, 4])),
+			mapShadow: vi.fn(),
+			addSource: vi.fn(),
+			resetShadow: vi.fn()
 		};
 
 		// Setup compiler mock to return our mock compiler

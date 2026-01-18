@@ -1262,7 +1262,7 @@ describe('createArrowWithBindings', () => {
 
 			// Pentagon edge may not be exactly at x=200
 			expect(
-				result.arrow.startBinding === null || result.arrow.startBinding.elementId === pentagon.id
+				!result.arrow.startBinding || result.arrow.startBinding.elementId === pentagon.id
 			).toBe(true);
 		});
 
@@ -1276,9 +1276,9 @@ describe('createArrowWithBindings', () => {
 			const result = createArrowWithBindings(start, end, elements, options);
 
 			// May or may not bind depending on exact star geometry
-			expect(
-				result.arrow.startBinding === null || result.arrow.startBinding.elementId === star.id
-			).toBe(true);
+			expect(!result.arrow.startBinding || result.arrow.startBinding.elementId === star.id).toBe(
+				true
+			);
 		});
 	});
 });
