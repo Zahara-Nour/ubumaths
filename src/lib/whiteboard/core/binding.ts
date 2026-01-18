@@ -29,7 +29,7 @@ import {
 	type BoundingBox
 } from './binding-geometry';
 import { routeElbowArrow } from './elbow-routing';
-import { headingFromPoints, headingFromNormalizedPoint, flipHeading } from './heading';
+import { headingFromPoints, getHeadingForBindingPoint, flipHeading } from './heading';
 
 // =============================================================================
 // Constants
@@ -347,14 +347,16 @@ export function createArrowWithBindings(
 	if (effectiveArrowType === 'elbow') {
 		// For elbow arrows, use A* routing
 
-		// Calculate headings from binding positions (fixedPoint approach)
-		// The heading is determined by which side of the shape the binding is on
-		if (startBinding && !calculatedStartHeading) {
-			calculatedStartHeading = headingFromNormalizedPoint(startBinding.perimeterPoint);
+		// Calculate headings using search cones (like Excalidraw)
+		// The heading is determined by which side of the shape the actual point is on
+		if (startCandidate && !calculatedStartHeading) {
+			calculatedStartHeading = getHeadingForBindingPoint(startCandidate.element, adjustedStart);
 		}
-		if (endBinding && !calculatedEndHeading) {
+		if (endCandidate && !calculatedEndHeading) {
 			// For end binding, flip the heading (arrow enters from opposite direction)
-			calculatedEndHeading = flipHeading(headingFromNormalizedPoint(endBinding.perimeterPoint));
+			calculatedEndHeading = flipHeading(
+				getHeadingForBindingPoint(endCandidate.element, adjustedEnd)
+			);
 		}
 
 		// Default headings if not bound to shapes
