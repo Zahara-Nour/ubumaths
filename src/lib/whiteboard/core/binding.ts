@@ -25,6 +25,7 @@ import {
 	getShapeCenter,
 	getClosestPerimeterPoint,
 	normalizePoint,
+	denormalizePoint,
 	type BoundingBox
 } from './binding-geometry';
 import { routeElbowArrow } from './elbow-routing';
@@ -186,27 +187,31 @@ export function createBindingAnchor(
  * Calculates the absolute position of a bound arrow endpoint.
  * Called when updating arrow positions after shape transformations.
  *
+ * Uses the stored fixedPoint (normalizedPosition) to maintain the binding
+ * at a fixed relative position on the shape, like Excalidraw does.
+ *
  * @param binding - The binding anchor data
  * @param targetShape - Current state of the target shape
- * @param otherEndpoint - Position of the arrow's other endpoint (for direction)
+ * @param _otherEndpoint - Unused, kept for API compatibility
  * @returns Absolute point position for the arrow endpoint
  */
 export function calculateBoundEndpoint(
 	binding: BindingAnchor,
 	targetShape: ShapeElement,
-	otherEndpoint: Point
+	_otherEndpoint: Point
 ): Point {
+	const bounds = getShapeBounds(targetShape);
 	const center = getShapeCenter(targetShape);
 
-	// Get perimeter point in the direction of the other endpoint
-	// This ensures the connection point updates correctly when shape moves
-	const perimeterPoint = getClosestPerimeterPoint(targetShape, otherEndpoint, 0);
+	// Use the stored perimeter point (normalized) to get actual position
+	// This keeps the binding at a fixed relative position on the shape
+	const perimeterPoint = denormalizePoint(binding.perimeterPoint, bounds);
 
 	// Apply gap offset in the direction away from center
-	const direction = normalizeVector({
-		x: otherEndpoint.x - center.x,
-		y: otherEndpoint.y - center.y
-	});
+	const dx = perimeterPoint.x - center.x;
+	const dy = perimeterPoint.y - center.y;
+	const length = Math.sqrt(dx * dx + dy * dy);
+	const direction = length > 0 ? { x: dx / length, y: dy / length } : { x: 1, y: 0 };
 
 	return {
 		x: perimeterPoint.x + direction.x * binding.gap,
@@ -459,18 +464,4 @@ function getDistance(p1: Point, p2: Point): number {
 	const dx = p2.x - p1.x;
 	const dy = p2.y - p1.y;
 	return Math.sqrt(dx * dx + dy * dy);
-}
-
-/**
- * Normalizes a vector to unit length.
- */
-function normalizeVector(v: { x: number; y: number }): { x: number; y: number } {
-	const length = Math.sqrt(v.x * v.x + v.y * v.y);
-	if (length === 0) {
-		return { x: 1, y: 0 }; // Default direction
-	}
-	return {
-		x: v.x / length,
-		y: v.y / length
-	};
 }
