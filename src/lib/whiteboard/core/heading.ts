@@ -219,39 +219,16 @@ function triangleIncludesPoint(triangle: [Point, Point, Point], point: Point): b
 }
 
 /**
- * Determine heading from a normalized point (0-1) based on which edge it's closest to.
- * This is used for bindings to determine the exit/entry direction based on where
- * the binding point is on the shape's perimeter.
+ * Get the heading for a binding point on a shape.
+ * Uses the search cone algorithm to determine which side the point is on.
  *
- * @param normalizedPoint - Point with coordinates in range [0,1]
+ * @param shape - The shape element
+ * @param globalPoint - The actual world coordinates of the binding point
  * @returns The heading direction (LEFT, RIGHT, UP, or DOWN)
  */
-export function headingFromNormalizedPoint(normalizedPoint: Point): Heading {
-	const { x, y } = normalizedPoint;
-
-	// Calculate distances to each edge
-	const distToLeft = x;
-	const distToRight = 1 - x;
-	const distToTop = y;
-	const distToBottom = 1 - y;
-
-	// Find minimum distance
-	const minDist = Math.min(distToLeft, distToRight, distToTop, distToBottom);
-
-	// Return heading based on closest edge
-	if (minDist === distToLeft) return HEADING_LEFT;
-	if (minDist === distToRight) return HEADING_RIGHT;
-	if (minDist === distToTop) return HEADING_UP;
-	return HEADING_DOWN;
-}
-
-/**
- * Get the heading for exiting a shape toward a target point.
- * Uses the search cone algorithm to determine which side to exit from.
- */
-export function getExitHeading(shape: ShapeElement, targetPoint: Point): Heading {
+export function getHeadingForBindingPoint(shape: ShapeElement, globalPoint: Point): Heading {
 	const bounds = boundsFromShape(shape);
-	return headingForPointFromElement(bounds, targetPoint);
+	return headingForPointFromElement(bounds, globalPoint);
 }
 
 /**
