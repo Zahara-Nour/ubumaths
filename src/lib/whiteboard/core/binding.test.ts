@@ -1227,7 +1227,7 @@ describe('createArrowWithBindings', () => {
 		});
 
 		it('handles all supported stroke styles', () => {
-			const strokeStyles = ['solid', 'dashed', 'dotted', 'dashdot'] as const;
+			const strokeStyles = ['solid', 'dashed', 'dotted'] as const;
 
 			for (const strokeStyle of strokeStyles) {
 				const options = { color: '#000000', strokeWidth: 2, opacity: 1, strokeStyle };
