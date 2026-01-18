@@ -65,16 +65,36 @@ function getOrCreateSeed(seed: number | undefined): number {
 // =============================================================================
 
 /**
+ * Get stroke dash array for roughjs based on stroke style
+ * Returns array of [dash, gap] values relative to stroke width
+ */
+function getStrokeLineDash(
+	strokeStyle: string | undefined,
+	strokeWidth: number
+): number[] | undefined {
+	switch (strokeStyle) {
+		case 'dashed':
+			return [strokeWidth * 4, strokeWidth * 2];
+		case 'dotted':
+			return [strokeWidth, strokeWidth * 2];
+		default:
+			return undefined;
+	}
+}
+
+/**
  * Create roughjs options from a shape element
  */
 function createRoughOptions(shape: ShapeElement, seed: number, roughness: number): RoughOptions {
 	const hasFill = shape.fillMode && shape.fillMode !== 'none' && shape.fill;
+	const strokeLineDash = getStrokeLineDash(shape.strokeStyle, shape.strokeWidth);
 
 	return {
 		seed,
 		roughness,
 		stroke: shape.color,
 		strokeWidth: shape.strokeWidth,
+		strokeLineDash,
 		fill: hasFill ? shape.fill : undefined,
 		fillStyle: hasFill ? mapFillStyle(shape.fillMode) : undefined,
 		fillWeight: shape.strokeWidth * 0.5,
