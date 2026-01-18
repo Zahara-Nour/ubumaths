@@ -15,8 +15,11 @@ import type {
 	WhiteboardElement,
 	ElbowDirection,
 	ArrowType,
-	ArrowWaypoint
+	ArrowWaypoint,
+	Arrowhead,
+	Heading
 } from '../types/document';
+import { createArrowPoints } from '../types/document';
 import {
 	getShapeBounds,
 	getShapeCenter,
@@ -241,14 +244,30 @@ export interface ArrowOptions {
 	strokeStyle?: 'solid' | 'dashed' | 'dotted';
 	/** Type of arrow: sharp (straight), curved (bezier), or elbow (90° angles) */
 	arrowType?: ArrowType;
-	/** Initial waypoints for curved arrows */
+	/** Arrowhead style at the start of the arrow (null = none) */
+	startArrowhead?: Arrowhead | null;
+	/** Arrowhead style at the end of the arrow (default: 'arrow') */
+	endArrowhead?: Arrowhead | null;
+	/** Direction the arrow exits from the start point/shape (for elbow routing) */
+	startHeading?: Heading | null;
+	/** Direction the arrow enters the end point/shape (for elbow routing) */
+	endHeading?: Heading | null;
+	/** Initial intermediate points for arrows (excluding start and end) */
+	intermediatePoints?: readonly Point[];
+	/**
+	 * @deprecated Use intermediatePoints instead
+	 * Initial waypoints for curved arrows
+	 */
 	waypoints?: readonly ArrowWaypoint[];
 	/**
 	 * @deprecated Use arrowType: 'elbow' instead
 	 * If true, arrow bends at 90 degree angles (elbow arrow)
 	 */
 	elbowed?: boolean;
-	/** Direction of first segment for elbow arrows */
+	/**
+	 * @deprecated Use startHeading/endHeading instead
+	 * Direction of first segment for elbow arrows
+	 */
 	elbowDirection?: ElbowDirection;
 }
 
@@ -306,6 +325,32 @@ export function createArrowWithBindings(
 	// Determine effective arrow type (handle legacy elbowed flag)
 	const effectiveArrowType: ArrowType = options.arrowType ?? (options.elbowed ? 'elbow' : 'sharp');
 
+	// Get intermediate points (prefer new model, fallback to legacy waypoints)
+	let intermediatePoints: readonly Point[] = options.intermediatePoints ?? [];
+	if (intermediatePoints.length === 0 && options.waypoints && options.waypoints.length > 0) {
+		// Convert legacy waypoints to points
+		intermediatePoints = options.waypoints.map((wp) => wp.position);
+	}
+
+	// Create the unified points[] array
+	const points = createArrowPoints(adjustedStart, adjustedEnd, intermediatePoints);
+
+	// Build legacy waypoints for backwards compatibility (curved arrows only)
+	let waypoints: readonly ArrowWaypoint[] | undefined;
+	if (effectiveArrowType === 'curved') {
+		if (options.waypoints && options.waypoints.length > 0) {
+			waypoints = options.waypoints;
+		} else if (intermediatePoints.length > 0) {
+			// Convert intermediate points to waypoints format
+			waypoints = intermediatePoints.map((p) => ({
+				id: crypto.randomUUID(),
+				position: p
+			}));
+		} else {
+			waypoints = [];
+		}
+	}
+
 	const arrow: ArrowElement = {
 		id: arrowId,
 		type: 'shape',
@@ -316,11 +361,21 @@ export function createArrowWithBindings(
 		strokeWidth: options.strokeWidth,
 		opacity: options.opacity,
 		strokeStyle: options.strokeStyle,
+		// Unified points[] model
+		points,
+		// Arrow type
+		arrowType: effectiveArrowType,
+		// Arrowhead styles
+		startArrowhead: options.startArrowhead ?? null,
+		endArrowhead: options.endArrowhead ?? 'arrow',
+		// Heading for elbow routing
+		startHeading: effectiveArrowType === 'elbow' ? (options.startHeading ?? null) : undefined,
+		endHeading: effectiveArrowType === 'elbow' ? (options.endHeading ?? null) : undefined,
+		// Bindings
 		startBinding,
 		endBinding,
-		arrowType: effectiveArrowType,
-		waypoints: effectiveArrowType === 'curved' ? (options.waypoints ?? []) : undefined,
-		// Keep elbowed for backwards compatibility during migration
+		// Legacy fields for backwards compatibility
+		waypoints,
 		elbowed: effectiveArrowType === 'elbow' ? true : undefined,
 		elbowDirection: effectiveArrowType === 'elbow' ? options.elbowDirection : undefined
 	};

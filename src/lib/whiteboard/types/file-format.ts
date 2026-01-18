@@ -44,6 +44,12 @@ export const arrowWaypointSchema = z.object({
 	position: pointSchema
 });
 
+/** Schema for arrowhead types (Excalidraw-style) */
+export const arrowheadSchema = z.enum(['arrow', 'triangle', 'circle', 'bar', 'diamond', 'none']);
+
+/** Schema for heading directions (for elbow arrow routing) */
+export const headingSchema = z.enum(['up', 'down', 'left', 'right']);
+
 // =============================================================================
 // Element Schemas
 // =============================================================================
@@ -82,11 +88,20 @@ const shapeElementSchema = z.object({
 	labelMarkdown: z.string().max(1000).optional(),
 	// Arrow type fields (only used for arrow shapes)
 	arrowType: z.enum(['sharp', 'curved', 'elbow']).optional(),
-	waypoints: z.array(arrowWaypointSchema).max(50).optional(),
+	// Unified points[] model (Excalidraw-style)
+	points: z.array(pointSchema).min(2).max(100).optional(),
+	// Arrowhead styles (Excalidraw-style)
+	startArrowhead: arrowheadSchema.nullable().optional(),
+	endArrowhead: arrowheadSchema.nullable().optional(),
+	// Heading directions for elbow routing (Excalidraw-style)
+	startHeading: headingSchema.nullable().optional(),
+	endHeading: headingSchema.nullable().optional(),
 	// Binding fields (only used for arrow shapes)
 	startBinding: bindingAnchorSchema.nullable().optional(),
 	endBinding: bindingAnchorSchema.nullable().optional(),
-	// Elbow arrow fields (only used for arrow shapes) - deprecated, use arrowType instead
+	// Legacy: waypoints (deprecated, use points[] instead)
+	waypoints: z.array(arrowWaypointSchema).max(50).optional(),
+	// Legacy: elbow arrow fields - deprecated, use arrowType instead
 	elbowed: z.boolean().optional(),
 	elbowDirection: z.enum(['horizontal-first', 'vertical-first']).optional(),
 	// Render style fields (for roughjs hand-drawn rendering)

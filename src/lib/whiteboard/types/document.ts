@@ -123,6 +123,47 @@ export function getStrokeDashArray(style: StrokeStyle, strokeWidth: number): str
 	}
 }
 
+// =============================================================================
+// Corner Radius (Excalidraw-style adaptive algorithm)
+// =============================================================================
+
+/** Default adaptive radius used for large shapes (matches Excalidraw) */
+export const DEFAULT_ADAPTIVE_RADIUS = 32;
+
+/** Proportional radius factor for small shapes (matches Excalidraw) */
+export const DEFAULT_PROPORTIONAL_RADIUS = 0.25;
+
+/** Cutoff size below which proportional radius is used */
+const CUTOFF_SIZE = DEFAULT_ADAPTIVE_RADIUS / DEFAULT_PROPORTIONAL_RADIUS; // 128px
+
+/**
+ * Calculate adaptive corner radius like Excalidraw.
+ * For small shapes: uses proportional radius (25% of min dimension)
+ * For large shapes: uses fixed radius (32px)
+ *
+ * @param width - Width of the shape
+ * @param height - Height of the shape
+ * @param hasRoundedCorners - Whether rounded corners are enabled (cornerRadius > 0)
+ * @returns The actual corner radius to use for rendering
+ */
+export function getAdaptiveCornerRadius(
+	width: number,
+	height: number,
+	hasRoundedCorners: boolean
+): number {
+	if (!hasRoundedCorners) return 0;
+
+	const minDimension = Math.min(Math.abs(width), Math.abs(height));
+
+	// For small shapes, use proportional radius (25% of min dimension)
+	if (minDimension <= CUTOFF_SIZE) {
+		return minDimension * DEFAULT_PROPORTIONAL_RADIUS;
+	}
+
+	// For large shapes, use fixed radius
+	return DEFAULT_ADAPTIVE_RADIUS;
+}
+
 /** Stroke element - freehand drawing */
 export interface StrokeElement {
 	readonly id: string;
@@ -185,7 +226,50 @@ export const ARROW_TYPE_LABELS: Record<ArrowType, string> = {
 	elbow: 'Flèche coudée'
 };
 
-/** Direction of the first segment for elbow arrows */
+/**
+ * Arrowhead style types (like Excalidraw)
+ * Used for both start and end of arrows
+ */
+export type Arrowhead =
+	| 'arrow' // Default triangle (current)
+	| 'triangle' // Filled triangle
+	| 'circle' // Filled circle (for probability trees)
+	| 'bar' // Perpendicular line
+	| 'diamond' // Diamond shape (flowcharts)
+	| 'none'; // No arrowhead
+
+/** Arrowhead labels for UI */
+export const ARROWHEAD_LABELS: Record<Arrowhead, string> = {
+	arrow: 'Flèche',
+	triangle: 'Triangle plein',
+	circle: 'Cercle',
+	bar: 'Barre',
+	diamond: 'Losange',
+	none: 'Aucun'
+};
+
+/** Default arrowheads for new arrows */
+export const DEFAULT_START_ARROWHEAD: Arrowhead | null = null;
+export const DEFAULT_END_ARROWHEAD: Arrowhead = 'arrow';
+
+/**
+ * Heading direction for elbow arrow routing (like Excalidraw)
+ * Determines the direction an arrow enters or exits a shape
+ */
+export type Heading = 'up' | 'down' | 'left' | 'right';
+
+/** Heading labels for UI */
+export const HEADING_LABELS: Record<Heading, string> = {
+	up: 'Haut',
+	down: 'Bas',
+	left: 'Gauche',
+	right: 'Droite'
+};
+
+/**
+ * @deprecated Use arrowType: 'elbow' with heading system instead
+ * Direction of the first segment for elbow arrows
+ */
 export type ElbowDirection = 'horizontal-first' | 'vertical-first';
 
 /** Elbow direction labels for UI */
@@ -196,6 +280,7 @@ export const ELBOW_DIRECTION_LABELS: Record<ElbowDirection, string> = {
 
 /**
  * Waypoint for curved arrows.
+ * @deprecated Use points[] array instead. Waypoints are migrated to points.
  * Waypoints define the control points that the curve passes through.
  */
 export interface ArrowWaypoint {
@@ -238,24 +323,165 @@ export interface BindingAnchor {
  * - 'sharp' (default): Straight line from start to end
  * - 'curved': Smooth Bezier curve through waypoints
  * - 'elbow': 90-degree bends (L-shaped path)
+ *
+ * Data model:
+ * - `points[]` is the unified model for all arrow types
+ * - `start` and `end` are computed as `points[0]` and `points[n-1]`
+ * - For sharp arrows: points = [start, end]
+ * - For curved arrows: points = [start, ...waypoints, end]
+ * - For elbow arrows: points = [start, ...routedPoints, end]
  */
 export interface ArrowElement extends ShapeElement {
 	readonly shapeType: 'arrow';
 	/** Arrow rendering type: sharp (default), curved, or elbow */
 	readonly arrowType?: ArrowType;
-	/** Waypoints for curved arrows (defines the path the curve passes through) */
-	readonly waypoints?: readonly ArrowWaypoint[];
+
+	// =========================================================================
+	// Unified points[] model (Excalidraw-style)
+	// =========================================================================
+
+	/**
+	 * Array of points defining the arrow path.
+	 * - Sharp: [start, end]
+	 * - Curved: [start, ...intermediatePoints, end]
+	 * - Elbow: [start, ...routedBendPoints, end]
+	 *
+	 * When present, this is the source of truth for the arrow geometry.
+	 * `start` and `end` should match `points[0]` and `points[n-1]`.
+	 */
+	readonly points?: readonly Point[];
+
+	// =========================================================================
+	// Arrowhead styles (Excalidraw-style)
+	// =========================================================================
+
+	/** Arrowhead style at the start of the arrow (null = none) */
+	readonly startArrowhead?: Arrowhead | null;
+	/** Arrowhead style at the end of the arrow (default: 'arrow') */
+	readonly endArrowhead?: Arrowhead | null;
+
+	// =========================================================================
+	// Heading system for elbow routing (Excalidraw-style)
+	// =========================================================================
+
+	/** Direction the arrow exits from the start point/shape */
+	readonly startHeading?: Heading | null;
+	/** Direction the arrow enters the end point/shape */
+	readonly endHeading?: Heading | null;
+
+	// =========================================================================
+	// Bindings
+	// =========================================================================
+
 	/** Binding for the start point of the arrow (optional) */
 	readonly startBinding?: BindingAnchor | null;
 	/** Binding for the end point of the arrow (optional) */
 	readonly endBinding?: BindingAnchor | null;
+
+	// =========================================================================
+	// Legacy fields (deprecated, kept for migration)
+	// =========================================================================
+
+	/**
+	 * @deprecated Use points[] array instead
+	 * Waypoints for curved arrows (defines the path the curve passes through)
+	 */
+	readonly waypoints?: readonly ArrowWaypoint[];
 	/**
 	 * @deprecated Use arrowType: 'elbow' instead
 	 * If true, arrow bends at 90 degree angles (elbow arrow)
 	 */
 	readonly elbowed?: boolean;
-	/** Direction of first segment for elbow arrows (default: horizontal-first) */
+	/**
+	 * @deprecated Use startHeading/endHeading instead
+	 * Direction of first segment for elbow arrows
+	 */
 	readonly elbowDirection?: ElbowDirection;
+}
+
+// =============================================================================
+// Arrow Helper Functions
+// =============================================================================
+
+/**
+ * Get the points array for an arrow element.
+ * Handles both new points[] model and legacy start/end + waypoints.
+ *
+ * @param arrow - The arrow element
+ * @returns Array of points defining the arrow path
+ */
+export function getArrowPoints(arrow: ArrowElement): readonly Point[] {
+	// If points[] exists, use it directly
+	if (arrow.points && arrow.points.length >= 2) {
+		return arrow.points;
+	}
+
+	// Legacy: construct from start, waypoints, end
+	const waypoints = arrow.waypoints ?? [];
+	return [arrow.start, ...waypoints.map((wp) => wp.position), arrow.end];
+}
+
+/**
+ * Get the start point of an arrow.
+ * Works with both points[] model and legacy start property.
+ */
+export function getArrowStart(arrow: ArrowElement): Point {
+	if (arrow.points && arrow.points.length >= 1) {
+		return arrow.points[0];
+	}
+	return arrow.start;
+}
+
+/**
+ * Get the end point of an arrow.
+ * Works with both points[] model and legacy end property.
+ */
+export function getArrowEnd(arrow: ArrowElement): Point {
+	if (arrow.points && arrow.points.length >= 2) {
+		return arrow.points[arrow.points.length - 1];
+	}
+	return arrow.end;
+}
+
+/**
+ * Get intermediate points (excluding start and end) for an arrow.
+ * Useful for curved arrows and elbow routing.
+ */
+export function getArrowIntermediatePoints(arrow: ArrowElement): readonly Point[] {
+	const points = getArrowPoints(arrow);
+	if (points.length <= 2) return [];
+	return points.slice(1, -1);
+}
+
+/**
+ * Create an arrow with the unified points[] model.
+ * This is the preferred way to create new arrows.
+ */
+export function createArrowPoints(
+	start: Point,
+	end: Point,
+	intermediatePoints?: readonly Point[]
+): readonly Point[] {
+	if (intermediatePoints && intermediatePoints.length > 0) {
+		return [start, ...intermediatePoints, end];
+	}
+	return [start, end];
+}
+
+/**
+ * Get the effective arrowhead at the start.
+ * Returns null if not set (meaning no arrowhead at start).
+ */
+export function getStartArrowhead(arrow: ArrowElement): Arrowhead | null {
+	return arrow.startArrowhead ?? null;
+}
+
+/**
+ * Get the effective arrowhead at the end.
+ * Returns 'arrow' by default (standard triangle arrowhead).
+ */
+export function getEndArrowhead(arrow: ArrowElement): Arrowhead {
+	return arrow.endArrowhead ?? 'arrow';
 }
 
 /** Text block element - rich text with markdown */

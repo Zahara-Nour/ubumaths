@@ -11,7 +11,16 @@
 import rough from 'roughjs';
 import type { RoughSVG } from 'roughjs/bin/svg';
 import type { Options as RoughOptions } from 'roughjs/bin/core';
-import type { ShapeElement, StrokeElement, Point, FillMode, ArrowElement } from '../types/document';
+import type {
+	ShapeElement,
+	StrokeElement,
+	Point,
+	FillMode,
+	ArrowElement,
+	Arrowhead
+} from '../types/document';
+import { getArrowPoints, getStartArrowhead, getEndArrowhead } from '../types/document';
+import { getAdaptiveCornerRadius } from '../types/document';
 import { getPolygonVertices, getStarVertices } from './shapes';
 import { getAngleOnCurvedPath } from './curved-path';
 
@@ -117,13 +126,14 @@ function renderRoughRectangle(
 	const w = Math.abs(shape.end.x - shape.start.x);
 	const h = Math.abs(shape.end.y - shape.start.y);
 
-	// Check for corner radius
-	const r = shape.cornerRadius ?? 0;
+	// Use adaptive corner radius like Excalidraw
+	const hasRoundedCorners = (shape.cornerRadius ?? 0) > 0;
+	const adaptiveRadius = getAdaptiveCornerRadius(w, h, hasRoundedCorners);
 
-	if (r > 0) {
+	if (adaptiveRadius > 0) {
 		// Clamp radius to half the smallest dimension
 		const maxRadius = Math.min(w, h) / 2;
-		const radius = Math.min(r, maxRadius);
+		const radius = Math.min(adaptiveRadius, maxRadius);
 
 		// Build SVG path with rounded corners using quadratic Bezier curves (like Excalidraw)
 		// Path goes: top-left corner -> top edge -> top-right corner -> right edge -> etc.
@@ -167,7 +177,7 @@ function renderRoughLine(rc: RoughSVG, shape: ShapeElement, options: RoughOption
 
 /**
  * Render an arrow shape using roughjs
- * Creates a line with a hand-drawn arrowhead
+ * Creates a line with hand-drawn arrowheads (supports multiple types)
  * Supports straight, elbow, and curved arrows
  */
 function renderRoughArrow(
@@ -180,17 +190,16 @@ function renderRoughArrow(
 	const arrowShape = shape as ArrowElement;
 	const effectiveArrowType = arrowShape.arrowType ?? (arrowShape.elbowed ? 'elbow' : 'sharp');
 
-	if (effectiveArrowType === 'curved') {
-		// Curved arrow: pass waypoints directly to rc.curve() like Excalidraw does
-		// Key: use preserveVertices to ensure curve passes through exact points
-		const waypoints = arrowShape.waypoints ?? [];
+	// Get arrowhead types (with defaults)
+	const startArrowhead = getStartArrowhead(arrowShape);
+	const endArrowhead = getEndArrowhead(arrowShape);
 
-		// Build points array: start + waypoints + end
-		const curvePoints: [number, number][] = [
-			[shape.start.x, shape.start.y],
-			...waypoints.map((wp) => [wp.position.x, wp.position.y] as [number, number]),
-			[shape.end.x, shape.end.y]
-		];
+	// Get points using the unified model
+	const points = getArrowPoints(arrowShape);
+
+	if (effectiveArrowType === 'curved') {
+		// Curved arrow: use points directly with rc.curve()
+		const curvePoints: [number, number][] = points.map((p) => [p.x, p.y]);
 
 		// Use preserveVertices: true to avoid random offsets at points (like Excalidraw)
 		const curveOptions: RoughOptions = {
@@ -201,86 +210,359 @@ function renderRoughArrow(
 		const curveElement = rc.curve(curvePoints, curveOptions);
 		g.appendChild(curveElement);
 
-		// Add arrowhead at the end, using the angle at the endpoint
-		const endAngle = getAngleOnCurvedPath(shape.start, shape.end, waypoints, 1);
-		const angleRad = (endAngle * Math.PI) / 180;
-		const dx = Math.cos(angleRad);
-		const dy = Math.sin(angleRad);
-		const arrowhead = createRoughArrowhead(rc, shape.end.x, shape.end.y, dx, dy, options);
-		g.appendChild(arrowhead);
+		// Start arrowhead (direction from second to first point)
+		if (startArrowhead && points.length >= 2) {
+			const dx = points[0].x - points[1].x;
+			const dy = points[0].y - points[1].y;
+			const head = renderArrowhead(rc, points[0].x, points[0].y, dx, dy, startArrowhead, options);
+			if (head) g.appendChild(head);
+		}
+
+		// End arrowhead (use curve angle at endpoint)
+		if (endArrowhead && points.length >= 2) {
+			const waypoints = arrowShape.waypoints ?? [];
+			const endAngle = getAngleOnCurvedPath(shape.start, shape.end, waypoints, 1);
+			const angleRad = (endAngle * Math.PI) / 180;
+			const dx = Math.cos(angleRad);
+			const dy = Math.sin(angleRad);
+			const endPoint = points[points.length - 1];
+			const head = renderArrowhead(rc, endPoint.x, endPoint.y, dx, dy, endArrowhead, options);
+			if (head) g.appendChild(head);
+		}
 	} else if (effectiveArrowType === 'elbow') {
-		// Elbow arrow: draw the L-shaped path
-		const direction = arrowShape.elbowDirection ?? 'horizontal-first';
-		const elbowX = direction === 'horizontal-first' ? shape.end.x : shape.start.x;
-		const elbowY = direction === 'horizontal-first' ? shape.start.y : shape.end.y;
+		// Elbow arrow: draw segments between all points
+		if (points.length >= 2) {
+			// If only 2 points, calculate elbow point
+			if (points.length === 2) {
+				const direction = arrowShape.elbowDirection ?? 'horizontal-first';
+				const elbowX = direction === 'horizontal-first' ? shape.end.x : shape.start.x;
+				const elbowY = direction === 'horizontal-first' ? shape.start.y : shape.end.y;
 
-		// Draw two line segments
-		const line1 = rc.line(shape.start.x, shape.start.y, elbowX, elbowY, options);
-		const line2 = rc.line(elbowX, elbowY, shape.end.x, shape.end.y, options);
-		g.appendChild(line1);
-		g.appendChild(line2);
+				const line1 = rc.line(shape.start.x, shape.start.y, elbowX, elbowY, options);
+				const line2 = rc.line(elbowX, elbowY, shape.end.x, shape.end.y, options);
+				g.appendChild(line1);
+				g.appendChild(line2);
 
-		// Calculate arrowhead direction based on the last segment
-		const dx = shape.end.x - elbowX;
-		const dy = shape.end.y - elbowY;
-		const arrowhead = createRoughArrowhead(rc, shape.end.x, shape.end.y, dx, dy, options);
-		g.appendChild(arrowhead);
+				// Start arrowhead
+				if (startArrowhead) {
+					const dx = shape.start.x - elbowX;
+					const dy = shape.start.y - elbowY;
+					const head = renderArrowhead(
+						rc,
+						shape.start.x,
+						shape.start.y,
+						dx,
+						dy,
+						startArrowhead,
+						options
+					);
+					if (head) g.appendChild(head);
+				}
+
+				// End arrowhead
+				if (endArrowhead) {
+					const dx = shape.end.x - elbowX;
+					const dy = shape.end.y - elbowY;
+					const head = renderArrowhead(rc, shape.end.x, shape.end.y, dx, dy, endArrowhead, options);
+					if (head) g.appendChild(head);
+				}
+			} else {
+				// Multi-point elbow: draw all segments
+				for (let i = 0; i < points.length - 1; i++) {
+					const line = rc.line(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, options);
+					g.appendChild(line);
+				}
+
+				// Start arrowhead (direction from second to first point)
+				if (startArrowhead) {
+					const dx = points[0].x - points[1].x;
+					const dy = points[0].y - points[1].y;
+					const head = renderArrowhead(
+						rc,
+						points[0].x,
+						points[0].y,
+						dx,
+						dy,
+						startArrowhead,
+						options
+					);
+					if (head) g.appendChild(head);
+				}
+
+				// End arrowhead (direction from second-to-last to last point)
+				if (endArrowhead) {
+					const lastIdx = points.length - 1;
+					const dx = points[lastIdx].x - points[lastIdx - 1].x;
+					const dy = points[lastIdx].y - points[lastIdx - 1].y;
+					const head = renderArrowhead(
+						rc,
+						points[lastIdx].x,
+						points[lastIdx].y,
+						dx,
+						dy,
+						endArrowhead,
+						options
+					);
+					if (head) g.appendChild(head);
+				}
+			}
+		}
 	} else {
 		// Sharp/straight arrow
 		const line = rc.line(shape.start.x, shape.start.y, shape.end.x, shape.end.y, options);
 		g.appendChild(line);
 
-		// Add arrowhead
-		const dx = shape.end.x - shape.start.x;
-		const dy = shape.end.y - shape.start.y;
-		const arrowhead = createRoughArrowhead(rc, shape.end.x, shape.end.y, dx, dy, options);
-		g.appendChild(arrowhead);
+		// Start arrowhead
+		if (startArrowhead) {
+			const dx = shape.start.x - shape.end.x;
+			const dy = shape.start.y - shape.end.y;
+			const head = renderArrowhead(
+				rc,
+				shape.start.x,
+				shape.start.y,
+				dx,
+				dy,
+				startArrowhead,
+				options
+			);
+			if (head) g.appendChild(head);
+		}
+
+		// End arrowhead
+		if (endArrowhead) {
+			const dx = shape.end.x - shape.start.x;
+			const dy = shape.end.y - shape.start.y;
+			const head = renderArrowhead(rc, shape.end.x, shape.end.y, dx, dy, endArrowhead, options);
+			if (head) g.appendChild(head);
+		}
 	}
 
 	return g;
 }
 
+// =============================================================================
+// Arrowhead Rendering
+// =============================================================================
+
+/** Arrowhead configuration constants (like Excalidraw) */
+const ARROWHEAD_SIZE = 25;
+const ARROWHEAD_ANGLE_DEG = 20;
+const ARROWHEAD_ANGLE_RAD = (ARROWHEAD_ANGLE_DEG * Math.PI) / 180;
+
 /**
- * Create a hand-drawn arrowhead (like Excalidraw)
+ * Render an arrowhead of the specified type.
+ *
+ * @param rc - RoughSVG instance
+ * @param tipX - X coordinate of the arrow tip
+ * @param tipY - Y coordinate of the arrow tip
+ * @param dx - Direction X component (pointing toward the tip)
+ * @param dy - Direction Y component (pointing toward the tip)
+ * @param arrowheadType - Type of arrowhead to render
+ * @param options - Rough.js options
+ * @returns SVG group element containing the arrowhead, or null for 'none'
  */
-function createRoughArrowhead(
+function renderArrowhead(
 	rc: RoughSVG,
 	tipX: number,
 	tipY: number,
 	dx: number,
 	dy: number,
+	arrowheadType: Arrowhead | null,
 	options: RoughOptions
-): SVGGElement {
-	const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+): SVGGElement | null {
+	if (!arrowheadType || arrowheadType === 'none') {
+		return null;
+	}
 
-	// Excalidraw uses size=25 for arrows, angle=20 degrees
-	const size = 25;
-	const arrowAngle = (20 * Math.PI) / 180; // 20 degrees in radians
-
-	// Calculate angle of the incoming line
-	const angle = Math.atan2(dy, dx);
-
-	// Calculate arrowhead wing points
-	const x3 = tipX - size * Math.cos(angle - arrowAngle);
-	const y3 = tipY - size * Math.sin(angle - arrowAngle);
-	const x4 = tipX - size * Math.cos(angle + arrowAngle);
-	const y4 = tipY - size * Math.sin(angle + arrowAngle);
-
-	// Draw the two lines of the arrowhead (from wing tips TO the arrow tip, like Excalidraw)
+	// Common options for arrowheads: solid stroke, reduced roughness
 	const arrowheadOptions: RoughOptions = {
 		...options,
 		fill: undefined,
 		fillStyle: undefined,
 		strokeLineDash: undefined, // Always solid for arrowhead
-		roughness: Math.min(1, options.roughness ?? 0) // Reduced roughness like Excalidraw
+		roughness: Math.min(1, options.roughness ?? 0)
 	};
 
-	// Lines go FROM wing points TO tip (like Excalidraw: generator.line(x3, y3, x2, y2))
-	const line1 = rc.line(x3, y3, tipX, tipY, arrowheadOptions);
-	const line2 = rc.line(x4, y4, tipX, tipY, arrowheadOptions);
+	const angle = Math.atan2(dy, dx);
+
+	switch (arrowheadType) {
+		case 'arrow':
+			return renderArrowheadArrow(rc, tipX, tipY, angle, arrowheadOptions);
+		case 'triangle':
+			return renderArrowheadTriangle(rc, tipX, tipY, angle, arrowheadOptions, options.stroke);
+		case 'circle':
+			return renderArrowheadCircle(rc, tipX, tipY, angle, arrowheadOptions, options.stroke);
+		case 'bar':
+			return renderArrowheadBar(rc, tipX, tipY, angle, arrowheadOptions);
+		case 'diamond':
+			return renderArrowheadDiamond(rc, tipX, tipY, angle, arrowheadOptions, options.stroke);
+		default:
+			return null;
+	}
+}
+
+/**
+ * Render the default 'arrow' arrowhead (two lines meeting at the tip).
+ */
+function renderArrowheadArrow(
+	rc: RoughSVG,
+	tipX: number,
+	tipY: number,
+	angle: number,
+	options: RoughOptions
+): SVGGElement {
+	const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+	// Calculate wing points
+	const x3 = tipX - ARROWHEAD_SIZE * Math.cos(angle - ARROWHEAD_ANGLE_RAD);
+	const y3 = tipY - ARROWHEAD_SIZE * Math.sin(angle - ARROWHEAD_ANGLE_RAD);
+	const x4 = tipX - ARROWHEAD_SIZE * Math.cos(angle + ARROWHEAD_ANGLE_RAD);
+	const y4 = tipY - ARROWHEAD_SIZE * Math.sin(angle + ARROWHEAD_ANGLE_RAD);
+
+	// Lines go FROM wing points TO tip
+	const line1 = rc.line(x3, y3, tipX, tipY, options);
+	const line2 = rc.line(x4, y4, tipX, tipY, options);
 
 	g.appendChild(line1);
 	g.appendChild(line2);
+
+	return g;
+}
+
+/**
+ * Render a filled triangle arrowhead.
+ */
+function renderArrowheadTriangle(
+	rc: RoughSVG,
+	tipX: number,
+	tipY: number,
+	angle: number,
+	options: RoughOptions,
+	fillColor: string | undefined
+): SVGGElement {
+	const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+	// Calculate triangle points
+	const x3 = tipX - ARROWHEAD_SIZE * Math.cos(angle - ARROWHEAD_ANGLE_RAD);
+	const y3 = tipY - ARROWHEAD_SIZE * Math.sin(angle - ARROWHEAD_ANGLE_RAD);
+	const x4 = tipX - ARROWHEAD_SIZE * Math.cos(angle + ARROWHEAD_ANGLE_RAD);
+	const y4 = tipY - ARROWHEAD_SIZE * Math.sin(angle + ARROWHEAD_ANGLE_RAD);
+
+	const triangleOptions: RoughOptions = {
+		...options,
+		fill: fillColor,
+		fillStyle: 'solid'
+	};
+
+	const triangle = rc.polygon(
+		[
+			[tipX, tipY],
+			[x3, y3],
+			[x4, y4]
+		],
+		triangleOptions
+	);
+
+	g.appendChild(triangle);
+
+	return g;
+}
+
+/**
+ * Render a filled circle arrowhead (useful for probability trees).
+ */
+function renderArrowheadCircle(
+	rc: RoughSVG,
+	tipX: number,
+	tipY: number,
+	angle: number,
+	options: RoughOptions,
+	fillColor: string | undefined
+): SVGGElement {
+	const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+	// Circle is centered slightly behind the tip
+	const circleRadius = ARROWHEAD_SIZE * 0.35;
+	const cx = tipX - circleRadius * Math.cos(angle);
+	const cy = tipY - circleRadius * Math.sin(angle);
+
+	const circleOptions: RoughOptions = {
+		...options,
+		fill: fillColor,
+		fillStyle: 'solid'
+	};
+
+	const circle = rc.circle(cx, cy, circleRadius * 2, circleOptions);
+
+	g.appendChild(circle);
+
+	return g;
+}
+
+/**
+ * Render a perpendicular bar arrowhead.
+ */
+function renderArrowheadBar(
+	rc: RoughSVG,
+	tipX: number,
+	tipY: number,
+	angle: number,
+	options: RoughOptions
+): SVGGElement {
+	const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+	// Bar is perpendicular to the arrow direction
+	const barLength = ARROWHEAD_SIZE * 0.6;
+	const perpAngle = angle + Math.PI / 2;
+
+	const x1 = tipX + barLength * Math.cos(perpAngle);
+	const y1 = tipY + barLength * Math.sin(perpAngle);
+	const x2 = tipX - barLength * Math.cos(perpAngle);
+	const y2 = tipY - barLength * Math.sin(perpAngle);
+
+	const bar = rc.line(x1, y1, x2, y2, options);
+
+	g.appendChild(bar);
+
+	return g;
+}
+
+/**
+ * Render a filled diamond arrowhead (useful for flowcharts).
+ */
+function renderArrowheadDiamond(
+	rc: RoughSVG,
+	tipX: number,
+	tipY: number,
+	angle: number,
+	options: RoughOptions,
+	fillColor: string | undefined
+): SVGGElement {
+	const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+	// Diamond is centered slightly behind the tip
+	const diamondSize = ARROWHEAD_SIZE * 0.5;
+	const cx = tipX - diamondSize * Math.cos(angle);
+	const cy = tipY - diamondSize * Math.sin(angle);
+
+	// Four corners of the diamond
+	const perpAngle = angle + Math.PI / 2;
+	const points: [number, number][] = [
+		[tipX, tipY], // Front tip
+		[cx + diamondSize * 0.5 * Math.cos(perpAngle), cy + diamondSize * 0.5 * Math.sin(perpAngle)], // Right
+		[cx - diamondSize * Math.cos(angle), cy - diamondSize * Math.sin(angle)], // Back
+		[cx - diamondSize * 0.5 * Math.cos(perpAngle), cy - diamondSize * 0.5 * Math.sin(perpAngle)] // Left
+	];
+
+	const diamondOptions: RoughOptions = {
+		...options,
+		fill: fillColor,
+		fillStyle: 'solid'
+	};
+
+	const diamond = rc.polygon(points, diamondOptions);
+
+	g.appendChild(diamond);
 
 	return g;
 }
