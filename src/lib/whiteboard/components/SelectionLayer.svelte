@@ -21,6 +21,7 @@
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import {
 		getArrowPoints,
+		getAdaptiveCornerRadius,
 		type WhiteboardElement,
 		type ShapeElement,
 		type ArrowElement,
@@ -317,6 +318,24 @@
 		// Find the element in page
 		return whiteboardStore.currentPage?.elements.find((el) => el.id === hoveredElementId) ?? null;
 	});
+
+	/**
+	 * Get the corner radius for selection/hover highlight.
+	 * Returns the same radius as the actual shape rendering for rectangles.
+	 */
+	function getSelectionCornerRadius(element: WhiteboardElement, bounds: BoundingBox): number {
+		if (element.type !== 'shape') return 0;
+		const shape = element as ShapeElement;
+		if (shape.shapeType !== 'rectangle') return 0;
+
+		const hasRoundedCorners = (shape.cornerRadius ?? 0) > 0;
+		if (!hasRoundedCorners) return 0;
+
+		const adaptiveRadius = getAdaptiveCornerRadius(bounds.width, bounds.height, true);
+		// Clamp to half the smallest dimension (same as in rough-renderer)
+		const maxRadius = Math.min(bounds.width, bounds.height) / 2;
+		return Math.min(adaptiveRadius, maxRadius);
+	}
 
 	// ==========================================================================
 	// Resize Handlers
@@ -744,11 +763,14 @@
 				hoverRotation !== 0
 					? `rotate(${hoverRotation}, ${hoverCenter.x}, ${hoverCenter.y})`
 					: undefined}
+			{@const hoverCornerRadius = getSelectionCornerRadius(hoveredElement, bounds)}
 			<rect
 				x={bounds.x}
 				y={bounds.y}
 				width={bounds.width}
 				height={bounds.height}
+				rx={hoverCornerRadius}
+				ry={hoverCornerRadius}
 				fill="rgba(59, 130, 246, 0.08)"
 				stroke="#93c5fd"
 				stroke-width={strokeWidth}
@@ -925,6 +947,7 @@
 				{/each}
 			{/if}
 		{:else}
+			{@const selectionCornerRadius = getSelectionCornerRadius(element, bounds)}
 			<!-- Group that transforms selection UI with the element -->
 			<g
 				transform={`${translateTransform} ${scaleTransform} ${rotateTransform}`.trim() || undefined}
@@ -935,6 +958,8 @@
 					y={bounds.y}
 					width={bounds.width}
 					height={bounds.height}
+					rx={selectionCornerRadius}
+					ry={selectionCornerRadius}
 					fill="none"
 					stroke={SELECTION_STROKE_COLOR}
 					stroke-width={strokeWidth}
