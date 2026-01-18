@@ -241,6 +241,7 @@ function resolveExercise(
 		exercise_id: exercise.exercise_id,
 		title: exercise.exercise?.title ?? null,
 		position,
+		section_id: exercise.section_id ?? null,
 		parameters,
 		statement: instance.statement_md,
 		solution: instance.solution_md,

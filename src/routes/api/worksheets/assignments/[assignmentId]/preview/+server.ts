@@ -47,6 +47,7 @@ import type { Variable } from '$lib/ubumark';
 import type { ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
 import type {
 	StudentExerciseView,
+	StudentSectionView,
 	StudentWorksheetView,
 	WorksheetType
 } from '$lib/types/worksheets';
@@ -363,6 +364,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				custom_instructions,
 				correction_visible,
 				variation_index,
+				section_id,
 				exercise:exercises (
 					id,
 					title,
@@ -381,6 +383,18 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		if (exercisesError) {
 			console.error('[Preview API] Error fetching exercises:', exercisesError);
 			throw error(500, 'Erreur lors de la recuperation des exercices');
+		}
+
+		// Fetch worksheet sections
+		const { data: sections, error: sectionsError } = await locals.supabase
+			.from('worksheet_sections')
+			.select('id, title, instructions, position')
+			.eq('worksheet_id', worksheet.id)
+			.order('position', { ascending: true });
+
+		if (sectionsError) {
+			console.error('[Preview API] Error fetching sections:', sectionsError);
+			// Non-blocking: sections are optional
 		}
 
 		// Determine preview mode and seed
@@ -425,7 +439,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				custom_instructions: we.custom_instructions,
 				statement: resolved.statement,
 				correction: correctionVisible ? resolved.correction : null,
-				correction_visible: correctionVisible
+				correction_visible: correctionVisible,
+				section_id: we.section_id ?? null
 			};
 
 			if (resolved.hints && resolved.hints.length > 0) {
@@ -442,6 +457,14 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 			exercises.push(exerciseView);
 		}
+
+		// Build sections array for response
+		const sectionViews: StudentSectionView[] = (sections ?? []).map((s) => ({
+			id: s.id,
+			title: s.title,
+			instructions: s.instructions,
+			position: s.position
+		}));
 
 		// Build response with preview metadata
 		const response: StudentWorksheetView & {
@@ -460,6 +483,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			show_corrections: isTeacherMode ? true : (fullAssignment.show_corrections ?? false),
 			class_name: classData?.name ?? null,
 			exercises,
+			sections: sectionViews,
 			// Preview metadata
 			preview_mode: isTeacherMode ? 'teacher' : 'student',
 			preview_student_id: studentId ?? null,

@@ -180,6 +180,8 @@ export interface TemplatePlaceholder {
 export interface ResolvedExercise {
 	exercise_id: string;
 	position: number;
+	/** Section ID if exercise belongs to a section */
+	section_id?: string | null;
 	parameters: Record<string, number | string>;
 	statement: string;
 	solution: string;
@@ -197,8 +199,18 @@ export interface ResolvedExercise {
 	hints?: ExerciseHint[];
 }
 
+/** Section data for PDF generation */
+export interface InstanceSection {
+	id: string;
+	title: string;
+	instructions: string | null;
+	position: number;
+}
+
 export interface InstanceData {
 	exercises: ResolvedExercise[];
+	/** Sections for grouping exercises in PDF */
+	sections?: InstanceSection[];
 	exercise_order?: number[];
 	variant_info?: {
 		seed: number;
@@ -594,6 +606,8 @@ export interface StudentExerciseView {
 	statement: string;
 	correction: string | null;
 	correction_visible: boolean;
+	/** Section ID if exercise belongs to a section */
+	section_id: string | null;
 	/** Optional title for the exercise */
 	title?: string | null;
 	/** Tags associated with the exercise */
@@ -602,6 +616,16 @@ export interface StudentExerciseView {
 	hints?: ExerciseHint[];
 	/** Supplementary resources (videos, PDFs, links) */
 	resources?: ExerciseResource[];
+}
+
+/**
+ * Section data as seen by students
+ */
+export interface StudentSectionView {
+	id: string;
+	title: string;
+	instructions: string | null;
+	position: number;
 }
 
 /**
@@ -619,6 +643,8 @@ export interface StudentWorksheetView {
 	show_corrections: boolean;
 	class_name: string | null;
 	exercises: StudentExerciseView[];
+	/** Sections for grouping exercises */
+	sections: StudentSectionView[];
 }
 
 /**
