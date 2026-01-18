@@ -34,6 +34,7 @@
 	import type ContextMenu from './ContextMenu.svelte';
 	import {
 		getStrokeDashArray,
+		getArrowPoints,
 		type Point,
 		type StrokeElement,
 		type ShapeElement,
@@ -1812,13 +1813,22 @@
 								marker-end={props.hasArrowMarker ? `url(#arrow-marker-${shape.id})` : undefined}
 							/>
 						{:else if effectiveArrowType === 'elbow'}
-							{@const elbowResult = calculateElbowPath(
-								adjustedStart,
-								adjustedEnd,
-								arrowShape?.elbowDirection ?? 'horizontal-first'
-							)}
+							{@const elbowPoints = arrowShape
+								? getArrowPoints(arrowShape)
+								: [adjustedStart, adjustedEnd]}
+							{@const elbowPath =
+								elbowPoints.length > 2
+									? `M ${elbowPoints[0].x} ${elbowPoints[0].y} ${elbowPoints
+											.slice(1)
+											.map((p) => `L ${p.x} ${p.y}`)
+											.join(' ')}`
+									: calculateElbowPath(
+											adjustedStart,
+											adjustedEnd,
+											arrowShape?.elbowDirection ?? 'horizontal-first'
+										).path}
 							<path
-								d={elbowResult.path}
+								d={elbowPath}
 								stroke={shape.color}
 								stroke-width={shape.strokeWidth}
 								stroke-linecap="round"
