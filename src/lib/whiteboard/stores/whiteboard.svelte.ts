@@ -2660,10 +2660,6 @@ function createWhiteboardStore() {
 			const effectiveArrowType = arrow.arrowType ?? (arrow.elbowed ? 'elbow' : 'sharp');
 			if (effectiveArrowType !== 'elbow') return;
 
-			// Calculate new start/end positions
-			const newStart = endpoint === 'start' ? { x, y } : arrow.start;
-			const newEnd = endpoint === 'end' ? { x, y } : arrow.end;
-
 			// Build a map of all shapes for quick lookup
 			const shapeMap = new Map<string, ShapeElement>();
 			for (const el of elements) {
@@ -2672,19 +2668,42 @@ function createWhiteboardStore() {
 				}
 			}
 
-			// Get bound shapes (the non-dragged endpoint keeps its binding)
+			// Check for binding candidate at the dragged position (like in updateElementEndpoint)
+			const excludeIds = new Set([elementId]);
+			const candidate = findBindingCandidate({ x, y }, elements, excludeIds);
+
+			// Calculate adjusted position (snapped to perimeter if binding candidate exists)
+			let adjustedPosition = { x, y };
+			let candidateShape: ShapeElement | null = null;
+			if (candidate) {
+				const otherEndpoint = endpoint === 'start' ? arrow.end : arrow.start;
+				const binding = createBindingAnchor(candidate.element, { x, y }, otherEndpoint);
+				adjustedPosition = calculateBoundEndpoint(binding, candidate.element, otherEndpoint);
+				candidateShape = candidate.element;
+			}
+
+			// Calculate new start/end positions using adjusted position
+			const newStart = endpoint === 'start' ? adjustedPosition : arrow.start;
+			const newEnd = endpoint === 'end' ? adjustedPosition : arrow.end;
+
+			// Get bound shapes
 			let startShape: ShapeElement | null = null;
 			let endShape: ShapeElement | null = null;
 
-			// When dragging an endpoint, the binding on that end is temporarily ignored
-			// (the user is manually positioning it)
-			if (endpoint !== 'start' && arrow.startBinding) {
-				const boundShape = shapeMap.get(arrow.startBinding.elementId);
-				if (boundShape) startShape = boundShape;
-			}
-			if (endpoint !== 'end' && arrow.endBinding) {
-				const boundShape = shapeMap.get(arrow.endBinding.elementId);
-				if (boundShape) endShape = boundShape;
+			// For the dragged endpoint, use the candidate if found
+			// For the non-dragged endpoint, use existing binding
+			if (endpoint === 'start') {
+				startShape = candidateShape;
+				if (arrow.endBinding) {
+					const boundShape = shapeMap.get(arrow.endBinding.elementId);
+					if (boundShape) endShape = boundShape;
+				}
+			} else {
+				endShape = candidateShape;
+				if (arrow.startBinding) {
+					const boundShape = shapeMap.get(arrow.startBinding.elementId);
+					if (boundShape) startShape = boundShape;
+				}
 			}
 
 			// Calculate headings
