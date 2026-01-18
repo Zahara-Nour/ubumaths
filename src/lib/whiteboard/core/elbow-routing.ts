@@ -1,72 +1,81 @@
 /**
- * Elbow Arrow Routing with A* Pathfinding
+ * Elbow Arrow Routing with A* Pathfinding (Excalidraw-style)
  *
- * Implements automatic routing for elbow arrows that avoid obstacles.
- * Based on Excalidraw's elbow arrow routing algorithm.
- *
- * The algorithm:
- * 1. Creates a navigation grid around obstacles
- * 2. Uses A* search to find the shortest path with 90-degree turns only
- * 3. Simplifies the path by removing redundant points
+ * This module implements the elbow arrow routing algorithm from Excalidraw.
+ * Key features:
+ * - Non-uniform grid based on obstacle boundaries
+ * - Dynamic AABBs with direction-dependent padding
+ * - Dongle system for proper heading enforcement
+ * - A* search with cubic turn penalties
  *
  * @module whiteboard/core/elbow-routing
  */
 
-import type { Point, Heading, WhiteboardElement } from '../types/document';
-import type { AABB } from './aabb';
-import { aabbsFromElements, expandAABB, segmentIntersectsAABB } from './aabb';
-import { HEADING_VECTORS, getOppositeHeading, areHeadingsPerpendicular } from './heading';
+import type { Point, Heading, ShapeElement } from '../types/document';
+import { HEADING_UP, HEADING_DOWN, HEADING_LEFT, HEADING_RIGHT } from '../types/document';
+import {
+	type Bounds,
+	compareHeading,
+	flipHeading,
+	headingIsHorizontal,
+	vectorToHeading,
+	boundsFromShape,
+	pointInsideBounds,
+	neighborIndexToHeading
+} from './heading';
+
+// =============================================================================
+// Constants
+// =============================================================================
+
+/** Base padding around elements for routing */
+export const BASE_PADDING = 40;
+
+/** Threshold for removing duplicate/short segments */
+const DEDUP_THRESHOLD = 1;
 
 // =============================================================================
 // Types
 // =============================================================================
 
-/** A node in the A* search graph */
-interface PathNode {
-	readonly x: number;
-	readonly y: number;
-	readonly heading: Heading;
-	/** Cost from start to this node */
-	g: number;
-	/** Estimated cost from this node to goal (heuristic) */
-	h: number;
-	/** Total cost (g + h) */
+/** Grid address as [col, row] */
+type GridAddress = readonly [number, number];
+
+/** A* search node */
+interface Node {
 	f: number;
-	/** Parent node for path reconstruction */
-	parent: PathNode | null;
+	g: number;
+	h: number;
+	closed: boolean;
+	visited: boolean;
+	parent: Node | null;
+	pos: Point;
+	addr: GridAddress;
 }
 
-/** Configuration for elbow routing */
-export interface ElbowRoutingConfig {
-	/** Minimum gap between arrow path and obstacles (default: 10) */
-	obstacleGap: number;
-	/** Grid cell size for A* search (default: 10) */
-	gridSize: number;
-	/** Maximum number of nodes to explore (default: 5000) */
-	maxNodes: number;
-	/** Penalty multiplier for direction changes (default: 2) */
-	turnPenalty: number;
+/** Navigation grid for A* */
+interface Grid {
+	row: number;
+	col: number;
+	data: (Node | null)[];
 }
 
-/** Default routing configuration */
-const DEFAULT_CONFIG: ElbowRoutingConfig = {
-	obstacleGap: 10,
-	gridSize: 10,
-	maxNodes: 5000,
-	turnPenalty: 2
-};
+/** Input data for routing calculation */
+interface ElbowArrowData {
+	dynamicAABBs: [Bounds, Bounds];
+	startDonglePosition: Point | null;
+	startGlobalPoint: Point;
+	startHeading: Heading;
+	endDonglePosition: Point | null;
+	endGlobalPoint: Point;
+	endHeading: Heading;
+	commonBounds: Bounds;
+}
 
 /** Result of elbow routing */
 export interface ElbowRoutingResult {
-	/** The calculated path points */
 	points: Point[];
-	/** Whether the routing was successful */
 	success: boolean;
-	/** Debug info (number of nodes explored, etc.) */
-	debug?: {
-		nodesExplored: number;
-		pathLength: number;
-	};
 }
 
 // =============================================================================
@@ -74,358 +83,718 @@ export interface ElbowRoutingResult {
 // =============================================================================
 
 /**
- * Calculate an elbow arrow path that avoids obstacles.
+ * Calculate an elbow arrow path between two points.
  *
- * @param start - Start point of the arrow
- * @param end - End point of the arrow
- * @param startHeading - Direction the arrow exits from start (optional)
- * @param endHeading - Direction the arrow enters at end (optional)
- * @param elements - All elements that are potential obstacles
- * @param excludeIds - Element IDs to exclude from obstacle checking
- * @param config - Routing configuration (optional)
+ * @param startPoint - Start point of the arrow
+ * @param endPoint - End point of the arrow
+ * @param startHeading - Direction the arrow exits from start
+ * @param endHeading - Direction the arrow enters at end
+ * @param startElement - Optional shape element at start (for dynamic AABB)
+ * @param endElement - Optional shape element at end (for dynamic AABB)
  * @returns Routing result with path points
  */
 export function routeElbowArrow(
-	start: Point,
-	end: Point,
-	startHeading: Heading | null,
-	endHeading: Heading | null,
-	elements: readonly WhiteboardElement[],
-	excludeIds?: Set<string>,
-	config: Partial<ElbowRoutingConfig> = {}
+	startPoint: Point,
+	endPoint: Point,
+	startHeading: Heading,
+	endHeading: Heading,
+	startElement: ShapeElement | null = null,
+	endElement: ShapeElement | null = null
 ): ElbowRoutingResult {
-	const cfg: ElbowRoutingConfig = { ...DEFAULT_CONFIG, ...config };
-
-	// Get obstacle AABBs
-	const rawObstacles = aabbsFromElements(elements, excludeIds);
-
-	// Expand obstacles by the gap amount
-	const obstacles = rawObstacles.map((aabb) => expandAABB(aabb, cfg.obstacleGap));
-
-	// If no obstacles or very close points, use simple L-shape
-	if (obstacles.length === 0 || distance(start, end) < cfg.gridSize * 2) {
+	// Handle same point edge case - return a minimal path
+	if (startPoint.x === endPoint.x && startPoint.y === endPoint.y) {
+		// Generate a small path in the start heading direction and back
+		const offset = 20;
+		const midPoint: Point = headingIsHorizontal(startHeading)
+			? { x: startPoint.x + startHeading[0] * offset, y: startPoint.y }
+			: { x: startPoint.x, y: startPoint.y + startHeading[1] * offset };
 		return {
-			points: generateSimplePath(start, end, startHeading, endHeading),
+			points: [startPoint, midPoint, endPoint],
 			success: true
 		};
 	}
 
-	// Try A* pathfinding
-	const result = aStarSearch(start, end, startHeading, endHeading, obstacles, cfg);
+	// Prepare routing data
+	const data = getElbowArrowData(
+		startPoint,
+		endPoint,
+		startHeading,
+		endHeading,
+		startElement,
+		endElement
+	);
 
-	if (result.success) {
-		return result;
+	// Calculate the grid
+	const grid = calculateGrid(
+		data.dynamicAABBs,
+		data.startDonglePosition ?? data.startGlobalPoint,
+		data.startHeading,
+		data.endDonglePosition ?? data.endGlobalPoint,
+		data.endHeading,
+		data.commonBounds
+	);
+
+	// Find dongle nodes in the grid
+	const startDongle = data.startDonglePosition
+		? pointToGridNode(data.startDonglePosition, grid)
+		: null;
+	const endDongle = data.endDonglePosition ? pointToGridNode(data.endDonglePosition, grid) : null;
+
+	// Get start and end nodes
+	const startNode = startDongle ?? pointToGridNode(data.startGlobalPoint, grid);
+	const endNode = endDongle ?? pointToGridNode(data.endGlobalPoint, grid);
+
+	if (!startNode || !endNode) {
+		// Fallback to simple path
+		return {
+			points: generateSimplePath(startPoint, endPoint, startHeading, endHeading),
+			success: false
+		};
 	}
 
-	// Fallback to simple path if A* fails
+	// Determine which AABBs to use for obstacle avoidance
+	// Only use AABBs when there are actual shapes to avoid
+	const hasShapes = startElement !== null || endElement !== null;
+
+	// Check if dongles overlap (both points inside the other's AABB)
+	const dongleOverlap =
+		startDongle &&
+		endDongle &&
+		(pointInsideBounds(startDongle.pos, data.dynamicAABBs[1]) ||
+			pointInsideBounds(endDongle.pos, data.dynamicAABBs[0]));
+
+	// Run A* search - don't use AABBs if no shapes or if dongles overlap
+	const aabbsToAvoid = !hasShapes || dongleOverlap ? [] : data.dynamicAABBs;
+	const path = astar(startNode, endNode, grid, data.startHeading, data.endHeading, aabbsToAvoid);
+
+	if (path) {
+		// Convert path nodes to points
+		const points = path.map((node) => node.pos);
+
+		// Add start/end global points if using dongles
+		if (startDongle) {
+			points.unshift(data.startGlobalPoint);
+		}
+		if (endDongle) {
+			points.push(data.endGlobalPoint);
+		}
+
+		// Post-process: remove short segments and keep only corners
+		const cleanedPoints = getElbowArrowCornerPoints(removeElbowArrowShortSegments(points));
+
+		return {
+			points: cleanedPoints,
+			success: true
+		};
+	}
+
+	// Fallback to simple path
 	return {
-		points: generateSimplePath(start, end, startHeading, endHeading),
+		points: generateSimplePath(startPoint, endPoint, startHeading, endHeading),
 		success: false
 	};
 }
 
 // =============================================================================
-// A* Search Implementation
+// Data Preparation
 // =============================================================================
 
 /**
- * A* search for finding optimal elbow path.
+ * Prepare all data needed for elbow arrow routing.
  */
-function aStarSearch(
-	start: Point,
-	end: Point,
-	startHeading: Heading | null,
-	endHeading: Heading | null,
-	obstacles: readonly AABB[],
-	config: ElbowRoutingConfig
-): ElbowRoutingResult {
-	const { gridSize, maxNodes, turnPenalty } = config;
+function getElbowArrowData(
+	startPoint: Point,
+	endPoint: Point,
+	startHeading: Heading,
+	endHeading: Heading,
+	startElement: ShapeElement | null,
+	endElement: ShapeElement | null
+): ElbowArrowData {
+	// Get element bounds or create point bounds
+	const startBounds = startElement
+		? expandBounds(boundsFromShape(startElement), BASE_PADDING)
+		: pointToBounds(startPoint);
+	const endBounds = endElement
+		? expandBounds(boundsFromShape(endElement), BASE_PADDING)
+		: pointToBounds(endPoint);
 
-	// Snap start and end to grid
-	const gridStart = snapToGrid(start, gridSize);
-	const gridEnd = snapToGrid(end, gridSize);
+	// Calculate common bounds
+	const commonBounds = combineBounds([startBounds, endBounds]);
 
-	// Determine initial headings if not provided
-	const effectiveStartHeading = startHeading ?? guessHeading(start, end);
-	const effectiveEndHeading = endHeading ?? getOppositeHeading(guessHeading(end, start));
+	// Generate dynamic AABBs with direction-dependent offsets
+	const dynamicAABBs = generateDynamicAABBs(
+		startBounds,
+		endBounds,
+		commonBounds,
+		offsetFromHeading(startHeading, BASE_PADDING, BASE_PADDING),
+		offsetFromHeading(endHeading, BASE_PADDING, BASE_PADDING)
+	);
 
-	// Create start nodes (one for each possible initial heading)
-	const startNodes = createStartNodes(gridStart, effectiveStartHeading);
+	// Calculate dongle positions
+	const startDonglePosition = startElement
+		? getDonglePosition(dynamicAABBs[0], startHeading, startPoint)
+		: null;
+	const endDonglePosition = endElement
+		? getDonglePosition(dynamicAABBs[1], endHeading, endPoint)
+		: null;
 
-	// Open set (nodes to explore) - using array as simple priority queue
-	const openSet: PathNode[] = startNodes;
-
-	// Closed set (explored nodes) - key is "x,y,heading"
-	const closedSet = new Set<string>();
-
-	let nodesExplored = 0;
-
-	while (openSet.length > 0 && nodesExplored < maxNodes) {
-		// Get node with lowest f score
-		openSet.sort((a, b) => a.f - b.f);
-		const current = openSet.shift()!;
-
-		const currentKey = nodeKey(current);
-		if (closedSet.has(currentKey)) continue;
-		closedSet.add(currentKey);
-		nodesExplored++;
-
-		// Check if we reached the goal
-		if (isAtGoal(current, gridEnd, effectiveEndHeading, gridSize)) {
-			const path = reconstructPath(current);
-			const simplifiedPath = simplifyPath(path);
-
-			// Ensure path starts at exact start and ends at exact end
-			simplifiedPath[0] = start;
-			simplifiedPath[simplifiedPath.length - 1] = end;
-
-			return {
-				points: simplifiedPath,
-				success: true,
-				debug: { nodesExplored, pathLength: simplifiedPath.length }
-			};
-		}
-
-		// Explore neighbors (forward, and perpendicular directions)
-		const neighbors = getNeighbors(current, gridSize, turnPenalty);
-
-		for (const neighbor of neighbors) {
-			const neighborKey = nodeKey(neighbor);
-			if (closedSet.has(neighborKey)) continue;
-
-			// Check if path to neighbor intersects any obstacle
-			const segment = { p1: { x: current.x, y: current.y }, p2: { x: neighbor.x, y: neighbor.y } };
-			const intersectsObstacle = obstacles.some((o) => segmentIntersectsAABB(segment, o));
-			if (intersectsObstacle) continue;
-
-			// Calculate heuristic
-			neighbor.h = heuristic(neighbor, gridEnd, effectiveEndHeading, turnPenalty);
-			neighbor.f = neighbor.g + neighbor.h;
-			neighbor.parent = current;
-
-			// Check if already in open set with better score
-			const existingIdx = openSet.findIndex(
-				(n) => n.x === neighbor.x && n.y === neighbor.y && n.heading === neighbor.heading
-			);
-
-			if (existingIdx === -1) {
-				openSet.push(neighbor);
-			} else if (neighbor.g < openSet[existingIdx].g) {
-				openSet[existingIdx] = neighbor;
-			}
-		}
-	}
-
-	// No path found
 	return {
-		points: generateSimplePath(start, end, startHeading, endHeading),
-		success: false,
-		debug: { nodesExplored, pathLength: 0 }
+		dynamicAABBs,
+		startDonglePosition,
+		startGlobalPoint: startPoint,
+		startHeading,
+		endDonglePosition,
+		endGlobalPoint: endPoint,
+		endHeading,
+		commonBounds
 	};
 }
 
+// =============================================================================
+// Dynamic AABB Generation
+// =============================================================================
+
 /**
- * Create start nodes for A* search.
+ * Calculate offset values based on heading direction.
+ * Returns [top, right, bottom, left] offsets.
  */
-function createStartNodes(start: Point, heading: Heading): PathNode[] {
-	return [
-		{
-			x: start.x,
-			y: start.y,
-			heading,
-			g: 0,
-			h: 0,
-			f: 0,
-			parent: null
-		}
+function offsetFromHeading(
+	heading: Heading,
+	head: number,
+	side: number
+): [number, number, number, number] {
+	if (compareHeading(heading, HEADING_UP)) {
+		return [head, side, side, side];
+	}
+	if (compareHeading(heading, HEADING_RIGHT)) {
+		return [side, head, side, side];
+	}
+	if (compareHeading(heading, HEADING_DOWN)) {
+		return [side, side, head, side];
+	}
+	// HEADING_LEFT
+	return [side, side, side, head];
+}
+
+/**
+ * Generate dynamic AABBs for start and end elements.
+ * These AABBs are expanded differently based on the heading direction
+ * to create a "corridor" for the arrow to exit/enter.
+ */
+function generateDynamicAABBs(
+	startBounds: Bounds,
+	endBounds: Bounds,
+	commonBounds: Bounds,
+	startOffset: [number, number, number, number],
+	endOffset: [number, number, number, number]
+): [Bounds, Bounds] {
+	const [startUp, startRight, startDown, startLeft] = startOffset;
+	const [endUp, endRight, endDown, endLeft] = endOffset;
+
+	const a = startBounds;
+	const b = endBounds;
+
+	// First AABB (start element)
+	const first: Bounds = [
+		a[0] > b[2]
+			? Math.min((a[0] + b[2]) / 2, a[0] - startLeft)
+			: a[0] > b[0]
+				? a[0] - startLeft
+				: commonBounds[0] - startLeft,
+		a[1] > b[3]
+			? Math.min((a[1] + b[3]) / 2, a[1] - startUp)
+			: a[1] > b[1]
+				? a[1] - startUp
+				: commonBounds[1] - startUp,
+		a[2] < b[0]
+			? Math.max((a[2] + b[0]) / 2, a[2] + startRight)
+			: a[2] < b[2]
+				? a[2] + startRight
+				: commonBounds[2] + startRight,
+		a[3] < b[1]
+			? Math.max((a[3] + b[1]) / 2, a[3] + startDown)
+			: a[3] < b[3]
+				? a[3] + startDown
+				: commonBounds[3] + startDown
 	];
+
+	// Second AABB (end element)
+	const second: Bounds = [
+		b[0] > a[2]
+			? Math.min((b[0] + a[2]) / 2, b[0] - endLeft)
+			: b[0] > a[0]
+				? b[0] - endLeft
+				: commonBounds[0] - endLeft,
+		b[1] > a[3]
+			? Math.min((b[1] + a[3]) / 2, b[1] - endUp)
+			: b[1] > a[1]
+				? b[1] - endUp
+				: commonBounds[1] - endUp,
+		b[2] < a[0]
+			? Math.max((b[2] + a[0]) / 2, b[2] + endRight)
+			: b[2] < a[2]
+				? b[2] + endRight
+				: commonBounds[2] + endRight,
+		b[3] < a[1]
+			? Math.max((b[3] + a[1]) / 2, b[3] + endDown)
+			: b[3] < a[3]
+				? b[3] + endDown
+				: commonBounds[3] + endDown
+	];
+
+	return [first, second];
+}
+
+/**
+ * Get the dongle position - the point where the arrow should exit/enter
+ * the dynamic AABB in the given heading direction.
+ */
+function getDonglePosition(bounds: Bounds, heading: Heading, point: Point): Point {
+	if (compareHeading(heading, HEADING_UP)) {
+		return { x: point.x, y: bounds[1] };
+	}
+	if (compareHeading(heading, HEADING_RIGHT)) {
+		return { x: bounds[2], y: point.y };
+	}
+	if (compareHeading(heading, HEADING_DOWN)) {
+		return { x: point.x, y: bounds[3] };
+	}
+	// HEADING_LEFT
+	return { x: bounds[0], y: point.y };
+}
+
+// =============================================================================
+// Grid Calculation
+// =============================================================================
+
+/**
+ * Calculate the navigation grid for A* pathfinding.
+ * Creates a non-uniform grid with lines at AABB boundaries.
+ */
+function calculateGrid(
+	aabbs: Bounds[],
+	start: Point,
+	startHeading: Heading,
+	end: Point,
+	endHeading: Heading,
+	commonBounds: Bounds
+): Grid {
+	const horizontal = new Set<number>();
+	const vertical = new Set<number>();
+
+	// ALWAYS add start and end positions to ensure they're in the grid
+	horizontal.add(start.x);
+	vertical.add(start.y);
+	horizontal.add(end.x);
+	vertical.add(end.y);
+
+	// Add start position line based on heading
+	if (headingIsHorizontal(startHeading)) {
+		vertical.add(start.y);
+	} else {
+		horizontal.add(start.x);
+	}
+
+	// Add end position line based on heading
+	if (headingIsHorizontal(endHeading)) {
+		vertical.add(end.y);
+	} else {
+		horizontal.add(end.x);
+	}
+
+	// Add AABB boundaries
+	for (const aabb of aabbs) {
+		horizontal.add(aabb[0]); // minX
+		horizontal.add(aabb[2]); // maxX
+		vertical.add(aabb[1]); // minY
+		vertical.add(aabb[3]); // maxY
+	}
+
+	// Add common bounds
+	horizontal.add(commonBounds[0]);
+	horizontal.add(commonBounds[2]);
+	vertical.add(commonBounds[1]);
+	vertical.add(commonBounds[3]);
+
+	// Sort and create grid
+	const sortedHorizontal = Array.from(horizontal).sort((a, b) => a - b);
+	const sortedVertical = Array.from(vertical).sort((a, b) => a - b);
+
+	const rows = sortedVertical.length;
+	const cols = sortedHorizontal.length;
+
+	const data: (Node | null)[] = sortedVertical.flatMap((y, row) =>
+		sortedHorizontal.map(
+			(x, col): Node => ({
+				f: 0,
+				g: 0,
+				h: 0,
+				closed: false,
+				visited: false,
+				parent: null,
+				addr: [col, row],
+				pos: { x, y }
+			})
+		)
+	);
+
+	return { row: rows, col: cols, data };
+}
+
+/**
+ * Find a grid node at the given position.
+ */
+function pointToGridNode(point: Point, grid: Grid): Node | null {
+	for (let col = 0; col < grid.col; col++) {
+		for (let row = 0; row < grid.row; row++) {
+			const candidate = gridNodeFromAddr([col, row], grid);
+			if (candidate && point.x === candidate.pos.x && point.y === candidate.pos.y) {
+				return candidate;
+			}
+		}
+	}
+	return null;
+}
+
+/**
+ * Get a grid node by address.
+ */
+function gridNodeFromAddr(addr: GridAddress, grid: Grid): Node | null {
+	const [col, row] = addr;
+	if (col < 0 || col >= grid.col || row < 0 || row >= grid.row) {
+		return null;
+	}
+	return grid.data[row * grid.col + col] ?? null;
 }
 
 /**
  * Get neighboring nodes for A* expansion.
+ * Returns [up, right, down, left] neighbors.
  */
-function getNeighbors(node: PathNode, gridSize: number, turnPenalty: number): PathNode[] {
-	const neighbors: PathNode[] = [];
-	const allHeadings: Heading[] = ['up', 'down', 'left', 'right'];
+function getNeighbors(
+	addr: GridAddress,
+	grid: Grid
+): [Node | null, Node | null, Node | null, Node | null] {
+	const [col, row] = addr;
+	return [
+		gridNodeFromAddr([col, row - 1], grid), // up
+		gridNodeFromAddr([col + 1, row], grid), // right
+		gridNodeFromAddr([col, row + 1], grid), // down
+		gridNodeFromAddr([col - 1, row], grid) // left
+	];
+}
 
-	for (const heading of allHeadings) {
-		const vec = HEADING_VECTORS[heading];
-		const newX = node.x + vec.x * gridSize;
-		const newY = node.y + vec.y * gridSize;
+// =============================================================================
+// A* Pathfinding
+// =============================================================================
 
-		// Calculate movement cost
-		let cost = gridSize;
+/**
+ * A* pathfinding algorithm with cubic turn penalties.
+ */
+function astar(
+	start: Node,
+	end: Node,
+	grid: Grid,
+	startHeading: Heading,
+	endHeading: Heading,
+	aabbs: Bounds[]
+): Node[] | null {
+	// Bend multiplier based on total distance
+	const bendMultiplier = manhattanDistance(start.pos, end.pos);
 
-		// Add turn penalty if changing direction
-		if (heading !== node.heading) {
-			if (areHeadingsPerpendicular(heading, node.heading)) {
-				cost += gridSize * turnPenalty;
-			} else {
-				// Going backwards - very expensive
-				cost += gridSize * turnPenalty * 10;
-			}
+	// Binary heap for efficient node selection
+	const open: Node[] = [start];
+
+	while (open.length > 0) {
+		// Sort by f score and get lowest
+		open.sort((a, b) => a.f - b.f);
+		const current = open.shift()!;
+
+		if (!current || current.closed) {
+			continue;
 		}
 
-		neighbors.push({
-			x: newX,
-			y: newY,
-			heading,
-			g: node.g + cost,
-			h: 0,
-			f: 0,
-			parent: null
-		});
+		// Goal reached
+		if (current === end) {
+			return pathTo(start, current);
+		}
+
+		// Mark as closed
+		current.closed = true;
+
+		// Get neighbors
+		const neighbors = getNeighbors(current.addr, grid);
+
+		for (let i = 0; i < 4; i++) {
+			const neighbor = neighbors[i];
+
+			if (!neighbor || neighbor.closed) {
+				continue;
+			}
+
+			// Check if midpoint intersects any AABB
+			const midpoint: Point = {
+				x: (current.pos.x + neighbor.pos.x) / 2,
+				y: (current.pos.y + neighbor.pos.y) / 2
+			};
+
+			let intersectsObstacle = false;
+			for (const aabb of aabbs) {
+				if (pointInsideBounds(midpoint, aabb)) {
+					intersectsObstacle = true;
+					break;
+				}
+			}
+			if (intersectsObstacle) {
+				continue;
+			}
+
+			// Calculate heading for this move
+			const neighborHeading = neighborIndexToHeading(i as 0 | 1 | 2 | 3);
+
+			// Get previous direction
+			const previousDirection = current.parent
+				? vectorToHeading([
+						current.pos.x - current.parent.pos.x,
+						current.pos.y - current.parent.pos.y
+					])
+				: startHeading;
+
+			// Don't allow going backwards
+			const reverseHeading = flipHeading(previousDirection);
+			if (
+				compareHeading(reverseHeading, neighborHeading) ||
+				(gridAddressesEqual(start.addr, neighbor.addr) &&
+					compareHeading(neighborHeading, startHeading)) ||
+				(gridAddressesEqual(end.addr, neighbor.addr) && compareHeading(neighborHeading, endHeading))
+			) {
+				continue;
+			}
+
+			// Calculate g score with cubic turn penalty
+			const directionChange = !compareHeading(previousDirection, neighborHeading);
+			const gScore =
+				current.g +
+				manhattanDistance(neighbor.pos, current.pos) +
+				(directionChange ? Math.pow(bendMultiplier, 3) : 0);
+
+			const beenVisited = neighbor.visited;
+
+			if (!beenVisited || gScore < neighbor.g) {
+				// Estimate remaining bends
+				const estBendCount = estimateSegmentCount(neighbor, end, neighborHeading, endHeading);
+
+				// Update node
+				neighbor.visited = true;
+				neighbor.parent = current;
+				neighbor.h =
+					manhattanDistance(end.pos, neighbor.pos) + estBendCount * Math.pow(bendMultiplier, 2);
+				neighbor.g = gScore;
+				neighbor.f = neighbor.g + neighbor.h;
+
+				if (!beenVisited) {
+					open.push(neighbor);
+				}
+			}
+		}
 	}
 
-	return neighbors;
-}
-
-/**
- * Heuristic function for A* (Manhattan distance with turn estimate).
- */
-function heuristic(node: PathNode, goal: Point, goalHeading: Heading, turnPenalty: number): number {
-	const dx = Math.abs(node.x - goal.x);
-	const dy = Math.abs(node.y - goal.y);
-	const manhattan = dx + dy;
-
-	// Estimate turns needed
-	let turnEstimate = 0;
-
-	// If not aligned with goal, we need at least one turn
-	if (dx > 0 && dy > 0) {
-		turnEstimate = 1;
-	}
-
-	// If current heading doesn't match goal heading, might need another turn
-	if (node.heading !== goalHeading && !areHeadingsPerpendicular(node.heading, goalHeading)) {
-		turnEstimate++;
-	}
-
-	return manhattan + turnEstimate * turnPenalty * 10;
-}
-
-/**
- * Check if a node is at the goal position.
- */
-function isAtGoal(node: PathNode, goal: Point, goalHeading: Heading, gridSize: number): boolean {
-	const dx = Math.abs(node.x - goal.x);
-	const dy = Math.abs(node.y - goal.y);
-
-	// Within one grid cell of goal
-	if (dx <= gridSize && dy <= gridSize) {
-		// Check if heading is compatible
-		return node.heading === goalHeading || areHeadingsPerpendicular(node.heading, goalHeading);
-	}
-
-	return false;
-}
-
-/**
- * Generate a unique key for a node.
- */
-function nodeKey(node: PathNode): string {
-	return `${node.x},${node.y},${node.heading}`;
+	return null;
 }
 
 /**
  * Reconstruct path from A* result.
  */
-function reconstructPath(endNode: PathNode): Point[] {
-	const path: Point[] = [];
-	let current: PathNode | null = endNode;
+function pathTo(start: Node, node: Node): Node[] {
+	let curr: Node | null = node;
+	const path: Node[] = [];
 
-	while (current) {
-		path.unshift({ x: current.x, y: current.y });
-		current = current.parent;
+	while (curr?.parent) {
+		path.unshift(curr);
+		curr = curr.parent;
 	}
+	path.unshift(start);
 
 	return path;
 }
 
 /**
- * Simplify path by removing collinear points.
+ * Estimate the number of turns needed to reach the goal.
  */
-function simplifyPath(path: Point[]): Point[] {
-	if (path.length <= 2) return path;
+function estimateSegmentCount(
+	start: Node,
+	end: Node,
+	startHeading: Heading,
+	endHeading: Heading
+): number {
+	const sx = start.pos.x;
+	const sy = start.pos.y;
+	const ex = end.pos.x;
+	const ey = end.pos.y;
 
-	const simplified: Point[] = [path[0]];
-
-	for (let i = 1; i < path.length - 1; i++) {
-		const prev = simplified[simplified.length - 1];
-		const curr = path[i];
-		const next = path[i + 1];
-
-		// Check if current point is on the same line as prev and next
-		if (!areCollinear(prev, curr, next)) {
-			simplified.push(curr);
+	// This is a simplified version - Excalidraw has a more complex estimation
+	if (compareHeading(endHeading, HEADING_RIGHT)) {
+		if (compareHeading(startHeading, HEADING_RIGHT)) {
+			if (sx >= ex) return 4;
+			if (sy === ey) return 0;
+			return 2;
 		}
+		if (compareHeading(startHeading, HEADING_UP)) {
+			if (sy > ey && sx < ex) return 1;
+			return 3;
+		}
+		if (compareHeading(startHeading, HEADING_DOWN)) {
+			if (sy < ey && sx < ex) return 1;
+			return 3;
+		}
+		// HEADING_LEFT
+		if (sy === ey) return 4;
+		return 2;
 	}
 
-	simplified.push(path[path.length - 1]);
+	if (compareHeading(endHeading, HEADING_LEFT)) {
+		if (compareHeading(startHeading, HEADING_RIGHT)) {
+			if (sy === ey) return 4;
+			return 2;
+		}
+		if (compareHeading(startHeading, HEADING_UP)) {
+			if (sy > ey && sx > ex) return 1;
+			return 3;
+		}
+		if (compareHeading(startHeading, HEADING_DOWN)) {
+			if (sy < ey && sx > ex) return 1;
+			return 3;
+		}
+		// HEADING_LEFT
+		if (sx <= ex) return 4;
+		if (sy === ey) return 0;
+		return 2;
+	}
 
-	return simplified;
+	if (compareHeading(endHeading, HEADING_UP)) {
+		if (compareHeading(startHeading, HEADING_RIGHT)) {
+			if (sy > ey && sx < ex) return 1;
+			return 3;
+		}
+		if (compareHeading(startHeading, HEADING_UP)) {
+			if (sy >= ey) return 4;
+			if (sx === ex) return 0;
+			return 2;
+		}
+		if (compareHeading(startHeading, HEADING_DOWN)) {
+			if (sx === ex) return 4;
+			return 2;
+		}
+		// HEADING_LEFT
+		if (sy > ey && sx > ex) return 1;
+		return 3;
+	}
+
+	// HEADING_DOWN
+	if (compareHeading(startHeading, HEADING_RIGHT)) {
+		if (sy < ey && sx < ex) return 1;
+		return 3;
+	}
+	if (compareHeading(startHeading, HEADING_UP)) {
+		if (sx === ex) return 4;
+		return 2;
+	}
+	if (compareHeading(startHeading, HEADING_DOWN)) {
+		if (sy <= ey) return 4;
+		if (sx === ex) return 0;
+		return 2;
+	}
+	// HEADING_LEFT
+	if (sy < ey && sx > ex) return 1;
+	return 3;
 }
 
+// =============================================================================
+// Post-processing
+// =============================================================================
+
 /**
- * Check if three points are collinear.
+ * Remove segments that are too short.
  */
-function areCollinear(p1: Point, p2: Point, p3: Point): boolean {
-	// Use cross product - if zero (or very small), points are collinear
-	const cross = (p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x);
-	return Math.abs(cross) < 0.001;
+function removeElbowArrowShortSegments(points: Point[]): Point[] {
+	if (points.length < 4) {
+		return points;
+	}
+
+	return points.filter((p, idx) => {
+		if (idx === 0 || idx === points.length - 1) {
+			return true;
+		}
+
+		const prev = points[idx - 1];
+		const dist = manhattanDistance(prev, p);
+		return dist > DEDUP_THRESHOLD;
+	});
+}
+
+/**
+ * Keep only corner points (where direction changes).
+ */
+function getElbowArrowCornerPoints(points: Point[]): Point[] {
+	if (points.length <= 2) {
+		return points;
+	}
+
+	let previousHorizontal =
+		Math.abs(points[0].y - points[1].y) < Math.abs(points[0].x - points[1].x);
+
+	return points.filter((p, idx) => {
+		// Always keep first and last
+		if (idx === 0 || idx === points.length - 1) {
+			return true;
+		}
+
+		const next = points[idx + 1];
+		const nextHorizontal = Math.abs(p.y - next.y) < Math.abs(p.x - next.x);
+
+		if (previousHorizontal === nextHorizontal) {
+			previousHorizontal = nextHorizontal;
+			return false;
+		}
+
+		previousHorizontal = nextHorizontal;
+		return true;
+	});
 }
 
 // =============================================================================
-// Simple Path Generation (Fallback)
+// Fallback Simple Path
 // =============================================================================
 
 /**
- * Generate a simple L-shape or Z-shape path.
+ * Generate a simple L-shape or Z-shape path as fallback.
  */
 function generateSimplePath(
 	start: Point,
 	end: Point,
-	startHeading: Heading | null,
-	endHeading: Heading | null
+	startHeading: Heading,
+	endHeading: Heading
 ): Point[] {
-	const dx = end.x - start.x;
-	const dy = end.y - start.y;
+	// If headings are perpendicular, use simple L-shape
+	const startIsHorizontal = headingIsHorizontal(startHeading);
+	const endIsHorizontal = headingIsHorizontal(endHeading);
 
-	// If headings are specified and perpendicular, use simple L-shape
-	if (startHeading && endHeading && areHeadingsPerpendicular(startHeading, endHeading)) {
-		const startVec = HEADING_VECTORS[startHeading];
-
-		if (startVec.x !== 0) {
-			// Start horizontal
+	if (startIsHorizontal !== endIsHorizontal) {
+		// L-shape
+		if (startIsHorizontal) {
 			return [start, { x: end.x, y: start.y }, end];
 		} else {
-			// Start vertical
 			return [start, { x: start.x, y: end.y }, end];
 		}
 	}
 
-	// If headings are same or opposite, need Z-shape (two turns)
-	if (startHeading && endHeading) {
-		const startVec = HEADING_VECTORS[startHeading];
-
-		if (startVec.x !== 0) {
-			// Start and end horizontal - need vertical middle segment
-			const midX = (start.x + end.x) / 2;
-			return [start, { x: midX, y: start.y }, { x: midX, y: end.y }, end];
-		} else {
-			// Start and end vertical - need horizontal middle segment
-			const midY = (start.y + end.y) / 2;
-			return [start, { x: start.x, y: midY }, { x: end.x, y: midY }, end];
-		}
-	}
-
-	// No headings - use simple L based on distance
-	if (Math.abs(dx) >= Math.abs(dy)) {
-		// Horizontal first
-		return [start, { x: end.x, y: start.y }, end];
+	// Same orientation - need Z-shape (two turns)
+	if (startIsHorizontal) {
+		const midX = (start.x + end.x) / 2;
+		return [start, { x: midX, y: start.y }, { x: midX, y: end.y }, end];
 	} else {
-		// Vertical first
-		return [start, { x: start.x, y: end.y }, end];
+		const midY = (start.y + end.y) / 2;
+		return [start, { x: start.x, y: midY }, { x: end.x, y: midY }, end];
 	}
 }
 
@@ -434,99 +803,55 @@ function generateSimplePath(
 // =============================================================================
 
 /**
- * Calculate Euclidean distance between two points.
+ * Manhattan distance between two points.
  */
-function distance(p1: Point, p2: Point): number {
-	const dx = p2.x - p1.x;
-	const dy = p2.y - p1.y;
-	return Math.sqrt(dx * dx + dy * dy);
+function manhattanDistance(a: Point, b: Point): number {
+	return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
 
 /**
- * Snap a point to the nearest grid position.
+ * Create bounds from a single point (zero-size bounds).
  */
-function snapToGrid(point: Point, gridSize: number): Point {
-	return {
-		x: Math.round(point.x / gridSize) * gridSize,
-		y: Math.round(point.y / gridSize) * gridSize
-	};
+function pointToBounds(p: Point): Bounds {
+	return [p.x - 2, p.y - 2, p.x + 2, p.y + 2];
 }
 
 /**
- * Guess the best heading from one point toward another.
+ * Expand bounds by a margin.
  */
-function guessHeading(from: Point, to: Point): Heading {
-	const dx = to.x - from.x;
-	const dy = to.y - from.y;
+function expandBounds(bounds: Bounds, margin: number): Bounds {
+	return [bounds[0] - margin, bounds[1] - margin, bounds[2] + margin, bounds[3] + margin];
+}
 
-	if (Math.abs(dx) > Math.abs(dy)) {
-		return dx > 0 ? 'right' : 'left';
-	} else {
-		return dy > 0 ? 'down' : 'up';
-	}
+/**
+ * Combine multiple bounds into one that contains all.
+ */
+function combineBounds(boundsList: Bounds[]): Bounds {
+	return [
+		Math.min(...boundsList.map((b) => b[0])),
+		Math.min(...boundsList.map((b) => b[1])),
+		Math.max(...boundsList.map((b) => b[2])),
+		Math.max(...boundsList.map((b) => b[3]))
+	];
+}
+
+/**
+ * Check if two grid addresses are equal.
+ */
+function gridAddressesEqual(a: GridAddress, b: GridAddress): boolean {
+	return a[0] === b[0] && a[1] === b[1];
 }
 
 // =============================================================================
-// Path Validation
+// Validation
 // =============================================================================
 
 /**
- * Check if a path is valid (no intersections with obstacles).
+ * Validate that elbow points are properly orthogonal.
  */
-export function isPathValid(path: readonly Point[], obstacles: readonly AABB[]): boolean {
-	if (path.length < 2) return true;
-
-	for (let i = 0; i < path.length - 1; i++) {
-		const segment = { p1: path[i], p2: path[i + 1] };
-
-		for (const obstacle of obstacles) {
-			if (segmentIntersectsAABB(segment, obstacle)) {
-				return false;
-			}
-		}
-	}
-
-	return true;
-}
-
-/**
- * Calculate the total length of a path.
- */
-export function calculatePathLength(path: readonly Point[]): number {
-	let length = 0;
-
-	for (let i = 0; i < path.length - 1; i++) {
-		length += distance(path[i], path[i + 1]);
-	}
-
-	return length;
-}
-
-/**
- * Count the number of turns (direction changes) in a path.
- */
-export function countPathTurns(path: readonly Point[]): number {
-	if (path.length < 3) return 0;
-
-	let turns = 0;
-
-	for (let i = 1; i < path.length - 1; i++) {
-		const prev = path[i - 1];
-		const curr = path[i];
-		const next = path[i + 1];
-
-		// Check if direction changes at this point
-		const dx1 = curr.x - prev.x;
-		const dy1 = curr.y - prev.y;
-		const dx2 = next.x - curr.x;
-		const dy2 = next.y - curr.y;
-
-		// If cross product is non-zero, there's a turn
-		const cross = dx1 * dy2 - dy1 * dx2;
-		if (Math.abs(cross) > 0.001) {
-			turns++;
-		}
-	}
-
-	return turns;
+export function validateElbowPoints(points: Point[], tolerance: number = DEDUP_THRESHOLD): boolean {
+	return points.slice(1).every((p, i) => {
+		const prev = points[i];
+		return Math.abs(p.x - prev.x) < tolerance || Math.abs(p.y - prev.y) < tolerance;
+	});
 }

@@ -253,18 +253,38 @@ export const DEFAULT_START_ARROWHEAD: Arrowhead | null = null;
 export const DEFAULT_END_ARROWHEAD: Arrowhead = 'arrow';
 
 /**
- * Heading direction for elbow arrow routing (like Excalidraw)
- * Determines the direction an arrow enters or exits a shape
+ * Heading direction for elbow arrow routing (Excalidraw-style)
+ * Tuple [dx, dy] representing cardinal direction unit vectors
+ * Used for determining arrow entry/exit directions from shapes
  */
-export type Heading = 'up' | 'down' | 'left' | 'right';
+export type Heading = readonly [1, 0] | readonly [0, 1] | readonly [-1, 0] | readonly [0, -1];
 
-/** Heading labels for UI */
-export const HEADING_LABELS: Record<Heading, string> = {
-	up: 'Haut',
-	down: 'Bas',
-	left: 'Gauche',
-	right: 'Droite'
+/** Heading constants - cardinal direction unit vectors */
+export const HEADING_RIGHT: Heading = [1, 0] as const;
+export const HEADING_DOWN: Heading = [0, 1] as const;
+export const HEADING_LEFT: Heading = [-1, 0] as const;
+export const HEADING_UP: Heading = [0, -1] as const;
+
+/** All headings for iteration */
+export const ALL_HEADINGS: readonly Heading[] = [
+	HEADING_UP,
+	HEADING_RIGHT,
+	HEADING_DOWN,
+	HEADING_LEFT
+] as const;
+
+/** Heading labels for UI (keyed by string representation) */
+export const HEADING_LABELS: Record<string, string> = {
+	'0,-1': 'Haut',
+	'0,1': 'Bas',
+	'-1,0': 'Gauche',
+	'1,0': 'Droite'
 };
+
+/** Convert heading to display label */
+export function getHeadingLabel(heading: Heading): string {
+	return HEADING_LABELS[`${heading[0]},${heading[1]}`] ?? 'Inconnu';
+}
 
 /**
  * @deprecated Use arrowType: 'elbow' with heading system instead

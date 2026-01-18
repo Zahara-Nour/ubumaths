@@ -1,168 +1,121 @@
 /**
- * Heading System for Elbow Arrow Routing
+ * Heading System for Elbow Arrow Routing (Excalidraw-style)
  *
- * Headings represent cardinal directions (up, down, left, right) that determine
- * how arrows enter or exit shapes. This is similar to Excalidraw's heading system.
+ * Headings are cardinal direction unit vectors [dx, dy] that determine
+ * how arrows enter or exit shapes. This module provides utilities for
+ * working with headings in the elbow arrow routing system.
  *
  * @module whiteboard/core/heading
  */
 
-import type { Point, Heading, ShapeElement } from '../types/document';
-import { getShapeBounds } from './binding-geometry';
+import type { Point, ShapeElement, Heading } from '../types/document';
+import {
+	HEADING_UP,
+	HEADING_DOWN,
+	HEADING_LEFT,
+	HEADING_RIGHT,
+	ALL_HEADINGS
+} from '../types/document';
+
+// Re-export constants for convenience
+export { HEADING_UP, HEADING_DOWN, HEADING_LEFT, HEADING_RIGHT, ALL_HEADINGS, type Heading };
 
 // =============================================================================
-// Types
-// =============================================================================
-
-/** Vector representation of a heading */
-export interface HeadingVector {
-	readonly x: number;
-	readonly y: number;
-}
-
-/** Heading with its perpendicular alternatives */
-export interface HeadingInfo {
-	readonly heading: Heading;
-	readonly vector: HeadingVector;
-	readonly perpendiculars: readonly [Heading, Heading];
-	readonly opposite: Heading;
-}
-
-// =============================================================================
-// Constants
-// =============================================================================
-
-/** Heading vectors (unit vectors in each direction) */
-export const HEADING_VECTORS: Record<Heading, HeadingVector> = {
-	up: { x: 0, y: -1 },
-	down: { x: 0, y: 1 },
-	left: { x: -1, y: 0 },
-	right: { x: 1, y: 0 }
-};
-
-/** All heading values */
-export const ALL_HEADINGS: readonly Heading[] = ['up', 'down', 'left', 'right'];
-
-/** Perpendicular headings for each heading */
-export const PERPENDICULAR_HEADINGS: Record<Heading, readonly [Heading, Heading]> = {
-	up: ['left', 'right'],
-	down: ['left', 'right'],
-	left: ['up', 'down'],
-	right: ['up', 'down']
-};
-
-/** Opposite heading for each heading */
-export const OPPOSITE_HEADINGS: Record<Heading, Heading> = {
-	up: 'down',
-	down: 'up',
-	left: 'right',
-	right: 'left'
-};
-
-// =============================================================================
-// Heading Utilities
+// Heading Comparison
 // =============================================================================
 
 /**
- * Get the vector for a heading.
+ * Compare two headings for equality.
  */
-export function getHeadingVector(heading: Heading): HeadingVector {
-	return HEADING_VECTORS[heading];
+export function compareHeading(a: Heading, b: Heading): boolean {
+	return a[0] === b[0] && a[1] === b[1];
 }
 
 /**
- * Get the opposite heading.
+ * Check if a heading is horizontal (LEFT or RIGHT).
  */
-export function getOppositeHeading(heading: Heading): Heading {
-	return OPPOSITE_HEADINGS[heading];
+export function headingIsHorizontal(h: Heading): boolean {
+	return h[0] !== 0;
 }
 
 /**
- * Get perpendicular headings.
+ * Check if a heading is vertical (UP or DOWN).
  */
-export function getPerpendicularHeadings(heading: Heading): readonly [Heading, Heading] {
-	return PERPENDICULAR_HEADINGS[heading];
-}
-
-/**
- * Get complete heading info.
- */
-export function getHeadingInfo(heading: Heading): HeadingInfo {
-	return {
-		heading,
-		vector: HEADING_VECTORS[heading],
-		perpendiculars: PERPENDICULAR_HEADINGS[heading],
-		opposite: OPPOSITE_HEADINGS[heading]
-	};
-}
-
-/**
- * Convert a direction vector to the nearest heading.
- */
-export function vectorToHeading(dx: number, dy: number): Heading {
-	// Determine if horizontal or vertical is dominant
-	if (Math.abs(dx) > Math.abs(dy)) {
-		return dx > 0 ? 'right' : 'left';
-	} else {
-		return dy > 0 ? 'down' : 'up';
-	}
-}
-
-/**
- * Convert an angle (in radians) to the nearest heading.
- */
-export function angleToHeading(angle: number): Heading {
-	// Normalize angle to [0, 2*PI)
-	const normalized = ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-
-	// Divide into quadrants (45-degree sectors around each cardinal direction)
-	if (normalized < Math.PI / 4 || normalized >= (7 * Math.PI) / 4) {
-		return 'right';
-	} else if (normalized < (3 * Math.PI) / 4) {
-		return 'down';
-	} else if (normalized < (5 * Math.PI) / 4) {
-		return 'left';
-	} else {
-		return 'up';
-	}
-}
-
-/**
- * Convert a heading to an angle (in radians).
- */
-export function headingToAngle(heading: Heading): number {
-	switch (heading) {
-		case 'right':
-			return 0;
-		case 'down':
-			return Math.PI / 2;
-		case 'left':
-			return Math.PI;
-		case 'up':
-			return (3 * Math.PI) / 2;
-	}
+export function headingIsVertical(h: Heading): boolean {
+	return h[1] !== 0;
 }
 
 /**
  * Check if two headings are perpendicular.
  */
-export function areHeadingsPerpendicular(h1: Heading, h2: Heading): boolean {
-	const perps = PERPENDICULAR_HEADINGS[h1];
-	return perps[0] === h2 || perps[1] === h2;
+export function areHeadingsPerpendicular(a: Heading, b: Heading): boolean {
+	// Perpendicular if one is horizontal and one is vertical
+	return headingIsHorizontal(a) !== headingIsHorizontal(b);
 }
 
 /**
  * Check if two headings are opposite.
  */
-export function areHeadingsOpposite(h1: Heading, h2: Heading): boolean {
-	return OPPOSITE_HEADINGS[h1] === h2;
+export function areHeadingsOpposite(a: Heading, b: Heading): boolean {
+	return a[0] === -b[0] && a[1] === -b[1];
+}
+
+// =============================================================================
+// Heading Transformations
+// =============================================================================
+
+/**
+ * Get the opposite (flipped) heading.
+ */
+export function flipHeading(h: Heading): Heading {
+	return [h[0] === 0 ? 0 : h[0] > 0 ? -1 : 1, h[1] === 0 ? 0 : h[1] > 0 ? -1 : 1] as Heading;
 }
 
 /**
- * Check if two headings are the same.
+ * Get perpendicular headings (the two headings that are 90 degrees from this one).
  */
-export function areHeadingsSame(h1: Heading, h2: Heading): boolean {
-	return h1 === h2;
+export function getPerpendicularHeadings(h: Heading): [Heading, Heading] {
+	if (headingIsHorizontal(h)) {
+		return [HEADING_UP, HEADING_DOWN];
+	}
+	return [HEADING_LEFT, HEADING_RIGHT];
+}
+
+// =============================================================================
+// Vector to Heading Conversion
+// =============================================================================
+
+/**
+ * Convert a direction vector to the nearest heading.
+ * Uses Excalidraw's algorithm for consistency.
+ */
+export function vectorToHeading(vec: readonly [number, number]): Heading {
+	const [x, y] = vec;
+	const absX = Math.abs(x);
+	const absY = Math.abs(y);
+
+	if (x > absY) {
+		return HEADING_RIGHT;
+	} else if (x <= -absY) {
+		return HEADING_LEFT;
+	} else if (y > absX) {
+		return HEADING_DOWN;
+	}
+	return HEADING_UP;
+}
+
+/**
+ * Convert two points to a heading (direction from p1 to p2).
+ */
+export function headingFromPoints(p1: Point, p2: Point): Heading {
+	return vectorToHeading([p2.x - p1.x, p2.y - p1.y]);
+}
+
+/**
+ * Determine if the direction from origin to point is horizontal.
+ */
+export function headingForPointIsHorizontal(p: Point, origin: Point): boolean {
+	return headingIsHorizontal(headingFromPoints(origin, p));
 }
 
 // =============================================================================
@@ -170,173 +123,170 @@ export function areHeadingsSame(h1: Heading, h2: Heading): boolean {
 // =============================================================================
 
 /**
- * Determine the heading for a point relative to a shape's center.
- * Returns the heading that points from the shape's center toward the point.
+ * Bounds type: [minX, minY, maxX, maxY] (Excalidraw-style)
  */
-export function getHeadingFromShapeToPoint(shape: ShapeElement, point: Point): Heading {
-	const bounds = getShapeBounds(shape);
-	const centerX = bounds.x + bounds.width / 2;
-	const centerY = bounds.y + bounds.height / 2;
+export type Bounds = readonly [number, number, number, number];
 
-	const dx = point.x - centerX;
-	const dy = point.y - centerY;
-
-	return vectorToHeading(dx, dy);
+/**
+ * Get bounds from a shape element.
+ */
+export function boundsFromShape(shape: ShapeElement): Bounds {
+	const minX = Math.min(shape.start.x, shape.end.x);
+	const minY = Math.min(shape.start.y, shape.end.y);
+	const maxX = Math.max(shape.start.x, shape.end.x);
+	const maxY = Math.max(shape.start.y, shape.end.y);
+	return [minX, minY, maxX, maxY];
 }
 
 /**
- * Determine the heading for exiting a shape toward a target point.
- * This considers which side of the shape is closest to the target.
+ * Get the center point of bounds.
+ */
+export function getCenterForBounds(bounds: Bounds): Point {
+	return {
+		x: (bounds[0] + bounds[2]) / 2,
+		y: (bounds[1] + bounds[3]) / 2
+	};
+}
+
+/**
+ * Check if a point is strictly inside bounds (not on the boundary).
+ * Uses strict inequalities so points on AABB edges are not considered inside,
+ * allowing dongle points on boundaries to work correctly in A* pathfinding.
+ */
+export function pointInsideBounds(p: Point, bounds: Bounds): boolean {
+	return p.x > bounds[0] && p.x < bounds[2] && p.y > bounds[1] && p.y < bounds[3];
+}
+
+/**
+ * Determine heading for a point from an element's bounding box.
+ * Uses search cones (triangular regions) around the center to determine
+ * which side of the element the point is closest to.
+ *
+ * This is the Excalidraw algorithm for rectangular elements.
+ */
+export function headingForPointFromElement(bounds: Bounds, point: Point): Heading {
+	const SEARCH_CONE_MULTIPLIER = 2;
+	const midPoint = getCenterForBounds(bounds);
+
+	// Scale corners outward to create search cones
+	const scalePoint = (px: number, py: number): Point => ({
+		x: midPoint.x + (px - midPoint.x) * SEARCH_CONE_MULTIPLIER,
+		y: midPoint.y + (py - midPoint.y) * SEARCH_CONE_MULTIPLIER
+	});
+
+	const topLeft = scalePoint(bounds[0], bounds[1]);
+	const topRight = scalePoint(bounds[2], bounds[1]);
+	const bottomLeft = scalePoint(bounds[0], bounds[3]);
+	const bottomRight = scalePoint(bounds[2], bounds[3]);
+
+	// Check which triangular region contains the point
+	if (triangleIncludesPoint([topLeft, topRight, midPoint], point)) {
+		return HEADING_UP;
+	}
+	if (triangleIncludesPoint([topRight, bottomRight, midPoint], point)) {
+		return HEADING_RIGHT;
+	}
+	if (triangleIncludesPoint([bottomRight, bottomLeft, midPoint], point)) {
+		return HEADING_DOWN;
+	}
+	return HEADING_LEFT;
+}
+
+/**
+ * Check if a point is inside a triangle using barycentric coordinates.
+ */
+function triangleIncludesPoint(triangle: [Point, Point, Point], point: Point): boolean {
+	const [a, b, c] = triangle;
+
+	const v0x = c.x - a.x;
+	const v0y = c.y - a.y;
+	const v1x = b.x - a.x;
+	const v1y = b.y - a.y;
+	const v2x = point.x - a.x;
+	const v2y = point.y - a.y;
+
+	const dot00 = v0x * v0x + v0y * v0y;
+	const dot01 = v0x * v1x + v0y * v1y;
+	const dot02 = v0x * v2x + v0y * v2y;
+	const dot11 = v1x * v1x + v1y * v1y;
+	const dot12 = v1x * v2x + v1y * v2y;
+
+	const invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+	const u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+	const v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+	return u >= 0 && v >= 0 && u + v <= 1;
+}
+
+/**
+ * Get the heading for exiting a shape toward a target point.
+ * Uses the search cone algorithm to determine which side to exit from.
  */
 export function getExitHeading(shape: ShapeElement, targetPoint: Point): Heading {
-	const bounds = getShapeBounds(shape);
-	const centerX = bounds.x + bounds.width / 2;
-	const centerY = bounds.y + bounds.height / 2;
-
-	// Direction from shape center to target
-	const dx = targetPoint.x - centerX;
-	const dy = targetPoint.y - centerY;
-
-	return vectorToHeading(dx, dy);
+	const bounds = boundsFromShape(shape);
+	return headingForPointFromElement(bounds, targetPoint);
 }
 
 /**
- * Determine the heading for entering a shape from a source point.
- * This is the opposite of the exit heading from source toward this shape.
+ * Get the heading for entering a shape from a source point.
+ * This is the opposite of the exit heading from the source toward this shape.
  */
 export function getEntryHeading(shape: ShapeElement, sourcePoint: Point): Heading {
-	const exitHeading = getExitHeading(shape, sourcePoint);
-	return getOppositeHeading(exitHeading);
+	const bounds = boundsFromShape(shape);
+	const headingTowardSource = headingForPointFromElement(bounds, sourcePoint);
+	return flipHeading(headingTowardSource);
 }
 
 /**
  * Get the point on a shape's perimeter in a given heading direction.
- * Useful for calculating where an arrow should connect to a shape.
  */
 export function getPerimeterPointForHeading(
-	shape: ShapeElement,
+	bounds: Bounds,
 	heading: Heading,
 	gap: number = 0
 ): Point {
-	const bounds = getShapeBounds(shape);
-	const centerX = bounds.x + bounds.width / 2;
-	const centerY = bounds.y + bounds.height / 2;
+	const center = getCenterForBounds(bounds);
 
-	switch (heading) {
-		case 'up':
-			return { x: centerX, y: bounds.y - gap };
-		case 'down':
-			return { x: centerX, y: bounds.y + bounds.height + gap };
-		case 'left':
-			return { x: bounds.x - gap, y: centerY };
-		case 'right':
-			return { x: bounds.x + bounds.width + gap, y: centerY };
+	if (compareHeading(heading, HEADING_UP)) {
+		return { x: center.x, y: bounds[1] - gap };
 	}
-}
-
-/**
- * Get all four perimeter points (one for each heading).
- */
-export function getAllPerimeterPoints(
-	shape: ShapeElement,
-	gap: number = 0
-): Record<Heading, Point> {
-	return {
-		up: getPerimeterPointForHeading(shape, 'up', gap),
-		down: getPerimeterPointForHeading(shape, 'down', gap),
-		left: getPerimeterPointForHeading(shape, 'left', gap),
-		right: getPerimeterPointForHeading(shape, 'right', gap)
-	};
+	if (compareHeading(heading, HEADING_DOWN)) {
+		return { x: center.x, y: bounds[3] + gap };
+	}
+	if (compareHeading(heading, HEADING_LEFT)) {
+		return { x: bounds[0] - gap, y: center.y };
+	}
+	// HEADING_RIGHT
+	return { x: bounds[2] + gap, y: center.y };
 }
 
 // =============================================================================
-// Routing Helpers
+// Neighbor Index Conversion (for A* grid navigation)
 // =============================================================================
 
 /**
- * Determine the best heading sequence for an elbow arrow.
- * Returns an array of headings representing the turns in the path.
- *
- * For a simple L-shaped elbow:
- * - If horizontal distance > vertical: start horizontal, then vertical
- * - Otherwise: start vertical, then horizontal
+ * Convert neighbor index (0-3) to heading.
+ * Used in A* pathfinding: 0=UP, 1=RIGHT, 2=DOWN, 3=LEFT
  */
-export function getSimpleElbowHeadings(start: Point, end: Point): [Heading, Heading] {
-	const dx = end.x - start.x;
-	const dy = end.y - start.y;
-
-	// First heading based on major axis
-	const firstHeading =
-		Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : dy > 0 ? 'down' : 'up';
-
-	// Second heading is perpendicular, toward the end point
-	const secondHeading =
-		firstHeading === 'left' || firstHeading === 'right'
-			? dy > 0
-				? 'down'
-				: 'up'
-			: dx > 0
-				? 'right'
-				: 'left';
-
-	return [firstHeading, secondHeading];
+export function neighborIndexToHeading(idx: 0 | 1 | 2 | 3): Heading {
+	switch (idx) {
+		case 0:
+			return HEADING_UP;
+		case 1:
+			return HEADING_RIGHT;
+		case 2:
+			return HEADING_DOWN;
+		case 3:
+			return HEADING_LEFT;
+	}
 }
 
 /**
- * Generate elbow points from start to end using simple L-shape routing.
- * Returns an array of points including start, elbow point, and end.
+ * Convert heading to neighbor index.
  */
-export function generateSimpleElbowPoints(
-	start: Point,
-	end: Point,
-	startHeading?: Heading | null,
-	endHeading?: Heading | null
-): Point[] {
-	// If headings are provided, use them to determine the elbow point
-	if (startHeading && endHeading) {
-		// Check if headings are compatible (perpendicular)
-		if (areHeadingsPerpendicular(startHeading, endHeading)) {
-			// Simple case: one 90-degree turn
-			let elbowX: number;
-			let elbowY: number;
-
-			if (startHeading === 'left' || startHeading === 'right') {
-				// Start horizontal, end vertical
-				elbowX = end.x;
-				elbowY = start.y;
-			} else {
-				// Start vertical, end horizontal
-				elbowX = start.x;
-				elbowY = end.y;
-			}
-
-			return [start, { x: elbowX, y: elbowY }, end];
-		}
-
-		// Same or opposite headings: need two turns
-		// This creates a Z or S shape
-		const midX = (start.x + end.x) / 2;
-		const midY = (start.y + end.y) / 2;
-
-		if (startHeading === 'left' || startHeading === 'right') {
-			// Horizontal start
-			return [start, { x: midX, y: start.y }, { x: midX, y: end.y }, end];
-		} else {
-			// Vertical start
-			return [start, { x: start.x, y: midY }, { x: end.x, y: midY }, end];
-		}
-	}
-
-	// No headings provided: use simple L-shape based on distance
-	const dx = end.x - start.x;
-	const dy = end.y - start.y;
-
-	// Determine direction based on which axis has more distance
-	if (Math.abs(dx) >= Math.abs(dy)) {
-		// Horizontal first
-		return [start, { x: end.x, y: start.y }, end];
-	} else {
-		// Vertical first
-		return [start, { x: start.x, y: end.y }, end];
-	}
+export function headingToNeighborIndex(h: Heading): 0 | 1 | 2 | 3 {
+	if (compareHeading(h, HEADING_UP)) return 0;
+	if (compareHeading(h, HEADING_RIGHT)) return 1;
+	if (compareHeading(h, HEADING_DOWN)) return 2;
+	return 3;
 }

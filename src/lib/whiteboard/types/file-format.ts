@@ -47,8 +47,13 @@ export const arrowWaypointSchema = z.object({
 /** Schema for arrowhead types (Excalidraw-style) */
 export const arrowheadSchema = z.enum(['arrow', 'triangle', 'circle', 'bar', 'diamond', 'none']);
 
-/** Schema for heading directions (for elbow arrow routing) */
-export const headingSchema = z.enum(['up', 'down', 'left', 'right']);
+/** Schema for heading directions (for elbow arrow routing) - Excalidraw-style tuples */
+export const headingSchema = z.union([
+	z.tuple([z.literal(1), z.literal(0)]), // RIGHT
+	z.tuple([z.literal(0), z.literal(1)]), // DOWN
+	z.tuple([z.literal(-1), z.literal(0)]), // LEFT
+	z.tuple([z.literal(0), z.literal(-1)]) // UP
+]);
 
 // =============================================================================
 // Element Schemas

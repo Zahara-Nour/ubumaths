@@ -28,7 +28,7 @@ import {
 	type BoundingBox
 } from './binding-geometry';
 import { routeElbowArrow } from './elbow-routing';
-import { getExitHeading, getEntryHeading } from './heading';
+import { getExitHeading, getEntryHeading, headingFromPoints } from './heading';
 
 // =============================================================================
 // Constants
@@ -340,7 +340,7 @@ export function createArrowWithBindings(
 	let calculatedEndHeading: Heading | null = options.endHeading ?? null;
 
 	if (effectiveArrowType === 'elbow') {
-		// For elbow arrows, use A* routing to avoid obstacles
+		// For elbow arrows, use A* routing
 
 		// Calculate headings from bindings (if bound to shapes)
 		if (startCandidate && !calculatedStartHeading) {
@@ -350,19 +350,20 @@ export function createArrowWithBindings(
 			calculatedEndHeading = getEntryHeading(endCandidate.element, adjustedStart);
 		}
 
-		// Get IDs to exclude from obstacle checking (the arrow itself and bound shapes)
-		const routeExcludeIds = new Set<string>([arrowId]);
-		if (startCandidate) routeExcludeIds.add(startCandidate.element.id);
-		if (endCandidate) routeExcludeIds.add(endCandidate.element.id);
+		// Default headings if not bound to shapes
+		const effectiveStartHeading =
+			calculatedStartHeading ?? headingFromPoints(adjustedStart, adjustedEnd);
+		const effectiveEndHeading =
+			calculatedEndHeading ?? headingFromPoints(adjustedEnd, adjustedStart);
 
 		// Route the elbow arrow using A* pathfinding
 		const routeResult = routeElbowArrow(
 			adjustedStart,
 			adjustedEnd,
-			calculatedStartHeading,
-			calculatedEndHeading,
-			elements,
-			routeExcludeIds
+			effectiveStartHeading,
+			effectiveEndHeading,
+			startCandidate?.element ?? null,
+			endCandidate?.element ?? null
 		);
 
 		points = routeResult.points;

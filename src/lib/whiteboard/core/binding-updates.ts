@@ -12,7 +12,7 @@ import type { ShapeElement, ArrowElement, WhiteboardElement, Heading } from '../
 import { createArrowPoints } from '../types/document';
 import { calculateBoundEndpoint, isArrowElement } from './binding';
 import { routeElbowArrow } from './elbow-routing';
-import { getExitHeading, getEntryHeading } from './heading';
+import { getExitHeading, getEntryHeading, headingFromPoints } from './heading';
 
 // =============================================================================
 // Types
@@ -137,31 +137,42 @@ export function updateBoundArrowsForShapes(
 				const newStart = boundAt === 'start' ? newPosition : updatedArrow.start;
 				const newEnd = boundAt === 'end' ? newPosition : updatedArrow.end;
 
+				// Find bound shapes
+				const startShape = currentArrow.startBinding
+					? (elements.find(
+							(e) => e.id === currentArrow.startBinding!.elementId && e.type === 'shape'
+						) as ShapeElement | undefined)
+					: undefined;
+				const endShape = currentArrow.endBinding
+					? (elements.find(
+							(e) => e.id === currentArrow.endBinding!.elementId && e.type === 'shape'
+						) as ShapeElement | undefined)
+					: undefined;
+
 				// Calculate headings from shapes
 				let startHeading: Heading | null = currentArrow.startHeading ?? null;
 				let endHeading: Heading | null = currentArrow.endHeading ?? null;
 
 				// Update heading if bound at that end
-				if (boundAt === 'start') {
-					startHeading = getExitHeading(targetShape, newEnd);
+				if (boundAt === 'start' && startShape) {
+					startHeading = getExitHeading(startShape, newEnd);
 				}
-				if (boundAt === 'end') {
-					endHeading = getEntryHeading(targetShape, newStart);
+				if (boundAt === 'end' && endShape) {
+					endHeading = getEntryHeading(endShape, newStart);
 				}
 
-				// Get IDs to exclude from obstacle checking
-				const routeExcludeIds = new Set<string>([arrow.id]);
-				if (currentArrow.startBinding) routeExcludeIds.add(currentArrow.startBinding.elementId);
-				if (currentArrow.endBinding) routeExcludeIds.add(currentArrow.endBinding.elementId);
+				// Ensure headings are never null for routing
+				const effectiveStartHeading = startHeading ?? headingFromPoints(newStart, newEnd);
+				const effectiveEndHeading = endHeading ?? headingFromPoints(newEnd, newStart);
 
 				// Route the elbow arrow
 				const routeResult = routeElbowArrow(
 					newStart,
 					newEnd,
-					startHeading,
-					endHeading,
-					elements,
-					routeExcludeIds
+					effectiveStartHeading,
+					effectiveEndHeading,
+					startShape ?? null,
+					endShape ?? null
 				);
 
 				updatedArrow = {
