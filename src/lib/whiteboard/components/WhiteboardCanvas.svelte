@@ -985,7 +985,9 @@
 				strokeStyle: toolState.strokeStyle,
 				arrowType: toolState.arrowType,
 				elbowed: toolState.elbowed,
-				elbowDirection: toolState.elbowDirection
+				elbowDirection: toolState.elbowDirection,
+				startArrowhead: toolState.startArrowhead,
+				endArrowhead: toolState.endArrowhead
 			});
 			// Add renderStyle properties
 			const arrowWithStyle = { ...arrow, renderStyle, roughSeed, roughness };
@@ -1060,7 +1062,9 @@
 			opacity: toolState.opacity,
 			strokeStyle: toolState.strokeStyle,
 			arrowType: 'curved',
-			waypoints
+			waypoints,
+			startArrowhead: toolState.startArrowhead,
+			endArrowhead: toolState.endArrowhead
 		});
 
 		// Add renderStyle properties

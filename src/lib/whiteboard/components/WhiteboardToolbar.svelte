@@ -51,6 +51,7 @@
 		FILL_MODE_LABELS,
 		ELBOW_DIRECTION_LABELS,
 		ARROW_TYPE_LABELS,
+		ARROWHEAD_LABELS,
 		SLOPPINESS_PRESETS,
 		getSloppinessPreset,
 		PAGE_FORMATS,
@@ -61,6 +62,7 @@
 		type PageFormatKey,
 		type ElbowDirection,
 		type ArrowType,
+		type Arrowhead,
 		type SloppinessPreset
 	} from '../types/document';
 
@@ -248,6 +250,8 @@
 	/** Current arrow type from toolbar/selection */
 	let currentArrowType = $derived(toolState.arrowType);
 	let currentElbowDirection = $derived(toolState.elbowDirection);
+	let currentStartArrowhead = $derived(toolState.startArrowhead);
+	let currentEndArrowhead = $derived(toolState.endArrowhead);
 
 	/** Current page background style */
 	let currentBackgroundStyle = $derived.by(() => {
@@ -398,6 +402,22 @@
 		// Apply to selected arrows if any
 		if (whiteboardStore.hasSelection) {
 			whiteboardStore.updateSelectedStyles({ elbowDirection: direction });
+		}
+	}
+
+	function handleStartArrowheadChange(arrowhead: Arrowhead | null) {
+		whiteboardStore.setStartArrowhead(arrowhead);
+		// Apply to selected arrows if any
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ startArrowhead: arrowhead });
+		}
+	}
+
+	function handleEndArrowheadChange(arrowhead: Arrowhead) {
+		whiteboardStore.setEndArrowhead(arrowhead);
+		// Apply to selected arrows if any
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ endArrowhead: arrowhead });
 		}
 	}
 
@@ -1167,6 +1187,34 @@
 								{/each}
 							</select>
 						{/if}
+						<!-- Arrowhead selectors -->
+						<div class="flex items-center gap-1">
+							<select
+								value={currentStartArrowhead ?? 'none'}
+								onchange={(e) => {
+									const value = (e.target as HTMLSelectElement).value;
+									handleStartArrowheadChange(value === 'none' ? null : (value as Arrowhead));
+								}}
+								class="h-7 rounded-md border border-border bg-background px-1.5 text-xs"
+								title="Pointe début"
+							>
+								{#each Object.entries(ARROWHEAD_LABELS) as [value, label] (value)}
+									<option {value}>{label}</option>
+								{/each}
+							</select>
+							<span class="text-xs text-muted-foreground">→</span>
+							<select
+								value={currentEndArrowhead ?? 'arrow'}
+								onchange={(e) =>
+									handleEndArrowheadChange((e.target as HTMLSelectElement).value as Arrowhead)}
+								class="h-7 rounded-md border border-border bg-background px-1.5 text-xs"
+								title="Pointe fin"
+							>
+								{#each Object.entries(ARROWHEAD_LABELS) as [value, label] (value)}
+									<option {value}>{label}</option>
+								{/each}
+							</select>
+						</div>
 					</div>
 				{/if}
 			</div>
