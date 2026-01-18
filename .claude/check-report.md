@@ -1,117 +1,88 @@
-# Rapport de Verification - 2026-01-11
+# Rapport de Verification - 2026-01-18
 
 ## Resume
-
-- Erreurs Prettier : 0 (pas de changements necessaires)
-- Erreurs ESLint : 0 corrigees (auto-fix applique)
-- Erreurs TypeScript : 29 corrigees
+- Erreurs Prettier : 0 (code deja formate)
+- Erreurs ESLint : 0 corrigees
+- Erreurs TypeScript : 10 corrigees
 - Erreurs Build : 0
-- Warnings analyses : 112
-- Warnings corriges : 0 (voir justification ci-dessous)
-- Warnings ignores (justifies) : 112
+- Warnings ESLint analyses : 128
+- Warnings ESLint corriges : 0 (voir justification)
 
 ## Corrections Majeures
 
-### 1. IntegrateOptions `_depth` Type Errors (11 instances + related)
+### 1. Types manquants dans database.ts
+Ajout des types suivants qui etaient importes mais non exportes:
+- `FriendshipStatus` - Type pour le statut d'amitie ('pending', 'accepted', 'rejected', 'blocked')
+- `FriendshipRelationType` - Type pour le type de relation ('friend', 'classmate', 'best_friend')
+- `FriendProfile` - Type pour les informations de profil d'ami avec presence
+- `FriendshipWithProfile` - Type composite pour les amities avec profil
+- `Class` - Alias pour `Database['public']['Tables']['classes']['Row']`
+- `ClassSchedule` - Alias pour `Database['public']['Tables']['class_schedules']['Row']`
 
-**Fichiers modifies :**
-- `src/lib/mathAST/integration/types.ts`
-- `src/lib/mathAST/integration/integrate.ts`
-- `src/lib/mathAST/integration/integrators/basic.ts`
-- `src/lib/mathAST/integration/integrators/partial-fractions.ts`
-- `src/lib/mathAST/integration/integrators/u-substitution.ts`
-- `src/lib/mathAST/integration/integrators/parts.ts`
-- `src/lib/mathAST/integration/integrators/trig-substitution.ts`
+**Fichier modifie**: `src/lib/types/database.ts:14501-14556`
 
-**Probleme :** Le type `Required<Omit<IntegrateOptions, 'variable'>>` incluait `_depth` comme requis avec type `number`, mais `DEFAULT_INTEGRATE_OPTIONS` definissait `_depth` comme `undefined`.
+### 2. Correction du type Uint8Array dans image-loader.ts
+Correction des erreurs de compatibilite TypeScript 5.7+ avec les types generiques Uint8Array:
+- Ajout de types explicites `Uint8Array<ArrayBuffer>` pour la fonction `convertToPng`
+- Ajout de type explicite pour la variable `imageData` dans `fetchImageAsBytes`
 
-**Solution :** Creation d'un nouveau type `ResolvedIntegrateOptions` qui exclut `_depth` du wrapper `Required<>`, permettant a `_depth` de rester optionnel:
-\`\`\`typescript
-export type ResolvedIntegrateOptions = Required<
-  Omit<IntegrateOptions, 'variable' | '_depth'>
-> & {
-  readonly _depth?: number;
-};
-\`\`\`
+**Fichier modifie**: `src/lib/typst/image-loader.ts:186-189, 265`
 
-### 2. IntegrandType 'irrational' Error (1 instance)
+### 3. Correction du mock TypstCompiler incomplet
+Ajout des methodes manquantes dans le mock du test:
+- `mapShadow: vi.fn()`
+- `addSource: vi.fn()`
+- `resetShadow: vi.fn()`
 
-**Fichier modifie :** `src/lib/mathAST/integration/integrators/basic.ts:611`
+**Fichier modifie**: `src/lib/typst/service/typst-service.test.ts:46-51`
 
-**Probleme :** `'irrational'` n'est pas un type valide dans `IntegrandType`.
+### 4. Correction des assertions undefined dans binding.test.ts
+Remplacement des comparaisons `=== null` par `!result.arrow.startBinding` pour gerer correctement les cas ou `startBinding` peut etre `undefined` ou `null`.
 
-**Solution :** Remplace par `'radical'` qui est le type correct pour les fonctions arcsin/racines.
+**Fichier modifie**: `src/lib/whiteboard/core/binding.test.ts:1264-1281`
 
-### 3. U-substitution Missing Properties (1 instance)
+## Warnings ESLint Ignores (avec justification)
 
-**Fichier modifie :** `src/lib/mathAST/integration/integrators/u-substitution.ts:560`
+### svelte/prefer-svelte-reactivity (128 warnings)
+Ces warnings recommandent d'utiliser les classes reactives de Svelte au lieu des classes JavaScript natives:
+- `SvelteMap` au lieu de `Map`
+- `SvelteSet` au lieu de `Set`
+- `SvelteDate` au lieu de `Date`
+- `SvelteURL` au lieu de `URL`
+- `SvelteURLSearchParams` au lieu de `URLSearchParams`
 
-**Probleme :** L'objet d'options passait a `performUSubstitution` manquait `normalizeResult`.
+**Raisons de ne pas corriger:**
+1. **URLSearchParams dans les fonctions fetch**: Ces instances sont utilisees pour construire des query strings pour les appels API et ne necessitent pas de reactivite. Exemple: construction de parametres pour pagination.
 
-**Solution :** Ajoute `normalizeResult: true` a l'objet d'options.
+2. **Map/Set pour des calculs temporaires**: Beaucoup de ces Map/Set sont utilises pour des operations de transformation de donnees dans des fonctions et ne sont jamais observes par le systeme de reactivite Svelte.
 
-### 4. Limits Test `multiply` Function Arguments (14 instances)
+3. **Date pour le formatage**: Les instances Date sont souvent utilisees pour du formatage ou des calculs ponctuels et ne necessitent pas d'etre reactives.
 
-**Fichier modifie :** `src/lib/mathAST/limits/__tests__/edge-cases.test.ts`
+4. **Risque de regression**: Convertir ces 128 usages pourrait introduire des comportements inattendus sans benefice fonctionnel.
 
-**Probleme :** La fonction `multiply` de `factory.ts` a ete mise a jour pour exiger un 3eme argument `displayStyle`, mais les tests utilisaient l'ancienne signature a 2 arguments.
+5. **Recommandation**: Ces warnings peuvent etre corriges progressivement lors de refactorings specifiques ou lors de l'ajout de nouvelles fonctionnalites.
 
-**Solution :** Change l'import pour utiliser `implicitMultiply as multiply` qui a la meme signature a 2 arguments:
-\`\`\`typescript
-import { implicitMultiply as multiply, ... } from '../../factory';
-\`\`\`
+## Warnings de Build (non-bloquants)
 
-### 5. Friends Store RPC Function Name Errors (3 instances)
+Les warnings suivants concernent des dependances optionnelles non installees:
+- `@myriaddreamin/typst-ts-web-compiler` (charge dynamiquement via CDN)
+- `@myriaddreamin/typst-ts-renderer` (charge dynamiquement via CDN)
+- `canvas` (dependance optionnelle de jsdom)
+- `bufferutil` (dependance optionnelle de ws)
+- `utf-8-validate` (dependance optionnelle de ws)
 
-**Fichier modifie :** `src/lib/types/database.ts`
-
-**Probleme :** Les fonctions RPC `get_classes_by_user_grade` et `get_students_in_class_by_grade` n'etaient pas definies dans les types database, bien qu'elles existent dans les migrations Supabase.
-
-**Solution :** Ajout des definitions de types pour ces deux fonctions RPC:
-\`\`\`typescript
-get_classes_by_user_grade: {
-  Args: Record<PropertyKey, never>;
-  Returns: { id: string; name: string; }[];
-};
-get_students_in_class_by_grade: {
-  Args: { target_class_id: string };
-  Returns: {
-    id: string;
-    full_name: string | null;
-    firstname: string | null;
-    lastname: string | null;
-    avatar_url: string | null;
-    role: string;
-    friendship_status: string | null;
-  }[];
-};
-\`\`\`
-
-## Warnings Ignores (avec justification)
-
-### `svelte/prefer-svelte-reactivity` (112 warnings)
-
-**Types concernes :**
-- `Map` -> `SvelteMap`
-- `Set` -> `SvelteSet`
-- `Date` -> `SvelteDate`
-- `URL` -> `SvelteURL`
-- `URLSearchParams` -> `SvelteURLSearchParams`
-
-**Raison d'ignorer :**
-1. Ces warnings sont des **suggestions d'optimisation**, pas des erreurs
-2. Le code actuel fonctionne correctement avec les types JavaScript standard
-3. La migration vers les types Svelte reactive serait un **refactoring majeur** avec risque de regressions
-4. Ces types Svelte sont relativement nouveaux dans Svelte 5 et le code existant est stable
-5. L'impact sur la reactivite est minimal dans la plupart des cas d'usage actuels
-
-**Recommandation :** Considerer la migration vers les types Svelte reactifs lors d'une future phase de refactoring dediee, avec tests exhaustifs.
+Ces dependances sont chargees dynamiquement ou sont optionnelles pour des fonctionnalites specifiques.
 
 ## Status Final
+**SUCCESS** - Le build est reussi avec 0 erreurs.
 
-**SUCCESS** - 0 erreurs restantes
+## Fichiers Modifies
+1. `src/lib/types/database.ts` - Ajout des types manquants
+2. `src/lib/typst/image-loader.ts` - Correction des types Uint8Array
+3. `src/lib/typst/service/typst-service.test.ts` - Completion du mock
+4. `src/lib/whiteboard/core/binding.test.ts` - Correction des assertions
 
-- Prettier : OK
-- ESLint : 0 erreurs, 112 warnings (justifies)
-- TypeScript : 0 erreurs
-- Build : OK (2m 16s)
+## Recommandations pour le Futur
+1. Envisager de creer un fichier `src/lib/types/custom.ts` pour les types personnalises afin de separer les types generes automatiquement (database.ts) des types manuels.
+2. Mettre a jour le script de generation de database.ts pour inclure les alias de types courants.
+3. Planifier une tache pour migrer progressivement vers les classes reactives Svelte dans les composants qui beneficieraient reellement de la reactivite.

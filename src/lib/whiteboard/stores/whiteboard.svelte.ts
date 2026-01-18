@@ -26,6 +26,8 @@ import {
 	type StrokeStyle,
 	type FillMode,
 	type ElbowDirection,
+	type ArrowType,
+	type ArrowWaypoint,
 	type RenderStyle
 } from '../types/document';
 import { getElementBounds } from '../core/hit-testing';
@@ -128,7 +130,9 @@ export interface ToolSettings {
 	fillMode: FillMode;
 	fillColor: string;
 	fillOpacity: number;
-	/** For arrows: whether to use elbow (L-shaped) path */
+	/** For arrows: type of arrow (sharp, curved, elbow) */
+	arrowType: ArrowType;
+	/** @deprecated Use arrowType: 'elbow' instead - kept for backwards compatibility */
 	elbowed: boolean;
 	/** For arrows: direction of first segment */
 	elbowDirection: ElbowDirection;
@@ -157,7 +161,10 @@ const DEFAULT_FILL_COLOR = '#000000';
 /** Default fill opacity */
 const DEFAULT_FILL_OPACITY = 1;
 
-/** Default elbow mode (straight arrow) */
+/** Default arrow type (sharp = straight line) */
+const DEFAULT_ARROW_TYPE: ArrowType = 'sharp';
+
+/** Default elbow mode (straight arrow) - deprecated, use DEFAULT_ARROW_TYPE */
 const DEFAULT_ELBOWED = false;
 
 /** Default elbow direction */
@@ -181,6 +188,7 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillMode: 'none',
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
+		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
 		renderStyle: DEFAULT_RENDER_STYLE,
@@ -195,6 +203,7 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillMode: 'none',
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
+		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
 		renderStyle: DEFAULT_RENDER_STYLE,
@@ -209,6 +218,7 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillMode: 'none',
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
+		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
 		renderStyle: DEFAULT_RENDER_STYLE,
@@ -223,6 +233,7 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillMode: 'none',
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
+		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
 		renderStyle: DEFAULT_RENDER_STYLE,
@@ -238,6 +249,7 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillMode: 'none', // Lines don't have fill
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
+		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
 		renderStyle: DEFAULT_RENDER_STYLE,
@@ -252,6 +264,7 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillMode: DEFAULT_FILL_MODE,
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
+		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
 		renderStyle: DEFAULT_RENDER_STYLE,
@@ -266,6 +279,7 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillMode: DEFAULT_FILL_MODE,
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
+		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
 		renderStyle: DEFAULT_RENDER_STYLE,
@@ -280,6 +294,7 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillMode: 'none', // Arrows don't have fill
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
+		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
 		renderStyle: DEFAULT_RENDER_STYLE,
@@ -294,6 +309,7 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillMode: DEFAULT_FILL_MODE,
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
+		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
 		renderStyle: DEFAULT_RENDER_STYLE,
@@ -308,6 +324,7 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillMode: DEFAULT_FILL_MODE,
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
+		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
 		renderStyle: DEFAULT_RENDER_STYLE,
@@ -322,6 +339,7 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		fillMode: DEFAULT_FILL_MODE,
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
+		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
 		renderStyle: DEFAULT_RENDER_STYLE,
@@ -355,6 +373,7 @@ function createWhiteboardStore() {
 		fillMode: DEFAULT_FILL_MODE as FillMode,
 		fillColor: DEFAULT_FILL_COLOR,
 		fillOpacity: DEFAULT_FILL_OPACITY,
+		arrowType: DEFAULT_ARROW_TYPE as ArrowType,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION as ElbowDirection,
 		renderStyle: DEFAULT_RENDER_STYLE as RenderStyle,
@@ -386,6 +405,9 @@ function createWhiteboardStore() {
 		new Map()
 	);
 
+	// === Live Waypoints State (for smooth dragging of curve control points) ===
+	let liveWaypoints = $state<Map<string, ArrowWaypoint[]>>(new Map());
+
 	// === Autosave ===
 	let autosaveTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -412,6 +434,7 @@ function createWhiteboardStore() {
 			fillMode: settings.fillMode,
 			fillColor: settings.fillColor,
 			fillOpacity: settings.fillOpacity,
+			arrowType: settings.arrowType,
 			elbowed: settings.elbowed,
 			elbowDirection: settings.elbowDirection,
 			renderStyle: userPreferences.renderStyle,
@@ -649,6 +672,11 @@ function createWhiteboardStore() {
 		/** Live endpoint positions for lines/arrows during drag */
 		get liveEndpoints() {
 			return liveEndpoints;
+		},
+
+		/** Live waypoints for curved arrows during drag */
+		get liveWaypoints() {
+			return liveWaypoints;
 		},
 
 		// === Document Operations ===
@@ -2206,6 +2234,138 @@ function createWhiteboardStore() {
 			liveEndpoints = newMap;
 		},
 
+		// =======================================================================
+		// Waypoint Operations (for curved arrows)
+		// =======================================================================
+
+		/**
+		 * Set live waypoints for an arrow during drag.
+		 * This updates the visual preview without modifying the actual element.
+		 * @param arrowId - Arrow element ID
+		 * @param waypoints - Updated waypoints array
+		 */
+		setLiveWaypoints(arrowId: string, waypoints: ArrowWaypoint[]): void {
+			const newMap = new Map(liveWaypoints);
+			newMap.set(arrowId, waypoints);
+			liveWaypoints = newMap;
+		},
+
+		/**
+		 * Update a single waypoint position in the live state.
+		 * @param arrowId - Arrow element ID
+		 * @param waypointId - Waypoint ID to update
+		 * @param position - New position
+		 */
+		setLiveWaypointPosition(arrowId: string, waypointId: string, position: Point): void {
+			const page = currentPage;
+			if (!page) return;
+
+			// Find the arrow element
+			const element = page.elements.find((e) => e.id === arrowId);
+			if (!element || element.type !== 'shape') return;
+			const arrow = element as ArrowElement;
+			if (arrow.shapeType !== 'arrow' || arrow.arrowType !== 'curved') return;
+
+			// Get current waypoints (from live state or from element)
+			const currentWaypoints = liveWaypoints.get(arrowId) ?? [...(arrow.waypoints ?? [])];
+
+			// Update the specific waypoint
+			const updatedWaypoints = currentWaypoints.map((wp) =>
+				wp.id === waypointId ? { ...wp, position } : wp
+			);
+
+			// Set live state
+			const newMap = new Map(liveWaypoints);
+			newMap.set(arrowId, updatedWaypoints);
+			liveWaypoints = newMap;
+		},
+
+		/**
+		 * Commit live waypoints to the actual element and clear live state.
+		 * @param arrowId - Arrow element ID
+		 */
+		commitLiveWaypoints(arrowId: string): void {
+			const waypoints = liveWaypoints.get(arrowId);
+			if (!waypoints) return;
+
+			// Clear live state
+			const newMap = new Map(liveWaypoints);
+			newMap.delete(arrowId);
+			liveWaypoints = newMap;
+
+			// Update the element
+			this.updateElement(arrowId, (el) => {
+				if (el.type !== 'shape') return el;
+				const arrow = el as ArrowElement;
+				if (arrow.shapeType !== 'arrow') return el;
+				return { ...arrow, waypoints };
+			});
+		},
+
+		/**
+		 * Clear live waypoints without committing (e.g., on cancel).
+		 * @param arrowId - Arrow element ID
+		 */
+		clearLiveWaypoints(arrowId: string): void {
+			if (!liveWaypoints.has(arrowId)) return;
+
+			const newMap = new Map(liveWaypoints);
+			newMap.delete(arrowId);
+			liveWaypoints = newMap;
+		},
+
+		/**
+		 * Add a waypoint to an arrow at a specific index.
+		 * @param arrowId - Arrow element ID
+		 * @param position - Position for the new waypoint
+		 * @param index - Index where to insert (if undefined, adds at end)
+		 */
+		addWaypointToArrow(arrowId: string, position: Point, index?: number): void {
+			const page = currentPage;
+			if (!page) return;
+
+			const element = page.elements.find((e) => e.id === arrowId);
+			if (!element || element.type !== 'shape') return;
+			const arrow = element as ArrowElement;
+			if (arrow.shapeType !== 'arrow') return;
+
+			const newWaypoint: ArrowWaypoint = {
+				id: crypto.randomUUID(),
+				position
+			};
+
+			const currentWaypoints = [...(arrow.waypoints ?? [])];
+			const insertIndex = index ?? currentWaypoints.length;
+			currentWaypoints.splice(insertIndex, 0, newWaypoint);
+
+			this.updateElement(arrowId, (el) => {
+				if (el.type !== 'shape') return el;
+				return { ...(el as ArrowElement), waypoints: currentWaypoints };
+			});
+		},
+
+		/**
+		 * Remove a waypoint from an arrow.
+		 * @param arrowId - Arrow element ID
+		 * @param waypointId - Waypoint ID to remove
+		 */
+		removeWaypointFromArrow(arrowId: string, waypointId: string): void {
+			const page = currentPage;
+			if (!page) return;
+
+			const element = page.elements.find((e) => e.id === arrowId);
+			if (!element || element.type !== 'shape') return;
+			const arrow = element as ArrowElement;
+			if (arrow.shapeType !== 'arrow' || !arrow.waypoints) return;
+
+			const updatedWaypoints = arrow.waypoints.filter((wp) => wp.id !== waypointId);
+
+			this.updateElement(arrowId, (el) => {
+				if (el.type !== 'shape') return el;
+				return { ...(el as ArrowElement), waypoints: updatedWaypoints };
+			});
+		},
+
 		/**
 		 * Update a single endpoint of a line/arrow element.
 		 * Handles binding detection and updates bindings accordingly.
@@ -2966,6 +3126,24 @@ function createWhiteboardStore() {
 		},
 
 		/**
+		 * Set arrow type (sharp, curved, elbow)
+		 * Only saves to user preferences if no element is selected
+		 */
+		setArrowType(type: ArrowType): void {
+			// Only save to preferences if no element is selected
+			if (selectedIds.size === 0) {
+				userPreferences = { ...userPreferences, arrowType: type };
+			}
+			// Also sync elbowed for backwards compatibility
+			const elbowed = type === 'elbow';
+			// Only apply to arrow tool
+			toolSettings = {
+				...toolSettings,
+				arrow: { ...toolSettings.arrow, arrowType: type, elbowed }
+			};
+		},
+
+		/**
 		 * Set render style (perfect or sketch) for all tools
 		 * This is a global setting that affects all new elements
 		 */
@@ -3011,6 +3189,7 @@ function createWhiteboardStore() {
 			fillMode?: FillMode;
 			fill?: string;
 			fillOpacity?: number;
+			arrowType?: ArrowType;
 			elbowed?: boolean;
 			elbowDirection?: ElbowDirection;
 			renderStyle?: RenderStyle;
@@ -3031,7 +3210,8 @@ function createWhiteboardStore() {
 						fillMode: element.fillMode ?? currentToolSettings.fillMode,
 						fillColor: element.fill ?? currentToolSettings.fillColor,
 						fillOpacity: element.fillOpacity ?? currentToolSettings.fillOpacity,
-						// Elbow properties (only for arrows)
+						// Arrow type properties (only for arrows)
+						arrowType: element.arrowType ?? currentToolSettings.arrowType,
 						elbowed: element.elbowed ?? currentToolSettings.elbowed,
 						elbowDirection: element.elbowDirection ?? currentToolSettings.elbowDirection,
 						// Render style properties
@@ -3061,6 +3241,7 @@ function createWhiteboardStore() {
 						fillMode: userPreferences.fillMode,
 						fillColor: userPreferences.fillColor,
 						fillOpacity: userPreferences.fillOpacity,
+						arrowType: userPreferences.arrowType,
 						elbowed: userPreferences.elbowed,
 						elbowDirection: userPreferences.elbowDirection,
 						renderStyle: userPreferences.renderStyle,

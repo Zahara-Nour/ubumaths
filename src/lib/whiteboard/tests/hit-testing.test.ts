@@ -20,7 +20,8 @@ import type {
 	ShapeElement,
 	ImageElement,
 	TextBlockElement,
-	WhiteboardElement
+	WhiteboardElement,
+	ArrowElement
 } from '../types/document';
 
 // =============================================================================
@@ -282,8 +283,12 @@ describe('hitTestShape', () => {
 	it('handles line shape', () => {
 		const shape = createShape('line', { x: 0, y: 0 }, { x: 100, y: 100 });
 
+		// Point on the diagonal line
 		expect(hitTestShape({ x: 50, y: 50 }, shape)).toBe(true);
-		expect(hitTestShape({ x: 0, y: 100 }, shape)).toBe(true); // corner of bounding box
+		// Point near the line (within tolerance)
+		expect(hitTestShape({ x: 48, y: 52 }, shape)).toBe(true);
+		// Point far from the line (corner of bounding box but not on line)
+		expect(hitTestShape({ x: 0, y: 100 }, shape)).toBe(false);
 	});
 
 	it('handles circle shape', () => {
@@ -296,6 +301,59 @@ describe('hitTestShape', () => {
 		const shape = createShape('arrow', { x: 0, y: 0 }, { x: 100, y: 100 });
 
 		expect(hitTestShape({ x: 50, y: 50 }, shape)).toBe(true);
+	});
+
+	it('handles sharp arrow type', () => {
+		const shape: ArrowElement = {
+			...(createShape('arrow', { x: 0, y: 0 }, { x: 100, y: 0 }) as ArrowElement),
+			arrowType: 'sharp'
+		};
+
+		// Point on the line
+		expect(hitTestShape({ x: 50, y: 0 }, shape)).toBe(true);
+		// Point far from the line
+		expect(hitTestShape({ x: 50, y: 50 }, shape)).toBe(false);
+	});
+
+	it('handles curved arrow type', () => {
+		const shape: ArrowElement = {
+			...(createShape('arrow', { x: 0, y: 0 }, { x: 100, y: 0 }) as ArrowElement),
+			arrowType: 'curved',
+			waypoints: [{ id: 'wp1', position: { x: 50, y: 30 } }]
+		};
+
+		// Point near the curve (which passes through the waypoint)
+		expect(hitTestShape({ x: 50, y: 28 }, shape, 10)).toBe(true);
+		// Point far from the curve
+		expect(hitTestShape({ x: 50, y: 100 }, shape)).toBe(false);
+	});
+
+	it('handles elbow arrow type', () => {
+		const shape: ArrowElement = {
+			...(createShape('arrow', { x: 0, y: 0 }, { x: 100, y: 100 }) as ArrowElement),
+			arrowType: 'elbow',
+			elbowDirection: 'horizontal-first'
+		};
+
+		// Point on horizontal segment
+		expect(hitTestShape({ x: 50, y: 0 }, shape)).toBe(true);
+		// Point on vertical segment
+		expect(hitTestShape({ x: 100, y: 50 }, shape)).toBe(true);
+		// Point far from both segments
+		expect(hitTestShape({ x: 50, y: 50 }, shape)).toBe(false);
+	});
+
+	it('handles legacy elbowed flag', () => {
+		const shape: ArrowElement = {
+			...(createShape('arrow', { x: 0, y: 0 }, { x: 100, y: 100 }) as ArrowElement),
+			elbowed: true,
+			elbowDirection: 'vertical-first'
+		};
+
+		// Point on vertical segment
+		expect(hitTestShape({ x: 0, y: 50 }, shape)).toBe(true);
+		// Point on horizontal segment
+		expect(hitTestShape({ x: 50, y: 100 }, shape)).toBe(true);
 	});
 
 	it('uses custom tolerance', () => {

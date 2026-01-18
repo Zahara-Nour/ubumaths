@@ -7,7 +7,7 @@
  * @module whiteboard/core/serialization
  */
 
-import type { WhiteboardDocument } from '../types/document';
+import type { WhiteboardDocument, ArrowElement, ArrowType } from '../types/document';
 import { validateDocument, isVersionCompatible } from '../types/file-format';
 
 /** MIME type for .ubw files */
@@ -15,6 +15,50 @@ export const UBW_MIME_TYPE = 'application/vnd.ubumaths.whiteboard+json';
 
 /** File extension */
 export const UBW_EXTENSION = '.ubw';
+
+// =============================================================================
+// Migration
+// =============================================================================
+
+/**
+ * Migrates arrow elements from old `elbowed` format to new `arrowType` format.
+ *
+ * Migration rules:
+ * - `elbowed: true` → `arrowType: 'elbow'`
+ * - No `arrowType` and no `elbowed` → `arrowType: 'sharp'`
+ * - Already has `arrowType` → no change
+ *
+ * @param data - Parsed document data (may be mutated)
+ * @returns Migrated data
+ */
+function migrateArrowTypes(data: unknown): unknown {
+	if (typeof data !== 'object' || data === null) return data;
+
+	const doc = data as Record<string, unknown>;
+	if (!Array.isArray(doc.elements)) return data;
+
+	doc.elements = doc.elements.map((element: unknown) => {
+		if (typeof element !== 'object' || element === null) return element;
+
+		const el = element as Record<string, unknown>;
+
+		// Only process arrow elements
+		if (el.type !== 'shape' || el.shapeType !== 'arrow') return element;
+
+		// Skip if already has arrowType
+		if (el.arrowType) return element;
+
+		// Determine arrowType from elbowed flag
+		const arrowType: ArrowType = el.elbowed === true ? 'elbow' : 'sharp';
+
+		return {
+			...el,
+			arrowType
+		} as ArrowElement;
+	});
+
+	return data;
+}
 
 // =============================================================================
 // Serialization
@@ -81,8 +125,11 @@ export function deserialize(json: string): DeserializationResult {
 		}
 	}
 
+	// Apply migrations before validation
+	const migrated = migrateArrowTypes(parsed);
+
 	// Validate with Zod schema
-	const validation = validateDocument(parsed);
+	const validation = validateDocument(migrated);
 
 	if (!validation.success) {
 		return {

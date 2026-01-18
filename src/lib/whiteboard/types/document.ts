@@ -155,8 +155,18 @@ export interface ShapeElement {
 }
 
 // =============================================================================
-// Elbow Arrow Types
+// Arrow Types
 // =============================================================================
+
+/** Arrow type discriminator for different arrow rendering modes */
+export type ArrowType = 'sharp' | 'curved' | 'elbow';
+
+/** Arrow type labels for UI */
+export const ARROW_TYPE_LABELS: Record<ArrowType, string> = {
+	sharp: 'Flèche droite',
+	curved: 'Flèche courbée',
+	elbow: 'Flèche coudée'
+};
 
 /** Direction of the first segment for elbow arrows */
 export type ElbowDirection = 'horizontal-first' | 'vertical-first';
@@ -166,6 +176,17 @@ export const ELBOW_DIRECTION_LABELS: Record<ElbowDirection, string> = {
 	'horizontal-first': "Horizontal d'abord",
 	'vertical-first': "Vertical d'abord"
 };
+
+/**
+ * Waypoint for curved arrows.
+ * Waypoints define the control points that the curve passes through.
+ */
+export interface ArrowWaypoint {
+	/** Unique identifier for the waypoint */
+	readonly id: string;
+	/** Position of the waypoint in canvas coordinates */
+	readonly position: Point;
+}
 
 // =============================================================================
 // Binding Types (Arrow-to-Shape connections)
@@ -195,14 +216,26 @@ export interface BindingAnchor {
 /**
  * Arrow element with optional bindings to shapes.
  * When bound, the arrow endpoint automatically follows shape transformations.
+ *
+ * Arrow types:
+ * - 'sharp' (default): Straight line from start to end
+ * - 'curved': Smooth Bezier curve through waypoints
+ * - 'elbow': 90-degree bends (L-shaped path)
  */
 export interface ArrowElement extends ShapeElement {
 	readonly shapeType: 'arrow';
+	/** Arrow rendering type: sharp (default), curved, or elbow */
+	readonly arrowType?: ArrowType;
+	/** Waypoints for curved arrows (defines the path the curve passes through) */
+	readonly waypoints?: readonly ArrowWaypoint[];
 	/** Binding for the start point of the arrow (optional) */
 	readonly startBinding?: BindingAnchor | null;
 	/** Binding for the end point of the arrow (optional) */
 	readonly endBinding?: BindingAnchor | null;
-	/** If true, arrow bends at 90 degree angles (elbow arrow) */
+	/**
+	 * @deprecated Use arrowType: 'elbow' instead
+	 * If true, arrow bends at 90 degree angles (elbow arrow)
+	 */
 	readonly elbowed?: boolean;
 	/** Direction of first segment for elbow arrows (default: horizontal-first) */
 	readonly elbowDirection?: ElbowDirection;

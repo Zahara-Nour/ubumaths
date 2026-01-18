@@ -38,6 +38,12 @@ export const bindingAnchorSchema = z.object({
 	gap: z.number().min(0).max(50).default(4)
 });
 
+/** Schema for arrow waypoints (used in curved arrows) */
+export const arrowWaypointSchema = z.object({
+	id: z.string().uuid(),
+	position: pointSchema
+});
+
 // =============================================================================
 // Element Schemas
 // =============================================================================
@@ -74,10 +80,13 @@ const shapeElementSchema = z.object({
 	cornerRadius: z.number().min(0).max(100).optional(),
 	rotation: z.number().min(0).max(360).optional(),
 	labelMarkdown: z.string().max(1000).optional(),
+	// Arrow type fields (only used for arrow shapes)
+	arrowType: z.enum(['sharp', 'curved', 'elbow']).optional(),
+	waypoints: z.array(arrowWaypointSchema).max(50).optional(),
 	// Binding fields (only used for arrow shapes)
 	startBinding: bindingAnchorSchema.nullable().optional(),
 	endBinding: bindingAnchorSchema.nullable().optional(),
-	// Elbow arrow fields (only used for arrow shapes)
+	// Elbow arrow fields (only used for arrow shapes) - deprecated, use arrowType instead
 	elbowed: z.boolean().optional(),
 	elbowDirection: z.enum(['horizontal-first', 'vertical-first']).optional(),
 	// Render style fields (for roughjs hand-drawn rendering)

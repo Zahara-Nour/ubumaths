@@ -13,6 +13,7 @@ import type { RoughSVG } from 'roughjs/bin/svg';
 import type { Options as RoughOptions } from 'roughjs/bin/core';
 import type { ShapeElement, StrokeElement, Point, FillMode, ArrowElement } from '../types/document';
 import { getPolygonVertices, getStarVertices } from './shapes';
+import { getAngleOnCurvedPath } from './curved-path';
 
 // =============================================================================
 // Types
@@ -84,6 +85,7 @@ function createRoughOptions(shape: ShapeElement, seed: number, roughness: number
 
 /**
  * Render a rectangle shape using roughjs
+ * Supports rounded corners using SVG path with quadratic Bezier curves (like Excalidraw)
  */
 function renderRoughRectangle(
 	rc: RoughSVG,
@@ -94,6 +96,32 @@ function renderRoughRectangle(
 	const y = Math.min(shape.start.y, shape.end.y);
 	const w = Math.abs(shape.end.x - shape.start.x);
 	const h = Math.abs(shape.end.y - shape.start.y);
+
+	// Check for corner radius
+	const r = shape.cornerRadius ?? 0;
+
+	if (r > 0) {
+		// Clamp radius to half the smallest dimension
+		const maxRadius = Math.min(w, h) / 2;
+		const radius = Math.min(r, maxRadius);
+
+		// Build SVG path with rounded corners using quadratic Bezier curves (like Excalidraw)
+		// Path goes: top-left corner -> top edge -> top-right corner -> right edge -> etc.
+		const path = `
+			M ${x + radius} ${y}
+			L ${x + w - radius} ${y}
+			Q ${x + w} ${y}, ${x + w} ${y + radius}
+			L ${x + w} ${y + h - radius}
+			Q ${x + w} ${y + h}, ${x + w - radius} ${y + h}
+			L ${x + radius} ${y + h}
+			Q ${x} ${y + h}, ${x} ${y + h - radius}
+			L ${x} ${y + radius}
+			Q ${x} ${y}, ${x + radius} ${y}
+		`;
+
+		// Use preserveVertices for continuous path (like Excalidraw's continuousPath=true)
+		return rc.path(path, { ...options, preserveVertices: true });
+	}
 
 	return rc.rectangle(x, y, w, h, options);
 }
@@ -120,6 +148,7 @@ function renderRoughLine(rc: RoughSVG, shape: ShapeElement, options: RoughOption
 /**
  * Render an arrow shape using roughjs
  * Creates a line with a hand-drawn arrowhead
+ * Supports straight, elbow, and curved arrows
  */
 function renderRoughArrow(
 	rc: RoughSVG,
@@ -128,12 +157,39 @@ function renderRoughArrow(
 ): SVGGElement {
 	const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
-	// Check if it's an elbow arrow
 	const arrowShape = shape as ArrowElement;
-	const isElbowed = arrowShape.elbowed === true;
+	const effectiveArrowType = arrowShape.arrowType ?? (arrowShape.elbowed ? 'elbow' : 'sharp');
 
-	if (isElbowed) {
-		// For elbow arrows, draw the L-shaped path
+	if (effectiveArrowType === 'curved') {
+		// Curved arrow: pass waypoints directly to rc.curve() like Excalidraw does
+		// Key: use preserveVertices to ensure curve passes through exact points
+		const waypoints = arrowShape.waypoints ?? [];
+
+		// Build points array: start + waypoints + end
+		const curvePoints: [number, number][] = [
+			[shape.start.x, shape.start.y],
+			...waypoints.map((wp) => [wp.position.x, wp.position.y] as [number, number]),
+			[shape.end.x, shape.end.y]
+		];
+
+		// Use preserveVertices: true to avoid random offsets at points (like Excalidraw)
+		const curveOptions: RoughOptions = {
+			...options,
+			preserveVertices: true
+		};
+
+		const curveElement = rc.curve(curvePoints, curveOptions);
+		g.appendChild(curveElement);
+
+		// Add arrowhead at the end, using the angle at the endpoint
+		const endAngle = getAngleOnCurvedPath(shape.start, shape.end, waypoints, 1);
+		const angleRad = (endAngle * Math.PI) / 180;
+		const dx = Math.cos(angleRad);
+		const dy = Math.sin(angleRad);
+		const arrowhead = createRoughArrowhead(rc, shape.end.x, shape.end.y, dx, dy, options);
+		g.appendChild(arrowhead);
+	} else if (effectiveArrowType === 'elbow') {
+		// Elbow arrow: draw the L-shaped path
 		const direction = arrowShape.elbowDirection ?? 'horizontal-first';
 		const elbowX = direction === 'horizontal-first' ? shape.end.x : shape.start.x;
 		const elbowY = direction === 'horizontal-first' ? shape.start.y : shape.end.y;
@@ -150,7 +206,7 @@ function renderRoughArrow(
 		const arrowhead = createRoughArrowhead(rc, shape.end.x, shape.end.y, dx, dy, options);
 		g.appendChild(arrowhead);
 	} else {
-		// Regular straight arrow
+		// Sharp/straight arrow
 		const line = rc.line(shape.start.x, shape.start.y, shape.end.x, shape.end.y, options);
 		g.appendChild(line);
 
@@ -165,7 +221,7 @@ function renderRoughArrow(
 }
 
 /**
- * Create a hand-drawn arrowhead
+ * Create a hand-drawn arrowhead (like Excalidraw)
  */
 function createRoughArrowhead(
 	rc: RoughSVG,
@@ -177,28 +233,31 @@ function createRoughArrowhead(
 ): SVGGElement {
 	const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
-	// Calculate arrowhead size based on stroke width
-	const size = Math.max(10, (options.strokeWidth ?? 2) * 4);
+	// Excalidraw uses size=25 for arrows, angle=20 degrees
+	const size = 25;
+	const arrowAngle = (20 * Math.PI) / 180; // 20 degrees in radians
 
-	// Calculate angle of the line
+	// Calculate angle of the incoming line
 	const angle = Math.atan2(dy, dx);
 
-	// Calculate arrowhead points
-	const arrowAngle = Math.PI / 6; // 30 degrees
-	const x1 = tipX - size * Math.cos(angle - arrowAngle);
-	const y1 = tipY - size * Math.sin(angle - arrowAngle);
-	const x2 = tipX - size * Math.cos(angle + arrowAngle);
-	const y2 = tipY - size * Math.sin(angle + arrowAngle);
+	// Calculate arrowhead wing points
+	const x3 = tipX - size * Math.cos(angle - arrowAngle);
+	const y3 = tipY - size * Math.sin(angle - arrowAngle);
+	const x4 = tipX - size * Math.cos(angle + arrowAngle);
+	const y4 = tipY - size * Math.sin(angle + arrowAngle);
 
-	// Draw the two lines of the arrowhead
+	// Draw the two lines of the arrowhead (from wing tips TO the arrow tip, like Excalidraw)
 	const arrowheadOptions: RoughOptions = {
 		...options,
 		fill: undefined,
-		fillStyle: undefined
+		fillStyle: undefined,
+		strokeLineDash: undefined, // Always solid for arrowhead
+		roughness: Math.min(1, options.roughness ?? 0) // Reduced roughness like Excalidraw
 	};
 
-	const line1 = rc.line(tipX, tipY, x1, y1, arrowheadOptions);
-	const line2 = rc.line(tipX, tipY, x2, y2, arrowheadOptions);
+	// Lines go FROM wing points TO tip (like Excalidraw: generator.line(x3, y3, x2, y2))
+	const line1 = rc.line(x3, y3, tipX, tipY, arrowheadOptions);
+	const line2 = rc.line(x4, y4, tipX, tipY, arrowheadOptions);
 
 	g.appendChild(line1);
 	g.appendChild(line2);

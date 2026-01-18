@@ -1,6 +1,6 @@
 
-> ubumaths@0.5.23 lint /Users/david/Coding/js/ubumaths
-> eslint . --cache
+> ubumaths@0.7.4 lint /Users/david/Coding/js/ubumaths
+> eslint
 
 
 /Users/david/Coding/js/ubumaths/src/lib/components/assessments/AssessmentConfigForm.svelte
@@ -116,9 +116,9 @@
   602:32  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
 
 /Users/david/Coding/js/ubumaths/src/lib/stores/friends.svelte.ts
-  367:26  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
-  533:26  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
-  540:21  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  366:26  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  532:26  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  539:21  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
 
 /Users/david/Coding/js/ubumaths/src/lib/stores/marketplace.svelte.ts
   233:19  warning  Found a mutable instance of the built-in URLSearchParams class. Use SvelteURLSearchParams instead  svelte/prefer-svelte-reactivity
@@ -144,8 +144,29 @@
 /Users/david/Coding/js/ubumaths/src/lib/stores/studentDashboardCache.svelte.ts
   111:33  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
 
+/Users/david/Coding/js/ubumaths/src/lib/whiteboard/components/SelectionLayer.svelte
+  237:17  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+
+/Users/david/Coding/js/ubumaths/src/lib/whiteboard/components/WhiteboardCanvas.svelte
+  164:17  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  596:24  warning  Found a mutable instance of the built-in Set class. Use SvelteSet instead  svelte/prefer-svelte-reactivity
+
 /Users/david/Coding/js/ubumaths/src/lib/whiteboard/stores/whiteboard.svelte.ts
-  773:20  warning  Found a mutable instance of the built-in Set class. Use SvelteSet instead  svelte/prefer-svelte-reactivity
+  1015:20  warning  Found a mutable instance of the built-in Set class. Use SvelteSet instead  svelte/prefer-svelte-reactivity
+  1933:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  1959:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  1971:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  2002:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  2044:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  2056:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  2071:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  2083:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  2106:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  2124:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  2138:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  2162:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  2188:20  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  2204:19  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
 
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/admin/bug-reports/+page.svelte
   75:18  warning  Found a mutable instance of the built-in URLSearchParams class. Use SvelteURLSearchParams instead  svelte/prefer-svelte-reactivity
@@ -163,7 +184,7 @@
   102:18  warning  Found a mutable instance of the built-in URLSearchParams class. Use SvelteURLSearchParams instead  svelte/prefer-svelte-reactivity
 
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/admin/import-students/+page.svelte
-  64:15  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
+  63:15  warning  Found a mutable instance of the built-in Map class. Use SvelteMap instead  svelte/prefer-svelte-reactivity
 
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/admin/message-templates/+page.svelte
   375:26  warning  Found a mutable instance of the built-in Set class. Use SvelteSet instead  svelte/prefer-svelte-reactivity
@@ -174,7 +195,7 @@
   439:18  warning  Found a mutable instance of the built-in URLSearchParams class. Use SvelteURLSearchParams instead  svelte/prefer-svelte-reactivity
 
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/admin/users/+page.svelte
-  102:18  warning  Found a mutable instance of the built-in Set class. Use SvelteSet instead  svelte/prefer-svelte-reactivity
+  100:18  warning  Found a mutable instance of the built-in Set class. Use SvelteSet instead  svelte/prefer-svelte-reactivity
 
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/bug-reports/+page.svelte
   33:18  warning  Found a mutable instance of the built-in URLSearchParams class. Use SvelteURLSearchParams instead  svelte/prefer-svelte-reactivity
@@ -223,11 +244,20 @@
    65:15  warning  Found a mutable instance of the built-in Date class. Use SvelteDate instead  svelte/prefer-svelte-reactivity
   111:15  warning  Found a mutable instance of the built-in Date class. Use SvelteDate instead  svelte/prefer-svelte-reactivity
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/exercises/+page.svelte
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/contenu/exercices/+page.svelte
   140:18  warning  Found a mutable instance of the built-in URLSearchParams class. Use SvelteURLSearchParams instead  svelte/prefer-svelte-reactivity
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/marketplace/+page.svelte
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/contenu/templates/+page.svelte
+  41:18  warning  Found a mutable instance of the built-in URLSearchParams class. Use SvelteURLSearchParams instead  svelte/prefer-svelte-reactivity
+
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/gamification/marketplace/+page.svelte
   3:18  warning  Found a mutable instance of the built-in Date class. Use SvelteDate instead  svelte/prefer-svelte-reactivity
+
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/gamification/rewards/+page.svelte
+  71:6  warning  Prefer using writable $derived instead of $state and $effect  svelte/prefer-writable-derived
+
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/gamification/rewards/ActivationRequestsTab.svelte
+  135:22  warning  Found a mutable instance of the built-in Set class. Use SvelteSet instead  svelte/prefer-svelte-reactivity
 
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/message-templates/+page.svelte
   115:18  warning  Found a mutable instance of the built-in Set class. Use SvelteSet instead  svelte/prefer-svelte-reactivity
@@ -238,26 +268,14 @@
   183:21  warning  Found a mutable instance of the built-in Date class. Use SvelteDate instead  svelte/prefer-svelte-reactivity
   189:21  warning  Found a mutable instance of the built-in Date class. Use SvelteDate instead  svelte/prefer-svelte-reactivity
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/rewards/+page.svelte
-  69:6  warning  Prefer using writable $derived instead of $state and $effect  svelte/prefer-writable-derived
-
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/rewards/ActivationRequestsTab.svelte
-  135:22  warning  Found a mutable instance of the built-in Set class. Use SvelteSet instead  svelte/prefer-svelte-reactivity
-
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/templates/+page.svelte
-  41:18  warning  Found a mutable instance of the built-in URLSearchParams class. Use SvelteURLSearchParams instead  svelte/prefer-svelte-reactivity
-
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/tutor-stats/+page.svelte
   112:19  warning  Found a mutable instance of the built-in URLSearchParams class. Use SvelteURLSearchParams instead  svelte/prefer-svelte-reactivity
 
 /Users/david/Coding/js/ubumaths/src/routes/(public)/automaths/panier/+page.svelte
   160:18  warning  Found a mutable instance of the built-in URLSearchParams class. Use SvelteURLSearchParams instead  svelte/prefer-svelte-reactivity
 
-/Users/david/Coding/js/ubumaths/src/routes/(public)/exercice/[slug]/+page.svelte
-  118:18  warning  Found a mutable instance of the built-in URLSearchParams class. Use SvelteURLSearchParams instead  svelte/prefer-svelte-reactivity
-
 /Users/david/Coding/js/ubumaths/src/routes/(public)/games/mathemo/+page.svelte
   154:37  warning  Found a mutable instance of the built-in Set class. Use SvelteSet instead  svelte/prefer-svelte-reactivity
 
-✖ 112 problems (0 errors, 112 warnings)
+✖ 128 problems (0 errors, 128 warnings)
 
