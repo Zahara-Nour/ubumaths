@@ -455,6 +455,72 @@ export function normalizeAngleForText(angle: number): number {
 }
 
 /**
+ * Calculate the midpoint along a polyline defined by points.
+ * Returns the point at 50% of total length and the angle at that point.
+ *
+ * @param points - Array of points defining the polyline
+ * @returns Object with point and angle (in degrees)
+ */
+export function getPolylineMidpoint(points: readonly Point[]): { point: Point; angle: number } {
+	if (points.length === 0) {
+		return { point: { x: 0, y: 0 }, angle: 0 };
+	}
+	if (points.length === 1) {
+		return { point: { ...points[0] }, angle: 0 };
+	}
+
+	// Calculate segment lengths and total length
+	const segmentLengths: number[] = [];
+	let totalLength = 0;
+
+	for (let i = 0; i < points.length - 1; i++) {
+		const length = calculateLineLength(points[i], points[i + 1]);
+		segmentLengths.push(length);
+		totalLength += length;
+	}
+
+	// Handle degenerate case
+	if (totalLength === 0) {
+		return { point: { ...points[0] }, angle: 0 };
+	}
+
+	// Find the point at 50% of total length
+	const targetLength = totalLength / 2;
+	let accumulatedLength = 0;
+
+	for (let i = 0; i < segmentLengths.length; i++) {
+		const segmentLength = segmentLengths[i];
+
+		if (accumulatedLength + segmentLength >= targetLength) {
+			// Midpoint is on this segment
+			const remainingLength = targetLength - accumulatedLength;
+			const ratio = segmentLength > 0 ? remainingLength / segmentLength : 0;
+
+			const start = points[i];
+			const end = points[i + 1];
+
+			const point: Point = {
+				x: start.x + (end.x - start.x) * ratio,
+				y: start.y + (end.y - start.y) * ratio
+			};
+
+			const angle = calculateLineAngle(start, end);
+
+			return { point, angle };
+		}
+
+		accumulatedLength += segmentLength;
+	}
+
+	// Fallback: return last point
+	const lastIdx = points.length - 1;
+	return {
+		point: { ...points[lastIdx] },
+		angle: points.length >= 2 ? calculateLineAngle(points[lastIdx - 1], points[lastIdx]) : 0
+	};
+}
+
+/**
  * Calculate bounding box for a shape
  */
 export function calculateShapeBounds(

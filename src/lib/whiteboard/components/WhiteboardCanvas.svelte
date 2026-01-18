@@ -26,7 +26,7 @@
 	} from '../core/hit-testing';
 	import { calculateCurvedPath } from '../core/curved-path';
 	import { routeElbowArrow } from '../core/elbow-routing';
-	import { headingFromPoints } from '../core/heading';
+	import { headingFromPoints, getHeadingForBindingPoint, flipHeading } from '../core/heading';
 	import InstrumentLayer from './InstrumentLayer.svelte';
 	import TextBlockLayer from './TextBlockLayer.svelte';
 	import ShapeLabelLayer from './ShapeLabelLayer.svelte';
@@ -89,6 +89,10 @@
 
 	/** Snap points during arrow drawing (shows exact connection points) */
 	let snapPoints = $state<{ point: Point; end: 'start' | 'end' }[]>([]);
+
+	/** Binding candidate shapes for arrow preview routing */
+	let bindingStartShape = $state<ShapeElement | null>(null);
+	let bindingEndShape = $state<ShapeElement | null>(null);
 
 	/** TextBlockLayer reference */
 	let textBlockLayerRef: TextBlockLayer | null = $state(null);
@@ -612,7 +616,7 @@
 				shapeEndPoint = point;
 			}
 
-			// Detect binding candidates for arrow tool (visual feedback)
+			// Detect binding candidates for arrow tool (visual feedback + preview routing)
 			if (toolState.toolType === 'arrow' && shapeStartPoint) {
 				const excludeIds = new Set<string>();
 				const candidates = new Set<string>();
@@ -623,6 +627,9 @@
 				if (startCandidate) {
 					candidates.add(startCandidate.element.id);
 					newSnapPoints.push({ point: startCandidate.perimeterPoint, end: 'start' });
+					bindingStartShape = startCandidate.element;
+				} else {
+					bindingStartShape = null;
 				}
 
 				// Check end point
@@ -631,6 +638,9 @@
 				if (endCandidate) {
 					candidates.add(endCandidate.element.id);
 					newSnapPoints.push({ point: endCandidate.perimeterPoint, end: 'end' });
+					bindingEndShape = endCandidate.element;
+				} else {
+					bindingEndShape = null;
 				}
 
 				bindingCandidateIds = candidates;
@@ -1027,6 +1037,8 @@
 		shapeEndPoint = null;
 		bindingCandidateIds = new Set();
 		snapPoints = [];
+		bindingStartShape = null;
+		bindingEndShape = null;
 	}
 
 	/**
@@ -1097,6 +1109,8 @@
 		multiPointCurrentPos = null;
 		bindingCandidateIds = new Set();
 		snapPoints = [];
+		bindingStartShape = null;
+		bindingEndShape = null;
 	}
 
 	// ==========================================================================
@@ -1981,15 +1995,19 @@
 							marker-end={previewProps.hasArrowMarker ? 'url(#arrow-marker-preview)' : undefined}
 						/>
 					{:else if toolState.toolType === 'arrow' && effectivePreviewArrowType === 'elbow'}
-						{@const previewStartHeading = headingFromPoints(shapeStartPoint, shapeEndPoint)}
-						{@const previewEndHeading = headingFromPoints(shapeEndPoint, shapeStartPoint)}
+						{@const previewStartHeading = bindingStartShape
+							? getHeadingForBindingPoint(bindingStartShape, shapeStartPoint)
+							: headingFromPoints(shapeStartPoint, shapeEndPoint)}
+						{@const previewEndHeading = bindingEndShape
+							? flipHeading(getHeadingForBindingPoint(bindingEndShape, shapeEndPoint))
+							: headingFromPoints(shapeEndPoint, shapeStartPoint)}
 						{@const previewElbowResult = routeElbowArrow(
 							shapeStartPoint,
 							shapeEndPoint,
 							previewStartHeading,
 							previewEndHeading,
-							null,
-							null
+							bindingStartShape,
+							bindingEndShape
 						)}
 						{@const previewElbowPath = `M ${previewElbowResult.points[0].x} ${previewElbowResult.points[0].y} ${previewElbowResult.points
 							.slice(1)

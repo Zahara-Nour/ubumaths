@@ -9,10 +9,14 @@
 	 * EDIT mode: Simple textarea for editing
 	 */
 
-	import type { ShapeElement, ArrowElement } from '../types/document';
+	import type { ShapeElement, ArrowElement, Point } from '../types/document';
 	import { getElementBounds, getBoundsCenter } from '../core/hit-testing';
-	import { calculateLineAngle, calculateLineLength, normalizeAngleForText } from '../core/shapes';
-	import { getElbowMidpoint } from '../core/elbow-path';
+	import {
+		calculateLineAngle,
+		calculateLineLength,
+		normalizeAngleForText,
+		getPolylineMidpoint
+	} from '../core/shapes';
 	import { parseLabelToInline } from '../utils/label-parser';
 	import InlineRenderer from '$lib/components/markdown/InlineRenderer.svelte';
 
@@ -89,15 +93,19 @@
 	/** Is this a line or arrow shape? */
 	let isLineOrArrow = $derived(element.shapeType === 'line' || element.shapeType === 'arrow');
 
-	/** Is this an elbow arrow? */
-	let isElbowArrow = $derived(
-		element.shapeType === 'arrow' && (element as ArrowElement).elbowed === true
-	);
+	/** Is this an elbow arrow? Check both new arrowType and legacy elbowed flag */
+	let isElbowArrow = $derived.by(() => {
+		if (element.shapeType !== 'arrow') return false;
+		const arrow = element as ArrowElement;
+		return arrow.arrowType === 'elbow' || arrow.elbowed === true;
+	});
 
-	/** Elbow direction for elbow arrows */
-	let elbowDirection = $derived(
-		isElbowArrow ? ((element as ArrowElement).elbowDirection ?? 'horizontal-first') : null
-	);
+	/** Get points array for elbow arrows (for midpoint calculation) */
+	let elbowPoints = $derived.by((): readonly Point[] | null => {
+		if (!isElbowArrow) return null;
+		const arrow = element as ArrowElement;
+		return arrow.points ?? null;
+	});
 
 	/** Effective start point (considering liveEndpoint during drag) */
 	let effectiveStart = $derived.by(() => {
@@ -117,7 +125,7 @@
 
 	/**
 	 * Effective center including all live transforms:
-	 * 1. For elbow arrows: use elbow midpoint
+	 * 1. For elbow arrows: use polyline midpoint from points[]
 	 * 2. For lines/arrows with liveEndpoint: use effective points
 	 * 3. Apply resize (scale around origin)
 	 * 4. Apply position offset (translate)
@@ -126,11 +134,11 @@
 		let cx: number;
 		let cy: number;
 
-		// For elbow arrows, use the elbow path midpoint
-		if (isElbowArrow && elbowDirection) {
-			const elbowMid = getElbowMidpoint(effectiveStart, effectiveEnd, elbowDirection);
-			cx = elbowMid.point.x;
-			cy = elbowMid.point.y;
+		// For elbow arrows, use the polyline midpoint from points[]
+		if (isElbowArrow && elbowPoints && elbowPoints.length >= 2) {
+			const mid = getPolylineMidpoint(elbowPoints);
+			cx = mid.point.x;
+			cy = mid.point.y;
 		}
 		// For straight lines/arrows, calculate center from effective endpoints
 		else if (isLineOrArrow && liveEndpoint) {
@@ -168,10 +176,10 @@
 		// Use explicit rotation if set
 		if (element.rotation) return element.rotation;
 
-		// For elbow arrows, use the angle at the midpoint (0 for horizontal, 90/-90 for vertical)
-		if (isElbowArrow && elbowDirection) {
-			const elbowMid = getElbowMidpoint(effectiveStart, effectiveEnd, elbowDirection);
-			return normalizeAngleForText(elbowMid.angle);
+		// For elbow arrows, use the angle at the midpoint from points[]
+		if (isElbowArrow && elbowPoints && elbowPoints.length >= 2) {
+			const mid = getPolylineMidpoint(elbowPoints);
+			return normalizeAngleForText(mid.angle);
 		}
 
 		// Auto-calculate rotation for lines/arrows (use effective points for live updates)
