@@ -17,7 +17,6 @@
 		snapAngle,
 		type BoundingBox
 	} from '../core/hit-testing';
-	import { calculateElbowPath } from '../core/elbow-path';
 	import { calculateCurvedPath } from '../core/curved-path';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import {
@@ -708,17 +707,10 @@
 				/>
 			{:else if effectiveArrowType === 'elbow'}
 				{@const elbowPoints = arrowEl ? getArrowPoints(arrowEl) : [lineEl.start, lineEl.end]}
-				{@const elbowPath =
-					elbowPoints.length > 2
-						? `M ${elbowPoints[0].x} ${elbowPoints[0].y} ${elbowPoints
-								.slice(1)
-								.map((p) => `L ${p.x} ${p.y}`)
-								.join(' ')}`
-						: calculateElbowPath(
-								lineEl.start,
-								lineEl.end,
-								arrowEl?.elbowDirection ?? 'horizontal-first'
-							).path}
+				{@const elbowPath = `M ${elbowPoints[0].x} ${elbowPoints[0].y} ${elbowPoints
+					.slice(1)
+					.map((p) => `L ${p.x} ${p.y}`)
+					.join(' ')}`}
 				<path
 					d={elbowPath}
 					stroke="#93c5fd"
