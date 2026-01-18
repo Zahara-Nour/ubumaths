@@ -1115,7 +1115,7 @@
 						</button>
 						<button
 							type="button"
-							onclick={() => handleCornerRadiusChange(16)}
+							onclick={() => handleCornerRadiusChange(32)}
 							class="flex h-7 w-7 items-center justify-center rounded-sm transition-colors {currentCornerRadius >
 							0
 								? 'bg-secondary'
