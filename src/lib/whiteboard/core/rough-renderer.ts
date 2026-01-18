@@ -1,9 +1,9 @@
 /**
  * Rough.js Rendering Utilities
  *
- * Provides sketchy, hand-drawn rendering for shapes and strokes
- * using the roughjs library. This module is used when elements
- * have renderStyle: 'sketch'.
+ * Provides sketchy, hand-drawn rendering for shapes using the roughjs library.
+ * All shapes in the whiteboard use roughjs for a consistent hand-drawn look.
+ * The roughness level is controlled by the sloppiness presets (architect, artist, cartoonist).
  *
  * @module whiteboard/core/rough-renderer
  */
@@ -11,14 +11,7 @@
 import rough from 'roughjs';
 import type { RoughSVG } from 'roughjs/bin/svg';
 import type { Options as RoughOptions } from 'roughjs/bin/core';
-import type {
-	ShapeElement,
-	StrokeElement,
-	Point,
-	FillMode,
-	ArrowElement,
-	Arrowhead
-} from '../types/document';
+import type { ShapeElement, FillMode, ArrowElement, Arrowhead } from '../types/document';
 import { getArrowPoints, getStartArrowhead, getEndArrowhead } from '../types/document';
 import { getAdaptiveCornerRadius } from '../types/document';
 import { getPolygonVertices, getStarVertices } from './shapes';
@@ -652,56 +645,6 @@ export function renderRoughShape(
 }
 
 // =============================================================================
-// Stroke Rendering
-// =============================================================================
-
-/**
- * Convert points to SVG path d attribute (simple polyline)
- */
-function pointsToPathD(points: readonly Point[]): string {
-	if (points.length === 0) return '';
-	if (points.length === 1) {
-		return `M ${points[0].x} ${points[0].y} L ${points[0].x + 0.1} ${points[0].y}`;
-	}
-
-	const [first, ...rest] = points;
-	return `M ${first.x} ${first.y} ${rest.map((p) => `L ${p.x} ${p.y}`).join(' ')}`;
-}
-
-/**
- * Render a stroke element in sketch mode using roughjs
- * Uses roughjs path rendering for a hand-drawn look
- */
-export function renderRoughStroke(svgElement: SVGSVGElement, stroke: StrokeElement): SVGGElement {
-	const rc = rough.svg(svgElement);
-	const seed = getOrCreateSeed(stroke.roughSeed);
-
-	// For strokes, use lower roughness to preserve the user's drawing intent
-	const roughness = 0.5;
-
-	const options: RoughOptions = {
-		seed,
-		roughness,
-		stroke: stroke.color,
-		strokeWidth: stroke.width,
-		fill: 'none',
-		simplification: 0.3 // Simplify complex paths for better performance
-	};
-
-	// Convert points to path
-	const pathD = pointsToPathD(stroke.points);
-
-	const element = rc.path(pathD, options);
-
-	// Apply opacity if needed
-	if (stroke.opacity !== undefined && stroke.opacity < 1) {
-		element.setAttribute('opacity', String(stroke.opacity));
-	}
-
-	return element;
-}
-
-// =============================================================================
 // SVG String Generation (for export)
 // =============================================================================
 
@@ -729,17 +672,4 @@ export function renderRoughShapeToSvgString(shape: ShapeElement): string {
 	result += element.outerHTML;
 
 	return result;
-}
-
-/**
- * Render a rough stroke to an SVG string (for export)
- */
-export function renderRoughStrokeToSvgString(stroke: StrokeElement): string {
-	// Create a temporary SVG element
-	const tempSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-	tempSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-
-	const element = renderRoughStroke(tempSvg, stroke);
-
-	return element.outerHTML;
 }

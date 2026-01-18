@@ -1,6 +1,9 @@
 /**
  * Tests for Rough Renderer Types and Compatibility
  *
+ * All shapes use roughjs for consistent hand-drawn rendering.
+ * Strokes use perfect-freehand for natural handwriting.
+ *
  * Note: The actual roughjs rendering functions require DOM access and are
  * tested implicitly through:
  * - Browser testing at http://localhost:5175/whiteboard
@@ -11,7 +14,7 @@
 import { describe, it, expect } from 'vitest';
 import type { ShapeElement, StrokeElement, Point, FillMode } from '../types/document';
 
-// Helper to create a mock shape element
+// Helper to create a mock shape element (all shapes use roughjs)
 function createMockShape(
 	shapeType: ShapeElement['shapeType'],
 	overrides: Partial<ShapeElement> = {}
@@ -25,14 +28,13 @@ function createMockShape(
 		color: '#000000',
 		strokeWidth: 2,
 		opacity: 1,
-		renderStyle: 'sketch',
 		roughSeed: 12345,
 		roughness: 1,
 		...overrides
 	};
 }
 
-// Helper to create a mock stroke element
+// Helper to create a mock stroke element (strokes use perfect-freehand)
 function createMockStroke(overrides: Partial<StrokeElement> = {}): StrokeElement {
 	const points: Point[] = [
 		{ x: 10, y: 10 },
@@ -47,15 +49,13 @@ function createMockStroke(overrides: Partial<StrokeElement> = {}): StrokeElement
 		color: '#000000',
 		width: 2,
 		opacity: 1,
-		renderStyle: 'sketch',
-		roughSeed: 12345,
 		...overrides
 	};
 }
 
 describe('Rough Renderer Type Compatibility', () => {
 	describe('Shape element types', () => {
-		it('supports all shape types for sketch rendering', () => {
+		it('supports all shape types for roughjs rendering', () => {
 			const shapeTypes: ShapeElement['shapeType'][] = [
 				'rectangle',
 				'circle',
@@ -68,15 +68,9 @@ describe('Rough Renderer Type Compatibility', () => {
 
 			shapeTypes.forEach((shapeType) => {
 				const shape = createMockShape(shapeType);
-				expect(shape.renderStyle).toBe('sketch');
 				expect(shape.roughSeed).toBe(12345);
 				expect(shape.roughness).toBe(1);
 			});
-		});
-
-		it('supports perfect render style', () => {
-			const shape = createMockShape('rectangle', { renderStyle: 'perfect' });
-			expect(shape.renderStyle).toBe('perfect');
 		});
 
 		it('supports roughjs fill modes', () => {
@@ -88,10 +82,10 @@ describe('Rough Renderer Type Compatibility', () => {
 			});
 		});
 
-		it('supports roughness values from 0 to 2', () => {
-			const shape0 = createMockShape('rectangle', { roughness: 0 });
-			const shape1 = createMockShape('rectangle', { roughness: 1 });
-			const shape2 = createMockShape('rectangle', { roughness: 2 });
+		it('supports roughness values from 0 to 2 (sloppiness presets)', () => {
+			const shape0 = createMockShape('rectangle', { roughness: 0 }); // architect
+			const shape1 = createMockShape('rectangle', { roughness: 1 }); // artist
+			const shape2 = createMockShape('rectangle', { roughness: 2 }); // cartoonist
 
 			expect(shape0.roughness).toBe(0);
 			expect(shape1.roughness).toBe(1);
@@ -105,15 +99,11 @@ describe('Rough Renderer Type Compatibility', () => {
 	});
 
 	describe('Stroke element types', () => {
-		it('supports sketch render style for strokes', () => {
+		it('strokes use perfect-freehand (no roughjs)', () => {
 			const stroke = createMockStroke();
-			expect(stroke.renderStyle).toBe('sketch');
-			expect(stroke.roughSeed).toBe(12345);
-		});
-
-		it('supports perfect render style for strokes', () => {
-			const stroke = createMockStroke({ renderStyle: 'perfect' });
-			expect(stroke.renderStyle).toBe('perfect');
+			// Strokes don't have roughSeed or roughness - they use perfect-freehand
+			expect((stroke as unknown as { roughSeed?: number }).roughSeed).toBeUndefined();
+			expect((stroke as unknown as { roughness?: number }).roughness).toBeUndefined();
 		});
 
 		it('supports various stroke widths', () => {
@@ -139,18 +129,8 @@ describe('Rough Renderer Type Compatibility', () => {
 });
 
 describe('Backward Compatibility', () => {
-	it('perfect style shapes are handled by regular renderer', () => {
-		const perfectShape = createMockShape('rectangle', {
-			renderStyle: 'perfect'
-		});
-
-		// This shape should not be rendered by rough renderer
-		// The export module checks renderStyle before calling rough renderer
-		expect(perfectShape.renderStyle).toBe('perfect');
-	});
-
-	it('shapes without renderStyle default to perfect', () => {
-		const defaultShape: ShapeElement = {
+	it('shapes without roughSeed still render (seed will be generated)', () => {
+		const oldShape: ShapeElement = {
 			id: 'test',
 			type: 'shape',
 			shapeType: 'rectangle',
@@ -159,26 +139,11 @@ describe('Backward Compatibility', () => {
 			color: '#000000',
 			strokeWidth: 2,
 			opacity: 1
-			// No renderStyle - should default to 'perfect'
+			// No roughSeed or roughness - renderer will use defaults
 		};
 
-		// renderStyle is undefined, which should be treated as 'perfect'
-		expect(defaultShape.renderStyle).toBeUndefined();
-	});
-
-	it('strokes without renderStyle default to perfect', () => {
-		const defaultStroke: StrokeElement = {
-			id: 'test',
-			type: 'stroke',
-			toolType: 'pen',
-			points: [{ x: 0, y: 0 }],
-			color: '#000000',
-			width: 2,
-			opacity: 1
-			// No renderStyle - should default to 'perfect'
-		};
-
-		expect(defaultStroke.renderStyle).toBeUndefined();
+		expect(oldShape.roughSeed).toBeUndefined();
+		expect(oldShape.roughness).toBeUndefined();
 	});
 
 	it('hatched fillMode is separate from roughjs hachure', () => {

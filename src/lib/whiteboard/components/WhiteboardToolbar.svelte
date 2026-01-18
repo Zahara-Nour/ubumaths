@@ -169,9 +169,8 @@
 	let currentFillMode = $derived(toolState.fillMode);
 	let currentFillColor = $derived(toolState.fillColor);
 	let currentFillOpacity = $derived(toolState.fillOpacity);
-	let currentRenderStyle = $derived(toolState.renderStyle);
 	let currentRoughness = $derived(toolState.roughness);
-	let currentSloppinessPreset = $derived(getSloppinessPreset(currentRenderStyle, currentRoughness));
+	let currentSloppinessPreset = $derived(getSloppinessPreset(currentRoughness));
 	let instruments = $derived(whiteboardStore.instruments);
 
 	/** Current shape tool icon for the button */
@@ -193,8 +192,8 @@
 		whiteboardStore.selectedElements.some((el) => el.type === 'shape')
 	);
 
-	/** Show render style toggle only when relevant (shape tool active OR shape selected, NOT for stroke tools) */
-	let showRenderStyleToggle = $derived(
+	/** Show sloppiness control only when relevant (shape tool active OR shape selected, NOT for stroke tools) */
+	let showSloppinessControl = $derived(
 		(isShapeToolActive || hasSelectedShape) && !isStrokeToolActive
 	);
 
@@ -477,12 +476,11 @@
 	}
 
 	function handleSloppinessPresetChange(preset: SloppinessPreset) {
-		const { renderStyle, roughness } = SLOPPINESS_PRESETS[preset];
-		whiteboardStore.setRenderStyle(renderStyle);
+		const { roughness } = SLOPPINESS_PRESETS[preset];
 		whiteboardStore.setRoughness(roughness);
 		// Apply to selected shapes
 		if (whiteboardStore.hasSelection) {
-			whiteboardStore.updateSelectedStyles({ renderStyle, roughness });
+			whiteboardStore.updateSelectedStyles({ roughness });
 		}
 	}
 </script>
@@ -823,7 +821,7 @@
 			</Popover.Root>
 
 			<!-- Sloppiness presets for shapes (Architect/Artist/Cartoonist) -->
-			{#if showRenderStyleToggle}
+			{#if showSloppinessControl}
 				<div class="mx-2 h-6 w-px bg-border"></div>
 
 				<div class="flex items-center gap-0.5 rounded-md border border-border p-0.5">
@@ -919,7 +917,7 @@
 				</div>
 
 				<!-- Stroke style toggles (only for shapes) -->
-				{#if showRenderStyleToggle}
+				{#if showSloppinessControl}
 					<div class="flex items-center gap-0.5">
 						{#each Object.entries(STROKE_STYLE_LABELS) as [style, _label] (style)}
 							<button

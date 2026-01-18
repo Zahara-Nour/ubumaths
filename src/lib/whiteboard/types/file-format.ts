@@ -67,9 +67,7 @@ const strokeElementSchema = z.object({
 	color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
 	width: z.number().positive().max(100),
 	opacity: z.number().min(0).max(1),
-	strokeStyle: z.enum(['solid', 'dashed', 'dotted']).optional(),
-	renderStyle: z.enum(['perfect', 'sketch']).optional(),
-	roughSeed: z.number().int().positive().optional()
+	strokeStyle: z.enum(['solid', 'dashed', 'dotted']).optional()
 });
 
 const shapeElementSchema = z.object({
@@ -109,8 +107,7 @@ const shapeElementSchema = z.object({
 	// Legacy: elbow arrow fields - deprecated, use arrowType instead
 	elbowed: z.boolean().optional(),
 	elbowDirection: z.enum(['horizontal-first', 'vertical-first']).optional(),
-	// Render style fields (for roughjs hand-drawn rendering)
-	renderStyle: z.enum(['perfect', 'sketch']).optional(),
+	// Roughjs rendering fields
 	roughSeed: z.number().int().positive().optional(),
 	roughness: z.number().min(0).max(3).optional()
 });
