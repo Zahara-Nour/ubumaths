@@ -460,6 +460,10 @@
 		const { renderStyle, roughness } = SLOPPINESS_PRESETS[preset];
 		whiteboardStore.setRenderStyle(renderStyle);
 		whiteboardStore.setRoughness(roughness);
+		// Apply to selected shapes
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ renderStyle, roughness });
+		}
 	}
 </script>
 
