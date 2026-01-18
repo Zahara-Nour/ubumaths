@@ -67,7 +67,7 @@ import {
 	calculateBoundEndpoint
 } from '../core/binding';
 import { routeElbowArrow } from '../core/elbow-routing';
-import { getExitHeading, getEntryHeading, headingFromPoints } from '../core/heading';
+import { headingFromPoints, headingFromNormalizedPoint, flipHeading } from '../core/heading';
 import type { ShapeElement, ArrowElement, BindingAnchor, Point, Heading } from '../types/document';
 import { createArrowPoints } from '../types/document';
 
@@ -2471,12 +2471,19 @@ function createWhiteboardStore() {
 									) as ShapeElement | undefined)
 								: undefined;
 
-					// Update heading if bound at that end
-					if (endpoint === 'start' && startShape) {
-						updatedStartHeading = getExitHeading(startShape, newEnd);
+					// Calculate headings from binding positions (fixedPoint approach)
+					// The heading is determined by which side of the shape the binding is on
+					const newStartBinding = endpoint === 'start' ? newBinding : arrow.startBinding;
+					const newEndBinding = endpoint === 'end' ? newBinding : arrow.endBinding;
+
+					if (newStartBinding) {
+						updatedStartHeading = headingFromNormalizedPoint(newStartBinding.perimeterPoint);
 					}
-					if (endpoint === 'end' && endShape) {
-						updatedEndHeading = getEntryHeading(endShape, newStart);
+					if (newEndBinding) {
+						// For end binding, flip the heading (arrow enters from opposite direction)
+						updatedEndHeading = flipHeading(
+							headingFromNormalizedPoint(newEndBinding.perimeterPoint)
+						);
 					}
 
 					// Ensure headings are never null for routing
