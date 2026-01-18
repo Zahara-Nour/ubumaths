@@ -66,7 +66,10 @@ import {
 	createBindingAnchor,
 	calculateBoundEndpoint
 } from '../core/binding';
-import type { ShapeElement, ArrowElement, BindingAnchor, Point } from '../types/document';
+import { routeElbowArrow } from '../core/elbow-routing';
+import { getExitHeading, getEntryHeading } from '../core/heading';
+import type { ShapeElement, ArrowElement, BindingAnchor, Point, Heading } from '../types/document';
+import { createArrowPoints } from '../types/document';
 
 // =============================================================================
 // Constants
@@ -2425,6 +2428,7 @@ function createWhiteboardStore() {
 
 			// If it's an arrow, handle bindings
 			if (shape.shapeType === 'arrow') {
+				const arrow = shape as ArrowElement;
 				let newBinding: BindingAnchor | null = null;
 				let adjustedPosition = position;
 
@@ -2434,23 +2438,67 @@ function createWhiteboardStore() {
 					adjustedPosition = calculateBoundEndpoint(newBinding, candidate.element, otherEndpoint);
 				}
 
-				// Update the arrow with new endpoint and binding
+				// Determine arrow type
+				const effectiveArrowType = arrow.arrowType ?? (arrow.elbowed ? 'elbow' : 'sharp');
+
+				// Calculate new start and end positions
+				const newStart = endpoint === 'start' ? adjustedPosition : arrow.start;
+				const newEnd = endpoint === 'end' ? adjustedPosition : arrow.end;
+
+				// Calculate updated points based on arrow type
+				let updatedPoints: readonly Point[];
+				let updatedStartHeading: Heading | null = arrow.startHeading ?? null;
+				let updatedEndHeading: Heading | null = arrow.endHeading ?? null;
+
+				if (effectiveArrowType === 'elbow') {
+					// For elbow arrows, recalculate the entire path using A* routing
+
+					// Update heading if bound at that end
+					if (endpoint === 'start' && candidate) {
+						updatedStartHeading = getExitHeading(candidate.element, newEnd);
+					}
+					if (endpoint === 'end' && candidate) {
+						updatedEndHeading = getEntryHeading(candidate.element, newStart);
+					}
+
+					// Get IDs to exclude from obstacle checking
+					const routeExcludeIds = new Set<string>([elementId]);
+					if (arrow.startBinding) routeExcludeIds.add(arrow.startBinding.elementId);
+					if (arrow.endBinding) routeExcludeIds.add(arrow.endBinding.elementId);
+					if (newBinding) routeExcludeIds.add(newBinding.elementId);
+
+					// Route the elbow arrow
+					const routeResult = routeElbowArrow(
+						newStart,
+						newEnd,
+						updatedStartHeading,
+						updatedEndHeading,
+						page.elements,
+						routeExcludeIds
+					);
+
+					updatedPoints = routeResult.points;
+				} else {
+					// For non-elbow arrows, preserve intermediate points
+					const intermediatePoints =
+						arrow.points && arrow.points.length > 2 ? arrow.points.slice(1, -1) : [];
+					updatedPoints = createArrowPoints(newStart, newEnd, intermediatePoints);
+				}
+
+				// Update the arrow with new endpoint, binding, and points
 				this.updateElement(elementId, (el) => {
 					if (el.type !== 'shape' || (el as ShapeElement).shapeType !== 'arrow') return el;
 					const a = el as ArrowElement;
-					if (endpoint === 'start') {
-						return {
-							...a,
-							start: adjustedPosition,
-							startBinding: newBinding
-						};
-					} else {
-						return {
-							...a,
-							end: adjustedPosition,
-							endBinding: newBinding
-						};
-					}
+					return {
+						...a,
+						start: newStart,
+						end: newEnd,
+						points: updatedPoints,
+						startBinding: endpoint === 'start' ? newBinding : a.startBinding,
+						endBinding: endpoint === 'end' ? newBinding : a.endBinding,
+						startHeading: effectiveArrowType === 'elbow' ? updatedStartHeading : a.startHeading,
+						endHeading: effectiveArrowType === 'elbow' ? updatedEndHeading : a.endHeading
+					};
 				});
 			} else {
 				// For lines, just update the endpoint (no bindings)
