@@ -37,7 +37,6 @@
 	// Constants
 	// ==========================================================================
 
-	const SIDEBAR_WIDTH = 180;
 	const MIN_ZOOM = 0.25; // 25%
 	const MAX_ZOOM = 4; // 400%
 	const ZOOM_STEP = 0.1; // 10% per step
@@ -97,9 +96,6 @@
 	/** Tool state */
 	let toolState = $derived(whiteboardStore.toolState);
 
-	/** Sidebar visibility */
-	let sidebarVisible = $derived(whiteboardStore.sidebarVisible);
-
 	/** Sync state for status indicator */
 	let syncState = $derived(whiteboardStore.syncState);
 	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
@@ -109,8 +105,7 @@
 		if (containerWidth === 0 || containerHeight === 0) return 1;
 
 		const padding = 40;
-		const rightOffset = sidebarVisible ? SIDEBAR_WIDTH : 0;
-		const availableWidth = containerWidth - padding * 2 - rightOffset;
+		const availableWidth = containerWidth - padding * 2;
 		const availableHeight = containerHeight - padding * 2;
 
 		const scaleX = availableWidth / pageWidth;
@@ -188,8 +183,7 @@
 		}
 
 		// Calculate max pan range based on how much the canvas exceeds the viewport
-		const rightOffset = sidebarVisible ? SIDEBAR_WIDTH : 0;
-		const viewportWidth = containerWidth - rightOffset;
+		const viewportWidth = containerWidth;
 		const viewportHeight = containerHeight - 80; // Account for status bar and toolbar
 
 		const maxPanX = Math.max(0, (canvasWidth - viewportWidth) / 2 + 20);
@@ -594,10 +588,9 @@
 		<!-- Canvas area -->
 		<div
 			bind:this={canvasAreaEl}
-			class="whiteboard-canvas-area flex h-full items-center justify-center transition-all duration-200"
+			class="whiteboard-canvas-area flex h-full items-center justify-center"
 			class:cursor-grab={isPanToolActive && canPan && !isPanning}
 			class:cursor-grabbing={isPanning}
-			style="margin-right: {sidebarVisible ? SIDEBAR_WIDTH : 0}px;"
 			onpointerdown={handlePanStart}
 			onpointermove={handlePanMove}
 			onpointerup={handlePanEnd}

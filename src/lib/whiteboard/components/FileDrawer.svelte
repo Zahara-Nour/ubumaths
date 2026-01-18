@@ -858,8 +858,8 @@
 	<PanelLeftOpen class="h-5 w-5" />
 </button>
 
-<!-- File Drawer Sheet -->
-<Sheet.Root open={fileDrawerVisible} onOpenChange={handleOpenChange}>
+<!-- File Drawer Sheet (preventScroll=false to avoid layout shift) -->
+<Sheet.Root open={fileDrawerVisible} onOpenChange={handleOpenChange} preventScroll={false}>
 	<Sheet.Content side="left" class="w-[450px] sm:max-w-[450px]">
 		<Sheet.Header class="border-b pb-4">
 			<div class="flex items-center justify-between pr-8">

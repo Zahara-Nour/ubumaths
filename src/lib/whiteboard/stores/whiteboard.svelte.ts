@@ -399,7 +399,7 @@ function createWhiteboardStore() {
 	// === UI State ===
 	let hasUnsavedChanges = $state(false);
 	const isLoading = $state(false);
-	let sidebarVisible = $state(true);
+	let sidebarVisible = $state(false);
 	let fileDrawerVisible = $state(false);
 
 	// === Selection State ===
