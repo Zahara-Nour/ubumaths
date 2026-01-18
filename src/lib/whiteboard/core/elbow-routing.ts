@@ -156,34 +156,62 @@ export function routeElbowArrow(
 	// Only use AABBs when there are actual shapes to avoid
 	const hasShapes = startElement !== null || endElement !== null;
 
-	// Check if dongles overlap (both points inside the other's AABB)
-	const dongleOverlap =
-		startDongle &&
-		endDongle &&
-		(pointInsideBounds(startDongle.pos, data.dynamicAABBs[1]) ||
-			pointInsideBounds(endDongle.pos, data.dynamicAABBs[0]));
-
-	// Run A* search - don't use AABBs if no shapes or if dongles overlap
-	const aabbsToAvoid = !hasShapes || dongleOverlap ? [] : data.dynamicAABBs;
-	const path = astar(startNode, endNode, grid, data.startHeading, data.endHeading, aabbsToAvoid);
-
-	if (path) {
-		// Convert path nodes to points
+	// Helper to process A* result
+	const processPath = (path: Node[]): Point[] => {
 		const points = path.map((node) => node.pos);
-
-		// Add start/end global points if using dongles
 		if (startDongle) {
 			points.unshift(data.startGlobalPoint);
 		}
 		if (endDongle) {
 			points.push(data.endGlobalPoint);
 		}
+		return getElbowArrowCornerPoints(removeElbowArrowShortSegments(points));
+	};
 
-		// Post-process: remove short segments and keep only corners
-		const cleanedPoints = getElbowArrowCornerPoints(removeElbowArrowShortSegments(points));
+	// First attempt: try with obstacle avoidance if we have shapes
+	if (hasShapes) {
+		const pathWithObstacles = astar(
+			startNode,
+			endNode,
+			grid,
+			data.startHeading,
+			data.endHeading,
+			data.dynamicAABBs
+		);
 
+		if (pathWithObstacles) {
+			return {
+				points: processPath(pathWithObstacles),
+				success: true
+			};
+		}
+
+		// Reset grid nodes for second attempt (A* modifies node state)
+		for (const node of grid.data) {
+			if (node) {
+				node.f = 0;
+				node.g = 0;
+				node.h = 0;
+				node.closed = false;
+				node.visited = false;
+				node.parent = null;
+			}
+		}
+	}
+
+	// Second attempt: try without obstacles (shapes too close or first attempt failed)
+	const pathWithoutObstacles = astar(
+		startNode,
+		endNode,
+		grid,
+		data.startHeading,
+		data.endHeading,
+		[]
+	);
+
+	if (pathWithoutObstacles) {
 		return {
-			points: cleanedPoints,
+			points: processPath(pathWithoutObstacles),
 			success: true
 		};
 	}
