@@ -2646,6 +2646,90 @@ function createWhiteboardStore() {
 			const newMap = new Map(liveEndpoints);
 			newMap.set(elementId, { endpoint, x, y });
 			liveEndpoints = newMap;
+
+			// Recalculate elbow arrow if this is an elbow arrow
+			this.recalculateLiveElbowArrowForEndpoint(elementId, endpoint, x, y);
+		},
+
+		/**
+		 * Recalculate live elbow arrow path when an endpoint is being dragged.
+		 * @param elementId - The arrow element ID
+		 * @param endpoint - Which endpoint is being dragged ('start' or 'end')
+		 * @param x - New X coordinate
+		 * @param y - New Y coordinate
+		 */
+		recalculateLiveElbowArrowForEndpoint(
+			elementId: string,
+			endpoint: 'start' | 'end',
+			x: number,
+			y: number
+		): void {
+			if (!currentPage) return;
+
+			const elements = currentPage.elements;
+
+			// Find the arrow element
+			const element = elements.find((e) => e.id === elementId);
+			if (!element || element.type !== 'shape') return;
+
+			const shape = element as ShapeElement;
+			if (shape.shapeType !== 'arrow') return;
+
+			const arrow = shape as ArrowElement;
+			const effectiveArrowType = arrow.arrowType ?? (arrow.elbowed ? 'elbow' : 'sharp');
+			if (effectiveArrowType !== 'elbow') return;
+
+			// Calculate new start/end positions
+			const newStart = endpoint === 'start' ? { x, y } : arrow.start;
+			const newEnd = endpoint === 'end' ? { x, y } : arrow.end;
+
+			// Build a map of all shapes for quick lookup
+			const shapeMap = new Map<string, ShapeElement>();
+			for (const el of elements) {
+				if (el.type === 'shape') {
+					shapeMap.set(el.id, el as ShapeElement);
+				}
+			}
+
+			// Get bound shapes (the non-dragged endpoint keeps its binding)
+			let startShape: ShapeElement | null = null;
+			let endShape: ShapeElement | null = null;
+
+			// When dragging an endpoint, the binding on that end is temporarily ignored
+			// (the user is manually positioning it)
+			if (endpoint !== 'start' && arrow.startBinding) {
+				const boundShape = shapeMap.get(arrow.startBinding.elementId);
+				if (boundShape) startShape = boundShape;
+			}
+			if (endpoint !== 'end' && arrow.endBinding) {
+				const boundShape = shapeMap.get(arrow.endBinding.elementId);
+				if (boundShape) endShape = boundShape;
+			}
+
+			// Calculate headings
+			let startHeading: Heading = arrow.startHeading ?? headingFromPoints(newStart, newEnd);
+			let endHeading: Heading = arrow.endHeading ?? headingFromPoints(newEnd, newStart);
+
+			if (startShape) {
+				startHeading = getHeadingForBindingPoint(startShape, newStart);
+			}
+			if (endShape) {
+				endHeading = flipHeading(getHeadingForBindingPoint(endShape, newEnd));
+			}
+
+			// Route the elbow arrow
+			const routeResult = routeElbowArrow(
+				newStart,
+				newEnd,
+				startHeading,
+				endHeading,
+				startShape,
+				endShape
+			);
+
+			const newElbowPoints = new Map(liveElbowPoints);
+			newElbowPoints.set(arrow.id, routeResult.points);
+			liveElbowPoints = newElbowPoints;
 		},
 
 		/**
@@ -2676,6 +2760,9 @@ function createWhiteboardStore() {
 
 			// Update the element's endpoint
 			this.updateElementEndpoint(elementId, endpoint, { x, y });
+
+			// Clear live elbow points (arrow is updated by updateElementEndpoint)
+			this.clearLiveElbowPoints(elementId);
 		},
 
 		/**
@@ -2688,6 +2775,9 @@ function createWhiteboardStore() {
 			const newMap = new Map(liveEndpoints);
 			newMap.delete(elementId);
 			liveEndpoints = newMap;
+
+			// Also clear live elbow points for this arrow
+			this.clearLiveElbowPoints(elementId);
 		},
 
 		// =======================================================================
