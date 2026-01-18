@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.4...v0.7.5) (2026-01-18)
+
+### 🐛 Bug Fixes
+
+- **types:** resolve TypeScript errors in database types and tests ([bb24ff4](https://github.com/Zahara-Nour/ubumaths/commit/bb24ff484bd2d69dcaf0f0af5937172494743e13))
+
 ### [0.7.4](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.3...v0.7.4) (2026-01-17)
 
 ### 🐛 Bug Fixes
