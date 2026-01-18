@@ -2466,6 +2466,8 @@ function createWhiteboardStore() {
 				fillOpacity?: number;
 				elbowed?: boolean;
 				elbowDirection?: ElbowDirection;
+				renderStyle?: RenderStyle;
+				roughness?: number;
 			},
 			live: boolean = false
 		): void {
@@ -2495,6 +2497,9 @@ function createWhiteboardStore() {
 							...(style.fillMode !== undefined && { fillMode: style.fillMode }),
 							...(style.fill !== undefined && { fill: style.fill }),
 							...(style.fillOpacity !== undefined && { fillOpacity: style.fillOpacity }),
+							// Render style properties
+							...(style.renderStyle !== undefined && { renderStyle: style.renderStyle }),
+							...(style.roughness !== undefined && { roughness: style.roughness }),
 							// Elbow properties (only for arrows)
 							...(isArrow && style.elbowed !== undefined && { elbowed: style.elbowed }),
 							...(isArrow &&
