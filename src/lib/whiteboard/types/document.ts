@@ -56,15 +56,14 @@ export type StrokeToolType = 'pen' | 'marker' | 'highlighter' | 'eraser';
 /** Shape types */
 export type ShapeType = 'line' | 'rectangle' | 'circle' | 'arrow' | 'pentagon' | 'hexagon' | 'star';
 
-/** Stroke/line style for shapes */
-export type StrokeStyle = 'solid' | 'dashed' | 'dotted' | 'dashdot';
+/** Stroke/line style for shapes (like Excalidraw: solid, dashed, dotted) */
+export type StrokeStyle = 'solid' | 'dashed' | 'dotted';
 
 /** Stroke style labels for UI */
 export const STROKE_STYLE_LABELS: Record<StrokeStyle, string> = {
 	solid: 'Plein',
 	dashed: 'Tirets',
-	dotted: 'Pointillé',
-	dashdot: 'Mixte'
+	dotted: 'Pointillé'
 };
 
 /** Render style: perfect (clean geometry) or sketch (hand-drawn with roughjs) */
@@ -121,8 +120,6 @@ export function getStrokeDashArray(style: StrokeStyle, strokeWidth: number): str
 			return `${strokeWidth * 4} ${strokeWidth * 2}`;
 		case 'dotted':
 			return `${strokeWidth} ${strokeWidth * 2}`;
-		case 'dashdot':
-			return `${strokeWidth * 4} ${strokeWidth * 2} ${strokeWidth} ${strokeWidth * 2}`;
 	}
 }
 
@@ -135,7 +132,7 @@ export interface StrokeElement {
 	readonly color: string;
 	readonly width: number;
 	readonly opacity: number;
-	/** Stroke style (solid, dashed, dotted, dashdot), default solid */
+	/** Stroke style (solid, dashed, dotted), default solid */
 	readonly strokeStyle?: StrokeStyle;
 	/** Rotation angle in degrees (0-360), default 0 */
 	readonly rotation?: number;

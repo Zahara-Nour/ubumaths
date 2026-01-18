@@ -238,7 +238,7 @@ export interface ArrowOptions {
 	color: string;
 	strokeWidth: number;
 	opacity: number;
-	strokeStyle?: 'solid' | 'dashed' | 'dotted' | 'dashdot';
+	strokeStyle?: 'solid' | 'dashed' | 'dotted';
 	/** Type of arrow: sharp (straight), curved (bezier), or elbow (90° angles) */
 	arrowType?: ArrowType;
 	/** Initial waypoints for curved arrows */

@@ -894,40 +894,40 @@
 					<span class="w-6 text-right text-[10px] text-muted-foreground">{currentStrokeWidth}</span>
 				</div>
 
-				<!-- Stroke style toggles -->
-				<div class="flex items-center gap-0.5">
-					{#each Object.entries(STROKE_STYLE_LABELS) as [style, _label] (style)}
-						<button
-							type="button"
-							onclick={() => handleStrokeStyleChange(style as StrokeStyle)}
-							class="flex h-7 w-7 items-center justify-center rounded-sm transition-colors {currentStrokeStyle ===
-							style
-								? 'bg-secondary'
-								: 'hover:bg-accent'}"
-							title={_label}
-							aria-label={_label}
-						>
-							<svg class="h-5 w-5" viewBox="0 0 20 10">
-								<line
-									x1="2"
-									y1="5"
-									x2="18"
-									y2="5"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-dasharray={style === 'solid'
-										? undefined
-										: style === 'dashed'
-											? '4 2'
-											: style === 'dotted'
-												? '1 2'
-												: '4 1 1 1'}
-								/>
-							</svg>
-						</button>
-					{/each}
-				</div>
+				<!-- Stroke style toggles (only for shapes) -->
+				{#if showRenderStyleToggle}
+					<div class="flex items-center gap-0.5">
+						{#each Object.entries(STROKE_STYLE_LABELS) as [style, _label] (style)}
+							<button
+								type="button"
+								onclick={() => handleStrokeStyleChange(style as StrokeStyle)}
+								class="flex h-7 w-7 items-center justify-center rounded-sm transition-colors {currentStrokeStyle ===
+								style
+									? 'bg-secondary'
+									: 'hover:bg-accent'}"
+								title={_label}
+								aria-label={_label}
+							>
+								<svg class="h-5 w-5" viewBox="0 0 20 10">
+									<line
+										x1="2"
+										y1="5"
+										x2="18"
+										y2="5"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+										stroke-dasharray={style === 'solid'
+											? undefined
+											: style === 'dashed'
+												? '4 2'
+												: '1 2'}
+									/>
+								</svg>
+							</button>
+						{/each}
+					</div>
+				{/if}
 
 				<!-- Opacity (compact) -->
 				<div class="flex w-16 items-center gap-1">
