@@ -2159,10 +2159,25 @@
 					)}
 				onRotate={(elementId, rotation) => whiteboardStore.setLiveRotation(elementId, rotation)}
 				onRotateEnd={(elementId) => whiteboardStore.commitLiveRotation(elementId)}
-				onEndpointDrag={(elementId, endpoint, x, y) =>
-					whiteboardStore.setLiveEndpoint(elementId, endpoint, x, y)}
-				onEndpointDragEnd={(elementId, endpoint, x, y) =>
-					whiteboardStore.commitLiveEndpoint(elementId, endpoint, x, y)}
+				onEndpointDrag={(elementId, endpoint, x, y) => {
+					whiteboardStore.setLiveEndpoint(elementId, endpoint, x, y);
+					// Show binding candidate feedback during endpoint drag
+					const excludeIds = new Set([elementId]);
+					const candidate = findBindingCandidate({ x, y }, elements, excludeIds);
+					if (candidate) {
+						bindingCandidateIds = new Set([candidate.element.id]);
+						snapPoints = [{ point: candidate.perimeterPoint, end: endpoint }];
+					} else {
+						bindingCandidateIds = new Set();
+						snapPoints = [];
+					}
+				}}
+				onEndpointDragEnd={(elementId, endpoint, x, y) => {
+					whiteboardStore.commitLiveEndpoint(elementId, endpoint, x, y);
+					// Clear binding candidate feedback
+					bindingCandidateIds = new Set();
+					snapPoints = [];
+				}}
 				onWaypointDrag={(arrowId, waypointId, x, y) =>
 					whiteboardStore.setLiveWaypointPosition(arrowId, waypointId, { x, y })}
 				onWaypointDragEnd={(arrowId, _waypointId, _x, _y) =>
