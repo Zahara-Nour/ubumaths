@@ -24,8 +24,9 @@
 		getBoundsCenter,
 		type BoundingBox
 	} from '../core/hit-testing';
-	import { calculateElbowPath } from '../core/elbow-path';
 	import { calculateCurvedPath } from '../core/curved-path';
+	import { routeElbowArrow } from '../core/elbow-routing';
+	import { headingFromPoints } from '../core/heading';
 	import InstrumentLayer from './InstrumentLayer.svelte';
 	import TextBlockLayer from './TextBlockLayer.svelte';
 	import ShapeLabelLayer from './ShapeLabelLayer.svelte';
@@ -1813,9 +1814,10 @@
 								marker-end={props.hasArrowMarker ? `url(#arrow-marker-${shape.id})` : undefined}
 							/>
 						{:else if effectiveArrowType === 'elbow'}
-							{@const elbowPoints = arrowShape
-								? getArrowPoints(arrowShape)
-								: [adjustedStart, adjustedEnd]}
+							{@const livePoints = whiteboardStore.liveElbowPoints.get(shape.id)}
+							{@const elbowPoints =
+								livePoints ??
+								(arrowShape ? getArrowPoints(arrowShape) : [adjustedStart, adjustedEnd])}
 							{@const elbowPath = `M ${elbowPoints[0].x} ${elbowPoints[0].y} ${elbowPoints
 								.slice(1)
 								.map((p) => `L ${p.x} ${p.y}`)
@@ -1974,13 +1976,22 @@
 							marker-end={previewProps.hasArrowMarker ? 'url(#arrow-marker-preview)' : undefined}
 						/>
 					{:else if toolState.toolType === 'arrow' && effectivePreviewArrowType === 'elbow'}
-						{@const previewElbowResult = calculateElbowPath(
+						{@const previewStartHeading = headingFromPoints(shapeStartPoint, shapeEndPoint)}
+						{@const previewEndHeading = headingFromPoints(shapeEndPoint, shapeStartPoint)}
+						{@const previewElbowResult = routeElbowArrow(
 							shapeStartPoint,
 							shapeEndPoint,
-							toolState.elbowDirection ?? 'horizontal-first'
+							previewStartHeading,
+							previewEndHeading,
+							null,
+							null
 						)}
+						{@const previewElbowPath = `M ${previewElbowResult.points[0].x} ${previewElbowResult.points[0].y} ${previewElbowResult.points
+							.slice(1)
+							.map((p) => `L ${p.x} ${p.y}`)
+							.join(' ')}`}
 						<path
-							d={previewElbowResult.path}
+							d={previewElbowPath}
 							stroke={toolState.color}
 							stroke-width={toolState.strokeWidth}
 							stroke-dasharray={previewDashArray}

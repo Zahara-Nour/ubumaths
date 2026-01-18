@@ -442,6 +442,9 @@ function createWhiteboardStore() {
 	// === Live Waypoints State (for smooth dragging of curve control points) ===
 	let liveWaypoints = $state<Map<string, ArrowWaypoint[]>>(new Map());
 
+	// === Live Elbow Points State (for smooth elbow arrow re-routing during drag) ===
+	let liveElbowPoints = $state<Map<string, readonly Point[]>>(new Map());
+
 	// === Autosave ===
 	let autosaveTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -713,6 +716,11 @@ function createWhiteboardStore() {
 		/** Live waypoints for curved arrows during drag */
 		get liveWaypoints() {
 			return liveWaypoints;
+		},
+
+		/** Live elbow points for elbow arrows during drag */
+		get liveElbowPoints() {
+			return liveElbowPoints;
 		},
 
 		// === Document Operations ===
@@ -2139,6 +2147,7 @@ function createWhiteboardStore() {
 
 		/**
 		 * Set live position for multiple elements at once (for group dragging).
+		 * Also recalculates elbow arrows bound to moved shapes in real-time.
 		 * @param elementIds - Elements to set live position for
 		 * @param dx - Horizontal offset from original position
 		 * @param dy - Vertical offset from original position
@@ -2149,6 +2158,25 @@ function createWhiteboardStore() {
 				newMap.set(id, { dx, dy });
 			}
 			livePositions = newMap;
+
+			// Identify bindable shapes among the moved elements and recalculate elbow arrows
+			if (currentPage) {
+				const movedShapeIds: string[] = [];
+				for (const id of elementIds) {
+					const element = currentPage.elements.find((e) => e.id === id);
+					if (
+						element?.type === 'shape' &&
+						isBindableShape(element as ShapeElement) &&
+						!isArrowElement(element)
+					) {
+						movedShapeIds.push(id);
+					}
+				}
+
+				if (movedShapeIds.length > 0) {
+					this.recalculateLiveElbowArrows(movedShapeIds, dx, dy);
+				}
+			}
 		},
 
 		/**
@@ -2174,6 +2202,7 @@ function createWhiteboardStore() {
 
 		/**
 		 * Commit live positions for multiple elements and clear live state.
+		 * Also clears live elbow points used during the drag.
 		 * @param elementIds - Elements to commit positions for
 		 */
 		commitLivePositionBatch(elementIds: string[]): void {
@@ -2190,6 +2219,9 @@ function createWhiteboardStore() {
 				newMap.delete(id);
 			}
 			livePositions = newMap;
+
+			// Clear live elbow points (the actual arrows are now updated by moveElements)
+			this.clearAllLiveElbowPoints();
 		},
 
 		/**
@@ -2206,10 +2238,154 @@ function createWhiteboardStore() {
 
 		/**
 		 * Clear all live positions (e.g., after commit or cancel).
+		 * Also clears live elbow points.
 		 */
 		clearAllLivePositions(): void {
-			if (livePositions.size === 0) return;
+			if (livePositions.size === 0 && liveElbowPoints.size === 0) return;
 			livePositions = new Map();
+			this.clearAllLiveElbowPoints();
+		},
+
+		// === Live Elbow Points Methods (for elbow arrows during drag) ===
+
+		/**
+		 * Set live elbow points for an arrow during drag.
+		 * @param arrowId - Arrow element ID
+		 * @param points - Calculated elbow points
+		 */
+		setLiveElbowPoints(arrowId: string, points: readonly Point[]): void {
+			const newMap = new Map(liveElbowPoints);
+			newMap.set(arrowId, points);
+			liveElbowPoints = newMap;
+		},
+
+		/**
+		 * Clear live elbow points for an arrow (e.g., on commit or cancel).
+		 * @param arrowId - Arrow element ID
+		 */
+		clearLiveElbowPoints(arrowId: string): void {
+			if (!liveElbowPoints.has(arrowId)) return;
+			const newMap = new Map(liveElbowPoints);
+			newMap.delete(arrowId);
+			liveElbowPoints = newMap;
+		},
+
+		/**
+		 * Clear all live elbow points (e.g., after commit).
+		 */
+		clearAllLiveElbowPoints(): void {
+			if (liveElbowPoints.size === 0) return;
+			liveElbowPoints = new Map();
+		},
+
+		/**
+		 * Recalculate elbow arrow paths for arrows bound to shapes being dragged.
+		 * Stores the calculated points in liveElbowPoints for rendering.
+		 * @param movedShapeIds - IDs of shapes being moved
+		 * @param dx - Horizontal offset from original position
+		 * @param dy - Vertical offset from original position
+		 */
+		recalculateLiveElbowArrows(movedShapeIds: string[], dx: number, dy: number): void {
+			if (!currentPage || movedShapeIds.length === 0) return;
+
+			const elements = currentPage.elements;
+			const movedIdSet = new Set(movedShapeIds);
+
+			// Build a map of all shapes for quick lookup
+			const shapeMap = new Map<string, ShapeElement>();
+			for (const element of elements) {
+				if (element.type === 'shape') {
+					shapeMap.set(element.id, element as ShapeElement);
+				}
+			}
+
+			// Find all elbow arrows bound to the moved shapes
+			const newElbowPoints = new Map<string, readonly Point[]>(liveElbowPoints);
+
+			for (const element of elements) {
+				if (element.type !== 'shape') continue;
+
+				const shape = element as ShapeElement;
+				if (shape.shapeType !== 'arrow') continue;
+
+				const arrow = shape as ArrowElement;
+				const effectiveArrowType = arrow.arrowType ?? (arrow.elbowed ? 'elbow' : 'sharp');
+				if (effectiveArrowType !== 'elbow') continue;
+
+				// Check if this arrow is bound to any moved shape
+				const startBoundToMoved =
+					arrow.startBinding && movedIdSet.has(arrow.startBinding.elementId);
+				const endBoundToMoved = arrow.endBinding && movedIdSet.has(arrow.endBinding.elementId);
+
+				if (!startBoundToMoved && !endBoundToMoved) continue;
+
+				// Calculate new start/end positions accounting for drag offset
+				let newStart = arrow.start;
+				let newEnd = arrow.end;
+
+				// Create adjusted shape copies for routing
+				let startShape: ShapeElement | null = null;
+				let endShape: ShapeElement | null = null;
+
+				if (arrow.startBinding) {
+					const boundShape = shapeMap.get(arrow.startBinding.elementId);
+					if (boundShape) {
+						// If this shape is being moved, apply offset
+						if (movedIdSet.has(arrow.startBinding.elementId)) {
+							startShape = {
+								...boundShape,
+								start: { x: boundShape.start.x + dx, y: boundShape.start.y + dy },
+								end: { x: boundShape.end.x + dx, y: boundShape.end.y + dy }
+							};
+							newStart = { x: arrow.start.x + dx, y: arrow.start.y + dy };
+						} else {
+							startShape = boundShape;
+						}
+					}
+				}
+
+				if (arrow.endBinding) {
+					const boundShape = shapeMap.get(arrow.endBinding.elementId);
+					if (boundShape) {
+						// If this shape is being moved, apply offset
+						if (movedIdSet.has(arrow.endBinding.elementId)) {
+							endShape = {
+								...boundShape,
+								start: { x: boundShape.start.x + dx, y: boundShape.start.y + dy },
+								end: { x: boundShape.end.x + dx, y: boundShape.end.y + dy }
+							};
+							newEnd = { x: arrow.end.x + dx, y: arrow.end.y + dy };
+						} else {
+							endShape = boundShape;
+						}
+					}
+				}
+
+				// Calculate headings using search cones
+				let startHeading: Heading = arrow.startHeading ?? headingFromPoints(newStart, newEnd);
+				let endHeading: Heading = arrow.endHeading ?? headingFromPoints(newEnd, newStart);
+
+				if (startShape) {
+					startHeading = getHeadingForBindingPoint(startShape, newStart);
+				}
+				if (endShape) {
+					endHeading = flipHeading(getHeadingForBindingPoint(endShape, newEnd));
+				}
+
+				// Route the elbow arrow
+				const routeResult = routeElbowArrow(
+					newStart,
+					newEnd,
+					startHeading,
+					endHeading,
+					startShape,
+					endShape
+				);
+
+				newElbowPoints.set(arrow.id, routeResult.points);
+			}
+
+			liveElbowPoints = newElbowPoints;
 		},
 
 		// === Live Endpoint Methods (for lines/arrows) ===
