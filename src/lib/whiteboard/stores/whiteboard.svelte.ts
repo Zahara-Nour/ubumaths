@@ -2624,12 +2624,37 @@ function createWhiteboardStore() {
 		 * @param y - New Y coordinate
 		 */
 		setLiveEndpoint(elementId: string, endpoint: 'start' | 'end', x: number, y: number): void {
+			if (!currentPage) return;
+
+			// Find the element to get its other endpoint for binding calculation
+			const element = currentPage.elements.find((e) => e.id === elementId);
+			if (!element || element.type !== 'shape') return;
+
+			const shape = element as ShapeElement;
+			if (shape.shapeType !== 'line' && shape.shapeType !== 'arrow') return;
+
+			// Check for binding candidate at this position
+			const excludeIds = new Set([elementId]);
+			const candidate = findBindingCandidate({ x, y }, currentPage.elements, excludeIds);
+
+			// Calculate snapped position if there's a binding candidate
+			let snappedX = x;
+			let snappedY = y;
+			if (candidate) {
+				const otherEndpoint = endpoint === 'start' ? shape.end : shape.start;
+				const binding = createBindingAnchor(candidate.element, { x, y }, otherEndpoint);
+				const snappedPos = calculateBoundEndpoint(binding, candidate.element, otherEndpoint);
+				snappedX = snappedPos.x;
+				snappedY = snappedPos.y;
+			}
+
+			// Store the snapped position
 			const newMap = new Map(liveEndpoints);
-			newMap.set(elementId, { endpoint, x, y });
+			newMap.set(elementId, { endpoint, x: snappedX, y: snappedY });
 			liveEndpoints = newMap;
 
-			// Recalculate elbow arrow if this is an elbow arrow
-			this.recalculateLiveElbowArrowForEndpoint(elementId, endpoint, x, y);
+			// Recalculate elbow arrow if this is an elbow arrow (uses snapped position)
+			this.recalculateLiveElbowArrowForEndpoint(elementId, endpoint, snappedX, snappedY);
 		},
 
 		/**
@@ -2668,23 +2693,17 @@ function createWhiteboardStore() {
 				}
 			}
 
-			// Check for binding candidate at the dragged position (like in updateElementEndpoint)
+			// Position is already snapped by setLiveEndpoint, use directly
+			const position = { x, y };
+
+			// Check for binding candidate to get the shape for heading calculation
 			const excludeIds = new Set([elementId]);
-			const candidate = findBindingCandidate({ x, y }, elements, excludeIds);
+			const candidate = findBindingCandidate(position, elements, excludeIds);
+			const candidateShape = candidate?.element ?? null;
 
-			// Calculate adjusted position (snapped to perimeter if binding candidate exists)
-			let adjustedPosition = { x, y };
-			let candidateShape: ShapeElement | null = null;
-			if (candidate) {
-				const otherEndpoint = endpoint === 'start' ? arrow.end : arrow.start;
-				const binding = createBindingAnchor(candidate.element, { x, y }, otherEndpoint);
-				adjustedPosition = calculateBoundEndpoint(binding, candidate.element, otherEndpoint);
-				candidateShape = candidate.element;
-			}
-
-			// Calculate new start/end positions using adjusted position
-			const newStart = endpoint === 'start' ? adjustedPosition : arrow.start;
-			const newEnd = endpoint === 'end' ? adjustedPosition : arrow.end;
+			// Calculate new start/end positions
+			const newStart = endpoint === 'start' ? position : arrow.start;
+			const newEnd = endpoint === 'end' ? position : arrow.end;
 
 			// Get bound shapes
 			let startShape: ShapeElement | null = null;
