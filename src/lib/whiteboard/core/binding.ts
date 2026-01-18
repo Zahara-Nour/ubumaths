@@ -26,6 +26,7 @@ import {
 	getClosestPerimeterPoint,
 	normalizePoint,
 	denormalizePoint,
+	rotatePointAroundCenter,
 	type BoundingBox
 } from './binding-geometry';
 import { routeElbowArrow } from './elbow-routing';
@@ -207,16 +208,23 @@ export function calculateBoundEndpoint(
 	// This keeps the binding at a fixed relative position on the shape
 	const perimeterPoint = denormalizePoint(binding.perimeterPoint, bounds);
 
-	// Apply gap offset in the direction away from center
+	// Apply gap offset in the direction away from center (before rotation)
 	const dx = perimeterPoint.x - center.x;
 	const dy = perimeterPoint.y - center.y;
 	const length = Math.sqrt(dx * dx + dy * dy);
 	const direction = length > 0 ? { x: dx / length, y: dy / length } : { x: 1, y: 0 };
 
-	return {
+	let result: Point = {
 		x: perimeterPoint.x + direction.x * binding.gap,
 		y: perimeterPoint.y + direction.y * binding.gap
 	};
+
+	// Apply shape rotation if present
+	if (targetShape.rotation && targetShape.rotation !== 0) {
+		result = rotatePointAroundCenter(result, center, targetShape.rotation);
+	}
+
+	return result;
 }
 
 // =============================================================================
