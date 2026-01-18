@@ -14,7 +14,12 @@
 		doStrokesIntersect
 	} from '../core/stroke-smoothing';
 	import { createShapeElement, getShapeSvgProps } from '../core/shapes';
-	import { createArrowWithBindings, findBindingCandidate } from '../core/binding';
+	import {
+		createArrowWithBindings,
+		findBindingCandidate,
+		createBindingAnchor,
+		calculateBoundEndpoint
+	} from '../core/binding';
 	import { renderRoughShape } from '../core/rough-renderer';
 	import {
 		hitTestElements,
@@ -2089,7 +2094,17 @@
 					const candidate = findBindingCandidate({ x, y }, elements, excludeIds);
 					if (candidate) {
 						bindingCandidateIds = new Set([candidate.element.id]);
-						snapPoints = [{ point: candidate.perimeterPoint, end: endpoint }];
+						// Calculate the snapped position with gap (matching what setLiveEndpoint does)
+						const element = elements.find((e) => e.id === elementId);
+						if (element && element.type === 'shape') {
+							const shape = element as ShapeElement;
+							const otherEndpoint = endpoint === 'start' ? shape.end : shape.start;
+							const binding = createBindingAnchor(candidate.element, { x, y }, otherEndpoint);
+							const snappedPos = calculateBoundEndpoint(binding, candidate.element, otherEndpoint);
+							snapPoints = [{ point: snappedPos, end: endpoint }];
+						} else {
+							snapPoints = [{ point: candidate.perimeterPoint, end: endpoint }];
+						}
 					} else {
 						bindingCandidateIds = new Set();
 						snapPoints = [];
