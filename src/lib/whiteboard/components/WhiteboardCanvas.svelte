@@ -280,9 +280,19 @@
 				};
 			}
 
+			// Determine if this is an elbow arrow (check both new arrowType and legacy elbowed flag)
+			const effectiveArrowType = arrowShape
+				? (arrowShape.arrowType ?? (arrowShape.elbowed ? 'elbow' : 'sharp'))
+				: null;
+			const isElbowArrow = effectiveArrowType === 'elbow';
+
 			// Create a modified shape for rendering if live states exist
 			let shapeToRender: ShapeElement = shape;
-			if (effectiveStart !== shape.start || effectiveEnd !== shape.end || liveElbowPts) {
+			if (
+				effectiveStart !== shape.start ||
+				effectiveEnd !== shape.end ||
+				(liveElbowPts && isElbowArrow)
+			) {
 				// Clone the shape with adjusted points
 				shapeToRender = {
 					...shape,
@@ -290,8 +300,8 @@
 					end: effectiveEnd
 				};
 
-				// For elbow arrows, inject liveElbowPoints as points[]
-				if (liveElbowPts && isArrowShape) {
+				// For elbow arrows ONLY, inject liveElbowPoints as points[]
+				if (liveElbowPts && isElbowArrow) {
 					shapeToRender = {
 						...shapeToRender,
 						points: liveElbowPts as Point[]
