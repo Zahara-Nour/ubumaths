@@ -13,6 +13,8 @@ import {
 	createEmptyPage,
 	createDefaultInstruments,
 	PAGE_FORMATS,
+	DEFAULT_START_ARROWHEAD,
+	DEFAULT_END_ARROWHEAD,
 	type WhiteboardDocument,
 	type Page,
 	type PageBackground,
@@ -28,7 +30,8 @@ import {
 	type ElbowDirection,
 	type ArrowType,
 	type ArrowWaypoint,
-	type RenderStyle
+	type RenderStyle,
+	type Arrowhead
 } from '../types/document';
 import { getElementBounds } from '../core/hit-testing';
 import { createHistoryManager, type HistoryManager } from '../core/history.svelte';
@@ -136,6 +139,10 @@ export interface ToolSettings {
 	elbowed: boolean;
 	/** For arrows: direction of first segment */
 	elbowDirection: ElbowDirection;
+	/** For arrows: arrowhead style at start (null = none) */
+	startArrowhead: Arrowhead | null;
+	/** For arrows: arrowhead style at end (default: 'arrow') */
+	endArrowhead: Arrowhead;
 	/** Render style: perfect (clean) or sketch (hand-drawn with roughjs) */
 	renderStyle: RenderStyle;
 	/** Roughness level for sketch mode (0-2, default 1) */
@@ -191,6 +198,8 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		startArrowhead: DEFAULT_START_ARROWHEAD,
+		endArrowhead: DEFAULT_END_ARROWHEAD,
 		renderStyle: DEFAULT_RENDER_STYLE,
 		roughness: DEFAULT_ROUGHNESS
 	},
@@ -206,6 +215,8 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		startArrowhead: DEFAULT_START_ARROWHEAD,
+		endArrowhead: DEFAULT_END_ARROWHEAD,
 		renderStyle: DEFAULT_RENDER_STYLE,
 		roughness: DEFAULT_ROUGHNESS
 	},
@@ -221,6 +232,8 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		startArrowhead: DEFAULT_START_ARROWHEAD,
+		endArrowhead: DEFAULT_END_ARROWHEAD,
 		renderStyle: DEFAULT_RENDER_STYLE,
 		roughness: DEFAULT_ROUGHNESS
 	},
@@ -236,6 +249,8 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		startArrowhead: DEFAULT_START_ARROWHEAD,
+		endArrowhead: DEFAULT_END_ARROWHEAD,
 		renderStyle: DEFAULT_RENDER_STYLE,
 		roughness: DEFAULT_ROUGHNESS
 	},
@@ -252,6 +267,8 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		startArrowhead: DEFAULT_START_ARROWHEAD,
+		endArrowhead: DEFAULT_END_ARROWHEAD,
 		renderStyle: DEFAULT_RENDER_STYLE,
 		roughness: DEFAULT_ROUGHNESS
 	},
@@ -267,6 +284,8 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		startArrowhead: DEFAULT_START_ARROWHEAD,
+		endArrowhead: DEFAULT_END_ARROWHEAD,
 		renderStyle: DEFAULT_RENDER_STYLE,
 		roughness: DEFAULT_ROUGHNESS
 	},
@@ -282,6 +301,8 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		startArrowhead: DEFAULT_START_ARROWHEAD,
+		endArrowhead: DEFAULT_END_ARROWHEAD,
 		renderStyle: DEFAULT_RENDER_STYLE,
 		roughness: DEFAULT_ROUGHNESS
 	},
@@ -297,6 +318,8 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		startArrowhead: DEFAULT_START_ARROWHEAD,
+		endArrowhead: DEFAULT_END_ARROWHEAD,
 		renderStyle: DEFAULT_RENDER_STYLE,
 		roughness: DEFAULT_ROUGHNESS
 	},
@@ -312,6 +335,8 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		startArrowhead: DEFAULT_START_ARROWHEAD,
+		endArrowhead: DEFAULT_END_ARROWHEAD,
 		renderStyle: DEFAULT_RENDER_STYLE,
 		roughness: DEFAULT_ROUGHNESS
 	},
@@ -327,6 +352,8 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		startArrowhead: DEFAULT_START_ARROWHEAD,
+		endArrowhead: DEFAULT_END_ARROWHEAD,
 		renderStyle: DEFAULT_RENDER_STYLE,
 		roughness: DEFAULT_ROUGHNESS
 	},
@@ -342,6 +369,8 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		arrowType: DEFAULT_ARROW_TYPE,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION,
+		startArrowhead: DEFAULT_START_ARROWHEAD,
+		endArrowhead: DEFAULT_END_ARROWHEAD,
 		renderStyle: DEFAULT_RENDER_STYLE,
 		roughness: DEFAULT_ROUGHNESS
 	}
@@ -376,6 +405,8 @@ function createWhiteboardStore() {
 		arrowType: DEFAULT_ARROW_TYPE as ArrowType,
 		elbowed: DEFAULT_ELBOWED,
 		elbowDirection: DEFAULT_ELBOW_DIRECTION as ElbowDirection,
+		startArrowhead: DEFAULT_START_ARROWHEAD as Arrowhead | null,
+		endArrowhead: DEFAULT_END_ARROWHEAD as Arrowhead,
 		renderStyle: DEFAULT_RENDER_STYLE as RenderStyle,
 		roughness: DEFAULT_ROUGHNESS
 	});
@@ -437,6 +468,8 @@ function createWhiteboardStore() {
 			arrowType: settings.arrowType,
 			elbowed: settings.elbowed,
 			elbowDirection: settings.elbowDirection,
+			startArrowhead: settings.startArrowhead,
+			endArrowhead: settings.endArrowhead,
 			renderStyle: userPreferences.renderStyle,
 			roughness: userPreferences.roughness
 		};
@@ -2466,6 +2499,8 @@ function createWhiteboardStore() {
 				fillOpacity?: number;
 				elbowed?: boolean;
 				elbowDirection?: ElbowDirection;
+				startArrowhead?: Arrowhead | null;
+				endArrowhead?: Arrowhead | null;
 				renderStyle?: RenderStyle;
 				roughness?: number;
 			},
@@ -2500,10 +2535,14 @@ function createWhiteboardStore() {
 							// Render style properties
 							...(style.renderStyle !== undefined && { renderStyle: style.renderStyle }),
 							...(style.roughness !== undefined && { roughness: style.roughness }),
-							// Elbow properties (only for arrows)
+							// Arrow properties (only for arrows)
 							...(isArrow && style.elbowed !== undefined && { elbowed: style.elbowed }),
 							...(isArrow &&
-								style.elbowDirection !== undefined && { elbowDirection: style.elbowDirection })
+								style.elbowDirection !== undefined && { elbowDirection: style.elbowDirection }),
+							...(isArrow &&
+								style.startArrowhead !== undefined && { startArrowhead: style.startArrowhead }),
+							...(isArrow &&
+								style.endArrowhead !== undefined && { endArrowhead: style.endArrowhead })
 						};
 					}
 					case 'group':
@@ -3149,6 +3188,38 @@ function createWhiteboardStore() {
 		},
 
 		/**
+		 * Set start arrowhead style
+		 * Only saves to user preferences if no element is selected
+		 */
+		setStartArrowhead(arrowhead: Arrowhead | null): void {
+			// Only save to preferences if no element is selected
+			if (selectedIds.size === 0) {
+				userPreferences = { ...userPreferences, startArrowhead: arrowhead };
+			}
+			// Only apply to arrow tool
+			toolSettings = {
+				...toolSettings,
+				arrow: { ...toolSettings.arrow, startArrowhead: arrowhead }
+			};
+		},
+
+		/**
+		 * Set end arrowhead style
+		 * Only saves to user preferences if no element is selected
+		 */
+		setEndArrowhead(arrowhead: Arrowhead): void {
+			// Only save to preferences if no element is selected
+			if (selectedIds.size === 0) {
+				userPreferences = { ...userPreferences, endArrowhead: arrowhead };
+			}
+			// Only apply to arrow tool
+			toolSettings = {
+				...toolSettings,
+				arrow: { ...toolSettings.arrow, endArrowhead: arrowhead }
+			};
+		},
+
+		/**
 		 * Set render style (perfect or sketch) for all tools
 		 * This is a global setting that affects all new elements
 		 */
@@ -3197,6 +3268,8 @@ function createWhiteboardStore() {
 			arrowType?: ArrowType;
 			elbowed?: boolean;
 			elbowDirection?: ElbowDirection;
+			startArrowhead?: Arrowhead | null;
+			endArrowhead?: Arrowhead | null;
 			renderStyle?: RenderStyle;
 			roughness?: number;
 		}): void {
@@ -3219,6 +3292,8 @@ function createWhiteboardStore() {
 						arrowType: element.arrowType ?? currentToolSettings.arrowType,
 						elbowed: element.elbowed ?? currentToolSettings.elbowed,
 						elbowDirection: element.elbowDirection ?? currentToolSettings.elbowDirection,
+						startArrowhead: element.startArrowhead ?? currentToolSettings.startArrowhead,
+						endArrowhead: element.endArrowhead ?? currentToolSettings.endArrowhead,
 						// Render style properties
 						renderStyle: element.renderStyle ?? currentToolSettings.renderStyle,
 						roughness: element.roughness ?? currentToolSettings.roughness
@@ -3249,6 +3324,8 @@ function createWhiteboardStore() {
 						arrowType: userPreferences.arrowType,
 						elbowed: userPreferences.elbowed,
 						elbowDirection: userPreferences.elbowDirection,
+						startArrowhead: userPreferences.startArrowhead,
+						endArrowhead: userPreferences.endArrowhead,
 						renderStyle: userPreferences.renderStyle,
 						roughness: userPreferences.roughness
 					};
