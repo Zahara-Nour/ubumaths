@@ -77,8 +77,24 @@ function getOrCreateSeed(seed: number | undefined, shapeId: string): number {
 // =============================================================================
 
 /**
+ * Get stroke dash array for dashed style (like Excalidraw)
+ * Dash length is fixed at 8px, gap scales with strokeWidth
+ */
+function getDashArrayDashed(strokeWidth: number): number[] {
+	return [8, 8 + strokeWidth];
+}
+
+/**
+ * Get stroke dash array for dotted style (like Excalidraw)
+ * Dot length is fixed at 1.5px, gap scales with strokeWidth
+ */
+function getDashArrayDotted(strokeWidth: number): number[] {
+	return [1.5, 6 + strokeWidth];
+}
+
+/**
  * Get stroke dash array for roughjs based on stroke style
- * Returns array of [dash, gap] values relative to stroke width
+ * Uses Excalidraw's algorithm for consistent visual appearance
  */
 function getStrokeLineDash(
 	strokeStyle: string | undefined,
@@ -86,9 +102,9 @@ function getStrokeLineDash(
 ): number[] | undefined {
 	switch (strokeStyle) {
 		case 'dashed':
-			return [strokeWidth * 4, strokeWidth * 2];
+			return getDashArrayDashed(strokeWidth);
 		case 'dotted':
-			return [strokeWidth, strokeWidth * 2];
+			return getDashArrayDotted(strokeWidth);
 		default:
 			return undefined;
 	}
@@ -212,19 +228,31 @@ export function buildElbowPathWithRoundedCorners(
 
 /**
  * Create roughjs options from a shape element
+ * Uses Excalidraw's optimizations for non-solid strokes:
+ * - disableMultiStroke: prevents dashes/dots from overlapping
+ * - strokeWidth +0.5: compensates for disabled multiStroke
+ * - explicit fillWeight/hachureGap: prevents fills from being affected
  */
 function createRoughOptions(shape: ShapeElement, seed: number, roughness: number): RoughOptions {
 	const hasFill = shape.fillMode && shape.fillMode !== 'none' && shape.fill;
 	const strokeLineDash = getStrokeLineDash(shape.strokeStyle, shape.strokeWidth);
+	const isNonSolid = shape.strokeStyle === 'dashed' || shape.strokeStyle === 'dotted';
+
+	// For non-solid strokes, increase width slightly to compensate for disabled multiStroke
+	const effectiveStrokeWidth = isNonSolid ? shape.strokeWidth + 0.5 : shape.strokeWidth;
 
 	return {
 		seed,
 		roughness,
 		stroke: shape.color,
-		strokeWidth: shape.strokeWidth,
+		strokeWidth: effectiveStrokeWidth,
 		strokeLineDash,
+		// Disable multiStroke for non-solid to prevent dashes/dots from overlapping
+		disableMultiStroke: isNonSolid,
 		fill: hasFill ? shape.fill : undefined,
 		fillStyle: hasFill ? mapFillStyle(shape.fillMode) : undefined,
+		// Explicitly set fillWeight and hachureGap based on original strokeWidth
+		// (not affected by the +0.5 adjustment for non-solid strokes)
 		fillWeight: shape.strokeWidth * 0.5,
 		hachureAngle: 45,
 		hachureGap: shape.strokeWidth * 4
