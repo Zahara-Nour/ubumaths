@@ -67,7 +67,7 @@ import {
 	calculateBoundEndpoint
 } from '../core/binding';
 import { routeElbowArrow } from '../core/elbow-routing';
-import { headingFromPoints, getHeadingForBindingPoint, flipHeading } from '../core/heading';
+import { headingFromPoints, getOptimalHeadingForBinding, flipHeading } from '../core/heading';
 import type { ShapeElement, ArrowElement, BindingAnchor, Point, Heading } from '../types/document';
 import { createArrowPoints } from '../types/document';
 
@@ -2361,15 +2361,17 @@ function createWhiteboardStore() {
 					}
 				}
 
-				// Calculate headings using search cones
+				// Calculate headings using optimal direction toward target
 				let startHeading: Heading = arrow.startHeading ?? headingFromPoints(newStart, newEnd);
 				let endHeading: Heading = arrow.endHeading ?? headingFromPoints(newEnd, newStart);
 
 				if (startShape) {
-					startHeading = getHeadingForBindingPoint(startShape, newStart);
+					// Use optimal heading that considers target direction
+					startHeading = getOptimalHeadingForBinding(startShape, newStart, newEnd);
 				}
 				if (endShape) {
-					endHeading = flipHeading(getHeadingForBindingPoint(endShape, newEnd));
+					// Use optimal heading that considers source direction, then flip
+					endHeading = flipHeading(getOptimalHeadingForBinding(endShape, newEnd, newStart));
 				}
 
 				// Route the elbow arrow
@@ -2647,14 +2649,16 @@ function createWhiteboardStore() {
 									) as ShapeElement | undefined)
 								: undefined;
 
-					// Calculate headings using search cones (like Excalidraw)
-					// The heading is determined by which side of the shape the actual point is on
+					// Calculate headings using optimal direction toward target
+					// This considers both the binding position and the direction to the other endpoint
 					if (startShape) {
-						updatedStartHeading = getHeadingForBindingPoint(startShape, newStart);
+						updatedStartHeading = getOptimalHeadingForBinding(startShape, newStart, newEnd);
 					}
 					if (endShape) {
 						// For end binding, flip the heading (arrow enters from opposite direction)
-						updatedEndHeading = flipHeading(getHeadingForBindingPoint(endShape, newEnd));
+						updatedEndHeading = flipHeading(
+							getOptimalHeadingForBinding(endShape, newEnd, newStart)
+						);
 					}
 
 					// Ensure headings are never null for routing
