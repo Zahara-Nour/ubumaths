@@ -158,14 +158,14 @@ export function findBindingCandidate(
 export function createBindingAnchor(
 	targetShape: ShapeElement,
 	arrowEndpoint: Point,
-	otherEndpoint: Point,
+	_otherEndpoint: Point,
 	gap: number = DEFAULT_BINDING_GAP
 ): BindingAnchor {
 	const bounds = getShapeBounds(targetShape);
 
-	// Calculate perimeter point in the direction toward the other endpoint
-	// This ensures the arrow connects at the "facing" edge of the shape
-	const perimeterPoint = getClosestPerimeterPoint(targetShape, otherEndpoint, 0);
+	// Calculate perimeter point based on where the user clicked (arrowEndpoint)
+	// This respects the user's choice of binding position on the shape
+	const perimeterPoint = getClosestPerimeterPoint(targetShape, arrowEndpoint, 0);
 
 	// Normalize positions relative to shape bounds
 	const normalizedPosition = normalizePoint(arrowEndpoint, bounds);

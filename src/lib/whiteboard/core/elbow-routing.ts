@@ -231,11 +231,13 @@ function getElbowArrowData(
 	);
 
 	// Calculate dongle positions
+	// For start: dongle is in the direction the arrow EXITS (startHeading)
+	// For end: dongle is in the direction the arrow COMES FROM (opposite of endHeading)
 	const startDonglePosition = startElement
 		? getDonglePosition(dynamicAABBs[0], startHeading, startPoint)
 		: null;
 	const endDonglePosition = endElement
-		? getDonglePosition(dynamicAABBs[1], endHeading, endPoint)
+		? getDonglePosition(dynamicAABBs[1], flipHeading(endHeading), endPoint)
 		: null;
 
 	return {

@@ -20,13 +20,14 @@
 	import { calculateElbowPath } from '../core/elbow-path';
 	import { calculateCurvedPath } from '../core/curved-path';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
-	import type {
-		WhiteboardElement,
-		ShapeElement,
-		ArrowElement,
-		StrokeElement,
-		GroupElement,
-		Point
+	import {
+		getArrowPoints,
+		type WhiteboardElement,
+		type ShapeElement,
+		type ArrowElement,
+		type StrokeElement,
+		type GroupElement,
+		type Point
 	} from '../types/document';
 
 	// ==========================================================================
@@ -706,13 +707,20 @@
 					class="pointer-events-none"
 				/>
 			{:else if effectiveArrowType === 'elbow'}
-				{@const elbowResult = calculateElbowPath(
-					lineEl.start,
-					lineEl.end,
-					arrowEl?.elbowDirection ?? 'horizontal-first'
-				)}
+				{@const elbowPoints = arrowEl ? getArrowPoints(arrowEl) : [lineEl.start, lineEl.end]}
+				{@const elbowPath =
+					elbowPoints.length > 2
+						? `M ${elbowPoints[0].x} ${elbowPoints[0].y} ${elbowPoints
+								.slice(1)
+								.map((p) => `L ${p.x} ${p.y}`)
+								.join(' ')}`
+						: calculateElbowPath(
+								lineEl.start,
+								lineEl.end,
+								arrowEl?.elbowDirection ?? 'horizontal-first'
+							).path}
 				<path
-					d={elbowResult.path}
+					d={elbowPath}
 					stroke="#93c5fd"
 					stroke-width={Math.max(lineEl.strokeWidth + 4, 8) / scale}
 					stroke-linecap="round"
