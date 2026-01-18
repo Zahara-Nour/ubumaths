@@ -248,7 +248,8 @@ export function hitTestStroke(
 export function hitTestShape(
 	point: Point,
 	shape: ShapeElement,
-	tolerance: number = DEFAULT_TOLERANCE
+	tolerance: number = DEFAULT_TOLERANCE,
+	liveElbowPoints?: Map<string, readonly Point[]>
 ): boolean {
 	const bounds = calculateShapeBounds(shape.shapeType, shape.start, shape.end, shape.strokeWidth);
 	const rotation = shape.rotation ?? 0;
@@ -284,8 +285,8 @@ export function hitTestShape(
 					hitTolerance
 				);
 			} else if (effectiveArrowType === 'elbow') {
-				// Use actual points from A* routing for hit testing
-				const points = getArrowPoints(arrowShape);
+				// Use live points if available, otherwise use stored points
+				const points = liveElbowPoints?.get(arrowShape.id) ?? getArrowPoints(arrowShape);
 				return hitTestPolyline(points, testPoint, hitTolerance);
 			}
 		}
@@ -437,7 +438,8 @@ export function hitTestGroup(
 export function hitTestElements(
 	point: Point,
 	elements: readonly WhiteboardElement[],
-	tolerance: number = DEFAULT_TOLERANCE
+	tolerance: number = DEFAULT_TOLERANCE,
+	liveElbowPoints?: Map<string, readonly Point[]>
 ): HitTestResult | null {
 	// Iterate in reverse to check topmost elements first
 	for (let i = elements.length - 1; i >= 0; i--) {
@@ -449,7 +451,7 @@ export function hitTestElements(
 				hit = hitTestStroke(point, element, tolerance);
 				break;
 			case 'shape':
-				hit = hitTestShape(point, element, tolerance);
+				hit = hitTestShape(point, element, tolerance, liveElbowPoints);
 				break;
 			case 'image':
 				hit = hitTestImage(point, element, tolerance);

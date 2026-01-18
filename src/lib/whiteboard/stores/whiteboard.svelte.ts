@@ -2005,6 +2005,9 @@ function createWhiteboardStore() {
 			const newMap = new Map(liveRotations);
 			newMap.set(elementId, normalizedRotation);
 			liveRotations = newMap;
+
+			// Recalculate elbow arrows bound to this shape
+			this.recalculateLiveElbowArrowsForRotation(elementId, normalizedRotation);
 		},
 
 		/**
@@ -2031,6 +2034,9 @@ function createWhiteboardStore() {
 			const newMap = new Map(liveRotations);
 			newMap.delete(elementId);
 			liveRotations = newMap;
+
+			// Clear live elbow points (arrows are updated by rotateElement)
+			this.clearAllLiveElbowPoints();
 		},
 
 		/**
@@ -2043,6 +2049,9 @@ function createWhiteboardStore() {
 			const newMap = new Map(liveRotations);
 			newMap.delete(elementId);
 			liveRotations = newMap;
+
+			// Clear live elbow points
+			this.clearAllLiveElbowPoints();
 		},
 
 		/**
@@ -2074,6 +2083,9 @@ function createWhiteboardStore() {
 			const newMap = new Map(liveResizes);
 			newMap.set(elementId, { scaleX, scaleY, originX, originY });
 			liveResizes = newMap;
+
+			// Recalculate elbow arrows bound to this shape
+			this.recalculateLiveElbowArrowsForResize(elementId, scaleX, scaleY, originX, originY);
 		},
 
 		/**
@@ -2116,6 +2128,9 @@ function createWhiteboardStore() {
 			const newMap = new Map(liveResizes);
 			newMap.delete(elementId);
 			liveResizes = newMap;
+
+			// Clear live elbow points (arrows are updated by resizeElement)
+			this.clearAllLiveElbowPoints();
 		},
 
 		/**
@@ -2128,6 +2143,9 @@ function createWhiteboardStore() {
 			const newMap = new Map(liveResizes);
 			newMap.delete(elementId);
 			liveResizes = newMap;
+
+			// Clear live elbow points
+			this.clearAllLiveElbowPoints();
 		},
 
 		// === Live Position Methods ===
@@ -2362,6 +2380,232 @@ function createWhiteboardStore() {
 				}
 
 				// Calculate headings using search cones
+				let startHeading: Heading = arrow.startHeading ?? headingFromPoints(newStart, newEnd);
+				let endHeading: Heading = arrow.endHeading ?? headingFromPoints(newEnd, newStart);
+
+				if (startShape) {
+					startHeading = getHeadingForBindingPoint(startShape, newStart);
+				}
+				if (endShape) {
+					endHeading = flipHeading(getHeadingForBindingPoint(endShape, newEnd));
+				}
+
+				// Route the elbow arrow
+				const routeResult = routeElbowArrow(
+					newStart,
+					newEnd,
+					startHeading,
+					endHeading,
+					startShape,
+					endShape
+				);
+
+				newElbowPoints.set(arrow.id, routeResult.points);
+			}
+
+			liveElbowPoints = newElbowPoints;
+		},
+
+		/**
+		 * Recalculate live elbow arrow paths when a shape is being resized.
+		 * Similar to recalculateLiveElbowArrows but handles scale transforms.
+		 * @param elementId - The shape being resized
+		 * @param scaleX - Horizontal scale factor
+		 * @param scaleY - Vertical scale factor
+		 * @param originX - Transform origin X
+		 * @param originY - Transform origin Y
+		 */
+		recalculateLiveElbowArrowsForResize(
+			elementId: string,
+			scaleX: number,
+			scaleY: number,
+			originX: number,
+			originY: number
+		): void {
+			if (!currentPage) return;
+
+			const elements = currentPage.elements;
+
+			// Find the shape being resized
+			const resizedElement = elements.find((e) => e.id === elementId);
+			if (!resizedElement || resizedElement.type !== 'shape') return;
+			if (!isBindableShape(resizedElement as ShapeElement)) return;
+
+			const originalShape = resizedElement as ShapeElement;
+
+			// Create a scaled version of the shape
+			const scalePoint = (p: Point): Point => ({
+				x: originX + (p.x - originX) * scaleX,
+				y: originY + (p.y - originY) * scaleY
+			});
+
+			const scaledShape: ShapeElement = {
+				...originalShape,
+				start: scalePoint(originalShape.start),
+				end: scalePoint(originalShape.end)
+			};
+
+			// Build a map of all shapes for quick lookup
+			const shapeMap = new Map<string, ShapeElement>();
+			for (const element of elements) {
+				if (element.type === 'shape') {
+					shapeMap.set(element.id, element as ShapeElement);
+				}
+			}
+
+			// Find all elbow arrows bound to the resized shape
+			const newElbowPoints = new Map<string, readonly Point[]>(liveElbowPoints);
+
+			for (const element of elements) {
+				if (element.type !== 'shape') continue;
+
+				const shape = element as ShapeElement;
+				if (shape.shapeType !== 'arrow') continue;
+
+				const arrow = shape as ArrowElement;
+				const effectiveArrowType = arrow.arrowType ?? (arrow.elbowed ? 'elbow' : 'sharp');
+				if (effectiveArrowType !== 'elbow') continue;
+
+				// Check if this arrow is bound to the resized shape
+				const startBoundToResized = arrow.startBinding?.elementId === elementId;
+				const endBoundToResized = arrow.endBinding?.elementId === elementId;
+
+				if (!startBoundToResized && !endBoundToResized) continue;
+
+				// Calculate new start/end positions
+				let newStart = arrow.start;
+				let newEnd = arrow.end;
+				let startShape: ShapeElement | null = null;
+				let endShape: ShapeElement | null = null;
+
+				if (arrow.startBinding) {
+					if (startBoundToResized) {
+						startShape = scaledShape;
+						// Recalculate binding position on the scaled shape
+						newStart = calculateBoundEndpoint(arrow.startBinding, scaledShape, arrow.end);
+					} else {
+						const boundShape = shapeMap.get(arrow.startBinding.elementId);
+						if (boundShape) startShape = boundShape;
+					}
+				}
+
+				if (arrow.endBinding) {
+					if (endBoundToResized) {
+						endShape = scaledShape;
+						// Recalculate binding position on the scaled shape
+						newEnd = calculateBoundEndpoint(arrow.endBinding, scaledShape, arrow.start);
+					} else {
+						const boundShape = shapeMap.get(arrow.endBinding.elementId);
+						if (boundShape) endShape = boundShape;
+					}
+				}
+
+				// Calculate headings
+				let startHeading: Heading = arrow.startHeading ?? headingFromPoints(newStart, newEnd);
+				let endHeading: Heading = arrow.endHeading ?? headingFromPoints(newEnd, newStart);
+
+				if (startShape) {
+					startHeading = getHeadingForBindingPoint(startShape, newStart);
+				}
+				if (endShape) {
+					endHeading = flipHeading(getHeadingForBindingPoint(endShape, newEnd));
+				}
+
+				// Route the elbow arrow
+				const routeResult = routeElbowArrow(
+					newStart,
+					newEnd,
+					startHeading,
+					endHeading,
+					startShape,
+					endShape
+				);
+
+				newElbowPoints.set(arrow.id, routeResult.points);
+			}
+
+			liveElbowPoints = newElbowPoints;
+		},
+
+		/**
+		 * Recalculate live elbow arrow paths when a shape is being rotated.
+		 * @param elementId - The shape being rotated
+		 * @param rotation - New rotation angle in degrees
+		 */
+		recalculateLiveElbowArrowsForRotation(elementId: string, rotation: number): void {
+			if (!currentPage) return;
+
+			const elements = currentPage.elements;
+
+			// Find the shape being rotated
+			const rotatedElement = elements.find((e) => e.id === elementId);
+			if (!rotatedElement || rotatedElement.type !== 'shape') return;
+			if (!isBindableShape(rotatedElement as ShapeElement)) return;
+
+			const originalShape = rotatedElement as ShapeElement;
+
+			// Create a rotated version of the shape
+			const rotatedShape: ShapeElement = {
+				...originalShape,
+				rotation
+			};
+
+			// Build a map of all shapes for quick lookup
+			const shapeMap = new Map<string, ShapeElement>();
+			for (const element of elements) {
+				if (element.type === 'shape') {
+					shapeMap.set(element.id, element as ShapeElement);
+				}
+			}
+
+			// Find all elbow arrows bound to the rotated shape
+			const newElbowPoints = new Map<string, readonly Point[]>(liveElbowPoints);
+
+			for (const element of elements) {
+				if (element.type !== 'shape') continue;
+
+				const shape = element as ShapeElement;
+				if (shape.shapeType !== 'arrow') continue;
+
+				const arrow = shape as ArrowElement;
+				const effectiveArrowType = arrow.arrowType ?? (arrow.elbowed ? 'elbow' : 'sharp');
+				if (effectiveArrowType !== 'elbow') continue;
+
+				// Check if this arrow is bound to the rotated shape
+				const startBoundToRotated = arrow.startBinding?.elementId === elementId;
+				const endBoundToRotated = arrow.endBinding?.elementId === elementId;
+
+				if (!startBoundToRotated && !endBoundToRotated) continue;
+
+				// Calculate new start/end positions
+				let newStart = arrow.start;
+				let newEnd = arrow.end;
+				let startShape: ShapeElement | null = null;
+				let endShape: ShapeElement | null = null;
+
+				if (arrow.startBinding) {
+					if (startBoundToRotated) {
+						startShape = rotatedShape;
+						// Recalculate binding position on the rotated shape
+						newStart = calculateBoundEndpoint(arrow.startBinding, rotatedShape, arrow.end);
+					} else {
+						const boundShape = shapeMap.get(arrow.startBinding.elementId);
+						if (boundShape) startShape = boundShape;
+					}
+				}
+
+				if (arrow.endBinding) {
+					if (endBoundToRotated) {
+						endShape = rotatedShape;
+						// Recalculate binding position on the rotated shape
+						newEnd = calculateBoundEndpoint(arrow.endBinding, rotatedShape, arrow.start);
+					} else {
+						const boundShape = shapeMap.get(arrow.endBinding.elementId);
+						if (boundShape) endShape = boundShape;
+					}
+				}
+
+				// Calculate headings
 				let startHeading: Heading = arrow.startHeading ?? headingFromPoints(newStart, newEnd);
 				let endHeading: Heading = arrow.endHeading ?? headingFromPoints(newEnd, newStart);
 

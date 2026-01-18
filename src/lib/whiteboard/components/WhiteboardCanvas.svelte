@@ -380,7 +380,7 @@
 		const point = { x, y };
 
 		// Hit test to find element under cursor
-		const result = hitTestElements(point, elements);
+		const result = hitTestElements(point, elements, undefined, whiteboardStore.liveElbowPoints);
 
 		if (result) {
 			// If element is not already selected, select it
@@ -411,7 +411,7 @@
 		// Handle select tool - click to select elements with immediate drag support
 		if (isSelectTool) {
 			e.preventDefault();
-			const result = hitTestElements(point, elements);
+			const result = hitTestElements(point, elements, undefined, whiteboardStore.liveElbowPoints);
 
 			if (result) {
 				// Element found - handle selection
@@ -462,7 +462,12 @@
 			e.preventDefault();
 
 			// Check if clicking on a shape - if so, edit its label
-			const hitResult = hitTestElements(point, elements);
+			const hitResult = hitTestElements(
+				point,
+				elements,
+				undefined,
+				whiteboardStore.liveElbowPoints
+			);
 			if (hitResult && hitResult.elementType === 'shape') {
 				whiteboardStore.clearSelection();
 				shapeLabelLayerRef?.startEditingShape(hitResult.elementId);
@@ -553,7 +558,7 @@
 
 		// Track hover for select tool (when not drawing or dragging)
 		if (isSelectTool && !isDrawing) {
-			const result = hitTestElements(point, elements);
+			const result = hitTestElements(point, elements, undefined, whiteboardStore.liveElbowPoints);
 			hoveredElementId = result?.elementId ?? null;
 			return;
 		}

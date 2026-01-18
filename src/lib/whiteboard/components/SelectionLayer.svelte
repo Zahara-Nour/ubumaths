@@ -706,7 +706,9 @@
 					class="pointer-events-none"
 				/>
 			{:else if effectiveArrowType === 'elbow'}
-				{@const elbowPoints = arrowEl ? getArrowPoints(arrowEl) : [lineEl.start, lineEl.end]}
+				{@const livePoints = arrowEl ? whiteboardStore.liveElbowPoints.get(arrowEl.id) : undefined}
+				{@const elbowPoints =
+					livePoints ?? (arrowEl ? getArrowPoints(arrowEl) : [lineEl.start, lineEl.end])}
 				{@const elbowPath = `M ${elbowPoints[0].x} ${elbowPoints[0].y} ${elbowPoints
 					.slice(1)
 					.map((p) => `L ${p.x} ${p.y}`)
