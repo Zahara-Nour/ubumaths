@@ -54,6 +54,8 @@
 		ELBOW_DIRECTION_LABELS,
 		ARROW_TYPE_LABELS,
 		RENDER_STYLE_LABELS,
+		SLOPPINESS_PRESETS,
+		getSloppinessPreset,
 		PAGE_FORMATS,
 		type InstrumentType,
 		type StrokeStyle,
@@ -62,7 +64,8 @@
 		type PageFormatKey,
 		type ElbowDirection,
 		type ArrowType,
-		type RenderStyle
+		type RenderStyle,
+		type SloppinessPreset
 	} from '../types/document';
 
 	// ==========================================================================
@@ -170,6 +173,7 @@
 	let currentFillOpacity = $derived(toolState.fillOpacity);
 	let currentRenderStyle = $derived(toolState.renderStyle);
 	let currentRoughness = $derived(toolState.roughness);
+	let currentSloppinessPreset = $derived(getSloppinessPreset(currentRoughness));
 	let instruments = $derived(whiteboardStore.instruments);
 
 	/** Current shape tool icon for the button */
@@ -460,10 +464,9 @@
 		whiteboardStore.setRenderStyle(style);
 	}
 
-	function handleRoughnessChange(value: number[] | number) {
-		const actualValue = getSliderValue(value);
-		if (actualValue === undefined) return;
-		whiteboardStore.setRoughness(actualValue);
+	function handleSloppinessPresetChange(preset: SloppinessPreset) {
+		const { roughness } = SLOPPINESS_PRESETS[preset];
+		whiteboardStore.setRoughness(roughness);
 	}
 </script>
 
@@ -831,19 +834,22 @@
 					</Button>
 				</div>
 
-				<!-- Roughness slider (only visible in sketch mode) -->
+				<!-- Sloppiness presets (only visible in sketch mode) -->
 				{#if currentRenderStyle === 'sketch'}
-					<div class="flex w-20 items-center gap-1">
-						<Slider
-							type="single"
-							value={[currentRoughness]}
-							onValueChange={handleRoughnessChange}
-							min={0}
-							max={2}
-							step={0.1}
-							class="flex-1"
-							aria-label="Rugosité: {currentRoughness}"
-						/>
+					<div class="flex items-center gap-0.5 rounded-md border border-border p-0.5">
+						{#each Object.entries(SLOPPINESS_PRESETS) as [preset, config] (preset)}
+							<Button
+								type="button"
+								variant={currentSloppinessPreset === preset ? 'secondary' : 'ghost'}
+								size="sm"
+								onclick={() => handleSloppinessPresetChange(preset as SloppinessPreset)}
+								title={config.label}
+								aria-label={config.label}
+								class="h-7 px-2 text-xs"
+							>
+								{config.label.charAt(0)}
+							</Button>
+						{/each}
 					</div>
 				{/if}
 			{/if}
