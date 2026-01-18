@@ -1081,23 +1081,31 @@
 								{/if}
 								{#if showCornerRadiusSlider}
 									<div>
-										<span class="mb-1.5 block text-xs font-medium text-muted-foreground"
-											>Arrondi</span
+										<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Bords</span
 										>
-										<div class="flex items-center gap-2">
-											<Slider
-												type="single"
-												value={[currentCornerRadius]}
-												onValueChange={handleCornerRadiusChange}
-												onValueCommit={handleSliderCommit}
-												min={0}
-												max={50}
-												step={1}
-												class="flex-1"
-											/>
-											<span class="w-8 text-right text-xs text-muted-foreground"
-												>{currentCornerRadius}px</span
+										<div class="flex gap-1">
+											<button
+												type="button"
+												onclick={() => handleCornerRadiusChange(0)}
+												class="flex h-8 flex-1 items-center justify-center rounded-md border text-xs transition-colors {currentCornerRadius ===
+												0
+													? 'border-primary bg-secondary'
+													: 'border-border hover:bg-accent'}"
+												title="Angles vifs"
 											>
+												Vif
+											</button>
+											<button
+												type="button"
+												onclick={() => handleCornerRadiusChange(16)}
+												class="flex h-8 flex-1 items-center justify-center rounded-md border text-xs transition-colors {currentCornerRadius >
+												0
+													? 'border-primary bg-secondary'
+													: 'border-border hover:bg-accent'}"
+												title="Angles arrondis"
+											>
+												Arrondi
+											</button>
 										</div>
 									</div>
 								{/if}
