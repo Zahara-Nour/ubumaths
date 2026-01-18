@@ -16,7 +16,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import { getTypstService, PRIORITY } from '$lib/typst/service';
+	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
 	import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
@@ -40,7 +40,11 @@
 		Download
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
-	import type { StudentWorksheetView, WorksheetType } from '$lib/types/worksheets';
+	import type {
+		StudentWorksheetView,
+		StudentExerciseView,
+		WorksheetType
+	} from '$lib/types/worksheets';
 
 	let { data }: { data: PageData } = $props();
 
@@ -137,41 +141,21 @@
 		showPdfDialog = false;
 		isPdfLoading = true;
 
-		try {
-			const typstContent = generateStudentWorksheetTypst(worksheet, includeSolution);
-			const service = getTypstService();
-			await service.initialize();
+		const suffix = previewStudentName ? `_${previewStudentName.replace(/\s+/g, '_')}` : '';
+		const filename = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}${suffix}.pdf`;
 
-			const result = await service.compileWithPriority(
-				typstContent,
-				{ format: 'pdf' },
-				PRIORITY.URGENT
-			);
+		const result = await generateAndDownloadPdf(
+			() => generateStudentWorksheetTypst(worksheet, includeSolution),
+			filename
+		);
 
-			if (!result.success || !result.data) {
-				toaster.error(result.error || 'Erreur lors de la compilation PDF');
-				return;
-			}
-
-			const pdfData = result.data as Uint8Array;
-			const blob = new Blob([new Uint8Array(pdfData)], { type: 'application/pdf' });
-			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = url;
-			const suffix = previewStudentName ? `_${previewStudentName.replace(/\s+/g, '_')}` : '';
-			a.download = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}${suffix}.pdf`;
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
-			URL.revokeObjectURL(url);
-
+		if (result.success) {
 			toaster.success('PDF telecharge !');
-		} catch (err) {
-			console.error('[PDF] Error during PDF generation:', err);
-			toaster.error('Erreur lors de la generation du PDF');
-		} finally {
-			isPdfLoading = false;
+		} else {
+			toaster.error(result.error || 'Erreur lors de la generation du PDF');
 		}
+
+		isPdfLoading = false;
 	}
 
 	// Type helpers
@@ -236,6 +220,7 @@
 
 	// Derived values
 	let exercises = $derived(worksheet?.exercises ?? []);
+	let sections = $derived(worksheet?.sections ?? []);
 	let currentExercise = $derived(exercises[currentExerciseIndex] ?? null);
 	let hasCorrection = $derived(
 		currentExercise?.correction_visible && currentExercise?.correction !== null
@@ -246,6 +231,41 @@
 	let typeBadgeVariant = $derived(worksheet ? getTypeBadgeVariant(worksheet.type) : 'outline');
 	let closesInfo = $derived(worksheet ? formatClosesAt(worksheet.closes_at) : null);
 	let TypeIcon = $derived(typeInfo?.icon ?? FileText);
+
+	// Group exercises by section
+	let groupedExercises = $derived.by(() => {
+		const groups = new Map<string | null, StudentExerciseView[]>();
+
+		// Initialize groups for all sections
+		for (const section of sections) {
+			groups.set(section.id, []);
+		}
+		// Group for unsectioned exercises
+		groups.set(null, []);
+
+		// Assign exercises to their sections
+		for (const exercise of exercises) {
+			const sectionId = exercise.section_id;
+			const group = groups.get(sectionId) ?? groups.get(null)!;
+			group.push(exercise);
+		}
+
+		return groups;
+	});
+
+	// Sorted section IDs (sections first, then unsectioned)
+	let sortedSectionIds = $derived.by(() => {
+		const ids: (string | null)[] = sections.map((s) => s.id);
+		// Only add null if there are unsectioned exercises
+		const unsectioned = groupedExercises.get(null);
+		if (unsectioned && unsectioned.length > 0) {
+			ids.push(null);
+		}
+		return ids;
+	});
+
+	// Check if we have sections to display
+	let hasSections = $derived(sections.length > 0);
 
 	// Modal navigation
 	function openExercise(index: number) {
@@ -409,44 +429,113 @@
 		<!-- Exercises list -->
 		<div class="space-y-3">
 			<h2 class="text-lg font-semibold">Exercices ({exercises.length})</h2>
-			{#each exercises as exercise, i (exercise.id)}
-				<button
-					type="button"
-					onclick={() => openExercise(i)}
-					class="flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50"
-				>
-					<div
-						class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
+
+			{#if hasSections}
+				<!-- Exercise List grouped by sections -->
+				{#each sortedSectionIds as sectionId (sectionId ?? 'unsectioned')}
+					{@const sectionExercises = groupedExercises.get(sectionId) ?? []}
+					{@const section = sections.find((s) => s.id === sectionId)}
+
+					{#if sectionExercises.length > 0}
+						<div class="space-y-3">
+							{#if section}
+								<!-- Section Header -->
+								<div class="mb-4 border-l-4 border-primary pl-4">
+									<h3 class="text-lg font-semibold">{section.title}</h3>
+									{#if section.instructions}
+										<p class="mt-1 text-sm text-muted-foreground">{section.instructions}</p>
+									{/if}
+								</div>
+							{:else if sections.length > 0}
+								<!-- Unsectioned exercises header -->
+								<div class="mb-4 border-l-4 border-muted pl-4">
+									<h3 class="text-lg font-semibold text-muted-foreground">Autres exercices</h3>
+								</div>
+							{/if}
+
+							{#each sectionExercises as exercise (exercise.id)}
+								{@const globalIndex = exercises.findIndex((e) => e.id === exercise.id)}
+								<button
+									type="button"
+									onclick={() => openExercise(globalIndex)}
+									class="flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50"
+								>
+									<div
+										class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
+									>
+										<span class="text-sm font-semibold">{globalIndex + 1}</span>
+									</div>
+									<div class="flex-1">
+										<div class="flex items-center gap-2">
+											<span class="font-medium">
+												Exercice {globalIndex + 1}{#if exercise.title}: {exercise.title}{/if}
+											</span>
+											{#if exercise.correction_visible && exercise.correction}
+												<BookOpen
+													class="h-4 w-4 text-green-600 dark:text-green-500"
+													aria-label="Correction disponible"
+												/>
+											{/if}
+										</div>
+										{#if exercise.tags && exercise.tags.length > 0}
+											<div class="mt-1 flex flex-wrap gap-1">
+												{#each exercise.tags as tag (tag)}
+													<Badge variant="secondary" class="text-xs">{tag}</Badge>
+												{/each}
+											</div>
+										{/if}
+									</div>
+									{#if exercise.points !== null}
+										<Badge variant="outline" class="font-normal">
+											{exercise.points} point{exercise.points !== 1 ? 's' : ''}
+										</Badge>
+									{/if}
+								</button>
+							{/each}
+						</div>
+					{/if}
+				{/each}
+			{:else}
+				<!-- Exercise List without sections -->
+				{#each exercises as exercise, i (exercise.id)}
+					<button
+						type="button"
+						onclick={() => openExercise(i)}
+						class="flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50"
 					>
-						<span class="text-sm font-semibold">{i + 1}</span>
-					</div>
-					<div class="flex-1">
-						<div class="flex items-center gap-2">
-							<span class="font-medium">
-								Exercice {i + 1}{#if exercise.title}: {exercise.title}{/if}
-							</span>
-							{#if exercise.correction_visible && exercise.correction}
-								<BookOpen
-									class="h-4 w-4 text-green-600 dark:text-green-500"
-									aria-label="Correction disponible"
-								/>
+						<div
+							class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
+						>
+							<span class="text-sm font-semibold">{i + 1}</span>
+						</div>
+						<div class="flex-1">
+							<div class="flex items-center gap-2">
+								<span class="font-medium">
+									Exercice {i + 1}{#if exercise.title}: {exercise.title}{/if}
+								</span>
+								{#if exercise.correction_visible && exercise.correction}
+									<BookOpen
+										class="h-4 w-4 text-green-600 dark:text-green-500"
+										aria-label="Correction disponible"
+									/>
+								{/if}
+							</div>
+							{#if exercise.tags && exercise.tags.length > 0}
+								<div class="mt-1 flex flex-wrap gap-1">
+									{#each exercise.tags as tag (tag)}
+										<Badge variant="secondary" class="text-xs">{tag}</Badge>
+									{/each}
+								</div>
 							{/if}
 						</div>
-						{#if exercise.tags && exercise.tags.length > 0}
-							<div class="mt-1 flex flex-wrap gap-1">
-								{#each exercise.tags as tag (tag)}
-									<Badge variant="secondary" class="text-xs">{tag}</Badge>
-								{/each}
-							</div>
+						{#if exercise.points !== null}
+							<Badge variant="outline" class="font-normal">
+								{exercise.points} point{exercise.points !== 1 ? 's' : ''}
+							</Badge>
 						{/if}
-					</div>
-					{#if exercise.points !== null}
-						<Badge variant="outline" class="font-normal">
-							{exercise.points} point{exercise.points !== 1 ? 's' : ''}
-						</Badge>
-					{/if}
-				</button>
-			{/each}
+					</button>
+				{/each}
+			{/if}
 		</div>
 	{/if}
 </div>

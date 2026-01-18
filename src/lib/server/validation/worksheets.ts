@@ -882,12 +882,24 @@ export const studentExerciseViewSchema = z.object({
 	statement: z.string(),
 	correction: z.string().nullable(),
 	correction_visible: z.boolean(),
+	/** Section ID if exercise belongs to a section */
+	section_id: z.string().uuid().nullable(),
 	/** Hints from selected variation (for guided exercises) */
 	hints: z.array(exerciseHintSchema).optional(),
 	/** Supplementary resources (videos, PDFs, links) */
 	resources: z.array(exerciseResourceSchema).optional(),
 	/** Exercise tags for categorization */
 	tags: z.array(z.string()).optional()
+});
+
+/**
+ * Student section view response
+ */
+export const studentSectionViewSchema = z.object({
+	id: z.string().uuid(),
+	title: z.string(),
+	instructions: z.string().nullable(),
+	position: z.number().int().nonnegative()
 });
 
 /**
@@ -904,7 +916,9 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	closes_at: timestampSchema.nullable(),
 	show_corrections: z.boolean(),
 	class_name: z.string().nullable(),
-	exercises: z.array(studentExerciseViewSchema)
+	exercises: z.array(studentExerciseViewSchema),
+	/** Sections for grouping exercises */
+	sections: z.array(studentSectionViewSchema)
 });
 
 // ============================================================================

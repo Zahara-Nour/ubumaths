@@ -52,6 +52,7 @@ import type { ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/t
 import type {
 	StudentExerciseView,
 	StudentWorksheetView,
+	StudentSectionView,
 	WorksheetType
 } from '$lib/types/worksheets';
 
@@ -109,6 +110,8 @@ interface WorksheetExerciseData {
 	 * If set, overrides seed-based selection for all students.
 	 */
 	variation_index: number | null;
+	/** Section this exercise belongs to */
+	section_id: string | null;
 	exercise: ExerciseData;
 }
 
@@ -272,6 +275,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				custom_instructions,
 				correction_visible,
 				variation_index,
+				section_id,
 				exercise:exercises (
 					id,
 					title,
@@ -290,6 +294,18 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		if (exercisesError) {
 			console.error('[API] Error fetching exercises:', exercisesError);
 			throw error(500, 'Erreur lors de la recuperation des exercices');
+		}
+
+		// Fetch worksheet sections
+		const { data: sections, error: sectionsError } = await locals.supabase
+			.from('worksheet_sections')
+			.select('id, title, instructions, position')
+			.eq('worksheet_id', worksheet.id)
+			.order('position', { ascending: true });
+
+		if (sectionsError) {
+			console.error('[API] Error fetching sections:', sectionsError);
+			// Non-blocking: sections are optional, continue without them
 		}
 
 		// Check if a pre-resolved instance exists
@@ -387,7 +403,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				custom_instructions: we.custom_instructions,
 				statement,
 				correction: correctionVisible ? correction : null,
-				correction_visible: correctionVisible
+				correction_visible: correctionVisible,
+				section_id: we.section_id ?? null
 			};
 
 			// Add hints if present (from variation or instance)
@@ -408,6 +425,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			exercises.push(exerciseView);
 		}
 
+		// Build sections array for response
+		const sectionViews: StudentSectionView[] = (sections ?? []).map((s) => ({
+			id: s.id,
+			title: s.title,
+			instructions: s.instructions,
+			position: s.position
+		}));
+
 		// Build response
 		const response: StudentWorksheetView = {
 			assignment_id: assignment.id,
@@ -420,7 +445,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			closes_at: assignment.closes_at,
 			show_corrections: assignment.show_corrections ?? false,
 			class_name: classData?.name ?? null,
-			exercises
+			exercises,
+			sections: sectionViews
 		};
 
 		// Validate response

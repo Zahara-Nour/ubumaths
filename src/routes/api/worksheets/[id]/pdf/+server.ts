@@ -16,7 +16,12 @@ import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
-import type { InstanceData, WorksheetWithRelations } from '$lib/types/worksheets';
+import type {
+	InstanceData,
+	InstanceSection,
+	WorksheetWithRelations,
+	WorksheetSectionRow
+} from '$lib/types/worksheets';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { writeFile, unlink, readFile } from 'fs/promises';
@@ -94,6 +99,9 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		// Get or generate instance data
 		let instanceData: InstanceData;
 
+		// Extract sections from worksheet data
+		const worksheetSections = (worksheet.worksheet_sections ?? []) as WorksheetSectionRow[];
+
 		if (studentId) {
 			// Try to fetch existing instance for this student
 			const { data: instance } = await locals.supabase
@@ -105,14 +113,26 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 			if (instance) {
 				instanceData = instance.instance_data as InstanceData;
+				// Add sections if not present in stored instance
+				if (!instanceData.sections && worksheetSections.length > 0) {
+					instanceData.sections = worksheetSections.map((s) => ({
+						id: s.id,
+						title: s.title,
+						instructions: s.instructions,
+						position: s.position
+					}));
+				}
 			} else {
 				// Generate new instance (would need to import instance generator)
 				// For now, create a simple instance from exercises
-				instanceData = generateSimpleInstance(worksheet as WorksheetWithRelations);
+				instanceData = generateSimpleInstance(
+					worksheet as WorksheetWithRelations,
+					worksheetSections
+				);
 			}
 		} else {
 			// Generate generic instance for preview
-			instanceData = generateSimpleInstance(worksheet as WorksheetWithRelations);
+			instanceData = generateSimpleInstance(worksheet as WorksheetWithRelations, worksheetSections);
 		}
 
 		// Check if Typst CLI is available
@@ -214,7 +234,8 @@ async function generatePdfWithTypstCli(typstContent: string): Promise<Uint8Array
  * This is a placeholder - in production, use the actual instance generator
  */
 function generateSimpleInstance(
-	worksheet: WorksheetWithRelations & { worksheet_exercises?: WorksheetWithRelations['exercises'] }
+	worksheet: WorksheetWithRelations & { worksheet_exercises?: WorksheetWithRelations['exercises'] },
+	worksheetSections: WorksheetSectionRow[] = []
 ): InstanceData {
 	// Handle both property names: 'exercises' from composed response, 'worksheet_exercises' from joined query
 	const exercises = worksheet.exercises || worksheet.worksheet_exercises || [];
@@ -231,14 +252,26 @@ function generateSimpleInstance(
 			exercise_id: we.exercise_id,
 			title: we.exercise?.title ?? null,
 			position: we.position,
+			section_id: we.section_id ?? null,
 			parameters: {},
 			statement: content.statement_md,
 			solution: content.solution_md
 		};
 	});
 
+	// Map sections for PDF generation
+	const sections: InstanceSection[] = worksheetSections
+		.sort((a, b) => a.position - b.position)
+		.map((s) => ({
+			id: s.id,
+			title: s.title,
+			instructions: s.instructions,
+			position: s.position
+		}));
+
 	return {
 		exercises: resolvedExercises,
+		sections: sections.length > 0 ? sections : undefined,
 		variant_info: {
 			seed: Math.floor(Math.random() * 1000000),
 			version: 'preview'

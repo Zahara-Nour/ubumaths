@@ -35,6 +35,7 @@ import type {
 	WorksheetRow,
 	WorksheetConfig,
 	InstanceData,
+	InstanceSection,
 	ResolvedExercise,
 	WorksheetType,
 	WorksheetTemplateRow
@@ -414,6 +415,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 
 	/**
 	 * Generate all exercises with proper numbering and formatting
+	 * Groups exercises by section if sections are present
 	 */
 	private generateExercises(
 		instance: InstanceData,
@@ -421,6 +423,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		worksheetType: WorksheetType
 	): string {
 		const exercises = instance.exercises;
+		const sections = instance.sections ?? [];
 		const numberingStyle = this.worksheetConfig.numbering_style || 'numeric';
 
 		// Apply exercise order if shuffled
@@ -428,14 +431,72 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			? instance.exercise_order.map((idx) => exercises[idx])
 			: exercises;
 
-		let content = '';
+		// If no sections, render exercises directly
+		if (sections.length === 0) {
+			let content = '';
+			orderedExercises.forEach((exercise, index) => {
+				const number = formatNumber(index + 1, numberingStyle);
+				content += this.generateSingleExercise(exercise, number, mode, worksheetType);
+				content += '\n\n';
+			});
+			return content;
+		}
 
-		orderedExercises.forEach((exercise, index) => {
-			const number = formatNumber(index + 1, numberingStyle);
+		// Group exercises by section
+		const grouped = new Map<string | null, ResolvedExercise[]>();
+		for (const section of sections) {
+			grouped.set(section.id, []);
+		}
+		grouped.set(null, []); // For unsectioned exercises
+
+		for (const exercise of orderedExercises) {
+			const sectionId = exercise.section_id ?? null;
+			const group = grouped.get(sectionId) ?? grouped.get(null)!;
+			group.push(exercise);
+		}
+
+		let content = '';
+		let globalIndex = 0;
+
+		// Render sections with their exercises
+		for (const section of sections) {
+			const sectionExercises = grouped.get(section.id) ?? [];
+			if (sectionExercises.length === 0) continue;
+
+			// Section header
+			content += this.generateSectionHeader(section);
+
+			// Section exercises
+			for (const exercise of sectionExercises) {
+				const number = formatNumber(++globalIndex, numberingStyle);
+				content += this.generateSingleExercise(exercise, number, mode, worksheetType);
+				content += '\n\n';
+			}
+		}
+
+		// Render unsectioned exercises
+		const unsectioned = grouped.get(null) ?? [];
+		for (const exercise of unsectioned) {
+			const number = formatNumber(++globalIndex, numberingStyle);
 			content += this.generateSingleExercise(exercise, number, mode, worksheetType);
 			content += '\n\n';
-		});
+		}
 
+		return content;
+	}
+
+	/**
+	 * Generate section header for PDF
+	 */
+	private generateSectionHeader(section: InstanceSection): string {
+		let content = '#block(width: 100%, inset: (top: 0.5em, bottom: 0.3em))[\n';
+		content += `  #text(size: 1.2em, weight: "bold")[${escapeTypst(section.title)}]\n`;
+		if (section.instructions) {
+			content += '  #v(0.2em)\n';
+			content += `  #text(size: 0.95em, style: "italic")[${escapeTypst(section.instructions)}]\n`;
+		}
+		content += ']\n';
+		content += '#v(0.3em)\n\n';
 		return content;
 	}
 
@@ -520,6 +581,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 
 	/**
 	 * Generate only the exercises content (for use in templates)
+	 * Groups exercises by section if sections are present
 	 */
 	private generateExercisesOnly(
 		instance: InstanceData,
@@ -527,6 +589,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		worksheetType: WorksheetType
 	): string {
 		const exercises = instance.exercises;
+		const sections = instance.sections ?? [];
 		const numberingStyle = this.worksheetConfig.numbering_style || 'numeric';
 
 		// Apply exercise order if shuffled
@@ -534,14 +597,72 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			? instance.exercise_order.map((idx) => exercises[idx])
 			: exercises;
 
-		let content = '';
+		// If no sections, render exercises directly
+		if (sections.length === 0) {
+			let content = '';
+			orderedExercises.forEach((exercise, index) => {
+				const number = formatNumber(index + 1, numberingStyle);
+				content += this.generateSingleExerciseSimple(exercise, number, mode, worksheetType);
+				content += '\n\n';
+			});
+			return content;
+		}
 
-		orderedExercises.forEach((exercise, index) => {
-			const number = formatNumber(index + 1, numberingStyle);
+		// Group exercises by section
+		const grouped = new Map<string | null, ResolvedExercise[]>();
+		for (const section of sections) {
+			grouped.set(section.id, []);
+		}
+		grouped.set(null, []); // For unsectioned exercises
+
+		for (const exercise of orderedExercises) {
+			const sectionId = exercise.section_id ?? null;
+			const group = grouped.get(sectionId) ?? grouped.get(null)!;
+			group.push(exercise);
+		}
+
+		let content = '';
+		let globalIndex = 0;
+
+		// Render sections with their exercises
+		for (const section of sections) {
+			const sectionExercises = grouped.get(section.id) ?? [];
+			if (sectionExercises.length === 0) continue;
+
+			// Section header (simplified for templates)
+			content += this.generateSectionHeaderSimple(section);
+
+			// Section exercises
+			for (const exercise of sectionExercises) {
+				const number = formatNumber(++globalIndex, numberingStyle);
+				content += this.generateSingleExerciseSimple(exercise, number, mode, worksheetType);
+				content += '\n\n';
+			}
+		}
+
+		// Render unsectioned exercises
+		const unsectioned = grouped.get(null) ?? [];
+		for (const exercise of unsectioned) {
+			const number = formatNumber(++globalIndex, numberingStyle);
 			content += this.generateSingleExerciseSimple(exercise, number, mode, worksheetType);
 			content += '\n\n';
-		});
+		}
 
+		return content;
+	}
+
+	/**
+	 * Generate section header for templates (simplified version)
+	 */
+	private generateSectionHeaderSimple(section: InstanceSection): string {
+		let content = `#block(width: 100%, inset: (top: 0.5em, bottom: 0.3em))[
+  #text(size: 1.2em, weight: "bold")[${escapeTypst(section.title)}]`;
+		if (section.instructions) {
+			content += `
+  #v(0.2em)
+  #text(size: 0.95em, style: "italic")[${escapeTypst(section.instructions)}]`;
+		}
+		content += '\n]\n#v(0.3em)\n\n';
 		return content;
 	}
 

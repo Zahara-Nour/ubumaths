@@ -27,7 +27,7 @@
 		Download,
 		Loader2
 	} from 'lucide-svelte';
-	import { getTypstService, PRIORITY } from '$lib/typst/service';
+	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
 	import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { StudentWorksheetView, WorksheetType } from '$lib/types/worksheets';
@@ -66,44 +66,19 @@
 		showPdfDialog = false;
 		isPdfLoading = true;
 
-		try {
-			// Generate Typst content
-			const typstContent = generateStudentWorksheetTypst(worksheet, includeSolution);
+		const filename = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+		const result = await generateAndDownloadPdf(
+			() => generateStudentWorksheetTypst(worksheet, includeSolution),
+			filename
+		);
 
-			// Compile to PDF using TypstService
-			const service = getTypstService();
-			await service.initialize();
-
-			const result = await service.compileWithPriority(
-				typstContent,
-				{ format: 'pdf' },
-				PRIORITY.URGENT
-			);
-
-			if (!result.success || !result.data) {
-				toaster.error(result.error || 'Erreur lors de la compilation PDF');
-				return;
-			}
-
-			// Download the PDF
-			const pdfData = result.data as Uint8Array;
-			const blob = new Blob([new Uint8Array(pdfData)], { type: 'application/pdf' });
-			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
-			URL.revokeObjectURL(url);
-
+		if (result.success) {
 			toaster.success('PDF telecharge !');
-		} catch (error) {
-			console.error('[PDF] Error during PDF generation:', error);
-			toaster.error('Erreur lors de la generation du PDF');
-		} finally {
-			isPdfLoading = false;
+		} else {
+			toaster.error(result.error || 'Erreur lors de la generation du PDF');
 		}
+
+		isPdfLoading = false;
 	}
 
 	// Get icon and label for worksheet type (same logic as WorksheetCard)

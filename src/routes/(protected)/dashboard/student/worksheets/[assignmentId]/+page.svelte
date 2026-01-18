@@ -9,7 +9,7 @@
 	import { FileText, AlertTriangle } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { MasteryStatus, ExerciseMasteryListResponse } from '$lib/types/exercise-mastery';
-	import type { StudentErrorReportView } from '$lib/types/worksheets';
+	import type { StudentErrorReportView, StudentExerciseView } from '$lib/types/worksheets';
 
 	interface Props {
 		data: PageData;
@@ -20,8 +20,44 @@
 	// Derived values
 	let worksheet = $derived(data.worksheet);
 	let exercises = $derived(worksheet.exercises ?? []);
+	let sections = $derived(worksheet.sections ?? []);
 	let exerciseCount = $derived(exercises.length);
 	let assignmentId = $derived(worksheet.assignment_id);
+
+	// Group exercises by section
+	let groupedExercises = $derived.by(() => {
+		const groups = new Map<string | null, StudentExerciseView[]>();
+
+		// Initialize groups for all sections
+		for (const section of sections) {
+			groups.set(section.id, []);
+		}
+		// Group for unsectioned exercises
+		groups.set(null, []);
+
+		// Assign exercises to their sections
+		for (const exercise of exercises) {
+			const sectionId = exercise.section_id;
+			const group = groups.get(sectionId) ?? groups.get(null)!;
+			group.push(exercise);
+		}
+
+		return groups;
+	});
+
+	// Sorted section IDs (sections first, then unsectioned)
+	let sortedSectionIds = $derived.by(() => {
+		const ids: (string | null)[] = sections.map((s) => s.id);
+		// Only add null if there are unsectioned exercises
+		const unsectioned = groupedExercises.get(null);
+		if (unsectioned && unsectioned.length > 0) {
+			ids.push(null);
+		}
+		return ids;
+	});
+
+	// Check if we have sections to display
+	let hasSections = $derived(sections.length > 0);
 
 	// Modal state
 	let modalOpen = $state(false);
@@ -200,8 +236,43 @@
 							</p>
 						</Card.Content>
 					</Card.Root>
+				{:else if hasSections}
+					<!-- Exercise List grouped by sections -->
+					{#each sortedSectionIds as sectionId (sectionId ?? 'unsectioned')}
+						{@const sectionExercises = groupedExercises.get(sectionId) ?? []}
+						{@const section = sections.find((s) => s.id === sectionId)}
+
+						{#if sectionExercises.length > 0}
+							<div class="space-y-3">
+								{#if section}
+									<!-- Section Header -->
+									<div class="mb-4 border-l-4 border-primary pl-4">
+										<h3 class="text-lg font-semibold">{section.title}</h3>
+										{#if section.instructions}
+											<p class="mt-1 text-sm text-muted-foreground">{section.instructions}</p>
+										{/if}
+									</div>
+								{:else if sections.length > 0}
+									<!-- Unsectioned exercises header (only if there are sections) -->
+									<div class="mb-4 border-l-4 border-muted pl-4">
+										<h3 class="text-lg font-semibold text-muted-foreground">Autres exercices</h3>
+									</div>
+								{/if}
+
+								{#each sectionExercises as exercise (exercise.id)}
+									{@const globalIndex = exercises.findIndex((e) => e.id === exercise.id)}
+									<ExerciseListItem
+										{exercise}
+										index={globalIndex + 1}
+										masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
+										onclick={() => openExercise(globalIndex)}
+									/>
+								{/each}
+							</div>
+						{/if}
+					{/each}
 				{:else}
-					<!-- Exercise List -->
+					<!-- Exercise List without sections -->
 					<div class="space-y-3">
 						{#each exercises as exercise, i (exercise.id)}
 							<ExerciseListItem
