@@ -98,13 +98,12 @@ export {
 	getStarVertices
 } from './core/shapes';
 
-// Rough renderer (for sketch/hand-drawn style)
+// Rough renderer (for sketch/hand-drawn style shapes only - strokes use perfect-freehand)
 export type { RoughRenderResult } from './core/rough-renderer';
 export {
 	renderRoughShape,
-	renderRoughStroke,
 	renderRoughShapeToSvgString,
-	renderRoughStrokeToSvgString
+	renderRoughStrokeToSvgString // Kept for PDF export compatibility
 } from './core/rough-renderer';
 
 // Components
