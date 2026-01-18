@@ -12,7 +12,8 @@
  * @module whiteboard/core/curved-path
  */
 
-import type { Point, ArrowWaypoint } from '../types/document';
+import type { Point, ArrowWaypoint, ArrowElement } from '../types/document';
+import { getArrowPoints } from '../types/document';
 
 // =============================================================================
 // Types
@@ -547,4 +548,95 @@ function distanceToLineSegment(point: Point, lineStart: Point, lineEnd: Point): 
 	const closestY = lineStart.y + t * dy;
 
 	return Math.sqrt((point.x - closestX) ** 2 + (point.y - closestY) ** 2);
+}
+
+// =============================================================================
+// Arrow Element Functions (using unified points[] model)
+// =============================================================================
+
+/**
+ * Calculate curved path directly from an ArrowElement.
+ * Uses the unified points[] model, with fallback to legacy waypoints.
+ *
+ * @param arrow - The arrow element
+ * @param tension - Curve tension (0.5 = tight, 1 = smooth, default: 1)
+ * @returns CurvedPathResult with path data and metadata
+ */
+export function calculateCurvedPathFromArrow(
+	arrow: ArrowElement,
+	tension: number = 1
+): CurvedPathResult {
+	const points = getArrowPoints(arrow);
+
+	if (points.length < 2) {
+		return {
+			path: '',
+			midpoint: { x: 0, y: 0 },
+			midpointAngle: 0,
+			totalLength: 0,
+			segmentMidpoints: []
+		};
+	}
+
+	return calculateCurvedPathFromPoints(points, tension);
+}
+
+/**
+ * Calculate curved path from a points array.
+ * This is the new preferred API using the unified points[] model.
+ *
+ * @param points - Array of points defining the curve
+ * @param tension - Curve tension (0.5 = tight, 1 = smooth, default: 1)
+ * @returns CurvedPathResult with path data and metadata
+ */
+export function calculateCurvedPathFromPoints(
+	points: readonly Point[],
+	tension: number = 1
+): CurvedPathResult {
+	// Handle degenerate cases
+	if (points.length < 2) {
+		return {
+			path: '',
+			midpoint: points[0] ?? { x: 0, y: 0 },
+			midpointAngle: 0,
+			totalLength: 0,
+			segmentMidpoints: []
+		};
+	}
+
+	// For 2 points, draw a straight line
+	if (points.length === 2) {
+		const [p1, p2] = points;
+		const dx = p2.x - p1.x;
+		const dy = p2.y - p1.y;
+		const length = Math.sqrt(dx * dx + dy * dy);
+
+		return {
+			path: `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`,
+			midpoint: { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 },
+			midpointAngle: Math.atan2(dy, dx) * (180 / Math.PI),
+			totalLength: length,
+			segmentMidpoints: [{ x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 }]
+		};
+	}
+
+	// Generate Bezier segments for the curve (points is mutable copy needed)
+	const bezierSegments = generateBezierSegments([...points], tension);
+
+	// Build SVG path
+	const pathCommands = generateSvgPath(bezierSegments);
+
+	// Calculate segment midpoints for "add waypoint" UI
+	const segmentMidpoints = calculateSegmentMidpoints(bezierSegments);
+
+	// Calculate total length and curve midpoint
+	const { totalLength, midpoint, midpointAngle } = calculatePathMetrics(bezierSegments);
+
+	return {
+		path: pathCommands,
+		midpoint,
+		midpointAngle,
+		totalLength,
+		segmentMidpoints
+	};
 }

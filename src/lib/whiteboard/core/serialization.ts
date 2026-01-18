@@ -35,27 +35,103 @@ function migrateArrowTypes(data: unknown): unknown {
 	if (typeof data !== 'object' || data === null) return data;
 
 	const doc = data as Record<string, unknown>;
-	if (!Array.isArray(doc.elements)) return data;
+	if (!Array.isArray(doc.pages)) return data;
 
-	doc.elements = doc.elements.map((element: unknown) => {
-		if (typeof element !== 'object' || element === null) return element;
+	for (const page of doc.pages) {
+		if (typeof page !== 'object' || page === null) continue;
+		const pageObj = page as Record<string, unknown>;
+		if (!Array.isArray(pageObj.elements)) continue;
 
-		const el = element as Record<string, unknown>;
+		pageObj.elements = pageObj.elements.map((element: unknown) => {
+			if (typeof element !== 'object' || element === null) return element;
 
-		// Only process arrow elements
-		if (el.type !== 'shape' || el.shapeType !== 'arrow') return element;
+			const el = element as Record<string, unknown>;
 
-		// Skip if already has arrowType
-		if (el.arrowType) return element;
+			// Only process arrow elements
+			if (el.type !== 'shape' || el.shapeType !== 'arrow') return element;
 
-		// Determine arrowType from elbowed flag
-		const arrowType: ArrowType = el.elbowed === true ? 'elbow' : 'sharp';
+			// Skip if already has arrowType
+			if (el.arrowType) return element;
 
-		return {
-			...el,
-			arrowType
-		} as ArrowElement;
-	});
+			// Determine arrowType from elbowed flag
+			const arrowType: ArrowType = el.elbowed === true ? 'elbow' : 'sharp';
+
+			return {
+				...el,
+				arrowType
+			} as ArrowElement;
+		});
+	}
+
+	return data;
+}
+
+/**
+ * Migrates arrow elements from legacy waypoints to new unified points[] model.
+ *
+ * Migration rules:
+ * - If `points[]` already exists → no change
+ * - Sharp arrows: `points = [start, end]`
+ * - Curved arrows with waypoints: `points = [start, ...waypoints.position, end]`
+ * - Elbow arrows: `points = [start, end]` (routing will be recalculated)
+ *
+ * Also ensures default arrowhead (endArrowhead: 'arrow') is set for legacy arrows.
+ *
+ * @param data - Parsed document data (may be mutated)
+ * @returns Migrated data
+ */
+function migrateArrowPointsModel(data: unknown): unknown {
+	if (typeof data !== 'object' || data === null) return data;
+
+	const doc = data as Record<string, unknown>;
+	if (!Array.isArray(doc.pages)) return data;
+
+	for (const page of doc.pages) {
+		if (typeof page !== 'object' || page === null) continue;
+		const pageObj = page as Record<string, unknown>;
+		if (!Array.isArray(pageObj.elements)) continue;
+
+		pageObj.elements = pageObj.elements.map((element: unknown) => {
+			if (typeof element !== 'object' || element === null) return element;
+
+			const el = element as Record<string, unknown>;
+
+			// Only process arrow elements
+			if (el.type !== 'shape' || el.shapeType !== 'arrow') return element;
+
+			// Skip if already has points[]
+			if (Array.isArray(el.points) && el.points.length >= 2) return element;
+
+			// Get start and end points
+			const start = el.start as { x: number; y: number } | undefined;
+			const end = el.end as { x: number; y: number } | undefined;
+
+			if (!start || !end) return element;
+
+			// Build points array based on arrow type
+			const arrowType = (el.arrowType as string) ?? 'sharp';
+			let points: Array<{ x: number; y: number }>;
+
+			if (arrowType === 'curved' && Array.isArray(el.waypoints)) {
+				// Curved: include waypoint positions
+				const waypointPositions = el.waypoints
+					.filter(
+						(wp): wp is { position: { x: number; y: number } } =>
+							wp && typeof wp === 'object' && 'position' in wp
+					)
+					.map((wp) => wp.position);
+				points = [start, ...waypointPositions, end];
+			} else {
+				// Sharp and elbow: just start and end
+				points = [start, end];
+			}
+
+			return {
+				...el,
+				points
+			};
+		});
+	}
 
 	return data;
 }
@@ -125,8 +201,9 @@ export function deserialize(json: string): DeserializationResult {
 		}
 	}
 
-	// Apply migrations before validation
-	const migrated = migrateArrowTypes(parsed);
+	// Apply migrations before validation (in order)
+	let migrated = migrateArrowTypes(parsed);
+	migrated = migrateArrowPointsModel(migrated);
 
 	// Validate with Zod schema
 	const validation = validateDocument(migrated);

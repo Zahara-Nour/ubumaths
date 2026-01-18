@@ -7,6 +7,7 @@
  */
 
 import type { Point, ShapeElement, ShapeType, StrokeStyle, FillMode } from '../types/document';
+import { getAdaptiveCornerRadius } from '../types/document';
 
 // =============================================================================
 // Types
@@ -303,9 +304,12 @@ export function getShapeSvgProps(
 			const y = Math.min(start.y, end.y);
 			const width = Math.abs(end.x - start.x);
 			const height = Math.abs(end.y - start.y);
-			// Limit corner radius to half the smaller dimension
+			// Use adaptive corner radius like Excalidraw (25% of min dimension, max 32px)
+			const hasRoundedCorners = cornerRadius > 0;
+			const adaptiveRadius = getAdaptiveCornerRadius(width, height, hasRoundedCorners);
+			// Clamp to half the smaller dimension
 			const maxRadius = Math.min(width / 2, height / 2);
-			const effectiveRadius = Math.min(cornerRadius, maxRadius);
+			const effectiveRadius = Math.min(adaptiveRadius, maxRadius);
 
 			return {
 				type: 'rect',
