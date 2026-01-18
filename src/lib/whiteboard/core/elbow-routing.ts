@@ -264,24 +264,43 @@ function getElbowArrowData(
 	startElement: ShapeElement | null,
 	endElement: ShapeElement | null
 ): ElbowArrowData {
-	// Get element bounds or create point bounds
-	const startBounds = startElement
+	// Create point bounds (minimal bounds around just the endpoint)
+	const startPointBounds = pointToBounds(startPoint);
+	const endPointBounds = pointToBounds(endPoint);
+
+	// Get element bounds with padding for normal routing
+	const startElementBounds = startElement
 		? expandBounds(boundsFromShape(startElement), BASE_PADDING)
-		: pointToBounds(startPoint);
-	const endBounds = endElement
+		: startPointBounds;
+	const endElementBounds = endElement
 		? expandBounds(boundsFromShape(endElement), BASE_PADDING)
-		: pointToBounds(endPoint);
+		: endPointBounds;
+
+	// Check for bounds overlap (Excalidraw-style)
+	// When shapes are close, their padded bounds overlap
+	// In this case, use minimal point bounds instead of element bounds
+	const boundsOverlap =
+		pointInsideBounds(startPoint, endElementBounds) ||
+		pointInsideBounds(endPoint, startElementBounds);
+
+	// Use minimal bounds if shapes overlap, otherwise use full element bounds
+	const startBounds = boundsOverlap ? startPointBounds : startElementBounds;
+	const endBounds = boundsOverlap ? endPointBounds : endElementBounds;
 
 	// Calculate common bounds
 	const commonBounds = combineBounds([startBounds, endBounds]);
+
+	// Adjust offsets based on overlap - use smaller offsets when shapes are close
+	const headOffset = boundsOverlap ? BASE_PADDING : BASE_PADDING;
+	const sideOffset = boundsOverlap ? 0 : BASE_PADDING;
 
 	// Generate dynamic AABBs with direction-dependent offsets
 	const dynamicAABBs = generateDynamicAABBs(
 		startBounds,
 		endBounds,
 		commonBounds,
-		offsetFromHeading(startHeading, BASE_PADDING, BASE_PADDING),
-		offsetFromHeading(endHeading, BASE_PADDING, BASE_PADDING)
+		offsetFromHeading(startHeading, headOffset, sideOffset),
+		offsetFromHeading(endHeading, headOffset, sideOffset)
 	);
 
 	// Calculate dongle positions
