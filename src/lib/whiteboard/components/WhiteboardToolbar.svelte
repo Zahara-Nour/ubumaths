@@ -180,6 +180,22 @@
 	/** Check if current tool is a shape tool */
 	let isShapeToolActive = $derived(SHAPE_TOOLS.some((t) => t.id === toolState.toolType));
 
+	/** Stroke tools (freehand drawing - always use perfect-freehand, no sketch mode) */
+	const STROKE_TOOLS = ['pen', 'marker', 'highlighter', 'eraser'] as const;
+
+	/** Check if current tool is a stroke tool (pen, marker, highlighter, eraser) */
+	let isStrokeToolActive = $derived(STROKE_TOOLS.some((t) => t === toolState.toolType));
+
+	/** Check if any shape is selected */
+	let hasSelectedShape = $derived(
+		whiteboardStore.selectedElements.some((el) => el.type === 'shape')
+	);
+
+	/** Show render style toggle only when relevant (shape tool active OR shape selected, NOT for stroke tools) */
+	let showRenderStyleToggle = $derived(
+		(isShapeToolActive || hasSelectedShape) && !isStrokeToolActive
+	);
+
 	/** Shape tools that support corner radius */
 	const SHAPES_WITH_CORNERS = ['rectangle', 'pentagon', 'hexagon', 'star'] as const;
 
@@ -786,49 +802,50 @@
 				</Popover.Content>
 			</Popover.Root>
 
-			<!-- Separator before render style -->
-			<div class="mx-2 h-6 w-px bg-border"></div>
+			<!-- Render Style Toggle (Perfect vs Sketch) - Only for shapes, not strokes -->
+			{#if showRenderStyleToggle}
+				<div class="mx-2 h-6 w-px bg-border"></div>
 
-			<!-- Render Style Toggle (Perfect vs Sketch) -->
-			<div class="flex items-center gap-0.5 rounded-md border border-border p-0.5">
-				<Button
-					type="button"
-					variant={currentRenderStyle === 'perfect' ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => handleRenderStyleChange('perfect')}
-					title={RENDER_STYLE_LABELS.perfect}
-					aria-label={RENDER_STYLE_LABELS.perfect}
-					class="h-7 w-7 p-0"
-				>
-					<Sparkles class="h-4 w-4" />
-				</Button>
-				<Button
-					type="button"
-					variant={currentRenderStyle === 'sketch' ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => handleRenderStyleChange('sketch')}
-					title={RENDER_STYLE_LABELS.sketch}
-					aria-label={RENDER_STYLE_LABELS.sketch}
-					class="h-7 w-7 p-0"
-				>
-					<PencilLine class="h-4 w-4" />
-				</Button>
-			</div>
-
-			<!-- Roughness slider (only visible in sketch mode) -->
-			{#if currentRenderStyle === 'sketch'}
-				<div class="flex w-20 items-center gap-1">
-					<Slider
-						type="single"
-						value={[currentRoughness]}
-						onValueChange={handleRoughnessChange}
-						min={0}
-						max={2}
-						step={0.1}
-						class="flex-1"
-						aria-label="Rugosité: {currentRoughness}"
-					/>
+				<div class="flex items-center gap-0.5 rounded-md border border-border p-0.5">
+					<Button
+						type="button"
+						variant={currentRenderStyle === 'perfect' ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => handleRenderStyleChange('perfect')}
+						title={RENDER_STYLE_LABELS.perfect}
+						aria-label={RENDER_STYLE_LABELS.perfect}
+						class="h-7 w-7 p-0"
+					>
+						<Sparkles class="h-4 w-4" />
+					</Button>
+					<Button
+						type="button"
+						variant={currentRenderStyle === 'sketch' ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => handleRenderStyleChange('sketch')}
+						title={RENDER_STYLE_LABELS.sketch}
+						aria-label={RENDER_STYLE_LABELS.sketch}
+						class="h-7 w-7 p-0"
+					>
+						<PencilLine class="h-4 w-4" />
+					</Button>
 				</div>
+
+				<!-- Roughness slider (only visible in sketch mode) -->
+				{#if currentRenderStyle === 'sketch'}
+					<div class="flex w-20 items-center gap-1">
+						<Slider
+							type="single"
+							value={[currentRoughness]}
+							onValueChange={handleRoughnessChange}
+							min={0}
+							max={2}
+							step={0.1}
+							class="flex-1"
+							aria-label="Rugosité: {currentRoughness}"
+						/>
+					</div>
+				{/if}
 			{/if}
 
 			<!-- Separator before style section -->
