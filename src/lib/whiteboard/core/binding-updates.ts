@@ -12,7 +12,7 @@ import type { ShapeElement, ArrowElement, WhiteboardElement, Heading } from '../
 import { createArrowPoints } from '../types/document';
 import { calculateBoundEndpoint, isArrowElement } from './binding';
 import { routeElbowArrow } from './elbow-routing';
-import { getExitHeading, getEntryHeading, headingFromPoints } from './heading';
+import { headingFromPoints, headingFromNormalizedPoint, flipHeading } from './heading';
 
 // =============================================================================
 // Types
@@ -149,16 +149,22 @@ export function updateBoundArrowsForShapes(
 						) as ShapeElement | undefined)
 					: undefined;
 
-				// Calculate headings from shapes
+				// Calculate headings from binding positions (fixedPoint approach)
+				// The heading is determined by which side of the shape the binding is on,
+				// NOT by the direction to the other endpoint
 				let startHeading: Heading | null = currentArrow.startHeading ?? null;
 				let endHeading: Heading | null = currentArrow.endHeading ?? null;
 
-				// Update heading if bound at that end
-				if (boundAt === 'start' && startShape) {
-					startHeading = getExitHeading(startShape, newEnd);
+				// Update heading based on the stored binding position
+				if (currentArrow.startBinding) {
+					startHeading = headingFromNormalizedPoint(currentArrow.startBinding.perimeterPoint);
 				}
-				if (boundAt === 'end' && endShape) {
-					endHeading = getEntryHeading(endShape, newStart);
+				if (currentArrow.endBinding) {
+					// For end binding, the heading is the direction the arrow ENTERS from,
+					// which is opposite to the side of the shape
+					endHeading = flipHeading(
+						headingFromNormalizedPoint(currentArrow.endBinding.perimeterPoint)
+					);
 				}
 
 				// Ensure headings are never null for routing
