@@ -496,6 +496,10 @@
 					e.preventDefault();
 					whiteboardStore.setTool('arrow');
 					break;
+				case 'z':
+					e.preventDefault();
+					whiteboardStore.setTool('laser');
+					break;
 			}
 		}
 	}

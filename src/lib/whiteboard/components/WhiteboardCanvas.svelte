@@ -131,6 +131,15 @@
 	/** Minimum drag distance before movement starts (prevents jitter) */
 	const MIN_DRAG_DISTANCE = 2;
 
+	/** Laser pointer constants */
+	const LASER_POINTER_RADIUS = 18; // Mode pointeur - gros point
+	const LASER_TRAIL_RADIUS = 8; // Mode trainée - petit point
+	const LASER_TRAIL_FADE_MS = 1500; // Durée fade de la trainée
+
+	/** Laser trail animation state */
+	let visibleTrail = $state<{ point: Point; opacity: number }[]>([]);
+	let trailAnimationId: number | null = null;
+
 	// ==========================================================================
 	// Derived State
 	// ==========================================================================
@@ -210,6 +219,9 @@
 	let isCurvedArrowTool = $derived(
 		toolState.toolType === 'arrow' && toolState.arrowType === 'curved'
 	);
+
+	/** Laser tool active */
+	let isLaserTool = $derived(toolState.toolType === 'laser');
 
 	/** ViewBox for SVG */
 	let viewBox = $derived(`0 0 ${pageWidth} ${pageHeight}`);
@@ -367,6 +379,49 @@
 		}
 	});
 
+	/**
+	 * Animate laser trail fade effect
+	 */
+	$effect(() => {
+		// Only animate in trail mode
+		if (whiteboardStore.laserMode !== 'trail') {
+			visibleTrail = [];
+			if (trailAnimationId) {
+				cancelAnimationFrame(trailAnimationId);
+				trailAnimationId = null;
+			}
+			return;
+		}
+
+		function updateTrail() {
+			const now = Date.now();
+			const trail = whiteboardStore.laserTrail;
+
+			visibleTrail = trail
+				.map((item) => ({
+					point: item.point,
+					opacity: Math.max(0, 1 - (now - item.timestamp) / LASER_TRAIL_FADE_MS)
+				}))
+				.filter((item) => item.opacity > 0.01);
+
+			// Clean up old trail points from store
+			if (trail.length > 0 && now - trail[0].timestamp > LASER_TRAIL_FADE_MS) {
+				whiteboardStore.clearOldTrailPoints(LASER_TRAIL_FADE_MS);
+			}
+
+			trailAnimationId = requestAnimationFrame(updateTrail);
+		}
+
+		updateTrail();
+
+		return () => {
+			if (trailAnimationId) {
+				cancelAnimationFrame(trailAnimationId);
+				trailAnimationId = null;
+			}
+		};
+	});
+
 	// ==========================================================================
 	// Pointer Event Handlers
 	// ==========================================================================
@@ -494,6 +549,16 @@
 
 		const point = getPointFromEvent(e);
 
+		// Handle laser tool
+		if (isLaserTool) {
+			e.preventDefault();
+			(e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
+			whiteboardStore.clearLaserTrail(); // Clear old trail before starting new one
+			whiteboardStore.setLaserActive(true);
+			whiteboardStore.updateLaserPosition(point);
+			return;
+		}
+
 		// Handle select tool - click to select elements with immediate drag support
 		if (isSelectTool) {
 			e.preventDefault();
@@ -618,6 +683,13 @@
 	 */
 	function handlePointerMove(e: PointerEvent) {
 		const point = getPointFromEvent(e);
+
+		// Handle laser tool
+		if (isLaserTool && whiteboardStore.laserActive) {
+			e.preventDefault();
+			whiteboardStore.updateLaserPosition(point);
+			return;
+		}
 
 		// Handle marquee selection (drag on empty space)
 		if (isMarqueeSelecting) {
@@ -746,6 +818,17 @@
 	 * Handle pointer up - finalize stroke or end selection drag
 	 */
 	function handlePointerUp(e: PointerEvent) {
+		// Handle laser tool
+		if (isLaserTool) {
+			whiteboardStore.setLaserActive(false);
+			try {
+				(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
+			} catch {
+				// Ignore - capture may already be released
+			}
+			return;
+		}
+
 		// End marquee selection and select elements in the rectangle
 		if (isMarqueeSelecting) {
 			if (
@@ -813,6 +896,11 @@
 	 * Handle pointer cancel - abort stroke or selection drag
 	 */
 	function handlePointerCancel(e: PointerEvent) {
+		// Cancel laser tool
+		if (isLaserTool) {
+			whiteboardStore.setLaserActive(false);
+		}
+
 		// Cancel marquee selection
 		if (isMarqueeSelecting) {
 			isMarqueeSelecting = false;
@@ -862,6 +950,11 @@
 	function handlePointerLeave(e: PointerEvent) {
 		// Clear hover state
 		hoveredElementId = null;
+
+		// Cancel laser tool
+		if (isLaserTool) {
+			whiteboardStore.setLaserActive(false);
+		}
 
 		// Cancel marquee selection
 		if (isMarqueeSelecting) {
@@ -1390,7 +1483,10 @@
 			!isSelectionDragging &&
 			!isMarqueeSelecting}
 		class:cursor-grabbing={isSelectionDragging}
-		class:cursor-crosshair={!isSelectTool || isMarqueeSelecting}
+		class:cursor-crosshair={(!isSelectTool && !isLaserTool) ||
+			isMarqueeSelecting ||
+			(isLaserTool && !whiteboardStore.laserActive)}
+		class:cursor-none={isLaserTool && whiteboardStore.laserActive}
 		{viewBox}
 		preserveAspectRatio="xMidYMid meet"
 		style="width: 100%; height: 100%;"
@@ -2146,6 +2242,119 @@
 				class="pointer-events-none"
 			/>
 		{/if}
+
+		<!-- Layer 7: Laser Pointer -->
+		{#if isLaserTool}
+			<g class="layer-laser" style="pointer-events: none;">
+				{#if whiteboardStore.laserMode === 'trail' && visibleTrail.length > 1}
+					<!-- Smooth tapered trail using catmull-rom to bezier conversion -->
+					{@const buildSmoothTaperedPath = () => {
+						const pts = visibleTrail;
+						if (pts.length < 2) return '';
+
+						const maxWidth = (LASER_TRAIL_RADIUS * 0.7) / scale;
+
+						// Calculate perpendicular offsets for each point
+						const offsets: {
+							top: { x: number; y: number };
+							bottom: { x: number; y: number };
+							opacity: number;
+						}[] = [];
+
+						for (let i = 0; i < pts.length; i++) {
+							const p = pts[i];
+							const width = maxWidth * p.opacity;
+
+							let dx = 0,
+								dy = 0;
+							if (i < pts.length - 1) {
+								dx = pts[i + 1].point.x - p.point.x;
+								dy = pts[i + 1].point.y - p.point.y;
+							} else if (i > 0) {
+								dx = p.point.x - pts[i - 1].point.x;
+								dy = p.point.y - pts[i - 1].point.y;
+							}
+
+							const len = Math.sqrt(dx * dx + dy * dy) || 1;
+							const nx = -dy / len;
+							const ny = dx / len;
+
+							offsets.push({
+								top: { x: p.point.x + nx * width, y: p.point.y + ny * width },
+								bottom: { x: p.point.x - nx * width, y: p.point.y - ny * width },
+								opacity: p.opacity
+							});
+						}
+
+						const topPoints = offsets.map((o) => o.top);
+						const bottomPoints = offsets.map((o) => o.bottom).reverse();
+
+						// Add rounded cap at the head (newest point)
+						const headTop = topPoints[0];
+						const headBottom = bottomPoints[bottomPoints.length - 1];
+						const headRadius =
+							Math.sqrt(
+								Math.pow(headTop.x - headBottom.x, 2) + Math.pow(headTop.y - headBottom.y, 2)
+							) / 2;
+
+						// Build top edge curves (skip first point, we start there with arc)
+						let topCurves = '';
+						for (let i = 1; i < topPoints.length - 1; i++) {
+							const xc = (topPoints[i].x + topPoints[i + 1].x) / 2;
+							const yc = (topPoints[i].y + topPoints[i + 1].y) / 2;
+							topCurves += ` Q ${topPoints[i].x},${topPoints[i].y} ${xc},${yc}`;
+						}
+						if (topPoints.length > 1) {
+							const lastTop = topPoints[topPoints.length - 1];
+							topCurves += ` L ${lastTop.x},${lastTop.y}`;
+						}
+
+						// Build bottom edge curves
+						let bottomCurves = '';
+						for (let i = 1; i < bottomPoints.length - 1; i++) {
+							const xc = (bottomPoints[i].x + bottomPoints[i + 1].x) / 2;
+							const yc = (bottomPoints[i].y + bottomPoints[i + 1].y) / 2;
+							bottomCurves += ` Q ${bottomPoints[i].x},${bottomPoints[i].y} ${xc},${yc}`;
+						}
+						if (bottomPoints.length > 1) {
+							const lastBottom = bottomPoints[bottomPoints.length - 1];
+							bottomCurves += ` L ${lastBottom.x},${lastBottom.y}`;
+						}
+
+						// Build complete path: arc at head, top edge, tail connection, bottom edge, close
+						const tailBottom = bottomPoints[0];
+
+						return `M ${headBottom.x},${headBottom.y} A ${headRadius} ${headRadius} 0 0 1 ${headTop.x},${headTop.y}${topCurves} L ${tailBottom.x},${tailBottom.y}${bottomCurves} Z`;
+					}}
+					{@const pathData = buildSmoothTaperedPath()}
+					{@const avgOpacity =
+						visibleTrail.reduce((sum, t) => sum + t.opacity, 0) / visibleTrail.length}
+					<path d={pathData} fill={`rgba(239, 68, 68, ${avgOpacity * 0.8})`} stroke="none" />
+				{/if}
+
+				{#if whiteboardStore.laserActive && whiteboardStore.laserPosition}
+					{#if whiteboardStore.laserMode === 'pointer'}
+						<!-- Large translucent pointer dot -->
+						<circle
+							cx={whiteboardStore.laserPosition.x}
+							cy={whiteboardStore.laserPosition.y}
+							r={LASER_POINTER_RADIUS / scale}
+							fill="rgba(239, 68, 68, 0.6)"
+							stroke="rgba(220, 38, 38, 0.8)"
+							stroke-width={2 / scale}
+						/>
+					{:else}
+						<!-- Trail head - small bright dot -->
+						<circle
+							cx={whiteboardStore.laserPosition.x}
+							cy={whiteboardStore.laserPosition.y}
+							r={(LASER_TRAIL_RADIUS * 0.5) / scale}
+							fill="rgba(239, 68, 68, 0.95)"
+						/>
+					{/if}
+				{/if}
+			</g>
+		{/if}
 	</svg>
 
 	<!-- TextBlock Layer (HTML overlay on SVG) -->
@@ -2180,5 +2389,9 @@
 
 	.whiteboard-svg.cursor-grabbing {
 		cursor: grabbing;
+	}
+
+	.whiteboard-svg.cursor-none {
+		cursor: none;
 	}
 </style>

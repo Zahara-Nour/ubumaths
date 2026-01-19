@@ -16,7 +16,7 @@
 	 */
 
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
-	import type { Tool } from '../stores/whiteboard.svelte';
+	import type { Tool, LaserMode } from '../stores/whiteboard.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Slider } from '$lib/components/ui/slider';
@@ -43,7 +43,8 @@
 		Grid3x3,
 		Maximize2,
 		Minimize2,
-		Palette
+		Palette,
+		Crosshair
 	} from 'lucide-svelte';
 	import {
 		INSTRUMENT_LABELS,
@@ -112,6 +113,12 @@
 		hexagonal: 'Hexagonal',
 		'hexagonal-dotted': 'Hexagonal pointillé'
 	};
+
+	/** Laser pointer mode options */
+	const LASER_MODES: { value: LaserMode; label: string; description: string }[] = [
+		{ value: 'pointer', label: 'Pointeur', description: 'Point fixe' },
+		{ value: 'trail', label: 'Trainée', description: 'Avec trace' }
+	];
 
 	// ==========================================================================
 	// Props
@@ -251,6 +258,12 @@
 	let currentElbowDirection = $derived(toolState.elbowDirection);
 	let currentStartArrowhead = $derived(toolState.startArrowhead);
 	let currentEndArrowhead = $derived(toolState.endArrowhead);
+
+	/** Check if laser tool is active */
+	let isLaserTool = $derived(toolState.toolType === 'laser');
+
+	/** Current laser mode */
+	let laserMode = $derived(whiteboardStore.laserMode);
 
 	/** Current page background style */
 	let currentBackgroundStyle = $derived.by(() => {
@@ -514,6 +527,44 @@
 			>
 				<Hand class="h-4 w-4" />
 			</Button>
+
+			<!-- Laser Pointer Tool -->
+			<Popover.Root>
+				<Popover.Trigger>
+					{#snippet child({ props })}
+						<Button
+							{...props}
+							type="button"
+							variant={isLaserTool ? 'default' : 'ghost'}
+							size="sm"
+							title="Pointeur laser (Z)"
+							aria-label="Pointeur laser"
+							class={isLaserTool ? 'ring-2 ring-primary ring-offset-1' : ''}
+						>
+							<Crosshair class="h-4 w-4" />
+						</Button>
+					{/snippet}
+				</Popover.Trigger>
+				<Popover.Content class="w-40 p-2" side="top">
+					<div class="flex flex-col gap-1">
+						<span class="mb-1 text-xs font-medium text-muted-foreground">Mode laser</span>
+						{#each LASER_MODES as mode (mode.value)}
+							<Button
+								type="button"
+								variant={laserMode === mode.value ? 'secondary' : 'ghost'}
+								size="sm"
+								class="justify-start text-xs"
+								onclick={() => {
+									whiteboardStore.setLaserMode(mode.value);
+									handleToolSelect('laser');
+								}}
+							>
+								{mode.label}
+							</Button>
+						{/each}
+					</div>
+				</Popover.Content>
+			</Popover.Root>
 
 			<!-- Separator -->
 			<div class="mx-1 h-6 w-px bg-border"></div>
