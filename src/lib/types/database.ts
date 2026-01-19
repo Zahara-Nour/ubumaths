@@ -10764,6 +10764,60 @@ export type Database = {
 					}
 				];
 			};
+			user_whiteboard_template_favorites: {
+				Row: {
+					created_at: string;
+					template_id: string;
+					user_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					template_id: string;
+					user_id: string;
+				};
+				Update: {
+					created_at?: string;
+					template_id?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'user_whiteboard_template_favorites_template_id_fkey';
+						columns: ['template_id'];
+						isOneToOne: false;
+						referencedRelation: 'whiteboard_templates';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'user_whiteboard_template_favorites_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'user_whiteboard_template_favorites_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'user_whiteboard_template_favorites_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'user_whiteboard_template_favorites_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			vip_card_config: {
 				Row: {
 					common_probability: number;
