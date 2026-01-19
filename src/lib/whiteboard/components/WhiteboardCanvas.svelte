@@ -134,7 +134,7 @@
 	/** Laser pointer constants */
 	const LASER_POINTER_RADIUS = 18; // Mode pointeur - gros point
 	const LASER_TRAIL_RADIUS = 8; // Mode trainée - petit point
-	const LASER_TRAIL_FADE_MS = 1500; // Durée fade de la trainée
+	const LASER_TRAIL_FADE_MS = 1200; // Durée fade de la trainée
 
 	/** Laser trail animation state */
 	let visibleTrail = $state<{ point: Point; opacity: number }[]>([]);
@@ -398,10 +398,12 @@
 			const trail = whiteboardStore.laserTrail;
 
 			visibleTrail = trail
-				.map((item) => ({
-					point: item.point,
-					opacity: Math.max(0, 1 - (now - item.timestamp) / LASER_TRAIL_FADE_MS)
-				}))
+				.map((item) => {
+					const t = (now - item.timestamp) / LASER_TRAIL_FADE_MS; // 0 to 1
+					// Use sqrt curve for slower fade (opacity stays higher longer)
+					const opacity = Math.max(0, Math.pow(1 - t, 0.4));
+					return { point: item.point, opacity };
+				})
 				.filter((item) => item.opacity > 0.01);
 
 			// Clean up old trail points from store
@@ -2247,89 +2249,27 @@
 		{#if isLaserTool}
 			<g class="layer-laser" style="pointer-events: none;">
 				{#if whiteboardStore.laserMode === 'trail' && visibleTrail.length > 1}
-					<!-- Smooth tapered trail using catmull-rom to bezier conversion -->
-					{@const buildSmoothTaperedPath = () => {
-						const pts = visibleTrail;
-						if (pts.length < 2) return '';
-
-						const maxWidth = (LASER_TRAIL_RADIUS * 0.7) / scale;
-
-						// Calculate perpendicular offsets for each point
-						const offsets: {
-							top: { x: number; y: number };
-							bottom: { x: number; y: number };
-							opacity: number;
-						}[] = [];
-
-						for (let i = 0; i < pts.length; i++) {
-							const p = pts[i];
-							const width = maxWidth * p.opacity;
-
-							let dx = 0,
-								dy = 0;
-							if (i < pts.length - 1) {
-								dx = pts[i + 1].point.x - p.point.x;
-								dy = pts[i + 1].point.y - p.point.y;
-							} else if (i > 0) {
-								dx = p.point.x - pts[i - 1].point.x;
-								dy = p.point.y - pts[i - 1].point.y;
-							}
-
-							const len = Math.sqrt(dx * dx + dy * dy) || 1;
-							const nx = -dy / len;
-							const ny = dx / len;
-
-							offsets.push({
-								top: { x: p.point.x + nx * width, y: p.point.y + ny * width },
-								bottom: { x: p.point.x - nx * width, y: p.point.y - ny * width },
-								opacity: p.opacity
-							});
-						}
-
-						const topPoints = offsets.map((o) => o.top);
-						const bottomPoints = offsets.map((o) => o.bottom).reverse();
-
-						// Add rounded cap at the head (newest point)
-						const headTop = topPoints[0];
-						const headBottom = bottomPoints[bottomPoints.length - 1];
-						const headRadius =
-							Math.sqrt(
-								Math.pow(headTop.x - headBottom.x, 2) + Math.pow(headTop.y - headBottom.y, 2)
-							) / 2;
-
-						// Build top edge curves (skip first point, we start there with arc)
-						let topCurves = '';
-						for (let i = 1; i < topPoints.length - 1; i++) {
-							const xc = (topPoints[i].x + topPoints[i + 1].x) / 2;
-							const yc = (topPoints[i].y + topPoints[i + 1].y) / 2;
-							topCurves += ` Q ${topPoints[i].x},${topPoints[i].y} ${xc},${yc}`;
-						}
-						if (topPoints.length > 1) {
-							const lastTop = topPoints[topPoints.length - 1];
-							topCurves += ` L ${lastTop.x},${lastTop.y}`;
-						}
-
-						// Build bottom edge curves
-						let bottomCurves = '';
-						for (let i = 1; i < bottomPoints.length - 1; i++) {
-							const xc = (bottomPoints[i].x + bottomPoints[i + 1].x) / 2;
-							const yc = (bottomPoints[i].y + bottomPoints[i + 1].y) / 2;
-							bottomCurves += ` Q ${bottomPoints[i].x},${bottomPoints[i].y} ${xc},${yc}`;
-						}
-						if (bottomPoints.length > 1) {
-							const lastBottom = bottomPoints[bottomPoints.length - 1];
-							bottomCurves += ` L ${lastBottom.x},${lastBottom.y}`;
-						}
-
-						// Build complete path: arc at head, top edge, tail connection, bottom edge, close
-						const tailBottom = bottomPoints[0];
-
-						return `M ${headBottom.x},${headBottom.y} A ${headRadius} ${headRadius} 0 0 1 ${headTop.x},${headTop.y}${topCurves} L ${tailBottom.x},${tailBottom.y}${bottomCurves} Z`;
+					<!-- Laser trail using perfect-freehand with tapering -->
+					<!-- Use position-based opacity (not time-based) for uniform fade speed -->
+					{@const reversedTrail = [...visibleTrail].reverse()}
+					{@const laserTrailPoints = reversedTrail.map((t, i) => ({
+						x: t.point.x,
+						y: t.point.y,
+						// Position-based pressure: head (i=0) = 1, tail = low
+						pressure: Math.pow(1 - i / (reversedTrail.length - 1), 0.5)
+					}))}
+					{@const laserOptions = {
+						size: (LASER_TRAIL_RADIUS * 0.8) / scale,
+						thinning: 0.6,
+						smoothing: 0.5,
+						streamline: 0.5,
+						simulatePressure: false,
+						start: { taper: 0, cap: true },
+						end: { taper: true, cap: false }
 					}}
-					{@const pathData = buildSmoothTaperedPath()}
-					{@const avgOpacity =
-						visibleTrail.reduce((sum, t) => sum + t.opacity, 0) / visibleTrail.length}
-					<path d={pathData} fill={`rgba(239, 68, 68, ${avgOpacity * 0.8})`} stroke="none" />
+					{@const outlinePoints = smoothStroke(laserTrailPoints, laserOptions)}
+					{@const pathData = pointsToSvgPath(outlinePoints)}
+					<path d={pathData} fill="rgba(239, 68, 68, 0.75)" stroke="none" />
 				{/if}
 
 				{#if whiteboardStore.laserActive && whiteboardStore.laserPosition}
