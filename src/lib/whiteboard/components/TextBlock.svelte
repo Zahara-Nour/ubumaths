@@ -22,6 +22,8 @@
 		element: TextBlockElement;
 		/** Whether this block is currently being edited */
 		isEditing: boolean;
+		/** Whether this block is currently selected */
+		isSelected?: boolean;
 		/** Callback when edit mode should start */
 		onStartEdit: () => void;
 		/** Callback when edit mode should end */
@@ -30,7 +32,14 @@
 		scale?: number;
 	}
 
-	let { element, isEditing, onStartEdit, onEndEdit, scale = 1 }: Props = $props();
+	let {
+		element,
+		isEditing,
+		isSelected = false,
+		onStartEdit,
+		onEndEdit,
+		scale = 1
+	}: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -145,12 +154,32 @@
 
 	// --- Drag handlers (VIEW mode only) ---
 
-	function handleDragStart(e: PointerEvent) {
+	function handlePointerDown(e: PointerEvent) {
 		if (isEditing || isResizing) return;
 
 		e.preventDefault();
 		e.stopPropagation();
 
+		// First click: select the element
+		if (!isSelected) {
+			if (e.shiftKey) {
+				// Add to selection
+				whiteboardStore.selectElement(element.id, true);
+			} else {
+				// Replace selection
+				whiteboardStore.clearSelection();
+				whiteboardStore.selectElement(element.id);
+			}
+			// Capture pointer for potential drag
+			(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+			dragStartX = e.clientX;
+			dragStartY = e.clientY;
+			elementStartX = element.position.x;
+			elementStartY = element.position.y;
+			return;
+		}
+
+		// Already selected: start drag immediately
 		isDragging = true;
 		dragStartX = e.clientX;
 		dragStartY = e.clientY;
@@ -257,11 +286,12 @@
 	bind:this={containerEl}
 	class="text-block absolute"
 	class:editing={isEditing}
+	class:selected={isSelected && !isEditing}
 	class:dragging={isDragging}
 	style="left: {left * scale}px; top: {top * scale}px; width: {width * scale}px; height: {height *
 		scale}px;"
 	ondblclick={handleDoubleClick}
-	onpointerdown={!isEditing ? handleDragStart : undefined}
+	onpointerdown={!isEditing ? handlePointerDown : undefined}
 	onpointermove={handleDragMove}
 	onpointerup={handleDragEnd}
 	onpointercancel={handleDragEnd}
@@ -295,79 +325,81 @@
 			{/if}
 		</div>
 
-		<!-- Resize handles (only in VIEW mode) -->
-		<div
-			class="resize-handle resize-n"
-			onpointerdown={(e) => handleResizeStart(e, 'n')}
-			onpointermove={handleResizeMove}
-			onpointerup={handleResizeEnd}
-			role="slider"
-			aria-label="Redimensionner vers le haut"
-			tabindex="-1"
-		></div>
-		<div
-			class="resize-handle resize-s"
-			onpointerdown={(e) => handleResizeStart(e, 's')}
-			onpointermove={handleResizeMove}
-			onpointerup={handleResizeEnd}
-			role="slider"
-			aria-label="Redimensionner vers le bas"
-			tabindex="-1"
-		></div>
-		<div
-			class="resize-handle resize-e"
-			onpointerdown={(e) => handleResizeStart(e, 'e')}
-			onpointermove={handleResizeMove}
-			onpointerup={handleResizeEnd}
-			role="slider"
-			aria-label="Redimensionner vers la droite"
-			tabindex="-1"
-		></div>
-		<div
-			class="resize-handle resize-w"
-			onpointerdown={(e) => handleResizeStart(e, 'w')}
-			onpointermove={handleResizeMove}
-			onpointerup={handleResizeEnd}
-			role="slider"
-			aria-label="Redimensionner vers la gauche"
-			tabindex="-1"
-		></div>
-		<div
-			class="resize-handle resize-ne"
-			onpointerdown={(e) => handleResizeStart(e, 'ne')}
-			onpointermove={handleResizeMove}
-			onpointerup={handleResizeEnd}
-			role="slider"
-			aria-label="Redimensionner coin supérieur droit"
-			tabindex="-1"
-		></div>
-		<div
-			class="resize-handle resize-nw"
-			onpointerdown={(e) => handleResizeStart(e, 'nw')}
-			onpointermove={handleResizeMove}
-			onpointerup={handleResizeEnd}
-			role="slider"
-			aria-label="Redimensionner coin supérieur gauche"
-			tabindex="-1"
-		></div>
-		<div
-			class="resize-handle resize-se"
-			onpointerdown={(e) => handleResizeStart(e, 'se')}
-			onpointermove={handleResizeMove}
-			onpointerup={handleResizeEnd}
-			role="slider"
-			aria-label="Redimensionner coin inférieur droit"
-			tabindex="-1"
-		></div>
-		<div
-			class="resize-handle resize-sw"
-			onpointerdown={(e) => handleResizeStart(e, 'sw')}
-			onpointermove={handleResizeMove}
-			onpointerup={handleResizeEnd}
-			role="slider"
-			aria-label="Redimensionner coin inférieur gauche"
-			tabindex="-1"
-		></div>
+		<!-- Resize handles (only when selected in VIEW mode) -->
+		{#if isSelected}
+			<div
+				class="resize-handle resize-n"
+				onpointerdown={(e) => handleResizeStart(e, 'n')}
+				onpointermove={handleResizeMove}
+				onpointerup={handleResizeEnd}
+				role="slider"
+				aria-label="Redimensionner vers le haut"
+				tabindex="-1"
+			></div>
+			<div
+				class="resize-handle resize-s"
+				onpointerdown={(e) => handleResizeStart(e, 's')}
+				onpointermove={handleResizeMove}
+				onpointerup={handleResizeEnd}
+				role="slider"
+				aria-label="Redimensionner vers le bas"
+				tabindex="-1"
+			></div>
+			<div
+				class="resize-handle resize-e"
+				onpointerdown={(e) => handleResizeStart(e, 'e')}
+				onpointermove={handleResizeMove}
+				onpointerup={handleResizeEnd}
+				role="slider"
+				aria-label="Redimensionner vers la droite"
+				tabindex="-1"
+			></div>
+			<div
+				class="resize-handle resize-w"
+				onpointerdown={(e) => handleResizeStart(e, 'w')}
+				onpointermove={handleResizeMove}
+				onpointerup={handleResizeEnd}
+				role="slider"
+				aria-label="Redimensionner vers la gauche"
+				tabindex="-1"
+			></div>
+			<div
+				class="resize-handle resize-ne"
+				onpointerdown={(e) => handleResizeStart(e, 'ne')}
+				onpointermove={handleResizeMove}
+				onpointerup={handleResizeEnd}
+				role="slider"
+				aria-label="Redimensionner coin supérieur droit"
+				tabindex="-1"
+			></div>
+			<div
+				class="resize-handle resize-nw"
+				onpointerdown={(e) => handleResizeStart(e, 'nw')}
+				onpointermove={handleResizeMove}
+				onpointerup={handleResizeEnd}
+				role="slider"
+				aria-label="Redimensionner coin supérieur gauche"
+				tabindex="-1"
+			></div>
+			<div
+				class="resize-handle resize-se"
+				onpointerdown={(e) => handleResizeStart(e, 'se')}
+				onpointermove={handleResizeMove}
+				onpointerup={handleResizeEnd}
+				role="slider"
+				aria-label="Redimensionner coin inférieur droit"
+				tabindex="-1"
+			></div>
+			<div
+				class="resize-handle resize-sw"
+				onpointerdown={(e) => handleResizeStart(e, 'sw')}
+				onpointermove={handleResizeMove}
+				onpointerup={handleResizeEnd}
+				role="slider"
+				aria-label="Redimensionner coin inférieur gauche"
+				tabindex="-1"
+			></div>
+		{/if}
 	{/if}
 </div>
 
@@ -387,6 +419,11 @@
 
 	.text-block.dragging {
 		opacity: 0.8;
+	}
+
+	.text-block.selected {
+		outline: 2px solid rgb(59, 130, 246);
+		outline-offset: 2px;
 	}
 
 	/* Resize handles */
