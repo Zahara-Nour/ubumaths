@@ -6,7 +6,7 @@
 	 * - Thumbnail preview of each page
 	 * - Click to navigate
 	 * - Drag & drop to reorder
-	 * - Add/delete pages
+	 * - Add/delete pages (blank or from template)
 	 * - Sheet overlay (doesn't reduce canvas width)
 	 */
 
@@ -17,7 +17,10 @@
 	import { smoothStroke, getToolOptions, pointsToSvgPath } from '../core/stroke-smoothing';
 	import { Button } from '$lib/components/ui/button';
 	import * as Sheet from '$lib/components/ui/sheet';
-	import { Plus, X, GripVertical, PanelRightOpen } from 'lucide-svelte';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Plus, X, GripVertical, PanelRightOpen, FileText, LayoutTemplate } from 'lucide-svelte';
+	import TemplatePickerModal from './TemplatePickerModal.svelte';
+	import type { WhiteboardTemplate } from '../types/templates';
 
 	// ==========================================================================
 	// Constants
@@ -44,6 +47,9 @@
 	let isDragging = $state(false);
 	let draggedIndex = $state<number | null>(null);
 	let dropTargetIndex = $state<number | null>(null);
+
+	/** Template picker modal state */
+	let templatePickerOpen = $state(false);
 
 	// ==========================================================================
 	// Derived
@@ -76,6 +82,18 @@
 
 	function handleAddPage() {
 		whiteboardStore.addPage();
+	}
+
+	function handleAddFromTemplate() {
+		templatePickerOpen = true;
+	}
+
+	function handleTemplateSelect(template: WhiteboardTemplate) {
+		whiteboardStore.addPageFromTemplate(template);
+	}
+
+	function handleTemplatePickerClose() {
+		templatePickerOpen = false;
 	}
 
 	function handleDeletePage(index: number, e: MouseEvent) {
@@ -230,17 +248,33 @@
 		<Sheet.Header class="border-b pb-3">
 			<div class="flex items-center justify-between pr-8">
 				<Sheet.Title class="text-sm font-medium">Pages</Sheet.Title>
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={handleAddPage}
-					title="Ajouter une page"
-					aria-label="Ajouter une page"
-					class="h-7 w-7 p-0"
-				>
-					<Plus class="h-4 w-4" />
-				</Button>
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger>
+						{#snippet child({ props })}
+							<Button
+								{...props}
+								type="button"
+								variant="ghost"
+								size="sm"
+								title="Ajouter une page"
+								aria-label="Ajouter une page"
+								class="h-7 w-7 p-0"
+							>
+								<Plus class="h-4 w-4" />
+							</Button>
+						{/snippet}
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content align="end">
+						<DropdownMenu.Item onclick={handleAddPage}>
+							<FileText class="mr-2 h-4 w-4" />
+							Page vide
+						</DropdownMenu.Item>
+						<DropdownMenu.Item onclick={handleAddFromTemplate}>
+							<LayoutTemplate class="mr-2 h-4 w-4" />
+							Depuis un modele...
+						</DropdownMenu.Item>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
 			</div>
 		</Sheet.Header>
 
@@ -474,6 +508,13 @@
 		</Sheet.Footer>
 	</Sheet.Content>
 </Sheet.Root>
+
+<!-- Template Picker Modal -->
+<TemplatePickerModal
+	bind:open={templatePickerOpen}
+	onSelect={handleTemplateSelect}
+	onClose={handleTemplatePickerClose}
+/>
 
 <style>
 	.thumbnail-item:hover {
