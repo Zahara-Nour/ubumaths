@@ -10,6 +10,32 @@
 import type { WhiteboardElement, PageBackground } from './document';
 
 // =============================================================================
+// Template Fonts
+// =============================================================================
+
+/**
+ * Available fonts for whiteboard templates.
+ * These fonts are available in the application for TextBlocks.
+ */
+export type TemplateFont = 'Inter' | 'Excalifont' | 'Shantell Sans' | 'Linux Libertine';
+
+/** All available template fonts for iteration */
+export const TEMPLATE_FONTS: readonly TemplateFont[] = [
+	'Inter',
+	'Excalifont',
+	'Shantell Sans',
+	'Linux Libertine'
+] as const;
+
+/** Font labels for UI display */
+export const TEMPLATE_FONT_LABELS: Record<TemplateFont, string> = {
+	Inter: 'Inter (défaut)',
+	Excalifont: 'Excalifont (manuscrit)',
+	'Shantell Sans': 'Shantell Sans (marqueur)',
+	'Linux Libertine': 'Linux Libertine (académique)'
+} as const;
+
+// =============================================================================
 // Template Category
 // =============================================================================
 
@@ -63,6 +89,8 @@ export interface TemplatePageData {
 	readonly width: number;
 	/** Page height in pixels */
 	readonly height: number;
+	/** Default font for TextBlocks created on this page (optional) */
+	readonly font?: TemplateFont;
 }
 
 // =============================================================================
@@ -107,6 +135,15 @@ export interface CreateTemplatePayload {
 	readonly pageData: TemplatePageData;
 	/** Optional thumbnail */
 	readonly thumbnail?: string | null;
+}
+
+/**
+ * Template with favorite status.
+ * Used in the template picker to show favorite state.
+ */
+export interface WhiteboardTemplateWithFavorite extends WhiteboardTemplate {
+	/** Whether this template is in the user's favorites */
+	readonly isFavorite: boolean;
 }
 
 /**
@@ -163,5 +200,18 @@ export function templateToInsert(
 		created_by: createdBy,
 		is_system: false,
 		is_public: true
+	};
+}
+
+/**
+ * Convert a database row to a WhiteboardTemplateWithFavorite.
+ */
+export function rowToTemplateWithFavorite(
+	row: WhiteboardTemplateRow,
+	isFavorite: boolean
+): WhiteboardTemplateWithFavorite {
+	return {
+		...rowToTemplate(row),
+		isFavorite
 	};
 }

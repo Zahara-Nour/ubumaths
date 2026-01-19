@@ -69,7 +69,7 @@ import { routeElbowArrow } from '../core/elbow-routing';
 import { headingFromPoints, getHeadingForBindingPoint, flipHeading } from '../core/heading';
 import type { ShapeElement, ArrowElement, BindingAnchor, Point, Heading } from '../types/document';
 import { createArrowPoints } from '../types/document';
-import type { WhiteboardTemplate } from '../types/templates';
+import type { WhiteboardTemplate, TemplatePageData, TemplateFont } from '../types/templates';
 
 // =============================================================================
 // Constants
@@ -412,6 +412,10 @@ function createWhiteboardStore() {
 	// === Sync State ===
 	let syncState = $state<SyncState>(createInitialSyncState());
 
+	// === Template Preferences ===
+	// Default font for new TextBlocks (set when applying a template with font preference)
+	let defaultTextFont = $state<TemplateFont | undefined>(undefined);
+
 	// === Live Transform State (for smooth dragging/rotating without full re-render) ===
 	let liveRotations = $state<Map<string, number>>(new Map());
 	let liveResizes = $state<
@@ -668,6 +672,9 @@ function createWhiteboardStore() {
 		get syncStatus(): SyncStatus {
 			return syncState.status;
 		},
+		get defaultTextFont() {
+			return defaultTextFont;
+		},
 		get selectedIds() {
 			return selectedIds;
 		},
@@ -841,10 +848,23 @@ function createWhiteboardStore() {
 		 */
 		addPageFromTemplate(template: WhiteboardTemplate): void {
 			if (!document) return;
+			this.addPageFromPageData(template.pageData);
+		},
 
-			const { pageData } = template;
+		/**
+		 * Add a new page from page data (template or customized)
+		 * Deep clones the elements and background
+		 * Also stores the font preference for new TextBlocks
+		 */
+		addPageFromPageData(pageData: TemplatePageData): void {
+			if (!document) return;
 
-			// Create new page with template content (deep clone via JSON to handle readonly arrays)
+			// Store font preference if specified
+			if (pageData.font) {
+				defaultTextFont = pageData.font;
+			}
+
+			// Create new page with content (deep clone via JSON to handle readonly arrays)
 			const newPage: Page = {
 				id: crypto.randomUUID(),
 				elements: JSON.parse(JSON.stringify(pageData.elements)) as WhiteboardElement[],
@@ -3288,6 +3308,7 @@ function createWhiteboardStore() {
 
 		/**
 		 * Create a new text block at the given position
+		 * Uses the default font from the current template if set
 		 */
 		createTextBlock(
 			position: { x: number; y: number },
@@ -3300,7 +3321,9 @@ function createWhiteboardStore() {
 				position: { x: position.x, y: position.y },
 				width: Math.max(width, MIN_TEXT_BLOCK_WIDTH),
 				height: Math.max(height, MIN_TEXT_BLOCK_HEIGHT),
-				markdownContent: ''
+				markdownContent: '',
+				// Apply default font from template if set
+				...(defaultTextFont ? { fontFamily: defaultTextFont } : {})
 			};
 
 			this.addElement(element);

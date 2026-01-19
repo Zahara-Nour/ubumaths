@@ -28,6 +28,19 @@ const BACKGROUND_STYLES = [
 	'hexagonal-dotted'
 ] as const;
 
+/** Valid template fonts */
+const TEMPLATE_FONTS = ['Inter', 'Excalifont', 'Shantell Sans', 'Linux Libertine'] as const;
+
+/** Valid page formats */
+const PAGE_FORMATS = [
+	'A4',
+	'A4_LANDSCAPE',
+	'A3',
+	'A3_LANDSCAPE',
+	'WIDESCREEN_16_9',
+	'STANDARD_4_3'
+] as const;
+
 // =============================================================================
 // Page Data Schemas
 // =============================================================================
@@ -179,13 +192,29 @@ const pageBackgroundSchema = z.discriminatedUnion('type', [
 ]);
 
 /**
+ * Schema for template font
+ */
+export const templateFontSchema = z.enum(TEMPLATE_FONTS);
+
+/**
+ * Schema for background style
+ */
+export const backgroundStyleSchema = z.enum(BACKGROUND_STYLES);
+
+/**
+ * Schema for page format
+ */
+export const pageFormatSchema = z.enum(PAGE_FORMATS);
+
+/**
  * Schema for template page data
  */
 export const templatePageDataSchema = z.object({
 	elements: z.array(whiteboardElementSchema).max(1000, "Trop d'elements (max 1000)"),
 	background: pageBackgroundSchema,
 	width: z.number().positive().max(10000, 'Largeur trop grande (max 10000px)'),
-	height: z.number().positive().max(10000, 'Hauteur trop grande (max 10000px)')
+	height: z.number().positive().max(10000, 'Hauteur trop grande (max 10000px)'),
+	font: templateFontSchema.optional()
 });
 
 // =============================================================================
@@ -229,6 +258,37 @@ export const templateIdParamSchema = z.object({
 	id: uuidSchema
 });
 
+/**
+ * Schema for creating a template from the modal form
+ * POST /api/whiteboard/templates (alternative payload for modal creation)
+ */
+export const createTemplateFromModalSchema = z.object({
+	name: z.string().trim().min(1, 'Nom requis').max(100, 'Nom trop long (max 100 caracteres)'),
+	description: z
+		.string()
+		.max(500, 'Description trop longue (max 500 caracteres)')
+		.nullable()
+		.optional(),
+	category: templateCategorySchema,
+	format: pageFormatSchema,
+	backgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Couleur invalide (format #RRGGBB)'),
+	backgroundStyle: backgroundStyleSchema,
+	gridSpacing: z
+		.number()
+		.min(5, 'Espacement minimum: 5px')
+		.max(100, 'Espacement maximum: 100px')
+		.optional(),
+	font: templateFontSchema.optional()
+});
+
+/**
+ * Schema for template favorite operations
+ * POST/DELETE /api/whiteboard/templates/favorites
+ */
+export const templateFavoriteSchema = z.object({
+	templateId: uuidSchema
+});
+
 // =============================================================================
 // Type Exports
 // =============================================================================
@@ -236,3 +296,5 @@ export const templateIdParamSchema = z.object({
 export type CreateWhiteboardTemplateInput = z.infer<typeof createWhiteboardTemplateSchema>;
 export type ListWhiteboardTemplatesQuery = z.infer<typeof listWhiteboardTemplatesQuerySchema>;
 export type TemplatePageData = z.infer<typeof templatePageDataSchema>;
+export type CreateTemplateFromModalInput = z.infer<typeof createTemplateFromModalSchema>;
+export type TemplateFavoriteInput = z.infer<typeof templateFavoriteSchema>;

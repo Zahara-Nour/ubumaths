@@ -21,17 +21,24 @@ import {
 	listWhiteboardTemplatesQuerySchema,
 	createWhiteboardTemplateSchema
 } from '$lib/server/validation/whiteboard-templates';
-import { rowToTemplate, type WhiteboardTemplateRow } from '$lib/whiteboard/types/templates';
+import {
+	rowToTemplate,
+	rowToTemplateWithFavorite,
+	type WhiteboardTemplateRow,
+	type WhiteboardTemplateWithFavorite
+} from '$lib/whiteboard/types/templates';
 
 /**
  * List whiteboard templates
  *
  * GET /api/whiteboard/templates
  * GET /api/whiteboard/templates?category=grids
+ *
+ * Returns templates with favorite status for the authenticated user.
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	// Require authentication (any role)
-	await requireAuth(locals);
+	const { user } = await requireAuth(locals);
 
 	// Parse query parameters
 	const queryParams = Object.fromEntries(url.searchParams);
@@ -44,7 +51,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const { category } = validation.data;
 
 	try {
-		// Build query
+		// Build query for templates
 		let query = locals.supabase
 			.from('whiteboard_templates')
 			.select('*')
@@ -58,15 +65,27 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			query = query.eq('category', category);
 		}
 
-		const { data: rows, error: dbError } = await query;
+		// Fetch templates and user favorites in parallel
+		const [templatesResult, favoritesResult] = await Promise.all([
+			query,
+			locals.supabase
+				.from('user_whiteboard_template_favorites')
+				.select('template_id')
+				.eq('user_id', user.id)
+		]);
 
-		if (dbError) {
-			console.error('[Whiteboard Templates] Query error:', dbError);
+		if (templatesResult.error) {
+			console.error('[Whiteboard Templates] Query error:', templatesResult.error);
 			throw error(500, 'Erreur lors de la recuperation des templates');
 		}
 
-		// Transform database rows to API response
-		const templates = ((rows as WhiteboardTemplateRow[]) || []).map(rowToTemplate);
+		// Build a Set of favorite template IDs for fast lookup
+		const favoriteIds = new Set((favoritesResult.data ?? []).map((f) => f.template_id as string));
+
+		// Transform database rows to API response with favorite status
+		const templates: WhiteboardTemplateWithFavorite[] = (
+			(templatesResult.data as WhiteboardTemplateRow[]) || []
+		).map((row) => rowToTemplateWithFavorite(row, favoriteIds.has(row.id)));
 
 		return json({ templates });
 	} catch (err) {

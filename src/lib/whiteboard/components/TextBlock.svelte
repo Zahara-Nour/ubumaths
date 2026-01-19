@@ -72,6 +72,7 @@
 	let top = $derived(element.position.y);
 	let width = $derived(element.width);
 	let height = $derived(element.height);
+	let fontFamily = $derived(element.fontFamily);
 
 	// ==========================================================================
 	// Effects
@@ -284,6 +285,7 @@
 		<!-- VIEW Mode: MarkdownRenderer -->
 		<div
 			class="view-container h-full w-full overflow-auto rounded border border-border/50 bg-white p-2 hover:border-border"
+			style:font-family={fontFamily}
 		>
 			{#if element.markdownContent}
 				<MarkdownRenderer content={element.markdownContent} />
