@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.10](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.9...v0.7.10) (2026-01-19)
+
+### 🐛 Bug Fixes
+
+- **variation-table:** use toFrenchDecimal for number formatting ([4cc26ee](https://github.com/Zahara-Nour/ubumaths/commit/4cc26ee26a6bc1a73a63658aa2efa97024ba4932))
+
+### ✨ Features
+
+- **pdf:** 2-column layout and compact variation tables ([b2d534e](https://github.com/Zahara-Nour/ubumaths/commit/b2d534ee036911bad35774cb2f4d4af4269cbc00))
+- **pdf:** exercise styling and French number formatting ([7bc7d7c](https://github.com/Zahara-Nour/ubumaths/commit/7bc7d7ca883a6bf920b8640fb0498b961b8f8659))
+- **worksheets:** render math expressions in exercise titles ([0f5b9a2](https://github.com/Zahara-Nour/ubumaths/commit/0f5b9a2780f24ffed9c5279e5b1527520a471fe7))
+
 ### [0.7.9](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.8...v0.7.9) (2026-01-19)
 
 ### ✨ Features
