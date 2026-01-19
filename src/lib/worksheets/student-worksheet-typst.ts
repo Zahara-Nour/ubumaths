@@ -18,9 +18,53 @@
  * ```
  */
 
-import type { StudentWorksheetView } from '$lib/types/worksheets';
+import type { StudentWorksheetView, StudentExerciseView } from '$lib/types/worksheets';
 import { generateTypst, escapeTypst } from '$lib/ubumark/generators/typst-generator';
 import { parseMarkdown } from '$lib/ubumark';
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+/**
+ * Get exercises ordered by section (visual order)
+ *
+ * Orders exercises by:
+ * 1. Section position (sections first, in order)
+ * 2. Position within each section
+ * 3. Unsectioned exercises at the end
+ *
+ * @param worksheet - Student worksheet view
+ * @returns Exercises in visual display order
+ */
+function getSectionOrderedExercises(worksheet: StudentWorksheetView): StudentExerciseView[] {
+	const sections = worksheet.sections ?? [];
+	const exercises = worksheet.exercises ?? [];
+
+	// Create a map of section_id to section position
+	const sectionPositionMap = new Map<string, number>();
+	for (const section of sections) {
+		sectionPositionMap.set(section.id, section.position);
+	}
+
+	// Sort exercises by section position first, then by exercise position
+	return [...exercises].sort((a, b) => {
+		const aSectionPos = a.section_id
+			? (sectionPositionMap.get(a.section_id) ?? Infinity)
+			: Infinity;
+		const bSectionPos = b.section_id
+			? (sectionPositionMap.get(b.section_id) ?? Infinity)
+			: Infinity;
+
+		// First compare by section position
+		if (aSectionPos !== bSectionPos) {
+			return aSectionPos - bSectionPos;
+		}
+
+		// Then by exercise position within section
+		return a.position - b.position;
+	});
+}
 
 // ============================================================================
 // MAIN GENERATOR
@@ -71,14 +115,40 @@ export function generateStudentWorksheetTypst(
 
 	typst += `#line(length: 100%, stroke: 0.5pt + gray)\n\n`;
 
-	// Exercises
-	const sortedExercises = [...worksheet.exercises].sort((a, b) => a.position - b.position);
+	// Sort exercises by section order, then by position within section
+	const sortedExercises = getSectionOrderedExercises(worksheet);
+
+	// Create a map of section_id to section data for quick lookup
+	const sections = worksheet.sections ?? [];
+	const sectionMap = new Map(sections.map((s) => [s.id, s]));
+	let currentSectionId: string | null | undefined = undefined;
+	let exerciseNumber = 0;
 
 	for (const exercise of sortedExercises) {
-		// Exercise header with title if present
+		// Check if we're entering a new section
+		if (exercise.section_id !== currentSectionId) {
+			currentSectionId = exercise.section_id;
+
+			if (currentSectionId) {
+				const section = sectionMap.get(currentSectionId);
+				if (section) {
+					// Section header
+					typst += `= ${escapeTypst(section.title)}\n\n`;
+					if (section.instructions) {
+						typst += `#text(style: "italic", fill: gray)[${escapeTypst(section.instructions)}]\n\n`;
+					}
+				}
+			} else if (sections.length > 0) {
+				// Unsectioned exercises after sectioned ones
+				typst += `= Autres exercices\n\n`;
+			}
+		}
+
+		exerciseNumber++;
+		// Exercise header with sequential number and title if present
 		const exerciseHeader = exercise.title
-			? `Exercice ${exercise.position} - ${escapeTypst(exercise.title)}`
-			: `Exercice ${exercise.position}`;
+			? `Exercice ${exerciseNumber} - ${escapeTypst(exercise.title)}`
+			: `Exercice ${exerciseNumber}`;
 
 		typst += `== ${exerciseHeader}\n\n`;
 
