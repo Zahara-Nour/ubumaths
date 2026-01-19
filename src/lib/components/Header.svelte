@@ -304,9 +304,10 @@
 					</DropdownMenu.Root>
 				</div>
 			{:else}
-				<Button href="/auth/login" size="sm" variant="destructive">
-					<LogIn class="mr-2 h-4 w-4" /></Button
-				>
+				<Button href="/auth/login" size="sm" variant="destructive" aria-label="Se connecter">
+					<LogIn class="h-4 w-4 sm:mr-2" />
+					<span class="hidden sm:inline">Connexion</span>
+				</Button>
 			{/if}
 
 			<!-- Desktop controls - hidden on mobile -->
