@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.12](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.11...v0.7.12) (2026-01-19)
+
+### ✨ Features
+
+- **analytics:** add Vercel Analytics and Speed Insights ([9dbf8b8](https://github.com/Zahara-Nour/ubumaths/commit/9dbf8b8c91af07d63a4d19319d3ba4ca3006c55a))
+
 ### [0.7.11](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.10...v0.7.11) (2026-01-19)
 
 ### ⚡ Performance Improvements
