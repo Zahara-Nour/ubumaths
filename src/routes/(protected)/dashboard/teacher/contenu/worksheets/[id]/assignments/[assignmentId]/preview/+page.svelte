@@ -16,6 +16,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
 	import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -481,7 +482,9 @@
 									<div class="flex-1">
 										<div class="flex items-center gap-2">
 											<span class="font-medium">
-												Exercice {visualIndex + 1}{#if exercise.title}: {exercise.title}{/if}
+												Exercice {visualIndex + 1}{#if exercise.title}:&ensp;<InlineMarkdown
+														content={exercise.title}
+													/>{/if}
 											</span>
 											{#if exercise.correction_visible && exercise.correction}
 												<BookOpen
@@ -524,7 +527,9 @@
 						<div class="flex-1">
 							<div class="flex items-center gap-2">
 								<span class="font-medium">
-									Exercice {i + 1}{#if exercise.title}: {exercise.title}{/if}
+									Exercice {i + 1}{#if exercise.title}:&ensp;<InlineMarkdown
+											content={exercise.title}
+										/>{/if}
 								</span>
 								{#if exercise.correction_visible && exercise.correction}
 									<BookOpen
@@ -564,7 +569,9 @@
 		<div class="flex items-center justify-between gap-4 border-b border-border bg-card px-6 py-4">
 			<div class="flex items-center gap-3">
 				<Dialog.Title class="flex items-center gap-3 text-xl font-semibold">
-					Exercice {currentExerciseIndex + 1}{#if currentExercise?.title}: {currentExercise.title}{/if}
+					Exercice {currentExerciseIndex + 1}{#if currentExercise?.title}:&ensp;<InlineMarkdown
+							content={currentExercise.title}
+						/>{/if}
 					{#if currentExercise?.points !== null}
 						<Badge variant="outline" class="font-normal">
 							{currentExercise?.points} point{currentExercise?.points !== 1 ? 's' : ''}

@@ -1979,7 +1979,7 @@ export function escapeTypst(text: string): string {
  * @param content - Cell content possibly containing inline math
  * @returns Processed content safe for Typst tables
  */
-function processTableCellContent(content: string): string {
+export function processTableCellContent(content: string): string {
 	// Match inline math: $...$ (non-greedy, doesn't cross line breaks)
 	// Capture: text before, math content, text after
 	const parts: string[] = [];

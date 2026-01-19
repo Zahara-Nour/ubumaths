@@ -19,7 +19,11 @@
  */
 
 import type { StudentWorksheetView, StudentExerciseView } from '$lib/types/worksheets';
-import { generateTypst, escapeTypst } from '$lib/ubumark/generators/typst-generator';
+import {
+	generateTypst,
+	escapeTypst,
+	processTableCellContent
+} from '$lib/ubumark/generators/typst-generator';
 import { parseMarkdown } from '$lib/ubumark';
 
 // ============================================================================
@@ -150,8 +154,9 @@ export function generateStudentWorksheetTypst(
 
 		exerciseNumber++;
 		// Exercise header: red box with white number, optional bold title
+		// Use processTableCellContent to handle math expressions in titles
 		const titlePart = exercise.title
-			? ` #h(0.5em) #text(weight: "bold")[${escapeTypst(exercise.title)}]`
+			? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(exercise.title)}]`
 			: '';
 		typst += `#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${exerciseNumber}]]${titlePart}\n\n`;
 
@@ -187,7 +192,9 @@ export function generateStudentWorksheetTypst(
 		typst += `= Corrections\n\n`;
 
 		for (const { number, title, correction } of corrections) {
-			const titlePart = title ? ` #h(0.5em) #text(weight: "bold")[${escapeTypst(title)}]` : '';
+			const titlePart = title
+				? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(title)}]`
+				: '';
 
 			typst += `#block(fill: rgb("#f0fdf4"), radius: 4pt, inset: 12pt, width: 100%)[
   #box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${number}]]${titlePart}
@@ -216,7 +223,16 @@ export function generateStudentWorksheetTypst(
  * - Paragraph justification
  */
 function generateSetup(): string {
-	return `#set page(paper: "a4", margin: (x: 1cm, y: 1.5cm), columns: 2)
+	return `#set page(
+  paper: "a4",
+  margin: (x: 1cm, y: 1.5cm),
+  columns: 2,
+  footer: context [
+    #set align(center)
+    #set text(size: 9pt, fill: gray)
+    #counter(page).display("1 / 1", both: true)
+  ]
+)
 #set text(font: "New Computer Modern", size: 10pt, lang: "fr")
 #set par(justify: true)
 #set heading(numbering: none)
