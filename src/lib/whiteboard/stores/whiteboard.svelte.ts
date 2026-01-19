@@ -844,11 +844,11 @@ function createWhiteboardStore() {
 
 			const { pageData } = template;
 
-			// Create new page with template content (deep clone elements to avoid shared references)
+			// Create new page with template content (deep clone via JSON to handle readonly arrays)
 			const newPage: Page = {
 				id: crypto.randomUUID(),
-				elements: structuredClone(pageData.elements) as WhiteboardElement[],
-				background: structuredClone(pageData.background) as PageBackground,
+				elements: JSON.parse(JSON.stringify(pageData.elements)) as WhiteboardElement[],
+				background: JSON.parse(JSON.stringify(pageData.background)) as PageBackground,
 				width: pageData.width,
 				height: pageData.height
 			};
