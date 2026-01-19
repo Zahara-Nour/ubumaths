@@ -69,6 +69,7 @@ import { routeElbowArrow } from '../core/elbow-routing';
 import { headingFromPoints, getHeadingForBindingPoint, flipHeading } from '../core/heading';
 import type { ShapeElement, ArrowElement, BindingAnchor, Point, Heading } from '../types/document';
 import { createArrowPoints } from '../types/document';
+import type { WhiteboardTemplate } from '../types/templates';
 
 // =============================================================================
 // Constants
@@ -826,6 +827,31 @@ function createWhiteboardStore() {
 				'A4';
 
 			const newPage = createEmptyPage(pageFormat);
+
+			updateDocument((doc) => ({
+				...doc,
+				pages: [...doc.pages, newPage],
+				currentPageIndex: doc.pages.length // Go to new page
+			}));
+		},
+
+		/**
+		 * Add a new page from a template
+		 * Deep clones the template's elements and background
+		 */
+		addPageFromTemplate(template: WhiteboardTemplate): void {
+			if (!document) return;
+
+			const { pageData } = template;
+
+			// Create new page with template content (deep clone elements to avoid shared references)
+			const newPage: Page = {
+				id: crypto.randomUUID(),
+				elements: structuredClone(pageData.elements) as WhiteboardElement[],
+				background: structuredClone(pageData.background) as PageBackground,
+				width: pageData.width,
+				height: pageData.height
+			};
 
 			updateDocument((doc) => ({
 				...doc,
