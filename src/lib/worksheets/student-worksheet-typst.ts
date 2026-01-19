@@ -219,8 +219,8 @@ export function generateStudentWorksheetTypst(
  * - Paragraph justification
  */
 function generateSetup(): string {
-	return `#set page(paper: "a4", margin: (x: 2cm, y: 2cm))
-#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+	return `#set page(paper: "a4", margin: (x: 1.5cm, y: 1.5cm), columns: 2)
+#set text(font: "New Computer Modern", size: 10pt, lang: "fr")
 #set par(justify: true)
 #set heading(numbering: none)
 
