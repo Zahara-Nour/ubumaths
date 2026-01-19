@@ -11175,6 +11175,77 @@ export type Database = {
 					}
 				];
 			};
+			whiteboard_templates: {
+				Row: {
+					category: Database['public']['Enums']['whiteboard_template_category'];
+					created_at: string;
+					created_by: string | null;
+					description: string | null;
+					id: string;
+					is_public: boolean;
+					is_system: boolean;
+					name: string;
+					page_data: Json;
+					thumbnail: string | null;
+					updated_at: string;
+				};
+				Insert: {
+					category: Database['public']['Enums']['whiteboard_template_category'];
+					created_at?: string;
+					created_by?: string | null;
+					description?: string | null;
+					id?: string;
+					is_public?: boolean;
+					is_system?: boolean;
+					name: string;
+					page_data: Json;
+					thumbnail?: string | null;
+					updated_at?: string;
+				};
+				Update: {
+					category?: Database['public']['Enums']['whiteboard_template_category'];
+					created_at?: string;
+					created_by?: string | null;
+					description?: string | null;
+					id?: string;
+					is_public?: boolean;
+					is_system?: boolean;
+					name?: string;
+					page_data?: Json;
+					thumbnail?: string | null;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'whiteboard_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'whiteboard_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'whiteboard_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'whiteboard_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			worksheet_assignment_classes: {
 				Row: {
 					assignment_id: string;
@@ -13808,6 +13879,21 @@ export type Database = {
 				Args: { user_id: string };
 				Returns: Database['public']['Enums']['user_status'];
 			};
+			get_whiteboard_templates: {
+				Args: {
+					p_category?: Database['public']['Enums']['whiteboard_template_category'];
+				};
+				Returns: {
+					category: Database['public']['Enums']['whiteboard_template_category'];
+					created_at: string;
+					description: string;
+					id: string;
+					is_system: boolean;
+					name: string;
+					page_data: Json;
+					thumbnail: string;
+				}[];
+			};
 			grant_parental_consent: {
 				Args: { p_ip?: unknown; p_token: string; p_user_agent?: string };
 				Returns: Json;
@@ -14376,6 +14462,7 @@ export type Database = {
 			reward_type: 'gidouilles' | 'bonus' | 'vip_card' | 'achievement' | 'item';
 			user_role: 'student' | 'teacher' | 'admin';
 			user_status: 'pending' | 'approved' | 'rejected';
+			whiteboard_template_category: 'geometry' | 'algebra' | 'graphs' | 'grids' | 'blank';
 		};
 		CompositeTypes: {
 			[_ in never]: never;
@@ -14517,47 +14604,8 @@ export const Constants = {
 			],
 			reward_type: ['gidouilles', 'bonus', 'vip_card', 'achievement', 'item'],
 			user_role: ['student', 'teacher', 'admin'],
-			user_status: ['pending', 'approved', 'rejected']
+			user_status: ['pending', 'approved', 'rejected'],
+			whiteboard_template_category: ['geometry', 'algebra', 'graphs', 'grids', 'blank']
 		}
 	}
 } as const;
-
-// ============= Custom Type Aliases =============
-
-/** Friendship status type */
-export type FriendshipStatus = 'pending' | 'accepted' | 'rejected' | 'blocked';
-
-/** Friendship relation type */
-export type FriendshipRelationType = 'friend' | 'classmate' | 'best_friend';
-
-/** Profile info for friendship display */
-export type FriendProfile = {
-	id: string;
-	full_name: string | null;
-	firstname: string | null;
-	lastname: string | null;
-	avatar_url: string | null;
-	role: Database['public']['Enums']['user_role'];
-	presence?: {
-		is_online: boolean;
-		last_seen: string;
-	};
-};
-
-/** Friendship with profile info - contains the friend's profile (not requester/addressee separately) */
-export type FriendshipWithProfile = {
-	id: string;
-	status: FriendshipStatus;
-	friendship_type: FriendshipRelationType;
-	created_at: string;
-	updated_at: string;
-	requester_id: string;
-	addressee_id: string;
-	friend_profile: FriendProfile | null;
-};
-
-/** Class type alias */
-export type Class = Database['public']['Tables']['classes']['Row'];
-
-/** ClassSchedule type alias */
-export type ClassSchedule = Database['public']['Tables']['class_schedules']['Row'];
