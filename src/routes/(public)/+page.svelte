@@ -2,6 +2,14 @@
 	import { resolve } from '$app/paths';
 </script>
 
+<svelte:head>
+	<title>UbuMaths - Les maths de la chandelle verte</title>
+	<meta
+		name="description"
+		content="UbuMaths est une application educative de mathematiques pour eleves francophones. Exercices interactifs, jeux et outils pour apprendre les maths."
+	/>
+</svelte:head>
+
 <div
 	class="container mx-auto flex h-full flex-col items-center justify-center space-y-20 p-4 text-center"
 >

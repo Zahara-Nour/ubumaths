@@ -22,7 +22,6 @@
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
-	import { toaster as _toaster } from '$lib/stores/toaster.svelte';
 	import { initializeTemplates } from '$lib/stores/vipCardTemplates.svelte';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
