@@ -879,10 +879,23 @@ function createWhiteboardStore() {
 				defaultTextFont = pageData.font;
 			}
 
-			// Create new page with content (deep clone via JSON to handle readonly arrays)
+			// Deep clone elements via JSON to handle readonly arrays
+			let clonedElements = JSON.parse(JSON.stringify(pageData.elements)) as WhiteboardElement[];
+
+			// Apply template font to TextBlocks that don't have a fontFamily set
+			if (pageData.font) {
+				clonedElements = clonedElements.map((el) => {
+					if (el.type === 'textblock' && !el.fontFamily) {
+						return { ...el, fontFamily: pageData.font };
+					}
+					return el;
+				});
+			}
+
+			// Create new page with content
 			const newPage: Page = {
 				id: crypto.randomUUID(),
-				elements: JSON.parse(JSON.stringify(pageData.elements)) as WhiteboardElement[],
+				elements: clonedElements,
 				background: JSON.parse(JSON.stringify(pageData.background)) as PageBackground,
 				width: pageData.width,
 				height: pageData.height
