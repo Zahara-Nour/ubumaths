@@ -30,8 +30,23 @@
 @import '@fontsource/lora/600.css'; /* Semi-bold - Main headings */
 @import '@fontsource/lora/700.css'; /* Bold - Hero headings */
 
-/* Shantell Sans - Marker-style handwritten font for whiteboard templates */
-@import url('https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@400;700&display=swap');
+/* Pacifico - Playful font for game titles (self-hosted for performance) */
+@font-face {
+	font-family: 'Pacifico';
+	src: url('/fonts/pacifico-400.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+/* Shantell Sans - Marker-style handwritten font for whiteboard (self-hosted) */
+@font-face {
+	font-family: 'Shantell Sans';
+	src: url('/fonts/shantell-sans-variable.woff2') format('woff2');
+	font-weight: 400 700;
+	font-style: normal;
+	font-display: swap;
+}
 
 /* Excalifont - Handwritten style font (from Excalidraw) */
 @font-face {
