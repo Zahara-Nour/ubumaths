@@ -8,6 +8,7 @@
  * FONTS USED:
  * - Inter: Modern sans-serif for body text (4 weights)
  * - Lora: Elegant serif for headings (3 weights)
+ * - Shantell Sans: Marker-style handwritten font for whiteboard (2 weights)
  *
  * PERFORMANCE BENEFITS:
  * - Reduces module graph complexity
@@ -28,6 +29,9 @@
 @import '@fontsource/lora/400.css'; /* Regular - Subheadings */
 @import '@fontsource/lora/600.css'; /* Semi-bold - Main headings */
 @import '@fontsource/lora/700.css'; /* Bold - Hero headings */
+
+/* Shantell Sans - Marker-style handwritten font for whiteboard templates */
+@import url('https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@400;700&display=swap');
 
 /* Excalifont - Handwritten style font (from Excalidraw) */
 @font-face {

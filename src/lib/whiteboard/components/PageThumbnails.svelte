@@ -20,7 +20,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Plus, X, GripVertical, PanelRightOpen, FileText, LayoutTemplate } from 'lucide-svelte';
 	import TemplatePickerModal from './TemplatePickerModal.svelte';
-	import type { WhiteboardTemplate } from '../types/templates';
+	import type { TemplatePageData } from '../types/templates';
 
 	// ==========================================================================
 	// Constants
@@ -88,8 +88,8 @@
 		templatePickerOpen = true;
 	}
 
-	function handleTemplateSelect(template: WhiteboardTemplate) {
-		whiteboardStore.addPageFromTemplate(template);
+	function handleTemplateSelect(pageData: TemplatePageData) {
+		whiteboardStore.addPageFromPageData(pageData);
 	}
 
 	function handleTemplatePickerClose() {

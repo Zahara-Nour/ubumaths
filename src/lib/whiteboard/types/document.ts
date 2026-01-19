@@ -496,6 +496,8 @@ export interface TextBlockElement {
 	readonly width: number;
 	readonly height: number;
 	readonly markdownContent: string;
+	/** Optional font family for the text block */
+	readonly fontFamily?: string;
 }
 
 /** Image element */
