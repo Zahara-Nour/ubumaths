@@ -98,7 +98,16 @@ export type ShapeTool = 'line' | 'rectangle' | 'circle' | 'arrow' | 'pentagon' |
 export type ConfigurableTool = DrawingTool | ShapeTool;
 
 /** Action tools */
-export type ActionTool = 'select' | 'pan' | 'text' | 'image';
+export type ActionTool = 'select' | 'pan' | 'text' | 'image' | 'laser';
+
+/** Laser pointer modes */
+export type LaserMode = 'pointer' | 'trail';
+
+/** Point in laser trail with timestamp for fading */
+export interface LaserTrailPoint {
+	point: Point;
+	timestamp: number;
+}
 
 // =============================================================================
 // TextBlock Constants
@@ -415,6 +424,12 @@ function createWhiteboardStore() {
 	// === Template Preferences ===
 	// Default font for new TextBlocks (set when applying a template with font preference)
 	let defaultTextFont = $state<TemplateFont | undefined>(undefined);
+
+	// === Laser Pointer State ===
+	let laserMode = $state<LaserMode>('pointer');
+	let laserActive = $state(false);
+	let laserPosition = $state<Point | null>(null);
+	let laserTrail = $state<LaserTrailPoint[]>([]);
 
 	// === Live Transform State (for smooth dragging/rotating without full re-render) ===
 	let liveRotations = $state<Map<string, number>>(new Map());
@@ -4285,6 +4300,72 @@ function createWhiteboardStore() {
 					})
 				);
 			}
+		},
+
+		// === Laser Pointer ===
+
+		/** Current laser mode */
+		get laserMode(): LaserMode {
+			return laserMode;
+		},
+
+		/** Whether laser is currently active (pointer down) */
+		get laserActive(): boolean {
+			return laserActive;
+		},
+
+		/** Current laser position */
+		get laserPosition(): Point | null {
+			return laserPosition;
+		},
+
+		/** Trail points with timestamps */
+		get laserTrail(): LaserTrailPoint[] {
+			return laserTrail;
+		},
+
+		/**
+		 * Set laser mode (pointer or trail)
+		 */
+		setLaserMode(mode: LaserMode): void {
+			laserMode = mode;
+			// Clear trail when switching modes
+			laserTrail = [];
+		},
+
+		/**
+		 * Set laser active state
+		 */
+		setLaserActive(active: boolean): void {
+			laserActive = active;
+			if (!active) {
+				laserPosition = null;
+			}
+		},
+
+		/**
+		 * Update laser position
+		 */
+		updateLaserPosition(point: Point): void {
+			laserPosition = point;
+			if (laserMode === 'trail' && laserActive) {
+				laserTrail = [...laserTrail, { point, timestamp: Date.now() }];
+			}
+		},
+
+		/**
+		 * Clear old trail points beyond maxAge (in ms)
+		 */
+		clearOldTrailPoints(maxAge: number): void {
+			const now = Date.now();
+			laserTrail = laserTrail.filter((p) => now - p.timestamp < maxAge);
+		},
+
+		/**
+		 * Clear all laser trail points
+		 */
+		clearLaserTrail(): void {
+			laserTrail = [];
 		},
 
 		// === Cleanup ===
