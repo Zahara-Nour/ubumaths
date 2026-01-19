@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.8](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.7...v0.7.8) (2026-01-19)
+
+### 🐛 Bug Fixes
+
+- **whiteboard:** persist TextBlock fontFamily in file format ([b7326d2](https://github.com/Zahara-Nour/ubumaths/commit/b7326d273e312586a104a25abef1c70e3814ca76))
+- **worksheets:** correct exercise numbering with sections ([46705f6](https://github.com/Zahara-Nour/ubumaths/commit/46705f6592caf2ccc382155076f7ed161a4996fb))
+
 ### [0.7.7](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.6...v0.7.7) (2026-01-19)
 
 ### ✨ Features
