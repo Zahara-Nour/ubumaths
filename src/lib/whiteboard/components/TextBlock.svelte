@@ -303,6 +303,7 @@
 		<div
 			bind:this={editContainerEl}
 			class="edit-container h-full w-full overflow-auto rounded border-2 border-primary bg-white shadow-lg"
+			style:font-family={fontFamily}
 		>
 			<RichTextEditor
 				bind:this={editorRef}
