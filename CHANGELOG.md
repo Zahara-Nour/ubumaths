@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.7](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.6...v0.7.7) (2026-01-19)
+
+### ✨ Features
+
+- **whiteboard:** add arrowhead type selector to toolbar ([4a27c2b](https://github.com/Zahara-Nour/ubumaths/commit/4a27c2b9ee252b3d08c6cd895f1e1cb52dac8cc2))
+- **whiteboard:** add curved arrows with multi-point drawing ([ae87c80](https://github.com/Zahara-Nour/ubumaths/commit/ae87c80c9361dff30237938a7d7092b59090b5e1))
+- **whiteboard:** add laser pointer tool with two modes ([d37c3e9](https://github.com/Zahara-Nour/ubumaths/commit/d37c3e9ebfa572e7f5be93f7cf4382e4fc7a8119))
+- **whiteboard:** add live elbow arrow re-routing during shape drag ([1c7d2de](https://github.com/Zahara-Nour/ubumaths/commit/1c7d2de57d4486c47ac48161a87185c80b9c76ba))
+- **whiteboard:** add rounded corners to elbow arrows like Excalidraw ([fab436f](https://github.com/Zahara-Nour/ubumaths/commit/fab436fe9f37f2a796926bfdf7e1cd3430f29da1))
+- **whiteboard:** add sloppiness presets for sketch mode (Excalidraw style) ([4cb006f](https://github.com/Zahara-Nour/ubumaths/commit/4cb006f655c09302346c298e4ae05957e191ca54))
+- **whiteboard:** add template favorites, creation, and customization ([fcfd517](https://github.com/Zahara-Nour/ubumaths/commit/fcfd5171c0bd7a284b8f82de32a61e8410d847ba))
+- **whiteboard:** add template system for creating pages from presets ([10c2474](https://github.com/Zahara-Nour/ubumaths/commit/10c24740ab8c3c35274a79ce156dc3fee2f15189))
+- **whiteboard:** enable TextBlock selection and deletion ([5d29082](https://github.com/Zahara-Nour/ubumaths/commit/5d2908209010c9615381983bd322eba0c9c1c252))
+- **whiteboard:** integrate A\* routing for elbow arrows ([b19ec70](https://github.com/Zahara-Nour/ubumaths/commit/b19ec70462b0625a5ec2d30218ebda6a016faf1b))
+- **whiteboard:** migrate arrows to Excalidraw-style data model ([a0e414a](https://github.com/Zahara-Nour/ubumaths/commit/a0e414a858fcf3fcb94e57b8548bfa511607ed84))
+- **whiteboard:** use Excalidraw's dash algorithm for stroke styles ([29c23e6](https://github.com/Zahara-Nour/ubumaths/commit/29c23e6121dfff9af6a69299b60a7c6fd5f2ccfe))
+
+### 🐛 Bug Fixes
+
+- **typst:** add space before Euler's e in implicit multiplication ([ea2f52d](https://github.com/Zahara-Nour/ubumaths/commit/ea2f52d0370f08199f1ea5c7e6001606fbfe5eee))
+- **whiteboard:** add minimal bounds fallback for elbow routing ([fd8eb0f](https://github.com/Zahara-Nour/ubumaths/commit/fd8eb0f09e9089c03b7193ce9b44f65ea35f1031))
+- **whiteboard:** add renderStyle and roughness to updateSelectedStyles ([0e08472](https://github.com/Zahara-Nour/ubumaths/commit/0e08472c9273b223effe1031883715de2f217bd5))
+- **whiteboard:** apply scale transform to TextBlock positioning ([99eee79](https://github.com/Zahara-Nour/ubumaths/commit/99eee7998d67d12649ef46c41feb747c0ad24585))
+- **whiteboard:** apply sloppiness preset changes to selected shapes ([b1673e1](https://github.com/Zahara-Nour/ubumaths/commit/b1673e118d428dfabc44094ff255f74cadddc047))
+- **whiteboard:** apply stroke styles (dashed/dotted) in sketch mode ([a89afda](https://github.com/Zahara-Nour/ubumaths/commit/a89afda8f6bd06386520067f4de2f13d09d488a8))
+- **whiteboard:** apply template font to cloned TextBlocks ([430f04c](https://github.com/Zahara-Nour/ubumaths/commit/430f04cce47b4576614d3ed1cd1a369c2b6018c5))
+- **whiteboard:** apply template font to TextBlock edit mode ([9243a38](https://github.com/Zahara-Nour/ubumaths/commit/9243a38d65b972a8475e87af105fdb7d2f5c9df8))
+- **whiteboard:** calculate headings from binding position not direction ([70075fb](https://github.com/Zahara-Nour/ubumaths/commit/70075fb7d9a3ed329fe0fe0579f13368ca8dd4ed))
+- **whiteboard:** correct elbow arrow routing and rendering ([c8424d5](https://github.com/Zahara-Nour/ubumaths/commit/c8424d5194beedecd5182cb12f06bf4cb8862d4f))
+- **whiteboard:** detect bounds overlap for close shapes (Excalidraw-style) ([a948086](https://github.com/Zahara-Nour/ubumaths/commit/a9480863af0be5ac60f710563aad78b3a5f552f5))
+- **whiteboard:** fix elbow arrow hit-testing and remove calculateElbowPath fallbacks ([b1d3b04](https://github.com/Zahara-Nour/ubumaths/commit/b1d3b04eb7f61fde30ceb4ef3fb69de31be28136))
+- **whiteboard:** improve elbow routing when shapes are close ([c5c8533](https://github.com/Zahara-Nour/ubumaths/commit/c5c85337e53157fc4d1fbe730054abd47bc90309))
+- **whiteboard:** improve laser trail rendering with perfect-freehand ([981d534](https://github.com/Zahara-Nour/ubumaths/commit/981d534aab7dd0635c3114fa94f859a9de507f0d))
+- **whiteboard:** match Excalidraw corner radius (32px) ([bf2d154](https://github.com/Zahara-Nour/ubumaths/commit/bf2d154497cd1460fa9202db131a07ecc383ed74))
+- **whiteboard:** match selection highlight shape to rounded rectangles ([f8a8be7](https://github.com/Zahara-Nour/ubumaths/commit/f8a8be7422fc551a85d08da544e020911d0852ce))
+- **whiteboard:** replace nested buttons with accessible divs in template cards ([c13753d](https://github.com/Zahara-Nour/ubumaths/commit/c13753d8113ca3fdc11c149af59210f5209f7268))
+- **whiteboard:** snap endpoint position during live drag preview ([2de23ba](https://github.com/Zahara-Nour/ubumaths/commit/2de23bad3ae8ff937820352196c62941d465ca54))
+- **whiteboard:** sync elbow arrow preview with commit during endpoint drag ([9a11a49](https://github.com/Zahara-Nour/ubumaths/commit/9a11a49babd3e5da43be42b9998117030c58481c))
+- **whiteboard:** update elbow arrows live during endpoint drag ([84835e5](https://github.com/Zahara-Nour/ubumaths/commit/84835e550293b6e8f3475eef17121bd8ba789427))
+- **whiteboard:** update elbow arrows live during resize and rotation ([2624a85](https://github.com/Zahara-Nour/ubumaths/commit/2624a850d2cc795a4a3c8fb46893a3eb69aca14a))
+- **whiteboard:** use deterministic seed for shapes without roughSeed ([383b45c](https://github.com/Zahara-Nour/ubumaths/commit/383b45c709358f053b940b180d3a3bb19ab905c5))
+- **whiteboard:** use JSON clone instead of structuredClone for templates ([38fe812](https://github.com/Zahara-Nour/ubumaths/commit/38fe812e601ad8bcd9b7b2217d256e189acf8280))
+- **whiteboard:** use search cones for heading calculation (Excalidraw) ([d595613](https://github.com/Zahara-Nour/ubumaths/commit/d595613337e051b784bbee648484e1dc3cad1d21))
+- **whiteboard:** use stored fixedPoint for binding position ([c4d4347](https://github.com/Zahara-Nour/ubumaths/commit/c4d4347116ca7220ce3fbb98007e6f0c93d3671e))
+
 ### [0.7.6](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.5...v0.7.6) (2026-01-18)
 
 ### ✨ Features
