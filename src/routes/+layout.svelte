@@ -17,6 +17,13 @@
 	import '../app.css';
 	import '../fonts.css'; // Consolidated font imports (optimized loading)
 
+	// Vercel Analytics & Speed Insights (RUM - Real User Monitoring)
+	import { inject } from '@vercel/analytics';
+	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+
+	inject(); // Web Analytics
+	injectSpeedInsights(); // Speed Insights (Core Web Vitals)
+
 	import favicon from '$lib/assets/images/favicon.png';
 	import Header from '$lib/components/Header.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
