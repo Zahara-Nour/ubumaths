@@ -194,7 +194,13 @@ function formatMathExpression(expr: string): string {
 	}
 
 	// Convert LaTeX to Typst
-	return convertLatexToTypstMath(expr);
+	let result = convertLatexToTypstMath(expr);
+
+	// French number formatting: replace decimal point with comma
+	// Match numbers with decimal points (e.g., 3.6 -> 3,6)
+	result = result.replace(/(\d)\.(\d)/g, '$1,$2');
+
+	return result;
 }
 
 // ============================================================================

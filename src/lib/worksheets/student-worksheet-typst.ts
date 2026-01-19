@@ -149,12 +149,11 @@ export function generateStudentWorksheetTypst(
 		}
 
 		exerciseNumber++;
-		// Exercise header with sequential number and title if present
-		const exerciseHeader = exercise.title
-			? `Exercice ${exerciseNumber} - ${escapeTypst(exercise.title)}`
-			: `Exercice ${exerciseNumber}`;
-
-		typst += `== ${exerciseHeader}\n\n`;
+		// Exercise header: red box with white number, optional bold title
+		const titlePart = exercise.title
+			? ` #h(0.5em) #text(weight: "bold")[${escapeTypst(exercise.title)}]`
+			: '';
+		typst += `#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${exerciseNumber}]]${titlePart}\n\n`;
 
 		// Points if available
 		if (exercise.points) {
@@ -188,12 +187,10 @@ export function generateStudentWorksheetTypst(
 		typst += `= Corrections\n\n`;
 
 		for (const { number, title, correction } of corrections) {
-			const correctionHeader = title
-				? `Exercice ${number} - ${escapeTypst(title)}`
-				: `Exercice ${number}`;
+			const titlePart = title ? ` #h(0.5em) #text(weight: "bold")[${escapeTypst(title)}]` : '';
 
 			typst += `#block(fill: rgb("#f0fdf4"), radius: 4pt, inset: 12pt, width: 100%)[
-  #text(weight: "bold", fill: rgb("#166534"))[${correctionHeader}]
+  #box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${number}]]${titlePart}
   #v(0.5em)
 `;
 			const correctionAst = parseMarkdown(correction);
@@ -219,7 +216,7 @@ export function generateStudentWorksheetTypst(
  * - Paragraph justification
  */
 function generateSetup(): string {
-	return `#set page(paper: "a4", margin: (x: 1.5cm, y: 1.5cm), columns: 2)
+	return `#set page(paper: "a4", margin: (x: 1cm, y: 1.5cm), columns: 2)
 #set text(font: "New Computer Modern", size: 10pt, lang: "fr")
 #set par(justify: true)
 #set heading(numbering: none)
