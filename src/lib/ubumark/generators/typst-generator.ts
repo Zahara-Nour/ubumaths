@@ -1778,6 +1778,12 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/([a-zA-Z])\\imaginaryI/g, '$1 i');
 	result = result.replace(/\\imaginaryI/g, 'i');
 
+	// Handle implicit multiplication with Euler's number e when NOT using \exponentialE
+	// Pattern: letter followed by 'e' followed by '^' (exponent) should be "x e^..." not "xe^..."
+	// This is common in expressions like "xe^{-x}" meaning "x times e^(-x)"
+	// Must be done BEFORE subscript/superscript conversion to catch the ^ pattern
+	result = result.replace(/([a-zA-Z])e\^/g, '$1 e^');
+
 	// 5. Math text styles (1 argument) - use balanced brace matching for nested content
 	result = convertLatexOneArgCommand(result, 'mathbf', 'bold');
 	result = convertLatexOneArgCommand(result, 'mathit', 'italic');
