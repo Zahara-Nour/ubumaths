@@ -221,12 +221,6 @@
 	// Derived values
 	let exercises = $derived(worksheet?.exercises ?? []);
 	let sections = $derived(worksheet?.sections ?? []);
-	let currentExercise = $derived(exercises[currentExerciseIndex] ?? null);
-	let hasCorrection = $derived(
-		currentExercise?.correction_visible && currentExercise?.correction !== null
-	);
-	let canGoPrev = $derived(currentExerciseIndex > 0);
-	let canGoNext = $derived(currentExerciseIndex < exercises.length - 1);
 	let typeInfo = $derived(worksheet ? getTypeInfo(worksheet.type) : null);
 	let typeBadgeVariant = $derived(worksheet ? getTypeBadgeVariant(worksheet.type) : 'outline');
 	let closesInfo = $derived(worksheet ? formatClosesAt(worksheet.closes_at) : null);
@@ -263,6 +257,25 @@
 		}
 		return ids;
 	});
+
+	// Visual order of exercises (respects section grouping)
+	// This is used for numbering exercises correctly when displayed by sections
+	let visualOrderExercises = $derived.by(() => {
+		const ordered: StudentExerciseView[] = [];
+		for (const sectionId of sortedSectionIds) {
+			const sectionExercises = groupedExercises.get(sectionId) ?? [];
+			ordered.push(...sectionExercises);
+		}
+		return ordered;
+	});
+
+	// Modal navigation state (uses visual order)
+	let currentExercise = $derived(visualOrderExercises[currentExerciseIndex] ?? null);
+	let hasCorrection = $derived(
+		currentExercise?.correction_visible && currentExercise?.correction !== null
+	);
+	let canGoPrev = $derived(currentExerciseIndex > 0);
+	let canGoNext = $derived(currentExerciseIndex < visualOrderExercises.length - 1);
 
 	// Check if we have sections to display
 	let hasSections = $derived(sections.length > 0);
@@ -454,21 +467,21 @@
 							{/if}
 
 							{#each sectionExercises as exercise (exercise.id)}
-								{@const globalIndex = exercises.findIndex((e) => e.id === exercise.id)}
+								{@const visualIndex = visualOrderExercises.findIndex((e) => e.id === exercise.id)}
 								<button
 									type="button"
-									onclick={() => openExercise(globalIndex)}
+									onclick={() => openExercise(visualIndex)}
 									class="flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50"
 								>
 									<div
 										class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
 									>
-										<span class="text-sm font-semibold">{globalIndex + 1}</span>
+										<span class="text-sm font-semibold">{visualIndex + 1}</span>
 									</div>
 									<div class="flex-1">
 										<div class="flex items-center gap-2">
 											<span class="font-medium">
-												Exercice {globalIndex + 1}{#if exercise.title}: {exercise.title}{/if}
+												Exercice {visualIndex + 1}{#if exercise.title}: {exercise.title}{/if}
 											</span>
 											{#if exercise.correction_visible && exercise.correction}
 												<BookOpen
@@ -638,7 +651,7 @@
 				</Button>
 
 				<span class="text-sm text-muted-foreground">
-					{currentExerciseIndex + 1} / {exercises.length}
+					{currentExerciseIndex + 1} / {visualOrderExercises.length}
 				</span>
 
 				<Button
