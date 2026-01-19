@@ -21,6 +21,7 @@ import type {
 	DomainPoint
 } from '../types/variation-table';
 import { convertLatexToTypstMath } from './typst-generator';
+import { toFrenchDecimal } from '$lib/utils/french-math';
 
 // ============================================================================
 // CONFIGURATION
@@ -193,14 +194,9 @@ function formatMathExpression(expr: string): string {
 		return '+infinity';
 	}
 
-	// Convert LaTeX to Typst
-	let result = convertLatexToTypstMath(expr);
-
-	// French number formatting: replace decimal point with comma
-	// Match numbers with decimal points (e.g., 3.6 -> 3,6)
-	result = result.replace(/(\d)\.(\d)/g, '$1,$2');
-
-	return result;
+	// Apply French decimal formatting first, then convert to Typst
+	const frenchExpr = toFrenchDecimal(expr);
+	return convertLatexToTypstMath(frenchExpr);
 }
 
 // ============================================================================
