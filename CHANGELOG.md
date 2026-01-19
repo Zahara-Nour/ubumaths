@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.13](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.12...v0.7.13) (2026-01-19)
+
+### ⚡ Performance Improvements
+
+- **fonts:** self-host Pacifico and Shantell Sans fonts ([aedc78f](https://github.com/Zahara-Nour/ubumaths/commit/aedc78f1f7cf66ac9bd4e3f0992e5c1777fab110))
+
 ### [0.7.12](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.11...v0.7.12) (2026-01-19)
 
 ### ✨ Features
