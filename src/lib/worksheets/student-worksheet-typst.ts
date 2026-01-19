@@ -124,6 +124,10 @@ export function generateStudentWorksheetTypst(
 	let currentSectionId: string | null | undefined = undefined;
 	let exerciseNumber = 0;
 
+	// Collect corrections for later (if includeSolution)
+	const corrections: { number: number; title: string | null | undefined; correction: string }[] =
+		[];
+
 	for (const exercise of sortedExercises) {
 		// Check if we're entering a new section
 		if (exercise.section_id !== currentSectionId) {
@@ -166,19 +170,36 @@ export function generateStudentWorksheetTypst(
 		const statementAst = parseMarkdown(exercise.statement);
 		typst += generateTypst(statementAst, { includeSetup: false }) + '\n\n';
 
-		// Correction if available and requested
+		// Collect correction for the end section
 		if (includeSolution && exercise.correction && exercise.correction_visible) {
-			typst += `#v(0.5em)\n`;
-			typst += `#block(fill: rgb("#f0fdf4"), radius: 4pt, inset: 12pt, width: 100%)[
-  #text(weight: "bold", fill: rgb("#166534"))[Correction]
-  #v(0.5em)
-`;
-			const correctionAst = parseMarkdown(exercise.correction);
-			typst += generateTypst(correctionAst, { includeSetup: false });
-			typst += `\n]\n\n`;
+			corrections.push({
+				number: exerciseNumber,
+				title: exercise.title,
+				correction: exercise.correction
+			});
 		}
 
 		typst += `#v(1em)\n`;
+	}
+
+	// Add corrections section at the end
+	if (corrections.length > 0) {
+		typst += `#pagebreak()\n\n`;
+		typst += `= Corrections\n\n`;
+
+		for (const { number, title, correction } of corrections) {
+			const correctionHeader = title
+				? `Exercice ${number} - ${escapeTypst(title)}`
+				: `Exercice ${number}`;
+
+			typst += `#block(fill: rgb("#f0fdf4"), radius: 4pt, inset: 12pt, width: 100%)[
+  #text(weight: "bold", fill: rgb("#166534"))[${correctionHeader}]
+  #v(0.5em)
+`;
+			const correctionAst = parseMarkdown(correction);
+			typst += generateTypst(correctionAst, { includeSetup: false });
+			typst += `\n]\n\n#v(1em)\n`;
+		}
 	}
 
 	return typst;
