@@ -118,7 +118,8 @@ const textBlockElementSchema = z.object({
 	position: pointSchema,
 	width: z.number().positive().max(10000),
 	height: z.number().positive().max(10000),
-	markdownContent: z.string().max(100000)
+	markdownContent: z.string().max(100000),
+	fontFamily: z.string().max(100).optional()
 });
 
 const imageElementSchema = z.object({
