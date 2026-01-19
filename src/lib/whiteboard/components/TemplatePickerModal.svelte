@@ -407,10 +407,17 @@
 								<div class="grid grid-cols-2 gap-3 md:grid-cols-3">
 									{#each favoriteTemplates as template (template.id)}
 										{@const Icon = getCategoryIcon(template.category)}
-										<button
-											type="button"
+										<div
+											role="button"
+											tabindex="0"
 											class="template-card group"
 											onclick={() => handleTemplateClick(template)}
+											onkeydown={(e) => {
+												if (e.key === 'Enter' || e.key === ' ') {
+													e.preventDefault();
+													handleTemplateClick(template);
+												}
+											}}
 										>
 											<div class="template-preview" style={getTemplatePreviewStyle(template)}>
 												{#if template.thumbnail}
@@ -445,7 +452,7 @@
 													{TEMPLATE_CATEGORY_LABELS[template.category]}
 												</span>
 											</div>
-										</button>
+										</div>
 									{/each}
 								</div>
 							</div>
@@ -461,10 +468,17 @@
 							<div class="grid grid-cols-2 gap-3 md:grid-cols-3">
 								{#each filteredTemplates as template (template.id)}
 									{@const Icon = getCategoryIcon(template.category)}
-									<button
-										type="button"
+									<div
+										role="button"
+										tabindex="0"
 										class="template-card group"
 										onclick={() => handleTemplateClick(template)}
+										onkeydown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.preventDefault();
+												handleTemplateClick(template);
+											}
+										}}
 									>
 										<div class="template-preview" style={getTemplatePreviewStyle(template)}>
 											{#if template.thumbnail}
@@ -502,7 +516,7 @@
 												<span class="system-badge">Systeme</span>
 											{/if}
 										</div>
-									</button>
+									</div>
 								{/each}
 							</div>
 						{/if}
