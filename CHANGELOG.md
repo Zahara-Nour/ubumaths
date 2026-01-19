@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.11](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.10...v0.7.11) (2026-01-19)
+
+### ⚡ Performance Improvements
+
+- **lighthouse:** improve SEO and accessibility scores ([03d0d3a](https://github.com/Zahara-Nour/ubumaths/commit/03d0d3afb2b726dee8dd72dc2e24466a96a8f826))
+
 ### [0.7.10](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.9...v0.7.10) (2026-01-19)
 
 ### 🐛 Bug Fixes
