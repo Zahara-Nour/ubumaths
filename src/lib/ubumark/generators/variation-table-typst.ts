@@ -115,14 +115,21 @@ export function generateVariationTableTypst(
 		const labels = generateLabels(node.rows);
 		const content = generateContent(node);
 
-		return `${importStatement}#tabvar(
+		// Wrap in a scaled block to fit column width
+		// Text enlarged then scaled down = readable text but reduced padding
+		return `${importStatement}#block(width: 100%, breakable: false)[
+#set text(size: 1.6em)
+#scale(x: 55%, y: 55%, origin: top + left)[
+#tabvar(
   variable: ${variable},
   domain: ${domain},
   label: ${labels},
   contents: (
 ${content}
   )
-)`;
+)
+]
+]`;
 	} catch (error) {
 		return `// Error: ${error instanceof Error ? error.message : 'Failed to generate variation table'}`;
 	}
@@ -212,7 +219,7 @@ function generateLabels(rows: (SignRow | VariationRow)[]): string {
 		const converted = convertLatexToTypstMath(row.label);
 		const rowType = row.type === 'sign' ? 's' : 'v';
 		// Use content blocks [...] for labels, with embedded math
-		// vartable 0.2.3 format: ([label], "type") - no height parameter
+		// vartable 0.2.1 format: ([label], "type") - no height parameter in this version
 		return `([$${converted}$], "${rowType}")`;
 	});
 
