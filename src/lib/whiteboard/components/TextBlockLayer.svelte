@@ -39,6 +39,9 @@
 		elements.filter((el): el is TextBlockElement => el.type === 'textblock')
 	);
 
+	/** Selected element IDs */
+	let selectedIds = $derived(whiteboardStore.selectedIds);
+
 	// ==========================================================================
 	// Handlers
 	// ==========================================================================
@@ -82,6 +85,7 @@
 			<TextBlock
 				element={block}
 				isEditing={editingBlockId === block.id}
+				isSelected={selectedIds.has(block.id)}
 				onStartEdit={() => handleStartEdit(block.id)}
 				onEndEdit={handleEndEdit}
 				{scale}
