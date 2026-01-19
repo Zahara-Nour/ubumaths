@@ -258,7 +258,8 @@
 	class="text-block absolute"
 	class:editing={isEditing}
 	class:dragging={isDragging}
-	style="left: {left}px; top: {top}px; width: {width}px; height: {height}px;"
+	style="left: {left * scale}px; top: {top * scale}px; width: {width * scale}px; height: {height *
+		scale}px;"
 	ondblclick={handleDoubleClick}
 	onpointerdown={!isEditing ? handleDragStart : undefined}
 	onpointermove={handleDragMove}
