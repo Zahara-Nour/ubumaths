@@ -771,8 +771,8 @@ function createWhiteboardStore() {
 			history = createHistoryManager(document);
 			hasUnsavedChanges = false;
 			selectedIds = new Set();
-			// Reset template preferences when loading a document
-			defaultTemplate = null;
+			// Restore template preference from document if available
+			defaultTemplate = result.document.defaultTemplate ?? null;
 
 			return { success: true };
 		},
@@ -786,8 +786,8 @@ function createWhiteboardStore() {
 			history = createHistoryManager(document);
 			hasUnsavedChanges = false;
 			selectedIds = new Set();
-			// Reset template preferences when loading a document
-			defaultTemplate = null;
+			// Restore template preference from document if available
+			defaultTemplate = doc.defaultTemplate ?? null;
 		},
 
 		/**
@@ -933,6 +933,11 @@ function createWhiteboardStore() {
 		 */
 		setDefaultTemplate(template: TemplatePageData | null): void {
 			defaultTemplate = template;
+			// Persist to document
+			if (document) {
+				document = { ...document, defaultTemplate: template ?? undefined };
+				scheduleAutosave();
+			}
 		},
 
 		/**
