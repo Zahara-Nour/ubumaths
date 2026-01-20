@@ -7,6 +7,8 @@
  * @module whiteboard/types/document
  */
 
+import type { TemplatePageData } from './templates';
+
 // =============================================================================
 // Constants
 // =============================================================================
@@ -637,6 +639,8 @@ export interface WhiteboardDocument {
 	readonly currentPageIndex: number;
 	/** Instrument state (persisted across sessions) */
 	readonly instruments: Record<InstrumentType, InstrumentState>;
+	/** Default template for new pages (optional, persisted) */
+	readonly defaultTemplate?: TemplatePageData;
 }
 
 // =============================================================================
