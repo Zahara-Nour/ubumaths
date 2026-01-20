@@ -151,7 +151,16 @@ shantell-math/
 - L'intensité du roughen doit être ajustée selon la taille d'affichage cible
 - Le seed permet de reproduire exactement le même résultat
 
-## Ressources
+## Documentation
+
+| Document                                           | Description                    |
+| -------------------------------------------------- | ------------------------------ |
+| [docs/USAGE.md](docs/USAGE.md)                     | Guide d'utilisation détaillé   |
+| [docs/TECHNICAL.md](docs/TECHNICAL.md)             | Architecture et implémentation |
+| [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Résolution des problèmes       |
+| [CHANGELOG.md](CHANGELOG.md)                       | Historique des modifications   |
+
+## Ressources externes
 
 - [fontTools documentation](https://fonttools.readthedocs.io/)
 - [KaTeX fonts repo](https://github.com/KaTeX/katex-fonts)
