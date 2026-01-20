@@ -134,7 +134,7 @@
 	/** Laser pointer constants */
 	const LASER_POINTER_RADIUS = 18; // Mode pointeur - gros point
 	const LASER_TRAIL_RADIUS = 8; // Mode trainée - petit point
-	const LASER_TRAIL_FADE_MS = 1200; // Durée fade de la trainée
+	const LASER_TRAIL_FADE_MS = 600; // Durée fade de la trainée
 
 	/** Laser trail animation state */
 	let visibleTrail = $state<{ point: Point; opacity: number }[]>([]);
@@ -381,6 +381,7 @@
 
 	/**
 	 * Animate laser trail fade effect
+	 * Trail stays at full opacity while drawing, retracts from tail after release
 	 */
 	$effect(() => {
 		// Only animate in trail mode
@@ -394,21 +395,44 @@
 		}
 
 		function updateTrail() {
-			const now = Date.now();
 			const trail = whiteboardStore.laserTrail;
+			const fadeStartTime = whiteboardStore.laserFadeStartTime;
 
-			visibleTrail = trail
-				.map((item) => {
-					const t = (now - item.timestamp) / LASER_TRAIL_FADE_MS; // 0 to 1
-					// Use sqrt curve for slower fade (opacity stays higher longer)
-					const opacity = Math.max(0, Math.pow(1 - t, 0.4));
+			if (trail.length === 0) {
+				visibleTrail = [];
+				trailAnimationId = requestAnimationFrame(updateTrail);
+				return;
+			}
+
+			// If still drawing or fade hasn't started, show trail at full opacity
+			if (whiteboardStore.laserActive || fadeStartTime === null) {
+				visibleTrail = trail.map((item) => ({ point: item.point, opacity: 1 }));
+				trailAnimationId = requestAnimationFrame(updateTrail);
+				return;
+			}
+
+			// Retract animation: trail shrinks from tail to head
+			const now = Date.now();
+			const elapsed = now - fadeStartTime;
+			const t = Math.min(1, elapsed / LASER_TRAIL_FADE_MS); // 0 to 1
+
+			if (t >= 1) {
+				// Fade complete - clear trail
+				visibleTrail = [];
+				whiteboardStore.clearLaserTrail();
+			} else {
+				// Calculate how many points to skip from the tail
+				const skipCount = Math.floor(t * trail.length);
+				const remainingTrail = trail.slice(skipCount);
+
+				// Apply opacity gradient: tail fades, head stays bright
+				visibleTrail = remainingTrail.map((item, i) => {
+					// Position in remaining trail: 0 = tail, 1 = head
+					const positionRatio = remainingTrail.length > 1 ? i / (remainingTrail.length - 1) : 1;
+					// Tail points are more transparent
+					const opacity = 0.3 + 0.7 * positionRatio;
 					return { point: item.point, opacity };
-				})
-				.filter((item) => item.opacity > 0.01);
-
-			// Clean up old trail points from store
-			if (trail.length > 0 && now - trail[0].timestamp > LASER_TRAIL_FADE_MS) {
-				whiteboardStore.clearOldTrailPoints(LASER_TRAIL_FADE_MS);
+				});
 			}
 
 			trailAnimationId = requestAnimationFrame(updateTrail);
@@ -2244,57 +2268,6 @@
 				class="pointer-events-none"
 			/>
 		{/if}
-
-		<!-- Layer 7: Laser Pointer -->
-		{#if isLaserTool}
-			<g class="layer-laser" style="pointer-events: none;">
-				{#if whiteboardStore.laserMode === 'trail' && visibleTrail.length > 1}
-					<!-- Laser trail using perfect-freehand with tapering -->
-					<!-- Use position-based opacity (not time-based) for uniform fade speed -->
-					{@const reversedTrail = [...visibleTrail].reverse()}
-					{@const laserTrailPoints = reversedTrail.map((t, i) => ({
-						x: t.point.x,
-						y: t.point.y,
-						// Position-based pressure: head (i=0) = 1, tail = low
-						pressure: Math.pow(1 - i / (reversedTrail.length - 1), 0.5)
-					}))}
-					{@const laserOptions = {
-						size: (LASER_TRAIL_RADIUS * 0.8) / scale,
-						thinning: 0.6,
-						smoothing: 0.5,
-						streamline: 0.5,
-						simulatePressure: false,
-						start: { taper: 0, cap: true },
-						end: { taper: true, cap: false }
-					}}
-					{@const outlinePoints = smoothStroke(laserTrailPoints, laserOptions)}
-					{@const pathData = pointsToSvgPath(outlinePoints)}
-					<path d={pathData} fill="rgba(239, 68, 68, 0.75)" stroke="none" />
-				{/if}
-
-				{#if whiteboardStore.laserActive && whiteboardStore.laserPosition}
-					{#if whiteboardStore.laserMode === 'pointer'}
-						<!-- Large translucent pointer dot -->
-						<circle
-							cx={whiteboardStore.laserPosition.x}
-							cy={whiteboardStore.laserPosition.y}
-							r={LASER_POINTER_RADIUS / scale}
-							fill="rgba(239, 68, 68, 0.6)"
-							stroke="rgba(220, 38, 38, 0.8)"
-							stroke-width={2 / scale}
-						/>
-					{:else}
-						<!-- Trail head - small bright dot -->
-						<circle
-							cx={whiteboardStore.laserPosition.x}
-							cy={whiteboardStore.laserPosition.y}
-							r={(LASER_TRAIL_RADIUS * 0.5) / scale}
-							fill="rgba(239, 68, 68, 0.95)"
-						/>
-					{/if}
-				{/if}
-			</g>
-		{/if}
 	</svg>
 
 	<!-- TextBlock Layer (HTML overlay on SVG) -->
@@ -2302,6 +2275,62 @@
 
 	<!-- Shape Labels Layer (HTML overlay on SVG) -->
 	<ShapeLabelLayer bind:this={shapeLabelLayerRef} {scale} />
+
+	<!-- Laser Pointer Layer (SVG overlay - always on top) -->
+	{#if isLaserTool}
+		<svg
+			class="laser-overlay pointer-events-none absolute inset-0"
+			{viewBox}
+			preserveAspectRatio="xMidYMid meet"
+			style="width: 100%; height: 100%;"
+		>
+			{#if whiteboardStore.laserMode === 'trail' && visibleTrail.length > 1}
+				<!-- Laser trail using perfect-freehand with tapering -->
+				<!-- Use position-based opacity (not time-based) for uniform fade speed -->
+				{@const reversedTrail = [...visibleTrail].reverse()}
+				{@const laserTrailPoints = reversedTrail.map((t, i) => ({
+					x: t.point.x,
+					y: t.point.y,
+					// Position-based pressure: head (i=0) = 1, tail = low
+					pressure: Math.pow(1 - i / (reversedTrail.length - 1), 0.5)
+				}))}
+				{@const laserOptions = {
+					size: (LASER_TRAIL_RADIUS * 0.8) / scale,
+					thinning: 0.6,
+					smoothing: 0.5,
+					streamline: 0.5,
+					simulatePressure: false,
+					start: { taper: 0, cap: true },
+					end: { taper: true, cap: false }
+				}}
+				{@const outlinePoints = smoothStroke(laserTrailPoints, laserOptions)}
+				{@const pathData = pointsToSvgPath(outlinePoints)}
+				<path d={pathData} fill="rgba(239, 68, 68, 0.75)" stroke="none" />
+			{/if}
+
+			{#if whiteboardStore.laserActive && whiteboardStore.laserPosition}
+				{#if whiteboardStore.laserMode === 'pointer'}
+					<!-- Large translucent pointer dot -->
+					<circle
+						cx={whiteboardStore.laserPosition.x}
+						cy={whiteboardStore.laserPosition.y}
+						r={LASER_POINTER_RADIUS / scale}
+						fill="rgba(239, 68, 68, 0.6)"
+						stroke="rgba(220, 38, 38, 0.8)"
+						stroke-width={2 / scale}
+					/>
+				{:else}
+					<!-- Trail head - small bright dot -->
+					<circle
+						cx={whiteboardStore.laserPosition.x}
+						cy={whiteboardStore.laserPosition.y}
+						r={(LASER_TRAIL_RADIUS * 0.5) / scale}
+						fill="rgba(239, 68, 68, 0.95)"
+					/>
+				{/if}
+			{/if}
+		</svg>
+	{/if}
 </div>
 
 <style>
