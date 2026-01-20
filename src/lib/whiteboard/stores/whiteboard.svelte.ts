@@ -430,6 +430,7 @@ function createWhiteboardStore() {
 	let laserActive = $state(false);
 	let laserPosition = $state<Point | null>(null);
 	let laserTrail = $state<LaserTrailPoint[]>([]);
+	let laserFadeStartTime = $state<number | null>(null);
 
 	// === Live Transform State (for smooth dragging/rotating without full re-render) ===
 	let liveRotations = $state<Map<string, number>>(new Map());
@@ -4337,6 +4338,11 @@ function createWhiteboardStore() {
 			return laserTrail;
 		},
 
+		/** Timestamp when fade animation should start (null = no fade yet) */
+		get laserFadeStartTime(): number | null {
+			return laserFadeStartTime;
+		},
+
 		/**
 		 * Set laser mode (pointer or trail)
 		 */
@@ -4344,6 +4350,7 @@ function createWhiteboardStore() {
 			laserMode = mode;
 			// Clear trail when switching modes
 			laserTrail = [];
+			laserFadeStartTime = null;
 		},
 
 		/**
@@ -4353,6 +4360,13 @@ function createWhiteboardStore() {
 			laserActive = active;
 			if (!active) {
 				laserPosition = null;
+				// Start fade animation when releasing
+				if (laserTrail.length > 0) {
+					laserFadeStartTime = Date.now();
+				}
+			} else {
+				// Reset fade when starting new trail
+				laserFadeStartTime = null;
 			}
 		},
 
@@ -4379,6 +4393,7 @@ function createWhiteboardStore() {
 		 */
 		clearLaserTrail(): void {
 			laserTrail = [];
+			laserFadeStartTime = null;
 		},
 
 		// === Cleanup ===
