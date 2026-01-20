@@ -35,14 +35,10 @@
 		Triangle,
 		MousePointer2,
 		Hand,
-		ZoomIn,
-		ZoomOut,
 		Pentagon,
 		Hexagon,
 		Star,
 		Grid3x3,
-		Maximize2,
-		Minimize2,
 		Palette,
 		Crosshair
 	} from 'lucide-svelte';
@@ -125,31 +121,11 @@
 	// ==========================================================================
 
 	interface Props {
-		/** Current zoom level (1 = 100%) */
-		zoomLevel?: number;
-		/** Current zoom percentage for display */
-		zoomPercent?: number;
-		/** Callback to zoom in */
-		onZoomIn?: () => void;
-		/** Callback to zoom out */
-		onZoomOut?: () => void;
-		/** Callback to reset zoom to fit */
-		onZoomToFit?: () => void;
-		/** Whether fullscreen mode is active */
-		isFullscreen?: boolean;
-		/** Callback to toggle fullscreen */
-		onToggleFullscreen?: () => void;
+		/** Optional class for styling */
+		class?: string;
 	}
 
-	let {
-		zoomLevel: _zoomLevel = 1,
-		zoomPercent = 100,
-		onZoomIn,
-		onZoomOut,
-		onZoomToFit,
-		isFullscreen = false,
-		onToggleFullscreen
-	}: Props = $props();
+	let { class: className = '' }: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -498,9 +474,9 @@
 	}
 </script>
 
-<div class="whiteboard-toolbar border-t border-border bg-muted/95 backdrop-blur-sm">
-	<div class="flex items-center justify-between gap-2 px-3 py-2">
-		<!-- Left: Tool menus -->
+<div class="whiteboard-toolbar border-t border-border bg-muted/95 backdrop-blur-sm {className}">
+	<div class="flex items-center gap-2 px-3 py-2">
+		<!-- Tool menus -->
 		<div class="flex items-center gap-1">
 			<!-- Select Tool -->
 			<Button
@@ -1267,60 +1243,6 @@
 					</div>
 				{/if}
 			</div>
-
-			<!-- Separator before actions -->
-			<div class="mx-2 h-6 w-px bg-border"></div>
-
-			<!-- Zoom Controls -->
-			<div class="flex items-center gap-1">
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={onZoomOut}
-					title="Zoom arrière (Ctrl+-)"
-					aria-label="Zoom arrière"
-				>
-					<ZoomOut class="h-4 w-4" />
-				</Button>
-				<button
-					type="button"
-					onclick={onZoomToFit}
-					class="min-w-[3.5rem] rounded-md px-2 py-1 text-xs font-medium hover:bg-accent"
-					title="Ajuster à la fenêtre (Ctrl+0)"
-					aria-label="Zoom: {zoomPercent}%"
-				>
-					{zoomPercent}%
-				</button>
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={onZoomIn}
-					title="Zoom avant (Ctrl++)"
-					aria-label="Zoom avant"
-				>
-					<ZoomIn class="h-4 w-4" />
-				</Button>
-			</div>
-		</div>
-
-		<!-- Right: Actions -->
-		<div class="flex items-center gap-1">
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={onToggleFullscreen}
-				title={isFullscreen ? 'Quitter le plein écran (Echap)' : 'Plein écran'}
-				aria-label={isFullscreen ? 'Quitter le plein écran' : 'Plein écran'}
-			>
-				{#if isFullscreen}
-					<Minimize2 class="h-4 w-4" />
-				{:else}
-					<Maximize2 class="h-4 w-4" />
-				{/if}
-			</Button>
 		</div>
 	</div>
 </div>

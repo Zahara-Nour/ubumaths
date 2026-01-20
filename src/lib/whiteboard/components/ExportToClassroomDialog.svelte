@@ -310,23 +310,16 @@
 			}
 		}
 
-		isCreating = true;
+		// Open template picker for new document
+		whiteboardStore.openNewDocumentPicker(name);
 
-		try {
-			// Create new document with the name
-			whiteboardStore.createNew(name);
-			toaster.success('Nouveau document créé');
+		// Close dialog
+		open = false;
+		onOpenChange?.(false);
 
-			// Close dialog
-			open = false;
-			onOpenChange?.(false);
-
-			// Close file drawer if open
-			if (whiteboardStore.isFileDrawerOpen) {
-				whiteboardStore.toggleFileDrawer();
-			}
-		} finally {
-			isCreating = false;
+		// Close file drawer if open
+		if (whiteboardStore.fileDrawerVisible) {
+			whiteboardStore.toggleFileDrawer();
 		}
 	}
 

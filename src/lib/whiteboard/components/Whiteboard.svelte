@@ -14,9 +14,21 @@
 	import PageThumbnails from './PageThumbnails.svelte';
 	import FileDrawer from './FileDrawer.svelte';
 	import ContextMenu from './ContextMenu.svelte';
+	import TemplatePickerModal from './TemplatePickerModal.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Undo2, Redo2 } from 'lucide-svelte';
+	import {
+		Undo2,
+		Redo2,
+		Plus,
+		ZoomIn,
+		ZoomOut,
+		ChevronLeft,
+		ChevronRight,
+		Maximize2,
+		Minimize2
+	} from 'lucide-svelte';
 	import type { PageFormatKey } from '../types/document';
+	import type { TemplatePageData } from '../types/templates';
 
 	// ==========================================================================
 	// Props
@@ -134,6 +146,12 @@
 	let canUndo = $derived(whiteboardStore.canUndo);
 	let canRedo = $derived(whiteboardStore.canRedo);
 
+	/** Page navigation state */
+	let pageCount = $derived(whiteboardStore.pageCount);
+	let currentPageIndex = $derived(whiteboardStore.currentPageIndex);
+	let canGoToPrevPage = $derived(currentPageIndex > 0);
+	let canGoToNextPage = $derived(currentPageIndex < pageCount - 1);
+
 	// ==========================================================================
 	// Undo/Redo Methods
 	// ==========================================================================
@@ -144,6 +162,48 @@
 
 	function handleRedo() {
 		whiteboardStore.redo();
+	}
+
+	// ==========================================================================
+	// Page Navigation Methods
+	// ==========================================================================
+
+	function handlePrevPage() {
+		whiteboardStore.previousPage();
+	}
+
+	function handleNextPage() {
+		whiteboardStore.nextPage();
+	}
+
+	function handleAddPage() {
+		whiteboardStore.addPageFromDefaultTemplate();
+	}
+
+	// ==========================================================================
+	// New Document Template Methods
+	// ==========================================================================
+
+	function handleNewDocumentTemplateSelect(pageData: TemplatePageData) {
+		// Create document with the selected template as first page
+		const docTitle = whiteboardStore.newDocumentTitle || title;
+		whiteboardStore.createNew(docTitle, format);
+		// Replace the empty first page with template content
+		const doc = whiteboardStore.document;
+		if (doc && doc.pages.length > 0) {
+			// Delete the empty page and add template page
+			whiteboardStore.deletePage(0);
+			whiteboardStore.addPageFromPageData(pageData);
+			whiteboardStore.setDefaultTemplate(pageData);
+		}
+		whiteboardStore.closeNewDocumentPicker();
+	}
+
+	function handleNewDocumentPickerClose() {
+		// Create empty document if picker is closed without selection
+		const docTitle = whiteboardStore.newDocumentTitle || title;
+		whiteboardStore.createNew(docTitle, format);
+		whiteboardStore.closeNewDocumentPicker();
 	}
 
 	// ==========================================================================
@@ -255,10 +315,11 @@
 	// ==========================================================================
 
 	onMount(() => {
-		// Try to restore from autosave first, otherwise create new document
+		// Try to restore from autosave first, otherwise show template picker
 		const restoredFromAutosave = whiteboardStore.loadFromAutosave();
 		if (!restoredFromAutosave) {
-			whiteboardStore.createNew(title, format);
+			// Show template picker for new document
+			whiteboardStore.openNewDocumentPicker(title);
 		}
 
 		// Setup resize observer
@@ -527,33 +588,135 @@
 		: `whiteboard-container grid grid-rows-[auto_1fr_auto] bg-gray-200 ${className}`}
 	onwheel={handleWheel}
 >
-	<!-- Status bar -->
-	<div class="whiteboard-status flex items-center gap-4 px-3 py-2 text-xs text-gray-600">
-		<!-- Sync indicator (orange dot when unsaved) - fixed width to prevent layout shift -->
-		<span
-			class="inline-flex w-3 items-center justify-center"
-			title={hasUnsavedChanges || syncState.status === 'modified'
-				? 'Modifications non sauvegardées'
-				: ''}
-		>
-			{#if hasUnsavedChanges || syncState.status === 'modified'}
-				<span class="h-2 w-2 rounded-full bg-orange-500"></span>
-			{/if}
-		</span>
-		<span class="font-medium">{document?.title ?? 'Sans titre'}</span>
-		<span>
-			Page {(whiteboardStore.document?.currentPageIndex ?? 0) + 1} / {document?.pages.length ?? 1}
-		</span>
-		<span>{pageWidth} × {pageHeight}</span>
-		<span class="text-primary capitalize">{toolState.toolType}</span>
-		{#if whiteboardStore.hasSelection}
-			<span class="rounded bg-blue-100 px-1.5 py-0.5 text-blue-700">
-				{whiteboardStore.selectedIds.size} sélectionné{whiteboardStore.selectedIds.size > 1
-					? 's'
+	<!-- Top bar -->
+	<div
+		class="whiteboard-topbar flex items-center justify-between gap-2 border-b border-border bg-muted/50 px-3 py-1.5 text-xs text-gray-600"
+	>
+		<!-- Left: Status info -->
+		<div class="flex items-center gap-3">
+			<!-- Sync indicator (orange dot when unsaved) -->
+			<span
+				class="inline-flex w-3 items-center justify-center"
+				title={hasUnsavedChanges || syncState.status === 'modified'
+					? 'Modifications non sauvegardées'
 					: ''}
+			>
+				{#if hasUnsavedChanges || syncState.status === 'modified'}
+					<span class="h-2 w-2 rounded-full bg-orange-500"></span>
+				{/if}
 			</span>
-		{/if}
-		<span class="ml-auto">{zoomPercent}%</span>
+			<span class="font-medium">{document?.title ?? 'Sans titre'}</span>
+			<span class="text-muted-foreground">
+				Page {currentPageIndex + 1}/{pageCount}
+			</span>
+			<span class="text-muted-foreground">{pageWidth}×{pageHeight}</span>
+			<span class="text-primary capitalize">{toolState.toolType}</span>
+			{#if whiteboardStore.hasSelection}
+				<span class="rounded bg-blue-100 px-1.5 py-0.5 text-blue-700">
+					{whiteboardStore.selectedIds.size} sélectionné{whiteboardStore.selectedIds.size > 1
+						? 's'
+						: ''}
+				</span>
+			{/if}
+		</div>
+
+		<!-- Right: Actions -->
+		<div class="flex items-center gap-1">
+			<!-- Add page button -->
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={handleAddPage}
+				title="Ajouter une page"
+				aria-label="Ajouter une page"
+				class="h-7 w-7 p-0"
+			>
+				<Plus class="h-4 w-4" />
+			</Button>
+
+			<div class="mx-1 h-4 w-px bg-border"></div>
+
+			<!-- Zoom controls -->
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={zoomOut}
+				title="Zoom arrière (Ctrl+-)"
+				aria-label="Zoom arrière"
+				class="h-7 w-7 p-0"
+			>
+				<ZoomOut class="h-4 w-4" />
+			</Button>
+			<button
+				type="button"
+				onclick={zoomToFit}
+				class="min-w-[3rem] rounded-md px-1.5 py-0.5 text-xs font-medium hover:bg-accent"
+				title="Ajuster à la fenêtre (Ctrl+0)"
+				aria-label="Zoom: {zoomPercent}%"
+			>
+				{zoomPercent}%
+			</button>
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={zoomIn}
+				title="Zoom avant (Ctrl++)"
+				aria-label="Zoom avant"
+				class="h-7 w-7 p-0"
+			>
+				<ZoomIn class="h-4 w-4" />
+			</Button>
+
+			<div class="mx-1 h-4 w-px bg-border"></div>
+
+			<!-- Page navigation -->
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={handlePrevPage}
+				disabled={!canGoToPrevPage}
+				title="Page précédente (Page Up)"
+				aria-label="Page précédente"
+				class="h-7 w-7 p-0"
+			>
+				<ChevronLeft class="h-4 w-4" />
+			</Button>
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={handleNextPage}
+				disabled={!canGoToNextPage}
+				title="Page suivante (Page Down)"
+				aria-label="Page suivante"
+				class="h-7 w-7 p-0"
+			>
+				<ChevronRight class="h-4 w-4" />
+			</Button>
+
+			<div class="mx-1 h-4 w-px bg-border"></div>
+
+			<!-- Fullscreen toggle -->
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={toggleFullscreen}
+				title={isFullscreen ? 'Quitter le plein écran (Echap)' : 'Plein écran'}
+				aria-label={isFullscreen ? 'Quitter le plein écran' : 'Plein écran'}
+				class="h-7 w-7 p-0"
+			>
+				{#if isFullscreen}
+					<Minimize2 class="h-4 w-4" />
+				{:else}
+					<Maximize2 class="h-4 w-4" />
+				{/if}
+			</Button>
+		</div>
 	</div>
 
 	<!-- Main content area with sidebars -->
@@ -625,16 +788,15 @@
 	</div>
 
 	<!-- Toolbar at bottom -->
-	<WhiteboardToolbar
-		{zoomLevel}
-		{zoomPercent}
-		onZoomIn={zoomIn}
-		onZoomOut={zoomOut}
-		onZoomToFit={zoomToFit}
-		{isFullscreen}
-		onToggleFullscreen={toggleFullscreen}
-	/>
+	<WhiteboardToolbar />
 </div>
+
+<!-- Template Picker Modal for new documents -->
+<TemplatePickerModal
+	open={whiteboardStore.newDocumentPickerOpen}
+	onSelect={handleNewDocumentTemplateSelect}
+	onClose={handleNewDocumentPickerClose}
+/>
 
 <style>
 	.whiteboard-container {

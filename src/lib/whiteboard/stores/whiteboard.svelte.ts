@@ -424,6 +424,11 @@ function createWhiteboardStore() {
 	// === Template Preferences ===
 	// Default font for new TextBlocks (set when applying a template with font preference)
 	let defaultTextFont = $state<TemplateFont | undefined>(undefined);
+	// Default template for new pages (set when user selects a template via PageThumbnails)
+	let defaultTemplate = $state<TemplatePageData | null>(null);
+	// New document template picker state
+	let newDocumentPickerOpen = $state(false);
+	let newDocumentTitle = $state('');
 
 	// === Laser Pointer State ===
 	let laserMode = $state<LaserMode>('pointer');
@@ -691,6 +696,15 @@ function createWhiteboardStore() {
 		get defaultTextFont() {
 			return defaultTextFont;
 		},
+		get defaultTemplate() {
+			return defaultTemplate;
+		},
+		get newDocumentPickerOpen() {
+			return newDocumentPickerOpen;
+		},
+		get newDocumentTitle() {
+			return newDocumentTitle;
+		},
 		get selectedIds() {
 			return selectedIds;
 		},
@@ -757,6 +771,8 @@ function createWhiteboardStore() {
 			history = createHistoryManager(document);
 			hasUnsavedChanges = false;
 			selectedIds = new Set();
+			// Reset template preferences when loading a document
+			defaultTemplate = null;
 
 			return { success: true };
 		},
@@ -770,6 +786,8 @@ function createWhiteboardStore() {
 			history = createHistoryManager(document);
 			hasUnsavedChanges = false;
 			selectedIds = new Set();
+			// Reset template preferences when loading a document
+			defaultTemplate = null;
 		},
 
 		/**
@@ -907,6 +925,48 @@ function createWhiteboardStore() {
 				pages: [...doc.pages, newPage],
 				currentPageIndex: doc.pages.length // Go to new page
 			}));
+		},
+
+		/**
+		 * Set the default template for new pages
+		 * Called when user selects a template from PageThumbnails or TemplatePickerModal
+		 */
+		setDefaultTemplate(template: TemplatePageData | null): void {
+			defaultTemplate = template;
+		},
+
+		/**
+		 * Add a new page using the default template if set, otherwise blank page
+		 * Used by the "+" button in the top bar
+		 */
+		addPageFromDefaultTemplate(): void {
+			if (defaultTemplate) {
+				this.addPageFromPageData(defaultTemplate);
+			} else {
+				this.addPage();
+			}
+		},
+
+		/**
+		 * Open the template picker for a new document
+		 */
+		openNewDocumentPicker(title: string): void {
+			newDocumentTitle = title;
+			newDocumentPickerOpen = true;
+		},
+
+		/**
+		 * Close the template picker for new document
+		 */
+		closeNewDocumentPicker(): void {
+			newDocumentPickerOpen = false;
+		},
+
+		/**
+		 * Set the new document picker open state (for bind:open)
+		 */
+		setNewDocumentPickerOpen(open: boolean): void {
+			newDocumentPickerOpen = open;
 		},
 
 		/**
