@@ -2,7 +2,7 @@
 // for information about these interfaces
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { type MathfieldElementAttributes } from 'mathlive';
-import type { Profile } from '$lib/types/database';
+import type { Profile } from '$lib/types/database-helpers';
 
 declare global {
 	namespace App {

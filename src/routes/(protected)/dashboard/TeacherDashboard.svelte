@@ -63,7 +63,8 @@
 	// Types
 	import type { PageData } from './$types';
 	import type { ClassWithData } from '$lib/server/students';
-	import type { Class, ClassSchedule, Database } from '$lib/types/database';
+	import type { Database } from '$lib/types/database';
+	import type { Class, ClassSchedule } from '$lib/types/database-helpers';
 
 	type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 

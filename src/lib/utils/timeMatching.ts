@@ -39,7 +39,7 @@
  * ```
  */
 
-import type { Class, ClassSchedule } from '$lib/types/database';
+import type { Class, ClassSchedule } from '$lib/types/database-helpers';
 import { formatTimeDisplay, getDayName } from './schedule';
 
 /**
