@@ -1,10 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '$lib/types/database';
 import type {
-	Database,
 	FriendshipWithProfile,
 	FriendshipRelationType,
 	FriendshipStatus
-} from '$lib/types/database';
+} from '$lib/types/database-helpers';
 
 export type ClassmateInfo = {
 	id: string;

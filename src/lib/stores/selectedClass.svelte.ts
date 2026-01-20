@@ -45,7 +45,7 @@
  * (/dashboard/teacher/+layout.svelte) which observes selectedClassId changes.
  */
 
-import type { Class } from '$lib/types/database';
+import type { Class } from '$lib/types/database-helpers';
 
 // localStorage key for persisting selected class ID
 const STORAGE_KEY = 'teacher_selected_class_id';

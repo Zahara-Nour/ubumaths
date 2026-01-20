@@ -42,7 +42,7 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import type { User } from '@supabase/supabase-js';
-	import type { Profile } from '$lib/types/database';
+	import type { Profile } from '$lib/types/database-helpers';
 	import type { Component } from 'svelte';
 	import {
 		Menu,
