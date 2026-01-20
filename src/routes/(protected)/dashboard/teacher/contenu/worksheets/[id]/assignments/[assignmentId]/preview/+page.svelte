@@ -38,7 +38,8 @@
 		FileQuestion,
 		PenLine,
 		BookOpen,
-		Download
+		Download,
+		Pencil
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type {
@@ -492,6 +493,14 @@
 													aria-label="Correction disponible"
 												/>
 											{/if}
+											<a
+												href="/dashboard/teacher/contenu/exercices/{exercise.exercise_id}"
+												onclick={(e) => e.stopPropagation()}
+												class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+												title="Modifier l'exercice"
+											>
+												<Pencil class="h-4 w-4" />
+											</a>
 										</div>
 										{#if exercise.tags && exercise.tags.length > 0}
 											<div class="mt-1 flex flex-wrap gap-1">
@@ -537,6 +546,14 @@
 										aria-label="Correction disponible"
 									/>
 								{/if}
+								<a
+									href="/dashboard/teacher/contenu/exercices/{exercise.exercise_id}"
+									onclick={(e) => e.stopPropagation()}
+									class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+									title="Modifier l'exercice"
+								>
+									<Pencil class="h-4 w-4" />
+								</a>
 							</div>
 							{#if exercise.tags && exercise.tags.length > 0}
 								<div class="mt-1 flex flex-wrap gap-1">
@@ -580,6 +597,17 @@
 				</Dialog.Title>
 			</div>
 			<div class="flex items-center gap-2">
+				{#if currentExercise}
+					<Button
+						variant="outline"
+						size="sm"
+						href="/dashboard/teacher/contenu/exercices/{currentExercise.exercise_id}"
+						class="gap-1"
+					>
+						<Pencil class="h-4 w-4" />
+						Modifier
+					</Button>
+				{/if}
 				<Badge variant={previewMode === 'teacher' ? 'default' : 'secondary'} class="text-xs">
 					{previewMode === 'teacher' ? 'Vue enseignant' : previewStudentName}
 				</Badge>
