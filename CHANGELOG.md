@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.16](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.15...v0.7.16) (2026-01-20)
+
+### ✨ Features
+
+- **whiteboard:** add default template system and reorganize top bar ([a4895eb](https://github.com/Zahara-Nour/ubumaths/commit/a4895ebe9c284c45bdc2f58ee6559d12096e2c81))
+
+### 🐛 Bug Fixes
+
+- **whiteboard:** laser always visible and trail fades on release ([7f5837a](https://github.com/Zahara-Nour/ubumaths/commit/7f5837a537c366657dc7ab43244ccbaf05a7de6d))
+- **whiteboard:** persist default template in document ([4feb359](https://github.com/Zahara-Nour/ubumaths/commit/4feb359aec49f09fee5a56e56e8b2ed733e7fafe))
+
 ### [0.7.15](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.14...v0.7.15) (2026-01-20)
 
 ### ✨ Features
