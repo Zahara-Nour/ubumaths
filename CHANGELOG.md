@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.15](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.14...v0.7.15) (2026-01-20)
+
+### ✨ Features
+
+- **worksheets:** add edit button to exercise preview ([507d34b](https://github.com/Zahara-Nour/ubumaths/commit/507d34bc84a775396ec625f2bdccd3d2e48c23d6))
+
 ### [0.7.14](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.13...v0.7.14) (2026-01-20)
 
 ### 📚 Documentation
