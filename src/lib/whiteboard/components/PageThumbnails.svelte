@@ -90,6 +90,10 @@
 
 	function handleTemplateSelect(pageData: TemplatePageData) {
 		whiteboardStore.addPageFromPageData(pageData);
+		// Store as default template for future pages
+		whiteboardStore.setDefaultTemplate(pageData);
+		// Close the sidebar after template selection
+		whiteboardStore.setSidebarVisible(false);
 	}
 
 	function handleTemplatePickerClose() {
