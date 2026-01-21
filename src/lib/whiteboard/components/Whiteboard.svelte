@@ -141,7 +141,7 @@
 	/** Is pan tool active */
 	let isPanToolActive = $derived(toolState.toolType === 'pan');
 
-	/** Can pan (zoomed in beyond container) */
+	/** Can pan (zoomed in beyond 100%) */
 	let canPan = $derived(zoomLevel > 1);
 
 	/** Undo/Redo state */
@@ -153,6 +153,12 @@
 	let currentPageIndex = $derived(whiteboardStore.currentPageIndex);
 	let canGoToPrevPage = $derived(currentPageIndex > 0);
 	let canGoToNextPage = $derived(currentPageIndex < pageCount - 1);
+
+	/** Page expansion state */
+	let isPageExpanded = $derived(whiteboardStore.isCurrentPageExpanded());
+	let expansionPercent = $derived(
+		Math.round(whiteboardStore.getCurrentPageExpansionFactor() * 100)
+	);
 
 	// ==========================================================================
 	// Undo/Redo Methods
@@ -306,15 +312,45 @@
 	// Pan Handlers
 	// ==========================================================================
 
+	/** Track if current pan is for page expansion (started from edge) */
+	let isPanningForExpansion = $state(false);
+	/** Last position for incremental expansion calculation */
+	let lastExpansionX = $state(0);
+	let lastExpansionY = $state(0);
+
 	function handlePanStart(e: PointerEvent) {
-		if (!canPan || !isPanToolActive) return;
+		if (!isPanToolActive) return;
+
+		// Get click position relative to canvas area
+		const rect = canvasAreaEl?.getBoundingClientRect();
+		if (!rect) return;
+
+		// Calculate position in page coordinates
+		const clickX = e.clientX - rect.left - rect.width / 2 + canvasWidth / 2;
+		const clickY = e.clientY - rect.top - rect.height / 2 + canvasHeight / 2;
+
+		// Convert to page coordinates (accounting for scale)
+		const pageX = clickX / effectiveScale;
+		const pageY = clickY / effectiveScale;
+
+		// Check if click is near right or bottom edge of page (within 50px)
+		const nearRightEdge = pageX > pageWidth - 50 && pageX <= pageWidth + 20;
+		const nearBottomEdge = pageY > pageHeight - 50 && pageY <= pageHeight + 20;
+		const isOnEdge = nearRightEdge || nearBottomEdge;
+
+		// Allow pan if zoomed in OR if starting from page edge (for expansion)
+		if (!canPan && !isOnEdge) return;
 
 		e.preventDefault();
 		isPanning = true;
+		isPanningForExpansion = isOnEdge && !canPan; // Track if this is expansion-only pan
 		panStartX = e.clientX;
 		panStartY = e.clientY;
 		panStartOffsetX = panX;
 		panStartOffsetY = panY;
+		// Initialize incremental tracking for expansion
+		lastExpansionX = e.clientX;
+		lastExpansionY = e.clientY;
 
 		(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
 	}
@@ -325,14 +361,75 @@
 		const dx = e.clientX - panStartX;
 		const dy = e.clientY - panStartY;
 
-		panX = panStartOffsetX + dx;
-		panY = panStartOffsetY + dy;
+		// If panning for expansion only (started from edge at 100% zoom)
+		if (isPanningForExpansion) {
+			// Calculate incremental movement since last frame
+			const incrementalDx = e.clientX - lastExpansionX;
+			const incrementalDy = e.clientY - lastExpansionY;
+
+			// Update last position for next frame
+			lastExpansionX = e.clientX;
+			lastExpansionY = e.clientY;
+
+			// Convert to page coordinates
+			const moveX = incrementalDx / effectiveScale;
+			const moveY = incrementalDy / effectiveScale;
+
+			// Drag LEFT (negative dx) to expand RIGHT, drag UP (negative dy) to expand DOWN
+			// This is like "unrolling" the paper
+			if (moveX < 0 || moveY < 0) {
+				// Convert negative movement to positive expansion delta
+				const expandX = Math.max(0, -moveX);
+				const expandY = Math.max(0, -moveY);
+
+				// Use progressive expansion (not max)
+				whiteboardStore.expandPageByDeltaAmount(expandX, expandY);
+			}
+			return; // Don't do normal pan
+		}
+
+		// Normal pan behavior (when zoomed in)
+		const newPanX = panStartOffsetX + dx;
+		const newPanY = panStartOffsetY + dy;
+
+		// Check if trying to pan beyond the page edge (towards bottom-right)
+		const viewportWidth = containerWidth;
+		const viewportHeight = containerHeight - 80;
+
+		// Calculate the normal pan limits
+		const normalMaxPanX = Math.max(0, (canvasWidth - viewportWidth) / 2 + 20);
+		const normalMaxPanY = Math.max(0, (canvasHeight - viewportHeight) / 2 + 20);
+
+		// If panning beyond bottom-right edge, try to expand the page
+		if (newPanX < -normalMaxPanX || newPanY < -normalMaxPanY) {
+			const beyondX = newPanX < -normalMaxPanX ? (-normalMaxPanX - newPanX) / effectiveScale : 0;
+			const beyondY = newPanY < -normalMaxPanY ? (-normalMaxPanY - newPanY) / effectiveScale : 0;
+
+			if (beyondX > 0 || beyondY > 0) {
+				// Use progressive expansion (not max)
+				const expanded = whiteboardStore.expandPageByDeltaAmount(beyondX, beyondY);
+
+				if (expanded) {
+					panX = 0;
+					panY = 0;
+					panStartOffsetX = 0;
+					panStartOffsetY = 0;
+					panStartX = e.clientX;
+					panStartY = e.clientY;
+					return;
+				}
+			}
+		}
+
+		panX = newPanX;
+		panY = newPanY;
 		clampPan();
 	}
 
 	function handlePanEnd(e: PointerEvent) {
 		if (isPanning) {
 			isPanning = false;
+			isPanningForExpansion = false;
 			try {
 				(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
 			} catch {
@@ -659,6 +756,16 @@
 				Page {currentPageIndex + 1}/{pageCount}
 			</span>
 			<span class="text-muted-foreground">{pageWidth}×{pageHeight}</span>
+			{#if isPageExpanded}
+				<button
+					type="button"
+					onclick={() => whiteboardStore.resetPageToOriginal()}
+					class="rounded bg-blue-100 px-1.5 py-0.5 text-blue-700 transition-colors hover:bg-blue-200"
+					title="Page étendue - Cliquer pour remettre à la taille originale"
+				>
+					Page {expansionPercent}%
+				</button>
+			{/if}
 			<span class="text-primary capitalize">{toolState.toolType}</span>
 			{#if whiteboardStore.hasSelection}
 				<span class="rounded bg-blue-100 px-1.5 py-0.5 text-blue-700">

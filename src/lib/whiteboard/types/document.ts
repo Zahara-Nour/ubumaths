@@ -16,6 +16,19 @@ import type { TemplatePageData } from './templates';
 /** Current file format version */
 export const UBW_FILE_VERSION = 1 as const;
 
+// =============================================================================
+// Page Expansion Constants
+// =============================================================================
+
+/** Maximum factor by which a page can be expanded (√2 ≈ 1.414, so area doubles) */
+export const MAX_EXPANSION_FACTOR = Math.SQRT2;
+
+/** Extra margin added when expanding (pixels) */
+export const EXPANSION_MARGIN = 100;
+
+/** Distance from edge that triggers expansion detection (pixels) */
+export const EDGE_DETECTION_THRESHOLD = 50;
+
 /** Page format presets with dimensions in pixels at 96 DPI */
 export const PAGE_FORMATS = {
 	/** A4 Portrait (210mm × 297mm) */
@@ -626,6 +639,10 @@ export interface Page {
 	readonly background: PageBackground;
 	readonly width: number;
 	readonly height: number;
+	/** Original width before expansion (for scaling at export). Undefined = not expanded. */
+	readonly originalWidth?: number;
+	/** Original height before expansion (for scaling at export). Undefined = not expanded. */
+	readonly originalHeight?: number;
 }
 
 /** Complete whiteboard document */
