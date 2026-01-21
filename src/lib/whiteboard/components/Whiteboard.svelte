@@ -233,9 +233,10 @@
 		// Replace the empty first page with template content
 		const doc = whiteboardStore.document;
 		if (doc && doc.pages.length > 0) {
-			// Delete the empty page and add template page
-			whiteboardStore.deletePage(0);
+			// Add template page first (now we have 2 pages)
 			whiteboardStore.addPageFromPageData(pageData);
+			// Delete the empty first page (now allowed since we have 2 pages)
+			whiteboardStore.deletePage(0);
 			whiteboardStore.setDefaultTemplate(pageData);
 		}
 		whiteboardStore.closeNewDocumentPicker();
