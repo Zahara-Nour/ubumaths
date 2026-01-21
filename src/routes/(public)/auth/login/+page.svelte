@@ -7,6 +7,14 @@
 
   Both methods use SvelteKit form actions (server-side) to ensure cookies are
   properly set on the server.
+
+  ERROR HANDLING:
+  Errors are displayed in a single Alert at the top of the form. Sources:
+  - urlError: From URL query params (OAuth callback errors, e.g., domain restriction)
+  - form?.error: From form action responses (rate limiting, auth failures)
+
+  This unified error display ensures users always see feedback, regardless of
+  which authentication method they use or what type of error occurs.
 -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
@@ -45,10 +53,10 @@
 		</Card.Header>
 
 		<Card.Content class="space-y-6">
-			<!-- Display errors from OAuth callback or form actions -->
-			{#if urlError}
+			<!-- Display errors from OAuth callback, form actions, or rate limiting -->
+			{#if urlError || form?.error}
 				<Alert.Root variant="destructive">
-					<Alert.Description>{urlError}</Alert.Description>
+					<Alert.Description>{urlError || form?.error}</Alert.Description>
 				</Alert.Root>
 			{/if}
 
@@ -184,12 +192,6 @@
 								required
 							/>
 						</div>
-
-						{#if form?.error && !urlError}
-							<Alert.Root variant="destructive">
-								<Alert.Description>{form.error}</Alert.Description>
-							</Alert.Root>
-						{/if}
 
 						<Button
 							type="submit"
