@@ -445,6 +445,8 @@ function createWhiteboardStore() {
 	// New document template picker state
 	let newDocumentPickerOpen = $state(false);
 	let newDocumentTitle = $state('');
+	// Pending class info for auto-save to Drive on document creation
+	let pendingClassInfo = $state<{ joinCode: string; className: string } | null>(null);
 
 	// === Laser Pointer State ===
 	let laserMode = $state<LaserMode>('pointer');
@@ -767,6 +769,9 @@ function createWhiteboardStore() {
 		get newDocumentTitle() {
 			return newDocumentTitle;
 		},
+		get pendingClassInfo() {
+			return pendingClassInfo;
+		},
 		get selectedIds() {
 			return selectedIds;
 		},
@@ -1076,9 +1081,15 @@ function createWhiteboardStore() {
 
 		/**
 		 * Open the template picker for a new document
+		 * @param title - Document title
+		 * @param classInfo - Optional class info for auto-save to Drive
 		 */
-		openNewDocumentPicker(title: string): void {
+		openNewDocumentPicker(
+			title: string,
+			classInfo?: { joinCode: string; className: string }
+		): void {
 			newDocumentTitle = title;
+			pendingClassInfo = classInfo || null;
 			newDocumentPickerOpen = true;
 		},
 
@@ -1087,6 +1098,16 @@ function createWhiteboardStore() {
 		 */
 		closeNewDocumentPicker(): void {
 			newDocumentPickerOpen = false;
+		},
+
+		/**
+		 * Get and clear pending class info (used after document creation)
+		 * Returns the class info if set, then clears it
+		 */
+		getAndClearPendingClassInfo(): { joinCode: string; className: string } | null {
+			const info = pendingClassInfo;
+			pendingClassInfo = null;
+			return info;
 		},
 
 		/**

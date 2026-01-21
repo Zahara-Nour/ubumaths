@@ -311,7 +311,11 @@
 		}
 
 		// Open template picker for new document
-		whiteboardStore.openNewDocumentPicker(name);
+		// Pass class info if selected (for auto-save to Drive)
+		const classInfo = selectedClass
+			? { joinCode: selectedClass.join_code, className: selectedClass.name }
+			: undefined;
+		whiteboardStore.openNewDocumentPicker(name, classInfo);
 
 		// Close dialog
 		open = false;
