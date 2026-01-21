@@ -1366,10 +1366,12 @@
 			{@const strokeCenter = getBoundsCenter(strokeBounds)}
 			{@const strokeStyle = child.strokeStyle ?? 'solid'}
 			{@const isDashedStroke = strokeStyle !== 'solid'}
+			{@const isHighlighter = child.toolType === 'highlighter'}
 			<g
 				transform={strokeRotation !== 0
 					? `rotate(${strokeRotation}, ${strokeCenter.x}, ${strokeCenter.y})`
 					: undefined}
+				style={isHighlighter ? 'mix-blend-mode: multiply' : undefined}
 			>
 				{#if isDashedStroke}
 					<path
@@ -1821,6 +1823,7 @@
 				{@const strokeCenter = getBoundsCenter(strokeBounds)}
 				{@const strokeStyle = stroke.strokeStyle ?? 'solid'}
 				{@const isDashedStroke = strokeStyle !== 'solid'}
+				{@const isHighlighter = stroke.toolType === 'highlighter'}
 				{@const translateTransform = livePos ? `translate(${livePos.dx}, ${livePos.dy})` : ''}
 				{@const rotateTransform =
 					strokeRotation !== 0
@@ -1832,6 +1835,7 @@
 				<g
 					transform={`${translateTransform} ${scaleTransform} ${rotateTransform}`.trim() ||
 						undefined}
+					style={isHighlighter ? 'mix-blend-mode: multiply' : undefined}
 				>
 					{#if isDashedStroke}
 						<!-- Dashed/dotted stroke: use simple path with stroke -->
@@ -1991,12 +1995,14 @@
 		<g class="layer-active-stroke">
 			<!-- Active stroke preview -->
 			{#if isDrawing && activeStrokePath && isDrawingTool}
-				<path
-					d={activeStrokePath}
-					fill={toolState.toolType === 'eraser' ? '#f87171' : currentStrokeStyle.color}
-					fill-opacity={toolState.toolType === 'eraser' ? 0.3 : currentStrokeStyle.opacity}
-					stroke="none"
-				/>
+				<g style={toolState.toolType === 'highlighter' ? 'mix-blend-mode: multiply' : undefined}>
+					<path
+						d={activeStrokePath}
+						fill={toolState.toolType === 'eraser' ? '#f87171' : currentStrokeStyle.color}
+						fill-opacity={toolState.toolType === 'eraser' ? 0.3 : currentStrokeStyle.opacity}
+						stroke="none"
+					/>
+				</g>
 			{/if}
 
 			<!-- Active shape preview -->
