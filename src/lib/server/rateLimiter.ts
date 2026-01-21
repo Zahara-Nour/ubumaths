@@ -14,7 +14,7 @@
  * - Login attempts: 5 per 15 minutes per IP
  * - Login attempts: 3 per 15 minutes per email (stricter)
  * - Signup attempts: 3 per hour per IP
- * - OAuth attempts: 10 per 15 minutes per IP
+ * - OAuth attempts: 100 per 15 minutes per IP (high limit for shared school networks)
  * - Chatbot requests: 5 per 15 minutes per user
  * - Notification creation (teachers): 10 per hour per user
  * - Notification creation (admins): 50 per hour per user
@@ -621,16 +621,18 @@ export async function checkSignupRateLimitByIP(ip: string): Promise<RateLimitRes
  * - Multiple social login attempts (Google, GitHub, etc.)
  * - Browser compatibility issues requiring retries
  *
- * **Rate Limit**: 10 attempts per 15 minutes per IP (higher than email/password login)
+ * **Rate Limit**: 100 attempts per 15 minutes per IP (very high for shared networks)
  *
- * **Why Higher Limit?**
+ * **Why Such a High Limit?**
+ * - School networks: All students share the same public IP address
+ * - During class login sessions, dozens of students may authenticate simultaneously
  * - OAuth flows naturally require more redirects (initiate → callback → complete)
- * - Users may try multiple providers (Google, then GitHub, then email)
- * - Legitimate failures are more common (cancelled consent, expired tokens)
- * - OAuth providers have their own rate limiting and security
+ * - Legitimate failures are common (cancelled consent, expired tokens, retry attempts)
+ * - OAuth providers (Google) have their own rate limiting and security measures
+ * - Previous limit of 10 caused silent failures for entire schools
  *
  * **Security Notes**:
- * - Still prevents automated abuse (10 attempts is reasonable for legitimate users)
+ * - Still prevents automated abuse (100 attempts per IP is reasonable for shared networks)
  * - OAuth providers (Google, GitHub) enforce their own security measures
  * - Fail-open: Allows requests if database is unavailable
  *
@@ -678,7 +680,7 @@ export async function checkOAuthRateLimitByIP(ip: string): Promise<RateLimitResu
 	const key = `ratelimit:oauth:${ip}`;
 	const result = await checkRateLimitWithMessage(
 		key,
-		10,
+		100, // High limit for shared school networks
 		900, // 15 minutes
 		'Trop de tentatives OAuth. Réessayez dans 15 minutes.'
 	);

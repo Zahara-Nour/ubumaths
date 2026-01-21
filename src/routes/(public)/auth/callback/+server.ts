@@ -15,6 +15,21 @@
  * - Email domain validation prevents unauthorized access
  * - Server-side session handling via cookies
  * - Automatic profile creation for new valid users
+ *
+ * ERROR HANDLING:
+ * All errors result in explicit user feedback via redirect to /auth/login?error=...
+ * This includes:
+ * - Missing authorization code
+ * - Failed code exchange
+ * - Invalid email domain
+ * - Profile creation failure (user is signed out and shown error message)
+ * - Rejected user status
+ *
+ * IMPORTANT: Profile creation failures must NOT be silent. If the profile INSERT
+ * fails, the user must be signed out and shown an error. Otherwise, they would be
+ * redirected to /auth/pending-approval without a profile in the database, causing
+ * userProfileHandle (in hooks.server.ts) to silently sign them out on the next
+ * page load - a confusing UX where login appears to work then immediately fails.
  */
 
 import { redirect, error } from '@sveltejs/kit';
@@ -103,14 +118,22 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
 			if (insertError) {
 				logger.error('Failed to create profile:', insertError);
-				// Don't fail the auth flow, just log the error
-				// The profile creation trigger might handle this
-			} else {
-				// Notify admins of the new pending user
-				const fullName = user.user_metadata?.full_name || null;
-				await notifyAdminsOfPendingUser(supabase, user.email!, fullName);
-				logger.info('New user pending approval:', user.email);
+				// CRITICAL: Sign out the user since we couldn't create their profile.
+				// Without this, they would have a valid Supabase auth session but no profile
+				// in the database. The userProfileHandle hook would then silently sign them
+				// out on the next page load, causing a confusing "login works then fails" UX.
+				await supabase.auth.signOut();
+				// Redirect to login with explicit error message so user knows what happened
+				throw redirect(
+					303,
+					`/auth/login?error=${encodeURIComponent("Impossible de créer votre compte. Veuillez réessayer. Si le problème persiste, contactez l'administrateur.")}`
+				);
 			}
+
+			// Notify admins of the new pending user
+			const fullName = user.user_metadata?.full_name || null;
+			await notifyAdminsOfPendingUser(supabase, user.email!, fullName);
+			logger.info('New user pending approval:', user.email);
 
 			// Redirect new users to pending approval page
 			throw redirect(303, '/auth/pending-approval');
