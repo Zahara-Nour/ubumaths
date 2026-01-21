@@ -56,7 +56,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { getAvatarUrl } from '$lib/utils/avatar';
-	import { Mail, CheckCircle2, BookOpen, GraduationCap, Loader2 } from 'lucide-svelte';
+	import { Mail, CheckCircle2, BookOpen, GraduationCap, Loader2, ScrollText } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -638,6 +638,14 @@
 												</div>
 											</div>
 											<div class="flex items-center gap-2">
+												<Button
+													variant="ghost"
+													size="sm"
+													href="/dashboard/teacher/students/{student.id}/journal"
+													title="Voir l'historique des récompenses"
+												>
+													<ScrollText class="h-4 w-4" />
+												</Button>
 												{#if student.welcomeEmailSentAt}
 													<Badge variant="outline" class="gap-1 text-green-600">
 														<CheckCircle2 class="h-3 w-3" />
