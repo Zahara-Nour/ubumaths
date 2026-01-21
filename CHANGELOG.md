@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.17](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.16...v0.7.17) (2026-01-21)
+
+### 📚 Documentation
+
+- **shantell-math:** add comprehensive documentation ([9c8dcc5](https://github.com/Zahara-Nour/ubumaths/commit/9c8dcc55a4a2ce2e080c009d611a6b21baa2cf36))
+
+### ✨ Features
+
+- **fonts:** add dynamic font switching between KaTeX and Shantell ([da370a4](https://github.com/Zahara-Nour/ubumaths/commit/da370a49af2a836f5afd411fdd323ccacd6c3478))
+- **fonts:** add ShantellMath handwritten math fonts ([099c90f](https://github.com/Zahara-Nour/ubumaths/commit/099c90ff21049942ff9ec87f3631003700d96e7b))
+
+### 🐛 Bug Fixes
+
+- **auth:** resolve silent OAuth failures on shared school networks ([3117e91](https://github.com/Zahara-Nour/ubumaths/commit/3117e91483c14e99819a359f4c95f6e064610c69))
+- **whiteboard:** make highlighter visually distinct from pen ([8682f95](https://github.com/Zahara-Nour/ubumaths/commit/8682f950bc21021d59848592c6d7f2e3d0214a88)), closes [#facc15](https://github.com/Zahara-Nour/ubumaths/issues/facc15)
+
 ### [0.7.16](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.15...v0.7.16) (2026-01-20)
 
 ### ✨ Features
