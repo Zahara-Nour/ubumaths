@@ -81,8 +81,8 @@ const AUTOSAVE_KEY = 'ubumaths-whiteboard-autosave';
 /** LocalStorage key for sync state (Drive file/folder IDs) */
 const SYNC_STATE_KEY = 'ubumaths-whiteboard-sync-state';
 
-/** Autosave delay in milliseconds (1 minute) */
-const AUTOSAVE_DELAY_MS = 60_000;
+/** Autosave delay in milliseconds (5 seconds - short to avoid data loss) */
+const AUTOSAVE_DELAY_MS = 5_000;
 
 // =============================================================================
 // Tool Types
@@ -455,6 +455,21 @@ function createWhiteboardStore() {
 
 	// === Autosave ===
 	let autosaveTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	// === Beforeunload handler (save before page close) ===
+	function handleBeforeUnload(): void {
+		// Save immediately if there are pending changes
+		if (autosaveTimeout) {
+			clearTimeout(autosaveTimeout);
+			autosaveTimeout = null;
+		}
+		saveToLocalStorage();
+	}
+
+	// Register beforeunload handler
+	if (browser) {
+		window.addEventListener('beforeunload', handleBeforeUnload);
+	}
 
 	// === Derived State ===
 	const currentPage = $derived(document?.pages[document.currentPageIndex] ?? null);
@@ -4506,6 +4521,10 @@ function createWhiteboardStore() {
 		destroy(): void {
 			if (autosaveTimeout) {
 				clearTimeout(autosaveTimeout);
+			}
+			// Remove beforeunload handler
+			if (browser) {
+				window.removeEventListener('beforeunload', handleBeforeUnload);
 			}
 			// Cancel any pending Drive auto-sync
 			driveSyncService.cancelAutoSync();
