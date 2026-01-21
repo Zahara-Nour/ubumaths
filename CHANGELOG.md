@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.18](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.17...v0.7.18) (2026-01-21)
+
+### ✨ Features
+
+- **whiteboard:** auto-save new documents to Drive when class selected ([6ca1d92](https://github.com/Zahara-Nour/ubumaths/commit/6ca1d929fcf1003f83970ed088c2d4281488f9d4))
+- **whiteboard:** implement multi-document autosave system ([67fab43](https://github.com/Zahara-Nour/ubumaths/commit/67fab4306efe4a52775b883ad9d9a8a7d1c4c090))
+
+### 🐛 Bug Fixes
+
+- **cache:** remove mutation from getPeriodsSync for $derived safety ([6b7010a](https://github.com/Zahara-Nour/ubumaths/commit/6b7010a0993a34444727cc252099397e7a04bc84))
+- **whiteboard:** correctly replace blank page with template on new document ([4b03a9e](https://github.com/Zahara-Nour/ubumaths/commit/4b03a9e7ebf220af10aa2d490b18d2223fd1d005))
+- **whiteboard:** prevent data loss with aggressive autosave ([0ffc74b](https://github.com/Zahara-Nour/ubumaths/commit/0ffc74bb959b2b05244f5756a38200182ae4d4e8))
+- **whiteboard:** save new document immediately to localStorage ([012f12b](https://github.com/Zahara-Nour/ubumaths/commit/012f12b9dba46d31cb70f4ab0a96cb85eb0e3450))
+
 ### [0.7.17](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.16...v0.7.17) (2026-01-21)
 
 ### 📚 Documentation
