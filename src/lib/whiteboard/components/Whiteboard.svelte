@@ -103,9 +103,13 @@
 	/** Current page */
 	let currentPage = $derived(whiteboardStore.currentPage);
 
-	/** Page dimensions */
+	/** Page dimensions (current, possibly expanded) */
 	let pageWidth = $derived(currentPage?.width ?? 794);
 	let pageHeight = $derived(currentPage?.height ?? 1123);
+
+	/** Original page dimensions (for scale calculation - don't zoom out when expanding) */
+	let originalPageWidth = $derived(currentPage?.originalWidth ?? currentPage?.width ?? 794);
+	let originalPageHeight = $derived(currentPage?.originalHeight ?? currentPage?.height ?? 1123);
 
 	/** Tool state */
 	let toolState = $derived(whiteboardStore.toolState);
@@ -114,7 +118,7 @@
 	let syncState = $derived(whiteboardStore.syncState);
 	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
 
-	/** Calculate base scale to fit page in container */
+	/** Calculate base scale to fit ORIGINAL page in container (don't zoom out on expansion) */
 	let fitScale = $derived.by(() => {
 		if (containerWidth === 0 || containerHeight === 0) return 1;
 
@@ -122,8 +126,9 @@
 		const availableWidth = containerWidth - padding * 2;
 		const availableHeight = containerHeight - padding * 2;
 
-		const scaleX = availableWidth / pageWidth;
-		const scaleY = availableHeight / pageHeight;
+		// Use original dimensions so scale doesn't change when page expands
+		const scaleX = availableWidth / originalPageWidth;
+		const scaleY = availableHeight / originalPageHeight;
 
 		return Math.min(scaleX, scaleY, 1);
 	});
@@ -141,8 +146,10 @@
 	/** Is pan tool active */
 	let isPanToolActive = $derived(toolState.toolType === 'pan');
 
-	/** Can pan (zoomed in beyond 100%) */
-	let canPan = $derived(zoomLevel > 1);
+	/** Can pan (zoomed in beyond 100% OR page is expanded beyond original size) */
+	let canPan = $derived(
+		zoomLevel > 1 || pageWidth > originalPageWidth || pageHeight > originalPageHeight
+	);
 
 	/** Undo/Redo state */
 	let canUndo = $derived(whiteboardStore.canUndo);
@@ -291,7 +298,9 @@
 	}
 
 	function clampPan() {
-		if (zoomLevel <= 1) {
+		// Allow pan if zoomed in OR if page is expanded
+		const isExpanded = pageWidth > originalPageWidth || pageHeight > originalPageHeight;
+		if (zoomLevel <= 1 && !isExpanded) {
 			panX = 0;
 			panY = 0;
 			return;
