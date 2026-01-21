@@ -1408,6 +1408,223 @@ function convertLatexFractions(str: string): string {
 }
 
 /**
+ * Known Typst symbols that should NOT be split by implicit multiplication.
+ * Includes built-in functions, Greek letters, and math symbols.
+ */
+const KNOWN_TYPST_SYMBOLS = new Set([
+	// Functions
+	'sin',
+	'cos',
+	'tan',
+	'cot',
+	'sec',
+	'csc',
+	'arcsin',
+	'arccos',
+	'arctan',
+	'sinh',
+	'cosh',
+	'tanh',
+	'log',
+	'ln',
+	'exp',
+	'lim',
+	'max',
+	'min',
+	'sup',
+	'inf',
+	'det',
+	'dim',
+	'ker',
+	'deg',
+	'gcd',
+	'mod',
+	'arg',
+	'sum',
+	'product',
+	'sqrt',
+	'root',
+	'frac',
+	'binom',
+	'integral',
+	'display',
+	'cases',
+	'lr',
+	'grid',
+	'cell',
+	'text',
+	'bold',
+	'italic',
+	'upright',
+	'cal',
+	'frak',
+	'overline',
+	'underline',
+	'hat',
+	'macron',
+	'tilde',
+	'arrow',
+	'dot',
+	'diaer',
+	'limsup',
+	'liminf',
+	// Greek letters (lowercase - uppercase are short enough)
+	'alpha',
+	'beta',
+	'gamma',
+	'delta',
+	'epsilon',
+	'zeta',
+	'eta',
+	'theta',
+	'iota',
+	'kappa',
+	'lambda',
+	'mu',
+	'nu',
+	'xi',
+	'pi',
+	'rho',
+	'sigma',
+	'tau',
+	'upsilon',
+	'phi',
+	'chi',
+	'psi',
+	'omega',
+	'varepsilon',
+	'vartheta',
+	'varpi',
+	'varrho',
+	'varsigma',
+	'varphi',
+	// Typst math symbols
+	'infinity',
+	'forall',
+	'exists',
+	'partial',
+	'diff',
+	'nabla',
+	'emptyset',
+	'union',
+	'sect',
+	'subset',
+	'supset',
+	'approx',
+	'equiv',
+	'prime',
+	'ell',
+	'plus',
+	'minus',
+	'times',
+	'div',
+	'dots',
+	// Dot variants
+	'thin',
+	'med',
+	'thick',
+	'quad',
+	'wide',
+	'negthin',
+	// Symbol modifiers (used in constructs like lt.eq.slant)
+	'in',
+	'eq',
+	'lt',
+	'gt',
+	'not',
+	'slant',
+	'double',
+	'cont',
+	'triple',
+	// Differential notation (dx, dy, dz, dt, etc.) - these are NOT implicit multiplication
+	'dx',
+	'dy',
+	'dz',
+	'dt',
+	'ds',
+	'du',
+	'dv',
+	'dw',
+	'dr',
+	'da',
+	'db',
+	'dc',
+	'dn',
+	'dm',
+	'dk',
+	'dp',
+	'dq'
+]);
+
+/**
+ * Add spaces between adjacent single letters for implicit multiplication in Typst
+ *
+ * In LaTeX: `nr` means n × r (implicit multiplication)
+ * In Typst: `nr` is an unknown variable; `n r` means n × r
+ *
+ * This function splits sequences of 2+ lowercase letters that aren't known
+ * Typst symbols into individual letters with spaces.
+ *
+ * IMPORTANT: This function protects content that should NOT be modified:
+ * - Quoted strings: "text" should stay as "text", not "t e x t"
+ * - Typst code: #text(fill: red) should stay intact
+ *
+ * @param str - Math expression string
+ * @returns String with spaces added for implicit multiplication
+ *
+ * @example
+ * addImplicitMultiplicationSpaces('e^(-nr)') // Returns 'e^(-n r)'
+ * addImplicitMultiplicationSpaces('sin(x)') // Returns 'sin(x)' (known function)
+ * addImplicitMultiplicationSpaces('xyz') // Returns 'x y z'
+ * addImplicitMultiplicationSpaces('"text"') // Returns '"text"' (protected)
+ */
+function addImplicitMultiplicationSpaces(str: string): string {
+	// Protect content that should not be modified
+	const protections: string[] = [];
+	let protected_ = str;
+
+	// Protect quoted strings "..."
+	protected_ = protected_.replace(/"[^"]*"/g, (match) => {
+		protections.push(match);
+		return `<<<PROTECT_${protections.length - 1}>>>`;
+	});
+
+	// Protect Typst function calls #func(...)[...] or #func[...]
+	// Pattern matches: #identifier followed by optional (...) and optional [...]
+	protected_ = protected_.replace(/#[a-zA-Z_]+(?:\([^)]*\))?(?:\[[^\]]*\])?/g, (match) => {
+		protections.push(match);
+		return `<<<PROTECT_${protections.length - 1}>>>`;
+	});
+
+	// Apply implicit multiplication to remaining content
+	protected_ = protected_.replace(/([a-z]{2,})/g, (match, _group, offset, fullStr) => {
+		// If followed by '(', it's a function call - preserve entire match
+		const nextChar = fullStr[offset + match.length];
+		if (nextChar === '(') {
+			return match;
+		}
+
+		// Check if this is a known symbol
+		if (KNOWN_TYPST_SYMBOLS.has(match)) {
+			return match;
+		}
+
+		// Check if preceded by . which indicates a method/property (e.g., dots.c)
+		if (offset > 0 && fullStr[offset - 1] === '.') {
+			return match;
+		}
+
+		// Split into individual letters with spaces
+		return match.split('').join(' ');
+	});
+
+	// Restore protected content
+	protected_ = protected_.replace(/<<<PROTECT_(\d+)>>>/g, (_, idx) => protections[parseInt(idx)]);
+
+	return protected_;
+}
+
+/**
  * Convert LaTeX math to Typst math syntax
  *
  * Typst uses different syntax than LaTeX for math mode.
@@ -1934,6 +2151,16 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/<<<ARROW_LONG_LEFT>>>/g, '<--');
 	result = result.replace(/<<<ARROW_MAPSTO>>>/g, '|->');
 	result = result.replace(/<<<ARROW_IMPLIED_BY>>>/g, 'arrow.l.double');
+
+	// ========================================================================
+	// IMPLICIT MULTIPLICATION: Add spaces between adjacent letters
+	// ========================================================================
+	// In LaTeX: `nr` means n × r (implicit multiplication between variables)
+	// In Typst: `nr` is an unknown variable; `n r` means n × r
+	//
+	// We need to split sequences of 2+ lowercase letters that aren't known
+	// Typst symbols into individual letters with spaces.
+	result = addImplicitMultiplicationSpaces(result);
 
 	return result;
 }
