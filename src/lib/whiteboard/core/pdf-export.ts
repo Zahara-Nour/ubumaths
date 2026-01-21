@@ -10,6 +10,7 @@
 import type { WhiteboardDocument, Page } from '../types/document';
 import { smoothStroke, pointsToSvgPath, getToolOptions } from './stroke-smoothing';
 import { renderRoughShapeToSvgString } from './rough-renderer';
+import { isPageExpanded, getExportScaleFactor, getOriginalDimensions } from './page-expansion';
 
 // =============================================================================
 // Constants
@@ -171,14 +172,18 @@ export function getPagesToExport(
 
 /**
  * Calculate export dimensions for PNG
+ * Uses original dimensions for expanded pages
  */
 export function calculateExportDimensions(
 	page: Page,
 	resolution: PngResolution
 ): { width: number; height: number } {
+	const dims = isPageExpanded(page)
+		? getOriginalDimensions(page)
+		: { width: page.width, height: page.height };
 	return {
-		width: Math.round(page.width * resolution),
-		height: Math.round(page.height * resolution)
+		width: Math.round(dims.width * resolution),
+		height: Math.round(dims.height * resolution)
 	};
 }
 
@@ -210,18 +215,31 @@ export function calculateProgress(completedPages: number, totalPages: number): n
 
 /**
  * Export a page to SVG string
+ *
+ * For expanded pages, scales content to fit original dimensions.
+ * The viewBox uses original dimensions, and content is wrapped in a scale transform.
  */
 export function exportPageToSvg(
 	page: Page,
 	document: WhiteboardDocument,
 	options: ExportOptions
 ): string {
-	const { width, height } = page;
+	// Determine output dimensions (original size for expanded pages)
+	const expanded = isPageExpanded(page);
+	const outputDims = expanded
+		? getOriginalDimensions(page)
+		: { width: page.width, height: page.height };
+	const scaleFactor = expanded ? getExportScaleFactor(page) : 1;
 
-	// Start SVG
-	let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
+	// Start SVG with output dimensions
+	let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${outputDims.width}" height="${outputDims.height}" viewBox="0 0 ${outputDims.width} ${outputDims.height}">`;
 
-	// Add background
+	// For expanded pages, wrap content in a scale group
+	if (expanded) {
+		svg += `<g transform="scale(${scaleFactor})">`;
+	}
+
+	// Add background (uses full page dimensions, will be scaled)
 	svg += renderBackgroundToSvg(page);
 
 	// Add elements
@@ -232,6 +250,11 @@ export function exportPageToSvg(
 	// Add instruments if requested
 	if (options.includeInstruments && document.instruments) {
 		svg += renderInstrumentsToSvg(document.instruments);
+	}
+
+	// Close scale group if expanded
+	if (expanded) {
+		svg += '</g>';
 	}
 
 	svg += '</svg>';
@@ -780,6 +803,7 @@ export interface ThumbnailResult {
 /**
  * Generate a WebP thumbnail of the first page
  * Optimized for small file size while maintaining decent quality
+ * Uses original dimensions for expanded pages
  */
 export async function generateThumbnail(
 	page: Page,
@@ -790,8 +814,13 @@ export async function generateThumbnail(
 		const targetWidth = options.width ?? THUMBNAIL_WIDTH;
 		const quality = options.quality ?? THUMBNAIL_QUALITY;
 
+		// Use original dimensions for expanded pages
+		const pageDims = isPageExpanded(page)
+			? getOriginalDimensions(page)
+			: { width: page.width, height: page.height };
+
 		// Calculate dimensions maintaining aspect ratio
-		const aspectRatio = page.height / page.width;
+		const aspectRatio = pageDims.height / pageDims.width;
 		const width = Math.round(targetWidth);
 		const height = Math.round(targetWidth * aspectRatio);
 
@@ -909,6 +938,9 @@ export function exportToSvg(document: WhiteboardDocument, options: ExportOptions
 /**
  * Export document to PDF
  * Uses jspdf library (dynamically imported)
+ *
+ * For expanded pages, the PDF uses original page dimensions
+ * and the content is scaled to fit.
  */
 export async function exportToPdf(
 	document: WhiteboardDocument,
@@ -924,15 +956,18 @@ export async function exportToPdf(
 		// Dynamically import jspdf
 		const { jsPDF } = await import('jspdf');
 
-		// Determine orientation from first page
+		// Determine dimensions from first page (use original if expanded)
 		const firstPage = document.pages[indices[0]];
-		const orientation = firstPage.width > firstPage.height ? 'landscape' : 'portrait';
+		const firstPageDims = isPageExpanded(firstPage)
+			? getOriginalDimensions(firstPage)
+			: { width: firstPage.width, height: firstPage.height };
+		const orientation = firstPageDims.width > firstPageDims.height ? 'landscape' : 'portrait';
 
-		// Create PDF
+		// Create PDF with original dimensions
 		const pdf = new jsPDF({
 			orientation,
 			unit: 'px',
-			format: [firstPage.width, firstPage.height]
+			format: [firstPageDims.width, firstPageDims.height]
 		});
 
 		// Export each page
@@ -940,17 +975,22 @@ export async function exportToPdf(
 			const pageIndex = indices[i];
 			const page = document.pages[pageIndex];
 
+			// Get output dimensions (original if expanded)
+			const pageDims = isPageExpanded(page)
+				? getOriginalDimensions(page)
+				: { width: page.width, height: page.height };
+
 			if (i > 0) {
-				// Add new page with correct dimensions
-				const pageOrientation = page.width > page.height ? 'landscape' : 'portrait';
-				pdf.addPage([page.width, page.height], pageOrientation);
+				// Add new page with correct dimensions (original if expanded)
+				const pageOrientation = pageDims.width > pageDims.height ? 'landscape' : 'portrait';
+				pdf.addPage([pageDims.width, pageDims.height], pageOrientation);
 			}
 
-			// Render page to SVG, then to canvas, then to PDF
+			// Render page to SVG (already handles scaling for expanded pages)
 			const svgString = exportPageToSvg(page, document, options);
 
-			// Convert SVG to image and add to PDF
-			await addSvgToPdfPage(pdf, svgString, page.width, page.height);
+			// Convert SVG to image and add to PDF (using original dimensions)
+			await addSvgToPdfPage(pdf, svgString, pageDims.width, pageDims.height);
 
 			// Report progress
 			if (options.onProgress) {

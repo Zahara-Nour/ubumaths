@@ -67,6 +67,15 @@ import {
 } from '../core/binding';
 import { routeElbowArrow } from '../core/elbow-routing';
 import { headingFromPoints, getHeadingForBindingPoint, flipHeading } from '../core/heading';
+import {
+	calculatePageExpansion,
+	expandPageByDelta,
+	isPageExpanded,
+	getExportScaleFactor,
+	getExpansionFactor,
+	createExpandedPage,
+	createResetPage
+} from '../core/page-expansion';
 import type { ShapeElement, ArrowElement, BindingAnchor, Point, Heading } from '../types/document';
 import { createArrowPoints } from '../types/document';
 import type { WhiteboardTemplate, TemplatePageData, TemplateFont } from '../types/templates';
@@ -1204,6 +1213,86 @@ function createWhiteboardStore() {
 					currentPageIndex: newCurrentIdx
 				};
 			});
+		},
+
+		// === Page Expansion Operations ===
+
+		/**
+		 * Check if the current page has been expanded from its original size
+		 */
+		isCurrentPageExpanded(): boolean {
+			if (!currentPage) return false;
+			return isPageExpanded(currentPage);
+		},
+
+		/**
+		 * Get the expansion factor of the current page (1 = not expanded)
+		 */
+		getCurrentPageExpansionFactor(): number {
+			if (!currentPage) return 1;
+			return getExpansionFactor(currentPage);
+		},
+
+		/**
+		 * Get the export scale factor for the current page (to fit content in original size)
+		 */
+		getCurrentPageExportScaleFactor(): number {
+			if (!currentPage) return 1;
+			return getExportScaleFactor(currentPage);
+		},
+
+		/**
+		 * Check if the page should expand and expand it if necessary
+		 * Called during drawing operations when cursor approaches the edge
+		 * @param point - Current cursor/drawing position
+		 * @returns true if expansion occurred
+		 */
+		checkAndExpandPage(point: Point): boolean {
+			if (!currentPage) return false;
+
+			const result = calculatePageExpansion(currentPage, point);
+			if (!result.needsExpansion) return false;
+
+			// Expand the page using updateCurrentPageLive for smooth drawing
+			// (no history push during drawing - will be committed with the stroke)
+			updateCurrentPageLive((page) => createExpandedPage(page, result.newWidth, result.newHeight));
+
+			return true;
+		},
+
+		/**
+		 * Expand the current page to specific dimensions
+		 * Preserves original dimensions for export scaling
+		 */
+		expandPage(newWidth: number, newHeight: number): void {
+			updateCurrentPage((page) => createExpandedPage(page, newWidth, newHeight));
+		},
+
+		/**
+		 * Expand the page by a delta amount (for pan-based expansion)
+		 * Uses progressive expansion, respects MAX_EXPANSION_FACTOR limit
+		 * @param deltaX - Amount to expand horizontally (in page pixels)
+		 * @param deltaY - Amount to expand vertically (in page pixels)
+		 * @returns true if expansion occurred
+		 */
+		expandPageByDeltaAmount(deltaX: number, deltaY: number): boolean {
+			if (!currentPage) return false;
+
+			const result = expandPageByDelta(currentPage, deltaX, deltaY);
+			if (!result) return false;
+
+			// Use live update for smooth expansion during pan
+			updateCurrentPageLive((page) => createExpandedPage(page, result.width, result.height));
+			return true;
+		},
+
+		/**
+		 * Reset the current page to its original dimensions
+		 * Elements are not scaled - they remain in their expanded positions
+		 */
+		resetPageToOriginal(): void {
+			if (!currentPage || !isPageExpanded(currentPage)) return;
+			updateCurrentPage((page) => createResetPage(page));
 		},
 
 		// === UI Operations ===
