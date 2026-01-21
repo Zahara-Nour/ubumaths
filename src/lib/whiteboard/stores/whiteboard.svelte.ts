@@ -746,6 +746,7 @@ function createWhiteboardStore() {
 
 		/**
 		 * Create a new empty document
+		 * Immediately saves to localStorage so autosave is active
 		 */
 		createNew(title: string = 'Sans titre', format: PageFormatKey = 'A4'): void {
 			document = createEmptyDocument(title, format);
@@ -755,6 +756,8 @@ function createWhiteboardStore() {
 			// Reset sync state for new document
 			syncState = createInitialSyncState();
 			clearSyncStateFromLocalStorage();
+			// Save immediately so autosave is active from the start
+			saveToLocalStorage();
 		},
 
 		/**
