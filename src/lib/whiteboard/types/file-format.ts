@@ -212,7 +212,11 @@ const pageSchema = z.object({
 	elements: z.array(elementSchema).max(5000),
 	background: backgroundSchema,
 	width: z.number().positive().max(10000),
-	height: z.number().positive().max(10000)
+	height: z.number().positive().max(10000),
+	/** Original width before expansion (for scaling at export). Undefined = not expanded. */
+	originalWidth: z.number().positive().max(10000).optional(),
+	/** Original height before expansion (for scaling at export). Undefined = not expanded. */
+	originalHeight: z.number().positive().max(10000).optional()
 });
 
 // =============================================================================
