@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.20](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.19...v0.7.20) (2026-01-21)
+
+### ✨ Features
+
+- **teacher:** add quick access to student reward journal from classes page ([6540f48](https://github.com/Zahara-Nour/ubumaths/commit/6540f48f5a56908e1c0b077dc38ceab04ed2bcd0))
+- **whiteboard:** add progressive page expansion on pan ([d092fd7](https://github.com/Zahara-Nour/ubumaths/commit/d092fd73c0c0ff9566517b37037c0b143724e488))
+
+### 🐛 Bug Fixes
+
+- **whiteboard:** keep scale stable during page expansion ([a1ad85c](https://github.com/Zahara-Nour/ubumaths/commit/a1ad85c901b66d78d4c96da12ed041e986ec0bab))
+- **whiteboard:** persist page expansion state in file format ([fed7cac](https://github.com/Zahara-Nour/ubumaths/commit/fed7cacbadc54c9931adc92c69924b6a5bc97060))
+
 ### [0.7.19](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.18...v0.7.19) (2026-01-21)
 
 ### 🐛 Bug Fixes
