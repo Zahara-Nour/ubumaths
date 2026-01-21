@@ -226,8 +226,8 @@ const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 		roughness: DEFAULT_ROUGHNESS
 	},
 	highlighter: {
-		color: DEFAULT_COLOR,
-		width: DEFAULT_WIDTH,
+		color: '#facc15', // Yellow - typical highlighter color
+		width: 20, // Wide stroke like a real highlighter
 		opacity: 0.5,
 		strokeStyle: DEFAULT_STROKE_STYLE,
 		cornerRadius: DEFAULT_CORNER_RADIUS,
@@ -3695,54 +3695,69 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Set color for all configurable tools (except eraser)
+		 * Set color for configurable tools
+		 * Highlighter has isolated settings (only updated when it's the current tool)
 		 * Only saves to user preferences if no element is selected
 		 */
 		setColor(color: string): void {
-			// Only save to preferences if no element is selected
-			if (selectedIds.size === 0) {
+			// Only save to preferences if no element is selected and not on highlighter
+			if (selectedIds.size === 0 && currentTool !== 'highlighter') {
 				userPreferences = { ...userPreferences, color };
 			}
 			const updatedSettings = { ...toolSettings };
 			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
-				if (tool !== 'eraser') {
-					updatedSettings[tool] = { ...updatedSettings[tool], color };
-				}
+				// Skip eraser (always white)
+				if (tool === 'eraser') continue;
+				// Highlighter has isolated settings - only update when it's the current tool
+				if (tool === 'highlighter' && currentTool !== 'highlighter') continue;
+				// Other tools don't get updated when highlighter is active
+				if (tool !== 'highlighter' && currentTool === 'highlighter') continue;
+				updatedSettings[tool] = { ...updatedSettings[tool], color };
 			}
 			toolSettings = updatedSettings;
 		},
 
 		/**
-		 * Set stroke width for all configurable tools
+		 * Set stroke width for configurable tools
+		 * Highlighter has isolated settings (only updated when it's the current tool)
 		 * Only saves to user preferences if no element is selected
 		 */
 		setStrokeWidth(width: number): void {
-			// Only save to preferences if no element is selected
-			if (selectedIds.size === 0) {
+			// Only save to preferences if no element is selected and not on highlighter
+			if (selectedIds.size === 0 && currentTool !== 'highlighter') {
 				userPreferences = { ...userPreferences, strokeWidth: width };
 			}
 			const updatedSettings = { ...toolSettings };
 			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
+				// Highlighter has isolated settings - only update when it's the current tool
+				if (tool === 'highlighter' && currentTool !== 'highlighter') continue;
+				// Other tools don't get updated when highlighter is active
+				if (tool !== 'highlighter' && currentTool === 'highlighter') continue;
 				updatedSettings[tool] = { ...updatedSettings[tool], width };
 			}
 			toolSettings = updatedSettings;
 		},
 
 		/**
-		 * Set opacity for all configurable tools (except eraser)
+		 * Set opacity for configurable tools
+		 * Highlighter has isolated settings (only updated when it's the current tool)
 		 * Only saves to user preferences if no element is selected
 		 */
 		setOpacity(opacity: number): void {
 			const clampedOpacity = Math.max(0.1, Math.min(1, opacity));
-			// Only save to preferences if no element is selected
-			if (selectedIds.size === 0) {
+			// Only save to preferences if no element is selected and not on highlighter
+			if (selectedIds.size === 0 && currentTool !== 'highlighter') {
 				userPreferences = { ...userPreferences, opacity: clampedOpacity };
 			}
 			const updatedSettings = { ...toolSettings };
 			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
-				if (tool !== 'eraser') {
-					updatedSettings[tool] = { ...updatedSettings[tool], opacity: clampedOpacity };
-				}
+				// Skip eraser (always opaque)
+				if (tool === 'eraser') continue;
+				// Highlighter has isolated settings - only update when it's the current tool
+				if (tool === 'highlighter' && currentTool !== 'highlighter') continue;
+				// Other tools don't get updated when highlighter is active
+				if (tool !== 'highlighter' && currentTool === 'highlighter') continue;
+				updatedSettings[tool] = { ...updatedSettings[tool], opacity: clampedOpacity };
 			}
 			toolSettings = updatedSettings;
 		},
@@ -4024,16 +4039,17 @@ function createWhiteboardStore() {
 		/**
 		 * Restore toolbar to user's manually selected preferences
 		 * Called when selection is cleared
+		 * Note: highlighter keeps its own independent settings (color, width, opacity)
 		 */
 		restoreUserPreferences(): void {
 			const updatedSettings = { ...toolSettings };
 			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
-				if (tool !== 'eraser') {
+				// Skip eraser (has fixed settings) and highlighter (keeps its own color/width/opacity)
+				if (tool === 'eraser') continue;
+				if (tool === 'highlighter') {
+					// Only restore non-visual settings for highlighter
 					updatedSettings[tool] = {
 						...updatedSettings[tool],
-						color: userPreferences.color,
-						width: userPreferences.strokeWidth,
-						opacity: userPreferences.opacity,
 						strokeStyle: userPreferences.strokeStyle,
 						cornerRadius: userPreferences.cornerRadius,
 						fillMode: userPreferences.fillMode,
@@ -4046,7 +4062,25 @@ function createWhiteboardStore() {
 						endArrowhead: userPreferences.endArrowhead,
 						roughness: userPreferences.roughness
 					};
+					continue;
 				}
+				updatedSettings[tool] = {
+					...updatedSettings[tool],
+					color: userPreferences.color,
+					width: userPreferences.strokeWidth,
+					opacity: userPreferences.opacity,
+					strokeStyle: userPreferences.strokeStyle,
+					cornerRadius: userPreferences.cornerRadius,
+					fillMode: userPreferences.fillMode,
+					fillColor: userPreferences.fillColor,
+					fillOpacity: userPreferences.fillOpacity,
+					arrowType: userPreferences.arrowType,
+					elbowed: userPreferences.elbowed,
+					elbowDirection: userPreferences.elbowDirection,
+					startArrowhead: userPreferences.startArrowhead,
+					endArrowhead: userPreferences.endArrowhead,
+					roughness: userPreferences.roughness
+				};
 			}
 			toolSettings = updatedSettings;
 		},
