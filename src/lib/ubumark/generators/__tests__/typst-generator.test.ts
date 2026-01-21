@@ -245,6 +245,7 @@ describe('generateTypst', () => {
 
 		expect(typst).toContain('$');
 		// LaTeX is now converted to Typst syntax
+		// Note: 'dx' is preserved as differential notation, not split
 		expect(typst).toContain('integral_0^pi sin(x) dx');
 	});
 
@@ -1824,7 +1825,8 @@ describe('convertLatexToTypstMath - Subscripts and Superscripts', () => {
 	});
 
 	it('should handle multi-character subscripts', () => {
-		expect(convertLatexToTypstMath('a_{ij}')).toBe('a_(ij)');
+		// In Typst, 'ij' becomes 'i j' for implicit multiplication (i times j)
+		expect(convertLatexToTypstMath('a_{ij}')).toBe('a_(i j)');
 	});
 
 	it('should handle both subscript and superscript', () => {
@@ -2495,5 +2497,55 @@ describe('convertLatexToTypstMath - N-th Root', () => {
 		const result = convertLatexToTypstMath(input);
 		// Should have space before sqrt and root to prevent "esqrt" fusion
 		expect(result).toBe('frac(e sqrt(e), e^2 root(3, e))');
+	});
+});
+
+describe('convertLatexToTypstMath - Implicit Multiplication', () => {
+	it('should add space between adjacent letters for implicit multiplication', () => {
+		// In LaTeX, 'nr' means n × r (implicit multiplication)
+		// In Typst, 'nr' is an unknown variable; 'n r' means n × r
+		expect(convertLatexToTypstMath('e^{-nr}')).toBe('e^(-n r)');
+	});
+
+	it('should handle implicit multiplication in exponents', () => {
+		expect(convertLatexToTypstMath('e^{-(n+1)r}')).toBe('e^(-(n+1)r)');
+	});
+
+	it('should split multiple adjacent letters', () => {
+		expect(convertLatexToTypstMath('xyz')).toBe('x y z');
+	});
+
+	it('should preserve known function names', () => {
+		expect(convertLatexToTypstMath('\\sin(x)')).toBe('sin(x)');
+		expect(convertLatexToTypstMath('\\cos(x)')).toBe('cos(x)');
+		expect(convertLatexToTypstMath('\\log(x)')).toBe('log(x)');
+	});
+
+	it('should preserve Greek letters', () => {
+		expect(convertLatexToTypstMath('\\alpha + \\beta')).toBe('alpha + beta');
+	});
+
+	it('should preserve Typst symbols like dots.c', () => {
+		expect(convertLatexToTypstMath('\\cdots')).toBe('dots.c');
+	});
+
+	it('should handle complex expression with implicit multiplication', () => {
+		// From the actual exercise: e^{-u_0}e^{-nr}
+		// Note: We only split multi-letter sequences like 'nr' -> 'n r'
+		// Typst handles implicit multiplication between terms like e^(...)e^(...) natively
+		const result = convertLatexToTypstMath('e^{-u_0}e^{-nr}');
+		expect(result).toBe('e^(-u_0)e^(-n r)');
+	});
+
+	it('should handle subscripts with implicit multiplication', () => {
+		expect(convertLatexToTypstMath('u_{nr}')).toBe('u_(n r)');
+	});
+
+	it('should preserve differential notation (dx, dy, dt, etc.)', () => {
+		// Differentials are NOT implicit multiplication - they are a single notation
+		expect(convertLatexToTypstMath('dx')).toBe('dx');
+		expect(convertLatexToTypstMath('dy')).toBe('dy');
+		expect(convertLatexToTypstMath('dt')).toBe('dt');
+		expect(convertLatexToTypstMath('\\int f(x) dx')).toBe('integral f(x) dx');
 	});
 });
