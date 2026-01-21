@@ -910,8 +910,9 @@ export class TeacherDashboardCache {
 	}
 
 	/**
-	 * Get periods from cache (sync, reactive)
+	 * Get periods from cache (sync, reactive, pure - no side effects)
 	 * Returns null if not cached or expired
+	 * Note: Does NOT delete expired entries to remain pure for $derived usage
 	 */
 	getPeriodsSync(
 		schoolId: string
@@ -919,9 +920,8 @@ export class TeacherDashboardCache {
 		const cached = this.periodsCache.get(schoolId);
 		if (!cached) return null;
 
-		// Check if expired
+		// Check if expired (just return null, don't mutate cache here)
 		if (Date.now() - cached.cachedAt > this.PERIODS_TTL) {
-			this.periodsCache.delete(schoolId);
 			this.log('trace', `[Cache] Periods expired for school ${schoolId}`);
 			return null;
 		}
