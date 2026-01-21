@@ -29,6 +29,8 @@
 	} from 'lucide-svelte';
 	import type { PageFormatKey } from '../types/document';
 	import type { TemplatePageData } from '../types/templates';
+	import { driveSyncService } from '../services/drive-sync';
+	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// ==========================================================================
 	// Props
@@ -184,6 +186,46 @@
 	// New Document Template Methods
 	// ==========================================================================
 
+	/**
+	 * Auto-save new document to Drive if class info is present
+	 * This enables autosave on Drive for the newly created document
+	 */
+	async function autoSaveToDriveIfNeeded(): Promise<void> {
+		const classInfo = whiteboardStore.getAndClearPendingClassInfo();
+		if (!classInfo) return;
+
+		const doc = whiteboardStore.document;
+		if (!doc) return;
+
+		try {
+			// Get or create the class folder
+			const folderId = await driveSyncService.getOrCreateClassFolder(
+				classInfo.joinCode,
+				classInfo.className
+			);
+
+			// Save the document to Drive
+			const result = await driveSyncService.saveToDrive({
+				document: doc,
+				fileName: doc.title || 'Sans titre',
+				folderId
+			});
+
+			if (result.success && result.fileId) {
+				// Connect to Drive with the new file ID
+				whiteboardStore.connectToDrive(result.fileId, folderId);
+				toaster.success('Document sauvegardé sur Drive');
+				console.log('[Whiteboard] Auto-saved new document to Drive:', result.fileId);
+			} else {
+				console.error('[Whiteboard] Failed to auto-save to Drive:', result.error);
+				toaster.error('Erreur lors de la sauvegarde sur Drive');
+			}
+		} catch (error) {
+			console.error('[Whiteboard] Error auto-saving to Drive:', error);
+			toaster.error('Erreur lors de la sauvegarde sur Drive');
+		}
+	}
+
 	function handleNewDocumentTemplateSelect(pageData: TemplatePageData) {
 		// Create document with the selected template as first page
 		const docTitle = whiteboardStore.newDocumentTitle || title;
@@ -197,6 +239,9 @@
 			whiteboardStore.setDefaultTemplate(pageData);
 		}
 		whiteboardStore.closeNewDocumentPicker();
+
+		// Auto-save to Drive if class was selected
+		autoSaveToDriveIfNeeded();
 	}
 
 	function handleNewDocumentPickerClose() {
@@ -204,6 +249,9 @@
 		const docTitle = whiteboardStore.newDocumentTitle || title;
 		whiteboardStore.createNew(docTitle, format);
 		whiteboardStore.closeNewDocumentPicker();
+
+		// Auto-save to Drive if class was selected
+		autoSaveToDriveIfNeeded();
 	}
 
 	// ==========================================================================
