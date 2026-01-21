@@ -75,14 +75,30 @@ import type { WhiteboardTemplate, TemplatePageData, TemplateFont } from '../type
 // Constants
 // =============================================================================
 
-/** LocalStorage key for autosave */
-const AUTOSAVE_KEY = 'ubumaths-whiteboard-autosave';
+/** LocalStorage key prefix for autosave (followed by document ID) */
+const AUTOSAVE_KEY_PREFIX = 'ubumaths-whiteboard-autosave-';
+
+/** LocalStorage key for autosave index (list of saved document IDs with metadata) */
+const AUTOSAVE_INDEX_KEY = 'ubumaths-whiteboard-autosave-index';
+
+/** Legacy autosave key (for migration) */
+const LEGACY_AUTOSAVE_KEY = 'ubumaths-whiteboard-autosave';
 
 /** LocalStorage key for sync state (Drive file/folder IDs) */
 const SYNC_STATE_KEY = 'ubumaths-whiteboard-sync-state';
 
-/** Autosave delay in milliseconds (5 seconds - short to avoid data loss) */
-const AUTOSAVE_DELAY_MS = 5_000;
+/** Autosave delay in milliseconds (1 minute) */
+const AUTOSAVE_DELAY_MS = 60_000;
+
+/** Maximum number of autosaves to keep */
+const MAX_AUTOSAVES = 10;
+
+/** Autosave index entry */
+export interface AutosaveIndexEntry {
+	id: string;
+	title: string;
+	updatedAt: string;
+}
 
 // =============================================================================
 // Tool Types
@@ -456,21 +472,6 @@ function createWhiteboardStore() {
 	// === Autosave ===
 	let autosaveTimeout: ReturnType<typeof setTimeout> | null = null;
 
-	// === Beforeunload handler (save before page close) ===
-	function handleBeforeUnload(): void {
-		// Save immediately if there are pending changes
-		if (autosaveTimeout) {
-			clearTimeout(autosaveTimeout);
-			autosaveTimeout = null;
-		}
-		saveToLocalStorage();
-	}
-
-	// Register beforeunload handler
-	if (browser) {
-		window.addEventListener('beforeunload', handleBeforeUnload);
-	}
-
 	// === Derived State ===
 	const currentPage = $derived(document?.pages[document.currentPageIndex] ?? null);
 	const pageCount = $derived(document?.pages.length ?? 0);
@@ -531,7 +532,11 @@ function createWhiteboardStore() {
 
 		try {
 			const json = serialize(document);
-			localStorage.setItem(AUTOSAVE_KEY, json);
+			const autosaveKey = AUTOSAVE_KEY_PREFIX + document.id;
+			localStorage.setItem(autosaveKey, json);
+
+			// Update autosave index
+			updateAutosaveIndex(document.id, document.title, document.updatedAt);
 
 			// Also save sync state if connected to Drive
 			if (syncState.driveFileId) {
@@ -543,11 +548,53 @@ function createWhiteboardStore() {
 				localStorage.setItem(SYNC_STATE_KEY, JSON.stringify(syncStateData));
 			}
 
-			console.debug('[Whiteboard] Autosaved to localStorage');
+			console.debug('[Whiteboard] Autosaved to localStorage:', document.id);
 		} catch (error) {
 			// Handle quota exceeded or other errors gracefully
 			console.warn('[Whiteboard] Autosave failed:', error);
 		}
+	}
+
+	function getAutosaveIndex(): AutosaveIndexEntry[] {
+		if (!browser) return [];
+		try {
+			const saved = localStorage.getItem(AUTOSAVE_INDEX_KEY);
+			if (!saved) return [];
+			return JSON.parse(saved) as AutosaveIndexEntry[];
+		} catch {
+			return [];
+		}
+	}
+
+	function updateAutosaveIndex(id: string, title: string, updatedAt: string): void {
+		if (!browser) return;
+
+		let index = getAutosaveIndex();
+
+		// Remove existing entry for this document
+		index = index.filter((entry) => entry.id !== id);
+
+		// Add new entry at the beginning
+		index.unshift({ id, title, updatedAt });
+
+		// Keep only MAX_AUTOSAVES entries
+		if (index.length > MAX_AUTOSAVES) {
+			const removed = index.splice(MAX_AUTOSAVES);
+			// Clean up removed autosaves from localStorage
+			for (const entry of removed) {
+				localStorage.removeItem(AUTOSAVE_KEY_PREFIX + entry.id);
+			}
+		}
+
+		localStorage.setItem(AUTOSAVE_INDEX_KEY, JSON.stringify(index));
+	}
+
+	function removeFromAutosaveIndex(id: string): void {
+		if (!browser) return;
+
+		const index = getAutosaveIndex().filter((entry) => entry.id !== id);
+		localStorage.setItem(AUTOSAVE_INDEX_KEY, JSON.stringify(index));
+		localStorage.removeItem(AUTOSAVE_KEY_PREFIX + id);
 	}
 
 	function loadSyncStateFromLocalStorage(): {
@@ -810,13 +857,33 @@ function createWhiteboardStore() {
 
 		/**
 		 * Load from localStorage autosave if available
+		 * First tries to load the most recent autosave, also handles legacy migration
 		 * Also restores sync state (Drive file/folder IDs) if present
 		 */
 		loadFromAutosave(): boolean {
 			if (!browser) return false;
 
 			try {
-				const saved = localStorage.getItem(AUTOSAVE_KEY);
+				// First try legacy autosave (migration)
+				const legacySaved = localStorage.getItem(LEGACY_AUTOSAVE_KEY);
+				if (legacySaved) {
+					const result = this.loadFromJson(legacySaved);
+					if (result.success && document) {
+						// Migrate to new system
+						saveToLocalStorage();
+						// Remove legacy autosave
+						localStorage.removeItem(LEGACY_AUTOSAVE_KEY);
+						console.debug('[Whiteboard] Migrated legacy autosave to new system');
+						return true;
+					}
+				}
+
+				// Try to load most recent autosave from index
+				const index = getAutosaveIndex();
+				if (index.length === 0) return false;
+
+				const mostRecent = index[0];
+				const saved = localStorage.getItem(AUTOSAVE_KEY_PREFIX + mostRecent.id);
 				if (!saved) return false;
 
 				const result = this.loadFromJson(saved);
@@ -845,11 +912,48 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Clear autosave from localStorage
+		 * Get list of available autosaves
+		 */
+		getAutosaveList(): AutosaveIndexEntry[] {
+			return getAutosaveIndex();
+		},
+
+		/**
+		 * Load a specific autosave by document ID
+		 */
+		loadAutosaveById(id: string): boolean {
+			if (!browser) return false;
+
+			try {
+				const saved = localStorage.getItem(AUTOSAVE_KEY_PREFIX + id);
+				if (!saved) return false;
+
+				const result = this.loadFromJson(saved);
+				if (result.success) {
+					console.debug('[Whiteboard] Loaded autosave:', id);
+					return true;
+				}
+			} catch (error) {
+				console.warn('[Whiteboard] Failed to load autosave:', error);
+			}
+
+			return false;
+		},
+
+		/**
+		 * Delete a specific autosave by document ID
+		 */
+		deleteAutosave(id: string): void {
+			if (!browser) return;
+			removeFromAutosaveIndex(id);
+		},
+
+		/**
+		 * Clear autosave for current document from localStorage
 		 */
 		clearAutosave(): void {
-			if (!browser) return;
-			localStorage.removeItem(AUTOSAVE_KEY);
+			if (!browser || !document) return;
+			removeFromAutosaveIndex(document.id);
 			clearSyncStateFromLocalStorage();
 		},
 
@@ -4521,10 +4625,6 @@ function createWhiteboardStore() {
 		destroy(): void {
 			if (autosaveTimeout) {
 				clearTimeout(autosaveTimeout);
-			}
-			// Remove beforeunload handler
-			if (browser) {
-				window.removeEventListener('beforeunload', handleBeforeUnload);
 			}
 			// Cancel any pending Drive auto-sync
 			driveSyncService.cancelAutoSync();
