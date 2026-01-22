@@ -112,6 +112,8 @@ interface WorksheetExerciseData {
 	variation_index: number | null;
 	/** Section this exercise belongs to */
 	section_id: string | null;
+	/** Indicates if this exercise is essential/priority for students */
+	is_essential: boolean;
 	exercise: ExerciseData;
 }
 
@@ -147,7 +149,7 @@ function resolveExercise(
 		shared: exercise.shared ?? undefined,
 		variations: exercise.variations ?? undefined,
 		distribution_mode: 'on_demand',
-		difficulty: 1,
+		category: 'application',
 		tags: [],
 		// Audit fields (not used by generator but required by type)
 		created_at: new Date().toISOString(),
@@ -276,6 +278,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				correction_visible,
 				variation_index,
 				section_id,
+				is_essential,
 				exercise:exercises (
 					id,
 					title,
@@ -404,7 +407,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				statement,
 				correction: correctionVisible ? correction : null,
 				correction_visible: correctionVisible,
-				section_id: we.section_id ?? null
+				section_id: we.section_id ?? null,
+				is_essential: we.is_essential ?? false
 			};
 
 			// Add hints if present (from variation or instance)

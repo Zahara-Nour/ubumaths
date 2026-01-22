@@ -71,7 +71,6 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 						exercise:exercises(
 							id,
 							title,
-							difficulty,
 							variables,
 							shared,
 							variations

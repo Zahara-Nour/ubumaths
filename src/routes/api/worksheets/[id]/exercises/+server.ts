@@ -86,7 +86,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			exercise:exercises (
 				id,
 				title,
-				difficulty,
 				variables,
 				shared,
 				variations

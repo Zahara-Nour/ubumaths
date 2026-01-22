@@ -249,7 +249,8 @@ export const createWorksheetExerciseSchema = z.object({
 		.nullable(),
 	variant_mode: variantModeSchema.default('none'),
 	variant_config: variantConfigSchema,
-	custom_instructions: z.string().trim().max(5000, 'Instructions too long').optional().nullable()
+	custom_instructions: z.string().trim().max(5000, 'Instructions too long').optional().nullable(),
+	is_essential: z.boolean().optional().default(false)
 });
 
 /**
@@ -584,6 +585,7 @@ export const worksheetExerciseResponseSchema = z.object({
 	variant_mode: variantModeSchema,
 	variant_config: z.record(z.string(), z.unknown()),
 	custom_instructions: z.string().nullable(),
+	is_essential: z.boolean(),
 	created_at: timestampSchema,
 	updated_at: timestampSchema
 });
@@ -599,7 +601,6 @@ export const worksheetExerciseWithDataResponseSchema = worksheetExerciseResponse
 		.object({
 			id: z.string().uuid(),
 			title: z.string().nullable(),
-			difficulty: z.number().int().nullable(),
 			variables: z.unknown().nullable(),
 			shared: z.unknown().nullable(),
 			variations: z.array(z.unknown()).nullable()
@@ -889,7 +890,9 @@ export const studentExerciseViewSchema = z.object({
 	/** Supplementary resources (videos, PDFs, links) */
 	resources: z.array(exerciseResourceSchema).optional(),
 	/** Exercise tags for categorization */
-	tags: z.array(z.string()).optional()
+	tags: z.array(z.string()).optional(),
+	/** Indicates if this exercise is essential/priority */
+	is_essential: z.boolean().optional()
 });
 
 /**

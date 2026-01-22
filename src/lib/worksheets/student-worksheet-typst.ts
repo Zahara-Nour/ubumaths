@@ -117,6 +117,12 @@ export function generateStudentWorksheetTypst(
 ]\n\n`;
 	}
 
+	// Check if there are essential exercises for legend
+	const hasEssentialExercises = (worksheet.exercises ?? []).some((e) => e.is_essential);
+	if (hasEssentialExercises) {
+		typst += `#text(size: 0.9em, fill: gray)[#text(fill: rgb("#f59e0b"))[★] = Exercices indispensables]\n\n`;
+	}
+
 	typst += `#line(length: 100%, stroke: 0.5pt + gray)\n\n`;
 
 	// Sort exercises by section order, then by position within section
@@ -158,21 +164,34 @@ export function generateStudentWorksheetTypst(
 		const titlePart = exercise.title
 			? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(exercise.title)}]`
 			: '';
-		typst += `#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${exerciseNumber}]]${titlePart}\n\n`;
+
+		// Star prefix for essential exercises
+		const essentialPrefix = exercise.is_essential ? `#text(fill: rgb("#f59e0b"))[★] ` : '';
+
+		// Build exercise content
+		let exerciseContent = `${essentialPrefix}#box(fill: rgb("#dc2626"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[${exerciseNumber}]]${titlePart}\n\n`;
 
 		// Points if available
 		if (exercise.points) {
-			typst += `#text(size: 0.9em, fill: gray)[${exercise.points} point${exercise.points > 1 ? 's' : ''}]\n\n`;
+			exerciseContent += `#text(size: 0.9em, fill: gray)[${exercise.points} point${exercise.points > 1 ? 's' : ''}]\n\n`;
 		}
 
 		// Custom instructions if present
 		if (exercise.custom_instructions) {
-			typst += `#text(style: "italic", fill: gray)[${escapeTypst(exercise.custom_instructions)}]\n\n`;
+			exerciseContent += `#text(style: "italic", fill: gray)[${escapeTypst(exercise.custom_instructions)}]\n\n`;
 		}
 
 		// Statement (already resolved markdown)
 		const statementAst = parseMarkdown(exercise.statement);
-		typst += generateTypst(statementAst, { includeSetup: false }) + '\n\n';
+		exerciseContent += generateTypst(statementAst, { includeSetup: false }) + '\n\n';
+
+		// Wrap essential exercises with orange left border
+		if (exercise.is_essential) {
+			typst += `#block(stroke: (left: 2pt + rgb("#f97316")), inset: (left: 8pt))[
+${exerciseContent}]\n`;
+		} else {
+			typst += exerciseContent;
+		}
 
 		// Collect correction for the end section
 		if (includeSolution && exercise.correction && exercise.correction_visible) {
