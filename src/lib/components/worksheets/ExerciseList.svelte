@@ -67,6 +67,9 @@
 	let deleteConfirmOpen = $state(false);
 	let isDeleting = $state(false);
 
+	// Toggle essential state
+	let togglingEssentialId = $state<string | null>(null);
+
 	// Saving state
 	let isSaving = $state(false);
 
@@ -388,6 +391,45 @@
 		}
 		return position + localIndex + 1;
 	}
+
+	/**
+	 * Toggle essential status for an exercise
+	 */
+	async function toggleEssential(exercise: WorksheetExerciseWithExercise) {
+		if (readonly || togglingEssentialId) return;
+
+		const newValue = !exercise.is_essential;
+		togglingEssentialId = exercise.id;
+
+		// Optimistic update
+		const previousExercises = [...exercises];
+		const newExercises = exercises.map((e) =>
+			e.id === exercise.id ? { ...e, is_essential: newValue } : e
+		);
+		onExercisesChange?.(newExercises);
+
+		try {
+			const response = await fetch(`/api/worksheets/${worksheetId}/exercises/${exercise.id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ is_essential: newValue })
+			});
+
+			if (!response.ok) {
+				const error = await response.json().catch(() => ({}));
+				throw new Error(error.message || 'Erreur lors de la mise a jour');
+			}
+
+			toaster.success(newValue ? 'Exercice marque indispensable' : 'Exercice non indispensable');
+		} catch (err) {
+			console.error('Error toggling essential:', err);
+			// Rollback
+			onExercisesChange?.(previousExercises);
+			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la mise a jour');
+		} finally {
+			togglingEssentialId = null;
+		}
+	}
 </script>
 
 <Card.Root>
@@ -480,8 +522,8 @@
 												</div>
 											{/if}
 
-											<!-- Essential star indicator -->
-											{#if exercise.is_essential}
+											<!-- Essential star indicator (readonly mode only) -->
+											{#if readonly && exercise.is_essential}
 												<Star class="h-4 w-4 shrink-0 fill-amber-500 text-amber-500" />
 											{/if}
 
@@ -516,6 +558,22 @@
 												<div
 													class="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100"
 												>
+													<Button
+														variant="ghost"
+														size="icon"
+														class="h-7 w-7 {exercise.is_essential
+															? 'text-amber-500 hover:bg-amber-50 hover:text-amber-600'
+															: 'text-muted-foreground hover:text-amber-500'}"
+														onclick={() => toggleEssential(exercise)}
+														disabled={togglingEssentialId === exercise.id}
+														aria-label={exercise.is_essential
+															? 'Retirer indispensable'
+															: 'Marquer indispensable'}
+													>
+														<Star
+															class="h-3.5 w-3.5 {exercise.is_essential ? 'fill-current' : ''}"
+														/>
+													</Button>
 													<Button
 														variant="ghost"
 														size="icon"
