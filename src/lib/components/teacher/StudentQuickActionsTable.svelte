@@ -53,9 +53,9 @@
 		- No gidouilles refund
 
 	Step 3: Add warning C (if score ≠ 0)
-		- Adds Conduite warning instantly
+		- Adds Comportement warning instantly
 		- Decrements warning score by 1
-		- Sends notification: "Avertissement de Conduite"
+		- Sends notification: "Avertissement de Comportement"
 
 	Edge Case: Already at 20 warnings (score = 0)
 		- Shows warning toast: "Already has 20 warnings"

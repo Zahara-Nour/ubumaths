@@ -27,6 +27,7 @@
 	import { cn } from '$lib/utils';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { X } from 'lucide-svelte';
+	import { WARNING_TYPE_LABELS } from '$lib/types/warnings';
 
 	interface Warning {
 		id: string;
@@ -66,13 +67,8 @@
 	let error = $state<string | null>(null);
 	let success = $state(false);
 
-	// Warning type labels
-	const warningTypeLabels: Record<'C' | 'M' | 'R' | 'T', string> = {
-		C: 'Comportement',
-		M: 'Matériel',
-		R: 'Retard',
-		T: 'Travail'
-	};
+	// Warning type labels (from shared constants)
+	const warningTypeLabels = WARNING_TYPE_LABELS;
 
 	// Warning type colors
 	const warningTypeColors: Record<'C' | 'M' | 'R' | 'T', string> = {

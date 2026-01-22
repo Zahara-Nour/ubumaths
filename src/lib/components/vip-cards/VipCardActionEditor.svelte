@@ -4,7 +4,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import type { VipCardAction, VipCardRarity } from '$lib/types/vip-card';
-	import type { WarningType } from '$lib/server/warnings';
+	import { type WarningType, WARNING_TYPE_LABELS } from '$lib/types/warnings';
 	import { getRarityPoints } from '$lib/types/vip-card';
 
 	interface Props {
@@ -105,13 +105,10 @@
 		{ value: 'choose_card', label: 'Choisir des cartes spécifiques' }
 	];
 
-	// Warning type options
+	// Warning type options (from shared constants)
 	const warningTypeItems = [
 		{ value: 'none', label: 'Tous les types' },
-		{ value: 'C', label: 'Comportement' },
-		{ value: 'M', label: 'Matériel' },
-		{ value: 'R', label: 'Retard' },
-		{ value: 'T', label: 'Travail' }
+		...Object.entries(WARNING_TYPE_LABELS).map(([value, label]) => ({ value, label }))
 	];
 
 	// Exchange mode options
