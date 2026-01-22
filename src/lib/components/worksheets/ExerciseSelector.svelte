@@ -113,7 +113,7 @@
 	let selectionCount = $derived(selectedExercises.size);
 	let canSelectMore = $derived(limit === undefined || selectionCount < limit);
 	let hasActiveFilters = $derived(
-		selectedDifficulty !== '' || selectedGrades !== '' || selectedTags !== ''
+		selectedCategory !== '' || selectedGrades !== '' || selectedTags !== ''
 	);
 
 	/**
@@ -180,7 +180,7 @@
 	 */
 	function clearFilters(): void {
 		searchQuery = '';
-		selectedDifficulty = '';
+		selectedCategory = '';
 		selectedGrades = '';
 		selectedTags = '';
 		fetchExercises(1);
@@ -255,7 +255,7 @@
 			// Reset state when opening
 			selectedExercises.clear();
 			searchQuery = '';
-			selectedDifficulty = '';
+			selectedCategory = '';
 			selectedGrades = '';
 			selectedTags = '';
 			fetchExercises(1);
