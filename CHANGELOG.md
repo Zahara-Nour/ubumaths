@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.21](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.20...v0.7.21) (2026-01-22)
+
+### ✨ Features
+
+- **exercises:** replace difficulty system with category taxonomy ([2738a8d](https://github.com/Zahara-Nour/ubumaths/commit/2738a8df4e65ca0e0627ff9f74bc177420a43fd7))
+- **worksheets:** add essential exercise marking with visual indicators ([59d6929](https://github.com/Zahara-Nour/ubumaths/commit/59d69297d01a112beec3b094e409a7887eedb4b6))
+- **worksheets:** add quick toggle for essential exercises ([f60e862](https://github.com/Zahara-Nour/ubumaths/commit/f60e86298c0ac031788f9321e39ccbc040347b33))
+
+### 🐛 Bug Fixes
+
+- **csp:** add Vercel Analytics domains to Content Security Policy ([3038a40](https://github.com/Zahara-Nour/ubumaths/commit/3038a401d23fc5f7ac06754f0c97862ecdc6c76c))
+- **worksheets:** improve essential exercise toggle UX and preview API ([23f67d2](https://github.com/Zahara-Nour/ubumaths/commit/23f67d2ad140c48f01d9cada6e6db92923ba02fc))
+
 ### [0.7.20](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.19...v0.7.20) (2026-01-21)
 
 ### ✨ Features
