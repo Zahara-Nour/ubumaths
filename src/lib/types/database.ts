@@ -2860,9 +2860,9 @@ export type Database = {
 			};
 			exercises: {
 				Row: {
+					category: string;
 					created_at: string;
 					created_by: string;
-					difficulty: number;
 					distribution_mode: string;
 					generic_functions: string[] | null;
 					grades: string[] | null;
@@ -2880,9 +2880,9 @@ export type Database = {
 					variations: Json | null;
 				};
 				Insert: {
+					category: string;
 					created_at?: string;
 					created_by: string;
-					difficulty: number;
 					distribution_mode?: string;
 					generic_functions?: string[] | null;
 					grades?: string[] | null;
@@ -2900,9 +2900,9 @@ export type Database = {
 					variations?: Json | null;
 				};
 				Update: {
+					category?: string;
 					created_at?: string;
 					created_by?: string;
-					difficulty?: number;
 					distribution_mode?: string;
 					generic_functions?: string[] | null;
 					grades?: string[] | null;

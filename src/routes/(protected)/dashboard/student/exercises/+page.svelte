@@ -221,7 +221,9 @@
 
 						<!-- Metadata -->
 						<div class="flex flex-wrap gap-4 text-sm text-muted-foreground">
-							<span>Difficulté: {exercise.difficulty}/3</span>
+							<span class="capitalize"
+								>{exercise.category?.replace('_', ' ') || 'Non catégorisé'}</span
+							>
 
 							{#if exercise.grades && exercise.grades.length > 0}
 								<span>Niveaux: {exercise.grades.join(', ')}</span>

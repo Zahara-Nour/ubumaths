@@ -57,7 +57,8 @@
 	import { formatGradeShort } from '$lib/utils/grades';
 	import type { GradeCode } from '$lib/types/grades';
 	import type { Exercise } from '$lib/exercises/types';
-	import { getExerciseContentSafe } from '$lib/exercises/types';
+	import { getExerciseContentSafe, EXERCISE_CATEGORIES } from '$lib/exercises/types';
+	import type { ExerciseCategory } from '$lib/exercises/types';
 	import ExercisePreview from './ExercisePreview.svelte';
 
 	// Types
@@ -90,7 +91,7 @@
 
 	// Filter state
 	let searchQuery = $state('');
-	let selectedDifficulty = $state<string>('');
+	let selectedCategory = $state<ExerciseCategory | ''>('');
 	let selectedGrades = $state<string>('');
 	let selectedTags = $state<string>('');
 	let showFilters = $state(false);
@@ -106,12 +107,7 @@
 	let searchTimer: ReturnType<typeof setTimeout>;
 
 	// Filter options
-	const difficultyOptions = [
-		{ value: '', label: 'Toutes' },
-		{ value: '1', label: 'Facile' },
-		{ value: '2', label: 'Moyen' },
-		{ value: '3', label: 'Difficile' }
-	];
+	const categoryOptions = [{ value: '', label: 'Toutes' }, ...EXERCISE_CATEGORIES];
 
 	// Derived values
 	let selectionCount = $derived(selectedExercises.size);
@@ -135,8 +131,8 @@
 			if (searchQuery.trim()) {
 				params.set('search', searchQuery.trim());
 			}
-			if (selectedDifficulty) {
-				params.set('difficulty', selectedDifficulty);
+			if (selectedCategory) {
+				params.set('category', selectedCategory);
 			}
 			if (selectedGrades) {
 				params.set('grades', selectedGrades);
@@ -277,21 +273,11 @@
 	}
 
 	/**
-	 * Get difficulty badge variant
+	 * Get category label from category value
 	 */
-	function getDifficultyVariant(difficulty: number): 'default' | 'secondary' | 'destructive' {
-		if (difficulty === 1) return 'default';
-		if (difficulty === 2) return 'secondary';
-		return 'destructive';
-	}
-
-	/**
-	 * Get difficulty label
-	 */
-	function getDifficultyLabel(difficulty: number): string {
-		if (difficulty === 1) return 'Facile';
-		if (difficulty === 2) return 'Moyen';
-		return 'Difficile';
+	function getCategoryLabel(category: ExerciseCategory): string {
+		const found = EXERCISE_CATEGORIES.find((c) => c.value === category);
+		return found?.label || category;
 	}
 
 	// Cleanup on unmount
@@ -365,12 +351,8 @@
 						<Card.Content class="pt-4">
 							<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
 								<div class="space-y-2">
-									<Label>Difficulte</Label>
-									<MySelect
-										type="single"
-										bind:value={selectedDifficulty}
-										items={difficultyOptions}
-									/>
+									<Label>Categorie</Label>
+									<MySelect type="single" bind:value={selectedCategory} items={categoryOptions} />
 								</div>
 
 								<div class="space-y-2">
@@ -480,8 +462,8 @@
 
 									<!-- Metadata -->
 									<div class="mt-2 flex flex-wrap items-center gap-2">
-										<Badge variant={getDifficultyVariant(exercise.difficulty)}>
-											{getDifficultyLabel(exercise.difficulty)}
+										<Badge variant="secondary">
+											{getCategoryLabel(exercise.category as ExerciseCategory)}
 										</Badge>
 
 										{#if exercise.variables && exercise.variables.length > 0}

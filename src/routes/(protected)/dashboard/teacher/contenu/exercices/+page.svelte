@@ -15,7 +15,8 @@
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import { Send, Pencil, Trash2, Loader2, ArrowUp, ArrowDown, Eye, Globe } from 'lucide-svelte';
-	import type { Exercise } from '$lib/exercises/types';
+	import type { Exercise, ExerciseCategory } from '$lib/exercises/types';
+	import { EXERCISE_CATEGORIES } from '$lib/exercises/types';
 	import type { PageData } from './$types';
 	import type { GradeCode } from '$lib/types/grades';
 	import { formatGradeShort, getMinGradeOrder } from '$lib/utils/grades';
@@ -34,7 +35,9 @@
 
 	// Filter state
 	let searchQuery = $state(data.filters.search);
-	let selectedDifficulty = $state(data.filters.difficulty?.toString() || '');
+	let selectedCategory = $state<ExerciseCategory | ''>(
+		(data.filters.category as ExerciseCategory) || ''
+	);
 	let selectedGradeLevels = $state<GradeCode[]>((data.filters.grades || []) as GradeCode[]);
 
 	// Delete confirmation
@@ -140,7 +143,7 @@
 		const params = new URLSearchParams();
 
 		if (searchQuery) params.set('search', searchQuery);
-		if (selectedDifficulty) params.set('difficulty', selectedDifficulty);
+		if (selectedCategory) params.set('category', selectedCategory);
 		if (selectedGradeLevels.length > 0) params.set('grades', selectedGradeLevels.join(','));
 		// grades sorting is client-side only, don't send to API
 		if (sortBy !== 'updated_at' && sortBy !== 'grades') params.set('sortBy', sortBy);
@@ -217,7 +220,7 @@
 	 */
 	function clearFilters() {
 		searchQuery = '';
-		selectedDifficulty = '';
+		selectedCategory = '';
 		selectedGradeLevels = [];
 		fetchExercises(1);
 	}
@@ -238,21 +241,11 @@
 	}
 
 	/**
-	 * Get difficulty badge variant
+	 * Get category label from category value
 	 */
-	function getDifficultyVariant(difficulty: number): 'default' | 'secondary' | 'destructive' {
-		if (difficulty === 1) return 'default';
-		if (difficulty === 2) return 'secondary';
-		return 'destructive';
-	}
-
-	/**
-	 * Get difficulty label
-	 */
-	function getDifficultyLabel(difficulty: number): string {
-		if (difficulty === 1) return 'Facile';
-		if (difficulty === 2) return 'Moyen';
-		return 'Difficile';
+	function getCategoryLabel(category: ExerciseCategory): string {
+		const found = EXERCISE_CATEGORIES.find((c) => c.value === category);
+		return found?.label || category;
 	}
 
 	/**
@@ -309,18 +302,18 @@
 					/>
 				</div>
 
-				<!-- Difficulty -->
+				<!-- Category -->
 				<div class="space-y-2">
-					<Label for="difficulty">Difficulté</Label>
+					<Label for="category">Catégorie</Label>
 					<select
-						id="difficulty"
-						bind:value={selectedDifficulty}
+						id="category"
+						bind:value={selectedCategory}
 						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						<option value="">Toutes</option>
-						<option value="1">Facile</option>
-						<option value="2">Moyen</option>
-						<option value="3">Difficile</option>
+						{#each EXERCISE_CATEGORIES as cat (cat.value)}
+							<option value={cat.value}>{cat.label}</option>
+						{/each}
 					</select>
 				</div>
 
@@ -392,7 +385,7 @@
 								{/if}
 							</button>
 						</Table.Head>
-						<Table.Head>Difficulté</Table.Head>
+						<Table.Head>Catégorie</Table.Head>
 						<Table.Head>
 							<button
 								onclick={() => toggleSort('grades')}
@@ -463,8 +456,8 @@
 									</div>
 								</Table.Cell>
 								<Table.Cell>
-									<Badge variant={getDifficultyVariant(exercise.difficulty)}>
-										{getDifficultyLabel(exercise.difficulty)}
+									<Badge variant="secondary">
+										{getCategoryLabel(exercise.category as ExerciseCategory)}
 									</Badge>
 								</Table.Cell>
 								<Table.Cell>

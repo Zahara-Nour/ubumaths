@@ -345,7 +345,7 @@ function generateVariationsInstance(
 		// Metadata from template
 		exerciseId: exercise.id,
 		title: exercise.title,
-		difficulty: exercise.difficulty,
+		category: exercise.category,
 		tags: exercise.tags,
 		source: exercise.source,
 		grades: exercise.grades,
