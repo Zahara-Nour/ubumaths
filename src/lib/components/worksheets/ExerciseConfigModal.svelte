@@ -30,7 +30,8 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Loader2, Save } from 'lucide-svelte';
+	import { Loader2, Save, Star } from 'lucide-svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import type {
 		WorksheetExerciseWithExercise,
 		WorksheetSectionRow,
@@ -60,6 +61,7 @@
 	let nVersions = $state<number>(2);
 	let groupSize = $state<number>(2);
 	let customInstructions = $state('');
+	let isEssential = $state(false);
 
 	// Saving state
 	let isSaving = $state(false);
@@ -102,6 +104,7 @@
 		nVersions = ex.variant_config?.n_versions ?? 2;
 		groupSize = ex.variant_config?.group_size ?? 2;
 		customInstructions = ex.custom_instructions || '';
+		isEssential = ex.is_essential ?? false;
 	}
 
 	/**
@@ -138,7 +141,8 @@
 					section_id: sectionId || null,
 					variant_mode: variantMode,
 					variant_config: buildVariantConfig(),
-					custom_instructions: customInstructions.trim() || null
+					custom_instructions: customInstructions.trim() || null,
+					is_essential: isEssential
 				})
 			});
 
@@ -214,6 +218,24 @@
 					placeholder="Ex: 10"
 				/>
 				<p class="text-xs text-muted-foreground">Nombre de points attribues a cet exercice</p>
+			</div>
+
+			<!-- Essential exercise -->
+			<div
+				class="flex items-start space-x-3 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-950/30"
+			>
+				<Star class="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500" />
+				<div class="flex-1 space-y-2">
+					<div class="flex items-center justify-between">
+						<Label for="is-essential" class="cursor-pointer font-medium"
+							>Exercice indispensable</Label
+						>
+						<MyCheckbox id="is-essential" bind:checked={isEssential} />
+					</div>
+					<p class="text-xs text-muted-foreground">
+						Les exercices indispensables sont mis en evidence avec une etoile doree pour les eleves
+					</p>
+				</div>
 			</div>
 
 			<!-- Variant mode -->

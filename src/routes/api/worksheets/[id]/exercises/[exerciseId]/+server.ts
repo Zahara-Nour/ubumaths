@@ -164,6 +164,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	if (data.variant_config !== undefined) updateData.variant_config = data.variant_config;
 	if (data.custom_instructions !== undefined)
 		updateData.custom_instructions = data.custom_instructions;
+	if (data.is_essential !== undefined) updateData.is_essential = data.is_essential;
 
 	// Update exercise
 	const { data: exerciseData, error: dbError } = await locals.supabase

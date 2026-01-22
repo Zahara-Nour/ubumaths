@@ -76,7 +76,6 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 					exercise:exercises(
 						id,
 						title,
-						difficulty,
 						variables,
 						shared,
 						variations

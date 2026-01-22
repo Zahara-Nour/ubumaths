@@ -133,7 +133,7 @@ function resolveExercise(
 		shared: exercise.shared ?? undefined,
 		variations: exercise.variations ?? undefined,
 		distribution_mode: 'on_demand',
-		difficulty: 1,
+		category: 'application',
 		tags: [],
 		created_at: new Date().toISOString(),
 		updated_at: new Date().toISOString(),

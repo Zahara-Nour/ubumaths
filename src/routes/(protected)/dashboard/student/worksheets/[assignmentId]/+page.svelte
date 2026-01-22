@@ -6,7 +6,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { FileText, AlertTriangle } from 'lucide-svelte';
+	import { FileText, AlertTriangle, Star } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { MasteryStatus, ExerciseMasteryListResponse } from '$lib/types/exercise-mastery';
 	import type { StudentErrorReportView, StudentExerciseView } from '$lib/types/worksheets';
@@ -58,6 +58,9 @@
 
 	// Check if we have sections to display
 	let hasSections = $derived(sections.length > 0);
+
+	// Check if there are essential exercises (for legend display)
+	let hasEssentialExercises = $derived(exercises.some((e) => e.is_essential));
 
 	// Modal state
 	let modalOpen = $state(false);
@@ -227,6 +230,14 @@
 
 			<!-- Exercises Tab -->
 			<Tabs.Content value="exercises" class="space-y-6">
+				<!-- Legend for essential exercises -->
+				{#if hasEssentialExercises}
+					<div class="flex items-center gap-2 text-sm text-muted-foreground">
+						<Star class="h-4 w-4 fill-amber-500 text-amber-500" />
+						<span>= Exercices indispensables</span>
+					</div>
+				{/if}
+
 				{#if exercises.length === 0}
 					<!-- Empty State -->
 					<Card.Root class="border-dashed">

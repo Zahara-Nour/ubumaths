@@ -30,7 +30,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { GripVertical, Trash2, Loader2, Settings2 } from 'lucide-svelte';
+	import { GripVertical, Trash2, Loader2, Settings2, Star } from 'lucide-svelte';
 	import type {
 		WorksheetExerciseWithExercise,
 		WorksheetSectionRow,
@@ -478,6 +478,11 @@
 												<div class="text-muted-foreground">
 													<GripVertical class="h-4 w-4" />
 												</div>
+											{/if}
+
+											<!-- Essential star indicator -->
+											{#if exercise.is_essential}
+												<Star class="h-4 w-4 shrink-0 fill-amber-500 text-amber-500" />
 											{/if}
 
 											<!-- Position number -->

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
-	import { CheckCircle, AlertCircle, BookOpen } from 'lucide-svelte';
+	import { CheckCircle, AlertCircle, BookOpen, Star } from 'lucide-svelte';
 	import type { StudentExerciseView } from '$lib/types/worksheets';
 	import type { MasteryStatus } from '$lib/types/exercise-mastery';
 
@@ -19,7 +19,11 @@
 	);
 </script>
 
-<div class="flex w-full items-center gap-3 rounded-lg border bg-card p-4">
+<div
+	class="flex w-full items-center gap-3 rounded-lg border bg-card p-4 {exercise.is_essential
+		? 'border-l-[3px] border-l-amber-500'
+		: ''}"
+>
 	<!-- Clickable area for opening exercise -->
 	<button
 		type="button"
@@ -27,6 +31,14 @@
 		class="flex flex-1 items-center gap-3 text-left transition-colors hover:opacity-80"
 		aria-label="Ouvrir l'exercice {index}"
 	>
+		<!-- Essential star indicator -->
+		{#if exercise.is_essential}
+			<Star
+				class="h-5 w-5 flex-shrink-0 fill-amber-500 text-amber-500"
+				aria-label="Exercice indispensable"
+			/>
+		{/if}
+
 		<div
 			class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
 		>

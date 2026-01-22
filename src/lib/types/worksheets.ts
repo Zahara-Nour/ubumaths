@@ -284,6 +284,11 @@ export interface WorksheetExerciseRow {
 	 * When set, this variation is used for all students regardless of seed.
 	 */
 	variation_index: number | null;
+	/**
+	 * Indicates if this exercise is essential/priority for students.
+	 * Displayed with a star icon in student view.
+	 */
+	is_essential: boolean;
 	created_at: string;
 	updated_at: string;
 }
@@ -391,6 +396,8 @@ export interface WorksheetExerciseInsert {
 	custom_instructions?: string | null;
 	/** Optional: Force a specific variation index (0-based). NULL = seed-based. */
 	variation_index?: number | null;
+	/** Mark as essential/priority exercise. Defaults to false. */
+	is_essential?: boolean;
 }
 
 export interface WorksheetInstanceInsert {
@@ -494,6 +501,8 @@ export interface WorksheetExerciseUpdate {
 	custom_instructions?: string | null;
 	/** Optional: Force a specific variation index (0-based). NULL = seed-based. */
 	variation_index?: number | null;
+	/** Mark as essential/priority exercise. */
+	is_essential?: boolean;
 }
 
 export interface WorksheetInstanceUpdate {
@@ -539,7 +548,6 @@ export interface WorksheetExerciseWithExercise extends WorksheetExerciseRow {
 		statement_md?: string;
 		/** @deprecated Use variations array instead - kept for backward compatibility */
 		solution_md?: string | null;
-		difficulty: number | null;
 		/** @deprecated Use shared.variables instead - kept for backward compatibility */
 		variables?: Variable[] | null;
 		/** Shared defaults for variations (recommended) */
@@ -616,6 +624,8 @@ export interface StudentExerciseView {
 	hints?: ExerciseHint[];
 	/** Supplementary resources (videos, PDFs, links) */
 	resources?: ExerciseResource[];
+	/** Indicates if this exercise is essential/priority */
+	is_essential?: boolean;
 }
 
 /**
