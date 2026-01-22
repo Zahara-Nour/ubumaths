@@ -79,6 +79,7 @@ import {
 import type { ShapeElement, ArrowElement, BindingAnchor, Point, Heading } from '../types/document';
 import { createArrowPoints } from '../types/document';
 import type { WhiteboardTemplate, TemplatePageData, TemplateFont } from '../types/templates';
+import { calculateSnapForTranslate, type PointsSnapIndicator } from '../core/snapping';
 
 // =============================================================================
 // Constants
@@ -480,6 +481,10 @@ function createWhiteboardStore() {
 	// === Live Elbow Points State (for smooth elbow arrow re-routing during drag) ===
 	let liveElbowPoints = $state<Map<string, readonly Point[]>>(new Map());
 
+	// === Snapping State ===
+	let snapIndicators = $state<PointsSnapIndicator[]>([]);
+	let snappingEnabled = $state(true);
+
 	// === Autosave ===
 	let autosaveTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -816,6 +821,16 @@ function createWhiteboardStore() {
 		/** Live elbow points for elbow arrows during drag */
 		get liveElbowPoints() {
 			return liveElbowPoints;
+		},
+
+		/** Snap indicators for visual feedback during drag */
+		get snapIndicators() {
+			return snapIndicators;
+		},
+
+		/** Whether snapping is enabled */
+		get snappingEnabled() {
+			return snappingEnabled;
 		},
 
 		// === Document Operations ===
@@ -2519,14 +2534,44 @@ function createWhiteboardStore() {
 		/**
 		 * Set live position for multiple elements at once (for group dragging).
 		 * Also recalculates elbow arrows bound to moved shapes in real-time.
+		 * Applies snapping if enabled.
 		 * @param elementIds - Elements to set live position for
 		 * @param dx - Horizontal offset from original position
 		 * @param dy - Vertical offset from original position
+		 * @param zoom - Current zoom level (for snap threshold adjustment)
+		 * @param disableSnap - If true, disable snapping for this call (e.g., Alt key held)
 		 */
-		setLivePositionBatch(elementIds: string[], dx: number, dy: number): void {
+		setLivePositionBatch(
+			elementIds: string[],
+			dx: number,
+			dy: number,
+			zoom: number = 1,
+			disableSnap: boolean = false
+		): void {
+			let finalDx = dx;
+			let finalDy = dy;
+
+			// Apply snapping if enabled and not disabled for this call
+			if (snappingEnabled && !disableSnap && currentPage && elementIds.length > 0) {
+				const selectedSet = new Set(elementIds);
+				const snapResult = calculateSnapForTranslate(
+					selectedSet,
+					currentPage.elements,
+					{ x: dx, y: dy },
+					zoom
+				);
+
+				finalDx = dx + snapResult.nudge.x;
+				finalDy = dy + snapResult.nudge.y;
+				snapIndicators = snapResult.indicators;
+			} else {
+				// Clear snap indicators if snapping is disabled
+				snapIndicators = [];
+			}
+
 			const newMap = new Map(livePositions);
 			for (const id of elementIds) {
-				newMap.set(id, { dx, dy });
+				newMap.set(id, { dx: finalDx, dy: finalDy });
 			}
 			livePositions = newMap;
 
@@ -2545,7 +2590,7 @@ function createWhiteboardStore() {
 				}
 
 				if (movedShapeIds.length > 0) {
-					this.recalculateLiveElbowArrows(movedShapeIds, dx, dy);
+					this.recalculateLiveElbowArrows(movedShapeIds, finalDx, finalDy);
 				}
 			}
 		},
@@ -2609,11 +2654,13 @@ function createWhiteboardStore() {
 
 		/**
 		 * Clear all live positions (e.g., after commit or cancel).
-		 * Also clears live elbow points.
+		 * Also clears live elbow points and snap indicators.
 		 */
 		clearAllLivePositions(): void {
-			if (livePositions.size === 0 && liveElbowPoints.size === 0) return;
+			if (livePositions.size === 0 && liveElbowPoints.size === 0 && snapIndicators.length === 0)
+				return;
 			livePositions = new Map();
+			snapIndicators = [];
 			this.clearAllLiveElbowPoints();
 		},
 
@@ -2647,6 +2694,33 @@ function createWhiteboardStore() {
 		clearAllLiveElbowPoints(): void {
 			if (liveElbowPoints.size === 0) return;
 			liveElbowPoints = new Map();
+		},
+
+		// === Snapping Methods ===
+
+		/**
+		 * Enable or disable snapping.
+		 */
+		setSnappingEnabled(enabled: boolean): void {
+			snappingEnabled = enabled;
+			if (!enabled) {
+				snapIndicators = [];
+			}
+		},
+
+		/**
+		 * Toggle snapping on/off.
+		 */
+		toggleSnapping(): void {
+			this.setSnappingEnabled(!snappingEnabled);
+		},
+
+		/**
+		 * Clear snap indicators (e.g., when drag ends).
+		 */
+		clearSnapIndicators(): void {
+			if (snapIndicators.length === 0) return;
+			snapIndicators = [];
 		},
 
 		/**
