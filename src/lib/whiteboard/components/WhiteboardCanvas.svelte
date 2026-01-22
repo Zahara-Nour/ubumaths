@@ -41,6 +41,7 @@
 	import ShapeLabelLayer from './ShapeLabelLayer.svelte';
 	import ImageLayer from './ImageLayer.svelte';
 	import SelectionLayer from './SelectionLayer.svelte';
+	import SnapIndicators from './SnapIndicators.svelte';
 	import type ContextMenu from './ContextMenu.svelte';
 	import {
 		getStrokeDashArray,
@@ -733,9 +734,10 @@
 			const dy = (e.clientY - selectionDragStartY) / scale;
 
 			// Apply live position to all selected elements
+			// Alt key disables snapping temporarily
 			if (Number.isFinite(dx) && Number.isFinite(dy)) {
 				const selectedIds = selectedElements.map((el) => el.id);
-				whiteboardStore.setLivePositionBatch(selectedIds, dx, dy);
+				whiteboardStore.setLivePositionBatch(selectedIds, dx, dy, scale, e.altKey);
 			}
 			return;
 		}
@@ -2258,6 +2260,11 @@
 					whiteboardStore.removeWaypointFromArrow(arrowId, waypointId)}
 			/>
 		</g>
+
+		<!-- Layer 5b: Snap Indicators (during drag) -->
+		{#if whiteboardStore.snapIndicators.length > 0}
+			<SnapIndicators indicators={whiteboardStore.snapIndicators} {scale} />
+		{/if}
 
 		<!-- Layer 6: Marquee Selection Rectangle -->
 		<!-- Blue = containment mode (default), Orange = intersection mode (Alt) -->
