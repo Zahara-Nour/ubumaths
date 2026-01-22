@@ -365,6 +365,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				correction_visible,
 				variation_index,
 				section_id,
+				is_essential,
 				exercise:exercises (
 					id,
 					title,
@@ -440,7 +441,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				statement: resolved.statement,
 				correction: correctionVisible ? resolved.correction : null,
 				correction_visible: correctionVisible,
-				section_id: we.section_id ?? null
+				section_id: we.section_id ?? null,
+				is_essential: we.is_essential ?? false
 			};
 
 			if (resolved.hints && resolved.hints.length > 0) {

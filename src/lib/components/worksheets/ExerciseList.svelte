@@ -25,6 +25,7 @@
 	```
 -->
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
@@ -40,7 +41,7 @@
 	// Types
 	interface Props {
 		worksheetId: string;
-		exercises: WorksheetExerciseWithExercise[];
+		exercises?: WorksheetExerciseWithExercise[];
 		sections: WorksheetSectionRow[];
 		readonly?: boolean;
 		onExercisesChange?: (exercises: WorksheetExerciseWithExercise[]) => void;
@@ -50,7 +51,7 @@
 	// Props
 	let {
 		worksheetId,
-		exercises = [],
+		exercises = $bindable([]),
 		sections = [],
 		readonly = false,
 		onExercisesChange,
@@ -67,8 +68,8 @@
 	let deleteConfirmOpen = $state(false);
 	let isDeleting = $state(false);
 
-	// Toggle essential state
-	let togglingEssentialId = $state<string | null>(null);
+	// Toggle essential state - SvelteSet allows multiple concurrent toggles with reactivity
+	const togglingEssentialIds = new SvelteSet<string>();
 
 	// Saving state
 	let isSaving = $state(false);
@@ -396,17 +397,15 @@
 	 * Toggle essential status for an exercise
 	 */
 	async function toggleEssential(exercise: WorksheetExerciseWithExercise) {
-		if (readonly || togglingEssentialId) return;
+		if (readonly || togglingEssentialIds.has(exercise.id)) return;
 
 		const newValue = !exercise.is_essential;
-		togglingEssentialId = exercise.id;
+		togglingEssentialIds.add(exercise.id);
 
-		// Optimistic update
+		// Optimistic update - update locally for immediate UI feedback AND notify parent
 		const previousExercises = [...exercises];
-		const newExercises = exercises.map((e) =>
-			e.id === exercise.id ? { ...e, is_essential: newValue } : e
-		);
-		onExercisesChange?.(newExercises);
+		exercises = exercises.map((e) => (e.id === exercise.id ? { ...e, is_essential: newValue } : e));
+		onExercisesChange?.(exercises);
 
 		try {
 			const response = await fetch(`/api/worksheets/${worksheetId}/exercises/${exercise.id}`, {
@@ -423,11 +422,12 @@
 			toaster.success(newValue ? 'Exercice marque indispensable' : 'Exercice non indispensable');
 		} catch (err) {
 			console.error('Error toggling essential:', err);
-			// Rollback
+			// Rollback - update locally AND notify parent
+			exercises = previousExercises;
 			onExercisesChange?.(previousExercises);
 			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la mise a jour');
 		} finally {
-			togglingEssentialId = null;
+			togglingEssentialIds.delete(exercise.id);
 		}
 	}
 </script>
@@ -555,25 +555,25 @@
 
 											<!-- Actions -->
 											{#if !readonly}
+												<!-- Essential toggle - always visible when essential, hover only when not -->
+												<Button
+													variant="ghost"
+													size="icon"
+													class="h-7 w-7 transition-opacity {exercise.is_essential
+														? 'text-amber-500 opacity-100 hover:bg-amber-50 hover:text-amber-600'
+														: 'text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-amber-500'}"
+													onclick={() => toggleEssential(exercise)}
+													disabled={togglingEssentialIds.has(exercise.id)}
+													aria-label={exercise.is_essential
+														? 'Retirer indispensable'
+														: 'Marquer indispensable'}
+												>
+													<Star class="h-3.5 w-3.5 {exercise.is_essential ? 'fill-current' : ''}" />
+												</Button>
+												<!-- Other actions - hover only -->
 												<div
 													class="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100"
 												>
-													<Button
-														variant="ghost"
-														size="icon"
-														class="h-7 w-7 {exercise.is_essential
-															? 'text-amber-500 hover:bg-amber-50 hover:text-amber-600'
-															: 'text-muted-foreground hover:text-amber-500'}"
-														onclick={() => toggleEssential(exercise)}
-														disabled={togglingEssentialId === exercise.id}
-														aria-label={exercise.is_essential
-															? 'Retirer indispensable'
-															: 'Marquer indispensable'}
-													>
-														<Star
-															class="h-3.5 w-3.5 {exercise.is_essential ? 'fill-current' : ''}"
-														/>
-													</Button>
 													<Button
 														variant="ghost"
 														size="icon"
