@@ -39,7 +39,8 @@
 		PenLine,
 		BookOpen,
 		Download,
-		Pencil
+		Pencil,
+		Star
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type {
@@ -482,6 +483,12 @@
 									</div>
 									<div class="flex-1">
 										<div class="flex items-center gap-2">
+											{#if exercise.is_essential}
+												<Star
+													class="h-4 w-4 shrink-0 fill-amber-500 text-amber-500"
+													aria-label="Exercice indispensable"
+												/>
+											{/if}
 											<span class="font-medium">
 												Exercice {visualIndex + 1}{#if exercise.title}:&ensp;<InlineMarkdown
 														content={exercise.title}
@@ -535,6 +542,12 @@
 						</div>
 						<div class="flex-1">
 							<div class="flex items-center gap-2">
+								{#if exercise.is_essential}
+									<Star
+										class="h-4 w-4 shrink-0 fill-amber-500 text-amber-500"
+										aria-label="Exercice indispensable"
+									/>
+								{/if}
 								<span class="font-medium">
 									Exercice {i + 1}{#if exercise.title}:&ensp;<InlineMarkdown
 											content={exercise.title}
