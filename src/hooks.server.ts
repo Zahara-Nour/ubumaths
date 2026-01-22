@@ -432,7 +432,8 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 			"script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'",
 			'https://cdn.jsdelivr.net',
 			'https://cdn.plot.ly',
-			'https://unpkg.com'
+			'https://unpkg.com',
+			'https://va.vercel-scripts.com'
 		].join(' '),
 
 		// Styles: self + inline (Tailwind) + Google Fonts
@@ -452,7 +453,9 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 			'https://cdn.jsdelivr.net',
 			'https://cdn.plot.ly',
 			'https://*.googleapis.com',
-			'https://packages.typst.org'
+			'https://packages.typst.org',
+			'https://va.vercel-scripts.com',
+			'https://vitals.vercel-insights.com'
 		].join(' '),
 
 		// Workers: for Pyodide Web Worker
