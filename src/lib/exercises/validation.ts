@@ -18,25 +18,33 @@ const gradeCodeSchema = z.enum(GRADE_CODES);
 // ============================================================================
 
 /**
- * Schema for difficulty level (1, 2, or 3)
+ * Schema for exercise category
  *
  * @example Valid values
  * ```typescript
- * difficultySchema.parse(1); // ✅ Easy
- * difficultySchema.parse(2); // ✅ Medium
- * difficultySchema.parse(3); // ✅ Hard
+ * categorySchema.parse('automatisme');  // ✅
+ * categorySchema.parse('application');  // ✅
+ * categorySchema.parse('challenge');    // ✅
  * ```
  *
  * @example Invalid values
  * ```typescript
- * difficultySchema.parse(0);   // ❌ Throws ZodError
- * difficultySchema.parse(4);   // ❌ Throws ZodError
- * difficultySchema.parse('2'); // ❌ Throws ZodError (must be number, not string)
+ * categorySchema.parse('easy');    // ❌ Throws ZodError
+ * categorySchema.parse(1);         // ❌ Throws ZodError (must be string)
+ * categorySchema.parse('');        // ❌ Throws ZodError
  * ```
  */
-const difficultySchema = z
-	.union([z.literal(1), z.literal(2), z.literal(3)])
-	.describe('Difficulty must be 1 (easy), 2 (medium), or 3 (hard)');
+const categorySchema = z.enum([
+	'automatisme',
+	'application',
+	'adaptation',
+	'recherche',
+	'tache_complexe',
+	'situation_probleme',
+	'challenge',
+	'mission',
+	'synthese'
+]);
 
 /**
  * Schema for tags array
@@ -104,7 +112,7 @@ const sharedExerciseDefaultsSchema = z.object({
  * const exercise = {
  *   version: '1.0',
  *   title: 'Équations du premier degré',
- *   difficulty: 2,
+ *   category: 'application',
  *   tags: ['algèbre', 'équations'],
  *   statement_md: '# Résoudre\n\nRésoudre l\'équation: $2x + 5 = 13$',
  *   solution_md: '# Solution\n\n$2x = 8$\n\n$x = 4$'
@@ -118,7 +126,7 @@ const exerciseExportSchemaV1 = z.object({
 	// Metadata
 	title: z.string().trim().optional(),
 	source: z.string().trim().optional(),
-	difficulty: difficultySchema,
+	category: categorySchema,
 	tags: tagsSchema,
 
 	// Content (required)
@@ -137,7 +145,7 @@ const exerciseExportSchemaV1 = z.object({
  * ```typescript
  * const exercise = {
  *   version: '2.0',
- *   difficulty: 2,
+ *   category: 'application',
  *   tags: ['algèbre'],
  *   statement_md: 'Base statement',
  *   solution_md: 'Base solution',
@@ -154,7 +162,7 @@ const exerciseExportSchemaV2 = z.object({
 	// Metadata
 	title: z.string().trim().optional(),
 	source: z.string().trim().optional(),
-	difficulty: difficultySchema,
+	category: categorySchema,
 	tags: tagsSchema,
 
 	// Content (required - preserved for backward compatibility)
@@ -180,7 +188,7 @@ const exerciseExportSchemaV2 = z.object({
  * ```typescript
  * const v1Exercise = {
  *   version: '1.0',
- *   difficulty: 2,
+ *   category: 'application',
  *   tags: ['algèbre'],
  *   statement_md: 'Question',
  *   solution_md: 'Answer'
@@ -192,7 +200,7 @@ const exerciseExportSchemaV2 = z.object({
  * ```typescript
  * const v2Exercise = {
  *   version: '2.0',
- *   difficulty: 2,
+ *   category: 'application',
  *   tags: ['algèbre'],
  *   statement_md: 'Base',
  *   solution_md: 'Base solution',
@@ -223,7 +231,7 @@ export const exerciseFrontmatterSchema = z.object({
 	// Metadata
 	title: z.string().trim().optional(),
 	source: z.string().trim().optional(),
-	difficulty: difficultySchema,
+	category: categorySchema,
 	tags: tagsSchema,
 	grades: gradesSchema,
 	topic: z.string().trim().optional()
@@ -289,7 +297,7 @@ export type ValidatedTemplateCreate = z.infer<typeof templateCreateSchema>;
  * ```typescript
  * const exerciseData = {
  *   version: '1.0',
- *   difficulty: 2,
+ *   category: 'application',
  *   tags: ['algèbre'],
  *   statement_md: '# Question\n\nRésoudre $x + 5 = 10$',
  *   solution_md: '# Solution\n\n$x = 5$'
@@ -299,7 +307,7 @@ export type ValidatedTemplateCreate = z.infer<typeof templateCreateSchema>;
  * if (result.success) {
  *   // result.data is fully typed and validated
  *   const exercise = result.data; // Type: ValidatedExerciseExport
- *   console.log(exercise.difficulty); // 2
+ *   console.log(exercise.category); // 'application'
  * }
  * ```
  *
@@ -307,7 +315,7 @@ export type ValidatedTemplateCreate = z.infer<typeof templateCreateSchema>;
  * ```typescript
  * const invalid = {
  *   version: '1.0',
- *   difficulty: 5, // ❌ Invalid (must be 1, 2, or 3)
+ *   category: 'invalid', // ❌ Invalid category
  *   statement_md: '',  // ❌ Empty statement
  *   solution_md: 'Solution'
  * };
@@ -315,7 +323,7 @@ export type ValidatedTemplateCreate = z.infer<typeof templateCreateSchema>;
  * const result = validateExerciseExport(invalid);
  * if (!result.success) {
  *   console.log(result.error);
- *   // Output: "difficulty: Invalid literal value, expected 1 | 2 | 3; statement_md: String must contain at least 1 character(s)"
+ *   // Output: "category: Invalid enum value; statement_md: String must contain at least 1 character(s)"
  * }
  * ```
  *
@@ -369,14 +377,14 @@ export function validateExerciseExport(data: unknown): {
  * const exercises = [
  *   {
  *     version: '1.0',
- *     difficulty: 1,
+ *     category: 'automatisme',
  *     tags: ['géométrie'],
  *     statement_md: 'Calculate the area of a square with side 5cm',
  *     solution_md: 'Area = 5 × 5 = 25 cm²'
  *   },
  *   {
  *     version: '1.0',
- *     difficulty: 2,
+ *     category: 'application',
  *     tags: ['algèbre'],
  *     statement_md: 'Solve: x + 3 = 7',
  *     solution_md: 'x = 4'
@@ -393,15 +401,15 @@ export function validateExerciseExport(data: unknown): {
  * @example Failed validation (one bad exercise)
  * ```typescript
  * const exercises = [
- *   { version: '1.0', difficulty: 1, statement_md: 'Q1', solution_md: 'A1' },
- *   { version: '1.0', difficulty: 99, statement_md: 'Q2', solution_md: 'A2' }, // ❌ Invalid difficulty
- *   { version: '1.0', difficulty: 2, statement_md: 'Q3', solution_md: 'A3' }
+ *   { version: '1.0', category: 'automatisme', statement_md: 'Q1', solution_md: 'A1' },
+ *   { version: '1.0', category: 'invalid', statement_md: 'Q2', solution_md: 'A2' }, // ❌ Invalid category
+ *   { version: '1.0', category: 'application', statement_md: 'Q3', solution_md: 'A3' }
  * ];
  *
  * const result = validateExerciseExportArray(exercises);
  * if (!result.success) {
  *   console.log(result.error);
- *   // Output: "1.difficulty: Invalid literal value, expected 1 | 2 | 3"
+ *   // Output: "1.category: Invalid enum value"
  *   // Shows which exercise (index 1) and which field failed
  * }
  * ```
@@ -534,14 +542,14 @@ export function validateTemplateCreate(data: unknown): {
  * ```typescript
  * const validated = {
  *   version: '1.0',  // ← This will be removed
- *   difficulty: 2,
+ *   category: 'application',
  *   tags: ['algèbre'],
  *   statement_md: 'Question',
  *   solution_md: 'Answer'
  * };
  *
  * const sanitized = sanitizeExerciseForInsert(validated);
- * // Result: { difficulty: 2, tags: [...], statement_md: '...', solution_md: '...' }
+ * // Result: { category: 'application', tags: [...], statement_md: '...', solution_md: '...' }
  * // The 'version' field is removed because it's not stored in the database
  * ```
  */

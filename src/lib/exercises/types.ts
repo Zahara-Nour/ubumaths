@@ -20,6 +20,50 @@
 import type { Variable, ResolvedVariable, DocumentNode } from '$lib/ubumark';
 import type { GradeCode } from '$lib/types/grades';
 
+// ============================================================================
+// EXERCISE CATEGORY
+// ============================================================================
+
+/**
+ * Exercise category - replaces the old difficulty (1-3) system
+ *
+ * Categories represent different types of mathematical exercises:
+ * - automatisme: Quick computational exercises for automatization
+ * - application: Direct application of a concept
+ * - adaptation: Applying concepts in slightly different contexts
+ * - recherche: Open-ended research problems
+ * - tache_complexe: Complex multi-step tasks
+ * - situation_probleme: Real-world problem-solving situations
+ * - challenge: Extra challenging problems
+ * - mission: Gamified mission-style exercises
+ * - synthese: Review/synthesis exercises
+ */
+export type ExerciseCategory =
+	| 'automatisme'
+	| 'application'
+	| 'adaptation'
+	| 'recherche'
+	| 'tache_complexe'
+	| 'situation_probleme'
+	| 'challenge'
+	| 'mission'
+	| 'synthese';
+
+/**
+ * Exercise categories with French labels for UI display
+ */
+export const EXERCISE_CATEGORIES: { value: ExerciseCategory; label: string }[] = [
+	{ value: 'automatisme', label: 'Automatisme' },
+	{ value: 'application', label: 'Application' },
+	{ value: 'adaptation', label: 'Adaptation' },
+	{ value: 'recherche', label: 'Recherche' },
+	{ value: 'tache_complexe', label: 'Tâche complexe' },
+	{ value: 'situation_probleme', label: 'Situation-problème' },
+	{ value: 'challenge', label: 'Challenge' },
+	{ value: 'mission', label: 'Mission' },
+	{ value: 'synthese', label: 'Synthèse' }
+];
+
 // Re-export AST types from ubumark for backwards compatibility
 export type {
 	BaseNode,
@@ -252,7 +296,7 @@ export interface InstanceGenerationResult {
  *   statement_md: 'Calculate $2 + 3$',
  *   solution_md: 'The answer is $5$',
  *   distribution_mode: 'on_demand',
- *   difficulty: 1,
+ *   category: 'automatisme',
  *   tags: ['addition'],
  *   created_by: 'teacher-id',
  *   // ... other fields
@@ -271,7 +315,7 @@ export interface InstanceGenerationResult {
  *   statement_md: 'Calculate ${{a}} + {{b}}$',
  *   solution_md: 'The answer is ${{sum}}$',
  *   distribution_mode: 'per_student',
- *   difficulty: 1,
+ *   category: 'automatisme',
  *   tags: ['addition'],
  *   created_by: 'teacher-id',
  *   // ... other fields
@@ -296,8 +340,8 @@ export interface Exercise {
 	/** Source reference (e.g., book name, author) */
 	source?: string;
 
-	/** Difficulty level: 1=easy, 2=medium, 3=hard */
-	difficulty: 1 | 2 | 3;
+	/** Exercise category */
+	category: ExerciseCategory;
 
 	/** Tags for categorization (e.g., ['algèbre', 'équations', '3ème']) */
 	tags: string[];
@@ -649,7 +693,7 @@ export type ParameterizedExercise = Exercise;
  *   statement_md: 'Calculate ${{a}} + {{b}}$',
  *   solution_md: 'The answer is ${{eval:a+b}}$',
  *   distribution_mode: 'per_student',
- *   difficulty: 1,
+ *   category: 'automatisme',
  *   // ... other fields
  * };
  *
@@ -657,7 +701,7 @@ export type ParameterizedExercise = Exercise;
  * const instance: ExerciseInstance = {
  *   exerciseId: 'ex-123',
  *   title: undefined,
- *   difficulty: 1,
+ *   category: 'automatisme',
  *   seed: 54321, // Generated from student_id
  *   resolvedVariables: [
  *     { name: 'a', value: '7' },
@@ -678,7 +722,7 @@ export type ParameterizedExercise = Exercise;
  *   statement_md: 'Calculate $2 + 3$',
  *   solution_md: 'The answer is $5$',
  *   distribution_mode: 'on_demand',
- *   difficulty: 1,
+ *   category: 'automatisme',
  *   // ... other fields
  * };
  *
@@ -686,7 +730,7 @@ export type ParameterizedExercise = Exercise;
  * const instance: ExerciseInstance = {
  *   exerciseId: 'ex-456',
  *   title: undefined,
- *   difficulty: 1,
+ *   category: 'automatisme',
  *   seed: 0, // No randomization needed
  *   resolvedVariables: [], // No variables
  *   statement_md: 'Calculate $2 + 3$', // Unchanged
@@ -708,8 +752,8 @@ export interface ExerciseInstance {
 	/** Exercise title (copied from template) */
 	title?: string;
 
-	/** Difficulty level (copied from template) */
-	difficulty: 1 | 2 | 3;
+	/** Exercise category (copied from template) */
+	category: ExerciseCategory;
 
 	/** Tags (copied from template) */
 	tags?: string[];
@@ -820,7 +864,7 @@ export interface ExerciseInstance {
  * ```typescript
  * const newExercise: ExerciseCreate = {
  *   title: 'Addition Practice',
- *   difficulty: 1,
+ *   category: 'automatisme',
  *   tags: ['addition', 'arithmetic'],
  *   variables: [
  *     { name: 'a', expression: '{{1..20}}' },
@@ -837,7 +881,7 @@ export interface ExerciseInstance {
  * ```typescript
  * const newExercise: ExerciseCreate = {
  *   title: 'Pythagorean Theorem',
- *   difficulty: 2,
+ *   category: 'application',
  *   tags: ['geometry', 'triangles'],
  *   statement_md: 'Find $c$ if $a=3$ and $b=4$...',
  *   solution_md: 'Using $c^2 = a^2 + b^2$...',
@@ -856,12 +900,12 @@ export type ExerciseCreate = Omit<Exercise, 'id' | 'created_at' | 'updated_at'>;
  *
  * Note: created_at and created_by cannot be updated (audit fields)
  *
- * @example Updating title and difficulty
+ * @example Updating title and category
  * ```typescript
  * const update: ExerciseUpdate = {
  *   id: 'ex-123',
  *   title: 'New Title',
- *   difficulty: 2
+ *   category: 'application'
  * };
  * ```
  *
@@ -1011,7 +1055,7 @@ export interface ExerciseExportV1 {
 	// Metadata
 	title?: string;
 	source?: string;
-	difficulty: 1 | 2 | 3;
+	category: ExerciseCategory;
 	tags: string[];
 
 	// Content
@@ -1034,7 +1078,7 @@ export interface ExerciseExportV2 {
 	// Metadata
 	title?: string;
 	source?: string;
-	difficulty: 1 | 2 | 3;
+	category: ExerciseCategory;
 	tags: string[];
 
 	// Content - preserved for legacy compatibility and as fallbacks
@@ -1068,7 +1112,7 @@ export interface ExerciseFrontmatterV1 {
 	// Metadata
 	title?: string;
 	source?: string;
-	difficulty: 1 | 2 | 3;
+	category: ExerciseCategory;
 	tags: string[];
 	grades?: GradeCode[];
 	topic?: string;
@@ -1084,7 +1128,7 @@ export interface ExerciseFrontmatterV2 {
 	// Metadata
 	title?: string;
 	source?: string;
-	difficulty: 1 | 2 | 3;
+	category: ExerciseCategory;
 	tags: string[];
 	grades?: GradeCode[];
 	topic?: string;
@@ -1604,7 +1648,7 @@ export interface ValidatedAssignmentData extends CreateExerciseAssignment {
  *   statement_md: 'Dans un triangle rectangle...',
  *   distribution_mode: 'per_student',
  *   exercise_is_public: false,
- *   difficulty: 2,
+ *   category: 'application',
  *   tags: ['géométrie', 'pythagore'],
  *   grades: ['3'],
  *
@@ -1630,8 +1674,8 @@ export interface AssignedExerciseWithDetails extends ExerciseAssignment {
 	/** Whether exercise is public */
 	exercise_is_public: boolean;
 
-	/** Difficulty level */
-	difficulty: number;
+	/** Exercise category */
+	category: ExerciseCategory;
 
 	/** Exercise tags */
 	tags: string[];

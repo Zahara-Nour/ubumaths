@@ -22,8 +22,10 @@
 		ExerciseResource,
 		ExerciseVariation,
 		SharedExerciseDefaults,
-		Exercise
+		Exercise,
+		ExerciseCategory
 	} from '$lib/exercises/types';
+	import { EXERCISE_CATEGORIES } from '$lib/exercises/types';
 	import type { Variable } from '$lib/ubumark';
 	import { Save, Loader2 } from 'lucide-svelte';
 
@@ -55,7 +57,7 @@
 	let title = $state(exercise?.title || '');
 	let slug = $state(exercise?.slug || '');
 	let source = $state(exercise?.source || '');
-	let difficulty = $state<1 | 2 | 3>((exercise?.difficulty as 1 | 2 | 3) || 2);
+	let category = $state<ExerciseCategory | ''>(exercise?.category || '');
 	let tags = $state<string[]>(exercise?.tags || []);
 	let topic = $state(exercise?.topic || '');
 	let gradeLevels = $state<GradeCode[]>((exercise?.grades as GradeCode[]) || []);
@@ -352,8 +354,8 @@
 			}
 		}
 
-		if (![1, 2, 3].includes(difficulty)) {
-			errors.difficulty = 'La difficulte doit etre 1, 2 ou 3';
+		if (!category) {
+			errors.category = 'La categorie est requise';
 		}
 
 		// Validate slug format if provided
@@ -400,7 +402,7 @@
 			title: title.trim() || null,
 			slug: slug.trim() || null,
 			source: source.trim() || null,
-			difficulty,
+			category: category as ExerciseCategory,
 			tags,
 			topic: topic.trim() || null,
 			grades: gradeLevels,
@@ -549,25 +551,21 @@
 						</div>
 					</div>
 
-					<!-- Difficulty, Slug & Topic -->
+					<!-- Category, Slug & Topic -->
 					<div class="grid gap-4 md:grid-cols-3">
 						<div class="space-y-2">
-							<Label for="difficulty">
-								Difficulte <span class="text-destructive">*</span>
+							<Label for="category">
+								Categorie <span class="text-destructive">*</span>
 							</Label>
 							<MySelect
 								type="single"
-								value={String(difficulty)}
-								onValueChange={(v) => (difficulty = parseInt(v) as 1 | 2 | 3)}
-								items={[
-									{ value: '1', label: '1 - Facile' },
-									{ value: '2', label: '2 - Moyen' },
-									{ value: '3', label: '3 - Difficile' }
-								]}
-								placeholder="Selectionnez..."
+								value={category}
+								onValueChange={(v) => (category = v as ExerciseCategory)}
+								items={EXERCISE_CATEGORIES}
+								placeholder="Selectionnez une categorie..."
 							/>
-							{#if errors.difficulty}
-								<p class="text-sm text-destructive">{errors.difficulty}</p>
+							{#if errors.category}
+								<p class="text-sm text-destructive">{errors.category}</p>
 							{/if}
 						</div>
 

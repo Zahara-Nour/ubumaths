@@ -264,10 +264,20 @@ function generateHeader(
 		// Metadata row
 		const meta: string[] = [];
 
-		// Difficulty
-		if (exercise.difficulty) {
-			const diffLabels = ['Facile', 'Moyen', 'Difficile'];
-			meta.push(`Difficulté : ${diffLabels[exercise.difficulty - 1]}`);
+		// Category
+		if (exercise.category) {
+			const categoryLabels: Record<string, string> = {
+				automatisme: 'Automatisme',
+				application: 'Application',
+				adaptation: 'Adaptation',
+				recherche: 'Recherche',
+				tache_complexe: 'Tâche complexe',
+				situation_probleme: 'Situation-problème',
+				challenge: 'Challenge',
+				mission: 'Mission',
+				synthese: 'Synthèse'
+			};
+			meta.push(`Catégorie : ${categoryLabels[exercise.category] || exercise.category}`);
 		}
 
 		// Grade levels

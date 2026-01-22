@@ -1,5 +1,6 @@
 import type { PageServerLoad, Actions } from './$types';
 import type { GradeCode } from '$lib/types/grades';
+import type { ExerciseCategory } from '$lib/exercises/types';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { getTeacherExercises, deleteExercise } from '$lib/server/exercises';
 
@@ -13,7 +14,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	}
 
 	// Parse query parameters for filters
-	const difficulty = url.searchParams.get('difficulty');
+	const category = url.searchParams.get('category');
 	const tags = url.searchParams.get('tags')?.split(',').filter(Boolean);
 	const topic = url.searchParams.get('topic');
 	const grades = url.searchParams.get('grades')?.split(',').filter(Boolean);
@@ -24,17 +25,29 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const sortBy: 'title' | 'updated_at' = sortByParam === 'title' ? 'title' : 'updated_at';
 	const sortOrder: 'asc' | 'desc' = url.searchParams.get('order') === 'asc' ? 'asc' : 'desc';
 
+	const validCategories = [
+		'automatisme',
+		'application',
+		'adaptation',
+		'recherche',
+		'tache_complexe',
+		'situation_probleme',
+		'challenge',
+		'mission',
+		'synthese'
+	];
+
 	// Build filters
 	const filters: {
-		difficulty?: 1 | 2 | 3;
+		category?: ExerciseCategory;
 		tags?: string[];
 		topic?: string;
 		grades?: GradeCode[];
 		search?: string;
 	} = {};
 
-	if (difficulty && ['1', '2', '3'].includes(difficulty)) {
-		filters.difficulty = parseInt(difficulty) as 1 | 2 | 3;
+	if (category && validCategories.includes(category)) {
+		filters.category = category as ExerciseCategory;
 	}
 
 	if (tags && tags.length > 0) {
@@ -75,7 +88,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			totalPages: result.totalPages
 		},
 		filters: {
-			difficulty: difficulty ? parseInt(difficulty) : null,
+			category: category || null,
 			tags: tags || [],
 			topic: topic || '',
 			grades: grades || [],

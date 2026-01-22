@@ -48,7 +48,7 @@ export function exerciseToExport(exercise: Exercise): ExerciseExportV1 {
 		version: '1.0',
 		title: exercise.title,
 		source: exercise.source,
-		difficulty: exercise.difficulty,
+		category: exercise.category,
 		tags: exercise.tags,
 		statement_md: content.statement_md,
 		solution_md: content.solution_md,
@@ -75,7 +75,7 @@ export function exerciseToExportV2(exercise: Exercise): ExerciseExportV2 {
 		version: '2.0',
 		title: exercise.title,
 		source: exercise.source,
-		difficulty: exercise.difficulty,
+		category: exercise.category,
 		tags: exercise.tags,
 		// Legacy fields populated from variations for backward compatibility
 		statement_md: content.statement_md,

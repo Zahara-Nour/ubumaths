@@ -22,10 +22,24 @@ type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 type ExerciseUpdate = Database['public']['Tables']['exercises']['Update'];
 
 /**
+ * Exercise category type
+ */
+type ExerciseCategory =
+	| 'automatisme'
+	| 'application'
+	| 'adaptation'
+	| 'recherche'
+	| 'tache_complexe'
+	| 'situation_probleme'
+	| 'challenge'
+	| 'mission'
+	| 'synthese';
+
+/**
  * Filters for listing exercises
  */
 export interface ExerciseFilters {
-	difficulty?: 1 | 2 | 3;
+	category?: ExerciseCategory;
 	tags?: string[];
 	topic?: string;
 	grades?: GradeCode[];
@@ -115,8 +129,8 @@ export async function getExercises(
 		.order('created_at', { ascending: false });
 
 	// Apply filters
-	if (filters.difficulty) {
-		query = query.eq('difficulty', filters.difficulty);
+	if (filters.category) {
+		query = query.eq('category', filters.category);
 	}
 
 	if (filters.tags && filters.tags.length > 0) {
@@ -404,8 +418,8 @@ export async function getTeacherExercises(
 		.order(sortBy, { ascending: sortOrder === 'asc' });
 
 	// Apply filters (same as getExercises)
-	if (filters.difficulty) {
-		query = query.eq('difficulty', filters.difficulty);
+	if (filters.category) {
+		query = query.eq('category', filters.category);
 	}
 
 	if (filters.tags && filters.tags.length > 0) {

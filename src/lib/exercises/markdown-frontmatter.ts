@@ -173,7 +173,7 @@ export function serializeToMarkdown(exercise: ExerciseExport): string {
 		version: exercise.version,
 		title: exercise.title,
 		source: exercise.source,
-		difficulty: exercise.difficulty,
+		category: exercise.category,
 		tags: exercise.tags,
 		grades: exercise.grades,
 		topic: exercise.topic

@@ -154,9 +154,20 @@ const exerciseBaseSchema = z.object({
 	// Statement and solution are optional when using variations system
 	statement_md: z.string().trim().max(50000, 'Statement too long').optional(),
 	solution_md: z.string().trim().max(50000, 'Solution too long').optional(),
-	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)], {
-		message: 'Difficulty must be 1 (easy), 2 (medium), or 3 (hard)'
-	}),
+	category: z.enum(
+		[
+			'automatisme',
+			'application',
+			'adaptation',
+			'recherche',
+			'tache_complexe',
+			'situation_probleme',
+			'challenge',
+			'mission',
+			'synthese'
+		],
+		{ message: 'Catégorie invalide' }
+	),
 	slug: z
 		.string()
 		.trim()
@@ -259,11 +270,18 @@ export const listExercisesQuerySchema = z.object({
 		.positive('Limit must be positive')
 		.max(100, 'Maximum 100 items per page')
 		.default(50),
-	difficulty: z.coerce
-		.number()
-		.int()
-		.min(1, 'Difficulty must be 1, 2, or 3')
-		.max(3, 'Difficulty must be 1, 2, or 3')
+	category: z
+		.enum([
+			'automatisme',
+			'application',
+			'adaptation',
+			'recherche',
+			'tache_complexe',
+			'situation_probleme',
+			'challenge',
+			'mission',
+			'synthese'
+		])
 		.optional(),
 	grades: z
 		.string()
@@ -548,7 +566,17 @@ const exerciseVariationResponseSchema = z.object({
 export const exerciseResponseSchema = z.object({
 	id: z.string().uuid(),
 	slug: z.string().nullable().optional(),
-	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+	category: z.enum([
+		'automatisme',
+		'application',
+		'adaptation',
+		'recherche',
+		'tache_complexe',
+		'situation_probleme',
+		'challenge',
+		'mission',
+		'synthese'
+	]),
 	tags: z.array(z.string()).optional(),
 	grades: z.array(gradeCodeSchema).optional(),
 	topic: z.string().nullable().optional(),
@@ -633,7 +661,17 @@ export const assignedExerciseSchema = z.object({
 	id: z.string().uuid(),
 	statement_md: z.string(),
 	solution_md: z.string(),
-	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+	category: z.enum([
+		'automatisme',
+		'application',
+		'adaptation',
+		'recherche',
+		'tache_complexe',
+		'situation_probleme',
+		'challenge',
+		'mission',
+		'synthese'
+	]),
 	tags: z.array(z.string()).optional(),
 	grades: z.array(gradeCodeSchema).optional(),
 	topic: z.string().nullable().optional(),

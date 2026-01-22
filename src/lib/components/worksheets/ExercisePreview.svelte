@@ -27,8 +27,8 @@
 	import { formatGradeShort } from '$lib/utils/grades';
 	import type { GradeCode } from '$lib/types/grades';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
-	import type { Exercise } from '$lib/exercises/types';
-	import { getExerciseContentSafe } from '$lib/exercises/types';
+	import type { Exercise, ExerciseCategory } from '$lib/exercises/types';
+	import { getExerciseContentSafe, EXERCISE_CATEGORIES } from '$lib/exercises/types';
 
 	// Props
 	interface Props {
@@ -48,21 +48,11 @@
 	let hasVariables = $derived(exercise.variables && exercise.variables.length > 0);
 
 	/**
-	 * Get difficulty badge variant
+	 * Get category label from category value
 	 */
-	function getDifficultyVariant(difficulty: number): 'default' | 'secondary' | 'destructive' {
-		if (difficulty === 1) return 'default';
-		if (difficulty === 2) return 'secondary';
-		return 'destructive';
-	}
-
-	/**
-	 * Get difficulty label
-	 */
-	function getDifficultyLabel(difficulty: number): string {
-		if (difficulty === 1) return 'Facile';
-		if (difficulty === 2) return 'Moyen';
-		return 'Difficile';
+	function getCategoryLabel(category: ExerciseCategory): string {
+		const found = EXERCISE_CATEGORIES.find((c) => c.value === category);
+		return found?.label || category;
 	}
 </script>
 
@@ -75,9 +65,9 @@
 
 		<!-- Metadata badges -->
 		<div class="flex flex-wrap items-center gap-2">
-			<!-- Difficulty -->
-			<Badge variant={getDifficultyVariant(exercise.difficulty)}>
-				{getDifficultyLabel(exercise.difficulty)}
+			<!-- Category -->
+			<Badge variant="secondary">
+				{getCategoryLabel(exercise.category as ExerciseCategory)}
 			</Badge>
 
 			<!-- Parameterized indicator -->

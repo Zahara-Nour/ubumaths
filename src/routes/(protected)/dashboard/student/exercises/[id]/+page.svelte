@@ -147,7 +147,9 @@
 
 					<!-- Exercise metadata -->
 					<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
-						<span>Difficulté: {data.exercise.difficulty}/3</span>
+						<span class="capitalize"
+							>{data.exercise.category?.replace('_', ' ') || 'Non catégorisé'}</span
+						>
 
 						{#if data.exercise.grades && data.exercise.grades.length > 0}
 							<span>Niveaux: {data.exercise.grades.join(', ')}</span>
