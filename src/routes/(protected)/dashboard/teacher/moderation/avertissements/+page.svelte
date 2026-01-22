@@ -18,10 +18,10 @@
 
 	WARNING TYPES:
 	--------------
-	- C: Conduite (Behavior)
-	- M: Manque de Travail (Lack of Work)
+	- C: Comportement (Behavior)
+	- M: Matériel (Material/Equipment)
 	- R: Retard (Late)
-	- T: Tricherie (Cheating)
+	- T: Travail (Work)
 
 	SCORE CALCULATION:
 	------------------
@@ -50,6 +50,7 @@
 	import { History, AlertCircle, Plus } from 'lucide-svelte';
 	import { openRemoveWarningsModal } from '$lib/utils/vip-card-modals';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
+	import { WARNING_TYPE_LABELS, type WarningType } from '$lib/types/warnings';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
 	import { selectedPeriodStore } from '$lib/stores/selectedPeriod.svelte';
@@ -188,13 +189,7 @@
 	 * Get warning type label (French)
 	 */
 	function getWarningTypeLabel(type: string): string {
-		const labels: Record<string, string> = {
-			C: 'Conduite',
-			M: 'Manque de Travail',
-			R: 'Retard',
-			T: 'Tricherie'
-		};
-		return labels[type] || type;
+		return WARNING_TYPE_LABELS[type as WarningType] || type;
 	}
 
 	/**
@@ -547,7 +542,7 @@
 														addWarning(student.id, 'C', name);
 													}}
 												>
-													+C (Conduite)
+													+C (Comportement)
 												</DropdownMenu.Item>
 												<DropdownMenu.Item
 													onclick={() => {
@@ -555,7 +550,7 @@
 														addWarning(student.id, 'M', name);
 													}}
 												>
-													+M (Manque de Travail)
+													+M (Matériel)
 												</DropdownMenu.Item>
 												<DropdownMenu.Item
 													onclick={() => {
@@ -571,7 +566,7 @@
 														addWarning(student.id, 'T', name);
 													}}
 												>
-													+T (Tricherie)
+													+T (Travail)
 												</DropdownMenu.Item>
 											</DropdownMenu.Content>
 										</DropdownMenu.Root>

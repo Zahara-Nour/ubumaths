@@ -21,7 +21,7 @@
  * {
  *   warnings: {
  *     counts: {
- *       C: number,  // Conduite warnings
+ *       C: number,  // Comportement warnings
  *       M: number,  // Matériel warnings
  *       R: number,  // Retard warnings
  *       T: number   // Travail warnings

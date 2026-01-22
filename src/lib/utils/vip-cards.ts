@@ -5,6 +5,7 @@
 import type { StudentVipCards, VipCardAction } from '$lib/types/vip-card';
 import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 import { getTemplateById } from '$lib/stores/vipCardTemplates.svelte';
+import { WARNING_TYPE_LABELS } from '$lib/types/warnings';
 
 /**
  * Cost in gidouilles to purchase one VIP card
@@ -166,13 +167,7 @@ export function getActionDescription(action: VipCardAction, templates: VipCardTe
 
 		case 'remove_warnings':
 			if (action.warningType) {
-				const typeNames = {
-					C: 'Comportement',
-					M: 'Matériel',
-					R: 'Retard',
-					T: 'Travail'
-				};
-				return `Enlever ${action.count} avertissement${action.count > 1 ? 's' : ''} (${typeNames[action.warningType]})`;
+				return `Enlever ${action.count} avertissement${action.count > 1 ? 's' : ''} (${WARNING_TYPE_LABELS[action.warningType]})`;
 			}
 			return `Enlever ${action.count} avertissement${action.count > 1 ? 's' : ''}`;
 

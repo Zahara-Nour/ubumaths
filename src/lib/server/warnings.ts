@@ -20,7 +20,7 @@
  *
  * PATTERNS:
  * - All functions verify teacher ownership via RLS
- * - Warning types: C (Conduite), M (Manque de Travail), R (Retard), T (Tricherie)
+ * - Warning types: C (Comportement), M (Matériel), R (Retard), T (Travail)
  * - Score calculation: 20 - total_warnings (max 20, min 0)
  */
 
@@ -32,10 +32,8 @@ import { error } from '@sveltejs/kit';
 // TYPES
 // ============================================================================
 
-/**
- * Warning type enum (database constraint)
- */
-export type WarningType = 'C' | 'M' | 'R' | 'T';
+// Re-export shared types and constants
+export { type WarningType, WARNING_TYPE_LABELS, getWarningTypeLabel } from '$lib/types/warnings';
 
 /**
  * Individual warning record
@@ -56,10 +54,10 @@ export interface Warning {
  * Contains only counts per type - total/score calculated on-the-fly in UI
  */
 export interface StudentWarningCounts {
-	C: number; // Conduite
-	M: number; // Manque de Travail
+	C: number; // Comportement
+	M: number; // Matériel
 	R: number; // Retard
-	T: number; // Tricherie
+	T: number; // Travail
 }
 
 /**
