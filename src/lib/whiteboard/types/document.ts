@@ -629,6 +629,152 @@ export function createDefaultInstruments(): Record<InstrumentType, InstrumentSta
 }
 
 // =============================================================================
+// Annotation Types
+// =============================================================================
+
+/** Stamp types available for annotations */
+export type StampType =
+	// Correction marks
+	| '✓'
+	| '✗'
+	| '?'
+	| '!'
+	// Letters
+	| 'A'
+	| 'B'
+	| 'C'
+	| 'D'
+	| 'E'
+	| 'F'
+	// Numbers
+	| '1'
+	| '2'
+	| '3'
+	| '4'
+	| '5'
+	| '6'
+	// Symbols
+	| '★'
+	| '♥'
+	| '👍'
+	| '👎'
+	| '💡'
+	| '⚠️';
+
+/** Stamp categories for UI organization */
+export const STAMP_CATEGORIES = {
+	correction: ['✓', '✗', '?', '!'] as const,
+	letters: ['A', 'B', 'C', 'D', 'E', 'F'] as const,
+	numbers: ['1', '2', '3', '4', '5', '6'] as const,
+	symbols: ['★', '♥', '👍', '👎', '💡', '⚠️'] as const
+} as const;
+
+/** Stamp category labels for UI */
+export const STAMP_CATEGORY_LABELS: Record<keyof typeof STAMP_CATEGORIES, string> = {
+	correction: 'Correction',
+	letters: 'Lettres',
+	numbers: 'Chiffres',
+	symbols: 'Symboles'
+};
+
+/** Annotation type discriminator */
+export type AnnotationType = 'stroke' | 'shape' | 'stamp';
+
+/** Drawing tools for annotation strokes (eraser deletes by intersection, not a stroke type) */
+export type AnnotationStrokeToolType = 'pen' | 'marker' | 'highlighter';
+
+/** Shape types available for annotations (subset of ShapeType) */
+export type AnnotationShapeType = 'line' | 'rectangle' | 'circle' | 'arrow';
+
+/** Base interface for all annotations */
+export interface AnnotationBase {
+	readonly id: string;
+	readonly type: AnnotationType;
+	readonly color: string;
+	readonly opacity: number;
+	readonly createdAt: number;
+	/** true = roughjs sketch rendering, false = clean SVG rendering */
+	readonly sketch: boolean;
+}
+
+/** Annotation stroke - freehand drawing */
+export interface AnnotationStroke extends AnnotationBase {
+	readonly type: 'stroke';
+	readonly points: readonly Point[];
+	readonly width: number;
+	readonly toolType: AnnotationStrokeToolType;
+	readonly strokeStyle: StrokeStyle;
+}
+
+/** Annotation shape - geometric shape */
+export interface AnnotationShape extends AnnotationBase {
+	readonly type: 'shape';
+	readonly shapeType: AnnotationShapeType;
+	readonly start: Point;
+	readonly end: Point;
+	readonly strokeWidth: number;
+	readonly strokeStyle: StrokeStyle;
+	readonly fillMode: FillMode;
+	readonly fill?: string;
+	/** Rotation angle in degrees (0-360), default 0 */
+	readonly rotation?: number;
+}
+
+/** Annotation stamp - symbol/marker */
+export interface AnnotationStamp extends AnnotationBase {
+	readonly type: 'stamp';
+	readonly stampType: StampType;
+	readonly position: Point;
+	readonly size: number;
+	/** Rotation angle in degrees (0-360), default 0 */
+	readonly rotation: number;
+	/** Optional background fill color */
+	readonly fill?: string;
+	/** Background fill opacity (0-1), default 1 */
+	readonly fillOpacity?: number;
+}
+
+/** Union of all annotation element types */
+export type AnnotationElement = AnnotationStroke | AnnotationShape | AnnotationStamp;
+
+/** Preset stamp sizes */
+export const STAMP_SIZES = {
+	small: 24,
+	medium: 32,
+	large: 48
+} as const;
+
+/** Default stamp size */
+export const DEFAULT_STAMP_SIZE = STAMP_SIZES.medium;
+
+/** Annotation tool types (for toolbar) */
+export type AnnotationToolType =
+	| 'annotation-select'
+	| 'annotation-pen'
+	| 'annotation-marker'
+	| 'annotation-highlighter'
+	| 'annotation-eraser'
+	| 'annotation-line'
+	| 'annotation-rectangle'
+	| 'annotation-circle'
+	| 'annotation-arrow'
+	| 'annotation-stamp';
+
+/** Annotation tool labels for UI */
+export const ANNOTATION_TOOL_LABELS: Record<AnnotationToolType, string> = {
+	'annotation-select': 'Sélection',
+	'annotation-pen': 'Stylo',
+	'annotation-marker': 'Marqueur',
+	'annotation-highlighter': 'Surligneur',
+	'annotation-eraser': 'Gomme',
+	'annotation-line': 'Ligne',
+	'annotation-rectangle': 'Rectangle',
+	'annotation-circle': 'Cercle',
+	'annotation-arrow': 'Flèche',
+	'annotation-stamp': 'Tampon'
+};
+
+// =============================================================================
 // Page & Document Types
 // =============================================================================
 
@@ -643,6 +789,8 @@ export interface Page {
 	readonly originalWidth?: number;
 	/** Original height before expansion (for scaling at export). Undefined = not expanded. */
 	readonly originalHeight?: number;
+	/** Annotations on this page (overlay layer, optional for backward compatibility) */
+	readonly annotations?: readonly AnnotationElement[];
 }
 
 /** Complete whiteboard document */
@@ -658,6 +806,8 @@ export interface WhiteboardDocument {
 	readonly instruments: Record<InstrumentType, InstrumentState>;
 	/** Default template for new pages (optional, persisted) */
 	readonly defaultTemplate?: TemplatePageData;
+	/** Global visibility toggle for annotations (default: true) */
+	readonly annotationsVisible?: boolean;
 }
 
 // =============================================================================

@@ -136,6 +136,41 @@ function migrateArrowPointsModel(data: unknown): unknown {
 	return data;
 }
 
+/**
+ * Migrates documents to include annotations fields.
+ *
+ * Migration rules:
+ * - Each page gets `annotations: []` if not present
+ * - Document gets `annotationsVisible: true` if not present
+ *
+ * @param data - Parsed document data (may be mutated)
+ * @returns Migrated data
+ */
+function migrateAnnotations(data: unknown): unknown {
+	if (typeof data !== 'object' || data === null) return data;
+
+	const doc = data as Record<string, unknown>;
+
+	// Add annotationsVisible if not present
+	if (doc.annotationsVisible === undefined) {
+		doc.annotationsVisible = true;
+	}
+
+	// Add annotations array to each page if not present
+	if (!Array.isArray(doc.pages)) return data;
+
+	for (const page of doc.pages) {
+		if (typeof page !== 'object' || page === null) continue;
+		const pageObj = page as Record<string, unknown>;
+
+		if (!Array.isArray(pageObj.annotations)) {
+			pageObj.annotations = [];
+		}
+	}
+
+	return data;
+}
+
 // =============================================================================
 // Serialization
 // =============================================================================
@@ -204,6 +239,7 @@ export function deserialize(json: string): DeserializationResult {
 	// Apply migrations before validation (in order)
 	let migrated = migrateArrowTypes(parsed);
 	migrated = migrateArrowPointsModel(migrated);
+	migrated = migrateAnnotations(migrated);
 
 	// Validate with Zod schema
 	const validation = validateDocument(migrated);

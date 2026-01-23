@@ -39,6 +39,7 @@
 	import InstrumentLayer from './InstrumentLayer.svelte';
 	import TextBlockLayer from './TextBlockLayer.svelte';
 	import ShapeLabelLayer from './ShapeLabelLayer.svelte';
+	import AnnotationLayer from './AnnotationLayer.svelte';
 	import ImageLayer from './ImageLayer.svelte';
 	import SelectionLayer from './SelectionLayer.svelte';
 	import SnapIndicators from './SnapIndicators.svelte';
@@ -906,10 +907,10 @@
 			const dy = (e.clientY - selectionDragStartY + dragPanOffsetY) / scale;
 
 			// Apply live position to all selected elements
-			// Alt key disables snapping temporarily
+			// Snapping is disabled by default, Alt key enables it
 			if (Number.isFinite(dx) && Number.isFinite(dy)) {
 				const selectedIds = selectedElements.map((el) => el.id);
-				whiteboardStore.setLivePositionBatch(selectedIds, dx, dy, scale, e.altKey);
+				whiteboardStore.setLivePositionBatch(selectedIds, dx, dy, scale, !e.altKey);
 			}
 
 			// Check for edge scroll (auto-pan when dragging near viewport edges)
@@ -2472,6 +2473,9 @@
 
 	<!-- Shape Labels Layer (HTML overlay on SVG) -->
 	<ShapeLabelLayer bind:this={shapeLabelLayerRef} {scale} />
+
+	<!-- Annotation Layer (SVG overlay - above all content including HTML overlays) -->
+	<AnnotationLayer {scale} />
 
 	<!-- Laser Pointer Layer (SVG overlay - always on top) -->
 	{#if isLaserTool}

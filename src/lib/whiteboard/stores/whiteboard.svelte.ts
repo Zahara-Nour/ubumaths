@@ -15,6 +15,7 @@ import {
 	PAGE_FORMATS,
 	DEFAULT_START_ARROWHEAD,
 	DEFAULT_END_ARROWHEAD,
+	DEFAULT_STAMP_SIZE,
 	type WhiteboardDocument,
 	type Page,
 	type PageBackground,
@@ -30,7 +31,14 @@ import {
 	type ElbowDirection,
 	type ArrowType,
 	type ArrowWaypoint,
-	type Arrowhead
+	type Arrowhead,
+	type AnnotationStroke,
+	type AnnotationShape,
+	type AnnotationStamp,
+	type AnnotationToolType,
+	type AnnotationShapeType,
+	type AnnotationStrokeToolType,
+	type StampType
 } from '../types/document';
 import { getElementBounds } from '../core/hit-testing';
 import { createHistoryManager, type HistoryManager } from '../core/history.svelte';
@@ -446,6 +454,23 @@ function createWhiteboardStore() {
 	let sidebarVisible = $state(false);
 	let fileDrawerVisible = $state(false);
 	let stylePanelOpen = $state(false);
+	let isAnnotationMode = $state(false);
+
+	// === Annotation State ===
+	let annotationTool = $state<AnnotationToolType>('annotation-pen');
+	let annotationStyle = $state({
+		color: '#ef4444', // Red default for annotations
+		strokeWidth: 3,
+		opacity: 1,
+		strokeStyle: 'solid' as StrokeStyle,
+		fillMode: 'none' as FillMode,
+		fill: '#ef4444',
+		sketch: false,
+		stampType: '✓' as StampType,
+		stampSize: DEFAULT_STAMP_SIZE,
+		stampFill: undefined as string | undefined,
+		stampFillOpacity: 1
+	});
 
 	// === Selection State ===
 	let selectedIds = $state<Set<string>>(new Set());
@@ -773,6 +798,15 @@ function createWhiteboardStore() {
 		},
 		get stylePanelOpen() {
 			return stylePanelOpen;
+		},
+		get isAnnotationMode() {
+			return isAnnotationMode;
+		},
+		get annotationTool() {
+			return annotationTool;
+		},
+		get annotationStyle() {
+			return annotationStyle;
 		},
 		get currentPageIndex() {
 			return document?.currentPageIndex ?? 0;
@@ -1364,6 +1398,163 @@ function createWhiteboardStore() {
 		 */
 		setStylePanelOpen(visible: boolean): void {
 			stylePanelOpen = visible;
+		},
+
+		// === Annotation Mode ===
+
+		/**
+		 * Enter annotation mode
+		 */
+		enterAnnotationMode(): void {
+			isAnnotationMode = true;
+		},
+
+		/**
+		 * Exit annotation mode
+		 */
+		exitAnnotationMode(): void {
+			isAnnotationMode = false;
+		},
+
+		/**
+		 * Toggle annotation mode
+		 */
+		toggleAnnotationMode(): void {
+			isAnnotationMode = !isAnnotationMode;
+		},
+
+		/**
+		 * Toggle annotations visibility (document-wide)
+		 */
+		toggleAnnotationsVisible(): void {
+			if (!document) return;
+			const newValue = !(document.annotationsVisible ?? true);
+			updateDocument((doc) => ({
+				...doc,
+				annotationsVisible: newValue
+			}));
+		},
+
+		/**
+		 * Set annotations visibility (document-wide)
+		 */
+		setAnnotationsVisible(visible: boolean): void {
+			if (!document) return;
+			updateDocument((doc) => ({
+				...doc,
+				annotationsVisible: visible
+			}));
+		},
+
+		/**
+		 * Set annotation tool
+		 */
+		setAnnotationTool(tool: AnnotationToolType): void {
+			annotationTool = tool;
+		},
+
+		/**
+		 * Set annotation style property
+		 */
+		setAnnotationStyleProperty<K extends keyof typeof annotationStyle>(
+			key: K,
+			value: (typeof annotationStyle)[K]
+		): void {
+			annotationStyle = { ...annotationStyle, [key]: value };
+		},
+
+		/**
+		 * Add annotation stroke to current page
+		 */
+		addAnnotationStroke(points: Point[], toolType: AnnotationStrokeToolType): void {
+			const stroke: AnnotationStroke = {
+				id: crypto.randomUUID(),
+				type: 'stroke',
+				points: points.map((p) => ({ x: p.x, y: p.y, pressure: p.pressure })),
+				width: annotationStyle.strokeWidth,
+				color: annotationStyle.color,
+				opacity: toolType === 'highlighter' ? 0.4 : annotationStyle.opacity,
+				toolType,
+				strokeStyle: annotationStyle.strokeStyle,
+				sketch: annotationStyle.sketch,
+				createdAt: Date.now()
+			};
+
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: [...(page.annotations ?? []), stroke]
+			}));
+		},
+
+		/**
+		 * Add annotation shape to current page
+		 */
+		addAnnotationShape(start: Point, end: Point, shapeType: AnnotationShapeType): void {
+			const shape: AnnotationShape = {
+				id: crypto.randomUUID(),
+				type: 'shape',
+				shapeType,
+				start: { x: start.x, y: start.y },
+				end: { x: end.x, y: end.y },
+				color: annotationStyle.color,
+				strokeWidth: annotationStyle.strokeWidth,
+				opacity: annotationStyle.opacity,
+				strokeStyle: annotationStyle.strokeStyle,
+				fillMode: annotationStyle.fillMode,
+				fill: annotationStyle.fill,
+				sketch: annotationStyle.sketch,
+				createdAt: Date.now()
+			};
+
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: [...(page.annotations ?? []), shape]
+			}));
+		},
+
+		/**
+		 * Add annotation stamp to current page
+		 */
+		addAnnotationStamp(position: Point): void {
+			const stamp: AnnotationStamp = {
+				id: crypto.randomUUID(),
+				type: 'stamp',
+				stampType: annotationStyle.stampType,
+				position: { x: position.x, y: position.y },
+				size: annotationStyle.stampSize,
+				rotation: 0,
+				color: annotationStyle.color,
+				opacity: annotationStyle.opacity,
+				fill: annotationStyle.stampFill,
+				fillOpacity: annotationStyle.stampFillOpacity,
+				sketch: false,
+				createdAt: Date.now()
+			};
+
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: [...(page.annotations ?? []), stamp]
+			}));
+		},
+
+		/**
+		 * Delete annotation by ID
+		 */
+		deleteAnnotation(annotationId: string): void {
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: (page.annotations ?? []).filter((a) => a.id !== annotationId)
+			}));
+		},
+
+		/**
+		 * Clear all annotations on current page
+		 */
+		clearAnnotations(): void {
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: []
+			}));
 		},
 
 		// === Element Operations ===
@@ -2689,7 +2880,7 @@ function createWhiteboardStore() {
 		 * @param dx - Horizontal offset from original position
 		 * @param dy - Vertical offset from original position
 		 * @param zoom - Current zoom level (for snap threshold adjustment)
-		 * @param disableSnap - If true, disable snapping for this call (e.g., Alt key held)
+		 * @param disableSnap - If true, disable snapping for this call (snapping is opt-in via Alt key)
 		 */
 		setLivePositionBatch(
 			elementIds: string[],

@@ -141,6 +141,97 @@ export const elementSchema = z.discriminatedUnion('type', [
 ]);
 
 // =============================================================================
+// Annotation Schemas
+// =============================================================================
+
+/** Stamp types for annotations */
+const stampTypeSchema = z.enum([
+	'✓',
+	'✗',
+	'?',
+	'!',
+	'A',
+	'B',
+	'C',
+	'D',
+	'E',
+	'F',
+	'1',
+	'2',
+	'3',
+	'4',
+	'5',
+	'6',
+	'★',
+	'♥',
+	'👍',
+	'👎',
+	'💡',
+	'⚠️'
+]);
+
+/** Annotation stroke tool types */
+const annotationStrokeToolTypeSchema = z.enum(['pen', 'marker', 'highlighter']);
+
+/** Annotation shape types (subset of shape types) */
+const annotationShapeTypeSchema = z.enum(['line', 'rectangle', 'circle', 'arrow']);
+
+/** Base fields for all annotations */
+const annotationBaseSchema = z.object({
+	id: z.string().uuid(),
+	color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+	opacity: z.number().min(0).max(1),
+	createdAt: z.number().int().positive(),
+	sketch: z.boolean()
+});
+
+/** Annotation stroke element */
+const annotationStrokeSchema = annotationBaseSchema.extend({
+	type: z.literal('stroke'),
+	points: z.array(pointSchema).min(1).max(50000),
+	width: z.number().positive().max(100),
+	toolType: annotationStrokeToolTypeSchema,
+	strokeStyle: z.enum(['solid', 'dashed', 'dotted'])
+});
+
+/** Annotation shape element */
+const annotationShapeSchema = annotationBaseSchema.extend({
+	type: z.literal('shape'),
+	shapeType: annotationShapeTypeSchema,
+	start: pointSchema,
+	end: pointSchema,
+	strokeWidth: z.number().positive().max(50),
+	strokeStyle: z.enum(['solid', 'dashed', 'dotted']),
+	fillMode: z.enum(['none', 'solid', 'hatched', 'hachure', 'crosshatch', 'zigzag']),
+	fill: z
+		.string()
+		.regex(/^#[0-9A-Fa-f]{6}$/)
+		.optional(),
+	rotation: z.number().min(0).max(360).optional()
+});
+
+/** Annotation stamp element */
+const annotationStampSchema = annotationBaseSchema.extend({
+	type: z.literal('stamp'),
+	stampType: stampTypeSchema,
+	position: pointSchema,
+	size: z.number().positive().max(200),
+	rotation: z.number().min(0).max(360),
+	fill: z
+		.string()
+		.regex(/^#[0-9A-Fa-f]{6}$/)
+		.optional(),
+	fillOpacity: z.number().min(0).max(1).optional()
+});
+
+/** Union of all annotation types */
+export const annotationElementSchema = z.discriminatedUnion('type', [
+	annotationStrokeSchema,
+	annotationShapeSchema,
+	annotationStampSchema
+]);
+
+// =============================================================================
 // Background Schemas
 // =============================================================================
 
@@ -216,7 +307,9 @@ const pageSchema = z.object({
 	/** Original width before expansion (for scaling at export). Undefined = not expanded. */
 	originalWidth: z.number().positive().max(10000).optional(),
 	/** Original height before expansion (for scaling at export). Undefined = not expanded. */
-	originalHeight: z.number().positive().max(10000).optional()
+	originalHeight: z.number().positive().max(10000).optional(),
+	/** Annotations on this page (overlay layer) */
+	annotations: z.array(annotationElementSchema).max(1000).optional()
 });
 
 // =============================================================================
@@ -231,7 +324,11 @@ export const whiteboardDocumentSchema = z.object({
 	updatedAt: z.string().datetime(),
 	pages: z.array(pageSchema).min(1).max(100),
 	currentPageIndex: z.number().int().min(0),
-	instruments: instrumentsSchema
+	instruments: instrumentsSchema,
+	/** Default template for new pages (optional) */
+	defaultTemplate: z.unknown().optional(),
+	/** Global visibility toggle for annotations (default: true) */
+	annotationsVisible: z.boolean().optional()
 });
 
 // Refine to ensure currentPageIndex is within bounds
