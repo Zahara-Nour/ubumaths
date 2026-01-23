@@ -141,6 +141,14 @@
 		checkGoogleConnection();
 	});
 
+	// Watch for drawer open to trigger initial load
+	// (onOpenChange only fires on user interaction with Sheet, not programmatic open)
+	$effect(() => {
+		if (fileDrawerVisible && googleConnected && !initialLoadDone) {
+			triggerInitialLoadIfNeeded();
+		}
+	});
+
 	// ==========================================================================
 	// Connection Check
 	// ==========================================================================
