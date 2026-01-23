@@ -46,6 +46,7 @@
 	let selectedPages = $state<'current' | 'all' | 'custom'>('current');
 	let customPageIndices = $state<string>('');
 	let includeInstruments = $state(true);
+	let includeAnnotations = $state(true);
 	let isExporting = $state(false);
 	let exportProgress = $state(0);
 
@@ -143,7 +144,8 @@
 		// Build export options
 		const options: ExportOptions = {
 			format: selectedFormat,
-			includeInstruments
+			includeInstruments,
+			includeAnnotations
 		};
 
 		if (selectedFormat === 'png') {
@@ -295,6 +297,11 @@
 					bind:checked={includeInstruments}
 					label="Inclure les instruments (règle, rapporteur...)"
 				/>
+			</div>
+
+			<!-- Include Annotations -->
+			<div class="flex items-center gap-2">
+				<MyCheckbox bind:checked={includeAnnotations} label="Inclure les annotations" />
 			</div>
 
 			<!-- Progress Indicator -->
