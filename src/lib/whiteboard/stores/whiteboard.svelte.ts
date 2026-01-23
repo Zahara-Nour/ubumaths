@@ -79,7 +79,7 @@ import {
 import type { ShapeElement, ArrowElement, BindingAnchor, Point, Heading } from '../types/document';
 import { createArrowPoints } from '../types/document';
 import type { WhiteboardTemplate, TemplatePageData, TemplateFont } from '../types/templates';
-import { calculateSnapForTranslate, type PointsSnapIndicator } from '../core/snapping';
+import { calculateSnapForTranslate, type SnapIndicator } from '../core/snapping';
 
 // =============================================================================
 // Constants
@@ -482,7 +482,7 @@ function createWhiteboardStore() {
 	let liveElbowPoints = $state<Map<string, readonly Point[]>>(new Map());
 
 	// === Snapping State ===
-	let snapIndicators = $state<PointsSnapIndicator[]>([]);
+	let snapIndicators = $state<SnapIndicator[]>([]);
 	let snappingEnabled = $state(true);
 
 	// === Autosave ===

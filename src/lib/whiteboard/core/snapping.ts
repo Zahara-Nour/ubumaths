@@ -41,10 +41,34 @@ export interface PointsSnapIndicator {
 	points: Point[];
 }
 
+/** A gap between two elements */
+export interface Gap {
+	startBounds: BoundingBox;
+	endBounds: BoundingBox;
+	length: number;
+	breadthIntersection: [number, number]; // Overlapping range on perpendicular axis
+}
+
+/** Visual indicator for a gap snap */
+export interface GapSnapIndicator {
+	id: string;
+	type: 'gap';
+	direction: 'horizontal' | 'vertical';
+	gaps: Array<{
+		startEdge: number; // X for horizontal, Y for vertical
+		endEdge: number;
+		breadthStart: number; // Y range for horizontal, X range for vertical
+		breadthEnd: number;
+	}>;
+}
+
+/** Union type for all snap indicators */
+export type SnapIndicator = PointsSnapIndicator | GapSnapIndicator;
+
 /** Result of snap calculation */
 export interface SnapResult {
 	nudge: Point;
-	indicators: PointsSnapIndicator[];
+	indicators: SnapIndicator[];
 }
 
 // =============================================================================
@@ -89,6 +113,24 @@ function dedupePoints(points: Point[]): Point[] {
 	});
 }
 
+/**
+ * Check if two ranges overlap and return the overlapping range.
+ * Returns null if no overlap.
+ */
+function rangesOverlap(
+	aMin: number,
+	aMax: number,
+	bMin: number,
+	bMax: number
+): [number, number] | null {
+	const overlapMin = Math.max(aMin, bMin);
+	const overlapMax = Math.min(aMax, bMax);
+	if (overlapMin < overlapMax) {
+		return [overlapMin, overlapMax];
+	}
+	return null;
+}
+
 // =============================================================================
 // Snap Point Extraction
 // =============================================================================
@@ -130,6 +172,391 @@ export function getBoundsSnapPoints(bounds: BoundingBox, prefix: string): SnapPo
 		{ id: `${prefix}:se`, x: x + width, y: y + height },
 		{ id: `${prefix}:center`, x: x + width / 2, y: y + height / 2 }
 	];
+}
+
+// =============================================================================
+// Gap Detection (based on tldraw's GapSnaps)
+// =============================================================================
+
+/**
+ * Collect gaps between non-selected elements.
+ * A gap exists when two elements don't overlap on one axis
+ * but do overlap on the perpendicular axis.
+ */
+function collectVisibleGaps(
+	elements: readonly WhiteboardElement[],
+	selectedIds: Set<string>
+): { horizontal: Gap[]; vertical: Gap[] } {
+	const horizontal: Gap[] = [];
+	const vertical: Gap[] = [];
+
+	// Get non-selected elements with their bounds
+	const otherElements = elements
+		.filter((e) => !selectedIds.has(e.id))
+		.map((e) => ({ element: e, bounds: getElementBounds(e) }))
+		.filter((e) => e.bounds.width > 0 && e.bounds.height > 0);
+
+	// Collect horizontal gaps (sorted by X)
+	const sortedByX = [...otherElements].sort((a, b) => a.bounds.x - b.bounds.x);
+
+	for (let i = 0; i < sortedByX.length; i++) {
+		const startBounds = sortedByX[i].bounds;
+		const startRight = startBounds.x + startBounds.width;
+
+		for (let j = i + 1; j < sortedByX.length; j++) {
+			const endBounds = sortedByX[j].bounds;
+			const endLeft = endBounds.x;
+
+			// Is there a horizontal gap? (no X overlap)
+			if (startRight < endLeft) {
+				// Check vertical overlap (breadth intersection)
+				const startTop = startBounds.y;
+				const startBottom = startBounds.y + startBounds.height;
+				const endTop = endBounds.y;
+				const endBottom = endBounds.y + endBounds.height;
+
+				const overlap = rangesOverlap(startTop, startBottom, endTop, endBottom);
+
+				if (overlap) {
+					horizontal.push({
+						startBounds,
+						endBounds,
+						length: endLeft - startRight,
+						breadthIntersection: overlap
+					});
+				}
+			}
+		}
+	}
+
+	// Collect vertical gaps (sorted by Y)
+	const sortedByY = [...otherElements].sort((a, b) => a.bounds.y - b.bounds.y);
+
+	for (let i = 0; i < sortedByY.length; i++) {
+		const startBounds = sortedByY[i].bounds;
+		const startBottom = startBounds.y + startBounds.height;
+
+		for (let j = i + 1; j < sortedByY.length; j++) {
+			const endBounds = sortedByY[j].bounds;
+			const endTop = endBounds.y;
+
+			// Is there a vertical gap? (no Y overlap)
+			if (startBottom < endTop) {
+				// Check horizontal overlap (breadth intersection)
+				const startLeft = startBounds.x;
+				const startRight = startBounds.x + startBounds.width;
+				const endLeft = endBounds.x;
+				const endRight = endBounds.x + endBounds.width;
+
+				const overlap = rangesOverlap(startLeft, startRight, endLeft, endRight);
+
+				if (overlap) {
+					vertical.push({
+						startBounds,
+						endBounds,
+						length: endTop - startBottom,
+						breadthIntersection: overlap
+					});
+				}
+			}
+		}
+	}
+
+	return { horizontal, vertical };
+}
+
+/** Result of a gap snap calculation */
+interface GapSnapResult {
+	nudge: number;
+	indicator: GapSnapIndicator;
+}
+
+/**
+ * Find gap snaps for the selection.
+ * Returns a nudge if the selection can create a gap equal to an existing gap.
+ */
+function findGapSnaps(
+	selectionBounds: BoundingBox,
+	gaps: { horizontal: Gap[]; vertical: Gap[] },
+	threshold: number
+): { x: GapSnapResult | null; y: GapSnapResult | null } {
+	let xResult: GapSnapResult | null = null;
+	let yResult: GapSnapResult | null = null;
+
+	const selLeft = selectionBounds.x;
+	const selRight = selectionBounds.x + selectionBounds.width;
+	const selTop = selectionBounds.y;
+	const selBottom = selectionBounds.y + selectionBounds.height;
+
+	// Check horizontal gaps (affects X position)
+	for (const gap of gaps.horizontal) {
+		const gapStartRight = gap.startBounds.x + gap.startBounds.width;
+		const gapEndLeft = gap.endBounds.x;
+
+		// Check if selection overlaps vertically with this gap
+		const vertOverlap = rangesOverlap(
+			selTop,
+			selBottom,
+			gap.breadthIntersection[0],
+			gap.breadthIntersection[1]
+		);
+		if (!vertOverlap) continue;
+
+		// Case 1: Selection to the LEFT of the gap's start element
+		// Check if placing selection would create equal gap on the left
+		{
+			const currentGap = gap.startBounds.x - selRight;
+			// Only consider if selection is actually to the left (positive gap)
+			if (currentGap > 0) {
+				const diff = Math.abs(currentGap - gap.length);
+
+				if (diff < threshold && (xResult === null || diff < Math.abs(xResult.nudge))) {
+					// nudge = how much to move right to make currentGap equal gap.length
+					// If currentGap > gap.length, move right (positive), else move left (negative)
+					const nudge = currentGap - gap.length;
+					xResult = {
+						nudge,
+						indicator: {
+							id: uniqueId(),
+							type: 'gap',
+							direction: 'horizontal',
+							gaps: [
+								// The new gap we're creating
+								{
+									startEdge: selRight + nudge,
+									endEdge: gap.startBounds.x,
+									breadthStart: vertOverlap[0],
+									breadthEnd: vertOverlap[1]
+								},
+								// The existing gap we're matching
+								{
+									startEdge: gapStartRight,
+									endEdge: gapEndLeft,
+									breadthStart: gap.breadthIntersection[0],
+									breadthEnd: gap.breadthIntersection[1]
+								}
+							]
+						}
+					};
+				}
+			}
+		}
+
+		// Case 2: Selection to the RIGHT of the gap's end element
+		// Check if placing selection would create equal gap on the right
+		{
+			const gapEndRight = gap.endBounds.x + gap.endBounds.width;
+			const currentGap = selLeft - gapEndRight;
+			// Only consider if selection is actually to the right (positive gap)
+			if (currentGap > 0) {
+				const diff = Math.abs(currentGap - gap.length);
+
+				if (diff < threshold && (xResult === null || diff < Math.abs(xResult.nudge))) {
+					// nudge = how much to move to make currentGap equal gap.length
+					// If currentGap > gap.length, move left (negative), else move right (positive)
+					const nudge = gap.length - currentGap;
+					xResult = {
+						nudge,
+						indicator: {
+							id: uniqueId(),
+							type: 'gap',
+							direction: 'horizontal',
+							gaps: [
+								// The existing gap
+								{
+									startEdge: gapStartRight,
+									endEdge: gapEndLeft,
+									breadthStart: gap.breadthIntersection[0],
+									breadthEnd: gap.breadthIntersection[1]
+								},
+								// The new gap we're creating
+								{
+									startEdge: gapEndRight,
+									endEdge: selLeft + nudge,
+									breadthStart: vertOverlap[0],
+									breadthEnd: vertOverlap[1]
+								}
+							]
+						}
+					};
+				}
+			}
+		}
+
+		// Case 3: Selection BETWEEN the two elements (center of gap)
+		// Check if we can place selection in the center
+		{
+			const gapCenterX = gapStartRight + gap.length / 2;
+			const selCenterX = selLeft + selectionBounds.width / 2;
+			const diff = Math.abs(gapCenterX - selCenterX);
+
+			if (diff < threshold && (xResult === null || diff < Math.abs(xResult.nudge))) {
+				const nudge = gapCenterX - selCenterX;
+				const newSelLeft = selLeft + nudge;
+				const newSelRight = selRight + nudge;
+				const gapLeft = newSelLeft - gapStartRight;
+				const gapRight = gapEndLeft - newSelRight;
+
+				// Only snap if it creates two equal gaps
+				if (Math.abs(gapLeft - gapRight) < 1) {
+					xResult = {
+						nudge,
+						indicator: {
+							id: uniqueId(),
+							type: 'gap',
+							direction: 'horizontal',
+							gaps: [
+								// Left gap
+								{
+									startEdge: gapStartRight,
+									endEdge: newSelLeft,
+									breadthStart: vertOverlap[0],
+									breadthEnd: vertOverlap[1]
+								},
+								// Right gap
+								{
+									startEdge: newSelRight,
+									endEdge: gapEndLeft,
+									breadthStart: vertOverlap[0],
+									breadthEnd: vertOverlap[1]
+								}
+							]
+						}
+					};
+				}
+			}
+		}
+	}
+
+	// Check vertical gaps (affects Y position)
+	for (const gap of gaps.vertical) {
+		const gapStartBottom = gap.startBounds.y + gap.startBounds.height;
+		const gapEndTop = gap.endBounds.y;
+
+		// Check if selection overlaps horizontally with this gap
+		const horizOverlap = rangesOverlap(
+			selLeft,
+			selRight,
+			gap.breadthIntersection[0],
+			gap.breadthIntersection[1]
+		);
+		if (!horizOverlap) continue;
+
+		// Case 1: Selection ABOVE the gap's start element
+		{
+			const currentGap = gap.startBounds.y - selBottom;
+			// Only consider if selection is actually above (positive gap)
+			if (currentGap > 0) {
+				const diff = Math.abs(currentGap - gap.length);
+
+				if (diff < threshold && (yResult === null || diff < Math.abs(yResult.nudge))) {
+					// nudge = how much to move down to make currentGap equal gap.length
+					const nudge = currentGap - gap.length;
+					yResult = {
+						nudge,
+						indicator: {
+							id: uniqueId(),
+							type: 'gap',
+							direction: 'vertical',
+							gaps: [
+								{
+									startEdge: selBottom + nudge,
+									endEdge: gap.startBounds.y,
+									breadthStart: horizOverlap[0],
+									breadthEnd: horizOverlap[1]
+								},
+								{
+									startEdge: gapStartBottom,
+									endEdge: gapEndTop,
+									breadthStart: gap.breadthIntersection[0],
+									breadthEnd: gap.breadthIntersection[1]
+								}
+							]
+						}
+					};
+				}
+			}
+		}
+
+		// Case 2: Selection BELOW the gap's end element
+		{
+			const gapEndBottom = gap.endBounds.y + gap.endBounds.height;
+			const currentGap = selTop - gapEndBottom;
+			// Only consider if selection is actually below (positive gap)
+			if (currentGap > 0) {
+				const diff = Math.abs(currentGap - gap.length);
+
+				if (diff < threshold && (yResult === null || diff < Math.abs(yResult.nudge))) {
+					// nudge = how much to move to make currentGap equal gap.length
+					const nudge = gap.length - currentGap;
+					yResult = {
+						nudge,
+						indicator: {
+							id: uniqueId(),
+							type: 'gap',
+							direction: 'vertical',
+							gaps: [
+								{
+									startEdge: gapStartBottom,
+									endEdge: gapEndTop,
+									breadthStart: gap.breadthIntersection[0],
+									breadthEnd: gap.breadthIntersection[1]
+								},
+								{
+									startEdge: gapEndBottom,
+									endEdge: selTop + nudge,
+									breadthStart: horizOverlap[0],
+									breadthEnd: horizOverlap[1]
+								}
+							]
+						}
+					};
+				}
+			}
+		}
+
+		// Case 3: Selection BETWEEN (center of gap)
+		{
+			const gapCenterY = gapStartBottom + gap.length / 2;
+			const selCenterY = selTop + selectionBounds.height / 2;
+			const diff = Math.abs(gapCenterY - selCenterY);
+
+			if (diff < threshold && (yResult === null || diff < Math.abs(yResult.nudge))) {
+				const nudge = gapCenterY - selCenterY;
+				const newSelTop = selTop + nudge;
+				const newSelBottom = selBottom + nudge;
+				const gapTop = newSelTop - gapStartBottom;
+				const gapBottom = gapEndTop - newSelBottom;
+
+				if (Math.abs(gapTop - gapBottom) < 1) {
+					yResult = {
+						nudge,
+						indicator: {
+							id: uniqueId(),
+							type: 'gap',
+							direction: 'vertical',
+							gaps: [
+								{
+									startEdge: gapStartBottom,
+									endEdge: newSelTop,
+									breadthStart: horizOverlap[0],
+									breadthEnd: horizOverlap[1]
+								},
+								{
+									startEdge: newSelBottom,
+									endEdge: gapEndTop,
+									breadthStart: horizOverlap[0],
+									breadthEnd: horizOverlap[1]
+								}
+							]
+						}
+					};
+				}
+			}
+		}
+	}
+
+	return { x: xResult, y: yResult };
 }
 
 // =============================================================================
@@ -289,7 +716,7 @@ export function calculateSnapForTranslate(
 		return { nudge: { x: 0, y: 0 }, indicators: [] };
 	}
 
-	// Find nearest snaps
+	// Find nearest point snaps
 	const nearestSnapsX: NearestPointsSnap[] = [];
 	const nearestSnapsY: NearestPointsSnap[] = [];
 	const minOffset = { x: adjustedThreshold, y: adjustedThreshold };
@@ -302,39 +729,76 @@ export function calculateSnapForTranslate(
 		nearestSnapsY
 	});
 
-	// Calculate nudge from the first snap on each axis
-	const nudge: Point = {
+	// Calculate nudge from point snaps (use mutable object, not Point which may be readonly)
+	const nudge = {
 		x: nearestSnapsX[0]?.nudge ?? 0,
 		y: nearestSnapsY[0]?.nudge ?? 0
 	};
 
-	// Now recalculate with the nudge applied to get all matching snap points
+	// Track gap snap indicators
+	const gapIndicators: GapSnapIndicator[] = [];
+
+	// If no point snap on an axis, try gap snapping
+	if (nudge.x === 0 || nudge.y === 0) {
+		// Calculate selection bounds with drag delta applied
+		const selectionBounds = getSelectionBounds(selectedIds, elements);
+
+		if (selectionBounds) {
+			const movedSelectionBounds: BoundingBox = {
+				x: selectionBounds.x + dragDelta.x,
+				y: selectionBounds.y + dragDelta.y,
+				width: selectionBounds.width,
+				height: selectionBounds.height
+			};
+
+			// Collect gaps between non-selected elements
+			const gaps = collectVisibleGaps(elements, selectedIds);
+
+			// Find gap snaps
+			const gapSnaps = findGapSnaps(movedSelectionBounds, gaps, adjustedThreshold);
+
+			// Apply gap snap nudge if no point snap on that axis
+			if (nudge.x === 0 && gapSnaps.x) {
+				nudge.x = gapSnaps.x.nudge;
+				gapIndicators.push(gapSnaps.x.indicator);
+			}
+			if (nudge.y === 0 && gapSnaps.y) {
+				nudge.y = gapSnaps.y.nudge;
+				gapIndicators.push(gapSnaps.y.indicator);
+			}
+		}
+	}
+
+	// Now recalculate point snaps with the nudge applied to get all matching snap points
 	// (for accurate indicator rendering)
-	if (nudge.x !== 0 || nudge.y !== 0) {
-		// Reset and recalculate with nudged positions
-		nearestSnapsX.length = 0;
-		nearestSnapsY.length = 0;
-		minOffset.x = 0;
-		minOffset.y = 0;
+	if (nearestSnapsX.length > 0 || nearestSnapsY.length > 0) {
+		if (nudge.x !== 0 || nudge.y !== 0) {
+			// Reset and recalculate with nudged positions
+			nearestSnapsX.length = 0;
+			nearestSnapsY.length = 0;
+			minOffset.x = 0;
+			minOffset.y = 0;
 
-		// Apply nudge to selection points
-		const nudgedSelectionPoints = selectionSnapPoints.map((p) => ({
-			...p,
-			x: p.x + nudge.x,
-			y: p.y + nudge.y
-		}));
+			// Apply nudge to selection points
+			const nudgedSelectionPoints = selectionSnapPoints.map((p) => ({
+				...p,
+				x: p.x + nudge.x,
+				y: p.y + nudge.y
+			}));
 
-		collectPointSnaps({
-			selectionSnapPoints: nudgedSelectionPoints,
-			otherSnapPoints,
-			minOffset,
-			nearestSnapsX,
-			nearestSnapsY
-		});
+			collectPointSnaps({
+				selectionSnapPoints: nudgedSelectionPoints,
+				otherSnapPoints,
+				minOffset,
+				nearestSnapsX,
+				nearestSnapsY
+			});
+		}
 	}
 
 	// Generate visual indicators
-	const indicators = getPointSnapLines({ nearestSnapsX, nearestSnapsY });
+	const pointIndicators = getPointSnapLines({ nearestSnapsX, nearestSnapsY });
+	const indicators: SnapIndicator[] = [...pointIndicators, ...gapIndicators];
 
 	return { nudge, indicators };
 }
