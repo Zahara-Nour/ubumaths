@@ -37,7 +37,6 @@
 		FolderPlus,
 		ArrowLeft,
 		Sparkles,
-		PanelLeftOpen,
 		Image,
 		Upload,
 		Trash2
@@ -812,19 +811,6 @@
 	}
 
 	/**
-	 * Handle drawer toggle from external button
-	 * Follows: UI event → handler → side effect (explicit flow)
-	 */
-	function handleToggleDrawer() {
-		const willOpen = !fileDrawerVisible;
-		whiteboardStore.toggleFileDrawer();
-		// When opening, trigger initial load
-		if (willOpen) {
-			triggerInitialLoadIfNeeded();
-		}
-	}
-
-	/**
 	 * Trigger initial data load (classes + files) if not already done
 	 */
 	function triggerInitialLoadIfNeeded() {
@@ -847,16 +833,6 @@
 		});
 	}
 </script>
-
-<!-- Toggle button (always visible) -->
-<button
-	type="button"
-	class="absolute top-1/2 left-2 z-10 -translate-y-1/2 rounded-md border border-border bg-background p-2 shadow-sm transition-all hover:bg-accent"
-	onclick={handleToggleDrawer}
-	aria-label="Ouvrir les fichiers"
->
-	<PanelLeftOpen class="h-5 w-5" />
-</button>
 
 <!-- File Drawer Sheet (preventScroll=false to avoid layout shift) -->
 <Sheet.Root open={fileDrawerVisible} onOpenChange={handleOpenChange} preventScroll={false}>

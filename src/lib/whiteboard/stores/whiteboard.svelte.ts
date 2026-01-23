@@ -445,6 +445,7 @@ function createWhiteboardStore() {
 	const isLoading = $state(false);
 	let sidebarVisible = $state(false);
 	let fileDrawerVisible = $state(false);
+	let stylePanelOpen = $state(false);
 
 	// === Selection State ===
 	let selectedIds = $state<Set<string>>(new Set());
@@ -769,6 +770,9 @@ function createWhiteboardStore() {
 		},
 		get fileDrawerVisible() {
 			return fileDrawerVisible;
+		},
+		get stylePanelOpen() {
+			return stylePanelOpen;
 		},
 		get currentPageIndex() {
 			return document?.currentPageIndex ?? 0;
@@ -1346,6 +1350,20 @@ function createWhiteboardStore() {
 		 */
 		setFileDrawerVisible(visible: boolean): void {
 			fileDrawerVisible = visible;
+		},
+
+		/**
+		 * Toggle style panel visibility
+		 */
+		toggleStylePanel(): void {
+			stylePanelOpen = !stylePanelOpen;
+		},
+
+		/**
+		 * Set style panel visibility
+		 */
+		setStylePanelOpen(visible: boolean): void {
+			stylePanelOpen = visible;
 		},
 
 		// === Element Operations ===

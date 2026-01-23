@@ -18,7 +18,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Plus, X, GripVertical, PanelRightOpen, FileText, LayoutTemplate } from 'lucide-svelte';
+	import { Plus, X, GripVertical, FileText, LayoutTemplate } from 'lucide-svelte';
 	import TemplatePickerModal from './TemplatePickerModal.svelte';
 	import type { TemplatePageData } from '../types/templates';
 
@@ -110,10 +110,6 @@
 		if (confirmDelete) {
 			whiteboardStore.deletePage(index);
 		}
-	}
-
-	function toggleSidebar() {
-		whiteboardStore.toggleSidebar();
 	}
 
 	/**
@@ -235,16 +231,6 @@
 		return pointsToSvgPath(outlinePoints);
 	}
 </script>
-
-<!-- Toggle button (always visible, fixed on right edge) -->
-<button
-	type="button"
-	class="absolute top-1/2 right-2 z-10 -translate-y-1/2 rounded-md border border-border bg-background p-2 shadow-sm transition-all hover:bg-accent"
-	onclick={toggleSidebar}
-	aria-label="Ouvrir les pages"
->
-	<PanelRightOpen class="h-5 w-5" />
-</button>
 
 <!-- Sheet overlay (preventScroll=false to avoid layout shift) -->
 <Sheet.Root open={sidebarVisible} onOpenChange={handleOpenChange} preventScroll={false}>
