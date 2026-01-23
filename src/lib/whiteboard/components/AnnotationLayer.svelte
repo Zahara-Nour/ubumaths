@@ -615,6 +615,7 @@
 
 		<!-- Selection bounding box -->
 		{#if selectionBBox && currentTool === 'annotation-select'}
+			{@const handleSize = 8 / scale}
 			<g class="layer-annotation-selection">
 				<rect
 					x={selectionBBox.minX - 4}
@@ -628,7 +629,6 @@
 					class="selection-box"
 				/>
 				<!-- Corner handles -->
-				{@const handleSize = 8 / scale}
 				<rect
 					x={selectionBBox.minX - 4 - handleSize / 2}
 					y={selectionBBox.minY - 4 - handleSize / 2}
@@ -687,24 +687,24 @@
 
 		<!-- Active shape preview -->
 		{#if isDrawing && isShapeTool(currentTool) && activeShapePreview}
+			{@const preview = activeShapePreview}
+			{@const shapeType = currentTool.replace('annotation-', '')}
+			{@const tempShape = {
+				type: 'shape' as const,
+				shapeType: shapeType as 'line' | 'rectangle' | 'circle' | 'arrow',
+				start: preview.start,
+				end: preview.end,
+				color: annotationStyle.color,
+				strokeWidth: annotationStyle.strokeWidth,
+				opacity: annotationStyle.opacity,
+				fillMode: annotationStyle.fillMode,
+				fill: annotationStyle.fill,
+				strokeStyle: annotationStyle.strokeStyle,
+				sketch: annotationStyle.sketch,
+				id: 'preview',
+				createdAt: 0
+			}}
 			<g class="layer-active-annotation">
-				{@const preview = activeShapePreview}
-				{@const shapeType = currentTool.replace('annotation-', '')}
-				{@const tempShape = {
-					type: 'shape' as const,
-					shapeType: shapeType as 'line' | 'rectangle' | 'circle' | 'arrow',
-					start: preview.start,
-					end: preview.end,
-					color: annotationStyle.color,
-					strokeWidth: annotationStyle.strokeWidth,
-					opacity: annotationStyle.opacity,
-					fillMode: annotationStyle.fillMode,
-					fill: annotationStyle.fill,
-					strokeStyle: annotationStyle.strokeStyle,
-					sketch: annotationStyle.sketch,
-					id: 'preview',
-					createdAt: 0
-				}}
 				<path
 					d={renderShapePath(tempShape)}
 					stroke={annotationStyle.color}
