@@ -7,7 +7,7 @@
  */
 
 import { getElementBounds, type BoundingBox } from './hit-testing';
-import type { WhiteboardElement } from '../types/document';
+import type { WhiteboardElement, ArrowElement } from '../types/document';
 
 // =============================================================================
 // Types
@@ -298,13 +298,16 @@ function moveElement(element: WhiteboardElement, dx: number, dy: number): Whiteb
 		case 'shape': {
 			const shape = element;
 			// Handle arrow shapes with points array
-			if (shape.shapeType === 'arrow' && 'points' in shape && shape.points) {
-				return {
-					...shape,
-					start: { x: shape.start.x + dx, y: shape.start.y + dy },
-					end: { x: shape.end.x + dx, y: shape.end.y + dy },
-					points: shape.points.map((p) => ({ x: p.x + dx, y: p.y + dy }))
-				};
+			if (shape.shapeType === 'arrow') {
+				const arrow = shape as ArrowElement;
+				if (arrow.points) {
+					return {
+						...arrow,
+						start: { x: arrow.start.x + dx, y: arrow.start.y + dy },
+						end: { x: arrow.end.x + dx, y: arrow.end.y + dy },
+						points: arrow.points.map((p) => ({ x: p.x + dx, y: p.y + dy }))
+					} as ArrowElement;
+				}
 			}
 			// Handle shapes with start/end (line, rectangle, circle, triangle, etc.)
 			if ('start' in shape && 'end' in shape && shape.start && shape.end) {
@@ -314,12 +317,8 @@ function moveElement(element: WhiteboardElement, dx: number, dy: number): Whiteb
 					end: { x: shape.end.x + dx, y: shape.end.y + dy }
 				};
 			}
-			// Handle shapes with x/y (fallback)
-			return {
-				...shape,
-				x: (shape.x ?? 0) + dx,
-				y: (shape.y ?? 0) + dy
-			};
+			// All shapes should have start/end, return unchanged if not
+			return element;
 		}
 
 		case 'stroke': {
@@ -329,19 +328,17 @@ function moveElement(element: WhiteboardElement, dx: number, dy: number): Whiteb
 			};
 		}
 
-		case 'text': {
+		case 'textblock': {
 			return {
 				...element,
-				x: element.x + dx,
-				y: element.y + dy
+				position: { x: element.position.x + dx, y: element.position.y + dy }
 			};
 		}
 
 		case 'image': {
 			return {
 				...element,
-				x: element.x + dx,
-				y: element.y + dy
+				position: { x: element.position.x + dx, y: element.position.y + dy }
 			};
 		}
 
@@ -349,14 +346,6 @@ function moveElement(element: WhiteboardElement, dx: number, dy: number): Whiteb
 			return {
 				...element,
 				children: element.children.map((child) => moveElement(child, dx, dy))
-			};
-		}
-
-		case 'pdf': {
-			return {
-				...element,
-				x: element.x + dx,
-				y: element.y + dy
 			};
 		}
 

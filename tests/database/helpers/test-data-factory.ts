@@ -153,7 +153,7 @@ export class ExerciseBuilder {
 		this.data = {
 			id: generateTestId('exercise'),
 			created_by: createdBy,
-			difficulty: 1,
+			category: 'automatisme',
 			variations: [
 				{
 					label: 'default',
@@ -166,8 +166,8 @@ export class ExerciseBuilder {
 		};
 	}
 
-	withDifficulty(difficulty: number): this {
-		this.data.difficulty = difficulty;
+	withCategory(category: string): this {
+		this.data.category = category;
 		return this;
 	}
 

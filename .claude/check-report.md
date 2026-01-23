@@ -1,49 +1,41 @@
-# Rapport de Verification - 2026-01-18
+# Rapport de Verification - 2026-01-19
 
 ## Resume
-- Erreurs Prettier : 0 (code deja formate)
-- Erreurs ESLint : 0 corrigees
-- Erreurs TypeScript : 10 corrigees
+- Erreurs Prettier : 0 (code formate automatiquement)
+- Erreurs ESLint : 0
+- Erreurs TypeScript : 0
 - Erreurs Build : 0
-- Warnings ESLint analyses : 128
+- Warnings ESLint analyses : 144
 - Warnings ESLint corriges : 0 (voir justification)
 
-## Corrections Majeures
+## Correction Permanente: Types Personnalises
 
-### 1. Types manquants dans database.ts
-Ajout des types suivants qui etaient importes mais non exportes:
-- `FriendshipStatus` - Type pour le statut d'amitie ('pending', 'accepted', 'rejected', 'blocked')
-- `FriendshipRelationType` - Type pour le type de relation ('friend', 'classmate', 'best_friend')
-- `FriendProfile` - Type pour les informations de profil d'ami avec presence
+### Probleme
+Les types personnalises (`Class`, `ClassSchedule`, `Profile`, `FriendshipWithProfile`, etc.) etaient ajoutes manuellement a `database.ts`, mais ce fichier est regenere automatiquement par `pnpm db:types` (Supabase CLI), ce qui ecrasait les types a chaque regeneration.
+
+### Solution
+Creation d'un fichier separe `src/lib/types/database-helpers.ts` pour les types derives qui ne seront pas ecrases.
+
+**Types deplaces vers database-helpers.ts:**
+- `Class` - Alias pour `Tables<'classes'>`
+- `ClassSchedule` - Alias pour `Tables<'class_schedules'>`
+- `Profile` - Alias pour `Tables<'profiles'>`
+- `FriendshipStatus` - Type pour le statut d'amitie
+- `FriendshipRelationType` - Type pour le type de relation
+- `FriendProfile` - Type pour les informations de profil d'ami
 - `FriendshipWithProfile` - Type composite pour les amities avec profil
-- `Class` - Alias pour `Database['public']['Tables']['classes']['Row']`
-- `ClassSchedule` - Alias pour `Database['public']['Tables']['class_schedules']['Row']`
 
-**Fichier modifie**: `src/lib/types/database.ts:14501-14556`
-
-### 2. Correction du type Uint8Array dans image-loader.ts
-Correction des erreurs de compatibilite TypeScript 5.7+ avec les types generiques Uint8Array:
-- Ajout de types explicites `Uint8Array<ArrayBuffer>` pour la fonction `convertToPng`
-- Ajout de type explicite pour la variable `imageData` dans `fetchImageAsBytes`
-
-**Fichier modifie**: `src/lib/typst/image-loader.ts:186-189, 265`
-
-### 3. Correction du mock TypstCompiler incomplet
-Ajout des methodes manquantes dans le mock du test:
-- `mapShadow: vi.fn()`
-- `addSource: vi.fn()`
-- `resetShadow: vi.fn()`
-
-**Fichier modifie**: `src/lib/typst/service/typst-service.test.ts:46-51`
-
-### 4. Correction des assertions undefined dans binding.test.ts
-Remplacement des comparaisons `=== null` par `!result.arrow.startBinding` pour gerer correctement les cas ou `startBinding` peut etre `undefined` ou `null`.
-
-**Fichier modifie**: `src/lib/whiteboard/core/binding.test.ts:1264-1281`
+**Fichiers mis a jour pour utiliser database-helpers.ts:**
+- `src/app.d.ts` - Profile
+- `src/lib/components/Header.svelte` - Profile
+- `src/lib/stores/friends.svelte.ts` - FriendshipWithProfile, FriendshipRelationType, FriendshipStatus
+- `src/lib/stores/selectedClass.svelte.ts` - Class
+- `src/lib/utils/timeMatching.ts` - Class, ClassSchedule
+- `src/routes/(protected)/dashboard/TeacherDashboard.svelte` - Class, ClassSchedule
 
 ## Warnings ESLint Ignores (avec justification)
 
-### svelte/prefer-svelte-reactivity (128 warnings)
+### svelte/prefer-svelte-reactivity (144 warnings)
 Ces warnings recommandent d'utiliser les classes reactives de Svelte au lieu des classes JavaScript natives:
 - `SvelteMap` au lieu de `Map`
 - `SvelteSet` au lieu de `Set`
@@ -76,13 +68,23 @@ Ces dependances sont chargees dynamiquement ou sont optionnelles pour des foncti
 ## Status Final
 **SUCCESS** - Le build est reussi avec 0 erreurs.
 
+- Build time: 1m 25s
+- Prettier: ✅
+- ESLint: ✅ (0 errors, 144 warnings)
+- TypeScript: ✅ (0 errors)
+- Build: ✅
+
 ## Fichiers Modifies
-1. `src/lib/types/database.ts` - Ajout des types manquants
-2. `src/lib/typst/image-loader.ts` - Correction des types Uint8Array
-3. `src/lib/typst/service/typst-service.test.ts` - Completion du mock
-4. `src/lib/whiteboard/core/binding.test.ts` - Correction des assertions
+1. `src/lib/types/database-helpers.ts` - **NOUVEAU** - Types convenience aliases (Profile, Class, ClassSchedule, FriendshipStatus, FriendshipRelationType, FriendProfile, FriendshipWithProfile)
+2. `src/lib/types/database.ts` - Suppression des types personnalises (ils etaient ecrases a chaque regeneration)
+3. `src/app.d.ts` - Import de Profile depuis database-helpers
+4. `src/lib/components/Header.svelte` - Import de Profile depuis database-helpers
+5. `src/lib/stores/friends.svelte.ts` - Imports depuis database-helpers
+6. `src/lib/stores/selectedClass.svelte.ts` - Import de Class depuis database-helpers
+7. `src/lib/utils/timeMatching.ts` - Imports depuis database-helpers
+8. `src/routes/(protected)/dashboard/TeacherDashboard.svelte` - Imports depuis database-helpers
 
 ## Recommandations pour le Futur
-1. Envisager de creer un fichier `src/lib/types/custom.ts` pour les types personnalises afin de separer les types generes automatiquement (database.ts) des types manuels.
-2. Mettre a jour le script de generation de database.ts pour inclure les alias de types courants.
-3. Planifier une tache pour migrer progressivement vers les classes reactives Svelte dans les composants qui beneficieraient reellement de la reactivite.
+1. ✅ **FAIT** - `database-helpers.ts` cree pour les types personnalises
+2. Lors de l'ajout de nouveaux types derives de la DB, les ajouter a `database-helpers.ts` (pas a `database.ts`)
+3. Planifier une tache pour migrer progressivement vers les classes reactives Svelte (SvelteMap, SvelteSet, etc.)

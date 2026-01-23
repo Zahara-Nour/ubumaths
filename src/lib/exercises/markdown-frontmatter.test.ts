@@ -13,7 +13,7 @@ describe('parseMarkdownWithFrontmatter', () => {
 	it('should parse valid markdown with frontmatter', () => {
 		const markdown = `---
 version: "1.0"
-difficulty: 2
+category: application
 tags:
   - algèbre
   - équations
@@ -35,7 +35,7 @@ $x = \\pm 2$
 		expect(result.success).toBe(true);
 		expect(result.data).toBeDefined();
 		expect(result.data?.version).toBe('1.0');
-		expect(result.data?.difficulty).toBe(2);
+		expect(result.data?.category).toBe(2);
 		expect(result.data?.tags).toEqual(['algèbre', 'équations']);
 		expect(result.data?.title).toBe('Test Exercise');
 		expect(result.data?.source).toBe('Test Book');
@@ -46,7 +46,7 @@ $x = \\pm 2$
 	it('should parse markdown with only required fields', () => {
 		const markdown = `---
 version: "1.0"
-difficulty: 1
+category: automatisme
 tags: []
 ---
 
@@ -62,7 +62,7 @@ Simple answer
 		const result = parseMarkdownWithFrontmatter(markdown);
 
 		expect(result.success).toBe(true);
-		expect(result.data?.difficulty).toBe(1);
+		expect(result.data?.category).toBe(1);
 		expect(result.data?.tags).toEqual([]);
 		expect(result.data?.statement_md).toBe('Simple question');
 		expect(result.data?.solution_md).toBe('Simple answer');
@@ -71,7 +71,7 @@ Simple answer
 	it('should handle multiline statement and solution', () => {
 		const markdown = `---
 version: "1.0"
-difficulty: 2
+category: application
 tags: []
 ---
 
@@ -100,7 +100,7 @@ Line 3 ends here
 	it('should handle optional fields in frontmatter', () => {
 		const markdown = `---
 version: "1.0"
-difficulty: 3
+category: adaptation
 tags:
   - algèbre
 title: "Advanced Algebra"
@@ -147,7 +147,7 @@ Answer
 	it('should reject markdown with invalid YAML', () => {
 		const markdown = `---
 version: 1.0
-difficulty: invalid yaml [[[
+category: invalid yaml [[[
 ---
 
 # Énoncé
@@ -168,7 +168,7 @@ Answer
 	it('should reject markdown missing Énoncé section', () => {
 		const markdown = `---
 version: "1.0"
-difficulty: 2
+category: application
 tags: []
 ---
 
@@ -187,7 +187,7 @@ Answer only
 	it('should reject markdown missing Solution section', () => {
 		const markdown = `---
 version: "1.0"
-difficulty: 2
+category: application
 tags: []
 ---
 
@@ -203,10 +203,10 @@ Question only
 		expect(result.error).toContain('Solution');
 	});
 
-	it('should reject markdown with invalid difficulty in frontmatter', () => {
+	it('should reject markdown with invalid category in frontmatter', () => {
 		const markdown = `---
 version: "1.0"
-difficulty: 5
+category: invalid_category
 tags: []
 ---
 
@@ -228,7 +228,7 @@ Answer
 	it('should handle empty content between sections', () => {
 		const markdown = `---
 version: "1.0"
-difficulty: 1
+category: automatisme
 tags: []
 ---
 
@@ -250,7 +250,7 @@ tags: []
 	it('should preserve LaTeX formatting', () => {
 		const markdown = `---
 version: "1.0"
-difficulty: 2
+category: application
 tags: []
 ---
 
@@ -275,7 +275,7 @@ describe('serializeToMarkdown', () => {
 	it('should serialize minimal exercise to markdown', () => {
 		const exercise: ExerciseExport = {
 			version: '1.0',
-			difficulty: 1,
+			category: 'automatisme',
 			tags: [],
 			statement_md: 'Simple question',
 			solution_md: 'Simple answer'
@@ -285,7 +285,7 @@ describe('serializeToMarkdown', () => {
 
 		expect(markdown).toContain('---');
 		expect(markdown).toContain('version: "1.0"');
-		expect(markdown).toContain('difficulty: 1');
+		expect(markdown).toContain('category: automatisme');
 		expect(markdown).toContain('tags: []');
 		expect(markdown).toContain('# Énoncé');
 		expect(markdown).toContain('Simple question');
@@ -296,7 +296,7 @@ describe('serializeToMarkdown', () => {
 	it('should serialize complete exercise to markdown', () => {
 		const exercise: ExerciseExport = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'application',
 			tags: ['algèbre', 'équations'],
 			statement_md: 'Résoudre $x^2 = 4$',
 			solution_md: '$x = \\pm 2$',
@@ -322,7 +322,7 @@ describe('serializeToMarkdown', () => {
 	it('should preserve LaTeX in serialized markdown', () => {
 		const exercise: ExerciseExport = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'application',
 			tags: [],
 			statement_md: 'Calculate $$\\int_0^\\pi \\sin(x) dx$$',
 			solution_md: 'The result is $2$'
@@ -337,7 +337,7 @@ describe('serializeToMarkdown', () => {
 	it('should handle multiline content', () => {
 		const exercise: ExerciseExport = {
 			version: '1.0',
-			difficulty: 1,
+			category: 'automatisme',
 			tags: [],
 			statement_md: 'Line 1\nLine 2\nLine 3',
 			solution_md: 'Answer line 1\nAnswer line 2'
@@ -354,7 +354,7 @@ describe('round-trip serialization', () => {
 	it('should parse and serialize to same content', () => {
 		const original: ExerciseExport = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'application',
 			tags: ['test', 'round-trip'],
 			statement_md: 'Test question with $x^2$',
 			solution_md: 'Test answer',
@@ -373,7 +373,7 @@ describe('round-trip serialization', () => {
 		expect(result.success).toBe(true);
 		// Compare only the defined fields from original
 		expect(result.data?.version).toBe(original.version);
-		expect(result.data?.difficulty).toBe(original.difficulty);
+		expect(result.data?.category).toBe(original.category);
 		expect(result.data?.tags).toEqual(original.tags);
 		expect(result.data?.statement_md).toBe(original.statement_md);
 		expect(result.data?.solution_md).toBe(original.solution_md);
@@ -386,7 +386,7 @@ describe('round-trip serialization', () => {
 	it('should handle round-trip with minimal data', () => {
 		const original: ExerciseExport = {
 			version: '1.0',
-			difficulty: 1,
+			category: 'automatisme',
 			tags: [],
 			statement_md: 'Q',
 			solution_md: 'A'
@@ -398,7 +398,7 @@ describe('round-trip serialization', () => {
 		expect(result.success).toBe(true);
 		// Check only the fields that should be present
 		expect(result.data?.version).toBe(original.version);
-		expect(result.data?.difficulty).toBe(original.difficulty);
+		expect(result.data?.category).toBe(original.category);
 		expect(result.data?.tags).toEqual(original.tags);
 		expect(result.data?.statement_md).toBe(original.statement_md);
 		expect(result.data?.solution_md).toBe(original.solution_md);

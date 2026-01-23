@@ -32,8 +32,9 @@ import { error } from '@sveltejs/kit';
 // TYPES
 // ============================================================================
 
-// Re-export shared types and constants
-export { type WarningType, WARNING_TYPE_LABELS, getWarningTypeLabel } from '$lib/types/warnings';
+// Import and re-export shared types and constants
+import { type WarningType, WARNING_TYPE_LABELS, getWarningTypeLabel } from '$lib/types/warnings';
+export { type WarningType, WARNING_TYPE_LABELS, getWarningTypeLabel };
 
 /**
  * Individual warning record

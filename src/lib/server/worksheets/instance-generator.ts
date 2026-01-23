@@ -177,7 +177,7 @@ function toExerciseTemplate(worksheetExercise: WorksheetExerciseWithExercise): E
 		shared: ex.shared ?? undefined,
 		variations: ex.variations,
 		distribution_mode: 'on_demand', // Worksheets handle their own distribution
-		difficulty: (ex.difficulty as 1 | 2 | 3) ?? 1,
+		category: (ex.category ?? 'automatisme') as Exercise['category'],
 		tags: [],
 		// Required audit fields (not used by generator, but required by Exercise type)
 		created_at: worksheetExercise.created_at,

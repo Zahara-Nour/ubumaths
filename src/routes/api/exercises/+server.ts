@@ -39,13 +39,13 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(400, `Invalid query parameters: ${errorMsg}`);
 	}
 
-	const { page, limit, difficulty, tags, topic, grades, search } = queryValidation.data;
+	const { page, limit, category, tags, topic, grades, search } = queryValidation.data;
 
 	// Build filters
 	const filters: ExerciseFilters = {};
 
-	if (difficulty !== undefined) {
-		filters.difficulty = difficulty as 1 | 2 | 3;
+	if (category !== undefined) {
+		filters.category = category;
 	}
 
 	if (tags) {

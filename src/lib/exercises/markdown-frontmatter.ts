@@ -6,7 +6,7 @@
  * ---
  * version: '1.0'
  * title: Exercise Title
- * difficulty: 2
+ * category: automatisme
  * tags: [algebra, equations]
  * ...
  * ---
@@ -97,7 +97,7 @@ export function parseMarkdownWithFrontmatter(content: string): {
 			version: frontmatterValidation.data!.version,
 			title: frontmatterValidation.data!.title,
 			source: frontmatterValidation.data!.source,
-			difficulty: frontmatterValidation.data!.difficulty,
+			category: frontmatterValidation.data!.category,
 			tags: frontmatterValidation.data!.tags,
 			statement_md: statement!,
 			solution_md: solution!,

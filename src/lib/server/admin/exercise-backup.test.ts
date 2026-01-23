@@ -251,7 +251,7 @@ describe('Backup Validation', () => {
 							slug: 'test-exercise',
 							title: 'Test Exercise',
 							source: null,
-							difficulty: 2,
+							category: 'application',
 							tags: ['algebra', 'equations'],
 							statement_md: '# Problem\n\nSolve $x + 5 = 10$',
 							solution_md: '# Solution\n\n$x = 5$',
@@ -280,7 +280,7 @@ describe('Backup Validation', () => {
 			expect(result.success).toBe(true);
 		});
 
-		it('should reject exercise with invalid difficulty', () => {
+		it('should reject exercise with invalid category', () => {
 			const invalidBackup = {
 				version: '1.0' as const,
 				format: 'ubumaths-backup' as const,
@@ -302,7 +302,7 @@ describe('Backup Validation', () => {
 							slug: null,
 							title: null,
 							source: null,
-							difficulty: 5, // Invalid - must be 1, 2, or 3
+							category: 'invalid_cat', // Invalid category
 							tags: [],
 							statement_md: 'Test',
 							solution_md: 'Test',
@@ -328,7 +328,7 @@ describe('Backup Validation', () => {
 
 			const result = validateBackup(invalidBackup);
 			expect(result.success).toBe(false);
-			expect(result.error).toContain('difficulty');
+			expect(result.error).toContain('category');
 		});
 
 		it('should reject exercise with invalid UUID', () => {
@@ -353,7 +353,7 @@ describe('Backup Validation', () => {
 							slug: null,
 							title: null,
 							source: null,
-							difficulty: 1,
+							category: 'automatisme',
 							tags: [],
 							statement_md: 'Test',
 							solution_md: 'Test',
@@ -465,7 +465,7 @@ describe('Template Record Validation', () => {
 						description: 'A system template for equations',
 						template_data: {
 							version: '1.0',
-							difficulty: 1,
+							category: 'automatisme',
 							tags: [],
 							statement_md: '',
 							solution_md: ''
@@ -509,7 +509,7 @@ describe('Template Record Validation', () => {
 						description: null,
 						template_data: {
 							version: '1.0',
-							difficulty: 2,
+							category: 'application',
 							tags: ['custom'],
 							statement_md: 'Q',
 							solution_md: 'A'

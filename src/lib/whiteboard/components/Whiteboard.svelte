@@ -98,14 +98,15 @@
 	// Derived State
 	// ==========================================================================
 
-	/** Current document - access store state directly for reactivity */
-	let document = $derived(whiteboardStore.document);
+	/**
+	 * Access store's currentPage directly for proper reactivity.
+	 * IMPORTANT: Don't re-derive from whiteboardStore.document as getter access
+	 * doesn't create proper reactive dependencies in Svelte 5.
+	 */
+	let currentPage = $derived(whiteboardStore.currentPage);
 
 	/** Current page index */
-	let currentPageIdx = $derived(document?.currentPageIndex ?? 0);
-
-	/** Current page - derived from document for proper reactivity tracking */
-	let currentPage = $derived(document?.pages[currentPageIdx] ?? null);
+	let currentPageIdx = $derived(whiteboardStore.currentPageIndex);
 
 	/** Page dimensions (current, possibly expanded) */
 	let pageWidth = $derived(currentPage?.width ?? 794);
@@ -156,8 +157,8 @@
 		zoomLevel > 1 || pageWidth > originalPageWidth || pageHeight > originalPageHeight
 	);
 
-	/** Page navigation state - derived from document for proper reactivity */
-	let pageCount = $derived(document?.pages.length ?? 0);
+	/** Page navigation state */
+	let pageCount = $derived(whiteboardStore.pageCount);
 	let canGoToPrevPage = $derived(currentPageIdx > 0);
 	let canGoToNextPage = $derived(currentPageIdx < pageCount - 1);
 
@@ -804,7 +805,7 @@
 						title="Modifications non sauvegardées"
 					></span>
 				{/if}
-				<span class="truncate font-medium">{document?.title ?? 'Sans titre'}</span>
+				<span class="truncate font-medium">{whiteboardStore.document?.title ?? 'Sans titre'}</span>
 			</div>
 
 			<span class="flex-shrink-0 text-muted-foreground">

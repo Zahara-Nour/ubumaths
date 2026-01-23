@@ -59,7 +59,7 @@ export const exerciseBackupRecordSchema = z.object({
 	slug: z.string().nullable(),
 	title: z.string().nullable(),
 	source: z.string().nullable(),
-	difficulty: z.number().int().min(1).max(3),
+	category: z.string(),
 	tags: z.array(z.string()),
 
 	// Content

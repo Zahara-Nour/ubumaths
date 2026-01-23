@@ -237,7 +237,7 @@ export async function insertTestExercise(params: {
 	const exercise = {
 		id: generateTestId('exercise'),
 		created_by: params.createdBy,
-		difficulty: 1,
+		category: 'automatisme',
 		statement_md: 'Test question?',
 		solution_md: '42',
 		created_at: new Date().toISOString()
