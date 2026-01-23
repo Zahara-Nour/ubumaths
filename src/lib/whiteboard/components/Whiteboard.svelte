@@ -466,6 +466,26 @@
 	}
 
 	// ==========================================================================
+	// Edge Scroll Handler (auto-pan when dragging near viewport edges)
+	// ==========================================================================
+
+	function handleEdgeScroll(dx: number, dy: number): { dx: number; dy: number } {
+		const oldPanX = panX;
+		const oldPanY = panY;
+
+		// Update pan position (negative because we're moving the canvas, not the viewport)
+		panX -= dx;
+		panY -= dy;
+		clampPan();
+
+		// Return actual pan change (may be less than requested due to clamping)
+		return {
+			dx: oldPanX - panX,
+			dy: oldPanY - panY
+		};
+	}
+
+	// ==========================================================================
 	// Lifecycle
 	// ==========================================================================
 
@@ -963,6 +983,7 @@
 					class="h-full w-full"
 					scale={effectiveScale}
 					{contextMenuRef}
+					onEdgeScroll={handleEdgeScroll}
 				/>
 			</div>
 		</div>
