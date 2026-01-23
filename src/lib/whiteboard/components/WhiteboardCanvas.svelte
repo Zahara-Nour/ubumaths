@@ -66,9 +66,11 @@
 		scale?: number;
 		/** Context menu reference (rendered outside transformed area) */
 		contextMenuRef?: ContextMenu | null;
+		/** Callback for edge scroll during drag (dx, dy in pixels). Returns actual pan amount applied. */
+		onEdgeScroll?: (dx: number, dy: number) => { dx: number; dy: number };
 	}
 
-	let { class: className = '', scale = 1, contextMenuRef = null }: Props = $props();
+	let { class: className = '', scale = 1, contextMenuRef = null, onEdgeScroll }: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -116,6 +118,9 @@
 	let isSelectionDragging = $state(false);
 	let selectionDragStartX = $state(0);
 	let selectionDragStartY = $state(0);
+	/** Cumulative pan offset during current drag (for edge scroll compensation) */
+	let dragPanOffsetX = $state(0);
+	let dragPanOffsetY = $state(0);
 
 	/** Marquee selection state (drag to select multiple elements) */
 	let isMarqueeSelecting = $state(false);
@@ -131,6 +136,15 @@
 
 	/** Minimum drag distance before movement starts (prevents jitter) */
 	const MIN_DRAG_DISTANCE = 2;
+
+	/** Edge scroll constants */
+	const EDGE_SCROLL_THRESHOLD = 40; // Distance from edge to trigger scroll (pixels)
+	const EDGE_SCROLL_SPEED = 8; // Base scroll speed (pixels per frame)
+	const EDGE_SCROLL_ACCELERATION = 1.5; // Speed multiplier when closer to edge
+
+	/** Edge scroll state */
+	let edgeScrollAnimationId: number | null = null;
+	let lastEdgeScrollTime = 0;
 
 	/** Laser pointer constants */
 	const LASER_POINTER_RADIUS = 18; // Mode pointeur - gros point
@@ -534,6 +548,161 @@
 		};
 	}
 
+	// ==========================================================================
+	// Edge Scroll Helpers
+	// ==========================================================================
+
+	/**
+	 * Calculate edge scroll velocity based on cursor position relative to canvas bounds.
+	 * Returns {dx, dy} in pixels per frame, or null if not near any edge.
+	 */
+	function calculateEdgeScrollVelocity(
+		clientX: number,
+		clientY: number,
+		canvasRect: DOMRect
+	): { dx: number; dy: number } | null {
+		let dx = 0;
+		let dy = 0;
+
+		// Check left edge
+		const distFromLeft = clientX - canvasRect.left;
+		if (distFromLeft < EDGE_SCROLL_THRESHOLD && distFromLeft >= 0) {
+			const intensity = 1 - distFromLeft / EDGE_SCROLL_THRESHOLD;
+			dx = -EDGE_SCROLL_SPEED * (1 + intensity * EDGE_SCROLL_ACCELERATION);
+		}
+
+		// Check right edge
+		const distFromRight = canvasRect.right - clientX;
+		if (distFromRight < EDGE_SCROLL_THRESHOLD && distFromRight >= 0) {
+			const intensity = 1 - distFromRight / EDGE_SCROLL_THRESHOLD;
+			dx = EDGE_SCROLL_SPEED * (1 + intensity * EDGE_SCROLL_ACCELERATION);
+		}
+
+		// Check top edge
+		const distFromTop = clientY - canvasRect.top;
+		if (distFromTop < EDGE_SCROLL_THRESHOLD && distFromTop >= 0) {
+			const intensity = 1 - distFromTop / EDGE_SCROLL_THRESHOLD;
+			dy = -EDGE_SCROLL_SPEED * (1 + intensity * EDGE_SCROLL_ACCELERATION);
+		}
+
+		// Check bottom edge
+		const distFromBottom = canvasRect.bottom - clientY;
+		if (distFromBottom < EDGE_SCROLL_THRESHOLD && distFromBottom >= 0) {
+			const intensity = 1 - distFromBottom / EDGE_SCROLL_THRESHOLD;
+			dy = EDGE_SCROLL_SPEED * (1 + intensity * EDGE_SCROLL_ACCELERATION);
+		}
+
+		if (dx === 0 && dy === 0) return null;
+		return { dx, dy };
+	}
+
+	/** Last known cursor position for edge scroll animation */
+	let edgeScrollLastClientX = 0;
+	let edgeScrollLastClientY = 0;
+
+	/**
+	 * Start edge scroll animation loop.
+	 * Called during drag when cursor is near viewport edges.
+	 */
+	function startEdgeScroll(clientX: number, clientY: number): void {
+		if (!onEdgeScroll) return;
+
+		// Already scrolling
+		if (edgeScrollAnimationId !== null) return;
+
+		edgeScrollLastClientX = clientX;
+		edgeScrollLastClientY = clientY;
+
+		const scrollLoop = () => {
+			const now = performance.now();
+			const deltaTime = lastEdgeScrollTime ? (now - lastEdgeScrollTime) / 16.67 : 1; // Normalize to ~60fps
+			lastEdgeScrollTime = now;
+
+			const viewportRect = {
+				left: 0,
+				right: window.innerWidth,
+				top: 0,
+				bottom: window.innerHeight
+			} as DOMRect;
+
+			const currentVelocity = calculateEdgeScrollVelocity(
+				edgeScrollLastClientX,
+				edgeScrollLastClientY,
+				viewportRect
+			);
+
+			if (!currentVelocity) {
+				stopEdgeScroll();
+				return;
+			}
+
+			// Apply scroll with time-based smoothing
+			const scrollX = currentVelocity.dx * Math.min(deltaTime, 2);
+			const scrollY = currentVelocity.dy * Math.min(deltaTime, 2);
+
+			// Apply the pan and get the actual amount applied (may be clamped)
+			const actualPan = onEdgeScroll(scrollX, scrollY);
+
+			// Track cumulative pan offset during drag (only the actual amount)
+			// This is used to compensate element position calculation
+			if (isSelectionDragging && actualPan) {
+				dragPanOffsetX += actualPan.dx;
+				dragPanOffsetY += actualPan.dy;
+			}
+
+			edgeScrollAnimationId = requestAnimationFrame(scrollLoop);
+		};
+
+		edgeScrollAnimationId = requestAnimationFrame(scrollLoop);
+	}
+
+	/**
+	 * Update edge scroll with new cursor position.
+	 * Uses viewport bounds, not canvas bounds.
+	 */
+	function updateEdgeScroll(clientX: number, clientY: number): void {
+		if (!onEdgeScroll) return;
+
+		// Update last known position for animation loop
+		edgeScrollLastClientX = clientX;
+		edgeScrollLastClientY = clientY;
+
+		// Use viewport bounds instead of canvas bounds
+		const viewportRect = {
+			left: 0,
+			right: window.innerWidth,
+			top: 0,
+			bottom: window.innerHeight
+		} as DOMRect;
+
+		const velocity = calculateEdgeScrollVelocity(clientX, clientY, viewportRect);
+
+		if (!velocity) {
+			stopEdgeScroll();
+			return;
+		}
+
+		// Start scrolling if not already
+		if (edgeScrollAnimationId === null) {
+			startEdgeScroll(clientX, clientY);
+		}
+	}
+
+	/**
+	 * Stop edge scroll animation.
+	 */
+	function stopEdgeScroll(): void {
+		if (edgeScrollAnimationId !== null) {
+			cancelAnimationFrame(edgeScrollAnimationId);
+			edgeScrollAnimationId = null;
+		}
+		lastEdgeScrollTime = 0;
+	}
+
+	// ==========================================================================
+	// Context Menu
+	// ==========================================================================
+
 	/**
 	 * Handle context menu (right-click) - show z-order menu
 	 * If clicking on an element, select it first, then show menu
@@ -619,6 +788,8 @@
 				isSelectionDragging = true;
 				selectionDragStartX = e.clientX;
 				selectionDragStartY = e.clientY;
+				dragPanOffsetX = 0;
+				dragPanOffsetY = 0;
 				(e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
 			} else {
 				// Click in empty space - start marquee selection
@@ -730,8 +901,9 @@
 			e.preventDefault(); // Prevent browser defaults during drag
 
 			// Calculate total offset from drag start (not incremental)
-			const dx = (e.clientX - selectionDragStartX) / scale;
-			const dy = (e.clientY - selectionDragStartY) / scale;
+			// Add pan offset to compensate for edge scroll movement
+			const dx = (e.clientX - selectionDragStartX + dragPanOffsetX) / scale;
+			const dy = (e.clientY - selectionDragStartY + dragPanOffsetY) / scale;
 
 			// Apply live position to all selected elements
 			// Alt key disables snapping temporarily
@@ -739,6 +911,9 @@
 				const selectedIds = selectedElements.map((el) => el.id);
 				whiteboardStore.setLivePositionBatch(selectedIds, dx, dy, scale, e.altKey);
 			}
+
+			// Check for edge scroll (auto-pan when dragging near viewport edges)
+			updateEdgeScroll(e.clientX, e.clientY);
 			return;
 		}
 
@@ -886,6 +1061,9 @@
 
 		// End selection dragging
 		if (isSelectionDragging) {
+			// Stop edge scroll animation
+			stopEdgeScroll();
+
 			// Commit live positions to actual element positions
 			const selectedIds = selectedElements.map((el) => el.id);
 			if (selectedIds.length > 0) {
@@ -946,6 +1124,9 @@
 
 		// Cancel selection dragging
 		if (isSelectionDragging) {
+			// Stop edge scroll animation
+			stopEdgeScroll();
+
 			// Clear live positions without committing (cancel)
 			whiteboardStore.clearAllLivePositions();
 
@@ -1000,6 +1181,9 @@
 
 		// Cancel selection dragging
 		if (isSelectionDragging) {
+			// Stop edge scroll animation
+			stopEdgeScroll();
+
 			isSelectionDragging = false;
 			selectionDragStartX = 0;
 			selectionDragStartY = 0;

@@ -2701,6 +2701,41 @@ function createWhiteboardStore() {
 				snapIndicators = [];
 			}
 
+			// Clamp dx/dy to keep elements within page bounds
+			if (currentPage && elementIds.length > 0) {
+				// Calculate combined bounding box of all selected elements
+				let minX = Infinity,
+					minY = Infinity,
+					maxX = -Infinity,
+					maxY = -Infinity;
+
+				for (const id of elementIds) {
+					const element = currentPage.elements.find((e) => e.id === id);
+					if (element) {
+						const bounds = getElementBounds(element);
+						minX = Math.min(minX, bounds.x);
+						minY = Math.min(minY, bounds.y);
+						maxX = Math.max(maxX, bounds.x + bounds.width);
+						maxY = Math.max(maxY, bounds.y + bounds.height);
+					}
+				}
+
+				if (minX !== Infinity) {
+					const pageW = currentPage.width;
+					const pageH = currentPage.height;
+
+					// Calculate how far we can move in each direction
+					const maxDxRight = pageW - maxX;
+					const maxDxLeft = -minX;
+					const maxDyBottom = pageH - maxY;
+					const maxDyTop = -minY;
+
+					// Clamp dx/dy
+					finalDx = Math.max(maxDxLeft, Math.min(maxDxRight, finalDx));
+					finalDy = Math.max(maxDyTop, Math.min(maxDyBottom, finalDy));
+				}
+			}
+
 			const newMap = new Map(livePositions);
 			for (const id of elementIds) {
 				newMap.set(id, { dx: finalDx, dy: finalDy });
