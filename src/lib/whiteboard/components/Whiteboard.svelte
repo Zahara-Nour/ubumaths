@@ -607,6 +607,28 @@
 			}
 		}
 
+		// Alignment shortcuts: Ctrl+Shift+L/R/T/B (2+ elements selected)
+		if (isCtrl && e.shiftKey && whiteboardStore.canAlign) {
+			switch (e.key.toLowerCase()) {
+				case 'l':
+					e.preventDefault();
+					whiteboardStore.alignSelectedHorizontal('left');
+					return;
+				case 'r':
+					e.preventDefault();
+					whiteboardStore.alignSelectedHorizontal('right');
+					return;
+				case 't':
+					e.preventDefault();
+					whiteboardStore.alignSelectedVertical('top');
+					return;
+				case 'b':
+					e.preventDefault();
+					whiteboardStore.alignSelectedVertical('bottom');
+					return;
+			}
+		}
+
 		// Selection shortcuts (no modifier needed)
 		// Delete selected elements
 		if (e.key === 'Delete' || e.key === 'Backspace') {
