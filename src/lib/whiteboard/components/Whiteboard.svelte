@@ -123,7 +123,7 @@
 	let syncState = $derived(whiteboardStore.syncState);
 	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
 
-	/** Calculate base scale to fit ORIGINAL page in container (don't zoom out on expansion) */
+	/** Calculate base scale to fit current page in container (including expanded dimensions) */
 	let fitScale = $derived.by(() => {
 		if (containerWidth === 0 || containerHeight === 0) return 1;
 
@@ -132,9 +132,9 @@
 		const availableWidth = containerWidth - padding * 2;
 		const availableHeight = containerHeight - padding * 2;
 
-		// Use original dimensions so scale doesn't change when page expands
-		const scaleX = availableWidth / originalPageWidth;
-		const scaleY = availableHeight / originalPageHeight;
+		// Use current page dimensions so 100% zoom always fits the entire page
+		const scaleX = availableWidth / pageWidth;
+		const scaleY = availableHeight / pageHeight;
 
 		return Math.min(scaleX, scaleY, 1);
 	});
