@@ -3,7 +3,7 @@
  * Generated from migration: 20250123000000_worksheets.sql
  */
 
-import type { Variable, DocumentNode } from '$lib/ubumark';
+import type { DocumentNode } from '$lib/ubumark';
 import type {
 	ExerciseVariation,
 	SharedExerciseDefaults,
@@ -546,15 +546,9 @@ export interface WorksheetExerciseWithExercise extends WorksheetExerciseRow {
 		title: string;
 		/** Exercise category (automatisme, application, etc.) */
 		category?: string;
-		/** @deprecated Use variations array instead - kept for backward compatibility */
-		statement_md?: string;
-		/** @deprecated Use variations array instead - kept for backward compatibility */
-		solution_md?: string | null;
-		/** @deprecated Use shared.variables instead - kept for backward compatibility */
-		variables?: Variable[] | null;
-		/** Shared defaults for variations (recommended) */
+		/** Shared defaults for variations */
 		shared?: SharedExerciseDefaults | null;
-		/** Exercise variations for different guidance levels (recommended) */
+		/** Exercise variations for different guidance levels */
 		variations?: ExerciseVariation[] | null;
 	};
 }

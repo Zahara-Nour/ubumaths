@@ -231,7 +231,6 @@ describe('Instance Generator', () => {
 						id: 'e3',
 						title: 'Static exercise',
 						category: 'automatisme',
-						variables: [],
 						variations: [
 							{
 								label: 'default',
@@ -467,13 +466,7 @@ describe('Instance Generator', () => {
 			exercise: {
 				id: 'e-var',
 				title: 'Exercise with variations',
-				statement_md: '', // Will be overridden by variation
-				solution_md: 'AC = {{result}} cm',
 				category: 'automatisme',
-				variables: [
-					{ name: 'a', expression: '{{random:3..10}}' },
-					{ name: 'b', expression: '{{random:3..10}}' }
-				],
 				shared: {
 					variables: [
 						{ name: 'a', expression: '{{random:3..10}}' },
@@ -676,7 +669,6 @@ describe('Instance Generator', () => {
 						id: 'e-static-ast',
 						title: 'Static for AST test',
 						category: 'automatisme',
-						variables: [],
 						variations: [
 							{
 								label: 'default',

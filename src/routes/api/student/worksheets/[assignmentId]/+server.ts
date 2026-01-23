@@ -145,7 +145,6 @@ function resolveExercise(
 	const template: Exercise = {
 		id: exercise.id,
 		title: exercise.title ?? undefined,
-		variables: exercise.variables ?? undefined,
 		shared: exercise.shared ?? undefined,
 		variations: exercise.variations ?? undefined,
 		distribution_mode: 'on_demand',
