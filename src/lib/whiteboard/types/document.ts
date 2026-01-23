@@ -848,6 +848,7 @@ export function createEmptyDocument(
 		updatedAt: now,
 		pages: [createEmptyPage(format)],
 		currentPageIndex: 0,
-		instruments: createDefaultInstruments()
+		instruments: createDefaultInstruments(),
+		annotationsVisible: true
 	};
 }
