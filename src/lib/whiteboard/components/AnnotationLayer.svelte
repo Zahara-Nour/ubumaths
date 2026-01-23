@@ -17,7 +17,12 @@
 		Point,
 		AnnotationToolType
 	} from '../types/document';
-	import { smoothStroke, pointsToSvgPath, doStrokesIntersect } from '../core/stroke-smoothing';
+	import {
+		smoothStroke,
+		pointsToSvgPath,
+		doStrokesIntersect,
+		getBoundingBox
+	} from '../core/stroke-smoothing';
 
 	// ==========================================================================
 	// Props
@@ -41,6 +46,12 @@
 
 	/** Is currently drawing */
 	let isDrawing = $state(false);
+
+	/** Is currently dragging selection */
+	let isDragging = $state(false);
+
+	/** Drag start position */
+	let dragStart = $state<Point | null>(null);
 
 	/** Shape drawing start point */
 	let shapeStart = $state<Point | null>(null);
@@ -77,6 +88,9 @@
 	/** Current annotation style settings */
 	let annotationStyle = $derived(whiteboardStore.annotationStyle);
 
+	/** Selected annotation IDs */
+	let selectedIds = $derived(whiteboardStore.selectedAnnotationIds);
+
 	/** Active stroke path for preview */
 	let activeStrokePath = $derived.by(() => {
 		if (activePoints.length < 2) return '';
@@ -89,6 +103,29 @@
 	let activeShapePreview = $derived.by(() => {
 		if (!shapeStart || !shapeEnd) return null;
 		return { start: shapeStart, end: shapeEnd };
+	});
+
+	/** Selection bounding box */
+	let selectionBBox = $derived.by(() => {
+		if (selectedIds.size === 0) return null;
+
+		let minX = Infinity,
+			minY = Infinity,
+			maxX = -Infinity,
+			maxY = -Infinity;
+
+		for (const annotation of annotations) {
+			if (!selectedIds.has(annotation.id)) continue;
+
+			const bbox = getAnnotationBBox(annotation);
+			minX = Math.min(minX, bbox.minX);
+			minY = Math.min(minY, bbox.minY);
+			maxX = Math.max(maxX, bbox.maxX);
+			maxY = Math.max(maxY, bbox.maxY);
+		}
+
+		if (minX === Infinity) return null;
+		return { minX, minY, maxX, maxY, width: maxX - minX, height: maxY - minY };
 	});
 
 	// ==========================================================================
@@ -159,6 +196,74 @@
 		].includes(tool);
 	}
 
+	function getAnnotationBBox(annotation: AnnotationElement): {
+		minX: number;
+		minY: number;
+		maxX: number;
+		maxY: number;
+	} {
+		if (annotation.type === 'stroke') {
+			const bbox = getBoundingBox([...annotation.points], annotation.width);
+			return bbox;
+		} else if (annotation.type === 'shape') {
+			const padding = annotation.strokeWidth / 2;
+			return {
+				minX: Math.min(annotation.start.x, annotation.end.x) - padding,
+				minY: Math.min(annotation.start.y, annotation.end.y) - padding,
+				maxX: Math.max(annotation.start.x, annotation.end.x) + padding,
+				maxY: Math.max(annotation.start.y, annotation.end.y) + padding
+			};
+		} else if (annotation.type === 'stamp') {
+			const half = annotation.size / 2;
+			return {
+				minX: annotation.position.x - half,
+				minY: annotation.position.y - half,
+				maxX: annotation.position.x + half,
+				maxY: annotation.position.y + half
+			};
+		}
+		return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+	}
+
+	function hitTestAnnotation(point: Point, annotation: AnnotationElement): boolean {
+		const bbox = getAnnotationBBox(annotation);
+		const hitPadding = 5;
+
+		// Quick bounding box check
+		if (
+			point.x < bbox.minX - hitPadding ||
+			point.x > bbox.maxX + hitPadding ||
+			point.y < bbox.minY - hitPadding ||
+			point.y > bbox.maxY + hitPadding
+		) {
+			return false;
+		}
+
+		// For strokes, do more precise hit testing
+		if (annotation.type === 'stroke') {
+			const hitPoints = [point];
+			return doStrokesIntersect(
+				hitPoints,
+				[...annotation.points],
+				hitPadding * 2,
+				annotation.width
+			);
+		}
+
+		// For shapes and stamps, bounding box is enough
+		return true;
+	}
+
+	function findAnnotationAtPoint(point: Point): AnnotationElement | null {
+		// Search in reverse order (top-most first)
+		for (let i = annotations.length - 1; i >= 0; i--) {
+			if (hitTestAnnotation(point, annotations[i])) {
+				return annotations[i];
+			}
+		}
+		return null;
+	}
+
 	// ==========================================================================
 	// Stroke Rendering
 	// ==========================================================================
@@ -200,6 +305,7 @@
 				const cy = (start.y + end.y) / 2;
 				const rx = width / 2;
 				const ry = height / 2;
+				if (rx < 1 || ry < 1) return '';
 				return `M ${cx - rx} ${cy} A ${rx} ${ry} 0 1 0 ${cx + rx} ${cy} A ${rx} ${ry} 0 1 0 ${cx - rx} ${cy}`;
 			}
 			case 'arrow': {
@@ -261,7 +367,27 @@
 
 		const point = getPointerPosition(e);
 
-		if (currentTool === 'annotation-eraser') {
+		if (currentTool === 'annotation-select') {
+			// Selection tool: check for hit on existing annotation
+			const hitAnnotation = findAnnotationAtPoint(point);
+
+			if (hitAnnotation) {
+				const isShift = e.shiftKey;
+				if (selectedIds.has(hitAnnotation.id)) {
+					// Already selected - start dragging
+					isDragging = true;
+					dragStart = point;
+				} else {
+					// Select this annotation
+					whiteboardStore.selectAnnotation(hitAnnotation.id, isShift);
+					isDragging = true;
+					dragStart = point;
+				}
+			} else {
+				// Clicked on empty space - clear selection
+				whiteboardStore.clearAnnotationSelection();
+			}
+		} else if (currentTool === 'annotation-eraser') {
 			// Eraser: check for intersections immediately
 			handleEraserPoint(point);
 			isDrawing = true;
@@ -283,11 +409,25 @@
 	}
 
 	function handlePointerMove(e: PointerEvent) {
-		if (!isAnnotationMode || !isDrawing) return;
-
-		e.preventDefault();
+		if (!isAnnotationMode) return;
 
 		const point = getPointerPosition(e);
+
+		if (isDragging && dragStart) {
+			e.preventDefault();
+			const dx = point.x - dragStart.x;
+			const dy = point.y - dragStart.y;
+
+			if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+				whiteboardStore.moveSelectedAnnotations(dx, dy);
+				dragStart = point;
+			}
+			return;
+		}
+
+		if (!isDrawing) return;
+
+		e.preventDefault();
 
 		if (currentTool === 'annotation-eraser') {
 			handleEraserPoint(point);
@@ -299,9 +439,22 @@
 	}
 
 	function handlePointerUp(e: PointerEvent) {
-		if (!isAnnotationMode || !isDrawing) return;
+		if (!isAnnotationMode) return;
 
 		e.preventDefault();
+
+		if (isDragging) {
+			isDragging = false;
+			dragStart = null;
+			try {
+				(e.target as Element)?.releasePointerCapture?.(e.pointerId);
+			} catch {
+				// Ignore
+			}
+			return;
+		}
+
+		if (!isDrawing) return;
 
 		if (isStrokeTool(currentTool) && activePoints.length >= 2) {
 			// Finalize stroke
@@ -335,6 +488,8 @@
 		shapeStart = null;
 		shapeEnd = null;
 		isDrawing = false;
+		isDragging = false;
+		dragStart = null;
 
 		try {
 			(e.target as Element)?.releasePointerCapture?.(e.pointerId);
@@ -376,13 +531,26 @@
 			}
 		}
 	}
+
+	function handleKeyDown(e: KeyboardEvent) {
+		if (!isAnnotationMode) return;
+
+		// Delete selected annotations
+		if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIds.size > 0) {
+			e.preventDefault();
+			whiteboardStore.deleteSelectedAnnotations();
+		}
+	}
 </script>
+
+<svelte:window onkeydown={handleKeyDown} />
 
 {#if annotationsVisible}
 	<svg
 		bind:this={svgElement}
 		class="annotation-layer {className}"
 		class:annotation-mode={isAnnotationMode}
+		class:select-mode={currentTool === 'annotation-select'}
 		viewBox="0 0 {pageWidth} {pageHeight}"
 		width={pageWidth * scale}
 		height={pageHeight * scale}
@@ -396,8 +564,14 @@
 		<!-- Rendered annotations -->
 		<g class="layer-annotations">
 			{#each annotations as annotation (annotation.id)}
+				{@const isSelected = selectedIds.has(annotation.id)}
 				{#if annotation.type === 'stroke'}
-					<path d={renderStrokePath(annotation)} style={getStrokeStyle(annotation)} stroke="none" />
+					<path
+						d={renderStrokePath(annotation)}
+						style={getStrokeStyle(annotation)}
+						stroke="none"
+						class:selected={isSelected}
+					/>
 				{:else if annotation.type === 'shape'}
 					{@const style = getShapeStyle(annotation)}
 					<path
@@ -408,6 +582,7 @@
 						opacity={style.opacity}
 						stroke-linecap="round"
 						stroke-linejoin="round"
+						class:selected={isSelected}
 					/>
 				{:else if annotation.type === 'stamp'}
 					{#if annotation.fill}
@@ -430,12 +605,72 @@
 						transform="rotate({annotation.rotation}, {annotation.position.x}, {annotation.position
 							.y})"
 						style="user-select: none;"
+						class:selected={isSelected}
 					>
 						{annotation.stampType}
 					</text>
 				{/if}
 			{/each}
 		</g>
+
+		<!-- Selection bounding box -->
+		{#if selectionBBox && currentTool === 'annotation-select'}
+			<g class="layer-annotation-selection">
+				<rect
+					x={selectionBBox.minX - 4}
+					y={selectionBBox.minY - 4}
+					width={selectionBBox.width + 8}
+					height={selectionBBox.height + 8}
+					fill="none"
+					stroke="#3b82f6"
+					stroke-width={1 / scale}
+					stroke-dasharray={`${4 / scale} ${4 / scale}`}
+					class="selection-box"
+				/>
+				<!-- Corner handles -->
+				{@const handleSize = 8 / scale}
+				<rect
+					x={selectionBBox.minX - 4 - handleSize / 2}
+					y={selectionBBox.minY - 4 - handleSize / 2}
+					width={handleSize}
+					height={handleSize}
+					fill="white"
+					stroke="#3b82f6"
+					stroke-width={1 / scale}
+					class="selection-handle"
+				/>
+				<rect
+					x={selectionBBox.maxX + 4 - handleSize / 2}
+					y={selectionBBox.minY - 4 - handleSize / 2}
+					width={handleSize}
+					height={handleSize}
+					fill="white"
+					stroke="#3b82f6"
+					stroke-width={1 / scale}
+					class="selection-handle"
+				/>
+				<rect
+					x={selectionBBox.minX - 4 - handleSize / 2}
+					y={selectionBBox.maxY + 4 - handleSize / 2}
+					width={handleSize}
+					height={handleSize}
+					fill="white"
+					stroke="#3b82f6"
+					stroke-width={1 / scale}
+					class="selection-handle"
+				/>
+				<rect
+					x={selectionBBox.maxX + 4 - handleSize / 2}
+					y={selectionBBox.maxY + 4 - handleSize / 2}
+					width={handleSize}
+					height={handleSize}
+					fill="white"
+					stroke="#3b82f6"
+					stroke-width={1 / scale}
+					class="selection-handle"
+				/>
+			</g>
+		{/if}
 
 		<!-- Active stroke preview -->
 		{#if isDrawing && isStrokeTool(currentTool) && activeStrokePath}
@@ -484,13 +719,6 @@
 				/>
 			</g>
 		{/if}
-
-		<!-- Eraser cursor preview -->
-		{#if isAnnotationMode && currentTool === 'annotation-eraser'}
-			<g class="layer-eraser-cursor" style="pointer-events: none;">
-				<!-- Eraser cursor is handled by CSS -->
-			</g>
-		{/if}
 	</svg>
 {/if}
 
@@ -509,7 +737,27 @@
 		cursor: crosshair;
 	}
 
+	.annotation-layer.select-mode {
+		cursor: default;
+	}
+
 	.layer-active-annotation {
 		pointer-events: none;
+	}
+
+	.layer-annotation-selection {
+		pointer-events: none;
+	}
+
+	.selection-box {
+		pointer-events: none;
+	}
+
+	.selection-handle {
+		pointer-events: none;
+	}
+
+	:global(.selected) {
+		filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.8));
 	}
 </style>

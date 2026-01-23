@@ -11,6 +11,7 @@
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import WhiteboardCanvas from './WhiteboardCanvas.svelte';
 	import FloatingToolbar from './FloatingToolbar.svelte';
+	import AnnotationToolbar from './AnnotationToolbar.svelte';
 	import StylePanel from './StylePanel.svelte';
 	import PageThumbnails from './PageThumbnails.svelte';
 	import FileDrawer from './FileDrawer.svelte';
@@ -26,7 +27,8 @@
 		Maximize2,
 		Minimize2,
 		FolderOpen,
-		PanelRight
+		PanelRight,
+		PenTool
 	} from 'lucide-svelte';
 	import type { PageFormatKey } from '../types/document';
 	import type { TemplatePageData } from '../types/templates';
@@ -642,6 +644,66 @@
 			}
 		}
 
+		// Annotation mode toggle: Ctrl+Shift+A
+		if (isCtrl && e.shiftKey && e.key.toLowerCase() === 'a') {
+			e.preventDefault();
+			whiteboardStore.toggleAnnotationMode();
+			return;
+		}
+
+		// Toggle annotations visibility: Ctrl+H (when in annotation mode)
+		if (isCtrl && e.key.toLowerCase() === 'h' && whiteboardStore.isAnnotationMode) {
+			e.preventDefault();
+			whiteboardStore.toggleAnnotationsVisible();
+			return;
+		}
+
+		// Annotation tool shortcuts (only when in annotation mode)
+		if (whiteboardStore.isAnnotationMode && !isCtrl && !e.altKey && !e.shiftKey) {
+			switch (e.key.toLowerCase()) {
+				case 'v':
+					e.preventDefault();
+					whiteboardStore.setAnnotationTool('annotation-select');
+					return;
+				case 'p':
+					e.preventDefault();
+					whiteboardStore.setAnnotationTool('annotation-pen');
+					return;
+				case 'm':
+					e.preventDefault();
+					whiteboardStore.setAnnotationTool('annotation-marker');
+					return;
+				case 'h':
+					e.preventDefault();
+					whiteboardStore.setAnnotationTool('annotation-highlighter');
+					return;
+				case 'e':
+					e.preventDefault();
+					whiteboardStore.setAnnotationTool('annotation-eraser');
+					return;
+				case 'l':
+					e.preventDefault();
+					whiteboardStore.setAnnotationTool('annotation-line');
+					return;
+				case 'r':
+					e.preventDefault();
+					whiteboardStore.setAnnotationTool('annotation-rectangle');
+					return;
+				case 'c':
+					e.preventDefault();
+					whiteboardStore.setAnnotationTool('annotation-circle');
+					return;
+				case 'a':
+					e.preventDefault();
+					whiteboardStore.setAnnotationTool('annotation-arrow');
+					return;
+				case 't':
+					e.preventDefault();
+					whiteboardStore.setAnnotationTool('annotation-stamp');
+					return;
+			}
+		}
+
 		// Selection shortcuts (no modifier needed)
 		// Delete selected elements
 		if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -671,8 +733,14 @@
 			}
 		}
 
-		// Escape - exit fullscreen or clear selection
+		// Escape - exit annotation mode, fullscreen, or clear selection
 		if (e.key === 'Escape') {
+			// First priority: exit annotation mode
+			if (whiteboardStore.isAnnotationMode) {
+				e.preventDefault();
+				whiteboardStore.exitAnnotationMode();
+				return;
+			}
 			if (isFullscreen) {
 				e.preventDefault();
 				isFullscreen = false;
@@ -828,6 +896,19 @@
 
 		<!-- Right: Actions -->
 		<div class="flex flex-shrink-0 items-center gap-1">
+			<!-- Annotation mode toggle -->
+			<Button
+				type="button"
+				variant={whiteboardStore.isAnnotationMode ? 'default' : 'ghost'}
+				size="sm"
+				onclick={() => whiteboardStore.toggleAnnotationMode()}
+				title="Mode annotation (Ctrl+Shift+A)"
+				aria-label="Mode annotation"
+				class="h-7 w-7 p-0"
+			>
+				<PenTool class="h-4 w-4" />
+			</Button>
+
 			<!-- Add page button -->
 			<Button
 				type="button"
@@ -980,6 +1061,9 @@
 
 		<!-- Floating Toolbar (bottom center) -->
 		<FloatingToolbar />
+
+		<!-- Annotation Toolbar (bottom center, above floating toolbar when in annotation mode) -->
+		<AnnotationToolbar />
 
 		<!-- Page thumbnails sidebar (right) -->
 		<PageThumbnails />

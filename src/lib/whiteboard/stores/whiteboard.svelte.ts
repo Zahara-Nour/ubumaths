@@ -471,6 +471,7 @@ function createWhiteboardStore() {
 		stampFill: undefined as string | undefined,
 		stampFillOpacity: 1
 	});
+	let selectedAnnotationIds = $state<Set<string>>(new Set());
 
 	// === Selection State ===
 	let selectedIds = $state<Set<string>>(new Set());
@@ -807,6 +808,12 @@ function createWhiteboardStore() {
 		},
 		get annotationStyle() {
 			return annotationStyle;
+		},
+		get selectedAnnotationIds() {
+			return selectedAnnotationIds;
+		},
+		get hasSelectedAnnotations() {
+			return selectedAnnotationIds.size > 0;
 		},
 		get currentPageIndex() {
 			return document?.currentPageIndex ?? 0;
@@ -1554,6 +1561,123 @@ function createWhiteboardStore() {
 			updateCurrentPage((page) => ({
 				...page,
 				annotations: []
+			}));
+		},
+
+		/**
+		 * Select an annotation
+		 */
+		selectAnnotation(annotationId: string, addToSelection = false): void {
+			if (addToSelection) {
+				selectedAnnotationIds = new Set([...selectedAnnotationIds, annotationId]);
+			} else {
+				selectedAnnotationIds = new Set([annotationId]);
+			}
+		},
+
+		/**
+		 * Deselect an annotation
+		 */
+		deselectAnnotation(annotationId: string): void {
+			const newSet = new Set(selectedAnnotationIds);
+			newSet.delete(annotationId);
+			selectedAnnotationIds = newSet;
+		},
+
+		/**
+		 * Clear annotation selection
+		 */
+		clearAnnotationSelection(): void {
+			selectedAnnotationIds = new Set();
+		},
+
+		/**
+		 * Delete selected annotations
+		 */
+		deleteSelectedAnnotations(): void {
+			if (selectedAnnotationIds.size === 0) return;
+
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: (page.annotations ?? []).filter((a) => !selectedAnnotationIds.has(a.id))
+			}));
+
+			selectedAnnotationIds = new Set();
+		},
+
+		/**
+		 * Move annotation by delta
+		 */
+		moveAnnotation(annotationId: string, dx: number, dy: number): void {
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: (page.annotations ?? []).map((a) => {
+					if (a.id !== annotationId) return a;
+
+					if (a.type === 'stroke') {
+						return {
+							...a,
+							points: a.points.map((p) => ({ ...p, x: p.x + dx, y: p.y + dy }))
+						};
+					} else if (a.type === 'shape') {
+						return {
+							...a,
+							start: { x: a.start.x + dx, y: a.start.y + dy },
+							end: { x: a.end.x + dx, y: a.end.y + dy }
+						};
+					} else if (a.type === 'stamp') {
+						return {
+							...a,
+							position: { x: a.position.x + dx, y: a.position.y + dy }
+						};
+					}
+					return a;
+				})
+			}));
+		},
+
+		/**
+		 * Move all selected annotations by delta
+		 */
+		moveSelectedAnnotations(dx: number, dy: number): void {
+			if (selectedAnnotationIds.size === 0) return;
+
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: (page.annotations ?? []).map((a) => {
+					if (!selectedAnnotationIds.has(a.id)) return a;
+
+					if (a.type === 'stroke') {
+						return {
+							...a,
+							points: a.points.map((p) => ({ ...p, x: p.x + dx, y: p.y + dy }))
+						};
+					} else if (a.type === 'shape') {
+						return {
+							...a,
+							start: { x: a.start.x + dx, y: a.start.y + dy },
+							end: { x: a.end.x + dx, y: a.end.y + dy }
+						};
+					} else if (a.type === 'stamp') {
+						return {
+							...a,
+							position: { x: a.position.x + dx, y: a.position.y + dy }
+						};
+					}
+					return a;
+				})
+			}));
+		},
+
+		/**
+		 * Update annotation color
+		 */
+		updateAnnotationColor(annotationId: string, color: string): void {
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: (page.annotations ?? []).map((a) =>
+					a.id === annotationId ? { ...a, color } : a
+				)
 			}));
 		},
 
