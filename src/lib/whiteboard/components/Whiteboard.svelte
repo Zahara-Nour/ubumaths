@@ -790,10 +790,10 @@
 		class="whiteboard-topbar flex items-center justify-between gap-2 border-b border-border bg-muted/50 px-3 py-1.5 text-xs text-gray-600"
 	>
 		<!-- Left: Status info -->
-		<div class="flex items-center gap-3">
+		<div class="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
 			<!-- Sync indicator (orange dot when unsaved) -->
 			<span
-				class="inline-flex w-3 items-center justify-center"
+				class="inline-flex w-3 flex-shrink-0 items-center justify-center"
 				title={hasUnsavedChanges || syncState.status === 'modified'
 					? 'Modifications non sauvegardées'
 					: ''}
@@ -802,33 +802,33 @@
 					<span class="h-2 w-2 rounded-full bg-orange-500"></span>
 				{/if}
 			</span>
-			<span class="font-medium">{document?.title ?? 'Sans titre'}</span>
-			<span class="text-muted-foreground">
+			<span class="truncate font-medium">{document?.title ?? 'Sans titre'}</span>
+			<span class="flex-shrink-0 text-muted-foreground">
 				Page {currentPageIndex + 1}/{pageCount}
 			</span>
-			<span class="text-muted-foreground">{pageWidth}×{pageHeight}</span>
+			<span class="hidden flex-shrink-0 text-muted-foreground sm:inline"
+				>{pageWidth}×{pageHeight}</span
+			>
 			{#if isPageExpanded}
 				<button
 					type="button"
 					onclick={() => whiteboardStore.resetPageToOriginal()}
-					class="rounded bg-blue-100 px-1.5 py-0.5 text-blue-700 transition-colors hover:bg-blue-200"
-					title="Page étendue - Cliquer pour remettre à la taille originale"
+					class="flex-shrink-0 rounded bg-blue-100 px-1.5 py-0.5 text-blue-700 transition-colors hover:bg-blue-200"
+					title="Page étendue à {expansionPercent}% - Cliquer pour remettre à la taille originale"
 				>
-					Page {expansionPercent}%
+					Étendue
 				</button>
 			{/if}
-			<span class="text-primary capitalize">{toolState.toolType}</span>
+			<span class="flex-shrink-0 text-primary capitalize">{toolState.toolType}</span>
 			{#if whiteboardStore.hasSelection}
-				<span class="rounded bg-blue-100 px-1.5 py-0.5 text-blue-700">
-					{whiteboardStore.selectedIds.size} sélectionné{whiteboardStore.selectedIds.size > 1
-						? 's'
-						: ''}
+				<span class="flex-shrink-0 rounded bg-blue-100 px-1.5 py-0.5 text-blue-700">
+					{whiteboardStore.selectedIds.size} sél.
 				</span>
 			{/if}
 		</div>
 
 		<!-- Right: Actions -->
-		<div class="flex items-center gap-1">
+		<div class="flex flex-shrink-0 items-center gap-1">
 			<!-- Add page button -->
 			<Button
 				type="button"
