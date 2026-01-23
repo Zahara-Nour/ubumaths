@@ -172,8 +172,6 @@ function toExerciseTemplate(worksheetExercise: WorksheetExerciseWithExercise): E
 	return {
 		id: ex.id,
 		title: ex.title,
-		// Legacy fields deprecated - content comes from variations
-		variables: ex.variables ?? undefined,
 		shared: ex.shared ?? undefined,
 		variations: ex.variations,
 		distribution_mode: 'on_demand', // Worksheets handle their own distribution
