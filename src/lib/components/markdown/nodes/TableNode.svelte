@@ -30,6 +30,7 @@
 		rows: TableCellNode[][];
 		alignments: ('left' | 'center' | 'right')[];
 		transpose?: boolean;
+		cross?: boolean;
 		genericFunctions?: GenericFunctionConfig | null;
 		class?: string;
 	}
@@ -39,6 +40,7 @@
 		rows,
 		alignments,
 		transpose = false,
+		cross = false,
 		genericFunctions,
 		class: className = ''
 	}: Props = $props();
@@ -147,6 +149,53 @@
 								</th>
 							{:else}
 								<td class="px-4 py-2 text-center text-foreground">
+									{@render cellContent(cell.content)}
+								</td>
+							{/if}
+						{/each}
+					</tr>
+				{/each}
+			</tbody>
+		{:else if cross}
+			<!-- Cross table (double-entry): first row AND first column are headers -->
+			<colgroup>
+				{#each alignments as alignment, index (index)}
+					<col class={getAlignmentClass(alignment)} />
+				{/each}
+			</colgroup>
+			<thead class="border-b-2 border-border">
+				<tr>
+					{#each header as cell, index (index)}
+						<!-- Corner cell: header styling only if it has content -->
+						<th
+							class="px-4 py-2 font-semibold text-foreground {getAlignmentClass(
+								alignments[index] || 'center'
+							)} {index === 0 ? (cell.content.trim() ? 'bg-muted/50' : '') : 'bg-muted/50'}"
+						>
+							{@render cellContent(cell.content)}
+						</th>
+					{/each}
+				</tr>
+			</thead>
+			<tbody>
+				{#each rows as row, rowIndex (rowIndex)}
+					<tr class="border-b border-border">
+						{#each row as cell, cellIndex (cellIndex)}
+							{#if cellIndex === 0}
+								<!-- First column: header cell -->
+								<th
+									class="border-r-2 border-border bg-muted/50 px-4 py-2 font-semibold text-foreground {getAlignmentClass(
+										alignments[cellIndex] || 'center'
+									)}"
+								>
+									{@render cellContent(cell.content)}
+								</th>
+							{:else}
+								<td
+									class="px-4 py-2 text-foreground {getAlignmentClass(
+										alignments[cellIndex] || 'center'
+									)}"
+								>
 									{@render cellContent(cell.content)}
 								</td>
 							{/if}

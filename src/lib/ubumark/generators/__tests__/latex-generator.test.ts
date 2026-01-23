@@ -1224,3 +1224,477 @@ describe('Transposed Tables', () => {
 		expect(latex).not.toContain('\\textbf{X}');
 	});
 });
+
+// ============================================================================
+// CROSS TABLES (DOUBLE-ENTRY)
+// ============================================================================
+describe('Cross Tables (Double-Entry)', () => {
+	it('should generate cross table with bold first row and first column', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '×', align: 'center' },
+						{ content: '1', align: 'center' },
+						{ content: '2', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: '1', align: 'center' },
+							{ content: '2', align: 'center' }
+						],
+						[
+							{ content: '2', align: 'center' },
+							{ content: '2', align: 'center' },
+							{ content: '4', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		// Header row should have bold cells
+		expect(latex).toContain('\\textbf{×}');
+		expect(latex).toContain('\\textbf{1}');
+		expect(latex).toContain('\\textbf{2}');
+		// First column of data rows should be bold
+		// Check that first cell in row 1 (value "1") is bold and second (value "1") is not
+		expect(latex).toMatch(/\\textbf\{1\} & 1 & 2/);
+		// Check that first cell in row 2 (value "2") is bold
+		expect(latex).toMatch(/\\textbf\{2\} & 2 & 4/);
+	});
+
+	it('should handle cross table with empty corner cell', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '', align: 'center' },
+						{ content: 'A', align: 'center' },
+						{ content: 'B', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: 'x', align: 'center' },
+							{ content: 'y', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		// Empty corner cell should NOT be wrapped in \textbf
+		expect(latex).not.toContain('\\textbf{}');
+		// But other header cells should be bold
+		expect(latex).toContain('\\textbf{A}');
+		expect(latex).toContain('\\textbf{B}');
+		// First column of data row should be bold
+		expect(latex).toContain('\\textbf{1}');
+	});
+
+	it('should handle cross table with non-empty corner cell', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '+', align: 'center' },
+						{ content: 'a', align: 'center' },
+						{ content: 'b', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: 'a', align: 'center' },
+							{ content: '2a', align: 'center' },
+							{ content: 'ab', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		// Non-empty corner cell should be bold
+		expect(latex).toContain('\\textbf{+}');
+		// Header cells should be bold
+		expect(latex).toContain('\\textbf{a}');
+		expect(latex).toContain('\\textbf{b}');
+	});
+
+	it('should use proper column alignments for cross tables', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'L', align: 'left' },
+						{ content: 'C', align: 'center' },
+						{ content: 'R', align: 'right' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'left' },
+							{ content: '2', align: 'center' },
+							{ content: '3', align: 'right' }
+						]
+					],
+					alignments: ['left', 'center', 'right'],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		// Should have proper column specification
+		expect(latex).toContain('{|l|c|r|}');
+	});
+
+	it('should handle cross table with whitespace-only corner cell', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '   ', align: 'center' },
+						{ content: 'A', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: 'x', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		// Whitespace-only corner cell should not be bold
+		expect(latex).not.toContain('\\textbf{   }');
+		expect(latex).toContain('\\textbf{A}');
+	});
+
+	it('should handle cross table with no data rows', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '×', align: 'center' },
+						{ content: '1', align: 'center' },
+						{ content: '2', align: 'center' }
+					],
+					rows: [],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\textbf{×}');
+		expect(latex).toContain('\\textbf{1}');
+		expect(latex).toContain('\\begin{tabular}');
+		expect(latex).toContain('\\end{tabular}');
+	});
+
+	it('should handle cross table with single column', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [{ content: 'Header', align: 'center' }],
+					rows: [[{ content: 'Row1', align: 'center' }], [{ content: 'Row2', align: 'center' }]],
+					alignments: ['center'],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\textbf{Header}');
+		expect(latex).toContain('\\textbf{Row1}');
+		expect(latex).toContain('\\textbf{Row2}');
+	});
+
+	it('should handle cross table with many columns', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: Array.from({ length: 10 }, (_, i) => ({
+						content: `H${i}`,
+						align: 'center' as const
+					})),
+					rows: [
+						Array.from({ length: 10 }, (_, i) => ({ content: `C${i}`, align: 'center' as const }))
+					],
+					alignments: Array(10).fill('center') as 'center'[],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\textbf{H0}');
+		expect(latex).toContain('\\textbf{H9}');
+		expect(latex).toContain('\\textbf{C0}');
+		expect(latex).toContain('C9'); // Not bold (not first column)
+	});
+
+	it('should escape LaTeX special characters in cross table cells', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '&', align: 'center' },
+						{ content: '%', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '$', align: 'center' },
+							{ content: '#', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\textbf{\\&}');
+		expect(latex).toContain('\\textbf{\\%}');
+		expect(latex).toContain('\\textbf{\\$}');
+		expect(latex).toContain('\\#');
+	});
+
+	it('should handle cross table with empty body cells', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '×', align: 'center' },
+						{ content: 'A', align: 'center' },
+						{ content: 'B', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: '', align: 'center' },
+							{ content: 'x', align: 'center' }
+						],
+						[
+							{ content: '2', align: 'center' },
+							{ content: 'y', align: 'center' },
+							{ content: '', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\textbf{1}');
+		expect(latex).toContain('\\textbf{2}');
+		// Empty cells should still be present (just empty)
+		expect(latex).toMatch(/\\textbf\{1\} & {2}& x/);
+	});
+
+	it('should handle cross table with unicode characters', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '×', align: 'center' },
+						{ content: 'α', align: 'center' },
+						{ content: 'β', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: 'γ', align: 'center' },
+							{ content: 'δ', align: 'center' },
+							{ content: 'ε', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\textbf{×}');
+		expect(latex).toContain('\\textbf{α}');
+		expect(latex).toContain('\\textbf{γ}');
+	});
+
+	it('should handle cross table with very long content', () => {
+		const longText = 'LongHeader'.repeat(10);
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: longText, align: 'center' },
+						{ content: 'B', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: 'row', align: 'center' },
+							{ content: 'data', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain(`\\textbf{${longText}}`);
+	});
+
+	it('should handle cross table with multiple data rows correctly', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '×', align: 'center' },
+						{ content: '1', align: 'center' },
+						{ content: '2', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: '1', align: 'center' },
+							{ content: '2', align: 'center' }
+						],
+						[
+							{ content: '2', align: 'center' },
+							{ content: '2', align: 'center' },
+							{ content: '4', align: 'center' }
+						],
+						[
+							{ content: '3', align: 'center' },
+							{ content: '3', align: 'center' },
+							{ content: '6', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		// All first column cells should be bold
+		expect(latex).toMatch(/\\textbf\{1\} & 1 & 2/);
+		expect(latex).toMatch(/\\textbf\{2\} & 2 & 4/);
+		expect(latex).toMatch(/\\textbf\{3\} & 3 & 6/);
+	});
+
+	it('should not apply cross styling when cross is false', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'A', align: 'center' },
+						{ content: 'B', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: '2', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center'],
+					cross: false
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		// Standard table - no bold in cells
+		expect(latex).not.toContain('\\textbf{A}');
+		expect(latex).not.toContain('\\textbf{1}');
+	});
+
+	it('should not apply cross styling when cross is undefined', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'A', align: 'center' },
+						{ content: 'B', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: '2', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center']
+					// cross not specified
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		// Standard table - no bold in cells
+		expect(latex).not.toContain('\\textbf{A}');
+		expect(latex).not.toContain('\\textbf{1}');
+	});
+});

@@ -2390,6 +2390,536 @@ describe('Transposed Tables', () => {
 });
 
 // ============================================================================
+// CROSS TABLES (DOUBLE-ENTRY)
+// ============================================================================
+describe('Cross Tables (Double-Entry)', () => {
+	it('should generate cross table with bold first row and first column', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '×', align: 'center' },
+						{ content: '1', align: 'center' },
+						{ content: '2', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: '1', align: 'center' },
+							{ content: '2', align: 'center' }
+						],
+						[
+							{ content: '2', align: 'center' },
+							{ content: '2', align: 'center' },
+							{ content: '4', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Header row should have bold cells
+		expect(typst).toContain('[*×*]');
+		expect(typst).toContain('[*1*]');
+		expect(typst).toContain('[*2*]');
+		// First column of data rows should be bold, rest not
+		// Should use table function with fill for header background
+		expect(typst).toContain('#table(');
+		expect(typst).toContain('fill:');
+	});
+
+	it('should handle cross table with empty corner cell', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '', align: 'center' },
+						{ content: 'A', align: 'center' },
+						{ content: 'B', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: 'x', align: 'center' },
+							{ content: 'y', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Empty corner cell should NOT be wrapped in bold
+		expect(typst).toContain('[]'); // Empty cell without bold
+		// But other header cells should be bold
+		expect(typst).toContain('[*A*]');
+		expect(typst).toContain('[*B*]');
+		// First column of data row should be bold
+		expect(typst).toContain('[*1*]');
+	});
+
+	it('should handle cross table with non-empty corner cell', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '+', align: 'center' },
+						{ content: 'a', align: 'center' },
+						{ content: 'b', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: 'a', align: 'center' },
+							{ content: '2a', align: 'center' },
+							{ content: 'ab', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Non-empty corner cell should be bold
+		expect(typst).toContain('[*+*]');
+		// Header cells should be bold
+		expect(typst).toContain('[*a*]');
+		expect(typst).toContain('[*b*]');
+	});
+
+	it('should include fill function for header background in cross tables', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'L', align: 'left' },
+						{ content: 'C', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'left' },
+							{ content: '2', align: 'center' }
+						]
+					],
+					alignments: ['left', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Should have fill parameter for header background
+		expect(typst).toContain('fill: (x, y) => if x == 0 or y == 0');
+		expect(typst).toContain('luma(240)');
+	});
+
+	it('should handle cross table with whitespace-only corner cell', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '   ', align: 'center' },
+						{ content: 'A', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: 'x', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Whitespace-only corner cell should not be bold
+		expect(typst).not.toContain('[*   *]');
+		expect(typst).toContain('[*A*]');
+	});
+
+	it('should handle cross table with no data rows', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '×', align: 'center' },
+						{ content: '1', align: 'center' },
+						{ content: '2', align: 'center' }
+					],
+					rows: [],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		expect(typst).toContain('[*×*]');
+		expect(typst).toContain('[*1*]');
+		expect(typst).toContain('#table(');
+	});
+
+	it('should handle cross table with single column', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [{ content: 'Header', align: 'center' }],
+					rows: [[{ content: 'Row1', align: 'center' }], [{ content: 'Row2', align: 'center' }]],
+					alignments: ['center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		expect(typst).toContain('[*Header*]');
+		expect(typst).toContain('[*Row1*]');
+		expect(typst).toContain('[*Row2*]');
+		expect(typst).toContain('columns: 1');
+	});
+
+	it('should handle cross table with many columns', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: Array.from({ length: 10 }, (_, i) => ({
+						content: `H${i}`,
+						align: 'center' as const
+					})),
+					rows: [
+						Array.from({ length: 10 }, (_, i) => ({ content: `C${i}`, align: 'center' as const }))
+					],
+					alignments: Array(10).fill('center') as 'center'[],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		expect(typst).toContain('[*H0*]');
+		expect(typst).toContain('[*H9*]');
+		expect(typst).toContain('[*C0*]');
+		expect(typst).toContain('[C9]'); // Not bold (not first column)
+		expect(typst).toContain('columns: 10');
+	});
+
+	it('should escape Typst special characters in cross table cells', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '#', align: 'center' },
+						{ content: '@', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '*', align: 'center' },
+							{ content: '_', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		expect(typst).toContain('[*\\#*]');
+		expect(typst).toContain('[*\\@*]');
+		expect(typst).toContain('[*\\**]');
+	});
+
+	it('should handle cross table with empty body cells', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '×', align: 'center' },
+						{ content: 'A', align: 'center' },
+						{ content: 'B', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: '', align: 'center' },
+							{ content: 'x', align: 'center' }
+						],
+						[
+							{ content: '2', align: 'center' },
+							{ content: 'y', align: 'center' },
+							{ content: '', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		expect(typst).toContain('[*1*]');
+		expect(typst).toContain('[*2*]');
+		// Empty cells should be present as []
+		expect(typst).toContain('[]');
+	});
+
+	it('should handle cross table with unicode characters', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '×', align: 'center' },
+						{ content: 'α', align: 'center' },
+						{ content: 'β', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: 'γ', align: 'center' },
+							{ content: 'δ', align: 'center' },
+							{ content: 'ε', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		expect(typst).toContain('[*×*]');
+		expect(typst).toContain('[*α*]');
+		expect(typst).toContain('[*γ*]');
+	});
+
+	it('should handle cross table with very long content', () => {
+		const longText = 'LongHeader'.repeat(10);
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: longText, align: 'center' },
+						{ content: 'B', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: 'row', align: 'center' },
+							{ content: 'data', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		expect(typst).toContain(`[*${longText}*]`);
+	});
+
+	it('should handle cross table with multiple data rows correctly', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '×', align: 'center' },
+						{ content: '1', align: 'center' },
+						{ content: '2', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: '1', align: 'center' },
+							{ content: '2', align: 'center' }
+						],
+						[
+							{ content: '2', align: 'center' },
+							{ content: '2', align: 'center' },
+							{ content: '4', align: 'center' }
+						],
+						[
+							{ content: '3', align: 'center' },
+							{ content: '3', align: 'center' },
+							{ content: '6', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// All first column cells should be bold
+		expect(typst).toContain('[*1*], [1], [2]');
+		expect(typst).toContain('[*2*], [2], [4]');
+		expect(typst).toContain('[*3*], [3], [6]');
+	});
+
+	it('should not apply cross styling when cross is false', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'A', align: 'center' },
+						{ content: 'B', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: '2', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center'],
+					cross: false
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Standard table uses table.header() but data cells are not bold
+		expect(typst).toContain('table.header(');
+		expect(typst).not.toContain('[*1*]'); // First column data not bold
+	});
+
+	it('should not apply cross styling when cross is undefined', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'A', align: 'center' },
+						{ content: 'B', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'center' },
+							{ content: '2', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center']
+					// cross not specified
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Standard table - first column data not bold
+		expect(typst).toContain('table.header(');
+		expect(typst).not.toContain('[*1*]');
+	});
+
+	it('should use correct alignment for all columns in cross table', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'L', align: 'left' },
+						{ content: 'C', align: 'center' },
+						{ content: 'R', align: 'right' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'left' },
+							{ content: '2', align: 'center' },
+							{ content: '3', align: 'right' }
+						]
+					],
+					alignments: ['left', 'center', 'right'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		expect(typst).toContain('align: (left, center, right)');
+	});
+
+	it('should handle cross table with math content in cells', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: '$f$', align: 'center' },
+						{ content: '$x$', align: 'center' }
+					],
+					rows: [
+						[
+							{ content: '$g$', align: 'center' },
+							{ content: '$x^2$', align: 'center' }
+						]
+					],
+					alignments: ['center', 'center'],
+					cross: true
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Math should be converted to Typst format
+		expect(typst).toContain('[*$f$*]');
+		expect(typst).toContain('[*$g$*]');
+	});
+});
+
+// ============================================================================
 // MATHLIVE SPECIAL CONSTANTS (\\exponentialE, \\imaginaryI)
 // ============================================================================
 describe('convertLatexToTypstMath - MathLive Special Constants', () => {

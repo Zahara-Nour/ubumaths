@@ -222,6 +222,7 @@
 						rows={node.rows}
 						alignments={node.alignments}
 						transpose={node.transpose}
+						cross={node.cross}
 						{genericFunctions}
 					/>
 				{:else if node.type === 'image'}

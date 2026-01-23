@@ -360,6 +360,7 @@ describe('Edge Cases', () => {
 
 import {
 	isHorizontalTableDirective,
+	isCrossTableDirective,
 	findTableBlocksWithDirective
 } from '../../parser/table-parser';
 
@@ -502,5 +503,445 @@ describe('parseTable with transpose', () => {
 		const table = parseTable(lines, false);
 
 		expect(table?.transpose).toBeUndefined();
+	});
+});
+
+// ============================================================================
+// CROSS TABLE SUPPORT (DOUBLE-ENTRY TABLES)
+// ============================================================================
+
+describe('isCrossTableDirective', () => {
+	it('should identify :table-cross directive', () => {
+		expect(isCrossTableDirective(':table-cross')).toBe(true);
+	});
+
+	it('should handle whitespace around directive', () => {
+		expect(isCrossTableDirective('  :table-cross  ')).toBe(true);
+		expect(isCrossTableDirective('\t:table-cross\t')).toBe(true);
+	});
+
+	it('should reject partial matches', () => {
+		expect(isCrossTableDirective(':table')).toBe(false);
+		expect(isCrossTableDirective('table-cross')).toBe(false);
+		expect(isCrossTableDirective(':table-crossed')).toBe(false);
+	});
+
+	it('should reject table rows', () => {
+		expect(isCrossTableDirective('| cell |')).toBe(false);
+		expect(isCrossTableDirective('|---|---|')).toBe(false);
+	});
+
+	it('should reject text containing directive', () => {
+		expect(isCrossTableDirective('Use :table-cross for double-entry')).toBe(false);
+	});
+});
+
+describe('findTableBlocksWithDirective - cross tables', () => {
+	it('should detect cross table after :table-cross', () => {
+		const lines = [':table-cross', '| × | 1 | 2 |', '|---|---|---|', '| 1 | 1 | 2 |'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].cross).toBe(true);
+		expect(blocks[0].transpose).toBe(false);
+		expect(blocks[0].directiveIndex).toBe(0);
+		expect(blocks[0].startIndex).toBe(1);
+		expect(blocks[0].endIndex).toBe(3);
+	});
+
+	it('should handle mixed cross and transpose tables', () => {
+		const lines = [
+			':table-cross',
+			'| × | 1 | 2 |',
+			'|---|---|---|',
+			'| 1 | 1 | 2 |',
+			'',
+			':table-h',
+			'| Nom | Age |',
+			'|---|---|',
+			'| Alice | 25 |'
+		];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(2);
+		expect(blocks[0].cross).toBe(true);
+		expect(blocks[0].transpose).toBe(false);
+		expect(blocks[1].cross).toBe(false);
+		expect(blocks[1].transpose).toBe(true);
+	});
+
+	it('should handle :table-cross with text before it', () => {
+		const lines = ['Some text', ':table-cross', '| × | 1 |', '|---|---|', '| 1 | 1 |'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].cross).toBe(true);
+		expect(blocks[0].directiveIndex).toBe(1);
+		expect(blocks[0].startIndex).toBe(2);
+	});
+
+	it('should ignore :table-cross not followed by table', () => {
+		const lines = [':table-cross', 'Not a table', '| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		// The :table-cross is not immediately before a table, so it should be ignored
+		// The table starting at line 2 should be detected as normal
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].cross).toBe(false);
+		expect(blocks[0].startIndex).toBe(2);
+	});
+
+	it('should handle multiple cross tables', () => {
+		const lines = [
+			':table-cross',
+			'| × | 1 | 2 |',
+			'|---|---|---|',
+			'| 1 | 1 | 2 |',
+			'',
+			':table-cross',
+			'| + | A | B |',
+			'|---|---|---|',
+			'| A | 2A | AB |'
+		];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(2);
+		expect(blocks[0].cross).toBe(true);
+		expect(blocks[1].cross).toBe(true);
+	});
+});
+
+describe('parseTable with cross', () => {
+	it('should include cross when specified', () => {
+		const lines = ['| × | 1 | 2 |', '|---|---|---|', '| 1 | 1 | 2 |', '| 2 | 2 | 4 |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.transpose).toBeUndefined();
+	});
+
+	it('should default to no cross', () => {
+		const lines = ['| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const table = parseTable(lines);
+
+		expect(table?.cross).toBeUndefined();
+	});
+
+	it('should preserve headers and rows structure for cross table', () => {
+		const lines = [
+			'| × | 1 | 2 | 3 |',
+			'|---|---|---|---|',
+			'| 1 | 1 | 2 | 3 |',
+			'| 2 | 2 | 4 | 6 |'
+		];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table).not.toBeNull();
+		expect(table?.header).toHaveLength(4);
+		expect(table?.header[0].content).toBe('×');
+		expect(table?.header[1].content).toBe('1');
+		expect(table?.rows).toHaveLength(2);
+		expect(table?.rows[0][0].content).toBe('1');
+		expect(table?.rows[1][0].content).toBe('2');
+	});
+
+	it('should handle cross table with empty corner cell', () => {
+		const lines = ['|  | A | B |', '|---|---|---|', '| 1 | x | y |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.header[0].content).toBe('');
+		expect(table?.header[1].content).toBe('A');
+	});
+
+	it('should handle cross table with whitespace-only corner cell', () => {
+		const lines = ['|   | A | B |', '|---|---|---|', '| 1 | x | y |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.header[0].content).toBe('');
+	});
+
+	it('should handle cross table with no data rows (header only)', () => {
+		const lines = ['| × | 1 | 2 |', '|---|---|---|'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.header).toHaveLength(3);
+		expect(table?.rows).toHaveLength(0);
+	});
+
+	it('should handle cross table with single data row', () => {
+		const lines = ['| × | A |', '|---|---|', '| 1 | x |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.rows).toHaveLength(1);
+		expect(table?.rows[0][0].content).toBe('1');
+	});
+
+	it('should handle cross table with single column', () => {
+		const lines = ['| × |', '|---|', '| 1 |', '| 2 |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.header).toHaveLength(1);
+		expect(table?.rows).toHaveLength(2);
+	});
+
+	it('should handle cross table with many columns', () => {
+		const lines = [
+			'| × | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |',
+			'|---|---|---|---|---|---|---|---|---|---|---|',
+			'| 1 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |'
+		];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.header).toHaveLength(11);
+		expect(table?.rows[0]).toHaveLength(11);
+	});
+
+	it('should handle cross table with math expressions', () => {
+		const lines = ['| $f$ | $x$ | $y$ |', '|---|---|---|', '| $a$ | $x^2$ | $y^2$ |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.header[0].content).toBe('$f$');
+		expect(table?.rows[0][1].content).toBe('$x^2$');
+	});
+
+	it('should handle cross table with special characters', () => {
+		const lines = ['| & | % | # |', '|---|---|---|', '| _ | $ | @ |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.header[0].content).toBe('&');
+		expect(table?.rows[0][1].content).toBe('$');
+	});
+
+	it('should handle cross table with formatted text', () => {
+		const lines = ['| **×** | _A_ | `B` |', '|---|---|---|', '| **1** | _x_ | `y` |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.header[0].content).toBe('**×**');
+		expect(table?.header[1].content).toBe('_A_');
+	});
+
+	it('should handle cross table with empty cells in body', () => {
+		const lines = ['| × | A | B |', '|---|---|---|', '| 1 |   | y |', '| 2 | x |   |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.rows[0][1].content).toBe('');
+		expect(table?.rows[1][2].content).toBe('');
+	});
+
+	it('should handle cross table with very long cell content', () => {
+		const longText = 'a'.repeat(200);
+		const lines = [`| ${longText} | B |`, '|---|---|', '| 1 | 2 |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.header[0].content).toBe(longText);
+	});
+
+	it('should handle cross table with unicode characters', () => {
+		const lines = ['| × | α | β |', '|---|---|---|', '| γ | δ | ε |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.header[1].content).toBe('α');
+		expect(table?.rows[0][0].content).toBe('γ');
+	});
+
+	it('should handle cross table with mixed alignments', () => {
+		const lines = ['| × | L | C | R |', '|:---|:---|:---:|---:|', '| 1 | a | b | c |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.alignments).toEqual(['left', 'left', 'center', 'right']);
+	});
+
+	it('should handle cross table with mismatched column counts (padding)', () => {
+		const lines = ['| × | A | B | C |', '|---|---|---|---|', '| 1 | x |'];
+
+		const table = parseTable(lines, false, true);
+
+		expect(table?.cross).toBe(true);
+		expect(table?.rows[0]).toHaveLength(4);
+		expect(table?.rows[0][2].content).toBe('');
+		expect(table?.rows[0][3].content).toBe('');
+	});
+
+	it('should not set cross flag when both cross and transpose are requested', () => {
+		const lines = ['| × | A |', '|---|---|', '| 1 | x |'];
+
+		// Testing that both flags can coexist (parser just sets them)
+		const table = parseTable(lines, true, true);
+
+		expect(table?.transpose).toBe(true);
+		expect(table?.cross).toBe(true);
+	});
+});
+
+// ============================================================================
+// CROSS TABLE DIRECTIVE EDGE CASES
+// ============================================================================
+describe('findTableBlocksWithDirective - cross table edge cases', () => {
+	it('should handle :table-cross at the very end of document', () => {
+		const lines = ['Some text', ':table-cross'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		// Directive not followed by table, should be ignored
+		expect(blocks).toHaveLength(0);
+	});
+
+	it('should handle :table-cross followed by empty line then table', () => {
+		const lines = [':table-cross', '', '| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		// Empty line breaks the connection - should detect table as normal
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].cross).toBe(false);
+		expect(blocks[0].startIndex).toBe(2);
+	});
+
+	it('should handle multiple :table-cross directives with some invalid', () => {
+		const lines = [
+			':table-cross',
+			'Not a table',
+			':table-cross',
+			'| A | B |',
+			'|---|---|',
+			'| 1 | 2 |'
+		];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].cross).toBe(true);
+		expect(blocks[0].startIndex).toBe(3);
+	});
+
+	it('should handle :table-cross with trailing comment on same line', () => {
+		const lines = [':table-cross <!-- comment -->', '| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		// Trailing content makes it not a valid directive
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].cross).toBe(false);
+	});
+
+	it('should handle alternating cross and transpose tables', () => {
+		const lines = [
+			':table-cross',
+			'| × | 1 |',
+			'|---|---|',
+			'| 1 | 1 |',
+			'',
+			':table-h',
+			'| A | B |',
+			'|---|---|',
+			'| 1 | 2 |',
+			'',
+			':table-cross',
+			'| + | a |',
+			'|---|---|',
+			'| a | 2a |'
+		];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(3);
+		expect(blocks[0].cross).toBe(true);
+		expect(blocks[0].transpose).toBe(false);
+		expect(blocks[1].cross).toBe(false);
+		expect(blocks[1].transpose).toBe(true);
+		expect(blocks[2].cross).toBe(true);
+		expect(blocks[2].transpose).toBe(false);
+	});
+
+	it('should handle :table-cross with table that has alignment row only', () => {
+		const lines = [':table-cross', '| A | B |', '|---|---|'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].cross).toBe(true);
+		expect(blocks[0].startIndex).toBe(1);
+		expect(blocks[0].endIndex).toBe(2);
+	});
+
+	it('should handle consecutive :table-cross directives', () => {
+		const lines = [':table-cross', ':table-cross', '| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		// First directive is ignored (followed by another directive, not a table)
+		// Second directive should work
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].cross).toBe(true);
+		expect(blocks[0].directiveIndex).toBe(1);
+	});
+
+	it('should handle :table-cross case sensitivity', () => {
+		// Our regex is case-sensitive, so these should NOT match
+		const lines1 = [':TABLE-CROSS', '| A | B |', '|---|---|', '| 1 | 2 |'];
+		const lines2 = [':Table-Cross', '| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const blocks1 = findTableBlocksWithDirective(lines1);
+		const blocks2 = findTableBlocksWithDirective(lines2);
+
+		// Both should find the table but without cross flag
+		expect(blocks1).toHaveLength(1);
+		expect(blocks1[0].cross).toBe(false);
+		expect(blocks2).toHaveLength(1);
+		expect(blocks2[0].cross).toBe(false);
+	});
+
+	it('should handle :table-cross with indented table', () => {
+		const lines = [':table-cross', '  | A | B |', '  |---|---|', '  | 1 | 2 |'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].cross).toBe(true);
+	});
+
+	it('should preserve directive index correctly for cross tables', () => {
+		const lines = ['Line 1', 'Line 2', ':table-cross', '| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].directiveIndex).toBe(2);
+		expect(blocks[0].startIndex).toBe(3);
+		expect(blocks[0].endIndex).toBe(5);
 	});
 });

@@ -255,7 +255,12 @@ export interface TableCellNode {
  * - When `transpose: true`: Table is transposed for display (rows become columns)
  *   The original header cells become the first column (displayed as headers)
  *
- * The AST stores the table as written in markdown. Transposition is done by renderers.
+ * Supports double-entry tables via the `:table-cross` directive:
+ * - When `cross: true`: Both first row AND first column are headers
+ *   This is useful for multiplication tables, cross-reference tables, etc.
+ *   The corner cell (row 0, col 0) is styled based on whether it has content.
+ *
+ * The AST stores the table as written in markdown. Transposition/cross is done by renderers.
  */
 export interface TableNode extends BaseNode {
 	type: 'table';
@@ -264,6 +269,8 @@ export interface TableNode extends BaseNode {
 	alignments: ('left' | 'center' | 'right')[];
 	/** When true, renderers transpose the table (headers become first column) */
 	transpose?: boolean;
+	/** When true, renderers treat first row AND first column as headers (double-entry table) */
+	cross?: boolean;
 }
 
 /**

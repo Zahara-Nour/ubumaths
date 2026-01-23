@@ -1225,4 +1225,28 @@ describe('Table cell inline formatting', () => {
 
 		expect(result).toBe(markdown);
 	});
+
+	it('preserves transposed table with :table-h directive', () => {
+		const markdown = ':table-h\n| Nom | Age |\n|:---|:---|\n| Alice | 25 |\n| Bob | 30 |';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('preserves cross table with :table-cross directive', () => {
+		const markdown = ':table-cross\n| × | 1 | 2 |\n|:---|:---|:---|\n| 1 | 1 | 2 |\n| 2 | 2 | 4 |';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('preserves cross table with empty corner cell', () => {
+		const markdown = ':table-cross\n|  | A | B |\n|:---|:---|:---|\n| 1 | x | y |';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
 });

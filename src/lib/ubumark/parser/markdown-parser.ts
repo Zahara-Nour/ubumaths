@@ -521,7 +521,7 @@ function parseBlocks(
 			}
 
 			const tableLines = lines.slice(tableBlock.startIndex, tableBlock.endIndex + 1);
-			const table = parseTable(tableLines, tableBlock.transpose);
+			const table = parseTable(tableLines, tableBlock.transpose, tableBlock.cross);
 			if (table) {
 				// Post-process table to restore math placeholders in cell content
 				const processedTable = processTableCellContent(table, placeholders);
@@ -1387,7 +1387,7 @@ function containsBlockMath(content: string, placeholders: MathPlaceholder[]): bo
  * 1. A header row: | Header1 | Header2 |
  * 2. An alignment row: |---|---| or |:---|:---:|
  *
- * Also checks for :table-h directive before tables.
+ * Also checks for :table-h and :table-cross directives before tables.
  */
 function containsTables(content: string): boolean {
 	const lines = content.split('\n');
@@ -1395,8 +1395,8 @@ function containsTables(content: string): boolean {
 		const line = lines[i].trim();
 		const nextLine = lines[i + 1]?.trim() || '';
 
-		// Check for :table-h directive followed by table
-		if (/^:table-h$/i.test(line)) {
+		// Check for :table-h or :table-cross directive followed by table
+		if (/^:table-(h|cross)$/i.test(line)) {
 			// Check if next line is a table row and line after that is alignment row
 			if (i + 2 < lines.length) {
 				const tableRow = lines[i + 1]?.trim() || '';
@@ -1477,7 +1477,7 @@ function parseContentWithTables(
 
 		// Parse the table
 		const tableLines = lines.slice(tableBlock.startIndex, tableBlock.endIndex + 1);
-		const table = parseTable(tableLines, tableBlock.transpose);
+		const table = parseTable(tableLines, tableBlock.transpose, tableBlock.cross);
 		if (table) {
 			// Process table cell content to restore math placeholders
 			const processedTable = processTableCellContent(table, placeholders);

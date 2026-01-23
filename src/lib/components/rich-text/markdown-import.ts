@@ -767,9 +767,18 @@ function convertTable(table: TableNode): JSONContent {
 		rows.push(tableRow);
 	}
 
+	// Build table attrs based on flags
+	const attrs: Record<string, boolean> | undefined =
+		table.transpose || table.cross
+			? {
+					...(table.transpose && { transpose: true }),
+					...(table.cross && { cross: true })
+				}
+			: undefined;
+
 	return {
 		type: 'table',
-		attrs: table.transpose ? { transpose: true } : undefined,
+		attrs,
 		content: rows
 	};
 }
