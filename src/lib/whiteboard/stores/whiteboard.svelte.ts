@@ -1468,6 +1468,17 @@ function createWhiteboardStore() {
 			value: (typeof annotationStyle)[K]
 		): void {
 			annotationStyle = { ...annotationStyle, [key]: value };
+
+			// Also apply to selected annotations if any
+			if (selectedAnnotationIds.size > 0) {
+				if (key === 'color') {
+					this.updateSelectedAnnotationsColor(value as string);
+				} else if (key === 'strokeWidth') {
+					this.updateSelectedAnnotationsStrokeWidth(value as number);
+				} else if (key === 'opacity') {
+					this.updateSelectedAnnotationsOpacity(value as number);
+				}
+			}
 		},
 
 		/**
@@ -1677,6 +1688,55 @@ function createWhiteboardStore() {
 				...page,
 				annotations: (page.annotations ?? []).map((a) =>
 					a.id === annotationId ? { ...a, color } : a
+				)
+			}));
+		},
+
+		/**
+		 * Update color for all selected annotations
+		 */
+		updateSelectedAnnotationsColor(color: string): void {
+			if (selectedAnnotationIds.size === 0) return;
+
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: (page.annotations ?? []).map((a) =>
+					selectedAnnotationIds.has(a.id) ? { ...a, color } : a
+				)
+			}));
+		},
+
+		/**
+		 * Update stroke width for all selected annotations
+		 */
+		updateSelectedAnnotationsStrokeWidth(strokeWidth: number): void {
+			if (selectedAnnotationIds.size === 0) return;
+
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: (page.annotations ?? []).map((a) => {
+					if (!selectedAnnotationIds.has(a.id)) return a;
+
+					if (a.type === 'stroke') {
+						return { ...a, width: strokeWidth };
+					} else if (a.type === 'shape') {
+						return { ...a, strokeWidth };
+					}
+					return a;
+				})
+			}));
+		},
+
+		/**
+		 * Update opacity for all selected annotations
+		 */
+		updateSelectedAnnotationsOpacity(opacity: number): void {
+			if (selectedAnnotationIds.size === 0) return;
+
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: (page.annotations ?? []).map((a) =>
+					selectedAnnotationIds.has(a.id) ? { ...a, opacity } : a
 				)
 			}));
 		},
