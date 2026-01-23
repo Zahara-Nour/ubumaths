@@ -18,15 +18,15 @@
 	import TemplatePickerModal from './TemplatePickerModal.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import {
-		Undo2,
-		Redo2,
 		Plus,
 		ZoomIn,
 		ZoomOut,
 		ChevronLeft,
 		ChevronRight,
 		Maximize2,
-		Minimize2
+		Minimize2,
+		FolderOpen,
+		PanelRight
 	} from 'lucide-svelte';
 	import type { PageFormatKey } from '../types/document';
 	import type { TemplatePageData } from '../types/templates';
@@ -123,7 +123,8 @@
 	let fitScale = $derived.by(() => {
 		if (containerWidth === 0 || containerHeight === 0) return 1;
 
-		const padding = 40;
+		// Minimal padding to maximize canvas space
+		const padding = 8;
 		const availableWidth = containerWidth - padding * 2;
 		const availableHeight = containerHeight - padding * 2;
 
@@ -152,10 +153,6 @@
 		zoomLevel > 1 || pageWidth > originalPageWidth || pageHeight > originalPageHeight
 	);
 
-	/** Undo/Redo state */
-	let canUndo = $derived(whiteboardStore.canUndo);
-	let canRedo = $derived(whiteboardStore.canRedo);
-
 	/** Page navigation state */
 	let pageCount = $derived(whiteboardStore.pageCount);
 	let currentPageIndex = $derived(whiteboardStore.currentPageIndex);
@@ -167,18 +164,6 @@
 	let expansionPercent = $derived(
 		Math.round(whiteboardStore.getCurrentPageExpansionFactor() * 100)
 	);
-
-	// ==========================================================================
-	// Undo/Redo Methods
-	// ==========================================================================
-
-	function handleUndo() {
-		whiteboardStore.undo();
-	}
-
-	function handleRedo() {
-		whiteboardStore.redo();
-	}
 
 	// ==========================================================================
 	// Page Navigation Methods
@@ -790,20 +775,32 @@
 	<div
 		class="whiteboard-topbar flex items-center justify-between gap-2 border-b border-border bg-muted/50 px-3 py-1.5 text-xs text-gray-600"
 	>
-		<!-- Left: Status info -->
-		<div class="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
-			<!-- Sync indicator (orange dot when unsaved) -->
-			<span
-				class="inline-flex w-3 flex-shrink-0 items-center justify-center"
-				title={hasUnsavedChanges || syncState.status === 'modified'
-					? 'Modifications non sauvegardées'
-					: ''}
+		<!-- Left: FileDrawer toggle + Document info -->
+		<div class="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+			<!-- FileDrawer toggle -->
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={() => whiteboardStore.toggleFileDrawer()}
+				title="Fichiers (Ctrl+O)"
+				aria-label="Ouvrir les fichiers"
+				class="h-7 w-7 flex-shrink-0 p-0"
 			>
+				<FolderOpen class="h-4 w-4" />
+			</Button>
+
+			<!-- Document title with sync indicator -->
+			<div class="flex min-w-0 items-center gap-1.5">
 				{#if hasUnsavedChanges || syncState.status === 'modified'}
-					<span class="h-2 w-2 rounded-full bg-orange-500"></span>
+					<span
+						class="h-2 w-2 flex-shrink-0 rounded-full bg-orange-500"
+						title="Modifications non sauvegardées"
+					></span>
 				{/if}
-			</span>
-			<span class="truncate font-medium">{document?.title ?? 'Sans titre'}</span>
+				<span class="truncate font-medium">{document?.title ?? 'Sans titre'}</span>
+			</div>
+
 			<span class="flex-shrink-0 text-muted-foreground">
 				Page {currentPageIndex + 1}/{pageCount}
 			</span>
@@ -819,12 +816,6 @@
 				>
 					Étendue
 				</button>
-			{/if}
-			<span class="flex-shrink-0 text-primary capitalize">{toolState.toolType}</span>
-			{#if whiteboardStore.hasSelection}
-				<span class="flex-shrink-0 rounded bg-blue-100 px-1.5 py-0.5 text-blue-700">
-					{whiteboardStore.selectedIds.size} sél.
-				</span>
 			{/if}
 		</div>
 
@@ -908,6 +899,19 @@
 
 			<div class="mx-1 h-4 w-px bg-border"></div>
 
+			<!-- Thumbnails toggle -->
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={() => whiteboardStore.toggleSidebar()}
+				title="Miniatures"
+				aria-label="Afficher les miniatures"
+				class="h-7 w-7 p-0"
+			>
+				<PanelRight class="h-4 w-4" />
+			</Button>
+
 			<!-- Fullscreen toggle -->
 			<Button
 				type="button"
@@ -931,34 +935,6 @@
 	<div class="whiteboard-main relative min-h-0 overflow-hidden">
 		<!-- File Drawer (left) -->
 		<FileDrawer />
-
-		<!-- Floating Undo/Redo buttons (top-left) -->
-		<div class="absolute top-2 left-14 z-10 flex gap-1">
-			<Button
-				type="button"
-				variant="secondary"
-				size="sm"
-				onclick={handleUndo}
-				disabled={!canUndo}
-				title="Annuler (Ctrl+Z)"
-				aria-label="Annuler"
-				class="h-8 w-8 rounded-full p-0 shadow-md"
-			>
-				<Undo2 class="h-4 w-4" />
-			</Button>
-			<Button
-				type="button"
-				variant="secondary"
-				size="sm"
-				onclick={handleRedo}
-				disabled={!canRedo}
-				title="Rétablir (Ctrl+Shift+Z)"
-				aria-label="Rétablir"
-				class="h-8 w-8 rounded-full p-0 shadow-md"
-			>
-				<Redo2 class="h-4 w-4" />
-			</Button>
-		</div>
 
 		<!-- Canvas area -->
 		<div

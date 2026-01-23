@@ -37,7 +37,11 @@
 		Hexagon,
 		Star,
 		Grid3x3,
-		Crosshair
+		Crosshair,
+		Undo2,
+		Redo2,
+		GripVertical,
+		Palette
 	} from 'lucide-svelte';
 	import {
 		INSTRUMENT_LABELS,
@@ -104,11 +108,22 @@
 	let instrumentsPopoverOpen = $state(false);
 	let pagePopoverOpen = $state(false);
 
+	/** Drag state */
+	let toolbarPosition = $state({ x: 0, y: 0 });
+	let isDragging = $state(false);
+	let dragStart = $state({ x: 0, y: 0 });
+	let hasCustomPosition = $state(false);
+
+	/** Style panel state */
+	let stylePanelOpen = $derived(whiteboardStore.stylePanelOpen);
+
 	// ==========================================================================
 	// Derived State
 	// ==========================================================================
 
 	let toolState = $derived(whiteboardStore.toolState);
+	let canUndo = $derived(whiteboardStore.canUndo);
+	let canRedo = $derived(whiteboardStore.canRedo);
 	let instruments = $derived(whiteboardStore.instruments);
 	let currentRoughness = $derived(toolState.roughness);
 	let currentSloppinessPreset = $derived(getSloppinessPreset(currentRoughness));
@@ -237,11 +252,135 @@
 		whiteboardStore.setPageFormat(format);
 		pagePopoverOpen = false;
 	}
+
+	// ==========================================================================
+	// Undo/Redo Handlers
+	// ==========================================================================
+
+	function handleUndo() {
+		whiteboardStore.undo();
+	}
+
+	function handleRedo() {
+		whiteboardStore.redo();
+	}
+
+	// ==========================================================================
+	// Style Panel Handler
+	// ==========================================================================
+
+	function toggleStylePanel() {
+		whiteboardStore.toggleStylePanel();
+	}
+
+	// ==========================================================================
+	// Drag Handlers
+	// ==========================================================================
+
+	function handleDragStart(e: PointerEvent) {
+		e.preventDefault();
+		isDragging = true;
+		dragStart = {
+			x: e.clientX - toolbarPosition.x,
+			y: e.clientY - toolbarPosition.y
+		};
+		// Attach move and end handlers to window for reliable tracking
+		window.addEventListener('pointermove', handleDragMove);
+		window.addEventListener('pointerup', handleDragEnd);
+	}
+
+	function handleDragMove(e: PointerEvent) {
+		if (!isDragging) return;
+
+		toolbarPosition = {
+			x: e.clientX - dragStart.x,
+			y: e.clientY - dragStart.y
+		};
+		hasCustomPosition = true;
+	}
+
+	function handleDragEnd() {
+		if (isDragging) {
+			isDragging = false;
+			// Remove window listeners
+			window.removeEventListener('pointermove', handleDragMove);
+			window.removeEventListener('pointerup', handleDragEnd);
+			// Save position to localStorage
+			if (hasCustomPosition) {
+				localStorage.setItem('whiteboard-toolbar-position', JSON.stringify(toolbarPosition));
+			}
+		}
+	}
+
+	function handleDragDoubleClick() {
+		// Reset to default position
+		toolbarPosition = { x: 0, y: 0 };
+		hasCustomPosition = false;
+		localStorage.removeItem('whiteboard-toolbar-position');
+	}
+
+	// Load saved position on mount and cleanup on destroy
+	$effect(() => {
+		const saved = localStorage.getItem('whiteboard-toolbar-position');
+		if (saved) {
+			try {
+				const pos = JSON.parse(saved);
+				if (typeof pos.x === 'number' && typeof pos.y === 'number') {
+					toolbarPosition = pos;
+					hasCustomPosition = true;
+				}
+			} catch {
+				// Ignore parse errors
+			}
+		}
+
+		// Cleanup on destroy
+		return () => {
+			if (isDragging) {
+				window.removeEventListener('pointermove', handleDragMove);
+				window.removeEventListener('pointerup', handleDragEnd);
+			}
+		};
+	});
 </script>
 
 <div
-	class="floating-toolbar absolute bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-xl border border-border bg-background/95 px-2 py-1.5 shadow-lg backdrop-blur-sm {className}"
+	class="floating-toolbar absolute z-50 flex items-center gap-1 rounded-xl border border-border bg-background/95 px-2 py-1.5 shadow-lg backdrop-blur-sm {className}"
+	style="bottom: 16px; left: 50%; transform: translate(calc(-50% + {toolbarPosition.x}px), {toolbarPosition.y}px); {isDragging
+		? ''
+		: 'transition: transform 0.1s ease-out;'}"
 >
+	<!-- Drag handle -->
+	<div
+		class="drag-handle flex cursor-grab items-center justify-center rounded p-1 transition-colors hover:bg-accent active:cursor-grabbing"
+		onpointerdown={handleDragStart}
+		ondblclick={handleDragDoubleClick}
+		title="Glisser pour deplacer (double-clic pour reinitialiser)"
+		aria-label="Deplacer la barre d'outils"
+	>
+		<GripVertical class="h-4 w-4 text-muted-foreground" />
+	</div>
+
+	<!-- Undo/Redo -->
+	<div class="flex items-center gap-0.5">
+		<ToolButton
+			icon={Undo2}
+			disabled={!canUndo}
+			label="Annuler"
+			shortcut="Ctrl+Z"
+			onclick={handleUndo}
+		/>
+		<ToolButton
+			icon={Redo2}
+			disabled={!canRedo}
+			label="Rétablir"
+			shortcut="Ctrl+Y"
+			onclick={handleRedo}
+		/>
+	</div>
+
+	<div class="h-6 w-px bg-border"></div>
+
 	<!-- Group 1: Action tools -->
 	<div class="flex items-center gap-0.5">
 		<ToolButton
@@ -601,6 +740,17 @@
 			{/each}
 		</div>
 	{/if}
+
+	<div class="h-6 w-px bg-border"></div>
+
+	<!-- Style Panel toggle -->
+	<ToolButton
+		icon={Palette}
+		active={stylePanelOpen}
+		label="Styles"
+		shortcut="Ctrl+P"
+		onclick={toggleStylePanel}
+	/>
 </div>
 
 <style>
