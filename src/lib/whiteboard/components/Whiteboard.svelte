@@ -98,11 +98,14 @@
 	// Derived State
 	// ==========================================================================
 
-	/** Current document */
+	/** Current document - access store state directly for reactivity */
 	let document = $derived(whiteboardStore.document);
 
-	/** Current page */
-	let currentPage = $derived(whiteboardStore.currentPage);
+	/** Current page index */
+	let currentPageIdx = $derived(document?.currentPageIndex ?? 0);
+
+	/** Current page - derived from document for proper reactivity tracking */
+	let currentPage = $derived(document?.pages[currentPageIdx] ?? null);
 
 	/** Page dimensions (current, possibly expanded) */
 	let pageWidth = $derived(currentPage?.width ?? 794);
@@ -153,17 +156,20 @@
 		zoomLevel > 1 || pageWidth > originalPageWidth || pageHeight > originalPageHeight
 	);
 
-	/** Page navigation state */
-	let pageCount = $derived(whiteboardStore.pageCount);
-	let currentPageIndex = $derived(whiteboardStore.currentPageIndex);
-	let canGoToPrevPage = $derived(currentPageIndex > 0);
-	let canGoToNextPage = $derived(currentPageIndex < pageCount - 1);
+	/** Page navigation state - derived from document for proper reactivity */
+	let pageCount = $derived(document?.pages.length ?? 0);
+	let canGoToPrevPage = $derived(currentPageIdx > 0);
+	let canGoToNextPage = $derived(currentPageIdx < pageCount - 1);
 
-	/** Page expansion state */
-	let isPageExpanded = $derived(whiteboardStore.isCurrentPageExpanded());
-	let expansionPercent = $derived(
-		Math.round(whiteboardStore.getCurrentPageExpansionFactor() * 100)
+	/** Page expansion state - derived from currentPage for proper reactivity */
+	let isPageExpanded = $derived(
+		currentPage?.originalWidth !== undefined && currentPage?.originalHeight !== undefined
 	);
+	let expansionPercent = $derived.by(() => {
+		if (!currentPage || !isPageExpanded) return 100;
+		const origWidth = currentPage.originalWidth ?? currentPage.width;
+		return Math.round((currentPage.width / origWidth) * 100);
+	});
 
 	// ==========================================================================
 	// Page Navigation Methods
@@ -802,7 +808,7 @@
 			</div>
 
 			<span class="flex-shrink-0 text-muted-foreground">
-				Page {currentPageIndex + 1}/{pageCount}
+				Page {currentPageIdx + 1}/{pageCount}
 			</span>
 			<span class="hidden flex-shrink-0 text-muted-foreground sm:inline"
 				>{pageWidth}×{pageHeight}</span
