@@ -474,8 +474,10 @@
 	}
 </script>
 
-<div class="whiteboard-toolbar border-t border-border bg-muted/95 backdrop-blur-sm {className}">
-	<div class="flex items-center gap-2 px-3 py-2">
+<div
+	class="whiteboard-toolbar overflow-x-auto border-t border-border bg-muted/95 backdrop-blur-sm {className}"
+>
+	<div class="flex w-max min-w-full items-center gap-2 px-3 py-2">
 		<!-- Tool menus -->
 		<div class="flex items-center gap-1">
 			<!-- Select Tool -->
