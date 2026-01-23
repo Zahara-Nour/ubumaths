@@ -105,7 +105,7 @@ export async function loginAsStudent(
  *   statement_md: 'Calculate {{a}} + {{b}}',
  *   solution_md: 'Answer: {{eval:{{a}}+{{b}}}}',
  *   distribution_mode: 'per_student',
- *   difficulty: 1
+ *   category: 'automatisme'
  * });
  * ```
  */
@@ -116,7 +116,7 @@ export async function createParamExercise(
 	const response = await page.request.post('/api/exercises', {
 		data: {
 			title: data.title || 'Test Exercise',
-			difficulty: data.difficulty || 1,
+			category: data.category || 'automatisme',
 			tags: data.tags || [],
 			variations: data.variations || [
 				{
@@ -153,7 +153,7 @@ export async function createParamExercise(
  *   title: 'Pythagorean Theorem',
  *   statement_md: 'If a=3 and b=4, find c',
  *   solution_md: 'c = 5',
- *   difficulty: 2
+ *   category: 'application'
  * });
  * ```
  */
@@ -220,7 +220,7 @@ export async function gotoViewExercise(
  * ```typescript
  * await fillExerciseMetadata(page, {
  *   title: 'Algebra Practice',
- *   difficulty: 2,
+ *   category: 'application',
  *   topic: 'Equations'
  * });
  * ```
@@ -230,7 +230,7 @@ export async function fillExerciseMetadata(
 	data: {
 		title?: string;
 		source?: string;
-		difficulty?: 1 | 2 | 3;
+		category?: string;
 		topic?: string;
 		tags?: string;
 		gradeLevels?: string;
@@ -243,8 +243,8 @@ export async function fillExerciseMetadata(
 	if (data.source !== undefined) {
 		await page.fill('#source', data.source);
 	}
-	if (data.difficulty !== undefined) {
-		await page.selectOption('#difficulty', String(data.difficulty));
+	if (data.category !== undefined) {
+		await page.selectOption('#category', data.category || 'automatisme');
 	}
 	if (data.topic !== undefined) {
 		await page.fill('#topic', data.topic);

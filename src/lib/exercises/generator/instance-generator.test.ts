@@ -68,7 +68,7 @@ function createExercise(overrides: TestExerciseParams = {}): Exercise {
 
 	return {
 		id: 'test-exercise-id',
-		difficulty: 1,
+		category: 'automatisme',
 		tags: ['test'],
 		distribution_mode: 'on_demand',
 		created_at: '2024-01-01T00:00:00Z',
@@ -127,7 +127,7 @@ describe('Static Exercises', () => {
 	it('should copy metadata to instance', () => {
 		const exercise = createExercise({
 			title: 'Addition Practice',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: ['addition', 'arithmetic'],
 			source: 'Test Book',
 			grades: ['6', '5'],
@@ -139,7 +139,7 @@ describe('Static Exercises', () => {
 		expect(result.success).toBe(true);
 		if (result.success && result.instance) {
 			expect(result.instance.title).toBe('Addition Practice');
-			expect(result.instance.difficulty).toBe(2);
+			expect(result.instance.category).toBe(2);
 			expect(result.instance.tags).toEqual(['addition', 'arithmetic']);
 			expect(result.instance.source).toBe('Test Book');
 			expect(result.instance.grades).toEqual(['6', '5']);
@@ -1108,7 +1108,7 @@ describe('Integration Tests', () => {
 	it('should handle realistic parameterized exercise', () => {
 		const exercise = createExercise({
 			title: 'Quadratic Equation',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: ['algebra', 'equations', '2nd'],
 			variables: [
 				{ name: 'a', expression: '{{1..5}}' },
@@ -1141,7 +1141,7 @@ describe('Integration Tests', () => {
 
 			// Verify metadata
 			expect(result.instance.title).toBe('Quadratic Equation');
-			expect(result.instance.difficulty).toBe(2);
+			expect(result.instance.category).toBe(2);
 			expect(result.instance.distributionMode).toBe('per_student');
 		}
 	});
@@ -1149,7 +1149,7 @@ describe('Integration Tests', () => {
 	it('should handle realistic exercise with variations and hints', () => {
 		const exercise = createExercise({
 			title: 'Théorème de Pythagore',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: ['géométrie', 'pythagore'],
 			shared: {
 				variables: [
@@ -1217,7 +1217,7 @@ describe('Integration Tests', () => {
 
 			// Verify metadata
 			expect(result.instance.title).toBe('Théorème de Pythagore');
-			expect(result.instance.difficulty).toBe(2);
+			expect(result.instance.category).toBe(2);
 		}
 	});
 });

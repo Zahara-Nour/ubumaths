@@ -29,7 +29,7 @@ describe('exercise validation schemas', () => {
 			const data = {
 				statement_md: '# Problem\nSolve for x: 2x + 3 = 7',
 				solution_md: '# Solution\nx = 2',
-				difficulty: 1,
+				category: 'automatisme',
 				tags: ['algebra', 'equations'],
 				grades: ['6eme', '5eme'],
 				topic: 'Linear Equations',
@@ -47,7 +47,7 @@ describe('exercise validation schemas', () => {
 			const data = {
 				statement_md: 'Problem statement',
 				solution_md: 'Solution',
-				difficulty: 2
+				category: 'application'
 			};
 
 			const result = createExerciseSchema.safeParse(data);
@@ -58,7 +58,7 @@ describe('exercise validation schemas', () => {
 			const data = {
 				statement_md: 'Problem',
 				solution_md: 'Solution',
-				difficulty: 1
+				category: 'automatisme'
 			};
 
 			const result = createExerciseSchema.safeParse(data);
@@ -73,7 +73,7 @@ describe('exercise validation schemas', () => {
 			const data = {
 				statement_md: '   ',
 				solution_md: 'Solution',
-				difficulty: 1
+				category: 'automatisme'
 			};
 
 			const result = createExerciseSchema.safeParse(data);
@@ -84,20 +84,20 @@ describe('exercise validation schemas', () => {
 			const data = {
 				statement_md: 'Problem',
 				solution_md: '   ',
-				difficulty: 1
+				category: 'automatisme'
 			};
 
 			const result = createExerciseSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject invalid difficulty', () => {
-			const invalidDifficulties = [0, 4, -1, 1.5, '2'];
-			invalidDifficulties.forEach((difficulty) => {
+		it('should reject invalid category', () => {
+			const invalidCategories = ['invalid', '', 123, null];
+			invalidCategories.forEach((category) => {
 				const data = {
 					statement_md: 'Problem',
 					solution_md: 'Solution',
-					difficulty
+					category
 				};
 
 				const result = createExerciseSchema.safeParse(data);
@@ -105,12 +105,13 @@ describe('exercise validation schemas', () => {
 			});
 		});
 
-		it('should accept all valid difficulties', () => {
-			[1, 2, 3].forEach((difficulty) => {
+		it('should accept all valid categories', () => {
+			const validCategories = ['automatisme', 'application', 'adaptation', 'recherche'];
+			validCategories.forEach((category) => {
 				const data = {
 					statement_md: 'Problem',
 					solution_md: 'Solution',
-					difficulty
+					category
 				};
 
 				const result = createExerciseSchema.safeParse(data);
@@ -122,7 +123,7 @@ describe('exercise validation schemas', () => {
 			const data = {
 				statement_md: 'Problem',
 				solution_md: 'Solution',
-				difficulty: 1,
+				category: 'automatisme',
 				tags: Array.from({ length: 21 }, (_, i) => `tag${i}`)
 			};
 
@@ -134,7 +135,7 @@ describe('exercise validation schemas', () => {
 			const data = {
 				statement_md: 'Problem',
 				solution_md: 'Solution',
-				difficulty: 1,
+				category: 'automatisme',
 				tags: ['a'.repeat(51)]
 			};
 
@@ -146,7 +147,7 @@ describe('exercise validation schemas', () => {
 			const data = {
 				statement_md: 'a'.repeat(50001),
 				solution_md: 'Solution',
-				difficulty: 1
+				category: 'automatisme'
 			};
 
 			const result = createExerciseSchema.safeParse(data);
@@ -158,7 +159,7 @@ describe('exercise validation schemas', () => {
 		it('should accept partial updates', () => {
 			const partialUpdates = [
 				{ title: 'Updated Title' },
-				{ difficulty: 3 },
+				{ category: 'adaptation' },
 				{ is_public: true },
 				{ tags: ['new-tag'] }
 			];
@@ -184,7 +185,7 @@ describe('exercise validation schemas', () => {
 			const data = {
 				page: 2,
 				limit: 25,
-				difficulty: 1,
+				category: 'automatisme',
 				grades: '6eme,5eme',
 				topic: 'Algebra',
 				tags: 'equations,linear',
@@ -208,7 +209,7 @@ describe('exercise validation schemas', () => {
 			const data = {
 				page: '3',
 				limit: '10',
-				difficulty: '2'
+				category: 123
 			};
 
 			const result = listExercisesQuerySchema.safeParse(data);
@@ -216,13 +217,13 @@ describe('exercise validation schemas', () => {
 			if (result.success) {
 				expect(typeof result.data.page).toBe('number');
 				expect(typeof result.data.limit).toBe('number');
-				expect(typeof result.data.difficulty).toBe('number');
+				expect(typeof result.data.category).toBe('number');
 			}
 		});
 
-		it('should reject invalid difficulty', () => {
+		it('should reject invalid category', () => {
 			const data = {
-				difficulty: 4
+				category: 'invalid_cat'
 			};
 
 			const result = listExercisesQuerySchema.safeParse(data);
@@ -757,7 +758,7 @@ describe('exercise validation schemas', () => {
 				id: '550e8400-e29b-41d4-a716-446655440000',
 				statement_md: 'Problem',
 				solution_md: 'Solution',
-				difficulty: 1,
+				category: 'automatisme',
 				tags: ['algebra'],
 				grades: ['6eme'],
 				topic: 'Equations',
@@ -779,7 +780,7 @@ describe('exercise validation schemas', () => {
 				id: '550e8400-e29b-41d4-a716-446655440000',
 				statement_md: 'Problem',
 				solution_md: 'Solution',
-				difficulty: 2,
+				category: 'application',
 				is_public: false,
 				created_by: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
 				created_at: '2025-01-01T00:00:00.000Z',
@@ -799,7 +800,7 @@ describe('exercise validation schemas', () => {
 						id: '550e8400-e29b-41d4-a716-446655440000',
 						statement_md: 'Problem',
 						solution_md: 'Solution',
-						difficulty: 1,
+						category: 'automatisme',
 						is_public: true,
 						created_by: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
 						created_at: '2025-01-01T00:00:00Z',

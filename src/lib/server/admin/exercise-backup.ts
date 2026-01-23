@@ -180,7 +180,7 @@ export async function exportBackupJSON(
 			slug: ex.slug,
 			title: ex.title,
 			source: ex.source,
-			difficulty: ex.difficulty,
+			category: ex.category,
 			tags: ex.tags,
 			statement_md: firstVariation?.statement_md || '',
 			solution_md: firstVariation?.solution_md || '',
@@ -315,7 +315,7 @@ export async function exportBackupSQL(
 		for (const ex of backup.data.exercises) {
 			// Note: statement_md and solution_md are deprecated in DB schema but preserved in backup for compatibility
 			lines.push(`INSERT INTO exercises (
-  id, slug, title, source, difficulty, tags,
+  id, slug, title, source, category, tags,
   grades, topic, is_public, distribution_mode, variables, variations,
   shared, resources, generic_functions, created_at, updated_at, created_by
 ) VALUES (
@@ -323,7 +323,7 @@ export async function exportBackupSQL(
   ${escapeSQL(ex.slug)},
   ${escapeSQL(ex.title)},
   ${escapeSQL(ex.source)},
-  ${ex.difficulty},
+  ${escapeSQL(ex.category)},
   ${escapeSQL(ex.tags)},
   ${escapeSQL(ex.grades)},
   ${escapeSQL(ex.topic)},
@@ -341,7 +341,7 @@ export async function exportBackupSQL(
   slug = EXCLUDED.slug,
   title = EXCLUDED.title,
   source = EXCLUDED.source,
-  difficulty = EXCLUDED.difficulty,
+  category = EXCLUDED.category,
   tags = EXCLUDED.tags,
   grades = EXCLUDED.grades,
   topic = EXCLUDED.topic,
@@ -588,7 +588,7 @@ async function restoreExercises(
 						slug: record.slug,
 						title: record.title,
 						source: record.source,
-						difficulty: record.difficulty,
+						category: record.category,
 						tags: record.tags,
 						grades: record.grades,
 						topic: record.topic,
@@ -617,7 +617,7 @@ async function restoreExercises(
 					slug: record.slug,
 					title: record.title,
 					source: record.source,
-					difficulty: record.difficulty,
+					category: record.category,
 					tags: record.tags,
 					grades: record.grades,
 					topic: record.topic,

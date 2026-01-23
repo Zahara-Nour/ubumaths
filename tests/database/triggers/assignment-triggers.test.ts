@@ -77,7 +77,7 @@ describe('Exercise Completion Tracking Triggers', () => {
 			.from('exercises')
 			.insert({
 				created_by: testTeacher.id,
-				difficulty: 1,
+				category: 'automatisme',
 				statement_md: 'What is 2 + 2?',
 				solution_md: 'The answer is 4',
 				is_public: true
@@ -315,7 +315,7 @@ describe('Exercise Completion Tracking Triggers', () => {
 					.from('exercises')
 					.insert({
 						created_by: testTeacher.id,
-						difficulty: 1,
+						category: 'automatisme',
 						statement_md: 'Exercise 1?',
 						solution_md: 'Answer: 1',
 						is_public: true
@@ -326,7 +326,7 @@ describe('Exercise Completion Tracking Triggers', () => {
 					.from('exercises')
 					.insert({
 						created_by: testTeacher.id,
-						difficulty: 1,
+						category: 'automatisme',
 						statement_md: 'Exercise 2?',
 						solution_md: 'Answer: 2',
 						is_public: true
@@ -337,7 +337,7 @@ describe('Exercise Completion Tracking Triggers', () => {
 					.from('exercises')
 					.insert({
 						created_by: testTeacher.id,
-						difficulty: 1,
+						category: 'automatisme',
 						statement_md: 'Exercise 3?',
 						solution_md: 'Answer: 3',
 						is_public: true

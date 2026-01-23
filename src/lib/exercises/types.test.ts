@@ -26,7 +26,7 @@ import type { Exercise, ExerciseVariation, SharedExerciseDefaults, Variable } fr
 function createExercise(overrides: Partial<Exercise> = {}): Exercise {
 	return {
 		id: 'test-exercise-id',
-		difficulty: 1,
+		category: 'automatisme',
 		tags: ['test'],
 		distribution_mode: 'on_demand',
 		created_at: '2024-01-01T00:00:00Z',

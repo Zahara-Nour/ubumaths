@@ -32,7 +32,7 @@ function dbRowToExercise(
 		slug: dbExercise.slug ?? undefined,
 		title: dbExercise.title ?? undefined,
 		source: dbExercise.source ?? undefined,
-		difficulty: dbExercise.difficulty as 1 | 2 | 3,
+		category: dbExercise.category as Exercise['category'],
 		tags: (dbExercise.tags as string[]) || [],
 		variables: dbExercise.variables as unknown as Exercise['variables'],
 		distribution_mode: dbExercise.distribution_mode as Exercise['distribution_mode'],

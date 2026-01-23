@@ -25,12 +25,13 @@ describe('Instance Generator', () => {
 			custom_instructions: null,
 			correction_visible: true,
 			variation_index: null,
+			is_essential: false,
 			created_at: '2024-01-01',
 			updated_at: '2024-01-01',
 			exercise: {
 				id: 'e1',
 				title: 'Addition simple',
-				difficulty: 1,
+				category: 'automatisme',
 				shared: {
 					variables: [
 						{ name: 'a', expression: '{{random:1..10}}' },
@@ -59,12 +60,13 @@ describe('Instance Generator', () => {
 			custom_instructions: null,
 			correction_visible: true,
 			variation_index: null,
+			is_essential: false,
 			created_at: '2024-01-01',
 			updated_at: '2024-01-01',
 			exercise: {
 				id: 'e2',
 				title: 'Multiplication',
-				difficulty: 2,
+				category: 'automatisme',
 				shared: {
 					variables: [
 						{ name: 'x', expression: '{{random:2..9}}' },
@@ -228,7 +230,7 @@ describe('Instance Generator', () => {
 					exercise: {
 						id: 'e3',
 						title: 'Static exercise',
-						difficulty: 1,
+						category: 'automatisme',
 						variables: [],
 						variations: [
 							{
@@ -348,7 +350,7 @@ describe('Instance Generator', () => {
 					exercise: {
 						id: 'e4',
 						title: 'Complex parameters',
-						difficulty: 3,
+						category: 'automatisme',
 						shared: {
 							variables: [
 								{ name: 'a', expression: '{{random:10..20}}' },
@@ -412,7 +414,7 @@ describe('Instance Generator', () => {
 					exercise: {
 						id: 'typed-ex',
 						title: 'Typed exercise',
-						difficulty: 1,
+						category: 'automatisme',
 						shared: {
 							variables: typedVariables // Should be Variable[], not unknown[]
 						} as SharedExerciseDefaults,
@@ -458,6 +460,7 @@ describe('Instance Generator', () => {
 			variant_config: {},
 			custom_instructions: null,
 			correction_visible: true,
+			is_essential: false,
 			variation_index: null, // Seed-based selection (default)
 			created_at: '2024-01-01',
 			updated_at: '2024-01-01',
@@ -466,7 +469,7 @@ describe('Instance Generator', () => {
 				title: 'Exercise with variations',
 				statement_md: '', // Will be overridden by variation
 				solution_md: 'AC = {{result}} cm',
-				difficulty: 2,
+				category: 'automatisme',
 				variables: [
 					{ name: 'a', expression: '{{random:3..10}}' },
 					{ name: 'b', expression: '{{random:3..10}}' }
@@ -672,7 +675,7 @@ describe('Instance Generator', () => {
 					exercise: {
 						id: 'e-static-ast',
 						title: 'Static for AST test',
-						difficulty: 1,
+						category: 'automatisme',
 						variables: [],
 						variations: [
 							{

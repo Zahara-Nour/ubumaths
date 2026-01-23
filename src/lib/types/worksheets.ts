@@ -544,6 +544,8 @@ export interface WorksheetExerciseWithExercise extends WorksheetExerciseRow {
 	exercise?: {
 		id: string;
 		title: string;
+		/** Exercise category (automatisme, application, etc.) */
+		category?: string;
 		/** @deprecated Use variations array instead - kept for backward compatibility */
 		statement_md?: string;
 		/** @deprecated Use variations array instead - kept for backward compatibility */

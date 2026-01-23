@@ -50,7 +50,7 @@ describe('getExercises', () => {
 				id: '1',
 				title: 'Test Exercise',
 				source: 'Test Book',
-				difficulty: 2,
+				category: 'automatisme',
 				tags: ['algèbre'],
 				grades: ['3'],
 				topic: 'Algèbre',
@@ -90,13 +90,13 @@ describe('getExercises', () => {
 		expect(result.limit).toBe(50);
 	});
 
-	it('should apply difficulty filter', async () => {
+	it('should apply category filter', async () => {
 		const mockSupabase = createMockSupabase() as any;
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: [], error: null, count: 0 });
 
-		await getExercises(mockSupabase, { difficulty: 2 });
+		await getExercises(mockSupabase, { category: 'automatisme' });
 
-		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('difficulty', 2);
+		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('category', 'automatisme');
 	});
 
 	it('should apply tags filter', async () => {
@@ -150,7 +150,7 @@ describe('getExercise', () => {
 			id: 'ex-123',
 			title: 'Test Exercise',
 			source: 'Test Book',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: ['algèbre'],
 			grades: ['3'],
 			topic: 'Algèbre',
@@ -201,7 +201,7 @@ describe('createExercise', () => {
 	it('should create a new exercise', async () => {
 		const mockSupabase = createMockSupabase() as any;
 		const newExercise = {
-			difficulty: 2 as const,
+			category: 'automatisme' as const,
 			tags: ['algèbre'],
 			variations: [
 				{
@@ -214,7 +214,7 @@ describe('createExercise', () => {
 
 		const createdExercise: ExerciseRow = {
 			id: 'new-ex-123',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: ['algèbre'],
 			title: null,
 			source: null,
@@ -265,7 +265,7 @@ describe('updateExercise', () => {
 			id: 'ex-123',
 			title: 'Original Title',
 			source: 'Original Source',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: ['algèbre'],
 			grades: ['3'],
 			topic: 'Algèbre',
@@ -290,7 +290,7 @@ describe('updateExercise', () => {
 
 		const updates = {
 			title: 'Updated Title',
-			difficulty: 3 as const
+			category: 'automatisme' as const
 		};
 
 		// Mock getExercise call
@@ -302,7 +302,7 @@ describe('updateExercise', () => {
 
 		expect(result.error).toBeNull();
 		expect(result.data?.title).toBe('Updated Title');
-		expect(result.data?.difficulty).toBe(3);
+		expect(result.data?.category).toBe(3);
 	});
 
 	it('should reject update from non-owner', async () => {
@@ -311,7 +311,7 @@ describe('updateExercise', () => {
 			id: 'ex-123',
 			title: 'Test',
 			source: null,
-			difficulty: 2,
+			category: 'automatisme',
 			tags: [],
 			grades: null,
 			topic: null,
@@ -351,7 +351,7 @@ describe('deleteExercise', () => {
 			id: 'ex-123',
 			title: 'To Delete',
 			source: null,
-			difficulty: 1,
+			category: 'automatisme',
 			tags: [],
 			grades: null,
 			topic: null,
@@ -401,7 +401,7 @@ describe('deleteExercise', () => {
 			id: 'ex-123',
 			title: 'Protected',
 			source: null,
-			difficulty: 1,
+			category: 'automatisme',
 			tags: [],
 			grades: null,
 			topic: null,
@@ -448,10 +448,13 @@ describe('getTeacherExercises', () => {
 		const mockSupabase = createMockSupabase() as any;
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: [], error: null, count: 0 });
 
-		await getTeacherExercises(mockSupabase, 'teacher-123', { difficulty: 3, tags: ['algèbre'] });
+		await getTeacherExercises(mockSupabase, 'teacher-123', {
+			category: 'automatisme',
+			tags: ['algèbre']
+		});
 
 		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('created_by', 'teacher-123');
-		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('difficulty', 3);
+		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('category', 'automatisme');
 		expect(mockSupabase.__mockQuery.contains).toHaveBeenCalledWith('tags', ['algèbre']);
 	});
 });

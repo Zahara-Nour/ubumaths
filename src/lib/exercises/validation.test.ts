@@ -13,7 +13,7 @@ describe('validateExerciseExport', () => {
 	it('should validate a valid exercise export', () => {
 		const validExport: ExerciseExport = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: ['algèbre', 'équations'],
 			statement_md: 'Résoudre $x^2 = 4$',
 			solution_md: '$x = \\pm 2$',
@@ -33,7 +33,7 @@ describe('validateExerciseExport', () => {
 	it('should validate minimal valid exercise (only required fields)', () => {
 		const minimalExport: ExerciseExport = {
 			version: '1.0',
-			difficulty: 1,
+			category: 'automatisme',
 			tags: [],
 			statement_md: 'Simple question',
 			solution_md: 'Simple answer'
@@ -48,7 +48,7 @@ describe('validateExerciseExport', () => {
 	it('should reject invalid version', () => {
 		const invalidExport = {
 			version: '3.0', // Invalid version (only 1.0 and 2.0 are valid)
-			difficulty: 2,
+			category: 'automatisme',
 			tags: [],
 			statement_md: 'Test',
 			solution_md: 'Test'
@@ -62,10 +62,10 @@ describe('validateExerciseExport', () => {
 		expect(result.error).toContain('Invalid');
 	});
 
-	it('should reject invalid difficulty', () => {
+	it('should reject invalid category', () => {
 		const invalidExport = {
 			version: '1.0',
-			difficulty: 5, // Must be 1, 2, or 3
+			category: 'automatisme', // Must be 1, 2, or 3
 			tags: [],
 			statement_md: 'Test',
 			solution_md: 'Test'
@@ -82,7 +82,7 @@ describe('validateExerciseExport', () => {
 	it('should reject empty statement', () => {
 		const invalidExport = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: [],
 			statement_md: '   ', // Empty after trim
 			solution_md: 'Test'
@@ -98,7 +98,7 @@ describe('validateExerciseExport', () => {
 	it('should reject empty solution', () => {
 		const invalidExport = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: [],
 			statement_md: 'Test',
 			solution_md: '' // Empty
@@ -114,7 +114,7 @@ describe('validateExerciseExport', () => {
 	it('should reject non-array tags', () => {
 		const invalidExport = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: 'not an array',
 			statement_md: 'Test',
 			solution_md: 'Test'
@@ -129,7 +129,7 @@ describe('validateExerciseExport', () => {
 	it('should trim whitespace from strings', () => {
 		const exportWithWhitespace = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: ['  algèbre  ', 'équations'],
 			statement_md: '  Test question  ',
 			solution_md: '  Test answer  ',
@@ -149,7 +149,7 @@ describe('validateExerciseExport', () => {
 	it('should handle optional fields as undefined when not provided', () => {
 		const minimalExport = {
 			version: '1.0',
-			difficulty: 1,
+			category: 'automatisme',
 			tags: [],
 			statement_md: 'Test',
 			solution_md: 'Test'
@@ -170,14 +170,14 @@ describe('validateExercisesArray', () => {
 		const exercises: ExerciseExport[] = [
 			{
 				version: '1.0',
-				difficulty: 1,
+				category: 'automatisme',
 				tags: [],
 				statement_md: 'Question 1',
 				solution_md: 'Answer 1'
 			},
 			{
 				version: '1.0',
-				difficulty: 2,
+				category: 'automatisme',
 				tags: ['test'],
 				statement_md: 'Question 2',
 				solution_md: 'Answer 2'
@@ -194,7 +194,7 @@ describe('validateExercisesArray', () => {
 	it('should reject non-array input', () => {
 		const notAnArray = {
 			version: '1.0',
-			difficulty: 1,
+			category: 'automatisme',
 			tags: [],
 			statement_md: 'Test',
 			solution_md: 'Test'
@@ -211,14 +211,14 @@ describe('validateExercisesArray', () => {
 		const exercises = [
 			{
 				version: '1.0',
-				difficulty: 1,
+				category: 'automatisme',
 				tags: [],
 				statement_md: 'Valid',
 				solution_md: 'Valid'
 			},
 			{
 				version: '1.0',
-				difficulty: 99, // Invalid difficulty
+				category: 'invalid_cat', // Invalid category
 				tags: [],
 				statement_md: 'Invalid',
 				solution_md: 'Invalid'

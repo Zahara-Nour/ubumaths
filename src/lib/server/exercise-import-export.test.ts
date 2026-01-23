@@ -23,7 +23,7 @@ const sampleExercise: Exercise = {
 	id: 'ex-123',
 	title: 'Test Exercise',
 	source: 'Test Book',
-	difficulty: 2,
+	category: 'automatisme',
 	tags: ['algèbre', 'équations'],
 	grades: ['3', '2'],
 	topic: 'Algèbre',
@@ -67,7 +67,7 @@ describe('exportExerciseToJSON', () => {
 		const parsed = JSON.parse(json);
 
 		expect(parsed.version).toBe('2.0');
-		expect(parsed.difficulty).toBe(2);
+		expect(parsed.category).toBe(2);
 		expect(parsed.tags).toEqual(['algèbre', 'équations']);
 		expect(parsed.statement_md).toBe('Résoudre $x^2 = 4$');
 		expect(parsed.solution_md).toBe('$x = \\pm 2$');
@@ -99,7 +99,7 @@ describe('exportExerciseToJSON', () => {
 	it('should handle exercise with minimal fields', () => {
 		const minimalExercise: Exercise = {
 			id: 'ex-min',
-			difficulty: 1,
+			category: 'automatisme',
 			tags: [],
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
@@ -114,7 +114,7 @@ describe('exportExerciseToJSON', () => {
 		const parsed = JSON.parse(json);
 
 		expect(parsed.version).toBe('2.0');
-		expect(parsed.difficulty).toBe(1);
+		expect(parsed.category).toBe(1);
 		expect(parsed.tags).toEqual([]);
 		// Optional fields that are undefined in source are not included in export
 		expect(parsed.title).toBeUndefined();
@@ -132,7 +132,7 @@ describe('exportExerciseToMarkdown', () => {
 		expect(markdown).toContain('---');
 		expect(markdown).toContain('version:');
 		expect(markdown).toContain('2.0');
-		expect(markdown).toContain('difficulty: 2');
+		expect(markdown).toContain("category: 'automatisme'");
 		expect(markdown).toContain('title:');
 		expect(markdown).toContain('Test Exercise');
 		expect(markdown).toContain('- algèbre');
@@ -146,7 +146,7 @@ describe('exportExerciseToMarkdown', () => {
 	it('should handle exercise with minimal fields', () => {
 		const minimalExercise: Exercise = {
 			id: 'ex-min',
-			difficulty: 1,
+			category: 'automatisme',
 			tags: [],
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
@@ -157,7 +157,7 @@ describe('exportExerciseToMarkdown', () => {
 
 		const markdown = exportExerciseToMarkdown(minimalExercise);
 
-		expect(markdown).toContain('difficulty: 1');
+		expect(markdown).toContain("category: 'automatisme'");
 		expect(markdown).toContain('tags: []');
 		expect(markdown).toContain('# Énoncé');
 		expect(markdown).toContain('Q');
@@ -215,7 +215,7 @@ describe('importExerciseFromJSON', () => {
 		const mockSupabase = createMockSupabase() as any;
 		const jsonData = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: ['test'],
 			statement_md: 'Question',
 			solution_md: 'Answer',
@@ -242,7 +242,7 @@ describe('importExerciseFromJSON', () => {
 		const mockSupabase = createMockSupabase() as any;
 		const jsonData = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: [],
 			statement_md: 'Duplicate Question',
 			solution_md: 'Answer',
@@ -277,7 +277,7 @@ describe('importExerciseFromJSON', () => {
 		const mockSupabase = createMockSupabase() as any;
 		const jsonData = {
 			version: '1.0',
-			difficulty: 3,
+			category: 'automatisme',
 			tags: ['updated'],
 			statement_md: 'Updated Question',
 			solution_md: 'Updated Answer',
@@ -309,7 +309,7 @@ describe('importExerciseFromJSON', () => {
 		mockSupabase.__mockQuery.single.mockResolvedValueOnce({
 			data: {
 				id: 'existing-ex-id',
-				difficulty: 3,
+				category: 'automatisme',
 				tags: ['updated'],
 				statement_md: 'Updated Question',
 				solution_md: 'Updated Answer',
@@ -335,7 +335,7 @@ describe('importExerciseFromJSON', () => {
 		const mockSupabase = createMockSupabase() as any;
 		const jsonData = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: [],
 			statement_md: 'Question',
 			solution_md: 'Answer',
@@ -404,7 +404,7 @@ describe('importExerciseFromJSON', () => {
 				data: {
 					id: 'new-copy-id',
 					title: 'Original Title (copie)',
-					difficulty: 2,
+					category: 'automatisme',
 					tags: ['test'],
 					statement_md: 'Duplicate Question',
 					solution_md: 'Answer',
@@ -424,7 +424,7 @@ describe('importExerciseFromJSON', () => {
 
 		const jsonData = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: ['test'],
 			statement_md: 'Duplicate Question',
 			solution_md: 'Answer',
@@ -473,7 +473,7 @@ describe('importExerciseFromJSON', () => {
 				data: {
 					id: 'new-copy-id-3',
 					title: 'Title (copie 3)',
-					difficulty: 2,
+					category: 'automatisme',
 					tags: [],
 					statement_md: 'Question',
 					solution_md: 'Answer',
@@ -493,7 +493,7 @@ describe('importExerciseFromJSON', () => {
 
 		const jsonData = {
 			version: '1.0',
-			difficulty: 2,
+			category: 'automatisme',
 			tags: [],
 			statement_md: 'Question',
 			solution_md: 'Answer',
@@ -512,7 +512,7 @@ describe('importExerciseFromJSON', () => {
 		const mockSupabase = createMockSupabase() as any;
 		const invalidData = {
 			version: '1.0',
-			difficulty: 99, // Invalid
+			category: 'invalid_category', // Invalid
 			tags: [],
 			statement_md: 'Question',
 			solution_md: 'Answer'
@@ -522,7 +522,7 @@ describe('importExerciseFromJSON', () => {
 
 		expect(result.success).toBe(false);
 		expect(result.error).toBeDefined();
-		// Union validation fails when difficulty is invalid (99 doesn't match 1|2|3)
+		// Union validation fails when category is invalid
 		expect(result.error).toContain('Invalid');
 	});
 
@@ -530,7 +530,7 @@ describe('importExerciseFromJSON', () => {
 		const mockSupabase = createMockSupabase() as any;
 		const dataWithInvalidDifficulty = {
 			version: '1.0',
-			difficulty: 99,
+			category: 'invalid_category',
 			tags: [],
 			statement_md: 'Question',
 			solution_md: 'Answer'
@@ -540,7 +540,7 @@ describe('importExerciseFromJSON', () => {
 		mockSupabase.__mockQuery.limit.mockResolvedValue({ data: [], error: null });
 		// Mock successful insert (would fail validation normally)
 		mockSupabase.__mockQuery.single.mockResolvedValue({
-			data: { id: 'new-id', difficulty: 99, created_by: 'user-123' },
+			data: { id: 'new-id', category: 'invalid_category', created_by: 'user-123' },
 			error: null
 		});
 
@@ -569,7 +569,7 @@ describe('importExerciseFromMarkdown', () => {
 		const mockSupabase = createMockSupabase() as any;
 		const markdown = `---
 version: "1.0"
-difficulty: 2
+category: 'automatisme'
 tags:
   - test
 title: "Markdown Import"
@@ -591,7 +591,7 @@ Answer from markdown
 			data: {
 				id: 'markdown-ex-id',
 				title: 'Markdown Import',
-				difficulty: 2,
+				category: 'automatisme',
 				created_by: 'user-123'
 			},
 			error: null
@@ -634,14 +634,14 @@ describe('importExercisesFromJSON', () => {
 		const exercises = [
 			{
 				version: '1.0',
-				difficulty: 1,
+				category: 'automatisme',
 				tags: [],
 				statement_md: 'Q1',
 				solution_md: 'A1'
 			},
 			{
 				version: '1.0',
-				difficulty: 2,
+				category: 'automatisme',
 				tags: [],
 				statement_md: 'Q2',
 				solution_md: 'A2'
@@ -670,14 +670,14 @@ describe('importExercisesFromJSON', () => {
 		const exercises = [
 			{
 				version: '1.0',
-				difficulty: 1,
+				category: 'automatisme',
 				tags: [],
 				statement_md: 'Success',
 				solution_md: 'A'
 			},
 			{
 				version: '1.0',
-				difficulty: 2,
+				category: 'automatisme',
 				tags: [],
 				statement_md: 'Duplicate',
 				solution_md: 'A',
@@ -685,7 +685,7 @@ describe('importExercisesFromJSON', () => {
 			},
 			{
 				version: '1.0',
-				difficulty: 99, // Invalid
+				category: 'invalid_category', // Invalid
 				tags: [],
 				statement_md: 'Error',
 				solution_md: 'A'
@@ -720,7 +720,7 @@ describe('importExercisesFromJSON', () => {
 		expect(result.importedIds).toEqual(['ex-1']);
 		expect(result.errors).toHaveLength(1);
 		expect(result.errors[0].index).toBe(2);
-		// Union validation fails when difficulty is invalid (99 doesn't match 1|2|3)
+		// Union validation fails when category is invalid
 		expect(result.errors[0].error).toContain('Invalid');
 	});
 
@@ -728,7 +728,7 @@ describe('importExercisesFromJSON', () => {
 		const mockSupabase = createMockSupabase() as any;
 		const notAnArray = {
 			version: '1.0',
-			difficulty: 1,
+			category: 'automatisme',
 			tags: [],
 			statement_md: 'Q',
 			solution_md: 'A'
