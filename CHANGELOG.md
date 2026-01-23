@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.22](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.21...v0.7.22) (2026-01-23)
+
+### ✨ Features
+
+- **tables:** add :table-cross directive for double-entry tables ([41e6078](https://github.com/Zahara-Nour/ubumaths/commit/41e6078dc05999f1ad58e38bb5c0f7d7c0dd63ba))
+- **whiteboard:** add alignment and distribution for multiple selection ([47c37b4](https://github.com/Zahara-Nour/ubumaths/commit/47c37b4598f5705a615bf0b7ae1bc4e98b73c534))
+- **whiteboard:** add edge scroll auto-pan during drag ([09e13fc](https://github.com/Zahara-Nour/ubumaths/commit/09e13fc00ef1cdea07c26c20bb73eb9ac9543faf))
+- **whiteboard:** add gap snapping for equal spacing ([88a79fd](https://github.com/Zahara-Nour/ubumaths/commit/88a79fdf8d03d816ca93f28e2a0d5b6035c0d630))
+- **whiteboard:** add snap-to-object functionality ([951d04c](https://github.com/Zahara-Nour/ubumaths/commit/951d04cca6669fe3b3efb3d06633076a3846dc82))
+- **whiteboard:** consolidate UI with unified draggable toolbar ([63d19d3](https://github.com/Zahara-Nour/ubumaths/commit/63d19d39c84789cb6ba5379fd7c09e8e05e1e75f))
+- **whiteboard:** redesign toolbar with floating UI and style panel ([f609056](https://github.com/Zahara-Nour/ubumaths/commit/f609056cad6c670936d0c8f568b768fedf00a74d))
+
+### 🐛 Bug Fixes
+
+- **whiteboard:** improve reactivity for page expansion indicators ([c9e6675](https://github.com/Zahara-Nour/ubumaths/commit/c9e66754239f8b83c834caafbbee2d2b6cc4a551))
+- **whiteboard:** improve toolbar overflow handling ([4b40655](https://github.com/Zahara-Nour/ubumaths/commit/4b406556b3fc95837b2c26e0ef48fbf4e70582d9))
+- **whiteboard:** make 100% zoom fit expanded pages correctly ([d05742a](https://github.com/Zahara-Nour/ubumaths/commit/d05742a82d1fdc3546c2a9c8fbb714fbb45b0b33))
+- **whiteboard:** trigger FileDrawer initial load on programmatic open ([4f3bbe3](https://github.com/Zahara-Nour/ubumaths/commit/4f3bbe39179026feb334a98b31e08f0dded9852a))
+
 ### [0.7.21](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.20...v0.7.21) (2026-01-22)
 
 ### ✨ Features
