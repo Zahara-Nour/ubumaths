@@ -60,6 +60,8 @@
 		header: { content: string; align?: 'left' | 'center' | 'right' }[];
 		rows: { content: string; align?: 'left' | 'center' | 'right' }[][];
 		alignments: ('left' | 'center' | 'right')[];
+		transpose?: boolean;
+		cross?: boolean;
 	} {
 		return node.type === 'table';
 	}
@@ -105,7 +107,13 @@
 		{:else if isListNode(child)}
 			<ListNode ordered={child.ordered} start={child.start} items={child.items} />
 		{:else if isTableNode(child)}
-			<TableNode header={child.header} rows={child.rows} alignments={child.alignments} />
+			<TableNode
+				header={child.header}
+				rows={child.rows}
+				alignments={child.alignments}
+				transpose={child.transpose}
+				cross={child.cross}
+			/>
 		{:else if isImageNode(child)}
 			<ImageDisplay
 				src={child.src}

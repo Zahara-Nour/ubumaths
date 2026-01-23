@@ -155,6 +155,7 @@
 		rows: { content: string; align?: 'left' | 'center' | 'right' }[][];
 		alignments: ('left' | 'center' | 'right')[];
 		transpose?: boolean;
+		cross?: boolean;
 	} {
 		return node.type === 'table';
 	}
@@ -298,6 +299,7 @@
 							rows={child.rows}
 							alignments={child.alignments}
 							transpose={child.transpose}
+							cross={child.cross}
 						/>
 					{:else if isCodeBlockNode(child)}
 						<CodeBlock code={child.code} language={child.language} />
@@ -370,6 +372,7 @@
 							rows={child.rows}
 							alignments={child.alignments}
 							transpose={child.transpose}
+							cross={child.cross}
 						/>
 					{:else if isCodeBlockNode(child)}
 						<CodeBlock code={child.code} language={child.language} />

@@ -43,6 +43,12 @@ const ALIGNMENT_ROW_REGEX = /^\s*\|(\s*:?-+:?\s*\|)+\s*$/;
  */
 const TABLE_H_DIRECTIVE_REGEX = /^\s*:table-h\s*$/;
 
+/**
+ * Regex to detect :table-cross directive for double-entry tables
+ * Matches lines containing only ":table-cross" with optional whitespace
+ */
+const TABLE_CROSS_DIRECTIVE_REGEX = /^\s*:table-cross\s*$/;
+
 // ============================================================================
 // TABLE DETECTION
 // ============================================================================
@@ -75,6 +81,16 @@ export function isAlignmentRow(line: string): boolean {
  */
 export function isHorizontalTableDirective(line: string): boolean {
 	return TABLE_H_DIRECTIVE_REGEX.test(line);
+}
+
+/**
+ * Check if a line is a cross table directive (:table-cross)
+ *
+ * @param line - Line to check
+ * @returns true if line is the :table-cross directive
+ */
+export function isCrossTableDirective(line: string): boolean {
+	return TABLE_CROSS_DIRECTIVE_REGEX.test(line);
 }
 
 /**
@@ -200,6 +216,7 @@ function createCellNodes(
  *
  * @param lines - Array of table lines (must be a valid table)
  * @param transpose - If true, renderers will transpose the table (headers become first column)
+ * @param cross - If true, renderers will treat first row AND first column as headers
  * @returns TableNode AST node or null if invalid
  *
  * @example
@@ -211,8 +228,13 @@ function createCellNodes(
  * ];
  * const table = parseTable(lines);
  * const transposedTable = parseTable(lines, true);
+ * const crossTable = parseTable(lines, false, true);
  */
-export function parseTable(lines: string[], transpose: boolean = false): TableNode | null {
+export function parseTable(
+	lines: string[],
+	transpose: boolean = false,
+	cross: boolean = false
+): TableNode | null {
 	if (!isValidTable(lines)) {
 		return null;
 	}
@@ -259,6 +281,10 @@ export function parseTable(lines: string[], transpose: boolean = false): TableNo
 
 	if (transpose) {
 		result.transpose = true;
+	}
+
+	if (cross) {
+		result.cross = true;
 	}
 
 	return result;
@@ -330,15 +356,17 @@ export interface TableBlockRange {
 	endIndex: number;
 	/** Whether this table should be transposed (:table-h directive was present) */
 	transpose: boolean;
-	/** Line index of the :table-h directive, if present */
+	/** Whether this is a cross table (:table-cross directive was present) */
+	cross: boolean;
+	/** Line index of the directive, if present */
 	directiveIndex?: number;
 }
 
 /**
  * Find all table blocks in an array of lines, with directive detection
  *
- * Returns table block ranges with information about transpose directives.
- * A :table-h directive must immediately precede a table to be recognized.
+ * Returns table block ranges with information about transpose and cross directives.
+ * A :table-h or :table-cross directive must immediately precede a table to be recognized.
  *
  * @param lines - Array of markdown lines
  * @returns Array of TableBlockRange objects
@@ -351,21 +379,43 @@ export interface TableBlockRange {
  *   '| c1 | c2 |'
  * ];
  * const blocks = findTableBlocksWithDirective(lines);
- * // Returns: [{ startIndex: 1, endIndex: 3, transpose: true, directiveIndex: 0 }]
+ * // Returns: [{ startIndex: 1, endIndex: 3, transpose: true, cross: false, directiveIndex: 0 }]
+ *
+ * @example Cross table
+ * const lines = [
+ *   ':table-cross',
+ *   '| × | 1 | 2 |',
+ *   '|---|---|---|',
+ *   '| 1 | 1 | 2 |'
+ * ];
+ * const blocks = findTableBlocksWithDirective(lines);
+ * // Returns: [{ startIndex: 1, endIndex: 3, transpose: false, cross: true, directiveIndex: 0 }]
  */
 export function findTableBlocksWithDirective(lines: string[]): TableBlockRange[] {
 	const blocks: TableBlockRange[] = [];
 
 	let i = 0;
 	while (i < lines.length) {
-		// Check for :table-h directive
+		// Check for directives
 		let transpose = false;
+		let cross = false;
 		let directiveIndex: number | undefined;
 
 		if (isHorizontalTableDirective(lines[i])) {
 			// Check if next line starts a table
 			if (i + 2 < lines.length && isTableRow(lines[i + 1]) && isAlignmentRow(lines[i + 2])) {
 				transpose = true;
+				directiveIndex = i;
+				i++; // Move past directive to table start
+			} else {
+				// Directive not followed by table, skip it
+				i++;
+				continue;
+			}
+		} else if (isCrossTableDirective(lines[i])) {
+			// Check if next line starts a table
+			if (i + 2 < lines.length && isTableRow(lines[i + 1]) && isAlignmentRow(lines[i + 2])) {
+				cross = true;
 				directiveIndex = i;
 				i++; // Move past directive to table start
 			} else {
@@ -393,6 +443,7 @@ export function findTableBlocksWithDirective(lines: string[]): TableBlockRange[]
 				startIndex: start,
 				endIndex: end,
 				transpose,
+				cross,
 				directiveIndex
 			});
 			i = end + 1;

@@ -369,6 +369,56 @@ ${lines.join(' \\\\\n\\hline\n')} \\\\
 \\end{tabular}`;
 	}
 
+	if (node.cross) {
+		// Cross table (double-entry): first row AND first column are headers (bold)
+		// Generate column specification
+		const colSpec = node.alignments
+			.map((align: string) => {
+				switch (align) {
+					case 'center':
+						return 'c';
+					case 'right':
+						return 'r';
+					default:
+						return 'l';
+				}
+			})
+			.join('|');
+
+		// Generate header row with bold cells
+		// Corner cell: bold only if non-empty
+		const header = node.header
+			.map((cell: { content: string }, index: number) => {
+				const content = escapeLatex(cell.content);
+				// Corner cell (index 0): bold only if has content
+				if (index === 0) {
+					return content.trim() ? `\\textbf{${content}}` : content;
+				}
+				return `\\textbf{${content}}`;
+			})
+			.join(' & ');
+
+		// Generate rows with first cell bold (row header)
+		const rows = node.rows
+			.map((row: { content: string }[]) =>
+				row
+					.map((cell: { content: string }, cellIndex: number) => {
+						const content = escapeLatex(cell.content);
+						return cellIndex === 0 ? `\\textbf{${content}}` : content;
+					})
+					.join(' & ')
+			)
+			.join(' \\\\\n');
+
+		return `\\begin{tabular}{|${colSpec}|}
+\\hline
+${header} \\\\
+\\hline
+${rows} \\\\
+\\hline
+\\end{tabular}`;
+	}
+
 	// Standard vertical table
 	// Generate column specification
 	const colSpec = node.alignments

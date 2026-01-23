@@ -65,7 +65,9 @@
 		Minimize,
 		ImageIcon,
 		FileCode,
-		TrendingUp
+		TrendingUp,
+		Table2,
+		Grid3x3
 	} from 'lucide-svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
@@ -201,6 +203,10 @@
 	let isCodeBlock = $state(false);
 	let currentHeading = $state<number | null>(null);
 	let currentAlignment = $state<string>('left');
+
+	// Table state
+	let isInTable = $state(false);
+	let currentTableType = $state<'standard' | 'transpose' | 'cross'>('standard');
 
 	// Link dialog state
 	let showLinkDialog = $state(false);
@@ -355,6 +361,82 @@
 		else if (editor.isActive({ textAlign: 'right' })) currentAlignment = 'right';
 		else if (editor.isActive({ textAlign: 'justify' })) currentAlignment = 'justify';
 		else currentAlignment = 'left';
+
+		// Check if in table and get table type
+		isInTable = editor.isActive('table');
+		if (isInTable) {
+			// Get table attributes from current selection
+			const tableNode = findParentTable(editor);
+			if (tableNode?.attrs?.cross) {
+				currentTableType = 'cross';
+			} else if (tableNode?.attrs?.transpose) {
+				currentTableType = 'transpose';
+			} else {
+				currentTableType = 'standard';
+			}
+		} else {
+			currentTableType = 'standard';
+		}
+	}
+
+	/**
+	 * Find the parent table node from current selection
+	 */
+	function findParentTable(
+		editorInstance: Editor
+	): { attrs?: { transpose?: boolean; cross?: boolean } } | null {
+		const { selection } = editorInstance.state;
+		let depth = selection.$from.depth;
+
+		while (depth > 0) {
+			const node = selection.$from.node(depth);
+			if (node.type.name === 'table') {
+				return node;
+			}
+			depth--;
+		}
+		return null;
+	}
+
+	/**
+	 * Set the table type for the current table
+	 */
+	function setTableType(type: 'standard' | 'transpose' | 'cross') {
+		if (!editor || !isInTable) return;
+
+		const tableNode = findParentTable(editor);
+		if (!tableNode) return;
+
+		// Get position of table
+		const { selection } = editor.state;
+		let depth = selection.$from.depth;
+		let tablePos = 0;
+
+		while (depth > 0) {
+			const node = selection.$from.node(depth);
+			if (node.type.name === 'table') {
+				tablePos = selection.$from.before(depth);
+				break;
+			}
+			depth--;
+		}
+
+		// Update table attributes
+		const attrs = {
+			transpose: type === 'transpose',
+			cross: type === 'cross'
+		};
+
+		editor
+			.chain()
+			.focus()
+			.command(({ tr }) => {
+				tr.setNodeMarkup(tablePos, undefined, attrs);
+				return true;
+			})
+			.run();
+
+		currentTableType = type;
 	}
 
 	/**
@@ -1552,6 +1634,57 @@
 				</div>
 			{/if}
 
+			<!-- Table Type Section (Contextual) - Only when cursor is in a table -->
+			{#if isInTable}
+				<div
+					class="flex flex-wrap items-center gap-1 border-t border-border/50 bg-muted/30 px-2 pt-2 pb-2"
+				>
+					<span class="mr-2 text-xs font-medium text-muted-foreground">Type de tableau :</span>
+
+					<!-- Standard Table -->
+					<Button
+						type="button"
+						variant={currentTableType === 'standard' ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => setTableType('standard')}
+						{disabled}
+						title="Tableau standard"
+						class="gap-1"
+					>
+						<Table2 class="h-4 w-4" />
+						<span class="text-xs">Standard</span>
+					</Button>
+
+					<!-- Transposed Table -->
+					<Button
+						type="button"
+						variant={currentTableType === 'transpose' ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => setTableType('transpose')}
+						{disabled}
+						title="Tableau transposé (en-têtes en colonne)"
+						class="gap-1"
+					>
+						<Table2 class="h-4 w-4 rotate-90" />
+						<span class="text-xs">Transposé</span>
+					</Button>
+
+					<!-- Cross Table (Double Entry) -->
+					<Button
+						type="button"
+						variant={currentTableType === 'cross' ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => setTableType('cross')}
+						{disabled}
+						title="Tableau à double entrée (en-têtes en ligne ET colonne)"
+						class="gap-1"
+					>
+						<Grid3x3 class="h-4 w-4" />
+						<span class="text-xs">Double entrée</span>
+					</Button>
+				</div>
+			{/if}
+
 			<!-- Formule Section (Collapsible) - Only if showFormula and resolvedMathTemplates !== 'none' -->
 			{#if showFormula && openSection === 'formula' && resolvedMathTemplates !== 'none'}
 				<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
@@ -1905,5 +2038,37 @@
 		background: hsl(var(--primary));
 		border-radius: 0.25rem;
 		white-space: nowrap;
+	}
+
+	/*
+	 * Cross Table (Double Entry) Indicator
+	 * =====================================
+	 * Shows a visual badge and highlights first column for tables with data-cross="true"
+	 * Note: This only affects TipTap editor tables, not MarkdownRenderer output.
+	 */
+	:global(.ProseMirror table[data-cross='true']) {
+		position: relative;
+		border: 2px dashed hsl(142 76% 36% / 0.4) !important;
+		margin-top: 1.75rem !important;
+	}
+
+	:global(.ProseMirror table[data-cross='true'])::before {
+		content: '⊞ Double entrée';
+		position: absolute;
+		top: -1.25rem;
+		left: 0;
+		padding: 0.125rem 0.5rem;
+		font-size: 0.625rem;
+		font-weight: 500;
+		color: white;
+		background: hsl(142 76% 36%);
+		border-radius: 0.25rem;
+		white-space: nowrap;
+	}
+
+	/* First column cells styled as headers in cross tables (TipTap only) */
+	:global(table[data-cross='true'] td:first-of-type) {
+		background-color: var(--color-muted) !important;
+		font-weight: 600 !important;
 	}
 </style>

@@ -556,6 +556,58 @@ function generateTable(node: TableNode, _options: Required<TypstTranspilerOption
 )`;
 	}
 
+	if (node.cross) {
+		// Cross table (double-entry): first row AND first column are headers
+		const numCols = node.header.length;
+
+		// Map alignments (default to center for cross tables)
+		const alignments = node.alignments.map((align: string) => {
+			switch (align) {
+				case 'center':
+					return 'center';
+				case 'right':
+					return 'right';
+				default:
+					return 'left';
+			}
+		});
+
+		// Build header cells with conditional fill for corner cell
+		// Corner cell: header styling only if non-empty
+		const headerCells = node.header
+			.map((cell: { content: string }, index: number) => {
+				const content = processTableCellContent(cell.content);
+				if (index === 0) {
+					// Corner cell: bold only if has content
+					return content.trim() ? `[*${content}*]` : `[${content}]`;
+				}
+				return `[*${content}*]`;
+			})
+			.join(', ');
+
+		// Build body rows with first cell bold (row header)
+		const bodyRows = node.rows
+			.map((row: { content: string }[]) =>
+				row
+					.map((cell: { content: string }, cellIndex: number) => {
+						const content = processTableCellContent(cell.content);
+						return cellIndex === 0 ? `[*${content}*]` : `[${content}]`;
+					})
+					.join(', ')
+			)
+			.join(',\n  ');
+
+		// Use fill parameter to style headers with background
+		// First row and first column get muted background
+		return `#table(
+  columns: ${numCols},
+  align: (${alignments.join(', ')}),
+  fill: (x, y) => if x == 0 or y == 0 { luma(240) } else { none },
+  table.header(${headerCells}),
+  ${bodyRows}
+)`;
+	}
+
 	// Standard vertical table
 	const numCols = node.header.length;
 

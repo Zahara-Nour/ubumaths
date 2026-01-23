@@ -439,8 +439,10 @@ function convertMathBlockToMarkdown(math: JSONContent): string {
  * TipTap structure: table > tableRow > (tableHeader | tableCell)
  * Preserves column alignment with :---, :---:, ---: syntax
  * Preserves transpose attribute with :table-h directive
+ * Preserves cross attribute with :table-cross directive
  * Output:
  * :table-h (if transpose)
+ * :table-cross (if cross - double-entry table)
  * | Header1 | Header2 |
  * |:--------|:-------:|
  * | Cell1   | Cell2   |
@@ -475,8 +477,10 @@ function convertTableToMarkdown(table: JSONContent): string {
 	// Build markdown table
 	const lines: string[] = [];
 
-	// Add :table-h directive if table is transposed
-	if (table.attrs?.transpose) {
+	// Add directive based on table type (cross takes precedence over transpose)
+	if (table.attrs?.cross) {
+		lines.push(':table-cross');
+	} else if (table.attrs?.transpose) {
 		lines.push(':table-h');
 	}
 
