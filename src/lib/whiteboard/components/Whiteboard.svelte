@@ -1059,10 +1059,12 @@
 		<!-- Style Panel (left side) -->
 		<StylePanel />
 
-		<!-- Floating Toolbar (bottom center) -->
-		<FloatingToolbar />
+		<!-- Floating Toolbar (bottom center) - hidden in annotation mode -->
+		{#if !whiteboardStore.isAnnotationMode}
+			<FloatingToolbar />
+		{/if}
 
-		<!-- Annotation Toolbar (bottom center, above floating toolbar when in annotation mode) -->
+		<!-- Annotation Toolbar (bottom center, shown in annotation mode) -->
 		<AnnotationToolbar />
 
 		<!-- Page thumbnails sidebar (right) -->
