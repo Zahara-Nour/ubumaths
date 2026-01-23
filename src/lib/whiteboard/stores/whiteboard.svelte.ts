@@ -80,6 +80,14 @@ import type { ShapeElement, ArrowElement, BindingAnchor, Point, Heading } from '
 import { createArrowPoints } from '../types/document';
 import type { WhiteboardTemplate, TemplatePageData, TemplateFont } from '../types/templates';
 import { calculateSnapForTranslate, type SnapIndicator } from '../core/snapping';
+import {
+	alignHorizontal,
+	alignVertical,
+	distributeHorizontal,
+	distributeVertical,
+	type HorizontalAlignment,
+	type VerticalAlignment
+} from '../core/alignment';
 
 // =============================================================================
 // Constants
@@ -1663,6 +1671,130 @@ function createWhiteboardStore() {
 		 */
 		get canGroup(): boolean {
 			return selectedIds.size >= 2;
+		},
+
+		/**
+		 * Check if selection can be aligned (2+ elements)
+		 */
+		get canAlign(): boolean {
+			return selectedIds.size >= 2;
+		},
+
+		/**
+		 * Check if selection can be distributed (3+ elements)
+		 */
+		get canDistribute(): boolean {
+			return selectedIds.size >= 3;
+		},
+
+		// =========================================================================
+		// Alignment Operations
+		// =========================================================================
+
+		/**
+		 * Align selected elements horizontally.
+		 * @param alignment - 'left', 'center', or 'right'
+		 */
+		alignSelectedHorizontal(alignment: HorizontalAlignment): void {
+			if (selectedIds.size < 2 || !currentPage) return;
+
+			const selectedElements = currentPage.elements.filter((el) => selectedIds.has(el.id));
+			const result = alignHorizontal(selectedElements, alignment);
+
+			if (result.modifiedIds.length === 0) return;
+
+			// Create a map of updated elements
+			const updatedMap = new Map(result.updatedElements.map((el) => [el.id, el]));
+
+			// Apply updates
+			const updatedPage: Page = {
+				...currentPage,
+				elements: currentPage.elements.map((el) => updatedMap.get(el.id) ?? el)
+			};
+
+			updateDocument((doc) => ({
+				...doc,
+				pages: doc.pages.map((p) => (p.id === currentPage.id ? updatedPage : p))
+			}));
+		},
+
+		/**
+		 * Align selected elements vertically.
+		 * @param alignment - 'top', 'center', or 'bottom'
+		 */
+		alignSelectedVertical(alignment: VerticalAlignment): void {
+			if (selectedIds.size < 2 || !currentPage) return;
+
+			const selectedElements = currentPage.elements.filter((el) => selectedIds.has(el.id));
+			const result = alignVertical(selectedElements, alignment);
+
+			if (result.modifiedIds.length === 0) return;
+
+			// Create a map of updated elements
+			const updatedMap = new Map(result.updatedElements.map((el) => [el.id, el]));
+
+			// Apply updates
+			const updatedPage: Page = {
+				...currentPage,
+				elements: currentPage.elements.map((el) => updatedMap.get(el.id) ?? el)
+			};
+
+			updateDocument((doc) => ({
+				...doc,
+				pages: doc.pages.map((p) => (p.id === currentPage.id ? updatedPage : p))
+			}));
+		},
+
+		/**
+		 * Distribute selected elements horizontally with equal spacing.
+		 */
+		distributeSelectedHorizontal(): void {
+			if (selectedIds.size < 3 || !currentPage) return;
+
+			const selectedElements = currentPage.elements.filter((el) => selectedIds.has(el.id));
+			const result = distributeHorizontal(selectedElements);
+
+			if (result.modifiedIds.length === 0) return;
+
+			// Create a map of updated elements
+			const updatedMap = new Map(result.updatedElements.map((el) => [el.id, el]));
+
+			// Apply updates
+			const updatedPage: Page = {
+				...currentPage,
+				elements: currentPage.elements.map((el) => updatedMap.get(el.id) ?? el)
+			};
+
+			updateDocument((doc) => ({
+				...doc,
+				pages: doc.pages.map((p) => (p.id === currentPage.id ? updatedPage : p))
+			}));
+		},
+
+		/**
+		 * Distribute selected elements vertically with equal spacing.
+		 */
+		distributeSelectedVertical(): void {
+			if (selectedIds.size < 3 || !currentPage) return;
+
+			const selectedElements = currentPage.elements.filter((el) => selectedIds.has(el.id));
+			const result = distributeVertical(selectedElements);
+
+			if (result.modifiedIds.length === 0) return;
+
+			// Create a map of updated elements
+			const updatedMap = new Map(result.updatedElements.map((el) => [el.id, el]));
+
+			// Apply updates
+			const updatedPage: Page = {
+				...currentPage,
+				elements: currentPage.elements.map((el) => updatedMap.get(el.id) ?? el)
+			};
+
+			updateDocument((doc) => ({
+				...doc,
+				pages: doc.pages.map((p) => (p.id === currentPage.id ? updatedPage : p))
+			}));
 		},
 
 		/**

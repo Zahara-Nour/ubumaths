@@ -16,7 +16,15 @@
 		Scissors,
 		ClipboardPaste,
 		Group,
-		Ungroup
+		Ungroup,
+		AlignStartVertical,
+		AlignCenterVertical,
+		AlignEndVertical,
+		AlignStartHorizontal,
+		AlignCenterHorizontal,
+		AlignEndHorizontal,
+		AlignHorizontalSpaceAround,
+		AlignVerticalSpaceAround
 	} from 'lucide-svelte';
 
 	// ==========================================================================
@@ -32,6 +40,8 @@
 	let hasClipboard = $derived(whiteboardStore.hasClipboard);
 	let canGroup = $derived(whiteboardStore.canGroup);
 	let hasSelectedGroups = $derived(whiteboardStore.hasSelectedGroups);
+	let canAlign = $derived(whiteboardStore.canAlign);
+	let canDistribute = $derived(whiteboardStore.canDistribute);
 
 	// ==========================================================================
 	// Methods
@@ -134,6 +144,50 @@
 
 	function handleUngroup() {
 		whiteboardStore.ungroupSelected();
+		hide();
+	}
+
+	// ==========================================================================
+	// Alignment Handlers
+	// ==========================================================================
+
+	function handleAlignLeft() {
+		whiteboardStore.alignSelectedHorizontal('left');
+		hide();
+	}
+
+	function handleAlignCenterH() {
+		whiteboardStore.alignSelectedHorizontal('center');
+		hide();
+	}
+
+	function handleAlignRight() {
+		whiteboardStore.alignSelectedHorizontal('right');
+		hide();
+	}
+
+	function handleAlignTop() {
+		whiteboardStore.alignSelectedVertical('top');
+		hide();
+	}
+
+	function handleAlignCenterV() {
+		whiteboardStore.alignSelectedVertical('center');
+		hide();
+	}
+
+	function handleAlignBottom() {
+		whiteboardStore.alignSelectedVertical('bottom');
+		hide();
+	}
+
+	function handleDistributeH() {
+		whiteboardStore.distributeSelectedHorizontal();
+		hide();
+	}
+
+	function handleDistributeV() {
+		whiteboardStore.distributeSelectedVertical();
 		hide();
 	}
 
@@ -264,6 +318,91 @@
 				<span class="flex-1">Degrouper</span>
 				<span class="text-xs text-muted-foreground">Ctrl+Shift+G</span>
 			</button>
+
+			<!-- Alignment operations (2+ elements) -->
+			{#if canAlign}
+				<div class="my-1 h-px bg-border"></div>
+
+				<div class="px-2 py-1 text-xs text-muted-foreground">Aligner</div>
+
+				<div class="flex gap-0.5 px-1">
+					<button
+						type="button"
+						class="flex-1 rounded-sm p-1.5 hover:bg-accent"
+						onclick={handleAlignLeft}
+						title="Aligner a gauche"
+					>
+						<AlignStartVertical class="mx-auto h-4 w-4" />
+					</button>
+					<button
+						type="button"
+						class="flex-1 rounded-sm p-1.5 hover:bg-accent"
+						onclick={handleAlignCenterH}
+						title="Centrer horizontalement"
+					>
+						<AlignCenterVertical class="mx-auto h-4 w-4" />
+					</button>
+					<button
+						type="button"
+						class="flex-1 rounded-sm p-1.5 hover:bg-accent"
+						onclick={handleAlignRight}
+						title="Aligner a droite"
+					>
+						<AlignEndVertical class="mx-auto h-4 w-4" />
+					</button>
+				</div>
+
+				<div class="flex gap-0.5 px-1">
+					<button
+						type="button"
+						class="flex-1 rounded-sm p-1.5 hover:bg-accent"
+						onclick={handleAlignTop}
+						title="Aligner en haut"
+					>
+						<AlignStartHorizontal class="mx-auto h-4 w-4" />
+					</button>
+					<button
+						type="button"
+						class="flex-1 rounded-sm p-1.5 hover:bg-accent"
+						onclick={handleAlignCenterV}
+						title="Centrer verticalement"
+					>
+						<AlignCenterHorizontal class="mx-auto h-4 w-4" />
+					</button>
+					<button
+						type="button"
+						class="flex-1 rounded-sm p-1.5 hover:bg-accent"
+						onclick={handleAlignBottom}
+						title="Aligner en bas"
+					>
+						<AlignEndHorizontal class="mx-auto h-4 w-4" />
+					</button>
+				</div>
+
+				<!-- Distribution (3+ elements) -->
+				{#if canDistribute}
+					<div class="px-2 py-1 text-xs text-muted-foreground">Distribuer</div>
+
+					<div class="flex gap-0.5 px-1">
+						<button
+							type="button"
+							class="flex-1 rounded-sm p-1.5 hover:bg-accent"
+							onclick={handleDistributeH}
+							title="Distribuer horizontalement"
+						>
+							<AlignHorizontalSpaceAround class="mx-auto h-4 w-4" />
+						</button>
+						<button
+							type="button"
+							class="flex-1 rounded-sm p-1.5 hover:bg-accent"
+							onclick={handleDistributeV}
+							title="Distribuer verticalement"
+						>
+							<AlignVerticalSpaceAround class="mx-auto h-4 w-4" />
+						</button>
+					</div>
+				{/if}
+			{/if}
 
 			<div class="my-1 h-px bg-border"></div>
 
