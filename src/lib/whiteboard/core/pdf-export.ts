@@ -7,7 +7,14 @@
  * @module whiteboard/core/pdf-export
  */
 
-import type { WhiteboardDocument, Page } from '../types/document';
+import type {
+	WhiteboardDocument,
+	Page,
+	AnnotationElement,
+	AnnotationStroke,
+	AnnotationShape,
+	AnnotationStamp
+} from '../types/document';
 import { smoothStroke, pointsToSvgPath, getToolOptions } from './stroke-smoothing';
 import { renderRoughShapeToSvgString } from './rough-renderer';
 import { isPageExpanded, getExportScaleFactor, getOriginalDimensions } from './page-expansion';
@@ -43,6 +50,8 @@ export interface ExportOptions {
 	pages?: 'current' | 'all' | number[];
 	/** Include instruments in export */
 	includeInstruments?: boolean;
+	/** Include annotations in export (default: true) */
+	includeAnnotations?: boolean;
 	/** Callback for progress updates (0-100) */
 	onProgress?: (progress: number) => void;
 }
@@ -250,6 +259,13 @@ export function exportPageToSvg(
 	// Add instruments if requested
 	if (options.includeInstruments && document.instruments) {
 		svg += renderInstrumentsToSvg(document.instruments);
+	}
+
+	// Add annotations if requested (and visible in document)
+	const includeAnnotations = options.includeAnnotations ?? true;
+	const annotationsVisible = document.annotationsVisible ?? true;
+	if (includeAnnotations && annotationsVisible && page.annotations) {
+		svg += renderAnnotationsToSvg(page.annotations);
 	}
 
 	// Close scale group if expanded
@@ -653,6 +669,179 @@ function renderInstrumentsToSvg(instruments: WhiteboardDocument['instruments']):
 
 		svg += '</g>';
 	}
+
+	svg += '</g>';
+	return svg;
+}
+
+// =============================================================================
+// Annotation Export
+// =============================================================================
+
+/**
+ * Render all annotations to SVG
+ */
+function renderAnnotationsToSvg(annotations: readonly AnnotationElement[]): string {
+	let svg = '<g class="annotations">';
+
+	for (const annotation of annotations) {
+		svg += renderAnnotationToSvg(annotation);
+	}
+
+	svg += '</g>';
+	return svg;
+}
+
+/**
+ * Render a single annotation element to SVG
+ */
+function renderAnnotationToSvg(annotation: AnnotationElement): string {
+	switch (annotation.type) {
+		case 'stroke':
+			return renderAnnotationStrokeToSvg(annotation);
+		case 'shape':
+			return renderAnnotationShapeToSvg(annotation);
+		case 'stamp':
+			return renderAnnotationStampToSvg(annotation);
+		default:
+			return '';
+	}
+}
+
+/**
+ * Render annotation stroke to SVG
+ * Uses the same smoothing algorithm as the annotation layer for consistent rendering
+ */
+function renderAnnotationStrokeToSvg(stroke: AnnotationStroke): string {
+	if (stroke.points.length === 0) return '';
+
+	const opacity = stroke.toolType === 'highlighter' ? stroke.opacity : 1;
+
+	// For single point, render a small circle
+	if (stroke.points.length === 1) {
+		const p = stroke.points[0];
+		const r = stroke.width / 2;
+		return `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${stroke.color}" opacity="${opacity}"/>`;
+	}
+
+	// Get smoothing options for this tool type (same as canvas rendering)
+	const smoothingOptions = getToolOptions(stroke.toolType, stroke.width, stroke.color, opacity);
+
+	// Generate smooth outline points using perfect-freehand algorithm
+	const outlinePoints = smoothStroke([...stroke.points], smoothingOptions);
+
+	if (outlinePoints.length === 0) {
+		// Fallback to simple line if smoothing fails
+		const pathData = stroke.points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+		return `<path d="${pathData}" stroke="${stroke.color}" stroke-width="${stroke.width}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${opacity}"/>`;
+	}
+
+	// Convert outline points to SVG path with quadratic Bezier curves
+	const pathData = pointsToSvgPath(outlinePoints);
+
+	// Render as filled shape (same as canvas)
+	return `<path d="${pathData}" fill="${stroke.color}" opacity="${opacity}"/>`;
+}
+
+/**
+ * Render annotation shape to SVG
+ */
+function renderAnnotationShapeToSvg(shape: AnnotationShape): string {
+	const { start, end, color, strokeWidth, strokeStyle, fillMode, fill, opacity, rotation } = shape;
+
+	// Calculate shape bounds
+	const minX = Math.min(start.x, end.x);
+	const minY = Math.min(start.y, end.y);
+	const maxX = Math.max(start.x, end.x);
+	const maxY = Math.max(start.y, end.y);
+	const width = maxX - minX;
+	const height = maxY - minY;
+	const centerX = minX + width / 2;
+	const centerY = minY + height / 2;
+
+	// Fill and stroke attributes
+	const fillAttr = fillMode === 'none' ? 'none' : fill || color;
+	const fillOpacity = fillMode === 'none' ? 0 : opacity;
+	const strokeDasharray =
+		strokeStyle === 'dashed' ? `8 ${8 + strokeWidth}` : strokeStyle === 'dotted' ? `2 4` : '';
+
+	// Build transform for rotation
+	const transform = rotation ? ` transform="rotate(${rotation} ${centerX} ${centerY})"` : '';
+
+	let svg = '';
+
+	switch (shape.shapeType) {
+		case 'line':
+			svg = `<line x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}" stroke="${color}" stroke-width="${strokeWidth}" opacity="${opacity}"${strokeDasharray ? ` stroke-dasharray="${strokeDasharray}"` : ''}${transform}/>`;
+			break;
+
+		case 'rectangle':
+			svg = `<rect x="${minX}" y="${minY}" width="${width}" height="${height}" fill="${fillAttr}" fill-opacity="${fillOpacity}" stroke="${color}" stroke-width="${strokeWidth}" opacity="${opacity}"${strokeDasharray ? ` stroke-dasharray="${strokeDasharray}"` : ''}${transform}/>`;
+			break;
+
+		case 'circle': {
+			const rx = width / 2;
+			const ry = height / 2;
+			svg = `<ellipse cx="${centerX}" cy="${centerY}" rx="${rx}" ry="${ry}" fill="${fillAttr}" fill-opacity="${fillOpacity}" stroke="${color}" stroke-width="${strokeWidth}" opacity="${opacity}"${strokeDasharray ? ` stroke-dasharray="${strokeDasharray}"` : ''}${transform}/>`;
+			break;
+		}
+
+		case 'arrow': {
+			// Draw line with arrowhead
+			const dx = end.x - start.x;
+			const dy = end.y - start.y;
+			const len = Math.sqrt(dx * dx + dy * dy);
+			if (len < 1) break;
+
+			const arrowSize = Math.min(20, len / 3);
+			const ux = dx / len;
+			const uy = dy / len;
+
+			// Arrowhead points
+			const tipX = end.x;
+			const tipY = end.y;
+			const baseX = end.x - ux * arrowSize;
+			const baseY = end.y - uy * arrowSize;
+			const perpX = -uy * arrowSize * 0.4;
+			const perpY = ux * arrowSize * 0.4;
+
+			const arrowPath = `M ${start.x} ${start.y} L ${baseX} ${baseY} M ${tipX} ${tipY} L ${baseX + perpX} ${baseY + perpY} L ${baseX - perpX} ${baseY - perpY} Z`;
+			svg = `<path d="${arrowPath}" fill="${color}" stroke="${color}" stroke-width="${strokeWidth}" opacity="${opacity}"${strokeDasharray ? ` stroke-dasharray="${strokeDasharray}"` : ''}${transform}/>`;
+			break;
+		}
+	}
+
+	return svg;
+}
+
+/**
+ * Render annotation stamp to SVG
+ */
+function renderAnnotationStampToSvg(stamp: AnnotationStamp): string {
+	const { position, stampType, size, color, rotation, fill, fillOpacity, opacity } = stamp;
+
+	const centerX = position.x;
+	const centerY = position.y;
+
+	// Build transform for rotation
+	const transform = rotation ? `rotate(${rotation} ${centerX} ${centerY})` : '';
+
+	let svg = '<g';
+	if (transform) {
+		svg += ` transform="${transform}"`;
+	}
+	svg += '>';
+
+	// Optional background fill
+	if (fill) {
+		const bgOpacity = fillOpacity ?? 1;
+		const bgRadius = size * 0.6;
+		svg += `<circle cx="${centerX}" cy="${centerY}" r="${bgRadius}" fill="${fill}" opacity="${bgOpacity * opacity}"/>`;
+	}
+
+	// Stamp text (emoji or character)
+	const escapedStamp = escapeHtml(stampType);
+	svg += `<text x="${centerX}" y="${centerY}" text-anchor="middle" dominant-baseline="central" font-size="${size}" fill="${color}" opacity="${opacity}">${escapedStamp}</text>`;
 
 	svg += '</g>';
 	return svg;
