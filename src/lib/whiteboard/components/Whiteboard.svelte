@@ -10,7 +10,8 @@
 	import { browser } from '$app/environment';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import WhiteboardCanvas from './WhiteboardCanvas.svelte';
-	import WhiteboardToolbar from './WhiteboardToolbar.svelte';
+	import FloatingToolbar from './FloatingToolbar.svelte';
+	import StylePanel from './StylePanel.svelte';
 	import PageThumbnails from './PageThumbnails.svelte';
 	import FileDrawer from './FileDrawer.svelte';
 	import ContextMenu from './ContextMenu.svelte';
@@ -781,8 +782,8 @@
 <div
 	bind:this={containerEl}
 	class={isFullscreen
-		? 'fixed inset-0 z-50 grid grid-rows-[auto_1fr_auto] bg-gray-200'
-		: `whiteboard-container grid grid-rows-[auto_1fr_auto] bg-gray-200 ${className}`}
+		? 'fixed inset-0 z-50 grid grid-rows-[auto_1fr] bg-gray-200'
+		: `whiteboard-container grid grid-rows-[auto_1fr] bg-gray-200 ${className}`}
 	onwheel={handleWheel}
 >
 	<!-- Top bar -->
@@ -991,12 +992,15 @@
 		<!-- Context Menu (rendered outside transformed area for correct fixed positioning) -->
 		<ContextMenu bind:this={contextMenuRef} />
 
+		<!-- Style Panel (left side) -->
+		<StylePanel />
+
+		<!-- Floating Toolbar (bottom center) -->
+		<FloatingToolbar />
+
 		<!-- Page thumbnails sidebar (right) -->
 		<PageThumbnails />
 	</div>
-
-	<!-- Toolbar at bottom -->
-	<WhiteboardToolbar />
 </div>
 
 <!-- Template Picker Modal for new documents -->
