@@ -208,6 +208,14 @@
 		store.next();
 	}
 
+	function handleUp() {
+		store.up();
+	}
+
+	function handleDown() {
+		store.down();
+	}
+
 	// ==========================================================================
 	// Computed Values
 	// ==========================================================================
@@ -232,6 +240,11 @@
 		if (total <= 1) return 0;
 		return (store.h / (total - 1)) * 100;
 	});
+
+	// Vertical navigation state
+	const hasVerticalSlides = $derived(store.hasVerticalSlides);
+	const canGoUp = $derived(store.v > 0);
+	const canGoDown = $derived(store.v < store.verticalCount - 1);
 </script>
 
 <div
@@ -270,6 +283,33 @@
 					<polyline points="15,18 9,12 15,6" />
 				</svg>
 			</button>
+
+			{#if hasVerticalSlides}
+				<div class="controls-vertical">
+					<button
+						type="button"
+						class="control-btn control-btn-small control-up"
+						onclick={handleUp}
+						disabled={!canGoUp}
+						aria-label="Diapositive verticale précédente"
+					>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polyline points="18,15 12,9 6,15" />
+						</svg>
+					</button>
+					<button
+						type="button"
+						class="control-btn control-btn-small control-down"
+						onclick={handleDown}
+						disabled={!canGoDown}
+						aria-label="Diapositive verticale suivante"
+					>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polyline points="6,9 12,15 18,9" />
+						</svg>
+					</button>
+				</div>
+			{/if}
 
 			<button
 				type="button"
@@ -459,6 +499,22 @@
 	.control-btn svg {
 		width: 24px;
 		height: 24px;
+	}
+
+	.controls-vertical {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.control-btn-small {
+		width: 32px;
+		height: 32px;
+	}
+
+	.control-btn-small svg {
+		width: 18px;
+		height: 18px;
 	}
 
 	/* =========================================================================

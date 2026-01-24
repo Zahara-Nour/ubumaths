@@ -1,78 +1,111 @@
 # UbuSlides Migration Progress
 
-## Status: Phase 1 - Core Engine
+## Status: COMPLETE
 
-### Completed
+Migration from reveal.js to native Svelte 5 completed successfully.
 
-- [x] Exploration du code existant
-- [x] Compréhension de l'architecture actuelle (reveal.js)
+### All Phases Completed
 
-### In Progress
+#### Phase 1: Core Engine
 
-- [x] 1.1 Créer `deckStore.svelte.ts`
-- [x] 1.2 Mettre à jour `types.ts`
-- [x] 1.3 Créer transitions
-- [x] 1.4 Créer `navigation/hash.ts`
-- [x] 1.5 Réécrire `Deck.svelte`
-- [x] 1.6 Réécrire `Slide.svelte`
-- [x] 1.7 Simplifier `WhiteboardSlide.svelte`
-- [x] 1.8 Simplifier `AnnotatableSlide.svelte`
-- [x] 1.9 Tests unitaires (51 tests)
-- [x] 1.10 Code Review + fixes
-- [ ] 1.11 Commit
+- [x] `deckStore.svelte.ts` - Reactive navigation store
+- [x] `types.ts` - Removed reveal.js types
+- [x] Transitions (slide.ts, fade.ts)
+- [x] `navigation/hash.ts` - URL sync
+- [x] `Deck.svelte` - Complete rewrite
+- [x] `Slide.svelte` - Complete rewrite
+- [x] `WhiteboardSlide.svelte` - Simplified
+- [x] `AnnotatableSlide.svelte` - Simplified
+- [x] 51 unit tests passing
+- [x] Code review + fixes
+- [x] Commit: `dcdbcf25`
 
-### Decisions
+#### Phase 2: Transitions
 
-- DeckStore: Instance par Deck via Context (pas singleton)
-- Slides verticales: Slot nommé `vertical`
-- Fragments: Detection `.fragment` via querySelectorAll au mount
-- Scale: ResizeObserver sur container parent
-- Focus clavier: tabindex="0" + événements scopés au focus
-- Thème: Variables CSS Shadcn
+- [x] `zoom.ts` - Zoom transition
+- [x] `convex.ts` - 3D rotation transition
+- [x] Commit: `2609e6b8`
 
-### Files Modified
+#### Phase 3: Touch & UI
 
-- `src/lib/slides/stores/deckStore.svelte.ts` - NOUVEAU
-- `src/lib/slides/core/types.ts` - MIS À JOUR (suppression reveal.js)
-- `src/lib/slides/core/config.ts` - SIMPLIFIÉ
-- `src/lib/slides/core/context.ts` - MIS À JOUR (nouvelles clés)
-- `src/lib/slides/transitions/slide.ts` - NOUVEAU
-- `src/lib/slides/transitions/fade.ts` - NOUVEAU
-- `src/lib/slides/navigation/hash.ts` - NOUVEAU
-- `src/lib/slides/actions/keyboard.ts` - NOUVEAU
-- `src/lib/slides/core/Deck.svelte` - RÉÉCRIT
-- `src/lib/slides/core/Slide.svelte` - RÉÉCRIT
-- `src/lib/slides/core/WhiteboardSlide.svelte` - SIMPLIFIÉ
-- `src/lib/slides/core/AnnotatableSlide.svelte` - SIMPLIFIÉ
-- `src/lib/slides/index.ts` - MIS À JOUR (exports)
-- `src/routes/slides/demo/+page.svelte` - MIS À JOUR
+- [x] `swipe.ts` - Touch gesture action
+- [x] `Controls.svelte` - Navigation buttons
+- [x] `Progress.svelte` - Progress bar
+- [x] DeckStore extensions (fragmentCount, verticalCount)
+- [x] Commit: `d4e34c0d`
+
+#### Phase 4: Component Migration
+
+- [x] `QuestionSlide.svelte` - CSS variables
+- [x] Commit: `06704925`
+
+#### Phase 5: Overview Mode
+
+- [x] Grid view with O key toggle
+- [x] Click to navigate from overview
+- [x] Commit: `4c9a44da`
+
+#### Phase 6: Cleanup
+
+- [x] Remove reveal.js from package.json
+- [x] Commit: `7e00717b`
+
+#### Bug Fixes (post-migration)
+
+- [x] Fix `processFragments` null reference error
+- [x] Fix vertical navigation: ArrowDown/ArrowUp now correctly navigate vertical slides
+- [x] Fix `down()`/`up()` fallback to horizontal navigation when no verticals
+- [x] Add up/down arrows to Deck controls when vertical slides exist
+
+### Design Decisions
+
+- DeckStore: Instance per Deck via Context (not singleton)
+- Vertical slides: Named slot `vertical`
+- Fragments: Detection via querySelectorAll at mount
+- Scale: ResizeObserver on parent container
+- Keyboard focus: tabindex="0" + scoped events
+- Theme: Shadcn CSS variables
 
 ---
 
-## Architecture Cible
+## Final Architecture
 
 ```
 src/lib/slides/
 ├── core/
-│   ├── Deck.svelte        # RÉÉCRIT
-│   ├── Slide.svelte       # RÉÉCRIT
-│   ├── types.ts           # MIS À JOUR
-│   ├── config.ts          # SIMPLIFIÉ
-│   └── context.ts         # Clés context
+│   ├── Deck.svelte              # Container with scale, controls, progress
+│   ├── Slide.svelte             # Slide with transitions
+│   ├── AnnotatableSlide.svelte  # Slide with annotations
+│   ├── WhiteboardSlide.svelte   # Whiteboard as slide
+│   ├── QuestionSlide.svelte     # Question as slide
+│   ├── UbuMarkSlide.svelte      # Markdown as slide
+│   ├── types.ts                 # TypeScript types
+│   ├── config.ts                # Default config
+│   └── context.ts               # Context keys
 ├── navigation/
-│   └── hash.ts            # NOUVEAU
+│   └── hash.ts                  # URL hash sync (#/h/v/f)
 ├── transitions/
-│   ├── slide.ts           # NOUVEAU
-│   ├── fade.ts            # NOUVEAU
-│   ├── zoom.ts            # Phase 2
-│   └── convex.ts          # Phase 2
+│   ├── slide.ts                 # Slide in/out
+│   ├── fade.ts                  # Fade in/out
+│   ├── zoom.ts                  # Zoom in/out
+│   └── convex.ts                # 3D rotation
 ├── components/
-│   ├── Controls.svelte    # Phase 3
-│   └── Progress.svelte    # Phase 3
+│   ├── Controls.svelte          # Navigation arrows
+│   ├── Progress.svelte          # Progress bar
+│   ├── SlideAnnotationToolbar.svelte
+│   └── SlideAnnotationLayer.svelte
 ├── stores/
-│   └── deckStore.svelte.ts  # NOUVEAU
+│   ├── deckStore.svelte.ts      # Navigation state
+│   ├── deckStore.test.ts        # 51 tests
+│   └── slideAnnotationStore.svelte.ts
 ├── actions/
-│   ├── keyboard.ts        # NOUVEAU
-│   └── swipe.ts           # Phase 3
-└── index.ts
+│   ├── keyboard.ts              # Keyboard navigation
+│   └── swipe.ts                 # Touch gestures
+└── index.ts                     # Public exports
 ```
+
+## Known Limitations
+
+- Auto-animate (FLIP algorithm) not implemented
+- Speaker notes not implemented
+- Print styles are basic

@@ -20,19 +20,21 @@ export interface KeyboardActionOptions {
  * Default key bindings
  */
 const defaultKeyBindings: Record<string, (store: DeckStore) => void> = {
-	// Next slide/fragment
+	// Horizontal navigation (next/prev includes fragments)
 	ArrowRight: (store) => store.next(),
-	ArrowDown: (store) => store.next(),
+	ArrowLeft: (store) => store.prev(),
+
+	// Vertical navigation (down/up for vertical slides)
+	ArrowDown: (store) => store.down(),
+	ArrowUp: (store) => store.up(),
+
+	// General next/prev (space, page keys)
 	PageDown: (store) => store.next(),
+	PageUp: (store) => store.prev(),
 	' ': (store) => store.next(),
+	Backspace: (store) => store.prev(),
 	n: (store) => store.next(),
 	N: (store) => store.next(),
-
-	// Previous slide/fragment
-	ArrowLeft: (store) => store.prev(),
-	ArrowUp: (store) => store.prev(),
-	PageUp: (store) => store.prev(),
-	Backspace: (store) => store.prev(),
 	p: (store) => store.prev(),
 	P: (store) => store.prev(),
 
