@@ -39,14 +39,6 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 - Troisieme point ->
 `;
 
-	const variablesSlideContent = `
-## Exercice parametre
-
-Calculer la somme : $5 + 3 = ?$
-
-**Reponse** : $8$
-`;
-
 	// Example Question Instance (QCM)
 	const qcmQuestion: QuestionInstance = {
 		templateId: 'demo-qcm',
@@ -72,25 +64,6 @@ Calculer la somme : $5 + 3 = ?$
 		],
 		correction: {
 			steps: ['$2^3 = 2 \\times 2 \\times 2 = 8$']
-		}
-	};
-
-	// Example numerical question
-	const numericalQuestion: QuestionInstance = {
-		templateId: 'demo-numerical',
-		type: 'numerical_exact',
-		statement: 'Calculer $\\frac{3}{4} + \\frac{1}{4}$',
-		solution: '1',
-		grades: ['6'],
-		theme: 'Calcul',
-		domain: 'Fractions',
-		level: 1,
-		generatedAt: new Date().toISOString(),
-		correction: {
-			steps: [
-				'Les fractions ont le meme denominateur',
-				'$\\frac{3}{4} + \\frac{1}{4} = \\frac{3+1}{4} = \\frac{4}{4} = 1$'
-			]
 		}
 	};
 
@@ -170,14 +143,118 @@ Calculer la somme : $5 + 3 = ?$
 
 <div class="deck-container">
 	<Deck onslidechanged={handleSlideChanged}>
-		<!-- Slide 1: Title -->
+		<!-- Slide 1: Title (fade par defaut) -->
 		<Slide background="#1a1a2e">
 			<h1>UbuSlides</h1>
 			<p>Systeme de presentation pour UbuMaths</p>
 			<p class="fragment">Construit avec Svelte 5 + UbuMark</p>
 		</Slide>
 
-		<!-- Slide 2: Features (with annotations) -->
+		<!-- ============================================ -->
+		<!-- DEMO DES TRANSITIONS -->
+		<!-- ============================================ -->
+
+		<!-- Transition: FADE -->
+		<Slide transition="fade" background="#2563eb">
+			<h2>Transition: FADE</h2>
+			<p>Fondu enchaine (opacity)</p>
+			<p style="font-size: 0.6em; opacity: 0.7;">Les 3 prochaines slides utilisent aussi FADE</p>
+		</Slide>
+
+		<Slide transition="fade" background="#1d4ed8">
+			<h2>FADE 2/3</h2>
+			<p>L'ancien slide disparait progressivement</p>
+		</Slide>
+
+		<Slide transition="fade" background="#1e40af">
+			<h2>FADE 3/3</h2>
+			<p>Le nouveau slide apparait progressivement</p>
+		</Slide>
+
+		<!-- Transition: SLIDE -->
+		<Slide transition="slide" background="#059669">
+			<h2>Transition: SLIDE</h2>
+			<p>Glissement horizontal</p>
+			<p style="font-size: 0.6em; opacity: 0.7;">Les 3 prochaines slides utilisent SLIDE</p>
+		</Slide>
+
+		<Slide transition="slide" background="#047857">
+			<h2>SLIDE 2/3</h2>
+			<p>L'ancien part a gauche</p>
+		</Slide>
+
+		<Slide transition="slide" background="#065f46">
+			<h2>SLIDE 3/3</h2>
+			<p>Le nouveau arrive de droite</p>
+		</Slide>
+
+		<!-- Transition: ZOOM -->
+		<Slide transition="zoom" background="#dc2626">
+			<h2>Transition: ZOOM</h2>
+			<p>Effet de zoom avant/arriere</p>
+			<p style="font-size: 0.6em; opacity: 0.7;">Les 3 prochaines slides utilisent ZOOM</p>
+		</Slide>
+
+		<Slide transition="zoom" background="#b91c1c">
+			<h2>ZOOM 2/3</h2>
+			<p>L'ancien retrecit</p>
+		</Slide>
+
+		<Slide transition="zoom" background="#991b1b">
+			<h2>ZOOM 3/3</h2>
+			<p>Le nouveau grandit</p>
+		</Slide>
+
+		<!-- Transition: CONVEX -->
+		<Slide transition="convex" background="#7c3aed">
+			<h2>Transition: CONVEX</h2>
+			<p>Rotation 3D vers l'exterieur</p>
+			<p style="font-size: 0.6em; opacity: 0.7;">Les 3 prochaines slides utilisent CONVEX</p>
+		</Slide>
+
+		<Slide transition="convex" background="#6d28d9">
+			<h2>CONVEX 2/3</h2>
+			<p>Effet de page qui tourne</p>
+		</Slide>
+
+		<Slide transition="convex" background="#5b21b6">
+			<h2>CONVEX 3/3</h2>
+			<p>Rotation vers l'exterieur</p>
+		</Slide>
+
+		<!-- Transition: CONCAVE -->
+		<Slide transition="concave" background="#ea580c">
+			<h2>Transition: CONCAVE</h2>
+			<p>Rotation 3D vers l'interieur</p>
+			<p style="font-size: 0.6em; opacity: 0.7;">Les 3 prochaines slides utilisent CONCAVE</p>
+		</Slide>
+
+		<Slide transition="concave" background="#c2410c">
+			<h2>CONCAVE 2/3</h2>
+			<p>Effet de carrousel</p>
+		</Slide>
+
+		<Slide transition="concave" background="#9a3412">
+			<h2>CONCAVE 3/3</h2>
+			<p>Rotation vers l'interieur</p>
+		</Slide>
+
+		<!-- Transition: NONE -->
+		<Slide transition="none" background="#475569">
+			<h2>Transition: NONE</h2>
+			<p>Changement instantane</p>
+		</Slide>
+
+		<Slide transition="none" background="#334155">
+			<h2>NONE 2/2</h2>
+			<p>Pas d'animation</p>
+		</Slide>
+
+		<!-- ============================================ -->
+		<!-- AUTRES FONCTIONNALITES -->
+		<!-- ============================================ -->
+
+		<!-- Features (with annotations) -->
 		<AnnotatableSlide transition="fade">
 			{#snippet content()}
 				<h2>Fonctionnalites</h2>
@@ -186,31 +263,25 @@ Calculer la somme : $5 + 3 = ?$
 					<li class="fragment">Transitions fluides</li>
 					<li class="fragment">Fragments pour reveler le contenu</li>
 					<li class="fragment">Support formules mathematiques</li>
-					<li class="fragment">Annotations professeur sur toutes les slides!</li>
+					<li class="fragment">Annotations professeur!</li>
 				</ul>
 			{/snippet}
 		</AnnotatableSlide>
 
-		<!-- Slide 3: UbuMark with math formulas -->
+		<!-- UbuMark with math formulas -->
 		<UbuMarkSlide content={mathSlideContent} background="#0f3460" transition="fade" />
 
-		<!-- Slide 4: UbuMark with fragments -->
-		<UbuMarkSlide content={listSlideContent} background="#16213e" />
+		<!-- UbuMark with fragments -->
+		<UbuMarkSlide content={listSlideContent} background="#16213e" transition="fade" />
 
-		<!-- Slide 5: UbuMark with variables -->
-		<UbuMarkSlide content={variablesSlideContent} variables={{ a: 5, b: 3 }} background="#1a1a2e" />
-
-		<!-- Slide 6: Question QCM -->
+		<!-- Question QCM -->
 		<QuestionSlide instance={qcmQuestion} background="#1e3a5f" onanswer={handleAnswer} />
 
-		<!-- Slide 7: Question Numerique -->
-		<QuestionSlide instance={numericalQuestion} background="#2d1b4e" onanswer={handleAnswer} />
-
-		<!-- Slide 8: Whiteboard -->
+		<!-- Whiteboard -->
 		<WhiteboardSlide page={whiteboardPage} background="#1a1a2e" />
 
-		<!-- Slide 9: Vertical slides -->
-		<Slide background="#16213e">
+		<!-- Vertical slides -->
+		<Slide transition="fade" background="#16213e">
 			{#snippet vertical()}
 				<Slide>
 					<h2>Slides verticaux</h2>
@@ -229,13 +300,7 @@ Calculer la somme : $5 + 3 = ?$
 			<p>Horizontal et vertical</p>
 		</Slide>
 
-		<!-- Slide 10: Convex transition demo -->
-		<Slide transition="convex" background="#2d3436">
-			<h2>Transition Convex</h2>
-			<p>Rotation 3D autour de l'axe vertical</p>
-		</Slide>
-
-		<!-- Slide 11: End -->
+		<!-- End -->
 		<Slide transition="zoom" background="#e94560">
 			<h2>Fin de la demo</h2>
 			<p>Slide {currentSlide.h + 1}</p>

@@ -3,10 +3,6 @@
 	import type { SlideProps } from './types.js';
 	import { DECK_CONTEXT_KEY, SLIDE_POSITION_KEY } from './context.js';
 	import type { DeckStore } from '../stores/deckStore.svelte.js';
-	import { slideIn, slideOut } from '../transitions/slide.js';
-	import { fadeIn, fadeOut } from '../transitions/fade.js';
-	import { zoomIn, zoomOut } from '../transitions/zoom.js';
-	import { convexIn, convexOut } from '../transitions/convex.js';
 	import { TRANSITION_DURATIONS } from './types.js';
 
 	// ============================================================================
@@ -32,7 +28,7 @@
 	let {
 		children,
 		vertical,
-		transition = 'slide',
+		transition = 'fade',
 		transitionSpeed = 'default',
 		background,
 		backgroundImage,
@@ -56,24 +52,16 @@
 	// Context & State
 	// ============================================================================
 
-	// Get deck store from context
 	const deckContext = getContext<{ getStore: () => DeckStore }>(DECK_CONTEXT_KEY);
 	const deckStore = deckContext?.getStore();
-
-	// Get position context (for vertical slides in a stack)
 	const positionContext = getContext<SlidePositionContext | undefined>(SLIDE_POSITION_KEY);
-
-	// Track if this slide has vertical children (check once at init)
 	const hasVerticalSlides = vertical !== undefined;
 
-	// Determine slide indices
 	let slideH = $state(0);
 	let slideV = $state(0);
 	let slideElement: HTMLElement | undefined = $state();
 
-	// For root slides (not inside a vertical stack), claim h index NOW during script execution
-	// This ensures correct ordering because scripts execute in DOM order
-	// Vertical children will get their h from the parent's context
+	// Claim h index during script execution for correct ordering
 	if (!positionContext && deckStore) {
 		slideH = deckStore.claimNextH();
 		slideV = 0;
@@ -81,9 +69,15 @@
 
 	// Is this slide currently active?
 	const isActive = $derived(deckStore ? deckStore.h === slideH && deckStore.v === slideV : false);
-
-	// Is this slide in the current vertical stack (for overview mode)?
 	const isInActiveStack = $derived(deckStore ? deckStore.h === slideH : false);
+
+	// Is this slide before or after the current slide? (for directional transitions)
+	const isPast = $derived(
+		deckStore ? slideH < deckStore.h || (slideH === deckStore.h && slideV < deckStore.v) : false
+	);
+	const isFuture = $derived(
+		deckStore ? slideH > deckStore.h || (slideH === deckStore.h && slideV > deckStore.v) : false
+	);
 
 	// Notify parent components when active state changes
 	$effect(() => {
@@ -95,10 +89,15 @@
 	// ============================================================================
 
 	const transitionDuration = $derived(TRANSITION_DURATIONS[transitionSpeed]);
-	const transitionParams = $derived({ duration: transitionDuration });
+
+	// CSS transition style based on transition type
+	const transitionStyle = $derived.by(() => {
+		if (transition === 'none') return '';
+		return `transition: opacity ${transitionDuration}ms ease, visibility ${transitionDuration}ms ease, transform ${transitionDuration}ms ease;`;
+	});
 
 	// ============================================================================
-	// Fragment Management (like reveal.js - just update visibility based on f)
+	// Fragment Management
 	// ============================================================================
 
 	function updateFragmentVisibility(element: HTMLElement, currentF: number) {
@@ -106,19 +105,15 @@
 		fragments.forEach((fragment, index) => {
 			const isVisible = index <= currentF;
 			const isCurrent = index === currentF;
-
 			fragment.classList.toggle('visible', isVisible);
 			fragment.classList.toggle('current-fragment', isCurrent);
 		});
 	}
 
-	// Action to initialize fragments synchronously when slide element is created
-	// This runs BEFORE the transition starts, preventing flash
 	function initFragments(node: HTMLElement) {
 		updateFragmentVisibility(node, deckStore?.f ?? -1);
 	}
 
-	// Handle click in overview mode to navigate to this slide
 	function handleSlideClick() {
 		if (deckStore?.overview) {
 			deckStore.goTo(slideH, slideV);
@@ -149,6 +144,14 @@
 		return styles.length > 0 ? styles.join('; ') : undefined;
 	});
 
+	// Combined style (background + transition)
+	const combinedStyle = $derived.by(() => {
+		const parts: string[] = [];
+		if (backgroundStyle) parts.push(backgroundStyle);
+		if (transitionStyle) parts.push(transitionStyle);
+		return parts.length > 0 ? parts.join('; ') : undefined;
+	});
+
 	// ============================================================================
 	// Data Attributes
 	// ============================================================================
@@ -162,7 +165,6 @@
 		if (autoAnimateId) attrs['data-auto-animate-id'] = autoAnimateId;
 		if (visibility) attrs['data-visibility'] = visibility;
 
-		// Merge custom data attributes
 		if (data) {
 			for (const [key, value] of Object.entries(data)) {
 				attrs[`data-${key}`] = value;
@@ -176,8 +178,6 @@
 	// Vertical Stack Context
 	// ============================================================================
 
-	// If this slide has vertical children, provide context for them
-	// Using a closure to capture slideH reactively
 	let verticalIndex = $state(0);
 
 	if (hasVerticalSlides) {
@@ -188,7 +188,7 @@
 			nextV: () => {
 				const v = verticalIndex;
 				verticalIndex++;
-				return v + 1; // Vertical slides start at v=1 (parent is v=0)
+				return v + 1;
 			}
 		} satisfies SlidePositionContext);
 	}
@@ -203,28 +203,22 @@
 			return;
 		}
 
-		// For vertical slides, determine position from parent context
 		if (positionContext) {
 			slideH = positionContext.h;
 			slideV = positionContext.nextV();
 		}
-		// Root slides already have their h from claimNextH during script execution
 
-		// Register with store (element will be updated via $effect when bound)
 		deckStore.registerSlide({
 			h: slideH,
 			v: slideV,
 			element: slideElement ?? null
 		});
 
-		// Cleanup on unmount
 		return () => {
 			deckStore.unregisterSlide(slideH, slideV);
 		};
 	});
 
-	// Update slide element reference in store when it becomes available
-	// (slideElement is only bound when the slide is active)
 	$effect(() => {
 		if (slideElement && deckStore) {
 			const slide = deckStore.getSlide(slideH, slideV);
@@ -234,7 +228,6 @@
 		}
 	});
 
-	// Update fragment visibility when store.f changes (like reveal.js)
 	$effect(() => {
 		if (isActive && slideElement && deckStore) {
 			updateFragmentVisibility(slideElement, deckStore.f);
@@ -243,187 +236,36 @@
 </script>
 
 {#if hasVerticalSlides}
-	<!-- Vertical slide stack -->
 	<div class="vertical-stack" class:active-stack={isInActiveStack}>
-		<!-- Parent slide (v=0) -->
-		{#if isActive || deckStore?.overview}
-			{#if transition === 'fade'}
-				<div
-					bind:this={slideElement}
-					use:initFragments
-					class="slide {className ?? ''}"
-					class:active={isActive}
-					style={backgroundStyle}
-					{...dataAttributes}
-					onclick={handleSlideClick}
-					in:fadeIn={transitionParams}
-					out:fadeOut={transitionParams}
-				>
-					{@render slideContent()}
-				</div>
-			{:else if transition === 'none'}
-				<div
-					bind:this={slideElement}
-					use:initFragments
-					class="slide {className ?? ''}"
-					class:active={isActive}
-					style={backgroundStyle}
-					{...dataAttributes}
-					onclick={handleSlideClick}
-				>
-					{@render slideContent()}
-				</div>
-			{:else if transition === 'zoom'}
-				<div
-					bind:this={slideElement}
-					use:initFragments
-					class="slide {className ?? ''}"
-					class:active={isActive}
-					style={backgroundStyle}
-					{...dataAttributes}
-					onclick={handleSlideClick}
-					in:zoomIn={transitionParams}
-					out:zoomOut={transitionParams}
-				>
-					{@render slideContent()}
-				</div>
-			{:else if transition === 'convex'}
-				<div
-					bind:this={slideElement}
-					use:initFragments
-					class="slide {className ?? ''}"
-					class:active={isActive}
-					style={backgroundStyle}
-					{...dataAttributes}
-					onclick={handleSlideClick}
-					in:convexIn={transitionParams}
-					out:convexOut={transitionParams}
-				>
-					{@render slideContent()}
-				</div>
-			{:else}
-				<div
-					bind:this={slideElement}
-					use:initFragments
-					class="slide {className ?? ''}"
-					class:active={isActive}
-					style={backgroundStyle}
-					{...dataAttributes}
-					onclick={handleSlideClick}
-					in:slideIn={transitionParams}
-					out:slideOut={transitionParams}
-				>
-					{@render slideContent()}
-				</div>
-			{/if}
-		{/if}
-
-		<!-- Vertical children -->
+		<div
+			bind:this={slideElement}
+			use:initFragments
+			class="slide {className ?? ''} transition-{transition}"
+			class:active={isActive}
+			class:past={isPast}
+			class:future={isFuture}
+			style={combinedStyle}
+			{...dataAttributes}
+			onclick={handleSlideClick}
+		>
+			{@render slideContent()}
+		</div>
 		{@render vertical()}
 	</div>
 {:else}
-	<!-- Single slide -->
-	{#if isActive || deckStore?.overview}
-		{#if transition === 'fade'}
-			<div
-				bind:this={slideElement}
-				use:initFragments
-				class="slide {className ?? ''}"
-				class:active={isActive}
-				class:past={deckStore
-					? deckStore.h > slideH || (deckStore.h === slideH && deckStore.v > slideV)
-					: false}
-				class:future={deckStore
-					? deckStore.h < slideH || (deckStore.h === slideH && deckStore.v < slideV)
-					: false}
-				style={backgroundStyle}
-				{...dataAttributes}
-				onclick={handleSlideClick}
-				in:fadeIn={transitionParams}
-				out:fadeOut={transitionParams}
-			>
-				{@render slideContent()}
-			</div>
-		{:else if transition === 'none'}
-			<div
-				bind:this={slideElement}
-				use:initFragments
-				class="slide {className ?? ''}"
-				class:active={isActive}
-				class:past={deckStore
-					? deckStore.h > slideH || (deckStore.h === slideH && deckStore.v > slideV)
-					: false}
-				class:future={deckStore
-					? deckStore.h < slideH || (deckStore.h === slideH && deckStore.v < slideV)
-					: false}
-				style={backgroundStyle}
-				{...dataAttributes}
-				onclick={handleSlideClick}
-			>
-				{@render slideContent()}
-			</div>
-		{:else if transition === 'zoom'}
-			<div
-				bind:this={slideElement}
-				use:initFragments
-				class="slide {className ?? ''}"
-				class:active={isActive}
-				class:past={deckStore
-					? deckStore.h > slideH || (deckStore.h === slideH && deckStore.v > slideV)
-					: false}
-				class:future={deckStore
-					? deckStore.h < slideH || (deckStore.h === slideH && deckStore.v < slideV)
-					: false}
-				style={backgroundStyle}
-				{...dataAttributes}
-				onclick={handleSlideClick}
-				in:zoomIn={transitionParams}
-				out:zoomOut={transitionParams}
-			>
-				{@render slideContent()}
-			</div>
-		{:else if transition === 'convex'}
-			<div
-				bind:this={slideElement}
-				use:initFragments
-				class="slide {className ?? ''}"
-				class:active={isActive}
-				class:past={deckStore
-					? deckStore.h > slideH || (deckStore.h === slideH && deckStore.v > slideV)
-					: false}
-				class:future={deckStore
-					? deckStore.h < slideH || (deckStore.h === slideH && deckStore.v < slideV)
-					: false}
-				style={backgroundStyle}
-				{...dataAttributes}
-				onclick={handleSlideClick}
-				in:convexIn={transitionParams}
-				out:convexOut={transitionParams}
-			>
-				{@render slideContent()}
-			</div>
-		{:else}
-			<div
-				bind:this={slideElement}
-				use:initFragments
-				class="slide {className ?? ''}"
-				class:active={isActive}
-				class:past={deckStore
-					? deckStore.h > slideH || (deckStore.h === slideH && deckStore.v > slideV)
-					: false}
-				class:future={deckStore
-					? deckStore.h < slideH || (deckStore.h === slideH && deckStore.v < slideV)
-					: false}
-				style={backgroundStyle}
-				{...dataAttributes}
-				onclick={handleSlideClick}
-				in:slideIn={transitionParams}
-				out:slideOut={transitionParams}
-			>
-				{@render slideContent()}
-			</div>
-		{/if}
-	{/if}
+	<div
+		bind:this={slideElement}
+		use:initFragments
+		class="slide {className ?? ''} transition-{transition}"
+		class:active={isActive}
+		class:past={isPast}
+		class:future={isFuture}
+		style={combinedStyle}
+		{...dataAttributes}
+		onclick={handleSlideClick}
+	>
+		{@render slideContent()}
+	</div>
 {/if}
 
 {#snippet slideContent()}
@@ -453,6 +295,12 @@
 		flex-direction: column;
 	}
 
+	/*
+	 * Slide visibility using pure CSS transitions (like reveal.js)
+	 *
+	 * All slides are always in the DOM. Active slide has opacity: 1,
+	 * inactive slides have opacity: 0. CSS transition handles the fade.
+	 */
 	.slide {
 		position: absolute;
 		top: 0;
@@ -469,24 +317,86 @@
 		/* Default background */
 		background-color: var(--slide-background, transparent);
 
-		/* Visibility control */
-		visibility: hidden;
+		/* Inactive state */
 		opacity: 0;
+		visibility: hidden;
+		z-index: 1;
 		pointer-events: none;
 	}
 
 	.slide.active {
-		visibility: visible;
 		opacity: 1;
+		visibility: visible;
+		z-index: 2;
 		pointer-events: auto;
-		z-index: 10;
+		transform: none;
 	}
 
-	.slide.past,
-	.slide.future {
-		/* Hidden but exists in DOM for transitions */
-		visibility: hidden;
-		opacity: 0;
+	/* =========================================================================
+	 * Transition: Slide (translateX)
+	 * ========================================================================= */
+	.slide.transition-slide.past {
+		transform: translateX(-100%);
+	}
+
+	.slide.transition-slide.future {
+		transform: translateX(100%);
+	}
+
+	/* =========================================================================
+	 * Transition: Zoom (scale)
+	 * ========================================================================= */
+	.slide.transition-zoom.past {
+		transform: scale(0.5);
+	}
+
+	.slide.transition-zoom.future {
+		transform: scale(2);
+	}
+
+	/* =========================================================================
+	 * Transition: Convex (3D rotation outward)
+	 * ========================================================================= */
+	.slide.transition-convex {
+		transform-style: preserve-3d;
+	}
+
+	.slide.transition-convex.past {
+		transform: perspective(1000px) rotateY(-90deg) translateZ(300px);
+	}
+
+	.slide.transition-convex.future {
+		transform: perspective(1000px) rotateY(90deg) translateZ(300px);
+	}
+
+	/* =========================================================================
+	 * Transition: Concave (3D rotation inward)
+	 * ========================================================================= */
+	.slide.transition-concave {
+		transform-style: preserve-3d;
+	}
+
+	.slide.transition-concave.past {
+		transform: perspective(1000px) rotateY(90deg) translateZ(300px);
+	}
+
+	.slide.transition-concave.future {
+		transform: perspective(1000px) rotateY(-90deg) translateZ(300px);
+	}
+
+	/* =========================================================================
+	 * Transition: Fade (opacity only, no transform)
+	 * ========================================================================= */
+	.slide.transition-fade.past,
+	.slide.transition-fade.future {
+		transform: none;
+	}
+
+	/* =========================================================================
+	 * Transition: None (instant)
+	 * ========================================================================= */
+	.slide.transition-none {
+		transition: none !important;
 	}
 
 	.slide-content {
@@ -504,14 +414,6 @@
 
 	/*
 	 * Line-height override for slide content
-	 *
-	 * Problem: app.css sets line-height using fixed rem values (e.g., 1.5rem = 24px)
-	 * for elements inside <main>. But slides use large font-sizes (42px+ for text,
-	 * 105px+ for headings). With a fixed 24px line-height on 42px text, the text
-	 * overflows its container and overlaps adjacent elements.
-	 *
-	 * Solution: Use relative line-height values (1.2, 1.5) that scale proportionally
-	 * with the font-size, ensuring text fits within its container.
 	 */
 	:global(.slide-content h1),
 	:global(.slide-content h2),
@@ -545,10 +447,6 @@
 
 	/*
 	 * Fragment visibility styles
-	 *
-	 * Fragments are hidden by default and revealed progressively via the .visible class.
-	 * Using opacity:0 + pointer-events:none (instead of visibility:hidden) ensures
-	 * the element still occupies space in the layout when hidden.
 	 */
 	:global(.slide .fragment) {
 		opacity: 0 !important;
