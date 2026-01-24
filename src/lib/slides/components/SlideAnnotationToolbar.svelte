@@ -355,21 +355,22 @@
 		display: flex;
 		align-items: center;
 		gap: 4px;
-		padding: 6px 8px;
-		background: hsl(var(--background) / 0.95);
+		padding: 8px 12px;
+		background: rgba(30, 30, 40, 0.95);
 		backdrop-filter: blur(8px);
-		border: 1px solid hsl(var(--border));
+		border: 1px solid rgba(255, 255, 255, 0.2);
 		border-radius: 12px;
 		box-shadow:
-			0 4px 6px -1px rgb(0 0 0 / 0.1),
-			0 2px 4px -2px rgb(0 0 0 / 0.1);
+			0 4px 20px rgba(0, 0, 0, 0.4),
+			0 2px 8px rgba(0, 0, 0, 0.2);
 		user-select: none;
 		/* Reset font-size to prevent reveal.js scaling effects */
 		font-size: 14px;
+		color: white;
 	}
 
 	.slide-annotation-toolbar:not(.enabled) {
-		opacity: 0.7;
+		opacity: 0.8;
 	}
 
 	.slide-annotation-toolbar:not(.enabled):hover {
@@ -379,7 +380,7 @@
 	.separator {
 		width: 1px;
 		height: 24px;
-		background: hsl(var(--border));
+		background: rgba(255, 255, 255, 0.2);
 		margin: 0 4px;
 	}
 
@@ -393,7 +394,7 @@
 		width: 28px;
 		height: 28px;
 		border-radius: 6px;
-		border: 2px solid hsl(var(--border));
+		border: 2px solid rgba(255, 255, 255, 0.3);
 		cursor: pointer;
 		transition: transform 0.1s;
 	}
@@ -412,10 +413,10 @@
 		grid-template-columns: repeat(4, 1fr);
 		gap: 4px;
 		padding: 8px;
-		background: hsl(var(--background));
-		border: 1px solid hsl(var(--border));
+		background: rgba(30, 30, 40, 0.98);
+		border: 1px solid rgba(255, 255, 255, 0.2);
 		border-radius: 8px;
-		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 	}
 
 	.color-swatch {
@@ -432,7 +433,7 @@
 	}
 
 	.color-swatch.selected {
-		border-color: hsl(var(--primary));
+		border-color: #3b82f6;
 	}
 
 	.stroke-width-selector {
@@ -451,15 +452,16 @@
 		background: transparent;
 		cursor: pointer;
 		transition: background 0.1s;
+		color: white;
 	}
 
 	.stroke-width-btn:hover {
-		background: hsl(var(--accent));
+		background: rgba(255, 255, 255, 0.1);
 	}
 
 	.stroke-width-btn.selected {
-		background: hsl(var(--accent));
-		border-color: hsl(var(--primary));
+		background: rgba(255, 255, 255, 0.2);
+		border-color: #3b82f6;
 	}
 
 	.stroke-preview {
