@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.23](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.22...v0.7.23) (2026-01-24)
+
+### ⚠ BREAKING CHANGES
+
+- **slides:** reveal.js is no longer used
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### 📚 Documentation
+
+- add comprehensive analysis for annotation layer refactor ([e7eadc2](https://github.com/Zahara-Nour/ubumaths/commit/e7eadc2582a776dd6c5c032da603c55cef7419bd))
+
+### ✨ Features
+
+- **slides:** add overview mode grid view (Phase 5) ([4c9a44d](https://github.com/Zahara-Nour/ubumaths/commit/4c9a44dab1920eaf86a2e675b3bc90ce23bc4f9b))
+- **slides:** add QuestionSlide component - Phase 3 ([7fb8b15](https://github.com/Zahara-Nour/ubumaths/commit/7fb8b1508d7ec7d660ef3ba9ce788124dc5c76c7))
+- **slides:** add touch support and UI components (Phase 3) ([d4e34c0](https://github.com/Zahara-Nour/ubumaths/commit/d4e34c0dc9dbe224caf064c01aa953ec4b1352c0))
+- **slides:** add UbuMarkSlide component - Phase 2 ([40b79cf](https://github.com/Zahara-Nour/ubumaths/commit/40b79cfb7659fb9c0275c6735757d77b57d9a76f))
+- **slides:** add UbuSlides presentation system - Phase 1 prototype ([26670b6](https://github.com/Zahara-Nour/ubumaths/commit/26670b6bb72f6b126e1913ffde17bfbc089a5aef))
+- **slides:** add whiteboard and annotation support (Phase 4) ([0df3f23](https://github.com/Zahara-Nour/ubumaths/commit/0df3f2328ff53e04c42b513fd6b5deceb043847f))
+- **slides:** add zoom and convex transitions (Phase 2) ([2609e6b](https://github.com/Zahara-Nour/ubumaths/commit/2609e6b805eb5b5da790c2558b20e0b9a576d4a0))
+- **slides:** migrate UbuSlides from reveal.js to native Svelte 5 (Phase 1) ([dcdbcf2](https://github.com/Zahara-Nour/ubumaths/commit/dcdbcf25a1c90571c8205264e72d8aeeb771d5e1))
+- **whiteboard:** add annotation export to PDF/PNG/SVG (Phase 8) ([cb1bd16](https://github.com/Zahara-Nour/ubumaths/commit/cb1bd16153f989446c3b5740009b34c845f5b332))
+- **whiteboard:** add annotation layer with drawing tools (Phases 1-4) ([4de99eb](https://github.com/Zahara-Nour/ubumaths/commit/4de99eba872691d6abefcd5fccedb1218c0556b1))
+- **whiteboard:** add annotation selection, toolbar and keyboard shortcuts (Phases 5-7) ([640021c](https://github.com/Zahara-Nour/ubumaths/commit/640021c70686828a7e44f48d26045575fe2a139c))
+- **whiteboard:** add annotation tests and polish (Phase 9) ([8d71a21](https://github.com/Zahara-Nour/ubumaths/commit/8d71a2133aa3e0ad8a4d3c11add17733a3bc779e))
+- **whiteboard:** add resize/rotate for annotation selection ([e7d04ca](https://github.com/Zahara-Nour/ubumaths/commit/e7d04cadc89a41c4338a9c888f45f26485832c23))
+- **whiteboard:** add resize/rotate support for annotation strokes ([4a1a029](https://github.com/Zahara-Nour/ubumaths/commit/4a1a029ad7dd5df6653f1e2628e8e66b0cd7c9b8))
+- **whiteboard:** apply style changes to selected annotations ([fdf6e0d](https://github.com/Zahara-Nour/ubumaths/commit/fdf6e0d62cbabee9afda4a64081f487be4b0ef0f))
+- **whiteboard:** complete annotation system with separate undo/redo ([f72d2b6](https://github.com/Zahara-Nour/ubumaths/commit/f72d2b6b1f1c0633a59ea5b163d04d45aca80cc8))
+
+### 🐛 Bug Fixes
+
+- **slides:** correct slide registration order for vertical navigation ([9874a93](https://github.com/Zahara-Nour/ubumaths/commit/9874a93137168101ffd2ca456978ceb048f06a30))
+- **slides:** correct vertical navigation and add up/down controls ([6dcd10b](https://github.com/Zahara-Nour/ubumaths/commit/6dcd10b9d214bf3b7b0c1723a68de2e8a9cb91a5))
+- **slides:** down/up should only navigate vertically, no fallback ([f353226](https://github.com/Zahara-Nour/ubumaths/commit/f3532267575a73aa5b2afe79710f4efc21ec8ee7))
+- **slides:** fix null element error in processFragments ([2be0472](https://github.com/Zahara-Nour/ubumaths/commit/2be04723aabc737902cc5820137b576d0a502e7f))
+- **slides:** import Shadcn theme and fix toolbar button styles ([df445e5](https://github.com/Zahara-Nour/ubumaths/commit/df445e592c4b97d667a5030ac97ecf8758e666f2))
+- **slides:** increase font size for QuestionSlide components ([0b41898](https://github.com/Zahara-Nour/ubumaths/commit/0b41898b0114b9567f014a441c354fc5bcb05362))
+- **slides:** remove $state runes causing runtime errors ([16532e8](https://github.com/Zahara-Nour/ubumaths/commit/16532e8107a5b51977a0eb2a8e60c34877bb9a45))
+- **slides:** resolve $state rune conflict in QuestionSlide ([ba8a74d](https://github.com/Zahara-Nour/ubumaths/commit/ba8a74d5e1fdebf85a01cceaf6547e5080e3bd7f))
+- **slides:** restore Svelte 5 runes in QuestionSlide ([977ba09](https://github.com/Zahara-Nour/ubumaths/commit/977ba09c09a75c5f6e37278da361c8bb8df1b796))
+- **slides:** rewrite QuestionSlide with proper Svelte 5 runes ([dbb4e92](https://github.com/Zahara-Nour/ubumaths/commit/dbb4e927b6fc429f3bcafe42633595219d45c028))
+- **slides:** use $state without generic type annotations ([be39756](https://github.com/Zahara-Nour/ubumaths/commit/be39756fda1999b6193ea4697d5cbf68c0900246))
+- **slides:** use writable stores instead of $state runes ([446f4d4](https://github.com/Zahara-Nour/ubumaths/commit/446f4d4669cbe22b939e71111ab80cdc5018cfd2))
+- **whiteboard:** annotation undo/redo only affects annotations ([ad59221](https://github.com/Zahara-Nour/ubumaths/commit/ad59221991b4c75832c1edd530062fc3428058f0))
+- **whiteboard:** hide FloatingToolbar in annotation mode ([213110e](https://github.com/Zahara-Nour/ubumaths/commit/213110e2ff3b2ef73c631f80c8aa28321dee3423))
+- **whiteboard:** implement proper live transform pattern for annotations ([d3045b0](https://github.com/Zahara-Nour/ubumaths/commit/d3045b01a2267c533749469ecd75f68ed40b23e0))
+- **whiteboard:** implement proper separate annotation history ([5485679](https://github.com/Zahara-Nour/ubumaths/commit/5485679c3b5ad8379aa45069eb66335e7451e7df))
+- **whiteboard:** move [@const](https://github.com/const) to valid position in AnnotationLayer ([8a93d68](https://github.com/Zahara-Nour/ubumaths/commit/8a93d68c6a55f48552a855ace001f663ff5626c5))
+- **whiteboard:** preserve annotations during element undo/redo ([36fd5db](https://github.com/Zahara-Nour/ubumaths/commit/36fd5db44cbc46b7425eb914c5db4d8e1eb7ff6a))
+
 ### [0.7.22](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.21...v0.7.22) (2026-01-23)
 
 ### ✨ Features
