@@ -21,8 +21,12 @@
 		Eye,
 		EyeOff,
 		Trash2,
-		MousePointer2
+		MousePointer2,
+		Undo2,
+		Redo2,
+		Paintbrush
 	} from 'lucide-svelte';
+	import type { FillMode, StrokeStyle } from '../types/document';
 	import type { AnnotationToolType, StampType } from '../types/document';
 	import { STAMP_CATEGORIES, STAMP_CATEGORY_LABELS } from '../types/document';
 
@@ -49,12 +53,30 @@
 		{ label: 'Épais', value: 8 }
 	];
 
+	const STROKE_STYLES: { label: string; value: StrokeStyle }[] = [
+		{ label: 'Continu', value: 'solid' },
+		{ label: 'Tirets', value: 'dashed' }
+	];
+
+	const FILL_COLORS = [
+		{ label: 'Aucun', value: null },
+		'#fecaca', // Red light
+		'#fed7aa', // Orange light
+		'#fef08a', // Yellow light
+		'#bbf7d0', // Green light
+		'#bfdbfe', // Blue light
+		'#ddd6fe', // Purple light
+		'#fbcfe8', // Pink light
+		'#ffffff' // White
+	];
+
 	// ==========================================================================
 	// State
 	// ==========================================================================
 
 	let showStampPalette = $state(false);
 	let showColorPicker = $state(false);
+	let showFillPicker = $state(false);
 
 	// ==========================================================================
 	// Derived State
@@ -64,6 +86,8 @@
 	let currentTool = $derived(whiteboardStore.annotationTool);
 	let annotationStyle = $derived(whiteboardStore.annotationStyle);
 	let annotationsVisible = $derived(whiteboardStore.document?.annotationsVisible ?? true);
+	let canUndo = $derived(whiteboardStore.canUndoAnnotation);
+	let canRedo = $derived(whiteboardStore.canRedoAnnotation);
 
 	// ==========================================================================
 	// Handlers
@@ -82,6 +106,28 @@
 
 	function selectStrokeWidth(width: number) {
 		whiteboardStore.setAnnotationStyleProperty('strokeWidth', width);
+	}
+
+	function selectStrokeStyle(style: StrokeStyle) {
+		whiteboardStore.setAnnotationStyleProperty('strokeStyle', style);
+	}
+
+	function selectFillColor(color: string | null) {
+		if (color === null) {
+			whiteboardStore.setAnnotationStyleProperty('fillMode', 'none' as FillMode);
+		} else {
+			whiteboardStore.setAnnotationStyleProperty('fillMode', 'solid' as FillMode);
+			whiteboardStore.setAnnotationStyleProperty('fill', color);
+		}
+		showFillPicker = false;
+	}
+
+	function handleUndo() {
+		whiteboardStore.undoAnnotation();
+	}
+
+	function handleRedo() {
+		whiteboardStore.redoAnnotation();
 	}
 
 	function selectStamp(stamp: StampType) {
@@ -256,6 +302,7 @@
 
 		<!-- Color picker -->
 		<div class="toolbar-section">
+			<!-- Stroke color -->
 			<div class="relative">
 				<button
 					type="button"
@@ -264,8 +311,9 @@
 					onclick={() => {
 						showColorPicker = !showColorPicker;
 						showStampPalette = false;
+						showFillPicker = false;
 					}}
-					title="Couleur"
+					title="Couleur du trait"
 				></button>
 
 				{#if showColorPicker}
@@ -278,6 +326,51 @@
 								style="background-color: {color}"
 								onclick={() => selectColor(color)}
 							></button>
+						{/each}
+					</div>
+				{/if}
+			</div>
+
+			<!-- Fill color (for shapes) -->
+			<div class="relative">
+				<button
+					type="button"
+					class="fill-button"
+					class:has-fill={annotationStyle.fillMode !== 'none'}
+					style="background-color: {annotationStyle.fillMode !== 'none'
+						? annotationStyle.fill
+						: 'transparent'}"
+					onclick={() => {
+						showFillPicker = !showFillPicker;
+						showColorPicker = false;
+						showStampPalette = false;
+					}}
+					title="Couleur de remplissage"
+				>
+					<Paintbrush class="fill-icon h-3 w-3" />
+				</button>
+
+				{#if showFillPicker}
+					<div class="color-palette fill-palette">
+						{#each FILL_COLORS as item, i (i)}
+							{@const color = typeof item === 'string' ? item : null}
+							{@const label = typeof item === 'object' && item !== null ? item.label : null}
+							<button
+								type="button"
+								class="color-swatch"
+								class:selected={(color === null && annotationStyle.fillMode === 'none') ||
+									(color !== null &&
+										annotationStyle.fillMode !== 'none' &&
+										annotationStyle.fill === color)}
+								class:no-fill={color === null}
+								style={color ? `background-color: ${color}` : ''}
+								onclick={() => selectFillColor(color)}
+								title={label ?? color ?? 'Aucun'}
+							>
+								{#if color === null}
+									<span class="no-fill-icon">∅</span>
+								{/if}
+							</button>
 						{/each}
 					</div>
 				{/if}
@@ -297,6 +390,46 @@
 					</button>
 				{/each}
 			</div>
+
+			<!-- Stroke style (solid/dashed) -->
+			<div class="stroke-style-selector">
+				{#each STROKE_STYLES as { label, value } (value)}
+					<button
+						type="button"
+						class="stroke-style-btn"
+						class:selected={annotationStyle.strokeStyle === value}
+						onclick={() => selectStrokeStyle(value)}
+						title={label}
+					>
+						<div class="stroke-style-preview" class:dashed={value === 'dashed'}></div>
+					</button>
+				{/each}
+			</div>
+		</div>
+
+		<!-- Undo/Redo -->
+		<div class="toolbar-section">
+			<Button
+				variant="ghost"
+				size="sm"
+				class="toolbar-btn"
+				onclick={handleUndo}
+				disabled={!canUndo}
+				title="Annuler (Ctrl+Z)"
+			>
+				<Undo2 class="h-4 w-4" />
+			</Button>
+
+			<Button
+				variant="ghost"
+				size="sm"
+				class="toolbar-btn"
+				onclick={handleRedo}
+				disabled={!canRedo}
+				title="Rétablir (Ctrl+Y)"
+			>
+				<Redo2 class="h-4 w-4" />
+			</Button>
 		</div>
 
 		<!-- Actions -->
@@ -454,6 +587,102 @@
 		width: 16px;
 		background: currentColor;
 		border-radius: 2px;
+	}
+
+	.stroke-style-selector {
+		display: flex;
+		gap: 2px;
+	}
+
+	.stroke-style-btn {
+		width: 28px;
+		height: 28px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 4px;
+		border: 1px solid transparent;
+		background: transparent;
+		cursor: pointer;
+		transition: background 0.1s;
+	}
+
+	.stroke-style-btn:hover {
+		background: hsl(var(--accent));
+	}
+
+	.stroke-style-btn.selected {
+		background: hsl(var(--accent));
+		border-color: hsl(var(--primary));
+	}
+
+	.stroke-style-preview {
+		width: 16px;
+		height: 2px;
+		background: currentColor;
+		border-radius: 1px;
+	}
+
+	.stroke-style-preview.dashed {
+		background: repeating-linear-gradient(
+			90deg,
+			currentColor 0px,
+			currentColor 3px,
+			transparent 3px,
+			transparent 6px
+		);
+	}
+
+	.fill-button {
+		width: 28px;
+		height: 28px;
+		border-radius: 6px;
+		border: 2px solid hsl(var(--border));
+		cursor: pointer;
+		transition: transform 0.1s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+	}
+
+	.fill-button:hover {
+		transform: scale(1.1);
+	}
+
+	.fill-button:not(.has-fill) {
+		background: linear-gradient(
+			45deg,
+			transparent 45%,
+			hsl(var(--destructive)) 45%,
+			hsl(var(--destructive)) 55%,
+			transparent 55%
+		);
+	}
+
+	.fill-button .fill-icon {
+		opacity: 0.6;
+	}
+
+	.fill-button.has-fill .fill-icon {
+		color: hsl(var(--background));
+		opacity: 1;
+	}
+
+	.fill-palette {
+		grid-template-columns: repeat(3, 1fr);
+	}
+
+	.color-swatch.no-fill {
+		background: hsl(var(--muted));
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.no-fill-icon {
+		font-size: 14px;
+		color: hsl(var(--muted-foreground));
 	}
 
 	.stamp-palette {

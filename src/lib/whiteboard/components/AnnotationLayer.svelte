@@ -106,6 +106,9 @@
 	/** Is currently resizing */
 	let isResizing = $state(false);
 
+	/** Track if shift was held during resize (for aspect ratio constraint) */
+	let resizeConstrainAspectRatio = $state(false);
+
 	/** Is currently rotating */
 	let isRotating = $state(false);
 
@@ -401,13 +404,16 @@
 		fill: string;
 		strokeWidth: number;
 		opacity: number;
+		strokeDasharray: string | undefined;
 	} {
 		const fillColor = shape.fillMode !== 'none' && shape.fill ? shape.fill : 'none';
+		const strokeDasharray = shape.strokeStyle === 'dashed' ? '8 4' : undefined;
 		return {
 			stroke: shape.color,
 			fill: fillColor,
 			strokeWidth: shape.strokeWidth,
-			opacity: shape.opacity
+			opacity: shape.opacity,
+			strokeDasharray
 		};
 	}
 
@@ -533,6 +539,9 @@
 		}
 
 		if (isDragging) {
+			// Commit move to annotation history
+			whiteboardStore.commitMoveAnnotations();
+
 			isDragging = false;
 			dragStart = null;
 			try {
@@ -586,6 +595,7 @@
 		isRotating = false;
 		initialRotation = 0;
 		initialMouseAngle = 0;
+		resizeConstrainAspectRatio = false;
 
 		try {
 			(e.target as Element)?.releasePointerCapture?.(e.pointerId);
@@ -646,6 +656,7 @@
 		activeResizeHandle = handle;
 		resizeOriginalAnnotation = annotation;
 		resizeStartBBox = { ...selectionBounds };
+		resizeConstrainAspectRatio = e.shiftKey;
 
 		(e.target as Element)?.setPointerCapture?.(e.pointerId);
 	}
@@ -655,6 +666,9 @@
 
 		e.preventDefault();
 		const point = getPointerPosition(e);
+
+		// Update aspect ratio constraint based on current shift state
+		resizeConstrainAspectRatio = e.shiftKey;
 
 		// Calculate new bounding box based on handle being dragged
 		let newMinX = resizeStartBBox.x;
@@ -666,6 +680,38 @@
 		if (handle.includes('e')) newMaxX = Math.max(point.x, newMinX + 10);
 		if (handle.includes('n')) newMinY = Math.min(point.y, newMaxY - 10);
 		if (handle.includes('s')) newMaxY = Math.max(point.y, newMinY + 10);
+
+		// Apply aspect ratio constraint for corner handles
+		if (resizeConstrainAspectRatio && ['nw', 'ne', 'sw', 'se'].includes(handle)) {
+			const originalWidth = resizeStartBBox.width;
+			const originalHeight = resizeStartBBox.height;
+
+			let newWidth = newMaxX - newMinX;
+			let newHeight = newMaxY - newMinY;
+
+			// Use the larger dimension change to determine uniform scale
+			const scaleX = newWidth / originalWidth;
+			const scaleY = newHeight / originalHeight;
+			const uniformScale = Math.max(scaleX, scaleY);
+
+			newWidth = originalWidth * uniformScale;
+			newHeight = originalHeight * uniformScale;
+
+			// Adjust bounds based on which corner is being dragged
+			if (handle === 'nw') {
+				newMinX = newMaxX - newWidth;
+				newMinY = newMaxY - newHeight;
+			} else if (handle === 'ne') {
+				newMaxX = newMinX + newWidth;
+				newMinY = newMaxY - newHeight;
+			} else if (handle === 'sw') {
+				newMinX = newMaxX - newWidth;
+				newMaxY = newMinY + newHeight;
+			} else if (handle === 'se') {
+				newMaxX = newMinX + newWidth;
+				newMaxY = newMinY + newHeight;
+			}
+		}
 
 		const originalBBox = {
 			minX: resizeStartBBox.x,
@@ -696,9 +742,13 @@
 	}
 
 	function handleResizeEnd() {
+		// Commit to annotation history
+		whiteboardStore.commitAnnotationTransform();
+
 		isResizing = false;
 		activeResizeHandle = null;
 		resizeOriginalAnnotation = null;
+		resizeConstrainAspectRatio = false;
 		resizeStartBBox = null;
 	}
 
@@ -745,6 +795,9 @@
 	}
 
 	function handleRotateEnd() {
+		// Commit to annotation history
+		whiteboardStore.commitAnnotationTransform();
+
 		isRotating = false;
 		initialRotation = 0;
 		initialMouseAngle = 0;
@@ -799,6 +852,7 @@
 						d={renderShapePath(annotation)}
 						stroke={style.stroke}
 						stroke-width={style.strokeWidth}
+						stroke-dasharray={style.strokeDasharray}
 						fill={style.fill}
 						opacity={style.opacity}
 						stroke-linecap="round"
@@ -926,6 +980,9 @@
 						class="pointer-events-auto"
 						style="cursor: grab;"
 						onpointerdown={handleRotateStart}
+						onpointermove={handleRotateMove}
+						onpointerup={handlePointerUp}
+						onpointercancel={handlePointerCancel}
 					/>
 					<circle
 						cx={centerX}
@@ -947,6 +1004,9 @@
 							class="pointer-events-auto"
 							style="cursor: {h.cursor};"
 							onpointerdown={(e) => handleResizeStart(h.pos, e)}
+							onpointermove={(e) => handleResizeMove(h.pos, e)}
+							onpointerup={handlePointerUp}
+							onpointercancel={handlePointerCancel}
 						/>
 						<rect
 							x={h.x - handleSize / 2}
