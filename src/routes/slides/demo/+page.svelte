@@ -1,11 +1,36 @@
 <script lang="ts">
-	import { Deck, Slide, type SlideChangedEvent } from '$lib/slides';
+	import { Deck, Slide, UbuMarkSlide, type SlideChangedEvent } from '$lib/slides';
 
 	let currentSlide = $state({ h: 0, v: 0 });
 
 	function handleSlideChanged(event: SlideChangedEvent) {
 		currentSlide = { h: event.indexh, v: event.indexv };
 	}
+
+	// Example UbuMark content with math
+	const mathSlideContent = `
+## Formules mathematiques
+
+La formule quadratique : $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$
+
+Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
+`;
+
+	const listSlideContent = `
+## Liste avec fragments
+
+- Premier point {.fragment}
+- Deuxieme point {.fragment}
+- Troisieme point {.fragment}
+`;
+
+	const variablesSlideContent = `
+## Exercice parametre
+
+Calculer la somme : $5 + 3 = ?$
+
+**Reponse** : $8$
+`;
 </script>
 
 <svelte:head>
@@ -18,7 +43,7 @@
 		<Slide background="#1a1a2e">
 			<h1>UbuSlides</h1>
 			<p>Systeme de presentation pour UbuMaths</p>
-			<p class="fragment">Construit sur reveal.js</p>
+			<p class="fragment">Construit sur reveal.js + UbuMark</p>
 		</Slide>
 
 		<!-- Slide 2: Features -->
@@ -32,7 +57,16 @@
 			</ul>
 		</Slide>
 
-		<!-- Slide 3: Vertical slides -->
+		<!-- Slide 3: UbuMark with math formulas -->
+		<UbuMarkSlide content={mathSlideContent} background="#0f3460" transition="fade" />
+
+		<!-- Slide 4: UbuMark with fragments -->
+		<UbuMarkSlide content={listSlideContent} background="#16213e" />
+
+		<!-- Slide 5: UbuMark with variables -->
+		<UbuMarkSlide content={variablesSlideContent} variables={{ a: 5, b: 3 }} background="#1a1a2e" />
+
+		<!-- Slide 6: Vertical slides -->
 		<Slide background="#16213e">
 			{#snippet vertical()}
 				<Slide>
@@ -52,16 +86,7 @@
 			<p>Horizontal et vertical</p>
 		</Slide>
 
-		<!-- Slide 4: Math placeholder -->
-		<Slide background="#0f3460">
-			<h2>Mathematiques</h2>
-			<p>Bientot : formules UbuMark</p>
-			<div class="math-placeholder">
-				<code>$\int_0^1 x^2 dx = \frac 1 3$</code>
-			</div>
-		</Slide>
-
-		<!-- Slide 5: End -->
+		<!-- Slide 7: End -->
 		<Slide transition="zoom" background="#e94560">
 			<h2>Fin de la demo</h2>
 			<p>Slide {currentSlide.h + 1}</p>
