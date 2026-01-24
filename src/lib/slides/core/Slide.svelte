@@ -112,6 +112,12 @@
 		});
 	}
 
+	// Action to initialize fragments synchronously when slide element is created
+	// This runs BEFORE the transition starts, preventing flash
+	function initFragments(node: HTMLElement) {
+		updateFragmentVisibility(node, deckStore?.f ?? -1);
+	}
+
 	// Handle click in overview mode to navigate to this slide
 	function handleSlideClick() {
 		if (deckStore?.overview) {
@@ -244,6 +250,7 @@
 			{#if transition === 'fade'}
 				<div
 					bind:this={slideElement}
+					use:initFragments
 					class="slide {className ?? ''}"
 					class:active={isActive}
 					style={backgroundStyle}
@@ -257,6 +264,7 @@
 			{:else if transition === 'none'}
 				<div
 					bind:this={slideElement}
+					use:initFragments
 					class="slide {className ?? ''}"
 					class:active={isActive}
 					style={backgroundStyle}
@@ -268,6 +276,7 @@
 			{:else if transition === 'zoom'}
 				<div
 					bind:this={slideElement}
+					use:initFragments
 					class="slide {className ?? ''}"
 					class:active={isActive}
 					style={backgroundStyle}
@@ -281,6 +290,7 @@
 			{:else if transition === 'convex'}
 				<div
 					bind:this={slideElement}
+					use:initFragments
 					class="slide {className ?? ''}"
 					class:active={isActive}
 					style={backgroundStyle}
@@ -294,6 +304,7 @@
 			{:else}
 				<div
 					bind:this={slideElement}
+					use:initFragments
 					class="slide {className ?? ''}"
 					class:active={isActive}
 					style={backgroundStyle}
@@ -316,6 +327,7 @@
 		{#if transition === 'fade'}
 			<div
 				bind:this={slideElement}
+				use:initFragments
 				class="slide {className ?? ''}"
 				class:active={isActive}
 				class:past={deckStore
@@ -335,6 +347,7 @@
 		{:else if transition === 'none'}
 			<div
 				bind:this={slideElement}
+				use:initFragments
 				class="slide {className ?? ''}"
 				class:active={isActive}
 				class:past={deckStore
@@ -352,6 +365,7 @@
 		{:else if transition === 'zoom'}
 			<div
 				bind:this={slideElement}
+				use:initFragments
 				class="slide {className ?? ''}"
 				class:active={isActive}
 				class:past={deckStore
@@ -371,6 +385,7 @@
 		{:else if transition === 'convex'}
 			<div
 				bind:this={slideElement}
+				use:initFragments
 				class="slide {className ?? ''}"
 				class:active={isActive}
 				class:past={deckStore
@@ -390,6 +405,7 @@
 		{:else}
 			<div
 				bind:this={slideElement}
+				use:initFragments
 				class="slide {className ?? ''}"
 				class:active={isActive}
 				class:past={deckStore
