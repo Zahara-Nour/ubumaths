@@ -14,10 +14,23 @@ import { createDeckStore, type DeckStore } from './deckStore.svelte.js';
 import type { SlideInfo } from '../core/types.js';
 
 /**
+ * Helper to create a mock HTML element with fragments
+ */
+function createMockElement(fragmentCount: number = 0): HTMLElement {
+	const element = document.createElement('div');
+	for (let i = 0; i < fragmentCount; i++) {
+		const fragment = document.createElement('span');
+		fragment.classList.add('fragment');
+		element.appendChild(fragment);
+	}
+	return element;
+}
+
+/**
  * Helper to create a SlideInfo object
  */
 function createSlideInfo(h: number, v: number = 0, fragmentCount: number = 0): SlideInfo {
-	return { h, v, fragmentCount, element: null };
+	return { h, v, element: createMockElement(fragmentCount) };
 }
 
 /**
@@ -227,7 +240,7 @@ describe('deckStore', () => {
 			setupSlides(store, [{ h: 0, fragments: 3 }]);
 
 			store.goTo(0, 0, 10);
-			expect(store.f).toBe(2); // Max is fragmentCount - 1
+			expect(store.f).toBe(2); // Max is fragment count - 1
 
 			store.goTo(0, 0, -5);
 			expect(store.f).toBe(-1); // Min is -1
@@ -489,19 +502,6 @@ describe('deckStore', () => {
 
 			expect(store.h).toBe(0);
 		});
-
-		it('updateFragmentCount() updates fragment count for a slide', () => {
-			store.registerSlide(createSlideInfo(0, 0, 0));
-
-			store.updateFragmentCount(0, 0, 5);
-
-			expect(store.getTotalFragments()).toBe(5);
-		});
-
-		it('updateFragmentCount() does nothing for non-existent slide', () => {
-			// Should not throw
-			expect(() => store.updateFragmentCount(99, 0, 5)).not.toThrow();
-		});
 	});
 
 	describe('state - overview mode', () => {
@@ -565,7 +565,9 @@ describe('deckStore', () => {
 			const slide = store.getSlide(0, 0);
 
 			expect(slide).toBeDefined();
-			expect(slide?.fragmentCount).toBe(3);
+			expect(slide?.element).toBeDefined();
+			// Fragment count is now queried from DOM
+			expect(slide?.element?.querySelectorAll('.fragment').length).toBe(3);
 		});
 
 		it('getTotalFragments() returns 0 when no current slide', () => {
