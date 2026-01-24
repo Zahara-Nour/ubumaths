@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, getContext, setContext, type Snippet } from 'svelte';
+	import { onMount, getContext, setContext, untrack, type Snippet } from 'svelte';
 	import type { SlideProps } from './types.js';
 	import { DECK_CONTEXT_KEY, SLIDE_POSITION_KEY } from './context.js';
 	import type { DeckStore } from '../stores/deckStore.svelte.js';
@@ -205,6 +205,9 @@
 	// Lifecycle
 	// ============================================================================
 
+	// Track MutationObserver for cleanup
+	let fragmentObserver: MutationObserver | undefined;
+
 	onMount(() => {
 		if (!deckStore) {
 			console.warn('Slide: No deck store found in context');
@@ -226,14 +229,50 @@
 			element: slideElement ?? null
 		});
 
-		// Process fragments after initial render
-		if (slideElement) {
-			processFragments(slideElement);
-		}
-
 		// Cleanup on unmount
 		return () => {
+			fragmentObserver?.disconnect();
 			deckStore.unregisterSlide(slideH, slideV);
+		};
+	});
+
+	// Watch for slideElement to become available and set up fragment processing
+	// This needs to be in $effect because slideElement is only bound when the slide is active
+	$effect(() => {
+		if (!slideElement) return;
+
+		// Use untrack to prevent store updates from re-triggering this effect
+		untrack(() => {
+			if (!deckStore) return;
+
+			// Process fragments immediately
+			processFragments(slideElement);
+
+			// Watch for dynamically added fragment classes (e.g., from UbuMarkSlide)
+			fragmentObserver?.disconnect();
+			fragmentObserver = new MutationObserver((mutations) => {
+				for (const mutation of mutations) {
+					if (
+						mutation.type === 'attributes' &&
+						mutation.attributeName === 'class' &&
+						(mutation.target as Element).classList.contains('fragment')
+					) {
+						// Re-process fragments when a new fragment class is added
+						processFragments(slideElement!);
+						break;
+					}
+				}
+			});
+
+			fragmentObserver.observe(slideElement, {
+				attributes: true,
+				attributeFilter: ['class'],
+				subtree: true
+			});
+		});
+
+		return () => {
+			fragmentObserver?.disconnect();
 		};
 	});
 
@@ -241,21 +280,6 @@
 	$effect(() => {
 		if (isActive && slideElement && deckStore) {
 			updateFragmentVisibility(slideElement, deckStore.f);
-		}
-	});
-
-	// Re-process fragments when content might have changed
-	$effect(() => {
-		if (slideElement && deckStore) {
-			// Capture element reference before microtask
-			const element = slideElement;
-			// Use a microtask to ensure DOM is updated
-			queueMicrotask(() => {
-				// Check element still exists (component may have unmounted)
-				if (element) {
-					processFragments(element);
-				}
-			});
 		}
 	});
 </script>

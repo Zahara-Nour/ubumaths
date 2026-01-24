@@ -8,7 +8,6 @@
 	 * - Variables (predefined via props)
 	 * - Fragments via {.fragment} marker
 	 */
-	import { onMount } from 'svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { SlideProps } from './types.js';
 	import Slide from './Slide.svelte';
@@ -34,7 +33,7 @@
 		backgroundPosition,
 		backgroundRepeat,
 		backgroundOpacity,
-		state,
+		state: slideState,
 		autoSlide,
 		autoAnimate,
 		autoAnimateId,
@@ -57,25 +56,66 @@
 	const resolvedContent = $derived(resolveContent(content, variables));
 
 	// Reference to the slide element for fragment processing
-	let slideElement: HTMLElement | undefined;
+	let slideElement: HTMLElement | undefined = $state();
 
-	// Process fragments after mount
-	onMount(() => {
+	// Process fragment markers when slideElement becomes available
+	// Syntax: "text ->" at end of line marks element as fragment
+	$effect(() => {
 		if (!slideElement) return;
 
-		// Find elements with {.fragment} and add fragment class
-		const processFragments = (selector: string) => {
-			slideElement?.querySelectorAll(selector).forEach((el) => {
-				if (el.innerHTML.includes('{.fragment}')) {
-					el.classList.add('fragment');
-					el.innerHTML = el.innerHTML.replace(/\{\.fragment\}/g, '');
-				}
-			});
-		};
+		// Small delay to ensure MarkdownRenderer has rendered
+		const timer = setTimeout(() => {
+			processFragmentMarkers();
+		}, 50);
 
-		processFragments('li');
-		processFragments('p');
+		return () => clearTimeout(timer);
 	});
+
+	function processFragmentMarkers() {
+		if (!slideElement) return;
+
+		// Find all text nodes and elements containing " ->" marker
+		const walker = document.createTreeWalker(slideElement, NodeFilter.SHOW_TEXT, null);
+
+		const nodesToProcess: { textNode: Text; parent: HTMLElement }[] = [];
+
+		let node: Text | null;
+		while ((node = walker.nextNode() as Text | null)) {
+			if (node.textContent?.includes(' ->')) {
+				const parent = node.parentElement;
+				if (parent) {
+					nodesToProcess.push({ textNode: node, parent });
+				}
+			}
+		}
+
+		// Process each found marker
+		for (const { textNode, parent } of nodesToProcess) {
+			// Remove the " ->" marker from text
+			textNode.textContent = textNode.textContent!.replace(/\s*->\s*$/, '');
+
+			// Find the best element to add fragment class to
+			// For list items, go up to the <li>
+			// For paragraphs, use the <p> or closest block element
+			let fragmentTarget: HTMLElement = parent;
+
+			// Walk up to find li (preferred) or p
+			// Keep walking to find <li> even if we find <p> first
+			let current: HTMLElement | null = parent;
+			while (current && current !== slideElement) {
+				if (current.tagName === 'LI') {
+					fragmentTarget = current;
+					break; // <li> is preferred, stop here
+				}
+				if (current.tagName === 'P' && fragmentTarget === parent) {
+					fragmentTarget = current; // Remember <p> but keep looking for <li>
+				}
+				current = current.parentElement;
+			}
+
+			fragmentTarget.classList.add('fragment');
+		}
+	}
 
 	// Collect slide props to pass through
 	const slideProps = {
@@ -89,7 +129,7 @@
 		backgroundPosition,
 		backgroundRepeat,
 		backgroundOpacity,
-		state,
+		state: slideState,
 		autoSlide,
 		autoAnimate,
 		autoAnimateId,
