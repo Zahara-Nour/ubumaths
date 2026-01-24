@@ -46,7 +46,7 @@
 		backgroundPosition,
 		backgroundRepeat,
 		backgroundOpacity,
-		state,
+		state: slideState,
 		autoSlide,
 		autoAnimate,
 		autoAnimateId,
@@ -122,7 +122,7 @@
 	}
 
 	// Collect slide props
-	const slideProps = {
+	const slideProps = $derived({
 		transition,
 		transitionSpeed,
 		background,
@@ -133,14 +133,14 @@
 		backgroundPosition,
 		backgroundRepeat,
 		backgroundOpacity,
-		state,
+		state: slideState,
 		autoSlide,
 		autoAnimate,
 		autoAnimateId,
 		visibility,
 		class: className,
 		data
-	};
+	});
 
 	// Computed states
 	const isInputDisabled = $derived(!interactive || isSubmitted);
