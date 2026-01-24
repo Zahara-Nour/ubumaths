@@ -502,6 +502,31 @@
 		box-sizing: border-box;
 	}
 
+	/*
+	 * Line-height override for slide content
+	 *
+	 * Problem: app.css sets line-height using fixed rem values (e.g., 1.5rem = 24px)
+	 * for elements inside <main>. But slides use large font-sizes (42px+ for text,
+	 * 105px+ for headings). With a fixed 24px line-height on 42px text, the text
+	 * overflows its container and overlaps adjacent elements.
+	 *
+	 * Solution: Use relative line-height values (1.2, 1.5) that scale proportionally
+	 * with the font-size, ensuring text fits within its container.
+	 */
+	:global(.slide-content h1),
+	:global(.slide-content h2),
+	:global(.slide-content h3),
+	:global(.slide-content h4),
+	:global(.slide-content h5),
+	:global(.slide-content h6) {
+		line-height: 1.2 !important;
+	}
+
+	:global(.slide-content p),
+	:global(.slide-content li) {
+		line-height: 1.5 !important;
+	}
+
 	/* Background media */
 	.slide-background-video,
 	.slide-background-iframe {
@@ -518,16 +543,22 @@
 		border: none;
 	}
 
-	/* Fragment base styles - fragments hidden by default, only visible with .visible class */
+	/*
+	 * Fragment visibility styles
+	 *
+	 * Fragments are hidden by default and revealed progressively via the .visible class.
+	 * Using opacity:0 + pointer-events:none (instead of visibility:hidden) ensures
+	 * the element still occupies space in the layout when hidden.
+	 */
 	:global(.slide .fragment) {
 		opacity: 0 !important;
-		visibility: hidden !important;
+		pointer-events: none !important;
 		transition: none !important;
 	}
 
 	:global(.slide .fragment.visible) {
 		opacity: 1 !important;
-		visibility: visible !important;
+		pointer-events: auto !important;
 		transition:
 			opacity 0.3s ease,
 			transform 0.3s ease !important;
