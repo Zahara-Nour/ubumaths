@@ -189,32 +189,37 @@
 
 <style>
 	.code-block {
-		width: 100%;
-		max-width: 100%;
-		margin: 1rem 0;
-		border-radius: 0.5rem;
+		width: 90%;
+		margin: 20px auto;
+		border-radius: 8px;
 		overflow: hidden;
 		background: #282c34;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+		box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+		text-align: left;
 	}
 
 	.code-pre {
 		margin: 0;
-		padding: 1rem;
-		overflow-x: auto;
-		font-size: 0.9em;
-		line-height: 1.5;
-		tab-size: 4;
+		padding: 20px 25px;
+		overflow: auto;
+		font-size: 0.5em;
+		line-height: 1.4;
+		tab-size: 2;
 	}
 
 	.code-pre.line-numbers {
 		padding-left: 0;
 	}
 
-	code {
+	.code-block code {
 		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
-			monospace;
-		display: block;
+			monospace !important;
+		display: block !important;
+		font-size: inherit !important;
+		color: #abb2bf !important;
+		background: transparent !important;
+		padding: 0 !important;
+		border-radius: 0 !important;
 	}
 
 	.code-line {
