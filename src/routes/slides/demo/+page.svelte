@@ -339,6 +339,20 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 			<p style="color: #333;">Couleurs, gradients, images, videos, iframes</p>
 		</Slide>
 
+		<!-- Background Transitions -->
+		<Slide transition="slide" background="#4d7e65" backgroundTransition="zoom">
+			<h2>Transitions d'arriere-plan</h2>
+			<p>L'arriere-plan peut avoir une transition differente du contenu</p>
+			<p style="font-size: 0.6em;">
+				<code>transition="slide" backgroundTransition="zoom"</code>
+			</p>
+		</Slide>
+
+		<Slide transition="slide" background="#b5533c" backgroundTransition="zoom">
+			<h2>Transitions d'arriere-plan</h2>
+			<p>Ici le contenu glisse, mais l'arriere-plan fait un zoom</p>
+		</Slide>
+
 		<!-- Interactive Iframe -->
 		<Slide
 			backgroundIframe="https://en.wikipedia.org/wiki/Mathematics"

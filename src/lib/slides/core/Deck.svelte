@@ -11,7 +11,13 @@
 	import { onMount, setContext, type Snippet } from 'svelte';
 	import { mergeConfig } from './config.js';
 	import { DECK_CONTEXT_KEY } from './context.js';
-	import type { DeckConfig, DeckContext, SlideChangedEvent } from './types.js';
+	import type {
+		DeckConfig,
+		DeckContext,
+		SlideChangedEvent,
+		SlideBackgroundConfig
+	} from './types.js';
+	import { TRANSITION_DURATIONS } from './types.js';
 	import { createDeckStore } from '../stores/deckStore.svelte.js';
 	import { createHashNavigation, parseHash, syncHashEffect } from '../navigation/hash.js';
 	import { keyboard } from '../actions/keyboard.js';
@@ -234,6 +240,55 @@
 	// Swipe handlers for touch navigation
 	const swipeHandlers = $derived(createSwipeHandlers(store));
 
+	// Background transition duration (from config or default)
+	const backgroundTransitionDuration = $derived(
+		TRANSITION_DURATIONS[mergedConfig.transitionSpeed ?? 'default']
+	);
+
+	/**
+	 * Get background state classes for a slide position
+	 */
+	function getBackgroundState(bg: SlideBackgroundConfig): {
+		isActive: boolean;
+		isPast: boolean;
+		isFuture: boolean;
+	} {
+		const isActive = store.h === bg.h && store.v === bg.v;
+		const isPast = bg.h < store.h || (bg.h === store.h && bg.v < store.v);
+		const isFuture = bg.h > store.h || (bg.h === store.h && bg.v > store.v);
+		return { isActive, isPast, isFuture };
+	}
+
+	/**
+	 * Build inline style for a background
+	 */
+	function getBackgroundStyle(bg: SlideBackgroundConfig, transitionDuration: number): string {
+		const styles: string[] = [];
+
+		if (bg.background) {
+			styles.push(`background: ${bg.background}`);
+		}
+		if (bg.backgroundImage) {
+			styles.push(`background-image: url('${bg.backgroundImage}')`);
+			styles.push(`background-size: ${bg.backgroundSize ?? 'cover'}`);
+			styles.push(`background-position: ${bg.backgroundPosition ?? 'center'}`);
+			styles.push(`background-repeat: ${bg.backgroundRepeat ?? 'no-repeat'}`);
+		}
+		if (bg.backgroundOpacity !== undefined && bg.backgroundOpacity !== 1) {
+			styles.push(`opacity: ${bg.backgroundOpacity}`);
+		}
+
+		// Add transition
+		const transition = bg.backgroundTransition ?? 'fade';
+		if (transition !== 'none') {
+			styles.push(
+				`transition: opacity ${transitionDuration}ms ease, visibility ${transitionDuration}ms ease, transform ${transitionDuration}ms ease`
+			);
+		}
+
+		return styles.join('; ');
+	}
+
 	// Progress calculation
 	const progressPercent = $derived.by(() => {
 		const total = store.totalH;
@@ -262,6 +317,43 @@
 	use:keyboard={{ store, enabled: keyboardEnabled }}
 	use:swipe={touchEnabled ? swipeHandlers : undefined}
 >
+	<!-- Backgrounds container (separate from slides for independent transitions) -->
+	<div class="backgrounds-viewport" style={viewportStyle}>
+		<div class="backgrounds-container">
+			{#each store.backgrounds as bg (`${bg.h}-${bg.v}`)}
+				{@const state = getBackgroundState(bg)}
+				{@const transition = bg.backgroundTransition ?? 'fade'}
+				<div
+					class="slide-background transition-{transition}"
+					class:active={state.isActive}
+					class:past={state.isPast}
+					class:future={state.isFuture}
+					style={getBackgroundStyle(bg, backgroundTransitionDuration)}
+				>
+					{#if bg.backgroundVideo}
+						<video
+							class="slide-background-video"
+							src={bg.backgroundVideo}
+							autoplay
+							loop
+							muted
+							playsinline
+						></video>
+					{/if}
+					{#if bg.backgroundIframe}
+						<iframe
+							class="slide-background-iframe"
+							class:interactive={bg.backgroundInteractive}
+							src={bg.backgroundIframe}
+							title="Background"
+							frameborder="0"
+						></iframe>
+					{/if}
+				</div>
+			{/each}
+		</div>
+	</div>
+
 	<div class="slides-viewport" bind:this={viewportElement} style={viewportStyle}>
 		<div class="slides-container" class:centered={mergedConfig.center}>
 			{@render children()}
@@ -427,6 +519,105 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	/* =========================================================================
+	 * Backgrounds Viewport (separate layer for independent transitions)
+	 * ========================================================================= */
+
+	.backgrounds-viewport {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform-origin: center center;
+		translate: -50% -50%;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	.backgrounds-container {
+		position: relative;
+		width: 100%;
+		height: 100%;
+	}
+
+	.slide-background {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+
+		/* Inactive state */
+		opacity: 0;
+		visibility: hidden;
+		z-index: 1;
+	}
+
+	.slide-background.active {
+		opacity: 1;
+		visibility: visible;
+		z-index: 2;
+		transform: none;
+	}
+
+	/* Background transitions */
+	.slide-background.transition-slide.past {
+		transform: translateX(-100%);
+	}
+	.slide-background.transition-slide.future {
+		transform: translateX(100%);
+	}
+
+	.slide-background.transition-zoom.past {
+		transform: scale(0.5);
+	}
+	.slide-background.transition-zoom.future {
+		transform: scale(2);
+	}
+
+	.slide-background.transition-convex.past {
+		transform: perspective(1000px) rotateY(-90deg) translateZ(300px);
+	}
+	.slide-background.transition-convex.future {
+		transform: perspective(1000px) rotateY(90deg) translateZ(300px);
+	}
+
+	.slide-background.transition-concave.past {
+		transform: perspective(1000px) rotateY(90deg) translateZ(300px);
+	}
+	.slide-background.transition-concave.future {
+		transform: perspective(1000px) rotateY(-90deg) translateZ(300px);
+	}
+
+	.slide-background.transition-fade.past,
+	.slide-background.transition-fade.future {
+		transform: none;
+	}
+
+	.slide-background.transition-none {
+		transition: none !important;
+	}
+
+	/* Background media */
+	.slide-background-video,
+	.slide-background-iframe {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	.slide-background-iframe {
+		border: none;
+	}
+
+	.slide-background-iframe.interactive {
+		pointer-events: auto;
 	}
 
 	/* =========================================================================
