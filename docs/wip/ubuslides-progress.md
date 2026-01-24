@@ -238,8 +238,13 @@ src/lib/slides/
 - [x] **TERMINÉ** : Phase 4 - Plugin Whiteboard
   - [x] Composant PageRenderer.svelte (lecture seule)
   - [x] Composant SlideAnnotationLayer.svelte (annotations autonomes)
-  - [x] Composant SlideAnnotationToolbar.svelte (barre d'outils)
+  - [x] Composant SlideAnnotationToolbar.svelte (Shadcn + Lucide icons)
   - [x] Composant WhiteboardSlide.svelte (intégration)
+  - [x] Composant AnnotatableSlide.svelte (annotations sur tout contenu)
+  - [x] Store slideAnnotationStore.svelte.ts (état partagé Deck ↔ Slides)
+  - [x] Toolbar rendue au niveau Deck (hors transforms reveal.js)
+  - [x] MutationObserver pour détection slide courante (classe `present`)
+  - [x] Correction calcul coordonnées SVG (getBoundingClientRect)
   - [x] Support roughjs pour formes
   - [x] Support perfect-freehand pour strokes
   - [x] Undo/redo local pour annotations
@@ -311,14 +316,17 @@ const defaultConfig = {
 
 ### Phase 4 (terminée ✅)
 
-| Fichier                                                   | Statut     | Description                  |
-| --------------------------------------------------------- | ---------- | ---------------------------- |
-| `src/lib/whiteboard/components/PageRenderer.svelte`       | ✅ Créé    | Rendu lecture seule Page     |
-| `src/lib/slides/components/SlideAnnotationLayer.svelte`   | ✅ Créé    | Layer annotations autonome   |
-| `src/lib/slides/components/SlideAnnotationToolbar.svelte` | ✅ Créé    | Barre d'outils flottante     |
-| `src/lib/slides/core/WhiteboardSlide.svelte`              | ✅ Créé    | Slide whiteboard avec annot. |
-| `src/lib/slides/index.ts`                                 | ✅ Modifié | Export WhiteboardSlide       |
-| `src/routes/slides/demo/+page.svelte`                     | ✅ Modifié | Démo avec exemple whiteboard |
+| Fichier                                                   | Statut     | Description                        |
+| --------------------------------------------------------- | ---------- | ---------------------------------- |
+| `src/lib/whiteboard/components/PageRenderer.svelte`       | ✅ Créé    | Rendu lecture seule Page           |
+| `src/lib/slides/components/SlideAnnotationLayer.svelte`   | ✅ Créé    | Layer annotations autonome         |
+| `src/lib/slides/components/SlideAnnotationToolbar.svelte` | ✅ Créé    | Barre d'outils Shadcn (Deck-level) |
+| `src/lib/slides/stores/slideAnnotationStore.svelte.ts`    | ✅ Créé    | Store partagé Deck ↔ Slides       |
+| `src/lib/slides/core/WhiteboardSlide.svelte`              | ✅ Créé    | Slide whiteboard avec annot.       |
+| `src/lib/slides/core/AnnotatableSlide.svelte`             | ✅ Créé    | Annotations sur tout contenu       |
+| `src/lib/slides/core/Deck.svelte`                         | ✅ Modifié | Toolbar rendue hors reveal.js      |
+| `src/lib/slides/index.ts`                                 | ✅ Modifié | Export composants + store          |
+| `src/routes/slides/demo/+page.svelte`                     | ✅ Modifié | Démo avec exemple whiteboard       |
 
 ---
 
