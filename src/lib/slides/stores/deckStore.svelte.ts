@@ -5,7 +5,12 @@
  * Uses Svelte 5 runes for reactivity.
  */
 
-import type { SlideInfo, NavigationState, DeckStoreActions } from '../core/types.js';
+import type {
+	SlideInfo,
+	NavigationState,
+	DeckStoreActions,
+	SlideBackgroundConfig
+} from '../core/types.js';
 
 export interface DeckStore extends DeckStoreActions {
 	/** Current horizontal index (0-based) */
@@ -28,6 +33,8 @@ export interface DeckStore extends DeckStoreActions {
 	readonly scale: number;
 	/** Get current navigation state */
 	readonly state: NavigationState;
+	/** All registered backgrounds (for Deck to render) */
+	readonly backgrounds: SlideBackgroundConfig[];
 	/** Get slide info at position */
 	getSlide(h: number, v?: number): SlideInfo | undefined;
 	/** Get total fragments for current slide (queries DOM) */
@@ -40,6 +47,10 @@ export interface DeckStore extends DeckStoreActions {
 	up(): void;
 	/** Go down (next vertical) */
 	down(): void;
+	/** Register a slide background */
+	registerBackground(config: SlideBackgroundConfig): void;
+	/** Unregister a slide background */
+	unregisterBackground(h: number, v?: number): void;
 }
 
 interface DeckStoreState {
@@ -71,6 +82,10 @@ export function createDeckStore(): DeckStore {
 	// Slide registry: Map<horizontal index, SlideInfo[]>
 	// Each horizontal index maps to an array of vertical slides
 	let slides = $state<Map<number, SlideInfo[]>>(new Map());
+
+	// Background registry: Map<"h-v", SlideBackgroundConfig>
+	// Stores background configuration for each slide position
+	let backgroundRegistry = $state<Map<string, SlideBackgroundConfig>>(new Map());
 
 	// Counter for claiming h indices (incremented synchronously during script execution)
 	// This ensures correct ordering even when slides with vertical children need to know
@@ -113,6 +128,13 @@ export function createDeckStore(): DeckStore {
 	const totalH = $derived(slides.size);
 	const verticalCount = $derived(getVerticalCount(state.h));
 	const hasVerticalSlides = $derived(verticalCount > 1);
+
+	// Convert background registry to sorted array for rendering
+	const backgrounds = $derived.by(() => {
+		const arr = Array.from(backgroundRegistry.values());
+		// Sort by h, then v for consistent rendering order
+		return arr.sort((a, b) => (a.h !== b.h ? a.h - b.h : a.v - b.v));
+	});
 
 	/**
 	 * Get slide info at position
@@ -415,6 +437,26 @@ export function createDeckStore(): DeckStore {
 	}
 
 	/**
+	 * Register a slide background
+	 */
+	function registerBackground(config: SlideBackgroundConfig): void {
+		const key = `${config.h}-${config.v}`;
+		backgroundRegistry.set(key, config);
+		// Trigger reactivity
+		backgroundRegistry = new Map(backgroundRegistry);
+	}
+
+	/**
+	 * Unregister a slide background
+	 */
+	function unregisterBackground(h: number, v: number = 0): void {
+		const key = `${h}-${v}`;
+		backgroundRegistry.delete(key);
+		// Trigger reactivity
+		backgroundRegistry = new Map(backgroundRegistry);
+	}
+
+	/**
 	 * Toggle overview mode
 	 */
 	function toggleOverview(): void {
@@ -478,6 +520,9 @@ export function createDeckStore(): DeckStore {
 				f: state.f
 			};
 		},
+		get backgrounds() {
+			return backgrounds;
+		},
 
 		// Methods
 		getSlide,
@@ -495,6 +540,8 @@ export function createDeckStore(): DeckStore {
 		down,
 		registerSlide,
 		unregisterSlide,
+		registerBackground,
+		unregisterBackground,
 		toggleOverview,
 		setOverview,
 		togglePause,

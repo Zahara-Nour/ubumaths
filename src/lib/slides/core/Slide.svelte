@@ -38,6 +38,7 @@
 		backgroundPosition = 'center',
 		backgroundRepeat = 'no-repeat',
 		backgroundOpacity = 1,
+		backgroundTransition,
 		backgroundInteractive = false,
 		state: slideState,
 		autoSlide,
@@ -123,35 +124,15 @@
 	}
 
 	// ============================================================================
-	// Background Style
+	// Background Configuration (registered with Deck for separate layer rendering)
 	// ============================================================================
 
-	// Check if we have any background media (separate layer needed)
+	// Check if we have any background media
 	const hasBackgroundMedia = $derived(
 		!!background || !!backgroundImage || !!backgroundVideo || !!backgroundIframe
 	);
 
-	// Style for the background layer
-	const backgroundLayerStyle = $derived.by(() => {
-		const styles: string[] = [];
-
-		if (background) {
-			styles.push(`background: ${background}`);
-		}
-		if (backgroundImage) {
-			styles.push(`background-image: url('${backgroundImage}')`);
-			styles.push(`background-size: ${backgroundSize}`);
-			styles.push(`background-position: ${backgroundPosition}`);
-			styles.push(`background-repeat: ${backgroundRepeat}`);
-		}
-		if (backgroundOpacity !== 1) {
-			styles.push(`opacity: ${backgroundOpacity}`);
-		}
-
-		return styles.length > 0 ? styles.join('; ') : undefined;
-	});
-
-	// Slide style (just the transition, no background when we have a separate background layer)
+	// Slide style (just the transition)
 	const slideStyle = $derived.by(() => {
 		const parts: string[] = [];
 		if (transitionStyle) parts.push(transitionStyle);
@@ -220,8 +201,29 @@
 			element: slideElement ?? null
 		});
 
+		// Register background if present
+		if (hasBackgroundMedia) {
+			deckStore.registerBackground({
+				h: slideH,
+				v: slideV,
+				background,
+				backgroundImage,
+				backgroundVideo,
+				backgroundIframe,
+				backgroundSize,
+				backgroundPosition,
+				backgroundRepeat,
+				backgroundOpacity,
+				backgroundTransition: backgroundTransition ?? transition,
+				backgroundInteractive
+			});
+		}
+
 		return () => {
 			deckStore.unregisterSlide(slideH, slideV);
+			if (hasBackgroundMedia) {
+				deckStore.unregisterBackground(slideH, slideV);
+			}
 		};
 	});
 
@@ -277,25 +279,7 @@
 {/if}
 
 {#snippet slideContent()}
-	<!-- Background layer -->
-	{#if hasBackgroundMedia}
-		<div class="slide-background" style={backgroundLayerStyle}>
-			{#if backgroundVideo}
-				<video class="slide-background-video" src={backgroundVideo} autoplay loop muted playsinline
-				></video>
-			{/if}
-			{#if backgroundIframe}
-				<iframe
-					class="slide-background-iframe"
-					class:interactive={backgroundInteractive}
-					src={backgroundIframe}
-					title="Background"
-					frameborder="0"
-				></iframe>
-			{/if}
-		</div>
-	{/if}
-	<!-- Content layer -->
+	<!-- Content layer (background is rendered by Deck in a separate container) -->
 	<div class="slide-content" class:background-interactive={backgroundInteractive}>
 		{@render children()}
 	</div>
@@ -442,45 +426,6 @@
 	:global(.slide-content p),
 	:global(.slide-content li) {
 		line-height: 1.5 !important;
-	}
-
-	/* =========================================================================
-	 * Background Layer (separate for independent transitions)
-	 * ========================================================================= */
-	.slide-background {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		z-index: 0;
-		/* Note: background-size/position are set via inline styles to allow customization */
-
-		/* Always visible when parent slide is active (parent controls visibility) */
-		opacity: 1;
-		visibility: visible;
-	}
-
-	/* Background media */
-	.slide-background-video,
-	.slide-background-iframe {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		z-index: 0;
-		pointer-events: none;
-	}
-
-	.slide-background-iframe {
-		border: none;
-	}
-
-	/* Interactive iframes */
-	.slide-background-iframe.interactive {
-		pointer-events: auto;
 	}
 
 	/* When background is interactive, content should allow clicks through */

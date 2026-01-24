@@ -87,6 +87,24 @@ export interface SlideInfo {
 }
 
 /**
+ * Registered background configuration for a slide
+ */
+export interface SlideBackgroundConfig {
+	h: number;
+	v: number;
+	background?: string;
+	backgroundImage?: string;
+	backgroundVideo?: string;
+	backgroundIframe?: string;
+	backgroundSize?: BackgroundSize;
+	backgroundPosition?: string;
+	backgroundRepeat?: BackgroundRepeat;
+	backgroundOpacity?: number;
+	backgroundTransition?: SlideTransition;
+	backgroundInteractive?: boolean;
+}
+
+/**
  * Slide props
  */
 export interface SlideProps {
@@ -110,6 +128,8 @@ export interface SlideProps {
 	backgroundRepeat?: BackgroundRepeat;
 	/** Background opacity (0-1) */
 	backgroundOpacity?: number;
+	/** Background transition (can differ from slide transition) */
+	backgroundTransition?: SlideTransition;
 	/** Allow interaction with background iframe */
 	backgroundInteractive?: boolean;
 	/** Custom state class added to slide element */
