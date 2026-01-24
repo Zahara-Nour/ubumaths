@@ -5,6 +5,7 @@
 	 * Displays a QuestionInstance with optional interactivity.
 	 * Supports all question types via existing input components.
 	 */
+	import { onMount } from 'svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { AnswerData, ValidationResult } from '$lib/types/question-display';
 	import type { SlideProps } from './types.js';
@@ -54,17 +55,17 @@
 		data
 	}: Props = $props();
 
-	// Answer state
-	let userAnswer = $state<string>('');
-	let selectedChoices = $state<number[]>([]);
-	let fillBlankValues = $state<string[]>([]);
+	// Answer state - using $state without explicit generic types
+	let userAnswer = $state('');
+	let selectedChoices = $state([] as number[]);
+	let fillBlankValues = $state([] as string[]);
 	let isSubmitted = $state(false);
-	let validationResult = $state<ValidationResult | null>(null);
-	let startTime = $state<number>(Date.now());
+	let validationResult = $state(null as ValidationResult | null);
+	let startTime = Date.now();
 	let attempts = $state(0);
 
-	// Initialize fill blanks
-	$effect(() => {
+	// Initialize on mount (after reveal.js is ready)
+	onMount(() => {
 		if (instance.type === 'fill_in_blanks' && instance.blanks) {
 			fillBlankValues = instance.blanks.map(() => '');
 		}
