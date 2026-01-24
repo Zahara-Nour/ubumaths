@@ -55,20 +55,14 @@
 		data
 	}: Props = $props();
 
-	// Answer state - plain variables (bind:value handles reactivity for inputs)
-	let userAnswer = '';
-	let selectedChoices: number[] = [];
-	let fillBlankValues: string[] = [];
-	let isSubmitted = false;
-	let validationResult: ValidationResult | null = null;
+	// Answer state
+	let userAnswer = $state('');
+	let selectedChoices = $state<number[]>([]);
+	let fillBlankValues = $state<string[]>([]);
+	let isSubmitted = $state(false);
+	let validationResult = $state<ValidationResult | null>(null);
 	let startTime = Date.now();
-	let attempts = 0;
-
-	// Force re-render helper
-	let _forceUpdate = {};
-	function forceUpdate() {
-		_forceUpdate = {};
-	}
+	let attempts = $state(0);
 
 	// Initialize on mount (after reveal.js is ready)
 	onMount(() => {
@@ -125,7 +119,6 @@
 		};
 
 		onanswer?.(answerData);
-		forceUpdate();
 	}
 
 	// Collect slide props
@@ -149,9 +142,9 @@
 		data
 	};
 
-	// Computed helpers (inline in template since no runes)
-	$: isInputDisabled = !interactive || isSubmitted;
-	$: canSubmit = interactive && !isSubmitted && hasValidInput();
+	// Computed states
+	const isInputDisabled = $derived(!interactive || isSubmitted);
+	const canSubmit = $derived(interactive && !isSubmitted && hasValidInput());
 </script>
 
 <Slide {...slideProps}>
