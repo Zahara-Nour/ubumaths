@@ -704,6 +704,8 @@ export interface AnnotationStroke extends AnnotationBase {
 	readonly width: number;
 	readonly toolType: AnnotationStrokeToolType;
 	readonly strokeStyle: StrokeStyle;
+	/** Rotation angle in degrees (0-360), default 0 */
+	readonly rotation?: number;
 }
 
 /** Annotation shape - geometric shape */
