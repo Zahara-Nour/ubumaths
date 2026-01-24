@@ -110,8 +110,6 @@ export interface SlideProps {
 	backgroundRepeat?: BackgroundRepeat;
 	/** Background opacity (0-1) */
 	backgroundOpacity?: number;
-	/** Background transition (can differ from slide transition) */
-	backgroundTransition?: SlideTransition;
 	/** Allow interaction with background iframe */
 	backgroundInteractive?: boolean;
 	/** Custom state class added to slide element */
