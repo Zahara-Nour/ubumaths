@@ -36,6 +36,8 @@ export interface DeckStore extends DeckStoreActions {
 	getTotalFragments(): number;
 	/** Get vertical count for a horizontal index */
 	getVerticalCount(h: number): number;
+	/** Claim the next horizontal index (for synchronous ordering) */
+	claimNextH(): number;
 	/** Go up (previous vertical) */
 	up(): void;
 	/** Go down (next vertical) */
@@ -71,6 +73,11 @@ export function createDeckStore(): DeckStore {
 	// Slide registry: Map<horizontal index, SlideInfo[]>
 	// Each horizontal index maps to an array of vertical slides
 	let slides = $state<Map<number, SlideInfo[]>>(new Map());
+
+	// Counter for claiming h indices (incremented synchronously during script execution)
+	// This ensures correct ordering even when slides with vertical children need to know
+	// their h index before onMount (so they can pass it to children via context)
+	let nextHIndex = 0;
 
 	// Derived values
 	const totalH = $derived(slides.size);
@@ -245,7 +252,6 @@ export function createDeckStore(): DeckStore {
 			state.v++;
 			state.f = -1;
 		}
-		// Do nothing if no vertical slides below
 	}
 
 	/**
@@ -257,6 +263,17 @@ export function createDeckStore(): DeckStore {
 			state.f = -1;
 		}
 		// Do nothing if already at top of vertical stack
+	}
+
+	/**
+	 * Claim the next horizontal index (called synchronously during script execution)
+	 * This ensures correct ordering for slides with vertical children that need to
+	 * know their h index before their children mount.
+	 */
+	function claimNextH(): number {
+		const h = nextHIndex;
+		nextHIndex++;
+		return h;
 	}
 
 	/**
@@ -389,6 +406,7 @@ export function createDeckStore(): DeckStore {
 		getSlide,
 		getVerticalCount,
 		getTotalFragments,
+		claimNextH,
 		goTo,
 		next,
 		prev,

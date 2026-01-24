@@ -63,15 +63,21 @@
 	// Get position context (for vertical slides in a stack)
 	const positionContext = getContext<SlidePositionContext | undefined>(SLIDE_POSITION_KEY);
 
+	// Track if this slide has vertical children (check once at init)
+	const hasVerticalSlides = vertical !== undefined;
+
 	// Determine slide indices
-	// If inside a vertical stack, use parent's h and get next v index
-	// Otherwise, use next h index (0-based, determined by registration order)
 	let slideH = $state(0);
 	let slideV = $state(0);
 	let slideElement: HTMLElement | undefined = $state();
 
-	// Track if this slide has vertical children (check once at init)
-	const hasVerticalSlides = vertical !== undefined;
+	// For root slides (not inside a vertical stack), claim h index NOW during script execution
+	// This ensures correct ordering because scripts execute in DOM order
+	// Vertical children will get their h from the parent's context
+	if (!positionContext && deckStore) {
+		slideH = deckStore.claimNextH();
+		slideV = 0;
+	}
 
 	// Is this slide currently active?
 	const isActive = $derived(deckStore ? deckStore.h === slideH && deckStore.v === slideV : false);
@@ -205,16 +211,12 @@
 			return;
 		}
 
-		// Determine position indices
+		// For vertical slides, determine position from parent context
 		if (positionContext) {
-			// This is a vertical slide inside a stack
 			slideH = positionContext.h;
 			slideV = positionContext.nextV();
-		} else {
-			// This is a root-level slide (or first in a vertical stack)
-			slideH = deckStore.totalH;
-			slideV = 0;
 		}
+		// Root slides already have their h from claimNextH during script execution
 
 		// Register with store
 		deckStore.registerSlide({
