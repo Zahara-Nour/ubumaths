@@ -1,6 +1,6 @@
 # UbuSlides - Documentation de progression
 
-> **Statut** : 🟢 Phase 2 terminée - Prêt pour Phase 3 (Questions)
+> **Statut** : 🟢 Phase 3 terminée - Prêt pour Phase 4 (Whiteboard)
 > **Dernière mise à jour** : 2026-01-24
 
 ---
@@ -101,22 +101,30 @@ src/lib/slides/
 
 ---
 
-### Phase 3 : Plugin Questions
+### Phase 3 : Plugin Questions ✅ TERMINÉE
 
 **Objectif** : Questions interactives dans les slides
 
 **Livrables** :
 
-- [ ] Plugin `questions` pour reveal.js
-- [ ] `QuestionSlide.svelte`
-- [ ] Intégration types de questions existants
-- [ ] Validation réponses
-- [ ] Feedback visuel
+- [x] `QuestionSlide.svelte` - Slide avec question interactive
+- [x] Support tous types (QCM, numérique, algébrique, blancs)
+- [x] Validation réponses via `validateAnswer()`
+- [x] Feedback visuel (correct/incorrect)
+- [x] Section correction révélée par bouton/fragment
+- [ ] Plugin `questions` reveal.js natif (reporté - non nécessaire)
+
+**Décisions techniques** :
+
+- Réutilisation des input components existants (pas QuestionCard)
+- Correction séparée via fragment reveal.js
+- Callback `onanswer` pour collecte (prévu Phase 5)
+- Style simplifié adapté aux slides
 
 **Dépendances** :
 
-- Composants questions existants (`src/lib/components/questions/`)
-- Système de variables UbuMark
+- Input components (`src/lib/components/question-inputs/`)
+- `validateAnswer()` (`src/lib/utils/answer-validator.ts`)
 
 ---
 
@@ -209,6 +217,13 @@ src/lib/slides/
   - [x] Support fragments {.fragment}
   - [x] Fix: SSR désactivé (+page.ts)
   - [x] Démo mise à jour avec UbuMarkSlide
+- [x] **TERMINÉ** : Phase 3 - Plugin Questions
+  - [x] Composant QuestionSlide.svelte
+  - [x] Support QCM, numérique, algébrique, blancs
+  - [x] Validation via validateAnswer()
+  - [x] Feedback visuel correct/incorrect
+  - [x] Section correction via fragment
+  - [x] Démo avec exemples QCM et numérique
 
 ---
 
@@ -266,6 +281,14 @@ const defaultConfig = {
 | `src/routes/slides/demo/+page.ts`         | ✅ Créé    | Désactive SSR              |
 | `src/routes/slides/demo/+page.svelte`     | ✅ Modifié | Démo avec UbuMarkSlide     |
 
+### Phase 3 (terminée ✅)
+
+| Fichier                                    | Statut     | Description                 |
+| ------------------------------------------ | ---------- | --------------------------- |
+| `src/lib/slides/core/QuestionSlide.svelte` | ✅ Créé    | Slide avec question         |
+| `src/lib/slides/index.ts`                  | ✅ Modifié | Export QuestionSlide        |
+| `src/routes/slides/demo/+page.svelte`      | ✅ Modifié | Démo avec exemples question |
+
 ---
 
 ## Risques identifiés
@@ -298,11 +321,14 @@ const defaultConfig = {
 6. ~~**Implémenter UbuMarkSlide.svelte**~~ ✅
 7. ~~**Support formules math et variables**~~ ✅
 
-**Phase 3 - Plugin Questions** :
+8. ~~**Implémenter QuestionSlide.svelte**~~ ✅
+9. ~~**Support validation et feedback**~~ ✅
 
-1. Analyser composants questions existants
-2. Créer `QuestionSlide.svelte`
-3. Intégrer types de questions (QCM, numérique, etc.)
-4. Validation réponses
-5. Feedback visuel
+**Phase 4 - Plugin Whiteboard** :
+
+1. Analyser intégration whiteboard existant
+2. Créer `WhiteboardSlide.svelte`
+3. Mode lecture (affichage page)
+4. Mode édition (dessin live)
+5. Synchronisation avec store whiteboard
 6. Tests et validation
