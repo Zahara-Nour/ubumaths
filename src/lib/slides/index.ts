@@ -7,6 +7,7 @@
 export { default as Deck } from './core/Deck.svelte';
 export { default as Slide } from './core/Slide.svelte';
 export { default as UbuMarkSlide } from './core/UbuMarkSlide.svelte';
+export { default as QuestionSlide } from './core/QuestionSlide.svelte';
 
 // Context
 export { DECK_CONTEXT_KEY } from './core/context.js';

@@ -1,10 +1,16 @@
 <script lang="ts">
-	import { Deck, Slide, UbuMarkSlide, type SlideChangedEvent } from '$lib/slides';
+	import { Deck, Slide, UbuMarkSlide, QuestionSlide, type SlideChangedEvent } from '$lib/slides';
+	import type { QuestionInstance } from '$lib/questions/types';
+	import type { AnswerData } from '$lib/types/question-display';
 
 	let currentSlide = $state({ h: 0, v: 0 });
 
 	function handleSlideChanged(event: SlideChangedEvent) {
 		currentSlide = { h: event.indexh, v: event.indexv };
+	}
+
+	function handleAnswer(data: AnswerData) {
+		console.log('Answer submitted:', data);
 	}
 
 	// Example UbuMark content with math
@@ -31,6 +37,53 @@ Calculer la somme : $5 + 3 = ?$
 
 **Reponse** : $8$
 `;
+
+	// Example Question Instance (QCM)
+	const qcmQuestion: QuestionInstance = {
+		templateId: 'demo-qcm',
+		type: 'multiple_choice',
+		statement: 'Quel est le resultat de $2^3$ ?',
+		solution: '8',
+		grades: ['6'],
+		theme: 'Calcul',
+		domain: 'Puissances',
+		level: 1,
+		generatedAt: new Date().toISOString(),
+		shuffledChoices: [
+			{ content: '$6$', originalIndex: 0 },
+			{ content: '$8$', originalIndex: 1 },
+			{ content: '$9$', originalIndex: 2 },
+			{ content: '$16$', originalIndex: 3 }
+		],
+		choices: [
+			{ content: '$6$', isCorrect: false },
+			{ content: '$8$', isCorrect: true },
+			{ content: '$9$', isCorrect: false },
+			{ content: '$16$', isCorrect: false }
+		],
+		correction: {
+			steps: ['$2^3 = 2 \\times 2 \\times 2 = 8$']
+		}
+	};
+
+	// Example numerical question
+	const numericalQuestion: QuestionInstance = {
+		templateId: 'demo-numerical',
+		type: 'numerical_exact',
+		statement: 'Calculer $\\frac{3}{4} + \\frac{1}{4}$',
+		solution: '1',
+		grades: ['6'],
+		theme: 'Calcul',
+		domain: 'Fractions',
+		level: 1,
+		generatedAt: new Date().toISOString(),
+		correction: {
+			steps: [
+				'Les fractions ont le meme denominateur',
+				'$\\frac{3}{4} + \\frac{1}{4} = \\frac{3+1}{4} = \\frac{4}{4} = 1$'
+			]
+		}
+	};
 </script>
 
 <svelte:head>
@@ -66,7 +119,13 @@ Calculer la somme : $5 + 3 = ?$
 		<!-- Slide 5: UbuMark with variables -->
 		<UbuMarkSlide content={variablesSlideContent} variables={{ a: 5, b: 3 }} background="#1a1a2e" />
 
-		<!-- Slide 6: Vertical slides -->
+		<!-- Slide 6: Question QCM -->
+		<QuestionSlide instance={qcmQuestion} background="#1e3a5f" onanswer={handleAnswer} />
+
+		<!-- Slide 7: Question Numerique -->
+		<QuestionSlide instance={numericalQuestion} background="#2d1b4e" onanswer={handleAnswer} />
+
+		<!-- Slide 8: Vertical slides -->
 		<Slide background="#16213e">
 			{#snippet vertical()}
 				<Slide>
@@ -86,7 +145,7 @@ Calculer la somme : $5 + 3 = ?$
 			<p>Horizontal et vertical</p>
 		</Slide>
 
-		<!-- Slide 7: End -->
+		<!-- Slide 9: End -->
 		<Slide transition="zoom" background="#e94560">
 			<h2>Fin de la demo</h2>
 			<p>Slide {currentSlide.h + 1}</p>
