@@ -522,8 +522,65 @@
 	 * Overview Mode
 	 * ========================================================================= */
 
+	.deck-wrapper.overview {
+		cursor: pointer;
+		overflow: auto;
+	}
+
 	.deck-wrapper.overview .slides-viewport {
-		transform: scale(0.5) translate(-50%, -50%) !important;
+		position: relative;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: auto;
+		min-height: 100%;
+		transform: none !important;
+		translate: none;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 20px;
+		padding: 40px;
+		box-sizing: border-box;
+	}
+
+	.deck-wrapper.overview .slides-container {
+		display: contents;
+	}
+
+	/* In overview mode, each slide becomes a grid item */
+	.deck-wrapper.overview :global(.slide) {
+		position: relative !important;
+		width: 100% !important;
+		height: auto !important;
+		aspect-ratio: 16 / 9;
+		border-radius: 8px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+		transition:
+			transform 0.2s,
+			box-shadow 0.2s;
+		visibility: visible !important;
+		opacity: 1 !important;
+	}
+
+	.deck-wrapper.overview :global(.slide:hover) {
+		transform: scale(1.05);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+		z-index: 10;
+	}
+
+	.deck-wrapper.overview :global(.slide.active) {
+		outline: 3px solid var(--color-primary, #3b82f6);
+		outline-offset: 2px;
+	}
+
+	.deck-wrapper.overview :global(.vertical-stack) {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.deck-wrapper.overview :global(.vertical-stack .slide) {
+		aspect-ratio: 16 / 9;
 	}
 
 	/* =========================================================================

@@ -118,6 +118,14 @@
 		});
 	}
 
+	// Handle click in overview mode to navigate to this slide
+	function handleSlideClick() {
+		if (deckStore?.overview) {
+			deckStore.goTo(slideH, slideV);
+			deckStore.setOverview(false);
+		}
+	}
+
 	// ============================================================================
 	// Background Style
 	// ============================================================================
@@ -255,6 +263,7 @@
 					class:active={isActive}
 					style={backgroundStyle}
 					{...dataAttributes}
+					onclick={handleSlideClick}
 					in:fadeIn={transitionParams}
 					out:fadeOut={transitionParams}
 				>
@@ -267,6 +276,7 @@
 					class:active={isActive}
 					style={backgroundStyle}
 					{...dataAttributes}
+					onclick={handleSlideClick}
 				>
 					{@render slideContent()}
 				</div>
@@ -277,6 +287,7 @@
 					class:active={isActive}
 					style={backgroundStyle}
 					{...dataAttributes}
+					onclick={handleSlideClick}
 					in:zoomIn={transitionParams}
 					out:zoomOut={transitionParams}
 				>
@@ -289,6 +300,7 @@
 					class:active={isActive}
 					style={backgroundStyle}
 					{...dataAttributes}
+					onclick={handleSlideClick}
 					in:convexIn={transitionParams}
 					out:convexOut={transitionParams}
 				>
@@ -301,6 +313,7 @@
 					class:active={isActive}
 					style={backgroundStyle}
 					{...dataAttributes}
+					onclick={handleSlideClick}
 					in:slideIn={transitionParams}
 					out:slideOut={transitionParams}
 				>
@@ -328,6 +341,7 @@
 					: false}
 				style={backgroundStyle}
 				{...dataAttributes}
+				onclick={handleSlideClick}
 				in:fadeIn={transitionParams}
 				out:fadeOut={transitionParams}
 			>
@@ -346,6 +360,7 @@
 					: false}
 				style={backgroundStyle}
 				{...dataAttributes}
+				onclick={handleSlideClick}
 			>
 				{@render slideContent()}
 			</div>
@@ -362,6 +377,7 @@
 					: false}
 				style={backgroundStyle}
 				{...dataAttributes}
+				onclick={handleSlideClick}
 				in:zoomIn={transitionParams}
 				out:zoomOut={transitionParams}
 			>
@@ -380,6 +396,7 @@
 					: false}
 				style={backgroundStyle}
 				{...dataAttributes}
+				onclick={handleSlideClick}
 				in:convexIn={transitionParams}
 				out:convexOut={transitionParams}
 			>
@@ -398,6 +415,7 @@
 					: false}
 				style={backgroundStyle}
 				{...dataAttributes}
+				onclick={handleSlideClick}
 				in:slideIn={transitionParams}
 				out:slideOut={transitionParams}
 			>
