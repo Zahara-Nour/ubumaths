@@ -1,6 +1,6 @@
 # UbuSlides - Documentation de progression
 
-> **Statut** : 🟢 Phase 3 terminée - Prêt pour Phase 4 (Whiteboard)
+> **Statut** : 🟢 Phase 4 terminée - Prêt pour Phase 5 (Realtime)
 > **Dernière mise à jour** : 2026-01-24
 
 ---
@@ -128,22 +128,33 @@ src/lib/slides/
 
 ---
 
-### Phase 4 : Plugin Whiteboard
+### Phase 4 : Plugin Whiteboard ✅ TERMINÉE
 
-**Objectif** : Pages whiteboard comme slides
+**Objectif** : Pages whiteboard comme slides avec annotations
 
 **Livrables** :
 
-- [ ] Plugin `whiteboard` pour reveal.js
-- [ ] `WhiteboardSlide.svelte`
-- [ ] Mode lecture (affichage)
-- [ ] Mode édition (dessin live)
-- [ ] Synchronisation avec store whiteboard
+- [x] `PageRenderer.svelte` - Rendu lecture seule d'une Page
+- [x] `SlideAnnotationLayer.svelte` - Layer d'annotations autonome
+- [x] `SlideAnnotationToolbar.svelte` - Barre d'outils flottante
+- [x] `WhiteboardSlide.svelte` - Slide avec page whiteboard
+- [x] Mode lecture (affichage page)
+- [x] Mode annotation (dessin professeur)
+- [x] Undo/redo local
+- [ ] Synchronisation store whiteboard (reporté Phase 5)
+
+**Décisions techniques** :
+
+- `PageRenderer` : Extraction logique de rendu de WhiteboardCanvas
+- `SlideAnnotationLayer` : Autonome (pas couplé à whiteboardStore)
+- Annotations éphémères par défaut (perdues à la fermeture)
+- Callback `onAnnotationsChange` pour persistence optionnelle
 
 **Dépendances** :
 
 - Whiteboard existant (`src/lib/whiteboard/`)
-- Canvas rendering
+- roughjs pour rendu formes
+- perfect-freehand pour strokes
 
 ---
 
@@ -224,6 +235,15 @@ src/lib/slides/
   - [x] Feedback visuel correct/incorrect
   - [x] Section correction via fragment
   - [x] Démo avec exemples QCM et numérique
+- [x] **TERMINÉ** : Phase 4 - Plugin Whiteboard
+  - [x] Composant PageRenderer.svelte (lecture seule)
+  - [x] Composant SlideAnnotationLayer.svelte (annotations autonomes)
+  - [x] Composant SlideAnnotationToolbar.svelte (barre d'outils)
+  - [x] Composant WhiteboardSlide.svelte (intégration)
+  - [x] Support roughjs pour formes
+  - [x] Support perfect-freehand pour strokes
+  - [x] Undo/redo local pour annotations
+  - [x] Démo avec exemple whiteboard
 
 ---
 
@@ -289,6 +309,17 @@ const defaultConfig = {
 | `src/lib/slides/index.ts`                  | ✅ Modifié | Export QuestionSlide        |
 | `src/routes/slides/demo/+page.svelte`      | ✅ Modifié | Démo avec exemples question |
 
+### Phase 4 (terminée ✅)
+
+| Fichier                                                   | Statut     | Description                  |
+| --------------------------------------------------------- | ---------- | ---------------------------- |
+| `src/lib/whiteboard/components/PageRenderer.svelte`       | ✅ Créé    | Rendu lecture seule Page     |
+| `src/lib/slides/components/SlideAnnotationLayer.svelte`   | ✅ Créé    | Layer annotations autonome   |
+| `src/lib/slides/components/SlideAnnotationToolbar.svelte` | ✅ Créé    | Barre d'outils flottante     |
+| `src/lib/slides/core/WhiteboardSlide.svelte`              | ✅ Créé    | Slide whiteboard avec annot. |
+| `src/lib/slides/index.ts`                                 | ✅ Modifié | Export WhiteboardSlide       |
+| `src/routes/slides/demo/+page.svelte`                     | ✅ Modifié | Démo avec exemple whiteboard |
+
 ---
 
 ## Risques identifiés
@@ -324,11 +355,12 @@ const defaultConfig = {
 8. ~~**Implémenter QuestionSlide.svelte**~~ ✅
 9. ~~**Support validation et feedback**~~ ✅
 
-**Phase 4 - Plugin Whiteboard** :
+~~**Phase 4 - Plugin Whiteboard**~~ : ✅ TERMINÉE
 
-1. Analyser intégration whiteboard existant
-2. Créer `WhiteboardSlide.svelte`
-3. Mode lecture (affichage page)
-4. Mode édition (dessin live)
-5. Synchronisation avec store whiteboard
-6. Tests et validation
+**Phase 5 - Plugin Realtime** :
+
+1. Créer canal Supabase dédié slides
+2. Sync position slide (prof → élèves)
+3. Sync annotations whiteboard (temps réel)
+4. Collecte réponses élèves (questions)
+5. Affichage résultats agrégés
