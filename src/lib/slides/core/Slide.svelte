@@ -95,7 +95,9 @@
 	// Fragment Management
 	// ============================================================================
 
-	function processFragments(element: HTMLElement): number {
+	function processFragments(element: HTMLElement | null): number {
+		if (!element) return 0;
+
 		const fragments = element.querySelectorAll('.fragment');
 		const fragmentCount = fragments.length;
 
@@ -243,9 +245,14 @@
 	// Re-process fragments when content might have changed
 	$effect(() => {
 		if (slideElement && deckStore) {
+			// Capture element reference before microtask
+			const element = slideElement;
 			// Use a microtask to ensure DOM is updated
 			queueMicrotask(() => {
-				processFragments(slideElement);
+				// Check element still exists (component may have unmounted)
+				if (element) {
+					processFragments(element);
+				}
 			});
 		}
 	});

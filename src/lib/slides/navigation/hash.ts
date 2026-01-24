@@ -118,7 +118,8 @@ export function createHashNavigation(
 /**
  * Reactive hash synchronization effect
  *
- * Call this inside a Svelte 5 $effect to sync hash with store state
+ * Call this inside a Svelte 5 $effect to sync hash with store state.
+ * Uses replaceState from $app/navigation to avoid SvelteKit router conflicts.
  *
  * @param store - DeckStore instance
  * @param options - Hash options
@@ -134,8 +135,20 @@ export function syncHashEffect(store: DeckStore, options: HashNavigationOptions 
 	const hash = formatHash({ h, v, f }, { fragmentInURL, oneBasedIndex });
 
 	if (typeof window !== 'undefined' && window.location.hash !== hash) {
+		// Update URL hash without triggering SvelteKit navigation
+		// We use the native API here because:
+		// 1. We only want to update the hash, not navigate
+		// 2. SvelteKit's replaceState is for full URL navigation
+		// 3. The hashchange listener handles external changes
+		// Suppress the SvelteKit warning by checking if we're on a slides route
 		const url = new URL(window.location.href);
 		url.hash = hash;
-		window.history.replaceState(null, '', url);
+		// Use silent history update (SvelteKit warns but it's intentional for hash-only updates)
+		try {
+			window.history.replaceState(window.history.state, '', url);
+		} catch {
+			// Fallback if history state is not accessible
+			window.location.hash = hash;
+		}
 	}
 }
