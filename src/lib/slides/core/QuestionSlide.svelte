@@ -262,10 +262,12 @@
 		gap: 1.5em;
 		padding: 2em;
 		text-align: center;
+		/* Base font size for slides */
+		font-size: 32px;
 	}
 
 	.question-statement {
-		font-size: 1.2em;
+		font-size: 1.4em;
 		max-width: 80%;
 	}
 
@@ -279,12 +281,35 @@
 		align-items: center;
 		gap: 1em;
 		width: 100%;
-		max-width: 600px;
+		max-width: 800px;
+		font-size: 1em;
+	}
+
+	/* Scale up input components for slides */
+	.answer-section :global(.choice-button) {
+		font-size: 1em !important;
+		padding: 0.8em 1.2em !important;
+	}
+
+	.answer-section :global(.choice-letter) {
+		font-size: 0.9em !important;
+		min-width: 2em !important;
+		min-height: 2em !important;
+	}
+
+	.answer-section :global(.numerical-input-field),
+	.answer-section :global(math-field) {
+		font-size: 1.2em !important;
+		min-height: 2.5em !important;
+	}
+
+	.answer-section :global(.helper-text) {
+		font-size: 0.7em !important;
 	}
 
 	.submit-button {
-		padding: 0.5em 2em;
-		font-size: 0.8em;
+		padding: 0.6em 2.5em;
+		font-size: 1em;
 		font-weight: bold;
 		color: white;
 		background: #3b82f6;
