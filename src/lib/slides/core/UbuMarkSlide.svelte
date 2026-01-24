@@ -58,6 +58,9 @@
 	// Reference to the slide element for fragment processing
 	let slideElement: HTMLElement | undefined = $state();
 
+	// Track if fragments have been processed (to avoid flash)
+	let fragmentsReady = $state(false);
+
 	// Process fragment markers when slideElement becomes available
 	// Syntax: "text ->" at end of line marks element as fragment
 	$effect(() => {
@@ -66,6 +69,7 @@
 		// Small delay to ensure MarkdownRenderer has rendered
 		const timer = setTimeout(() => {
 			processFragmentMarkers();
+			fragmentsReady = true;
 		}, 50);
 
 		return () => clearTimeout(timer);
@@ -140,7 +144,7 @@
 </script>
 
 <Slide {...slideProps}>
-	<div class="ubumark-slide" bind:this={slideElement}>
+	<div class="ubumark-slide" class:fragments-ready={fragmentsReady} bind:this={slideElement}>
 		<MarkdownRenderer content={resolvedContent} />
 	</div>
 </Slide>
@@ -154,6 +158,13 @@
 		justify-content: center;
 		align-items: center;
 		text-align: center;
+		/* Hide content until fragments are processed to prevent flash */
+		opacity: 0;
+		transition: opacity 0.1s ease;
+	}
+
+	.ubumark-slide.fragments-ready {
+		opacity: 1;
 	}
 
 	/* Override markdown-content styles for slides */
