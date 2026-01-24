@@ -38,7 +38,6 @@
 		backgroundPosition = 'center',
 		backgroundRepeat = 'no-repeat',
 		backgroundOpacity = 1,
-		backgroundTransition,
 		backgroundInteractive = false,
 		state: slideState,
 		autoSlide,
@@ -92,18 +91,9 @@
 
 	const transitionDuration = $derived(TRANSITION_DURATIONS[transitionSpeed]);
 
-	// Effective background transition (falls back to slide transition)
-	const effectiveBackgroundTransition = $derived(backgroundTransition ?? transition);
-
 	// CSS transition style based on transition type
 	const transitionStyle = $derived.by(() => {
 		if (transition === 'none') return '';
-		return `transition: opacity ${transitionDuration}ms ease, visibility ${transitionDuration}ms ease, transform ${transitionDuration}ms ease;`;
-	});
-
-	// Background transition style (can differ from slide content transition)
-	const backgroundTransitionStyle = $derived.by(() => {
-		if (effectiveBackgroundTransition === 'none') return '';
 		return `transition: opacity ${transitionDuration}ms ease, visibility ${transitionDuration}ms ease, transform ${transitionDuration}ms ease;`;
 	});
 
@@ -156,9 +146,6 @@
 		}
 		if (backgroundOpacity !== 1) {
 			styles.push(`opacity: ${backgroundOpacity}`);
-		}
-		if (backgroundTransitionStyle) {
-			styles.push(backgroundTransitionStyle);
 		}
 
 		return styles.length > 0 ? styles.join('; ') : undefined;
@@ -290,15 +277,9 @@
 {/if}
 
 {#snippet slideContent()}
-	<!-- Background layer (separate for independent transitions) -->
+	<!-- Background layer -->
 	{#if hasBackgroundMedia}
-		<div
-			class="slide-background transition-{effectiveBackgroundTransition}"
-			class:active={isActive}
-			class:past={isPast}
-			class:future={isFuture}
-			style={backgroundLayerStyle}
-		>
+		<div class="slide-background" style={backgroundLayerStyle}>
 			{#if backgroundVideo}
 				<video class="slide-background-video" src={backgroundVideo} autoplay loop muted playsinline
 				></video>
@@ -473,56 +454,11 @@
 		width: 100%;
 		height: 100%;
 		z-index: 0;
-		background-size: cover;
-		background-position: center;
+		/* Note: background-size/position are set via inline styles to allow customization */
 
-		/* Inactive state */
-		opacity: 0;
-		visibility: hidden;
-	}
-
-	.slide-background.active {
+		/* Always visible when parent slide is active (parent controls visibility) */
 		opacity: 1;
 		visibility: visible;
-		transform: none;
-	}
-
-	/* Background transitions (same as slide transitions) */
-	.slide-background.transition-slide.past {
-		transform: translateX(-100%);
-	}
-	.slide-background.transition-slide.future {
-		transform: translateX(100%);
-	}
-
-	.slide-background.transition-zoom.past {
-		transform: scale(0.5);
-	}
-	.slide-background.transition-zoom.future {
-		transform: scale(2);
-	}
-
-	.slide-background.transition-convex.past {
-		transform: perspective(1000px) rotateY(-90deg) translateZ(300px);
-	}
-	.slide-background.transition-convex.future {
-		transform: perspective(1000px) rotateY(90deg) translateZ(300px);
-	}
-
-	.slide-background.transition-concave.past {
-		transform: perspective(1000px) rotateY(90deg) translateZ(300px);
-	}
-	.slide-background.transition-concave.future {
-		transform: perspective(1000px) rotateY(-90deg) translateZ(300px);
-	}
-
-	.slide-background.transition-fade.past,
-	.slide-background.transition-fade.future {
-		transform: none;
-	}
-
-	.slide-background.transition-none {
-		transition: none !important;
 	}
 
 	/* Background media */

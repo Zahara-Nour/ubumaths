@@ -290,7 +290,7 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 					</div>
 				</Slide>
 				<Slide
-					backgroundImage="https://images.unsplash.com/photo-1557683316-973673bdar25?w=400&q=80"
+					backgroundImage="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80"
 					backgroundRepeat="repeat"
 					backgroundSize="200px"
 				>
@@ -337,20 +337,6 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 			{/snippet}
 			<h2 style="color: #333;">Arriere-plans de Slides</h2>
 			<p style="color: #333;">Couleurs, gradients, images, videos, iframes</p>
-		</Slide>
-
-		<!-- Background Transitions -->
-		<Slide transition="slide" background="#4d7e65" backgroundTransition="zoom">
-			<h2>Transitions d'arriere-plan</h2>
-			<p>L'arriere-plan peut avoir une transition differente du contenu</p>
-			<p style="font-size: 0.6em;">
-				<code>transition="slide" backgroundTransition="zoom"</code>
-			</p>
-		</Slide>
-
-		<Slide transition="slide" background="#b5533c" backgroundTransition="zoom">
-			<h2>Transitions d'arriere-plan</h2>
-			<p>Ici le contenu glisse, mais l'arriere-plan fait un zoom</p>
 		</Slide>
 
 		<!-- Interactive Iframe -->
