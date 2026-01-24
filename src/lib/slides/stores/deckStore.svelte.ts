@@ -237,32 +237,26 @@ export function createDeckStore(): DeckStore {
 	}
 
 	/**
-	 * Go down (next vertical, or fallback to next horizontal if no vertical slides)
+	 * Go down (next vertical slide only - no fallback to horizontal)
 	 */
 	function down(): void {
 		const maxV = getVerticalCount(state.h) - 1;
 		if (state.v < maxV) {
-			// More vertical slides below
 			state.v++;
 			state.f = -1;
-		} else {
-			// At bottom of vertical stack (or no verticals), go to next horizontal
-			next();
 		}
+		// Do nothing if no vertical slides below
 	}
 
 	/**
-	 * Go up (previous vertical, or fallback to previous horizontal if at top)
+	 * Go up (previous vertical slide only - no fallback to horizontal)
 	 */
 	function up(): void {
 		if (state.v > 0) {
-			// More vertical slides above
 			state.v--;
 			state.f = -1;
-		} else {
-			// At top of vertical stack, go to previous horizontal
-			prev();
 		}
+		// Do nothing if already at top of vertical stack
 	}
 
 	/**
