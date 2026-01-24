@@ -8,10 +8,16 @@
 	 * - Variables (predefined via props)
 	 * - Fragments via {.fragment} marker
 	 */
-	import { tick } from 'svelte';
+	import { tick, getContext } from 'svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { SlideProps } from './types.js';
 	import Slide from './Slide.svelte';
+	import { DECK_CONTEXT_KEY } from './context.js';
+	import type { DeckStore } from '../stores/deckStore.svelte.js';
+
+	// Get deck store from context to update fragment visibility after processing
+	const deckContext = getContext<{ getStore: () => DeckStore }>(DECK_CONTEXT_KEY);
+	const deckStore = deckContext?.getStore();
 
 	interface Props extends SlideProps {
 		/** UbuMark content to render */
@@ -62,6 +68,24 @@
 	// Track if fragments have been processed (to avoid flash)
 	let fragmentsReady = $state(false);
 
+	/**
+	 * Update fragment visibility based on current deckStore.f
+	 * Must be called after processFragmentMarkers() adds .fragment classes
+	 */
+	function updateFragmentVisibility() {
+		if (!slideElement || !deckStore) return;
+
+		const currentF = deckStore.f;
+		const fragments = slideElement.querySelectorAll('.fragment');
+		fragments.forEach((fragment, index) => {
+			const isVisible = index <= currentF;
+			const isCurrent = index === currentF;
+
+			fragment.classList.toggle('visible', isVisible);
+			fragment.classList.toggle('current-fragment', isCurrent);
+		});
+	}
+
 	// Process fragment markers when slideElement becomes available
 	// Syntax: "text ->" at end of line marks element as fragment
 	$effect(() => {
@@ -70,6 +94,9 @@
 		// Use tick() to ensure MarkdownRenderer has rendered to DOM
 		tick().then(() => {
 			processFragmentMarkers();
+			// Update fragment visibility immediately after adding .fragment classes
+			// This ensures fragments are shown correctly when returning to a slide
+			updateFragmentVisibility();
 			fragmentsReady = true;
 		});
 	});

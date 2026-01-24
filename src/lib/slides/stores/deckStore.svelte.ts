@@ -81,6 +81,34 @@ export function createDeckStore(): DeckStore {
 	// When navigating horizontally, we save/restore vertical positions
 	const verticalMemory = new Map<number, number>();
 
+	// Memory for fragment positions (like reveal.js)
+	// When leaving a slide, we save fragment position; when returning, we restore it
+	// Key is "h-v" string, value is fragment index
+	const fragmentMemory = new Map<string, number>();
+
+	/**
+	 * Get fragment memory key for a slide position
+	 */
+	function getFragmentKey(h: number, v: number): string {
+		return `${h}-${v}`;
+	}
+
+	/**
+	 * Save current fragment position to memory
+	 */
+	function saveFragmentPosition(): void {
+		if (state.f >= 0) {
+			fragmentMemory.set(getFragmentKey(state.h, state.v), state.f);
+		}
+	}
+
+	/**
+	 * Get saved fragment position for a slide, or -1 if none
+	 */
+	function getSavedFragmentPosition(h: number, v: number): number {
+		return fragmentMemory.get(getFragmentKey(h, v)) ?? -1;
+	}
+
 	// Derived values
 	const totalH = $derived(slides.size);
 	const verticalCount = $derived(getVerticalCount(state.h));
@@ -134,11 +162,21 @@ export function createDeckStore(): DeckStore {
 
 	/**
 	 * Navigate to specific position
+	 * If f is not specified (-1), restores saved fragment position for the target slide
 	 */
 	function goTo(h: number, v: number = 0, f: number = -1): void {
+		// Save current fragment position before leaving
+		saveFragmentPosition();
+
 		const clamped = clampPosition(h, v);
 		const totalFragments = getFragmentCount(clamped.h, clamped.v);
-		const clampedF = Math.max(-1, Math.min(f, totalFragments - 1));
+
+		// If f not specified, try to restore saved position
+		let targetF = f;
+		if (f === -1) {
+			targetF = getSavedFragmentPosition(clamped.h, clamped.v);
+		}
+		const clampedF = Math.max(-1, Math.min(targetF, totalFragments - 1));
 
 		state.h = clamped.h;
 		state.v = clamped.v;
@@ -157,20 +195,25 @@ export function createDeckStore(): DeckStore {
 			return;
 		}
 
+		// Save fragment position before leaving this slide
+		saveFragmentPosition();
+
 		// Try to go to next vertical slide
 		const maxV = getVerticalCount(state.h) - 1;
 		if (state.v < maxV) {
-			state.v++;
-			state.f = -1;
+			const newV = state.v + 1;
+			state.v = newV;
+			state.f = getSavedFragmentPosition(state.h, newV);
 			return;
 		}
 
 		// Go to next horizontal slide
 		const maxH = slides.size - 1;
 		if (state.h < maxH) {
-			state.h++;
+			const newH = state.h + 1;
+			state.h = newH;
 			state.v = 0;
-			state.f = -1;
+			state.f = getSavedFragmentPosition(newH, 0);
 		}
 	}
 
@@ -184,12 +227,16 @@ export function createDeckStore(): DeckStore {
 			return;
 		}
 
+		// Save fragment position before leaving this slide
+		saveFragmentPosition();
+
 		// Try to go to previous vertical slide
 		if (state.v > 0) {
 			const newV = state.v - 1;
 			state.v = newV;
-			// Show all fragments of previous slide
-			state.f = getFragmentCount(state.h, newV) - 1;
+			// Restore saved fragment position, or show all fragments if never visited
+			const savedF = getSavedFragmentPosition(state.h, newV);
+			state.f = savedF >= 0 ? savedF : getFragmentCount(state.h, newV) - 1;
 			return;
 		}
 
@@ -198,21 +245,22 @@ export function createDeckStore(): DeckStore {
 			const newH = state.h - 1;
 			const newV = Math.max(0, getVerticalCount(newH) - 1);
 			state.h = newH;
-			// Go to last vertical slide of previous horizontal
 			state.v = newV;
-			// Show all fragments
-			state.f = getFragmentCount(newH, newV) - 1;
+			// Restore saved fragment position, or show all fragments if never visited
+			const savedF = getSavedFragmentPosition(newH, newV);
+			state.f = savedF >= 0 ? savedF : getFragmentCount(newH, newV) - 1;
 		}
 	}
 
 	/**
 	 * Go to next horizontal slide (skip verticals)
-	 * Saves current vertical position and restores target's saved position (like reveal.js)
+	 * Saves current vertical/fragment position and restores target's saved position (like reveal.js)
 	 */
 	function nextH(): void {
 		const maxH = slides.size - 1;
 		if (state.h < maxH) {
-			// Save current vertical position before leaving
+			// Save current positions before leaving
+			saveFragmentPosition();
 			if (getVerticalCount(state.h) > 1) {
 				verticalMemory.set(state.h, state.v);
 			}
@@ -222,20 +270,22 @@ export function createDeckStore(): DeckStore {
 			const targetV = verticalMemory.get(targetH) ?? 0;
 			// Clamp to valid range
 			const maxV = Math.max(0, getVerticalCount(targetH) - 1);
+			const finalV = Math.min(targetV, maxV);
 
 			state.h = targetH;
-			state.v = Math.min(targetV, maxV);
-			state.f = -1;
+			state.v = finalV;
+			state.f = getSavedFragmentPosition(targetH, finalV);
 		}
 	}
 
 	/**
 	 * Go to previous horizontal slide (skip verticals)
-	 * Saves current vertical position and restores target's saved position (like reveal.js)
+	 * Saves current vertical/fragment position and restores target's saved position (like reveal.js)
 	 */
 	function prevH(): void {
 		if (state.h > 0) {
-			// Save current vertical position before leaving
+			// Save current positions before leaving
+			saveFragmentPosition();
 			if (getVerticalCount(state.h) > 1) {
 				verticalMemory.set(state.h, state.v);
 			}
@@ -245,10 +295,13 @@ export function createDeckStore(): DeckStore {
 			const targetV = verticalMemory.get(targetH) ?? 0;
 			// Clamp to valid range
 			const maxV = Math.max(0, getVerticalCount(targetH) - 1);
+			const finalV = Math.min(targetV, maxV);
 
 			state.h = targetH;
-			state.v = Math.min(targetV, maxV);
-			state.f = -1;
+			state.v = finalV;
+			// Restore saved fragment position, or show all if going backward and never visited
+			const savedF = getSavedFragmentPosition(targetH, finalV);
+			state.f = savedF >= 0 ? savedF : getFragmentCount(targetH, finalV) - 1;
 		}
 	}
 
@@ -258,8 +311,10 @@ export function createDeckStore(): DeckStore {
 	function nextV(): void {
 		const maxV = getVerticalCount(state.h) - 1;
 		if (state.v < maxV) {
-			state.v++;
-			state.f = -1;
+			saveFragmentPosition();
+			const newV = state.v + 1;
+			state.v = newV;
+			state.f = getSavedFragmentPosition(state.h, newV);
 		}
 	}
 
@@ -268,8 +323,11 @@ export function createDeckStore(): DeckStore {
 	 */
 	function prevV(): void {
 		if (state.v > 0) {
-			state.v--;
-			state.f = -1;
+			saveFragmentPosition();
+			const newV = state.v - 1;
+			state.v = newV;
+			const savedF = getSavedFragmentPosition(state.h, newV);
+			state.f = savedF >= 0 ? savedF : getFragmentCount(state.h, newV) - 1;
 		}
 	}
 
@@ -279,8 +337,10 @@ export function createDeckStore(): DeckStore {
 	function down(): void {
 		const maxV = getVerticalCount(state.h) - 1;
 		if (state.v < maxV) {
-			state.v++;
-			state.f = -1;
+			saveFragmentPosition();
+			const newV = state.v + 1;
+			state.v = newV;
+			state.f = getSavedFragmentPosition(state.h, newV);
 		}
 	}
 
@@ -289,8 +349,11 @@ export function createDeckStore(): DeckStore {
 	 */
 	function up(): void {
 		if (state.v > 0) {
-			state.v--;
-			state.f = -1;
+			saveFragmentPosition();
+			const newV = state.v - 1;
+			state.v = newV;
+			const savedF = getSavedFragmentPosition(state.h, newV);
+			state.f = savedF >= 0 ? savedF : getFragmentCount(state.h, newV) - 1;
 		}
 		// Do nothing if already at top of vertical stack
 	}
