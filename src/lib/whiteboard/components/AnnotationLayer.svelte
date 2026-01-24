@@ -723,9 +723,19 @@
 		const newBBox = { minX: newMinX, minY: newMinY, maxX: newMaxX, maxY: newMaxY };
 
 		// Build original values from stored annotation
-		const originalValues: { start?: Point; end?: Point; position?: Point; size?: number } = {};
+		const originalValues: {
+			start?: Point;
+			end?: Point;
+			position?: Point;
+			size?: number;
+			points?: readonly Point[];
+			width?: number;
+		} = {};
 
-		if (resizeOriginalAnnotation.type === 'shape') {
+		if (resizeOriginalAnnotation.type === 'stroke') {
+			originalValues.points = resizeOriginalAnnotation.points;
+			originalValues.width = resizeOriginalAnnotation.width;
+		} else if (resizeOriginalAnnotation.type === 'shape') {
 			originalValues.start = resizeOriginalAnnotation.start;
 			originalValues.end = resizeOriginalAnnotation.end;
 		} else if (resizeOriginalAnnotation.type === 'stamp') {
@@ -837,10 +847,17 @@
 			{#each annotations as annotation (annotation.id)}
 				{@const isSelected = selectedIds.has(annotation.id)}
 				{#if annotation.type === 'stroke'}
+					{@const strokeBBox = getAnnotationBBox(annotation)}
+					{@const strokeCenterX = (strokeBBox.minX + strokeBBox.maxX) / 2}
+					{@const strokeCenterY = (strokeBBox.minY + strokeBBox.maxY) / 2}
+					{@const strokeRotation = annotation.rotation ?? 0}
 					<path
 						d={renderStrokePath(annotation)}
 						style={getStrokeStyle(annotation)}
 						stroke="none"
+						transform={strokeRotation !== 0
+							? `rotate(${strokeRotation}, ${strokeCenterX}, ${strokeCenterY})`
+							: undefined}
 						class:selected={isSelected}
 					/>
 				{:else if annotation.type === 'shape'}

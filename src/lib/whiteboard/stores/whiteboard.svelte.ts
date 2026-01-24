@@ -1852,9 +1852,9 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Resize annotation shape by scaling from original bounding box (live - no history)
-		 * Only works for shapes and stamps (not strokes)
-		 * Use commitResizeAnnotation() to commit to history at end of drag
+		 * Resize annotation by scaling from original bounding box (live - no history)
+		 * Works for shapes, stamps, and strokes
+		 * Use commitAnnotationTransform() to commit to history at end of drag
 		 */
 		resizeAnnotation(
 			annotationId: string,
@@ -1865,6 +1865,8 @@ function createWhiteboardStore() {
 				end?: Point;
 				position?: Point;
 				size?: number;
+				points?: readonly Point[];
+				width?: number;
 			}
 		): void {
 			updateCurrentPageLive((page) => ({
@@ -1872,23 +1874,38 @@ function createWhiteboardStore() {
 				annotations: (page.annotations ?? []).map((a) => {
 					if (a.id !== annotationId) return a;
 
-					if (a.type === 'shape') {
+					const origWidth = originalBBox.maxX - originalBBox.minX;
+					const origHeight = originalBBox.maxY - originalBBox.minY;
+					const newWidth = newBBox.maxX - newBBox.minX;
+					const newHeight = newBBox.maxY - newBBox.minY;
+
+					if (origWidth === 0 || origHeight === 0) return a;
+
+					const scaleX = newWidth / origWidth;
+					const scaleY = newHeight / origHeight;
+
+					if (a.type === 'stroke') {
+						// Use original values if provided, otherwise use current
+						const origPoints = originalValues?.points ?? a.points;
+						const origStrokeWidth = originalValues?.width ?? a.width;
+
+						// Transform all points relative to original bbox
+						const newPoints = origPoints.map((p) => ({
+							x: newBBox.minX + (p.x - originalBBox.minX) * scaleX,
+							y: newBBox.minY + (p.y - originalBBox.minY) * scaleY
+						}));
+
+						return {
+							...a,
+							points: newPoints,
+							width: origStrokeWidth * Math.min(scaleX, scaleY)
+						};
+					} else if (a.type === 'shape') {
 						// Use original values if provided, otherwise use current
 						const startX = originalValues?.start?.x ?? a.start.x;
 						const startY = originalValues?.start?.y ?? a.start.y;
 						const endX = originalValues?.end?.x ?? a.end.x;
 						const endY = originalValues?.end?.y ?? a.end.y;
-
-						// Scale shape start/end points relative to original bbox
-						const origWidth = originalBBox.maxX - originalBBox.minX;
-						const origHeight = originalBBox.maxY - originalBBox.minY;
-						const newWidth = newBBox.maxX - newBBox.minX;
-						const newHeight = newBBox.maxY - newBBox.minY;
-
-						if (origWidth === 0 || origHeight === 0) return a;
-
-						const scaleX = newWidth / origWidth;
-						const scaleY = newHeight / origHeight;
 
 						const newStart = {
 							x: newBBox.minX + (startX - originalBBox.minX) * scaleX,
@@ -1903,12 +1920,6 @@ function createWhiteboardStore() {
 					} else if (a.type === 'stamp') {
 						// Use original size if provided
 						const origSize = originalValues?.size ?? a.size;
-
-						// For stamps, scale the size and move the position
-						const origWidth = originalBBox.maxX - originalBBox.minX;
-						const newWidth = newBBox.maxX - newBBox.minX;
-
-						if (origWidth === 0) return a;
 
 						const scale = newWidth / origWidth;
 						const newSize = Math.max(16, Math.min(96, origSize * scale));
@@ -1928,8 +1939,8 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Rotate annotation (shapes and stamps only) - live, no history
-		 * Use commitRotateAnnotation() to commit to history at end of drag
+		 * Rotate annotation (shapes, stamps, and strokes) - live, no history
+		 * Use commitAnnotationTransform() to commit to history at end of drag
 		 */
 		rotateAnnotation(annotationId: string, rotation: number): void {
 			updateCurrentPageLive((page) => ({
@@ -1937,7 +1948,7 @@ function createWhiteboardStore() {
 				annotations: (page.annotations ?? []).map((a) => {
 					if (a.id !== annotationId) return a;
 
-					if (a.type === 'shape' || a.type === 'stamp') {
+					if (a.type === 'shape' || a.type === 'stamp' || a.type === 'stroke') {
 						// Normalize rotation to 0-360
 						const normalizedRotation = ((rotation % 360) + 360) % 360;
 						return { ...a, rotation: normalizedRotation };
