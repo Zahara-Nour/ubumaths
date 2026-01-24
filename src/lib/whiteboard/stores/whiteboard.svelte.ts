@@ -5175,24 +5175,42 @@ function createWhiteboardStore() {
 		// === History Operations ===
 
 		/**
-		 * Undo last action
+		 * Undo last action (elements only, preserves annotations)
 		 */
 		undo(): void {
+			if (!document) return;
 			const previous = history?.undo();
 			if (previous) {
-				document = previous;
+				// Preserve current annotations when restoring elements
+				const currentAnnotations = document.pages.map((p) => p.annotations ?? []);
+				document = {
+					...previous,
+					pages: previous.pages.map((page, i) => ({
+						...page,
+						annotations: currentAnnotations[i] ?? []
+					}))
+				};
 				hasUnsavedChanges = true;
 				scheduleAutosave();
 			}
 		},
 
 		/**
-		 * Redo last undone action
+		 * Redo last undone action (elements only, preserves annotations)
 		 */
 		redo(): void {
+			if (!document) return;
 			const next = history?.redo();
 			if (next) {
-				document = next;
+				// Preserve current annotations when restoring elements
+				const currentAnnotations = document.pages.map((p) => p.annotations ?? []);
+				document = {
+					...next,
+					pages: next.pages.map((page, i) => ({
+						...page,
+						annotations: currentAnnotations[i] ?? []
+					}))
+				};
 				hasUnsavedChanges = true;
 				scheduleAutosave();
 			}
