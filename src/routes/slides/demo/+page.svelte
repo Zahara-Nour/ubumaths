@@ -94,7 +94,7 @@ Calculer la somme : $5 + 3 = ?$
 		}
 	};
 
-	// Example whiteboard page with some content
+	// Example whiteboard page with some content (4:3 ratio)
 	const whiteboardPage: Page = {
 		id: 'demo-page',
 		width: 1024,

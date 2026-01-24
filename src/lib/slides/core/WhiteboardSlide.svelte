@@ -9,7 +9,6 @@
 	 * @module slides/core/WhiteboardSlide
 	 */
 
-	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import Slide from './Slide.svelte';
 	import type { SlideProps } from './types.js';
@@ -154,20 +153,26 @@
 	// Lifecycle
 	// ==========================================================================
 
-	onMount(() => {
+	// Track ResizeObserver for cleanup
+	let resizeObserver: ResizeObserver | null = null;
+
+	// Use $effect to react when containerRef becomes available
+	$effect(() => {
+		if (!containerRef) return;
+
+		// Calculate initial scale
 		calculateScale();
 
-		// Recalculate on resize
-		const resizeObserver = new ResizeObserver(() => {
+		// Set up ResizeObserver
+		resizeObserver = new ResizeObserver(() => {
 			calculateScale();
 		});
+		resizeObserver.observe(containerRef);
 
-		if (containerRef) {
-			resizeObserver.observe(containerRef);
-		}
-
+		// Cleanup
 		return () => {
-			resizeObserver.disconnect();
+			resizeObserver?.disconnect();
+			resizeObserver = null;
 		};
 	});
 
@@ -250,13 +255,21 @@
 		height: 100%;
 	}
 
+	/* Remove padding and ensure full space for whiteboard */
+	:global(.whiteboard-slide .slide-content) {
+		padding: 0 !important;
+	}
+
 	.whiteboard-slide-container {
-		position: relative;
+		/* Take all available space */
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 100%;
-		height: 100%;
 		overflow: hidden;
 	}
 
