@@ -34,9 +34,9 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 	const listSlideContent = `
 ## Liste avec fragments
 
-- Premier point {.fragment}
-- Deuxieme point {.fragment}
-- Troisieme point {.fragment}
+- Premier point ->
+- Deuxieme point ->
+- Troisieme point ->
 `;
 
 	const variablesSlideContent = `
