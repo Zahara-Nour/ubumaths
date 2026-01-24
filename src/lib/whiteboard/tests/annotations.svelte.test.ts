@@ -447,7 +447,7 @@ describe('Annotation Layer', () => {
 			whiteboardStore.enterAnnotationMode();
 		});
 
-		it('resizes a shape annotation', () => {
+		it('resizes a shape annotation using live transform', () => {
 			const start: Point = { x: 50, y: 50 };
 			const end: Point = { x: 150, y: 150 };
 
@@ -458,16 +458,28 @@ describe('Annotation Layer', () => {
 			expect(shape).toBeDefined();
 
 			const originalBBox = { minX: 50, minY: 50, maxX: 150, maxY: 150 };
-			const newBBox = { minX: 50, minY: 50, maxX: 200, maxY: 200 };
+			// Scale by 1.5x (200-50)/(150-50) = 1.5
+			const scaleX = 1.5;
+			const scaleY = 1.5;
 
-			whiteboardStore.resizeAnnotation(shape.id, originalBBox, newBBox);
+			// Set live resize (visual only)
+			whiteboardStore.setLiveAnnotationResize(shape.id, scaleX, scaleY, 50, 50, originalBBox);
+
+			// Verify live state is set
+			expect(whiteboardStore.liveAnnotationResizes.get(shape.id)).toBeDefined();
+
+			// Commit the transform
+			whiteboardStore.commitAnnotationTransform(shape.id);
 
 			const resized = whiteboardStore.currentPage?.annotations?.[0] as AnnotationShape;
 			expect(resized.end.x).toBe(200);
 			expect(resized.end.y).toBe(200);
+
+			// Live state should be cleared
+			expect(whiteboardStore.liveAnnotationResizes.get(shape.id)).toBeUndefined();
 		});
 
-		it('resizes a stamp annotation', () => {
+		it('resizes a stamp annotation using live transform', () => {
 			whiteboardStore.setAnnotationStyleProperty('stampType', '★');
 			whiteboardStore.addAnnotationStamp({ x: 100, y: 100 });
 
@@ -484,15 +496,19 @@ describe('Annotation Layer', () => {
 				maxX: 100 + half,
 				maxY: 100 + half
 			};
-			// Double the size
-			const newBBox = {
-				minX: 100 - half,
-				minY: 100 - half,
-				maxX: 100 + half * 2,
-				maxY: 100 + half * 2
-			};
+			// Scale by 1.5x
+			const scaleX = 1.5;
+			const scaleY = 1.5;
 
-			whiteboardStore.resizeAnnotation(stamp.id, originalBBox, newBBox);
+			whiteboardStore.setLiveAnnotationResize(
+				stamp.id,
+				scaleX,
+				scaleY,
+				originalBBox.minX,
+				originalBBox.minY,
+				originalBBox
+			);
+			whiteboardStore.commitAnnotationTransform(stamp.id);
 
 			const resized = whiteboardStore.currentPage?.annotations?.[0] as AnnotationStamp;
 			// Size should have increased (clamped between 16 and 96)
@@ -505,7 +521,7 @@ describe('Annotation Layer', () => {
 			whiteboardStore.enterAnnotationMode();
 		});
 
-		it('rotates a shape annotation', () => {
+		it('rotates a shape annotation using live transform', () => {
 			const start: Point = { x: 50, y: 50 };
 			const end: Point = { x: 150, y: 150 };
 
@@ -516,13 +532,23 @@ describe('Annotation Layer', () => {
 			expect(shape).toBeDefined();
 			expect(shape.rotation ?? 0).toBe(0);
 
-			whiteboardStore.rotateAnnotation(shape.id, 45);
+			// Set live rotation (visual only)
+			whiteboardStore.setLiveAnnotationRotation(shape.id, 45);
+
+			// Verify live state is set
+			expect(whiteboardStore.liveAnnotationRotations.get(shape.id)).toBe(45);
+
+			// Commit the transform
+			whiteboardStore.commitAnnotationTransform(shape.id);
 
 			const rotated = whiteboardStore.currentPage?.annotations?.[0] as AnnotationShape;
 			expect(rotated.rotation).toBe(45);
+
+			// Live state should be cleared
+			expect(whiteboardStore.liveAnnotationRotations.get(shape.id)).toBeUndefined();
 		});
 
-		it('rotates a stamp annotation', () => {
+		it('rotates a stamp annotation using live transform', () => {
 			whiteboardStore.setAnnotationStyleProperty('stampType', '✓');
 			whiteboardStore.addAnnotationStamp({ x: 100, y: 100 });
 
@@ -530,7 +556,8 @@ describe('Annotation Layer', () => {
 			const stamp = annotations?.[0] as AnnotationStamp;
 			expect(stamp).toBeDefined();
 
-			whiteboardStore.rotateAnnotation(stamp.id, 90);
+			whiteboardStore.setLiveAnnotationRotation(stamp.id, 90);
+			whiteboardStore.commitAnnotationTransform(stamp.id);
 
 			const rotated = whiteboardStore.currentPage?.annotations?.[0] as AnnotationStamp;
 			expect(rotated.rotation).toBe(90);
@@ -543,7 +570,8 @@ describe('Annotation Layer', () => {
 			const annotations = whiteboardStore.currentPage?.annotations;
 			const stamp = annotations?.[0] as AnnotationStamp;
 
-			whiteboardStore.rotateAnnotation(stamp.id, -45);
+			whiteboardStore.setLiveAnnotationRotation(stamp.id, -45);
+			whiteboardStore.commitAnnotationTransform(stamp.id);
 
 			const rotated = whiteboardStore.currentPage?.annotations?.[0] as AnnotationStamp;
 			expect(rotated.rotation).toBe(315); // -45 + 360 = 315

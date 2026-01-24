@@ -174,23 +174,51 @@
 			if (!selectedIds.has(annotation.id)) continue;
 
 			const bbox = getAnnotationBBox(annotation);
-			minX = Math.min(minX, bbox.minX);
-			minY = Math.min(minY, bbox.minY);
-			maxX = Math.max(maxX, bbox.maxX);
-			maxY = Math.max(maxY, bbox.maxY);
+
+			// Apply live resize transform to the bbox
+			const liveResize = whiteboardStore.liveAnnotationResizes.get(annotation.id);
+			if (liveResize) {
+				// Scale the bbox
+				const scaledMinX =
+					liveResize.originX + (bbox.minX - liveResize.originX) * liveResize.scaleX;
+				const scaledMinY =
+					liveResize.originY + (bbox.minY - liveResize.originY) * liveResize.scaleY;
+				const scaledMaxX =
+					liveResize.originX + (bbox.maxX - liveResize.originX) * liveResize.scaleX;
+				const scaledMaxY =
+					liveResize.originY + (bbox.maxY - liveResize.originY) * liveResize.scaleY;
+				minX = Math.min(minX, scaledMinX);
+				minY = Math.min(minY, scaledMinY);
+				maxX = Math.max(maxX, scaledMaxX);
+				maxY = Math.max(maxY, scaledMaxY);
+			} else {
+				minX = Math.min(minX, bbox.minX);
+				minY = Math.min(minY, bbox.minY);
+				maxX = Math.max(maxX, bbox.maxX);
+				maxY = Math.max(maxY, bbox.maxY);
+			}
 		}
 
 		if (minX === Infinity) return null;
 		return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
 	});
 
-	/** Get current rotation of selected annotation */
+	/** Get current rotation of selected annotation (including live rotation) */
 	let selectedAnnotationRotation = $derived.by(() => {
 		if (selectedIds.size !== 1) return 0;
 		const selectedId = Array.from(selectedIds)[0];
+
+		// Check live rotation first
+		const liveRotation = whiteboardStore.liveAnnotationRotations.get(selectedId);
+		if (liveRotation !== undefined) return liveRotation;
+
 		const annotation = annotations.find((a) => a.id === selectedId);
 		if (!annotation) return 0;
-		if (annotation.type === 'shape' || annotation.type === 'stamp') {
+		if (
+			annotation.type === 'shape' ||
+			annotation.type === 'stamp' ||
+			annotation.type === 'stroke'
+		) {
 			return annotation.rotation ?? 0;
 		}
 		return 0;
@@ -720,40 +748,26 @@
 			maxY: resizeStartBBox.y + resizeStartBBox.height
 		};
 
-		const newBBox = { minX: newMinX, minY: newMinY, maxX: newMaxX, maxY: newMaxY };
+		// Calculate scale factors from original to new bbox
+		const scaleX = (newMaxX - newMinX) / (originalBBox.maxX - originalBBox.minX);
+		const scaleY = (newMaxY - newMinY) / (originalBBox.maxY - originalBBox.minY);
 
-		// Build original values from stored annotation
-		const originalValues: {
-			start?: Point;
-			end?: Point;
-			position?: Point;
-			size?: number;
-			points?: readonly Point[];
-			width?: number;
-		} = {};
-
-		if (resizeOriginalAnnotation.type === 'stroke') {
-			originalValues.points = resizeOriginalAnnotation.points;
-			originalValues.width = resizeOriginalAnnotation.width;
-		} else if (resizeOriginalAnnotation.type === 'shape') {
-			originalValues.start = resizeOriginalAnnotation.start;
-			originalValues.end = resizeOriginalAnnotation.end;
-		} else if (resizeOriginalAnnotation.type === 'stamp') {
-			originalValues.position = resizeOriginalAnnotation.position;
-			originalValues.size = resizeOriginalAnnotation.size;
-		}
-
-		whiteboardStore.resizeAnnotation(
+		// Set live resize (visual only, no data modification)
+		whiteboardStore.setLiveAnnotationResize(
 			resizeOriginalAnnotation.id,
-			originalBBox,
-			newBBox,
-			originalValues
+			scaleX,
+			scaleY,
+			originalBBox.minX,
+			originalBBox.minY,
+			originalBBox
 		);
 	}
 
 	function handleResizeEnd() {
-		// Commit to annotation history
-		whiteboardStore.commitAnnotationTransform();
+		if (resizeOriginalAnnotation) {
+			// Commit to annotation history
+			whiteboardStore.commitAnnotationTransform(resizeOriginalAnnotation.id);
+		}
 
 		isResizing = false;
 		activeResizeHandle = null;
@@ -801,12 +815,16 @@
 		const newRotation = normalizeAngle(initialRotation + deltaAngle);
 
 		const selectedId = Array.from(selectedIds)[0];
-		whiteboardStore.rotateAnnotation(selectedId, newRotation);
+		// Set live rotation (visual only, no data modification)
+		whiteboardStore.setLiveAnnotationRotation(selectedId, newRotation);
 	}
 
 	function handleRotateEnd() {
-		// Commit to annotation history
-		whiteboardStore.commitAnnotationTransform();
+		if (selectedIds.size === 1) {
+			const selectedId = Array.from(selectedIds)[0];
+			// Commit to annotation history
+			whiteboardStore.commitAnnotationTransform(selectedId);
+		}
 
 		isRotating = false;
 		initialRotation = 0;
@@ -846,17 +864,27 @@
 		<g class="layer-annotations">
 			{#each annotations as annotation (annotation.id)}
 				{@const isSelected = selectedIds.has(annotation.id)}
+				{@const liveRotation = whiteboardStore.liveAnnotationRotations.get(annotation.id)}
+				{@const liveResize = whiteboardStore.liveAnnotationResizes.get(annotation.id)}
 				{#if annotation.type === 'stroke'}
 					{@const strokeBBox = getAnnotationBBox(annotation)}
 					{@const strokeCenterX = (strokeBBox.minX + strokeBBox.maxX) / 2}
 					{@const strokeCenterY = (strokeBBox.minY + strokeBBox.maxY) / 2}
-					{@const strokeRotation = annotation.rotation ?? 0}
+					{@const storedRotation = annotation.rotation ?? 0}
+					{@const strokeRotation = liveRotation ?? storedRotation}
+					{@const resizeTransform = liveResize
+						? `translate(${liveResize.originX}, ${liveResize.originY}) scale(${liveResize.scaleX}, ${liveResize.scaleY}) translate(${-liveResize.originX}, ${-liveResize.originY})`
+						: ''}
+					{@const rotateTransform =
+						strokeRotation !== 0
+							? `rotate(${strokeRotation}, ${strokeCenterX}, ${strokeCenterY})`
+							: ''}
 					<path
 						d={renderStrokePath(annotation)}
 						style={getStrokeStyle(annotation)}
 						stroke="none"
-						transform={strokeRotation !== 0
-							? `rotate(${strokeRotation}, ${strokeCenterX}, ${strokeCenterY})`
+						transform={resizeTransform || rotateTransform
+							? `${resizeTransform} ${rotateTransform}`.trim()
 							: undefined}
 						class:selected={isSelected}
 					/>
@@ -864,7 +892,13 @@
 					{@const style = getShapeStyle(annotation)}
 					{@const shapeCenterX = (annotation.start.x + annotation.end.x) / 2}
 					{@const shapeCenterY = (annotation.start.y + annotation.end.y) / 2}
-					{@const shapeRotation = annotation.rotation ?? 0}
+					{@const storedRotation = annotation.rotation ?? 0}
+					{@const shapeRotation = liveRotation ?? storedRotation}
+					{@const resizeTransform = liveResize
+						? `translate(${liveResize.originX}, ${liveResize.originY}) scale(${liveResize.scaleX}, ${liveResize.scaleY}) translate(${-liveResize.originX}, ${-liveResize.originY})`
+						: ''}
+					{@const rotateTransform =
+						shapeRotation !== 0 ? `rotate(${shapeRotation}, ${shapeCenterX}, ${shapeCenterY})` : ''}
 					<path
 						d={renderShapePath(annotation)}
 						stroke={style.stroke}
@@ -874,36 +908,42 @@
 						opacity={style.opacity}
 						stroke-linecap="round"
 						stroke-linejoin="round"
-						transform={shapeRotation !== 0
-							? `rotate(${shapeRotation}, ${shapeCenterX}, ${shapeCenterY})`
+						transform={resizeTransform || rotateTransform
+							? `${resizeTransform} ${rotateTransform}`.trim()
 							: undefined}
 						class:selected={isSelected}
 					/>
 				{:else if annotation.type === 'stamp'}
-					{#if annotation.fill}
-						<circle
-							cx={annotation.position.x}
-							cy={annotation.position.y}
-							r={annotation.size / 2 + 4}
-							fill={annotation.fill}
-							opacity={annotation.fillOpacity ?? 1}
-						/>
-					{/if}
-					<text
-						x={annotation.position.x}
-						y={annotation.position.y}
-						font-size={getStampFontSize(annotation)}
-						fill={annotation.color}
-						opacity={annotation.opacity}
-						text-anchor="middle"
-						dominant-baseline="central"
-						transform="rotate({annotation.rotation}, {annotation.position.x}, {annotation.position
-							.y})"
-						style="user-select: none;"
-						class:selected={isSelected}
-					>
-						{annotation.stampType}
-					</text>
+					{@const storedRotation = annotation.rotation ?? 0}
+					{@const stampRotation = liveRotation ?? storedRotation}
+					{@const resizeTransform = liveResize
+						? `translate(${liveResize.originX}, ${liveResize.originY}) scale(${liveResize.scaleX}, ${liveResize.scaleY}) translate(${-liveResize.originX}, ${-liveResize.originY})`
+						: ''}
+					<g transform={resizeTransform || undefined}>
+						{#if annotation.fill}
+							<circle
+								cx={annotation.position.x}
+								cy={annotation.position.y}
+								r={annotation.size / 2 + 4}
+								fill={annotation.fill}
+								opacity={annotation.fillOpacity ?? 1}
+							/>
+						{/if}
+						<text
+							x={annotation.position.x}
+							y={annotation.position.y}
+							font-size={getStampFontSize(annotation)}
+							fill={annotation.color}
+							opacity={annotation.opacity}
+							text-anchor="middle"
+							dominant-baseline="central"
+							transform="rotate({stampRotation}, {annotation.position.x}, {annotation.position.y})"
+							style="user-select: none;"
+							class:selected={isSelected}
+						>
+							{annotation.stampType}
+						</text>
+					</g>
 				{/if}
 			{/each}
 		</g>
