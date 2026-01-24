@@ -16,8 +16,6 @@ export interface DeckStore extends DeckStoreActions {
 	readonly f: number;
 	/** Total number of horizontal slides */
 	readonly totalH: number;
-	/** Fragment count for current slide */
-	readonly fragmentCount: number;
 	/** Whether current horizontal has vertical slides */
 	readonly hasVerticalSlides: boolean;
 	/** Vertical slide count for current horizontal */
@@ -32,7 +30,7 @@ export interface DeckStore extends DeckStoreActions {
 	readonly state: NavigationState;
 	/** Get slide info at position */
 	getSlide(h: number, v?: number): SlideInfo | undefined;
-	/** Get total fragments for current slide */
+	/** Get total fragments for current slide (queries DOM) */
 	getTotalFragments(): number;
 	/** Get vertical count for a horizontal index */
 	getVerticalCount(h: number): number;
@@ -85,10 +83,6 @@ export function createDeckStore(): DeckStore {
 
 	// Derived values
 	const totalH = $derived(slides.size);
-	const fragmentCount = $derived.by(() => {
-		const slide = getSlide(state.h, state.v);
-		return slide?.fragmentCount ?? 0;
-	});
 	const verticalCount = $derived(getVerticalCount(state.h));
 	const hasVerticalSlides = $derived(verticalCount > 1);
 
@@ -110,11 +104,12 @@ export function createDeckStore(): DeckStore {
 	}
 
 	/**
-	 * Get total fragments for current slide
+	 * Get total fragments for current slide (queries DOM like reveal.js)
 	 */
 	function getTotalFragments(): number {
 		const slide = getSlide(state.h, state.v);
-		return slide?.fragmentCount ?? 0;
+		if (!slide?.element) return 0;
+		return slide.element.querySelectorAll('.fragment').length;
 	}
 
 	/**
@@ -129,11 +124,20 @@ export function createDeckStore(): DeckStore {
 	}
 
 	/**
+	 * Get fragment count for a specific slide (queries DOM)
+	 */
+	function getFragmentCount(h: number, v: number): number {
+		const slide = getSlide(h, v);
+		if (!slide?.element) return 0;
+		return slide.element.querySelectorAll('.fragment').length;
+	}
+
+	/**
 	 * Navigate to specific position
 	 */
 	function goTo(h: number, v: number = 0, f: number = -1): void {
 		const clamped = clampPosition(h, v);
-		const totalFragments = getSlide(clamped.h, clamped.v)?.fragmentCount ?? 0;
+		const totalFragments = getFragmentCount(clamped.h, clamped.v);
 		const clampedF = Math.max(-1, Math.min(f, totalFragments - 1));
 
 		state.h = clamped.h;
@@ -183,10 +187,9 @@ export function createDeckStore(): DeckStore {
 		// Try to go to previous vertical slide
 		if (state.v > 0) {
 			const newV = state.v - 1;
-			const slide = getSlide(state.h, newV);
 			state.v = newV;
 			// Show all fragments of previous slide
-			state.f = (slide?.fragmentCount ?? 0) - 1;
+			state.f = getFragmentCount(state.h, newV) - 1;
 			return;
 		}
 
@@ -194,12 +197,11 @@ export function createDeckStore(): DeckStore {
 		if (state.h > 0) {
 			const newH = state.h - 1;
 			const newV = Math.max(0, getVerticalCount(newH) - 1);
-			const slide = getSlide(newH, newV);
 			state.h = newH;
 			// Go to last vertical slide of previous horizontal
 			state.v = newV;
 			// Show all fragments
-			state.f = (slide?.fragmentCount ?? 0) - 1;
+			state.f = getFragmentCount(newH, newV) - 1;
 		}
 	}
 
@@ -316,7 +318,6 @@ export function createDeckStore(): DeckStore {
 			stack.push({
 				h,
 				v: stack.length,
-				fragmentCount: 0,
 				element: null
 			});
 		}
@@ -348,18 +349,6 @@ export function createDeckStore(): DeckStore {
 		const clamped = clampPosition(state.h, state.v);
 		state.h = clamped.h;
 		state.v = clamped.v;
-	}
-
-	/**
-	 * Update fragment count for a slide
-	 */
-	function updateFragmentCount(h: number, v: number, count: number): void {
-		const slide = getSlide(h, v);
-		if (slide) {
-			slide.fragmentCount = count;
-			// Trigger reactivity
-			slides = new Map(slides);
-		}
 	}
 
 	/**
@@ -404,9 +393,6 @@ export function createDeckStore(): DeckStore {
 		get totalH() {
 			return totalH;
 		},
-		get fragmentCount() {
-			return fragmentCount;
-		},
 		get hasVerticalSlides() {
 			return hasVerticalSlides;
 		},
@@ -446,7 +432,6 @@ export function createDeckStore(): DeckStore {
 		down,
 		registerSlide,
 		unregisterSlide,
-		updateFragmentCount,
 		toggleOverview,
 		setOverview,
 		togglePause,

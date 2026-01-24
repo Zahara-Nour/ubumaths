@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, getContext, setContext, untrack, type Snippet } from 'svelte';
+	import { onMount, getContext, setContext, type Snippet } from 'svelte';
 	import type { SlideProps } from './types.js';
 	import { DECK_CONTEXT_KEY, SLIDE_POSITION_KEY } from './context.js';
 	import type { DeckStore } from '../stores/deckStore.svelte.js';
@@ -98,22 +98,8 @@
 	const transitionParams = $derived({ duration: transitionDuration });
 
 	// ============================================================================
-	// Fragment Management
+	// Fragment Management (like reveal.js - just update visibility based on f)
 	// ============================================================================
-
-	function processFragments(element: HTMLElement | null): number {
-		if (!element) return 0;
-
-		const fragments = element.querySelectorAll('.fragment');
-		const fragmentCount = fragments.length;
-
-		// Update store with fragment count
-		if (deckStore && fragmentCount > 0) {
-			deckStore.updateFragmentCount(slideH, slideV, fragmentCount);
-		}
-
-		return fragmentCount;
-	}
 
 	function updateFragmentVisibility(element: HTMLElement, currentF: number) {
 		const fragments = element.querySelectorAll('.fragment');
@@ -205,9 +191,6 @@
 	// Lifecycle
 	// ============================================================================
 
-	// Track MutationObserver for cleanup
-	let fragmentObserver: MutationObserver | undefined;
-
 	onMount(() => {
 		if (!deckStore) {
 			console.warn('Slide: No deck store found in context');
@@ -221,62 +204,31 @@
 		}
 		// Root slides already have their h from claimNextH during script execution
 
-		// Register with store
+		// Register with store (element will be updated via $effect when bound)
 		deckStore.registerSlide({
 			h: slideH,
 			v: slideV,
-			fragmentCount: 0,
 			element: slideElement ?? null
 		});
 
 		// Cleanup on unmount
 		return () => {
-			fragmentObserver?.disconnect();
 			deckStore.unregisterSlide(slideH, slideV);
 		};
 	});
 
-	// Watch for slideElement to become available and set up fragment processing
-	// This needs to be in $effect because slideElement is only bound when the slide is active
+	// Update slide element reference in store when it becomes available
+	// (slideElement is only bound when the slide is active)
 	$effect(() => {
-		if (!slideElement) return;
-
-		// Use untrack to prevent store updates from re-triggering this effect
-		untrack(() => {
-			if (!deckStore) return;
-
-			// Process fragments immediately
-			processFragments(slideElement);
-
-			// Watch for dynamically added fragment classes (e.g., from UbuMarkSlide)
-			fragmentObserver?.disconnect();
-			fragmentObserver = new MutationObserver((mutations) => {
-				for (const mutation of mutations) {
-					if (
-						mutation.type === 'attributes' &&
-						mutation.attributeName === 'class' &&
-						(mutation.target as Element).classList.contains('fragment')
-					) {
-						// Re-process fragments when a new fragment class is added
-						processFragments(slideElement!);
-						break;
-					}
-				}
-			});
-
-			fragmentObserver.observe(slideElement, {
-				attributes: true,
-				attributeFilter: ['class'],
-				subtree: true
-			});
-		});
-
-		return () => {
-			fragmentObserver?.disconnect();
-		};
+		if (slideElement && deckStore) {
+			const slide = deckStore.getSlide(slideH, slideV);
+			if (slide) {
+				slide.element = slideElement;
+			}
+		}
 	});
 
-	// Update fragment visibility when store.f changes
+	// Update fragment visibility when store.f changes (like reveal.js)
 	$effect(() => {
 		if (isActive && slideElement && deckStore) {
 			updateFragmentVisibility(slideElement, deckStore.f);

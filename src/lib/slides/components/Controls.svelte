@@ -49,7 +49,7 @@
 
 	const canGoLeft = $derived(store ? store.h > 0 || store.v > 0 || store.f >= 0 : false);
 	const canGoRight = $derived(
-		store ? store.h < store.totalH - 1 || store.f < store.fragmentCount - 1 : false
+		store ? store.h < store.totalH - 1 || store.f < store.getTotalFragments() - 1 : false
 	);
 	const canGoUp = $derived(store ? store.v > 0 : false);
 	const canGoDown = $derived(

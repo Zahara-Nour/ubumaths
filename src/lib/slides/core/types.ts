@@ -83,7 +83,6 @@ export interface SlideBackground {
 export interface SlideInfo {
 	h: number;
 	v: number;
-	fragmentCount: number;
 	element: HTMLElement | null;
 }
 
@@ -246,8 +245,6 @@ export interface DeckStoreActions {
 	registerSlide(info: SlideInfo): void;
 	/** Unregister a slide */
 	unregisterSlide(h: number, v?: number): void;
-	/** Update fragment count for a slide */
-	updateFragmentCount(h: number, v: number, count: number): void;
 	/** Toggle overview mode */
 	toggleOverview(): void;
 	/** Set overview mode */
