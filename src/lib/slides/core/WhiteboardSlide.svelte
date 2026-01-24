@@ -9,6 +9,7 @@
 	 * @module slides/core/WhiteboardSlide
 	 */
 
+	import { untrack } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import Slide from './Slide.svelte';
 	import type { SlideProps } from './types.js';
@@ -185,7 +186,8 @@
 				redo: handleRedo,
 				clear: handleClear
 			});
-			updateUndoRedoState();
+			// Use untrack to avoid re-running effect when annotationLayerRef changes
+			untrack(() => updateUndoRedoState());
 
 			// Cleanup when effect re-runs or component unmounts
 			return () => {
