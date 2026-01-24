@@ -506,14 +506,14 @@
 	:global(.fragment) {
 		opacity: 0;
 		visibility: hidden;
-		transition:
-			opacity 0.3s ease,
-			transform 0.3s ease;
 	}
 
 	:global(.fragment.visible) {
 		opacity: 1;
 		visibility: visible;
+		transition:
+			opacity 0.3s ease,
+			transform 0.3s ease;
 	}
 
 	:global(.fragment.current-fragment) {
