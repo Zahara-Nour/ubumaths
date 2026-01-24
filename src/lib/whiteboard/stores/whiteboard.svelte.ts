@@ -84,7 +84,14 @@ import {
 	createExpandedPage,
 	createResetPage
 } from '../core/page-expansion';
-import type { ShapeElement, ArrowElement, BindingAnchor, Point, Heading } from '../types/document';
+import type {
+	ShapeElement,
+	ArrowElement,
+	BindingAnchor,
+	Point,
+	Heading,
+	AnnotationElement
+} from '../types/document';
 import { createArrowPoints } from '../types/document';
 import type { WhiteboardTemplate, TemplatePageData, TemplateFont } from '../types/templates';
 import { calculateSnapForTranslate, type SnapIndicator } from '../core/snapping';
@@ -425,7 +432,14 @@ function createWhiteboardStore() {
 	// === Document State ===
 	let document = $state<WhiteboardDocument | null>(null);
 	let history = $state<HistoryManager | null>(null);
-	let annotationHistory = $state<HistoryManager | null>(null);
+
+	// === Annotation History (separate from document history) ===
+	// Stores only annotations per page, not the entire document
+	type AnnotationSnapshot = AnnotationElement[][];
+	const MAX_ANNOTATION_HISTORY = 50;
+	let annotationPast = $state<AnnotationSnapshot[]>([]);
+	let annotationFuture = $state<AnnotationSnapshot[]>([]);
+	let annotationCurrent = $state<AnnotationSnapshot | null>(null);
 
 	// === Tool State ===
 	let currentTool = $state<Tool>('pen');
@@ -535,8 +549,8 @@ function createWhiteboardStore() {
 	const pageCount = $derived(document?.pages.length ?? 0);
 	const canUndo = $derived(history?.canUndo ?? false);
 	const canRedo = $derived(history?.canRedo ?? false);
-	const canUndoAnnotation = $derived(annotationHistory?.canUndo ?? false);
-	const canRedoAnnotation = $derived(annotationHistory?.canRedo ?? false);
+	const canUndoAnnotation = $derived(annotationPast.length > 0);
+	const canRedoAnnotation = $derived(annotationFuture.length > 0);
 
 	// Combined tool state for convenience
 	// Use 'pen' as reference for shared settings when current tool is not configurable (e.g., select, pan)
@@ -770,7 +784,10 @@ function createWhiteboardStore() {
 	function updateCurrentPageAnnotations(updater: (page: Page) => Page): void {
 		if (!document || !currentPage) return;
 
-		const doc = document; // TypeScript narrowing helper
+		// Push current state to annotation history before making changes
+		pushAnnotationHistory();
+
+		const doc = document;
 		const updated = {
 			...doc,
 			updatedAt: new Date().toISOString(),
@@ -778,7 +795,8 @@ function createWhiteboardStore() {
 		};
 
 		document = updated;
-		annotationHistory?.push(updated);
+		// Update current snapshot after change
+		annotationCurrent = getAnnotationsSnapshot();
 		hasUnsavedChanges = true;
 		scheduleAutosave();
 
@@ -787,6 +805,29 @@ function createWhiteboardStore() {
 			syncState = markAsModified(syncState);
 			scheduleAutoSync();
 		}
+	}
+
+	// === Annotation History Helpers ===
+
+	/** Get current annotations snapshot from document */
+	function getAnnotationsSnapshot(): AnnotationSnapshot {
+		if (!document) return [];
+		return document.pages.map((page) => [...(page.annotations ?? [])]);
+	}
+
+	/** Initialize annotation history from current document */
+	function initAnnotationHistory(): void {
+		annotationCurrent = getAnnotationsSnapshot();
+		annotationPast = [];
+		annotationFuture = [];
+	}
+
+	/** Push current state to annotation history (call before making changes) */
+	function pushAnnotationHistory(): void {
+		if (!annotationCurrent) return;
+		annotationPast = [...annotationPast.slice(-MAX_ANNOTATION_HISTORY + 1), annotationCurrent];
+		annotationCurrent = getAnnotationsSnapshot();
+		annotationFuture = []; // Clear redo stack on new action
 	}
 
 	// === Public API ===
@@ -946,7 +987,7 @@ function createWhiteboardStore() {
 		createNew(title: string = 'Sans titre', format: PageFormatKey = 'A4'): void {
 			document = createEmptyDocument(title, format);
 			history = createHistoryManager(document);
-			annotationHistory = createHistoryManager(document);
+			initAnnotationHistory();
 			hasUnsavedChanges = false;
 			selectedIds = new Set();
 			// Reset sync state for new document
@@ -968,7 +1009,7 @@ function createWhiteboardStore() {
 
 			document = result.document;
 			history = createHistoryManager(document);
-			annotationHistory = createHistoryManager(document);
+			initAnnotationHistory();
 			hasUnsavedChanges = false;
 			selectedIds = new Set();
 			// Restore template preference from document if available
@@ -984,7 +1025,7 @@ function createWhiteboardStore() {
 		loadDocument(doc: WhiteboardDocument): void {
 			document = doc;
 			history = createHistoryManager(document);
-			annotationHistory = createHistoryManager(document);
+			initAnnotationHistory();
 			hasUnsavedChanges = false;
 			selectedIds = new Set();
 			// Restore template preference from document if available
@@ -1737,10 +1778,14 @@ function createWhiteboardStore() {
 
 		/**
 		 * Commit annotation move to history (call at end of drag)
+		 * Pushes the state before the drag to history
 		 */
 		commitMoveAnnotations(): void {
-			if (!document) return;
-			annotationHistory?.push(document);
+			if (!document || !annotationCurrent) return;
+			// annotationCurrent still has state from before live operations
+			annotationPast = [...annotationPast.slice(-MAX_ANNOTATION_HISTORY + 1), annotationCurrent];
+			annotationCurrent = getAnnotationsSnapshot();
+			annotationFuture = [];
 			hasUnsavedChanges = true;
 			scheduleAutosave();
 		},
@@ -1905,10 +1950,14 @@ function createWhiteboardStore() {
 
 		/**
 		 * Commit annotation rotation/resize to history (call at end of drag)
+		 * Pushes the state before the drag to history
 		 */
 		commitAnnotationTransform(): void {
-			if (!document) return;
-			annotationHistory?.push(document);
+			if (!document || !annotationCurrent) return;
+			// annotationCurrent still has state from before live operations
+			annotationPast = [...annotationPast.slice(-MAX_ANNOTATION_HISTORY + 1), annotationCurrent];
+			annotationCurrent = getAnnotationsSnapshot();
+			annotationFuture = [];
 			hasUnsavedChanges = true;
 			scheduleAutosave();
 		},
@@ -5151,46 +5200,54 @@ function createWhiteboardStore() {
 
 		/**
 		 * Undo last annotation action (separate history from elements)
-		 * Only restores annotations, not whiteboard elements
+		 * Only affects annotations, never whiteboard elements
 		 */
 		undoAnnotation(): void {
-			if (!document) return;
-			const previous = annotationHistory?.undo();
-			if (previous) {
-				// Only restore annotations from the history snapshot, keep current elements
-				document = {
-					...document,
-					updatedAt: new Date().toISOString(),
-					pages: document.pages.map((currentPage, i) => ({
-						...currentPage,
-						annotations: previous.pages[i]?.annotations ?? []
-					}))
-				};
-				hasUnsavedChanges = true;
-				scheduleAutosave();
-			}
+			if (!document || annotationPast.length === 0 || !annotationCurrent) return;
+
+			// Move current to future, pop from past
+			annotationFuture = [annotationCurrent, ...annotationFuture];
+			const previous = annotationPast[annotationPast.length - 1];
+			annotationPast = annotationPast.slice(0, -1);
+			annotationCurrent = previous;
+
+			// Apply annotations to document (keep all elements unchanged)
+			document = {
+				...document,
+				updatedAt: new Date().toISOString(),
+				pages: document.pages.map((page, i) => ({
+					...page,
+					annotations: previous[i] ?? []
+				}))
+			};
+			hasUnsavedChanges = true;
+			scheduleAutosave();
 		},
 
 		/**
 		 * Redo last undone annotation action (separate history from elements)
-		 * Only restores annotations, not whiteboard elements
+		 * Only affects annotations, never whiteboard elements
 		 */
 		redoAnnotation(): void {
-			if (!document) return;
-			const next = annotationHistory?.redo();
-			if (next) {
-				// Only restore annotations from the history snapshot, keep current elements
-				document = {
-					...document,
-					updatedAt: new Date().toISOString(),
-					pages: document.pages.map((currentPage, i) => ({
-						...currentPage,
-						annotations: next.pages[i]?.annotations ?? []
-					}))
-				};
-				hasUnsavedChanges = true;
-				scheduleAutosave();
-			}
+			if (!document || annotationFuture.length === 0 || !annotationCurrent) return;
+
+			// Move current to past, pop from future
+			annotationPast = [...annotationPast, annotationCurrent];
+			const next = annotationFuture[0];
+			annotationFuture = annotationFuture.slice(1);
+			annotationCurrent = next;
+
+			// Apply annotations to document (keep all elements unchanged)
+			document = {
+				...document,
+				updatedAt: new Date().toISOString(),
+				pages: document.pages.map((page, i) => ({
+					...page,
+					annotations: next[i] ?? []
+				}))
+			};
+			hasUnsavedChanges = true;
+			scheduleAutosave();
 		},
 
 		// === Instrument Operations ===
@@ -5325,7 +5382,7 @@ function createWhiteboardStore() {
 
 			document = result.document;
 			history = createHistoryManager(document);
-			annotationHistory = createHistoryManager(document);
+			initAnnotationHistory();
 			hasUnsavedChanges = false;
 			syncState = createInitialSyncState(); // Reset sync state
 			clearSyncStateFromLocalStorage();
