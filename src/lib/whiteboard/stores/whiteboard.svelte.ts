@@ -532,9 +532,19 @@ function createWhiteboardStore() {
 	let liveElbowPoints = $state<Map<string, readonly Point[]>>(new Map());
 
 	// === Live Annotation Transform State (separate from whiteboard elements) ===
-	const liveAnnotationRotations = $state<Map<string, number>>(new Map());
-	const liveAnnotationResizes = $state<
-		Map<string, { scaleX: number; scaleY: number; originX: number; originY: number }>
+	// These store visual-only transforms during drag, actual data is modified at commit
+	let liveAnnotationRotations = $state<Map<string, number>>(new Map());
+	let liveAnnotationResizes = $state<
+		Map<
+			string,
+			{
+				scaleX: number;
+				scaleY: number;
+				originX: number;
+				originY: number;
+				originalBBox: { minX: number; minY: number; maxX: number; maxY: number };
+			}
+		>
 	>(new Map());
 
 	// === Snapping State ===
@@ -1852,123 +1862,141 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Resize annotation by scaling from original bounding box (live - no history)
-		 * Works for shapes, stamps, and strokes
-		 * Use commitAnnotationTransform() to commit to history at end of drag
+		 * Set live annotation resize (visual only, no data modification)
+		 * Data is modified at commit
 		 */
-		resizeAnnotation(
+		setLiveAnnotationResize(
 			annotationId: string,
-			originalBBox: { minX: number; minY: number; maxX: number; maxY: number },
-			newBBox: { minX: number; minY: number; maxX: number; maxY: number },
-			originalValues?: {
-				start?: Point;
-				end?: Point;
-				position?: Point;
-				size?: number;
-				points?: readonly Point[];
-				width?: number;
-			}
+			scaleX: number,
+			scaleY: number,
+			originX: number,
+			originY: number,
+			originalBBox: { minX: number; minY: number; maxX: number; maxY: number }
 		): void {
-			updateCurrentPageLive((page) => ({
-				...page,
-				annotations: (page.annotations ?? []).map((a) => {
-					if (a.id !== annotationId) return a;
-
-					const origWidth = originalBBox.maxX - originalBBox.minX;
-					const origHeight = originalBBox.maxY - originalBBox.minY;
-					const newWidth = newBBox.maxX - newBBox.minX;
-					const newHeight = newBBox.maxY - newBBox.minY;
-
-					if (origWidth === 0 || origHeight === 0) return a;
-
-					const scaleX = newWidth / origWidth;
-					const scaleY = newHeight / origHeight;
-
-					if (a.type === 'stroke') {
-						// Use original values if provided, otherwise use current
-						const origPoints = originalValues?.points ?? a.points;
-						const origStrokeWidth = originalValues?.width ?? a.width;
-
-						// Transform all points relative to original bbox
-						const newPoints = origPoints.map((p) => ({
-							x: newBBox.minX + (p.x - originalBBox.minX) * scaleX,
-							y: newBBox.minY + (p.y - originalBBox.minY) * scaleY
-						}));
-
-						return {
-							...a,
-							points: newPoints,
-							width: origStrokeWidth * Math.min(scaleX, scaleY)
-						};
-					} else if (a.type === 'shape') {
-						// Use original values if provided, otherwise use current
-						const startX = originalValues?.start?.x ?? a.start.x;
-						const startY = originalValues?.start?.y ?? a.start.y;
-						const endX = originalValues?.end?.x ?? a.end.x;
-						const endY = originalValues?.end?.y ?? a.end.y;
-
-						const newStart = {
-							x: newBBox.minX + (startX - originalBBox.minX) * scaleX,
-							y: newBBox.minY + (startY - originalBBox.minY) * scaleY
-						};
-						const newEnd = {
-							x: newBBox.minX + (endX - originalBBox.minX) * scaleX,
-							y: newBBox.minY + (endY - originalBBox.minY) * scaleY
-						};
-
-						return { ...a, start: newStart, end: newEnd };
-					} else if (a.type === 'stamp') {
-						// Use original size if provided
-						const origSize = originalValues?.size ?? a.size;
-
-						const scale = newWidth / origWidth;
-						const newSize = Math.max(16, Math.min(96, origSize * scale));
-
-						// Center position in new bbox
-						const newPosition = {
-							x: (newBBox.minX + newBBox.maxX) / 2,
-							y: (newBBox.minY + newBBox.maxY) / 2
-						};
-
-						return { ...a, size: newSize, position: newPosition };
-					}
-
-					return a;
-				})
-			}));
+			const newMap = new Map(liveAnnotationResizes);
+			newMap.set(annotationId, { scaleX, scaleY, originX, originY, originalBBox });
+			liveAnnotationResizes = newMap;
 		},
 
 		/**
-		 * Rotate annotation (shapes, stamps, and strokes) - live, no history
-		 * Use commitAnnotationTransform() to commit to history at end of drag
+		 * Set live annotation rotation (visual only, no data modification)
+		 * Data is modified at commit
 		 */
-		rotateAnnotation(annotationId: string, rotation: number): void {
-			updateCurrentPageLive((page) => ({
-				...page,
-				annotations: (page.annotations ?? []).map((a) => {
-					if (a.id !== annotationId) return a;
-
-					if (a.type === 'shape' || a.type === 'stamp' || a.type === 'stroke') {
-						// Normalize rotation to 0-360
-						const normalizedRotation = ((rotation % 360) + 360) % 360;
-						return { ...a, rotation: normalizedRotation };
-					}
-
-					return a;
-				})
-			}));
+		setLiveAnnotationRotation(annotationId: string, rotation: number): void {
+			const newMap = new Map(liveAnnotationRotations);
+			newMap.set(annotationId, rotation);
+			liveAnnotationRotations = newMap;
 		},
 
 		/**
-		 * Commit annotation rotation/resize to history (call at end of drag)
-		 * Pushes the state before the drag to history
+		 * Clear live annotation transforms without committing
 		 */
-		commitAnnotationTransform(): void {
+		clearLiveAnnotationTransforms(annotationId: string): void {
+			if (liveAnnotationRotations.has(annotationId)) {
+				const newRotMap = new Map(liveAnnotationRotations);
+				newRotMap.delete(annotationId);
+				liveAnnotationRotations = newRotMap;
+			}
+			if (liveAnnotationResizes.has(annotationId)) {
+				const newResizeMap = new Map(liveAnnotationResizes);
+				newResizeMap.delete(annotationId);
+				liveAnnotationResizes = newResizeMap;
+			}
+		},
+
+		/**
+		 * Commit annotation transform to data and history
+		 * Applies the live transform to actual annotation data, then pushes to history
+		 */
+		commitAnnotationTransform(annotationId: string): void {
 			if (!document || !annotationCurrent) return;
-			// annotationCurrent still has state from before live operations
+
+			const liveRotation = liveAnnotationRotations.get(annotationId);
+			const liveResize = liveAnnotationResizes.get(annotationId);
+
+			if (liveRotation === undefined && !liveResize) return;
+
+			// Push current state to history before modifying
 			annotationPast = [...annotationPast.slice(-MAX_ANNOTATION_HISTORY + 1), annotationCurrent];
-			annotationCurrent = getAnnotationsSnapshot();
 			annotationFuture = [];
+
+			// Apply transforms to actual data
+			const doc = document;
+			document = {
+				...doc,
+				updatedAt: new Date().toISOString(),
+				pages: doc.pages.map((page, pageIndex) => {
+					if (pageIndex !== doc.currentPageIndex) return page;
+					return {
+						...page,
+						annotations: (page.annotations ?? []).map((a) => {
+							if (a.id !== annotationId) return a;
+
+							let result = a;
+
+							// Apply rotation
+							if (liveRotation !== undefined) {
+								const normalizedRotation = ((liveRotation % 360) + 360) % 360;
+								result = { ...result, rotation: normalizedRotation };
+							}
+
+							// Apply resize
+							if (liveResize) {
+								const { scaleX, scaleY, originalBBox } = liveResize;
+								const newBBox = {
+									minX: originalBBox.minX,
+									minY: originalBBox.minY,
+									maxX: originalBBox.minX + (originalBBox.maxX - originalBBox.minX) * scaleX,
+									maxY: originalBBox.minY + (originalBBox.maxY - originalBBox.minY) * scaleY
+								};
+
+								if (result.type === 'stroke') {
+									const newPoints = result.points.map((p) => ({
+										x: newBBox.minX + (p.x - originalBBox.minX) * scaleX,
+										y: newBBox.minY + (p.y - originalBBox.minY) * scaleY
+									}));
+									result = {
+										...result,
+										points: newPoints,
+										width: result.width * Math.min(scaleX, scaleY)
+									};
+								} else if (result.type === 'shape') {
+									result = {
+										...result,
+										start: {
+											x: newBBox.minX + (result.start.x - originalBBox.minX) * scaleX,
+											y: newBBox.minY + (result.start.y - originalBBox.minY) * scaleY
+										},
+										end: {
+											x: newBBox.minX + (result.end.x - originalBBox.minX) * scaleX,
+											y: newBBox.minY + (result.end.y - originalBBox.minY) * scaleY
+										}
+									};
+								} else if (result.type === 'stamp') {
+									const scale = scaleX; // Use uniform scale for stamps
+									result = {
+										...result,
+										size: Math.max(16, Math.min(96, result.size * scale)),
+										position: {
+											x: (newBBox.minX + newBBox.maxX) / 2,
+											y: (newBBox.minY + newBBox.maxY) / 2
+										}
+									};
+								}
+							}
+
+							return result;
+						})
+					};
+				})
+			};
+
+			// Update current snapshot
+			annotationCurrent = getAnnotationsSnapshot();
+
+			// Clear live transforms
+			this.clearLiveAnnotationTransforms(annotationId);
+
 			hasUnsavedChanges = true;
 			scheduleAutosave();
 		},
