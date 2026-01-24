@@ -6,8 +6,10 @@
 // Core components
 export { default as Deck } from './core/Deck.svelte';
 export { default as Slide } from './core/Slide.svelte';
+export { default as AnnotatableSlide } from './core/AnnotatableSlide.svelte';
 export { default as UbuMarkSlide } from './core/UbuMarkSlide.svelte';
 export { default as QuestionSlide } from './core/QuestionSlide.svelte';
+export { default as WhiteboardSlide } from './core/WhiteboardSlide.svelte';
 
 // Context
 export { DECK_CONTEXT_KEY } from './core/context.js';

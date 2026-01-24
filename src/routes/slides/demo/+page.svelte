@@ -1,7 +1,16 @@
 <script lang="ts">
-	import { Deck, Slide, UbuMarkSlide, QuestionSlide, type SlideChangedEvent } from '$lib/slides';
+	import {
+		Deck,
+		Slide,
+		AnnotatableSlide,
+		UbuMarkSlide,
+		QuestionSlide,
+		WhiteboardSlide,
+		type SlideChangedEvent
+	} from '$lib/slides';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { AnswerData } from '$lib/types/question-display';
+	import type { Page } from '$lib/whiteboard/types/document';
 
 	let currentSlide = $state({ h: 0, v: 0 });
 
@@ -84,6 +93,75 @@ Calculer la somme : $5 + 3 = ?$
 			]
 		}
 	};
+
+	// Example whiteboard page with some content
+	const whiteboardPage: Page = {
+		id: 'demo-page',
+		width: 1024,
+		height: 768,
+		background: {
+			type: 'plain',
+			style: 'grid',
+			color: '#ffffff',
+			gridSpacing: 20,
+			gridOpacity: 0.2
+		},
+		elements: [
+			// A rectangle
+			{
+				id: 'shape-1',
+				type: 'shape',
+				shapeType: 'rectangle',
+				start: { x: 100, y: 100 },
+				end: { x: 300, y: 200 },
+				color: '#3b82f6',
+				strokeWidth: 3,
+				opacity: 1,
+				fillMode: 'solid',
+				fill: '#dbeafe',
+				roughness: 1
+			},
+			// A circle
+			{
+				id: 'shape-2',
+				type: 'shape',
+				shapeType: 'circle',
+				start: { x: 400, y: 100 },
+				end: { x: 550, y: 250 },
+				color: '#10b981',
+				strokeWidth: 3,
+				opacity: 1,
+				fillMode: 'hachure',
+				fill: '#d1fae5',
+				roughness: 1
+			},
+			// An arrow
+			{
+				id: 'shape-3',
+				type: 'shape',
+				shapeType: 'arrow',
+				start: { x: 200, y: 350 },
+				end: { x: 450, y: 350 },
+				color: '#ef4444',
+				strokeWidth: 3,
+				opacity: 1,
+				roughness: 1
+			},
+			// A line
+			{
+				id: 'shape-4',
+				type: 'shape',
+				shapeType: 'line',
+				start: { x: 600, y: 150 },
+				end: { x: 900, y: 350 },
+				color: '#8b5cf6',
+				strokeWidth: 2,
+				opacity: 1,
+				strokeStyle: 'dashed',
+				roughness: 1
+			}
+		]
+	};
 </script>
 
 <svelte:head>
@@ -99,16 +177,19 @@ Calculer la somme : $5 + 3 = ?$
 			<p class="fragment">Construit sur reveal.js + UbuMark</p>
 		</Slide>
 
-		<!-- Slide 2: Features -->
-		<Slide transition="fade">
-			<h2>Fonctionnalites</h2>
-			<ul>
-				<li class="fragment">Navigation clavier et tactile</li>
-				<li class="fragment">Transitions fluides</li>
-				<li class="fragment">Fragments pour reveler le contenu</li>
-				<li class="fragment">Support formules mathematiques</li>
-			</ul>
-		</Slide>
+		<!-- Slide 2: Features (with annotations) -->
+		<AnnotatableSlide transition="fade">
+			{#snippet content()}
+				<h2>Fonctionnalites</h2>
+				<ul>
+					<li class="fragment">Navigation clavier et tactile</li>
+					<li class="fragment">Transitions fluides</li>
+					<li class="fragment">Fragments pour reveler le contenu</li>
+					<li class="fragment">Support formules mathematiques</li>
+					<li class="fragment">Annotations professeur sur toutes les slides!</li>
+				</ul>
+			{/snippet}
+		</AnnotatableSlide>
 
 		<!-- Slide 3: UbuMark with math formulas -->
 		<UbuMarkSlide content={mathSlideContent} background="#0f3460" transition="fade" />
@@ -125,7 +206,10 @@ Calculer la somme : $5 + 3 = ?$
 		<!-- Slide 7: Question Numerique -->
 		<QuestionSlide instance={numericalQuestion} background="#2d1b4e" onanswer={handleAnswer} />
 
-		<!-- Slide 8: Vertical slides -->
+		<!-- Slide 8: Whiteboard -->
+		<WhiteboardSlide page={whiteboardPage} background="#1a1a2e" />
+
+		<!-- Slide 9: Vertical slides -->
 		<Slide background="#16213e">
 			{#snippet vertical()}
 				<Slide>
@@ -145,7 +229,7 @@ Calculer la somme : $5 + 3 = ?$
 			<p>Horizontal et vertical</p>
 		</Slide>
 
-		<!-- Slide 9: End -->
+		<!-- Slide 10: End -->
 		<Slide transition="zoom" background="#e94560">
 			<h2>Fin de la demo</h2>
 			<p>Slide {currentSlide.h + 1}</p>
