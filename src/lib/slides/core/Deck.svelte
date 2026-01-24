@@ -456,18 +456,17 @@
 		height: var(--control-size);
 		border-radius: 50%;
 		border: none;
-		background: rgba(255, 255, 255, 0.1);
-		color: rgba(255, 255, 255, 0.8);
+		background: transparent;
+		color: rgba(255, 255, 255, 0.7);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		transition:
-			background-color 0.2s,
+			color 0.2s,
 			opacity 0.2s,
 			visibility 0.2s,
 			transform 0.2s;
-		backdrop-filter: blur(4px);
 		pointer-events: auto;
 
 		/* Hidden by default */
@@ -478,14 +477,12 @@
 
 	.control-btn.enabled {
 		visibility: visible;
-		opacity: 0.9;
+		opacity: 1;
 		transform: scale(1);
 	}
 
 	.control-btn.enabled:hover {
-		background: rgba(255, 255, 255, 0.2);
 		color: white;
-		opacity: 1;
 	}
 
 	.control-btn.enabled:active {
