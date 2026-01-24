@@ -8,6 +8,7 @@
 	 * - Variables (predefined via props)
 	 * - Fragments via {.fragment} marker
 	 */
+	import { tick } from 'svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { SlideProps } from './types.js';
 	import Slide from './Slide.svelte';
@@ -66,13 +67,11 @@
 	$effect(() => {
 		if (!slideElement) return;
 
-		// Small delay to ensure MarkdownRenderer has rendered
-		const timer = setTimeout(() => {
+		// Use tick() to ensure MarkdownRenderer has rendered to DOM
+		tick().then(() => {
 			processFragmentMarkers();
 			fragmentsReady = true;
-		}, 50);
-
-		return () => clearTimeout(timer);
+		});
 	});
 
 	function processFragmentMarkers() {
@@ -144,7 +143,11 @@
 </script>
 
 <Slide {...slideProps}>
-	<div class="ubumark-slide" class:fragments-ready={fragmentsReady} bind:this={slideElement}>
+	<div
+		class="ubumark-slide"
+		bind:this={slideElement}
+		style:visibility={fragmentsReady ? 'visible' : 'hidden'}
+	>
 		<MarkdownRenderer content={resolvedContent} />
 	</div>
 </Slide>
@@ -158,13 +161,6 @@
 		justify-content: center;
 		align-items: center;
 		text-align: center;
-		/* Hide content until fragments are processed to prevent flash */
-		opacity: 0;
-		transition: opacity 0.1s ease;
-	}
-
-	.ubumark-slide.fragments-ready {
-		opacity: 1;
 	}
 
 	/* Override markdown-content styles for slides */

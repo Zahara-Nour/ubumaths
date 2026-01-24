@@ -66,9 +66,52 @@ point -> `;
 <UbuMarkSlide content={listSlideContent} background="#16213e" />
 ```
 
-## Pistes de solution
+## Solution implementee
 
-1. **Pre-traiter le Markdown** : Ajouter les classes `.fragment` directement dans le HTML genere par MarkdownRenderer, avant le rendu
-2. **Utiliser `display: none`** au lieu de `opacity: 0` pour les fragments non-ready
-3. **Retarder la transition de slide** jusqu'a ce que les fragments soient prets
-4. **Utiliser `requestAnimationFrame`** ou `queueMicrotask` pour synchroniser avec le paint du navigateur
+### Cause racine identifiee
+
+Le probleme etait double :
+
+1. **CSS `opacity: 0` via styles scopes** - Les styles scoped de Svelte peuvent avoir un delai d'application, causant un flash avant que le style soit calcule
+2. **`setTimeout(50ms)` arbitraire** - Le delai de 50ms n'etait pas garanti de correspondre au rendu reel du DOM
+
+### Fix applique (UbuMarkSlide.svelte)
+
+1. **Style inline `visibility: hidden`** au lieu de CSS scoped :
+
+```svelte
+<div
+  class="ubumark-slide"
+  bind:this={slideElement}
+  style:visibility={fragmentsReady ? 'visible' : 'hidden'}
+>
+```
+
+- Les styles inline sont appliques immediatement (pas de parsing CSS)
+- `visibility: hidden` est plus robuste que `opacity: 0` (pas de probleme de transition)
+- L'element garde sa place dans le layout (pas de saut)
+
+2. **`tick()` au lieu de `setTimeout(50)`** :
+
+```typescript
+$effect(() => {
+	if (!slideElement) return;
+	tick().then(() => {
+		processFragmentMarkers();
+		fragmentsReady = true;
+	});
+});
+```
+
+- `tick()` attend que Svelte finisse de mettre a jour le DOM
+- Plus fiable qu'un delai arbitraire
+
+### Flux corrige
+
+1. Slide devient active → `visibility: hidden` immediat (style inline)
+2. MarkdownRenderer rend les `<li>` dans le DOM
+3. `tick()` attend la fin du rendu Svelte
+4. `processFragmentMarkers()` ajoute `.fragment` aux `<li>`
+5. CSS `.slide .fragment { opacity: 0 }` cache les fragments
+6. `fragmentsReady = true` → `visibility: visible`
+7. Contenu visible avec fragments correctement caches
