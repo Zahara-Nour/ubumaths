@@ -1,6 +1,47 @@
 # Analyse complète : Refonte du système d'Annotations
 
-## Contexte
+## Statut : IMPLÉMENTÉ ✅
+
+### Changements effectués (2024-01-24)
+
+1. **Store - Annotation History séparé** (`whiteboard.svelte.ts`)
+
+   - Ajout de `annotationHistory: HistoryManager` séparé du history principal
+   - Ajout de `canUndoAnnotation`, `canRedoAnnotation` getters
+   - Ajout de `undoAnnotation()`, `redoAnnotation()` méthodes
+   - Création de `updateCurrentPageAnnotations()` qui push dans annotationHistory
+
+2. **Store - Pattern Live sans History**
+
+   - `moveSelectedAnnotations()` utilise `updateCurrentPageLive()` (pas de history pendant drag)
+   - `resizeAnnotation()` utilise `updateCurrentPageLive()`
+   - `rotateAnnotation()` utilise `updateCurrentPageLive()`
+   - `commitMoveAnnotations()` et `commitAnnotationTransform()` pour commit final
+
+3. **AnnotationLayer.svelte - Commits à la fin des drags**
+
+   - `handleResizeEnd()` appelle `commitAnnotationTransform()`
+   - `handleRotateEnd()` appelle `commitAnnotationTransform()`
+   - `handlePointerUp()` (drag) appelle `commitMoveAnnotations()`
+   - **Fix pointer events** : `onpointermove`, `onpointerup`, `onpointercancel` sur les handles
+   - **Stroke dasharray** : support du style dashed pour les shapes
+
+4. **AnnotationToolbar.svelte - UI complète**
+   - Boutons Undo/Redo avec états disabled
+   - Sélecteur de style de trait (solid/dashed)
+   - Sélecteur de couleur de fond pour formes
+
+### Pattern implémenté
+
+```
+Pointer down → Sauvegarder état initial
+Pointer move → updateCurrentPageLive() (modifie données, PAS de history)
+Pointer up   → commitAnnotationTransform() (push dans annotationHistory)
+```
+
+---
+
+## Contexte (Historique)
 
 L'implémentation actuelle de AnnotationLayer a des problèmes fondamentaux de conception :
 

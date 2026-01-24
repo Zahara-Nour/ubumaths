@@ -425,6 +425,7 @@ function createWhiteboardStore() {
 	// === Document State ===
 	let document = $state<WhiteboardDocument | null>(null);
 	let history = $state<HistoryManager | null>(null);
+	let annotationHistory = $state<HistoryManager | null>(null);
 
 	// === Tool State ===
 	let currentTool = $state<Tool>('pen');
@@ -516,6 +517,12 @@ function createWhiteboardStore() {
 	// === Live Elbow Points State (for smooth elbow arrow re-routing during drag) ===
 	let liveElbowPoints = $state<Map<string, readonly Point[]>>(new Map());
 
+	// === Live Annotation Transform State (separate from whiteboard elements) ===
+	const liveAnnotationRotations = $state<Map<string, number>>(new Map());
+	const liveAnnotationResizes = $state<
+		Map<string, { scaleX: number; scaleY: number; originX: number; originY: number }>
+	>(new Map());
+
 	// === Snapping State ===
 	let snapIndicators = $state<SnapIndicator[]>([]);
 	let snappingEnabled = $state(true);
@@ -528,6 +535,8 @@ function createWhiteboardStore() {
 	const pageCount = $derived(document?.pages.length ?? 0);
 	const canUndo = $derived(history?.canUndo ?? false);
 	const canRedo = $derived(history?.canRedo ?? false);
+	const canUndoAnnotation = $derived(annotationHistory?.canUndo ?? false);
+	const canRedoAnnotation = $derived(annotationHistory?.canRedo ?? false);
 
 	// Combined tool state for convenience
 	// Use 'pen' as reference for shared settings when current tool is not configurable (e.g., select, pan)
@@ -754,6 +763,32 @@ function createWhiteboardStore() {
 		}));
 	}
 
+	/**
+	 * Update current page annotations with SEPARATE history (not shared with elements)
+	 * Used for annotation operations that should have their own undo/redo stack
+	 */
+	function updateCurrentPageAnnotations(updater: (page: Page) => Page): void {
+		if (!document || !currentPage) return;
+
+		const doc = document; // TypeScript narrowing helper
+		const updated = {
+			...doc,
+			updatedAt: new Date().toISOString(),
+			pages: doc.pages.map((p, i) => (i === doc.currentPageIndex ? updater(p) : p))
+		};
+
+		document = updated;
+		annotationHistory?.push(updated);
+		hasUnsavedChanges = true;
+		scheduleAutosave();
+
+		// Mark sync state as modified and schedule auto-sync
+		if (syncState.status !== 'disconnected') {
+			syncState = markAsModified(syncState);
+			scheduleAutoSync();
+		}
+	}
+
 	// === Public API ===
 
 	return {
@@ -787,6 +822,12 @@ function createWhiteboardStore() {
 		},
 		get canRedo() {
 			return canRedo;
+		},
+		get canUndoAnnotation() {
+			return canUndoAnnotation;
+		},
+		get canRedoAnnotation() {
+			return canRedoAnnotation;
 		},
 		get instruments() {
 			return document?.instruments ?? null;
@@ -876,6 +917,16 @@ function createWhiteboardStore() {
 			return liveElbowPoints;
 		},
 
+		/** Live annotation rotations during drag (separate from whiteboard elements) */
+		get liveAnnotationRotations() {
+			return liveAnnotationRotations;
+		},
+
+		/** Live annotation resizes during drag (separate from whiteboard elements) */
+		get liveAnnotationResizes() {
+			return liveAnnotationResizes;
+		},
+
 		/** Snap indicators for visual feedback during drag */
 		get snapIndicators() {
 			return snapIndicators;
@@ -895,6 +946,7 @@ function createWhiteboardStore() {
 		createNew(title: string = 'Sans titre', format: PageFormatKey = 'A4'): void {
 			document = createEmptyDocument(title, format);
 			history = createHistoryManager(document);
+			annotationHistory = createHistoryManager(document);
 			hasUnsavedChanges = false;
 			selectedIds = new Set();
 			// Reset sync state for new document
@@ -916,6 +968,7 @@ function createWhiteboardStore() {
 
 			document = result.document;
 			history = createHistoryManager(document);
+			annotationHistory = createHistoryManager(document);
 			hasUnsavedChanges = false;
 			selectedIds = new Set();
 			// Restore template preference from document if available
@@ -931,6 +984,7 @@ function createWhiteboardStore() {
 		loadDocument(doc: WhiteboardDocument): void {
 			document = doc;
 			history = createHistoryManager(document);
+			annotationHistory = createHistoryManager(document);
 			hasUnsavedChanges = false;
 			selectedIds = new Set();
 			// Restore template preference from document if available
@@ -1498,7 +1552,7 @@ function createWhiteboardStore() {
 				createdAt: Date.now()
 			};
 
-			updateCurrentPage((page) => ({
+			updateCurrentPageAnnotations((page) => ({
 				...page,
 				annotations: [...(page.annotations ?? []), stroke]
 			}));
@@ -1524,7 +1578,7 @@ function createWhiteboardStore() {
 				createdAt: Date.now()
 			};
 
-			updateCurrentPage((page) => ({
+			updateCurrentPageAnnotations((page) => ({
 				...page,
 				annotations: [...(page.annotations ?? []), shape]
 			}));
@@ -1549,7 +1603,7 @@ function createWhiteboardStore() {
 				createdAt: Date.now()
 			};
 
-			updateCurrentPage((page) => ({
+			updateCurrentPageAnnotations((page) => ({
 				...page,
 				annotations: [...(page.annotations ?? []), stamp]
 			}));
@@ -1559,7 +1613,7 @@ function createWhiteboardStore() {
 		 * Delete annotation by ID
 		 */
 		deleteAnnotation(annotationId: string): void {
-			updateCurrentPage((page) => ({
+			updateCurrentPageAnnotations((page) => ({
 				...page,
 				annotations: (page.annotations ?? []).filter((a) => a.id !== annotationId)
 			}));
@@ -1569,7 +1623,7 @@ function createWhiteboardStore() {
 		 * Clear all annotations on current page
 		 */
 		clearAnnotations(): void {
-			updateCurrentPage((page) => ({
+			updateCurrentPageAnnotations((page) => ({
 				...page,
 				annotations: []
 			}));
@@ -1608,7 +1662,7 @@ function createWhiteboardStore() {
 		deleteSelectedAnnotations(): void {
 			if (selectedAnnotationIds.size === 0) return;
 
-			updateCurrentPage((page) => ({
+			updateCurrentPageAnnotations((page) => ({
 				...page,
 				annotations: (page.annotations ?? []).filter((a) => !selectedAnnotationIds.has(a.id))
 			}));
@@ -1617,10 +1671,10 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Move annotation by delta
+		 * Move annotation by delta (commit - goes to history)
 		 */
 		moveAnnotation(annotationId: string, dx: number, dy: number): void {
-			updateCurrentPage((page) => ({
+			updateCurrentPageAnnotations((page) => ({
 				...page,
 				annotations: (page.annotations ?? []).map((a) => {
 					if (a.id !== annotationId) return a;
@@ -1648,12 +1702,13 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Move all selected annotations by delta
+		 * Move all selected annotations by delta (live - no history)
+		 * Use commitMoveAnnotations() to commit to history at end of drag
 		 */
 		moveSelectedAnnotations(dx: number, dy: number): void {
 			if (selectedAnnotationIds.size === 0) return;
 
-			updateCurrentPage((page) => ({
+			updateCurrentPageLive((page) => ({
 				...page,
 				annotations: (page.annotations ?? []).map((a) => {
 					if (!selectedAnnotationIds.has(a.id)) return a;
@@ -1681,10 +1736,20 @@ function createWhiteboardStore() {
 		},
 
 		/**
+		 * Commit annotation move to history (call at end of drag)
+		 */
+		commitMoveAnnotations(): void {
+			if (!document) return;
+			annotationHistory?.push(document);
+			hasUnsavedChanges = true;
+			scheduleAutosave();
+		},
+
+		/**
 		 * Update annotation color
 		 */
 		updateAnnotationColor(annotationId: string, color: string): void {
-			updateCurrentPage((page) => ({
+			updateCurrentPageAnnotations((page) => ({
 				...page,
 				annotations: (page.annotations ?? []).map((a) =>
 					a.id === annotationId ? { ...a, color } : a
@@ -1698,7 +1763,7 @@ function createWhiteboardStore() {
 		updateSelectedAnnotationsColor(color: string): void {
 			if (selectedAnnotationIds.size === 0) return;
 
-			updateCurrentPage((page) => ({
+			updateCurrentPageAnnotations((page) => ({
 				...page,
 				annotations: (page.annotations ?? []).map((a) =>
 					selectedAnnotationIds.has(a.id) ? { ...a, color } : a
@@ -1712,7 +1777,7 @@ function createWhiteboardStore() {
 		updateSelectedAnnotationsStrokeWidth(strokeWidth: number): void {
 			if (selectedAnnotationIds.size === 0) return;
 
-			updateCurrentPage((page) => ({
+			updateCurrentPageAnnotations((page) => ({
 				...page,
 				annotations: (page.annotations ?? []).map((a) => {
 					if (!selectedAnnotationIds.has(a.id)) return a;
@@ -1733,7 +1798,7 @@ function createWhiteboardStore() {
 		updateSelectedAnnotationsOpacity(opacity: number): void {
 			if (selectedAnnotationIds.size === 0) return;
 
-			updateCurrentPage((page) => ({
+			updateCurrentPageAnnotations((page) => ({
 				...page,
 				annotations: (page.annotations ?? []).map((a) =>
 					selectedAnnotationIds.has(a.id) ? { ...a, opacity } : a
@@ -1742,8 +1807,9 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Resize annotation shape by scaling from original bounding box
+		 * Resize annotation shape by scaling from original bounding box (live - no history)
 		 * Only works for shapes and stamps (not strokes)
+		 * Use commitResizeAnnotation() to commit to history at end of drag
 		 */
 		resizeAnnotation(
 			annotationId: string,
@@ -1756,7 +1822,7 @@ function createWhiteboardStore() {
 				size?: number;
 			}
 		): void {
-			updateCurrentPage((page) => ({
+			updateCurrentPageLive((page) => ({
 				...page,
 				annotations: (page.annotations ?? []).map((a) => {
 					if (a.id !== annotationId) return a;
@@ -1817,10 +1883,11 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Rotate annotation (shapes and stamps only)
+		 * Rotate annotation (shapes and stamps only) - live, no history
+		 * Use commitRotateAnnotation() to commit to history at end of drag
 		 */
 		rotateAnnotation(annotationId: string, rotation: number): void {
-			updateCurrentPage((page) => ({
+			updateCurrentPageLive((page) => ({
 				...page,
 				annotations: (page.annotations ?? []).map((a) => {
 					if (a.id !== annotationId) return a;
@@ -1834,6 +1901,16 @@ function createWhiteboardStore() {
 					return a;
 				})
 			}));
+		},
+
+		/**
+		 * Commit annotation rotation/resize to history (call at end of drag)
+		 */
+		commitAnnotationTransform(): void {
+			if (!document) return;
+			annotationHistory?.push(document);
+			hasUnsavedChanges = true;
+			scheduleAutosave();
 		},
 
 		// === Element Operations ===
@@ -5072,6 +5149,30 @@ function createWhiteboardStore() {
 			}
 		},
 
+		/**
+		 * Undo last annotation action (separate history from elements)
+		 */
+		undoAnnotation(): void {
+			const previous = annotationHistory?.undo();
+			if (previous) {
+				document = previous;
+				hasUnsavedChanges = true;
+				scheduleAutosave();
+			}
+		},
+
+		/**
+		 * Redo last undone annotation action (separate history from elements)
+		 */
+		redoAnnotation(): void {
+			const next = annotationHistory?.redo();
+			if (next) {
+				document = next;
+				hasUnsavedChanges = true;
+				scheduleAutosave();
+			}
+		},
+
 		// === Instrument Operations ===
 
 		/**
@@ -5204,6 +5305,7 @@ function createWhiteboardStore() {
 
 			document = result.document;
 			history = createHistoryManager(document);
+			annotationHistory = createHistoryManager(document);
 			hasUnsavedChanges = false;
 			syncState = createInitialSyncState(); // Reset sync state
 			clearSyncStateFromLocalStorage();
