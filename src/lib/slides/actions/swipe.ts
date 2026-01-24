@@ -129,16 +129,19 @@ export const swipe: Action<HTMLElement, SwipeOptions | undefined> = (node, optio
 
 /**
  * Create swipe handlers that work with a DeckStore
+ * Matches reveal.js behavior:
+ * - Horizontal swipes navigate horizontally (skip verticals)
+ * - Vertical swipes navigate vertically
  */
 export function createSwipeHandlers(store: {
-	next: () => void;
-	prev: () => void;
+	nextH: () => void;
+	prevH: () => void;
 	down?: () => void;
 	up?: () => void;
 }): SwipeHandlers {
 	return {
-		onSwipeLeft: () => store.next(),
-		onSwipeRight: () => store.prev(),
+		onSwipeLeft: () => store.nextH(), // Horizontal navigation only
+		onSwipeRight: () => store.prevH(), // Horizontal navigation only
 		onSwipeUp: store.down,
 		onSwipeDown: store.up
 	};

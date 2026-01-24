@@ -56,6 +56,11 @@ Migration from reveal.js to native Svelte 5 completed successfully.
 - [x] Fix vertical navigation: ArrowDown/ArrowUp now correctly navigate vertical slides
 - [x] Fix `down()`/`up()` fallback to horizontal navigation when no verticals
 - [x] Add up/down arrows to Deck controls when vertical slides exist
+- [x] Fix navigation to match reveal.js behavior:
+  - Left/Right arrows use `prevH()`/`nextH()` (horizontal only, skip verticals)
+  - Up/Down arrows use `up()`/`down()` (vertical only)
+  - Space/PageDown/N use `next()`/`prev()` (sequential with fragments/verticals)
+  - Swipe gestures updated to match (horizontal swipes = horizontal navigation)
 
 ### Design Decisions
 

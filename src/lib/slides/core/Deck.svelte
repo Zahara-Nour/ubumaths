@@ -197,23 +197,23 @@
 	});
 
 	// ==========================================================================
-	// Navigation Handlers
+	// Navigation Handlers (matching reveal.js behavior)
 	// ==========================================================================
 
-	function handlePrev() {
-		store.prev();
+	function handleLeft() {
+		store.prevH(); // Horizontal only (skip verticals)
 	}
 
-	function handleNext() {
-		store.next();
+	function handleRight() {
+		store.nextH(); // Horizontal only (skip verticals)
 	}
 
 	function handleUp() {
-		store.up();
+		store.up(); // Vertical only
 	}
 
 	function handleDown() {
-		store.down();
+		store.down(); // Vertical only
 	}
 
 	// ==========================================================================
@@ -241,13 +241,11 @@
 		return (store.h / (total - 1)) * 100;
 	});
 
-	// Navigation state for all 4 directions
-	const canGoLeft = $derived(store.h > 0 || store.v > 0 || store.f >= 0);
-	const canGoRight = $derived(
-		store.h < store.totalH - 1 ||
-			store.v < store.verticalCount - 1 ||
-			store.f < store.fragmentCount - 1
-	);
+	// Navigation state for all 4 directions (matching reveal.js behavior)
+	// Left/Right: horizontal navigation only
+	const canGoLeft = $derived(store.h > 0);
+	const canGoRight = $derived(store.h < store.totalH - 1);
+	// Up/Down: vertical navigation only
 	const canGoUp = $derived(store.v > 0);
 	const canGoDown = $derived(store.v < store.verticalCount - 1);
 </script>
@@ -273,15 +271,15 @@
 	<!-- Navigation controls (reveal.js style cross layout) -->
 	{#if showControls}
 		<div class="controls" class:edges={mergedConfig.controlsLayout === 'edges'}>
-			<!-- Left arrow -->
+			<!-- Left arrow (horizontal navigation only) -->
 			<button
 				type="button"
 				class="control-btn navigate-left"
 				class:enabled={canGoLeft}
 				class:faded={mergedConfig.controlsBackArrows === 'faded' && !canGoLeft}
-				onclick={handlePrev}
+				onclick={handleLeft}
 				disabled={!canGoLeft}
-				aria-label="Diapositive précédente"
+				aria-label="Diapositive horizontale précédente"
 			>
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<polyline points="15,18 9,12 15,6" />
@@ -316,14 +314,14 @@
 				</svg>
 			</button>
 
-			<!-- Right arrow -->
+			<!-- Right arrow (horizontal navigation only) -->
 			<button
 				type="button"
 				class="control-btn navigate-right"
 				class:enabled={canGoRight}
-				onclick={handleNext}
+				onclick={handleRight}
 				disabled={!canGoRight}
-				aria-label="Diapositive suivante"
+				aria-label="Diapositive horizontale suivante"
 			>
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<polyline points="9,6 15,12 9,18" />
