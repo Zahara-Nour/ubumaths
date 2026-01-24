@@ -1,6 +1,6 @@
 <script lang="ts">
 	/**
-	 * QuestionSlide - Interactive question in a reveal.js slide
+	 * QuestionSlide - Interactive question in a slide
 	 *
 	 * Displays a QuestionInstance with optional interactivity.
 	 * Supports all question types via existing input components.
@@ -64,7 +64,7 @@
 	let startTime = Date.now();
 	let attempts = $state(0);
 
-	// Initialize on mount (after reveal.js is ready)
+	// Initialize on mount
 	onMount(() => {
 		if (instance.type === 'fill_in_blanks' && instance.blanks) {
 			fillBlankValues = instance.blanks.map(() => '');

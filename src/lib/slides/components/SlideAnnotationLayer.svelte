@@ -159,7 +159,7 @@
 
 		const rect = svgElement.getBoundingClientRect();
 		// Calculate the actual scale from screen pixels to viewBox units
-		// This accounts for reveal.js CSS transforms
+		// This accounts for CSS transforms
 		const actualScaleX = rect.width / pageWidth;
 		const actualScaleY = rect.height / pageHeight;
 
