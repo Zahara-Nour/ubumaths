@@ -38,6 +38,8 @@
 		backgroundPosition = 'center',
 		backgroundRepeat = 'no-repeat',
 		backgroundOpacity = 1,
+		backgroundTransition,
+		backgroundInteractive = false,
 		state: slideState,
 		autoSlide,
 		autoAnimate,
@@ -90,9 +92,18 @@
 
 	const transitionDuration = $derived(TRANSITION_DURATIONS[transitionSpeed]);
 
+	// Effective background transition (falls back to slide transition)
+	const effectiveBackgroundTransition = $derived(backgroundTransition ?? transition);
+
 	// CSS transition style based on transition type
 	const transitionStyle = $derived.by(() => {
 		if (transition === 'none') return '';
+		return `transition: opacity ${transitionDuration}ms ease, visibility ${transitionDuration}ms ease, transform ${transitionDuration}ms ease;`;
+	});
+
+	// Background transition style (can differ from slide content transition)
+	const backgroundTransitionStyle = $derived.by(() => {
+		if (effectiveBackgroundTransition === 'none') return '';
 		return `transition: opacity ${transitionDuration}ms ease, visibility ${transitionDuration}ms ease, transform ${transitionDuration}ms ease;`;
 	});
 
@@ -125,11 +136,17 @@
 	// Background Style
 	// ============================================================================
 
-	const backgroundStyle = $derived.by(() => {
+	// Check if we have any background media (separate layer needed)
+	const hasBackgroundMedia = $derived(
+		!!background || !!backgroundImage || !!backgroundVideo || !!backgroundIframe
+	);
+
+	// Style for the background layer
+	const backgroundLayerStyle = $derived.by(() => {
 		const styles: string[] = [];
 
 		if (background) {
-			styles.push(`background-color: ${background}`);
+			styles.push(`background: ${background}`);
 		}
 		if (backgroundImage) {
 			styles.push(`background-image: url('${backgroundImage}')`);
@@ -140,14 +157,16 @@
 		if (backgroundOpacity !== 1) {
 			styles.push(`opacity: ${backgroundOpacity}`);
 		}
+		if (backgroundTransitionStyle) {
+			styles.push(backgroundTransitionStyle);
+		}
 
 		return styles.length > 0 ? styles.join('; ') : undefined;
 	});
 
-	// Combined style (background + transition)
-	const combinedStyle = $derived.by(() => {
+	// Slide style (just the transition, no background when we have a separate background layer)
+	const slideStyle = $derived.by(() => {
 		const parts: string[] = [];
-		if (backgroundStyle) parts.push(backgroundStyle);
 		if (transitionStyle) parts.push(transitionStyle);
 		return parts.length > 0 ? parts.join('; ') : undefined;
 	});
@@ -244,7 +263,8 @@
 			class:active={isActive}
 			class:past={isPast}
 			class:future={isFuture}
-			style={combinedStyle}
+			class:background-interactive={backgroundInteractive}
+			style={slideStyle}
 			{...dataAttributes}
 			onclick={handleSlideClick}
 		>
@@ -260,7 +280,8 @@
 		class:active={isActive}
 		class:past={isPast}
 		class:future={isFuture}
-		style={combinedStyle}
+		class:background-interactive={backgroundInteractive}
+		style={slideStyle}
 		{...dataAttributes}
 		onclick={handleSlideClick}
 	>
@@ -269,30 +290,43 @@
 {/if}
 
 {#snippet slideContent()}
-	{#if backgroundVideo}
-		<video class="slide-background-video" src={backgroundVideo} autoplay loop muted playsinline
-		></video>
+	<!-- Background layer (separate for independent transitions) -->
+	{#if hasBackgroundMedia}
+		<div
+			class="slide-background transition-{effectiveBackgroundTransition}"
+			class:active={isActive}
+			class:past={isPast}
+			class:future={isFuture}
+			style={backgroundLayerStyle}
+		>
+			{#if backgroundVideo}
+				<video class="slide-background-video" src={backgroundVideo} autoplay loop muted playsinline
+				></video>
+			{/if}
+			{#if backgroundIframe}
+				<iframe
+					class="slide-background-iframe"
+					class:interactive={backgroundInteractive}
+					src={backgroundIframe}
+					title="Background"
+					frameborder="0"
+				></iframe>
+			{/if}
+		</div>
 	{/if}
-	{#if backgroundIframe}
-		<iframe
-			class="slide-background-iframe"
-			src={backgroundIframe}
-			title="Background"
-			frameborder="0"
-		></iframe>
-	{/if}
-	<div class="slide-content">
+	<!-- Content layer -->
+	<div class="slide-content" class:background-interactive={backgroundInteractive}>
 		{@render children()}
 	</div>
 {/snippet}
 
 <style>
 	.vertical-stack {
-		position: relative;
+		position: absolute;
+		top: 0;
+		left: 0;
 		width: 100%;
 		height: 100%;
-		display: flex;
-		flex-direction: column;
 	}
 
 	/*
@@ -429,6 +463,68 @@
 		line-height: 1.5 !important;
 	}
 
+	/* =========================================================================
+	 * Background Layer (separate for independent transitions)
+	 * ========================================================================= */
+	.slide-background {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 0;
+		background-size: cover;
+		background-position: center;
+
+		/* Inactive state */
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	.slide-background.active {
+		opacity: 1;
+		visibility: visible;
+		transform: none;
+	}
+
+	/* Background transitions (same as slide transitions) */
+	.slide-background.transition-slide.past {
+		transform: translateX(-100%);
+	}
+	.slide-background.transition-slide.future {
+		transform: translateX(100%);
+	}
+
+	.slide-background.transition-zoom.past {
+		transform: scale(0.5);
+	}
+	.slide-background.transition-zoom.future {
+		transform: scale(2);
+	}
+
+	.slide-background.transition-convex.past {
+		transform: perspective(1000px) rotateY(-90deg) translateZ(300px);
+	}
+	.slide-background.transition-convex.future {
+		transform: perspective(1000px) rotateY(90deg) translateZ(300px);
+	}
+
+	.slide-background.transition-concave.past {
+		transform: perspective(1000px) rotateY(90deg) translateZ(300px);
+	}
+	.slide-background.transition-concave.future {
+		transform: perspective(1000px) rotateY(-90deg) translateZ(300px);
+	}
+
+	.slide-background.transition-fade.past,
+	.slide-background.transition-fade.future {
+		transform: none;
+	}
+
+	.slide-background.transition-none {
+		transition: none !important;
+	}
+
 	/* Background media */
 	.slide-background-video,
 	.slide-background-iframe {
@@ -439,10 +535,25 @@
 		height: 100%;
 		object-fit: cover;
 		z-index: 0;
+		pointer-events: none;
 	}
 
 	.slide-background-iframe {
 		border: none;
+	}
+
+	/* Interactive iframes */
+	.slide-background-iframe.interactive {
+		pointer-events: auto;
+	}
+
+	/* When background is interactive, content should allow clicks through */
+	.slide-content.background-interactive {
+		pointer-events: none;
+	}
+
+	.slide-content.background-interactive > * {
+		pointer-events: auto;
 	}
 
 	/*

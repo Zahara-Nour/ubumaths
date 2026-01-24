@@ -22,24 +22,28 @@
 		console.log('Answer submitted:', data);
 	}
 
-	// Example UbuMark content with math
-	const mathSlideContent = `
-## Formules mathematiques
+	// UbuMark content examples
+	const markdownExample = `
+## Support Markdown
 
-La formule quadratique : $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$
+Ecrivez du contenu en **Markdown** avec UbuMark.
+
+- Listes a puces
+- Formules $E = mc^2$
+- Et plus encore...
+`;
+
+	const mathExample = `
+## Formules Mathematiques
+
+La formule quadratique :
+
+$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
 
 Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 `;
 
-	const listSlideContent = `
-## Liste avec fragments
-
-- Premier point ->
-- Deuxieme point ->
-- Troisieme point ->
-`;
-
-	// Example Question Instance (QCM)
+	// Example QCM Question
 	const qcmQuestion: QuestionInstance = {
 		templateId: 'demo-qcm',
 		type: 'multiple_choice',
@@ -67,7 +71,7 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 		}
 	};
 
-	// Example whiteboard page with some content (4:3 ratio)
+	// Example whiteboard page
 	const whiteboardPage: Page = {
 		id: 'demo-page',
 		width: 1024,
@@ -80,7 +84,6 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 			gridOpacity: 0.2
 		},
 		elements: [
-			// A rectangle
 			{
 				id: 'shape-1',
 				type: 'shape',
@@ -94,7 +97,6 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 				fill: '#dbeafe',
 				roughness: 1
 			},
-			// A circle
 			{
 				id: 'shape-2',
 				type: 'shape',
@@ -108,7 +110,6 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 				fill: '#d1fae5',
 				roughness: 1
 			},
-			// An arrow
 			{
 				id: 'shape-3',
 				type: 'shape',
@@ -118,19 +119,6 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 				color: '#ef4444',
 				strokeWidth: 3,
 				opacity: 1,
-				roughness: 1
-			},
-			// A line
-			{
-				id: 'shape-4',
-				type: 'shape',
-				shapeType: 'line',
-				start: { x: 600, y: 150 },
-				end: { x: 900, y: 350 },
-				color: '#8b5cf6',
-				strokeWidth: 2,
-				opacity: 1,
-				strokeStyle: 'dashed',
 				roughness: 1
 			}
 		]
@@ -143,167 +131,365 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 
 <div class="deck-container">
 	<Deck onslidechanged={handleSlideChanged}>
-		<!-- Slide 1: Title (fade par defaut) -->
+		<!-- ============================================ -->
+		<!-- INTRO -->
+		<!-- ============================================ -->
+
 		<Slide background="#1a1a2e">
 			<h1>UbuSlides</h1>
-			<p>Systeme de presentation pour UbuMaths</p>
-			<p class="fragment">Construit avec Svelte 5 + UbuMark</p>
+			<h3>Systeme de presentation pour UbuMaths</h3>
+			<p>
+				<small
+					>Inspire de <a href="https://revealjs.com">reveal.js</a> - Construit avec Svelte 5</small
+				>
+			</p>
+		</Slide>
+
+		<Slide background="#1a1a2e">
+			<h2>Bienvenue</h2>
+			<p>
+				UbuSlides permet de creer des presentations interactives avec support mathematique integre.
+			</p>
 		</Slide>
 
 		<!-- ============================================ -->
-		<!-- DEMO DES TRANSITIONS -->
+		<!-- VERTICAL SLIDES -->
 		<!-- ============================================ -->
 
-		<!-- Transition: FADE -->
-		<Slide transition="fade" background="#2563eb">
-			<h2>Transition: FADE</h2>
-			<p>Fondu enchaine (opacity)</p>
-			<p style="font-size: 0.6em; opacity: 0.7;">Les 3 prochaines slides utilisent aussi FADE</p>
-		</Slide>
-
-		<Slide transition="fade" background="#1d4ed8">
-			<h2>FADE 2/3</h2>
-			<p>L'ancien slide disparait progressivement</p>
-		</Slide>
-
-		<Slide transition="fade" background="#1e40af">
-			<h2>FADE 3/3</h2>
-			<p>Le nouveau slide apparait progressivement</p>
-		</Slide>
-
-		<!-- Transition: SLIDE -->
-		<Slide transition="slide" background="#059669">
-			<h2>Transition: SLIDE</h2>
-			<p>Glissement horizontal</p>
-			<p style="font-size: 0.6em; opacity: 0.7;">Les 3 prochaines slides utilisent SLIDE</p>
-		</Slide>
-
-		<Slide transition="slide" background="#047857">
-			<h2>SLIDE 2/3</h2>
-			<p>L'ancien part a gauche</p>
-		</Slide>
-
-		<Slide transition="slide" background="#065f46">
-			<h2>SLIDE 3/3</h2>
-			<p>Le nouveau arrive de droite</p>
-		</Slide>
-
-		<!-- Transition: ZOOM -->
-		<Slide transition="zoom" background="#dc2626">
-			<h2>Transition: ZOOM</h2>
-			<p>Effet de zoom avant/arriere</p>
-			<p style="font-size: 0.6em; opacity: 0.7;">Les 3 prochaines slides utilisent ZOOM</p>
-		</Slide>
-
-		<Slide transition="zoom" background="#b91c1c">
-			<h2>ZOOM 2/3</h2>
-			<p>L'ancien retrecit</p>
-		</Slide>
-
-		<Slide transition="zoom" background="#991b1b">
-			<h2>ZOOM 3/3</h2>
-			<p>Le nouveau grandit</p>
-		</Slide>
-
-		<!-- Transition: CONVEX -->
-		<Slide transition="convex" background="#7c3aed">
-			<h2>Transition: CONVEX</h2>
-			<p>Rotation 3D vers l'exterieur</p>
-			<p style="font-size: 0.6em; opacity: 0.7;">Les 3 prochaines slides utilisent CONVEX</p>
-		</Slide>
-
-		<Slide transition="convex" background="#6d28d9">
-			<h2>CONVEX 2/3</h2>
-			<p>Effet de page qui tourne</p>
-		</Slide>
-
-		<Slide transition="convex" background="#5b21b6">
-			<h2>CONVEX 3/3</h2>
-			<p>Rotation vers l'exterieur</p>
-		</Slide>
-
-		<!-- Transition: CONCAVE -->
-		<Slide transition="concave" background="#ea580c">
-			<h2>Transition: CONCAVE</h2>
-			<p>Rotation 3D vers l'interieur</p>
-			<p style="font-size: 0.6em; opacity: 0.7;">Les 3 prochaines slides utilisent CONCAVE</p>
-		</Slide>
-
-		<Slide transition="concave" background="#c2410c">
-			<h2>CONCAVE 2/3</h2>
-			<p>Effet de carrousel</p>
-		</Slide>
-
-		<Slide transition="concave" background="#9a3412">
-			<h2>CONCAVE 3/3</h2>
-			<p>Rotation vers l'interieur</p>
-		</Slide>
-
-		<!-- Transition: NONE -->
-		<Slide transition="none" background="#475569">
-			<h2>Transition: NONE</h2>
-			<p>Changement instantane</p>
-		</Slide>
-
-		<Slide transition="none" background="#334155">
-			<h2>NONE 2/2</h2>
-			<p>Pas d'animation</p>
-		</Slide>
-
-		<!-- ============================================ -->
-		<!-- AUTRES FONCTIONNALITES -->
-		<!-- ============================================ -->
-
-		<!-- Features (with annotations) -->
-		<AnnotatableSlide transition="fade">
-			{#snippet content()}
-				<h2>Fonctionnalites</h2>
-				<ul>
-					<li class="fragment">Navigation clavier et tactile</li>
-					<li class="fragment">Transitions fluides</li>
-					<li class="fragment">Fragments pour reveler le contenu</li>
-					<li class="fragment">Support formules mathematiques</li>
-					<li class="fragment">Annotations professeur!</li>
-				</ul>
-			{/snippet}
-		</AnnotatableSlide>
-
-		<!-- UbuMark with math formulas -->
-		<UbuMarkSlide content={mathSlideContent} background="#0f3460" transition="fade" />
-
-		<!-- UbuMark with fragments -->
-		<UbuMarkSlide content={listSlideContent} background="#16213e" transition="fade" />
-
-		<!-- Question QCM -->
-		<QuestionSlide instance={qcmQuestion} background="#1e3a5f" onanswer={handleAnswer} />
-
-		<!-- Whiteboard -->
-		<WhiteboardSlide page={whiteboardPage} background="#1a1a2e" />
-
-		<!-- Vertical slides -->
-		<Slide transition="fade" background="#16213e">
+		<Slide background="#2d3436">
 			{#snippet vertical()}
 				<Slide>
-					<h2>Slides verticaux</h2>
-					<p>Descendez pour voir plus</p>
+					<h2>Slides Verticaux</h2>
+					<p>Les slides peuvent etre imbriquees.</p>
+					<p>Utilisez les fleches <strong>haut/bas</strong> pour naviguer.</p>
+					<br />
+					<p style="font-size: 0.6em; opacity: 0.7;">↓ Descendez ↓</p>
 				</Slide>
 				<Slide>
-					<h3>Sous-slide 1</h3>
-					<p>Contenu organise hierarchiquement</p>
+					<h2>Niveau 1</h2>
+					<p>
+						Les slides verticaux sont utiles pour ajouter des details sous une slide principale.
+					</p>
 				</Slide>
 				<Slide>
-					<h3>Sous-slide 2</h3>
-					<p>Parfait pour les details</p>
+					<h2>Niveau 2</h2>
+					<p>C'est tout, remontons !</p>
+					<p style="font-size: 0.6em; opacity: 0.7;">↑ ou → pour continuer</p>
 				</Slide>
 			{/snippet}
 			<h2>Navigation 2D</h2>
 			<p>Horizontal et vertical</p>
 		</Slide>
 
-		<!-- End -->
+		<!-- ============================================ -->
+		<!-- TRANSITIONS -->
+		<!-- ============================================ -->
+
+		<Slide transition="fade" background="#0f3460">
+			<h2>Styles de Transition</h2>
+			<p>Plusieurs transitions disponibles :</p>
+			<p style="font-size: 0.8em;">
+				<strong>None</strong> -
+				<strong>Fade</strong> -
+				<strong>Slide</strong> -
+				<strong>Convex</strong> -
+				<strong>Concave</strong> -
+				<strong>Zoom</strong>
+			</p>
+		</Slide>
+
+		<Slide transition="slide" background="#1e3a5f">
+			<h2>Transition: Slide</h2>
+			<p>Glissement horizontal</p>
+		</Slide>
+
+		<Slide transition="convex" background="#2d3436">
+			<h2>Transition: Convex</h2>
+			<p>Rotation 3D vers l'exterieur</p>
+		</Slide>
+
+		<Slide transition="concave" background="#1e272e">
+			<h2>Transition: Concave</h2>
+			<p>Rotation 3D vers l'interieur</p>
+		</Slide>
+
+		<Slide transition="zoom" background="#4a1942">
+			<h2>Transition: Zoom</h2>
+			<p>Effet de zoom avant/arriere</p>
+		</Slide>
+
+		<!-- ============================================ -->
+		<!-- FRAGMENTS -->
+		<!-- ============================================ -->
+
+		<Slide background="#16213e">
+			{#snippet vertical()}
+				<Slide>
+					<h2>Fragments</h2>
+					<p>Appuyez sur la fleche suivante...</p>
+					<p class="fragment">... pour reveler progressivement...</p>
+					<p>
+						<span class="fragment">... une</span>
+						<span class="fragment">slide</span>
+						<span class="fragment">fragmentee.</span>
+					</p>
+				</Slide>
+				<Slide>
+					<h2>Styles de Fragments</h2>
+					<p>Differents types de fragments :</p>
+					<p class="fragment grow">grow</p>
+					<p class="fragment shrink">shrink</p>
+					<p class="fragment fade-out">fade-out</p>
+					<p>
+						<span class="fragment slide-right" style="display: inline-block;">slide-right, </span>
+						<span class="fragment slide-up" style="display: inline-block;">up, </span>
+						<span class="fragment slide-down" style="display: inline-block;">down, </span>
+						<span class="fragment slide-left" style="display: inline-block;">left</span>
+					</p>
+					<p>
+						Highlight <span class="fragment highlight-red">red</span>
+						<span class="fragment highlight-blue">blue</span>
+						<span class="fragment highlight-green">green</span>
+					</p>
+				</Slide>
+			{/snippet}
+			<h2>Fragments</h2>
+			<p>Revelez le contenu progressivement</p>
+		</Slide>
+
+		<!-- ============================================ -->
+		<!-- BACKGROUNDS -->
+		<!-- ============================================ -->
+
+		<Slide background="#dddddd">
+			{#snippet vertical()}
+				<Slide>
+					<h2 style="color: #333;">Arriere-plans</h2>
+					<p style="color: #333;">
+						Utilisez <code>background="#dddddd"</code> pour changer la couleur.
+					</p>
+					<p style="font-size: 0.6em; opacity: 0.7; color: #333;">↓ Descendez ↓</p>
+				</Slide>
+				<Slide background="linear-gradient(to bottom, #283b95, #17b2c3)">
+					<h2>Gradients</h2>
+					<p>Utilisez des gradients CSS</p>
+					<p style="font-size: 0.6em;">
+						<code style="color: #fff;">background="linear-gradient(...)"</code>
+					</p>
+				</Slide>
+				<Slide
+					backgroundImage="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80"
+					backgroundSize="cover"
+				>
+					<div style="background: rgba(0,0,0,0.6); padding: 1em 2em; border-radius: 10px;">
+						<h2>Images</h2>
+						<p>Arriere-plans avec images</p>
+						<p style="font-size: 0.6em;">
+							<code>backgroundImage="url..."</code>
+						</p>
+					</div>
+				</Slide>
+				<Slide
+					backgroundImage="https://images.unsplash.com/photo-1557683316-973673bdar25?w=400&q=80"
+					backgroundRepeat="repeat"
+					backgroundSize="200px"
+				>
+					<div style="background: rgba(0,0,0,0.7); padding: 1em 2em; border-radius: 10px;">
+						<h2 style="color: #fff;">Motifs repetes</h2>
+						<p style="color: #fff;">Images en mosaique</p>
+						<p style="font-size: 0.6em; color: #fff;">
+							<code>backgroundRepeat="repeat"</code>
+						</p>
+					</div>
+				</Slide>
+				<Slide
+					backgroundVideo="https://static.slid.es/site/homepage/v1/homepage-video-editor.mp4"
+					background="#000"
+				>
+					<div style="background: rgba(0,0,0,0.8); padding: 1em 2em; border-radius: 10px;">
+						<h2>Videos</h2>
+						<p>Arriere-plans video</p>
+						<p style="font-size: 0.6em;">
+							<code>backgroundVideo="url..."</code>
+						</p>
+					</div>
+				</Slide>
+				<Slide
+					backgroundIframe="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=0"
+					background="#000"
+				>
+					<div
+						style="background: rgba(0,0,0,0.8); padding: 1em 2em; border-radius: 10px; position: relative; z-index: 10;"
+					>
+						<h2>Iframes</h2>
+						<p>Contenu web en arriere-plan</p>
+						<p style="font-size: 0.6em;">
+							<code>backgroundIframe="url..."</code>
+						</p>
+					</div>
+				</Slide>
+				<Slide backgroundImage="https://i.giphy.com/90F8aUepslB84.gif" backgroundSize="cover">
+					<div style="background: rgba(0,0,0,0.6); padding: 1em 2em; border-radius: 10px;">
+						<h2>... et les GIFs !</h2>
+						<p style="font-size: 0.7em;">Les GIFs animes fonctionnent aussi</p>
+					</div>
+				</Slide>
+			{/snippet}
+			<h2 style="color: #333;">Arriere-plans de Slides</h2>
+			<p style="color: #333;">Couleurs, gradients, images, videos, iframes</p>
+		</Slide>
+
+		<!-- Background Transitions -->
+		<Slide transition="slide" background="#4d7e65" backgroundTransition="zoom">
+			<h2>Transitions d'arriere-plan</h2>
+			<p>L'arriere-plan peut avoir une transition differente du contenu</p>
+			<p style="font-size: 0.6em;">
+				<code>transition="slide" backgroundTransition="zoom"</code>
+			</p>
+		</Slide>
+
+		<Slide transition="slide" background="#b5533c" backgroundTransition="zoom">
+			<h2>Transitions d'arriere-plan</h2>
+			<p>Ici le contenu glisse, mais l'arriere-plan fait un zoom</p>
+		</Slide>
+
+		<!-- Interactive Iframe -->
+		<Slide
+			backgroundIframe="https://en.wikipedia.org/wiki/Mathematics"
+			backgroundInteractive={true}
+			background="#000"
+		>
+			<div
+				style="position: absolute; width: 40%; right: 2em; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.9); padding: 1.5em; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);"
+			>
+				<h2 style="font-size: 1.2em;">Iframe Interactif</h2>
+				<p style="font-size: 0.7em;">Vous pouvez interagir avec la page en arriere-plan !</p>
+				<p style="font-size: 0.5em; opacity: 0.8;">
+					<code>backgroundInteractive={'{true}'}</code>
+				</p>
+			</div>
+		</Slide>
+
+		<!-- ============================================ -->
+		<!-- UBUMARK / MARKDOWN -->
+		<!-- ============================================ -->
+
+		<UbuMarkSlide content={markdownExample} background="#0f3460" transition="fade" />
+
+		<UbuMarkSlide content={mathExample} background="#16213e" transition="fade" />
+
+		<!-- ============================================ -->
+		<!-- ANNOTATIONS -->
+		<!-- ============================================ -->
+
+		<AnnotatableSlide transition="fade">
+			{#snippet content()}
+				<h2>Annotations</h2>
+				<p>Les enseignants peuvent annoter les slides en direct !</p>
+				<ul>
+					<li class="fragment">Crayon et surligneur</li>
+					<li class="fragment">Plusieurs couleurs</li>
+					<li class="fragment">Undo/Redo</li>
+					<li class="fragment">Effacement</li>
+				</ul>
+				<p class="fragment" style="font-size: 0.7em; opacity: 0.8;">
+					Utilisez la barre d'outils en bas pour dessiner
+				</p>
+			{/snippet}
+		</AnnotatableSlide>
+
+		<!-- ============================================ -->
+		<!-- QUESTIONS -->
+		<!-- ============================================ -->
+
+		<Slide background="#1e3a5f" transition="fade">
+			<h2>Questions Interactives</h2>
+			<p>Integrez des questions directement dans vos presentations</p>
+			<ul>
+				<li class="fragment">QCM (choix multiples)</li>
+				<li class="fragment">Reponses numeriques</li>
+				<li class="fragment">Correction automatique</li>
+			</ul>
+		</Slide>
+
+		<QuestionSlide instance={qcmQuestion} background="#2d1b4e" onanswer={handleAnswer} />
+
+		<!-- ============================================ -->
+		<!-- WHITEBOARD -->
+		<!-- ============================================ -->
+
+		<Slide background="#1a1a2e" transition="fade">
+			<h2>Tableau Blanc</h2>
+			<p>Integrez un tableau blanc interactif</p>
+			<ul>
+				<li class="fragment">Formes geometriques</li>
+				<li class="fragment">Dessin libre</li>
+				<li class="fragment">Style "fait main" (Rough.js)</li>
+			</ul>
+		</Slide>
+
+		<WhiteboardSlide page={whiteboardPage} background="#1a1a2e" />
+
+		<!-- ============================================ -->
+		<!-- NAVIGATION -->
+		<!-- ============================================ -->
+
+		<Slide background="#2d3436" transition="fade">
+			<h2>Navigation</h2>
+			<p>Optimise pour le tactile et le clavier</p>
+			<table style="font-size: 0.7em; margin: 0 auto;">
+				<tbody>
+					<tr>
+						<td><strong>Fleches</strong></td>
+						<td>Navigation directionnelle</td>
+					</tr>
+					<tr>
+						<td><strong>Espace</strong></td>
+						<td>Slide/fragment suivant</td>
+					</tr>
+					<tr>
+						<td><strong>Echap</strong></td>
+						<td>Vue d'ensemble</td>
+					</tr>
+					<tr>
+						<td><strong>B / .</strong></td>
+						<td>Pause (ecran noir)</td>
+					</tr>
+					<tr>
+						<td><strong>Swipe</strong></td>
+						<td>Navigation tactile</td>
+					</tr>
+				</tbody>
+			</table>
+		</Slide>
+
+		<!-- ============================================ -->
+		<!-- FEATURES -->
+		<!-- ============================================ -->
+
+		<Slide background="#1e272e" transition="fade">
+			<h2>Et plus encore...</h2>
+			<ul>
+				<li class="fragment">Support RTL</li>
+				<li class="fragment">API JavaScript</li>
+				<li class="fragment">Navigation par hash (#/2/1)</li>
+				<li class="fragment">Barre de progression</li>
+				<li class="fragment">Numerotation des slides</li>
+			</ul>
+		</Slide>
+
+		<!-- ============================================ -->
+		<!-- END -->
+		<!-- ============================================ -->
+
 		<Slide transition="zoom" background="#e94560">
-			<h2>Fin de la demo</h2>
-			<p>Slide {currentSlide.h + 1}</p>
+			<h1>FIN</h1>
+			<p>
+				Slide {currentSlide.h + 1}{currentSlide.v > 0 ? `.${currentSlide.v + 1}` : ''}
+			</p>
+			<p style="font-size: 0.7em;">
+				<a href="https://github.com/ubumaths" style="color: white;">Code source</a>
+			</p>
 		</Slide>
 	</Deck>
 </div>
@@ -317,11 +503,10 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 		height: 100vh;
 		overflow: hidden;
 		background: #000;
-		/* Base font-size pour slides (peut être reset par Tailwind) */
 		font-size: 42px;
 	}
 
-	/* Les styles doivent être globaux pour atteindre le contenu des slides */
+	/* Global styles for slide content */
 	.deck-container :global(h1) {
 		font-size: 2.5em !important;
 		margin-bottom: 0.5em;
@@ -334,6 +519,7 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 
 	.deck-container :global(h3) {
 		font-size: 1.4em !important;
+		margin-bottom: 0.5em;
 	}
 
 	.deck-container :global(p) {
@@ -350,15 +536,29 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 		font-size: 0.9em !important;
 	}
 
-	.deck-container :global(.math-placeholder) {
-		margin-top: 1em;
-		padding: 1em;
-		background: rgba(255, 255, 255, 0.1);
-		border-radius: 8px;
+	.deck-container :global(table) {
+		border-collapse: collapse;
+	}
+
+	.deck-container :global(td) {
+		padding: 0.5em 1em;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
+	.deck-container :global(a) {
+		color: #42affa;
 	}
 
 	.deck-container :global(code) {
-		font-size: 1.2em;
+		font-size: 0.9em;
 		color: #ffd700;
+		background: rgba(255, 255, 255, 0.1);
+		padding: 0.1em 0.3em;
+		border-radius: 4px;
+	}
+
+	.deck-container :global(small) {
+		font-size: 0.6em;
+		opacity: 0.8;
 	}
 </style>
