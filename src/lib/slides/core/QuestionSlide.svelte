@@ -6,7 +6,6 @@
 	 * Supports all question types via existing input components.
 	 */
 	import { onMount } from 'svelte';
-	import { writable } from 'svelte/store';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { AnswerData, ValidationResult } from '$lib/types/question-display';
 	import type { SlideProps } from './types.js';
@@ -56,19 +55,19 @@
 		data
 	}: Props = $props();
 
-	// Answer state using stores (runes have issues in slide context)
-	const userAnswer = writable('');
-	const selectedChoices = writable<number[]>([]);
-	const fillBlankValues = writable<string[]>([]);
-	const isSubmitted = writable(false);
-	const validationResult = writable<ValidationResult | null>(null);
+	// Answer state
+	let userAnswer = $state('');
+	let selectedChoices: number[] = $state([]);
+	let fillBlankValues: string[] = $state([]);
+	let isSubmitted = $state(false);
+	let validationResult: ValidationResult | null = $state(null);
 	let startTime = Date.now();
-	const attempts = writable(0);
+	let attempts = $state(0);
 
 	// Initialize on mount (after reveal.js is ready)
 	onMount(() => {
 		if (instance.type === 'fill_in_blanks' && instance.blanks) {
-			fillBlankValues.set(instance.blanks.map(() => ''));
+			fillBlankValues = instance.blanks.map(() => '');
 		}
 	});
 
@@ -79,13 +78,13 @@
 			case 'numerical_decimal':
 			case 'numerical_rounded':
 			case 'algebraic_transform':
-				return $userAnswer.trim().length > 0;
+				return userAnswer.trim().length > 0;
 			case 'fill_in_blanks':
-				return $fillBlankValues.every((v) => v.trim().length > 0);
+				return fillBlankValues.every((v) => v.trim().length > 0);
 			case 'multiple_choice':
-				return $selectedChoices.length > 0;
+				return selectedChoices.length > 0;
 			default:
-				return $userAnswer.trim().length > 0;
+				return userAnswer.trim().length > 0;
 		}
 	}
 
@@ -93,29 +92,29 @@
 	function prepareAnswerValue(): string | string[] | number | number[] {
 		switch (instance.type) {
 			case 'fill_in_blanks':
-				return $fillBlankValues;
+				return fillBlankValues;
 			case 'multiple_choice':
-				return instance.multipleAnswers ? $selectedChoices : $selectedChoices[0];
+				return instance.multipleAnswers ? selectedChoices : selectedChoices[0];
 			default:
-				return $userAnswer;
+				return userAnswer;
 		}
 	}
 
 	// Handle answer submission
 	function handleSubmit() {
-		if (!interactive || $isSubmitted || !hasValidInput()) return;
+		if (!interactive || isSubmitted || !hasValidInput()) return;
 
-		attempts.update((n) => n + 1);
+		attempts += 1;
 		const answer = prepareAnswerValue();
 		const result = validateAnswer(answer, instance);
-		validationResult.set(result);
-		isSubmitted.set(true);
+		validationResult = result;
+		isSubmitted = true;
 
 		const answerData: AnswerData = {
 			value: answer,
 			isCorrect: result.isCorrect,
 			timeSpent: Math.round((Date.now() - startTime) / 1000),
-			attempts: $attempts,
+			attempts,
 			submittedAt: new Date().toISOString()
 		};
 
@@ -143,9 +142,9 @@
 		data
 	};
 
-	// Computed states (reactive with stores)
-	$: isInputDisabled = !interactive || $isSubmitted;
-	$: canSubmit = interactive && !$isSubmitted && hasValidInput();
+	// Computed states
+	const isInputDisabled = $derived(!interactive || isSubmitted);
+	const canSubmit = $derived(interactive && !isSubmitted && hasValidInput());
 </script>
 
 <Slide {...slideProps}>
@@ -160,13 +159,13 @@
 			<div class="answer-section">
 				{#if instance.type === 'numerical_exact' || instance.type === 'numerical_decimal' || instance.type === 'numerical_rounded'}
 					<NumericalInput
-						bind:value={$userAnswer}
+						bind:value={userAnswer}
 						disabled={isInputDisabled}
 						onSubmit={handleSubmit}
 					/>
 				{:else if instance.type === 'algebraic_transform'}
 					<AlgebraicInput
-						bind:value={$userAnswer}
+						bind:value={userAnswer}
 						disabled={isInputDisabled}
 						onSubmit={handleSubmit}
 					/>
@@ -174,7 +173,7 @@
 					<FillBlanksInput
 						statement={instance.statement}
 						blanks={instance.blanks || []}
-						bind:values={$fillBlankValues}
+						bind:values={fillBlankValues}
 						disabled={isInputDisabled}
 						validationResults={[]}
 						onSubmit={handleSubmit}
@@ -182,21 +181,21 @@
 				{:else if instance.type === 'multiple_choice'}
 					<MultipleChoiceInput
 						choices={instance.shuffledChoices || []}
-						bind:selectedIndexes={$selectedChoices}
+						bind:selectedIndexes={selectedChoices}
 						multipleAnswers={instance.multipleAnswers}
 						disabled={isInputDisabled}
-						showValidation={$isSubmitted}
+						showValidation={isSubmitted}
 					/>
 				{:else}
 					<NumericalInput
-						bind:value={$userAnswer}
+						bind:value={userAnswer}
 						disabled={isInputDisabled}
 						onSubmit={handleSubmit}
 					/>
 				{/if}
 
 				<!-- Submit Button -->
-				{#if !$isSubmitted && instance.type !== 'multiple_choice'}
+				{#if !isSubmitted && instance.type !== 'multiple_choice'}
 					<button class="submit-button" onclick={handleSubmit} disabled={!canSubmit}>
 						Valider
 					</button>
@@ -205,27 +204,27 @@
 		{/if}
 
 		<!-- Feedback Section -->
-		{#if $validationResult}
+		{#if validationResult}
 			<div
 				class="feedback-section"
-				class:correct={$validationResult.isCorrect}
-				class:incorrect={!$validationResult.isCorrect}
+				class:correct={validationResult.isCorrect}
+				class:incorrect={!validationResult.isCorrect}
 			>
-				{#if $validationResult.isCorrect}
+				{#if validationResult.isCorrect}
 					<span class="feedback-icon">&#x2714;</span>
 					<span>Correct !</span>
 				{:else}
 					<span class="feedback-icon">&#x2718;</span>
 					<span>Incorrect</span>
 				{/if}
-				{#if $validationResult.message}
-					<span class="feedback-message">{$validationResult.message}</span>
+				{#if validationResult.message}
+					<span class="feedback-message">{validationResult.message}</span>
 				{/if}
 			</div>
 		{/if}
 
 		<!-- Correction Section (revealed via fragment or showCorrection prop) -->
-		{#if showCorrection || ($isSubmitted && instance.correction)}
+		{#if showCorrection || (isSubmitted && instance.correction)}
 			<div class="correction-section fragment">
 				<h3>Correction</h3>
 				{#if instance.solution}
