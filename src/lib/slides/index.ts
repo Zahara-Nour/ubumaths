@@ -14,6 +14,7 @@ export { default as WhiteboardSlide } from './core/WhiteboardSlide.svelte';
 // UI components
 export { default as Controls } from './components/Controls.svelte';
 export { default as Progress } from './components/Progress.svelte';
+export { default as Code } from './components/Code.svelte';
 
 // Context
 export { DECK_CONTEXT_KEY, SLIDE_CONTEXT_KEY, SLIDE_POSITION_KEY } from './core/context.js';

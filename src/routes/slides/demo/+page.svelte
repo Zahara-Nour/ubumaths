@@ -6,6 +6,7 @@
 		UbuMarkSlide,
 		QuestionSlide,
 		WhiteboardSlide,
+		Code,
 		type SlideChangedEvent
 	} from '$lib/slides';
 	import type { QuestionInstance } from '$lib/questions/types';
@@ -461,6 +462,109 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 					</tr>
 				</tbody>
 			</table>
+		</Slide>
+
+		<!-- ============================================ -->
+		<!-- CODE SLIDES -->
+		<!-- ============================================ -->
+
+		<Slide background="#1a1a2e" transition="fade">
+			<h2>Slides de Code</h2>
+			<p>Coloration syntaxique avec highlight.js</p>
+			<ul>
+				<li class="fragment">Nombreux langages supportes</li>
+				<li class="fragment">Numeros de ligne optionnels</li>
+				<li class="fragment">Mise en surbrillance de lignes</li>
+				<li class="fragment">Animation progressive</li>
+			</ul>
+		</Slide>
+
+		<Slide background="#282c34" transition="fade">
+			<h2>TypeScript</h2>
+			<Code language="typescript" lineNumbers>
+				{`interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+function greet(user: User): string {
+  return \`Hello, \${user.name}!\`;
+}`}
+			</Code>
+		</Slide>
+
+		<Slide background="#282c34" transition="fade">
+			<h2>Python</h2>
+			<Code language="python" lineNumbers>
+				{`def fibonacci(n: int) -> list[int]:
+    """Generate Fibonacci sequence."""
+    if n <= 0:
+        return []
+
+    fib = [0, 1]
+    while len(fib) < n:
+        fib.append(fib[-1] + fib[-2])
+    return fib[:n]
+
+# Usage
+print(fibonacci(10))`}
+			</Code>
+		</Slide>
+
+		<Slide background="#282c34" transition="fade">
+			<h2>Mise en surbrillance</h2>
+			<p style="font-size: 0.6em; margin-bottom: 0.5em;">
+				<code>highlightLines="2,5-7"</code>
+			</p>
+			<Code language="javascript" lineNumbers highlightLines="2,5-7">
+				{`// Basic example
+const message = "Highlighted!";
+
+function process(data) {
+  // These lines are
+  // also highlighted
+  return data.map(x => x * 2);
+}
+
+console.log(message);`}
+			</Code>
+		</Slide>
+
+		<Slide background="#282c34" transition="fade">
+			<h2>Animation progressive</h2>
+			<p style="font-size: 0.6em; margin-bottom: 0.5em;">
+				<code>animateLines="|1-3|5-7|9"</code>
+			</p>
+			<Code language="javascript" lineNumbers animateLines="|1-3|5-7|9">
+				{`// Step 1: Define function
+function calculate(a, b) {
+  return a + b;
+}
+
+// Step 2: Call function
+const x = calculate(5, 3);
+const y = calculate(10, 20);
+
+// Step 3: Output
+console.log(x, y);`}
+			</Code>
+		</Slide>
+
+		<Slide background="#282c34" transition="fade">
+			<h2>Svelte 5</h2>
+			<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+			<Code language="svelte" lineNumbers>
+				{`<script lang="ts">
+  let count = $state(0);
+  let doubled = $derived(count * 2);
+</script>
+
+<button onclick={() => count++}>
+  Count: {count}, Double: {doubled}
+</button>`}
+			</Code>
+			<!-- eslint-enable @typescript-eslint/no-unused-vars -->
 		</Slide>
 
 		<!-- ============================================ -->
