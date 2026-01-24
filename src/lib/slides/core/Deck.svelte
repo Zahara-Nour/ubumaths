@@ -241,8 +241,13 @@
 		return (store.h / (total - 1)) * 100;
 	});
 
-	// Vertical navigation state
-	const hasVerticalSlides = $derived(store.hasVerticalSlides);
+	// Navigation state for all 4 directions
+	const canGoLeft = $derived(store.h > 0 || store.v > 0 || store.f >= 0);
+	const canGoRight = $derived(
+		store.h < store.totalH - 1 ||
+			store.v < store.verticalCount - 1 ||
+			store.f < store.fragmentCount - 1
+	);
 	const canGoUp = $derived(store.v > 0);
 	const canGoDown = $derived(store.v < store.verticalCount - 1);
 </script>
@@ -265,18 +270,17 @@
 		</div>
 	</div>
 
-	<!-- Navigation controls -->
+	<!-- Navigation controls (reveal.js style cross layout) -->
 	{#if showControls}
 		<div class="controls" class:edges={mergedConfig.controlsLayout === 'edges'}>
+			<!-- Left arrow -->
 			<button
 				type="button"
-				class="control-btn control-prev"
-				class:faded={mergedConfig.controlsBackArrows === 'faded' && store.h === 0 && store.v === 0}
-				class:hidden={mergedConfig.controlsBackArrows === 'hidden' &&
-					store.h === 0 &&
-					store.v === 0}
+				class="control-btn navigate-left"
+				class:enabled={canGoLeft}
+				class:faded={mergedConfig.controlsBackArrows === 'faded' && !canGoLeft}
 				onclick={handlePrev}
-				disabled={store.h === 0 && store.v === 0 && store.f < 0}
+				disabled={!canGoLeft}
 				aria-label="Diapositive précédente"
 			>
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -284,37 +288,41 @@
 				</svg>
 			</button>
 
-			{#if hasVerticalSlides}
-				<div class="controls-vertical">
-					<button
-						type="button"
-						class="control-btn control-btn-small control-up"
-						onclick={handleUp}
-						disabled={!canGoUp}
-						aria-label="Diapositive verticale précédente"
-					>
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<polyline points="18,15 12,9 6,15" />
-						</svg>
-					</button>
-					<button
-						type="button"
-						class="control-btn control-btn-small control-down"
-						onclick={handleDown}
-						disabled={!canGoDown}
-						aria-label="Diapositive verticale suivante"
-					>
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<polyline points="6,9 12,15 18,9" />
-						</svg>
-					</button>
-				</div>
-			{/if}
-
+			<!-- Up arrow -->
 			<button
 				type="button"
-				class="control-btn control-next"
+				class="control-btn navigate-up"
+				class:enabled={canGoUp}
+				onclick={handleUp}
+				disabled={!canGoUp}
+				aria-label="Diapositive verticale précédente"
+			>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<polyline points="18,15 12,9 6,15" />
+				</svg>
+			</button>
+
+			<!-- Down arrow -->
+			<button
+				type="button"
+				class="control-btn navigate-down"
+				class:enabled={canGoDown}
+				onclick={handleDown}
+				disabled={!canGoDown}
+				aria-label="Diapositive verticale suivante"
+			>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<polyline points="6,9 12,15 18,9" />
+				</svg>
+			</button>
+
+			<!-- Right arrow -->
+			<button
+				type="button"
+				class="control-btn navigate-right"
+				class:enabled={canGoRight}
 				onclick={handleNext}
+				disabled={!canGoRight}
 				aria-label="Diapositive suivante"
 			>
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -427,38 +435,25 @@
 	 * Navigation Controls
 	 * ========================================================================= */
 
+	/* =========================================================================
+	 * Navigation Controls - Cross Layout (like reveal.js)
+	 * ========================================================================= */
+
 	.controls {
+		--control-size: 44px;
+		--control-spacing: 8px;
+
 		position: absolute;
 		bottom: 16px;
 		right: 16px;
-		display: flex;
-		gap: 8px;
 		z-index: 100;
-	}
-
-	.controls.edges {
-		/* Position controls at edges of screen */
-		bottom: auto;
-		right: auto;
-	}
-
-	.controls.edges .control-prev {
-		position: fixed;
-		left: 16px;
-		top: 50%;
-		transform: translateY(-50%);
-	}
-
-	.controls.edges .control-next {
-		position: fixed;
-		right: 16px;
-		top: 50%;
-		transform: translateY(-50%);
+		pointer-events: none;
 	}
 
 	.control-btn {
-		width: 44px;
-		height: 44px;
+		position: absolute;
+		width: var(--control-size);
+		height: var(--control-size);
 		border-radius: 50%;
 		border: none;
 		background: rgba(255, 255, 255, 0.1);
@@ -470,30 +465,35 @@
 		transition:
 			background-color 0.2s,
 			opacity 0.2s,
-			transform 0.1s;
+			visibility 0.2s,
+			transform 0.2s;
 		backdrop-filter: blur(4px);
+		pointer-events: auto;
+
+		/* Hidden by default */
+		visibility: hidden;
+		opacity: 0;
+		transform: scale(0.9);
 	}
 
-	.control-btn:hover:not(:disabled) {
+	.control-btn.enabled {
+		visibility: visible;
+		opacity: 0.9;
+		transform: scale(1);
+	}
+
+	.control-btn.enabled:hover {
 		background: rgba(255, 255, 255, 0.2);
 		color: white;
+		opacity: 1;
 	}
 
-	.control-btn:active:not(:disabled) {
+	.control-btn.enabled:active {
 		transform: scale(0.95);
-	}
-
-	.control-btn:disabled {
-		opacity: 0.3;
-		cursor: not-allowed;
 	}
 
 	.control-btn.faded {
 		opacity: 0.3;
-	}
-
-	.control-btn.hidden {
-		visibility: hidden;
 	}
 
 	.control-btn svg {
@@ -501,20 +501,81 @@
 		height: 24px;
 	}
 
-	.controls-vertical {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
+	/* Cross layout positioning */
+	.navigate-left {
+		right: calc(var(--control-size) + var(--control-spacing) * 2);
+		bottom: calc(var(--control-spacing) + var(--control-size) * 0.5);
 	}
 
-	.control-btn-small {
-		width: 32px;
-		height: 32px;
+	.navigate-right {
+		right: 0;
+		bottom: calc(var(--control-spacing) + var(--control-size) * 0.5);
 	}
 
-	.control-btn-small svg {
-		width: 18px;
-		height: 18px;
+	.navigate-up {
+		right: calc(var(--control-spacing) + var(--control-size) * 0.5);
+		bottom: calc(var(--control-spacing) * 2 + var(--control-size));
+	}
+
+	.navigate-down {
+		right: calc(var(--control-spacing) + var(--control-size) * 0.5);
+		bottom: 0;
+	}
+
+	/* Edge layout (arrows at screen edges) */
+	.controls.edges {
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+	}
+
+	.controls.edges .navigate-left,
+	.controls.edges .navigate-right,
+	.controls.edges .navigate-up,
+	.controls.edges .navigate-down {
+		bottom: auto;
+		right: auto;
+	}
+
+	.controls.edges .navigate-left {
+		top: 50%;
+		left: 16px;
+		transform: translateY(-50%);
+	}
+
+	.controls.edges .navigate-left.enabled {
+		transform: translateY(-50%) scale(1);
+	}
+
+	.controls.edges .navigate-right {
+		top: 50%;
+		right: 16px;
+		transform: translateY(-50%);
+	}
+
+	.controls.edges .navigate-right.enabled {
+		transform: translateY(-50%) scale(1);
+	}
+
+	.controls.edges .navigate-up {
+		top: 16px;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+	.controls.edges .navigate-up.enabled {
+		transform: translateX(-50%) scale(1);
+	}
+
+	.controls.edges .navigate-down {
+		bottom: 16px;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+	.controls.edges .navigate-down.enabled {
+		transform: translateX(-50%) scale(1);
 	}
 
 	/* =========================================================================
