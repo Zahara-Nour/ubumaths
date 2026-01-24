@@ -4,19 +4,19 @@
 	 *
 	 * Wraps any slide content with an annotation layer that allows
 	 * teachers to draw on top during presentations.
+	 * The toolbar is rendered at the Deck level via slideAnnotationStore.
 	 *
 	 * @module slides/core/AnnotatableSlide
 	 */
 
-	import { onMount } from 'svelte';
+	import { onMount, getContext } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import Slide from './Slide.svelte';
 	import type { SlideProps } from './types.js';
-	import SlideAnnotationLayer, {
-		type SlideAnnotationToolType,
-		type AnnotationStyle
-	} from '../components/SlideAnnotationLayer.svelte';
-	import SlideAnnotationToolbar from '../components/SlideAnnotationToolbar.svelte';
+	import { DECK_CONTEXT_KEY } from './context.js';
+	import type { DeckContext } from './types.js';
+	import SlideAnnotationLayer from '../components/SlideAnnotationLayer.svelte';
+	import { slideAnnotationStore } from '../stores/slideAnnotationStore.svelte.js';
 	import type { AnnotationElement } from '$lib/whiteboard/types/document';
 
 	// ==========================================================================
@@ -26,8 +26,6 @@
 	interface Props extends SlideProps {
 		/** Whether annotation mode is available */
 		annotatable?: boolean;
-		/** Whether to show the annotation toolbar */
-		showToolbar?: boolean;
 		/** Initial annotations (if provided externally) */
 		annotations?: AnnotationElement[];
 		/** Callback when annotations change */
@@ -38,7 +36,6 @@
 
 	let {
 		annotatable = true,
-		showToolbar = true,
 		annotations: externalAnnotations,
 		onAnnotationsChange,
 		content,
@@ -63,32 +60,29 @@
 	}: Props = $props();
 
 	// ==========================================================================
+	// Context
+	// ==========================================================================
+
+	const deckContext = getContext<DeckContext>(DECK_CONTEXT_KEY);
+
+	// ==========================================================================
 	// Local State
 	// ==========================================================================
 
 	/** Container element reference for measuring */
 	let containerRef: HTMLDivElement | null = $state(null);
 	let annotationLayerRef: SlideAnnotationLayer | null = $state(null);
+	let slideElement: HTMLElement | null = $state(null);
 
 	/** Internal annotations state (used if no external state provided) */
 	let internalAnnotations = $state<AnnotationElement[]>([]);
-
-	/** Annotation mode state */
-	let isAnnotating = $state(false);
-	let annotationTool = $state<SlideAnnotationToolType>('pen');
-	let annotationStyle = $state<AnnotationStyle>({
-		color: '#ff0000',
-		strokeWidth: 3,
-		opacity: 1
-	});
 
 	/** Container dimensions */
 	let containerWidth = $state(1920);
 	let containerHeight = $state(1080);
 
-	/** Track undo/redo state */
-	let canUndo = $state(false);
-	let canRedo = $state(false);
+	/** Whether this slide is currently visible */
+	let isCurrentSlide = $state(false);
 
 	// ==========================================================================
 	// Derived State
@@ -112,18 +106,6 @@
 		updateUndoRedoState();
 	}
 
-	function handleToolChange(tool: SlideAnnotationToolType) {
-		annotationTool = tool;
-	}
-
-	function handleStyleChange(style: AnnotationStyle) {
-		annotationStyle = style;
-	}
-
-	function handleToggle(enabled: boolean) {
-		isAnnotating = enabled;
-	}
-
 	function handleClear() {
 		annotationLayerRef?.clearAll();
 		updateUndoRedoState();
@@ -140,8 +122,9 @@
 	}
 
 	function updateUndoRedoState() {
-		canUndo = annotationLayerRef?.canUndo() ?? false;
-		canRedo = annotationLayerRef?.canRedo() ?? false;
+		const canUndo = annotationLayerRef?.canUndo() ?? false;
+		const canRedo = annotationLayerRef?.canRedo() ?? false;
+		slideAnnotationStore.setUndoRedoState(canUndo, canRedo);
 	}
 
 	// ==========================================================================
@@ -161,6 +144,21 @@
 	}
 
 	// ==========================================================================
+	// Slide Visibility Detection
+	// ==========================================================================
+
+	function checkIfCurrentSlide() {
+		if (!slideElement || !deckContext) return false;
+
+		// Find the section element (the actual slide)
+		const section = slideElement.closest('section');
+		if (!section) return false;
+
+		// Check if this section has the 'present' class (reveal.js adds this to current slide)
+		return section.classList.contains('present');
+	}
+
+	// ==========================================================================
 	// Lifecycle
 	// ==========================================================================
 
@@ -176,9 +174,57 @@
 			resizeObserver.observe(containerRef);
 		}
 
+		// Initial check
+		isCurrentSlide = checkIfCurrentSlide();
+		if (isCurrentSlide && annotatable) {
+			slideAnnotationStore.setAvailable(true);
+			slideAnnotationStore.registerCallbacks({
+				undo: handleUndo,
+				redo: handleRedo,
+				clear: handleClear
+			});
+		}
+
 		return () => {
 			resizeObserver.disconnect();
+			if (isCurrentSlide) {
+				slideAnnotationStore.setAvailable(false);
+				slideAnnotationStore.unregisterCallbacks();
+			}
 		};
+	});
+
+	// Watch for slide changes using MutationObserver
+	$effect(() => {
+		if (!slideElement) return;
+
+		const section = slideElement.closest('section');
+		if (!section) return;
+
+		const observer = new MutationObserver(() => {
+			const nowCurrent = section.classList.contains('present');
+
+			if (nowCurrent !== isCurrentSlide) {
+				isCurrentSlide = nowCurrent;
+
+				if (isCurrentSlide && annotatable) {
+					slideAnnotationStore.setAvailable(true);
+					slideAnnotationStore.registerCallbacks({
+						undo: handleUndo,
+						redo: handleRedo,
+						clear: handleClear
+					});
+					updateUndoRedoState();
+				} else if (!isCurrentSlide) {
+					slideAnnotationStore.setAvailable(false);
+					slideAnnotationStore.unregisterCallbacks();
+				}
+			}
+		});
+
+		observer.observe(section, { attributes: true, attributeFilter: ['class'] });
+
+		return () => observer.disconnect();
 	});
 </script>
 
@@ -202,6 +248,8 @@
 	{data}
 >
 	<div bind:this={containerRef} class="annotatable-slide-container">
+		<div bind:this={slideElement} class="slide-marker"></div>
+
 		<!-- Slide content -->
 		<div class="slide-content">
 			{#if content}
@@ -216,27 +264,10 @@
 				{annotations}
 				pageWidth={containerWidth}
 				pageHeight={containerHeight}
-				enabled={isAnnotating}
-				tool={annotationTool}
-				style={annotationStyle}
+				enabled={slideAnnotationStore.enabled && isCurrentSlide}
+				tool={slideAnnotationStore.tool}
+				style={slideAnnotationStore.style}
 				onchange={handleAnnotationsChange}
-			/>
-		{/if}
-
-		<!-- Annotation toolbar -->
-		{#if annotatable && showToolbar}
-			<SlideAnnotationToolbar
-				tool={annotationTool}
-				style={annotationStyle}
-				enabled={isAnnotating}
-				{canUndo}
-				{canRedo}
-				ontoolchange={handleToolChange}
-				onstylechange={handleStyleChange}
-				ontoggle={handleToggle}
-				onclear={handleClear}
-				onundo={handleUndo}
-				onredo={handleRedo}
 			/>
 		{/if}
 	</div>
@@ -256,6 +287,10 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
+	}
+
+	.slide-marker {
+		display: none;
 	}
 
 	.slide-content {

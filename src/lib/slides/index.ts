@@ -17,6 +17,9 @@ export { DECK_CONTEXT_KEY } from './core/context.js';
 // Configuration
 export { defaultConfig, mergeConfig } from './core/config.js';
 
+// Stores
+export { slideAnnotationStore } from './stores/slideAnnotationStore.svelte.js';
+
 // Types
 export type {
 	DeckConfig,
@@ -32,3 +35,8 @@ export type {
 	TransitionSpeed,
 	NavigationMode
 } from './core/types.js';
+
+export type {
+	SlideAnnotationToolType,
+	AnnotationStyle
+} from './stores/slideAnnotationStore.svelte.js';

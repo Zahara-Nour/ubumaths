@@ -23,7 +23,10 @@
 		Pencil,
 		PencilOff
 	} from 'lucide-svelte';
-	import type { SlideAnnotationToolType, AnnotationStyle } from './SlideAnnotationLayer.svelte';
+	import type {
+		SlideAnnotationToolType,
+		AnnotationStyle
+	} from '../stores/slideAnnotationStore.svelte.js';
 
 	// ==========================================================================
 	// Props
