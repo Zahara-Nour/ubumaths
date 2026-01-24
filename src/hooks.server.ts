@@ -442,8 +442,8 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 		// Fonts: self + Google Fonts
 		"font-src 'self' https://fonts.gstatic.com",
 
-		// Images: self + data URIs (base64 matplotlib plots) + blob + Supabase storage + Google profile pics + Blockly media + Picsum (test) + YouTube thumbnails
-		"img-src 'self' data: blob: https://*.supabase.co https://*.googleusercontent.com https://unpkg.com https://picsum.photos https://fastly.picsum.photos https://i.ytimg.com",
+		// Images: self + data URIs (base64 matplotlib plots) + blob + Supabase storage + Google profile pics + Blockly media + Picsum (test) + YouTube thumbnails + Unsplash (demo) + Giphy (demo)
+		"img-src 'self' data: blob: https://*.supabase.co https://*.googleusercontent.com https://unpkg.com https://picsum.photos https://fastly.picsum.photos https://i.ytimg.com https://images.unsplash.com https://i.giphy.com",
 
 		// Connect: API calls + WebSocket for realtime + Typst packages
 		[
@@ -464,8 +464,8 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 		// Media: video/audio sources
 		"media-src 'self' blob: data: https:",
 
-		// Child/Frame: Supabase auth popups + YouTube embeds
-		"frame-src 'self' https://*.supabase.co https://www.youtube.com https://www.youtube-nocookie.com",
+		// Child/Frame: Supabase auth popups + YouTube embeds + Wikipedia (demo)
+		"frame-src 'self' https://*.supabase.co https://www.youtube.com https://www.youtube-nocookie.com https://en.wikipedia.org",
 
 		// Frame ancestors: prevent clickjacking (allow only self)
 		"frame-ancestors 'self'",
