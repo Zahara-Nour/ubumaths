@@ -32,6 +32,7 @@ export { slideTransition, slideIn, slideOut } from './transitions/slide.js';
 export { fadeTransition, fadeIn, fadeOut } from './transitions/fade.js';
 export { zoomTransition, zoomIn, zoomOut } from './transitions/zoom.js';
 export { convexTransition, convexIn, convexOut } from './transitions/convex.js';
+export { concaveTransition, concaveIn, concaveOut } from './transitions/concave.js';
 
 // Navigation
 export { createHashNavigation, parseHash, formatHash, syncHashEffect } from './navigation/hash.js';

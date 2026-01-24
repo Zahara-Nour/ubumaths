@@ -26,9 +26,9 @@ export type TransitionDirection = 'forward' | 'backward';
  * Transition durations in milliseconds
  */
 export const TRANSITION_DURATIONS: Record<TransitionSpeed, number> = {
-	fast: 200,
-	default: 400,
-	slow: 600
+	fast: 400,
+	default: 800,
+	slow: 1200
 };
 
 // ============================================================================
