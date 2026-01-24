@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.24](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.23...v0.7.24) (2026-01-24)
+
+### 📚 Documentation
+
+- **wip:** add fragment flash debug notes ([e4d813c](https://github.com/Zahara-Nour/ubumaths/commit/e4d813caa6d4c02a5943d09cb9799e8321eaeb41))
+
+### 🐛 Bug Fixes
+
+- **csp:** allow demo resources for UbuSlides ([a420397](https://github.com/Zahara-Nour/ubumaths/commit/a4203977f129df4c25b507ef9abcb7e12dd1c6d0))
+- **slides:** fix repeated pattern background and remove non-functional backgroundTransition ([448f527](https://github.com/Zahara-Nour/ubumaths/commit/448f5272d332ffff0b55c4793909d3d4c16c53e7))
+- **slides:** improve Code component font size and styling ([736fc04](https://github.com/Zahara-Nour/ubumaths/commit/736fc04712d4f206cb0ce9895fc486ad5fd20850))
+- **slides:** initialize fragments synchronously via action ([87f3dd4](https://github.com/Zahara-Nour/ubumaths/commit/87f3dd49bd43ae5169d2c86330acf547e4f7bdbf))
+- **slides:** match reveal.js navigation behavior ([a2e327c](https://github.com/Zahara-Nour/ubumaths/commit/a2e327ca4b91d1fb8677bed1160c1f7c0f35d241))
+- **slides:** maximize whiteboard space in slides ([2984244](https://github.com/Zahara-Nour/ubumaths/commit/2984244319d32f0f8c2eb64b1e49a2265f50c995))
+- **slides:** prevent fragment flash on slide display ([8027dbd](https://github.com/Zahara-Nour/ubumaths/commit/8027dbd940d5f51991d04cfaa3e57c3d3116226a))
+- **slides:** prevent toolbar deselection during whiteboard annotation ([2c7b8fe](https://github.com/Zahara-Nour/ubumaths/commit/2c7b8fe3570eb8168f97746c11d06bccacf24f6f))
+- **slides:** prevent UbuMarkSlide fragment flash ([11dd9fb](https://github.com/Zahara-Nour/ubumaths/commit/11dd9fbddfd3e243c17c44ddf6bf994998018a9f))
+- **slides:** resolve fragment flash with visibility and tick() ([00062d9](https://github.com/Zahara-Nour/ubumaths/commit/00062d99e84e7a085629d90aeb92f84a1be7f7fe))
+- **slides:** resolve text overlap in fragments with proper line-height ([d58c96b](https://github.com/Zahara-Nour/ubumaths/commit/d58c96bc80963d4e7b393b89e7e23734543e7819))
+- **slides:** use more aggressive CSS for fragment hiding ([7231945](https://github.com/Zahara-Nour/ubumaths/commit/7231945b7c6b59611fa041a3aa8f9b45da81994c))
+
+### ✨ Features
+
+- **slides:** add backgroundTransition and backgroundInteractive props ([c110eac](https://github.com/Zahara-Nour/ubumaths/commit/c110eac588cc46d6569d0d73c990707168adf571))
+- **slides:** add Code component with syntax highlighting ([611fbb1](https://github.com/Zahara-Nour/ubumaths/commit/611fbb1ce6455857a8d131aa86d0d52cd90e9e86))
+- **slides:** add embedded demo and transition test pages ([1924f28](https://github.com/Zahara-Nour/ubumaths/commit/1924f2886b9c5c46868bd1079d34ad78aae3433d))
+- **slides:** add fragment marker syntax for UbuMarkSlide ([70c6706](https://github.com/Zahara-Nour/ubumaths/commit/70c67066374f6363fe56abc38be4f9d1345776e1))
+- **slides:** add vertical position memory like reveal.js ([3cf2d4c](https://github.com/Zahara-Nour/ubumaths/commit/3cf2d4c6091d744afeedb7b1ae39f4b584aff373))
+- **slides:** implement CSS-based slide transitions ([60576b4](https://github.com/Zahara-Nour/ubumaths/commit/60576b47618524d28578c2317d764f5fe01d52a9))
+- **slides:** implement independent background transitions ([07c0a5d](https://github.com/Zahara-Nour/ubumaths/commit/07c0a5d408017e49228020cbaf56f3acd3162933))
+- **slides:** remember fragment position when navigating ([bf6ea1c](https://github.com/Zahara-Nour/ubumaths/commit/bf6ea1cc0dabebfc66e301baf0de7f1dc8d2ddf5))
+
 ### [0.7.23](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.22...v0.7.23) (2026-01-24)
 
 ### ⚠ BREAKING CHANGES
