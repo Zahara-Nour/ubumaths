@@ -311,8 +311,8 @@
 		padding: 0.6em 2.5em;
 		font-size: 1em;
 		font-weight: bold;
-		color: white;
-		background: #3b82f6;
+		color: var(--color-primary-foreground, white);
+		background: var(--color-primary, #3b82f6);
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
@@ -320,7 +320,7 @@
 	}
 
 	.submit-button:hover:not(:disabled) {
-		background: #2563eb;
+		background: color-mix(in srgb, var(--color-primary, #3b82f6) 85%, black);
 		transform: translateY(-2px);
 	}
 
@@ -340,13 +340,13 @@
 	}
 
 	.feedback-section.correct {
-		background: rgba(34, 197, 94, 0.2);
-		color: #22c55e;
+		background: color-mix(in srgb, var(--color-success, #22c55e) 20%, transparent);
+		color: var(--color-success, #22c55e);
 	}
 
 	.feedback-section.incorrect {
-		background: rgba(239, 68, 68, 0.2);
-		color: #ef4444;
+		background: color-mix(in srgb, var(--color-destructive, #ef4444) 20%, transparent);
+		color: var(--color-destructive, #ef4444);
 	}
 
 	.feedback-icon {
