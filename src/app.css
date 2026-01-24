@@ -346,7 +346,7 @@ main li {
 	line-height: calc(1.5rem * var(--font-scale)) !important;
 }
 
-main pre {
+main pre:not(.code-pre) {
 	font-size: calc(0.875rem * var(--font-scale)) !important;
 	line-height: calc(1.25rem * var(--font-scale)) !important;
 }
