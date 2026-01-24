@@ -3,7 +3,7 @@
 	 * SlideAnnotationToolbar - Floating toolbar for slide annotations
 	 *
 	 * Matches the look and feel of the whiteboard AnnotationToolbar.
-	 * Positioned fixed at the bottom of the viewport, outside reveal.js transforms.
+	 * Positioned fixed at the bottom of the viewport, outside slide transforms.
 	 *
 	 * @module slides/components/SlideAnnotationToolbar
 	 */
@@ -364,7 +364,7 @@
 			0 4px 20px rgba(0, 0, 0, 0.4),
 			0 2px 8px rgba(0, 0, 0, 0.2);
 		user-select: none;
-		/* Reset font-size to prevent reveal.js scaling effects */
+		/* Reset font-size to prevent scaling effects */
 		font-size: 14px;
 		color: white;
 	}

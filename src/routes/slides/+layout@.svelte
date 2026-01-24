@@ -22,7 +22,7 @@
 			overflow: hidden !important;
 			background: #000 !important;
 		}
-		/* Hide UbuMaths layout elements (but not reveal.js elements) */
+		/* Hide UbuMaths layout elements (but not slide elements) */
 		body > header,
 		body > footer,
 		body > nav,

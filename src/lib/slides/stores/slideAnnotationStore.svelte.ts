@@ -2,7 +2,7 @@
  * Slide Annotation Store
  *
  * Manages annotation state for slides, shared between Deck and individual slides.
- * This allows the toolbar to be rendered at the Deck level (outside reveal.js transforms)
+ * This allows the toolbar to be rendered at the Deck level (outside slide transforms)
  * while slides can control the annotation state.
  */
 

@@ -15,7 +15,7 @@
 	let currentSlide = $state({ h: 0, v: 0 });
 
 	function handleSlideChanged(event: SlideChangedEvent) {
-		currentSlide = { h: event.indexh, v: event.indexv };
+		currentSlide = { h: event.h, v: event.v };
 	}
 
 	function handleAnswer(data: AnswerData) {
@@ -174,7 +174,7 @@ Calculer la somme : $5 + 3 = ?$
 		<Slide background="#1a1a2e">
 			<h1>UbuSlides</h1>
 			<p>Systeme de presentation pour UbuMaths</p>
-			<p class="fragment">Construit sur reveal.js + UbuMark</p>
+			<p class="fragment">Construit avec Svelte 5 + UbuMark</p>
 		</Slide>
 
 		<!-- Slide 2: Features (with annotations) -->
@@ -246,11 +246,11 @@ Calculer la somme : $5 + 3 = ?$
 		height: 100vh;
 		overflow: hidden;
 		background: #000;
-		/* Base font-size pour reveal.js (peut être reset par Tailwind) */
+		/* Base font-size pour slides (peut être reset par Tailwind) */
 		font-size: 42px;
 	}
 
-	/* Les styles doivent être globaux pour atteindre le contenu dans reveal.js */
+	/* Les styles doivent être globaux pour atteindre le contenu des slides */
 	.deck-container :global(h1) {
 		font-size: 2.5em !important;
 		margin-bottom: 0.5em;

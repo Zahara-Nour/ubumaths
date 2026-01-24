@@ -1,16 +1,14 @@
 /**
  * UbuSlides - Type definitions
- * Wrapper around reveal.js for UbuMaths
+ * Native Svelte 5 slide system (no reveal.js dependency)
  */
 
-import type Reveal from 'reveal.js';
-
-// Re-export Reveal types
-export type RevealInstance = Reveal.Api;
-export type RevealOptions = Reveal.Options;
+// ============================================================================
+// Transition Types
+// ============================================================================
 
 /**
- * Transition types supported by reveal.js
+ * Available transition types
  */
 export type SlideTransition = 'none' | 'fade' | 'slide' | 'convex' | 'concave' | 'zoom';
 
@@ -20,9 +18,40 @@ export type SlideTransition = 'none' | 'fade' | 'slide' | 'convex' | 'concave' |
 export type TransitionSpeed = 'default' | 'fast' | 'slow';
 
 /**
+ * Transition direction
+ */
+export type TransitionDirection = 'forward' | 'backward';
+
+/**
+ * Transition durations in milliseconds
+ */
+export const TRANSITION_DURATIONS: Record<TransitionSpeed, number> = {
+	fast: 200,
+	default: 400,
+	slow: 600
+};
+
+// ============================================================================
+// Navigation Types
+// ============================================================================
+
+/**
  * Navigation mode
  */
 export type NavigationMode = 'default' | 'linear' | 'grid';
+
+/**
+ * Current navigation state
+ */
+export interface NavigationState {
+	h: number; // Horizontal index
+	v: number; // Vertical index
+	f: number; // Fragment index (-1 = none shown)
+}
+
+// ============================================================================
+// Slide Types
+// ============================================================================
 
 /**
  * Background repeat options
@@ -49,72 +78,13 @@ export interface SlideBackground {
 }
 
 /**
- * Deck configuration - extends reveal.js options with UbuMaths specifics
+ * Information about a registered slide
  */
-export interface DeckConfig {
-	// Layout
-	width?: number;
-	height?: number;
-	margin?: number;
-	minScale?: number;
-	maxScale?: number;
-	center?: boolean;
-
-	// Navigation
-	controls?: boolean;
-	controlsTutorial?: boolean;
-	controlsLayout?: 'bottom-right' | 'edges';
-	controlsBackArrows?: 'faded' | 'hidden' | 'visible';
-	navigationMode?: NavigationMode;
-	keyboard?: boolean;
-	touch?: boolean;
-	mouseWheel?: boolean;
-	loop?: boolean;
-	rtl?: boolean;
-	shuffle?: boolean;
-
-	// Progress & Status
-	progress?: boolean;
-	slideNumber?: boolean | string | ((slide: { h: number; v: number }) => string);
-	hash?: boolean;
-	history?: boolean;
-	hashOneBasedIndex?: boolean;
-	respondToHashChanges?: boolean;
-
-	// Transitions
-	transition?: SlideTransition;
-	transitionSpeed?: TransitionSpeed;
-	backgroundTransition?: SlideTransition;
-
-	// Fragments
-	fragments?: boolean;
-	fragmentInURL?: boolean;
-
-	// Auto-slide
-	autoSlide?: number;
-	autoSlideStoppable?: boolean;
-
-	// Auto-animate
-	autoAnimate?: boolean;
-	autoAnimateEasing?: string;
-	autoAnimateDuration?: number;
-	autoAnimateUnmatched?: boolean;
-
-	// Appearance
-	embedded?: boolean;
-	help?: boolean;
-	pause?: boolean;
-	showNotes?: boolean;
-	hideInactiveCursor?: boolean;
-	hideCursorTime?: number;
-
-	// Performance
-	viewDistance?: number;
-	mobileViewDistance?: number;
-	preloadIframes?: boolean | null;
-
-	// Plugins
-	plugins?: Reveal.PluginFunction[];
+export interface SlideInfo {
+	h: number;
+	v: number;
+	fragmentCount: number;
+	element: HTMLElement | null;
 }
 
 /**
@@ -141,7 +111,7 @@ export interface SlideProps {
 	backgroundRepeat?: BackgroundRepeat;
 	/** Background opacity (0-1) */
 	backgroundOpacity?: number;
-	/** Custom state class added to reveal element */
+	/** Custom state class added to slide element */
 	state?: string;
 	/** Auto-slide duration for this slide (ms) */
 	autoSlide?: number;
@@ -155,15 +125,78 @@ export interface SlideProps {
 	class?: string;
 	/** Data attributes */
 	data?: Record<string, string>;
+	/** Callback when slide active state changes */
+	onActiveChange?: (isActive: boolean) => void;
+}
+
+// ============================================================================
+// Deck Types
+// ============================================================================
+
+/**
+ * Deck configuration
+ */
+export interface DeckConfig {
+	// Layout
+	width?: number;
+	height?: number;
+	margin?: number;
+	minScale?: number;
+	maxScale?: number;
+	center?: boolean;
+
+	// Navigation
+	controls?: boolean;
+	controlsLayout?: 'bottom-right' | 'edges';
+	controlsBackArrows?: 'faded' | 'hidden' | 'visible';
+	navigationMode?: NavigationMode;
+	keyboard?: boolean;
+	touch?: boolean;
+	mouseWheel?: boolean;
+	loop?: boolean;
+	rtl?: boolean;
+
+	// Progress & Status
+	progress?: boolean;
+	slideNumber?: boolean | string;
+	hash?: boolean;
+	hashOneBasedIndex?: boolean;
+	respondToHashChanges?: boolean;
+
+	// Transitions
+	transition?: SlideTransition;
+	transitionSpeed?: TransitionSpeed;
+	backgroundTransition?: SlideTransition;
+
+	// Fragments
+	fragments?: boolean;
+	fragmentInURL?: boolean;
+
+	// Auto-slide
+	autoSlide?: number;
+	autoSlideStoppable?: boolean;
+
+	// Auto-animate
+	autoAnimate?: boolean;
+	autoAnimateEasing?: string;
+	autoAnimateDuration?: number;
+
+	// Appearance
+	embedded?: boolean;
+	hideInactiveCursor?: boolean;
+	hideCursorTime?: number;
+
+	// Fullscreen mode (position: fixed)
+	fullscreen?: boolean;
 }
 
 /**
  * Deck state
  */
 export interface DeckState {
-	indexh: number;
-	indexv: number;
-	indexf?: number;
+	h: number;
+	v: number;
+	f?: number;
 	paused: boolean;
 	overview: boolean;
 }
@@ -172,10 +205,11 @@ export interface DeckState {
  * Slide changed event data
  */
 export interface SlideChangedEvent {
-	indexh: number;
-	indexv: number;
-	previousSlide: HTMLElement | null;
-	currentSlide: HTMLElement;
+	h: number;
+	v: number;
+	f: number;
+	previousH: number;
+	previousV: number;
 }
 
 /**
@@ -183,25 +217,63 @@ export interface SlideChangedEvent {
  */
 export interface FragmentEvent {
 	fragment: HTMLElement;
-	fragments: HTMLElement[];
+	index: number;
+}
+
+// ============================================================================
+// Store Types
+// ============================================================================
+
+/**
+ * Actions provided by DeckStore
+ */
+export interface DeckStoreActions {
+	/** Navigate to specific position */
+	goTo(h: number, v?: number, f?: number): void;
+	/** Go to next slide/fragment */
+	next(): void;
+	/** Go to previous slide/fragment */
+	prev(): void;
+	/** Go to next horizontal slide */
+	nextH(): void;
+	/** Go to previous horizontal slide */
+	prevH(): void;
+	/** Go to next vertical slide */
+	nextV(): void;
+	/** Go to previous vertical slide */
+	prevV(): void;
+	/** Register a slide */
+	registerSlide(info: SlideInfo): void;
+	/** Unregister a slide */
+	unregisterSlide(h: number, v?: number): void;
+	/** Update fragment count for a slide */
+	updateFragmentCount(h: number, v: number, count: number): void;
+	/** Toggle overview mode */
+	toggleOverview(): void;
+	/** Set overview mode */
+	setOverview(value: boolean): void;
+	/** Toggle pause state */
+	togglePause(): void;
+	/** Set scale factor */
+	setScale(scale: number): void;
 }
 
 /**
  * Deck context provided to child components
  */
 export interface DeckContext {
-	/** Get the reveal.js instance */
-	getReveal: () => RevealInstance | undefined;
-	/** Check if deck is ready */
-	isReady: () => boolean;
+	/** Get the store instance */
+	getStore: () => import('../stores/deckStore.svelte.js').DeckStore;
+	/** Get current indices */
+	getIndices: () => NavigationState;
 	/** Navigate to slide */
 	slide: (h: number, v?: number, f?: number) => void;
 	/** Go to next slide */
 	next: () => void;
 	/** Go to previous slide */
 	prev: () => void;
-	/** Get current indices */
-	getIndices: () => { h: number; v: number; f: number };
-	/** Get total slides count */
-	getTotalSlides: () => number;
+	/** Get current scale */
+	getScale: () => number;
+	/** Check if deck is in overview mode */
+	isOverview: () => boolean;
 }

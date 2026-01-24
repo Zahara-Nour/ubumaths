@@ -1,13 +1,26 @@
 <script lang="ts">
+	/**
+	 * Deck - UbuSlides container component
+	 *
+	 * Native Svelte 5 slide deck implementation (no reveal.js dependency).
+	 * Manages scaling, navigation, and provides context to child slides.
+	 *
+	 * @module slides/core/Deck
+	 */
+
 	import { onMount, setContext, type Snippet } from 'svelte';
-	import Reveal from 'reveal.js';
-	import 'reveal.js/dist/reveal.css';
-	import 'reveal.js/dist/theme/black.css';
 	import { mergeConfig } from './config.js';
 	import { DECK_CONTEXT_KEY } from './context.js';
-	import type { DeckConfig, DeckContext, RevealInstance, SlideChangedEvent } from './types.js';
+	import type { DeckConfig, DeckContext, SlideChangedEvent } from './types.js';
+	import { createDeckStore } from '../stores/deckStore.svelte.js';
+	import { createHashNavigation, parseHash, syncHashEffect } from '../navigation/hash.js';
+	import { keyboard } from '../actions/keyboard.js';
 	import SlideAnnotationToolbar from '../components/SlideAnnotationToolbar.svelte';
 	import { slideAnnotationStore } from '../stores/slideAnnotationStore.svelte.js';
+
+	// ==========================================================================
+	// Types
+	// ==========================================================================
 
 	interface Props {
 		/** Deck configuration */
@@ -20,72 +33,279 @@
 		onslidechanged?: (event: SlideChangedEvent) => void;
 	}
 
+	// ==========================================================================
+	// Props
+	// ==========================================================================
+
 	let { config = {}, children, onready, onslidechanged }: Props = $props();
 
-	let deckElement: HTMLDivElement | undefined = $state();
-	let reveal: RevealInstance | undefined = $state();
+	// ==========================================================================
+	// State
+	// ==========================================================================
+
+	let wrapperElement: HTMLDivElement | undefined = $state();
+	let viewportElement: HTMLDivElement | undefined = $state();
+	let scale = $state(1);
 	let ready = $state(false);
 
-	// Provide context to child Slide components
+	// Create store instance for this deck
+	const store = createDeckStore();
+
+	// Merged configuration
+	const mergedConfig = $derived(mergeConfig(config));
+
+	// Track previous indices for slidechanged event
+	let previousH = $state(0);
+	let previousV = $state(0);
+
+	// ==========================================================================
+	// Context
+	// ==========================================================================
+
 	const context: DeckContext = {
-		getReveal: () => reveal,
-		isReady: () => ready,
-		slide: (h, v, f) => reveal?.slide(h, v, f),
-		next: () => reveal?.next(),
-		prev: () => reveal?.prev(),
-		getIndices: () => reveal?.getIndices() ?? { h: 0, v: 0, f: 0 },
-		getTotalSlides: () => reveal?.getTotalSlides() ?? 0
+		getStore: () => store,
+		getIndices: () => store.state,
+		slide: (h, v, f) => store.goTo(h, v, f),
+		next: () => store.next(),
+		prev: () => store.prev(),
+		getScale: () => store.scale,
+		isOverview: () => store.overview
 	};
 
 	setContext(DECK_CONTEXT_KEY, context);
 
+	// ==========================================================================
+	// Scale Calculation
+	// ==========================================================================
+
+	/**
+	 * Calculate scale based on container size and configured dimensions
+	 */
+	function calculateScale(containerWidth: number, containerHeight: number): number {
+		const {
+			width = 1920,
+			height = 1080,
+			margin = 0.04,
+			minScale = 0.2,
+			maxScale = 2.0
+		} = mergedConfig;
+
+		// Account for margin
+		const availableWidth = containerWidth * (1 - margin * 2);
+		const availableHeight = containerHeight * (1 - margin * 2);
+
+		// Calculate scale to fit
+		const scaleX = availableWidth / width;
+		const scaleY = availableHeight / height;
+		const computedScale = Math.min(scaleX, scaleY);
+
+		// Clamp to min/max
+		return Math.max(minScale, Math.min(computedScale, maxScale));
+	}
+
+	// ==========================================================================
+	// Lifecycle
+	// ==========================================================================
+
 	onMount(() => {
-		if (!deckElement) return;
+		if (!wrapperElement) return;
 
-		const mergedConfig = mergeConfig(config);
-
-		reveal = new Reveal(deckElement, mergedConfig);
-
-		reveal.initialize().then(() => {
-			ready = true;
-			// Force layout calculation after init
-			reveal?.layout();
-			onready?.();
+		// Set up ResizeObserver on wrapper to track container size
+		const resizeObserver = new ResizeObserver((entries) => {
+			for (const entry of entries) {
+				const { width, height } = entry.contentRect;
+				if (width > 0 && height > 0) {
+					scale = calculateScale(width, height);
+					store.setScale(scale);
+				}
+			}
 		});
 
-		// Event listeners
-		reveal.on('slidechanged', (event: unknown) => {
-			const e = event as SlideChangedEvent;
-			onslidechanged?.(e);
-		});
+		resizeObserver.observe(wrapperElement);
+
+		// Initial scale calculation
+		const rect = wrapperElement.getBoundingClientRect();
+		if (rect.width > 0 && rect.height > 0) {
+			scale = calculateScale(rect.width, rect.height);
+			store.setScale(scale);
+		}
+
+		// Hash navigation setup
+		let cleanupHash: (() => void) | undefined;
+		if (mergedConfig.hash) {
+			// Parse initial hash and navigate if present
+			const initialState = parseHash(window.location.hash, mergedConfig.hashOneBasedIndex);
+			if (initialState) {
+				store.goTo(initialState.h, initialState.v, initialState.f);
+			}
+
+			cleanupHash = createHashNavigation(store, {
+				respondToHashChanges: mergedConfig.respondToHashChanges,
+				fragmentInURL: mergedConfig.fragmentInURL,
+				oneBasedIndex: mergedConfig.hashOneBasedIndex
+			});
+		}
+
+		// Mark as ready
+		ready = true;
+		onready?.();
 
 		return () => {
-			// Cleanup on unmount
-			if (reveal) {
-				reveal.destroy();
-				reveal = undefined;
-				ready = false;
-			}
+			resizeObserver.disconnect();
+			cleanupHash?.();
 		};
 	});
 
-	// React to config changes
+	// ==========================================================================
+	// Effects
+	// ==========================================================================
+
+	// Sync hash with store state when it changes
 	$effect(() => {
-		if (reveal && ready) {
-			const mergedConfig = mergeConfig(config);
-			reveal.configure(mergedConfig);
+		if (!ready || !mergedConfig.hash) return;
+
+		syncHashEffect(store, {
+			fragmentInURL: mergedConfig.fragmentInURL,
+			oneBasedIndex: mergedConfig.hashOneBasedIndex
+		});
+	});
+
+	// Fire slidechanged event when position changes
+	$effect(() => {
+		const h = store.h;
+		const v = store.v;
+		const f = store.f;
+
+		if (!ready) return;
+
+		// Only fire if position actually changed
+		if (h !== previousH || v !== previousV) {
+			const event: SlideChangedEvent = {
+				h,
+				v,
+				f,
+				previousH,
+				previousV
+			};
+
+			onslidechanged?.(event);
+
+			previousH = h;
+			previousV = v;
 		}
+	});
+
+	// ==========================================================================
+	// Navigation Handlers
+	// ==========================================================================
+
+	function handlePrev() {
+		store.prev();
+	}
+
+	function handleNext() {
+		store.next();
+	}
+
+	// ==========================================================================
+	// Computed Values
+	// ==========================================================================
+
+	const viewportStyle = $derived.by(() => {
+		const { width = 1920, height = 1080 } = mergedConfig;
+		return `width: ${width}px; height: ${height}px; transform: scale(${scale});`;
+	});
+
+	const isFullscreen = $derived(mergedConfig.fullscreen ?? false);
+	const showControls = $derived(mergedConfig.controls ?? true);
+	const showProgress = $derived(mergedConfig.progress ?? true);
+	const keyboardEnabled = $derived(mergedConfig.keyboard ?? true);
+
+	// Progress calculation
+	const progressPercent = $derived.by(() => {
+		const total = store.totalH;
+		if (total <= 1) return 0;
+		return (store.h / (total - 1)) * 100;
 	});
 </script>
 
-<div class="deck-wrapper">
-	<div class="reveal" bind:this={deckElement}>
-		<div class="slides">
+<div
+	class="deck-wrapper"
+	class:fullscreen={isFullscreen}
+	class:overview={store.overview}
+	class:paused={store.paused}
+	bind:this={wrapperElement}
+	tabindex="0"
+	role="application"
+	aria-label="Presentation slides"
+	use:keyboard={{ store, enabled: keyboardEnabled }}
+>
+	<div class="slides-viewport" bind:this={viewportElement} style={viewportStyle}>
+		<div class="slides-container" class:centered={mergedConfig.center}>
 			{@render children()}
 		</div>
 	</div>
 
-	<!-- Annotation toolbar rendered outside reveal.js container -->
+	<!-- Navigation controls -->
+	{#if showControls}
+		<div class="controls" class:edges={mergedConfig.controlsLayout === 'edges'}>
+			<button
+				type="button"
+				class="control-btn control-prev"
+				class:faded={mergedConfig.controlsBackArrows === 'faded' && store.h === 0 && store.v === 0}
+				class:hidden={mergedConfig.controlsBackArrows === 'hidden' &&
+					store.h === 0 &&
+					store.v === 0}
+				onclick={handlePrev}
+				disabled={store.h === 0 && store.v === 0 && store.f < 0}
+				aria-label="Diapositive précédente"
+			>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<polyline points="15,18 9,12 15,6" />
+				</svg>
+			</button>
+
+			<button
+				type="button"
+				class="control-btn control-next"
+				onclick={handleNext}
+				aria-label="Diapositive suivante"
+			>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<polyline points="9,6 15,12 9,18" />
+				</svg>
+			</button>
+		</div>
+	{/if}
+
+	<!-- Progress bar -->
+	{#if showProgress}
+		<div
+			class="progress-bar"
+			role="progressbar"
+			aria-valuenow={progressPercent}
+			aria-valuemin={0}
+			aria-valuemax={100}
+		>
+			<div class="progress-fill" style="width: {progressPercent}%"></div>
+		</div>
+	{/if}
+
+	<!-- Slide number -->
+	{#if mergedConfig.slideNumber}
+		<div class="slide-number" aria-live="polite">
+			{store.h + 1}{store.v > 0 ? `.${store.v + 1}` : ''} / {store.totalH}
+		</div>
+	{/if}
+
+	<!-- Pause overlay -->
+	{#if store.paused}
+		<div class="pause-overlay" aria-label="Présentation en pause">
+			<span class="pause-text">Pause</span>
+		</div>
+	{/if}
+
+	<!-- Annotation toolbar rendered outside viewport transforms -->
 	{#if slideAnnotationStore.available}
 		<SlideAnnotationToolbar
 			tool={slideAnnotationStore.tool}
@@ -104,14 +324,223 @@
 </div>
 
 <style>
+	/* =========================================================================
+	 * Deck Wrapper
+	 * ========================================================================= */
+
 	.deck-wrapper {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		background-color: var(--color-background, #1e1e2e);
+		outline: none;
+	}
+
+	.deck-wrapper:focus {
+		outline: 2px solid var(--color-primary, #3b82f6);
+		outline-offset: -2px;
+	}
+
+	.deck-wrapper.fullscreen {
+		position: fixed;
+		inset: 0;
+		z-index: 9999;
+	}
+
+	.deck-wrapper.paused {
+		filter: brightness(0.3);
+	}
+
+	/* =========================================================================
+	 * Slides Viewport
+	 * ========================================================================= */
+
+	.slides-viewport {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform-origin: center center;
+		/* Scale transform applied via inline style */
+		translate: -50% -50%;
+	}
+
+	.slides-container {
 		position: relative;
 		width: 100%;
 		height: 100%;
 	}
 
-	.reveal {
-		width: 100%;
+	.slides-container.centered {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* =========================================================================
+	 * Navigation Controls
+	 * ========================================================================= */
+
+	.controls {
+		position: absolute;
+		bottom: 16px;
+		right: 16px;
+		display: flex;
+		gap: 8px;
+		z-index: 100;
+	}
+
+	.controls.edges {
+		/* Position controls at edges of screen */
+		bottom: auto;
+		right: auto;
+	}
+
+	.controls.edges .control-prev {
+		position: fixed;
+		left: 16px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+
+	.controls.edges .control-next {
+		position: fixed;
+		right: 16px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+
+	.control-btn {
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		border: none;
+		background: rgba(255, 255, 255, 0.1);
+		color: rgba(255, 255, 255, 0.8);
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition:
+			background-color 0.2s,
+			opacity 0.2s,
+			transform 0.1s;
+		backdrop-filter: blur(4px);
+	}
+
+	.control-btn:hover:not(:disabled) {
+		background: rgba(255, 255, 255, 0.2);
+		color: white;
+	}
+
+	.control-btn:active:not(:disabled) {
+		transform: scale(0.95);
+	}
+
+	.control-btn:disabled {
+		opacity: 0.3;
+		cursor: not-allowed;
+	}
+
+	.control-btn.faded {
+		opacity: 0.3;
+	}
+
+	.control-btn.hidden {
+		visibility: hidden;
+	}
+
+	.control-btn svg {
+		width: 24px;
+		height: 24px;
+	}
+
+	/* =========================================================================
+	 * Progress Bar
+	 * ========================================================================= */
+
+	.progress-bar {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 4px;
+		background: rgba(255, 255, 255, 0.1);
+		z-index: 100;
+	}
+
+	.progress-fill {
 		height: 100%;
+		background: var(--color-primary, #3b82f6);
+		transition: width 0.3s ease-out;
+	}
+
+	/* =========================================================================
+	 * Slide Number
+	 * ========================================================================= */
+
+	.slide-number {
+		position: absolute;
+		bottom: 16px;
+		left: 16px;
+		font-size: 14px;
+		font-family: system-ui, sans-serif;
+		color: rgba(255, 255, 255, 0.5);
+		z-index: 100;
+		user-select: none;
+	}
+
+	/* =========================================================================
+	 * Pause Overlay
+	 * ========================================================================= */
+
+	.pause-overlay {
+		position: absolute;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.8);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 200;
+	}
+
+	.pause-text {
+		font-size: 48px;
+		font-weight: bold;
+		color: white;
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+	}
+
+	/* =========================================================================
+	 * Overview Mode
+	 * ========================================================================= */
+
+	.deck-wrapper.overview .slides-viewport {
+		transform: scale(0.5) translate(-50%, -50%) !important;
+	}
+
+	/* =========================================================================
+	 * Print Styles
+	 * ========================================================================= */
+
+	@media print {
+		.deck-wrapper {
+			position: static;
+			overflow: visible;
+		}
+
+		.slides-viewport {
+			position: static;
+			transform: none !important;
+			translate: none;
+		}
+
+		.controls,
+		.progress-bar,
+		.slide-number,
+		.pause-overlay {
+			display: none;
+		}
 	}
 </style>

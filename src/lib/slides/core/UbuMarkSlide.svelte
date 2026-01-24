@@ -2,7 +2,7 @@
 	/**
 	 * UbuMarkSlide - Slide with UbuMark content
 	 *
-	 * Renders UbuMark markdown content inside a reveal.js slide.
+	 * Renders UbuMark markdown content inside a slide.
 	 * Supports:
 	 * - Math formulas ($...$ and $$...$$)
 	 * - Variables (predefined via props)
@@ -63,7 +63,7 @@
 	onMount(() => {
 		if (!slideElement) return;
 
-		// Find elements with {.fragment} and add reveal.js fragment class
+		// Find elements with {.fragment} and add fragment class
 		const processFragments = (selector: string) => {
 			slideElement?.querySelectorAll(selector).forEach((el) => {
 				if (el.innerHTML.includes('{.fragment}')) {

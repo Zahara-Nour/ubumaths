@@ -1,2 +1,2 @@
-// Slides are client-only (reveal.js requires DOM)
+// Slides are client-only (requires DOM for transitions and interactivity)
 export const ssr = false;

@@ -1,5 +1,6 @@
 /**
  * UbuSlides - Default configuration
+ * Native Svelte 5 implementation
  */
 
 import type { DeckConfig } from './types.js';
@@ -19,7 +20,6 @@ export const defaultConfig: DeckConfig = {
 
 	// Navigation
 	controls: true,
-	controlsTutorial: true,
 	controlsLayout: 'bottom-right',
 	controlsBackArrows: 'faded',
 	navigationMode: 'default',
@@ -28,13 +28,11 @@ export const defaultConfig: DeckConfig = {
 	mouseWheel: false,
 	loop: false,
 	rtl: false,
-	shuffle: false,
 
 	// Progress & Status
 	progress: true,
 	slideNumber: false,
 	hash: true,
-	history: false,
 	hashOneBasedIndex: false,
 	respondToHashChanges: true,
 
@@ -55,23 +53,14 @@ export const defaultConfig: DeckConfig = {
 	autoAnimate: true,
 	autoAnimateEasing: 'ease',
 	autoAnimateDuration: 1.0,
-	autoAnimateUnmatched: true,
 
 	// Appearance
 	embedded: false,
-	help: true,
-	pause: true,
-	showNotes: false,
 	hideInactiveCursor: true,
 	hideCursorTime: 5000,
 
-	// Performance
-	viewDistance: 3,
-	mobileViewDistance: 2,
-	preloadIframes: null,
-
-	// Plugins (none by default, added via UbuSlides plugins)
-	plugins: []
+	// Fullscreen mode
+	fullscreen: false
 };
 
 /**
@@ -80,8 +69,6 @@ export const defaultConfig: DeckConfig = {
 export function mergeConfig(userConfig: Partial<DeckConfig> = {}): DeckConfig {
 	return {
 		...defaultConfig,
-		...userConfig,
-		// Merge plugins array
-		plugins: [...(defaultConfig.plugins ?? []), ...(userConfig.plugins ?? [])]
+		...userConfig
 	};
 }

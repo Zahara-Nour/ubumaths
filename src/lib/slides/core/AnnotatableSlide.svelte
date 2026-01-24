@@ -6,15 +6,16 @@
 	 * teachers to draw on top during presentations.
 	 * The toolbar is rendered at the Deck level via slideAnnotationStore.
 	 *
+	 * Uses the onActiveChange callback from Slide to track active state
+	 * without DOM observation.
+	 *
 	 * @module slides/core/AnnotatableSlide
 	 */
 
-	import { onMount, getContext } from 'svelte';
+	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import Slide from './Slide.svelte';
 	import type { SlideProps } from './types.js';
-	import { DECK_CONTEXT_KEY } from './context.js';
-	import type { DeckContext } from './types.js';
 	import SlideAnnotationLayer from '../components/SlideAnnotationLayer.svelte';
 	import { slideAnnotationStore } from '../stores/slideAnnotationStore.svelte.js';
 	import type { AnnotationElement } from '$lib/whiteboard/types/document';
@@ -60,19 +61,12 @@
 	}: Props = $props();
 
 	// ==========================================================================
-	// Context
-	// ==========================================================================
-
-	const deckContext = getContext<DeckContext>(DECK_CONTEXT_KEY);
-
-	// ==========================================================================
 	// Local State
 	// ==========================================================================
 
 	/** Container element reference for measuring */
 	let containerRef: HTMLDivElement | null = $state(null);
 	let annotationLayerRef: SlideAnnotationLayer | null = $state(null);
-	let slideElement: HTMLElement | null = $state(null);
 
 	/** Internal annotations state (used if no external state provided) */
 	let internalAnnotations = $state<AnnotationElement[]>([]);
@@ -81,7 +75,7 @@
 	let containerWidth = $state(1920);
 	let containerHeight = $state(1080);
 
-	/** Whether this slide is currently visible */
+	/** Whether this slide is currently active (updated via Slide's onActiveChange) */
 	let isCurrentSlide = $state(false);
 
 	// ==========================================================================
@@ -94,6 +88,23 @@
 	// ==========================================================================
 	// Handlers
 	// ==========================================================================
+
+	function handleActiveChange(active: boolean) {
+		isCurrentSlide = active;
+
+		if (active && annotatable) {
+			slideAnnotationStore.setAvailable(true);
+			slideAnnotationStore.registerCallbacks({
+				undo: handleUndo,
+				redo: handleRedo,
+				clear: handleClear
+			});
+			updateUndoRedoState();
+		} else {
+			slideAnnotationStore.setAvailable(false);
+			slideAnnotationStore.unregisterCallbacks();
+		}
+	}
 
 	function handleAnnotationsChange(newAnnotations: AnnotationElement[]) {
 		if (externalAnnotations !== undefined) {
@@ -144,21 +155,6 @@
 	}
 
 	// ==========================================================================
-	// Slide Visibility Detection
-	// ==========================================================================
-
-	function checkIfCurrentSlide() {
-		if (!slideElement || !deckContext) return false;
-
-		// Find the section element (the actual slide)
-		const section = slideElement.closest('section');
-		if (!section) return false;
-
-		// Check if this section has the 'present' class (reveal.js adds this to current slide)
-		return section.classList.contains('present');
-	}
-
-	// ==========================================================================
 	// Lifecycle
 	// ==========================================================================
 
@@ -174,57 +170,12 @@
 			resizeObserver.observe(containerRef);
 		}
 
-		// Initial check
-		isCurrentSlide = checkIfCurrentSlide();
-		if (isCurrentSlide && annotatable) {
-			slideAnnotationStore.setAvailable(true);
-			slideAnnotationStore.registerCallbacks({
-				undo: handleUndo,
-				redo: handleRedo,
-				clear: handleClear
-			});
-		}
-
 		return () => {
 			resizeObserver.disconnect();
-			if (isCurrentSlide) {
-				slideAnnotationStore.setAvailable(false);
-				slideAnnotationStore.unregisterCallbacks();
-			}
+			// Cleanup annotation state when unmounting
+			slideAnnotationStore.setAvailable(false);
+			slideAnnotationStore.unregisterCallbacks();
 		};
-	});
-
-	// Watch for slide changes using MutationObserver
-	$effect(() => {
-		if (!slideElement) return;
-
-		const section = slideElement.closest('section');
-		if (!section) return;
-
-		const observer = new MutationObserver(() => {
-			const nowCurrent = section.classList.contains('present');
-
-			if (nowCurrent !== isCurrentSlide) {
-				isCurrentSlide = nowCurrent;
-
-				if (isCurrentSlide && annotatable) {
-					slideAnnotationStore.setAvailable(true);
-					slideAnnotationStore.registerCallbacks({
-						undo: handleUndo,
-						redo: handleRedo,
-						clear: handleClear
-					});
-					updateUndoRedoState();
-				} else if (!isCurrentSlide) {
-					slideAnnotationStore.setAvailable(false);
-					slideAnnotationStore.unregisterCallbacks();
-				}
-			}
-		});
-
-		observer.observe(section, { attributes: true, attributeFilter: ['class'] });
-
-		return () => observer.disconnect();
 	});
 </script>
 
@@ -246,10 +197,9 @@
 	{visibility}
 	class="annotatable-slide {className ?? ''}"
 	{data}
+	onActiveChange={handleActiveChange}
 >
 	<div bind:this={containerRef} class="annotatable-slide-container">
-		<div bind:this={slideElement} class="slide-marker"></div>
-
 		<!-- Slide content -->
 		<div class="slide-content">
 			{#if content}
@@ -287,10 +237,6 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
-	}
-
-	.slide-marker {
-		display: none;
 	}
 
 	.slide-content {
