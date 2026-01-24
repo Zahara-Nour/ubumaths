@@ -1741,6 +1741,101 @@ function createWhiteboardStore() {
 			}));
 		},
 
+		/**
+		 * Resize annotation shape by scaling from original bounding box
+		 * Only works for shapes and stamps (not strokes)
+		 */
+		resizeAnnotation(
+			annotationId: string,
+			originalBBox: { minX: number; minY: number; maxX: number; maxY: number },
+			newBBox: { minX: number; minY: number; maxX: number; maxY: number },
+			originalValues?: {
+				start?: Point;
+				end?: Point;
+				position?: Point;
+				size?: number;
+			}
+		): void {
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: (page.annotations ?? []).map((a) => {
+					if (a.id !== annotationId) return a;
+
+					if (a.type === 'shape') {
+						// Use original values if provided, otherwise use current
+						const startX = originalValues?.start?.x ?? a.start.x;
+						const startY = originalValues?.start?.y ?? a.start.y;
+						const endX = originalValues?.end?.x ?? a.end.x;
+						const endY = originalValues?.end?.y ?? a.end.y;
+
+						// Scale shape start/end points relative to original bbox
+						const origWidth = originalBBox.maxX - originalBBox.minX;
+						const origHeight = originalBBox.maxY - originalBBox.minY;
+						const newWidth = newBBox.maxX - newBBox.minX;
+						const newHeight = newBBox.maxY - newBBox.minY;
+
+						if (origWidth === 0 || origHeight === 0) return a;
+
+						const scaleX = newWidth / origWidth;
+						const scaleY = newHeight / origHeight;
+
+						const newStart = {
+							x: newBBox.minX + (startX - originalBBox.minX) * scaleX,
+							y: newBBox.minY + (startY - originalBBox.minY) * scaleY
+						};
+						const newEnd = {
+							x: newBBox.minX + (endX - originalBBox.minX) * scaleX,
+							y: newBBox.minY + (endY - originalBBox.minY) * scaleY
+						};
+
+						return { ...a, start: newStart, end: newEnd };
+					} else if (a.type === 'stamp') {
+						// Use original size if provided
+						const origSize = originalValues?.size ?? a.size;
+
+						// For stamps, scale the size and move the position
+						const origWidth = originalBBox.maxX - originalBBox.minX;
+						const newWidth = newBBox.maxX - newBBox.minX;
+
+						if (origWidth === 0) return a;
+
+						const scale = newWidth / origWidth;
+						const newSize = Math.max(16, Math.min(96, origSize * scale));
+
+						// Center position in new bbox
+						const newPosition = {
+							x: (newBBox.minX + newBBox.maxX) / 2,
+							y: (newBBox.minY + newBBox.maxY) / 2
+						};
+
+						return { ...a, size: newSize, position: newPosition };
+					}
+
+					return a;
+				})
+			}));
+		},
+
+		/**
+		 * Rotate annotation (shapes and stamps only)
+		 */
+		rotateAnnotation(annotationId: string, rotation: number): void {
+			updateCurrentPage((page) => ({
+				...page,
+				annotations: (page.annotations ?? []).map((a) => {
+					if (a.id !== annotationId) return a;
+
+					if (a.type === 'shape' || a.type === 'stamp') {
+						// Normalize rotation to 0-360
+						const normalizedRotation = ((rotation % 360) + 360) % 360;
+						return { ...a, rotation: normalizedRotation };
+					}
+
+					return a;
+				})
+			}));
+		},
+
 		// === Element Operations ===
 
 		/**

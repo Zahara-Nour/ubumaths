@@ -441,4 +441,112 @@ describe('Annotation Layer', () => {
 			}
 		});
 	});
+
+	describe('annotation resize', () => {
+		beforeEach(() => {
+			whiteboardStore.enterAnnotationMode();
+		});
+
+		it('resizes a shape annotation', () => {
+			const start: Point = { x: 50, y: 50 };
+			const end: Point = { x: 150, y: 150 };
+
+			whiteboardStore.addAnnotationShape(start, end, 'rectangle');
+
+			const annotations = whiteboardStore.currentPage?.annotations;
+			const shape = annotations?.[0] as AnnotationShape;
+			expect(shape).toBeDefined();
+
+			const originalBBox = { minX: 50, minY: 50, maxX: 150, maxY: 150 };
+			const newBBox = { minX: 50, minY: 50, maxX: 200, maxY: 200 };
+
+			whiteboardStore.resizeAnnotation(shape.id, originalBBox, newBBox);
+
+			const resized = whiteboardStore.currentPage?.annotations?.[0] as AnnotationShape;
+			expect(resized.end.x).toBe(200);
+			expect(resized.end.y).toBe(200);
+		});
+
+		it('resizes a stamp annotation', () => {
+			whiteboardStore.setAnnotationStyleProperty('stampType', '★');
+			whiteboardStore.addAnnotationStamp({ x: 100, y: 100 });
+
+			const annotations = whiteboardStore.currentPage?.annotations;
+			const stamp = annotations?.[0] as AnnotationStamp;
+			expect(stamp).toBeDefined();
+
+			const originalSize = stamp.size;
+			const half = originalSize / 2;
+
+			const originalBBox = {
+				minX: 100 - half,
+				minY: 100 - half,
+				maxX: 100 + half,
+				maxY: 100 + half
+			};
+			// Double the size
+			const newBBox = {
+				minX: 100 - half,
+				minY: 100 - half,
+				maxX: 100 + half * 2,
+				maxY: 100 + half * 2
+			};
+
+			whiteboardStore.resizeAnnotation(stamp.id, originalBBox, newBBox);
+
+			const resized = whiteboardStore.currentPage?.annotations?.[0] as AnnotationStamp;
+			// Size should have increased (clamped between 16 and 96)
+			expect(resized.size).toBeGreaterThan(originalSize);
+		});
+	});
+
+	describe('annotation rotation', () => {
+		beforeEach(() => {
+			whiteboardStore.enterAnnotationMode();
+		});
+
+		it('rotates a shape annotation', () => {
+			const start: Point = { x: 50, y: 50 };
+			const end: Point = { x: 150, y: 150 };
+
+			whiteboardStore.addAnnotationShape(start, end, 'rectangle');
+
+			const annotations = whiteboardStore.currentPage?.annotations;
+			const shape = annotations?.[0] as AnnotationShape;
+			expect(shape).toBeDefined();
+			expect(shape.rotation ?? 0).toBe(0);
+
+			whiteboardStore.rotateAnnotation(shape.id, 45);
+
+			const rotated = whiteboardStore.currentPage?.annotations?.[0] as AnnotationShape;
+			expect(rotated.rotation).toBe(45);
+		});
+
+		it('rotates a stamp annotation', () => {
+			whiteboardStore.setAnnotationStyleProperty('stampType', '✓');
+			whiteboardStore.addAnnotationStamp({ x: 100, y: 100 });
+
+			const annotations = whiteboardStore.currentPage?.annotations;
+			const stamp = annotations?.[0] as AnnotationStamp;
+			expect(stamp).toBeDefined();
+
+			whiteboardStore.rotateAnnotation(stamp.id, 90);
+
+			const rotated = whiteboardStore.currentPage?.annotations?.[0] as AnnotationStamp;
+			expect(rotated.rotation).toBe(90);
+		});
+
+		it('normalizes rotation to 0-360 range', () => {
+			whiteboardStore.setAnnotationStyleProperty('stampType', '✓');
+			whiteboardStore.addAnnotationStamp({ x: 100, y: 100 });
+
+			const annotations = whiteboardStore.currentPage?.annotations;
+			const stamp = annotations?.[0] as AnnotationStamp;
+
+			whiteboardStore.rotateAnnotation(stamp.id, -45);
+
+			const rotated = whiteboardStore.currentPage?.annotations?.[0] as AnnotationStamp;
+			expect(rotated.rotation).toBe(315); // -45 + 360 = 315
+		});
+	});
 });
