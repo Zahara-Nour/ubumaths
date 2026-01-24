@@ -61,6 +61,7 @@ Migration from reveal.js to native Svelte 5 completed successfully.
   - Up/Down arrows use `up()`/`down()` (vertical only)
   - Space/PageDown/N use `next()`/`prev()` (sequential with fragments/verticals)
   - Swipe gestures updated to match (horizontal swipes = horizontal navigation)
+  - Vertical position memory: left→right returns to same vertical level (like reveal.js)
 
 ### Design Decisions
 

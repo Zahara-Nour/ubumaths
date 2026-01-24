@@ -79,6 +79,10 @@ export function createDeckStore(): DeckStore {
 	// their h index before onMount (so they can pass it to children via context)
 	let nextHIndex = 0;
 
+	// Memory for vertical positions (like reveal.js)
+	// When navigating horizontally, we save/restore vertical positions
+	const verticalMemory = new Map<number, number>();
+
 	// Derived values
 	const totalH = $derived(slides.size);
 	const fragmentCount = $derived.by(() => {
@@ -201,23 +205,47 @@ export function createDeckStore(): DeckStore {
 
 	/**
 	 * Go to next horizontal slide (skip verticals)
+	 * Saves current vertical position and restores target's saved position (like reveal.js)
 	 */
 	function nextH(): void {
 		const maxH = slides.size - 1;
 		if (state.h < maxH) {
-			state.h++;
-			state.v = 0;
+			// Save current vertical position before leaving
+			if (getVerticalCount(state.h) > 1) {
+				verticalMemory.set(state.h, state.v);
+			}
+
+			const targetH = state.h + 1;
+			// Restore saved vertical position for target, or default to 0
+			const targetV = verticalMemory.get(targetH) ?? 0;
+			// Clamp to valid range
+			const maxV = Math.max(0, getVerticalCount(targetH) - 1);
+
+			state.h = targetH;
+			state.v = Math.min(targetV, maxV);
 			state.f = -1;
 		}
 	}
 
 	/**
 	 * Go to previous horizontal slide (skip verticals)
+	 * Saves current vertical position and restores target's saved position (like reveal.js)
 	 */
 	function prevH(): void {
 		if (state.h > 0) {
-			state.h--;
-			state.v = 0;
+			// Save current vertical position before leaving
+			if (getVerticalCount(state.h) > 1) {
+				verticalMemory.set(state.h, state.v);
+			}
+
+			const targetH = state.h - 1;
+			// Restore saved vertical position for target, or default to 0
+			const targetV = verticalMemory.get(targetH) ?? 0;
+			// Clamp to valid range
+			const maxV = Math.max(0, getVerticalCount(targetH) - 1);
+
+			state.h = targetH;
+			state.v = Math.min(targetV, maxV);
 			state.f = -1;
 		}
 	}

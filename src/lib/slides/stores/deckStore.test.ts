@@ -247,11 +247,12 @@ describe('deckStore', () => {
 			expect(store.v).toBe(0);
 		});
 
-		it('nextH() skips vertical slides', () => {
+		it('nextH() skips vertical slides and restores saved v position', () => {
 			store.goTo(1, 2); // At h=1, v=2
 
 			store.nextH();
 
+			// Goes to h=2, v=0 (no previous memory for h=2)
 			expect(store.h).toBe(2);
 			expect(store.v).toBe(0);
 		});
@@ -274,11 +275,12 @@ describe('deckStore', () => {
 			expect(store.v).toBe(0);
 		});
 
-		it('prevH() resets to v=0', () => {
+		it('prevH() restores saved v position or defaults to v=0', () => {
 			store.goTo(1, 2);
 
 			store.prevH();
 
+			// Goes to h=0, v=0 (no previous memory for h=0)
 			expect(store.h).toBe(0);
 			expect(store.v).toBe(0);
 		});
@@ -295,6 +297,52 @@ describe('deckStore', () => {
 			store.prevH();
 
 			expect(store.h).toBe(0);
+		});
+
+		it('nextH() then prevH() returns to saved vertical position (like reveal.js)', () => {
+			// Start at h=1, v=2
+			store.goTo(1, 2);
+
+			// Go right to h=2
+			store.nextH();
+			expect(store.h).toBe(2);
+			expect(store.v).toBe(0);
+
+			// Go back left to h=1 - should restore v=2
+			store.prevH();
+			expect(store.h).toBe(1);
+			expect(store.v).toBe(2);
+		});
+
+		it('prevH() then nextH() returns to saved vertical position', () => {
+			// Start at h=1, v=2
+			store.goTo(1, 2);
+
+			// Go left to h=0
+			store.prevH();
+			expect(store.h).toBe(0);
+			expect(store.v).toBe(0);
+
+			// Go back right to h=1 - should restore v=2
+			store.nextH();
+			expect(store.h).toBe(1);
+			expect(store.v).toBe(2);
+		});
+
+		it('vertical memory clamps to valid range when stack size changes', () => {
+			// Start at h=1, v=2
+			store.goTo(1, 2);
+
+			// Go right (saves v=2 for h=1)
+			store.nextH();
+
+			// Simulate stack shrinking by unregistering v=2
+			store.unregisterSlide(1, 2);
+
+			// Go back left - should clamp to max available v
+			store.prevH();
+			expect(store.h).toBe(1);
+			expect(store.v).toBeLessThanOrEqual(1); // Clamped to available verticals
 		});
 	});
 
