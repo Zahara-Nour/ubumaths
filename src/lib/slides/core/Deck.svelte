@@ -15,6 +15,7 @@
 	import { createDeckStore } from '../stores/deckStore.svelte.js';
 	import { createHashNavigation, parseHash, syncHashEffect } from '../navigation/hash.js';
 	import { keyboard } from '../actions/keyboard.js';
+	import { swipe, createSwipeHandlers } from '../actions/swipe.js';
 	import SlideAnnotationToolbar from '../components/SlideAnnotationToolbar.svelte';
 	import { slideAnnotationStore } from '../stores/slideAnnotationStore.svelte.js';
 
@@ -220,6 +221,10 @@
 	const showControls = $derived(mergedConfig.controls ?? true);
 	const showProgress = $derived(mergedConfig.progress ?? true);
 	const keyboardEnabled = $derived(mergedConfig.keyboard ?? true);
+	const touchEnabled = $derived(mergedConfig.touch ?? true);
+
+	// Swipe handlers for touch navigation
+	const swipeHandlers = $derived(createSwipeHandlers(store));
 
 	// Progress calculation
 	const progressPercent = $derived.by(() => {
@@ -239,6 +244,7 @@
 	role="application"
 	aria-label="Presentation slides"
 	use:keyboard={{ store, enabled: keyboardEnabled }}
+	use:swipe={touchEnabled ? swipeHandlers : undefined}
 >
 	<div class="slides-viewport" bind:this={viewportElement} style={viewportStyle}>
 		<div class="slides-container" class:centered={mergedConfig.center}>

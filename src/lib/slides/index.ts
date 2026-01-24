@@ -11,6 +11,10 @@ export { default as UbuMarkSlide } from './core/UbuMarkSlide.svelte';
 export { default as QuestionSlide } from './core/QuestionSlide.svelte';
 export { default as WhiteboardSlide } from './core/WhiteboardSlide.svelte';
 
+// UI components
+export { default as Controls } from './components/Controls.svelte';
+export { default as Progress } from './components/Progress.svelte';
+
 // Context
 export { DECK_CONTEXT_KEY, SLIDE_CONTEXT_KEY, SLIDE_POSITION_KEY } from './core/context.js';
 
@@ -34,6 +38,12 @@ export { createHashNavigation, parseHash, formatHash, syncHashEffect } from './n
 
 // Actions
 export { keyboard, mergeKeyHandlers } from './actions/keyboard.js';
+export {
+	swipe,
+	createSwipeHandlers,
+	type SwipeOptions,
+	type SwipeHandlers
+} from './actions/swipe.js';
 
 // Types
 export type {

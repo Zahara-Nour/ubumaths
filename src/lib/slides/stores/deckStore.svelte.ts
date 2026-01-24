@@ -16,6 +16,12 @@ export interface DeckStore extends DeckStoreActions {
 	readonly f: number;
 	/** Total number of horizontal slides */
 	readonly totalH: number;
+	/** Fragment count for current slide */
+	readonly fragmentCount: number;
+	/** Whether current horizontal has vertical slides */
+	readonly hasVerticalSlides: boolean;
+	/** Vertical slide count for current horizontal */
+	readonly verticalCount: number;
 	/** Whether overview mode is active */
 	readonly overview: boolean;
 	/** Whether deck is paused */
@@ -28,6 +34,12 @@ export interface DeckStore extends DeckStoreActions {
 	getSlide(h: number, v?: number): SlideInfo | undefined;
 	/** Get total fragments for current slide */
 	getTotalFragments(): number;
+	/** Get vertical count for a horizontal index */
+	getVerticalCount(h: number): number;
+	/** Go up (previous vertical) */
+	up(): void;
+	/** Go down (next vertical) */
+	down(): void;
 }
 
 interface DeckStoreState {
@@ -62,6 +74,12 @@ export function createDeckStore(): DeckStore {
 
 	// Derived values
 	const totalH = $derived(slides.size);
+	const fragmentCount = $derived.by(() => {
+		const slide = getSlide(state.h, state.v);
+		return slide?.fragmentCount ?? 0;
+	});
+	const verticalCount = $derived(getVerticalCount(state.h));
+	const hasVerticalSlides = $derived(verticalCount > 1);
 
 	/**
 	 * Get slide info at position
@@ -318,6 +336,15 @@ export function createDeckStore(): DeckStore {
 		get totalH() {
 			return totalH;
 		},
+		get fragmentCount() {
+			return fragmentCount;
+		},
+		get hasVerticalSlides() {
+			return hasVerticalSlides;
+		},
+		get verticalCount() {
+			return verticalCount;
+		},
 		get overview() {
 			return state.overview;
 		},
@@ -337,6 +364,7 @@ export function createDeckStore(): DeckStore {
 
 		// Methods
 		getSlide,
+		getVerticalCount,
 		getTotalFragments,
 		goTo,
 		next,
@@ -345,6 +373,8 @@ export function createDeckStore(): DeckStore {
 		prevH,
 		nextV,
 		prevV,
+		up: prevV,
+		down: nextV,
 		registerSlide,
 		unregisterSlide,
 		updateFragmentCount,
