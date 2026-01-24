@@ -518,18 +518,19 @@
 		border: none;
 	}
 
-	/* Fragment base styles */
-	:global(.fragment) {
-		opacity: 0;
-		visibility: hidden;
+	/* Fragment base styles - fragments hidden by default, only visible with .visible class */
+	:global(.slide .fragment) {
+		opacity: 0 !important;
+		visibility: hidden !important;
+		transition: none !important;
 	}
 
-	:global(.fragment.visible) {
-		opacity: 1;
-		visibility: visible;
+	:global(.slide .fragment.visible) {
+		opacity: 1 !important;
+		visibility: visible !important;
 		transition:
 			opacity 0.3s ease,
-			transform 0.3s ease;
+			transform 0.3s ease !important;
 	}
 
 	:global(.fragment.current-fragment) {
