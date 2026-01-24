@@ -5,6 +5,8 @@
 	import type { DeckStore } from '../stores/deckStore.svelte.js';
 	import { slideIn, slideOut } from '../transitions/slide.js';
 	import { fadeIn, fadeOut } from '../transitions/fade.js';
+	import { zoomIn, zoomOut } from '../transitions/zoom.js';
+	import { convexIn, convexOut } from '../transitions/convex.js';
 	import { TRANSITION_DURATIONS } from './types.js';
 
 	// ============================================================================
@@ -268,6 +270,30 @@
 				>
 					{@render slideContent()}
 				</div>
+			{:else if transition === 'zoom'}
+				<div
+					bind:this={slideElement}
+					class="slide {className ?? ''}"
+					class:active={isActive}
+					style={backgroundStyle}
+					{...dataAttributes}
+					in:zoomIn={transitionParams}
+					out:zoomOut={transitionParams}
+				>
+					{@render slideContent()}
+				</div>
+			{:else if transition === 'convex'}
+				<div
+					bind:this={slideElement}
+					class="slide {className ?? ''}"
+					class:active={isActive}
+					style={backgroundStyle}
+					{...dataAttributes}
+					in:convexIn={transitionParams}
+					out:convexOut={transitionParams}
+				>
+					{@render slideContent()}
+				</div>
 			{:else}
 				<div
 					bind:this={slideElement}
@@ -320,6 +346,42 @@
 					: false}
 				style={backgroundStyle}
 				{...dataAttributes}
+			>
+				{@render slideContent()}
+			</div>
+		{:else if transition === 'zoom'}
+			<div
+				bind:this={slideElement}
+				class="slide {className ?? ''}"
+				class:active={isActive}
+				class:past={deckStore
+					? deckStore.h > slideH || (deckStore.h === slideH && deckStore.v > slideV)
+					: false}
+				class:future={deckStore
+					? deckStore.h < slideH || (deckStore.h === slideH && deckStore.v < slideV)
+					: false}
+				style={backgroundStyle}
+				{...dataAttributes}
+				in:zoomIn={transitionParams}
+				out:zoomOut={transitionParams}
+			>
+				{@render slideContent()}
+			</div>
+		{:else if transition === 'convex'}
+			<div
+				bind:this={slideElement}
+				class="slide {className ?? ''}"
+				class:active={isActive}
+				class:past={deckStore
+					? deckStore.h > slideH || (deckStore.h === slideH && deckStore.v > slideV)
+					: false}
+				class:future={deckStore
+					? deckStore.h < slideH || (deckStore.h === slideH && deckStore.v < slideV)
+					: false}
+				style={backgroundStyle}
+				{...dataAttributes}
+				in:convexIn={transitionParams}
+				out:convexOut={transitionParams}
 			>
 				{@render slideContent()}
 			</div>

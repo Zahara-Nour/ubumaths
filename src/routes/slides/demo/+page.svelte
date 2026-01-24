@@ -229,7 +229,13 @@ Calculer la somme : $5 + 3 = ?$
 			<p>Horizontal et vertical</p>
 		</Slide>
 
-		<!-- Slide 10: End -->
+		<!-- Slide 10: Convex transition demo -->
+		<Slide transition="convex" background="#2d3436">
+			<h2>Transition Convex</h2>
+			<p>Rotation 3D autour de l'axe vertical</p>
+		</Slide>
+
+		<!-- Slide 11: End -->
 		<Slide transition="zoom" background="#e94560">
 			<h2>Fin de la demo</h2>
 			<p>Slide {currentSlide.h + 1}</p>
