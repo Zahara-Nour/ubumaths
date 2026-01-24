@@ -4,6 +4,11 @@
 	 *
 	 * Provides tool selection, color picker, stroke width, and stamp palette
 	 * for the annotation layer.
+	 *
+	 * Follows the same patterns as FloatingToolbar:
+	 * - Draggable with GripVertical handle
+	 * - Undo/Redo on the left
+	 * - Solid background with blur
 	 */
 
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
@@ -24,7 +29,8 @@
 		MousePointer2,
 		Undo2,
 		Redo2,
-		Paintbrush
+		Paintbrush,
+		GripVertical
 	} from 'lucide-svelte';
 	import type { FillMode, StrokeStyle } from '../types/document';
 	import type { AnnotationToolType, StampType } from '../types/document';
@@ -77,6 +83,12 @@
 	let showStampPalette = $state(false);
 	let showColorPicker = $state(false);
 	let showFillPicker = $state(false);
+
+	/** Drag state */
+	let toolbarPosition = $state({ x: 0, y: 0 });
+	let isDragging = $state(false);
+	let dragStart = $state({ x: 0, y: 0 });
+	let hasCustomPosition = $state(false);
 
 	// ==========================================================================
 	// Derived State
@@ -136,6 +148,71 @@
 		showStampPalette = false;
 	}
 
+	// ==========================================================================
+	// Drag Handlers
+	// ==========================================================================
+
+	function handleDragStart(e: PointerEvent) {
+		e.preventDefault();
+		isDragging = true;
+		dragStart = {
+			x: e.clientX - toolbarPosition.x,
+			y: e.clientY - toolbarPosition.y
+		};
+		window.addEventListener('pointermove', handleDragMove);
+		window.addEventListener('pointerup', handleDragEnd);
+	}
+
+	function handleDragMove(e: PointerEvent) {
+		if (!isDragging) return;
+
+		toolbarPosition = {
+			x: e.clientX - dragStart.x,
+			y: e.clientY - dragStart.y
+		};
+		hasCustomPosition = true;
+	}
+
+	function handleDragEnd() {
+		if (isDragging) {
+			isDragging = false;
+			window.removeEventListener('pointermove', handleDragMove);
+			window.removeEventListener('pointerup', handleDragEnd);
+			if (hasCustomPosition) {
+				localStorage.setItem('annotation-toolbar-position', JSON.stringify(toolbarPosition));
+			}
+		}
+	}
+
+	function handleDragDoubleClick() {
+		toolbarPosition = { x: 0, y: 0 };
+		hasCustomPosition = false;
+		localStorage.removeItem('annotation-toolbar-position');
+	}
+
+	// Load saved position on mount and cleanup on destroy
+	$effect(() => {
+		const saved = localStorage.getItem('annotation-toolbar-position');
+		if (saved) {
+			try {
+				const pos = JSON.parse(saved);
+				if (typeof pos.x === 'number' && typeof pos.y === 'number') {
+					toolbarPosition = pos;
+					hasCustomPosition = true;
+				}
+			} catch {
+				// Ignore parse errors
+			}
+		}
+
+		return () => {
+			if (isDragging) {
+				window.removeEventListener('pointermove', handleDragMove);
+				window.removeEventListener('pointerup', handleDragEnd);
+			}
+		};
+	});
+
 	function toggleVisibility() {
 		whiteboardStore.toggleAnnotationsVisible();
 	}
@@ -156,7 +233,50 @@
 </script>
 
 {#if isAnnotationMode}
-	<div class="annotation-toolbar">
+	<div
+		class="annotation-toolbar"
+		style="transform: translate(calc(-50% + {toolbarPosition.x}px), {toolbarPosition.y}px); {isDragging
+			? ''
+			: 'transition: transform 0.1s ease-out;'}"
+	>
+		<!-- Drag handle -->
+		<div
+			class="drag-handle"
+			onpointerdown={handleDragStart}
+			ondblclick={handleDragDoubleClick}
+			title="Glisser pour déplacer (double-clic pour réinitialiser)"
+			aria-label="Déplacer la barre d'outils"
+		>
+			<GripVertical class="h-4 w-4 text-muted-foreground" />
+		</div>
+
+		<!-- Undo/Redo -->
+		<div class="toolbar-section">
+			<Button
+				variant="ghost"
+				size="sm"
+				class="toolbar-btn"
+				onclick={handleUndo}
+				disabled={!canUndo}
+				title="Annuler (Ctrl+Z)"
+			>
+				<Undo2 class="h-4 w-4" />
+			</Button>
+
+			<Button
+				variant="ghost"
+				size="sm"
+				class="toolbar-btn"
+				onclick={handleRedo}
+				disabled={!canRedo}
+				title="Rétablir (Ctrl+Y)"
+			>
+				<Redo2 class="h-4 w-4" />
+			</Button>
+		</div>
+
+		<div class="separator"></div>
+
 		<!-- Tool buttons -->
 		<div class="toolbar-section">
 			<Button
@@ -407,31 +527,6 @@
 			</div>
 		</div>
 
-		<!-- Undo/Redo -->
-		<div class="toolbar-section">
-			<Button
-				variant="ghost"
-				size="sm"
-				class="toolbar-btn"
-				onclick={handleUndo}
-				disabled={!canUndo}
-				title="Annuler (Ctrl+Z)"
-			>
-				<Undo2 class="h-4 w-4" />
-			</Button>
-
-			<Button
-				variant="ghost"
-				size="sm"
-				class="toolbar-btn"
-				onclick={handleRedo}
-				disabled={!canRedo}
-				title="Rétablir (Ctrl+Y)"
-			>
-				<Redo2 class="h-4 w-4" />
-			</Button>
-		</div>
-
 		<!-- Actions -->
 		<div class="toolbar-section">
 			<Button
@@ -478,23 +573,43 @@
 		position: absolute;
 		bottom: 16px;
 		left: 50%;
-		transform: translateX(-50%);
 		z-index: 250;
 		display: flex;
-		gap: 8px;
-		padding: 8px;
-		background: hsl(var(--background));
+		align-items: center;
+		gap: 4px;
+		padding: 6px 8px;
+		background: hsl(var(--background) / 0.95);
+		backdrop-filter: blur(8px);
 		border: 1px solid hsl(var(--border));
 		border-radius: 12px;
 		box-shadow:
 			0 4px 6px -1px rgb(0 0 0 / 0.1),
 			0 2px 4px -2px rgb(0 0 0 / 0.1);
+		user-select: none;
+	}
+
+	.drag-handle {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 4px;
+		border-radius: 4px;
+		cursor: grab;
+		transition: background 0.1s;
+	}
+
+	.drag-handle:hover {
+		background: hsl(var(--accent));
+	}
+
+	.drag-handle:active {
+		cursor: grabbing;
 	}
 
 	.toolbar-section {
 		display: flex;
 		align-items: center;
-		gap: 4px;
+		gap: 2px;
 	}
 
 	.separator {
