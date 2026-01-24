@@ -5151,11 +5151,21 @@ function createWhiteboardStore() {
 
 		/**
 		 * Undo last annotation action (separate history from elements)
+		 * Only restores annotations, not whiteboard elements
 		 */
 		undoAnnotation(): void {
+			if (!document) return;
 			const previous = annotationHistory?.undo();
 			if (previous) {
-				document = previous;
+				// Only restore annotations from the history snapshot, keep current elements
+				document = {
+					...document,
+					updatedAt: new Date().toISOString(),
+					pages: document.pages.map((currentPage, i) => ({
+						...currentPage,
+						annotations: previous.pages[i]?.annotations ?? []
+					}))
+				};
 				hasUnsavedChanges = true;
 				scheduleAutosave();
 			}
@@ -5163,11 +5173,21 @@ function createWhiteboardStore() {
 
 		/**
 		 * Redo last undone annotation action (separate history from elements)
+		 * Only restores annotations, not whiteboard elements
 		 */
 		redoAnnotation(): void {
+			if (!document) return;
 			const next = annotationHistory?.redo();
 			if (next) {
-				document = next;
+				// Only restore annotations from the history snapshot, keep current elements
+				document = {
+					...document,
+					updatedAt: new Date().toISOString(),
+					pages: document.pages.map((currentPage, i) => ({
+						...currentPage,
+						annotations: next.pages[i]?.annotations ?? []
+					}))
+				};
 				hasUnsavedChanges = true;
 				scheduleAutosave();
 			}
