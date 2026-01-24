@@ -1,6 +1,6 @@
 # UbuSlides - Documentation de progression
 
-> **Statut** : 🟢 Phase 1 terminée - Prêt pour Phase 2 (UbuMark)
+> **Statut** : 🟢 Phase 2 terminée - Prêt pour Phase 3 (Questions)
 > **Dernière mise à jour** : 2026-01-24
 
 ---
@@ -76,22 +76,28 @@ src/lib/slides/
 
 ---
 
-### Phase 2 : Plugin UbuMark
+### Phase 2 : Plugin UbuMark ✅ TERMINÉE
 
 **Objectif** : Rendre le contenu UbuMark dans les slides
 
 **Livrables** :
 
-- [ ] Plugin `ubumark` pour reveal.js
-- [ ] `UbuMarkSlide.svelte` - Slide avec contenu markdown
-- [ ] Support formules math ($...$)
-- [ ] Support variables ({{random:...}})
-- [ ] Support fragments via hints
+- [x] `UbuMarkSlide.svelte` - Slide avec contenu markdown
+- [x] Support formules math ($...$) via MarkdownRenderer
+- [x] Support variables ({{name}}) via substitution
+- [x] Support fragments via {.fragment} marker
+- [ ] Plugin `ubumark` reveal.js natif (reporté - non nécessaire)
+
+**Décisions techniques** :
+
+- Contenu passé via prop (pas slot) pour traitement variables
+- Variables pré-définies via prop `variables`
+- SSR désactivé (reveal.js nécessite DOM)
+- Réutilisation de MarkdownRenderer existant
 
 **Dépendances** :
 
-- Parser UbuMark existant (`src/lib/ubumark/`)
-- MarkdownRenderer existant
+- MarkdownRenderer existant (`src/lib/components/markdown/`)
 
 ---
 
@@ -196,6 +202,13 @@ src/lib/slides/
   - [x] Layout isolé (`+layout@.svelte`)
   - [x] Page démo fonctionnelle
   - [x] Fix: export contexte, CSS scoping, font-size
+- [x] **TERMINÉ** : Phase 2 - Plugin UbuMark
+  - [x] Composant UbuMarkSlide.svelte
+  - [x] Support formules math via MarkdownRenderer
+  - [x] Substitution variables {{name}}
+  - [x] Support fragments {.fragment}
+  - [x] Fix: SSR désactivé (+page.ts)
+  - [x] Démo mise à jour avec UbuMarkSlide
 
 ---
 
@@ -244,6 +257,15 @@ const defaultConfig = {
 | `src/routes/slides/+layout@.svelte`   | ✅ Créé | Layout isolé (sans dashboard) |
 | `src/routes/slides/demo/+page.svelte` | ✅ Créé | Page démo fonctionnelle       |
 
+### Phase 2 (terminée ✅)
+
+| Fichier                                   | Statut     | Description                |
+| ----------------------------------------- | ---------- | -------------------------- |
+| `src/lib/slides/core/UbuMarkSlide.svelte` | ✅ Créé    | Slide avec contenu UbuMark |
+| `src/lib/slides/index.ts`                 | ✅ Modifié | Export UbuMarkSlide        |
+| `src/routes/slides/demo/+page.ts`         | ✅ Créé    | Désactive SSR              |
+| `src/routes/slides/demo/+page.svelte`     | ✅ Modifié | Démo avec UbuMarkSlide     |
+
 ---
 
 ## Risques identifiés
@@ -273,12 +295,14 @@ const defaultConfig = {
 3. ~~**Implémenter Deck.svelte**~~ ✅
 4. ~~**Implémenter Slide.svelte**~~ ✅
 5. ~~**Créer page démo** fonctionnelle~~ ✅
+6. ~~**Implémenter UbuMarkSlide.svelte**~~ ✅
+7. ~~**Support formules math et variables**~~ ✅
 
-**Phase 2 - Plugin UbuMark** :
+**Phase 3 - Plugin Questions** :
 
-1. Créer plugin reveal.js pour UbuMark
-2. Créer `UbuMarkSlide.svelte`
-3. Intégrer parser/renderer existants
-4. Support formules math ($...$)
-5. Support variables ({{random:...}})
+1. Analyser composants questions existants
+2. Créer `QuestionSlide.svelte`
+3. Intégrer types de questions (QCM, numérique, etc.)
+4. Validation réponses
+5. Feedback visuel
 6. Tests et validation
