@@ -245,6 +245,8 @@ src/lib/slides/
   - [x] Toolbar rendue au niveau Deck (hors transforms reveal.js)
   - [x] MutationObserver pour détection slide courante (classe `present`)
   - [x] Correction calcul coordonnées SVG (getBoundingClientRect)
+  - [x] Import app.css dans layout slides pour thème Shadcn
+  - [x] Style toolbar dark theme avec boutons actifs mis en valeur
   - [x] Support roughjs pour formes
   - [x] Support perfect-freehand pour strokes
   - [x] Undo/redo local pour annotations

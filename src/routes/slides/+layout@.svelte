@@ -2,8 +2,10 @@
 	/**
 	 * Slides Layout - No parent layout inheritance
 	 * The @ suffix breaks the layout chain completely
+	 * But we still import app.css for Shadcn theme variables
 	 */
 	import type { Snippet } from 'svelte';
+	import '../../app.css';
 
 	let { children }: { children: Snippet } = $props();
 </script>
