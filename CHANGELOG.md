@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.29](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.28...v0.7.29) (2026-01-25)
+
+### 🐛 Bug Fixes
+
+- **ubumark:** preserve block math $$...$$ when embedded in paragraph ([9d5b5a0](https://github.com/Zahara-Nour/ubumaths/commit/9d5b5a0625843cfc34f18a25600bf6734f230663))
+
+### ✨ Features
+
+- **whiteboard:** improve image handling with aspect ratio and clipboard paste ([9b9edc3](https://github.com/Zahara-Nour/ubumaths/commit/9b9edc319c010211964fc013245e7f4728898264))
+- **whiteboard:** improve toolbar with quick colors and separate laser buttons ([5df9c35](https://github.com/Zahara-Nour/ubumaths/commit/5df9c35638fbe9f1b7cdc47d3d534b41b08d9c56))
+- **worksheets:** add drag-and-drop reordering for sections ([9be2ba7](https://github.com/Zahara-Nour/ubumaths/commit/9be2ba776bbd58d641a8c51b71ad9d152ddd51b6))
+
 ### [0.7.28](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.27...v0.7.28) (2026-01-25)
 
 ### [0.7.27](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.26...v0.7.27) (2026-01-25)
