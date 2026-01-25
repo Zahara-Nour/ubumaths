@@ -409,6 +409,10 @@
 		justify-content: center;
 		padding: var(--slide-padding, 2rem);
 		box-sizing: border-box;
+
+		/* Default text styles for slides */
+		color: var(--slide-color, #fff);
+		text-align: center;
 	}
 
 	/*

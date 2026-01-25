@@ -701,37 +701,12 @@ console.log(x, y);`}
 		background: #000;
 		border-radius: 8px;
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-		font-size: 24px;
 	}
 
-	/* Global styles for slide content */
-	.deck-container :global(h1) {
-		font-size: 2em !important;
-		margin-bottom: 0.5em;
-	}
-
-	.deck-container :global(h2) {
-		font-size: 1.5em !important;
-		margin-bottom: 0.5em;
-	}
-
-	.deck-container :global(h3) {
-		font-size: 1.2em !important;
-		margin-bottom: 0.5em;
-	}
-
-	.deck-container :global(p) {
-		font-size: 0.9em !important;
-	}
-
+	/* Layout styles */
 	.deck-container :global(ul) {
 		text-align: left;
 		display: inline-block;
-	}
-
-	.deck-container :global(li) {
-		margin: 0.3em 0;
-		font-size: 0.85em !important;
 	}
 
 	.deck-container :global(table) {
@@ -748,15 +723,9 @@ console.log(x, y);`}
 	}
 
 	.deck-container :global(code) {
-		font-size: 0.85em;
 		color: #ffd700;
 		background: rgba(255, 255, 255, 0.1);
 		padding: 0.1em 0.3em;
 		border-radius: 4px;
-	}
-
-	.deck-container :global(small) {
-		font-size: 0.6em;
-		opacity: 0.8;
 	}
 </style>
