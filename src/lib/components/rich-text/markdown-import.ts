@@ -302,8 +302,11 @@ function convertListItem(item: ListItemNode): JSONContent {
 			content.push(convertVariationTable(child as VariationTableNode));
 		} else if (child.type === 'probability-tree') {
 			content.push(convertProbabilityTree(child as ProbabilityTreeNode));
+		} else if (child.type === 'image') {
+			content.push(convertImage(child as ImageNode));
+		} else if (child.type === 'video') {
+			content.push(convertVideo(child as VideoNode));
 		}
-		// Other block types in list items not supported
 	}
 
 	// Ensure listItem starts with a paragraph (TipTap schema requirement)
@@ -323,7 +326,9 @@ function convertListItem(item: ListItemNode): JSONContent {
 		'blockquote',
 		'table',
 		'variationTable',
-		'probabilityTree'
+		'probabilityTree',
+		'image',
+		'video'
 	];
 
 	for (let i = 0; i < content.length; i++) {

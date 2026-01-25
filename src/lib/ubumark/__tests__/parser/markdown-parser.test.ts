@@ -800,6 +800,118 @@ describe('parseMarkdown - blank support', () => {
 			}
 		}
 	});
+
+	it('should parse images in list item continuations', () => {
+		const markdown = `1. Item with image:
+
+   ![A cat](cat.png)
+
+2. Next item`;
+
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('list');
+
+		if (ast.children[0].type === 'list') {
+			const list = ast.children[0];
+			expect(list.items).toHaveLength(2);
+
+			// First item should have paragraph + image
+			const firstItem = list.items[0];
+			expect(firstItem.children.length).toBeGreaterThanOrEqual(2);
+
+			// Find the image
+			const image = firstItem.children.find((c) => c.type === 'image');
+			expect(image).toBeDefined();
+
+			if (image && image.type === 'image') {
+				expect(image.src).toBe('cat.png');
+				expect(image.alt).toBe('A cat');
+			}
+		}
+	});
+
+	it('should parse image as first element in list item (block-first with empty marker line)', () => {
+		const markdown = `-
+  ![Figure](graph.png)
+
+- Second item`;
+
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('list');
+
+		if (ast.children[0].type === 'list') {
+			const list = ast.children[0];
+			expect(list.items).toHaveLength(2);
+
+			// First item should have just the image
+			const firstItem = list.items[0];
+			const image = firstItem.children.find((c) => c.type === 'image');
+			expect(image).toBeDefined();
+
+			if (image && image.type === 'image') {
+				expect(image.src).toBe('graph.png');
+				expect(image.alt).toBe('Figure');
+			}
+		}
+	});
+
+	it('should parse image on same line as list marker', () => {
+		const markdown = `- ![Figure](graph.png)
+- Second item`;
+
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('list');
+
+		if (ast.children[0].type === 'list') {
+			const list = ast.children[0];
+			expect(list.items).toHaveLength(2);
+
+			// First item should have the image
+			const firstItem = list.items[0];
+			const image = firstItem.children.find((c) => c.type === 'image');
+			expect(image).toBeDefined();
+
+			if (image && image.type === 'image') {
+				expect(image.src).toBe('graph.png');
+				expect(image.alt).toBe('Figure');
+			}
+		}
+	});
+
+	it('should parse video in list item continuations', () => {
+		const markdown = `1. Watch this:
+
+   !video[Demo](demo.mp4)
+
+2. Next item`;
+
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('list');
+
+		if (ast.children[0].type === 'list') {
+			const list = ast.children[0];
+
+			// First item should have paragraph + video
+			const firstItem = list.items[0];
+
+			// Find the video
+			const video = firstItem.children.find((c) => c.type === 'video');
+			expect(video).toBeDefined();
+
+			if (video && video.type === 'video') {
+				expect(video.src).toBe('demo.mp4');
+				expect(video.alt).toBe('Demo');
+			}
+		}
+	});
 });
 
 describe('parseMarkdown - link support', () => {

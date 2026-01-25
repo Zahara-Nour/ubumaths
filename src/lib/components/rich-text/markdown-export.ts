@@ -210,7 +210,9 @@ function convertListItemToMarkdown(
 		'orderedList',
 		'blockquote',
 		'table',
-		'variationTable'
+		'variationTable',
+		'image',
+		'video'
 	];
 
 	for (let i = 0; i < item.content.length; i++) {
@@ -365,6 +367,34 @@ function convertListItemToMarkdown(
 			}
 
 			parts.push(variationOutput);
+		} else if (child.type === 'image') {
+			// Image inside list item
+			const imageMarkdown = convertImageToMarkdown(child);
+
+			let imageOutput: string;
+			if (isFirstChild) {
+				// Image at start of item - newline then indented image
+				imageOutput = '\n' + continuationIndent + imageMarkdown;
+			} else {
+				// Image after other content - blank line separator + indent
+				imageOutput = '\n\n' + continuationIndent + imageMarkdown;
+			}
+
+			parts.push(imageOutput);
+		} else if (child.type === 'video') {
+			// Video inside list item
+			const videoMarkdown = convertVideoToMarkdown(child);
+
+			let videoOutput: string;
+			if (isFirstChild) {
+				// Video at start of item - newline then indented video
+				videoOutput = '\n' + continuationIndent + videoMarkdown;
+			} else {
+				// Video after other content - blank line separator + indent
+				videoOutput = '\n\n' + continuationIndent + videoMarkdown;
+			}
+
+			parts.push(videoOutput);
 		}
 	}
 

@@ -453,6 +453,72 @@ describe('tipTapToMarkdown - Lists', () => {
 
 		expect(result).toBe('- Item with **bold**');
 	});
+
+	it('exports image inside list item correctly', () => {
+		const json = createDoc({
+			type: 'bulletList',
+			content: [
+				{
+					type: 'listItem',
+					content: [
+						createParagraph(createText('Some text')),
+						{
+							type: 'image',
+							attrs: { src: 'https://example.com/img.png', alt: 'example' }
+						}
+					]
+				}
+			]
+		});
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toContain('- Some text');
+		expect(result).toContain('![example](https://example.com/img.png)');
+	});
+
+	it('exports image as first element in list item correctly', () => {
+		const json = createDoc({
+			type: 'bulletList',
+			content: [
+				{
+					type: 'listItem',
+					content: [
+						{
+							type: 'image',
+							attrs: { src: 'https://example.com/img.png', alt: 'example' }
+						}
+					]
+				}
+			]
+		});
+		const result = tipTapToMarkdown(json);
+
+		// Should start with list marker then newline (block-first pattern)
+		expect(result).toMatch(/^-\n/);
+		expect(result).toContain('![example](https://example.com/img.png)');
+	});
+
+	it('exports video inside list item correctly', () => {
+		const json = createDoc({
+			type: 'orderedList',
+			content: [
+				{
+					type: 'listItem',
+					content: [
+						createParagraph(createText('Watch this:')),
+						{
+							type: 'video',
+							attrs: { src: 'https://example.com/video.mp4', alt: 'demo' }
+						}
+					]
+				}
+			]
+		});
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toContain('1. Watch this:');
+		expect(result).toContain('!video[demo](https://example.com/video.mp4)');
+	});
 });
 
 // ============================================================================
