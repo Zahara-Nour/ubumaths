@@ -133,11 +133,20 @@ const imageElementSchema = z.object({
 	rotation: z.number().min(0).max(360).optional()
 });
 
-export const elementSchema = z.discriminatedUnion('type', [
+// Group element schema needs lazy evaluation for recursive children
+const groupElementSchema = z.object({
+	id: z.string().uuid(),
+	type: z.literal('group'),
+	children: z.lazy(() => z.array(elementSchema).max(500)),
+	rotation: z.number().min(0).max(360).optional()
+});
+
+export const elementSchema: z.ZodType = z.discriminatedUnion('type', [
 	strokeElementSchema,
 	shapeElementSchema,
 	textBlockElementSchema,
-	imageElementSchema
+	imageElementSchema,
+	groupElementSchema
 ]);
 
 // =============================================================================
