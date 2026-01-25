@@ -13,7 +13,7 @@
 	 */
 
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
-	import type { Tool, LaserMode } from '../stores/whiteboard.svelte';
+	import type { Tool } from '../stores/whiteboard.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Slider } from '$lib/components/ui/slider';
@@ -38,6 +38,7 @@
 		Star,
 		Grid3x3,
 		Crosshair,
+		Sparkles,
 		Undo2,
 		Redo2,
 		GripVertical,
@@ -85,10 +86,12 @@
 		'hexagonal-dotted': 'Hexagonal pointille'
 	};
 
-	const LASER_MODES: { value: LaserMode; label: string; description: string }[] = [
-		{ value: 'pointer', label: 'Pointeur', description: 'Point fixe' },
-		{ value: 'trail', label: 'Trainee', description: 'Avec trace' }
-	];
+	/** Quick access colors for the toolbar */
+	const QUICK_COLORS = [
+		{ color: '#000000', label: 'Noir' },
+		{ color: '#22c55e', label: 'Vert' },
+		{ color: '#ef4444', label: 'Rouge' }
+	] as const;
 
 	// ==========================================================================
 	// Props
@@ -147,6 +150,7 @@
 
 	let isLaserTool = $derived(toolState.toolType === 'laser');
 	let laserMode = $derived(whiteboardStore.laserMode);
+	let currentColor = $derived(toolState.color);
 
 	let currentBackgroundStyle = $derived.by(() => {
 		const page = whiteboardStore.currentPage;
@@ -203,6 +207,13 @@
 		whiteboardStore.setRoughness(roughness);
 		if (whiteboardStore.hasSelection) {
 			whiteboardStore.updateSelectedStyles({ roughness });
+		}
+	}
+
+	function handleQuickColorChange(color: string) {
+		whiteboardStore.setColor(color);
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ color });
 		}
 	}
 
@@ -398,49 +409,42 @@
 			onclick={() => handleToolSelect('pan')}
 		/>
 
-		<!-- Laser with submenu -->
-		<Popover.Root>
-			<Popover.Trigger>
-				{#snippet child({ props })}
-					<Button
-						{...props}
-						type="button"
-						variant={isLaserTool ? 'default' : 'ghost'}
-						size="icon"
-						title="Pointeur laser (Z)"
-						aria-label="Pointeur laser"
-						class="h-9 w-9 {isLaserTool ? 'ring-2 ring-primary ring-offset-1' : ''}"
-					>
-						<Crosshair class="h-4 w-4" />
-					</Button>
-				{/snippet}
-			</Popover.Trigger>
-			<Popover.Content class="w-40 p-2" side="top">
-				<div class="flex flex-col gap-1">
-					<span class="mb-1 text-xs font-medium text-muted-foreground">Mode laser</span>
-					{#each LASER_MODES as mode (mode.value)}
-						<Button
-							type="button"
-							variant={laserMode === mode.value ? 'secondary' : 'ghost'}
-							size="sm"
-							class="justify-start text-xs"
-							onclick={() => {
-								whiteboardStore.setLaserMode(mode.value);
-								handleToolSelect('laser');
-							}}
-						>
-							{mode.label}
-						</Button>
-					{/each}
-				</div>
-			</Popover.Content>
-		</Popover.Root>
+		<!-- Laser pointer (fixed point) -->
+		<ToolButton
+			icon={Crosshair}
+			active={isLaserTool && laserMode === 'pointer'}
+			label="Laser pointeur"
+			shortcut="Z"
+			onclick={() => {
+				whiteboardStore.setLaserMode('pointer');
+				handleToolSelect('laser');
+			}}
+		/>
+
+		<!-- Laser trail -->
+		<ToolButton
+			icon={Sparkles}
+			active={isLaserTool && laserMode === 'trail'}
+			label="Laser trainee"
+			shortcut=""
+			onclick={() => {
+				whiteboardStore.setLaserMode('trail');
+				handleToolSelect('laser');
+			}}
+		/>
 	</div>
 
 	<div class="h-6 w-px bg-border"></div>
 
-	<!-- Group 2: Drawing tools -->
+	<!-- Group 2: Drawing tools (eraser first, then drawing tools) -->
 	<div class="flex items-center gap-0.5">
+		<ToolButton
+			icon={Eraser}
+			active={toolState.toolType === 'eraser'}
+			label="Gomme"
+			shortcut="E"
+			onclick={() => handleToolSelect('eraser')}
+		/>
 		<ToolButton
 			icon={Pen}
 			active={toolState.toolType === 'pen'}
@@ -462,19 +466,6 @@
 			shortcut="H"
 			onclick={() => handleToolSelect('highlighter')}
 		/>
-	</div>
-
-	<div class="h-6 w-px bg-border"></div>
-
-	<!-- Group 3: Edit tools -->
-	<div class="flex items-center gap-0.5">
-		<ToolButton
-			icon={Eraser}
-			active={toolState.toolType === 'eraser'}
-			label="Gomme"
-			shortcut="E"
-			onclick={() => handleToolSelect('eraser')}
-		/>
 		<ToolButton
 			icon={Type}
 			active={toolState.toolType === 'text'}
@@ -482,6 +473,29 @@
 			shortcut="T"
 			onclick={() => handleToolSelect('text')}
 		/>
+	</div>
+
+	<div class="h-6 w-px bg-border"></div>
+
+	<!-- Group 3: Quick colors -->
+	<div class="flex items-center gap-0.5">
+		{#each QUICK_COLORS as { color, label } (color)}
+			<button
+				type="button"
+				class="flex h-7 w-7 items-center justify-center rounded-md border-2 transition-all {currentColor ===
+				color
+					? 'border-primary ring-2 ring-primary ring-offset-1'
+					: 'border-transparent hover:border-border'}"
+				style="background-color: {color};"
+				title={label}
+				aria-label={label}
+				onclick={() => handleQuickColorChange(color)}
+			>
+				{#if color === '#ffffff'}
+					<span class="h-4 w-4 rounded-sm border border-gray-300"></span>
+				{/if}
+			</button>
+		{/each}
 	</div>
 
 	<div class="h-6 w-px bg-border"></div>
