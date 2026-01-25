@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.27](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.26...v0.7.27) (2026-01-25)
+
+### 🐛 Bug Fixes
+
+- **whiteboard:** add group element to validation schema ([22bec75](https://github.com/Zahara-Nour/ubumaths/commit/22bec7565e058e520afec176459a9ea2b6cf6092))
+
 ### [0.7.26](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.25...v0.7.26) (2026-01-25)
 
 ### 🐛 Bug Fixes
