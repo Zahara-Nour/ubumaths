@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.25](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.24...v0.7.25) (2026-01-25)
+
+### 📚 Documentation
+
+- **claude:** replace global checks with file-specific validation ([7da8f4d](https://github.com/Zahara-Nour/ubumaths/commit/7da8f4d90e0c0eb9fdceb61a6451d67e7c746494))
+
+### ✨ Features
+
+- **slides:** disable content scaling by default ([c118342](https://github.com/Zahara-Nour/ubumaths/commit/c118342163078d6ad3b7159a783101b911ca3d50))
+
 ### [0.7.24](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.23...v0.7.24) (2026-01-24)
 
 ### 📚 Documentation
