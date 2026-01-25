@@ -1381,6 +1381,21 @@ function containsBlockMath(content: string, placeholders: MathPlaceholder[]): bo
 }
 
 /**
+ * Check if content contains images or videos on their own line
+ *
+ * Matches:
+ * - Standard images: ![alt](url)
+ * - Linked images: [![alt](url)](href)
+ * - Videos: !video[alt](url)
+ */
+function containsImages(content: string): boolean {
+	// Check for images or videos at the start of a line
+	// Images: ![...](...)  or [![...](...)
+	// Videos: !video[...](...)
+	return /^(?:\[)?!\[|^!video\[/m.test(content);
+}
+
+/**
  * Check if content contains a markdown table
  *
  * A valid table requires:
@@ -1595,11 +1610,100 @@ function parseContentWithBlockMath(
 }
 
 /**
+ * Parse content that may contain images or videos into block nodes
+ *
+ * Handles cases where list item content contains images or videos on their own line.
+ * Returns an array of BlockNode (paragraphs, images, videos).
+ *
+ * @param content - Text content that may contain images/videos
+ * @param placeholders - Math placeholders from extraction
+ * @param options - Parse options
+ * @returns Array of block nodes
+ */
+function parseContentWithImages(
+	content: string,
+	placeholders: MathPlaceholder[],
+	options: ParseOptions
+): BlockNode[] {
+	const blocks: BlockNode[] = [];
+	const lines = content.split('\n');
+
+	let currentParagraphLines: string[] = [];
+
+	const flushParagraph = () => {
+		if (currentParagraphLines.length > 0) {
+			const paragraphText = currentParagraphLines.join('\n').trim();
+			if (paragraphText) {
+				// Check for other block types in paragraph content
+				if (containsCodeBlocks(paragraphText)) {
+					blocks.push(...parseContentWithCodeBlocks(paragraphText, placeholders, options));
+				} else if (containsBlockMath(paragraphText, placeholders)) {
+					blocks.push(...parseContentWithBlockMath(paragraphText, placeholders, options));
+				} else if (containsTables(paragraphText)) {
+					blocks.push(...parseContentWithTables(paragraphText, placeholders, options));
+				} else {
+					const parsedInline = parseInlineContent(paragraphText, placeholders, options);
+					if (parsedInline.length > 0) {
+						blocks.push({
+							type: 'paragraph',
+							children: parsedInline
+						});
+					}
+				}
+			}
+			currentParagraphLines = [];
+		}
+	};
+
+	for (const line of lines) {
+		const trimmedLine = line.trim();
+
+		// Check for video first (more specific pattern)
+		if (VIDEO_REGEX.test(trimmedLine)) {
+			flushParagraph();
+			const video = parseVideoLine(trimmedLine);
+			if (video) {
+				blocks.push(video);
+			}
+			continue;
+		}
+
+		// Check for linked image: [![alt](src)](href)
+		if (/^\[!\[/.test(trimmedLine)) {
+			flushParagraph();
+			const image = parseImageLine(trimmedLine);
+			if (image) {
+				blocks.push(image);
+			}
+			continue;
+		}
+
+		// Check for standard image: ![alt](src)
+		if (/^!\[/.test(trimmedLine)) {
+			flushParagraph();
+			const image = parseImageLine(trimmedLine);
+			if (image) {
+				blocks.push(image);
+			}
+			continue;
+		}
+
+		// Regular line - add to current paragraph
+		currentParagraphLines.push(line);
+	}
+
+	// Flush any remaining paragraph content
+	flushParagraph();
+
+	return blocks;
+}
+
+/**
  * Process list items to parse inline content (math, formatting)
  *
  * The list-parser creates simple text nodes with placeholders.
  * This function replaces those text nodes with properly parsed inline content.
- * Also handles code blocks that may appear in list item continuations.
+ * Also handles code blocks, images, and videos that may appear in list item continuations.
  *
  * @param list - ListNode to process
  * @param placeholders - Math placeholders from extraction
@@ -1639,6 +1743,12 @@ function processListInlineContent(
 					if (containsBlockMath(textContent, placeholders)) {
 						// Parse as blocks (may return paragraphs and math-blocks)
 						return parseContentWithBlockMath(textContent, placeholders, options);
+					}
+
+					// Check if content contains images or videos
+					if (containsImages(textContent)) {
+						// Parse as blocks (may return paragraphs, images, and videos)
+						return parseContentWithImages(textContent, placeholders, options);
 					}
 
 					// Parse inline content with placeholders

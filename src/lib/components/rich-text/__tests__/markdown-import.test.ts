@@ -480,6 +480,61 @@ describe('markdownToTipTap - Lists', () => {
 		expect(itemContent?.some((n) => n.marks?.some((m) => m.type === 'bold'))).toBe(true);
 		expect(itemContent?.some((n) => n.type === 'mathInline')).toBe(true);
 	});
+
+	it('converts image in list item', () => {
+		const markdown = `1. Item with image:
+
+   ![A cat](cat.png)
+
+2. Next item`;
+		const result = markdownToTipTap(markdown);
+
+		expect(result.content?.[0].type).toBe('orderedList');
+		const firstItem = result.content?.[0].content?.[0];
+		expect(firstItem?.type).toBe('listItem');
+
+		// Find image in first item's children
+		const hasImage = firstItem?.content?.some((n) => n.type === 'image');
+		expect(hasImage).toBe(true);
+
+		const image = firstItem?.content?.find((n) => n.type === 'image');
+		expect(image?.attrs?.src).toBe('cat.png');
+		expect(image?.attrs?.alt).toBe('A cat');
+	});
+
+	it('converts image on same line as list marker', () => {
+		const markdown = `- ![Figure](graph.png)
+- Second item`;
+		const result = markdownToTipTap(markdown);
+
+		expect(result.content?.[0].type).toBe('bulletList');
+		const firstItem = result.content?.[0].content?.[0];
+
+		// Find image in first item's children
+		const hasImage = firstItem?.content?.some((n) => n.type === 'image');
+		expect(hasImage).toBe(true);
+
+		const image = firstItem?.content?.find((n) => n.type === 'image');
+		expect(image?.attrs?.src).toBe('graph.png');
+		expect(image?.attrs?.alt).toBe('Figure');
+	});
+
+	it('converts video in list item', () => {
+		const markdown = `1. Watch this:
+
+   !video[Demo](demo.mp4)
+
+2. Next item`;
+		const result = markdownToTipTap(markdown);
+
+		const firstItem = result.content?.[0].content?.[0];
+		const hasVideo = firstItem?.content?.some((n) => n.type === 'video');
+		expect(hasVideo).toBe(true);
+
+		const video = firstItem?.content?.find((n) => n.type === 'video');
+		expect(video?.attrs?.src).toBe('demo.mp4');
+		expect(video?.attrs?.alt).toBe('Demo');
+	});
 });
 
 // ============================================================================
