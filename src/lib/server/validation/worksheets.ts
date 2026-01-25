@@ -274,6 +274,21 @@ export const reorderExercisesSchema = z.object({
 		.max(200, 'Maximum 200 exercises per batch')
 });
 
+/**
+ * Schema for reordering sections (PUT /api/worksheets/[id]/sections)
+ */
+export const reorderSectionsSchema = z.object({
+	sections: z
+		.array(
+			z.object({
+				id: uuidSchema,
+				position: z.number().int().nonnegative().max(100)
+			})
+		)
+		.min(1, 'At least one section required')
+		.max(50, 'Maximum 50 sections per batch')
+});
+
 // ============================================================================
 // URL PARAMETER SCHEMAS
 // ============================================================================
@@ -460,6 +475,13 @@ export function validateUpdateWorksheetExercise(data: unknown) {
  */
 export function validateReorderExercises(data: unknown) {
 	return reorderExercisesSchema.safeParse(data);
+}
+
+/**
+ * Validate reorder sections request body
+ */
+export function validateReorderSections(data: unknown) {
+	return reorderSectionsSchema.safeParse(data);
 }
 
 /**
@@ -819,6 +841,15 @@ export const createWorksheetExerciseResponseSchema = z.object({
  * Reorder exercises response schema
  */
 export const reorderExercisesResponseSchema = z.object({
+	success: z.literal(true),
+	message: z.string(),
+	updated_count: z.number().int().nonnegative()
+});
+
+/**
+ * Reorder sections response schema
+ */
+export const reorderSectionsResponseSchema = z.object({
 	success: z.literal(true),
 	message: z.string(),
 	updated_count: z.number().int().nonnegative()

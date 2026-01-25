@@ -9,7 +9,7 @@
 	- Add new section with title and optional instructions
 	- Edit section (inline)
 	- Delete section (with confirmation)
-	- Reorder sections (up/down buttons)
+	- Drag and drop to reorder sections (with optimistic UI)
 
 	Usage:
 	```svelte
@@ -29,17 +29,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import {
-		Plus,
-		Pencil,
-		Trash2,
-		ChevronUp,
-		ChevronDown,
-		GripVertical,
-		Loader2,
-		Save,
-		X
-	} from 'lucide-svelte';
+	import { Plus, Pencil, Trash2, GripVertical, Loader2, Save, X } from 'lucide-svelte';
 	import type { WorksheetSectionRow } from '$lib/types/worksheets';
 
 	// Types
@@ -70,8 +60,10 @@
 	let deleteConfirmOpen = $state(false);
 	let isDeleting = $state(false);
 
-	// Reorder state
-	let reorderingId = $state<string | null>(null);
+	// Drag state
+	let draggedSection = $state<WorksheetSectionRow | null>(null);
+	let dragOverIndex = $state<number | null>(null);
+	let isSaving = $state(false);
 
 	// Derived
 	let sortedSections = $derived([...sections].sort((a, b) => a.position - b.position));
@@ -237,52 +229,144 @@
 	}
 
 	/**
-	 * Move section up or down
+	 * Handle drag start
 	 */
-	async function moveSection(sectionId: string, direction: 'up' | 'down') {
-		const currentIndex = sortedSections.findIndex((s) => s.id === sectionId);
-		if (currentIndex === -1) return;
+	function handleDragStart(e: DragEvent, section: WorksheetSectionRow) {
+		if (readonly || isSaving || editingSectionId) {
+			e.preventDefault();
+			return;
+		}
+		draggedSection = section;
+		if (e.dataTransfer) {
+			e.dataTransfer.effectAllowed = 'move';
+			e.dataTransfer.setData('text/plain', section.id);
+		}
+	}
 
-		const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-		if (targetIndex < 0 || targetIndex >= sortedSections.length) return;
+	/**
+	 * Handle drag over a specific section position
+	 */
+	function handleDragOver(e: DragEvent, index: number) {
+		if (readonly || !draggedSection) return;
+		e.preventDefault();
+		if (e.dataTransfer) {
+			e.dataTransfer.dropEffect = 'move';
+		}
+		dragOverIndex = index;
+	}
 
-		reorderingId = sectionId;
+	/**
+	 * Handle drag over the container (for dropping at the end)
+	 */
+	function handleDragOverContainer(e: DragEvent) {
+		if (readonly || !draggedSection) return;
+		e.preventDefault();
+		if (e.dataTransfer) {
+			e.dataTransfer.dropEffect = 'move';
+		}
+		// Only set to end if not over a specific item
+		if (dragOverIndex === null) {
+			dragOverIndex = sortedSections.length;
+		}
+	}
+
+	/**
+	 * Handle drop
+	 */
+	async function handleDrop(e: DragEvent) {
+		e.preventDefault();
+		if (readonly || !draggedSection || dragOverIndex === null) {
+			resetDragState();
+			return;
+		}
+
+		const sourceIndex = sortedSections.findIndex((s) => s.id === draggedSection!.id);
+		let targetIndex = dragOverIndex;
+
+		// Check if anything changed
+		if (targetIndex === sourceIndex || targetIndex === sourceIndex + 1) {
+			resetDragState();
+			return;
+		}
+
+		// Adjust target index if dropping after the source
+		if (targetIndex > sourceIndex) {
+			targetIndex = targetIndex - 1;
+		}
+
+		// Build new order
+		const newOrder = [...sortedSections];
+		const [removed] = newOrder.splice(sourceIndex, 1);
+		newOrder.splice(targetIndex, 0, removed);
+
+		// Build updates with normalized positions
+		const updates: { id: string; position: number }[] = [];
+		newOrder.forEach((section, idx) => {
+			const newPosition = idx + 1;
+			if (section.position !== newPosition) {
+				updates.push({ id: section.id, position: newPosition });
+			}
+		});
+
+		resetDragState();
+
+		if (updates.length === 0) return;
+
+		// Optimistic UI: apply changes immediately
+		const previousSections = [...sections];
+		const newSections = sections.map((s) => {
+			const update = updates.find((u) => u.id === s.id);
+			return update ? { ...s, position: update.position } : s;
+		});
+		onSectionsChange?.(newSections);
+
+		// Save to server (rollback on error)
+		await saveSectionOrder(updates, previousSections);
+	}
+
+	/**
+	 * Save section order to server with rollback on error
+	 */
+	async function saveSectionOrder(
+		updates: { id: string; position: number }[],
+		previousSections: WorksheetSectionRow[]
+	) {
+		isSaving = true;
 
 		try {
-			// Swap positions
-			const currentSection = sortedSections[currentIndex];
-			const targetSection = sortedSections[targetIndex];
-
-			const updates = [
-				{ id: currentSection.id, position: targetSection.position },
-				{ id: targetSection.id, position: currentSection.position }
-			];
-
-			// Update both sections
-			for (const update of updates) {
-				const response = await fetch(`/api/worksheets/${worksheetId}/sections/${update.id}`, {
-					method: 'PUT',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ position: update.position })
-				});
-
-				if (!response.ok) {
-					throw new Error('Erreur lors du reordonnancement');
-				}
-			}
-
-			// Update local state
-			const newSections = sections.map((s) => {
-				const update = updates.find((u) => u.id === s.id);
-				return update ? { ...s, position: update.position } : s;
+			const response = await fetch(`/api/worksheets/${worksheetId}/sections`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ sections: updates })
 			});
-			onSectionsChange?.(newSections);
+
+			if (!response.ok) {
+				const error = await response.json().catch(() => ({}));
+				throw new Error(error.message || 'Erreur lors de la sauvegarde');
+			}
 		} catch (err) {
-			console.error('Error reordering section:', err);
-			toaster.error('Erreur lors du reordonnancement');
+			console.error('Error saving section order:', err);
+			// Rollback to previous state
+			onSectionsChange?.(previousSections);
+			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
 		} finally {
-			reorderingId = null;
+			isSaving = false;
 		}
+	}
+
+	/**
+	 * Reset drag state
+	 */
+	function resetDragState() {
+		draggedSection = null;
+		dragOverIndex = null;
+	}
+
+	/**
+	 * Handle drag end
+	 */
+	function handleDragEnd() {
+		resetDragState();
 	}
 </script>
 
@@ -292,6 +376,12 @@
 			<Card.Title class="text-lg">Sections</Card.Title>
 			<Card.Description>
 				{sections.length} section(s)
+				{#if isSaving}
+					<span class="ml-2 inline-flex items-center text-primary">
+						<Loader2 class="mr-1 h-3 w-3 animate-spin" />
+						Sauvegarde...
+					</span>
+				{/if}
 			</Card.Description>
 		</div>
 		{#if !readonly && !isAdding}
@@ -352,15 +442,37 @@
 				{/if}
 			</div>
 		{:else}
-			<div class="space-y-2">
+			<div
+				class="space-y-2"
+				role="list"
+				aria-label="Liste des sections"
+				ondragover={handleDragOverContainer}
+				ondrop={handleDrop}
+			>
 				{#each sortedSections as section, index (section.id)}
 					{@const isEditing = editingSectionId === section.id}
-					{@const isReordering = reorderingId === section.id}
+					{@const isDragging = draggedSection?.id === section.id}
+					{@const isDropBefore = dragOverIndex === index && !isDragging}
+
+					<!-- Drop indicator before this item -->
+					{#if isDropBefore}
+						<div class="h-1 rounded bg-primary"></div>
+					{/if}
 
 					<div
-						class="group flex items-start gap-3 rounded-lg border p-3 transition-colors {isEditing
+						class="group flex items-start gap-3 rounded-lg border p-3 transition-all {isEditing
 							? 'border-primary bg-primary/5'
-							: 'hover:bg-muted/50'}"
+							: 'hover:bg-muted/50'} {isDragging ? 'opacity-50' : ''} {!readonly &&
+						!isEditing &&
+						!isSaving
+							? 'cursor-grab active:cursor-grabbing'
+							: ''} {isSaving ? 'cursor-not-allowed opacity-70' : ''}"
+						draggable={!readonly && !isEditing && !isSaving}
+						role="listitem"
+						aria-label="Section {section.title}"
+						ondragstart={(e) => handleDragStart(e, section)}
+						ondragend={handleDragEnd}
+						ondragover={(e) => handleDragOver(e, index)}
 					>
 						<!-- Drag handle / position indicator -->
 						<div class="flex flex-col items-center pt-1 text-muted-foreground">
@@ -425,38 +537,6 @@
 							<div
 								class="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100"
 							>
-								<!-- Move up -->
-								<Button
-									variant="ghost"
-									size="icon"
-									class="h-7 w-7"
-									onclick={() => moveSection(section.id, 'up')}
-									disabled={index === 0 || isReordering}
-									aria-label="Monter"
-								>
-									{#if isReordering}
-										<Loader2 class="h-3 w-3 animate-spin" />
-									{:else}
-										<ChevronUp class="h-3 w-3" />
-									{/if}
-								</Button>
-
-								<!-- Move down -->
-								<Button
-									variant="ghost"
-									size="icon"
-									class="h-7 w-7"
-									onclick={() => moveSection(section.id, 'down')}
-									disabled={index === sortedSections.length - 1 || isReordering}
-									aria-label="Descendre"
-								>
-									{#if isReordering}
-										<Loader2 class="h-3 w-3 animate-spin" />
-									{:else}
-										<ChevronDown class="h-3 w-3" />
-									{/if}
-								</Button>
-
 								<!-- Edit -->
 								<Button
 									variant="ghost"
@@ -482,6 +562,11 @@
 						{/if}
 					</div>
 				{/each}
+
+				<!-- Drop indicator at end -->
+				{#if dragOverIndex === sortedSections.length && draggedSection}
+					<div class="h-1 rounded bg-primary"></div>
+				{/if}
 			</div>
 		{/if}
 	</Card.Content>
