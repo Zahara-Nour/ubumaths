@@ -34,6 +34,7 @@
 	import type { TemplatePageData } from '../types/templates';
 	import { driveSyncService } from '../services/drive-sync';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { importImageFromClipboard } from '../utils/image-loader';
 
 	// ==========================================================================
 	// Props
@@ -525,6 +526,67 @@
 	});
 
 	// ==========================================================================
+	// Paste Handler (for system clipboard images)
+	// ==========================================================================
+
+	async function handlePaste(e: ClipboardEvent) {
+		// Don't handle if in an input field or contenteditable
+		if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+			return;
+		}
+		if (e.target instanceof HTMLElement && e.target.isContentEditable) {
+			return;
+		}
+
+		// Check for images in clipboard
+		const items = e.clipboardData?.items;
+		if (!items) return;
+
+		for (const item of items) {
+			if (item.type.startsWith('image/')) {
+				e.preventDefault();
+
+				const blob = item.getAsFile();
+				if (!blob) continue;
+
+				// Calculate center position of visible area
+				const page = whiteboardStore.currentPage;
+				if (!page) return;
+
+				// Default to center of page
+				const centerX = page.width / 2;
+				const centerY = page.height / 2;
+
+				const result = await importImageFromClipboard(blob, { x: centerX, y: centerY });
+
+				if (result.success && result.element) {
+					// Adjust position so image is centered
+					const adjustedPosition = {
+						x: centerX - result.element.width / 2,
+						y: centerY - result.element.height / 2
+					};
+
+					whiteboardStore.addImage(
+						adjustedPosition,
+						result.element.width,
+						result.element.height,
+						result.element.src,
+						result.element.originalFilename
+					);
+
+					toaster.success('Image collée');
+				} else {
+					toaster.error(result.error || "Erreur lors du collage de l'image");
+				}
+
+				return;
+			}
+		}
+
+		// No image found, let the internal clipboard handle it (Ctrl+V keydown)
+	}
+
+	// ==========================================================================
 	// Keyboard Shortcuts
 	// ==========================================================================
 
@@ -837,7 +899,7 @@
 	}
 </script>
 
-<svelte:window onkeydown={handleKeyDown} />
+<svelte:window onkeydown={handleKeyDown} onpaste={handlePaste} />
 
 <div
 	bind:this={containerEl}

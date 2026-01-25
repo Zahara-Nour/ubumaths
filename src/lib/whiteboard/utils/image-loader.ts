@@ -385,6 +385,118 @@ export async function importImageFile(file: File, position: Point): Promise<Imag
 	return { success: true, element };
 }
 
+/**
+ * Load an image from a Blob (e.g., from clipboard)
+ */
+export function loadImageFromBlob(blob: Blob): Promise<ImageLoadResult> {
+	return new Promise((resolve) => {
+		// Check blob type
+		if (!SUPPORTED_IMAGE_TYPES.includes(blob.type as (typeof SUPPORTED_IMAGE_TYPES)[number])) {
+			resolve({
+				success: false,
+				error: `Type de fichier non supporté: ${blob.type}. Types acceptés: PNG, JPG, SVG, WebP`
+			});
+			return;
+		}
+
+		// Check size
+		if (blob.size > MAX_IMAGE_SIZE) {
+			const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
+			resolve({
+				success: false,
+				error: `Image trop volumineuse (${sizeMB}MB). Maximum: 5MB`
+			});
+			return;
+		}
+
+		const reader = new FileReader();
+
+		reader.onload = (e) => {
+			const dataUrl = e.target?.result as string;
+			if (!dataUrl) {
+				resolve({ success: false, error: "Erreur lors de la lecture de l'image" });
+				return;
+			}
+
+			// Load image to get dimensions
+			const img = new Image();
+			img.onload = () => {
+				const { width, height, needsResize } = calculateImageDimensions(
+					img.naturalWidth,
+					img.naturalHeight
+				);
+
+				// Compress/resize if needed
+				if (needsResize || blob.type === 'image/png') {
+					compressImage(img, width, height)
+						.then((compressedDataUrl) => {
+							resolve({
+								success: true,
+								dataUrl: compressedDataUrl,
+								width,
+								height
+							});
+						})
+						.catch(() => {
+							resolve({
+								success: true,
+								dataUrl,
+								width,
+								height
+							});
+						});
+				} else {
+					resolve({
+						success: true,
+						dataUrl,
+						width,
+						height
+					});
+				}
+			};
+
+			img.onerror = () => {
+				resolve({ success: false, error: 'Image invalide ou corrompue' });
+			};
+
+			img.src = dataUrl;
+		};
+
+		reader.onerror = () => {
+			resolve({ success: false, error: "Erreur lors de la lecture de l'image" });
+		};
+
+		reader.readAsDataURL(blob);
+	});
+}
+
+/**
+ * Import an image from clipboard and create an element
+ */
+export async function importImageFromClipboard(
+	blob: Blob,
+	position: Point
+): Promise<ImageImportResult> {
+	const loadResult = await loadImageFromBlob(blob);
+
+	if (!loadResult.success || !loadResult.dataUrl) {
+		return {
+			success: false,
+			error: loadResult.error || "Erreur lors du chargement de l'image"
+		};
+	}
+
+	const element = createImageElement(
+		position,
+		loadResult.width || DEFAULT_IMAGE_WIDTH,
+		loadResult.height || DEFAULT_IMAGE_HEIGHT,
+		loadResult.dataUrl,
+		'Image collée'
+	);
+
+	return { success: true, element };
+}
+
 // =============================================================================
 // Element Manipulation
 // =============================================================================
