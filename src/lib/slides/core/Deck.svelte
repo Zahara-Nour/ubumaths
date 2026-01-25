@@ -227,11 +227,16 @@
 	// ==========================================================================
 
 	const viewportStyle = $derived.by(() => {
-		const { width = 1920, height = 1080 } = mergedConfig;
-		return `width: ${width}px; height: ${height}px; transform: scale(${scale});`;
+		const { width = 1920, height = 1080, scaleContent = false } = mergedConfig;
+		if (scaleContent) {
+			return `width: ${width}px; height: ${height}px; transform: scale(${scale});`;
+		}
+		// No scaling - viewport fills container, uses natural font sizes
+		return `width: 100%; height: 100%;`;
 	});
 
 	const isFullscreen = $derived(mergedConfig.fullscreen ?? false);
+	const scaleContent = $derived(mergedConfig.scaleContent ?? false);
 	const showControls = $derived(mergedConfig.controls ?? true);
 	const showProgress = $derived(mergedConfig.progress ?? true);
 	const keyboardEnabled = $derived(mergedConfig.keyboard ?? true);
@@ -318,7 +323,7 @@
 	use:swipe={touchEnabled ? swipeHandlers : undefined}
 >
 	<!-- Backgrounds container (separate from slides for independent transitions) -->
-	<div class="backgrounds-viewport" style={viewportStyle}>
+	<div class="backgrounds-viewport" class:no-scale={!scaleContent} style={viewportStyle}>
 		<div class="backgrounds-container">
 			{#each store.backgrounds as bg (`${bg.h}-${bg.v}`)}
 				{@const state = getBackgroundState(bg)}
@@ -354,7 +359,12 @@
 		</div>
 	</div>
 
-	<div class="slides-viewport" bind:this={viewportElement} style={viewportStyle}>
+	<div
+		class="slides-viewport"
+		class:no-scale={!scaleContent}
+		bind:this={viewportElement}
+		style={viewportStyle}
+	>
 		<div class="slides-container" class:centered={mergedConfig.center}>
 			{@render children()}
 		</div>
@@ -521,6 +531,14 @@
 		justify-content: center;
 	}
 
+	/* No-scale mode: viewport fills container without transform */
+	.slides-viewport.no-scale {
+		position: relative;
+		top: 0;
+		left: 0;
+		translate: none;
+	}
+
 	/* =========================================================================
 	 * Backgrounds Viewport (separate layer for independent transitions)
 	 * ========================================================================= */
@@ -539,6 +557,14 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
+	}
+
+	/* No-scale mode for backgrounds */
+	.backgrounds-viewport.no-scale {
+		position: absolute;
+		top: 0;
+		left: 0;
+		translate: none;
 	}
 
 	.slide-background {

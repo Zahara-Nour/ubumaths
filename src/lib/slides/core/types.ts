@@ -209,6 +209,10 @@ export interface DeckConfig {
 
 	// Fullscreen mode (position: fixed)
 	fullscreen?: boolean;
+
+	// Content scaling
+	/** Scale content to fit container (default: true). When false, uses natural font sizes. */
+	scaleContent?: boolean;
 }
 
 /**

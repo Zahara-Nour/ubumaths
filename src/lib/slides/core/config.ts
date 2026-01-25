@@ -60,7 +60,10 @@ export const defaultConfig: DeckConfig = {
 	hideCursorTime: 5000,
 
 	// Fullscreen mode
-	fullscreen: false
+	fullscreen: false,
+
+	// Content scaling - false = use natural font sizes
+	scaleContent: false
 };
 
 /**
