@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.26](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.25...v0.7.26) (2026-01-25)
+
+### 🐛 Bug Fixes
+
+- **rich-text:** support images and videos in list items ([447a29b](https://github.com/Zahara-Nour/ubumaths/commit/447a29b3c7e4e88e5f448e5bd099f7aedd95a57e))
+- **slides:** position annotation toolbar inside deck container ([1930905](https://github.com/Zahara-Nour/ubumaths/commit/19309057b3d6b4df0e775f6979356ebce39c2df2))
+
 ### [0.7.25](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.24...v0.7.25) (2026-01-25)
 
 ### 📚 Documentation
