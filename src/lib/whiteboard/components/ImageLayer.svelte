@@ -63,6 +63,15 @@
 
 	let selectedImage = $derived(images.find((img) => img.id === selectedImageId) ?? null);
 
+	let isSelectMode = $derived(whiteboardStore.currentTool === 'select');
+
+	// Deselect image when leaving select mode
+	$effect(() => {
+		if (!isSelectMode && selectedImageId) {
+			selectedImageId = null;
+		}
+	});
+
 	// ==========================================================================
 	// Handle Position Calculations
 	// ==========================================================================
@@ -115,6 +124,10 @@
 
 	function handleImagePointerDown(e: PointerEvent, image: ImageElement) {
 		if (e.button !== 0) return;
+
+		// Only allow selection/drag in select mode
+		if (whiteboardStore.currentTool !== 'select') return;
+
 		e.stopPropagation();
 
 		selectedImageId = image.id;
@@ -174,47 +187,92 @@
 		const dy = (e.clientY - resizeStartPos.y) / scale;
 
 		const { x, y, width, height } = resizeStartBounds;
+		const aspectRatio = width / height;
+
 		let newX = x;
 		let newY = y;
 		let newWidth = width;
 		let newHeight = height;
 
-		// Calculate new bounds based on handle
+		// Calculate new bounds based on handle, preserving aspect ratio
 		switch (resizeHandle) {
 			case 'e':
 				newWidth = Math.max(width + dx, MIN_IMAGE_WIDTH);
+				newHeight = newWidth / aspectRatio;
+				// Center vertically
+				newY = y + (height - newHeight) / 2;
 				break;
 			case 'w':
 				newWidth = Math.max(width - dx, MIN_IMAGE_WIDTH);
+				newHeight = newWidth / aspectRatio;
 				newX = x + width - newWidth;
+				// Center vertically
+				newY = y + (height - newHeight) / 2;
 				break;
 			case 's':
 				newHeight = Math.max(height + dy, MIN_IMAGE_HEIGHT);
+				newWidth = newHeight * aspectRatio;
+				// Center horizontally
+				newX = x + (width - newWidth) / 2;
 				break;
 			case 'n':
 				newHeight = Math.max(height - dy, MIN_IMAGE_HEIGHT);
+				newWidth = newHeight * aspectRatio;
 				newY = y + height - newHeight;
+				// Center horizontally
+				newX = x + (width - newWidth) / 2;
 				break;
 			case 'se':
-				newWidth = Math.max(width + dx, MIN_IMAGE_WIDTH);
-				newHeight = Math.max(height + dy, MIN_IMAGE_HEIGHT);
+				// Use the larger delta to determine scale
+				if (Math.abs(dx) / width > Math.abs(dy) / height) {
+					newWidth = Math.max(width + dx, MIN_IMAGE_WIDTH);
+					newHeight = newWidth / aspectRatio;
+				} else {
+					newHeight = Math.max(height + dy, MIN_IMAGE_HEIGHT);
+					newWidth = newHeight * aspectRatio;
+				}
 				break;
 			case 'sw':
-				newWidth = Math.max(width - dx, MIN_IMAGE_WIDTH);
-				newHeight = Math.max(height + dy, MIN_IMAGE_HEIGHT);
+				if (Math.abs(dx) / width > Math.abs(dy) / height) {
+					newWidth = Math.max(width - dx, MIN_IMAGE_WIDTH);
+					newHeight = newWidth / aspectRatio;
+				} else {
+					newHeight = Math.max(height + dy, MIN_IMAGE_HEIGHT);
+					newWidth = newHeight * aspectRatio;
+				}
 				newX = x + width - newWidth;
 				break;
 			case 'ne':
-				newWidth = Math.max(width + dx, MIN_IMAGE_WIDTH);
-				newHeight = Math.max(height - dy, MIN_IMAGE_HEIGHT);
+				if (Math.abs(dx) / width > Math.abs(dy) / height) {
+					newWidth = Math.max(width + dx, MIN_IMAGE_WIDTH);
+					newHeight = newWidth / aspectRatio;
+				} else {
+					newHeight = Math.max(height - dy, MIN_IMAGE_HEIGHT);
+					newWidth = newHeight * aspectRatio;
+				}
 				newY = y + height - newHeight;
 				break;
 			case 'nw':
-				newWidth = Math.max(width - dx, MIN_IMAGE_WIDTH);
-				newHeight = Math.max(height - dy, MIN_IMAGE_HEIGHT);
+				if (Math.abs(dx) / width > Math.abs(dy) / height) {
+					newWidth = Math.max(width - dx, MIN_IMAGE_WIDTH);
+					newHeight = newWidth / aspectRatio;
+				} else {
+					newHeight = Math.max(height - dy, MIN_IMAGE_HEIGHT);
+					newWidth = newHeight * aspectRatio;
+				}
 				newX = x + width - newWidth;
 				newY = y + height - newHeight;
 				break;
+		}
+
+		// Ensure minimum dimensions are respected
+		if (newWidth < MIN_IMAGE_WIDTH) {
+			newWidth = MIN_IMAGE_WIDTH;
+			newHeight = newWidth / aspectRatio;
+		}
+		if (newHeight < MIN_IMAGE_HEIGHT) {
+			newHeight = MIN_IMAGE_HEIGHT;
+			newWidth = newHeight * aspectRatio;
 		}
 
 		whiteboardStore.resizeAndMoveImage(selectedImageId, newWidth, newHeight, { x: newX, y: newY });
@@ -361,7 +419,7 @@
 				width={image.width}
 				height={image.height}
 				preserveAspectRatio="none"
-				style="cursor: move;"
+				style="cursor: {isSelectMode ? 'move' : 'default'};"
 				onpointerdown={(e) => handleImagePointerDown(e, image)}
 				onpointermove={handleImagePointerMove}
 				onpointerup={handleImagePointerUp}
