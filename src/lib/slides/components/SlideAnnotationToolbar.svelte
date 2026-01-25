@@ -347,7 +347,7 @@
 
 <style>
 	.slide-annotation-toolbar {
-		position: fixed;
+		position: absolute;
 		bottom: 16px;
 		left: 50%;
 		transform: translateX(-50%);
