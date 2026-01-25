@@ -1217,6 +1217,23 @@ describe('Table cell inline formatting', () => {
 		expect(result).toBe(markdown);
 	});
 
+	it('preserves $$block math$$ embedded in paragraph text', () => {
+		// This is the user's case: $$\begin{cases}...\end{cases}$$ within a paragraph
+		// The key is that block math should be exported as $$...$$ not $...$
+		const input =
+			"Soit $t \\in \\mathbb{R}$. On considère le système $$\\begin{cases}\n(x - 5)^2 + (y - 5)^2 = 5 \\\\\ny = tx\n\\end{cases}$$ d'inconnues ~x~ et ~y~.";
+		const json = markdownToTipTap(input);
+		const result = tipTapToMarkdown(json);
+
+		// Must export with $$ not $ for the block math
+		expect(result).toContain('$$\\begin{cases}');
+		expect(result).toContain('\\end{cases}$$');
+		// Should also preserve inline math
+		expect(result).toContain('$t \\in \\mathbb{R}$');
+		expect(result).toContain('~x~');
+		expect(result).toContain('~y~');
+	});
+
 	it('preserves complex table with multiple formatting types', () => {
 		const markdown =
 			'| Function | Description | Example |\n|:---|:---|:---|\n| `map()` | Transforme | `[1,2].map(x => x*2)` |\n| `filter()` | **Filtre** | *resultat* |';

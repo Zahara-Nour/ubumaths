@@ -627,8 +627,15 @@ function parseBlocks(
 		}
 
 		if (paragraphLines.length > 0) {
-			const paragraph = parseParagraph(paragraphLines.join('\n'), placeholders, options);
-			blocks.push(paragraph);
+			const paragraphText = paragraphLines.join('\n');
+			// Check if paragraph contains block math - if so, split into separate blocks
+			if (containsBlockMath(paragraphText, placeholders)) {
+				const splitBlocks = parseContentWithBlockMath(paragraphText, placeholders, options);
+				blocks.push(...splitBlocks);
+			} else {
+				const paragraph = parseParagraph(paragraphText, placeholders, options);
+				blocks.push(paragraph);
+			}
 		}
 	}
 

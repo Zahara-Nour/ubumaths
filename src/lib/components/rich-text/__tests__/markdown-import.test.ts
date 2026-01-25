@@ -399,6 +399,23 @@ describe('markdownToTipTap - Math Block', () => {
 		expect(result.content?.[1].type).toBe('mathBlock');
 		expect(result.content?.[1].attrs?.syntax).toBe('latex');
 	});
+
+	it('handles block math $$...$$ inline within paragraph text', () => {
+		// This is the user's case: $$\begin{cases}...\end{cases}$$ within a paragraph
+		const markdown =
+			"Soit $t \\in \\mathbb{R}$. On considère le système $$\\begin{cases}\n(x - 5)^2 + (y - 5)^2 = 5 \\\\\ny = tx\n\\end{cases}$$ d'inconnues ~x~ et ~y~.";
+		const result = markdownToTipTap(markdown);
+
+		// Should split into: paragraph, mathBlock, paragraph
+		expect(result.content?.length).toBeGreaterThanOrEqual(3);
+
+		// Find the mathBlock
+		const mathBlock = result.content?.find((n) => n.type === 'mathBlock');
+		expect(mathBlock).toBeDefined();
+		expect(mathBlock?.type).toBe('mathBlock');
+		expect(mathBlock?.attrs?.syntax).toBe('latex');
+		expect(mathBlock?.attrs?.originalExpression).toContain('\\begin{cases}');
+	});
 });
 
 // ============================================================================
