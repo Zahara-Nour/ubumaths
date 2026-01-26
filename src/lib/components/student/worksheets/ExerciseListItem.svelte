@@ -57,13 +57,6 @@
 					/>
 				{/if}
 			</div>
-			{#if exercise.tags && exercise.tags.length > 0}
-				<div class="mt-1 flex flex-wrap gap-1">
-					{#each exercise.tags as tag (tag)}
-						<Badge variant="secondary" class="text-xs">{tag}</Badge>
-					{/each}
-				</div>
-			{/if}
 			{#if exercise.custom_instructions}
 				<p class="mt-0.5 line-clamp-1 text-sm text-muted-foreground">
 					{exercise.custom_instructions}

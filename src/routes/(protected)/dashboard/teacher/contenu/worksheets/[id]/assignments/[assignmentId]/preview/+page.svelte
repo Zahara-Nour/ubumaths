@@ -509,13 +509,6 @@
 												<Pencil class="h-4 w-4" />
 											</a>
 										</div>
-										{#if exercise.tags && exercise.tags.length > 0}
-											<div class="mt-1 flex flex-wrap gap-1">
-												{#each exercise.tags as tag (tag)}
-													<Badge variant="secondary" class="text-xs">{tag}</Badge>
-												{/each}
-											</div>
-										{/if}
 									</div>
 									{#if exercise.points !== null}
 										<Badge variant="outline" class="font-normal">
@@ -568,13 +561,6 @@
 									<Pencil class="h-4 w-4" />
 								</a>
 							</div>
-							{#if exercise.tags && exercise.tags.length > 0}
-								<div class="mt-1 flex flex-wrap gap-1">
-									{#each exercise.tags as tag (tag)}
-										<Badge variant="secondary" class="text-xs">{tag}</Badge>
-									{/each}
-								</div>
-							{/if}
 						</div>
 						{#if exercise.points !== null}
 							<Badge variant="outline" class="font-normal">
