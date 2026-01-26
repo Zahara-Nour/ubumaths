@@ -8,6 +8,7 @@
 	 * Features:
 	 * - Shows question description and level
 	 * - Status badge (clean/warning/error)
+	 * - Review status badge (approved/rejected/pending)
 	 * - Warning/error count indicators
 	 * - Click to view details
 	 * - Responsive layout
@@ -16,7 +17,9 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import { cn } from '$lib/utils';
-	import { AlertCircle, AlertTriangle, CheckCircle2, ChevronRight } from 'lucide-svelte';
+	import { AlertCircle, AlertTriangle, CheckCircle2, ChevronRight, XCircle } from 'lucide-svelte';
+
+	type ReviewStatus = 'pending' | 'approved' | 'rejected';
 
 	interface Props {
 		question: {
@@ -30,11 +33,12 @@
 			warnings: string[];
 			errors: string[];
 		};
+		reviewStatus?: ReviewStatus;
 		onclick?: () => void;
 		class?: string;
 	}
 
-	let { question, onclick, class: className }: Props = $props();
+	let { question, reviewStatus = 'pending', onclick, class: className }: Props = $props();
 
 	// Determine status
 	const hasErrors = $derived(question.errors.length > 0);
@@ -53,9 +57,11 @@
 
 <Card.Root
 	class={cn('cursor-pointer transition-all hover:border-primary hover:shadow-md', className, {
-		'border-destructive/50 bg-destructive/5': hasErrors,
-		'border-warning/50 bg-warning/5': hasWarnings && !hasErrors,
-		'border-success/50': isClean
+		'border-green-500/50 bg-green-500/5': reviewStatus === 'approved',
+		'border-red-500/50 bg-red-500/5': reviewStatus === 'rejected',
+		'border-destructive/50 bg-destructive/5': reviewStatus === 'pending' && hasErrors,
+		'border-warning/50 bg-warning/5': reviewStatus === 'pending' && hasWarnings && !hasErrors,
+		'border-success/50': reviewStatus === 'pending' && isClean
 	})}
 >
 	<button
@@ -91,11 +97,24 @@
 
 			<!-- Status and Counts -->
 			<div class="flex flex-wrap items-center gap-2">
-				<!-- Status Badge -->
-				<Badge variant={statusVariant} class="flex items-center gap-1 text-xs">
-					<StatusIcon class="h-3 w-3" />
-					{statusText}
-				</Badge>
+				<!-- Review Status Badge -->
+				{#if reviewStatus === 'approved'}
+					<Badge class="bg-green-600 text-xs text-white">
+						<CheckCircle2 class="mr-1 h-3 w-3" />
+						Approuvee
+					</Badge>
+				{:else if reviewStatus === 'rejected'}
+					<Badge variant="destructive" class="text-xs">
+						<XCircle class="mr-1 h-3 w-3" />
+						Rejetee
+					</Badge>
+				{:else}
+					<!-- Transformation Status Badge -->
+					<Badge variant={statusVariant} class="flex items-center gap-1 text-xs">
+						<StatusIcon class="h-3 w-3" />
+						{statusText}
+					</Badge>
+				{/if}
 
 				<!-- Error Count -->
 				{#if hasErrors}
