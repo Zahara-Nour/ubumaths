@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.30](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.29...v0.7.30) (2026-01-26)
+
+### 🐛 Bug Fixes
+
+- **worksheets:** remove tags display from student and teacher preview views ([87d8002](https://github.com/Zahara-Nour/ubumaths/commit/87d80024ea1915cbcc5f6fb18b16930a2057960e))
+
 ### [0.7.29](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.28...v0.7.29) (2026-01-25)
 
 ### 🐛 Bug Fixes
