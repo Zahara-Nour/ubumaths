@@ -728,3 +728,80 @@ export function validateConversion(original: string, converted: string): boolean
 // "[._expression_.]" → "{{eval:expression}}" (with warning)
 // "[+_expression_]" → "{{eval:+expression}}" (with warning)
 // "[(_expression_]" → "{{eval:(expression)}}" (with warning)
+
+// ============================================================================
+// MATH DELIMITER FIXER
+// ============================================================================
+
+/**
+ * Fix math delimiters: convert $$...$$ to $...$ when used inline.
+ *
+ * In LaTeX/ubumark:
+ * - $...$ or ~...~ = inline math (within text flow)
+ * - $$...$$ or ~~...~~ = display math (block, centered)
+ *
+ * Old TinyMath used $$...$$ everywhere. This function detects when
+ * $$...$$ is used inline (text before/after on same line) and converts
+ * it to $...$ for proper rendering.
+ *
+ * @param text - Text with math delimiters
+ * @returns Text with corrected delimiters
+ *
+ * @example
+ * // Inline - should convert
+ * "Dans $$5+3$$, calcule" → "Dans $5+3$, calcule"
+ *
+ * // Display - should keep
+ * "Calcule:\n$$5+3$$\n" → "Calcule:\n$$5+3$$\n"
+ */
+export function fixMathDelimiters(text: string): string {
+	if (!text || !text.includes('$$')) {
+		return text;
+	}
+
+	// Split by lines to analyze context
+	const lines = text.split('\n');
+	const result: string[] = [];
+
+	for (const line of lines) {
+		// Check if line contains $$...$$
+		if (!line.includes('$$')) {
+			result.push(line);
+			continue;
+		}
+
+		// Check if entire line (trimmed) is just $$...$$ (display math)
+		const trimmed = line.trim();
+		if (/^\$\$[^$]+\$\$$/.test(trimmed) && trimmed === line.trim()) {
+			// Could be display if it's the only content
+			// But we need to check if there's text before/after the $$...$$
+			const match = line.match(/^(\s*)\$\$([^$]+)\$\$(\s*)$/);
+			if (match) {
+				// Line is only whitespace + $$...$$ + whitespace → display, keep as is
+				result.push(line);
+				continue;
+			}
+		}
+
+		// Line has $$...$$ with other content → convert to inline
+		// Use regex to find all $$...$$ and check their context
+		let converted = line;
+		const mathPattern = /\$\$([^$]+)\$\$/g;
+		let hasNonMathContent = false;
+
+		// Check if there's non-math content on the line
+		const withoutMath = line.replace(mathPattern, '').trim();
+		if (withoutMath.length > 0) {
+			hasNonMathContent = true;
+		}
+
+		if (hasNonMathContent) {
+			// Convert all $$...$$ to $...$ on this line
+			converted = line.replace(mathPattern, (_, content) => `$${content}$`);
+		}
+
+		result.push(converted);
+	}
+
+	return result.join('\n');
+}
