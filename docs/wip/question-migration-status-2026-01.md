@@ -4,7 +4,40 @@
 
 This document describes the current state of the question system migration and the work needed to complete it.
 
-**Goal**: Migrate ~2,238 questions from TinyMath to the new UbuMaths question system.
+**Goal**: Migrate **633 questions** from TinyMath to the new UbuMaths question system.
+
+> **Note**: Previous documentation incorrectly stated ~2,238 questions. This was an erroneous estimate based on arbitrary phase percentages, never verified against the actual source file. The real count from `extern/new-tinymath/.../questions.ts` is **633 questions**.
+
+---
+
+## Question Statistics
+
+### By Theme (633 total)
+
+| Theme            | Questions |
+| ---------------- | --------- |
+| Entiers          | 228       |
+| Décimaux         | 83        |
+| Calcul littéral  | 68        |
+| Fractions        | 58        |
+| Grandeurs        | 45        |
+| Fonctions        | 39        |
+| Relatifs         | 36        |
+| Proportionnalité | 28        |
+| Puissances       | 21        |
+| Suites           | 15        |
+| Racines carré    | 10        |
+| Probabilités     | 2         |
+
+### Transformation Status
+
+| Metric                   | Value |
+| ------------------------ | ----- |
+| Total questions          | 633   |
+| Successfully transformed | 633   |
+| With warnings            | 192   |
+| Failed                   | 0     |
+| **Success rate**         | 100%  |
 
 ---
 
@@ -118,39 +151,80 @@ The current parser (`src/lib/ubumark/parameterization/`) supports:
 
 ## Migration Scripts Status
 
-| Script                           | Location             | Status                       |
-| -------------------------------- | -------------------- | ---------------------------- |
-| `syntax-converter.ts`            | `src/lib/migration/` | ✅ 118 tests pass            |
-| `question-transformer.ts`        | `src/lib/migration/` | ✅ 56 tests pass (bug fixed) |
-| `correction-integration.test.ts` | `src/lib/migration/` | ✅ 51 tests pass             |
-| All migration tests              | `src/lib/migration/` | ✅ **440 tests pass**        |
+### Core Transformation (`src/lib/migration/`)
+
+| Script                           | Status                                  |
+| -------------------------------- | --------------------------------------- |
+| `syntax-converter.ts`            | ✅ Tests pass                           |
+| `question-transformer.ts`        | ✅ Tests pass (bug fixed)               |
+| `correction-integration.test.ts` | ✅ Tests pass                           |
+| **All migration tests**          | ✅ **439/440 pass** (1 flaky perf test) |
+
+### Available Scripts (`scripts/`)
+
+| Command                                           | Description                                      |
+| ------------------------------------------------- | ------------------------------------------------ |
+| `pnpm tsx scripts/migrate-questions-loader.ts`    | Extract questions → `.claude/old-questions.json` |
+| `pnpm tsx scripts/export-questions-for-review.ts` | Export transformed questions for review          |
+| `pnpm migration:import:dry`                       | Preview import (no DB write)                     |
+| `pnpm migration:import`                           | Import questions to database                     |
+| `pnpm migration:rollback:dry`                     | Preview rollback                                 |
+| `pnpm migration:rollback:all`                     | Rollback all imported questions                  |
+| `pnpm test:server src/lib/migration`              | Run all transformation tests                     |
+
+### Current State
+
+| Item                   | Status                                            |
+| ---------------------- | ------------------------------------------------- |
+| Source extraction      | ✅ 633 questions in `.claude/old-questions.json`  |
+| Transformation tests   | ✅ 439/440 pass                                   |
+| Export for review      | ✅ `data/migration-output/export-2025-11-30/`     |
+| Database schema        | ✅ `shared` column added, legacy seeds removed    |
+| **Import to database** | ❌ **PENDING** - table `question_templates` empty |
 
 ---
 
-## Action Plan (Phases 1-3 Complete ✅)
+## Action Plan
 
-### Phase 1: Database Schema Fix ✅
+### Phase 1: Database Schema Fix ✅ COMPLETE
 
 - Created migration `20260126083727_add_shared_column_and_cleanup_seeds.sql`
 - Deletes legacy seeds, adds `shared JSONB` column
 - Applied via `pnpm db:migrate`
 - Types regenerated via `pnpm db:types`
 
-### Phase 2: Fix Migration Script Bug ✅
+### Phase 2: Fix Migration Script Bug ✅ COMPLETE
 
 - Fixed `question-transformer.ts` to handle single-variation corrections
-- All 440 migration tests pass
+- All 439/440 migration tests pass (1 flaky performance test)
 
-### Phase 3: Update API ✅
+### Phase 3: Update API ✅ COMPLETE
 
 - POST `/api/questions/templates` now stores `shared` field
 - PUT `/api/questions/templates/[id]` now updates `shared` field
 
-### Phase 4: Run Migration (PENDING)
+### Phase 4: Import Questions ⏳ PENDING
 
-1. ✅ All tests pass
-2. ✅ Database schema updated (clean, no legacy data)
-3. **TODO**: Import questions from TinyMath using updated scripts
+**Prerequisites met:**
+
+- ✅ 633 questions extracted to `.claude/old-questions.json`
+- ✅ 100% transformation success (633/633)
+- ✅ Export available at `data/migration-output/export-2025-11-30/`
+- ✅ Database schema ready (clean, no legacy data)
+- ✅ API endpoints updated
+
+**To import:**
+
+```bash
+# 1. Preview (recommended first)
+pnpm migration:import:dry
+
+# 2. Import all questions
+pnpm migration:import
+
+# 3. Validate (after import)
+pnpm migrate:phase1:validate
+```
 
 ---
 
@@ -184,13 +258,14 @@ The current parser (`src/lib/ubumark/parameterization/`) supports:
 
 ## Decision Log
 
-| Date       | Decision                            | Rationale                                         |
-| ---------- | ----------------------------------- | ------------------------------------------------- |
-| 2026-01-26 | Add `shared` column to DB           | TypeScript type requires it, API doesn't store it |
-| 2026-01-26 | Remove legacy `{@:var}` syntax      | Parser doesn't support it, causes confusion       |
-| 2026-01-26 | Keep both random syntaxes           | `{{random:1..10}}` and `{{1..10}}` both supported |
-| 2026-01-26 | Fix single-variation correction bug | Tests failing, blocks migration                   |
-| 2026-01-26 | Apply migration & regenerate types  | Database ready for fresh import                   |
+| Date       | Decision                             | Rationale                                                 |
+| ---------- | ------------------------------------ | --------------------------------------------------------- |
+| 2026-01-26 | Add `shared` column to DB            | TypeScript type requires it, API doesn't store it         |
+| 2026-01-26 | Remove legacy `{@:var}` syntax       | Parser doesn't support it, causes confusion               |
+| 2026-01-26 | Keep both random syntaxes            | `{{random:1..10}}` and `{{1..10}}` both supported         |
+| 2026-01-26 | Fix single-variation correction bug  | Tests failing, blocks migration                           |
+| 2026-01-26 | Apply migration & regenerate types   | Database ready for fresh import                           |
+| 2026-01-26 | Correct question count: 633 not 2238 | Verified against source file, previous estimate was wrong |
 
 ---
 
@@ -246,11 +321,41 @@ Fixed test expectations in `correction-integration.test.ts`:
 
 ## Next Steps
 
+### Completed ✅
+
 1. [x] Create migration: add `shared` column ✅ `20260126083727_add_shared_column_and_cleanup_seeds.sql`
 2. [x] Create migration: delete legacy seeds ✅ (same migration deletes all seeds)
 3. [x] Fix `question-transformer.ts` bug ✅ Single-variation corrections now processed
 4. [x] Update API to handle `shared` field ✅ POST and PUT endpoints updated
-5. [x] Verify all tests pass ✅ **440 migration tests pass**
+5. [x] Verify all tests pass ✅ **439/440 migration tests pass**
 6. [x] Apply migration ✅ `pnpm db:migrate` executed
 7. [x] Regenerate TypeScript types ✅ `pnpm db:types` executed
-8. [ ] **Run full migration**: Import questions from TinyMath using updated scripts
+
+### Remaining
+
+8. [ ] **Run import**: `pnpm migration:import` (633 questions)
+9. [ ] **Validate**: `pnpm migrate:phase1:validate`
+10. [ ] **Test in UI**: Verify questions work in the application
+
+---
+
+## Correction: Why 633, not 2,238?
+
+Previous documentation stated ~2,238 questions. This number was an **erroneous estimate** calculated from arbitrary phase percentages:
+
+| Phase     | Estimated | %    |
+| --------- | --------- | ---- |
+| Phase 1   | 560       | 25%  |
+| Phase 2   | 895       | 40%  |
+| Phase 3   | 560       | 25%  |
+| Phase 4   | 223       | 10%  |
+| **Total** | **2,238** | 100% |
+
+These percentages were applied to a made-up total, never verified against the source file.
+
+**Actual count** from `extern/new-tinymath/apps/ubumaths/src/lib/questions/questions.ts`:
+
+- `grep -c "grade:" questions.ts` → 649 (includes 16 commented questions)
+- `migrate-questions-loader.ts` extracts → **633 questions**
+
+The loader correctly parses the nested structure `{theme: {domain: {subdomain: [questions]}}}` and flattens it to an array with `_migration` metadata for tracking.
