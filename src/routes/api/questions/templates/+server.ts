@@ -216,6 +216,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				type: templateData.type,
 				title: templateData.title,
 				description: templateData.description || null,
+				shared: templateData.shared || null,
 				variations: templateData.variations,
 				exercise_instruction: templateData.exerciseInstruction || null,
 				precision: templateData.precision || { type: 'none' },

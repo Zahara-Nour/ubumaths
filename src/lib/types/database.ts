@@ -8095,6 +8095,7 @@ export type Database = {
 					multiple_answers: boolean | null;
 					options: Json | null;
 					precision: Json | null;
+					shared: Json | null;
 					status: string;
 					subdomain: string | null;
 					theme: string;
@@ -8117,6 +8118,7 @@ export type Database = {
 					multiple_answers?: boolean | null;
 					options?: Json | null;
 					precision?: Json | null;
+					shared?: Json | null;
 					status: string;
 					subdomain?: string | null;
 					theme: string;
@@ -8139,6 +8141,7 @@ export type Database = {
 					multiple_answers?: boolean | null;
 					options?: Json | null;
 					precision?: Json | null;
+					shared?: Json | null;
 					status?: string;
 					subdomain?: string | null;
 					theme?: string;
@@ -11661,6 +11664,7 @@ export type Database = {
 					custom_instructions: string | null;
 					exercise_id: string;
 					id: string;
+					is_essential: boolean;
 					points: number | null;
 					position: number;
 					section_id: string | null;
@@ -11676,6 +11680,7 @@ export type Database = {
 					custom_instructions?: string | null;
 					exercise_id: string;
 					id?: string;
+					is_essential?: boolean;
 					points?: number | null;
 					position: number;
 					section_id?: string | null;
@@ -11691,6 +11696,7 @@ export type Database = {
 					custom_instructions?: string | null;
 					exercise_id?: string;
 					id?: string;
+					is_essential?: boolean;
 					points?: number | null;
 					position?: number;
 					section_id?: string | null;
@@ -14198,6 +14204,10 @@ export type Database = {
 			};
 			reorder_worksheet_exercises: {
 				Args: { p_exercises: Json; p_worksheet_id: string };
+				Returns: number;
+			};
+			reorder_worksheet_sections: {
+				Args: { p_sections: Json; p_worksheet_id: string };
 				Returns: number;
 			};
 			report_message: {

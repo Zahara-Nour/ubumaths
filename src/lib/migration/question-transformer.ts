@@ -1438,13 +1438,15 @@ function detectSharedFields(
 	// ---- Detect correction sharing (correctionDetailss + correctionFormats) ----
 	const correctionDetailss = oldQuestion.correctionDetailss || [];
 	const correctionFormats = oldQuestion.correctionFormats || [];
+	const hasCorrections = correctionDetailss.length > 0 || correctionFormats.length > 0;
 
 	// Correction is shared if both arrays have 0 or 1 elements for multiple variations
 	const detailsIsShared = correctionDetailss.length <= 1 && variationCount > 1;
 	const formatsIsShared = correctionFormats.length <= 1 && variationCount > 1;
 	const correctionIsShared = detailsIsShared && formatsIsShared;
 
-	if (correctionIsShared && (correctionDetailss.length > 0 || correctionFormats.length > 0)) {
+	if (correctionIsShared && hasCorrections) {
+		// Multiple variations, single correction → shared
 		const questionCorrection = transformCorrection(
 			correctionDetailss[0],
 			correctionFormats[0],
@@ -1455,6 +1457,7 @@ function detectSharedFields(
 			shared.correction = questionCorrection;
 		}
 	} else if (correctionDetailss.length > 1 || correctionFormats.length > 1) {
+		// Multiple corrections → per-variation
 		for (let i = 0; i < variationCount; i++) {
 			const correctionDetails = correctionDetailss[i] || correctionDetailss[0];
 			const correctionFormat = correctionFormats[i] || correctionFormats[0];
@@ -1467,6 +1470,17 @@ function detectSharedFields(
 			if (questionCorrection) {
 				perVariation[i].correction = questionCorrection;
 			}
+		}
+	} else if (variationCount === 1 && hasCorrections) {
+		// Single variation with correction → per-variation[0]
+		const questionCorrection = transformCorrection(
+			correctionDetailss[0],
+			correctionFormats[0],
+			warnings,
+			stats
+		);
+		if (questionCorrection) {
+			perVariation[0].correction = questionCorrection;
 		}
 	}
 
