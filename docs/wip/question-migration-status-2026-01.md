@@ -135,6 +135,21 @@ The current parser (`src/lib/ubumark/parameterization/`) supports:
 - `{#:min-max}` - Old random integer
 - `{eval:expr}` - Old eval (without double braces)
 
+### Math Delimiters (ubumark)
+
+| Syntax    | Usage          | Example                      |
+| --------- | -------------- | ---------------------------- |
+| `$...$`   | Inline math    | `Dans $5+3$, calcule`        |
+| `$$...$$` | Display math   | `$$\frac{a}{b}$$` (centered) |
+| `~...~`   | Custom inline  | Custom renderer              |
+| `~~...~~` | Custom display | Custom renderer              |
+
+**Migration fix**: Old TinyMath used `$$...$$` everywhere. The transformer now:
+
+- Detects context (text before/after on same line = inline)
+- Converts inline `$$...$$ ` to `$...$`
+- Keeps display `$$...$$` when alone on line
+
 ---
 
 ## Issues Found (All Resolved ✅)
@@ -275,16 +290,17 @@ pnpm migrate:phase1:validate
 
 ## Decision Log
 
-| Date       | Decision                             | Rationale                                                 |
-| ---------- | ------------------------------------ | --------------------------------------------------------- |
-| 2026-01-26 | Add `shared` column to DB            | TypeScript type requires it, API doesn't store it         |
-| 2026-01-26 | Remove legacy `{@:var}` syntax       | Parser doesn't support it, causes confusion               |
-| 2026-01-26 | Keep both random syntaxes            | `{{random:1..10}}` and `{{1..10}}` both supported         |
-| 2026-01-26 | Fix single-variation correction bug  | Tests failing, blocks migration                           |
-| 2026-01-26 | Apply migration & regenerate types   | Database ready for fresh import                           |
-| 2026-01-26 | Correct question count: 633 not 2238 | Verified against source file, previous estimate was wrong |
-| 2026-01-26 | Fix logger.ts for standalone scripts | Scripts can now run outside SvelteKit context             |
-| 2026-01-26 | Regenerate export (2026-01-26)       | Fresh export with 633 questions, 220 warnings             |
+| Date       | Decision                                | Rationale                                                   |
+| ---------- | --------------------------------------- | ----------------------------------------------------------- |
+| 2026-01-26 | Add `shared` column to DB               | TypeScript type requires it, API doesn't store it           |
+| 2026-01-26 | Remove legacy `{@:var}` syntax          | Parser doesn't support it, causes confusion                 |
+| 2026-01-26 | Keep both random syntaxes               | `{{random:1..10}}` and `{{1..10}}` both supported           |
+| 2026-01-26 | Fix single-variation correction bug     | Tests failing, blocks migration                             |
+| 2026-01-26 | Apply migration & regenerate types      | Database ready for fresh import                             |
+| 2026-01-26 | Correct question count: 633 not 2238    | Verified against source file, previous estimate was wrong   |
+| 2026-01-26 | Fix logger.ts for standalone scripts    | Scripts can now run outside SvelteKit context               |
+| 2026-01-26 | Regenerate export (2026-01-26)          | Fresh export with 633 questions, 220 warnings               |
+| 2026-01-26 | Fix math delimiters (inline vs display) | TinyMath used `$$` everywhere, ubumark needs `$` for inline |
 
 ---
 
