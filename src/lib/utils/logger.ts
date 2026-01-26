@@ -1,4 +1,13 @@
-import { dev } from '$app/environment';
+// Handle both SvelteKit and standalone Node.js environments
+let dev = true;
+try {
+	// Dynamic import to avoid build errors in standalone scripts
+	const env = await import('$app/environment');
+	dev = env.dev;
+} catch {
+	// Fallback for standalone Node.js scripts (tsx, vitest, etc.)
+	dev = process.env.NODE_ENV !== 'production';
+}
 
 /**
  * Log severity levels

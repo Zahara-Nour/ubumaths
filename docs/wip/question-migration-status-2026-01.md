@@ -29,15 +29,31 @@ This document describes the current state of the question system migration and t
 | Racines carré    | 10        |
 | Probabilités     | 2         |
 
-### Transformation Status
+### Transformation Status (Export 2026-01-26)
 
 | Metric                   | Value |
 | ------------------------ | ----- |
 | Total questions          | 633   |
 | Successfully transformed | 633   |
-| With warnings            | 192   |
+| With warnings            | 220   |
 | Failed                   | 0     |
 | **Success rate**         | 100%  |
+
+### Warnings Summary
+
+| Category             | Count  | Description                | Action                            |
+| -------------------- | ------ | -------------------------- | --------------------------------- |
+| Précision décimale   | 73     | Défaut 2 décimales         | ✅ OK - valeur raisonnable        |
+| Pattern N-digits     | 66     | `$e{...}` → `{{1.0}}`      | ✅ OK - conversion auto           |
+| Couleurs             | 44     | `${get(correct_color)}`    | ✅ OK - géré par système couleurs |
+| Signe + évaluations  | ~150   | `[+_&2_]` converti         | ✅ OK - conversion correcte       |
+| Permutations TODO    | 24     | Validation non implémentée | ⚠️ Feature future                 |
+| **Images**           | **12** | Questions avec images      | 🔍 Review manuel requis           |
+| Custom validation    | 8      | `testAnswers` utilisé      | ✅ OK - déjà implémenté           |
+| Options inconnues    | 13     | Typos (`extraneaous`)      | ✅ OK - ignoré                    |
+| Solutions manquantes | 4      | Variations sans solution   | 🔍 À investiguer                  |
+
+**Conclusion** : 220 warnings dont ~12-16 nécessitent attention (images, solutions manquantes).
 
 ---
 
@@ -177,8 +193,8 @@ The current parser (`src/lib/ubumark/parameterization/`) supports:
 | Item                   | Status                                            |
 | ---------------------- | ------------------------------------------------- |
 | Source extraction      | ✅ 633 questions in `.claude/old-questions.json`  |
-| Transformation tests   | ✅ 439/440 pass                                   |
-| Export for review      | ✅ `data/migration-output/export-2025-11-30/`     |
+| Transformation tests   | ✅ 440/440 pass                                   |
+| Export for review      | ✅ `data/migration-output/export-2026-01-26/`     |
 | Database schema        | ✅ `shared` column added, legacy seeds removed    |
 | **Import to database** | ❌ **PENDING** - table `question_templates` empty |
 
@@ -209,9 +225,10 @@ The current parser (`src/lib/ubumark/parameterization/`) supports:
 
 - ✅ 633 questions extracted to `.claude/old-questions.json`
 - ✅ 100% transformation success (633/633)
-- ✅ Export available at `data/migration-output/export-2025-11-30/`
+- ✅ Export available at `data/migration-output/export-2026-01-26/`
 - ✅ Database schema ready (clean, no legacy data)
 - ✅ API endpoints updated
+- ✅ Custom validation (`testAnswers`) fully implemented via `ValidationRule`
 
 **To import:**
 
@@ -266,6 +283,8 @@ pnpm migrate:phase1:validate
 | 2026-01-26 | Fix single-variation correction bug  | Tests failing, blocks migration                           |
 | 2026-01-26 | Apply migration & regenerate types   | Database ready for fresh import                           |
 | 2026-01-26 | Correct question count: 633 not 2238 | Verified against source file, previous estimate was wrong |
+| 2026-01-26 | Fix logger.ts for standalone scripts | Scripts can now run outside SvelteKit context             |
+| 2026-01-26 | Regenerate export (2026-01-26)       | Fresh export with 633 questions, 220 warnings             |
 
 ---
 
@@ -359,3 +378,31 @@ These percentages were applied to a made-up total, never verified against the so
 - `migrate-questions-loader.ts` extracts → **633 questions**
 
 The loader correctly parses the nested structure `{theme: {domain: {subdomain: [questions]}}}` and flattens it to an array with `_migration` metadata for tracking.
+
+---
+
+## Custom Validation (testAnswers) - Already Implemented ✅
+
+The warning "needs Phase 4 implementation" is **misleading**. Custom validation is fully implemented:
+
+### Conversion (`question-transformer.ts`)
+
+`convertTestAnswers()` converts legacy `testAnswerss` to typed `ValidationRule` objects.
+
+### Evaluation (`validation-rule-evaluator.ts`)
+
+`evaluateRule()` evaluates all rule types at answer validation time.
+
+### Supported ValidationRule Types
+
+| Type                   | Description                     | Example                                                                    |
+| ---------------------- | ------------------------------- | -------------------------------------------------------------------------- |
+| `DivisorRule`          | Answer must divide dividend     | `{ type: 'divisor', dividend: '{{n}}' }`                                   |
+| `MultipleRule`         | Answer must be multiple of base | `{ type: 'multiple', base: '{{a}}' }`                                      |
+| `RangeRule`            | Answer within range             | `{ type: 'range', min: '1', max: '{{max}}' }`                              |
+| `EquationRootRule`     | Answer is root of equation      | `{ type: 'equation_root', equation: 'x^2 - {{sum}}*x + {{product}} = 0' }` |
+| `EquivalenceRule`      | Answer equivalent to expression | `{ type: 'equivalent', expression: '{{a}}/{{b}}' }`                        |
+| `PredicateRule`        | Answer satisfies predicate      | `{ type: 'predicate', predicate: 'isPrime' }`                              |
+| `CustomExpressionRule` | Legacy fallback                 | `{ type: 'custom', expression: 'answer > 0' }`                             |
+
+The 8 questions with "custom validation" warnings are **not blocked** - they use `CustomExpressionRule` as fallback.
