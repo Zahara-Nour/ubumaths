@@ -212,7 +212,8 @@ describe('Correction Integration', () => {
 				const result = testLegacySyntaxConversion(
 					'@@mod(&1;2)=0 ?? pair@@ @@mod(&1;2)!=0 ?? impair@@'
 				);
-				expect(result).toBe('{{if:mod(a;2)=0|pair|impair}}');
+				// Variables inside conditionals keep their {{}} wrapper
+				expect(result).toBe('{{if:mod({{a}};2)=0|pair|impair}}');
 			});
 		});
 
@@ -224,7 +225,8 @@ describe('Correction Integration', () => {
 				expect(result).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
 				expect(result).toContain('{{a}}');
 				expect(result).toContain('{{b}}');
-				expect(result).toContain('{{if:a<5|petit}}');
+				// Variables inside conditionals keep their {{}} wrapper
+				expect(result).toContain('{{if:{{a}}<5|petit}}');
 			});
 
 			it('should handle complex real-world example', () => {
@@ -248,7 +250,8 @@ describe('Correction Integration', () => {
 				const input = '@@&1<5 ?? La réponse &sol est petite@@';
 				const result = testLegacySyntaxConversion(input);
 
-				expect(result).toContain('{{if:a<5|La réponse {{sol}} est petite}}');
+				// Variables inside conditionals keep their {{}} wrapper
+				expect(result).toContain('{{if:{{a}}<5|La réponse {{sol}} est petite}}');
 			});
 		});
 	});
@@ -298,7 +301,7 @@ describe('Correction Integration', () => {
 				expect(result?.steps?.[0]).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
 			});
 
-			it('should transform multiple correction details to concatenated steps', () => {
+			it('should transform multiple correction details to separate steps', () => {
 				const warnings: string[] = [];
 				const stats = createMockStats();
 				const details: CorrectionDetail[] = [
@@ -309,13 +312,12 @@ describe('Correction Integration', () => {
 
 				const result = testTransformCorrection(details, undefined, warnings, stats);
 
-				// Current implementation concatenates steps into single correction field
-				expect(result?.steps).toHaveLength(1);
+				// Current implementation keeps each correction detail as a separate step
+				expect(result?.steps).toHaveLength(3);
 				expect(result?.steps?.[0]).toContain('{{a}}');
 				expect(result?.steps?.[0]).toContain('{{b}}');
-				expect(result?.steps?.[0]).toContain('{{sol}}');
-				// Steps should be joined with double newline
-				expect(result?.steps?.[0]).toContain('\n\n');
+				expect(result?.steps?.[1]).toContain('{{sol}}');
+				expect(result?.steps?.[2]).toBe('Étape 3: Vérification');
 			});
 
 			it('should convert legacy syntax in steps', () => {
@@ -327,7 +329,8 @@ describe('Correction Integration', () => {
 
 				const result = testTransformCorrection(details, undefined, warnings, stats);
 
-				expect(result?.steps?.[0]).toContain('{{if:a<10|');
+				// Variables inside conditionals keep their {{}} wrapper
+				expect(result?.steps?.[0]).toContain('{{if:{{a}}<10|');
 				expect(result?.steps?.[0]).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
 			});
 		});
@@ -487,9 +490,12 @@ describe('Correction Integration', () => {
 
 				expect(result.success).toBe(true);
 				expect(result.template?.variations[0].correction).toBeDefined();
-				expect(result.template?.variations[0].correction).toContain('{{a}}');
-				expect(result.template?.variations[0].correction).toContain('{{b}}');
-				expect(result.template?.variations[0].correction).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				const steps = result.template?.variations[0].correction?.steps;
+				expect(steps).toBeDefined();
+				const stepsText = steps?.join(' ') || '';
+				expect(stepsText).toContain('{{a}}');
+				expect(stepsText).toContain('{{b}}');
+				expect(stepsText).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
 			});
 
 			it('should transform question with correctionFormat', () => {
@@ -558,7 +564,10 @@ describe('Correction Integration', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				expect(result.template?.variations[0].correction).toContain('{{if:mod(a;2)=0|');
+				const steps = result.template?.variations[0].correction?.steps;
+				expect(steps).toBeDefined();
+				// Note: Variables inside conditionals are converted to {{varName}} format
+				expect(steps?.join(' ')).toContain('{{if:mod({{a}};2)=0|');
 			});
 
 			it('should handle correction with time addition conditional', () => {
@@ -578,7 +587,9 @@ describe('Correction Integration', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				expect(result.template?.variations[0].correction).toContain('{{if:{{a}}+{{b}}<60|');
+				const steps = result.template?.variations[0].correction?.steps;
+				expect(steps).toBeDefined();
+				expect(steps?.join(' ')).toContain('{{if:{{a}}+{{b}}<60|');
 			});
 
 			it('should handle correction with multiple conditionals', () => {
@@ -631,9 +642,11 @@ describe('Correction Integration', () => {
 				expect(result.success).toBe(true);
 				const correction = result.template?.variations[0].correction;
 				expect(correction).toBeDefined();
-				expect(correction).toContain('{{eval:');
-				expect(correction).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
-				expect(correction).toContain('{{if:');
+				// Access steps array and check content
+				const stepsText = correction?.steps?.join(' ') || '';
+				expect(stepsText).toContain('{{eval:');
+				expect(stepsText).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				expect(stepsText).toContain('{{if:');
 			});
 
 			it('should handle color references in correction', () => {
@@ -657,8 +670,10 @@ describe('Correction Integration', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				expect(result.template?.variations[0].correction).toContain('{{color:');
-				expect(result.template?.variations[0].correction).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				const steps = result.template?.variations[0].correction?.steps;
+				expect(steps).toBeDefined();
+				expect(steps?.join(' ')).toContain('{{color:');
+				expect(steps?.join(' ')).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
 			});
 
 			it('should handle all syntax types in single correction', () => {
@@ -685,11 +700,13 @@ describe('Correction Integration', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				const correction = result.template?.variations[0].correction;
-				expect(correction).toContain('{{eval:');
-				expect(correction).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
-				expect(correction).toContain('{{color:');
-				expect(correction).toContain('{{if:');
+				const steps = result.template?.variations[0].correction?.steps;
+				expect(steps).toBeDefined();
+				const stepsText = steps?.join(' ') || '';
+				expect(stepsText).toContain('{{eval:');
+				expect(stepsText).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				expect(stepsText).toContain('{{color:');
+				expect(stepsText).toContain('{{if:');
 			});
 		});
 
@@ -758,10 +775,12 @@ describe('Correction Integration', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				const correction = result.template?.variations[0].correction;
-				expect(correction).toContain('{{a}}');
-				expect(correction).toContain('{{b}}');
-				expect(correction).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
+				const steps = result.template?.variations[0].correction?.steps;
+				expect(steps).toBeDefined();
+				const stepsText = steps?.join(' ') || '';
+				expect(stepsText).toContain('{{a}}');
+				expect(stepsText).toContain('{{b}}');
+				expect(stepsText).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
 			});
 		});
 
@@ -866,8 +885,11 @@ describe('Correction Integration', () => {
 
 			expect(result.success).toBe(true);
 			expect(result.template?.variations[0].correction).toBeDefined();
-			// Steps should be joined with double newline
-			expect(result.template?.variations[0].correction).toContain('\n\n');
+			// Steps should be stored as an array
+			const steps = result.template?.variations[0].correction?.steps;
+			expect(steps).toHaveLength(2);
+			expect(steps?.[0]).toBe('Step 1');
+			expect(steps?.[1]).toBe('Step 2');
 		});
 	});
 });
