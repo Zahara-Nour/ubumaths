@@ -95,21 +95,22 @@ mathAST/
 
 ## Documentation Index
 
-| Document                                        | Description                                     |
-| ----------------------------------------------- | ----------------------------------------------- |
-| [Types & Nodes](./types.md)                     | Node types, interfaces, and type system         |
-| [Factory & Transforms](./factory-transforms.md) | Creating and manipulating AST nodes             |
-| [Visitor Pattern](./visitor.md)                 | Enter/leave hooks for AST traversal             |
-| [Parsing](./parsing.md)                         | LaTeX and custom syntax parsing                 |
-| [Evaluation](./evaluation.md)                   | Numeric evaluation and substitution             |
-| [Pattern Matching](./patterns.md)               | Pattern matching and rule-based transformations |
-| [Normalization](./normalization.md)             | Canonical forms and equivalence                 |
-| [Differentiation & Taylor](./calculus.md)       | Symbolic differentiation and series             |
-| [Limits](./limits.md)                           | Symbolic limit evaluation                       |
-| [Matrix Operations](./matrix.md)                | Matrix algebra with pedagogical steps           |
-| [Domain of Definition](./domain.md)             | Domain computation and validation               |
-| [Physical Units](./units.md)                    | Unit system with dimensional analysis           |
-| [CLI & REPL](./cli.md)                          | Command-line interface and web REPL             |
+| Document                                                         | Description                                                   |
+| ---------------------------------------------------------------- | ------------------------------------------------------------- |
+| [Types & Nodes](./types.md)                                      | Node types, interfaces, and type system                       |
+| [Factory & Transforms](./factory-transforms.md)                  | Creating and manipulating AST nodes                           |
+| [Visitor Pattern](./visitor.md)                                  | Enter/leave hooks for AST traversal                           |
+| [Parsing](./parsing.md)                                          | LaTeX and custom syntax parsing                               |
+| [Evaluation](./evaluation.md)                                    | Numeric evaluation and substitution                           |
+| [Pattern Matching](./patterns.md)                                | Pattern matching and rule-based transformations               |
+| [Normalization](./normalization.md)                              | Canonical forms and equivalence                               |
+| [Differentiation & Taylor](./calculus.md)                        | Symbolic differentiation and series                           |
+| [Limits](./limits.md)                                            | Symbolic limit evaluation                                     |
+| [Matrix Operations](./matrix.md)                                 | Matrix algebra with pedagogical steps                         |
+| [Domain of Definition](./domain.md)                              | Domain computation and validation                             |
+| [Physical Units](./units.md)                                     | Unit system with dimensional analysis                         |
+| [CLI & REPL](./cli.md)                                           | Command-line interface and web REPL                           |
+| [Comparison with Compute Engine](./comparison-compute-engine.md) | Detailed comparison between mathAST and Cortex Compute Engine |
 
 ## Design Principles
 
