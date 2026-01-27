@@ -60,6 +60,8 @@ export type PatternTokenType =
 	| 'IMPLIES' // =>
 	| 'COMMA' // , (for function args, NOT decimal when between digits)
 	| 'WILDCARD' // _x or _x:constraint
+	| 'ARROW' // -> (for rule syntax)
+	| 'SEMICOLON' // ; (for rule conditions)
 	| 'EOF';
 
 // =============================================================================
@@ -336,6 +338,11 @@ export class PatternTokenizer {
 			return this.scanMultiChar('COLON_SLASH', ':/', 2);
 		}
 
+		// -> (MUST be checked BEFORE single - is scanned)
+		if (char === '-' && this.peekChar(1) === '>') {
+			return this.scanMultiChar('ARROW', '->', 2);
+		}
+
 		// Single character tokens
 		return this.scanSingleChar();
 	}
@@ -610,6 +617,8 @@ export class PatternTokenizer {
 				return 'GREATER';
 			case ',':
 				return 'COMMA';
+			case ';':
+				return 'SEMICOLON';
 			case '!':
 				// Standalone ! (not followed by =) - treat as unknown, use LETTER as fallback
 				return 'LETTER';
@@ -827,6 +836,10 @@ export function tokenTypeToString(type: PatternTokenType): string {
 			return "'=>'";
 		case 'COMMA':
 			return "','";
+		case 'ARROW':
+			return "'->'";
+		case 'SEMICOLON':
+			return "';'";
 		case 'EOF':
 			return 'end of input';
 	}

@@ -137,7 +137,8 @@ export { P } from './builder';
 // Parser Exports
 // =============================================================================
 
-export { parsePattern } from '../parser/custom/pattern-parser';
+export { parsePattern, PatternParseError } from '../parser/custom/pattern-parser';
+export { parseRule, RuleParseError } from '../parser/custom/rule-parser';
 
 // Export individual builder functions for direct imports
 export {
