@@ -19,6 +19,7 @@
 import { P } from '../builder';
 import { createRule } from '../rule';
 import type { Rule, MatchBindings } from '../types';
+import { isMathNodeBinding } from '../types';
 import { opposite } from '../../factory';
 
 // =============================================================================
@@ -30,7 +31,8 @@ import { opposite } from '../../factory';
  */
 function isNotZero(bindings: MatchBindings): boolean {
 	const x = bindings.get('x');
-	return !(x?.type === 'number' && x.value === '0');
+	if (!x || !isMathNodeBinding(x)) return true;
+	return !(x.type === 'number' && x.value === '0');
 }
 
 // =============================================================================
@@ -81,9 +83,19 @@ export const arithmeticRules: readonly Rule[] = [
 	}),
 
 	// 0 - x = -x (zero minus - function replacement)
-	createRule(P.sub(P.num(0), P._('x')), (bindings: MatchBindings) => opposite(bindings.get('x')!), {
-		name: 'zero-sub'
-	}),
+	createRule(
+		P.sub(P.num(0), P._('x')),
+		(bindings: MatchBindings) => {
+			const x = bindings.get('x');
+			if (!x || !isMathNodeBinding(x)) {
+				throw new Error('Expected MathNode binding for x');
+			}
+			return opposite(x);
+		},
+		{
+			name: 'zero-sub'
+		}
+	),
 
 	// x - x = 0 (self subtraction)
 	createRule(P.sub(P._('x'), P._('x')), P.num(0), {

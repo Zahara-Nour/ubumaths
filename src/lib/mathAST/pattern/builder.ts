@@ -24,6 +24,13 @@ import type {
 	DelimiterPattern,
 	SubscriptPattern,
 	RelationPattern,
+	// Sequence pattern types
+	SequencePattern,
+	OptionalSequencePattern,
+	SumPattern,
+	ProductPattern,
+	SumPatternElement,
+	ProductPatternElement,
 	// Constraint types
 	PatternConstraint,
 	TypeConstraint,
@@ -70,6 +77,110 @@ function wildcard(name: string, constraint?: PatternConstraint): WildcardPattern
 		type: 'wildcard',
 		name,
 		...(constraint !== undefined && { constraint })
+	} as const;
+}
+
+// =============================================================================
+// Sequence Pattern Builders
+// =============================================================================
+
+/**
+ * Creates a sequence pattern that captures 1 or more consecutive terms/factors
+ *
+ * Used within P.sum() or P.prod() to capture multiple elements.
+ * The sequence must capture at least one element.
+ *
+ * @param name - Name to bind the captured sequence to
+ * @param constraint - Optional constraint that each element must satisfy
+ * @returns A sequence pattern
+ *
+ * @example
+ * // Match a + <rest> where rest is 1+ terms
+ * P.sum(P._('a'), P.__('rest'))
+ *
+ * // Match coeff * <vars> where each var must be a variable
+ * P.prod(P._('coeff', P.isNumber()), P.__('vars', P.isVariable()))
+ */
+function seqWildcard(name: string, constraint?: PatternConstraint): SequencePattern {
+	return {
+		type: 'sequence',
+		name,
+		...(constraint !== undefined && { constraint })
+	} as const;
+}
+
+/**
+ * Creates an optional sequence pattern that captures 0 or more consecutive terms/factors
+ *
+ * Used within P.sum() or P.prod() to capture optional elements.
+ * Can capture zero elements (empty sequence).
+ *
+ * @param name - Name to bind the captured sequence to
+ * @param constraint - Optional constraint that each element must satisfy
+ * @returns An optional sequence pattern
+ *
+ * @example
+ * // Match a + b + <extras> where extras can be empty
+ * P.sum(P._('a'), P._('b'), P.___('extras'))
+ */
+function optSeqWildcard(name: string, constraint?: PatternConstraint): OptionalSequencePattern {
+	return {
+		type: 'optional-sequence',
+		name,
+		...(constraint !== undefined && { constraint })
+	} as const;
+}
+
+// =============================================================================
+// N-ary Pattern Builders
+// =============================================================================
+
+/**
+ * Creates an n-ary sum pattern for matching sums with multiple terms
+ *
+ * Flattens addition/subtraction chains and matches elements in any order
+ * (due to commutativity of addition). Can include sequence wildcards.
+ *
+ * @param elements - Pattern elements (wildcards, literals, or sequence patterns)
+ * @returns A sum pattern
+ *
+ * @example
+ * // Match a + <rest>
+ * P.sum(P._('first'), P.__('rest'))
+ *
+ * // Match a + b with optional extras
+ * P.sum(P._('a'), P._('b'), P.___('extras'))
+ *
+ * // Match sum where first term is a number
+ * P.sum(P._('n', P.isNumber()), P.__('rest'))
+ */
+function sum(...elements: SumPatternElement[]): SumPattern {
+	return {
+		type: 'sum-pattern',
+		elements
+	} as const;
+}
+
+/**
+ * Creates an n-ary product pattern for matching products with multiple factors
+ *
+ * Flattens multiplication chains and matches elements in any order
+ * (due to commutativity of multiplication). Can include sequence wildcards.
+ *
+ * @param elements - Pattern elements (wildcards, literals, or sequence patterns)
+ * @returns A product pattern
+ *
+ * @example
+ * // Match coeff * <vars>
+ * P.prod(P._('coeff', P.isNumber()), P.__('vars'))
+ *
+ * // Match a * b with optional extras
+ * P.prod(P._('a'), P._('b'), P.___('extras'))
+ */
+function prod(...elements: ProductPatternElement[]): ProductPattern {
+	return {
+		type: 'product-pattern',
+		elements
 	} as const;
 }
 
@@ -638,6 +749,12 @@ function rule(
 export const P = {
 	// Wildcards
 	_: wildcard,
+	__: seqWildcard,
+	___: optSeqWildcard,
+
+	// N-ary patterns
+	sum,
+	prod,
 
 	// Literals
 	num,
@@ -685,6 +802,10 @@ export const P = {
 // Re-export individual functions for direct imports
 export {
 	wildcard,
+	seqWildcard,
+	optSeqWildcard,
+	sum,
+	prod,
 	num,
 	varPattern as varPat,
 	lit,

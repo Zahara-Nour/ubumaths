@@ -41,19 +41,19 @@ This document describes the current state of the question system migration and t
 
 ### Warnings Summary
 
-| Category             | Count  | Description                | Action                            |
-| -------------------- | ------ | -------------------------- | --------------------------------- |
-| Précision décimale   | 73     | Défaut 2 décimales         | ✅ OK - valeur raisonnable        |
-| Pattern N-digits     | 66     | `$e{...}` → `{{1.0}}`      | ✅ OK - conversion auto           |
-| Couleurs             | 44     | `${get(correct_color)}`    | ✅ OK - géré par système couleurs |
-| Signe + évaluations  | ~150   | `[+_&2_]` converti         | ✅ OK - conversion correcte       |
-| Permutations TODO    | 24     | Validation non implémentée | ⚠️ Feature future                 |
-| **Images**           | **12** | Questions avec images      | 🔍 Review manuel requis           |
-| Custom validation    | 8      | `testAnswers` utilisé      | ✅ OK - déjà implémenté           |
-| Options inconnues    | 13     | Typos (`extraneaous`)      | ✅ OK - ignoré                    |
-| Solutions manquantes | 4      | Variations sans solution   | 🔍 À investiguer                  |
+| Category             | Count | Description                | Action                            |
+| -------------------- | ----- | -------------------------- | --------------------------------- |
+| Précision décimale   | 73    | Défaut 2 décimales         | ✅ OK - valeur raisonnable        |
+| Pattern N-digits     | 66    | `$e{...}` → `{{1.0}}`      | ✅ OK - conversion auto           |
+| Couleurs             | 44    | `${get(correct_color)}`    | ✅ OK - géré par système couleurs |
+| Signe + évaluations  | ~150  | `[+_&2_]` converti         | ✅ OK - conversion correcte       |
+| Permutations TODO    | 24    | Validation non implémentée | ⚠️ Feature future                 |
+| **Images**           | **0** | Toutes migrées             | ✅ 254 images → Supabase Storage  |
+| Custom validation    | 8     | `testAnswers` utilisé      | ✅ OK - déjà implémenté           |
+| Options inconnues    | 13    | Typos (`extraneaous`)      | ✅ OK - ignoré                    |
+| Solutions manquantes | 4     | Variations sans solution   | 🔍 À investiguer                  |
 
-**Conclusion** : 220 warnings dont ~12-16 nécessitent attention (images, solutions manquantes).
+**Conclusion** : 210 warnings dont ~4 nécessitent attention (solutions manquantes).
 
 ---
 
@@ -149,6 +149,44 @@ The current parser (`src/lib/ubumark/parameterization/`) supports:
 - Detects context (text before/after on same line = inline)
 - Converts inline `$$...$$ ` to `$...$`
 - Keeps display `$$...$$` when alone on line
+
+---
+
+## Image Migration ✅ COMPLETE
+
+### Statistics (2026-01-27)
+
+| Metric              | Value                                          |
+| ------------------- | ---------------------------------------------- |
+| Total images        | 254                                            |
+| Initial migration   | 214 images                                     |
+| Missing (Phase 2)   | 40 images (tableau-de-signe)                   |
+| Format              | PNG → WebP (quality 85)                        |
+| URL mappings        | 1016 entries (multiple path formats per image) |
+| Questions w/ images | 207 (export verification)                      |
+| Missing images      | 0                                              |
+
+### Image Sources
+
+1. **Initial batch (214)**: Various themes - downloaded via `scripts/download-old-images.ts`
+2. **Tableau-de-signe (40)**: `fonctions-affines/tableau-de-signe/` - migrated via `scripts/migrate-missing-images.ts`
+   - 20 `tableau_de_signe_fonction_affine_correct-N-600.png`
+   - 20 `tableau_de_signe_fonction_affine_uncorrect-N-600.png`
+
+### Storage
+
+- **Old bucket**: `vlqgmctfhesdhaifmyab.supabase.co/storage/v1/object/public/mental/`
+- **New bucket**: `aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/question-images/`
+- **Mapping file**: `scripts/image-url-mapping.json`
+- **Local cache**: `static/images/questions/`
+
+### Integration
+
+The image URL mapping is integrated into the transformation pipeline:
+
+- `src/lib/migration/image-url-mapping.ts` - Loader with caching
+- `src/lib/migration/question-data-loader.ts` - Passes mapping to transformer
+- `scripts/export-questions-for-review.ts` - Uses mapping during export
 
 ---
 
@@ -301,6 +339,8 @@ pnpm migrate:phase1:validate
 | 2026-01-26 | Fix logger.ts for standalone scripts    | Scripts can now run outside SvelteKit context               |
 | 2026-01-26 | Regenerate export (2026-01-26)          | Fresh export with 633 questions, 220 warnings               |
 | 2026-01-26 | Fix math delimiters (inline vs display) | TinyMath used `$$` everywhere, ubumark needs `$` for inline |
+| 2026-01-27 | Complete image migration                | All 254 images uploaded to new Supabase Storage bucket      |
+| 2026-01-27 | Integrate image URL mapping             | Transformer now converts old paths to new Storage URLs      |
 
 ---
 
@@ -422,3 +462,136 @@ The warning "needs Phase 4 implementation" is **misleading**. Custom validation 
 | `CustomExpressionRule` | Legacy fallback                 | `{ type: 'custom', expression: 'answer > 0' }`                             |
 
 The 8 questions with "custom validation" warnings are **not blocked** - they use `CustomExpressionRule` as fallback.
+
+---
+
+## Transformation Phases (Detailed History)
+
+### Phase 16: Complete Image Migration ✅
+
+**Problème résolu** : 40 images (tableau-de-signe) manquantes dans la première migration, et le mapping d'URLs n'était pas intégré dans le pipeline de transformation.
+
+**Solution** :
+
+1. `src/lib/migration/image-url-mapping.ts` - Utilitaire de chargement avec cache
+2. Intégration dans `question-data-loader.ts` pour l'API de review
+3. Intégration dans `export-questions-for-review.ts` pour l'export
+4. `scripts/migrate-missing-images.ts` pour les 40 images manquantes
+5. Upload des 40 images vers le nouveau bucket Supabase Storage
+
+### Phase 15: AsciiMath to LaTeX Conversion ✅
+
+**Problème résolu** : Les expressions utilisent AsciiMath, le nouveau format nécessite LaTeX.
+
+**Solution** : `convertAsciiMathToLatex()` de MathLive avec protection des placeholders `{{...}}`.
+
+| Input (AsciiMath)   | Output (LaTeX)        |
+| ------------------- | --------------------- |
+| `sqrt({{a}})`       | `\sqrt{{{a}}}`        |
+| `{{a}}^2 + {{b}}^2` | `{{a}}^{2}+{{b}}^{2}` |
+| `pi * {{r}}^2`      | `\pi \cdot {{r}}^{2}` |
+
+### Phase 14: Dynamic QCM solutions ✅
+
+`isCorrect` n'est plus stocké statiquement - calculé à runtime depuis `solution`.
+
+### Phase 13: Simplified syntax for alphanumeric variables ✅
+
+| Context        | Before                 | After            |
+| -------------- | ---------------------- | ---------------- |
+| `{{eval:...}}` | `{{eval:{{a}}+{{b}}}}` | `{{eval:a+b}}`   |
+| `{{if:...}}`   | `{{if:{{a}}>0\|..}}`   | `{{if:a>0\|..}}` |
+| Exclusions     | `{{1..10!{{a}}}}`      | `{{1..10!a}}`    |
+
+### Phase 12: Convert numeric variable names to letters ✅
+
+Excel-style: `1→a`, `26→z`, `27→aa`
+
+### Phase 11: Extract expressions to variables ✅
+
+Expressions extraites en variables (`expression1`, `expression2`) pour ordre de résolution correct.
+
+### Phase 10: Rename answer to solution ✅
+
+Champ `answer` renommé en `solution` partout.
+
+### Phase 9: Display Options Mapping ✅
+
+6 options de génération mappées vers `defaultDisplayOptions`.
+
+### Phase 8: Image Upload to Supabase ✅
+
+- 214 images initiales + 40 tableau-de-signe = **254 total**
+- Format: PNG → WebP (quality 85)
+- Réduction: ~34%
+
+### Phases 1-7: Foundation ✅
+
+1. Documentation & analysis
+2. TypeScript types (QuestionCorrection, ValidationRule)
+3. Placeholder/conditional converters
+4. Correction integration
+5. Validation rule evaluator
+6. Image scripts
+7. Quality checks
+
+---
+
+## Key Decisions
+
+| Decision       | Choice                       | Rationale                                    |
+| -------------- | ---------------------------- | -------------------------------------------- |
+| Images         | WebP simple                  | Supabase dynamic, no build-time optimization |
+| Correction     | Unify to `{feedback, steps}` | Remove redundancy, single source             |
+| Placeholders   | `{{}}` syntax                | Consistent, no conflict with LaTeX           |
+| testAnswerss   | Typed ValidationRule         | Type safety, exhaustive checking             |
+| Expressions    | Per-variation variables      | Guarantees correct resolution order          |
+| Variable names | Letters (Excel-style)        | Enables simplified template syntax `{{a}}`   |
+| Math format    | LaTeX (via MathLive)         | Native support in MathLive rendering         |
+
+---
+
+## Files Modified (by Phase)
+
+### Phase 16
+
+- `src/lib/migration/image-url-mapping.ts` - NEW
+- `src/lib/migration/question-data-loader.ts` - Image mapping integration
+- `scripts/export-questions-for-review.ts` - Image mapping loading
+- `scripts/migrate-missing-images.ts` - NEW
+- `scripts/image-url-mapping.json` - Updated (1016 entries)
+
+### Phase 15
+
+- `src/lib/migration/ascii-math-converter.ts` - NEW (45 tests)
+- `src/lib/migration/question-transformer.ts` - AsciiMath integration
+
+### Phase 8-14
+
+- `src/lib/migration/question-transformer.ts` - Core transformer
+- `src/lib/migration/syntax-converter.ts` - TinyMath → UbuMaths
+- `src/lib/migration/placeholder-converter.ts` - Legacy placeholders
+- `src/lib/migration/conditional-converter.ts` - Legacy conditionals
+- `src/lib/questions/types.ts` - Type definitions
+- `scripts/image-url-mapping.json` - URL mappings
+
+### Phase 1-7
+
+- `src/lib/questions/correction-placeholders.ts`
+- `src/lib/questions/validation-rule-evaluator.ts`
+- `scripts/migrate-question-images.ts`
+- `scripts/extract-question-image-refs.ts`
+
+---
+
+## Crash Recovery
+
+```
+"Lis docs/wip/question-migration-status.md et continue l'implementation"
+```
+
+**Documents de référence** :
+
+- Status: `docs/wip/question-migration-status.md` (ce fichier)
+- Analyse: `docs/wip/question-migration-analysis.md`
+- Review system: `docs/wip/migration-review-system-progress.md`

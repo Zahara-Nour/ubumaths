@@ -57,6 +57,18 @@ export type {
 	DelimiterPattern,
 	SubscriptPattern,
 	RelationPattern,
+	// Sequence pattern types
+	SequencePattern,
+	OptionalSequencePattern,
+	SumPattern,
+	ProductPattern,
+	SumPatternElement,
+	ProductPatternElement,
+	// Sequence binding types
+	SumSequenceBinding,
+	ProductSequenceBinding,
+	SequenceBinding,
+	BindingValue,
 	// Match types
 	MatchResult,
 	MatchBindings,
@@ -89,6 +101,17 @@ export {
 	isSubscriptPattern,
 	isRelationPattern,
 	isStructuralPattern,
+	// Sequence pattern type guards
+	isSumPattern,
+	isProductPattern,
+	isSequencePattern,
+	isOptionalSequencePattern,
+	isAnySequencePattern,
+	// Binding type guards
+	isSumSequenceBinding,
+	isProductSequenceBinding,
+	isSequenceBinding,
+	isMathNodeBinding,
 	// Constraint type guards
 	isTypeConstraint,
 	isNumberConstraint,
@@ -119,6 +142,10 @@ export { parsePattern } from '../parser/custom/pattern-parser';
 // Export individual builder functions for direct imports
 export {
 	wildcard,
+	seqWildcard,
+	optSeqWildcard,
+	sum,
+	prod,
 	num,
 	varPat,
 	lit,

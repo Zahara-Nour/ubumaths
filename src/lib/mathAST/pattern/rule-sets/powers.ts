@@ -18,6 +18,7 @@
 import { P } from '../builder';
 import { createRule } from '../rule';
 import type { Rule, MatchBindings } from '../types';
+import { isMathNodeBinding } from '../types';
 
 // =============================================================================
 // Helper Conditions
@@ -28,7 +29,8 @@ import type { Rule, MatchBindings } from '../types';
  */
 function isNotZero(bindings: MatchBindings): boolean {
 	const x = bindings.get('x');
-	return !(x?.type === 'number' && x.value === '0');
+	if (!x || !isMathNodeBinding(x)) return true;
+	return !(x.type === 'number' && x.value === '0');
 }
 
 // =============================================================================

@@ -2,8 +2,9 @@
 
 ## Current State
 
-- **Status**: COMPLETED
+- **Status**: ACTIVE - Image migration complete
 - **All 6 phases finished**
+- **Image migration**: ✅ 254/254 images uploaded
 - **Final commit**: 4257bfd6
 
 ## Commits
@@ -68,10 +69,23 @@
 - Build: Successful (added missing breadcrumb component)
 - TypeScript: Pre-existing errors in unrelated files (pdf-extractor, rag/search, documents)
 
+### Image Migration (2026-01-27) ✅
+
+- **Initial migration**: 214 images downloaded from old Supabase bucket
+- **Missing images found**: 40 (tableau-de-signe) during export verification
+- **Scripts created**:
+  - `src/lib/migration/image-url-mapping.ts` - URL mapping loader
+  - `scripts/migrate-missing-images.ts` - Download/upload missing images
+- **Integration**: Image mapping now integrated in transformer pipeline
+- **Final result**: 254 images, 1016 URL mappings, 0 missing
+
 ## Statistics
 
 - Total questions: 633
 - Themes: 12 (Entiers: 228, Decimaux: 83, Calcul litteral: 68, etc.)
+- Images: 254 (214 initial + 40 tableau-de-signe)
+- URL mappings: 1016
+- Questions with images: 207
 
 ## Usage
 
