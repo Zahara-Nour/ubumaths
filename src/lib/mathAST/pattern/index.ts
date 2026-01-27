@@ -199,3 +199,15 @@ export { createRule, instantiate, applyRule, applyRuleDeep, applyRules } from '.
 // =============================================================================
 
 export { arithmeticRules, powerRules, allRules } from './rule-sets';
+
+// =============================================================================
+// Verification Exports
+// =============================================================================
+
+export { verifyForm, matchesForm, extractBindings } from './verify';
+export type {
+	VerifyFormResult,
+	VerifyFormSuccess,
+	VerifyFormFailure,
+	VerifyFormOptions
+} from './verify';
