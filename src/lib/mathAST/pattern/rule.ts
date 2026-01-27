@@ -5,7 +5,15 @@
  * that match patterns and produce replacement expressions.
  */
 
-import type { Rule, Pattern, MatchBindings, RuleOptions } from './types';
+import type {
+	Rule,
+	Pattern,
+	MatchBindings,
+	RuleOptions,
+	SumPattern,
+	ProductPattern
+} from './types';
+import { isSumSequenceBinding, isProductSequenceBinding, isAnySequencePattern } from './types';
 import type { MathNode } from '../types';
 import { match } from './match';
 import { mapNode } from '../transforms';
@@ -22,6 +30,7 @@ import {
 	subscript,
 	relation
 } from '../factory';
+import { unflattenSum, unflattenProduct } from '../flatten';
 import { nodesEqual } from './match';
 
 // =============================================================================
@@ -95,6 +104,23 @@ export function instantiate(pattern: Pattern, bindings: MatchBindings): MathNode
 			if (boundValue === undefined) {
 				throw new Error(`Wildcard '${pattern.name}' not found in bindings`);
 			}
+
+			// Handle sequence bindings - convert back to MathNode
+			if (isSumSequenceBinding(boundValue)) {
+				const result = unflattenSum(boundValue.terms);
+				if (!result) {
+					throw new Error(`Cannot instantiate empty sum sequence '${pattern.name}'`);
+				}
+				return result;
+			}
+			if (isProductSequenceBinding(boundValue)) {
+				const result = unflattenProduct(boundValue.factors);
+				if (!result) {
+					throw new Error(`Cannot instantiate empty product sequence '${pattern.name}'`);
+				}
+				return result;
+			}
+
 			return boundValue;
 		}
 
@@ -157,12 +183,118 @@ export function instantiate(pattern: Pattern, bindings: MatchBindings): MathNode
 			);
 		}
 
+		case 'sum-pattern': {
+			return instantiateSumPattern(pattern, bindings);
+		}
+
+		case 'product-pattern': {
+			return instantiateProductPattern(pattern, bindings);
+		}
+
 		default: {
 			// Exhaustive check
 			const _exhaustive: never = pattern;
 			return _exhaustive;
 		}
 	}
+}
+
+// =============================================================================
+// N-ary Pattern Instantiation Helpers
+// =============================================================================
+
+/**
+ * Instantiates a SumPattern into a MathNode
+ *
+ * Combines all single element instantiations and sequence bindings into a sum.
+ */
+function instantiateSumPattern(pattern: SumPattern, bindings: MatchBindings): MathNode {
+	const nodes: MathNode[] = [];
+
+	for (const elem of pattern.elements) {
+		if (isAnySequencePattern(elem)) {
+			// Get the sequence binding and unflatten it
+			const binding = bindings.get(elem.name);
+			if (binding === undefined) {
+				throw new Error(`Sequence '${elem.name}' not found in bindings`);
+			}
+			if (!isSumSequenceBinding(binding)) {
+				throw new Error(`Expected sum sequence binding for '${elem.name}'`);
+			}
+
+			// Unflatten and add to nodes
+			const unflattened = unflattenSum(binding.terms);
+			if (unflattened) {
+				nodes.push(unflattened);
+			}
+			// If empty, we just skip it (0 terms contribute nothing to sum)
+		} else {
+			// Regular pattern - instantiate it
+			nodes.push(instantiate(elem, bindings));
+		}
+	}
+
+	// Combine all nodes into a sum
+	if (nodes.length === 0) {
+		throw new Error('Cannot instantiate empty sum pattern');
+	}
+	if (nodes.length === 1) {
+		return nodes[0];
+	}
+
+	// Build left-associative sum
+	let result = nodes[0];
+	for (let i = 1; i < nodes.length; i++) {
+		result = add(result, nodes[i]);
+	}
+	return result;
+}
+
+/**
+ * Instantiates a ProductPattern into a MathNode
+ *
+ * Combines all single element instantiations and sequence bindings into a product.
+ */
+function instantiateProductPattern(pattern: ProductPattern, bindings: MatchBindings): MathNode {
+	const nodes: MathNode[] = [];
+
+	for (const elem of pattern.elements) {
+		if (isAnySequencePattern(elem)) {
+			// Get the sequence binding and unflatten it
+			const binding = bindings.get(elem.name);
+			if (binding === undefined) {
+				throw new Error(`Sequence '${elem.name}' not found in bindings`);
+			}
+			if (!isProductSequenceBinding(binding)) {
+				throw new Error(`Expected product sequence binding for '${elem.name}'`);
+			}
+
+			// Unflatten and add to nodes
+			const unflattened = unflattenProduct(binding.factors);
+			if (unflattened) {
+				nodes.push(unflattened);
+			}
+			// If empty, we just skip it (0 factors contribute nothing - but 1 would be identity)
+		} else {
+			// Regular pattern - instantiate it
+			nodes.push(instantiate(elem, bindings));
+		}
+	}
+
+	// Combine all nodes into a product
+	if (nodes.length === 0) {
+		throw new Error('Cannot instantiate empty product pattern');
+	}
+	if (nodes.length === 1) {
+		return nodes[0];
+	}
+
+	// Build left-associative product
+	let result = nodes[0];
+	for (let i = 1; i < nodes.length; i++) {
+		result = multiply(result, nodes[i], 'implicit');
+	}
+	return result;
 }
 
 // =============================================================================

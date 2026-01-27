@@ -5,11 +5,35 @@
  * against MathNode expressions and returns bindings for wildcards.
  */
 
-import type { Pattern, MatchResult, MatchBindings } from './types';
-import { successMatch, failMatch, EMPTY_BINDINGS } from './types';
+import type {
+	Pattern,
+	MatchResult,
+	MatchBindings,
+	SumPattern,
+	ProductPattern,
+	SumPatternElement,
+	ProductPatternElement,
+	SequencePattern,
+	OptionalSequencePattern,
+	SumSequenceBinding,
+	ProductSequenceBinding,
+	BindingValue
+} from './types';
+import {
+	successMatch,
+	failMatch,
+	EMPTY_BINDINGS,
+	isSequencePattern,
+	isOptionalSequencePattern,
+	isAnySequencePattern,
+	isMathNodeBinding
+} from './types';
 import type { MathNode } from '../types';
+import type { SignedTerm, FlatProduct } from '../flatten';
 import { hashMathNode } from '../normal/hash';
 import { checkConstraint } from './constraints';
+import { flattenSumShallow, flattenProductShallow } from '../flatten';
+import { opposite } from '../factory';
 import {
 	isAddition,
 	isSubtraction,
@@ -45,6 +69,38 @@ export function nodesEqual(a: MathNode, b: MathNode): boolean {
 // =============================================================================
 
 /**
+ * Checks if two binding values are equal.
+ * For MathNodes, uses structural equality.
+ * For SequenceBindings, compares the underlying collections.
+ */
+function bindingsEqual(a: BindingValue, b: BindingValue): boolean {
+	// Both must be the same type
+	if (isMathNodeBinding(a) && isMathNodeBinding(b)) {
+		return nodesEqual(a, b);
+	}
+
+	// Both are sequence bindings - compare by kind and content
+	if (!isMathNodeBinding(a) && !isMathNodeBinding(b)) {
+		if (a.kind !== b.kind) return false;
+
+		if (a.kind === 'sum-sequence' && b.kind === 'sum-sequence') {
+			if (a.terms.length !== b.terms.length) return false;
+			return a.terms.every((t, i) => {
+				const bt = b.terms[i];
+				return t.sign === bt.sign && nodesEqual(t.term, bt.term);
+			});
+		}
+
+		if (a.kind === 'product-sequence' && b.kind === 'product-sequence') {
+			if (a.factors.length !== b.factors.length) return false;
+			return a.factors.every((f, i) => nodesEqual(f, b.factors[i]));
+		}
+	}
+
+	return false;
+}
+
+/**
  * Merges two binding maps into a new map.
  * Returns undefined if there's a conflict (same key, different values).
  */
@@ -55,7 +111,7 @@ function mergeBindings(a: MatchBindings, b: MatchBindings): MatchBindings | unde
 		const existing = result.get(key);
 		if (existing !== undefined) {
 			// Key exists - check for consistency
-			if (!nodesEqual(existing, value)) {
+			if (!bindingsEqual(existing, value)) {
 				return undefined; // Conflict
 			}
 		} else {
@@ -69,8 +125,8 @@ function mergeBindings(a: MatchBindings, b: MatchBindings): MatchBindings | unde
 /**
  * Creates a new binding map with a single entry.
  */
-function singleBinding(name: string, node: MathNode): MatchBindings {
-	return new Map([[name, node]]);
+function singleBinding(name: string, value: BindingValue): MatchBindings {
+	return new Map([[name, value]]);
 }
 
 // =============================================================================
@@ -141,6 +197,12 @@ export function match(
 		case 'relation-pattern':
 			return matchRelation(pattern, node, bindings);
 
+		case 'sum-pattern':
+			return matchSumPattern(pattern, node, bindings);
+
+		case 'product-pattern':
+			return matchProductPattern(pattern, node, bindings);
+
 		default: {
 			// Exhaustive check
 			const _exhaustive: never = pattern;
@@ -173,6 +235,10 @@ function matchWildcard(
 	const existingBinding = bindings.get(pattern.name);
 	if (existingBinding !== undefined) {
 		// Must match existing binding
+		// Regular wildcards should only be bound to MathNodes
+		if (!isMathNodeBinding(existingBinding)) {
+			return failMatch(); // Conflict: sequence binding vs node
+		}
 		if (nodesEqual(existingBinding, node)) {
 			return successMatch(bindings);
 		}
@@ -439,6 +505,322 @@ function matchPair(
 
 	// Match right with updated bindings
 	return match(patternRight, nodeRight, leftResult.bindings);
+}
+
+// =============================================================================
+// N-ary Pattern Matching
+// =============================================================================
+
+/**
+ * Generates all k-combinations of indices from an array
+ *
+ * @param arr - Array to select from
+ * @param k - Number of elements to select
+ * @yields Arrays of k indices
+ */
+function* combinations<T>(arr: readonly T[], k: number): Generator<T[]> {
+	if (k === 0) {
+		yield [];
+		return;
+	}
+	if (arr.length < k) return;
+
+	const [first, ...rest] = arr;
+	// Include first
+	for (const combo of combinations(rest, k - 1)) {
+		yield [first, ...combo];
+	}
+	// Exclude first
+	yield* combinations(rest, k);
+}
+
+/**
+ * Generates all permutations of an array
+ *
+ * @param arr - Array to permute
+ * @yields All permutations
+ */
+function* permutations<T>(arr: readonly T[]): Generator<T[]> {
+	if (arr.length <= 1) {
+		yield [...arr];
+		return;
+	}
+
+	for (let i = 0; i < arr.length; i++) {
+		const rest = [...arr.slice(0, i), ...arr.slice(i + 1)];
+		for (const perm of permutations(rest)) {
+			yield [arr[i], ...perm];
+		}
+	}
+}
+
+/**
+ * Categorizes pattern elements into single patterns and sequence pattern
+ *
+ * @param elements - Array of pattern elements
+ * @returns Object with singles array and optional sequence pattern
+ * @throws Error if more than one sequence pattern is found
+ */
+function categorizeElements(elements: readonly (SumPatternElement | ProductPatternElement)[]): {
+	singles: Pattern[];
+	sequence: SequencePattern | OptionalSequencePattern | undefined;
+} {
+	const singles: Pattern[] = [];
+	let sequence: SequencePattern | OptionalSequencePattern | undefined;
+
+	for (const elem of elements) {
+		if (isAnySequencePattern(elem)) {
+			if (sequence !== undefined) {
+				throw new Error('Only one sequence pattern allowed per sum/product pattern');
+			}
+			sequence = elem;
+		} else {
+			singles.push(elem);
+		}
+	}
+
+	return { singles, sequence };
+}
+
+/**
+ * Matches a SumPattern against a MathNode
+ *
+ * Algorithm:
+ * 1. Flatten the node into signed terms
+ * 2. Separate pattern elements into single patterns and optional sequence
+ * 3. Try all possible assignments of terms to single patterns (commutative)
+ * 4. Remaining terms go to sequence if present
+ */
+function matchSumPattern(
+	pattern: SumPattern,
+	node: MathNode,
+	bindings: MatchBindings
+): MatchResult {
+	// Only match addition/subtraction chains (or single terms for edge cases)
+	if (!isAddition(node) && !isSubtraction(node) && !isOpposite(node) && !isPositive(node)) {
+		// Single term - can only match if pattern has exactly one single element and no required sequence
+		const { singles, sequence } = categorizeElements(pattern.elements);
+		if (singles.length === 1 && (!sequence || isOptionalSequencePattern(sequence))) {
+			// Try matching the single element
+			const result = match(singles[0], node, bindings);
+			if (result.success && sequence) {
+				// Bind empty sequence
+				const seqBinding: SumSequenceBinding = { kind: 'sum-sequence', terms: [] };
+				const newBindings = mergeBindings(
+					result.bindings,
+					singleBinding(sequence.name, seqBinding)
+				);
+				if (newBindings) {
+					return successMatch(newBindings);
+				}
+			}
+			return result;
+		}
+		return failMatch();
+	}
+
+	// Flatten the sum
+	const flatTerms = flattenSumShallow(node);
+
+	// Categorize pattern elements
+	const { singles, sequence } = categorizeElements(pattern.elements);
+
+	const n = flatTerms.length;
+	const k = singles.length;
+	const minSeq = sequence ? (isSequencePattern(sequence) ? 1 : 0) : 0;
+
+	// Check we have enough terms
+	if (n < k + minSeq) {
+		return failMatch();
+	}
+
+	// If no sequence, need exact count
+	if (!sequence && n !== k) {
+		return failMatch();
+	}
+
+	// Try all ways to assign k terms to the single patterns
+	const indices = Array.from({ length: n }, (_, i) => i);
+
+	for (const assignment of combinations(indices, k)) {
+		// Try all orderings of the assignment to patterns (due to commutativity)
+		for (const perm of permutations(assignment)) {
+			const result = tryAssignment(flatTerms, singles, perm, sequence, bindings);
+			if (result.success) {
+				return result;
+			}
+		}
+	}
+
+	return failMatch();
+}
+
+/**
+ * Tries a specific assignment of terms to patterns
+ */
+function tryAssignment(
+	terms: readonly SignedTerm[],
+	patterns: readonly Pattern[],
+	assignment: readonly number[],
+	seqPattern: SequencePattern | OptionalSequencePattern | undefined,
+	bindings: MatchBindings
+): MatchResult {
+	let currentBindings = bindings;
+
+	// Match each pattern to its assigned term
+	for (let i = 0; i < patterns.length; i++) {
+		const termIdx = assignment[i];
+		const { sign, term } = terms[termIdx];
+
+		// For matching, we need to consider the sign
+		// If sign is '-', we match against opposite(term)
+		const nodeToMatch = sign === '+' ? term : opposite(term);
+
+		const result = match(patterns[i], nodeToMatch, currentBindings);
+		if (!result.success) {
+			return failMatch();
+		}
+		currentBindings = result.bindings;
+	}
+
+	// Collect remaining terms for sequence
+	if (seqPattern) {
+		const usedSet = new Set(assignment);
+		const remaining = terms.filter((_, i) => !usedSet.has(i));
+
+		// Check sequence constraint on each element
+		if (seqPattern.constraint) {
+			const allSatisfy = remaining.every((t) => checkConstraint(seqPattern.constraint!, t.term));
+			if (!allSatisfy) {
+				return failMatch();
+			}
+		}
+
+		const seqBinding: SumSequenceBinding = { kind: 'sum-sequence', terms: remaining };
+		const newBindings = mergeBindings(currentBindings, singleBinding(seqPattern.name, seqBinding));
+		if (!newBindings) {
+			return failMatch();
+		}
+		currentBindings = newBindings;
+	}
+
+	return successMatch(currentBindings);
+}
+
+/**
+ * Matches a ProductPattern against a MathNode
+ *
+ * Similar to matchSumPattern but for multiplication chains.
+ */
+function matchProductPattern(
+	pattern: ProductPattern,
+	node: MathNode,
+	bindings: MatchBindings
+): MatchResult {
+	// Only match multiplication chains
+	if (!isMultiplication(node)) {
+		// Single factor - can only match if pattern has exactly one single element
+		const { singles, sequence } = categorizeElements(pattern.elements);
+		if (singles.length === 1 && (!sequence || isOptionalSequencePattern(sequence))) {
+			const result = match(singles[0], node, bindings);
+			if (result.success && sequence) {
+				// Bind empty sequence
+				const seqBinding: ProductSequenceBinding = { kind: 'product-sequence', factors: [] };
+				const newBindings = mergeBindings(
+					result.bindings,
+					singleBinding(sequence.name, seqBinding)
+				);
+				if (newBindings) {
+					return successMatch(newBindings);
+				}
+			}
+			return result;
+		}
+		return failMatch();
+	}
+
+	// Flatten the product
+	const flatFactors = flattenProductShallow(node);
+
+	// Categorize pattern elements
+	const { singles, sequence } = categorizeElements(pattern.elements);
+
+	const n = flatFactors.length;
+	const k = singles.length;
+	const minSeq = sequence ? (isSequencePattern(sequence) ? 1 : 0) : 0;
+
+	// Check we have enough factors
+	if (n < k + minSeq) {
+		return failMatch();
+	}
+
+	// If no sequence, need exact count
+	if (!sequence && n !== k) {
+		return failMatch();
+	}
+
+	// Try all ways to assign k factors to the single patterns
+	const indices = Array.from({ length: n }, (_, i) => i);
+
+	for (const assignment of combinations(indices, k)) {
+		// Try all orderings due to commutativity
+		for (const perm of permutations(assignment)) {
+			const result = tryProductAssignment(flatFactors, singles, perm, sequence, bindings);
+			if (result.success) {
+				return result;
+			}
+		}
+	}
+
+	return failMatch();
+}
+
+/**
+ * Tries a specific assignment of factors to patterns
+ */
+function tryProductAssignment(
+	factors: FlatProduct,
+	patterns: readonly Pattern[],
+	assignment: readonly number[],
+	seqPattern: SequencePattern | OptionalSequencePattern | undefined,
+	bindings: MatchBindings
+): MatchResult {
+	let currentBindings = bindings;
+
+	// Match each pattern to its assigned factor
+	for (let i = 0; i < patterns.length; i++) {
+		const factorIdx = assignment[i];
+		const factor = factors[factorIdx];
+
+		const result = match(patterns[i], factor, currentBindings);
+		if (!result.success) {
+			return failMatch();
+		}
+		currentBindings = result.bindings;
+	}
+
+	// Collect remaining factors for sequence
+	if (seqPattern) {
+		const usedSet = new Set(assignment);
+		const remaining = factors.filter((_, i) => !usedSet.has(i));
+
+		// Check sequence constraint on each element
+		if (seqPattern.constraint) {
+			const allSatisfy = remaining.every((f) => checkConstraint(seqPattern.constraint!, f));
+			if (!allSatisfy) {
+				return failMatch();
+			}
+		}
+
+		const seqBinding: ProductSequenceBinding = { kind: 'product-sequence', factors: remaining };
+		const newBindings = mergeBindings(currentBindings, singleBinding(seqPattern.name, seqBinding));
+		if (!newBindings) {
+			return failMatch();
+		}
+		currentBindings = newBindings;
+	}
+
+	return successMatch(currentBindings);
 }
 
 // =============================================================================

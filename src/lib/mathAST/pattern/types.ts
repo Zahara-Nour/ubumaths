@@ -7,6 +7,7 @@
  */
 
 import type { MathNode, MathNodeType, RelationType } from '../types';
+import type { SignedTerm } from '../flatten';
 
 // =============================================================================
 // Pattern Constraints
@@ -264,6 +265,85 @@ export interface RelationPattern {
 }
 
 // =============================================================================
+// Sequence Patterns (N-ary matching)
+// =============================================================================
+
+/**
+ * Sequence wildcard pattern - captures 1 or more consecutive terms in a sum/product
+ *
+ * Used with SumPattern or ProductPattern to capture multiple terms.
+ * The sequence must contain at least one element (use OptionalSequencePattern for 0+).
+ *
+ * @example
+ * // Match a + <rest> where rest is 1+ terms
+ * P.sum(P._('a'), P.__('rest'))
+ */
+export interface SequencePattern {
+	readonly type: 'sequence';
+	readonly name: string;
+	readonly constraint?: PatternConstraint;
+}
+
+/**
+ * Optional sequence wildcard pattern - captures 0 or more consecutive terms
+ *
+ * Used with SumPattern or ProductPattern to capture optional terms.
+ * Can match empty sequences (0 elements).
+ *
+ * @example
+ * // Match a + b + <extras> where extras can be 0 or more terms
+ * P.sum(P._('a'), P._('b'), P.___('extras'))
+ */
+export interface OptionalSequencePattern {
+	readonly type: 'optional-sequence';
+	readonly name: string;
+	readonly constraint?: PatternConstraint;
+}
+
+/**
+ * Element type for SumPattern - can be a regular pattern or sequence pattern
+ */
+export type SumPatternElement = Pattern | SequencePattern | OptionalSequencePattern;
+
+/**
+ * Element type for ProductPattern - can be a regular pattern or sequence pattern
+ */
+export type ProductPatternElement = Pattern | SequencePattern | OptionalSequencePattern;
+
+/**
+ * N-ary sum pattern - matches sums with multiple terms (commutative)
+ *
+ * Flattens the sum and attempts to match elements in any order (due to commutativity).
+ * Can include sequence wildcards to capture remaining terms.
+ *
+ * @example
+ * // Match any sum with a captured first term and remaining terms
+ * P.sum(P._('first'), P.__('rest'))
+ *
+ * // Match sum with known term and optional extras
+ * P.sum(P._('a'), P._('b'), P.___('extras'))
+ */
+export interface SumPattern {
+	readonly type: 'sum-pattern';
+	readonly elements: readonly SumPatternElement[];
+}
+
+/**
+ * N-ary product pattern - matches products with multiple factors (commutative)
+ *
+ * Flattens the product and attempts to match elements in any order (due to commutativity).
+ * Can include sequence wildcards to capture remaining factors.
+ *
+ * @example
+ * // Match coefficient * variables pattern
+ * P.prod(P._('coeff', P.isNumber()), P.__('vars'))
+ */
+export interface ProductPattern {
+	readonly type: 'product-pattern';
+	readonly elements: readonly ProductPatternElement[];
+}
+
+// =============================================================================
 // Pattern Union
 // =============================================================================
 
@@ -283,7 +363,9 @@ export type Pattern =
 	| PositivePattern
 	| DelimiterPattern
 	| SubscriptPattern
-	| RelationPattern;
+	| RelationPattern
+	| SumPattern
+	| ProductPattern;
 
 // =============================================================================
 // Pattern Type Extraction
@@ -295,13 +377,49 @@ export type Pattern =
 export type PatternType = Pattern['type'];
 
 // =============================================================================
+// Sequence Binding Types
+// =============================================================================
+
+/**
+ * Binding for a sequence captured in a sum context
+ *
+ * Stores signed terms to preserve sign information.
+ */
+export interface SumSequenceBinding {
+	readonly kind: 'sum-sequence';
+	readonly terms: readonly SignedTerm[];
+}
+
+/**
+ * Binding for a sequence captured in a product context
+ *
+ * Stores raw factor nodes.
+ */
+export interface ProductSequenceBinding {
+	readonly kind: 'product-sequence';
+	readonly factors: readonly MathNode[];
+}
+
+/**
+ * Union of sequence binding types
+ */
+export type SequenceBinding = SumSequenceBinding | ProductSequenceBinding;
+
+/**
+ * Value that can be bound to a wildcard or sequence
+ */
+export type BindingValue = MathNode | SequenceBinding;
+
+// =============================================================================
 // Match Result Types
 // =============================================================================
 
 /**
- * Alias for bindings map - maps wildcard names to matched MathNodes
+ * Alias for bindings map - maps wildcard names to matched values
+ *
+ * Regular wildcards bind to MathNode, sequence wildcards bind to SequenceBinding.
  */
-export type MatchBindings = ReadonlyMap<string, MathNode>;
+export type MatchBindings = ReadonlyMap<string, BindingValue>;
 
 /**
  * Result of a pattern match operation
@@ -458,6 +576,79 @@ export function isRelationPattern(pattern: Pattern): pattern is RelationPattern 
  */
 export function isStructuralPattern(pattern: Pattern): boolean {
 	return pattern.type !== 'wildcard' && pattern.type !== 'literal';
+}
+
+/**
+ * Checks if a pattern is a sum pattern
+ */
+export function isSumPattern(pattern: Pattern): pattern is SumPattern {
+	return pattern.type === 'sum-pattern';
+}
+
+/**
+ * Checks if a pattern is a product pattern
+ */
+export function isProductPattern(pattern: Pattern): pattern is ProductPattern {
+	return pattern.type === 'product-pattern';
+}
+
+/**
+ * Checks if a pattern element is a sequence pattern (1+ terms)
+ */
+export function isSequencePattern(
+	element: SumPatternElement | ProductPatternElement
+): element is SequencePattern {
+	return (element as SequencePattern).type === 'sequence';
+}
+
+/**
+ * Checks if a pattern element is an optional sequence pattern (0+ terms)
+ */
+export function isOptionalSequencePattern(
+	element: SumPatternElement | ProductPatternElement
+): element is OptionalSequencePattern {
+	return (element as OptionalSequencePattern).type === 'optional-sequence';
+}
+
+/**
+ * Checks if a pattern element is any sequence pattern (sequence or optional-sequence)
+ */
+export function isAnySequencePattern(
+	element: SumPatternElement | ProductPatternElement
+): element is SequencePattern | OptionalSequencePattern {
+	return isSequencePattern(element) || isOptionalSequencePattern(element);
+}
+
+// =============================================================================
+// Type Guards for Bindings
+// =============================================================================
+
+/**
+ * Checks if a binding value is a SumSequenceBinding
+ */
+export function isSumSequenceBinding(value: BindingValue): value is SumSequenceBinding {
+	return typeof value === 'object' && 'kind' in value && value.kind === 'sum-sequence';
+}
+
+/**
+ * Checks if a binding value is a ProductSequenceBinding
+ */
+export function isProductSequenceBinding(value: BindingValue): value is ProductSequenceBinding {
+	return typeof value === 'object' && 'kind' in value && value.kind === 'product-sequence';
+}
+
+/**
+ * Checks if a binding value is any SequenceBinding
+ */
+export function isSequenceBinding(value: BindingValue): value is SequenceBinding {
+	return isSumSequenceBinding(value) || isProductSequenceBinding(value);
+}
+
+/**
+ * Checks if a binding value is a MathNode (not a sequence binding)
+ */
+export function isMathNodeBinding(value: BindingValue): value is MathNode {
+	return !isSequenceBinding(value);
 }
 
 // =============================================================================
