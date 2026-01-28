@@ -710,6 +710,130 @@ function transformTanCofunction(node: MathNode): MathNode | null {
 }
 
 // =============================================================================
+// Supplementary Angle Identities (π - x)
+// =============================================================================
+
+/**
+ * Check if expression is π - x
+ */
+function isPiMinus(node: MathNode): MathNode | null {
+	if (!isSubtraction(node)) return null;
+	if (!isPi(node.left)) return null;
+	return node.right;
+}
+
+/**
+ * sin(π - x) -> sin(x)
+ */
+function transformSinSupplementary(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sin') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPiMinus(node.args[0]);
+	if (!x) return null;
+
+	return sin(x);
+}
+
+/**
+ * cos(π - x) -> -cos(x)
+ */
+function transformCosSupplementary(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'cos') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPiMinus(node.args[0]);
+	if (!x) return null;
+
+	return opposite(cos(x));
+}
+
+/**
+ * tan(π - x) -> -tan(x)
+ */
+function transformTanSupplementary(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'tan') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPiMinus(node.args[0]);
+	if (!x) return null;
+
+	return opposite(tan(x));
+}
+
+// =============================================================================
+// Shifted by π/2 Identities (x + π/2)
+// =============================================================================
+
+/**
+ * Check if expression is x + π/2
+ */
+function isPlusPiOver2(node: MathNode): MathNode | null {
+	if (!isAddition(node)) return null;
+
+	// Check if right side is π/2
+	if (isDivision(node.right)) {
+		if (
+			isPi(node.right.numerator) &&
+			isNumber(node.right.denominator) &&
+			node.right.denominator.value === '2'
+		) {
+			return node.left;
+		}
+	}
+	// Check if left side is π/2
+	if (isDivision(node.left)) {
+		if (
+			isPi(node.left.numerator) &&
+			isNumber(node.left.denominator) &&
+			node.left.denominator.value === '2'
+		) {
+			return node.right;
+		}
+	}
+	return null;
+}
+
+/**
+ * sin(x + π/2) -> cos(x)
+ */
+function transformSinPlusPiOver2(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sin') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPlusPiOver2(node.args[0]);
+	if (!x) return null;
+
+	return cos(x);
+}
+
+/**
+ * cos(x + π/2) -> -sin(x)
+ */
+function transformCosPlusPiOver2(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'cos') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPlusPiOver2(node.args[0]);
+	if (!x) return null;
+
+	return opposite(sin(x));
+}
+
+/**
+ * tan(x + π/2) -> -cot(x)
+ */
+function transformTanPlusPiOver2(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'tan') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPlusPiOver2(node.args[0]);
+	if (!x) return null;
+
+	return opposite(cot(x));
+}
+
+// =============================================================================
 // Sum-to-Product (Factorization) Formulas
 // =============================================================================
 
@@ -1075,6 +1199,18 @@ const COFUNCTION_TRANSFORMS: TrigRule[] = [
 	{ name: 'tan-cofunction', transform: transformTanCofunction }
 ];
 
+const SUPPLEMENTARY_TRANSFORMS: TrigRule[] = [
+	{ name: 'sin-supplementary', transform: transformSinSupplementary },
+	{ name: 'cos-supplementary', transform: transformCosSupplementary },
+	{ name: 'tan-supplementary', transform: transformTanSupplementary }
+];
+
+const SHIFT_PI_OVER_2_TRANSFORMS: TrigRule[] = [
+	{ name: 'sin-plus-pi-over-2', transform: transformSinPlusPiOver2 },
+	{ name: 'cos-plus-pi-over-2', transform: transformCosPlusPiOver2 },
+	{ name: 'tan-plus-pi-over-2', transform: transformTanPlusPiOver2 }
+];
+
 const FACTORIZATION_TRANSFORMS: TrigRule[] = [
 	{ name: 'sin-plus-sin', transform: transformSinPlusSin },
 	{ name: 'sin-minus-sin', transform: transformSinMinusSin },
@@ -1317,6 +1453,36 @@ export function simplifyCofunction(node: MathNode): TrigTransformResult {
 }
 
 /**
+ * Simplify supplementary angle expressions (π - x).
+ *
+ * Examples:
+ * - sin(π - x) -> sin(x)
+ * - cos(π - x) -> -cos(x)
+ * - tan(π - x) -> -tan(x)
+ *
+ * @param node - The expression to transform
+ * @returns Transformation result
+ */
+export function simplifySupplementary(node: MathNode): TrigTransformResult {
+	return applyTrigIdentities(node, SUPPLEMENTARY_TRANSFORMS);
+}
+
+/**
+ * Simplify expressions shifted by π/2 (x + π/2).
+ *
+ * Examples:
+ * - sin(x + π/2) -> cos(x)
+ * - cos(x + π/2) -> -sin(x)
+ * - tan(x + π/2) -> -cot(x)
+ *
+ * @param node - The expression to transform
+ * @returns Transformation result
+ */
+export function simplifyShiftPiOver2(node: MathNode): TrigTransformResult {
+	return applyTrigIdentities(node, SHIFT_PI_OVER_2_TRANSFORMS);
+}
+
+/**
  * Factorize sums/differences of trig functions (sum-to-product formulas).
  *
  * Examples:
@@ -1445,3 +1611,13 @@ export const TRANSFORM_SIN_CUBED = transformSinCubed;
 export const TRANSFORM_COS_CUBED = transformCosCubed;
 export const TRANSFORM_SIN_FOURTH = transformSinFourth;
 export const TRANSFORM_COS_FOURTH = transformCosFourth;
+
+// Supplementary angle (π - x)
+export const TRANSFORM_SIN_SUPPLEMENTARY = transformSinSupplementary;
+export const TRANSFORM_COS_SUPPLEMENTARY = transformCosSupplementary;
+export const TRANSFORM_TAN_SUPPLEMENTARY = transformTanSupplementary;
+
+// Shift by π/2 (x + π/2)
+export const TRANSFORM_SIN_PLUS_PI_OVER_2 = transformSinPlusPiOver2;
+export const TRANSFORM_COS_PLUS_PI_OVER_2 = transformCosPlusPiOver2;
+export const TRANSFORM_TAN_PLUS_PI_OVER_2 = transformTanPlusPiOver2;

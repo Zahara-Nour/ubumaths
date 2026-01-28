@@ -41,6 +41,12 @@ import {
 	TRANSFORM_COS_HALF_ANGLE,
 	TRANSFORM_SIN_CUBED,
 	TRANSFORM_COS_CUBED,
+	TRANSFORM_SIN_SUPPLEMENTARY,
+	TRANSFORM_COS_SUPPLEMENTARY,
+	TRANSFORM_TAN_SUPPLEMENTARY,
+	TRANSFORM_SIN_PLUS_PI_OVER_2,
+	TRANSFORM_COS_PLUS_PI_OVER_2,
+	TRANSFORM_TAN_PLUS_PI_OVER_2,
 	applyTrigIdentities,
 	contractToDoubleAngle,
 	simplifyPythagorean,
@@ -52,7 +58,9 @@ import {
 	factorize,
 	reducePeriodic,
 	expandHalfAngle,
-	reduceHigherPowers
+	reduceHigherPowers,
+	simplifySupplementary,
+	simplifyShiftPiOver2
 } from '../trig-identities';
 
 describe('Double Angle Contraction', () => {
@@ -762,6 +770,152 @@ describe('Higher Power Formulas', () => {
 		it('should not change sin²(x)', () => {
 			const expr = parseLatex('\\sin^2(x)');
 			const result = reduceHigherPowers(expr);
+			expect(result.changed).toBe(false);
+		});
+	});
+});
+
+describe('Supplementary Angle Identities (π - x)', () => {
+	describe('TRANSFORM_SIN_SUPPLEMENTARY', () => {
+		it('should transform sin(π - x) to sin(x)', () => {
+			const expr = parseLatex('\\sin(\\pi - x)');
+			const result = TRANSFORM_SIN_SUPPLEMENTARY(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('sin');
+		});
+
+		it('should not transform sin(x)', () => {
+			const expr = parseLatex('\\sin(x)');
+			const result = TRANSFORM_SIN_SUPPLEMENTARY(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_COS_SUPPLEMENTARY', () => {
+		it('should transform cos(π - x) to -cos(x)', () => {
+			const expr = parseLatex('\\cos(\\pi - x)');
+			const result = TRANSFORM_COS_SUPPLEMENTARY(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('cos');
+		});
+
+		it('should not transform cos(x)', () => {
+			const expr = parseLatex('\\cos(x)');
+			const result = TRANSFORM_COS_SUPPLEMENTARY(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_TAN_SUPPLEMENTARY', () => {
+		it('should transform tan(π - x) to -tan(x)', () => {
+			const expr = parseLatex('\\tan(\\pi - x)');
+			const result = TRANSFORM_TAN_SUPPLEMENTARY(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('tan');
+		});
+	});
+
+	describe('simplifySupplementary', () => {
+		it('should simplify sin(π - x)', () => {
+			const expr = parseLatex('\\sin(\\pi - x)');
+			const result = simplifySupplementary(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('sin-supplementary');
+		});
+
+		it('should simplify cos(π - x)', () => {
+			const expr = parseLatex('\\cos(\\pi - x)');
+			const result = simplifySupplementary(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('cos-supplementary');
+		});
+
+		it('should simplify tan(π - x)', () => {
+			const expr = parseLatex('\\tan(\\pi - x)');
+			const result = simplifySupplementary(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('tan-supplementary');
+		});
+
+		it('should not change expressions without π - x pattern', () => {
+			const expr = parseLatex('\\sin(x)');
+			const result = simplifySupplementary(expr);
+			expect(result.changed).toBe(false);
+		});
+	});
+});
+
+describe('Shift by π/2 Identities (x + π/2)', () => {
+	describe('TRANSFORM_SIN_PLUS_PI_OVER_2', () => {
+		it('should transform sin(x + π/2) to cos(x)', () => {
+			const expr = parseLatex('\\sin(x + \\frac{\\pi}{2})');
+			const result = TRANSFORM_SIN_PLUS_PI_OVER_2(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('cos');
+		});
+
+		it('should handle π/2 + x order', () => {
+			const expr = parseLatex('\\sin(\\frac{\\pi}{2} + x)');
+			const result = TRANSFORM_SIN_PLUS_PI_OVER_2(expr);
+			expect(result).not.toBeNull();
+		});
+
+		it('should not transform sin(x)', () => {
+			const expr = parseLatex('\\sin(x)');
+			const result = TRANSFORM_SIN_PLUS_PI_OVER_2(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_COS_PLUS_PI_OVER_2', () => {
+		it('should transform cos(x + π/2) to -sin(x)', () => {
+			const expr = parseLatex('\\cos(x + \\frac{\\pi}{2})');
+			const result = TRANSFORM_COS_PLUS_PI_OVER_2(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('sin');
+		});
+	});
+
+	describe('TRANSFORM_TAN_PLUS_PI_OVER_2', () => {
+		it('should transform tan(x + π/2) to -cot(x)', () => {
+			const expr = parseLatex('\\tan(x + \\frac{\\pi}{2})');
+			const result = TRANSFORM_TAN_PLUS_PI_OVER_2(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('cot');
+		});
+	});
+
+	describe('simplifyShiftPiOver2', () => {
+		it('should simplify sin(x + π/2)', () => {
+			const expr = parseLatex('\\sin(x + \\frac{\\pi}{2})');
+			const result = simplifyShiftPiOver2(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('sin-plus-pi-over-2');
+		});
+
+		it('should simplify cos(x + π/2)', () => {
+			const expr = parseLatex('\\cos(x + \\frac{\\pi}{2})');
+			const result = simplifyShiftPiOver2(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('cos-plus-pi-over-2');
+		});
+
+		it('should simplify tan(x + π/2)', () => {
+			const expr = parseLatex('\\tan(x + \\frac{\\pi}{2})');
+			const result = simplifyShiftPiOver2(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('tan-plus-pi-over-2');
+		});
+
+		it('should not change expressions without x + π/2 pattern', () => {
+			const expr = parseLatex('\\sin(x)');
+			const result = simplifyShiftPiOver2(expr);
 			expect(result.changed).toBe(false);
 		});
 	});
