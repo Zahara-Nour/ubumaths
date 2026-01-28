@@ -267,6 +267,86 @@ function transformSinOverCos(node: MathNode): MathNode | null {
 }
 
 // =============================================================================
+// Linearization Formulas (Product to Sum)
+// =============================================================================
+
+/**
+ * cos(a) * cos(b) -> (cos(a-b) + cos(a+b)) / 2
+ */
+function transformCosCosProduct(node: MathNode): MathNode | null {
+	if (!isMultiplication(node)) return null;
+	if (!isTrigFunc(node.left, 'cos') || !isTrigFunc(node.right, 'cos')) return null;
+
+	// Skip if same argument (handled by sin-cos-product via double angle)
+	const a = getArg(node.left);
+	const b = getArg(node.right);
+	if (nodesEqual(a, b)) return null;
+
+	// cos(a)cos(b) = (cos(a-b) + cos(a+b)) / 2
+	const aPlusB = add(a, b);
+	const aMinusB = subtract(a, b);
+	return halveExpr(add(cos(aMinusB), cos(aPlusB)));
+}
+
+/**
+ * sin(a) * sin(b) -> (cos(a-b) - cos(a+b)) / 2
+ */
+function transformSinSinProduct(node: MathNode): MathNode | null {
+	if (!isMultiplication(node)) return null;
+	if (!isTrigFunc(node.left, 'sin') || !isTrigFunc(node.right, 'sin')) return null;
+
+	// Skip if same argument (handled by power reduction)
+	const a = getArg(node.left);
+	const b = getArg(node.right);
+	if (nodesEqual(a, b)) return null;
+
+	// sin(a)sin(b) = (cos(a-b) - cos(a+b)) / 2
+	const aPlusB = add(a, b);
+	const aMinusB = subtract(a, b);
+	return halveExpr(subtract(cos(aMinusB), cos(aPlusB)));
+}
+
+/**
+ * sin(a) * cos(b) -> (sin(a+b) + sin(a-b)) / 2
+ * cos(a) * sin(b) -> (sin(a+b) - sin(a-b)) / 2
+ *
+ * Note: When a = b, this is handled by transformSinCosProduct instead
+ */
+function transformSinCosProductDifferent(node: MathNode): MathNode | null {
+	if (!isMultiplication(node)) return null;
+
+	// sin(a) * cos(b)
+	if (isTrigFunc(node.left, 'sin') && isTrigFunc(node.right, 'cos')) {
+		const a = getArg(node.left);
+		const b = getArg(node.right);
+
+		// Skip if same argument (handled by sin-cos-product)
+		if (nodesEqual(a, b)) return null;
+
+		// sin(a)cos(b) = (sin(a+b) + sin(a-b)) / 2
+		const aPlusB = add(a, b);
+		const aMinusB = subtract(a, b);
+		return halveExpr(add(sin(aPlusB), sin(aMinusB)));
+	}
+
+	// cos(a) * sin(b)
+	if (isTrigFunc(node.left, 'cos') && isTrigFunc(node.right, 'sin')) {
+		const a = getArg(node.left);
+		const b = getArg(node.right);
+
+		// Skip if same argument (handled by sin-cos-product)
+		if (nodesEqual(a, b)) return null;
+
+		// cos(a)sin(b) = (sin(a+b) - sin(a-b)) / 2
+		const aPlusB = add(a, b);
+		const aMinusB = subtract(a, b);
+		return halveExpr(subtract(sin(aPlusB), sin(aMinusB)));
+	}
+
+	return null;
+}
+
+// =============================================================================
 // Rule Collections
 // =============================================================================
 
@@ -288,11 +368,18 @@ const PYTHAGOREAN_TRANSFORMS: TrigRule[] = [
 
 const QUOTIENT_TRANSFORMS: TrigRule[] = [{ name: 'sin-over-cos', transform: transformSinOverCos }];
 
+const LINEARIZATION_TRANSFORMS: TrigRule[] = [
+	{ name: 'cos-cos-product', transform: transformCosCosProduct },
+	{ name: 'sin-sin-product', transform: transformSinSinProduct },
+	{ name: 'sin-cos-different', transform: transformSinCosProductDifferent }
+];
+
 const ALL_TRANSFORMS: TrigRule[] = [
 	...DOUBLE_ANGLE_TRANSFORMS,
 	...POWER_REDUCTION_TRANSFORMS,
 	...PYTHAGOREAN_TRANSFORMS,
-	...QUOTIENT_TRANSFORMS
+	...QUOTIENT_TRANSFORMS,
+	...LINEARIZATION_TRANSFORMS
 ];
 
 // =============================================================================
@@ -361,9 +448,7 @@ export function applyTrigIdentities(
 			break;
 		}
 
-		for (const rule of appliedRules) {
-			allAppliedRules.add(rule);
-		}
+		appliedRules.forEach((rule) => allAppliedRules.add(rule));
 		current = result;
 		changed = true;
 	}
@@ -416,6 +501,25 @@ export function simplifyQuotients(node: MathNode): TrigTransformResult {
 	return applyTrigIdentities(node, QUOTIENT_TRANSFORMS);
 }
 
+/**
+ * Linearize products of trig functions (product-to-sum formulas).
+ *
+ * Examples:
+ * - cos(a) * cos(b) -> (cos(a-b) + cos(a+b)) / 2
+ * - sin(a) * sin(b) -> (cos(a-b) - cos(a+b)) / 2
+ * - sin(a) * cos(b) -> (sin(a+b) + sin(a-b)) / 2
+ * - cos(a) * sin(b) -> (sin(a+b) - sin(a-b)) / 2
+ *
+ * Note: Products with same argument (e.g., sin(x)*cos(x)) are handled
+ * by contractToDoubleAngle instead.
+ *
+ * @param node - The expression to transform
+ * @returns Transformation result
+ */
+export function linearize(node: MathNode): TrigTransformResult {
+	return applyTrigIdentities(node, LINEARIZATION_TRANSFORMS);
+}
+
 // =============================================================================
 // Exports for individual transforms (for testing)
 // =============================================================================
@@ -428,3 +532,6 @@ export const TRANSFORM_PYTHAGOREAN = transformPythagorean;
 export const TRANSFORM_ONE_MINUS_SIN_SQUARED = transformOneMinusSinSquared;
 export const TRANSFORM_ONE_MINUS_COS_SQUARED = transformOneMinusCosSquared;
 export const TRANSFORM_SIN_OVER_COS = transformSinOverCos;
+export const TRANSFORM_COS_COS_PRODUCT = transformCosCosProduct;
+export const TRANSFORM_SIN_SIN_PRODUCT = transformSinSinProduct;
+export const TRANSFORM_SIN_COS_DIFFERENT = transformSinCosProductDifferent;
