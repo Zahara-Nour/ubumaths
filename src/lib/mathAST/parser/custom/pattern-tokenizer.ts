@@ -5,14 +5,21 @@
  * Extends the regular tokenizer syntax with WILDCARD tokens for pattern matching.
  *
  * Features:
- * - All features from the regular tokenizer
- * - WILDCARD: `_x` or `_x:constraint` where x is an identifier
- *   - Valid constraints: number, integer, positive, negative, nonzero, variable
+ * - WILDCARD: Letters are wildcards by default (`x`, `a`, `n`)
+ *   - Constraints: `x:number`, `x:integer`, `x:positive`, etc.
+ * - SEQUENCES: `__x` for sequence (1+), `___x` for optional sequence (0+)
+ * - LITERAL_VAR: `$x` for literal variable matching (rare use case)
+ *
+ * Note: Single underscore `_x` is NOT supported. Use `x` directly.
  *
  * @example
- * // Tokenize a pattern with wildcards
- * const tokenizer = new PatternTokenizer('_x + _y:number');
- * // Produces: WILDCARD(_x), PLUS, WILDCARD(_y:number)
+ * // Tokenize a pattern with wildcards (letters are wildcards by default)
+ * const tokenizer = new PatternTokenizer('x + y:number');
+ * // Produces: WILDCARD(x), PLUS, WILDCARD(y:number)
+ *
+ * // Sequences
+ * const tokenizer2 = new PatternTokenizer('a + __rest');
+ * // Produces: WILDCARD(a), PLUS, WILDCARD(__rest, sequence)
  *
  * @module mathAST/parser/custom/pattern-tokenizer
  */
@@ -25,11 +32,13 @@
  * Token types for pattern syntax lexing.
  *
  * Includes all types from the regular tokenizer plus:
- * - WILDCARD: Pattern wildcard like `_x` or `_x:number`
+ * - WILDCARD: Pattern wildcard - letters are wildcards by default (`x`, `a`)
+ *   Also `_x` syntax for compatibility, `__x`/`___x` for sequences
+ * - LITERAL_VAR: Literal variable matching with `$x` syntax (rare)
  */
 export type PatternTokenType =
 	| 'NUMBER' // 42, 3.14, 3,14 (comma as decimal separator too)
-	| 'LETTER' // single a-z, A-Z
+	| 'LETTER' // NOT USED IN PATTERNS - letters become WILDCARD
 	| 'BACKSLASH' // \ (for symbols)
 	| 'SYMBOL' // pi, alpha, beta, gamma, theta, infty (after \)
 	| 'FUNC' // sin, cos, tan, ln, log, exp, sqrt
@@ -59,7 +68,8 @@ export type PatternTokenType =
 	| 'IFF' // <=>
 	| 'IMPLIES' // =>
 	| 'COMMA' // , (for function args, NOT decimal when between digits)
-	| 'WILDCARD' // _x or _x:constraint
+	| 'WILDCARD' // x, _x, x:constraint, __x (sequence), ___x (optional sequence)
+	| 'LITERAL_VAR' // $x for literal variable matching
 	| 'ARROW' // -> (for rule syntax)
 	| 'SEMICOLON' // ; (for rule conditions)
 	| 'EOF';
@@ -104,17 +114,28 @@ export function isValidConstraintName(name: string): name is WildcardConstraintN
 // =============================================================================
 
 /**
+ * Wildcard sequence type for __x and ___x patterns
+ */
+export type WildcardSequenceType = 'single' | 'sequence' | 'optional-sequence';
+
+/**
  * Represents a single token from the pattern syntax lexer.
  *
  * All properties are readonly to ensure immutability.
  * WILDCARD tokens have additional wildcardName and optional constraintName fields.
  *
  * @example
- * // A wildcard token without constraint
- * { type: 'WILDCARD', value: '_x', position: 0, length: 2, wildcardName: 'x' }
+ * // A wildcard token (letter is wildcard by default)
+ * { type: 'WILDCARD', value: 'x', position: 0, length: 1, wildcardName: 'x', sequenceType: 'single' }
  *
  * // A wildcard token with constraint
- * { type: 'WILDCARD', value: '_y:number', position: 5, length: 9, wildcardName: 'y', constraintName: 'number' }
+ * { type: 'WILDCARD', value: 'y:number', position: 4, length: 8, wildcardName: 'y', constraintName: 'number', sequenceType: 'single' }
+ *
+ * // A sequence wildcard (__x matches 1+ elements)
+ * { type: 'WILDCARD', value: '__rest', position: 0, length: 6, wildcardName: 'rest', sequenceType: 'sequence' }
+ *
+ * // A literal variable ($x matches exactly variable 'x')
+ * { type: 'LITERAL_VAR', value: '$x', position: 0, length: 2, literalName: 'x' }
  */
 export interface PatternToken {
 	/** The type of this token */
@@ -129,11 +150,17 @@ export interface PatternToken {
 	/** The length of this token in the input string */
 	readonly length: number;
 
-	/** For WILDCARD tokens: the name part (e.g., 'x' from '_x') */
+	/** For WILDCARD tokens: the name part (e.g., 'x' from 'x' or '_x') */
 	readonly wildcardName?: string;
 
-	/** For WILDCARD tokens: the optional constraint (e.g., 'number' from '_x:number') */
+	/** For WILDCARD tokens: the optional constraint (e.g., 'number' from 'x:number') */
 	readonly constraintName?: WildcardConstraintName;
+
+	/** For WILDCARD tokens: sequence type (single, sequence for __, optional-sequence for ___) */
+	readonly sequenceType?: WildcardSequenceType;
+
+	/** For LITERAL_VAR tokens: the literal variable name (e.g., 'x' from '$x') */
+	readonly literalName?: string;
 }
 
 // =============================================================================
@@ -285,9 +312,14 @@ export class PatternTokenizer {
 
 		const char = this.input[this.position];
 
-		// Underscore: check if this is a wildcard pattern
+		// Dollar sign: literal variable ($x)
+		if (char === '$') {
+			return this.scanLiteralVariable();
+		}
+
+		// Underscore: check if this is a wildcard pattern with _ prefix
 		if (char === '_') {
-			return this.scanUnderscoreOrWildcard();
+			return this.scanUnderscoreWildcard();
 		}
 
 		// Backslash symbol (starts with \)
@@ -300,9 +332,9 @@ export class PatternTokenizer {
 			return this.scanNumber();
 		}
 
-		// Letter or function name
+		// Letter: in pattern syntax, letters are wildcards by default
 		if (this.isLetter(char)) {
-			return this.scanIdentifier();
+			return this.scanLetterWildcard();
 		}
 
 		// Multi-character operators and relations
@@ -348,27 +380,74 @@ export class PatternTokenizer {
 	}
 
 	/**
-	 * Scans an underscore character and determines if it's a wildcard or standalone underscore.
-	 *
-	 * A wildcard is recognized when:
-	 * - `_` is followed by a letter (e.g., `_x`)
-	 * - Optionally followed by more letters (e.g., `_foo`)
-	 * - Optionally followed by `:constraint` (e.g., `_x:number`)
-	 *
-	 * If just `_` or `_` followed by non-letter, we throw an error since
-	 * standalone underscores are not valid in pattern syntax (they have no meaning).
+	 * Scans a literal variable starting with $.
+	 * $x matches exactly the variable named "x".
 	 */
-	private scanUnderscoreOrWildcard(): PatternToken {
+	private scanLiteralVariable(): PatternToken {
 		const startPos = this.position;
-		this.position++; // Skip the underscore
+		this.position++; // Skip the $
 
-		// Check if followed by a letter (required for wildcard)
+		// Check if followed by a letter (required)
 		if (this.position >= this.length || !this.isLetter(this.input[this.position])) {
-			// Standalone underscore - invalid in pattern syntax
 			throw new Error(
-				`Invalid pattern syntax at position ${startPos}: '_' must be followed by a letter to form a wildcard (e.g., '_x')`
+				`Invalid pattern syntax at position ${startPos}: '$' must be followed by a letter to form a literal variable (e.g., '$x')`
 			);
 		}
+
+		// Scan the variable name (one or more letters)
+		let literalName = '';
+		while (this.position < this.length && this.isLetter(this.input[this.position])) {
+			literalName += this.input[this.position];
+			this.position++;
+		}
+
+		const value = this.input.slice(startPos, this.position);
+
+		return {
+			type: 'LITERAL_VAR',
+			value,
+			position: startPos,
+			length: this.position - startPos,
+			literalName
+		};
+	}
+
+	/**
+	 * Scans a sequence wildcard starting with underscores.
+	 *
+	 * Patterns:
+	 * - `__x` or `__x:constraint` - sequence wildcard (1+ elements)
+	 * - `___x` or `___x:constraint` - optional sequence wildcard (0+ elements)
+	 *
+	 * Single underscore `_x` is NOT supported - use `x` directly for wildcards.
+	 */
+	private scanUnderscoreWildcard(): PatternToken {
+		const startPos = this.position;
+
+		// Count underscores
+		let underscoreCount = 0;
+		while (this.position < this.length && this.input[this.position] === '_') {
+			underscoreCount++;
+			this.position++;
+		}
+
+		// Single underscore is not allowed - must use letter directly
+		if (underscoreCount === 1) {
+			throw new Error(
+				`Invalid pattern syntax at position ${startPos}: '_x' syntax is deprecated. Use 'x' directly for wildcards, '__x' for sequences (1+), or '___x' for optional sequences (0+).`
+			);
+		}
+
+		// Check if followed by a letter (required for sequence wildcard)
+		if (this.position >= this.length || !this.isLetter(this.input[this.position])) {
+			throw new Error(
+				`Invalid pattern syntax at position ${startPos}: '${'_'.repeat(underscoreCount)}' must be followed by a letter (e.g., '__rest', '___opt')`
+			);
+		}
+
+		// Determine sequence type
+		const sequenceType: WildcardSequenceType =
+			underscoreCount >= 3 ? 'optional-sequence' : 'sequence';
 
 		// Scan the wildcard name (one or more letters)
 		let wildcardName = '';
@@ -378,32 +457,7 @@ export class PatternTokenizer {
 		}
 
 		// Check for optional constraint (`:constraint`)
-		let constraintName: WildcardConstraintName | undefined;
-		if (this.position < this.length && this.input[this.position] === ':') {
-			const colonPos = this.position;
-			this.position++; // Skip the colon
-
-			// Read the constraint name (letters only)
-			let constraintStr = '';
-			while (this.position < this.length && this.isLetter(this.input[this.position])) {
-				constraintStr += this.input[this.position];
-				this.position++;
-			}
-
-			if (constraintStr === '') {
-				throw new Error(
-					`Invalid pattern syntax at position ${colonPos}: ':' must be followed by a constraint name (number, integer, positive, negative, nonzero, variable)`
-				);
-			}
-
-			if (!isValidConstraintName(constraintStr)) {
-				throw new Error(
-					`Invalid constraint '${constraintStr}' at position ${colonPos + 1}. Valid constraints: number, integer, positive, negative, nonzero, variable`
-				);
-			}
-
-			constraintName = constraintStr;
-		}
+		const constraintName = this.scanOptionalConstraint();
 
 		const value = this.input.slice(startPos, this.position);
 
@@ -413,8 +467,101 @@ export class PatternTokenizer {
 			position: startPos,
 			length: this.position - startPos,
 			wildcardName,
-			constraintName
+			constraintName,
+			sequenceType
 		};
+	}
+
+	/**
+	 * Scans a letter which becomes a wildcard in pattern syntax.
+	 * In patterns, letters like 'x', 'a', 'n' are wildcards by default.
+	 * Function names (sin, cos, etc.) are still recognized as functions.
+	 */
+	private scanLetterWildcard(): PatternToken {
+		const startPos = this.position;
+
+		// Look ahead to see the full identifier starting here
+		let identifier = '';
+		let tempPos = this.position;
+		while (tempPos < this.length && this.isLetter(this.input[tempPos])) {
+			identifier += this.input[tempPos];
+			tempPos++;
+		}
+
+		// Check if this is a function name (sin, cos, etc.)
+		// We check longest functions first to ensure greedy matching
+		for (const funcName of FUNCTION_NAMES_BY_LENGTH) {
+			if (identifier.startsWith(funcName)) {
+				// Check if followed by '(' - this confirms it's a function
+				const afterFunc = startPos + funcName.length;
+				if (afterFunc < this.length && this.input[afterFunc] === '(') {
+					this.position = afterFunc;
+					return {
+						type: 'FUNC',
+						value: funcName,
+						position: startPos,
+						length: funcName.length
+					};
+				}
+			}
+		}
+
+		// Not a function - treat as wildcard
+		// Scan the full name (for multi-letter wildcards like 'rest', 'coeff')
+		let wildcardName = '';
+		while (this.position < this.length && this.isLetter(this.input[this.position])) {
+			wildcardName += this.input[this.position];
+			this.position++;
+		}
+
+		// Check for optional constraint (`:constraint`)
+		const constraintName = this.scanOptionalConstraint();
+
+		const value = this.input.slice(startPos, this.position);
+
+		return {
+			type: 'WILDCARD',
+			value,
+			position: startPos,
+			length: this.position - startPos,
+			wildcardName,
+			constraintName,
+			sequenceType: 'single'
+		};
+	}
+
+	/**
+	 * Scans an optional constraint suffix like `:number` or `:positive`.
+	 * Returns undefined if no constraint is present.
+	 */
+	private scanOptionalConstraint(): WildcardConstraintName | undefined {
+		if (this.position >= this.length || this.input[this.position] !== ':') {
+			return undefined;
+		}
+
+		const colonPos = this.position;
+		this.position++; // Skip the colon
+
+		// Read the constraint name (letters only)
+		let constraintStr = '';
+		while (this.position < this.length && this.isLetter(this.input[this.position])) {
+			constraintStr += this.input[this.position];
+			this.position++;
+		}
+
+		if (constraintStr === '') {
+			throw new Error(
+				`Invalid pattern syntax at position ${colonPos}: ':' must be followed by a constraint name (number, integer, positive, negative, nonzero, variable)`
+			);
+		}
+
+		if (!isValidConstraintName(constraintStr)) {
+			throw new Error(
+				`Invalid constraint '${constraintStr}' at position ${colonPos + 1}. Valid constraints: number, integer, positive, negative, nonzero, variable`
+			);
+		}
+
+		return constraintStr;
 	}
 
 	/**
@@ -499,50 +646,6 @@ export class PatternTokenizer {
 			value,
 			position: startPos,
 			length: this.position - startPos
-		};
-	}
-
-	/**
-	 * Scans an identifier (letter sequence) and determines if it's a function or letter(s).
-	 *
-	 * Rules:
-	 * - Function name at start of identifier -> FUNC (greedy match)
-	 * - Single letter (if not start of function name) -> LETTER
-	 * - Multi-letter non-function -> treated as consecutive letters (tokenized one at a time)
-	 */
-	private scanIdentifier(): PatternToken {
-		const startPos = this.position;
-
-		// Look ahead to see the full identifier starting here
-		let identifier = '';
-		let tempPos = this.position;
-		while (tempPos < this.length && this.isLetter(this.input[tempPos])) {
-			identifier += this.input[tempPos];
-			tempPos++;
-		}
-
-		// Check if any function name is a prefix of (or equals) this identifier
-		// We check longest functions first to ensure greedy matching
-		for (const funcName of FUNCTION_NAMES_BY_LENGTH) {
-			if (identifier.startsWith(funcName)) {
-				this.position = startPos + funcName.length;
-				return {
-					type: 'FUNC',
-					value: funcName,
-					position: startPos,
-					length: funcName.length
-				};
-			}
-		}
-
-		// Not a function - return single letter
-		const letter = this.input[this.position];
-		this.position++;
-		return {
-			type: 'LETTER',
-			value: letter,
-			position: startPos,
-			length: 1
 		};
 	}
 

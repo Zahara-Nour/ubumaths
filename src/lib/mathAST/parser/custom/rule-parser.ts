@@ -7,14 +7,19 @@
  * ```
  * rule := pattern '->' replacement [';' conditions]
  * conditions := condition (',' condition)*
- * condition := '_' wildcardName ':' constraintName
+ * condition := wildcardName ':' constraintName
  * constraintName := 'number' | 'integer' | 'positive' | 'negative' | 'nonzero' | 'variable'
  * ```
  *
+ * Letters are wildcards by default (no underscore needed).
+ * Sequence wildcards use `__x` (1+ elements) or `___x` (0+ elements).
+ *
+ * Note: Single underscore `_x` syntax is deprecated. Use `x` directly.
+ *
  * @example
- * parseRule('_x + 0 -> _x')
- * parseRule('_x / _x -> 1 ; _x:nonzero')
- * parseRule('_a^_n * _a^_m -> _a^(_n+_m) ; _n:integer, _m:integer')
+ * parseRule('x + 0 -> x')
+ * parseRule('x / x -> 1 ; x:nonzero')
+ * parseRule('a^n * a^m -> a^(n+m) ; n:integer, m:integer')
  *
  * @module mathAST/parser/custom/rule-parser
  */
@@ -166,23 +171,26 @@ function buildConditionFunction(
  *
  * Syntax: `pattern -> replacement [; conditions]`
  *
+ * Letters are wildcards by default - no underscore needed.
+ * Use `__x` for sequences (1+ elements) or `___x` for optional sequences (0+).
+ *
  * @param input - The rule string to parse
  * @param options - Optional rule options (name, priority)
  * @returns A Rule object
  * @throws RuleParseError if parsing fails
  *
  * @example
- * // Basic rule
- * parseRule('_x + 0 -> _x')
+ * // Basic rule (letters are wildcards)
+ * parseRule('x + 0 -> x')
  *
  * // Rule with name
- * parseRule('_x + 0 -> _x', { name: 'additive-identity' })
+ * parseRule('x + 0 -> x', { name: 'additive-identity' })
  *
  * // Rule with condition
- * parseRule('_x / _x -> 1 ; _x:nonzero')
+ * parseRule('x / x -> 1 ; x:nonzero')
  *
  * // Rule with multiple conditions
- * parseRule('_a^_n * _a^_m -> _a^(_n+_m) ; _n:integer, _m:integer')
+ * parseRule('a^n * a^m -> a^(n+m) ; n:integer, m:integer')
  */
 export function parseRule(input: string, options?: Partial<RuleOptions>): Rule {
 	// Step 1: Find and split on '->'

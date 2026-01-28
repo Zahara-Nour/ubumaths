@@ -17,7 +17,7 @@ The pattern matching system provides a declarative way to match, transform, and 
 
 **Patterns** describe what to match against. They are NOT MathNodes - they're templates that specify structural requirements and constraints.
 
-**Wildcards** (`_x`, `_n`, etc.) capture matching subexpressions and bind them to names for later use.
+**Wildcards** (letters like `x`, `n`) capture matching subexpressions and bind them to names for later use. Letters are wildcards by default in pattern syntax.
 
 **Rules** combine a pattern with a replacement, defining how to transform matching expressions.
 
@@ -31,11 +31,11 @@ import { Exp } from '$lib/mathAST';
 
 // Check if expression matches form: 2*x + y (using pattern strings)
 const expr = Exp.parse('2a + b');
-const isMatch = expr.matches(parsePattern('2 * _x + _y'));
-// true - binds x→a, y→b
+const isMatch = expr.matches(parsePattern('2 * x + y'));
+// true - binds x→a, y→b (letters are wildcards by default)
 
 // Extract bindings from pattern match
-const bindings = expr.extract(parsePattern('_left + _right'));
+const bindings = expr.extract(parsePattern('left + right'));
 // bindings.get('left') => multiplication node (2*a)
 // bindings.get('right') => variable node (b)
 
@@ -61,31 +61,34 @@ Pattern strings provide a concise, readable syntax for creating patterns. They a
 Instead of building patterns programmatically with the `P` namespace, you can write them as strings using familiar mathematical notation:
 
 ```typescript
-// Pattern string syntax (concise)
-parsePattern('_x + 0');
+// Pattern string syntax (concise) - letters are wildcards by default
+parsePattern('x + 0');
 
 // Equivalent builder API (verbose)
 P.add(P._('x'), P.num(0));
 
 // Or use the P.parse() convenience alias
-P.parse('_x + 0');
+P.parse('x + 0');
 ```
 
 Both syntaxes produce identical patterns and can be used interchangeably based on your preference and use case.
 
 ### Wildcard Syntax
 
-Wildcards in pattern strings use underscore prefix (`_name`) with optional type constraints using colon syntax (`_name:type`):
+Letters are wildcards by default in pattern strings. Use colon syntax (`name:type`) for type constraints:
 
-| Syntax        | Equivalent Builder         | Description                |
-| ------------- | -------------------------- | -------------------------- |
-| `_x`          | `P._('x')`                 | Wildcard, matches anything |
-| `_x:number`   | `P._('x', P.isNumber())`   | Must match a number        |
-| `_x:integer`  | `P._('x', P.isInteger())`  | Must match an integer      |
-| `_x:positive` | `P._('x', P.isPositive())` | Must be positive           |
-| `_x:negative` | `P._('x', P.isNegative())` | Must be negative           |
-| `_x:nonzero`  | `P._('x', P.isNonzero())`  | Must be non-zero           |
-| `_x:variable` | `P._('x', P.isVariable())` | Must match a variable      |
+| Syntax       | Equivalent Builder         | Description                |
+| ------------ | -------------------------- | -------------------------- |
+| `x`          | `P._('x')`                 | Wildcard, matches anything |
+| `x:number`   | `P._('x', P.isNumber())`   | Must match a number        |
+| `x:integer`  | `P._('x', P.isInteger())`  | Must match an integer      |
+| `x:positive` | `P._('x', P.isPositive())` | Must be positive           |
+| `x:negative` | `P._('x', P.isNegative())` | Must be negative           |
+| `x:nonzero`  | `P._('x', P.isNonzero())`  | Must be non-zero           |
+| `x:variable` | `P._('x', P.isVariable())` | Must match a variable      |
+| `$x`         | `P.var('x')`               | Literal variable (rare)    |
+| `__x`        | `P.__('x')`                | Sequence (1+ elements)     |
+| `___x`       | `P.___('x')`               | Optional sequence (0+)     |
 
 ### Operators
 
@@ -100,7 +103,7 @@ Pattern strings support standard mathematical operators with correct precedence:
 | `^`          | Power          | High (40)   | Right         |
 | `-x` (unary) | Opposite       | High (30)   | -             |
 
-Parentheses can be used to override precedence: `(_x + _y) * _z`
+Parentheses can be used to override precedence: `(x + y) * z`
 
 ### Functions
 
@@ -110,7 +113,7 @@ All standard mathematical functions are supported:
 - **Logarithmic**: `ln`, `log`, `exp`
 - **Other**: `sqrt`, `abs`, `floor`, `ceil`, `round`, `sign`
 
-Functions use standard notation: `sin(_x)`, `sqrt(_x^2 + _y^2)`, `ln(_x:positive)`
+Functions use standard notation: `sin(x)`, `sqrt(x^2 + y^2)`, `ln(x:positive)`
 
 ### Examples
 
@@ -118,45 +121,45 @@ Functions use standard notation: `sin(_x)`, `sqrt(_x^2 + _y^2)`, `ln(_x:positive
 
 ```typescript
 // Additive identity
-parsePattern('_x + 0'); // matches: x + 0, a + 0, (a+b) + 0
+parsePattern('x + 0'); // matches: x + 0, a + 0, (a+b) + 0
 
 // Multiplicative identity
-parsePattern('_x * 1'); // matches: x * 1, 2 * 1, (a/b) * 1
+parsePattern('x * 1'); // matches: x * 1, 2 * 1, (a/b) * 1
 
 // Subtractive identity
-parsePattern('_x - 0'); // matches: x - 0, 5 - 0
+parsePattern('x - 0'); // matches: x - 0, 5 - 0
 ```
 
 #### Patterns with Constraints
 
 ```typescript
 // Coefficient must be a number
-parsePattern('_n:number * _x'); // matches: 2*x, 3.5*y, -1*z
+parsePattern('n:number * x'); // matches: 2*x, 3.5*y, -1*z
 
 // Denominator cannot be zero
-parsePattern('_x / _d:nonzero'); // matches: a/b, 5/3, x/y (but ensures d≠0)
+parsePattern('x / d:nonzero'); // matches: a/b, 5/3, x/y (but ensures d≠0)
 
 // Integer coefficient
-parsePattern('_k:integer * _x'); // matches: 2*x, -5*y (not 2.5*x)
+parsePattern('k:integer * x'); // matches: 2*x, -5*y (not 2.5*x)
 ```
 
 #### Complex Mathematical Patterns
 
 ```typescript
 // Quadratic form
-parsePattern('_a * _x^2 + _b * _x + _c');
+parsePattern('a * x^2 + b * x + c');
 // matches: x^2 + 2x + 1, 2x^2 - 3x + 5
 
 // Pythagorean identity
-parsePattern('sin(_x)^2 + cos(_x)^2');
+parsePattern('sin(x)^2 + cos(x)^2');
 // matches: sin(x)^2 + cos(x)^2, sin(2a)^2 + cos(2a)^2
 
 // Difference of squares
-parsePattern('_a^2 - _b^2');
+parsePattern('a^2 - b^2');
 // matches: x^2 - y^2, (a+b)^2 - c^2
 
 // Logarithm properties
-parsePattern('ln(_x) + ln(_y)');
+parsePattern('ln(x) + ln(y)');
 // matches: ln(a) + ln(b), ln(x+1) + ln(x-1)
 ```
 
@@ -166,12 +169,12 @@ Wildcards with the same name must match identical expressions:
 
 ```typescript
 // Doubling pattern (x + x)
-parsePattern('_x + _x');
+parsePattern('x + x');
 // matches: a + a, 2b + 2b
 // does NOT match: a + b, x + y
 
 // Self-division (x / x)
-parsePattern('_x / _x');
+parsePattern('x / x');
 // matches: a / a, (x+1) / (x+1)
 // does NOT match: a / b
 ```
@@ -182,7 +185,7 @@ Pattern strings and the builder API are completely equivalent - use whichever is
 
 ```typescript
 // These produce identical patterns:
-const p1 = parsePattern('_a * _x^2 + _b * _x + _c');
+const p1 = parsePattern('a * x^2 + b * x + c');
 const p2 = P.add(
 	P.add(P.mul(P._('a'), P.pow(P._('x'), P.num(2))), P.mul(P._('b'), P._('x'))),
 	P._('c')
@@ -214,10 +217,10 @@ expr.matches(p2); // true
 import { parsePattern, P } from '$lib/mathAST/pattern';
 
 // Using parsePattern directly
-const pattern1 = parsePattern('_x + 0');
+const pattern1 = parsePattern('x + 0');
 
 // Using P.parse() alias
-const pattern2 = P.parse('_x + 0');
+const pattern2 = P.parse('x + 0');
 
 // Both are equivalent
 ```
