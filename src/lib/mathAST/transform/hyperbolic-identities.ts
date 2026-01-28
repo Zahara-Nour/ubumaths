@@ -2,21 +2,12 @@
  * Hyperbolic Identities Module
  *
  * Provides transformation functions for hyperbolic identities.
- * Uses direct AST matching to handle the specific structure of function nodes.
+ * Uses the pattern matching system (P.*, match()) for structural detection.
  *
  * @module mathAST/transform/hyperbolic-identities
  */
 
-import type { MathNode, FunctionNode } from '../types';
-import {
-	isFunction,
-	isMultiplication,
-	isAddition,
-	isSubtraction,
-	isDivision,
-	isNumber,
-	isOpposite
-} from '../guards';
+import type { MathNode } from '../types';
 import {
 	number,
 	sinh,
@@ -34,7 +25,10 @@ import {
 	opposite
 } from '../factory';
 import { mapNode } from '../transforms';
-import { nodesEqual } from '../pattern/match';
+import { P } from '../pattern/builder';
+import { match, nodesEqual } from '../pattern/match';
+import type { MatchBindings } from '../pattern/types';
+import { isMathNodeBinding } from '../pattern/types';
 
 // =============================================================================
 // Types
@@ -65,38 +59,12 @@ interface HyperbolicRule {
 // =============================================================================
 
 /**
- * Check if a node is a hyperbolic function with a specific name
+ * Extract MathNode from bindings safely.
  */
-function isHyperbolicFunc(node: MathNode, name: string): node is FunctionNode {
-	return isFunction(node) && node.name === name && node.args.length === 1;
-}
-
-/**
- * Check if a function node has a power of 2
- */
-function hasPowerOf2(node: FunctionNode): boolean {
-	return node.power !== undefined && isNumber(node.power) && node.power.value === '2';
-}
-
-/**
- * Check if a function node has a power of 3
- */
-function hasPowerOf3(node: FunctionNode): boolean {
-	return node.power !== undefined && isNumber(node.power) && node.power.value === '3';
-}
-
-/**
- * Check if a function node has a power of 4
- */
-function hasPowerOf4(node: FunctionNode): boolean {
-	return node.power !== undefined && isNumber(node.power) && node.power.value === '4';
-}
-
-/**
- * Get the argument of a single-argument function
- */
-function getArg(node: FunctionNode): MathNode {
-	return node.args[0];
+function getBinding(bindings: MatchBindings, name: string): MathNode | null {
+	const value = bindings.get(name);
+	if (value && isMathNodeBinding(value)) return value;
+	return null;
 }
 
 /**
@@ -128,85 +96,116 @@ function halveExpr(node: MathNode): MathNode {
 }
 
 // =============================================================================
+// Pattern Definitions
+// =============================================================================
+
+// --- Pattern factory helpers ---
+function patFuncSum(name: string) {
+	return P.func(name, [P.add(P._('a'), P._('b'))]);
+}
+function patFuncDiff(name: string) {
+	return P.func(name, [P.sub(P._('a'), P._('b'))]);
+}
+function patFuncDouble(name: string) {
+	return P.func(name, [P.mul(P.num(2), P._('x'))]);
+}
+function patFuncHalf(name: string) {
+	return P.func(name, [P.div(P._('x'), P.num(2))]);
+}
+function patFuncNeg(name: string) {
+	return P.func(name, [P.neg(P._('x'))]);
+}
+
+// --- Group 1: Functions with power ---
+const PAT_SINH_SQ = P.func('sinh', [P._('a')], { power: P.num(2) });
+const PAT_COSH_SQ = P.func('cosh', [P._('a')], { power: P.num(2) });
+const PAT_TANH_SQ = P.func('tanh', [P._('a')], { power: P.num(2) });
+const PAT_COTH_SQ = P.func('coth', [P._('a')], { power: P.num(2) });
+const PAT_SECH_SQ = P.func('sech', [P._('a')], { power: P.num(2) });
+const PAT_CSCH_SQ = P.func('csch', [P._('a')], { power: P.num(2) });
+const PAT_SINH_CUBED = P.func('sinh', [P._('a')], { power: P.num(3) });
+const PAT_COSH_CUBED = P.func('cosh', [P._('a')], { power: P.num(3) });
+const PAT_SINH_FOURTH = P.func('sinh', [P._('a')], { power: P.num(4) });
+const PAT_COSH_FOURTH = P.func('cosh', [P._('a')], { power: P.num(4) });
+
+// --- Group 2: Pythagorean identities ---
+const PAT_COSH_SQ_MINUS_SINH_SQ = P.sub(PAT_COSH_SQ, PAT_SINH_SQ);
+const PAT_1_PLUS_SINH_SQ = P.add(P.num(1), PAT_SINH_SQ);
+const PAT_COSH_SQ_MINUS_1 = P.sub(PAT_COSH_SQ, P.num(1));
+const PAT_1_MINUS_TANH_SQ = P.sub(P.num(1), PAT_TANH_SQ);
+const PAT_SECH_SQ_PLUS_TANH_SQ = P.add(PAT_SECH_SQ, PAT_TANH_SQ);
+const PAT_COTH_SQ_MINUS_1 = P.sub(PAT_COTH_SQ, P.num(1));
+const PAT_COTH_SQ_MINUS_CSCH_SQ = P.sub(PAT_COTH_SQ, PAT_CSCH_SQ);
+const PAT_1_PLUS_CSCH_SQ = P.add(P.num(1), PAT_CSCH_SQ);
+
+// --- Group 3: Quotient identities ---
+const PAT_SINH_OVER_COSH = P.div(P.func('sinh', [P._('a')]), P.func('cosh', [P._('a')]));
+const PAT_COSH_OVER_SINH = P.div(P.func('cosh', [P._('a')]), P.func('sinh', [P._('a')]));
+const PAT_1_OVER_COSH = P.div(P.num(1), P.func('cosh', [P._('a')]));
+const PAT_1_OVER_SINH = P.div(P.num(1), P.func('sinh', [P._('a')]));
+
+// --- Group 4: Product patterns ---
+const PAT_SINH_COSH_SAME = P.mul(P.func('sinh', [P._('a')]), P.func('cosh', [P._('a')]));
+const PAT_2_SINH_COSH = P.prod(P.num(2), P.func('sinh', [P._('a')]), P.func('cosh', [P._('a')]));
+const PAT_COSH_COSH = P.mul(P.func('cosh', [P._('a')]), P.func('cosh', [P._('b')]));
+const PAT_SINH_SINH = P.mul(P.func('sinh', [P._('a')]), P.func('sinh', [P._('b')]));
+const PAT_SINH_COSH_DIFF = P.mul(P.func('sinh', [P._('a')]), P.func('cosh', [P._('b')]));
+
+// --- Group 5: Sum-to-product (factorization) ---
+const PAT_SINH_PLUS_SINH = P.add(P.func('sinh', [P._('a')]), P.func('sinh', [P._('b')]));
+const PAT_SINH_MINUS_SINH = P.sub(P.func('sinh', [P._('a')]), P.func('sinh', [P._('b')]));
+const PAT_COSH_PLUS_COSH = P.add(P.func('cosh', [P._('a')]), P.func('cosh', [P._('b')]));
+const PAT_COSH_MINUS_COSH = P.sub(P.func('cosh', [P._('a')]), P.func('cosh', [P._('b')]));
+
+// --- Group 6: Addition/subtraction formulas ---
+const PAT_COSH_SUM = patFuncSum('cosh');
+const PAT_COSH_DIFF = patFuncDiff('cosh');
+const PAT_SINH_SUM = patFuncSum('sinh');
+const PAT_SINH_DIFF = patFuncDiff('sinh');
+const PAT_TANH_SUM = patFuncSum('tanh');
+const PAT_TANH_DIFF = patFuncDiff('tanh');
+
+// Double angle expansion: f(2x)
+const PAT_SINH_DOUBLE = patFuncDouble('sinh');
+const PAT_COSH_DOUBLE = patFuncDouble('cosh');
+const PAT_TANH_DOUBLE = patFuncDouble('tanh');
+
+// Half angle: f(x/2)
+const PAT_SINH_HALF = patFuncHalf('sinh');
+const PAT_COSH_HALF = patFuncHalf('cosh');
+const PAT_TANH_HALF = patFuncHalf('tanh');
+
+// Negative angle: f(-x)
+const PAT_SINH_NEG = patFuncNeg('sinh');
+const PAT_COSH_NEG = patFuncNeg('cosh');
+const PAT_TANH_NEG = patFuncNeg('tanh');
+
+// =============================================================================
 // Transform Functions - Products and Double Angle
 // =============================================================================
 
 /**
  * sinh(a) * cosh(a) -> sinh(2a) / 2
- * Also handles cosh(a) * sinh(a)
+ * Also handles cosh(a) * sinh(a) (commutative matching)
  */
 function transformSinhCoshProduct(node: MathNode): MathNode | null {
-	if (!isMultiplication(node)) return null;
-
-	// Check sinh(a) * cosh(a)
-	if (isHyperbolicFunc(node.left, 'sinh') && isHyperbolicFunc(node.right, 'cosh')) {
-		const sinhArg = getArg(node.left);
-		const coshArg = getArg(node.right);
-		if (nodesEqual(sinhArg, coshArg)) {
-			return halveExpr(sinh(doubleArg(sinhArg)));
-		}
-	}
-
-	// Check cosh(a) * sinh(a)
-	if (isHyperbolicFunc(node.left, 'cosh') && isHyperbolicFunc(node.right, 'sinh')) {
-		const coshArg = getArg(node.left);
-		const sinhArg = getArg(node.right);
-		if (nodesEqual(coshArg, sinhArg)) {
-			return halveExpr(sinh(doubleArg(sinhArg)));
-		}
-	}
-
-	return null;
+	const result = match(PAT_SINH_COSH_SAME, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return halveExpr(sinh(doubleArg(a)));
 }
 
 /**
  * 2 * sinh(a) * cosh(a) -> sinh(2a)
- * Handles various orderings
+ * Handles various orderings via n-ary product matching
  */
 function transformDoubleAngleSinh(node: MathNode): MathNode | null {
-	if (!isMultiplication(node)) return null;
-
-	// Helper to extract coefficient and remaining factors
-	function extractFactors(n: MathNode): { coeff: number; factors: MathNode[] } {
-		const factors: MathNode[] = [];
-		let coeff = 1;
-
-		function collect(m: MathNode) {
-			if (isMultiplication(m)) {
-				collect(m.left);
-				collect(m.right);
-			} else if (isNumber(m)) {
-				coeff *= parseFloat(m.value);
-			} else {
-				factors.push(m);
-			}
-		}
-
-		collect(n);
-		return { coeff, factors };
-	}
-
-	const { coeff, factors } = extractFactors(node);
-
-	if (coeff !== 2) return null;
-
-	// Find sinh and cosh with same argument
-	let sinhFunc: FunctionNode | null = null;
-	let coshFunc: FunctionNode | null = null;
-
-	for (const f of factors) {
-		if (isHyperbolicFunc(f, 'sinh') && !hasPowerOf2(f)) {
-			sinhFunc = f;
-		} else if (isHyperbolicFunc(f, 'cosh') && !hasPowerOf2(f)) {
-			coshFunc = f;
-		}
-	}
-
-	if (sinhFunc && coshFunc && nodesEqual(getArg(sinhFunc), getArg(coshFunc))) {
-		return sinh(doubleArg(getArg(sinhFunc)));
-	}
-
-	return null;
+	const result = match(PAT_2_SINH_COSH, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return sinh(doubleArg(a));
 }
 
 // =============================================================================
@@ -217,10 +216,10 @@ function transformDoubleAngleSinh(node: MathNode): MathNode | null {
  * sinh²(a) -> (cosh(2a) - 1) / 2
  */
 function transformSinhSquared(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sinh') return null;
-	if (!hasPowerOf2(node)) return null;
-
-	const a = getArg(node);
+	const result = match(PAT_SINH_SQ, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
 	return halveExpr(subtract(cosh(doubleArg(a)), number('1')));
 }
 
@@ -228,10 +227,10 @@ function transformSinhSquared(node: MathNode): MathNode | null {
  * cosh²(a) -> (cosh(2a) + 1) / 2
  */
 function transformCoshSquared(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cosh') return null;
-	if (!hasPowerOf2(node)) return null;
-
-	const a = getArg(node);
+	const result = match(PAT_COSH_SQ, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
 	return halveExpr(add(cosh(doubleArg(a)), number('1')));
 }
 
@@ -241,63 +240,34 @@ function transformCoshSquared(node: MathNode): MathNode | null {
 
 /**
  * cosh²(a) - sinh²(a) -> 1
+ * Same wildcard 'a' ensures same argument
  */
 function transformHyperbolicPythagorean(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-
-	function isSinhSquared(n: MathNode): n is FunctionNode {
-		return isFunction(n) && n.name === 'sinh' && hasPowerOf2(n);
-	}
-
-	function isCoshSquared(n: MathNode): n is FunctionNode {
-		return isFunction(n) && n.name === 'cosh' && hasPowerOf2(n);
-	}
-
-	// cosh²(a) - sinh²(a)
-	if (isCoshSquared(node.left) && isSinhSquared(node.right)) {
-		if (nodesEqual(getArg(node.left), getArg(node.right))) {
-			return number('1');
-		}
-	}
-
-	return null;
+	const result = match(PAT_COSH_SQ_MINUS_SINH_SQ, node);
+	if (!result.success) return null;
+	return number('1');
 }
 
 /**
  * 1 + sinh²(a) -> cosh²(a)
+ * Also handles sinh²(a) + 1 (commutative matching)
  */
 function transformOnePlusSinhSquared(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-
-	// Check 1 + sinh²(a)
-	if (isNumber(node.left) && node.left.value === '1') {
-		if (isFunction(node.right) && node.right.name === 'sinh' && hasPowerOf2(node.right)) {
-			const a = getArg(node.right);
-			return superscript(cosh(a), number('2'));
-		}
-	}
-
-	// Check sinh²(a) + 1
-	if (isNumber(node.right) && node.right.value === '1') {
-		if (isFunction(node.left) && node.left.name === 'sinh' && hasPowerOf2(node.left)) {
-			const a = getArg(node.left);
-			return superscript(cosh(a), number('2'));
-		}
-	}
-
-	return null;
+	const result = match(PAT_1_PLUS_SINH_SQ, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return superscript(cosh(a), number('2'));
 }
 
 /**
  * cosh²(a) - 1 -> sinh²(a)
  */
 function transformCoshSquaredMinusOne(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-	if (!isFunction(node.left) || node.left.name !== 'cosh') return null;
-	if (!hasPowerOf2(node.left)) return null;
-	if (!isNumber(node.right) || node.right.value !== '1') return null;
-
-	const a = getArg(node.left);
+	const result = match(PAT_COSH_SQ_MINUS_1, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
 	return superscript(sinh(a), number('2'));
 }
 
@@ -305,109 +275,55 @@ function transformCoshSquaredMinusOne(node: MathNode): MathNode | null {
  * 1 - tanh²(a) -> sech²(a)
  */
 function transformOneMinusTanhSquared(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-	if (!isNumber(node.left) || node.left.value !== '1') return null;
-	if (!isFunction(node.right) || node.right.name !== 'tanh') return null;
-	if (!hasPowerOf2(node.right)) return null;
-
-	const a = getArg(node.right);
+	const result = match(PAT_1_MINUS_TANH_SQ, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
 	return superscript(sech(a), number('2'));
 }
 
 /**
  * sech²(a) + tanh²(a) -> 1
- * Also handles tanh²(a) + sech²(a)
+ * Also handles tanh²(a) + sech²(a) (commutative matching)
+ * Same wildcard 'a' ensures same argument
  */
 function transformSechTanhPythagorean(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-
-	function isTanhSquared(n: MathNode): n is FunctionNode {
-		return isFunction(n) && n.name === 'tanh' && hasPowerOf2(n);
-	}
-
-	function isSechSquared(n: MathNode): n is FunctionNode {
-		return isFunction(n) && n.name === 'sech' && hasPowerOf2(n);
-	}
-
-	// sech²(a) + tanh²(a)
-	if (isSechSquared(node.left) && isTanhSquared(node.right)) {
-		if (nodesEqual(getArg(node.left), getArg(node.right))) {
-			return number('1');
-		}
-	}
-
-	// tanh²(a) + sech²(a)
-	if (isTanhSquared(node.left) && isSechSquared(node.right)) {
-		if (nodesEqual(getArg(node.left), getArg(node.right))) {
-			return number('1');
-		}
-	}
-
-	return null;
+	const result = match(PAT_SECH_SQ_PLUS_TANH_SQ, node);
+	if (!result.success) return null;
+	return number('1');
 }
 
 /**
  * coth²(a) - 1 -> csch²(a)
  */
 function transformCothSquaredMinusOne(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-	if (!isFunction(node.left) || node.left.name !== 'coth') return null;
-	if (!hasPowerOf2(node.left)) return null;
-	if (!isNumber(node.right) || node.right.value !== '1') return null;
-
-	const a = getArg(node.left);
+	const result = match(PAT_COTH_SQ_MINUS_1, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
 	return superscript(csch(a), number('2'));
 }
 
 /**
  * coth²(a) - csch²(a) -> 1
- * Also handles the reverse order
+ * Same wildcard 'a' ensures same argument
  */
 function transformCothCschPythagorean(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-
-	function isCothSquared(n: MathNode): n is FunctionNode {
-		return isFunction(n) && n.name === 'coth' && hasPowerOf2(n);
-	}
-
-	function isCschSquared(n: MathNode): n is FunctionNode {
-		return isFunction(n) && n.name === 'csch' && hasPowerOf2(n);
-	}
-
-	// coth²(a) - csch²(a)
-	if (isCothSquared(node.left) && isCschSquared(node.right)) {
-		if (nodesEqual(getArg(node.left), getArg(node.right))) {
-			return number('1');
-		}
-	}
-
-	return null;
+	const result = match(PAT_COTH_SQ_MINUS_CSCH_SQ, node);
+	if (!result.success) return null;
+	return number('1');
 }
 
 /**
  * 1 + csch²(a) -> coth²(a)
- * Also handles csch²(a) + 1
+ * Also handles csch²(a) + 1 (commutative matching)
  */
 function transformOnePlusCschSquared(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-
-	function isCschSquared(n: MathNode): n is FunctionNode {
-		return isFunction(n) && n.name === 'csch' && hasPowerOf2(n);
-	}
-
-	// 1 + csch²(a)
-	if (isNumber(node.left) && node.left.value === '1' && isCschSquared(node.right)) {
-		const a = getArg(node.right);
-		return superscript(coth(a), number('2'));
-	}
-
-	// csch²(a) + 1
-	if (isCschSquared(node.left) && isNumber(node.right) && node.right.value === '1') {
-		const a = getArg(node.left);
-		return superscript(coth(a), number('2'));
-	}
-
-	return null;
+	const result = match(PAT_1_PLUS_CSCH_SQ, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return superscript(coth(a), number('2'));
 }
 
 // =============================================================================
@@ -416,60 +332,48 @@ function transformOnePlusCschSquared(node: MathNode): MathNode | null {
 
 /**
  * sinh(a) / cosh(a) -> tanh(a)
+ * Same wildcard 'a' ensures same argument
  */
 function transformSinhOverCosh(node: MathNode): MathNode | null {
-	if (!isDivision(node)) return null;
-	if (!isHyperbolicFunc(node.numerator, 'sinh')) return null;
-	if (!isHyperbolicFunc(node.denominator, 'cosh')) return null;
-
-	const sinhArg = getArg(node.numerator as FunctionNode);
-	const coshArg = getArg(node.denominator as FunctionNode);
-
-	if (nodesEqual(sinhArg, coshArg)) {
-		return tanh(sinhArg);
-	}
-
-	return null;
+	const result = match(PAT_SINH_OVER_COSH, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return tanh(a);
 }
 
 /**
  * cosh(a) / sinh(a) -> coth(a)
+ * Same wildcard 'a' ensures same argument
  */
 function transformCoshOverSinh(node: MathNode): MathNode | null {
-	if (!isDivision(node)) return null;
-	if (!isHyperbolicFunc(node.numerator, 'cosh')) return null;
-	if (!isHyperbolicFunc(node.denominator, 'sinh')) return null;
-
-	const coshArg = getArg(node.numerator as FunctionNode);
-	const sinhArg = getArg(node.denominator as FunctionNode);
-
-	if (nodesEqual(coshArg, sinhArg)) {
-		return coth(coshArg);
-	}
-
-	return null;
+	const result = match(PAT_COSH_OVER_SINH, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return coth(a);
 }
 
 /**
  * 1 / cosh(x) -> sech(x)
  */
 function transformOneOverCosh(node: MathNode): MathNode | null {
-	if (!isDivision(node)) return null;
-	if (!isNumber(node.numerator) || node.numerator.value !== '1') return null;
-	if (!isHyperbolicFunc(node.denominator, 'cosh')) return null;
-
-	return sech(getArg(node.denominator as FunctionNode));
+	const result = match(PAT_1_OVER_COSH, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return sech(a);
 }
 
 /**
  * 1 / sinh(x) -> csch(x)
  */
 function transformOneOverSinh(node: MathNode): MathNode | null {
-	if (!isDivision(node)) return null;
-	if (!isNumber(node.numerator) || node.numerator.value !== '1') return null;
-	if (!isHyperbolicFunc(node.denominator, 'sinh')) return null;
-
-	return csch(getArg(node.denominator as FunctionNode));
+	const result = match(PAT_1_OVER_SINH, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return csch(a);
 }
 
 // =============================================================================
@@ -480,70 +384,54 @@ function transformOneOverSinh(node: MathNode): MathNode | null {
  * cosh(a) * cosh(b) -> (cosh(a+b) + cosh(a-b)) / 2
  */
 function transformCoshCoshProduct(node: MathNode): MathNode | null {
-	if (!isMultiplication(node)) return null;
-	if (!isHyperbolicFunc(node.left, 'cosh') || !isHyperbolicFunc(node.right, 'cosh')) return null;
+	const result = match(PAT_COSH_COSH, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
-	const a = getArg(node.left);
-	const b = getArg(node.right);
+	// Skip if same argument (handled by cosh-squared)
 	if (nodesEqual(a, b)) return null;
 
 	// cosh(a)cosh(b) = (cosh(a+b) + cosh(a-b)) / 2
-	const aPlusB = add(a, b);
-	const aMinusB = subtract(a, b);
-	return halveExpr(add(cosh(aPlusB), cosh(aMinusB)));
+	return halveExpr(add(cosh(add(a, b)), cosh(subtract(a, b))));
 }
 
 /**
  * sinh(a) * sinh(b) -> (cosh(a+b) - cosh(a-b)) / 2
  */
 function transformSinhSinhProduct(node: MathNode): MathNode | null {
-	if (!isMultiplication(node)) return null;
-	if (!isHyperbolicFunc(node.left, 'sinh') || !isHyperbolicFunc(node.right, 'sinh')) return null;
+	const result = match(PAT_SINH_SINH, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
-	const a = getArg(node.left);
-	const b = getArg(node.right);
+	// Skip if same argument (handled by sinh-squared)
 	if (nodesEqual(a, b)) return null;
 
 	// sinh(a)sinh(b) = (cosh(a+b) - cosh(a-b)) / 2
-	const aPlusB = add(a, b);
-	const aMinusB = subtract(a, b);
-	return halveExpr(subtract(cosh(aPlusB), cosh(aMinusB)));
+	return halveExpr(subtract(cosh(add(a, b)), cosh(subtract(a, b))));
 }
 
 /**
  * sinh(a) * cosh(b) -> (sinh(a+b) + sinh(a-b)) / 2
- * cosh(a) * sinh(b) -> (sinh(a+b) - sinh(a-b)) / 2
+ * cosh(a) * sinh(b) -> handled by commutative matching (a gets sinh arg, b gets cosh arg)
+ *
+ * Note: When a = b, this is handled by transformSinhCoshProduct instead
  */
 function transformSinhCoshProductDifferent(node: MathNode): MathNode | null {
-	if (!isMultiplication(node)) return null;
+	const result = match(PAT_SINH_COSH_DIFF, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
-	// sinh(a) * cosh(b)
-	if (isHyperbolicFunc(node.left, 'sinh') && isHyperbolicFunc(node.right, 'cosh')) {
-		const a = getArg(node.left);
-		const b = getArg(node.right);
+	// Skip if same argument (handled by sinh-cosh-product)
+	if (nodesEqual(a, b)) return null;
 
-		if (nodesEqual(a, b)) return null;
-
-		// sinh(a)cosh(b) = (sinh(a+b) + sinh(a-b)) / 2
-		const aPlusB = add(a, b);
-		const aMinusB = subtract(a, b);
-		return halveExpr(add(sinh(aPlusB), sinh(aMinusB)));
-	}
-
-	// cosh(a) * sinh(b)
-	if (isHyperbolicFunc(node.left, 'cosh') && isHyperbolicFunc(node.right, 'sinh')) {
-		const a = getArg(node.left);
-		const b = getArg(node.right);
-
-		if (nodesEqual(a, b)) return null;
-
-		// cosh(a)sinh(b) = (sinh(a+b) - sinh(a-b)) / 2
-		const aPlusB = add(a, b);
-		const aMinusB = subtract(a, b);
-		return halveExpr(subtract(sinh(aPlusB), sinh(aMinusB)));
-	}
-
-	return null;
+	// sinh(a)cosh(b) = (sinh(a+b) + sinh(a-b)) / 2
+	return halveExpr(add(sinh(add(a, b)), sinh(subtract(a, b))));
 }
 
 // =============================================================================
@@ -554,16 +442,11 @@ function transformSinhCoshProductDifferent(node: MathNode): MathNode | null {
  * cosh(a + b) -> cosh(a)cosh(b) + sinh(a)sinh(b)
  */
 function transformCoshSum(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cosh') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isAddition(arg)) return null;
-
-	const a = arg.left;
-	const b = arg.right;
-
-	// cosh(a+b) = cosh(a)cosh(b) + sinh(a)sinh(b)
+	const result = match(PAT_COSH_SUM, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 	return add(multiply(cosh(a), cosh(b), 'implicit'), multiply(sinh(a), sinh(b), 'implicit'));
 }
 
@@ -571,16 +454,11 @@ function transformCoshSum(node: MathNode): MathNode | null {
  * cosh(a - b) -> cosh(a)cosh(b) - sinh(a)sinh(b)
  */
 function transformCoshDifference(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cosh') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isSubtraction(arg)) return null;
-
-	const a = arg.left;
-	const b = arg.right;
-
-	// cosh(a-b) = cosh(a)cosh(b) - sinh(a)sinh(b)
+	const result = match(PAT_COSH_DIFF, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 	return subtract(multiply(cosh(a), cosh(b), 'implicit'), multiply(sinh(a), sinh(b), 'implicit'));
 }
 
@@ -588,16 +466,11 @@ function transformCoshDifference(node: MathNode): MathNode | null {
  * sinh(a + b) -> sinh(a)cosh(b) + cosh(a)sinh(b)
  */
 function transformSinhSum(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sinh') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isAddition(arg)) return null;
-
-	const a = arg.left;
-	const b = arg.right;
-
-	// sinh(a+b) = sinh(a)cosh(b) + cosh(a)sinh(b)
+	const result = match(PAT_SINH_SUM, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 	return add(multiply(sinh(a), cosh(b), 'implicit'), multiply(cosh(a), sinh(b), 'implicit'));
 }
 
@@ -605,16 +478,11 @@ function transformSinhSum(node: MathNode): MathNode | null {
  * sinh(a - b) -> sinh(a)cosh(b) - cosh(a)sinh(b)
  */
 function transformSinhDifference(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sinh') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isSubtraction(arg)) return null;
-
-	const a = arg.left;
-	const b = arg.right;
-
-	// sinh(a-b) = sinh(a)cosh(b) - cosh(a)sinh(b)
+	const result = match(PAT_SINH_DIFF, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 	return subtract(multiply(sinh(a), cosh(b), 'implicit'), multiply(cosh(a), sinh(b), 'implicit'));
 }
 
@@ -622,18 +490,13 @@ function transformSinhDifference(node: MathNode): MathNode | null {
  * tanh(a + b) -> (tanh(a) + tanh(b)) / (1 + tanh(a)tanh(b))
  */
 function transformTanhSum(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tanh') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isAddition(arg)) return null;
-
-	const a = arg.left;
-	const b = arg.right;
+	const result = match(PAT_TANH_SUM, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 	const tanhA = tanh(a);
 	const tanhB = tanh(b);
-
-	// tanh(a+b) = (tanh(a) + tanh(b)) / (1 + tanh(a)tanh(b))
 	return divide(
 		add(tanhA, tanhB),
 		add(number('1'), multiply(tanh(a), tanh(b), 'implicit')),
@@ -645,18 +508,13 @@ function transformTanhSum(node: MathNode): MathNode | null {
  * tanh(a - b) -> (tanh(a) - tanh(b)) / (1 - tanh(a)tanh(b))
  */
 function transformTanhDifference(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tanh') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isSubtraction(arg)) return null;
-
-	const a = arg.left;
-	const b = arg.right;
+	const result = match(PAT_TANH_DIFF, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 	const tanhA = tanh(a);
 	const tanhB = tanh(b);
-
-	// tanh(a-b) = (tanh(a) - tanh(b)) / (1 - tanh(a)tanh(b))
 	return divide(
 		subtract(tanhA, tanhB),
 		subtract(number('1'), multiply(tanh(a), tanh(b), 'implicit')),
@@ -669,30 +527,13 @@ function transformTanhDifference(node: MathNode): MathNode | null {
 // =============================================================================
 
 /**
- * Check if expression is 2*x (coefficient of 2)
- */
-function isDoubleOf(node: MathNode): MathNode | null {
-	if (!isMultiplication(node)) return null;
-	if (isNumber(node.left) && node.left.value === '2') {
-		return node.right;
-	}
-	if (isNumber(node.right) && node.right.value === '2') {
-		return node.left;
-	}
-	return null;
-}
-
-/**
  * sinh(2x) -> 2sinh(x)cosh(x)
  */
 function transformExpandDoubleSinh(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sinh') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isDoubleOf(node.args[0]);
+	const result = match(PAT_SINH_DOUBLE, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
-	// sinh(2x) = 2sinh(x)cosh(x)
 	return multiply(number('2'), multiply(sinh(x), cosh(x), 'implicit'), 'implicit');
 }
 
@@ -700,13 +541,10 @@ function transformExpandDoubleSinh(node: MathNode): MathNode | null {
  * cosh(2x) -> cosh²(x) + sinh²(x)
  */
 function transformExpandDoubleCosh(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cosh') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isDoubleOf(node.args[0]);
+	const result = match(PAT_COSH_DOUBLE, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
-	// cosh(2x) = cosh²(x) + sinh²(x)
 	return add(superscript(cosh(x), number('2')), superscript(sinh(x), number('2')));
 }
 
@@ -714,13 +552,10 @@ function transformExpandDoubleCosh(node: MathNode): MathNode | null {
  * tanh(2x) -> 2tanh(x) / (1 + tanh²(x))
  */
 function transformExpandDoubleTanh(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tanh') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isDoubleOf(node.args[0]);
+	const result = match(PAT_TANH_DOUBLE, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
-	// tanh(2x) = 2tanh(x) / (1 + tanh²(x))
 	const tanhX = tanh(x);
 	return divide(
 		multiply(number('2'), tanhX, 'implicit'),
@@ -737,42 +572,33 @@ function transformExpandDoubleTanh(node: MathNode): MathNode | null {
  * sinh(-x) -> -sinh(x)
  */
 function transformSinhNegative(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sinh') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isOpposite(arg)) return null;
-
-	// sinh(-x) = -sinh(x)
-	return opposite(sinh(arg.operand));
+	const result = match(PAT_SINH_NEG, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
+	if (!x) return null;
+	return opposite(sinh(x));
 }
 
 /**
  * cosh(-x) -> cosh(x)
  */
 function transformCoshNegative(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cosh') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isOpposite(arg)) return null;
-
-	// cosh(-x) = cosh(x)
-	return cosh(arg.operand);
+	const result = match(PAT_COSH_NEG, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
+	if (!x) return null;
+	return cosh(x);
 }
 
 /**
  * tanh(-x) -> -tanh(x)
  */
 function transformTanhNegative(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tanh') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isOpposite(arg)) return null;
-
-	// tanh(-x) = -tanh(x)
-	return opposite(tanh(arg.operand));
+	const result = match(PAT_TANH_NEG, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
+	if (!x) return null;
+	return opposite(tanh(x));
 }
 
 // =============================================================================
@@ -783,16 +609,14 @@ function transformTanhNegative(node: MathNode): MathNode | null {
  * sinh(a) + sinh(b) -> 2sinh((a+b)/2)cosh((a-b)/2)
  */
 function transformSinhPlusSinh(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-	if (!isHyperbolicFunc(node.left, 'sinh') || !isHyperbolicFunc(node.right, 'sinh')) return null;
+	const result = match(PAT_SINH_PLUS_SINH, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
-	const a = getArg(node.left);
-	const b = getArg(node.right);
-
-	// sinh(a) + sinh(b) = 2sinh((a+b)/2)cosh((a-b)/2)
 	const halfSum = divide(add(a, b), number('2'), 'fraction');
 	const halfDiff = divide(subtract(a, b), number('2'), 'fraction');
-
 	return multiply(number('2'), multiply(sinh(halfSum), cosh(halfDiff), 'implicit'), 'implicit');
 }
 
@@ -800,16 +624,14 @@ function transformSinhPlusSinh(node: MathNode): MathNode | null {
  * sinh(a) - sinh(b) -> 2cosh((a+b)/2)sinh((a-b)/2)
  */
 function transformSinhMinusSinh(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-	if (!isHyperbolicFunc(node.left, 'sinh') || !isHyperbolicFunc(node.right, 'sinh')) return null;
+	const result = match(PAT_SINH_MINUS_SINH, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
-	const a = getArg(node.left);
-	const b = getArg(node.right);
-
-	// sinh(a) - sinh(b) = 2cosh((a+b)/2)sinh((a-b)/2)
 	const halfSum = divide(add(a, b), number('2'), 'fraction');
 	const halfDiff = divide(subtract(a, b), number('2'), 'fraction');
-
 	return multiply(number('2'), multiply(cosh(halfSum), sinh(halfDiff), 'implicit'), 'implicit');
 }
 
@@ -817,16 +639,14 @@ function transformSinhMinusSinh(node: MathNode): MathNode | null {
  * cosh(a) + cosh(b) -> 2cosh((a+b)/2)cosh((a-b)/2)
  */
 function transformCoshPlusCosh(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-	if (!isHyperbolicFunc(node.left, 'cosh') || !isHyperbolicFunc(node.right, 'cosh')) return null;
+	const result = match(PAT_COSH_PLUS_COSH, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
-	const a = getArg(node.left);
-	const b = getArg(node.right);
-
-	// cosh(a) + cosh(b) = 2cosh((a+b)/2)cosh((a-b)/2)
 	const halfSum = divide(add(a, b), number('2'), 'fraction');
 	const halfDiff = divide(subtract(a, b), number('2'), 'fraction');
-
 	return multiply(number('2'), multiply(cosh(halfSum), cosh(halfDiff), 'implicit'), 'implicit');
 }
 
@@ -834,16 +654,14 @@ function transformCoshPlusCosh(node: MathNode): MathNode | null {
  * cosh(a) - cosh(b) -> 2sinh((a+b)/2)sinh((a-b)/2)
  */
 function transformCoshMinusCosh(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-	if (!isHyperbolicFunc(node.left, 'cosh') || !isHyperbolicFunc(node.right, 'cosh')) return null;
+	const result = match(PAT_COSH_MINUS_COSH, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
-	const a = getArg(node.left);
-	const b = getArg(node.right);
-
-	// cosh(a) - cosh(b) = 2sinh((a+b)/2)sinh((a-b)/2)
 	const halfSum = divide(add(a, b), number('2'), 'fraction');
 	const halfDiff = divide(subtract(a, b), number('2'), 'fraction');
-
 	return multiply(number('2'), multiply(sinh(halfSum), sinh(halfDiff), 'implicit'), 'implicit');
 }
 
@@ -852,57 +670,35 @@ function transformCoshMinusCosh(node: MathNode): MathNode | null {
 // =============================================================================
 
 /**
- * Check if expression is x/2
- */
-function isHalfOf(node: MathNode): MathNode | null {
-	if (!isDivision(node)) return null;
-	if (!isNumber(node.denominator) || node.denominator.value !== '2') return null;
-	return node.numerator;
-}
-
-/**
- * sinh(x/2) -> ±√((cosh(x) - 1)/2)
- * Note: Sign depends on quadrant; we use signed form based on sinh sign
+ * sinh(x/2) -> √((cosh(x) - 1)/2)
  */
 function transformSinhHalfAngle(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sinh') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isHalfOf(node.args[0]);
+	const result = match(PAT_SINH_HALF, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
-	// sinh(x/2) = sign(x) * √((cosh(x) - 1)/2)
-	// We return positive root; actual sign depends on x
 	return sqrt(divide(subtract(cosh(x), number('1')), number('2'), 'fraction'));
 }
 
 /**
  * cosh(x/2) -> √((cosh(x) + 1)/2)
- * Note: cosh is always positive
  */
 function transformCoshHalfAngle(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cosh') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isHalfOf(node.args[0]);
+	const result = match(PAT_COSH_HALF, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
-	// cosh(x/2) = √((cosh(x) + 1)/2)
 	return sqrt(divide(add(cosh(x), number('1')), number('2'), 'fraction'));
 }
 
 /**
  * tanh(x/2) -> sinh(x) / (1 + cosh(x))
- * Alternative: (cosh(x) - 1) / sinh(x)
  */
 function transformTanhHalfAngle(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tanh') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isHalfOf(node.args[0]);
+	const result = match(PAT_TANH_HALF, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
-	// tanh(x/2) = sinh(x) / (1 + cosh(x))
 	return divide(sinh(x), add(number('1'), cosh(x)), 'fraction');
 }
 
@@ -914,12 +710,11 @@ function transformTanhHalfAngle(node: MathNode): MathNode | null {
  * sinh³(x) -> (sinh(3x) - 3sinh(x)) / 4
  */
 function transformSinhCubed(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sinh') return null;
-	if (!hasPowerOf3(node)) return null;
+	const result = match(PAT_SINH_CUBED, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'a');
+	if (!x) return null;
 
-	const x = getArg(node);
-
-	// sinh³(x) = (sinh(3x) - 3sinh(x)) / 4
 	const threeX = tripleArg(x);
 	return divide(
 		subtract(sinh(threeX), multiply(number('3'), sinh(x), 'implicit')),
@@ -932,12 +727,11 @@ function transformSinhCubed(node: MathNode): MathNode | null {
  * cosh³(x) -> (cosh(3x) + 3cosh(x)) / 4
  */
 function transformCoshCubed(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cosh') return null;
-	if (!hasPowerOf3(node)) return null;
+	const result = match(PAT_COSH_CUBED, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'a');
+	if (!x) return null;
 
-	const x = getArg(node);
-
-	// cosh³(x) = (cosh(3x) + 3cosh(x)) / 4
 	const threeX = tripleArg(x);
 	return divide(
 		add(cosh(threeX), multiply(number('3'), cosh(x), 'implicit')),
@@ -950,12 +744,11 @@ function transformCoshCubed(node: MathNode): MathNode | null {
  * sinh⁴(x) -> (3 - 4cosh(2x) + cosh(4x)) / 8
  */
 function transformSinhFourth(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sinh') return null;
-	if (!hasPowerOf4(node)) return null;
+	const result = match(PAT_SINH_FOURTH, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'a');
+	if (!x) return null;
 
-	const x = getArg(node);
-
-	// sinh⁴(x) = (3 - 4cosh(2x) + cosh(4x)) / 8
 	const twoX = doubleArg(x);
 	const fourX = quadrupleArg(x);
 	return divide(
@@ -969,12 +762,11 @@ function transformSinhFourth(node: MathNode): MathNode | null {
  * cosh⁴(x) -> (3 + 4cosh(2x) + cosh(4x)) / 8
  */
 function transformCoshFourth(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cosh') return null;
-	if (!hasPowerOf4(node)) return null;
+	const result = match(PAT_COSH_FOURTH, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'a');
+	if (!x) return null;
 
-	const x = getArg(node);
-
-	// cosh⁴(x) = (3 + 4cosh(2x) + cosh(4x)) / 8
 	const twoX = doubleArg(x);
 	const fourX = quadrupleArg(x);
 	return divide(
