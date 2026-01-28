@@ -35,8 +35,8 @@ function varNode(name: string): MathNode {
 
 describe('parseRule', () => {
 	describe('basic rules', () => {
-		it('parses additive identity: _x + 0 -> _x', () => {
-			const rule = parseRule('_x + 0 -> _x');
+		it('parses additive identity: x + 0 -> x', () => {
+			const rule = parseRule('x + 0 -> x');
 
 			expect(rule.name).toBe('parsed-rule');
 			expect(rule.pattern.type).toBe('addition-pattern');
@@ -44,46 +44,86 @@ describe('parseRule', () => {
 			expect(rule.condition).toBeUndefined();
 		});
 
-		it('parses multiplicative identity: _x * 1 -> _x', () => {
-			const rule = parseRule('_x * 1 -> _x');
+		it('parses multiplicative identity: x * 1 -> x', () => {
+			const rule = parseRule('x * 1 -> x');
 
 			expect(rule.pattern.type).toBe('multiplication-pattern');
 			expect(rule.replacement).toEqual(P._('x'));
 		});
 
-		it('parses zero rule: _x * 0 -> 0', () => {
-			const rule = parseRule('_x * 0 -> 0');
+		it('parses zero rule: x * 0 -> 0', () => {
+			const rule = parseRule('x * 0 -> 0');
 
 			expect(rule.pattern.type).toBe('multiplication-pattern');
 			expect(rule.replacement).toEqual(P.num(0));
 		});
 
-		it('parses power of zero: _x ^ 0 -> 1', () => {
-			const rule = parseRule('_x ^ 0 -> 1');
+		it('parses power of zero: x ^ 0 -> 1', () => {
+			const rule = parseRule('x ^ 0 -> 1');
 
 			expect(rule.pattern.type).toBe('superscript-pattern');
 			expect(rule.replacement).toEqual(P.num(1));
 		});
 
-		it('parses power of one: _x ^ 1 -> _x', () => {
-			const rule = parseRule('_x ^ 1 -> _x');
+		it('parses power of one: x ^ 1 -> x', () => {
+			const rule = parseRule('x ^ 1 -> x');
 
 			expect(rule.pattern.type).toBe('superscript-pattern');
 			expect(rule.replacement).toEqual(P._('x'));
 		});
 
-		it('parses double negation: -(-_x) -> _x', () => {
-			const rule = parseRule('-(-_x) -> _x');
+		it('parses double negation: -(-x) -> x', () => {
+			const rule = parseRule('-(-x) -> x');
 
 			expect(rule.pattern.type).toBe('opposite-pattern');
 			expect(rule.replacement).toEqual(P._('x'));
 		});
 
-		it('parses division identity: _x / 1 -> _x', () => {
-			const rule = parseRule('_x / 1 -> _x');
+		it('parses division identity: x / 1 -> x', () => {
+			const rule = parseRule('x / 1 -> x');
 
 			expect(rule.pattern.type).toBe('division-pattern');
 			expect(rule.replacement).toEqual(P._('x'));
+		});
+	});
+
+	// =========================================================================
+	// New Syntax Without Underscore
+	// =========================================================================
+
+	describe('new syntax without underscore', () => {
+		it('parses additive identity: x + 0 -> x (letters are wildcards)', () => {
+			const rule = parseRule('x + 0 -> x');
+
+			expect(rule.pattern.type).toBe('addition-pattern');
+			expect(rule.replacement).toEqual(P._('x'));
+		});
+
+		it('parses multiplicative identity: x * 1 -> x', () => {
+			const rule = parseRule('x * 1 -> x');
+
+			expect(rule.pattern.type).toBe('multiplication-pattern');
+			expect(rule.replacement).toEqual(P._('x'));
+		});
+
+		it('parses rule with constraint: x / x -> 1 ; x:nonzero', () => {
+			const rule = parseRule('x / x -> 1 ; x:nonzero');
+
+			expect(rule.pattern.type).toBe('division-pattern');
+			expect(rule.replacement).toEqual(P.num(1));
+			expect(rule.condition).toBeDefined();
+		});
+
+		it('parses power rule with constraints: a^n * a^m -> a^(n+m) ; n:integer, m:integer', () => {
+			const rule = parseRule('a^n * a^m -> a^(n+m) ; n:integer, m:integer');
+
+			expect(rule.pattern.type).toBe('multiplication-pattern');
+			expect(rule.condition).toBeDefined();
+		});
+
+		it('rejects deprecated _x syntax', () => {
+			// Old syntax with underscore prefix is no longer supported
+			expect(() => parseRule('_x + y -> _x')).toThrow("'_x' syntax is deprecated");
 		});
 	});
 
@@ -93,19 +133,19 @@ describe('parseRule', () => {
 
 	describe('rule options', () => {
 		it('accepts custom rule name', () => {
-			const rule = parseRule('_x + 0 -> _x', { name: 'additive-identity' });
+			const rule = parseRule('x + 0 -> x', { name: 'additive-identity' });
 
 			expect(rule.name).toBe('additive-identity');
 		});
 
 		it('accepts priority option', () => {
-			const rule = parseRule('_x + 0 -> _x', { priority: 10 });
+			const rule = parseRule('x + 0 -> x', { priority: 10 });
 
 			expect(rule.priority).toBe(10);
 		});
 
 		it('accepts both name and priority', () => {
-			const rule = parseRule('_x + 0 -> _x', {
+			const rule = parseRule('x + 0 -> x', {
 				name: 'high-priority-rule',
 				priority: 100
 			});
@@ -120,8 +160,8 @@ describe('parseRule', () => {
 	// =========================================================================
 
 	describe('rules with conditions', () => {
-		it('parses single condition: _x / _x -> 1 ; _x:nonzero', () => {
-			const rule = parseRule('_x / _x -> 1 ; _x:nonzero');
+		it('parses single condition: x / x -> 1 ; x:nonzero', () => {
+			const rule = parseRule('x / x -> 1 ; x:nonzero');
 
 			expect(rule.pattern.type).toBe('division-pattern');
 			expect(rule.replacement).toEqual(P.num(1));
@@ -129,7 +169,7 @@ describe('parseRule', () => {
 		});
 
 		it('condition passes for nonzero value', () => {
-			const rule = parseRule('_x / _x -> 1 ; _x:nonzero');
+			const rule = parseRule('x / x -> 1 ; x:nonzero');
 
 			// Test with nonzero binding
 			const bindings = new Map<string, MathNode>([['x', num(5)]]);
@@ -137,7 +177,7 @@ describe('parseRule', () => {
 		});
 
 		it('condition fails for zero value', () => {
-			const rule = parseRule('_x / _x -> 1 ; _x:nonzero');
+			const rule = parseRule('x / x -> 1 ; x:nonzero');
 
 			// Test with zero binding
 			const bindings = new Map<string, MathNode>([['x', num(0)]]);
@@ -145,14 +185,14 @@ describe('parseRule', () => {
 		});
 
 		it('parses multiple conditions', () => {
-			const rule = parseRule('_a^_n * _a^_m -> _a^(_n+_m) ; _n:integer, _m:integer');
+			const rule = parseRule('a^n * a^m -> a^(n+m) ; n:integer, m:integer');
 
 			expect(rule.pattern.type).toBe('multiplication-pattern');
 			expect(rule.condition).toBeDefined();
 		});
 
 		it('multiple conditions all pass', () => {
-			const rule = parseRule('_a^_n * _a^_m -> _a^(_n+_m) ; _n:integer, _m:integer');
+			const rule = parseRule('a^n * a^m -> a^(n+m) ; n:integer, m:integer');
 
 			const bindings = new Map<string, MathNode>([
 				['a', varNode('x')],
@@ -163,7 +203,7 @@ describe('parseRule', () => {
 		});
 
 		it('multiple conditions fail if one fails', () => {
-			const rule = parseRule('_a^_n * _a^_m -> _a^(_n+_m) ; _n:integer, _m:integer');
+			const rule = parseRule('a^n * a^m -> a^(n+m) ; n:integer, m:integer');
 
 			const bindings = new Map<string, MathNode>([
 				['a', varNode('x')],
@@ -174,7 +214,7 @@ describe('parseRule', () => {
 		});
 
 		it('parses positive constraint', () => {
-			const rule = parseRule('sqrt(_x) -> _y ; _x:positive');
+			const rule = parseRule('sqrt(x) -> y ; x:positive');
 
 			const posBindings = new Map<string, MathNode>([['x', num(4)]]);
 			expect(rule.condition!(posBindings)).toBe(true);
@@ -184,7 +224,7 @@ describe('parseRule', () => {
 		});
 
 		it('parses negative constraint', () => {
-			const rule = parseRule('_x + _y -> _z ; _x:negative');
+			const rule = parseRule('x + y -> z ; x:negative');
 
 			const negBindings = new Map<string, MathNode>([['x', num(-5)]]);
 			expect(rule.condition!(negBindings)).toBe(true);
@@ -194,7 +234,7 @@ describe('parseRule', () => {
 		});
 
 		it('parses number constraint', () => {
-			const rule = parseRule('_a * _x -> _b ; _a:number');
+			const rule = parseRule('a * x -> b ; a:number');
 
 			const numBindings = new Map<string, MathNode>([['a', num(5)]]);
 			expect(rule.condition!(numBindings)).toBe(true);
@@ -204,7 +244,7 @@ describe('parseRule', () => {
 		});
 
 		it('parses variable constraint', () => {
-			const rule = parseRule('_a * _x -> _b ; _x:variable');
+			const rule = parseRule('a * x -> b ; x:variable');
 
 			const varBindings = new Map<string, MathNode>([['x', varNode('y')]]);
 			expect(rule.condition!(varBindings)).toBe(true);
@@ -215,7 +255,7 @@ describe('parseRule', () => {
 
 		it('condition returns true for unbound wildcards (skips check)', () => {
 			// If a wildcard mentioned in condition is not bound, the condition fails
-			const rule = parseRule('_x + 0 -> _x ; _y:nonzero');
+			const rule = parseRule('x + 0 -> x ; y:nonzero');
 
 			// Only 'x' is bound, 'y' is not in bindings
 			const bindings = new Map<string, MathNode>([['x', num(5)]]);
@@ -229,25 +269,25 @@ describe('parseRule', () => {
 
 	describe('whitespace handling', () => {
 		it('handles extra whitespace around arrow', () => {
-			const rule = parseRule('_x + 0   ->   _x');
+			const rule = parseRule('x + 0   ->   x');
 
 			expect(rule.pattern.type).toBe('addition-pattern');
 		});
 
 		it('handles extra whitespace around semicolon', () => {
-			const rule = parseRule('_x / _x -> 1   ;   _x:nonzero');
+			const rule = parseRule('x / x -> 1   ;   x:nonzero');
 
 			expect(rule.condition).toBeDefined();
 		});
 
 		it('handles no whitespace', () => {
-			const rule = parseRule('_x+0->_x');
+			const rule = parseRule('x+0->x');
 
 			expect(rule.pattern.type).toBe('addition-pattern');
 		});
 
 		it('handles whitespace only before rule', () => {
-			const rule = parseRule('  _x + 0 -> _x');
+			const rule = parseRule('  x + 0 -> x');
 
 			expect(rule.pattern.type).toBe('addition-pattern');
 		});
@@ -259,27 +299,27 @@ describe('parseRule', () => {
 
 	describe('complex rules', () => {
 		it('parses rule with function pattern', () => {
-			const rule = parseRule('sin(_x)^2 + cos(_x)^2 -> 1');
+			const rule = parseRule('sin(x)^2 + cos(x)^2 -> 1');
 
 			expect(rule.pattern.type).toBe('addition-pattern');
 			expect(rule.replacement).toEqual(P.num(1));
 		});
 
 		it('parses rule with parenthesized replacement', () => {
-			const rule = parseRule('_a * (_b + _c) -> _a * _b + _a * _c');
+			const rule = parseRule('a * (b + c) -> a * b + a * c');
 
 			expect(rule.pattern.type).toBe('multiplication-pattern');
 			expect(rule.replacement.type).toBe('addition-pattern');
 		});
 
 		it('parses rule with nested powers', () => {
-			const rule = parseRule('(_x^_a)^_b -> _x^(_a*_b)');
+			const rule = parseRule('(x^a)^b -> x^(a*b)');
 
 			expect(rule.pattern.type).toBe('superscript-pattern');
 		});
 
 		it('parses rule with constrained pattern wildcards', () => {
-			const rule = parseRule('_n:integer + _m:integer -> _r');
+			const rule = parseRule('n:integer + m:integer -> r');
 
 			expect(rule.pattern.type).toBe('addition-pattern');
 			// Pattern itself has constraints, not condition
@@ -287,11 +327,11 @@ describe('parseRule', () => {
 		});
 
 		it('parses rule with both pattern constraints and conditions', () => {
-			const rule = parseRule('_n:number * _x -> _y ; _n:positive');
+			const rule = parseRule('n:number * x -> y ; n:positive');
 
-			// Pattern has :number constraint on _n
+			// Pattern has :number constraint on n
 			expect(rule.pattern.type).toBe('multiplication-pattern');
-			// Condition checks :positive on _n
+			// Condition checks :positive on n
 			expect(rule.condition).toBeDefined();
 
 			const posBindings = new Map<string, MathNode>([
@@ -314,40 +354,41 @@ describe('parseRule', () => {
 
 	describe('error handling', () => {
 		it('throws on missing arrow', () => {
-			expect(() => parseRule('_x + 0')).toThrow(RuleParseError);
-			expect(() => parseRule('_x + 0')).toThrow("Missing '->'");
+			expect(() => parseRule('x + 0')).toThrow(RuleParseError);
+			expect(() => parseRule('x + 0')).toThrow("Missing '->'");
 		});
 
 		it('throws on empty pattern', () => {
-			expect(() => parseRule('-> _x')).toThrow(RuleParseError);
-			expect(() => parseRule('-> _x')).toThrow('Empty pattern');
+			expect(() => parseRule('-> x')).toThrow(RuleParseError);
+			expect(() => parseRule('-> x')).toThrow('Empty pattern');
 		});
 
 		it('throws on empty replacement', () => {
-			expect(() => parseRule('_x + 0 ->')).toThrow(RuleParseError);
-			expect(() => parseRule('_x + 0 ->')).toThrow('Empty replacement');
+			expect(() => parseRule('x + 0 ->')).toThrow(RuleParseError);
+			expect(() => parseRule('x + 0 ->')).toThrow('Empty replacement');
 		});
 
 		it('throws on invalid pattern syntax', () => {
-			expect(() => parseRule('_x + + 0 -> _x')).toThrow(RuleParseError);
+			expect(() => parseRule('x + + 0 -> x')).toThrow(RuleParseError);
 		});
 
 		it('throws on invalid replacement syntax', () => {
-			expect(() => parseRule('_x + 0 -> _x +')).toThrow(RuleParseError);
+			expect(() => parseRule('x + 0 -> x +')).toThrow(RuleParseError);
 		});
 
-		it('throws on condition without constraint', () => {
-			expect(() => parseRule('_x + 0 -> _x ; _y')).toThrow(RuleParseError);
-			expect(() => parseRule('_x + 0 -> _x ; _y')).toThrow('Condition must have constraint');
+		it('throws on condition without constraint (deprecated syntax)', () => {
+			// With new syntax, y without constraint is just a wildcard, not a condition error
+			// The condition parsing now uses the tokenizer which rejects _y
+			expect(() => parseRule('x + 0 -> x ; _y')).toThrow("'_x' syntax is deprecated");
 		});
 
 		it('throws on invalid condition syntax', () => {
-			expect(() => parseRule('_x + 0 -> _x ; invalid')).toThrow(RuleParseError);
+			expect(() => parseRule('x + 0 -> x ; invalid')).toThrow(RuleParseError);
 		});
 
 		it('throws RuleParseError instance', () => {
 			try {
-				parseRule('_x + 0');
+				parseRule('x + 0');
 			} catch (e) {
 				expect(e).toBeInstanceOf(RuleParseError);
 			}
@@ -360,7 +401,7 @@ describe('parseRule', () => {
 
 	describe('integration with applyRule', () => {
 		it('parsed rule applies correctly (additive identity)', () => {
-			const rule = parseRule('_x + 0 -> _x');
+			const rule = parseRule('x + 0 -> x');
 			const expr = add(varNode('a'), num(0));
 
 			const result = applyRule(rule, expr);
@@ -371,7 +412,7 @@ describe('parseRule', () => {
 		});
 
 		it('parsed rule applies correctly (multiplicative identity)', () => {
-			const rule = parseRule('_x * 1 -> _x');
+			const rule = parseRule('x * 1 -> x');
 			const expr = multiply(varNode('b'), num(1));
 
 			const result = applyRule(rule, expr);
@@ -382,7 +423,7 @@ describe('parseRule', () => {
 		});
 
 		it('parsed rule with condition applies correctly (division)', () => {
-			const rule = parseRule('_x / _x -> 1 ; _x:nonzero');
+			const rule = parseRule('x / x -> 1 ; x:nonzero');
 
 			// Should apply when x is nonzero
 			const expr1 = divide(num(5), num(5));
@@ -398,7 +439,7 @@ describe('parseRule', () => {
 		});
 
 		it('parsed rule applies with complex expression', () => {
-			const rule = parseRule('_x ^ 0 -> 1');
+			const rule = parseRule('x ^ 0 -> 1');
 			const expr = power(add(varNode('a'), varNode('b')), num(0));
 
 			const result = applyRule(rule, expr);
@@ -409,7 +450,7 @@ describe('parseRule', () => {
 		});
 
 		it('parsed rule does not apply when pattern does not match', () => {
-			const rule = parseRule('_x + 0 -> _x');
+			const rule = parseRule('x + 0 -> x');
 			const expr = add(varNode('a'), num(1)); // 1, not 0
 
 			const result = applyRule(rule, expr);
@@ -428,8 +469,8 @@ describe('parseRule', () => {
 		});
 
 		it('P.parseRule produces same result as parseRule', () => {
-			const rule1 = parseRule('_x + 0 -> _x');
-			const rule2 = P.parseRule('_x + 0 -> _x');
+			const rule1 = parseRule('x + 0 -> x');
+			const rule2 = P.parseRule('x + 0 -> x');
 
 			expect(rule1.pattern).toEqual(rule2.pattern);
 			expect(rule1.replacement).toEqual(rule2.replacement);
