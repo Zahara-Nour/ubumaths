@@ -46,11 +46,13 @@ import type {
 	AndConstraint,
 	OrConstraint,
 	NotConstraint,
+	NumericTypeConstraint,
 	// Rule types
 	Rule,
 	RuleOptions,
 	MatchBindings
 } from './types';
+import type { NumericType } from '../numtype/types';
 
 // =============================================================================
 // Wildcard Pattern Builders
@@ -670,6 +672,145 @@ function not(constraint: PatternConstraint): NotConstraint {
 }
 
 // =============================================================================
+// Numeric Type Constraint Builders
+// =============================================================================
+
+/**
+ * Creates a numeric type constraint for integer expressions.
+ *
+ * Uses the numtype inference system to determine if an expression
+ * has integer type based on its structure.
+ *
+ * @param strict - If true, requires exact 'integer' type; if false (default), allows subtypes
+ * @returns A numeric type constraint for integers
+ *
+ * @example
+ * P._('n', P.isIntegerType())     // Match any integer expression
+ * P._('n', P.isIntegerType(true)) // Match only exact integer type
+ */
+function isIntegerType(strict?: boolean): NumericTypeConstraint {
+	return {
+		kind: 'numericType',
+		numericType: 'integer',
+		...(strict !== undefined && { strict })
+	} as const;
+}
+
+/**
+ * Creates a numeric type constraint for rational expressions.
+ *
+ * When strict is false (default), this matches integers as well
+ * since integer is a subtype of rational.
+ *
+ * @param strict - If true, requires exact 'rational' type; if false, allows subtypes (integer)
+ * @returns A numeric type constraint for rationals
+ *
+ * @example
+ * P._('r', P.isRationalType())     // Match integer or rational expressions
+ * P._('r', P.isRationalType(true)) // Match only exactly rational (like 1/2)
+ */
+function isRationalType(strict?: boolean): NumericTypeConstraint {
+	return {
+		kind: 'numericType',
+		numericType: 'rational',
+		...(strict !== undefined && { strict })
+	} as const;
+}
+
+/**
+ * Creates a numeric type constraint for algebraic expressions.
+ *
+ * Algebraic numbers include integers, rationals, and irrational algebraics (like √2).
+ *
+ * @param strict - If true, requires exact 'algebraic' type; if false, allows subtypes
+ * @returns A numeric type constraint for algebraics
+ *
+ * @example
+ * P._('a', P.isAlgebraicType())  // Match integer, rational, or irrational algebraic
+ */
+function isAlgebraicType(strict?: boolean): NumericTypeConstraint {
+	return {
+		kind: 'numericType',
+		numericType: 'algebraic',
+		...(strict !== undefined && { strict })
+	} as const;
+}
+
+/**
+ * Creates a numeric type constraint for real expressions.
+ *
+ * Real numbers include all algebraic and transcendental numbers.
+ *
+ * @param strict - If true, requires exact 'real' type; if false, allows subtypes
+ * @returns A numeric type constraint for reals
+ *
+ * @example
+ * P._('x', P.isRealType())  // Match any real expression
+ */
+function isRealType(strict?: boolean): NumericTypeConstraint {
+	return {
+		kind: 'numericType',
+		numericType: 'real',
+		...(strict !== undefined && { strict })
+	} as const;
+}
+
+/**
+ * Creates a numeric type constraint for transcendental expressions.
+ *
+ * Transcendental numbers include π, e, and results of transcendental
+ * functions on algebraic inputs (sin(1), ln(2), etc.).
+ *
+ * @param strict - If true, requires exact 'transcendental' type
+ * @returns A numeric type constraint for transcendentals
+ *
+ * @example
+ * P._('t', P.isTranscendentalType())  // Match π, e, sin(1), etc.
+ */
+function isTranscendentalType(strict?: boolean): NumericTypeConstraint {
+	return {
+		kind: 'numericType',
+		numericType: 'transcendental',
+		...(strict !== undefined && { strict })
+	} as const;
+}
+
+/**
+ * Creates a numeric type constraint for complex expressions.
+ *
+ * @param strict - If true, requires exact 'complex' type; if false, allows subtypes
+ * @returns A numeric type constraint for complex numbers
+ *
+ * @example
+ * P._('z', P.isComplexType())  // Match complex expressions like √(-1)
+ */
+function isComplexType(strict?: boolean): NumericTypeConstraint {
+	return {
+		kind: 'numericType',
+		numericType: 'complex',
+		...(strict !== undefined && { strict })
+	} as const;
+}
+
+/**
+ * Creates a numeric type constraint for any specific type.
+ *
+ * @param numericType - The numeric type to match
+ * @param strict - If true, requires exact type match; if false, allows subtypes
+ * @returns A numeric type constraint
+ *
+ * @example
+ * P._('x', P.isNumType('irrational_algebraic'))  // Match √2, ∛5, etc.
+ */
+function isNumType(numericType: NumericType, strict?: boolean): NumericTypeConstraint {
+	return {
+		kind: 'numericType',
+		numericType,
+		...(strict !== undefined && { strict })
+	} as const;
+}
+
+// =============================================================================
 // Rule Builder
 // =============================================================================
 
@@ -789,6 +930,15 @@ export const P = {
 	or,
 	not,
 
+	// Numeric type constraints
+	isIntegerType,
+	isRationalType,
+	isAlgebraicType,
+	isRealType,
+	isTranscendentalType,
+	isComplexType,
+	isNumType,
+
 	// Rules
 	rule,
 
@@ -834,5 +984,13 @@ export {
 	and,
 	or,
 	not,
+	// Numeric type constraints
+	isIntegerType,
+	isRationalType,
+	isAlgebraicType,
+	isRealType,
+	isTranscendentalType,
+	isComplexType,
+	isNumType,
 	rule
 };

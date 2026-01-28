@@ -8,6 +8,7 @@
 
 import type { MathNode, MathNodeType, RelationType } from '../types';
 import type { SignedTerm } from '../flatten';
+import type { NumericType } from '../numtype/types';
 
 // =============================================================================
 // Pattern Constraints
@@ -105,6 +106,31 @@ export interface NotConstraint {
 }
 
 /**
+ * Numeric type constraint - matches nodes with specific numeric type
+ *
+ * Uses the numtype inference system to determine the type of expressions.
+ *
+ * @example
+ * // Match any integer expression
+ * { kind: 'numericType', numericType: 'integer' }
+ *
+ * // Match any real expression (includes integer, rational, algebraic, transcendental)
+ * { kind: 'numericType', numericType: 'real' }
+ *
+ * // Match exactly rational (not subtypes)
+ * { kind: 'numericType', numericType: 'rational', strict: true }
+ */
+export interface NumericTypeConstraint {
+	readonly kind: 'numericType';
+	readonly numericType: NumericType;
+	/**
+	 * If true, requires exact type match.
+	 * If false (default), allows subtypes (e.g., integer satisfies 'rational').
+	 */
+	readonly strict?: boolean;
+}
+
+/**
  * Union of all constraint types
  */
 export type PatternConstraint =
@@ -119,7 +145,8 @@ export type PatternConstraint =
 	| CustomConstraint
 	| AndConstraint
 	| OrConstraint
-	| NotConstraint;
+	| NotConstraint
+	| NumericTypeConstraint;
 
 // =============================================================================
 // Wildcard Pattern
@@ -747,4 +774,13 @@ export function isOrConstraint(constraint: PatternConstraint): constraint is OrC
  */
 export function isNotConstraint(constraint: PatternConstraint): constraint is NotConstraint {
 	return constraint.kind === 'not';
+}
+
+/**
+ * Checks if a constraint is a numeric type constraint
+ */
+export function isNumericTypeConstraint(
+	constraint: PatternConstraint
+): constraint is NumericTypeConstraint {
+	return constraint.kind === 'numericType';
 }

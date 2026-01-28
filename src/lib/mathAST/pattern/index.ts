@@ -41,6 +41,7 @@ export type {
 	AndConstraint,
 	OrConstraint,
 	NotConstraint,
+	NumericTypeConstraint,
 	// Pattern types
 	Pattern,
 	PatternType,
@@ -124,7 +125,8 @@ export {
 	isCustomConstraint,
 	isAndConstraint,
 	isOrConstraint,
-	isNotConstraint
+	isNotConstraint,
+	isNumericTypeConstraint
 } from './types';
 
 // =============================================================================
@@ -173,6 +175,14 @@ export {
 	and,
 	or,
 	not,
+	// Numeric type constraints
+	isIntegerType,
+	isRationalType,
+	isAlgebraicType,
+	isRealType,
+	isTranscendentalType,
+	isComplexType,
+	isNumType,
 	rule
 } from './builder';
 

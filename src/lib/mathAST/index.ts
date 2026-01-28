@@ -490,14 +490,80 @@ export {
 	isNegativeConstraint,
 	isNonzeroConstraint,
 	isIntegerConstraint,
+	isNumericTypeConstraint,
+	// Numeric type constraint builders
+	isIntegerType as patternIsIntegerType,
+	isRationalType as patternIsRationalType,
+	isAlgebraicType as patternIsAlgebraicType,
+	isRealType as patternIsRealType,
+	isTranscendentalType as patternIsTranscendentalType,
+	isComplexType as patternIsComplexType,
+	isNumType,
 	// Types
 	type Pattern,
 	type MatchResult,
 	type PatternConstraint,
 	type MatchBindings,
 	type Rule,
-	type RuleOptions
+	type RuleOptions,
+	type NumericTypeConstraint
 } from './pattern';
+
+// =============================================================================
+// Numeric Type System
+// =============================================================================
+
+export type { NumericType, SignInfo, MathType, TypeContext, TypeDescription } from './numtype';
+
+export {
+	// Constants
+	EMPTY_CONTEXT,
+	UNKNOWN_TYPE,
+	INTEGER_TYPE,
+	RATIONAL_TYPE,
+	REAL_TYPE,
+	COMPLEX_TYPE,
+	TRANSCENDENTAL_TYPE,
+	IRRATIONAL_ALGEBRAIC_TYPE,
+	ALGEBRAIC_TYPE,
+	// Type algebra
+	isSubtype as numTypeIsSubtype,
+	areCompatible,
+	join as numTypeJoin,
+	joinAll,
+	meet as numTypeMeet,
+	meetAll,
+	getParents,
+	getAncestors,
+	getLevel,
+	isLeafType,
+	isAlgebraicBranch,
+	isTranscendentalBranch,
+	// Type inference
+	inferType,
+	clearTypeCache,
+	clearAllTypeCache,
+	// Type predicates
+	isIntegerType,
+	isRationalType,
+	isAlgebraicType,
+	isTranscendentalType,
+	isRealType,
+	isComplexType,
+	isIrrationalAlgebraicType,
+	hasType,
+	isSubtypeOf,
+	isPositiveType,
+	isNegativeType,
+	isZeroType,
+	isNonzeroType,
+	isNonNegativeType,
+	isNonPositiveType,
+	isFiniteType,
+	isInfiniteType,
+	getType,
+	getBaseType
+} from './numtype';
 
 // =============================================================================
 // Symbolic Differentiation

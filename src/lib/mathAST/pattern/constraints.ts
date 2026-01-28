@@ -8,6 +8,7 @@
 import type { PatternConstraint } from './types';
 import type { MathNode, MathNodeType } from '../types';
 import { isNumber, isVariable } from '../guards';
+import { inferType, isSubtype } from '../numtype';
 
 // =============================================================================
 // Helper Functions
@@ -184,6 +185,16 @@ export function checkConstraint(constraint: PatternConstraint, node: MathNode): 
 
 		case 'custom':
 			return constraint.predicate(node);
+
+		case 'numericType': {
+			const inferredType = inferType(node);
+			if (constraint.strict) {
+				// Exact match required
+				return inferredType.base === constraint.numericType;
+			}
+			// Subtype matching (e.g., integer satisfies 'rational')
+			return isSubtype(inferredType.base, constraint.numericType);
+		}
 
 		default: {
 			// Exhaustive check - should never reach
