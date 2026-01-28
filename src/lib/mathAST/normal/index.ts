@@ -276,3 +276,11 @@ export type {
 	DivisionResult,
 	ContentResult
 } from './univariate-gcd.js';
+
+// =============================================================================
+// Function Parity
+// =============================================================================
+
+export { isEvenFunction, isOddFunction, canFactorOutNegative } from './parity.js';
+
+export type { NegativeFactorResult } from './parity.js';

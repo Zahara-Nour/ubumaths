@@ -1486,6 +1486,58 @@ Optimizations:
 - Term sorting enables efficient comparison
 - Caching normalized forms recommended for repeated checks
 
+## Function Parity
+
+The normalization module provides utilities for detecting and handling even/odd function parity.
+
+### Even and Odd Functions
+
+```typescript
+import { isEvenFunction, isOddFunction } from '$lib/mathAST/normal';
+
+// Even functions: f(-x) = f(x)
+isEvenFunction('cos'); // true
+isEvenFunction('cosh'); // true
+isEvenFunction('abs'); // true
+isEvenFunction('sec'); // true
+
+// Odd functions: f(-x) = -f(x)
+isOddFunction('sin'); // true
+isOddFunction('tan'); // true
+isOddFunction('sinh'); // true
+isOddFunction('arctan'); // true
+```
+
+### Known Functions
+
+| Even                      | Odd                                        |
+| ------------------------- | ------------------------------------------ |
+| cos, cosh, abs, sec, sech | sin, sinh, tan, tanh, cot, coth, csc, csch |
+|                           | arcsin, arctan, arcsinh, arctanh           |
+
+### Negative Factor Detection
+
+Detect if an expression can be written as `-u` where all terms have negative coefficients:
+
+```typescript
+import { canFactorOutNegative } from '$lib/mathAST/normal';
+
+// Returns positive parts if -1 can be factored out
+canFactorOutNegative(normalize(parseLatex('-x')));
+// → { positiveNumerator: [term for x], denominator: [...] }
+
+canFactorOutNegative(normalize(parseLatex('-x - 2y')));
+// → { positiveNumerator: [terms for x + 2y], ... }
+
+canFactorOutNegative(normalize(parseLatex('x - y')));
+// → null (mixed signs, can't factor -1)
+```
+
+This is used during normalization to ensure:
+
+- `cos(-x)` normalizes to `cos(x)`
+- `sin(-x)` normalizes to `-sin(x)`
+
 ## See Also
 
 - [Evaluation](./evaluation.md) - Numeric computation
