@@ -2,24 +2,14 @@
  * Trigonometric Identities Module
  *
  * Provides transformation functions for trigonometric identities.
- * Uses direct AST matching to handle the specific structure of function nodes.
+ * Uses the pattern matching system (P.*, match()) for structural detection.
  *
  * @module mathAST/transform/trig-identities
  */
 
-import type { MathNode, FunctionNode } from '../types';
+import type { MathNode } from '../types';
 import type { GreekLetterNode } from '../types';
-import {
-	isFunction,
-	isMultiplication,
-	isAddition,
-	isSubtraction,
-	isDivision,
-	isNumber,
-	isOpposite,
-	isPiConstant,
-	isGreek
-} from '../guards';
+import { isPiConstant, isGreek } from '../guards';
 import {
 	number,
 	sin,
@@ -37,7 +27,10 @@ import {
 	opposite
 } from '../factory';
 import { mapNode } from '../transforms';
-import { nodesEqual } from '../pattern/match';
+import { P } from '../pattern/builder';
+import { match, nodesEqual } from '../pattern/match';
+import type { MatchBindings } from '../pattern/types';
+import { isMathNodeBinding } from '../pattern/types';
 
 // =============================================================================
 // Types
@@ -77,24 +70,12 @@ function isPi(node: MathNode): boolean {
 }
 
 /**
- * Check if a node is a trig function with a specific name
+ * Extract MathNode from bindings safely.
  */
-function isTrigFunc(node: MathNode, name: string): node is FunctionNode {
-	return isFunction(node) && node.name === name && node.args.length === 1;
-}
-
-/**
- * Check if a function node has a power of 2
- */
-function hasPowerOf2(node: FunctionNode): boolean {
-	return node.power !== undefined && isNumber(node.power) && node.power.value === '2';
-}
-
-/**
- * Get the argument of a single-argument function
- */
-function getArg(node: FunctionNode): MathNode {
-	return node.args[0];
+function getBinding(bindings: MatchBindings, name: string): MathNode | null {
+	const value = bindings.get(name);
+	if (value && isMathNodeBinding(value)) return value;
+	return null;
 }
 
 /**
@@ -112,98 +93,155 @@ function halveExpr(node: MathNode): MathNode {
 }
 
 // =============================================================================
+// Pattern Definitions
+// =============================================================================
+
+// --- π helpers ---
+const piConstraint = P.custom((node) => isPi(node), 'π');
+const PI = P._('_pi', piConstraint);
+const PI_OVER_2 = P.div(PI, P.num(2));
+
+// --- Pattern factory helpers ---
+function patFuncSum(name: string) {
+	return P.func(name, [P.add(P._('a'), P._('b'))]);
+}
+function patFuncDiff(name: string) {
+	return P.func(name, [P.sub(P._('a'), P._('b'))]);
+}
+function patFuncDouble(name: string) {
+	return P.func(name, [P.mul(P.num(2), P._('x'))]);
+}
+function patFuncHalf(name: string) {
+	return P.func(name, [P.div(P._('x'), P.num(2))]);
+}
+function patFuncNeg(name: string) {
+	return P.func(name, [P.neg(P._('x'))]);
+}
+
+// --- Group 1: Functions with power ---
+const PAT_SIN_SQ = P.func('sin', [P._('a')], { power: P.num(2) });
+const PAT_COS_SQ = P.func('cos', [P._('a')], { power: P.num(2) });
+const PAT_TAN_SQ = P.func('tan', [P._('a')], { power: P.num(2) });
+const PAT_COT_SQ = P.func('cot', [P._('a')], { power: P.num(2) });
+const PAT_SEC_SQ = P.func('sec', [P._('a')], { power: P.num(2) });
+const PAT_CSC_SQ = P.func('csc', [P._('a')], { power: P.num(2) });
+const PAT_SIN_CUBED = P.func('sin', [P._('a')], { power: P.num(3) });
+const PAT_COS_CUBED = P.func('cos', [P._('a')], { power: P.num(3) });
+const PAT_SIN_FOURTH = P.func('sin', [P._('a')], { power: P.num(4) });
+const PAT_COS_FOURTH = P.func('cos', [P._('a')], { power: P.num(4) });
+
+// --- Group 3: Pythagorean identities ---
+const PAT_SIN_SQ_PLUS_COS_SQ = P.add(
+	P.func('sin', [P._('a')], { power: P.num(2) }),
+	P.func('cos', [P._('a')], { power: P.num(2) })
+);
+const PAT_1_MINUS_SIN_SQ = P.sub(P.num(1), PAT_SIN_SQ);
+const PAT_1_MINUS_COS_SQ = P.sub(P.num(1), PAT_COS_SQ);
+const PAT_TAN_SQ_PLUS_1 = P.add(PAT_TAN_SQ, P.num(1));
+const PAT_SEC_SQ_MINUS_1 = P.sub(PAT_SEC_SQ, P.num(1));
+const PAT_COT_SQ_PLUS_1 = P.add(PAT_COT_SQ, P.num(1));
+const PAT_CSC_SQ_MINUS_1 = P.sub(PAT_CSC_SQ, P.num(1));
+
+// --- Group 4: Quotient identities ---
+const PAT_SIN_OVER_COS = P.div(P.func('sin', [P._('a')]), P.func('cos', [P._('a')]));
+const PAT_COS_OVER_SIN = P.div(P.func('cos', [P._('a')]), P.func('sin', [P._('a')]));
+const PAT_1_OVER_COS = P.div(P.num(1), P.func('cos', [P._('a')]));
+const PAT_1_OVER_SIN = P.div(P.num(1), P.func('sin', [P._('a')]));
+
+// --- Group 5: Product patterns ---
+const PAT_SIN_COS_SAME = P.mul(P.func('sin', [P._('a')]), P.func('cos', [P._('a')]));
+const PAT_2_SIN_COS = P.prod(P.num(2), P.func('sin', [P._('a')]), P.func('cos', [P._('a')]));
+const PAT_COS_COS = P.mul(P.func('cos', [P._('a')]), P.func('cos', [P._('b')]));
+const PAT_SIN_SIN = P.mul(P.func('sin', [P._('a')]), P.func('sin', [P._('b')]));
+const PAT_SIN_COS_DIFF = P.mul(P.func('sin', [P._('a')]), P.func('cos', [P._('b')]));
+
+// --- Group 6: Sum-to-product (factorization) ---
+const PAT_SIN_PLUS_SIN = P.add(P.func('sin', [P._('a')]), P.func('sin', [P._('b')]));
+const PAT_SIN_MINUS_SIN = P.sub(P.func('sin', [P._('a')]), P.func('sin', [P._('b')]));
+const PAT_COS_PLUS_COS = P.add(P.func('cos', [P._('a')]), P.func('cos', [P._('b')]));
+const PAT_COS_MINUS_COS = P.sub(P.func('cos', [P._('a')]), P.func('cos', [P._('b')]));
+
+// --- Group 7: Patterns involving π ---
+// Cofunction: f(π/2 - x)
+const PAT_SIN_PI_OVER_2_MINUS = P.func('sin', [P.sub(PI_OVER_2, P._('x'))]);
+const PAT_COS_PI_OVER_2_MINUS = P.func('cos', [P.sub(PI_OVER_2, P._('x'))]);
+const PAT_TAN_PI_OVER_2_MINUS = P.func('tan', [P.sub(PI_OVER_2, P._('x'))]);
+
+// Supplementary: f(π - x)
+const PAT_SIN_PI_MINUS = P.func('sin', [P.sub(PI, P._('x'))]);
+const PAT_COS_PI_MINUS = P.func('cos', [P.sub(PI, P._('x'))]);
+const PAT_TAN_PI_MINUS = P.func('tan', [P.sub(PI, P._('x'))]);
+
+// Shift π/2: f(x + π/2)
+const PAT_SIN_PLUS_PI_OVER_2 = P.func('sin', [P.add(P._('x'), PI_OVER_2)]);
+const PAT_COS_PLUS_PI_OVER_2 = P.func('cos', [P.add(P._('x'), PI_OVER_2)]);
+const PAT_TAN_PLUS_PI_OVER_2 = P.func('tan', [P.add(P._('x'), PI_OVER_2)]);
+
+// Periodic: f(x + 2π) and f(x + π)
+const PAT_SIN_PLUS_2PI = P.func('sin', [P.add(P._('x'), P.mul(P.num(2), PI))]);
+const PAT_COS_PLUS_2PI = P.func('cos', [P.add(P._('x'), P.mul(P.num(2), PI))]);
+const PAT_SIN_PLUS_PI = P.func('sin', [P.add(P._('x'), PI)]);
+const PAT_COS_PLUS_PI = P.func('cos', [P.add(P._('x'), PI)]);
+
+// --- Group 2: Addition/subtraction formulas ---
+const PAT_COS_SUM = patFuncSum('cos');
+const PAT_COS_DIFF = patFuncDiff('cos');
+const PAT_SIN_SUM = patFuncSum('sin');
+const PAT_SIN_DIFF = patFuncDiff('sin');
+const PAT_TAN_SUM = patFuncSum('tan');
+const PAT_TAN_DIFF = patFuncDiff('tan');
+
+// Double angle expansion: f(2x)
+const PAT_SIN_DOUBLE = patFuncDouble('sin');
+const PAT_COS_DOUBLE = patFuncDouble('cos');
+const PAT_TAN_DOUBLE = patFuncDouble('tan');
+
+// Half angle: f(x/2)
+const PAT_SIN_HALF = patFuncHalf('sin');
+const PAT_COS_HALF = patFuncHalf('cos');
+const PAT_TAN_HALF = patFuncHalf('tan');
+
+// Negative angle: f(-x)
+const PAT_SIN_NEG = patFuncNeg('sin');
+const PAT_COS_NEG = patFuncNeg('cos');
+const PAT_TAN_NEG = patFuncNeg('tan');
+
+// =============================================================================
 // Transform Functions
 // =============================================================================
 
 /**
  * sin(a) * cos(a) -> sin(2a) / 2
- * Also handles cos(a) * sin(a)
+ * Also handles cos(a) * sin(a) (commutative matching)
  */
 function transformSinCosProduct(node: MathNode): MathNode | null {
-	if (!isMultiplication(node)) return null;
-
-	// Check sin(a) * cos(a)
-	if (isTrigFunc(node.left, 'sin') && isTrigFunc(node.right, 'cos')) {
-		const sinArg = getArg(node.left);
-		const cosArg = getArg(node.right);
-		if (nodesEqual(sinArg, cosArg)) {
-			return halveExpr(sin(doubleArg(sinArg)));
-		}
-	}
-
-	// Check cos(a) * sin(a)
-	if (isTrigFunc(node.left, 'cos') && isTrigFunc(node.right, 'sin')) {
-		const cosArg = getArg(node.left);
-		const sinArg = getArg(node.right);
-		if (nodesEqual(cosArg, sinArg)) {
-			return halveExpr(sin(doubleArg(sinArg)));
-		}
-	}
-
-	return null;
+	const result = match(PAT_SIN_COS_SAME, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return halveExpr(sin(doubleArg(a)));
 }
 
 /**
  * 2 * sin(a) * cos(a) -> sin(2a)
- * Handles various orderings
+ * Handles various orderings via n-ary product matching
  */
 function transformDoubleAngleSin(node: MathNode): MathNode | null {
-	if (!isMultiplication(node)) return null;
-
-	// Pattern: 2 * (sin(a) * cos(a)) or (2 * sin(a)) * cos(a) etc.
-	// We need to find: coefficient 2, sin(a), cos(a) with same argument
-
-	// Helper to extract coefficient and remaining factors
-	function extractFactors(n: MathNode): { coeff: number; factors: MathNode[] } {
-		const factors: MathNode[] = [];
-		let coeff = 1;
-
-		function collect(m: MathNode) {
-			if (isMultiplication(m)) {
-				collect(m.left);
-				collect(m.right);
-			} else if (isNumber(m)) {
-				coeff *= parseFloat(m.value);
-			} else {
-				factors.push(m);
-			}
-		}
-
-		collect(n);
-		return { coeff, factors };
-	}
-
-	const { coeff, factors } = extractFactors(node);
-
-	if (coeff !== 2) return null;
-
-	// Find sin and cos with same argument
-	let sinFunc: FunctionNode | null = null;
-	let cosFunc: FunctionNode | null = null;
-
-	for (const f of factors) {
-		if (isTrigFunc(f, 'sin') && !hasPowerOf2(f)) {
-			sinFunc = f;
-		} else if (isTrigFunc(f, 'cos') && !hasPowerOf2(f)) {
-			cosFunc = f;
-		}
-	}
-
-	if (sinFunc && cosFunc && nodesEqual(getArg(sinFunc), getArg(cosFunc))) {
-		return sin(doubleArg(getArg(sinFunc)));
-	}
-
-	return null;
+	const result = match(PAT_2_SIN_COS, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return sin(doubleArg(a));
 }
 
 /**
  * sin²(a) -> (1 - cos(2a)) / 2
  */
 function transformSinSquared(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (!hasPowerOf2(node)) return null;
-
-	const a = getArg(node);
+	const result = match(PAT_SIN_SQ, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
 	return halveExpr(subtract(number('1'), cos(doubleArg(a))));
 }
 
@@ -211,55 +249,31 @@ function transformSinSquared(node: MathNode): MathNode | null {
  * cos²(a) -> (1 + cos(2a)) / 2
  */
 function transformCosSquared(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (!hasPowerOf2(node)) return null;
-
-	const a = getArg(node);
+	const result = match(PAT_COS_SQ, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
 	return halveExpr(add(number('1'), cos(doubleArg(a))));
 }
 
 /**
  * sin²(a) + cos²(a) -> 1
- * Also handles cos²(a) + sin²(a)
+ * Also handles cos²(a) + sin²(a) (commutative matching)
  */
 function transformPythagorean(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-
-	function isSinSquared(n: MathNode): n is FunctionNode {
-		return isFunction(n) && n.name === 'sin' && hasPowerOf2(n);
-	}
-
-	function isCosSquared(n: MathNode): n is FunctionNode {
-		return isFunction(n) && n.name === 'cos' && hasPowerOf2(n);
-	}
-
-	// sin²(a) + cos²(a)
-	if (isSinSquared(node.left) && isCosSquared(node.right)) {
-		if (nodesEqual(getArg(node.left), getArg(node.right))) {
-			return number('1');
-		}
-	}
-
-	// cos²(a) + sin²(a)
-	if (isCosSquared(node.left) && isSinSquared(node.right)) {
-		if (nodesEqual(getArg(node.left), getArg(node.right))) {
-			return number('1');
-		}
-	}
-
-	return null;
+	const result = match(PAT_SIN_SQ_PLUS_COS_SQ, node);
+	if (!result.success) return null;
+	return number('1');
 }
 
 /**
  * 1 - sin²(a) -> cos²(a)
  */
 function transformOneMinusSinSquared(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-	if (!isNumber(node.left) || node.left.value !== '1') return null;
-	if (!isFunction(node.right) || node.right.name !== 'sin') return null;
-	if (!hasPowerOf2(node.right)) return null;
-
-	const a = getArg(node.right);
+	const result = match(PAT_1_MINUS_SIN_SQ, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
 	return superscript(cos(a), number('2'));
 }
 
@@ -267,90 +281,56 @@ function transformOneMinusSinSquared(node: MathNode): MathNode | null {
  * 1 - cos²(a) -> sin²(a)
  */
 function transformOneMinusCosSquared(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-	if (!isNumber(node.left) || node.left.value !== '1') return null;
-	if (!isFunction(node.right) || node.right.name !== 'cos') return null;
-	if (!hasPowerOf2(node.right)) return null;
-
-	const a = getArg(node.right);
+	const result = match(PAT_1_MINUS_COS_SQ, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
 	return superscript(sin(a), number('2'));
 }
 
 /**
  * tan²(a) + 1 -> sec²(a)
- * Also handles 1 + tan²(a)
+ * Also handles 1 + tan²(a) (commutative matching)
  */
 function transformTanSquaredPlusOne(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-
-	function isTanSquared(n: MathNode): n is FunctionNode {
-		return isFunction(n) && n.name === 'tan' && hasPowerOf2(n);
-	}
-
-	// tan²(a) + 1
-	if (isTanSquared(node.left) && isNumber(node.right) && node.right.value === '1') {
-		const a = getArg(node.left);
-		return superscript(sec(a), number('2'));
-	}
-
-	// 1 + tan²(a)
-	if (isNumber(node.left) && node.left.value === '1' && isTanSquared(node.right)) {
-		const a = getArg(node.right);
-		return superscript(sec(a), number('2'));
-	}
-
-	return null;
+	const result = match(PAT_TAN_SQ_PLUS_1, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return superscript(sec(a), number('2'));
 }
 
 /**
  * sec²(a) - 1 -> tan²(a)
  */
 function transformSecSquaredMinusOne(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-	if (!isFunction(node.left) || node.left.name !== 'sec') return null;
-	if (!hasPowerOf2(node.left)) return null;
-	if (!isNumber(node.right) || node.right.value !== '1') return null;
-
-	const a = getArg(node.left);
+	const result = match(PAT_SEC_SQ_MINUS_1, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
 	return superscript(tan(a), number('2'));
 }
 
 /**
  * cot²(a) + 1 -> csc²(a)
- * Also handles 1 + cot²(a)
+ * Also handles 1 + cot²(a) (commutative matching)
  */
 function transformCotSquaredPlusOne(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-
-	function isCotSquared(n: MathNode): n is FunctionNode {
-		return isFunction(n) && n.name === 'cot' && hasPowerOf2(n);
-	}
-
-	// cot²(a) + 1
-	if (isCotSquared(node.left) && isNumber(node.right) && node.right.value === '1') {
-		const a = getArg(node.left);
-		return superscript(csc(a), number('2'));
-	}
-
-	// 1 + cot²(a)
-	if (isNumber(node.left) && node.left.value === '1' && isCotSquared(node.right)) {
-		const a = getArg(node.right);
-		return superscript(csc(a), number('2'));
-	}
-
-	return null;
+	const result = match(PAT_COT_SQ_PLUS_1, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return superscript(csc(a), number('2'));
 }
 
 /**
  * csc²(a) - 1 -> cot²(a)
  */
 function transformCscSquaredMinusOne(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-	if (!isFunction(node.left) || node.left.name !== 'csc') return null;
-	if (!hasPowerOf2(node.left)) return null;
-	if (!isNumber(node.right) || node.right.value !== '1') return null;
-
-	const a = getArg(node.left);
+	const result = match(PAT_CSC_SQ_MINUS_1, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
 	return superscript(cot(a), number('2'));
 }
 
@@ -358,18 +338,11 @@ function transformCscSquaredMinusOne(node: MathNode): MathNode | null {
  * sin(a) / cos(a) -> tan(a)
  */
 function transformSinOverCos(node: MathNode): MathNode | null {
-	if (!isDivision(node)) return null;
-	if (!isTrigFunc(node.numerator, 'sin')) return null;
-	if (!isTrigFunc(node.denominator, 'cos')) return null;
-
-	const sinArg = getArg(node.numerator as FunctionNode);
-	const cosArg = getArg(node.denominator as FunctionNode);
-
-	if (nodesEqual(sinArg, cosArg)) {
-		return tan(sinArg);
-	}
-
-	return null;
+	const result = match(PAT_SIN_OVER_COS, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return tan(a);
 }
 
 // =============================================================================
@@ -380,76 +353,54 @@ function transformSinOverCos(node: MathNode): MathNode | null {
  * cos(a) * cos(b) -> (cos(a-b) + cos(a+b)) / 2
  */
 function transformCosCosProduct(node: MathNode): MathNode | null {
-	if (!isMultiplication(node)) return null;
-	if (!isTrigFunc(node.left, 'cos') || !isTrigFunc(node.right, 'cos')) return null;
+	const result = match(PAT_COS_COS, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
 	// Skip if same argument (handled by sin-cos-product via double angle)
-	const a = getArg(node.left);
-	const b = getArg(node.right);
 	if (nodesEqual(a, b)) return null;
 
 	// cos(a)cos(b) = (cos(a-b) + cos(a+b)) / 2
-	const aPlusB = add(a, b);
-	const aMinusB = subtract(a, b);
-	return halveExpr(add(cos(aMinusB), cos(aPlusB)));
+	return halveExpr(add(cos(subtract(a, b)), cos(add(a, b))));
 }
 
 /**
  * sin(a) * sin(b) -> (cos(a-b) - cos(a+b)) / 2
  */
 function transformSinSinProduct(node: MathNode): MathNode | null {
-	if (!isMultiplication(node)) return null;
-	if (!isTrigFunc(node.left, 'sin') || !isTrigFunc(node.right, 'sin')) return null;
+	const result = match(PAT_SIN_SIN, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
 	// Skip if same argument (handled by power reduction)
-	const a = getArg(node.left);
-	const b = getArg(node.right);
 	if (nodesEqual(a, b)) return null;
 
 	// sin(a)sin(b) = (cos(a-b) - cos(a+b)) / 2
-	const aPlusB = add(a, b);
-	const aMinusB = subtract(a, b);
-	return halveExpr(subtract(cos(aMinusB), cos(aPlusB)));
+	return halveExpr(subtract(cos(subtract(a, b)), cos(add(a, b))));
 }
 
 /**
  * sin(a) * cos(b) -> (sin(a+b) + sin(a-b)) / 2
- * cos(a) * sin(b) -> (sin(a+b) - sin(a-b)) / 2
+ * cos(a) * sin(b) -> handled by commutative matching (a gets sin arg, b gets cos arg)
  *
  * Note: When a = b, this is handled by transformSinCosProduct instead
  */
 function transformSinCosProductDifferent(node: MathNode): MathNode | null {
-	if (!isMultiplication(node)) return null;
+	const result = match(PAT_SIN_COS_DIFF, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
-	// sin(a) * cos(b)
-	if (isTrigFunc(node.left, 'sin') && isTrigFunc(node.right, 'cos')) {
-		const a = getArg(node.left);
-		const b = getArg(node.right);
+	// Skip if same argument (handled by sin-cos-product)
+	if (nodesEqual(a, b)) return null;
 
-		// Skip if same argument (handled by sin-cos-product)
-		if (nodesEqual(a, b)) return null;
-
-		// sin(a)cos(b) = (sin(a+b) + sin(a-b)) / 2
-		const aPlusB = add(a, b);
-		const aMinusB = subtract(a, b);
-		return halveExpr(add(sin(aPlusB), sin(aMinusB)));
-	}
-
-	// cos(a) * sin(b)
-	if (isTrigFunc(node.left, 'cos') && isTrigFunc(node.right, 'sin')) {
-		const a = getArg(node.left);
-		const b = getArg(node.right);
-
-		// Skip if same argument (handled by sin-cos-product)
-		if (nodesEqual(a, b)) return null;
-
-		// cos(a)sin(b) = (sin(a+b) - sin(a-b)) / 2
-		const aPlusB = add(a, b);
-		const aMinusB = subtract(a, b);
-		return halveExpr(subtract(sin(aPlusB), sin(aMinusB)));
-	}
-
-	return null;
+	// sin(a)cos(b) = (sin(a+b) + sin(a-b)) / 2
+	return halveExpr(add(sin(add(a, b)), sin(subtract(a, b))));
 }
 
 // =============================================================================
@@ -460,16 +411,11 @@ function transformSinCosProductDifferent(node: MathNode): MathNode | null {
  * cos(a + b) -> cos(a)cos(b) - sin(a)sin(b)
  */
 function transformCosSum(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isAddition(arg)) return null;
-
-	const a = arg.left;
-	const b = arg.right;
-
-	// cos(a+b) = cos(a)cos(b) - sin(a)sin(b)
+	const result = match(PAT_COS_SUM, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 	return subtract(multiply(cos(a), cos(b), 'implicit'), multiply(sin(a), sin(b), 'implicit'));
 }
 
@@ -477,16 +423,11 @@ function transformCosSum(node: MathNode): MathNode | null {
  * cos(a - b) -> cos(a)cos(b) + sin(a)sin(b)
  */
 function transformCosDifference(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isSubtraction(arg)) return null;
-
-	const a = arg.left;
-	const b = arg.right;
-
-	// cos(a-b) = cos(a)cos(b) + sin(a)sin(b)
+	const result = match(PAT_COS_DIFF, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 	return add(multiply(cos(a), cos(b), 'implicit'), multiply(sin(a), sin(b), 'implicit'));
 }
 
@@ -494,16 +435,11 @@ function transformCosDifference(node: MathNode): MathNode | null {
  * sin(a + b) -> sin(a)cos(b) + cos(a)sin(b)
  */
 function transformSinSum(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isAddition(arg)) return null;
-
-	const a = arg.left;
-	const b = arg.right;
-
-	// sin(a+b) = sin(a)cos(b) + cos(a)sin(b)
+	const result = match(PAT_SIN_SUM, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 	return add(multiply(sin(a), cos(b), 'implicit'), multiply(cos(a), sin(b), 'implicit'));
 }
 
@@ -511,16 +447,11 @@ function transformSinSum(node: MathNode): MathNode | null {
  * sin(a - b) -> sin(a)cos(b) - cos(a)sin(b)
  */
 function transformSinDifference(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isSubtraction(arg)) return null;
-
-	const a = arg.left;
-	const b = arg.right;
-
-	// sin(a-b) = sin(a)cos(b) - cos(a)sin(b)
+	const result = match(PAT_SIN_DIFF, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 	return subtract(multiply(sin(a), cos(b), 'implicit'), multiply(cos(a), sin(b), 'implicit'));
 }
 
@@ -529,30 +460,13 @@ function transformSinDifference(node: MathNode): MathNode | null {
 // =============================================================================
 
 /**
- * Check if expression is 2*x (coefficient of 2)
- */
-function isDoubleOf(node: MathNode): MathNode | null {
-	if (!isMultiplication(node)) return null;
-	if (isNumber(node.left) && node.left.value === '2') {
-		return node.right;
-	}
-	if (isNumber(node.right) && node.right.value === '2') {
-		return node.left;
-	}
-	return null;
-}
-
-/**
  * sin(2x) -> 2sin(x)cos(x)
  */
 function transformExpandDoubleSin(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isDoubleOf(node.args[0]);
+	const result = match(PAT_SIN_DOUBLE, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
-	// sin(2x) = 2sin(x)cos(x)
 	return multiply(number('2'), multiply(sin(x), cos(x), 'implicit'), 'implicit');
 }
 
@@ -560,13 +474,10 @@ function transformExpandDoubleSin(node: MathNode): MathNode | null {
  * cos(2x) -> cos²(x) - sin²(x)
  */
 function transformExpandDoubleCos(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isDoubleOf(node.args[0]);
+	const result = match(PAT_COS_DOUBLE, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
-	// cos(2x) = cos²(x) - sin²(x)
 	return subtract(superscript(cos(x), number('2')), superscript(sin(x), number('2')));
 }
 
@@ -574,13 +485,10 @@ function transformExpandDoubleCos(node: MathNode): MathNode | null {
  * tan(2x) -> 2tan(x) / (1 - tan²(x))
  */
 function transformExpandDoubleTan(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tan') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isDoubleOf(node.args[0]);
+	const result = match(PAT_TAN_DOUBLE, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
-	// tan(2x) = 2tan(x) / (1 - tan²(x))
 	const tanX = tan(x);
 	return divide(
 		multiply(number('2'), tanX, 'implicit'),
@@ -597,39 +505,33 @@ function transformExpandDoubleTan(node: MathNode): MathNode | null {
  * cos(x) / sin(x) -> cot(x)
  */
 function transformCosOverSin(node: MathNode): MathNode | null {
-	if (!isDivision(node)) return null;
-	if (!isTrigFunc(node.numerator, 'cos')) return null;
-	if (!isTrigFunc(node.denominator, 'sin')) return null;
-
-	const cosArg = getArg(node.numerator as FunctionNode);
-	const sinArg = getArg(node.denominator as FunctionNode);
-
-	if (nodesEqual(cosArg, sinArg)) {
-		return cot(cosArg);
-	}
-	return null;
+	const result = match(PAT_COS_OVER_SIN, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return cot(a);
 }
 
 /**
  * 1 / cos(x) -> sec(x)
  */
 function transformOneOverCos(node: MathNode): MathNode | null {
-	if (!isDivision(node)) return null;
-	if (!isNumber(node.numerator) || node.numerator.value !== '1') return null;
-	if (!isTrigFunc(node.denominator, 'cos')) return null;
-
-	return sec(getArg(node.denominator as FunctionNode));
+	const result = match(PAT_1_OVER_COS, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return sec(a);
 }
 
 /**
  * 1 / sin(x) -> csc(x)
  */
 function transformOneOverSin(node: MathNode): MathNode | null {
-	if (!isDivision(node)) return null;
-	if (!isNumber(node.numerator) || node.numerator.value !== '1') return null;
-	if (!isTrigFunc(node.denominator, 'sin')) return null;
-
-	return csc(getArg(node.denominator as FunctionNode));
+	const result = match(PAT_1_OVER_SIN, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	if (!a) return null;
+	return csc(a);
 }
 
 // =============================================================================
@@ -640,18 +542,13 @@ function transformOneOverSin(node: MathNode): MathNode | null {
  * tan(a + b) -> (tan(a) + tan(b)) / (1 - tan(a)tan(b))
  */
 function transformTanSum(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tan') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isAddition(arg)) return null;
-
-	const a = arg.left;
-	const b = arg.right;
+	const result = match(PAT_TAN_SUM, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 	const tanA = tan(a);
 	const tanB = tan(b);
-
-	// tan(a+b) = (tan(a) + tan(b)) / (1 - tan(a)tan(b))
 	return divide(
 		add(tanA, tanB),
 		subtract(number('1'), multiply(tan(a), tan(b), 'implicit')),
@@ -663,18 +560,13 @@ function transformTanSum(node: MathNode): MathNode | null {
  * tan(a - b) -> (tan(a) - tan(b)) / (1 + tan(a)tan(b))
  */
 function transformTanDifference(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tan') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isSubtraction(arg)) return null;
-
-	const a = arg.left;
-	const b = arg.right;
+	const result = match(PAT_TAN_DIFF, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 	const tanA = tan(a);
 	const tanB = tan(b);
-
-	// tan(a-b) = (tan(a) - tan(b)) / (1 + tan(a)tan(b))
 	return divide(
 		subtract(tanA, tanB),
 		add(number('1'), multiply(tan(a), tan(b), 'implicit')),
@@ -690,42 +582,33 @@ function transformTanDifference(node: MathNode): MathNode | null {
  * sin(-x) -> -sin(x)
  */
 function transformSinNegative(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isOpposite(arg)) return null;
-
-	// sin(-x) = -sin(x)
-	return opposite(sin(arg.operand));
+	const result = match(PAT_SIN_NEG, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
+	if (!x) return null;
+	return opposite(sin(x));
 }
 
 /**
  * cos(-x) -> cos(x)
  */
 function transformCosNegative(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isOpposite(arg)) return null;
-
-	// cos(-x) = cos(x)
-	return cos(arg.operand);
+	const result = match(PAT_COS_NEG, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
+	if (!x) return null;
+	return cos(x);
 }
 
 /**
  * tan(-x) -> -tan(x)
  */
 function transformTanNegative(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tan') return null;
-	if (node.args.length !== 1) return null;
-
-	const arg = node.args[0];
-	if (!isOpposite(arg)) return null;
-
-	// tan(-x) = -tan(x)
-	return opposite(tan(arg.operand));
+	const result = match(PAT_TAN_NEG, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
+	if (!x) return null;
+	return opposite(tan(x));
 }
 
 // =============================================================================
@@ -733,31 +616,13 @@ function transformTanNegative(node: MathNode): MathNode | null {
 // =============================================================================
 
 /**
- * Check if expression is π/2 - x
- */
-function isPiOver2Minus(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-
-	// Check if left side is π/2
-	const left = node.left;
-	if (isDivision(left)) {
-		if (isPi(left.numerator) && isNumber(left.denominator) && left.denominator.value === '2') {
-			return node.right;
-		}
-	}
-	return null;
-}
-
-/**
  * sin(π/2 - x) -> cos(x)
  */
 function transformSinCofunction(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPiOver2Minus(node.args[0]);
+	const result = match(PAT_SIN_PI_OVER_2_MINUS, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return cos(x);
 }
 
@@ -765,12 +630,10 @@ function transformSinCofunction(node: MathNode): MathNode | null {
  * cos(π/2 - x) -> sin(x)
  */
 function transformCosCofunction(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPiOver2Minus(node.args[0]);
+	const result = match(PAT_COS_PI_OVER_2_MINUS, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return sin(x);
 }
 
@@ -778,12 +641,10 @@ function transformCosCofunction(node: MathNode): MathNode | null {
  * tan(π/2 - x) -> cot(x)
  */
 function transformTanCofunction(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tan') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPiOver2Minus(node.args[0]);
+	const result = match(PAT_TAN_PI_OVER_2_MINUS, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return cot(x);
 }
 
@@ -792,24 +653,13 @@ function transformTanCofunction(node: MathNode): MathNode | null {
 // =============================================================================
 
 /**
- * Check if expression is π - x
- */
-function isPiMinus(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-	if (!isPi(node.left)) return null;
-	return node.right;
-}
-
-/**
  * sin(π - x) -> sin(x)
  */
 function transformSinSupplementary(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPiMinus(node.args[0]);
+	const result = match(PAT_SIN_PI_MINUS, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return sin(x);
 }
 
@@ -817,12 +667,10 @@ function transformSinSupplementary(node: MathNode): MathNode | null {
  * cos(π - x) -> -cos(x)
  */
 function transformCosSupplementary(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPiMinus(node.args[0]);
+	const result = match(PAT_COS_PI_MINUS, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return opposite(cos(x));
 }
 
@@ -830,12 +678,10 @@ function transformCosSupplementary(node: MathNode): MathNode | null {
  * tan(π - x) -> -tan(x)
  */
 function transformTanSupplementary(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tan') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPiMinus(node.args[0]);
+	const result = match(PAT_TAN_PI_MINUS, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return opposite(tan(x));
 }
 
@@ -844,44 +690,13 @@ function transformTanSupplementary(node: MathNode): MathNode | null {
 // =============================================================================
 
 /**
- * Check if expression is x + π/2
- */
-function isPlusPiOver2(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-
-	// Check if right side is π/2
-	if (isDivision(node.right)) {
-		if (
-			isPi(node.right.numerator) &&
-			isNumber(node.right.denominator) &&
-			node.right.denominator.value === '2'
-		) {
-			return node.left;
-		}
-	}
-	// Check if left side is π/2
-	if (isDivision(node.left)) {
-		if (
-			isPi(node.left.numerator) &&
-			isNumber(node.left.denominator) &&
-			node.left.denominator.value === '2'
-		) {
-			return node.right;
-		}
-	}
-	return null;
-}
-
-/**
  * sin(x + π/2) -> cos(x)
  */
 function transformSinPlusPiOver2(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPlusPiOver2(node.args[0]);
+	const result = match(PAT_SIN_PLUS_PI_OVER_2, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return cos(x);
 }
 
@@ -889,12 +704,10 @@ function transformSinPlusPiOver2(node: MathNode): MathNode | null {
  * cos(x + π/2) -> -sin(x)
  */
 function transformCosPlusPiOver2(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPlusPiOver2(node.args[0]);
+	const result = match(PAT_COS_PLUS_PI_OVER_2, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return opposite(sin(x));
 }
 
@@ -902,12 +715,10 @@ function transformCosPlusPiOver2(node: MathNode): MathNode | null {
  * tan(x + π/2) -> -cot(x)
  */
 function transformTanPlusPiOver2(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tan') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPlusPiOver2(node.args[0]);
+	const result = match(PAT_TAN_PLUS_PI_OVER_2, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return opposite(cot(x));
 }
 
@@ -919,16 +730,14 @@ function transformTanPlusPiOver2(node: MathNode): MathNode | null {
  * sin(a) + sin(b) -> 2sin((a+b)/2)cos((a-b)/2)
  */
 function transformSinPlusSin(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-	if (!isTrigFunc(node.left, 'sin') || !isTrigFunc(node.right, 'sin')) return null;
+	const result = match(PAT_SIN_PLUS_SIN, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
-	const a = getArg(node.left);
-	const b = getArg(node.right);
-
-	// sin(a) + sin(b) = 2sin((a+b)/2)cos((a-b)/2)
 	const halfSum = divide(add(a, b), number('2'), 'fraction');
 	const halfDiff = divide(subtract(a, b), number('2'), 'fraction');
-
 	return multiply(number('2'), multiply(sin(halfSum), cos(halfDiff), 'implicit'), 'implicit');
 }
 
@@ -936,16 +745,14 @@ function transformSinPlusSin(node: MathNode): MathNode | null {
  * sin(a) - sin(b) -> 2cos((a+b)/2)sin((a-b)/2)
  */
 function transformSinMinusSin(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-	if (!isTrigFunc(node.left, 'sin') || !isTrigFunc(node.right, 'sin')) return null;
+	const result = match(PAT_SIN_MINUS_SIN, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
-	const a = getArg(node.left);
-	const b = getArg(node.right);
-
-	// sin(a) - sin(b) = 2cos((a+b)/2)sin((a-b)/2)
 	const halfSum = divide(add(a, b), number('2'), 'fraction');
 	const halfDiff = divide(subtract(a, b), number('2'), 'fraction');
-
 	return multiply(number('2'), multiply(cos(halfSum), sin(halfDiff), 'implicit'), 'implicit');
 }
 
@@ -953,16 +760,14 @@ function transformSinMinusSin(node: MathNode): MathNode | null {
  * cos(a) + cos(b) -> 2cos((a+b)/2)cos((a-b)/2)
  */
 function transformCosPlusCos(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-	if (!isTrigFunc(node.left, 'cos') || !isTrigFunc(node.right, 'cos')) return null;
+	const result = match(PAT_COS_PLUS_COS, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
-	const a = getArg(node.left);
-	const b = getArg(node.right);
-
-	// cos(a) + cos(b) = 2cos((a+b)/2)cos((a-b)/2)
 	const halfSum = divide(add(a, b), number('2'), 'fraction');
 	const halfDiff = divide(subtract(a, b), number('2'), 'fraction');
-
 	return multiply(number('2'), multiply(cos(halfSum), cos(halfDiff), 'implicit'), 'implicit');
 }
 
@@ -970,16 +775,14 @@ function transformCosPlusCos(node: MathNode): MathNode | null {
  * cos(a) - cos(b) -> -2sin((a+b)/2)sin((a-b)/2)
  */
 function transformCosMinusCos(node: MathNode): MathNode | null {
-	if (!isSubtraction(node)) return null;
-	if (!isTrigFunc(node.left, 'cos') || !isTrigFunc(node.right, 'cos')) return null;
+	const result = match(PAT_COS_MINUS_COS, node);
+	if (!result.success) return null;
+	const a = getBinding(result.bindings, 'a');
+	const b = getBinding(result.bindings, 'b');
+	if (!a || !b) return null;
 
-	const a = getArg(node.left);
-	const b = getArg(node.right);
-
-	// cos(a) - cos(b) = -2sin((a+b)/2)sin((a-b)/2)
 	const halfSum = divide(add(a, b), number('2'), 'fraction');
 	const halfDiff = divide(subtract(a, b), number('2'), 'fraction');
-
 	return opposite(
 		multiply(number('2'), multiply(sin(halfSum), sin(halfDiff), 'implicit'), 'implicit')
 	);
@@ -990,56 +793,13 @@ function transformCosMinusCos(node: MathNode): MathNode | null {
 // =============================================================================
 
 /**
- * Check if expression is x + 2π
- */
-function isPlus2Pi(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-
-	// Check if right side is 2π
-	if (isMultiplication(node.right)) {
-		const mult = node.right;
-		if (
-			(isNumber(mult.left) && mult.left.value === '2' && isPi(mult.right)) ||
-			(isNumber(mult.right) && mult.right.value === '2' && isPi(mult.left))
-		) {
-			return node.left;
-		}
-	}
-	// Also check left side
-	if (isMultiplication(node.left)) {
-		const mult = node.left;
-		if (
-			(isNumber(mult.left) && mult.left.value === '2' && isPi(mult.right)) ||
-			(isNumber(mult.right) && mult.right.value === '2' && isPi(mult.left))
-		) {
-			return node.right;
-		}
-	}
-	return null;
-}
-
-/**
- * Check if expression is x + π
- */
-function isPlusPi(node: MathNode): MathNode | null {
-	if (!isAddition(node)) return null;
-
-	if (isPi(node.right)) return node.left;
-	if (isPi(node.left)) return node.right;
-
-	return null;
-}
-
-/**
  * sin(x + 2π) -> sin(x)
  */
 function transformSinPeriod2Pi(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPlus2Pi(node.args[0]);
+	const result = match(PAT_SIN_PLUS_2PI, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return sin(x);
 }
 
@@ -1047,12 +807,10 @@ function transformSinPeriod2Pi(node: MathNode): MathNode | null {
  * cos(x + 2π) -> cos(x)
  */
 function transformCosPeriod2Pi(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPlus2Pi(node.args[0]);
+	const result = match(PAT_COS_PLUS_2PI, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return cos(x);
 }
 
@@ -1060,12 +818,10 @@ function transformCosPeriod2Pi(node: MathNode): MathNode | null {
  * sin(x + π) -> -sin(x)
  */
 function transformSinPlusPi(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPlusPi(node.args[0]);
+	const result = match(PAT_SIN_PLUS_PI, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return opposite(sin(x));
 }
 
@@ -1073,12 +829,10 @@ function transformSinPlusPi(node: MathNode): MathNode | null {
  * cos(x + π) -> -cos(x)
  */
 function transformCosPlusPi(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isPlusPi(node.args[0]);
+	const result = match(PAT_COS_PLUS_PI, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
 	return opposite(cos(x));
 }
 
@@ -1087,26 +841,14 @@ function transformCosPlusPi(node: MathNode): MathNode | null {
 // =============================================================================
 
 /**
- * Check if expression is x/2
- */
-function isHalfOf(node: MathNode): MathNode | null {
-	if (!isDivision(node)) return null;
-	if (!isNumber(node.denominator) || node.denominator.value !== '2') return null;
-	return node.numerator;
-}
-
-/**
  * sin(x/2) -> ±√((1 - cos(x))/2)
  * Note: We use positive root; sign depends on quadrant
  */
 function transformSinHalfAngle(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isHalfOf(node.args[0]);
+	const result = match(PAT_SIN_HALF, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
-	// sin(x/2) = √((1 - cos(x))/2)
 	return sqrt(divide(subtract(number('1'), cos(x)), number('2'), 'fraction'));
 }
 
@@ -1115,13 +857,10 @@ function transformSinHalfAngle(node: MathNode): MathNode | null {
  * Note: We use positive root; sign depends on quadrant
  */
 function transformCosHalfAngle(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isHalfOf(node.args[0]);
+	const result = match(PAT_COS_HALF, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
-	// cos(x/2) = √((1 + cos(x))/2)
 	return sqrt(divide(add(number('1'), cos(x)), number('2'), 'fraction'));
 }
 
@@ -1130,13 +869,10 @@ function transformCosHalfAngle(node: MathNode): MathNode | null {
  * Alternative: (1 - cos(x)) / sin(x)
  */
 function transformTanHalfAngle(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'tan') return null;
-	if (node.args.length !== 1) return null;
-
-	const x = isHalfOf(node.args[0]);
+	const result = match(PAT_TAN_HALF, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'x');
 	if (!x) return null;
-
-	// tan(x/2) = sin(x) / (1 + cos(x))
 	return divide(sin(x), add(number('1'), cos(x)), 'fraction');
 }
 
@@ -1145,29 +881,14 @@ function transformTanHalfAngle(node: MathNode): MathNode | null {
 // =============================================================================
 
 /**
- * Check if a function node has a power of 3
- */
-function hasPowerOf3(node: FunctionNode): boolean {
-	return node.power !== undefined && isNumber(node.power) && node.power.value === '3';
-}
-
-/**
- * Check if a function node has a power of 4
- */
-function hasPowerOf4(node: FunctionNode): boolean {
-	return node.power !== undefined && isNumber(node.power) && node.power.value === '4';
-}
-
-/**
  * sin³(x) -> (3sin(x) - sin(3x)) / 4
  */
 function transformSinCubed(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (!hasPowerOf3(node)) return null;
+	const result = match(PAT_SIN_CUBED, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'a');
+	if (!x) return null;
 
-	const x = getArg(node);
-
-	// sin³(x) = (3sin(x) - sin(3x)) / 4
 	const threeX = multiply(number('3'), x, 'implicit');
 	return divide(
 		subtract(multiply(number('3'), sin(x), 'implicit'), sin(threeX)),
@@ -1180,12 +901,11 @@ function transformSinCubed(node: MathNode): MathNode | null {
  * cos³(x) -> (3cos(x) + cos(3x)) / 4
  */
 function transformCosCubed(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (!hasPowerOf3(node)) return null;
+	const result = match(PAT_COS_CUBED, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'a');
+	if (!x) return null;
 
-	const x = getArg(node);
-
-	// cos³(x) = (3cos(x) + cos(3x)) / 4
 	const threeX = multiply(number('3'), x, 'implicit');
 	return divide(
 		add(multiply(number('3'), cos(x), 'implicit'), cos(threeX)),
@@ -1198,12 +918,11 @@ function transformCosCubed(node: MathNode): MathNode | null {
  * sin⁴(x) -> (3 - 4cos(2x) + cos(4x)) / 8
  */
 function transformSinFourth(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'sin') return null;
-	if (!hasPowerOf4(node)) return null;
+	const result = match(PAT_SIN_FOURTH, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'a');
+	if (!x) return null;
 
-	const x = getArg(node);
-
-	// sin⁴(x) = (3 - 4cos(2x) + cos(4x)) / 8
 	const twoX = multiply(number('2'), x, 'implicit');
 	const fourX = multiply(number('4'), x, 'implicit');
 	return divide(
@@ -1217,12 +936,11 @@ function transformSinFourth(node: MathNode): MathNode | null {
  * cos⁴(x) -> (3 + 4cos(2x) + cos(4x)) / 8
  */
 function transformCosFourth(node: MathNode): MathNode | null {
-	if (!isFunction(node) || node.name !== 'cos') return null;
-	if (!hasPowerOf4(node)) return null;
+	const result = match(PAT_COS_FOURTH, node);
+	if (!result.success) return null;
+	const x = getBinding(result.bindings, 'a');
+	if (!x) return null;
 
-	const x = getArg(node);
-
-	// cos⁴(x) = (3 + 4cos(2x) + cos(4x)) / 8
 	const twoX = multiply(number('2'), x, 'implicit');
 	const fourX = multiply(number('4'), x, 'implicit');
 	return divide(
