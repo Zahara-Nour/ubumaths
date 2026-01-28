@@ -18,6 +18,8 @@ export {
 	expandDoubleAngle,
 	simplifyNegativeAngle,
 	simplifyCofunction,
+	simplifySupplementary,
+	simplifyShiftPiOver2,
 	factorize,
 	reducePeriodic,
 	expandHalfAngle,
@@ -66,6 +68,12 @@ export {
 	TRANSFORM_COS_CUBED,
 	TRANSFORM_SIN_FOURTH,
 	TRANSFORM_COS_FOURTH,
+	TRANSFORM_SIN_SUPPLEMENTARY,
+	TRANSFORM_COS_SUPPLEMENTARY,
+	TRANSFORM_TAN_SUPPLEMENTARY,
+	TRANSFORM_SIN_PLUS_PI_OVER_2,
+	TRANSFORM_COS_PLUS_PI_OVER_2,
+	TRANSFORM_TAN_PLUS_PI_OVER_2,
 	// Types
 	type TrigTransformResult
 } from './trig-identities';
