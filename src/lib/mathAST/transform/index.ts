@@ -6,6 +6,34 @@
  * @module mathAST/transform
  */
 
+// Identity engine (shared infrastructure)
+export {
+	type TransformRule,
+	type TransformResult,
+	getBinding,
+	applyTransformsToNode,
+	applyTransformsDeep,
+	applyIdentityTransforms
+} from './identity-engine';
+
+// Algebraic identities
+export {
+	// Application functions
+	factorAlgebraic,
+	expandAlgebraic,
+	applyAlgebraicIdentities,
+	// Individual transforms (for testing/direct use)
+	TRANSFORM_DIFF_SQUARES_TO_PRODUCT,
+	TRANSFORM_PERFECT_SQUARE_TRINOMIAL,
+	TRANSFORM_SUM_CUBES_TO_PRODUCT,
+	TRANSFORM_DIFF_CUBES_TO_PRODUCT,
+	TRANSFORM_PRODUCT_TO_DIFF_SQUARES,
+	TRANSFORM_EXPAND_SUM_SQUARED,
+	TRANSFORM_EXPAND_DIFF_SQUARED,
+	// Types
+	type AlgebraicTransformResult
+} from './algebraic-identities';
+
 // Trigonometric identities
 export {
 	// Application functions

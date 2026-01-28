@@ -26,35 +26,21 @@ import {
 	superscript,
 	opposite
 } from '../factory';
-import { mapNode } from '../transforms';
 import { P } from '../pattern/builder';
 import { match, nodesEqual } from '../pattern/match';
-import type { MatchBindings } from '../pattern/types';
-import { isMathNodeBinding } from '../pattern/types';
+import {
+	type TransformRule,
+	type TransformResult,
+	getBinding,
+	applyIdentityTransforms
+} from './identity-engine';
 
 // =============================================================================
 // Types
 // =============================================================================
 
-/**
- * Result of applying trig identity transformations
- */
-export interface TrigTransformResult {
-	/** The transformed expression */
-	readonly result: MathNode;
-	/** Whether any transformation was applied */
-	readonly changed: boolean;
-	/** Names of rules that were applied */
-	readonly appliedRules: readonly string[];
-}
-
-/**
- * A transformation rule with name and transform function
- */
-interface TrigRule {
-	readonly name: string;
-	readonly transform: (node: MathNode) => MathNode | null;
-}
+/** Result of applying trig identity transformations */
+export type TrigTransformResult = TransformResult;
 
 // =============================================================================
 // Helper Functions
@@ -67,15 +53,6 @@ function isPi(node: MathNode): boolean {
 	if (isPiConstant(node)) return true;
 	if (isGreek(node) && (node as GreekLetterNode).letter === 'pi') return true;
 	return false;
-}
-
-/**
- * Extract MathNode from bindings safely.
- */
-function getBinding(bindings: MatchBindings, name: string): MathNode | null {
-	const value = bindings.get(name);
-	if (value && isMathNodeBinding(value)) return value;
-	return null;
 }
 
 /**
@@ -954,17 +931,17 @@ function transformCosFourth(node: MathNode): MathNode | null {
 // Rule Collections
 // =============================================================================
 
-const DOUBLE_ANGLE_TRANSFORMS: TrigRule[] = [
+const DOUBLE_ANGLE_TRANSFORMS: TransformRule[] = [
 	{ name: 'double-angle-sin', transform: transformDoubleAngleSin },
 	{ name: 'sin-cos-product', transform: transformSinCosProduct }
 ];
 
-const POWER_REDUCTION_TRANSFORMS: TrigRule[] = [
+const POWER_REDUCTION_TRANSFORMS: TransformRule[] = [
 	{ name: 'sin-squared', transform: transformSinSquared },
 	{ name: 'cos-squared', transform: transformCosSquared }
 ];
 
-const PYTHAGOREAN_TRANSFORMS: TrigRule[] = [
+const PYTHAGOREAN_TRANSFORMS: TransformRule[] = [
 	{ name: 'pythagorean', transform: transformPythagorean },
 	{ name: 'one-minus-sin-squared', transform: transformOneMinusSinSquared },
 	{ name: 'one-minus-cos-squared', transform: transformOneMinusCosSquared },
@@ -974,20 +951,20 @@ const PYTHAGOREAN_TRANSFORMS: TrigRule[] = [
 	{ name: 'csc-squared-minus-one', transform: transformCscSquaredMinusOne }
 ];
 
-const QUOTIENT_TRANSFORMS: TrigRule[] = [
+const QUOTIENT_TRANSFORMS: TransformRule[] = [
 	{ name: 'sin-over-cos', transform: transformSinOverCos },
 	{ name: 'cos-over-sin', transform: transformCosOverSin },
 	{ name: 'one-over-cos', transform: transformOneOverCos },
 	{ name: 'one-over-sin', transform: transformOneOverSin }
 ];
 
-const LINEARIZATION_TRANSFORMS: TrigRule[] = [
+const LINEARIZATION_TRANSFORMS: TransformRule[] = [
 	{ name: 'cos-cos-product', transform: transformCosCosProduct },
 	{ name: 'sin-sin-product', transform: transformSinSinProduct },
 	{ name: 'sin-cos-different', transform: transformSinCosProductDifferent }
 ];
 
-const ADDITION_TRANSFORMS: TrigRule[] = [
+const ADDITION_TRANSFORMS: TransformRule[] = [
 	{ name: 'cos-sum', transform: transformCosSum },
 	{ name: 'cos-difference', transform: transformCosDifference },
 	{ name: 'sin-sum', transform: transformSinSum },
@@ -996,57 +973,57 @@ const ADDITION_TRANSFORMS: TrigRule[] = [
 	{ name: 'tan-difference', transform: transformTanDifference }
 ];
 
-const DOUBLE_ANGLE_EXPANSION_TRANSFORMS: TrigRule[] = [
+const DOUBLE_ANGLE_EXPANSION_TRANSFORMS: TransformRule[] = [
 	{ name: 'expand-double-sin', transform: transformExpandDoubleSin },
 	{ name: 'expand-double-cos', transform: transformExpandDoubleCos },
 	{ name: 'expand-double-tan', transform: transformExpandDoubleTan }
 ];
 
-const NEGATIVE_ANGLE_TRANSFORMS: TrigRule[] = [
+const NEGATIVE_ANGLE_TRANSFORMS: TransformRule[] = [
 	{ name: 'sin-negative', transform: transformSinNegative },
 	{ name: 'cos-negative', transform: transformCosNegative },
 	{ name: 'tan-negative', transform: transformTanNegative }
 ];
 
-const COFUNCTION_TRANSFORMS: TrigRule[] = [
+const COFUNCTION_TRANSFORMS: TransformRule[] = [
 	{ name: 'sin-cofunction', transform: transformSinCofunction },
 	{ name: 'cos-cofunction', transform: transformCosCofunction },
 	{ name: 'tan-cofunction', transform: transformTanCofunction }
 ];
 
-const SUPPLEMENTARY_TRANSFORMS: TrigRule[] = [
+const SUPPLEMENTARY_TRANSFORMS: TransformRule[] = [
 	{ name: 'sin-supplementary', transform: transformSinSupplementary },
 	{ name: 'cos-supplementary', transform: transformCosSupplementary },
 	{ name: 'tan-supplementary', transform: transformTanSupplementary }
 ];
 
-const SHIFT_PI_OVER_2_TRANSFORMS: TrigRule[] = [
+const SHIFT_PI_OVER_2_TRANSFORMS: TransformRule[] = [
 	{ name: 'sin-plus-pi-over-2', transform: transformSinPlusPiOver2 },
 	{ name: 'cos-plus-pi-over-2', transform: transformCosPlusPiOver2 },
 	{ name: 'tan-plus-pi-over-2', transform: transformTanPlusPiOver2 }
 ];
 
-const FACTORIZATION_TRANSFORMS: TrigRule[] = [
+const FACTORIZATION_TRANSFORMS: TransformRule[] = [
 	{ name: 'sin-plus-sin', transform: transformSinPlusSin },
 	{ name: 'sin-minus-sin', transform: transformSinMinusSin },
 	{ name: 'cos-plus-cos', transform: transformCosPlusCos },
 	{ name: 'cos-minus-cos', transform: transformCosMinusCos }
 ];
 
-const PERIODIC_TRANSFORMS: TrigRule[] = [
+const PERIODIC_TRANSFORMS: TransformRule[] = [
 	{ name: 'sin-period-2pi', transform: transformSinPeriod2Pi },
 	{ name: 'cos-period-2pi', transform: transformCosPeriod2Pi },
 	{ name: 'sin-plus-pi', transform: transformSinPlusPi },
 	{ name: 'cos-plus-pi', transform: transformCosPlusPi }
 ];
 
-const HALF_ANGLE_TRANSFORMS: TrigRule[] = [
+const HALF_ANGLE_TRANSFORMS: TransformRule[] = [
 	{ name: 'sin-half-angle', transform: transformSinHalfAngle },
 	{ name: 'cos-half-angle', transform: transformCosHalfAngle },
 	{ name: 'tan-half-angle', transform: transformTanHalfAngle }
 ];
 
-const HIGHER_POWER_TRANSFORMS: TrigRule[] = [
+const HIGHER_POWER_TRANSFORMS: TransformRule[] = [
 	{ name: 'sin-cubed', transform: transformSinCubed },
 	{ name: 'cos-cubed', transform: transformCosCubed },
 	{ name: 'sin-fourth', transform: transformSinFourth },
@@ -1056,7 +1033,7 @@ const HIGHER_POWER_TRANSFORMS: TrigRule[] = [
 // Note: Some transforms are NOT included in ALL_TRANSFORMS because they are
 // inverse to other transforms and would cause loops (e.g., ADDITION vs LINEARIZATION,
 // DOUBLE_ANGLE_EXPANSION vs DOUBLE_ANGLE contraction)
-const ALL_TRANSFORMS: TrigRule[] = [
+const ALL_TRANSFORMS: TransformRule[] = [
 	...DOUBLE_ANGLE_TRANSFORMS,
 	...POWER_REDUCTION_TRANSFORMS,
 	...PYTHAGOREAN_TRANSFORMS,
@@ -1071,44 +1048,6 @@ const ALL_TRANSFORMS: TrigRule[] = [
 // =============================================================================
 
 /**
- * Apply transforms to a single node (not recursive)
- */
-function applyTransformsToNode(
-	node: MathNode,
-	transforms: TrigRule[]
-): { result: MathNode; applied: string | null } {
-	for (const rule of transforms) {
-		const result = rule.transform(node);
-		if (result !== null) {
-			return { result, applied: rule.name };
-		}
-	}
-	return { result: node, applied: null };
-}
-
-/**
- * Apply transforms recursively to all subexpressions (single pass, bottom-up)
- */
-function applyTransformsDeep(
-	node: MathNode,
-	transforms: TrigRule[]
-): { result: MathNode; appliedRules: Set<string> } {
-	const appliedRules = new Set<string>();
-
-	// mapNode already handles recursion bottom-up (children first, then parent)
-	// We just need to apply transforms at each node
-	const result = mapNode(node, (n) => {
-		const { result: transformed, applied } = applyTransformsToNode(n, transforms);
-		if (applied) {
-			appliedRules.add(applied);
-		}
-		return transformed;
-	});
-
-	return { result, appliedRules };
-}
-
-/**
  * Apply all trig identity transforms to an expression.
  *
  * @param node - The expression to transform
@@ -1117,31 +1056,9 @@ function applyTransformsDeep(
  */
 export function applyTrigIdentities(
 	node: MathNode,
-	transforms: TrigRule[] = ALL_TRANSFORMS
+	transforms: TransformRule[] = ALL_TRANSFORMS
 ): TrigTransformResult {
-	let current = node;
-	const allAppliedRules = new Set<string>();
-	let changed = false;
-
-	// Apply repeatedly until no more changes
-	const maxIterations = 10;
-	for (let i = 0; i < maxIterations; i++) {
-		const { result, appliedRules } = applyTransformsDeep(current, transforms);
-
-		if (appliedRules.size === 0) {
-			break;
-		}
-
-		appliedRules.forEach((rule) => allAppliedRules.add(rule));
-		current = result;
-		changed = true;
-	}
-
-	return {
-		result: current,
-		changed,
-		appliedRules: Array.from(allAppliedRules)
-	};
+	return applyIdentityTransforms(node, transforms);
 }
 
 /**

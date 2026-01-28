@@ -24,48 +24,25 @@ import {
 	superscript,
 	opposite
 } from '../factory';
-import { mapNode } from '../transforms';
 import { P } from '../pattern/builder';
 import { match, nodesEqual } from '../pattern/match';
-import type { MatchBindings } from '../pattern/types';
-import { isMathNodeBinding } from '../pattern/types';
+import {
+	type TransformRule,
+	type TransformResult,
+	getBinding,
+	applyIdentityTransforms
+} from './identity-engine';
 
 // =============================================================================
 // Types
 // =============================================================================
 
-/**
- * Result of applying hyperbolic identity transformations
- */
-export interface HyperbolicTransformResult {
-	/** The transformed expression */
-	readonly result: MathNode;
-	/** Whether any transformation was applied */
-	readonly changed: boolean;
-	/** Names of rules that were applied */
-	readonly appliedRules: readonly string[];
-}
-
-/**
- * A transformation rule with name and transform function
- */
-interface HyperbolicRule {
-	readonly name: string;
-	readonly transform: (node: MathNode) => MathNode | null;
-}
+/** Result of applying hyperbolic identity transformations */
+export type HyperbolicTransformResult = TransformResult;
 
 // =============================================================================
 // Helper Functions
 // =============================================================================
-
-/**
- * Extract MathNode from bindings safely.
- */
-function getBinding(bindings: MatchBindings, name: string): MathNode | null {
-	const value = bindings.get(name);
-	if (value && isMathNodeBinding(value)) return value;
-	return null;
-}
 
 /**
  * Double an expression: a -> 2a
@@ -780,17 +757,17 @@ function transformCoshFourth(node: MathNode): MathNode | null {
 // Rule Collections
 // =============================================================================
 
-const DOUBLE_ANGLE_TRANSFORMS: HyperbolicRule[] = [
+const DOUBLE_ANGLE_TRANSFORMS: TransformRule[] = [
 	{ name: 'double-angle-sinh', transform: transformDoubleAngleSinh },
 	{ name: 'sinh-cosh-product', transform: transformSinhCoshProduct }
 ];
 
-const POWER_REDUCTION_TRANSFORMS: HyperbolicRule[] = [
+const POWER_REDUCTION_TRANSFORMS: TransformRule[] = [
 	{ name: 'sinh-squared', transform: transformSinhSquared },
 	{ name: 'cosh-squared', transform: transformCoshSquared }
 ];
 
-const PYTHAGOREAN_TRANSFORMS: HyperbolicRule[] = [
+const PYTHAGOREAN_TRANSFORMS: TransformRule[] = [
 	{ name: 'hyperbolic-pythagorean', transform: transformHyperbolicPythagorean },
 	{ name: 'one-plus-sinh-squared', transform: transformOnePlusSinhSquared },
 	{ name: 'cosh-squared-minus-one', transform: transformCoshSquaredMinusOne },
@@ -801,20 +778,20 @@ const PYTHAGOREAN_TRANSFORMS: HyperbolicRule[] = [
 	{ name: 'one-plus-csch-squared', transform: transformOnePlusCschSquared }
 ];
 
-const QUOTIENT_TRANSFORMS: HyperbolicRule[] = [
+const QUOTIENT_TRANSFORMS: TransformRule[] = [
 	{ name: 'sinh-over-cosh', transform: transformSinhOverCosh },
 	{ name: 'cosh-over-sinh', transform: transformCoshOverSinh },
 	{ name: 'one-over-cosh', transform: transformOneOverCosh },
 	{ name: 'one-over-sinh', transform: transformOneOverSinh }
 ];
 
-const LINEARIZATION_TRANSFORMS: HyperbolicRule[] = [
+const LINEARIZATION_TRANSFORMS: TransformRule[] = [
 	{ name: 'cosh-cosh-product', transform: transformCoshCoshProduct },
 	{ name: 'sinh-sinh-product', transform: transformSinhSinhProduct },
 	{ name: 'sinh-cosh-different', transform: transformSinhCoshProductDifferent }
 ];
 
-const ADDITION_TRANSFORMS: HyperbolicRule[] = [
+const ADDITION_TRANSFORMS: TransformRule[] = [
 	{ name: 'cosh-sum', transform: transformCoshSum },
 	{ name: 'cosh-difference', transform: transformCoshDifference },
 	{ name: 'sinh-sum', transform: transformSinhSum },
@@ -823,32 +800,32 @@ const ADDITION_TRANSFORMS: HyperbolicRule[] = [
 	{ name: 'tanh-difference', transform: transformTanhDifference }
 ];
 
-const DOUBLE_ANGLE_EXPANSION_TRANSFORMS: HyperbolicRule[] = [
+const DOUBLE_ANGLE_EXPANSION_TRANSFORMS: TransformRule[] = [
 	{ name: 'expand-double-sinh', transform: transformExpandDoubleSinh },
 	{ name: 'expand-double-cosh', transform: transformExpandDoubleCosh },
 	{ name: 'expand-double-tanh', transform: transformExpandDoubleTanh }
 ];
 
-const NEGATIVE_ARGUMENT_TRANSFORMS: HyperbolicRule[] = [
+const NEGATIVE_ARGUMENT_TRANSFORMS: TransformRule[] = [
 	{ name: 'sinh-negative', transform: transformSinhNegative },
 	{ name: 'cosh-negative', transform: transformCoshNegative },
 	{ name: 'tanh-negative', transform: transformTanhNegative }
 ];
 
-const FACTORIZATION_TRANSFORMS: HyperbolicRule[] = [
+const FACTORIZATION_TRANSFORMS: TransformRule[] = [
 	{ name: 'sinh-plus-sinh', transform: transformSinhPlusSinh },
 	{ name: 'sinh-minus-sinh', transform: transformSinhMinusSinh },
 	{ name: 'cosh-plus-cosh', transform: transformCoshPlusCosh },
 	{ name: 'cosh-minus-cosh', transform: transformCoshMinusCosh }
 ];
 
-const HALF_ANGLE_TRANSFORMS: HyperbolicRule[] = [
+const HALF_ANGLE_TRANSFORMS: TransformRule[] = [
 	{ name: 'sinh-half-angle', transform: transformSinhHalfAngle },
 	{ name: 'cosh-half-angle', transform: transformCoshHalfAngle },
 	{ name: 'tanh-half-angle', transform: transformTanhHalfAngle }
 ];
 
-const HIGHER_POWER_TRANSFORMS: HyperbolicRule[] = [
+const HIGHER_POWER_TRANSFORMS: TransformRule[] = [
 	{ name: 'sinh-cubed', transform: transformSinhCubed },
 	{ name: 'cosh-cubed', transform: transformCoshCubed },
 	{ name: 'sinh-fourth', transform: transformSinhFourth },
@@ -856,7 +833,7 @@ const HIGHER_POWER_TRANSFORMS: HyperbolicRule[] = [
 ];
 
 // Default transforms (excludes inverse pairs to avoid loops)
-const ALL_TRANSFORMS: HyperbolicRule[] = [
+const ALL_TRANSFORMS: TransformRule[] = [
 	...DOUBLE_ANGLE_TRANSFORMS,
 	...POWER_REDUCTION_TRANSFORMS,
 	...PYTHAGOREAN_TRANSFORMS,
@@ -870,42 +847,6 @@ const ALL_TRANSFORMS: HyperbolicRule[] = [
 // =============================================================================
 
 /**
- * Apply transforms to a single node (not recursive)
- */
-function applyTransformsToNode(
-	node: MathNode,
-	transforms: HyperbolicRule[]
-): { result: MathNode; applied: string | null } {
-	for (const rule of transforms) {
-		const result = rule.transform(node);
-		if (result !== null) {
-			return { result, applied: rule.name };
-		}
-	}
-	return { result: node, applied: null };
-}
-
-/**
- * Apply transforms recursively to all subexpressions (single pass, bottom-up)
- */
-function applyTransformsDeep(
-	node: MathNode,
-	transforms: HyperbolicRule[]
-): { result: MathNode; appliedRules: Set<string> } {
-	const appliedRules = new Set<string>();
-
-	const result = mapNode(node, (n) => {
-		const { result: transformed, applied } = applyTransformsToNode(n, transforms);
-		if (applied) {
-			appliedRules.add(applied);
-		}
-		return transformed;
-	});
-
-	return { result, appliedRules };
-}
-
-/**
  * Apply all hyperbolic identity transforms to an expression.
  *
  * @param node - The expression to transform
@@ -914,31 +855,9 @@ function applyTransformsDeep(
  */
 export function applyHyperbolicIdentities(
 	node: MathNode,
-	transforms: HyperbolicRule[] = ALL_TRANSFORMS
+	transforms: TransformRule[] = ALL_TRANSFORMS
 ): HyperbolicTransformResult {
-	let current = node;
-	const allAppliedRules = new Set<string>();
-	let changed = false;
-
-	// Apply repeatedly until no more changes
-	const maxIterations = 10;
-	for (let i = 0; i < maxIterations; i++) {
-		const { result, appliedRules } = applyTransformsDeep(current, transforms);
-
-		if (appliedRules.size === 0) {
-			break;
-		}
-
-		appliedRules.forEach((rule) => allAppliedRules.add(rule));
-		current = result;
-		changed = true;
-	}
-
-	return {
-		result: current,
-		changed,
-		appliedRules: Array.from(allAppliedRules)
-	};
+	return applyIdentityTransforms(node, transforms);
 }
 
 /**
