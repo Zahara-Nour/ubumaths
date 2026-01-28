@@ -126,45 +126,48 @@ const selfDiv = P.div(P._('x', P.isNonzero()), P._('x'));
 
 ## Pattern Strings
 
-Alternative syntax using parseable strings:
+Alternative syntax using parseable strings. Letters are wildcards by default.
 
 ```typescript
 import { parsePattern, P } from '$lib/mathAST/pattern';
 
 // These are equivalent:
-const p1 = parsePattern('_x + 0');
+const p1 = parsePattern('x + 0');
 const p2 = P.add(P._('x'), P.num(0));
 
 // Also available as P.parse()
-const p3 = P.parse('_x + 0');
+const p3 = P.parse('x + 0');
 
 // With constraints
-parsePattern('_n:number * _x'); // n must be a number
-parsePattern('_k:integer'); // k must be an integer
-parsePattern('_p:positive'); // p must be positive
-parsePattern('_z:nonzero'); // z must be nonzero
+parsePattern('n:number * x'); // n must be a number
+parsePattern('k:integer'); // k must be an integer
+parsePattern('p:positive'); // p must be positive
+parsePattern('z:nonzero'); // z must be nonzero
 ```
 
 ### Pattern String Syntax
 
-| Syntax                  | Description                           |
-| ----------------------- | ------------------------------------- |
-| `_x`                    | Wildcard named 'x'                    |
-| `_x:number`             | Wildcard constrained to numbers       |
-| `_x:integer`            | Wildcard constrained to integers      |
-| `_x:positive`           | Wildcard constrained to positive      |
-| `_x:negative`           | Wildcard constrained to negative      |
-| `_x:nonzero`            | Wildcard constrained to nonzero       |
-| `_x:variable`           | Wildcard constrained to variables     |
-| `_x:integerType`        | Wildcard with integer type inference  |
-| `_x:rationalType`       | Wildcard with rational type inference |
-| `_x:realType`           | Wildcard with real type inference     |
-| `_x:transcendentalType` | Wildcard with transcendental type     |
-| `5`, `3.14`             | Literal numbers                       |
-| `+`, `-`, `*`, `/`      | Operators                             |
-| `^`                     | Power                                 |
-| `sin(_x)`               | Function                              |
-| `(_x + _y)`             | Grouping                              |
+| Syntax                 | Description                            |
+| ---------------------- | -------------------------------------- |
+| `x`                    | Wildcard named 'x'                     |
+| `x:number`             | Wildcard constrained to numbers        |
+| `x:integer`            | Wildcard constrained to integers       |
+| `x:positive`           | Wildcard constrained to positive       |
+| `x:negative`           | Wildcard constrained to negative       |
+| `x:nonzero`            | Wildcard constrained to nonzero        |
+| `x:variable`           | Wildcard constrained to variables      |
+| `x:integerType`        | Wildcard with integer type inference   |
+| `x:rationalType`       | Wildcard with rational type inference  |
+| `x:realType`           | Wildcard with real type inference      |
+| `x:transcendentalType` | Wildcard with transcendental type      |
+| `__rest`               | Sequence wildcard (1+ elements)        |
+| `___opt`               | Optional sequence (0+ elements)        |
+| `$x`                   | Literal variable (matches exactly 'x') |
+| `5`, `3.14`            | Literal numbers                        |
+| `+`, `-`, `*`, `/`     | Operators                              |
+| `^`                    | Power                                  |
+| `sin(x)`               | Function                               |
+| `(x + y)`              | Grouping                               |
 
 ## Constraints
 

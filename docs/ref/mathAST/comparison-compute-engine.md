@@ -227,6 +227,14 @@ canonicalForm(expr, forms: CanonicalOptions)
 
 ```typescript
 // Types de patterns separes des MathNodes
+// Syntaxe string: lettres = wildcards par defaut
+parsePattern('x + 0'); // x est un wildcard
+parsePattern('x:positive'); // Avec contrainte
+parsePattern('a + __rest'); // Sequence 1+
+parsePattern('___opt'); // Sequence 0+
+parsePattern('$x'); // Variable litterale (rare)
+
+// API builder
 P._('x'); // Wildcard simple
 P._('x', P.isPositive()); // Avec contrainte
 P.__('terms'); // Sequence 1+
@@ -246,23 +254,24 @@ P._('x', P.not(P.isNegative()));
 '_'; // Universel (pas de capture)
 '_x'; // Capture nommee
 '__x'; // Sequence 0+
-'___x'[ // Sequence 1+
-	// Pattern via MathJSON
-	('Add', '_a', '_b')
-];
+'___x'; // Sequence 1+
+// Pattern via MathJSON
+['Add', '_a', '_b'];
 ```
 
 ### Comparaison
 
-| Aspect                | mathAST                  | Compute Engine         |
-| --------------------- | ------------------------ | ---------------------- |
-| **Separation types**  | Pattern != MathNode      | Pattern = Expression   |
-| **Sequence 0+**       | `P.___()`                | `__`                   |
-| **Sequence 1+**       | `P.__()`                 | `___`                  |
-| **Contraintes**       | Composables (and/or/not) | Inline (`:positive`)   |
-| **Custom predicates** | `P.custom(fn)`           | Via condition function |
-| **FreeOf**            | `P.isFreeOf('x')`        | Non natif              |
-| **Commutativite**     | Auto pour Add/Mul        | Permutations completes |
+| Aspect                 | mathAST                     | Compute Engine            |
+| ---------------------- | --------------------------- | ------------------------- |
+| **Syntaxe string**     | `x + 0` (lettres=wildcards) | `_x + 0` (prefixe requis) |
+| **Separation types**   | Pattern != MathNode         | Pattern = Expression      |
+| **Sequence 0+**        | `P.___()`/`___x`            | `__`                      |
+| **Sequence 1+**        | `P.__()`/`__x`              | `___`                     |
+| **Variable litterale** | `$x`                        | Pas de syntaxe directe    |
+| **Contraintes**        | Composables (and/or/not)    | Inline (`:positive`)      |
+| **Custom predicates**  | `P.custom(fn)`              | Via condition function    |
+| **FreeOf**             | `P.isFreeOf('x')`           | Non natif                 |
+| **Commutativite**      | Auto pour Add/Mul           | Permutations completes    |
 
 ---
 
