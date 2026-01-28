@@ -14,6 +14,7 @@ export {
 	simplifyPythagorean,
 	simplifyQuotients,
 	linearize,
+	expandAddition,
 	// Individual transforms (for testing/direct use)
 	TRANSFORM_SIN_COS_PRODUCT,
 	TRANSFORM_DOUBLE_ANGLE_SIN,
@@ -26,6 +27,10 @@ export {
 	TRANSFORM_COS_COS_PRODUCT,
 	TRANSFORM_SIN_SIN_PRODUCT,
 	TRANSFORM_SIN_COS_DIFFERENT,
+	TRANSFORM_COS_SUM,
+	TRANSFORM_COS_DIFFERENCE,
+	TRANSFORM_SIN_SUM,
+	TRANSFORM_SIN_DIFFERENCE,
 	// Types
 	type TrigTransformResult
 } from './trig-identities';
