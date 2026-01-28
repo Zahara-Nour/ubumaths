@@ -44,7 +44,15 @@ import {
 	isQuadraticForm,
 	isFactoredForm,
 	hasCommonFactor,
-	type DetectedStructure
+	type DetectedStructure,
+
+	// Symmetry detection
+	detectSymmetry,
+	isEven,
+	isOdd,
+	hasNoSymmetry,
+	type SymmetryType,
+	type SymmetryResult
 } from '$lib/mathAST/analysis';
 ```
 
@@ -354,6 +362,87 @@ equalLinearCombinations(parseLatex('2x + 3y'), parseLatex('3y + 2x'), ['x', 'y']
 | `sin(x)`   | Variable inside function             |
 
 ---
+
+---
+
+## Symmetry Detection
+
+Detects whether expressions are even, odd, or neither.
+
+### `detectSymmetry(node, variable?)`
+
+Returns detailed symmetry analysis.
+
+```typescript
+import { parseLatex } from '$lib/mathAST';
+import { detectSymmetry } from '$lib/mathAST/analysis';
+
+// Even functions: f(-x) = f(x)
+detectSymmetry(parseLatex('x^2'));
+// → { symmetry: 'even', variable: 'x', confidence: 'proven' }
+
+detectSymmetry(parseLatex('\\cos(x)'));
+// → { symmetry: 'even', variable: 'x', confidence: 'heuristic' }
+
+// Odd functions: f(-x) = -f(x)
+detectSymmetry(parseLatex('x^3'));
+// → { symmetry: 'odd', variable: 'x', confidence: 'proven' }
+
+detectSymmetry(parseLatex('\\sin(x)'));
+// → { symmetry: 'odd', variable: 'x', confidence: 'heuristic' }
+
+// No symmetry
+detectSymmetry(parseLatex('x^2 + x'));
+// → { symmetry: 'none', variable: 'x', confidence: 'proven' }
+```
+
+**Returns:** `SymmetryResult`
+
+```typescript
+type SymmetryType = 'even' | 'odd' | 'none' | 'unknown';
+
+interface SymmetryResult {
+	symmetry: SymmetryType;
+	variable: string;
+	confidence: 'proven' | 'heuristic';
+	reason?: string;
+}
+```
+
+### Helper Functions
+
+```typescript
+// Boolean checks
+isEven(parseLatex('x^2')); // true
+isEven(parseLatex('\\cos(x)')); // true
+isEven(parseLatex('x^3')); // false
+
+isOdd(parseLatex('x^3')); // true
+isOdd(parseLatex('\\sin(x)')); // true
+isOdd(parseLatex('x^2')); // false
+
+hasNoSymmetry(parseLatex('x^2 + x')); // true
+hasNoSymmetry(parseLatex('x + 1')); // true
+```
+
+### Symmetry Rules
+
+| Expression | Type | Reason                      |
+| ---------- | ---- | --------------------------- |
+| `x²`       | even | Even power                  |
+| `x³`       | odd  | Odd power                   |
+| `cos(x)`   | even | Known even function         |
+| `sin(x)`   | odd  | Known odd function          |
+| `x·sin(x)` | even | odd × odd = even            |
+| `x·cos(x)` | odd  | odd × even = odd            |
+| `x² + x`   | none | even + odd = none           |
+| `cos(x³)`  | even | even function of odd = even |
+
+### Known Functions
+
+| Even                | Odd                                    |
+| ------------------- | -------------------------------------- |
+| cos, cosh, abs, sec | sin, sinh, tan, tanh, cot, csc, arcsin |
 
 ---
 
