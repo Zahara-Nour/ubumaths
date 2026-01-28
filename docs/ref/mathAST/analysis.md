@@ -355,8 +355,38 @@ equalLinearCombinations(parseLatex('2x + 3y'), parseLatex('3y + 2x'), ['x', 'y']
 
 ---
 
+---
+
+## Domain Analysis
+
+The analysis module re-exports the complete domain module for convenience.
+
+```typescript
+import {
+	// Domain computation
+	computeDomain,
+	computeRange,
+
+	// Domain factories
+	positiveReals,
+	nonNegativeReals,
+	nonZeroReals,
+
+	// Validation
+	isInDomain,
+	getDomainViolations
+
+	// ... and all other domain exports
+} from '$lib/mathAST/analysis';
+```
+
+For complete domain documentation, see [Domain](./domain.md).
+
+---
+
 ## See Also
 
+- [Domain](./domain.md) - Domain of definition computation and validation
 - [Pattern Matching](./patterns.md) - For complex structural matching
 - [Normalization](./normalization.md) - For polynomial equivalence checking
 - [Types](./types.md) - MathNode type definitions
