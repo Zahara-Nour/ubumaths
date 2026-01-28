@@ -567,6 +567,30 @@ Functions with **half-period antisymmetry** (f(x + T/2) = -f(x)) have reduced pe
 | `sin³(x)`       | 2π     | Odd power preserves antisymmetry             |
 | `tan²(x)`       | π      | tan has no antisymmetry, period unchanged    |
 
+### Absolute Value
+
+If f(x) has half-period antisymmetry (f(x + T/2) = -f(x)), then |f(x)| has period T/2:
+
+| Expression    | Period  | Reason                                    |
+| ------------- | ------- | ----------------------------------------- |
+| `\|sin(x)\|`  | **π**   | \|sin(x + π)\| = \|-sin(x)\| = \|sin(x)\| |
+| `\|cos(x)\|`  | **π**   | Same antisymmetry property                |
+| `\|sin(2x)\|` | **π/2** | Period of sin(2x) is π, halved            |
+| `\|tan(x)\|`  | π       | tan has no antisymmetry, unchanged        |
+
+### Step Functions (floor, ceil, frac)
+
+Step functions have period 1 (or scaled):
+
+| Expression      | Period | Reason                       |
+| --------------- | ------ | ---------------------------- |
+| `floor(x)`      | 1      | Staircase pattern            |
+| `ceil(x)`       | 1      | Staircase pattern            |
+| `frac(x)`       | 1      | Truly periodic: x - floor(x) |
+| `floor(2x)`     | 0.5    | Period = 1 / 2               |
+| `floor(x/3)`    | 3      | Period = 1 × 3               |
+| `floor(sin(x))` | 2π     | Composition with periodic    |
+
 ### Function Compositions
 
 For f(g(x)) where g(x) is periodic with period T, the composition f(g(x)) also has period T:

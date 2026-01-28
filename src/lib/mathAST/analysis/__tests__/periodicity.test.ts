@@ -4,6 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseLatex } from '../../parser';
+import { func, variable } from '../../factory';
 import { detectPeriodicity, isPeriodic, getPeriod, getPeriodNumeric } from '../periodicity';
 
 const PI = Math.PI;
@@ -206,6 +207,82 @@ describe('detectPeriodicity', () => {
 		it('should detect constant as non-periodic', () => {
 			const result = detectPeriodicity(parseLatex('5'));
 			expect(result.isPeriodic).toBe(false);
+		});
+	});
+
+	describe('absolute value', () => {
+		it('should detect |sin(x)| as periodic with period π', () => {
+			// |sin(x + π)| = |-sin(x)| = |sin(x)|, so period is π
+			const result = detectPeriodicity(parseLatex('|\\sin(x)|'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI, 5);
+		});
+
+		it('should detect |cos(x)| as periodic with period π', () => {
+			const result = detectPeriodicity(parseLatex('|\\cos(x)|'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI, 5);
+		});
+
+		it('should detect |sin(2x)| as periodic with period π/2', () => {
+			// sin(2x) has period π, |sin(2x)| has period π/2
+			const result = detectPeriodicity(parseLatex('|\\sin(2x)|'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI / 2, 5);
+		});
+
+		it('should detect |tan(x)| as periodic with period π (no reduction)', () => {
+			// tan has no half-period antisymmetry, so |tan(x)| has same period as tan(x)
+			const result = detectPeriodicity(parseLatex('|\\tan(x)|'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI, 5);
+		});
+
+		it('should detect |x| as non-periodic', () => {
+			const result = detectPeriodicity(parseLatex('|x|'));
+			expect(result.isPeriodic).toBe(false);
+		});
+	});
+
+	describe('step functions (floor, ceil, frac)', () => {
+		it('should detect floor(x) as periodic with period 1', () => {
+			const result = detectPeriodicity(parseLatex('\\lfloor x \\rfloor'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(1, 5);
+		});
+
+		it('should detect ceil(x) as periodic with period 1', () => {
+			const result = detectPeriodicity(parseLatex('\\lceil x \\rceil'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(1, 5);
+		});
+
+		it('should detect floor(2x) as periodic with period 0.5', () => {
+			const result = detectPeriodicity(parseLatex('\\lfloor 2x \\rfloor'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(0.5, 5);
+		});
+
+		it('should detect floor(x/3) as periodic with period 3', () => {
+			const result = detectPeriodicity(parseLatex('\\lfloor \\frac{x}{3} \\rfloor'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(3, 5);
+		});
+
+		it('should detect frac(x) as periodic with period 1', () => {
+			// frac(x) = x - floor(x) is truly periodic
+			// Create node directly since \{x\} is not supported by the parser
+			const fracNode = func('frac', [variable('x')]);
+			const result = detectPeriodicity(fracNode);
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(1, 5);
+		});
+
+		it('should detect floor(sin(x)) as periodic with period 2π', () => {
+			// Composition: floor of periodic function
+			const result = detectPeriodicity(parseLatex('\\lfloor \\sin(x) \\rfloor'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(TWO_PI, 5);
 		});
 	});
 
