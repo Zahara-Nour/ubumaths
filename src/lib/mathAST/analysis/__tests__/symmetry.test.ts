@@ -235,3 +235,39 @@ describe('hasNoSymmetry', () => {
 		expect(hasNoSymmetry(parseLatex('x^3'))).toBe(false);
 	});
 });
+
+describe('domain symmetry', () => {
+	it('should detect non-symmetric domain for sqrt(x)', () => {
+		// sqrt(x) has domain [0, +∞[ which is not symmetric
+		const result = detectSymmetry(parseLatex('\\sqrt{x}'));
+		expect(result.symmetry).toBe('none');
+		expect(result.reason).toContain('Domain');
+	});
+
+	it('should detect non-symmetric domain for ln(x)', () => {
+		// ln(x) has domain ]0, +∞[ which is not symmetric
+		const result = detectSymmetry(parseLatex('\\ln(x)'));
+		expect(result.symmetry).toBe('none');
+		expect(result.reason).toContain('Domain');
+	});
+
+	it('should allow symmetric domain for ln(x^2)', () => {
+		// ln(x^2) has domain ℝ \ {0} which is symmetric
+		// But the function itself: ln((-x)^2) = ln(x^2) → even
+		const result = detectSymmetry(parseLatex('\\ln(x^2)'));
+		expect(result.symmetry).toBe('even');
+	});
+
+	it('should allow symmetric domain for 1/x', () => {
+		// 1/x has domain ℝ \ {0} which is symmetric
+		// And the function is odd: 1/(-x) = -1/x
+		const result = detectSymmetry(parseLatex('\\frac{1}{x}'));
+		expect(result.symmetry).toBe('odd');
+	});
+
+	it('should allow symmetric domain for x^2 + 1', () => {
+		// x^2 + 1 has domain ℝ which is symmetric
+		const result = detectSymmetry(parseLatex('x^2 + 1'));
+		expect(result.symmetry).toBe('even');
+	});
+});

@@ -444,6 +444,28 @@ hasNoSymmetry(parseLatex('x + 1')); // true
 | ------------------- | -------------------------------------- |
 | cos, cosh, abs, sec | sin, sinh, tan, tanh, cot, csc, arcsin |
 
+### Domain Symmetry Requirement
+
+A function can only be even or odd if its domain is symmetric about the origin.
+
+```typescript
+// sqrt(x) has domain [0, +∞[ - NOT symmetric
+detectSymmetry(parseLatex('\\sqrt{x}'));
+// → { symmetry: 'none', reason: 'Domain is not symmetric...' }
+
+// ln(x) has domain ]0, +∞[ - NOT symmetric
+detectSymmetry(parseLatex('\\ln(x)'));
+// → { symmetry: 'none', reason: 'Domain is not symmetric...' }
+
+// ln(x²) has domain ℝ \ {0} - symmetric, and function is even
+detectSymmetry(parseLatex('\\ln(x^2)'));
+// → { symmetry: 'even', ... }
+
+// 1/x has domain ℝ \ {0} - symmetric, and function is odd
+detectSymmetry(parseLatex('\\frac{1}{x}'));
+// → { symmetry: 'odd', ... }
+```
+
 ---
 
 ## Domain Analysis
