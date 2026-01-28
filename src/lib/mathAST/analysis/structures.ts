@@ -9,10 +9,14 @@
  * - Factored form: (x - r₁)(x - r₂)
  * - Common factors: k(...)
  *
+ * Uses the pattern matching system for structure detection.
+ *
  * @module mathAST/analysis/structures
  */
 
 import type { MathNode } from '../types';
+import { P, match, type MatchBindings } from '../pattern';
+import { isMathNodeBinding } from '../pattern/types';
 import { flattenSumShallow, flattenProductShallow } from '../flatten';
 import {
 	isNumber,
@@ -21,11 +25,9 @@ import {
 	isMultiplication,
 	isOpposite,
 	isDelimiter,
-	isSuperscript,
 	isAddition,
 	isSubtraction
 } from '../guards';
-import { nodesEqual } from '../pattern';
 import { getVariables } from '../eval/substitute';
 import { analyzePolynomial } from './polynomial-analysis';
 import { getPolynomialDegree } from './expression-classify';
@@ -122,60 +124,57 @@ export interface CommonFactorInfo extends DetectedStructure {
 }
 
 // =============================================================================
+// Patterns
+// =============================================================================
+
+// a² - b² (difference of squares)
+const PATTERN_DIFF_SQUARES = P.sub(P.pow(P._('a'), P.num(2)), P.pow(P._('b'), P.num(2)));
+
+// a³ + b³ (sum of cubes)
+const PATTERN_SUM_CUBES = P.add(P.pow(P._('a'), P.num(3)), P.pow(P._('b'), P.num(3)));
+
+// a³ - b³ (difference of cubes)
+const PATTERN_DIFF_CUBES = P.sub(P.pow(P._('a'), P.num(3)), P.pow(P._('b'), P.num(3)));
+
+// =============================================================================
 // Helper Functions
 // =============================================================================
 
 /**
- * Check if node is a perfect square (x² or number that's a perfect square).
+ * Extract MathNode from bindings safely.
  */
-function isPerfectSquare(node: MathNode): { base: MathNode } | null {
-	// x^2
-	if (isSuperscript(node)) {
-		if (isNumber(node.superscript) && node.superscript.value === '2') {
-			return { base: node.base };
-		}
+function getBinding(bindings: MatchBindings, name: string): MathNode | null {
+	const value = bindings.get(name);
+	if (value && isMathNodeBinding(value)) {
+		return value;
 	}
-
-	// Numeric perfect square
-	if (isNumber(node)) {
-		const val = parseFloat(node.value);
-		const sqrt = Math.sqrt(val);
-		if (Number.isInteger(sqrt)) {
-			return { base: { type: 'number', value: String(sqrt) } };
-		}
-	}
-
-	// (expression)^2
-	if (isDelimiter(node)) {
-		const result = isPerfectSquare(node.content);
-		if (result) {
-			return result;
-		}
-	}
-
 	return null;
 }
 
 /**
- * Check if node is a perfect cube (x³ or number that's a perfect cube).
+ * Check if a number node represents a perfect square and return its root.
  */
-function isPerfectCube(node: MathNode): { base: MathNode } | null {
-	// x^3
-	if (isSuperscript(node)) {
-		if (isNumber(node.superscript) && node.superscript.value === '3') {
-			return { base: node.base };
-		}
+function numericPerfectSquareRoot(node: MathNode): MathNode | null {
+	if (!isNumber(node)) return null;
+	const val = parseFloat(node.value);
+	if (val < 0) return null;
+	const sqrt = Math.sqrt(val);
+	if (Number.isInteger(sqrt)) {
+		return { type: 'number', value: String(sqrt) };
 	}
+	return null;
+}
 
-	// Numeric perfect cube
-	if (isNumber(node)) {
-		const val = parseFloat(node.value);
-		const cbrt = Math.cbrt(val);
-		if (Number.isInteger(cbrt)) {
-			return { base: { type: 'number', value: String(cbrt) } };
-		}
+/**
+ * Check if a number node represents a perfect cube and return its root.
+ */
+function numericPerfectCubeRoot(node: MathNode): MathNode | null {
+	if (!isNumber(node)) return null;
+	const val = parseFloat(node.value);
+	const cbrt = Math.cbrt(val);
+	if (Number.isInteger(cbrt)) {
+		return { type: 'number', value: String(cbrt) };
 	}
-
 	return null;
 }
 
@@ -193,10 +192,17 @@ function getNumericValue(node: MathNode): number | null {
 }
 
 /**
- * Check if two nodes are equal (structurally).
+ * Greatest common divisor of two numbers.
  */
-function areEqual(a: MathNode, b: MathNode): boolean {
-	return nodesEqual(a, b);
+function gcd(a: number, b: number): number {
+	a = Math.abs(a);
+	b = Math.abs(b);
+	while (b > 0) {
+		const t = b;
+		b = a % b;
+		a = t;
+	}
+	return a;
 }
 
 // =============================================================================
@@ -210,25 +216,52 @@ function areEqual(a: MathNode, b: MathNode): boolean {
  * @returns DifferenceOfSquaresInfo if detected, null otherwise
  */
 export function isDifferenceOfSquares(node: MathNode): DifferenceOfSquaresInfo | null {
-	// Must be a subtraction
-	if (!isSubtraction(node)) {
-		return null;
+	// Try pattern match first: a² - b²
+	const result = match(PATTERN_DIFF_SQUARES, node);
+	if (result.success) {
+		const a = getBinding(result.bindings, 'a');
+		const b = getBinding(result.bindings, 'b');
+		if (a && b) {
+			return {
+				type: 'difference_of_squares',
+				a,
+				b,
+				confidence: 'certain'
+			};
+		}
 	}
 
-	// Both sides must be perfect squares
-	const leftSquare = isPerfectSquare(node.left);
-	const rightSquare = isPerfectSquare(node.right);
+	// Check for numeric perfect squares: e.g., x² - 9 where 9 = 3²
+	if (!isSubtraction(node)) return null;
 
-	if (!leftSquare || !rightSquare) {
-		return null;
+	// Left side: check if it's a² or a numeric perfect square
+	let aBase: MathNode | null = null;
+	const leftResult = match(P.pow(P._('a'), P.num(2)), node.left);
+	if (leftResult.success) {
+		aBase = getBinding(leftResult.bindings, 'a');
+	} else {
+		aBase = numericPerfectSquareRoot(node.left);
 	}
 
-	return {
-		type: 'difference_of_squares',
-		a: leftSquare.base,
-		b: rightSquare.base,
-		confidence: 'certain'
-	};
+	// Right side: check if it's b² or a numeric perfect square
+	let bBase: MathNode | null = null;
+	const rightResult = match(P.pow(P._('b'), P.num(2)), node.right);
+	if (rightResult.success) {
+		bBase = getBinding(rightResult.bindings, 'b');
+	} else {
+		bBase = numericPerfectSquareRoot(node.right);
+	}
+
+	if (aBase && bBase) {
+		return {
+			type: 'difference_of_squares',
+			a: aBase,
+			b: bBase,
+			confidence: 'certain'
+		};
+	}
+
+	return null;
 }
 
 /**
@@ -245,18 +278,32 @@ export function isPerfectSquareTrinomial(node: MathNode): PerfectSquareTrinomial
 		return null;
 	}
 
-	// Find the two perfect square terms
+	// Find terms that are perfect squares (x² or numeric squares)
 	const squareTerms: { base: MathNode; sign: '+' | '-'; index: number }[] = [];
 	let middleTermIndex = -1;
 
 	for (let i = 0; i < terms.length; i++) {
 		const { sign, term } = terms[i];
-		const square = isPerfectSquare(term);
-		if (square) {
-			squareTerms.push({ base: square.base, sign, index: i });
-		} else {
-			middleTermIndex = i;
+
+		// Check if term is a² pattern
+		const powResult = match(P.pow(P._('base'), P.num(2)), term);
+		if (powResult.success) {
+			const base = getBinding(powResult.bindings, 'base');
+			if (base) {
+				squareTerms.push({ base, sign, index: i });
+				continue;
+			}
 		}
+
+		// Check if term is a numeric perfect square
+		const numRoot = numericPerfectSquareRoot(term);
+		if (numRoot) {
+			squareTerms.push({ base: numRoot, sign, index: i });
+			continue;
+		}
+
+		// This is the middle term
+		middleTermIndex = i;
 	}
 
 	// Need exactly 2 square terms and 1 middle term
@@ -274,8 +321,6 @@ export function isPerfectSquareTrinomial(node: MathNode): PerfectSquareTrinomial
 	const middleTerm = terms[middleTermIndex];
 
 	// Middle term should be ±2ab
-	// Check if middle term equals 2ab or -2ab
-	// This is a simplified check - we verify the coefficient is ±2 and contains both bases
 	const middleCoeff = extractMiddleTermCoeff(middleTerm.term, a, b);
 
 	if (middleCoeff === null) {
@@ -310,17 +355,21 @@ function extractMiddleTermCoeff(term: MathNode, a: MathNode, b: MathNode): numbe
 	const bNumeric = isNumber(b) ? parseFloat(b.value) : null;
 	const bIsOne = bNumeric === 1;
 
+	// Use pattern matching to find a and b in factors
+	const patternA = P.lit(a);
+	const patternB = P.lit(b);
+
 	for (const factor of factors) {
-		if (areEqual(factor, a)) {
+		const matchA = match(patternA, factor);
+		const matchB = match(patternB, factor);
+
+		if (matchA.success) {
 			foundA = true;
-		} else if (!bIsOne && bNumeric === null && areEqual(factor, b)) {
-			// b is not a number, check for structural equality
+		} else if (!bIsOne && bNumeric === null && matchB.success) {
 			foundB = true;
 		} else if (isNumber(factor)) {
 			numericCoeff *= parseFloat(factor.value);
 		} else {
-			// Unknown factor - might be acceptable in some cases
-			// For now, we'll be strict
 			return null;
 		}
 	}
@@ -328,17 +377,12 @@ function extractMiddleTermCoeff(term: MathNode, a: MathNode, b: MathNode): numbe
 	// If b is 1, we only need to find a
 	if (bIsOne) {
 		if (!foundA) return null;
-		// Coefficient should be 2 (for perfect square trinomial with b=1)
 		if (numericCoeff !== 2 && numericCoeff !== -2) return null;
 		return numericCoeff;
 	}
 
 	// If b is a number (not 1), check if numeric coefficient includes b
 	if (bNumeric !== null) {
-		// For x² + 4x + 4 = (x + 2)²:
-		// a = x, b = 2, middle term = 4x
-		// We need: numericCoeff = 2 * b = 2 * 2 = 4
-		// So we check if numericCoeff / bNumeric = 2 or -2
 		if (!foundA) return null;
 		const effectiveCoeff = numericCoeff / bNumeric;
 		if (effectiveCoeff !== 2 && effectiveCoeff !== -2) return null;
@@ -346,12 +390,10 @@ function extractMiddleTermCoeff(term: MathNode, a: MathNode, b: MathNode): numbe
 	}
 
 	// b is a symbolic expression
-	// Must have found both a and b
 	if (!foundA || !foundB) {
 		return null;
 	}
 
-	// Coefficient should be 2 (for perfect square trinomial)
 	if (numericCoeff !== 2 && numericCoeff !== -2) {
 		return null;
 	}
@@ -366,23 +408,50 @@ function extractMiddleTermCoeff(term: MathNode, a: MathNode, b: MathNode): numbe
  * @returns SumOfCubesInfo if detected, null otherwise
  */
 export function isSumOfCubes(node: MathNode): SumOfCubesInfo | null {
-	if (!isAddition(node)) {
-		return null;
+	// Try pattern match first: a³ + b³
+	const result = match(PATTERN_SUM_CUBES, node);
+	if (result.success) {
+		const a = getBinding(result.bindings, 'a');
+		const b = getBinding(result.bindings, 'b');
+		if (a && b) {
+			return {
+				type: 'sum_of_cubes',
+				a,
+				b,
+				confidence: 'certain'
+			};
+		}
 	}
 
-	const leftCube = isPerfectCube(node.left);
-	const rightCube = isPerfectCube(node.right);
+	// Check for numeric perfect cubes: e.g., x³ + 8 where 8 = 2³
+	if (!isAddition(node)) return null;
 
-	if (!leftCube || !rightCube) {
-		return null;
+	let aBase: MathNode | null = null;
+	const leftResult = match(P.pow(P._('a'), P.num(3)), node.left);
+	if (leftResult.success) {
+		aBase = getBinding(leftResult.bindings, 'a');
+	} else {
+		aBase = numericPerfectCubeRoot(node.left);
 	}
 
-	return {
-		type: 'sum_of_cubes',
-		a: leftCube.base,
-		b: rightCube.base,
-		confidence: 'certain'
-	};
+	let bBase: MathNode | null = null;
+	const rightResult = match(P.pow(P._('b'), P.num(3)), node.right);
+	if (rightResult.success) {
+		bBase = getBinding(rightResult.bindings, 'b');
+	} else {
+		bBase = numericPerfectCubeRoot(node.right);
+	}
+
+	if (aBase && bBase) {
+		return {
+			type: 'sum_of_cubes',
+			a: aBase,
+			b: bBase,
+			confidence: 'certain'
+		};
+	}
+
+	return null;
 }
 
 /**
@@ -392,23 +461,50 @@ export function isSumOfCubes(node: MathNode): SumOfCubesInfo | null {
  * @returns DifferenceOfCubesInfo if detected, null otherwise
  */
 export function isDifferenceOfCubes(node: MathNode): DifferenceOfCubesInfo | null {
-	if (!isSubtraction(node)) {
-		return null;
+	// Try pattern match first: a³ - b³
+	const result = match(PATTERN_DIFF_CUBES, node);
+	if (result.success) {
+		const a = getBinding(result.bindings, 'a');
+		const b = getBinding(result.bindings, 'b');
+		if (a && b) {
+			return {
+				type: 'difference_of_cubes',
+				a,
+				b,
+				confidence: 'certain'
+			};
+		}
 	}
 
-	const leftCube = isPerfectCube(node.left);
-	const rightCube = isPerfectCube(node.right);
+	// Check for numeric perfect cubes: e.g., x³ - 27 where 27 = 3³
+	if (!isSubtraction(node)) return null;
 
-	if (!leftCube || !rightCube) {
-		return null;
+	let aBase: MathNode | null = null;
+	const leftResult = match(P.pow(P._('a'), P.num(3)), node.left);
+	if (leftResult.success) {
+		aBase = getBinding(leftResult.bindings, 'a');
+	} else {
+		aBase = numericPerfectCubeRoot(node.left);
 	}
 
-	return {
-		type: 'difference_of_cubes',
-		a: leftCube.base,
-		b: rightCube.base,
-		confidence: 'certain'
-	};
+	let bBase: MathNode | null = null;
+	const rightResult = match(P.pow(P._('b'), P.num(3)), node.right);
+	if (rightResult.success) {
+		bBase = getBinding(rightResult.bindings, 'b');
+	} else {
+		bBase = numericPerfectCubeRoot(node.right);
+	}
+
+	if (aBase && bBase) {
+		return {
+			type: 'difference_of_cubes',
+			a: aBase,
+			b: bBase,
+			confidence: 'certain'
+		};
+	}
+
+	return null;
 }
 
 /**
@@ -485,30 +581,67 @@ export function isFactoredForm(node: MathNode, variable?: string): FactoredFormI
 	const linearFactors: MathNode[] = [];
 	const roots: MathNode[] = [];
 
-	for (const factor of factors) {
-		// Each factor should be a linear binomial (x - r) or (x + r)
-		const linearInfo = extractLinearFactor(factor, targetVar);
+	// Patterns for linear factors: (x - r) and (x + r)
+	const patternXMinusR = P.sub(P.var(targetVar), P._('r'));
+	const patternXPlusR = P.add(P.var(targetVar), P._('r'));
+	const patternRMinusX = P.sub(P._('r'), P.var(targetVar));
+	const patternRPlusX = P.add(P._('r'), P.var(targetVar));
 
-		if (linearInfo === null) {
-			// Not all factors are linear - could be coefficient or other
-			// Allow numeric coefficients
-			if (isNumber(factor)) {
+	for (const factor of factors) {
+		// Unwrap delimiter if present
+		const inner = isDelimiter(factor) ? factor.content : factor;
+
+		// Try (x - r): root is r
+		let matchResult = match(patternXMinusR, inner);
+		if (matchResult.success) {
+			const r = getBinding(matchResult.bindings, 'r');
+			if (r) {
+				linearFactors.push(factor);
+				roots.push(r);
 				continue;
 			}
-			// Check for delimiter containing linear factor
-			if (isDelimiter(factor)) {
-				const innerInfo = extractLinearFactor(factor.content, targetVar);
-				if (innerInfo) {
-					linearFactors.push(factor);
-					roots.push(innerInfo.root);
-					continue;
-				}
-			}
-			return null;
 		}
 
-		linearFactors.push(factor);
-		roots.push(linearInfo.root);
+		// Try (x + r): root is -r
+		matchResult = match(patternXPlusR, inner);
+		if (matchResult.success) {
+			const r = getBinding(matchResult.bindings, 'r');
+			if (r) {
+				linearFactors.push(factor);
+				roots.push({ type: 'opposite', operand: r });
+				continue;
+			}
+		}
+
+		// Try (r - x): root is r
+		matchResult = match(patternRMinusX, inner);
+		if (matchResult.success) {
+			const r = getBinding(matchResult.bindings, 'r');
+			if (r) {
+				linearFactors.push(factor);
+				roots.push(r);
+				continue;
+			}
+		}
+
+		// Try (r + x): root is -r
+		matchResult = match(patternRPlusX, inner);
+		if (matchResult.success) {
+			const r = getBinding(matchResult.bindings, 'r');
+			if (r) {
+				linearFactors.push(factor);
+				roots.push({ type: 'opposite', operand: r });
+				continue;
+			}
+		}
+
+		// Allow numeric coefficients
+		if (isNumber(factor)) {
+			continue;
+		}
+
+		// Not a recognized factor
+		return null;
 	}
 
 	if (linearFactors.length < 2) {
@@ -522,47 +655,6 @@ export function isFactoredForm(node: MathNode, variable?: string): FactoredFormI
 		roots,
 		confidence: 'certain'
 	};
-}
-
-/**
- * Extract root from a linear factor (x - r) or (x + r).
- */
-function extractLinearFactor(node: MathNode, variable: string): { root: MathNode } | null {
-	// Handle delimiter
-	if (isDelimiter(node)) {
-		return extractLinearFactor(node.content, variable);
-	}
-
-	// Must be addition or subtraction
-	if (!isAddition(node) && !isSubtraction(node)) {
-		return null;
-	}
-
-	// Check if one side is just the variable
-	const leftIsVar = isVariable(node.left) && node.left.name === variable;
-	const rightIsVar = isVariable(node.right) && node.right.name === variable;
-
-	if (leftIsVar && isSubtraction(node)) {
-		// x - r: root is r
-		return { root: node.right };
-	}
-
-	if (leftIsVar && isAddition(node)) {
-		// x + r: root is -r
-		return { root: { type: 'opposite', operand: node.right } };
-	}
-
-	if (rightIsVar && isSubtraction(node)) {
-		// a - x: root is a
-		return { root: node.left };
-	}
-
-	if (rightIsVar && isAddition(node)) {
-		// a + x: This could be seen as x + a, root is -a
-		return { root: { type: 'opposite', operand: node.left } };
-	}
-
-	return null;
 }
 
 /**
@@ -648,19 +740,19 @@ function extractLeadingCoefficient(node: MathNode): number | null {
 	}
 
 	if (isMultiplication(node)) {
-		// Check left side first
 		if (isNumber(node.left)) {
 			return parseFloat(node.left.value);
 		}
-		// Could be nested
-		return 1; // Implicit coefficient of 1
+		return 1;
 	}
 
 	if (isVariable(node) || isGreek(node)) {
 		return 1;
 	}
 
-	if (isSuperscript(node)) {
+	// Check for power pattern
+	const powResult = match(P.pow(P._('base'), P._('exp')), node);
+	if (powResult.success) {
 		return 1;
 	}
 
@@ -703,20 +795,6 @@ function divideByCoefficient(node: MathNode, coeff: number): MathNode {
 		denominator: { type: 'number', value: String(coeff) },
 		displayStyle: 'fraction'
 	};
-}
-
-/**
- * Greatest common divisor of two numbers.
- */
-function gcd(a: number, b: number): number {
-	a = Math.abs(a);
-	b = Math.abs(b);
-	while (b > 0) {
-		const t = b;
-		b = a % b;
-		a = t;
-	}
-	return a;
 }
 
 // =============================================================================
