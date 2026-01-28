@@ -11,11 +11,186 @@
  */
 
 import type { MathNode } from '../types';
-import { isFunction, isNumber } from '../guards';
+import type { Domain, IntervalSet, Interval } from '../domain/types';
+import { isFunction, isNumber, isPositiveInfinity, isNegativeInfinity } from '../guards';
 import { opposite } from '../factory';
 import { substitute, getVariables } from '../eval/substitute';
 import { normalize, normalFormsEquivalent } from '../normal';
 import { mapNode } from '../transforms';
+import { computeDomain } from '../domain/compute';
+import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+
+// =============================================================================
+// Domain Symmetry Checking
+// =============================================================================
+
+/**
+ * Check if a domain is symmetric about the origin.
+ * A domain D is symmetric if x ∈ D ⟺ -x ∈ D.
+ *
+ * @returns true if symmetric, false if not, undefined if cannot determine
+ */
+function isDomainSymmetric(domain: Domain): boolean | undefined {
+	switch (domain.kind) {
+		case 'universal':
+			// ℝ is symmetric
+			return true;
+
+		case 'empty':
+			// ∅ is symmetric (vacuously)
+			return true;
+
+		case 'interval_set':
+			return isIntervalSetSymmetric(domain);
+
+		case 'condition':
+			// Cannot easily determine symmetry for condition domains
+			return undefined;
+
+		case 'periodic_exclusion':
+			// Periodic exclusions like tan(x) are symmetric if base is symmetric
+			// For now, assume unknown
+			return undefined;
+
+		default:
+			return undefined;
+	}
+}
+
+/**
+ * Check if an interval set is symmetric about the origin.
+ */
+function isIntervalSetSymmetric(domain: IntervalSet): boolean | undefined {
+	const intervals = domain.intervals;
+	const excluded = domain.excludedPoints ?? [];
+
+	// Check excluded points are symmetric
+	for (const point of excluded) {
+		const value = evaluateNodeToApproximatedNumber(point.value);
+		if (!isFinite(value)) continue;
+
+		// If x is excluded, -x must also be excluded
+		const hasNegative = excluded.some((p) => {
+			const v = evaluateNodeToApproximatedNumber(p.value);
+			return isFinite(v) && Math.abs(v + value) < 1e-10;
+		});
+
+		if (!hasNegative && Math.abs(value) > 1e-10) {
+			return false;
+		}
+	}
+
+	// Single interval case
+	if (intervals.length === 1) {
+		return isIntervalSymmetric(intervals[0]);
+	}
+
+	// Multiple intervals: each interval must have a symmetric counterpart
+	for (const interval of intervals) {
+		const mirror = getMirrorInterval(interval);
+		if (!mirror) return undefined;
+
+		const hasMirror = intervals.some((i) => intervalsMatch(i, mirror));
+		if (!hasMirror) return false;
+	}
+
+	return true;
+}
+
+/**
+ * Check if a single interval is symmetric about the origin.
+ * Examples: [-1, 1], ]-∞, +∞[, ]-a, a[
+ */
+function isIntervalSymmetric(interval: Interval): boolean | undefined {
+	const lowerVal = getEndpointNumericValue(interval.lower.value);
+	const upperVal = getEndpointNumericValue(interval.upper.value);
+
+	// Handle infinities
+	const lowerIsNegInf = isNegativeInfinity(interval.lower.value);
+	const upperIsPosInf = isPositiveInfinity(interval.upper.value);
+
+	// ]-∞, +∞[ is symmetric
+	if (lowerIsNegInf && upperIsPosInf) {
+		return true;
+	}
+
+	// ]-∞, a] or [a, +∞[ - not symmetric unless a = 0 with special structure
+	if (lowerIsNegInf || upperIsPosInf) {
+		// One-sided infinite intervals are not symmetric
+		return false;
+	}
+
+	// Finite interval [a, b]
+	if (lowerVal !== undefined && upperVal !== undefined) {
+		// Symmetric if a = -b and same endpoint types
+		const isSymmetricBounds = Math.abs(lowerVal + upperVal) < 1e-10;
+		const sameTypes = interval.lower.type === interval.upper.type;
+		return isSymmetricBounds && sameTypes;
+	}
+
+	// Cannot determine numerically
+	return undefined;
+}
+
+/**
+ * Get the mirror interval (negated endpoints).
+ * [a, b] → [-b, -a]
+ */
+function getMirrorInterval(
+	interval: Interval
+): { lower: number; upper: number; lowerType: string; upperType: string } | undefined {
+	const lowerVal = getEndpointNumericValue(interval.lower.value);
+	const upperVal = getEndpointNumericValue(interval.upper.value);
+
+	if (lowerVal === undefined || upperVal === undefined) {
+		return undefined;
+	}
+
+	return {
+		lower: -upperVal,
+		upper: -lowerVal,
+		lowerType: interval.upper.type, // Swap types
+		upperType: interval.lower.type
+	};
+}
+
+/**
+ * Check if two intervals match (approximately).
+ */
+function intervalsMatch(
+	interval: Interval,
+	target: { lower: number; upper: number; lowerType: string; upperType: string }
+): boolean {
+	const lowerVal = getEndpointNumericValue(interval.lower.value);
+	const upperVal = getEndpointNumericValue(interval.upper.value);
+
+	if (lowerVal === undefined || upperVal === undefined) {
+		return false;
+	}
+
+	return (
+		Math.abs(lowerVal - target.lower) < 1e-10 &&
+		Math.abs(upperVal - target.upper) < 1e-10 &&
+		interval.lower.type === target.lowerType &&
+		interval.upper.type === target.upperType
+	);
+}
+
+/**
+ * Get numeric value of an endpoint, or undefined if not evaluable.
+ */
+function getEndpointNumericValue(value: MathNode): number | undefined {
+	if (isPositiveInfinity(value) || isNegativeInfinity(value)) {
+		return undefined;
+	}
+
+	try {
+		const num = evaluateNodeToApproximatedNumber(value);
+		return isFinite(num) ? num : undefined;
+	} catch {
+		return undefined;
+	}
+}
 
 // =============================================================================
 // Types
@@ -391,6 +566,25 @@ export function detectSymmetry(node: MathNode, variable?: string): SymmetryResul
 			confidence: 'proven',
 			reason: `Expression is constant in ${targetVar}`
 		};
+	}
+
+	// Check domain symmetry first
+	// A function can only be even/odd if its domain is symmetric about 0
+	try {
+		const domainResult = computeDomain(node, targetVar);
+		const domainSymmetric = isDomainSymmetric(domainResult.domain);
+
+		if (domainSymmetric === false) {
+			return {
+				symmetry: 'none',
+				variable: targetVar,
+				confidence: 'proven',
+				reason: 'Domain is not symmetric about the origin'
+			};
+		}
+		// If domainSymmetric is undefined, we continue with other checks
+	} catch {
+		// Domain computation failed, continue with symmetry detection
 	}
 
 	// Try heuristic first (fast)
