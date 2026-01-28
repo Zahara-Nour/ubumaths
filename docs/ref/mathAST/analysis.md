@@ -479,11 +479,11 @@ detectSymmetry(parseLatex('\\frac{1}{x}'));
 
 ## Periodicity Detection
 
-Detects whether expressions are periodic and computes their period.
+Detects whether expressions are periodic and computes their **minimal** period.
 
 ### `detectPeriodicity(node, variable?)`
 
-Returns detailed periodicity analysis.
+Returns detailed periodicity analysis with symbolic period.
 
 ```typescript
 import { parseLatex } from '$lib/mathAST';
@@ -491,21 +491,35 @@ import { detectPeriodicity } from '$lib/mathAST/analysis';
 
 // Basic trigonometric functions
 detectPeriodicity(parseLatex('\\sin(x)'));
-// → { isPeriodic: true, periodNumeric: 6.283..., variable: 'x' }
+// → { isPeriodic: true, period: 2π (symbolic), periodNumeric: 6.283..., variable: 'x' }
 
 detectPeriodicity(parseLatex('\\tan(x)'));
-// → { isPeriodic: true, periodNumeric: 3.141..., variable: 'x' }
+// → { isPeriodic: true, period: π (symbolic), periodNumeric: 3.141..., variable: 'x' }
 
 // Scaled arguments: sin(kx) has period 2π/k
 detectPeriodicity(parseLatex('\\sin(2x)'));
-// → { isPeriodic: true, periodNumeric: 3.141..., ... }
+// → { isPeriodic: true, period: π (symbolic), periodNumeric: 3.141..., ... }
 
-detectPeriodicity(parseLatex('\\cos(\\pi x)'));
-// → { isPeriodic: true, periodNumeric: 2, ... }
+// Minimal period detection (half-period antisymmetry)
+detectPeriodicity(parseLatex('\\sin^2(x)'));
+// → { isPeriodic: true, period: π (symbolic), periodNumeric: 3.141..., ... }
+
+detectPeriodicity(parseLatex('\\sin(x)\\cos(x)'));
+// → { isPeriodic: true, period: π (symbolic), periodNumeric: 3.141..., ... }
+
+// Function compositions
+detectPeriodicity(parseLatex('\\sin(\\sin(x))'));
+// → { isPeriodic: true, period: 2π, periodNumeric: 6.283..., ... }
+
+detectPeriodicity(parseLatex('\\exp(\\sin(x))'));
+// → { isPeriodic: true, period: 2π, periodNumeric: 6.283..., ... }
 
 // Non-periodic functions
 detectPeriodicity(parseLatex('x^2'));
 // → { isPeriodic: false, period: null }
+
+detectPeriodicity(parseLatex('\\sin(x^2)'));
+// → { isPeriodic: false, period: null } (x² is not periodic)
 ```
 
 **Returns:** `PeriodicityResult`
@@ -513,8 +527,8 @@ detectPeriodicity(parseLatex('x^2'));
 ```typescript
 interface PeriodicityResult {
 	isPeriodic: boolean;
-	period: MathNode | null;
-	periodNumeric: number | null;
+	period: MathNode | null; // Symbolic period (e.g., π, 2π, 2π/3)
+	periodNumeric: number | null; // Numeric approximation
 	variable: string;
 	confidence: 'proven' | 'heuristic';
 	reason?: string;
@@ -528,35 +542,63 @@ interface PeriodicityResult {
 isPeriodic(parseLatex('\\sin(x)')); // true
 isPeriodic(parseLatex('x^2')); // false
 
-// Get period as MathNode
-getPeriod(parseLatex('\\sin(x)')); // 2π node
+// Get period as MathNode (symbolic)
+getPeriod(parseLatex('\\sin(x)')); // 2π node (multiplication)
+getPeriod(parseLatex('\\sin^2(x)')); // π node (constant)
 getPeriod(parseLatex('x^2')); // null
 
 // Get numeric period
 getPeriodNumeric(parseLatex('\\sin(x)')); // 6.283185...
 getPeriodNumeric(parseLatex('\\tan(x)')); // 3.141592...
-getPeriodNumeric(parseLatex('\\sin(2x)')); // 3.141592...
+getPeriodNumeric(parseLatex('\\sin^2(x)')); // 3.141592... (minimal period)
 ```
+
+### Minimal Period Detection
+
+Functions with **half-period antisymmetry** (f(x + T/2) = -f(x)) have reduced period when squared or multiplied:
+
+| Expression      | Period | Reason                                       |
+| --------------- | ------ | -------------------------------------------- |
+| `sin(x)`        | 2π     | Base period                                  |
+| `sin²(x)`       | **π**  | sin(x + π) = -sin(x) → sin²(x + π) = sin²(x) |
+| `cos²(x)`       | **π**  | Same antisymmetry property                   |
+| `sin(x)·cos(x)` | **π**  | Both antisymmetric → product has period π    |
+| `sin(x)/cos(x)` | **π**  | Both antisymmetric → quotient has period π   |
+| `sin³(x)`       | 2π     | Odd power preserves antisymmetry             |
+| `tan²(x)`       | π      | tan has no antisymmetry, period unchanged    |
+
+### Function Compositions
+
+For f(g(x)) where g(x) is periodic with period T, the composition f(g(x)) also has period T:
+
+| Expression    | Period | Reason                     |
+| ------------- | ------ | -------------------------- |
+| `sin(sin(x))` | 2π     | Inner sin(x) has period 2π |
+| `cos(sin(x))` | 2π     | Inner sin(x) has period 2π |
+| `sin(tan(x))` | π      | Inner tan(x) has period π  |
+| `exp(sin(x))` | 2π     | Inner sin(x) has period 2π |
+| `2^{cos(x)}`  | 2π     | Inner cos(x) has period 2π |
+| `sin(x²)`     | ❌     | x² is not periodic         |
+| `sin(eˣ)`     | ❌     | eˣ is not periodic         |
 
 ### Periodicity Rules
 
-| Expression        | Period | Reason                |
-| ----------------- | ------ | --------------------- |
-| `sin(x)`          | 2π     | Base period           |
-| `cos(x)`          | 2π     | Base period           |
-| `tan(x)`          | π      | Base period           |
-| `sin(2x)`         | π      | Period = 2π / 2       |
-| `cos(πx)`         | 2      | Period = 2π / π       |
-| `sin(x) + cos(x)` | 2π     | LCM of periods        |
-| `sin(x) * cos(x)` | 2π     | LCM of periods        |
-| `sin²(x)`         | 2π     | Same as base function |
+| Expression        | Period | Reason          |
+| ----------------- | ------ | --------------- |
+| `sin(x)`          | 2π     | Base period     |
+| `cos(x)`          | 2π     | Base period     |
+| `tan(x)`          | π      | Base period     |
+| `sin(2x)`         | π      | Period = 2π / 2 |
+| `cos(πx)`         | 2      | Period = 2π / π |
+| `sin(x) + cos(x)` | 2π     | LCM of periods  |
+| `sin(x) + 1`      | 2π     | Constant offset |
 
 ### Known Periodic Functions
 
-| Function           | Base Period |
-| ------------------ | ----------- |
-| sin, cos, sec, csc | 2π          |
-| tan, cot           | π           |
+| Function           | Base Period | Has Antisymmetry |
+| ------------------ | ----------- | ---------------- |
+| sin, cos, sec, csc | 2π          | Yes (at π)       |
+| tan, cot           | π           | No               |
 
 **Note:** Hyperbolic functions (sinh, cosh, etc.) are NOT periodic on ℝ.
 
