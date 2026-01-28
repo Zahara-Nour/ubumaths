@@ -65,3 +65,6 @@ export {
 	type FactoredFormInfo,
 	type CommonFactorInfo
 } from './structures';
+
+// Domain analysis (re-exported from domain module)
+export * from '../domain';
