@@ -295,18 +295,92 @@ function combinePeriods(p1: number, p2: number): number | null {
 	return null;
 }
 
+/**
+ * Combine two symbolic periods, returning the LCM as a symbolic MathNode.
+ * Tries to preserve symbolic representation when possible.
+ */
+function combineSymbolicPeriods(
+	period1: MathNode,
+	numeric1: number,
+	period2: MathNode,
+	numeric2: number
+): MathNode {
+	const combinedNumeric = lcm(numeric1, numeric2);
+	const tolerance = 1e-9;
+
+	// If periods are equal, return either one (prefer first)
+	if (Math.abs(numeric1 - numeric2) < tolerance) {
+		return period1;
+	}
+
+	// If combinedNumeric equals one of them, return that symbolic period
+	if (Math.abs(combinedNumeric - numeric1) < tolerance) {
+		return period1;
+	}
+	if (Math.abs(combinedNumeric - numeric2) < tolerance) {
+		return period2;
+	}
+
+	// LCM is a multiple of period1: try to express as n * period1
+	const ratio1 = combinedNumeric / numeric1;
+	if (Math.abs(ratio1 - Math.round(ratio1)) < tolerance) {
+		const n = Math.round(ratio1);
+		return multiply(number(String(n)), period1, 'implicit');
+	}
+
+	// LCM is a multiple of period2: try to express as n * period2
+	const ratio2 = combinedNumeric / numeric2;
+	if (Math.abs(ratio2 - Math.round(ratio2)) < tolerance) {
+		const n = Math.round(ratio2);
+		return multiply(number(String(n)), period2, 'implicit');
+	}
+
+	// Fallback to numeric
+	return number(String(combinedNumeric));
+}
+
+/**
+ * Halve a symbolic period: period / 2
+ */
+function halveSymbolicPeriod(period: MathNode, periodNumeric: number): MathNode {
+	// Check if period is 2π (common case)
+	const twoPiNumeric = 2 * Math.PI;
+	if (Math.abs(periodNumeric - twoPiNumeric) < 1e-9) {
+		return PI; // 2π / 2 = π
+	}
+
+	// General case: divide by 2
+	return divide(period, number('2'), 'fraction');
+}
+
 // =============================================================================
 // Main Detection Functions
 // =============================================================================
 
 /**
+ * Internal result type with antisymmetry tracking for minimal period computation.
+ * If hasHalfPeriodAntisymmetry is true, f(x + T/2) = -f(x), meaning:
+ * - f²(x) has period T/2
+ * - f(x) · g(x) has period T/2 if both have this property
+ */
+interface InternalPeriodResult {
+	period: MathNode;
+	periodNumeric: number;
+	/** Whether f(x + period/2) = -f(x) */
+	hasHalfPeriodAntisymmetry: boolean;
+}
+
+/**
+ * Functions with half-period antisymmetry: f(x + T/2) = -f(x)
+ * sin(x + π) = -sin(x), cos(x + π) = -cos(x), etc.
+ */
+const FUNCTIONS_WITH_ANTISYMMETRY = new Set(['sin', 'cos', 'sec', 'csc']);
+
+/**
  * Detect periodicity of a function node.
  * Returns the period if found, null otherwise.
  */
-function detectPeriodForNode(
-	node: MathNode,
-	variable: string
-): { period: MathNode; periodNumeric: number } | null {
+function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodResult | null {
 	// Check if expression contains the variable
 	const vars = getVariables(node);
 	if (!vars.has(variable)) {
@@ -318,28 +392,91 @@ function detectPeriodForNode(
 	switch (node.type) {
 		case 'function': {
 			const basePeriod = getBasePeriod(node.name);
-			if (!basePeriod || node.args.length === 0) {
+			const arg = node.args.length > 0 ? node.args[0] : null;
+
+			if (!arg) {
 				return null;
 			}
-
-			const arg = node.args[0];
 
 			// Check if argument is linear in variable: f(ax + b)
 			const linearForm = extractLinearForm(arg, variable);
-			if (!linearForm) {
-				// Non-linear argument - can't determine period
-				return null;
+
+			if (linearForm && basePeriod) {
+				// Linear argument: f(ax + b) has period = basePeriod / |a|
+				let period = dividePeriod(basePeriod, linearForm.coefficient);
+				let periodNumeric = periodToNumeric(period);
+
+				if (periodNumeric === null) {
+					return null;
+				}
+
+				// Track antisymmetry for minimal period computation
+				let hasHalfPeriodAntisymmetry = FUNCTIONS_WITH_ANTISYMMETRY.has(node.name);
+
+				// Handle function with power: sin^n(x), cos^n(x), etc.
+				// FunctionNode has optional power field for \sin^2(x) syntax
+				if (node.power !== undefined) {
+					const powerValue = evaluateNodeToApproximatedNumber(node.power);
+					const isPositiveInteger =
+						isFinite(powerValue) &&
+						powerValue > 0 &&
+						Math.abs(powerValue - Math.round(powerValue)) < 1e-10;
+
+					if (isPositiveInteger) {
+						const n = Math.round(powerValue);
+
+						// If function has antisymmetry and power is even, period halves
+						// sin²(x + π) = (-sin(x))² = sin²(x), so period is π
+						if (hasHalfPeriodAntisymmetry && n % 2 === 0) {
+							period = halveSymbolicPeriod(period, periodNumeric);
+							periodNumeric = periodNumeric / 2;
+							hasHalfPeriodAntisymmetry = false; // antisymmetry lost for even powers
+						} else if (n % 2 === 1) {
+							// Odd power: antisymmetry preserved
+							// sin³(x + π) = (-sin(x))³ = -sin³(x)
+						}
+					} else {
+						// Non-integer power: antisymmetry lost
+						hasHalfPeriodAntisymmetry = false;
+					}
+				}
+
+				return { period, periodNumeric, hasHalfPeriodAntisymmetry };
 			}
 
-			// Period = basePeriod / |a|
-			const period = dividePeriod(basePeriod, linearForm.coefficient);
-			const periodNumeric = periodToNumeric(period);
+			// Non-linear argument: check if argument is itself periodic
+			// f(g(x)) where g(x) has period T → f(g(x)) also has period T
+			// Example: sin(sin(x)) has period 2π because sin(x) has period 2π
+			const argResult = detectPeriodForNode(arg, variable);
+			if (argResult) {
+				// Composition: f(g(x)) inherits period from g(x)
+				// Note: antisymmetry is generally lost in composition
+				// sin(sin(x + π)) = sin(-sin(x)) ≠ -sin(sin(x)) in general
+				let { period, periodNumeric } = argResult;
+				const hasHalfPeriodAntisymmetry = false;
 
-			if (periodNumeric === null) {
-				return null;
+				// Handle power on function
+				if (node.power !== undefined) {
+					const powerValue = evaluateNodeToApproximatedNumber(node.power);
+					const isEvenInteger =
+						isFinite(powerValue) &&
+						powerValue > 0 &&
+						Math.abs(powerValue - Math.round(powerValue)) < 1e-10 &&
+						Math.round(powerValue) % 2 === 0;
+
+					// For even powers: if inner function has antisymmetry, period might halve
+					// But this is complex for compositions, keep simple for now
+					if (isEvenInteger && argResult.hasHalfPeriodAntisymmetry) {
+						// sin²(g(x)) where g has antisymmetry - period halves
+						period = halveSymbolicPeriod(period, periodNumeric);
+						periodNumeric = periodNumeric / 2;
+					}
+				}
+
+				return { period, periodNumeric, hasHalfPeriodAntisymmetry };
 			}
 
-			return { period, periodNumeric };
+			return null;
 		}
 
 		case 'addition':
@@ -349,23 +486,49 @@ function detectPeriodForNode(
 			const rightResult = detectPeriodForNode(node.right, variable);
 
 			if (leftResult && rightResult) {
-				const combined = combinePeriods(leftResult.periodNumeric, rightResult.periodNumeric);
-				if (combined !== null) {
-					// Return numeric period (symbolic would be complex)
-					return { period: number(String(combined)), periodNumeric: combined };
+				const combinedNumeric = combinePeriods(leftResult.periodNumeric, rightResult.periodNumeric);
+				if (combinedNumeric !== null) {
+					// Both antisymmetric with same period → result is antisymmetric
+					// sin(x) + cos(x): both have period 2π and antisymmetry at π
+					// (sin + cos)(x + π) = -sin(x) - cos(x) = -(sin + cos)(x)
+					const bothAntisymmetric =
+						leftResult.hasHalfPeriodAntisymmetry &&
+						rightResult.hasHalfPeriodAntisymmetry &&
+						Math.abs(leftResult.periodNumeric - rightResult.periodNumeric) < 1e-10;
+
+					// Preserve symbolic period
+					const symbolicPeriod = combineSymbolicPeriods(
+						leftResult.period,
+						leftResult.periodNumeric,
+						rightResult.period,
+						rightResult.periodNumeric
+					);
+
+					return {
+						period: symbolicPeriod,
+						periodNumeric: combinedNumeric,
+						hasHalfPeriodAntisymmetry: bothAntisymmetric
+					};
 				}
 				// Incommensurable periods - not periodic
 				return null;
 			}
 
 			if (leftResult && !getVariables(node.right).has(variable)) {
-				// f(x) + c has same period as f(x)
-				return leftResult;
+				// f(x) + c has same period as f(x), but loses antisymmetry (unless c = 0)
+				// sin(x) + 1: (sin + 1)(x + π) = -sin(x) + 1 ≠ -(sin(x) + 1)
+				return {
+					...leftResult,
+					hasHalfPeriodAntisymmetry: false
+				};
 			}
 
 			if (rightResult && !getVariables(node.left).has(variable)) {
-				// c + f(x) or c - f(x) has same period as f(x)
-				return rightResult;
+				// c + f(x) or c - f(x) has same period as f(x), but loses antisymmetry
+				return {
+					...rightResult,
+					hasHalfPeriodAntisymmetry: false
+				};
 			}
 
 			return null;
@@ -377,10 +540,12 @@ function detectPeriodForNode(
 			const rightVars = getVariables(node.right);
 
 			if (!leftVars.has(variable) && rightVars.has(variable)) {
+				// c * f(x): antisymmetry preserved (if c ≠ 0)
 				return detectPeriodForNode(node.right, variable);
 			}
 
 			if (leftVars.has(variable) && !rightVars.has(variable)) {
+				// f(x) * c: antisymmetry preserved (if c ≠ 0)
 				return detectPeriodForNode(node.left, variable);
 			}
 
@@ -390,10 +555,39 @@ function detectPeriodForNode(
 
 			if (leftResult && rightResult) {
 				// Product of periodic functions with periods T1 and T2
-				// has period LCM(T1, T2) (the largest period is always valid)
-				const combined = combinePeriods(leftResult.periodNumeric, rightResult.periodNumeric);
-				if (combined !== null) {
-					return { period: number(String(combined)), periodNumeric: combined };
+				const combinedNumeric = combinePeriods(leftResult.periodNumeric, rightResult.periodNumeric);
+				if (combinedNumeric !== null) {
+					// KEY: If both have half-period antisymmetry with same period,
+					// the product has HALF the period:
+					// (f·g)(x + T/2) = f(x + T/2)·g(x + T/2) = (-f(x))·(-g(x)) = f(x)·g(x)
+					// Example: sin(x)·cos(x) has period π, not 2π
+					const samePeriod = Math.abs(leftResult.periodNumeric - rightResult.periodNumeric) < 1e-10;
+					const bothAntisymmetric =
+						leftResult.hasHalfPeriodAntisymmetry && rightResult.hasHalfPeriodAntisymmetry;
+
+					if (samePeriod && bothAntisymmetric) {
+						const minimalPeriodNumeric = combinedNumeric / 2;
+						const symbolicPeriod = halveSymbolicPeriod(leftResult.period, leftResult.periodNumeric);
+						return {
+							period: symbolicPeriod,
+							periodNumeric: minimalPeriodNumeric,
+							hasHalfPeriodAntisymmetry: false // (-1)·(-1) = 1, antisymmetry lost
+						};
+					}
+
+					// Preserve symbolic period
+					const symbolicPeriod = combineSymbolicPeriods(
+						leftResult.period,
+						leftResult.periodNumeric,
+						rightResult.period,
+						rightResult.periodNumeric
+					);
+
+					return {
+						period: symbolicPeriod,
+						periodNumeric: combinedNumeric,
+						hasHalfPeriodAntisymmetry: false
+					};
 				}
 				return null;
 			}
@@ -407,26 +601,120 @@ function detectPeriodForNode(
 			const denVars = getVariables(node.denominator);
 
 			if (numVars.has(variable) && !denVars.has(variable)) {
+				// f(x) / c: antisymmetry preserved
 				return detectPeriodForNode(node.numerator, variable);
 			}
 
-			// c / f(x) - more complex, usually not periodic unless f is specific
+			// c / f(x): antisymmetry preserved
+			// 1/f(x + T/2) = 1/(-f(x)) = -1/f(x) when f is antisymmetric
 			if (!numVars.has(variable) && denVars.has(variable)) {
-				// 1/sin(x) = csc(x) has same period as sin(x)
 				return detectPeriodForNode(node.denominator, variable);
+			}
+
+			// f(x) / g(x): similar to multiplication
+			if (numVars.has(variable) && denVars.has(variable)) {
+				const numResult = detectPeriodForNode(node.numerator, variable);
+				const denResult = detectPeriodForNode(node.denominator, variable);
+
+				if (numResult && denResult) {
+					const combinedNumeric = combinePeriods(numResult.periodNumeric, denResult.periodNumeric);
+					if (combinedNumeric !== null) {
+						// If both antisymmetric with same period, period halves
+						// f(x+T/2)/g(x+T/2) = (-f(x))/(-g(x)) = f(x)/g(x)
+						const samePeriod = Math.abs(numResult.periodNumeric - denResult.periodNumeric) < 1e-10;
+						const bothAntisymmetric =
+							numResult.hasHalfPeriodAntisymmetry && denResult.hasHalfPeriodAntisymmetry;
+
+						if (samePeriod && bothAntisymmetric) {
+							const minimalPeriodNumeric = combinedNumeric / 2;
+							const symbolicPeriod = halveSymbolicPeriod(numResult.period, numResult.periodNumeric);
+							return {
+								period: symbolicPeriod,
+								periodNumeric: minimalPeriodNumeric,
+								hasHalfPeriodAntisymmetry: false
+							};
+						}
+
+						// Preserve symbolic period
+						const symbolicPeriod = combineSymbolicPeriods(
+							numResult.period,
+							numResult.periodNumeric,
+							denResult.period,
+							denResult.periodNumeric
+						);
+
+						return {
+							period: symbolicPeriod,
+							periodNumeric: combinedNumeric,
+							hasHalfPeriodAntisymmetry: false
+						};
+					}
+				}
 			}
 
 			return null;
 		}
 
 		case 'superscript': {
-			// f(x)^n has same period as f(x) for constant n
-			// (the base period is always a valid period, even if not minimal)
+			// Two cases:
+			// 1. f(x)^n for constant n (base has variable, exponent doesn't)
+			// 2. a^{f(x)} for constant a (base doesn't have variable, exponent does)
 			const baseVars = getVariables(node.base);
 			const expVars = getVariables(node.superscript);
 
+			// Case 1: f(x)^n - base is periodic, exponent is constant
 			if (baseVars.has(variable) && !expVars.has(variable)) {
-				return detectPeriodForNode(node.base, variable);
+				const baseResult = detectPeriodForNode(node.base, variable);
+				if (!baseResult) return null;
+
+				// Check if exponent is a positive integer
+				const expValue = evaluateNodeToApproximatedNumber(node.superscript);
+				const isPositiveInteger =
+					isFinite(expValue) && expValue > 0 && Math.abs(expValue - Math.round(expValue)) < 1e-10;
+
+				if (isPositiveInteger) {
+					const n = Math.round(expValue);
+
+					// KEY: If base has half-period antisymmetry and n is even,
+					// the period halves: f(x + T/2)^n = (-f(x))^n = f(x)^n when n is even
+					// Example: sin²(x) has period π, not 2π
+					if (baseResult.hasHalfPeriodAntisymmetry && n % 2 === 0) {
+						const minimalPeriodNumeric = baseResult.periodNumeric / 2;
+						return {
+							period: halveSymbolicPeriod(baseResult.period, baseResult.periodNumeric),
+							periodNumeric: minimalPeriodNumeric,
+							hasHalfPeriodAntisymmetry: false // antisymmetry lost for even powers
+						};
+					}
+
+					// Odd power: antisymmetry preserved
+					// f(x + T/2)^n = (-f(x))^n = -f(x)^n when n is odd
+					return {
+						...baseResult,
+						hasHalfPeriodAntisymmetry: baseResult.hasHalfPeriodAntisymmetry && n % 2 === 1
+					};
+				}
+
+				// Non-integer exponent: period preserved, antisymmetry lost
+				return {
+					...baseResult,
+					hasHalfPeriodAntisymmetry: false
+				};
+			}
+
+			// Case 2: a^{f(x)} - base is constant, exponent is periodic
+			// Example: e^{sin(x)}, 2^{cos(x)}
+			// If f(x) has period T, then a^{f(x)} also has period T
+			if (!baseVars.has(variable) && expVars.has(variable)) {
+				const expResult = detectPeriodForNode(node.superscript, variable);
+				if (expResult) {
+					// a^{f(x)} inherits period from f(x), but loses antisymmetry
+					// a^{f(x + T/2)} = a^{-f(x)} ≠ -a^{f(x)} in general
+					return {
+						...expResult,
+						hasHalfPeriodAntisymmetry: false
+					};
+				}
 			}
 
 			return null;
@@ -434,9 +722,11 @@ function detectPeriodForNode(
 
 		case 'opposite':
 		case 'positive':
+			// -f(x) and +f(x) preserve both period and antisymmetry
 			return detectPeriodForNode(node.operand, variable);
 
 		case 'delimiter':
+			// (f(x)) preserves everything
 			return detectPeriodForNode(node.content, variable);
 
 		default:

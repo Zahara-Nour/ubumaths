@@ -120,20 +120,53 @@ describe('detectPeriodicity', () => {
 			expect(result.periodNumeric).toBeCloseTo(TWO_PI, 5);
 		});
 
-		it('should detect sin(x)*cos(x) as periodic with period 2π', () => {
-			// Product of periodic functions has period = LCM of periods
-			// (2π is a valid period, even if π is the fundamental period)
+		it('should detect sin(x)*cos(x) as periodic with MINIMAL period π', () => {
+			// sin(x)·cos(x) = sin(2x)/2, so minimal period is π
+			// Both sin and cos have half-period antisymmetry at π
 			const result = detectPeriodicity(parseLatex('\\sin(x)\\cos(x)'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI, 5);
+		});
+
+		it('should detect sin²(x) as periodic with MINIMAL period π', () => {
+			// sin²(x + π) = (-sin(x))² = sin²(x), so minimal period is π
+			const result = detectPeriodicity(parseLatex('\\sin^2(x)'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI, 5);
+		});
+
+		it('should detect cos²(x) as periodic with MINIMAL period π', () => {
+			const result = detectPeriodicity(parseLatex('\\cos^2(x)'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI, 5);
+		});
+
+		it('should detect sin⁴(x) as periodic with MINIMAL period π', () => {
+			// Even power of antisymmetric function
+			const result = detectPeriodicity(parseLatex('\\sin^4(x)'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI, 5);
+		});
+
+		it('should detect sin³(x) as periodic with period 2π (odd power)', () => {
+			// Odd power preserves antisymmetry, period unchanged
+			const result = detectPeriodicity(parseLatex('\\sin^3(x)'));
 			expect(result.isPeriodic).toBe(true);
 			expect(result.periodNumeric).toBeCloseTo(TWO_PI, 5);
 		});
 
-		it('should detect sin²(x) as periodic with period 2π', () => {
-			// f(x)^n has same period as f(x)
-			// (2π is a valid period, even if π is the fundamental period)
-			const result = detectPeriodicity(parseLatex('\\sin^2(x)'));
+		it('should detect tan²(x) as periodic with period π (no reduction)', () => {
+			// tan has no half-period antisymmetry, so no reduction
+			const result = detectPeriodicity(parseLatex('\\tan^2(x)'));
 			expect(result.isPeriodic).toBe(true);
-			expect(result.periodNumeric).toBeCloseTo(TWO_PI, 5);
+			expect(result.periodNumeric).toBeCloseTo(PI, 5);
+		});
+
+		it('should detect sin(x)/cos(x) as periodic with MINIMAL period π', () => {
+			// sin/cos = tan, but computed via antisymmetry: period π
+			const result = detectPeriodicity(parseLatex('\\frac{\\sin(x)}{\\cos(x)}'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI, 5);
 		});
 
 		it('should detect 1/sin(x) as periodic with period 2π', () => {
@@ -173,6 +206,89 @@ describe('detectPeriodicity', () => {
 		it('should detect constant as non-periodic', () => {
 			const result = detectPeriodicity(parseLatex('5'));
 			expect(result.isPeriodic).toBe(false);
+		});
+	});
+
+	describe('function compositions', () => {
+		it('should detect sin(sin(x)) as periodic with period 2π', () => {
+			// sin(x) has period 2π, so sin(sin(x)) also has period 2π
+			const result = detectPeriodicity(parseLatex('\\sin(\\sin(x))'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(TWO_PI, 5);
+		});
+
+		it('should detect cos(sin(x)) as periodic with period 2π', () => {
+			const result = detectPeriodicity(parseLatex('\\cos(\\sin(x))'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(TWO_PI, 5);
+		});
+
+		it('should detect sin(cos(x)) as periodic with period 2π', () => {
+			const result = detectPeriodicity(parseLatex('\\sin(\\cos(x))'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(TWO_PI, 5);
+		});
+
+		it('should detect sin(tan(x)) as periodic with period π', () => {
+			// tan(x) has period π, so sin(tan(x)) has period π
+			const result = detectPeriodicity(parseLatex('\\sin(\\tan(x))'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI, 5);
+		});
+
+		it('should detect sin(x²) as non-periodic', () => {
+			// x² is not periodic, so sin(x²) is not periodic
+			const result = detectPeriodicity(parseLatex('\\sin(x^2)'));
+			expect(result.isPeriodic).toBe(false);
+		});
+
+		it('should detect sin(eˣ) as non-periodic', () => {
+			const result = detectPeriodicity(parseLatex('\\sin(e^x)'));
+			expect(result.isPeriodic).toBe(false);
+		});
+
+		it('should detect exp(sin(x)) as periodic with period 2π', () => {
+			// sin(x) has period 2π, so exp(sin(x)) also has period 2π
+			// Use \exp function notation since e^{...} parses e as a variable
+			const result = detectPeriodicity(parseLatex('\\exp(\\sin(x))'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(TWO_PI, 5);
+		});
+
+		it('should detect 2^{cos(x)} as periodic with period 2π', () => {
+			const result = detectPeriodicity(parseLatex('2^{\\cos(x)}'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(TWO_PI, 5);
+		});
+	});
+
+	describe('symbolic periods', () => {
+		it('should return symbolic 2π for sin(x)', () => {
+			const period = getPeriod(parseLatex('\\sin(x)'));
+			expect(period).not.toBeNull();
+			// Check it's 2π symbolically (multiplication of 2 and π)
+			expect(period?.type).toBe('multiplication');
+		});
+
+		it('should return symbolic π for sin²(x)', () => {
+			const period = getPeriod(parseLatex('\\sin^2(x)'));
+			expect(period).not.toBeNull();
+			// Check it's π symbolically (MathConstantNode has type 'constant')
+			expect(period?.type).toBe('constant');
+		});
+
+		it('should return symbolic 2π for sin(x) + cos(x)', () => {
+			const period = getPeriod(parseLatex('\\sin(x) + \\cos(x)'));
+			expect(period).not.toBeNull();
+			// Should be symbolic, not numeric
+			expect(period?.type).not.toBe('number');
+		});
+
+		it('should return symbolic π for sin(x)·cos(x)', () => {
+			const period = getPeriod(parseLatex('\\sin(x)\\cos(x)'));
+			expect(period).not.toBeNull();
+			// Check it's π symbolically (MathConstantNode has type 'constant')
+			expect(period?.type).toBe('constant');
 		});
 	});
 
