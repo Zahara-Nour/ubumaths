@@ -2,6 +2,285 @@
 
 The analysis module provides tools for extracting structural information from mathematical expressions.
 
+## Import
+
+```typescript
+import {
+	// Linear combinations
+	extractLinearCombination,
+	isLinearCombination,
+	getCoefficient,
+	equalLinearCombinations,
+	type LinearCombinationResult,
+
+	// Expression classification
+	classifyExpression,
+	getPolynomialDegree,
+	isPolynomialIn,
+	containsTranscendental,
+	getTranscendentalType,
+	containsRadical,
+	isRationalIn,
+	calculateComplexity,
+	type ExpressionCategory,
+	type ExpressionClassification,
+
+	// Polynomial analysis
+	analyzePolynomial,
+	getPolynomialCoefficients,
+	isMonomial,
+	isBinomial,
+	isTrinomial,
+	getTermCount,
+	type MonomialInfo,
+	type PolynomialAnalysis,
+
+	// Structure detection
+	detectStructure,
+	isDifferenceOfSquares,
+	isPerfectSquareTrinomial,
+	isSumOfCubes,
+	isDifferenceOfCubes,
+	isQuadraticForm,
+	isFactoredForm,
+	hasCommonFactor,
+	type DetectedStructure
+} from '$lib/mathAST/analysis';
+```
+
+---
+
+## Expression Classification
+
+Classifies expressions by their mathematical category.
+
+### `classifyExpression(node, variable?)`
+
+Returns detailed classification of an expression.
+
+```typescript
+import { parseLatex } from '$lib/mathAST';
+import { classifyExpression } from '$lib/mathAST/analysis';
+
+// Polynomial
+classifyExpression(parseLatex('x^2 + 2x + 1'), 'x');
+// → { category: 'polynomial', polynomialDegree: 2, ... }
+
+// Trigonometric
+classifyExpression(parseLatex('\\sin(x)'), 'x');
+// → { category: 'trigonometric', hasTranscendental: true, ... }
+
+// Rational
+classifyExpression(parseLatex('\\frac{x}{x+1}'), 'x');
+// → { category: 'rational', polynomialDegree: null, ... }
+```
+
+**Returns:** `ExpressionClassification`
+
+```typescript
+interface ExpressionClassification {
+	category: ExpressionCategory;
+	subCategories: readonly ExpressionCategory[];
+	variables: readonly string[];
+	polynomialDegree: number | null;
+	degreeInVariable?: Map<string, number>;
+	complexity: number;
+	isConstant: boolean;
+	hasTranscendental: boolean;
+	transcendentalType: 'trigonometric' | 'exponential' | 'logarithmic' | null;
+}
+
+type ExpressionCategory =
+	| 'constant'
+	| 'polynomial'
+	| 'rational'
+	| 'radical'
+	| 'trigonometric'
+	| 'exponential'
+	| 'logarithmic'
+	| 'algebraic'
+	| 'transcendental'
+	| 'mixed'
+	| 'unknown';
+```
+
+### Helper Functions
+
+```typescript
+// Polynomial degree (null if not polynomial)
+getPolynomialDegree(parseLatex('x^2 + x'), 'x'); // 2
+getPolynomialDegree(parseLatex('\\sin(x)'), 'x'); // null
+
+// Boolean checks
+isPolynomialIn(parseLatex('x^2 + 1'), 'x'); // true
+containsTranscendental(parseLatex('\\sin(x)')); // true
+containsRadical(parseLatex('\\sqrt{x}')); // true
+isRationalIn(parseLatex('\\frac{x}{x+1}'), 'x'); // true
+
+// Get transcendental type
+getTranscendentalType(parseLatex('\\sin(x)')); // 'trigonometric'
+getTranscendentalType(parseLatex('\\exp(x)')); // 'exponential'
+getTranscendentalType(parseLatex('\\ln(x)')); // 'logarithmic'
+
+// Structural complexity score
+calculateComplexity(parseLatex('x')); // low
+calculateComplexity(parseLatex('\\frac{x^2+1}{\\sqrt{x+1}}')); // high
+```
+
+---
+
+## Polynomial Analysis
+
+Detailed analysis of polynomial expressions.
+
+### `analyzePolynomial(node, variable)`
+
+Returns complete polynomial analysis including coefficients.
+
+```typescript
+import { analyzePolynomial } from '$lib/mathAST/analysis';
+
+const result = analyzePolynomial(parseLatex('2x^2 + 3x + 1'), 'x');
+// result.isPolynomial → true
+// result.degree → 2
+// result.termCount → 3
+// result.leadingCoefficient → number('2')
+// result.constantTerm → number('1')
+// result.coefficients → Map { 2 → number('2'), 1 → number('3'), 0 → number('1') }
+```
+
+**Returns:** `PolynomialAnalysis`
+
+```typescript
+interface PolynomialAnalysis {
+	isPolynomial: boolean;
+	error?: string;
+	variable: string;
+	degree: number;
+	termCount: number;
+	leadingCoefficient: MathNode;
+	constantTerm: MathNode;
+	monomials: readonly MonomialInfo[];
+	coefficients: ReadonlyMap<number, MathNode>;
+}
+
+interface MonomialInfo {
+	coefficient: MathNode;
+	degree: number;
+	term: MathNode;
+	variables: readonly string[];
+}
+```
+
+### `getPolynomialCoefficients(node, variable)`
+
+Returns map of degree → coefficient, or `null` if not polynomial.
+
+```typescript
+const coeffs = getPolynomialCoefficients(parseLatex('x^2 + 2x + 1'), 'x');
+// coeffs.get(2) → number('1')
+// coeffs.get(1) → number('2')
+// coeffs.get(0) → number('1')
+```
+
+### Term Count Classifiers
+
+```typescript
+isMonomial(parseLatex('3x^2')); // true (1 term)
+isBinomial(parseLatex('x + 1')); // true (2 terms)
+isTrinomial(parseLatex('x^2 + 2x + 1')); // true (3 terms)
+getTermCount(parseLatex('a + b + c + d')); // 4
+```
+
+---
+
+## Structure Detection
+
+Detects notable algebraic structures and identities.
+
+### `detectStructure(node)`
+
+Returns all detected structures in the expression.
+
+```typescript
+import { detectStructure } from '$lib/mathAST/analysis';
+
+const structures = detectStructure(parseLatex('x^2 - 4'));
+// Returns both 'difference_of_squares' and 'quadratic_form'
+```
+
+### Individual Structure Detectors
+
+#### Difference of Squares: a² - b²
+
+```typescript
+const result = isDifferenceOfSquares(parseLatex('x^2 - 9'));
+// result.type → 'difference_of_squares'
+// result.a → variable('x')
+// result.b → number('3')  (since 9 = 3²)
+```
+
+#### Perfect Square Trinomial: a² ± 2ab + b²
+
+```typescript
+const result = isPerfectSquareTrinomial(parseLatex('x^2 + 2x + 1'));
+// result.type → 'perfect_square_trinomial'
+// result.a → variable('x')
+// result.b → number('1')
+// result.sign → '+'  (for (a + b)²)
+```
+
+#### Sum/Difference of Cubes: a³ ± b³
+
+```typescript
+isSumOfCubes(parseLatex('x^3 + 8'));
+// → { a: variable('x'), b: number('2') }  (since 8 = 2³)
+
+isDifferenceOfCubes(parseLatex('x^3 - 27'));
+// → { a: variable('x'), b: number('3') }  (since 27 = 3³)
+```
+
+#### Quadratic Form: ax² + bx + c
+
+```typescript
+const result = isQuadraticForm(parseLatex('2x^2 + 3x + 1'));
+// result.variable → 'x'
+// result.a → number('2')
+// result.b → number('3')
+// result.c → number('1')
+```
+
+#### Factored Form: (x - r₁)(x - r₂)
+
+```typescript
+const result = isFactoredForm(parseLatex('(x - 1)(x + 2)'));
+// result.variable → 'x'
+// result.factors → [delimiter containing (x-1), delimiter containing (x+2)]
+// result.roots → [number('1'), opposite(number('2'))]
+```
+
+#### Common Factor: k(...)
+
+```typescript
+const result = hasCommonFactor(parseLatex('4x + 8'));
+// result.factor → number('4')
+// result.remainder → (x + 2) as MathNode
+```
+
+### Structure Types
+
+| Structure                  | Pattern       | Example      |
+| -------------------------- | ------------- | ------------ |
+| `difference_of_squares`    | a² - b²       | x² - 9       |
+| `perfect_square_trinomial` | a² ± 2ab + b² | x² + 2x + 1  |
+| `sum_of_cubes`             | a³ + b³       | x³ + 8       |
+| `difference_of_cubes`      | a³ - b³       | x³ - 27      |
+| `quadratic_form`           | ax² + bx + c  | 2x² + 3x + 1 |
+| `factored_form`            | (x-r₁)(x-r₂)  | (x-1)(x+2)   |
+| `common_factor`            | k(...)        | 4x + 8       |
+
+---
+
 ## Linear Combination Extraction
 
 Extracts coefficients from linear combinations of the form:
@@ -12,24 +291,9 @@ a₁·x₁ + a₂·x₂ + ... + aₙ·xₙ
 
 where coefficients can be any MathNode (not just numbers).
 
-### Import
+### `extractLinearCombination(node, variables)`
 
 ```typescript
-import {
-	extractLinearCombination,
-	isLinearCombination,
-	getCoefficient,
-	equalLinearCombinations,
-	type LinearCombinationResult
-} from '$lib/mathAST/analysis';
-```
-
-### Basic Usage
-
-```typescript
-import { parseLatex } from '$lib/mathAST';
-import { extractLinearCombination } from '$lib/mathAST/analysis';
-
 // Numeric coefficients
 const result = extractLinearCombination(parseLatex('2x + 3y'), ['x', 'y']);
 // result.coefficients.get('x') → number('2')
@@ -39,71 +303,32 @@ const result = extractLinearCombination(parseLatex('2x + 3y'), ['x', 'y']);
 const result2 = extractLinearCombination(parseLatex('\\sqrt{2}x + \\pi y'), ['x', 'y']);
 // result2.coefficients.get('x') → sqrt(2) as MathNode
 // result2.coefficients.get('y') → π as MathNode
-
-// Function coefficients
-const result3 = extractLinearCombination(parseLatex('\\cos(3)x + \\ln(5)y'), ['x', 'y']);
-// result3.coefficients.get('x') → cos(3) as MathNode
-// result3.coefficients.get('y') → ln(5) as MathNode
 ```
-
-### API Reference
-
-#### `extractLinearCombination(node, variables)`
-
-Extracts coefficients from a linear combination.
-
-**Parameters:**
-
-- `node: MathNode` - The expression to analyze
-- `variables: readonly string[]` - Variable names to look for (e.g., `['x', 'y', 'z']`)
 
 **Returns:** `LinearCombinationResult`
 
 ```typescript
 interface LinearCombinationResult {
-	/** Map from variable name to its coefficient (as MathNode) */
-	readonly coefficients: ReadonlyMap<string, MathNode>;
-
-	/** The variables that were looked for (in order) */
-	readonly variables: readonly string[];
-
-	/** Whether the expression is a valid linear combination */
-	readonly isLinear: boolean;
-
-	/** Error message if isLinear is false */
-	readonly error?: string;
+	coefficients: ReadonlyMap<string, MathNode>;
+	variables: readonly string[];
+	isLinear: boolean;
+	error?: string;
 }
 ```
 
-#### `isLinearCombination(node, variables)`
-
-Checks if an expression is a valid linear combination.
+### Helper Functions
 
 ```typescript
+// Check if valid linear combination
 isLinearCombination(parseLatex('2x + 3y'), ['x', 'y']); // true
 isLinearCombination(parseLatex('xy'), ['x', 'y']); // false (product)
-isLinearCombination(parseLatex('x^2'), ['x']); // false (power)
 isLinearCombination(parseLatex('x + 1'), ['x']); // false (constant term)
-```
 
-#### `getCoefficient(node, variable, otherVariables?)`
+// Get single coefficient
+getCoefficient(parseLatex('2x + 3y'), 'x', ['y']); // → number('2')
 
-Gets the coefficient for a specific variable.
-
-```typescript
-const node = parseLatex('2x + 3y');
-getCoefficient(node, 'x', ['y']); // → number('2')
-getCoefficient(node, 'y', ['x']); // → number('3')
-```
-
-#### `equalLinearCombinations(a, b, variables)`
-
-Compares if two linear combinations have structurally equal coefficients.
-
-```typescript
-const a = parseLatex('2x + 3y');
-const b = parseLatex('3y + 2x');
-equalLinearCombinations(a, b, ['x', 'y']); // true (same coefficients)
+// Compare linear combinations
+equalLinearCombinations(parseLatex('2x + 3y'), parseLatex('3y + 2x'), ['x', 'y']); // true
 ```
 
 ### Supported Coefficient Types
@@ -116,23 +341,9 @@ equalLinearCombinations(a, b, ['x', 'y']); // true (same coefficients)
 | `√2·x`     | x        | `func('sqrt', [number('2')])`      |
 | `πy`       | y        | `greek('pi')`                      |
 | `x/2`      | x        | `divide(number('1'), number('2'))` |
-| `2x/3`     | x        | `divide(number('2'), number('3'))` |
 | `cos(3)x`  | x        | `func('cos', [number('3')])`       |
-| `ln(5)y`   | y        | `func('ln', [number('5')])`        |
-| `f(a)z`    | z        | `func('f', [variable('a')])`       |
-
-### Features
-
-- **Symbolic coefficients**: Coefficients are returned as MathNode, not just numbers
-- **Like term combining**: `x + 2x` → coefficient of x is `3`
-- **Sign handling**: `-x + y` correctly gives coefficient `-1` for x
-- **Fraction support**: `x/2` and `2x/3` work correctly
-- **Function coefficients**: `cos(3)x`, `ln(5)y`, `f(a)z` all supported
-- **Missing variables**: Variables not present get coefficient `0`
 
 ### Rejected Expressions
-
-The following are NOT valid linear combinations:
 
 | Expression | Reason                               |
 | ---------- | ------------------------------------ |
@@ -142,57 +353,10 @@ The following are NOT valid linear combinations:
 | `1/x`      | Variable in denominator              |
 | `sin(x)`   | Variable inside function             |
 
-### Use Cases
-
-#### Equation System Coefficients
-
-```typescript
-// Extract coefficients for system: 2x + 3y = 5, x - y = 1
-const eq1 = parseLatex('2x + 3y');
-const eq2 = parseLatex('x - y');
-
-const coeffs1 = extractLinearCombination(eq1, ['x', 'y']);
-const coeffs2 = extractLinearCombination(eq2, ['x', 'y']);
-
-// Build coefficient matrix
-const matrix = [
-	[coeffs1.coefficients.get('x'), coeffs1.coefficients.get('y')],
-	[coeffs2.coefficients.get('x'), coeffs2.coefficients.get('y')]
-];
-```
-
-#### Vector Space Linear Combinations
-
-```typescript
-// Check if expression is in span of basis vectors
-const expr = parseLatex('a \\vec{u} + b \\vec{v} + c \\vec{w}');
-const result = extractLinearCombination(expr, ['\\vec{u}', '\\vec{v}', '\\vec{w}']);
-
-if (result.isLinear) {
-	// Expression is a valid linear combination of the basis
-}
-```
-
-#### Polynomial Coefficient Extraction
-
-```typescript
-// For polynomial ax² + bx + c, extract coefficients of powers
-// (Note: requires treating x², x, 1 as "variables")
-const poly = parseLatex('2x^2 + 3x + 5');
-// This module is for LINEAR combinations; for polynomials,
-// use the normalization module instead
-```
-
-## Future Additions
-
-The analysis module is designed to be extended with:
-
-- **Polynomial analysis**: Degree, leading coefficient, factor extraction
-- **Expression classification**: Polynomial, rational, trigonometric, etc.
-- **Structure detection**: Quadratic form, difference of squares, etc.
+---
 
 ## See Also
 
-- [Pattern Matching](./patterns.md) - For more complex structural matching
+- [Pattern Matching](./patterns.md) - For complex structural matching
 - [Normalization](./normalization.md) - For polynomial equivalence checking
 - [Types](./types.md) - MathNode type definitions
