@@ -388,42 +388,105 @@ expr1.isEqual(expr2);
 
 ---
 
-## 10. Fonctionnalites Uniques
+## 10. Systeme de Types Numeriques
 
-### Uniquement mathAST
+### mathAST: numtype
 
-| Fonctionnalite              | Description                                      |
-| --------------------------- | ------------------------------------------------ |
-| **Tableaux de signes**      | `analyzeSign()` - intervalles avec signes        |
-| **Tableaux de variations**  | `computeVariations()` - monotonie, extrema       |
-| **Domaine de definition**   | `computeDomain()` - R\\{0}, [0,+inf), etc.       |
-| **Limites**                 | `evaluateLimit()` - L'Hopital, squeeze theorem   |
-| **Series de Taylor**        | `expand()` - developpements                      |
-| **Operations matricielles** | `determinant()`, `inverse()`, `matrixMultiply()` |
-| **Unites physiques**        | `UnitNode` avec conversions                      |
-| **verifyForm()**            | Validation de forme pour exercices               |
-| **CLI REPL**                | Interface interactive complete                   |
-| **Descriptions francaises** | Toutes les regles decrites en francais           |
+```typescript
+// Inference de type
+inferType(parseLatex('5')); // { base: 'integer', sign: 'positive' }
+inferType(parseLatex('\\sqrt{2}')); // { base: 'irrational_algebraic' }
+inferType(parseLatex('\\pi')); // { base: 'transcendental' }
 
-### Uniquement Compute Engine
+// Hierarchie: integer < rational < algebraic < real < complex
+//             irrational_algebraic < algebraic
+//             transcendental < real
 
-| Fonctionnalite            | Description                         |
-| ------------------------- | ----------------------------------- |
-| **Fonctions speciales**   | Bessel, Gamma, Erf, Zeta, Beta...   |
-| **Systeme de types math** | integer c rational c real c complex |
-| **Evaluation paresseuse** | Collections infinies (Range, Sum)   |
-| **Scope/Bindings**        | Gestion des portees de variables    |
-| **MathJSON standard**     | Format d'echange standardise        |
+// Predicats
+isIntegerType(node);
+isRationalType(node); // includes integers
+isTranscendentalType(node);
+
+// Pattern matching avec contraintes de type
+P._('n', P.isIntegerType()); // n doit etre entier
+
+// Feedback pedagogique en francais
+describeType({ base: 'rational' }); // "un nombre rationnel"
+getTypeHint('transcendental', 'integer');
+// "Astuce : π et e sont transcendants, pas entiers."
+```
+
+### Compute Engine: Domaines
+
+```typescript
+// Domaines comme proprietes
+ce.parse('5').domain; // 'Integer'
+ce.parse('\\pi').domain; // 'TranscendentalNumber'
+
+// Hierarchie similaire
+// Integer < Rational < AlgebraicNumber < RealNumber < ComplexNumber
+// TranscendentalNumber < RealNumber
+
+// Validation via domaine
+expr.is('Integer');
+expr.is('RealNumber');
+```
+
+### Comparaison Types
+
+| Aspect                   | mathAST                       | Compute Engine       |
+| ------------------------ | ----------------------------- | -------------------- |
+| **Inference**            | `inferType()` explicite       | Propriete `.domain`  |
+| **Hierarchie**           | 8 types avec lattice          | ~15 domaines         |
+| **irrational_algebraic** | Type distinct (√2)            | Sous AlgebraicNumber |
+| **Predicats**            | `isIntegerType()`, etc.       | `.is('Integer')`     |
+| **Pattern matching**     | `P.isIntegerType()`           | Non integre          |
+| **Feedback FR**          | Descriptions, hints, exemples | Non                  |
+| **Contexte variables**   | `TypeContext` configurable    | Via assumptions      |
 
 ---
 
-## 11. Resume Comparatif
+## 11. Fonctionnalites Uniques
+
+### Uniquement mathAST
+
+| Fonctionnalite               | Description                                       |
+| ---------------------------- | ------------------------------------------------- |
+| **Systeme de types numtype** | `inferType()` - integer, rational, transcendental |
+| **Tableaux de signes**       | `analyzeSign()` - intervalles avec signes         |
+| **Tableaux de variations**   | `computeVariations()` - monotonie, extrema        |
+| **Domaine de definition**    | `computeDomain()` - R\\{0}, [0,+inf), etc.        |
+| **Limites**                  | `evaluateLimit()` - L'Hopital, squeeze theorem    |
+| **Series de Taylor**         | `expand()` - developpements                       |
+| **Operations matricielles**  | `determinant()`, `inverse()`, `matrixMultiply()`  |
+| **Unites physiques**         | `UnitNode` avec conversions                       |
+| **verifyForm()**             | Validation de forme pour exercices                |
+| **CLI REPL**                 | Interface interactive complete                    |
+| **Feedback pedagogique FR**  | Types, erreurs, hints en francais                 |
+
+### Uniquement Compute Engine
+
+| Fonctionnalite            | Description                       |
+| ------------------------- | --------------------------------- |
+| **Fonctions speciales**   | Bessel, Gamma, Erf, Zeta, Beta... |
+| **Evaluation paresseuse** | Collections infinies (Range, Sum) |
+| **Scope/Bindings**        | Gestion des portees de variables  |
+| **MathJSON standard**     | Format d'echange standardise      |
+
+> **Note**: Les deux systemes ont maintenant un systeme de types mathematiques.
+> mathAST: `numtype` avec inference, predicats, et feedback pedagogique en francais.
+> Compute Engine: Domaines mathematiques integres (integer, rational, real, complex).
+
+---
+
+## 12. Resume Comparatif
 
 ```
                     mathAST                 Compute Engine
                     -------                 --------------
 Pedagogie           ############  (10/10)   ##            (2/10)
 Type Safety         ############  (10/10)   ######        (6/10)
+Types Numeriques    ##########    (10/10)   ########      (8/10)
 Integration         ############  (10/10)   ####          (4/10)
 Derivation          ########      (8/10)    ############  (10/10)
 Pattern Matching    ############  (10/10)   ########      (8/10)
@@ -435,22 +498,23 @@ Documentation       ############  (10/10)   ########      (8/10)
 
 ---
 
-## 12. Quand Utiliser Quoi
+## 13. Quand Utiliser Quoi
 
-| Cas d'usage                         | Recommandation                       |
-| ----------------------------------- | ------------------------------------ |
-| Exercices avec etapes detaillees    | **mathAST**                          |
-| Validation reponse eleve (forme)    | **mathAST** (`verifyForm`)           |
-| Tableaux de signes/variations       | **mathAST** (seul a le faire)        |
-| Integrales avec technique expliquee | **mathAST**                          |
-| Calcul avec fonctions speciales     | **Compute Engine**                   |
-| Verification equivalence algebrique | **Compute Engine** (`areEquivalent`) |
-| Evaluation numerique rapide         | **Compute Engine**                   |
-| Developpement de nouvelles regles   | **mathAST** (plus simple)            |
+| Cas d'usage                          | Recommandation                       |
+| ------------------------------------ | ------------------------------------ |
+| Exercices avec etapes detaillees     | **mathAST**                          |
+| Validation reponse eleve (forme)     | **mathAST** (`verifyForm`)           |
+| Validation type numerique + feedback | **mathAST** (`numtype` + francais)   |
+| Tableaux de signes/variations        | **mathAST** (seul a le faire)        |
+| Integrales avec technique expliquee  | **mathAST**                          |
+| Calcul avec fonctions speciales      | **Compute Engine**                   |
+| Verification equivalence algebrique  | **Compute Engine** (`areEquivalent`) |
+| Evaluation numerique rapide          | **Compute Engine**                   |
+| Developpement de nouvelles regles    | **mathAST** (plus simple)            |
 
 ---
 
-## 13. Integration dans UbuMaths
+## 14. Integration dans UbuMaths
 
 UbuMaths utilise les deux systemes de maniere complementaire:
 
