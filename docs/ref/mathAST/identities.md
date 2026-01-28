@@ -1,8 +1,61 @@
-# Trigonometric & Hyperbolic Identities
+# Mathematical Identities
 
-Transformation rules for trigonometric and hyperbolic function identities.
+Transformation rules and structure detection for notable mathematical identities.
 
 ## Overview
+
+This module covers two categories of identities:
+
+1. **Trigonometric & Hyperbolic Identities** (`transform/`) - Function identity transformations (sin²+cos²=1, angle addition, etc.)
+2. **Algebraic Structures** (`analysis/structures.ts`) - Polynomial identity detection (a²-b², (a+b)², a³+b³, etc.)
+
+---
+
+## Algebraic Structures (Identités Remarquables)
+
+Detection of notable algebraic identities. See [Analysis Module](./analysis.md#structure-detection) for complete documentation.
+
+```typescript
+import {
+	detectStructure,
+	isDifferenceOfSquares,
+	isPerfectSquareTrinomial,
+	isSumOfCubes,
+	isDifferenceOfCubes,
+	isQuadraticForm,
+	hasCommonFactor
+} from '$lib/mathAST/analysis';
+```
+
+### Supported Structures
+
+| Structure                | Pattern       | Example      | Factorization   |
+| ------------------------ | ------------- | ------------ | --------------- |
+| Difference of squares    | a² - b²       | x² - 9       | (a+b)(a-b)      |
+| Perfect square trinomial | a² ± 2ab + b² | x² + 6x + 9  | (a ± b)²        |
+| Sum of cubes             | a³ + b³       | x³ + 8       | (a+b)(a²-ab+b²) |
+| Difference of cubes      | a³ - b³       | x³ - 27      | (a-b)(a²+ab+b²) |
+| Quadratic form           | ax² + bx + c  | 2x² + 3x + 1 | a(x-r₁)(x-r₂)   |
+| Common factor            | k(...)        | 4x + 8       | 4(x + 2)        |
+
+### Quick Examples
+
+```typescript
+import { parseLatex } from '$lib/mathAST';
+import { isDifferenceOfSquares, isPerfectSquareTrinomial } from '$lib/mathAST/analysis';
+
+// x² - 9 = (x+3)(x-3)
+const diff = isDifferenceOfSquares(parseLatex('x^2 - 9'));
+// diff.a → variable('x'), diff.b → number('3')
+
+// x² + 6x + 9 = (x+3)²
+const perfect = isPerfectSquareTrinomial(parseLatex('x^2 + 6x + 9'));
+// perfect.a → variable('x'), perfect.b → number('3'), perfect.sign → '+'
+```
+
+---
+
+## Trigonometric Identities
 
 The `transform/` module provides AST-level transformations for applying standard mathematical identities. Each transformation is a pure function that takes a `MathNode` and returns either a transformed node or `null` if the pattern doesn't match.
 
@@ -391,6 +444,7 @@ if (changed) {
 
 ## See Also
 
+- [Analysis Module](./analysis.md#structure-detection) - Algebraic structure detection (complete API)
 - [Pattern Matching](./patterns.md) - General pattern matching system
 - [Normalization](./normalization.md) - Canonical form transformations
 - [Factory Functions](./factory-transforms.md) - Creating AST nodes

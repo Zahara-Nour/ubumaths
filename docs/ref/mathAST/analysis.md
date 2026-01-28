@@ -211,7 +211,9 @@ getTermCount(parseLatex('a + b + c + d')); // 4
 
 ## Structure Detection
 
-Detects notable algebraic structures and identities.
+Detects notable algebraic structures and identities (identités remarquables).
+
+> **Note:** For trigonometric and hyperbolic identities (sin²+cos²=1, angle formulas, etc.), see [Identities](./identities.md).
 
 ### `detectStructure(node)`
 
@@ -589,6 +591,7 @@ For complete domain documentation, see [Domain](./domain.md).
 
 ## See Also
 
+- [Identities](./identities.md) - Trigonometric and hyperbolic identity transformations
 - [Domain](./domain.md) - Domain of definition computation and validation
 - [Pattern Matching](./patterns.md) - For complex structural matching
 - [Normalization](./normalization.md) - For polynomial equivalence checking
