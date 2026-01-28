@@ -562,7 +562,17 @@ export {
 	isFiniteType,
 	isInfiniteType,
 	getType,
-	getBaseType
+	getBaseType,
+	// French descriptions (feedback)
+	describeType,
+	describeTypeDetailed,
+	getTypeName,
+	getTypeNameWithArticle,
+	describeTypeRelation,
+	getTypeMismatchMessage,
+	getTypeHint,
+	getTypeExamples,
+	formatTypeExamples
 } from './numtype';
 
 // =============================================================================

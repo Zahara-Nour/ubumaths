@@ -142,3 +142,25 @@ export {
 	// Function rules
 	inferFunctionType
 } from './rules';
+
+// =============================================================================
+// French Descriptions (Feedback)
+// =============================================================================
+
+export {
+	// Simple description
+	describeType,
+	// Detailed description
+	describeTypeDetailed,
+	// Type names
+	getTypeName,
+	getTypeNameWithArticle,
+	// Comparison and relations
+	describeTypeRelation,
+	// Error messages
+	getTypeMismatchMessage,
+	getTypeHint,
+	// Examples
+	getTypeExamples,
+	formatTypeExamples
+} from './format-fr';
