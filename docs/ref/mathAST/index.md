@@ -73,6 +73,12 @@ mathAST/
 │   │   └── validation.ts # Zod schemas for bindings
 │   ├── normal/           # Normalization (canonical form)
 │   │   └── step-recorder.ts # Step-by-step recording
+│   ├── numtype/          # Numeric type inference
+│   │   ├── algebra.ts    # Type lattice (join, meet, isSubtype)
+│   │   ├── infer.ts      # Type inference with cache
+│   │   ├── predicates.ts # isIntegerType, isRationalType, etc.
+│   │   ├── rules/        # Inference rules by category
+│   │   └── format-fr.ts  # French pedagogical feedback
 │   ├── differentiation/  # Symbolic derivatives
 │   ├── taylor/           # Taylor series expansion
 │   ├── limits/           # Symbolic limit evaluation
@@ -102,6 +108,7 @@ mathAST/
 | [Visitor Pattern](./visitor.md)                                  | Enter/leave hooks for AST traversal                           |
 | [Parsing](./parsing.md)                                          | LaTeX and custom syntax parsing                               |
 | [Evaluation](./evaluation.md)                                    | Numeric evaluation and substitution                           |
+| [Numeric Types](./numtype.md)                                    | Type inference and classification (integer, rational, etc.)   |
 | [Pattern Matching](./patterns.md)                                | Pattern matching and rule-based transformations               |
 | [Normalization](./normalization.md)                              | Canonical forms and equivalence                               |
 | [Differentiation & Taylor](./calculus.md)                        | Symbolic differentiation and series                           |
@@ -239,6 +246,7 @@ The system has evolved through several iterations:
 5. **Advanced calculus**: Differentiation and Taylor expansion
 6. **Function composition**: Support for f o g notation
 7. **Domain system**: Domain of definition with French interval notation
+8. **Numeric types**: Type inference system with French pedagogical feedback
 
 ## See Also
 

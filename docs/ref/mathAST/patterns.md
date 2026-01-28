@@ -147,20 +147,24 @@ parsePattern('_z:nonzero'); // z must be nonzero
 
 ### Pattern String Syntax
 
-| Syntax             | Description                       |
-| ------------------ | --------------------------------- |
-| `_x`               | Wildcard named 'x'                |
-| `_x:number`        | Wildcard constrained to numbers   |
-| `_x:integer`       | Wildcard constrained to integers  |
-| `_x:positive`      | Wildcard constrained to positive  |
-| `_x:negative`      | Wildcard constrained to negative  |
-| `_x:nonzero`       | Wildcard constrained to nonzero   |
-| `_x:variable`      | Wildcard constrained to variables |
-| `5`, `3.14`        | Literal numbers                   |
-| `+`, `-`, `*`, `/` | Operators                         |
-| `^`                | Power                             |
-| `sin(_x)`          | Function                          |
-| `(_x + _y)`        | Grouping                          |
+| Syntax                  | Description                           |
+| ----------------------- | ------------------------------------- |
+| `_x`                    | Wildcard named 'x'                    |
+| `_x:number`             | Wildcard constrained to numbers       |
+| `_x:integer`            | Wildcard constrained to integers      |
+| `_x:positive`           | Wildcard constrained to positive      |
+| `_x:negative`           | Wildcard constrained to negative      |
+| `_x:nonzero`            | Wildcard constrained to nonzero       |
+| `_x:variable`           | Wildcard constrained to variables     |
+| `_x:integerType`        | Wildcard with integer type inference  |
+| `_x:rationalType`       | Wildcard with rational type inference |
+| `_x:realType`           | Wildcard with real type inference     |
+| `_x:transcendentalType` | Wildcard with transcendental type     |
+| `5`, `3.14`             | Literal numbers                       |
+| `+`, `-`, `*`, `/`      | Operators                             |
+| `^`                     | Power                                 |
+| `sin(_x)`               | Function                              |
+| `(_x + _y)`             | Grouping                              |
 
 ## Constraints
 
@@ -193,6 +197,35 @@ P.isFreeOf('x', 'y'); // Doesn't contain x or y
 // Custom constraint
 P.custom((node) => node.type === 'number' && parseFloat(node.value) > 10, 'greater than 10');
 ```
+
+### Numeric Type Constraints
+
+Match expressions by their inferred numeric type:
+
+```typescript
+// Integer type (5, -3, but not 5.5 or 1/2)
+P._('n', P.isIntegerType());
+
+// Rational type (includes integers: 5, 1/2, 3/4)
+P._('q', P.isRationalType());
+
+// Algebraic type (includes rational and √2, ∛5)
+P._('a', P.isAlgebraicType());
+
+// Real type (includes all above + π, e)
+P._('r', P.isRealType());
+
+// Transcendental type (π, e, sin(1), ln(2))
+P._('t', P.isTranscendentalType());
+
+// Complex type (includes all)
+P._('z', P.isComplexType());
+
+// With strict mode (exact type, not subtypes)
+P._('n', P.isIntegerType(true)); // Only integer, not "rational that happens to be integer"
+```
+
+These constraints use the numeric type inference system. See [Numeric Types](./numtype.md) for details.
 
 ### Logical Constraints
 
@@ -551,6 +584,7 @@ const node = MathAST.add(MathAST.variable('x'), MathAST.number('0'));
 
 ## See Also
 
+- [Numeric Types](./numtype.md) - Type inference for numeric constraints
 - [Evaluation](./evaluation.md) - Numeric evaluation
 - [Normalization](./normalization.md) - Canonical forms
 - [Source README](../../../src/lib/mathAST/pattern/README.md) - Additional examples
