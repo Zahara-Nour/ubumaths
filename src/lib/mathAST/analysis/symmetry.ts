@@ -12,11 +12,10 @@
 
 import type { MathNode } from '../types';
 import type { Domain, IntervalSet, Interval } from '../domain/types';
-import { isFunction, isNumber, isPositiveInfinity, isNegativeInfinity } from '../guards';
-import { opposite } from '../factory';
+import { isNumber, isPositiveInfinity, isNegativeInfinity } from '../guards';
+import { opposite, subtract, add } from '../factory';
 import { substitute, getVariables } from '../eval/substitute';
-import { normalize, normalFormsEquivalent } from '../normal';
-import { mapNode } from '../transforms';
+import { normalize, isZeroPolynomial } from '../normal';
 import { computeDomain } from '../domain/compute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
@@ -435,7 +434,12 @@ function detectSymmetryHeuristic(node: MathNode, variable: string): SymmetryType
 
 /**
  * Detect symmetry by algebraic comparison.
- * Substitutes -x for x and compares normalized forms.
+ * Uses the approach:
+ * - Even: f(-x) - f(x) = 0
+ * - Odd: f(-x) + f(x) = 0
+ *
+ * This is more robust than direct comparison because it handles
+ * cases like 1/(-x) = -1/x where the representations differ.
  */
 function detectSymmetryAlgebraic(node: MathNode, variable: string): SymmetryResult {
 	try {
@@ -444,31 +448,29 @@ function detectSymmetryAlgebraic(node: MathNode, variable: string): SymmetryResu
 		const negX = opposite({ type: 'variable', name: variable });
 		const fNegX = substitute(node, { [variable]: negX }, { maxIterations: 1 });
 
-		// Create -f(x)
-		const negFX = opposite(node);
+		// Check even: f(-x) - f(x) = 0
+		const diffEven = subtract(fNegX, node);
+		const normDiffEven = normalize(diffEven);
 
-		// Normalize all three: f(x), f(-x), -f(x)
-		const normFX = normalize(node);
-		const normFNegX = normalize(fNegX);
-		const normNegFX = normalize(negFX);
-
-		// Compare f(-x) with f(x) for even
-		if (normalFormsEquivalent(normFNegX, normFX)) {
+		if (isZeroPolynomial(normDiffEven.numerator)) {
 			return {
 				symmetry: 'even',
 				variable,
 				confidence: 'proven',
-				reason: 'f(-x) = f(x) verified algebraically'
+				reason: 'f(-x) - f(x) = 0 verified algebraically'
 			};
 		}
 
-		// Compare f(-x) with -f(x) for odd
-		if (normalFormsEquivalent(normFNegX, normNegFX)) {
+		// Check odd: f(-x) + f(x) = 0
+		const sumOdd = add(fNegX, node);
+		const normSumOdd = normalize(sumOdd);
+
+		if (isZeroPolynomial(normSumOdd.numerator)) {
 			return {
 				symmetry: 'odd',
 				variable,
 				confidence: 'proven',
-				reason: 'f(-x) = -f(x) verified algebraically'
+				reason: 'f(-x) + f(x) = 0 verified algebraically'
 			};
 		}
 
@@ -493,31 +495,6 @@ function detectSymmetryAlgebraic(node: MathNode, variable: string): SymmetryResu
 // =============================================================================
 // Main API
 // =============================================================================
-
-/**
- * Check if expression contains transcendental functions.
- * Algebraic normalization cannot simplify transcendental identities,
- * so we trust heuristics for these.
- */
-function containsTranscendentalFunctions(node: MathNode): boolean {
-	let found = false;
-	mapNode(node, (n) => {
-		if (found) return n;
-		if (isFunction(n)) {
-			if (
-				EVEN_FUNCTIONS.has(n.name) ||
-				ODD_FUNCTIONS.has(n.name) ||
-				n.name === 'ln' ||
-				n.name === 'log' ||
-				n.name === 'exp'
-			) {
-				found = true;
-			}
-		}
-		return n;
-	});
-	return found;
-}
 
 /**
  * Detect whether an expression has even, odd, or no symmetry.
@@ -587,45 +564,18 @@ export function detectSymmetry(node: MathNode, variable?: string): SymmetryResul
 		// Domain computation failed, continue with symmetry detection
 	}
 
-	// Try heuristic first (fast)
-	const heuristicResult = detectSymmetryHeuristic(node, targetVar);
+	// Use algebraic method (normalization now handles parity of trig functions)
+	// This gives 'proven' confidence for all cases it can handle
+	const algebraicResult = detectSymmetryAlgebraic(node, targetVar);
 
-	// For expressions with transcendental functions, trust the heuristic
-	// because algebraic normalization can't simplify trig/exp identities
-	if (heuristicResult !== 'unknown' && containsTranscendentalFunctions(node)) {
-		return {
-			symmetry: heuristicResult,
-			variable: targetVar,
-			confidence: 'heuristic',
-			reason: 'Structural analysis (transcendental functions)'
-		};
+	if (algebraicResult.confidence === 'proven') {
+		return algebraicResult;
 	}
 
+	// Fall back to heuristic if algebraic method failed
+	const heuristicResult = detectSymmetryHeuristic(node, targetVar);
+
 	if (heuristicResult !== 'unknown') {
-		// Verify with algebraic method for proven confidence
-		const algebraicResult = detectSymmetryAlgebraic(node, targetVar);
-
-		// If algebraic confirms heuristic, return proven result
-		if (algebraicResult.symmetry === heuristicResult) {
-			return algebraicResult;
-		}
-
-		// If algebraic disagrees but heuristic is definite, trust heuristic
-		// (algebraic might fail due to complex expressions)
-		if (heuristicResult === 'even' || heuristicResult === 'odd') {
-			return {
-				symmetry: heuristicResult,
-				variable: targetVar,
-				confidence: 'heuristic',
-				reason: 'Structural analysis'
-			};
-		}
-
-		// For 'none', trust algebraic if proven
-		if (algebraicResult.confidence === 'proven') {
-			return algebraicResult;
-		}
-
 		return {
 			symmetry: heuristicResult,
 			variable: targetVar,
@@ -634,8 +584,7 @@ export function detectSymmetry(node: MathNode, variable?: string): SymmetryResul
 		};
 	}
 
-	// Heuristic returned unknown - try algebraic
-	return detectSymmetryAlgebraic(node, targetVar);
+	return algebraicResult;
 }
 
 /**
