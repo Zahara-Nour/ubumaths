@@ -599,6 +599,52 @@ export function csc(arg: MathNode, options?: FunctionOptions | NodeMetadata): Fu
 	return func('csc', [arg], normalizeFunctionOptions(options));
 }
 
+// =============================================================================
+// Hyperbolic Functions
+// =============================================================================
+
+/**
+ * Convenience: Creates sinh(arg) - hyperbolic sine
+ */
+export function sinh(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('sinh', [arg], normalizeFunctionOptions(options));
+}
+
+/**
+ * Convenience: Creates cosh(arg) - hyperbolic cosine
+ */
+export function cosh(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('cosh', [arg], normalizeFunctionOptions(options));
+}
+
+/**
+ * Convenience: Creates tanh(arg) - hyperbolic tangent
+ */
+export function tanh(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('tanh', [arg], normalizeFunctionOptions(options));
+}
+
+/**
+ * Convenience: Creates coth(arg) - hyperbolic cotangent
+ */
+export function coth(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('coth', [arg], normalizeFunctionOptions(options));
+}
+
+/**
+ * Convenience: Creates sech(arg) - hyperbolic secant
+ */
+export function sech(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('sech', [arg], normalizeFunctionOptions(options));
+}
+
+/**
+ * Convenience: Creates csch(arg) - hyperbolic cosecant
+ */
+export function csch(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('csch', [arg], normalizeFunctionOptions(options));
+}
+
 /**
  * Convenience: Creates ln(arg)
  */
