@@ -9,7 +9,7 @@
 
 import type { MathNode } from '../types';
 import { isNumber, isMultiplication, isAddition, isSubtraction, isDivision } from '../guards';
-import { number, greek, multiply, divide } from '../factory';
+import { number, multiply, divide, PI, TWO_PI } from '../factory';
 import { getVariables } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
@@ -44,14 +44,11 @@ export interface PeriodicityResult {
 // Constants
 // =============================================================================
 
-const PI: MathNode = greek('pi');
-const TWO_PI: MathNode = multiply(number('2'), PI, 'implicit');
-
 /**
  * Known mathematical constants that should not be treated as variables.
- * These are greek letters that represent fixed values.
+ * These are represented as MathConstantNode in the AST.
  */
-const MATH_CONSTANTS = new Set(['pi', 'e']);
+const MATH_CONSTANTS = new Set(['pi', 'euler']);
 
 /**
  * Filter out known mathematical constants from a set of variables.

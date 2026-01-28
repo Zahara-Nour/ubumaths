@@ -23,7 +23,7 @@ import type { DimensionalContext } from '../types';
 import {
 	number,
 	variable,
-	greek,
+	piConstant,
 	symbol,
 	add,
 	subtract,
@@ -152,11 +152,12 @@ describe('Dimensional Analyzer', () => {
 			expect(result.resultUnit!.components.get('m')).toBe(1);
 		});
 
-		it('should return valid with null unit for Greek letters', () => {
-			const result = analyzeDimensions(greek('pi'));
+		it('should return valid with dimensionless unit for π constant', () => {
+			const result = analyzeDimensions(piConstant());
 
 			expect(result.valid).toBe(true);
-			expect(result.resultUnit).toBe(null);
+			// π is a mathematical constant, which is dimensionless (not null/"no info")
+			expect(isDimensionless(result.resultUnit)).toBe(true);
 		});
 
 		it('should return valid with null unit for mathematical symbols', () => {

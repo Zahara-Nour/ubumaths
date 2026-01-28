@@ -1,5 +1,6 @@
 /**
  * Test that both LaTeX and Custom parsers support the same limited set of Greek letters
+ * and that π is properly handled as a MathConstant (not a Greek letter).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -7,7 +8,8 @@ import { parsePratt as parseLatex } from '../latex/parser-pratt';
 import { parseCustomPratt as parseCustom } from '../custom/parser-pratt';
 
 describe('Greek letter support - harmonization between parsers', () => {
-	const SUPPORTED_GREEK = ['pi', 'alpha', 'beta', 'gamma', 'theta'];
+	// Note: 'pi' is NOT a Greek letter - it's a MathConstant
+	const SUPPORTED_GREEK = ['alpha', 'beta', 'gamma', 'theta'];
 	const UNSUPPORTED_GREEK = ['omega', 'sigma', 'delta', 'epsilon', 'lambda', 'mu', 'nu'];
 
 	describe('LaTeX parser', () => {
@@ -17,6 +19,14 @@ describe('Greek letter support - harmonization between parsers', () => {
 			expect(result.type).toBe('greek');
 			if (result.type === 'greek') {
 				expect(result.letter).toBe(letter);
+			}
+		});
+
+		it('should parse \\pi as MathConstant, not Greek letter', () => {
+			const result = parseLatex('\\pi');
+			expect(result.type).toBe('constant');
+			if (result.type === 'constant') {
+				expect(result.constant).toBe('pi');
 			}
 		});
 
@@ -32,6 +42,14 @@ describe('Greek letter support - harmonization between parsers', () => {
 			expect(result.type).toBe('greek');
 			if (result.type === 'greek') {
 				expect(result.letter).toBe(letter);
+			}
+		});
+
+		it('should parse \\pi as MathConstant, not Greek letter', () => {
+			const result = parseCustom('\\pi');
+			expect(result.type).toBe('constant');
+			if (result.type === 'constant') {
+				expect(result.constant).toBe('pi');
 			}
 		});
 
@@ -55,6 +73,19 @@ describe('Greek letter support - harmonization between parsers', () => {
 				if (latexResult.type === 'greek' && customResult.type === 'greek') {
 					expect(latexResult.letter).toBe(customResult.letter);
 				}
+			}
+		});
+
+		it('should have both parsers treat \\pi as MathConstant', () => {
+			const latexResult = parseLatex('\\pi');
+			const customResult = parseCustom('\\pi');
+
+			expect(latexResult.type).toBe('constant');
+			expect(customResult.type).toBe('constant');
+
+			if (latexResult.type === 'constant' && customResult.type === 'constant') {
+				expect(latexResult.constant).toBe('pi');
+				expect(customResult.constant).toBe('pi');
 			}
 		});
 	});

@@ -404,11 +404,9 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		throw new Error(`Cannot evaluate expression with unsubstituted variable: ${node.name}`);
 	}
 
-	// GreekLetterNode - handle constants (pi)
+	// GreekLetterNode - Greek letters are variables, not constants
+	// Note: π is NOT a GreekLetter - it's a MathConstant
 	if (isGreek(node)) {
-		if (node.letter === 'pi') {
-			return floatToRational(Math.PI);
-		}
 		throw new Error(`Cannot evaluate expression with unsubstituted Greek letter: ${node.letter}`);
 	}
 

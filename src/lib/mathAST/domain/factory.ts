@@ -125,12 +125,12 @@ export function tanDomain(): PeriodicExclusion {
 		// π/2
 		{
 			type: 'division',
-			numerator: { type: 'greek', letter: 'pi' },
+			numerator: { type: 'constant', constant: 'pi' },
 			denominator: { type: 'number', value: '2' },
 			displayStyle: 'inline'
 		},
 		// π
-		{ type: 'greek', letter: 'pi' }
+		{ type: 'constant', constant: 'pi' }
 	);
 }
 
@@ -142,7 +142,7 @@ export function cotDomain(): PeriodicExclusion {
 		// 0
 		{ type: 'number', value: '0' },
 		// π
-		{ type: 'greek', letter: 'pi' }
+		{ type: 'constant', constant: 'pi' }
 	);
 }
 

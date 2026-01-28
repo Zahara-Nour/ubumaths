@@ -16,15 +16,15 @@ import type { MatrixType } from './matrix/types';
  * Supported Greek letter names (lowercase only)
  *
  * This is a limited set of Greek letters supported by both LaTeX and Custom parsers.
- * Only these letters can be used in mathematical expressions.
+ * Only these letters can be used as variables in mathematical expressions.
  *
- * Note: 'pi' is now represented as MathConstantNode('pi'), not GreekLetterNode.
- * The other Greek letters (alpha, beta, gamma, theta) remain as variables.
+ * Note: π is NOT a GreekLetter - it's a MathConstant. Use piConstant() or PI.
+ * Similarly, e (Euler's number) is MathConstant('euler'), not a variable.
  *
- * Supported: pi, alpha, beta, gamma, theta
- * Not supported: All other Greek letters (omega, sigma, delta, epsilon, etc.)
+ * Supported: alpha, beta, gamma, theta
+ * Not supported: pi (use MathConstant), omega, sigma, delta, epsilon, etc.
  */
-export type GreekLetter = 'pi' | 'alpha' | 'beta' | 'gamma' | 'theta';
+export type GreekLetter = 'alpha' | 'beta' | 'gamma' | 'theta';
 
 // =============================================================================
 // Mathematical Constants

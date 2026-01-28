@@ -42,6 +42,8 @@ export function hashNode(node: MathNode): string {
 			return `V:${node.name}`;
 		case 'greek':
 			return `G:${node.letter}`;
+		case 'constant':
+			return `C:${node.constant}`;
 		case 'symbol':
 			return `S:${node.symbol}`;
 		case 'hole':
@@ -87,7 +89,8 @@ export function hashNode(node: MathNode): string {
  * Lower priority = comes first in canonical order.
  */
 const BASE_TYPE_PRIORITY: Record<string, number> = {
-	greek: 0, // Constants like pi, e
+	constant: 0, // Mathematical constants (pi, euler)
+	greek: 0, // Greek letters used as variables (alpha, beta, etc.)
 	variable: 1, // Variables like x, y, z
 	function: 2, // Functions like sin, cos, ln
 	composition: 2, // Function composition (same level as function)
@@ -129,6 +132,8 @@ function getNodeName(node: MathNode): string {
 			return node.name;
 		case 'greek':
 			return node.letter;
+		case 'constant':
+			return node.constant;
 		case 'function':
 			return node.name;
 		case 'number':

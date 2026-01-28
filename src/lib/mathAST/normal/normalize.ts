@@ -1320,7 +1320,16 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		}
 
 		case 'greek': {
-			// Greek letters like pi, alpha are treated as symbolic constants
+			// Greek letters like alpha, beta are treated as symbolic constants
+			const term: NormalTerm = {
+				coefficient: ALGEBRAIC_ONE,
+				monomial: [symbolicFactor(node, ONE)]
+			};
+			return normalFormFromPolynomial(polynomialFromTerm(term));
+		}
+
+		case 'constant': {
+			// Mathematical constants (pi, euler) are treated as symbolic constants
 			const term: NormalTerm = {
 				coefficient: ALGEBRAIC_ONE,
 				monomial: [symbolicFactor(node, ONE)]
@@ -1556,7 +1565,11 @@ function getPiCoefficient(form: NormalForm): Rational | null {
 	// Monomial must be exactly π^1
 	if (term.monomial.length !== 1) return null;
 	const factor = term.monomial[0];
-	if (factor.base.type !== 'greek' || factor.base.letter !== 'pi') return null;
+	// π can be represented as MathConstantNode or (legacy) GreekLetterNode
+	const isPi =
+		(factor.base.type === 'constant' && factor.base.constant === 'pi') ||
+		(factor.base.type === 'greek' && factor.base.letter === 'pi');
+	if (!isPi) return null;
 	if (factor.exponent.n !== 1n || factor.exponent.d !== 1n) return null;
 
 	return term.coefficient.terms[0].rational;
@@ -2297,8 +2310,8 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 		return result;
 	}
 
-	// B3. √[n](greek like π, e) = symbol^{1/n}
-	if (arg.type === 'greek') {
+	// B3. √[n](symbolic constant like π, e, α) = symbol^{1/n}
+	if (arg.type === 'greek' || arg.type === 'constant') {
 		const term = termFromSymbolicFactor(arg, { n: 1n, d: rootIndex });
 		const result = normalFormFromPolynomial(polynomialFromTerm(term));
 		recordNormalizationStep(ctx, 'sqrt-to-half-power', node, result, 'detailed');

@@ -35,11 +35,15 @@ describe('LatexGenerator - Literals', () => {
 	});
 
 	it('generates supported Greek letters', () => {
-		expect(toLatex(MathAST.greek('pi'))).toBe('\\pi');
+		// Note: π is NOT a Greek letter - it's a MathConstant
 		expect(toLatex(MathAST.greek('alpha'))).toBe('\\alpha');
 		expect(toLatex(MathAST.greek('beta'))).toBe('\\beta');
 		expect(toLatex(MathAST.greek('gamma'))).toBe('\\gamma');
 		expect(toLatex(MathAST.greek('theta'))).toBe('\\theta');
+	});
+
+	it('generates π as MathConstant', () => {
+		expect(toLatex(MathAST.piConstant())).toBe('\\pi');
 	});
 
 	it('generates mathematical symbols', () => {

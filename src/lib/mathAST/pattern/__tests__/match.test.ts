@@ -262,11 +262,11 @@ describe('Pattern Matching Algorithm', () => {
 		});
 
 		it('matches literal node', () => {
-			const originalNode = greek('pi');
+			const originalNode = greek('alpha');
 			const pattern = P.lit(originalNode);
 
-			expect(match(pattern, greek('pi')).success).toBe(true);
-			expect(match(pattern, greek('alpha')).success).toBe(false);
+			expect(match(pattern, greek('alpha')).success).toBe(true);
+			expect(match(pattern, greek('beta')).success).toBe(false);
 		});
 	});
 

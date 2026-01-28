@@ -192,6 +192,7 @@ export function getPolynomialDegree(node: MathNode, variable: string): number | 
 function getPolynomialDegreeRecursive(node: MathNode, variable: string): number | null {
 	switch (node.type) {
 		case 'number':
+		case 'constant': // Mathematical constants (π, e) are degree 0
 			return 0;
 
 		case 'variable':

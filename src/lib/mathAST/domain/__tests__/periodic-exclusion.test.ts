@@ -27,24 +27,27 @@ import { fromNumber } from '../factory';
 describe('PeriodicExclusion type', () => {
 	describe('factory functions', () => {
 		it('creates a periodic exclusion with periodicExclusion()', () => {
-			const pe = periodicExclusion({ type: 'number', value: '0' }, { type: 'greek', letter: 'pi' });
+			const pe = periodicExclusion(
+				{ type: 'number', value: '0' },
+				{ type: 'constant', constant: 'pi' }
+			);
 			expect(pe.kind).toBe('periodic_exclusion');
 			expect(pe.basePoint).toEqual({ type: 'number', value: '0' });
-			expect(pe.period).toEqual({ type: 'greek', letter: 'pi' });
+			expect(pe.period).toEqual({ type: 'constant', constant: 'pi' });
 		});
 
 		it('tanDomain() creates ℝ \\ {π/2 + kπ}', () => {
 			const d = tanDomain();
 			expect(d.kind).toBe('periodic_exclusion');
 			expect(d.basePoint.type).toBe('division');
-			expect(d.period).toEqual({ type: 'greek', letter: 'pi' });
+			expect(d.period).toEqual({ type: 'constant', constant: 'pi' });
 		});
 
 		it('cotDomain() creates ℝ \\ {kπ}', () => {
 			const d = cotDomain();
 			expect(d.kind).toBe('periodic_exclusion');
 			expect(d.basePoint).toEqual({ type: 'number', value: '0' });
-			expect(d.period).toEqual({ type: 'greek', letter: 'pi' });
+			expect(d.period).toEqual({ type: 'constant', constant: 'pi' });
 		});
 
 		it('secDomain() is the same as tanDomain()', () => {

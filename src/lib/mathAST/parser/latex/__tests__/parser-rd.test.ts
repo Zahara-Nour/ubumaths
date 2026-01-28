@@ -101,12 +101,19 @@ describe('Literals', () => {
 		});
 
 		it('should parse all supported Greek letters', () => {
-			const letters = ['pi', 'alpha', 'beta', 'gamma', 'theta'];
+			// Note: 'pi' is NOT a Greek letter - it's a MathConstant
+			const letters = ['alpha', 'beta', 'gamma', 'theta'];
 			for (const letter of letters) {
 				const node = parse(`\\${letter}`);
 				expectType(node, 'greek');
 				expect(node.letter).toBe(letter);
 			}
+		});
+
+		it('should parse \\pi as MathConstant, not Greek letter', () => {
+			const node = parse('\\pi');
+			expectType(node, 'constant');
+			expect(node.constant).toBe('pi');
 		});
 	});
 

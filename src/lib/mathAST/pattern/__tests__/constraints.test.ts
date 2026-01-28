@@ -31,7 +31,7 @@ describe('Constraint Evaluation', () => {
 			const constraint = P.isType('number', 'variable');
 			const numNode = number('5');
 			const varNode = variable('x');
-			const greekNode = greek('pi');
+			const greekNode = greek('alpha');
 
 			expect(checkConstraint(constraint, numNode)).toBe(true);
 			expect(checkConstraint(constraint, varNode)).toBe(true);
@@ -65,7 +65,7 @@ describe('Constraint Evaluation', () => {
 			const constraint = P.isNumber();
 
 			expect(checkConstraint(constraint, variable('x'))).toBe(false);
-			expect(checkConstraint(constraint, greek('pi'))).toBe(false);
+			expect(checkConstraint(constraint, greek('alpha'))).toBe(false);
 			expect(checkConstraint(constraint, add(number('1'), number('2')))).toBe(false);
 		});
 	});
@@ -344,7 +344,7 @@ describe('Constraint Evaluation', () => {
 		it('fails when all constraints fail', () => {
 			const constraint = P.or(P.isNumber(), P.isVariable());
 
-			expect(checkConstraint(constraint, greek('pi'))).toBe(false);
+			expect(checkConstraint(constraint, greek('alpha'))).toBe(false);
 		});
 
 		it('handles multiple constraints', () => {
@@ -352,7 +352,7 @@ describe('Constraint Evaluation', () => {
 
 			expect(checkConstraint(constraint, number('5'))).toBe(true);
 			expect(checkConstraint(constraint, variable('x'))).toBe(true);
-			expect(checkConstraint(constraint, greek('pi'))).toBe(true);
+			expect(checkConstraint(constraint, greek('alpha'))).toBe(true);
 		});
 
 		it('handles empty or constraint', () => {
@@ -557,7 +557,7 @@ describe('containsVariable', () => {
 	});
 
 	it('does not find variable in greek letter', () => {
-		expect(containsVariable(greek('pi'), 'pi')).toBe(false);
+		expect(containsVariable(greek('alpha'), 'alpha')).toBe(false);
 	});
 });
 
