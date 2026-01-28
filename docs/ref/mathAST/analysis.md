@@ -52,7 +52,14 @@ import {
 	isOdd,
 	hasNoSymmetry,
 	type SymmetryType,
-	type SymmetryResult
+	type SymmetryResult,
+
+	// Periodicity detection
+	detectPeriodicity,
+	isPeriodic,
+	getPeriod,
+	getPeriodNumeric,
+	type PeriodicityResult
 } from '$lib/mathAST/analysis';
 ```
 
@@ -465,6 +472,91 @@ detectSymmetry(parseLatex('\\ln(x^2)'));
 detectSymmetry(parseLatex('\\frac{1}{x}'));
 // → { symmetry: 'odd', ... }
 ```
+
+---
+
+## Periodicity Detection
+
+Detects whether expressions are periodic and computes their period.
+
+### `detectPeriodicity(node, variable?)`
+
+Returns detailed periodicity analysis.
+
+```typescript
+import { parseLatex } from '$lib/mathAST';
+import { detectPeriodicity } from '$lib/mathAST/analysis';
+
+// Basic trigonometric functions
+detectPeriodicity(parseLatex('\\sin(x)'));
+// → { isPeriodic: true, periodNumeric: 6.283..., variable: 'x' }
+
+detectPeriodicity(parseLatex('\\tan(x)'));
+// → { isPeriodic: true, periodNumeric: 3.141..., variable: 'x' }
+
+// Scaled arguments: sin(kx) has period 2π/k
+detectPeriodicity(parseLatex('\\sin(2x)'));
+// → { isPeriodic: true, periodNumeric: 3.141..., ... }
+
+detectPeriodicity(parseLatex('\\cos(\\pi x)'));
+// → { isPeriodic: true, periodNumeric: 2, ... }
+
+// Non-periodic functions
+detectPeriodicity(parseLatex('x^2'));
+// → { isPeriodic: false, period: null }
+```
+
+**Returns:** `PeriodicityResult`
+
+```typescript
+interface PeriodicityResult {
+	isPeriodic: boolean;
+	period: MathNode | null;
+	periodNumeric: number | null;
+	variable: string;
+	confidence: 'proven' | 'heuristic';
+	reason?: string;
+}
+```
+
+### Helper Functions
+
+```typescript
+// Boolean check
+isPeriodic(parseLatex('\\sin(x)')); // true
+isPeriodic(parseLatex('x^2')); // false
+
+// Get period as MathNode
+getPeriod(parseLatex('\\sin(x)')); // 2π node
+getPeriod(parseLatex('x^2')); // null
+
+// Get numeric period
+getPeriodNumeric(parseLatex('\\sin(x)')); // 6.283185...
+getPeriodNumeric(parseLatex('\\tan(x)')); // 3.141592...
+getPeriodNumeric(parseLatex('\\sin(2x)')); // 3.141592...
+```
+
+### Periodicity Rules
+
+| Expression        | Period | Reason                |
+| ----------------- | ------ | --------------------- |
+| `sin(x)`          | 2π     | Base period           |
+| `cos(x)`          | 2π     | Base period           |
+| `tan(x)`          | π      | Base period           |
+| `sin(2x)`         | π      | Period = 2π / 2       |
+| `cos(πx)`         | 2      | Period = 2π / π       |
+| `sin(x) + cos(x)` | 2π     | LCM of periods        |
+| `sin(x) * cos(x)` | 2π     | LCM of periods        |
+| `sin²(x)`         | 2π     | Same as base function |
+
+### Known Periodic Functions
+
+| Function           | Base Period |
+| ------------------ | ----------- |
+| sin, cos, sec, csc | 2π          |
+| tan, cot           | π           |
+
+**Note:** Hyperbolic functions (sinh, cosh, etc.) are NOT periodic on ℝ.
 
 ---
 
