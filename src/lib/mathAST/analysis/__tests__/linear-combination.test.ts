@@ -151,6 +151,54 @@ describe('extractLinearCombination', () => {
 			expect(coeffX).toBeDefined();
 			expect(isDivision(coeffX!)).toBe(true);
 		});
+
+		it('extracts function coefficients (cos, ln)', () => {
+			const result = extract('\\cos(3)x + \\ln(5)y', ['x', 'y']);
+
+			expect(result.isLinear).toBe(true);
+			const coeffX = result.coefficients.get('x');
+			const coeffY = result.coefficients.get('y');
+			expect(coeffX).toBeDefined();
+			expect(coeffY).toBeDefined();
+			expect(isFunction(coeffX!)).toBe(true);
+			expect(isFunction(coeffY!)).toBe(true);
+			if (isFunction(coeffX!)) {
+				expect(coeffX.name).toBe('cos');
+			}
+			if (isFunction(coeffY!)) {
+				expect(coeffY.name).toBe('ln');
+			}
+		});
+
+		it('extracts negative function coefficient (-cos(3)x)', () => {
+			const result = extract('-\\cos(3)x + y', ['x', 'y']);
+
+			expect(result.isLinear).toBe(true);
+			const coeffX = result.coefficients.get('x');
+			expect(coeffX).toBeDefined();
+			// Should be opposite(cos(3)) or similar
+		});
+
+		it('extracts generic function coefficient (f(5)z)', () => {
+			const result = extract('f(5)z', ['z']);
+
+			expect(result.isLinear).toBe(true);
+			const coeffZ = result.coefficients.get('z');
+			expect(coeffZ).toBeDefined();
+			expect(isFunction(coeffZ!)).toBe(true);
+			if (isFunction(coeffZ!)) {
+				expect(coeffZ.name).toBe('f');
+			}
+		});
+
+		it('extracts combined function coefficients', () => {
+			const result = extract('-\\cos(3)x + \\ln(5)y + f(5)z', ['x', 'y', 'z']);
+
+			expect(result.isLinear).toBe(true);
+			expect(result.coefficients.get('x')).toBeDefined();
+			expect(result.coefficients.get('y')).toBeDefined();
+			expect(result.coefficients.get('z')).toBeDefined();
+		});
 	});
 
 	describe('non-linear expressions', () => {
