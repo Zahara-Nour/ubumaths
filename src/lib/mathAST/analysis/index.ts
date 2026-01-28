@@ -76,5 +76,14 @@ export {
 	type SymmetryResult
 } from './symmetry';
 
+// Periodicity detection
+export {
+	detectPeriodicity,
+	isPeriodic,
+	getPeriod,
+	getPeriodNumeric,
+	type PeriodicityResult
+} from './periodicity';
+
 // Domain analysis (re-exported from domain module)
 export * from '../domain';
