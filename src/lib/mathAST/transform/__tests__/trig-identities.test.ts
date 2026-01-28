@@ -39,6 +39,11 @@ import {
 	TRANSFORM_COS_PERIOD_2PI,
 	TRANSFORM_SIN_HALF_ANGLE,
 	TRANSFORM_COS_HALF_ANGLE,
+	TRANSFORM_TAN_HALF_ANGLE,
+	TRANSFORM_TAN_SQUARED_PLUS_ONE,
+	TRANSFORM_SEC_SQUARED_MINUS_ONE,
+	TRANSFORM_COT_SQUARED_PLUS_ONE,
+	TRANSFORM_CSC_SQUARED_MINUS_ONE,
 	TRANSFORM_SIN_CUBED,
 	TRANSFORM_COS_CUBED,
 	TRANSFORM_SIN_SUPPLEMENTARY,
@@ -917,6 +922,94 @@ describe('Shift by π/2 Identities (x + π/2)', () => {
 			const expr = parseLatex('\\sin(x)');
 			const result = simplifyShiftPiOver2(expr);
 			expect(result.changed).toBe(false);
+		});
+	});
+});
+
+describe('Tan/Cot Pythagorean Identities', () => {
+	describe('TRANSFORM_TAN_SQUARED_PLUS_ONE', () => {
+		it('should transform tan²(x) + 1 to sec²(x)', () => {
+			const expr = parseLatex('\\tan^2(x) + 1');
+			const result = TRANSFORM_TAN_SQUARED_PLUS_ONE(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('sec');
+		});
+
+		it('should transform 1 + tan²(x) to sec²(x)', () => {
+			const expr = parseLatex('1 + \\tan^2(x)');
+			const result = TRANSFORM_TAN_SQUARED_PLUS_ONE(expr);
+			expect(result).not.toBeNull();
+		});
+
+		it('should not transform tan(x) + 1', () => {
+			const expr = parseLatex('\\tan(x) + 1');
+			const result = TRANSFORM_TAN_SQUARED_PLUS_ONE(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_SEC_SQUARED_MINUS_ONE', () => {
+		it('should transform sec²(x) - 1 to tan²(x)', () => {
+			const expr = parseLatex('\\sec^2(x) - 1');
+			const result = TRANSFORM_SEC_SQUARED_MINUS_ONE(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('tan');
+		});
+	});
+
+	describe('TRANSFORM_COT_SQUARED_PLUS_ONE', () => {
+		it('should transform cot²(x) + 1 to csc²(x)', () => {
+			const expr = parseLatex('\\cot^2(x) + 1');
+			const result = TRANSFORM_COT_SQUARED_PLUS_ONE(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('csc');
+		});
+
+		it('should transform 1 + cot²(x) to csc²(x)', () => {
+			const expr = parseLatex('1 + \\cot^2(x)');
+			const result = TRANSFORM_COT_SQUARED_PLUS_ONE(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_CSC_SQUARED_MINUS_ONE', () => {
+		it('should transform csc²(x) - 1 to cot²(x)', () => {
+			const expr = parseLatex('\\csc^2(x) - 1');
+			const result = TRANSFORM_CSC_SQUARED_MINUS_ONE(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('cot');
+		});
+	});
+});
+
+describe('Tan Half-Angle', () => {
+	describe('TRANSFORM_TAN_HALF_ANGLE', () => {
+		it('should transform tan(x/2) to sin(x)/(1+cos(x))', () => {
+			const expr = parseLatex('\\tan(\\frac{x}{2})');
+			const result = TRANSFORM_TAN_HALF_ANGLE(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('sin');
+			expect(latex).toContain('cos');
+		});
+
+		it('should not transform tan(x)', () => {
+			const expr = parseLatex('\\tan(x)');
+			const result = TRANSFORM_TAN_HALF_ANGLE(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('expandHalfAngle with tan', () => {
+		it('should expand tan(x/2)', () => {
+			const expr = parseLatex('\\tan(\\frac{x}{2})');
+			const result = expandHalfAngle(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('tan-half-angle');
 		});
 	});
 });

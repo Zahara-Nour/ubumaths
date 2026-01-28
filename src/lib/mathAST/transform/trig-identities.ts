@@ -277,6 +277,84 @@ function transformOneMinusCosSquared(node: MathNode): MathNode | null {
 }
 
 /**
+ * tan²(a) + 1 -> sec²(a)
+ * Also handles 1 + tan²(a)
+ */
+function transformTanSquaredPlusOne(node: MathNode): MathNode | null {
+	if (!isAddition(node)) return null;
+
+	function isTanSquared(n: MathNode): n is FunctionNode {
+		return isFunction(n) && n.name === 'tan' && hasPowerOf2(n);
+	}
+
+	// tan²(a) + 1
+	if (isTanSquared(node.left) && isNumber(node.right) && node.right.value === '1') {
+		const a = getArg(node.left);
+		return superscript(sec(a), number('2'));
+	}
+
+	// 1 + tan²(a)
+	if (isNumber(node.left) && node.left.value === '1' && isTanSquared(node.right)) {
+		const a = getArg(node.right);
+		return superscript(sec(a), number('2'));
+	}
+
+	return null;
+}
+
+/**
+ * sec²(a) - 1 -> tan²(a)
+ */
+function transformSecSquaredMinusOne(node: MathNode): MathNode | null {
+	if (!isSubtraction(node)) return null;
+	if (!isFunction(node.left) || node.left.name !== 'sec') return null;
+	if (!hasPowerOf2(node.left)) return null;
+	if (!isNumber(node.right) || node.right.value !== '1') return null;
+
+	const a = getArg(node.left);
+	return superscript(tan(a), number('2'));
+}
+
+/**
+ * cot²(a) + 1 -> csc²(a)
+ * Also handles 1 + cot²(a)
+ */
+function transformCotSquaredPlusOne(node: MathNode): MathNode | null {
+	if (!isAddition(node)) return null;
+
+	function isCotSquared(n: MathNode): n is FunctionNode {
+		return isFunction(n) && n.name === 'cot' && hasPowerOf2(n);
+	}
+
+	// cot²(a) + 1
+	if (isCotSquared(node.left) && isNumber(node.right) && node.right.value === '1') {
+		const a = getArg(node.left);
+		return superscript(csc(a), number('2'));
+	}
+
+	// 1 + cot²(a)
+	if (isNumber(node.left) && node.left.value === '1' && isCotSquared(node.right)) {
+		const a = getArg(node.right);
+		return superscript(csc(a), number('2'));
+	}
+
+	return null;
+}
+
+/**
+ * csc²(a) - 1 -> cot²(a)
+ */
+function transformCscSquaredMinusOne(node: MathNode): MathNode | null {
+	if (!isSubtraction(node)) return null;
+	if (!isFunction(node.left) || node.left.name !== 'csc') return null;
+	if (!hasPowerOf2(node.left)) return null;
+	if (!isNumber(node.right) || node.right.value !== '1') return null;
+
+	const a = getArg(node.left);
+	return superscript(cot(a), number('2'));
+}
+
+/**
  * sin(a) / cos(a) -> tan(a)
  */
 function transformSinOverCos(node: MathNode): MathNode | null {
@@ -1047,6 +1125,21 @@ function transformCosHalfAngle(node: MathNode): MathNode | null {
 	return sqrt(divide(add(number('1'), cos(x)), number('2'), 'fraction'));
 }
 
+/**
+ * tan(x/2) -> sin(x) / (1 + cos(x))
+ * Alternative: (1 - cos(x)) / sin(x)
+ */
+function transformTanHalfAngle(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'tan') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isHalfOf(node.args[0]);
+	if (!x) return null;
+
+	// tan(x/2) = sin(x) / (1 + cos(x))
+	return divide(sin(x), add(number('1'), cos(x)), 'fraction');
+}
+
 // =============================================================================
 // Higher Power Formulas
 // =============================================================================
@@ -1156,7 +1249,11 @@ const POWER_REDUCTION_TRANSFORMS: TrigRule[] = [
 const PYTHAGOREAN_TRANSFORMS: TrigRule[] = [
 	{ name: 'pythagorean', transform: transformPythagorean },
 	{ name: 'one-minus-sin-squared', transform: transformOneMinusSinSquared },
-	{ name: 'one-minus-cos-squared', transform: transformOneMinusCosSquared }
+	{ name: 'one-minus-cos-squared', transform: transformOneMinusCosSquared },
+	{ name: 'tan-squared-plus-one', transform: transformTanSquaredPlusOne },
+	{ name: 'sec-squared-minus-one', transform: transformSecSquaredMinusOne },
+	{ name: 'cot-squared-plus-one', transform: transformCotSquaredPlusOne },
+	{ name: 'csc-squared-minus-one', transform: transformCscSquaredMinusOne }
 ];
 
 const QUOTIENT_TRANSFORMS: TrigRule[] = [
@@ -1227,7 +1324,8 @@ const PERIODIC_TRANSFORMS: TrigRule[] = [
 
 const HALF_ANGLE_TRANSFORMS: TrigRule[] = [
 	{ name: 'sin-half-angle', transform: transformSinHalfAngle },
-	{ name: 'cos-half-angle', transform: transformCosHalfAngle }
+	{ name: 'cos-half-angle', transform: transformCosHalfAngle },
+	{ name: 'tan-half-angle', transform: transformTanHalfAngle }
 ];
 
 const HIGHER_POWER_TRANSFORMS: TrigRule[] = [
@@ -1605,6 +1703,13 @@ export const TRANSFORM_COS_PLUS_PI = transformCosPlusPi;
 // Half angle
 export const TRANSFORM_SIN_HALF_ANGLE = transformSinHalfAngle;
 export const TRANSFORM_COS_HALF_ANGLE = transformCosHalfAngle;
+export const TRANSFORM_TAN_HALF_ANGLE = transformTanHalfAngle;
+
+// Tan/Cot Pythagorean
+export const TRANSFORM_TAN_SQUARED_PLUS_ONE = transformTanSquaredPlusOne;
+export const TRANSFORM_SEC_SQUARED_MINUS_ONE = transformSecSquaredMinusOne;
+export const TRANSFORM_COT_SQUARED_PLUS_ONE = transformCotSquaredPlusOne;
+export const TRANSFORM_CSC_SQUARED_MINUS_ONE = transformCscSquaredMinusOne;
 
 // Higher powers
 export const TRANSFORM_SIN_CUBED = transformSinCubed;
