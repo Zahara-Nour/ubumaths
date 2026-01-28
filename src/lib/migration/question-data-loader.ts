@@ -12,6 +12,7 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import type { QuestionBase } from './old-question-types';
 import { transformQuestion } from './question-transformer';
+import { loadImageUrlMapping } from './image-url-mapping';
 
 // ============================================================================
 // CONSTANTS
@@ -66,6 +67,9 @@ export async function loadQuestionByIndex(globalIndex: number): Promise<Question
 /**
  * Load a question with its transformation result
  * Includes transformation errors if any
+ *
+ * The transformation includes image URL mapping to convert old image paths
+ * to new Supabase Storage URLs.
  */
 export async function loadQuestionWithTransform(
 	globalIndex: number
@@ -80,7 +84,12 @@ export async function loadQuestionWithTransform(
 	let transformError: string | null = null;
 
 	try {
-		transformed = transformQuestion(original, globalIndex);
+		// Load image URL mapping for conversion
+		const imageUrlMapping = await loadImageUrlMapping();
+
+		transformed = transformQuestion(original, globalIndex, {
+			imageUrlMapping
+		});
 	} catch (err) {
 		transformError = err instanceof Error ? err.message : String(err);
 	}
