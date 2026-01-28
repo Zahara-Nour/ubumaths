@@ -17,11 +17,16 @@ import {
 	TRANSFORM_COS_COS_PRODUCT,
 	TRANSFORM_SIN_SIN_PRODUCT,
 	TRANSFORM_SIN_COS_DIFFERENT,
+	TRANSFORM_COS_SUM,
+	TRANSFORM_COS_DIFFERENCE,
+	TRANSFORM_SIN_SUM,
+	TRANSFORM_SIN_DIFFERENCE,
 	applyTrigIdentities,
 	contractToDoubleAngle,
 	simplifyPythagorean,
 	simplifyQuotients,
-	linearize
+	linearize,
+	expandAddition
 } from '../trig-identities';
 
 describe('Double Angle Contraction', () => {
@@ -325,6 +330,112 @@ describe('Linearization (Product to Sum)', () => {
 		it('should work on nested products', () => {
 			const expr = parseLatex('\\cos(x)\\cos(y) + \\sin(x)\\sin(y)');
 			const result = linearize(expr);
+			expect(result.changed).toBe(true);
+		});
+	});
+});
+
+describe('Addition Formulas (Angle Sum/Difference)', () => {
+	describe('TRANSFORM_COS_SUM', () => {
+		it('should transform cos(a+b) to cos(a)cos(b) - sin(a)sin(b)', () => {
+			const expr = parseLatex('\\cos(x+y)');
+			const result = TRANSFORM_COS_SUM(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('cos');
+			expect(latex).toContain('sin');
+		});
+
+		it('should not transform cos(x) without sum', () => {
+			const expr = parseLatex('\\cos(x)');
+			const result = TRANSFORM_COS_SUM(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_COS_DIFFERENCE', () => {
+		it('should transform cos(a-b) to cos(a)cos(b) + sin(a)sin(b)', () => {
+			const expr = parseLatex('\\cos(x-y)');
+			const result = TRANSFORM_COS_DIFFERENCE(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('cos');
+			expect(latex).toContain('sin');
+		});
+
+		it('should not transform cos(x) without difference', () => {
+			const expr = parseLatex('\\cos(x)');
+			const result = TRANSFORM_COS_DIFFERENCE(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_SIN_SUM', () => {
+		it('should transform sin(a+b) to sin(a)cos(b) + cos(a)sin(b)', () => {
+			const expr = parseLatex('\\sin(x+y)');
+			const result = TRANSFORM_SIN_SUM(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('sin');
+			expect(latex).toContain('cos');
+		});
+
+		it('should not transform sin(x) without sum', () => {
+			const expr = parseLatex('\\sin(x)');
+			const result = TRANSFORM_SIN_SUM(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_SIN_DIFFERENCE', () => {
+		it('should transform sin(a-b) to sin(a)cos(b) - cos(a)sin(b)', () => {
+			const expr = parseLatex('\\sin(x-y)');
+			const result = TRANSFORM_SIN_DIFFERENCE(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('sin');
+			expect(latex).toContain('cos');
+		});
+
+		it('should not transform sin(x) without difference', () => {
+			const expr = parseLatex('\\sin(x)');
+			const result = TRANSFORM_SIN_DIFFERENCE(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('expandAddition', () => {
+		it('should expand cos(a+b)', () => {
+			const expr = parseLatex('\\cos(x+y)');
+			const result = expandAddition(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('cos-sum');
+		});
+
+		it('should expand sin(a-b)', () => {
+			const expr = parseLatex('\\sin(x-y)');
+			const result = expandAddition(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('sin-difference');
+		});
+
+		it('should expand nested expressions', () => {
+			const expr = parseLatex('\\cos(x+y) + \\sin(x-y)');
+			const result = expandAddition(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('cos-sum');
+			expect(result.appliedRules).toContain('sin-difference');
+		});
+
+		it('should not change expressions without sum/difference', () => {
+			const expr = parseLatex('\\cos(x) + \\sin(y)');
+			const result = expandAddition(expr);
+			expect(result.changed).toBe(false);
+		});
+
+		it('should work with complex arguments', () => {
+			const expr = parseLatex('\\cos(2x+3y)');
+			const result = expandAddition(expr);
 			expect(result.changed).toBe(true);
 		});
 	});

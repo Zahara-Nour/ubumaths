@@ -347,6 +347,78 @@ function transformSinCosProductDifferent(node: MathNode): MathNode | null {
 }
 
 // =============================================================================
+// Addition Formulas (Angle Sum/Difference Expansion)
+// =============================================================================
+
+/**
+ * cos(a + b) -> cos(a)cos(b) - sin(a)sin(b)
+ */
+function transformCosSum(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'cos') return null;
+	if (node.args.length !== 1) return null;
+
+	const arg = node.args[0];
+	if (!isAddition(arg)) return null;
+
+	const a = arg.left;
+	const b = arg.right;
+
+	// cos(a+b) = cos(a)cos(b) - sin(a)sin(b)
+	return subtract(multiply(cos(a), cos(b), 'implicit'), multiply(sin(a), sin(b), 'implicit'));
+}
+
+/**
+ * cos(a - b) -> cos(a)cos(b) + sin(a)sin(b)
+ */
+function transformCosDifference(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'cos') return null;
+	if (node.args.length !== 1) return null;
+
+	const arg = node.args[0];
+	if (!isSubtraction(arg)) return null;
+
+	const a = arg.left;
+	const b = arg.right;
+
+	// cos(a-b) = cos(a)cos(b) + sin(a)sin(b)
+	return add(multiply(cos(a), cos(b), 'implicit'), multiply(sin(a), sin(b), 'implicit'));
+}
+
+/**
+ * sin(a + b) -> sin(a)cos(b) + cos(a)sin(b)
+ */
+function transformSinSum(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sin') return null;
+	if (node.args.length !== 1) return null;
+
+	const arg = node.args[0];
+	if (!isAddition(arg)) return null;
+
+	const a = arg.left;
+	const b = arg.right;
+
+	// sin(a+b) = sin(a)cos(b) + cos(a)sin(b)
+	return add(multiply(sin(a), cos(b), 'implicit'), multiply(cos(a), sin(b), 'implicit'));
+}
+
+/**
+ * sin(a - b) -> sin(a)cos(b) - cos(a)sin(b)
+ */
+function transformSinDifference(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sin') return null;
+	if (node.args.length !== 1) return null;
+
+	const arg = node.args[0];
+	if (!isSubtraction(arg)) return null;
+
+	const a = arg.left;
+	const b = arg.right;
+
+	// sin(a-b) = sin(a)cos(b) - cos(a)sin(b)
+	return subtract(multiply(sin(a), cos(b), 'implicit'), multiply(cos(a), sin(b), 'implicit'));
+}
+
+// =============================================================================
 // Rule Collections
 // =============================================================================
 
@@ -374,6 +446,15 @@ const LINEARIZATION_TRANSFORMS: TrigRule[] = [
 	{ name: 'sin-cos-different', transform: transformSinCosProductDifferent }
 ];
 
+const ADDITION_TRANSFORMS: TrigRule[] = [
+	{ name: 'cos-sum', transform: transformCosSum },
+	{ name: 'cos-difference', transform: transformCosDifference },
+	{ name: 'sin-sum', transform: transformSinSum },
+	{ name: 'sin-difference', transform: transformSinDifference }
+];
+
+// Note: ADDITION_TRANSFORMS are NOT included in ALL_TRANSFORMS
+// because they are inverse to LINEARIZATION_TRANSFORMS and would cause loops
 const ALL_TRANSFORMS: TrigRule[] = [
 	...DOUBLE_ANGLE_TRANSFORMS,
 	...POWER_REDUCTION_TRANSFORMS,
@@ -520,6 +601,25 @@ export function linearize(node: MathNode): TrigTransformResult {
 	return applyTrigIdentities(node, LINEARIZATION_TRANSFORMS);
 }
 
+/**
+ * Expand angle sums and differences (addition formulas).
+ *
+ * Examples:
+ * - cos(a + b) -> cos(a)cos(b) - sin(a)sin(b)
+ * - cos(a - b) -> cos(a)cos(b) + sin(a)sin(b)
+ * - sin(a + b) -> sin(a)cos(b) + cos(a)sin(b)
+ * - sin(a - b) -> sin(a)cos(b) - cos(a)sin(b)
+ *
+ * Note: This is the inverse of linearize(). Applying both in sequence
+ * will not return to the original form.
+ *
+ * @param node - The expression to transform
+ * @returns Transformation result
+ */
+export function expandAddition(node: MathNode): TrigTransformResult {
+	return applyTrigIdentities(node, ADDITION_TRANSFORMS);
+}
+
 // =============================================================================
 // Exports for individual transforms (for testing)
 // =============================================================================
@@ -535,3 +635,7 @@ export const TRANSFORM_SIN_OVER_COS = transformSinOverCos;
 export const TRANSFORM_COS_COS_PRODUCT = transformCosCosProduct;
 export const TRANSFORM_SIN_SIN_PRODUCT = transformSinSinProduct;
 export const TRANSFORM_SIN_COS_DIFFERENT = transformSinCosProductDifferent;
+export const TRANSFORM_COS_SUM = transformCosSum;
+export const TRANSFORM_COS_DIFFERENCE = transformCosDifference;
+export const TRANSFORM_SIN_SUM = transformSinSum;
+export const TRANSFORM_SIN_DIFFERENCE = transformSinDifference;
