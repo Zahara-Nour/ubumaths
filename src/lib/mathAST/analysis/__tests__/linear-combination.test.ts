@@ -9,7 +9,7 @@ import {
 	getCoefficient
 } from '../linear-combination';
 import { parseLatex } from '../../parser';
-import { isNumber, isGreek, isFunction, isDivision } from '../../guards';
+import { isNumber, isFunction, isDivision, isMathConstant } from '../../guards';
 
 // Helper to parse and extract
 function extract(latex: string, variables: string[]) {
@@ -116,9 +116,9 @@ describe('extractLinearCombination', () => {
 			expect(result.isLinear).toBe(true);
 			const coeffX = result.coefficients.get('x');
 			expect(coeffX).toBeDefined();
-			expect(isGreek(coeffX!)).toBe(true);
-			if (isGreek(coeffX!)) {
-				expect(coeffX.letter).toBe('pi');
+			expect(isMathConstant(coeffX!)).toBe(true);
+			if (isMathConstant(coeffX!)) {
+				expect(coeffX.constant).toBe('pi');
 			}
 		});
 

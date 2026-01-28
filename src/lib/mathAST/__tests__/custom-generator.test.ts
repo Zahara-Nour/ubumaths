@@ -34,18 +34,20 @@ describe('CustomGenerator - Literals', () => {
 	});
 
 	it('generates supported Greek letters', () => {
-		expect(toCustom(MathAST.greek('pi'))).toBe('\\pi');
+		// Note: pi is NOT a Greek letter - it's a MathConstant
 		expect(toCustom(MathAST.greek('alpha'))).toBe('\\alpha');
 		expect(toCustom(MathAST.greek('beta'))).toBe('\\beta');
 		expect(toCustom(MathAST.greek('gamma'))).toBe('\\gamma');
 		expect(toCustom(MathAST.greek('theta'))).toBe('\\theta');
 	});
 
-	it('rejects unsupported Greek letters at type level', () => {
-		// Note: 'omega' and 'Delta' are no longer valid GreekLetter types
-		// The type system now enforces only: 'pi', 'alpha', 'beta', 'gamma', 'theta'
-		// This test verifies all supported letters work
-		expect(toCustom(MathAST.greek('pi'))).toBe('\\pi');
+	it('generates π as MathConstant', () => {
+		expect(toCustom(MathAST.piConstant())).toBe('\\pi');
+	});
+
+	it('verifies all supported Greek letters work', () => {
+		// The type system enforces: 'alpha', 'beta', 'gamma', 'theta'
+		// π is a MathConstant, not a Greek letter
 		expect(toCustom(MathAST.greek('alpha'))).toBe('\\alpha');
 		expect(toCustom(MathAST.greek('beta'))).toBe('\\beta');
 		expect(toCustom(MathAST.greek('gamma'))).toBe('\\gamma');
@@ -210,8 +212,8 @@ describe('CustomGenerator - Subscript/Superscript with Brace Rules', () => {
 		expect(toCustom(expr)).toBe('x^{-2}');
 	});
 
-	it('generates superscript with supported Greek (no braces)', () => {
-		const expr = MathAST.power(MathAST.variable('x'), MathAST.greek('pi'));
+	it('generates superscript with π constant (no braces)', () => {
+		const expr = MathAST.power(MathAST.variable('x'), MathAST.piConstant());
 		expect(toCustom(expr)).toBe('x^\\pi');
 	});
 

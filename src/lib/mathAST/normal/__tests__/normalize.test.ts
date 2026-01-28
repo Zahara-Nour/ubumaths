@@ -59,7 +59,11 @@ function abs(arg: MathNode): MathNode {
 // }
 
 function greek(letter: string): MathNode {
-	return { type: 'greek', letter: letter as 'pi' | 'alpha' };
+	// π is a MathConstant, not a Greek letter
+	if (letter === 'pi') {
+		return { type: 'constant', constant: 'pi' };
+	}
+	return { type: 'greek', letter: letter as 'alpha' | 'beta' | 'gamma' | 'theta' };
 }
 
 // =============================================================================
@@ -116,8 +120,16 @@ describe('Normalize Variables', () => {
 		}
 	});
 
-	test('normalizes greek letter', () => {
+	test('normalizes π constant', () => {
 		const result = normalize(greek('pi'));
+		expect(result.numerator.length).toBe(1);
+		expect(result.numerator[0].monomial.length).toBe(1);
+		// π is now a MathConstantNode, not a GreekLetterNode
+		expect(result.numerator[0].monomial[0].base.type).toBe('constant');
+	});
+
+	test('normalizes greek letter (alpha)', () => {
+		const result = normalize(greek('alpha'));
 		expect(result.numerator.length).toBe(1);
 		expect(result.numerator[0].monomial.length).toBe(1);
 		expect(result.numerator[0].monomial[0].base.type).toBe('greek');

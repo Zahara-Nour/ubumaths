@@ -132,7 +132,7 @@ describe('Pattern Builder (P namespace)', () => {
 			});
 
 			it('works with greek letter nodes', () => {
-				const node = greek('pi');
+				const node = greek('alpha');
 				const pattern = P.lit(node);
 
 				expect(pattern.type).toBe('literal');

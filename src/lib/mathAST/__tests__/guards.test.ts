@@ -120,7 +120,7 @@ describe('guards', () => {
 
 		it('returns false for non-symbol nodes', () => {
 			expect(isSymbol(variable('x'))).toBe(false);
-			expect(isSymbol(greek('pi'))).toBe(false);
+			expect(isSymbol(greek('alpha'))).toBe(false);
 		});
 	});
 

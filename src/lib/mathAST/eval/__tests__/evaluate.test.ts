@@ -9,6 +9,7 @@ import {
 	number,
 	variable,
 	greek,
+	piConstant,
 	add,
 	subtract,
 	multiply,
@@ -357,13 +358,13 @@ describe('evaluate - transcendental functions', () => {
 		});
 
 		it('evaluates sin(pi/2) approximately 1', () => {
-			const ast = sin(divide(greek('pi'), number('2'), 'fraction'));
+			const ast = sin(divide(piConstant(), number('2'), 'fraction'));
 			const result = evaluate(ast, { mode: 'decimal' });
 			expect(Math.abs((result.value as number) - 1)).toBeLessThan(1e-10);
 		});
 
 		it('evaluates cos(pi) approximately -1', () => {
-			const ast = cos(greek('pi'));
+			const ast = cos(piConstant());
 			const result = evaluate(ast, { mode: 'decimal' });
 			expect(Math.abs((result.value as number) - -1)).toBeLessThan(1e-10);
 		});
@@ -429,13 +430,13 @@ describe('evaluate - transcendental functions', () => {
 
 describe('evaluate - constants', () => {
 	it('evaluates pi as Math.PI', () => {
-		const ast = greek('pi');
+		const ast = piConstant();
 		const result = evaluate(ast, { mode: 'decimal' });
 		expect(result.value).toBe(Math.PI);
 	});
 
 	it('evaluates 2*pi', () => {
-		const ast = multiply(number('2'), greek('pi'), 'dot');
+		const ast = multiply(number('2'), piConstant(), 'dot');
 		const result = evaluate(ast, { mode: 'decimal' });
 		expect(Math.abs((result.value as number) - 2 * Math.PI)).toBeLessThan(1e-10);
 	});

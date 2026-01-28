@@ -1688,6 +1688,28 @@ export function zeroMatrix(numRows: number, numCols?: number, options?: MatrixOp
 }
 
 // =============================================================================
+// Pre-built Constants
+// =============================================================================
+
+/**
+ * The mathematical constant π ≈ 3.14159...
+ * Pre-built MathConstantNode for convenience.
+ */
+export const PI: MathConstantNode = piConstant();
+
+/**
+ * Euler's number e ≈ 2.71828...
+ * Pre-built MathConstantNode for convenience.
+ */
+export const E: MathConstantNode = euler();
+
+/**
+ * The constant 2π ≈ 6.28318...
+ * Commonly used in trigonometry and periodicity.
+ */
+export const TWO_PI: MultiplicationNode = multiply(number('2'), PI, 'implicit');
+
+// =============================================================================
 // MathAST Namespace
 // =============================================================================
 
@@ -1706,6 +1728,9 @@ export const MathAST = {
 	mathConstant,
 	euler,
 	piConstant,
+	PI,
+	E,
+	TWO_PI,
 
 	// Binary operations
 	add,

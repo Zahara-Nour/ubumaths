@@ -52,9 +52,9 @@ import {
 
 /**
  * Map custom syntax symbol names to MathAST GreekLetter type
+ * Note: 'pi' is NOT here - it's a MathConstant, not a GreekLetter
  */
 const GREEK_SYMBOL_MAP: Record<string, GreekLetter> = {
-	pi: 'pi',
 	alpha: 'alpha',
 	beta: 'beta',
 	gamma: 'gamma',
@@ -688,7 +688,12 @@ class CustomRDParser {
 		const token = this.advance();
 		const symbolName = token.value;
 
-		// Check if it's a Greek letter
+		// Check if it's π (mathematical constant, not Greek letter)
+		if (symbolName === 'pi') {
+			return this.applyColor(MathAST.piConstant());
+		}
+
+		// Check if it's a Greek letter (alpha, beta, gamma, theta - NOT pi)
 		if (symbolName in GREEK_SYMBOL_MAP) {
 			return this.applyColor(MathAST.greek(GREEK_SYMBOL_MAP[symbolName]));
 		}

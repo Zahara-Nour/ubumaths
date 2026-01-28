@@ -32,7 +32,7 @@ import {
 	sqrt,
 	func,
 	opposite,
-	greek,
+	piConstant,
 	relation,
 	parentheses
 } from '../../factory';
@@ -69,7 +69,7 @@ describe('differentiate', () => {
 		});
 
 		it('d/dx(pi) = 0 (Greek letters are constants)', () => {
-			const result = differentiate(greek('pi'));
+			const result = differentiate(piConstant());
 			expect(result).toEqual(number('0'));
 		});
 	});
@@ -703,6 +703,6 @@ describe('containsVariable', () => {
 
 	it('returns false for constants', () => {
 		expect(containsVariable(number('5'), 'x')).toBe(false);
-		expect(containsVariable(greek('pi'), 'x')).toBe(false);
+		expect(containsVariable(piConstant(), 'x')).toBe(false);
 	});
 });

@@ -752,7 +752,13 @@ class PrattParser {
 		const token = this.currentToken;
 		const cmd = token.value;
 
-		// Greek letters
+		// Mathematical constant π (must check before Greek letters)
+		if (cmd === 'pi') {
+			this.advance();
+			return this.applyColor(MathAST.piConstant());
+		}
+
+		// Greek letters (alpha, beta, gamma, theta - NOT pi)
 		if (GREEK_COMMANDS.has(cmd)) {
 			this.advance();
 			return this.applyColor(MathAST.greek(cmd as GreekLetter));

@@ -13,8 +13,8 @@ import { verifyForm, matchesForm, extractBindings } from '../verify';
 // =============================================================================
 
 describe('verifyForm', () => {
-	describe('linear form: _a * x + _b', () => {
-		const pattern = '_a * x + _b';
+	describe('linear form: a * $x + b', () => {
+		const pattern = 'a * $x + b';
 
 		it('matches 2x + 3', () => {
 			const result = verifyForm('2x + 3', pattern);
@@ -49,8 +49,8 @@ describe('verifyForm', () => {
 		});
 	});
 
-	describe('product of sums: (_a + _b) * (_c + _d)', () => {
-		const pattern = '(_a + _b) * (_c + _d)';
+	describe('product of sums: (a + b) * (c + d)', () => {
+		const pattern = '(a + b) * (c + d)';
 
 		it('matches (x+1)(x+2)', () => {
 			const result = verifyForm('(x+1)(x+2)', pattern);
@@ -83,8 +83,8 @@ describe('verifyForm', () => {
 		});
 	});
 
-	describe('fraction: _num / _den', () => {
-		const pattern = '_num / _den';
+	describe('fraction: num / den', () => {
+		const pattern = 'num / den';
 
 		it('matches (x+1)/2', () => {
 			const result = verifyForm('\\frac{x+1}{2}', pattern);
@@ -107,8 +107,8 @@ describe('verifyForm', () => {
 		});
 	});
 
-	describe('power with integer exponent: _base ^ _n:integer', () => {
-		const pattern = '_base ^ _n:integer';
+	describe('power with integer exponent: base ^ n:integer', () => {
+		const pattern = 'base ^ n:integer';
 
 		it('matches x^2', () => {
 			const result = verifyForm('x^2', pattern);
@@ -142,8 +142,8 @@ describe('verifyForm', () => {
 		});
 	});
 
-	describe('number constraint: _n:number', () => {
-		const pattern = '_n:number';
+	describe('number constraint: n:number', () => {
+		const pattern = 'n:number';
 
 		it('matches 42', () => {
 			const result = verifyForm('42', pattern);
@@ -176,8 +176,8 @@ describe('verifyForm', () => {
 		});
 	});
 
-	describe('variable constraint: _v:variable', () => {
-		const pattern = '_v:variable';
+	describe('variable constraint: v:variable', () => {
+		const pattern = 'v:variable';
 
 		it('matches x', () => {
 			const result = verifyForm('x', pattern);
@@ -195,8 +195,8 @@ describe('verifyForm', () => {
 		});
 	});
 
-	describe('positive constraint: _n:positive', () => {
-		const pattern = '_n:positive';
+	describe('positive constraint: n:positive', () => {
+		const pattern = 'n:positive';
 
 		it('matches 5', () => {
 			const result = verifyForm('5', pattern);
@@ -217,8 +217,8 @@ describe('verifyForm', () => {
 		});
 	});
 
-	describe('wildcard without constraint: _x', () => {
-		const pattern = '_x';
+	describe('wildcard without constraint: x', () => {
+		const pattern = 'x';
 
 		it('matches any number', () => {
 			expect(verifyForm('42', pattern).matches).toBe(true);
@@ -235,7 +235,7 @@ describe('verifyForm', () => {
 
 	describe('error handling', () => {
 		it('returns error for invalid pattern', () => {
-			const result = verifyForm('x', '_x +');
+			const result = verifyForm('x', 'a +');
 
 			expect(result.matches).toBe(false);
 			if (!result.matches) {
@@ -244,7 +244,7 @@ describe('verifyForm', () => {
 		});
 
 		it('returns no error for valid but non-matching', () => {
-			const result = verifyForm('x', '_n:number');
+			const result = verifyForm('x', 'n:number');
 
 			expect(result.matches).toBe(false);
 			if (!result.matches) {
@@ -255,7 +255,7 @@ describe('verifyForm', () => {
 
 	describe('rawBindings', () => {
 		it('provides MathNode bindings', () => {
-			const result = verifyForm('2x + 3', '_a * x + _b');
+			const result = verifyForm('2x + 3', 'a * $x + b');
 
 			expect(result.matches).toBe(true);
 			if (result.matches) {
@@ -276,15 +276,15 @@ describe('verifyForm', () => {
 
 describe('matchesForm', () => {
 	it('returns true for matching form', () => {
-		expect(matchesForm('2x + 3', '_a * x + _b')).toBe(true);
+		expect(matchesForm('2x + 3', 'a * $x + b')).toBe(true);
 	});
 
 	it('returns false for non-matching form', () => {
-		expect(matchesForm('x^2', '_a * x + _b')).toBe(false);
+		expect(matchesForm('x^2', 'a * $x + b')).toBe(false);
 	});
 
 	it('returns false for invalid pattern', () => {
-		expect(matchesForm('x', '_x +')).toBe(false);
+		expect(matchesForm('x', 'a +')).toBe(false);
 	});
 });
 
@@ -294,7 +294,7 @@ describe('matchesForm', () => {
 
 describe('extractBindings', () => {
 	it('returns bindings for matching form', () => {
-		const bindings = extractBindings('2x + 3', '_a * x + _b');
+		const bindings = extractBindings('2x + 3', 'a * $x + b');
 
 		expect(bindings).not.toBeNull();
 		expect(bindings?.a).toBe('2');
@@ -302,13 +302,13 @@ describe('extractBindings', () => {
 	});
 
 	it('returns null for non-matching form', () => {
-		const bindings = extractBindings('x^2', '_a * x + _b');
+		const bindings = extractBindings('x^2', 'a * $x + b');
 
 		expect(bindings).toBeNull();
 	});
 
 	it('returns null for invalid pattern', () => {
-		const bindings = extractBindings('x', '_x +');
+		const bindings = extractBindings('x', 'a +');
 
 		expect(bindings).toBeNull();
 	});
@@ -319,8 +319,8 @@ describe('extractBindings', () => {
 // =============================================================================
 
 describe('real-world exercise patterns', () => {
-	it('quadratic form: _a * x^2 + _b * x + _c', () => {
-		const pattern = '_a * x^2 + _b * x + _c';
+	it('quadratic form: a * $x^2 + b * $x + c', () => {
+		const pattern = 'a * $x^2 + b * $x + c';
 		const result = verifyForm('2x^2 + 3x + 1', pattern);
 
 		expect(result.matches).toBe(true);
@@ -331,8 +331,8 @@ describe('real-world exercise patterns', () => {
 		}
 	});
 
-	it('simple power: _x ^ 2', () => {
-		const result = verifyForm('x^2', '_x ^ 2');
+	it('simple power: x ^ 2', () => {
+		const result = verifyForm('x^2', 'x ^ 2');
 
 		expect(result.matches).toBe(true);
 		if (result.matches) {
@@ -340,8 +340,8 @@ describe('real-world exercise patterns', () => {
 		}
 	});
 
-	it('sine function: sin(_x)', () => {
-		const result = verifyForm('\\sin(x)', 'sin(_x)');
+	it('sine function: sin(x)', () => {
+		const result = verifyForm('\\sin(x)', 'sin(x)');
 
 		expect(result.matches).toBe(true);
 		if (result.matches) {
@@ -349,8 +349,8 @@ describe('real-world exercise patterns', () => {
 		}
 	});
 
-	it('negation: -_x', () => {
-		const result = verifyForm('-5', '-_x');
+	it('negation: -x', () => {
+		const result = verifyForm('-5', '-x');
 
 		expect(result.matches).toBe(true);
 		if (result.matches) {

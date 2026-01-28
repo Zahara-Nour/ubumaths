@@ -16,6 +16,7 @@ import {
 	isNegativeInfinity,
 	isNumber,
 	isGreek,
+	isMathConstant,
 	isFunction,
 	isDivision,
 	isMultiplication
@@ -159,7 +160,6 @@ export function formatEndpointValue(value: EndpointValue): string {
 	// Handle Greek letters with nice Unicode
 	if (isGreek(value)) {
 		const greekMap: Record<string, string> = {
-			pi: 'π',
 			alpha: 'α',
 			beta: 'β',
 			gamma: 'γ',
@@ -174,6 +174,15 @@ export function formatEndpointValue(value: EndpointValue): string {
 			psi: 'ψ'
 		};
 		return greekMap[value.letter] ?? value.letter;
+	}
+
+	// Handle mathematical constants (pi, euler) with nice Unicode
+	if (isMathConstant(value)) {
+		const constantMap: Record<string, string> = {
+			pi: 'π',
+			euler: 'e'
+		};
+		return constantMap[value.constant] ?? value.constant;
 	}
 
 	// Handle sqrt with nice √ symbol

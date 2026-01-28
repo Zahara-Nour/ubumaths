@@ -116,9 +116,9 @@ describe('Literals', () => {
 	});
 
 	describe('Symbols', () => {
-		it('should parse \\pi', () => {
+		it('should parse \\pi as MathConstant', () => {
 			const ast = parse('\\pi');
-			expect(ast).toEqual({ type: 'greek', letter: 'pi' });
+			expect(ast).toEqual({ type: 'constant', constant: 'pi' });
 		});
 
 		it('should parse \\alpha', () => {
@@ -371,7 +371,7 @@ describe('Multiplication', () => {
 		expect(ast.type).toBe('multiplication');
 		const mult = ast as MultiplicationNode;
 		expect(mult.left).toEqual({ type: 'number', value: '2' });
-		expect(mult.right).toEqual({ type: 'greek', letter: 'pi' });
+		expect(mult.right).toEqual({ type: 'constant', constant: 'pi' });
 		expect(mult.displayStyle).toBe('implicit');
 	});
 

@@ -7,11 +7,11 @@
 import {
 	number,
 	infinity,
-	greek,
 	func,
 	fraction,
 	implicitMultiply,
-	variable
+	piConstant,
+	euler
 } from '$lib/mathAST/factory';
 import type {
 	Endpoint,
@@ -116,14 +116,14 @@ export function negativeInfinity(): EndpointValue {
  * Creates a pi endpoint value.
  */
 export function pi(): EndpointValue {
-	return greek('pi');
+	return piConstant();
 }
 
 /**
  * Creates an 'e' (Euler's number) endpoint value.
  */
 export function e(): EndpointValue {
-	return variable('e');
+	return euler();
 }
 
 /**

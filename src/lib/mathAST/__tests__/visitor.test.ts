@@ -4,7 +4,7 @@ import {
 	add,
 	fraction as divide,
 	func,
-	greek,
+	piConstant,
 	hole,
 	implicitMultiply as multiply,
 	number as num,
@@ -257,7 +257,7 @@ describe('visitAST - Read-only traversal', () => {
 	describe('Type-specific callbacks', () => {
 		it('should call type-specific enter callbacks', () => {
 			// Arrange: x + 2 * π
-			const tree = add(variable('x'), multiply(number(2), greek('pi')));
+			const tree = add(variable('x'), multiply(number(2), piConstant()));
 			const typeVisits: string[] = [];
 
 			const visitor: ASTVisitor = {
@@ -267,8 +267,8 @@ describe('visitAST - Read-only traversal', () => {
 				enterNumber: (node) => {
 					typeVisits.push(`num:${node.value}`);
 				},
-				enterGreek: (node) => {
-					typeVisits.push(`greek:${node.letter}`);
+				enterConstant: (node) => {
+					typeVisits.push(`const:${node.constant}`);
 				},
 				enterAddition: () => {
 					typeVisits.push('add');
@@ -282,7 +282,7 @@ describe('visitAST - Read-only traversal', () => {
 			visitAST(tree, visitor);
 
 			// Assert
-			expect(typeVisits).toEqual(['add', 'var:x', 'mult', 'num:2', 'greek:pi']);
+			expect(typeVisits).toEqual(['add', 'var:x', 'mult', 'num:2', 'const:pi']);
 		});
 
 		it('should call type-specific leave callbacks', () => {
@@ -337,7 +337,7 @@ describe('visitAST - Read-only traversal', () => {
 	describe('Edge cases', () => {
 		it('should handle leaf nodes (number, variable, greek, symbol, hole)', () => {
 			// Arrange
-			const leaves = [number(1), variable('x'), greek('pi'), hole(0, '?')];
+			const leaves = [number(1), variable('x'), piConstant(), hole(0, '?')];
 			const visitCounts: number[] = [];
 
 			leaves.forEach((leaf) => {
@@ -766,7 +766,7 @@ describe('transformAST - Transformation traversal', () => {
 
 		it('should handle transforming leaf nodes', () => {
 			// Arrange
-			const leaves = [number(1), variable('x'), greek('pi'), hole(0, '?')] satisfies MathNode[];
+			const leaves = [number(1), variable('x'), piConstant(), hole(0, '?')] satisfies MathNode[];
 
 			const visitor: TransformVisitor = {
 				leaveNode: (node) => {
@@ -781,7 +781,7 @@ describe('transformAST - Transformation traversal', () => {
 			// Assert: only hole transformed
 			expect(results[0]).toEqual(number(1));
 			expect(results[1]).toEqual(variable('x'));
-			expect(results[2]).toEqual(greek('pi'));
+			expect(results[2]).toEqual(piConstant());
 			expect(results[3]).toEqual(variable('replaced'));
 		});
 
