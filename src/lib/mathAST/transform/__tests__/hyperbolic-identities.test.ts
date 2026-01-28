@@ -38,6 +38,12 @@ import {
 	TRANSFORM_COSH_MINUS_COSH,
 	TRANSFORM_SINH_HALF_ANGLE,
 	TRANSFORM_COSH_HALF_ANGLE,
+	TRANSFORM_TANH_HALF_ANGLE,
+	TRANSFORM_ONE_MINUS_TANH_SQUARED,
+	TRANSFORM_SECH_TANH_PYTHAGOREAN,
+	TRANSFORM_COTH_SQUARED_MINUS_ONE,
+	TRANSFORM_COTH_CSCH_PYTHAGOREAN,
+	TRANSFORM_ONE_PLUS_CSCH_SQUARED,
 	TRANSFORM_SINH_CUBED,
 	TRANSFORM_COSH_CUBED,
 	TRANSFORM_SINH_FOURTH,
@@ -603,6 +609,97 @@ describe('Application Functions', () => {
 			const expr = parseLatex('2(\\cosh^2(x) - \\sinh^2(x))');
 			const result = applyHyperbolicIdentities(expr);
 			expect(result.changed).toBe(true);
+		});
+	});
+});
+
+describe('Tanh/Coth Pythagorean Identities', () => {
+	describe('TRANSFORM_ONE_MINUS_TANH_SQUARED', () => {
+		it('should transform 1 - tanh²(x) to sech²(x)', () => {
+			const expr = parseLatex('1 - \\tanh^2(x)');
+			const result = TRANSFORM_ONE_MINUS_TANH_SQUARED(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('sech');
+		});
+	});
+
+	describe('TRANSFORM_SECH_TANH_PYTHAGOREAN', () => {
+		it('should transform sech²(x) + tanh²(x) to 1', () => {
+			const expr = parseLatex('\\sech^2(x) + \\tanh^2(x)');
+			const result = TRANSFORM_SECH_TANH_PYTHAGOREAN(expr);
+			expect(result).not.toBeNull();
+			expect(toLatex(result!)).toBe('1');
+		});
+
+		it('should transform tanh²(x) + sech²(x) to 1', () => {
+			const expr = parseLatex('\\tanh^2(x) + \\sech^2(x)');
+			const result = TRANSFORM_SECH_TANH_PYTHAGOREAN(expr);
+			expect(result).not.toBeNull();
+			expect(toLatex(result!)).toBe('1');
+		});
+	});
+
+	describe('TRANSFORM_COTH_SQUARED_MINUS_ONE', () => {
+		it('should transform coth²(x) - 1 to csch²(x)', () => {
+			const expr = parseLatex('\\coth^2(x) - 1');
+			const result = TRANSFORM_COTH_SQUARED_MINUS_ONE(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('csch');
+		});
+	});
+
+	describe('TRANSFORM_COTH_CSCH_PYTHAGOREAN', () => {
+		it('should transform coth²(x) - csch²(x) to 1', () => {
+			const expr = parseLatex('\\coth^2(x) - \\csch^2(x)');
+			const result = TRANSFORM_COTH_CSCH_PYTHAGOREAN(expr);
+			expect(result).not.toBeNull();
+			expect(toLatex(result!)).toBe('1');
+		});
+	});
+
+	describe('TRANSFORM_ONE_PLUS_CSCH_SQUARED', () => {
+		it('should transform 1 + csch²(x) to coth²(x)', () => {
+			const expr = parseLatex('1 + \\csch^2(x)');
+			const result = TRANSFORM_ONE_PLUS_CSCH_SQUARED(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('coth');
+		});
+
+		it('should transform csch²(x) + 1 to coth²(x)', () => {
+			const expr = parseLatex('\\csch^2(x) + 1');
+			const result = TRANSFORM_ONE_PLUS_CSCH_SQUARED(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+});
+
+describe('Tanh Half-Angle', () => {
+	describe('TRANSFORM_TANH_HALF_ANGLE', () => {
+		it('should transform tanh(x/2) to sinh(x)/(1+cosh(x))', () => {
+			const expr = parseLatex('\\tanh(\\frac{x}{2})');
+			const result = TRANSFORM_TANH_HALF_ANGLE(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('sinh');
+			expect(latex).toContain('cosh');
+		});
+
+		it('should not transform tanh(x)', () => {
+			const expr = parseLatex('\\tanh(x)');
+			const result = TRANSFORM_TANH_HALF_ANGLE(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('expandHalfAngleH with tanh', () => {
+		it('should expand tanh(x/2)', () => {
+			const expr = parseLatex('\\tanh(\\frac{x}{2})');
+			const result = expandHalfAngleH(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('tanh-half-angle');
 		});
 	});
 });

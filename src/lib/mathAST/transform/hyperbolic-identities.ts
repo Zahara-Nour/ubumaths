@@ -301,6 +301,115 @@ function transformCoshSquaredMinusOne(node: MathNode): MathNode | null {
 	return superscript(sinh(a), number('2'));
 }
 
+/**
+ * 1 - tanh²(a) -> sech²(a)
+ */
+function transformOneMinusTanhSquared(node: MathNode): MathNode | null {
+	if (!isSubtraction(node)) return null;
+	if (!isNumber(node.left) || node.left.value !== '1') return null;
+	if (!isFunction(node.right) || node.right.name !== 'tanh') return null;
+	if (!hasPowerOf2(node.right)) return null;
+
+	const a = getArg(node.right);
+	return superscript(sech(a), number('2'));
+}
+
+/**
+ * sech²(a) + tanh²(a) -> 1
+ * Also handles tanh²(a) + sech²(a)
+ */
+function transformSechTanhPythagorean(node: MathNode): MathNode | null {
+	if (!isAddition(node)) return null;
+
+	function isTanhSquared(n: MathNode): n is FunctionNode {
+		return isFunction(n) && n.name === 'tanh' && hasPowerOf2(n);
+	}
+
+	function isSechSquared(n: MathNode): n is FunctionNode {
+		return isFunction(n) && n.name === 'sech' && hasPowerOf2(n);
+	}
+
+	// sech²(a) + tanh²(a)
+	if (isSechSquared(node.left) && isTanhSquared(node.right)) {
+		if (nodesEqual(getArg(node.left), getArg(node.right))) {
+			return number('1');
+		}
+	}
+
+	// tanh²(a) + sech²(a)
+	if (isTanhSquared(node.left) && isSechSquared(node.right)) {
+		if (nodesEqual(getArg(node.left), getArg(node.right))) {
+			return number('1');
+		}
+	}
+
+	return null;
+}
+
+/**
+ * coth²(a) - 1 -> csch²(a)
+ */
+function transformCothSquaredMinusOne(node: MathNode): MathNode | null {
+	if (!isSubtraction(node)) return null;
+	if (!isFunction(node.left) || node.left.name !== 'coth') return null;
+	if (!hasPowerOf2(node.left)) return null;
+	if (!isNumber(node.right) || node.right.value !== '1') return null;
+
+	const a = getArg(node.left);
+	return superscript(csch(a), number('2'));
+}
+
+/**
+ * coth²(a) - csch²(a) -> 1
+ * Also handles the reverse order
+ */
+function transformCothCschPythagorean(node: MathNode): MathNode | null {
+	if (!isSubtraction(node)) return null;
+
+	function isCothSquared(n: MathNode): n is FunctionNode {
+		return isFunction(n) && n.name === 'coth' && hasPowerOf2(n);
+	}
+
+	function isCschSquared(n: MathNode): n is FunctionNode {
+		return isFunction(n) && n.name === 'csch' && hasPowerOf2(n);
+	}
+
+	// coth²(a) - csch²(a)
+	if (isCothSquared(node.left) && isCschSquared(node.right)) {
+		if (nodesEqual(getArg(node.left), getArg(node.right))) {
+			return number('1');
+		}
+	}
+
+	return null;
+}
+
+/**
+ * 1 + csch²(a) -> coth²(a)
+ * Also handles csch²(a) + 1
+ */
+function transformOnePlusCschSquared(node: MathNode): MathNode | null {
+	if (!isAddition(node)) return null;
+
+	function isCschSquared(n: MathNode): n is FunctionNode {
+		return isFunction(n) && n.name === 'csch' && hasPowerOf2(n);
+	}
+
+	// 1 + csch²(a)
+	if (isNumber(node.left) && node.left.value === '1' && isCschSquared(node.right)) {
+		const a = getArg(node.right);
+		return superscript(coth(a), number('2'));
+	}
+
+	// csch²(a) + 1
+	if (isCschSquared(node.left) && isNumber(node.right) && node.right.value === '1') {
+		const a = getArg(node.left);
+		return superscript(coth(a), number('2'));
+	}
+
+	return null;
+}
+
 // =============================================================================
 // Quotient Identities
 // =============================================================================
@@ -782,6 +891,21 @@ function transformCoshHalfAngle(node: MathNode): MathNode | null {
 	return sqrt(divide(add(cosh(x), number('1')), number('2'), 'fraction'));
 }
 
+/**
+ * tanh(x/2) -> sinh(x) / (1 + cosh(x))
+ * Alternative: (cosh(x) - 1) / sinh(x)
+ */
+function transformTanhHalfAngle(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'tanh') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isHalfOf(node.args[0]);
+	if (!x) return null;
+
+	// tanh(x/2) = sinh(x) / (1 + cosh(x))
+	return divide(sinh(x), add(number('1'), cosh(x)), 'fraction');
+}
+
 // =============================================================================
 // Higher Power Formulas
 // =============================================================================
@@ -877,7 +1001,12 @@ const POWER_REDUCTION_TRANSFORMS: HyperbolicRule[] = [
 const PYTHAGOREAN_TRANSFORMS: HyperbolicRule[] = [
 	{ name: 'hyperbolic-pythagorean', transform: transformHyperbolicPythagorean },
 	{ name: 'one-plus-sinh-squared', transform: transformOnePlusSinhSquared },
-	{ name: 'cosh-squared-minus-one', transform: transformCoshSquaredMinusOne }
+	{ name: 'cosh-squared-minus-one', transform: transformCoshSquaredMinusOne },
+	{ name: 'one-minus-tanh-squared', transform: transformOneMinusTanhSquared },
+	{ name: 'sech-tanh-pythagorean', transform: transformSechTanhPythagorean },
+	{ name: 'coth-squared-minus-one', transform: transformCothSquaredMinusOne },
+	{ name: 'coth-csch-pythagorean', transform: transformCothCschPythagorean },
+	{ name: 'one-plus-csch-squared', transform: transformOnePlusCschSquared }
 ];
 
 const QUOTIENT_TRANSFORMS: HyperbolicRule[] = [
@@ -923,7 +1052,8 @@ const FACTORIZATION_TRANSFORMS: HyperbolicRule[] = [
 
 const HALF_ANGLE_TRANSFORMS: HyperbolicRule[] = [
 	{ name: 'sinh-half-angle', transform: transformSinhHalfAngle },
-	{ name: 'cosh-half-angle', transform: transformCoshHalfAngle }
+	{ name: 'cosh-half-angle', transform: transformCoshHalfAngle },
+	{ name: 'tanh-half-angle', transform: transformTanhHalfAngle }
 ];
 
 const HIGHER_POWER_TRANSFORMS: HyperbolicRule[] = [
@@ -1217,6 +1347,14 @@ export const TRANSFORM_COSH_MINUS_COSH = transformCoshMinusCosh;
 // Half angle
 export const TRANSFORM_SINH_HALF_ANGLE = transformSinhHalfAngle;
 export const TRANSFORM_COSH_HALF_ANGLE = transformCoshHalfAngle;
+export const TRANSFORM_TANH_HALF_ANGLE = transformTanhHalfAngle;
+
+// Tanh/Coth Pythagorean
+export const TRANSFORM_ONE_MINUS_TANH_SQUARED = transformOneMinusTanhSquared;
+export const TRANSFORM_SECH_TANH_PYTHAGOREAN = transformSechTanhPythagorean;
+export const TRANSFORM_COTH_SQUARED_MINUS_ONE = transformCothSquaredMinusOne;
+export const TRANSFORM_COTH_CSCH_PYTHAGOREAN = transformCothCschPythagorean;
+export const TRANSFORM_ONE_PLUS_CSCH_SQUARED = transformOnePlusCschSquared;
 
 // Higher powers
 export const TRANSFORM_SINH_CUBED = transformSinhCubed;

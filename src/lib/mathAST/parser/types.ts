@@ -297,6 +297,9 @@ export type KnownCommand =
 	| 'sinh'
 	| 'cosh'
 	| 'tanh'
+	| 'coth'
+	| 'sech'
+	| 'csch'
 	// Logarithmic/exponential
 	| 'ln'
 	| 'log'
@@ -424,6 +427,9 @@ export const KNOWN_COMMANDS: ReadonlySet<string> = new Set<string>([
 	'sinh',
 	'cosh',
 	'tanh',
+	'coth',
+	'sech',
+	'csch',
 	// Logarithmic/exponential
 	'ln',
 	'log',
@@ -543,6 +549,9 @@ export const FUNCTION_COMMANDS: ReadonlySet<string> = new Set<string>([
 	'sinh',
 	'cosh',
 	'tanh',
+	'coth',
+	'sech',
+	'csch',
 	'ln',
 	'log',
 	'exp',
