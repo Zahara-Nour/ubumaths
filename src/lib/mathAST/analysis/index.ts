@@ -66,5 +66,15 @@ export {
 	type CommonFactorInfo
 } from './structures';
 
+// Symmetry detection
+export {
+	detectSymmetry,
+	isEven,
+	isOdd,
+	hasNoSymmetry,
+	type SymmetryType,
+	type SymmetryResult
+} from './symmetry';
+
 // Domain analysis (re-exported from domain module)
 export * from '../domain';
