@@ -21,12 +21,38 @@ import {
 	TRANSFORM_COS_DIFFERENCE,
 	TRANSFORM_SIN_SUM,
 	TRANSFORM_SIN_DIFFERENCE,
+	TRANSFORM_EXPAND_DOUBLE_SIN,
+	TRANSFORM_EXPAND_DOUBLE_COS,
+	TRANSFORM_COS_OVER_SIN,
+	TRANSFORM_ONE_OVER_COS,
+	TRANSFORM_ONE_OVER_SIN,
+	TRANSFORM_TAN_SUM,
+	TRANSFORM_TAN_DIFFERENCE,
+	TRANSFORM_SIN_NEGATIVE,
+	TRANSFORM_COS_NEGATIVE,
+	TRANSFORM_TAN_NEGATIVE,
+	TRANSFORM_SIN_PLUS_SIN,
+	TRANSFORM_SIN_MINUS_SIN,
+	TRANSFORM_COS_PLUS_COS,
+	TRANSFORM_COS_MINUS_COS,
+	TRANSFORM_SIN_PERIOD_2PI,
+	TRANSFORM_COS_PERIOD_2PI,
+	TRANSFORM_SIN_HALF_ANGLE,
+	TRANSFORM_COS_HALF_ANGLE,
+	TRANSFORM_SIN_CUBED,
+	TRANSFORM_COS_CUBED,
 	applyTrigIdentities,
 	contractToDoubleAngle,
 	simplifyPythagorean,
 	simplifyQuotients,
 	linearize,
-	expandAddition
+	expandAddition,
+	expandDoubleAngle,
+	simplifyNegativeAngle,
+	factorize,
+	reducePeriodic,
+	expandHalfAngle,
+	reduceHigherPowers
 } from '../trig-identities';
 
 describe('Double Angle Contraction', () => {
@@ -437,6 +463,306 @@ describe('Addition Formulas (Angle Sum/Difference)', () => {
 			const expr = parseLatex('\\cos(2x+3y)');
 			const result = expandAddition(expr);
 			expect(result.changed).toBe(true);
+		});
+	});
+});
+
+describe('Double Angle Expansion', () => {
+	describe('TRANSFORM_EXPAND_DOUBLE_SIN', () => {
+		it('should expand sin(2x) to 2sin(x)cos(x)', () => {
+			const expr = parseLatex('\\sin(2x)');
+			const result = TRANSFORM_EXPAND_DOUBLE_SIN(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('sin');
+			expect(latex).toContain('cos');
+		});
+
+		it('should not transform sin(x)', () => {
+			const expr = parseLatex('\\sin(x)');
+			const result = TRANSFORM_EXPAND_DOUBLE_SIN(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_EXPAND_DOUBLE_COS', () => {
+		it('should expand cos(2x) to cos²(x) - sin²(x)', () => {
+			const expr = parseLatex('\\cos(2x)');
+			const result = TRANSFORM_EXPAND_DOUBLE_COS(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('expandDoubleAngle', () => {
+		it('should expand sin(2x)', () => {
+			const expr = parseLatex('\\sin(2x)');
+			const result = expandDoubleAngle(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('expand-double-sin');
+		});
+
+		it('should expand cos(2x)', () => {
+			const expr = parseLatex('\\cos(2x)');
+			const result = expandDoubleAngle(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('expand-double-cos');
+		});
+	});
+});
+
+describe('Additional Quotient Identities', () => {
+	describe('TRANSFORM_COS_OVER_SIN', () => {
+		it('should transform cos(x)/sin(x) to cot(x)', () => {
+			const expr = parseLatex('\\frac{\\cos(x)}{\\sin(x)}');
+			const result = TRANSFORM_COS_OVER_SIN(expr);
+			expect(result).not.toBeNull();
+			expect(toLatex(result!)).toContain('cot');
+		});
+	});
+
+	describe('TRANSFORM_ONE_OVER_COS', () => {
+		it('should transform 1/cos(x) to sec(x)', () => {
+			const expr = parseLatex('\\frac{1}{\\cos(x)}');
+			const result = TRANSFORM_ONE_OVER_COS(expr);
+			expect(result).not.toBeNull();
+			expect(toLatex(result!)).toContain('sec');
+		});
+	});
+
+	describe('TRANSFORM_ONE_OVER_SIN', () => {
+		it('should transform 1/sin(x) to csc(x)', () => {
+			const expr = parseLatex('\\frac{1}{\\sin(x)}');
+			const result = TRANSFORM_ONE_OVER_SIN(expr);
+			expect(result).not.toBeNull();
+			expect(toLatex(result!)).toContain('csc');
+		});
+	});
+});
+
+describe('Tangent Addition Formulas', () => {
+	describe('TRANSFORM_TAN_SUM', () => {
+		it('should expand tan(a+b)', () => {
+			const expr = parseLatex('\\tan(x+y)');
+			const result = TRANSFORM_TAN_SUM(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('tan');
+		});
+
+		it('should not transform tan(x)', () => {
+			const expr = parseLatex('\\tan(x)');
+			const result = TRANSFORM_TAN_SUM(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_TAN_DIFFERENCE', () => {
+		it('should expand tan(a-b)', () => {
+			const expr = parseLatex('\\tan(x-y)');
+			const result = TRANSFORM_TAN_DIFFERENCE(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+});
+
+describe('Negative Angle Identities', () => {
+	describe('TRANSFORM_SIN_NEGATIVE', () => {
+		it('should transform sin(-x) to -sin(x)', () => {
+			const expr = parseLatex('\\sin(-x)');
+			const result = TRANSFORM_SIN_NEGATIVE(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_COS_NEGATIVE', () => {
+		it('should transform cos(-x) to cos(x)', () => {
+			const expr = parseLatex('\\cos(-x)');
+			const result = TRANSFORM_COS_NEGATIVE(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_TAN_NEGATIVE', () => {
+		it('should transform tan(-x) to -tan(x)', () => {
+			const expr = parseLatex('\\tan(-x)');
+			const result = TRANSFORM_TAN_NEGATIVE(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('simplifyNegativeAngle', () => {
+		it('should simplify sin(-x)', () => {
+			const expr = parseLatex('\\sin(-x)');
+			const result = simplifyNegativeAngle(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('sin-negative');
+		});
+
+		it('should simplify cos(-x)', () => {
+			const expr = parseLatex('\\cos(-x)');
+			const result = simplifyNegativeAngle(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('cos-negative');
+		});
+	});
+});
+
+describe('Factorization (Sum to Product)', () => {
+	describe('TRANSFORM_SIN_PLUS_SIN', () => {
+		it('should factorize sin(a) + sin(b)', () => {
+			const expr = parseLatex('\\sin(x) + \\sin(y)');
+			const result = TRANSFORM_SIN_PLUS_SIN(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_SIN_MINUS_SIN', () => {
+		it('should factorize sin(a) - sin(b)', () => {
+			const expr = parseLatex('\\sin(x) - \\sin(y)');
+			const result = TRANSFORM_SIN_MINUS_SIN(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_COS_PLUS_COS', () => {
+		it('should factorize cos(a) + cos(b)', () => {
+			const expr = parseLatex('\\cos(x) + \\cos(y)');
+			const result = TRANSFORM_COS_PLUS_COS(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_COS_MINUS_COS', () => {
+		it('should factorize cos(a) - cos(b)', () => {
+			const expr = parseLatex('\\cos(x) - \\cos(y)');
+			const result = TRANSFORM_COS_MINUS_COS(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('factorize', () => {
+		it('should factorize sin(x) + sin(y)', () => {
+			const expr = parseLatex('\\sin(x) + \\sin(y)');
+			const result = factorize(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('sin-plus-sin');
+		});
+
+		it('should not factorize sin(x) + cos(x)', () => {
+			const expr = parseLatex('\\sin(x) + \\cos(x)');
+			const result = factorize(expr);
+			expect(result.changed).toBe(false);
+		});
+	});
+});
+
+describe('Periodic Reduction', () => {
+	describe('TRANSFORM_SIN_PERIOD_2PI', () => {
+		it('should reduce sin(x + 2π) to sin(x)', () => {
+			const expr = parseLatex('\\sin(x + 2\\pi)');
+			const result = TRANSFORM_SIN_PERIOD_2PI(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_COS_PERIOD_2PI', () => {
+		it('should reduce cos(x + 2π) to cos(x)', () => {
+			const expr = parseLatex('\\cos(x + 2\\pi)');
+			const result = TRANSFORM_COS_PERIOD_2PI(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('reducePeriodic', () => {
+		it('should reduce sin(x + 2π)', () => {
+			const expr = parseLatex('\\sin(x + 2\\pi)');
+			const result = reducePeriodic(expr);
+			expect(result.changed).toBe(true);
+		});
+
+		it('should not change sin(x)', () => {
+			const expr = parseLatex('\\sin(x)');
+			const result = reducePeriodic(expr);
+			expect(result.changed).toBe(false);
+		});
+	});
+});
+
+describe('Half Angle Formulas', () => {
+	describe('TRANSFORM_SIN_HALF_ANGLE', () => {
+		it('should expand sin(x/2)', () => {
+			const expr = parseLatex('\\sin(\\frac{x}{2})');
+			const result = TRANSFORM_SIN_HALF_ANGLE(expr);
+			expect(result).not.toBeNull();
+		});
+
+		it('should not transform sin(x)', () => {
+			const expr = parseLatex('\\sin(x)');
+			const result = TRANSFORM_SIN_HALF_ANGLE(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_COS_HALF_ANGLE', () => {
+		it('should expand cos(x/2)', () => {
+			const expr = parseLatex('\\cos(\\frac{x}{2})');
+			const result = TRANSFORM_COS_HALF_ANGLE(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('expandHalfAngle', () => {
+		it('should expand sin(x/2)', () => {
+			const expr = parseLatex('\\sin(\\frac{x}{2})');
+			const result = expandHalfAngle(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('sin-half-angle');
+		});
+	});
+});
+
+describe('Higher Power Formulas', () => {
+	describe('TRANSFORM_SIN_CUBED', () => {
+		it('should reduce sin³(x)', () => {
+			const expr = parseLatex('\\sin^3(x)');
+			const result = TRANSFORM_SIN_CUBED(expr);
+			expect(result).not.toBeNull();
+		});
+
+		it('should not transform sin²(x)', () => {
+			const expr = parseLatex('\\sin^2(x)');
+			const result = TRANSFORM_SIN_CUBED(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_COS_CUBED', () => {
+		it('should reduce cos³(x)', () => {
+			const expr = parseLatex('\\cos^3(x)');
+			const result = TRANSFORM_COS_CUBED(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('reduceHigherPowers', () => {
+		it('should reduce sin³(x)', () => {
+			const expr = parseLatex('\\sin^3(x)');
+			const result = reduceHigherPowers(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('sin-cubed');
+		});
+
+		it('should reduce cos³(x)', () => {
+			const expr = parseLatex('\\cos^3(x)');
+			const result = reduceHigherPowers(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('cos-cubed');
+		});
+
+		it('should not change sin²(x)', () => {
+			const expr = parseLatex('\\sin^2(x)');
+			const result = reduceHigherPowers(expr);
+			expect(result.changed).toBe(false);
 		});
 	});
 });

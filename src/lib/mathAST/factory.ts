@@ -579,6 +579,27 @@ export function tan(arg: MathNode, options?: FunctionOptions | NodeMetadata): Fu
 }
 
 /**
+ * Convenience: Creates cot(arg) - cotangent
+ */
+export function cot(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('cot', [arg], normalizeFunctionOptions(options));
+}
+
+/**
+ * Convenience: Creates sec(arg) - secant
+ */
+export function sec(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('sec', [arg], normalizeFunctionOptions(options));
+}
+
+/**
+ * Convenience: Creates csc(arg) - cosecant
+ */
+export function csc(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('csc', [arg], normalizeFunctionOptions(options));
+}
+
+/**
  * Convenience: Creates ln(arg)
  */
 export function ln(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
@@ -1657,6 +1678,9 @@ export const MathAST = {
 	sin,
 	cos,
 	tan,
+	cot,
+	sec,
+	csc,
 	ln,
 	log,
 	exp,

@@ -8,15 +8,34 @@
  */
 
 import type { MathNode, FunctionNode } from '../types';
+import type { GreekLetterNode } from '../types';
 import {
 	isFunction,
 	isMultiplication,
 	isAddition,
 	isSubtraction,
 	isDivision,
-	isNumber
+	isNumber,
+	isOpposite,
+	isPiConstant,
+	isGreek
 } from '../guards';
-import { number, sin, cos, tan, multiply, divide, add, subtract, superscript } from '../factory';
+import {
+	number,
+	sin,
+	cos,
+	tan,
+	cot,
+	sec,
+	csc,
+	sqrt,
+	multiply,
+	divide,
+	add,
+	subtract,
+	superscript,
+	opposite
+} from '../factory';
 import { mapNode } from '../transforms';
 import { nodesEqual } from '../pattern/match';
 
@@ -47,6 +66,15 @@ interface TrigRule {
 // =============================================================================
 // Helper Functions
 // =============================================================================
+
+/**
+ * Check if a node represents π (either as math constant or Greek letter)
+ */
+function isPi(node: MathNode): boolean {
+	if (isPiConstant(node)) return true;
+	if (isGreek(node) && (node as GreekLetterNode).letter === 'pi') return true;
+	return false;
+}
 
 /**
  * Check if a node is a trig function with a specific name
@@ -419,6 +447,575 @@ function transformSinDifference(node: MathNode): MathNode | null {
 }
 
 // =============================================================================
+// Double Angle Expansion
+// =============================================================================
+
+/**
+ * Check if expression is 2*x (coefficient of 2)
+ */
+function isDoubleOf(node: MathNode): MathNode | null {
+	if (!isMultiplication(node)) return null;
+	if (isNumber(node.left) && node.left.value === '2') {
+		return node.right;
+	}
+	if (isNumber(node.right) && node.right.value === '2') {
+		return node.left;
+	}
+	return null;
+}
+
+/**
+ * sin(2x) -> 2sin(x)cos(x)
+ */
+function transformExpandDoubleSin(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sin') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isDoubleOf(node.args[0]);
+	if (!x) return null;
+
+	// sin(2x) = 2sin(x)cos(x)
+	return multiply(number('2'), multiply(sin(x), cos(x), 'implicit'), 'implicit');
+}
+
+/**
+ * cos(2x) -> cos²(x) - sin²(x)
+ */
+function transformExpandDoubleCos(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'cos') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isDoubleOf(node.args[0]);
+	if (!x) return null;
+
+	// cos(2x) = cos²(x) - sin²(x)
+	return subtract(superscript(cos(x), number('2')), superscript(sin(x), number('2')));
+}
+
+/**
+ * tan(2x) -> 2tan(x) / (1 - tan²(x))
+ */
+function transformExpandDoubleTan(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'tan') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isDoubleOf(node.args[0]);
+	if (!x) return null;
+
+	// tan(2x) = 2tan(x) / (1 - tan²(x))
+	const tanX = tan(x);
+	return divide(
+		multiply(number('2'), tanX, 'implicit'),
+		subtract(number('1'), superscript(tan(x), number('2'))),
+		'fraction'
+	);
+}
+
+// =============================================================================
+// Additional Quotient Identities
+// =============================================================================
+
+/**
+ * cos(x) / sin(x) -> cot(x)
+ */
+function transformCosOverSin(node: MathNode): MathNode | null {
+	if (!isDivision(node)) return null;
+	if (!isTrigFunc(node.numerator, 'cos')) return null;
+	if (!isTrigFunc(node.denominator, 'sin')) return null;
+
+	const cosArg = getArg(node.numerator as FunctionNode);
+	const sinArg = getArg(node.denominator as FunctionNode);
+
+	if (nodesEqual(cosArg, sinArg)) {
+		return cot(cosArg);
+	}
+	return null;
+}
+
+/**
+ * 1 / cos(x) -> sec(x)
+ */
+function transformOneOverCos(node: MathNode): MathNode | null {
+	if (!isDivision(node)) return null;
+	if (!isNumber(node.numerator) || node.numerator.value !== '1') return null;
+	if (!isTrigFunc(node.denominator, 'cos')) return null;
+
+	return sec(getArg(node.denominator as FunctionNode));
+}
+
+/**
+ * 1 / sin(x) -> csc(x)
+ */
+function transformOneOverSin(node: MathNode): MathNode | null {
+	if (!isDivision(node)) return null;
+	if (!isNumber(node.numerator) || node.numerator.value !== '1') return null;
+	if (!isTrigFunc(node.denominator, 'sin')) return null;
+
+	return csc(getArg(node.denominator as FunctionNode));
+}
+
+// =============================================================================
+// Tangent Addition Formulas
+// =============================================================================
+
+/**
+ * tan(a + b) -> (tan(a) + tan(b)) / (1 - tan(a)tan(b))
+ */
+function transformTanSum(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'tan') return null;
+	if (node.args.length !== 1) return null;
+
+	const arg = node.args[0];
+	if (!isAddition(arg)) return null;
+
+	const a = arg.left;
+	const b = arg.right;
+	const tanA = tan(a);
+	const tanB = tan(b);
+
+	// tan(a+b) = (tan(a) + tan(b)) / (1 - tan(a)tan(b))
+	return divide(
+		add(tanA, tanB),
+		subtract(number('1'), multiply(tan(a), tan(b), 'implicit')),
+		'fraction'
+	);
+}
+
+/**
+ * tan(a - b) -> (tan(a) - tan(b)) / (1 + tan(a)tan(b))
+ */
+function transformTanDifference(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'tan') return null;
+	if (node.args.length !== 1) return null;
+
+	const arg = node.args[0];
+	if (!isSubtraction(arg)) return null;
+
+	const a = arg.left;
+	const b = arg.right;
+	const tanA = tan(a);
+	const tanB = tan(b);
+
+	// tan(a-b) = (tan(a) - tan(b)) / (1 + tan(a)tan(b))
+	return divide(
+		subtract(tanA, tanB),
+		add(number('1'), multiply(tan(a), tan(b), 'implicit')),
+		'fraction'
+	);
+}
+
+// =============================================================================
+// Negative Angle Identities
+// =============================================================================
+
+/**
+ * sin(-x) -> -sin(x)
+ */
+function transformSinNegative(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sin') return null;
+	if (node.args.length !== 1) return null;
+
+	const arg = node.args[0];
+	if (!isOpposite(arg)) return null;
+
+	// sin(-x) = -sin(x)
+	return opposite(sin(arg.operand));
+}
+
+/**
+ * cos(-x) -> cos(x)
+ */
+function transformCosNegative(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'cos') return null;
+	if (node.args.length !== 1) return null;
+
+	const arg = node.args[0];
+	if (!isOpposite(arg)) return null;
+
+	// cos(-x) = cos(x)
+	return cos(arg.operand);
+}
+
+/**
+ * tan(-x) -> -tan(x)
+ */
+function transformTanNegative(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'tan') return null;
+	if (node.args.length !== 1) return null;
+
+	const arg = node.args[0];
+	if (!isOpposite(arg)) return null;
+
+	// tan(-x) = -tan(x)
+	return opposite(tan(arg.operand));
+}
+
+// =============================================================================
+// Cofunction Identities
+// =============================================================================
+
+/**
+ * Check if expression is π/2 - x
+ */
+function isPiOver2Minus(node: MathNode): MathNode | null {
+	if (!isSubtraction(node)) return null;
+
+	// Check if left side is π/2
+	const left = node.left;
+	if (isDivision(left)) {
+		if (isPi(left.numerator) && isNumber(left.denominator) && left.denominator.value === '2') {
+			return node.right;
+		}
+	}
+	return null;
+}
+
+/**
+ * sin(π/2 - x) -> cos(x)
+ */
+function transformSinCofunction(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sin') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPiOver2Minus(node.args[0]);
+	if (!x) return null;
+
+	return cos(x);
+}
+
+/**
+ * cos(π/2 - x) -> sin(x)
+ */
+function transformCosCofunction(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'cos') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPiOver2Minus(node.args[0]);
+	if (!x) return null;
+
+	return sin(x);
+}
+
+/**
+ * tan(π/2 - x) -> cot(x)
+ */
+function transformTanCofunction(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'tan') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPiOver2Minus(node.args[0]);
+	if (!x) return null;
+
+	return cot(x);
+}
+
+// =============================================================================
+// Sum-to-Product (Factorization) Formulas
+// =============================================================================
+
+/**
+ * sin(a) + sin(b) -> 2sin((a+b)/2)cos((a-b)/2)
+ */
+function transformSinPlusSin(node: MathNode): MathNode | null {
+	if (!isAddition(node)) return null;
+	if (!isTrigFunc(node.left, 'sin') || !isTrigFunc(node.right, 'sin')) return null;
+
+	const a = getArg(node.left);
+	const b = getArg(node.right);
+
+	// sin(a) + sin(b) = 2sin((a+b)/2)cos((a-b)/2)
+	const halfSum = divide(add(a, b), number('2'), 'fraction');
+	const halfDiff = divide(subtract(a, b), number('2'), 'fraction');
+
+	return multiply(number('2'), multiply(sin(halfSum), cos(halfDiff), 'implicit'), 'implicit');
+}
+
+/**
+ * sin(a) - sin(b) -> 2cos((a+b)/2)sin((a-b)/2)
+ */
+function transformSinMinusSin(node: MathNode): MathNode | null {
+	if (!isSubtraction(node)) return null;
+	if (!isTrigFunc(node.left, 'sin') || !isTrigFunc(node.right, 'sin')) return null;
+
+	const a = getArg(node.left);
+	const b = getArg(node.right);
+
+	// sin(a) - sin(b) = 2cos((a+b)/2)sin((a-b)/2)
+	const halfSum = divide(add(a, b), number('2'), 'fraction');
+	const halfDiff = divide(subtract(a, b), number('2'), 'fraction');
+
+	return multiply(number('2'), multiply(cos(halfSum), sin(halfDiff), 'implicit'), 'implicit');
+}
+
+/**
+ * cos(a) + cos(b) -> 2cos((a+b)/2)cos((a-b)/2)
+ */
+function transformCosPlusCos(node: MathNode): MathNode | null {
+	if (!isAddition(node)) return null;
+	if (!isTrigFunc(node.left, 'cos') || !isTrigFunc(node.right, 'cos')) return null;
+
+	const a = getArg(node.left);
+	const b = getArg(node.right);
+
+	// cos(a) + cos(b) = 2cos((a+b)/2)cos((a-b)/2)
+	const halfSum = divide(add(a, b), number('2'), 'fraction');
+	const halfDiff = divide(subtract(a, b), number('2'), 'fraction');
+
+	return multiply(number('2'), multiply(cos(halfSum), cos(halfDiff), 'implicit'), 'implicit');
+}
+
+/**
+ * cos(a) - cos(b) -> -2sin((a+b)/2)sin((a-b)/2)
+ */
+function transformCosMinusCos(node: MathNode): MathNode | null {
+	if (!isSubtraction(node)) return null;
+	if (!isTrigFunc(node.left, 'cos') || !isTrigFunc(node.right, 'cos')) return null;
+
+	const a = getArg(node.left);
+	const b = getArg(node.right);
+
+	// cos(a) - cos(b) = -2sin((a+b)/2)sin((a-b)/2)
+	const halfSum = divide(add(a, b), number('2'), 'fraction');
+	const halfDiff = divide(subtract(a, b), number('2'), 'fraction');
+
+	return opposite(
+		multiply(number('2'), multiply(sin(halfSum), sin(halfDiff), 'implicit'), 'implicit')
+	);
+}
+
+// =============================================================================
+// Periodic Reduction
+// =============================================================================
+
+/**
+ * Check if expression is x + 2π
+ */
+function isPlus2Pi(node: MathNode): MathNode | null {
+	if (!isAddition(node)) return null;
+
+	// Check if right side is 2π
+	if (isMultiplication(node.right)) {
+		const mult = node.right;
+		if (
+			(isNumber(mult.left) && mult.left.value === '2' && isPi(mult.right)) ||
+			(isNumber(mult.right) && mult.right.value === '2' && isPi(mult.left))
+		) {
+			return node.left;
+		}
+	}
+	// Also check left side
+	if (isMultiplication(node.left)) {
+		const mult = node.left;
+		if (
+			(isNumber(mult.left) && mult.left.value === '2' && isPi(mult.right)) ||
+			(isNumber(mult.right) && mult.right.value === '2' && isPi(mult.left))
+		) {
+			return node.right;
+		}
+	}
+	return null;
+}
+
+/**
+ * Check if expression is x + π
+ */
+function isPlusPi(node: MathNode): MathNode | null {
+	if (!isAddition(node)) return null;
+
+	if (isPi(node.right)) return node.left;
+	if (isPi(node.left)) return node.right;
+
+	return null;
+}
+
+/**
+ * sin(x + 2π) -> sin(x)
+ */
+function transformSinPeriod2Pi(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sin') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPlus2Pi(node.args[0]);
+	if (!x) return null;
+
+	return sin(x);
+}
+
+/**
+ * cos(x + 2π) -> cos(x)
+ */
+function transformCosPeriod2Pi(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'cos') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPlus2Pi(node.args[0]);
+	if (!x) return null;
+
+	return cos(x);
+}
+
+/**
+ * sin(x + π) -> -sin(x)
+ */
+function transformSinPlusPi(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sin') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPlusPi(node.args[0]);
+	if (!x) return null;
+
+	return opposite(sin(x));
+}
+
+/**
+ * cos(x + π) -> -cos(x)
+ */
+function transformCosPlusPi(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'cos') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isPlusPi(node.args[0]);
+	if (!x) return null;
+
+	return opposite(cos(x));
+}
+
+// =============================================================================
+// Half-Angle Formulas
+// =============================================================================
+
+/**
+ * Check if expression is x/2
+ */
+function isHalfOf(node: MathNode): MathNode | null {
+	if (!isDivision(node)) return null;
+	if (!isNumber(node.denominator) || node.denominator.value !== '2') return null;
+	return node.numerator;
+}
+
+/**
+ * sin(x/2) -> ±√((1 - cos(x))/2)
+ * Note: We use positive root; sign depends on quadrant
+ */
+function transformSinHalfAngle(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sin') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isHalfOf(node.args[0]);
+	if (!x) return null;
+
+	// sin(x/2) = √((1 - cos(x))/2)
+	return sqrt(divide(subtract(number('1'), cos(x)), number('2'), 'fraction'));
+}
+
+/**
+ * cos(x/2) -> ±√((1 + cos(x))/2)
+ * Note: We use positive root; sign depends on quadrant
+ */
+function transformCosHalfAngle(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'cos') return null;
+	if (node.args.length !== 1) return null;
+
+	const x = isHalfOf(node.args[0]);
+	if (!x) return null;
+
+	// cos(x/2) = √((1 + cos(x))/2)
+	return sqrt(divide(add(number('1'), cos(x)), number('2'), 'fraction'));
+}
+
+// =============================================================================
+// Higher Power Formulas
+// =============================================================================
+
+/**
+ * Check if a function node has a power of 3
+ */
+function hasPowerOf3(node: FunctionNode): boolean {
+	return node.power !== undefined && isNumber(node.power) && node.power.value === '3';
+}
+
+/**
+ * Check if a function node has a power of 4
+ */
+function hasPowerOf4(node: FunctionNode): boolean {
+	return node.power !== undefined && isNumber(node.power) && node.power.value === '4';
+}
+
+/**
+ * sin³(x) -> (3sin(x) - sin(3x)) / 4
+ */
+function transformSinCubed(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sin') return null;
+	if (!hasPowerOf3(node)) return null;
+
+	const x = getArg(node);
+
+	// sin³(x) = (3sin(x) - sin(3x)) / 4
+	const threeX = multiply(number('3'), x, 'implicit');
+	return divide(
+		subtract(multiply(number('3'), sin(x), 'implicit'), sin(threeX)),
+		number('4'),
+		'fraction'
+	);
+}
+
+/**
+ * cos³(x) -> (3cos(x) + cos(3x)) / 4
+ */
+function transformCosCubed(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'cos') return null;
+	if (!hasPowerOf3(node)) return null;
+
+	const x = getArg(node);
+
+	// cos³(x) = (3cos(x) + cos(3x)) / 4
+	const threeX = multiply(number('3'), x, 'implicit');
+	return divide(
+		add(multiply(number('3'), cos(x), 'implicit'), cos(threeX)),
+		number('4'),
+		'fraction'
+	);
+}
+
+/**
+ * sin⁴(x) -> (3 - 4cos(2x) + cos(4x)) / 8
+ */
+function transformSinFourth(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sin') return null;
+	if (!hasPowerOf4(node)) return null;
+
+	const x = getArg(node);
+
+	// sin⁴(x) = (3 - 4cos(2x) + cos(4x)) / 8
+	const twoX = multiply(number('2'), x, 'implicit');
+	const fourX = multiply(number('4'), x, 'implicit');
+	return divide(
+		add(subtract(number('3'), multiply(number('4'), cos(twoX), 'implicit')), cos(fourX)),
+		number('8'),
+		'fraction'
+	);
+}
+
+/**
+ * cos⁴(x) -> (3 + 4cos(2x) + cos(4x)) / 8
+ */
+function transformCosFourth(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'cos') return null;
+	if (!hasPowerOf4(node)) return null;
+
+	const x = getArg(node);
+
+	// cos⁴(x) = (3 + 4cos(2x) + cos(4x)) / 8
+	const twoX = multiply(number('2'), x, 'implicit');
+	const fourX = multiply(number('4'), x, 'implicit');
+	return divide(
+		add(add(number('3'), multiply(number('4'), cos(twoX), 'implicit')), cos(fourX)),
+		number('8'),
+		'fraction'
+	);
+}
+
+// =============================================================================
 // Rule Collections
 // =============================================================================
 
@@ -438,7 +1035,12 @@ const PYTHAGOREAN_TRANSFORMS: TrigRule[] = [
 	{ name: 'one-minus-cos-squared', transform: transformOneMinusCosSquared }
 ];
 
-const QUOTIENT_TRANSFORMS: TrigRule[] = [{ name: 'sin-over-cos', transform: transformSinOverCos }];
+const QUOTIENT_TRANSFORMS: TrigRule[] = [
+	{ name: 'sin-over-cos', transform: transformSinOverCos },
+	{ name: 'cos-over-sin', transform: transformCosOverSin },
+	{ name: 'one-over-cos', transform: transformOneOverCos },
+	{ name: 'one-over-sin', transform: transformOneOverSin }
+];
 
 const LINEARIZATION_TRANSFORMS: TrigRule[] = [
 	{ name: 'cos-cos-product', transform: transformCosCosProduct },
@@ -450,17 +1052,66 @@ const ADDITION_TRANSFORMS: TrigRule[] = [
 	{ name: 'cos-sum', transform: transformCosSum },
 	{ name: 'cos-difference', transform: transformCosDifference },
 	{ name: 'sin-sum', transform: transformSinSum },
-	{ name: 'sin-difference', transform: transformSinDifference }
+	{ name: 'sin-difference', transform: transformSinDifference },
+	{ name: 'tan-sum', transform: transformTanSum },
+	{ name: 'tan-difference', transform: transformTanDifference }
 ];
 
-// Note: ADDITION_TRANSFORMS are NOT included in ALL_TRANSFORMS
-// because they are inverse to LINEARIZATION_TRANSFORMS and would cause loops
+const DOUBLE_ANGLE_EXPANSION_TRANSFORMS: TrigRule[] = [
+	{ name: 'expand-double-sin', transform: transformExpandDoubleSin },
+	{ name: 'expand-double-cos', transform: transformExpandDoubleCos },
+	{ name: 'expand-double-tan', transform: transformExpandDoubleTan }
+];
+
+const NEGATIVE_ANGLE_TRANSFORMS: TrigRule[] = [
+	{ name: 'sin-negative', transform: transformSinNegative },
+	{ name: 'cos-negative', transform: transformCosNegative },
+	{ name: 'tan-negative', transform: transformTanNegative }
+];
+
+const COFUNCTION_TRANSFORMS: TrigRule[] = [
+	{ name: 'sin-cofunction', transform: transformSinCofunction },
+	{ name: 'cos-cofunction', transform: transformCosCofunction },
+	{ name: 'tan-cofunction', transform: transformTanCofunction }
+];
+
+const FACTORIZATION_TRANSFORMS: TrigRule[] = [
+	{ name: 'sin-plus-sin', transform: transformSinPlusSin },
+	{ name: 'sin-minus-sin', transform: transformSinMinusSin },
+	{ name: 'cos-plus-cos', transform: transformCosPlusCos },
+	{ name: 'cos-minus-cos', transform: transformCosMinusCos }
+];
+
+const PERIODIC_TRANSFORMS: TrigRule[] = [
+	{ name: 'sin-period-2pi', transform: transformSinPeriod2Pi },
+	{ name: 'cos-period-2pi', transform: transformCosPeriod2Pi },
+	{ name: 'sin-plus-pi', transform: transformSinPlusPi },
+	{ name: 'cos-plus-pi', transform: transformCosPlusPi }
+];
+
+const HALF_ANGLE_TRANSFORMS: TrigRule[] = [
+	{ name: 'sin-half-angle', transform: transformSinHalfAngle },
+	{ name: 'cos-half-angle', transform: transformCosHalfAngle }
+];
+
+const HIGHER_POWER_TRANSFORMS: TrigRule[] = [
+	{ name: 'sin-cubed', transform: transformSinCubed },
+	{ name: 'cos-cubed', transform: transformCosCubed },
+	{ name: 'sin-fourth', transform: transformSinFourth },
+	{ name: 'cos-fourth', transform: transformCosFourth }
+];
+
+// Note: Some transforms are NOT included in ALL_TRANSFORMS because they are
+// inverse to other transforms and would cause loops (e.g., ADDITION vs LINEARIZATION,
+// DOUBLE_ANGLE_EXPANSION vs DOUBLE_ANGLE contraction)
 const ALL_TRANSFORMS: TrigRule[] = [
 	...DOUBLE_ANGLE_TRANSFORMS,
 	...POWER_REDUCTION_TRANSFORMS,
 	...PYTHAGOREAN_TRANSFORMS,
 	...QUOTIENT_TRANSFORMS,
-	...LINEARIZATION_TRANSFORMS
+	...LINEARIZATION_TRANSFORMS,
+	...NEGATIVE_ANGLE_TRANSFORMS,
+	...PERIODIC_TRANSFORMS
 ];
 
 // =============================================================================
@@ -620,6 +1271,115 @@ export function expandAddition(node: MathNode): TrigTransformResult {
 	return applyTrigIdentities(node, ADDITION_TRANSFORMS);
 }
 
+/**
+ * Expand double angles to single angle expressions.
+ *
+ * Examples:
+ * - sin(2x) -> 2sin(x)cos(x)
+ * - cos(2x) -> cos²(x) - sin²(x)
+ * - tan(2x) -> 2tan(x) / (1 - tan²(x))
+ *
+ * @param node - The expression to transform
+ * @returns Transformation result
+ */
+export function expandDoubleAngle(node: MathNode): TrigTransformResult {
+	return applyTrigIdentities(node, DOUBLE_ANGLE_EXPANSION_TRANSFORMS);
+}
+
+/**
+ * Simplify negative angle expressions.
+ *
+ * Examples:
+ * - sin(-x) -> -sin(x)
+ * - cos(-x) -> cos(x)
+ * - tan(-x) -> -tan(x)
+ *
+ * @param node - The expression to transform
+ * @returns Transformation result
+ */
+export function simplifyNegativeAngle(node: MathNode): TrigTransformResult {
+	return applyTrigIdentities(node, NEGATIVE_ANGLE_TRANSFORMS);
+}
+
+/**
+ * Convert cofunctions (complementary angle identities).
+ *
+ * Examples:
+ * - sin(π/2 - x) -> cos(x)
+ * - cos(π/2 - x) -> sin(x)
+ * - tan(π/2 - x) -> cot(x)
+ *
+ * @param node - The expression to transform
+ * @returns Transformation result
+ */
+export function simplifyCofunction(node: MathNode): TrigTransformResult {
+	return applyTrigIdentities(node, COFUNCTION_TRANSFORMS);
+}
+
+/**
+ * Factorize sums/differences of trig functions (sum-to-product formulas).
+ *
+ * Examples:
+ * - sin(a) + sin(b) -> 2sin((a+b)/2)cos((a-b)/2)
+ * - sin(a) - sin(b) -> 2cos((a+b)/2)sin((a-b)/2)
+ * - cos(a) + cos(b) -> 2cos((a+b)/2)cos((a-b)/2)
+ * - cos(a) - cos(b) -> -2sin((a+b)/2)sin((a-b)/2)
+ *
+ * @param node - The expression to transform
+ * @returns Transformation result
+ */
+export function factorize(node: MathNode): TrigTransformResult {
+	return applyTrigIdentities(node, FACTORIZATION_TRANSFORMS);
+}
+
+/**
+ * Reduce expressions using periodicity.
+ *
+ * Examples:
+ * - sin(x + 2π) -> sin(x)
+ * - cos(x + 2π) -> cos(x)
+ * - sin(x + π) -> -sin(x)
+ * - cos(x + π) -> -cos(x)
+ *
+ * @param node - The expression to transform
+ * @returns Transformation result
+ */
+export function reducePeriodic(node: MathNode): TrigTransformResult {
+	return applyTrigIdentities(node, PERIODIC_TRANSFORMS);
+}
+
+/**
+ * Expand half-angle expressions.
+ *
+ * Examples:
+ * - sin(x/2) -> √((1 - cos(x))/2)
+ * - cos(x/2) -> √((1 + cos(x))/2)
+ *
+ * Note: Uses positive root; actual sign depends on quadrant.
+ *
+ * @param node - The expression to transform
+ * @returns Transformation result
+ */
+export function expandHalfAngle(node: MathNode): TrigTransformResult {
+	return applyTrigIdentities(node, HALF_ANGLE_TRANSFORMS);
+}
+
+/**
+ * Reduce higher powers of trig functions.
+ *
+ * Examples:
+ * - sin³(x) -> (3sin(x) - sin(3x)) / 4
+ * - cos³(x) -> (3cos(x) + cos(3x)) / 4
+ * - sin⁴(x) -> (3 - 4cos(2x) + cos(4x)) / 8
+ * - cos⁴(x) -> (3 + 4cos(2x) + cos(4x)) / 8
+ *
+ * @param node - The expression to transform
+ * @returns Transformation result
+ */
+export function reduceHigherPowers(node: MathNode): TrigTransformResult {
+	return applyTrigIdentities(node, HIGHER_POWER_TRANSFORMS);
+}
+
 // =============================================================================
 // Exports for individual transforms (for testing)
 // =============================================================================
@@ -639,3 +1399,49 @@ export const TRANSFORM_COS_SUM = transformCosSum;
 export const TRANSFORM_COS_DIFFERENCE = transformCosDifference;
 export const TRANSFORM_SIN_SUM = transformSinSum;
 export const TRANSFORM_SIN_DIFFERENCE = transformSinDifference;
+
+// Double angle expansion
+export const TRANSFORM_EXPAND_DOUBLE_SIN = transformExpandDoubleSin;
+export const TRANSFORM_EXPAND_DOUBLE_COS = transformExpandDoubleCos;
+export const TRANSFORM_EXPAND_DOUBLE_TAN = transformExpandDoubleTan;
+
+// Additional quotients
+export const TRANSFORM_COS_OVER_SIN = transformCosOverSin;
+export const TRANSFORM_ONE_OVER_COS = transformOneOverCos;
+export const TRANSFORM_ONE_OVER_SIN = transformOneOverSin;
+
+// Tangent addition
+export const TRANSFORM_TAN_SUM = transformTanSum;
+export const TRANSFORM_TAN_DIFFERENCE = transformTanDifference;
+
+// Negative angle
+export const TRANSFORM_SIN_NEGATIVE = transformSinNegative;
+export const TRANSFORM_COS_NEGATIVE = transformCosNegative;
+export const TRANSFORM_TAN_NEGATIVE = transformTanNegative;
+
+// Cofunction
+export const TRANSFORM_SIN_COFUNCTION = transformSinCofunction;
+export const TRANSFORM_COS_COFUNCTION = transformCosCofunction;
+export const TRANSFORM_TAN_COFUNCTION = transformTanCofunction;
+
+// Factorization (sum-to-product)
+export const TRANSFORM_SIN_PLUS_SIN = transformSinPlusSin;
+export const TRANSFORM_SIN_MINUS_SIN = transformSinMinusSin;
+export const TRANSFORM_COS_PLUS_COS = transformCosPlusCos;
+export const TRANSFORM_COS_MINUS_COS = transformCosMinusCos;
+
+// Periodic reduction
+export const TRANSFORM_SIN_PERIOD_2PI = transformSinPeriod2Pi;
+export const TRANSFORM_COS_PERIOD_2PI = transformCosPeriod2Pi;
+export const TRANSFORM_SIN_PLUS_PI = transformSinPlusPi;
+export const TRANSFORM_COS_PLUS_PI = transformCosPlusPi;
+
+// Half angle
+export const TRANSFORM_SIN_HALF_ANGLE = transformSinHalfAngle;
+export const TRANSFORM_COS_HALF_ANGLE = transformCosHalfAngle;
+
+// Higher powers
+export const TRANSFORM_SIN_CUBED = transformSinCubed;
+export const TRANSFORM_COS_CUBED = transformCosCubed;
+export const TRANSFORM_SIN_FOURTH = transformSinFourth;
+export const TRANSFORM_COS_FOURTH = transformCosFourth;
