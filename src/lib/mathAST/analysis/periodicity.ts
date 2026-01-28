@@ -83,6 +83,15 @@ const FUNCTION_PERIODS: Map<string, MathNode> = new Map([
 ]);
 
 /**
+ * Step functions with period 1.
+ * floor(x+1) = floor(x) + 1, ceil(x+1) = ceil(x) + 1
+ * These are "quasi-periodic" - the pattern repeats with offset.
+ * frac(x) = x - floor(x) is truly periodic with period 1.
+ */
+const STEP_FUNCTION_PERIOD = number('1');
+const STEP_FUNCTIONS = new Set(['floor', 'ceil', 'frac']);
+
+/**
  * Get the base period of a known periodic function.
  */
 function getBasePeriod(funcName: string): MathNode | null {
@@ -395,6 +404,58 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 			const arg = node.args.length > 0 ? node.args[0] : null;
 
 			if (!arg) {
+				return null;
+			}
+
+			// Handle absolute value: |f(x)|
+			// If f has half-period antisymmetry, |f| has half the period
+			// |sin(x)| has period π because |sin(x + π)| = |-sin(x)| = |sin(x)|
+			if (node.name === 'abs') {
+				const argResult = detectPeriodForNode(arg, variable);
+				if (argResult) {
+					if (argResult.hasHalfPeriodAntisymmetry) {
+						// Period halves for absolute value of antisymmetric function
+						const minimalPeriodNumeric = argResult.periodNumeric / 2;
+						return {
+							period: halveSymbolicPeriod(argResult.period, argResult.periodNumeric),
+							periodNumeric: minimalPeriodNumeric,
+							hasHalfPeriodAntisymmetry: false // |f| is always non-negative, no antisymmetry
+						};
+					}
+					// No antisymmetry: period unchanged
+					return {
+						...argResult,
+						hasHalfPeriodAntisymmetry: false
+					};
+				}
+				return null;
+			}
+
+			// Handle step functions: floor, ceil, frac
+			// floor(x), ceil(x): quasi-periodic with period 1
+			// frac(x) = x - floor(x): truly periodic with period 1
+			if (STEP_FUNCTIONS.has(node.name)) {
+				const linearForm = extractLinearForm(arg, variable);
+				if (linearForm) {
+					// floor(ax + b) has period 1/|a|
+					const period = dividePeriod(STEP_FUNCTION_PERIOD, linearForm.coefficient);
+					const periodNumeric = periodToNumeric(period);
+					if (periodNumeric !== null) {
+						return {
+							period,
+							periodNumeric,
+							hasHalfPeriodAntisymmetry: false // step functions have no antisymmetry
+						};
+					}
+				}
+				// Non-linear argument: check if argument is periodic
+				const argResult = detectPeriodForNode(arg, variable);
+				if (argResult) {
+					return {
+						...argResult,
+						hasHalfPeriodAntisymmetry: false
+					};
+				}
 				return null;
 			}
 
