@@ -4,10 +4,13 @@ Transformation rules and structure detection for notable mathematical identities
 
 ## Overview
 
-This module covers two categories of identities:
+This module covers three categories of identity operations:
 
-1. **Trigonometric & Hyperbolic Identities** (`transform/`) - Function identity transformations (sin²+cos²=1, angle addition, etc.)
-2. **Algebraic Structures** (`analysis/structures.ts`) - Polynomial identity detection (a²-b², (a+b)², a³+b³, etc.)
+1. **Algebraic Identity Rewriting** (`transform/algebraic-identities.ts`) - Factor/expand polynomial identities (a²-b² ↔ (a+b)(a-b), etc.)
+2. **Trigonometric & Hyperbolic Identities** (`transform/`) - Function identity transformations (sin²+cos²=1, angle addition, etc.)
+3. **Algebraic Structure Detection** (`analysis/structures.ts`) - Detect polynomial structures without rewriting
+
+All identity modules share a common infrastructure (`transform/identity-engine.ts`) for rule-based transformations.
 
 ---
 
@@ -55,20 +58,139 @@ const perfect = isPerfectSquareTrinomial(parseLatex('x^2 + 6x + 9'));
 
 ---
 
+## Algebraic Identity Rewriting
+
+Transform polynomial expressions using remarkable identities (factoring and expanding).
+
+```typescript
+import { factorAlgebraic, expandAlgebraic, applyAlgebraicIdentities } from '$lib/mathAST/transform';
+```
+
+### Factoring Functions
+
+| Input Pattern | Output          | Example                |
+| ------------- | --------------- | ---------------------- |
+| a² - b²       | (a+b)(a-b)      | x²-9 → (x+3)(x-3)      |
+| a² + 2ab + b² | (a+b)²          | x²+6x+9 → (x+3)²       |
+| a² - 2ab + b² | (a-b)²          | x²-4x+4 → (x-2)²       |
+| a³ + b³       | (a+b)(a²-ab+b²) | x³+8 → (x+2)(x²-2x+4)  |
+| a³ - b³       | (a-b)(a²+ab+b²) | x³-27 → (x-3)(x²+3x+9) |
+
+### Expanding Functions
+
+| Input Pattern | Output        | Example           |
+| ------------- | ------------- | ----------------- |
+| (a+b)(a-b)    | a² - b²       | (x+3)(x-3) → x²-9 |
+| (a+b)²        | a² + 2ab + b² | (x+2)² → x²+4x+4  |
+| (a-b)²        | a² - 2ab + b² | (x-3)² → x²-6x+9  |
+
+### Usage Examples
+
+```typescript
+import { parseLatex } from '$lib/mathAST';
+import { factorAlgebraic, expandAlgebraic } from '$lib/mathAST/transform';
+
+// Factoring
+const node1 = parseLatex('x^2 - 9');
+const result1 = factorAlgebraic(node1);
+// result1.result → (x+3)(x-3)
+// result1.changed → true
+// result1.appliedRules → ['diff-squares-to-product']
+
+// Perfect square trinomial
+const node2 = parseLatex('x^2 + 6x + 9');
+const result2 = factorAlgebraic(node2);
+// result2.result → (x+3)²
+
+// Expanding
+const node3 = parseLatex('(a+b)^2');
+const result3 = expandAlgebraic(node3);
+// result3.result → a² + 2ab + b²
+```
+
+### Individual Transforms
+
+For fine-grained control, individual transforms are exported:
+
+```typescript
+import {
+	TRANSFORM_DIFF_SQUARES_TO_PRODUCT,
+	TRANSFORM_PERFECT_SQUARE_TRINOMIAL,
+	TRANSFORM_SUM_CUBES_TO_PRODUCT,
+	TRANSFORM_DIFF_CUBES_TO_PRODUCT,
+	TRANSFORM_PRODUCT_TO_DIFF_SQUARES,
+	TRANSFORM_EXPAND_SUM_SQUARED,
+	TRANSFORM_EXPAND_DIFF_SQUARED
+} from '$lib/mathAST/transform';
+
+// Each is a function: (node: MathNode) => MathNode | null
+const result = TRANSFORM_DIFF_SQUARES_TO_PRODUCT(parseLatex('x^2 - y^2'));
+```
+
+---
+
+## Shared Identity Engine
+
+All identity modules (algebraic, trig, hyperbolic) share common infrastructure for rule-based transformations.
+
+```typescript
+import {
+	type TransformRule,
+	type TransformResult,
+	getBinding,
+	applyTransformsToNode,
+	applyTransformsDeep,
+	applyIdentityTransforms
+} from '$lib/mathAST/transform';
+```
+
+### TransformRule Interface
+
+```typescript
+interface TransformRule {
+	readonly name: string;
+	readonly transform: (node: MathNode) => MathNode | null;
+}
+```
+
+### TransformResult Interface
+
+```typescript
+interface TransformResult {
+	readonly result: MathNode;
+	readonly changed: boolean;
+	readonly appliedRules: readonly string[];
+}
+```
+
+### Key Functions
+
+| Function                  | Description                                          |
+| ------------------------- | ---------------------------------------------------- |
+| `getBinding`              | Extract MathNode binding from pattern match          |
+| `applyTransformsToNode`   | Apply first matching transform to a single node      |
+| `applyTransformsDeep`     | Apply transforms recursively bottom-up               |
+| `applyIdentityTransforms` | Apply transforms to fixed-point with iteration limit |
+
+---
+
 ## Trigonometric Identities
 
 The `transform/` module provides AST-level transformations for applying standard mathematical identities. Each transformation is a pure function that takes a `MathNode` and returns either a transformed node or `null` if the pattern doesn't match.
 
 ```typescript
 import {
+	// Algebraic
+	factorAlgebraic,
+	expandAlgebraic,
+	// Trigonometric
 	applyTrigIdentities,
-	applyHyperbolicIdentities,
 	simplifyPythagorean,
-	expandDoubleAngle
+	expandDoubleAngle,
+	// Hyperbolic
+	applyHyperbolicIdentities
 } from '$lib/mathAST/transform';
 ```
-
-## Trigonometric Identities
 
 ### Application Functions
 
@@ -414,31 +536,43 @@ For fine-grained control, individual transforms are exported:
 
 ```typescript
 import {
+	// Algebraic
+	TRANSFORM_DIFF_SQUARES_TO_PRODUCT,
+	TRANSFORM_PERFECT_SQUARE_TRINOMIAL,
+	TRANSFORM_EXPAND_SUM_SQUARED,
+	// Trigonometric
 	TRANSFORM_SIN_COS_PRODUCT,
 	TRANSFORM_DOUBLE_ANGLE_SIN,
 	TRANSFORM_PYTHAGOREAN,
+	// Hyperbolic
 	TRANSFORM_SINH_COSH_PRODUCT,
 	TRANSFORM_HYPERBOLIC_PYTHAGOREAN
 } from '$lib/mathAST/transform';
 
-// Each transform has: pattern, apply(node), and description
-const result = TRANSFORM_PYTHAGOREAN.apply(node);
+// Each transform is a function: (node: MathNode) => MathNode | null
+const result = TRANSFORM_PYTHAGOREAN(node);
 ```
 
-## Return Type
+## Return Types
 
-All transformation functions return `TrigTransformResult` or `HyperbolicTransformResult`:
+All transformation functions return a `TransformResult` (with type aliases for each category):
 
 ```typescript
-type TrigTransformResult = {
-	result: MathNode;
-	changed: boolean;
-};
+interface TransformResult {
+	readonly result: MathNode;
+	readonly changed: boolean;
+	readonly appliedRules: readonly string[];
+}
+
+// Type aliases for backward compatibility
+type AlgebraicTransformResult = TransformResult;
+type TrigTransformResult = TransformResult;
+type HyperbolicTransformResult = TransformResult;
 
 // Usage
-const { result, changed } = applyTrigIdentities(ast);
+const { result, changed, appliedRules } = applyTrigIdentities(ast);
 if (changed) {
-	console.log('Expression was simplified');
+	console.log('Applied rules:', appliedRules.join(', '));
 }
 ```
 
