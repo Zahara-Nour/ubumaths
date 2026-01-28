@@ -5,7 +5,7 @@
  * Endpoint: POST /api/migration/questions/[globalIndex]/approve
  *
  * Marks a question as approved during migration review.
- * Currently updates in-memory state (future: database tracking).
+ * Persists the approval status to the migration_tracking table.
  *
  * Security: Admin only
  * Validation: Zod (globalIndex and body validated)
@@ -16,7 +16,13 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { globalIndexSchema, approveQuestionSchema } from '$lib/server/validation/migration-review';
-import { loadQuestionWithTransform, isValidGlobalIndex } from '$lib/migration/question-data-loader';
+import {
+	loadQuestionWithTransform,
+	isValidGlobalIndex,
+	loadQuestionByIndex
+} from '$lib/migration/question-data-loader';
+import { MigrationStateManager } from '$lib/server/migration/state-manager';
+import { generateStableQuestionHash } from '$lib/server/migration/hash-utils';
 
 /**
  * POST /api/migration/questions/[globalIndex]/approve
@@ -111,24 +117,55 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			);
 		}
 
-		// TODO: Phase 4 - Store approval in database (migration_tracking table)
-		// For now, we'll just return success
-		// Future implementation will:
-		// 1. Update migration_tracking.migration_status = 'validated'
-		// 2. Set migration_tracking.validated_at = NOW()
-		// 3. Store approval notes in a new field
+		// Load original question for hash generation
+		const originalQuestion = await loadQuestionByIndex(globalIndex);
+		if (!originalQuestion) {
+			throw error(404, `Original question not found for index ${globalIndex}`);
+		}
+
+		// Generate hash from original question to check for edits
+		const questionHash = generateStableQuestionHash(originalQuestion);
+
+		// Check if there's an edited version of this question
+		let editedJson: unknown = null;
+		const { data: editData } = await locals.supabase
+			.from('migration_edits')
+			.select('edited_json')
+			.eq('old_question_hash', questionHash)
+			.single();
+
+		if (editData?.edited_json) {
+			editedJson = editData.edited_json;
+		}
+
+		// Persist approval to database using MigrationStateManager
+		const stateManager = new MigrationStateManager();
+		await stateManager.init(locals.supabase);
+
+		await stateManager.recordQuestionProcessed(
+			globalIndex,
+			'validated', // status
+			4, // phase 4 = validation
+			originalQuestion,
+			{
+				notes: notes || undefined,
+				// Store whether we used an edited version
+				...(editedJson && { editedJson })
+			}
+		);
 
 		const approvalData = {
 			globalIndex,
 			approved: true,
 			approvedBy: locals.profile.id,
 			approvedAt: new Date().toISOString(),
+			usedEditedVersion: !!editedJson,
 			...(notes && { notes })
 		};
 
 		return json({
 			success: true,
-			message: 'Question approved',
+			message: editedJson ? 'Question approved (with edits)' : 'Question approved',
 			data: approvalData
 		});
 	} catch (err) {

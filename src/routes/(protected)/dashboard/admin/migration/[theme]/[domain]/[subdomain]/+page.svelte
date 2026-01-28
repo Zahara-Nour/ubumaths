@@ -23,8 +23,19 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import QuestionCard from '$lib/components/migration/QuestionCard.svelte';
 	import QuestionCompareView from '$lib/components/migration/QuestionCompareView.svelte';
+	import MigrationQuestionEditForm, {
+		type EditedQuestion
+	} from '$lib/components/migration/MigrationQuestionEditForm.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { AlertCircle, AlertTriangle, CheckCircle2, Home, Layers, XCircle } from 'lucide-svelte';
+	import {
+		AlertCircle,
+		AlertTriangle,
+		CheckCircle2,
+		Home,
+		Layers,
+		XCircle,
+		Edit3
+	} from 'lucide-svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import type { PageData } from './$types';
 
@@ -38,16 +49,67 @@
 	let selectedQuestion = $state<(typeof data.questions)[0] | null>(null);
 	let dialogOpen = $state(false);
 
-	// Review status tracking (in-memory for session) - use SvelteMap for reactivity
+	// Review status tracking - use SvelteMap for reactivity
+	// Initialize from persisted data, updates on approve/reject
 	type ReviewStatus = 'pending' | 'approved' | 'rejected';
-	let reviewStatus = new SvelteMap<number, { status: ReviewStatus; reason?: string }>();
+	const reviewStatus = new SvelteMap<number, { status: ReviewStatus; reason?: string }>();
+
+	// Edit tracking - track which questions have been edited
+	const questionEdits = new SvelteMap<number, { editId: string; editedJson: unknown }>();
+
+	// Initialize review status from server data (DB-persisted values)
+	$effect(() => {
+		if (data.reviewStatusMap) {
+			for (const [indexStr, dbStatus] of Object.entries(data.reviewStatusMap)) {
+				const index = Number(indexStr);
+				// Convert DB status to UI status: 'validated' -> 'approved', 'failed' -> 'rejected'
+				const uiStatus: ReviewStatus =
+					dbStatus.status === 'validated'
+						? 'approved'
+						: dbStatus.status === 'failed'
+							? 'rejected'
+							: 'pending';
+				if (uiStatus !== 'pending') {
+					reviewStatus.set(index, { status: uiStatus, reason: dbStatus.reason });
+				}
+			}
+		}
+	});
+
+	// Initialize question edits from server data
+	$effect(() => {
+		if (data.questionEditsMap) {
+			for (const [indexStr, editData] of Object.entries(data.questionEditsMap)) {
+				const index = Number(indexStr);
+				questionEdits.set(index, editData);
+			}
+		}
+	});
 
 	// Loading state for API calls
 	let isSubmitting = $state(false);
 
+	// Edit mode state
+	let isEditDialogOpen = $state(false);
+	let editingQuestion = $state<(typeof data.questions)[0] | null>(null);
+
 	// Get review status for a question
 	function getReviewStatus(globalIndex: number): ReviewStatus {
 		return reviewStatus.get(globalIndex)?.status ?? 'pending';
+	}
+
+	// Check if a question has been edited
+	function isQuestionEdited(globalIndex: number): boolean {
+		return questionEdits.has(globalIndex);
+	}
+
+	// Get edited data for a question (returns transformed data with edits applied)
+	function getEditedTransformed(question: (typeof data.questions)[0]): Record<string, unknown> {
+		const edit = questionEdits.get(question.globalIndex);
+		if (edit?.editedJson) {
+			return edit.editedJson as Record<string, unknown>;
+		}
+		return question.transformed;
 	}
 
 	// Filtered questions
@@ -95,8 +157,8 @@
 	}
 
 	// Navigate back
-	function navigateBack() {
-		goto('/dashboard/admin/migration');
+	async function navigateBack() {
+		await goto('/dashboard/admin/migration');
 	}
 
 	// Handle approve
@@ -161,6 +223,57 @@
 		} finally {
 			isSubmitting = false;
 		}
+	}
+
+	// Handle edit button click
+	function handleEditClick() {
+		if (!selectedQuestion) return;
+		editingQuestion = selectedQuestion;
+		isEditDialogOpen = true;
+	}
+
+	// Handle edit save
+	async function handleEditSave(editedData: EditedQuestion, notes: string) {
+		if (!editingQuestion || isSubmitting) return;
+
+		isSubmitting = true;
+		try {
+			const response = await fetch(`/api/migration/questions/${editingQuestion.globalIndex}/edit`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					editedTransformed: editedData,
+					notes: notes || undefined
+				})
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.message || "Erreur lors de l'enregistrement");
+			}
+
+			const result = await response.json();
+
+			// Update local state
+			questionEdits.set(editingQuestion.globalIndex, {
+				editId: result.data.editId,
+				editedJson: editedData
+			});
+
+			toaster.success(`Question #${editingQuestion.globalIndex} modifiee`);
+			isEditDialogOpen = false;
+			editingQuestion = null;
+		} catch (err) {
+			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'enregistrement");
+		} finally {
+			isSubmitting = false;
+		}
+	}
+
+	// Handle edit cancel
+	function handleEditCancel() {
+		isEditDialogOpen = false;
+		editingQuestion = null;
 	}
 </script>
 
@@ -275,7 +388,7 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="text-2xl font-bold text-green-600">{reviewStats.approved}</div>
-				<p class="text-xs text-muted-foreground">Cette session</p>
+				<p class="text-xs text-muted-foreground">Validees en DB</p>
 			</Card.Content>
 		</Card.Root>
 
@@ -288,7 +401,7 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="text-2xl font-bold text-red-600">{reviewStats.rejected}</div>
-				<p class="text-xs text-muted-foreground">Cette session</p>
+				<p class="text-xs text-muted-foreground">Rejetees en DB</p>
 			</Card.Content>
 		</Card.Root>
 	</div>
@@ -396,14 +509,21 @@
 
 		{#if selectedQuestion}
 			{@const status = getReviewStatus(selectedQuestion.globalIndex)}
-			{#if status !== 'pending'}
+			{@const isEdited = isQuestionEdited(selectedQuestion.globalIndex)}
+			{#if status !== 'pending' || isEdited}
 				<div class="mb-4 flex items-center gap-2">
+					{#if isEdited}
+						<Badge variant="outline" class="border-blue-500 text-blue-600">
+							<Edit3 class="mr-1 h-3 w-3" />
+							Modifie
+						</Badge>
+					{/if}
 					{#if status === 'approved'}
 						<Badge variant="default" class="bg-green-600">
 							<CheckCircle2 class="mr-1 h-3 w-3" />
 							Approuvee
 						</Badge>
-					{:else}
+					{:else if status === 'rejected'}
 						<Badge variant="destructive">
 							<XCircle class="mr-1 h-3 w-3" />
 							Rejetee
@@ -418,16 +538,63 @@
 			{/if}
 			<QuestionCompareView
 				original={selectedQuestion.question}
-				transformed={selectedQuestion.transformed}
+				transformed={getEditedTransformed(selectedQuestion)}
 				warnings={selectedQuestion.warnings}
 				errors={selectedQuestion.errors}
 				onApprove={status === 'pending' ? handleApprove : undefined}
 				onReject={status === 'pending' ? handleReject : undefined}
+				onEdit={status === 'pending' ? handleEditClick : undefined}
+				{isEdited}
 			/>
 		{/if}
 
 		<Dialog.Footer>
 			<Button variant="outline" onclick={closeDialog} disabled={isSubmitting}>Fermer</Button>
 		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Edit Question Dialog -->
+<Dialog.Root bind:open={isEditDialogOpen}>
+	<Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-[800px]">
+		<Dialog.Header>
+			<Dialog.Title class="flex items-center gap-2">
+				<Edit3 class="h-5 w-5" />
+				{#if editingQuestion}
+					<span>Modifier Question #{editingQuestion.globalIndex}</span>
+				{/if}
+			</Dialog.Title>
+			<Dialog.Description>
+				{#if editingQuestion}
+					Modifiez la question transformee avant de l'approuver.
+				{/if}
+			</Dialog.Description>
+		</Dialog.Header>
+
+		{#if editingQuestion}
+			{@const transformedData = getEditedTransformed(editingQuestion)}
+			{#key editingQuestion.globalIndex}
+				<MigrationQuestionEditForm
+					initialData={{
+						type: transformedData.type as string | undefined,
+						title: (transformedData.title as string) || '',
+						description: transformedData.description as string | undefined,
+						shared: transformedData.shared as EditedQuestion['shared'],
+						variations: (transformedData.variations as EditedQuestion['variations']) || [],
+						exerciseInstruction: transformedData.exerciseInstruction as string | undefined,
+						grades: transformedData.grades as string[] | undefined,
+						theme: transformedData.theme as string | undefined,
+						domain: transformedData.domain as string | undefined,
+						subdomain: transformedData.subdomain as string | undefined,
+						level: transformedData.level as number | undefined,
+						status: transformedData.status as 'draft' | 'published' | undefined,
+						delay: transformedData.delay as number | undefined
+					}}
+					onSave={handleEditSave}
+					onCancel={handleEditCancel}
+					isSaving={isSubmitting}
+				/>
+			{/key}
+		{/if}
 	</Dialog.Content>
 </Dialog.Root>

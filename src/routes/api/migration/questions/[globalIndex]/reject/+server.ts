@@ -6,7 +6,7 @@
  *
  * Marks a question as rejected during migration review.
  * Requires a rejection reason.
- * Currently updates in-memory state (future: database tracking).
+ * Persists the rejection status to the migration_tracking table.
  *
  * Security: Admin only
  * Validation: Zod (globalIndex and body validated)
@@ -17,7 +17,8 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { globalIndexSchema, rejectQuestionSchema } from '$lib/server/validation/migration-review';
-import { isValidGlobalIndex } from '$lib/migration/question-data-loader';
+import { isValidGlobalIndex, loadQuestionByIndex } from '$lib/migration/question-data-loader';
+import { MigrationStateManager } from '$lib/server/migration/state-manager';
 
 /**
  * POST /api/migration/questions/[globalIndex]/reject
@@ -97,12 +98,33 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			throw error(404, `Question with global index ${globalIndex} not found`);
 		}
 
-		// TODO: Phase 4 - Store rejection in database (migration_tracking table)
-		// For now, we'll just return success
-		// Future implementation will:
-		// 1. Update migration_tracking.migration_status = 'failed'
-		// 2. Add rejection reason to conversion_errors array
-		// 3. Set migration_tracking.updated_at = NOW()
+		// Load original question for hash generation
+		const originalQuestion = await loadQuestionByIndex(globalIndex);
+		if (!originalQuestion) {
+			throw error(404, `Original question not found for index ${globalIndex}`);
+		}
+
+		// Persist rejection to database using MigrationStateManager
+		const stateManager = new MigrationStateManager();
+		await stateManager.init(locals.supabase);
+
+		await stateManager.recordQuestionProcessed(
+			globalIndex,
+			'failed', // status
+			4, // phase 4 = validation
+			originalQuestion,
+			{
+				errors: [
+					{
+						code: 'MANUAL_REJECTION',
+						message: reason,
+						field: 'review',
+						severity: 'error'
+					}
+				],
+				notes: `Rejected by admin: ${reason}`
+			}
+		);
 
 		const rejectionData = {
 			globalIndex,

@@ -19,7 +19,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { AlertCircle, AlertTriangle, CheckCircle2, RefreshCw } from 'lucide-svelte';
+	import { AlertCircle, AlertTriangle, CheckCircle2, RefreshCw, Edit3 } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 	import ReviewActions from './ReviewActions.svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
@@ -39,6 +39,8 @@
 		errors: string[];
 		onApprove?: () => void;
 		onReject?: (reason: string) => void;
+		onEdit?: () => void;
+		isEdited?: boolean;
 		class?: string;
 	}
 
@@ -49,6 +51,8 @@
 		errors,
 		onApprove,
 		onReject,
+		onEdit,
+		isEdited = false,
 		class: className
 	}: Props = $props();
 
@@ -461,6 +465,12 @@
 					>
 						{hasErrors ? 'Erreur' : hasWarnings ? 'Attention' : 'Nouveau'}
 					</Badge>
+					{#if isEdited}
+						<Badge variant="outline" class="border-blue-500 text-blue-600">
+							<Edit3 class="mr-1 h-3 w-3" />
+							Modifie
+						</Badge>
+					{/if}
 				</Card.Title>
 			</Card.Header>
 			<Card.Content class="space-y-4">
@@ -871,7 +881,22 @@
 	{/if}
 
 	<!-- Review Actions -->
-	{#if onApprove || onReject}
-		<ReviewActions {onApprove} {onReject} disabled={hasErrors} />
+	{#if onApprove || onReject || onEdit}
+		<div class="flex items-center justify-between">
+			<!-- Edit Button (left side) -->
+			{#if onEdit}
+				<Button variant="outline" onclick={onEdit}>
+					<Edit3 class="mr-2 h-4 w-4" />
+					Modifier
+				</Button>
+			{:else}
+				<div></div>
+			{/if}
+
+			<!-- Approve/Reject Actions (right side) -->
+			{#if onApprove || onReject}
+				<ReviewActions {onApprove} {onReject} disabled={hasErrors} />
+			{/if}
+		</div>
 	{/if}
 </div>

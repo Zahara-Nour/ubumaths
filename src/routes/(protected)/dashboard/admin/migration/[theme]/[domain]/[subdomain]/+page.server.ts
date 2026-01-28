@@ -4,6 +4,7 @@
  *
  * Loads all questions within a specific subdomain from migration export files.
  * Reads level-*.json files from the subdomain directory.
+ * Also loads review status from migration_tracking table.
  */
 
 import { error } from '@sveltejs/kit';
@@ -11,6 +12,7 @@ import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 import type { PageServerLoad } from './$types';
 import type { GradeCode } from '$lib/types/grades';
+import type { MigrationStatus } from '$lib/types/migration';
 
 /**
  * Get the latest export folder from data/migration-output/
@@ -83,7 +85,7 @@ export interface QuestionEntry {
 	};
 }
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, locals }) => {
 	const { theme, domain, subdomain } = params;
 
 	// Decode URL-encoded params
@@ -146,12 +148,67 @@ export const load: PageServerLoad = async ({ params }) => {
 				.length
 		};
 
+		// Load review status from database
+		const globalIndices = allQuestions.map((q) => q.globalIndex);
+		const reviewStatusMap: Record<number, { status: MigrationStatus; reason?: string }> = {};
+		const questionEditsMap: Record<number, { editId: string; editedJson: unknown }> = {};
+
+		if (locals.supabase && globalIndices.length > 0) {
+			// Load tracking data for review status
+			const { data: trackingData } = await locals.supabase
+				.from('migration_tracking')
+				.select('old_question_index, migration_status, conversion_errors, conversion_notes')
+				.in('old_question_index', globalIndices);
+
+			if (trackingData) {
+				for (const row of trackingData) {
+					// Only include validated or failed (rejected) status
+					if (row.migration_status === 'validated' || row.migration_status === 'failed') {
+						const errors = row.conversion_errors as { code?: string; message?: string }[] | null;
+						const rejectionReason = errors?.find((e) => e.code === 'MANUAL_REJECTION')?.message;
+						reviewStatusMap[row.old_question_index] = {
+							status: row.migration_status as MigrationStatus,
+							reason: rejectionReason || (row.conversion_notes as string | undefined)
+						};
+					}
+				}
+			}
+
+			// Load edits from migration_edits table
+			// We need to join with migration_tracking to get the old_question_index
+			const { data: editsData } = await locals.supabase
+				.from('migration_edits')
+				.select(
+					`
+					id,
+					edited_json,
+					migration_tracking_id,
+					migration_tracking!inner(old_question_index)
+				`
+				)
+				.in('migration_tracking.old_question_index', globalIndices);
+
+			if (editsData) {
+				for (const edit of editsData) {
+					const tracking = edit.migration_tracking as { old_question_index: number } | null;
+					if (tracking) {
+						questionEditsMap[tracking.old_question_index] = {
+							editId: edit.id,
+							editedJson: edit.edited_json
+						};
+					}
+				}
+			}
+		}
+
 		return {
 			theme: displayTheme,
 			domain: displayDomain,
 			subdomain: displaySubdomain,
 			questions: allQuestions,
-			stats
+			stats,
+			reviewStatusMap,
+			questionEditsMap
 		};
 	} catch (err) {
 		if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
