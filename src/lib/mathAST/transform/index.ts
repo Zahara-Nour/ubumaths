@@ -13,6 +13,7 @@ export {
 	contractToDoubleAngle,
 	simplifyPythagorean,
 	simplifyQuotients,
+	linearize,
 	// Individual transforms (for testing/direct use)
 	TRANSFORM_SIN_COS_PRODUCT,
 	TRANSFORM_DOUBLE_ANGLE_SIN,
@@ -22,6 +23,9 @@ export {
 	TRANSFORM_ONE_MINUS_SIN_SQUARED,
 	TRANSFORM_ONE_MINUS_COS_SQUARED,
 	TRANSFORM_SIN_OVER_COS,
+	TRANSFORM_COS_COS_PRODUCT,
+	TRANSFORM_SIN_SIN_PRODUCT,
+	TRANSFORM_SIN_COS_DIFFERENT,
 	// Types
 	type TrigTransformResult
 } from './trig-identities';

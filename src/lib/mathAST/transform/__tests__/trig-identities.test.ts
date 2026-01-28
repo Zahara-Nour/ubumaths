@@ -14,10 +14,14 @@ import {
 	TRANSFORM_ONE_MINUS_SIN_SQUARED,
 	TRANSFORM_ONE_MINUS_COS_SQUARED,
 	TRANSFORM_SIN_OVER_COS,
+	TRANSFORM_COS_COS_PRODUCT,
+	TRANSFORM_SIN_SIN_PRODUCT,
+	TRANSFORM_SIN_COS_DIFFERENT,
 	applyTrigIdentities,
 	contractToDoubleAngle,
 	simplifyPythagorean,
-	simplifyQuotients
+	simplifyQuotients,
+	linearize
 } from '../trig-identities';
 
 describe('Double Angle Contraction', () => {
@@ -223,6 +227,105 @@ describe('Application Functions', () => {
 			const result = applyTrigIdentities(expr);
 			expect(result.changed).toBe(true);
 			// Should simplify to 2*1 = 2
+		});
+	});
+});
+
+describe('Linearization (Product to Sum)', () => {
+	describe('TRANSFORM_COS_COS_PRODUCT', () => {
+		it('should transform cos(a)*cos(b) to (cos(a-b) + cos(a+b))/2', () => {
+			const expr = parseLatex('\\cos(x)\\cos(y)');
+			const result = TRANSFORM_COS_COS_PRODUCT(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('cos');
+		});
+
+		it('should not transform cos(x)*cos(x) (same argument)', () => {
+			const expr = parseLatex('\\cos(x)\\cos(x)');
+			const result = TRANSFORM_COS_COS_PRODUCT(expr);
+			expect(result).toBeNull();
+		});
+
+		it('should work with complex arguments', () => {
+			const expr = parseLatex('\\cos(2x)\\cos(3x)');
+			const result = TRANSFORM_COS_COS_PRODUCT(expr);
+			expect(result).not.toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_SIN_SIN_PRODUCT', () => {
+		it('should transform sin(a)*sin(b) to (cos(a-b) - cos(a+b))/2', () => {
+			const expr = parseLatex('\\sin(x)\\sin(y)');
+			const result = TRANSFORM_SIN_SIN_PRODUCT(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('cos');
+		});
+
+		it('should not transform sin(x)*sin(x) (same argument)', () => {
+			const expr = parseLatex('\\sin(x)\\sin(x)');
+			const result = TRANSFORM_SIN_SIN_PRODUCT(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('TRANSFORM_SIN_COS_DIFFERENT', () => {
+		it('should transform sin(a)*cos(b) to (sin(a+b) + sin(a-b))/2', () => {
+			const expr = parseLatex('\\sin(x)\\cos(y)');
+			const result = TRANSFORM_SIN_COS_DIFFERENT(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('sin');
+		});
+
+		it('should transform cos(a)*sin(b) to (sin(a+b) - sin(a-b))/2', () => {
+			const expr = parseLatex('\\cos(x)\\sin(y)');
+			const result = TRANSFORM_SIN_COS_DIFFERENT(expr);
+			expect(result).not.toBeNull();
+			const latex = toLatex(result!);
+			expect(latex).toContain('sin');
+		});
+
+		it('should not transform sin(x)*cos(x) (same argument)', () => {
+			const expr = parseLatex('\\sin(x)\\cos(x)');
+			const result = TRANSFORM_SIN_COS_DIFFERENT(expr);
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('linearize', () => {
+		it('should linearize cos(a)*cos(b)', () => {
+			const expr = parseLatex('\\cos(2x)\\cos(3x)');
+			const result = linearize(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('cos-cos-product');
+		});
+
+		it('should linearize sin(a)*sin(b)', () => {
+			const expr = parseLatex('\\sin(2x)\\sin(3x)');
+			const result = linearize(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('sin-sin-product');
+		});
+
+		it('should linearize sin(a)*cos(b)', () => {
+			const expr = parseLatex('\\sin(2x)\\cos(3x)');
+			const result = linearize(expr);
+			expect(result.changed).toBe(true);
+			expect(result.appliedRules).toContain('sin-cos-different');
+		});
+
+		it('should not change non-product expressions', () => {
+			const expr = parseLatex('\\sin(x) + \\cos(x)');
+			const result = linearize(expr);
+			expect(result.changed).toBe(false);
+		});
+
+		it('should work on nested products', () => {
+			const expr = parseLatex('\\cos(x)\\cos(y) + \\sin(x)\\sin(y)');
+			const result = linearize(expr);
+			expect(result.changed).toBe(true);
 		});
 	});
 });
