@@ -88,6 +88,9 @@ mathAST/
 ├── Pattern Matching
 │   └── pattern/          # Pattern matching and rules
 │
+├── Transforms
+│   └── transform/        # Trig and hyperbolic identities
+│
 ├── Analysis
 │   └── analysis/         # Expression analysis (linear combinations)
 │
@@ -113,6 +116,7 @@ mathAST/
 | [Evaluation](./evaluation.md)                                    | Numeric evaluation and substitution                               |
 | [Numeric Types](./numtype.md)                                    | Type inference and classification (integer, rational, etc.)       |
 | [Pattern Matching](./patterns.md)                                | Pattern matching and rule-based transformations                   |
+| [Identities](./identities.md)                                    | Trigonometric and hyperbolic identity transformations             |
 | [Analysis](./analysis.md)                                        | Expression analysis (linear combinations, coefficient extraction) |
 | [Normalization](./normalization.md)                              | Canonical forms and equivalence                                   |
 | [Differentiation & Taylor](./calculus.md)                        | Symbolic differentiation and series                               |
