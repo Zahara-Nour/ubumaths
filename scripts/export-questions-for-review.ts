@@ -29,7 +29,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import type { QuestionWithMigration } from '../src/lib/migration/old-question-types';
 import { transformQuestion } from '../src/lib/migration/question-transformer';
-import type { TransformResult } from '../src/lib/migration/question-transformer';
+import type { TransformResult, ImageUrlMapping } from '../src/lib/migration/question-transformer';
 import type { QuestionTemplate } from '../src/lib/questions/types';
 
 // ============================================================================
@@ -86,6 +86,7 @@ interface Manifest {
 // ============================================================================
 
 const INPUT_FILE = '.claude/old-questions.json';
+const IMAGE_MAPPING_FILE = 'scripts/image-url-mapping.json';
 const OUTPUT_BASE = 'data/migration-output';
 const TIMESTAMP = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 const EXPORT_DIR = join(OUTPUT_BASE, `export-${TIMESTAMP}`);
@@ -145,15 +146,42 @@ async function loadQuestions(): Promise<QuestionWithMigration[]> {
 }
 
 /**
+ * Load image URL mapping from JSON file
+ */
+async function loadImageMapping(): Promise<ImageUrlMapping> {
+	console.log(`🖼️  Reading image mapping from: ${IMAGE_MAPPING_FILE}`);
+	try {
+		const content = await readFile(IMAGE_MAPPING_FILE, 'utf-8');
+		const mapping = JSON.parse(content) as ImageUrlMapping;
+		const uniqueUrls = new Set(Object.values(mapping));
+		console.log(
+			`✓ Loaded ${Object.keys(mapping).length} mappings for ${uniqueUrls.size} unique images`
+		);
+		return mapping;
+	} catch (err) {
+		if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+			console.warn(`⚠️  Image mapping file not found, proceeding without image conversion`);
+			return {};
+		}
+		throw err;
+	}
+}
+
+/**
  * Transform all questions and organize by category
  */
-async function transformQuestions(questions: QuestionWithMigration[]): Promise<{
+async function transformQuestions(
+	questions: QuestionWithMigration[],
+	imageMapping: ImageUrlMapping
+): Promise<{
 	exportedQuestions: ExportedQuestion[];
 	structure: CategoryStructure;
 	stats: {
 		success: number;
 		warnings: number;
 		errors: number;
+		imagesConverted: number;
+		imagesMissing: number;
 	};
 }> {
 	console.log('\n🔄 Transforming questions...');
@@ -163,7 +191,9 @@ async function transformQuestions(questions: QuestionWithMigration[]): Promise<{
 	const stats = {
 		success: 0,
 		warnings: 0,
-		errors: 0
+		errors: 0,
+		imagesConverted: 0,
+		imagesMissing: 0
 	};
 
 	for (let i = 0; i < questions.length; i++) {
@@ -175,8 +205,10 @@ async function transformQuestions(questions: QuestionWithMigration[]): Promise<{
 			console.log(`  Processing question ${i + 1}/${questions.length}...`);
 		}
 
-		// Transform using question-transformer
-		const result = transformQuestion(question, globalIndex);
+		// Transform using question-transformer with image mapping
+		const result = transformQuestion(question, globalIndex, {
+			imageUrlMapping: imageMapping
+		});
 
 		// Create exported question entry
 		const exported: ExportedQuestion = {
@@ -220,6 +252,11 @@ async function transformQuestions(questions: QuestionWithMigration[]): Promise<{
 			if (result.warnings && result.warnings.length > 0) {
 				stats.warnings++;
 			}
+			// Track image conversion stats
+			if (result.stats) {
+				stats.imagesConverted += result.stats.imagesConverted;
+				stats.imagesMissing += result.stats.imagesMissing;
+			}
 		} else {
 			stats.errors++;
 		}
@@ -229,6 +266,8 @@ async function transformQuestions(questions: QuestionWithMigration[]): Promise<{
 	console.log(`  Success: ${stats.success}`);
 	console.log(`  Warnings: ${stats.warnings}`);
 	console.log(`  Errors: ${stats.errors}`);
+	console.log(`  Images converted: ${stats.imagesConverted}`);
+	console.log(`  Images missing: ${stats.imagesMissing}`);
 
 	return { exportedQuestions, structure, stats };
 }
@@ -510,8 +549,14 @@ async function main(): Promise<void> {
 		// Load questions
 		const questions = await loadQuestions();
 
-		// Transform questions
-		const { exportedQuestions, structure, stats } = await transformQuestions(questions);
+		// Load image URL mapping
+		const imageMapping = await loadImageMapping();
+
+		// Transform questions with image mapping
+		const { exportedQuestions, structure, stats } = await transformQuestions(
+			questions,
+			imageMapping
+		);
 
 		// Write organized files
 		await writeByCategory(exportedQuestions, structure);
