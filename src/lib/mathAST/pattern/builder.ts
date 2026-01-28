@@ -365,15 +365,22 @@ function pow(base: Pattern, exponent: Pattern): SuperscriptPattern {
 }
 
 /**
- * Creates a function pattern: name(args...)
+ * Creates a function pattern: name(args...) with optional power
  *
  * @param name - Function name to match
  * @param args - Patterns for function arguments
+ * @param options - Optional settings (power pattern for matching sin²(x), etc.)
  * @returns A function pattern
  *
  * @example
  * // Match sin(x)
  * P.func('sin', [P._('x')])
+ *
+ * // Match sin²(x)
+ * P.func('sin', [P._('x')], { power: P.num(2) })
+ *
+ * // Match sin^n(x) where n is any expression
+ * P.func('sin', [P._('x')], { power: P._('n') })
  *
  * // Match log(x) with any base
  * P.func('log', [P._('x')])
@@ -381,11 +388,12 @@ function pow(base: Pattern, exponent: Pattern): SuperscriptPattern {
  * // Match max(a, b)
  * P.func('max', [P._('a'), P._('b')])
  */
-function func(name: string, args: Pattern[]): FunctionPattern {
+function func(name: string, args: Pattern[], options?: { power?: Pattern }): FunctionPattern {
 	return {
 		type: 'function-pattern',
 		name,
-		args
+		args,
+		...(options?.power !== undefined && { power: options.power })
 	} as const;
 }
 

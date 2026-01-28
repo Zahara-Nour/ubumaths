@@ -303,6 +303,22 @@ describe('Pattern Builder (P namespace)', () => {
 				expect(lnP.name).toBe('ln');
 				expect(sqrtP.name).toBe('sqrt');
 			});
+
+			it('creates a function pattern with power', () => {
+				const pattern = P.func('sin', [P._('x')], { power: P.num(2) });
+
+				expect(pattern.type).toBe('function-pattern');
+				expect(pattern.name).toBe('sin');
+				expect(pattern.args).toHaveLength(1);
+				expect(pattern.power).toBeDefined();
+				expect(pattern.power!.type).toBe('literal');
+			});
+
+			it('creates a function pattern without power by default', () => {
+				const pattern = P.func('sin', [P._('x')]);
+
+				expect(pattern.power).toBeUndefined();
+			});
 		});
 
 		describe('P.neg()', () => {

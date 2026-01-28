@@ -244,6 +244,7 @@ export interface FunctionPattern {
 	readonly type: 'function-pattern';
 	readonly name: string;
 	readonly args: readonly Pattern[];
+	readonly power?: Pattern;
 }
 
 /**

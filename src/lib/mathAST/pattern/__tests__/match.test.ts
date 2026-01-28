@@ -21,6 +21,7 @@ import {
 	relation,
 	greek
 } from '../../factory';
+import { parseLatex } from '../../parser';
 
 describe('Pattern Matching Algorithm', () => {
 	// ===========================================================================
@@ -566,6 +567,63 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
+		});
+
+		it('matches function with power: sin²(x)', () => {
+			const pattern = P.func('sin', [P._('x')], { power: P.num(2) });
+			const node = func('sin', [variable('x')], { power: number('2') });
+
+			const result = match(pattern, node);
+
+			expect(result.success).toBe(true);
+			expect(nodesEqual(result.bindings.get('x')!, variable('x'))).toBe(true);
+		});
+
+		it('matches function with wildcard power: sin^n(x)', () => {
+			const pattern = P.func('sin', [P._('x')], { power: P._('n') });
+			const node = func('sin', [variable('x')], { power: number('3') });
+
+			const result = match(pattern, node);
+
+			expect(result.success).toBe(true);
+			expect(nodesEqual(result.bindings.get('n')!, number('3'))).toBe(true);
+		});
+
+		it('fails when pattern expects power but node has none', () => {
+			const pattern = P.func('sin', [P._('x')], { power: P.num(2) });
+			const node = func('sin', [variable('x')]);
+
+			const result = match(pattern, node);
+
+			expect(result.success).toBe(false);
+		});
+
+		it('fails when pattern expects no power but node has one', () => {
+			const pattern = P.func('sin', [P._('x')]);
+			const node = func('sin', [variable('x')], { power: number('2') });
+
+			const result = match(pattern, node);
+
+			expect(result.success).toBe(false);
+		});
+
+		it('fails when power value does not match', () => {
+			const pattern = P.func('cos', [P._('x')], { power: P.num(2) });
+			const node = func('cos', [variable('x')], { power: number('3') });
+
+			const result = match(pattern, node);
+
+			expect(result.success).toBe(false);
+		});
+
+		it('matches cos²(x) with parser output', () => {
+			const pattern = P.func('cos', [P._('x')], { power: P.num(2) });
+			const node = parseLatex('\\cos^2(x)');
+
+			const result = match(pattern, node);
+
+			expect(result.success).toBe(true);
+			expect(nodesEqual(result.bindings.get('x')!, variable('x'))).toBe(true);
 		});
 	});
 

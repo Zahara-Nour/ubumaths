@@ -369,6 +369,10 @@ function matchSuperscript(
 
 /**
  * Matches a function pattern.
+ *
+ * Supports optional power matching for expressions like sin²(x).
+ * - If pattern has no power: matches functions without power (or ignores power)
+ * - If pattern has power: matches only functions with matching power
  */
 function matchFunction(
 	pattern: Extract<Pattern, { type: 'function-pattern' }>,
@@ -382,6 +386,24 @@ function matchFunction(
 	// Check function name
 	if (pattern.name !== node.name) {
 		return failMatch();
+	}
+
+	// Check power constraint
+	if (pattern.power !== undefined) {
+		// Pattern requires a power - node must have one
+		if (node.power === undefined) {
+			return failMatch();
+		}
+		const powerResult = match(pattern.power, node.power, bindings);
+		if (!powerResult.success) {
+			return failMatch();
+		}
+		bindings = powerResult.bindings;
+	} else {
+		// Pattern has no power - node must not have one
+		if (node.power !== undefined) {
+			return failMatch();
+		}
 	}
 
 	// Check argument count
