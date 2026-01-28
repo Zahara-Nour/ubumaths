@@ -64,6 +64,7 @@
  */
 
 import type { Tables } from './database';
+import type { QuestionTemplate } from '$lib/questions/types';
 
 // ============================================================================
 // Table Row Type Aliases
@@ -71,6 +72,9 @@ import type { Tables } from './database';
 
 /** Class table row type alias */
 export type Class = Tables<'classes'>;
+
+/** Migration edit row type alias */
+export type MigrationEdit = Tables<'migration_edits'>;
 
 /** Class schedule table row type alias */
 export type ClassSchedule = Tables<'class_schedules'>;
@@ -112,4 +116,32 @@ export interface FriendshipWithProfile {
 	requester_id: string;
 	addressee_id: string;
 	friend_profile: FriendProfile;
+}
+
+// ============================================================================
+// Migration Edit Types
+// ============================================================================
+
+/**
+ * Migration edit with properly typed edited_json field.
+ *
+ * The database stores edited_json as JSONB, but we know it's a QuestionTemplate.
+ */
+export interface MigrationEditWithTemplate {
+	id: string;
+	migration_tracking_id: string;
+	old_question_hash: string;
+	edited_json: Partial<QuestionTemplate>;
+	editor_id: string;
+	edit_notes: string | null;
+	created_at: string;
+	updated_at: string;
+}
+
+/**
+ * Input type for creating/updating a migration edit
+ */
+export interface MigrationEditInput {
+	editedTransformed: Partial<QuestionTemplate>;
+	notes?: string;
 }
