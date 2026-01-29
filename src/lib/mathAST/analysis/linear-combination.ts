@@ -23,17 +23,16 @@
  */
 
 import type { MathNode } from '../types';
-import { flattenSumShallow, flattenProductShallow, type SignedTerm } from '../flatten';
-import {
-	isVariable,
-	isMultiplication,
-	isNumber,
-	isOpposite,
-	isDivision,
-	isDelimiter
-} from '../guards';
-import { number, opposite, multiply, divide, add } from '../factory';
+import { flattenSumShallow, type SignedTerm } from '../flatten';
+import { isOpposite } from '../guards';
 import { nodesEqual } from '../pattern';
+import {
+	ZERO,
+	containsAnyVariable,
+	applySign,
+	addCoefficients,
+	extractCoefficientAndVariable
+} from './coefficient-utils';
 
 // =============================================================================
 // Types
@@ -67,279 +66,6 @@ export interface LinearCombinationResult {
 	 * Error message if isLinear is false.
 	 */
 	readonly error?: string;
-}
-
-/**
- * Extracted term: coefficient and variable name.
- */
-interface ExtractedTerm {
-	readonly coefficient: MathNode;
-	readonly variableName: string;
-}
-
-// =============================================================================
-// Constants
-// =============================================================================
-
-const ZERO = number('0');
-const ONE = number('1');
-const MINUS_ONE = number('-1');
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
-/**
- * Checks if a node represents a target variable.
- */
-function isTargetVariable(node: MathNode, variables: readonly string[]): string | null {
-	if (isVariable(node) && variables.includes(node.name)) {
-		return node.name;
-	}
-	return null;
-}
-
-/**
- * Applies a sign to a coefficient.
- * If sign is '-', wraps in opposite() or simplifies if possible.
- */
-function applySign(coefficient: MathNode, sign: '+' | '-'): MathNode {
-	if (sign === '+') {
-		return coefficient;
-	}
-
-	// Optimization: -1 becomes number('-1') not opposite(1)
-	if (isNumber(coefficient) && coefficient.value === '1') {
-		return MINUS_ONE;
-	}
-
-	// Optimization: -(−x) becomes x (double negation)
-	if (isOpposite(coefficient)) {
-		return coefficient.operand;
-	}
-
-	// Optimization: -n becomes number(-n) for numeric values
-	if (isNumber(coefficient)) {
-		const value = parseFloat(coefficient.value);
-		return number(String(-value));
-	}
-
-	// General case: wrap in opposite
-	return opposite(coefficient);
-}
-
-/**
- * Adds two coefficients (as MathNodes).
- * Returns a simplified result when possible.
- */
-function addCoefficients(a: MathNode, b: MathNode): MathNode {
-	// 0 + x = x
-	if (isNumber(a) && a.value === '0') {
-		return b;
-	}
-	// x + 0 = x
-	if (isNumber(b) && b.value === '0') {
-		return a;
-	}
-
-	// Numeric addition: n + m = (n+m)
-	if (isNumber(a) && isNumber(b)) {
-		const sum = parseFloat(a.value) + parseFloat(b.value);
-		return number(String(sum));
-	}
-
-	// General case: create addition node
-	return add(a, b);
-}
-
-/**
- * Extracts coefficient and variable from a single term.
- *
- * Handles:
- * - x → { coefficient: 1, variable: 'x' }
- * - 2x → { coefficient: 2, variable: 'x' }
- * - √2·x → { coefficient: √2, variable: 'x' }
- * - (a+b)x → { coefficient: (a+b), variable: 'x' }
- * - x/2 → { coefficient: 1/2, variable: 'x' }
- * - 2x/3 → { coefficient: 2/3, variable: 'x' }
- *
- * @returns ExtractedTerm or null if not a valid linear term
- */
-function extractCoefficientAndVariable(
-	term: MathNode,
-	variables: readonly string[]
-): ExtractedTerm | null {
-	// Case 1: Variable alone (x) → coefficient = 1
-	const varName = isTargetVariable(term, variables);
-	if (varName !== null) {
-		return { coefficient: ONE, variableName: varName };
-	}
-
-	// Case 2: Multiplication (a * x or x * a or a * b * x)
-	if (isMultiplication(term)) {
-		const factors = flattenProductShallow(term);
-		return extractFromFactors(factors, variables);
-	}
-
-	// Case 3: Division (x/2 or (ax)/b)
-	if (isDivision(term)) {
-		return extractFromDivision(term, variables);
-	}
-
-	// Case 4: Delimiter (parentheses) - extract from content
-	if (isDelimiter(term)) {
-		return extractCoefficientAndVariable(term.content, variables);
-	}
-
-	// Case 5: Opposite (-x or -ax) - handled at the term level with sign
-	// This case shouldn't normally be reached as opposite is handled in sign
-
-	// Not a valid linear term
-	return null;
-}
-
-/**
- * Extracts coefficient and variable from flattened product factors.
- *
- * Valid forms:
- * - [x] → coefficient = 1
- * - [2, x] → coefficient = 2
- * - [√2, x] → coefficient = √2
- * - [(a+b), x] → coefficient = (a+b)
- * - [2, 3, x] → coefficient = 2*3 = 6
- *
- * Invalid (non-linear):
- * - [x, y] → two variables
- * - [x, x] → x²
- */
-function extractFromFactors(
-	factors: readonly MathNode[],
-	variables: readonly string[]
-): ExtractedTerm | null {
-	let foundVariable: string | null = null;
-	const coefficientFactors: MathNode[] = [];
-
-	for (const factor of factors) {
-		const varName = isTargetVariable(factor, variables);
-		if (varName !== null) {
-			// Found a target variable
-			if (foundVariable !== null) {
-				// Second variable found → non-linear (x*y or x*x)
-				return null;
-			}
-			foundVariable = varName;
-		} else {
-			// Not a target variable → part of coefficient
-			coefficientFactors.push(factor);
-		}
-	}
-
-	if (foundVariable === null) {
-		// No variable found → constant term, not a linear term
-		return null;
-	}
-
-	// Build coefficient from factors
-	const coefficient = buildProductFromFactors(coefficientFactors);
-	return { coefficient, variableName: foundVariable };
-}
-
-/**
- * Builds a product MathNode from an array of factors.
- */
-function buildProductFromFactors(factors: readonly MathNode[]): MathNode {
-	if (factors.length === 0) {
-		return ONE;
-	}
-	if (factors.length === 1) {
-		return factors[0];
-	}
-
-	// Multiply all factors together
-	let result = factors[0];
-	for (let i = 1; i < factors.length; i++) {
-		result = multiply(result, factors[i], 'implicit');
-	}
-	return result;
-}
-
-/**
- * Extracts coefficient and variable from a division node.
- *
- * Valid forms:
- * - x/2 → coefficient = 1/2, variable = x
- * - (2x)/3 → coefficient = 2/3, variable = x
- * - (ax)/b → coefficient = a/b, variable = x
- *
- * Invalid:
- * - 2/x → variable in denominator (non-linear)
- */
-function extractFromDivision(node: MathNode, variables: readonly string[]): ExtractedTerm | null {
-	if (!isDivision(node)) return null;
-
-	const { numerator, denominator } = node;
-
-	// Check denominator doesn't contain target variables (would be non-linear)
-	if (containsVariable(denominator, variables)) {
-		return null;
-	}
-
-	// Extract from numerator
-	const numExtracted = extractCoefficientAndVariable(numerator, variables);
-	if (numExtracted === null) {
-		// Numerator might just be the variable
-		const varName = isTargetVariable(numerator, variables);
-		if (varName !== null) {
-			// x/d → coefficient = 1/d
-			return {
-				coefficient: divide(ONE, denominator, 'fraction'),
-				variableName: varName
-			};
-		}
-		return null;
-	}
-
-	// (coeff * x) / d → coefficient = coeff/d
-	return {
-		coefficient: divide(numExtracted.coefficient, denominator, 'fraction'),
-		variableName: numExtracted.variableName
-	};
-}
-
-/**
- * Checks if a node contains any of the target variables.
- */
-function containsVariable(node: MathNode, variables: readonly string[]): boolean {
-	if (isVariable(node) && variables.includes(node.name)) {
-		return true;
-	}
-
-	// Recursively check children based on node type
-	switch (node.type) {
-		case 'addition':
-		case 'subtraction':
-		case 'multiplication':
-			return containsVariable(node.left, variables) || containsVariable(node.right, variables);
-		case 'division':
-			return (
-				containsVariable(node.numerator, variables) || containsVariable(node.denominator, variables)
-			);
-		case 'opposite':
-		case 'positive':
-			return containsVariable(node.operand, variables);
-		case 'delimiter':
-			return containsVariable(node.content, variables);
-		case 'function':
-			return node.args.some((arg) => containsVariable(arg, variables));
-		case 'superscript':
-			return (
-				containsVariable(node.base, variables) || containsVariable(node.superscript, variables)
-			);
-		case 'subscript':
-			return containsVariable(node.base, variables) || containsVariable(node.subscript, variables);
-		default:
-			return false;
-	}
 }
 
 // =============================================================================
@@ -406,7 +132,7 @@ export function extractLinearCombination(
 
 		if (extracted === null) {
 			// Check if it's a constant term (no variables) - which is invalid for linear combination
-			if (!containsVariable(actualTerm, variables)) {
+			if (!containsAnyVariable(actualTerm, variables)) {
 				return {
 					coefficients,
 					variables,

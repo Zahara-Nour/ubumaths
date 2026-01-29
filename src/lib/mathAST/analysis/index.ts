@@ -82,8 +82,26 @@ export {
 	isPeriodic,
 	getPeriod,
 	getPeriodNumeric,
-	type PeriodicityResult
+	type PeriodicityResult,
+	type PeriodicityStep,
+	type PeriodicityRule,
+	type PeriodicityOptions
 } from './periodicity';
+
+// Coefficient extraction utilities
+export {
+	isTargetVariable,
+	isTargetVariableIn,
+	containsVariable,
+	containsAnyVariable,
+	applySign,
+	addCoefficients,
+	buildProduct,
+	extractCoefficientAndVariable,
+	extractLinearForm,
+	type ExtractedTerm,
+	type LinearForm
+} from './coefficient-utils';
 
 // Domain analysis (re-exported from domain module)
 export * from '../domain';

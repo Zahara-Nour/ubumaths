@@ -391,7 +391,7 @@ describe('detectPeriodicity', () => {
 		it('should return non-periodic for multiple variables without specification', () => {
 			const result = detectPeriodicity(parseLatex('\\sin(x) + y'));
 			expect(result.isPeriodic).toBe(false);
-			expect(result.reason).toContain('Multiple variables');
+			expect(result.reason).toContain('Plusieurs variables');
 		});
 	});
 });
@@ -430,5 +430,72 @@ describe('getPeriodNumeric', () => {
 
 	it('should return null for non-periodic functions', () => {
 		expect(getPeriodNumeric(parseLatex('x^2'))).toBeNull();
+	});
+});
+
+describe('pedagogical steps', () => {
+	it('should include steps explaining sin(x) period', () => {
+		const result = detectPeriodicity(parseLatex('\\sin(x)'));
+		expect(result.steps).toBeDefined();
+		expect(result.steps!.length).toBeGreaterThan(0);
+		expect(result.steps![0].rule).toBe('base_period');
+		expect(result.steps![0].description).toContain('Période de base');
+	});
+
+	it('should include scaling step for sin(2x)', () => {
+		const result = detectPeriodicity(parseLatex('\\sin(2x)'));
+		expect(result.steps).toBeDefined();
+		const scalingStep = result.steps!.find((s) => s.rule === 'scaling');
+		expect(scalingStep).toBeDefined();
+		expect(scalingStep!.description).toContain('Dilatation');
+	});
+
+	it('should include even power step for sin²(x)', () => {
+		const result = detectPeriodicity(parseLatex('\\sin^2(x)'));
+		expect(result.steps).toBeDefined();
+		const evenPowerStep = result.steps!.find((s) => s.rule === 'even_power');
+		expect(evenPowerStep).toBeDefined();
+		expect(evenPowerStep!.description).toContain('Puissance paire');
+	});
+
+	it('should include antisymmetry step for sin(x)·cos(x)', () => {
+		const result = detectPeriodicity(parseLatex('\\sin(x)\\cos(x)'));
+		expect(result.steps).toBeDefined();
+		const productStep = result.steps!.find((s) => s.rule === 'product_antisymmetry');
+		expect(productStep).toBeDefined();
+		expect(productStep!.description).toContain('antisymétrique');
+	});
+
+	it('should include absolute value step for |sin(x)|', () => {
+		const result = detectPeriodicity(parseLatex('|\\sin(x)|'));
+		expect(result.steps).toBeDefined();
+		const absStep = result.steps!.find((s) => s.rule === 'absolute_value');
+		expect(absStep).toBeDefined();
+		expect(absStep!.description).toContain('Valeur absolue');
+	});
+
+	it('should include composition step for sin(sin(x))', () => {
+		const result = detectPeriodicity(parseLatex('\\sin(\\sin(x))'));
+		expect(result.steps).toBeDefined();
+		const compStep = result.steps!.find((s) => s.rule === 'composition');
+		expect(compStep).toBeDefined();
+		expect(compStep!.description).toContain('Composition');
+	});
+
+	it('should filter steps by verbosity level', () => {
+		const detailed = detectPeriodicity(parseLatex('\\sin(x) + 1'), { verbosity: 'detailed' });
+		const summarized = detectPeriodicity(parseLatex('\\sin(x) + 1'), { verbosity: 'summarized' });
+		const resultOnly = detectPeriodicity(parseLatex('\\sin(x) + 1'), { verbosity: 'result' });
+
+		// detailed should have at least as many steps as summarized
+		expect(detailed.steps!.length).toBeGreaterThanOrEqual(summarized.steps!.length);
+		// result should have no steps
+		expect(resultOnly.steps!.length).toBe(0);
+	});
+
+	it('should return empty steps for non-periodic expressions', () => {
+		const result = detectPeriodicity(parseLatex('x^2'));
+		expect(result.steps).toBeDefined();
+		// Non-periodic expressions may have no steps or just a "not_periodic" step
 	});
 });

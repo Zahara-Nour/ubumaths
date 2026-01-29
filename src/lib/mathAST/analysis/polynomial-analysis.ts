@@ -15,17 +15,23 @@ import type { MathNode } from '../types';
 import { flattenSumShallow, type SignedTerm } from '../flatten';
 import {
 	isNumber,
-	isVariable,
-	isGreek,
 	isMultiplication,
 	isDivision,
 	isOpposite,
 	isDelimiter,
 	isSuperscript
 } from '../guards';
-import { number, opposite, multiply, add } from '../factory';
 import { getPolynomialDegree } from './expression-classify';
 import { getVariables } from '../eval/substitute';
+import {
+	ZERO,
+	ONE,
+	isTargetVariable,
+	containsVariable,
+	applySign,
+	addCoefficients,
+	buildProduct
+} from './coefficient-utils';
 
 // =============================================================================
 // Types
@@ -78,31 +84,6 @@ export interface PolynomialAnalysis {
 
 	/** Map from degree to coefficient (MathNode) */
 	readonly coefficients: ReadonlyMap<number, MathNode>;
-}
-
-// =============================================================================
-// Constants
-// =============================================================================
-
-const ZERO = number('0');
-const ONE = number('1');
-const MINUS_ONE = number('-1');
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
-/**
- * Checks if a node represents the target variable.
- */
-function isTargetVariable(node: MathNode, variable: string): boolean {
-	if (isVariable(node)) {
-		return node.name === variable;
-	}
-	if (isGreek(node)) {
-		return node.letter === variable;
-	}
-	return false;
 }
 
 /**
@@ -160,14 +141,6 @@ function getTermDegree(node: MathNode, variable: string): number {
 
 	// Anything else (number, other variable, function): degree 0
 	return 0;
-}
-
-/**
- * Check if node contains the variable.
- */
-function containsVariable(node: MathNode, variable: string): boolean {
-	const vars = getVariables(node);
-	return vars.has(variable);
 }
 
 /**
@@ -291,73 +264,6 @@ function collectFactors(
 	} else {
 		coeffFactors.push(node);
 	}
-}
-
-/**
- * Build a product from factors.
- */
-function buildProduct(factors: MathNode[]): MathNode {
-	if (factors.length === 0) {
-		return ONE;
-	}
-	if (factors.length === 1) {
-		return factors[0];
-	}
-
-	let result = factors[0];
-	for (let i = 1; i < factors.length; i++) {
-		result = multiply(result, factors[i], 'implicit');
-	}
-	return result;
-}
-
-/**
- * Apply a sign to a coefficient.
- */
-function applySign(coeff: MathNode, sign: '+' | '-'): MathNode {
-	if (sign === '+') {
-		return coeff;
-	}
-
-	// Optimize for simple cases
-	if (isNumber(coeff)) {
-		if (coeff.value === '1') {
-			return MINUS_ONE;
-		}
-		if (coeff.value === '-1') {
-			return ONE;
-		}
-		const val = parseFloat(coeff.value);
-		return number(String(-val));
-	}
-
-	// Double negation
-	if (isOpposite(coeff)) {
-		return coeff.operand;
-	}
-
-	return opposite(coeff);
-}
-
-/**
- * Add two coefficients.
- */
-function addCoefficients(a: MathNode, b: MathNode): MathNode {
-	// 0 + x = x
-	if (isNumber(a) && a.value === '0') {
-		return b;
-	}
-	if (isNumber(b) && b.value === '0') {
-		return a;
-	}
-
-	// Numeric addition
-	if (isNumber(a) && isNumber(b)) {
-		const sum = parseFloat(a.value) + parseFloat(b.value);
-		return number(String(sum));
-	}
-
-	return add(a, b);
 }
 
 // =============================================================================
