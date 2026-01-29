@@ -59,7 +59,16 @@ import {
 	isPeriodic,
 	getPeriod,
 	getPeriodNumeric,
-	type PeriodicityResult
+	type PeriodicityResult,
+	type PeriodicityStep,
+	type PeriodicityRule,
+	type PeriodicityOptions,
+
+	// Coefficient extraction utilities
+	extractLinearForm,
+	extractCoefficientAndVariable,
+	type LinearForm,
+	type ExtractedTerm
 } from '$lib/mathAST/analysis';
 ```
 
@@ -480,10 +489,11 @@ detectSymmetry(parseLatex('\\frac{1}{x}'));
 ## Periodicity Detection
 
 Detects whether expressions are periodic and computes their **minimal** period.
+Includes **pedagogical explanations** (in French) for each step of the analysis.
 
-### `detectPeriodicity(node, variable?)`
+### `detectPeriodicity(node, options?)`
 
-Returns detailed periodicity analysis with symbolic period.
+Returns detailed periodicity analysis with symbolic period and pedagogical steps.
 
 ```typescript
 import { parseLatex } from '$lib/mathAST';
@@ -491,35 +501,47 @@ import { detectPeriodicity } from '$lib/mathAST/analysis';
 
 // Basic trigonometric functions
 detectPeriodicity(parseLatex('\\sin(x)'));
-// → { isPeriodic: true, period: 2π (symbolic), periodNumeric: 6.283..., variable: 'x' }
+// → { isPeriodic: true, period: 2π (symbolic), periodNumeric: 6.283..., variable: 'x', steps: [...] }
 
 detectPeriodicity(parseLatex('\\tan(x)'));
-// → { isPeriodic: true, period: π (symbolic), periodNumeric: 3.141..., variable: 'x' }
+// → { isPeriodic: true, period: π (symbolic), periodNumeric: 3.141..., variable: 'x', steps: [...] }
 
 // Scaled arguments: sin(kx) has period 2π/k
 detectPeriodicity(parseLatex('\\sin(2x)'));
-// → { isPeriodic: true, period: π (symbolic), periodNumeric: 3.141..., ... }
+// → { isPeriodic: true, period: π (symbolic), periodNumeric: 3.141..., steps: [...] }
 
 // Minimal period detection (half-period antisymmetry)
 detectPeriodicity(parseLatex('\\sin^2(x)'));
-// → { isPeriodic: true, period: π (symbolic), periodNumeric: 3.141..., ... }
+// → { isPeriodic: true, period: π (symbolic), periodNumeric: 3.141..., steps: [...] }
 
 detectPeriodicity(parseLatex('\\sin(x)\\cos(x)'));
-// → { isPeriodic: true, period: π (symbolic), periodNumeric: 3.141..., ... }
+// → { isPeriodic: true, period: π (symbolic), periodNumeric: 3.141..., steps: [...] }
 
 // Function compositions
 detectPeriodicity(parseLatex('\\sin(\\sin(x))'));
-// → { isPeriodic: true, period: 2π, periodNumeric: 6.283..., ... }
+// → { isPeriodic: true, period: 2π, periodNumeric: 6.283..., steps: [...] }
 
 detectPeriodicity(parseLatex('\\exp(\\sin(x))'));
-// → { isPeriodic: true, period: 2π, periodNumeric: 6.283..., ... }
+// → { isPeriodic: true, period: 2π, periodNumeric: 6.283..., steps: [...] }
 
 // Non-periodic functions
 detectPeriodicity(parseLatex('x^2'));
-// → { isPeriodic: false, period: null }
+// → { isPeriodic: false, period: null, steps: [] }
 
 detectPeriodicity(parseLatex('\\sin(x^2)'));
-// → { isPeriodic: false, period: null } (x² is not periodic)
+// → { isPeriodic: false, period: null, steps: [] } (x² is not periodic)
+
+// With options
+detectPeriodicity(parseLatex('\\sin(x)'), { variable: 'x', verbosity: 'detailed' });
+```
+
+**Options:** `PeriodicityOptions`
+
+```typescript
+interface PeriodicityOptions {
+	variable?: string; // Variable to check (auto-detected if single)
+	verbosity?: Verbosity; // 'result' | 'summarized' | 'detailed' (default: 'summarized')
+}
 ```
 
 **Returns:** `PeriodicityResult`
@@ -532,8 +554,61 @@ interface PeriodicityResult {
 	variable: string;
 	confidence: 'proven' | 'heuristic';
 	reason?: string;
+	steps?: readonly PeriodicityStep[]; // Pedagogical explanations
 }
 ```
+
+### Pedagogical Steps
+
+Each step explains one rule applied during periodicity detection:
+
+```typescript
+interface PeriodicityStep {
+	id: number;
+	rule: PeriodicityRule;
+	description: string; // French explanation
+	detail?: string; // LaTeX formula
+	verbosityLevel: Verbosity;
+}
+
+type PeriodicityRule =
+	| 'base_period' // Période de base de la fonction
+	| 'scaling' // Dilatation de l'argument
+	| 'translation' // Translation (période inchangée)
+	| 'even_power' // Puissance paire → période ÷ 2
+	| 'odd_power' // Puissance impaire → période inchangée
+	| 'product_antisymmetry' // sin·cos → période ÷ 2
+	| 'quotient_antisymmetry' // sin/cos → période ÷ 2
+	| 'absolute_value' // |sin| → période ÷ 2
+	| 'step_function' // floor, ceil → période 1
+	| 'composition' // sin(sin(x)) hérite
+	| 'exponential' // a^{sin(x)} hérite
+	| 'sum_lcm' // sin + cos → PPCM
+	| 'constant_offset' // sin + 1 → inchangée
+	| 'constant_factor' // 2·sin → inchangée
+	| 'not_periodic';
+```
+
+**Example:**
+
+```typescript
+const result = detectPeriodicity(parseLatex('\\sin^2(x)'));
+console.log(result.steps);
+// [
+//   { id: 1, rule: 'base_period', description: 'Période de base de la fonction',
+//     detail: '\\sin(x) a pour période de base 2\\pi' },
+//   { id: 2, rule: 'even_power', description: 'Puissance paire : la période est divisée par 2',
+//     detail: 'Puissance 2 (paire) : f(x + T/2) = -f(x) donc f^2(x + T/2) = f^2(x). Période 2\\pi → \\pi' }
+// ]
+```
+
+### Verbosity Levels
+
+| Level          | Description                               | Use Case                         |
+| -------------- | ----------------------------------------- | -------------------------------- |
+| `'result'`     | No steps returned                         | Performance-critical computation |
+| `'summarized'` | Important steps only (default)            | Pedagogical display              |
+| `'detailed'`   | All steps including micro-transformations | Debugging, advanced users        |
 
 ### Helper Functions
 
@@ -652,6 +727,43 @@ import {
 ```
 
 For complete domain documentation, see [Domain](./domain.md).
+
+---
+
+## Coefficient Utilities
+
+Shared utilities for extracting coefficients from expressions. Used internally by linear-combination, polynomial-analysis, and periodicity modules.
+
+### `extractLinearForm(node, variable)`
+
+Extracts linear form (ax + b) from an expression.
+
+```typescript
+import { extractLinearForm } from '$lib/mathAST/analysis';
+
+extractLinearForm(parseLatex('2x + 1'), 'x');
+// → { coefficient: number('2'), offset: number('1') }
+
+extractLinearForm(parseLatex('x'), 'x');
+// → { coefficient: number('1'), offset: null }
+
+extractLinearForm(parseLatex('x^2'), 'x');
+// → null (not linear)
+```
+
+### `extractCoefficientAndVariable(term, variables)`
+
+Extracts coefficient and variable from a product term.
+
+```typescript
+import { extractCoefficientAndVariable } from '$lib/mathAST/analysis';
+
+extractCoefficientAndVariable(parseLatex('2x'), ['x', 'y']);
+// → { coefficient: number('2'), variableName: 'x' }
+
+extractCoefficientAndVariable(parseLatex('\\sqrt{2}y'), ['x', 'y']);
+// → { coefficient: sqrt(2), variableName: 'y' }
+```
 
 ---
 

@@ -8,14 +8,57 @@
  */
 
 import type { MathNode } from '../types';
-import { isNumber, isMultiplication, isAddition, isSubtraction, isDivision } from '../guards';
+import type { Verbosity } from '../common/verbosity';
+import { isNumber } from '../guards';
 import { number, multiply, divide, PI, TWO_PI } from '../factory';
 import { getVariables } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { extractLinearForm } from './coefficient-utils';
+import { toLatex } from '../latex-generator';
 
 // =============================================================================
 // Types
 // =============================================================================
+
+/**
+ * Rules applied during periodicity detection.
+ */
+export type PeriodicityRule =
+	| 'base_period' // sin(x) has period 2π
+	| 'scaling' // sin(2x) has period π (2π/2)
+	| 'translation' // sin(x + a) has same period as sin(x)
+	| 'even_power' // sin²(x) has period π (halved by antisymmetry)
+	| 'odd_power' // sin³(x) has period 2π (unchanged)
+	| 'product_antisymmetry' // sin(x)·cos(x) has period π
+	| 'quotient_antisymmetry' // sin(x)/cos(x) has period π
+	| 'absolute_value' // |sin(x)| has period π
+	| 'step_function' // floor(x) has period 1
+	| 'composition' // sin(sin(x)) inherits period from inner
+	| 'exponential' // a^{sin(x)} inherits period
+	| 'sum_lcm' // sin(x) + cos(x) → LCM of periods
+	| 'constant_offset' // sin(x) + 1 has same period
+	| 'constant_factor' // 2·sin(x) has same period
+	| 'not_periodic'; // Expression is not periodic
+
+/**
+ * A pedagogical step explaining periodicity reasoning.
+ */
+export interface PeriodicityStep {
+	/** Unique step identifier */
+	readonly id: number;
+
+	/** Rule applied in this step */
+	readonly rule: PeriodicityRule;
+
+	/** Human-readable description in French */
+	readonly description: string;
+
+	/** Mathematical detail (LaTeX) */
+	readonly detail?: string;
+
+	/** Minimum verbosity level to include this step */
+	readonly verbosityLevel: Verbosity;
+}
 
 /**
  * Result of periodicity detection
@@ -38,6 +81,75 @@ export interface PeriodicityResult {
 
 	/** Reason for the result */
 	readonly reason?: string;
+
+	/** Pedagogical explanation steps */
+	readonly steps?: readonly PeriodicityStep[];
+}
+
+// =============================================================================
+// Rule Descriptions (French)
+// =============================================================================
+
+/**
+ * French descriptions for periodicity rules.
+ */
+const RULE_DESCRIPTIONS: Record<PeriodicityRule, string> = {
+	base_period: 'Période de base de la fonction',
+	scaling: "Dilatation de l'argument",
+	translation: "Translation de l'argument (période inchangée)",
+	even_power: 'Puissance paire : la période est divisée par 2',
+	odd_power: 'Puissance impaire : la période est inchangée',
+	product_antisymmetry: 'Produit de fonctions antisymétriques : période divisée par 2',
+	quotient_antisymmetry: 'Quotient de fonctions antisymétriques : période divisée par 2',
+	absolute_value: "Valeur absolue d'une fonction antisymétrique : période divisée par 2",
+	step_function: 'Fonction en escalier : période 1',
+	composition: 'Composition : la période est héritée de la fonction intérieure',
+	exponential: "Exponentielle d'une fonction périodique : même période",
+	sum_lcm: 'Somme de fonctions périodiques : PPCM des périodes',
+	constant_offset: 'Addition de constante : période inchangée',
+	constant_factor: 'Multiplication par constante : période inchangée',
+	not_periodic: "L'expression n'est pas périodique"
+};
+
+// =============================================================================
+// Step Accumulator
+// =============================================================================
+
+/**
+ * Accumulates pedagogical steps during detection.
+ */
+class StepAccumulator {
+	private steps: PeriodicityStep[] = [];
+	private nextId = 1;
+
+	/**
+	 * Add a step to the accumulator.
+	 */
+	add(rule: PeriodicityRule, detail?: string, verbosityLevel: Verbosity = 'summarized'): void {
+		this.steps.push({
+			id: this.nextId++,
+			rule,
+			description: RULE_DESCRIPTIONS[rule],
+			detail,
+			verbosityLevel
+		});
+	}
+
+	/**
+	 * Get all accumulated steps.
+	 */
+	getSteps(): readonly PeriodicityStep[] {
+		return this.steps;
+	}
+
+	/**
+	 * Get steps filtered by verbosity level.
+	 */
+	getStepsFiltered(verbosity: Verbosity): readonly PeriodicityStep[] {
+		if (verbosity === 'result') return [];
+		const order = { result: 0, summarized: 1, detailed: 2 };
+		return this.steps.filter((s) => order[s.verbosityLevel] <= order[verbosity]);
+	}
 }
 
 // =============================================================================
@@ -101,132 +213,6 @@ function getBasePeriod(funcName: string): MathNode | null {
 // =============================================================================
 // Helper Functions
 // =============================================================================
-
-/**
- * Check if a node is the target variable.
- */
-function isTargetVariable(node: MathNode, variable: string): boolean {
-	if (node.type === 'variable') return node.name === variable;
-	if (node.type === 'greek') return node.letter === variable;
-	return false;
-}
-
-/**
- * Extract linear coefficient from expression of form (a*x + b) or (x*a + b).
- * Returns { coefficient, offset } where expression = coefficient * x + offset.
- * Returns null if not a linear expression in the variable.
- */
-function extractLinearForm(
-	node: MathNode,
-	variable: string
-): { coefficient: MathNode; offset: MathNode | null } | null {
-	// Just the variable: coefficient = 1
-	if (isTargetVariable(node, variable)) {
-		return { coefficient: number('1'), offset: null };
-	}
-
-	// Multiplication: a*x or x*a
-	if (isMultiplication(node)) {
-		// Check left * right
-		if (isTargetVariable(node.left, variable) && !getVariables(node.right).has(variable)) {
-			return { coefficient: node.right, offset: null };
-		}
-		if (isTargetVariable(node.right, variable) && !getVariables(node.left).has(variable)) {
-			return { coefficient: node.left, offset: null };
-		}
-
-		// Nested: (a*x)*b or a*(x*b) etc.
-		const leftLinear = extractLinearForm(node.left, variable);
-		if (leftLinear && !getVariables(node.right).has(variable)) {
-			return {
-				coefficient: multiply(leftLinear.coefficient, node.right, 'implicit'),
-				offset: leftLinear.offset ? multiply(leftLinear.offset, node.right, 'implicit') : null
-			};
-		}
-
-		const rightLinear = extractLinearForm(node.right, variable);
-		if (rightLinear && !getVariables(node.left).has(variable)) {
-			return {
-				coefficient: multiply(node.left, rightLinear.coefficient, 'implicit'),
-				offset: rightLinear.offset ? multiply(node.left, rightLinear.offset, 'implicit') : null
-			};
-		}
-	}
-
-	// Addition: expr + constant or constant + expr
-	if (isAddition(node)) {
-		const leftVars = getVariables(node.left);
-		const rightVars = getVariables(node.right);
-
-		if (leftVars.has(variable) && !rightVars.has(variable)) {
-			const leftLinear = extractLinearForm(node.left, variable);
-			if (leftLinear) {
-				return {
-					coefficient: leftLinear.coefficient,
-					offset: leftLinear.offset
-						? { type: 'addition', left: leftLinear.offset, right: node.right }
-						: node.right
-				};
-			}
-		}
-
-		if (rightVars.has(variable) && !leftVars.has(variable)) {
-			const rightLinear = extractLinearForm(node.right, variable);
-			if (rightLinear) {
-				return {
-					coefficient: rightLinear.coefficient,
-					offset: rightLinear.offset
-						? { type: 'addition', left: node.left, right: rightLinear.offset }
-						: node.left
-				};
-			}
-		}
-	}
-
-	// Subtraction: expr - constant
-	if (isSubtraction(node)) {
-		const leftVars = getVariables(node.left);
-		const rightVars = getVariables(node.right);
-
-		if (leftVars.has(variable) && !rightVars.has(variable)) {
-			const leftLinear = extractLinearForm(node.left, variable);
-			if (leftLinear) {
-				// Combine existing offset with the subtracted constant
-				const negRight: MathNode = { type: 'opposite', operand: node.right };
-				const newOffset = leftLinear.offset
-					? { type: 'addition' as const, left: leftLinear.offset, right: negRight }
-					: negRight;
-				return {
-					coefficient: leftLinear.coefficient,
-					offset: newOffset
-				};
-			}
-		}
-	}
-
-	// Division: x/k => coefficient = 1/k
-	if (isDivision(node)) {
-		const numVars = getVariables(node.numerator);
-		const denVars = getVariables(node.denominator);
-
-		if (numVars.has(variable) && !denVars.has(variable)) {
-			const numLinear = extractLinearForm(node.numerator, variable);
-			if (numLinear) {
-				return {
-					coefficient: divide(numLinear.coefficient, node.denominator, 'fraction'),
-					offset: numLinear.offset ? divide(numLinear.offset, node.denominator, 'fraction') : null
-				};
-			}
-		}
-	}
-
-	// Delimiter (parentheses)
-	if (node.type === 'delimiter') {
-		return extractLinearForm(node.content, variable);
-	}
-
-	return null;
-}
 
 /**
  * Divide a period by a coefficient.
@@ -380,6 +366,17 @@ interface InternalPeriodResult {
 }
 
 /**
+ * Format a period as LaTeX string for step details.
+ */
+function formatPeriod(period: MathNode): string {
+	try {
+		return toLatex(period);
+	} catch {
+		return '?';
+	}
+}
+
+/**
  * Functions with half-period antisymmetry: f(x + T/2) = -f(x)
  * sin(x + π) = -sin(x), cos(x + π) = -cos(x), etc.
  */
@@ -388,8 +385,16 @@ const FUNCTIONS_WITH_ANTISYMMETRY = new Set(['sin', 'cos', 'sec', 'csc']);
 /**
  * Detect periodicity of a function node.
  * Returns the period if found, null otherwise.
+ *
+ * @param node - The node to analyze
+ * @param variable - The variable to check periodicity for
+ * @param steps - Step accumulator for pedagogical explanations
  */
-function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodResult | null {
+function detectPeriodForNode(
+	node: MathNode,
+	variable: string,
+	steps: StepAccumulator
+): InternalPeriodResult | null {
 	// Check if expression contains the variable
 	const vars = getVariables(node);
 	if (!vars.has(variable)) {
@@ -411,13 +416,18 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 			// If f has half-period antisymmetry, |f| has half the period
 			// |sin(x)| has period π because |sin(x + π)| = |-sin(x)| = |sin(x)|
 			if (node.name === 'abs') {
-				const argResult = detectPeriodForNode(arg, variable);
+				const argResult = detectPeriodForNode(arg, variable, steps);
 				if (argResult) {
 					if (argResult.hasHalfPeriodAntisymmetry) {
 						// Period halves for absolute value of antisymmetric function
 						const minimalPeriodNumeric = argResult.periodNumeric / 2;
+						const newPeriod = halveSymbolicPeriod(argResult.period, argResult.periodNumeric);
+						steps.add(
+							'absolute_value',
+							`|f(${variable})| où f est antisymétrique en ${formatPeriod(argResult.period)}/2 → période ${formatPeriod(newPeriod)}`
+						);
 						return {
-							period: halveSymbolicPeriod(argResult.period, argResult.periodNumeric),
+							period: newPeriod,
 							periodNumeric: minimalPeriodNumeric,
 							hasHalfPeriodAntisymmetry: false // |f| is always non-negative, no antisymmetry
 						};
@@ -441,6 +451,10 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 					const period = dividePeriod(STEP_FUNCTION_PERIOD, linearForm.coefficient);
 					const periodNumeric = periodToNumeric(period);
 					if (periodNumeric !== null) {
+						steps.add(
+							'step_function',
+							`\\${node.name}(${variable}) a pour période ${formatPeriod(period)}`
+						);
 						return {
 							period,
 							periodNumeric,
@@ -449,8 +463,13 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 					}
 				}
 				// Non-linear argument: check if argument is periodic
-				const argResult = detectPeriodForNode(arg, variable);
+				const argResult = detectPeriodForNode(arg, variable, steps);
 				if (argResult) {
+					steps.add(
+						'composition',
+						`\\${node.name}(g(${variable})) hérite la période de g`,
+						'detailed'
+					);
 					return {
 						...argResult,
 						hasHalfPeriodAntisymmetry: false
@@ -471,6 +490,29 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 					return null;
 				}
 
+				// Record base period step
+				steps.add(
+					'base_period',
+					`\\${node.name}(${variable}) a pour période de base ${formatPeriod(basePeriod)}`
+				);
+
+				// Record scaling if coefficient ≠ 1
+				if (!isNumber(linearForm.coefficient) || linearForm.coefficient.value !== '1') {
+					steps.add(
+						'scaling',
+						`Coefficient ${formatPeriod(linearForm.coefficient)} → période ${formatPeriod(period)}`
+					);
+				}
+
+				// Record translation if offset exists
+				if (linearForm.offset !== null) {
+					steps.add(
+						'translation',
+						`Translation par ${formatPeriod(linearForm.offset)} : période inchangée`,
+						'detailed'
+					);
+				}
+
 				// Track antisymmetry for minimal period computation
 				let hasHalfPeriodAntisymmetry = FUNCTIONS_WITH_ANTISYMMETRY.has(node.name);
 
@@ -489,12 +531,22 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 						// If function has antisymmetry and power is even, period halves
 						// sin²(x + π) = (-sin(x))² = sin²(x), so period is π
 						if (hasHalfPeriodAntisymmetry && n % 2 === 0) {
+							const oldPeriod = period;
 							period = halveSymbolicPeriod(period, periodNumeric);
 							periodNumeric = periodNumeric / 2;
 							hasHalfPeriodAntisymmetry = false; // antisymmetry lost for even powers
+							steps.add(
+								'even_power',
+								`Puissance ${n} (paire) : f(${variable} + T/2) = -f(${variable}) donc f^${n}(${variable} + T/2) = f^${n}(${variable}). Période ${formatPeriod(oldPeriod)} → ${formatPeriod(period)}`
+							);
 						} else if (n % 2 === 1) {
 							// Odd power: antisymmetry preserved
 							// sin³(x + π) = (-sin(x))³ = -sin³(x)
+							steps.add(
+								'odd_power',
+								`Puissance ${n} (impaire) : l'antisymétrie est préservée, période inchangée`,
+								'detailed'
+							);
 						}
 					} else {
 						// Non-integer power: antisymmetry lost
@@ -508,13 +560,18 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 			// Non-linear argument: check if argument is itself periodic
 			// f(g(x)) where g(x) has period T → f(g(x)) also has period T
 			// Example: sin(sin(x)) has period 2π because sin(x) has period 2π
-			const argResult = detectPeriodForNode(arg, variable);
+			const argResult = detectPeriodForNode(arg, variable, steps);
 			if (argResult) {
 				// Composition: f(g(x)) inherits period from g(x)
 				// Note: antisymmetry is generally lost in composition
 				// sin(sin(x + π)) = sin(-sin(x)) ≠ -sin(sin(x)) in general
 				let { period, periodNumeric } = argResult;
 				const hasHalfPeriodAntisymmetry = false;
+
+				steps.add(
+					'composition',
+					`\\${node.name}(g(${variable})) : la période ${formatPeriod(period)} est héritée de l'argument`
+				);
 
 				// Handle power on function
 				if (node.power !== undefined) {
@@ -531,6 +588,11 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 						// sin²(g(x)) where g has antisymmetry - period halves
 						period = halveSymbolicPeriod(period, periodNumeric);
 						periodNumeric = periodNumeric / 2;
+						steps.add(
+							'even_power',
+							`Puissance paire sur composition antisymétrique → période divisée par 2`,
+							'detailed'
+						);
 					}
 				}
 
@@ -543,8 +605,8 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 		case 'addition':
 		case 'subtraction': {
 			// For sum/difference, find LCM of periods
-			const leftResult = detectPeriodForNode(node.left, variable);
-			const rightResult = detectPeriodForNode(node.right, variable);
+			const leftResult = detectPeriodForNode(node.left, variable, steps);
+			const rightResult = detectPeriodForNode(node.right, variable, steps);
 
 			if (leftResult && rightResult) {
 				const combinedNumeric = combinePeriods(leftResult.periodNumeric, rightResult.periodNumeric);
@@ -565,6 +627,11 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 						rightResult.periodNumeric
 					);
 
+					steps.add(
+						'sum_lcm',
+						`Somme de fonctions périodiques : PPCM(${formatPeriod(leftResult.period)}, ${formatPeriod(rightResult.period)}) = ${formatPeriod(symbolicPeriod)}`
+					);
+
 					return {
 						period: symbolicPeriod,
 						periodNumeric: combinedNumeric,
@@ -572,12 +639,17 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 					};
 				}
 				// Incommensurable periods - not periodic
+				steps.add(
+					'not_periodic',
+					`Périodes ${formatPeriod(leftResult.period)} et ${formatPeriod(rightResult.period)} incommensurables`
+				);
 				return null;
 			}
 
 			if (leftResult && !getVariables(node.right).has(variable)) {
 				// f(x) + c has same period as f(x), but loses antisymmetry (unless c = 0)
 				// sin(x) + 1: (sin + 1)(x + π) = -sin(x) + 1 ≠ -(sin(x) + 1)
+				steps.add('constant_offset', `f(${variable}) + c : période inchangée`, 'detailed');
 				return {
 					...leftResult,
 					hasHalfPeriodAntisymmetry: false
@@ -586,6 +658,11 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 
 			if (rightResult && !getVariables(node.left).has(variable)) {
 				// c + f(x) or c - f(x) has same period as f(x), but loses antisymmetry
+				steps.add(
+					'constant_offset',
+					`c ${node.type === 'subtraction' ? '-' : '+'} f(${variable}) : période inchangée`,
+					'detailed'
+				);
 				return {
 					...rightResult,
 					hasHalfPeriodAntisymmetry: false
@@ -602,17 +679,25 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 
 			if (!leftVars.has(variable) && rightVars.has(variable)) {
 				// c * f(x): antisymmetry preserved (if c ≠ 0)
-				return detectPeriodForNode(node.right, variable);
+				const result = detectPeriodForNode(node.right, variable, steps);
+				if (result) {
+					steps.add('constant_factor', `c \\cdot f(${variable}) : période inchangée`, 'detailed');
+				}
+				return result;
 			}
 
 			if (leftVars.has(variable) && !rightVars.has(variable)) {
 				// f(x) * c: antisymmetry preserved (if c ≠ 0)
-				return detectPeriodForNode(node.left, variable);
+				const result = detectPeriodForNode(node.left, variable, steps);
+				if (result) {
+					steps.add('constant_factor', `f(${variable}) \\cdot c : période inchangée`, 'detailed');
+				}
+				return result;
 			}
 
 			// Both sides have variable - product of periodic functions
-			const leftResult = detectPeriodForNode(node.left, variable);
-			const rightResult = detectPeriodForNode(node.right, variable);
+			const leftResult = detectPeriodForNode(node.left, variable, steps);
+			const rightResult = detectPeriodForNode(node.right, variable, steps);
 
 			if (leftResult && rightResult) {
 				// Product of periodic functions with periods T1 and T2
@@ -629,6 +714,10 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 					if (samePeriod && bothAntisymmetric) {
 						const minimalPeriodNumeric = combinedNumeric / 2;
 						const symbolicPeriod = halveSymbolicPeriod(leftResult.period, leftResult.periodNumeric);
+						steps.add(
+							'product_antisymmetry',
+							`f(${variable}) \\cdot g(${variable}) : les deux sont antisymétriques en T/2, donc (f \\cdot g)(${variable} + T/2) = (-f)(−g) = fg. Période ${formatPeriod(leftResult.period)} → ${formatPeriod(symbolicPeriod)}`
+						);
 						return {
 							period: symbolicPeriod,
 							periodNumeric: minimalPeriodNumeric,
@@ -642,6 +731,12 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 						leftResult.periodNumeric,
 						rightResult.period,
 						rightResult.periodNumeric
+					);
+
+					steps.add(
+						'sum_lcm',
+						`Produit de fonctions périodiques : PPCM = ${formatPeriod(symbolicPeriod)}`,
+						'detailed'
 					);
 
 					return {
@@ -663,19 +758,27 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 
 			if (numVars.has(variable) && !denVars.has(variable)) {
 				// f(x) / c: antisymmetry preserved
-				return detectPeriodForNode(node.numerator, variable);
+				const result = detectPeriodForNode(node.numerator, variable, steps);
+				if (result) {
+					steps.add('constant_factor', `f(${variable}) / c : période inchangée`, 'detailed');
+				}
+				return result;
 			}
 
 			// c / f(x): antisymmetry preserved
 			// 1/f(x + T/2) = 1/(-f(x)) = -1/f(x) when f is antisymmetric
 			if (!numVars.has(variable) && denVars.has(variable)) {
-				return detectPeriodForNode(node.denominator, variable);
+				const result = detectPeriodForNode(node.denominator, variable, steps);
+				if (result) {
+					steps.add('constant_factor', `c / f(${variable}) : période inchangée`, 'detailed');
+				}
+				return result;
 			}
 
 			// f(x) / g(x): similar to multiplication
 			if (numVars.has(variable) && denVars.has(variable)) {
-				const numResult = detectPeriodForNode(node.numerator, variable);
-				const denResult = detectPeriodForNode(node.denominator, variable);
+				const numResult = detectPeriodForNode(node.numerator, variable, steps);
+				const denResult = detectPeriodForNode(node.denominator, variable, steps);
 
 				if (numResult && denResult) {
 					const combinedNumeric = combinePeriods(numResult.periodNumeric, denResult.periodNumeric);
@@ -689,6 +792,10 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 						if (samePeriod && bothAntisymmetric) {
 							const minimalPeriodNumeric = combinedNumeric / 2;
 							const symbolicPeriod = halveSymbolicPeriod(numResult.period, numResult.periodNumeric);
+							steps.add(
+								'quotient_antisymmetry',
+								`f(${variable}) / g(${variable}) : les deux sont antisymétriques, donc (f/g)(${variable} + T/2) = (-f)/(-g) = f/g. Période → ${formatPeriod(symbolicPeriod)}`
+							);
 							return {
 								period: symbolicPeriod,
 								periodNumeric: minimalPeriodNumeric,
@@ -725,7 +832,7 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 
 			// Case 1: f(x)^n - base is periodic, exponent is constant
 			if (baseVars.has(variable) && !expVars.has(variable)) {
-				const baseResult = detectPeriodForNode(node.base, variable);
+				const baseResult = detectPeriodForNode(node.base, variable, steps);
 				if (!baseResult) return null;
 
 				// Check if exponent is a positive integer
@@ -741,8 +848,13 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 					// Example: sin²(x) has period π, not 2π
 					if (baseResult.hasHalfPeriodAntisymmetry && n % 2 === 0) {
 						const minimalPeriodNumeric = baseResult.periodNumeric / 2;
+						const newPeriod = halveSymbolicPeriod(baseResult.period, baseResult.periodNumeric);
+						steps.add(
+							'even_power',
+							`f(${variable})^{${n}} : puissance paire, f(${variable} + T/2) = -f(${variable}), donc f^{${n}}(${variable} + T/2) = f^{${n}}(${variable}). Période ${formatPeriod(baseResult.period)} → ${formatPeriod(newPeriod)}`
+						);
 						return {
-							period: halveSymbolicPeriod(baseResult.period, baseResult.periodNumeric),
+							period: newPeriod,
 							periodNumeric: minimalPeriodNumeric,
 							hasHalfPeriodAntisymmetry: false // antisymmetry lost for even powers
 						};
@@ -750,6 +862,13 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 
 					// Odd power: antisymmetry preserved
 					// f(x + T/2)^n = (-f(x))^n = -f(x)^n when n is odd
+					if (n % 2 === 1) {
+						steps.add(
+							'odd_power',
+							`f(${variable})^{${n}} : puissance impaire, antisymétrie préservée`,
+							'detailed'
+						);
+					}
 					return {
 						...baseResult,
 						hasHalfPeriodAntisymmetry: baseResult.hasHalfPeriodAntisymmetry && n % 2 === 1
@@ -767,10 +886,14 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 			// Example: e^{sin(x)}, 2^{cos(x)}
 			// If f(x) has period T, then a^{f(x)} also has period T
 			if (!baseVars.has(variable) && expVars.has(variable)) {
-				const expResult = detectPeriodForNode(node.superscript, variable);
+				const expResult = detectPeriodForNode(node.superscript, variable, steps);
 				if (expResult) {
 					// a^{f(x)} inherits period from f(x), but loses antisymmetry
 					// a^{f(x + T/2)} = a^{-f(x)} ≠ -a^{f(x)} in general
+					steps.add(
+						'exponential',
+						`a^{f(${variable})} : hérite la période ${formatPeriod(expResult.period)} de l'exposant`
+					);
 					return {
 						...expResult,
 						hasHalfPeriodAntisymmetry: false
@@ -784,11 +907,11 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 		case 'opposite':
 		case 'positive':
 			// -f(x) and +f(x) preserve both period and antisymmetry
-			return detectPeriodForNode(node.operand, variable);
+			return detectPeriodForNode(node.operand, variable, steps);
 
 		case 'delimiter':
 			// (f(x)) preserves everything
-			return detectPeriodForNode(node.content, variable);
+			return detectPeriodForNode(node.content, variable, steps);
 
 		default:
 			return null;
@@ -800,26 +923,47 @@ function detectPeriodForNode(node: MathNode, variable: string): InternalPeriodRe
 // =============================================================================
 
 /**
+ * Options for periodicity detection.
+ */
+export interface PeriodicityOptions {
+	/** The variable to check (auto-detected if single variable) */
+	variable?: string;
+	/** Verbosity level for pedagogical steps (default: 'summarized') */
+	verbosity?: Verbosity;
+}
+
+/**
  * Detect whether an expression is periodic and compute its period.
  *
  * @param node - The expression to analyze
- * @param variable - The variable to check (auto-detected if single variable)
- * @returns PeriodicityResult with period information
+ * @param options - Detection options (variable, verbosity)
+ * @returns PeriodicityResult with period information and pedagogical steps
  *
  * @example
  * detectPeriodicity(parseLatex('\\sin(x)'))
- * // → { isPeriodic: true, period: 2π, periodNumeric: 6.283... }
+ * // → { isPeriodic: true, period: 2π, periodNumeric: 6.283..., steps: [...] }
  *
  * detectPeriodicity(parseLatex('\\sin(2x)'))
- * // → { isPeriodic: true, period: π, periodNumeric: 3.141... }
+ * // → { isPeriodic: true, period: π, periodNumeric: 3.141..., steps: [...] }
  *
  * detectPeriodicity(parseLatex('\\tan(x)'))
- * // → { isPeriodic: true, period: π, periodNumeric: 3.141... }
+ * // → { isPeriodic: true, period: π, periodNumeric: 3.141..., steps: [...] }
  *
  * detectPeriodicity(parseLatex('x^2'))
- * // → { isPeriodic: false, period: null }
+ * // → { isPeriodic: false, period: null, steps: [] }
  */
-export function detectPeriodicity(node: MathNode, variable?: string): PeriodicityResult {
+export function detectPeriodicity(
+	node: MathNode,
+	options?: PeriodicityOptions | string
+): PeriodicityResult {
+	// Handle legacy string argument for backwards compatibility
+	const opts: PeriodicityOptions =
+		typeof options === 'string' ? { variable: options } : (options ?? {});
+	const { variable, verbosity = 'summarized' } = opts;
+
+	// Create step accumulator
+	const steps = new StepAccumulator();
+
 	// Auto-detect variable (filter out known constants like π)
 	const vars = filterVariables(getVariables(node));
 
@@ -830,7 +974,8 @@ export function detectPeriodicity(node: MathNode, variable?: string): Periodicit
 			periodNumeric: null,
 			variable: variable ?? 'x',
 			confidence: 'proven',
-			reason: 'Constant expression'
+			reason: 'Expression constante',
+			steps: []
 		};
 	}
 
@@ -843,7 +988,8 @@ export function detectPeriodicity(node: MathNode, variable?: string): Periodicit
 			periodNumeric: null,
 			variable: '',
 			confidence: 'heuristic',
-			reason: 'Multiple variables, none specified'
+			reason: 'Plusieurs variables, aucune spécifiée',
+			steps: []
 		};
 	}
 
@@ -854,11 +1000,12 @@ export function detectPeriodicity(node: MathNode, variable?: string): Periodicit
 			periodNumeric: null,
 			variable: targetVar,
 			confidence: 'proven',
-			reason: `Expression is constant in ${targetVar}`
+			reason: `Expression constante en ${targetVar}`,
+			steps: []
 		};
 	}
 
-	const result = detectPeriodForNode(node, targetVar);
+	const result = detectPeriodForNode(node, targetVar, steps);
 
 	if (result) {
 		return {
@@ -867,7 +1014,8 @@ export function detectPeriodicity(node: MathNode, variable?: string): Periodicit
 			periodNumeric: result.periodNumeric,
 			variable: targetVar,
 			confidence: 'proven',
-			reason: 'Periodic function detected'
+			reason: 'Fonction périodique détectée',
+			steps: steps.getStepsFiltered(verbosity)
 		};
 	}
 
@@ -877,7 +1025,8 @@ export function detectPeriodicity(node: MathNode, variable?: string): Periodicit
 		periodNumeric: null,
 		variable: targetVar,
 		confidence: 'heuristic',
-		reason: 'No periodic structure detected'
+		reason: 'Aucune structure périodique détectée',
+		steps: steps.getStepsFiltered(verbosity)
 	};
 }
 
