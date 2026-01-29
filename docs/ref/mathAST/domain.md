@@ -669,6 +669,269 @@ src/lib/math/intervals/  (upstream module)
 └── format.ts      # formatEndpointValue, formatInterval
 ```
 
+## Future Improvements
+
+This section documents potential enhancements and extensions for the domain module.
+
+### High Priority
+
+#### Enhanced Pedagogical Steps
+
+Enrich the `DomainStep` type with more detailed reasoning for educational purposes:
+
+```typescript
+interface EnhancedDomainStep {
+	type: 'restriction' | 'intersection' | 'union' | 'simplification';
+	expression: string; // Expression concerned
+	constraint: string; // Applied constraint
+	reasoning: string; // French explanation
+	intermediateResult: Domain; // Intermediate result
+	rule: string; // Mathematical rule used
+}
+
+// Example for sqrt(ln(x)):
+// Step 1: "ln(x) est défini pour x > 0" → ]0, +∞[
+// Step 2: "sqrt(u) est défini pour u ≥ 0, donc ln(x) ≥ 0"
+// Step 3: "ln(x) ≥ 0 équivaut à x ≥ 1" → [1, +∞[
+```
+
+#### Interactive Validation
+
+For exercises where students must find the domain:
+
+```typescript
+interface DomainValidation {
+	isCorrect: boolean;
+	score: number; // 0-100%
+	feedback: string[]; // Pedagogical messages
+	missingParts: Domain; // What's missing
+	extraParts: Domain; // What's extra
+	hints: string[]; // Progressive hints
+}
+
+function validateStudentDomain(
+	studentAnswer: string, // "x > 0 et x ≠ 1"
+	correctDomain: Domain,
+	expression: MathNode
+): DomainValidation;
+```
+
+#### Common Mistake Detection
+
+Detect and explain typical student errors:
+
+```typescript
+interface CommonMistake {
+	type: 'forgot_denominator' | 'wrong_direction' | 'missing_case' | 'sign_error';
+	description: string;
+	correction: string;
+}
+
+function detectCommonMistakes(
+	studentDomain: Domain,
+	correctDomain: Domain,
+	expression: MathNode
+): CommonMistake[];
+```
+
+### Medium Priority
+
+#### Rational Preimage Solving
+
+Extend preimage solving to rational expressions:
+
+```typescript
+// Currently: linear, quadratic, cubic
+// Extension: rational expressions like (x-1)/(x+2)
+
+function solveRationalInequality(
+	numerator: MathNode,
+	denominator: MathNode,
+	relation: '>=' | '>' | '<=' | '<',
+	variable: string
+): Domain;
+
+// Example: ln((x-1)/(x+2)) requires (x-1)/(x+2) > 0
+// Sign table analysis → ]-∞, -2[ ∪ ]1, +∞[
+```
+
+#### Trigonometric Preimage Solving
+
+Handle trigonometric arguments:
+
+```typescript
+// sqrt(sin(x)) requires sin(x) >= 0
+// Solution: x ∈ [2kπ, π + 2kπ] for k ∈ ℤ
+
+function solveTrigonometricInequality(
+	funcName: 'sin' | 'cos' | 'tan',
+	argument: MathNode,
+	relation: '>=' | '>' | '<=' | '<',
+	bound: number,
+	variable: string
+): Domain; // Returns PeriodicExclusion or union of periodic intervals
+```
+
+#### LaTeX Export
+
+Format domains in LaTeX for MathLive integration:
+
+```typescript
+function formatDomainLatex(domain: Domain, variable: string): string;
+// Examples:
+// positiveReals() → "D_f = \\mathbb{R}^{*+}" or "]0, +\\infty["
+// nonZeroReals() → "D_f = \\mathbb{R} \\setminus \\{0\\}"
+
+function formatDomainMathML(domain: Domain, variable: string): string;
+
+function formatDomainSetBuilder(domain: Domain, variable: string): string;
+// Example: "{x ∈ ℝ | x > 0 ∧ x ≠ 1}"
+```
+
+#### Derivability Domain
+
+Compute domain where the function is differentiable (more restricted than definition domain):
+
+```typescript
+interface DerivabilityResult {
+	domain: Domain;
+	nonDerivablePoints: Array<{
+		point: EndpointValue;
+		reason: 'cusp' | 'corner' | 'vertical_tangent' | 'discontinuity';
+	}>;
+}
+
+function computeDerivabilityDomain(expr: MathNode, variable: string): DerivabilityResult;
+
+// Example: |x| is defined on ℝ but not derivable at x = 0 (corner)
+```
+
+### Low Priority
+
+#### Parametric Domains
+
+For exercises involving parameters ("study according to a"):
+
+```typescript
+interface ParametricDomain {
+	kind: 'parametric';
+	parameter: string; // 'a'
+	cases: Array<{
+		condition: string; // "a > 0"
+		domain: Domain;
+	}>;
+}
+
+// Example: sqrt(ax + b)
+// If a > 0: [-b/a, +∞[
+// If a < 0: ]-∞, -b/a]
+// If a = 0 and b >= 0: ℝ
+// If a = 0 and b < 0: ∅
+```
+
+#### Multivariate Domains
+
+For functions ℝ² → ℝ:
+
+```typescript
+interface MultiVariableDomain {
+	kind: 'multivariate';
+	variables: string[]; // ['x', 'y']
+	constraints: Constraint2D[]; // x² + y² < 1, y > 0, etc.
+}
+
+function computeDomain2D(expr: MathNode, variables: [string, string]): MultiVariableDomain;
+
+// Example: ln(1 - x² - y²)
+// Domain: open disk x² + y² < 1
+```
+
+#### Domain Visualization
+
+Integration with a graphing system:
+
+```typescript
+interface DomainVisualization {
+	// For single-variable functions
+	numberLine: {
+		intervals: Array<{ start: number; end: number; included: [boolean, boolean] }>;
+		excludedPoints: number[];
+	};
+
+	// For two-variable functions
+	region2D?: {
+		boundaries: Curve[];
+		fillCondition: string;
+	};
+}
+
+function visualizeDomain(domain: Domain): DomainVisualization;
+```
+
+### Performance Optimizations
+
+#### Domain Caching
+
+Memoization for repeated expressions:
+
+```typescript
+const domainCache = new WeakMap<MathNode, DomainResult>();
+
+function computeDomainCached(
+	expr: MathNode,
+	variable: string,
+	options?: DomainOptions
+): DomainResult;
+```
+
+#### Lazy Evaluation
+
+Compute domains only when needed:
+
+```typescript
+interface LazyDomain {
+	compute(): Domain;
+	readonly isComputed: boolean;
+	readonly cachedResult?: Domain;
+}
+```
+
+### Integration Enhancements
+
+#### Continuity Analysis
+
+Combine domain with continuity information:
+
+```typescript
+interface ContinuityInfo {
+	domain: Domain;
+	discontinuities: Array<{
+		point: EndpointValue;
+		type: 'removable' | 'jump' | 'infinite' | 'oscillating';
+		leftLimit?: number;
+		rightLimit?: number;
+	}>;
+}
+
+function analyzeContinuity(expr: MathNode, variable: string): ContinuityInfo;
+```
+
+### Priority Summary
+
+| Priority | Feature                        | Educational Value | Complexity |
+| -------- | ------------------------------ | ----------------- | ---------- |
+| 🔴 High  | Enhanced pedagogical steps     | ⭐⭐⭐⭐⭐        | Medium     |
+| 🔴 High  | Interactive validation         | ⭐⭐⭐⭐⭐        | Medium     |
+| 🔴 High  | Common mistake detection       | ⭐⭐⭐⭐⭐        | Medium     |
+| 🟠 Med   | Rational preimage solving      | ⭐⭐⭐⭐          | Medium     |
+| 🟠 Med   | LaTeX export                   | ⭐⭐⭐⭐          | Low        |
+| 🟠 Med   | Derivability domain            | ⭐⭐⭐⭐          | Medium     |
+| 🟡 Low   | Parametric domains             | ⭐⭐⭐            | High       |
+| 🟡 Low   | Trigonometric preimage solving | ⭐⭐⭐            | High       |
+| 🟡 Low   | Multivariate domains           | ⭐⭐              | High       |
+| ⚪ Opt   | Domain visualization           | ⭐⭐⭐            | High       |
+| ⚪ Opt   | Caching/lazy evaluation        | ⭐                | Low        |
+
 ## See Also
 
 - [Evaluation](./evaluation.md) - Numeric evaluation
