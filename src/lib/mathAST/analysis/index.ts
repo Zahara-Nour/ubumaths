@@ -113,3 +113,40 @@ export {
 
 // Domain analysis (re-exported from domain module)
 export * from '../domain';
+
+// Continuity analysis - Types
+export type {
+	DiscontinuityType,
+	DiscontinuitySource,
+	PeriodicDiscontinuityInfo,
+	Discontinuity,
+	ContinuityRule,
+	ContinuityStep,
+	ContinuityResult,
+	ContinuityOptions,
+	DiscontinuityCandidate
+} from './continuity-types';
+
+// Continuity analysis - Functions
+export {
+	analyzeContinuity,
+	findDiscontinuityCandidates,
+	checkContinuityAtPoint
+} from './continuity';
+
+export {
+	// Type descriptions
+	DISCONTINUITY_TYPE_DESCRIPTIONS,
+	getDiscontinuityTypeDescription,
+	// Source descriptions
+	DISCONTINUITY_SOURCE_DESCRIPTIONS,
+	getDiscontinuitySourceDescription,
+	// Rule descriptions
+	CONTINUITY_RULE_DESCRIPTIONS,
+	getContinuityRuleDescription,
+	// Full descriptions
+	describeDiscontinuity,
+	describeDiscontinuityShort,
+	describePeriodicPattern,
+	summarizeContinuityResult
+} from './continuity-steps';
