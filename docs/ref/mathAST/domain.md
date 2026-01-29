@@ -598,6 +598,63 @@ interface DomainViolation {
 	messageFr: string;
 	messageEn: string;
 }
+
+// Enhanced step types
+type DomainRule =
+	| 'sqrt_constraint' | 'ln_constraint' | 'division_constraint'
+	| 'arcsin_constraint' | 'arccos_constraint' | 'tan_constraint'
+	| 'power_constraint' | 'even_root_constraint'
+	| 'preimage_linear' | 'preimage_quadratic' | 'preimage_cubic'
+	| 'intersection' | 'union' | 'complement' | 'difference'
+	| 'composition' | 'simplification' | /* ... 30+ rules */;
+
+interface EnhancedDomainStep {
+	id: number;
+	rule: DomainRule;
+	description: string;           // French description
+	expression: string;            // Expression (LaTeX)
+	constraint: string;            // Applied constraint
+	intermediateDomain?: Domain;   // Intermediate result
+	reasoning?: string;            // Reasoning explanation
+	verbosityLevel: Verbosity;     // 'result' | 'summarized' | 'detailed'
+}
+
+// Student validation types
+interface DomainValidationResult {
+	isCorrect: boolean;
+	score: number;                 // 0-100
+	feedback: readonly string[];   // French feedback messages
+	missingParts?: Domain;         // What student is missing
+	extraParts?: Domain;           // What student added incorrectly
+	parseError?: string;           // Parse error if applicable
+}
+
+interface DomainComparison {
+	areEqual: boolean;
+	studentIsSubset: boolean;      // Student too restrictive
+	studentIsSuperset: boolean;    // Student too permissive
+	intersection: Domain;
+	studentMissing: Domain;
+	studentExtra: Domain;
+}
+
+type DomainMistakeType =
+	| 'forgot_denominator' | 'forgot_sqrt_constraint' | 'forgot_ln_constraint'
+	| 'wrong_inequality_direction' | 'wrong_bound_value'
+	| 'included_instead_excluded' | 'excluded_instead_included'
+	| 'missing_union_part' | 'extra_restriction'
+	| 'periodic_not_recognized' | 'composition_error'
+	| /* ... 18 types total */;
+
+interface DomainMistake {
+	type: DomainMistakeType;
+	description: string;           // French description
+	correction: string;            // Correction suggestion
+	severity: 'error' | 'warning';
+	relatedExpression?: string;
+}
+
+type HintLevel = 1 | 2 | 3;        // Vague → Specific
 ```
 
 ### Functions
@@ -626,6 +683,30 @@ interface DomainViolation {
 | `hasRestrictedDomain` | Check if function has restricted domain          |
 | `hasRestrictedRange`  | Check if function has restricted (bounded) range |
 
+### Student Validation Functions
+
+| Function                     | Description                                        |
+| ---------------------------- | -------------------------------------------------- |
+| `parseStudentDomain`         | Parse student input (intervals, conditions, sets)  |
+| `validateStudentDomain`      | Validate student answer with feedback and scoring  |
+| `compareDomains`             | Compare two domains (subset, superset, difference) |
+| `domainsAreEqual`            | Check if two domains are mathematically equal      |
+| `calculateDomainSimilarity`  | Calculate 0-100 similarity score                   |
+| `describeDomainRelationship` | French description of relationship                 |
+| `generateDomainHints`        | Generate progressive hints (levels 1-3)            |
+| `detectDomainMistakes`       | Detect common student mistakes                     |
+| `getMistakeDescription`      | Get French description for mistake type            |
+| `getMistakeSeverity`         | Get severity level for mistake type                |
+
+### Step Recording Functions
+
+| Function                   | Description                                      |
+| -------------------------- | ------------------------------------------------ |
+| `createDomainStepRecorder` | Create a step recorder for domain computation    |
+| `getNullRecorder`          | Get a no-op recorder (for when steps not needed) |
+| `getDomainRuleDescription` | Get French description for a domain rule         |
+| `applyDomainRuleTemplate`  | Apply template with values for a rule            |
+
 ### Range Helpers (Advanced)
 
 | Function                         | Description                             |
@@ -648,19 +729,31 @@ interface DomainViolation {
 
 ```
 src/lib/mathAST/domain/
-├── types.ts         # Domain type definitions (re-exports from intervals)
-├── factory.ts       # Factory functions (re-exports from intervals)
-├── algebra.ts       # Domain algebra (delegates to intervals)
-├── builtins.ts      # Built-in function domains and ranges
-├── compute.ts       # Domain computation
-├── range.ts         # Range (image) computation
-├── range-helpers.ts # Advanced range analysis (quadratic, piecewise, critical points)
-├── preimage.ts      # Inequality solving
-├── validate.ts      # Validation functions
-├── format.ts        # Formatting functions (delegates to intervals)
-├── errors.ts        # DomainError class
-├── index.ts         # Public exports
-└── __tests__/       # 750+ tests (comprehensive edge cases)
+├── types.ts              # Domain type definitions (re-exports from intervals)
+├── factory.ts            # Factory functions (re-exports from intervals)
+├── algebra.ts            # Domain algebra (delegates to intervals)
+├── builtins.ts           # Built-in function domains and ranges
+├── compute.ts            # Domain computation
+├── range.ts              # Range (image) computation
+├── range-helpers.ts      # Advanced range analysis (quadratic, piecewise, critical points)
+├── preimage.ts           # Inequality solving
+├── validate.ts           # Validation functions (isInDomain, getDomainViolations)
+├── format.ts             # Formatting functions (delegates to intervals)
+├── errors.ts             # DomainError class
+├── step-descriptions.ts  # French descriptions for domain rules
+├── domain-step-recorder.ts # Enhanced step recording
+├── index.ts              # Public exports
+├── validation/           # Student domain validation module
+│   ├── types.ts          # Validation types (DomainValidationResult, etc.)
+│   ├── parse-student-domain.ts  # Parse student input (intervals, conditions, sets)
+│   ├── compare-domains.ts       # Compare student vs correct domains
+│   ├── validate-student-domain.ts # Main validation with feedback
+│   ├── hints.ts          # Progressive hint generation (3 levels)
+│   ├── mistake-types.ts  # 18 mistake type definitions
+│   ├── mistake-descriptions.ts  # French mistake descriptions
+│   ├── detect-mistakes.ts       # Mistake detection logic
+│   └── index.ts          # Validation module exports
+└── __tests__/            # 850+ tests (comprehensive edge cases)
 
 src/lib/math/intervals/  (upstream module)
 ├── types.ts       # EndpointValue = MathNode, IntervalSet
@@ -669,70 +762,197 @@ src/lib/math/intervals/  (upstream module)
 └── format.ts      # formatEndpointValue, formatInterval
 ```
 
+## Student Domain Validation
+
+The domain module includes comprehensive validation for student answers in domain exercises.
+
+### Parsing Student Input
+
+Students can enter domains in multiple formats:
+
+```typescript
+import { parseStudentDomain } from '$lib/mathAST';
+
+// Interval notation (French)
+parseStudentDomain(']0, +∞[', 'x'); // ]0, +∞[
+parseStudentDomain('[0, 1]', 'x'); // [0, 1]
+parseStudentDomain(']-∞, 2[ ∪ ]3, +∞[', 'x'); // Union
+
+// Condition notation
+parseStudentDomain('x > 0', 'x'); // ]0, +∞[
+parseStudentDomain('x >= 0 et x != 1', 'x'); // [0, +∞[ \ {1}
+parseStudentDomain('0 < x <= 5', 'x'); // ]0, 5]
+
+// Set notation
+parseStudentDomain('ℝ', 'x'); // ℝ
+parseStudentDomain('ℝ*', 'x'); // ℝ \ {0}
+parseStudentDomain('ℝ₊', 'x'); // [0, +∞[
+parseStudentDomain('ℝ \\ {0}', 'x'); // ℝ \ {0}
+```
+
+### Validating Answers
+
+```typescript
+import { validateStudentDomain, computeDomain } from '$lib/mathAST';
+
+const expr = parseLatex('\\sqrt{x}');
+const correctDomain = computeDomain(expr, 'x').domain;
+
+const result = validateStudentDomain(']0, +∞[', correctDomain, expr);
+// {
+//   isCorrect: false,
+//   score: 85,
+//   feedback: [
+//     "Tu as exclu x = 0, mais √0 est défini et vaut 0.",
+//     "Valeurs manquantes : {0}"
+//   ],
+//   missingParts: { point: 0 }
+// }
+
+// Correct answer
+const correct = validateStudentDomain('[0, +∞[', correctDomain, expr);
+// { isCorrect: true, score: 100, feedback: ["Correct !"] }
+```
+
+### Comparing Domains
+
+```typescript
+import { compareDomains, domainsAreEqual, calculateDomainSimilarity } from '$lib/mathAST';
+
+const comparison = compareDomains(studentDomain, correctDomain);
+// {
+//   areEqual: false,
+//   studentIsSubset: true,      // Student too restrictive
+//   studentIsSuperset: false,   // Student too permissive
+//   intersection: Domain,
+//   studentMissing: Domain,     // What student is missing
+//   studentExtra: Domain        // What student added incorrectly
+// }
+
+domainsAreEqual(a, b); // boolean
+calculateDomainSimilarity(student, correct); // 0-100 score
+```
+
+### Progressive Hints
+
+Generate hints at 3 levels (vague → specific):
+
+```typescript
+import { generateDomainHints } from '$lib/mathAST';
+
+// Level 1: Vague
+generateDomainHints(sqrtExpr, null, correctDomain, { level: 1 });
+// ["Cette expression contient une racine carrée."]
+
+// Level 2: More specific
+generateDomainHints(sqrtExpr, null, correctDomain, { level: 2 });
+// ["Pour qu'une racine carrée soit définie, son argument doit être positif ou nul (≥ 0)."]
+
+// Level 3: Very specific (with student's answer)
+generateDomainHints(sqrtExpr, studentDomain, correctDomain, { level: 3 });
+// ["L'argument de la racine est x - 2. Il faut x - 2 ≥ 0.", "Valeurs manquantes : {2}"]
+```
+
+### Common Mistake Detection
+
+Detect and explain 18 types of student errors:
+
+```typescript
+import { detectDomainMistakes, getMistakeDescription } from '$lib/mathAST';
+
+const mistakes = detectDomainMistakes(studentDomain, correctDomain, expr, 'x');
+// [
+//   {
+//     type: 'forgot_sqrt_constraint',
+//     description: "Tu as oublié que √u nécessite u ≥ 0",
+//     correction: "Pour √(x-2), il faut x-2 ≥ 0, donc x ≥ 2",
+//     severity: 'error',
+//     relatedExpression: 'sqrt(x-2)'
+//   }
+// ]
+
+// Mistake types include:
+// - forgot_denominator, forgot_sqrt_constraint, forgot_ln_constraint
+// - wrong_inequality_direction, wrong_bound_value
+// - included_instead_excluded, excluded_instead_included
+// - missing_union_part, extra_restriction
+// - periodic_not_recognized, composition_error
+// - missing_excluded_point, extra_excluded_point
+// - boundary_inclusive_exclusive, forgot_arcsin_bounds
+// - forgot_arccos_bounds, forgot_tan_exclusions, preimage_error
+```
+
+## Enhanced Pedagogical Steps
+
+The domain computation can record detailed steps with typed rules:
+
+```typescript
+import { computeDomain, createDomainStepRecorder } from '$lib/mathAST';
+
+const recorder = createDomainStepRecorder();
+const result = computeDomain(parseLatex('\\sqrt{\\ln{x}}'), 'x', {
+	showSteps: true,
+	recorder
+});
+
+const steps = recorder.getSteps();
+// [
+//   {
+//     id: 1,
+//     rule: 'ln_constraint',
+//     description: 'Le logarithme nécessite un argument strictement positif',
+//     expression: 'ln(x)',
+//     constraint: 'x > 0',
+//     intermediateDomain: ]0, +∞[,
+//     verbosityLevel: 'detailed'
+//   },
+//   {
+//     id: 2,
+//     rule: 'sqrt_constraint',
+//     description: 'La racine carrée nécessite un argument positif ou nul',
+//     expression: 'sqrt(ln(x))',
+//     constraint: 'ln(x) >= 0',
+//     verbosityLevel: 'detailed'
+//   },
+//   {
+//     id: 3,
+//     rule: 'preimage_exponential',
+//     description: 'Résolution par fonction réciproque exponentielle',
+//     expression: 'ln(x) >= 0',
+//     constraint: 'x >= 1',
+//     intermediateDomain: [1, +∞[,
+//     verbosityLevel: 'detailed'
+//   }
+// ]
+
+// Filter by verbosity
+recorder.getStepsFiltered('summarized'); // Only summarized + result steps
+recorder.getStepsFiltered('result'); // Only final result
+```
+
+### Domain Rule Types
+
+30+ typed rules for pedagogical explanations:
+
+| Category    | Rules                                                                                                                                                                           |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Constraints | `sqrt_constraint`, `ln_constraint`, `division_constraint`, `arcsin_constraint`, `arccos_constraint`, `tan_constraint`, `power_constraint`, `even_root_constraint`               |
+| Preimage    | `preimage_linear`, `preimage_quadratic`, `preimage_cubic`, `preimage_polynomial`, `preimage_rational`, `preimage_trigonometric`, `preimage_exponential`, `preimage_logarithmic` |
+| Operations  | `intersection`, `union`, `complement`, `difference`, `exclude_points`                                                                                                           |
+| Other       | `composition`, `simplification`, `identity`, `empty_result`, `universal_result`, `periodic_constraint`, `absolute_value_constraint`, `piecewise_constraint`                     |
+
+```typescript
+import { getDomainRuleDescription, DOMAIN_RULE_DESCRIPTIONS } from '$lib/mathAST';
+
+getDomainRuleDescription('sqrt_constraint');
+// "La racine carrée nécessite un argument positif ou nul"
+
+// All descriptions available in DOMAIN_RULE_DESCRIPTIONS
+```
+
 ## Future Improvements
 
 This section documents potential enhancements and extensions for the domain module.
-
-### High Priority
-
-#### Enhanced Pedagogical Steps
-
-Enrich the `DomainStep` type with more detailed reasoning for educational purposes:
-
-```typescript
-interface EnhancedDomainStep {
-	type: 'restriction' | 'intersection' | 'union' | 'simplification';
-	expression: string; // Expression concerned
-	constraint: string; // Applied constraint
-	reasoning: string; // French explanation
-	intermediateResult: Domain; // Intermediate result
-	rule: string; // Mathematical rule used
-}
-
-// Example for sqrt(ln(x)):
-// Step 1: "ln(x) est défini pour x > 0" → ]0, +∞[
-// Step 2: "sqrt(u) est défini pour u ≥ 0, donc ln(x) ≥ 0"
-// Step 3: "ln(x) ≥ 0 équivaut à x ≥ 1" → [1, +∞[
-```
-
-#### Interactive Validation
-
-For exercises where students must find the domain:
-
-```typescript
-interface DomainValidation {
-	isCorrect: boolean;
-	score: number; // 0-100%
-	feedback: string[]; // Pedagogical messages
-	missingParts: Domain; // What's missing
-	extraParts: Domain; // What's extra
-	hints: string[]; // Progressive hints
-}
-
-function validateStudentDomain(
-	studentAnswer: string, // "x > 0 et x ≠ 1"
-	correctDomain: Domain,
-	expression: MathNode
-): DomainValidation;
-```
-
-#### Common Mistake Detection
-
-Detect and explain typical student errors:
-
-```typescript
-interface CommonMistake {
-	type: 'forgot_denominator' | 'wrong_direction' | 'missing_case' | 'sign_error';
-	description: string;
-	correction: string;
-}
-
-function detectCommonMistakes(
-	studentDomain: Domain,
-	correctDomain: Domain,
-	expression: MathNode
-): CommonMistake[];
-```
 
 ### Medium Priority
 
@@ -918,19 +1138,19 @@ function analyzeContinuity(expr: MathNode, variable: string): ContinuityInfo;
 
 ### Priority Summary
 
-| Priority | Feature                        | Educational Value | Complexity |
-| -------- | ------------------------------ | ----------------- | ---------- |
-| 🔴 High  | Enhanced pedagogical steps     | ⭐⭐⭐⭐⭐        | Medium     |
-| 🔴 High  | Interactive validation         | ⭐⭐⭐⭐⭐        | Medium     |
-| 🔴 High  | Common mistake detection       | ⭐⭐⭐⭐⭐        | Medium     |
-| 🟠 Med   | Rational preimage solving      | ⭐⭐⭐⭐          | Medium     |
-| 🟠 Med   | LaTeX export                   | ⭐⭐⭐⭐          | Low        |
-| 🟠 Med   | Derivability domain            | ⭐⭐⭐⭐          | Medium     |
-| 🟡 Low   | Parametric domains             | ⭐⭐⭐            | High       |
-| 🟡 Low   | Trigonometric preimage solving | ⭐⭐⭐            | High       |
-| 🟡 Low   | Multivariate domains           | ⭐⭐              | High       |
-| ⚪ Opt   | Domain visualization           | ⭐⭐⭐            | High       |
-| ⚪ Opt   | Caching/lazy evaluation        | ⭐                | Low        |
+| Priority    | Feature                        | Educational Value | Complexity | Status      |
+| ----------- | ------------------------------ | ----------------- | ---------- | ----------- |
+| ✅ Done     | Enhanced pedagogical steps     | ⭐⭐⭐⭐⭐        | Medium     | Implemented |
+| ✅ Done     | Interactive validation         | ⭐⭐⭐⭐⭐        | Medium     | Implemented |
+| ✅ Done     | Common mistake detection       | ⭐⭐⭐⭐⭐        | Medium     | Implemented |
+| 🟠 Med      | Rational preimage solving      | ⭐⭐⭐⭐          | Medium     | Planned     |
+| 🟠 Med      | LaTeX export                   | ⭐⭐⭐⭐          | Low        | Planned     |
+| 🟠 Med      | Derivability domain            | ⭐⭐⭐⭐          | Medium     | Planned     |
+| 🟡 Low      | Parametric domains             | ⭐⭐⭐            | High       | Planned     |
+| 🟡 Low      | Trigonometric preimage solving | ⭐⭐⭐            | High       | Planned     |
+| 🟡 Low      | Multivariate domains           | ⭐⭐              | High       | Planned     |
+| ⚪ Optional | Domain visualization           | ⭐⭐⭐            | High       | Planned     |
+| ⚪ Optional | Caching/lazy evaluation        | ⭐                | Low        | Planned     |
 
 ## See Also
 

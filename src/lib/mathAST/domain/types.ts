@@ -202,3 +202,16 @@ export interface RangeResult {
 	readonly inputDomain?: Domain;
 	readonly steps?: readonly RangeStep[];
 }
+
+// =============================================================================
+// Re-export Enhanced Step Types
+// =============================================================================
+
+export type { DomainRule, EnhancedDomainStep, EnhancedDomainResult } from './enhanced-step-types';
+
+export {
+	isConstraintRule,
+	isPreimageRule,
+	isOperationRule,
+	getConstraintRuleForFunction
+} from './enhanced-step-types';
