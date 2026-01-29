@@ -2,10 +2,21 @@
  * Tests for periodicity detection module
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { parseLatex } from '../../parser';
 import { func, variable } from '../../factory';
-import { detectPeriodicity, isPeriodic, getPeriod, getPeriodNumeric } from '../periodicity';
+import {
+	detectPeriodicity,
+	isPeriodic,
+	getPeriod,
+	getPeriodNumeric,
+	registerPeriodicFunction,
+	unregisterPeriodicFunction,
+	clearPeriodicFunctionRegistry,
+	getRegisteredPeriodicFunctions,
+	isRegisteredPeriodicFunction
+} from '../periodicity';
+import { PI as PI_NODE, TWO_PI as TWO_PI_NODE, number } from '../../factory';
 
 const PI = Math.PI;
 const TWO_PI = 2 * Math.PI;
@@ -497,5 +508,185 @@ describe('pedagogical steps', () => {
 		const result = detectPeriodicity(parseLatex('x^2'));
 		expect(result.steps).toBeDefined();
 		// Non-periodic expressions may have no steps or just a "not_periodic" step
+	});
+});
+
+describe('user-defined periodic functions', () => {
+	// Clean up after each test
+	afterEach(() => {
+		clearPeriodicFunctionRegistry();
+	});
+
+	describe('registerPeriodicFunction', () => {
+		it('should register a function with numeric period', () => {
+			registerPeriodicFunction('sawtooth', 1);
+			expect(isRegisteredPeriodicFunction('sawtooth')).toBe(true);
+
+			const registered = getRegisteredPeriodicFunctions();
+			expect(registered.has('sawtooth')).toBe(true);
+			const config = registered.get('sawtooth')!;
+			expect(config.hasHalfPeriodAntisymmetry).toBe(false);
+		});
+
+		it('should register a function with symbolic period (PI)', () => {
+			registerPeriodicFunction('myTrig', PI_NODE);
+			const registered = getRegisteredPeriodicFunctions();
+			const config = registered.get('myTrig')!;
+			// PI is stored as a MathNode, verify it evaluates correctly
+			expect(config.period).toBe(PI_NODE);
+		});
+
+		it('should register a function with antisymmetry', () => {
+			registerPeriodicFunction('wave', TWO_PI_NODE, { hasHalfPeriodAntisymmetry: true });
+			const registered = getRegisteredPeriodicFunctions();
+			const config = registered.get('wave')!;
+			expect(config.hasHalfPeriodAntisymmetry).toBe(true);
+		});
+
+		it('should register a function with description', () => {
+			registerPeriodicFunction('heartbeat', 1, {
+				description: 'Fonction de battement cardiaque'
+			});
+			const registered = getRegisteredPeriodicFunctions();
+			const config = registered.get('heartbeat')!;
+			expect(config.description).toBe('Fonction de battement cardiaque');
+		});
+	});
+
+	describe('unregisterPeriodicFunction', () => {
+		it('should unregister a previously registered function', () => {
+			registerPeriodicFunction('temp', 1);
+			expect(isRegisteredPeriodicFunction('temp')).toBe(true);
+
+			const removed = unregisterPeriodicFunction('temp');
+			expect(removed).toBe(true);
+			expect(isRegisteredPeriodicFunction('temp')).toBe(false);
+		});
+
+		it('should return false for non-existent function', () => {
+			const removed = unregisterPeriodicFunction('nonexistent');
+			expect(removed).toBe(false);
+		});
+	});
+
+	describe('clearPeriodicFunctionRegistry', () => {
+		it('should clear all registered functions', () => {
+			registerPeriodicFunction('func1', 1);
+			registerPeriodicFunction('func2', 2);
+			expect(getRegisteredPeriodicFunctions().size).toBe(2);
+
+			clearPeriodicFunctionRegistry();
+			expect(getRegisteredPeriodicFunctions().size).toBe(0);
+		});
+	});
+
+	describe('detectPeriodicity with user functions', () => {
+		it('should detect periodicity of user-defined function', () => {
+			registerPeriodicFunction('myWave', 1);
+			const expr = func('myWave', [variable('x')]);
+			const result = detectPeriodicity(expr);
+
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(1, 5);
+		});
+
+		it('should apply scaling to user-defined function: myWave(2x) has period 0.5', () => {
+			registerPeriodicFunction('myWave', 1);
+			const expr = func('myWave', [parseLatex('2x')]);
+			const result = detectPeriodicity(expr);
+
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(0.5, 5);
+		});
+
+		it('should detect user function with symbolic period (2π)', () => {
+			registerPeriodicFunction('myTrig', TWO_PI_NODE);
+			const expr = func('myTrig', [variable('x')]);
+			const result = detectPeriodicity(expr);
+
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(TWO_PI, 5);
+		});
+
+		it('should halve period for even power of antisymmetric user function', () => {
+			// myWave(x) with period 2π and antisymmetry → myWave²(x) has period π
+			registerPeriodicFunction('myWave', TWO_PI_NODE, { hasHalfPeriodAntisymmetry: true });
+
+			// Use func factory with power option
+			const exprWithPower = func('myWave', [variable('x')], { power: number('2') });
+
+			const result = detectPeriodicity(exprWithPower);
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI, 5);
+		});
+
+		it('should not halve period for non-antisymmetric user function with even power', () => {
+			// myWave(x) with period 2π but NO antisymmetry → myWave²(x) still has period 2π
+			registerPeriodicFunction('myWave', TWO_PI_NODE, { hasHalfPeriodAntisymmetry: false });
+			const exprWithPower = func('myWave', [variable('x')], { power: number('2') });
+
+			const result = detectPeriodicity(exprWithPower);
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(TWO_PI, 5);
+		});
+
+		it('should include user_function step in pedagogical output', () => {
+			registerPeriodicFunction('myPeriodic', 1, {
+				description: 'Ma fonction périodique'
+			});
+			const expr = func('myPeriodic', [variable('x')]);
+			const result = detectPeriodicity(expr);
+
+			expect(result.steps).toBeDefined();
+			const userStep = result.steps!.find((s) => s.rule === 'user_function');
+			expect(userStep).toBeDefined();
+			expect(userStep!.description).toContain('utilisateur');
+			expect(userStep!.detail).toContain('Ma fonction périodique');
+		});
+
+		it('should combine periods of user and built-in functions', () => {
+			// myWave(x) has period 1, sin(x) has period 2π
+			// These are incommensurable, so should return not periodic
+			registerPeriodicFunction('myWave', 1);
+			const sinExpr = parseLatex('\\sin(x)');
+			const userExpr = func('myWave', [variable('x')]);
+
+			// Create sum: myWave(x) + sin(x)
+			const sumExpr = {
+				type: 'addition' as const,
+				left: userExpr,
+				right: sinExpr
+			};
+
+			const result = detectPeriodicity(sumExpr);
+			// Periods 1 and 2π are incommensurable (ratio is irrational)
+			expect(result.isPeriodic).toBe(false);
+		});
+
+		it('should combine commensurable periods of two user functions', () => {
+			// f(x) has period 2, g(x) has period 3 → sum has period 6 (LCM)
+			registerPeriodicFunction('f', 2);
+			registerPeriodicFunction('g', 3);
+
+			const sumExpr = {
+				type: 'addition' as const,
+				left: func('f', [variable('x')]),
+				right: func('g', [variable('x')])
+			};
+
+			const result = detectPeriodicity(sumExpr);
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(6, 5);
+		});
+
+		it('should prioritize user registry over built-in functions', () => {
+			// Override sin with a different period (for testing purposes)
+			registerPeriodicFunction('sin', number('1'));
+			const expr = func('sin', [variable('x')]);
+			const result = detectPeriodicity(expr);
+
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(1, 5); // Should use user-defined period
+		});
 	});
 });

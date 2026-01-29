@@ -59,10 +59,18 @@ import {
 	isPeriodic,
 	getPeriod,
 	getPeriodNumeric,
+	// User-defined periodic functions
+	registerPeriodicFunction,
+	unregisterPeriodicFunction,
+	clearPeriodicFunctionRegistry,
+	getRegisteredPeriodicFunctions,
+	isRegisteredPeriodicFunction,
 	type PeriodicityResult,
 	type PeriodicityStep,
 	type PeriodicityRule,
 	type PeriodicityOptions,
+	type UserPeriodicFunction,
+	type RegisterFunctionOptions,
 
 	// Coefficient extraction utilities
 	extractLinearForm,
@@ -573,6 +581,7 @@ interface PeriodicityStep {
 
 type PeriodicityRule =
 	| 'base_period' // Période de base de la fonction
+	| 'user_function' // Fonction utilisateur définie
 	| 'scaling' // Dilatation de l'argument
 	| 'translation' // Translation (période inchangée)
 	| 'even_power' // Puissance paire → période ÷ 2
@@ -700,6 +709,135 @@ For f(g(x)) where g(x) is periodic with period T, the composition f(g(x)) also h
 | tan, cot           | π           | No               |
 
 **Note:** Hyperbolic functions (sinh, cosh, etc.) are NOT periodic on ℝ.
+
+### User-Defined Periodic Functions (Extensibility)
+
+Register custom periodic functions to extend the detection system:
+
+```typescript
+import {
+	registerPeriodicFunction,
+	unregisterPeriodicFunction,
+	clearPeriodicFunctionRegistry,
+	getRegisteredPeriodicFunctions,
+	isRegisteredPeriodicFunction
+} from '$lib/mathAST/analysis';
+import { PI, TWO_PI } from '$lib/mathAST/factory';
+```
+
+#### `registerPeriodicFunction(name, period, options?)`
+
+Register a user-defined periodic function.
+
+```typescript
+// Simple function with numeric period
+registerPeriodicFunction('sawtooth', 1);
+
+// Function with symbolic period (π)
+registerPeriodicFunction('myTrig', PI);
+
+// Function with antisymmetry (like sin)
+// When squared, period will be halved
+registerPeriodicFunction('wave', TWO_PI, { hasHalfPeriodAntisymmetry: true });
+
+// Function with description for pedagogical output
+registerPeriodicFunction('heartbeat', 1, {
+	description: 'Fonction de battement cardiaque'
+});
+```
+
+**Options:** `RegisterFunctionOptions`
+
+```typescript
+interface RegisterFunctionOptions {
+	hasHalfPeriodAntisymmetry?: boolean; // f(x + T/2) = -f(x), default: false
+	description?: string; // Custom description for pedagogical steps
+}
+```
+
+**Example with detection:**
+
+```typescript
+import { func, variable } from '$lib/mathAST/factory';
+
+registerPeriodicFunction('myWave', 1);
+const expr = func('myWave', [variable('x')]);
+
+detectPeriodicity(expr);
+// → { isPeriodic: true, periodNumeric: 1, steps: [{ rule: 'user_function', ... }] }
+
+// Scaling works automatically
+const scaled = func('myWave', [parseLatex('2x')]);
+detectPeriodicity(scaled);
+// → { isPeriodic: true, periodNumeric: 0.5, ... }
+```
+
+#### `unregisterPeriodicFunction(name)`
+
+Remove a registered function.
+
+```typescript
+unregisterPeriodicFunction('myWave'); // Returns true if existed
+```
+
+#### `clearPeriodicFunctionRegistry()`
+
+Remove all registered functions (useful for testing).
+
+```typescript
+clearPeriodicFunctionRegistry();
+```
+
+#### `getRegisteredPeriodicFunctions()`
+
+Get all registered functions as a readonly map.
+
+```typescript
+const registered = getRegisteredPeriodicFunctions();
+for (const [name, config] of registered) {
+	console.log(
+		`${name}: period = ${config.period}, antisymmetry = ${config.hasHalfPeriodAntisymmetry}`
+	);
+}
+```
+
+#### `isRegisteredPeriodicFunction(name)`
+
+Check if a function is registered.
+
+```typescript
+isRegisteredPeriodicFunction('myWave'); // true or false
+```
+
+#### User Function Priority
+
+User-registered functions take priority over built-in functions. This allows overriding:
+
+```typescript
+// Override sin with custom period (for testing)
+registerPeriodicFunction('sin', number('1'));
+detectPeriodicity(parseLatex('\\sin(x)'));
+// → { periodNumeric: 1, ... } (uses user-defined period)
+
+// Restore original behavior
+unregisterPeriodicFunction('sin');
+```
+
+#### Antisymmetry for Minimal Period
+
+If `hasHalfPeriodAntisymmetry: true`, even powers and products with other antisymmetric functions will have halved periods:
+
+```typescript
+registerPeriodicFunction('wave', TWO_PI, { hasHalfPeriodAntisymmetry: true });
+
+// wave²(x) has period π (not 2π)
+const squared = func('wave', [variable('x')], { power: number('2') });
+detectPeriodicity(squared);
+// → { periodNumeric: Math.PI, ... }
+
+// wave(x) · sin(x) has period π
+// (both antisymmetric with same period)
+```
 
 ---
 

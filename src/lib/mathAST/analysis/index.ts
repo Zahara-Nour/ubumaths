@@ -82,10 +82,18 @@ export {
 	isPeriodic,
 	getPeriod,
 	getPeriodNumeric,
+	// User-defined periodic functions
+	registerPeriodicFunction,
+	unregisterPeriodicFunction,
+	clearPeriodicFunctionRegistry,
+	getRegisteredPeriodicFunctions,
+	isRegisteredPeriodicFunction,
 	type PeriodicityResult,
 	type PeriodicityStep,
 	type PeriodicityRule,
-	type PeriodicityOptions
+	type PeriodicityOptions,
+	type UserPeriodicFunction,
+	type RegisterFunctionOptions
 } from './periodicity';
 
 // Coefficient extraction utilities
