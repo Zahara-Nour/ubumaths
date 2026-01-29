@@ -25,6 +25,7 @@ import { toLatex } from '../latex-generator';
  */
 export type PeriodicityRule =
 	| 'base_period' // sin(x) has period 2π
+	| 'user_function' // User-defined periodic function
 	| 'scaling' // sin(2x) has period π (2π/2)
 	| 'translation' // sin(x + a) has same period as sin(x)
 	| 'even_power' // sin²(x) has period π (halved by antisymmetry)
@@ -95,6 +96,7 @@ export interface PeriodicityResult {
  */
 const RULE_DESCRIPTIONS: Record<PeriodicityRule, string> = {
 	base_period: 'Période de base de la fonction',
+	user_function: 'Fonction utilisateur définie avec période personnalisée',
 	scaling: "Dilatation de l'argument",
 	translation: "Translation de l'argument (période inchangée)",
 	even_power: 'Puissance paire : la période est divisée par 2',
@@ -203,11 +205,163 @@ const FUNCTION_PERIODS: Map<string, MathNode> = new Map([
 const STEP_FUNCTION_PERIOD = number('1');
 const STEP_FUNCTIONS = new Set(['floor', 'ceil', 'frac']);
 
+// =============================================================================
+// User-Defined Periodic Functions Registry
+// =============================================================================
+
+/**
+ * Configuration for a user-defined periodic function.
+ */
+export interface UserPeriodicFunction {
+	/** The base period of the function (as MathNode) */
+	readonly period: MathNode;
+
+	/** Whether the function has half-period antisymmetry: f(x + T/2) = -f(x) */
+	readonly hasHalfPeriodAntisymmetry: boolean;
+
+	/** Optional description for pedagogical output */
+	readonly description?: string;
+}
+
+/**
+ * Options for registering a periodic function.
+ */
+export interface RegisterFunctionOptions {
+	/** Whether f(x + T/2) = -f(x), default: false */
+	hasHalfPeriodAntisymmetry?: boolean;
+
+	/** Optional description for steps */
+	description?: string;
+}
+
+/**
+ * Registry for user-defined periodic functions.
+ * Key is the function name, value is the function configuration.
+ */
+const userFunctionRegistry = new Map<string, UserPeriodicFunction>();
+
+/**
+ * Register a user-defined periodic function.
+ *
+ * @param name - The function name (e.g., 'myFunc')
+ * @param period - The period as a MathNode or number
+ * @param options - Optional configuration (antisymmetry, description)
+ *
+ * @example
+ * // Register a simple periodic function with period 1
+ * registerPeriodicFunction('sawtooth', 1);
+ *
+ * // Register a function with symbolic period π
+ * registerPeriodicFunction('myTrig', PI);
+ *
+ * // Register with antisymmetry (like sin)
+ * registerPeriodicFunction('wave', TWO_PI, { hasHalfPeriodAntisymmetry: true });
+ *
+ * // Register with description for pedagogical output
+ * registerPeriodicFunction('heartbeat', 1, {
+ *   description: 'Fonction de battement cardiaque'
+ * });
+ */
+export function registerPeriodicFunction(
+	name: string,
+	period: MathNode | number,
+	options: RegisterFunctionOptions = {}
+): void {
+	const periodNode = typeof period === 'number' ? number(String(period)) : period;
+
+	userFunctionRegistry.set(name, {
+		period: periodNode,
+		hasHalfPeriodAntisymmetry: options.hasHalfPeriodAntisymmetry ?? false,
+		description: options.description
+	});
+}
+
+/**
+ * Unregister a user-defined periodic function.
+ *
+ * @param name - The function name to unregister
+ * @returns true if the function was registered, false otherwise
+ *
+ * @example
+ * unregisterPeriodicFunction('myFunc');
+ */
+export function unregisterPeriodicFunction(name: string): boolean {
+	return userFunctionRegistry.delete(name);
+}
+
+/**
+ * Clear all user-defined periodic functions.
+ * Useful for testing or resetting state.
+ */
+export function clearPeriodicFunctionRegistry(): void {
+	userFunctionRegistry.clear();
+}
+
+/**
+ * Get all registered user-defined periodic functions.
+ *
+ * @returns Map of function names to their configurations
+ *
+ * @example
+ * const registered = getRegisteredPeriodicFunctions();
+ * for (const [name, config] of registered) {
+ *   console.log(`${name}: period = ${config.period}`);
+ * }
+ */
+export function getRegisteredPeriodicFunctions(): ReadonlyMap<string, UserPeriodicFunction> {
+	return userFunctionRegistry;
+}
+
+/**
+ * Check if a function is registered as user-defined.
+ *
+ * @param name - The function name to check
+ * @returns true if registered, false otherwise
+ */
+export function isRegisteredPeriodicFunction(name: string): boolean {
+	return userFunctionRegistry.has(name);
+}
+
+/**
+ * Get a user-defined periodic function by name.
+ *
+ * @param name - The function name
+ * @returns The function configuration, or undefined if not registered
+ */
+function getUserPeriodicFunction(name: string): UserPeriodicFunction | undefined {
+	return userFunctionRegistry.get(name);
+}
+
 /**
  * Get the base period of a known periodic function.
+ * Checks user registry first, then built-in functions.
  */
 function getBasePeriod(funcName: string): MathNode | null {
+	// Check user registry first
+	const userFunc = getUserPeriodicFunction(funcName);
+	if (userFunc) {
+		return userFunc.period;
+	}
+	// Fall back to built-in functions
 	return FUNCTION_PERIODS.get(funcName) ?? null;
+}
+
+/**
+ * Built-in functions with half-period antisymmetry: f(x + T/2) = -f(x)
+ * sin(x + π) = -sin(x), cos(x + π) = -cos(x), etc.
+ */
+const FUNCTIONS_WITH_ANTISYMMETRY = new Set(['sin', 'cos', 'sec', 'csc']);
+
+/**
+ * Check if a function has half-period antisymmetry.
+ * Checks user registry first, then built-in set.
+ */
+function hasAntisymmetry(funcName: string): boolean {
+	const userFunc = getUserPeriodicFunction(funcName);
+	if (userFunc) {
+		return userFunc.hasHalfPeriodAntisymmetry;
+	}
+	return FUNCTIONS_WITH_ANTISYMMETRY.has(funcName);
 }
 
 // =============================================================================
@@ -377,12 +531,6 @@ function formatPeriod(period: MathNode): string {
 }
 
 /**
- * Functions with half-period antisymmetry: f(x + T/2) = -f(x)
- * sin(x + π) = -sin(x), cos(x + π) = -cos(x), etc.
- */
-const FUNCTIONS_WITH_ANTISYMMETRY = new Set(['sin', 'cos', 'sec', 'csc']);
-
-/**
  * Detect periodicity of a function node.
  * Returns the period if found, null otherwise.
  *
@@ -490,11 +638,20 @@ function detectPeriodForNode(
 					return null;
 				}
 
+				// Check if this is a user-defined function
+				const userFunc = getUserPeriodicFunction(node.name);
+				const isUserDefined = userFunc !== undefined;
+
 				// Record base period step
-				steps.add(
-					'base_period',
-					`\\${node.name}(${variable}) a pour période de base ${formatPeriod(basePeriod)}`
-				);
+				if (isUserDefined) {
+					const desc = userFunc.description ?? `fonction utilisateur ${node.name}`;
+					steps.add('user_function', `${desc} : période de base ${formatPeriod(basePeriod)}`);
+				} else {
+					steps.add(
+						'base_period',
+						`\\${node.name}(${variable}) a pour période de base ${formatPeriod(basePeriod)}`
+					);
+				}
 
 				// Record scaling if coefficient ≠ 1
 				if (!isNumber(linearForm.coefficient) || linearForm.coefficient.value !== '1') {
@@ -514,7 +671,8 @@ function detectPeriodForNode(
 				}
 
 				// Track antisymmetry for minimal period computation
-				let hasHalfPeriodAntisymmetry = FUNCTIONS_WITH_ANTISYMMETRY.has(node.name);
+				// Use hasAntisymmetry() which checks both user and built-in functions
+				let hasHalfPeriodAntisymmetry = hasAntisymmetry(node.name);
 
 				// Handle function with power: sin^n(x), cos^n(x), etc.
 				// FunctionNode has optional power field for \sin^2(x) syntax
