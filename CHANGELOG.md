@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.31](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.30...v0.7.31) (2026-01-29)
+
+### 🐛 Bug Fixes
+
+- **migration:** convert inline $$...$$ to $...$ for ubumark compatibility ([4fd3a6d](https://github.com/Zahara-Nour/ubumaths/commit/4fd3a6d88252b053439b14f00bff540845c24d5e))
+- **questions:** add shared column and fix single-variation corrections ([6722089](https://github.com/Zahara-Nour/ubumaths/commit/6722089f42909a3e7937a5a4c1b7c42b3148e3c3))
+
+### 📚 Documentation
+
+- **mathAST:** add analysis module documentation ([075ed9a](https://github.com/Zahara-Nour/ubumaths/commit/075ed9a0775a8b341aeb88e33c2da1f6fbb21e85))
+- **mathAST:** add detailed comparison guide with Compute Engine ([9d84a5f](https://github.com/Zahara-Nour/ubumaths/commit/9d84a5f961d2a95bbbd49daab6691ad0a373f09a))
+- **mathAST:** add future improvements section to domain module ([7af585e](https://github.com/Zahara-Nour/ubumaths/commit/7af585e7ace64b1738f0b07878b12b7245c4fb0a))
+- **mathAST:** add identities module documentation ([ee18fdd](https://github.com/Zahara-Nour/ubumaths/commit/ee18fdd334aaeab978cab6857820d639d60f6cb5))
+- **mathAST:** add numeric type system documentation ([375a5cb](https://github.com/Zahara-Nour/ubumaths/commit/375a5cb1156028221ba3983ae46314f3f71d2924))
+- **mathAST:** add numtype to Compute Engine comparison ([5524e03](https://github.com/Zahara-Nour/ubumaths/commit/5524e036366feca6888431280bb8cc9f8f8a5f07))
+- **mathAST:** consolidate identity documentation with cross-references ([c6a08cd](https://github.com/Zahara-Nour/ubumaths/commit/c6a08cdf87ecb3a4b473f2e01b75d5cf82c72458))
+- **mathAST:** update pattern docs to new syntax ([02fe377](https://github.com/Zahara-Nour/ubumaths/commit/02fe37723e44445a67e041c0d4e8afa514ed77d1))
+- **migration:** document math delimiter fix in status doc ([a10efd7](https://github.com/Zahara-Nour/ubumaths/commit/a10efd7dcad2dbf4b3f3a7b93cfb9ad74cc37660))
+
+### ✨ Features
+
+- **mathAST:** add absolute value and step functions to periodicity detection ([59daa4f](https://github.com/Zahara-Nour/ubumaths/commit/59daa4f9873a1f0e99e054482b3adfecaa7a739b))
+- **mathAST:** add analysis modules for polynomials and structures ([82af356](https://github.com/Zahara-Nour/ubumaths/commit/82af356983042c0692816fca9a7a5360ed6e5a6e))
+- **mathAST:** add angle addition formulas to trig-identities ([3c1fa01](https://github.com/Zahara-Nour/ubumaths/commit/3c1fa017f9b77589bc73fa054ea29bbf29db13e3))
+- **mathAST:** add comprehensive trig identity transformations ([e26c5c8](https://github.com/Zahara-Nour/ubumaths/commit/e26c5c8357d7a47711dee19c36dc2fc48aa011ab))
+- **mathAST:** add continuity analysis module ([1b4f749](https://github.com/Zahara-Nour/ubumaths/commit/1b4f7496045e3607a17b99c05ae38acb897ab5f5))
+- **mathAST:** add domain symmetry check to symmetry detection ([04f3bb6](https://github.com/Zahara-Nour/ubumaths/commit/04f3bb6d669926d53c227d573324675d646a1b87))
+- **mathAST:** add French pedagogical feedback for numeric types ([208bda8](https://github.com/Zahara-Nour/ubumaths/commit/208bda855dfb62b35958ff2be76c7e957f63a40f))
+- **mathAST:** add function parity handling in normalization ([8aba1c1](https://github.com/Zahara-Nour/ubumaths/commit/8aba1c156a8e261f5743bbd30973d33947d6fa35))
+- **mathAST:** add hyperbolic identity transformations ([f0a2e80](https://github.com/Zahara-Nour/ubumaths/commit/f0a2e809869c9d1ed58cad44baa1ed3974d67779))
+- **mathAST:** add linear combination extraction module ([d2af5d1](https://github.com/Zahara-Nour/ubumaths/commit/d2af5d1e4f00cee1676a454648248a5e757d22ae))
+- **mathAST:** add linearization formulas to trig-identities ([76d0e5b](https://github.com/Zahara-Nour/ubumaths/commit/76d0e5b764b6eaaddd91ef563280fc18c5e8e2c0))
+- **mathAST:** add numeric type inference system (numtype) ([9b5ef14](https://github.com/Zahara-Nour/ubumaths/commit/9b5ef14398a0ff403123e8b38a3df43ef3cfaa60))
+- **mathAST:** add parseRule() for string-based rule definitions ([4fa1040](https://github.com/Zahara-Nour/ubumaths/commit/4fa10400fa66df31c6aa0a614a3386839e227483))
+- **mathAST:** add pedagogical explanations to periodicity detection ([f0754bf](https://github.com/Zahara-Nour/ubumaths/commit/f0754bf8cd3874bd885a6c86cd443c341e7b3aec))
+- **mathAST:** add pedagogical steps, validation, and mistake detection to domain module ([9016125](https://github.com/Zahara-Nour/ubumaths/commit/90161257168e9d1d47694e6fee8464b7a1e6bfc3))
+- **mathAST:** add periodicity detection module ([7cd6c4e](https://github.com/Zahara-Nour/ubumaths/commit/7cd6c4ead39f00fd5538f5d7b77e97a6935c8a34))
+- **mathAST:** add power support to FunctionPattern ([731aacc](https://github.com/Zahara-Nour/ubumaths/commit/731aaccbb98af689bcb86afe59150da7c2e0888d))
+- **mathAST:** add sequence wildcards for n-ary pattern matching ([8e762a1](https://github.com/Zahara-Nour/ubumaths/commit/8e762a18f32542364ebf725a1409c52662a1900d))
+- **mathAST:** add shared identity engine and algebraic identity rewriting ([1cc485e](https://github.com/Zahara-Nour/ubumaths/commit/1cc485efd364ad702db758b7a962ea2cb10021fc))
+- **mathAST:** add supplementary and π/2 shift trig transforms ([a952b66](https://github.com/Zahara-Nour/ubumaths/commit/a952b661120c8952b4b1739c8b480e9739e35b2a))
+- **mathAST:** add symmetry detection module ([08bf3f6](https://github.com/Zahara-Nour/ubumaths/commit/08bf3f6e5a399b7a91d2a113430750dd8d85ac6b))
+- **mathAST:** add tan/tanh Pythagorean identities and half-angle formulas ([20249f4](https://github.com/Zahara-Nour/ubumaths/commit/20249f48c709ccf06c1b70a50ec3560ecbe88bdd))
+- **mathAST:** add trigonometric identities transform module ([46c9623](https://github.com/Zahara-Nour/ubumaths/commit/46c9623170a34b9b104025065d39f7c8d4877a0f))
+- **mathAST:** add user-defined periodic functions extensibility ([dad50f5](https://github.com/Zahara-Nour/ubumaths/commit/dad50f5685214fead229178946276cf645f5c4ff))
+- **mathAST:** add verifyForm() for student answer validation ([3912019](https://github.com/Zahara-Nour/ubumaths/commit/39120192e02e4dfbd24e6d5b47cef4f9611a9666))
+- **mathAST:** enhance periodicity detection with minimal periods and compositions ([54a8343](https://github.com/Zahara-Nour/ubumaths/commit/54a83430470915421bdb84b91b889eda0031693f))
+- **mathAST:** integrate domain analysis with periodicity detection ([3cfd9c0](https://github.com/Zahara-Nour/ubumaths/commit/3cfd9c00fe46fc9979b746eac7d89ecd2a98c4d8))
+- **migration:** add question editing before validation ([d8d10f4](https://github.com/Zahara-Nour/ubumaths/commit/d8d10f49787412331ecf0cfc3ddac58efe4f2fe9))
+- **migration:** complete image migration with URL mapping ([55aaf80](https://github.com/Zahara-Nour/ubumaths/commit/55aaf80f961d1fa912ba4a38b46341ec4b1eda6b))
+- **migration:** connect approve/reject buttons to API ([2206aab](https://github.com/Zahara-Nour/ubumaths/commit/2206aab7cbd09333284f97a3c8d4af9f28d918a9))
+
 ### [0.7.30](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.29...v0.7.30) (2026-01-26)
 
 ### 🐛 Bug Fixes
