@@ -931,3 +931,124 @@ export type {
 	VariationResult,
 	VariationOptions
 } from './variations';
+
+// =============================================================================
+// Analysis Module (Expression Classification, Continuity, etc.)
+// =============================================================================
+
+export {
+	// Linear combination analysis
+	extractLinearCombination,
+	isLinearCombination,
+	getCoefficient,
+	equalLinearCombinations,
+	// Expression classification
+	classifyExpression,
+	getPolynomialDegree as classifyPolynomialDegree,
+	isPolynomialIn as classifyIsPolynomial,
+	containsTranscendental as classifyContainsTranscendental,
+	getTranscendentalType as classifyTranscendentalType,
+	containsRadical,
+	isRationalIn,
+	calculateComplexity,
+	// Polynomial analysis
+	analyzePolynomial,
+	getPolynomialCoefficients,
+	isMonomial,
+	isBinomial,
+	isTrinomial,
+	getTermCount,
+	// Algebraic structure detection
+	detectStructure,
+	isDifferenceOfSquares,
+	isPerfectSquareTrinomial,
+	isSumOfCubes,
+	isDifferenceOfCubes,
+	isQuadraticForm,
+	isFactoredForm,
+	hasCommonFactor,
+	// Symmetry detection
+	detectSymmetry,
+	isEven,
+	isOdd,
+	hasNoSymmetry,
+	// Periodicity detection
+	detectPeriodicity,
+	isPeriodic,
+	getPeriod,
+	getPeriodNumeric,
+	registerPeriodicFunction,
+	unregisterPeriodicFunction,
+	clearPeriodicFunctionRegistry,
+	getRegisteredPeriodicFunctions,
+	isRegisteredPeriodicFunction,
+	// Coefficient extraction utilities
+	isTargetVariable,
+	isTargetVariableIn,
+	containsVariable as analysisContainsVariable,
+	containsAnyVariable,
+	applySign,
+	addCoefficients,
+	buildProduct,
+	extractCoefficientAndVariable,
+	extractLinearForm,
+	// Continuity analysis
+	analyzeContinuity,
+	findDiscontinuityCandidates,
+	checkContinuityAtPoint,
+	// Continuity descriptions
+	DISCONTINUITY_TYPE_DESCRIPTIONS,
+	getDiscontinuityTypeDescription,
+	DISCONTINUITY_SOURCE_DESCRIPTIONS,
+	getDiscontinuitySourceDescription,
+	CONTINUITY_RULE_DESCRIPTIONS,
+	getContinuityRuleDescription,
+	describeDiscontinuity as describeContinuityDiscontinuity,
+	describeDiscontinuityShort,
+	describePeriodicPattern,
+	summarizeContinuityResult
+} from './analysis';
+
+export type {
+	// Linear combination
+	LinearCombinationResult,
+	// Expression classification
+	ExpressionCategory,
+	ExpressionClassification,
+	// Polynomial analysis
+	MonomialInfo,
+	PolynomialAnalysis,
+	// Algebraic structures
+	StructureType,
+	DetectedStructure,
+	DifferenceOfSquaresInfo,
+	PerfectSquareTrinomialInfo,
+	SumOfCubesInfo,
+	DifferenceOfCubesInfo,
+	QuadraticFormInfo,
+	FactoredFormInfo,
+	CommonFactorInfo,
+	// Symmetry
+	SymmetryType,
+	SymmetryResult,
+	// Periodicity
+	PeriodicityResult,
+	PeriodicityStep,
+	PeriodicityRule,
+	PeriodicityOptions,
+	UserPeriodicFunction,
+	RegisterFunctionOptions,
+	// Coefficient extraction
+	ExtractedTerm,
+	LinearForm,
+	// Continuity
+	DiscontinuityType,
+	DiscontinuitySource,
+	PeriodicDiscontinuityInfo,
+	Discontinuity,
+	ContinuityRule,
+	ContinuityStep,
+	ContinuityResult,
+	ContinuityOptions,
+	DiscontinuityCandidate
+} from './analysis';

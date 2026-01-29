@@ -76,7 +76,22 @@ import {
 	extractLinearForm,
 	extractCoefficientAndVariable,
 	type LinearForm,
-	type ExtractedTerm
+	type ExtractedTerm,
+
+	// Continuity analysis
+	analyzeContinuity,
+	findDiscontinuityCandidates,
+	checkContinuityAtPoint,
+	// Continuity descriptions
+	DISCONTINUITY_TYPE_DESCRIPTIONS,
+	DISCONTINUITY_SOURCE_DESCRIPTIONS,
+	describeDiscontinuity,
+	summarizeContinuityResult,
+	type ContinuityResult,
+	type ContinuityOptions,
+	type Discontinuity,
+	type DiscontinuityType,
+	type DiscontinuitySource
 } from '$lib/mathAST/analysis';
 ```
 
@@ -914,6 +929,214 @@ import {
 ```
 
 For complete domain documentation, see [Domain](./domain.md).
+
+---
+
+## Continuity Analysis
+
+Analyzes the continuity of mathematical expressions, detecting and classifying all discontinuity points.
+
+### `analyzeContinuity(node, variable?, options?)`
+
+Returns comprehensive continuity analysis including domain, all discontinuities, and pedagogical explanations.
+
+```typescript
+import { parseLatex } from '$lib/mathAST';
+import { analyzeContinuity } from '$lib/mathAST/analysis';
+
+// Simple discontinuity at x=0
+const result1 = analyzeContinuity(parseLatex('\\frac{1}{x}'), 'x');
+// → {
+//     domain: { kind: 'interval_set', excludedPoints: [0] },
+//     discontinuities: [{ point: 0, type: 'infinite', source: 'division' }],
+//     isContinuousOnDomain: true  // continuous on ℝ\{0}
+// }
+
+// Removable discontinuity
+const result2 = analyzeContinuity(parseLatex('\\frac{x^2-1}{x-1}'), 'x');
+// → {
+//     discontinuities: [{ point: 1, type: 'removable', source: 'division' }],
+//     isContinuousOnDomain: true
+// }
+
+// Jump discontinuity
+const result3 = analyzeContinuity(parseLatex('\\lfloor x \\rfloor'), 'x', {
+	standardInterval: { min: -2, max: 2 }
+});
+// → {
+//     discontinuities: [
+//         { point: -2, type: 'jump', source: 'floor' },
+//         { point: -1, type: 'jump', source: 'floor' },
+//         { point: 0, type: 'jump', source: 'floor' },
+//         { point: 1, type: 'jump', source: 'floor' },
+//         { point: 2, type: 'jump', source: 'floor' }
+//     ],
+//     isContinuousOnDomain: false  // discontinuities inside domain
+// }
+
+// Periodic discontinuities
+const result4 = analyzeContinuity(parseLatex('\\tan(x)'), 'x', {
+	standardInterval: { min: -Math.PI, max: Math.PI }
+});
+// → {
+//     discontinuities: [
+//         { point: -π/2, type: 'infinite', source: 'tan', periodic: {...} },
+//         { point: π/2, type: 'infinite', source: 'tan', periodic: {...} }
+//     ],
+//     isContinuousOnDomain: true
+// }
+```
+
+**Options:** `ContinuityOptions`
+
+```typescript
+interface ContinuityOptions {
+	verbosity?: 'result' | 'summarized' | 'detailed'; // default: 'summarized'
+	standardInterval?: { min: number; max: number }; // for periodic functions
+	maxPeriodicPoints?: number; // default: 10
+	computeFunctionValues?: boolean; // default: true
+	timeout?: number; // default: 5000
+}
+```
+
+**Returns:** `ContinuityResult`
+
+```typescript
+interface ContinuityResult {
+	domain: Domain;
+	discontinuities: readonly Discontinuity[];
+	isContinuousOnDomain: boolean;
+	variable: string;
+	steps?: readonly ContinuityStep[]; // pedagogical explanations
+}
+
+interface Discontinuity {
+	point: MathNode;
+	type: DiscontinuityType;
+	leftLimit: MathNode | null;
+	rightLimit: MathNode | null;
+	functionValue: MathNode | null;
+	source: DiscontinuitySource;
+	description: string; // French explanation
+	periodic?: PeriodicDiscontinuityInfo;
+}
+
+type DiscontinuityType = 'removable' | 'jump' | 'infinite' | 'essential';
+
+type DiscontinuitySource =
+	| 'division'
+	| 'sqrt'
+	| 'ln'
+	| 'log'
+	| 'tan'
+	| 'cot'
+	| 'sec'
+	| 'csc'
+	| 'abs'
+	| 'sign'
+	| 'floor'
+	| 'ceil'
+	| 'piecewise'
+	| 'other';
+```
+
+### `findDiscontinuityCandidates(node, variable, domain?, options?)`
+
+Finds all potential discontinuity points without fully classifying them.
+
+```typescript
+import { findDiscontinuityCandidates } from '$lib/mathAST/analysis';
+
+const candidates = findDiscontinuityCandidates(parseLatex('\\frac{1}{x-2}'), 'x');
+// → [{ point: 2, source: 'division' }]
+
+const tanCandidates = findDiscontinuityCandidates(parseLatex('\\tan(x)'), 'x', undefined, {
+	standardInterval: { min: 0, max: Math.PI }
+});
+// → [{ point: π/2, source: 'tan', periodic: {...} }]
+```
+
+### `checkContinuityAtPoint(node, variable, point)`
+
+Checks continuity at a specific point.
+
+```typescript
+import { checkContinuityAtPoint } from '$lib/mathAST/analysis';
+import { number } from '$lib/mathAST/factory';
+
+// Discontinuous at x=0
+checkContinuityAtPoint(parseLatex('\\frac{1}{x}'), 'x', number('0'));
+// → { point: 0, type: 'infinite', ... }
+
+// Continuous at x=1
+checkContinuityAtPoint(parseLatex('x + 1'), 'x', number('0'));
+// → null (continuous)
+```
+
+### Discontinuity Types
+
+| Type        | French              | Description                            | Example              |
+| ----------- | ------------------- | -------------------------------------- | -------------------- |
+| `removable` | Trou                | Limit exists but ≠ f(a) or f undefined | (x²-1)/(x-1) at x=1  |
+| `jump`      | Saut                | Left limit ≠ right limit               | floor(x) at integers |
+| `infinite`  | Asymptote verticale | At least one limit is ±∞               | 1/x at x=0           |
+| `essential` | Essentielle         | Limit doesn't exist                    | sin(1/x) at x=0      |
+
+### Discontinuity Sources
+
+| Source                     | Description           | Example                     |
+| -------------------------- | --------------------- | --------------------------- |
+| `division`                 | Division by zero      | 1/x                         |
+| `sqrt`                     | Domain boundary       | √x at x=0                   |
+| `ln`, `log`                | Logarithm boundary    | ln(x) at x=0                |
+| `tan`, `cot`, `sec`, `csc` | Trig asymptotes       | tan(x) at π/2               |
+| `sign`                     | Sign function jump    | sign(x) at x=0              |
+| `floor`, `ceil`            | Step function jumps   | floor(x) at integers        |
+| `abs`                      | Absolute value corner | abs(x) at x=0 (continuous!) |
+
+### French Descriptions
+
+The module provides pedagogical descriptions in French:
+
+```typescript
+import {
+	DISCONTINUITY_TYPE_DESCRIPTIONS,
+	DISCONTINUITY_SOURCE_DESCRIPTIONS,
+	describeDiscontinuity,
+	summarizeContinuityResult
+} from '$lib/mathAST/analysis';
+
+DISCONTINUITY_TYPE_DESCRIPTIONS['infinite'];
+// → "Discontinuité infinie (asymptote verticale)"
+
+DISCONTINUITY_SOURCE_DESCRIPTIONS['division'];
+// → "Division par zéro"
+
+// Full description of a discontinuity
+describeDiscontinuity(discontinuity, 'x');
+// → "Discontinuité infinie (asymptote verticale) en x = 0 (cause : division par zéro)"
+
+// Summary of results
+summarizeContinuityResult(discontinuities, true);
+// → "2 discontinuités détectées : 2 asymptotes verticales.\nLa fonction reste continue sur son domaine de définition."
+```
+
+### Continuous on Domain
+
+A function is "continuous on its domain" if:
+
+- All discontinuities are at points **excluded** from the domain
+- For example, 1/x has domain ℝ\{0}, and the discontinuity at x=0 is outside this domain
+
+```typescript
+// 1/x: discontinuity at 0 is OUTSIDE domain ℝ\{0}
+analyzeContinuity(parseLatex('\\frac{1}{x}'), 'x').isContinuousOnDomain;
+// → true
+
+// floor(x): discontinuities at integers are INSIDE domain ℝ
+analyzeContinuity(parseLatex('\\lfloor x \\rfloor'), 'x').isContinuousOnDomain;
+// → false
+```
 
 ---
 
