@@ -45,7 +45,19 @@ export type {
 	// Backward compatibility aliases
 	EmptyDomain,
 	UniversalDomain,
-	IntervalDomain
+	IntervalDomain,
+	// Enhanced step types
+	DomainRule,
+	EnhancedDomainStep,
+	EnhancedDomainResult
+} from './types';
+
+// Enhanced step type guards
+export {
+	isConstraintRule,
+	isPreimageRule,
+	isOperationRule,
+	getConstraintRuleForFunction
 } from './types';
 
 // =============================================================================
@@ -204,6 +216,66 @@ export {
 	getFunctionPeriod
 } from './range-helpers';
 export type { QuadraticForm, LinearForm, RationalPower } from './range-helpers';
+
+// =============================================================================
+// Enhanced Step Recording
+// =============================================================================
+
+export { createDomainStepRecorder, getNullRecorder } from './domain-step-recorder';
+export type { DomainStepRecorder } from './domain-step-recorder';
+
+export {
+	getDomainRuleDescription,
+	applyDomainRuleTemplate,
+	DOMAIN_RULE_DESCRIPTIONS
+} from './step-descriptions';
+
+// =============================================================================
+// Student Domain Validation
+// =============================================================================
+
+// Types
+export type {
+	DomainValidationResult,
+	DomainValidationOptions,
+	DomainComparison,
+	StudentInputFormat,
+	ParseStudentDomainResult,
+	HintLevel,
+	HintOptions,
+	DomainMistakeType,
+	DomainMistake
+} from './validation';
+
+// Parsing
+export { parseStudentDomain } from './validation';
+
+// Comparison
+export {
+	compareDomains,
+	domainsAreEqual,
+	calculateDomainSimilarity,
+	describeDomainRelationship
+} from './validation';
+
+// Validation
+export { validateStudentDomain } from './validation';
+
+// Hints
+export { generateDomainHints } from './validation';
+
+// Mistake Detection
+export {
+	detectDomainMistakes,
+	getMistakeSeverity,
+	isForgotConstraintMistake,
+	isBoundaryMistake,
+	isSetOperationMistake,
+	getMistakeDescription,
+	getMistakeCorrectionTemplate,
+	applyMistakeCorrectionTemplate,
+	MISTAKE_DESCRIPTIONS
+} from './validation';
 
 // =============================================================================
 // Errors
