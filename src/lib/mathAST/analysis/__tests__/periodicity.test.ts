@@ -690,3 +690,91 @@ describe('user-defined periodic functions', () => {
 		});
 	});
 });
+
+describe('domain integration', () => {
+	describe('continuous functions', () => {
+		it('should report sin(x) as continuous with universal domain', () => {
+			const result = detectPeriodicity(parseLatex('\\sin(x)'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.isContinuous).toBe(true);
+			expect(result.discontinuities).toBeUndefined();
+			expect(result.domain).toBeDefined();
+			expect(result.domain?.kind).toBe('universal');
+		});
+
+		it('should report cos(x) as continuous with universal domain', () => {
+			const result = detectPeriodicity(parseLatex('\\cos(x)'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.isContinuous).toBe(true);
+			expect(result.discontinuities).toBeUndefined();
+		});
+	});
+
+	describe('functions with discontinuities', () => {
+		it('should report tan(x) with periodic discontinuities', () => {
+			const result = detectPeriodicity(parseLatex('\\tan(x)'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.isContinuous).toBe(false);
+			expect(result.discontinuities).toBeDefined();
+			expect(result.discontinuities?.kind).toBe('periodic_exclusion');
+			expect(result.domain?.kind).toBe('periodic_exclusion');
+		});
+
+		it('should report cot(x) with periodic discontinuities at kπ', () => {
+			const result = detectPeriodicity(parseLatex('\\cot(x)'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.isContinuous).toBe(false);
+			expect(result.discontinuities).toBeDefined();
+		});
+
+		it('should report sec(x) with periodic discontinuities', () => {
+			const result = detectPeriodicity(parseLatex('\\sec(x)'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.isContinuous).toBe(false);
+			expect(result.discontinuities).toBeDefined();
+		});
+
+		it('should report csc(x) with periodic discontinuities', () => {
+			const result = detectPeriodicity(parseLatex('\\csc(x)'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.isContinuous).toBe(false);
+			expect(result.discontinuities).toBeDefined();
+		});
+	});
+
+	describe('scaled discontinuities', () => {
+		it('should scale discontinuities for tan(2x): x = π/4 + kπ/2', () => {
+			const result = detectPeriodicity(parseLatex('\\tan(2x)'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI / 2, 5);
+			expect(result.isContinuous).toBe(false);
+			expect(result.discontinuities).toBeDefined();
+			// Discontinuities should be at π/4 + k(π/2) instead of π/2 + kπ
+		});
+
+		it('should scale discontinuities for cot(3x)', () => {
+			const result = detectPeriodicity(parseLatex('\\cot(3x)'));
+			expect(result.isPeriodic).toBe(true);
+			expect(result.periodNumeric).toBeCloseTo(PI / 3, 5);
+			expect(result.isContinuous).toBe(false);
+			expect(result.discontinuities).toBeDefined();
+		});
+	});
+
+	describe('pedagogical steps for domain', () => {
+		it('should include domain_exclusion step for tan(x) with detailed verbosity', () => {
+			const result = detectPeriodicity(parseLatex('\\tan(x)'), { verbosity: 'detailed' });
+			expect(result.steps).toBeDefined();
+			const domainStep = result.steps!.find((s) => s.rule === 'domain_exclusion');
+			expect(domainStep).toBeDefined();
+			expect(domainStep!.description).toContain('discontinuité');
+		});
+
+		it('should not include domain_exclusion step for sin(x)', () => {
+			const result = detectPeriodicity(parseLatex('\\sin(x)'), { verbosity: 'detailed' });
+			expect(result.steps).toBeDefined();
+			const domainStep = result.steps!.find((s) => s.rule === 'domain_exclusion');
+			expect(domainStep).toBeUndefined();
+		});
+	});
+});

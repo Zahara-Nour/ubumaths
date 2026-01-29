@@ -563,6 +563,10 @@ interface PeriodicityResult {
 	confidence: 'proven' | 'heuristic';
 	reason?: string;
 	steps?: readonly PeriodicityStep[]; // Pedagogical explanations
+	// Domain integration (new)
+	domain?: Domain; // Domain of definition
+	discontinuities?: PeriodicExclusion; // Periodic discontinuities
+	isContinuous?: boolean; // Whether function is continuous on its domain
 }
 ```
 
@@ -595,6 +599,7 @@ type PeriodicityRule =
 	| 'sum_lcm' // sin + cos → PPCM
 	| 'constant_offset' // sin + 1 → inchangée
 	| 'constant_factor' // 2·sin → inchangée
+	| 'domain_exclusion' // Discontinuités périodiques
 	| 'not_periodic';
 ```
 
@@ -700,6 +705,50 @@ For f(g(x)) where g(x) is periodic with period T, the composition f(g(x)) also h
 | `cos(πx)`         | 2      | Period = 2π / π |
 | `sin(x) + cos(x)` | 2π     | LCM of periods  |
 | `sin(x) + 1`      | 2π     | Constant offset |
+
+### Domain Integration
+
+Periodicity detection now includes domain of definition analysis:
+
+```typescript
+// Continuous function
+const sinResult = detectPeriodicity(parseLatex('\\sin(x)'));
+// → {
+//     isPeriodic: true,
+//     period: 2π,
+//     domain: { kind: 'universal' },  // defined everywhere
+//     discontinuities: undefined,
+//     isContinuous: true
+// }
+
+// Function with discontinuities
+const tanResult = detectPeriodicity(parseLatex('\\tan(x)'));
+// → {
+//     isPeriodic: true,
+//     period: π,
+//     domain: { kind: 'periodic_exclusion', basePoint: π/2, period: π },
+//     discontinuities: { kind: 'periodic_exclusion', basePoint: π/2, period: π },
+//     isContinuous: false
+// }
+
+// Scaled discontinuities
+const tan2xResult = detectPeriodicity(parseLatex('\\tan(2x)'));
+// → {
+//     isPeriodic: true,
+//     period: π/2,
+//     discontinuities: { basePoint: π/4, period: π/2 },  // scaled!
+//     isContinuous: false
+// }
+```
+
+| Function           | Domain           | Discontinuities |
+| ------------------ | ---------------- | --------------- |
+| `sin(x)`, `cos(x)` | ℝ (universal)    | None            |
+| `tan(x)`           | ℝ \ {π/2 + kπ}   | x = π/2 + kπ    |
+| `cot(x)`           | ℝ \ {kπ}         | x = kπ          |
+| `sec(x)`           | ℝ \ {π/2 + kπ}   | x = π/2 + kπ    |
+| `csc(x)`           | ℝ \ {kπ}         | x = kπ          |
+| `tan(2x)`          | ℝ \ {π/4 + kπ/2} | x = π/4 + kπ/2  |
 
 ### Known Periodic Functions
 

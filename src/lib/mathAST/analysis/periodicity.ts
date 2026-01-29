@@ -9,12 +9,14 @@
 
 import type { MathNode } from '../types';
 import type { Verbosity } from '../common/verbosity';
+import type { Domain, PeriodicExclusion } from '../domain/types';
 import { isNumber } from '../guards';
 import { number, multiply, divide, PI, TWO_PI } from '../factory';
 import { getVariables } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { extractLinearForm } from './coefficient-utils';
 import { toLatex } from '../latex-generator';
+import { periodicExclusion, tanDomain, cotDomain, universalDomain } from '../domain/factory';
 
 // =============================================================================
 // Types
@@ -39,6 +41,7 @@ export type PeriodicityRule =
 	| 'sum_lcm' // sin(x) + cos(x) → LCM of periods
 	| 'constant_offset' // sin(x) + 1 has same period
 	| 'constant_factor' // 2·sin(x) has same period
+	| 'domain_exclusion' // Periodic discontinuities in domain
 	| 'not_periodic'; // Expression is not periodic
 
 /**
@@ -85,6 +88,15 @@ export interface PeriodicityResult {
 
 	/** Pedagogical explanation steps */
 	readonly steps?: readonly PeriodicityStep[];
+
+	/** Domain of definition */
+	readonly domain?: Domain;
+
+	/** Periodic discontinuities (if any) */
+	readonly discontinuities?: PeriodicExclusion;
+
+	/** Whether the function is continuous on its domain */
+	readonly isContinuous?: boolean;
 }
 
 // =============================================================================
@@ -110,6 +122,7 @@ const RULE_DESCRIPTIONS: Record<PeriodicityRule, string> = {
 	sum_lcm: 'Somme de fonctions périodiques : PPCM des périodes',
 	constant_offset: 'Addition de constante : période inchangée',
 	constant_factor: 'Multiplication par constante : période inchangée',
+	domain_exclusion: 'Points de discontinuité périodiques',
 	not_periodic: "L'expression n'est pas périodique"
 };
 
@@ -365,6 +378,67 @@ function hasAntisymmetry(funcName: string): boolean {
 }
 
 // =============================================================================
+// Domain Functions
+// =============================================================================
+
+/**
+ * Functions with periodic discontinuities.
+ * Maps function name to a factory that returns its domain.
+ */
+const FUNCTION_DOMAINS: Map<string, () => PeriodicExclusion> = new Map([
+	['tan', tanDomain],
+	['cot', cotDomain],
+	['sec', tanDomain], // Same discontinuities as tan
+	['csc', cotDomain] // Same discontinuities as cot
+]);
+
+/**
+ * Get the domain (with discontinuities) for a function.
+ * Returns null for functions defined everywhere (sin, cos).
+ */
+function getFunctionDiscontinuities(funcName: string): PeriodicExclusion | null {
+	const domainFactory = FUNCTION_DOMAINS.get(funcName);
+	return domainFactory ? domainFactory() : null;
+}
+
+/**
+ * Scale a periodic exclusion by a coefficient.
+ * If f(x) has discontinuities at x = a + kT,
+ * then f(cx) has discontinuities at x = a/c + kT/c
+ */
+function scalePeriodicExclusion(
+	exclusion: PeriodicExclusion,
+	coefficient: MathNode
+): PeriodicExclusion {
+	// If coefficient is 1, return unchanged
+	if (isNumber(coefficient) && coefficient.value === '1') {
+		return exclusion;
+	}
+
+	// Scale both basePoint and period by dividing by coefficient
+	const scaledBasePoint = divide(exclusion.basePoint, coefficient, 'fraction');
+	const scaledPeriod = divide(exclusion.period, coefficient, 'fraction');
+
+	return periodicExclusion(scaledBasePoint, scaledPeriod);
+}
+
+/**
+ * Format a periodic exclusion for display.
+ */
+function formatDiscontinuities(exclusion: PeriodicExclusion, variable: string): string {
+	const baseStr = formatPeriod(exclusion.basePoint);
+	const periodStr = formatPeriod(exclusion.period);
+
+	// Check if basePoint is 0
+	const isZeroBase = isNumber(exclusion.basePoint) && exclusion.basePoint.value === '0';
+
+	if (isZeroBase) {
+		return `${variable} = k \\cdot ${periodStr}, k \\in \\mathbb{Z}`;
+	}
+	return `${variable} = ${baseStr} + k \\cdot ${periodStr}, k \\in \\mathbb{Z}`;
+}
+
+// =============================================================================
 // Helper Functions
 // =============================================================================
 
@@ -517,6 +591,10 @@ interface InternalPeriodResult {
 	periodNumeric: number;
 	/** Whether f(x + period/2) = -f(x) */
 	hasHalfPeriodAntisymmetry: boolean;
+	/** Domain of definition (optional) */
+	domain?: Domain;
+	/** Periodic discontinuities (optional) */
+	discontinuities?: PeriodicExclusion;
 }
 
 /**
@@ -674,6 +752,27 @@ function detectPeriodForNode(
 				// Use hasAntisymmetry() which checks both user and built-in functions
 				let hasHalfPeriodAntisymmetry = hasAntisymmetry(node.name);
 
+				// Compute domain and discontinuities
+				let domain: Domain | undefined;
+				let discontinuities: PeriodicExclusion | undefined;
+				const baseDiscontinuities = getFunctionDiscontinuities(node.name);
+
+				if (baseDiscontinuities) {
+					// Scale discontinuities if argument is scaled
+					discontinuities = scalePeriodicExclusion(baseDiscontinuities, linearForm.coefficient);
+					domain = discontinuities;
+
+					// Add pedagogical step for discontinuities
+					steps.add(
+						'domain_exclusion',
+						`Discontinuités en ${formatDiscontinuities(discontinuities, variable)}`,
+						'detailed'
+					);
+				} else {
+					// Function is defined everywhere (sin, cos)
+					domain = universalDomain();
+				}
+
 				// Handle function with power: sin^n(x), cos^n(x), etc.
 				// FunctionNode has optional power field for \sin^2(x) syntax
 				if (node.power !== undefined) {
@@ -712,7 +811,7 @@ function detectPeriodForNode(
 					}
 				}
 
-				return { period, periodNumeric, hasHalfPeriodAntisymmetry };
+				return { period, periodNumeric, hasHalfPeriodAntisymmetry, domain, discontinuities };
 			}
 
 			// Non-linear argument: check if argument is itself periodic
@@ -1166,6 +1265,9 @@ export function detectPeriodicity(
 	const result = detectPeriodForNode(node, targetVar, steps);
 
 	if (result) {
+		// Determine if function is continuous (no discontinuities)
+		const isContinuous = result.discontinuities === undefined;
+
 		return {
 			isPeriodic: true,
 			period: result.period,
@@ -1173,7 +1275,10 @@ export function detectPeriodicity(
 			variable: targetVar,
 			confidence: 'proven',
 			reason: 'Fonction périodique détectée',
-			steps: steps.getStepsFiltered(verbosity)
+			steps: steps.getStepsFiltered(verbosity),
+			domain: result.domain,
+			discontinuities: result.discontinuities,
+			isContinuous
 		};
 	}
 
