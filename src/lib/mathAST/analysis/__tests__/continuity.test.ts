@@ -13,6 +13,7 @@ import {
 	number,
 	add,
 	subtract,
+	implicitMultiply,
 	fraction,
 	power,
 	sqrt,
@@ -330,5 +331,89 @@ describe('descriptions', () => {
 		const result = analyzeContinuity(expr, 'x', { verbosity: 'summarized' });
 
 		expect(result.discontinuities[0].description).toContain('infini');
+	});
+});
+
+describe('findArgumentZeros with solver integration', () => {
+	it('finds zeros of quadratic argument in abs(x² - 4)', () => {
+		// abs(x² - 4) has corners at x = ±2 where the argument is zero
+		const xSquared = power(variable('x'), number('2'));
+		const expr = func('abs', [subtract(xSquared, number('4'))]);
+
+		// Extract numeric points from discontinuity candidates
+		const candidates = findDiscontinuityCandidates(expr, 'x');
+		const points = candidates
+			.map((c) => {
+				if (c.point.type === 'number') {
+					return parseFloat(c.point.value);
+				}
+				return null;
+			})
+			.filter((p): p is number => p !== null);
+
+		// Should find candidates at x = -2 and x = 2
+		expect(points.some((p) => Math.abs(p + 2) < 0.01)).toBe(true);
+		expect(points.some((p) => Math.abs(p - 2) < 0.01)).toBe(true);
+	});
+
+	it('finds zeros of linear argument in sign(2x + 3)', () => {
+		// sign(2x + 3) has jump discontinuity at x = -1.5 where 2x + 3 = 0
+		const linearArg = add(implicitMultiply(number('2'), variable('x')), number('3'));
+		const expr = func('sign', [linearArg]);
+		const result = analyzeContinuity(expr, 'x');
+
+		// Should have a jump discontinuity at x = -1.5
+		const discAtPoint = result.discontinuities.find((d) => {
+			if (d.point.type === 'number') {
+				return Math.abs(parseFloat(d.point.value) + 1.5) < 0.01;
+			}
+			return false;
+		});
+
+		expect(discAtPoint).toBeDefined();
+		expect(discAtPoint?.type).toBe('jump');
+		expect(discAtPoint?.source).toBe('sign');
+	});
+
+	it('finds zeros of quadratic argument in sign(x² - 2x - 3)', () => {
+		// sign(x² - 2x - 3) = sign((x-3)(x+1)) has jumps at x = -1 and x = 3
+		const xSquared = power(variable('x'), number('2'));
+		const quadArg = subtract(
+			subtract(xSquared, implicitMultiply(number('2'), variable('x'))),
+			number('3')
+		);
+		const expr = func('sign', [quadArg]);
+
+		const candidates = findDiscontinuityCandidates(expr, 'x');
+		const points = candidates
+			.map((c) => {
+				if (c.point.type === 'number') {
+					return parseFloat(c.point.value);
+				}
+				return null;
+			})
+			.filter((p): p is number => p !== null);
+
+		// Should find candidates at x = -1 and x = 3
+		expect(points.some((p) => Math.abs(p + 1) < 0.01)).toBe(true);
+		expect(points.some((p) => Math.abs(p - 3) < 0.01)).toBe(true);
+	});
+
+	it('handles simple linear case: abs(x - 5)', () => {
+		// abs(x - 5) has corner at x = 5
+		const expr = func('abs', [subtract(variable('x'), number('5'))]);
+
+		const candidates = findDiscontinuityCandidates(expr, 'x');
+		const points = candidates
+			.map((c) => {
+				if (c.point.type === 'number') {
+					return parseFloat(c.point.value);
+				}
+				return null;
+			})
+			.filter((p): p is number => p !== null);
+
+		// Should find candidate at x = 5
+		expect(points.some((p) => Math.abs(p - 5) < 0.01)).toBe(true);
 	});
 });
