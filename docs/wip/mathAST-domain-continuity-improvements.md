@@ -3,7 +3,7 @@
 Ce document suit la progression des améliorations planifiées pour les modules `domain` et `continuity` de mathAST.
 
 **Date de création**: 2026-01-30
-**Dernière mise à jour**: 2026-01-30
+**Dernière mise à jour**: 2026-01-30 (Phase 2 terminée)
 
 ---
 
@@ -39,7 +39,7 @@ Ce document suit la progression des améliorations planifiées pour les modules 
 | #   | Amélioration                                                   | Effort | Impact          | Statut      |
 | --- | -------------------------------------------------------------- | ------ | --------------- | ----------- |
 | 1   | [Support tan(ax+b) complet](#1-support-tanaxb-complet)         | Moyen  | Précision       | ✅ Terminé  |
-| 13  | [Domaine de dérivabilité](#13-domaine-de-dérivabilité)         | Élevé  | Fonctionnalité  | ⬜ À faire  |
+| 13  | [Domaine de dérivabilité](#13-domaine-de-dérivabilité)         | Élevé  | Fonctionnalité  | ✅ Terminé  |
 | 14  | [Solveur polynomial degré 4](#14-solveur-polynomial-degré-4)   | Moyen  | Précision       | ✅ Terminé  |
 | 15  | [Discontinuités essentielles](#15-discontinuités-essentielles) | Moyen  | Complétude math | ⬜ À faire  |
 | 2   | [Cache pour domaines](#2-cache-pour-domaines)                  | Faible | Performance     | ❌ Supprimé |
@@ -53,7 +53,7 @@ Ce document suit la progression des améliorations planifiées pour les modules 
 | 11  | [Solver unifié](#11-solver-unifié)                                        | Élevé  | Maintenabilité  | ⬜ À faire |
 | 4   | [Validation élève continuité](#4-validation-élève-continuité)             | Moyen  | Pédagogie       | ⬜ À faire |
 | 16  | [Intervalle d'analyse configurable](#16-intervalle-danalyse-configurable) | Faible | Flexibilité     | ⬜ À faire |
-| 17  | [Valeurs absolues composées](#17-valeurs-absolues-composées)              | Moyen  | Dérivabilité    | ⬜ À faire |
+| 17  | [Valeurs absolues composées](#17-valeurs-absolues-composées)              | Moyen  | Dérivabilité    | ✅ Terminé |
 
 ### Priorité Basse 🟢
 
@@ -988,13 +988,13 @@ Semaine 1-2:
 └── #2 Cache domaines - SUPPRIMÉ (analyse: bénéfice minimal vs complexité)
 ```
 
-### Phase 2: Domaine de dérivabilité
+### Phase 2: Domaine de dérivabilité ✅ TERMINÉE
 
 ```
 Semaine 3-4:
-├── #13 Domaine de dérivabilité (core)
-├── #17 Valeurs absolues composées (points anguleux)
-└── Tests associés
+├── #13 Domaine de dérivabilité (core) ✅
+├── #17 Valeurs absolues composées (points anguleux) ✅
+└── Tests associés ✅
 ```
 
 ### Phase 3: Complétude mathématique
@@ -1041,7 +1041,7 @@ Semaine 11+:
 ## Journal des modifications
 
 | Date       | Amélioration | Action                                                               | Commit |
-| ---------- | ------------ | -------------------------------------------------------------------- | ------ |
+| ---------- | ------------ | -------------------------------------------------------------------- | ------ | -------------------- | --- |
 | 2026-01-30 | -            | Document créé                                                        | -      |
 | 2026-01-30 | #13-20       | Ajout nouvelles améliorations                                        | -      |
 | 2026-01-30 | #8, #13      | Séparation dérivabilité domain vs analyse                            | -      |
@@ -1049,6 +1049,9 @@ Semaine 11+:
 | 2026-01-30 | #1           | ✅ Implémenté support tan(ax+b) dans compute.ts                      | -      |
 | 2026-01-30 | #14          | ✅ Implémenté solveur quartique (Ferrari) dans preimage.ts           | -      |
 | 2026-01-30 | #2           | ❌ Supprimé cache - analyse: bénéfice minimal dans contexte UbuMaths | -      |
+| 2026-01-30 | #13          | ✅ Implémenté module differentiability (types, analysis, steps)      | -      |
+| 2026-01-30 | #17          | ✅ Implémenté détection points anguleux                              | f(x)   | avec calcul dérivées | -   |
+| 2026-01-30 | #13, #17     | ✅ Ajout 68 edge cases aux tests (106 tests total)                   | -      |
 
 ---
 
@@ -1067,11 +1070,11 @@ Semaine 11+:
     [7] Compositions   [16] Intervalle  [15] Essential
         génériques     configurable     discontinuities
 
-[14] Solveur quartique ✅     [13] Domaine de dérivabilité
+[14] Solveur quartique ✅     [13] Domaine de dérivabilité ✅
                                         │
                            ┌────────────┼────────────┐
                            ▼            ▼            ▼
-                     [17] Abs       [8] Analyse   [20] Export
+                     [17] Abs ✅   [8] Analyse   [20] Export
                      composées      dérivabilité  steps
                                     complète
 
