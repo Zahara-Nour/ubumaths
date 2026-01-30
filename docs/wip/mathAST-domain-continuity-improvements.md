@@ -36,13 +36,13 @@ Ce document suit la progression des améliorations planifiées pour les modules 
 
 ### Priorité Haute 🔴
 
-| #   | Amélioration                                                   | Effort | Impact          | Statut     |
-| --- | -------------------------------------------------------------- | ------ | --------------- | ---------- |
-| 1   | [Support tan(ax+b) complet](#1-support-tanaxb-complet)         | Moyen  | Précision       | ⬜ À faire |
-| 13  | [Domaine de dérivabilité](#13-domaine-de-dérivabilité)         | Élevé  | Fonctionnalité  | ⬜ À faire |
-| 14  | [Solveur polynomial degré 4](#14-solveur-polynomial-degré-4)   | Moyen  | Précision       | ⬜ À faire |
-| 15  | [Discontinuités essentielles](#15-discontinuités-essentielles) | Moyen  | Complétude math | ⬜ À faire |
-| 2   | [Cache pour domaines](#2-cache-pour-domaines)                  | Faible | Performance     | ⬜ À faire |
+| #   | Amélioration                                                   | Effort | Impact          | Statut      |
+| --- | -------------------------------------------------------------- | ------ | --------------- | ----------- |
+| 1   | [Support tan(ax+b) complet](#1-support-tanaxb-complet)         | Moyen  | Précision       | ✅ Terminé  |
+| 13  | [Domaine de dérivabilité](#13-domaine-de-dérivabilité)         | Élevé  | Fonctionnalité  | ⬜ À faire  |
+| 14  | [Solveur polynomial degré 4](#14-solveur-polynomial-degré-4)   | Moyen  | Précision       | ✅ Terminé  |
+| 15  | [Discontinuités essentielles](#15-discontinuités-essentielles) | Moyen  | Complétude math | ⬜ À faire  |
+| 2   | [Cache pour domaines](#2-cache-pour-domaines)                  | Faible | Performance     | ❌ Supprimé |
 
 ### Priorité Moyenne 🟡
 
@@ -122,37 +122,20 @@ function computeTrigPeriodicExclusionLinear(
 
 ---
 
-### 2. Cache pour domaines
+### 2. Cache pour domaines ❌ SUPPRIMÉ
 
-**Problème actuel**: Les sous-expressions répétées comme `ln(x) + ln(x)²` recalculent le domaine de `ln(x)` plusieurs fois.
+**Statut**: Supprimé après analyse - bénéfice minimal dans le contexte UbuMaths.
 
-**Solution proposée**:
+**Raison de la suppression**:
 
-```typescript
-// Dans compute.ts
-const domainCache = new WeakMap<MathNode, Domain>();
+Après implémentation et analyse des patterns d'utilisation réels:
 
-function computeDomainNodeCached(node: MathNode, variable: string, context: DomainContext): Domain {
-	const cached = domainCache.get(node);
-	if (cached) return cached;
+1. **Pas de duplication au niveau UI**: Les composants (grapheur, calculatrice) n'appellent pas `computeDomain` directement
+2. **Architecture avec passage de domaine**: Les modules passent déjà le domaine en paramètre entre eux (`computeVariations`, `analyzeSign`, etc.)
+3. **Chaque module calcule un domaine DIFFÉRENT**: `computeVariations(f)` → domaine de f, `findCriticalPoints(f')` → domaine de f' (différent!)
+4. **Surcoût de la clé cache**: La génération de clé (LaTeX ou JSON) peut annuler les gains
 
-	const result = computeDomainNode(node, variable, context);
-	domainCache.set(node, result);
-	return result;
-}
-
-// Option: cache avec clé composite (node + variable)
-type CacheKey = `${string}:${string}`; // nodeId:variable
-const domainCacheWithVar = new Map<CacheKey, Domain>();
-```
-
-**Attention**: Le cache doit être invalidé si les sous-expressions sont modifiées.
-
-**Fichiers à modifier**:
-
-- `src/lib/mathAST/domain/compute.ts`
-
-**Tests**: Nouveaux benchmarks dans `domain/compute.test.ts`
+**Conclusion**: La complexité ajoutée ne justifie pas le bénéfice quasi-nul dans l'usage réel d'UbuMaths.
 
 ---
 
@@ -996,13 +979,13 @@ function computeDomainWithSteps(expr: MathNode | string, variable: string): Doma
 
 ## Plan d'implémentation recommandé
 
-### Phase 1: Fondations critiques (Priorité Haute)
+### Phase 1: Fondations critiques (Priorité Haute) ✅ TERMINÉE
 
 ```
 Semaine 1-2:
-├── #1 Support tan(ax+b) - débloquer les cas linéaires
-├── #14 Solveur quartique - étendre preimage.ts
-└── #2 Cache domaines - préparer les performances
+├── #1 Support tan(ax+b) - débloquer les cas linéaires ✅
+├── #14 Solveur quartique - étendre preimage.ts ✅
+└── #2 Cache domaines - SUPPRIMÉ (analyse: bénéfice minimal vs complexité)
 ```
 
 ### Phase 2: Domaine de dérivabilité
@@ -1057,12 +1040,15 @@ Semaine 11+:
 
 ## Journal des modifications
 
-| Date       | Amélioration | Action                                    | Commit |
-| ---------- | ------------ | ----------------------------------------- | ------ |
-| 2026-01-30 | -            | Document créé                             | -      |
-| 2026-01-30 | #13-20       | Ajout nouvelles améliorations             | -      |
-| 2026-01-30 | #8, #13      | Séparation dérivabilité domain vs analyse | -      |
-| 2026-01-30 | Tous         | Réorganisation des priorités              | -      |
+| Date       | Amélioration | Action                                                               | Commit |
+| ---------- | ------------ | -------------------------------------------------------------------- | ------ |
+| 2026-01-30 | -            | Document créé                                                        | -      |
+| 2026-01-30 | #13-20       | Ajout nouvelles améliorations                                        | -      |
+| 2026-01-30 | #8, #13      | Séparation dérivabilité domain vs analyse                            | -      |
+| 2026-01-30 | Tous         | Réorganisation des priorités                                         | -      |
+| 2026-01-30 | #1           | ✅ Implémenté support tan(ax+b) dans compute.ts                      | -      |
+| 2026-01-30 | #14          | ✅ Implémenté solveur quartique (Ferrari) dans preimage.ts           | -      |
+| 2026-01-30 | #2           | ❌ Supprimé cache - analyse: bénéfice minimal dans contexte UbuMaths | -      |
 
 ---
 
@@ -1071,7 +1057,7 @@ Semaine 11+:
 ### Dépendances entre améliorations
 
 ```
-                    [1] Support tan(ax+b)
+                    [1] Support tan(ax+b) ✅
                            │
                            ▼
                     [5] Algèbre PeriodicExclusion
@@ -1080,21 +1066,14 @@ Semaine 11+:
               ▼            ▼            ▼
     [7] Compositions   [16] Intervalle  [15] Essential
         génériques     configurable     discontinuities
-              │
-              ▼
-       [2] Cache domaines
-              │
-              ▼
-    ┌─────────┴─────────┐
-    ▼                   ▼
-[14] Solveur        [13] Domaine de
-    quartique           dérivabilité
-                           │
-              ┌────────────┼────────────┐
-              ▼            ▼            ▼
-        [17] Abs       [8] Analyse   [20] Export
-        composées      dérivabilité  steps
-                       complète
+
+[14] Solveur quartique ✅     [13] Domaine de dérivabilité
+                                        │
+                           ┌────────────┼────────────┐
+                           ▼            ▼            ▼
+                     [17] Abs       [8] Analyse   [20] Export
+                     composées      dérivabilité  steps
+                                    complète
 
 [4] Validation continuité ◄─── [6] Erreurs courantes
          │
@@ -1131,9 +1110,8 @@ Semaine 11+:
 
 ### Risques et mitigations
 
-| Risque                                   | Impact | Mitigation                |
-| ---------------------------------------- | ------ | ------------------------- |
-| Solveur quartique instable numériquement | Moyen  | Fallback Newton-Raphson   |
-| Cache invalide après modification AST    | Élevé  | WeakMap + clé composite   |
-| Régression performances                  | Moyen  | Benchmarks avant/après    |
-| Complexité algèbre PeriodicExclusion     | Élevé  | Approximation en fallback |
+| Risque                                   | Impact | Mitigation                | Statut   |
+| ---------------------------------------- | ------ | ------------------------- | -------- |
+| Solveur quartique instable numériquement | Moyen  | Fallback cas dégénérés    | ✅ Géré  |
+| Régression performances                  | Moyen  | Benchmarks avant/après    | À suivre |
+| Complexité algèbre PeriodicExclusion     | Élevé  | Approximation en fallback | À faire  |
