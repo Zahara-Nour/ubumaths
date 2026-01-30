@@ -36,6 +36,7 @@ import { evaluateOneSidedLimits, needsOneSidedAnalysis, recordOneSidedSteps } fr
 import { tryCompositionLimit } from './composition';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { number } from '../factory';
 import { computeDomain } from '../domain/compute';
 import { containsValue } from '../domain/algebra';
 
@@ -237,8 +238,25 @@ export function evaluateLimit(
 
 	// Verify variable is used in expression
 	if (!containsVariable(expression, varName)) {
+		// Constant expression: evaluate numerically (e.g., ln(e) → 1)
+		let evaluatedExpr = expression;
+		if (!isNumber(expression) && !isInfinity(expression)) {
+			try {
+				const numValue = evaluateNodeToApproximatedNumber(expression);
+				if (Number.isFinite(numValue)) {
+					// Convert to integer if it's a whole number
+					const intValue = Math.round(numValue);
+					evaluatedExpr =
+						Math.abs(numValue - intValue) < 1e-10
+							? number(intValue.toString())
+							: number(numValue.toPrecision(15));
+				}
+			} catch {
+				// If numeric evaluation fails, return the expression as-is
+			}
+		}
 		return createResult(
-			expression,
+			evaluatedExpr,
 			varName,
 			approachPoint,
 			dir,
@@ -483,8 +501,24 @@ function evaluateLimitInternal(
 
 	// Verify variable is used in expression
 	if (!containsVariable(expr, varName)) {
+		// Constant expression: evaluate numerically (e.g., ln(e) → 1)
+		let evaluatedExpr = expr;
+		if (!isNumber(expr) && !isInfinity(expr)) {
+			try {
+				const numValue = evaluateNodeToApproximatedNumber(expr);
+				if (Number.isFinite(numValue)) {
+					const intValue = Math.round(numValue);
+					evaluatedExpr =
+						Math.abs(numValue - intValue) < 1e-10
+							? number(intValue.toString())
+							: number(numValue.toPrecision(15));
+				}
+			} catch {
+				// If numeric evaluation fails, return the expression as-is
+			}
+		}
 		return createResult(
-			expr,
+			evaluatedExpr,
 			varName,
 			approach,
 			direction,
