@@ -1,7 +1,7 @@
 # Tracker : Améliorations du module Limits
 
 > **Module** : `src/lib/mathAST/limits/` > **Dernière mise à jour** : 2026-01-30
-> **Statut global** : 195 tests passants, 15 tests skipped
+> **Statut global** : 311 tests passants, 13 tests skipped
 
 ---
 
@@ -94,15 +94,16 @@ finite / ∞ = 0
 
 - **Priorité** : Haute
 - **Complexité** : Faible
-- **Tests concernés** : 1 skipped
+- **Tests concernés** : 0 skipped (1 fixed)
 - **Problème** : `ln(e)` n'est pas évalué à 1
-- **Solution** : Ajouter des règles de simplification symbolique pour les constantes
+- **Solution** : Évaluation numérique des expressions constantes (sans variable)
 
-| Tâche                 | Statut  | Fichier                            |
-| --------------------- | ------- | ---------------------------------- |
-| Évaluer ln(e) → 1     | ⬜ TODO | `known-limits.ts` ou `evaluate.ts` |
-| Évaluer e^(ln(x)) → x | ⬜ TODO | `composition.ts`                   |
-| Tests de régression   | ⬜ TODO | `edge-cases.test.ts`               |
+| Tâche                                           | Statut  | Fichier                   |
+| ----------------------------------------------- | ------- | ------------------------- |
+| Évaluer ln(e) → 1                               | ✅ DONE | `evaluate.ts`             |
+| Évaluation numérique des expressions constantes | ✅ DONE | `evaluate.ts`             |
+| Tests de régression                             | ✅ DONE | `edge-cases.test.ts`      |
+| Évaluer e^(ln(x)) → x (simplification)          | ⬜ TODO | `composition.ts` (future) |
 
 ---
 
@@ -110,15 +111,15 @@ finite / ∞ = 0
 
 - **Priorité** : Haute
 - **Complexité** : Faible
-- **Tests concernés** : 2 skipped
+- **Tests concernés** : 1 skipped (1 fixed)
 - **Problème** : `x + 1/x → +∞` et `x·(1/x) → 1` non supportés
-- **Solution** : Simplification algébrique avant évaluation à l'infini
+- **Solution** : Infinité algebra (Phase 0.1) + simplification algébrique
 
-| Tâche                                    | Statut  | Fichier                        |
-| ---------------------------------------- | ------- | ------------------------------ |
-| Gérer x + 1/x quand x→∞ (terme dominant) | ⬜ TODO | `algebraic.ts`                 |
-| Gérer x·(1/x) quand x→∞ (simplification) | ⬜ TODO | `composition.ts`               |
-| Dé-skipper et valider tests              | ⬜ TODO | `edge-cases.test.ts:1078,1091` |
+| Tâche                                                      | Statut  | Fichier              |
+| ---------------------------------------------------------- | ------- | -------------------- |
+| Gérer x + 1/x quand x→∞ (terme dominant via infinity alg.) | ✅ DONE | `composition.ts`     |
+| Gérer x·(1/x) quand x→∞ (simplification algébrique)        | ⬜ TODO | `algebraic.ts`       |
+| Test x + 1/x                                               | ✅ DONE | `edge-cases.test.ts` |
 
 ---
 
@@ -268,8 +269,8 @@ finite / ∞ = 0
 | Phase                       | Tests skipped | Progression | Effort estimé      |
 | --------------------------- | ------------- | ----------- | ------------------ |
 | **0.1 Algèbre des infinis** | 0             | ✅ 100%     | 6h                 |
-| 1.1 Constantes symboliques  | 1             | 0%          | 2h                 |
-| 1.2 Somme/produit à ∞       | 2             | 0%          | 3h (dépend de 0.1) |
+| **1.1 Constantes symbol.**  | 0             | ✅ 100%     | 1h                 |
+| 1.2 Somme/produit à ∞       | 1             | 50%         | 2h (dépend de 0.1) |
 | 2.1 Squeeze à ∞             | 4             | 0%          | 4h                 |
 | 3.1 L'Hôpital exp/poly      | 2             | 0%          | 4h                 |
 | 4.1 Valeur absolue          | 3             | 0%          | 6h                 |
@@ -313,11 +314,12 @@ finite / ∞ = 0
 
 ## Historique des modifications
 
-| Date       | Phase | Description                                                                                         | Commit |
-| ---------- | ----- | --------------------------------------------------------------------------------------------------- | ------ |
-| 2026-01-30 | 0.1   | Intégration dans composition.ts + amélioration classifyAtInfinity + 12 tests d'intégration          | -      |
-| 2026-01-30 | 0.1   | Implémentation algèbre des infinis (addSigns, subtractSigns, multiplySigns, divideSigns) + 78 tests | -      |
-| 2026-01-30 | -     | Création du tracker                                                                                 | -      |
+| Date       | Phase | Description                                                                                         | Commit   |
+| ---------- | ----- | --------------------------------------------------------------------------------------------------- | -------- |
+| 2026-01-30 | 1.1   | Évaluation numérique des expressions constantes (ln(e)→1) + x+1/x à ∞                               | -        |
+| 2026-01-30 | 0.1   | Intégration dans composition.ts + amélioration classifyAtInfinity + 12 tests d'intégration          | 27ef7c60 |
+| 2026-01-30 | 0.1   | Implémentation algèbre des infinis (addSigns, subtractSigns, multiplySigns, divideSigns) + 78 tests | 27ef7c60 |
+| 2026-01-30 | -     | Création du tracker                                                                                 | -        |
 
 ---
 

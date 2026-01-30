@@ -676,7 +676,7 @@ describe('Special Values and Constants', () => {
 		});
 
 		// TODO: ln(constant) evaluation not fully implemented
-		it.skip('ln(e) equals 1', () => {
+		it('ln(e) equals 1', () => {
 			const expr = func('ln', [euler()]);
 			const result = evaluateLimit(expr, 'x', number('0'));
 			expectNumber(result, 1);
@@ -1074,8 +1074,8 @@ describe('Fractional Powers', () => {
 // =============================================================================
 
 describe('Multiple Terms', () => {
-	// TODO: Sum at infinity not fully implemented
-	it.skip('x + 1/x at x→+∞ is +∞', () => {
+	// Phase 0.1 infinity algebra implemented
+	it('x + 1/x at x→+∞ is +∞', () => {
 		const expr = add(variable('x'), divide(number('1'), variable('x'), 'fraction'));
 		const result = evaluateLimit(expr, 'x', positiveInfinity());
 		expectPosInfinity(result);
@@ -1087,7 +1087,7 @@ describe('Multiple Terms', () => {
 		expectNumber(result, 0);
 	});
 
-	// TODO: Product simplification at infinity not fully implemented
+	// TODO: Requires algebraic simplification x·(1/x) = 1 before limit evaluation
 	it.skip('x·(1/x) at x→+∞ equals 1', () => {
 		const expr = multiply(variable('x'), divide(number('1'), variable('x'), 'fraction'));
 		const result = evaluateLimit(expr, 'x', positiveInfinity());
