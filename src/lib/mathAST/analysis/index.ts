@@ -150,3 +150,44 @@ export {
 	describePeriodicPattern,
 	summarizeContinuityResult
 } from './continuity-steps';
+
+// Differentiability analysis - Types
+export type {
+	NonDifferentiabilityType,
+	NonDifferentiabilitySource,
+	DerivativeLimit,
+	PeriodicNonDifferentiabilityInfo,
+	NonDifferentiablePoint,
+	BoundaryBehavior,
+	NonDifferentiabilityCandidate,
+	DifferentiabilityRule,
+	DifferentiabilityStep,
+	DifferentiabilityResult,
+	DifferentiabilityOptions
+} from './differentiability-types';
+
+// Differentiability analysis - Functions
+export {
+	analyzeDifferentiability,
+	findNonDifferentiabilityCandidates,
+	checkDifferentiabilityAtPoint,
+	computeDifferentiabilityDomain
+} from './differentiability';
+
+export {
+	// Type descriptions
+	NON_DIFFERENTIABILITY_TYPE_DESCRIPTIONS,
+	getNonDifferentiabilityTypeDescription,
+	// Source descriptions
+	NON_DIFFERENTIABILITY_SOURCE_DESCRIPTIONS,
+	getNonDifferentiabilitySourceDescription,
+	// Rule descriptions
+	DIFFERENTIABILITY_RULE_DESCRIPTIONS,
+	getDifferentiabilityRuleDescription,
+	// Full descriptions
+	describeNonDifferentiablePoint,
+	describeNonDifferentiablePointShort,
+	describeBoundary,
+	describePeriodicNonDifferentiability,
+	summarizeDifferentiabilityResult
+} from './differentiability-steps';
