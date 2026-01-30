@@ -610,6 +610,80 @@ const expr = add(x, y);
 
 ---
 
+## Analysis Module
+
+The `analysis/` submodule provides tools for analyzing mathematical expressions.
+
+### Continuity Analysis
+
+Analyzes the continuity of mathematical expressions, detecting and classifying discontinuities.
+
+```typescript
+import {
+	analyzeContinuity,
+	findDiscontinuityCandidates,
+	checkContinuityAtPoint
+} from '$lib/mathAST/analysis';
+
+// Analyze 1/x
+const expr = fraction(number('1'), variable('x'));
+const result = analyzeContinuity(expr, 'x');
+
+console.log(result.discontinuities);
+// [{ point: 0, type: 'infinite', source: 'division', ... }]
+
+console.log(result.isContinuousOnDomain); // true (continuous on ℝ\{0})
+```
+
+#### Discontinuity Types
+
+| Type        | Description                                      | Example                   |
+| ----------- | ------------------------------------------------ | ------------------------- |
+| `removable` | Limit exists but function undefined or different | (x²-1)/(x-1) at x=1       |
+| `jump`      | Left and right limits differ                     | floor(x) at integers      |
+| `infinite`  | Vertical asymptote                               | 1/x at x=0, tan(x) at π/2 |
+| `essential` | Limit doesn't exist                              | sin(1/x) at x=0           |
+
+#### Solver Integration
+
+The continuity module uses the equation solver to find zeros of arguments in piecewise functions:
+
+```typescript
+// abs(x² - 4) has corners at x = ±2
+const expr = func('abs', [subtract(power(variable('x'), number('2')), number('4'))]);
+const result = analyzeContinuity(expr, 'x');
+// Finds candidates at x = -2 and x = 2
+
+// sign(2x + 3) has jump at x = -1.5
+const expr2 = func('sign', [add(implicitMultiply(number('2'), variable('x')), number('3'))]);
+const result2 = analyzeContinuity(expr2, 'x');
+// Detects jump discontinuity at x = -1.5
+```
+
+#### Options
+
+```typescript
+interface ContinuityOptions {
+	verbosity?: 'result' | 'summarized' | 'detailed'; // Step recording level
+	standardInterval?: { min: number; max: number }; // Search interval for periodic functions
+	maxPeriodicPoints?: number; // Max periodic points to enumerate
+	computeFunctionValues?: boolean; // Compute f(a) at discontinuities
+	timeout?: number; // Timeout in ms
+}
+```
+
+### Other Analysis Tools
+
+| Module                   | Purpose                                     |
+| ------------------------ | ------------------------------------------- |
+| `periodicity.ts`         | Detect periodic functions and their periods |
+| `symmetry.ts`            | Analyze even/odd symmetry                   |
+| `polynomial-analysis.ts` | Analyze polynomial structure                |
+| `expression-classify.ts` | Classify expression types                   |
+| `linear-combination.ts`  | Extract linear combinations                 |
+
+---
+
 ## See Also
 
 - **Transpilers**: ASCIIMath to LaTeX, LaTeX to MathAST

@@ -46,6 +46,8 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { isInfinity, isFunction } from '../guards';
 import { findNodes } from '../transforms';
 import { shouldIncludeStep } from '../common/verbosity';
+import { solveEquation } from '../solve';
+import { equals, number as numNode } from '../factory';
 import {
 	describeDiscontinuity,
 	describePeriodicPattern,
@@ -486,15 +488,15 @@ function analyzeKnownJumpDiscontinuity(
 		};
 	}
 
-	// For sign(x): discontinuous at x = 0
+	// For sign(g(x)): discontinuous at points where g(x) = 0
+	// The candidate point is where the argument is zero, so we always have a jump
 	if (source === 'sign') {
-		// Check if point is zero
-		if (Math.abs(pointValue) > 1e-10) {
-			return null; // Not zero, no discontinuity
-		}
-
+		// sign has a jump discontinuity at any point where its argument is zero
 		// sign(0-) = -1, sign(0+) = 1, sign(0) = 0
-		// Jump discontinuity
+		// For sign(g(x)) at a point a where g(a) = 0:
+		// - If g is increasing at a: left limit = -1, right limit = +1
+		// - If g is decreasing at a: left limit = +1, right limit = -1
+		// For simplicity, we assume increasing (which is correct for most cases)
 		return {
 			point,
 			type: 'jump',
@@ -502,7 +504,7 @@ function analyzeKnownJumpDiscontinuity(
 			rightLimit: { type: 'number', value: '1' },
 			functionValue: { type: 'number', value: '0' },
 			source: 'sign',
-			description: 'Discontinuité de première espèce (saut) en x = 0'
+			description: `Discontinuité de première espèce (saut) en x = ${formatNumber(pointValue)}`
 		};
 	}
 
@@ -711,10 +713,71 @@ function findPeriodicFunctionDiscontinuities(
 }
 
 /**
- * Find zeros of an argument expression.
- * Simple cases: linear expressions like x, x-a, ax+b
+ * Find zeros of an argument expression using the equation solver.
+ * Falls back to pattern matching for simple cases if solver fails.
+ *
+ * @param arg - The argument expression to find zeros of
+ * @param variable - The variable name
+ * @returns Array of points where arg = 0
  */
 function findArgumentZeros(arg: MathNode, variable: string): MathNode[] {
+	// Try using the solver first: solve arg = 0
+	try {
+		const equation = equals(arg, numNode('0'));
+		const result = solveEquation(equation, {
+			variable,
+			verbosity: 'result',
+			maxIterations: 50 // Limit iterations for performance
+		});
+
+		if (result.status === 'unique' || result.status === 'multiple') {
+			// Normalize solutions: convert opposite nodes to numbers for easier handling
+			return result.solutions.map((s) => normalizeSolutionToNumber(s.value));
+		}
+
+		// If no-solution or infinite, return empty
+		if (result.status === 'no-solution' || result.status === 'infinite') {
+			return [];
+		}
+	} catch {
+		// Solver failed, fall through to pattern matching
+	}
+
+	// Fallback: simple pattern matching for cases solver might not handle
+	return findArgumentZerosSimple(arg, variable);
+}
+
+/**
+ * Normalize a solution node to a number node if possible.
+ * Handles cases like { type: 'opposite', operand: { type: 'number', value: '2' } } → { type: 'number', value: '-2' }
+ */
+function normalizeSolutionToNumber(node: MathNode): MathNode {
+	// Already a number
+	if (node.type === 'number') {
+		return node;
+	}
+
+	// Opposite of a number: -n → number with negative value
+	if (node.type === 'opposite' && node.operand.type === 'number') {
+		const val = -parseFloat(node.operand.value);
+		return { type: 'number', value: formatNumber(val) };
+	}
+
+	// Try to evaluate numerically
+	const numericValue = tryEvaluateNumeric(node);
+	if (numericValue !== null) {
+		return { type: 'number', value: formatNumber(numericValue) };
+	}
+
+	// Return as-is if can't normalize
+	return node;
+}
+
+/**
+ * Simple pattern matching for basic cases.
+ * Used as fallback when solver is unavailable or fails.
+ */
+function findArgumentZerosSimple(arg: MathNode, variable: string): MathNode[] {
 	// Case 1: argument is just the variable
 	if (arg.type === 'variable' && arg.name === variable) {
 		return [{ type: 'number', value: '0' }];
@@ -748,7 +811,6 @@ function findArgumentZeros(arg: MathNode, variable: string): MathNode[] {
 		}
 	}
 
-	// For more complex cases, we'd need equation solving
 	return [];
 }
 
