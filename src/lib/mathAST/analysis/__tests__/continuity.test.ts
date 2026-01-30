@@ -416,4 +416,27 @@ describe('findArgumentZeros with solver integration', () => {
 		// Should find candidate at x = 5
 		expect(points.some((p) => Math.abs(p - 5) < 0.01)).toBe(true);
 	});
+
+	it('finds zeros of cubic argument using findZeros from domain module', () => {
+		// sign(x³ - x) = sign(x(x-1)(x+1)) has jumps at x = -1, 0, 1
+		// This tests the integration with findZeros which handles cubics
+		const xCubed = power(variable('x'), number('3'));
+		const cubicArg = subtract(xCubed, variable('x')); // x³ - x
+		const expr = func('sign', [cubicArg]);
+
+		const candidates = findDiscontinuityCandidates(expr, 'x');
+		const points = candidates
+			.map((c) => {
+				if (c.point.type === 'number') {
+					return parseFloat(c.point.value);
+				}
+				return null;
+			})
+			.filter((p): p is number => p !== null);
+
+		// Should find candidates at x = -1, 0, and 1
+		expect(points.some((p) => Math.abs(p + 1) < 0.01)).toBe(true);
+		expect(points.some((p) => Math.abs(p) < 0.01)).toBe(true);
+		expect(points.some((p) => Math.abs(p - 1) < 0.01)).toBe(true);
+	});
 });

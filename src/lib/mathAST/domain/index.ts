@@ -145,6 +145,19 @@ export { computeDomain } from './compute';
 export type { ComputeDomainOptions } from './compute';
 
 // =============================================================================
+// Preimage and Zero Finding
+// =============================================================================
+
+export {
+	findZeros,
+	classifyExpression,
+	solveLinearInequality,
+	solveQuadraticInequality,
+	solveCubicInequality
+} from './preimage';
+export type { ExpressionKind } from './preimage';
+
+// =============================================================================
 // Validation
 // =============================================================================
 
