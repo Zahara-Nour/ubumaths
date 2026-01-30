@@ -11,7 +11,16 @@
 
 import type { MathNode } from '../types';
 import type { Domain, DomainResult, DomainStep, IntervalSet } from './types';
-import { universalDomain, intervalDomain, greaterThanOrEqual, fromNumber } from './factory';
+import {
+	universalDomain,
+	intervalDomain,
+	greaterThanOrEqual,
+	fromNumber,
+	tanDomain,
+	cotDomain,
+	secDomain,
+	cscDomain
+} from './factory';
 import { intersect, excludePoints, union, isEmpty } from './algebra';
 import { getBuiltinDomain, hasRestrictedDomain, getBuiltinRangeEntry } from './builtins';
 import { isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
@@ -348,6 +357,13 @@ function computeFunctionDomain(
 	const arg = node.args[0];
 	let domain = computeDomainNode(arg, variable, steps, options);
 
+	// Handle functions with periodic exclusions (tan, cot, sec, csc)
+	// For simple argument (just the variable), return PeriodicExclusion directly
+	const periodicDomain = getPeriodicExclusionDomain(node.name, arg, variable);
+	if (periodicDomain) {
+		return intersect(domain, periodicDomain);
+	}
+
 	// Check if this function has a restricted domain
 	if (!hasRestrictedDomain(node.name)) {
 		return domain;
@@ -371,6 +387,50 @@ function computeFunctionDomain(
 	}
 
 	return domain;
+}
+
+/**
+ * Get periodic exclusion domain for trigonometric functions with periodic discontinuities.
+ *
+ * Returns PeriodicExclusion for tan, cot, sec, csc when the argument is simple enough
+ * to compute the preimage of the periodic exclusion.
+ *
+ * @param funcName - The function name
+ * @param arg - The function argument
+ * @param variable - The variable name
+ * @returns PeriodicExclusion domain if applicable, null otherwise
+ */
+function getPeriodicExclusionDomain(
+	funcName: string,
+	arg: MathNode,
+	variable: string
+): Domain | null {
+	const name = funcName.toLowerCase();
+
+	// Only handle tan, cot, sec, csc
+	if (!['tan', 'cot', 'sec', 'csc'].includes(name)) {
+		return null;
+	}
+
+	// Case 1: Simple argument - just the variable (tan(x), cot(x), etc.)
+	if (arg.type === 'variable' && arg.name === variable) {
+		switch (name) {
+			case 'tan':
+				return tanDomain();
+			case 'sec':
+				return secDomain();
+			case 'cot':
+				return cotDomain();
+			case 'csc':
+				return cscDomain();
+		}
+	}
+
+	// Case 2: Linear argument (tan(ax + b)) - more complex preimage computation
+	// For now, return null and let the continuity module handle detection
+	// TODO: Implement preimage computation for linear arguments
+
+	return null;
 }
 
 /**

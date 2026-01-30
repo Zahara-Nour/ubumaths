@@ -262,7 +262,8 @@ export function findDiscontinuityCandidates(
 		}
 	}
 
-	// 2. Handle periodic exclusions (tan, cot, sec, csc)
+	// 2. Handle periodic exclusions from domain (tan, cot, sec, csc)
+	// computeDomain now returns PeriodicExclusion for these functions when argument is simple
 	if (actualDomain.kind === 'periodic_exclusion') {
 		const periodic = actualDomain as PeriodicExclusion;
 		const periodicCandidates = enumeratePeriodicPoints(periodic, opts);
@@ -275,8 +276,8 @@ export function findDiscontinuityCandidates(
 		}
 	}
 
-	// 2b. Detect periodic functions (tan, cot, sec, csc) even when domain is universal
-	// These functions have periodic discontinuities not captured by computeDomain
+	// 2b. Fallback: detect periodic functions when domain didn't capture them
+	// This handles cases like tan(2x) where the periodic exclusion preimage isn't computed yet
 	const periodicFuncCandidates = findPeriodicFunctionDiscontinuities(expr, variable, opts);
 	for (const pc of periodicFuncCandidates) {
 		const key = getPointKey(pc.point);
