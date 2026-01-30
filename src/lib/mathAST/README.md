@@ -644,9 +644,12 @@ console.log(result.isContinuousOnDomain); // true (continuous on ℝ\{0})
 | `infinite`  | Vertical asymptote                               | 1/x at x=0, tan(x) at π/2 |
 | `essential` | Limit doesn't exist                              | sin(1/x) at x=0           |
 
-#### Solver Integration
+#### Zero Finding Integration
 
-The continuity module uses the equation solver to find zeros of arguments in piecewise functions:
+The continuity module uses a unified approach to find zeros of arguments in piecewise functions:
+
+1. **`findZeros` from domain module** (fast algebraic method for polynomials up to degree 3)
+2. **`solveEquation` from solve module** (general equation solver as fallback)
 
 ```typescript
 // abs(x² - 4) has corners at x = ±2
@@ -658,6 +661,11 @@ const result = analyzeContinuity(expr, 'x');
 const expr2 = func('sign', [add(implicitMultiply(number('2'), variable('x')), number('3'))]);
 const result2 = analyzeContinuity(expr2, 'x');
 // Detects jump discontinuity at x = -1.5
+
+// sign(x³ - x) has jumps at x = -1, 0, 1 (cubic - uses findZeros)
+const expr3 = func('sign', [subtract(power(variable('x'), number('3')), variable('x'))]);
+const result3 = analyzeContinuity(expr3, 'x');
+// Detects jump discontinuities at x = -1, 0, 1
 ```
 
 #### Options

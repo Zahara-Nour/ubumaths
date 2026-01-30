@@ -37,8 +37,7 @@ import type {
 	ContinuityRule
 } from './continuity-types';
 
-import { computeDomain } from '../domain/compute';
-import { containsValue, isEmpty } from '../domain/algebra';
+import { computeDomain, containsValue, isEmpty, findZeros } from '../domain';
 import { analyzeOneSidedLimits } from '../limits/evaluate';
 import { analyzeDiscontinuity as classifyDiscontinuity } from '../limits/one-sided';
 import { substitute } from '../eval/substitute';
@@ -713,15 +712,30 @@ function findPeriodicFunctionDiscontinuities(
 }
 
 /**
- * Find zeros of an argument expression using the equation solver.
- * Falls back to pattern matching for simple cases if solver fails.
+ * Find zeros of an argument expression.
+ *
+ * Uses a three-tier approach:
+ * 1. findZeros from domain module (fast algebraic method for polynomials up to degree 3)
+ * 2. solveEquation from solve module (general equation solver)
+ * 3. Returns empty array if both fail
  *
  * @param arg - The argument expression to find zeros of
  * @param variable - The variable name
  * @returns Array of points where arg = 0
  */
 function findArgumentZeros(arg: MathNode, variable: string): MathNode[] {
-	// Try using the solver first: solve arg = 0
+	// Tier 1: Try algebraic method from domain module (fastest)
+	// Handles linear, quadratic, and cubic expressions directly
+	try {
+		const algebraicZeros = findZeros(arg, variable);
+		if (algebraicZeros.length > 0) {
+			return algebraicZeros.map((z) => ({ type: 'number' as const, value: formatNumber(z) }));
+		}
+	} catch {
+		// findZeros failed, try solver
+	}
+
+	// Tier 2: Try equation solver (more general but slower)
 	try {
 		const equation = equals(arg, numNode('0'));
 		const result = solveEquation(equation, {
@@ -740,11 +754,11 @@ function findArgumentZeros(arg: MathNode, variable: string): MathNode[] {
 			return [];
 		}
 	} catch {
-		// Solver failed, fall through to pattern matching
+		// Solver also failed
 	}
 
-	// Fallback: simple pattern matching for cases solver might not handle
-	return findArgumentZerosSimple(arg, variable);
+	// Tier 3: No zeros found
+	return [];
 }
 
 /**
@@ -771,47 +785,6 @@ function normalizeSolutionToNumber(node: MathNode): MathNode {
 
 	// Return as-is if can't normalize
 	return node;
-}
-
-/**
- * Simple pattern matching for basic cases.
- * Used as fallback when solver is unavailable or fails.
- */
-function findArgumentZerosSimple(arg: MathNode, variable: string): MathNode[] {
-	// Case 1: argument is just the variable
-	if (arg.type === 'variable' && arg.name === variable) {
-		return [{ type: 'number', value: '0' }];
-	}
-
-	// Case 2: argument is variable - constant
-	if (arg.type === 'subtraction') {
-		if (arg.left.type === 'variable' && arg.left.name === variable) {
-			if (arg.right.type === 'number') {
-				return [arg.right];
-			}
-		}
-	}
-
-	// Case 3: argument is constant - variable
-	if (arg.type === 'subtraction') {
-		if (arg.right.type === 'variable' && arg.right.name === variable) {
-			if (arg.left.type === 'number') {
-				return [arg.left];
-			}
-		}
-	}
-
-	// Case 4: argument is variable + constant
-	if (arg.type === 'addition') {
-		if (arg.left.type === 'variable' && arg.left.name === variable) {
-			if (arg.right.type === 'number') {
-				const val = -parseFloat(arg.right.value);
-				return [{ type: 'number', value: formatNumber(val) }];
-			}
-		}
-	}
-
-	return [];
 }
 
 // =============================================================================
