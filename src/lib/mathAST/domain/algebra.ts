@@ -292,18 +292,26 @@ export function intersect(a: Domain, b: Domain): Domain {
 		return EMPTY_SET;
 	}
 
-	// Handle PeriodicExclusion cases - conservative fallback
+	// Handle PeriodicExclusion cases
 	if (a.kind === 'periodic_exclusion' && b.kind === 'periodic_exclusion') {
 		// Two periodic exclusions - return the first as approximation
 		// (proper handling would need LCM of periods and combined base points)
 		return a;
 	}
 	if (a.kind === 'periodic_exclusion') {
-		// PeriodicExclusion ∩ IntervalSet - return the interval set
-		// (the periodic exclusions are extra points to exclude from ℝ)
+		// PeriodicExclusion ∩ IntervalSet
+		// If b is universal (ℝ), the result is the PeriodicExclusion
+		// Otherwise, return the interval set (more restrictive)
+		if (intervalsIsUniversal(b)) {
+			return a;
+		}
 		return b;
 	}
 	if (b.kind === 'periodic_exclusion') {
+		// Same logic: if a is universal, return the PeriodicExclusion
+		if (intervalsIsUniversal(a)) {
+			return b;
+		}
 		return a;
 	}
 

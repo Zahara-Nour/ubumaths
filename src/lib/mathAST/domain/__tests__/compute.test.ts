@@ -283,4 +283,46 @@ describe('computeDomain()', () => {
 			expect(result.variable).toBe('t');
 		});
 	});
+
+	describe('periodic exclusions (tan, cot, sec, csc)', () => {
+		it('tan(x) returns periodic_exclusion domain', () => {
+			const expr = func('tan', [variable('x')]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('periodic_exclusion');
+
+			// Check excluded points: π/2 + kπ
+			expect(containsValue(result.domain, 0)).toBe(true); // not excluded
+			expect(containsValue(result.domain, Math.PI / 4)).toBe(true); // not excluded
+			expect(containsValue(result.domain, Math.PI / 2)).toBe(false); // excluded
+			expect(containsValue(result.domain, -Math.PI / 2)).toBe(false); // excluded
+			expect(containsValue(result.domain, (3 * Math.PI) / 2)).toBe(false); // excluded
+		});
+
+		it('cot(x) returns periodic_exclusion domain', () => {
+			const expr = func('cot', [variable('x')]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('periodic_exclusion');
+
+			// Check excluded points: kπ
+			expect(containsValue(result.domain, Math.PI / 2)).toBe(true); // not excluded
+			expect(containsValue(result.domain, 0)).toBe(false); // excluded
+			expect(containsValue(result.domain, Math.PI)).toBe(false); // excluded
+			expect(containsValue(result.domain, -Math.PI)).toBe(false); // excluded
+		});
+
+		it('sec(x) returns periodic_exclusion domain (same as tan)', () => {
+			const expr = func('sec', [variable('x')]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('periodic_exclusion');
+			expect(containsValue(result.domain, Math.PI / 2)).toBe(false); // excluded
+		});
+
+		it('csc(x) returns periodic_exclusion domain (same as cot)', () => {
+			const expr = func('csc', [variable('x')]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('periodic_exclusion');
+			expect(containsValue(result.domain, 0)).toBe(false); // excluded
+			expect(containsValue(result.domain, Math.PI)).toBe(false); // excluded
+		});
+	});
 });
