@@ -157,5 +157,12 @@ export {
 	signedValueToInfinity,
 	isSignedInfinity,
 	isSignedZero,
-	type SignedLimitValue
+	// Binary operations (infinity algebra)
+	addSigns,
+	subtractSigns,
+	multiplySigns,
+	divideSigns,
+	isIndeterminate,
+	type SignedLimitValue,
+	type BinaryOpResult
 } from './sign-tracking';

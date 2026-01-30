@@ -171,24 +171,43 @@ function classifyAtFinitePoint(
  */
 function classifyAtInfinity(expr: MathNode, varName: string, positive: boolean): SignedLimitValue {
 	const testValues = positive ? [1e6, 1e8, 1e10] : [-1e6, -1e8, -1e10];
+	const results: number[] = [];
 
 	for (const testVal of testValues) {
 		const result = evaluateNumeric(expr, varName, testVal);
 		if (result === Infinity) return { type: 'pos-infinity' };
 		if (result === -Infinity) return { type: 'neg-infinity' };
-	}
-
-	// Check the last finite value
-	const lastTest = testValues[testValues.length - 1];
-	const lastResult = evaluateNumeric(expr, varName, lastTest);
-	if (lastResult !== null && Number.isFinite(lastResult)) {
-		if (Math.abs(lastResult) < 1e-6) {
-			return lastResult >= 0 ? { type: 'zero-plus' } : { type: 'zero-minus' };
+		if (result !== null && Number.isFinite(result)) {
+			results.push(result);
 		}
-		return { type: 'finite', value: lastResult };
 	}
 
-	return { type: 'unknown' };
+	if (results.length === 0) {
+		return { type: 'unknown' };
+	}
+
+	const lastResult = results[results.length - 1];
+
+	// Check if values are growing unboundedly (tending to infinity)
+	// If |last| >> |first| and |last| is very large, it's tending to infinity
+	if (results.length >= 2) {
+		const firstAbs = Math.abs(results[0]);
+		const lastAbs = Math.abs(lastResult);
+
+		// If values are growing proportionally with test values, it's tending to infinity
+		// e.g., for f(x) = x, results would be [1e6, 1e8, 1e10] - growing by 100x each time
+		if (lastAbs > 1e8 && lastAbs > firstAbs * 10) {
+			return lastResult > 0 ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
+		}
+	}
+
+	// Check if approaching zero
+	if (Math.abs(lastResult) < 1e-6) {
+		return lastResult >= 0 ? { type: 'zero-plus' } : { type: 'zero-minus' };
+	}
+
+	// Otherwise it's a finite limit
+	return { type: 'finite', value: lastResult };
 }
 
 // =============================================================================
@@ -372,6 +391,280 @@ export function sqrtSign(value: SignedLimitValue): SignedLimitValue {
 		default:
 			return { type: 'unknown' };
 	}
+}
+
+// =============================================================================
+// Binary Operations (Infinity Algebra)
+// =============================================================================
+
+/**
+ * Result of a binary operation that may be indeterminate.
+ */
+export type BinaryOpResult =
+	| SignedLimitValue
+	| { readonly type: 'indeterminate'; readonly form: '∞-∞' | '0·∞' | '∞/∞' | '0/0' };
+
+/**
+ * Check if a binary operation result is indeterminate.
+ */
+export function isIndeterminate(
+	result: BinaryOpResult
+): result is { type: 'indeterminate'; form: string } {
+	return result.type === 'indeterminate';
+}
+
+/**
+ * Add two signed limit values.
+ *
+ * Rules:
+ * - +∞ + +∞ = +∞
+ * - -∞ + -∞ = -∞
+ * - +∞ + -∞ = indeterminate (∞-∞)
+ * - ∞ + finite = ∞
+ * - finite + finite = finite
+ * - 0 + x = x (absorbing for zero)
+ */
+export function addSigns(a: SignedLimitValue, b: SignedLimitValue): BinaryOpResult {
+	// Handle unknown
+	if (a.type === 'unknown' || b.type === 'unknown') {
+		return { type: 'unknown' };
+	}
+
+	// Both infinities
+	if (a.type === 'pos-infinity' && b.type === 'pos-infinity') {
+		return { type: 'pos-infinity' };
+	}
+	if (a.type === 'neg-infinity' && b.type === 'neg-infinity') {
+		return { type: 'neg-infinity' };
+	}
+	if (
+		(a.type === 'pos-infinity' && b.type === 'neg-infinity') ||
+		(a.type === 'neg-infinity' && b.type === 'pos-infinity')
+	) {
+		return { type: 'indeterminate', form: '∞-∞' };
+	}
+
+	// Infinity + finite/zero = infinity
+	if (a.type === 'pos-infinity' || a.type === 'neg-infinity') {
+		return a;
+	}
+	if (b.type === 'pos-infinity' || b.type === 'neg-infinity') {
+		return b;
+	}
+
+	// Both finite
+	if (a.type === 'finite' && b.type === 'finite') {
+		return { type: 'finite', value: a.value + b.value };
+	}
+
+	// Finite + zero = finite
+	if (a.type === 'finite' && isSignedZero(b)) {
+		return a;
+	}
+	if (b.type === 'finite' && isSignedZero(a)) {
+		return b;
+	}
+
+	// Zero + zero
+	if (isSignedZero(a) && isSignedZero(b)) {
+		// 0+ + 0+ = 0+, 0- + 0- = 0-, otherwise unknown sign
+		if (a.type === 'zero-plus' && b.type === 'zero-plus') return { type: 'zero-plus' };
+		if (a.type === 'zero-minus' && b.type === 'zero-minus') return { type: 'zero-minus' };
+		return { type: 'zero' };
+	}
+
+	return { type: 'unknown' };
+}
+
+/**
+ * Subtract two signed limit values (a - b).
+ *
+ * Rules:
+ * - +∞ - -∞ = +∞
+ * - -∞ - +∞ = -∞
+ * - +∞ - +∞ = indeterminate (∞-∞)
+ * - -∞ - -∞ = indeterminate (∞-∞)
+ * - ∞ - finite = ∞
+ * - finite - ∞ = -∞ (opposite sign)
+ */
+export function subtractSigns(a: SignedLimitValue, b: SignedLimitValue): BinaryOpResult {
+	// a - b = a + (-b)
+	return addSigns(a, negateSign(b));
+}
+
+/**
+ * Multiply two signed limit values.
+ *
+ * Rules:
+ * - +∞ · +∞ = +∞
+ * - -∞ · -∞ = +∞
+ * - +∞ · -∞ = -∞
+ * - ∞ · 0 = indeterminate (0·∞)
+ * - ∞ · finite(>0) = ∞ (same sign)
+ * - ∞ · finite(<0) = ∞ (opposite sign)
+ * - 0 · finite = 0
+ */
+export function multiplySigns(a: SignedLimitValue, b: SignedLimitValue): BinaryOpResult {
+	// Handle unknown
+	if (a.type === 'unknown' || b.type === 'unknown') {
+		return { type: 'unknown' };
+	}
+
+	const aIsInf = a.type === 'pos-infinity' || a.type === 'neg-infinity';
+	const bIsInf = b.type === 'pos-infinity' || b.type === 'neg-infinity';
+	const aIsZero = isSignedZero(a);
+	const bIsZero = isSignedZero(b);
+
+	// ∞ · 0 = indeterminate
+	if ((aIsInf && bIsZero) || (bIsInf && aIsZero)) {
+		return { type: 'indeterminate', form: '0·∞' };
+	}
+
+	// Both infinities: sign rule
+	if (aIsInf && bIsInf) {
+		const aPos = a.type === 'pos-infinity';
+		const bPos = b.type === 'pos-infinity';
+		return aPos === bPos ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
+	}
+
+	// Infinity · finite
+	if (aIsInf && b.type === 'finite') {
+		if (b.value === 0) return { type: 'indeterminate', form: '0·∞' };
+		const resultPositive = (a.type === 'pos-infinity') === b.value > 0;
+		return resultPositive ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
+	}
+	if (bIsInf && a.type === 'finite') {
+		if (a.value === 0) return { type: 'indeterminate', form: '0·∞' };
+		const resultPositive = (b.type === 'pos-infinity') === a.value > 0;
+		return resultPositive ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
+	}
+
+	// Both finite
+	if (a.type === 'finite' && b.type === 'finite') {
+		return { type: 'finite', value: a.value * b.value };
+	}
+
+	// Zero · finite = zero (with sign)
+	if (aIsZero && b.type === 'finite') {
+		if (b.value === 0) return { type: 'zero' };
+		const aPositive = a.type === 'zero-plus';
+		const bPositive = b.value > 0;
+		if (a.type === 'zero') return { type: 'zero' };
+		return aPositive === bPositive ? { type: 'zero-plus' } : { type: 'zero-minus' };
+	}
+	if (bIsZero && a.type === 'finite') {
+		if (a.value === 0) return { type: 'zero' };
+		const aPositive = a.value > 0;
+		const bPositive = b.type === 'zero-plus';
+		if (b.type === 'zero') return { type: 'zero' };
+		return aPositive === bPositive ? { type: 'zero-plus' } : { type: 'zero-minus' };
+	}
+
+	// Zero · zero = zero
+	if (aIsZero && bIsZero) {
+		// Sign: positive if same sign, negative if different
+		if (a.type === 'zero' || b.type === 'zero') return { type: 'zero' };
+		const aPos = a.type === 'zero-plus';
+		const bPos = b.type === 'zero-plus';
+		return aPos === bPos ? { type: 'zero-plus' } : { type: 'zero-minus' };
+	}
+
+	return { type: 'unknown' };
+}
+
+/**
+ * Divide two signed limit values (a / b).
+ *
+ * Rules:
+ * - ∞ / ∞ = indeterminate
+ * - 0 / 0 = indeterminate
+ * - finite / ∞ = 0
+ * - ∞ / finite = ∞ (with sign)
+ * - finite / 0 = ∞ (with sign, uses reciprocalSign)
+ * - 0 / finite = 0
+ */
+export function divideSigns(a: SignedLimitValue, b: SignedLimitValue): BinaryOpResult {
+	// Handle unknown
+	if (a.type === 'unknown' || b.type === 'unknown') {
+		return { type: 'unknown' };
+	}
+
+	const aIsInf = a.type === 'pos-infinity' || a.type === 'neg-infinity';
+	const bIsInf = b.type === 'pos-infinity' || b.type === 'neg-infinity';
+	const aIsZero = isSignedZero(a);
+	const bIsZero = isSignedZero(b);
+
+	// ∞ / ∞ = indeterminate
+	if (aIsInf && bIsInf) {
+		return { type: 'indeterminate', form: '∞/∞' };
+	}
+
+	// 0 / 0 = indeterminate
+	if (aIsZero && bIsZero) {
+		return { type: 'indeterminate', form: '0/0' };
+	}
+
+	// finite / ∞ = 0
+	if (!aIsInf && bIsInf) {
+		// Sign of 0 depends on signs of a and b
+		if (a.type === 'finite') {
+			if (a.value === 0) return { type: 'zero' };
+			const aPos = a.value > 0;
+			const bPos = b.type === 'pos-infinity';
+			return aPos === bPos ? { type: 'zero-plus' } : { type: 'zero-minus' };
+		}
+		if (aIsZero) {
+			return { type: 'zero' };
+		}
+	}
+
+	// ∞ / finite = ∞
+	if (aIsInf && b.type === 'finite') {
+		if (b.value === 0) {
+			// ∞ / 0 - technically still ∞ but with potential sign issues
+			return a; // Keep the infinity
+		}
+		const aPos = a.type === 'pos-infinity';
+		const bPos = b.value > 0;
+		return aPos === bPos ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
+	}
+
+	// finite / 0 = ∞ (via reciprocal)
+	if (a.type === 'finite' && bIsZero) {
+		if (a.value === 0) return { type: 'indeterminate', form: '0/0' };
+		const recipB = reciprocalSign(b);
+		if (recipB.type === 'unknown') return { type: 'unknown' };
+		return multiplySigns({ type: 'finite', value: a.value }, recipB);
+	}
+
+	// 0 / finite = 0
+	if (aIsZero && b.type === 'finite') {
+		if (b.value === 0) return { type: 'indeterminate', form: '0/0' };
+		// Sign of 0 depends on signs
+		if (a.type === 'zero') return { type: 'zero' };
+		const aPos = a.type === 'zero-plus';
+		const bPos = b.value > 0;
+		return aPos === bPos ? { type: 'zero-plus' } : { type: 'zero-minus' };
+	}
+
+	// Both finite
+	if (a.type === 'finite' && b.type === 'finite') {
+		if (b.value === 0) {
+			// a / 0 where a is non-zero finite
+			return a.value > 0 ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
+		}
+		return { type: 'finite', value: a.value / b.value };
+	}
+
+	// ∞ / 0 = ∞ (with sign based on both)
+	if (aIsInf && bIsZero) {
+		if (b.type === 'zero') return { type: 'unknown' }; // Need sign of zero
+		const aPos = a.type === 'pos-infinity';
+		const bPos = b.type === 'zero-plus';
+		return aPos === bPos ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
+	}
+
+	return { type: 'unknown' };
 }
 
 // =============================================================================
