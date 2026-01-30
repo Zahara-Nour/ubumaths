@@ -35,7 +35,14 @@ import {
 	sqrtSign,
 	signedValueToInfinity,
 	isSignedInfinity,
-	isSignedZero
+	isSignedZero,
+	// Binary operations (infinity algebra)
+	addSigns,
+	subtractSigns,
+	multiplySigns,
+	divideSigns,
+	isIndeterminate,
+	type SignedLimitValue
 } from './sign-tracking';
 
 // =============================================================================
@@ -79,15 +86,33 @@ export function tryCompositionLimit(
 		if (result.success) return result;
 	}
 
-	// Strategy 3: Division where denominator → 0
+	// Strategy 3: Division using infinity algebra
 	if (isDivision(expr)) {
-		const result = tryDivisionByZero(expr, varName, approach, direction, recorder);
+		const result = tryDivisionLimit(expr, varName, approach, direction, recorder);
 		if (result.success) return result;
 	}
 
 	// Strategy 4: Opposite (negation)
 	if (isOpposite(expr)) {
 		const result = tryOppositeLimit(expr, varName, approach, direction, recorder);
+		if (result.success) return result;
+	}
+
+	// Strategy 5: Addition using infinity algebra
+	if (isAddition(expr)) {
+		const result = tryAdditionLimit(expr, varName, approach, direction, recorder);
+		if (result.success) return result;
+	}
+
+	// Strategy 6: Subtraction using infinity algebra
+	if (isSubtraction(expr)) {
+		const result = trySubtractionLimit(expr, varName, approach, direction, recorder);
+		if (result.success) return result;
+	}
+
+	// Strategy 7: Multiplication using infinity algebra
+	if (isMultiplication(expr)) {
+		const result = tryMultiplicationLimit(expr, varName, approach, direction, recorder);
 		if (result.success) return result;
 	}
 
@@ -414,58 +439,6 @@ function tryFunctionComposition(
 }
 
 // =============================================================================
-// Division by Zero
-// =============================================================================
-
-/**
- * Handle 1/f(x) or a/f(x) where f(x) → 0.
- */
-function tryDivisionByZero(
-	expr: MathNode,
-	varName: string,
-	approach: MathNode,
-	direction: LimitDirection,
-	recorder: LimitStepRecorder
-): CompositionResult {
-	if (!isDivision(expr)) return { success: false };
-
-	const { numerator, denominator } = expr;
-
-	// Check if denominator approaches 0
-	const denLimit = classifyWithSign(denominator, varName, approach, direction);
-	if (!isSignedZero(denLimit)) return { success: false };
-
-	// Check if numerator approaches a finite non-zero value
-	const numLimit = classifyWithSign(numerator, varName, approach, direction);
-	if (numLimit.type !== 'finite' || Math.abs(numLimit.value) < 1e-10) return { success: false };
-
-	// Determine the sign of the result
-	const numPositive = numLimit.value > 0;
-	let resultSign: 'positive' | 'negative';
-
-	if (denLimit.type === 'zero-plus') {
-		resultSign = numPositive ? 'positive' : 'negative';
-	} else if (denLimit.type === 'zero-minus') {
-		resultSign = numPositive ? 'negative' : 'positive';
-	} else {
-		// denLimit.type === 'zero' - need one-sided analysis
-		return { success: false };
-	}
-
-	const value: MathNode = { type: 'infinity', sign: resultSign };
-	recorder.recordStepByRule(
-		'composition',
-		expr,
-		value,
-		'summarized',
-		approach,
-		`Division par ${denLimit.type === 'zero-plus' ? '0⁺' : '0⁻'} donne ${resultSign === 'positive' ? '+∞' : '-∞'}`
-	);
-
-	return { success: true, value, technique: 'composition' };
-}
-
-// =============================================================================
 // Opposite (Negation)
 // =============================================================================
 
@@ -503,6 +476,256 @@ function tryOppositeLimit(
 	}
 
 	return { success: false };
+}
+
+// =============================================================================
+// Addition with Infinity Algebra
+// =============================================================================
+
+/**
+ * Handle a + b using infinity algebra.
+ * Examples: ∞ + ∞ = ∞, ∞ + finite = ∞, ∞ + (-∞) = indeterminate
+ */
+function tryAdditionLimit(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	recorder: LimitStepRecorder
+): CompositionResult {
+	if (!isAddition(expr)) return { success: false };
+
+	const leftLimit = classifyWithSign(expr.left, varName, approach, direction);
+	const rightLimit = classifyWithSign(expr.right, varName, approach, direction);
+
+	// Only apply if at least one operand involves infinity or zero
+	if (!needsInfinityAlgebra(leftLimit, rightLimit)) {
+		return { success: false };
+	}
+
+	const result = addSigns(leftLimit, rightLimit);
+
+	// If indeterminate, don't return a result - let other strategies handle it
+	if (isIndeterminate(result)) {
+		return { success: false };
+	}
+
+	const value = signedValueToInfinity(result);
+	if (value) {
+		recorder.recordStepByRule(
+			'composition',
+			expr,
+			value,
+			'summarized',
+			approach,
+			`${formatSignedValue(leftLimit)} + ${formatSignedValue(rightLimit)} = ${formatSignedValue(result)}`
+		);
+		return { success: true, value, technique: 'composition' };
+	}
+
+	return { success: false };
+}
+
+// =============================================================================
+// Subtraction with Infinity Algebra
+// =============================================================================
+
+/**
+ * Handle a - b using infinity algebra.
+ * Examples: ∞ - (-∞) = ∞, ∞ - ∞ = indeterminate
+ */
+function trySubtractionLimit(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	recorder: LimitStepRecorder
+): CompositionResult {
+	if (!isSubtraction(expr)) return { success: false };
+
+	const leftLimit = classifyWithSign(expr.left, varName, approach, direction);
+	const rightLimit = classifyWithSign(expr.right, varName, approach, direction);
+
+	// Only apply if at least one operand involves infinity or zero
+	if (!needsInfinityAlgebra(leftLimit, rightLimit)) {
+		return { success: false };
+	}
+
+	const result = subtractSigns(leftLimit, rightLimit);
+
+	// If indeterminate, don't return a result - let other strategies handle it
+	if (isIndeterminate(result)) {
+		return { success: false };
+	}
+
+	const value = signedValueToInfinity(result);
+	if (value) {
+		recorder.recordStepByRule(
+			'composition',
+			expr,
+			value,
+			'summarized',
+			approach,
+			`${formatSignedValue(leftLimit)} - ${formatSignedValue(rightLimit)} = ${formatSignedValue(result)}`
+		);
+		return { success: true, value, technique: 'composition' };
+	}
+
+	return { success: false };
+}
+
+// =============================================================================
+// Multiplication with Infinity Algebra
+// =============================================================================
+
+/**
+ * Handle a * b using infinity algebra.
+ * Examples: ∞ · ∞ = ∞, ∞ · 0 = indeterminate, ∞ · finite = ∞
+ */
+function tryMultiplicationLimit(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	recorder: LimitStepRecorder
+): CompositionResult {
+	if (!isMultiplication(expr)) return { success: false };
+
+	const leftLimit = classifyWithSign(expr.left, varName, approach, direction);
+	const rightLimit = classifyWithSign(expr.right, varName, approach, direction);
+
+	// Only apply if at least one operand involves infinity or zero
+	if (!needsInfinityAlgebra(leftLimit, rightLimit)) {
+		return { success: false };
+	}
+
+	const result = multiplySigns(leftLimit, rightLimit);
+
+	// If indeterminate, don't return a result - let other strategies handle it
+	if (isIndeterminate(result)) {
+		return { success: false };
+	}
+
+	const value = signedValueToInfinity(result);
+	if (value) {
+		recorder.recordStepByRule(
+			'composition',
+			expr,
+			value,
+			'summarized',
+			approach,
+			`${formatSignedValue(leftLimit)} · ${formatSignedValue(rightLimit)} = ${formatSignedValue(result)}`
+		);
+		return { success: true, value, technique: 'composition' };
+	}
+
+	return { success: false };
+}
+
+// =============================================================================
+// Division with Infinity Algebra
+// =============================================================================
+
+/**
+ * Handle a / b using infinity algebra.
+ * Examples: ∞ / ∞ = indeterminate, finite / ∞ = 0, ∞ / finite = ∞, finite / 0 = ∞
+ */
+function tryDivisionLimit(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	recorder: LimitStepRecorder
+): CompositionResult {
+	if (!isDivision(expr)) return { success: false };
+
+	const numLimit = classifyWithSign(expr.numerator, varName, approach, direction);
+	const denLimit = classifyWithSign(expr.denominator, varName, approach, direction);
+
+	// Apply infinity algebra for division when:
+	// - At least one operand is infinite, OR
+	// - Denominator is zero (finite/0 = ∞)
+	const numIsInf = isSignedInfinity(numLimit);
+	const denIsInf = isSignedInfinity(denLimit);
+	const denIsZero = isSignedZero(denLimit);
+
+	if (!numIsInf && !denIsInf && !denIsZero) {
+		return { success: false };
+	}
+
+	const result = divideSigns(numLimit, denLimit);
+
+	// If indeterminate, don't return a result - let other strategies (L'Hôpital, etc.) handle it
+	if (isIndeterminate(result)) {
+		return { success: false };
+	}
+
+	const value = signedValueToInfinity(result);
+	if (value) {
+		recorder.recordStepByRule(
+			'composition',
+			expr,
+			value,
+			'summarized',
+			approach,
+			`${formatSignedValue(numLimit)} / ${formatSignedValue(denLimit)} = ${formatSignedValue(result)}`
+		);
+		return { success: true, value, technique: 'composition' };
+	}
+
+	return { success: false };
+}
+
+// =============================================================================
+// Infinity Algebra Helpers
+// =============================================================================
+
+/**
+ * Check if we need to apply infinity algebra.
+ *
+ * We only apply when at least one operand is INFINITE.
+ * Cases with zeros (like 0·bounded) are left to other strategies (squeeze theorem, etc.)
+ * unless paired with infinity (0·∞ = indeterminate).
+ */
+function needsInfinityAlgebra(a: SignedLimitValue, b: SignedLimitValue): boolean {
+	const aIsInf = isSignedInfinity(a);
+	const bIsInf = isSignedInfinity(b);
+
+	// Apply if at least one is infinite
+	if (aIsInf || bIsInf) return true;
+
+	// Also apply for division by zero (finite / 0 = ∞)
+	// This is handled separately in tryDivisionLimit
+
+	return false;
+}
+
+/**
+ * Format a SignedLimitValue for display in step messages.
+ */
+function formatSignedValue(
+	value: SignedLimitValue | { type: 'indeterminate'; form: string }
+): string {
+	switch (value.type) {
+		case 'pos-infinity':
+			return '+∞';
+		case 'neg-infinity':
+			return '-∞';
+		case 'zero-plus':
+			return '0⁺';
+		case 'zero-minus':
+			return '0⁻';
+		case 'zero':
+			return '0';
+		case 'finite':
+			return String(value.value);
+		case 'indeterminate':
+			return `FI(${value.form})`;
+		case 'unknown':
+			return '?';
+		default:
+			return '?';
+	}
 }
 
 // =============================================================================
