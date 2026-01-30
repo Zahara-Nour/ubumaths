@@ -19,8 +19,12 @@ import {
 	tanDomain,
 	cotDomain,
 	secDomain,
-	cscDomain
+	cscDomain,
+	periodicExclusion
 } from './factory';
+import { extractLinearForm } from '../analysis/coefficient-utils';
+import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { number as numberNode } from '../factory';
 import { intersect, excludePoints, union, isEmpty } from './algebra';
 import { getBuiltinDomain, hasRestrictedDomain, getBuiltinRangeEntry } from './builtins';
 import { isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
@@ -395,6 +399,13 @@ function computeFunctionDomain(
  * Returns PeriodicExclusion for tan, cot, sec, csc when the argument is simple enough
  * to compute the preimage of the periodic exclusion.
  *
+ * For tan(x) and sec(x): undefined when x = π/2 + kπ
+ * For cot(x) and csc(x): undefined when x = kπ
+ *
+ * For tan(ax + b): undefined when ax + b = π/2 + kπ
+ *   → x = (π/2 - b)/a + kπ/|a|
+ *   → basePoint = (π/2 - b)/a, period = π/|a|
+ *
  * @param funcName - The function name
  * @param arg - The function argument
  * @param variable - The variable name
@@ -426,11 +437,67 @@ function getPeriodicExclusionDomain(
 		}
 	}
 
-	// Case 2: Linear argument (tan(ax + b)) - more complex preimage computation
-	// For now, return null and let the continuity module handle detection
-	// TODO: Implement preimage computation for linear arguments
+	// Case 2: Linear argument (tan(ax + b), cot(ax + b), etc.)
+	const linearForm = extractLinearForm(arg, variable);
+	if (linearForm) {
+		return createLinearPeriodicExclusion(name, linearForm.coefficient, linearForm.offset);
+	}
 
 	return null;
+}
+
+/**
+ * Create a periodic exclusion domain for a trigonometric function with linear argument.
+ *
+ * For f(ax + b) where f is tan, sec, cot, or csc:
+ * - tan/sec: undefined when ax + b = π/2 + kπ → x = (π/2 - b)/a + kπ/|a|
+ * - cot/csc: undefined when ax + b = kπ → x = -b/a + kπ/|a|
+ *
+ * @param funcName - The function name (tan, sec, cot, csc)
+ * @param coeffNode - The coefficient 'a' as a MathNode
+ * @param offsetNode - The offset 'b' as a MathNode (null if no offset)
+ * @returns PeriodicExclusion or null if cannot compute
+ */
+function createLinearPeriodicExclusion(
+	funcName: string,
+	coeffNode: MathNode,
+	offsetNode: MathNode | null
+): Domain | null {
+	// Evaluate coefficient 'a' to a number
+	let a: number;
+	try {
+		a = evaluateNodeToApproximatedNumber(coeffNode);
+	} catch {
+		return null;
+	}
+
+	// Check for zero coefficient (not linear in variable)
+	if (Math.abs(a) < 1e-10) {
+		return null;
+	}
+
+	// Evaluate offset 'b' to a number (default to 0 if no offset)
+	let b = 0;
+	if (offsetNode) {
+		try {
+			b = evaluateNodeToApproximatedNumber(offsetNode);
+		} catch {
+			return null;
+		}
+	}
+
+	// Determine the base singularity point for the function
+	// tan/sec: singularity at π/2, cot/csc: singularity at 0
+	const baseSingularity = funcName === 'tan' || funcName === 'sec' ? Math.PI / 2 : 0;
+
+	// Compute the new base point: x such that ax + b = baseSingularity
+	// ax + b = baseSingularity → x = (baseSingularity - b) / a
+	const newBasePoint = (baseSingularity - b) / a;
+
+	// Compute the new period: π / |a|
+	const newPeriod = Math.PI / Math.abs(a);
+
+	return periodicExclusion(numberNode(String(newBasePoint)), numberNode(String(newPeriod)));
 }
 
 /**

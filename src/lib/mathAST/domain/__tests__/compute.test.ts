@@ -4,6 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { computeDomain } from '../compute';
+import type { MathNode } from '../../types';
 import {
 	variable,
 	number,
@@ -323,6 +324,104 @@ describe('computeDomain()', () => {
 			expect(result.domain.kind).toBe('periodic_exclusion');
 			expect(containsValue(result.domain, 0)).toBe(false); // excluded
 			expect(containsValue(result.domain, Math.PI)).toBe(false); // excluded
+		});
+	});
+
+	describe('periodic exclusions with linear arguments (tan(ax+b))', () => {
+		it('tan(2x) returns periodic_exclusion with adjusted period', () => {
+			// tan(2x) is undefined when 2x = π/2 + kπ
+			// → x = π/4 + kπ/2
+			const expr = func('tan', [multiply(number('2'), variable('x'), 'implicit')]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('periodic_exclusion');
+
+			// Excluded at x = π/4 + kπ/2
+			expect(containsValue(result.domain, Math.PI / 4)).toBe(false); // excluded
+			expect(containsValue(result.domain, (3 * Math.PI) / 4)).toBe(false); // excluded
+			expect(containsValue(result.domain, -Math.PI / 4)).toBe(false); // excluded
+
+			// Not excluded at x = 0, π/2, etc.
+			expect(containsValue(result.domain, 0)).toBe(true);
+			expect(containsValue(result.domain, Math.PI / 2)).toBe(true);
+		});
+
+		it('tan(x + π/4) returns periodic_exclusion with adjusted base point', () => {
+			// tan(x + π/4) is undefined when x + π/4 = π/2 + kπ
+			// → x = π/4 + kπ
+			const piOver4 = fraction({ type: 'constant', constant: 'pi' } as MathNode, number('4'));
+			const expr = func('tan', [add(variable('x'), piOver4)]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('periodic_exclusion');
+
+			// Excluded at x = π/4 + kπ
+			expect(containsValue(result.domain, Math.PI / 4)).toBe(false); // excluded
+			expect(containsValue(result.domain, Math.PI / 4 + Math.PI)).toBe(false); // excluded
+			expect(containsValue(result.domain, Math.PI / 4 - Math.PI)).toBe(false); // excluded
+
+			// Not excluded at x = 0
+			expect(containsValue(result.domain, 0)).toBe(true);
+		});
+
+		it('cot(3x) returns periodic_exclusion with adjusted period', () => {
+			// cot(3x) is undefined when 3x = kπ
+			// → x = kπ/3
+			const expr = func('cot', [multiply(number('3'), variable('x'), 'implicit')]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('periodic_exclusion');
+
+			// Excluded at x = 0, π/3, 2π/3, π, ...
+			expect(containsValue(result.domain, 0)).toBe(false); // excluded
+			expect(containsValue(result.domain, Math.PI / 3)).toBe(false); // excluded
+			expect(containsValue(result.domain, (2 * Math.PI) / 3)).toBe(false); // excluded
+			expect(containsValue(result.domain, -Math.PI / 3)).toBe(false); // excluded
+
+			// Not excluded at x = π/6
+			expect(containsValue(result.domain, Math.PI / 6)).toBe(true);
+		});
+
+		it('sec(2x - π/2) returns periodic_exclusion with adjusted base and period', () => {
+			// sec(2x - π/2) is undefined when 2x - π/2 = π/2 + kπ
+			// → 2x = π + kπ → x = π/2 + kπ/2
+			const piOver2 = fraction({ type: 'constant', constant: 'pi' } as MathNode, number('2'));
+			const twoX = multiply(number('2'), variable('x'), 'implicit');
+			const expr = func('sec', [subtract(twoX, piOver2)]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('periodic_exclusion');
+
+			// Excluded at x = π/2 + kπ/2
+			expect(containsValue(result.domain, Math.PI / 2)).toBe(false); // excluded
+			expect(containsValue(result.domain, Math.PI)).toBe(false); // excluded
+			expect(containsValue(result.domain, 0)).toBe(false); // excluded
+
+			// Not excluded at x = π/4
+			expect(containsValue(result.domain, Math.PI / 4)).toBe(true);
+		});
+
+		it('tan(x²) returns null (non-linear argument)', () => {
+			// tan(x²) has a non-linear argument, cannot compute periodic exclusion simply
+			const xSquared = power(variable('x'), number('2'));
+			const expr = func('tan', [xSquared]);
+			const result = computeDomain(expr, 'x');
+
+			// Should not return periodic_exclusion for non-linear
+			// Will return universal or interval_set depending on implementation
+			expect(result.domain.kind).not.toBe('periodic_exclusion');
+		});
+
+		it('csc(x/2) returns periodic_exclusion with doubled period', () => {
+			// csc(x/2) is undefined when x/2 = kπ
+			// → x = 2kπ (period = 2π)
+			const expr = func('csc', [fraction(variable('x'), number('2'))]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('periodic_exclusion');
+
+			// Excluded at x = 0, 2π, -2π, ...
+			expect(containsValue(result.domain, 0)).toBe(false); // excluded
+			expect(containsValue(result.domain, 2 * Math.PI)).toBe(false); // excluded
+			expect(containsValue(result.domain, -2 * Math.PI)).toBe(false); // excluded
+
+			// Not excluded at x = π
+			expect(containsValue(result.domain, Math.PI)).toBe(true);
 		});
 	});
 });
