@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Sparkles, Palette, FileText, Gamepad2, Presentation } from 'lucide-svelte';
+	import { Sparkles, Palette, FileText, Gamepad2, Presentation, Circle } from 'lucide-svelte';
 	import MathField from '$lib/components/MathField.svelte';
 	import DynamicMathField from '$lib/components/DynamicMathField.svelte';
 	import FlipCard from '$lib/components/FlipCard.svelte';
@@ -43,6 +43,13 @@
 	}
 
 	const demoPages = [
+		{
+			title: 'Cercle Trigonométrique',
+			description: 'Visualisation du cercle unité avec valeurs remarquables et équations',
+			href: '/demo/trig-circle-demo',
+			icon: Circle,
+			color: 'from-blue-500 to-indigo-500'
+		},
 		{
 			title: 'VIP Cards Holographiques',
 			description: 'Cartes VIP avec effets holographiques 3D interactifs',
