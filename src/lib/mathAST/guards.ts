@@ -29,6 +29,7 @@ import type {
 	CompositionNode,
 	ComplexNode,
 	InfinityNode,
+	SignedZeroNode,
 	LimitNode,
 	LiteralNode,
 	BinaryOperationNode,
@@ -275,6 +276,13 @@ export function isComplex(node: MathNode): node is ComplexNode {
  */
 export function isInfinity(node: MathNode): node is InfinityNode {
 	return node.type === 'infinity';
+}
+
+/**
+ * Type guard for SignedZeroNode (0⁺ or 0⁻)
+ */
+export function isSignedZero(node: MathNode): node is SignedZeroNode {
+	return node.type === 'signed-zero';
 }
 
 /**
