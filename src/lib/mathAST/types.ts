@@ -501,6 +501,34 @@ export interface InfinityNode extends BaseNode {
 }
 
 // =============================================================================
+// Signed Zero Node
+// =============================================================================
+
+/**
+ * Represents a signed zero (0⁺ or 0⁻) for limit calculations.
+ *
+ * Essential for computing limits involving division by zero:
+ * - 1/0⁺ = +∞, 1/0⁻ = -∞
+ * - ln(0⁺) = -∞
+ * - exp(-∞) = 0⁺
+ *
+ * Also handles indeterminate forms:
+ * - 0⁺/0⁺ = indeterminate (0/0)
+ * - 0⁺ × (+∞) = indeterminate (0·∞)
+ *
+ * @example
+ * // Zero approached from positive side
+ * { type: 'signed-zero', sign: 'positive' }  // 0⁺
+ *
+ * // Zero approached from negative side
+ * { type: 'signed-zero', sign: 'negative' }  // 0⁻
+ */
+export interface SignedZeroNode extends BaseNode {
+	readonly type: 'signed-zero';
+	readonly sign: InfinitySign;
+}
+
+// =============================================================================
 // Limit Node
 // =============================================================================
 
@@ -607,6 +635,7 @@ export type MathNode =
 	| CompositionNode
 	| ComplexNode
 	| InfinityNode
+	| SignedZeroNode
 	| LimitNode;
 
 // =============================================================================

@@ -35,6 +35,7 @@ import type {
 	PositiveNode,
 	RelationNode,
 	RelationType,
+	SignedZeroNode,
 	SubscriptNode,
 	SubtractionNode,
 	SuperscriptNode,
@@ -1272,6 +1273,55 @@ export function negativeInfinity(metadata?: NodeMetadata): InfinityNode {
 }
 
 // =============================================================================
+// Signed Zero Factories
+// =============================================================================
+
+/**
+ * Creates a signed zero node (0⁺ or 0⁻).
+ *
+ * Used in limit calculations where the direction of approach matters:
+ * - 1/0⁺ = +∞
+ * - 1/0⁻ = -∞
+ * - ln(0⁺) = -∞
+ *
+ * @param sign - 'positive' for 0⁺, 'negative' for 0⁻
+ * @param metadata - Optional rendering hints
+ */
+export function signedZero(sign: InfinitySign, metadata?: NodeMetadata): SignedZeroNode {
+	return {
+		type: 'signed-zero',
+		sign,
+		...(metadata && { metadata })
+	};
+}
+
+/**
+ * Creates a positive signed zero (0⁺).
+ * Represents approaching zero from the positive side.
+ *
+ * @param metadata - Optional rendering hints
+ *
+ * @example
+ * zeroPlus()  // 0⁺
+ */
+export function zeroPlus(metadata?: NodeMetadata): SignedZeroNode {
+	return signedZero('positive', metadata);
+}
+
+/**
+ * Creates a negative signed zero (0⁻).
+ * Represents approaching zero from the negative side.
+ *
+ * @param metadata - Optional rendering hints
+ *
+ * @example
+ * zeroMinus()  // 0⁻
+ */
+export function zeroMinus(metadata?: NodeMetadata): SignedZeroNode {
+	return signedZero('negative', metadata);
+}
+
+// =============================================================================
 // Limit Factories
 // =============================================================================
 
@@ -1818,6 +1868,11 @@ export const MathAST = {
 	infinity,
 	positiveInfinity,
 	negativeInfinity,
+
+	// Signed zeros
+	signedZero,
+	zeroPlus,
+	zeroMinus,
 
 	// Limits
 	limit,
