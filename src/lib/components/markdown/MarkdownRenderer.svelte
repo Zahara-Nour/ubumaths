@@ -47,6 +47,7 @@
 	import Blockquote from './nodes/Blockquote.svelte';
 	import VariationTable from './nodes/VariationTable.svelte';
 	import ProbabilityTree from './nodes/ProbabilityTree.svelte';
+	import TrigCircle from './nodes/TrigCircle.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -259,6 +260,8 @@
 					<VariationTable {node} />
 				{:else if node.type === 'probability-tree'}
 					<ProbabilityTree {node} />
+				{:else if node.type === 'trig-circle'}
+					<TrigCircle {node} />
 				{/if}
 			{/each}
 		{:else}

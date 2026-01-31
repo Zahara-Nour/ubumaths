@@ -60,6 +60,7 @@ import {
 import { isCodeFence, findCodeBlocks, parseCodeBlock } from './code-block-parser';
 import { findVariationBlocks, parseVariationTable } from './variation-table-parser';
 import { findProbTreeBlocks, parseProbabilityTree } from './probability-tree-parser';
+import { findTrigCircleBlocks, parseTrigCircle } from './trig-circle-parser';
 
 // ============================================================================
 // REGULAR EXPRESSIONS
@@ -360,11 +361,12 @@ function parseBlocks(
 	const blocks: BlockNode[] = [];
 	let i = 0;
 
-	// Find all structured blocks (code, variation tables, probability trees, blockquotes, lists, tables)
-	// Code blocks, variation tables, and probability trees have highest priority as their content is verbatim
+	// Find all structured blocks (code, variation tables, probability trees, trig circles, blockquotes, lists, tables)
+	// Code blocks, variation tables, probability trees, and trig circles have highest priority as their content is verbatim
 	// Use original lines for code blocks to preserve math expressions
 	const variationBlocks = findVariationBlocks(originalLines);
 	const probTreeBlocks = findProbTreeBlocks(originalLines);
+	const trigCircleBlocks = findTrigCircleBlocks(originalLines);
 
 	// =========================================================================
 	// CODE BLOCK LINE INDEX MISMATCH FIX
@@ -445,7 +447,26 @@ function parseBlocks(
 			continue;
 		}
 
-		// PRIORITY 1c: Check if this line is part of a code block (highest priority)
+		// PRIORITY 1c: Check if this line is part of a trig circle block
+		// Trig circles use ```trig syntax and must be checked before regular code blocks
+		const trigCircleBlock = trigCircleBlocks.find(
+			(range) => i >= range.startIndex && i <= range.endIndex
+		);
+		if (trigCircleBlock) {
+			const result = parseTrigCircle(
+				originalLines,
+				trigCircleBlock.startIndex,
+				trigCircleBlock.endIndex
+			);
+			if (result.node) {
+				blocks.push(result.node);
+			}
+			// Note: Errors are silently ignored for now; could be logged if needed
+			i = trigCircleBlock.endIndex + 1;
+			continue;
+		}
+
+		// PRIORITY 1d: Check if this line is part of a code block (highest priority)
 		// Uses codeBlocks (from `lines`) for detection - indices match the loop variable `i`
 		const codeBlock = codeBlocks.find((range) => i >= range.startIndex && i <= range.endIndex);
 		if (codeBlock) {

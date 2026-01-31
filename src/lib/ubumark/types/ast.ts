@@ -492,9 +492,13 @@ export type { VariationTableNode } from './variation-table';
 // Re-export ProbabilityTreeNode for inclusion in BlockNode union
 export type { ProbabilityTreeNode } from './probability-tree';
 
+// Re-export TrigCircleNode for inclusion in BlockNode union
+export type { TrigCircleNode } from './trig-circle';
+
 // Import the types for use in BlockNode union
 import type { VariationTableNode } from './variation-table';
 import type { ProbabilityTreeNode } from './probability-tree';
+import type { TrigCircleNode } from './trig-circle';
 
 /**
  * Union of block nodes (top-level document structure)
@@ -511,7 +515,8 @@ export type BlockNode =
 	| BlockquoteNode
 	| CodeBlockNode
 	| VariationTableNode
-	| ProbabilityTreeNode;
+	| ProbabilityTreeNode
+	| TrigCircleNode;
 
 // ============================================================================
 // COMPOSITE NODES
