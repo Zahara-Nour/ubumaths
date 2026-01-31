@@ -86,6 +86,9 @@ export type {
 	EvalMode,
 	EvalOptions,
 	EvalResult,
+	EvalValue,
+	ComplexValueResult,
+	IndeterminateForm,
 	SubstituteOptions,
 	// Unit-aware evaluation types
 	UnitConversionMode,
@@ -96,7 +99,12 @@ export type {
 export {
 	DEFAULT_EVAL_OPTIONS,
 	DEFAULT_SUBSTITUTE_OPTIONS,
-	DEFAULT_EVAL_WITH_UNITS_OPTIONS
+	DEFAULT_EVAL_WITH_UNITS_OPTIONS,
+	// Type guards for EvalResult
+	isEvalValue,
+	isEvalIndeterminate,
+	isEvalUnevaluable,
+	unwrapEvalResult
 } from './types';
 
 // =============================================================================

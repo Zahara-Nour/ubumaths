@@ -443,6 +443,24 @@ export function evaluateWithUnits(
 			functions: opts.functions
 		});
 
+		// Handle non-value results
+		if (siResult.status !== 'value') {
+			throw new DimensionalEvaluationError(
+				siResult.status === 'unevaluable'
+					? siResult.reason
+					: `Indeterminate form: ${siResult.form}`,
+				[
+					{
+						code: 'EVAL_FAILED',
+						message:
+							siResult.status === 'unevaluable'
+								? siResult.reason
+								: `Indeterminate form: ${siResult.form}`
+					}
+				]
+			);
+		}
+
 		const siValue = getNumericValue(siResult.value);
 		const best = selectBestUnit(siValue, siUnit);
 
@@ -479,6 +497,24 @@ export function evaluateWithUnits(
 		precision: opts.precision,
 		functions: opts.functions
 	});
+
+	// Handle non-value results
+	if (evalResult.status !== 'value') {
+		throw new DimensionalEvaluationError(
+			evalResult.status === 'unevaluable'
+				? evalResult.reason
+				: `Indeterminate form: ${evalResult.form}`,
+			[
+				{
+					code: 'EVAL_FAILED',
+					message:
+						evalResult.status === 'unevaluable'
+							? evalResult.reason
+							: `Indeterminate form: ${evalResult.form}`
+				}
+			]
+		);
+	}
 
 	// Step 8: Build and return result with the correctly computed finalUnit
 	return {

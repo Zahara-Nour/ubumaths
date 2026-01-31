@@ -143,41 +143,116 @@ export interface ComplexValueResult {
 export type EvalValue = MathNode | number | ComplexValueResult;
 
 /**
+ * Indeterminate forms that can arise during evaluation, especially for limits.
+ *
+ * These forms require special handling (e.g., L'Hôpital's rule) and cannot
+ * be evaluated to a definite value without additional context.
+ */
+export type IndeterminateForm = '0/0' | '∞/∞' | '0·∞' | '∞-∞' | '0^0' | '1^∞' | '∞^0';
+
+/**
  * Result of evaluating a mathematical expression.
  *
- * Contains both the computed value and the simplified AST representation.
+ * This is a discriminated union with three possible statuses:
+ * - 'value': Successful evaluation with a computed value
+ * - 'indeterminate': An indeterminate form was encountered (e.g., 0/0)
+ * - 'unevaluable': Expression cannot be evaluated (e.g., free variables)
  *
  * @example
- * // Exact evaluation result (mode: 'exact')
+ * // Successful evaluation (status: 'value')
  * const result: EvalResult = {
+ *   status: 'value',
  *   value: sqrt(number('2')),  // MathNode for sqrt(2)
  *   node: sqrt(number('2')),
  *   exact: true
  * };
  *
- * // Decimal evaluation result (mode: 'decimal')
+ * // Indeterminate form (status: 'indeterminate')
  * const result: EvalResult = {
- *   value: 1.4142135623730951,
- *   node: number('1.4142135623730951'),
- *   exact: false
+ *   status: 'indeterminate',
+ *   form: '0/0'
  * };
  *
- * // Complex evaluation result
+ * // Unevaluable expression (status: 'unevaluable')
  * const result: EvalResult = {
- *   value: { real: 3, imag: 4 },  // 3 + 4i
- *   node: complex(number('3'), number('4')),
- *   exact: false
+ *   status: 'unevaluable',
+ *   reason: 'Cannot evaluate: free variables: x'
  * };
  */
-export interface EvalResult {
-	/** The computed value: MathNode (exact mode), number (decimal mode), or ComplexValueResult */
-	readonly value: EvalValue;
+export type EvalResult =
+	| {
+			readonly status: 'value';
+			/** The computed value: MathNode (exact mode), number (decimal mode), or ComplexValueResult */
+			readonly value: EvalValue;
+			/** The simplified AST node representing the result */
+			readonly node: MathNode;
+			/** True if the result is exact (no approximation or rounding) */
+			readonly exact: boolean;
+	  }
+	| {
+			readonly status: 'indeterminate';
+			/** The specific indeterminate form encountered */
+			readonly form: IndeterminateForm;
+	  }
+	| {
+			readonly status: 'unevaluable';
+			/** Description of why the expression cannot be evaluated */
+			readonly reason: string;
+	  };
 
-	/** The simplified AST node representing the result */
-	readonly node: MathNode;
+// =============================================================================
+// Type Guards for EvalResult
+// =============================================================================
 
-	/** True if the result is exact (no approximation or rounding) */
-	readonly exact: boolean;
+/**
+ * Type guard to check if an EvalResult is a successful value result.
+ */
+export function isEvalValue(
+	result: EvalResult
+): result is EvalResult & { status: 'value'; value: EvalValue; node: MathNode; exact: boolean } {
+	return result.status === 'value';
+}
+
+/**
+ * Type guard to check if an EvalResult is an indeterminate form.
+ */
+export function isEvalIndeterminate(
+	result: EvalResult
+): result is EvalResult & { status: 'indeterminate'; form: IndeterminateForm } {
+	return result.status === 'indeterminate';
+}
+
+/**
+ * Type guard to check if an EvalResult is unevaluable.
+ */
+export function isEvalUnevaluable(
+	result: EvalResult
+): result is EvalResult & { status: 'unevaluable'; reason: string } {
+	return result.status === 'unevaluable';
+}
+
+/**
+ * Unwraps an EvalResult, throwing an error if not a value.
+ *
+ * This is a convenience function for callers who expect evaluation to succeed
+ * and want to get the value directly or have an error thrown.
+ *
+ * @param result - The EvalResult to unwrap
+ * @returns The value from a successful evaluation
+ * @throws Error if the result is indeterminate or unevaluable
+ */
+export function unwrapEvalResult(result: EvalResult): {
+	value: EvalValue;
+	node: MathNode;
+	exact: boolean;
+} {
+	if (result.status === 'value') {
+		return { value: result.value, node: result.node, exact: result.exact };
+	}
+	if (result.status === 'indeterminate') {
+		throw new Error(`Indeterminate form: ${result.form}`);
+	}
+	throw new Error(result.reason);
 }
 
 // =============================================================================

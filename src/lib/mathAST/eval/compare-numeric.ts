@@ -39,44 +39,49 @@ export function compareNumericNodes(a: MathNode, b: MathNode): ComparisonResult 
 		return compareWithInfinity(a, b, aIsInfinity, bIsInfinity);
 	}
 
-	try {
-		// Step 1: Compute difference
-		const diff = subtract(a, b);
+	// Step 1: Compute difference
+	const diff = subtract(a, b);
 
-		// Step 2: Evaluate in exact mode
-		const exactResult = evaluate(diff, { mode: 'exact' });
+	// Step 2: Evaluate in exact mode
+	const exactResult = evaluate(diff, { mode: 'exact' });
 
-		// Step 3: Check for exact zero
-		// In exact mode, value is always a MathNode (not number or ComplexValueResult)
-		const exactValue = exactResult.value;
-		if (
-			typeof exactValue === 'object' &&
-			'type' in exactValue &&
-			isNumber(exactValue) &&
-			exactValue.value === '0'
-		) {
-			return 0;
-		}
-
-		// Step 4: Evaluate in decimal mode to get numeric value
-		const decimalResult = evaluate(exactResult.node, { mode: 'decimal' });
-
-		// Step 5: Determine sign
-		if (typeof decimalResult.value === 'number') {
-			if (Number.isNaN(decimalResult.value)) {
-				return undefined;
-			}
-			if (decimalResult.value > 0) return 1;
-			if (decimalResult.value < 0) return -1;
-			return 0;
-		}
-
-		// Complex number result - no total ordering
-		return undefined;
-	} catch {
-		// Evaluation failed (free variables, etc.)
+	// Handle non-value results
+	if (exactResult.status !== 'value') {
 		return undefined;
 	}
+
+	// Step 3: Check for exact zero
+	// In exact mode, value is always a MathNode (not number or ComplexValueResult)
+	const exactValue = exactResult.value;
+	if (
+		typeof exactValue === 'object' &&
+		'type' in exactValue &&
+		isNumber(exactValue) &&
+		exactValue.value === '0'
+	) {
+		return 0;
+	}
+
+	// Step 4: Evaluate in decimal mode to get numeric value
+	const decimalResult = evaluate(exactResult.node, { mode: 'decimal' });
+
+	// Handle non-value results
+	if (decimalResult.status !== 'value') {
+		return undefined;
+	}
+
+	// Step 5: Determine sign
+	if (typeof decimalResult.value === 'number') {
+		if (Number.isNaN(decimalResult.value)) {
+			return undefined;
+		}
+		if (decimalResult.value > 0) return 1;
+		if (decimalResult.value < 0) return -1;
+		return 0;
+	}
+
+	// Complex number result - no total ordering
+	return undefined;
 }
 
 /**

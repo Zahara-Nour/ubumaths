@@ -30,7 +30,8 @@ import {
 	relation
 } from '../../factory';
 import type { MathNode } from '../../types';
-import type { EvalValue } from '../types';
+import type { EvalValue, EvalResult } from '../types';
+import { isEvalValue, isEvalUnevaluable } from '../types';
 import { isNumber, isDivision, isOpposite } from '../../guards';
 
 // =============================================================================
@@ -45,12 +46,42 @@ function isMathNode(value: EvalValue): value is MathNode {
 }
 
 /**
- * Helper to evaluate LaTeX and get the numeric value
+ * Helper to evaluate LaTeX and get the numeric value.
+ * Throws if result is not a value (for backward compatibility with existing tests).
  */
 function evalLatex(latex: string, mode: 'exact' | 'decimal' = 'exact'): EvalValue {
 	const ast = parseLatex(latex);
 	const result = evaluate(ast, { mode });
+	if (!isEvalValue(result)) {
+		throw new Error(
+			result.status === 'unevaluable' ? result.reason : `Indeterminate form: ${result.form}`
+		);
+	}
 	return result.value;
+}
+
+/**
+ * Helper to evaluate LaTeX and return the full result object.
+ * Note: Kept for potential future use, prefixed to satisfy ESLint.
+ */
+function _evalLatexFull(latex: string, mode: 'exact' | 'decimal' = 'exact'): EvalResult {
+	const ast = parseLatex(latex);
+	return evaluate(ast, { mode });
+}
+
+/**
+ * Helper to assert that evaluation returns unevaluable with a matching reason.
+ */
+function expectUnevaluable(
+	ast: MathNode,
+	reasonPattern: RegExp,
+	mode: 'exact' | 'decimal' = 'exact'
+): void {
+	const result = evaluate(ast, { mode });
+	expect(result.status).toBe('unevaluable');
+	if (isEvalUnevaluable(result)) {
+		expect(result.reason).toMatch(reasonPattern);
+	}
 }
 
 /**
@@ -117,6 +148,8 @@ function expectRational(latex: string, expectedN: bigint, expectedD: bigint): vo
  */
 function expectAstRational(ast: MathNode, expectedN: bigint, expectedD: bigint): void {
 	const result = evaluate(ast, { mode: 'exact' });
+	expect(result.status).toBe('value');
+	if (!isEvalValue(result)) return;
 	expect(isMathNode(result.value)).toBe(true);
 	if (!isMathNode(result.value)) return;
 	expectMathNodeRational(result.value, expectedN, expectedD);
@@ -203,9 +236,9 @@ describe('evaluate - basic arithmetic', () => {
 			expect(result.value).toBe(2.5);
 		});
 
-		it('throws on division by zero', () => {
+		it('returns unevaluable on division by zero', () => {
 			const ast = divide(number('5'), number('0'), 'fraction');
-			expect(() => evaluate(ast)).toThrow(/division by zero/i);
+			expectUnevaluable(ast, /division by zero/i);
 		});
 
 		it('evaluates frac{1}{3}', () => {
@@ -324,10 +357,10 @@ describe('evaluate - square roots', () => {
 		expectRational('\\sqrt{9}+1', 4n, 1n);
 	});
 
-	it('throws on sqrt of negative number in decimal mode', () => {
+	it('returns unevaluable on sqrt of negative number in decimal mode', () => {
 		const ast = sqrt(opposite(number('4')));
-		// In decimal mode, sqrt of negative throws
-		expect(() => evaluate(ast, { mode: 'decimal' })).toThrow(/sqrt.*negative|non-negative/i);
+		// In decimal mode, sqrt of negative returns unevaluable
+		expectUnevaluable(ast, /sqrt.*negative|non-negative/i, 'decimal');
 	});
 
 	it('keeps sqrt of negative symbolic in exact mode', () => {
@@ -512,60 +545,61 @@ describe('evaluate - unary operations', () => {
 
 describe('evaluate - error cases', () => {
 	describe('unsubstituted variables', () => {
-		it('throws on expression with single variable', () => {
+		it('returns unevaluable on expression with single variable', () => {
 			const ast = variable('x');
-			expect(() => evaluate(ast)).toThrow(/free variables.*x/i);
+			expectUnevaluable(ast, /free variables.*x/i);
 		});
 
-		it('throws on expression with variable in operation', () => {
+		it('returns unevaluable on expression with variable in operation', () => {
 			const ast = add(variable('x'), number('1'));
-			expect(() => evaluate(ast)).toThrow(/free variables.*x/i);
+			expectUnevaluable(ast, /free variables.*x/i);
 		});
 
-		it('throws on Greek letter variable (not pi)', () => {
+		it('returns unevaluable on Greek letter variable (not pi)', () => {
 			const ast = greek('alpha');
-			expect(() => evaluate(ast)).toThrow(/free variables.*alpha/i);
+			expectUnevaluable(ast, /free variables.*alpha/i);
 		});
 
 		it('lists all unsubstituted variables in error message', () => {
 			const ast = add(variable('x'), variable('y'));
-			expect(() => evaluate(ast)).toThrow(/x.*y|y.*x/);
+			expectUnevaluable(ast, /x.*y|y.*x/);
 		});
 	});
 
 	describe('division by zero', () => {
-		it('throws on 1/0', () => {
+		it('returns unevaluable on 1/0', () => {
 			const ast = divide(number('1'), number('0'), 'fraction');
-			expect(() => evaluate(ast)).toThrow(/division by zero/i);
+			expectUnevaluable(ast, /division by zero/i);
 		});
 
-		it('throws on x/0 where x is computed', () => {
+		it('returns unevaluable on x/0 where x is computed', () => {
 			const ast = divide(
 				add(number('1'), number('2')),
 				subtract(number('5'), number('5')),
 				'fraction'
 			);
-			expect(() => evaluate(ast)).toThrow(/division by zero/i);
+			expectUnevaluable(ast, /division by zero/i);
 		});
 	});
 
 	describe('unknown functions', () => {
-		it('throws on unknown function', () => {
+		it('returns unevaluable on unknown function', () => {
 			const ast = func('unknownfunc', [number('5')]);
-			expect(() => evaluate(ast)).toThrow('Unknown function: unknownfunc');
+			expectUnevaluable(ast, /unknown function.*unknownfunc/i);
 		});
 	});
 
 	describe('non-evaluable node types', () => {
-		it('throws on subscript expressions', () => {
+		it('returns unevaluable on subscript expressions', () => {
 			const ast = subscript(variable('x'), number('1'));
-			// First, it will throw for variable
-			expect(() => evaluate(ast)).toThrow();
+			// First, it will return unevaluable for variable
+			const result = evaluate(ast);
+			expect(result.status).toBe('unevaluable');
 		});
 
-		it('throws on relation expressions', () => {
+		it('returns unevaluable on relation expressions', () => {
 			const ast = relation('=', number('5'), number('5'));
-			expect(() => evaluate(ast)).toThrow('Cannot evaluate relation expressions');
+			expectUnevaluable(ast, /cannot evaluate relation expressions/i);
 		});
 	});
 });
