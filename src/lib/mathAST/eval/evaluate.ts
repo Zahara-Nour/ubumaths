@@ -56,6 +56,8 @@ import { integerNthRoot } from '../normal/radical';
 import { number, divide } from '../factory';
 import { normalize } from '../normal/normalize';
 import { denormalize } from '../normal/denormalize';
+import { normalizeExtended } from '../normal/normalize-extended';
+import { denormalizeExtended } from '../normal/denormalize';
 import { mapNode } from '../transforms';
 
 // =============================================================================
@@ -1695,6 +1697,27 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 		}
 
 		try {
+			// Use normalizeExtended for limit calculations to handle ∞, 0±, and indeterminate forms
+			if (opts.limit) {
+				const result = normalizeExtended(processedNode);
+
+				if (result.type === 'indeterminate') {
+					return {
+						status: 'indeterminate',
+						form: result.form
+					};
+				}
+
+				const simplifiedNode = denormalizeExtended(result);
+				return {
+					status: 'value',
+					value: simplifiedNode,
+					node: simplifiedNode,
+					exact: true
+				};
+			}
+
+			// Standard exact mode: use regular normalize/denormalize
 			const normalForm = normalize(processedNode);
 			let simplifiedNode = denormalize(normalForm);
 

@@ -14,9 +14,11 @@ import type {
 	AlgebraicTerm,
 	SymbolicFactor,
 	SimplifiedRadical,
-	Rational
+	Rational,
+	ExtendedNormalizeResult
 } from './types';
 import { isZero as isZeroRational, isOne as isOneRational, isNegative } from './rational';
+import { positiveInfinity, negativeInfinity, zeroPlus, zeroMinus } from '../factory';
 
 // =============================================================================
 // Helper Functions
@@ -497,4 +499,30 @@ export function denormalize(form: NormalForm): MathNode {
 		denominator: denNode,
 		displayStyle: 'fraction' as const
 	};
+}
+
+/**
+ * Denormalizes an ExtendedNormalizeResult back to a MathNode.
+ *
+ * Handles:
+ * - 'normal': Delegates to denormalize()
+ * - 'infinity': Returns InfinityNode (positive or negative)
+ * - 'signed-zero': Returns SignedZeroNode (0⁺ or 0⁻)
+ * - 'indeterminate': Throws an error (cannot represent as MathNode)
+ *
+ * @param result - The ExtendedNormalizeResult to denormalize
+ * @returns A MathNode representing the result
+ * @throws Error if the result is indeterminate
+ */
+export function denormalizeExtended(result: ExtendedNormalizeResult): MathNode {
+	switch (result.type) {
+		case 'normal':
+			return denormalize(result.form);
+		case 'infinity':
+			return result.sign === 'positive' ? positiveInfinity() : negativeInfinity();
+		case 'signed-zero':
+			return result.sign === 'positive' ? zeroPlus() : zeroMinus();
+		case 'indeterminate':
+			throw new Error(`Cannot denormalize indeterminate form: ${result.form}`);
+	}
 }

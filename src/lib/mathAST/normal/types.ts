@@ -269,6 +269,27 @@ import type { Verbosity } from '../common/verbosity.js';
  */
 export type NormalizationVerbosity = Verbosity;
 
+// =============================================================================
+// Extended Normalization Types (for Limits)
+// =============================================================================
+
+import type { IndeterminateForm } from '../eval/types.js';
+
+/**
+ * Extended result from normalization that can represent:
+ * - Normal forms (finite algebraic expressions)
+ * - Infinities (positive or negative)
+ * - Signed zeros (approaching from positive or negative side)
+ * - Indeterminate forms (0/0, ∞/∞, etc.)
+ *
+ * Used by normalizeExtended() for limit calculations.
+ */
+export type ExtendedNormalizeResult =
+	| { readonly type: 'normal'; readonly form: NormalForm }
+	| { readonly type: 'infinity'; readonly sign: 'positive' | 'negative' }
+	| { readonly type: 'signed-zero'; readonly sign: 'positive' | 'negative' }
+	| { readonly type: 'indeterminate'; readonly form: IndeterminateForm };
+
 /**
  * Represents a single normalization/simplification step.
  *

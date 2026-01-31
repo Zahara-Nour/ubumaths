@@ -21,7 +21,8 @@ export type {
 	ComparisonResult,
 	NormalizationStep,
 	NormalizeOptions,
-	NormalizeResult
+	NormalizeResult,
+	ExtendedNormalizeResult
 } from './types.js';
 
 // =============================================================================
@@ -198,11 +199,14 @@ export {
 
 export { normalize, ZERO_NORMAL_FORM, ONE_NORMAL_FORM } from './normalize.js';
 
+export { normalizeExtended } from './normalize-extended.js';
+
 export {
 	denormalize,
 	denormalizeTerm,
 	denormalizeCoefficient,
-	denormalizeMonomial
+	denormalizeMonomial,
+	denormalizeExtended
 } from './denormalize.js';
 
 // =============================================================================
