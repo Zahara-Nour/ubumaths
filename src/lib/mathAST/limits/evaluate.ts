@@ -39,6 +39,11 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { number } from '../factory';
 import { computeDomain } from '../domain/compute';
 import { containsValue } from '../domain/algebra';
+import {
+	tryEvaluateLimitExact,
+	resultToFiniteNode,
+	isIndeterminateResult
+} from './exact-evaluation';
 
 // =============================================================================
 // Default Options
@@ -658,8 +663,60 @@ function evaluateLimitInternal(
 
 /**
  * Try direct substitution to evaluate the limit.
+ * Uses exact arithmetic first, with fallback to numeric evaluation.
  */
 function tryDirectSubstitution(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	recorder: LimitStepRecorderImpl
+): MathNode | null {
+	// Try exact evaluation first
+	const exactResult = tryDirectSubstitutionExact(expr, varName, approach, recorder);
+	if (exactResult !== null) {
+		return exactResult;
+	}
+
+	// Fallback to numeric evaluation
+	return tryDirectSubstitutionNumeric(expr, varName, approach, recorder);
+}
+
+/**
+ * Try direct substitution using exact arithmetic.
+ */
+function tryDirectSubstitutionExact(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	recorder: LimitStepRecorderImpl
+): MathNode | null {
+	const result = tryEvaluateLimitExact(expr, varName, approach, 'both');
+
+	if (!result || isIndeterminateResult(result)) {
+		return null; // Indeterminate form or evaluation failed
+	}
+
+	const node = resultToFiniteNode(result);
+	if (node) {
+		recorder.recordStepByRule(
+			'direct-substitution',
+			expr,
+			node,
+			'summarized',
+			approach,
+			`Substitution de ${varName} par ${getNumericValue(approach) ?? approach}`
+		);
+		return node;
+	}
+
+	return null;
+}
+
+/**
+ * Try direct substitution using numeric evaluation.
+ * This is the fallback method when exact evaluation fails.
+ */
+function tryDirectSubstitutionNumeric(
 	expr: MathNode,
 	varName: string,
 	approach: MathNode,

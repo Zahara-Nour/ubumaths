@@ -4,6 +4,9 @@
  * Tracks the sign of values approaching 0 or infinity,
  * which is critical for composition limits.
  *
+ * Uses exact arithmetic via normalizeExtended when possible, with fallback
+ * to numeric heuristics for transcendental functions.
+ *
  * Examples:
  * - 0+ means approaching 0 from above (positive side)
  * - 0- means approaching 0 from below (negative side)
@@ -27,6 +30,7 @@ import {
 	type ExtendedResult,
 	type IndeterminateForm
 } from '../eval/extended-arithmetic';
+import { tryEvaluateLimitExact, resultToNumber } from './exact-evaluation';
 
 // =============================================================================
 // Types
@@ -53,12 +57,76 @@ export type SignedLimitValue =
  * Classify the limit value with sign tracking.
  * This is critical for composition limits where sign matters.
  *
+ * Uses exact arithmetic via normalizeExtended when possible, with fallback
+ * to numeric heuristics for cases involving transcendental functions.
+ *
  * @param expr - Expression to evaluate
  * @param varName - Variable approaching the limit
  * @param approach - Point being approached
  * @param direction - Direction of approach
  */
 export function classifyWithSign(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): SignedLimitValue {
+	// Try exact evaluation first
+	const exactResult = classifyWithSignExact(expr, varName, approach, direction);
+	if (exactResult !== null) {
+		return exactResult;
+	}
+
+	// Fallback to numeric classification
+	return classifyWithSignNumeric(expr, varName, approach, direction);
+}
+
+/**
+ * Classify using exact arithmetic via normalizeExtended.
+ * Returns null if exact evaluation fails.
+ */
+function classifyWithSignExact(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): SignedLimitValue | null {
+	const result = tryEvaluateLimitExact(expr, varName, approach, direction);
+	if (!result) {
+		return null;
+	}
+
+	switch (result.type) {
+		case 'infinity':
+			return result.sign === 'positive' ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
+
+		case 'signed-zero':
+			return result.sign === 'positive' ? { type: 'zero-plus' } : { type: 'zero-minus' };
+
+		case 'normal': {
+			const numValue = resultToNumber(result);
+			if (numValue === null) {
+				// Result contains variables or complex radicals - can't classify
+				return null;
+			}
+			if (numValue === 0) {
+				// Unsigned zero from normal form
+				return { type: 'zero' };
+			}
+			return { type: 'finite', value: numValue };
+		}
+
+		case 'indeterminate':
+			// Indeterminate form - cannot classify
+			return { type: 'unknown' };
+	}
+}
+
+/**
+ * Classify using numeric heuristics.
+ * This is the fallback method when exact evaluation fails.
+ */
+function classifyWithSignNumeric(
 	expr: MathNode,
 	varName: string,
 	approach: MathNode,

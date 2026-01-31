@@ -12,6 +12,12 @@ import { isDivision } from '../guards';
 import { differentiate } from '../differentiation';
 import { detectIndeterminateForm, classifyLimitValue } from './indeterminate';
 import type { LimitStepRecorder } from './step-recorder';
+import {
+	tryEvaluateLimitExact,
+	isZeroResult,
+	isInfinityResult,
+	resultToFiniteNode
+} from './exact-evaluation';
 
 // =============================================================================
 // L'Hôpital's Rule
@@ -203,8 +209,92 @@ export function isLhopitalApplicable(
 
 /**
  * Try to evaluate a division directly at the limit point.
+ * Uses exact evaluation first, with fallback to numeric heuristics.
  */
 function tryDirectEvaluation(
+	expr: DivisionNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): MathNode | null {
+	// Try exact evaluation first
+	const exactResult = tryDirectEvaluationExact(expr, varName, approach, direction);
+	if (exactResult !== null) {
+		return exactResult;
+	}
+
+	// Fallback to numeric heuristics
+	return tryDirectEvaluationNumeric(expr, varName, approach, direction);
+}
+
+/**
+ * Try to evaluate a division using exact arithmetic.
+ */
+function tryDirectEvaluationExact(
+	expr: DivisionNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): MathNode | null {
+	const numResult = tryEvaluateLimitExact(expr.numerator, varName, approach, direction);
+	const denResult = tryEvaluateLimitExact(expr.denominator, varName, approach, direction);
+
+	// Need both results
+	if (!numResult || !denResult) {
+		return null;
+	}
+
+	// Handle infinity/finite case → infinity
+	if (isInfinityResult(numResult) && !isInfinityResult(denResult) && !isZeroResult(denResult)) {
+		// Get denominator sign to determine final sign
+		const denNode = resultToFiniteNode(denResult);
+		const denNegative = denNode && denNode.type === 'number' && parseFloat(denNode.value) < 0;
+
+		const numSign = numResult.sign;
+		let finalSign: 'positive' | 'negative';
+		if (numSign === 'positive') {
+			finalSign = denNegative ? 'negative' : 'positive';
+		} else {
+			finalSign = denNegative ? 'positive' : 'negative';
+		}
+		return { type: 'infinity', sign: finalSign };
+	}
+
+	// Handle finite/infinity case → 0
+	if (!isInfinityResult(numResult) && !isZeroResult(numResult) && isInfinityResult(denResult)) {
+		return { type: 'number', value: '0' };
+	}
+
+	// Handle zero/finite case → 0
+	if (isZeroResult(numResult) && !isZeroResult(denResult)) {
+		return { type: 'number', value: '0' };
+	}
+
+	// Handle finite/finite case
+	if (!isInfinityResult(numResult) && !isInfinityResult(denResult)) {
+		const numNode = resultToFiniteNode(numResult);
+		const denNode = resultToFiniteNode(denResult);
+
+		if (numNode && denNode && numNode.type === 'number' && denNode.type === 'number') {
+			const numVal = parseFloat(numNode.value);
+			const denVal = parseFloat(denNode.value);
+
+			if (denVal !== 0 && Number.isFinite(numVal) && Number.isFinite(denVal)) {
+				const result = numVal / denVal;
+				if (Number.isFinite(result)) {
+					return { type: 'number', value: cleanNumberString(result) };
+				}
+			}
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Try to evaluate a division using numeric heuristics (fallback).
+ */
+function tryDirectEvaluationNumeric(
 	expr: DivisionNode,
 	varName: string,
 	approach: MathNode,
@@ -238,7 +328,26 @@ function tryDirectEvaluation(
 		return { type: 'number', value: '0' };
 	}
 
+	// Handle infinity numerator with finite non-zero denominator → infinity
+	if (numClass.class === 'positive-infinity' && isFiniteClass(denClass.class)) {
+		const sign =
+			denClass.numericValue !== undefined && denClass.numericValue < 0 ? 'negative' : 'positive';
+		return { type: 'infinity', sign };
+	}
+	if (numClass.class === 'negative-infinity' && isFiniteClass(denClass.class)) {
+		const sign =
+			denClass.numericValue !== undefined && denClass.numericValue < 0 ? 'positive' : 'negative';
+		return { type: 'infinity', sign };
+	}
+
 	return null;
+}
+
+/**
+ * Check if a limit value class represents a finite value.
+ */
+function isFiniteClass(cls: import('./indeterminate').LimitValueClass): boolean {
+	return cls === 'zero' || cls === 'one' || cls === 'finite-nonzero';
 }
 
 /**
