@@ -35,7 +35,7 @@
 	const CENTER = SVG_SIZE / 2;
 	const RADIUS = 120;
 	const POINT_RADIUS = 4;
-	const LABEL_OFFSET = 20;
+	const LABEL_OFFSET = 25;
 	const AXIS_EXTENSION = 20;
 	const TICK_SIZE = 5;
 	const TABLE_WIDTH = 200;
@@ -404,7 +404,8 @@
 				<g class="trig-projections">
 					{#each displayAngles as angle (angle.radians)}
 						{@const point = angleToPoint(angle.radians)}
-						{@const isHovered = hoveredAngle?.radians === angle.radians}
+						{@const isHovered =
+							hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
 						<line
 							x1={point.x}
 							y1={point.y}
@@ -429,7 +430,8 @@
 			<g class="trig-points">
 				{#each displayAngles as angle (angle.radians)}
 					{@const point = angleToPoint(angle.radians)}
-					{@const isHovered = hoveredAngle?.radians === angle.radians}
+					{@const isHovered =
+						hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
 					{@const isInteractive =
 						node.config.mode === 'interactive' &&
 						interactiveAngle !== null &&
@@ -445,16 +447,24 @@
 						class:trig-radius-highlighted={isHovered || isInteractive}
 					/>
 
-					<!-- Point on circle -->
+					<!-- Invisible hit area for easier hover -->
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
+					<circle
+						cx={point.x}
+						cy={point.y}
+						r={12}
+						class="trig-hit-area"
+						onmouseenter={() => handleAngleHover(angle)}
+						onmouseleave={handleAngleLeave}
+					/>
+
+					<!-- Visible point on circle -->
 					<circle
 						cx={point.x}
 						cy={point.y}
 						r={POINT_RADIUS}
 						class="trig-angle-point"
 						class:trig-point-highlighted={isHovered || isInteractive}
-						onmouseenter={() => handleAngleHover(angle)}
-						onmouseleave={handleAngleLeave}
 					/>
 				{/each}
 			</g>
@@ -464,8 +474,9 @@
 				<g class="trig-labels">
 					{#each displayAngles as angle (angle.radians)}
 						{@const pos = getLabelPosition(angle.radians)}
-						{@const isHovered = hoveredAngle?.radians === angle.radians}
-						<foreignObject x={pos.x - 30} y={pos.y - 12} width="60" height="24">
+						{@const isHovered =
+							hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
+						<foreignObject x={pos.x - 40} y={pos.y - 16} width="80" height="32">
 							<div
 								class="trig-label"
 								class:trig-label-highlighted={isHovered}
@@ -504,7 +515,8 @@
 				</thead>
 				<tbody>
 					{#each tableAngles as angle (angle.radians)}
-						{@const isHovered = hoveredAngle?.radians === angle.radians}
+						{@const isHovered =
+							hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
 						<tr
 							class:trig-row-highlighted={isHovered}
 							onmouseenter={() => handleAngleHover(angle)}
@@ -602,6 +614,7 @@
 		stroke-dasharray: 4 2;
 		opacity: 0.5;
 		transition: opacity 0.2s ease;
+		pointer-events: none;
 	}
 
 	.trig-projection-highlighted {
@@ -617,6 +630,7 @@
 		transition:
 			opacity 0.2s ease,
 			stroke 0.2s ease;
+		pointer-events: none;
 	}
 
 	.trig-radius-highlighted {
@@ -624,12 +638,18 @@
 		opacity: 1;
 	}
 
+	/* Hit area for hover detection */
+	.trig-hit-area {
+		fill: transparent;
+		cursor: pointer;
+	}
+
 	/* Angle points */
 	.trig-angle-point {
 		fill: var(--primary-color);
 		stroke: var(--background, white);
 		stroke-width: 2;
-		cursor: pointer;
+		pointer-events: none;
 		transition: r 0.2s ease;
 	}
 
@@ -639,8 +659,12 @@
 	}
 
 	/* Labels */
+	.trig-labels {
+		pointer-events: none;
+	}
+
 	.trig-label {
-		font-size: 0.8rem;
+		font-size: 1rem;
 		color: var(--foreground, #1f2937);
 		transition: color 0.2s ease;
 		display: flex;
