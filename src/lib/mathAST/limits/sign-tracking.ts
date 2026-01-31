@@ -13,7 +13,20 @@
 
 import type { MathNode } from '../types';
 import type { LimitDirection } from './types';
-import { isNumber, isInfinity } from '../guards';
+import { isNumber, isInfinity, isSignedZero as isSignedZeroNode } from '../guards';
+import { number, positiveInfinity, negativeInfinity, zeroPlus, zeroMinus } from '../factory';
+import {
+	addExtended,
+	subtractExtended,
+	multiplyExtended,
+	divideExtended,
+	lnExtended,
+	expExtended,
+	sqrtExtended,
+	isIndeterminateResult,
+	type ExtendedResult,
+	type IndeterminateForm
+} from '../eval/extended-arithmetic';
 
 // =============================================================================
 // Types
@@ -316,81 +329,47 @@ export function powerSign(value: SignedLimitValue, exponent: number): SignedLimi
 
 /**
  * Get the sign of ln(x) when x approaches the given signed value.
- *
- * ln(0+) = -infinity
- * ln(+infinity) = +infinity
- * ln(1) = 0 (special case)
+ * Delegates to extended-arithmetic module.
  */
 export function lnSign(value: SignedLimitValue): SignedLimitValue {
-	switch (value.type) {
-		case 'zero-plus':
-			return { type: 'neg-infinity' };
-		case 'zero-minus':
-		case 'zero':
-			return { type: 'unknown' }; // ln not defined for negative
-		case 'pos-infinity':
-			return { type: 'pos-infinity' };
-		case 'neg-infinity':
-			return { type: 'unknown' }; // ln not defined for negative
-		case 'finite':
-			if (value.value <= 0) return { type: 'unknown' };
-			if (Math.abs(value.value - 1) < 1e-10) {
-				// ln(1) = 0, need to check direction for sign
-				return { type: 'zero' };
-			}
-			return { type: 'finite', value: Math.log(value.value) };
-		default:
-			return { type: 'unknown' };
-	}
+	if (value.type === 'unknown') return { type: 'unknown' };
+
+	const node = signedValueToMathNode(value);
+	if (!node) return { type: 'unknown' };
+
+	const result = lnExtended(node);
+	if (isIndeterminateResult(result)) return { type: 'unknown' };
+	return mathNodeToSignedValue(result.value);
 }
 
 /**
  * Get the sign of exp(x) when x approaches the given signed value.
- *
- * exp(+infinity) = +infinity
- * exp(-infinity) = 0+
- * exp(finite) = finite > 0
+ * Delegates to extended-arithmetic module.
  */
 export function expSign(value: SignedLimitValue): SignedLimitValue {
-	switch (value.type) {
-		case 'pos-infinity':
-			return { type: 'pos-infinity' };
-		case 'neg-infinity':
-			return { type: 'zero-plus' };
-		case 'finite':
-			return { type: 'finite', value: Math.exp(value.value) };
-		case 'zero':
-		case 'zero-plus':
-		case 'zero-minus':
-			return { type: 'finite', value: 1 }; // exp(0) = 1
-		default:
-			return { type: 'unknown' };
-	}
+	if (value.type === 'unknown') return { type: 'unknown' };
+
+	const node = signedValueToMathNode(value);
+	if (!node) return { type: 'unknown' };
+
+	const result = expExtended(node);
+	if (isIndeterminateResult(result)) return { type: 'unknown' };
+	return mathNodeToSignedValue(result.value);
 }
 
 /**
  * Get the sign of sqrt(x) when x approaches the given signed value.
- *
- * sqrt(0+) = 0+
- * sqrt(+infinity) = +infinity
+ * Delegates to extended-arithmetic module.
  */
 export function sqrtSign(value: SignedLimitValue): SignedLimitValue {
-	switch (value.type) {
-		case 'zero-plus':
-			return { type: 'zero-plus' };
-		case 'zero-minus':
-		case 'neg-infinity':
-			return { type: 'unknown' }; // sqrt not defined for negative
-		case 'zero':
-			return { type: 'zero-plus' }; // sqrt of small positive
-		case 'pos-infinity':
-			return { type: 'pos-infinity' };
-		case 'finite':
-			if (value.value < 0) return { type: 'unknown' };
-			return { type: 'finite', value: Math.sqrt(value.value) };
-		default:
-			return { type: 'unknown' };
-	}
+	if (value.type === 'unknown') return { type: 'unknown' };
+
+	const node = signedValueToMathNode(value);
+	if (!node) return { type: 'unknown' };
+
+	const result = sqrtExtended(node);
+	if (isIndeterminateResult(result)) return { type: 'unknown' };
+	return mathNodeToSignedValue(result.value);
 }
 
 // =============================================================================
@@ -415,256 +394,66 @@ export function isIndeterminate(
 
 /**
  * Add two signed limit values.
- *
- * Rules:
- * - +∞ + +∞ = +∞
- * - -∞ + -∞ = -∞
- * - +∞ + -∞ = indeterminate (∞-∞)
- * - ∞ + finite = ∞
- * - finite + finite = finite
- * - 0 + x = x (absorbing for zero)
+ * Delegates to extended-arithmetic module.
  */
 export function addSigns(a: SignedLimitValue, b: SignedLimitValue): BinaryOpResult {
-	// Handle unknown
 	if (a.type === 'unknown' || b.type === 'unknown') {
 		return { type: 'unknown' };
 	}
 
-	// Both infinities
-	if (a.type === 'pos-infinity' && b.type === 'pos-infinity') {
-		return { type: 'pos-infinity' };
-	}
-	if (a.type === 'neg-infinity' && b.type === 'neg-infinity') {
-		return { type: 'neg-infinity' };
-	}
-	if (
-		(a.type === 'pos-infinity' && b.type === 'neg-infinity') ||
-		(a.type === 'neg-infinity' && b.type === 'pos-infinity')
-	) {
-		return { type: 'indeterminate', form: '∞-∞' };
-	}
+	const aNode = signedValueToMathNode(a);
+	const bNode = signedValueToMathNode(b);
+	if (!aNode || !bNode) return { type: 'unknown' };
 
-	// Infinity + finite/zero = infinity
-	if (a.type === 'pos-infinity' || a.type === 'neg-infinity') {
-		return a;
-	}
-	if (b.type === 'pos-infinity' || b.type === 'neg-infinity') {
-		return b;
-	}
-
-	// Both finite
-	if (a.type === 'finite' && b.type === 'finite') {
-		return { type: 'finite', value: a.value + b.value };
-	}
-
-	// Finite + zero = finite
-	if (a.type === 'finite' && isSignedZero(b)) {
-		return a;
-	}
-	if (b.type === 'finite' && isSignedZero(a)) {
-		return b;
-	}
-
-	// Zero + zero
-	if (isSignedZero(a) && isSignedZero(b)) {
-		// 0+ + 0+ = 0+, 0- + 0- = 0-, otherwise unknown sign
-		if (a.type === 'zero-plus' && b.type === 'zero-plus') return { type: 'zero-plus' };
-		if (a.type === 'zero-minus' && b.type === 'zero-minus') return { type: 'zero-minus' };
-		return { type: 'zero' };
-	}
-
-	return { type: 'unknown' };
+	return extendedResultToBinaryOp(addExtended(aNode, bNode));
 }
 
 /**
  * Subtract two signed limit values (a - b).
- *
- * Rules:
- * - +∞ - -∞ = +∞
- * - -∞ - +∞ = -∞
- * - +∞ - +∞ = indeterminate (∞-∞)
- * - -∞ - -∞ = indeterminate (∞-∞)
- * - ∞ - finite = ∞
- * - finite - ∞ = -∞ (opposite sign)
+ * Delegates to extended-arithmetic module.
  */
 export function subtractSigns(a: SignedLimitValue, b: SignedLimitValue): BinaryOpResult {
-	// a - b = a + (-b)
-	return addSigns(a, negateSign(b));
+	if (a.type === 'unknown' || b.type === 'unknown') {
+		return { type: 'unknown' };
+	}
+
+	const aNode = signedValueToMathNode(a);
+	const bNode = signedValueToMathNode(b);
+	if (!aNode || !bNode) return { type: 'unknown' };
+
+	return extendedResultToBinaryOp(subtractExtended(aNode, bNode));
 }
 
 /**
  * Multiply two signed limit values.
- *
- * Rules:
- * - +∞ · +∞ = +∞
- * - -∞ · -∞ = +∞
- * - +∞ · -∞ = -∞
- * - ∞ · 0 = indeterminate (0·∞)
- * - ∞ · finite(>0) = ∞ (same sign)
- * - ∞ · finite(<0) = ∞ (opposite sign)
- * - 0 · finite = 0
+ * Delegates to extended-arithmetic module.
  */
 export function multiplySigns(a: SignedLimitValue, b: SignedLimitValue): BinaryOpResult {
-	// Handle unknown
 	if (a.type === 'unknown' || b.type === 'unknown') {
 		return { type: 'unknown' };
 	}
 
-	const aIsInf = a.type === 'pos-infinity' || a.type === 'neg-infinity';
-	const bIsInf = b.type === 'pos-infinity' || b.type === 'neg-infinity';
-	const aIsZero = isSignedZero(a);
-	const bIsZero = isSignedZero(b);
+	const aNode = signedValueToMathNode(a);
+	const bNode = signedValueToMathNode(b);
+	if (!aNode || !bNode) return { type: 'unknown' };
 
-	// ∞ · 0 = indeterminate
-	if ((aIsInf && bIsZero) || (bIsInf && aIsZero)) {
-		return { type: 'indeterminate', form: '0·∞' };
-	}
-
-	// Both infinities: sign rule
-	if (aIsInf && bIsInf) {
-		const aPos = a.type === 'pos-infinity';
-		const bPos = b.type === 'pos-infinity';
-		return aPos === bPos ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
-	}
-
-	// Infinity · finite
-	if (aIsInf && b.type === 'finite') {
-		if (b.value === 0) return { type: 'indeterminate', form: '0·∞' };
-		const resultPositive = (a.type === 'pos-infinity') === b.value > 0;
-		return resultPositive ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
-	}
-	if (bIsInf && a.type === 'finite') {
-		if (a.value === 0) return { type: 'indeterminate', form: '0·∞' };
-		const resultPositive = (b.type === 'pos-infinity') === a.value > 0;
-		return resultPositive ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
-	}
-
-	// Both finite
-	if (a.type === 'finite' && b.type === 'finite') {
-		return { type: 'finite', value: a.value * b.value };
-	}
-
-	// Zero · finite = zero (with sign)
-	if (aIsZero && b.type === 'finite') {
-		if (b.value === 0) return { type: 'zero' };
-		const aPositive = a.type === 'zero-plus';
-		const bPositive = b.value > 0;
-		if (a.type === 'zero') return { type: 'zero' };
-		return aPositive === bPositive ? { type: 'zero-plus' } : { type: 'zero-minus' };
-	}
-	if (bIsZero && a.type === 'finite') {
-		if (a.value === 0) return { type: 'zero' };
-		const aPositive = a.value > 0;
-		const bPositive = b.type === 'zero-plus';
-		if (b.type === 'zero') return { type: 'zero' };
-		return aPositive === bPositive ? { type: 'zero-plus' } : { type: 'zero-minus' };
-	}
-
-	// Zero · zero = zero
-	if (aIsZero && bIsZero) {
-		// Sign: positive if same sign, negative if different
-		if (a.type === 'zero' || b.type === 'zero') return { type: 'zero' };
-		const aPos = a.type === 'zero-plus';
-		const bPos = b.type === 'zero-plus';
-		return aPos === bPos ? { type: 'zero-plus' } : { type: 'zero-minus' };
-	}
-
-	return { type: 'unknown' };
+	return extendedResultToBinaryOp(multiplyExtended(aNode, bNode));
 }
 
 /**
  * Divide two signed limit values (a / b).
- *
- * Rules:
- * - ∞ / ∞ = indeterminate
- * - 0 / 0 = indeterminate
- * - finite / ∞ = 0
- * - ∞ / finite = ∞ (with sign)
- * - finite / 0 = ∞ (with sign, uses reciprocalSign)
- * - 0 / finite = 0
+ * Delegates to extended-arithmetic module.
  */
 export function divideSigns(a: SignedLimitValue, b: SignedLimitValue): BinaryOpResult {
-	// Handle unknown
 	if (a.type === 'unknown' || b.type === 'unknown') {
 		return { type: 'unknown' };
 	}
 
-	const aIsInf = a.type === 'pos-infinity' || a.type === 'neg-infinity';
-	const bIsInf = b.type === 'pos-infinity' || b.type === 'neg-infinity';
-	const aIsZero = isSignedZero(a);
-	const bIsZero = isSignedZero(b);
+	const aNode = signedValueToMathNode(a);
+	const bNode = signedValueToMathNode(b);
+	if (!aNode || !bNode) return { type: 'unknown' };
 
-	// ∞ / ∞ = indeterminate
-	if (aIsInf && bIsInf) {
-		return { type: 'indeterminate', form: '∞/∞' };
-	}
-
-	// 0 / 0 = indeterminate
-	if (aIsZero && bIsZero) {
-		return { type: 'indeterminate', form: '0/0' };
-	}
-
-	// finite / ∞ = 0
-	if (!aIsInf && bIsInf) {
-		// Sign of 0 depends on signs of a and b
-		if (a.type === 'finite') {
-			if (a.value === 0) return { type: 'zero' };
-			const aPos = a.value > 0;
-			const bPos = b.type === 'pos-infinity';
-			return aPos === bPos ? { type: 'zero-plus' } : { type: 'zero-minus' };
-		}
-		if (aIsZero) {
-			return { type: 'zero' };
-		}
-	}
-
-	// ∞ / finite = ∞
-	if (aIsInf && b.type === 'finite') {
-		if (b.value === 0) {
-			// ∞ / 0 - technically still ∞ but with potential sign issues
-			return a; // Keep the infinity
-		}
-		const aPos = a.type === 'pos-infinity';
-		const bPos = b.value > 0;
-		return aPos === bPos ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
-	}
-
-	// finite / 0 = ∞ (via reciprocal)
-	if (a.type === 'finite' && bIsZero) {
-		if (a.value === 0) return { type: 'indeterminate', form: '0/0' };
-		const recipB = reciprocalSign(b);
-		if (recipB.type === 'unknown') return { type: 'unknown' };
-		return multiplySigns({ type: 'finite', value: a.value }, recipB);
-	}
-
-	// 0 / finite = 0
-	if (aIsZero && b.type === 'finite') {
-		if (b.value === 0) return { type: 'indeterminate', form: '0/0' };
-		// Sign of 0 depends on signs
-		if (a.type === 'zero') return { type: 'zero' };
-		const aPos = a.type === 'zero-plus';
-		const bPos = b.value > 0;
-		return aPos === bPos ? { type: 'zero-plus' } : { type: 'zero-minus' };
-	}
-
-	// Both finite
-	if (a.type === 'finite' && b.type === 'finite') {
-		if (b.value === 0) {
-			// a / 0 where a is non-zero finite
-			return a.value > 0 ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
-		}
-		return { type: 'finite', value: a.value / b.value };
-	}
-
-	// ∞ / 0 = ∞ (with sign based on both)
-	if (aIsInf && bIsZero) {
-		if (b.type === 'zero') return { type: 'unknown' }; // Need sign of zero
-		const aPos = a.type === 'pos-infinity';
-		const bPos = b.type === 'zero-plus';
-		return aPos === bPos ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
-	}
-
-	return { type: 'unknown' };
+	return extendedResultToBinaryOp(divideExtended(aNode, bNode));
 }
 
 // =============================================================================
@@ -778,20 +567,80 @@ function evaluateNumeric(expr: MathNode, varName: string, varValue: number): num
 }
 
 /**
- * Convert a SignedLimitValue to a MathNode representing infinity.
+ * Convert a SignedLimitValue to a MathNode.
+ * Uses SignedZeroNode for signed zeros, preserving sign information.
+ */
+export function signedValueToMathNode(value: SignedLimitValue): MathNode | null {
+	switch (value.type) {
+		case 'pos-infinity':
+			return positiveInfinity();
+		case 'neg-infinity':
+			return negativeInfinity();
+		case 'finite':
+			return number(cleanNumber(value.value));
+		case 'zero-plus':
+			return zeroPlus();
+		case 'zero-minus':
+			return zeroMinus();
+		case 'zero':
+			return number('0');
+		default:
+			return null;
+	}
+}
+
+/**
+ * Convert a MathNode to a SignedLimitValue.
+ */
+export function mathNodeToSignedValue(node: MathNode): SignedLimitValue {
+	if (isNumber(node)) {
+		const val = parseFloat(node.value);
+		if (val === 0) return { type: 'zero' };
+		if (Number.isFinite(val)) return { type: 'finite', value: val };
+		return { type: 'unknown' };
+	}
+	if (isInfinity(node)) {
+		return node.sign === 'positive' ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
+	}
+	if (isSignedZeroNode(node)) {
+		return node.sign === 'positive' ? { type: 'zero-plus' } : { type: 'zero-minus' };
+	}
+	return { type: 'unknown' };
+}
+
+/**
+ * Convert ExtendedResult to BinaryOpResult.
+ */
+function extendedResultToBinaryOp(result: ExtendedResult): BinaryOpResult {
+	if (isIndeterminateResult(result)) {
+		// Map indeterminate forms
+		const form = result.form as IndeterminateForm;
+		if (form === '0/0' || form === '∞/∞' || form === '0·∞' || form === '∞-∞') {
+			return { type: 'indeterminate', form };
+		}
+		// For power-related forms, return unknown
+		return { type: 'unknown' };
+	}
+	return mathNodeToSignedValue(result.value);
+}
+
+/**
+ * Convert a SignedLimitValue to a MathNode for final output.
+ * Unlike signedValueToMathNode, this converts signed zeros to regular numbers
+ * since the final limit result should be a NumberNode, not a SignedZeroNode.
  */
 export function signedValueToInfinity(value: SignedLimitValue): MathNode | null {
 	switch (value.type) {
 		case 'pos-infinity':
-			return { type: 'infinity', sign: 'positive' };
+			return positiveInfinity();
 		case 'neg-infinity':
-			return { type: 'infinity', sign: 'negative' };
+			return negativeInfinity();
 		case 'finite':
-			return { type: 'number', value: cleanNumber(value.value) };
+			return number(cleanNumber(value.value));
 		case 'zero':
 		case 'zero-plus':
 		case 'zero-minus':
-			return { type: 'number', value: '0' };
+			return number('0'); // Convert to regular number for final output
 		default:
 			return null;
 	}
