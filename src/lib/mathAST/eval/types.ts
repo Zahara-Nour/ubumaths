@@ -110,6 +110,16 @@ export interface EvalOptions {
 	 * definitions before evaluation.
 	 */
 	readonly functions?: FunctionBindings;
+
+	/**
+	 * Enable extended arithmetic for limit calculations.
+	 * When true, uses normalizeExtended() which handles:
+	 * - InfinityNode and SignedZeroNode
+	 * - Indeterminate forms (0/0, ∞/∞, 0·∞, ∞-∞, 0^0, 1^∞, ∞^0)
+	 * Only used when mode is 'exact'.
+	 * Default: false
+	 */
+	readonly limit?: boolean;
 }
 
 /**
@@ -118,7 +128,8 @@ export interface EvalOptions {
 export const DEFAULT_EVAL_OPTIONS: Required<EvalOptions> = {
 	mode: 'exact',
 	precision: { type: 'none' },
-	functions: {}
+	functions: {},
+	limit: false
 } as const;
 
 // =============================================================================
@@ -315,6 +326,7 @@ export const DEFAULT_EVAL_WITH_UNITS_OPTIONS: Required<
 	mode: 'exact',
 	precision: { type: 'none' },
 	functions: {},
+	limit: false,
 	conversionMode: 'first',
 	variableUnits: new Map()
 } as const;
