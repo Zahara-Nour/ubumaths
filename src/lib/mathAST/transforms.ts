@@ -25,6 +25,7 @@ import {
 	opposite,
 	positive,
 	relation,
+	signedZero,
 	subscript,
 	subtract,
 	superscript,
@@ -226,6 +227,10 @@ export function getChildren(node: MathNode): MathNode[] {
 		case 'infinity':
 			return [];
 
+		// SignedZero has no children (leaf node)
+		case 'signed-zero':
+			return [];
+
 		// Limit has expression and approach as children
 		case 'limit':
 			return [node.expression, node.approach];
@@ -398,6 +403,11 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 
 		// Infinity - no children, return as-is
 		case 'infinity':
+			transformedNode = node;
+			break;
+
+		// SignedZero - no children, return as-is
+		case 'signed-zero':
 			transformedNode = node;
 			break;
 
@@ -598,6 +608,10 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 
 		// Infinity - no children
 		case 'infinity':
+			return transformedParent;
+
+		// SignedZero - no children
+		case 'signed-zero':
 			return transformedParent;
 
 		// Limit
@@ -828,6 +842,10 @@ export function cloneNode<T extends MathNode>(node: T): T {
 		// Infinity
 		case 'infinity':
 			return infinity(node.sign, node.metadata) as T;
+
+		// SignedZero
+		case 'signed-zero':
+			return signedZero(node.sign, node.metadata) as T;
 
 		// Limit
 		case 'limit':

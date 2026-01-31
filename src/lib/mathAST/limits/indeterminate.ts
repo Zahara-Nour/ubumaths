@@ -2,6 +2,8 @@
  * Indeterminate Form Detection
  *
  * Detects indeterminate forms (0/0, ∞/∞, etc.) for L'Hôpital's rule application.
+ * Uses exact arithmetic via normalizeExtended when possible, with fallback to
+ * numeric heuristics for transcendental functions.
  *
  * @module mathAST/limits/indeterminate
  */
@@ -16,6 +18,7 @@ import {
 	isSubtraction,
 	isSuperscript
 } from '../guards';
+import { tryEvaluateLimitExact, isZeroResult, isInfinityResult } from './exact-evaluation';
 
 // =============================================================================
 // Limit Value Types
@@ -186,6 +189,9 @@ function classifyAtInfinity(
 /**
  * Detect the indeterminate form of an expression at a limit point.
  *
+ * Uses exact arithmetic via normalizeExtended when possible, with fallback
+ * to numeric heuristics for cases involving transcendental functions.
+ *
  * @param expr - The expression to analyze
  * @param varName - The variable approaching the limit
  * @param approach - The point being approached
@@ -197,6 +203,120 @@ export function detectIndeterminateForm(
 	varName: string,
 	approach: MathNode,
 	direction: LimitDirection = 'both'
+): IndeterminateForm {
+	// Try exact detection first
+	const exactResult = detectIndeterminateFormExact(expr, varName, approach, direction);
+	if (exactResult !== null) {
+		return exactResult;
+	}
+
+	// Fallback to numeric detection
+	return detectIndeterminateFormNumeric(expr, varName, approach, direction);
+}
+
+/**
+ * Detect indeterminate form using exact arithmetic.
+ * Returns null if exact evaluation fails (e.g., for transcendental functions).
+ */
+function detectIndeterminateFormExact(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): IndeterminateForm | null {
+	// Division: check for 0/0 or ∞/∞
+	if (isDivision(expr)) {
+		const numResult = tryEvaluateLimitExact(expr.numerator, varName, approach, direction);
+		const denResult = tryEvaluateLimitExact(expr.denominator, varName, approach, direction);
+
+		// If exact evaluation succeeded for both
+		if (numResult && denResult) {
+			// 0/0
+			if (isZeroResult(numResult) && isZeroResult(denResult)) {
+				return '0/0';
+			}
+
+			// ∞/∞
+			if (isInfinityResult(numResult) && isInfinityResult(denResult)) {
+				return '∞/∞';
+			}
+
+			// Determinate case
+			return 'none';
+		}
+	}
+
+	// Multiplication: check for 0 * ∞
+	if (isMultiplication(expr)) {
+		const leftResult = tryEvaluateLimitExact(expr.left, varName, approach, direction);
+		const rightResult = tryEvaluateLimitExact(expr.right, varName, approach, direction);
+
+		if (leftResult && rightResult) {
+			if (
+				(isZeroResult(leftResult) && isInfinityResult(rightResult)) ||
+				(isInfinityResult(leftResult) && isZeroResult(rightResult))
+			) {
+				return '0*∞';
+			}
+			return 'none';
+		}
+	}
+
+	// Subtraction: check for ∞ - ∞
+	if (isSubtraction(expr)) {
+		const leftResult = tryEvaluateLimitExact(expr.left, varName, approach, direction);
+		const rightResult = tryEvaluateLimitExact(expr.right, varName, approach, direction);
+
+		if (leftResult && rightResult) {
+			if (isInfinityResult(leftResult) && isInfinityResult(rightResult)) {
+				return '∞-∞';
+			}
+			return 'none';
+		}
+	}
+
+	// Power: check for 0^0, ∞^0, 1^∞
+	if (isSuperscript(expr)) {
+		const baseResult = tryEvaluateLimitExact(expr.base, varName, approach, direction);
+		const expResult = tryEvaluateLimitExact(expr.superscript, varName, approach, direction);
+
+		if (baseResult && expResult) {
+			// 0^0
+			if (isZeroResult(baseResult) && isZeroResult(expResult)) {
+				return '0^0';
+			}
+
+			// ∞^0
+			if (isInfinityResult(baseResult) && isZeroResult(expResult)) {
+				return '∞^0';
+			}
+
+			// 1^∞ - need to check if base is exactly 1
+			if (expResult.type === 'infinity' && baseResult.type === 'normal') {
+				// Check if base normalizes to 1
+				const baseClass = classifyLimitValue(expr.base, varName, approach, direction);
+				if (baseClass.class === 'one') {
+					return '1^∞';
+				}
+			}
+
+			return 'none';
+		}
+	}
+
+	// Could not determine exactly, return null to trigger numeric fallback
+	return null;
+}
+
+/**
+ * Detect indeterminate form using numeric heuristics.
+ * This is the fallback method when exact evaluation fails.
+ */
+function detectIndeterminateFormNumeric(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
 ): IndeterminateForm {
 	// Division: check for 0/0 or ∞/∞
 	if (isDivision(expr)) {
