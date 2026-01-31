@@ -1200,16 +1200,13 @@ describe('Rational Functions with Higher Degrees', () => {
 // =============================================================================
 
 describe('Negative Approach Values', () => {
-	// TODO: Pattern x+a where a<0 requires detecting that x+3 = x-(-3)
-	// Not yet implemented in approach factor detection
-	it.skip('1/(x+3) at x=-3 right-sided is +∞', () => {
+	it('1/(x+3) at x=-3 right-sided is +∞', () => {
 		const expr = divide(number('1'), xPlus('3'), 'fraction');
 		const result = evaluateLimit(expr, 'x', number('-3'), 'right');
 		expectPosInfinity(result);
 	});
 
-	// TODO: Pattern x+a where a<0 not yet implemented
-	it.skip('1/(x+3) at x=-3 left-sided is -∞', () => {
+	it('1/(x+3) at x=-3 left-sided is -∞', () => {
 		const expr = divide(number('1'), xPlus('3'), 'fraction');
 		const result = evaluateLimit(expr, 'x', number('-3'), 'left');
 		expectNegInfinity(result);
@@ -1221,8 +1218,7 @@ describe('Negative Approach Values', () => {
 		expectNumber(result, 0);
 	});
 
-	// TODO: Pattern x+a where a<0 not yet implemented
-	it.skip('ln(x+5) at x=-5 right-sided is -∞', () => {
+	it('ln(x+5) at x=-5 right-sided is -∞', () => {
 		const expr = func('ln', [xPlus('5')]);
 		const result = evaluateLimit(expr, 'x', number('-5'), 'right');
 		expectNegInfinity(result);

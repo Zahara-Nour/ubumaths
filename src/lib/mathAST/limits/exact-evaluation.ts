@@ -123,7 +123,13 @@ function analyzeSubtraction(
 }
 
 /**
- * Check if an addition node represents (x + (-a)) which is equivalent to (x - a).
+ * Check if an addition node represents an approach factor.
+ *
+ * Handles several patterns:
+ * 1. x + (-a) where approach is a  → equivalent to (x - a)
+ * 2. (-a) + x where approach is a  → equivalent to (x - a)
+ * 3. x + a where approach is -a    → x + a = x - (-a), so this is (x - approach)
+ * 4. a + x where approach is -a    → same as above
  */
 function analyzeAdditionAsSubtraction(
 	node: MathNode,
@@ -136,7 +142,8 @@ function analyzeAdditionAsSubtraction(
 
 	const { left, right } = node;
 
-	// Check for x + (-a) pattern where -a is the negation of approach
+	// Pattern 1: x + (-a) where -a is the negation of approach
+	// Example: x + (-3) when approaching 3
 	if (isVariable(left) && left.name === varName && isOpposite(right)) {
 		const innerOperand = right.operand;
 		if (
@@ -148,13 +155,40 @@ function analyzeAdditionAsSubtraction(
 		}
 	}
 
-	// Check for (-a) + x pattern
+	// Pattern 2: (-a) + x where -a is the negation of approach
 	if (isOpposite(left) && isVariable(right) && right.name === varName) {
 		const innerOperand = left.operand;
 		if (
 			isNumber(innerOperand) &&
 			approachValue !== null &&
 			Math.abs(parseFloat(innerOperand.value) - approachValue) < 1e-12
+		) {
+			return { isVarMinusApproach: true, isApproachMinusVar: false };
+		}
+	}
+
+	// Pattern 3: x + a where approach is -a (negative)
+	// Example: x + 3 when approaching -3
+	// x + 3 = x - (-3), so when x → -3, this is (x - approach) → 0
+	if (isVariable(left) && left.name === varName && isNumber(right)) {
+		const addedValue = parseFloat(right.value);
+		if (
+			approachValue !== null &&
+			approachValue < 0 &&
+			Math.abs(addedValue + approachValue) < 1e-12 // addedValue = -approachValue
+		) {
+			return { isVarMinusApproach: true, isApproachMinusVar: false };
+		}
+	}
+
+	// Pattern 4: a + x where approach is -a (negative)
+	// Example: 3 + x when approaching -3
+	if (isNumber(left) && isVariable(right) && right.name === varName) {
+		const addedValue = parseFloat(left.value);
+		if (
+			approachValue !== null &&
+			approachValue < 0 &&
+			Math.abs(addedValue + approachValue) < 1e-12 // addedValue = -approachValue
 		) {
 			return { isVarMinusApproach: true, isApproachMinusVar: false };
 		}

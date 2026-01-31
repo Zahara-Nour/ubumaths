@@ -396,9 +396,7 @@ describe('Edge Cases: Negative Numbers', () => {
 		expect(resultToNumber(result)).toBe(-5);
 	});
 
-	// TODO: Pattern x+a where a<0 requires detecting that x+3 = x-(-3)
-	// This is not yet implemented in substituteApproachFactors
-	it.skip('evaluates 1/(x+3) at x→-3⁺ to get +∞', () => {
+	it('evaluates 1/(x+3) at x→-3⁺ to get +∞', () => {
 		const expression = expr('\\frac{1}{x+3}');
 		const result = evaluateLimitExact(expression, 'x', number('-3'), 'right');
 
@@ -406,8 +404,7 @@ describe('Edge Cases: Negative Numbers', () => {
 		expect(getInfinitySign(result)).toBe('positive');
 	});
 
-	// TODO: Pattern x+a where a<0 requires detecting that x+3 = x-(-3)
-	it.skip('evaluates 1/(x+3) at x→-3⁻ to get -∞', () => {
+	it('evaluates 1/(x+3) at x→-3⁻ to get -∞', () => {
 		const expression = expr('\\frac{1}{x+3}');
 		const result = evaluateLimitExact(expression, 'x', number('-3'), 'left');
 
@@ -662,9 +659,7 @@ describe('Edge Cases: Different Variable Names', () => {
 		expect(getZeroSign(result)).toBe('positive');
 	});
 
-	// TODO: Pattern y+a where a<0 requires detecting that y+1 = y-(-1)
-	// This is the same limitation as x+3 at x=-3
-	it.skip('evaluates 1/(y+1) at y→-1⁺ to get +∞', () => {
+	it('evaluates 1/(y+1) at y→-1⁺ to get +∞', () => {
 		const expression = parseLatex('\\frac{1}{y+1}');
 		const result = evaluateLimitExact(expression, 'y', number('-1'), 'right');
 
