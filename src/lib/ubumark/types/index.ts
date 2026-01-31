@@ -42,6 +42,7 @@ export type {
 	CodeBlockNode,
 	VariationTableNode,
 	ProbabilityTreeNode,
+	TrigCircleNode,
 	BlockNode,
 	// Composite
 	ASTNode,
@@ -106,6 +107,34 @@ export type {
 	TreePath,
 	CumulativeProbability
 } from './probability-tree';
+
+// ============================================================================
+// TRIG CIRCLE TYPES
+// ============================================================================
+
+export type {
+	// Angle types
+	TrigPreset,
+	TrigAngle,
+	// Equation types
+	TrigFunction,
+	TrigOperator,
+	TrigEquation,
+	// Solution types
+	TrigArc,
+	TrigSolution,
+	// Display types
+	TrigDisplayMode,
+	TrigDisplayType,
+	TrigCircleConfig,
+	// Parser types
+	TrigCircleParseError,
+	TrigCircleParseWarning,
+	TrigCircleParseResult,
+	TrigCircleBlockRange
+} from './trig-circle';
+
+export { DEFAULT_TRIG_CIRCLE_CONFIG, REMARKABLE_ANGLES, getPresetAngles } from './trig-circle';
 
 // ============================================================================
 // PARSER TYPES
