@@ -1106,3 +1106,537 @@ describe('Multiple Terms', () => {
 		expectNumber(result, 5);
 	});
 });
+
+// =============================================================================
+// Higher Degree Polynomials at Infinity
+// =============================================================================
+
+describe('Higher Degree Polynomials at Infinity', () => {
+	it('x⁴ at x→+∞ is +∞', () => {
+		const expr = power(variable('x'), number('4'));
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectPosInfinity(result);
+	});
+
+	it('x⁴ at x→-∞ is +∞', () => {
+		const expr = power(variable('x'), number('4'));
+		const result = evaluateLimit(expr, 'x', negativeInfinity());
+		expectPosInfinity(result);
+	});
+
+	it('x⁵ at x→-∞ is -∞', () => {
+		const expr = power(variable('x'), number('5'));
+		const result = evaluateLimit(expr, 'x', negativeInfinity());
+		expectNegInfinity(result);
+	});
+
+	it('-x⁴ at x→+∞ is -∞', () => {
+		const expr = opposite(power(variable('x'), number('4')));
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectNegInfinity(result);
+	});
+
+	it('x³ - x at x→+∞ is +∞ (dominant term)', () => {
+		const expr = subtract(power(variable('x'), number('3')), variable('x'));
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectPosInfinity(result);
+	});
+
+	it('x³ - x at x→-∞ is -∞', () => {
+		const expr = subtract(power(variable('x'), number('3')), variable('x'));
+		const result = evaluateLimit(expr, 'x', negativeInfinity());
+		expectNegInfinity(result);
+	});
+});
+
+// =============================================================================
+// Rational Functions with Higher Degrees
+// =============================================================================
+
+describe('Rational Functions with Higher Degrees', () => {
+	it('x³/x² at x→+∞ is +∞', () => {
+		const expr = divide(power(variable('x'), number('3')), xPow('2'), 'fraction');
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectPosInfinity(result);
+	});
+
+	it('x²/x³ at x→+∞ equals 0', () => {
+		const expr = divide(xPow('2'), power(variable('x'), number('3')), 'fraction');
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectNumber(result, 0);
+	});
+
+	it('(x⁴+1)/(x⁴-1) at x→+∞ equals 1', () => {
+		const num = add(power(variable('x'), number('4')), number('1'));
+		const den = subtract(power(variable('x'), number('4')), number('1'));
+		const expr = divide(num, den, 'fraction');
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectNumber(result, 1);
+	});
+
+	it('(2x⁴-x²)/(3x⁴+x) at x→+∞ equals 2/3', () => {
+		const num = subtract(multiply(number('2'), power(variable('x'), number('4'))), xPow('2'));
+		const den = add(multiply(number('3'), power(variable('x'), number('4'))), variable('x'));
+		const expr = divide(num, den, 'fraction');
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectNumber(result, 2 / 3, 1e-5);
+	});
+
+	it('1/x³ at x→+∞ equals 0', () => {
+		const expr = divide(number('1'), power(variable('x'), number('3')), 'fraction');
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectNumber(result, 0);
+	});
+
+	it('1/x³ at x→-∞ equals 0', () => {
+		const expr = divide(number('1'), power(variable('x'), number('3')), 'fraction');
+		const result = evaluateLimit(expr, 'x', negativeInfinity());
+		expectNumber(result, 0);
+	});
+});
+
+// =============================================================================
+// Negative Approach Values
+// =============================================================================
+
+describe('Negative Approach Values', () => {
+	// TODO: Pattern x+a where a<0 requires detecting that x+3 = x-(-3)
+	// Not yet implemented in approach factor detection
+	it.skip('1/(x+3) at x=-3 right-sided is +∞', () => {
+		const expr = divide(number('1'), xPlus('3'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('-3'), 'right');
+		expectPosInfinity(result);
+	});
+
+	// TODO: Pattern x+a where a<0 not yet implemented
+	it.skip('1/(x+3) at x=-3 left-sided is -∞', () => {
+		const expr = divide(number('1'), xPlus('3'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('-3'), 'left');
+		expectNegInfinity(result);
+	});
+
+	it('sqrt(x+4) at x=-4 right-sided equals 0', () => {
+		const expr = func('sqrt', [xPlus('4')]);
+		const result = evaluateLimit(expr, 'x', number('-4'), 'right');
+		expectNumber(result, 0);
+	});
+
+	// TODO: Pattern x+a where a<0 not yet implemented
+	it.skip('ln(x+5) at x=-5 right-sided is -∞', () => {
+		const expr = func('ln', [xPlus('5')]);
+		const result = evaluateLimit(expr, 'x', number('-5'), 'right');
+		expectNegInfinity(result);
+	});
+
+	it('(x+2)² at x=-2 equals 0', () => {
+		const expr = power(xPlus('2'), number('2'));
+		const result = evaluateLimit(expr, 'x', number('-2'));
+		expectNumber(result, 0);
+	});
+
+	it('(x+1)³ at x=-1 equals 0', () => {
+		const expr = power(xPlus('1'), number('3'));
+		const result = evaluateLimit(expr, 'x', number('-1'));
+		expectNumber(result, 0);
+	});
+});
+
+// =============================================================================
+// More Composition Cases
+// =============================================================================
+
+describe('More Composition Cases', () => {
+	it('cos(sin(x)) at x=0 equals 1', () => {
+		const expr = func('cos', [func('sin', [variable('x')])]);
+		const result = evaluateLimit(expr, 'x', number('0'));
+		expectNumber(result, 1);
+	});
+
+	it('exp(ln(x)) at x=1 equals 1', () => {
+		// e^(ln(x)) = x at x=1
+		const expr = func('exp', [func('ln', [variable('x')])]);
+		const result = evaluateLimit(expr, 'x', number('1'));
+		expectNumber(result, 1);
+	});
+
+	it('exp(ln(x)) at x=2 equals 2', () => {
+		const expr = func('exp', [func('ln', [variable('x')])]);
+		const result = evaluateLimit(expr, 'x', number('2'));
+		expectNumber(result, 2);
+	});
+
+	it('ln(1/x) at x=1 equals 0', () => {
+		const expr = func('ln', [divide(number('1'), variable('x'), 'fraction')]);
+		const result = evaluateLimit(expr, 'x', number('1'));
+		expectNumber(result, 0);
+	});
+
+	it('sqrt(x²) at x=3 equals 3', () => {
+		const expr = func('sqrt', [xPow('2')]);
+		const result = evaluateLimit(expr, 'x', number('3'));
+		expectNumber(result, 3);
+	});
+
+	it('1/exp(x) at x→+∞ equals 0', () => {
+		const expr = divide(number('1'), func('exp', [variable('x')]), 'fraction');
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectNumber(result, 0);
+	});
+
+	it('exp(-x) at x→+∞ equals 0', () => {
+		const expr = func('exp', [opposite(variable('x'))]);
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectNumber(result, 0);
+	});
+
+	it('ln(x²) at x=e equals 2', () => {
+		const expr = func('ln', [xPow('2')]);
+		const result = evaluateLimit(expr, 'x', euler());
+		expectNumber(result, 2);
+	});
+});
+
+// =============================================================================
+// More 0/0 Indeterminate Forms
+// =============================================================================
+
+describe('More 0/0 Indeterminate Forms', () => {
+	it('(x⁴-16)/(x-2) at x=2 equals 32', () => {
+		// x⁴-16 = (x-2)(x+2)(x²+4), at x=2: (2+2)(4+4) = 4·8 = 32
+		const expr = divide(
+			subtract(power(variable('x'), number('4')), number('16')),
+			xMinus('2'),
+			'fraction'
+		);
+		const result = evaluateLimit(expr, 'x', number('2'));
+		expectNumber(result, 32);
+	});
+
+	it('(x³-1)/(x-1) at x=1 equals 3', () => {
+		// x³-1 = (x-1)(x²+x+1), at x=1: 1+1+1 = 3
+		const expr = divide(
+			subtract(power(variable('x'), number('3')), number('1')),
+			xMinus('1'),
+			'fraction'
+		);
+		const result = evaluateLimit(expr, 'x', number('1'));
+		expectNumber(result, 3);
+	});
+
+	it('(x⁴-1)/(x²-1) at x=1 equals 2', () => {
+		// (x²+1)(x²-1)/(x²-1) = x²+1 → 2
+		const expr = divide(
+			subtract(power(variable('x'), number('4')), number('1')),
+			subtract(xPow('2'), number('1')),
+			'fraction'
+		);
+		const result = evaluateLimit(expr, 'x', number('1'));
+		expectNumber(result, 2);
+	});
+
+	it('arcsin(x)/x at x=0 equals 1', () => {
+		const expr = divide(func('arcsin', [variable('x')]), variable('x'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('0'));
+		expectNumber(result, 1);
+	});
+
+	it('arctan(x)/x at x=0 equals 1', () => {
+		const expr = divide(func('arctan', [variable('x')]), variable('x'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('0'));
+		expectNumber(result, 1);
+	});
+});
+
+// =============================================================================
+// Vertical Asymptotes with Different Coefficients
+// =============================================================================
+
+describe('Vertical Asymptotes with Different Coefficients', () => {
+	it('2/(x-1) at x=1 right-sided is +∞', () => {
+		const expr = divide(number('2'), xMinus('1'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('1'), 'right');
+		expectPosInfinity(result);
+	});
+
+	it('-3/(x-1) at x=1 right-sided is -∞', () => {
+		const expr = divide(number('-3'), xMinus('1'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('1'), 'right');
+		expectNegInfinity(result);
+	});
+
+	it('5/(x-1)² at x=1 both-sided is +∞', () => {
+		const expr = divide(number('5'), power(xMinus('1'), number('2')), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('1'));
+		expectPosInfinity(result);
+	});
+
+	it('-5/(x-1)² at x=1 both-sided is -∞', () => {
+		const expr = divide(number('-5'), power(xMinus('1'), number('2')), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('1'));
+		expectNegInfinity(result);
+	});
+
+	it('1/(x-1)³ at x=1 right-sided is +∞', () => {
+		const expr = divide(number('1'), power(xMinus('1'), number('3')), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('1'), 'right');
+		expectPosInfinity(result);
+	});
+
+	// TODO: Odd powers with signed zeros not fully handled
+	it.skip('1/(x-1)³ at x=1 left-sided is -∞', () => {
+		const expr = divide(number('1'), power(xMinus('1'), number('3')), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('1'), 'left');
+		expectNegInfinity(result);
+	});
+});
+
+// =============================================================================
+// Exponential and Logarithmic Edge Cases
+// =============================================================================
+
+describe('Exponential and Logarithmic Edge Cases', () => {
+	it('exp(2x) at x→+∞ is +∞', () => {
+		const expr = func('exp', [ax('2')]);
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectPosInfinity(result);
+	});
+
+	it('exp(-2x) at x→+∞ equals 0', () => {
+		const expr = func('exp', [multiply(number('-2'), variable('x'))]);
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectNumber(result, 0);
+	});
+
+	it('exp(x²) at x→+∞ is +∞', () => {
+		const expr = func('exp', [xPow('2')]);
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectPosInfinity(result);
+	});
+
+	it('exp(-x²) at x→+∞ equals 0', () => {
+		const expr = func('exp', [opposite(xPow('2'))]);
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectNumber(result, 0);
+	});
+
+	it('ln(2x) at x→+∞ is +∞', () => {
+		const expr = func('ln', [ax('2')]);
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectPosInfinity(result);
+	});
+
+	// TODO: ln(x+1) - ln(x) simplification at infinity not yet implemented
+	it.skip('ln(x+1) - ln(x) at x→+∞ equals 0', () => {
+		// ln((x+1)/x) = ln(1 + 1/x) → ln(1) = 0
+		const expr = subtract(func('ln', [xPlus('1')]), func('ln', [variable('x')]));
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectNumber(result, 0);
+	});
+});
+
+// =============================================================================
+// Trigonometric Values at Special Points
+// =============================================================================
+
+describe('Trigonometric Values at Special Points', () => {
+	it('sin(x) at x=π/2 equals 1', () => {
+		const expr = func('sin', [variable('x')]);
+		const piOver2 = divide(piConstant(), number('2'), 'fraction');
+		const result = evaluateLimit(expr, 'x', piOver2);
+		expectNumber(result, 1);
+	});
+
+	it('cos(x) at x=π equals -1', () => {
+		const expr = func('cos', [variable('x')]);
+		const result = evaluateLimit(expr, 'x', piConstant());
+		expectNumber(result, -1);
+	});
+
+	it('sin(x)/x at x→0 equals 1 (fundamental limit)', () => {
+		const expr = divide(func('sin', [variable('x')]), variable('x'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('0'));
+		expectNumber(result, 1);
+	});
+
+	it('sin(3x)/x at x=0 equals 3', () => {
+		const expr = divide(func('sin', [ax('3')]), variable('x'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('0'));
+		expectNumber(result, 3);
+	});
+
+	it('sin(x)/sin(3x) at x=0 equals 1/3', () => {
+		const expr = divide(func('sin', [variable('x')]), func('sin', [ax('3')]), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('0'));
+		expectNumber(result, 1 / 3);
+	});
+
+	it('tan(x)/sin(x) at x=0 equals 1', () => {
+		// tan(x)/sin(x) = 1/cos(x) → 1
+		const expr = divide(func('tan', [variable('x')]), func('sin', [variable('x')]), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('0'));
+		expectNumber(result, 1);
+	});
+});
+
+// =============================================================================
+// Edge Cases with Zero in Expression
+// =============================================================================
+
+describe('Edge Cases with Zero in Expression', () => {
+	it('0/x at x=1 equals 0', () => {
+		const expr = divide(number('0'), variable('x'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('1'));
+		expectNumber(result, 0);
+	});
+
+	it('0·x at x=5 equals 0', () => {
+		const expr = multiply(number('0'), variable('x'));
+		const result = evaluateLimit(expr, 'x', number('5'));
+		expectNumber(result, 0);
+	});
+
+	it('x+0 at x=3 equals 3', () => {
+		const expr = add(variable('x'), number('0'));
+		const result = evaluateLimit(expr, 'x', number('3'));
+		expectNumber(result, 3);
+	});
+
+	it('x-0 at x=7 equals 7', () => {
+		const expr = subtract(variable('x'), number('0'));
+		const result = evaluateLimit(expr, 'x', number('7'));
+		expectNumber(result, 7);
+	});
+});
+
+// =============================================================================
+// Very Small Approach Values
+// =============================================================================
+
+describe('Very Small Approach Values', () => {
+	it('x at x→0.001 equals 0.001', () => {
+		const result = evaluateLimit(variable('x'), 'x', number('0.001'));
+		expectNumber(result, 0.001);
+	});
+
+	it('1/x at x=0.001 equals 1000', () => {
+		const expr = divide(number('1'), variable('x'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('0.001'));
+		expectNumber(result, 1000);
+	});
+
+	it('sqrt(x) at x=0.0001 equals 0.01', () => {
+		const expr = func('sqrt', [variable('x')]);
+		const result = evaluateLimit(expr, 'x', number('0.0001'));
+		expectNumber(result, 0.01);
+	});
+});
+
+// =============================================================================
+// Large Finite Approach Values
+// =============================================================================
+
+describe('Large Finite Approach Values', () => {
+	it('1/x at x=1000000 is very small', () => {
+		const expr = divide(number('1'), variable('x'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('1000000'));
+		expectNumber(result, 0.000001);
+	});
+
+	it('x² at x=1000 equals 1000000', () => {
+		const result = evaluateLimit(xPow('2'), 'x', number('1000'));
+		expectNumber(result, 1000000);
+	});
+
+	it('ln(x) at x=e² equals 2', () => {
+		const expr = func('ln', [variable('x')]);
+		const eSquared = power(euler(), number('2'));
+		const result = evaluateLimit(expr, 'x', eSquared);
+		expectNumber(result, 2);
+	});
+});
+
+// =============================================================================
+// Multiple Indeterminate Forms (combinations)
+// =============================================================================
+
+describe('Multiple Indeterminate Forms', () => {
+	// TODO: 0·(-∞) forms require L'Hôpital transformation
+	it.skip('(x-1)·ln(x-1) at x→1⁺ equals 0 (0·(-∞) form)', () => {
+		const expr = multiply(xMinus('1'), func('ln', [xMinus('1')]));
+		const result = evaluateLimit(expr, 'x', number('1'), 'right');
+		expectNumber(result, 0);
+	});
+
+	// TODO: 0·(-∞) forms require L'Hôpital transformation
+	it.skip('x·ln(x) at x→0⁺ equals 0 (0·(-∞) form)', () => {
+		const expr = multiply(variable('x'), func('ln', [variable('x')]));
+		const result = evaluateLimit(expr, 'x', number('0'), 'right');
+		expectNumber(result, 0);
+	});
+});
+
+// =============================================================================
+// Oscillating Functions Edge Cases
+// =============================================================================
+
+describe('Oscillating Functions Edge Cases', () => {
+	it('sin(x)·cos(x) at x=0 equals 0', () => {
+		const expr = multiply(func('sin', [variable('x')]), func('cos', [variable('x')]));
+		const result = evaluateLimit(expr, 'x', number('0'));
+		expectNumber(result, 0);
+	});
+
+	it('sin²(x) + cos²(x) at x=0 equals 1', () => {
+		const expr = add(
+			power(func('sin', [variable('x')]), number('2')),
+			power(func('cos', [variable('x')]), number('2'))
+		);
+		const result = evaluateLimit(expr, 'x', number('0'));
+		expectNumber(result, 1);
+	});
+
+	it('sin²(x)/x at x=0 equals 0', () => {
+		const expr = divide(
+			power(func('sin', [variable('x')]), number('2')),
+			variable('x'),
+			'fraction'
+		);
+		const result = evaluateLimit(expr, 'x', number('0'));
+		expectNumber(result, 0);
+	});
+});
+
+// =============================================================================
+// Nested Fractions
+// =============================================================================
+
+describe('Nested Fractions', () => {
+	it('1/(1/x) at x=2 equals 2', () => {
+		const expr = divide(number('1'), divide(number('1'), variable('x'), 'fraction'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('2'));
+		expectNumber(result, 2);
+	});
+
+	// TODO: Nested fractions at infinity require algebraic simplification
+	// (1/x)/(1/x²) = x → +∞ after simplification
+	it.skip('(1/x)/(1/x²) at x→+∞ is +∞ (simplifies to x)', () => {
+		const expr = divide(
+			divide(number('1'), variable('x'), 'fraction'),
+			divide(number('1'), xPow('2'), 'fraction'),
+			'fraction'
+		);
+		// (1/x) / (1/x²) = x²/x = x → +∞
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectPosInfinity(result);
+	});
+
+	it('x/(1+1/x) at x→+∞ is +∞', () => {
+		const expr = divide(
+			variable('x'),
+			add(number('1'), divide(number('1'), variable('x'), 'fraction')),
+			'fraction'
+		);
+		const result = evaluateLimit(expr, 'x', positiveInfinity());
+		expectPosInfinity(result);
+	});
+});
