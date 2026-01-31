@@ -28,6 +28,7 @@ import {
 } from '../../factory';
 import type { FunctionNode, MathNode } from '../../types';
 import type { EvalValue } from '../types';
+import { isEvalUnevaluable } from '../types';
 import { isNumber } from '../../guards';
 
 // =============================================================================
@@ -439,22 +440,34 @@ describe('evaluate with function bindings', () => {
 	});
 
 	describe('error cases', () => {
-		it('throws for undefined generic function', () => {
+		it('returns unevaluable for undefined generic function', () => {
 			const ast = func('h', [number('3')]);
+			const result = evaluate(ast);
 
-			expect(() => evaluate(ast)).toThrow(/Unknown function: h/);
+			expect(result.status).toBe('unevaluable');
+			if (isEvalUnevaluable(result)) {
+				expect(result.reason).toMatch(/unknown function.*h/i);
+			}
 		});
 
-		it('throws descriptive error for derivative function without definition', () => {
+		it('returns unevaluable for derivative function without definition', () => {
 			const ast = derivativeFunc('f', [number('3')], 1);
+			const result = evaluate(ast);
 
-			expect(() => evaluate(ast)).toThrow(/derivative function/i);
+			expect(result.status).toBe('unevaluable');
+			if (isEvalUnevaluable(result)) {
+				expect(result.reason).toMatch(/derivative function/i);
+			}
 		});
 
-		it('throws descriptive error for inverse function without definition', () => {
+		it('returns unevaluable for inverse function without definition', () => {
 			const ast = inverseFunc('f', [number('3')]);
+			const result = evaluate(ast);
 
-			expect(() => evaluate(ast)).toThrow(/inverse function/i);
+			expect(result.status).toBe('unevaluable');
+			if (isEvalUnevaluable(result)) {
+				expect(result.reason).toMatch(/inverse function/i);
+			}
 		});
 	});
 

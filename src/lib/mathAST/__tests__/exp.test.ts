@@ -696,12 +696,20 @@ describe('Exp - Evaluation Methods', () => {
 			}
 		});
 
-		it('throws on unsubstituted variables', () => {
-			expect(() => Exp.parse('x+1').eval()).toThrow(/variable/i);
+		it('returns unevaluable on unsubstituted variables', () => {
+			const result = Exp.parse('x+1').eval();
+			expect(result.status).toBe('unevaluable');
+			if (result.status === 'unevaluable') {
+				expect(result.reason).toMatch(/variable/i);
+			}
 		});
 
-		it('throws on multiple unsubstituted variables', () => {
-			expect(() => Exp.parse('x+y').eval()).toThrow(/variable/i);
+		it('returns unevaluable on multiple unsubstituted variables', () => {
+			const result = Exp.parse('x+y').eval();
+			expect(result.status).toBe('unevaluable');
+			if (result.status === 'unevaluable') {
+				expect(result.reason).toMatch(/variable/i);
+			}
 		});
 
 		it('evaluates power with integer exponent exactly', () => {

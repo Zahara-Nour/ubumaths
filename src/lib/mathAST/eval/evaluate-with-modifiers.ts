@@ -112,6 +112,14 @@ export function evaluateWithModifiers(latex: string, modifiers: EvalModifiers = 
 	// This simplifies the logic and avoids having to interpret MathNode structures
 	const result = evaluate(ast, { mode: 'decimal' });
 
+	// Handle non-value results
+	if (result.status === 'unevaluable') {
+		throw new Error(result.reason);
+	}
+	if (result.status === 'indeterminate') {
+		throw new Error(`Indeterminate form: ${result.form}`);
+	}
+
 	// Get the numeric value
 	let numValue: number;
 	if (isComplex(result.value)) {

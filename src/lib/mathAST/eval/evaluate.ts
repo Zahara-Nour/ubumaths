@@ -6,7 +6,7 @@
  */
 
 import type { MathNode, FunctionNode } from '../types';
-import type { EvalOptions, EvalResult } from './types';
+import type { EvalOptions, EvalResult, IndeterminateForm } from './types';
 import type { Rational } from '../normal/types';
 import type { PrecisionType } from '$lib/questions/types';
 import { DEFAULT_EVAL_OPTIONS } from './types';
@@ -33,7 +33,9 @@ import {
 	isComposition,
 	isDerivativeFunction,
 	isInverseFunction,
-	isComplex
+	isComplex,
+	isInfinity,
+	isSignedZero
 } from '../guards';
 import { substituteFunction } from './function-bindings';
 import {
@@ -65,6 +67,94 @@ import { mapNode } from '../transforms';
  * Prevents stack overflow from deeply nested expressions.
  */
 const MAX_EVAL_DEPTH = 100;
+
+// =============================================================================
+// Internal Result Types
+// =============================================================================
+
+/**
+ * Internal result type for evaluateToRational.
+ * Uses a discriminated union to handle values, indeterminate forms, and errors.
+ */
+type InternalEvalResult =
+	| { readonly type: 'rational'; readonly value: Rational }
+	| { readonly type: 'infinity'; readonly sign: 'positive' | 'negative' }
+	| { readonly type: 'signed-zero'; readonly sign: 'positive' | 'negative' }
+	| { readonly type: 'indeterminate'; readonly form: IndeterminateForm }
+	| { readonly type: 'error'; readonly reason: string };
+
+/**
+ * Helper to create a rational result.
+ */
+function rationalResult(value: Rational): InternalEvalResult {
+	return { type: 'rational', value };
+}
+
+/**
+ * Helper to create an infinity result.
+ */
+function infinityResult(sign: 'positive' | 'negative'): InternalEvalResult {
+	return { type: 'infinity', sign };
+}
+
+/**
+ * Helper to create a signed-zero result.
+ */
+function signedZeroResult(sign: 'positive' | 'negative'): InternalEvalResult {
+	return { type: 'signed-zero', sign };
+}
+
+/**
+ * Helper to create an indeterminate result.
+ */
+function indeterminateResult(form: IndeterminateForm): InternalEvalResult {
+	return { type: 'indeterminate', form };
+}
+
+/**
+ * Helper to create an error result.
+ */
+function errorResult(reason: string): InternalEvalResult {
+	return { type: 'error', reason };
+}
+
+/**
+ * Check if internal result is a finite numeric value (rational).
+ * Note: Kept for potential future use, prefixed to satisfy ESLint.
+ */
+function _isFiniteResult(
+	result: InternalEvalResult
+): result is { type: 'rational'; value: Rational } {
+	return result.type === 'rational';
+}
+
+/**
+ * Get numeric value from a rational result or return null for special values.
+ * Note: Kept for potential future use, prefixed to satisfy ESLint.
+ */
+function _getResultNumber(result: InternalEvalResult): number | null {
+	if (result.type === 'rational') {
+		return rationalToNumber(result.value);
+	}
+	return null;
+}
+
+/**
+ * Flip the sign of a sign value.
+ */
+function flipSign(sign: 'positive' | 'negative'): 'positive' | 'negative' {
+	return sign === 'positive' ? 'negative' : 'positive';
+}
+
+/**
+ * Multiply two signs.
+ */
+function multiplySign(
+	a: 'positive' | 'negative',
+	b: 'positive' | 'negative'
+): 'positive' | 'negative' {
+	return a === b ? 'positive' : 'negative';
+}
 
 // =============================================================================
 // Precision Helpers
@@ -820,6 +910,694 @@ function evaluateRoundingFunctions(node: MathNode): MathNode {
 }
 
 // =============================================================================
+// Extended Arithmetic Evaluation
+// =============================================================================
+
+/**
+ * Evaluates a MathNode to an InternalEvalResult, handling extended arithmetic
+ * with infinity, signed-zero, and indeterminate forms.
+ *
+ * This function is used by evaluate() in decimal mode to properly handle
+ * limit-related values without throwing exceptions.
+ *
+ * @param node - The MathNode to evaluate
+ * @param depth - Current recursion depth
+ * @returns InternalEvalResult (rational, infinity, signed-zero, indeterminate, or error)
+ */
+function evaluateInternal(node: MathNode, depth: number): InternalEvalResult {
+	if (depth > MAX_EVAL_DEPTH) {
+		return errorResult(`Expression too deeply nested (max depth: ${MAX_EVAL_DEPTH})`);
+	}
+
+	// NumberNode
+	if (isNumber(node)) {
+		return rationalResult(parseNumberToRational(node.value));
+	}
+
+	// InfinityNode
+	if (isInfinity(node)) {
+		return infinityResult(node.sign);
+	}
+
+	// SignedZeroNode
+	if (isSignedZero(node)) {
+		return signedZeroResult(node.sign);
+	}
+
+	// VariableNode - handle 'e' as Euler's constant
+	if (isVariable(node)) {
+		if (node.name === 'e') {
+			return rationalResult(floatToRational(Math.E));
+		}
+		return errorResult(`Cannot evaluate expression with unsubstituted variable: ${node.name}`);
+	}
+
+	// GreekLetterNode
+	if (isGreek(node)) {
+		return errorResult(
+			`Cannot evaluate expression with unsubstituted Greek letter: ${node.letter}`
+		);
+	}
+
+	// MathConstantNode
+	if (isMathConstant(node)) {
+		switch (node.constant) {
+			case 'euler':
+				return rationalResult(floatToRational(Math.E));
+			case 'pi':
+				return rationalResult(floatToRational(Math.PI));
+		}
+	}
+
+	// SymbolNode
+	if (isSymbol(node)) {
+		switch (node.symbol) {
+			case 'infinity':
+				return infinityResult('positive');
+			default:
+				return errorResult(`Cannot evaluate symbol: ${node.symbol}`);
+		}
+	}
+
+	// HoleNode
+	if (isHole(node)) {
+		return errorResult('Cannot evaluate expression with holes');
+	}
+
+	// AdditionNode
+	if (isAddition(node)) {
+		const left = evaluateInternal(node.left, depth + 1);
+		const right = evaluateInternal(node.right, depth + 1);
+		return addInternal(left, right);
+	}
+
+	// SubtractionNode
+	if (isSubtraction(node)) {
+		const left = evaluateInternal(node.left, depth + 1);
+		const right = evaluateInternal(node.right, depth + 1);
+		return subtractInternal(left, right);
+	}
+
+	// MultiplicationNode
+	if (isMultiplication(node)) {
+		const left = evaluateInternal(node.left, depth + 1);
+		const right = evaluateInternal(node.right, depth + 1);
+		return multiplyInternal(left, right);
+	}
+
+	// DivisionNode
+	if (isDivision(node)) {
+		const num = evaluateInternal(node.numerator, depth + 1);
+		const den = evaluateInternal(node.denominator, depth + 1);
+		return divideInternal(num, den);
+	}
+
+	// OppositeNode
+	if (isOpposite(node)) {
+		const operand = evaluateInternal(node.operand, depth + 1);
+		return negateInternal(operand);
+	}
+
+	// PositiveNode
+	if (isPositive(node)) {
+		return evaluateInternal(node.operand, depth + 1);
+	}
+
+	// SuperscriptNode (power)
+	if (isSuperscript(node)) {
+		const base = evaluateInternal(node.base, depth + 1);
+		const exp = evaluateInternal(node.superscript, depth + 1);
+		return powerInternal(base, exp);
+	}
+
+	// FunctionNode
+	if (isFunction(node)) {
+		const funcName = node.name;
+		const funcArgs = node.args;
+		const funcBase = node.base;
+
+		if (isDerivativeFunction(node)) {
+			return errorResult(
+				`Cannot evaluate derivative function '${funcName}'(x) without a definition.`
+			);
+		}
+		if (isInverseFunction(node)) {
+			return errorResult(
+				`Cannot evaluate inverse function '${funcName}^{-1}(x)' without a definition.`
+			);
+		}
+
+		return evaluateFunctionInternal(funcName, funcArgs, depth, funcBase);
+	}
+
+	// DelimiterNode
+	if (isDelimiter(node)) {
+		return evaluateInternal(node.content, depth + 1);
+	}
+
+	// SubscriptNode
+	if (isSubscript(node)) {
+		return errorResult('Cannot evaluate subscript expressions numerically');
+	}
+
+	// RelationNode
+	if (isRelation(node)) {
+		return errorResult('Cannot evaluate relation expressions to a numeric value');
+	}
+
+	// UnitNode
+	if (isUnit(node)) {
+		return evaluateInternal(node.expression, depth + 1);
+	}
+
+	// ComplexNode
+	if (isComplex(node)) {
+		return errorResult('Complex numbers not supported in evaluateInternal');
+	}
+
+	// CompositionNode
+	if (isComposition(node)) {
+		return errorResult('Cannot evaluate composition expression directly.');
+	}
+
+	return errorResult(`Cannot evaluate node type: ${(node as MathNode).type}`);
+}
+
+// =============================================================================
+// Extended Arithmetic Operations
+// =============================================================================
+
+/**
+ * Add two internal results with extended arithmetic.
+ */
+function addInternal(a: InternalEvalResult, b: InternalEvalResult): InternalEvalResult {
+	// Propagate errors and indeterminate forms
+	if (a.type === 'error') return a;
+	if (b.type === 'error') return b;
+	if (a.type === 'indeterminate') return a;
+	if (b.type === 'indeterminate') return b;
+
+	// Both rational
+	if (a.type === 'rational' && b.type === 'rational') {
+		return rationalResult(addRational(a.value, b.value));
+	}
+
+	// Infinity + Infinity
+	if (a.type === 'infinity' && b.type === 'infinity') {
+		if (a.sign === b.sign) {
+			return a; // +∞ + +∞ = +∞, -∞ + -∞ = -∞
+		}
+		return indeterminateResult('∞-∞'); // +∞ + (-∞)
+	}
+
+	// Infinity + finite/zero
+	if (a.type === 'infinity') return a;
+	if (b.type === 'infinity') return b;
+
+	// SignedZero + SignedZero
+	if (a.type === 'signed-zero' && b.type === 'signed-zero') {
+		if (a.sign === b.sign) {
+			return a; // 0⁺ + 0⁺ = 0⁺
+		}
+		return rationalResult(fromInteger(0n)); // 0⁺ + 0⁻ = 0
+	}
+
+	// SignedZero + rational
+	if (a.type === 'signed-zero' && b.type === 'rational') {
+		if (isZeroRational(b.value)) return a;
+		return b;
+	}
+	if (b.type === 'signed-zero' && a.type === 'rational') {
+		if (isZeroRational(a.value)) return b;
+		return a;
+	}
+
+	return errorResult('Cannot add these values');
+}
+
+/**
+ * Subtract two internal results with extended arithmetic.
+ */
+function subtractInternal(a: InternalEvalResult, b: InternalEvalResult): InternalEvalResult {
+	// Propagate errors and indeterminate forms
+	if (a.type === 'error') return a;
+	if (b.type === 'error') return b;
+	if (a.type === 'indeterminate') return a;
+	if (b.type === 'indeterminate') return b;
+
+	// Both rational
+	if (a.type === 'rational' && b.type === 'rational') {
+		return rationalResult(subRational(a.value, b.value));
+	}
+
+	// Infinity - Infinity
+	if (a.type === 'infinity' && b.type === 'infinity') {
+		if (a.sign !== b.sign) {
+			return a; // +∞ - (-∞) = +∞, -∞ - (+∞) = -∞
+		}
+		return indeterminateResult('∞-∞');
+	}
+
+	// Infinity - finite/zero
+	if (a.type === 'infinity') return a;
+	if (b.type === 'infinity') {
+		return infinityResult(flipSign(b.sign));
+	}
+
+	// SignedZero - SignedZero
+	if (a.type === 'signed-zero' && b.type === 'signed-zero') {
+		if (a.sign === b.sign) {
+			return rationalResult(fromInteger(0n)); // 0⁺ - 0⁺ = 0
+		}
+		return a; // 0⁺ - 0⁻ = 0⁺
+	}
+
+	// SignedZero - rational
+	if (a.type === 'signed-zero' && b.type === 'rational') {
+		if (isZeroRational(b.value)) return a;
+		return rationalResult(negRational(b.value));
+	}
+	if (a.type === 'rational' && b.type === 'signed-zero') {
+		if (isZeroRational(a.value)) return signedZeroResult(flipSign(b.sign));
+		return a;
+	}
+
+	return errorResult('Cannot subtract these values');
+}
+
+/**
+ * Multiply two internal results with extended arithmetic.
+ */
+function multiplyInternal(a: InternalEvalResult, b: InternalEvalResult): InternalEvalResult {
+	// Propagate errors and indeterminate forms
+	if (a.type === 'error') return a;
+	if (b.type === 'error') return b;
+	if (a.type === 'indeterminate') return a;
+	if (b.type === 'indeterminate') return b;
+
+	// Both rational
+	if (a.type === 'rational' && b.type === 'rational') {
+		return rationalResult(mulRational(a.value, b.value));
+	}
+
+	// Check for 0 × ∞ = indeterminate
+	const aIsZero = a.type === 'signed-zero' || (a.type === 'rational' && isZeroRational(a.value));
+	const bIsZero = b.type === 'signed-zero' || (b.type === 'rational' && isZeroRational(b.value));
+	const aIsInf = a.type === 'infinity';
+	const bIsInf = b.type === 'infinity';
+
+	if ((aIsZero && bIsInf) || (aIsInf && bIsZero)) {
+		return indeterminateResult('0·∞');
+	}
+
+	// Infinity × Infinity
+	if (aIsInf && bIsInf) {
+		const sign = multiplySign(a.sign, b.sign);
+		return infinityResult(sign);
+	}
+
+	// Infinity × finite (≠0)
+	if (aIsInf && b.type === 'rational') {
+		const bNum = rationalToNumber(b.value);
+		const sign = bNum > 0 ? a.sign : flipSign(a.sign);
+		return infinityResult(sign);
+	}
+	if (bIsInf && a.type === 'rational') {
+		const aNum = rationalToNumber(a.value);
+		const sign = aNum > 0 ? b.sign : flipSign(b.sign);
+		return infinityResult(sign);
+	}
+
+	// SignedZero × SignedZero
+	if (a.type === 'signed-zero' && b.type === 'signed-zero') {
+		const sign = multiplySign(a.sign, b.sign);
+		return signedZeroResult(sign);
+	}
+
+	// SignedZero × finite (≠0)
+	if (a.type === 'signed-zero' && b.type === 'rational' && !isZeroRational(b.value)) {
+		const bNum = rationalToNumber(b.value);
+		const sign = bNum > 0 ? a.sign : flipSign(a.sign);
+		return signedZeroResult(sign);
+	}
+	if (b.type === 'signed-zero' && a.type === 'rational' && !isZeroRational(a.value)) {
+		const aNum = rationalToNumber(a.value);
+		const sign = aNum > 0 ? b.sign : flipSign(b.sign);
+		return signedZeroResult(sign);
+	}
+
+	// Zero × anything finite = 0
+	if (aIsZero && b.type === 'rational') {
+		return rationalResult(fromInteger(0n));
+	}
+	if (bIsZero && a.type === 'rational') {
+		return rationalResult(fromInteger(0n));
+	}
+
+	return errorResult('Cannot multiply these values');
+}
+
+/**
+ * Divide two internal results with extended arithmetic.
+ */
+function divideInternal(a: InternalEvalResult, b: InternalEvalResult): InternalEvalResult {
+	// Propagate errors and indeterminate forms
+	if (a.type === 'error') return a;
+	if (b.type === 'error') return b;
+	if (a.type === 'indeterminate') return a;
+	if (b.type === 'indeterminate') return b;
+
+	// Check for 0/0 and ∞/∞
+	const aIsZero = a.type === 'signed-zero' || (a.type === 'rational' && isZeroRational(a.value));
+	const bIsZero = b.type === 'signed-zero' || (b.type === 'rational' && isZeroRational(b.value));
+	const aIsInf = a.type === 'infinity';
+	const bIsInf = b.type === 'infinity';
+
+	if (aIsZero && bIsZero) {
+		return indeterminateResult('0/0');
+	}
+	if (aIsInf && bIsInf) {
+		return indeterminateResult('∞/∞');
+	}
+
+	// Both rational
+	if (a.type === 'rational' && b.type === 'rational') {
+		if (isZeroRational(b.value)) {
+			return errorResult('Division by zero');
+		}
+		return rationalResult(divRational(a.value, b.value));
+	}
+
+	// finite / 0± = ±∞
+	if (a.type === 'rational' && !isZeroRational(a.value) && b.type === 'signed-zero') {
+		const aNum = rationalToNumber(a.value);
+		const sign = aNum > 0 ? b.sign : flipSign(b.sign);
+		return infinityResult(sign);
+	}
+
+	// ∞ / 0± = ±∞
+	if (aIsInf && b.type === 'signed-zero') {
+		const sign = multiplySign(a.sign, b.sign);
+		return infinityResult(sign);
+	}
+
+	// finite / ∞ = 0±
+	if (a.type === 'rational' && bIsInf) {
+		const aNum = rationalToNumber(a.value);
+		const sign = aNum >= 0 ? b.sign : flipSign(b.sign);
+		return signedZeroResult(sign);
+	}
+
+	// 0± / ∞ = 0±
+	if (a.type === 'signed-zero' && bIsInf) {
+		const sign = multiplySign(a.sign, b.sign);
+		return signedZeroResult(sign);
+	}
+
+	// ∞ / finite (≠0) = ±∞
+	if (aIsInf && b.type === 'rational' && !isZeroRational(b.value)) {
+		const bNum = rationalToNumber(b.value);
+		const sign = bNum > 0 ? a.sign : flipSign(a.sign);
+		return infinityResult(sign);
+	}
+
+	// 0± / finite (≠0) = 0±
+	if (a.type === 'signed-zero' && b.type === 'rational' && !isZeroRational(b.value)) {
+		const bNum = rationalToNumber(b.value);
+		const sign = bNum > 0 ? a.sign : flipSign(a.sign);
+		return signedZeroResult(sign);
+	}
+
+	// 0 / finite = 0
+	if (aIsZero && b.type === 'rational' && !isZeroRational(b.value)) {
+		return rationalResult(fromInteger(0n));
+	}
+
+	return errorResult('Cannot divide these values');
+}
+
+/**
+ * Negate an internal result.
+ */
+function negateInternal(a: InternalEvalResult): InternalEvalResult {
+	if (a.type === 'error') return a;
+	if (a.type === 'indeterminate') return a;
+	if (a.type === 'rational') {
+		return rationalResult(negRational(a.value));
+	}
+	if (a.type === 'infinity') {
+		return infinityResult(flipSign(a.sign));
+	}
+	if (a.type === 'signed-zero') {
+		return signedZeroResult(flipSign(a.sign));
+	}
+	return errorResult('Cannot negate this value');
+}
+
+/**
+ * Compute power of two internal results.
+ */
+function powerInternal(base: InternalEvalResult, exp: InternalEvalResult): InternalEvalResult {
+	// Propagate errors and indeterminate forms
+	if (base.type === 'error') return base;
+	if (exp.type === 'error') return exp;
+	if (base.type === 'indeterminate') return base;
+	if (exp.type === 'indeterminate') return exp;
+
+	// Check for indeterminate forms
+	const baseIsZero =
+		base.type === 'signed-zero' || (base.type === 'rational' && isZeroRational(base.value));
+	const expIsZero =
+		exp.type === 'signed-zero' || (exp.type === 'rational' && isZeroRational(exp.value));
+	const baseIsInf = base.type === 'infinity';
+	const expIsInf = exp.type === 'infinity';
+
+	// 0^0 is indeterminate
+	if (baseIsZero && expIsZero) {
+		return indeterminateResult('0^0');
+	}
+
+	// ∞^0 is indeterminate
+	if (baseIsInf && expIsZero) {
+		return indeterminateResult('∞^0');
+	}
+
+	// 1^∞ is indeterminate (need to check if base is 1)
+	if (base.type === 'rational' && expIsInf) {
+		const baseNum = rationalToNumber(base.value);
+		if (Math.abs(baseNum - 1) < 1e-15) {
+			return indeterminateResult('1^∞');
+		}
+	}
+
+	// Both rational - use standard computation
+	if (base.type === 'rational' && exp.type === 'rational') {
+		// For integer exponent, use exact Rational power
+		if (isIntegerRational(exp.value)) {
+			const expNum = Number(exp.value.n);
+			if (Number.isSafeInteger(expNum) && Math.abs(expNum) <= 1000) {
+				return rationalResult(powRational(base.value, expNum));
+			}
+		}
+
+		// For fractional exponent with non-negative integer base: try exact nth root
+		if (isIntegerRational(base.value) && base.value.n >= 0n && exp.value.d !== 1n) {
+			const p = exp.value.n;
+			const q = exp.value.d;
+			const exactRoot = integerNthRoot(base.value.n, q);
+			if (exactRoot !== null) {
+				const pNum = Number(p);
+				if (Number.isSafeInteger(pNum) && Math.abs(pNum) <= 1000) {
+					return rationalResult(powRational(fromInteger(exactRoot), pNum));
+				}
+			}
+		}
+
+		// Fall back to floating point
+		const baseNum = rationalToNumber(base.value);
+		const expNum = rationalToNumber(exp.value);
+
+		if (baseNum < 0 && !Number.isInteger(expNum)) {
+			return errorResult('Cannot compute non-integer power of negative number');
+		}
+
+		return rationalResult(floatToRational(Math.pow(baseNum, expNum)));
+	}
+
+	// 0⁺^n (n > 0) = 0⁺
+	if (base.type === 'signed-zero' && exp.type === 'rational') {
+		const expNum = rationalToNumber(exp.value);
+		if (expNum > 0) {
+			return signedZeroResult(base.sign);
+		}
+		if (expNum < 0) {
+			// 0⁺^(-n) = +∞
+			return infinityResult(base.sign);
+		}
+	}
+
+	// +∞^n (n > 0) = +∞, +∞^(-n) = 0⁺
+	if (baseIsInf && exp.type === 'rational') {
+		const expNum = rationalToNumber(exp.value);
+		if (expNum > 0) {
+			return infinityResult(base.sign);
+		}
+		if (expNum < 0) {
+			return signedZeroResult('positive');
+		}
+	}
+
+	// n^+∞ depends on |n|
+	if (base.type === 'rational' && expIsInf) {
+		const baseNum = Math.abs(rationalToNumber(base.value));
+		if (baseNum > 1) {
+			return infinityResult(exp.sign === 'positive' ? 'positive' : 'positive'); // n^+∞ = +∞, n^-∞ = 0
+		}
+		if (baseNum < 1) {
+			return exp.sign === 'positive'
+				? signedZeroResult('positive') // n^+∞ = 0 (for |n| < 1)
+				: infinityResult('positive'); // n^-∞ = +∞ (for |n| < 1)
+		}
+	}
+
+	return errorResult('Cannot compute power of these values');
+}
+
+/**
+ * Evaluate a function with internal result handling.
+ */
+function evaluateFunctionInternal(
+	name: string,
+	args: readonly MathNode[],
+	depth: number,
+	base?: MathNode
+): InternalEvalResult {
+	// Evaluate arguments
+	const internalArgs = args.map((arg) => evaluateInternal(arg, depth + 1));
+
+	// Check for errors in arguments
+	for (const arg of internalArgs) {
+		if (arg.type === 'error') return arg;
+		if (arg.type === 'indeterminate') return arg;
+	}
+
+	// For most functions, we need rational arguments
+	const rationalArgs: Rational[] = [];
+	for (const arg of internalArgs) {
+		if (arg.type === 'rational') {
+			rationalArgs.push(arg.value);
+		} else if (arg.type === 'signed-zero') {
+			rationalArgs.push(fromInteger(0n)); // Treat signed zero as 0 for most functions
+		} else if (arg.type === 'infinity') {
+			// Handle infinity in functions specially below
+			break;
+		}
+	}
+
+	const numArgs = rationalArgs.map((r) => rationalToNumber(r));
+
+	// Handle special cases for infinity arguments
+	const hasInfinity = internalArgs.some((a) => a.type === 'infinity');
+	const hasSignedZero = internalArgs.some((a) => a.type === 'signed-zero');
+
+	switch (name.toLowerCase()) {
+		case 'sin':
+			if (internalArgs.length !== 1) return errorResult('sin requires exactly 1 argument');
+			if (hasInfinity) return errorResult('sin(∞) is undefined (oscillates)');
+			if (hasSignedZero && internalArgs[0].type === 'signed-zero') {
+				return signedZeroResult(internalArgs[0].sign); // sin(0±) = 0±
+			}
+			return rationalResult(floatToRational(Math.sin(numArgs[0])));
+
+		case 'cos':
+			if (internalArgs.length !== 1) return errorResult('cos requires exactly 1 argument');
+			if (hasInfinity) return errorResult('cos(∞) is undefined (oscillates)');
+			return rationalResult(floatToRational(Math.cos(numArgs[0])));
+
+		case 'tan':
+			if (internalArgs.length !== 1) return errorResult('tan requires exactly 1 argument');
+			if (hasInfinity) return errorResult('tan(∞) is undefined (oscillates)');
+			return rationalResult(floatToRational(Math.tan(numArgs[0])));
+
+		case 'exp':
+			if (internalArgs.length !== 1) return errorResult('exp requires exactly 1 argument');
+			if (internalArgs[0].type === 'infinity') {
+				return internalArgs[0].sign === 'positive'
+					? infinityResult('positive') // exp(+∞) = +∞
+					: signedZeroResult('positive'); // exp(-∞) = 0⁺
+			}
+			if (hasSignedZero) {
+				return rationalResult(fromInteger(1n)); // exp(0±) ≈ 1
+			}
+			return rationalResult(floatToRational(Math.exp(numArgs[0])));
+
+		case 'ln':
+			if (internalArgs.length !== 1) return errorResult('ln requires exactly 1 argument');
+			if (internalArgs[0].type === 'infinity') {
+				if (internalArgs[0].sign === 'positive') return infinityResult('positive');
+				return errorResult('ln(-∞) is undefined');
+			}
+			if (internalArgs[0].type === 'signed-zero') {
+				if (internalArgs[0].sign === 'positive') return infinityResult('negative'); // ln(0⁺) = -∞
+				return errorResult('ln(0⁻) is undefined');
+			}
+			if (numArgs[0] <= 0) return errorResult('ln argument must be positive');
+			return rationalResult(floatToRational(Math.log(numArgs[0])));
+
+		case 'sqrt': {
+			if (internalArgs.length !== 1) return errorResult('sqrt requires exactly 1 argument');
+			if (internalArgs[0].type === 'infinity') {
+				if (internalArgs[0].sign === 'positive') return infinityResult('positive');
+				return errorResult('sqrt(-∞) is undefined');
+			}
+			if (internalArgs[0].type === 'signed-zero') {
+				if (internalArgs[0].sign === 'positive') return signedZeroResult('positive');
+				return errorResult('sqrt(0⁻) is undefined');
+			}
+			if (numArgs[0] < 0) return errorResult('sqrt argument must be non-negative');
+
+			// Handle nth root
+			const index = base ? evaluateInternal(base, depth + 1) : rationalResult(fromInteger(2n));
+			if (index.type !== 'rational') {
+				return errorResult('Root index must be a finite number');
+			}
+
+			// Try exact computation
+			if (
+				isIntegerRational(index.value) &&
+				isIntegerRational(rationalArgs[0]) &&
+				rationalArgs[0].n >= 0n
+			) {
+				const exactRoot = integerNthRoot(rationalArgs[0].n, index.value.n);
+				if (exactRoot !== null) {
+					return rationalResult(fromInteger(exactRoot));
+				}
+			}
+
+			const indexNum = rationalToNumber(index.value);
+			return rationalResult(floatToRational(Math.pow(numArgs[0], 1 / indexNum)));
+		}
+
+		case 'abs':
+			if (internalArgs.length !== 1) return errorResult('abs requires exactly 1 argument');
+			if (internalArgs[0].type === 'infinity') return infinityResult('positive');
+			if (internalArgs[0].type === 'signed-zero') return signedZeroResult('positive');
+			return rationalResult(
+				rationalArgs[0].n < 0n ? { n: -rationalArgs[0].n, d: rationalArgs[0].d } : rationalArgs[0]
+			);
+
+		// Fall through for other functions - use original evaluateFunctionToRational
+		default:
+			try {
+				const result = evaluateFunctionToRational(name, args, depth, base);
+				return rationalResult(result);
+			} catch (e) {
+				return errorResult(e instanceof Error ? e.message : String(e));
+			}
+	}
+}
+
+// =============================================================================
 // Main Export
 // =============================================================================
 
@@ -899,29 +1677,103 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 	const freeVars = [...variables].filter((v) => !['pi', 'e', 'i'].includes(v));
 
 	if (freeVars.length > 0) {
-		throw new Error(`Cannot evaluate: free variables: ${freeVars.join(', ')}`);
+		return {
+			status: 'unevaluable',
+			reason: `Cannot evaluate: free variables: ${freeVars.join(', ')}`
+		};
 	}
 
 	// 3. Mode exact: validate and use normalize/denormalize for exact symbolic simplification
 	if (opts.mode === 'exact') {
-		validateEvaluable(processedNode, true); // Allow complex functions in exact mode
-		const normalForm = normalize(processedNode);
-		let simplifiedNode = denormalize(normalForm);
+		try {
+			validateEvaluable(processedNode, true); // Allow complex functions in exact mode
+		} catch (e) {
+			return {
+				status: 'unevaluable',
+				reason: e instanceof Error ? e.message : String(e)
+			};
+		}
 
-		// Post-process to evaluate rounding functions (floor, ceil, round, abs)
-		// that normalize/denormalize don't handle
-		simplifiedNode = evaluateRoundingFunctions(simplifiedNode);
+		try {
+			const normalForm = normalize(processedNode);
+			let simplifiedNode = denormalize(normalForm);
 
-		return {
-			value: simplifiedNode,
-			node: simplifiedNode,
-			exact: true
-		};
+			// Post-process to evaluate rounding functions (floor, ceil, round, abs)
+			// that normalize/denormalize don't handle
+			simplifiedNode = evaluateRoundingFunctions(simplifiedNode);
+
+			return {
+				status: 'value',
+				value: simplifiedNode,
+				node: simplifiedNode,
+				exact: true
+			};
+		} catch (e) {
+			// Handle errors from normalize (e.g., division by zero)
+			const message = e instanceof Error ? e.message : String(e);
+			// Convert normalize error messages to user-friendly format
+			if (message.includes('division by zero')) {
+				return {
+					status: 'unevaluable',
+					reason: 'Division by zero'
+				};
+			}
+			return {
+				status: 'unevaluable',
+				reason: message
+			};
+		}
 	}
 
 	// 4. Mode decimal: validate and evaluate numerically with Rational arithmetic
-	validateEvaluable(processedNode);
-	const numericValue = evaluateNodeToApproximatedNumber(processedNode, opts.precision);
+	try {
+		validateEvaluable(processedNode);
+	} catch (e) {
+		return {
+			status: 'unevaluable',
+			reason: e instanceof Error ? e.message : String(e)
+		};
+	}
+
+	// First, try to evaluate using the internal function that handles extended arithmetic
+	const internalResult = evaluateInternal(processedNode, 0);
+
+	// Handle the internal result
+	if (internalResult.type === 'indeterminate') {
+		return {
+			status: 'indeterminate',
+			form: internalResult.form
+		};
+	}
+
+	if (internalResult.type === 'error') {
+		return {
+			status: 'unevaluable',
+			reason: internalResult.reason
+		};
+	}
+
+	if (internalResult.type === 'infinity') {
+		// Infinity result - return as unevaluable since we can't represent it as a number
+		return {
+			status: 'unevaluable',
+			reason: `Result is ${internalResult.sign === 'positive' ? '+∞' : '-∞'}`
+		};
+	}
+
+	if (internalResult.type === 'signed-zero') {
+		// Signed zero collapses to 0 in decimal mode
+		const numericValue = 0;
+		return {
+			status: 'value',
+			value: numericValue,
+			node: number('0'),
+			exact: false
+		};
+	}
+
+	// Regular rational result
+	const numericValue = applyPrecisionToRational(internalResult.value, opts.precision);
 
 	// Create a MathNode for the numeric result
 	const resultNode = Number.isInteger(numericValue)
@@ -929,6 +1781,7 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 		: number(numericValue.toPrecision(15));
 
 	return {
+		status: 'value',
 		value: numericValue,
 		node: resultNode,
 		exact: false
