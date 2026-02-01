@@ -72,6 +72,11 @@ export interface PeriodicDiscontinuityInfo {
 }
 
 /**
+ * Sign of a limit value (used for infinite discontinuities).
+ */
+export type LimitSign = 'positive' | 'negative' | 'unknown';
+
+/**
  * Complete information about a discontinuity at a specific point.
  */
 export interface Discontinuity {
@@ -86,6 +91,24 @@ export interface Discontinuity {
 
 	/** Limit from the right (x → a⁺), null if doesn't exist */
 	readonly rightLimit: MathNode | null;
+
+	/**
+	 * Sign of the left limit (for infinite discontinuities).
+	 * - 'positive': limit is +∞
+	 * - 'negative': limit is -∞
+	 * - 'unknown': sign could not be determined
+	 * Only present for infinite discontinuities.
+	 */
+	readonly leftLimitSign?: LimitSign;
+
+	/**
+	 * Sign of the right limit (for infinite discontinuities).
+	 * - 'positive': limit is +∞
+	 * - 'negative': limit is -∞
+	 * - 'unknown': sign could not be determined
+	 * Only present for infinite discontinuities.
+	 */
+	readonly rightLimitSign?: LimitSign;
 
 	/** Value of the function at the point, null if undefined */
 	readonly functionValue: MathNode | null;
