@@ -34,6 +34,7 @@ import { tryAlgebraicSimplification } from './algebraic';
 import { trySqueeze } from './squeeze';
 import { evaluateOneSidedLimits, needsOneSidedAnalysis, recordOneSidedSteps } from './one-sided';
 import { tryCompositionLimit } from './composition';
+import { tryPiecewiseFunctionLimit, containsPiecewiseFunction } from './piecewise';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { number } from '../factory';
@@ -298,6 +299,31 @@ export function evaluateLimit(
 		);
 	}
 
+	// Strategy 1.5: Try piecewise function limits (floor, ceil, sign)
+	// Must be before direct substitution to handle direction correctly
+	if (!isInfinity(approachPoint) && containsPiecewiseFunction(expression)) {
+		const piecewiseResult = tryPiecewiseFunctionLimit(
+			expression,
+			varName,
+			approachPoint,
+			dir,
+			recorder
+		);
+		if (piecewiseResult.success && piecewiseResult.value) {
+			return createResult(
+				piecewiseResult.value,
+				varName,
+				approachPoint,
+				dir,
+				'exact',
+				'none',
+				piecewiseResult.technique,
+				recorder,
+				opts
+			);
+		}
+	}
+
 	// Strategy 2: Try direct substitution
 	if (!isInfinity(approachPoint)) {
 		const directResult = tryDirectSubstitution(expression, varName, approachPoint, recorder);
@@ -558,6 +584,25 @@ function evaluateLimitInternal(
 			recorder,
 			opts
 		);
+	}
+
+	// Try piecewise function limits (floor, ceil, sign)
+	// Must be before direct substitution to handle direction correctly
+	if (!isInfinity(approach) && containsPiecewiseFunction(expr)) {
+		const piecewiseResult = tryPiecewiseFunctionLimit(expr, varName, approach, direction, recorder);
+		if (piecewiseResult.success && piecewiseResult.value) {
+			return createResult(
+				piecewiseResult.value,
+				varName,
+				approach,
+				direction,
+				'exact',
+				'none',
+				piecewiseResult.technique,
+				recorder,
+				opts
+			);
+		}
 	}
 
 	// Try direct substitution

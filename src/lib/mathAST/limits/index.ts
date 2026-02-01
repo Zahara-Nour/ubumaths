@@ -166,3 +166,13 @@ export {
 	type SignedLimitValue,
 	type BinaryOpResult
 } from './sign-tracking';
+
+// =============================================================================
+// Piecewise Functions
+// =============================================================================
+
+export {
+	tryPiecewiseFunctionLimit,
+	containsPiecewiseFunction,
+	type PiecewiseLimitResult
+} from './piecewise';

@@ -61,11 +61,23 @@ This document tracks improvements to the `continuity` module to leverage these n
   - Symbolic base point (π/2) instead of numeric approximation
   - Reusable by limits module if needed
 
-#### 4. ⬜ Improve floor/ceil/sign handling in limits module
+#### 4. ✅ Improve floor/ceil/sign handling in limits module
 
-- **Status**: PENDING
-- **Problem**: Limits module doesn't detect jump discontinuities for these functions
-- **Note**: Requires limits module changes, more complex
+- **Status**: COMPLETED
+- **New file**: `src/lib/mathAST/limits/piecewise.ts`
+- **Changes made**:
+  - Created `piecewise.ts` with direction-aware limit evaluation for floor/ceil/sign
+  - Added `tryPiecewiseFunctionLimit` function that handles:
+    - `floor(x)` at integer n: left limit = n-1, right limit = n
+    - `ceil(x)` at integer n: left limit = n, right limit = n+1
+    - `sign(x)` at zero: left limit = -1, right limit = +1
+  - Added `containsPiecewiseFunction` detection function
+  - Integrated into `evaluate.ts` before direct substitution strategy
+  - Exported from `limits/index.ts`
+- **Tests added**: 8 new tests in `one-sided.test.ts`
+- **Benefits**:
+  - Correct one-sided limits for piecewise functions
+  - Jump discontinuity detection now works with limits module
 
 #### 5. ✅ Exact evaluation for point deduplication
 
@@ -135,15 +147,39 @@ function getPointKey(point: MathNode): string {
 }
 ```
 
+### Phase 5: Piecewise Functions ✅ COMPLETED
+
+**New file**: `src/lib/mathAST/limits/piecewise.ts`
+
+**Key types**:
+
+```typescript
+interface PiecewiseLimitResult {
+	readonly success: boolean;
+	readonly value: MathNode | null;
+	readonly technique: LimitRule;
+	readonly description?: string;
+}
+```
+
+**Key functions**:
+
+- `containsPiecewiseFunction(expr)` - check if expression contains floor/ceil/sign
+- `tryPiecewiseFunctionLimit(expr, varName, approach, direction, recorder)` - evaluate limit with direction
+
+**Integration**: Added as Strategy 1.5 in `evaluate.ts`, before direct substitution.
+
 ## Test Results
 
-All 29 continuity tests pass after all improvements.
+- **Continuity tests**: All 29 pass
+- **Limits tests**: All 502 pass (8 new piecewise tests added)
 
 ## Files Modified/Created
 
 **Created**:
 
 - `src/lib/mathAST/common/periodic-functions.ts` - Shared periodic function utilities
+- `src/lib/mathAST/limits/piecewise.ts` - Piecewise function limit handling
 
 **Modified**:
 
@@ -151,10 +187,13 @@ All 29 continuity tests pass after all improvements.
 - `src/lib/mathAST/analysis/continuity-types.ts` - Added LimitSign type
 - `src/lib/mathAST/analysis/index.ts` - Export LimitSign
 - `src/lib/mathAST/common/index.ts` - Export periodic-functions utilities
+- `src/lib/mathAST/limits/evaluate.ts` - Integrated piecewise strategy
+- `src/lib/mathAST/limits/index.ts` - Export piecewise functions
+- `src/lib/mathAST/limits/__tests__/one-sided.test.ts` - Added 8 piecewise tests
 
 ## Remaining Work
 
-1. **Improve floor/ceil/sign handling** - Requires limits module changes
+1. ~~**Improve floor/ceil/sign handling**~~ ✅ DONE
 2. **Unify pedagogical descriptions** - Lower priority
 3. **Add tests for periodic-functions utility**
 4. **Document new APIs**
