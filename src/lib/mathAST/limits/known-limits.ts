@@ -237,6 +237,198 @@ export const KNOWN_LIMITS: readonly KnownLimitEntry[] = [
 		approach: number('0'),
 		direction: 'right',
 		value: negativeInfinity()
+	},
+
+	// =========================================================================
+	// Croissances Comparées (Programme Français)
+	// Ces limites permettent de lever des formes indéterminées
+	// =========================================================================
+
+	// --- x·ln(x) en 0⁺ (forme 0·(-∞)) ---
+	{
+		id: 'x-ln-x-at-zero',
+		name: 'Croissance comparée x·ln(x)',
+		descriptionFr: 'Croissance comparée : lim(x·ln(x)) = 0 quand x tend vers 0⁺',
+		pattern: multiply(variable('x'), func('ln', [variable('x')]), 'implicit'),
+		variable: 'x',
+		approach: number('0'),
+		direction: 'right',
+		value: number('0')
+	},
+	{
+		id: 'x-ln-x-at-zero-explicit',
+		name: 'Croissance comparée x×ln(x)',
+		descriptionFr: 'Croissance comparée : lim(x×ln(x)) = 0 quand x tend vers 0⁺',
+		pattern: multiply(variable('x'), func('ln', [variable('x')]), 'explicit'),
+		variable: 'x',
+		approach: number('0'),
+		direction: 'right',
+		value: number('0')
+	},
+
+	// --- x^n·ln(x) en 0⁺ pour n > 0 ---
+	{
+		id: 'x-squared-ln-x-at-zero',
+		name: 'Croissance comparée x²·ln(x)',
+		descriptionFr: 'Croissance comparée : lim(x²·ln(x)) = 0 quand x tend vers 0⁺',
+		pattern: multiply(power(variable('x'), number('2')), func('ln', [variable('x')]), 'implicit'),
+		variable: 'x',
+		approach: number('0'),
+		direction: 'right',
+		value: number('0')
+	},
+
+	// --- sqrt(x)·ln(x) en 0⁺ ---
+	{
+		id: 'sqrt-x-ln-x-at-zero',
+		name: 'Croissance comparée √x·ln(x)',
+		descriptionFr: 'Croissance comparée : lim(√x·ln(x)) = 0 quand x tend vers 0⁺',
+		pattern: multiply(func('sqrt', [variable('x')]), func('ln', [variable('x')]), 'implicit'),
+		variable: 'x',
+		approach: number('0'),
+		direction: 'right',
+		value: number('0')
+	},
+
+	// --- x/e^x et x·e^(-x) en +∞ (forme ∞·0) ---
+	{
+		id: 'x-exp-neg-x-at-infinity',
+		name: 'Croissance comparée x·e^(-x)',
+		descriptionFr: 'Croissance comparée : lim(x·e^(-x)) = 0 quand x tend vers +∞',
+		pattern: multiply(
+			variable('x'),
+			func('exp', [{ type: 'opposite', operand: variable('x') }]),
+			'implicit'
+		),
+		variable: 'x',
+		approach: positiveInfinity(),
+		value: number('0')
+	},
+
+	// --- x²/e^x en +∞ ---
+	{
+		id: 'x-squared-over-exp-x',
+		name: 'Croissance comparée x²/e^x',
+		descriptionFr: 'Croissance comparée : lim(x²/e^x) = 0 quand x tend vers +∞',
+		pattern: divide(power(variable('x'), number('2')), func('exp', [variable('x')]), 'fraction'),
+		variable: 'x',
+		approach: positiveInfinity(),
+		value: number('0')
+	},
+	{
+		id: 'x-cubed-over-exp-x',
+		name: 'Croissance comparée x³/e^x',
+		descriptionFr: 'Croissance comparée : lim(x³/e^x) = 0 quand x tend vers +∞',
+		pattern: divide(power(variable('x'), number('3')), func('exp', [variable('x')]), 'fraction'),
+		variable: 'x',
+		approach: positiveInfinity(),
+		value: number('0')
+	},
+
+	// --- x²·e^(-x) en +∞ ---
+	{
+		id: 'x-squared-exp-neg-x-at-infinity',
+		name: 'Croissance comparée x²·e^(-x)',
+		descriptionFr: 'Croissance comparée : lim(x²·e^(-x)) = 0 quand x tend vers +∞',
+		pattern: multiply(
+			power(variable('x'), number('2')),
+			func('exp', [{ type: 'opposite', operand: variable('x') }]),
+			'implicit'
+		),
+		variable: 'x',
+		approach: positiveInfinity(),
+		value: number('0')
+	},
+
+	// --- ln(x)/x^n en +∞ ---
+	{
+		id: 'ln-x-over-x-squared',
+		name: 'Croissance comparée ln(x)/x²',
+		descriptionFr: 'Croissance comparée : lim(ln(x)/x²) = 0 quand x tend vers +∞',
+		pattern: divide(func('ln', [variable('x')]), power(variable('x'), number('2')), 'fraction'),
+		variable: 'x',
+		approach: positiveInfinity(),
+		value: number('0')
+	},
+	{
+		id: 'ln-x-over-sqrt-x',
+		name: 'Croissance comparée ln(x)/√x',
+		descriptionFr: 'Croissance comparée : lim(ln(x)/√x) = 0 quand x tend vers +∞',
+		pattern: divide(func('ln', [variable('x')]), func('sqrt', [variable('x')]), 'fraction'),
+		variable: 'x',
+		approach: positiveInfinity(),
+		value: number('0')
+	},
+
+	// --- (ln(x))^n/x en +∞ ---
+	{
+		id: 'ln-x-squared-over-x',
+		name: 'Croissance comparée (ln(x))²/x',
+		descriptionFr: 'Croissance comparée : lim((ln(x))²/x) = 0 quand x tend vers +∞',
+		pattern: divide(power(func('ln', [variable('x')]), number('2')), variable('x'), 'fraction'),
+		variable: 'x',
+		approach: positiveInfinity(),
+		value: number('0')
+	},
+
+	// --- e^x/x^n en +∞ (→ +∞) ---
+	{
+		id: 'exp-x-over-x',
+		name: 'Croissance comparée e^x/x',
+		descriptionFr: 'Croissance comparée : lim(e^x/x) = +∞ quand x tend vers +∞',
+		pattern: divide(func('exp', [variable('x')]), variable('x'), 'fraction'),
+		variable: 'x',
+		approach: positiveInfinity(),
+		value: positiveInfinity()
+	},
+	{
+		id: 'exp-x-over-x-squared',
+		name: 'Croissance comparée e^x/x²',
+		descriptionFr: 'Croissance comparée : lim(e^x/x²) = +∞ quand x tend vers +∞',
+		pattern: divide(func('exp', [variable('x')]), power(variable('x'), number('2')), 'fraction'),
+		variable: 'x',
+		approach: positiveInfinity(),
+		value: positiveInfinity()
+	},
+	{
+		id: 'exp-x-over-x-cubed',
+		name: 'Croissance comparée e^x/x³',
+		descriptionFr: 'Croissance comparée : lim(e^x/x³) = +∞ quand x tend vers +∞',
+		pattern: divide(func('exp', [variable('x')]), power(variable('x'), number('3')), 'fraction'),
+		variable: 'x',
+		approach: positiveInfinity(),
+		value: positiveInfinity()
+	},
+
+	// --- x·e^x en -∞ (forme (-∞)·0) ---
+	{
+		id: 'x-exp-x-at-neg-infinity',
+		name: 'Croissance comparée x·e^x',
+		descriptionFr: 'Croissance comparée : lim(x·e^x) = 0 quand x tend vers −∞',
+		pattern: multiply(variable('x'), func('exp', [variable('x')]), 'implicit'),
+		variable: 'x',
+		approach: negativeInfinity(),
+		value: number('0')
+	},
+	{
+		id: 'x-exp-x-at-neg-infinity-explicit',
+		name: 'Croissance comparée x×e^x',
+		descriptionFr: 'Croissance comparée : lim(x×e^x) = 0 quand x tend vers −∞',
+		pattern: multiply(variable('x'), func('exp', [variable('x')]), 'explicit'),
+		variable: 'x',
+		approach: negativeInfinity(),
+		value: number('0')
+	},
+
+	// --- x²·e^x en -∞ ---
+	{
+		id: 'x-squared-exp-x-at-neg-infinity',
+		name: 'Croissance comparée x²·e^x',
+		descriptionFr: 'Croissance comparée : lim(x²·e^x) = 0 quand x tend vers −∞',
+		pattern: multiply(power(variable('x'), number('2')), func('exp', [variable('x')]), 'implicit'),
+		variable: 'x',
+		approach: negativeInfinity(),
+		value: number('0')
 	}
 ];
 

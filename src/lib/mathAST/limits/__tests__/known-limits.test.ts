@@ -23,6 +23,8 @@ import {
 	func,
 	add,
 	subtract,
+	multiply,
+	power,
 	positiveInfinity,
 	negativeInfinity
 } from '../../factory';
@@ -233,6 +235,331 @@ describe('Known Limits Database', () => {
 			if (value.type === 'infinity') {
 				expect(value.sign).toBe('positive');
 			}
+		});
+	});
+
+	// =========================================================================
+	// Croissances Comparées (Programme Français)
+	// =========================================================================
+	describe('Croissances comparées', () => {
+		describe('x·ln(x) en 0⁺', () => {
+			it('matches x·ln(x) as x → 0⁺ (implicit multiplication)', () => {
+				const expr = multiply(variable('x'), func('ln', [variable('x')]), 'implicit');
+				const match = matchKnownLimit(expr, number('0'), 'x', 'right');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('x-ln-x-at-zero');
+			});
+
+			it('matches x×ln(x) as x → 0⁺ (explicit multiplication)', () => {
+				const expr = multiply(variable('x'), func('ln', [variable('x')]), 'explicit');
+				const match = matchKnownLimit(expr, number('0'), 'x', 'right');
+				expect(match).not.toBeNull();
+				// Both implicit and explicit patterns return 0, so either match is valid
+				expect(match?.id).toMatch(/^x-ln-x-at-zero/);
+			});
+
+			it('returns 0 for x·ln(x) limit', () => {
+				const entry = KNOWN_LIMITS.find((l) => l.id === 'x-ln-x-at-zero')!;
+				const value = getKnownLimitValue(entry, 'x');
+				expect(isNumber(value)).toBe(true);
+				if (isNumber(value)) {
+					expect(value.value).toBe('0');
+				}
+			});
+		});
+
+		describe('x²·ln(x) en 0⁺', () => {
+			it('matches x²·ln(x) as x → 0⁺', () => {
+				const expr = multiply(
+					power(variable('x'), number('2')),
+					func('ln', [variable('x')]),
+					'implicit'
+				);
+				const match = matchKnownLimit(expr, number('0'), 'x', 'right');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('x-squared-ln-x-at-zero');
+			});
+
+			it('returns 0 for x²·ln(x) limit', () => {
+				const entry = KNOWN_LIMITS.find((l) => l.id === 'x-squared-ln-x-at-zero')!;
+				const value = getKnownLimitValue(entry, 'x');
+				expect(isNumber(value)).toBe(true);
+				if (isNumber(value)) {
+					expect(value.value).toBe('0');
+				}
+			});
+		});
+
+		describe('√x·ln(x) en 0⁺', () => {
+			it('matches √x·ln(x) as x → 0⁺', () => {
+				const expr = multiply(
+					func('sqrt', [variable('x')]),
+					func('ln', [variable('x')]),
+					'implicit'
+				);
+				const match = matchKnownLimit(expr, number('0'), 'x', 'right');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('sqrt-x-ln-x-at-zero');
+			});
+
+			it('returns 0 for √x·ln(x) limit', () => {
+				const entry = KNOWN_LIMITS.find((l) => l.id === 'sqrt-x-ln-x-at-zero')!;
+				const value = getKnownLimitValue(entry, 'x');
+				expect(isNumber(value)).toBe(true);
+				if (isNumber(value)) {
+					expect(value.value).toBe('0');
+				}
+			});
+		});
+
+		describe('x^n/e^x en +∞', () => {
+			it('matches x/e^x as x → +∞', () => {
+				const expr = divide(variable('x'), func('exp', [variable('x')]), 'fraction');
+				const match = matchKnownLimit(expr, positiveInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('x-over-exp-x');
+			});
+
+			it('matches x²/e^x as x → +∞', () => {
+				const expr = divide(
+					power(variable('x'), number('2')),
+					func('exp', [variable('x')]),
+					'fraction'
+				);
+				const match = matchKnownLimit(expr, positiveInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('x-squared-over-exp-x');
+			});
+
+			it('matches x³/e^x as x → +∞', () => {
+				const expr = divide(
+					power(variable('x'), number('3')),
+					func('exp', [variable('x')]),
+					'fraction'
+				);
+				const match = matchKnownLimit(expr, positiveInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('x-cubed-over-exp-x');
+			});
+
+			it('returns 0 for x²/e^x limit', () => {
+				const entry = KNOWN_LIMITS.find((l) => l.id === 'x-squared-over-exp-x')!;
+				const value = getKnownLimitValue(entry, 'x');
+				expect(isNumber(value)).toBe(true);
+				if (isNumber(value)) {
+					expect(value.value).toBe('0');
+				}
+			});
+		});
+
+		describe('ln(x)/x^n en +∞', () => {
+			it('matches ln(x)/x as x → +∞', () => {
+				const expr = divide(func('ln', [variable('x')]), variable('x'), 'fraction');
+				const match = matchKnownLimit(expr, positiveInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('ln-x-over-x');
+			});
+
+			it('matches ln(x)/x² as x → +∞', () => {
+				const expr = divide(
+					func('ln', [variable('x')]),
+					power(variable('x'), number('2')),
+					'fraction'
+				);
+				const match = matchKnownLimit(expr, positiveInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('ln-x-over-x-squared');
+			});
+
+			it('matches ln(x)/√x as x → +∞', () => {
+				const expr = divide(func('ln', [variable('x')]), func('sqrt', [variable('x')]), 'fraction');
+				const match = matchKnownLimit(expr, positiveInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('ln-x-over-sqrt-x');
+			});
+
+			it('returns 0 for ln(x)/x² limit', () => {
+				const entry = KNOWN_LIMITS.find((l) => l.id === 'ln-x-over-x-squared')!;
+				const value = getKnownLimitValue(entry, 'x');
+				expect(isNumber(value)).toBe(true);
+				if (isNumber(value)) {
+					expect(value.value).toBe('0');
+				}
+			});
+		});
+
+		describe('(ln(x))^n/x en +∞', () => {
+			it('matches (ln(x))²/x as x → +∞', () => {
+				const expr = divide(
+					power(func('ln', [variable('x')]), number('2')),
+					variable('x'),
+					'fraction'
+				);
+				const match = matchKnownLimit(expr, positiveInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('ln-x-squared-over-x');
+			});
+
+			it('returns 0 for (ln(x))²/x limit', () => {
+				const entry = KNOWN_LIMITS.find((l) => l.id === 'ln-x-squared-over-x')!;
+				const value = getKnownLimitValue(entry, 'x');
+				expect(isNumber(value)).toBe(true);
+				if (isNumber(value)) {
+					expect(value.value).toBe('0');
+				}
+			});
+		});
+
+		describe('e^x/x^n en +∞', () => {
+			it('matches e^x/x as x → +∞', () => {
+				const expr = divide(func('exp', [variable('x')]), variable('x'), 'fraction');
+				const match = matchKnownLimit(expr, positiveInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('exp-x-over-x');
+			});
+
+			it('matches e^x/x² as x → +∞', () => {
+				const expr = divide(
+					func('exp', [variable('x')]),
+					power(variable('x'), number('2')),
+					'fraction'
+				);
+				const match = matchKnownLimit(expr, positiveInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('exp-x-over-x-squared');
+			});
+
+			it('matches e^x/x³ as x → +∞', () => {
+				const expr = divide(
+					func('exp', [variable('x')]),
+					power(variable('x'), number('3')),
+					'fraction'
+				);
+				const match = matchKnownLimit(expr, positiveInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('exp-x-over-x-cubed');
+			});
+
+			it('returns +∞ for e^x/x limit', () => {
+				const entry = KNOWN_LIMITS.find((l) => l.id === 'exp-x-over-x')!;
+				const value = getKnownLimitValue(entry, 'x');
+				expect(value.type).toBe('infinity');
+				if (value.type === 'infinity') {
+					expect(value.sign).toBe('positive');
+				}
+			});
+		});
+
+		describe('x·e^x en -∞', () => {
+			it('matches x·e^x as x → -∞ (implicit)', () => {
+				const expr = multiply(variable('x'), func('exp', [variable('x')]), 'implicit');
+				const match = matchKnownLimit(expr, negativeInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('x-exp-x-at-neg-infinity');
+			});
+
+			it('matches x×e^x as x → -∞ (explicit)', () => {
+				const expr = multiply(variable('x'), func('exp', [variable('x')]), 'explicit');
+				const match = matchKnownLimit(expr, negativeInfinity(), 'x');
+				expect(match).not.toBeNull();
+				// Both implicit and explicit patterns return 0, so either match is valid
+				expect(match?.id).toMatch(/^x-exp-x-at-neg-infinity/);
+			});
+
+			it('returns 0 for x·e^x limit at -∞', () => {
+				const entry = KNOWN_LIMITS.find((l) => l.id === 'x-exp-x-at-neg-infinity')!;
+				const value = getKnownLimitValue(entry, 'x');
+				expect(isNumber(value)).toBe(true);
+				if (isNumber(value)) {
+					expect(value.value).toBe('0');
+				}
+			});
+		});
+
+		describe('x²·e^x en -∞', () => {
+			it('matches x²·e^x as x → -∞', () => {
+				const expr = multiply(
+					power(variable('x'), number('2')),
+					func('exp', [variable('x')]),
+					'implicit'
+				);
+				const match = matchKnownLimit(expr, negativeInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('x-squared-exp-x-at-neg-infinity');
+			});
+
+			it('returns 0 for x²·e^x limit at -∞', () => {
+				const entry = KNOWN_LIMITS.find((l) => l.id === 'x-squared-exp-x-at-neg-infinity')!;
+				const value = getKnownLimitValue(entry, 'x');
+				expect(isNumber(value)).toBe(true);
+				if (isNumber(value)) {
+					expect(value.value).toBe('0');
+				}
+			});
+		});
+
+		describe('x·e^(-x) en +∞', () => {
+			it('matches x·e^(-x) as x → +∞', () => {
+				const expr = multiply(
+					variable('x'),
+					func('exp', [{ type: 'opposite', operand: variable('x') }]),
+					'implicit'
+				);
+				const match = matchKnownLimit(expr, positiveInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('x-exp-neg-x-at-infinity');
+			});
+
+			it('returns 0 for x·e^(-x) limit at +∞', () => {
+				const entry = KNOWN_LIMITS.find((l) => l.id === 'x-exp-neg-x-at-infinity')!;
+				const value = getKnownLimitValue(entry, 'x');
+				expect(isNumber(value)).toBe(true);
+				if (isNumber(value)) {
+					expect(value.value).toBe('0');
+				}
+			});
+		});
+
+		describe('x²·e^(-x) en +∞', () => {
+			it('matches x²·e^(-x) as x → +∞', () => {
+				const expr = multiply(
+					power(variable('x'), number('2')),
+					func('exp', [{ type: 'opposite', operand: variable('x') }]),
+					'implicit'
+				);
+				const match = matchKnownLimit(expr, positiveInfinity(), 'x');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('x-squared-exp-neg-x-at-infinity');
+			});
+
+			it('returns 0 for x²·e^(-x) limit at +∞', () => {
+				const entry = KNOWN_LIMITS.find((l) => l.id === 'x-squared-exp-neg-x-at-infinity')!;
+				const value = getKnownLimitValue(entry, 'x');
+				expect(isNumber(value)).toBe(true);
+				if (isNumber(value)) {
+					expect(value.value).toBe('0');
+				}
+			});
+		});
+
+		describe('with different variable names', () => {
+			it('matches t·ln(t) as t → 0⁺', () => {
+				const expr = multiply(variable('t'), func('ln', [variable('t')]), 'implicit');
+				const match = matchKnownLimit(expr, number('0'), 't', 'right');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('x-ln-x-at-zero');
+			});
+
+			it('matches u²/e^u as u → +∞', () => {
+				const expr = divide(
+					power(variable('u'), number('2')),
+					func('exp', [variable('u')]),
+					'fraction'
+				);
+				const match = matchKnownLimit(expr, positiveInfinity(), 'u');
+				expect(match).not.toBeNull();
+				expect(match?.id).toBe('x-squared-over-exp-x');
+			});
 		});
 	});
 });

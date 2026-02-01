@@ -9,7 +9,7 @@
  */
 
 import type { MathNode } from '../types';
-import type { NormalForm, ExtendedNormalizeResult, NormalizeContext } from './types';
+import type { NormalForm, ExtendedNormalizeResult, NormalizeContext, Rational } from './types';
 import type { IndeterminateForm } from '../eval/types';
 import {
 	isInfinity,
@@ -30,10 +30,11 @@ import {
 	mulPolynomials,
 	negPolynomial,
 	isZeroPolynomial,
-	isOnePolynomial
+	isOnePolynomial,
+	isConstantPolynomial
 } from './polynomial';
 import { hashNormalForm } from './hash';
-import { isNegative as isNegativeRational } from './rational';
+import { isNegative as isNegativeRational, rationalToNumber } from './rational';
 
 // =============================================================================
 // Result Constructors
@@ -188,6 +189,67 @@ function _getSignExtended(r: ExtendedNormalizeResult): 'positive' | 'negative' |
 		return 'positive'; // Zero is treated as positive for sign purposes
 	}
 	return null;
+}
+
+/**
+ * Extracts a numeric value from an ExtendedNormalizeResult if it represents a simple number.
+ * Returns null if the result is not a simple numeric value.
+ */
+function getExponentValue(r: ExtendedNormalizeResult): number | null {
+	if (r.type !== 'normal') return null;
+
+	const numValue = rationalToNumber(getNormalFormValue(r.form));
+	return numValue !== null && Number.isFinite(numValue) ? numValue : null;
+}
+
+/**
+ * Gets the numeric value of a NormalForm if it represents a constant (no variables).
+ * Returns a Rational or null if not a simple constant.
+ */
+function getNormalFormValue(form: NormalForm): Rational | null {
+	// Check if both numerator and denominator are constant (no variables)
+	if (!isConstantPolynomial(form.numerator) || !isConstantPolynomial(form.denominator)) {
+		return null;
+	}
+
+	// Handle zero
+	if (form.numerator.length === 0) {
+		return { n: 0n, d: 1n };
+	}
+
+	if (form.numerator.length !== 1 || form.denominator.length !== 1) {
+		return null;
+	}
+
+	const numTerm = form.numerator[0];
+	const denTerm = form.denominator[0];
+
+	// Check for pure constants (no variables)
+	if (numTerm.monomial.length > 0 || denTerm.monomial.length > 0) {
+		return null;
+	}
+
+	// Check for single rational terms (no radicals)
+	if (numTerm.coefficient.terms.length !== 1 || denTerm.coefficient.terms.length !== 1) {
+		return null;
+	}
+
+	const numAlgTerm = numTerm.coefficient.terms[0];
+	const denAlgTerm = denTerm.coefficient.terms[0];
+
+	if (numAlgTerm.radicals.length > 0 || denAlgTerm.radicals.length > 0) {
+		return null;
+	}
+
+	// Combine the rationals: (numAlg.rational) / (denAlg.rational)
+	const numRat = numAlgTerm.rational;
+	const denRat = denAlgTerm.rational;
+
+	// (a/b) / (c/d) = (a*d) / (b*c)
+	return {
+		n: numRat.n * denRat.d,
+		d: numRat.d * denRat.n
+	};
 }
 
 // =============================================================================
@@ -479,13 +541,33 @@ function powExtended(
 		return indeterminateResult('1^∞');
 	}
 
-	// 0⁺^(positive) = 0⁺
+	// (0±)^(positive) - sign depends on base sign and exponent parity
 	if (base.type === 'signed-zero' && isPositiveExtended(exp)) {
+		// Get numeric exponent value to check parity
+		const expValue = getExponentValue(exp);
+		if (expValue !== null && Number.isInteger(expValue)) {
+			// Even powers always give positive sign
+			// Odd powers preserve the base sign
+			const isEvenPower = expValue % 2 === 0;
+			const resultSign = isEvenPower ? 'positive' : base.sign;
+			return signedZeroResult(resultSign);
+		}
+		// Non-integer or unknown exponent - default to positive
 		return signedZeroResult('positive');
 	}
 
-	// 0⁺^(negative) = +∞
+	// (0±)^(negative) - result is ±∞ depending on sign
 	if (base.type === 'signed-zero' && isNegativeExtended(exp)) {
+		// Get numeric exponent value to check parity
+		const expValue = getExponentValue(exp);
+		if (expValue !== null && Number.isInteger(expValue)) {
+			// Even negative powers: 1/0² = +∞ always
+			// Odd negative powers: 1/0⁺ = +∞, 1/0⁻ = -∞
+			const isEvenPower = Math.abs(expValue) % 2 === 0;
+			const resultSign = isEvenPower ? 'positive' : base.sign;
+			return infinityResult(resultSign);
+		}
+		// Non-integer or unknown exponent - default to positive
 		return infinityResult('positive');
 	}
 
