@@ -220,4 +220,100 @@ describe('One-Sided Limits', () => {
 			expect(['does-not-exist', 'exact']).toContain(result.status);
 		});
 	});
+
+	describe('piecewise function limits', () => {
+		describe('floor function', () => {
+			it('evaluates floor(x) as x → 2⁻ to 1', () => {
+				const expr = func('floor', [variable('x')]);
+				const result = evaluateLimit(expr, 'x', number('2'), 'left');
+
+				expect(result.status).toBe('exact');
+				expect(result.value?.type).toBe('number');
+				if (result.value?.type === 'number') {
+					expect(result.value.value).toBe('1');
+				}
+			});
+
+			it('evaluates floor(x) as x → 2⁺ to 2', () => {
+				const expr = func('floor', [variable('x')]);
+				const result = evaluateLimit(expr, 'x', number('2'), 'right');
+
+				expect(result.status).toBe('exact');
+				expect(result.value?.type).toBe('number');
+				if (result.value?.type === 'number') {
+					expect(result.value.value).toBe('2');
+				}
+			});
+
+			it('evaluates floor(x) at non-integer point', () => {
+				const expr = func('floor', [variable('x')]);
+				const result = evaluateLimit(expr, 'x', number('2.5'), 'both');
+
+				expect(result.status).toBe('exact');
+				expect(result.value?.type).toBe('number');
+				if (result.value?.type === 'number') {
+					expect(result.value.value).toBe('2');
+				}
+			});
+		});
+
+		describe('ceil function', () => {
+			it('evaluates ceil(x) as x → 3⁻ to 3', () => {
+				const expr = func('ceil', [variable('x')]);
+				const result = evaluateLimit(expr, 'x', number('3'), 'left');
+
+				expect(result.status).toBe('exact');
+				expect(result.value?.type).toBe('number');
+				if (result.value?.type === 'number') {
+					expect(result.value.value).toBe('3');
+				}
+			});
+
+			it('evaluates ceil(x) as x → 3⁺ to 4', () => {
+				const expr = func('ceil', [variable('x')]);
+				const result = evaluateLimit(expr, 'x', number('3'), 'right');
+
+				expect(result.status).toBe('exact');
+				expect(result.value?.type).toBe('number');
+				if (result.value?.type === 'number') {
+					expect(result.value.value).toBe('4');
+				}
+			});
+		});
+
+		describe('sign function', () => {
+			it('evaluates sign(x) as x → 0⁻ to -1', () => {
+				const expr = func('sign', [variable('x')]);
+				const result = evaluateLimit(expr, 'x', number('0'), 'left');
+
+				expect(result.status).toBe('exact');
+				expect(result.value?.type).toBe('number');
+				if (result.value?.type === 'number') {
+					expect(result.value.value).toBe('-1');
+				}
+			});
+
+			it('evaluates sign(x) as x → 0⁺ to 1', () => {
+				const expr = func('sign', [variable('x')]);
+				const result = evaluateLimit(expr, 'x', number('0'), 'right');
+
+				expect(result.status).toBe('exact');
+				expect(result.value?.type).toBe('number');
+				if (result.value?.type === 'number') {
+					expect(result.value.value).toBe('1');
+				}
+			});
+
+			it('evaluates sign(x) at non-zero point', () => {
+				const expr = func('sign', [variable('x')]);
+				const result = evaluateLimit(expr, 'x', number('5'), 'both');
+
+				expect(result.status).toBe('exact');
+				expect(result.value?.type).toBe('number');
+				if (result.value?.type === 'number') {
+					expect(result.value.value).toBe('1');
+				}
+			});
+		});
+	});
 });
