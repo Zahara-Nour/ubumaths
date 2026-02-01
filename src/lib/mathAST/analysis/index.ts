@@ -124,7 +124,8 @@ export type {
 	ContinuityStep,
 	ContinuityResult,
 	ContinuityOptions,
-	DiscontinuityCandidate
+	DiscontinuityCandidate,
+	LimitSign
 } from './continuity-types';
 
 // Continuity analysis - Functions

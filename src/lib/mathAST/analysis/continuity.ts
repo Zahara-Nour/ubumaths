@@ -34,12 +34,20 @@ import type {
 	ContinuityResult,
 	ContinuityStep,
 	ContinuityOptions,
-	ContinuityRule
+	ContinuityRule,
+	LimitSign
 } from './continuity-types';
 
 import { computeDomain, containsValue, isEmpty, findZeros } from '../domain';
 import { analyzeOneSidedLimits } from '../limits/evaluate';
 import { analyzeDiscontinuity as classifyDiscontinuity } from '../limits/one-sided';
+import {
+	tryEvaluateLimitExact,
+	resultToFiniteNode,
+	isInfinityResult,
+	isIndeterminateResult
+} from '../limits/exact-evaluation';
+import { classifyWithSign, type SignedLimitValue } from '../limits/sign-tracking';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { isInfinity, isFunction } from '../guards';
@@ -330,6 +338,64 @@ export function checkContinuityAtPoint(
 // =============================================================================
 
 /**
+ * Convert a SignedLimitValue to a LimitSign for discontinuity reporting.
+ */
+function signedValueToLimitSign(value: SignedLimitValue): LimitSign {
+	switch (value.type) {
+		case 'pos-infinity':
+			return 'positive';
+		case 'neg-infinity':
+			return 'negative';
+		case 'zero-plus':
+		case 'finite':
+			// For finite/zero values approaching from positive side
+			return value.type === 'finite' && value.value < 0 ? 'negative' : 'positive';
+		case 'zero-minus':
+			return 'negative';
+		default:
+			return 'unknown';
+	}
+}
+
+/**
+ * Get sign information for infinite discontinuities using sign tracking.
+ */
+function getInfinitySignInfo(
+	expr: MathNode,
+	variable: string,
+	point: MathNode
+): { leftSign: LimitSign; rightSign: LimitSign } {
+	const leftValue = classifyWithSign(expr, variable, point, 'left');
+	const rightValue = classifyWithSign(expr, variable, point, 'right');
+
+	return {
+		leftSign:
+			leftValue.type === 'pos-infinity' || leftValue.type === 'neg-infinity'
+				? signedValueToLimitSign(leftValue)
+				: 'unknown',
+		rightSign:
+			rightValue.type === 'pos-infinity' || rightValue.type === 'neg-infinity'
+				? signedValueToLimitSign(rightValue)
+				: 'unknown'
+	};
+}
+
+/**
+ * Generate description for infinite discontinuity with sign information.
+ */
+function describeInfiniteDiscontinuity(leftSign: LimitSign, rightSign: LimitSign): string {
+	const leftStr = leftSign === 'positive' ? '+∞' : leftSign === 'negative' ? '-∞' : '±∞';
+	const rightStr = rightSign === 'positive' ? '+∞' : rightSign === 'negative' ? '-∞' : '±∞';
+
+	if (leftSign === rightSign && leftSign !== 'unknown') {
+		return `Discontinuité infinie (asymptote verticale, limite = ${leftStr})`;
+	} else if (leftSign !== 'unknown' && rightSign !== 'unknown') {
+		return `Discontinuité infinie (asymptote verticale, ${leftStr} à gauche, ${rightStr} à droite)`;
+	}
+	return 'Discontinuité infinie (asymptote verticale)';
+}
+
+/**
  * Analyze continuity at a candidate point.
  */
 function analyzePointContinuity(
@@ -397,6 +463,9 @@ function analyzePointContinuity(
 	// The limit module may not correctly detect infinity (returns large values instead),
 	// so we override the classification for these known cases.
 	if (periodic && functionValueUndefined && ['tan', 'cot', 'sec', 'csc'].includes(source)) {
+		// Get sign information for the infinite discontinuity
+		const { leftSign, rightSign } = getInfinitySignInfo(expr, variable, point);
+
 		// For periodic function discontinuities, if the function is undefined at the point,
 		// it's an infinite discontinuity (vertical asymptote), not a removable one
 		return {
@@ -404,9 +473,11 @@ function analyzePointContinuity(
 			type: 'infinite',
 			leftLimit: oneSided.left?.value ?? null,
 			rightLimit: oneSided.right?.value ?? null,
+			leftLimitSign: leftSign,
+			rightLimitSign: rightSign,
 			functionValue: null,
 			source,
-			description: 'Discontinuité infinie (asymptote verticale)',
+			description: describeInfiniteDiscontinuity(leftSign, rightSign),
 			periodic
 		};
 	}
@@ -416,15 +487,29 @@ function analyzePointContinuity(
 		return null;
 	}
 
+	// For infinite discontinuities, add sign tracking information
+	const isInfiniteDiscontinuity = classification.type === 'infinite';
+	let leftLimitSign: LimitSign | undefined;
+	let rightLimitSign: LimitSign | undefined;
+	let description = classification.description;
+
+	if (isInfiniteDiscontinuity) {
+		const signInfo = getInfinitySignInfo(expr, variable, point);
+		leftLimitSign = signInfo.leftSign;
+		rightLimitSign = signInfo.rightSign;
+		description = describeInfiniteDiscontinuity(leftLimitSign, rightLimitSign);
+	}
+
 	// Build discontinuity info
 	return {
 		point,
 		type: classification.type as DiscontinuityType,
 		leftLimit: classification.leftLimit ?? null,
 		rightLimit: classification.rightLimit ?? null,
+		...(isInfiniteDiscontinuity && { leftLimitSign, rightLimitSign }),
 		functionValue,
 		source,
-		description: classification.description,
+		description,
 		periodic
 	};
 }
@@ -898,27 +983,65 @@ function detectSourceFromPeriodicExclusion(periodic: PeriodicExclusion): Discont
 }
 
 /**
- * Threshold for considering a value as "effectively infinite".
- * Values above this are treated as if the function is undefined.
- * Use 1e8 to catch most practical cases of vertical asymptotes.
+ * Threshold for considering a numeric value as "effectively infinite".
+ * Values above this magnitude are treated as if the function is undefined.
+ * Used as a heuristic for detecting vertical asymptotes when exact evaluation fails.
+ *
+ * Example: tan(x) near π/2 can return values like 4.8e9 due to the candidate point
+ * being a truncated approximation of π/2. We use 1e8 to catch these cases.
  */
 const INFINITY_THRESHOLD = 1e8;
 
 /**
- * Try to evaluate expression at a point.
- * Returns null if evaluation fails or produces extremely large values
- * (which typically indicate vertical asymptotes).
+ * Try to evaluate expression at a point using exact arithmetic.
+ *
+ * Uses the limits module's exact evaluation when possible, with fallback
+ * to numeric evaluation for transcendental functions.
+ *
+ * Returns null if:
+ * - The function is undefined at the point (division by zero, sqrt of negative, etc.)
+ * - The result is infinite (vertical asymptote)
+ * - The numeric result exceeds INFINITY_THRESHOLD (heuristic for asymptotes)
+ * - Evaluation fails for any other reason
+ *
+ * @param expr - The expression to evaluate
+ * @param variable - The variable name
+ * @param point - The point at which to evaluate
+ * @returns The function value as a MathNode, or null if undefined/infinite
  */
 function tryEvaluateAtPoint(expr: MathNode, variable: string, point: MathNode): MathNode | null {
+	// Try exact evaluation first (handles polynomials, rationals, radicals)
+	const exactResult = tryEvaluateLimitExact(expr, variable, point, 'both');
+	if (exactResult) {
+		// Infinity means vertical asymptote - function undefined
+		if (isInfinityResult(exactResult)) {
+			return null;
+		}
+		// Indeterminate form means we can't determine the value directly
+		if (isIndeterminateResult(exactResult)) {
+			// Fall through to numeric evaluation
+		} else {
+			// Got a finite result from exact evaluation
+			const finiteNode = resultToFiniteNode(exactResult);
+			if (finiteNode) {
+				return finiteNode;
+			}
+		}
+	}
+
+	// Fallback to numeric evaluation (for transcendental functions like sin, cos, exp, etc.)
 	try {
 		const substituted = substitute(expr, { [variable]: point });
 		const value = evaluateNodeToApproximatedNumber(substituted);
 
+		// Check for finite values that don't exceed the infinity threshold.
+		// Very large values typically indicate we're evaluating near a vertical asymptote
+		// (e.g., tan(x) near π/2 due to floating point precision).
 		if (Number.isFinite(value) && Math.abs(value) < INFINITY_THRESHOLD) {
 			return { type: 'number', value: formatNumber(value) };
 		}
 	} catch {
-		// Evaluation failed
+		// Evaluation failed - function likely undefined at this point
 	}
 
 	return null;
