@@ -35,10 +35,7 @@ This document tracks improvements to the `continuity` module to leverage these n
   - Added `LimitSign` type to `continuity-types.ts`
   - Added `leftLimitSign` and `rightLimitSign` fields to `Discontinuity` interface
   - Imported `classifyWithSign` and `SignedLimitValue` from `limits/sign-tracking`
-  - Created helper functions:
-    - `signedValueToLimitSign()` - converts SignedLimitValue to LimitSign
-    - `getInfinitySignInfo()` - gets sign info for infinite discontinuities
-    - `describeInfiniteDiscontinuity()` - generates French description with sign info
+  - Created helper functions for sign tracking
   - Updated `analyzePointContinuity` to populate sign fields for infinite discontinuities
   - Exported `LimitSign` from `index.ts`
 - **Results**:
@@ -47,23 +44,40 @@ This document tracks improvements to the `continuity` module to leverage these n
 
 ### MEDIUM PRIORITY
 
-#### 3. ⬜ Centralize periodic function handling
+#### 3. ✅ Centralize periodic function handling
 
-- **Status**: PENDING
-- **Problem**: Duplicated logic between continuity and limits modules
-- **Solution**: Create shared `periodic-functions.ts` utility
+- **Status**: COMPLETED
+- **New file**: `src/lib/mathAST/common/periodic-functions.ts`
+- **Changes made**:
+  - Created shared utility with `PeriodicFunctionInfo` type
+  - Database `PERIODIC_FUNCTIONS` for tan, cot, sec, csc
+  - Query functions: `isPeriodicTrigFunction`, `getPeriodicFunctionInfo`, `getPeriodicFunctionNames`
+  - Symbolic representation: `getPeriodicPattern`, `piOverTwo`, `pi`
+  - Enumeration: `enumerateDiscontinuityPoints`, `isDiscontinuityPoint`
+  - Refactored `findPeriodicFunctionDiscontinuities` to use the shared utility
+  - Exported from `common/index.ts`
+- **Benefits**:
+  - Single source of truth for periodic function properties
+  - Symbolic base point (π/2) instead of numeric approximation
+  - Reusable by limits module if needed
 
 #### 4. ⬜ Improve floor/ceil/sign handling in limits module
 
 - **Status**: PENDING
 - **Problem**: Limits module doesn't detect jump discontinuities for these functions
-- **Note**: May require limits module changes
+- **Note**: Requires limits module changes, more complex
 
-#### 5. ⬜ Exact evaluation for point deduplication
+#### 5. ✅ Exact evaluation for point deduplication
 
-- **Status**: PENDING
+- **Status**: COMPLETED
 - **File**: `continuity.ts` - `getPointKey` function
-- **Problem**: Uses numeric rounding which can have precision issues
+- **Changes made**:
+  - Added exact evaluation via `tryEvaluateLimitExact` before numeric fallback
+  - Uses `resultToNumber` for extracting numeric values from normal forms
+  - Maintains rounding (1e10) for floating point comparison
+- **Benefits**:
+  - Better handling of symbolic values like π/2
+  - More consistent deduplication
 
 ### LOW PRIORITY
 
@@ -76,97 +90,71 @@ This document tracks improvements to the `continuity` module to leverage these n
 
 ### Phase 1: Exact Arithmetic ✅ COMPLETED
 
-**Files modified**:
+### Phase 2: Sign Tracking ✅ COMPLETED
 
-- `src/lib/mathAST/analysis/continuity.ts`
+### Phase 3: Periodic Functions Centralization ✅ COMPLETED
 
-**Key changes**:
+**New file**: `src/lib/mathAST/common/periodic-functions.ts`
+
+**Key types**:
 
 ```typescript
-// New imports
-import {
-	tryEvaluateLimitExact,
-	resultToFiniteNode,
-	isInfinityResult,
-	isIndeterminateResult
-} from '../limits/exact-evaluation';
-
-// tryEvaluateAtPoint now tries exact evaluation first
-function tryEvaluateAtPoint(expr, variable, point): MathNode | null {
-	// 1. Try exact evaluation (polynomials, rationals, radicals)
-	const exactResult = tryEvaluateLimitExact(expr, variable, point, 'both');
-	if (exactResult && !isInfinityResult(exactResult) && !isIndeterminateResult(exactResult)) {
-		return resultToFiniteNode(exactResult);
-	}
-	// 2. Fallback to numeric (for transcendental functions)
-	// with INFINITY_THRESHOLD = 1e8 check
+interface PeriodicFunctionInfo {
+	name: string; // 'tan', 'cot', 'sec', 'csc'
+	basePoint: number; // π/2 for tan/sec, 0 for cot/csc
+	period: number; // π
+	discontinuityType: 'infinite';
+	descriptionFr: string;
+	relatedFunction?: string;
 }
 ```
 
-### Phase 2: Sign Tracking ✅ COMPLETED
+**Key functions**:
 
-**Files modified**:
+- `isPeriodicTrigFunction(name)` - check if function has periodic discontinuities
+- `getPeriodicFunctionInfo(name)` - get discontinuity info
+- `getPeriodicPattern(name)` - get symbolic representation (π/2, π)
+- `enumerateDiscontinuityPoints(name, options)` - list points in interval
 
-- `src/lib/mathAST/analysis/continuity-types.ts`
-- `src/lib/mathAST/analysis/continuity.ts`
-- `src/lib/mathAST/analysis/index.ts`
+### Phase 4: Point Deduplication ✅ COMPLETED
 
-**Key changes**:
+**Changes to `getPointKey`**:
 
 ```typescript
-// New type in continuity-types.ts
-export type LimitSign = 'positive' | 'negative' | 'unknown';
-
-// Extended Discontinuity interface
-export interface Discontinuity {
-	// ... existing fields ...
-	leftLimitSign?: LimitSign;
-	rightLimitSign?: LimitSign;
+function getPointKey(point: MathNode): string {
+	// Try exact evaluation first
+	const exactResult = tryEvaluateLimitExact(point, '_dummy', number('0'), 'both');
+	if (exactResult?.type === 'normal') {
+		const numValue = resultToNumber(exactResult);
+		if (numValue !== null && Number.isFinite(numValue)) {
+			return String(Math.round(numValue * 1e10) / 1e10);
+		}
+	}
+	// Fallback to numeric evaluation
+	// ...
 }
-
-// New helper functions in continuity.ts
-function signedValueToLimitSign(value: SignedLimitValue): LimitSign;
-function getInfinitySignInfo(expr, variable, point): { leftSign; rightSign };
-function describeInfiniteDiscontinuity(leftSign, rightSign): string;
 ```
 
 ## Test Results
 
-All 29 continuity tests pass:
+All 29 continuity tests pass after all improvements.
 
-```
-✓ continuous functions (4 tests)
-✓ infinite discontinuities - division by zero (3 tests)
-✓ removable discontinuities (2 tests)
-✓ infinite discontinuities - logarithm (2 tests)
-✓ jump discontinuities - piecewise functions (2 tests)
-✓ abs(x) is continuous (1 test)
-✓ periodic discontinuities - trigonometric (2 tests)
-✓ domain boundaries - sqrt (1 test)
-✓ findDiscontinuityCandidates (2 tests)
-✓ checkContinuityAtPoint (2 tests)
-✓ options (2 tests)
-✓ descriptions (1 test)
-✓ findArgumentZeros with solver integration (5 tests)
-```
+## Files Modified/Created
 
-## Decisions Made
+**Created**:
 
-1. Keep `INFINITY_THRESHOLD = 1e8` for numeric fallback (was 1e10 briefly, caused test failures)
-2. Make sign information optional in `Discontinuity` type for backward compatibility
-3. Only populate sign fields for infinite discontinuities (not jump/removable/essential)
+- `src/lib/mathAST/common/periodic-functions.ts` - Shared periodic function utilities
 
-## Related Files
+**Modified**:
 
-- `src/lib/mathAST/limits/exact-evaluation.ts` - Exact arithmetic bridge
-- `src/lib/mathAST/limits/sign-tracking.ts` - Sign tracking utilities
-- `src/lib/mathAST/limits/one-sided.ts` - One-sided limit analysis
-- `src/lib/mathAST/analysis/continuity.ts` - Main continuity analysis
-- `src/lib/mathAST/analysis/continuity-types.ts` - Type definitions
-- `src/lib/mathAST/analysis/index.ts` - Module exports
+- `src/lib/mathAST/analysis/continuity.ts` - Main improvements
+- `src/lib/mathAST/analysis/continuity-types.ts` - Added LimitSign type
+- `src/lib/mathAST/analysis/index.ts` - Export LimitSign
+- `src/lib/mathAST/common/index.ts` - Export periodic-functions utilities
 
-## Next Steps
+## Remaining Work
 
-1. Consider implementing medium priority improvements
-2. Add more tests for exact evaluation edge cases
-3. Document the new `LimitSign` type and sign fields in API documentation
+1. **Improve floor/ceil/sign handling** - Requires limits module changes
+2. **Unify pedagogical descriptions** - Lower priority
+3. **Add tests for periodic-functions utility**
+4. **Document new APIs**

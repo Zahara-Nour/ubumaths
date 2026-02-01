@@ -44,6 +44,7 @@ import { analyzeDiscontinuity as classifyDiscontinuity } from '../limits/one-sid
 import {
 	tryEvaluateLimitExact,
 	resultToFiniteNode,
+	resultToNumber,
 	isInfinityResult,
 	isIndeterminateResult
 } from '../limits/exact-evaluation';
@@ -53,6 +54,12 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { isInfinity, isFunction } from '../guards';
 import { findNodes } from '../transforms';
 import { shouldIncludeStep } from '../common/verbosity';
+import {
+	isPeriodicTrigFunction,
+	getPeriodicFunctionInfo,
+	getPeriodicPattern,
+	enumerateDiscontinuityPoints
+} from '../common/periodic-functions';
 import { solveEquation } from '../solve';
 import { equals, number as numNode } from '../factory';
 import {
@@ -719,6 +726,8 @@ function findPiecewiseBoundaries(
  *
  * These functions have discontinuities at periodic points that are
  * not captured by computeDomain (which returns universal domain).
+ *
+ * Uses the shared periodic-functions utility for consistent handling.
  */
 function findPeriodicFunctionDiscontinuities(
 	expr: MathNode,
@@ -727,11 +736,11 @@ function findPeriodicFunctionDiscontinuities(
 ): DiscontinuityCandidate[] {
 	const candidates: DiscontinuityCandidate[] = [];
 
-	// Find all periodic trig function calls
-	const periodicFuncs = findNodes(
-		expr,
-		(node) => isFunction(node) && ['tan', 'cot', 'sec', 'csc'].includes(node.name.toLowerCase())
-	);
+	// Find all periodic trig function calls using the shared utility
+	const periodicFuncs = findNodes(expr, (node) => {
+		if (!isFunction(node)) return false;
+		return isPeriodicTrigFunction(node.name);
+	});
 
 	for (const funcNode of periodicFuncs) {
 		if (!isFunction(funcNode) || funcNode.args.length === 0) continue;
@@ -742,55 +751,33 @@ function findPeriodicFunctionDiscontinuities(
 		// Only handle simple case: argument is the variable
 		if (arg.type !== 'variable' || arg.name !== variable) continue;
 
-		// Determine base point and period based on function
-		let baseValue: number;
-		const periodValue: number = Math.PI;
-		let source: DiscontinuitySource;
+		// Get periodic function info from shared utility
+		const periodicInfo = getPeriodicFunctionInfo(funcName);
+		if (!periodicInfo) continue;
 
-		switch (funcName) {
-			case 'tan':
-			case 'sec':
-				// Discontinuities at π/2 + kπ
-				baseValue = Math.PI / 2;
-				source = funcName === 'tan' ? 'tan' : 'sec';
-				break;
-			case 'cot':
-			case 'csc':
-				// Discontinuities at kπ
-				baseValue = 0;
-				source = funcName === 'cot' ? 'cot' : 'csc';
-				break;
-			default:
-				continue;
-		}
+		const source = funcName as DiscontinuitySource;
 
-		// Create periodic info
-		const basePoint: MathNode = { type: 'number', value: formatNumber(baseValue) };
-		const period: MathNode = { type: 'number', value: formatNumber(periodValue) };
+		// Get symbolic periodic pattern for pedagogical display
+		const pattern = getPeriodicPattern(funcName);
+		if (!pattern) continue;
 
-		// Enumerate points in standard interval
-		const { min, max } = opts.standardInterval;
-		let count = 0;
-		let k = Math.ceil((min - baseValue) / periodValue);
+		// Enumerate discontinuity points using shared utility
+		const points = enumerateDiscontinuityPoints(funcName, {
+			min: opts.standardInterval.min,
+			max: opts.standardInterval.max,
+			maxPoints: opts.maxPeriodicPoints
+		});
 
-		while (count < opts.maxPeriodicPoints) {
-			const pointValue = baseValue + k * periodValue;
-			if (pointValue > max) break;
-
-			if (pointValue >= min) {
-				candidates.push({
-					point: { type: 'number', value: formatNumber(pointValue) },
-					source,
-					periodic: {
-						basePoint,
-						period,
-						description: describePeriodicPattern(basePoint, period, source)
-					}
-				});
-				count++;
-			}
-
-			k++;
+		for (const { value } of points) {
+			candidates.push({
+				point: { type: 'number', value: formatNumber(value) },
+				source,
+				periodic: {
+					basePoint: pattern.basePoint,
+					period: pattern.period,
+					description: pattern.description
+				}
+			});
 		}
 	}
 
@@ -1061,14 +1048,34 @@ function tryEvaluateNumeric(node: MathNode): number | null {
 
 /**
  * Get a unique key for a point (for deduplication).
+ *
+ * Uses exact evaluation when possible to handle symbolic values like π/2
+ * consistently, falling back to numeric evaluation for transcendental expressions.
  */
 function getPointKey(point: MathNode): string {
+	// Try exact evaluation first for consistent handling of symbolic values
+	const exactResult = tryEvaluateLimitExact(
+		point,
+		'_dummy',
+		{ type: 'number', value: '0' },
+		'both'
+	);
+	if (exactResult && exactResult.type === 'normal') {
+		const numValue = resultToNumber(exactResult);
+		if (numValue !== null && Number.isFinite(numValue)) {
+			// Round to avoid floating point comparison issues
+			return String(Math.round(numValue * 1e10) / 1e10);
+		}
+	}
+
+	// Fallback to numeric evaluation
 	const value = tryEvaluateNumeric(point);
 	if (value !== null) {
 		// Round to avoid floating point comparison issues
 		return String(Math.round(value * 1e10) / 1e10);
 	}
-	// Fallback to string representation
+
+	// Last resort: string representation for complex symbolic expressions
 	return JSON.stringify(point);
 }
 
