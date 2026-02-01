@@ -467,15 +467,15 @@ describe('Indeterminate Forms', () => {
 			expectNumber(result, 0);
 		});
 
-		// TODO: L'Hôpital-type limits not fully implemented
-		it.skip('x/e^x at x→+∞ equals 0', () => {
+		// Croissance comparée : x/e^x → 0 à +∞
+		it('x/e^x at x→+∞ equals 0', () => {
 			const expr = divide(variable('x'), func('exp', [variable('x')]), 'fraction');
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectNumber(result, 0);
 		});
 
-		// TODO: L'Hôpital-type limits not fully implemented
-		it.skip('e^x/x² at x→+∞ equals +∞', () => {
+		// Croissance comparée : e^x/x² → +∞ à +∞
+		it('e^x/x² at x→+∞ equals +∞', () => {
 			const expr = divide(func('exp', [variable('x')]), xPow('2'), 'fraction');
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectPosInfinity(result);
@@ -571,15 +571,13 @@ describe('Infinity Limits', () => {
 	});
 
 	describe('trigonometric at infinity', () => {
-		// TODO: Squeeze theorem at infinity not fully implemented
-		it.skip('sin(x)/x at x→+∞ equals 0 (squeeze theorem)', () => {
+		it('sin(x)/x at x→+∞ equals 0 (squeeze theorem)', () => {
 			const expr = divide(func('sin', [variable('x')]), variable('x'), 'fraction');
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectNumber(result, 0);
 		});
 
-		// TODO: Squeeze theorem at infinity not fully implemented
-		it.skip('cos(x)/x at x→+∞ equals 0 (squeeze theorem)', () => {
+		it('cos(x)/x at x→+∞ equals 0 (squeeze theorem)', () => {
 			const expr = divide(func('cos', [variable('x')]), variable('x'), 'fraction');
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectNumber(result, 0);
@@ -761,8 +759,8 @@ describe('Algebraic Simplification Edge Cases', () => {
 			expectNumber(result, 0.25);
 		});
 
-		// TODO: Difference of sqrt at infinity not fully implemented
-		it.skip('(sqrt(x+1)-sqrt(x)) at x→+∞ equals 0', () => {
+		// Difference of sqrt at infinity using conjugate technique
+		it('(sqrt(x+1)-sqrt(x)) at x→+∞ equals 0', () => {
 			const expr = subtract(func('sqrt', [xPlus('1')]), func('sqrt', [variable('x')]));
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectNumber(result, 0);
@@ -812,16 +810,14 @@ describe('Squeeze Theorem Cases', () => {
 		expectNumber(result, 0);
 	});
 
-	// TODO: Squeeze theorem at infinity not fully implemented
-	it.skip('sin(x)/x at x→+∞ equals 0', () => {
+	it('sin(x)/x at x→+∞ equals 0', () => {
 		// |sin(x)| ≤ 1, so |sin(x)/x| ≤ 1/x → 0
 		const expr = divide(func('sin', [variable('x')]), variable('x'), 'fraction');
 		const result = evaluateLimit(expr, 'x', positiveInfinity());
 		expectNumber(result, 0);
 	});
 
-	// TODO: Squeeze theorem at infinity not fully implemented
-	it.skip('cos(x)/x at x→+∞ equals 0', () => {
+	it('cos(x)/x at x→+∞ equals 0', () => {
 		const expr = divide(func('cos', [variable('x')]), variable('x'), 'fraction');
 		const result = evaluateLimit(expr, 'x', positiveInfinity());
 		expectNumber(result, 0);
@@ -1087,8 +1083,8 @@ describe('Multiple Terms', () => {
 		expectNumber(result, 0);
 	});
 
-	// TODO: Requires algebraic simplification x·(1/x) = 1 before limit evaluation
-	it.skip('x·(1/x) at x→+∞ equals 1', () => {
+	// Algebraic simplification x·(1/x) = 1 before limit evaluation
+	it('x·(1/x) at x→+∞ equals 1', () => {
 		const expr = multiply(variable('x'), divide(number('1'), variable('x'), 'fraction'));
 		const result = evaluateLimit(expr, 'x', positiveInfinity());
 		expectNumber(result, 1);
@@ -1344,6 +1340,122 @@ describe('More 0/0 Indeterminate Forms', () => {
 });
 
 // =============================================================================
+// Derivative Definition Technique for 0/0 Forms
+// =============================================================================
+
+/**
+ * Tests for the derivative definition technique:
+ * lim(x→a) [f(x) - f(a)] / (x - a) = f'(a)
+ *
+ * This technique is applied BEFORE L'Hôpital and handles 0/0 indeterminate forms
+ * by recognizing the pattern of the derivative definition.
+ */
+describe('Derivative Definition Technique', () => {
+	it('(x² - 4)/(x - 2) at x=2 uses derivative-definition to get 4', () => {
+		// Pattern: (f(x) - f(a))/(x - a) where f(x) = x², a = 2, f(a) = 4
+		// f'(x) = 2x, so f'(2) = 4
+		const expr = divide(subtract(xPow('2'), number('4')), xMinus('2'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('2'));
+		expectNumber(result, 4);
+		expect(result.technique).toBe('derivative-definition');
+	});
+
+	it('(x³ - 8)/(x - 2) at x=2 uses derivative-definition to get 12', () => {
+		// Pattern: (f(x) - f(a))/(x - a) where f(x) = x³, a = 2, f(a) = 8
+		// f'(x) = 3x², so f'(2) = 12
+		const expr = divide(
+			subtract(power(variable('x'), number('3')), number('8')),
+			xMinus('2'),
+			'fraction'
+		);
+		const result = evaluateLimit(expr, 'x', number('2'));
+		expectNumber(result, 12);
+		expect(result.technique).toBe('derivative-definition');
+	});
+
+	it('(x⁴ - 16)/(x - 2) at x=2 uses derivative-definition to get 32', () => {
+		// Pattern: (f(x) - f(a))/(x - a) where f(x) = x⁴, a = 2, f(a) = 16
+		// f'(x) = 4x³, so f'(2) = 32
+		const expr = divide(
+			subtract(power(variable('x'), number('4')), number('16')),
+			xMinus('2'),
+			'fraction'
+		);
+		const result = evaluateLimit(expr, 'x', number('2'));
+		expectNumber(result, 32);
+		expect(result.technique).toBe('derivative-definition');
+	});
+
+	it('(x² - 1)/(x - 1) at x=1 uses derivative-definition to get 2', () => {
+		// Pattern: (f(x) - f(a))/(x - a) where f(x) = x², a = 1, f(a) = 1
+		// f'(x) = 2x, so f'(1) = 2
+		const expr = divide(subtract(xPow('2'), number('1')), xMinus('1'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('1'));
+		expectNumber(result, 2);
+		expect(result.technique).toBe('derivative-definition');
+	});
+
+	it('(x³ - 1)/(x - 1) at x=1 uses derivative-definition to get 3', () => {
+		// Pattern: (f(x) - f(a))/(x - a) where f(x) = x³, a = 1, f(a) = 1
+		// f'(x) = 3x², so f'(1) = 3
+		const expr = divide(
+			subtract(power(variable('x'), number('3')), number('1')),
+			xMinus('1'),
+			'fraction'
+		);
+		const result = evaluateLimit(expr, 'x', number('1'));
+		expectNumber(result, 3);
+		expect(result.technique).toBe('derivative-definition');
+	});
+
+	it('(x⁵ - 32)/(x - 2) at x=2 uses derivative-definition to get 80', () => {
+		// Pattern: (f(x) - f(a))/(x - a) where f(x) = x⁵, a = 2, f(a) = 32
+		// f'(x) = 5x⁴, so f'(2) = 5·16 = 80
+		const expr = divide(
+			subtract(power(variable('x'), number('5')), number('32')),
+			xMinus('2'),
+			'fraction'
+		);
+		const result = evaluateLimit(expr, 'x', number('2'));
+		expectNumber(result, 80);
+		expect(result.technique).toBe('derivative-definition');
+	});
+
+	it('(sqrt(x) - 2)/(x - 4) at x=4 uses derivative-definition to get 1/4', () => {
+		// Pattern: (f(x) - f(a))/(x - a) where f(x) = √x, a = 4, f(a) = 2
+		// f'(x) = 1/(2√x), so f'(4) = 1/4
+		const expr = divide(
+			subtract(func('sqrt', [variable('x')]), number('2')),
+			subtract(variable('x'), number('4')),
+			'fraction'
+		);
+		const result = evaluateLimit(expr, 'x', number('4'));
+		expectNumber(result, 0.25);
+		expect(result.technique).toBe('derivative-definition');
+	});
+
+	it('known-limit takes precedence over derivative-definition for (e^x - 1)/x', () => {
+		// This is a known limit that should use known-limit technique, not derivative-definition
+		const expr = divide(
+			subtract(func('exp', [variable('x')]), number('1')),
+			variable('x'),
+			'fraction'
+		);
+		const result = evaluateLimit(expr, 'x', number('0'));
+		expectNumber(result, 1);
+		expect(result.technique).toBe('known-limit');
+	});
+
+	it('known-limit takes precedence for sin(x)/x at x=0', () => {
+		// This is a known limit that should use known-limit technique
+		const expr = divide(func('sin', [variable('x')]), variable('x'), 'fraction');
+		const result = evaluateLimit(expr, 'x', number('0'));
+		expectNumber(result, 1);
+		expect(result.technique).toBe('known-limit');
+	});
+});
+
+// =============================================================================
 // Vertical Asymptotes with Different Coefficients
 // =============================================================================
 
@@ -1378,8 +1490,7 @@ describe('Vertical Asymptotes with Different Coefficients', () => {
 		expectPosInfinity(result);
 	});
 
-	// TODO: Odd powers with signed zeros not fully handled
-	it.skip('1/(x-1)³ at x=1 left-sided is -∞', () => {
+	it('1/(x-1)³ at x=1 left-sided is -∞', () => {
 		const expr = divide(number('1'), power(xMinus('1'), number('3')), 'fraction');
 		const result = evaluateLimit(expr, 'x', number('1'), 'left');
 		expectNegInfinity(result);
@@ -1421,8 +1532,8 @@ describe('Exponential and Logarithmic Edge Cases', () => {
 		expectPosInfinity(result);
 	});
 
-	// TODO: ln(x+1) - ln(x) simplification at infinity not yet implemented
-	it.skip('ln(x+1) - ln(x) at x→+∞ equals 0', () => {
+	// ln(x+1) - ln(x) = ln((x+1)/x) = ln(1 + 1/x) → ln(1) = 0
+	it('ln(x+1) - ln(x) at x→+∞ equals 0', () => {
 		// ln((x+1)/x) = ln(1 + 1/x) → ln(1) = 0
 		const expr = subtract(func('ln', [xPlus('1')]), func('ln', [variable('x')]));
 		const result = evaluateLimit(expr, 'x', positiveInfinity());
@@ -1556,15 +1667,15 @@ describe('Large Finite Approach Values', () => {
 // =============================================================================
 
 describe('Multiple Indeterminate Forms', () => {
-	// TODO: 0·(-∞) forms require L'Hôpital transformation
-	it.skip('(x-1)·ln(x-1) at x→1⁺ equals 0 (0·(-∞) form)', () => {
+	// Croissance comparée avec substitution : (x-1)·ln(x-1) → 0 à 1⁺
+	it('(x-1)·ln(x-1) at x→1⁺ equals 0 (0·(-∞) form)', () => {
 		const expr = multiply(xMinus('1'), func('ln', [xMinus('1')]));
 		const result = evaluateLimit(expr, 'x', number('1'), 'right');
 		expectNumber(result, 0);
 	});
 
-	// TODO: 0·(-∞) forms require L'Hôpital transformation
-	it.skip('x·ln(x) at x→0⁺ equals 0 (0·(-∞) form)', () => {
+	// Croissance comparée : x·ln(x) → 0 à 0⁺
+	it('x·ln(x) at x→0⁺ equals 0 (0·(-∞) form)', () => {
 		const expr = multiply(variable('x'), func('ln', [variable('x')]));
 		const result = evaluateLimit(expr, 'x', number('0'), 'right');
 		expectNumber(result, 0);
@@ -1613,9 +1724,8 @@ describe('Nested Fractions', () => {
 		expectNumber(result, 2);
 	});
 
-	// TODO: Nested fractions at infinity require algebraic simplification
-	// (1/x)/(1/x²) = x → +∞ after simplification
-	it.skip('(1/x)/(1/x²) at x→+∞ is +∞ (simplifies to x)', () => {
+	// Nested fractions at infinity: (1/x)/(1/x²) = x → +∞
+	it('(1/x)/(1/x²) at x→+∞ is +∞ (simplifies to x)', () => {
 		const expr = divide(
 			divide(number('1'), variable('x'), 'fraction'),
 			divide(number('1'), xPow('2'), 'fraction'),

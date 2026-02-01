@@ -70,7 +70,8 @@ export type LimitRule =
 	| 'linearity' // lim(af + bg) = a*lim(f) + b*lim(g)
 	| 'product' // lim(fg) = lim(f) * lim(g)
 	| 'quotient' // lim(f/g) = lim(f) / lim(g)
-	| 'composition'; // lim(f(g)) under continuity
+	| 'composition' // lim(f(g)) under continuity
+	| 'derivative-definition'; // lim [f(x)-f(a)]/(x-a) = f'(a)
 
 /**
  * A single step in the limit evaluation process (pedagogical).

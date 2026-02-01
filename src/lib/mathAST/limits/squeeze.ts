@@ -14,7 +14,14 @@
 import type { MathNode } from '../types';
 import type { LimitDirection } from './types';
 import type { LimitStepRecorder } from './step-recorder';
-import { isMultiplication, isFunction, isDivision, isNumber, isVariable } from '../guards';
+import {
+	isMultiplication,
+	isFunction,
+	isDivision,
+	isNumber,
+	isVariable,
+	isInfinity
+} from '../guards';
 import { number } from '../factory';
 
 // =============================================================================
@@ -132,7 +139,12 @@ export function trySqueeze(
 	direction: LimitDirection,
 	recorder: LimitStepRecorder
 ): SqueezeResult {
-	// Look for pattern: (something → 0) * (bounded function)
+	// Case A: Approach is infinity - look for bounded/x pattern
+	if (isInfinity(approach)) {
+		return trySqueezeAtInfinity(expr, varName, approach, recorder);
+	}
+
+	// Case B: Approach is 0 - look for (something → 0) * (bounded function)
 	if (!isMultiplication(expr)) {
 		return { applicable: false };
 	}
@@ -351,4 +363,92 @@ export function constructSqueezeBounds(
 				};
 
 	return { lower: lowerBound, upper: upperBound };
+}
+
+// =============================================================================
+// Squeeze Theorem at Infinity
+// =============================================================================
+
+/**
+ * Try to apply squeeze theorem when x → ±∞.
+ *
+ * Pattern: bounded_function(x) / x → 0 as x → ±∞
+ * Examples:
+ * - sin(x)/x → 0 (since |sin(x)| ≤ 1, we have |sin(x)/x| ≤ 1/|x| → 0)
+ * - cos(x)/x → 0
+ * - sin(x)/x² → 0
+ *
+ * Also handles: bounded_function(x) / x^n for n ≥ 1
+ */
+function trySqueezeAtInfinity(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	recorder: LimitStepRecorder
+): SqueezeResult {
+	// Must be a division
+	if (!isDivision(expr)) {
+		return { applicable: false };
+	}
+
+	// Check if numerator is a bounded function
+	const boundedInfo = getBoundedFunctionInfo(expr.numerator);
+	if (!boundedInfo.bounded) {
+		return { applicable: false };
+	}
+
+	// Check if denominator approaches infinity
+	if (!approachesInfinity(expr.denominator, varName)) {
+		return { applicable: false };
+	}
+
+	const limitValue = number('0');
+
+	const description =
+		`La fonction ${boundedInfo.functionName} est bornée entre ${boundedInfo.lower} et ${boundedInfo.upper}, ` +
+		`donc ${boundedInfo.functionName}(${varName})/(${varName}...) est encadrée par des fonctions tendant vers 0`;
+
+	recorder.recordStep(
+		'squeeze',
+		"Application du théorème des gendarmes à l'infini",
+		expr,
+		limitValue,
+		'summarized',
+		undefined,
+		description
+	);
+
+	return {
+		applicable: true,
+		value: limitValue,
+		description
+	};
+}
+
+/**
+ * Check if an expression approaches infinity as the variable approaches infinity.
+ * Handles: x, x^n (n > 0), |x|
+ */
+function approachesInfinity(expr: MathNode, varName: string): boolean {
+	// x → ∞ as x → ∞
+	if (isVariable(expr) && expr.name === varName) {
+		return true;
+	}
+
+	// x^n → ∞ as x → ∞ (for n > 0)
+	if (expr.type === 'superscript') {
+		if (isVariable(expr.base) && expr.base.name === varName && isNumber(expr.superscript)) {
+			const exp = parseFloat(expr.superscript.value);
+			return exp > 0;
+		}
+	}
+
+	// |x| → ∞ as x → ∞
+	if (isFunction(expr) && expr.name.toLowerCase() === 'abs') {
+		if (expr.args.length === 1 && isVariable(expr.args[0]) && expr.args[0].name === varName) {
+			return true;
+		}
+	}
+
+	return false;
 }
