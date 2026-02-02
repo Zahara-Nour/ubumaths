@@ -17,6 +17,7 @@ import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { computeDomain } from '../domain/compute';
 import { containsValue } from '../domain/algebra';
+import { ZERO_TOLERANCE } from '../common';
 
 // =============================================================================
 // One-Sided Limit Evaluation
@@ -261,7 +262,7 @@ function hasAsymmetricBehavior(expr: MathNode, varName: string, approach: MathNo
 	// (functions like sqrt/ln, powers with fractional exponents, divisions)
 	if (isNumber(approach) && mayHaveRestrictedDomain(expr)) {
 		const approachVal = parseFloat(approach.value);
-		const epsilon = 1e-10;
+		const epsilon = ZERO_TOLERANCE;
 
 		try {
 			const { domain } = computeDomain(expr, varName);
@@ -286,7 +287,7 @@ function hasAsymmetricBehavior(expr: MathNode, varName: string, approach: MathNo
 		if (name === 'abs' || name === 'sign' || name === 'sgn') {
 			if (isNumber(approach) && expr.args.length === 1) {
 				const approachVal = parseFloat(approach.value);
-				const epsilon = 1e-10;
+				const epsilon = ZERO_TOLERANCE;
 
 				const argAtLeft = evaluateAtValue(expr.args[0], varName, approachVal - epsilon);
 				const argAtRight = evaluateAtValue(expr.args[0], varName, approachVal + epsilon);
@@ -327,7 +328,7 @@ export function analyzeSign(expr: MathNode, varName: string, approach: MathNode)
 	}
 
 	const approachVal = parseFloat(approach.value);
-	const epsilon = 1e-10;
+	const epsilon = ZERO_TOLERANCE;
 
 	// Evaluate just to the left
 	const leftValue = evaluateAtValue(expr, varName, approachVal - epsilon);

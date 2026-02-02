@@ -6,6 +6,7 @@
  */
 
 import type { Domain, EndpointValue, PeriodicExclusion, ConditionDomain } from './types';
+import { ZERO_TOLERANCE } from '../common';
 import type { IntervalDomain } from '$lib/math/intervals/types';
 import {
 	isEmpty as intervalsIsEmpty,
@@ -50,7 +51,7 @@ function isExcludedByPeriodic(pe: PeriodicExclusion, value: number): boolean {
 
 		// Check if (value - base) is an integer multiple of period
 		const k = (value - base) / period;
-		const tolerance = 1e-10;
+		const tolerance = ZERO_TOLERANCE;
 
 		return Math.abs(k - Math.round(k)) < tolerance;
 	} catch {
