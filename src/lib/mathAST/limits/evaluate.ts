@@ -45,6 +45,7 @@ import {
 	resultToFiniteNode,
 	isIndeterminateResult
 } from './exact-evaluation';
+import { getNumericValue } from '../common';
 
 // =============================================================================
 // Default Options
@@ -60,17 +61,6 @@ const DEFAULT_OPTIONS: Required<LimitOptions> = {
 // =============================================================================
 // Helper Functions
 // =============================================================================
-
-/**
- * Get numeric value from a NumberNode.
- */
-function getNumericValue(node: MathNode): number | null {
-	if (isNumber(node)) {
-		const val = parseFloat(node.value);
-		return Number.isFinite(val) ? val : null;
-	}
-	return null;
-}
 
 /**
  * Substitute a value for a variable in an expression.

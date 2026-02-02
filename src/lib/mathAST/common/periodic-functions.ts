@@ -11,6 +11,7 @@
 
 import type { MathNode } from '../types';
 import { divide, number, piConstant } from '../factory';
+import { formatNumber } from './format';
 
 // =============================================================================
 // Types
@@ -257,18 +258,4 @@ export function isDiscontinuityPoint(name: string, value: number, tolerance = 1e
 	const kRounded = Math.round(k);
 
 	return Math.abs(k - kRounded) < tolerance;
-}
-
-// =============================================================================
-// Helpers
-// =============================================================================
-
-/**
- * Format a number nicely for display.
- */
-function formatNumber(value: number): string {
-	if (Math.abs(value - Math.round(value)) < 1e-10) {
-		return String(Math.round(value));
-	}
-	return value.toPrecision(10).replace(/\.?0+$/, '');
 }

@@ -171,6 +171,34 @@ describe('analyzeContinuity()', () => {
 			expect(jumpDiscs.every((d) => d.source === 'floor')).toBe(true);
 		});
 
+		it('ceil(x) has jump discontinuities at integers with correct limits', () => {
+			const expr = func('ceil', [variable('x')]);
+			const result = analyzeContinuity(expr, 'x', {
+				standardInterval: { min: -1, max: 2 }
+			});
+
+			// Should have discontinuities at integers
+			const jumpDiscs = result.discontinuities.filter((d) => d.type === 'jump');
+			expect(jumpDiscs.length).toBeGreaterThanOrEqual(2);
+			expect(jumpDiscs.every((d) => d.source === 'ceil')).toBe(true);
+
+			// Check discontinuity at x=1: ceil(1-) = 1, ceil(1+) = 2, ceil(1) = 1
+			const discAt1 = jumpDiscs.find(
+				(d) => d.point.type === 'number' && Math.abs(parseFloat(d.point.value) - 1) < 0.01
+			);
+			expect(discAt1).toBeDefined();
+			expect(discAt1?.leftLimit?.type).toBe('number');
+			expect(discAt1?.rightLimit?.type).toBe('number');
+			if (discAt1?.leftLimit?.type === 'number' && discAt1?.rightLimit?.type === 'number') {
+				expect(parseFloat(discAt1.leftLimit.value)).toBe(1); // ceil(1-) = 1
+				expect(parseFloat(discAt1.rightLimit.value)).toBe(2); // ceil(1+) = 2
+			}
+			expect(discAt1?.functionValue?.type).toBe('number');
+			if (discAt1?.functionValue?.type === 'number') {
+				expect(parseFloat(discAt1.functionValue.value)).toBe(1); // ceil(1) = 1
+			}
+		});
+
 		it('sign(x) has jump discontinuity at x=0', () => {
 			const expr = func('sign', [variable('x')]);
 			const result = analyzeContinuity(expr, 'x');

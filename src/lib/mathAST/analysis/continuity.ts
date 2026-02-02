@@ -54,6 +54,7 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { isInfinity, isFunction } from '../guards';
 import { findNodes } from '../transforms';
 import { shouldIncludeStep } from '../common/verbosity';
+import { formatNumber } from '../common/format';
 import {
 	isPeriodicTrigFunction,
 	getPeriodicFunctionInfo,
@@ -568,12 +569,13 @@ function analyzeKnownJumpDiscontinuity(
 
 		const n = Math.round(pointValue);
 		// ceil(n-) = n, ceil(n+) = n+1, ceil(n) = n
+		// Example: ceil(2.9) = 3, ceil(3) = 3, ceil(3.01) = 4
 		// Jump discontinuity: left limit ≠ right limit
 		return {
 			point,
 			type: 'jump',
 			leftLimit: { type: 'number', value: String(n) },
-			rightLimit: { type: 'number', value: String(n) },
+			rightLimit: { type: 'number', value: String(n + 1) },
 			functionValue: { type: 'number', value: String(n) },
 			source: 'ceil',
 			description: `Discontinuité de première espèce (saut) en x = ${n}`
@@ -1086,16 +1088,6 @@ function isInfinityEndpoint(value: MathNode): boolean {
 	if (isInfinity(value)) return true;
 	if (value.type === 'symbol' && value.symbol === 'infinity') return true;
 	return false;
-}
-
-/**
- * Format a number nicely.
- */
-function formatNumber(value: number): string {
-	if (Math.abs(value - Math.round(value)) < 1e-10) {
-		return String(Math.round(value));
-	}
-	return value.toPrecision(10).replace(/\.?0+$/, '');
 }
 
 /**

@@ -18,6 +18,7 @@ import type { MathNode } from '../types';
 import type { LimitDirection } from './types';
 import { isNumber, isInfinity, isSignedZero as isSignedZeroNode } from '../guards';
 import { number, positiveInfinity, negativeInfinity, zeroPlus, zeroMinus } from '../factory';
+import { evaluateNumeric, getNumericValue, formatNumber } from '../common';
 import {
 	addExtended,
 	subtractExtended,
@@ -524,116 +525,6 @@ export function divideSigns(a: SignedLimitValue, b: SignedLimitValue): BinaryOpR
 	return extendedResultToBinaryOp(divideExtended(aNode, bNode));
 }
 
-// =============================================================================
-// Helpers
-// =============================================================================
-
-/**
- * Get numeric value from a MathNode.
- */
-function getNumericValue(node: MathNode): number | null {
-	if (isNumber(node)) {
-		const val = parseFloat(node.value);
-		return Number.isFinite(val) ? val : null;
-	}
-	return null;
-}
-
-/**
- * Recursively evaluate an expression numerically.
- */
-function evaluateNumeric(expr: MathNode, varName: string, varValue: number): number | null {
-	switch (expr.type) {
-		case 'number': {
-			const val = parseFloat(expr.value);
-			return Number.isFinite(val) ? val : null;
-		}
-
-		case 'variable':
-			return expr.name === varName ? varValue : null;
-
-		case 'addition': {
-			const left = evaluateNumeric(expr.left, varName, varValue);
-			const right = evaluateNumeric(expr.right, varName, varValue);
-			if (left === null || right === null) return null;
-			return left + right;
-		}
-
-		case 'subtraction': {
-			const left = evaluateNumeric(expr.left, varName, varValue);
-			const right = evaluateNumeric(expr.right, varName, varValue);
-			if (left === null || right === null) return null;
-			return left - right;
-		}
-
-		case 'multiplication': {
-			const left = evaluateNumeric(expr.left, varName, varValue);
-			const right = evaluateNumeric(expr.right, varName, varValue);
-			if (left === null || right === null) return null;
-			return left * right;
-		}
-
-		case 'division': {
-			const num = evaluateNumeric(expr.numerator, varName, varValue);
-			const den = evaluateNumeric(expr.denominator, varName, varValue);
-			if (num === null || den === null) return null;
-			if (den === 0) {
-				return num > 0 ? Infinity : num < 0 ? -Infinity : null;
-			}
-			return num / den;
-		}
-
-		case 'opposite': {
-			const operand = evaluateNumeric(expr.operand, varName, varValue);
-			return operand !== null ? -operand : null;
-		}
-
-		case 'positive':
-			return evaluateNumeric(expr.operand, varName, varValue);
-
-		case 'superscript': {
-			const base = evaluateNumeric(expr.base, varName, varValue);
-			const exp = evaluateNumeric(expr.superscript, varName, varValue);
-			if (base === null || exp === null) return null;
-			const result = Math.pow(base, exp);
-			return Number.isFinite(result) || result === Infinity || result === -Infinity ? result : null;
-		}
-
-		case 'function': {
-			if (expr.args.length === 1) {
-				const arg = evaluateNumeric(expr.args[0], varName, varValue);
-				if (arg === null) return null;
-
-				switch (expr.name.toLowerCase()) {
-					case 'sin':
-						return Math.sin(arg);
-					case 'cos':
-						return Math.cos(arg);
-					case 'tan':
-						return Math.tan(arg);
-					case 'exp':
-						return Math.exp(arg);
-					case 'ln':
-						return arg > 0 ? Math.log(arg) : arg === 0 ? -Infinity : null;
-					case 'sqrt':
-						return arg >= 0 ? Math.sqrt(arg) : null;
-					case 'abs':
-						return Math.abs(arg);
-					default:
-						return null;
-				}
-			}
-			return null;
-		}
-
-		case 'delimiter':
-			return evaluateNumeric(expr.content, varName, varValue);
-
-		default:
-			return null;
-	}
-}
-
 /**
  * Convert a SignedLimitValue to a MathNode.
  * Uses SignedZeroNode for signed zeros, preserving sign information.
@@ -645,7 +536,7 @@ export function signedValueToMathNode(value: SignedLimitValue): MathNode | null 
 		case 'neg-infinity':
 			return negativeInfinity();
 		case 'finite':
-			return number(cleanNumber(value.value));
+			return number(formatNumber(value.value));
 		case 'zero-plus':
 			return zeroPlus();
 		case 'zero-minus':
@@ -704,7 +595,7 @@ export function signedValueToInfinity(value: SignedLimitValue): MathNode | null 
 		case 'neg-infinity':
 			return negativeInfinity();
 		case 'finite':
-			return number(cleanNumber(value.value));
+			return number(formatNumber(value.value));
 		case 'zero':
 		case 'zero-plus':
 		case 'zero-minus':
@@ -726,14 +617,4 @@ export function isSignedInfinity(value: SignedLimitValue): boolean {
  */
 export function isSignedZero(value: SignedLimitValue): boolean {
 	return value.type === 'zero' || value.type === 'zero-plus' || value.type === 'zero-minus';
-}
-
-/**
- * Clean a number for string representation.
- */
-function cleanNumber(value: number): string {
-	if (Math.abs(value - Math.round(value)) < 1e-10) {
-		return String(Math.round(value));
-	}
-	return value.toPrecision(10).replace(/\.?0+$/, '');
 }

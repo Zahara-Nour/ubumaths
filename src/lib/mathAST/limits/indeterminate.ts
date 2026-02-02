@@ -10,15 +10,9 @@
 
 import type { MathNode } from '../types';
 import type { IndeterminateForm, LimitDirection } from './types';
-import {
-	isNumber,
-	isInfinity,
-	isDivision,
-	isMultiplication,
-	isSubtraction,
-	isSuperscript
-} from '../guards';
+import { isInfinity, isDivision, isMultiplication, isSubtraction, isSuperscript } from '../guards';
 import { tryEvaluateLimitExact, isZeroResult, isInfinityResult } from './exact-evaluation';
+import { evaluateNumeric, getNumericValue } from '../common';
 
 // =============================================================================
 // Limit Value Types
@@ -106,7 +100,7 @@ function classifyAtFinitePoint(
 	// Evaluate at test points
 	const values: number[] = [];
 	for (const testVal of testValues) {
-		const result = evaluateWithSubstitution(expr, varName, testVal);
+		const result = evaluateNumeric(expr, varName, testVal);
 		if (result !== null && Number.isFinite(result)) {
 			values.push(result);
 		}
@@ -115,7 +109,7 @@ function classifyAtFinitePoint(
 	if (values.length === 0) {
 		// Check for infinity
 		const testNear = direction === 'left' ? approachValue - epsilon : approachValue + epsilon;
-		const result = evaluateWithSubstitution(expr, varName, testNear);
+		const result = evaluateNumeric(expr, varName, testNear);
 		if (result !== null) {
 			if (result === Infinity) {
 				return { class: 'positive-infinity' };
@@ -153,7 +147,7 @@ function classifyAtInfinity(
 
 	const values: number[] = [];
 	for (const testVal of testValues) {
-		const result = evaluateWithSubstitution(expr, varName, testVal);
+		const result = evaluateNumeric(expr, varName, testVal);
 		if (result !== null) {
 			if (result === Infinity) {
 				return { class: 'positive-infinity' };
@@ -386,132 +380,4 @@ function detectIndeterminateFormNumeric(
  */
 function isInfinityClass(cls: LimitValueClass): boolean {
 	return cls === 'positive-infinity' || cls === 'negative-infinity' || cls === 'infinity';
-}
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
-/**
- * Get numeric value from a MathNode.
- */
-function getNumericValue(node: MathNode): number | null {
-	if (isNumber(node)) {
-		const val = parseFloat(node.value);
-		return Number.isFinite(val) ? val : null;
-	}
-	return null;
-}
-
-/**
- * Evaluate an expression with a substitution.
- */
-function evaluateWithSubstitution(expr: MathNode, varName: string, value: number): number | null {
-	return evaluateNodeNumeric(expr, varName, value);
-}
-
-/**
- * Recursively evaluate an expression numerically.
- */
-function evaluateNodeNumeric(expr: MathNode, varName: string, varValue: number): number | null {
-	switch (expr.type) {
-		case 'number': {
-			const val = parseFloat(expr.value);
-			return Number.isFinite(val) ? val : null;
-		}
-
-		case 'variable':
-			return expr.name === varName ? varValue : null;
-
-		case 'addition': {
-			const left = evaluateNodeNumeric(expr.left, varName, varValue);
-			const right = evaluateNodeNumeric(expr.right, varName, varValue);
-			if (left === null || right === null) return null;
-			return left + right;
-		}
-
-		case 'subtraction': {
-			const left = evaluateNodeNumeric(expr.left, varName, varValue);
-			const right = evaluateNodeNumeric(expr.right, varName, varValue);
-			if (left === null || right === null) return null;
-			return left - right;
-		}
-
-		case 'multiplication': {
-			const left = evaluateNodeNumeric(expr.left, varName, varValue);
-			const right = evaluateNodeNumeric(expr.right, varName, varValue);
-			if (left === null || right === null) return null;
-			return left * right;
-		}
-
-		case 'division': {
-			const num = evaluateNodeNumeric(expr.numerator, varName, varValue);
-			const den = evaluateNodeNumeric(expr.denominator, varName, varValue);
-			if (num === null || den === null) return null;
-			if (den === 0) {
-				// Return signed infinity based on numerator sign
-				return num > 0 ? Infinity : num < 0 ? -Infinity : null;
-			}
-			return num / den;
-		}
-
-		case 'opposite': {
-			const operand = evaluateNodeNumeric(expr.operand, varName, varValue);
-			return operand !== null ? -operand : null;
-		}
-
-		case 'positive': {
-			return evaluateNodeNumeric(expr.operand, varName, varValue);
-		}
-
-		case 'superscript': {
-			const base = evaluateNodeNumeric(expr.base, varName, varValue);
-			const exp = evaluateNodeNumeric(expr.superscript, varName, varValue);
-			if (base === null || exp === null) return null;
-			const result = Math.pow(base, exp);
-			return Number.isFinite(result) || result === Infinity || result === -Infinity ? result : null;
-		}
-
-		case 'function': {
-			if (expr.args.length === 1) {
-				const arg = evaluateNodeNumeric(expr.args[0], varName, varValue);
-				if (arg === null) return null;
-
-				switch (expr.name.toLowerCase()) {
-					case 'sin':
-						return Math.sin(arg);
-					case 'cos':
-						return Math.cos(arg);
-					case 'tan':
-						return Math.tan(arg);
-					case 'exp':
-						return Math.exp(arg);
-					case 'ln':
-						return arg > 0 ? Math.log(arg) : arg === 0 ? -Infinity : null;
-					case 'sqrt':
-						return arg >= 0 ? Math.sqrt(arg) : null;
-					case 'abs':
-						return Math.abs(arg);
-					case 'arcsin':
-					case 'asin':
-						return arg >= -1 && arg <= 1 ? Math.asin(arg) : null;
-					case 'arccos':
-					case 'acos':
-						return arg >= -1 && arg <= 1 ? Math.acos(arg) : null;
-					case 'arctan':
-					case 'atan':
-						return Math.atan(arg);
-					default:
-						return null;
-				}
-			}
-			return null;
-		}
-
-		case 'delimiter':
-			return evaluateNodeNumeric(expr.content, varName, varValue);
-
-		default:
-			return null;
-	}
 }

@@ -199,6 +199,72 @@ describe('computeDomain()', () => {
 		});
 	});
 
+	describe('quartic polynomial compositions', () => {
+		it('sqrt(x^4 - 1) has domain x <= -1 or x >= 1', () => {
+			// sqrt(x^4 - 1) requires x^4 - 1 >= 0, i.e., x^4 >= 1
+			// x^4 >= 1 when |x| >= 1, i.e., x <= -1 or x >= 1
+			const x4 = power(variable('x'), number('4'));
+			const expr = sqrt(subtract(x4, number('1')));
+			const result = computeDomain(expr, 'x');
+
+			// Valid at x = 1, -1, 2, -2
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(true);
+			expect(containsValue(result.domain, 2)).toBe(true);
+			expect(containsValue(result.domain, -2)).toBe(true);
+
+			// Invalid at x = 0, 0.5, -0.5
+			expect(containsValue(result.domain, 0)).toBe(false);
+			expect(containsValue(result.domain, 0.5)).toBe(false);
+			expect(containsValue(result.domain, -0.5)).toBe(false);
+		});
+
+		it('sqrt(1 - x^4) has domain -1 <= x <= 1', () => {
+			// sqrt(1 - x^4) requires 1 - x^4 >= 0, i.e., x^4 <= 1
+			// x^4 <= 1 when |x| <= 1, i.e., -1 <= x <= 1
+			const x4 = power(variable('x'), number('4'));
+			const expr = sqrt(subtract(number('1'), x4));
+			const result = computeDomain(expr, 'x');
+
+			// Valid at x = 0, 0.5, -0.5, 1, -1
+			expect(containsValue(result.domain, 0)).toBe(true);
+			expect(containsValue(result.domain, 0.5)).toBe(true);
+			expect(containsValue(result.domain, -0.5)).toBe(true);
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(true);
+
+			// Invalid at x = 2, -2, 1.5
+			expect(containsValue(result.domain, 2)).toBe(false);
+			expect(containsValue(result.domain, -2)).toBe(false);
+			expect(containsValue(result.domain, 1.5)).toBe(false);
+		});
+
+		it('sqrt(x^4 - 5x^2 + 4) factors to (x^2-1)(x^2-4)', () => {
+			// x^4 - 5x^2 + 4 = (x^2-1)(x^2-4) = (x-1)(x+1)(x-2)(x+2)
+			// >= 0 when: x <= -2 or -1 <= x <= 1 or x >= 2
+			const x = variable('x');
+			const x2 = power(x, number('2'));
+			const x4 = power(x, number('4'));
+			// x^4 - 5x^2 + 4
+			const poly = add(subtract(x4, multiply(number('5'), x2)), number('4'));
+			const expr = sqrt(poly);
+			const result = computeDomain(expr, 'x');
+
+			// Valid regions: x <= -2, -1 <= x <= 1, x >= 2
+			expect(containsValue(result.domain, -3)).toBe(true);
+			expect(containsValue(result.domain, -2)).toBe(true);
+			expect(containsValue(result.domain, 0)).toBe(true);
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(true);
+			expect(containsValue(result.domain, 2)).toBe(true);
+			expect(containsValue(result.domain, 3)).toBe(true);
+
+			// Invalid regions: -2 < x < -1, 1 < x < 2
+			expect(containsValue(result.domain, -1.5)).toBe(false);
+			expect(containsValue(result.domain, 1.5)).toBe(false);
+		});
+	});
+
 	describe('power expressions', () => {
 		it('x^(-1) has domain R \\ {0}', () => {
 			const expr = power(variable('x'), number('-1'));
