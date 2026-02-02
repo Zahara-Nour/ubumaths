@@ -32,6 +32,7 @@ import {
 	solveLinearInequality,
 	solveQuadraticInequality,
 	solveCubicInequality,
+	solveQuarticInequality,
 	findZeros,
 	classifyExpression
 } from './preimage';
@@ -698,6 +699,20 @@ function solveInequalityForPreimage(
 				exprType.b,
 				exprType.c,
 				exprType.d,
+				op,
+				bound,
+				strict,
+				variable
+			);
+
+		case 'quartic':
+			// expr = a*x⁴ + b*x³ + c*x² + d*x + e, solve inequality
+			return solveQuarticInequality(
+				exprType.a,
+				exprType.b,
+				exprType.c,
+				exprType.d,
+				exprType.e,
 				op,
 				bound,
 				strict,
