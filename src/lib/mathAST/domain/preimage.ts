@@ -23,6 +23,7 @@ import {
 	excludedPoint,
 	fromNumber
 } from './factory';
+import { ZERO_TOLERANCE } from '../common';
 
 // =============================================================================
 // Expression Classification
@@ -577,7 +578,7 @@ export function solveLinearInequality(
 	// a*x + b <= bound  =>  a*x <= bound - b
 	const rhs = bound - b;
 
-	if (Math.abs(a) < 1e-10) {
+	if (Math.abs(a) < ZERO_TOLERANCE) {
 		// Degenerate case: no x term
 		// Check if b satisfies the constraint
 		const satisfied =
@@ -634,7 +635,7 @@ export function solveQuadraticInequality(
 	// a*x² + b*x + c >= bound  =>  a*x² + b*x + (c - bound) >= 0
 	const newC = c - bound;
 
-	if (Math.abs(a) < 1e-10) {
+	if (Math.abs(a) < ZERO_TOLERANCE) {
 		// Not really quadratic, delegate to linear
 		return solveLinearInequality(b, newC, op, 0, strict, variable);
 	}
@@ -653,7 +654,7 @@ export function solveQuadraticInequality(
 		}
 	}
 
-	if (Math.abs(discriminant) < 1e-10) {
+	if (Math.abs(discriminant) < ZERO_TOLERANCE) {
 		// One root (tangent to axis)
 		const root = -b / (2 * a);
 		const rootValue = fromNumber(root);
@@ -741,11 +742,11 @@ export function findZeros(expr: MathNode, variable: string): number[] {
 	switch (classified.kind) {
 		case 'constant':
 			// Constant is zero only if value is 0
-			return Math.abs(classified.value) < 1e-10 ? [0] : [];
+			return Math.abs(classified.value) < ZERO_TOLERANCE ? [0] : [];
 
 		case 'linear':
 			// a*x + b = 0  =>  x = -b/a
-			if (Math.abs(classified.a) < 1e-10) {
+			if (Math.abs(classified.a) < ZERO_TOLERANCE) {
 				return [];
 			}
 			return [-classified.b / classified.a];
@@ -775,15 +776,29 @@ export function findZeros(expr: MathNode, variable: string): number[] {
 }
 
 /**
+ * Clean up floating-point roots by rounding values very close to integers.
+ * This fixes precision issues in polynomial root-finding (e.g., 1.9999999999999998 → 2).
+ */
+function cleanRoots(roots: number[]): number[] {
+	return roots.map((root) => {
+		const rounded = Math.round(root);
+		if (Math.abs(root - rounded) < ZERO_TOLERANCE) {
+			return rounded;
+		}
+		return root;
+	});
+}
+
+/**
  * Solve a*x² + b*x + c = 0.
  */
 function solveQuadraticZeros(a: number, b: number, c: number): number[] {
-	if (Math.abs(a) < 1e-10) {
+	if (Math.abs(a) < ZERO_TOLERANCE) {
 		// Linear case
-		if (Math.abs(b) < 1e-10) {
+		if (Math.abs(b) < ZERO_TOLERANCE) {
 			return [];
 		}
-		return [-c / b];
+		return cleanRoots([-c / b]);
 	}
 
 	const discriminant = b * b - 4 * a * c;
@@ -792,12 +807,12 @@ function solveQuadraticZeros(a: number, b: number, c: number): number[] {
 		return [];
 	}
 
-	if (Math.abs(discriminant) < 1e-10) {
-		return [-b / (2 * a)];
+	if (Math.abs(discriminant) < ZERO_TOLERANCE) {
+		return cleanRoots([-b / (2 * a)]);
 	}
 
 	const sqrtD = Math.sqrt(discriminant);
-	return [(-b - sqrtD) / (2 * a), (-b + sqrtD) / (2 * a)];
+	return cleanRoots([(-b - sqrtD) / (2 * a), (-b + sqrtD) / (2 * a)]);
 }
 
 /**
@@ -810,7 +825,7 @@ function solveQuadraticZeros(a: number, b: number, c: number): number[] {
  * @returns Array of real roots (1 to 3 roots)
  */
 function solveCubicZeros(a: number, b: number, c: number, d: number): number[] {
-	if (Math.abs(a) < 1e-10) {
+	if (Math.abs(a) < ZERO_TOLERANCE) {
 		// Not really cubic, delegate to quadratic
 		return solveQuadraticZeros(b, c, d);
 	}
@@ -833,9 +848,9 @@ function solveCubicZeros(a: number, b: number, c: number, d: number): number[] {
 
 	const roots: number[] = [];
 
-	if (Math.abs(discriminant) < 1e-10) {
+	if (Math.abs(discriminant) < ZERO_TOLERANCE) {
 		// Discriminant ≈ 0: one or two real roots
-		if (Math.abs(q) < 1e-10) {
+		if (Math.abs(q) < ZERO_TOLERANCE) {
 			// Triple root at t = 0
 			roots.push(-b1_3);
 		} else {
@@ -861,11 +876,15 @@ function solveCubicZeros(a: number, b: number, c: number, d: number): number[] {
 		roots.push(twoSqrtMinusP3 * Math.cos((theta + 4 * Math.PI) / 3) - b1_3);
 	}
 
-	// Sort roots and remove near-duplicates
-	roots.sort((x, y) => x - y);
+	// Clean roots (round near-integers), sort, and remove near-duplicates
+	const cleaned = cleanRoots(roots);
+	cleaned.sort((x, y) => x - y);
 	const uniqueRoots: number[] = [];
-	for (const root of roots) {
-		if (uniqueRoots.length === 0 || Math.abs(root - uniqueRoots[uniqueRoots.length - 1]) > 1e-8) {
+	for (const root of cleaned) {
+		if (
+			uniqueRoots.length === 0 ||
+			Math.abs(root - uniqueRoots[uniqueRoots.length - 1]) > ZERO_TOLERANCE
+		) {
 			uniqueRoots.push(root);
 		}
 	}
@@ -884,7 +903,7 @@ function solveCubicZeros(a: number, b: number, c: number, d: number): number[] {
  * @returns Array of real roots (0 to 4 roots)
  */
 function solveQuarticZeros(a: number, b: number, c: number, d: number, e: number): number[] {
-	if (Math.abs(a) < 1e-10) {
+	if (Math.abs(a) < ZERO_TOLERANCE) {
 		// Not really quartic, delegate to cubic
 		return solveCubicZeros(b, c, d, e);
 	}
@@ -906,7 +925,7 @@ function solveQuarticZeros(a: number, b: number, c: number, d: number, e: number
 	const C = s - (p * r) / 4 + (p2 * q) / 16 - (3 * p4) / 256;
 
 	// Special case: Biquadratic (B = 0)
-	if (Math.abs(B) < 1e-10) {
+	if (Math.abs(B) < ZERO_TOLERANCE) {
 		return solveBiquadratic(A, C, shift);
 	}
 
@@ -928,11 +947,11 @@ function solveQuarticZeros(a: number, b: number, c: number, d: number, e: number
 	}
 
 	// If y is too small, try the largest root even if negative
-	if (Math.abs(y) < 1e-10 && cubicRoots.length > 0) {
+	if (Math.abs(y) < ZERO_TOLERANCE && cubicRoots.length > 0) {
 		y = Math.max(...cubicRoots.map(Math.abs));
 		// Find the actual root with this absolute value
 		for (const root of cubicRoots) {
-			if (Math.abs(Math.abs(root) - y) < 1e-10) {
+			if (Math.abs(Math.abs(root) - y) < ZERO_TOLERANCE) {
 				y = root;
 				break;
 			}
@@ -941,13 +960,13 @@ function solveQuarticZeros(a: number, b: number, c: number, d: number, e: number
 
 	// Factor the depressed quartic as (t² + √(2y)t + q₁)(t² - √(2y)t + q₂)
 	const twoY = 2 * y;
-	if (twoY < -1e-10) {
+	if (twoY < -ZERO_TOLERANCE) {
 		// Cannot factor with real coefficients, no real roots
 		return [];
 	}
 
 	const sqrtTwoY = Math.sqrt(Math.max(0, twoY));
-	if (Math.abs(sqrtTwoY) < 1e-10) {
+	if (Math.abs(sqrtTwoY) < ZERO_TOLERANCE) {
 		// Special case: y ≈ 0, factor as (t² + √C)(t² - √C) or similar
 		return solveBiquadratic(A, C, shift);
 	}
@@ -984,13 +1003,13 @@ function solveBiquadratic(A: number, C: number, shift: number): number[] {
 		if (u >= 0) {
 			const sqrtU = Math.sqrt(u);
 			tRoots.push(sqrtU - shift);
-			if (Math.abs(sqrtU) > 1e-10) {
+			if (Math.abs(sqrtU) > ZERO_TOLERANCE) {
 				tRoots.push(-sqrtU - shift);
 			}
 		}
 	}
 
-	return deduplicateRoots(tRoots);
+	return deduplicateRoots(cleanRoots(tRoots));
 }
 
 /**
@@ -1002,7 +1021,7 @@ function deduplicateRoots(roots: number[]): number[] {
 	roots.sort((x, y) => x - y);
 	const unique: number[] = [roots[0]];
 	for (let i = 1; i < roots.length; i++) {
-		if (Math.abs(roots[i] - unique[unique.length - 1]) > 1e-8) {
+		if (Math.abs(roots[i] - unique[unique.length - 1]) > ZERO_TOLERANCE) {
 			unique.push(roots[i]);
 		}
 	}
@@ -1035,7 +1054,7 @@ export function solveCubicInequality(
 	// a*x³ + b*x² + c*x + d >= bound => a*x³ + b*x² + c*x + (d - bound) >= 0
 	const newD = d - bound;
 
-	if (Math.abs(a) < 1e-10) {
+	if (Math.abs(a) < ZERO_TOLERANCE) {
 		// Not really cubic, delegate to quadratic
 		return solveQuadraticInequality(b, c, newD, op, 0, strict, variable);
 	}
@@ -1202,7 +1221,7 @@ export function solveQuarticInequality(
 	// a*x⁴ + b*x³ + c*x² + d*x + e >= bound => a*x⁴ + b*x³ + c*x² + d*x + (e - bound) >= 0
 	const newE = e - bound;
 
-	if (Math.abs(a) < 1e-10) {
+	if (Math.abs(a) < ZERO_TOLERANCE) {
 		// Not really quartic, delegate to cubic
 		return solveCubicInequality(b, c, d, newE, op, 0, strict, variable);
 	}
