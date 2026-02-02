@@ -55,6 +55,7 @@ import { isInfinity, isFunction } from '../guards';
 import { findNodes } from '../transforms';
 import { shouldIncludeStep } from '../common/verbosity';
 import { formatNumber } from '../common/format';
+import { ZERO_TOLERANCE } from '../common/constants';
 import {
 	isPeriodicTrigFunction,
 	getPeriodicFunctionInfo,
@@ -542,7 +543,7 @@ function analyzeKnownJumpDiscontinuity(
 	// Left limit: n (the integer below), Right limit: n, but function jumps
 	if (source === 'floor') {
 		// Check if point is an integer
-		if (Math.abs(pointValue - Math.round(pointValue)) > 1e-10) {
+		if (Math.abs(pointValue - Math.round(pointValue)) > ZERO_TOLERANCE) {
 			return null; // Not an integer, no discontinuity
 		}
 
@@ -563,7 +564,7 @@ function analyzeKnownJumpDiscontinuity(
 	// For ceil(x): discontinuous at every integer
 	if (source === 'ceil') {
 		// Check if point is an integer
-		if (Math.abs(pointValue - Math.round(pointValue)) > 1e-10) {
+		if (Math.abs(pointValue - Math.round(pointValue)) > ZERO_TOLERANCE) {
 			return null; // Not an integer, no discontinuity
 		}
 

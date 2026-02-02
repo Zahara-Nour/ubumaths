@@ -12,7 +12,7 @@ import type { MathNode } from '../types';
 import type { IndeterminateForm, LimitDirection } from './types';
 import { isInfinity, isDivision, isMultiplication, isSubtraction, isSuperscript } from '../guards';
 import { tryEvaluateLimitExact, isZeroResult, isInfinityResult } from './exact-evaluation';
-import { evaluateNumeric, getNumericValue } from '../common';
+import { evaluateNumeric, getNumericValue, ZERO_TOLERANCE, NUMERIC_DELTA } from '../common';
 
 // =============================================================================
 // Limit Value Types
@@ -81,7 +81,7 @@ function classifyAtFinitePoint(
 	direction: LimitDirection
 ): LimitValueClassification {
 	// Determine which side to approach from
-	const epsilon = 1e-10;
+	const epsilon = ZERO_TOLERANCE;
 	let testValues: number[];
 
 	if (direction === 'right') {
@@ -124,10 +124,10 @@ function classifyAtFinitePoint(
 	// Check if values are converging to something
 	const lastValue = values[values.length - 1];
 
-	if (Math.abs(lastValue) < 1e-8) {
+	if (Math.abs(lastValue) < NUMERIC_DELTA) {
 		return { class: 'zero', numericValue: 0 };
 	}
-	if (Math.abs(lastValue - 1) < 1e-8) {
+	if (Math.abs(lastValue - 1) < NUMERIC_DELTA) {
 		return { class: 'one', numericValue: 1 };
 	}
 

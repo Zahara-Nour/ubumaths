@@ -28,6 +28,7 @@ import { number as numberNode } from '../factory';
 import { intersect, excludePoints, union, isEmpty } from './algebra';
 import { getBuiltinDomain, hasRestrictedDomain, getBuiltinRangeEntry } from './builtins';
 import { isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
+import { ZERO_TOLERANCE } from '../common';
 import {
 	solveLinearInequality,
 	solveQuadraticInequality,
@@ -51,7 +52,7 @@ function rangeHasLowerBound(
 	const range = getBuiltinRangeEntry(funcName);
 	if (!range || range.lower === null) return { hasBound: false, inclusive: false };
 
-	if (Math.abs(range.lower - bound) < 1e-10) {
+	if (Math.abs(range.lower - bound) < ZERO_TOLERANCE) {
 		return { hasBound: true, inclusive: range.lowerInclusive };
 	}
 	return { hasBound: false, inclusive: false };
@@ -155,7 +156,7 @@ function analyzeComposition(
 			// For ln/log, ln(x) >= 0 means x >= 1
 			if (
 				(innerNode.name === 'ln' || innerNode.name === 'log') &&
-				Math.abs(outerReq.lowerBound) < 1e-10
+				Math.abs(outerReq.lowerBound) < ZERO_TOLERANCE
 			) {
 				// ln(expr) >= 0 means expr >= 1
 				const constraintDomain = intervalDomain([greaterThanOrEqual(fromNumber(1))]);
@@ -473,7 +474,7 @@ function createLinearPeriodicExclusion(
 	}
 
 	// Check for zero coefficient (not linear in variable)
-	if (Math.abs(a) < 1e-10) {
+	if (Math.abs(a) < ZERO_TOLERANCE) {
 		return null;
 	}
 

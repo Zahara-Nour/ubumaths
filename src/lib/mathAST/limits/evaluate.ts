@@ -45,7 +45,7 @@ import {
 	resultToFiniteNode,
 	isIndeterminateResult
 } from './exact-evaluation';
-import { getNumericValue } from '../common';
+import { getNumericValue, ZERO_TOLERANCE } from '../common';
 
 // =============================================================================
 // Default Options
@@ -121,7 +121,7 @@ function validateApproachInDomain(
 		const { domain } = computeDomain(expr, varName);
 		// Small offset to check domain membership near the approach point
 		// We check at approach ± epsilon to determine left/right accessibility
-		const epsilon = 1e-10;
+		const epsilon = ZERO_TOLERANCE;
 
 		const leftDefined = containsValue(domain, approachVal - epsilon);
 		const rightDefined = containsValue(domain, approachVal + epsilon);
@@ -243,7 +243,7 @@ export function evaluateLimit(
 					// Convert to integer if it's a whole number
 					const intValue = Math.round(numValue);
 					evaluatedExpr =
-						Math.abs(numValue - intValue) < 1e-10
+						Math.abs(numValue - intValue) < ZERO_TOLERANCE
 							? number(intValue.toString())
 							: number(numValue.toPrecision(15));
 				}
@@ -530,7 +530,7 @@ function evaluateLimitInternal(
 				if (Number.isFinite(numValue)) {
 					const intValue = Math.round(numValue);
 					evaluatedExpr =
-						Math.abs(numValue - intValue) < 1e-10
+						Math.abs(numValue - intValue) < ZERO_TOLERANCE
 							? number(intValue.toString())
 							: number(numValue.toPrecision(15));
 				}
@@ -794,7 +794,7 @@ function tryEvaluateNumeric(expr: MathNode): number | null {
  * Clean a number string.
  */
 function cleanNumberString(value: number): string {
-	if (Math.abs(value - Math.round(value)) < 1e-10) {
+	if (Math.abs(value - Math.round(value)) < ZERO_TOLERANCE) {
 		return String(Math.round(value));
 	}
 	return value.toPrecision(10).replace(/\.?0+$/, '');
