@@ -81,19 +81,21 @@ color: pink
 		},
 		{
 			title: 'Équation: cos(x) = 1/2',
-			description: 'Solutions de cos(x) = 1/2',
+			description: 'Solutions de cos(x) = 1/2 : π/3 et 5π/3',
 			markdown: `\`\`\`trig
+preset: custom
 equation: cos(x) = 1/2
-mode: arc
+projections: true
 color: blue
 \`\`\``
 		},
 		{
 			title: 'Équation: sin(x) = √2/2',
-			description: 'Solutions de sin(x) = √2/2',
+			description: 'Solutions de sin(x) = √2/2 : π/4 et 3π/4',
 			markdown: `\`\`\`trig
+preset: custom
 equation: sin(x) = √2/2
-mode: arc
+projections: true
 color: red
 \`\`\``
 		},
@@ -101,6 +103,7 @@ color: red
 			title: 'Inéquation: cos(x) > 1/2',
 			description: 'Arc solution pour cos(x) > 1/2',
 			markdown: `\`\`\`trig
+preset: custom
 equation: cos(x) > 1/2
 mode: arc
 color: green
@@ -110,6 +113,7 @@ color: green
 			title: 'Inéquation: sin(x) < -1/2',
 			description: 'Arc solution pour sin(x) < -1/2',
 			markdown: `\`\`\`trig
+preset: custom
 equation: sin(x) < -1/2
 mode: arc
 color: orange
@@ -142,9 +146,10 @@ color: blue
 			title: 'Équation avec tableau',
 			description: 'cos(x) = -√3/2 avec tableau des solutions',
 			markdown: `\`\`\`trig
+preset: custom
 equation: cos(x) = -√3/2
-mode: arc
 display: circle+table
+projections: true
 color: red
 \`\`\``
 		}

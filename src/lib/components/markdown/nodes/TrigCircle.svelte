@@ -222,12 +222,22 @@
 	// RENDER DATA
 	// =========================================================================
 
-	// Angles to display (including interactive angle if present)
+	// Angles to display (including solution angles and interactive angle)
 	let displayAngles = $derived.by(() => {
 		const angles = [...node.angles];
 
+		// Add solution angles for equations (not inequations)
+		if (node.solution?.angles && node.solution.angles.length > 0) {
+			for (const solutionAngle of node.solution.angles) {
+				const exists = angles.some((a) => Math.abs(a.radians - solutionAngle.radians) < 1e-6);
+				if (!exists) {
+					angles.push(solutionAngle);
+				}
+			}
+		}
+
+		// Add interactive angle if present
 		if (node.config.mode === 'interactive' && interactiveAngle !== null) {
-			// Add interactive angle if it doesn't match an existing one
 			const exists = angles.some((a) => Math.abs(a.radians - interactiveAngle!) < 0.01);
 			if (!exists) {
 				angles.push({
@@ -238,11 +248,22 @@
 			}
 		}
 
+		// Sort by radians
+		angles.sort((a, b) => a.radians - b.radians);
+
 		return angles;
 	});
 
 	// Arcs to display (from solution)
 	let displayArcs = $derived(node.solution?.arcs || []);
+
+	// Solution angle radians (for highlighting)
+	let solutionRadians = $derived(node.solution?.angles?.map((a) => a.radians) || []);
+
+	// Check if an angle is a solution angle
+	function isSolutionAngle(radians: number): boolean {
+		return solutionRadians.some((r) => Math.abs(r - radians) < 1e-6);
+	}
 
 	// Table angles (for the value table)
 	let tableAngles = $derived.by(() => {
@@ -406,22 +427,89 @@
 						{@const point = angleToPoint(angle.radians)}
 						{@const isHovered =
 							hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
-						<line
-							x1={point.x}
-							y1={point.y}
-							x2={point.x}
-							y2={CENTER}
-							class="trig-projection-line"
-							class:trig-projection-highlighted={isHovered}
-						/>
-						<line
-							x1={point.x}
-							y1={point.y}
-							x2={CENTER}
-							y2={point.y}
-							class="trig-projection-line"
-							class:trig-projection-highlighted={isHovered}
-						/>
+						{@const isSolution = isSolutionAngle(angle.radians)}
+						{@const isHighlighted = isHovered || isSolution}
+						{@const cosVal = Math.cos(angle.radians)}
+						{@const sinVal = Math.sin(angle.radians)}
+						{@const eqFunc = node.config.equation?.func}
+						{@const showCos = !eqFunc || eqFunc === 'cos' || eqFunc === 'tan'}
+						{@const showSin = !eqFunc || eqFunc === 'sin' || eqFunc === 'tan'}
+
+						<!-- Vertical projection to x-axis (cos value) -->
+						{#if showCos}
+							<line
+								x1={point.x}
+								y1={point.y}
+								x2={point.x}
+								y2={CENTER}
+								class="trig-projection-line"
+								class:trig-projection-highlighted={isHighlighted}
+							/>
+							<!-- Tick mark on x-axis -->
+							<line
+								x1={point.x}
+								y1={CENTER - 4}
+								x2={point.x}
+								y2={CENTER + 4}
+								class="trig-projection-tick"
+								class:trig-projection-highlighted={isHighlighted}
+							/>
+							<!-- Cos value label -->
+							{#if Math.abs(cosVal) > 0.01}
+								<foreignObject
+									x={point.x - 25}
+									y={CENTER + 8}
+									width="50"
+									height="24"
+									class="trig-projection-label-container"
+								>
+									<div
+										class="trig-projection-value"
+										class:trig-projection-value-highlighted={isHighlighted}
+									>
+										<math-span>{getCosValue(angle.radians)}</math-span>
+									</div>
+								</foreignObject>
+							{/if}
+						{/if}
+
+						<!-- Horizontal projection to y-axis (sin value) -->
+						{#if showSin}
+							<line
+								x1={point.x}
+								y1={point.y}
+								x2={CENTER}
+								y2={point.y}
+								class="trig-projection-line"
+								class:trig-projection-highlighted={isHighlighted}
+							/>
+							<!-- Tick mark on y-axis -->
+							<line
+								x1={CENTER - 4}
+								y1={point.y}
+								x2={CENTER + 4}
+								y2={point.y}
+								class="trig-projection-tick"
+								class:trig-projection-highlighted={isHighlighted}
+							/>
+							<!-- Sin value label -->
+							{#if Math.abs(sinVal) > 0.01}
+								<foreignObject
+									x={CENTER - 42}
+									y={point.y - 12}
+									width="38"
+									height="24"
+									class="trig-projection-label-container"
+								>
+									<div
+										class="trig-projection-value"
+										class:trig-projection-value-highlighted={isHighlighted}
+									>
+										<math-span>{getSinValue(angle.radians)}</math-span>
+									</div>
+								</foreignObject>
+							{/if}
+						{/if}
 					{/each}
 				</g>
 			{/if}
@@ -436,6 +524,7 @@
 						node.config.mode === 'interactive' &&
 						interactiveAngle !== null &&
 						Math.abs(angle.radians - interactiveAngle) < 0.01}
+					{@const isSolution = isSolutionAngle(angle.radians)}
 
 					<!-- Radius line (from center to point) -->
 					<line
@@ -444,7 +533,7 @@
 						x2={point.x}
 						y2={point.y}
 						class="trig-radius-line"
-						class:trig-radius-highlighted={isHovered || isInteractive}
+						class:trig-radius-highlighted={isHovered || isInteractive || isSolution}
 					/>
 
 					<!-- Invisible hit area for easier hover -->
@@ -462,9 +551,9 @@
 					<circle
 						cx={point.x}
 						cy={point.y}
-						r={POINT_RADIUS}
+						r={isSolution ? POINT_RADIUS + 2 : POINT_RADIUS}
 						class="trig-angle-point"
-						class:trig-point-highlighted={isHovered || isInteractive}
+						class:trig-point-highlighted={isHovered || isInteractive || isSolution}
 					/>
 				{/each}
 			</g>
@@ -476,10 +565,11 @@
 						{@const pos = getLabelPosition(angle.radians)}
 						{@const isHovered =
 							hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
+						{@const isSolution = isSolutionAngle(angle.radians)}
 						<foreignObject x={pos.x - 40} y={pos.y - 16} width="80" height="32">
 							<div
 								class="trig-label"
-								class:trig-label-highlighted={isHovered}
+								class:trig-label-highlighted={isHovered || isSolution}
 								style="text-align: {pos.anchor === 'start'
 									? 'left'
 									: pos.anchor === 'end'
@@ -620,6 +710,30 @@
 	.trig-projection-highlighted {
 		stroke: var(--primary-color);
 		opacity: 1;
+	}
+
+	.trig-projection-tick {
+		stroke: var(--primary-color);
+		stroke-width: 1.5;
+		pointer-events: none;
+	}
+
+	.trig-projection-label-container {
+		pointer-events: none;
+	}
+
+	.trig-projection-value {
+		font-size: 0.75rem;
+		color: var(--primary-color);
+		text-align: center;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+	}
+
+	.trig-projection-value-highlighted {
+		font-weight: 600;
 	}
 
 	/* Radius line */
