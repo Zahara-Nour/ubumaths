@@ -208,6 +208,22 @@ export function resolveExpression(
 		}
 	}
 
+	// STAGE 2.5: Generate n-digit numbers {{digits:...}}
+	const digitsTokens = tokenize(result).filter((t) => t.type === 'digits');
+
+	// Replace from end to start to preserve positions
+	for (let i = digitsTokens.length - 1; i >= 0; i--) {
+		const token = digitsTokens[i];
+		try {
+			const generatedValue = generateDigitsNumber(token.inner, seed);
+			result = result.slice(0, token.start) + String(generatedValue) + result.slice(token.end);
+		} catch (error) {
+			throw new Error(
+				`Failed to generate digits number in expression "${token.content}": ${error instanceof Error ? error.message : String(error)}`
+			);
+		}
+	}
+
 	// STAGE 3: Evaluate {{eval:...}} expressions (with optional modifiers)
 	const evalTokens = tokenize(result).filter((t) => t.type === 'eval');
 
@@ -268,4 +284,66 @@ export function resolveExpression(
 	}
 
 	return result;
+}
+
+/**
+ * Generate an n-digit number from a digits specification
+ *
+ * @param spec - Digits specification: "1" (1 digit), "2" (2 digits), "1..3" (1 to 3 digits)
+ * @param seed - Optional seed for reproducible random generation
+ * @returns Generated number
+ *
+ * @example
+ * generateDigitsNumber('1', 12345)  // 1-9 (single digit)
+ * generateDigitsNumber('2', 12345)  // 10-99 (two digits)
+ * generateDigitsNumber('1..3', 12345)  // 1-999 (1 to 3 digits)
+ */
+function generateDigitsNumber(spec: string, seed: number | undefined): number {
+	// Parse the spec: "1", "2", "1..3"
+	const rangeMatch = spec.match(/^(\d+)\.\.(\d+)$/);
+
+	let minDigits: number;
+	let maxDigits: number;
+
+	if (rangeMatch) {
+		// Range: "1..3"
+		minDigits = parseInt(rangeMatch[1], 10);
+		maxDigits = parseInt(rangeMatch[2], 10);
+	} else {
+		// Single value: "1", "2"
+		const digits = parseInt(spec, 10);
+		if (isNaN(digits)) {
+			throw new Error(`Invalid digits specification: ${spec}`);
+		}
+		minDigits = digits;
+		maxDigits = digits;
+	}
+
+	// Calculate min and max values for the digit range
+	// For n digits: min = 10^(n-1), max = 10^n - 1
+	// Special case: 0 digits means 0
+	// Special case: 1 digit means 1-9 (not 0)
+	const minValue = minDigits === 0 ? 0 : Math.pow(10, minDigits - 1);
+	const maxValue = Math.pow(10, maxDigits) - 1;
+
+	// Adjust minValue for single digit to exclude 0
+	const adjustedMin = minDigits === 1 ? 1 : minValue;
+
+	// Generate random number in range
+	const range = maxValue - adjustedMin + 1;
+
+	// Use seeded random if seed provided
+	let randomValue: number;
+	if (seed !== undefined) {
+		// Simple LCG for seeded random
+		const a = 1103515245;
+		const c = 12345;
+		const m = 2147483648;
+		const seededRandom = ((a * seed + c) % m) / m;
+		randomValue = Math.floor(seededRandom * range) + adjustedMin;
+	} else {
+		randomValue = Math.floor(Math.random() * range) + adjustedMin;
+	}
+
+	return randomValue;
 }

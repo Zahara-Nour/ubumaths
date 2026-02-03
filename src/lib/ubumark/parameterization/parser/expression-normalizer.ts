@@ -21,6 +21,7 @@ export type ExpressionType =
 	| 'random' // 1..10, min..max, 2..9;+-, 1.5..9.5, random:2.3
 	| 'discrete-list' // rouge|vert|bleu
 	| 'eval' // eval:a+b
+	| 'digits' // digits:1, digits:1..3 (n-digit number generation)
 	| 'text-literal' // text:hello (use text: prefix for literal strings)
 	| 'numeric-literal' // 42, 3.14, -5
 	| 'variable-ref' // a, myVar (single identifier = variable reference)
@@ -58,6 +59,7 @@ export function detectExpressionType(expression: string): ExpressionType {
 	if (trimmed.startsWith('eval:')) return 'eval';
 	if (trimmed.startsWith('text:')) return 'text-literal';
 	if (trimmed.startsWith('random:')) return 'random';
+	if (trimmed.startsWith('digits:')) return 'digits';
 
 	// Discrete list (contains | at top level, not inside braces/parens)
 	if (hasTopLevelPipe(trimmed)) return 'discrete-list';
@@ -114,6 +116,7 @@ export function normalizeExpression(expression: string): string {
 
 		case 'eval':
 		case 'random':
+		case 'digits':
 		case 'discrete-list':
 		case 'variable-ref':
 			// These need {{...}} wrapping for the parsers

@@ -30,7 +30,7 @@ import type { DisplayOptions } from '../parameterization/display-options';
  */
 export interface Token {
 	/** Token type */
-	type: 'variable' | 'random' | 'eval';
+	type: 'variable' | 'random' | 'eval' | 'digits';
 
 	/** Full token text including delimiters: "{{a}}" */
 	content: string;

@@ -408,6 +408,44 @@ describe('resolveVariables', () => {
 	});
 
 	// ============================================================================
+	// DIGITS GENERATION
+	// ============================================================================
+
+	describe('Digits generation', () => {
+		it('should generate single digit number', () => {
+			const variables: Variable[] = [{ name: 'a', expression: 'digits:1' }];
+			const resolved = resolveVariables(variables, 42);
+			const value = parseInt(resolved[0].value);
+			expect(value).toBeGreaterThanOrEqual(1);
+			expect(value).toBeLessThanOrEqual(9);
+		});
+
+		it('should generate two digit number', () => {
+			const variables: Variable[] = [{ name: 'a', expression: 'digits:2' }];
+			const resolved = resolveVariables(variables, 42);
+			const value = parseInt(resolved[0].value);
+			expect(value).toBeGreaterThanOrEqual(10);
+			expect(value).toBeLessThanOrEqual(99);
+		});
+
+		it('should generate number with digit range', () => {
+			const variables: Variable[] = [{ name: 'a', expression: 'digits:1..3' }];
+			const resolved = resolveVariables(variables, 42);
+			const value = parseInt(resolved[0].value);
+			expect(value).toBeGreaterThanOrEqual(1);
+			expect(value).toBeLessThanOrEqual(999);
+		});
+
+		it('should work with legacy {{digits:...}} syntax', () => {
+			const variables: Variable[] = [{ name: 'a', expression: '{{digits:2}}' }];
+			const resolved = resolveVariables(variables, 42);
+			const value = parseInt(resolved[0].value);
+			expect(value).toBeGreaterThanOrEqual(10);
+			expect(value).toBeLessThanOrEqual(99);
+		});
+	});
+
+	// ============================================================================
 	// EDGE CASES
 	// ============================================================================
 

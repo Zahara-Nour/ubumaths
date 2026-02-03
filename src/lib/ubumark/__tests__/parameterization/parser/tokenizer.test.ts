@@ -243,11 +243,13 @@ describe('tokenize - Special markers (non-parameterization)', () => {
 		expect(tokens).toHaveLength(0);
 	});
 
-	it('should skip digits markers', () => {
-		const text = 'Number: {{digits:2-4}}';
+	it('should parse digits markers as digits tokens', () => {
+		const text = 'Number: {{digits:2}}';
 		const tokens = tokenize(text);
 
-		expect(tokens).toHaveLength(0);
+		expect(tokens).toHaveLength(1);
+		expect(tokens[0].type).toBe('digits');
+		expect(tokens[0].inner).toBe('2');
 	});
 
 	it('should handle mixed blank and variable tokens', () => {
@@ -271,12 +273,13 @@ describe('tokenize - Special markers (non-parameterization)', () => {
 	});
 
 	it('should handle complex digits syntax', () => {
-		const text = '{{digits:{{1}};{{1}}}}';
+		const text = '{{digits:1..3}}';
 		const tokens = tokenize(text);
 
-		// Should skip the outer digits: marker
-		// Inner {{1}} tokens are inside a skipped marker
-		expect(tokens).toHaveLength(0);
+		// digits: is now a proper token type for n-digit number generation
+		expect(tokens).toHaveLength(1);
+		expect(tokens[0].type).toBe('digits');
+		expect(tokens[0].inner).toBe('1..3');
 	});
 
 	it('should skip blank markers with text around', () => {

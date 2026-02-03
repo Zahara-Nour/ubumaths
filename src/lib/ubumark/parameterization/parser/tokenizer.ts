@@ -115,18 +115,13 @@ function extractMarkdownBracedToken(
 	const innerContent = text.substring(start + 2, i - 2);
 
 	// Determine token type
-	let type: 'variable' | 'random' | 'eval' | null = null;
+	let type: 'variable' | 'random' | 'eval' | 'digits' | null = null;
 	let inner = innerContent;
 
 	// Skip special markers that look like parameterization but aren't
 	// {{blank:N}} is a fill-in-blank marker, not a parameterization token
-	// {{digits:...}} is handled separately
 	// {{color:...}} is a color reference marker, resolved by color-parser
-	if (
-		innerContent.startsWith('blank:') ||
-		innerContent.startsWith('digits:') ||
-		innerContent.startsWith('color:')
-	) {
+	if (innerContent.startsWith('blank:') || innerContent.startsWith('color:')) {
 		return { token: null, endIndex: i };
 	}
 
@@ -136,6 +131,9 @@ function extractMarkdownBracedToken(
 	} else if (innerContent.startsWith('eval:')) {
 		type = 'eval';
 		inner = innerContent.substring(5);
+	} else if (innerContent.startsWith('digits:')) {
+		type = 'digits';
+		inner = innerContent.substring(7);
 	} else {
 		// Auto-detect: check if it looks like a random spec or variable
 		// Random patterns: contains "-" (range), "." followed by digit (decimal by digits)

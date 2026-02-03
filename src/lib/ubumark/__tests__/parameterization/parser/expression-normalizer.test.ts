@@ -72,6 +72,20 @@ describe('detectExpressionType', () => {
 		});
 	});
 
+	describe('digits expressions', () => {
+		it('detects digits prefix with single digit', () => {
+			expect(detectExpressionType('digits:1')).toBe('digits');
+		});
+
+		it('detects digits prefix with range', () => {
+			expect(detectExpressionType('digits:1..3')).toBe('digits');
+		});
+
+		it('detects digits prefix with two digits', () => {
+			expect(detectExpressionType('digits:2')).toBe('digits');
+		});
+	});
+
 	describe('text literals', () => {
 		it('detects text prefix', () => {
 			expect(detectExpressionType('text:hello')).toBe('text-literal');
@@ -205,6 +219,20 @@ describe('normalizeExpression', () => {
 
 		it('wraps eval with complex math', () => {
 			expect(normalizeExpression('eval:2*x+3')).toBe('{{eval:2*x+3}}');
+		});
+	});
+
+	describe('digits expressions', () => {
+		it('wraps digits with single digit count', () => {
+			expect(normalizeExpression('digits:1')).toBe('{{digits:1}}');
+		});
+
+		it('wraps digits with range', () => {
+			expect(normalizeExpression('digits:1..3')).toBe('{{digits:1..3}}');
+		});
+
+		it('wraps digits with two digit count', () => {
+			expect(normalizeExpression('digits:2')).toBe('{{digits:2}}');
 		});
 	});
 
