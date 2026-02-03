@@ -131,6 +131,18 @@ export { parseRandomSpec } from './parser/random-parser';
  */
 export { parseEvalExpression, parseEvalExpressionWithModifiers } from './parser/eval-parser';
 
+/**
+ * Normalize simplified expression syntax to legacy {{...}} syntax
+ *
+ * Converts: 1..10 → {{1..10}}, eval:a+b → {{eval:a+b}}, etc.
+ * See: {@link module:ubumark/parameterization/parser/expression-normalizer}
+ */
+export {
+	normalizeExpression,
+	detectExpressionType,
+	type ExpressionType
+} from './parser/expression-normalizer';
+
 // ============================================================================
 // RESOLVERS
 // ============================================================================

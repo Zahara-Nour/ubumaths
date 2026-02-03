@@ -54,11 +54,11 @@ describe('Question Transformer', () => {
 				expect(variation?.variables).toHaveLength(3);
 				expect(variation?.variables?.[0]).toEqual({
 					name: 'a',
-					expression: '{{1..10}}'
+					expression: '1..10'
 				});
 				expect(variation?.variables?.[1]).toEqual({
 					name: 'b',
-					expression: '{{1..10}}'
+					expression: '1..10'
 				});
 				// Expression is extracted as a separate variable
 				// Note: MathLive's AsciiMath converter removes spaces from expressions
@@ -515,9 +515,9 @@ describe('Question Transformer', () => {
 				expect(result.success).toBe(true);
 
 				const vars = result.template?.variations[0]?.variables;
-				expect(vars?.[0]).toEqual({ name: 'a', expression: '{{1..9}}' });
-				expect(vars?.[1]).toEqual({ name: 'b', expression: '{{0..9!a}}' });
-				expect(vars?.[2]).toEqual({ name: 'c', expression: '{{eval:a*10+b}}' });
+				expect(vars?.[0]).toEqual({ name: 'a', expression: '1..9' });
+				expect(vars?.[1]).toEqual({ name: 'b', expression: '0..9!a' });
+				expect(vars?.[2]).toEqual({ name: 'c', expression: 'eval:a*10+b' });
 
 				expect(result.template?.variations[0]?.solution).toBe('{{a}}');
 			});
@@ -542,7 +542,7 @@ describe('Question Transformer', () => {
 				expect(result.success).toBe(true);
 
 				const vars = result.template?.variations[0]?.variables;
-				expect(vars?.[0]?.expression).toBe('{{1000..9999}}');
+				expect(vars?.[0]?.expression).toBe('1000..9999');
 			});
 
 			it('should convert list selections', () => {
@@ -565,7 +565,7 @@ describe('Question Transformer', () => {
 				expect(result.success).toBe(true);
 
 				const vars = result.template?.variations[0]?.variables;
-				expect(vars?.[0]?.expression).toBe('{{rouge|bleu|vert|jaune}}');
+				expect(vars?.[0]?.expression).toBe('rouge|bleu|vert|jaune');
 			});
 		});
 	});
@@ -739,7 +739,7 @@ describe('Question Transformer', () => {
 			expect(result.template?.shared?.variables).toBeDefined();
 			expect(result.template?.shared?.variables?.length).toBeGreaterThan(0);
 			expect(result.template?.shared?.variables?.[0]?.name).toBe('a');
-			expect(result.template?.shared?.variables?.[0]?.expression).toBe('{{1..10}}');
+			expect(result.template?.shared?.variables?.[0]?.expression).toBe('1..10');
 		});
 
 		it('should detect shared solution when 1 solutionss for multiple variations', () => {

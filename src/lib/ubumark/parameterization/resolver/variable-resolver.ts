@@ -21,6 +21,7 @@ import { tokenize } from '../parser/tokenizer';
 import { parseVariableReference } from '../parser/variable-parser';
 import { parseRandomSpec } from '../parser/random-parser';
 import { parseEvalExpressionWithModifiers } from '../parser/eval-parser';
+import { normalizeExpression } from '../parser/expression-normalizer';
 import { generateRandomNumber } from './random-generator';
 import { evaluateWithModifiers } from '$lib/mathAST/eval';
 
@@ -167,7 +168,8 @@ export function resolveExpression(
 	alreadyResolved: ResolvedVariable[],
 	seed: number | undefined
 ): string {
-	let result = expression;
+	// Normalize simplified syntax to legacy {{...}} syntax
+	let result = normalizeExpression(expression);
 
 	// STAGE 1: Replace variable references {{name}}
 	const variableTokens = tokenize(result).filter((t) => t.type === 'variable');
