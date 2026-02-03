@@ -168,8 +168,25 @@ export function resolveExpression(
 	alreadyResolved: ResolvedVariable[],
 	seed: number | undefined
 ): string {
+	// Check if this is an explicit text literal (text:...) BEFORE normalization
+	// Text literals should NOT have variable substitution applied
+	const isTextLiteral = expression.trim().startsWith('text:');
+
 	// Normalize simplified syntax to legacy {{...}} syntax
 	let result = normalizeExpression(expression);
+
+	// STAGE 0: If no {{...}} tokens, apply bare variable name substitution
+	// This allows expressions like "a^b*a^c" to work without explicit {{}}
+	// Skip for text literals (text:x should remain literal 'x', not resolve variable x)
+	if (!result.includes('{{') && !isTextLiteral) {
+		for (const resolvedVar of alreadyResolved) {
+			// Use word boundary to avoid partial replacements
+			// e.g., don't replace 'a' in 'tan' or 'max'
+			const regex = new RegExp(`\\b${resolvedVar.name}\\b`, 'g');
+			result = result.replace(regex, resolvedVar.value);
+		}
+		return result;
+	}
 
 	// STAGE 1: Replace variable references {{name}}
 	const variableTokens = tokenize(result).filter((t) => t.type === 'variable');

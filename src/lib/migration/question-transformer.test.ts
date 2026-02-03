@@ -60,11 +60,11 @@ describe('Question Transformer', () => {
 					name: 'b',
 					expression: '1..10'
 				});
-				// Expression is extracted as a separate variable
-				// Expressions stay in custom mathAST syntax (with spaces preserved)
+				// Expression is extracted as a separate variable with bare variable names
+				// (no {{}} around variable references - resolver handles substitution)
 				expect(variation?.variables?.[2]).toEqual({
 					name: 'expression1',
-					expression: '{{a}} + {{b}}'
+					expression: 'a + b'
 				});
 				// Statement references the expression variable
 				expect(String(variation?.statement)).toContain('$${{expression1}}$$');

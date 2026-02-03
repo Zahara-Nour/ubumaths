@@ -59,7 +59,12 @@ import {
 	detectQuestionType as detectOldQuestionType
 } from './old-question-types';
 
-import { convertTinyCASToNew, fixMathDelimiters, toSimplifiedSyntax } from './syntax-converter';
+import {
+	convertTinyCASToNew,
+	fixMathDelimiters,
+	toSimplifiedSyntax,
+	toBareVariableSyntax
+} from './syntax-converter';
 import { convertPlaceholders } from './placeholder-converter';
 import { convertConditionals } from './conditional-converter';
 // Note: No AsciiMath→LaTeX conversion here. Variables use custom mathAST syntax.
@@ -418,10 +423,10 @@ function convertStatement(
 
 		if (!conversionResult.success) {
 			warnings.push(`Failed to convert expression: ${conversionResult.errors?.join(', ')}`);
-			// Still create variable with original expression, but simplify
+			// Still create variable with original expression, convert to bare syntax
 			expressionVariable = {
 				name: varName,
-				expression: toSimplifiedSyntax(expression)
+				expression: toBareVariableSyntax(toSimplifiedSyntax(expression))
 			};
 		} else {
 			if (conversionResult.warnings) {
@@ -431,12 +436,13 @@ function convertStatement(
 			// LaTeX conversion happens at instantiation when inside $...$
 			const afterTinyCAS = conversionResult.converted || expression;
 
-			// Convert to simplified syntax (remove outer {{}} for variable expressions)
-			const simplified = toSimplifiedSyntax(afterTinyCAS);
+			// Convert to bare variable syntax: {{a}}^{{b}} → a^b
+			// The resolver handles bare variable name substitution automatically
+			const bareExpr = toBareVariableSyntax(toSimplifiedSyntax(afterTinyCAS));
 
 			expressionVariable = {
 				name: varName,
-				expression: simplified
+				expression: bareExpr
 			};
 		}
 
