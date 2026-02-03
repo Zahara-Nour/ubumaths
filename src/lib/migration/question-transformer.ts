@@ -330,10 +330,10 @@ function convertVariables(
 			warnings.push(
 				`Failed to convert variable ${varName}: ${conversionResult.errors?.join(', ')}`
 			);
-			// Use original expression as fallback
+			// Use original expression as fallback, but still simplify
 			variables.push({
 				name,
-				expression
+				expression: toSimplifiedSyntax(expression)
 			});
 		} else {
 			if (conversionResult.warnings) {
@@ -418,10 +418,10 @@ function convertStatement(
 
 		if (!conversionResult.success) {
 			warnings.push(`Failed to convert expression: ${conversionResult.errors?.join(', ')}`);
-			// Still create variable with original expression
+			// Still create variable with original expression, but simplify
 			expressionVariable = {
 				name: varName,
-				expression: expression
+				expression: toSimplifiedSyntax(expression)
 			};
 		} else {
 			if (conversionResult.warnings) {
