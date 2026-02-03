@@ -215,7 +215,7 @@ export function resolveExpression(
 	for (let i = digitsTokens.length - 1; i >= 0; i--) {
 		const token = digitsTokens[i];
 		try {
-			const generatedValue = generateDigitsNumber(token.inner, seed);
+			const generatedValue = generateDigitsNumber(token.inner, alreadyResolved, seed);
 			result = result.slice(0, token.start) + String(generatedValue) + result.slice(token.end);
 		} catch (error) {
 			throw new Error(
@@ -289,34 +289,56 @@ export function resolveExpression(
 /**
  * Generate an n-digit number from a digits specification
  *
- * @param spec - Digits specification: "1" (1 digit), "2" (2 digits), "1..3" (1 to 3 digits)
+ * Supports both numeric literals and variable references for digit counts.
+ *
+ * @param spec - Digits specification:
+ *   - "1" (1 digit: 1-9)
+ *   - "2" (2 digits: 10-99)
+ *   - "1..3" (1 to 3 digits: 1-999)
+ *   - "a..b" (variable bounds)
+ *   - "{{min}}..{{max}}" (explicit variable syntax)
+ * @param alreadyResolved - Variables already resolved for variable lookups
  * @param seed - Optional seed for reproducible random generation
  * @returns Generated number
  *
- * @example
- * generateDigitsNumber('1', 12345)  // 1-9 (single digit)
- * generateDigitsNumber('2', 12345)  // 10-99 (two digits)
- * generateDigitsNumber('1..3', 12345)  // 1-999 (1 to 3 digits)
+ * @example Numeric specs
+ * generateDigitsNumber('1', [], 12345)  // 1-9 (single digit)
+ * generateDigitsNumber('2', [], 12345)  // 10-99 (two digits)
+ * generateDigitsNumber('1..3', [], 12345)  // 1-999 (1 to 3 digits)
+ *
+ * @example Variable bounds
+ * generateDigitsNumber('a..b', [{name:'a',value:'1'},{name:'b',value:'3'}], 12345)  // 1-999
  */
-function generateDigitsNumber(spec: string, seed: number | undefined): number {
-	// Parse the spec: "1", "2", "1..3"
-	const rangeMatch = spec.match(/^(\d+)\.\.(\d+)$/);
-
+function generateDigitsNumber(
+	spec: string,
+	alreadyResolved: ResolvedVariable[],
+	seed: number | undefined
+): number {
 	let minDigits: number;
 	let maxDigits: number;
 
-	if (rangeMatch) {
-		// Range: "1..3"
-		minDigits = parseInt(rangeMatch[1], 10);
-		maxDigits = parseInt(rangeMatch[2], 10);
+	// Check for range separator (..)
+	const rangeSeparatorIndex = spec.indexOf('..');
+	if (rangeSeparatorIndex !== -1) {
+		// Range: "1..3" or "a..b" or "{{min}}..{{max}}"
+		const minStr = spec.substring(0, rangeSeparatorIndex).trim();
+		const maxStr = spec.substring(rangeSeparatorIndex + 2).trim();
+
+		minDigits = resolveDigitValue(minStr, alreadyResolved);
+		maxDigits = resolveDigitValue(maxStr, alreadyResolved);
 	} else {
-		// Single value: "1", "2"
-		const digits = parseInt(spec, 10);
-		if (isNaN(digits)) {
-			throw new Error(`Invalid digits specification: ${spec}`);
-		}
+		// Single value: "1", "2", "a"
+		const digits = resolveDigitValue(spec.trim(), alreadyResolved);
 		minDigits = digits;
 		maxDigits = digits;
+	}
+
+	// Validate
+	if (minDigits < 0 || maxDigits < 0) {
+		throw new Error(`Digit count must be non-negative: ${spec}`);
+	}
+	if (minDigits > maxDigits) {
+		throw new Error(`Invalid digits range: min (${minDigits}) > max (${maxDigits})`);
 	}
 
 	// Calculate min and max values for the digit range
@@ -346,4 +368,48 @@ function generateDigitsNumber(spec: string, seed: number | undefined): number {
 	}
 
 	return randomValue;
+}
+
+/**
+ * Resolve a digit value from string (number literal or variable reference)
+ *
+ * @param str - Value string: "1", "a", "{{min}}"
+ * @param alreadyResolved - Variables to look up
+ * @returns Resolved numeric value
+ */
+function resolveDigitValue(str: string, alreadyResolved: ResolvedVariable[]): number {
+	// Case 1: Explicit variable syntax {{varName}}
+	if (str.startsWith('{{') && str.endsWith('}}')) {
+		const varName = str.slice(2, -2);
+		const resolvedVar = alreadyResolved.find((v) => v.name === varName);
+		if (!resolvedVar) {
+			throw new Error(`Variable "${varName}" not found in digits specification`);
+		}
+		const num = parseInt(resolvedVar.value, 10);
+		if (isNaN(num)) {
+			throw new Error(`Variable "${varName}" has non-numeric value: ${resolvedVar.value}`);
+		}
+		return num;
+	}
+
+	// Case 2: Numeric literal
+	const num = parseInt(str, 10);
+	if (!isNaN(num)) {
+		return num;
+	}
+
+	// Case 3: Bare variable name (starts with letter or underscore)
+	if (/^[a-zA-Z_]\w*$/.test(str)) {
+		const resolvedVar = alreadyResolved.find((v) => v.name === str);
+		if (!resolvedVar) {
+			throw new Error(`Variable "${str}" not found in digits specification`);
+		}
+		const varNum = parseInt(resolvedVar.value, 10);
+		if (isNaN(varNum)) {
+			throw new Error(`Variable "${str}" has non-numeric value: ${resolvedVar.value}`);
+		}
+		return varNum;
+	}
+
+	throw new Error(`Invalid digit value: ${str}`);
 }

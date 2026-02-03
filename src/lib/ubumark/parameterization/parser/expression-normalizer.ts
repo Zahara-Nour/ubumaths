@@ -49,17 +49,18 @@ export function detectExpressionType(expression: string): ExpressionType {
 		return 'text-literal';
 	}
 
+	// Explicit prefixes take priority - these may contain {{}} for variable refs
+	// e.g., digits:{{n}}..{{m}} should be wrapped as {{digits:{{n}}..{{m}}}}
+	if (trimmed.startsWith('eval:')) return 'eval';
+	if (trimmed.startsWith('text:')) return 'text-literal';
+	if (trimmed.startsWith('random:')) return 'random';
+	if (trimmed.startsWith('digits:')) return 'digits';
+
 	// Contains any {{...}} tokens - already has legacy syntax, pass through
 	// This handles both fully wrapped ({{1..10}}) and mixed (Value is {{a}})
 	if (trimmed.includes('{{') && trimmed.includes('}}')) {
 		return 'already-wrapped';
 	}
-
-	// Explicit prefixes
-	if (trimmed.startsWith('eval:')) return 'eval';
-	if (trimmed.startsWith('text:')) return 'text-literal';
-	if (trimmed.startsWith('random:')) return 'random';
-	if (trimmed.startsWith('digits:')) return 'digits';
 
 	// Discrete list (contains | at top level, not inside braces/parens)
 	if (hasTopLevelPipe(trimmed)) return 'discrete-list';

@@ -37,6 +37,7 @@ Variable definitions use a **simplified syntax** without `{{...}}`:
 | `random:2.3`        | decimal by digits  | 2 digits.3 decimals          |
 | `digits:2`          | n-digit number     | 2-digit number (10-99)       |
 | `digits:1..3`       | n to m digits      | 1-3 digit number (1-999)     |
+| `digits:a..b`       | digits var bounds  | Digits range with variables  |
 | `rouge\|vert\|bleu` | discrete list      | Random choice from list      |
 | `eval:a+b`          | expression         | Computed value               |
 | `text:hello`        | text literal       | Literal text (strips prefix) |

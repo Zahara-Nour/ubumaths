@@ -372,19 +372,20 @@ The sum is {{eval:{{a}}+{{b}}}}.
 
 #### Syntax Summary
 
-| Expression Type | In Variable Definitions | In Text Templates       |
-| --------------- | ----------------------- | ----------------------- |
-| Integer range   | `1..10`                 | `{{1..10}}`             |
-| With exclusion  | `1..10!5`               | `{{1..10!5}}`           |
-| Relative (±)    | `2..9;+-`               | `{{2..9;+-}}`           |
-| Decimal digits  | `random:2.3`            | `{{random:2.3}}`        |
-| Decimal range   | `0.5..2:0.25`           | `{{0.5..2:0.25}}`       |
-| N-digit number  | `digits:2`              | `{{digits:2}}`          |
-| N-M digits      | `digits:1..3`           | `{{digits:1..3}}`       |
-| Discrete list   | `rouge\|vert\|bleu`     | `{{rouge\|vert\|bleu}}` |
-| Eval            | `eval:a+b`              | `{{eval:a+b}}`          |
-| Variable ref    | `a`                     | `{{a}}`                 |
-| Text literal    | `text:hello`            | (just use `hello`)      |
+| Expression Type   | In Variable Definitions | In Text Templates         |
+| ----------------- | ----------------------- | ------------------------- |
+| Integer range     | `1..10`                 | `{{1..10}}`               |
+| With exclusion    | `1..10!5`               | `{{1..10!5}}`             |
+| Relative (±)      | `2..9;+-`               | `{{2..9;+-}}`             |
+| Decimal digits    | `random:2.3`            | `{{random:2.3}}`          |
+| Decimal range     | `0.5..2:0.25`           | `{{0.5..2:0.25}}`         |
+| N-digit number    | `digits:2`              | `{{digits:2}}`            |
+| N-M digits        | `digits:1..3`           | `{{digits:1..3}}`         |
+| Digits var bounds | `digits:a..b`           | `{{digits:{{a}}..{{b}}}}` |
+| Discrete list     | `rouge\|vert\|bleu`     | `{{rouge\|vert\|bleu}}`   |
+| Eval              | `eval:a+b`              | `{{eval:a+b}}`            |
+| Variable ref      | `a`                     | `{{a}}`                   |
+| Text literal      | `text:hello`            | (just use `hello`)        |
 
 See [parameterization.md](./parameterization.md) for complete reference.
 
