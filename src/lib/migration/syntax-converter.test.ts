@@ -170,15 +170,15 @@ describe('TinyCAS Syntax Converter', () => {
 
 	describe('2c. Decimal Pattern Tests', () => {
 		it('should convert simple decimal patterns', () => {
-			expectConversion('$d{1;1}', '{{1.1}}');
-			expectConversion('$d{2;3}', '{{2.3}}');
-			expectConversion('$d{0;2}', '{{0.2}}');
+			expectConversion('$d{1;1}', '{{digits:1.1}}');
+			expectConversion('$d{2;3}', '{{digits:2.3}}');
+			expectConversion('$d{0;2}', '{{digits:0.2}}');
 		});
 
 		it('should convert decimal patterns with variables', () => {
 			// Variables are converted first, so we need to test with already-converted vars
 			const result = convertTinyCASToNew('$d{&1;&2}');
-			expect(result.converted).toBe('{{{{a}}.{{b}}}}');
+			expect(result.converted).toBe('{{digits:{{a}}.{{b}}}}');
 			expect(result.stats?.decimals).toBe(1);
 			expect(result.stats?.variableRefs).toBe(2);
 		});
@@ -189,8 +189,8 @@ describe('TinyCAS Syntax Converter', () => {
 			const result = convertTinyCASToNew('$d{$e[1;2];$e[0;2]}');
 			expect(result.success).toBe(true);
 			expect(result.warnings?.some((w) => w.includes('unexpected format'))).toBe(true);
-			// Falls back to {{decimal:...}} format
-			expect(result.converted).toBe('{{decimal:{{1..2}};{{0..2}}}}');
+			// Falls back to {{digits:...}} format
+			expect(result.converted).toBe('{{digits:{{1..2}};{{0..2}}}}');
 		});
 
 		it('should track statistics for decimals', () => {
@@ -201,9 +201,9 @@ describe('TinyCAS Syntax Converter', () => {
 
 	describe('3. N-Digit Random Numbers Tests', () => {
 		it('should convert 1-digit numbers', () => {
-			// The converter doesn't handle 1-digit specially, it uses custom pattern
+			// The converter doesn't handle 1-digit specially, it uses digits:n format
 			const result = convertTinyCASToNew('$e{1;1}');
-			expect(result.converted).toBe('{{1.0}}');
+			expect(result.converted).toBe('{{digits:1}}');
 			expectWarning('$e{1;1}', 'verify range is correct');
 		});
 
@@ -231,7 +231,7 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should handle 6+ digit numbers with warning', () => {
 			const result = convertTinyCASToNew('$e{6;6}');
-			expect(result.converted).toBe('{{6.0}}');
+			expect(result.converted).toBe('{{digits:6}}');
 			expectWarning('$e{6;6}', 'verify range is correct');
 		});
 
@@ -476,7 +476,7 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should convert decimal patterns (previously unsupported)', () => {
 			const decimal = convertTinyCASToNew('$d{1;2}');
 			expect(decimal.success).toBe(true);
-			expect(decimal.converted).toBe('{{1.2}}');
+			expect(decimal.converted).toBe('{{digits:1.2}}');
 			expect(decimal.stats?.decimals).toBe(1);
 		});
 
@@ -619,7 +619,7 @@ describe('TinyCAS Syntax Converter', () => {
 			expect(results[0].success).toBe(true); // Valid random integer
 			expect(results[1].success).toBe(false); // Empty
 			expect(results[2].success).toBe(true); // Valid decimal pattern
-			expect(results[2].converted).toBe('{{1.2}}');
+			expect(results[2].converted).toBe('{{digits:1.2}}');
 		});
 	});
 
