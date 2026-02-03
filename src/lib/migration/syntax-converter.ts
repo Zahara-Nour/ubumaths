@@ -733,6 +733,70 @@ export function validateConversion(original: string, converted: string): boolean
 // MATH DELIMITER FIXER
 // ============================================================================
 
+// ============================================================================
+// SIMPLIFIED SYNTAX CONVERTER (for variable expressions)
+// ============================================================================
+
+/**
+ * Convert legacy {{...}} syntax to simplified syntax for variable expressions.
+ *
+ * This is used ONLY for variable definitions (QuestionVariable.expression),
+ * NOT for text templates where {{...}} is still required for variable references.
+ *
+ * Conversions:
+ * - {{1..10}} → 1..10
+ * - {{1..10!5}} → 1..10!5
+ * - {{2..9;±}} → 2..9;+-
+ * - {{1.2}} → random:1.2 (decimal by digits needs prefix for clarity)
+ * - {{eval:a+b}} → eval:a+b
+ * - {{rouge|vert|bleu}} → rouge|vert|bleu
+ * - {{a}} → a (single variable reference)
+ * - {{if:...}} → {{if:...}} (kept as-is, not in simplified syntax)
+ * - {{color:...}} → {{color:...}} (kept as-is, not in simplified syntax)
+ *
+ * @param legacySyntax - Expression in {{...}} format
+ * @returns Expression in simplified format
+ */
+export function toSimplifiedSyntax(legacySyntax: string): string {
+	const trimmed = legacySyntax.trim();
+
+	// If it doesn't contain {{, return as-is (already simple or literal)
+	if (!trimmed.includes('{{')) {
+		return legacySyntax;
+	}
+
+	// Check if it's a single {{...}} token (the whole expression is wrapped once)
+	// Use non-greedy match and ensure no nested {{ or }} inside
+	const singleTokenMatch = trimmed.match(/^\{\{([^{}]+)\}\}$/);
+	if (singleTokenMatch) {
+		const content = singleTokenMatch[1];
+
+		// Keep special prefixes that aren't in simplified syntax
+		if (
+			content.startsWith('if:') ||
+			content.startsWith('color:') ||
+			content.startsWith('digits:')
+		) {
+			return legacySyntax;
+		}
+
+		// Convert ± to +- for sign modifier
+		let simplified = content.replace(/±/g, '+-');
+
+		// Add random: prefix for decimal-by-digits pattern (e.g., "1.2" meaning 1 digit before, 2 after)
+		// This distinguishes it from a numeric literal like "1.2"
+		if (/^\d+\.\d+$/.test(simplified) && !simplified.includes('..')) {
+			simplified = `random:${simplified}`;
+		}
+
+		return simplified;
+	}
+
+	// Multiple tokens or mixed content - more complex case
+	// For now, return as-is (these are rare in variable expressions)
+	return legacySyntax;
+}
+
 /**
  * Fix math delimiters: convert $$...$$ to $...$ when used inline.
  *

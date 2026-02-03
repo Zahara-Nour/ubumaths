@@ -7,7 +7,12 @@
  * 2. Random generation
  * 3. Eval expressions
  *
- * All tests use Markdown syntax ({{var}}, {{random:1..10}}, {{eval:expr}})
+ * Supports both syntaxes:
+ * - Legacy: {{random:1..10}}, {{eval:a+b}}, {{var}}
+ * - Simplified: 1..10, eval:a+b, rouge|vert|bleu
+ *
+ * Note: Variable references ({{var}}) still require {{}} as single
+ * identifiers are ambiguous (could be literal math expression).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -635,7 +640,7 @@ describe('resolveVariables', () => {
 			const variables: Variable[] = [
 				{
 					name: 'expr',
-					expression: 'x', // No null terms to remove
+					expression: 'text:x', // Use text: prefix for literal math expression
 					displayOptions: { removeNullTerms: true }
 				}
 			];
@@ -687,6 +692,203 @@ describe('resolveVariables', () => {
 			const results = Array.from({ length: 10 }, () => resolveVariables(variables));
 			const hasTransformed = results.some((r) => r[0].displayValue !== undefined);
 			expect(hasTransformed).toBe(true);
+		});
+	});
+
+	// ============================================================================
+	// SIMPLIFIED SYNTAX (NEW)
+	// ============================================================================
+
+	describe('Simplified syntax', () => {
+		describe('Random (without {{}})', () => {
+			it('should generate random from simplified range', () => {
+				const variables: Variable[] = [{ name: 'rand', expression: '1..10' }];
+				const resolved = resolveVariables(variables, 42);
+				const value = parseInt(resolved[0].value);
+				expect(value).toBeGreaterThanOrEqual(1);
+				expect(value).toBeLessThanOrEqual(10);
+			});
+
+			it('should handle range with sign modifier', () => {
+				const variables: Variable[] = [{ name: 'rand', expression: '2..9;+-' }];
+				const resolved = resolveVariables(variables, 42);
+				const value = parseInt(resolved[0].value);
+				expect(Math.abs(value)).toBeGreaterThanOrEqual(2);
+				expect(Math.abs(value)).toBeLessThanOrEqual(9);
+			});
+
+			it('should handle decimal range', () => {
+				const variables: Variable[] = [{ name: 'rand', expression: '1.5..3.5;0.5' }];
+				const resolved = resolveVariables(variables, 42);
+				const value = parseFloat(resolved[0].value);
+				expect(value).toBeGreaterThanOrEqual(1.5);
+				expect(value).toBeLessThanOrEqual(3.5);
+			});
+
+			it('should handle random by digits with prefix', () => {
+				const variables: Variable[] = [{ name: 'rand', expression: 'random:2.3' }];
+				const resolved = resolveVariables(variables, 42);
+				const value = parseFloat(resolved[0].value);
+				expect(value).toBeGreaterThanOrEqual(10);
+				expect(value).toBeLessThan(100);
+				const decimals = resolved[0].value.split('.')[1];
+				expect(decimals).toHaveLength(3);
+			});
+
+			it('should handle exclusions', () => {
+				const variables: Variable[] = [{ name: 'rand', expression: '1..5!3' }];
+				const values = Array.from({ length: 100 }, (_, i) => {
+					const resolved = resolveVariables(variables, i);
+					return parseInt(resolved[0].value);
+				});
+				expect(values).not.toContain(3);
+			});
+		});
+
+		describe('Eval (without {{}})', () => {
+			it('should evaluate simplified eval expression', () => {
+				const variables: Variable[] = [{ name: 'result', expression: 'eval:5+3' }];
+				const resolved = resolveVariables(variables);
+				expect(resolved[0].value).toBe('8');
+			});
+
+			it('should evaluate with variable references in eval', () => {
+				const variables: Variable[] = [
+					{ name: 'a', expression: '5' },
+					{ name: 'b', expression: '10' },
+					{ name: 'sum', expression: 'eval:a+b' }
+				];
+				const resolved = resolveVariables(variables);
+				expect(resolved[2].value).toBe('15');
+			});
+
+			it('should evaluate complex expression', () => {
+				const variables: Variable[] = [{ name: 'result', expression: 'eval:(2+3)*4' }];
+				const resolved = resolveVariables(variables);
+				expect(resolved[0].value).toBe('20');
+			});
+		});
+
+		describe('Discrete list (without {{}})', () => {
+			it('should select from simplified discrete list', () => {
+				const variables: Variable[] = [{ name: 'color', expression: 'rouge|vert|bleu' }];
+				const resolved = resolveVariables(variables, 42);
+				expect(['rouge', 'vert', 'bleu']).toContain(resolved[0].value);
+			});
+
+			it('should handle operator list', () => {
+				const variables: Variable[] = [{ name: 'op', expression: '+|-' }];
+				const resolved = resolveVariables(variables, 42);
+				expect(['+', '-']).toContain(resolved[0].value);
+			});
+
+			it('should handle exclusions in list', () => {
+				const variables: Variable[] = [{ name: 'choice', expression: 'a|b|c|d!b,d' }];
+				const results = Array.from({ length: 50 }, (_, i) => resolveVariables(variables, i));
+				const values = results.map((r) => r[0].value);
+				expect(values.every((v) => ['a', 'c'].includes(v))).toBe(true);
+			});
+		});
+
+		describe('Text literal prefix', () => {
+			it('should strip text: prefix and use as literal', () => {
+				const variables: Variable[] = [{ name: 'msg', expression: 'text:hello world' }];
+				const resolved = resolveVariables(variables);
+				expect(resolved[0].value).toBe('hello world');
+			});
+
+			it('should preserve special characters after text: prefix', () => {
+				const variables: Variable[] = [{ name: 'latex', expression: 'text:x+y=z' }];
+				const resolved = resolveVariables(variables);
+				expect(resolved[0].value).toBe('x+y=z');
+			});
+		});
+
+		describe('Numeric literals', () => {
+			it('should keep integer literal unchanged', () => {
+				const variables: Variable[] = [{ name: 'n', expression: '42' }];
+				const resolved = resolveVariables(variables);
+				expect(resolved[0].value).toBe('42');
+			});
+
+			it('should keep negative number unchanged', () => {
+				const variables: Variable[] = [{ name: 'n', expression: '-5' }];
+				const resolved = resolveVariables(variables);
+				expect(resolved[0].value).toBe('-5');
+			});
+
+			it('should keep decimal unchanged', () => {
+				const variables: Variable[] = [{ name: 'n', expression: '3.14' }];
+				const resolved = resolveVariables(variables);
+				expect(resolved[0].value).toBe('3.14');
+			});
+		});
+
+		describe('Backward compatibility', () => {
+			it('should still accept legacy {{random:...}} syntax', () => {
+				const variables: Variable[] = [{ name: 'rand', expression: '{{random:1..10}}' }];
+				const resolved = resolveVariables(variables, 42);
+				const value = parseInt(resolved[0].value);
+				expect(value).toBeGreaterThanOrEqual(1);
+				expect(value).toBeLessThanOrEqual(10);
+			});
+
+			it('should still accept legacy {{eval:...}} syntax', () => {
+				const variables: Variable[] = [{ name: 'result', expression: '{{eval:5+3}}' }];
+				const resolved = resolveVariables(variables);
+				expect(resolved[0].value).toBe('8');
+			});
+
+			it('should still accept legacy {{...}} discrete list', () => {
+				const variables: Variable[] = [{ name: 'color', expression: '{{rouge|vert|bleu}}' }];
+				const resolved = resolveVariables(variables, 42);
+				expect(['rouge', 'vert', 'bleu']).toContain(resolved[0].value);
+			});
+
+			it('should resolve simplified variable reference', () => {
+				// 'x' alone is a variable reference (no {{}} needed)
+				const variables: Variable[] = [
+					{ name: 'x', expression: '5' },
+					{ name: 'ref', expression: 'x' }
+				];
+				const resolved = resolveVariables(variables);
+				expect(resolved[1].value).toBe('5'); // 'x' resolves to '5'
+			});
+
+			it('should use text: prefix for literal strings', () => {
+				const variables: Variable[] = [
+					{ name: 'x', expression: '5' },
+					{ name: 'literal', expression: 'text:x' }
+				];
+				const resolved = resolveVariables(variables);
+				expect(resolved[1].value).toBe('x'); // Literal 'x', not resolved
+			});
+		});
+
+		describe('Mixed syntax scenarios', () => {
+			it('should combine simplified random with variable reference in eval', () => {
+				const variables: Variable[] = [
+					{ name: 'a', expression: '1..10' },
+					{ name: 'b', expression: '1..10' },
+					{ name: 'sum', expression: 'eval:a+b' }
+				];
+				const resolved = resolveVariables(variables, 42);
+				const a = parseInt(resolved[0].value);
+				const b = parseInt(resolved[1].value);
+				const sum = parseInt(resolved[2].value);
+				expect(sum).toBe(a + b);
+			});
+
+			it('should combine discrete list with eval', () => {
+				const variables: Variable[] = [
+					{ name: 'op', expression: '+|-' },
+					{ name: 'result', expression: '{{eval:5{{op}}3}}' }
+				];
+				const results = Array.from({ length: 50 }, (_, i) => resolveVariables(variables, i));
+				const values = results.map((r) => r[1].value);
+				expect(values).toContain('8'); // 5+3
+				expect(values).toContain('2'); // 5-3
+			});
 		});
 	});
 });

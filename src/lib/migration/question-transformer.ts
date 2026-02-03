@@ -59,7 +59,7 @@ import {
 	detectQuestionType as detectOldQuestionType
 } from './old-question-types';
 
-import { convertTinyCASToNew, fixMathDelimiters } from './syntax-converter';
+import { convertTinyCASToNew, fixMathDelimiters, toSimplifiedSyntax } from './syntax-converter';
 import { convertPlaceholders } from './placeholder-converter';
 import { convertConditionals } from './conditional-converter';
 import { convertAsciiMathToLatexSafe } from './ascii-math-converter';
@@ -343,9 +343,12 @@ function convertVariables(
 			const afterTinyCAS = conversionResult.converted || expression;
 			const latexResult = convertAsciiMathToLatexSafe(afterTinyCAS);
 
+			// Convert to simplified syntax (remove outer {{}} for variable expressions)
+			const simplified = toSimplifiedSyntax(latexResult.converted);
+
 			variables.push({
 				name,
-				expression: latexResult.converted
+				expression: simplified
 			});
 		}
 	}
@@ -428,9 +431,12 @@ function convertStatement(
 			const latexResult = convertAsciiMathToLatexSafe(afterTinyCAS);
 			stats.asciiMathConverted++;
 
+			// Convert to simplified syntax (remove outer {{}} for variable expressions)
+			const simplified = toSimplifiedSyntax(latexResult.converted);
+
 			expressionVariable = {
 				name: varName,
-				expression: latexResult.converted
+				expression: simplified
 			};
 		}
 
