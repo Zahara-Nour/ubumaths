@@ -331,36 +331,56 @@ The tilde \~ is escaped.
 
 ### Parameterization Tokens
 
-Variables and expressions within `{{...}}`:
+The parameterization system supports two contexts with different syntax:
 
-#### Variable References
+#### 1. Variable Definitions (Simplified Syntax)
+
+In variable definitions, use **simplified syntax** without `{{...}}`:
+
+```typescript
+const variables = [
+	{ name: 'a', expression: '1..10' }, // Integer 1-10
+	{ name: 'b', expression: '-5..5' }, // Integer -5 to 5
+	{ name: 'c', expression: '1..10!5' }, // 1-10 excluding 5
+	{ name: 'd', expression: '2..9;+-' }, // {-9..-2} ∪ {2..9}
+	{ name: 'e', expression: 'random:2.3' }, // Decimal: 2 digits.3 decimals
+	{ name: 'f', expression: '1..1.5' }, // Decimal range (step=0.1)
+	{ name: 'sum', expression: 'eval:{{a}}+{{b}}' }, // Computed expression
+	{ name: 'color', expression: 'rouge|vert|bleu' }, // Discrete list
+	{ name: 'ref', expression: 'a' }, // Variable reference
+	{ name: 'literal', expression: 'text:hello' } // Text literal
+];
+```
+
+#### 2. Text Templates ({{...}} Syntax)
+
+In text templates, `{{...}}` is **required** for variable references:
 
 ```markdown
 The value is {{a}}.
+
+<!-- Inline random in text (rare) -->
+
+Random value: {{1..10}}
+
+<!-- Inline eval in text -->
+
+The sum is {{eval:{{a}}+{{b}}}}.
 ```
 
-#### Random Numbers
+#### Syntax Summary
 
-```markdown
-{{1..10}} <!-- Integer 1-10 -->
-{{-5..5}} <!-- Integer -5 to 5 -->
-{{1..10!5}} <!-- 1-10 excluding 5 -->
-{{1..10!3..5}} <!-- 1-10 excluding 3,4,5 -->
-{{2..9;+/-}} <!-- {-9..-2} U {2..9} -->
-{{2.3}} <!-- Decimal: 2 digits.3 decimals -->
-{{1..1.5}} <!-- Decimal range (step=0.1) -->
-{{0.5..2:0.25}} <!-- Decimal range with step -->
-```
-
-#### Expression Evaluation
-
-```markdown
-{{eval:a+b}} <!-- Simple expression -->
-{{eval:a*b|d}} <!-- Force decimal output -->
-{{eval:x|+}} <!-- Add + sign for positive -->
-{{eval:x|()}} <!-- Bracket negative values -->
-{{eval:1/3|d,+,()}} <!-- Multiple modifiers -->
-```
+| Expression Type | In Variable Definitions | In Text Templates       |
+| --------------- | ----------------------- | ----------------------- |
+| Integer range   | `1..10`                 | `{{1..10}}`             |
+| With exclusion  | `1..10!5`               | `{{1..10!5}}`           |
+| Relative (±)    | `2..9;+-`               | `{{2..9;+-}}`           |
+| Decimal digits  | `random:2.3`            | `{{random:2.3}}`        |
+| Decimal range   | `0.5..2:0.25`           | `{{0.5..2:0.25}}`       |
+| Discrete list   | `rouge\|vert\|bleu`     | `{{rouge\|vert\|bleu}}` |
+| Eval            | `eval:a+b`              | `{{eval:a+b}}`          |
+| Variable ref    | `a`                     | `{{a}}`                 |
+| Text literal    | `text:hello`            | (just use `hello`)      |
 
 See [parameterization.md](./parameterization.md) for complete reference.
 
@@ -511,6 +531,20 @@ Ubumark is based on GitHub Flavored Markdown (GFM) with extensions:
 
 ### Complete Exercise
 
+**Variable definitions** (simplified syntax):
+
+```typescript
+const variables = [
+	{ name: 'a', expression: '1..10' },
+	{ name: 'b', expression: '1..10' },
+	{ name: 'sum', expression: 'eval:{{a}}+{{b}}' },
+	{ name: 'product', expression: 'eval:{{a}}*{{b}}' },
+	{ name: 'quotient', expression: 'eval:{{a}}/{{b}};d' }
+];
+```
+
+**Text template** ({{...}} required for references):
+
 ```markdown
 # Exercice 1 : Calcul algébrique
 
@@ -530,9 +564,9 @@ $$
 
 **Solution** :
 
-1. $a + b = {{eval:a+b}}$
-2. $a \times b = {{eval:a*b}}$
-3. $\frac{a}{b} = {{eval:a/b|d}}$
+1. $a + b = {{sum}}$
+2. $a \times b = {{product}}$
+3. $\frac{a}{b} = {{quotient}}$
 ```
 
 ### With Variation Table

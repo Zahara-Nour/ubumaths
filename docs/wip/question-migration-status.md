@@ -1,4 +1,4 @@
-# Question System Migration - Status January 2026
+# Question System Migration - Status February 2026
 
 ## Overview
 
@@ -117,17 +117,29 @@ Current columns:
 
 ### Variable Syntax (ubumark)
 
-The current parser (`src/lib/ubumark/parameterization/`) supports:
+The current parser (`src/lib/ubumark/parameterization/`) supports **simplified syntax** in variable definitions:
 
-| Syntax                     | Description                | Example                |
-| -------------------------- | -------------------------- | ---------------------- |
-| `{{varName}}`              | Variable reference         | `{{a}}`, `{{sum}}`     |
-| `{{random:min..max}}`      | Random integer             | `{{random:1..10}}`     |
-| `{{min..max}}`             | Random integer (shorthand) | `{{1..10}}`            |
-| `{{random:min..max!excl}}` | With exclusions            | `{{random:1..10!5,7}}` |
-| `{{random:n.m}}`           | Decimal by digits          | `{{random:2.3}}`       |
-| `{{eval:expr}}`            | Expression evaluation      | `{{eval:a+b}}`         |
-| `{{blank:N}}`              | Fill-in-blank placeholder  | `{{blank:1}}`          |
+| Expression (in definitions) | Description        | Example             |
+| --------------------------- | ------------------ | ------------------- |
+| `min..max`                  | Random integer     | `1..10`             |
+| `min..max!excl`             | With exclusions    | `1..10!5,7`         |
+| `min..max;+-`               | Relative integer   | `2..9;+-`           |
+| `random:n.m`                | Decimal by digits  | `random:2.3`        |
+| `min..max:step`             | Decimal range      | `0.5..2:0.25`       |
+| `a\|b\|c`                   | Discrete list      | `rouge\|vert\|bleu` |
+| `eval:expr`                 | Expression         | `eval:a+b`          |
+| `varName`                   | Variable reference | `a`, `sum`          |
+| `text:value`                | Text literal       | `text:hello`        |
+| `42`                        | Numeric literal    | `42`, `3.14`        |
+
+**In text templates**, `{{...}}` is still required:
+
+| Syntax (in templates) | Description   | Example            |
+| --------------------- | ------------- | ------------------ |
+| `{{varName}}`         | Variable ref  | `{{a}}`, `{{sum}}` |
+| `{{min..max}}`        | Inline random | `{{1..10}}`        |
+| `{{eval:expr}}`       | Inline eval   | `{{eval:a+b}}`     |
+| `{{blank:N}}`         | Fill-in-blank | `{{blank:1}}`      |
 
 **NOT SUPPORTED** (legacy syntax):
 
@@ -341,6 +353,7 @@ pnpm migrate:phase1:validate
 | 2026-01-26 | Fix math delimiters (inline vs display) | TinyMath used `$$` everywhere, ubumark needs `$` for inline |
 | 2026-01-27 | Complete image migration                | All 254 images uploaded to new Supabase Storage bucket      |
 | 2026-01-27 | Integrate image URL mapping             | Transformer now converts old paths to new Storage URLs      |
+| 2026-02-03 | Simplified expression syntax            | `{{1..10}}` → `1..10` in variable definitions, cleaner code |
 
 ---
 
@@ -467,6 +480,28 @@ The 8 questions with "custom validation" warnings are **not blocked** - they use
 
 ## Transformation Phases (Detailed History)
 
+### Phase 17: Simplified Expression Syntax ✅
+
+**Problème résolu** : La syntaxe `{{...}}` dans les définitions de variables était verbeuse et redondante.
+
+**Solution** : Nouvelle syntaxe simplifiée dans les définitions de variables :
+
+| Before                       | After                    |
+| ---------------------------- | ------------------------ | ------------------- | ------ |
+| `expression: '{{1..10}}'`    | `expression: '1..10'`    |
+| `expression: '{{eval:a+b}}'` | `expression: 'eval:a+b'` |
+| `expression: '{{a}}'`        | `expression: 'a'`        |
+| `expression: '{{rouge        | vert}}'`                 | `expression: 'rouge | vert'` |
+
+**Fichiers créés/modifiés** :
+
+- `src/lib/ubumark/parameterization/parser/expression-normalizer.ts` - NEW
+- `src/lib/ubumark/parameterization/resolver/variable-resolver.ts` - Intégration normalizer
+- `src/lib/migration/syntax-converter.ts` - `toSimplifiedSyntax()`
+- `src/lib/migration/question-transformer.ts` - Génère syntaxe simplifiée
+
+**Note** : `{{...}}` reste obligatoire dans les templates texte (`"Calcule ${{a}}$"`).
+
 ### Phase 16: Complete Image Migration ✅
 
 **Problème résolu** : 40 images (tableau-de-signe) manquantes dans la première migration, et le mapping d'URLs n'était pas intégré dans le pipeline de transformation.
@@ -495,13 +530,17 @@ The 8 questions with "custom validation" warnings are **not blocked** - they use
 
 `isCorrect` n'est plus stocké statiquement - calculé à runtime depuis `solution`.
 
-### Phase 13: Simplified syntax for alphanumeric variables ✅
+### Phase 13: Simplified syntax for alphanumeric variables in expressions ✅
+
+Simplification des références de variables **à l'intérieur** des expressions `{{eval:...}}` et `{{if:...}}` :
 
 | Context        | Before                 | After            |
 | -------------- | ---------------------- | ---------------- |
 | `{{eval:...}}` | `{{eval:{{a}}+{{b}}}}` | `{{eval:a+b}}`   |
 | `{{if:...}}`   | `{{if:{{a}}>0\|..}}`   | `{{if:a>0\|..}}` |
 | Exclusions     | `{{1..10!{{a}}}}`      | `{{1..10!a}}`    |
+
+**Note** : Phase 17 va plus loin en supprimant `{{}}` des définitions de variables elles-mêmes.
 
 ### Phase 12: Convert numeric variable names to letters ✅
 
@@ -552,6 +591,20 @@ Champ `answer` renommé en `solution` partout.
 ---
 
 ## Files Modified (by Phase)
+
+### Phase 17
+
+- `src/lib/ubumark/parameterization/parser/expression-normalizer.ts` - NEW
+- `src/lib/ubumark/__tests__/parameterization/parser/expression-normalizer.test.ts` - NEW
+- `src/lib/ubumark/parameterization/resolver/variable-resolver.ts` - Normalizer integration
+- `src/lib/ubumark/__tests__/parameterization/resolver/variable-resolver.test.ts` - Updated tests
+- `src/lib/ubumark/parameterization/index.ts` - Export normalizer
+- `src/lib/migration/syntax-converter.ts` - `toSimplifiedSyntax()` function
+- `src/lib/migration/question-transformer.ts` - Generate simplified syntax
+- `src/lib/migration/question-transformer.test.ts` - Updated assertions
+- `docs/ref/ubumark/parameterization.md` - Updated documentation
+- `docs/ref/ubumark/syntax.md` - Updated documentation
+- `docs/wip/simplified-expression-syntax-migration.md` - NEW
 
 ### Phase 16
 

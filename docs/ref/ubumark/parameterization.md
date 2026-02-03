@@ -20,14 +20,33 @@
 
 The parameterization system enables dynamic content generation through:
 
-1. **Variable References** - `{{varName}}` substitution
-2. **Random Generation** - `{{1..10}}` numerical values
-3. **Expression Evaluation** - `{{eval:a+b}}` computed results
+1. **Variable References** - `{{varName}}` substitution in text
+2. **Random Generation** - `1..10` numerical values
+3. **Expression Evaluation** - `eval:a+b` computed results
+
+### Simplified Syntax (Variable Definitions)
+
+Variable definitions use a **simplified syntax** without `{{...}}`:
+
+| Expression          | Type               | Description                  |
+| ------------------- | ------------------ | ---------------------------- |
+| `1..10`             | random integer     | Integer from 1 to 10         |
+| `min..max`          | random bounds      | Range using variable bounds  |
+| `2..9;+-`           | relative random    | Non-zero: {-9..-2} ∪ {2..9}  |
+| `1.5..9.5`          | decimal range      | Decimal with auto-step       |
+| `random:2.3`        | decimal by digits  | 2 digits.3 decimals          |
+| `rouge\|vert\|bleu` | discrete list      | Random choice from list      |
+| `eval:a+b`          | expression         | Computed value               |
+| `text:hello`        | text literal       | Literal text (strips prefix) |
+| `42`                | numeric literal    | Unchanged                    |
+| `a`                 | variable reference | Reference to variable `a`    |
+
+> **Important**: `{{...}}` is still **required** in text templates for variable references (e.g., `"Calculate ${{a}}$"`).
 
 ### Design Principles
 
 - **Content-Agnostic**: No feature-specific dependencies
-- **Markdown Syntax**: Simple `{{...}}` delimiters
+- **Simplified Syntax**: Clean expressions in variable definitions
 - **Composable**: Each layer independent and testable
 - **Reproducible**: Seeded random for determinism
 - **Type-Safe**: Full TypeScript support
@@ -38,9 +57,9 @@ The parameterization system enables dynamic content generation through:
 import { resolveVariables, resolveText } from '$lib/ubumark';
 
 const variables = [
-	{ name: 'a', expression: '{{1..10}}' },
-	{ name: 'b', expression: '{{1..10}}' },
-	{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' }
+	{ name: 'a', expression: '1..10' }, // Simplified: no {{}}
+	{ name: 'b', expression: '1..10' }, // Simplified: no {{}}
+	{ name: 'sum', expression: 'eval:{{a}}+{{b}}' } // eval: prefix, {{}} for var refs
 ];
 
 const resolved = resolveVariables(variables, 12345);
@@ -50,6 +69,7 @@ const resolved = resolveVariables(variables, 12345);
 //   { name: 'sum', value: '10' }
 // ]
 
+// In text templates, {{}} is REQUIRED for variable references
 const text = 'Calculate {{a}} + {{b}} = {{sum}}';
 const result = resolveText(text, resolved);
 // "Calculate 7 + 3 = 10"
@@ -59,73 +79,91 @@ const result = resolveText(text, resolved);
 
 ## Token Types
 
+> **Context matters**: The syntax differs between **variable definitions** (simplified) and **text templates** (with `{{...}}`).
+
 ### Variable Reference
 
-**Syntax**: `{{varName}}`
+**In variable definitions**: Just the variable name
 
-References a previously defined variable by name.
+```typescript
+{ name: 'ref', expression: 'a' }  // References variable 'a'
+```
+
+**In text templates**: `{{varName}}`
 
 ```markdown
 Let a = {{a}} and b = {{b}}.
 ```
 
-**Parsing**: Variable name must be alphanumeric with underscores.
+**Note**: To define a literal single identifier (not a reference), use `text:` prefix:
+
+```typescript
+{ name: 'literal', expression: 'text:x' }  // Literal string "x"
+```
 
 ### Random Token
 
 #### Integer Range
 
-**Syntax**: `{{min..max}}` or `{{min..max}}`
+**In variable definitions**: `min..max`
+
+```typescript
+{ name: 'a', expression: '1..10' }    // Integer 1-10
+{ name: 'b', expression: '-5..5' }    // Integer -5 to 5
+{ name: 'c', expression: '-10..-1' }  // Negative integers
+```
+
+**In text templates**: `{{min..max}}`
 
 ```markdown
-{{1..10}} // Integer 1-10
-{{-5..5}} // Integer -5 to 5
-{{-10..-1}} // Negative integers
+The value is {{1..10}}.
 ```
 
 #### With Exclusions
 
-**Syntax**: `{{min..max!excluded}}`
+**Syntax**: `min..max!excluded`
 
-```markdown
-{{1..10!5}} // 1-10 except 5
-{{1..10!3,5,7}} // Except 3, 5, 7
-{{1..20!5..10}} // Except range 5-10
-{{1..10!{{a}}}} // Except variable value
+```typescript
+{ name: 'a', expression: '1..10!5' }       // 1-10 except 5
+{ name: 'b', expression: '1..10!3,5,7' }   // Except 3, 5, 7
+{ name: 'c', expression: '1..20!5..10' }   // Except range 5-10
+{ name: 'd', expression: '1..10!{{a}}' }   // Except variable value
 ```
 
 #### Relative Integers (±)
 
-**Syntax**: `{{min..max;±}}`
+**Syntax**: `min..max;+-`
 
 Generates from union of negative and positive ranges, excluding zero.
 
-```markdown
-{{2..9;±}} // {-9..-2} ∪ {2..9}
-{{1..5;±!3}} // Excludes ±3
+```typescript
+{ name: 'coef', expression: '2..9;+-' }   // {-9..-2} ∪ {2..9}
+{ name: 'val', expression: '1..5;+-!3' }  // Excludes ±3
 ```
 
 **Use case**: Non-zero coefficients in equations.
 
 #### Decimal by Digits
 
-**Syntax**: `{{before.after}}`
+**Syntax**: `random:before.after`
 
-```markdown
-{{2.3}} // 2 digits before, 3 after (e.g., "45.123")
-{{1.2}} // 1 digit before, 2 after (e.g., "7.42")
-{{0.1}} // 0 digits before, 1 after (e.g., "0.3")
+```typescript
+{ name: 'a', expression: 'random:2.3' }  // 2 digits before, 3 after (e.g., "45.123")
+{ name: 'b', expression: 'random:1.2' }  // 1 digit before, 2 after (e.g., "7.42")
+{ name: 'c', expression: 'random:0.1' }  // 0 digits before, 1 after (e.g., "0.3")
 ```
+
+> **Note**: `random:` prefix is required to distinguish from numeric literals (e.g., `2.3` is a literal, `random:2.3` is a decimal generator).
 
 #### Decimal Range
 
-**Syntax**: `{{min..max}}` or `{{min..max:step}}`
+**Syntax**: `min..max` or `min..max:step`
 
-```markdown
-{{1..1.5}} // Auto step 0.1 (from max decimals)
-{{1..1.25}} // Auto step 0.01
-{{0.5..2:0.25}} // Explicit step
-{{1..10:0.5!5,7.5}} // With exclusions
+```typescript
+{ name: 'a', expression: '1..1.5' }        // Auto step 0.1 (from max decimals)
+{ name: 'b', expression: '1..1.25' }       // Auto step 0.01
+{ name: 'c', expression: '0.5..2:0.25' }   // Explicit step
+{ name: 'd', expression: '1..10:0.5!5,7.5' } // With exclusions
 ```
 
 **Auto-step algorithm**:
@@ -137,14 +175,22 @@ const step = Math.pow(10, -precision);
 
 ### Eval Token
 
-**Syntax**: `{{eval:expression}}` or `{{eval:expression;modifiers}}`
+**In variable definitions**: `eval:expression` or `eval:expression;modifiers`
 
 Evaluates mathematical expressions using MathLive Compute Engine.
 
+```typescript
+{ name: 'sum', expression: 'eval:a+b' }         // Simple expression (no {{}} for var names)
+{ name: 'product', expression: 'eval:{{a}}*{{b}}' }  // With explicit {{}} for var refs
+{ name: 'half', expression: 'eval:\\frac{1}{2}+1' }  // LaTeX expressions
+```
+
+> **Note**: In eval expressions, variable names can be used directly (`eval:a+b`) or with `{{}}` syntax (`eval:{{a}}+{{b}}`). Both work.
+
+**In text templates**: `{{eval:expression}}`
+
 ```markdown
-{{eval:a+b}} // Simple expression
-{{eval:{{a}}\*{{b}}}} // With variable references
-{{eval:\frac{1}{2}+1}} // LaTeX expressions
+The sum is {{eval:{{a}}+{{b}}}}.
 ```
 
 #### Modifiers
@@ -156,25 +202,33 @@ Evaluates mathematical expressions using MathLive Compute Engine.
 | `()`  | `bracket`    | Bracket negative values |
 | `'`   | `derivative` | Reserved for future     |
 
-**Examples**:
+**Examples** (in variable definitions):
 
-```markdown
-{{eval:1/3;d}} // "0.333..." instead of fraction
-{{eval:5;+}} // "+5"
-{{eval:-3;()}} // "(-3)"
-{{eval:{{x}};+,()}} // "+5" or "(-3)"
+```typescript
+{ name: 'decimal', expression: 'eval:1/3;d' }     // "0.333..." instead of fraction
+{ name: 'signed', expression: 'eval:5;+' }        // "+5"
+{ name: 'bracketed', expression: 'eval:-3;()' }   // "(-3)"
+{ name: 'both', expression: 'eval:{{x}};+,()' }   // "+5" or "(-3)"
 ```
 
 ---
 
 ## Resolution Pipeline
 
-### 3-Stage Process
+### 4-Stage Process
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ INPUT: Variable { name, expression }                         │
-│ Example: { name: 'result', expression: '{{eval:{{a}}+{{1..5}}}}' }
+│ Example: { name: 'result', expression: 'eval:{{a}}+{{1..5}}' }
+└─────────────────────────────────────┬───────────────────────┘
+                                      │
+┌─────────────────────────────────────▼───────────────────────┐
+│ STAGE 0: NORMALIZATION                                       │
+│ Convert simplified syntax to legacy {{...}} format           │
+│                                                              │
+│ 'eval:{{a}}+{{1..5}}' → '{{eval:{{a}}+{{1..5}}}}'            │
+│ (simplified syntax normalized)                               │
 └─────────────────────────────────────┬───────────────────────┘
                                       │
 ┌─────────────────────────────────────▼───────────────────────┐
@@ -211,10 +265,10 @@ Variables are resolved in dependency order:
 
 ```typescript
 const variables = [
-	{ name: 'a', expression: '{{1..10}}' }, // Independent
-	{ name: 'b', expression: '{{1..10}}' }, // Independent
-	{ name: 'c', expression: '{{eval:{{a}}*2}}' }, // Depends on a
-	{ name: 'd', expression: '{{eval:{{b}}+{{c}}}}' } // Depends on b, c
+	{ name: 'a', expression: '1..10' }, // Independent
+	{ name: 'b', expression: '1..10' }, // Independent
+	{ name: 'c', expression: 'eval:{{a}}*2' }, // Depends on a
+	{ name: 'd', expression: 'eval:{{b}}+{{c}}' } // Depends on b, c
 ];
 ```
 
@@ -551,12 +605,12 @@ Where:
 
 ```typescript
 // Good: descriptive, lowercase with underscores
-{ name: 'base_angle', expression: '{{30..60:10}}' }
-{ name: 'side_length', expression: '{{5..15}}' }
+{ name: 'base_angle', expression: '30..60:10' }
+{ name: 'side_length', expression: '5..15' }
 
 // Avoid: generic, hard to track
-{ name: 'a', expression: '{{1..10}}' }
-{ name: 'x', expression: '{{1..10}}' }
+{ name: 'a', expression: '1..10' }
+{ name: 'x', expression: '1..10' }
 ```
 
 ### Expression Organization
@@ -564,14 +618,14 @@ Where:
 ```typescript
 // Good: build up complexity gradually
 [
-	{ name: 'a', expression: '{{1..10}}' },
-	{ name: 'b', expression: '{{1..10}}' },
-	{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' },
-	{ name: 'product', expression: '{{eval:{{a}}*{{b}}}}' },
-	{ name: 'final', expression: '{{eval:{{sum}}*{{product}}}}' }
+	{ name: 'a', expression: '1..10' },
+	{ name: 'b', expression: '1..10' },
+	{ name: 'sum', expression: 'eval:{{a}}+{{b}}' },
+	{ name: 'product', expression: 'eval:{{a}}*{{b}}' },
+	{ name: 'final', expression: 'eval:{{sum}}*{{product}}' }
 ][
-	// Avoid: deeply nested single expression
-	{ name: 'result', expression: '{{eval:({{1..10}}+{{1..10}})*({{1..10}}*{{1..10}})}}' }
+	// Avoid: deeply nested inline random in eval
+	{ name: 'result', expression: 'eval:({{1..10}}+{{1..10}})*({{1..10}}*{{1..10}})' }
 ];
 ```
 
