@@ -5,6 +5,7 @@ import {
 	TinyCASConverter,
 	validateConversion,
 	convertBatch,
+	toSimplifiedSyntax,
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	type ConversionResult
 } from './syntax-converter';
@@ -941,6 +942,123 @@ describe('TinyCAS Syntax Converter', () => {
 			const result = convertTinyCASToNew(input);
 			expect(result.success).toBe(true);
 			expect(result.converted).toBe('{{if:mod(num,2)=0|pair|impair}}');
+		});
+	});
+
+	describe('25. toSimplifiedSyntax - Convert legacy to simplified variable expressions', () => {
+		it('should strip {{}} from random patterns', () => {
+			expect(toSimplifiedSyntax('{{1..10}}')).toBe('1..10');
+			expect(toSimplifiedSyntax('{{-5..5}}')).toBe('-5..5');
+			expect(toSimplifiedSyntax('{{1..10!5}}')).toBe('1..10!5');
+		});
+
+		it('should convert digits: patterns (decimal-by-digits)', () => {
+			expect(toSimplifiedSyntax('{{digits:1.2}}')).toBe('digits:1.2');
+			expect(toSimplifiedSyntax('{{digits:2.3}}')).toBe('digits:2.3');
+			expect(toSimplifiedSyntax('{{digits:0.2}}')).toBe('digits:0.2');
+		});
+
+		it('should convert digits: patterns (n-digit integers)', () => {
+			expect(toSimplifiedSyntax('{{digits:2}}')).toBe('digits:2');
+			expect(toSimplifiedSyntax('{{digits:1..3}}')).toBe('digits:1..3');
+		});
+
+		it('should strip {{}} from eval patterns', () => {
+			expect(toSimplifiedSyntax('{{eval:a+b}}')).toBe('eval:a+b');
+			expect(toSimplifiedSyntax('{{eval:2*a}}')).toBe('eval:2*a');
+		});
+
+		it('should strip {{}} from variable references', () => {
+			expect(toSimplifiedSyntax('{{a}}')).toBe('a');
+			expect(toSimplifiedSyntax('{{myVar}}')).toBe('myVar');
+		});
+
+		it('should convert ± to +- for relative integers', () => {
+			expect(toSimplifiedSyntax('{{2..9;±}}')).toBe('2..9;+-');
+			expect(toSimplifiedSyntax('{{1..5;±}}')).toBe('1..5;+-');
+		});
+
+		it('should strip {{}} from discrete lists', () => {
+			expect(toSimplifiedSyntax('{{rouge|vert|bleu}}')).toBe('rouge|vert|bleu');
+			expect(toSimplifiedSyntax('{{A|B|C}}')).toBe('A|B|C');
+		});
+
+		it('should add digits: prefix for bare decimal-by-digits patterns', () => {
+			// When {{1.2}} (without digits: prefix) is passed - rare but possible
+			expect(toSimplifiedSyntax('{{1.2}}')).toBe('digits:1.2');
+			expect(toSimplifiedSyntax('{{2.3}}')).toBe('digits:2.3');
+		});
+
+		it('should preserve if: and color: patterns unchanged', () => {
+			expect(toSimplifiedSyntax('{{if:a>0|yes|no}}')).toBe('{{if:a>0|yes|no}}');
+			expect(toSimplifiedSyntax('{{color:primary}}')).toBe('{{color:primary}}');
+		});
+
+		it('should return non-{{}} input unchanged', () => {
+			expect(toSimplifiedSyntax('1..10')).toBe('1..10');
+			expect(toSimplifiedSyntax('hello')).toBe('hello');
+			expect(toSimplifiedSyntax('42')).toBe('42');
+		});
+
+		it('should handle mixed content unchanged', () => {
+			// Multiple tokens or text with {{}} - kept as-is
+			expect(toSimplifiedSyntax('{{a}}+{{b}}')).toBe('{{a}}+{{b}}');
+			expect(toSimplifiedSyntax('Value is {{x}}')).toBe('Value is {{x}}');
+		});
+	});
+
+	describe('26. Complete TinyCAS to Simplified Syntax Flow', () => {
+		/**
+		 * Test the complete migration path:
+		 * Old TinyCAS → Legacy {{...}} → Simplified syntax
+		 */
+		function expectFullConversion(oldTinyCAS: string, expectedSimplified: string) {
+			const legacyResult = convertTinyCASToNew(oldTinyCAS);
+			expect(legacyResult.success).toBe(true);
+			const simplified = toSimplifiedSyntax(legacyResult.converted!);
+			expect(simplified).toBe(expectedSimplified);
+		}
+
+		it('should convert decimal patterns end-to-end', () => {
+			expectFullConversion('$d{1;2}', 'digits:1.2');
+			expectFullConversion('$d{2;3}', 'digits:2.3');
+			expectFullConversion('$d{0;2}', 'digits:0.2');
+		});
+
+		it('should convert random integers end-to-end', () => {
+			expectFullConversion('$e[1;10]', '1..10');
+			expectFullConversion('$e[-5;5]', '-5..5');
+		});
+
+		it('should convert n-digit numbers end-to-end', () => {
+			expectFullConversion('$e{3;3}', '100..999');
+			expectFullConversion('$e{2;2}', '10..99');
+		});
+
+		it('should convert relative integers end-to-end', () => {
+			expectFullConversion('$er[2;9]', '2..9;+-');
+			expectFullConversion('$er[1;5]', '1..5;+-');
+		});
+
+		it('should convert random with exclusions end-to-end', () => {
+			expectFullConversion('$e[1;10]\\{5}', '1..10!5');
+			expectFullConversion('$e[0;9]\\{0}', '0..9!0');
+		});
+
+		it('should convert list selections end-to-end', () => {
+			expectFullConversion('$l{rouge;vert;bleu}', 'rouge|vert|bleu');
+			expectFullConversion('$l{A;B;C}', 'A|B|C');
+		});
+
+		it('should convert evaluations end-to-end', () => {
+			expectFullConversion('[_&1+&2_]', 'eval:a+b');
+			expectFullConversion('[_2*&1_]', 'eval:2*a');
+		});
+
+		it('should convert variable references end-to-end', () => {
+			expectFullConversion('&1', 'a');
+			expectFullConversion('&2', 'b');
+			expectFullConversion('&varname', 'varname');
 		});
 	});
 });
