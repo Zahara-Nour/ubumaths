@@ -989,6 +989,39 @@ describe('resolveVariables', () => {
 				const resolved = resolveVariables(variables);
 				expect(resolved[1].value).toBe('x'); // Literal 'x', not resolved
 			});
+
+			it('should substitute bare variable names in math expressions', () => {
+				// This is used for expression variables like expression1 = "a^b*a^c"
+				const variables: Variable[] = [
+					{ name: 'a', expression: '3' },
+					{ name: 'b', expression: '2' },
+					{ name: 'c', expression: '4' },
+					{ name: 'expr', expression: 'a^b*a^c' }
+				];
+				const resolved = resolveVariables(variables);
+				expect(resolved[3].value).toBe('3^2*3^4'); // Variables substituted
+			});
+
+			it('should substitute bare variable names with word boundaries', () => {
+				const variables: Variable[] = [
+					{ name: 'a', expression: '5' },
+					{ name: 'max', expression: '10' },
+					{ name: 'expr', expression: 'a + max' }
+				];
+				const resolved = resolveVariables(variables);
+				// 'a' should be replaced but 'max' should also be replaced (it's a variable)
+				expect(resolved[2].value).toBe('5 + 10');
+			});
+
+			it('should not substitute partial matches in bare expressions', () => {
+				const variables: Variable[] = [
+					{ name: 'a', expression: '5' },
+					{ name: 'expr', expression: 'tan(a)' }
+				];
+				const resolved = resolveVariables(variables);
+				// 'a' in 'tan' should not be replaced, but 'a' as argument should
+				expect(resolved[1].value).toBe('tan(5)');
+			});
 		});
 
 		describe('Mixed syntax scenarios', () => {

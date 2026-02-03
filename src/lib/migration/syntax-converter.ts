@@ -818,6 +818,29 @@ export function toSimplifiedSyntax(legacySyntax: string): string {
 }
 
 /**
+ * Convert all {{varName}} references to bare variable names.
+ *
+ * Used for expression variables (like expression1) where we want
+ * `a^b*a^c` instead of `{{a}}^{{b}}*{{a}}^{{c}}`.
+ *
+ * This allows cleaner syntax in stored expressions, and the resolver
+ * handles bare variable name substitution automatically.
+ *
+ * @param expression - Expression with {{...}} variable references
+ * @returns Expression with bare variable names
+ *
+ * @example
+ * toBareVariableSyntax('{{a}}^{{b}}*{{a}}^{{c}}')  // → 'a^b*a^c'
+ * toBareVariableSyntax('{{a}} + {{b}}')            // → 'a + b'
+ * toBareVariableSyntax('10^{{n}}')                 // → '10^n'
+ */
+export function toBareVariableSyntax(expression: string): string {
+	// Replace all {{varName}} with just varName
+	// Only matches valid variable names (letters, digits, underscores, starting with letter/underscore)
+	return expression.replace(/\{\{([a-zA-Z_][a-zA-Z0-9_]*)\}\}/g, '$1');
+}
+
+/**
  * Fix math delimiters: convert $$...$$ to $...$ when used inline.
  *
  * In LaTeX/ubumark:
