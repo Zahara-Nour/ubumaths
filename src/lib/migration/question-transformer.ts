@@ -62,7 +62,8 @@ import {
 import { convertTinyCASToNew, fixMathDelimiters, toSimplifiedSyntax } from './syntax-converter';
 import { convertPlaceholders } from './placeholder-converter';
 import { convertConditionals } from './conditional-converter';
-import { convertAsciiMathToLatexSafe } from './ascii-math-converter';
+// Note: No AsciiMath→LaTeX conversion here. Variables use custom mathAST syntax.
+// LaTeX conversion happens at question instantiation when inside $...$
 
 // ============================================================================
 // IMAGE URL MAPPING TYPE
@@ -339,12 +340,12 @@ function convertVariables(
 				warnings.push(...conversionResult.warnings.map((w) => `Variable ${varName}: ${w}`));
 			}
 
-			// Convert AsciiMath to LaTeX
+			// Variable expressions are NOT math - they're definitions like "5..7", "eval:a+b", "rouge|vert"
+			// Do NOT convert them to LaTeX - they are interpreted by the parameterization system
 			const afterTinyCAS = conversionResult.converted || expression;
-			const latexResult = convertAsciiMathToLatexSafe(afterTinyCAS);
 
 			// Convert to simplified syntax (remove outer {{}} for variable expressions)
-			const simplified = toSimplifiedSyntax(latexResult.converted);
+			const simplified = toSimplifiedSyntax(afterTinyCAS);
 
 			variables.push({
 				name,
@@ -426,13 +427,12 @@ function convertStatement(
 			if (conversionResult.warnings) {
 				warnings.push(...conversionResult.warnings.map((w) => `Expression: ${w}`));
 			}
-			// Convert AsciiMath to LaTeX
+			// Keep expression in custom mathAST syntax (no LaTeX conversion here)
+			// LaTeX conversion happens at instantiation when inside $...$
 			const afterTinyCAS = conversionResult.converted || expression;
-			const latexResult = convertAsciiMathToLatexSafe(afterTinyCAS);
-			stats.asciiMathConverted++;
 
 			// Convert to simplified syntax (remove outer {{}} for variable expressions)
-			const simplified = toSimplifiedSyntax(latexResult.converted);
+			const simplified = toSimplifiedSyntax(afterTinyCAS);
 
 			expressionVariable = {
 				name: varName,
@@ -531,11 +531,9 @@ function convertSolution(
 		warnings.push(...conversionResult.warnings.map((w) => `Solution: ${w}`));
 	}
 
-	// Convert AsciiMath to LaTeX
-	const afterTinyCAS = conversionResult.converted || solutionValue;
-	const latexResult = convertAsciiMathToLatexSafe(afterTinyCAS);
-
-	return latexResult.converted;
+	// Keep solution in custom mathAST syntax (no LaTeX conversion)
+	// Solutions are compared using mathAST, not rendered as LaTeX
+	return conversionResult.converted || solutionValue;
 }
 
 // ============================================================================
