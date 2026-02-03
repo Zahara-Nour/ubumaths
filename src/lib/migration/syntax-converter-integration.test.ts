@@ -458,7 +458,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Error Handling', () => 
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('{{1.2}} and {{2.3}}');
+		expect(result.converted).toBe('{{digits:1.2}} and {{digits:2.3}}');
 		expect(result.stats!.decimals).toBe(2);
 	});
 

@@ -287,33 +287,54 @@ export function resolveExpression(
 }
 
 /**
- * Generate an n-digit number from a digits specification
+ * Generate a number from a digits specification
  *
- * Supports both numeric literals and variable references for digit counts.
+ * Supports two modes:
+ * 1. N-digit integers: digits:2 → 10-99, digits:1..3 → 1-999
+ * 2. Decimal by digits: digits:2.3 → XX.XXX (2 integer digits, 3 decimal digits)
  *
  * @param spec - Digits specification:
- *   - "1" (1 digit: 1-9)
- *   - "2" (2 digits: 10-99)
- *   - "1..3" (1 to 3 digits: 1-999)
- *   - "a..b" (variable bounds)
- *   - "{{min}}..{{max}}" (explicit variable syntax)
+ *   - "1" (1 digit integer: 1-9)
+ *   - "2" (2 digit integer: 10-99)
+ *   - "1..3" (1 to 3 digit integer: 1-999)
+ *   - "a..b" (integer with variable bounds)
+ *   - "2.3" (decimal: 2 integer digits, 3 decimal digits)
+ *   - "a.b" (decimal with variable digit counts)
  * @param alreadyResolved - Variables already resolved for variable lookups
  * @param seed - Optional seed for reproducible random generation
- * @returns Generated number
+ * @returns Generated number as string (to preserve decimal formatting)
  *
- * @example Numeric specs
- * generateDigitsNumber('1', [], 12345)  // 1-9 (single digit)
- * generateDigitsNumber('2', [], 12345)  // 10-99 (two digits)
- * generateDigitsNumber('1..3', [], 12345)  // 1-999 (1 to 3 digits)
+ * @example Integer specs
+ * generateDigitsNumber('1', [], 12345)  // "7" (1-9)
+ * generateDigitsNumber('2', [], 12345)  // "45" (10-99)
+ * generateDigitsNumber('1..3', [], 12345)  // "123" (1-999)
  *
- * @example Variable bounds
- * generateDigitsNumber('a..b', [{name:'a',value:'1'},{name:'b',value:'3'}], 12345)  // 1-999
+ * @example Decimal specs
+ * generateDigitsNumber('2.3', [], 12345)  // "45.123"
+ * generateDigitsNumber('1.2', [], 12345)  // "7.42"
  */
 function generateDigitsNumber(
 	spec: string,
 	alreadyResolved: ResolvedVariable[],
 	seed: number | undefined
-): number {
+): string {
+	// Check for decimal-by-digits format: X.Y (single dot, not double dot ..)
+	// Must distinguish "2.3" (decimal) from "1..3" (integer range)
+	const hasDoubleDot = spec.includes('..');
+	const singleDotMatch = !hasDoubleDot && spec.match(/^([^.]+)\.([^.]+)$/);
+
+	if (singleDotMatch) {
+		// Decimal by digits format: "2.3" or "a.b"
+		const beforeStr = singleDotMatch[1].trim();
+		const afterStr = singleDotMatch[2].trim();
+
+		const digitsBefore = resolveDigitValue(beforeStr, alreadyResolved);
+		const digitsAfter = resolveDigitValue(afterStr, alreadyResolved);
+
+		return generateDecimalByDigits(digitsBefore, digitsAfter, seed);
+	}
+
+	// Integer mode: "2", "1..3", "a..b"
 	let minDigits: number;
 	let maxDigits: number;
 
@@ -367,7 +388,71 @@ function generateDigitsNumber(
 		randomValue = Math.floor(Math.random() * range) + adjustedMin;
 	}
 
-	return randomValue;
+	return String(randomValue);
+}
+
+/**
+ * Generate a decimal number with specified digit counts
+ *
+ * @param digitsBefore - Number of digits before decimal point (0 = "0.xxx")
+ * @param digitsAfter - Number of digits after decimal point
+ * @param seed - Optional seed for reproducible random generation
+ * @returns Formatted decimal string (e.g., "45.123")
+ */
+function generateDecimalByDigits(
+	digitsBefore: number,
+	digitsAfter: number,
+	seed: number | undefined
+): string {
+	if (digitsBefore < 0 || digitsAfter < 0) {
+		throw new Error(`Digit counts must be non-negative: ${digitsBefore}.${digitsAfter}`);
+	}
+
+	// Generate integer part
+	let integerPart: number;
+	if (digitsBefore === 0) {
+		integerPart = 0;
+	} else {
+		const minInt = digitsBefore === 1 ? 1 : Math.pow(10, digitsBefore - 1);
+		const maxInt = Math.pow(10, digitsBefore) - 1;
+		const rangeInt = maxInt - minInt + 1;
+
+		if (seed !== undefined) {
+			const a = 1103515245;
+			const c = 12345;
+			const m = 2147483648;
+			const seededRandom = ((a * seed + c) % m) / m;
+			integerPart = Math.floor(seededRandom * rangeInt) + minInt;
+		} else {
+			integerPart = Math.floor(Math.random() * rangeInt) + minInt;
+		}
+	}
+
+	// Generate decimal part
+	let decimalPart: number;
+	if (digitsAfter === 0) {
+		return String(integerPart);
+	} else {
+		const minDec = 0;
+		const maxDec = Math.pow(10, digitsAfter) - 1;
+		const rangeDec = maxDec - minDec + 1;
+
+		// Use different seed for decimal part to avoid correlation
+		const decimalSeed = seed !== undefined ? seed + 7919 : undefined;
+		if (decimalSeed !== undefined) {
+			const a = 1103515245;
+			const c = 12345;
+			const m = 2147483648;
+			const seededRandom = ((a * decimalSeed + c) % m) / m;
+			decimalPart = Math.floor(seededRandom * rangeDec) + minDec;
+		} else {
+			decimalPart = Math.floor(Math.random() * rangeDec) + minDec;
+		}
+	}
+
+	// Format with leading zeros for decimal part
+	const decimalStr = String(decimalPart).padStart(digitsAfter, '0');
+	return `${integerPart}.${decimalStr}`;
 }
 
 /**

@@ -22,23 +22,25 @@ Remplacer la syntaxe `{{}}` obligatoire dans les définitions de variables par u
 
 ## Syntaxe de référence
 
-| Expression            | Type                     | Normalisation interne       |
-| --------------------- | ------------------------ | --------------------------- |
-| `1..10`               | random entier            | → `{{1..10}}`               |
-| `min..max`            | random bounds variables  | → `{{min..max}}`            |
-| `2..9;+-`             | random relatif           | → `{{2..9;+-}}`             |
-| `1.5..9.5`            | random decimal range     | → `{{1.5..9.5}}`            |
-| `random:2.3`          | random decimal by digits | → `{{random:2.3}}`          |
-| `digits:2`            | n-digit number (10-99)   | → `{{digits:2}}`            |
-| `digits:1..3`         | n-m digits (1-999)       | → `{{digits:1..3}}`         |
-| `digits:a..b`         | digits variable bounds   | → `{{digits:a..b}}`         |
-| `digits:{{n}}..{{m}}` | digits explicit vars     | → `{{digits:{{n}}..{{m}}}}` |
-| `rouge\|vert\|bleu`   | discrete list            | → `{{rouge\|vert\|bleu}}`   |
-| `eval:a+b`            | expression               | → `{{eval:a+b}}`            |
-| `text:hello`          | chaîne littérale         | → `hello` (strip prefix)    |
-| `42`                  | littéral numérique       | → `42` (inchangé)           |
-| `a`                   | référence variable       | → `{{a}}`                   |
-| `{{...}}`             | déjà wrappé              | → `{{...}}` (passthrough)   |
+| Expression            | Type                      | Normalisation interne       |
+| --------------------- | ------------------------- | --------------------------- |
+| `1..10`               | random entier             | → `{{1..10}}`               |
+| `min..max`            | random bounds variables   | → `{{min..max}}`            |
+| `2..9;+-`             | random relatif            | → `{{2..9;+-}}`             |
+| `1.5..9.5`            | random decimal range      | → `{{1.5..9.5}}`            |
+| `digits:2`            | n-digit integer (10-99)   | → `{{digits:2}}`            |
+| `digits:1..3`         | n-m digit integer (1-999) | → `{{digits:1..3}}`         |
+| `digits:a..b`         | digits variable bounds    | → `{{digits:a..b}}`         |
+| `digits:{{n}}..{{m}}` | digits explicit vars      | → `{{digits:{{n}}..{{m}}}}` |
+| `digits:2.3`          | decimal by digits         | → `{{digits:2.3}}`          |
+| `digits:a.b`          | decimal variable digits   | → `{{digits:a.b}}`          |
+| `digits:{{n}}.{{m}}`  | decimal explicit vars     | → `{{digits:{{n}}.{{m}}}}`  |
+| `rouge\|vert\|bleu`   | discrete list             | → `{{rouge\|vert\|bleu}}`   |
+| `eval:a+b`            | expression                | → `{{eval:a+b}}`            |
+| `text:hello`          | chaîne littérale          | → `hello` (strip prefix)    |
+| `42`                  | littéral numérique        | → `42` (inchangé)           |
+| `a`                   | référence variable        | → `{{a}}`                   |
+| `{{...}}`             | déjà wrappé               | → `{{...}}` (passthrough)   |
 
 ---
 
@@ -62,18 +64,23 @@ Syntaxe simplifiée → normalizeExpression() → {{...}} → Parsers existants
 
 ## Fichiers créés/modifiés
 
-| Fichier                                                                           | Action  | Description                      |
-| --------------------------------------------------------------------------------- | ------- | -------------------------------- |
-| `src/lib/ubumark/parameterization/parser/expression-normalizer.ts`                | CRÉÉ    | Normalisation syntaxe simplifiée |
-| `src/lib/ubumark/__tests__/parameterization/parser/expression-normalizer.test.ts` | CRÉÉ    | Tests du normalizer              |
-| `src/lib/ubumark/parameterization/resolver/variable-resolver.ts`                  | MODIFIÉ | Import et appel au normalizer    |
-| `src/lib/ubumark/__tests__/parameterization/resolver/variable-resolver.test.ts`   | MODIFIÉ | Tests mis à jour                 |
-| `src/lib/ubumark/parameterization/index.ts`                                       | MODIFIÉ | Export des nouvelles fonctions   |
-| `src/lib/migration/syntax-converter.ts`                                           | MODIFIÉ | Ajout `toSimplifiedSyntax()`     |
-| `src/lib/migration/question-transformer.ts`                                       | MODIFIÉ | Génération syntaxe simplifiée    |
-| `src/lib/migration/question-transformer.test.ts`                                  | MODIFIÉ | Tests mis à jour                 |
-| `docs/ref/ubumark/parameterization.md`                                            | MODIFIÉ | Documentation mise à jour        |
-| `docs/ref/ubumark/syntax.md`                                                      | MODIFIÉ | Documentation mise à jour        |
+| Fichier                                                                           | Action  | Description                           |
+| --------------------------------------------------------------------------------- | ------- | ------------------------------------- |
+| `src/lib/ubumark/parameterization/parser/expression-normalizer.ts`                | CRÉÉ    | Normalisation syntaxe simplifiée      |
+| `src/lib/ubumark/__tests__/parameterization/parser/expression-normalizer.test.ts` | CRÉÉ    | Tests du normalizer                   |
+| `src/lib/ubumark/parameterization/resolver/variable-resolver.ts`                  | MODIFIÉ | Import normalizer + `digits:X.Y`      |
+| `src/lib/ubumark/__tests__/parameterization/resolver/variable-resolver.test.ts`   | MODIFIÉ | Tests mis à jour                      |
+| `src/lib/ubumark/parameterization/parser/random-parser.ts`                        | MODIFIÉ | Erreur pour `random:X.Y` → `digits:`  |
+| `src/lib/ubumark/__tests__/parameterization/parser/random-parser.test.ts`         | MODIFIÉ | Tests pour erreur `random:X.Y`        |
+| `src/lib/ubumark/__tests__/parameterization/validator/variable-validator.test.ts` | MODIFIÉ | Tests `digits:` au lieu de `random:`  |
+| `src/lib/ubumark/parameterization/index.ts`                                       | MODIFIÉ | Export des nouvelles fonctions        |
+| `src/lib/migration/syntax-converter.ts`                                           | MODIFIÉ | `toSimplifiedSyntax()` + `{{digits}}` |
+| `src/lib/migration/syntax-converter.test.ts`                                      | MODIFIÉ | Tests pour `{{digits:X.Y}}`           |
+| `src/lib/migration/syntax-converter-integration.test.ts`                          | MODIFIÉ | Tests intégration mis à jour          |
+| `src/lib/migration/question-transformer.ts`                                       | MODIFIÉ | Génération syntaxe simplifiée         |
+| `src/lib/migration/question-transformer.test.ts`                                  | MODIFIÉ | Tests mis à jour                      |
+| `docs/ref/ubumark/parameterization.md`                                            | MODIFIÉ | Documentation mise à jour             |
+| `docs/ref/ubumark/syntax.md`                                                      | MODIFIÉ | Documentation mise à jour             |
 
 ---
 
@@ -85,7 +92,8 @@ Fonctions principales :
 
 ```typescript
 export type ExpressionType =
-	| 'random' // 1..10, min..max, 2..9;+-, random:2.3
+	| 'random' // 1..10, min..max, 2..9;+-
+	| 'digits' // digits:2, digits:1..3, digits:2.3
 	| 'discrete-list' // rouge|vert|bleu
 	| 'eval' // eval:a+b
 	| 'text-literal' // text:hello, arbitrary text
@@ -144,10 +152,10 @@ Le système détecte automatiquement les expressions déjà wrappées avec `{{..
 
 Tous les tests passent :
 
-- **543 tests** parameterization
+- **560 tests** parameterization
 - **440 tests** migration
 
-Total : **983 tests** ✅
+Total : **1000 tests** ✅
 
 ---
 
@@ -191,10 +199,13 @@ Pour définir un littéral texte qui ressemble à un identifiant, utilisez le pr
 
 ### Décimaux par digits
 
-Pour générer un décimal par nombre de digits, utilisez le préfixe `random:` :
+Pour générer un décimal par nombre de digits, utilisez le préfixe `digits:` :
 
 ```typescript
-{ name: 'decimal', expression: 'random:2.3' }  // 2 digits.3 décimales
+{ name: 'decimal', expression: 'digits:2.3' }  // 2 digits entiers, 3 décimales → ex: "45.123"
+{ name: 'decimal2', expression: 'digits:a.b' }  // Variables pour les digits
 ```
 
 Sans préfixe, `2.3` serait interprété comme un littéral numérique.
+
+**Note** : `random:X.Y` n'est plus supporté pour les décimaux par digits. Utilisez `digits:X.Y` à la place.

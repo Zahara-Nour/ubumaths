@@ -34,10 +34,11 @@ Variable definitions use a **simplified syntax** without `{{...}}`:
 | `min..max`          | random bounds      | Range using variable bounds  |
 | `2..9;+-`           | relative random    | Non-zero: {-9..-2} ∪ {2..9}  |
 | `1.5..9.5`          | decimal range      | Decimal with auto-step       |
-| `random:2.3`        | decimal by digits  | 2 digits.3 decimals          |
-| `digits:2`          | n-digit number     | 2-digit number (10-99)       |
-| `digits:1..3`       | n to m digits      | 1-3 digit number (1-999)     |
-| `digits:a..b`       | digits var bounds  | Digits range with variables  |
+| `digits:2`          | n-digit integer    | 2-digit number (10-99)       |
+| `digits:1..3`       | n to m digits      | 1-3 digit integer (1-999)    |
+| `digits:a..b`       | integer var bounds | Integer digits with vars     |
+| `digits:2.3`        | decimal by digits  | 2 int digits, 3 decimals     |
+| `digits:a.b`        | decimal var digits | Decimal with variable digits |
 | `rouge\|vert\|bleu` | discrete list      | Random choice from list      |
 | `eval:a+b`          | expression         | Computed value               |
 | `text:hello`        | text literal       | Literal text (strips prefix) |
@@ -148,15 +149,16 @@ Generates from union of negative and positive ranges, excluding zero.
 
 #### Decimal by Digits
 
-**Syntax**: `random:before.after`
+**Syntax**: `digits:before.after`
 
 ```typescript
-{ name: 'a', expression: 'random:2.3' }  // 2 digits before, 3 after (e.g., "45.123")
-{ name: 'b', expression: 'random:1.2' }  // 1 digit before, 2 after (e.g., "7.42")
-{ name: 'c', expression: 'random:0.1' }  // 0 digits before, 1 after (e.g., "0.3")
+{ name: 'a', expression: 'digits:2.3' }  // 2 digits before, 3 after (e.g., "45.123")
+{ name: 'b', expression: 'digits:1.2' }  // 1 digit before, 2 after (e.g., "7.42")
+{ name: 'c', expression: 'digits:0.1' }  // 0 digits before, 1 after (e.g., "0.3")
+{ name: 'd', expression: 'digits:a.b' }  // Variable digit counts
 ```
 
-> **Note**: `random:` prefix is required to distinguish from numeric literals (e.g., `2.3` is a literal, `random:2.3` is a decimal generator).
+> **Note**: `digits:` prefix is used for both n-digit integers (`digits:2`) and decimals by digits (`digits:2.3`).
 
 #### Decimal Range
 

@@ -68,39 +68,18 @@ describe('parseRandomSpec - Integer ranges (Markdown syntax)', () => {
 	});
 });
 
-describe('parseRandomSpec - Decimal by digits', () => {
-	it('should parse Markdown syntax with prefix', () => {
-		const spec = parseRandomSpec('{{random:2.3}}');
-
-		expect(spec).toMatchObject({
-			type: 'decimal-by-digits',
-			digitsBefore: { type: 'number', value: 2 },
-			digitsAfter: { type: 'number', value: 3 }
-		});
+describe('parseRandomSpec - Decimal by digits (DEPRECATED - use digits: instead)', () => {
+	it('should throw error for random:X.Y format (use digits:X.Y instead)', () => {
+		expect(() => parseRandomSpec('{{random:2.3}}')).toThrow(/should use digits:2.3/);
 	});
 
-	it('should parse Markdown shorthand', () => {
-		const spec = parseRandomSpec('{{2.3}}');
-
-		expect(spec?.type).toBe('decimal-by-digits');
+	it('should throw error for shorthand X.Y format (use digits:X.Y instead)', () => {
+		expect(() => parseRandomSpec('{{2.3}}')).toThrow(/should use digits:2.3/);
 	});
 
-	it('should parse single digit before decimal', () => {
-		const spec = parseRandomSpec('{{random:1.5}}');
-
-		if (spec?.type === 'decimal-by-digits') {
-			expect(spec.digitsBefore).toMatchObject({ type: 'number', value: 1 });
-			expect(spec.digitsAfter).toMatchObject({ type: 'number', value: 5 });
-		}
-	});
-
-	it('should parse large digit counts', () => {
-		const spec = parseRandomSpec('{{random:10.8}}');
-
-		if (spec?.type === 'decimal-by-digits') {
-			expect(spec.digitsBefore).toMatchObject({ type: 'number', value: 10 });
-			expect(spec.digitsAfter).toMatchObject({ type: 'number', value: 8 });
-		}
+	it('should throw error with helpful message', () => {
+		expect(() => parseRandomSpec('{{random:1.5}}')).toThrow(/digits:1.5/);
+		expect(() => parseRandomSpec('{{10.8}}')).toThrow(/digits:10.8/);
 	});
 });
 
@@ -185,23 +164,13 @@ describe('parseRandomSpec - Variable bounds', () => {
 	});
 });
 
-describe('parseRandomSpec - Variable digits', () => {
-	it('should parse Markdown syntax with variable digits', () => {
-		const spec = parseRandomSpec('{{random:{{before}}.{{after}}}}');
-
-		if (spec?.type === 'decimal-by-digits') {
-			expect(spec.digitsBefore).toMatchObject({ type: 'variable', name: 'before' });
-			expect(spec.digitsAfter).toMatchObject({ type: 'variable', name: 'after' });
-		}
+describe('parseRandomSpec - Variable digits (DEPRECATED - use digits: instead)', () => {
+	it('should throw error for variable digits format (use digits: instead)', () => {
+		expect(() => parseRandomSpec('{{random:{{before}}.{{after}}}}')).toThrow(/should use digits:/);
 	});
 
-	it('should parse mixed number and variable digits', () => {
-		const spec = parseRandomSpec('{{random:2.{{after}}}}');
-
-		if (spec?.type === 'decimal-by-digits') {
-			expect(spec.digitsBefore).toMatchObject({ type: 'number', value: 2 });
-			expect(spec.digitsAfter).toMatchObject({ type: 'variable', name: 'after' });
-		}
+	it('should throw error for mixed number and variable digits', () => {
+		expect(() => parseRandomSpec('{{random:2.{{after}}}}')).toThrow(/should use digits:/);
 	});
 });
 
@@ -434,11 +403,12 @@ describe('parseRandomSpec - Edge cases', () => {
 		expect(spec?.type).toBe('integer');
 	});
 
-	it('should distinguish decimal range from decimal by digits', () => {
-		const byDigits = parseRandomSpec('{{random:2.3}}');
-		const range = parseRandomSpec('{{random:2.5..3.5}}');
+	it('should reject decimal-by-digits and accept decimal range', () => {
+		// decimal-by-digits should throw (use digits:2.3 instead)
+		expect(() => parseRandomSpec('{{random:2.3}}')).toThrow(/should use digits:/);
 
-		expect(byDigits?.type).toBe('decimal-by-digits');
+		// decimal range should still work
+		const range = parseRandomSpec('{{random:2.5..3.5}}');
 		expect(range?.type).toBe('decimal-range');
 	});
 });
@@ -720,10 +690,9 @@ describe('parseRandomSpec - Decimal auto-step inference', () => {
 		});
 	});
 
-	it('should not confuse decimal-by-digits with decimal range', () => {
-		// {{2.3}} should be decimal-by-digits (2 digits before, 3 after)
-		const byDigits = parseRandomSpec('{{2.3}}');
-		expect(byDigits?.type).toBe('decimal-by-digits');
+	it('should reject decimal-by-digits and accept decimal range', () => {
+		// {{2.3}} should throw error (use digits:2.3 instead)
+		expect(() => parseRandomSpec('{{2.3}}')).toThrow(/should use digits:/);
 
 		// {{1..1.6}} should be decimal range with auto-step
 		const range = parseRandomSpec('{{1..1.6}}');
@@ -825,24 +794,12 @@ describe('parseRandomSpec - Bare variable names (without {{}})', () => {
 		});
 	});
 
-	it('should parse bare variable names in decimal-by-digits', () => {
-		const spec = parseRandomSpec('{{before.after}}');
-
-		expect(spec).toMatchObject({
-			type: 'decimal-by-digits',
-			digitsBefore: { type: 'variable', name: 'before' },
-			digitsAfter: { type: 'variable', name: 'after' }
-		});
+	it('should reject bare variable names in decimal-by-digits (use digits: instead)', () => {
+		expect(() => parseRandomSpec('{{before.after}}')).toThrow(/should use digits:/);
 	});
 
-	it('should parse mixed bare variable and number in decimal-by-digits', () => {
-		const spec = parseRandomSpec('{{2.after}}');
-
-		expect(spec).toMatchObject({
-			type: 'decimal-by-digits',
-			digitsBefore: { type: 'number', value: 2 },
-			digitsAfter: { type: 'variable', name: 'after' }
-		});
+	it('should reject mixed bare variable and number in decimal-by-digits (use digits: instead)', () => {
+		expect(() => parseRandomSpec('{{2.after}}')).toThrow(/should use digits:/);
 	});
 
 	it('should parse bare variable range in exclusions', () => {

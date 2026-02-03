@@ -83,7 +83,7 @@ describe('validateVariables', () => {
 		it('should accept valid random specs', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '{{random:1..10}}' },
-				{ name: 'b', expression: '{{random:2.3}}' },
+				{ name: 'b', expression: '{{digits:2.3}}' },
 				{ name: 'c', expression: '{{random:0.5..9.99:0.01}}' }
 			];
 			const result = validateVariables(variables);
@@ -336,7 +336,7 @@ describe('validateVariables', () => {
 		});
 
 		it('should accept valid decimal by digits', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{{random:2.3}}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{digits:2.3}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
 			expect(result.errors).toHaveLength(0);

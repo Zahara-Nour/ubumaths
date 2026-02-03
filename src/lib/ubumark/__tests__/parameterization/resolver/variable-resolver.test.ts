@@ -167,7 +167,7 @@ describe('resolveVariables', () => {
 		});
 
 		it('should generate random decimals by digits', () => {
-			const variables: Variable[] = [{ name: 'rand', expression: '{{random:2.3}}' }];
+			const variables: Variable[] = [{ name: 'rand', expression: 'digits:2.3' }];
 			const resolved = resolveVariables(variables, 42);
 			const value = parseFloat(resolved[0].value);
 			expect(value).toBeGreaterThanOrEqual(10); // min 2 digits before
@@ -482,6 +482,54 @@ describe('resolveVariables', () => {
 		it('should throw for undefined variable in digits spec', () => {
 			const variables: Variable[] = [{ name: 'num', expression: 'digits:unknown' }];
 			expect(() => resolveVariables(variables, 42)).toThrow(/Variable "unknown" not found/);
+		});
+
+		// Decimal by digits tests (digits:X.Y format)
+		it('should generate decimal with digits:X.Y format', () => {
+			const variables: Variable[] = [{ name: 'dec', expression: 'digits:2.3' }];
+			const resolved = resolveVariables(variables, 42);
+			const value = parseFloat(resolved[0].value);
+			expect(value).toBeGreaterThanOrEqual(10);
+			expect(value).toBeLessThan(100);
+			const decimals = resolved[0].value.split('.')[1];
+			expect(decimals).toHaveLength(3);
+		});
+
+		it('should generate decimal with 0 integer digits (digits:0.2)', () => {
+			const variables: Variable[] = [{ name: 'dec', expression: 'digits:0.2' }];
+			const resolved = resolveVariables(variables, 42);
+			const value = parseFloat(resolved[0].value);
+			expect(value).toBeGreaterThanOrEqual(0);
+			expect(value).toBeLessThan(1);
+			expect(resolved[0].value).toMatch(/^0\.\d{2}$/);
+		});
+
+		it('should generate decimal with variable digit counts', () => {
+			const variables: Variable[] = [
+				{ name: 'before', expression: '1' },
+				{ name: 'after', expression: '2' },
+				{ name: 'dec', expression: 'digits:before.after' }
+			];
+			const resolved = resolveVariables(variables, 42);
+			const value = parseFloat(resolved[2].value);
+			expect(value).toBeGreaterThanOrEqual(1);
+			expect(value).toBeLessThan(10);
+			const decimals = resolved[2].value.split('.')[1];
+			expect(decimals).toHaveLength(2);
+		});
+
+		it('should generate decimal with explicit variable syntax', () => {
+			const variables: Variable[] = [
+				{ name: 'b', expression: '2' },
+				{ name: 'a', expression: '3' },
+				{ name: 'dec', expression: 'digits:{{b}}.{{a}}' }
+			];
+			const resolved = resolveVariables(variables, 42);
+			const value = parseFloat(resolved[2].value);
+			expect(value).toBeGreaterThanOrEqual(10);
+			expect(value).toBeLessThan(100);
+			const decimals = resolved[2].value.split('.')[1];
+			expect(decimals).toHaveLength(3);
 		});
 	});
 
@@ -803,8 +851,8 @@ describe('resolveVariables', () => {
 				expect(value).toBeLessThanOrEqual(3.5);
 			});
 
-			it('should handle random by digits with prefix', () => {
-				const variables: Variable[] = [{ name: 'rand', expression: 'random:2.3' }];
+			it('should handle decimal by digits with digits: prefix', () => {
+				const variables: Variable[] = [{ name: 'rand', expression: 'digits:2.3' }];
 				const resolved = resolveVariables(variables, 42);
 				const value = parseFloat(resolved[0].value);
 				expect(value).toBeGreaterThanOrEqual(10);

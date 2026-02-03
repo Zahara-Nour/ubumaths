@@ -87,10 +87,12 @@ import type { RandomSpec, NumberOrVariable, Exclusion } from '../../types';
 export function parseRandomSpec(token: string): RandomSpec | null {
 	// Extract content from Markdown syntax
 	let content: string | null = null;
+	let hadRandomPrefix = false;
 
 	// Try {{random:...}} format
 	if (token.startsWith('{{random:') && token.endsWith('}}')) {
 		content = token.slice(9, -2);
+		hadRandomPrefix = true;
 	}
 	// Try {{...}} shorthand format
 	else if (token.startsWith('{{') && token.endsWith('}}')) {
@@ -99,6 +101,14 @@ export function parseRandomSpec(token: string): RandomSpec | null {
 
 	if (!content) {
 		return null;
+	}
+
+	// DEPRECATED: Decimal-by-digits format should use digits: instead of random:
+	// Check if content looks like decimal-by-digits (X.Y format, not a range)
+	if (isDecimalByDigitsFormat(content)) {
+		throw new Error(
+			`Decimal-by-digits format "${content}" should use digits:${content} instead of ${hadRandomPrefix ? 'random:' : ''}${content}`
+		);
 	}
 
 	try {

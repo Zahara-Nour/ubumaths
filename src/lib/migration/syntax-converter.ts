@@ -278,7 +278,7 @@ export class TinyCASConverter {
 	}
 
 	/**
-	 * Convert decimal patterns: $d{n;m} → {{n.m}}
+	 * Convert decimal patterns: $d{n;m} → {{digits:n.m}}
 	 *
 	 * Generates decimals with n digits before and m digits after decimal point.
 	 * Supports nested expressions and variable references.
@@ -295,7 +295,7 @@ export class TinyCASConverter {
 			const parts = content.split(';');
 			if (parts.length !== 2) {
 				this.warnings.push(`Decimal pattern $d{${content}} has unexpected format`);
-				return `{{decimal:${content}}}`;
+				return `{{digits:${content}}}`;
 			}
 
 			const digitsBefore = parts[0].trim();
@@ -311,8 +311,8 @@ export class TinyCASConverter {
 				// since convertDecimalPatterns runs after convertVariableReferences
 			}
 
-			// Return new syntax: {{n.m}}
-			return `{{${digitsBefore}.${digitsAfter}}}`;
+			// Return new syntax: {{digits:n.m}}
+			return `{{digits:${digitsBefore}.${digitsAfter}}}`;
 		});
 	}
 
@@ -351,11 +351,11 @@ export class TinyCASConverter {
 				if (n === '4') return '{{1000..9999}}';
 				if (n === '5') return '{{10000..99999}}';
 
-				// For other cases, use a custom pattern
+				// For other cases, use digits:n (n-digit integer)
 				this.warnings.push(
-					`N-digit pattern $e{${n};${n}} converted to {{${n}.0}} - verify range is correct`
+					`N-digit pattern $e{${n};${n}} converted to {{digits:${n}}} - verify range is correct`
 				);
-				return `{{${n}.0}}`;
+				return `{{digits:${n}}}`;
 			} else {
 				// Variable number of digits
 				this.warnings.push(`Variable digit pattern $e{${n};${m}} needs custom implementation`);
@@ -694,10 +694,10 @@ export function validateConversion(original: string, converted: string): boolean
 // "$er[1;5]" → "{{1..5;±}}"
 // "$er{1}" → "{{1..1;±}}"
 
-// Decimal patterns:
-// "$d{1;1}" → "{{1.1}}"
-// "$d{2;3}" → "{{2.3}}"
-// "$d{0;2}" → "{{0.2}}"
+// Decimal patterns (using digits: prefix):
+// "$d{1;1}" → "{{digits:1.1}}"
+// "$d{2;3}" → "{{digits:2.3}}"
+// "$d{0;2}" → "{{digits:0.2}}"
 
 // Random with exclusions:
 // "$e[1;10]\\{5}" → "{{1..10!5}}"
@@ -747,7 +747,8 @@ export function validateConversion(original: string, converted: string): boolean
  * - {{1..10}} → 1..10
  * - {{1..10!5}} → 1..10!5
  * - {{2..9;±}} → 2..9;+-
- * - {{1.2}} → random:1.2 (decimal by digits needs prefix for clarity)
+ * - {{1.2}} → digits:1.2 (decimal by digits needs prefix for clarity)
+ * - {{digits:1.2}} → digits:1.2
  * - {{eval:a+b}} → eval:a+b
  * - {{rouge|vert|bleu}} → rouge|vert|bleu
  * - {{a}} → a (single variable reference)
@@ -779,10 +780,10 @@ export function toSimplifiedSyntax(legacySyntax: string): string {
 		// Convert ± to +- for sign modifier
 		let simplified = content.replace(/±/g, '+-');
 
-		// Add random: prefix for decimal-by-digits pattern (e.g., "1.2" meaning 1 digit before, 2 after)
+		// Add digits: prefix for decimal-by-digits pattern (e.g., "1.2" meaning 1 digit before, 2 after)
 		// This distinguishes it from a numeric literal like "1.2"
 		if (/^\d+\.\d+$/.test(simplified) && !simplified.includes('..')) {
-			simplified = `random:${simplified}`;
+			simplified = `digits:${simplified}`;
 		}
 
 		return simplified;
