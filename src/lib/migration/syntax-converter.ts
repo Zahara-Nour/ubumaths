@@ -766,27 +766,50 @@ export function toSimplifiedSyntax(legacySyntax: string): string {
 		return legacySyntax;
 	}
 
-	// Check if it's a single {{...}} token (the whole expression is wrapped once)
-	// Use non-greedy match and ensure no nested {{ or }} inside
-	const singleTokenMatch = trimmed.match(/^\{\{([^{}]+)\}\}$/);
-	if (singleTokenMatch) {
-		const content = singleTokenMatch[1];
-
-		// Keep special prefixes that aren't in simplified syntax
-		if (content.startsWith('if:') || content.startsWith('color:')) {
-			return legacySyntax;
+	// Check if the whole expression is wrapped in outer {{...}}
+	// This needs to handle nested {{...}} like {{2..9-{{a}}}}
+	if (trimmed.startsWith('{{') && trimmed.endsWith('}}')) {
+		// Find the matching closing }} for the opening {{
+		let depth = 0;
+		let closingIndex = -1;
+		for (let i = 0; i < trimmed.length; i++) {
+			if (trimmed[i] === '{' && trimmed[i + 1] === '{') {
+				depth++;
+				i++; // Skip the second {
+			} else if (trimmed[i] === '}' && trimmed[i + 1] === '}') {
+				depth--;
+				i++; // Skip the second }
+				if (depth === 0) {
+					closingIndex = i;
+					break;
+				}
+			}
 		}
 
-		// Convert ± to +- for sign modifier
-		let simplified = content.replace(/±/g, '+-');
+		// If the closing }} is at the end, the whole expression is wrapped
+		if (closingIndex === trimmed.length - 1) {
+			// Extract the content between outer {{ and }}
+			const content = trimmed.slice(2, -2);
 
-		// Add digits: prefix for decimal-by-digits pattern (e.g., "1.2" meaning 1 digit before, 2 after)
-		// This distinguishes it from a numeric literal like "1.2"
-		if (/^\d+\.\d+$/.test(simplified) && !simplified.includes('..')) {
-			simplified = `digits:${simplified}`;
+			// Keep special prefixes that aren't in simplified syntax
+			if (content.startsWith('if:') || content.startsWith('color:')) {
+				return legacySyntax;
+			}
+
+			// Simplify inner {{varName}} references to just varName
+			let simplified = content.replace(/\{\{([a-zA-Z_][a-zA-Z0-9_]*)\}\}/g, '$1');
+
+			// Convert ± to +- for sign modifier
+			simplified = simplified.replace(/±/g, '+-');
+
+			// Add digits: prefix for decimal-by-digits pattern (e.g., "1.2" meaning 1 digit before, 2 after)
+			// This distinguishes it from a numeric literal like "1.2"
+			if (/^\d+\.\d+$/.test(simplified) && !simplified.includes('..')) {
+				simplified = `digits:${simplified}`;
+			}
+
+			return simplified;
 		}
-
-		return simplified;
 	}
 
 	// Multiple tokens or mixed content - more complex case
