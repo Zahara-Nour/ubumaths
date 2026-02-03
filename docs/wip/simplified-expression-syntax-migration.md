@@ -22,21 +22,23 @@ Remplacer la syntaxe `{{}}` obligatoire dans les définitions de variables par u
 
 ## Syntaxe de référence
 
-| Expression          | Type                     | Normalisation interne     |
-| ------------------- | ------------------------ | ------------------------- |
-| `1..10`             | random entier            | → `{{1..10}}`             |
-| `min..max`          | random bounds variables  | → `{{min..max}}`          |
-| `2..9;+-`           | random relatif           | → `{{2..9;+-}}`           |
-| `1.5..9.5`          | random decimal range     | → `{{1.5..9.5}}`          |
-| `random:2.3`        | random decimal by digits | → `{{random:2.3}}`        |
-| `digits:2`          | n-digit number (10-99)   | → `{{digits:2}}`          |
-| `digits:1..3`       | n-m digits (1-999)       | → `{{digits:1..3}}`       |
-| `rouge\|vert\|bleu` | discrete list            | → `{{rouge\|vert\|bleu}}` |
-| `eval:a+b`          | expression               | → `{{eval:a+b}}`          |
-| `text:hello`        | chaîne littérale         | → `hello` (strip prefix)  |
-| `42`                | littéral numérique       | → `42` (inchangé)         |
-| `a`                 | référence variable       | → `{{a}}`                 |
-| `{{...}}`           | déjà wrappé              | → `{{...}}` (passthrough) |
+| Expression            | Type                     | Normalisation interne       |
+| --------------------- | ------------------------ | --------------------------- |
+| `1..10`               | random entier            | → `{{1..10}}`               |
+| `min..max`            | random bounds variables  | → `{{min..max}}`            |
+| `2..9;+-`             | random relatif           | → `{{2..9;+-}}`             |
+| `1.5..9.5`            | random decimal range     | → `{{1.5..9.5}}`            |
+| `random:2.3`          | random decimal by digits | → `{{random:2.3}}`          |
+| `digits:2`            | n-digit number (10-99)   | → `{{digits:2}}`            |
+| `digits:1..3`         | n-m digits (1-999)       | → `{{digits:1..3}}`         |
+| `digits:a..b`         | digits variable bounds   | → `{{digits:a..b}}`         |
+| `digits:{{n}}..{{m}}` | digits explicit vars     | → `{{digits:{{n}}..{{m}}}}` |
+| `rouge\|vert\|bleu`   | discrete list            | → `{{rouge\|vert\|bleu}}`   |
+| `eval:a+b`            | expression               | → `{{eval:a+b}}`            |
+| `text:hello`          | chaîne littérale         | → `hello` (strip prefix)    |
+| `42`                  | littéral numérique       | → `42` (inchangé)           |
+| `a`                   | référence variable       | → `{{a}}`                   |
+| `{{...}}`             | déjà wrappé              | → `{{...}}` (passthrough)   |
 
 ---
 

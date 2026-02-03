@@ -443,6 +443,46 @@ describe('resolveVariables', () => {
 			expect(value).toBeGreaterThanOrEqual(10);
 			expect(value).toBeLessThanOrEqual(99);
 		});
+
+		it('should support variable bounds with bare names', () => {
+			const variables: Variable[] = [
+				{ name: 'min', expression: '1' },
+				{ name: 'max', expression: '3' },
+				{ name: 'num', expression: 'digits:min..max' }
+			];
+			const resolved = resolveVariables(variables, 42);
+			const value = parseInt(resolved[2].value);
+			expect(value).toBeGreaterThanOrEqual(1);
+			expect(value).toBeLessThanOrEqual(999);
+		});
+
+		it('should support variable bounds with explicit syntax', () => {
+			const variables: Variable[] = [
+				{ name: 'n', expression: '2' },
+				{ name: 'm', expression: '4' },
+				{ name: 'num', expression: 'digits:{{n}}..{{m}}' }
+			];
+			const resolved = resolveVariables(variables, 42);
+			const value = parseInt(resolved[2].value);
+			expect(value).toBeGreaterThanOrEqual(10);
+			expect(value).toBeLessThanOrEqual(9999);
+		});
+
+		it('should support single variable bound', () => {
+			const variables: Variable[] = [
+				{ name: 'd', expression: '3' },
+				{ name: 'num', expression: 'digits:d' }
+			];
+			const resolved = resolveVariables(variables, 42);
+			const value = parseInt(resolved[1].value);
+			expect(value).toBeGreaterThanOrEqual(100);
+			expect(value).toBeLessThanOrEqual(999);
+		});
+
+		it('should throw for undefined variable in digits spec', () => {
+			const variables: Variable[] = [{ name: 'num', expression: 'digits:unknown' }];
+			expect(() => resolveVariables(variables, 42)).toThrow(/Variable "unknown" not found/);
+		});
 	});
 
 	// ============================================================================
