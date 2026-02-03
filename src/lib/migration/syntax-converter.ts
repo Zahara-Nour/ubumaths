@@ -772,11 +772,7 @@ export function toSimplifiedSyntax(legacySyntax: string): string {
 		const content = singleTokenMatch[1];
 
 		// Keep special prefixes that aren't in simplified syntax
-		if (
-			content.startsWith('if:') ||
-			content.startsWith('color:') ||
-			content.startsWith('digits:')
-		) {
+		if (content.startsWith('if:') || content.startsWith('color:')) {
 			return legacySyntax;
 		}
 
