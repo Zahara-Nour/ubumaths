@@ -119,18 +119,20 @@ Current columns:
 
 The current parser (`src/lib/ubumark/parameterization/`) supports **simplified syntax** in variable definitions:
 
-| Expression (in definitions) | Description        | Example             |
-| --------------------------- | ------------------ | ------------------- |
-| `min..max`                  | Random integer     | `1..10`             |
-| `min..max!excl`             | With exclusions    | `1..10!5,7`         |
-| `min..max;+-`               | Relative integer   | `2..9;+-`           |
-| `random:n.m`                | Decimal by digits  | `random:2.3`        |
-| `min..max:step`             | Decimal range      | `0.5..2:0.25`       |
-| `a\|b\|c`                   | Discrete list      | `rouge\|vert\|bleu` |
-| `eval:expr`                 | Expression         | `eval:a+b`          |
-| `varName`                   | Variable reference | `a`, `sum`          |
-| `text:value`                | Text literal       | `text:hello`        |
-| `42`                        | Numeric literal    | `42`, `3.14`        |
+| Expression (in definitions) | Description        | Example               |
+| --------------------------- | ------------------ | --------------------- |
+| `min..max`                  | Random integer     | `1..10`               |
+| `min..max!excl`             | With exclusions    | `1..10!5,7`           |
+| `min..max;+-`               | Relative integer   | `2..9;+-`             |
+| `random:n.m`                | Decimal by digits  | `random:2.3`          |
+| `min..max:step`             | Decimal range      | `0.5..2:0.25`         |
+| `digits:n`                  | N-digit number     | `digits:2` (10-99)    |
+| `digits:n..m`               | N to M digits      | `digits:1..3` (1-999) |
+| `a\|b\|c`                   | Discrete list      | `rouge\|vert\|bleu`   |
+| `eval:expr`                 | Expression         | `eval:a+b`            |
+| `varName`                   | Variable reference | `a`, `sum`            |
+| `text:value`                | Text literal       | `text:hello`          |
+| `42`                        | Numeric literal    | `42`, `3.14`          |
 
 **In text templates**, `{{...}}` is still required:
 

@@ -345,6 +345,8 @@ const variables = [
 	{ name: 'd', expression: '2..9;+-' }, // {-9..-2} ∪ {2..9}
 	{ name: 'e', expression: 'random:2.3' }, // Decimal: 2 digits.3 decimals
 	{ name: 'f', expression: '1..1.5' }, // Decimal range (step=0.1)
+	{ name: 'g', expression: 'digits:2' }, // 2-digit number (10-99)
+	{ name: 'h', expression: 'digits:1..3' }, // 1-3 digit number (1-999)
 	{ name: 'sum', expression: 'eval:{{a}}+{{b}}' }, // Computed expression
 	{ name: 'color', expression: 'rouge|vert|bleu' }, // Discrete list
 	{ name: 'ref', expression: 'a' }, // Variable reference
@@ -377,6 +379,8 @@ The sum is {{eval:{{a}}+{{b}}}}.
 | Relative (±)    | `2..9;+-`               | `{{2..9;+-}}`           |
 | Decimal digits  | `random:2.3`            | `{{random:2.3}}`        |
 | Decimal range   | `0.5..2:0.25`           | `{{0.5..2:0.25}}`       |
+| N-digit number  | `digits:2`              | `{{digits:2}}`          |
+| N-M digits      | `digits:1..3`           | `{{digits:1..3}}`       |
 | Discrete list   | `rouge\|vert\|bleu`     | `{{rouge\|vert\|bleu}}` |
 | Eval            | `eval:a+b`              | `{{eval:a+b}}`          |
 | Variable ref    | `a`                     | `{{a}}`                 |
