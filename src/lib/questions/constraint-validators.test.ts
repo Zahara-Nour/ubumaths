@@ -466,26 +466,32 @@ describe('checkBrackets', () => {
 			expect(checkBrackets(['(-123)'])).toEqual([0]);
 		});
 
-		it('should allow negative number at start when allowFirstNegative is true', () => {
+		it('should flag first negative brackets when allowFirstNegative is true', () => {
+			// With allowFirstNegative: true, brackets around first negative are UNNECESSARY
+			// (could write -5+3 instead of (-5)+3)
 			const result = checkBrackets(['(-5)+3'], { allowFirstNegative: true });
+			expect(result).toEqual([0]);
+		});
+
+		it('should accept first negative brackets when allowFirstNegative is false', () => {
+			// With allowFirstNegative: false, brackets around first negative are REQUIRED
+			const result = checkBrackets(['(-5)+3'], { allowFirstNegative: false });
 			expect(result).toHaveLength(0);
 		});
 
-		it('should accept negative at start in addition context (allowFirstNegative irrelevant here)', () => {
-			// (-5)+3 has brackets around a negative in addition context
-			// Per spec: "a+(-b) est correct" applies to negatives in addition
-			const result1 = checkBrackets(['(-5)+3'], { allowFirstNegative: true });
-			const result2 = checkBrackets(['(-5)+3'], { allowFirstNegative: false });
-			expect(result1).toHaveLength(0);
-			expect(result2).toHaveLength(0);
-		});
-
-		it('should accept negative in brackets within addition context', () => {
-			// Per spec: "a+(-b) est correct"
+		it('should accept negative in brackets in middle of expression (a+(-b) pattern)', () => {
+			// Brackets around negatives in middle are ALWAYS required
+			// (can't write 5+-3, must write 5+(-3))
 			const result1 = checkBrackets(['5+(-3)'], { allowFirstNegative: true });
 			const result2 = checkBrackets(['5+(-3)'], { allowFirstNegative: false });
 			expect(result1).toHaveLength(0);
 			expect(result2).toHaveLength(0);
+		});
+
+		it('should accept multiple negatives in brackets in expression', () => {
+			// a+(-b)+(-c) - all brackets are required
+			expect(checkBrackets(['a+(-b)+(-c)'])).toHaveLength(0);
+			expect(checkBrackets(['1+(-2)+(-3)+(-4)'])).toHaveLength(0);
 		});
 
 		it('should detect single decimal number in brackets', () => {
@@ -517,14 +523,10 @@ describe('checkBrackets', () => {
 	});
 
 	describe('Necessary Brackets (Acceptable)', () => {
-		it('should accept brackets used for grouping in context', () => {
+		it('should accept brackets used for grouping in multiplication context', () => {
 			expect(checkBrackets(['2(x+1)'])).toHaveLength(0);
 			expect(checkBrackets(['(x+1)(x-1)'])).toHaveLength(0);
-		});
-
-		it('should accept brackets around negative in addition context', () => {
-			expect(checkBrackets(['a+(-b)'])).toHaveLength(0);
-			expect(checkBrackets(['x+(-3)+y'])).toHaveLength(0);
+			expect(checkBrackets(['(a+b)^2'])).toHaveLength(0);
 		});
 	});
 

@@ -443,6 +443,10 @@ export function checkBrackets(
 
 /**
  * Check if a single LaTeX string has unnecessary bracket violations using mathAST
+ *
+ * Key rule for negatives: (-expr) brackets are REQUIRED except:
+ * 1. Global expression: -5 alone doesn't need brackets
+ * 2. First term of sum with allowFirstNegative: true: -5+3 doesn't need brackets
  */
 function hasBracketViolation(latex: string, allowFirstNegative: boolean): boolean {
 	const parseResult = parseLatexSafe(latex);
@@ -454,50 +458,49 @@ function hasBracketViolation(latex: string, allowFirstNegative: boolean): boolea
 
 	const ast = parseResult.ast;
 
-	// Case 1: Global expression wrapped in parentheses
+	// Case 1: Global expression wrapped in parentheses → always violation
 	if (isParenthesisDelimiter(ast)) {
-		// Exception: allowFirstNegative for (-5)+3 pattern
-		if (allowFirstNegative && ast.content.type === 'opposite') {
-			// This is handled below - we need to check if this is the ONLY thing
-			// If global is just (-5), it's still a violation unless part of larger expr
-		}
 		return true;
 	}
 
-	// Check for allowFirstNegative: if the leftmost element is a parenthesized negative
-	if (allowFirstNegative && isFirstNegativeParenthesized(ast)) {
-		// We'll skip this specific case during traversal
+	// Case 2: First term is parenthesized negative AND allowFirstNegative is true
+	// In this case, the brackets are UNNECESSARY (could write -5+3 instead of (-5)+3)
+	const firstNegParen = getFirstNegativeParenNode(ast);
+	if (firstNegParen && allowFirstNegative) {
+		return true;
 	}
 
 	// Traverse AST to find other violations
 	let foundViolation = false;
-	const isFirstNegativeParen = allowFirstNegative ? getFirstNegativeParenNode(ast) : null;
 
 	visitAST(ast, {
 		enterDelimiter(node: DelimiterNode, _context: VisitorContext) {
-			// Skip if this is the allowed first negative
-			if (isFirstNegativeParen && node === isFirstNegativeParen) {
-				return;
-			}
-
 			// Only check parentheses (not brackets, braces, abs, etc.)
 			if (!isParenthesisDelimiter(node)) {
 				return;
 			}
 
-			// Case 2: Double parentheses - delimiter containing delimiter
+			// Case 3: Double parentheses - delimiter containing delimiter
 			if (isParenthesisDelimiter(node.content)) {
 				foundViolation = true;
 				return 'skip';
 			}
 
-			// Case 3: Simple elements in parentheses
+			// Case 4: Parenthesized negative (-expr)
+			// Brackets are REQUIRED for negatives in middle of expression
+			// (already handled the first negative case above)
+			if (node.content.type === 'opposite') {
+				// Brackets are REQUIRED → no violation
+				return;
+			}
+
+			// Case 5: Other simple elements in parentheses (positive numbers, variables)
 			if (isSimpleElement(node.content)) {
 				foundViolation = true;
 				return 'skip';
 			}
 
-			// Case 4: Already-delimited structures in parentheses
+			// Case 6: Already-delimited structures in parentheses
 			if (isAlreadyDelimitedStructure(node.content)) {
 				foundViolation = true;
 				return 'skip';
@@ -505,7 +508,7 @@ function hasBracketViolation(latex: string, allowFirstNegative: boolean): boolea
 		},
 
 		enterDivision(node: DivisionNode) {
-			// Case 5: Parentheses in fractions (only for fraction display style)
+			// Case 7: Parentheses in fractions (only for fraction display style)
 			if (node.displayStyle === 'fraction') {
 				if (isParenthesisDelimiter(node.numerator) || isParenthesisDelimiter(node.denominator)) {
 					foundViolation = true;
@@ -514,7 +517,7 @@ function hasBracketViolation(latex: string, allowFirstNegative: boolean): boolea
 		},
 
 		enterSuperscript(node: SuperscriptNode) {
-			// Case 6: Parentheses in exponents
+			// Case 8: Parentheses in exponents
 			if (isParenthesisDelimiter(node.superscript)) {
 				foundViolation = true;
 			}
@@ -578,16 +581,8 @@ function isAlreadyDelimitedStructure(node: MathNode): boolean {
 }
 
 /**
- * Check if the first element of an expression is a parenthesized negative
- * For expressions like (-5)+3 where we might want to allow the parentheses
- */
-function isFirstNegativeParenthesized(node: MathNode): boolean {
-	const firstParen = getFirstNegativeParenNode(node);
-	return firstParen !== null;
-}
-
-/**
  * Get the first parenthesized negative node if it exists at the start of expression
+ * For expressions like (-5)+3, returns the (-5) delimiter node
  */
 function getFirstNegativeParenNode(node: MathNode): DelimiterNode | null {
 	// If root is addition/subtraction, check left operand
