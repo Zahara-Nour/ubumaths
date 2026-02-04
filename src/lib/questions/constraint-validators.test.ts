@@ -471,16 +471,21 @@ describe('checkBrackets', () => {
 			expect(result).toHaveLength(0);
 		});
 
-		it('should detect negative number at start when allowFirstNegative is false', () => {
-			const result = checkBrackets(['(-5)+3'], { allowFirstNegative: false });
-			expect(result).toEqual([0]);
+		it('should accept negative at start in addition context (allowFirstNegative irrelevant here)', () => {
+			// (-5)+3 has brackets around a negative in addition context
+			// Per spec: "a+(-b) est correct" applies to negatives in addition
+			const result1 = checkBrackets(['(-5)+3'], { allowFirstNegative: true });
+			const result2 = checkBrackets(['(-5)+3'], { allowFirstNegative: false });
+			expect(result1).toHaveLength(0);
+			expect(result2).toHaveLength(0);
 		});
 
-		it('should detect negative number not at start regardless of option', () => {
+		it('should accept negative in brackets within addition context', () => {
+			// Per spec: "a+(-b) est correct"
 			const result1 = checkBrackets(['5+(-3)'], { allowFirstNegative: true });
 			const result2 = checkBrackets(['5+(-3)'], { allowFirstNegative: false });
-			expect(result1).toEqual([0]);
-			expect(result2).toEqual([0]);
+			expect(result1).toHaveLength(0);
+			expect(result2).toHaveLength(0);
 		});
 
 		it('should detect single decimal number in brackets', () => {
@@ -503,20 +508,46 @@ describe('checkBrackets', () => {
 		});
 	});
 
-	describe('Necessary Brackets (Acceptable)', () => {
-		it('should accept brackets around expressions', () => {
-			expect(checkBrackets(['(x+1)'])).toHaveLength(0);
-			expect(checkBrackets(['(2x-3)'])).toHaveLength(0);
-			expect(checkBrackets(['(a+b+c)'])).toHaveLength(0);
+	describe('Global Brackets (Violations)', () => {
+		it('should detect global brackets around expressions', () => {
+			expect(checkBrackets(['(x+1)'])).toEqual([0]);
+			expect(checkBrackets(['(2x-3)'])).toEqual([0]);
+			expect(checkBrackets(['(a+b+c)'])).toEqual([0]);
 		});
+	});
 
-		it('should accept nested necessary brackets', () => {
+	describe('Necessary Brackets (Acceptable)', () => {
+		it('should accept brackets used for grouping in context', () => {
 			expect(checkBrackets(['2(x+1)'])).toHaveLength(0);
 			expect(checkBrackets(['(x+1)(x-1)'])).toHaveLength(0);
 		});
 
-		it('should accept brackets in fractions', () => {
-			expect(checkBrackets(['\\frac{(x+1)}{2}'])).toHaveLength(0);
+		it('should accept brackets around negative in addition context', () => {
+			expect(checkBrackets(['a+(-b)'])).toHaveLength(0);
+			expect(checkBrackets(['x+(-3)+y'])).toHaveLength(0);
+		});
+	});
+
+	describe('Brackets in Fractions and Exponents (Violations)', () => {
+		it('should detect brackets in fraction numerator', () => {
+			expect(checkBrackets(['\\frac{(x+1)}{2}'])).toEqual([0]);
+		});
+
+		it('should detect brackets in fraction denominator', () => {
+			expect(checkBrackets(['\\frac{2}{(x+1)}'])).toEqual([0]);
+		});
+
+		it('should detect brackets in exponent', () => {
+			expect(checkBrackets(['x^{(n+1)}'])).toEqual([0]);
+		});
+
+		it('should accept expressions without unnecessary brackets in fractions', () => {
+			expect(checkBrackets(['\\frac{x+1}{2}'])).toHaveLength(0);
+			expect(checkBrackets(['\\frac{2}{x+1}'])).toHaveLength(0);
+		});
+
+		it('should accept expressions without unnecessary brackets in exponents', () => {
+			expect(checkBrackets(['x^{n+1}'])).toHaveLength(0);
 		});
 	});
 
@@ -532,10 +563,17 @@ describe('checkBrackets', () => {
 	});
 
 	describe('LaTeX Delimiters', () => {
-		it('should normalize \\left( and \\right)', () => {
+		it('should detect single elements in \\left( \\right)', () => {
 			expect(checkBrackets(['\\left(5\\right)'])).toEqual([0]);
 			expect(checkBrackets(['\\left(x\\right)'])).toEqual([0]);
-			expect(checkBrackets(['\\left(x+1\\right)'])).toHaveLength(0);
+		});
+
+		it('should detect global brackets with \\left( \\right)', () => {
+			expect(checkBrackets(['\\left(x+1\\right)'])).toEqual([0]);
+		});
+
+		it('should accept \\left( \\right) when used for grouping', () => {
+			expect(checkBrackets(['2\\left(x+1\\right)'])).toHaveLength(0);
 		});
 
 		it('should normalize \\left[ and \\right] (but only checks parentheses)', () => {
@@ -548,13 +586,21 @@ describe('checkBrackets', () => {
 
 	describe('Multiple Answers', () => {
 		it('should check all answers and return violating indices', () => {
+			// (x+1) alone = global brackets, (5) = single element, (a+b) alone = global brackets, (x) = single element
 			const result = checkBrackets(['(x+1)', '(5)', '(a+b)', '(x)']);
-			expect(result).toEqual([1, 3]);
+			expect(result).toEqual([0, 1, 2, 3]);
 		});
 
 		it('should return empty array when all answers are correct', () => {
-			const result = checkBrackets(['(x+1)', '2(a-b)', '(a+b)(c+d)']);
+			// All brackets here are used for grouping (not global)
+			const result = checkBrackets(['2(x+1)', '2(a-b)', '(a+b)(c+d)']);
 			expect(result).toHaveLength(0);
+		});
+
+		it('should detect global brackets among mixed answers', () => {
+			// (x+1) alone is violation, others are OK
+			const result = checkBrackets(['(x+1)', '2(a-b)', '(a+b)(c+d)']);
+			expect(result).toEqual([0]);
 		});
 	});
 
