@@ -34,6 +34,7 @@ import {
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
+import { checkRequiredForm, getRequiredFormFeedback } from '$lib/questions/required-form-validator';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -245,6 +246,29 @@ export function validateAnswer(
 					isCorrect: false,
 					message: `Type de question non supporté: ${type}`
 				};
+		}
+
+		// Apply required form check FIRST if configured (takes precedence over constraints)
+		// This validates structural form (product, sum, fraction, etc.)
+		if (result.isCorrect && instance.requiredForm && userAnswerLatex) {
+			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
+			const formViolations = checkRequiredForm(latex, instance.requiredForm);
+
+			if (formViolations.length > 0) {
+				const feedback = getRequiredFormFeedback(instance.requiredForm, latex.length > 1);
+				return {
+					isCorrect: false,
+					status: 'bad_form',
+					feedback,
+					constraintViolations: [
+						{
+							constraint: 'form',
+							severity: 'error',
+							feedback
+						}
+					]
+				};
+			}
 		}
 
 		// Apply constraint checks if answer is correct, constraints are configured,
