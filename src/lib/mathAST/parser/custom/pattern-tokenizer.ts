@@ -81,6 +81,9 @@ export type PatternTokenType =
 /**
  * Valid constraint names for wildcards.
  * Maps to the `kind` field of PatternConstraint in pattern/types.ts
+ *
+ * @deprecated Use parseConstraintExpr for full constraint expression parsing.
+ * This type is kept for backwards compatibility with simple constraints.
  */
 export type WildcardConstraintName =
 	| 'number'
@@ -91,9 +94,11 @@ export type WildcardConstraintName =
 	| 'variable';
 
 /**
- * Set of valid constraint names for fast lookup
+ * Set of valid simple constraint names for fast lookup
+ *
+ * @deprecated Use parseConstraintExpr for full constraint expression parsing.
  */
-const VALID_CONSTRAINTS: ReadonlySet<string> = new Set<WildcardConstraintName>([
+const VALID_SIMPLE_CONSTRAINTS: ReadonlySet<string> = new Set<WildcardConstraintName>([
 	'number',
 	'integer',
 	'positive',
@@ -103,11 +108,19 @@ const VALID_CONSTRAINTS: ReadonlySet<string> = new Set<WildcardConstraintName>([
 ]);
 
 /**
- * Type guard to check if a string is a valid constraint name
+ * Type guard to check if a string is a valid simple constraint name
+ *
+ * @deprecated Use parseConstraintExpr for full constraint expression parsing.
  */
 export function isValidConstraintName(name: string): name is WildcardConstraintName {
-	return VALID_CONSTRAINTS.has(name);
+	return VALID_SIMPLE_CONSTRAINTS.has(name);
 }
+
+/**
+ * Characters that are valid within constraint expressions.
+ * Includes letters (constraint names), operators (!&|), parentheses, comma, and whitespace.
+ */
+const CONSTRAINT_EXPR_CHARS = /[a-zA-Z!&|(),\s]/;
 
 // =============================================================================
 // Token Interface
@@ -153,7 +166,17 @@ export interface PatternToken {
 	/** For WILDCARD tokens: the name part (e.g., 'x' from 'x' or '_x') */
 	readonly wildcardName?: string;
 
-	/** For WILDCARD tokens: the optional constraint (e.g., 'number' from 'x:number') */
+	/**
+	 * For WILDCARD tokens: the optional constraint expression string.
+	 * Can be a simple name (e.g., 'number') or a full expression (e.g., 'positive & nonzero').
+	 */
+	readonly constraintExpr?: string;
+
+	/**
+	 * For WILDCARD tokens: the optional simple constraint (e.g., 'number' from 'x:number')
+	 * @deprecated Use constraintExpr for full constraint expression support.
+	 * Kept for backwards compatibility with simple constraints.
+	 */
 	readonly constraintName?: WildcardConstraintName;
 
 	/** For WILDCARD tokens: sequence type (single, sequence for __, optional-sequence for ___) */
@@ -456,10 +479,14 @@ export class PatternTokenizer {
 			this.position++;
 		}
 
-		// Check for optional constraint (`:constraint`)
-		const constraintName = this.scanOptionalConstraint();
+		// Check for optional constraint expression (`:constraint`)
+		const constraintExpr = this.scanOptionalConstraint();
 
 		const value = this.input.slice(startPos, this.position);
+
+		// For backwards compatibility, also set constraintName if it's a simple constraint
+		const constraintName =
+			constraintExpr && isValidConstraintName(constraintExpr) ? constraintExpr : undefined;
 
 		return {
 			type: 'WILDCARD',
@@ -467,6 +494,7 @@ export class PatternTokenizer {
 			position: startPos,
 			length: this.position - startPos,
 			wildcardName,
+			constraintExpr,
 			constraintName,
 			sequenceType
 		};
@@ -514,10 +542,14 @@ export class PatternTokenizer {
 			this.position++;
 		}
 
-		// Check for optional constraint (`:constraint`)
-		const constraintName = this.scanOptionalConstraint();
+		// Check for optional constraint expression (`:constraint`)
+		const constraintExpr = this.scanOptionalConstraint();
 
 		const value = this.input.slice(startPos, this.position);
+
+		// For backwards compatibility, also set constraintName if it's a simple constraint
+		const constraintName =
+			constraintExpr && isValidConstraintName(constraintExpr) ? constraintExpr : undefined;
 
 		return {
 			type: 'WILDCARD',
@@ -525,16 +557,21 @@ export class PatternTokenizer {
 			position: startPos,
 			length: this.position - startPos,
 			wildcardName,
+			constraintExpr,
 			constraintName,
 			sequenceType: 'single'
 		};
 	}
 
 	/**
-	 * Scans an optional constraint suffix like `:number` or `:positive`.
+	 * Scans an optional constraint expression suffix.
+	 *
+	 * Supports both simple constraints (`:number`) and full expressions
+	 * (`:positive & nonzero`, `:type(addition|multiplication)`).
+	 *
 	 * Returns undefined if no constraint is present.
 	 */
-	private scanOptionalConstraint(): WildcardConstraintName | undefined {
+	private scanOptionalConstraint(): string | undefined {
 		if (this.position >= this.length || this.input[this.position] !== ':') {
 			return undefined;
 		}
@@ -542,26 +579,94 @@ export class PatternTokenizer {
 		const colonPos = this.position;
 		this.position++; // Skip the colon
 
-		// Read the constraint name (letters only)
-		let constraintStr = '';
-		while (this.position < this.length && this.isLetter(this.input[this.position])) {
-			constraintStr += this.input[this.position];
-			this.position++;
-		}
+		// Scan the full constraint expression
+		const constraintExpr = this.scanConstraintExpression();
 
-		if (constraintStr === '') {
+		if (constraintExpr === '') {
 			throw new Error(
-				`Invalid pattern syntax at position ${colonPos}: ':' must be followed by a constraint name (number, integer, positive, negative, nonzero, variable)`
+				`Invalid pattern syntax at position ${colonPos}: ':' must be followed by a constraint expression`
 			);
 		}
 
-		if (!isValidConstraintName(constraintStr)) {
-			throw new Error(
-				`Invalid constraint '${constraintStr}' at position ${colonPos + 1}. Valid constraints: number, integer, positive, negative, nonzero, variable`
-			);
+		return constraintExpr;
+	}
+
+	/**
+	 * Scans a constraint expression which can include:
+	 * - Atomic constraint names (number, integer, positive, etc.)
+	 * - Functional constraints: type(...), freeOf(...)
+	 * - Logical operators: ! (NOT), & (AND), | (OR)
+	 * - Grouping: (...)
+	 *
+	 * The expression ends when we hit a character that's not valid in constraints
+	 * (like +, -, *, /, ^, etc.) or EOF.
+	 */
+	private scanConstraintExpression(): string {
+		let expr = '';
+		let parenDepth = 0;
+
+		while (this.position < this.length) {
+			const char = this.input[this.position];
+
+			// Track parenthesis depth
+			if (char === '(') {
+				parenDepth++;
+				expr += char;
+				this.position++;
+				continue;
+			}
+
+			if (char === ')') {
+				if (parenDepth > 0) {
+					parenDepth--;
+					expr += char;
+					this.position++;
+					continue;
+				}
+				// Unmatched ) - end of constraint expression
+				break;
+			}
+
+			// Inside parentheses, allow any constraint chars plus pipe for type(a|b)
+			if (parenDepth > 0) {
+				if (CONSTRAINT_EXPR_CHARS.test(char)) {
+					expr += char;
+					this.position++;
+					continue;
+				}
+				// Unknown char inside parens - error
+				throw new Error(
+					`Unexpected character '${char}' in constraint expression at position ${this.position}`
+				);
+			}
+
+			// Outside parentheses
+			// Letters, !, &, | are always valid
+			if (/[a-zA-Z!&|]/.test(char)) {
+				expr += char;
+				this.position++;
+				continue;
+			}
+
+			// Whitespace is allowed (will be handled by constraint parser)
+			if (/\s/.test(char)) {
+				expr += char;
+				this.position++;
+				continue;
+			}
+
+			// Comma outside parens ends the expression (could be function arg separator)
+			// Pipe outside parens could be OR operator - allow it
+			// Any other character ends the constraint expression
+			break;
 		}
 
-		return constraintStr;
+		// Check for unmatched parentheses
+		if (parenDepth > 0) {
+			throw new Error(`Unclosed parenthesis in constraint expression at position ${this.position}`);
+		}
+
+		return expr.trim();
 	}
 
 	/**
