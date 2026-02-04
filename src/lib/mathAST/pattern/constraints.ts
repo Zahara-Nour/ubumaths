@@ -9,6 +9,7 @@ import type { PatternConstraint } from './types';
 import type { MathNode, MathNodeType } from '../types';
 import { isNumber, isVariable } from '../guards';
 import { inferType, isSubtype } from '../numtype';
+import { containsValue } from '$lib/math/intervals';
 
 // =============================================================================
 // Helper Functions
@@ -192,6 +193,12 @@ export function checkConstraint(constraint: PatternConstraint, node: MathNode): 
 					return _exhaustive;
 				}
 			}
+		}
+
+		case 'interval': {
+			const value = parseNumberValue(node);
+			if (value === undefined) return false;
+			return containsValue(constraint.domain, value);
 		}
 
 		case 'integer': {

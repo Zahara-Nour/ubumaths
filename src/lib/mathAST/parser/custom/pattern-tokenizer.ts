@@ -123,9 +123,10 @@ export function isValidConstraintName(name: string): name is WildcardConstraintN
 /**
  * Characters valid within constraint expressions.
  * Includes: letters, digits (for numbers), operators (!&|), parentheses, comma,
- * minus (for negative numbers), decimal point, and whitespace.
+ * minus (for negative numbers), plus (for +inf), decimal point, brackets (for interval notation),
+ * and whitespace.
  */
-const CONSTRAINT_EXPR_CHARS = /[a-zA-Z0-9!&|(),.\s-]/;
+const CONSTRAINT_EXPR_CHARS = /[a-zA-Z0-9!&|(),.\s\-+[\]]/;
 
 // =============================================================================
 // Token Interface
@@ -609,6 +610,7 @@ export class PatternTokenizer {
 	private scanConstraintExpression(): string {
 		let expr = '';
 		let parenDepth = 0;
+		let bracketDepth = 0; // Track interval brackets like in]0,10[
 
 		while (this.position < this.length) {
 			const char = this.input[this.position];
@@ -632,20 +634,41 @@ export class PatternTokenizer {
 				break;
 			}
 
-			// Inside parentheses, allow any constraint chars plus pipe for type(a|b)
-			if (parenDepth > 0) {
+			// Track bracket depth for interval notation
+			// In French notation: ] opens interval on left, [ opens on right
+			// Both [ and ] after 'in' start an interval, and the matching one closes it
+			if (char === '[' || char === ']') {
+				// Check if this is starting or ending an interval
+				// An interval starts after 'in' and a bracket
+				const endsWithIn = /\bin$/.test(expr.trim());
+				if (endsWithIn || bracketDepth > 0) {
+					if (bracketDepth === 0) {
+						// Starting an interval
+						bracketDepth = 1;
+					} else {
+						// Closing the interval
+						bracketDepth = 0;
+					}
+				}
+				expr += char;
+				this.position++;
+				continue;
+			}
+
+			// Inside parentheses or brackets, allow any constraint chars
+			if (parenDepth > 0 || bracketDepth > 0) {
 				if (CONSTRAINT_EXPR_CHARS.test(char)) {
 					expr += char;
 					this.position++;
 					continue;
 				}
-				// Unknown char inside parens - error
+				// Unknown char inside parens/brackets - error
 				throw new Error(
 					`Unexpected character '${char}' in constraint expression at position ${this.position}`
 				);
 			}
 
-			// Outside parentheses
+			// Outside parentheses and brackets
 			// Letters, !, &, | are always valid
 			if (/[a-zA-Z!&|]/.test(char)) {
 				expr += char;
@@ -660,15 +683,36 @@ export class PatternTokenizer {
 				continue;
 			}
 
-			// Comma outside parens ends the expression (could be function arg separator)
-			// Pipe outside parens could be OR operator - allow it
+			// Special case for mathematical domain shortcuts: inR+, inR-, inR*, inR+*, inR-*, inN*, inZ*
+			// Allow +, -, * immediately after inR, inN, or inZ
+			if ((char === '+' || char === '-' || char === '*') && /\bin[RNZ]$/.test(expr.trim())) {
+				expr += char;
+				this.position++;
+				// Also check for * after + or - (for inR+*, inR-*)
+				if (
+					(char === '+' || char === '-') &&
+					this.position < this.length &&
+					this.input[this.position] === '*'
+				) {
+					expr += '*';
+					this.position++;
+				}
+				continue;
+			}
+
 			// Any other character ends the constraint expression
+			// (including +, -, *, /, ^ which are operators in pattern syntax)
 			break;
 		}
 
 		// Check for unmatched parentheses
 		if (parenDepth > 0) {
 			throw new Error(`Unclosed parenthesis in constraint expression at position ${this.position}`);
+		}
+
+		// Check for unmatched brackets
+		if (bracketDepth > 0) {
+			throw new Error(`Unclosed bracket in interval expression at position ${this.position}`);
 		}
 
 		return expr.trim();

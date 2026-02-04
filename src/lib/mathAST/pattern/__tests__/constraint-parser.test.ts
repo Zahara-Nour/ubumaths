@@ -213,6 +213,153 @@ describe('Constraint Expression Parser', () => {
 				expect(() => parseConstraintExpr('freeOf(x')).toThrow("Expected ')'");
 			});
 		});
+
+		describe('in]...[  - interval constraints (French notation)', () => {
+			it('parses in]0,+inf[ - positive reals (x > 0)', () => {
+				const constraint = parseConstraintExpr('in]0,+inf[');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in[0,10] - closed interval 0 <= x <= 10', () => {
+				const constraint = parseConstraintExpr('in[0,10]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in[0,10[ - half-open interval 0 <= x < 10', () => {
+				const constraint = parseConstraintExpr('in[0,10[');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in]0,10] - half-open interval 0 < x <= 10', () => {
+				const constraint = parseConstraintExpr('in]0,10]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in]-inf,0[ - negative reals (x < 0)', () => {
+				const constraint = parseConstraintExpr('in]-inf,0[');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in[0,+inf[ - non-negative reals (x >= 0)', () => {
+				const constraint = parseConstraintExpr('in[0,+inf[');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in]-inf,+inf[ - all reals', () => {
+				const constraint = parseConstraintExpr('in]-inf,+inf[');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in[-1,1] - unit interval', () => {
+				const constraint = parseConstraintExpr('in[-1,1]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in[0,pi] - interval with pi constant', () => {
+				const constraint = parseConstraintExpr('in[0,pi]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in]0,e] - interval with e constant', () => {
+				const constraint = parseConstraintExpr('in]0,e]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in[0,sqrt2] - interval with sqrt2 constant', () => {
+				const constraint = parseConstraintExpr('in[0,sqrt2]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in]0,sqrt3[ - interval with sqrt3 constant', () => {
+				const constraint = parseConstraintExpr('in]0,sqrt3[');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses negative number bounds: in[-5,5]', () => {
+				const constraint = parseConstraintExpr('in[-5,5]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses decimal number bounds: in[0.5,1.5]', () => {
+				const constraint = parseConstraintExpr('in[0.5,1.5]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses with whitespace: in[ 0 , 10 ]', () => {
+				const constraint = parseConstraintExpr('in[ 0 , 10 ]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('throws error for missing opening bracket', () => {
+				// 'in0' is parsed as unknown constraint because identifier continues
+				expect(() => parseConstraintExpr('in0,10]')).toThrow("Unknown constraint 'in0'");
+			});
+
+			it('throws error for missing comma', () => {
+				expect(() => parseConstraintExpr('in[0 10]')).toThrow("Expected ','");
+			});
+
+			it('throws error for invalid bound', () => {
+				expect(() => parseConstraintExpr('in[0,unknown]')).toThrow('Unknown interval bound');
+			});
+		});
+
+		describe('mathematical domain shortcuts', () => {
+			it('parses inR - all reals', () => {
+				const constraint = parseConstraintExpr('inR');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses inR+ - non-negative reals (x >= 0)', () => {
+				const constraint = parseConstraintExpr('inR+');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses inR+* - positive reals (x > 0)', () => {
+				const constraint = parseConstraintExpr('inR+*');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses inR* - non-zero reals (x != 0)', () => {
+				const constraint = parseConstraintExpr('inR*');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses inR- - non-positive reals (x <= 0)', () => {
+				const constraint = parseConstraintExpr('inR-');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses inR-* - negative reals (x < 0)', () => {
+				const constraint = parseConstraintExpr('inR-*');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses inN - natural numbers (integers >= 0)', () => {
+				const constraint = parseConstraintExpr('inN');
+				expect(constraint.kind).toBe('and');
+			});
+
+			it('parses inN* - positive integers (integers > 0)', () => {
+				const constraint = parseConstraintExpr('inN*');
+				expect(constraint.kind).toBe('and');
+			});
+
+			it('parses inZ - all integers', () => {
+				const constraint = parseConstraintExpr('inZ');
+				expect(constraint.kind).toBe('integer');
+			});
+
+			it('parses inZ* - non-zero integers', () => {
+				const constraint = parseConstraintExpr('inZ*');
+				expect(constraint.kind).toBe('and');
+			});
+
+			it('parses inN & positive - combined constraints', () => {
+				const constraint = parseConstraintExpr('inN & positive');
+				expect(constraint.kind).toBe('and');
+			});
+		});
 	});
 
 	// =============================================================================
@@ -431,6 +578,45 @@ describe('Constraint Expression Parser', () => {
 		it('parses n:gt(0) & lt(10) for range constraint', () => {
 			const pattern = parsePattern('n:gt(0) & lt(10)');
 			expect(pattern).toEqual(P._('n', P.and(P.gt(0), P.lt(10))));
+		});
+
+		it('parses n:in]0,+inf[ for positive interval constraint', () => {
+			const pattern = parsePattern('n:in]0,+inf[');
+			expect(pattern.type).toBe('wildcard');
+			expect((pattern as { constraint?: { kind: string } }).constraint?.kind).toBe('interval');
+		});
+
+		it('parses n:in[0,10] & integer for interval with integer constraint', () => {
+			const pattern = parsePattern('n:in[0,10] & integer');
+			expect(pattern.type).toBe('wildcard');
+			const constraint = (pattern as { constraint?: { kind: string } }).constraint;
+			expect(constraint?.kind).toBe('and');
+		});
+
+		it('parses n:inR+ for non-negative reals', () => {
+			const pattern = parsePattern('n:inR+');
+			expect(pattern.type).toBe('wildcard');
+			const constraint = (pattern as { constraint?: { kind: string } }).constraint;
+			expect(constraint?.kind).toBe('interval');
+		});
+
+		it('parses n:inN* for positive integers', () => {
+			const pattern = parsePattern('n:inN*');
+			expect(pattern.type).toBe('wildcard');
+			const constraint = (pattern as { constraint?: { kind: string } }).constraint;
+			expect(constraint?.kind).toBe('and');
+		});
+
+		it('parses n:inZ* for non-zero integers', () => {
+			const pattern = parsePattern('n:inZ*');
+			expect(pattern.type).toBe('wildcard');
+			const constraint = (pattern as { constraint?: { kind: string } }).constraint;
+			expect(constraint?.kind).toBe('and');
+		});
+
+		it('parses a:inR+* + b:inR-* for operations with domain constraints', () => {
+			const pattern = parsePattern('a:inR+* + b:inR-*');
+			expect(pattern.type).toBe('addition-pattern');
 		});
 	});
 
