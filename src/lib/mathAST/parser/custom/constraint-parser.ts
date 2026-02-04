@@ -45,6 +45,7 @@ import type { MathNodeType } from '../../types';
 
 type ConstraintTokenType =
 	| 'IDENT'
+	| 'NUMBER'
 	| 'LPAREN'
 	| 'RPAREN'
 	| 'NOT'
@@ -107,6 +108,17 @@ class ConstraintTokenizer {
 			case ',':
 				this.position++;
 				return { type: 'COMMA', value: ',', position: startPos };
+			case '-':
+				// Could be negative number
+				if (this.position + 1 < this.length && this.isDigit(this.input[this.position + 1])) {
+					return this.scanNumber();
+				}
+				throw new Error(`Unexpected '-' at position ${startPos} in constraint expression`);
+		}
+
+		// Number (digits, optionally starting with -)
+		if (this.isDigit(char)) {
+			return this.scanNumber();
 		}
 
 		// Identifier (letters only)
@@ -139,6 +151,44 @@ class ConstraintTokenizer {
 
 	private isLetter(char: string): boolean {
 		return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z');
+	}
+
+	private isDigit(char: string): boolean {
+		return char >= '0' && char <= '9';
+	}
+
+	private scanNumber(): ConstraintToken {
+		const startPos = this.position;
+		let value = '';
+
+		// Handle optional minus sign
+		if (this.input[this.position] === '-') {
+			value += '-';
+			this.position++;
+		}
+
+		// Scan integer part
+		while (this.position < this.length && this.isDigit(this.input[this.position])) {
+			value += this.input[this.position];
+			this.position++;
+		}
+
+		// Scan optional decimal part
+		if (
+			this.position < this.length &&
+			this.input[this.position] === '.' &&
+			this.position + 1 < this.length &&
+			this.isDigit(this.input[this.position + 1])
+		) {
+			value += '.';
+			this.position++;
+			while (this.position < this.length && this.isDigit(this.input[this.position])) {
+				value += this.input[this.position];
+				this.position++;
+			}
+		}
+
+		return { type: 'NUMBER', value, position: startPos };
 	}
 }
 
@@ -211,7 +261,17 @@ function getAtomicConstraint(name: string): PatternConstraint {
 /**
  * Set of functional constraint names
  */
-const FUNCTIONAL_CONSTRAINT_NAMES = new Set(['type', 'freeOf']);
+const FUNCTIONAL_CONSTRAINT_NAMES = new Set([
+	'type',
+	'freeOf',
+	// Comparison operators
+	'gt',
+	'lt',
+	'gte',
+	'lte',
+	'eq',
+	'ne'
+]);
 
 // =============================================================================
 // Binding Power (Precedence)
@@ -449,6 +509,8 @@ class ConstraintParser {
 			return this.parseTypeConstraint();
 		} else if (funcName === 'freeOf') {
 			return this.parseFreeOfConstraint();
+		} else if (['gt', 'lt', 'gte', 'lte', 'eq', 'ne'].includes(funcName)) {
+			return this.parseComparisonConstraint(funcName as 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'ne');
 		}
 
 		throw new Error(`Unknown functional constraint '${funcName}'`);
@@ -498,6 +560,44 @@ class ConstraintParser {
 		this.expect('RPAREN', "Expected ')' after freeOf constraint");
 
 		return P.isFreeOf(...variables);
+	}
+
+	/**
+	 * Parse comparison constraint: gt(n), lt(n), gte(n), lte(n), eq(n), ne(n)
+	 * Takes a single number argument.
+	 */
+	private parseComparisonConstraint(
+		operator: 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'ne'
+	): PatternConstraint {
+		// Expect a number
+		if (this.currentToken.type !== 'NUMBER') {
+			throw new Error(
+				`Expected number in ${operator}(...) at position ${this.currentToken.position}`
+			);
+		}
+		const numToken = this.advance();
+		const value = parseFloat(numToken.value);
+
+		if (!Number.isFinite(value)) {
+			throw new Error(`Invalid number '${numToken.value}' in ${operator}(...)`);
+		}
+
+		this.expect('RPAREN', `Expected ')' after ${operator} constraint`);
+
+		switch (operator) {
+			case 'gt':
+				return P.gt(value);
+			case 'lt':
+				return P.lt(value);
+			case 'gte':
+				return P.gte(value);
+			case 'lte':
+				return P.lte(value);
+			case 'eq':
+				return P.eq(value);
+			case 'ne':
+				return P.ne(value);
+		}
 	}
 }
 

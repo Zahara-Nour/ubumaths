@@ -171,6 +171,29 @@ export function checkConstraint(constraint: PatternConstraint, node: MathNode): 
 			return value !== undefined && value !== 1;
 		}
 
+		case 'comparison': {
+			const nodeValue = parseNumberValue(node);
+			if (nodeValue === undefined) return false;
+			switch (constraint.operator) {
+				case 'gt':
+					return nodeValue > constraint.value;
+				case 'lt':
+					return nodeValue < constraint.value;
+				case 'gte':
+					return nodeValue >= constraint.value;
+				case 'lte':
+					return nodeValue <= constraint.value;
+				case 'eq':
+					return nodeValue === constraint.value;
+				case 'ne':
+					return nodeValue !== constraint.value;
+				default: {
+					const _exhaustive: never = constraint.operator;
+					return _exhaustive;
+				}
+			}
+		}
+
 		case 'integer': {
 			const value = parseNumberValue(node);
 			return value !== undefined && Number.isInteger(value);

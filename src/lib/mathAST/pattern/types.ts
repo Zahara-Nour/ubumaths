@@ -65,6 +65,23 @@ export interface NononeConstraint {
 }
 
 /**
+ * Comparison constraint - matches numbers based on comparison with a value
+ *
+ * Operators:
+ * - 'gt': greater than (>)
+ * - 'lt': less than (<)
+ * - 'gte': greater than or equal (≥)
+ * - 'lte': less than or equal (≤)
+ * - 'eq': equal to (=)
+ * - 'ne': not equal to (≠)
+ */
+export interface ComparisonConstraint {
+	readonly kind: 'comparison';
+	readonly operator: 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'ne';
+	readonly value: number;
+}
+
+/**
  * Integer constraint - matches number nodes with integer values
  */
 export interface IntegerConstraint {
@@ -148,6 +165,7 @@ export type PatternConstraint =
 	| NegativeConstraint
 	| NonzeroConstraint
 	| NononeConstraint
+	| ComparisonConstraint
 	| IntegerConstraint
 	| FreeOfConstraint
 	| CustomConstraint
