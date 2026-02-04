@@ -272,13 +272,10 @@ describe('TinyCAS Syntax Converter', () => {
 			expectConversion('$l{1:2:3:4}', '{{1|2|3|4}}');
 		});
 
-		it('should handle nested random patterns with warning', () => {
+		it('should handle nested random patterns', () => {
 			const result = convertTinyCASToNew('$l{0;$e[1;9]}');
-			expect(result.converted).toBe('{{0|{{1..9}}}}');
-			// The converter only warns for nested patterns when present, not for simple cases
-			if (result.warnings) {
-				expectWarning('$l{0;$e[1;9]}', 'Complex list item');
-			}
+			// Nested patterns use bare syntax (no inner {{}})
+			expect(result.converted).toBe('{{0|1..9}}');
 		});
 
 		it('should convert multiple lists in one string', () => {
@@ -440,9 +437,8 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should handle deeply nested patterns', () => {
 			const input = '$l{0;$e[1;9]\\{&1}}';
 			const result = convertTinyCASToNew(input);
-			expect(result.converted).toBe('{{0|{{1..9!a}}}}');
-			// The warning may or may not be generated depending on the pattern
-			// Just verify the conversion is correct
+			// Nested patterns use bare syntax (no inner {{}})
+			expect(result.converted).toBe('{{0|1..9!a}}');
 		});
 	});
 
@@ -963,6 +959,15 @@ describe('TinyCAS Syntax Converter', () => {
 			expect(toSimplifiedSyntax('{{digits:1..3}}')).toBe('digits:1..3');
 		});
 
+		it('should strip nested {{}} from digits: patterns', () => {
+			// digits: patterns with nested ranges from $d{$e[...];$e[...]} conversion
+			expect(toSimplifiedSyntax('digits:{{1..2}};{{1..2}}')).toBe('digits:1..2;1..2');
+			expect(toSimplifiedSyntax('digits:{{0..2}};{{1..2}}')).toBe('digits:0..2;1..2');
+			expect(toSimplifiedSyntax('digits:{{1..3}};{{1..4-a}}')).toBe('digits:1..3;1..4-a');
+			// With outer {{}}
+			expect(toSimplifiedSyntax('{{digits:{{1..2}};{{0..2}}}}')).toBe('digits:1..2;0..2');
+		});
+
 		it('should strip {{}} from eval patterns', () => {
 			expect(toSimplifiedSyntax('{{eval:a+b}}')).toBe('eval:a+b');
 			expect(toSimplifiedSyntax('{{eval:2*a}}')).toBe('eval:2*a');
@@ -1000,10 +1005,11 @@ describe('TinyCAS Syntax Converter', () => {
 			expect(toSimplifiedSyntax('42')).toBe('42');
 		});
 
-		it('should handle mixed content unchanged', () => {
-			// Multiple tokens or text with {{}} - kept as-is
-			expect(toSimplifiedSyntax('{{a}}+{{b}}')).toBe('{{a}}+{{b}}');
-			expect(toSimplifiedSyntax('Value is {{x}}')).toBe('Value is {{x}}');
+		it('should simplify variable references in mixed content', () => {
+			// Variable references are simplified to bare names
+			expect(toSimplifiedSyntax('{{a}}+{{b}}')).toBe('a+b');
+			// But text content is preserved
+			expect(toSimplifiedSyntax('Value is {{x}}')).toBe('Value is x');
 		});
 	});
 
