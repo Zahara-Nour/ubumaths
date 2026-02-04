@@ -43,15 +43,11 @@ import {
 	interval,
 	openEndpoint,
 	closedEndpoint,
-	fromNumber,
 	positiveInfinity,
-	negativeInfinity,
-	pi,
-	e,
-	sqrt2,
-	sqrt3
+	negativeInfinity
 } from '$lib/math/intervals';
 import type { Endpoint, EndpointValue } from '$lib/math/intervals';
+import { parseCustomPratt } from './parser-pratt';
 
 // =============================================================================
 // Token Types
@@ -191,6 +187,27 @@ class ConstraintTokenizer {
 		const token = this.nextToken();
 		this.position = savedPos;
 		return token;
+	}
+
+	/**
+	 * Get the raw input string.
+	 */
+	getInput(): string {
+		return this.input;
+	}
+
+	/**
+	 * Get current position in the input.
+	 */
+	getPosition(): number {
+		return this.position;
+	}
+
+	/**
+	 * Set the position in the input (used after external parsing).
+	 */
+	setPosition(pos: number): void {
+		this.position = pos;
 	}
 
 	private skipWhitespace(): void {
@@ -385,9 +402,11 @@ const enum BP {
  */
 class ConstraintParser {
 	private readonly tokenizer: ConstraintTokenizer;
+	private readonly input: string;
 	private currentToken: ConstraintToken;
 
 	constructor(input: string) {
+		this.input = input;
 		this.tokenizer = new ConstraintTokenizer(input);
 		this.currentToken = this.tokenizer.nextToken();
 	}
@@ -715,42 +734,46 @@ class ConstraintParser {
 	 * - in[0,10]    → 0 <= x <= 10
 	 * - in[0,10[    → 0 <= x < 10
 	 * - in]-inf,0[  → x < 0
+	 *
+	 * This method bypasses the constraint tokenizer and works directly with
+	 * the input string to support full math expression syntax (including \pi).
 	 */
 	private parseInConstraint(): IntervalConstraint {
+		// Get the position right after 'in' - should be at opening bracket
+		const startPos = this.currentToken.position;
+
 		// Expect opening bracket: [ or ]
 		if (this.currentToken.type !== 'LBRACKET' && this.currentToken.type !== 'RBRACKET') {
-			throw new Error(`Expected '[' or ']' after 'in' at position ${this.currentToken.position}`);
+			throw new Error(`Expected '[' or ']' after 'in' at position ${startPos}`);
 		}
 
 		// French notation: ] means open, [ means closed (for left endpoint)
-		const leftBracket = this.advance();
-		const lowerType: 'open' | 'closed' = leftBracket.value === ']' ? 'open' : 'closed';
+		const leftBracketChar = this.input[startPos];
+		const lowerType: 'open' | 'closed' = leftBracketChar === ']' ? 'open' : 'closed';
 
-		// Parse lower bound
-		const lowerValue = this.parseIntervalBound();
-
-		// Expect comma
-		this.expect('COMMA', "Expected ',' between interval bounds");
-
-		// Parse upper bound
-		const upperValue = this.parseIntervalBound();
-
-		// Expect closing bracket: [ or ]
-		if (this.currentToken.type !== 'LBRACKET' && this.currentToken.type !== 'RBRACKET') {
-			throw new Error(
-				`Expected '[' or ']' at end of interval at position ${this.currentToken.position}`
-			);
-		}
+		// Find the closing bracket and extract the interval content
+		const { commaPos, endBracketPos, rightBracketChar } = this.findIntervalBounds(startPos + 1);
 
 		// French notation: [ means open, ] means closed (for right endpoint)
-		const rightBracket = this.advance();
-		const upperType: 'open' | 'closed' = rightBracket.value === '[' ? 'open' : 'closed';
+		const upperType: 'open' | 'closed' = rightBracketChar === '[' ? 'open' : 'closed';
+
+		// Extract bound strings
+		const lowerStr = this.input.slice(startPos + 1, commaPos).trim();
+		const upperStr = this.input.slice(commaPos + 1, endBracketPos).trim();
+
+		// Parse bounds
+		const lowerValue = this.parseBoundString(lowerStr, startPos + 1);
+		const upperValue = this.parseBoundString(upperStr, commaPos + 1);
 
 		// Build endpoints
 		const lower: Endpoint =
 			lowerType === 'open' ? openEndpoint(lowerValue) : closedEndpoint(lowerValue);
 		const upper: Endpoint =
 			upperType === 'open' ? openEndpoint(upperValue) : closedEndpoint(upperValue);
+
+		// Update tokenizer position to after the interval
+		this.tokenizer.setPosition(endBracketPos + 1);
+		this.currentToken = this.tokenizer.nextToken();
 
 		// Create interval domain
 		const domain = intervalSet([interval(lower, upper)]);
@@ -759,82 +782,71 @@ class ConstraintParser {
 	}
 
 	/**
-	 * Parse an interval bound value.
-	 *
-	 * Supported values:
-	 * - Numbers: 0, 1, -5, 3.14
-	 * - Infinity: +inf, -inf, inf
-	 * - Constants: pi, e, sqrt2, sqrt3
+	 * Find interval bounds: the comma position and closing bracket position.
+	 * Handles nested parentheses/braces.
 	 */
-	private parseIntervalBound(): EndpointValue {
-		// Check for +inf or -inf
-		if (this.currentToken.type === 'PLUS') {
-			this.advance(); // consume +
-			if (this.currentToken.type === 'IDENT' && this.currentToken.value === 'inf') {
-				this.advance(); // consume inf
-				return positiveInfinity();
+	private findIntervalBounds(startPos: number): {
+		commaPos: number;
+		endBracketPos: number;
+		rightBracketChar: string;
+	} {
+		let pos = startPos;
+		let depth = 0;
+		let commaPos = -1;
+
+		while (pos < this.input.length) {
+			const char = this.input[pos];
+
+			// Track nesting depth
+			if (char === '(' || char === '{') {
+				depth++;
+			} else if (char === ')' || char === '}') {
+				depth--;
 			}
-			throw new Error(`Expected 'inf' after '+' at position ${this.currentToken.position}`);
+
+			// Find comma at depth 0
+			if (depth === 0 && char === ',' && commaPos === -1) {
+				commaPos = pos;
+			}
+
+			// Find closing bracket at depth 0
+			if (depth === 0 && (char === '[' || char === ']') && commaPos !== -1) {
+				return { commaPos, endBracketPos: pos, rightBracketChar: char };
+			}
+
+			pos++;
 		}
 
-		if (this.currentToken.type === 'MINUS') {
-			this.advance(); // consume -
-			if (this.currentToken.type === 'IDENT' && this.currentToken.value === 'inf') {
-				this.advance(); // consume inf
-				return negativeInfinity();
-			}
-			// Negative number
-			if (this.currentToken.type === 'NUMBER') {
-				const numToken = this.advance();
-				const value = -parseFloat(numToken.value);
-				return fromNumber(value);
-			}
-			throw new Error(
-				`Expected number or 'inf' after '-' at position ${this.currentToken.position}`
-			);
+		throw new Error(`Malformed interval at position ${startPos}: missing comma or closing bracket`);
+	}
+
+	/**
+	 * Parse a bound string into an EndpointValue.
+	 * Handles special cases like +inf, -inf, inf.
+	 */
+	private parseBoundString(boundStr: string, position: number): EndpointValue {
+		const trimmed = boundStr.trim();
+
+		if (!trimmed) {
+			throw new Error(`Empty interval bound at position ${position}`);
 		}
 
-		// Check for plain 'inf' (treated as +inf)
-		if (this.currentToken.type === 'IDENT' && this.currentToken.value === 'inf') {
-			this.advance();
+		// Handle infinity
+		if (trimmed === '+inf' || trimmed === 'inf') {
 			return positiveInfinity();
 		}
-
-		// Check for named constants
-		if (this.currentToken.type === 'IDENT') {
-			const name = this.currentToken.value;
-			switch (name) {
-				case 'pi':
-					this.advance();
-					return pi();
-				case 'e':
-					this.advance();
-					return e();
-				case 'sqrt2':
-					this.advance();
-					return sqrt2();
-				case 'sqrt3':
-					this.advance();
-					return sqrt3();
-				default:
-					throw new Error(
-						`Unknown interval bound '${name}' at position ${this.currentToken.position}. ` +
-							`Valid bounds: numbers, +inf, -inf, pi, e, sqrt2, sqrt3`
-					);
-			}
+		if (trimmed === '-inf') {
+			return negativeInfinity();
 		}
 
-		// Number
-		if (this.currentToken.type === 'NUMBER') {
-			const numToken = this.advance();
-			const value = parseFloat(numToken.value);
-			return fromNumber(value);
+		// Parse with math parser
+		try {
+			return parseCustomPratt(trimmed);
+		} catch (err) {
+			throw new Error(
+				`Invalid interval bound '${trimmed}' at position ${position}: ${err instanceof Error ? err.message : String(err)}`
+			);
 		}
-
-		throw new Error(
-			`Expected interval bound at position ${this.currentToken.position}. ` +
-				`Valid bounds: numbers, +inf, -inf, pi, e, sqrt2, sqrt3`
-		);
 	}
 }
 

@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import { checkConstraint, containsVariable, isFreeOfVariables } from '../constraints';
 import { P } from '../builder';
+import type { PatternConstraint } from '../types';
 import { number, variable, add, multiply, divide, opposite, func, greek } from '../../factory';
 import {
 	intervalSet,
@@ -13,6 +14,7 @@ import {
 	leftClosedInterval,
 	fromNumber
 } from '$lib/math/intervals';
+import { parsePattern } from '../../parser/custom/pattern-parser';
 
 describe('Constraint Evaluation', () => {
 	// ===========================================================================
@@ -555,6 +557,98 @@ describe('Constraint Evaluation', () => {
 				expect(checkConstraint(customInterval, number('0'))).toBe(true);
 				expect(checkConstraint(customInterval, number('10'))).toBe(false);
 				expect(checkConstraint(customInterval, number('5'))).toBe(true);
+			});
+		});
+
+		describe('symbolic bounds (parsed from pattern strings)', () => {
+			// Note: Use \pi for π (not just 'pi' which parses as p*i)
+			// Use e for Euler's number (recognized as reserved constant)
+
+			it('matches interval with \\pi bound: in]0,\\pi]', () => {
+				const pattern = parsePattern('n:in]0,\\pi]') as {
+					type: 'wildcard';
+					constraint?: unknown;
+				};
+				expect(pattern.type).toBe('wildcard');
+				expect(pattern.constraint).toBeDefined();
+
+				const constraint = pattern.constraint as PatternConstraint;
+				// pi ≈ 3.14159...
+				expect(checkConstraint(constraint, number('1'))).toBe(true);
+				expect(checkConstraint(constraint, number('3'))).toBe(true);
+				expect(checkConstraint(constraint, number('3.14159'))).toBe(true);
+				expect(checkConstraint(constraint, number('0'))).toBe(false); // open at 0
+				expect(checkConstraint(constraint, number('4'))).toBe(false); // > pi
+			});
+
+			it('matches interval with 2*\\pi bound: in]0,2*\\pi[', () => {
+				const pattern = parsePattern('n:in]0,2*\\pi[') as {
+					type: 'wildcard';
+					constraint?: unknown;
+				};
+				const constraint = pattern.constraint as PatternConstraint;
+				// 2*pi ≈ 6.28318...
+				expect(checkConstraint(constraint, number('3'))).toBe(true);
+				expect(checkConstraint(constraint, number('6'))).toBe(true);
+				expect(checkConstraint(constraint, number('6.28'))).toBe(true);
+				expect(checkConstraint(constraint, number('0'))).toBe(false);
+				expect(checkConstraint(constraint, number('7'))).toBe(false);
+			});
+
+			it('matches interval with sqrt(2) bound: in[1,sqrt(2)]', () => {
+				const pattern = parsePattern('n:in[1,sqrt(2)]') as {
+					type: 'wildcard';
+					constraint?: unknown;
+				};
+				const constraint = pattern.constraint as PatternConstraint;
+				// sqrt(2) ≈ 1.41421...
+				expect(checkConstraint(constraint, number('1'))).toBe(true);
+				expect(checkConstraint(constraint, number('1.2'))).toBe(true);
+				expect(checkConstraint(constraint, number('1.41'))).toBe(true);
+				expect(checkConstraint(constraint, number('1.42'))).toBe(false); // > sqrt(2)
+				expect(checkConstraint(constraint, number('0.9'))).toBe(false);
+			});
+
+			it('matches interval with fraction bounds: in[-1/2,1/2]', () => {
+				const pattern = parsePattern('n:in[-1/2,1/2]') as {
+					type: 'wildcard';
+					constraint?: unknown;
+				};
+				const constraint = pattern.constraint as PatternConstraint;
+				expect(checkConstraint(constraint, number('0'))).toBe(true);
+				expect(checkConstraint(constraint, number('0.25'))).toBe(true);
+				expect(checkConstraint(constraint, number('-0.25'))).toBe(true);
+				expect(checkConstraint(constraint, number('0.5'))).toBe(true);
+				expect(checkConstraint(constraint, number('-0.5'))).toBe(true);
+				expect(checkConstraint(constraint, number('0.6'))).toBe(false);
+				expect(checkConstraint(constraint, number('-0.6'))).toBe(false);
+			});
+
+			it('matches interval with complex expression: in[(1+sqrt(5))/2,2]', () => {
+				const pattern = parsePattern('n:in[(1+sqrt(5))/2,2]') as {
+					type: 'wildcard';
+					constraint?: unknown;
+				};
+				const constraint = pattern.constraint as PatternConstraint;
+				// Golden ratio φ ≈ 1.6180339887...
+				// Note: 1.618 < φ, so it's NOT in the interval [φ, 2]
+				expect(checkConstraint(constraint, number('1.6181'))).toBe(true); // > φ
+				expect(checkConstraint(constraint, number('1.7'))).toBe(true);
+				expect(checkConstraint(constraint, number('2'))).toBe(true);
+				expect(checkConstraint(constraint, number('1.618'))).toBe(false); // < φ (barely)
+				expect(checkConstraint(constraint, number('1.5'))).toBe(false); // < φ
+				expect(checkConstraint(constraint, number('2.1'))).toBe(false);
+			});
+
+			it('matches interval with e bound: in]0,e[', () => {
+				const pattern = parsePattern('n:in]0,e[') as { type: 'wildcard'; constraint?: unknown };
+				const constraint = pattern.constraint as PatternConstraint;
+				// e ≈ 2.71828...
+				expect(checkConstraint(constraint, number('1'))).toBe(true);
+				expect(checkConstraint(constraint, number('2'))).toBe(true);
+				expect(checkConstraint(constraint, number('2.7'))).toBe(true);
+				expect(checkConstraint(constraint, number('0'))).toBe(false);
+				expect(checkConstraint(constraint, number('3'))).toBe(false);
 			});
 		});
 	});

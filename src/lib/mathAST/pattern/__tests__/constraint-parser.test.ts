@@ -255,23 +255,25 @@ describe('Constraint Expression Parser', () => {
 				expect(constraint.kind).toBe('interval');
 			});
 
-			it('parses in[0,pi] - interval with pi constant', () => {
-				const constraint = parseConstraintExpr('in[0,pi]');
+			it('parses in[0,\\pi] - interval with pi constant', () => {
+				// Note: Use \pi for π (not 'pi' which parses as p*i)
+				const constraint = parseConstraintExpr('in[0,\\pi]');
 				expect(constraint.kind).toBe('interval');
 			});
 
 			it('parses in]0,e] - interval with e constant', () => {
+				// e is recognized as Euler's number constant
 				const constraint = parseConstraintExpr('in]0,e]');
 				expect(constraint.kind).toBe('interval');
 			});
 
-			it('parses in[0,sqrt2] - interval with sqrt2 constant', () => {
-				const constraint = parseConstraintExpr('in[0,sqrt2]');
+			it('parses in[0,sqrt(2)] - interval with sqrt(2) expression', () => {
+				const constraint = parseConstraintExpr('in[0,sqrt(2)]');
 				expect(constraint.kind).toBe('interval');
 			});
 
-			it('parses in]0,sqrt3[ - interval with sqrt3 constant', () => {
-				const constraint = parseConstraintExpr('in]0,sqrt3[');
+			it('parses in]0,sqrt(3)[ - interval with sqrt(3) expression', () => {
+				const constraint = parseConstraintExpr('in]0,sqrt(3)[');
 				expect(constraint.kind).toBe('interval');
 			});
 
@@ -296,11 +298,63 @@ describe('Constraint Expression Parser', () => {
 			});
 
 			it('throws error for missing comma', () => {
-				expect(() => parseConstraintExpr('in[0 10]')).toThrow("Expected ','");
+				// Without comma, the parser can't find interval bounds
+				expect(() => parseConstraintExpr('in[0 10]')).toThrow('missing comma or closing bracket');
 			});
 
-			it('throws error for invalid bound', () => {
-				expect(() => parseConstraintExpr('in[0,unknown]')).toThrow('Unknown interval bound');
+			it('parses variable as bound (detected at evaluation time, not parse time)', () => {
+				// With full math expression support, "unknown" parses as a variable
+				// The constraint system will fail at evaluation time if used with non-numeric value
+				const constraint = parseConstraintExpr('in[0,x]');
+				expect(constraint.kind).toBe('interval');
+			});
+		});
+
+		describe('in]...[ with complex math expressions', () => {
+			it('parses in]0,2*\\pi[ - expression with multiplication', () => {
+				// Note: Use \pi for π
+				const constraint = parseConstraintExpr('in]0,2*\\pi[');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in[-1/2,1/2] - fractions as bounds', () => {
+				const constraint = parseConstraintExpr('in[-1/2,1/2]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in[sqrt(2)/2,1] - expression with division and function', () => {
+				const constraint = parseConstraintExpr('in[sqrt(2)/2,1]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in]0,sqrt(2)+1[ - expression with addition', () => {
+				const constraint = parseConstraintExpr('in]0,sqrt(2)+1[');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in[\\pi/4,\\pi/2] - multiple expressions with pi', () => {
+				const constraint = parseConstraintExpr('in[\\pi/4,\\pi/2]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in]0,ln(2)[ - natural logarithm', () => {
+				const constraint = parseConstraintExpr('in]0,ln(2)[');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in[sin(\\pi/6),cos(\\pi/3)] - trig functions', () => {
+				const constraint = parseConstraintExpr('in[sin(\\pi/6),cos(\\pi/3)]');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in]0,e^2[ - exponential', () => {
+				const constraint = parseConstraintExpr('in]0,e^2[');
+				expect(constraint.kind).toBe('interval');
+			});
+
+			it('parses in[(1+sqrt(5))/2,2] - golden ratio as bound', () => {
+				const constraint = parseConstraintExpr('in[(1+sqrt(5))/2,2]');
+				expect(constraint.kind).toBe('interval');
 			});
 		});
 
