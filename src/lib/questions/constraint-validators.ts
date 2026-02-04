@@ -463,10 +463,11 @@ function hasBracketViolation(latex: string, allowFirstNegative: boolean): boolea
 		return true;
 	}
 
-	// Case 2: First term is parenthesized negative AND allowFirstNegative is true
-	// In this case, the brackets are UNNECESSARY (could write -5+3 instead of (-5)+3)
+	// Case 2: First term is parenthesized negative
+	// With allowFirstNegative: true → accept (no violation)
+	// With allowFirstNegative: false → violation (brackets unnecessary, write -5+3)
 	const firstNegParen = getFirstNegativeParenNode(ast);
-	if (firstNegParen && allowFirstNegative) {
+	if (firstNegParen && !allowFirstNegative) {
 		return true;
 	}
 

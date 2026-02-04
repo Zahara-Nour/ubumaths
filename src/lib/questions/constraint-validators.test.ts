@@ -466,17 +466,16 @@ describe('checkBrackets', () => {
 			expect(checkBrackets(['(-123)'])).toEqual([0]);
 		});
 
-		it('should flag first negative brackets when allowFirstNegative is true', () => {
-			// With allowFirstNegative: true, brackets around first negative are UNNECESSARY
-			// (could write -5+3 instead of (-5)+3)
+		it('should accept first negative brackets when allowFirstNegative is true', () => {
+			// With allowFirstNegative: true, we ACCEPT brackets around first negative
 			const result = checkBrackets(['(-5)+3'], { allowFirstNegative: true });
-			expect(result).toEqual([0]);
+			expect(result).toHaveLength(0);
 		});
 
-		it('should accept first negative brackets when allowFirstNegative is false', () => {
-			// With allowFirstNegative: false, brackets around first negative are REQUIRED
+		it('should flag first negative brackets when allowFirstNegative is false', () => {
+			// With allowFirstNegative: false, brackets are unnecessary (write -5+3)
 			const result = checkBrackets(['(-5)+3'], { allowFirstNegative: false });
-			expect(result).toHaveLength(0);
+			expect(result).toEqual([0]);
 		});
 
 		it('should accept negative in brackets in middle of expression (a+(-b) pattern)', () => {
