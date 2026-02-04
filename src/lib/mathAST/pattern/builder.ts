@@ -40,6 +40,7 @@ import type {
 	PositiveConstraint,
 	NegativeConstraint,
 	NonzeroConstraint,
+	NononeConstraint,
 	IntegerConstraint,
 	FreeOfConstraint,
 	CustomConstraint,
@@ -582,6 +583,18 @@ function isNonzero(): NonzeroConstraint {
 }
 
 /**
+ * Creates a non-one constraint (value different from 1)
+ *
+ * @returns A nonone constraint
+ *
+ * @example
+ * P._('n', P.isNonone())  // Match values different from 1 (useful for exponents)
+ */
+function isNonone(): NononeConstraint {
+	return { kind: 'nonone' } as const;
+}
+
+/**
  * Creates an integer constraint
  *
  * @returns An integer constraint
@@ -931,6 +944,7 @@ export const P = {
 	isPositive,
 	isNegative,
 	isNonzero,
+	isNonone,
 	isInteger,
 	isFreeOf,
 	custom,
@@ -986,6 +1000,7 @@ export {
 	isPositive,
 	isNegative,
 	isNonzero,
+	isNonone,
 	isInteger,
 	isFreeOf,
 	custom,
