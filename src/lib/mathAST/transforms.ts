@@ -860,6 +860,400 @@ export function cloneNode<T extends MathNode>(node: T): T {
 }
 
 // =============================================================================
+// Bracket Stripping
+// =============================================================================
+
+/**
+ * Options for stripUnnecessaryBrackets
+ */
+export interface StripBracketsOptions {
+	/**
+	 * When true, preserves brackets around a leading negative term.
+	 * Example: (-5)+3 keeps its brackets, 2+(-5) still strips them.
+	 * Default: false (strip all unnecessary brackets)
+	 */
+	allowFirstNegative?: boolean;
+}
+
+/**
+ * Checks if a delimiter node contains a "simple" element that doesn't need brackets.
+ * Simple elements are: numbers, variables, greek letters, symbols, holes, constants,
+ * functions (already delimited), divisions (fractions), delimiters (already delimited).
+ */
+function isSimpleElement(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+		case 'variable':
+		case 'greek':
+		case 'symbol':
+		case 'hole':
+		case 'constant':
+		case 'function': // Functions already have their own delimiters
+		case 'division': // Fractions are visually delimited
+		case 'delimiter': // Already delimited
+			return true;
+		default:
+			return false;
+	}
+}
+
+/**
+ * Checks if a node is a negative value that may need brackets in certain contexts.
+ * Examples: -5, -x, -(a+b)
+ */
+function isNegativeNode(node: MathNode): boolean {
+	return node.type === 'opposite';
+}
+
+/**
+ * Checks if brackets are needed for an opposite node inside an additive context.
+ * Brackets are needed when the opposite is NOT the first term in a sum.
+ *
+ * @param node - The opposite node
+ * @param isFirstTerm - Whether this is the first term in the expression
+ * @param allowFirstNegative - Whether to preserve brackets around first negative
+ */
+function needsBracketsForOpposite(
+	_node: MathNode,
+	isFirstTerm: boolean,
+	allowFirstNegative: boolean
+): boolean {
+	// If allowFirstNegative and this is the first term, brackets are needed
+	// Otherwise, brackets are needed when NOT the first term (middle of expression)
+	if (isFirstTerm) {
+		return allowFirstNegative;
+	}
+	// In the middle of an expression like 2 + (-5), brackets ARE needed for -5
+	return true;
+}
+
+/**
+ * Internal context for bracket stripping
+ */
+interface StripContext {
+	/** Whether this is the first term in an additive expression */
+	isFirstTerm: boolean;
+	/** Whether we are at the root level of the expression */
+	isRoot: boolean;
+	/** Strip options */
+	options: StripBracketsOptions;
+}
+
+/**
+ * Internal helper to strip brackets recursively.
+ *
+ * @param node - The node to process
+ * @param ctx - The stripping context
+ * @returns The processed node with unnecessary brackets removed
+ */
+function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
+	const { isFirstTerm, isRoot, options } = ctx;
+	const allowFirstNegative = options.allowFirstNegative ?? false;
+
+	// Context for children - not root, not first term by default
+	const childCtx: StripContext = { isFirstTerm: false, isRoot: false, options };
+
+	switch (node.type) {
+		// Literals - no children, return as-is
+		case 'number':
+		case 'variable':
+		case 'greek':
+		case 'symbol':
+		case 'hole':
+		case 'constant':
+		case 'infinity':
+		case 'signed-zero':
+			return node;
+
+		// Delimiter - the main case for stripping
+		case 'delimiter': {
+			// First, recursively strip the content (content is considered root if this delimiter is root)
+			const contentCtx: StripContext = { isFirstTerm, isRoot, options };
+			const strippedContent = stripBracketsInternal(node.content, contentCtx);
+
+			// Check if we can strip this delimiter
+			// We only strip parentheses, not other delimiters like brackets or braces with semantic meaning
+			if (node.delimiters !== 'parentheses') {
+				// Rebuild with stripped content but keep the delimiter
+				return delimiter(node.delimiters, strippedContent, node.semantic, {
+					delimiterMetadata: node.delimiterMetadata,
+					leftDelimiterMetadata: node.leftDelimiterMetadata,
+					rightDelimiterMetadata: node.rightDelimiterMetadata,
+					metadata: node.metadata
+				});
+			}
+
+			// For parentheses, check if they're unnecessary
+			// Case 1: Simple element inside - (5), (x), (sin(x)), (\frac{1}{2})
+			if (isSimpleElement(strippedContent)) {
+				return strippedContent;
+			}
+
+			// Case 2: Another delimiter inside - ((x+1))
+			if (strippedContent.type === 'delimiter') {
+				return strippedContent;
+			}
+
+			// Case 3: At root level, brackets around any expression are unnecessary
+			// (2+3), (2*3), etc. at root level -> strip them
+			if (isRoot) {
+				// Special case: if it's a negative and allowFirstNegative is true, keep brackets
+				if (isNegativeNode(strippedContent) && allowFirstNegative) {
+					return delimiter(node.delimiters, strippedContent, node.semantic, {
+						delimiterMetadata: node.delimiterMetadata,
+						leftDelimiterMetadata: node.leftDelimiterMetadata,
+						rightDelimiterMetadata: node.rightDelimiterMetadata,
+						metadata: node.metadata
+					});
+				}
+				return strippedContent;
+			}
+
+			// Case 4: Negative inside (not root) - we may need to keep brackets
+			if (isNegativeNode(strippedContent)) {
+				if (needsBracketsForOpposite(strippedContent, isFirstTerm, allowFirstNegative)) {
+					// Keep the brackets
+					return delimiter(node.delimiters, strippedContent, node.semantic, {
+						delimiterMetadata: node.delimiterMetadata,
+						leftDelimiterMetadata: node.leftDelimiterMetadata,
+						rightDelimiterMetadata: node.rightDelimiterMetadata,
+						metadata: node.metadata
+					});
+				}
+				// Strip the brackets - return the content directly
+				return strippedContent;
+			}
+
+			// Case 5: Superscript (power) - keep brackets to avoid ambiguity like (x+1)^2
+			if (strippedContent.type === 'superscript') {
+				return delimiter(node.delimiters, strippedContent, node.semantic, {
+					delimiterMetadata: node.delimiterMetadata,
+					leftDelimiterMetadata: node.leftDelimiterMetadata,
+					rightDelimiterMetadata: node.rightDelimiterMetadata,
+					metadata: node.metadata
+				});
+			}
+
+			// Default: keep brackets for complex content (sums, products, etc.)
+			return delimiter(node.delimiters, strippedContent, node.semantic, {
+				delimiterMetadata: node.delimiterMetadata,
+				leftDelimiterMetadata: node.leftDelimiterMetadata,
+				rightDelimiterMetadata: node.rightDelimiterMetadata,
+				metadata: node.metadata
+			});
+		}
+
+		// Binary operations - process children
+		case 'addition':
+			return add(
+				stripBracketsInternal(node.left, { ...childCtx, isFirstTerm: true }),
+				stripBracketsInternal(node.right, childCtx),
+				{
+					operatorMetadata: node.operatorMetadata,
+					metadata: node.metadata
+				}
+			);
+
+		case 'subtraction':
+			return subtract(
+				stripBracketsInternal(node.left, { ...childCtx, isFirstTerm: true }),
+				stripBracketsInternal(node.right, childCtx),
+				{
+					operatorMetadata: node.operatorMetadata,
+					metadata: node.metadata
+				}
+			);
+
+		case 'multiplication':
+			return multiply(
+				stripBracketsInternal(node.left, { ...childCtx, isFirstTerm: true }),
+				stripBracketsInternal(node.right, childCtx),
+				node.displayStyle,
+				{
+					operatorMetadata: node.operatorMetadata,
+					metadata: node.metadata
+				}
+			);
+
+		case 'division':
+			// For fractions, strip brackets in numerator and denominator
+			// Numerator and denominator are "root-like" contexts (isolated)
+			return divide(
+				stripBracketsInternal(node.numerator, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				stripBracketsInternal(node.denominator, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				node.displayStyle,
+				{
+					operatorMetadata: node.operatorMetadata,
+					metadata: node.metadata
+				}
+			);
+
+		// Unary operations
+		case 'opposite':
+			return opposite(stripBracketsInternal(node.operand, { ...childCtx, isFirstTerm: true }), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			});
+
+		case 'positive':
+			return positive(stripBracketsInternal(node.operand, { ...childCtx, isFirstTerm: true }), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			});
+
+		// Function - strip brackets in arguments and power
+		case 'function':
+			return func(
+				node.name,
+				node.args.map((arg) =>
+					stripBracketsInternal(arg, { ...childCtx, isRoot: true, isFirstTerm: true })
+				),
+				{
+					...(node.power && {
+						power: stripBracketsInternal(node.power, {
+							...childCtx,
+							isRoot: true,
+							isFirstTerm: true
+						})
+					}),
+					...(node.base && {
+						base: stripBracketsInternal(node.base, { ...childCtx, isRoot: true, isFirstTerm: true })
+					}),
+					...(node.derivativeOrder !== undefined && { derivativeOrder: node.derivativeOrder }),
+					...(node.isInverse && { isInverse: node.isInverse }),
+					...(node.nameMetadata && { nameMetadata: node.nameMetadata }),
+					...(node.delimiterMetadata && { delimiterMetadata: node.delimiterMetadata }),
+					...(node.leftDelimiterMetadata && { leftDelimiterMetadata: node.leftDelimiterMetadata }),
+					...(node.rightDelimiterMetadata && {
+						rightDelimiterMetadata: node.rightDelimiterMetadata
+					}),
+					...(node.metadata && { metadata: node.metadata })
+				}
+			);
+
+		// Subscript - strip brackets in base and subscript
+		case 'subscript':
+			return subscript(
+				stripBracketsInternal(node.base, childCtx),
+				stripBracketsInternal(node.subscript, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				node.metadata
+			);
+
+		// Superscript - strip brackets in superscript (exponent)
+		case 'superscript':
+			return superscript(
+				stripBracketsInternal(node.base, childCtx),
+				stripBracketsInternal(node.superscript, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				node.metadata
+			);
+
+		// Relation - strip brackets on both sides
+		case 'relation':
+			return relation(
+				node.relation,
+				stripBracketsInternal(node.left, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				stripBracketsInternal(node.right, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				{
+					relationMetadata: node.relationMetadata,
+					metadata: node.metadata
+				}
+			);
+
+		// Unit - strip brackets in expression
+		case 'unit':
+			return withUnit(stripBracketsInternal(node.expression, childCtx), node.unit, {
+				unitMetadata: node.unitMetadata,
+				metadata: node.metadata
+			});
+
+		// Composition - strip brackets in both functions
+		case 'composition':
+			return compose(
+				stripBracketsInternal(node.outer, childCtx),
+				stripBracketsInternal(node.inner, childCtx),
+				{
+					operatorMetadata: node.operatorMetadata,
+					metadata: node.metadata
+				}
+			);
+
+		// Matrix - strip brackets in all elements
+		case 'matrix': {
+			const strippedRows = node.rows.map((row) =>
+				row.map((elem) =>
+					stripBracketsInternal(elem, { ...childCtx, isRoot: true, isFirstTerm: true })
+				)
+			);
+			return matrix(strippedRows, {
+				matrixType: node.matrixType,
+				metadata: node.metadata
+			});
+		}
+
+		// Complex number - strip brackets in real and imaginary parts
+		case 'complex':
+			return complex(
+				stripBracketsInternal(node.real, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				stripBracketsInternal(node.imaginary, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				node.metadata
+			);
+
+		// Limit - strip brackets in expression and approach
+		case 'limit':
+			return limit(
+				stripBracketsInternal(node.expression, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				node.variable,
+				stripBracketsInternal(node.approach, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				node.direction,
+				node.metadata
+			);
+	}
+}
+
+/**
+ * Strips unnecessary brackets from a MathAST node.
+ *
+ * Removes parentheses that don't affect the mathematical meaning:
+ * - Global parentheses: (x+1) → x+1
+ * - Double parentheses: ((x+1)) → x+1
+ * - Simple elements: (5), (x), (sin(x)), (\frac{1}{2}) → 5, x, sin(x), \frac{1}{2}
+ * - Inside fractions: \frac{(x)}{2} → \frac{x}{2}
+ * - Inside exponents: x^{(2)} → x^2
+ *
+ * Preserves brackets when mathematically necessary:
+ * - Negative terms in middle of expression: 2+(-5) keeps brackets
+ * - With allowFirstNegative: (-5)+3 keeps brackets around first negative
+ *
+ * @param node - The MathAST node to process
+ * @param options - Configuration options
+ * @returns A new node with unnecessary brackets removed
+ *
+ * @example
+ * // Simple element
+ * stripUnnecessaryBrackets(parseLatex('(5)')) // → number(5)
+ *
+ * @example
+ * // Double parentheses
+ * stripUnnecessaryBrackets(parseLatex('((x+1))')) // → add(x, 1)
+ *
+ * @example
+ * // Preserve negative in middle
+ * stripUnnecessaryBrackets(parseLatex('2+(-5)')) // → 2+(-5)
+ *
+ * @example
+ * // With allowFirstNegative
+ * stripUnnecessaryBrackets(parseLatex('(-5)+3'), { allowFirstNegative: true }) // → (-5)+3
+ */
+export function stripUnnecessaryBrackets(node: MathNode, options?: StripBracketsOptions): MathNode {
+	const ctx: StripContext = {
+		isFirstTerm: true,
+		isRoot: true,
+		options: options ?? {}
+	};
+	return stripBracketsInternal(node, ctx);
+}
+
+// =============================================================================
 // Tree Statistics
 // =============================================================================
 

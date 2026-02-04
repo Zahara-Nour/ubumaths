@@ -214,8 +214,11 @@ export {
 	replaceNode,
 	cloneNode,
 	countNodes,
-	getDepth
+	getDepth,
+	stripUnnecessaryBrackets
 } from './transforms';
+
+export type { StripBracketsOptions } from './transforms';
 
 // =============================================================================
 // Type Guards

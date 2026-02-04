@@ -216,6 +216,17 @@ export interface QuestionVariation {
 	 * @see validation-rule-evaluator.ts for rule evaluation
 	 */
 	validationRules?: ValidationRule[];
+
+	/**
+	 * Required structural form for the answer.
+	 *
+	 * If set, validates that the answer is in this specific form.
+	 * If value is correct but form is wrong -> bad_form (0 points)
+	 *
+	 * @example { requiredForm: 'product' } // Answer must be a*b
+	 * @example { requiredForm: 'fraction' } // Answer must be a/b
+	 */
+	requiredForm?: RequiredForm;
 }
 
 /**
@@ -249,6 +260,13 @@ export interface SharedVariationDefaults {
 
 	/** Shared validation rules */
 	validationRules?: ValidationRule[];
+
+	/**
+	 * Shared required form for answer validation.
+	 *
+	 * @see QuestionVariation.requiredForm
+	 */
+	requiredForm?: RequiredForm;
 }
 
 // ============================================================================
@@ -521,6 +539,14 @@ export interface QuestionInstance {
 	 * - Enable color consistency verification in tests
 	 */
 	resolvedColors?: Record<string, string>;
+
+	/**
+	 * Required form for the answer (copied from variation/shared).
+	 *
+	 * If set, validates that the answer is in this specific structural form.
+	 * If value is correct but form is wrong -> bad_form (0 points)
+	 */
+	requiredForm?: RequiredForm;
 }
 
 // ============================================================================
@@ -629,6 +655,34 @@ export interface ConstraintOptions {
 	signs?: ConstraintMode;
 	reducedFractions?: ConstraintMode;
 }
+
+// ============================================================================
+// REQUIRED FORM CONSTRAINT
+// ============================================================================
+
+/**
+ * Required structural form for an answer.
+ *
+ * Validates that the student's answer is written in a specific form,
+ * independent of its mathematical value. If the value is correct but
+ * the form is wrong, the answer is marked as 'bad_form' (0 points).
+ *
+ * Predefined forms:
+ * - 'product': Must be a multiplication (e.g., 2×3, a×b), but 1×n is rejected
+ * - 'sum': Must be an addition (e.g., 2+3, a+b)
+ * - 'fraction': Must be a fraction (e.g., 1/2, a/b)
+ * - 'power': Must be a power/exponent (e.g., x², 2³)
+ *
+ * Custom pattern: Use a pattern string with placeholders
+ * - { pattern: 'a:integer * b:integer' }
+ *
+ * @example Predefined form
+ * { requiredForm: 'product' }
+ *
+ * @example Custom pattern
+ * { requiredForm: { pattern: 'a:integer * b:integer' } }
+ */
+export type RequiredForm = 'product' | 'sum' | 'fraction' | 'power' | { pattern: string };
 
 // ============================================================================
 // UNIFIED CORRECTION SYSTEM

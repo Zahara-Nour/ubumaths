@@ -13,7 +13,8 @@ import {
 	replaceNode,
 	cloneNode,
 	countNodes,
-	getDepth
+	getDepth,
+	stripUnnecessaryBrackets
 } from '../transforms';
 import {
 	number,
@@ -33,7 +34,8 @@ import {
 	parentheses,
 	subscript,
 	superscript,
-	equals
+	equals,
+	fraction
 } from '../factory';
 
 describe('transforms', () => {
@@ -643,6 +645,201 @@ describe('transforms', () => {
 			const inner = sin(variable('x'));
 			const outer = sin(inner);
 			expect(getDepth(outer)).toBe(3);
+		});
+	});
+
+	// =============================================================================
+	// Bracket Stripping
+	// =============================================================================
+
+	describe('stripUnnecessaryBrackets', () => {
+		describe('simple elements', () => {
+			it('strips parentheses around number: (5) -> 5', () => {
+				const node = parentheses(number('5'));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('number');
+				expect((result as ReturnType<typeof number>).value).toBe('5');
+			});
+
+			it('strips parentheses around variable: (x) -> x', () => {
+				const node = parentheses(variable('x'));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('variable');
+				expect((result as ReturnType<typeof variable>).name).toBe('x');
+			});
+
+			it('strips parentheses around greek letter: (α) -> α', () => {
+				const node = parentheses(greek('alpha'));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('greek');
+			});
+
+			it('strips parentheses around function: (sin(x)) -> sin(x)', () => {
+				const node = parentheses(sin(variable('x')));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('function');
+				expect((result as ReturnType<typeof sin>).name).toBe('sin');
+			});
+
+			it('strips parentheses around fraction: (1/2) -> 1/2', () => {
+				const node = parentheses(fraction(number('1'), number('2')));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('division');
+			});
+		});
+
+		describe('double parentheses', () => {
+			it('strips double parentheses: ((x)) -> x', () => {
+				const node = parentheses(parentheses(variable('x')));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('variable');
+				expect((result as ReturnType<typeof variable>).name).toBe('x');
+			});
+
+			it('strips triple parentheses: (((5))) -> 5', () => {
+				const node = parentheses(parentheses(parentheses(number('5'))));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('number');
+				expect((result as ReturnType<typeof number>).value).toBe('5');
+			});
+		});
+
+		describe('inside fractions', () => {
+			it('strips parentheses in numerator: (x)/2 -> x/2', () => {
+				const node = fraction(parentheses(variable('x')), number('2'));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('division');
+				const div = result as ReturnType<typeof fraction>;
+				expect(div.numerator.type).toBe('variable');
+			});
+
+			it('strips parentheses in denominator: x/(2) -> x/2', () => {
+				const node = fraction(variable('x'), parentheses(number('2')));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('division');
+				const div = result as ReturnType<typeof fraction>;
+				expect(div.denominator.type).toBe('number');
+			});
+		});
+
+		describe('inside exponents', () => {
+			it('strips parentheses in exponent: x^(2) -> x^2', () => {
+				const node = superscript(variable('x'), parentheses(number('2')));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('superscript');
+				const sup = result as ReturnType<typeof superscript>;
+				expect(sup.superscript.type).toBe('number');
+			});
+		});
+
+		describe('negative terms', () => {
+			it('preserves brackets around negative in middle: 2+(-5)', () => {
+				// 2 + (-5)
+				const node = add(number('2'), parentheses(opposite(number('5'))));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('addition');
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.right.type).toBe('delimiter'); // Brackets preserved
+			});
+
+			it('strips brackets around first negative by default: (-5)+3 -> -5+3', () => {
+				// (-5) + 3
+				const node = add(parentheses(opposite(number('5'))), number('3'));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('addition');
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.left.type).toBe('opposite'); // Brackets stripped
+			});
+
+			it('preserves brackets around first negative with allowFirstNegative: (-5)+3', () => {
+				// (-5) + 3 with option
+				const node = add(parentheses(opposite(number('5'))), number('3'));
+				const result = stripUnnecessaryBrackets(node, { allowFirstNegative: true });
+
+				expect(result.type).toBe('addition');
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.left.type).toBe('delimiter'); // Brackets preserved
+			});
+		});
+
+		describe('subtraction', () => {
+			it('preserves brackets around negative in subtraction: 2-(-5)', () => {
+				// 2 - (-5)
+				const node = subtract(number('2'), parentheses(opposite(number('5'))));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('subtraction');
+				const subtraction = result as ReturnType<typeof subtract>;
+				expect(subtraction.right.type).toBe('delimiter'); // Brackets preserved
+			});
+		});
+
+		describe('preserves necessary brackets', () => {
+			it('preserves brackets around sum: (a+b)*c', () => {
+				const node = multiply(parentheses(add(variable('a'), variable('b'))), variable('c'), 'dot');
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('multiplication');
+				const mult = result as ReturnType<typeof multiply>;
+				expect(mult.left.type).toBe('delimiter'); // Brackets preserved
+			});
+
+			it('preserves brackets for grouping in power base: (x+1)^2', () => {
+				// Note: superscript content that is a parenthesized expression
+				const node = superscript(parentheses(add(variable('x'), number('1'))), number('2'));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('superscript');
+				const sup = result as ReturnType<typeof superscript>;
+				expect(sup.base.type).toBe('delimiter'); // Brackets preserved
+			});
+		});
+
+		describe('recursive stripping', () => {
+			it('strips nested unnecessary brackets: ((x))+(y)', () => {
+				const node = add(parentheses(parentheses(variable('x'))), parentheses(variable('y')));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('addition');
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.left.type).toBe('variable');
+				expect(addition.right.type).toBe('variable');
+			});
+
+			it('strips brackets in function arguments: sin((x))', () => {
+				const node = sin(parentheses(variable('x')));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('function');
+				const funcNode = result as ReturnType<typeof sin>;
+				expect(funcNode.args[0].type).toBe('variable');
+			});
+		});
+
+		describe('leaf nodes unchanged', () => {
+			it('returns number unchanged', () => {
+				const node = number('42');
+				const result = stripUnnecessaryBrackets(node);
+				expect(result).toEqual(node);
+			});
+
+			it('returns variable unchanged', () => {
+				const node = variable('x');
+				const result = stripUnnecessaryBrackets(node);
+				expect(result).toEqual(node);
+			});
 		});
 	});
 });

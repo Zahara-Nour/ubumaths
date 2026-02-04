@@ -687,3 +687,208 @@ describe('validateAnswer - Edge Cases', () => {
 		expect(result.status).toBe('bad_form');
 	});
 });
+
+// ============================================================================
+// REQUIRED FORM VALIDATION TESTS
+// ============================================================================
+
+describe('validateAnswer - Required Form Integration', () => {
+	/**
+	 * Create an algebraic instance with requiredForm
+	 */
+	function createInstanceWithRequiredForm(
+		solution: string,
+		requiredForm: QuestionInstance['requiredForm']
+	): QuestionInstance {
+		return {
+			templateId: 'test-template',
+			type: 'algebraic_transform',
+			statement: 'Test question' as ResolvedMarkdown,
+			solution,
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			generatedAt: new Date().toISOString(),
+			requiredForm
+		};
+	}
+
+	describe('Product Form', () => {
+		it('should accept correct value in product form', () => {
+			const instance = createInstanceWithRequiredForm('6', 'product');
+			const result = validateAnswer('6', instance, '2 \\times 3');
+
+			expect(result.isCorrect).toBe(true);
+			expect(result.status).toBeUndefined();
+		});
+
+		it('should reject correct value NOT in product form', () => {
+			const instance = createInstanceWithRequiredForm('6', 'product');
+			const result = validateAnswer('6', instance, '6');
+
+			expect(result.isCorrect).toBe(false);
+			expect(result.status).toBe('bad_form');
+			expect(result.feedback).toContain('produit');
+		});
+
+		it('should reject trivial product (1×n)', () => {
+			const instance = createInstanceWithRequiredForm('6', 'product');
+			const result = validateAnswer('6', instance, '1 \\times 6');
+
+			expect(result.isCorrect).toBe(false);
+			expect(result.status).toBe('bad_form');
+		});
+
+		it('should reject incorrect value regardless of form', () => {
+			const instance = createInstanceWithRequiredForm('6', 'product');
+			const result = validateAnswer('10', instance, '2 \\times 5');
+
+			// Value is wrong, so it's incorrect (not bad_form)
+			expect(result.isCorrect).toBe(false);
+			expect(result.status).toBeUndefined(); // Not bad_form since value is wrong
+		});
+	});
+
+	describe('Sum Form', () => {
+		it('should accept correct value in sum form', () => {
+			const instance = createInstanceWithRequiredForm('5', 'sum');
+			const result = validateAnswer('5', instance, '2 + 3');
+
+			expect(result.isCorrect).toBe(true);
+		});
+
+		it('should reject correct value NOT in sum form', () => {
+			const instance = createInstanceWithRequiredForm('5', 'sum');
+			const result = validateAnswer('5', instance, '5');
+
+			expect(result.isCorrect).toBe(false);
+			expect(result.status).toBe('bad_form');
+			expect(result.feedback).toContain('somme');
+		});
+	});
+
+	describe('Fraction Form', () => {
+		it('should accept correct value in fraction form', () => {
+			const instance = createInstanceWithRequiredForm('0.5', 'fraction');
+			const result = validateAnswer('0.5', instance, '\\frac{1}{2}');
+
+			expect(result.isCorrect).toBe(true);
+		});
+
+		it('should reject correct value NOT in fraction form', () => {
+			const instance = createInstanceWithRequiredForm('0.5', 'fraction');
+			const result = validateAnswer('0.5', instance, '0.5');
+
+			expect(result.isCorrect).toBe(false);
+			expect(result.status).toBe('bad_form');
+			expect(result.feedback).toContain('fraction');
+		});
+	});
+
+	describe('Power Form', () => {
+		it('should accept correct value in power form', () => {
+			const instance = createInstanceWithRequiredForm('8', 'power');
+			const result = validateAnswer('8', instance, '2^3');
+
+			expect(result.isCorrect).toBe(true);
+		});
+
+		it('should reject correct value NOT in power form', () => {
+			const instance = createInstanceWithRequiredForm('8', 'power');
+			const result = validateAnswer('8', instance, '8');
+
+			expect(result.isCorrect).toBe(false);
+			expect(result.status).toBe('bad_form');
+			expect(result.feedback).toContain('puissance');
+		});
+	});
+
+	describe('Custom Pattern', () => {
+		it('should accept answer matching custom pattern', () => {
+			const instance = createInstanceWithRequiredForm('6', { pattern: 'a * b' });
+			const result = validateAnswer('6', instance, '2 \\times 3');
+
+			expect(result.isCorrect).toBe(true);
+		});
+
+		it('should reject answer not matching custom pattern', () => {
+			const instance = createInstanceWithRequiredForm('6', { pattern: 'a * b' });
+			const result = validateAnswer('6', instance, '6');
+
+			expect(result.isCorrect).toBe(false);
+			expect(result.status).toBe('bad_form');
+		});
+	});
+
+	describe('Edge Cases', () => {
+		it('should skip required form check when no latex provided', () => {
+			const instance = createInstanceWithRequiredForm('6', 'product');
+			// No latex argument -> skip form check
+			const result = validateAnswer('6', instance);
+
+			expect(result.isCorrect).toBe(true);
+		});
+
+		it('should apply required form before other constraints', () => {
+			const instance: QuestionInstance = {
+				templateId: 'test-template',
+				type: 'algebraic_transform',
+				statement: 'Test question' as ResolvedMarkdown,
+				solution: '6',
+				grades: ['6'],
+				theme: 'Test',
+				domain: 'Test',
+				level: 1,
+				generatedAt: new Date().toISOString(),
+				requiredForm: 'product',
+				options: {
+					constraints: {
+						brackets: 'strict',
+						spaces: 'off',
+						products: 'off',
+						zeros: 'off',
+						form: 'off'
+					}
+				}
+			};
+
+			// Value is correct, but NOT a product -> bad_form from requiredForm
+			const result = validateAnswer('6', instance, '6');
+
+			expect(result.isCorrect).toBe(false);
+			expect(result.status).toBe('bad_form');
+			expect(result.feedback).toContain('produit'); // From requiredForm, not brackets
+		});
+
+		it('should combine requiredForm and constraints without conflict', () => {
+			const instance: QuestionInstance = {
+				templateId: 'test-template',
+				type: 'numerical_exact',
+				statement: 'Test question' as ResolvedMarkdown,
+				solution: '5',
+				grades: ['6'],
+				theme: 'Test',
+				domain: 'Test',
+				level: 1,
+				generatedAt: new Date().toISOString(),
+				requiredForm: 'sum',
+				options: {
+					constraints: {
+						brackets: 'strict',
+						spaces: 'off',
+						products: 'off',
+						zeros: 'off',
+						form: 'off'
+					}
+				}
+			};
+
+			// Value is correct, IS a sum form, clean brackets
+			const result = validateAnswer('5', instance, '2 + 3');
+
+			// Both requiredForm and constraints pass
+			expect(result.isCorrect).toBe(true);
+		});
+	});
+});
