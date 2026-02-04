@@ -60,9 +60,9 @@ describe('Pattern Tokenizer', () => {
 				}
 			});
 
-			it('rejects old _x syntax (deprecated)', () => {
-				expect(() => tokenizePattern('_x')).toThrow("'_x' syntax is deprecated");
-				expect(() => tokenizePattern('_foo')).toThrow("'_x' syntax is deprecated");
+			it('rejects old _x syntax (not supported)', () => {
+				expect(() => tokenizePattern('_x')).toThrow("'_x' syntax is not supported");
+				expect(() => tokenizePattern('_foo')).toThrow("'_x' syntax is not supported");
 			});
 		});
 
@@ -194,17 +194,17 @@ describe('Pattern Tokenizer', () => {
 		});
 
 		describe('error cases', () => {
-			it('throws error for deprecated _x syntax', () => {
-				expect(() => tokenizePattern('_x')).toThrow("'_x' syntax is deprecated");
-				expect(() => tokenizePattern('_foo')).toThrow("'_x' syntax is deprecated");
+			it('throws error for unsupported _x syntax', () => {
+				expect(() => tokenizePattern('_x')).toThrow("'_x' syntax is not supported");
+				expect(() => tokenizePattern('_foo')).toThrow("'_x' syntax is not supported");
 			});
 
 			it('throws error for standalone underscore', () => {
-				expect(() => tokenizePattern('_')).toThrow("'_x' syntax is deprecated");
+				expect(() => tokenizePattern('_')).toThrow("'_x' syntax is not supported");
 			});
 
 			it('throws error for underscore followed by number', () => {
-				expect(() => tokenizePattern('_1')).toThrow("'_x' syntax is deprecated");
+				expect(() => tokenizePattern('_1')).toThrow("'_x' syntax is not supported");
 			});
 
 			it('throws error for empty constraint after colon', () => {

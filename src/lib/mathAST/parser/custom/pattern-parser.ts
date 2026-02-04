@@ -14,7 +14,7 @@
  * - Parentheses: (x + y)
  * - Number literals: 0, 1, 42, 3.14
  *
- * Note: Single underscore `_x` is deprecated. Use `x` directly.
+ * Note: Single underscore `_x` syntax is not supported. Use `x` directly.
  *
  * @example
  * parsePattern('x + y')          // => P.add(P._('x'), P._('y'))
@@ -490,9 +490,6 @@ export class PatternPrattParser {
  *
  * // Literal variables (rare - for matching specific variable names)
  * parsePattern('$x + 0')             // => P.add(P.var('x'), P.num(0))
- *
- * // Old underscore syntax still works
- * parsePattern('_x + _y')            // => P.add(P._('x'), P._('y'))
  *
  * // Other patterns
  * parsePattern('-x')                 // => P.neg(P._('x'))
