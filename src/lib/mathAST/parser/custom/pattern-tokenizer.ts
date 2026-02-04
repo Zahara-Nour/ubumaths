@@ -33,7 +33,7 @@
  *
  * Includes all types from the regular tokenizer plus:
  * - WILDCARD: Pattern wildcard - letters are wildcards by default (`x`, `a`)
- *   Also `_x` syntax for compatibility, `__x`/`___x` for sequences
+ *   Use `__x` for sequences (1+) or `___x` for optional sequences (0+)
  * - LITERAL_VAR: Literal variable matching with `$x` syntax (rare)
  */
 export type PatternTokenType =
@@ -206,14 +206,14 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
  * Usage:
  * ```typescript
  * // Streaming (one token at a time)
- * const tokenizer = new PatternTokenizer('_x + _y:number');
+ * const tokenizer = new PatternTokenizer('x + y:number');
  * while (tokenizer.peek().type !== 'EOF') {
  *   const token = tokenizer.nextToken();
  *   // process token
  * }
  *
  * // Batch (all tokens at once)
- * const tokens = tokenizePattern('_x + _y:number');
+ * const tokens = tokenizePattern('x + y:number');
  * ```
  */
 export class PatternTokenizer {
@@ -434,7 +434,7 @@ export class PatternTokenizer {
 		// Single underscore is not allowed - must use letter directly
 		if (underscoreCount === 1) {
 			throw new Error(
-				`Invalid pattern syntax at position ${startPos}: '_x' syntax is deprecated. Use 'x' directly for wildcards, '__x' for sequences (1+), or '___x' for optional sequences (0+).`
+				`Invalid pattern syntax at position ${startPos}: '_x' syntax is not supported. Use 'x' directly for wildcards, '__x' for sequences (1+), or '___x' for optional sequences (0+).`
 			);
 		}
 
@@ -783,11 +783,11 @@ export class PatternTokenizer {
  * @returns Array of all tokens, including EOF
  *
  * @example
- * const tokens = tokenizePattern('_x + _y:number');
+ * const tokens = tokenizePattern('x + y:number');
  * // [
- * //   { type: 'WILDCARD', value: '_x', position: 0, length: 2, wildcardName: 'x' },
+ * //   { type: 'WILDCARD', value: 'x', position: 0, length: 1, wildcardName: 'x' },
  * //   { type: 'PLUS', value: '+', position: 2, length: 1 },
- * //   { type: 'WILDCARD', value: '_y:number', position: 3, length: 9, wildcardName: 'y', constraintName: 'number' },
+ * //   { type: 'WILDCARD', value: 'y:number', position: 4, length: 8, wildcardName: 'y', constraintName: 'number' },
  * //   { type: 'EOF', value: '', position: 12, length: 0 }
  * // ]
  */

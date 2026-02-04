@@ -121,9 +121,9 @@ describe('parseRule', () => {
 			expect(rule.condition).toBeDefined();
 		});
 
-		it('rejects deprecated _x syntax', () => {
+		it('rejects old _x syntax (not supported)', () => {
 			// Old syntax with underscore prefix is no longer supported
-			expect(() => parseRule('_x + y -> _x')).toThrow("'_x' syntax is deprecated");
+			expect(() => parseRule('_x + y -> _x')).toThrow("'_x' syntax is not supported");
 		});
 	});
 
@@ -376,10 +376,10 @@ describe('parseRule', () => {
 			expect(() => parseRule('x + 0 -> x +')).toThrow(RuleParseError);
 		});
 
-		it('throws on condition without constraint (deprecated syntax)', () => {
+		it('throws on condition with unsupported _x syntax', () => {
 			// With new syntax, y without constraint is just a wildcard, not a condition error
 			// The condition parsing now uses the tokenizer which rejects _y
-			expect(() => parseRule('x + 0 -> x ; _y')).toThrow("'_x' syntax is deprecated");
+			expect(() => parseRule('x + 0 -> x ; _y')).toThrow("'_x' syntax is not supported");
 		});
 
 		it('throws on invalid condition syntax', () => {

@@ -894,7 +894,7 @@ function rule(
  * const sinPattern = P.func('sin', [P._('x')]);
  *
  * // Parse pattern from string
- * const parsed = P.parse('_x + 0');
+ * const parsed = P.parse('x + 0');
  */
 export const P = {
 	// Wildcards

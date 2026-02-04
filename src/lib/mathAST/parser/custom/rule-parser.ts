@@ -14,7 +14,7 @@
  * Letters are wildcards by default (no underscore needed).
  * Sequence wildcards use `__x` (1+ elements) or `___x` (0+ elements).
  *
- * Note: Single underscore `_x` syntax is deprecated. Use `x` directly.
+ * Note: Single underscore `_x` syntax is not supported. Use `x` directly.
  *
  * @example
  * parseRule('x + 0 -> x')
@@ -91,7 +91,7 @@ function getConstraint(name: WildcardConstraintName): PatternConstraint {
 // =============================================================================
 
 /**
- * Parses a conditions string like "_x:nonzero, _y:integer" into WildcardCondition objects.
+ * Parses a conditions string like "x:nonzero, y:integer" into WildcardCondition objects.
  *
  * Uses the PatternTokenizer to properly parse wildcards with constraints.
  */
@@ -111,7 +111,7 @@ function parseConditions(input: string): WildcardCondition[] {
 			// Wildcard must have a constraint in condition context
 			if (!token.constraintName) {
 				throw new RuleParseError(
-					`Condition must have constraint: ${token.value}. Use format '_name:constraint' (e.g., '_x:nonzero')`,
+					`Condition must have constraint: ${token.value}. Use format 'name:constraint' (e.g., 'x:nonzero')`,
 					token.position
 				);
 			}
@@ -125,7 +125,7 @@ function parseConditions(input: string): WildcardCondition[] {
 			continue;
 		} else {
 			throw new RuleParseError(
-				`Unexpected token in conditions: '${token.value}'. Expected wildcard with constraint (e.g., '_x:nonzero')`,
+				`Unexpected token in conditions: '${token.value}'. Expected wildcard with constraint (e.g., 'x:nonzero')`,
 				token.position
 			);
 		}

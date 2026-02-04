@@ -9,14 +9,14 @@
  * import { verifyForm } from '$lib/mathAST/pattern';
  *
  * // Check if answer is in linear form ax + b
- * const result = verifyForm('2x + 3', '_a * x + _b');
+ * const result = verifyForm('2x + 3', 'a * $x + b');
  * if (result.matches) {
  *   console.log('a =', result.bindings.a); // '2'
  *   console.log('b =', result.bindings.b); // '3'
  * }
  *
  * // Check with constraints
- * const intResult = verifyForm('x^2', '_base ^ _n:integer');
+ * const intResult = verifyForm('x^2', 'base ^ n:integer');
  * ```
  *
  * @module mathAST/pattern/verify
@@ -82,28 +82,28 @@ export interface VerifyFormOptions {
  *
  * @example
  * // Check linear form
- * verifyForm('2x + 3', '_a * x + _b')
+ * verifyForm('2x + 3', 'a * $x + b')
  * // => { matches: true, bindings: { a: '2', b: '3' } }
  *
  * @example
  * // Check with constraint (must be integer exponent)
- * verifyForm('x^2', '_base ^ _n:integer')
+ * verifyForm('x^2', 'base ^ n:integer')
  * // => { matches: true, bindings: { base: 'x', n: '2' } }
  *
- * verifyForm('x^{1.5}', '_base ^ _n:integer')
+ * verifyForm('x^{1.5}', 'base ^ n:integer')
  * // => { matches: false }
  *
  * @example
  * // Check factored form
- * verifyForm('(x+1)(x-2)', '(_a + _b) * (_c + _d)')
+ * verifyForm('(x+1)(x-2)', '(a + b) * (c + d)')
  * // => { matches: true, bindings: { a: 'x', b: '1', c: 'x', d: '-2' } }
  *
  * @example
  * // Check if answer is just a number
- * verifyForm('42', '_n:number')
+ * verifyForm('42', 'n:number')
  * // => { matches: true, bindings: { n: '42' } }
  *
- * verifyForm('x', '_n:number')
+ * verifyForm('x', 'n:number')
  * // => { matches: false }
  */
 export function verifyForm(
@@ -175,8 +175,8 @@ export function verifyForm(
  * @returns true if the form matches, false otherwise
  *
  * @example
- * matchesForm('2x + 3', '_a * x + _b')  // true
- * matchesForm('x^2', '_a * x + _b')     // false
+ * matchesForm('2x + 3', 'a * $x + b')  // true
+ * matchesForm('x^2', 'a * $x + b')     // false
  */
 export function matchesForm(answer: string, patternStr: string): boolean {
 	return verifyForm(answer, patternStr).matches;
@@ -190,10 +190,10 @@ export function matchesForm(answer: string, patternStr: string): boolean {
  * @returns The bindings object if matched, null otherwise
  *
  * @example
- * extractBindings('2x + 3', '_a * x + _b')
+ * extractBindings('2x + 3', 'a * $x + b')
  * // => { a: '2', b: '3' }
  *
- * extractBindings('x^2', '_a * x + _b')
+ * extractBindings('x^2', 'a * $x + b')
  * // => null
  */
 export function extractBindings(
