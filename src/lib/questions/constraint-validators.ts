@@ -200,17 +200,26 @@ function isCorrectDecimalSpacing(decimalPart: string): boolean {
 }
 
 // ============================================================================
-// PRODUCTS VALIDATOR
+// PRODUCTS VALIDATOR (mathAST-based implementation)
 // ============================================================================
+
+import {
+	parseLatexSafe,
+	isMultiplication,
+	findNodes,
+	type MathNode,
+	type MultiplicationNode
+} from '$lib/mathAST';
 
 /**
  * Check for explicit multiplication symbols that should be implicit
  *
- * In mathematical notation, multiplication before a variable or parenthesis
- * should typically be implicit (2x not 2*x).
+ * Uses mathAST to parse the LaTeX and analyze multiplication nodes.
+ * A multiplication is considered explicit when its displayStyle is 'dot', 'cross', or 'star'
+ * (as opposed to 'implicit' for juxtaposition like 2x).
  *
- * Violations: \times, \cdot, \ast, * when used before a variable or parenthesis
- * Valid: 2x3 (number x number), or explicit when both operands are numbers
+ * Violations occur when explicit multiplication is used before a variable or parenthesis,
+ * where implicit multiplication would be more appropriate.
  *
  * @param answersLatex - Array of LaTeX strings
  * @returns Indices of answers with explicit multiplication violations
@@ -242,9 +251,81 @@ export function checkProducts(answersLatex: string[]): number[] {
 }
 
 /**
- * Check if a single LaTeX string has product notation violations
+ * Check if a single LaTeX string has product notation violations using mathAST
+ *
+ * A violation occurs when:
+ * 1. The multiplication displayStyle is explicit ('dot', 'cross', 'star')
+ * 2. The right operand is NOT a pure number (variables, functions, parentheses require implicit mult)
+ *
+ * Valid explicit multiplication: 2 × 3 (number × number)
+ * Invalid: 2 × x, a × b, (x+1) × y (should be implicit)
  */
 function hasProductViolation(latex: string): boolean {
+	const parseResult = parseLatexSafe(latex);
+
+	// If parsing fails or has errors, fall back to regex-based check for safety
+	if (!parseResult.ast || parseResult.errors.length > 0) {
+		return hasProductViolationRegex(latex);
+	}
+
+	const ast = parseResult.ast;
+
+	// Find all multiplication nodes
+	const multiplicationNodes = findNodes(ast, isMultiplication) as MultiplicationNode[];
+
+	for (const mult of multiplicationNodes) {
+		// Only check explicit multiplications (dot, cross, star)
+		// 'implicit' is the correct style for juxtaposition (2x)
+		if (mult.displayStyle === 'implicit') {
+			continue;
+		}
+
+		// Explicit multiplication is OK only between two pure numbers
+		// e.g., 2 × 3 is acceptable
+		if (!isPureNumber(mult.right)) {
+			return true; // Violation: explicit mult before variable/expression
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Check if a node represents a pure number (no variables)
+ *
+ * Returns true for:
+ * - Number nodes (5, 3.14, -2)
+ * - Opposite of a number (-5)
+ *
+ * Returns false for:
+ * - Variables (x, y)
+ * - Expressions containing variables (x+1)
+ * - Functions (sin(x))
+ * - Greek letters used as variables (α, β)
+ */
+function isPureNumber(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+			return true;
+
+		case 'opposite':
+		case 'positive':
+			return isPureNumber(node.operand);
+
+		case 'delimiter':
+			// Check the content inside parentheses
+			return isPureNumber(node.content);
+
+		default:
+			return false;
+	}
+}
+
+/**
+ * Fallback regex-based check for when AST parsing fails
+ * (e.g., malformed LaTeX that mathAST can't parse but MathLive accepted)
+ */
+function hasProductViolationRegex(latex: string): boolean {
 	// Pattern for multiplication symbols
 	const multSymbols = /\\times|\\cdot|\\ast|\*/g;
 
@@ -258,8 +339,6 @@ function hasProductViolation(latex: string): boolean {
 		const afterSymbol = latex.slice(pos + symbolLength).replace(/^\s*/, '');
 
 		// Check if followed by a letter (variable), opening paren, or LaTeX command for letter
-		// Variables: a-z, A-Z, Greek letters (\alpha, \beta, etc.)
-		// Parentheses: (, \left(, [, \left[, {
 		if (isFollowedByVariableOrParen(afterSymbol)) {
 			return true;
 		}
@@ -270,6 +349,7 @@ function hasProductViolation(latex: string): boolean {
 
 /**
  * Check if string starts with a variable or opening parenthesis
+ * Used by the regex fallback
  */
 function isFollowedByVariableOrParen(str: string): boolean {
 	if (!str) return false;
@@ -280,7 +360,6 @@ function isFollowedByVariableOrParen(str: string): boolean {
 	}
 
 	// Check for opening parenthesis/bracket
-	// Note: We don't check for { as it's usually LaTeX grouping (\frac{}, etc.)
 	if (/^[([]/.test(str)) {
 		return true;
 	}
