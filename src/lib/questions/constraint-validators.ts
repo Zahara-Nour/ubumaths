@@ -206,9 +206,18 @@ function isCorrectDecimalSpacing(decimalPart: string): boolean {
 import {
 	parseLatexSafe,
 	isMultiplication,
+	isDelimiter,
+	isDivision,
+	isFunction,
+	isSuperscript,
 	findNodes,
+	visitAST,
 	type MathNode,
-	type MultiplicationNode
+	type MultiplicationNode,
+	type DelimiterNode,
+	type DivisionNode,
+	type SuperscriptNode,
+	type VisitorContext
 } from '$lib/mathAST';
 
 /**
@@ -382,31 +391,33 @@ function isFollowedByVariableOrParen(str: string): boolean {
 }
 
 // ============================================================================
-// BRACKETS VALIDATOR
+// BRACKETS VALIDATOR (mathAST-based implementation)
 // ============================================================================
 
 /**
  * Check for unnecessary brackets in student's raw answer
  *
- * NOT using CE canonical form comparison - checking actual student input.
+ * Uses mathAST to parse and analyze bracket usage structurally.
  *
  * Unnecessary brackets detected:
- * - Single number in brackets: (5), (-5) unless allowFirstNegative
- * - Single variable in brackets: (x)
- * - Double brackets: ((x+1))
- * - First negative term in brackets at start: (-5)+3 (unless allowed)
+ * 1. Expression globale entre parenthèses: (x+1) → x+1
+ * 2. Double parenthèses: ((x+1)) → (x+1)
+ * 3. Éléments simples entre parenthèses: (5), (x), (\alpha)
+ * 4. Structures déjà délimitées: (\frac{1}{2}), (\sin(x)), (\sqrt{x})
+ * 5. Parenthèses dans fractions: \frac{(x)}{2} → \frac{x}{2}
+ * 6. Parenthèses dans exposants: x^{(2)} → x^2
  *
  * @param answersLatex - Array of LaTeX strings
- * @param options.allowFirstNegative - Allow brackets around first negative term
+ * @param options.allowFirstNegative - Allow brackets around first negative term at start
  * @returns Indices of answers with unnecessary brackets
  *
  * @example
  * checkBrackets(['(5)'])                                // Returns [0]
  * checkBrackets(['(-5)+3'], {allowFirstNegative:true})  // Returns []
- * checkBrackets(['(-5)+3'], {allowFirstNegative:false}) // Returns [0]
- * checkBrackets(['(x+1)'])                              // Returns [] - necessary
+ * checkBrackets(['(x+1)'])                              // Returns [0] - global brackets
+ * checkBrackets(['2(x+1)'])                             // Returns [] - necessary
  * checkBrackets(['((x+1))'])                            // Returns [0] - double brackets
- * checkBrackets(['(x)'])                                // Returns [0] - single variable
+ * checkBrackets(['\\frac{(x)}{2}'])                     // Returns [0] - brackets in fraction
  */
 export function checkBrackets(
 	answersLatex: string[],
@@ -431,9 +442,171 @@ export function checkBrackets(
 }
 
 /**
- * Check if a single LaTeX string has unnecessary bracket violations
+ * Check if a single LaTeX string has unnecessary bracket violations using mathAST
  */
 function hasBracketViolation(latex: string, allowFirstNegative: boolean): boolean {
+	const parseResult = parseLatexSafe(latex);
+
+	// If parsing fails, fall back to regex-based check
+	if (!parseResult.ast || parseResult.errors.length > 0) {
+		return hasBracketViolationRegex(latex, allowFirstNegative);
+	}
+
+	const ast = parseResult.ast;
+
+	// Case 1: Global expression wrapped in parentheses
+	if (isParenthesisDelimiter(ast)) {
+		// Exception: allowFirstNegative for (-5)+3 pattern
+		if (allowFirstNegative && ast.content.type === 'opposite') {
+			// This is handled below - we need to check if this is the ONLY thing
+			// If global is just (-5), it's still a violation unless part of larger expr
+		}
+		return true;
+	}
+
+	// Check for allowFirstNegative: if the leftmost element is a parenthesized negative
+	if (allowFirstNegative && isFirstNegativeParenthesized(ast)) {
+		// We'll skip this specific case during traversal
+	}
+
+	// Traverse AST to find other violations
+	let foundViolation = false;
+	const isFirstNegativeParen = allowFirstNegative ? getFirstNegativeParenNode(ast) : null;
+
+	visitAST(ast, {
+		enterDelimiter(node: DelimiterNode, _context: VisitorContext) {
+			// Skip if this is the allowed first negative
+			if (isFirstNegativeParen && node === isFirstNegativeParen) {
+				return;
+			}
+
+			// Only check parentheses (not brackets, braces, abs, etc.)
+			if (!isParenthesisDelimiter(node)) {
+				return;
+			}
+
+			// Case 2: Double parentheses - delimiter containing delimiter
+			if (isParenthesisDelimiter(node.content)) {
+				foundViolation = true;
+				return 'skip';
+			}
+
+			// Case 3: Simple elements in parentheses
+			if (isSimpleElement(node.content)) {
+				foundViolation = true;
+				return 'skip';
+			}
+
+			// Case 4: Already-delimited structures in parentheses
+			if (isAlreadyDelimitedStructure(node.content)) {
+				foundViolation = true;
+				return 'skip';
+			}
+		},
+
+		enterDivision(node: DivisionNode) {
+			// Case 5: Parentheses in fractions (only for fraction display style)
+			if (node.displayStyle === 'fraction') {
+				if (isParenthesisDelimiter(node.numerator) || isParenthesisDelimiter(node.denominator)) {
+					foundViolation = true;
+				}
+			}
+		},
+
+		enterSuperscript(node: SuperscriptNode) {
+			// Case 6: Parentheses in exponents
+			if (isParenthesisDelimiter(node.superscript)) {
+				foundViolation = true;
+			}
+		}
+	});
+
+	return foundViolation;
+}
+
+/**
+ * Check if a node is a delimiter with parentheses (not brackets, braces, abs, etc.)
+ */
+function isParenthesisDelimiter(node: MathNode): node is DelimiterNode {
+	return isDelimiter(node) && node.delimiters === 'parentheses';
+}
+
+/**
+ * Check if a node is a simple element (number, variable, greek letter, constant)
+ */
+function isSimpleElement(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+		case 'variable':
+		case 'greek':
+		case 'constant':
+			return true;
+		case 'opposite':
+		case 'positive':
+			// -5 or +5 alone is also simple
+			return isSimpleElement(node.operand);
+		default:
+			return false;
+	}
+}
+
+/**
+ * Check if a node is an already-delimited structure (fraction, function, sqrt, abs)
+ */
+function isAlreadyDelimitedStructure(node: MathNode): boolean {
+	// Fractions are visually grouped
+	if (isDivision(node) && node.displayStyle === 'fraction') {
+		return true;
+	}
+
+	// Functions have their own parentheses: sin(x), f(x)
+	if (isFunction(node)) {
+		return true;
+	}
+
+	// Delimiters with other types (abs |x|, brackets [x], etc.)
+	if (isDelimiter(node) && node.delimiters !== 'parentheses') {
+		return true;
+	}
+
+	// Superscript/subscript structures
+	if (isSuperscript(node)) {
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Check if the first element of an expression is a parenthesized negative
+ * For expressions like (-5)+3 where we might want to allow the parentheses
+ */
+function isFirstNegativeParenthesized(node: MathNode): boolean {
+	const firstParen = getFirstNegativeParenNode(node);
+	return firstParen !== null;
+}
+
+/**
+ * Get the first parenthesized negative node if it exists at the start of expression
+ */
+function getFirstNegativeParenNode(node: MathNode): DelimiterNode | null {
+	// If root is addition/subtraction, check left operand
+	if (node.type === 'addition' || node.type === 'subtraction') {
+		return getFirstNegativeParenNode(node.left);
+	}
+
+	// If it's a parenthesized opposite, return it
+	if (isParenthesisDelimiter(node) && node.content.type === 'opposite') {
+		return node;
+	}
+
+	return null;
+}
+
+/**
+ * Fallback regex-based check for when AST parsing fails
+ */
+function hasBracketViolationRegex(latex: string, allowFirstNegative: boolean): boolean {
 	// Normalize \left( and \right) to regular parentheses
 	let normalized = latex.replace(/\\left\(/g, '(').replace(/\\right\)/g, ')');
 	normalized = normalized.replace(/\\left\[/g, '[').replace(/\\right\]/g, ']');
@@ -444,7 +617,6 @@ function hasBracketViolation(latex: string, allowFirstNegative: boolean): boolea
 	}
 
 	// Check for single number in brackets: (5), (123), (-5)
-	// But NOT expressions like (5+3) or (5x)
 	const singleNumberPattern = /\(\s*-?\d+(?:\.\d+)?\s*\)/g;
 	let match: RegExpExecArray | null;
 
@@ -453,17 +625,14 @@ function hasBracketViolation(latex: string, allowFirstNegative: boolean): boolea
 		const isNegative = matchedStr.includes('-');
 		const isAtStart = match.index === 0;
 
-		// If it's a negative number at the start and allowFirstNegative is true, skip
 		if (isNegative && isAtStart && allowFirstNegative) {
 			continue;
 		}
 
-		// Otherwise, it's a violation
 		return true;
 	}
 
 	// Check for single variable in brackets: (x), (y), (\alpha)
-	// Single letter variable
 	if (/\(\s*[a-zA-Z]\s*\)/.test(normalized)) {
 		return true;
 	}
