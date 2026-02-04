@@ -208,19 +208,29 @@ describe('Pattern Tokenizer', () => {
 			});
 
 			it('throws error for empty constraint after colon', () => {
-				expect(() => tokenizePattern('x:')).toThrow("':' must be followed by a constraint name");
+				expect(() => tokenizePattern('x:')).toThrow(
+					"':' must be followed by a constraint expression"
+				);
 			});
 
-			it('throws error for invalid constraint name', () => {
-				expect(() => tokenizePattern('x:invalid')).toThrow("Invalid constraint 'invalid'");
+			it('tokenizes constraint expression even if invalid (parser validates)', () => {
+				// Tokenizer now accepts any valid constraint expression syntax
+				// The constraint parser (parseConstraintExpr) handles validation
+				const tokens = tokenizePattern('x:invalid');
+				expect(tokens[0].constraintExpr).toBe('invalid');
+				expect(tokens[0].constraintName).toBeUndefined(); // Not a simple valid constraint
 			});
 
-			it('throws error for misspelled constraint', () => {
-				expect(() => tokenizePattern('x:numbr')).toThrow("Invalid constraint 'numbr'");
+			it('tokenizes misspelled constraint (parser validates)', () => {
+				// Tokenizer accepts, but parsePattern will fail when parsing constraint
+				const tokens = tokenizePattern('x:numbr');
+				expect(tokens[0].constraintExpr).toBe('numbr');
 			});
 
 			it('throws error for constraint followed by colon without name', () => {
-				expect(() => tokenizePattern('x:+')).toThrow("':' must be followed by a constraint name");
+				expect(() => tokenizePattern('x:+')).toThrow(
+					"':' must be followed by a constraint expression"
+				);
 			});
 
 			it('throws error for sequence without name', () => {

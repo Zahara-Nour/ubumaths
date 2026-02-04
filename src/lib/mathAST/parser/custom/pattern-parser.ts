@@ -26,14 +26,10 @@
  * @module mathAST/parser/custom/pattern-parser
  */
 
-import type { Pattern, PatternConstraint } from '../../pattern/types';
+import type { Pattern } from '../../pattern/types';
 import { P } from '../../pattern/builder';
-import {
-	PatternTokenizer,
-	type PatternToken,
-	type PatternTokenType,
-	type WildcardConstraintName
-} from './pattern-tokenizer';
+import { PatternTokenizer, type PatternToken, type PatternTokenType } from './pattern-tokenizer';
+import { parseConstraintExpr } from './constraint-parser';
 
 // =============================================================================
 // Binding Power (Precedence)
@@ -50,27 +46,6 @@ const enum BP {
 	FRACTION = 25, // /
 	UNARY = 30, // - (prefix)
 	POWER = 40 // ^ (right-associative)
-}
-
-// =============================================================================
-// Constraint Mapping
-// =============================================================================
-
-/**
- * Gets the constraint function for a given constraint name.
- * Uses a function to avoid circular dependency issues with P namespace.
- */
-function getConstraint(name: WildcardConstraintName): PatternConstraint {
-	// Access P lazily to avoid circular dependency at module load time
-	const constraintMap: Record<WildcardConstraintName, () => PatternConstraint> = {
-		number: P.isNumber,
-		integer: P.isInteger,
-		positive: P.isPositive,
-		negative: P.isNegative,
-		nonzero: P.isNonzero,
-		variable: P.isVariable
-	};
-	return constraintMap[name]();
 }
 
 // =============================================================================
@@ -312,11 +287,11 @@ export class PatternPrattParser {
 
 		// token.wildcardName is guaranteed to exist for WILDCARD tokens
 		const name = token.wildcardName!;
-		const constraintName = token.constraintName;
+		const constraintExpr = token.constraintExpr;
 		const sequenceType = token.sequenceType ?? 'single';
 
-		// Get constraint if present
-		const constraint = constraintName ? getConstraint(constraintName) : undefined;
+		// Parse constraint expression if present
+		const constraint = constraintExpr ? parseConstraintExpr(constraintExpr) : undefined;
 
 		// Create appropriate pattern based on sequence type
 		switch (sequenceType) {
