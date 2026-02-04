@@ -132,18 +132,21 @@ export class TinyCASConverter {
 			// that need to be converted as part of the evaluation
 			converted = this.convertEvaluations(converted);
 
-			// Step 4: Convert random patterns with exclusions (before simple random)
+			// Step 4: Convert list selections FIRST (before random conversions)
+			// Lists may contain nested $e[...] that need to be converted to raw ranges (not {{...}})
+			converted = this.convertListSelections(converted);
+
+			// Step 5: Convert random patterns with exclusions (before simple random)
 			converted = this.convertRandomWithExclusions(converted);
 
-			// Step 5: Convert variable references
+			// Step 6: Convert variable references
 			converted = this.convertVariableReferences(converted);
 
-			// Step 6: Convert other random patterns
+			// Step 7: Convert other random patterns
 			converted = this.convertRelativeIntegers(converted);
 			converted = this.convertDecimalPatterns(converted);
 			converted = this.convertRandomIntegers(converted);
 			converted = this.convertNDigitNumbers(converted);
-			converted = this.convertListSelections(converted);
 
 			// Step 7: Check for unconverted patterns
 			this.checkForUnconvertedPatterns(converted);
@@ -200,17 +203,27 @@ export class TinyCASConverter {
 
 	/**
 	 * Convert variable references: &varname → {{varname}}, &1 → {{a}}
+	 *
+	 * Important: Numeric variable names (&1, &2) must NOT include trailing letters.
+	 * E.g., "&1x" should become "{{a}}x", not "{{1x}}"
 	 */
 	private convertVariableReferences(input: string): string {
-		// Match &followed by word characters or digits
-		const pattern = /&(\w+)/g;
-
-		return input.replace(pattern, (match, varName) => {
+		// First, convert numeric variable references: &1 → {{a}}, &2 → {{b}}, etc.
+		// These MUST NOT include trailing letters (e.g., &1x should be &1 followed by x)
+		let result = input.replace(/&(\d+)/g, (match, digits) => {
 			this.stats.variableRefs++;
-			// Convert numeric variable names to letters
-			const name = /^\d+$/.test(varName) ? numberToLetterName(parseInt(varName, 10)) : varName;
+			const name = numberToLetterName(parseInt(digits, 10));
 			return `{{${name}}}`;
 		});
+
+		// Then, convert named variable references: &varname → {{varname}}
+		// These are non-numeric identifiers that start with a letter
+		result = result.replace(/&([a-zA-Z_]\w*)/g, (match, varName) => {
+			this.stats.variableRefs++;
+			return `{{${varName}}}`;
+		});
+
+		return result;
 	}
 
 	/**
@@ -365,39 +378,144 @@ export class TinyCASConverter {
 	}
 
 	/**
+	 * Split a string by separator, but respect brackets (don't split inside [...] or {...})
+	 */
+	private splitRespectingBrackets(str: string, separator: string): string[] {
+		const result: string[] = [];
+		let current = '';
+		let depth = 0;
+
+		for (let i = 0; i < str.length; i++) {
+			const char = str[i];
+			if (char === '[' || char === '{') {
+				depth++;
+				current += char;
+			} else if (char === ']' || char === '}') {
+				depth--;
+				current += char;
+			} else if (char === separator && depth === 0) {
+				result.push(current);
+				current = '';
+			} else {
+				current += char;
+			}
+		}
+		if (current) {
+			result.push(current);
+		}
+		return result;
+	}
+
+	/**
+	 * Extract list content from $l{...}, handling nested \{...\} for exclusions
+	 */
+	private extractListContent(
+		input: string,
+		startIndex: number
+	): { content: string; endIndex: number } | null {
+		// startIndex should point to the '{' after '$l'
+		if (input[startIndex] !== '{') return null;
+
+		let depth = 1;
+		let i = startIndex + 1;
+		const start = i;
+
+		while (i < input.length && depth > 0) {
+			const char = input[i];
+			// Handle escaped brace sequence \{...\} - scan to the closing }
+			// The exclusion syntax is \{items} where items ends at first }
+			if (char === '\\' && i + 1 < input.length && input[i + 1] === '{') {
+				// Skip \{ and scan to find the closing }
+				i += 2; // Move past \{
+				while (i < input.length && input[i] !== '}') {
+					i++;
+				}
+				if (i < input.length) {
+					i++; // Skip the closing }
+				}
+				continue;
+			}
+			if (char === '{') depth++;
+			if (char === '}') depth--;
+			i++;
+		}
+
+		if (depth !== 0) return null; // Unbalanced braces
+
+		return {
+			content: input.slice(start, i - 1), // Exclude the final '}'
+			endIndex: i
+		};
+	}
+
+	/**
 	 * Convert random selection from list: $l{item1;item2;item3} → {{item1|item2|item3}}
 	 */
 	private convertListSelections(input: string): string {
-		// Pattern for list selection with semicolon separator
-		const pattern1 = /\$l\{([^}]+)\}/g;
+		let result = '';
+		let i = 0;
 
-		return input.replace(pattern1, (match, items) => {
-			this.stats.listSelections++;
+		while (i < input.length) {
+			// Look for $l{
+			if (input.slice(i, i + 3) === '$l{') {
+				const extracted = this.extractListContent(input, i + 2);
+				if (extracted) {
+					const items = extracted.content;
+					this.stats.listSelections++;
 
-			// Check if it's using colon separator (alternative syntax)
-			let separator = ';';
-			if (items.includes(':') && !items.includes(';')) {
-				separator = ':';
+					// Check if it's using colon separator (alternative syntax)
+					let separator = ';';
+					if (items.includes(':') && !items.includes(';')) {
+						separator = ':';
+					}
+
+					// Process items and build replacement
+					const itemList = this.processListItems(items, separator);
+					result += `{{${itemList.join('|')}}}`;
+					i = extracted.endIndex;
+					continue;
+				}
+			}
+			result += input[i];
+			i++;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Process list items, converting nested patterns
+	 */
+	private processListItems(items: string, separator: string): string[] {
+		return this.splitRespectingBrackets(items, separator).map((item: string) => {
+			// Trim whitespace
+			item = item.trim();
+
+			// IMPORTANT: Handle patterns with exclusions FIRST (before simple random patterns)
+			// $e[min;max]\{excl} → min..max!excl (with variable conversion)
+			if (item.includes('$e[') && item.includes('\\{')) {
+				item = item.replace(/\$e\[([^;]+);([^\]]+)\]\\{([^}]+)\}/g, (_, min, max, excl) => {
+					// Convert variable references in exclusion list
+					const convertedExcl = excl
+						.replace(/&(\d+)/g, (_: string, d: string) => numberToLetterName(parseInt(d, 10)))
+						.replace(/;/g, ','); // Convert semicolon separators to commas
+					return `${min}..${max}!${convertedExcl}`;
+				});
 			}
 
-			// Split items and convert each one
-			const itemList = items.split(separator).map((item: string) => {
-				// Trim whitespace
-				item = item.trim();
+			// Check if item contains simple random expressions $e[1;9] (without exclusions)
+			if (item.includes('$e[')) {
+				// Convert $e[min;max] → min..max (raw format, no {{...}})
+				item = item.replace(/\$e\[([^;]+);([^\]]+)\]/g, '$1..$2');
+			}
 
-				// Check if item contains nested expressions
-				if (item.includes('$e')) {
-					// This is a complex case like $l{0;$e[1;9]}
-					this.warnings.push(`Complex list item "${item}" may need manual review`);
-					// Try to convert nested expressions
-					item = this.convertRandomIntegers(item);
-				}
+			// Check if item contains relative integers $er[...]
+			if (item.includes('$er[')) {
+				// Convert $er[min;max] → min..max;+- (raw format, no {{...}})
+				item = item.replace(/\$er\[([^;]+);([^\]]+)\]/g, '$1..$2;+-');
+			}
 
-				return item;
-			});
-
-			// Join with pipe separator for new syntax
-			return `{{${itemList.join('|')}}}`;
+			return item;
 		});
 	}
 
@@ -799,6 +917,10 @@ export function toSimplifiedSyntax(legacySyntax: string): string {
 			// Simplify inner {{varName}} references to just varName
 			let simplified = content.replace(/\{\{([a-zA-Z_][a-zA-Z0-9_]*)\}\}/g, '$1');
 
+			// Also simplify inner {{range}} patterns like {{1..2}} to just 1..2
+			// This handles patterns inside digits: like digits:{{1..2}};{{0..2}}
+			simplified = simplified.replace(/\{\{([^}]+)\}\}/g, '$1');
+
 			// Convert ± to +- for sign modifier
 			simplified = simplified.replace(/±/g, '+-');
 
@@ -813,8 +935,56 @@ export function toSimplifiedSyntax(legacySyntax: string): string {
 	}
 
 	// Multiple tokens or mixed content - more complex case
-	// For now, return as-is (these are rare in variable expressions)
-	return legacySyntax;
+	// Try to strip {{...}} from generator expressions (eval:, digits:, random specs)
+	let result = legacySyntax;
+
+	// Strip {{eval:...}} → eval:... (handles nested {{}} and single {} for LaTeX)
+	// The pattern allows: non-brace chars, single LaTeX braces {}, or double {{}}
+	result = result.replace(/\{\{(eval:(?:[^{}]|\{[^{}]*\}|\{\{[^}]*\}\})*)\}\}/g, (_, content) => {
+		// Also strip inner {{}} from the eval content for bare variable names
+		return content.replace(/\{\{([a-zA-Z_][a-zA-Z0-9_]*)\}\}/g, '$1');
+	});
+
+	// Strip {{digits:...}} → digits:... (handles nested {{}} inside)
+	result = result.replace(/\{\{(digits:(?:[^{}]|\{\{[^}]*\}\})*)\}\}/g, (_, content) => {
+		// Also strip inner {{}} from the digits content
+		return content.replace(/\{\{([^}]+)\}\}/g, '$1');
+	});
+
+	// Strip {{min..max...}} → min..max... (random specs)
+	// This handles patterns like {{2..5;±}} → 2..5;+-
+	result = result.replace(/\{\{(\d+\.\.\d+[^}]*)\}\}/g, (_, content) => {
+		return content.replace(/±/g, '+-');
+	});
+
+	// Also strip {{}} from inside digits: content (even without outer {{}})
+	// digits:{{1..2}};{{1..2}} → digits:1..2;1..2
+	result = result.replace(/digits:([^;\s]+);([^;\s]+)/g, (_, part1, part2) => {
+		const stripped1 = part1.replace(/\{\{([^}]+)\}\}/g, '$1');
+		const stripped2 = part2.replace(/\{\{([^}]+)\}\}/g, '$1');
+		return `digits:${stripped1};${stripped2}`;
+	});
+
+	// Strip {{random:...}} → random:...
+	result = result.replace(/\{\{(random:[^}]+)\}\}/g, '$1');
+
+	// Strip {{a|b|c}} → a|b|c (discrete lists)
+	result = result.replace(/\{\{([^}|]+(?:\|[^}|]+)+)\}\}/g, '$1');
+
+	// Strip {{...}} with ranges/unions (semicolon-separated): {{1..9;11..99}} → 1..9;11..99
+	// Also handles simple lists like {{a;b}}
+	result = result.replace(/\{\{([^}]+;[^}]+)\}\}/g, '$1');
+
+	// Strip remaining simple {{...}} wrappers that weren't caught above
+	// Only strip if content looks like a valid expression (not text)
+	result = result.replace(/\{\{([a-zA-Z_]\w*)\}\}/g, '$1');
+
+	// Reduce LaTeX double braces {{...}} to single {..} when content is math-like
+	// This handles cases like {{b}/{d}} → {b}/{d} (fraction notation)
+	// The pattern matches {{...}} where content contains } followed by / followed by {
+	result = result.replace(/\{\{(\w+\}\/\{\w+)\}\}/g, '{$1}');
+
+	return result;
 }
 
 /**

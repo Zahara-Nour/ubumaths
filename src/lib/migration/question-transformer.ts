@@ -335,10 +335,10 @@ function convertVariables(
 			warnings.push(
 				`Failed to convert variable ${varName}: ${conversionResult.errors?.join(', ')}`
 			);
-			// Use original expression as fallback, but still simplify
+			// Use original expression as fallback, but still simplify and convert to bare names
 			variables.push({
 				name,
-				expression: toSimplifiedSyntax(expression)
+				expression: toBareVariableSyntax(toSimplifiedSyntax(expression))
 			});
 		} else {
 			if (conversionResult.warnings) {
@@ -349,8 +349,9 @@ function convertVariables(
 			// Do NOT convert them to LaTeX - they are interpreted by the parameterization system
 			const afterTinyCAS = conversionResult.converted || expression;
 
-			// Convert to simplified syntax (remove outer {{}} for variable expressions)
-			const simplified = toSimplifiedSyntax(afterTinyCAS);
+			// Convert to simplified syntax and use bare variable names
+			// {{a}}^{{b}} → a^b (resolver handles bare name substitution)
+			const simplified = toBareVariableSyntax(toSimplifiedSyntax(afterTinyCAS));
 
 			variables.push({
 				name,
@@ -1174,11 +1175,9 @@ function convertTestAnswerSyntax(expression: string): string {
 	// Convert &answer to 'answer'
 	result = result.replace(/&answer/gi, 'answer');
 
-	// Convert &N*&M to {{varN}} * {{varM}}
-	result = result.replace(/&(\d+)\s*\*\s*&(\d+)/g, '{{var$1}} * {{var$2}}');
-
-	// Convert &N to {{varN}}
-	result = result.replace(/&(\d+)/g, '{{var$1}}');
+	// Convert &N to letter name (a, b, c, ...) using bare variable names
+	// This is consistent with how variables are named in the rest of the transformation
+	result = result.replace(/&(\d+)/g, (_, num) => numberToLetterName(parseInt(num, 10)));
 
 	// Convert mod(a;b) to (a % b === 0 ? true : false) or keep as mod function call
 	result = result.replace(/mod\s*\(\s*([^;]+)\s*;\s*([^)]+)\s*\)\s*=\s*0/gi, '($1 % $2 === 0)');
@@ -1190,21 +1189,21 @@ function convertTestAnswerSyntax(expression: string): string {
 }
 
 /**
- * Convert old variable reference (&1, &2, etc.) to new template syntax
+ * Convert old variable reference (&1, &2, etc.) to letter names
  *
  * @param varRef - Old variable reference like "&1" or "&1*&2"
- * @returns New template syntax like "{{var1}}" or "{{var1}} * {{var2}}"
+ * @returns Letter name like "a" or "a * b"
  */
 function convertVariableReference(varRef: string): string {
 	// Handle compound expressions like &1*&2
 	if (varRef.includes('*')) {
-		return varRef.replace(/&(\d+)/g, '{{var$1}}');
+		return varRef.replace(/&(\d+)/g, (_, num) => numberToLetterName(parseInt(num, 10)));
 	}
 
 	// Simple variable reference
 	const match = varRef.match(/^&(\d+)$/);
 	if (match) {
-		return `{{var${match[1]}}}`;
+		return numberToLetterName(parseInt(match[1], 10));
 	}
 
 	// Numeric literal
