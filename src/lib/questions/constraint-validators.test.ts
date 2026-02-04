@@ -244,6 +244,137 @@ describe('checkProducts', () => {
 		it('should accept multiplication in numeric expressions', () => {
 			expect(checkProducts(['12\\times34'])).toHaveLength(0);
 		});
+
+		it('should accept multiplication with negative numbers', () => {
+			expect(checkProducts(['2\\times(-3)'])).toHaveLength(0);
+			expect(checkProducts(['(-2)\\times3'])).toHaveLength(0);
+			expect(checkProducts(['(-2)\\times(-3)'])).toHaveLength(0);
+		});
+
+		it('should accept multiplication with decimal numbers', () => {
+			expect(checkProducts(['2.5\\times3'])).toHaveLength(0);
+			expect(checkProducts(['1.5\\times2.5'])).toHaveLength(0);
+		});
+	});
+
+	describe('Mathematical Constants (π, e, i)', () => {
+		it('should detect explicit multiplication before pi (\\pi)', () => {
+			expect(checkProducts(['2\\times\\pi'])).toEqual([0]);
+			expect(checkProducts(['r^2\\times\\pi'])).toEqual([0]);
+		});
+
+		it('should accept implicit multiplication with pi', () => {
+			expect(checkProducts(['2\\pi'])).toHaveLength(0);
+			expect(checkProducts(['\\pi r^2'])).toHaveLength(0);
+		});
+
+		it('should detect explicit multiplication before Euler number (e)', () => {
+			// Note: e as Euler's number uses \exponentialE in MathLive
+			expect(checkProducts(['2\\times e'])).toEqual([0]);
+			expect(checkProducts(['x\\cdot e'])).toEqual([0]);
+		});
+
+		it('should accept implicit multiplication with e', () => {
+			expect(checkProducts(['2e'])).toHaveLength(0);
+			expect(checkProducts(['e^x'])).toHaveLength(0);
+		});
+
+		it('should detect explicit multiplication before imaginary unit (i)', () => {
+			// Note: i as imaginary uses \imaginaryI in MathLive
+			expect(checkProducts(['2\\times i'])).toEqual([0]);
+			expect(checkProducts(['3\\cdot i'])).toEqual([0]);
+		});
+
+		it('should accept implicit multiplication with i', () => {
+			expect(checkProducts(['2i'])).toHaveLength(0);
+			expect(checkProducts(['3+2i'])).toHaveLength(0);
+		});
+	});
+
+	describe('Functions', () => {
+		it('should detect explicit multiplication before functions', () => {
+			expect(checkProducts(['2\\times\\sin(x)'])).toEqual([0]);
+			expect(checkProducts(['3\\cdot\\cos(\\theta)'])).toEqual([0]);
+			expect(checkProducts(['x\\times\\ln(y)'])).toEqual([0]);
+		});
+
+		it('should accept implicit multiplication before functions', () => {
+			expect(checkProducts(['2\\sin(x)'])).toHaveLength(0);
+			expect(checkProducts(['3\\cos(\\theta)'])).toHaveLength(0);
+		});
+
+		it('should detect explicit multiplication before sqrt', () => {
+			expect(checkProducts(['2\\times\\sqrt{x}'])).toEqual([0]);
+		});
+
+		it('should accept implicit multiplication before sqrt', () => {
+			expect(checkProducts(['2\\sqrt{x}'])).toHaveLength(0);
+		});
+	});
+
+	describe('Fractions', () => {
+		it('should detect explicit multiplication before fractions', () => {
+			expect(checkProducts(['2\\times\\frac{1}{2}'])).toEqual([0]);
+			expect(checkProducts(['x\\cdot\\frac{a}{b}'])).toEqual([0]);
+		});
+
+		it('should accept implicit multiplication before fractions', () => {
+			expect(checkProducts(['2\\frac{1}{2}'])).toHaveLength(0);
+		});
+
+		it('should detect explicit multiplication inside fractions', () => {
+			// If numerator or denominator has explicit mult before variable
+			expect(checkProducts(['\\frac{2\\times x}{3}'])).toEqual([0]);
+			expect(checkProducts(['\\frac{a}{2\\times b}'])).toEqual([0]);
+		});
+
+		it('should accept implicit multiplication inside fractions', () => {
+			expect(checkProducts(['\\frac{2x}{3}'])).toHaveLength(0);
+			expect(checkProducts(['\\frac{a}{2b}'])).toHaveLength(0);
+		});
+	});
+
+	describe('Exponents and Powers', () => {
+		it('should detect explicit multiplication before powers', () => {
+			expect(checkProducts(['2\\times x^2'])).toEqual([0]);
+			expect(checkProducts(['3\\cdot a^n'])).toEqual([0]);
+		});
+
+		it('should accept implicit multiplication before powers', () => {
+			expect(checkProducts(['2x^2'])).toHaveLength(0);
+			expect(checkProducts(['3a^n'])).toHaveLength(0);
+		});
+
+		it('should detect explicit multiplication in exponent', () => {
+			expect(checkProducts(['x^{2\\times n}'])).toEqual([0]);
+		});
+
+		it('should accept implicit multiplication in exponent', () => {
+			expect(checkProducts(['x^{2n}'])).toHaveLength(0);
+		});
+	});
+
+	describe('Complex Expressions', () => {
+		it('should detect violation in complex polynomial', () => {
+			expect(checkProducts(['2\\times x^2 + 3x + 1'])).toEqual([0]);
+		});
+
+		it('should accept correct implicit multiplication in polynomial', () => {
+			expect(checkProducts(['2x^2 + 3x + 1'])).toHaveLength(0);
+		});
+
+		it('should detect violation in nested expressions', () => {
+			expect(checkProducts(['(2\\times x)(y+1)'])).toEqual([0]);
+		});
+
+		it('should accept nested implicit multiplications', () => {
+			expect(checkProducts(['(2x)(y+1)'])).toHaveLength(0);
+		});
+
+		it('should handle mixed correct and incorrect in same expression', () => {
+			// 2×3 is OK, but ×x is not
+			expect(checkProducts(['2\\times 3\\times x'])).toEqual([0]);
+		});
 	});
 
 	describe('Multiple Violations', () => {
@@ -278,6 +409,43 @@ describe('checkProducts', () => {
 		it('should handle uppercase Greek letters', () => {
 			expect(checkProducts(['2\\times\\Delta'])).toEqual([0]);
 			expect(checkProducts(['3\\times\\Sigma'])).toEqual([0]);
+		});
+
+		it('should handle subscripted variables', () => {
+			expect(checkProducts(['2\\times x_1'])).toEqual([0]);
+			expect(checkProducts(['a\\cdot b_n'])).toEqual([0]);
+		});
+
+		it('should accept implicit multiplication with subscripted variables', () => {
+			expect(checkProducts(['2x_1'])).toHaveLength(0);
+			expect(checkProducts(['ab_n'])).toHaveLength(0);
+		});
+
+		it('should handle expressions with only numbers (no violation)', () => {
+			expect(checkProducts(['2\\times3\\times4'])).toHaveLength(0);
+			expect(checkProducts(['1\\cdot2\\cdot3\\cdot4'])).toHaveLength(0);
+		});
+
+		it('should handle single variable (no multiplication)', () => {
+			expect(checkProducts(['x'])).toHaveLength(0);
+			expect(checkProducts(['\\alpha'])).toHaveLength(0);
+		});
+
+		it('should handle single number (no multiplication)', () => {
+			expect(checkProducts(['42'])).toHaveLength(0);
+			expect(checkProducts(['-3.14'])).toHaveLength(0);
+		});
+
+		it('should handle expressions without any multiplication', () => {
+			expect(checkProducts(['x+y'])).toHaveLength(0);
+			expect(checkProducts(['a-b'])).toHaveLength(0);
+			expect(checkProducts(['\\frac{x}{y}'])).toHaveLength(0);
+		});
+
+		it('should handle matrices (if applicable)', () => {
+			// Matrix multiplication might use \\times legitimately
+			// but 2×A where A is matrix should still be flagged
+			expect(checkProducts(['2\\times A'])).toEqual([0]);
 		});
 	});
 });
