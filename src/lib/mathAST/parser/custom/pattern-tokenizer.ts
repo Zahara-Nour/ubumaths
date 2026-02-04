@@ -126,7 +126,7 @@ export function isValidConstraintName(name: string): name is WildcardConstraintN
  * minus (for negative numbers), plus (for +inf), decimal point, brackets (for interval notation),
  * and whitespace.
  */
-const CONSTRAINT_EXPR_CHARS = /[a-zA-Z0-9!&|(),.\s\-+[\]]/;
+const CONSTRAINT_EXPR_CHARS = /[a-zA-Z0-9!&|(),.\s\-+[\]*/^\\]/;
 
 // =============================================================================
 // Token Interface
