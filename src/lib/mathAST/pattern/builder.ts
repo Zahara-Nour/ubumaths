@@ -42,6 +42,7 @@ import type {
 	NonzeroConstraint,
 	NononeConstraint,
 	ComparisonConstraint,
+	IntervalConstraint,
 	IntegerConstraint,
 	FreeOfConstraint,
 	CustomConstraint,
@@ -54,6 +55,18 @@ import type {
 	RuleOptions,
 	MatchBindings
 } from './types';
+import type { IntervalDomain } from '$lib/math/intervals';
+import {
+	positiveReals,
+	nonNegativeReals,
+	nonZeroReals,
+	unitInterval,
+	intervalSet,
+	realLine,
+	lessThanOrEqual,
+	lessThan,
+	fromNumber
+} from '$lib/math/intervals';
 import type { NumericType } from '../numtype/types';
 
 // =============================================================================
@@ -685,6 +698,191 @@ function isInteger(): IntegerConstraint {
 	return { kind: 'integer' } as const;
 }
 
+// =============================================================================
+// Interval Constraint Builders
+// =============================================================================
+
+/**
+ * Creates an interval constraint that matches numbers within a domain.
+ *
+ * @param domain - The interval domain to match against
+ * @returns An interval constraint
+ *
+ * @example
+ * // Match n in ]0, +inf[ (positive reals)
+ * P._('n', P.inInterval(positiveReals()))
+ *
+ * // Match n in [0, 10]
+ * P._('n', P.inInterval(intervalSet([closedInterval(fromNumber(0), fromNumber(10))])))
+ */
+function inInterval(domain: IntervalDomain): IntervalConstraint {
+	return { kind: 'interval', domain } as const;
+}
+
+/**
+ * Creates a constraint for positive reals: n > 0 (French notation: ]0, +inf[)
+ *
+ * @returns An interval constraint for positive reals
+ *
+ * @example
+ * P._('n', P.inPositiveReals())  // Match values > 0
+ */
+function inPositiveReals(): IntervalConstraint {
+	return { kind: 'interval', domain: positiveReals() } as const;
+}
+
+/**
+ * Creates a constraint for non-negative reals: n >= 0 (French notation: [0, +inf[)
+ *
+ * @returns An interval constraint for non-negative reals
+ *
+ * @example
+ * P._('n', P.inNonNegativeReals())  // Match values >= 0
+ */
+function inNonNegativeReals(): IntervalConstraint {
+	return { kind: 'interval', domain: nonNegativeReals() } as const;
+}
+
+/**
+ * Creates a constraint for the unit interval: -1 <= n <= 1 (French notation: [-1, 1])
+ *
+ * @returns An interval constraint for the unit interval
+ *
+ * @example
+ * P._('n', P.inUnitInterval())  // Match values in [-1, 1]
+ */
+function inUnitInterval(): IntervalConstraint {
+	return { kind: 'interval', domain: unitInterval() } as const;
+}
+
+// =============================================================================
+// Mathematical Domain Constraint Builders
+// =============================================================================
+
+/**
+ * Creates a constraint for all real numbers: ℝ (French notation: ]-∞, +∞[)
+ *
+ * @returns An interval constraint for all reals
+ *
+ * @example
+ * P._('x', P.inR())  // Match any real number
+ */
+function inR(): IntervalConstraint {
+	return { kind: 'interval', domain: intervalSet([realLine()]) } as const;
+}
+
+/**
+ * Creates a constraint for non-negative reals: ℝ⁺ (n >= 0)
+ * French notation: [0, +∞[
+ *
+ * @returns An interval constraint for non-negative reals
+ *
+ * @example
+ * P._('n', P.inRplus())  // Match values >= 0
+ */
+function inRplus(): IntervalConstraint {
+	return { kind: 'interval', domain: nonNegativeReals() } as const;
+}
+
+/**
+ * Creates a constraint for positive reals: ℝ⁺* (n > 0)
+ * French notation: ]0, +∞[
+ *
+ * @returns An interval constraint for positive reals
+ *
+ * @example
+ * P._('n', P.inRplusStar())  // Match values > 0
+ */
+function inRplusStar(): IntervalConstraint {
+	return { kind: 'interval', domain: positiveReals() } as const;
+}
+
+/**
+ * Creates a constraint for non-zero reals: ℝ* (n ≠ 0)
+ *
+ * @returns An interval constraint for non-zero reals
+ *
+ * @example
+ * P._('n', P.inRstar())  // Match values ≠ 0
+ */
+function inRstar(): IntervalConstraint {
+	return { kind: 'interval', domain: nonZeroReals() } as const;
+}
+
+/**
+ * Creates a constraint for non-positive reals: ℝ⁻ (n <= 0)
+ * French notation: ]-∞, 0]
+ *
+ * @returns An interval constraint for non-positive reals
+ *
+ * @example
+ * P._('n', P.inRminus())  // Match values <= 0
+ */
+function inRminus(): IntervalConstraint {
+	return { kind: 'interval', domain: intervalSet([lessThanOrEqual(fromNumber(0))]) } as const;
+}
+
+/**
+ * Creates a constraint for negative reals: ℝ⁻* (n < 0)
+ * French notation: ]-∞, 0[
+ *
+ * @returns An interval constraint for negative reals
+ *
+ * @example
+ * P._('n', P.inRminusStar())  // Match values < 0
+ */
+function inRminusStar(): IntervalConstraint {
+	return { kind: 'interval', domain: intervalSet([lessThan(fromNumber(0))]) } as const;
+}
+
+/**
+ * Creates a constraint for natural numbers: ℕ (integers >= 0)
+ *
+ * @returns An AND constraint combining integer and gte(0)
+ *
+ * @example
+ * P._('n', P.inN())  // Match natural numbers (0, 1, 2, ...)
+ */
+function inN(): AndConstraint {
+	return { kind: 'and', constraints: [isInteger(), gte(0)] } as const;
+}
+
+/**
+ * Creates a constraint for positive natural numbers: ℕ* (integers > 0)
+ *
+ * @returns An AND constraint combining integer and gt(0)
+ *
+ * @example
+ * P._('n', P.inNstar())  // Match positive integers (1, 2, 3, ...)
+ */
+function inNstar(): AndConstraint {
+	return { kind: 'and', constraints: [isInteger(), gt(0)] } as const;
+}
+
+/**
+ * Creates a constraint for integers: ℤ
+ *
+ * @returns An integer constraint
+ *
+ * @example
+ * P._('n', P.inZ())  // Match any integer
+ */
+function inZ(): IntegerConstraint {
+	return isInteger();
+}
+
+/**
+ * Creates a constraint for non-zero integers: ℤ*
+ *
+ * @returns An AND constraint combining integer and nonzero
+ *
+ * @example
+ * P._('n', P.inZstar())  // Match non-zero integers
+ */
+function inZstar(): AndConstraint {
+	return { kind: 'and', constraints: [isInteger(), isNonzero()] } as const;
+}
+
 /**
  * Creates a freeOf constraint (expression does not contain specified variables)
  *
@@ -1037,6 +1235,24 @@ export const P = {
 	or,
 	not,
 
+	// Interval constraints
+	inInterval,
+	inPositiveReals,
+	inNonNegativeReals,
+	inUnitInterval,
+
+	// Mathematical domain constraints
+	inR,
+	inRplus,
+	inRplusStar,
+	inRstar,
+	inRminus,
+	inRminusStar,
+	inN,
+	inNstar,
+	inZ,
+	inZstar,
+
 	// Numeric type constraints
 	isIntegerType,
 	isRationalType,
@@ -1098,6 +1314,22 @@ export {
 	and,
 	or,
 	not,
+	// Interval constraints
+	inInterval,
+	inPositiveReals,
+	inNonNegativeReals,
+	inUnitInterval,
+	// Mathematical domain constraints
+	inR,
+	inRplus,
+	inRplusStar,
+	inRstar,
+	inRminus,
+	inRminusStar,
+	inN,
+	inNstar,
+	inZ,
+	inZstar,
 	// Numeric type constraints
 	isIntegerType,
 	isRationalType,

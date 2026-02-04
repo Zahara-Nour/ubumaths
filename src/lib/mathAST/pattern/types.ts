@@ -9,6 +9,7 @@
 import type { MathNode, MathNodeType, RelationType } from '../types';
 import type { SignedTerm } from '../flatten';
 import type { NumericType } from '../numtype/types';
+import type { IntervalDomain } from '$lib/math/intervals';
 
 // =============================================================================
 // Pattern Constraints
@@ -79,6 +80,26 @@ export interface ComparisonConstraint {
 	readonly kind: 'comparison';
 	readonly operator: 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'ne';
 	readonly value: number;
+}
+
+/**
+ * Interval constraint - matches numbers belonging to an interval domain
+ *
+ * Uses French interval notation:
+ * - ]a, b[ = open interval (a, b) in English notation
+ * - [a, b] = closed interval
+ * - ]a, b] or [a, b[ = half-open intervals
+ *
+ * @example
+ * // Match n > 0
+ * { kind: 'interval', domain: positiveReals() }
+ *
+ * // Match 0 <= n <= 10
+ * { kind: 'interval', domain: intervalSet([closedInterval(fromNumber(0), fromNumber(10))]) }
+ */
+export interface IntervalConstraint {
+	readonly kind: 'interval';
+	readonly domain: IntervalDomain;
 }
 
 /**
@@ -166,6 +187,7 @@ export type PatternConstraint =
 	| NonzeroConstraint
 	| NononeConstraint
 	| ComparisonConstraint
+	| IntervalConstraint
 	| IntegerConstraint
 	| FreeOfConstraint
 	| CustomConstraint

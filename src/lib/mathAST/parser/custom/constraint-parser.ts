@@ -35,9 +35,23 @@
  * @module mathAST/parser/custom/constraint-parser
  */
 
-import type { PatternConstraint } from '../../pattern/types';
+import type { PatternConstraint, IntervalConstraint } from '../../pattern/types';
 import { P } from '../../pattern/builder';
 import type { MathNodeType } from '../../types';
+import {
+	intervalSet,
+	interval,
+	openEndpoint,
+	closedEndpoint,
+	fromNumber,
+	positiveInfinity,
+	negativeInfinity,
+	pi,
+	e,
+	sqrt2,
+	sqrt3
+} from '$lib/math/intervals';
+import type { Endpoint, EndpointValue } from '$lib/math/intervals';
 
 // =============================================================================
 // Token Types
@@ -48,11 +62,15 @@ type ConstraintTokenType =
 	| 'NUMBER'
 	| 'LPAREN'
 	| 'RPAREN'
+	| 'LBRACKET'
+	| 'RBRACKET'
 	| 'NOT'
 	| 'AND'
 	| 'OR'
 	| 'COMMA'
 	| 'PIPE'
+	| 'PLUS'
+	| 'MINUS'
 	| 'EOF';
 
 interface ConstraintToken {
@@ -96,6 +114,12 @@ class ConstraintTokenizer {
 			case ')':
 				this.position++;
 				return { type: 'RPAREN', value: ')', position: startPos };
+			case '[':
+				this.position++;
+				return { type: 'LBRACKET', value: '[', position: startPos };
+			case ']':
+				this.position++;
+				return { type: 'RBRACKET', value: ']', position: startPos };
 			case '!':
 				this.position++;
 				return { type: 'NOT', value: '!', position: startPos };
@@ -108,12 +132,16 @@ class ConstraintTokenizer {
 			case ',':
 				this.position++;
 				return { type: 'COMMA', value: ',', position: startPos };
+			case '+':
+				this.position++;
+				return { type: 'PLUS', value: '+', position: startPos };
 			case '-':
-				// Could be negative number
+				// Could be negative number or MINUS token
 				if (this.position + 1 < this.length && this.isDigit(this.input[this.position + 1])) {
 					return this.scanNumber();
 				}
-				throw new Error(`Unexpected '-' at position ${startPos} in constraint expression`);
+				this.position++;
+				return { type: 'MINUS', value: '-', position: startPos };
 		}
 
 		// Number (digits, optionally starting with -)
@@ -121,13 +149,35 @@ class ConstraintTokenizer {
 			return this.scanNumber();
 		}
 
-		// Identifier (letters only)
+		// Identifier (starts with letter, may contain digits for sqrt2, sqrt3, etc.)
 		if (this.isLetter(char)) {
 			let ident = '';
-			while (this.position < this.length && this.isLetter(this.input[this.position])) {
+			while (this.position < this.length && this.isAlphanumeric(this.input[this.position])) {
 				ident += this.input[this.position];
 				this.position++;
 			}
+
+			// Special handling for mathematical domain shortcuts: inR, inN, inZ
+			// They can be followed by +, -, * to form inR+, inR-, inR*, inR+*, inR-*, inN*, inZ*
+			if (ident === 'inR' || ident === 'inN' || ident === 'inZ') {
+				// Check for + or - suffix
+				if (this.position < this.length) {
+					const nextChar = this.input[this.position];
+					if (nextChar === '+' || nextChar === '-') {
+						ident += nextChar;
+						this.position++;
+						// Check for * after + or -
+						if (this.position < this.length && this.input[this.position] === '*') {
+							ident += '*';
+							this.position++;
+						}
+					} else if (nextChar === '*') {
+						ident += '*';
+						this.position++;
+					}
+				}
+			}
+
 			return { type: 'IDENT', value: ident, position: startPos };
 		}
 
@@ -151,6 +201,10 @@ class ConstraintTokenizer {
 
 	private isLetter(char: string): boolean {
 		return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z');
+	}
+
+	private isAlphanumeric(char: string): boolean {
+		return this.isLetter(char) || this.isDigit(char);
 	}
 
 	private isDigit(char: string): boolean {
@@ -215,7 +269,18 @@ const VALID_ATOMIC_NAMES = new Set([
 	'algebraicType',
 	'realType',
 	'transcendentalType',
-	'complexType'
+	'complexType',
+	// Mathematical domain shortcuts
+	'inR',
+	'inR+',
+	'inR+*',
+	'inR*',
+	'inR-',
+	'inR-*',
+	'inN',
+	'inN*',
+	'inZ',
+	'inZ*'
 ]);
 
 /**
@@ -253,6 +318,27 @@ function getAtomicConstraint(name: string): PatternConstraint {
 			return P.isTranscendentalType();
 		case 'complexType':
 			return P.isComplexType();
+		// Mathematical domain shortcuts
+		case 'inR':
+			return P.inR();
+		case 'inR+':
+			return P.inRplus();
+		case 'inR+*':
+			return P.inRplusStar();
+		case 'inR*':
+			return P.inRstar();
+		case 'inR-':
+			return P.inRminus();
+		case 'inR-*':
+			return P.inRminusStar();
+		case 'inN':
+			return P.inN();
+		case 'inN*':
+			return P.inNstar();
+		case 'inZ':
+			return P.inZ();
+		case 'inZ*':
+			return P.inZstar();
 		default:
 			throw new Error(`Unknown atomic constraint: ${name}`);
 	}
@@ -270,7 +356,9 @@ const FUNCTIONAL_CONSTRAINT_NAMES = new Set([
 	'gte',
 	'lte',
 	'eq',
-	'ne'
+	'ne',
+	// Interval constraint
+	'in'
 ]);
 
 // =============================================================================
@@ -483,6 +571,14 @@ class ConstraintParser {
 		const identToken = this.advance();
 		const name = identToken.value;
 
+		// Check if this is the 'in' constraint (uses brackets, not parentheses)
+		if (
+			name === 'in' &&
+			(this.currentToken.type === 'LBRACKET' || this.currentToken.type === 'RBRACKET')
+		) {
+			return this.parseFunctional(name);
+		}
+
 		// Check if this is a functional constraint
 		if (FUNCTIONAL_CONSTRAINT_NAMES.has(name) && this.currentToken.type === 'LPAREN') {
 			return this.parseFunctional(name);
@@ -492,7 +588,7 @@ class ConstraintParser {
 		if (!VALID_ATOMIC_NAMES.has(name)) {
 			throw new Error(
 				`Unknown constraint '${name}' at position ${identToken.position}. ` +
-					`Valid constraints: ${Array.from(VALID_ATOMIC_NAMES).join(', ')}, type(...), freeOf(...)`
+					`Valid constraints: ${Array.from(VALID_ATOMIC_NAMES).join(', ')}, type(...), freeOf(...), in]...[`
 			);
 		}
 
@@ -500,9 +596,14 @@ class ConstraintParser {
 	}
 
 	/**
-	 * Parse functional constraint: type(...) or freeOf(...)
+	 * Parse functional constraint: type(...), freeOf(...), in]...[
 	 */
 	private parseFunctional(funcName: string): PatternConstraint {
+		// Special case for 'in' - doesn't use parentheses
+		if (funcName === 'in') {
+			return this.parseInConstraint();
+		}
+
 		this.advance(); // consume (
 
 		if (funcName === 'type') {
@@ -598,6 +699,142 @@ class ConstraintParser {
 			case 'ne':
 				return P.ne(value);
 		}
+	}
+
+	/**
+	 * Parse interval constraint: in]a,b[
+	 *
+	 * French notation:
+	 * - ] = open on left (exclusive)
+	 * - [ = closed on left (inclusive)
+	 * - [ at end = open on right (exclusive)
+	 * - ] at end = closed on right (inclusive)
+	 *
+	 * Examples:
+	 * - in]0,+inf[  → x > 0
+	 * - in[0,10]    → 0 <= x <= 10
+	 * - in[0,10[    → 0 <= x < 10
+	 * - in]-inf,0[  → x < 0
+	 */
+	private parseInConstraint(): IntervalConstraint {
+		// Expect opening bracket: [ or ]
+		if (this.currentToken.type !== 'LBRACKET' && this.currentToken.type !== 'RBRACKET') {
+			throw new Error(`Expected '[' or ']' after 'in' at position ${this.currentToken.position}`);
+		}
+
+		// French notation: ] means open, [ means closed (for left endpoint)
+		const leftBracket = this.advance();
+		const lowerType: 'open' | 'closed' = leftBracket.value === ']' ? 'open' : 'closed';
+
+		// Parse lower bound
+		const lowerValue = this.parseIntervalBound();
+
+		// Expect comma
+		this.expect('COMMA', "Expected ',' between interval bounds");
+
+		// Parse upper bound
+		const upperValue = this.parseIntervalBound();
+
+		// Expect closing bracket: [ or ]
+		if (this.currentToken.type !== 'LBRACKET' && this.currentToken.type !== 'RBRACKET') {
+			throw new Error(
+				`Expected '[' or ']' at end of interval at position ${this.currentToken.position}`
+			);
+		}
+
+		// French notation: [ means open, ] means closed (for right endpoint)
+		const rightBracket = this.advance();
+		const upperType: 'open' | 'closed' = rightBracket.value === '[' ? 'open' : 'closed';
+
+		// Build endpoints
+		const lower: Endpoint =
+			lowerType === 'open' ? openEndpoint(lowerValue) : closedEndpoint(lowerValue);
+		const upper: Endpoint =
+			upperType === 'open' ? openEndpoint(upperValue) : closedEndpoint(upperValue);
+
+		// Create interval domain
+		const domain = intervalSet([interval(lower, upper)]);
+
+		return { kind: 'interval', domain };
+	}
+
+	/**
+	 * Parse an interval bound value.
+	 *
+	 * Supported values:
+	 * - Numbers: 0, 1, -5, 3.14
+	 * - Infinity: +inf, -inf, inf
+	 * - Constants: pi, e, sqrt2, sqrt3
+	 */
+	private parseIntervalBound(): EndpointValue {
+		// Check for +inf or -inf
+		if (this.currentToken.type === 'PLUS') {
+			this.advance(); // consume +
+			if (this.currentToken.type === 'IDENT' && this.currentToken.value === 'inf') {
+				this.advance(); // consume inf
+				return positiveInfinity();
+			}
+			throw new Error(`Expected 'inf' after '+' at position ${this.currentToken.position}`);
+		}
+
+		if (this.currentToken.type === 'MINUS') {
+			this.advance(); // consume -
+			if (this.currentToken.type === 'IDENT' && this.currentToken.value === 'inf') {
+				this.advance(); // consume inf
+				return negativeInfinity();
+			}
+			// Negative number
+			if (this.currentToken.type === 'NUMBER') {
+				const numToken = this.advance();
+				const value = -parseFloat(numToken.value);
+				return fromNumber(value);
+			}
+			throw new Error(
+				`Expected number or 'inf' after '-' at position ${this.currentToken.position}`
+			);
+		}
+
+		// Check for plain 'inf' (treated as +inf)
+		if (this.currentToken.type === 'IDENT' && this.currentToken.value === 'inf') {
+			this.advance();
+			return positiveInfinity();
+		}
+
+		// Check for named constants
+		if (this.currentToken.type === 'IDENT') {
+			const name = this.currentToken.value;
+			switch (name) {
+				case 'pi':
+					this.advance();
+					return pi();
+				case 'e':
+					this.advance();
+					return e();
+				case 'sqrt2':
+					this.advance();
+					return sqrt2();
+				case 'sqrt3':
+					this.advance();
+					return sqrt3();
+				default:
+					throw new Error(
+						`Unknown interval bound '${name}' at position ${this.currentToken.position}. ` +
+							`Valid bounds: numbers, +inf, -inf, pi, e, sqrt2, sqrt3`
+					);
+			}
+		}
+
+		// Number
+		if (this.currentToken.type === 'NUMBER') {
+			const numToken = this.advance();
+			const value = parseFloat(numToken.value);
+			return fromNumber(value);
+		}
+
+		throw new Error(
+			`Expected interval bound at position ${this.currentToken.position}. ` +
+				`Valid bounds: numbers, +inf, -inf, pi, e, sqrt2, sqrt3`
+		);
 	}
 }
 

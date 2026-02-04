@@ -6,6 +6,13 @@ import { describe, it, expect } from 'vitest';
 import { checkConstraint, containsVariable, isFreeOfVariables } from '../constraints';
 import { P } from '../builder';
 import { number, variable, add, multiply, divide, opposite, func, greek } from '../../factory';
+import {
+	intervalSet,
+	openInterval,
+	closedInterval,
+	leftClosedInterval,
+	fromNumber
+} from '$lib/math/intervals';
 
 describe('Constraint Evaluation', () => {
 	// ===========================================================================
@@ -305,6 +312,249 @@ describe('Constraint Evaluation', () => {
 			it('fails for values equal to threshold', () => {
 				expect(checkConstraint(P.ne(0), number('0'))).toBe(false);
 				expect(checkConstraint(P.ne(5), number('5'))).toBe(false);
+			});
+		});
+	});
+
+	// ===========================================================================
+	// Interval Constraints
+	// ===========================================================================
+
+	describe('interval constraints', () => {
+		describe('inPositiveReals - x > 0', () => {
+			it('matches positive numbers', () => {
+				expect(checkConstraint(P.inPositiveReals(), number('5'))).toBe(true);
+				expect(checkConstraint(P.inPositiveReals(), number('0.001'))).toBe(true);
+				expect(checkConstraint(P.inPositiveReals(), number('1000'))).toBe(true);
+			});
+
+			it('fails for zero', () => {
+				expect(checkConstraint(P.inPositiveReals(), number('0'))).toBe(false);
+			});
+
+			it('fails for negative numbers', () => {
+				expect(checkConstraint(P.inPositiveReals(), number('-5'))).toBe(false);
+				expect(checkConstraint(P.inPositiveReals(), number('-0.001'))).toBe(false);
+			});
+
+			it('fails for non-number nodes', () => {
+				expect(checkConstraint(P.inPositiveReals(), variable('x'))).toBe(false);
+			});
+		});
+
+		describe('inNonNegativeReals - x >= 0', () => {
+			it('matches positive numbers', () => {
+				expect(checkConstraint(P.inNonNegativeReals(), number('5'))).toBe(true);
+				expect(checkConstraint(P.inNonNegativeReals(), number('0.001'))).toBe(true);
+			});
+
+			it('matches zero', () => {
+				expect(checkConstraint(P.inNonNegativeReals(), number('0'))).toBe(true);
+			});
+
+			it('fails for negative numbers', () => {
+				expect(checkConstraint(P.inNonNegativeReals(), number('-5'))).toBe(false);
+				expect(checkConstraint(P.inNonNegativeReals(), number('-0.001'))).toBe(false);
+			});
+		});
+
+		describe('inUnitInterval - -1 <= x <= 1', () => {
+			it('matches values in [-1, 1]', () => {
+				expect(checkConstraint(P.inUnitInterval(), number('0'))).toBe(true);
+				expect(checkConstraint(P.inUnitInterval(), number('0.5'))).toBe(true);
+				expect(checkConstraint(P.inUnitInterval(), number('-0.5'))).toBe(true);
+				expect(checkConstraint(P.inUnitInterval(), number('1'))).toBe(true);
+				expect(checkConstraint(P.inUnitInterval(), number('-1'))).toBe(true);
+			});
+
+			it('fails for values outside [-1, 1]', () => {
+				expect(checkConstraint(P.inUnitInterval(), number('1.01'))).toBe(false);
+				expect(checkConstraint(P.inUnitInterval(), number('-1.01'))).toBe(false);
+				expect(checkConstraint(P.inUnitInterval(), number('5'))).toBe(false);
+			});
+		});
+
+		describe('mathematical domain shortcuts', () => {
+			describe('inR - all reals', () => {
+				it('matches any finite number', () => {
+					expect(checkConstraint(P.inR(), number('5'))).toBe(true);
+					expect(checkConstraint(P.inR(), number('-100'))).toBe(true);
+					expect(checkConstraint(P.inR(), number('0'))).toBe(true);
+					expect(checkConstraint(P.inR(), number('3.14'))).toBe(true);
+				});
+
+				it('fails for non-number nodes', () => {
+					expect(checkConstraint(P.inR(), variable('x'))).toBe(false);
+				});
+			});
+
+			describe('inRplus - non-negative reals (x >= 0)', () => {
+				it('matches non-negative numbers', () => {
+					expect(checkConstraint(P.inRplus(), number('0'))).toBe(true);
+					expect(checkConstraint(P.inRplus(), number('5'))).toBe(true);
+					expect(checkConstraint(P.inRplus(), number('0.001'))).toBe(true);
+				});
+
+				it('fails for negative numbers', () => {
+					expect(checkConstraint(P.inRplus(), number('-1'))).toBe(false);
+					expect(checkConstraint(P.inRplus(), number('-0.001'))).toBe(false);
+				});
+			});
+
+			describe('inRplusStar - positive reals (x > 0)', () => {
+				it('matches positive numbers', () => {
+					expect(checkConstraint(P.inRplusStar(), number('5'))).toBe(true);
+					expect(checkConstraint(P.inRplusStar(), number('0.001'))).toBe(true);
+				});
+
+				it('fails for zero and negative numbers', () => {
+					expect(checkConstraint(P.inRplusStar(), number('0'))).toBe(false);
+					expect(checkConstraint(P.inRplusStar(), number('-1'))).toBe(false);
+				});
+			});
+
+			describe('inRstar - non-zero reals (x != 0)', () => {
+				it('matches non-zero numbers', () => {
+					expect(checkConstraint(P.inRstar(), number('5'))).toBe(true);
+					expect(checkConstraint(P.inRstar(), number('-5'))).toBe(true);
+					expect(checkConstraint(P.inRstar(), number('0.001'))).toBe(true);
+				});
+
+				it('fails for zero', () => {
+					expect(checkConstraint(P.inRstar(), number('0'))).toBe(false);
+				});
+			});
+
+			describe('inRminus - non-positive reals (x <= 0)', () => {
+				it('matches non-positive numbers', () => {
+					expect(checkConstraint(P.inRminus(), number('0'))).toBe(true);
+					expect(checkConstraint(P.inRminus(), number('-5'))).toBe(true);
+					expect(checkConstraint(P.inRminus(), number('-0.001'))).toBe(true);
+				});
+
+				it('fails for positive numbers', () => {
+					expect(checkConstraint(P.inRminus(), number('1'))).toBe(false);
+					expect(checkConstraint(P.inRminus(), number('0.001'))).toBe(false);
+				});
+			});
+
+			describe('inRminusStar - negative reals (x < 0)', () => {
+				it('matches negative numbers', () => {
+					expect(checkConstraint(P.inRminusStar(), number('-5'))).toBe(true);
+					expect(checkConstraint(P.inRminusStar(), number('-0.001'))).toBe(true);
+				});
+
+				it('fails for zero and positive numbers', () => {
+					expect(checkConstraint(P.inRminusStar(), number('0'))).toBe(false);
+					expect(checkConstraint(P.inRminusStar(), number('1'))).toBe(false);
+				});
+			});
+
+			describe('inN - natural numbers (integers >= 0)', () => {
+				it('matches natural numbers', () => {
+					expect(checkConstraint(P.inN(), number('0'))).toBe(true);
+					expect(checkConstraint(P.inN(), number('1'))).toBe(true);
+					expect(checkConstraint(P.inN(), number('100'))).toBe(true);
+				});
+
+				it('fails for negative integers', () => {
+					expect(checkConstraint(P.inN(), number('-1'))).toBe(false);
+					expect(checkConstraint(P.inN(), number('-100'))).toBe(false);
+				});
+
+				it('fails for non-integers', () => {
+					expect(checkConstraint(P.inN(), number('3.14'))).toBe(false);
+					expect(checkConstraint(P.inN(), number('0.5'))).toBe(false);
+				});
+			});
+
+			describe('inNstar - positive integers (integers > 0)', () => {
+				it('matches positive integers', () => {
+					expect(checkConstraint(P.inNstar(), number('1'))).toBe(true);
+					expect(checkConstraint(P.inNstar(), number('100'))).toBe(true);
+				});
+
+				it('fails for zero', () => {
+					expect(checkConstraint(P.inNstar(), number('0'))).toBe(false);
+				});
+
+				it('fails for negative integers', () => {
+					expect(checkConstraint(P.inNstar(), number('-1'))).toBe(false);
+				});
+
+				it('fails for non-integers', () => {
+					expect(checkConstraint(P.inNstar(), number('3.14'))).toBe(false);
+				});
+			});
+
+			describe('inZ - all integers', () => {
+				it('matches any integer', () => {
+					expect(checkConstraint(P.inZ(), number('0'))).toBe(true);
+					expect(checkConstraint(P.inZ(), number('5'))).toBe(true);
+					expect(checkConstraint(P.inZ(), number('-5'))).toBe(true);
+				});
+
+				it('fails for non-integers', () => {
+					expect(checkConstraint(P.inZ(), number('3.14'))).toBe(false);
+					expect(checkConstraint(P.inZ(), number('0.5'))).toBe(false);
+				});
+			});
+
+			describe('inZstar - non-zero integers', () => {
+				it('matches non-zero integers', () => {
+					expect(checkConstraint(P.inZstar(), number('1'))).toBe(true);
+					expect(checkConstraint(P.inZstar(), number('-1'))).toBe(true);
+					expect(checkConstraint(P.inZstar(), number('100'))).toBe(true);
+				});
+
+				it('fails for zero', () => {
+					expect(checkConstraint(P.inZstar(), number('0'))).toBe(false);
+				});
+
+				it('fails for non-integers', () => {
+					expect(checkConstraint(P.inZstar(), number('3.14'))).toBe(false);
+				});
+			});
+		});
+
+		describe('inInterval - custom interval', () => {
+			it('matches values in custom open interval ]0, 10[', () => {
+				const customInterval = P.inInterval(
+					intervalSet([openInterval(fromNumber(0), fromNumber(10))])
+				);
+
+				expect(checkConstraint(customInterval, number('5'))).toBe(true);
+				expect(checkConstraint(customInterval, number('0.001'))).toBe(true);
+				expect(checkConstraint(customInterval, number('9.999'))).toBe(true);
+			});
+
+			it('fails for endpoints on open interval ]0, 10[', () => {
+				const customInterval = P.inInterval(
+					intervalSet([openInterval(fromNumber(0), fromNumber(10))])
+				);
+
+				expect(checkConstraint(customInterval, number('0'))).toBe(false);
+				expect(checkConstraint(customInterval, number('10'))).toBe(false);
+			});
+
+			it('matches endpoints on closed interval [0, 10]', () => {
+				const customInterval = P.inInterval(
+					intervalSet([closedInterval(fromNumber(0), fromNumber(10))])
+				);
+
+				expect(checkConstraint(customInterval, number('0'))).toBe(true);
+				expect(checkConstraint(customInterval, number('10'))).toBe(true);
+				expect(checkConstraint(customInterval, number('5'))).toBe(true);
+			});
+
+			it('matches left-closed right-open interval [0, 10[', () => {
+				const customInterval = P.inInterval(
+					intervalSet([leftClosedInterval(fromNumber(0), fromNumber(10))])
+				);
+
+				expect(checkConstraint(customInterval, number('0'))).toBe(true);
+				expect(checkConstraint(customInterval, number('10'))).toBe(false);
+				expect(checkConstraint(customInterval, number('5'))).toBe(true);
 			});
 		});
 	});
