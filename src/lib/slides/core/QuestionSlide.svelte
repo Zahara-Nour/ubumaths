@@ -14,8 +14,7 @@
 	import Slide from './Slide.svelte';
 
 	// Input components
-	import NumericalInput from '$lib/components/question-inputs/NumericalInput.svelte';
-	import AlgebraicInput from '$lib/components/question-inputs/AlgebraicInput.svelte';
+	import MathInput from '$lib/components/question-inputs/MathInput.svelte';
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
 
@@ -158,15 +157,13 @@
 		{#if interactive}
 			<div class="answer-section">
 				{#if instance.type === 'numerical_exact' || instance.type === 'numerical_decimal' || instance.type === 'numerical_rounded'}
-					<NumericalInput
-						bind:value={userAnswer}
-						disabled={isInputDisabled}
-						onSubmit={handleSubmit}
-					/>
+					<MathInput bind:value={userAnswer} disabled={isInputDisabled} onSubmit={handleSubmit} />
 				{:else if instance.type === 'algebraic_transform'}
-					<AlgebraicInput
+					<MathInput
 						bind:value={userAnswer}
 						disabled={isInputDisabled}
+						placeholder="Entrez votre expression..."
+						helperText="Utilisez le clavier virtuel ou tapez directement (ex: x^2, sqrt(x), (x+1)(x-1))"
 						onSubmit={handleSubmit}
 					/>
 				{:else if instance.type === 'fill_in_blanks'}
@@ -187,11 +184,7 @@
 						showValidation={isSubmitted}
 					/>
 				{:else}
-					<NumericalInput
-						bind:value={userAnswer}
-						disabled={isInputDisabled}
-						onSubmit={handleSubmit}
-					/>
+					<MathInput bind:value={userAnswer} disabled={isInputDisabled} onSubmit={handleSubmit} />
 				{/if}
 
 				<!-- Submit Button -->
