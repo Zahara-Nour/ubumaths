@@ -166,6 +166,11 @@ export function checkConstraint(constraint: PatternConstraint, node: MathNode): 
 			return value !== undefined && value !== 0;
 		}
 
+		case 'nonone': {
+			const value = parseNumberValue(node);
+			return value !== undefined && value !== 1;
+		}
+
 		case 'integer': {
 			const value = parseNumberValue(node);
 			return value !== undefined && Number.isInteger(value);

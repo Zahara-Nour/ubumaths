@@ -46,6 +46,11 @@ describe('Constraint Expression Parser', () => {
 				expect(constraint).toEqual(P.isNonzero());
 			});
 
+			it('parses "nonone" constraint', () => {
+				const constraint = parseConstraintExpr('nonone');
+				expect(constraint).toEqual(P.isNonone());
+			});
+
 			it('parses "variable" constraint', () => {
 				const constraint = parseConstraintExpr('variable');
 				expect(constraint).toEqual(P.isVariable());

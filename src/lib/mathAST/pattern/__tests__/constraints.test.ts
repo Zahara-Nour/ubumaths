@@ -189,6 +189,34 @@ describe('Constraint Evaluation', () => {
 	});
 
 	// ===========================================================================
+	// Nonone Constraint
+	// ===========================================================================
+
+	describe('nonone constraint', () => {
+		it('matches numbers different from 1', () => {
+			const constraint = P.isNonone();
+
+			expect(checkConstraint(constraint, number('0'))).toBe(true);
+			expect(checkConstraint(constraint, number('2'))).toBe(true);
+			expect(checkConstraint(constraint, number('-1'))).toBe(true);
+			expect(checkConstraint(constraint, number('0.5'))).toBe(true);
+		});
+
+		it('fails for 1', () => {
+			const constraint = P.isNonone();
+
+			expect(checkConstraint(constraint, number('1'))).toBe(false);
+			expect(checkConstraint(constraint, number('1.0'))).toBe(false);
+		});
+
+		it('fails for non-number nodes', () => {
+			const constraint = P.isNonone();
+
+			expect(checkConstraint(constraint, variable('x'))).toBe(false);
+		});
+	});
+
+	// ===========================================================================
 	// Integer Constraint
 	// ===========================================================================
 

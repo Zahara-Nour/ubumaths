@@ -157,6 +157,7 @@ const VALID_ATOMIC_NAMES = new Set([
 	'positive',
 	'negative',
 	'nonzero',
+	'nonone',
 	'variable',
 	// Numeric type constraints
 	'integerType',
@@ -185,6 +186,8 @@ function getAtomicConstraint(name: string): PatternConstraint {
 			return P.isNegative();
 		case 'nonzero':
 			return P.isNonzero();
+		case 'nonone':
+			return P.isNonone();
 		case 'variable':
 			return P.isVariable();
 		// Numeric type constraints

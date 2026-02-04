@@ -58,6 +58,13 @@ export interface NonzeroConstraint {
 }
 
 /**
+ * Non-one constraint - matches nodes that evaluate to values different from 1
+ */
+export interface NononeConstraint {
+	readonly kind: 'nonone';
+}
+
+/**
  * Integer constraint - matches number nodes with integer values
  */
 export interface IntegerConstraint {
@@ -140,6 +147,7 @@ export type PatternConstraint =
 	| PositiveConstraint
 	| NegativeConstraint
 	| NonzeroConstraint
+	| NononeConstraint
 	| IntegerConstraint
 	| FreeOfConstraint
 	| CustomConstraint
