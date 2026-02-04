@@ -41,6 +41,7 @@ import type {
 	NegativeConstraint,
 	NonzeroConstraint,
 	NononeConstraint,
+	ComparisonConstraint,
 	IntegerConstraint,
 	FreeOfConstraint,
 	CustomConstraint,
@@ -595,6 +596,84 @@ function isNonone(): NononeConstraint {
 }
 
 /**
+ * Creates a greater-than constraint (value > n)
+ *
+ * @param n - The value to compare against
+ * @returns A comparison constraint
+ *
+ * @example
+ * P._('x', P.gt(0))  // Match values > 0
+ */
+function gt(n: number): ComparisonConstraint {
+	return { kind: 'comparison', operator: 'gt', value: n } as const;
+}
+
+/**
+ * Creates a less-than constraint (value < n)
+ *
+ * @param n - The value to compare against
+ * @returns A comparison constraint
+ *
+ * @example
+ * P._('x', P.lt(10))  // Match values < 10
+ */
+function lt(n: number): ComparisonConstraint {
+	return { kind: 'comparison', operator: 'lt', value: n } as const;
+}
+
+/**
+ * Creates a greater-than-or-equal constraint (value >= n)
+ *
+ * @param n - The value to compare against
+ * @returns A comparison constraint
+ *
+ * @example
+ * P._('x', P.gte(0))  // Match values >= 0
+ */
+function gte(n: number): ComparisonConstraint {
+	return { kind: 'comparison', operator: 'gte', value: n } as const;
+}
+
+/**
+ * Creates a less-than-or-equal constraint (value <= n)
+ *
+ * @param n - The value to compare against
+ * @returns A comparison constraint
+ *
+ * @example
+ * P._('x', P.lte(100))  // Match values <= 100
+ */
+function lte(n: number): ComparisonConstraint {
+	return { kind: 'comparison', operator: 'lte', value: n } as const;
+}
+
+/**
+ * Creates an equal-to constraint (value = n)
+ *
+ * @param n - The value to compare against
+ * @returns A comparison constraint
+ *
+ * @example
+ * P._('x', P.eq(2))  // Match values equal to 2
+ */
+function eq(n: number): ComparisonConstraint {
+	return { kind: 'comparison', operator: 'eq', value: n } as const;
+}
+
+/**
+ * Creates a not-equal constraint (value ≠ n)
+ *
+ * @param n - The value to compare against
+ * @returns A comparison constraint
+ *
+ * @example
+ * P._('x', P.ne(0))  // Match values different from 0 (equivalent to nonzero)
+ */
+function ne(n: number): ComparisonConstraint {
+	return { kind: 'comparison', operator: 'ne', value: n } as const;
+}
+
+/**
  * Creates an integer constraint
  *
  * @returns An integer constraint
@@ -945,6 +1024,12 @@ export const P = {
 	isNegative,
 	isNonzero,
 	isNonone,
+	gt,
+	lt,
+	gte,
+	lte,
+	eq,
+	ne,
 	isInteger,
 	isFreeOf,
 	custom,
@@ -1001,6 +1086,12 @@ export {
 	isNegative,
 	isNonzero,
 	isNonone,
+	gt,
+	lt,
+	gte,
+	lte,
+	eq,
+	ne,
 	isInteger,
 	isFreeOf,
 	custom,

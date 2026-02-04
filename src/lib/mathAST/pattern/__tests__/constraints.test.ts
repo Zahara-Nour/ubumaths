@@ -217,6 +217,99 @@ describe('Constraint Evaluation', () => {
 	});
 
 	// ===========================================================================
+	// Comparison Constraints
+	// ===========================================================================
+
+	describe('comparison constraints', () => {
+		describe('gt (greater than)', () => {
+			it('matches values greater than threshold', () => {
+				expect(checkConstraint(P.gt(5), number('6'))).toBe(true);
+				expect(checkConstraint(P.gt(5), number('10'))).toBe(true);
+				expect(checkConstraint(P.gt(0), number('0.001'))).toBe(true);
+			});
+
+			it('fails for values equal or less than threshold', () => {
+				expect(checkConstraint(P.gt(5), number('5'))).toBe(false);
+				expect(checkConstraint(P.gt(5), number('4'))).toBe(false);
+				expect(checkConstraint(P.gt(5), number('-1'))).toBe(false);
+			});
+
+			it('fails for non-number nodes', () => {
+				expect(checkConstraint(P.gt(5), variable('x'))).toBe(false);
+			});
+		});
+
+		describe('lt (less than)', () => {
+			it('matches values less than threshold', () => {
+				expect(checkConstraint(P.lt(10), number('9'))).toBe(true);
+				expect(checkConstraint(P.lt(10), number('-5'))).toBe(true);
+				expect(checkConstraint(P.lt(0), number('-0.001'))).toBe(true);
+			});
+
+			it('fails for values equal or greater than threshold', () => {
+				expect(checkConstraint(P.lt(10), number('10'))).toBe(false);
+				expect(checkConstraint(P.lt(10), number('11'))).toBe(false);
+			});
+
+			it('fails for non-number nodes', () => {
+				expect(checkConstraint(P.lt(10), variable('x'))).toBe(false);
+			});
+		});
+
+		describe('gte (greater or equal)', () => {
+			it('matches values greater than or equal to threshold', () => {
+				expect(checkConstraint(P.gte(5), number('5'))).toBe(true);
+				expect(checkConstraint(P.gte(5), number('6'))).toBe(true);
+				expect(checkConstraint(P.gte(0), number('0'))).toBe(true);
+			});
+
+			it('fails for values less than threshold', () => {
+				expect(checkConstraint(P.gte(5), number('4'))).toBe(false);
+				expect(checkConstraint(P.gte(5), number('-1'))).toBe(false);
+			});
+		});
+
+		describe('lte (less or equal)', () => {
+			it('matches values less than or equal to threshold', () => {
+				expect(checkConstraint(P.lte(10), number('10'))).toBe(true);
+				expect(checkConstraint(P.lte(10), number('9'))).toBe(true);
+				expect(checkConstraint(P.lte(0), number('0'))).toBe(true);
+			});
+
+			it('fails for values greater than threshold', () => {
+				expect(checkConstraint(P.lte(10), number('11'))).toBe(false);
+				expect(checkConstraint(P.lte(10), number('100'))).toBe(false);
+			});
+		});
+
+		describe('eq (equal to)', () => {
+			it('matches values equal to threshold', () => {
+				expect(checkConstraint(P.eq(5), number('5'))).toBe(true);
+				expect(checkConstraint(P.eq(0), number('0'))).toBe(true);
+				expect(checkConstraint(P.eq(-3), number('-3'))).toBe(true);
+			});
+
+			it('fails for values not equal to threshold', () => {
+				expect(checkConstraint(P.eq(5), number('4'))).toBe(false);
+				expect(checkConstraint(P.eq(5), number('6'))).toBe(false);
+			});
+		});
+
+		describe('ne (not equal)', () => {
+			it('matches values not equal to threshold', () => {
+				expect(checkConstraint(P.ne(0), number('1'))).toBe(true);
+				expect(checkConstraint(P.ne(0), number('-1'))).toBe(true);
+				expect(checkConstraint(P.ne(1), number('0'))).toBe(true);
+			});
+
+			it('fails for values equal to threshold', () => {
+				expect(checkConstraint(P.ne(0), number('0'))).toBe(false);
+				expect(checkConstraint(P.ne(5), number('5'))).toBe(false);
+			});
+		});
+	});
+
+	// ===========================================================================
 	// Integer Constraint
 	// ===========================================================================
 

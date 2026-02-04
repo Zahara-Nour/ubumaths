@@ -120,7 +120,12 @@ export function isValidConstraintName(name: string): name is WildcardConstraintN
  * Characters that are valid within constraint expressions.
  * Includes letters (constraint names), operators (!&|), parentheses, comma, and whitespace.
  */
-const CONSTRAINT_EXPR_CHARS = /[a-zA-Z!&|(),\s]/;
+/**
+ * Characters valid within constraint expressions.
+ * Includes: letters, digits (for numbers), operators (!&|), parentheses, comma,
+ * minus (for negative numbers), decimal point, and whitespace.
+ */
+const CONSTRAINT_EXPR_CHARS = /[a-zA-Z0-9!&|(),.\s-]/;
 
 // =============================================================================
 // Token Interface

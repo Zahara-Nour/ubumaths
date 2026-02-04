@@ -134,6 +134,61 @@ describe('Constraint Expression Parser', () => {
 			});
 		});
 
+		describe('comparison constraints gt, lt, gte, lte, eq, ne', () => {
+			it('parses gt(5) - greater than', () => {
+				const constraint = parseConstraintExpr('gt(5)');
+				expect(constraint).toEqual(P.gt(5));
+			});
+
+			it('parses lt(10) - less than', () => {
+				const constraint = parseConstraintExpr('lt(10)');
+				expect(constraint).toEqual(P.lt(10));
+			});
+
+			it('parses gte(0) - greater or equal', () => {
+				const constraint = parseConstraintExpr('gte(0)');
+				expect(constraint).toEqual(P.gte(0));
+			});
+
+			it('parses lte(100) - less or equal', () => {
+				const constraint = parseConstraintExpr('lte(100)');
+				expect(constraint).toEqual(P.lte(100));
+			});
+
+			it('parses eq(2) - equal to', () => {
+				const constraint = parseConstraintExpr('eq(2)');
+				expect(constraint).toEqual(P.eq(2));
+			});
+
+			it('parses ne(0) - not equal', () => {
+				const constraint = parseConstraintExpr('ne(0)');
+				expect(constraint).toEqual(P.ne(0));
+			});
+
+			it('parses negative numbers: gt(-5)', () => {
+				const constraint = parseConstraintExpr('gt(-5)');
+				expect(constraint).toEqual(P.gt(-5));
+			});
+
+			it('parses decimal numbers: lt(3.14)', () => {
+				const constraint = parseConstraintExpr('lt(3.14)');
+				expect(constraint).toEqual(P.lt(3.14));
+			});
+
+			it('parses negative decimals: gte(-0.5)', () => {
+				const constraint = parseConstraintExpr('gte(-0.5)');
+				expect(constraint).toEqual(P.gte(-0.5));
+			});
+
+			it('throws error for empty gt()', () => {
+				expect(() => parseConstraintExpr('gt()')).toThrow('Expected number');
+			});
+
+			it('throws error for non-number argument', () => {
+				expect(() => parseConstraintExpr('gt(x)')).toThrow('Expected number');
+			});
+		});
+
 		describe('freeOf(...)', () => {
 			it('parses freeOf(x) - single variable', () => {
 				const constraint = parseConstraintExpr('freeOf(x)');
@@ -361,6 +416,21 @@ describe('Constraint Expression Parser', () => {
 		it('parses __rest:integerType for sequence wildcard with constraint', () => {
 			const pattern = parsePattern('a + __rest:integerType');
 			expect(pattern).toEqual(P.add(P._('a'), P.__('rest', P.isIntegerType())));
+		});
+
+		it('parses n:gt(0) for comparison constraint', () => {
+			const pattern = parsePattern('n:gt(0)');
+			expect(pattern).toEqual(P._('n', P.gt(0)));
+		});
+
+		it('parses exp:gte(2) & integer for combined comparison', () => {
+			const pattern = parsePattern('base ^ exp:gte(2) & integer');
+			expect(pattern).toEqual(P.pow(P._('base'), P._('exp', P.and(P.gte(2), P.isInteger()))));
+		});
+
+		it('parses n:gt(0) & lt(10) for range constraint', () => {
+			const pattern = parsePattern('n:gt(0) & lt(10)');
+			expect(pattern).toEqual(P._('n', P.and(P.gt(0), P.lt(10))));
 		});
 	});
 
