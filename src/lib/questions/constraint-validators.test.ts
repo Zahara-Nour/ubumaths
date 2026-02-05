@@ -1279,11 +1279,195 @@ describe('checkFactorOne', () => {
 		it('should handle empty strings', () => {
 			expect(checkFactorOne([''])).toHaveLength(0);
 		});
+
+		it('should handle whitespace', () => {
+			expect(checkFactorOne(['  '])).toHaveLength(0);
+		});
+
+		it('should handle null/undefined gracefully', () => {
+			expect(checkFactorOne([null as unknown as string])).toHaveLength(0);
+			expect(checkFactorOne([undefined as unknown as string])).toHaveLength(0);
+		});
+
+		it('should handle empty array', () => {
+			expect(checkFactorOne([])).toHaveLength(0);
+		});
+	});
+
+	describe('Parenthesized One', () => {
+		it('should detect (1)*x as factor one', () => {
+			expect(checkFactorOne(['(1)\\times x'])).toEqual([0]);
+		});
+
+		it('should detect x*(1) as factor one', () => {
+			expect(checkFactorOne(['x\\times(1)'])).toEqual([0]);
+		});
+
+		it('should detect ((1))*x as factor one', () => {
+			expect(checkFactorOne(['((1))\\times x'])).toEqual([0]);
+		});
+	});
+
+	describe('Positive One (+1)', () => {
+		it('should detect (+1)*x as factor one', () => {
+			expect(checkFactorOne(['(+1)\\times x'])).toEqual([0]);
+		});
+
+		it('should detect x*(+1) as factor one', () => {
+			expect(checkFactorOne(['x\\times(+1)'])).toEqual([0]);
+		});
+	});
+
+	describe('Decimal One', () => {
+		it('should detect 1.0*x as factor one', () => {
+			expect(checkFactorOne(['1.0\\times x'])).toEqual([0]);
+		});
+
+		it('should detect 1.00*x as factor one', () => {
+			expect(checkFactorOne(['1.00\\times x'])).toEqual([0]);
+		});
+
+		it('should detect x*1.0 as factor one', () => {
+			expect(checkFactorOne(['x\\times 1.0'])).toEqual([0]);
+		});
+	});
+
+	describe('Nested Expressions', () => {
+		it('should detect factor one inside multiplication chain', () => {
+			expect(checkFactorOne(['2\\times 1\\times x'])).toEqual([0]);
+			expect(checkFactorOne(['a\\times 1\\times b'])).toEqual([0]);
+		});
+
+		it('should detect factor one in nested parentheses', () => {
+			expect(checkFactorOne(['2\\times(1\\times x)'])).toEqual([0]);
+			expect(checkFactorOne(['(1\\times x)\\times y'])).toEqual([0]);
+		});
+
+		it('should detect factor one inside fractions', () => {
+			expect(checkFactorOne(['\\frac{1\\times x}{2}'])).toEqual([0]);
+			expect(checkFactorOne(['\\frac{x}{1\\times y}'])).toEqual([0]);
+		});
+
+		it('should detect factor one in exponent base', () => {
+			expect(checkFactorOne(['(1\\times x)^2'])).toEqual([0]);
+		});
+	});
+
+	describe('Greek Letters and Subscripts', () => {
+		it('should detect factor one with greek letters', () => {
+			expect(checkFactorOne(['1\\times\\alpha'])).toEqual([0]);
+			expect(checkFactorOne(['\\beta\\times 1'])).toEqual([0]);
+			expect(checkFactorOne(['1\\alpha'])).toEqual([0]);
+		});
+
+		it('should detect factor one with subscripted variables', () => {
+			expect(checkFactorOne(['1\\times x_1'])).toEqual([0]);
+			expect(checkFactorOne(['1x_1'])).toEqual([0]);
+			expect(checkFactorOne(['x_{12}\\times 1'])).toEqual([0]);
+		});
+	});
+
+	describe('Functions', () => {
+		it('should detect factor one before functions', () => {
+			expect(checkFactorOne(['1\\times\\sin(x)'])).toEqual([0]);
+			expect(checkFactorOne(['1\\sin(x)'])).toEqual([0]);
+		});
+
+		it('should detect factor one inside function arguments', () => {
+			expect(checkFactorOne(['\\sin(1\\times x)'])).toEqual([0]);
+		});
+
+		it('should accept functions without factor one', () => {
+			expect(checkFactorOne(['2\\sin(x)'])).toHaveLength(0);
+			expect(checkFactorOne(['\\sin(2x)'])).toHaveLength(0);
+		});
+	});
+
+	describe('Complex Expressions', () => {
+		it('should detect factor one in polynomial terms', () => {
+			expect(checkFactorOne(['1\\times x^2+2x'])).toEqual([0]);
+			expect(checkFactorOne(['x^2+1\\times x'])).toEqual([0]);
+		});
+
+		it('should detect factor one in mixed operations', () => {
+			expect(checkFactorOne(['(1\\times x)+y'])).toEqual([0]);
+			expect(checkFactorOne(['a-(1\\times b)'])).toEqual([0]);
+		});
+
+		it('should accept complex expressions without factor one', () => {
+			expect(checkFactorOne(['2x^2+3x+4'])).toHaveLength(0);
+			expect(checkFactorOne(['a\\times b+c\\times d'])).toHaveLength(0);
+		});
+	});
+
+	describe('LaTeX Variations', () => {
+		it('should handle spaces in LaTeX', () => {
+			expect(checkFactorOne(['1 \\times x'])).toEqual([0]);
+			expect(checkFactorOne(['x \\times 1'])).toEqual([0]);
+		});
+
+		it('should handle \\left( and \\right) delimiters', () => {
+			expect(checkFactorOne(['\\left(1\\right)\\times x'])).toEqual([0]);
+		});
+
+		it('should handle cdot and times equally', () => {
+			expect(checkFactorOne(['1\\cdot x'])).toEqual([0]);
+			expect(checkFactorOne(['1\\times x'])).toEqual([0]);
+		});
+	});
+
+	describe('Should NOT Detect (Valid Expressions)', () => {
+		it('should not flag 1+x (addition, not multiplication)', () => {
+			expect(checkFactorOne(['1+x'])).toHaveLength(0);
+			expect(checkFactorOne(['x+1'])).toHaveLength(0);
+		});
+
+		it('should not flag 1/x or x/1 (division)', () => {
+			expect(checkFactorOne(['\\frac{1}{x}'])).toHaveLength(0);
+			expect(checkFactorOne(['\\frac{x}{1}'])).toHaveLength(0);
+		});
+
+		it('should not flag x^1 (exponent)', () => {
+			expect(checkFactorOne(['x^1'])).toHaveLength(0);
+			expect(checkFactorOne(['x^{1}'])).toHaveLength(0);
+		});
+
+		it('should not flag numbers containing digit 1', () => {
+			expect(checkFactorOne(['11x'])).toHaveLength(0);
+			expect(checkFactorOne(['21x'])).toHaveLength(0);
+			expect(checkFactorOne(['x\\times 11'])).toHaveLength(0);
+			expect(checkFactorOne(['x\\times 21'])).toHaveLength(0);
+			expect(checkFactorOne(['1.5x'])).toHaveLength(0);
+		});
+
+		it('should not flag standalone one', () => {
+			expect(checkFactorOne(['1'])).toHaveLength(0);
+			expect(checkFactorOne(['+1'])).toHaveLength(0);
+			expect(checkFactorOne(['(1)'])).toHaveLength(0);
+		});
+
+		it('should not flag -1*x (negative one is different from factor one)', () => {
+			// -1*x simplifies to -x, which is a different constraint (signs)
+			expect(checkFactorOne(['-1\\times x'])).toHaveLength(0);
+			expect(checkFactorOne(['(-1)x'])).toHaveLength(0);
+		});
+	});
+
+	describe('Malformed LaTeX', () => {
+		it('should handle unclosed parentheses gracefully', () => {
+			expect(() => checkFactorOne(['(1*x'])).not.toThrow();
+			expect(() => checkFactorOne(['1*x)'])).not.toThrow();
+		});
+
+		it('should handle random text gracefully', () => {
+			expect(() => checkFactorOne(['hello world'])).not.toThrow();
+			expect(checkFactorOne(['hello world'])).toHaveLength(0);
+		});
 	});
 });
 
 // ============================================================================
-// FACTOR ZERO VALIDATOR TESTS (Compute Engine based)
+// FACTOR ZERO VALIDATOR TESTS (mathAST based)
 // ============================================================================
 
 describe('checkFactorZero', () => {
@@ -1321,6 +1505,193 @@ describe('checkFactorZero', () => {
 	describe('Edge Cases', () => {
 		it('should handle empty strings', () => {
 			expect(checkFactorZero([''])).toHaveLength(0);
+		});
+
+		it('should handle whitespace', () => {
+			expect(checkFactorZero(['  '])).toHaveLength(0);
+		});
+
+		it('should handle null/undefined gracefully', () => {
+			expect(checkFactorZero([null as unknown as string])).toHaveLength(0);
+			expect(checkFactorZero([undefined as unknown as string])).toHaveLength(0);
+		});
+
+		it('should handle empty array', () => {
+			expect(checkFactorZero([])).toHaveLength(0);
+		});
+	});
+
+	describe('Parenthesized Zero', () => {
+		it('should detect (0)*x as factor zero', () => {
+			expect(checkFactorZero(['(0)\\times x'])).toEqual([0]);
+		});
+
+		it('should detect x*(0) as factor zero', () => {
+			expect(checkFactorZero(['x\\times(0)'])).toEqual([0]);
+		});
+
+		it('should detect ((0))*x as factor zero', () => {
+			expect(checkFactorZero(['((0))\\times x'])).toEqual([0]);
+		});
+	});
+
+	describe('Negative Zero', () => {
+		it('should detect (-0)*x as factor zero', () => {
+			expect(checkFactorZero(['(-0)\\times x'])).toEqual([0]);
+		});
+
+		it('should detect x*(-0) as factor zero', () => {
+			expect(checkFactorZero(['x\\times(-0)'])).toEqual([0]);
+		});
+	});
+
+	describe('Decimal Zero', () => {
+		it('should detect 0.0*x as factor zero', () => {
+			expect(checkFactorZero(['0.0\\times x'])).toEqual([0]);
+		});
+
+		it('should detect 0.00*x as factor zero', () => {
+			expect(checkFactorZero(['0.00\\times x'])).toEqual([0]);
+		});
+
+		it('should detect x*0.0 as factor zero', () => {
+			expect(checkFactorZero(['x\\times 0.0'])).toEqual([0]);
+		});
+	});
+
+	describe('Implicit Multiplication (0x notation)', () => {
+		it('should detect 0x as implicit factor zero', () => {
+			expect(checkFactorZero(['0x'])).toEqual([0]);
+		});
+
+		it('should detect 0a as implicit factor zero', () => {
+			expect(checkFactorZero(['0a'])).toEqual([0]);
+		});
+	});
+
+	describe('Nested Expressions', () => {
+		it('should detect factor zero inside multiplication chain', () => {
+			expect(checkFactorZero(['2\\times 0\\times x'])).toEqual([0]);
+			expect(checkFactorZero(['a\\times 0\\times b'])).toEqual([0]);
+		});
+
+		it('should detect factor zero in nested parentheses', () => {
+			expect(checkFactorZero(['2\\times(0\\times x)'])).toEqual([0]);
+			expect(checkFactorZero(['(0\\times x)\\times y'])).toEqual([0]);
+		});
+
+		it('should detect factor zero inside fractions', () => {
+			expect(checkFactorZero(['\\frac{0\\times x}{2}'])).toEqual([0]);
+			expect(checkFactorZero(['\\frac{x}{0\\times y}'])).toEqual([0]);
+		});
+
+		it('should detect factor zero in exponent base', () => {
+			expect(checkFactorZero(['(0\\times x)^2'])).toEqual([0]);
+		});
+	});
+
+	describe('Greek Letters and Subscripts', () => {
+		it('should detect factor zero with greek letters', () => {
+			expect(checkFactorZero(['0\\times\\alpha'])).toEqual([0]);
+			expect(checkFactorZero(['\\beta\\times 0'])).toEqual([0]);
+			expect(checkFactorZero(['0\\alpha'])).toEqual([0]);
+		});
+
+		it('should detect factor zero with subscripted variables', () => {
+			expect(checkFactorZero(['0\\times x_1'])).toEqual([0]);
+			expect(checkFactorZero(['0x_1'])).toEqual([0]);
+			expect(checkFactorZero(['x_{12}\\times 0'])).toEqual([0]);
+		});
+	});
+
+	describe('Functions', () => {
+		it('should detect factor zero before functions', () => {
+			expect(checkFactorZero(['0\\times\\sin(x)'])).toEqual([0]);
+			expect(checkFactorZero(['0\\sin(x)'])).toEqual([0]);
+		});
+
+		it('should detect factor zero inside function arguments', () => {
+			expect(checkFactorZero(['\\sin(0\\times x)'])).toEqual([0]);
+		});
+
+		it('should accept functions without factor zero', () => {
+			expect(checkFactorZero(['2\\sin(x)'])).toHaveLength(0);
+			expect(checkFactorZero(['\\sin(2x)'])).toHaveLength(0);
+		});
+	});
+
+	describe('Complex Expressions', () => {
+		it('should detect factor zero in polynomial terms', () => {
+			expect(checkFactorZero(['0\\times x^2+2x'])).toEqual([0]);
+			expect(checkFactorZero(['x^2+0\\times x'])).toEqual([0]);
+		});
+
+		it('should detect factor zero in mixed operations', () => {
+			expect(checkFactorZero(['(0\\times x)+y'])).toEqual([0]);
+			expect(checkFactorZero(['a-(0\\times b)'])).toEqual([0]);
+		});
+
+		it('should accept complex expressions without factor zero', () => {
+			expect(checkFactorZero(['2x^2+3x+4'])).toHaveLength(0);
+			expect(checkFactorZero(['a\\times b+c\\times d'])).toHaveLength(0);
+		});
+	});
+
+	describe('LaTeX Variations', () => {
+		it('should handle spaces in LaTeX', () => {
+			expect(checkFactorZero(['0 \\times x'])).toEqual([0]);
+			expect(checkFactorZero(['x \\times 0'])).toEqual([0]);
+		});
+
+		it('should handle \\left( and \\right) delimiters', () => {
+			expect(checkFactorZero(['\\left(0\\right)\\times x'])).toEqual([0]);
+		});
+
+		it('should handle cdot and times equally', () => {
+			expect(checkFactorZero(['0\\cdot x'])).toEqual([0]);
+			expect(checkFactorZero(['0\\times x'])).toEqual([0]);
+		});
+	});
+
+	describe('Should NOT Detect (Valid Expressions)', () => {
+		it('should not flag 0+x (addition, not multiplication)', () => {
+			expect(checkFactorZero(['0+x'])).toHaveLength(0);
+			expect(checkFactorZero(['x+0'])).toHaveLength(0);
+		});
+
+		it('should not flag 0/x (division)', () => {
+			expect(checkFactorZero(['\\frac{0}{x}'])).toHaveLength(0);
+		});
+
+		it('should not flag x^0 (exponent)', () => {
+			expect(checkFactorZero(['x^0'])).toHaveLength(0);
+			expect(checkFactorZero(['x^{0}'])).toHaveLength(0);
+		});
+
+		it('should not flag numbers containing digit 0', () => {
+			expect(checkFactorZero(['10x'])).toHaveLength(0);
+			expect(checkFactorZero(['20x'])).toHaveLength(0);
+			expect(checkFactorZero(['x\\times 10'])).toHaveLength(0);
+			expect(checkFactorZero(['x\\times 20'])).toHaveLength(0);
+			expect(checkFactorZero(['0.5x'])).toHaveLength(0);
+		});
+
+		it('should not flag standalone zero', () => {
+			expect(checkFactorZero(['0'])).toHaveLength(0);
+			expect(checkFactorZero(['-0'])).toHaveLength(0);
+			expect(checkFactorZero(['(0)'])).toHaveLength(0);
+		});
+	});
+
+	describe('Malformed LaTeX', () => {
+		it('should handle unclosed parentheses gracefully', () => {
+			expect(() => checkFactorZero(['(0*x'])).not.toThrow();
+			expect(() => checkFactorZero(['0*x)'])).not.toThrow();
+		});
+
+		it('should handle random text gracefully', () => {
+			expect(() => checkFactorZero(['hello world'])).not.toThrow();
+			expect(checkFactorZero(['hello world'])).toHaveLength(0);
 		});
 	});
 });
