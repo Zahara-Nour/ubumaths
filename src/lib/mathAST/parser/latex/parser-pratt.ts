@@ -1034,7 +1034,12 @@ class PrattParser {
 	private parseAddition(left: MathNode): MathNode {
 		// Capture color before parsing right side (which may close color scope)
 		const operatorColor = this.colorStack.current();
+		const opToken = this.currentToken;
 		this.advance(); // consume +
+
+		// Check for consecutive signs: ++, +-
+		this.checkConsecutiveSigns(opToken);
+
 		const right = this.parseExpression(BP.ADDITION);
 		return this.applyColorWithOperator(MathAST.add(left, right), operatorColor);
 	}
@@ -1045,9 +1050,29 @@ class PrattParser {
 	private parseSubtraction(left: MathNode): MathNode {
 		// Capture color before parsing right side (which may close color scope)
 		const operatorColor = this.colorStack.current();
+		const opToken = this.currentToken;
 		this.advance(); // consume -
+
+		// Check for consecutive signs: --, -+
+		this.checkConsecutiveSigns(opToken);
+
 		const right = this.parseExpression(BP.ADDITION);
 		return this.applyColorWithOperator(MathAST.subtract(left, right), operatorColor);
+	}
+
+	/**
+	 * Check for consecutive +/- signs and throw error if found
+	 */
+	private checkConsecutiveSigns(firstOpToken: Token): void {
+		if (this.check('PLUS') || this.check('MINUS')) {
+			const secondOp = this.currentToken;
+			this.error(
+				`Consecutive signs not allowed: ${firstOpToken.value}${secondOp.value}`,
+				firstOpToken.position,
+				secondOp.position + secondOp.length - firstOpToken.position,
+				'CONSECUTIVE_SIGNS'
+			);
+		}
 	}
 
 	/**

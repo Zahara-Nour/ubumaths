@@ -269,6 +269,21 @@ class RDParser {
 		throw new ParseException(message, position, length, code);
 	}
 
+	/**
+	 * Check for consecutive +/- signs and throw error if found
+	 */
+	private checkConsecutiveSigns(firstOpToken: Token): void {
+		if (this.check('PLUS') || this.check('MINUS')) {
+			const secondOp = this.currentToken;
+			this.error(
+				`Consecutive signs not allowed: ${firstOpToken.value}${secondOp.value}`,
+				firstOpToken.position,
+				secondOp.position + secondOp.length - firstOpToken.position,
+				'CONSECUTIVE_SIGNS'
+			);
+		}
+	}
+
 	// =========================================================================
 	// Grammar Rules
 	// =========================================================================
@@ -359,7 +374,12 @@ class RDParser {
 			// Capture color BEFORE consuming operator (color scope may close during parsing)
 			const operatorColor = this.colorStack.current();
 			const isPlus = this.check('PLUS');
+			const opToken = this.currentToken;
 			this.advance();
+
+			// Check for consecutive signs: ++, +-, --, -+
+			this.checkConsecutiveSigns(opToken);
+
 			const right = this.parseMultiplicative();
 
 			if (isPlus) {

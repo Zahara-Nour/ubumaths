@@ -1755,16 +1755,19 @@ describe('checkSigns', () => {
 			expect(checkSigns(['(-x)(-y)'])).toEqual([0]);
 		});
 
-		it('should accept (-2)*3 - single negative is valid', () => {
-			expect(checkSigns(['(-2)\\times 3'])).toHaveLength(0);
+		it('should detect (-2)*3 - negative factor should be extracted', () => {
+			// (-2)*3 should be written as -(2*3) or -2×3 with sign outside
+			expect(checkSigns(['(-2)\\times 3'])).toEqual([0]);
 		});
 
-		it('should accept 5*(-2) - single negative is valid', () => {
-			expect(checkSigns(['5\\times(-2)'])).toHaveLength(0);
+		it('should detect 5*(-2) - negative factor should be extracted', () => {
+			// 5*(-2) should be written as -(5*2)
+			expect(checkSigns(['5\\times(-2)'])).toEqual([0]);
 		});
 
-		it('should accept -2*3 - single negative is valid', () => {
-			expect(checkSigns(['-2\\times 3'])).toHaveLength(0);
+		it('should detect -2*3 - negative factor in product', () => {
+			// -2*3 is parsed as (-2)*3, sign should be outside: -(2*3)
+			expect(checkSigns(['-2\\times 3'])).toEqual([0]);
 		});
 	});
 
@@ -1789,10 +1792,9 @@ describe('checkSigns', () => {
 			expect(checkSigns(['  '])).toHaveLength(0);
 		});
 
-		it('should accept leading plus on numbers (debatable)', () => {
-			// +5 could be acceptable notation for positive 5
-			// Our regex only catches +letter, not +digit
-			expect(checkSigns(['+5'])).toHaveLength(0);
+		it('should detect leading plus on numbers', () => {
+			// +5 is redundant (equals 5), so it's a violation
+			expect(checkSigns(['+5'])).toEqual([0]);
 		});
 	});
 });

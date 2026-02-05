@@ -213,7 +213,8 @@ export type ParseErrorCode =
 	| 'SYNTAX_ERROR' // General syntax error
 	| 'UNKNOWN_ENVIRONMENT' // Unknown LaTeX environment (e.g., \begin{xyz})
 	| 'UNCLOSED_ENVIRONMENT' // Environment not closed (missing \end)
-	| 'MISMATCHED_ENVIRONMENT'; // Begin/end environment names don't match
+	| 'MISMATCHED_ENVIRONMENT' // Begin/end environment names don't match
+	| 'CONSECUTIVE_SIGNS'; // Consecutive +/- signs (++, --, +-, -+)
 
 /**
  * Context around an error showing surrounding text.
