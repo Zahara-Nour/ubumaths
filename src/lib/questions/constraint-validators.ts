@@ -1253,7 +1253,8 @@ export function checkReducedFractions(answersLatex: string[]): number[] {
 		if (!latex?.trim()) continue;
 
 		// Quick check: skip if no fraction in the answer
-		if (!latex.includes('\\frac')) continue;
+		// Match both \frac and \dfrac
+		if (!latex.includes('\\frac') && !latex.includes('\\dfrac')) continue;
 
 		const parseResult = parseLatexSafe(latex);
 
