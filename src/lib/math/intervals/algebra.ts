@@ -25,27 +25,47 @@ import {
 	UNIVERSAL_SET,
 	fromNumber
 } from './factory';
-import { compare, endpointToNumber, isNegativeInfinity, isPositiveInfinity } from './endpoint';
+import {
+	compare,
+	endpointToNumber,
+	isNegativeInfinity,
+	isPositiveInfinity,
+	endpointEquals,
+	endpointGreaterThan,
+	endpointGreaterThanOrEqual,
+	endpointLessThan,
+	endpointLessThanOrEqual
+} from './endpoint';
+import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
 // Helper Functions
 // =============================================================================
 
 /**
- * Check if a numeric value is contained in an interval.
+ * Check if a MathNode value is contained in an interval.
+ * Uses symbolic comparison via compareNumericNodes for exact results.
  */
-function valueInInterval(value: number, int: Interval): boolean {
-	const lower = endpointToNumber(int.lower.value);
-	const upper = endpointToNumber(int.upper.value);
+function nodeInInterval(value: MathNode, int: Interval): boolean {
+	// Check lower bound
+	const aboveLower =
+		int.lower.type === 'closed'
+			? endpointGreaterThanOrEqual(value, int.lower.value)
+			: endpointGreaterThan(value, int.lower.value);
 
-	if (Number.isNaN(lower) || Number.isNaN(upper)) {
-		return false;
-	}
+	// If comparison failed or value is below lower bound, not in interval
+	if (aboveLower !== true) return false;
 
-	const aboveLower = int.lower.type === 'closed' ? value >= lower : value > lower;
-	const belowUpper = int.upper.type === 'closed' ? value <= upper : value < upper;
+	// Check upper bound
+	const belowUpper =
+		int.upper.type === 'closed'
+			? endpointLessThanOrEqual(value, int.upper.value)
+			: endpointLessThan(value, int.upper.value);
 
-	return aboveLower && belowUpper;
+	// If comparison failed or value is above upper bound, not in interval
+	if (belowUpper !== true) return false;
+
+	return true;
 }
 
 /**
@@ -113,9 +133,20 @@ export function isUniversal(d: IntervalDomain): boolean {
 // =============================================================================
 
 /**
- * Check if a domain contains a specific numeric value.
+ * Check if a domain contains a specific MathNode value.
+ * Uses symbolic comparison via compareNumericNodes for exact results.
+ *
+ * @param d - The interval domain to check
+ * @param value - A MathNode representing the value to check
+ * @returns true if value is in the domain, false otherwise
+ *
+ * @example
+ * containsValue(positiveReals, number('5'))     // true
+ * containsValue(positiveReals, number('-3'))    // false
+ * containsValue(unitInterval, greek('pi'))      // false (π > 1)
+ * containsValue(interval_0_pi, sqrt(2))         // true (√2 ≈ 1.41 < π)
  */
-export function containsValue(d: IntervalDomain, value: number): boolean {
+export function containsValue(d: IntervalDomain, value: MathNode): boolean {
 	switch (d.kind) {
 		case 'empty':
 			return false;
@@ -124,12 +155,12 @@ export function containsValue(d: IntervalDomain, value: number): boolean {
 		case 'interval_set': {
 			// Check if value is excluded
 			for (const ep of d.excludedPoints) {
-				const epVal = endpointToNumber(ep.value);
-				if (value === epVal) return false;
+				const isEqual = endpointEquals(value, ep.value);
+				if (isEqual === true) return false;
 			}
 			// Check if value is in any interval
 			for (const int of d.intervals) {
-				if (valueInInterval(value, int)) return true;
+				if (nodeInInterval(value, int)) return true;
 			}
 			return false;
 		}

@@ -196,9 +196,11 @@ export function checkConstraint(constraint: PatternConstraint, node: MathNode): 
 		}
 
 		case 'interval': {
-			const value = parseNumberValue(node);
-			if (value === undefined) return false;
-			return containsValue(constraint.domain, value);
+			// First check that the node is a literal number (not a variable or symbolic expression)
+			// This ensures interval constraints only match concrete numeric values in patterns
+			if (!isNumber(node)) return false;
+			// Pass the node directly for symbolic comparison with interval bounds
+			return containsValue(constraint.domain, node);
 		}
 
 		case 'integer': {
