@@ -556,6 +556,55 @@ export const generateQuestionSchema = z.object({
 
 ---
 
+## Constraint Validators
+
+Constraint validators check if mathematically correct answers are written in proper form. They use **mathAST** for LaTeX parsing and analysis.
+
+### Available Validators
+
+| Validator               | Description                              | Example Violation                       |
+| ----------------------- | ---------------------------------------- | --------------------------------------- |
+| `checkSpaces`           | French number spacing (groups of 3)      | `12345` → should be `12 345`            |
+| `checkProducts`         | Explicit multiplication before variables | `2×x` → should be `2x`                  |
+| `checkBrackets`         | Unnecessary parentheses                  | `(5)` → should be `5`                   |
+| `checkZeros`            | Leading/trailing zeros                   | `01`, `1.0`                             |
+| `checkForm`             | Strict form matching                     | Order matters                           |
+| `checkNullTerms`        | Adding/subtracting zero                  | `x+0` → should be `x`                   |
+| `checkFactorOne`        | Multiplying/dividing by 1                | `x×1` → should be `x`                   |
+| `checkFactorZero`       | Multiplying by zero (result should be 0) | `x×0` → should be `0`                   |
+| `checkSigns`            | Useless signs                            | `x+(-y)` → should be `x-y`              |
+| `checkReducedFractions` | Non-reduced fractions                    | `\frac{2}{4}` → should be `\frac{1}{2}` |
+
+### Signature
+
+All validators follow the same pattern:
+
+```typescript
+function checkXxx(answersLatex: string[]): number[];
+```
+
+- **Input**: Array of LaTeX strings (student answers)
+- **Output**: Indices of answers with violations
+
+### Usage
+
+```typescript
+import { checkSigns, checkReducedFractions } from '$lib/questions/constraint-validators';
+
+const answers = ['x+(-y)', '\\frac{2}{4}', 'x-y'];
+const signViolations = checkSigns(answers); // [0] - first answer
+const fracViolations = checkReducedFractions(answers); // [1] - second answer
+```
+
+### Implementation Details
+
+- **Parser**: Uses `parseLatexSafe()` from mathAST
+- **Traversal**: Uses `visitAST()` with typed callbacks
+- **GCD**: Uses `gcd()` from `$lib/mathAST/normal` for fraction reduction
+- **Consecutive signs** (`++`, `--`, `+-`, `-+`): Rejected at parse time with `CONSECUTIVE_SIGNS` error
+
+---
+
 ## Related Documentation
 
 - [Variable Syntax](../ubumark/variables.md) - Full variable syntax reference
