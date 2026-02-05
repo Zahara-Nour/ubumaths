@@ -946,6 +946,30 @@ describe('checkNullTerms', () => {
 		it('should detect subtraction of zero in nested expression', () => {
 			expect(checkNullTerms(['(x-0)+y'])).toEqual([0]);
 		});
+
+		it('should detect null term inside multiplication', () => {
+			expect(checkNullTerms(['4*(x+0)'])).toEqual([0]);
+			expect(checkNullTerms(['(x+0)*4'])).toEqual([0]);
+			expect(checkNullTerms(['a*(b+0)*c'])).toEqual([0]);
+		});
+
+		it('should detect null term inside fractions', () => {
+			expect(checkNullTerms(['\\frac{x+0}{2}'])).toEqual([0]);
+			expect(checkNullTerms(['\\frac{2}{x+0}'])).toEqual([0]);
+		});
+
+		it('should detect null term inside exponents', () => {
+			expect(checkNullTerms(['(a+0)^2'])).toEqual([0]);
+		});
+
+		it('should detect null term inside sqrt', () => {
+			expect(checkNullTerms(['\\sqrt{x+0}'])).toEqual([0]);
+		});
+
+		it('should not detect violation without null term in nested expressions', () => {
+			expect(checkNullTerms(['4*(x+1)'])).toHaveLength(0);
+			expect(checkNullTerms(['\\frac{x+1}{2}'])).toHaveLength(0);
+		});
 	});
 
 	describe('Multiple Answers', () => {
