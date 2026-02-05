@@ -211,6 +211,7 @@ import {
 	isFunction,
 	isSuperscript,
 	isNumber,
+	isOpposite,
 	findNodes,
 	visitAST,
 	type MathNode,
@@ -220,6 +221,7 @@ import {
 	type SuperscriptNode,
 	type AdditionNode,
 	type SubtractionNode,
+	type OppositeNode,
 	type VisitorContext
 } from '$lib/mathAST';
 
@@ -1046,102 +1048,117 @@ export function checkFactorZero(answersLatex: string[]): number[] {
 }
 
 /**
- * Check if a MathJSON argument is a Negate (possibly wrapped in Delimiter)
+ * Check if a node is an opposite (negative), unwrapping delimiters
  */
-function isNegateArg(arg: unknown): boolean {
-	if (!Array.isArray(arg)) return false;
-	const [head, inner] = arg;
-
-	// Direct Negate
-	if (head === 'Negate') return true;
-
-	// Delimiter wrapping a Negate: ["Delimiter", ["Negate", ...]]
-	if (head === 'Delimiter' && Array.isArray(inner) && inner[0] === 'Negate') {
-		return true;
-	}
-
+function isNegativeNode(node: MathNode): boolean {
+	if (isOpposite(node)) return true;
+	if (isDelimiter(node)) return isNegativeNode(node.content);
 	return false;
 }
 
 /**
- * Count negatives in a Multiply/InvisibleOperator expression
- * Returns the count of negated factors
- */
-function countNegatesInMultiply(json: unknown): number {
-	if (!Array.isArray(json)) return 0;
-	const [head, ...args] = json;
-
-	if (head === 'Multiply' || head === 'InvisibleOperator') {
-		return args.filter(isNegateArg).length;
-	}
-
-	return 0;
-}
-
-/**
- * Recursively check if any Multiply/InvisibleOperator has 2+ negatives
- * (sign parity issue: (-a)*(-b) can be simplified to a*b)
- */
-function hasMultipleNegatesInMultiply(json: unknown): boolean {
-	if (!Array.isArray(json)) return false;
-	const [head, ...args] = json;
-
-	// Check this level
-	if ((head === 'Multiply' || head === 'InvisibleOperator') && countNegatesInMultiply(json) >= 2) {
-		return true;
-	}
-
-	// Recursively check nested expressions
-	return args.some((arg) => hasMultipleNegatesInMultiply(arg));
-}
-
-/**
- * Check for extraneous signs in an expression (+x, --x, ++, sign parity)
+ * Check for extraneous signs in an expression
+ *
+ * Uses mathAST to parse and analyze expressions.
  *
  * Detects patterns like:
- * - Leading plus sign on variables: +x, +a
- * - Double signs: ++, --, +-, -+
- * - Sign parity in multiplication: (-a)*(-b) can be simplified to a*b
- *
- * Uses both regex (for textual patterns) and CE (for sign parity).
+ * 1. Consecutive signs: ++, --, +-, -+ (detected by parser as CONSECUTIVE_SIGNS error)
+ * 2. Any positive node: +x, +5, (a)+(+b), etc.
+ * 3. Double negative: -(-x)
+ * 4. Opposite in addition/subtraction operand: x+(-y), x-(-y)
+ * 5. Opposite as factor in multiplication: (-a)*b, a*(-b)
+ * 6. Opposite as numerator/denominator in division: (-a)/b, a/(-b)
+ * 7. Opposite as numerator/denominator in fraction: \frac{-a}{b}
  *
  * @param answersLatex - Array of LaTeX strings
  * @returns Indices of answers with extraneous sign violations
  *
  * @example
- * checkSigns(['+x'])                  // Returns [0] - extraneous +
- * checkSigns(['--5'])                 // Returns [0] - double negative
- * checkSigns(['x+-3'])                // Returns [0] - +- signs
- * checkSigns(['(-2)\\times(-3)'])     // Returns [0] - sign parity
+ * checkSigns(['+x'])                  // Returns [0] - positive node
+ * checkSigns(['--5'])                 // Returns [0] - consecutive signs
+ * checkSigns(['x+-3'])                // Returns [0] - consecutive signs
+ * checkSigns(['-(-x)'])               // Returns [0] - double negative
+ * checkSigns(['x+(-y)'])              // Returns [0] - opposite in addition
+ * checkSigns(['(-a)*b'])              // Returns [0] - opposite as factor
+ * checkSigns(['(-a)/b'])              // Returns [0] - opposite in division
+ * checkSigns(['\\frac{-a}{b}'])       // Returns [0] - opposite in fraction
  * checkSigns(['-x'])                  // Returns [] - valid negative
  * checkSigns(['x+3'])                 // Returns [] - normal addition
  */
 export function checkSigns(answersLatex: string[]): number[] {
 	const violations: number[] = [];
-	const ce = getCE();
 
 	for (let i = 0; i < answersLatex.length; i++) {
 		const latex = answersLatex[i];
 		if (!latex?.trim()) continue;
 
-		// Detect extraneous signs using regex
-		// Pattern matches:
-		// - Double signs: ++, --, +-, -+
-		// - Leading + before letter: +x, +a (but not +5)
-		if (/\+\+|--|\+-|-\+|^\s*\+[a-zA-Z]/.test(latex)) {
+		const parseResult = parseLatexSafe(latex);
+
+		// Case 1: Consecutive signs error from parser (++, --, +-, -+)
+		if (parseResult.errors.some((e) => e.code === 'CONSECUTIVE_SIGNS')) {
 			violations.push(i);
 			continue;
 		}
 
-		// Check for sign parity using CE
-		// e.g., (-2)*(-3) has 2 negatives that could be simplified
-		try {
-			const expr = ce.parse(latex, { canonical: false });
-			if (hasMultipleNegatesInMultiply(expr.json)) {
-				violations.push(i);
+		// If parsing failed for other reasons, skip
+		if (!parseResult.ast) {
+			continue;
+		}
+
+		const ast = parseResult.ast;
+		let hasViolation = false;
+
+		visitAST(ast, {
+			// Case 2: Any positive node anywhere in the AST
+			enterPositive() {
+				hasViolation = true;
+				return 'skip';
+			},
+
+			// Case 3: Double negative -(-x)
+			enterOpposite(node: OppositeNode) {
+				if (isNegativeNode(node.operand)) {
+					hasViolation = true;
+					return 'skip';
+				}
+			},
+
+			// Case 4: Opposite in addition/subtraction operand
+			enterAddition(node: AdditionNode) {
+				// x+(-y) should be x-y
+				if (isNegativeNode(node.right) || isNegativeNode(node.left)) {
+					hasViolation = true;
+					return 'skip';
+				}
+			},
+
+			enterSubtraction(node: SubtractionNode) {
+				// x-(-y) should be x+y
+				if (isNegativeNode(node.right)) {
+					hasViolation = true;
+					return 'skip';
+				}
+			},
+
+			// Case 5: Opposite as factor in multiplication
+			enterMultiplication(node: MultiplicationNode) {
+				if (isNegativeNode(node.left) || isNegativeNode(node.right)) {
+					hasViolation = true;
+					return 'skip';
+				}
+			},
+
+			// Case 6 & 7: Opposite in division or fraction
+			enterDivision(node: DivisionNode) {
+				if (isNegativeNode(node.numerator) || isNegativeNode(node.denominator)) {
+					hasViolation = true;
+					return 'skip';
+				}
 			}
-		} catch {
-			// Skip invalid LaTeX
+		});
+
+		if (hasViolation) {
+			violations.push(i);
 		}
 	}
 
