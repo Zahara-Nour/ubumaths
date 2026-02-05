@@ -224,6 +224,7 @@ import {
 	type OppositeNode,
 	type VisitorContext
 } from '$lib/mathAST';
+import { gcd } from '$lib/mathAST/normal';
 
 /**
  * Check for explicit multiplication symbols that should be implicit
@@ -810,25 +811,8 @@ function normalizeForFormComparison(latex: string): string {
 }
 
 // ============================================================================
-// COMPUTE ENGINE BASED VALIDATORS
+// MATAST-BASED VALIDATORS (FORM CONSTRAINTS)
 // ============================================================================
-
-import { ComputeEngine } from '@cortex-js/compute-engine';
-
-/**
- * Shared Compute Engine instance for constraint validation
- */
-let ceInstance: ComputeEngine | null = null;
-
-/**
- * Get or create Compute Engine instance
- */
-function getCE(): ComputeEngine {
-	if (!ceInstance) {
-		ceInstance = new ComputeEngine();
-	}
-	return ceInstance;
-}
 
 /**
  * Check if a node represents zero (0, -0, (0), (-0), etc.)
@@ -1170,11 +1154,77 @@ export function checkSigns(answersLatex: string[]): number[] {
 // ============================================================================
 
 /**
+ * Extract numeric value from a node, handling:
+ * - Direct numbers: 5 → 5
+ * - Opposite of numbers: -5 → -5
+ * - Delimiters wrapping numbers: (5) → 5, (-5) → -5
+ * Returns null if node is not purely numeric.
+ */
+function extractNumericValue(node: MathNode): number | null {
+	// Direct number
+	if (isNumber(node)) {
+		return parseFloat(node.value);
+	}
+
+	// Opposite (negative)
+	if (isOpposite(node)) {
+		const inner = extractNumericValue(node.operand);
+		return inner !== null ? -inner : null;
+	}
+
+	// Delimiter (parentheses)
+	if (isDelimiter(node)) {
+		return extractNumericValue(node.content);
+	}
+
+	return null;
+}
+
+/**
+ * Extract the numeric coefficient from a node.
+ * For multiplication like 2x, returns 2.
+ * For pure numbers, returns the number.
+ * For pure variables or complex expressions, returns null.
+ */
+function extractCoefficient(node: MathNode): number | null {
+	// Direct number
+	const numValue = extractNumericValue(node);
+	if (numValue !== null) {
+		return numValue;
+	}
+
+	// Multiplication: check if one side is a number (coefficient)
+	if (isMultiplication(node)) {
+		const leftNum = extractNumericValue(node.left);
+		if (leftNum !== null) {
+			return leftNum;
+		}
+		const rightNum = extractNumericValue(node.right);
+		if (rightNum !== null) {
+			return rightNum;
+		}
+	}
+
+	// Opposite of multiplication: -2x
+	if (isOpposite(node) && isMultiplication(node.operand)) {
+		const coef = extractCoefficient(node.operand);
+		return coef !== null ? -coef : null;
+	}
+
+	// Delimiter wrapping multiplication: (2x)
+	if (isDelimiter(node)) {
+		return extractCoefficient(node.content);
+	}
+
+	return null;
+}
+
+/**
  * Check if fractions are reduced to their lowest terms
  *
- * Uses Compute Engine's canonical form to detect reducible fractions.
- * CE automatically reduces fractions when canonicalizing, so comparing
- * raw vs canonical LaTeX output reveals non-reduced fractions.
+ * Uses mathAST to parse the LaTeX and analyze fraction nodes.
+ * A fraction is considered non-reduced if the GCD of numerator and
+ * denominator coefficients is greater than 1, or if denominator is 1.
  *
  * Works with:
  * - Simple numeric fractions: 2/4 → 1/2
@@ -1197,7 +1247,6 @@ export function checkSigns(answersLatex: string[]): number[] {
  */
 export function checkReducedFractions(answersLatex: string[]): number[] {
 	const violations: number[] = [];
-	const ce = getCE();
 
 	for (let i = 0; i < answersLatex.length; i++) {
 		const latex = answersLatex[i];
@@ -1206,18 +1255,56 @@ export function checkReducedFractions(answersLatex: string[]): number[] {
 		// Quick check: skip if no fraction in the answer
 		if (!latex.includes('\\frac')) continue;
 
-		try {
-			// Parse without canonization to preserve original form
-			const rawExpr = ce.parse(latex, { canonical: false });
-			// Parse with canonization (default) - CE will reduce fractions
-			const canonExpr = ce.parse(latex);
+		const parseResult = parseLatexSafe(latex);
 
-			// Compare LaTeX output - if different, fraction was not reduced
-			if (rawExpr.latex !== canonExpr.latex) {
-				violations.push(i);
+		// If parsing fails, skip (no violation detected)
+		if (!parseResult.ast || parseResult.errors.length > 0) {
+			continue;
+		}
+
+		let hasUnreducedFraction = false;
+
+		visitAST(parseResult.ast, {
+			enterDivision(node: DivisionNode) {
+				// Only check \frac{}{} style fractions
+				if (node.displayStyle !== 'fraction') return;
+
+				// Extract numeric values or coefficients
+				const numValue = extractNumericValue(node.numerator);
+				const denValue = extractNumericValue(node.denominator);
+
+				if (numValue !== null && denValue !== null) {
+					// Pure numeric fraction
+					const absNum = BigInt(Math.round(Math.abs(numValue)));
+					const absDen = BigInt(Math.round(Math.abs(denValue)));
+
+					// Fraction is reducible if:
+					// - GCD > 1 (can simplify)
+					// - Denominator is 1 (trivial fraction like 5/1)
+					if (gcd(absNum, absDen) > 1n || absDen === 1n) {
+						hasUnreducedFraction = true;
+						return 'skip';
+					}
+				} else {
+					// Check for reducible coefficients (like 2x/4)
+					const numCoef = extractCoefficient(node.numerator);
+					const denCoef = extractCoefficient(node.denominator);
+
+					if (numCoef !== null && denCoef !== null) {
+						const absNumCoef = BigInt(Math.round(Math.abs(numCoef)));
+						const absDenCoef = BigInt(Math.round(Math.abs(denCoef)));
+
+						if (gcd(absNumCoef, absDenCoef) > 1n) {
+							hasUnreducedFraction = true;
+							return 'skip';
+						}
+					}
+				}
 			}
-		} catch {
-			// Skip invalid LaTeX
+		});
+
+		if (hasUnreducedFraction) {
+			violations.push(i);
 		}
 	}
 
