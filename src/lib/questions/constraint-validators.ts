@@ -210,6 +210,7 @@ import {
 	isDivision,
 	isFunction,
 	isSuperscript,
+	isNumber,
 	findNodes,
 	visitAST,
 	type MathNode,
@@ -217,6 +218,8 @@ import {
 	type DelimiterNode,
 	type DivisionNode,
 	type SuperscriptNode,
+	type AdditionNode,
+	type SubtractionNode,
 	type VisitorContext
 } from '$lib/mathAST';
 
@@ -826,37 +829,30 @@ function getCE(): ComputeEngine {
 }
 
 /**
- * Check if an argument represents zero (either direct 0 or ["Negate", 0])
- * This handles both x+0 and x-0 (parsed as x+["Negate",0])
+ * Check if a node represents zero (0 or -0)
  */
-function isZeroOrNegateZero(arg: unknown): boolean {
-	if (arg === 0) return true;
-	if (Array.isArray(arg) && arg[0] === 'Negate' && arg[1] === 0) return true;
+function isZeroNode(node: MathNode): boolean {
+	if (isNumber(node) && parseFloat(node.value) === 0) {
+		return true;
+	}
+	// Handle (-0) case
+	if (node.type === 'opposite' && isNumber(node.operand)) {
+		return parseFloat(node.operand.value) === 0;
+	}
 	return false;
 }
 
 /**
- * Recursively check if a MathJSON expression contains an Add with 0
- * Also handles x-0 which CE parses as ["Add", "x", ["Negate", 0]]
- */
-function hasAddWithZero(json: unknown): boolean {
-	if (!Array.isArray(json)) return false;
-	const [head, ...args] = json;
-
-	// Check if this is an Add with 0 or ["Negate", 0] in its arguments
-	if (head === 'Add' && args.some(isZeroOrNegateZero)) {
-		return true;
-	}
-
-	// Recursively check nested expressions
-	return args.some((arg) => hasAddWithZero(arg));
-}
-
-/**
- * Check for null terms in an expression (x+0, x-0, y+0+z)
+ * Check for null terms in an expression (x+0, x-0, 0-x, y+0+z)
  *
- * Parses without canonization to preserve the original form,
- * then inspects the MathJSON for Add/Subtract expressions containing 0.
+ * Uses mathAST to parse the LaTeX and analyze addition/subtraction nodes.
+ * A null term is detected when 0 is added, subtracted, or used as minuend.
+ *
+ * Cases detected:
+ * - x + 0 (adding zero)
+ * - 0 + x (zero as addend)
+ * - x - 0 (subtracting zero)
+ * - 0 - x (zero as minuend, equivalent to -x)
  *
  * @param answersLatex - Array of LaTeX strings
  * @returns Indices of answers with null term violations
@@ -864,26 +860,47 @@ function hasAddWithZero(json: unknown): boolean {
  * @example
  * checkNullTerms(['x+0'])       // Returns [0] - has null term
  * checkNullTerms(['x-0'])       // Returns [0] - subtracting zero
+ * checkNullTerms(['0-x'])       // Returns [0] - 0-x is equivalent to -x
  * checkNullTerms(['x+1'])       // Returns [] - no null term
  * checkNullTerms(['3+0+y'])     // Returns [0] - has null term
  * checkNullTerms(['0'])         // Returns [] - just zero, not a null term
  */
 export function checkNullTerms(answersLatex: string[]): number[] {
 	const violations: number[] = [];
-	const ce = getCE();
 
 	for (let i = 0; i < answersLatex.length; i++) {
 		const latex = answersLatex[i];
 		if (!latex?.trim()) continue;
 
-		try {
-			// Parse without canonization to preserve original form
-			const expr = ce.parse(latex, { canonical: false });
-			if (hasAddWithZero(expr.json)) {
-				violations.push(i);
+		const parseResult = parseLatexSafe(latex);
+
+		// If parsing fails, skip (no violation detected)
+		if (!parseResult.ast || parseResult.errors.length > 0) {
+			continue;
+		}
+
+		let hasNullTerm = false;
+
+		visitAST(parseResult.ast, {
+			enterAddition(node: AdditionNode) {
+				// x + 0 or 0 + x
+				if (isZeroNode(node.right) || isZeroNode(node.left)) {
+					hasNullTerm = true;
+					return 'skip';
+				}
+			},
+			enterSubtraction(node: SubtractionNode) {
+				// x - 0 (subtracting zero is useless)
+				// 0 - x (0-x is equivalent to -x, so 0 is unnecessary)
+				if (isZeroNode(node.right) || isZeroNode(node.left)) {
+					hasNullTerm = true;
+					return 'skip';
+				}
 			}
-		} catch {
-			// Skip invalid LaTeX
+		});
+
+		if (hasNullTerm) {
+			violations.push(i);
 		}
 	}
 
