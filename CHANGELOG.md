@@ -2,6 +2,97 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.31...v0.8.0) (2026-02-05)
+
+### ⚠ BREAKING CHANGES
+
+- **mathAST:** evaluate() now returns a discriminated union EvalResult type
+  with status 'value' | 'indeterminate' | 'unevaluable' instead of throwing
+  exceptions for non-evaluable expressions.
+
+Replace exception-based error handling with explicit status types to enable
+proper handling of limit-related indeterminate forms (0/0, ∞/∞, etc.) and
+unevaluable expressions (free variables) without try-catch blocks.
+
+Key changes:
+
+- Modified EvalResult from simple interface to discriminated union type
+- Added IndeterminateForm type for limit forms (0/0, ∞/∞, 0·∞, ∞-∞, etc.)
+- Added type guards: isEvalValue(), isEvalIndeterminate(), isEvalUnevaluable()
+- Created evaluateInternal() with extended arithmetic for infinity/signed-zero
+- Updated evaluate-with-modifiers.ts to check result.status before processing
+- Updated compare-numeric.ts to handle indeterminate/unevaluable results
+- Updated evaluate-with-units.ts to propagate non-value statuses
+- Updated all test files to use status-based assertions
+
+Migration guide:
+
+- Before: try { const {value} = evaluate(node); } catch (e) { ... }
+- After: const result = evaluate(node); if (result.status === 'value') { const {value} = result; }
+
+All 9969 mathAST tests pass.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### ♻️ Code Refactoring
+
+- **mathAST:** return status types from evaluate() instead of throwing ([3ee72b2](https://github.com/Zahara-Nour/ubumaths/commit/3ee72b2a2665c0b5403637d3b1d6eb253f62ec1c))
+
+### ⏪ Reverts
+
+- Revert "refactor(migration): integrate expression directly in statement" ([9c35480](https://github.com/Zahara-Nour/ubumaths/commit/9c354807ff3059fb519e684f404494dc0bb719ee))
+
+### 🐛 Bug Fixes
+
+- **constraints:** correct allowFirstNegative logic for brackets ([3426067](https://github.com/Zahara-Nour/ubumaths/commit/3426067dff1649e2d430c0693512eac1192bc6a6))
+- **constraints:** invert allowFirstNegative logic ([30e7693](https://github.com/Zahara-Nour/ubumaths/commit/30e7693430e0cada60cc64536793093f78ecaf2f))
+- **mathAST:** improve polynomial root precision in domain computation ([7fe7a1c](https://github.com/Zahara-Nour/ubumaths/commit/7fe7a1c238d6b82d004510bb4df4b5c89713f56c))
+- **migration:** always apply toSimplifiedSyntax to variable expressions ([5b37710](https://github.com/Zahara-Nour/ubumaths/commit/5b37710ba60f6e69a6df2e7557721a63ca5e3124))
+- **migration:** handle nested {{...}} in toSimplifiedSyntax ([1febf15](https://github.com/Zahara-Nour/ubumaths/commit/1febf1518873d9c46f98096eba91bd19957744b5))
+- **questions:** convert math zones to LaTeX at instantiation, not export ([ab00d6d](https://github.com/Zahara-Nour/ubumaths/commit/ab00d6df600e5feda92cd13c2733044e197fe148))
+
+### ✨ Features
+
+- **constraints:** add requiredForm validation for answer structure ([b66d0e7](https://github.com/Zahara-Nour/ubumaths/commit/b66d0e7451e4956bb384f98970f2152d3e8a3044))
+- **continuity:** add exact arithmetic and sign tracking ([2b41bd9](https://github.com/Zahara-Nour/ubumaths/commit/2b41bd9d8cd01b7c1ec513be8be0250cd32e902f))
+- **continuity:** centralize periodic functions and improve point deduplication ([69314e3](https://github.com/Zahara-Nour/ubumaths/commit/69314e3cb1bbe4d24f58ecea6ac6fe8d78fc4d02))
+- **limits:** add advanced indeterminate form resolution ([6daad5e](https://github.com/Zahara-Nour/ubumaths/commit/6daad5e073b54c6f3b8155b8132083e77d44677a))
+- **limits:** add piecewise function limit evaluation ([7adfc79](https://github.com/Zahara-Nour/ubumaths/commit/7adfc7942d543686d2783a697cc1a9bf8386c2cd))
+- **limits:** detect x+a pattern when approaching negative values ([da4fbbf](https://github.com/Zahara-Nour/ubumaths/commit/da4fbbfc080dbc54c19f17ce5e731b8a62aa809a))
+- **limits:** integrate normalizeExtended for exact limit evaluation ([9bb8fa5](https://github.com/Zahara-Nour/ubumaths/commit/9bb8fa50163de9c017dcf13c6c76cc0ab9ad4e2e))
+- **mathAST:** add normalizeExtended for limit calculations ([f8e0ba3](https://github.com/Zahara-Nour/ubumaths/commit/f8e0ba35d8aca6d6d531eb0227341f51c25ba6b8))
+- **mathAST:** add SignedZeroNode and extended arithmetic module ([c6e9b38](https://github.com/Zahara-Nour/ubumaths/commit/c6e9b385022f33e380d72011740483eb63c8fd7f))
+- **mathAST:** evaluate constant expressions in limits (Phase 1.1) ([ba2302b](https://github.com/Zahara-Nour/ubumaths/commit/ba2302b53a0dab0b3968519e869585cd029072ee))
+- **mathAST:** implement infinity algebra for limits module ([27ef7c6](https://github.com/Zahara-Nour/ubumaths/commit/27ef7c60007a3249b9d7fb1967a4056c96464a56))
+- **mathAST:** implement Phase 1 domain improvements ([42d05b1](https://github.com/Zahara-Nour/ubumaths/commit/42d05b17cdbd972976e3dcc8821770101caec36c)), closes [#1](https://github.com/Zahara-Nour/ubumaths/issues/1) [#14](https://github.com/Zahara-Nour/ubumaths/issues/14) [#2](https://github.com/Zahara-Nour/ubumaths/issues/2)
+- **mathAST:** implement Phase 2 differentiability analysis ([6ee8551](https://github.com/Zahara-Nour/ubumaths/commit/6ee85512afbc15b9f292b0a55c1a65a1bcea1f7f)), closes [#13](https://github.com/Zahara-Nour/ubumaths/issues/13) [#17](https://github.com/Zahara-Nour/ubumaths/issues/17)
+- **mathAST:** integrate equation solver in continuity analysis ([6ad7e3a](https://github.com/Zahara-Nour/ubumaths/commit/6ad7e3a8671014008c500afcc943484a7ddc25ba))
+- **mathAST:** return PeriodicExclusion from computeDomain for trig functions ([f19e5c9](https://github.com/Zahara-Nour/ubumaths/commit/f19e5c931da15b2768766d401110dc35acd48247))
+- **migration:** use bare variable names in all expressions ([56b2cb8](https://github.com/Zahara-Nour/ubumaths/commit/56b2cb860bf759971b4cc89932125ec518c63beb))
+- **pattern:** add comparison constraints gt, lt, gte, lte, eq, ne ([6f26a50](https://github.com/Zahara-Nour/ubumaths/commit/6f26a50a896dbc9d5842f2a0711e9bd72a3bbaf9))
+- **pattern:** add interval constraint with French notation and domain shortcuts ([d40595e](https://github.com/Zahara-Nour/ubumaths/commit/d40595e74c79a7d9e0ed63e57549ee037fed4655))
+- **pattern:** add nonone constraint for values different from 1 ([4393909](https://github.com/Zahara-Nour/ubumaths/commit/439390911d5c1b0fa6bd6a9e59763f3a9f5784de))
+- **pattern:** extend constraint syntax with operators and functions ([8247f84](https://github.com/Zahara-Nour/ubumaths/commit/8247f84cbe568cc4eea560fe3e4fd1ce0e716ccd))
+- **pattern:** support full math expressions as interval bounds ([8d1d35b](https://github.com/Zahara-Nour/ubumaths/commit/8d1d35b60b88af75770165225ffaff1dfff53209))
+- **trig-circle:** add demo page and improve UX ([96d1c20](https://github.com/Zahara-Nour/ubumaths/commit/96d1c205d96f70255c38602e86468450a01eddcf))
+- **trig-circle:** add projection values and solution highlighting ([3ab7e5d](https://github.com/Zahara-Nour/ubumaths/commit/3ab7e5dcaa7305eda1400b32cfac3cd8d8d57cd9))
+- **ubumark:** add digits: support to parameterization system ([71eba17](https://github.com/Zahara-Nour/ubumaths/commit/71eba172043d359664baae865e183f7c1510524f))
+- **ubumark:** add simplified syntax for variable expressions ([7b20fba](https://github.com/Zahara-Nour/ubumaths/commit/7b20fba8ce5be1bddb0ef69e1fb8438a42563d77))
+- **ubumark:** add trigonometric circle tool ([72aad73](https://github.com/Zahara-Nour/ubumaths/commit/72aad735388f2ce12b57eb097330d4e47b3fbca8))
+- **ubumark:** add variable bounds support for digits: syntax ([4f7ec19](https://github.com/Zahara-Nour/ubumaths/commit/4f7ec198a3f304782a89708bded6f74e81f8ce06))
+- **ubumark:** support bare variable names in expressions ([cb3db58](https://github.com/Zahara-Nour/ubumaths/commit/cb3db58c85b0137e64d1154f71a5ced34f403385))
+- **ubumark:** unify digits: syntax for integers and decimals ([299fba3](https://github.com/Zahara-Nour/ubumaths/commit/299fba357d7b527064e25b95e55f7aba80120331))
+
+### 📚 Documentation
+
+- add digits: syntax to migration documentation ([c79f118](https://github.com/Zahara-Nour/ubumaths/commit/c79f118c2a92bfb99b484bc808b1822856a0be35))
+- **constraints:** update documentation for mathAST migration ([236423e](https://github.com/Zahara-Nour/ubumaths/commit/236423e64945935b44a40ad1999d53abbb20f37c))
+- **mathAST:** add differentiability improvements tracker ([4bf0561](https://github.com/Zahara-Nour/ubumaths/commit/4bf056113d34dcbbb0ae394fc820f2f35e3d68d0))
+- **mathAST:** add domain/continuity improvements tracker ([f42431c](https://github.com/Zahara-Nour/ubumaths/commit/f42431cc2afba605a6a9c231f4e71066074e58c1))
+- **mathAST:** expand domain/continuity improvement tracker ([b590007](https://github.com/Zahara-Nour/ubumaths/commit/b59000757fec44a65c1063932d6d0f048e26e8ba)), closes [#13-20](https://github.com/Zahara-Nour/ubumaths/issues/13-20)
+- **mathAST:** update pattern syntax examples to use new wildcard style ([1725917](https://github.com/Zahara-Nour/ubumaths/commit/1725917393156c6baa85c09a0fa4ac52a86bce4c))
+- update documentation for simplified expression syntax ([2a57c39](https://github.com/Zahara-Nour/ubumaths/commit/2a57c39d949580dd3d73137649dd94ebaa7cbe49))
+
 ### [0.7.31](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.30...v0.7.31) (2026-01-29)
 
 ### 🐛 Bug Fixes
