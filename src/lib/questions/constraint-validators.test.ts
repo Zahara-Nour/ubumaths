@@ -1701,53 +1701,252 @@ describe('checkFactorZero', () => {
 // ============================================================================
 
 describe('checkSigns', () => {
-	describe('Double Signs (regex-based)', () => {
-		it('should detect double plus (++)', () => {
+	// ========================================================================
+	// CASE 1: Consecutive Signs (Parser Error)
+	// ========================================================================
+	describe('Consecutive Signs (parser error)', () => {
+		it('should detect ++ (double plus)', () => {
 			expect(checkSigns(['x++y'])).toEqual([0]);
 		});
 
-		it('should detect double minus (--)', () => {
+		it('should detect -- (double minus)', () => {
 			expect(checkSigns(['x--y'])).toEqual([0]);
 		});
 
-		it('should detect plus-minus (+-)', () => {
+		it('should detect +- (plus-minus)', () => {
 			expect(checkSigns(['x+-y'])).toEqual([0]);
 		});
 
-		it('should detect minus-plus (-+)', () => {
+		it('should detect -+ (minus-plus)', () => {
 			expect(checkSigns(['x-+y'])).toEqual([0]);
+		});
+
+		it('should detect consecutive signs at start: ++x', () => {
+			expect(checkSigns(['++x'])).toEqual([0]);
+		});
+
+		it('should detect consecutive signs at start: --x', () => {
+			expect(checkSigns(['--x'])).toEqual([0]);
+		});
+
+		it('should detect consecutive signs with numbers: 1++2', () => {
+			expect(checkSigns(['1++2'])).toEqual([0]);
+		});
+
+		it('should detect consecutive signs with numbers: 3--4', () => {
+			expect(checkSigns(['3--4'])).toEqual([0]);
+		});
+
+		it('should detect consecutive signs in longer expression: a+b++c', () => {
+			expect(checkSigns(['a+b++c'])).toEqual([0]);
 		});
 	});
 
-	describe('Leading Plus Before Variable (regex-based)', () => {
+	// ========================================================================
+	// CASE 2: Positive Nodes (+x, +5, etc.)
+	// ========================================================================
+	describe('Positive Nodes (redundant +)', () => {
 		it('should detect +x at start', () => {
 			expect(checkSigns(['+x'])).toEqual([0]);
+		});
+
+		it('should detect +5 (plus on number)', () => {
+			expect(checkSigns(['+5'])).toEqual([0]);
 		});
 
 		it('should detect +a at start', () => {
 			expect(checkSigns(['+a'])).toEqual([0]);
 		});
 
-		it('should accept -x (valid negative)', () => {
-			expect(checkSigns(['-x'])).toHaveLength(0);
+		it('should detect (+x) in parentheses', () => {
+			expect(checkSigns(['(+x)'])).toEqual([0]);
 		});
 
-		it('should accept normal addition', () => {
-			expect(checkSigns(['x+3'])).toHaveLength(0);
-			expect(checkSigns(['a+b'])).toHaveLength(0);
+		it('should detect (+5) in parentheses', () => {
+			expect(checkSigns(['(+5)'])).toEqual([0]);
+		});
+
+		it('should detect positive in expression: y+(+x)', () => {
+			expect(checkSigns(['y+(+x)'])).toEqual([0]);
+		});
+
+		it('should detect positive in expression: (+a)+b', () => {
+			expect(checkSigns(['(+a)+b'])).toEqual([0]);
+		});
+
+		it('should detect positive in multiplication: (+x)*y', () => {
+			expect(checkSigns(['(+x)\\times y'])).toEqual([0]);
+		});
+
+		it('should detect positive in division numerator: (+a)/b', () => {
+			expect(checkSigns(['(+a)/b'])).toEqual([0]);
+		});
+
+		it('should detect positive in fraction numerator: \\frac{+a}{b}', () => {
+			expect(checkSigns(['\\frac{+a}{b}'])).toEqual([0]);
+		});
+
+		it('should detect positive in function argument: \\sqrt{+x}', () => {
+			expect(checkSigns(['\\sqrt{+x}'])).toEqual([0]);
+		});
+
+		it('should detect positive in exponent: x^{+2}', () => {
+			expect(checkSigns(['x^{+2}'])).toEqual([0]);
+		});
+
+		it('should detect deeply nested positive: ((+x))', () => {
+			expect(checkSigns(['((+x))'])).toEqual([0]);
 		});
 	});
 
-	describe('Sign Parity in Multiplication (CE-based)', () => {
-		it('should detect (-2)*(-3) - two negatives can be simplified', () => {
-			expect(checkSigns(['(-2)\\times(-3)'])).toEqual([0]);
+	// ========================================================================
+	// CASE 3: Double Negative -(-x)
+	// ========================================================================
+	describe('Double Negative -(-x)', () => {
+		it('should detect -(-x)', () => {
+			expect(checkSigns(['-(-x)'])).toEqual([0]);
 		});
 
-		it('should detect (-a)*(-b) - variable negatives', () => {
+		it('should detect -(-5)', () => {
+			expect(checkSigns(['-(-5)'])).toEqual([0]);
+		});
+
+		it('should detect -(-a)', () => {
+			expect(checkSigns(['-(-a)'])).toEqual([0]);
+		});
+
+		it('should detect -(-(x+1))', () => {
+			expect(checkSigns(['-(-(x+1))'])).toEqual([0]);
+		});
+
+		it('should detect double negative in expression: y+(-(-x))', () => {
+			expect(checkSigns(['y+(-(-x))'])).toEqual([0]);
+		});
+
+		it('should detect double negative in multiplication: (-(-a))*b', () => {
+			expect(checkSigns(['(-(-a))\\times b'])).toEqual([0]);
+		});
+
+		it('should detect triple negative as double: -(-(-x)) contains -(-x)', () => {
+			expect(checkSigns(['-(-(-x))'])).toEqual([0]);
+		});
+
+		it('should detect double negative in fraction: \\frac{-(-a)}{b}', () => {
+			expect(checkSigns(['\\frac{-(-a)}{b}'])).toEqual([0]);
+		});
+	});
+
+	// ========================================================================
+	// CASE 4: Opposite in Addition x+(-y)
+	// ========================================================================
+	describe('Opposite in Addition', () => {
+		it('should detect x+(-y) - should be x-y', () => {
+			expect(checkSigns(['x+(-y)'])).toEqual([0]);
+		});
+
+		it('should detect a+(-5) - should be a-5', () => {
+			expect(checkSigns(['a+(-5)'])).toEqual([0]);
+		});
+
+		it('should detect 3+(-2) - should be 3-2', () => {
+			expect(checkSigns(['3+(-2)'])).toEqual([0]);
+		});
+
+		it('should detect (-x)+y - negative on left of addition', () => {
+			expect(checkSigns(['(-x)+y'])).toEqual([0]);
+		});
+
+		it('should detect (-a)+(-b) - both sides negative', () => {
+			expect(checkSigns(['(-a)+(-b)'])).toEqual([0]);
+		});
+
+		it('should detect nested: (x+(-y))+z', () => {
+			expect(checkSigns(['(x+(-y))+z'])).toEqual([0]);
+		});
+
+		it('should detect in longer chain: a+b+(-c)', () => {
+			expect(checkSigns(['a+b+(-c)'])).toEqual([0]);
+		});
+
+		it('should detect opposite in addition within multiplication: 2*(x+(-y))', () => {
+			expect(checkSigns(['2\\times(x+(-y))'])).toEqual([0]);
+		});
+
+		it('should detect opposite in addition within fraction: \\frac{a+(-b)}{c}', () => {
+			expect(checkSigns(['\\frac{a+(-b)}{c}'])).toEqual([0]);
+		});
+	});
+
+	// ========================================================================
+	// CASE 5: Opposite in Subtraction x-(-y)
+	// ========================================================================
+	describe('Opposite in Subtraction', () => {
+		it('should detect x-(-y) - should be x+y', () => {
+			expect(checkSigns(['x-(-y)'])).toEqual([0]);
+		});
+
+		it('should detect a-(-5) - should be a+5', () => {
+			expect(checkSigns(['a-(-5)'])).toEqual([0]);
+		});
+
+		it('should detect 3-(-2) - should be 3+2', () => {
+			expect(checkSigns(['3-(-2)'])).toEqual([0]);
+		});
+
+		it('should detect nested: (x-(-y))-z', () => {
+			expect(checkSigns(['(x-(-y))-z'])).toEqual([0]);
+		});
+
+		it('should detect in chain: a-b-(-c)', () => {
+			expect(checkSigns(['a-b-(-c)'])).toEqual([0]);
+		});
+
+		it('should detect opposite in subtraction within multiplication: 2*(x-(-y))', () => {
+			expect(checkSigns(['2\\times(x-(-y))'])).toEqual([0]);
+		});
+
+		it('should detect opposite in subtraction within fraction: \\frac{a-(-b)}{c}', () => {
+			expect(checkSigns(['\\frac{a-(-b)}{c}'])).toEqual([0]);
+		});
+
+		it('should accept x-y (normal subtraction, no parenthesized negative)', () => {
+			expect(checkSigns(['x-y'])).toHaveLength(0);
+		});
+	});
+
+	// ========================================================================
+	// CASE 6: Opposite in Multiplication
+	// ========================================================================
+	describe('Opposite in Multiplication', () => {
+		it('should detect (-a)*b - sign should be extracted', () => {
+			expect(checkSigns(['(-a)\\times b'])).toEqual([0]);
+		});
+
+		it('should detect a*(-b) - sign should be extracted', () => {
+			expect(checkSigns(['a\\times(-b)'])).toEqual([0]);
+		});
+
+		it('should detect (-a)*(-b) - two negatives', () => {
 			expect(checkSigns(['(-a)\\times(-b)'])).toEqual([0]);
 		});
 
-		it('should detect 5*(-2)*(-3) - two negatives in chain', () => {
+		it('should detect (-2)*3 - numeric', () => {
+			expect(checkSigns(['(-2)\\times 3'])).toEqual([0]);
+		});
+
+		it('should detect 5*(-2) - numeric', () => {
+			expect(checkSigns(['5\\times(-2)'])).toEqual([0]);
+		});
+
+		it('should detect (-2)*(-3) - two numeric negatives', () => {
+			expect(checkSigns(['(-2)\\times(-3)'])).toEqual([0]);
+		});
+
+		it('should detect -2*3 (parsed as (-2)*3)', () => {
+			expect(checkSigns(['-2\\times 3'])).toEqual([0]);
+		});
+
+		it('should detect 5*(-2)*(-3) - chain with negatives', () => {
 			expect(checkSigns(['5\\times(-2)\\times(-3)'])).toEqual([0]);
 		});
 
@@ -1755,22 +1954,256 @@ describe('checkSigns', () => {
 			expect(checkSigns(['(-x)(-y)'])).toEqual([0]);
 		});
 
-		it('should detect (-2)*3 - negative factor should be extracted', () => {
-			// (-2)*3 should be written as -(2*3) or -2×3 with sign outside
-			expect(checkSigns(['(-2)\\times 3'])).toEqual([0]);
+		it('should detect (-x)*y*(-z) - multiple negatives', () => {
+			expect(checkSigns(['(-x)\\times y\\times(-z)'])).toEqual([0]);
 		});
 
-		it('should detect 5*(-2) - negative factor should be extracted', () => {
-			// 5*(-2) should be written as -(5*2)
-			expect(checkSigns(['5\\times(-2)'])).toEqual([0]);
+		it('should detect negative in nested multiplication: ((-a)*b)*c', () => {
+			expect(checkSigns(['((-a)\\times b)\\times c'])).toEqual([0]);
 		});
 
-		it('should detect -2*3 - negative factor in product', () => {
-			// -2*3 is parsed as (-2)*3, sign should be outside: -(2*3)
-			expect(checkSigns(['-2\\times 3'])).toEqual([0]);
+		it('should detect cdot notation: (-a)\\cdot b', () => {
+			expect(checkSigns(['(-a)\\cdot b'])).toEqual([0]);
+		});
+
+		it('should accept 2*3 (no negative)', () => {
+			expect(checkSigns(['2\\times 3'])).toHaveLength(0);
+		});
+
+		it('should accept a*b (no negative)', () => {
+			expect(checkSigns(['a\\times b'])).toHaveLength(0);
 		});
 	});
 
+	// ========================================================================
+	// CASE 7: Opposite in Division (inline /)
+	// ========================================================================
+	describe('Opposite in Division (inline /)', () => {
+		it('should detect (-a)/b - negative numerator', () => {
+			expect(checkSigns(['(-a)/b'])).toEqual([0]);
+		});
+
+		it('should detect a/(-b) - negative denominator', () => {
+			expect(checkSigns(['a/(-b)'])).toEqual([0]);
+		});
+
+		it('should detect (-a)/(-b) - both negative', () => {
+			expect(checkSigns(['(-a)/(-b)'])).toEqual([0]);
+		});
+
+		it('should detect (-5)/2 - numeric negative numerator', () => {
+			expect(checkSigns(['(-5)/2'])).toEqual([0]);
+		});
+
+		it('should detect 5/(-2) - numeric negative denominator', () => {
+			expect(checkSigns(['5/(-2)'])).toEqual([0]);
+		});
+
+		it('should detect (-6)/(-3) - both numeric negatives', () => {
+			expect(checkSigns(['(-6)/(-3)'])).toEqual([0]);
+		});
+
+		it('should detect negative in nested division: ((-a)/b)/c', () => {
+			expect(checkSigns(['((-a)/b)/c'])).toEqual([0]);
+		});
+
+		it('should detect negative in division within expression: x+((-a)/b)', () => {
+			expect(checkSigns(['x+((-a)/b)'])).toEqual([0]);
+		});
+
+		it('should accept a/b (no negative)', () => {
+			expect(checkSigns(['a/b'])).toHaveLength(0);
+		});
+
+		it('should accept 6/3 (no negative)', () => {
+			expect(checkSigns(['6/3'])).toHaveLength(0);
+		});
+	});
+
+	// ========================================================================
+	// CASE 8: Opposite in Fraction (\\frac)
+	// ========================================================================
+	describe('Opposite in Fraction (\\frac)', () => {
+		it('should detect \\frac{-a}{b} - negative numerator', () => {
+			expect(checkSigns(['\\frac{-a}{b}'])).toEqual([0]);
+		});
+
+		it('should detect \\frac{a}{-b} - negative denominator', () => {
+			expect(checkSigns(['\\frac{a}{-b}'])).toEqual([0]);
+		});
+
+		it('should detect \\frac{-a}{-b} - both negative', () => {
+			expect(checkSigns(['\\frac{-a}{-b}'])).toEqual([0]);
+		});
+
+		it('should detect \\frac{-5}{2} - numeric negative numerator', () => {
+			expect(checkSigns(['\\frac{-5}{2}'])).toEqual([0]);
+		});
+
+		it('should detect \\frac{5}{-2} - numeric negative denominator', () => {
+			expect(checkSigns(['\\frac{5}{-2}'])).toEqual([0]);
+		});
+
+		it('should detect \\frac{-6}{-3} - both numeric negatives', () => {
+			expect(checkSigns(['\\frac{-6}{-3}'])).toEqual([0]);
+		});
+
+		it('should detect \\frac{(-x)}{y} - parenthesized negative numerator', () => {
+			expect(checkSigns(['\\frac{(-x)}{y}'])).toEqual([0]);
+		});
+
+		it('should detect \\frac{x}{(-y)} - parenthesized negative denominator', () => {
+			expect(checkSigns(['\\frac{x}{(-y)}'])).toEqual([0]);
+		});
+
+		it('should detect nested: \\frac{\\frac{-a}{b}}{c}', () => {
+			expect(checkSigns(['\\frac{\\frac{-a}{b}}{c}'])).toEqual([0]);
+		});
+
+		it('should detect negative in expression within fraction: \\frac{x+(-y)}{z}', () => {
+			expect(checkSigns(['\\frac{x+(-y)}{z}'])).toEqual([0]);
+		});
+
+		it('should accept \\frac{a}{b} (no negative)', () => {
+			expect(checkSigns(['\\frac{a}{b}'])).toHaveLength(0);
+		});
+
+		it('should accept \\frac{5}{2} (no negative)', () => {
+			expect(checkSigns(['\\frac{5}{2}'])).toHaveLength(0);
+		});
+
+		it('should accept -\\frac{a}{b} (sign outside fraction is OK)', () => {
+			expect(checkSigns(['-\\frac{a}{b}'])).toHaveLength(0);
+		});
+
+		it('should accept -\\frac{5}{2} (sign outside fraction is OK)', () => {
+			expect(checkSigns(['-\\frac{5}{2}'])).toHaveLength(0);
+		});
+	});
+
+	// ========================================================================
+	// Complex and Nested Cases
+	// ========================================================================
+	describe('Complex and Nested Cases', () => {
+		it('should accept (-x)^2 - negative in power base is mathematical', () => {
+			// (-x)^2 is different from x^2 semantically, sign is not "useless"
+			expect(checkSigns(['(-x)^2'])).toHaveLength(0);
+		});
+
+		it('should accept \\sqrt{(-x)} - negative in sqrt argument is mathematical', () => {
+			// The sign affects the domain, not "useless"
+			expect(checkSigns(['\\sqrt{(-x)}'])).toHaveLength(0);
+		});
+
+		it('should detect multiple violations in one expression: (+a)+(-b)', () => {
+			expect(checkSigns(['(+a)+(-b)'])).toEqual([0]);
+		});
+
+		it('should accept deeply nested negative: (((-x))) - just -x in parens', () => {
+			expect(checkSigns(['(((-x)))'])).toHaveLength(0);
+		});
+
+		it('should detect negative in complex fraction: \\frac{(-a)*b}{c+(-d)}', () => {
+			expect(checkSigns(['\\frac{(-a)\\times b}{c+(-d)}'])).toEqual([0]);
+		});
+
+		it('should detect in polynomial-like: x^2+(-x)+1', () => {
+			expect(checkSigns(['x^2+(-x)+1'])).toEqual([0]);
+		});
+
+		it('should detect in equation-like context: 2*(-x)=6', () => {
+			expect(checkSigns(['2\\times(-x)=6'])).toEqual([0]);
+		});
+
+		it('should accept -x^2 (negative of x squared)', () => {
+			expect(checkSigns(['-x^2'])).toHaveLength(0);
+		});
+
+		it('should accept -(x^2) (negative of x squared in parens)', () => {
+			expect(checkSigns(['-(x^2)'])).toHaveLength(0);
+		});
+	});
+
+	// ========================================================================
+	// Valid Cases (No Violations)
+	// ========================================================================
+	describe('Valid Cases (No Violations)', () => {
+		it('should accept -x (simple negative)', () => {
+			expect(checkSigns(['-x'])).toHaveLength(0);
+		});
+
+		it('should accept -5 (negative number)', () => {
+			expect(checkSigns(['-5'])).toHaveLength(0);
+		});
+
+		it('should accept x+y (normal addition)', () => {
+			expect(checkSigns(['x+y'])).toHaveLength(0);
+		});
+
+		it('should accept x-y (normal subtraction)', () => {
+			expect(checkSigns(['x-y'])).toHaveLength(0);
+		});
+
+		it('should accept a+b+c (chain addition)', () => {
+			expect(checkSigns(['a+b+c'])).toHaveLength(0);
+		});
+
+		it('should accept a-b-c (chain subtraction)', () => {
+			expect(checkSigns(['a-b-c'])).toHaveLength(0);
+		});
+
+		it('should accept a*b (multiplication)', () => {
+			expect(checkSigns(['a\\times b'])).toHaveLength(0);
+		});
+
+		it('should accept a/b (division)', () => {
+			expect(checkSigns(['a/b'])).toHaveLength(0);
+		});
+
+		it('should accept \\frac{a}{b} (fraction)', () => {
+			expect(checkSigns(['\\frac{a}{b}'])).toHaveLength(0);
+		});
+
+		it('should accept -\\frac{a}{b} (negative fraction, sign outside)', () => {
+			expect(checkSigns(['-\\frac{a}{b}'])).toHaveLength(0);
+		});
+
+		it('should accept -(a*b) (negative of product)', () => {
+			expect(checkSigns(['-(a\\times b)'])).toHaveLength(0);
+		});
+
+		it('should accept -(a+b) (negative of sum)', () => {
+			expect(checkSigns(['-(a+b)'])).toHaveLength(0);
+		});
+
+		it('should accept x^2-1 (polynomial)', () => {
+			expect(checkSigns(['x^2-1'])).toHaveLength(0);
+		});
+
+		it('should accept 2x+3y-z (linear expression)', () => {
+			expect(checkSigns(['2x+3y-z'])).toHaveLength(0);
+		});
+
+		it('should accept \\sqrt{x} (function)', () => {
+			expect(checkSigns(['\\sqrt{x}'])).toHaveLength(0);
+		});
+
+		it('should accept x^{-1} (negative exponent is valid)', () => {
+			expect(checkSigns(['x^{-1}'])).toHaveLength(0);
+		});
+
+		it('should accept 2^{-3} (negative exponent)', () => {
+			expect(checkSigns(['2^{-3}'])).toHaveLength(0);
+		});
+
+		it('should accept complex valid: \\frac{x^2-1}{x+1}', () => {
+			expect(checkSigns(['\\frac{x^2-1}{x+1}'])).toHaveLength(0);
+		});
+	});
+
+	// ========================================================================
+	// Multiple Answers
+	// ========================================================================
 	describe('Multiple Answers', () => {
 		it('should check all answers and return violating indices', () => {
 			const result = checkSigns(['x+y', 'x++z', 'a-b', '+c']);
@@ -1781,8 +2214,27 @@ describe('checkSigns', () => {
 			const result = checkSigns(['2x', '(-a)(-b)', '3y']);
 			expect(result).toEqual([1]);
 		});
+
+		it('should detect mixed violation types', () => {
+			const result = checkSigns([
+				'x+y', // OK
+				'-(-x)', // double negative
+				'a+(-b)', // opposite in addition
+				'\\frac{-a}{b}', // negative in fraction
+				'x-y' // OK
+			]);
+			expect(result).toEqual([1, 2, 3]);
+		});
+
+		it('should handle all violations', () => {
+			const result = checkSigns(['+x', '-(-y)', 'a+(-b)', '(-c)*d', '(-e)/f', '\\frac{-g}{h}']);
+			expect(result).toEqual([0, 1, 2, 3, 4, 5]);
+		});
 	});
 
+	// ========================================================================
+	// Edge Cases
+	// ========================================================================
 	describe('Edge Cases', () => {
 		it('should handle empty strings', () => {
 			expect(checkSigns([''])).toHaveLength(0);
@@ -1792,9 +2244,43 @@ describe('checkSigns', () => {
 			expect(checkSigns(['  '])).toHaveLength(0);
 		});
 
-		it('should detect leading plus on numbers', () => {
-			// +5 is redundant (equals 5), so it's a violation
-			expect(checkSigns(['+5'])).toEqual([0]);
+		it('should handle empty array', () => {
+			expect(checkSigns([])).toHaveLength(0);
+		});
+
+		it('should handle null-ish values gracefully', () => {
+			expect(checkSigns([null as unknown as string])).toHaveLength(0);
+			expect(checkSigns([undefined as unknown as string])).toHaveLength(0);
+		});
+
+		it('should handle just a number: 5', () => {
+			expect(checkSigns(['5'])).toHaveLength(0);
+		});
+
+		it('should handle just a variable: x', () => {
+			expect(checkSigns(['x'])).toHaveLength(0);
+		});
+
+		it('should handle decimal: 3.14', () => {
+			expect(checkSigns(['3.14'])).toHaveLength(0);
+		});
+
+		it('should handle negative decimal: -3.14', () => {
+			expect(checkSigns(['-3.14'])).toHaveLength(0);
+		});
+
+		it('should handle scientific notation: 1.5e-3', () => {
+			// If parsed, just check no crash
+			const result = checkSigns(['1.5\\times 10^{-3}']);
+			expect(Array.isArray(result)).toBe(true);
+		});
+
+		it('should handle invalid LaTeX gracefully', () => {
+			expect(checkSigns(['\\invalid{'])).toHaveLength(0);
+		});
+
+		it('should handle unbalanced parentheses gracefully', () => {
+			expect(checkSigns(['(x+y'])).toHaveLength(0);
 		});
 	});
 });
