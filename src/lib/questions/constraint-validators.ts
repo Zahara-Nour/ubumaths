@@ -829,15 +829,21 @@ function getCE(): ComputeEngine {
 }
 
 /**
- * Check if a node represents zero (0 or -0)
+ * Check if a node represents zero (0, -0, (0), (-0), etc.)
+ * Recursively unwraps delimiters and sign operators to find the core value.
  */
 function isZeroNode(node: MathNode): boolean {
+	// Direct number zero
 	if (isNumber(node) && parseFloat(node.value) === 0) {
 		return true;
 	}
-	// Handle (-0) case
-	if (node.type === 'opposite' && isNumber(node.operand)) {
-		return parseFloat(node.operand.value) === 0;
+	// Handle -0 or +0 (opposite/positive of zero)
+	if ((node.type === 'opposite' || node.type === 'positive') && isZeroNode(node.operand)) {
+		return true;
+	}
+	// Handle (0), (-0), ((0)), etc. - delimiters wrapping zero
+	if (isDelimiter(node)) {
+		return isZeroNode(node.content);
 	}
 	return false;
 }
