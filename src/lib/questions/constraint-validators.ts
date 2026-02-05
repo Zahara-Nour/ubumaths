@@ -914,33 +914,36 @@ export function checkNullTerms(answersLatex: string[]): number[] {
 }
 
 /**
- * Recursively check if a MathJSON expression contains a Multiply with 1
- * Also handles InvisibleOperator (implicit multiplication like 1x)
+ * Check if a node represents one (1, +1, (1), etc.)
+ * Recursively unwraps delimiters and sign operators to find the core value.
  */
-function hasMultiplyWithOne(json: unknown): boolean {
-	if (!Array.isArray(json)) return false;
-	const [head, ...args] = json;
-
-	// Check if this is a Multiply with 1 in its arguments
-	if (head === 'Multiply' && args.some((arg) => arg === 1)) {
+function isOneNode(node: MathNode): boolean {
+	// Direct number one
+	if (isNumber(node) && parseFloat(node.value) === 1) {
 		return true;
 	}
-
-	// Check if this is an InvisibleOperator (implicit multiplication) with 1
-	// e.g., 1x is parsed as ["InvisibleOperator", 1, "x"]
-	if (head === 'InvisibleOperator' && args.some((arg) => arg === 1)) {
+	// Handle +1 (positive of one)
+	if (node.type === 'positive' && isOneNode(node.operand)) {
 		return true;
 	}
-
-	// Recursively check nested expressions
-	return args.some((arg) => hasMultiplyWithOne(arg));
+	// Handle (1), ((1)), etc. - delimiters wrapping one
+	if (isDelimiter(node)) {
+		return isOneNode(node.content);
+	}
+	return false;
 }
 
 /**
  * Check for factor one in an expression (1*x, x*1, 1x)
  *
- * Parses without canonization to preserve the original form,
- * then inspects the MathJSON for Multiply/InvisibleOperator expressions containing 1.
+ * Uses mathAST to parse the LaTeX and analyze multiplication nodes.
+ * A factor one is detected when 1 is multiplied (explicitly or implicitly).
+ *
+ * Cases detected:
+ * - 1 × x (explicit multiplication with one)
+ * - x × 1 (one as right operand)
+ * - 1x (implicit multiplication with one)
+ * - x · 1 · y (one in chain)
  *
  * @param answersLatex - Array of LaTeX strings
  * @returns Indices of answers with factor one violations
@@ -954,20 +957,32 @@ function hasMultiplyWithOne(json: unknown): boolean {
  */
 export function checkFactorOne(answersLatex: string[]): number[] {
 	const violations: number[] = [];
-	const ce = getCE();
 
 	for (let i = 0; i < answersLatex.length; i++) {
 		const latex = answersLatex[i];
 		if (!latex?.trim()) continue;
 
-		try {
-			// Parse without canonization to preserve original form
-			const expr = ce.parse(latex, { canonical: false });
-			if (hasMultiplyWithOne(expr.json)) {
-				violations.push(i);
+		const parseResult = parseLatexSafe(latex);
+
+		// If parsing fails, skip (no violation detected)
+		if (!parseResult.ast || parseResult.errors.length > 0) {
+			continue;
+		}
+
+		let hasFactorOne = false;
+
+		visitAST(parseResult.ast, {
+			enterMultiplication(node: MultiplicationNode) {
+				// Check both operands for factor one
+				if (isOneNode(node.left) || isOneNode(node.right)) {
+					hasFactorOne = true;
+					return 'skip';
+				}
 			}
-		} catch {
-			// Skip invalid LaTeX
+		});
+
+		if (hasFactorOne) {
+			violations.push(i);
 		}
 	}
 
@@ -975,29 +990,18 @@ export function checkFactorOne(answersLatex: string[]): number[] {
 }
 
 /**
- * Recursively check if a MathJSON expression contains a Multiply with 0
- */
-function hasMultiplyWithZero(json: unknown): boolean {
-	if (!Array.isArray(json)) return false;
-	const [head, ...args] = json;
-
-	// Check if this is a Multiply with 0 in its arguments
-	if (head === 'Multiply' && args.some((arg) => arg === 0)) {
-		return true;
-	}
-
-	// Recursively check nested expressions
-	return args.some((arg) => hasMultiplyWithZero(arg));
-}
-
-/**
  * Check for factor zero in an expression (0*x, x*0)
  *
- * Parses without canonization to preserve the original form,
- * then inspects the MathJSON for Multiply expressions containing 0.
+ * Uses mathAST to parse the LaTeX and analyze multiplication nodes.
+ * A factor zero is detected when 0 is multiplied.
  *
  * Note: This is typically an error since 0*x = 0, but checking separately
  * allows more specific feedback.
+ *
+ * Cases detected:
+ * - 0 × x (explicit multiplication with zero)
+ * - x × 0 (zero as right operand)
+ * - 0x (implicit multiplication with zero)
  *
  * @param answersLatex - Array of LaTeX strings
  * @returns Indices of answers with factor zero violations
@@ -1009,20 +1013,32 @@ function hasMultiplyWithZero(json: unknown): boolean {
  */
 export function checkFactorZero(answersLatex: string[]): number[] {
 	const violations: number[] = [];
-	const ce = getCE();
 
 	for (let i = 0; i < answersLatex.length; i++) {
 		const latex = answersLatex[i];
 		if (!latex?.trim()) continue;
 
-		try {
-			// Parse without canonization to preserve original form
-			const expr = ce.parse(latex, { canonical: false });
-			if (hasMultiplyWithZero(expr.json)) {
-				violations.push(i);
+		const parseResult = parseLatexSafe(latex);
+
+		// If parsing fails, skip (no violation detected)
+		if (!parseResult.ast || parseResult.errors.length > 0) {
+			continue;
+		}
+
+		let hasFactorZero = false;
+
+		visitAST(parseResult.ast, {
+			enterMultiplication(node: MultiplicationNode) {
+				// Check both operands for factor zero (reuse isZeroNode)
+				if (isZeroNode(node.left) || isZeroNode(node.right)) {
+					hasFactorZero = true;
+					return 'skip';
+				}
 			}
-		} catch {
-			// Skip invalid LaTeX
+		});
+
+		if (hasFactorZero) {
+			violations.push(i);
 		}
 	}
 
