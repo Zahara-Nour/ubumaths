@@ -2,7 +2,7 @@
 
 > **Resume Instructions**: Read this file, then continue from the next incomplete phase.
 
-## Status: COMPLETE
+## Status: COMPLETE (migrated to mathAST)
 
 ## Completed Phases
 
@@ -48,13 +48,45 @@
 - [x] Progress document finalized
 - [x] All phases committed
 
+### Phase 6: Migration to mathAST - DONE (Feb 2026)
+
+Migrated all Compute Engine-based validators to use mathAST for better consistency, type safety, and reduced dependencies.
+
+**Migrated Functions:**
+
+| Function                | Before     | After                       | Commits            |
+| ----------------------- | ---------- | --------------------------- | ------------------ |
+| `checkNullTerms`        | CE         | mathAST                     | 8781dee1, 4a6da805 |
+| `checkFactorOne`        | CE         | mathAST                     | 0fcd6cb8, 4ba987f8 |
+| `checkFactorZero`       | CE         | mathAST                     | 0fcd6cb8, 4ba987f8 |
+| `checkSigns`            | CE + regex | mathAST + parser validation | 8dd21239, 85c97dde |
+| `checkReducedFractions` | CE         | mathAST (gcd)               | 4848238b, e367a26d |
+
+**Parser Enhancement:**
+
+- Added `CONSECUTIVE_SIGNS` error code to reject `++`, `--`, `+-`, `-+` at parse time
+
+**Test Coverage:**
+
+- 511 tests total (up from 133)
+- Comprehensive edge cases for all migrated validators
+
+**Benefits:**
+
+- Compute Engine completely removed from constraint-validators.ts
+- Strong typing with mathAST node types
+- Better performance (no CE canonization overhead)
+- Consistent parsing across all validators
+
 ## Decisions Made
 
-- Using regex-based constraint checking (not AST) since TinyCAS is not available
+- ~~Using regex-based constraint checking (not AST) since TinyCAS is not available~~
+- **Updated**: Now using mathAST for AST-based validation
 - Checking raw student LaTeX input for brackets (not CE canonical form)
 - Using partial credit (UNOPTIMAL_FORM) for constraint violations in 'warn' mode
 - Units excluded - to be implemented separately
+- Parser validates consecutive signs at parse time (not in checkSigns)
 
 ## Issues Encountered
 
-- (None yet)
+- (None)
