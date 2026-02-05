@@ -987,6 +987,232 @@ describe('checkNullTerms', () => {
 		it('should handle whitespace', () => {
 			expect(checkNullTerms(['  '])).toHaveLength(0);
 		});
+
+		it('should handle null/undefined in array gracefully', () => {
+			expect(checkNullTerms([null as unknown as string])).toHaveLength(0);
+			expect(checkNullTerms([undefined as unknown as string])).toHaveLength(0);
+		});
+
+		it('should handle empty array', () => {
+			expect(checkNullTerms([])).toHaveLength(0);
+		});
+	});
+
+	describe('Negative Zero Cases', () => {
+		it('should detect x+(-0) as null term', () => {
+			expect(checkNullTerms(['x+(-0)'])).toEqual([0]);
+		});
+
+		it('should detect (-0)+x as null term', () => {
+			expect(checkNullTerms(['(-0)+x'])).toEqual([0]);
+		});
+
+		it('should detect x-(-0) as null term', () => {
+			expect(checkNullTerms(['x-(-0)'])).toEqual([0]);
+		});
+	});
+
+	describe('Decimal Zero Cases', () => {
+		it('should detect x+0.0 as null term', () => {
+			expect(checkNullTerms(['x+0.0'])).toEqual([0]);
+		});
+
+		it('should detect x+0.00 as null term', () => {
+			expect(checkNullTerms(['x+0.00'])).toEqual([0]);
+		});
+
+		it('should detect 0.0+x as null term', () => {
+			expect(checkNullTerms(['0.0+x'])).toEqual([0]);
+		});
+
+		it('should detect x-0.0 as null term', () => {
+			expect(checkNullTerms(['x-0.0'])).toEqual([0]);
+		});
+	});
+
+	describe('Multiple Zeros', () => {
+		it('should detect 0+0 as null term', () => {
+			expect(checkNullTerms(['0+0'])).toEqual([0]);
+		});
+
+		it('should detect x+0+0 (multiple null terms)', () => {
+			expect(checkNullTerms(['x+0+0'])).toEqual([0]);
+		});
+
+		it('should detect 0+0+x (zeros at start)', () => {
+			expect(checkNullTerms(['0+0+x'])).toEqual([0]);
+		});
+	});
+
+	describe('Deeply Nested Expressions', () => {
+		it('should detect null term in double parentheses', () => {
+			expect(checkNullTerms(['((x+0))'])).toEqual([0]);
+		});
+
+		it('should detect null term in nested fractions', () => {
+			expect(checkNullTerms(['\\frac{\\frac{x+0}{2}}{3}'])).toEqual([0]);
+			expect(checkNullTerms(['\\frac{1}{\\frac{x+0}{2}}'])).toEqual([0]);
+		});
+
+		it('should detect null term deeply nested in multiplication', () => {
+			expect(checkNullTerms(['a*b*(c*(d+0))'])).toEqual([0]);
+		});
+
+		it('should detect null term in exponent base and exponent', () => {
+			expect(checkNullTerms(['(x+0)^{y+0}'])).toEqual([0]);
+			expect(checkNullTerms(['x^{y+0}'])).toEqual([0]);
+		});
+	});
+
+	describe('Greek Letters and Subscripts', () => {
+		it('should detect null term with greek letters', () => {
+			expect(checkNullTerms(['\\alpha+0'])).toEqual([0]);
+			expect(checkNullTerms(['0+\\beta'])).toEqual([0]);
+			expect(checkNullTerms(['\\gamma-0'])).toEqual([0]);
+		});
+
+		it('should detect null term with subscripted variables', () => {
+			expect(checkNullTerms(['x_1+0'])).toEqual([0]);
+			expect(checkNullTerms(['x_{12}+0'])).toEqual([0]);
+			expect(checkNullTerms(['a_n-0'])).toEqual([0]);
+		});
+
+		it('should accept greek letters without null terms', () => {
+			expect(checkNullTerms(['\\alpha+\\beta'])).toHaveLength(0);
+			expect(checkNullTerms(['x_1+x_2'])).toHaveLength(0);
+		});
+	});
+
+	describe('Functions with Null Terms', () => {
+		it('should detect null term inside sin', () => {
+			expect(checkNullTerms(['\\sin(x+0)'])).toEqual([0]);
+		});
+
+		it('should detect null term inside cos', () => {
+			expect(checkNullTerms(['\\cos(x+0)'])).toEqual([0]);
+		});
+
+		it('should detect null term inside log', () => {
+			expect(checkNullTerms(['\\log(x+0)'])).toEqual([0]);
+			expect(checkNullTerms(['\\ln(x+0)'])).toEqual([0]);
+		});
+
+		it('should detect null term inside exp', () => {
+			expect(checkNullTerms(['\\exp(x+0)'])).toEqual([0]);
+			expect(checkNullTerms(['e^{x+0}'])).toEqual([0]);
+		});
+
+		it('should accept functions without null terms', () => {
+			expect(checkNullTerms(['\\sin(x+1)'])).toHaveLength(0);
+			expect(checkNullTerms(['\\log(x)'])).toHaveLength(0);
+		});
+	});
+
+	describe('Absolute Value and Other Delimiters', () => {
+		it('should detect null term inside absolute value', () => {
+			expect(checkNullTerms(['|x+0|'])).toEqual([0]);
+			expect(checkNullTerms(['\\left|x+0\\right|'])).toEqual([0]);
+		});
+
+		it('should accept delimiters without null terms', () => {
+			expect(checkNullTerms(['|x+1|'])).toHaveLength(0);
+		});
+	});
+
+	describe('Complex Expressions', () => {
+		it('should detect null term in polynomial', () => {
+			expect(checkNullTerms(['x^2+2x+0'])).toEqual([0]);
+			expect(checkNullTerms(['0+x^2+2x'])).toEqual([0]);
+		});
+
+		it('should detect null term in mixed operations', () => {
+			expect(checkNullTerms(['x*y+0'])).toEqual([0]);
+			expect(checkNullTerms(['\\frac{x}{y}+0'])).toEqual([0]);
+			expect(checkNullTerms(['x^2+0'])).toEqual([0]);
+		});
+
+		it('should detect null term in expression with multiple operations', () => {
+			expect(checkNullTerms(['2x+3y-0+z'])).toEqual([0]);
+			expect(checkNullTerms(['a*b+c*d+0'])).toEqual([0]);
+		});
+
+		it('should accept complex expressions without null terms', () => {
+			expect(checkNullTerms(['x^2+2x+1'])).toHaveLength(0);
+			expect(checkNullTerms(['a*b+c*d'])).toHaveLength(0);
+			expect(checkNullTerms(['\\frac{x+1}{y+2}'])).toHaveLength(0);
+		});
+	});
+
+	describe('LaTeX Variations', () => {
+		it('should handle \\left( and \\right) delimiters', () => {
+			expect(checkNullTerms(['\\left(x+0\\right)'])).toEqual([0]);
+			expect(checkNullTerms(['\\left(x+0\\right)+y'])).toEqual([0]);
+		});
+
+		it('should handle spaces in LaTeX', () => {
+			expect(checkNullTerms(['x + 0'])).toEqual([0]);
+			expect(checkNullTerms(['x  +  0'])).toEqual([0]);
+			expect(checkNullTerms(['0 - x'])).toEqual([0]);
+		});
+
+		it('should handle cdot multiplication with null term', () => {
+			expect(checkNullTerms(['a\\cdot(b+0)'])).toEqual([0]);
+		});
+
+		it('should handle times multiplication with null term', () => {
+			expect(checkNullTerms(['a\\times(b+0)'])).toEqual([0]);
+		});
+	});
+
+	describe('Should NOT Detect (Valid Expressions)', () => {
+		it('should not flag zero in multiplication (different constraint)', () => {
+			// 0*x is a factor zero issue, not a null term issue
+			expect(checkNullTerms(['0*x'])).toHaveLength(0);
+			expect(checkNullTerms(['x*0'])).toHaveLength(0);
+		});
+
+		it('should not flag zero in division', () => {
+			expect(checkNullTerms(['0/x'])).toHaveLength(0);
+			expect(checkNullTerms(['\\frac{0}{x}'])).toHaveLength(0);
+		});
+
+		it('should not flag zero as exponent', () => {
+			expect(checkNullTerms(['x^0'])).toHaveLength(0);
+		});
+
+		it('should not flag standalone zero', () => {
+			expect(checkNullTerms(['0'])).toHaveLength(0);
+			expect(checkNullTerms(['-0'])).toHaveLength(0);
+		});
+
+		it('should not flag numbers containing digit 0', () => {
+			expect(checkNullTerms(['x+10'])).toHaveLength(0);
+			expect(checkNullTerms(['x+100'])).toHaveLength(0);
+			expect(checkNullTerms(['x+0.5'])).toHaveLength(0);
+			expect(checkNullTerms(['x+1.05'])).toHaveLength(0);
+		});
+
+		it('should not flag valid polynomial coefficients', () => {
+			expect(checkNullTerms(['x^2+0x+1'])).toHaveLength(0); // 0x is multiplication, not addition
+		});
+	});
+
+	describe('Malformed LaTeX', () => {
+		it('should handle unclosed parentheses gracefully', () => {
+			// Should not crash, just skip invalid LaTeX
+			expect(() => checkNullTerms(['(x+0'])).not.toThrow();
+			expect(() => checkNullTerms(['x+0)'])).not.toThrow();
+		});
+
+		it('should handle incomplete fractions gracefully', () => {
+			expect(() => checkNullTerms(['\\frac{x+0}'])).not.toThrow();
+			expect(() => checkNullTerms(['\\frac{}{x+0}'])).not.toThrow();
+		});
+
+		it('should handle random text gracefully', () => {
+			expect(() => checkNullTerms(['hello world'])).not.toThrow();
+			expect(checkNullTerms(['hello world'])).toHaveLength(0);
+		});
 	});
 });
 
