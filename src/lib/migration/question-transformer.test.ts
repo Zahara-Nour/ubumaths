@@ -280,7 +280,7 @@ describe('Question Transformer', () => {
 				expect(result.template?.options?.constraints?.reducedFractions).toBe('strict');
 			});
 
-			it('should omit no-penalty-for-non-reduced-fractions (off is default)', () => {
+			it('should map no-penalty-for-non-reduced-fractions to off', () => {
 				const oldQuestion: QuestionBase = {
 					description: 'Addition de fractions',
 					enounces: ['Calculer :'],
@@ -294,11 +294,11 @@ describe('Question Transformer', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				// 'off' constraints are omitted since 'off' is the default
-				expect(result.template?.options?.constraints?.reducedFractions).toBeUndefined();
+				// 'off' explicitly disables the check (overrides 'warn' default)
+				expect(result.template?.options?.constraints?.reducedFractions).toBe('off');
 			});
 
-			it('should omit bracket tolerance options (off is default)', () => {
+			it('should map bracket tolerance options to off', () => {
 				const oldQuestion: QuestionBase = {
 					description: 'Expression algébrique',
 					enounces: ['Écrire :'],
@@ -312,8 +312,8 @@ describe('Question Transformer', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				// 'off' constraints are omitted since 'off' is the default
-				expect(result.template?.options?.constraints?.brackets).toBeUndefined();
+				// 'off' explicitly disables the check (overrides 'warn' default)
+				expect(result.template?.options?.constraints?.brackets).toBe('off');
 			});
 
 			it('should map CE constraint options (nullTerms, factorOne, factorZero, signs)', () => {
@@ -341,7 +341,7 @@ describe('Question Transformer', () => {
 				expect(result.template?.options?.constraints?.signs).toBe('strict');
 			});
 
-			it('should omit no-penalty CE constraint options (off is default)', () => {
+			it('should map no-penalty CE constraint options to off', () => {
 				const oldQuestion: QuestionBase = {
 					description: 'Expression tolérante',
 					enounces: ['Calculer :'],
@@ -360,11 +360,11 @@ describe('Question Transformer', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				// 'off' constraints are omitted since 'off' is the default
-				expect(result.template?.options?.constraints?.nullTerms).toBeUndefined();
-				expect(result.template?.options?.constraints?.factorOne).toBeUndefined();
-				expect(result.template?.options?.constraints?.factorZero).toBeUndefined();
-				expect(result.template?.options?.constraints?.signs).toBeUndefined();
+				// 'off' explicitly disables the checks (overrides 'warn' default)
+				expect(result.template?.options?.constraints?.nullTerms).toBe('off');
+				expect(result.template?.options?.constraints?.factorOne).toBe('off');
+				expect(result.template?.options?.constraints?.factorZero).toBe('off');
+				expect(result.template?.options?.constraints?.signs).toBe('off');
 			});
 
 			it('should map allowBracketsInFirstNegativeTerm option', () => {
@@ -381,8 +381,8 @@ describe('Question Transformer', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				// brackets 'off' is omitted (default), but the boolean flag is kept
-				expect(result.template?.options?.constraints?.brackets).toBeUndefined();
+				// brackets 'off' explicitly disables bracket check, boolean flag is also set
+				expect(result.template?.options?.constraints?.brackets).toBe('off');
 				expect(result.template?.options?.constraints?.allowBracketsInFirstNegativeTerm).toBe(true);
 			});
 		});
