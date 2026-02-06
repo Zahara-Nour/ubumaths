@@ -906,3 +906,92 @@ describe('validateAnswer - Required Form Integration', () => {
 		});
 	});
 });
+
+// ============================================================================
+// SOLUTION POOL TESTS
+// ============================================================================
+
+describe('solutionPool - order-independent multi-answer matching', () => {
+	function createPoolInstance(
+		solutions: string[],
+		type: QuestionInstance['type'] = 'numerical_exact'
+	): QuestionInstance {
+		return {
+			templateId: 'test-pool',
+			type,
+			statement: 'Test question' as ResolvedMarkdown,
+			solution: solutions,
+			grades: ['2'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			generatedAt: new Date().toISOString(),
+			options: { solutionPool: true }
+		};
+	}
+
+	describe('numerical questions', () => {
+		// |x| = 3 → solutions: ["3", "-3"]
+		const instance = createPoolInstance(['3', '-3']);
+
+		it('should accept answers in same order as solutions', () => {
+			const result = validateAnswer(['3', '-3'], instance);
+			expect(result.isCorrect).toBe(true);
+		});
+
+		it('should accept answers in reversed order', () => {
+			const result = validateAnswer(['-3', '3'], instance);
+			expect(result.isCorrect).toBe(true);
+		});
+
+		it('should reject if one answer is wrong', () => {
+			const result = validateAnswer(['3', '5'], instance);
+			expect(result.isCorrect).toBe(false);
+		});
+
+		it('should reject if both answers are the same (even if valid)', () => {
+			const result = validateAnswer(['3', '3'], instance);
+			expect(result.isCorrect).toBe(false);
+		});
+	});
+
+	describe('algebraic questions', () => {
+		// Roots of (x+2)(x-5) → solutions: ["-2", "5"]
+		const instance = createPoolInstance(['-2', '5'], 'algebraic_transform');
+
+		it('should accept answers in reversed order', () => {
+			const result = validateAnswer(['5', '-2'], instance);
+			expect(result.isCorrect).toBe(true);
+		});
+
+		it('should accept answers in same order', () => {
+			const result = validateAnswer(['-2', '5'], instance);
+			expect(result.isCorrect).toBe(true);
+		});
+
+		it('should reject wrong answers', () => {
+			const result = validateAnswer(['2', '-5'], instance);
+			expect(result.isCorrect).toBe(false);
+		});
+	});
+
+	describe('without solutionPool flag', () => {
+		it('should use positional matching (default behavior)', () => {
+			const instance: QuestionInstance = {
+				templateId: 'test-no-pool',
+				type: 'numerical_exact',
+				statement: 'Test question' as ResolvedMarkdown,
+				solution: '3',
+				grades: ['2'],
+				theme: 'Test',
+				domain: 'Test',
+				level: 1,
+				generatedAt: new Date().toISOString()
+			};
+
+			// Single answer, no pool
+			const result = validateAnswer('3', instance);
+			expect(result.isCorrect).toBe(true);
+		});
+	});
+});
