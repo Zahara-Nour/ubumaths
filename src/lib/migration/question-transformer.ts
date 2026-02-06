@@ -39,7 +39,8 @@ import type {
 	PrecisionType,
 	AlgebraicTransformType,
 	ValidationRule,
-	ConstraintOptions
+	ConstraintOptions,
+	RequiredForm
 } from '$lib/questions/types';
 
 import type { DisplayOptions, TemplateMarkdown } from '$lib/ubumark';
@@ -854,8 +855,13 @@ function _convertCorrection(
  */
 function convertOptions(
 	oldOptions: string[] | undefined,
-	warnings: string[]
-): { options?: QuestionTemplate['options']; defaultDisplayOptions?: DisplayOptions } {
+	warnings: string[],
+	oldFormats?: string[]
+): {
+	options?: QuestionTemplate['options'];
+	defaultDisplayOptions?: DisplayOptions;
+	requiredForm?: RequiredForm;
+} {
 	if (!oldOptions || oldOptions.length === 0) {
 		return {};
 	}
@@ -863,6 +869,7 @@ function convertOptions(
 	const options: QuestionTemplate['options'] = {};
 	const constraints: ConstraintOptions = {};
 	const displayOptions: DisplayOptions = {};
+	let requiredForm: RequiredForm | undefined;
 	// Note: mappedCount tracked for potential debugging but not used in return
 	let _mappedCount = 0;
 
@@ -1007,8 +1014,18 @@ function convertOptions(
 			// NOT IMPLEMENTED - VALIDATION OPTIONS (generate warnings)
 			// ================================================================
 			case 'solutions-order-not-important':
-				// TODO: Allows multiple answers in any order (not about form)
-				warnings.push(`TODO: ${option} - answer order validation not yet implemented`);
+				if (oldFormats && oldFormats.length > 0) {
+					// Question has a formats field (e.g. "$e[2;99]*$e[2;99]")
+					// This is a single-answer question with multiple valid solutions.
+					// Convert format to requiredForm pattern + use numerical equivalence.
+					// The old format "$e[2;99]*$e[2;99]" becomes a product-of-integers pattern.
+					requiredForm = { pattern: 'a:inN & gte(2) * b:inN & gte(2)' };
+					_mappedCount++;
+				} else {
+					// Multi-answer question where order doesn't matter
+					// (e.g., absolute value equations, polynomial roots)
+					warnings.push(`TODO: ${option} - answer order validation not yet implemented`);
+				}
 				break;
 			case 'disallow-factors-permutation':
 				// Redundant with products constraint since the LaTeX parser
@@ -1120,7 +1137,8 @@ function convertOptions(
 
 	return {
 		options: hasOptions ? options : undefined,
-		defaultDisplayOptions: hasDisplayOptions ? displayOptions : undefined
+		defaultDisplayOptions: hasDisplayOptions ? displayOptions : undefined,
+		requiredForm
 	};
 }
 
@@ -1872,10 +1890,11 @@ export function transformQuestion(
 		}
 
 		// Convert options
-		const { options: convertedOptions, defaultDisplayOptions } = convertOptions(
-			oldQuestion.options,
-			warnings
-		);
+		const {
+			options: convertedOptions,
+			defaultDisplayOptions,
+			requiredForm
+		} = convertOptions(oldQuestion.options, warnings, oldQuestion.formats);
 		if (convertedOptions) {
 			stats.optionsMapped = Object.keys(convertedOptions).length;
 		}
@@ -1903,6 +1922,11 @@ export function transformQuestion(
 					}
 				}
 			}
+		}
+
+		// Apply requiredForm to shared (applies to all variations)
+		if (requiredForm) {
+			shared.requiredForm = requiredForm;
 		}
 
 		// Assign category
