@@ -75,9 +75,9 @@ export interface DisplayOptions {
 	shallowShuffleFactors?: boolean;
 
 	/**
-	 * Remove null terms (x + 0 -> x) via CE canonization
+	 * Remove null terms (x + 0 -> x)
 	 *
-	 * Uses Compute Engine's canonical form to simplify.
+	 * Uses mathAST to filter zero-valued terms from sums.
 	 */
 	removeNullTerms?: boolean;
 
