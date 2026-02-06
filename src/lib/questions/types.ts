@@ -634,22 +634,21 @@ export type ConstraintId =
  * - 'warn': Violation results in unoptimal_form (partial credit) - just a warning
  * - 'off': Skip this check entirely - constraint disabled
  *
- * **Default: 'off'** — When a constraint is not set in a template (undefined),
- * it defaults to 'off'. Only constraints explicitly set to 'strict' or 'warn'
- * are enforced. This was determined by analyzing all 633 legacy questions:
- * 95-99.5% don't set any constraint, and when they do, 'off' is overwhelmingly
- * more common than 'strict'.
+ * **Default: 'warn'** — When a constraint is not set in a template (undefined),
+ * it defaults to 'warn'. This matches the old TinyMath behavior where checks
+ * always run by default and violations cause STATUS_UNOPTIMAL_FORM (partial credit).
+ * Use 'off' to explicitly disable a check, or 'strict' to make it a hard requirement.
  */
 export type ConstraintMode = 'strict' | 'warn' | 'off';
 
 /** Default constraint mode when not explicitly set in a template */
-export const DEFAULT_CONSTRAINT_MODE: ConstraintMode = 'off';
+export const DEFAULT_CONSTRAINT_MODE: ConstraintMode = 'warn';
 
 /**
  * Constraint configuration for question validation.
  *
- * All fields are optional. When omitted, the constraint defaults to 'off'
- * (not enforced). Only set a constraint when you want 'strict' or 'warn' behavior.
+ * All fields are optional. When omitted, the constraint defaults to 'warn'
+ * (partial credit penalty). Use 'off' to disable a check, 'strict' to require it.
  */
 export interface ConstraintOptions {
 	// Existing validators (text/regex based)

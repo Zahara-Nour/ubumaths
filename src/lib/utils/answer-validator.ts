@@ -91,7 +91,7 @@ function applyConstraints(
 	for (const { id, check } of checks) {
 		const mode = (constraints[id] as ConstraintMode | undefined) ?? DEFAULT_CONSTRAINT_MODE;
 
-		// Skip if off (default for unconfigured constraints)
+		// Skip if explicitly disabled
 		if (mode === 'off') continue;
 
 		const problematic = check();
