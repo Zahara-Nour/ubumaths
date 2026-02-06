@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.0...v0.8.1) (2026-02-06)
+
+### 🐛 Bug Fixes
+
+- **constraints:** apply default warn checks even without explicit constraints ([de3e0cb](https://github.com/Zahara-Nour/ubumaths/commit/de3e0cb52d41f6d1e4ffe186946d61aeff36cd61))
+- **constraints:** correct default constraint mode from 'off' to 'warn' ([ec25872](https://github.com/Zahara-Nour/ubumaths/commit/ec2587253d0b259ba4966414293b6b60b196b337))
+- **docs:** correct outdated Compute Engine reference in display-options ([94b226c](https://github.com/Zahara-Nour/ubumaths/commit/94b226c79d15c1bdd4c4048dca72aca66a00cc4f))
+- **migration:** attach displayOptions to expression variables, not template ([7384503](https://github.com/Zahara-Nour/ubumaths/commit/73845038fd5549910489d447feb3f4b76c194287))
+- **migration:** fix $e{n;n} and $d{$e[n;m]} conversion in syntax converter ([ee4e4b9](https://github.com/Zahara-Nour/ubumaths/commit/ee4e4b99248ff1dab2829105720275ca82f5dc07))
+- **parser:** prevent NUMBER from starting implicit multiplication in LaTeX parsers ([cda20f9](https://github.com/Zahara-Nour/ubumaths/commit/cda20f960bed155c4b05df33b2575708c8199148))
+
+### ✨ Features
+
+- **validator:** implement solutionPool for order-independent multi-answer matching ([a187678](https://github.com/Zahara-Nour/ubumaths/commit/a18767825d89351b93677ce31e3e48e2134fcd49))
+
+### 📚 Documentation
+
+- **migration:** add complete options migration reference ([bd57a53](https://github.com/Zahara-Nour/ubumaths/commit/bd57a535f6cab103a022c35e64d0b1cf04014e1a))
+- **migration:** restructure options reference with detailed old/new comparison ([10a3a04](https://github.com/Zahara-Nour/ubumaths/commit/10a3a04c430b847bad7305abe4c0aa29077fb8aa))
+- **wip:** mark all migration options as fully implemented ([25e51d4](https://github.com/Zahara-Nour/ubumaths/commit/25e51d4e0a2b6f035c36999b8c06e0d4c014a40b))
+- **wip:** update expression-field-analysis for addSpaces → removeSpaces rename ([95ca7e3](https://github.com/Zahara-Nour/ubumaths/commit/95ca7e31f6fa5d3d8b254158328c8a1ea4914413))
+- **wip:** update migration reference for checkProducts fix and mark FlatProduct plan as done ([de8fb1d](https://github.com/Zahara-Nour/ubumaths/commit/de8fb1d608e35acbf3cbd2b4b49461d2beaf26bc))
+
 ## [0.8.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.7.31...v0.8.0) (2026-02-05)
 
 ### ⚠ BREAKING CHANGES
