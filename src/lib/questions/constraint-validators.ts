@@ -215,6 +215,7 @@ import {
 	isSuperscript,
 	isNumber,
 	isOpposite,
+	flattenProductShallow,
 	findNodes,
 	visitAST,
 	type MathNode,
@@ -236,19 +237,23 @@ import { gcd } from '$lib/mathAST/normal';
  * A multiplication is considered explicit when its displayStyle is 'dot', 'cross', or 'star'
  * (as opposed to 'implicit' for juxtaposition like 2x).
  *
- * Violations occur when explicit multiplication is used before a variable or parenthesis,
- * where implicit multiplication would be more appropriate.
+ * Violations occur when explicit multiplication is used where implicit multiplication
+ * is possible (possibly with factor reordering). The only case where explicit
+ * multiplication is acceptable is number × number (e.g., 2 × 3), since writing
+ * "23" would be ambiguous.
  *
  * @param answersLatex - Array of LaTeX strings
  * @returns Indices of answers with explicit multiplication violations
  *
  * @example
- * checkProducts(['2\\times x'])   // Returns [0] - should be 2x
- * checkProducts(['2x'])           // Returns [] - implicit is correct
- * checkProducts(['2\\times 3'])   // Returns [] - number x number is OK
- * checkProducts(['2\\cdot x'])    // Returns [0] - should be implicit
- * checkProducts(['a\\times b'])   // Returns [0] - variable x variable should be implicit
- * checkProducts(['(x+1)\\times y']) // Returns [0] - should be implicit
+ * checkProducts(['2\\times x'])     // Returns [0] - should be 2x
+ * checkProducts(['2x'])             // Returns [] - implicit is correct
+ * checkProducts(['2\\times 3'])     // Returns [] - number x number is OK
+ * checkProducts(['2\\cdot x'])      // Returns [0] - should be implicit
+ * checkProducts(['a\\times b'])     // Returns [0] - should be ab
+ * checkProducts(['(x+1)\\times y']) // Returns [0] - should be (x+1)y
+ * checkProducts(['a\\times 2'])     // Returns [0] - should be 2a
+ * checkProducts(['(x+1)\\times 3']) // Returns [0] - should be 3(x+1)
  */
 export function checkProducts(answersLatex: string[]): number[] {
 	const violations: number[] = [];
@@ -271,12 +276,12 @@ export function checkProducts(answersLatex: string[]): number[] {
 /**
  * Check if a single LaTeX string has product notation violations using mathAST
  *
- * A violation occurs when:
- * 1. The multiplication displayStyle is explicit ('dot', 'cross', 'star')
- * 2. The right operand is NOT a pure number (variables, functions, parentheses require implicit mult)
+ * Uses flattenProductShallow to get factors with their styles, then checks
+ * each explicit multiplication. A violation occurs when an explicit × separates
+ * factors that are not both pure numbers.
  *
- * Valid explicit multiplication: 2 × 3 (number × number)
- * Invalid: 2 × x, a × b, (x+1) × y (should be implicit)
+ * Valid explicit multiplication: 2 × 3 (number × number, can't write implicitly)
+ * Invalid: 2 × x, a × b, a × 2, (x+1) × 3 (all can use implicit mult)
  */
 function hasProductViolation(latex: string): boolean {
 	const parseResult = parseLatexSafe(latex);
@@ -288,20 +293,21 @@ function hasProductViolation(latex: string): boolean {
 
 	const ast = parseResult.ast;
 
-	// Find all multiplication nodes
+	// Find all multiplication nodes to check nested products too
 	const multiplicationNodes = findNodes(ast, isMultiplication) as MultiplicationNode[];
 
 	for (const mult of multiplicationNodes) {
-		// Only check explicit multiplications (dot, cross, star)
-		// 'implicit' is the correct style for juxtaposition (2x)
-		if (mult.displayStyle === 'implicit') {
-			continue;
-		}
+		const factors = flattenProductShallow(mult);
 
-		// Explicit multiplication is OK only between two pure numbers
-		// e.g., 2 × 3 is acceptable
-		if (!isPureNumber(mult.right)) {
-			return true; // Violation: explicit mult before variable/expression
+		for (let i = 1; i < factors.length; i++) {
+			// Only check explicit multiplications (dot, cross, star)
+			if (factors[i].style === 'implicit') continue;
+
+			// Explicit × is only needed between two numbers (23 would be ambiguous).
+			// All other cases can use implicit multiplication (possibly with reordering).
+			if (!(isPureNumber(factors[i - 1].factor) && isPureNumber(factors[i].factor))) {
+				return true;
+			}
 		}
 	}
 
@@ -353,47 +359,18 @@ function hasProductViolationRegex(latex: string): boolean {
 		const pos = match.index;
 		const symbolLength = match[0].length;
 
-		// Get what comes after the symbol (skip whitespace)
+		// Get what comes before and after the symbol (skip whitespace)
+		const beforeSymbol = latex.slice(0, pos).replace(/\s*$/, '');
 		const afterSymbol = latex.slice(pos + symbolLength).replace(/^\s*/, '');
 
-		// Check if followed by a letter (variable), opening paren, or LaTeX command for letter
-		if (isFollowedByVariableOrParen(afterSymbol)) {
+		// Only allow explicit multiplication between two pure numbers
+		// e.g., 2 × 3 is OK, but a × 2, 2 × x, (x+1) × 3 are violations
+		const leftIsNumber = /\d$/.test(beforeSymbol);
+		const rightIsNumber = /^\d/.test(afterSymbol);
+
+		if (!(leftIsNumber && rightIsNumber)) {
 			return true;
 		}
-	}
-
-	return false;
-}
-
-/**
- * Check if string starts with a variable or opening parenthesis
- * Used by the regex fallback
- */
-function isFollowedByVariableOrParen(str: string): boolean {
-	if (!str) return false;
-
-	// Check for letter (variable)
-	if (/^[a-zA-Z]/.test(str)) {
-		return true;
-	}
-
-	// Check for opening parenthesis/bracket
-	if (/^[([]/.test(str)) {
-		return true;
-	}
-
-	// Check for \left( or \left[
-	if (/^\\left[([]/.test(str)) {
-		return true;
-	}
-
-	// Check for Greek letters
-	if (
-		/^\\(alpha|beta|gamma|delta|epsilon|zeta|eta|theta|iota|kappa|lambda|mu|nu|xi|pi|rho|sigma|tau|upsilon|phi|chi|psi|omega)/i.test(
-			str
-		)
-	) {
-		return true;
 	}
 
 	return false;

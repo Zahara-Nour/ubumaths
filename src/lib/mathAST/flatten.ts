@@ -33,9 +33,19 @@ export type SignedTerm = {
 export type FlatSum = readonly SignedTerm[];
 
 /**
- * A flattened product as an array of factors
+ * A factor in a flattened product, with the multiplication style that precedes it.
+ * The first factor has style 'implicit' by convention (no preceding operator).
+ * Subsequent factors carry the displayStyle of the × that precedes them.
  */
-export type FlatProduct = readonly MathNode[];
+export type StyledFactor = {
+	readonly style: MultiplicationDisplayStyle;
+	readonly factor: MathNode;
+};
+
+/**
+ * A flattened product as an array of styled factors
+ */
+export type FlatProduct = readonly StyledFactor[];
 
 /**
  * Result of deep sum flattening with nested subLists
@@ -142,32 +152,51 @@ export function flattenSumShallow(node: MathNode): FlatSum {
 // =============================================================================
 
 /**
- * Flattens a multiplication chain into an array of factors (shallow).
- *
- * Stops at delimiter boundaries (delimiters are intangible).
- *
- * Examples:
- * - `a * b * c` → `[a, b, c]`
- * - `a * (b * c)` → `[a, delimiter(b * c)]` (stops at delimiter)
- * - `2 * x * y` → `[2, x, y]`
+ * Internal helper to flatten a product chain with a current style
  *
  * @param node - The node to flatten
+ * @param style - The style to apply to this factor (the × that precedes it)
  * @returns A flat product array
  */
-export function flattenProductShallow(node: MathNode): FlatProduct {
+function flattenProductShallowInternal(
+	node: MathNode,
+	style: MultiplicationDisplayStyle
+): FlatProduct {
 	switch (node.type) {
 		case 'multiplication':
-			// Recursively flatten both sides and concatenate
-			return [...flattenProductShallow(node.left), ...flattenProductShallow(node.right)];
+			// Left child inherits our style (the × that led to this node)
+			// Right child gets the displayStyle of THIS multiplication node
+			return [
+				...flattenProductShallowInternal(node.left, style),
+				...flattenProductShallowInternal(node.right, node.displayStyle)
+			];
 
 		case 'delimiter':
 			// STOP - delimiter is an intangible boundary
-			return [node];
+			return [{ style, factor: node }];
 
 		default:
 			// All other nodes are atomic factors
-			return [node];
+			return [{ style, factor: node }];
 	}
+}
+
+/**
+ * Flattens a multiplication chain into an array of styled factors (shallow).
+ *
+ * Stops at delimiter boundaries (delimiters are intangible).
+ * Each factor carries the multiplication displayStyle that precedes it.
+ * The first factor gets 'implicit' by convention.
+ *
+ * Examples:
+ * - `a × b · c` → `[{implicit, a}, {cross, b}, {dot, c}]`
+ * - `a * (b * c)` → `[{implicit, a}, {style, delimiter(b * c)}]`
+ *
+ * @param node - The node to flatten
+ * @returns A flat product array of styled factors
+ */
+export function flattenProductShallow(node: MathNode): FlatProduct {
+	return flattenProductShallowInternal(node, 'implicit');
 }
 
 // =============================================================================
@@ -344,7 +373,7 @@ export function flattenProductDeep(node: MathNode): DeepFlatProductResult {
 	const subLists = new Map<MathNode, DeepFlatSumResult | DeepFlatProductResult>();
 
 	// Step 3: Process each factor's content recursively
-	for (const factor of factors) {
+	for (const { factor } of factors) {
 		switch (factor.type) {
 			case 'delimiter':
 				// Delimiter content should be processed deeply
@@ -548,40 +577,39 @@ export function unflattenSum(terms: FlatSum): MathNode | null {
 /**
  * Unflattens a flat product back into a MathNode tree with LEFT associativity.
  *
+ * Each StyledFactor carries its own displayStyle. The first factor's style
+ * is ignored (no preceding operator). Subsequent factors use their own style
+ * for the multiplication node that precedes them.
+ *
  * Algorithm:
  * - If empty array, return null
  * - If single factor: return the factor
  * - For multiple factors, build left-to-right:
  *   - Start with first factor
- *   - For each subsequent factor: result = multiply(result, factor, style)
+ *   - For each subsequent factor: result = multiply(result, factor, factor.style)
  *
  * Examples:
- * - [a, b, c] → ((a * b) * c)
- * - [a] → a
+ * - [{implicit,a}, {cross,b}, {dot,c}] → ((a × b) · c)
+ * - [{implicit,a}] → a
  * - [] → null
  *
  * @param factors - The flat product array to unflatten
- * @param style - The multiplication display style (defaults to 'implicit')
  * @returns A MathNode tree or null if empty
  */
-export function unflattenProduct(
-	factors: FlatProduct,
-	style?: MultiplicationDisplayStyle
-): MathNode | null {
+export function unflattenProduct(factors: FlatProduct): MathNode | null {
 	if (factors.length === 0) {
 		return null;
 	}
 
 	if (factors.length === 1) {
-		return factors[0];
+		return factors[0].factor;
 	}
 
 	// Multiple factors: build left-to-right
-	let result: MathNode = factors[0];
-	const displayStyle = style ?? 'implicit';
+	let result: MathNode = factors[0].factor;
 
 	for (let i = 1; i < factors.length; i++) {
-		result = multiply(result, factors[i], displayStyle);
+		result = multiply(result, factors[i].factor, factors[i].style);
 	}
 
 	return result;

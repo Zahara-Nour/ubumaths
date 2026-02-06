@@ -87,10 +87,9 @@ function shuffleTermsDeep(ast: MathNode): MathNode {
  */
 function shuffleFactorsShallow(ast: MathNode): MathNode {
 	if (ast.type !== 'multiplication') return ast;
-	const style = ast.displayStyle;
 	const factors = flattenProductShallow(ast);
 	if (factors.length <= 1) return ast;
-	return unflattenProduct(fisherYatesShuffle([...factors]), style) ?? ast;
+	return unflattenProduct(fisherYatesShuffle([...factors])) ?? ast;
 }
 
 /**
@@ -99,10 +98,9 @@ function shuffleFactorsShallow(ast: MathNode): MathNode {
 function shuffleFactorsDeep(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
 		if (node.type !== 'multiplication') return node;
-		const style = node.displayStyle;
 		const factors = flattenProductShallow(node);
 		if (factors.length <= 1) return node;
-		return unflattenProduct(fisherYatesShuffle([...factors]), style) ?? node;
+		return unflattenProduct(fisherYatesShuffle([...factors])) ?? node;
 	});
 }
 

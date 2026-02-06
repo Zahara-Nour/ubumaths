@@ -29,7 +29,7 @@ import {
 	isMathNodeBinding
 } from './types';
 import type { MathNode } from '../types';
-import type { SignedTerm, FlatProduct } from '../flatten';
+import type { SignedTerm } from '../flatten';
 import { hashMathNode } from '../normal/hash';
 import { checkConstraint } from './constraints';
 import { flattenSumShallow, flattenProductShallow } from '../flatten';
@@ -801,7 +801,7 @@ function matchProductPattern(
  * Tries a specific assignment of factors to patterns
  */
 function tryProductAssignment(
-	factors: FlatProduct,
+	factors: ReturnType<typeof flattenProductShallow>,
 	patterns: readonly Pattern[],
 	assignment: readonly number[],
 	seqPattern: SequencePattern | OptionalSequencePattern | undefined,
@@ -812,7 +812,7 @@ function tryProductAssignment(
 	// Match each pattern to its assigned factor
 	for (let i = 0; i < patterns.length; i++) {
 		const factorIdx = assignment[i];
-		const factor = factors[factorIdx];
+		const { factor } = factors[factorIdx];
 
 		const result = match(patterns[i], factor, currentBindings);
 		if (!result.success) {
@@ -824,7 +824,7 @@ function tryProductAssignment(
 	// Collect remaining factors for sequence
 	if (seqPattern) {
 		const usedSet = new Set(assignment);
-		const remaining = factors.filter((_, i) => !usedSet.has(i));
+		const remaining = factors.filter((_, i) => !usedSet.has(i)).map((sf) => sf.factor);
 
 		// Check sequence constraint on each element
 		if (seqPattern.constraint) {

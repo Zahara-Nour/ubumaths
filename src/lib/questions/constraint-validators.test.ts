@@ -447,6 +447,15 @@ describe('checkProducts', () => {
 			// but 2×A where A is matrix should still be flagged
 			expect(checkProducts(['2\\times A'])).toEqual([0]);
 		});
+
+		it('should flag explicit multiplication with number on right (can reorder to implicit)', () => {
+			// a × 2 can be written as 2a
+			expect(checkProducts(['a\\times 2'])).toEqual([0]);
+			// (x+1) × 3 can be written as 3(x+1)
+			expect(checkProducts(['(x+1)\\times 3'])).toEqual([0]);
+			// x × 5 can be written as 5x
+			expect(checkProducts(['x\\cdot 5'])).toEqual([0]);
+		});
 	});
 });
 

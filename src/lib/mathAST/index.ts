@@ -303,6 +303,7 @@ export type {
 	Sign,
 	SignedTerm,
 	FlatSum,
+	StyledFactor,
 	FlatProduct,
 	DeepFlatSumResult,
 	DeepFlatProductResult,
