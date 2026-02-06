@@ -41,19 +41,19 @@ This document describes the current state of the question system migration and t
 
 ### Warnings Summary
 
-| Category             | Count | Description              | Action                            |
-| -------------------- | ----- | ------------------------ | --------------------------------- |
-| Précision décimale   | 73    | Défaut 2 décimales       | ✅ OK - valeur raisonnable        |
-| Pattern N-digits     | 66    | `$e{...}` → `{{1.0}}`    | ✅ OK - conversion auto           |
-| Couleurs             | 44    | `${get(correct_color)}`  | ✅ OK - géré par système couleurs |
-| Signe + évaluations  | ~150  | `[+_&2_]` converti       | ✅ OK - conversion correcte       |
-| Permutations         | 24    | Permutation de facteurs  | ✅ Redondant avec `products`      |
-| **Images**           | **0** | Toutes migrées           | ✅ 254 images → Supabase Storage  |
-| Custom validation    | 8     | `testAnswers` utilisé    | ✅ OK - déjà implémenté           |
-| Options inconnues    | 13    | Typos (`extraneaous`)    | ✅ OK - ignoré                    |
-| Solutions manquantes | 4     | Variations sans solution | 🔍 À investiguer                  |
+| Category             | Count | Description             | Action                            |
+| -------------------- | ----- | ----------------------- | --------------------------------- |
+| Précision décimale   | 73    | Défaut 2 décimales      | ✅ OK - valeur raisonnable        |
+| Pattern N-digits     | 66    | `$e{...}` → `{{1.0}}`   | ✅ OK - conversion auto           |
+| Couleurs             | 44    | `${get(correct_color)}` | ✅ OK - géré par système couleurs |
+| Signe + évaluations  | ~150  | `[+_&2_]` converti      | ✅ OK - conversion correcte       |
+| Permutations         | 24    | Permutation de facteurs | ✅ Redondant avec `products`      |
+| **Images**           | **0** | Toutes migrées          | ✅ 254 images → Supabase Storage  |
+| Custom validation    | 8     | `testAnswers` utilisé   | ✅ OK - déjà implémenté           |
+| Options inconnues    | 13    | Typos (`extraneaous`)   | ✅ OK - ignoré                    |
+| Solutions manquantes | 1     | Flash card #617         | ✅ OK - flash card sans input     |
 
-**Conclusion** : ~210 warnings dont ~4 necessitent attention (solutions manquantes). Toutes les options de validation (45/45) sont mappees et implementees.
+**Conclusion** : ~210 warnings, tous resolus. 242 questions sans `solutionss` utilisent l'expression comme solution (comportement normal). La seule question sans solution ni expression (#617) est un flash card. Toutes les options de validation (45/45) sont mappees et implementees.
 
 ---
 
