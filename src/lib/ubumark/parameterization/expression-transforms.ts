@@ -125,28 +125,6 @@ function removeNullTermsFromAST(ast: MathNode): MathNode {
 }
 
 // ============================================================================
-// LATEX POST-PROCESSING
-// ============================================================================
-
-/**
- * Post-process LaTeX output based on display options
- */
-function postProcessLatex(latex: string, options: Required<DisplayOptions>): string {
-	let result = latex;
-
-	if (options.addSpaces) {
-		// Add thin spaces around binary operators only (not unary like -3)
-		// Pattern: non-space char followed by +/- followed by non-space char
-		result = result.replace(/(\S)([+-])(\S)/g, '$1 $2 $3');
-	} else {
-		// Remove any extra spaces
-		result = result.replace(/\s+/g, '');
-	}
-
-	return result;
-}
-
-// ============================================================================
 // MAIN TRANSFORMATION FUNCTION
 // ============================================================================
 
@@ -158,7 +136,6 @@ function postProcessLatex(latex: string, options: Required<DisplayOptions>): str
  * 2. Apply structural transforms (shuffle terms/factors)
  * 3. Apply removeNullTerms / removeUnnecessaryBrackets
  * 4. Serialize back to LaTeX
- * 5. Post-process for formatting (addSpaces, etc.)
  */
 export function applyDisplayTransforms(latex: string, options: Required<DisplayOptions>): string {
 	// Guard: empty or whitespace-only input
@@ -200,12 +177,7 @@ export function applyDisplayTransforms(latex: string, options: Required<DisplayO
 		}
 
 		// Step 4: Serialize back to LaTeX
-		let resultLatex = toLatex(ast);
-
-		// Step 5: Post-process for formatting options
-		resultLatex = postProcessLatex(resultLatex, options);
-
-		return resultLatex;
+		return toLatex(ast);
 	} catch {
 		// If parsing or transformation fails, return original latex unchanged
 		return latex;

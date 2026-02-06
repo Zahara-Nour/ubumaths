@@ -1064,7 +1064,7 @@ function convertOptions(
 			// LATEX FORMATTING OPTIONS → defaultDisplayOptions
 			// ================================================================
 			case 'exp-no-spaces':
-				displayOptions.addSpaces = false;
+				displayOptions.removeSpaces = true;
 				_mappedCount++;
 				break;
 			// ================================================================

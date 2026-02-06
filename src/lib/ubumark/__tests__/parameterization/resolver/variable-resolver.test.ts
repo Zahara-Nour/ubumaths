@@ -805,6 +805,73 @@ describe('resolveVariables', () => {
 			expect(resolved[2].displayValue).toBe('5');
 		});
 
+		it('should apply removeSpaces to integer (insert {} between digits)', () => {
+			const variables: Variable[] = [
+				{
+					name: 'n',
+					expression: '12345',
+					displayOptions: { removeSpaces: true }
+				}
+			];
+			const resolved = resolveVariables(variables);
+			expect(resolved[0].value).toBe('12345');
+			expect(resolved[0].displayValue).toBe('1{}2{}3{}4{}5');
+		});
+
+		it('should apply removeSpaces to decimal (convert . to {,} and insert {})', () => {
+			const variables: Variable[] = [
+				{
+					name: 'n',
+					expression: '3.14',
+					displayOptions: { removeSpaces: true }
+				}
+			];
+			const resolved = resolveVariables(variables);
+			expect(resolved[0].value).toBe('3.14');
+			// toFrenchDecimal({formatSpaces:false}) converts . to {,}, then {} between digits
+			expect(resolved[0].displayValue).toBe('3{,}1{}4');
+		});
+
+		it('should apply removeSpaces to large decimal', () => {
+			const variables: Variable[] = [
+				{
+					name: 'n',
+					expression: '12345.6789',
+					displayOptions: { removeSpaces: true }
+				}
+			];
+			const resolved = resolveVariables(variables);
+			expect(resolved[0].value).toBe('12345.6789');
+			expect(resolved[0].displayValue).toBe('1{}2{}3{}4{}5{,}6{}7{}8{}9');
+		});
+
+		it('should not set displayValue for single digit with removeSpaces', () => {
+			const variables: Variable[] = [
+				{
+					name: 'n',
+					expression: '5',
+					displayOptions: { removeSpaces: true }
+				}
+			];
+			const resolved = resolveVariables(variables);
+			// Single digit: toFrenchDecimal doesn't change it, {} not needed
+			expect(resolved[0].displayValue).toBeUndefined();
+		});
+
+		it('should combine removeSpaces with structural transforms', () => {
+			const variables: Variable[] = [
+				{
+					name: 'expr',
+					expression: 'x+0',
+					displayOptions: { removeNullTerms: true, removeSpaces: true }
+				}
+			];
+			const resolved = resolveVariables(variables);
+			// removeNullTerms: x+0 → x, then removeSpaces on 'x' (no digits, no change)
+			expect(resolved[0].value).toBe('x+0');
+			expect(resolved[0].displayValue).toBe('x');
+		});
+
 		it('should handle shuffleTermsAndFactors convenience option', () => {
 			const variables: Variable[] = [
 				{

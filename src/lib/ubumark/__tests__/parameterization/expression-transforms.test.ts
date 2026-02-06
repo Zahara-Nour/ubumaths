@@ -118,10 +118,7 @@ describe('applyDisplayTransforms', () => {
 			randomSpy.mockReturnValue(0.99);
 
 			const latex = 'a-b+c';
-			const result = applyDisplayTransforms(
-				latex,
-				makeOptions({ shuffleTerms: true, addSpaces: false })
-			);
+			const result = applyDisplayTransforms(latex, makeOptions({ shuffleTerms: true }));
 
 			// All terms should still be present
 			expect(result).toMatch(/a/);
@@ -188,10 +185,7 @@ describe('applyDisplayTransforms', () => {
 			randomSpy.mockReturnValue(0.5);
 
 			const latex = 'a \\cdot b \\cdot c';
-			const result = applyDisplayTransforms(
-				latex,
-				makeOptions({ shuffleFactors: true, addSpaces: false })
-			);
+			const result = applyDisplayTransforms(latex, makeOptions({ shuffleFactors: true }));
 
 			// Should preserve the cdot style
 			expect(result).toMatch(/a/);
@@ -283,10 +277,7 @@ describe('applyDisplayTransforms', () => {
 
 		it('should remove zero in nested expression (deep)', () => {
 			const latex = '(x+0)+y';
-			const result = applyDisplayTransforms(
-				latex,
-				makeOptions({ removeNullTerms: true, addSpaces: false })
-			);
+			const result = applyDisplayTransforms(latex, makeOptions({ removeNullTerms: true }));
 
 			expect(result).toMatch(/x/);
 			expect(result).toMatch(/y/);
@@ -319,28 +310,6 @@ describe('applyDisplayTransforms', () => {
 			expect(result).toMatch(/a/);
 			expect(result).toMatch(/b/);
 			expect(result).toMatch(/c/);
-		});
-	});
-
-	// ============================================================================
-	// ADD SPACES
-	// ============================================================================
-
-	describe('addSpaces', () => {
-		it('should add spaces around operators when enabled', () => {
-			const latex = 'a+b';
-			const result = applyDisplayTransforms(latex, makeOptions({ addSpaces: true }));
-
-			// Should have spaces around +
-			expect(result).toMatch(/\s\+\s/);
-		});
-
-		it('should remove spaces when disabled', () => {
-			const latex = 'a + b';
-			const result = applyDisplayTransforms(latex, makeOptions({ addSpaces: false }));
-
-			// Should not have spaces
-			expect(result).not.toMatch(/\s/);
 		});
 	});
 

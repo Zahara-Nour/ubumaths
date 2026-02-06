@@ -137,7 +137,7 @@ Ces options controlent le formatage des expressions **avant** leur affichage a l
 ### Cascade des defauts
 
 ```
-GLOBAL (hardcode)           → addSpaces: true, reste: false/OFF
+GLOBAL (hardcode)           → removeSpaces: false, reste: false/OFF
   ↓ override partiel
 TEMPLATE (defaultDisplayOptions)
   ↓ override partiel
@@ -146,16 +146,16 @@ VARIABLE (variable.displayOptions)
 
 ### Mapping complet
 
-| Option ancienne                  | Nouveau chemin                             | Valeur  | Utilisation |
-| -------------------------------- | ------------------------------------------ | ------- | ----------- |
-| `shuffle-terms`                  | `displayOptions.shuffleTerms`              | `true`  | 3 (0.47%)   |
-| `shuffle-factors`                | `displayOptions.shuffleFactors`            | `true`  | 0           |
-| `shuffle-terms-and-factors`      | `displayOptions.shuffleTermsAndFactors`    | `true`  | 0           |
-| `shallow-shuffle-terms`          | `displayOptions.shallowShuffleTerms`       | `true`  | 0           |
-| `shallow-shuffle-factors`        | `displayOptions.shallowShuffleFactors`     | `true`  | 0           |
-| `remove-null-terms`              | `displayOptions.removeNullTerms`           | `true`  | 11 (1.74%)  |
-| `exp-no-spaces`                  | `displayOptions.addSpaces`                 | `false` | 3 (0.47%)   |
-| `exp-remove-unecessary-brackets` | `displayOptions.removeUnnecessaryBrackets` | `true`  | (ignore)    |
+| Option ancienne                  | Nouveau chemin                             | Valeur | Utilisation |
+| -------------------------------- | ------------------------------------------ | ------ | ----------- |
+| `shuffle-terms`                  | `displayOptions.shuffleTerms`              | `true` | 3 (0.47%)   |
+| `shuffle-factors`                | `displayOptions.shuffleFactors`            | `true` | 0           |
+| `shuffle-terms-and-factors`      | `displayOptions.shuffleTermsAndFactors`    | `true` | 0           |
+| `shallow-shuffle-terms`          | `displayOptions.shallowShuffleTerms`       | `true` | 0           |
+| `shallow-shuffle-factors`        | `displayOptions.shallowShuffleFactors`     | `true` | 0           |
+| `remove-null-terms`              | `displayOptions.removeNullTerms`           | `true` | 11 (1.74%)  |
+| `exp-no-spaces`                  | `displayOptions.removeSpaces`              | `true` | 3 (0.47%)   |
+| `exp-remove-unecessary-brackets` | `displayOptions.removeUnnecessaryBrackets` | `true` | (ignore)    |
 
 ---
 
