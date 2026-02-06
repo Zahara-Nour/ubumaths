@@ -1024,7 +1024,8 @@ function convertOptions(
 				} else {
 					// Multi-answer question where order doesn't matter
 					// (e.g., absolute value equations, polynomial roots)
-					warnings.push(`TODO: ${option} - answer order validation not yet implemented`);
+					options.solutionPool = true;
+					_mappedCount++;
 				}
 				break;
 			case 'disallow-factors-permutation':
@@ -1051,8 +1052,10 @@ function convertOptions(
 				_mappedCount++;
 				break;
 			case 'one-single-form-solution':
-				// TODO: Requires exact form match (strictlyEquals)
-				warnings.push(`TODO: ${option} - strict form validation not yet implemented`);
+				// Requires structural match (strictlyEquals in old system).
+				// The solution "0-&1" must be written exactly as 0 minus something.
+				requiredForm = { pattern: '0 - a' };
+				_mappedCount++;
 				break;
 
 			// ================================================================

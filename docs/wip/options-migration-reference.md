@@ -133,12 +133,13 @@ ordre" (ex: `a3`, `\sqrt{2}3` sont rejetes — seul `3a`, `3\sqrt{2}` sont accep
 | `penalty-for-terms-permutation`             | Ignore (0 questions)        | 0           |
 | `penalty-for-terms-and-factors-permutation` | Ignore (0 questions)        | 0           |
 
-### Options TODO (non implementees)
+### Options implementees (validation avancee)
 
-| Option ancienne                 | Mapping prevu | Description                                 | Utilisation |
-| ------------------------------- | ------------- | ------------------------------------------- | ----------- |
-| `solutions-order-not-important` | TODO          | Accepter reponses dans n'importe quel ordre | 5 (0.79%)   |
-| `one-single-form-solution`      | TODO          | Forme exacte obligatoire (strictlyEquals)   | 1 (0.16%)   |
+| Option ancienne                 | Nouveau chemin                                     | Description                                             | Utilisation |
+| ------------------------------- | -------------------------------------------------- | ------------------------------------------------------- | ----------- |
+| `solutions-order-not-important` | `options.solutionPool = true` (4 questions)        | Matching par pool : chaque reponse pioche dans le pool  | 5 (0.79%)   |
+| `solutions-order-not-important` | `requiredForm` + pattern (1 question avec formats) | Decomposition : pattern produit + equivalence numerique | (inclus)    |
+| `one-single-form-solution`      | `requiredForm: { pattern: '0 - a' }`               | Forme exacte : soustraction a partir de 0               | 1 (0.16%)   |
 
 ---
 
@@ -212,20 +213,16 @@ NOUVEAU SYSTEME (UbuMaths):
 
 ### Statistiques
 
-| Categorie   | Options | Implementees | TODO  | Ignorees |
-| ----------- | ------- | ------------ | ----- | -------- |
-| Contraintes | 23      | 23           | 0     | 0        |
-| Validation  | 9       | 7            | 2     | 0        |
-| Affichage   | 8       | 8            | 0     | 0        |
-| Ignorees    | 4       | -            | -     | 4        |
-| **Total**   | **45**  | **38**       | **2** | **4**    |
+| Categorie   | Options | Implementees | Ignorees |
+| ----------- | ------- | ------------ | -------- |
+| Contraintes | 23      | 23           | 0        |
+| Validation  | 9       | 9            | 0        |
+| Affichage   | 8       | 8            | 0        |
+| Ignorees    | 4       | -            | 4        |
+| **Total**   | **45**  | **40**       | **4**    |
 
-### Options TODO par priorite
-
-| Option                          | Questions impactees | Priorite |
-| ------------------------------- | ------------------- | -------- |
-| `solutions-order-not-important` | 5 (0.79%)           | Moyenne  |
-| `one-single-form-solution`      | 1 (0.16%)           | Basse    |
+> **Toutes les options sont maintenant mappees.** Le validateur `solutionPool`
+> reste a implementer dans `answer-validator.ts`.
 
 ### Fichiers de reference
 
