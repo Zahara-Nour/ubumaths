@@ -1206,10 +1206,14 @@ class PrattParser {
 			return false;
 		}
 
+		// NUMBER cannot start implicit multiplication (prevents x2, (a)2, \sqrt{2}3)
+		if (token.type === 'NUMBER') {
+			return false;
+		}
+
 		// Tokens that CAN trigger implicit multiplication:
-		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt, \begin, \imaginaryI, \exponentialE)
+		// LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt, \begin, \imaginaryI, \exponentialE)
 		return (
-			token.type === 'NUMBER' ||
 			token.type === 'LETTER' ||
 			token.type === 'LPAREN' ||
 			(token.type === 'COMMAND' &&
