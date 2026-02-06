@@ -24,28 +24,12 @@ import { unitsAreCompatible } from './operations';
  */
 export interface ValidationOptions {
 	/**
-	 * Require exact unit match (no conversion allowed)
-	 *
-	 * When true:
-	 * - User must provide the exact same unit as expected
-	 * - "5 km" will NOT match "5000 m" (even though values are equivalent)
-	 * - Useful when testing unit conversion skills
-	 *
-	 * When false (default):
-	 * - Any compatible unit is accepted
-	 * - "5 km" will match "5000 m"
-	 *
-	 * @default false
-	 */
-	requireExactUnit?: boolean;
-
-	/**
 	 * Require matching unit symbols (same representation)
 	 *
 	 * When true:
 	 * - User must use the same unit symbol as expected
 	 * - "5 km" will NOT match "5 km" if symbols differ in any way
-	 * - Less strict than requireExactUnit (allows coefficient differences)
+	 * - Less strict than exact unit matching (allows coefficient differences)
 	 *
 	 * When false (default):
 	 * - Any compatible unit with correct conversion is accepted
@@ -111,7 +95,7 @@ export interface ValidationResult {
 	 * Helps identify what aspect of the answer was wrong:
 	 * - 'invalid_input': Could not parse user's answer
 	 * - 'incompatible_units': Units have different dimensions (e.g., m vs kg)
-	 * - 'wrong_unit': Unit is incorrect (when requireExactUnit or requireSameSymbol)
+	 * - 'wrong_unit': Unit is incorrect (when requireSameSymbol is set)
 	 * - 'wrong_value': Value is incorrect (unit is correct or compatible)
 	 * - 'wrong_both': Both value and unit are incorrect
 	 */
@@ -178,12 +162,12 @@ const DEFAULT_MESSAGES = {
  * // { isCorrect: true, feedback: null, ...}
  * ```
  *
- * @example Require exact unit
+ * @example Require same symbol
  * ```typescript
  * validateQuantityAnswer(
  *   '5000\\unit{m}',
  *   '5\\unit{km}',
- *   { requireExactUnit: true}
+ *   { requireSameSymbol: true}
  * )
  * // { isCorrect: false, errorType: 'wrong_unit', feedback: 'Unité incorrecte.', ...}
  * ```
@@ -271,26 +255,6 @@ export function validateQuantityAnswer(
 		};
 	}
 
-	// Check requireExactUnit - units must match exactly (including coefficient)
-	if (options.requireExactUnit) {
-		const unitsMatch = checkExactUnitMatch(userQuantity.unit, expectedQuantity.unit);
-		if (!unitsMatch) {
-			return {
-				isCorrect: false,
-				feedback: options.messages?.incorrectUnit ?? DEFAULT_MESSAGES.incorrectUnit,
-				errorType: 'wrong_unit',
-				parsed: {
-					value: typeof userQuantity.value === 'number' ? userQuantity.value : null,
-					unit: userUnitStr
-				},
-				expected: {
-					value: typeof expectedQuantity.value === 'number' ? expectedQuantity.value : null,
-					unit: expectedUnitStr
-				}
-			};
-		}
-	}
-
 	// Check requireSameSymbol - unit symbols must match
 	if (options.requireSameSymbol) {
 		const symbolsMatch = checkSameSymbol(userQuantity.unit, expectedQuantity.unit);
@@ -367,7 +331,7 @@ export function validateQuantityAnswer(
  * @param expectedUnit - Expected unit
  * @returns True if units are exactly the same
  */
-function checkExactUnitMatch(
+export function checkExactUnitMatch(
 	userUnit: { components: ReadonlyMap<string, number>; coefficient: number },
 	expectedUnit: { components: ReadonlyMap<string, number>; coefficient: number }
 ): boolean {
