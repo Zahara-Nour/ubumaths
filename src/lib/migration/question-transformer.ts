@@ -313,6 +313,84 @@ export function numberToLetterName(num: number): string {
 }
 
 /**
+ * Decompose a complex digits: expression into intermediate variables.
+ *
+ * When a digits: decimal expression has ranges in its parts (e.g., "digits:0..2.1..2"),
+ * the "." separator is ambiguous with ".." ranges. We split it into intermediate
+ * variables that each resolve to a single digit count, then reference them with
+ * the standard "digits:intVar.decVar" syntax.
+ *
+ * @example
+ * "digits:0..2.1..2" becomes:
+ *   { name: "b_int", expression: "0..2" }
+ *   { name: "b_dec", expression: "1..2" }
+ *   { name: "b", expression: "digits:b_int.b_dec" }
+ *
+ * @example
+ * "digits:0..4-a.1..4" becomes:
+ *   { name: "b_int", expression: "eval:4-a" } (with range 0..)
+ *   → actually: { name: "b_int", expression: "0..eval:4-a" }
+ *   Hmm, that doesn't work either. Let's use the range directly.
+ *
+ * @returns Array of variables (intermediates + final), or null if no decomposition needed
+ */
+function decomposeComplexDigits(varName: string, expression: string): QuestionVariable[] | null {
+	// Only handle digits: expressions
+	if (!expression.startsWith('digits:')) return null;
+
+	const spec = expression.slice('digits:'.length);
+
+	// Check if this is a decimal format (has a separator between int/dec parts)
+	// Simple cases like "digits:a" or "digits:2" or "digits:1..3" don't need decomposition
+	// Only decimal format "digits:X.Y" needs checking
+
+	// Find the separator "." that divides int digits from dec digits
+	// Must not confuse with ".." (range separator)
+	// Strategy: try to split into exactly 2 parts on "." that is NOT part of ".."
+	const parts = splitDigitsParts(spec);
+	if (!parts) return null;
+
+	const [beforePart, afterPart] = parts;
+
+	// If neither part contains ".." (ranges), no decomposition needed
+	// The standard "digits:2.3" or "digits:a.b" syntax works fine
+	if (!beforePart.includes('..') && !afterPart.includes('..')) return null;
+
+	// Create intermediate variables for the range parts
+	const result: QuestionVariable[] = [];
+
+	const intVarName = `${varName}_int`;
+	const decVarName = `${varName}_dec`;
+
+	result.push({ name: intVarName, expression: beforePart });
+	result.push({ name: decVarName, expression: afterPart });
+	result.push({ name: varName, expression: `digits:${intVarName}.${decVarName}` });
+
+	return result;
+}
+
+/**
+ * Split a digits spec "X.Y" into [X, Y] where "." separates int/dec parts.
+ * Returns null if this is not a decimal format (no valid "." separator found).
+ *
+ * Must distinguish "." (decimal separator) from ".." (range separator).
+ * Scans for "." that is NOT preceded or followed by another ".".
+ */
+function splitDigitsParts(spec: string): [string, string] | null {
+	for (let i = 0; i < spec.length; i++) {
+		if (spec[i] === '.') {
+			// Check it's a single ".", not part of ".."
+			const prevIsDot = i > 0 && spec[i - 1] === '.';
+			const nextIsDot = i < spec.length - 1 && spec[i + 1] === '.';
+			if (!prevIsDot && !nextIsDot) {
+				return [spec.substring(0, i), spec.substring(i + 1)];
+			}
+		}
+	}
+	return null;
+}
+
+/**
  * Convert old variable definitions to new format
  */
 function convertVariables(
@@ -353,10 +431,17 @@ function convertVariables(
 			// {{a}}^{{b}} → a^b (resolver handles bare name substitution)
 			const simplified = toBareVariableSyntax(toSimplifiedSyntax(afterTinyCAS));
 
-			variables.push({
-				name,
-				expression: simplified
-			});
+			// Handle complex digits: expressions where parts contain ranges (..)
+			// e.g., "digits:0..2.1..2" → split into intermediate variables
+			const digitsDecomposed = decomposeComplexDigits(name, simplified);
+			if (digitsDecomposed) {
+				variables.push(...digitsDecomposed);
+			} else {
+				variables.push({
+					name,
+					expression: simplified
+				});
+			}
 		}
 	}
 

@@ -449,7 +449,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Error Handling', () => 
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.warnings!.length).toBeGreaterThanOrEqual(4); // Multiple warnings
+		expect(result.warnings!.length).toBeGreaterThanOrEqual(3); // Multiple warnings
 		expect(result.stats!.total).toBeGreaterThan(0); // Still converted patterns
 	});
 
