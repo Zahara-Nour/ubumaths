@@ -1309,7 +1309,7 @@ describe('Question Transformer', () => {
 			expect(result.template?.defaultDisplayOptions?.addSpaces).toBe(false);
 		});
 
-		it('should map exp-allow-unecessary-zeros to defaultDisplayOptions.keepUnnecessaryZeros', () => {
+		it('should silently ignore exp-allow-unecessary-zeros (dead code in old TinyMath)', () => {
 			const oldQuestion: QuestionBase = {
 				description: 'Test keep zeros',
 				enounces: ['Calculer :'],
@@ -1324,7 +1324,8 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.defaultDisplayOptions?.keepUnnecessaryZeros).toBe(true);
+			// Option is silently ignored - no display options created for this alone
+			expect(result.template?.defaultDisplayOptions).toBeUndefined();
 		});
 
 		it('should map multiple display options together', () => {

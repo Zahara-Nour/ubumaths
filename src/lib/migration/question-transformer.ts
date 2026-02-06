@@ -1069,14 +1069,10 @@ function convertOptions(
 				displayOptions.addSpaces = false;
 				_mappedCount++;
 				break;
-			case 'exp-allow-unecessary-zeros':
-				displayOptions.keepUnnecessaryZeros = true;
-				_mappedCount++;
-				break;
-
 			// ================================================================
 			// DISPLAY OPTIONS - Silently ignored (cosmetic only)
 			// ================================================================
+			case 'exp-allow-unecessary-zeros':
 			case 'enounce-no-spaces':
 			case 'exp-remove-unecessary-brackets':
 				// Display formatting options - cosmetic only, safe to ignore

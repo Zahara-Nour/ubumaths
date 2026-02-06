@@ -228,13 +228,12 @@ Ces options controlent le formatage des expressions **avant** leur affichage a l
 
 ### 3.3 Formatage LaTeX
 
-| Option ancienne              | Mapping                                      | Description                         |
-| ---------------------------- | -------------------------------------------- | ----------------------------------- |
-| `exp-no-spaces`              | `displayOptions.addSpaces = false`           | Pas d'espaces autour des operateurs |
-| `exp-allow-unecessary-zeros` | `displayOptions.keepUnnecessaryZeros = true` | Garder les zeros inutiles (`1.00`)  |
+| Option ancienne | Mapping                            | Description                         |
+| --------------- | ---------------------------------- | ----------------------------------- |
+| `exp-no-spaces` | `displayOptions.addSpaces = false` | Pas d'espaces autour des operateurs |
 
 **Statut** : Implemente
-**Utilisation** : `exp-no-spaces` 3 questions (0.47%), `exp-allow-unecessary-zeros` 1 question (0.16%)
+**Utilisation** : `exp-no-spaces` 3 questions (0.47%)
 
 ---
 
@@ -242,13 +241,14 @@ Ces options controlent le formatage des expressions **avant** leur affichage a l
 
 Ces options n'ont pas d'equivalent dans le nouveau systeme et sont ignorees sans warning.
 
-| Option ancienne                  | Raison de l'ignorance                                           |
-| -------------------------------- | --------------------------------------------------------------- |
-| `enounce-no-spaces`              | Cosmetique, pas necessaire dans le nouveau systeme de rendu     |
-| `exp-remove-unecessary-brackets` | Cosmetique, gere automatiquement par le rendu LaTeX             |
-| `allow-same-expression`          | Legacy : autorisait des expressions identiques entre variations |
-| `allow-same-enounce`             | Legacy : autorisait des enonces identiques entre variations     |
-| `multiples`                      | Legacy : option de generation, pas necessaire                   |
+| Option ancienne                  | Raison de l'ignorance                                                              |
+| -------------------------------- | ---------------------------------------------------------------------------------- |
+| `enounce-no-spaces`              | Cosmetique, pas necessaire dans le nouveau systeme de rendu                        |
+| `exp-remove-unecessary-brackets` | Cosmetique, gere automatiquement par le rendu LaTeX                                |
+| `exp-allow-unecessary-zeros`     | Code mort dans TinyMath (logique commentee), mathAST preserve les zeros nativement |
+| `allow-same-expression`          | Legacy : autorisait des expressions identiques entre variations                    |
+| `allow-same-enounce`             | Legacy : autorisait des enonces identiques entre variations                        |
+| `multiples`                      | Legacy : option de generation, pas necessaire                                      |
 
 ---
 
@@ -260,9 +260,9 @@ Ces options n'ont pas d'equivalent dans le nouveau systeme et sont ignorees sans
 | ----------- | ------- | ------------ | ----- | -------- |
 | Contraintes | 21      | 21           | 0     | 0        |
 | Validation  | 11      | 3            | 8     | 0        |
-| Affichage   | 8       | 8            | 0     | 0        |
-| Ignorees    | 5       | -            | -     | 5        |
-| **Total**   | **45**  | **32**       | **8** | **5**    |
+| Affichage   | 7       | 7            | 0     | 0        |
+| Ignorees    | 6       | -            | -     | 6        |
+| **Total**   | **45**  | **31**       | **8** | **6**    |
 
 ### Options TODO : impact
 

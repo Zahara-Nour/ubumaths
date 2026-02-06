@@ -27,10 +27,6 @@ describe('GLOBAL_DISPLAY_DEFAULTS', () => {
 		expect(GLOBAL_DISPLAY_DEFAULTS.addSpaces).toBe(true);
 	});
 
-	it('should have keepUnnecessaryZeros disabled by default', () => {
-		expect(GLOBAL_DISPLAY_DEFAULTS.keepUnnecessaryZeros).toBe(false);
-	});
-
 	it('should be a complete Required<DisplayOptions>', () => {
 		// All keys must be defined
 		const keys: (keyof DisplayOptions)[] = [
@@ -41,8 +37,7 @@ describe('GLOBAL_DISPLAY_DEFAULTS', () => {
 			'shallowShuffleFactors',
 			'removeNullTerms',
 			'removeUnnecessaryBrackets',
-			'addSpaces',
-			'keepUnnecessaryZeros'
+			'addSpaces'
 		];
 
 		for (const key of keys) {
@@ -248,11 +243,6 @@ describe('resolveDisplayOptions', () => {
 	});
 
 	describe('LaTeX formatting options', () => {
-		it('should support keepUnnecessaryZeros', () => {
-			const result = resolveDisplayOptions({ keepUnnecessaryZeros: true }, undefined);
-			expect(result.keepUnnecessaryZeros).toBe(true);
-		});
-
 		it('should allow variable to override template addSpaces', () => {
 			const result = resolveDisplayOptions({ addSpaces: false }, { addSpaces: true });
 			expect(result.addSpaces).toBe(true);
@@ -282,8 +272,7 @@ describe('resolveDisplayOptions', () => {
 				shallowShuffleFactors: true,
 				removeNullTerms: true,
 				removeUnnecessaryBrackets: true,
-				addSpaces: false,
-				keepUnnecessaryZeros: true
+				addSpaces: false
 			};
 
 			const result = resolveDisplayOptions(allOptions, undefined);
@@ -296,7 +285,6 @@ describe('resolveDisplayOptions', () => {
 			expect(result.removeNullTerms).toBe(true);
 			expect(result.removeUnnecessaryBrackets).toBe(true);
 			expect(result.addSpaces).toBe(false);
-			expect(result.keepUnnecessaryZeros).toBe(true);
 		});
 	});
 });
