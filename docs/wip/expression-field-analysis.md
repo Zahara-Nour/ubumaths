@@ -70,7 +70,7 @@ interface QuestionBase {
 4. **Options de formatage LaTeX** :
 
    ```typescript
-   // generateQuestion.ts:661-666
+   // generateQuestion.ts:661-666 (ANCIEN CODE - remplacé par displayOptions.removeSpaces)
    expression_latex = math(expression).toLatex({
    	addSpaces: !options.includes('exp-no-spaces'),
    	keepUnecessaryZeros: options.includes('exp-allow-unecessary-zeros')
@@ -204,8 +204,8 @@ variables: [
 		expression: '{{a}} + {{b}} + {{c}}',
 		displayOptions: {
 			shuffleTerms: true,
-			addSpaces: true,
-			removeUnnecessaryZeros: true
+			removeSpaces: false,
+			removeUnnecessaryBrackets: true
 		}
 	}
 ];
@@ -429,7 +429,7 @@ const variables = [
 ];
 
 // Template-level defaults (optionnel)
-const templateDefaults: DisplayOptions = { addSpaces: true };
+const templateDefaults: DisplayOptions = { removeSpaces: false };
 
 // Résolution
 const resolved = resolveVariables(variables, seed, templateDefaults);
