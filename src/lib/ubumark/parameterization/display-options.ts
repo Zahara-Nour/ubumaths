@@ -97,13 +97,6 @@ export interface DisplayOptions {
 	 * @default true
 	 */
 	addSpaces?: boolean;
-
-	/**
-	 * Keep unnecessary zeros (3.00 instead of 3)
-	 *
-	 * Useful for preserving decimal precision in display.
-	 */
-	keepUnnecessaryZeros?: boolean;
 }
 
 // ============================================================================
@@ -127,8 +120,7 @@ export const GLOBAL_DISPLAY_DEFAULTS: Required<DisplayOptions> = {
 	removeUnnecessaryBrackets: false,
 
 	// LaTeX formatting
-	addSpaces: true,
-	keepUnnecessaryZeros: false
+	addSpaces: true
 };
 
 // ============================================================================

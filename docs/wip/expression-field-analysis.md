@@ -263,7 +263,6 @@ interface QuestionVariable {
 
 		// Formatage LaTeX
 		addSpaces?: boolean; // Défaut: true
-		keepUnnecessaryZeros?: boolean; // Défaut: false
 	};
 }
 ```
