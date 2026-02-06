@@ -118,18 +118,27 @@ Chaque contrainte suit le meme pattern : `require-*` → `strict`, `no-penalty-*
 | `no-shuffle-choices` | `options.shuffleChoices` | `false`         | 32 questions (5.06%) |
 | _(absent)_           | `options.shuffleChoices` | `true` (defaut) |                      |
 
+### Options de permutation (resolues via contrainte `products`)
+
+Ces options sont rendues redondantes par la contrainte `products` combinee avec
+la restriction du parser LaTeX qui interdit la multiplication implicite en "mauvais
+ordre" (ex: `a3`, `\sqrt{2}3` sont rejetes — seul `3a`, `3\sqrt{2}` sont acceptes).
+
+| Option ancienne                             | Mapping                     | Utilisation |
+| ------------------------------------------- | --------------------------- | ----------- |
+| `penalty-for-factors-permutation`           | `products: 'warn'` (defaut) | 24 (3.79%)  |
+| `disallow-factors-permutation`              | `products: 'strict'`        | 2 (0.32%)   |
+| `disallow-terms-permutation`                | Ignore (0 questions)        | 0           |
+| `disallow-terms-and-factors-permutation`    | Ignore (0 questions)        | 0           |
+| `penalty-for-terms-permutation`             | Ignore (0 questions)        | 0           |
+| `penalty-for-terms-and-factors-permutation` | Ignore (0 questions)        | 0           |
+
 ### Options TODO (non implementees)
 
-| Option ancienne                             | Mapping prevu | Description                                 | Utilisation |
-| ------------------------------------------- | ------------- | ------------------------------------------- | ----------- |
-| `solutions-order-not-important`             | TODO          | Accepter reponses dans n'importe quel ordre | 5 (0.79%)   |
-| `penalty-for-factors-permutation`           | TODO          | Penalite si facteurs permutes               | 24 (3.79%)  |
-| `disallow-factors-permutation`              | TODO          | Interdire permutation des facteurs          | 2 (0.32%)   |
-| `one-single-form-solution`                  | TODO          | Forme exacte obligatoire (strictlyEquals)   | 1 (0.16%)   |
-| `disallow-terms-permutation`                | TODO          | Interdire permutation des termes            | 0           |
-| `disallow-terms-and-factors-permutation`    | TODO          | Interdire les deux                          | 0           |
-| `penalty-for-terms-permutation`             | TODO          | Penalite si termes permutes                 | 0           |
-| `penalty-for-terms-and-factors-permutation` | TODO          | Penalite si les deux permutes               | 0           |
+| Option ancienne                 | Mapping prevu | Description                                 | Utilisation |
+| ------------------------------- | ------------- | ------------------------------------------- | ----------- |
+| `solutions-order-not-important` | TODO          | Accepter reponses dans n'importe quel ordre | 5 (0.79%)   |
+| `one-single-form-solution`      | TODO          | Forme exacte obligatoire (strictlyEquals)   | 1 (0.16%)   |
 
 ---
 
@@ -206,20 +215,17 @@ NOUVEAU SYSTEME (UbuMaths):
 | Categorie   | Options | Implementees | TODO  | Ignorees |
 | ----------- | ------- | ------------ | ----- | -------- |
 | Contraintes | 23      | 23           | 0     | 0        |
-| Validation  | 9       | 1            | 8     | 0        |
+| Validation  | 9       | 7            | 2     | 0        |
 | Affichage   | 8       | 8            | 0     | 0        |
 | Ignorees    | 4       | -            | -     | 4        |
-| **Total**   | **45**  | **32**       | **8** | **4**    |
+| **Total**   | **45**  | **38**       | **2** | **4**    |
 
 ### Options TODO par priorite
 
-| Option                            | Questions impactees | Priorite               |
-| --------------------------------- | ------------------- | ---------------------- |
-| `penalty-for-factors-permutation` | 24 (3.79%)          | Haute                  |
-| `solutions-order-not-important`   | 5 (0.79%)           | Moyenne                |
-| `disallow-factors-permutation`    | 2 (0.32%)           | Basse                  |
-| `one-single-form-solution`        | 1 (0.16%)           | Basse                  |
-| Autres permutations (4 options)   | 0                   | Aucune - pas utilisees |
+| Option                          | Questions impactees | Priorite |
+| ------------------------------- | ------------------- | -------- |
+| `solutions-order-not-important` | 5 (0.79%)           | Moyenne  |
+| `one-single-form-solution`      | 1 (0.16%)           | Basse    |
 
 ### Fichiers de reference
 

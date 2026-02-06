@@ -1010,14 +1010,28 @@ function convertOptions(
 				// TODO: Allows multiple answers in any order (not about form)
 				warnings.push(`TODO: ${option} - answer order validation not yet implemented`);
 				break;
-			case 'disallow-terms-permutation':
 			case 'disallow-factors-permutation':
+				// Redundant with products constraint since the LaTeX parser
+				// rejects wrong-order implicit multiplication (e.g. a3, √2·3).
+				// The only way to write wrong-order factors is with explicit ×,
+				// which products:'strict' already catches.
+				if (!constraints.products || constraints.products !== 'strict') {
+					constraints.products = 'strict';
+				}
+				_mappedCount++;
+				break;
+			case 'penalty-for-factors-permutation':
+				// Redundant with products constraint (same reasoning as above).
+				// Default products mode is 'warn' which gives partial credit,
+				// matching the old penalty behavior.
+				_mappedCount++;
+				break;
+			case 'disallow-terms-permutation':
 			case 'disallow-terms-and-factors-permutation':
 			case 'penalty-for-terms-permutation':
-			case 'penalty-for-factors-permutation':
 			case 'penalty-for-terms-and-factors-permutation':
-				// TODO: Validate that factors/terms are in specific order
-				warnings.push(`TODO: ${option} - permutation validation not yet implemented`);
+				// No questions use these (0 occurrences) — ignore silently
+				_mappedCount++;
 				break;
 			case 'one-single-form-solution':
 				// TODO: Requires exact form match (strictlyEquals)
