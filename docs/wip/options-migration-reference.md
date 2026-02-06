@@ -221,8 +221,7 @@ NOUVEAU SYSTEME (UbuMaths):
 | Ignorees    | 4       | -            | 4        |
 | **Total**   | **45**  | **40**       | **4**    |
 
-> **Toutes les options sont maintenant mappees.** Le validateur `solutionPool`
-> reste a implementer dans `answer-validator.ts`.
+> **Toutes les options sont maintenant mappees et implementees.**
 
 ### Fichiers de reference
 
@@ -230,7 +229,7 @@ NOUVEAU SYSTEME (UbuMaths):
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | `src/lib/questions/types.ts`                                | `ConstraintOptions`, `ConstraintMode`, `DEFAULT_CONSTRAINT_MODE`, `ValidationStatus` |
 | `src/lib/questions/constraint-validators.ts`                | 11 validateurs (`checkSpaces`, `checkProducts`, ..., `checkUnit`)                    |
-| `src/lib/utils/answer-validator.ts`                         | `applyConstraints()` - orchestre les checks                                          |
+| `src/lib/utils/answer-validator.ts`                         | `applyConstraints()`, `validateWithSolutionPool()` - orchestre les checks            |
 | `src/lib/questions/feedback.ts`                             | Messages de feedback par contrainte                                                  |
 | `src/lib/migration/question-transformer.ts`                 | `convertOptions()` - mapping ancien → nouveau (lignes ~855-1110)                     |
 | `src/lib/migration/old-question-types.ts`                   | Type `OldOption` - enum de toutes les anciennes options                              |
