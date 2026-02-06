@@ -625,7 +625,9 @@ function convertSolution(
 
 	// Keep solution in custom mathAST syntax (no LaTeX conversion)
 	// Solutions are compared using mathAST, not rendered as LaTeX
-	return conversionResult.converted || solutionValue;
+	// Use simplified syntax (same as variable expressions)
+	const afterTinyCAS = conversionResult.converted || solutionValue;
+	return toBareVariableSyntax(toSimplifiedSyntax(afterTinyCAS));
 }
 
 // ============================================================================
@@ -1526,10 +1528,10 @@ function detectSharedFields(
 		const expressionIsSharedForSolution = expressions.length === 1 && variationCount > 1;
 
 		if (expressionIsSharedForSolution) {
-			shared.solution = '{{eval:expression1}}';
+			shared.solution = 'eval:expression1';
 		} else {
 			for (let i = 0; i < variationCount; i++) {
-				perVariation[i].solution = `{{eval:expression${i + 1}}}`;
+				perVariation[i].solution = `eval:expression${i + 1}`;
 			}
 		}
 	}
