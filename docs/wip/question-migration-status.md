@@ -41,19 +41,19 @@ This document describes the current state of the question system migration and t
 
 ### Warnings Summary
 
-| Category             | Count | Description                | Action                            |
-| -------------------- | ----- | -------------------------- | --------------------------------- |
-| Précision décimale   | 73    | Défaut 2 décimales         | ✅ OK - valeur raisonnable        |
-| Pattern N-digits     | 66    | `$e{...}` → `{{1.0}}`      | ✅ OK - conversion auto           |
-| Couleurs             | 44    | `${get(correct_color)}`    | ✅ OK - géré par système couleurs |
-| Signe + évaluations  | ~150  | `[+_&2_]` converti         | ✅ OK - conversion correcte       |
-| Permutations TODO    | 24    | Validation non implémentée | ⚠️ Feature future                 |
-| **Images**           | **0** | Toutes migrées             | ✅ 254 images → Supabase Storage  |
-| Custom validation    | 8     | `testAnswers` utilisé      | ✅ OK - déjà implémenté           |
-| Options inconnues    | 13    | Typos (`extraneaous`)      | ✅ OK - ignoré                    |
-| Solutions manquantes | 4     | Variations sans solution   | 🔍 À investiguer                  |
+| Category             | Count | Description              | Action                            |
+| -------------------- | ----- | ------------------------ | --------------------------------- |
+| Précision décimale   | 73    | Défaut 2 décimales       | ✅ OK - valeur raisonnable        |
+| Pattern N-digits     | 66    | `$e{...}` → `{{1.0}}`    | ✅ OK - conversion auto           |
+| Couleurs             | 44    | `${get(correct_color)}`  | ✅ OK - géré par système couleurs |
+| Signe + évaluations  | ~150  | `[+_&2_]` converti       | ✅ OK - conversion correcte       |
+| Permutations         | 24    | Permutation de facteurs  | ✅ Redondant avec `products`      |
+| **Images**           | **0** | Toutes migrées           | ✅ 254 images → Supabase Storage  |
+| Custom validation    | 8     | `testAnswers` utilisé    | ✅ OK - déjà implémenté           |
+| Options inconnues    | 13    | Typos (`extraneaous`)    | ✅ OK - ignoré                    |
+| Solutions manquantes | 4     | Variations sans solution | 🔍 À investiguer                  |
 
-**Conclusion** : 210 warnings dont ~4 nécessitent attention (solutions manquantes).
+**Conclusion** : ~210 warnings dont ~4 necessitent attention (solutions manquantes). Toutes les options de validation (45/45) sont mappees et implementees.
 
 ---
 
@@ -236,12 +236,12 @@ The image URL mapping is integrated into the transformation pipeline:
 
 ### Core Transformation (`src/lib/migration/`)
 
-| Script                           | Status                                  |
-| -------------------------------- | --------------------------------------- |
-| `syntax-converter.ts`            | ✅ Tests pass                           |
-| `question-transformer.ts`        | ✅ Tests pass (bug fixed)               |
-| `correction-integration.test.ts` | ✅ Tests pass                           |
-| **All migration tests**          | ✅ **439/440 pass** (1 flaky perf test) |
+| Script                           | Status                    |
+| -------------------------------- | ------------------------- |
+| `syntax-converter.ts`            | ✅ Tests pass             |
+| `question-transformer.ts`        | ✅ Tests pass (bug fixed) |
+| `correction-integration.test.ts` | ✅ Tests pass             |
+| **All migration tests**          | ✅ **460/460 pass**       |
 
 ### Available Scripts (`scripts/`)
 
@@ -257,13 +257,14 @@ The image URL mapping is integrated into the transformation pipeline:
 
 ### Current State
 
-| Item                   | Status                                            |
-| ---------------------- | ------------------------------------------------- |
-| Source extraction      | ✅ 633 questions in `.claude/old-questions.json`  |
-| Transformation tests   | ✅ 440/440 pass                                   |
-| Export for review      | ✅ `data/migration-output/export-2026-01-26/`     |
-| Database schema        | ✅ `shared` column added, legacy seeds removed    |
-| **Import to database** | ❌ **PENDING** - table `question_templates` empty |
+| Item                   | Status                                                              |
+| ---------------------- | ------------------------------------------------------------------- |
+| Source extraction      | ✅ 633 questions in `.claude/old-questions.json`                    |
+| Transformation tests   | ✅ 460/460 pass                                                     |
+| Options mapping        | ✅ 45/45 options mappees et implementees                            |
+| Export for review      | ⚠️ `data/migration-output/export-2026-01-26/` (avant fixes options) |
+| Database schema        | ✅ `shared` column added, legacy seeds removed                      |
+| **Import to database** | ❌ **PENDING** - table `question_templates` empty                   |
 
 ---
 
@@ -279,12 +280,24 @@ The image URL mapping is integrated into the transformation pipeline:
 ### Phase 2: Fix Migration Script Bug ✅ COMPLETE
 
 - Fixed `question-transformer.ts` to handle single-variation corrections
-- All 439/440 migration tests pass (1 flaky performance test)
+- All 460/460 migration tests pass
 
 ### Phase 3: Update API ✅ COMPLETE
 
 - POST `/api/questions/templates` now stores `shared` field
 - PUT `/api/questions/templates/[id]` now updates `shared` field
+
+### Phase 3b: Options Migration Review ✅ COMPLETE (v0.8.1)
+
+- All 45 old options mapped to new system (0 TODO remaining)
+- Constraint options (23) → `ConstraintOptions` with strict/warn/off modes
+- Display options (8) → `DisplayOptions` on expression variables
+- Validation options (9): shuffleChoices, permutations (→ `products`), `solutionPool`, `requiredForm`
+- 4 legacy options silently ignored (no equivalent needed)
+- LaTeX parser fix: NUMBER cannot start implicit multiplication (aligns with custom parser)
+- `solutionPool` validator implemented in `answer-validator.ts` (pool matching without replacement)
+- `requiredForm` patterns: `a:inN & gte(2) * b:inN & gte(2)` (decomposition), `0 - a` (subtraction form)
+- Reference: `docs/wip/options-migration-reference.md`
 
 ### Phase 4: Import Questions ⏳ PENDING
 
@@ -292,10 +305,11 @@ The image URL mapping is integrated into the transformation pipeline:
 
 - ✅ 633 questions extracted to `.claude/old-questions.json`
 - ✅ 100% transformation success (633/633)
-- ✅ Export available at `data/migration-output/export-2026-01-26/`
+- ✅ All 45 options mapped and implemented
 - ✅ Database schema ready (clean, no legacy data)
 - ✅ API endpoints updated
 - ✅ Custom validation (`testAnswers`) fully implemented via `ValidationRule`
+- ⚠️ Export needs regeneration (last export predates options fixes)
 
 **To import:**
 
@@ -342,20 +356,24 @@ pnpm migrate:phase1:validate
 
 ## Decision Log
 
-| Date       | Decision                                | Rationale                                                   |
-| ---------- | --------------------------------------- | ----------------------------------------------------------- |
-| 2026-01-26 | Add `shared` column to DB               | TypeScript type requires it, API doesn't store it           |
-| 2026-01-26 | Remove legacy `{@:var}` syntax          | Parser doesn't support it, causes confusion                 |
-| 2026-01-26 | Keep both random syntaxes               | `{{random:1..10}}` and `{{1..10}}` both supported           |
-| 2026-01-26 | Fix single-variation correction bug     | Tests failing, blocks migration                             |
-| 2026-01-26 | Apply migration & regenerate types      | Database ready for fresh import                             |
-| 2026-01-26 | Correct question count: 633 not 2238    | Verified against source file, previous estimate was wrong   |
-| 2026-01-26 | Fix logger.ts for standalone scripts    | Scripts can now run outside SvelteKit context               |
-| 2026-01-26 | Regenerate export (2026-01-26)          | Fresh export with 633 questions, 220 warnings               |
-| 2026-01-26 | Fix math delimiters (inline vs display) | TinyMath used `$$` everywhere, ubumark needs `$` for inline |
-| 2026-01-27 | Complete image migration                | All 254 images uploaded to new Supabase Storage bucket      |
-| 2026-01-27 | Integrate image URL mapping             | Transformer now converts old paths to new Storage URLs      |
-| 2026-02-03 | Simplified expression syntax            | `{{1..10}}` → `1..10` in variable definitions, cleaner code |
+| Date       | Decision                                     | Rationale                                                                          |
+| ---------- | -------------------------------------------- | ---------------------------------------------------------------------------------- |
+| 2026-01-26 | Add `shared` column to DB                    | TypeScript type requires it, API doesn't store it                                  |
+| 2026-01-26 | Remove legacy `{@:var}` syntax               | Parser doesn't support it, causes confusion                                        |
+| 2026-01-26 | Keep both random syntaxes                    | `{{random:1..10}}` and `{{1..10}}` both supported                                  |
+| 2026-01-26 | Fix single-variation correction bug          | Tests failing, blocks migration                                                    |
+| 2026-01-26 | Apply migration & regenerate types           | Database ready for fresh import                                                    |
+| 2026-01-26 | Correct question count: 633 not 2238         | Verified against source file, previous estimate was wrong                          |
+| 2026-01-26 | Fix logger.ts for standalone scripts         | Scripts can now run outside SvelteKit context                                      |
+| 2026-01-26 | Regenerate export (2026-01-26)               | Fresh export with 633 questions, 220 warnings                                      |
+| 2026-01-26 | Fix math delimiters (inline vs display)      | TinyMath used `$$` everywhere, ubumark needs `$` for inline                        |
+| 2026-01-27 | Complete image migration                     | All 254 images uploaded to new Supabase Storage bucket                             |
+| 2026-01-27 | Integrate image URL mapping                  | Transformer now converts old paths to new Storage URLs                             |
+| 2026-02-03 | Simplified expression syntax                 | `{{1..10}}` → `1..10` in variable definitions, cleaner code                        |
+| 2026-02-06 | Options review complete (45/45)              | All options mapped: constraints, display, permutations, solutionPool, requiredForm |
+| 2026-02-06 | Factor permutation → products constraint     | LaTeX parser fix + products constraint renders permutation options redundant       |
+| 2026-02-06 | solutionPool replaces solutions-order        | Pool matching (without replacement) for multi-answer questions                     |
+| 2026-02-06 | requiredForm for decomposition + subtraction | Pattern-based form validation replaces old format/one-single-form checks           |
 
 ---
 
@@ -417,15 +435,17 @@ Fixed test expectations in `correction-integration.test.ts`:
 2. [x] Create migration: delete legacy seeds ✅ (same migration deletes all seeds)
 3. [x] Fix `question-transformer.ts` bug ✅ Single-variation corrections now processed
 4. [x] Update API to handle `shared` field ✅ POST and PUT endpoints updated
-5. [x] Verify all tests pass ✅ **439/440 migration tests pass**
+5. [x] Verify all tests pass ✅ **460/460 migration tests pass**
 6. [x] Apply migration ✅ `pnpm db:migrate` executed
 7. [x] Regenerate TypeScript types ✅ `pnpm db:types` executed
 
 ### Remaining
 
-8. [ ] **Run import**: `pnpm migration:import` (633 questions)
-9. [ ] **Validate**: `pnpm migrate:phase1:validate`
-10. [ ] **Test in UI**: Verify questions work in the application
+8. [x] Complete options migration review ✅ 45/45 options mapped (v0.8.1)
+9. [ ] **Re-exporter** les questions (export actuel date du 26/01, avant fixes options)
+10. [ ] **Run import**: `pnpm migration:import` (633 questions)
+11. [ ] **Validate**: `pnpm migrate:phase1:validate`
+12. [ ] **Test in UI**: Verify questions work in the application
 
 ---
 
