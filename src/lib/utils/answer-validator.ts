@@ -272,9 +272,10 @@ export function validateAnswer(
 			}
 		}
 
-		// Apply constraint checks if answer is correct, constraints are configured,
-		// AND LaTeX input is available (required for reliable form checking)
-		if (result.isCorrect && instance.options?.constraints && userAnswerLatex) {
+		// Apply constraint checks if answer is correct and LaTeX input is available.
+		// Constraints use DEFAULT_CONSTRAINT_MODE ('warn') when not explicitly set,
+		// so we always run checks even without explicit constraints in the template.
+		if (result.isCorrect && userAnswerLatex) {
 			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
 			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
 			const expected = Array.isArray(solution) ? solution : [solution];
@@ -283,7 +284,7 @@ export function validateAnswer(
 				answers,
 				latex,
 				expected,
-				instance.options.constraints
+				instance.options?.constraints ?? {}
 			);
 
 			result.status = status;
