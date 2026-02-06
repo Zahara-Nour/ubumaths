@@ -48,49 +48,49 @@ Chaque contrainte suit le meme pattern : `require-*` → `strict`, `no-penalty-*
 
 ### Mapping complet
 
-| Option ancienne                                                        | Nouveau chemin                                                                 | Valeur               | Validateur                          |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------ | -------------------- | ----------------------------------- |
-| **Espaces** — _espacement des grands nombres (`12 345`)_               |                                                                                |                      | `checkSpaces()` - regex             |
-| `require-correct-spaces`                                               | `constraints.spaces`                                                           | `'strict'`           |                                     |
-| `no-penalty-for-incorrect-spaces`                                      | `constraints.spaces`                                                           | `'off'`              |                                     |
-| _(absent)_                                                             | `constraints.spaces`                                                           | `'warn'` (defaut)    |                                     |
-| **Produits** — _multiplication implicite (`2x` vs `2 x x`)_            |                                                                                |                      | `checkProducts()` - mathAST/regex   |
-| `require-implicit-products`                                            | `constraints.products`                                                         | `'strict'`           |                                     |
-| `no-penalty-for-explicit-products`                                     | `constraints.products`                                                         | `'off'`              |                                     |
-| _(absent)_                                                             | `constraints.products`                                                         | `'warn'` (defaut)    |                                     |
-| **Parentheses** — _parentheses inutiles (`(5)`, `((x+1))`)_            |                                                                                |                      | `checkBrackets()` - mathAST/regex   |
-| `require-no-extraneous-brackets`                                       | `constraints.brackets`                                                         | `'strict'`           |                                     |
-| `no-penalty-for-extraneous-brackets`                                   | `constraints.brackets`                                                         | `'off'`              |                                     |
-| `no-penalty-for-extraneous-brackets-in-first-negative-term`            | `constraints.brackets` = `'off'` + `allowBracketsInFirstNegativeTerm` = `true` | Cas special `(-5)+3` |                                     |
-| _(absent)_                                                             | `constraints.brackets`                                                         | `'warn'` (defaut)    |                                     |
-| **Zeros** — _zeros initiaux (`01`) et decimaux (`1.0`, `1.20`)_        |                                                                                |                      | `checkZeros()` - regex              |
-| `require-no-extraneous-zeros`                                          | `constraints.zeros`                                                            | `'strict'`           |                                     |
-| `no-penalty-for-extraneous-zeros`                                      | `constraints.zeros`                                                            | `'off'`              |                                     |
-| _(absent)_                                                             | `constraints.zeros`                                                            | `'warn'` (defaut)    |                                     |
-| **Termes nuls** — _termes nuls dans les sommes (`x+0`, `0-x`)_         |                                                                                |                      | `checkNullTerms()` - mathAST        |
-| `require-no-null-terms`                                                | `constraints.nullTerms`                                                        | `'strict'`           |                                     |
-| `no-penalty-for-null-terms`                                            | `constraints.nullTerms`                                                        | `'off'`              |                                     |
-| _(absent)_                                                             | `constraints.nullTerms`                                                        | `'warn'` (defaut)    |                                     |
-| **Facteur un** — _facteur 1 dans les produits (`1*x`, `1x`)_           |                                                                                |                      | `checkFactorOne()` - mathAST        |
-| `require-no-factor-one`                                                | `constraints.factorOne`                                                        | `'strict'`           |                                     |
-| `no-penalty-for-factor-one`                                            | `constraints.factorOne`                                                        | `'off'`              |                                     |
-| _(absent)_                                                             | `constraints.factorOne`                                                        | `'warn'` (defaut)    |                                     |
-| **Facteur zero** — _facteur 0 dans les produits (`0*x`, `x*0`)_        |                                                                                |                      | `checkFactorZero()` - mathAST       |
-| `require-no-factor-zero`                                               | `constraints.factorZero`                                                       | `'strict'`           |                                     |
-| `no-penalty-for-factor-zero`                                           | `constraints.factorZero`                                                       | `'off'`              |                                     |
-| _(absent)_                                                             | `constraints.factorZero`                                                       | `'warn'` (defaut)    |                                     |
-| **Signes** — _signes redondants (`++`, `--`, `+-`, `(-a)*b`)_          |                                                                                |                      | `checkSigns()` - mathAST            |
-| `require-no-extraneous-signs`                                          | `constraints.signs`                                                            | `'strict'`           |                                     |
-| `no-penalty-for-extraneous-signs`                                      | `constraints.signs`                                                            | `'off'`              |                                     |
-| _(absent)_                                                             | `constraints.signs`                                                            | `'warn'` (defaut)    |                                     |
-| **Fractions irreductibles** — _fractions non reduites (`2/4` → `1/2`)_ |                                                                                |                      | `checkReducedFractions()` - mathAST |
-| `require-reduced-fractions`                                            | `constraints.reducedFractions`                                                 | `'strict'`           |                                     |
-| `no-penalty-for-non-reduced-fractions`                                 | `constraints.reducedFractions`                                                 | `'off'`              |                                     |
-| _(absent)_                                                             | `constraints.reducedFractions`                                                 | `'warn'` (defaut)    |                                     |
-| **Unite** — _unite exacte attendue (`5 km` vs `5000 m`)_               |                                                                                |                      | `checkUnit()` - parseLatexQuantity  |
-| `require-specific-unit`                                                | `constraints.unit`                                                             | `'strict'`           |                                     |
-| `no-penalty-for-not-respected-unit`                                    | `constraints.unit`                                                             | `'off'`              |                                     |
-| _(absent)_                                                             | `constraints.unit`                                                             | `'warn'` (defaut)    |                                     |
+| Option ancienne                                                          | Nouveau chemin                                                                 | Valeur               | Validateur                          |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | -------------------- | ----------------------------------- |
+| **Espaces** — _espacement des grands nombres (`12 345`)_                 |                                                                                |                      | `checkSpaces()` - regex             |
+| `require-correct-spaces`                                                 | `constraints.spaces`                                                           | `'strict'`           |                                     |
+| `no-penalty-for-incorrect-spaces`                                        | `constraints.spaces`                                                           | `'off'`              |                                     |
+| _(absent)_                                                               | `constraints.spaces`                                                           | `'warn'` (defaut)    |                                     |
+| **Produits** — _multiplication implicite (`2x` vs `2×x`, `a×2` vs `2a`)_ |                                                                                |                      | `checkProducts()` - mathAST/regex   |
+| `require-implicit-products`                                              | `constraints.products`                                                         | `'strict'`           |                                     |
+| `no-penalty-for-explicit-products`                                       | `constraints.products`                                                         | `'off'`              |                                     |
+| _(absent)_                                                               | `constraints.products`                                                         | `'warn'` (defaut)    |                                     |
+| **Parentheses** — _parentheses inutiles (`(5)`, `((x+1))`)_              |                                                                                |                      | `checkBrackets()` - mathAST/regex   |
+| `require-no-extraneous-brackets`                                         | `constraints.brackets`                                                         | `'strict'`           |                                     |
+| `no-penalty-for-extraneous-brackets`                                     | `constraints.brackets`                                                         | `'off'`              |                                     |
+| `no-penalty-for-extraneous-brackets-in-first-negative-term`              | `constraints.brackets` = `'off'` + `allowBracketsInFirstNegativeTerm` = `true` | Cas special `(-5)+3` |                                     |
+| _(absent)_                                                               | `constraints.brackets`                                                         | `'warn'` (defaut)    |                                     |
+| **Zeros** — _zeros initiaux (`01`) et decimaux (`1.0`, `1.20`)_          |                                                                                |                      | `checkZeros()` - regex              |
+| `require-no-extraneous-zeros`                                            | `constraints.zeros`                                                            | `'strict'`           |                                     |
+| `no-penalty-for-extraneous-zeros`                                        | `constraints.zeros`                                                            | `'off'`              |                                     |
+| _(absent)_                                                               | `constraints.zeros`                                                            | `'warn'` (defaut)    |                                     |
+| **Termes nuls** — _termes nuls dans les sommes (`x+0`, `0-x`)_           |                                                                                |                      | `checkNullTerms()` - mathAST        |
+| `require-no-null-terms`                                                  | `constraints.nullTerms`                                                        | `'strict'`           |                                     |
+| `no-penalty-for-null-terms`                                              | `constraints.nullTerms`                                                        | `'off'`              |                                     |
+| _(absent)_                                                               | `constraints.nullTerms`                                                        | `'warn'` (defaut)    |                                     |
+| **Facteur un** — _facteur 1 dans les produits (`1*x`, `1x`)_             |                                                                                |                      | `checkFactorOne()` - mathAST        |
+| `require-no-factor-one`                                                  | `constraints.factorOne`                                                        | `'strict'`           |                                     |
+| `no-penalty-for-factor-one`                                              | `constraints.factorOne`                                                        | `'off'`              |                                     |
+| _(absent)_                                                               | `constraints.factorOne`                                                        | `'warn'` (defaut)    |                                     |
+| **Facteur zero** — _facteur 0 dans les produits (`0*x`, `x*0`)_          |                                                                                |                      | `checkFactorZero()` - mathAST       |
+| `require-no-factor-zero`                                                 | `constraints.factorZero`                                                       | `'strict'`           |                                     |
+| `no-penalty-for-factor-zero`                                             | `constraints.factorZero`                                                       | `'off'`              |                                     |
+| _(absent)_                                                               | `constraints.factorZero`                                                       | `'warn'` (defaut)    |                                     |
+| **Signes** — _signes redondants (`++`, `--`, `+-`, `(-a)*b`)_            |                                                                                |                      | `checkSigns()` - mathAST            |
+| `require-no-extraneous-signs`                                            | `constraints.signs`                                                            | `'strict'`           |                                     |
+| `no-penalty-for-extraneous-signs`                                        | `constraints.signs`                                                            | `'off'`              |                                     |
+| _(absent)_                                                               | `constraints.signs`                                                            | `'warn'` (defaut)    |                                     |
+| **Fractions irreductibles** — _fractions non reduites (`2/4` → `1/2`)_   |                                                                                |                      | `checkReducedFractions()` - mathAST |
+| `require-reduced-fractions`                                              | `constraints.reducedFractions`                                                 | `'strict'`           |                                     |
+| `no-penalty-for-non-reduced-fractions`                                   | `constraints.reducedFractions`                                                 | `'off'`              |                                     |
+| _(absent)_                                                               | `constraints.reducedFractions`                                                 | `'warn'` (defaut)    |                                     |
+| **Unite** — _unite exacte attendue (`5 km` vs `5000 m`)_                 |                                                                                |                      | `checkUnit()` - parseLatexQuantity  |
+| `require-specific-unit`                                                  | `constraints.unit`                                                             | `'strict'`           |                                     |
+| `no-penalty-for-not-respected-unit`                                      | `constraints.unit`                                                             | `'off'`              |                                     |
+| _(absent)_                                                               | `constraints.unit`                                                             | `'warn'` (defaut)    |                                     |
 
 ### Statistiques d'utilisation par contrainte
 
@@ -184,18 +184,18 @@ NOUVEAU SYSTEME (UbuMaths):
 
 ### Changements techniques des validateurs
 
-| Validateur              | Ancien (TinyMath) | Nouveau (UbuMaths)       |
-| ----------------------- | ----------------- | ------------------------ |
-| `checkSpaces`           | Regex             | Regex (inchange)         |
-| `checkProducts`         | Regex             | mathAST + fallback regex |
-| `checkBrackets`         | Regex             | mathAST + fallback regex |
-| `checkZeros`            | Regex             | Regex (inchange)         |
-| `checkNullTerms`        | Regex             | mathAST                  |
-| `checkFactorOne`        | Regex             | mathAST                  |
-| `checkFactorZero`       | Regex             | mathAST                  |
-| `checkSigns`            | Regex             | mathAST                  |
-| `checkReducedFractions` | Regex             | mathAST (GCD)            |
-| `checkUnit`             | Boolean flag      | parseLatexQuantity       |
+| Validateur              | Ancien (TinyMath) | Nouveau (UbuMaths)                                              |
+| ----------------------- | ----------------- | --------------------------------------------------------------- |
+| `checkSpaces`           | Regex             | Regex (inchange)                                                |
+| `checkProducts`         | Regex             | mathAST (flattenProductShallow + StyledFactor) + fallback regex |
+| `checkBrackets`         | Regex             | mathAST + fallback regex                                        |
+| `checkZeros`            | Regex             | Regex (inchange)                                                |
+| `checkNullTerms`        | Regex             | mathAST                                                         |
+| `checkFactorOne`        | Regex             | mathAST                                                         |
+| `checkFactorZero`       | Regex             | mathAST                                                         |
+| `checkSigns`            | Regex             | mathAST                                                         |
+| `checkReducedFractions` | Regex             | mathAST (GCD)                                                   |
+| `checkUnit`             | Boolean flag      | parseLatexQuantity                                              |
 
 ---
 
