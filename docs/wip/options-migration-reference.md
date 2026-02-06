@@ -2,248 +2,166 @@
 
 ## Vue d'ensemble
 
-L'ancien systeme TinyMath utilise des options sous forme de chaines de caracteres dans un tableau `options: string[]`.
-Le nouveau systeme UbuMaths mappe ces options vers trois structures typees :
+### Architecture comparee
 
-- **`options.constraints`** (`ConstraintOptions`) - Validation de la forme des reponses
-- **`options.*`** (autres champs de `QuestionTemplate['options']`) - Validation des reponses
-- **`defaultDisplayOptions`** (`DisplayOptions`) - Formatage de l'affichage des expressions
+| Aspect                     | Ancien (TinyMath)                        | Nouveau (UbuMaths)                                                   |
+| -------------------------- | ---------------------------------------- | -------------------------------------------------------------------- |
+| **Format des options**     | `options: string[]` (tableau de chaines) | Objets types : `constraints`, `displayOptions`, `unitOptions`        |
+| **Niveaux de contrainte**  | Binaire (option presente ou absente)     | 3 modes : `strict` / `warn` / `off`                                  |
+| **Defauts**                | Implicites dans le correcteur            | `DEFAULT_CONSTRAINT_MODE = 'warn'` explicite                         |
+| **Cascade**                | Plat (template seulement)                | Global → Template → Variable                                         |
+| **Validateurs**            | Regex uniquement                         | Regex + mathAST (2 tiers)                                            |
+| **Statuts de validation**  | correct / incorrect                      | `correct` / `unoptimal_form` / `bad_form` / `incorrect` / `empty`    |
+| **Fonction de conversion** | -                                        | `convertOptions()` dans `question-transformer.ts` (lignes ~855-1110) |
 
-### Comportement par defaut des contraintes
+### Structures du nouveau systeme
 
-Le mode par defaut quand aucune option n'est positionnee est **`'warn'`** (credit partiel).
-Cela correspond au comportement de l'ancien TinyMath (source : `extern/new-tinymath/.../correction.ts` lignes 224-248).
+```
+options: {
+  constraints?: ConstraintOptions    // Validation de la forme des reponses
+  shuffleChoices?: boolean           // Melange des choix QCM
+  unitOptions?: {                    // Validation des unites
+    requireExactUnit?: boolean
+    requireSameSymbol?: boolean
+    tolerance?: { absolute?: number; relative?: number }
+  }
+}
 
-| Mode       | Effet                        | Points         |
-| ---------- | ---------------------------- | -------------- |
-| `'strict'` | Violation = `bad_form`       | 0 points       |
-| `'warn'`   | Violation = `unoptimal_form` | Credit partiel |
-| `'off'`    | Check desactive              | Pas d'impact   |
+defaultDisplayOptions?: DisplayOptions  // Formatage de l'affichage
+```
 
----
+### Impact sur les points (modes de contrainte)
 
-## 1. Options de contrainte (→ `options.constraints`)
-
-### 1.1 Espaces (`spaces`)
-
-Verifie l'espacement correct des grands nombres (ex: `12 345`, pas `12345`).
-
-| Option ancienne                   | Mode       | Description                              |
-| --------------------------------- | ---------- | ---------------------------------------- |
-| `require-correct-spaces`          | `'strict'` | Espaces obligatoires, 0 pts si violation |
-| `no-penalty-for-incorrect-spaces` | `'off'`    | Check desactive                          |
-| _(aucune option)_                 | `'warn'`   | Credit partiel si violation              |
-
-**Validateur** : `checkSpaces()` dans `constraint-validators.ts`
-**Utilisation** : `require` 3 questions (0.47%), `no-penalty` 0 questions, defaut 630 questions (99.5%)
-
-### 1.2 Produits (`products`)
-
-Verifie que les multiplications sont implicites quand appropriee (ex: `2x` au lieu de `2 x x`).
-
-| Option ancienne                    | Mode       | Description                                       |
-| ---------------------------------- | ---------- | ------------------------------------------------- |
-| `require-implicit-products`        | `'strict'` | Produit implicite obligatoire, 0 pts si violation |
-| `no-penalty-for-explicit-products` | `'off'`    | Check desactive                                   |
-| _(aucune option)_                  | `'warn'`   | Credit partiel si violation                       |
-
-**Validateur** : `checkProducts()` dans `constraint-validators.ts`
-**Utilisation** : `require` 2 questions (0.32%), `no-penalty` 5 questions (0.79%), defaut 626 questions (98.9%)
-
-### 1.3 Parentheses (`brackets`)
-
-Verifie l'absence de parentheses inutiles (ex: `(5)`, `((x+1))`, `\frac{(x)}{2}`).
-
-| Option ancienne                                             | Mode                                                | Description                                        |
-| ----------------------------------------------------------- | --------------------------------------------------- | -------------------------------------------------- |
-| `require-no-extraneous-brackets`                            | `'strict'`                                          | Parentheses inutiles interdites, 0 pts             |
-| `no-penalty-for-extraneous-brackets`                        | `'off'`                                             | Check desactive                                    |
-| `no-penalty-for-extraneous-brackets-in-first-negative-term` | `'off'` + `allowBracketsInFirstNegativeTerm = true` | Check desactive, mais flag pour tolerance `(-5)+3` |
-| _(aucune option)_                                           | `'warn'`                                            | Credit partiel si violation                        |
-
-**Validateur** : `checkBrackets()` dans `constraint-validators.ts`
-**Utilisation** : `require` 3 questions (0.47%), `no-penalty` 23 questions (3.64%), `no-penalty-first-neg` 3 questions (0.47%), defaut 604 questions (95.4%)
-
-### 1.4 Zeros inutiles (`zeros`)
-
-Verifie l'absence de zeros inutiles : zeros initiaux (`01`, `007`) et zeros finaux decimaux (`1.0`, `1.20`).
-
-| Option ancienne                   | Mode       | Description                     |
-| --------------------------------- | ---------- | ------------------------------- |
-| `require-no-extraneous-zeros`     | `'strict'` | Zeros inutiles interdits, 0 pts |
-| `no-penalty-for-extraneous-zeros` | `'off'`    | Check desactive                 |
-| _(aucune option)_                 | `'warn'`   | Credit partiel si violation     |
-
-**Validateur** : `checkZeros()` dans `constraint-validators.ts`
-**Utilisation** : `require` 6 questions (0.95%), `no-penalty` 8 questions (1.26%), defaut 619 questions (97.8%)
-
-### 1.5 Termes nuls (`nullTerms`)
-
-Verifie l'absence de termes nuls dans les sommes (ex: `x+0`, `0+x`, `x-0`, `0-x`).
-
-| Option ancienne             | Mode       | Description                  |
-| --------------------------- | ---------- | ---------------------------- |
-| `require-no-null-terms`     | `'strict'` | Termes nuls interdits, 0 pts |
-| `no-penalty-for-null-terms` | `'off'`    | Check desactive              |
-| _(aucune option)_           | `'warn'`   | Credit partiel si violation  |
-
-**Validateur** : `checkNullTerms()` dans `constraint-validators.ts` (mathAST)
-**Utilisation** : `require` 1 question (0.16%), `no-penalty` 4 questions (0.63%), defaut 628 questions (99.2%)
-
-### 1.6 Facteur un (`factorOne`)
-
-Verifie l'absence du facteur 1 dans les produits (ex: `1*x`, `1x`, `x*1`).
-
-| Option ancienne             | Mode       | Description                 |
-| --------------------------- | ---------- | --------------------------- |
-| `require-no-factor-one`     | `'strict'` | Facteur 1 interdit, 0 pts   |
-| `no-penalty-for-factor-one` | `'off'`    | Check desactive             |
-| _(aucune option)_           | `'warn'`   | Credit partiel si violation |
-
-**Validateur** : `checkFactorOne()` dans `constraint-validators.ts` (mathAST)
-**Utilisation** : `require` 1 question (0.16%), `no-penalty` 6 questions (0.95%), defaut 626 questions (98.9%)
-
-### 1.7 Facteur zero (`factorZero`)
-
-Verifie l'absence du facteur 0 dans les produits (ex: `0*x`, `x*0`).
-
-| Option ancienne              | Mode       | Description                 |
-| ---------------------------- | ---------- | --------------------------- |
-| `require-no-factor-zero`     | `'strict'` | Facteur 0 interdit, 0 pts   |
-| `no-penalty-for-factor-zero` | `'off'`    | Check desactive             |
-| _(aucune option)_            | `'warn'`   | Credit partiel si violation |
-
-**Validateur** : `checkFactorZero()` dans `constraint-validators.ts` (mathAST)
-**Utilisation** : `require` 1 question (0.16%), `no-penalty` 3 questions (0.47%), defaut 629 questions (99.4%)
-
-### 1.8 Signes inutiles (`signs`)
-
-Verifie l'absence de signes redondants : `++`, `--`, `+-`, `-+`, `+x`, `-(-x)`, `x+(-y)`, `(-a)*b`, `\frac{-a}{b}`.
-
-| Option ancienne                   | Mode       | Description                      |
-| --------------------------------- | ---------- | -------------------------------- |
-| `require-no-extraneous-signs`     | `'strict'` | Signes inutiles interdits, 0 pts |
-| `no-penalty-for-extraneous-signs` | `'off'`    | Check desactive                  |
-| _(aucune option)_                 | `'warn'`   | Credit partiel si violation      |
-
-**Validateur** : `checkSigns()` dans `constraint-validators.ts` (mathAST)
-**Utilisation** : `require` 4 questions (0.63%), `no-penalty` 1 question (0.16%), defaut 628 questions (99.2%)
-
-### 1.9 Fractions irreductibles (`reducedFractions`)
-
-Verifie que les fractions sont reduites (ex: `2/4` devrait etre `1/2`).
-
-| Option ancienne                        | Mode       | Description                              |
-| -------------------------------------- | ---------- | ---------------------------------------- |
-| `require-reduced-fractions`            | `'strict'` | Fraction irreductible obligatoire, 0 pts |
-| `no-penalty-for-non-reduced-fractions` | `'off'`    | Check desactive                          |
-| _(aucune option)_                      | `'warn'`   | Credit partiel si violation              |
-
-**Validateur** : `checkReducedFractions()` dans `constraint-validators.ts` (mathAST)
-**Utilisation** : `require` 0 questions, `no-penalty` 10 questions (1.58%), defaut 623 questions (98.4%)
+| Mode       | Ancien comportement     | Nouveau `ValidationStatus` | Points         |
+| ---------- | ----------------------- | -------------------------- | -------------- |
+| `'strict'` | Reponse rejetee         | `bad_form`                 | 0 points       |
+| `'warn'`   | Credit partiel (defaut) | `unoptimal_form`           | Credit partiel |
+| `'off'`    | Check desactive         | `correct` (si juste)       | 100%           |
 
 ---
 
-## 2. Options de validation (→ `options.*`)
+## 1. Contraintes (→ `options.constraints`)
 
-### 2.1 Melange des choix QCM
+Chaque contrainte suit le meme pattern : `require-*` → `strict`, `no-penalty-*` → `off`, absent → `warn` (defaut).
 
-| Option ancienne      | Mapping                          | Description                       |
-| -------------------- | -------------------------------- | --------------------------------- |
-| `no-shuffle-choices` | `options.shuffleChoices = false` | Garder l'ordre original des choix |
-| _(aucune option)_    | `shuffleChoices = true` (defaut) | Melanger les choix                |
+### Mapping complet
 
-**Statut** : Implemente
-**Utilisation** : 32 questions (5.06%)
+| Option ancienne                                                        | Nouveau chemin                                                                 | Valeur               | Validateur                          |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------ | -------------------- | ----------------------------------- |
+| **Espaces** — _espacement des grands nombres (`12 345`)_               |                                                                                |                      | `checkSpaces()` - regex             |
+| `require-correct-spaces`                                               | `constraints.spaces`                                                           | `'strict'`           |                                     |
+| `no-penalty-for-incorrect-spaces`                                      | `constraints.spaces`                                                           | `'off'`              |                                     |
+| _(absent)_                                                             | `constraints.spaces`                                                           | `'warn'` (defaut)    |                                     |
+| **Produits** — _multiplication implicite (`2x` vs `2 x x`)_            |                                                                                |                      | `checkProducts()` - mathAST/regex   |
+| `require-implicit-products`                                            | `constraints.products`                                                         | `'strict'`           |                                     |
+| `no-penalty-for-explicit-products`                                     | `constraints.products`                                                         | `'off'`              |                                     |
+| _(absent)_                                                             | `constraints.products`                                                         | `'warn'` (defaut)    |                                     |
+| **Parentheses** — _parentheses inutiles (`(5)`, `((x+1))`)_            |                                                                                |                      | `checkBrackets()` - mathAST/regex   |
+| `require-no-extraneous-brackets`                                       | `constraints.brackets`                                                         | `'strict'`           |                                     |
+| `no-penalty-for-extraneous-brackets`                                   | `constraints.brackets`                                                         | `'off'`              |                                     |
+| `no-penalty-for-extraneous-brackets-in-first-negative-term`            | `constraints.brackets` = `'off'` + `allowBracketsInFirstNegativeTerm` = `true` | Cas special `(-5)+3` |                                     |
+| _(absent)_                                                             | `constraints.brackets`                                                         | `'warn'` (defaut)    |                                     |
+| **Zeros** — _zeros initiaux (`01`) et decimaux (`1.0`, `1.20`)_        |                                                                                |                      | `checkZeros()` - regex              |
+| `require-no-extraneous-zeros`                                          | `constraints.zeros`                                                            | `'strict'`           |                                     |
+| `no-penalty-for-extraneous-zeros`                                      | `constraints.zeros`                                                            | `'off'`              |                                     |
+| _(absent)_                                                             | `constraints.zeros`                                                            | `'warn'` (defaut)    |                                     |
+| **Termes nuls** — _termes nuls dans les sommes (`x+0`, `0-x`)_         |                                                                                |                      | `checkNullTerms()` - mathAST        |
+| `require-no-null-terms`                                                | `constraints.nullTerms`                                                        | `'strict'`           |                                     |
+| `no-penalty-for-null-terms`                                            | `constraints.nullTerms`                                                        | `'off'`              |                                     |
+| _(absent)_                                                             | `constraints.nullTerms`                                                        | `'warn'` (defaut)    |                                     |
+| **Facteur un** — _facteur 1 dans les produits (`1*x`, `1x`)_           |                                                                                |                      | `checkFactorOne()` - mathAST        |
+| `require-no-factor-one`                                                | `constraints.factorOne`                                                        | `'strict'`           |                                     |
+| `no-penalty-for-factor-one`                                            | `constraints.factorOne`                                                        | `'off'`              |                                     |
+| _(absent)_                                                             | `constraints.factorOne`                                                        | `'warn'` (defaut)    |                                     |
+| **Facteur zero** — _facteur 0 dans les produits (`0*x`, `x*0`)_        |                                                                                |                      | `checkFactorZero()` - mathAST       |
+| `require-no-factor-zero`                                               | `constraints.factorZero`                                                       | `'strict'`           |                                     |
+| `no-penalty-for-factor-zero`                                           | `constraints.factorZero`                                                       | `'off'`              |                                     |
+| _(absent)_                                                             | `constraints.factorZero`                                                       | `'warn'` (defaut)    |                                     |
+| **Signes** — _signes redondants (`++`, `--`, `+-`, `(-a)*b`)_          |                                                                                |                      | `checkSigns()` - mathAST            |
+| `require-no-extraneous-signs`                                          | `constraints.signs`                                                            | `'strict'`           |                                     |
+| `no-penalty-for-extraneous-signs`                                      | `constraints.signs`                                                            | `'off'`              |                                     |
+| _(absent)_                                                             | `constraints.signs`                                                            | `'warn'` (defaut)    |                                     |
+| **Fractions irreductibles** — _fractions non reduites (`2/4` → `1/2`)_ |                                                                                |                      | `checkReducedFractions()` - mathAST |
+| `require-reduced-fractions`                                            | `constraints.reducedFractions`                                                 | `'strict'`           |                                     |
+| `no-penalty-for-non-reduced-fractions`                                 | `constraints.reducedFractions`                                                 | `'off'`              |                                     |
+| _(absent)_                                                             | `constraints.reducedFractions`                                                 | `'warn'` (defaut)    |                                     |
 
-### 2.2 Unite physique
+### Statistiques d'utilisation par contrainte
 
-| Option ancienne                     | Mapping                                        | Description              |
-| ----------------------------------- | ---------------------------------------------- | ------------------------ |
-| `require-specific-unit`             | `options.unitOptions.requireExactUnit = true`  | Unite exacte obligatoire |
-| `no-penalty-for-not-respected-unit` | `options.unitOptions.requireExactUnit = false` | Tolere unite differente  |
-
-**Statut** : Implemente
-**Utilisation** : `require` 0 questions, `no-penalty` 6 questions (0.95%)
-
-### 2.3 Ordre des solutions
-
-| Option ancienne                 | Mapping      | Description                                     |
-| ------------------------------- | ------------ | ----------------------------------------------- |
-| `solutions-order-not-important` | Warning TODO | Accepter les reponses dans n'importe quel ordre |
-
-**Statut** : Non implemente
-**Utilisation** : 5 questions (0.79%)
-
-### 2.4 Permutations de termes/facteurs
-
-| Option ancienne                             | Mapping      | Description                        |
-| ------------------------------------------- | ------------ | ---------------------------------- |
-| `disallow-terms-permutation`                | Warning TODO | Interdire permutation des termes   |
-| `disallow-factors-permutation`              | Warning TODO | Interdire permutation des facteurs |
-| `disallow-terms-and-factors-permutation`    | Warning TODO | Interdire les deux                 |
-| `penalty-for-terms-permutation`             | Warning TODO | Penalite si termes permutes        |
-| `penalty-for-factors-permutation`           | Warning TODO | Penalite si facteurs permutes      |
-| `penalty-for-terms-and-factors-permutation` | Warning TODO | Penalite si les deux permutes      |
-
-**Statut** : Non implemente
-**Utilisation** : `penalty-for-factors-permutation` 24 questions (3.79%), `disallow-factors-permutation` 2 questions (0.32%), autres 0 questions
-
-### 2.5 Forme exacte
-
-| Option ancienne            | Mapping      | Description                               |
-| -------------------------- | ------------ | ----------------------------------------- |
-| `one-single-form-solution` | Warning TODO | Forme exacte obligatoire (strictlyEquals) |
-
-**Statut** : Non implemente
-**Utilisation** : 1 question (0.16%)
+| Contrainte         | `require` (strict) | `no-penalty` (off)               | defaut (warn) |
+| ------------------ | ------------------ | -------------------------------- | ------------- |
+| `spaces`           | 3 (0.47%)          | 0                                | 630 (99.5%)   |
+| `products`         | 2 (0.32%)          | 5 (0.79%)                        | 626 (98.9%)   |
+| `brackets`         | 3 (0.47%)          | 23 (3.64%) + 3 first-neg (0.47%) | 604 (95.4%)   |
+| `zeros`            | 6 (0.95%)          | 8 (1.26%)                        | 619 (97.8%)   |
+| `nullTerms`        | 1 (0.16%)          | 4 (0.63%)                        | 628 (99.2%)   |
+| `factorOne`        | 1 (0.16%)          | 6 (0.95%)                        | 626 (98.9%)   |
+| `factorZero`       | 1 (0.16%)          | 3 (0.47%)                        | 629 (99.4%)   |
+| `signs`            | 4 (0.63%)          | 1 (0.16%)                        | 628 (99.2%)   |
+| `reducedFractions` | 0                  | 10 (1.58%)                       | 623 (98.4%)   |
 
 ---
 
-## 3. Options d'affichage (→ `defaultDisplayOptions`)
+## 2. Validation (→ `options.*`)
+
+### Options implementees
+
+| Option ancienne                     | Nouveau chemin                         | Valeur          | Utilisation          |
+| ----------------------------------- | -------------------------------------- | --------------- | -------------------- |
+| `no-shuffle-choices`                | `options.shuffleChoices`               | `false`         | 32 questions (5.06%) |
+| _(absent)_                          | `options.shuffleChoices`               | `true` (defaut) |                      |
+| `require-specific-unit`             | `options.unitOptions.requireExactUnit` | `true`          | 0 questions          |
+| `no-penalty-for-not-respected-unit` | `options.unitOptions.requireExactUnit` | `false`         | 6 questions (0.95%)  |
+
+### Options TODO (non implementees)
+
+| Option ancienne                             | Mapping prevu | Description                                 | Utilisation |
+| ------------------------------------------- | ------------- | ------------------------------------------- | ----------- |
+| `solutions-order-not-important`             | TODO          | Accepter reponses dans n'importe quel ordre | 5 (0.79%)   |
+| `penalty-for-factors-permutation`           | TODO          | Penalite si facteurs permutes               | 24 (3.79%)  |
+| `disallow-factors-permutation`              | TODO          | Interdire permutation des facteurs          | 2 (0.32%)   |
+| `one-single-form-solution`                  | TODO          | Forme exacte obligatoire (strictlyEquals)   | 1 (0.16%)   |
+| `disallow-terms-permutation`                | TODO          | Interdire permutation des termes            | 0           |
+| `disallow-terms-and-factors-permutation`    | TODO          | Interdire les deux                          | 0           |
+| `penalty-for-terms-permutation`             | TODO          | Penalite si termes permutes                 | 0           |
+| `penalty-for-terms-and-factors-permutation` | TODO          | Penalite si les deux permutes               | 0           |
+
+---
+
+## 3. Affichage (→ `defaultDisplayOptions`)
 
 Ces options controlent le formatage des expressions **avant** leur affichage a l'eleve.
 
-### 3.1 Melange des termes et facteurs
+### Cascade des defauts
 
-| Option ancienne             | Mapping                                        | Description                        |
-| --------------------------- | ---------------------------------------------- | ---------------------------------- |
-| `shuffle-terms`             | `displayOptions.shuffleTerms = true`           | Melanger les termes d'une somme    |
-| `shuffle-factors`           | `displayOptions.shuffleFactors = true`         | Melanger les facteurs d'un produit |
-| `shuffle-terms-and-factors` | `displayOptions.shuffleTermsAndFactors = true` | Melanger les deux                  |
-| `shallow-shuffle-terms`     | `displayOptions.shallowShuffleTerms = true`    | Melange peu profond des termes     |
-| `shallow-shuffle-factors`   | `displayOptions.shallowShuffleFactors = true`  | Melange peu profond des facteurs   |
+```
+GLOBAL (hardcode)           → addSpaces: true, reste: false/OFF
+  ↓ override partiel
+TEMPLATE (defaultDisplayOptions)
+  ↓ override partiel
+VARIABLE (variable.displayOptions)
+```
 
-**Statut** : Implemente
-**Utilisation** : `shuffle-terms` 3 questions (0.47%), autres 0 questions
+### Mapping complet
 
-### 3.2 Suppression des termes nuls
-
-| Option ancienne     | Mapping                                 | Description                   |
-| ------------------- | --------------------------------------- | ----------------------------- |
-| `remove-null-terms` | `displayOptions.removeNullTerms = true` | Supprimer `+0` de l'affichage |
-
-**Statut** : Implemente
-**Utilisation** : 11 questions (1.74%)
-
-### 3.3 Formatage LaTeX
-
-| Option ancienne | Mapping                            | Description                         |
-| --------------- | ---------------------------------- | ----------------------------------- |
-| `exp-no-spaces` | `displayOptions.addSpaces = false` | Pas d'espaces autour des operateurs |
-
-**Statut** : Implemente
-**Utilisation** : `exp-no-spaces` 3 questions (0.47%)
+| Option ancienne                  | Nouveau chemin                             | Valeur  | Utilisation |
+| -------------------------------- | ------------------------------------------ | ------- | ----------- |
+| `shuffle-terms`                  | `displayOptions.shuffleTerms`              | `true`  | 3 (0.47%)   |
+| `shuffle-factors`                | `displayOptions.shuffleFactors`            | `true`  | 0           |
+| `shuffle-terms-and-factors`      | `displayOptions.shuffleTermsAndFactors`    | `true`  | 0           |
+| `shallow-shuffle-terms`          | `displayOptions.shallowShuffleTerms`       | `true`  | 0           |
+| `shallow-shuffle-factors`        | `displayOptions.shallowShuffleFactors`     | `true`  | 0           |
+| `remove-null-terms`              | `displayOptions.removeNullTerms`           | `true`  | 11 (1.74%)  |
+| `exp-no-spaces`                  | `displayOptions.addSpaces`                 | `false` | 3 (0.47%)   |
+| `exp-remove-unecessary-brackets` | `displayOptions.removeUnnecessaryBrackets` | `true`  | (ignore)    |
 
 ---
 
-## 4. Options ignorees silencieusement
+## 4. Options ignorees (sans equivalent)
 
-Ces options n'ont pas d'equivalent dans le nouveau systeme et sont ignorees sans warning.
-
-| Option ancienne                  | Raison de l'ignorance                                                              |
+| Option ancienne                  | Raison                                                                             |
 | -------------------------------- | ---------------------------------------------------------------------------------- |
-| `enounce-no-spaces`              | Cosmetique, pas necessaire dans le nouveau systeme de rendu                        |
+| `enounce-no-spaces`              | Cosmetique, gere par le nouveau rendu                                              |
 | `exp-remove-unecessary-brackets` | Cosmetique, gere automatiquement par le rendu LaTeX                                |
 | `exp-allow-unecessary-zeros`     | Code mort dans TinyMath (logique commentee), mathAST preserve les zeros nativement |
 | `allow-same-expression`          | Legacy : autorisait des expressions identiques entre variations                    |
@@ -252,7 +170,39 @@ Ces options n'ont pas d'equivalent dans le nouveau systeme et sont ignorees sans
 
 ---
 
-## 5. Bilan de la migration
+## 5. Flux de validation compare
+
+```
+ANCIEN SYSTEME (TinyMath):
+  option string[] ──→ correcteur (checks hardcodes)
+                           ↓
+                     correct / incorrect
+
+NOUVEAU SYSTEME (UbuMaths):
+  convertOptions() ──→ { constraints, displayOptions, unitOptions }
+                           ↓
+  applyConstraints() ──→ constraint-validators.ts (check par check)
+                           ↓
+                     correct / unoptimal_form / bad_form / incorrect / empty
+```
+
+### Changements techniques des validateurs
+
+| Validateur              | Ancien (TinyMath) | Nouveau (UbuMaths)       |
+| ----------------------- | ----------------- | ------------------------ |
+| `checkSpaces`           | Regex             | Regex (inchange)         |
+| `checkProducts`         | Regex             | mathAST + fallback regex |
+| `checkBrackets`         | Regex             | mathAST + fallback regex |
+| `checkZeros`            | Regex             | Regex (inchange)         |
+| `checkNullTerms`        | Regex             | mathAST                  |
+| `checkFactorOne`        | Regex             | mathAST                  |
+| `checkFactorZero`       | Regex             | mathAST                  |
+| `checkSigns`            | Regex             | mathAST                  |
+| `checkReducedFractions` | Regex             | mathAST (GCD)            |
+
+---
+
+## 6. Bilan de la migration
 
 ### Statistiques
 
@@ -260,28 +210,30 @@ Ces options n'ont pas d'equivalent dans le nouveau systeme et sont ignorees sans
 | ----------- | ------- | ------------ | ----- | -------- |
 | Contraintes | 21      | 21           | 0     | 0        |
 | Validation  | 11      | 3            | 8     | 0        |
-| Affichage   | 7       | 7            | 0     | 0        |
-| Ignorees    | 6       | -            | -     | 6        |
+| Affichage   | 8       | 7            | 0     | 1        |
+| Ignorees    | 5       | -            | -     | 5        |
 | **Total**   | **45**  | **31**       | **8** | **6**    |
 
-### Options TODO : impact
+### Options TODO par priorite
 
-| Option                            | Questions impactees | Priorite                             |
-| --------------------------------- | ------------------- | ------------------------------------ |
-| `penalty-for-factors-permutation` | 24 (3.79%)          | Haute - affecte le plus de questions |
-| `solutions-order-not-important`   | 5 (0.79%)           | Moyenne                              |
-| `disallow-factors-permutation`    | 2 (0.32%)           | Basse                                |
-| `one-single-form-solution`        | 1 (0.16%)           | Basse                                |
-| Autres permutations               | 0                   | Aucune - pas utilisees               |
+| Option                            | Questions impactees | Priorite               |
+| --------------------------------- | ------------------- | ---------------------- |
+| `penalty-for-factors-permutation` | 24 (3.79%)          | Haute                  |
+| `solutions-order-not-important`   | 5 (0.79%)           | Moyenne                |
+| `disallow-factors-permutation`    | 2 (0.32%)           | Basse                  |
+| `one-single-form-solution`        | 1 (0.16%)           | Basse                  |
+| Autres permutations (4 options)   | 0                   | Aucune - pas utilisees |
 
 ### Fichiers de reference
 
-| Fichier                                                     | Role                                                                  |
-| ----------------------------------------------------------- | --------------------------------------------------------------------- |
-| `src/lib/questions/types.ts`                                | `ConstraintOptions`, `ConstraintMode`, `DEFAULT_CONSTRAINT_MODE`      |
-| `src/lib/questions/constraint-validators.ts`                | 10 validateurs (`checkSpaces`, `checkProducts`, etc.)                 |
-| `src/lib/utils/answer-validator.ts`                         | `applyConstraints()` - orchestre les checks                           |
-| `src/lib/questions/feedback.ts`                             | Messages de feedback par contrainte                                   |
-| `src/lib/migration/question-transformer.ts`                 | `convertOptions()` - mapping ancien → nouveau                         |
-| `src/lib/ubumark/parameterization/expression-transforms.ts` | Transformations d'affichage (shuffles, removeNullTerms) - **mathAST** |
-| `extern/new-tinymath/.../correction.ts`                     | Source de verite pour le comportement par defaut                      |
+| Fichier                                                     | Role                                                                                 |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `src/lib/questions/types.ts`                                | `ConstraintOptions`, `ConstraintMode`, `DEFAULT_CONSTRAINT_MODE`, `ValidationStatus` |
+| `src/lib/questions/constraint-validators.ts`                | 10 validateurs (`checkSpaces`, `checkProducts`, etc.)                                |
+| `src/lib/utils/answer-validator.ts`                         | `applyConstraints()` - orchestre les checks                                          |
+| `src/lib/questions/feedback.ts`                             | Messages de feedback par contrainte                                                  |
+| `src/lib/migration/question-transformer.ts`                 | `convertOptions()` - mapping ancien → nouveau (lignes ~855-1110)                     |
+| `src/lib/migration/old-question-types.ts`                   | Type `OldOption` - enum de toutes les anciennes options                              |
+| `src/lib/ubumark/parameterization/display-options.ts`       | `DisplayOptions` type + cascade global/template/variable                             |
+| `src/lib/ubumark/parameterization/expression-transforms.ts` | Transformations d'affichage (shuffles, removeNullTerms) - mathAST                    |
+| `extern/new-tinymath/.../correction.ts`                     | Source de verite pour le comportement par defaut                                     |
