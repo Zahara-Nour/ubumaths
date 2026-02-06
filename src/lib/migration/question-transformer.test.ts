@@ -1232,12 +1232,15 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.defaultDisplayOptions).toBeDefined();
-			expect(result.template?.defaultDisplayOptions?.shuffleTerms).toBe(true);
+			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
+				v.name.startsWith('expression')
+			);
+			expect(exprVar?.displayOptions?.shuffleTerms).toBe(true);
+			expect(result.template?.defaultDisplayOptions).toBeUndefined();
 			expect(result.stats?.displayOptionsMapped).toBe(1);
 		});
 
-		it('should map shuffle-factors to defaultDisplayOptions.shuffleFactors', () => {
+		it('should map shuffle-factors to expression variable displayOptions', () => {
 			const oldQuestion: QuestionBase = {
 				description: 'Test shuffle factors',
 				enounces: ['Calculer :'],
@@ -1252,10 +1255,13 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.defaultDisplayOptions?.shuffleFactors).toBe(true);
+			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
+				v.name.startsWith('expression')
+			);
+			expect(exprVar?.displayOptions?.shuffleFactors).toBe(true);
 		});
 
-		it('should map shuffle-terms-and-factors to defaultDisplayOptions.shuffleTermsAndFactors', () => {
+		it('should map shuffle-terms-and-factors to expression variable displayOptions', () => {
 			const oldQuestion: QuestionBase = {
 				description: 'Test shuffle both',
 				enounces: ['Calculer :'],
@@ -1270,10 +1276,13 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.defaultDisplayOptions?.shuffleTermsAndFactors).toBe(true);
+			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
+				v.name.startsWith('expression')
+			);
+			expect(exprVar?.displayOptions?.shuffleTermsAndFactors).toBe(true);
 		});
 
-		it('should map remove-null-terms to defaultDisplayOptions.removeNullTerms', () => {
+		it('should map remove-null-terms to expression variable displayOptions', () => {
 			const oldQuestion: QuestionBase = {
 				description: 'Test remove null terms',
 				enounces: ['Calculer :'],
@@ -1288,10 +1297,13 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.defaultDisplayOptions?.removeNullTerms).toBe(true);
+			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
+				v.name.startsWith('expression')
+			);
+			expect(exprVar?.displayOptions?.removeNullTerms).toBe(true);
 		});
 
-		it('should map exp-no-spaces to defaultDisplayOptions.removeSpaces=true', () => {
+		it('should map exp-no-spaces to expression variable displayOptions.removeSpaces', () => {
 			const oldQuestion: QuestionBase = {
 				description: 'Test no spaces',
 				enounces: ['Calculer :'],
@@ -1306,7 +1318,10 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.defaultDisplayOptions?.removeSpaces).toBe(true);
+			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
+				v.name.startsWith('expression')
+			);
+			expect(exprVar?.displayOptions?.removeSpaces).toBe(true);
 		});
 
 		it('should silently ignore exp-allow-unecessary-zeros (dead code in old TinyMath)', () => {
@@ -1324,11 +1339,14 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			// Option is silently ignored - no display options created for this alone
-			expect(result.template?.defaultDisplayOptions).toBeUndefined();
+			// Option is silently ignored - no display options on expression variable
+			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
+				v.name.startsWith('expression')
+			);
+			expect(exprVar?.displayOptions).toBeUndefined();
 		});
 
-		it('should map multiple display options together', () => {
+		it('should map multiple display options to expression variable', () => {
 			const oldQuestion: QuestionBase = {
 				description: 'Test multiple display options',
 				enounces: ['Calculer :'],
@@ -1343,13 +1361,16 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.defaultDisplayOptions?.shuffleTerms).toBe(true);
-			expect(result.template?.defaultDisplayOptions?.removeNullTerms).toBe(true);
-			expect(result.template?.defaultDisplayOptions?.removeSpaces).toBe(true);
+			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
+				v.name.startsWith('expression')
+			);
+			expect(exprVar?.displayOptions?.shuffleTerms).toBe(true);
+			expect(exprVar?.displayOptions?.removeNullTerms).toBe(true);
+			expect(exprVar?.displayOptions?.removeSpaces).toBe(true);
 			expect(result.stats?.displayOptionsMapped).toBe(3);
 		});
 
-		it('should map shallow-shuffle-terms to defaultDisplayOptions.shallowShuffleTerms', () => {
+		it('should map shallow-shuffle-terms to expression variable displayOptions', () => {
 			const oldQuestion: QuestionBase = {
 				description: 'Test shallow shuffle terms',
 				enounces: ['Calculer :'],
@@ -1364,10 +1385,13 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.defaultDisplayOptions?.shallowShuffleTerms).toBe(true);
+			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
+				v.name.startsWith('expression')
+			);
+			expect(exprVar?.displayOptions?.shallowShuffleTerms).toBe(true);
 		});
 
-		it('should map shallow-shuffle-factors to defaultDisplayOptions.shallowShuffleFactors', () => {
+		it('should map shallow-shuffle-factors to expression variable displayOptions', () => {
 			const oldQuestion: QuestionBase = {
 				description: 'Test shallow shuffle factors',
 				enounces: ['Calculer :'],
@@ -1382,7 +1406,10 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.defaultDisplayOptions?.shallowShuffleFactors).toBe(true);
+			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
+				v.name.startsWith('expression')
+			);
+			expect(exprVar?.displayOptions?.shallowShuffleFactors).toBe(true);
 		});
 
 		it('should keep constraint options separate from display options', () => {
@@ -1400,9 +1427,12 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			// Display options
-			expect(result.template?.defaultDisplayOptions?.shuffleTerms).toBe(true);
-			// Constraint options
+			// Display options on expression variable
+			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
+				v.name.startsWith('expression')
+			);
+			expect(exprVar?.displayOptions?.shuffleTerms).toBe(true);
+			// Constraint options on template
 			expect(result.template?.options?.constraints?.brackets).toBe('strict');
 		});
 	});
