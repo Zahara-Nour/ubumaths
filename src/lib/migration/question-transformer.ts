@@ -1067,12 +1067,15 @@ function convertOptions(
 				displayOptions.removeSpaces = true;
 				_mappedCount++;
 				break;
+			case 'exp-remove-unecessary-brackets':
+				displayOptions.removeUnnecessaryBrackets = true;
+				_mappedCount++;
+				break;
 			// ================================================================
 			// DISPLAY OPTIONS - Silently ignored (cosmetic only)
 			// ================================================================
 			case 'exp-allow-unecessary-zeros':
 			case 'enounce-no-spaces':
-			case 'exp-remove-unecessary-brackets':
 				// Display formatting options - cosmetic only, safe to ignore
 				_mappedCount++;
 				break;
@@ -1864,6 +1867,28 @@ export function transformQuestion(
 		}
 		if (defaultDisplayOptions) {
 			stats.displayOptionsMapped = Object.keys(defaultDisplayOptions).length;
+
+			// Attach displayOptions to expression variables (not template-level defaultDisplayOptions)
+			// In the old system, display options like exp-no-spaces, exp-remove-unecessary-brackets,
+			// shuffle-terms, remove-null-terms all apply to the expression field,
+			// which is now a variable named "expressionN".
+			for (const variation of variations) {
+				if (variation.variables) {
+					for (const variable of variation.variables) {
+						if (variable.name.startsWith('expression')) {
+							variable.displayOptions = { ...defaultDisplayOptions };
+						}
+					}
+				}
+			}
+			// Also check shared variables
+			if (shared?.variables) {
+				for (const variable of shared.variables) {
+					if (variable.name.startsWith('expression')) {
+						variable.displayOptions = { ...defaultDisplayOptions };
+					}
+				}
+			}
 		}
 
 		// Assign category
@@ -1896,7 +1921,7 @@ export function transformQuestion(
 			variations,
 			exerciseInstruction: oldQuestion.help ? fixMathDelimiters(oldQuestion.help) : undefined,
 			options: convertedOptions,
-			defaultDisplayOptions,
+			// displayOptions are attached to expression variables directly, not at template level
 			grades: [mapGrade(oldQuestion.grade)],
 			...category,
 			status: 'draft', // Import as draft for review

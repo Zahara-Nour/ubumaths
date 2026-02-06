@@ -26,7 +26,10 @@ options: {
   }
 }
 
-defaultDisplayOptions?: DisplayOptions  // Formatage de l'affichage
+// Display options sur les variables expression (pas au niveau template)
+variables: [
+  { name: "expressionN", expression: "...", displayOptions?: DisplayOptions }
+]
 ```
 
 ### Impact sur les points (modes de contrainte)
@@ -130,45 +133,36 @@ Chaque contrainte suit le meme pattern : `require-*` → `strict`, `no-penalty-*
 
 ---
 
-## 3. Affichage (→ `defaultDisplayOptions`)
+## 3. Affichage (→ `variable.displayOptions` sur les variables expression)
 
 Ces options controlent le formatage des expressions **avant** leur affichage a l'eleve.
-
-### Cascade des defauts
-
-```
-GLOBAL (hardcode)           → removeSpaces: false, reste: false/OFF
-  ↓ override partiel
-TEMPLATE (defaultDisplayOptions)
-  ↓ override partiel
-VARIABLE (variable.displayOptions)
-```
+Elles sont attachees directement aux variables dont le nom commence par `expression`
+(pas sur `defaultDisplayOptions` du template).
 
 ### Mapping complet
 
-| Option ancienne                  | Nouveau chemin                             | Valeur | Utilisation |
-| -------------------------------- | ------------------------------------------ | ------ | ----------- |
-| `shuffle-terms`                  | `displayOptions.shuffleTerms`              | `true` | 3 (0.47%)   |
-| `shuffle-factors`                | `displayOptions.shuffleFactors`            | `true` | 0           |
-| `shuffle-terms-and-factors`      | `displayOptions.shuffleTermsAndFactors`    | `true` | 0           |
-| `shallow-shuffle-terms`          | `displayOptions.shallowShuffleTerms`       | `true` | 0           |
-| `shallow-shuffle-factors`        | `displayOptions.shallowShuffleFactors`     | `true` | 0           |
-| `remove-null-terms`              | `displayOptions.removeNullTerms`           | `true` | 11 (1.74%)  |
-| `exp-no-spaces`                  | `displayOptions.removeSpaces`              | `true` | 3 (0.47%)   |
-| `exp-remove-unecessary-brackets` | `displayOptions.removeUnnecessaryBrackets` | `true` | (ignore)    |
+| Option ancienne                  | Nouveau chemin                                         | Valeur | Utilisation |
+| -------------------------------- | ------------------------------------------------------ | ------ | ----------- |
+| `shuffle-terms`                  | `expressionN.displayOptions.shuffleTerms`              | `true` | 3 (0.47%)   |
+| `shuffle-factors`                | `expressionN.displayOptions.shuffleFactors`            | `true` | 0           |
+| `shuffle-terms-and-factors`      | `expressionN.displayOptions.shuffleTermsAndFactors`    | `true` | 0           |
+| `shallow-shuffle-terms`          | `expressionN.displayOptions.shallowShuffleTerms`       | `true` | 0           |
+| `shallow-shuffle-factors`        | `expressionN.displayOptions.shallowShuffleFactors`     | `true` | 0           |
+| `remove-null-terms`              | `expressionN.displayOptions.removeNullTerms`           | `true` | 11 (1.74%)  |
+| `exp-no-spaces`                  | `expressionN.displayOptions.removeSpaces`              | `true` | 3 (0.47%)   |
+| `exp-remove-unecessary-brackets` | `expressionN.displayOptions.removeUnnecessaryBrackets` | `true` | 5 (0.79%)   |
 
 ---
 
 ## 4. Options ignorees (sans equivalent)
 
-| Option ancienne                  | Raison                                                                             |
-| -------------------------------- | ---------------------------------------------------------------------------------- |
-| `enounce-no-spaces`              | Cosmetique, gere par le nouveau rendu                                              |
-| `exp-remove-unecessary-brackets` | Cosmetique, gere automatiquement par le rendu LaTeX                                |
-| `exp-allow-unecessary-zeros`     | Code mort dans TinyMath (logique commentee), mathAST preserve les zeros nativement |
-| `allow-same-expression`          | Legacy : autorisait des expressions identiques entre variations                    |
-| `allow-same-enounce`             | Legacy : autorisait des enonces identiques entre variations                        |
-| `multiples`                      | Legacy : option de generation, pas necessaire                                      |
+| Option ancienne              | Raison                                                                             |
+| ---------------------------- | ---------------------------------------------------------------------------------- |
+| `enounce-no-spaces`          | Cosmetique, gere par le nouveau rendu                                              |
+| `exp-allow-unecessary-zeros` | Code mort dans TinyMath (logique commentee), mathAST preserve les zeros nativement |
+| `allow-same-expression`      | Legacy : autorisait des expressions identiques entre variations                    |
+| `allow-same-enounce`         | Legacy : autorisait des enonces identiques entre variations                        |
+| `multiples`                  | Legacy : option de generation, pas necessaire                                      |
 
 ---
 
@@ -213,9 +207,9 @@ NOUVEAU SYSTEME (UbuMaths):
 | ----------- | ------- | ------------ | ----- | -------- |
 | Contraintes | 23      | 23           | 0     | 0        |
 | Validation  | 9       | 1            | 8     | 0        |
-| Affichage   | 8       | 7            | 0     | 1        |
-| Ignorees    | 5       | -            | -     | 5        |
-| **Total**   | **45**  | **31**       | **8** | **6**    |
+| Affichage   | 8       | 8            | 0     | 0        |
+| Ignorees    | 4       | -            | -     | 4        |
+| **Total**   | **45**  | **32**       | **8** | **4**    |
 
 ### Options TODO par priorite
 
