@@ -1098,7 +1098,14 @@ function convertOptions(
 		}
 	}
 
-	// Add constraints to options if any were set
+	// Remove 'off' constraints (redundant with default) to keep templates lean
+	for (const key of Object.keys(constraints)) {
+		if (constraints[key as keyof typeof constraints] === 'off') {
+			delete constraints[key as keyof typeof constraints];
+		}
+	}
+
+	// Add constraints to options if any non-default were set
 	if (Object.keys(constraints).length > 0) {
 		options.constraints = constraints;
 	}
