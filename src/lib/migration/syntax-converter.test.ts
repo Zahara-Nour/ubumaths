@@ -184,14 +184,13 @@ describe('TinyCAS Syntax Converter', () => {
 			expect(result.stats?.variableRefs).toBe(2);
 		});
 
-		it('should handle decimal patterns with complex content', () => {
-			// Nested $e patterns can't be split correctly - triggers format warning
-			// The semicolons inside $e[...] interfere with parsing
+		it('should handle decimal patterns with nested $e ranges', () => {
+			// Nested $e patterns are properly split with bracket-respecting split
+			// and inner $e[N;M] converted to {{N..M}} range syntax
 			const result = convertTinyCASToNew('$d{$e[1;2];$e[0;2]}');
 			expect(result.success).toBe(true);
-			expect(result.warnings?.some((w) => w.includes('unexpected format'))).toBe(true);
-			// Falls back to {{digits:...}} format
-			expect(result.converted).toBe('{{digits:{{1..2}};{{0..2}}}}');
+			// Uses "." separator - the question-transformer handles decomposition
+			expect(result.converted).toBe('{{digits:{{1..2}}.{{0..2}}}}');
 		});
 
 		it('should track statistics for decimals', () => {
@@ -205,7 +204,6 @@ describe('TinyCAS Syntax Converter', () => {
 			// The converter doesn't handle 1-digit specially, it uses digits:n format
 			const result = convertTinyCASToNew('$e{1;1}');
 			expect(result.converted).toBe('{{digits:1}}');
-			expectWarning('$e{1;1}', 'verify range is correct');
 		});
 
 		it('should convert 2-digit numbers', () => {
@@ -224,23 +222,20 @@ describe('TinyCAS Syntax Converter', () => {
 			expectConversion('$e{5;5}', '{{10000..99999}}');
 		});
 
-		it('should handle variable digit ranges with warning', () => {
+		it('should handle variable digit ranges', () => {
 			const result = convertTinyCASToNew('$e{2;4}');
 			expect(result.converted).toBe('{{digits:2..4}}');
-			expectWarning('$e{2;4}', 'Variable digit pattern');
 		});
 
-		it('should handle 6+ digit numbers with warning', () => {
+		it('should handle 6+ digit numbers', () => {
 			const result = convertTinyCASToNew('$e{6;6}');
 			expect(result.converted).toBe('{{digits:6}}');
-			expectWarning('$e{6;6}', 'verify range is correct');
 		});
 
-		it('should handle complex patterns with variables', () => {
+		it('should handle patterns with variables (same on both sides)', () => {
 			const result = convertTinyCASToNew('$e{&1;&1}');
-			// The converter keeps the semicolon in the content
-			expect(result.converted).toBe('{{digits:{{a}};{{a}}}}');
-			expectWarning('$e{&1;&1}', 'Complex n-digit pattern');
+			// Same variable on both sides of ; → digits:var (n-digit integer)
+			expect(result.converted).toBe('{{digits:{{a}}}}');
 		});
 
 		it('should track statistics for n-digit numbers', () => {
@@ -708,8 +703,6 @@ describe('TinyCAS Syntax Converter', () => {
 	describe('16. Warning System Tests', () => {
 		it('should generate appropriate warnings for complex patterns', () => {
 			const patterns = [
-				{ input: '$e{2;4}', warning: 'Variable digit pattern' },
-				{ input: '$e{7;7}', warning: 'verify range is correct' },
 				{ input: '[._&1_.]', warning: 'Decimal evaluation' },
 				{ input: '[+_&1_]', warning: '+ sign' },
 				{ input: '[(_&1_]', warning: 'parentheses' }
@@ -733,9 +726,9 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should accumulate multiple warnings', () => {
-			const input = '$e{2;4} and [._&1_.] and [+_&2_]';
+			const input = '[._&1_.] and [+_&2_]';
 			const result = convertTinyCASToNew(input);
-			expect(result.warnings?.length).toBeGreaterThanOrEqual(3);
+			expect(result.warnings?.length).toBeGreaterThanOrEqual(2);
 		});
 	});
 

@@ -295,6 +295,10 @@ export class TinyCASConverter {
 	 *
 	 * Generates decimals with n digits before and m digits after decimal point.
 	 * Supports nested expressions and variable references.
+	 *
+	 * When parts contain ranges (e.g., $e[0;2]), the inner $e patterns are
+	 * converted inline. The question-transformer will then split complex
+	 * digits expressions into intermediate variables.
 	 */
 	private convertDecimalPatterns(input: string): string {
 		// Pattern for $d{...} - need to handle nested braces
@@ -304,28 +308,28 @@ export class TinyCASConverter {
 		return input.replace(pattern, (match, content) => {
 			this.stats.decimals++;
 
-			// Split on semicolon (separator between digitsBefore and digitsAfter)
-			const parts = content.split(';');
+			// Use bracket-respecting split to handle nested $e[N;M] patterns
+			const parts = this.splitRespectingBrackets(content, ';');
 			if (parts.length !== 2) {
 				this.warnings.push(`Decimal pattern $d{${content}} has unexpected format`);
 				return `{{digits:${content}}}`;
 			}
 
-			const digitsBefore = parts[0].trim();
-			const digitsAfter = parts[1].trim();
+			// Convert inner $e[N;M] or $e[N;M-{{var}}] patterns to {{N..M}} syntax
+			const digitsBefore = this.convertInnerRandomIntegers(parts[0].trim());
+			const digitsAfter = this.convertInnerRandomIntegers(parts[1].trim());
 
-			// Check for complex expressions that need manual review
-			if (digitsBefore.includes('$e') || digitsAfter.includes('$e')) {
-				// Has nested random - convert those first
-				this.warnings.push(
-					`Complex decimal pattern $d{${content}} with nested random - verify conversion`
-				);
-				// The nested $e patterns will have been converted to {{...}} by this point
-				// since convertDecimalPatterns runs after convertVariableReferences
-			}
-
-			// Return new syntax: {{digits:n.m}}
 			return `{{digits:${digitsBefore}.${digitsAfter}}}`;
+		});
+	}
+
+	/**
+	 * Convert $e[N;M] patterns inside an expression to {{N..M}} syntax.
+	 * Used by convertDecimalPatterns to handle nested random integers.
+	 */
+	private convertInnerRandomIntegers(input: string): string {
+		return input.replace(/\$e\[([^;]+);([^\]]+)\]/g, (_, min, max) => {
+			return `{{${min}..${max}}}`;
 		});
 	}
 
@@ -339,39 +343,29 @@ export class TinyCASConverter {
 		const varPattern = /\$e\{((?:[^{}]|\{\{[^}]*\}\})+)\}/g;
 
 		return input.replace(varPattern, (match, content) => {
-			// Check if it contains only digits and semicolons
-			if (!/^\d+;\d+$/.test(content)) {
-				// Contains variable references (already converted to {{...}}) or other non-digit content
+			// Split on semicolon to get min/max parts (works for both literals and variables)
+			const parts = content.split(';');
+			if (parts.length !== 2) {
 				this.warnings.push(`Complex n-digit pattern $e{${content}} may need manual review`);
-
-				// Content already has variables converted (e.g., "{{1}};{{1}}")
-				// No further conversion needed - just wrap it
 				return `{{digits:${content}}}`;
 			}
 
-			// Split the numeric pattern
-			const parts = content.split(';');
-			const n = parts[0];
-			const m = parts[1];
+			const n = parts[0].trim();
+			const m = parts[1].trim();
 
 			this.stats.nDigitNumbers++;
 
 			if (n === m) {
-				// Same number of digits - use special notation
-				// $e{3;3} means 3-digit number (100-999)
+				// Same number of digits: $e{3;3} or $e{&1;&1} → digits:n
+				// For common literal cases, use explicit ranges
 				if (n === '2') return '{{10..99}}';
 				if (n === '3') return '{{100..999}}';
 				if (n === '4') return '{{1000..9999}}';
 				if (n === '5') return '{{10000..99999}}';
 
-				// For other cases, use digits:n (n-digit integer)
-				this.warnings.push(
-					`N-digit pattern $e{${n};${n}} converted to {{digits:${n}}} - verify range is correct`
-				);
 				return `{{digits:${n}}}`;
 			} else {
-				// Variable number of digits
-				this.warnings.push(`Variable digit pattern $e{${n};${m}} needs custom implementation`);
+				// Different digit counts: $e{2;4} or $e{&1;&2} → digits:n..m
 				return `{{digits:${n}..${m}}}`;
 			}
 		});
@@ -958,11 +952,11 @@ export function toSimplifiedSyntax(legacySyntax: string): string {
 	});
 
 	// Also strip {{}} from inside digits: content (even without outer {{}})
-	// digits:{{1..2}};{{1..2}} → digits:1..2;1..2
-	result = result.replace(/digits:([^;\s]+);([^;\s]+)/g, (_, part1, part2) => {
+	// digits:{{1..2}}.{{1..2}} → digits:1..2.1..2
+	result = result.replace(/digits:([^.\s]+)\.([^.\s]+)/g, (_, part1, part2) => {
 		const stripped1 = part1.replace(/\{\{([^}]+)\}\}/g, '$1');
 		const stripped2 = part2.replace(/\{\{([^}]+)\}\}/g, '$1');
-		return `digits:${stripped1};${stripped2}`;
+		return `digits:${stripped1}.${stripped2}`;
 	});
 
 	// Strip {{random:...}} → random:...
