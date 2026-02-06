@@ -24,6 +24,42 @@ import { parseEvalExpressionWithModifiers } from '../parser/eval-parser';
 import { normalizeExpression } from '../parser/expression-normalizer';
 import { generateRandomNumber } from './random-generator';
 import { evaluateWithModifiers } from '$lib/mathAST/eval';
+import { toFrenchDecimal } from '$lib/utils/french-math';
+
+// ============================================================================
+// REMOVE SPACES (French digit grouping prevention)
+// ============================================================================
+
+/**
+ * Prevent French digit grouping on a LaTeX value.
+ *
+ * Problem: generators (latex-generator, typst-generator) call toFrenchDecimal()
+ * on all math content, turning 12345 → 12\,345. For exercises where students must
+ * add digit grouping themselves, we need to prevent this.
+ *
+ * Solution: insert empty LaTeX groups {} between consecutive digits.
+ * toFrenchDecimal's regex /(\d+)/g then sees only single-digit matches,
+ * which are too short (< 4 digits) to trigger grouping.
+ * {} renders as nothing in LaTeX, so the visual output is unchanged.
+ *
+ * Steps:
+ * 1. Pre-apply toFrenchDecimal with formatSpaces:false to convert decimal
+ *    points to French commas ({,}) without adding digit grouping.
+ *    This is necessary because the {} insertion would otherwise prevent
+ *    the generator from recognizing decimal numbers (3.14 → 3{}.{}1{}4).
+ * 2. Insert {} between every pair of consecutive digits.
+ *
+ * @example
+ * applyRemoveSpaces("12345")     → "1{}2{}3{}4{}5"
+ * applyRemoveSpaces("3.14")      → "3{,}1{}4"        (decimal → {,}, then {} between digits)
+ * applyRemoveSpaces("12345.678") → "1{}2{}3{}4{}5{,}6{}7{}8"
+ */
+function applyRemoveSpaces(latex: string): string {
+	// Step 1: convert decimal points to French commas (but no digit grouping)
+	const withFrenchComma = toFrenchDecimal(latex, { formatSpaces: false });
+	// Step 2: break consecutive digit sequences with empty LaTeX groups
+	return withFrenchComma.replace(/(\d)(?=\d)/g, '$1{}');
+}
 
 /**
  * Resolve all variables using 3-stage pipeline
@@ -121,8 +157,10 @@ export function resolveVariables(
 					variable.displayOptions
 				);
 
-				// Only apply transforms if the value is transformable (valid LaTeX)
-				// and at least one transform option is enabled
+				let displayValue = resolvedValue;
+				let changed = false;
+
+				// Apply structural transforms (shuffle, removeNullTerms, etc.)
 				const hasActiveTransforms =
 					displayOptions.shuffleTerms ||
 					displayOptions.shuffleFactors ||
@@ -133,11 +171,18 @@ export function resolveVariables(
 					displayOptions.removeUnnecessaryBrackets;
 
 				if (hasActiveTransforms && canTransform(resolvedValue)) {
-					const displayValue = applyDisplayTransforms(resolvedValue, displayOptions);
-					// Only set displayValue if it's different from the raw value
-					if (displayValue !== resolvedValue) {
-						resolved.displayValue = displayValue;
-					}
+					displayValue = applyDisplayTransforms(resolvedValue, displayOptions);
+					changed = displayValue !== resolvedValue;
+				}
+
+				// Apply removeSpaces: prevent French digit grouping by inserting {}
+				if (displayOptions.removeSpaces) {
+					displayValue = applyRemoveSpaces(displayValue);
+					changed = displayValue !== resolvedValue;
+				}
+
+				if (changed) {
+					resolved.displayValue = displayValue;
 				}
 			}
 

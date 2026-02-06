@@ -1291,7 +1291,7 @@ describe('Question Transformer', () => {
 			expect(result.template?.defaultDisplayOptions?.removeNullTerms).toBe(true);
 		});
 
-		it('should map exp-no-spaces to defaultDisplayOptions.addSpaces=false', () => {
+		it('should map exp-no-spaces to defaultDisplayOptions.removeSpaces=true', () => {
 			const oldQuestion: QuestionBase = {
 				description: 'Test no spaces',
 				enounces: ['Calculer :'],
@@ -1306,7 +1306,7 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.defaultDisplayOptions?.addSpaces).toBe(false);
+			expect(result.template?.defaultDisplayOptions?.removeSpaces).toBe(true);
 		});
 
 		it('should silently ignore exp-allow-unecessary-zeros (dead code in old TinyMath)', () => {
@@ -1345,7 +1345,7 @@ describe('Question Transformer', () => {
 			expect(result.success).toBe(true);
 			expect(result.template?.defaultDisplayOptions?.shuffleTerms).toBe(true);
 			expect(result.template?.defaultDisplayOptions?.removeNullTerms).toBe(true);
-			expect(result.template?.defaultDisplayOptions?.addSpaces).toBe(false);
+			expect(result.template?.defaultDisplayOptions?.removeSpaces).toBe(true);
 			expect(result.stats?.displayOptionsMapped).toBe(3);
 		});
 

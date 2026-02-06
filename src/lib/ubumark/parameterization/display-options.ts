@@ -88,15 +88,21 @@ export interface DisplayOptions {
 	 */
 	removeUnnecessaryBrackets?: boolean;
 
-	// === LaTeX formatting options ===
+	// === Number formatting options ===
 
 	/**
-	 * Add spaces in LaTeX output
+	 * Remove French digit grouping spaces from numbers
 	 *
-	 * When true, adds spacing around operators for better readability.
-	 * @default true
+	 * By default, numbers with 4+ digits get French formatting via toFrenchDecimal()
+	 * in generators (e.g. 12345 → 12\,345). When true, this formatting is prevented
+	 * by inserting empty LaTeX groups {} between consecutive digits in the displayValue,
+	 * so the generator's toFrenchDecimal regex sees only single-digit sequences.
+	 *
+	 * Used by exercises where students must add correct digit grouping themselves.
+	 *
+	 * @default false
 	 */
-	addSpaces?: boolean;
+	removeSpaces?: boolean;
 }
 
 // ============================================================================
@@ -107,7 +113,7 @@ export interface DisplayOptions {
  * Global hardcoded defaults - most conservative settings
  *
  * These are the base values used when no template or variable options are specified.
- * All boolean options default to false (no transformation) except addSpaces.
+ * All boolean options default to false (no transformation).
  */
 export const GLOBAL_DISPLAY_DEFAULTS: Required<DisplayOptions> = {
 	// Structural transformations - all off by default
@@ -119,8 +125,8 @@ export const GLOBAL_DISPLAY_DEFAULTS: Required<DisplayOptions> = {
 	removeNullTerms: false,
 	removeUnnecessaryBrackets: false,
 
-	// LaTeX formatting
-	addSpaces: true
+	// Number formatting
+	removeSpaces: false
 };
 
 // ============================================================================

@@ -261,8 +261,8 @@ interface QuestionVariable {
 		removeNullTerms?: boolean;
 		removeUnnecessaryBrackets?: boolean;
 
-		// Formatage LaTeX
-		addSpaces?: boolean; // Défaut: true
+		// Number formatting
+		removeSpaces?: boolean; // Défaut: false
 	};
 }
 ```
