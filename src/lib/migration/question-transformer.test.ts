@@ -68,7 +68,7 @@ describe('Question Transformer', () => {
 				});
 				// Statement references the expression variable
 				expect(String(variation?.statement)).toContain('$${{expression1}}$$');
-				expect(variation?.solution).toBe('{{eval:a+b}}');
+				expect(variation?.solution).toBe('eval:a+b');
 			});
 
 			it('should detect and transform decimal questions', () => {
@@ -248,11 +248,11 @@ describe('Question Transformer', () => {
 
 				const var1 = result.template?.variations[0];
 				expect(var1?.statement).toContain('Additionner');
-				expect(var1?.solution).toBe('{{eval:a+b}}');
+				expect(var1?.solution).toBe('eval:a+b');
 
 				const var2 = result.template?.variations[1];
 				expect(var2?.statement).toContain('Soustraire');
-				expect(var2?.solution).toBe('{{eval:a-b}}');
+				expect(var2?.solution).toBe('eval:a-b');
 			});
 		});
 
@@ -519,7 +519,7 @@ describe('Question Transformer', () => {
 				expect(vars?.[1]).toEqual({ name: 'b', expression: '0..9!a' });
 				expect(vars?.[2]).toEqual({ name: 'c', expression: 'eval:a*10+b' });
 
-				expect(result.template?.variations[0]?.solution).toBe('{{a}}');
+				expect(result.template?.variations[0]?.solution).toBe('a');
 			});
 
 			it('should handle n-digit number patterns', () => {
@@ -792,8 +792,8 @@ describe('Question Transformer', () => {
 			// Per-variation solutions
 			expect(result.template?.variations[0]?.solution).toBeDefined();
 			expect(result.template?.variations[1]?.solution).toBeDefined();
-			expect(result.template?.variations[0]?.solution).toBe('{{eval:a+b}}');
-			expect(result.template?.variations[1]?.solution).toBe('{{eval:a*2+b}}');
+			expect(result.template?.variations[0]?.solution).toBe('eval:a+b');
+			expect(result.template?.variations[1]?.solution).toBe('eval:a*2+b');
 		});
 
 		it('should preserve QuestionCorrection structure when shared', () => {
@@ -1190,7 +1190,7 @@ describe('Question Transformer', () => {
 
 			expect(result.success).toBe(true);
 			// Solution should evaluate the expression variable
-			expect(result.template?.variations[0]?.solution).toBe('{{eval:expression1}}');
+			expect(result.template?.variations[0]?.solution).toBe('eval:expression1');
 		});
 
 		it('should generate per-variation solutions from expressions when solutionss is absent', () => {
@@ -1207,8 +1207,8 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.variations[0]?.solution).toBe('{{eval:expression1}}');
-			expect(result.template?.variations[1]?.solution).toBe('{{eval:expression2}}');
+			expect(result.template?.variations[0]?.solution).toBe('eval:expression1');
+			expect(result.template?.variations[1]?.solution).toBe('eval:expression2');
 		});
 	});
 
