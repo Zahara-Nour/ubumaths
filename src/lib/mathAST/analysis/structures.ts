@@ -359,7 +359,7 @@ function extractMiddleTermCoeff(term: MathNode, a: MathNode, b: MathNode): numbe
 	const patternA = P.lit(a);
 	const patternB = P.lit(b);
 
-	for (const factor of factors) {
+	for (const { factor } of factors) {
 		const matchA = match(patternA, factor);
 		const matchB = match(patternB, factor);
 
@@ -587,7 +587,7 @@ export function isFactoredForm(node: MathNode, variable?: string): FactoredFormI
 	const patternRMinusX = P.sub(P._('r'), P.var(targetVar));
 	const patternRPlusX = P.add(P._('r'), P.var(targetVar));
 
-	for (const factor of factors) {
+	for (const { factor } of factors) {
 		// Unwrap delimiter if present
 		const inner = isDelimiter(factor) ? factor.content : factor;
 

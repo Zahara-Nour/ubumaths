@@ -92,7 +92,7 @@ function isValidProduct(node: MathNode): boolean {
 	}
 
 	// No trivial factors allowed (1 or -1)
-	for (const factor of factors) {
+	for (const { factor } of factors) {
 		if (isTrivialFactor(factor)) {
 			return false;
 		}

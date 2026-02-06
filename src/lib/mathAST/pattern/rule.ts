@@ -269,8 +269,12 @@ function instantiateProductPattern(pattern: ProductPattern, bindings: MatchBindi
 				throw new Error(`Expected product sequence binding for '${elem.name}'`);
 			}
 
-			// Unflatten and add to nodes
-			const unflattened = unflattenProduct(binding.factors);
+			// Wrap MathNodes as StyledFactors with implicit style for unflatten
+			const styledFactors = binding.factors.map((f) => ({
+				style: 'implicit' as const,
+				factor: f
+			}));
+			const unflattened = unflattenProduct(styledFactors);
 			if (unflattened) {
 				nodes.push(unflattened);
 			}

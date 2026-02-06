@@ -116,7 +116,7 @@ describe('unflattenProduct', () => {
 
 	it('returns factor for single factor', () => {
 		const a = variable('a');
-		const flatProduct: FlatProduct = [a];
+		const flatProduct: FlatProduct = [{ style: 'implicit', factor: a }];
 		const result = unflattenProduct(flatProduct);
 		expect(result).toEqual(a);
 	});
@@ -125,7 +125,11 @@ describe('unflattenProduct', () => {
 		const a = variable('a');
 		const b = variable('b');
 		const c = variable('c');
-		const flatProduct: FlatProduct = [a, b, c];
+		const flatProduct: FlatProduct = [
+			{ style: 'implicit', factor: a },
+			{ style: 'implicit', factor: b },
+			{ style: 'implicit', factor: c }
+		];
 		const result = unflattenProduct(flatProduct);
 		// Should be ((a * b) * c) with implicit style
 		expect(result).toEqual(multiply(multiply(a, b, 'implicit'), c, 'implicit'));
@@ -135,17 +139,39 @@ describe('unflattenProduct', () => {
 		const a = variable('a');
 		const b = variable('b');
 		const c = variable('c');
-		const flatProduct: FlatProduct = [a, b, c];
-		const result = unflattenProduct(flatProduct, 'dot');
-		// Should be ((a * b) * c) with dot style
+		const flatProduct: FlatProduct = [
+			{ style: 'implicit', factor: a },
+			{ style: 'dot', factor: b },
+			{ style: 'dot', factor: c }
+		];
+		const result = unflattenProduct(flatProduct);
+		// Should be ((a · b) · c) with dot style
 		expect(result).toEqual(multiply(multiply(a, b, 'dot'), c, 'dot'));
+	});
+
+	it('builds left-associative product with mixed styles', () => {
+		const a = variable('a');
+		const b = variable('b');
+		const c = variable('c');
+		const flatProduct: FlatProduct = [
+			{ style: 'implicit', factor: a },
+			{ style: 'cross', factor: b },
+			{ style: 'dot', factor: c }
+		];
+		const result = unflattenProduct(flatProduct);
+		// Should be ((a × b) · c) with per-factor styles
+		expect(result).toEqual(multiply(multiply(a, b, 'cross'), c, 'dot'));
 	});
 
 	it('builds left-associative product with numbers', () => {
 		const two = number('2');
 		const x = variable('x');
 		const y = variable('y');
-		const flatProduct: FlatProduct = [two, x, y];
+		const flatProduct: FlatProduct = [
+			{ style: 'implicit', factor: two },
+			{ style: 'implicit', factor: x },
+			{ style: 'implicit', factor: y }
+		];
 		const result = unflattenProduct(flatProduct);
 		// Should be ((2 * x) * y)
 		expect(result).toEqual(multiply(multiply(two, x, 'implicit'), y, 'implicit'));
@@ -161,8 +187,8 @@ describe('unflattenProduct', () => {
 		// Flatten it
 		const flattened = flattenProductShallow(original);
 
-		// Unflatten it back with implicit style
-		const result = unflattenProduct(flattened, 'implicit');
+		// Unflatten it back
+		const result = unflattenProduct(flattened);
 
 		// Should get the same tree structure
 		expect(result).toEqual(original);
@@ -311,17 +337,21 @@ describe('flattenProductShallow', () => {
 	it('flattens single factor to single-element array', () => {
 		const a = variable('a');
 		const result = flattenProductShallow(a);
-		expect(result).toEqual([a]);
+		expect(result).toEqual([{ style: 'implicit', factor: a }]);
 	});
 
 	it('flattens multiplication chain: a * b * c', () => {
 		const a = variable('a');
 		const b = variable('b');
 		const c = variable('c');
-		// (a * b) * c
+		// (a · b) · c
 		const expr = multiply(multiply(a, b, 'dot'), c, 'dot');
 		const result = flattenProductShallow(expr);
-		expect(result).toEqual([a, b, c]);
+		expect(result).toEqual([
+			{ style: 'implicit', factor: a },
+			{ style: 'dot', factor: b },
+			{ style: 'dot', factor: c }
+		]);
 	});
 
 	it('stops at delimiter boundary: a * (b * c)', () => {
@@ -332,18 +362,25 @@ describe('flattenProductShallow', () => {
 		const expr = multiply(a, delim, 'dot');
 		const result = flattenProductShallow(expr);
 		// Should NOT flatten inside the delimiter
-		expect(result).toEqual([a, delim]);
+		expect(result).toEqual([
+			{ style: 'implicit', factor: a },
+			{ style: 'dot', factor: delim }
+		]);
 	});
 
-	it('handles mixed display styles', () => {
+	it('preserves mixed display styles', () => {
 		const a = variable('a');
 		const b = variable('b');
 		const c = variable('c');
-		// (a * b) * c with different display styles
+		// (a · b) c with different display styles
 		const expr = multiply(multiply(a, b, 'dot'), c, 'implicit');
 		const result = flattenProductShallow(expr);
-		// Display styles are preserved in the nodes but not in the flat array
-		expect(result).toEqual([a, b, c]);
+		// Display styles are now preserved per factor
+		expect(result).toEqual([
+			{ style: 'implicit', factor: a },
+			{ style: 'dot', factor: b },
+			{ style: 'implicit', factor: c }
+		]);
 	});
 
 	it('handles numeric coefficients: 2 * x * y', () => {
@@ -352,7 +389,11 @@ describe('flattenProductShallow', () => {
 		const y = variable('y');
 		const expr = multiply(multiply(two, x, 'dot'), y, 'dot');
 		const result = flattenProductShallow(expr);
-		expect(result).toEqual([two, x, y]);
+		expect(result).toEqual([
+			{ style: 'implicit', factor: two },
+			{ style: 'dot', factor: x },
+			{ style: 'dot', factor: y }
+		]);
 	});
 
 	it('handles long multiplication chain: a * b * c * d * e', () => {
@@ -361,10 +402,16 @@ describe('flattenProductShallow', () => {
 		const c = variable('c');
 		const d = variable('d');
 		const e = variable('e');
-		// ((((a * b) * c) * d) * e)
+		// ((((a · b) · c) · d) · e)
 		const expr = multiply(multiply(multiply(multiply(a, b, 'dot'), c, 'dot'), d, 'dot'), e, 'dot');
 		const result = flattenProductShallow(expr);
-		expect(result).toEqual([a, b, c, d, e]);
+		expect(result).toEqual([
+			{ style: 'implicit', factor: a },
+			{ style: 'dot', factor: b },
+			{ style: 'dot', factor: c },
+			{ style: 'dot', factor: d },
+			{ style: 'dot', factor: e }
+		]);
 	});
 
 	it('stops at multiple delimiters: (a * b) * (c * d)', () => {
@@ -376,7 +423,10 @@ describe('flattenProductShallow', () => {
 		const delim2 = parentheses(multiply(c, d, 'dot'));
 		const expr = multiply(delim1, delim2, 'dot');
 		const result = flattenProductShallow(expr);
-		expect(result).toEqual([delim1, delim2]);
+		expect(result).toEqual([
+			{ style: 'implicit', factor: delim1 },
+			{ style: 'dot', factor: delim2 }
+		]);
 	});
 });
 
@@ -449,7 +499,10 @@ describe('flattenSumDeep', () => {
 		const prodContent = result.subLists.get(prod);
 		expect(prodContent).toBeDefined();
 		if (prodContent && 'factors' in prodContent) {
-			expect(prodContent.factors).toEqual([b, c]);
+			expect(prodContent.factors).toEqual([
+				{ style: 'implicit', factor: b },
+				{ style: 'dot', factor: c }
+			]);
 		}
 	});
 
@@ -527,7 +580,11 @@ describe('flattenProductDeep', () => {
 		const expr = multiply(multiply(a, b, 'dot'), c, 'dot');
 		const result = flattenProductDeep(expr);
 
-		expect(result.factors).toEqual([a, b, c]);
+		expect(result.factors).toEqual([
+			{ style: 'implicit', factor: a },
+			{ style: 'dot', factor: b },
+			{ style: 'dot', factor: c }
+		]);
 		expect(result.subLists.size).toBe(0);
 	});
 
@@ -540,7 +597,10 @@ describe('flattenProductDeep', () => {
 		const result = flattenProductDeep(expr);
 
 		// Shallow factors include the delimiter
-		expect(result.factors).toEqual([a, delim]);
+		expect(result.factors).toEqual([
+			{ style: 'implicit', factor: a },
+			{ style: 'dot', factor: delim }
+		]);
 
 		// SubList should contain the sum content
 		expect(result.subLists.size).toBe(1);
@@ -565,7 +625,10 @@ describe('flattenProductDeep', () => {
 		const result = flattenProductDeep(expr);
 
 		// Shallow factors include the delimiter
-		expect(result.factors).toEqual([a, delim]);
+		expect(result.factors).toEqual([
+			{ style: 'implicit', factor: a },
+			{ style: 'dot', factor: delim }
+		]);
 
 		// SubList should contain the product content
 		expect(result.subLists.size).toBe(1);
@@ -574,7 +637,10 @@ describe('flattenProductDeep', () => {
 		const delimContent = result.subLists.get(delim);
 		expect(delimContent).toBeDefined();
 		if (delimContent && 'factors' in delimContent) {
-			expect(delimContent.factors).toEqual([b, c]);
+			expect(delimContent.factors).toEqual([
+				{ style: 'implicit', factor: b },
+				{ style: 'dot', factor: c }
+			]);
 		}
 	});
 
@@ -588,7 +654,11 @@ describe('flattenProductDeep', () => {
 		const result = flattenProductDeep(expr);
 
 		// Shallow factors
-		expect(result.factors).toEqual([a, delim, d]);
+		expect(result.factors).toEqual([
+			{ style: 'implicit', factor: a },
+			{ style: 'dot', factor: delim },
+			{ style: 'dot', factor: d }
+		]);
 
 		// Should have subList for the delimiter
 		expect(result.subLists.size).toBe(1);
@@ -606,21 +676,30 @@ describe('flattenProductDeep', () => {
 		const result = flattenProductDeep(expr);
 
 		// Top level has outer delimiter and d
-		expect(result.factors).toEqual([outerDelim, d]);
+		expect(result.factors).toEqual([
+			{ style: 'implicit', factor: outerDelim },
+			{ style: 'dot', factor: d }
+		]);
 
 		// Should have subList for outerDelim
 		expect(result.subLists.has(outerDelim)).toBe(true);
 
 		const outerContent = result.subLists.get(outerDelim);
 		if (outerContent && 'factors' in outerContent) {
-			expect(outerContent.factors).toEqual([a, innerDelim]);
+			expect(outerContent.factors).toEqual([
+				{ style: 'implicit', factor: a },
+				{ style: 'dot', factor: innerDelim }
+			]);
 
 			// Should also have subList for innerDelim
 			expect(outerContent.subLists.has(innerDelim)).toBe(true);
 
 			const innerContent = outerContent.subLists.get(innerDelim);
 			if (innerContent && 'factors' in innerContent) {
-				expect(innerContent.factors).toEqual([b, c]);
+				expect(innerContent.factors).toEqual([
+					{ style: 'implicit', factor: b },
+					{ style: 'dot', factor: c }
+				]);
 			}
 		}
 	});
@@ -636,7 +715,10 @@ describe('flattenProductDeep', () => {
 		const result = flattenProductDeep(expr);
 
 		// Shallow level
-		expect(result.factors).toEqual([sumDelim, prodDelim]);
+		expect(result.factors).toEqual([
+			{ style: 'implicit', factor: sumDelim },
+			{ style: 'dot', factor: prodDelim }
+		]);
 
 		// Should have subLists for both
 		expect(result.subLists.size).toBe(2);
@@ -655,7 +737,10 @@ describe('flattenProductDeep', () => {
 		// Second should be a product
 		const prodContent = result.subLists.get(prodDelim);
 		if (prodContent && 'factors' in prodContent) {
-			expect(prodContent.factors).toEqual([c, d]);
+			expect(prodContent.factors).toEqual([
+				{ style: 'implicit', factor: c },
+				{ style: 'dot', factor: d }
+			]);
 		}
 	});
 });
@@ -843,11 +928,11 @@ describe('Round-trip tests', () => {
 		const b = variable('b');
 		const c = variable('c');
 		const d = variable('d');
-		// ((a * b) * c) * d
+		// ((a · b) · c) · d
 		const original = multiply(multiply(multiply(a, b, 'dot'), c, 'dot'), d, 'dot');
 
 		const flattened = flattenProductShallow(original);
-		const reconstructed = unflattenProduct(flattened, 'dot');
+		const reconstructed = unflattenProduct(flattened);
 
 		expect(reconstructed).toEqual(original);
 	});
