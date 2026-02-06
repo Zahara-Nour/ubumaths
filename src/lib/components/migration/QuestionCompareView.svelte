@@ -146,7 +146,18 @@
 					domain: (transformed.domain as string) || '',
 					level: transformed.level as number | null,
 					status: (transformed.status as string) || '',
-					delay: transformed.delay as number | null
+					delay: transformed.delay as number | null,
+					options: transformed.options as
+						| {
+								constraints?: Record<string, string | boolean>;
+								unitOptions?: Record<string, unknown>;
+								shuffleChoices?: boolean;
+								[key: string]: unknown;
+						  }
+						| undefined,
+					defaultDisplayOptions: transformed.defaultDisplayOptions as
+						| Record<string, boolean>
+						| undefined
 				}
 			: null
 	);
@@ -524,6 +535,56 @@
 							</div>
 						{/if}
 					</div>
+
+					<!-- Options (constraints, unitOptions, etc.) -->
+					{#if newFields.options && Object.keys(newFields.options).length > 0}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">Options</h4>
+							<div class="space-y-1 rounded-md bg-muted p-3 font-mono text-xs">
+								{#if newFields.options.constraints}
+									{#each Object.entries(newFields.options.constraints) as [key, value] (key)}
+										<div>
+											<span class="text-primary">{key}</span>
+											<span class="text-muted-foreground"> = </span>
+											<span>{value}</span>
+										</div>
+									{/each}
+								{/if}
+								{#if newFields.options.shuffleChoices !== undefined}
+									<div>
+										<span class="text-primary">shuffleChoices</span>
+										<span class="text-muted-foreground"> = </span>
+										<span>{newFields.options.shuffleChoices}</span>
+									</div>
+								{/if}
+								{#if newFields.options.unitOptions}
+									{#each Object.entries(newFields.options.unitOptions) as [key, value] (key)}
+										<div>
+											<span class="text-primary">unit.{key}</span>
+											<span class="text-muted-foreground"> = </span>
+											<span>{value}</span>
+										</div>
+									{/each}
+								{/if}
+							</div>
+						</div>
+					{/if}
+
+					<!-- Default Display Options -->
+					{#if newFields.defaultDisplayOptions && Object.keys(newFields.defaultDisplayOptions).length > 0}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">Display Options</h4>
+							<div class="space-y-1 rounded-md bg-muted p-3 font-mono text-xs">
+								{#each Object.entries(newFields.defaultDisplayOptions) as [key, value] (key)}
+									<div>
+										<span class="text-primary">{key}</span>
+										<span class="text-muted-foreground"> = </span>
+										<span>{value}</span>
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
 
 					<!-- Shared Variables -->
 					{#if newFields.shared?.variables && newFields.shared.variables.length > 0}

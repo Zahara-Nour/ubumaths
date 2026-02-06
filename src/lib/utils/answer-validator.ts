@@ -17,6 +17,7 @@ import type {
 	ConstraintOptions,
 	ValidationRule
 } from '$lib/questions/types';
+import { DEFAULT_CONSTRAINT_MODE } from '$lib/questions/types';
 import type { ValidationResult } from '$lib/types/question-display';
 import { evaluateExpression, areEquivalent } from '$lib/math/compute-engine';
 import {
@@ -88,10 +89,10 @@ function applyConstraints(
 	];
 
 	for (const { id, check } of checks) {
-		const mode = constraints[id] as ConstraintMode | undefined;
+		const mode = (constraints[id] as ConstraintMode | undefined) ?? DEFAULT_CONSTRAINT_MODE;
 
-		// Skip if off or not configured
-		if (!mode || mode === 'off') continue;
+		// Skip if off (default for unconfigured constraints)
+		if (mode === 'off') continue;
 
 		const problematic = check();
 		if (problematic.length > 0) {
