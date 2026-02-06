@@ -59,6 +59,11 @@ export const CONSTRAINT_FEEDBACK: Record<ConstraintId, { single: string; multipl
 	reducedFractions: {
 		single: 'La fraction peut être simplifiée.',
 		multiple: 'Une ou plusieurs fractions peuvent être simplifiées.'
+	},
+	// Unit matching
+	unit: {
+		single: "L'unité n'est pas celle attendue.",
+		multiple: "L'unité n'est pas celle attendue."
 	}
 } as const;
 

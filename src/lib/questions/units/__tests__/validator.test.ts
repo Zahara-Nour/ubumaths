@@ -12,7 +12,7 @@
  * Test Categories:
  * 1. Basic Validation - Simple correct/incorrect answers
  * 2. Unit Compatibility - Compatible vs incompatible units
- * 3. requireExactUnit Option - Strict unit matching
+ * 3. checkUnit Constraint Validator - Strict unit matching (via constraint system)
  * 4. requireSameSymbol Option - Symbol matching
  * 5. Tolerance Options - Absolute and relative tolerance
  * 6. Error Classification - All error types
@@ -22,6 +22,7 @@
 
 import { describe, test, expect } from 'vitest';
 import { validateQuantityAnswer, type ValidationOptions } from '../validator';
+import { checkUnit } from '../../constraint-validators';
 
 // ============================================================================
 // BASIC VALIDATION
@@ -194,64 +195,59 @@ describe('Unit Compatibility', () => {
 });
 
 // ============================================================================
-// REQUIRE EXACT UNIT OPTION
+// UNIT CONSTRAINT VALIDATOR (checkUnit)
 // ============================================================================
 
-describe('requireExactUnit Option', () => {
-	describe('When requireExactUnit is true', () => {
-		const options: ValidationOptions = { requireExactUnit: true };
-
-		test('rejects km when expecting m (even if value equivalent)', () => {
-			const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}', options);
-
-			expect(result.isCorrect).toBe(false);
-			expect(result.errorType).toBe('wrong_unit');
-			expect(result.feedback).toBe('Unité incorrecte.');
-		});
-
-		test('rejects m when expecting km', () => {
-			const result = validateQuantityAnswer('5000\\unit{m}', '5\\unit{km}', options);
-
-			expect(result.isCorrect).toBe(false);
-			expect(result.errorType).toBe('wrong_unit');
-		});
-
-		test('accepts exact match with same unit', () => {
-			const result = validateQuantityAnswer('5\\unit{m}', '5\\unit{m}', options);
-
-			expect(result.isCorrect).toBe(true);
-			expect(result.feedback).toBeNull();
-		});
-
-		test('rejects cm when expecting m', () => {
-			const result = validateQuantityAnswer('100\\unit{cm}', '1\\unit{m}', options);
-
-			expect(result.isCorrect).toBe(false);
-			expect(result.errorType).toBe('wrong_unit');
-		});
-
-		test('rejects g when expecting kg', () => {
-			const result = validateQuantityAnswer('1000\\unit{g}', '1\\unit{kg}', options);
-
-			expect(result.isCorrect).toBe(false);
-			expect(result.errorType).toBe('wrong_unit');
-		});
+describe('checkUnit Constraint Validator', () => {
+	test('flags violation when units differ (km vs m)', () => {
+		const violations = checkUnit(['5\\unit{km}'], ['5000\\unit{m}']);
+		expect(violations).toEqual([0]);
 	});
 
-	describe('When requireExactUnit is false (default)', () => {
-		test('accepts km when expecting m (with conversion)', () => {
-			const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}');
+	test('flags violation when units differ (m vs km)', () => {
+		const violations = checkUnit(['5000\\unit{m}'], ['5\\unit{km}']);
+		expect(violations).toEqual([0]);
+	});
 
-			expect(result.isCorrect).toBe(true);
-			expect(result.feedback).toBeNull();
-		});
+	test('no violation when units match exactly', () => {
+		const violations = checkUnit(['5\\unit{m}'], ['5\\unit{m}']);
+		expect(violations).toEqual([]);
+	});
 
-		test('accepts compatible units with correct value', () => {
-			const result = validateQuantityAnswer('100\\unit{cm}', '1\\unit{m}');
+	test('flags violation for cm vs m', () => {
+		const violations = checkUnit(['100\\unit{cm}'], ['1\\unit{m}']);
+		expect(violations).toEqual([0]);
+	});
 
-			expect(result.isCorrect).toBe(true);
-			expect(result.feedback).toBeNull();
-		});
+	test('flags violation for g vs kg', () => {
+		const violations = checkUnit(['1000\\unit{g}'], ['1\\unit{kg}']);
+		expect(violations).toEqual([0]);
+	});
+
+	test('skips non-unit answers (no violations)', () => {
+		const violations = checkUnit(['42'], ['42']);
+		expect(violations).toEqual([]);
+	});
+
+	test('handles multiple answers with mixed violations', () => {
+		const violations = checkUnit(['5\\unit{km}', '10\\unit{m}'], ['5000\\unit{m}', '10\\unit{m}']);
+		expect(violations).toEqual([0]);
+	});
+});
+
+describe('validateQuantityAnswer accepts compatible units by default', () => {
+	test('accepts km when expecting m (with conversion)', () => {
+		const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}');
+
+		expect(result.isCorrect).toBe(true);
+		expect(result.feedback).toBeNull();
+	});
+
+	test('accepts compatible units with correct value', () => {
+		const result = validateQuantityAnswer('100\\unit{cm}', '1\\unit{m}');
+
+		expect(result.isCorrect).toBe(true);
+		expect(result.feedback).toBeNull();
 	});
 });
 
@@ -484,15 +480,6 @@ describe('Error Classification', () => {
 		expect(result.errorType).toBe('incompatible_units');
 	});
 
-	test('classifies wrong_unit when requireExactUnit is violated', () => {
-		const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}', {
-			requireExactUnit: true
-		});
-
-		expect(result.isCorrect).toBe(false);
-		expect(result.errorType).toBe('wrong_unit');
-	});
-
 	test('classifies wrong_unit when requireSameSymbol is violated (different base symbols)', () => {
 		const result = validateQuantityAnswer('5\\unit{m}', '5\\unit{L}', {
 			requireSameSymbol: true
@@ -621,14 +608,6 @@ describe('French Feedback Messages', () => {
 		expect(result.feedback).toBe('Les unités ne sont pas compatibles.');
 	});
 
-	test('provides French message for incorrect unit', () => {
-		const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}', {
-			requireExactUnit: true
-		});
-
-		expect(result.feedback).toBe('Unité incorrecte.');
-	});
-
 	test('provides French message for incorrect value', () => {
 		const result = validateQuantityAnswer('10\\unit{m}', '5\\unit{m}');
 
@@ -647,18 +626,6 @@ describe('French Feedback Messages', () => {
 // ============================================================================
 
 describe('Custom Messages', () => {
-	test('allows custom message for incorrect unit', () => {
-		const options: ValidationOptions = {
-			requireExactUnit: true,
-			messages: {
-				incorrectUnit: 'Utilise la bonne unité!'
-			}
-		};
-		const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}', options);
-
-		expect(result.feedback).toBe('Utilise la bonne unité!');
-	});
-
 	test('allows custom message for incompatible units', () => {
 		const options: ValidationOptions = {
 			messages: {

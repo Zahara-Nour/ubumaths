@@ -365,8 +365,6 @@ export interface QuestionTemplate {
 
 		/** Unit validation options for numerical_with_unit questions */
 		unitOptions?: {
-			/** Require exact unit match (no conversion allowed) */
-			requireExactUnit?: boolean;
 			/** Require matching unit symbols */
 			requireSameSymbol?: boolean;
 			/** Numeric tolerance */
@@ -625,7 +623,8 @@ export type ConstraintId =
 	| 'factorOne'
 	| 'factorZero'
 	| 'signs'
-	| 'reducedFractions';
+	| 'reducedFractions'
+	| 'unit';
 
 /**
  * How to handle constraint violations (ordered by decreasing severity)
@@ -665,6 +664,8 @@ export interface ConstraintOptions {
 	factorZero?: ConstraintMode;
 	signs?: ConstraintMode;
 	reducedFractions?: ConstraintMode;
+	// Unit matching (numerical_with_unit questions)
+	unit?: ConstraintMode;
 }
 
 // ============================================================================

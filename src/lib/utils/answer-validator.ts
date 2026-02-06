@@ -30,7 +30,8 @@ import {
 	checkFactorOne,
 	checkFactorZero,
 	checkSigns,
-	checkReducedFractions
+	checkReducedFractions,
+	checkUnit
 } from '$lib/questions/constraint-validators';
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
@@ -85,7 +86,9 @@ function applyConstraints(
 		{ id: 'factorOne', check: () => checkFactorOne(answersLatex) },
 		{ id: 'factorZero', check: () => checkFactorZero(answersLatex) },
 		{ id: 'signs', check: () => checkSigns(answersLatex) },
-		{ id: 'reducedFractions', check: () => checkReducedFractions(answersLatex) }
+		{ id: 'reducedFractions', check: () => checkReducedFractions(answersLatex) },
+		// Unit matching (numerical_with_unit questions - no-op for non-unit answers)
+		{ id: 'unit', check: () => checkUnit(answersLatex, expectedAnswers) }
 	];
 
 	for (const { id, check } of checks) {
@@ -438,8 +441,6 @@ export function validateNumerical(
  * Options for unit validation
  */
 export interface UnitValidationOptions {
-	/** Require exact unit match (no conversion allowed) */
-	requireExactUnit?: boolean;
 	/** Require matching unit symbols */
 	requireSameSymbol?: boolean;
 	/** Numeric tolerance */
@@ -463,7 +464,6 @@ export function validateNumericalWithUnit(
 	options?: UnitValidationOptions
 ): ValidationResult {
 	const result = validateQuantityAnswer(userAnswer, correctAnswer, {
-		requireExactUnit: options?.requireExactUnit,
 		requireSameSymbol: options?.requireSameSymbol,
 		tolerance: options?.tolerance
 	});

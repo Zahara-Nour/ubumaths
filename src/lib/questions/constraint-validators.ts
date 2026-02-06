@@ -12,6 +12,9 @@
  * @module questions/constraint-validators
  */
 
+import { parseLatexQuantity } from './units/parser';
+import { checkExactUnitMatch } from './units/validator';
+
 // ============================================================================
 // SPACING VALIDATOR
 // ============================================================================
@@ -1305,6 +1308,41 @@ export function checkReducedFractions(answersLatex: string[]): number[] {
 		});
 
 		if (hasUnreducedFraction) {
+			violations.push(i);
+		}
+	}
+
+	return violations;
+}
+
+// ============================================================================
+// UNIT MATCH VALIDATOR
+// ============================================================================
+
+/**
+ * Check that answer units match the expected units exactly.
+ *
+ * Only applies to answers that contain units (parsed via parseLatexQuantity).
+ * Answers without parseable units are skipped (not flagged as violations).
+ *
+ * @param answersLatex - Student answers in LaTeX format
+ * @param expectedAnswers - Expected answers in LaTeX format
+ * @returns Array of indices where units don't match
+ */
+export function checkUnit(answersLatex: string[], expectedAnswers: string[]): number[] {
+	const violations: number[] = [];
+
+	for (let i = 0; i < answersLatex.length; i++) {
+		const expected = expectedAnswers[i];
+		if (!expected) continue;
+
+		const userQuantity = parseLatexQuantity(answersLatex[i]);
+		const expectedQuantity = parseLatexQuantity(expected);
+
+		// Skip if either side doesn't have a parseable unit
+		if (!userQuantity || !expectedQuantity) continue;
+
+		if (!checkExactUnitMatch(userQuantity.unit, expectedQuantity.unit)) {
 			violations.push(i);
 		}
 	}

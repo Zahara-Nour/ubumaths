@@ -992,16 +992,14 @@ function convertOptions(
 				break;
 
 			// ================================================================
-			// UNIT OPTIONS - Implemented
+			// UNIT CONSTRAINT - Implemented (same pattern as other constraints)
 			// ================================================================
 			case 'require-specific-unit':
-				if (!options.unitOptions) options.unitOptions = {};
-				options.unitOptions.requireExactUnit = true;
+				constraints.unit = 'strict';
 				_mappedCount++;
 				break;
 			case 'no-penalty-for-not-respected-unit':
-				if (!options.unitOptions) options.unitOptions = {};
-				options.unitOptions.requireExactUnit = false;
+				constraints.unit = 'off';
 				_mappedCount++;
 				break;
 

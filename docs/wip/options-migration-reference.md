@@ -18,10 +18,9 @@
 
 ```
 options: {
-  constraints?: ConstraintOptions    // Validation de la forme des reponses
+  constraints?: ConstraintOptions    // Validation de la forme des reponses (inclut unit)
   shuffleChoices?: boolean           // Melange des choix QCM
-  unitOptions?: {                    // Validation des unites
-    requireExactUnit?: boolean
+  unitOptions?: {                    // Options de comparaison des unites
     requireSameSymbol?: boolean
     tolerance?: { absolute?: number; relative?: number }
   }
@@ -85,6 +84,10 @@ Chaque contrainte suit le meme pattern : `require-*` → `strict`, `no-penalty-*
 | `require-reduced-fractions`                                            | `constraints.reducedFractions`                                                 | `'strict'`           |                                     |
 | `no-penalty-for-non-reduced-fractions`                                 | `constraints.reducedFractions`                                                 | `'off'`              |                                     |
 | _(absent)_                                                             | `constraints.reducedFractions`                                                 | `'warn'` (defaut)    |                                     |
+| **Unite** — _unite exacte attendue (`5 km` vs `5000 m`)_               |                                                                                |                      | `checkUnit()` - parseLatexQuantity  |
+| `require-specific-unit`                                                | `constraints.unit`                                                             | `'strict'`           |                                     |
+| `no-penalty-for-not-respected-unit`                                    | `constraints.unit`                                                             | `'off'`              |                                     |
+| _(absent)_                                                             | `constraints.unit`                                                             | `'warn'` (defaut)    |                                     |
 
 ### Statistiques d'utilisation par contrainte
 
@@ -99,6 +102,7 @@ Chaque contrainte suit le meme pattern : `require-*` → `strict`, `no-penalty-*
 | `factorZero`       | 1 (0.16%)          | 3 (0.47%)                        | 629 (99.4%)   |
 | `signs`            | 4 (0.63%)          | 1 (0.16%)                        | 628 (99.2%)   |
 | `reducedFractions` | 0                  | 10 (1.58%)                       | 623 (98.4%)   |
+| `unit`             | 0                  | 6 (0.95%)                        | 627 (99.1%)   |
 
 ---
 
@@ -106,12 +110,10 @@ Chaque contrainte suit le meme pattern : `require-*` → `strict`, `no-penalty-*
 
 ### Options implementees
 
-| Option ancienne                     | Nouveau chemin                         | Valeur          | Utilisation          |
-| ----------------------------------- | -------------------------------------- | --------------- | -------------------- |
-| `no-shuffle-choices`                | `options.shuffleChoices`               | `false`         | 32 questions (5.06%) |
-| _(absent)_                          | `options.shuffleChoices`               | `true` (defaut) |                      |
-| `require-specific-unit`             | `options.unitOptions.requireExactUnit` | `true`          | 0 questions          |
-| `no-penalty-for-not-respected-unit` | `options.unitOptions.requireExactUnit` | `false`         | 6 questions (0.95%)  |
+| Option ancienne      | Nouveau chemin           | Valeur          | Utilisation          |
+| -------------------- | ------------------------ | --------------- | -------------------- |
+| `no-shuffle-choices` | `options.shuffleChoices` | `false`         | 32 questions (5.06%) |
+| _(absent)_           | `options.shuffleChoices` | `true` (defaut) |                      |
 
 ### Options TODO (non implementees)
 
@@ -199,6 +201,7 @@ NOUVEAU SYSTEME (UbuMaths):
 | `checkFactorZero`       | Regex             | mathAST                  |
 | `checkSigns`            | Regex             | mathAST                  |
 | `checkReducedFractions` | Regex             | mathAST (GCD)            |
+| `checkUnit`             | Boolean flag      | parseLatexQuantity       |
 
 ---
 
@@ -208,8 +211,8 @@ NOUVEAU SYSTEME (UbuMaths):
 
 | Categorie   | Options | Implementees | TODO  | Ignorees |
 | ----------- | ------- | ------------ | ----- | -------- |
-| Contraintes | 21      | 21           | 0     | 0        |
-| Validation  | 11      | 3            | 8     | 0        |
+| Contraintes | 23      | 23           | 0     | 0        |
+| Validation  | 9       | 1            | 8     | 0        |
 | Affichage   | 8       | 7            | 0     | 1        |
 | Ignorees    | 5       | -            | -     | 5        |
 | **Total**   | **45**  | **31**       | **8** | **6**    |
@@ -229,7 +232,7 @@ NOUVEAU SYSTEME (UbuMaths):
 | Fichier                                                     | Role                                                                                 |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | `src/lib/questions/types.ts`                                | `ConstraintOptions`, `ConstraintMode`, `DEFAULT_CONSTRAINT_MODE`, `ValidationStatus` |
-| `src/lib/questions/constraint-validators.ts`                | 10 validateurs (`checkSpaces`, `checkProducts`, etc.)                                |
+| `src/lib/questions/constraint-validators.ts`                | 11 validateurs (`checkSpaces`, `checkProducts`, ..., `checkUnit`)                    |
 | `src/lib/utils/answer-validator.ts`                         | `applyConstraints()` - orchestre les checks                                          |
 | `src/lib/questions/feedback.ts`                             | Messages de feedback par contrainte                                                  |
 | `src/lib/migration/question-transformer.ts`                 | `convertOptions()` - mapping ancien → nouveau (lignes ~855-1110)                     |
