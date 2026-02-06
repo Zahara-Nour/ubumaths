@@ -3,13 +3,13 @@
  * ==============================================
  *
  * Applies display transformations to LaTeX mathematical expressions.
- * Uses Compute Engine for parsing and manipulation.
+ * Uses mathAST for parsing and manipulation.
  *
  * Key transformations:
  * - shuffleTerms: Randomly reorder terms in sums (a + b + c -> b + c + a)
  * - shuffleFactors: Randomly reorder factors in products (a * b * c -> c * a * b)
- * - removeNullTerms: Remove zero terms via canonization (x + 0 -> x)
- * - removeUnnecessaryBrackets: Simplify brackets via canonization
+ * - removeNullTerms: Remove zero terms (x + 0 -> x)
+ * - removeUnnecessaryBrackets: Simplify brackets
  *
  * @module ubumark/parameterization/expression-transforms
  *
@@ -24,28 +24,19 @@
  * ```
  */
 
-import { ComputeEngine } from '@cortex-js/compute-engine';
-import type { Expression } from '@cortex-js/compute-engine';
+import {
+	parseLatex,
+	toLatex,
+	number,
+	flattenSumShallow,
+	flattenProductShallow,
+	unflattenSum,
+	unflattenProduct,
+	mapNode,
+	stripUnnecessaryBrackets
+} from '$lib/mathAST';
+import type { MathNode } from '$lib/mathAST';
 import type { DisplayOptions } from './display-options';
-
-// ============================================================================
-// COMPUTE ENGINE SINGLETON
-// ============================================================================
-
-/**
- * Shared Compute Engine instance for expression transformations
- */
-let engineInstance: ComputeEngine | null = null;
-
-/**
- * Get or create Compute Engine instance
- */
-function getEngine(): ComputeEngine {
-	if (!engineInstance) {
-		engineInstance = new ComputeEngine();
-	}
-	return engineInstance;
-}
 
 // ============================================================================
 // FISHER-YATES SHUFFLE
@@ -56,9 +47,6 @@ function getEngine(): ComputeEngine {
  *
  * Creates a new array with elements in random order.
  * Does not modify the original array.
- *
- * @param array - Array to shuffle
- * @returns New array with elements in random order
  */
 function fisherYatesShuffle<T>(array: readonly T[]): T[] {
 	const result = [...array];
@@ -74,122 +62,66 @@ function fisherYatesShuffle<T>(array: readonly T[]): T[] {
 // ============================================================================
 
 /**
- * Internal mutable type for MathJSON transformations
- *
- * We use a more permissive internal type for transformations,
- * then cast back to Expression when passing to Compute Engine.
- * This is necessary because Expression uses readonly arrays.
+ * Shuffle terms in a sum at the top level only
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MutableMathJSON = any;
-
-/**
- * Check if a MathJSON expression is an array (function expression)
- */
-function isFunctionExpr(json: MutableMathJSON): json is [string, ...MutableMathJSON[]] {
-	return Array.isArray(json) && typeof json[0] === 'string';
+function shuffleTermsShallow(ast: MathNode): MathNode {
+	const terms = flattenSumShallow(ast);
+	if (terms.length <= 1) return ast;
+	return unflattenSum(fisherYatesShuffle([...terms])) ?? ast;
 }
 
 /**
- * Shuffle terms in an Add expression (MathJSON level)
- *
- * @param json - MathJSON expression
- * @param deep - If true, recursively shuffle nested sums
- * @returns MathJSON with shuffled terms
+ * Shuffle terms in sums recursively (bottom-up via mapNode)
  */
-function shuffleTermsJson(json: MutableMathJSON, deep: boolean): MutableMathJSON {
-	// Not a function expression - return as-is (number, symbol, etc.)
-	if (!isFunctionExpr(json)) {
-		return json;
-	}
-
-	const [operator, ...operands] = json;
-
-	// Process children first if deep shuffle
-	const processedOperands = deep
-		? operands.map((op: MutableMathJSON) => shuffleTermsJson(op, deep))
-		: operands;
-
-	// Shuffle if this is an Add operation
-	if (operator === 'Add') {
-		const shuffled = fisherYatesShuffle(processedOperands);
-		return ['Add', ...shuffled];
-	}
-
-	// For other operators, recurse into children if deep
-	if (deep) {
-		return [operator, ...processedOperands];
-	}
-
-	return json;
+function shuffleTermsDeep(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (node.type !== 'addition' && node.type !== 'subtraction') return node;
+		const terms = flattenSumShallow(node);
+		if (terms.length <= 1) return node;
+		return unflattenSum(fisherYatesShuffle([...terms])) ?? node;
+	});
 }
 
 /**
- * Shuffle factors in a Multiply expression (MathJSON level)
- *
- * @param json - MathJSON expression
- * @param deep - If true, recursively shuffle nested products
- * @returns MathJSON with shuffled factors
+ * Shuffle factors in a product at the top level only
  */
-function shuffleFactorsJson(json: MutableMathJSON, deep: boolean): MutableMathJSON {
-	// Not a function expression - return as-is (number, symbol, etc.)
-	if (!isFunctionExpr(json)) {
-		return json;
-	}
-
-	const [operator, ...operands] = json;
-
-	// Process children first if deep shuffle
-	const processedOperands = deep
-		? operands.map((op: MutableMathJSON) => shuffleFactorsJson(op, deep))
-		: operands;
-
-	// Shuffle if this is a Multiply or InvisibleOperator (implicit multiplication)
-	if (operator === 'Multiply' || operator === 'InvisibleOperator') {
-		const shuffled = fisherYatesShuffle(processedOperands);
-		return [operator, ...shuffled];
-	}
-
-	// For other operators, recurse into children if deep
-	if (deep) {
-		return [operator, ...processedOperands];
-	}
-
-	return json;
+function shuffleFactorsShallow(ast: MathNode): MathNode {
+	if (ast.type !== 'multiplication') return ast;
+	const style = ast.displayStyle;
+	const factors = flattenProductShallow(ast);
+	if (factors.length <= 1) return ast;
+	return unflattenProduct(fisherYatesShuffle([...factors]), style) ?? ast;
 }
 
 /**
- * Shuffle both terms and factors (MathJSON level)
- *
- * @param json - MathJSON expression
- * @param deep - If true, recursively shuffle nested expressions
- * @returns MathJSON with shuffled terms and factors
+ * Shuffle factors in products recursively (bottom-up via mapNode)
  */
-function shuffleTermsAndFactorsJson(json: MutableMathJSON, deep: boolean): MutableMathJSON {
-	// Not a function expression - return as-is (number, symbol, etc.)
-	if (!isFunctionExpr(json)) {
-		return json;
-	}
+function shuffleFactorsDeep(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (node.type !== 'multiplication') return node;
+		const style = node.displayStyle;
+		const factors = flattenProductShallow(node);
+		if (factors.length <= 1) return node;
+		return unflattenProduct(fisherYatesShuffle([...factors]), style) ?? node;
+	});
+}
 
-	const [operator, ...operands] = json;
+// ============================================================================
+// NULL TERM REMOVAL
+// ============================================================================
 
-	// Process children first if deep shuffle
-	const processedOperands = deep
-		? operands.map((op: MutableMathJSON) => shuffleTermsAndFactorsJson(op, deep))
-		: operands;
-
-	// Shuffle if this is Add, Multiply, or InvisibleOperator
-	if (operator === 'Add' || operator === 'Multiply' || operator === 'InvisibleOperator') {
-		const shuffled = fisherYatesShuffle(processedOperands);
-		return [operator, ...shuffled];
-	}
-
-	// For other operators, recurse into children if deep
-	if (deep) {
-		return [operator, ...processedOperands];
-	}
-
-	return json;
+/**
+ * Remove zero terms from sums recursively (bottom-up via mapNode)
+ */
+function removeNullTermsFromAST(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (node.type !== 'addition' && node.type !== 'subtraction') return node;
+		const terms = flattenSumShallow(node);
+		const filtered = terms.filter((t) => !(t.term.type === 'number' && t.term.value === '0'));
+		if (filtered.length === terms.length) return node;
+		if (filtered.length === 0) return number('0');
+		return unflattenSum(filtered) ?? node;
+	});
 }
 
 // ============================================================================
@@ -198,15 +130,10 @@ function shuffleTermsAndFactorsJson(json: MutableMathJSON, deep: boolean): Mutab
 
 /**
  * Post-process LaTeX output based on display options
- *
- * @param latex - LaTeX from Compute Engine serialization
- * @param options - Display options
- * @returns Post-processed LaTeX
  */
 function postProcessLatex(latex: string, options: Required<DisplayOptions>): string {
 	let result = latex;
 
-	// Handle addSpaces option
 	if (options.addSpaces) {
 		// Add thin spaces around binary operators only (not unary like -3)
 		// Pattern: non-space char followed by +/- followed by non-space char
@@ -215,9 +142,6 @@ function postProcessLatex(latex: string, options: Required<DisplayOptions>): str
 		// Remove any extra spaces
 		result = result.replace(/\s+/g, '');
 	}
-
-	// Note: keepUnnecessaryZeros would require tracking original precision
-	// which is lost during parsing. This option may need alternative implementation.
 
 	return result;
 }
@@ -230,43 +154,11 @@ function postProcessLatex(latex: string, options: Required<DisplayOptions>): str
  * Apply display transformations to a LaTeX expression
  *
  * Pipeline:
- * 1. Parse LaTeX to MathJSON (without canonization to preserve structure)
+ * 1. Parse LaTeX to AST via mathAST
  * 2. Apply structural transforms (shuffle terms/factors)
- * 3. Optionally apply canonization (removeNullTerms, removeUnnecessaryBrackets)
+ * 3. Apply removeNullTerms / removeUnnecessaryBrackets
  * 4. Serialize back to LaTeX
  * 5. Post-process for formatting (addSpaces, etc.)
- *
- * @param latex - LaTeX expression to transform
- * @param options - Fully resolved display options (use resolveDisplayOptions to get this)
- * @returns Transformed LaTeX string
- *
- * @example Shuffle terms
- * ```typescript
- * const result = applyDisplayTransforms('a + b + c', {
- *   ...GLOBAL_DISPLAY_DEFAULTS,
- *   shuffleTerms: true
- * });
- * // Might return: 'c + a + b'
- * ```
- *
- * @example Remove null terms
- * ```typescript
- * const result = applyDisplayTransforms('x + 0', {
- *   ...GLOBAL_DISPLAY_DEFAULTS,
- *   removeNullTerms: true
- * });
- * // Returns: 'x'
- * ```
- *
- * @example Combined transforms
- * ```typescript
- * const result = applyDisplayTransforms('0 + a + b', {
- *   ...GLOBAL_DISPLAY_DEFAULTS,
- *   shuffleTerms: true,
- *   removeNullTerms: true
- * });
- * // Might return: 'b + a' (0 removed, terms shuffled)
- * ```
  */
 export function applyDisplayTransforms(latex: string, options: Required<DisplayOptions>): string {
 	// Guard: empty or whitespace-only input
@@ -274,19 +166,11 @@ export function applyDisplayTransforms(latex: string, options: Required<DisplayO
 		return latex;
 	}
 
-	const ce = getEngine();
-
 	try {
-		// Step 1: Parse without canonization to preserve original structure
-		const expr = ce.parse(latex, { canonical: false });
-
-		// Get MathJSON representation for transformation
-		// Cast to mutable type for internal manipulation
-		let json: MutableMathJSON = expr.json;
+		// Step 1: Parse LaTeX to AST
+		let ast = parseLatex(latex);
 
 		// Step 2: Apply structural transforms (shuffles)
-
-		// Determine shuffle settings
 		const doShuffleTerms =
 			options.shuffleTerms || options.shuffleTermsAndFactors || options.shallowShuffleTerms;
 		const doShuffleFactors =
@@ -296,49 +180,34 @@ export function applyDisplayTransforms(latex: string, options: Required<DisplayO
 		const deepFactors =
 			(options.shuffleFactors || options.shuffleTermsAndFactors) && !options.shallowShuffleFactors;
 
-		// Apply shuffles
-		if (doShuffleTerms && doShuffleFactors) {
-			// Combined shuffle - need to decide on depth per operation type
-			// For now, use a combined approach
-			const deep = deepTerms && deepFactors;
-			json = shuffleTermsAndFactorsJson(json, deep);
-
-			// If depths differ, apply individual shuffles for remaining
-			if (deepTerms !== deepFactors) {
-				if (deepTerms && !deepFactors) {
-					// Need deep terms shuffle only - already handled in combined
-					json = shuffleTermsJson(json, true);
-				} else if (deepFactors && !deepTerms) {
-					// Need deep factors shuffle only
-					json = shuffleFactorsJson(json, true);
-				}
-			}
-		} else if (doShuffleTerms) {
-			json = shuffleTermsJson(json, deepTerms);
-		} else if (doShuffleFactors) {
-			json = shuffleFactorsJson(json, deepFactors);
+		// Apply term shuffles
+		if (doShuffleTerms) {
+			ast = deepTerms ? shuffleTermsDeep(ast) : shuffleTermsShallow(ast);
 		}
 
-		// Step 3: Reconstruct BoxedExpression from transformed JSON
-		// Cast back to Expression type for CE
-		let transformedExpr = ce.box(json as Expression);
-
-		// Step 4: Apply canonization if needed (removeNullTerms, removeUnnecessaryBrackets)
-		if (options.removeNullTerms || options.removeUnnecessaryBrackets) {
-			// Canonization handles both null term removal and bracket simplification
-			transformedExpr = transformedExpr.canonical;
+		// Apply factor shuffles
+		if (doShuffleFactors) {
+			ast = deepFactors ? shuffleFactorsDeep(ast) : shuffleFactorsShallow(ast);
 		}
 
-		// Step 5: Serialize back to LaTeX
-		let resultLatex = transformedExpr.latex;
+		// Step 3: Apply cleanup transforms
+		if (options.removeNullTerms) {
+			ast = removeNullTermsFromAST(ast);
+		}
 
-		// Step 6: Post-process for formatting options
+		if (options.removeUnnecessaryBrackets) {
+			ast = stripUnnecessaryBrackets(ast);
+		}
+
+		// Step 4: Serialize back to LaTeX
+		let resultLatex = toLatex(ast);
+
+		// Step 5: Post-process for formatting options
 		resultLatex = postProcessLatex(resultLatex, options);
 
 		return resultLatex;
 	} catch {
 		// If parsing or transformation fails, return original latex unchanged
-		// This is a graceful degradation - better to show original than crash
 		return latex;
 	}
 }
@@ -349,9 +218,6 @@ export function applyDisplayTransforms(latex: string, options: Required<DisplayO
 
 /**
  * Check if an expression can be transformed
- *
- * @param latex - LaTeX expression to check
- * @returns True if expression can be parsed for transformation
  */
 export function canTransform(latex: string): boolean {
 	if (!latex || !latex.trim()) {
@@ -359,8 +225,7 @@ export function canTransform(latex: string): boolean {
 	}
 
 	try {
-		const ce = getEngine();
-		ce.parse(latex, { canonical: false });
+		parseLatex(latex);
 		return true;
 	} catch {
 		return false;
@@ -371,9 +236,6 @@ export function canTransform(latex: string): boolean {
  * Get the structure type of an expression
  *
  * Useful for debugging and understanding what transforms apply.
- *
- * @param latex - LaTeX expression
- * @returns Structure information or null if invalid
  */
 export function getExpressionStructure(latex: string): {
 	operator: string | null;
@@ -386,25 +248,33 @@ export function getExpressionStructure(latex: string): {
 	}
 
 	try {
-		const ce = getEngine();
-		const expr = ce.parse(latex, { canonical: false });
-		const json = expr.json;
+		const ast = parseLatex(latex);
 
-		if (!Array.isArray(json)) {
+		if (ast.type === 'addition' || ast.type === 'subtraction') {
+			const terms = flattenSumShallow(ast);
 			return {
-				operator: null,
-				operandCount: 0,
-				isSum: false,
+				operator: ast.type,
+				operandCount: terms.length,
+				isSum: true,
 				isProduct: false
 			};
 		}
 
-		const [operator, ...operands] = json;
+		if (ast.type === 'multiplication') {
+			const factors = flattenProductShallow(ast);
+			return {
+				operator: ast.type,
+				operandCount: factors.length,
+				isSum: false,
+				isProduct: true
+			};
+		}
+
 		return {
-			operator: typeof operator === 'string' ? operator : null,
-			operandCount: operands.length,
-			isSum: operator === 'Add',
-			isProduct: operator === 'Multiply' || operator === 'InvisibleOperator'
+			operator: null,
+			operandCount: 0,
+			isSum: false,
+			isProduct: false
 		};
 	} catch {
 		return null;

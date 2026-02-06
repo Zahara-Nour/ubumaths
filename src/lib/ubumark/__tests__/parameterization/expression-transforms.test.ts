@@ -2,8 +2,8 @@
  * Expression Transforms Tests
  * ===========================
  *
- * Tests for LaTeX expression transformations using Compute Engine.
- * Tests shuffle operations, canonization, and utility functions.
+ * Tests for LaTeX expression transformations using mathAST.
+ * Tests shuffle operations, null term removal, bracket simplification, and utility functions.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -31,7 +31,7 @@ describe('applyDisplayTransforms', () => {
 		it('should return original latex when no transforms enabled', () => {
 			const latex = 'a + b + c';
 			const result = applyDisplayTransforms(latex, makeOptions());
-			// Result should be semantically equivalent (CE may normalize)
+			// Result should be semantically equivalent (mathAST may normalize)
 			expect(result).toBeDefined();
 		});
 
@@ -59,12 +59,9 @@ describe('applyDisplayTransforms', () => {
 	// ============================================================================
 
 	describe('shuffleTerms', () => {
-		// We need to mock Math.random for deterministic tests
 		let randomSpy: ReturnType<typeof vi.spyOn>;
 
 		beforeEach(() => {
-			// Mock Math.random to return predictable values
-			// This sequence will cause Fisher-Yates to reverse a 3-element array
 			randomSpy = vi.spyOn(Math, 'random');
 		});
 
@@ -73,17 +70,15 @@ describe('applyDisplayTransforms', () => {
 		});
 
 		it('should shuffle terms in a sum', () => {
-			// Set up deterministic random for testing
-			// For a 3-element array [a, b, c], with these random values:
-			// i=2: random=0.5 -> j=1, swap [a,c,b]
-			// i=1: random=0.5 -> j=0, swap [c,a,b]
 			randomSpy.mockReturnValueOnce(0.5).mockReturnValueOnce(0.5);
 
 			const latex = 'a+b+c';
 			const result = applyDisplayTransforms(latex, makeOptions({ shuffleTerms: true }));
 
 			// Result should contain all original terms
-			expect(result).toMatch(/[abc]/);
+			expect(result).toMatch(/a/);
+			expect(result).toMatch(/b/);
+			expect(result).toMatch(/c/);
 			expect(result).toMatch(/\+/);
 		});
 
@@ -116,6 +111,22 @@ describe('applyDisplayTransforms', () => {
 			expect(result).toMatch(/b/);
 			expect(result).toMatch(/c/);
 			expect(result).toMatch(/d/);
+		});
+
+		it('should preserve signs when shuffling subtraction terms', () => {
+			// Use identity shuffle (no swap) to verify signs are preserved
+			randomSpy.mockReturnValue(0.99);
+
+			const latex = 'a-b+c';
+			const result = applyDisplayTransforms(
+				latex,
+				makeOptions({ shuffleTerms: true, addSpaces: false })
+			);
+
+			// All terms should still be present
+			expect(result).toMatch(/a/);
+			expect(result).toMatch(/b/);
+			expect(result).toMatch(/c/);
 		});
 	});
 
@@ -173,6 +184,22 @@ describe('applyDisplayTransforms', () => {
 			expect(result).toMatch(/c/);
 		});
 
+		it('should preserve multiplication style (cdot)', () => {
+			randomSpy.mockReturnValue(0.5);
+
+			const latex = 'a \\cdot b \\cdot c';
+			const result = applyDisplayTransforms(
+				latex,
+				makeOptions({ shuffleFactors: true, addSpaces: false })
+			);
+
+			// Should preserve the cdot style
+			expect(result).toMatch(/a/);
+			expect(result).toMatch(/b/);
+			expect(result).toMatch(/c/);
+			expect(result).toMatch(/\\cdot/);
+		});
+
 		it('should handle implicit multiplication', () => {
 			randomSpy.mockReturnValue(0.5);
 
@@ -224,9 +251,8 @@ describe('applyDisplayTransforms', () => {
 			const latex = 'x+0';
 			const result = applyDisplayTransforms(latex, makeOptions({ removeNullTerms: true }));
 
-			// Canonization should simplify x+0 to x
 			expect(result).toContain('x');
-			// Should not contain explicit 0 as a term
+			expect(result).not.toMatch(/0/);
 		});
 
 		it('should handle 0 + x', () => {
@@ -234,6 +260,7 @@ describe('applyDisplayTransforms', () => {
 			const result = applyDisplayTransforms(latex, makeOptions({ removeNullTerms: true }));
 
 			expect(result).toContain('x');
+			expect(result).not.toMatch(/0/);
 		});
 
 		it('should handle multiple zeros', () => {
@@ -242,6 +269,7 @@ describe('applyDisplayTransforms', () => {
 
 			expect(result).toMatch(/x/);
 			expect(result).toMatch(/y/);
+			expect(result).not.toMatch(/0/);
 		});
 
 		it('should preserve non-zero expression', () => {
@@ -251,6 +279,17 @@ describe('applyDisplayTransforms', () => {
 			expect(result).toMatch(/a/);
 			expect(result).toMatch(/b/);
 			expect(result).toMatch(/c/);
+		});
+
+		it('should remove zero in nested expression (deep)', () => {
+			const latex = '(x+0)+y';
+			const result = applyDisplayTransforms(
+				latex,
+				makeOptions({ removeNullTerms: true, addSpaces: false })
+			);
+
+			expect(result).toMatch(/x/);
+			expect(result).toMatch(/y/);
 		});
 	});
 
@@ -266,7 +305,6 @@ describe('applyDisplayTransforms', () => {
 				makeOptions({ removeUnnecessaryBrackets: true })
 			);
 
-			// Should simplify to just x
 			expect(result).toContain('x');
 		});
 
@@ -321,7 +359,7 @@ describe('applyDisplayTransforms', () => {
 			randomSpy.mockRestore();
 		});
 
-		it('should apply shuffle and then canonization', () => {
+		it('should apply shuffle and then null term removal', () => {
 			randomSpy.mockReturnValue(0.5);
 
 			const latex = '0+a+b';
@@ -333,6 +371,7 @@ describe('applyDisplayTransforms', () => {
 			// Should contain a and b but 0 should be removed
 			expect(result).toMatch(/a/);
 			expect(result).toMatch(/b/);
+			expect(result).not.toMatch(/0/);
 		});
 	});
 
@@ -342,14 +381,12 @@ describe('applyDisplayTransforms', () => {
 
 	describe('Error handling', () => {
 		it('should handle malformed LaTeX gracefully', () => {
-			// Note: Compute Engine is very permissive and parses most input
-			// Even "invalid" LaTeX gets parsed (with error markers)
+			// mathAST throws on invalid LaTeX, catch returns original
 			const malformedLatex = '\\invalid{{{';
 			const result = applyDisplayTransforms(malformedLatex, makeOptions());
 
-			// Should not throw - returns some result (possibly with CE error markers)
-			expect(result).toBeDefined();
-			expect(typeof result).toBe('string');
+			// Should not throw - returns original latex
+			expect(result).toBe(malformedLatex);
 		});
 
 		it('should handle complex expressions gracefully', () => {
@@ -390,25 +427,25 @@ describe('canTransform', () => {
 	});
 
 	it('should return false for invalid LaTeX', () => {
-		// Most LaTeX is actually parseable, even if malformed
-		// CE is quite permissive
-		expect(canTransform('')).toBe(false);
+		// mathAST is stricter than CE - malformed LaTeX throws
+		expect(canTransform('\\invalid{{{')).toBe(false);
 	});
 });
 
 describe('getExpressionStructure', () => {
-	it('should identify Add operator', () => {
+	it('should identify addition operator', () => {
 		const structure = getExpressionStructure('a + b + c');
 		expect(structure?.isSum).toBe(true);
 		expect(structure?.isProduct).toBe(false);
-		expect(structure?.operator).toBe('Add');
+		expect(structure?.operator).toBe('addition');
 		expect(structure?.operandCount).toBe(3);
 	});
 
-	it('should identify Multiply operator', () => {
+	it('should identify multiplication operator', () => {
 		const structure = getExpressionStructure('a \\times b');
 		expect(structure?.isProduct).toBe(true);
 		expect(structure?.isSum).toBe(false);
+		expect(structure?.operator).toBe('multiplication');
 	});
 
 	it('should handle simple values', () => {
@@ -420,5 +457,11 @@ describe('getExpressionStructure', () => {
 	it('should return null for empty string', () => {
 		expect(getExpressionStructure('')).toBeNull();
 		expect(getExpressionStructure('   ')).toBeNull();
+	});
+
+	it('should identify subtraction as a sum', () => {
+		const structure = getExpressionStructure('a - b');
+		expect(structure?.isSum).toBe(true);
+		expect(structure?.operandCount).toBe(2);
 	});
 });

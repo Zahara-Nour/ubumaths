@@ -276,11 +276,12 @@ Ces options n'ont pas d'equivalent dans le nouveau systeme et sont ignorees sans
 
 ### Fichiers de reference
 
-| Fichier                                      | Role                                                             |
-| -------------------------------------------- | ---------------------------------------------------------------- |
-| `src/lib/questions/types.ts`                 | `ConstraintOptions`, `ConstraintMode`, `DEFAULT_CONSTRAINT_MODE` |
-| `src/lib/questions/constraint-validators.ts` | 10 validateurs (`checkSpaces`, `checkProducts`, etc.)            |
-| `src/lib/utils/answer-validator.ts`          | `applyConstraints()` - orchestre les checks                      |
-| `src/lib/questions/feedback.ts`              | Messages de feedback par contrainte                              |
-| `src/lib/migration/question-transformer.ts`  | `convertOptions()` - mapping ancien → nouveau                    |
-| `extern/new-tinymath/.../correction.ts`      | Source de verite pour le comportement par defaut                 |
+| Fichier                                                     | Role                                                                  |
+| ----------------------------------------------------------- | --------------------------------------------------------------------- |
+| `src/lib/questions/types.ts`                                | `ConstraintOptions`, `ConstraintMode`, `DEFAULT_CONSTRAINT_MODE`      |
+| `src/lib/questions/constraint-validators.ts`                | 10 validateurs (`checkSpaces`, `checkProducts`, etc.)                 |
+| `src/lib/utils/answer-validator.ts`                         | `applyConstraints()` - orchestre les checks                           |
+| `src/lib/questions/feedback.ts`                             | Messages de feedback par contrainte                                   |
+| `src/lib/migration/question-transformer.ts`                 | `convertOptions()` - mapping ancien → nouveau                         |
+| `src/lib/ubumark/parameterization/expression-transforms.ts` | Transformations d'affichage (shuffles, removeNullTerms) - **mathAST** |
+| `extern/new-tinymath/.../correction.ts`                     | Source de verite pour le comportement par defaut                      |
