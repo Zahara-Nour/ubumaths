@@ -259,17 +259,21 @@ describe('validateAnswer - Constraint Integration', () => {
 		});
 	});
 
-	describe('No Constraints Configured', () => {
-		it('should skip constraint checks when no constraints in options', () => {
+	describe('Default Constraint Mode (warn)', () => {
+		it('should apply warn-level checks even when no constraints in options', () => {
 			const instance = createNumericalInstance('12345');
 
 			const result = validateAnswer('12345', instance, '12345');
 
+			// Default mode is 'warn' - spacing violation detected with partial credit
 			expect(result.isCorrect).toBe(true);
-			expect(result.constraintViolations).toBeUndefined();
+			expect(result.status).toBe('unoptimal_form');
+			expect(result.constraintViolations).toBeDefined();
+			expect(result.constraintViolations![0].constraint).toBe('spaces');
+			expect(result.constraintViolations![0].severity).toBe('warning');
 		});
 
-		it('should skip constraint checks when options is undefined', () => {
+		it('should apply warn-level checks even when options is undefined', () => {
 			const instance: QuestionInstance = {
 				templateId: 'test',
 				type: 'numerical_exact',
@@ -285,8 +289,12 @@ describe('validateAnswer - Constraint Integration', () => {
 
 			const result = validateAnswer('5', instance, '(5)');
 
+			// Default mode is 'warn' - bracket violation detected with partial credit
 			expect(result.isCorrect).toBe(true);
-			expect(result.constraintViolations).toBeUndefined();
+			expect(result.status).toBe('unoptimal_form');
+			expect(result.constraintViolations).toBeDefined();
+			expect(result.constraintViolations![0].constraint).toBe('brackets');
+			expect(result.constraintViolations![0].severity).toBe('warning');
 		});
 	});
 });
@@ -394,6 +402,11 @@ describe('validateAnswer - Specific Constraints', () => {
 					products: 'off',
 					zeros: 'off',
 					form: 'off',
+					nullTerms: 'off',
+					factorOne: 'off',
+					factorZero: 'off',
+					signs: 'off',
+					reducedFractions: 'off',
 					allowBracketsInFirstNegativeTerm: true
 				}
 			});
@@ -720,7 +733,8 @@ describe('validateAnswer - Required Form Integration', () => {
 			const result = validateAnswer('6', instance, '2 \\times 3');
 
 			expect(result.isCorrect).toBe(true);
-			expect(result.status).toBeUndefined();
+			// Constraints always run now (default 'warn'), status is 'correct' when no violations
+			expect(result.status).toBe('correct');
 		});
 
 		it('should reject correct value NOT in product form', () => {
