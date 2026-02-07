@@ -151,6 +151,41 @@ function recordNormalizationStep(
 // Helper Functions
 // =============================================================================
 
+/**
+ * Applies function parity rules when the argument is detected as negative.
+ * For even functions f(-x) = f(x), for odd functions f(-x) = -f(x).
+ *
+ * @returns The simplified NormalForm if parity applies, null otherwise
+ */
+function applyFunctionParity(
+	argForm: NormalForm,
+	name: string,
+	canonicalNode: MathNode,
+	originalNode: MathNode,
+	ctx: NormalizeContext | undefined
+): NormalForm | null {
+	const negativeArg = canFactorOutNegative(argForm);
+	if (negativeArg === null) return null;
+
+	const posArgNode = denormalize(
+		normalFormFromFraction(negativeArg.positiveNumerator, negativeArg.denominator)
+	);
+	const posNode: MathNode = { ...canonicalNode, args: [posArgNode] };
+	const posResult = normalizeOpaqueNode(posNode);
+
+	if (isEvenFunction(name)) {
+		recordNormalizationStep(ctx, 'even-function-parity', originalNode, posResult, 'summarized');
+		return posResult;
+	}
+	if (isOddFunction(name)) {
+		const result = negNormalForm(posResult);
+		recordNormalizationStep(ctx, 'odd-function-parity', originalNode, result, 'summarized');
+		return result;
+	}
+
+	return null;
+}
+
 // =============================================================================
 // Rationalization - Clearing fractional exponents from denominator
 // =============================================================================
@@ -2634,27 +2669,8 @@ function normalizeFunction(
 		}
 
 		// Apply parity rules: cos(-x) = cos(x), sin(-x) = -sin(x), tan(-x) = -tan(x)
-		const negativeArg = canFactorOutNegative(argForm);
-		if (negativeArg !== null) {
-			// Reconstruct function with positive argument
-			const posArgNode = denormalize(
-				normalFormFromFraction(negativeArg.positiveNumerator, negativeArg.denominator)
-			);
-			const posNode: MathNode = { ...canonicalNode, args: [posArgNode] };
-			const posResult = normalizeOpaqueNode(posNode);
-
-			if (isEvenFunction(name)) {
-				// cos(-u) = cos(u): return the positive result
-				recordNormalizationStep(ctx, 'even-function-parity', node, posResult, 'summarized');
-				return posResult;
-			}
-			if (isOddFunction(name)) {
-				// sin(-u) = -sin(u), tan(-u) = -tan(u): negate the result
-				const result = negNormalForm(posResult);
-				recordNormalizationStep(ctx, 'odd-function-parity', node, result, 'summarized');
-				return result;
-			}
-		}
+		const parityResult = applyFunctionParity(argForm, name, canonicalNode, node, ctx);
+		if (parityResult !== null) return parityResult;
 
 		return normalizeOpaqueNode(canonicalNode);
 	}
@@ -2665,27 +2681,8 @@ function normalizeFunction(
 		const argForm = normalizeNode(canonicalArgs[0], ctx);
 
 		// Apply parity rules: sec(-x) = sec(x), csc(-x) = -csc(x), cot(-x) = -cot(x)
-		const negativeArg = canFactorOutNegative(argForm);
-		if (negativeArg !== null) {
-			// Reconstruct function with positive argument
-			const posArgNode = denormalize(
-				normalFormFromFraction(negativeArg.positiveNumerator, negativeArg.denominator)
-			);
-			const posNode: MathNode = { ...canonicalNode, args: [posArgNode] };
-			const posResult = normalizeOpaqueNode(posNode);
-
-			if (isEvenFunction(name)) {
-				// sec(-u) = sec(u)
-				recordNormalizationStep(ctx, 'even-function-parity', node, posResult, 'summarized');
-				return posResult;
-			}
-			if (isOddFunction(name)) {
-				// csc(-u) = -csc(u), cot(-u) = -cot(u)
-				const result = negNormalForm(posResult);
-				recordNormalizationStep(ctx, 'odd-function-parity', node, result, 'summarized');
-				return result;
-			}
-		}
+		const parityResult2 = applyFunctionParity(argForm, name, canonicalNode, node, ctx);
+		if (parityResult2 !== null) return parityResult2;
 
 		return normalizeOpaqueNode(canonicalNode);
 	}
@@ -2896,27 +2893,8 @@ function normalizeFunction(
 		const argForm = normalizeNode(canonicalArgs[0], ctx);
 
 		// Apply parity rules: cosh(-x) = cosh(x), sinh(-x) = -sinh(x), etc.
-		const negativeArg = canFactorOutNegative(argForm);
-		if (negativeArg !== null) {
-			// Reconstruct function with positive argument
-			const posArgNode = denormalize(
-				normalFormFromFraction(negativeArg.positiveNumerator, negativeArg.denominator)
-			);
-			const posNode: MathNode = { ...canonicalNode, args: [posArgNode] };
-			const posResult = normalizeOpaqueNode(posNode);
-
-			if (isEvenFunction(name)) {
-				// cosh(-u) = cosh(u), sech(-u) = sech(u)
-				recordNormalizationStep(ctx, 'even-function-parity', node, posResult, 'summarized');
-				return posResult;
-			}
-			if (isOddFunction(name)) {
-				// sinh(-u) = -sinh(u), tanh(-u) = -tanh(u), etc.
-				const result = negNormalForm(posResult);
-				recordNormalizationStep(ctx, 'odd-function-parity', node, result, 'summarized');
-				return result;
-			}
-		}
+		const parityResult3 = applyFunctionParity(argForm, name, canonicalNode, node, ctx);
+		if (parityResult3 !== null) return parityResult3;
 
 		return normalizeOpaqueNode(canonicalNode);
 	}
@@ -2926,20 +2904,9 @@ function normalizeFunction(
 	if (inverseTrigFunctions.includes(name) && canonicalArgs.length === 1) {
 		const argForm = normalizeNode(canonicalArgs[0], ctx);
 
-		// Apply parity rule: arcsin(-x) = -arcsin(x), arctan(-x) = -arctan(x)
-		// Note: all inverse trig functions in our list are odd
-		const negativeArg = canFactorOutNegative(argForm);
-		if (negativeArg !== null && isOddFunction(name)) {
-			// Reconstruct function with positive argument
-			const posArgNode = denormalize(
-				normalFormFromFraction(negativeArg.positiveNumerator, negativeArg.denominator)
-			);
-			const posNode: MathNode = { ...canonicalNode, args: [posArgNode] };
-			const posResult = normalizeOpaqueNode(posNode);
-			const result = negNormalForm(posResult);
-			recordNormalizationStep(ctx, 'odd-function-parity', node, result, 'summarized');
-			return result;
-		}
+		// Apply parity rules: arcsin(-x) = -arcsin(x), arctan(-x) = -arctan(x)
+		const parityResult4 = applyFunctionParity(argForm, name, canonicalNode, node, ctx);
+		if (parityResult4 !== null) return parityResult4;
 
 		return normalizeOpaqueNode(canonicalNode);
 	}
@@ -2986,17 +2953,8 @@ function normalizeFunction(
 		}
 
 		// Apply parity rule: abs(-x) = abs(x)
-		const negativeArg = canFactorOutNegative(argForm);
-		if (negativeArg !== null) {
-			// Reconstruct abs with positive argument
-			const posArgNode = denormalize(
-				normalFormFromFraction(negativeArg.positiveNumerator, negativeArg.denominator)
-			);
-			const posNode: MathNode = { ...canonicalNode, args: [posArgNode] };
-			const result = normalizeOpaqueNode(posNode);
-			recordNormalizationStep(ctx, 'even-function-parity', node, result, 'summarized');
-			return result;
-		}
+		const parityResult5 = applyFunctionParity(argForm, name, canonicalNode, node, ctx);
+		if (parityResult5 !== null) return parityResult5;
 
 		// Contains variables or evaluation failed - treat as opaque
 		return normalizeOpaqueNode(canonicalNode);
