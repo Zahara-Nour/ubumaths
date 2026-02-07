@@ -413,6 +413,13 @@ export { Exp } from './exp';
 export * from './normal/index.js';
 
 // =============================================================================
+// Simplification
+// =============================================================================
+
+export { simplify, computeCost, cheapest } from './simplify';
+export type { SimplifyOptions, SimplifyResult, SimplifyStep, SimplifyPhase } from './simplify';
+
+// =============================================================================
 // Evaluation and Substitution
 // =============================================================================
 
@@ -486,6 +493,7 @@ export {
 	applyRules,
 	arithmeticRules,
 	powerRules,
+	absRules,
 	allRules,
 	// Type guards
 	isWildcardPattern,
@@ -517,7 +525,14 @@ export {
 // Numeric Type System
 // =============================================================================
 
-export type { NumericType, SignInfo, MathType, TypeContext, TypeDescription } from './numtype';
+export type {
+	NumericType,
+	SignInfo,
+	MathType,
+	TypeContext,
+	TypeDescription,
+	VariableAssumption
+} from './numtype';
 
 export {
 	// Constants

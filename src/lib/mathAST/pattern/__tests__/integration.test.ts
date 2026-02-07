@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 import { Exp } from '../../exp';
 import { P } from '../builder';
-import { arithmeticRules, powerRules, allRules } from '../rule-sets';
+import { arithmeticRules, powerRules, absRules, allRules } from '../rule-sets';
 import { applyRules } from '../rule';
 import { nodesEqual } from '../match';
 import { number, variable, add, superscript } from '../../factory';
@@ -434,8 +434,8 @@ describe('Pattern Matching Integration', () => {
 		});
 
 		describe('allRules', () => {
-			it('combines arithmetic and power rules', () => {
-				expect(allRules.length).toBe(arithmeticRules.length + powerRules.length);
+			it('combines arithmetic, power, and abs rules', () => {
+				expect(allRules.length).toBe(arithmeticRules.length + powerRules.length + absRules.length);
 			});
 
 			it('includes all arithmetic rules', () => {

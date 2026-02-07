@@ -29,6 +29,7 @@ import {
 	isMathNodeBinding
 } from './types';
 import type { MathNode } from '../types';
+import type { TypeContext } from '../numtype/types';
 import type { SignedTerm } from '../flatten';
 import { hashMathNode } from '../normal/hash';
 import { checkConstraint } from './constraints';
@@ -155,53 +156,54 @@ function singleBinding(name: string, value: BindingValue): MatchBindings {
 export function match(
 	pattern: Pattern,
 	node: MathNode,
-	bindings: MatchBindings = EMPTY_BINDINGS
+	bindings: MatchBindings = EMPTY_BINDINGS,
+	ctx?: TypeContext
 ): MatchResult {
 	switch (pattern.type) {
 		case 'wildcard':
-			return matchWildcard(pattern, node, bindings);
+			return matchWildcard(pattern, node, bindings, ctx);
 
 		case 'literal':
 			return matchLiteral(pattern, node, bindings);
 
 		case 'addition-pattern':
-			return matchAddition(pattern, node, bindings);
+			return matchAddition(pattern, node, bindings, ctx);
 
 		case 'subtraction-pattern':
-			return matchSubtraction(pattern, node, bindings);
+			return matchSubtraction(pattern, node, bindings, ctx);
 
 		case 'multiplication-pattern':
-			return matchMultiplication(pattern, node, bindings);
+			return matchMultiplication(pattern, node, bindings, ctx);
 
 		case 'division-pattern':
-			return matchDivision(pattern, node, bindings);
+			return matchDivision(pattern, node, bindings, ctx);
 
 		case 'superscript-pattern':
-			return matchSuperscript(pattern, node, bindings);
+			return matchSuperscript(pattern, node, bindings, ctx);
 
 		case 'function-pattern':
-			return matchFunction(pattern, node, bindings);
+			return matchFunction(pattern, node, bindings, ctx);
 
 		case 'opposite-pattern':
-			return matchOpposite(pattern, node, bindings);
+			return matchOpposite(pattern, node, bindings, ctx);
 
 		case 'positive-pattern':
-			return matchPositive(pattern, node, bindings);
+			return matchPositive(pattern, node, bindings, ctx);
 
 		case 'delimiter-pattern':
-			return matchDelimiter(pattern, node, bindings);
+			return matchDelimiter(pattern, node, bindings, ctx);
 
 		case 'subscript-pattern':
-			return matchSubscript(pattern, node, bindings);
+			return matchSubscript(pattern, node, bindings, ctx);
 
 		case 'relation-pattern':
-			return matchRelation(pattern, node, bindings);
+			return matchRelation(pattern, node, bindings, ctx);
 
 		case 'sum-pattern':
-			return matchSumPattern(pattern, node, bindings);
+			return matchSumPattern(pattern, node, bindings, ctx);
 
 		case 'product-pattern':
-			return matchProductPattern(pattern, node, bindings);
+			return matchProductPattern(pattern, node, bindings, ctx);
 
 		default: {
 			// Exhaustive check
@@ -224,10 +226,11 @@ export function match(
 function matchWildcard(
 	pattern: Extract<Pattern, { type: 'wildcard' }>,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	// Check constraint first if present
-	if (pattern.constraint && !checkConstraint(pattern.constraint, node)) {
+	if (pattern.constraint && !checkConstraint(pattern.constraint, node, ctx)) {
 		return failMatch();
 	}
 
@@ -275,20 +278,21 @@ function matchLiteral(
 function matchAddition(
 	pattern: Extract<Pattern, { type: 'addition-pattern' }>,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	if (!isAddition(node)) {
 		return failMatch();
 	}
 
 	// Try original order: left + right
-	const result1 = matchPair(pattern.left, pattern.right, node.left, node.right, bindings);
+	const result1 = matchPair(pattern.left, pattern.right, node.left, node.right, bindings, ctx);
 	if (result1.success) {
 		return result1;
 	}
 
 	// Try swapped order: right + left (commutative)
-	return matchPair(pattern.left, pattern.right, node.right, node.left, bindings);
+	return matchPair(pattern.left, pattern.right, node.right, node.left, bindings, ctx);
 }
 
 /**
@@ -298,13 +302,14 @@ function matchAddition(
 function matchSubtraction(
 	pattern: Extract<Pattern, { type: 'subtraction-pattern' }>,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	if (!isSubtraction(node)) {
 		return failMatch();
 	}
 
-	return matchPair(pattern.left, pattern.right, node.left, node.right, bindings);
+	return matchPair(pattern.left, pattern.right, node.left, node.right, bindings, ctx);
 }
 
 /**
@@ -314,20 +319,21 @@ function matchSubtraction(
 function matchMultiplication(
 	pattern: Extract<Pattern, { type: 'multiplication-pattern' }>,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	if (!isMultiplication(node)) {
 		return failMatch();
 	}
 
 	// Try original order
-	const result1 = matchPair(pattern.left, pattern.right, node.left, node.right, bindings);
+	const result1 = matchPair(pattern.left, pattern.right, node.left, node.right, bindings, ctx);
 	if (result1.success) {
 		return result1;
 	}
 
 	// Try swapped order (commutative)
-	return matchPair(pattern.left, pattern.right, node.right, node.left, bindings);
+	return matchPair(pattern.left, pattern.right, node.right, node.left, bindings, ctx);
 }
 
 /**
@@ -337,7 +343,8 @@ function matchMultiplication(
 function matchDivision(
 	pattern: Extract<Pattern, { type: 'division-pattern' }>,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	if (!isDivision(node)) {
 		return failMatch();
@@ -348,7 +355,8 @@ function matchDivision(
 		pattern.denominator,
 		node.numerator,
 		node.denominator,
-		bindings
+		bindings,
+		ctx
 	);
 }
 
@@ -358,13 +366,14 @@ function matchDivision(
 function matchSuperscript(
 	pattern: Extract<Pattern, { type: 'superscript-pattern' }>,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	if (!isSuperscript(node)) {
 		return failMatch();
 	}
 
-	return matchPair(pattern.base, pattern.exponent, node.base, node.superscript, bindings);
+	return matchPair(pattern.base, pattern.exponent, node.base, node.superscript, bindings, ctx);
 }
 
 /**
@@ -377,7 +386,8 @@ function matchSuperscript(
 function matchFunction(
 	pattern: Extract<Pattern, { type: 'function-pattern' }>,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	if (!isFunction(node)) {
 		return failMatch();
@@ -394,7 +404,7 @@ function matchFunction(
 		if (node.power === undefined) {
 			return failMatch();
 		}
-		const powerResult = match(pattern.power, node.power, bindings);
+		const powerResult = match(pattern.power, node.power, bindings, ctx);
 		if (!powerResult.success) {
 			return failMatch();
 		}
@@ -414,7 +424,7 @@ function matchFunction(
 	// Match all arguments
 	let currentBindings = bindings;
 	for (let i = 0; i < pattern.args.length; i++) {
-		const result = match(pattern.args[i], node.args[i], currentBindings);
+		const result = match(pattern.args[i], node.args[i], currentBindings, ctx);
 		if (!result.success) {
 			return failMatch();
 		}
@@ -430,13 +440,14 @@ function matchFunction(
 function matchOpposite(
 	pattern: Extract<Pattern, { type: 'opposite-pattern' }>,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	if (!isOpposite(node)) {
 		return failMatch();
 	}
 
-	return match(pattern.operand, node.operand, bindings);
+	return match(pattern.operand, node.operand, bindings, ctx);
 }
 
 /**
@@ -445,13 +456,14 @@ function matchOpposite(
 function matchPositive(
 	pattern: Extract<Pattern, { type: 'positive-pattern' }>,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	if (!isPositive(node)) {
 		return failMatch();
 	}
 
-	return match(pattern.operand, node.operand, bindings);
+	return match(pattern.operand, node.operand, bindings, ctx);
 }
 
 /**
@@ -460,13 +472,14 @@ function matchPositive(
 function matchDelimiter(
 	pattern: Extract<Pattern, { type: 'delimiter-pattern' }>,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	if (!isDelimiter(node)) {
 		return failMatch();
 	}
 
-	return match(pattern.content, node.content, bindings);
+	return match(pattern.content, node.content, bindings, ctx);
 }
 
 /**
@@ -475,13 +488,14 @@ function matchDelimiter(
 function matchSubscript(
 	pattern: Extract<Pattern, { type: 'subscript-pattern' }>,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	if (!isSubscript(node)) {
 		return failMatch();
 	}
 
-	return matchPair(pattern.base, pattern.subscript, node.base, node.subscript, bindings);
+	return matchPair(pattern.base, pattern.subscript, node.base, node.subscript, bindings, ctx);
 }
 
 /**
@@ -490,7 +504,8 @@ function matchSubscript(
 function matchRelation(
 	pattern: Extract<Pattern, { type: 'relation-pattern' }>,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	if (!isRelation(node)) {
 		return failMatch();
@@ -501,7 +516,7 @@ function matchRelation(
 		return failMatch();
 	}
 
-	return matchPair(pattern.left, pattern.right, node.left, node.right, bindings);
+	return matchPair(pattern.left, pattern.right, node.left, node.right, bindings, ctx);
 }
 
 // =============================================================================
@@ -517,16 +532,17 @@ function matchPair(
 	patternRight: Pattern,
 	nodeLeft: MathNode,
 	nodeRight: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	// Match left first
-	const leftResult = match(patternLeft, nodeLeft, bindings);
+	const leftResult = match(patternLeft, nodeLeft, bindings, ctx);
 	if (!leftResult.success) {
 		return failMatch();
 	}
 
 	// Match right with updated bindings
-	return match(patternRight, nodeRight, leftResult.bindings);
+	return match(patternRight, nodeRight, leftResult.bindings, ctx);
 }
 
 // =============================================================================
@@ -616,7 +632,8 @@ function categorizeElements(elements: readonly (SumPatternElement | ProductPatte
 function matchSumPattern(
 	pattern: SumPattern,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	// Only match addition/subtraction chains (or single terms for edge cases)
 	if (!isAddition(node) && !isSubtraction(node) && !isOpposite(node) && !isPositive(node)) {
@@ -624,7 +641,7 @@ function matchSumPattern(
 		const { singles, sequence } = categorizeElements(pattern.elements);
 		if (singles.length === 1 && (!sequence || isOptionalSequencePattern(sequence))) {
 			// Try matching the single element
-			const result = match(singles[0], node, bindings);
+			const result = match(singles[0], node, bindings, ctx);
 			if (result.success && sequence) {
 				// Bind empty sequence
 				const seqBinding: SumSequenceBinding = { kind: 'sum-sequence', terms: [] };
@@ -667,7 +684,7 @@ function matchSumPattern(
 	for (const assignment of combinations(indices, k)) {
 		// Try all orderings of the assignment to patterns (due to commutativity)
 		for (const perm of permutations(assignment)) {
-			const result = tryAssignment(flatTerms, singles, perm, sequence, bindings);
+			const result = tryAssignment(flatTerms, singles, perm, sequence, bindings, ctx);
 			if (result.success) {
 				return result;
 			}
@@ -685,7 +702,8 @@ function tryAssignment(
 	patterns: readonly Pattern[],
 	assignment: readonly number[],
 	seqPattern: SequencePattern | OptionalSequencePattern | undefined,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	let currentBindings = bindings;
 
@@ -698,7 +716,7 @@ function tryAssignment(
 		// If sign is '-', we match against opposite(term)
 		const nodeToMatch = sign === '+' ? term : opposite(term);
 
-		const result = match(patterns[i], nodeToMatch, currentBindings);
+		const result = match(patterns[i], nodeToMatch, currentBindings, ctx);
 		if (!result.success) {
 			return failMatch();
 		}
@@ -712,7 +730,9 @@ function tryAssignment(
 
 		// Check sequence constraint on each element
 		if (seqPattern.constraint) {
-			const allSatisfy = remaining.every((t) => checkConstraint(seqPattern.constraint!, t.term));
+			const allSatisfy = remaining.every((t) =>
+				checkConstraint(seqPattern.constraint!, t.term, ctx)
+			);
 			if (!allSatisfy) {
 				return failMatch();
 			}
@@ -737,14 +757,15 @@ function tryAssignment(
 function matchProductPattern(
 	pattern: ProductPattern,
 	node: MathNode,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	// Only match multiplication chains
 	if (!isMultiplication(node)) {
 		// Single factor - can only match if pattern has exactly one single element
 		const { singles, sequence } = categorizeElements(pattern.elements);
 		if (singles.length === 1 && (!sequence || isOptionalSequencePattern(sequence))) {
-			const result = match(singles[0], node, bindings);
+			const result = match(singles[0], node, bindings, ctx);
 			if (result.success && sequence) {
 				// Bind empty sequence
 				const seqBinding: ProductSequenceBinding = { kind: 'product-sequence', factors: [] };
@@ -787,7 +808,7 @@ function matchProductPattern(
 	for (const assignment of combinations(indices, k)) {
 		// Try all orderings due to commutativity
 		for (const perm of permutations(assignment)) {
-			const result = tryProductAssignment(flatFactors, singles, perm, sequence, bindings);
+			const result = tryProductAssignment(flatFactors, singles, perm, sequence, bindings, ctx);
 			if (result.success) {
 				return result;
 			}
@@ -805,7 +826,8 @@ function tryProductAssignment(
 	patterns: readonly Pattern[],
 	assignment: readonly number[],
 	seqPattern: SequencePattern | OptionalSequencePattern | undefined,
-	bindings: MatchBindings
+	bindings: MatchBindings,
+	ctx?: TypeContext
 ): MatchResult {
 	let currentBindings = bindings;
 
@@ -814,7 +836,7 @@ function tryProductAssignment(
 		const factorIdx = assignment[i];
 		const { factor } = factors[factorIdx];
 
-		const result = match(patterns[i], factor, currentBindings);
+		const result = match(patterns[i], factor, currentBindings, ctx);
 		if (!result.success) {
 			return failMatch();
 		}
@@ -828,7 +850,7 @@ function tryProductAssignment(
 
 		// Check sequence constraint on each element
 		if (seqPattern.constraint) {
-			const allSatisfy = remaining.every((f) => checkConstraint(seqPattern.constraint!, f));
+			const allSatisfy = remaining.every((f) => checkConstraint(seqPattern.constraint!, f, ctx));
 			if (!allSatisfy) {
 				return failMatch();
 			}
@@ -857,8 +879,12 @@ function tryProductAssignment(
  * @param node - The node to match against
  * @returns The bindings map if successful, undefined otherwise
  */
-export function tryMatch(pattern: Pattern, node: MathNode): MatchBindings | undefined {
-	const result = match(pattern, node);
+export function tryMatch(
+	pattern: Pattern,
+	node: MathNode,
+	ctx?: TypeContext
+): MatchBindings | undefined {
+	const result = match(pattern, node, EMPTY_BINDINGS, ctx);
 	return result.success ? result.bindings : undefined;
 }
 
@@ -867,8 +893,9 @@ export function tryMatch(pattern: Pattern, node: MathNode): MatchBindings | unde
  *
  * @param pattern - The pattern to match
  * @param node - The node to match against
+ * @param ctx - Optional type context for assumption-aware matching
  * @returns true if the pattern matches
  */
-export function matches(pattern: Pattern, node: MathNode): boolean {
-	return match(pattern, node).success;
+export function matches(pattern: Pattern, node: MathNode, ctx?: TypeContext): boolean {
+	return match(pattern, node, EMPTY_BINDINGS, ctx).success;
 }

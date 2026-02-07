@@ -68,6 +68,21 @@ export interface MathType {
 }
 
 // =============================================================================
+// Variable Assumptions
+// =============================================================================
+
+/**
+ * Assumptions about a variable's properties for simplification.
+ *
+ * Allows declaring sign and finiteness properties on variables
+ * so that pattern constraints (e.g., P.isPositive()) can match symbolic variables.
+ */
+export interface VariableAssumption {
+	readonly sign?: SignInfo;
+	readonly finite?: boolean;
+}
+
+// =============================================================================
 // Type Context
 // =============================================================================
 
@@ -80,6 +95,12 @@ export interface TypeContext {
 	 * Variables not in this map default to 'real' (or 'unknown' if strict mode).
 	 */
 	readonly variables?: ReadonlyMap<string, NumericType>;
+
+	/**
+	 * Assumptions about variable properties (sign, finiteness).
+	 * Used by simplify() to enable conditional rules like |x| -> x when x > 0.
+	 */
+	readonly assumptions?: ReadonlyMap<string, VariableAssumption>;
 
 	/**
 	 * If true, unknown variables are typed as 'unknown' instead of 'real'.

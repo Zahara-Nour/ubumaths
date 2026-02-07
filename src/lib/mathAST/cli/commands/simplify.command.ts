@@ -9,8 +9,9 @@ import chalk from 'chalk';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toLatex, toCustom } from '../../index';
+import { simplify } from '../../simplify';
 import { preprocess } from '../../normal/rules';
-import { normalize, denormalize, hashNormalForm } from '../../normal';
+import { normalize, hashNormalForm } from '../../normal';
 
 // =============================================================================
 // Simplify Command
@@ -47,17 +48,16 @@ export class SimplifyCommand extends BaseCommand {
 		}
 
 		try {
-			// First apply Phase 1 preprocessing (radical rules)
-			const simplified = preprocess(ctx.ast);
+			// Use the unified simplify pipeline
+			const { result } = simplify(ctx.ast);
 
-			// Then normalize and denormalize for canonical form
-			const normalForm = normalize(simplified);
-			const canonical = denormalize(normalForm);
+			// Generate hash from normal form (for structural comparison)
+			const normalForm = normalize(preprocess(result));
+			const hash = hashNormalForm(normalForm);
 
 			// Generate outputs
-			const latex = toLatex(canonical);
-			const custom = toCustom(canonical);
-			const hash = hashNormalForm(normalForm);
+			const latex = toLatex(result);
+			const custom = toCustom(result);
 
 			// Build output
 			const lines = [
@@ -71,7 +71,7 @@ export class SimplifyCommand extends BaseCommand {
 			return {
 				success: true,
 				output: lines.join('\n'),
-				ast: canonical
+				ast: result
 			};
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Unknown error during simplification';

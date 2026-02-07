@@ -7,6 +7,7 @@
 
 import type { PatternConstraint } from './types';
 import type { MathNode, MathNodeType } from '../types';
+import type { TypeContext } from '../numtype/types';
 import { isNumber, isVariable } from '../guards';
 import { inferType, isSubtype } from '../numtype';
 import { containsValue } from '$lib/math/intervals';
@@ -137,7 +138,11 @@ function isFreeOfVariables(node: MathNode, variables: readonly string[]): boolea
  *   someNode
  * )
  */
-export function checkConstraint(constraint: PatternConstraint, node: MathNode): boolean {
+export function checkConstraint(
+	constraint: PatternConstraint,
+	node: MathNode,
+	ctx?: TypeContext
+): boolean {
 	switch (constraint.kind) {
 		case 'type': {
 			const types = Array.isArray(constraint.nodeType)
@@ -154,17 +159,39 @@ export function checkConstraint(constraint: PatternConstraint, node: MathNode): 
 
 		case 'positive': {
 			const value = parseNumberValue(node);
-			return value !== undefined && value > 0;
+			if (value !== undefined) return value > 0;
+			// Fallback to type inference with context
+			if (ctx) {
+				const inferred = inferType(node, ctx);
+				return inferred.sign === 'positive';
+			}
+			return false;
 		}
 
 		case 'negative': {
 			const value = parseNumberValue(node);
-			return value !== undefined && value < 0;
+			if (value !== undefined) return value < 0;
+			// Fallback to type inference with context
+			if (ctx) {
+				const inferred = inferType(node, ctx);
+				return inferred.sign === 'negative';
+			}
+			return false;
 		}
 
 		case 'nonzero': {
 			const value = parseNumberValue(node);
-			return value !== undefined && value !== 0;
+			if (value !== undefined) return value !== 0;
+			// Fallback to type inference with context
+			if (ctx) {
+				const inferred = inferType(node, ctx);
+				return (
+					inferred.sign === 'nonzero' ||
+					inferred.sign === 'positive' ||
+					inferred.sign === 'negative'
+				);
+			}
+			return false;
 		}
 
 		case 'nonone': {
@@ -205,26 +232,32 @@ export function checkConstraint(constraint: PatternConstraint, node: MathNode): 
 
 		case 'integer': {
 			const value = parseNumberValue(node);
-			return value !== undefined && Number.isInteger(value);
+			if (value !== undefined) return Number.isInteger(value);
+			// Fallback to type inference with context
+			if (ctx) {
+				const inferred = inferType(node, ctx);
+				return isSubtype(inferred.base, 'integer');
+			}
+			return false;
 		}
 
 		case 'freeOf':
 			return isFreeOfVariables(node, constraint.variables);
 
 		case 'and':
-			return constraint.constraints.every((c) => checkConstraint(c, node));
+			return constraint.constraints.every((c) => checkConstraint(c, node, ctx));
 
 		case 'or':
-			return constraint.constraints.some((c) => checkConstraint(c, node));
+			return constraint.constraints.some((c) => checkConstraint(c, node, ctx));
 
 		case 'not':
-			return !checkConstraint(constraint.constraint, node);
+			return !checkConstraint(constraint.constraint, node, ctx);
 
 		case 'custom':
 			return constraint.predicate(node);
 
 		case 'numericType': {
-			const inferredType = inferType(node);
+			const inferredType = inferType(node, ctx);
 			if (constraint.strict) {
 				// Exact match required
 				return inferredType.base === constraint.numericType;
