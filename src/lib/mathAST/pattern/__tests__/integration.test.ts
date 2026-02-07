@@ -572,6 +572,36 @@ describe('Pattern Matching Integration', () => {
 			});
 		});
 
+		describe('with absRules', () => {
+			it('simplifies |x^2| to x^2 (even exponent)', () => {
+				const node = abs(superscript(variable('x'), number('2')));
+				const result = applyRules([...absRules], node);
+				expect(nodesEqual(result, superscript(variable('x'), number('2')))).toBe(true);
+			});
+
+			it('simplifies |a^4| to a^4', () => {
+				const node = abs(superscript(variable('a'), number('4')));
+				const result = applyRules([...absRules], node);
+				expect(nodesEqual(result, superscript(variable('a'), number('4')))).toBe(true);
+			});
+
+			it('does not simplify |x^3| (odd exponent)', () => {
+				const node = abs(superscript(variable('x'), number('3')));
+				const result = applyRules([...absRules], node);
+				expect(nodesEqual(result, node)).toBe(true);
+			});
+
+			it('simplifies |x^n| to x^n when n declared even', () => {
+				const ctx: TypeContext = {
+					variables: new Map([['n', 'integer']]),
+					assumptions: new Map([['n', { parity: 'even' }]])
+				};
+				const node = abs(superscript(variable('x'), variable('n')));
+				const result = applyRules([...absRules], node, 100, ctx);
+				expect(nodesEqual(result, superscript(variable('x'), variable('n')))).toBe(true);
+			});
+		});
+
 		describe('with functionParityRules', () => {
 			it('simplifies sin(-x) to -sin(x) (odd)', () => {
 				const node = func('sin', [opposite(variable('x'))]);
