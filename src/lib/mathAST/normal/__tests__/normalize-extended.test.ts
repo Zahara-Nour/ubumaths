@@ -333,6 +333,152 @@ describe('normalizeExtended - functions', () => {
 		const result = normalizeExtended(func('abs', [zeroMinus()]));
 		expect(result).toEqual({ type: 'signed-zero', sign: 'positive' });
 	});
+
+	it('tan(0⁺) = 0⁺', () => {
+		const result = normalizeExtended(func('tan', [zeroPlus()]));
+		expect(result).toEqual({ type: 'signed-zero', sign: 'positive' });
+	});
+
+	it('tan(0⁻) = 0⁻', () => {
+		const result = normalizeExtended(func('tan', [zeroMinus()]));
+		expect(result).toEqual({ type: 'signed-zero', sign: 'negative' });
+	});
+});
+
+// =============================================================================
+// Inverse Trig Functions
+// =============================================================================
+
+describe('normalizeExtended - arctan', () => {
+	it('arctan(+∞) = π/2 (normal form)', () => {
+		const result = normalizeExtended(func('arctan', [positiveInfinity()]));
+		expect(result.type).toBe('normal');
+	});
+
+	it('arctan(-∞) = -π/2 (normal form)', () => {
+		const result = normalizeExtended(func('arctan', [negativeInfinity()]));
+		expect(result.type).toBe('normal');
+	});
+
+	it('arctan(0⁺) = 0⁺', () => {
+		const result = normalizeExtended(func('arctan', [zeroPlus()]));
+		expect(result).toEqual({ type: 'signed-zero', sign: 'positive' });
+	});
+
+	it('arctan(0⁻) = 0⁻', () => {
+		const result = normalizeExtended(func('arctan', [zeroMinus()]));
+		expect(result).toEqual({ type: 'signed-zero', sign: 'negative' });
+	});
+});
+
+// =============================================================================
+// Hyperbolic Functions
+// =============================================================================
+
+describe('normalizeExtended - hyperbolic', () => {
+	it('sinh(+∞) = +∞', () => {
+		const result = normalizeExtended(func('sinh', [positiveInfinity()]));
+		expect(result).toEqual({ type: 'infinity', sign: 'positive' });
+	});
+
+	it('sinh(-∞) = -∞', () => {
+		const result = normalizeExtended(func('sinh', [negativeInfinity()]));
+		expect(result).toEqual({ type: 'infinity', sign: 'negative' });
+	});
+
+	it('sinh(0⁺) = 0⁺', () => {
+		const result = normalizeExtended(func('sinh', [zeroPlus()]));
+		expect(result).toEqual({ type: 'signed-zero', sign: 'positive' });
+	});
+
+	it('sinh(0⁻) = 0⁻', () => {
+		const result = normalizeExtended(func('sinh', [zeroMinus()]));
+		expect(result).toEqual({ type: 'signed-zero', sign: 'negative' });
+	});
+
+	it('cosh(+∞) = +∞', () => {
+		const result = normalizeExtended(func('cosh', [positiveInfinity()]));
+		expect(result).toEqual({ type: 'infinity', sign: 'positive' });
+	});
+
+	it('cosh(-∞) = +∞', () => {
+		const result = normalizeExtended(func('cosh', [negativeInfinity()]));
+		expect(result).toEqual({ type: 'infinity', sign: 'positive' });
+	});
+
+	it('cosh(0±) = 1', () => {
+		const result = normalizeExtended(func('cosh', [zeroPlus()]));
+		expect(result.type).toBe('normal');
+	});
+
+	it('tanh(+∞) = 1', () => {
+		const result = normalizeExtended(func('tanh', [positiveInfinity()]));
+		expect(result.type).toBe('normal');
+	});
+
+	it('tanh(-∞) = -1', () => {
+		const result = normalizeExtended(func('tanh', [negativeInfinity()]));
+		expect(result.type).toBe('normal');
+	});
+
+	it('tanh(0⁺) = 0⁺', () => {
+		const result = normalizeExtended(func('tanh', [zeroPlus()]));
+		expect(result).toEqual({ type: 'signed-zero', sign: 'positive' });
+	});
+
+	it('tanh(0⁻) = 0⁻', () => {
+		const result = normalizeExtended(func('tanh', [zeroMinus()]));
+		expect(result).toEqual({ type: 'signed-zero', sign: 'negative' });
+	});
+});
+
+// =============================================================================
+// Inverse Hyperbolic Functions
+// =============================================================================
+
+describe('normalizeExtended - inverse hyperbolic', () => {
+	it('arcsinh(+∞) = +∞', () => {
+		const result = normalizeExtended(func('arcsinh', [positiveInfinity()]));
+		expect(result).toEqual({ type: 'infinity', sign: 'positive' });
+	});
+
+	it('arcsinh(-∞) = -∞', () => {
+		const result = normalizeExtended(func('arcsinh', [negativeInfinity()]));
+		expect(result).toEqual({ type: 'infinity', sign: 'negative' });
+	});
+
+	it('arcsinh(0⁺) = 0⁺', () => {
+		const result = normalizeExtended(func('arcsinh', [zeroPlus()]));
+		expect(result).toEqual({ type: 'signed-zero', sign: 'positive' });
+	});
+
+	it('arcsinh(0⁻) = 0⁻', () => {
+		const result = normalizeExtended(func('arcsinh', [zeroMinus()]));
+		expect(result).toEqual({ type: 'signed-zero', sign: 'negative' });
+	});
+
+	it('arccosh(+∞) = +∞', () => {
+		const result = normalizeExtended(func('arccosh', [positiveInfinity()]));
+		expect(result).toEqual({ type: 'infinity', sign: 'positive' });
+	});
+
+	it('arccosh(-∞) throws (complex)', () => {
+		expect(() => normalizeExtended(func('arccosh', [negativeInfinity()]))).toThrow(/complex/);
+	});
+
+	it('arctanh(0⁺) = 0⁺', () => {
+		const result = normalizeExtended(func('arctanh', [zeroPlus()]));
+		expect(result).toEqual({ type: 'signed-zero', sign: 'positive' });
+	});
+
+	it('arctanh(0⁻) = 0⁻', () => {
+		const result = normalizeExtended(func('arctanh', [zeroMinus()]));
+		expect(result).toEqual({ type: 'signed-zero', sign: 'negative' });
+	});
+
+	it('arctanh(+∞) throws (complex)', () => {
+		expect(() => normalizeExtended(func('arctanh', [positiveInfinity()]))).toThrow(/complex/);
+	});
 });
 
 // =============================================================================
