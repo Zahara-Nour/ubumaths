@@ -12,6 +12,8 @@ import type { MathType, NumericType, SignInfo } from '../types';
 import { join, isSubtype } from '../algebra';
 import { COMPLEX_TYPE, TRANSCENDENTAL_TYPE, INTEGER_TYPE, UNKNOWN_TYPE } from '../types';
 import { inferSqrtType } from './power';
+import { getBuiltinRangeEntry } from '$lib/mathAST/domain/builtins';
+import type { Bounds } from '$lib/math/intervals/algebra';
 
 // =============================================================================
 // Function Type Categories
@@ -126,6 +128,87 @@ export function inferFunctionType(
 }
 
 // =============================================================================
+// Bounds Helpers
+// =============================================================================
+
+/**
+ * Get output bounds for a builtin function from the range registry.
+ */
+function getFunctionBounds(name: string): Bounds | undefined {
+	const entry = getBuiltinRangeEntry(name);
+	if (!entry) return undefined;
+	return {
+		lower: entry.lower,
+		upper: entry.upper,
+		lowerInclusive: entry.lowerInclusive,
+		upperInclusive: entry.upperInclusive
+	};
+}
+
+/**
+ * Compute abs bounds from argument bounds.
+ * |[a, b]| where a <= b:
+ * - If a >= 0: [a, b]
+ * - If b <= 0: [-b, -a]
+ * - If a < 0 < b: [0, max(-a, b)]
+ */
+function computeAbsBounds(argBounds: Bounds): Bounds {
+	const { lower, upper, lowerInclusive, upperInclusive } = argBounds;
+
+	// Both unbounded -> [0, +inf)
+	if (lower === null && upper === null) {
+		return { lower: 0, upper: null, lowerInclusive: true, upperInclusive: false };
+	}
+
+	// Entirely non-negative
+	if (lower !== null && lower >= 0) {
+		return argBounds;
+	}
+
+	// Entirely non-positive
+	if (upper !== null && upper <= 0) {
+		return {
+			lower: upper === 0 ? 0 : -upper,
+			upper: lower === null ? null : -lower,
+			lowerInclusive: upper === 0 ? true : upperInclusive,
+			upperInclusive: lower === null ? false : lowerInclusive
+		};
+	}
+
+	// Crosses zero: lower < 0 < upper
+	const absLower = lower !== null ? -lower : null;
+	const absUpper = upper;
+
+	let maxVal: number | null;
+	let maxInclusive: boolean;
+
+	if (absLower === null) {
+		maxVal = null;
+		maxInclusive = false;
+	} else if (absUpper === null) {
+		maxVal = null;
+		maxInclusive = false;
+	} else if (absLower > absUpper) {
+		maxVal = absLower;
+		maxInclusive = lowerInclusive;
+	} else if (absUpper > absLower) {
+		maxVal = absUpper;
+		maxInclusive = upperInclusive;
+	} else {
+		// Equal
+		maxVal = absLower;
+		maxInclusive = lowerInclusive || upperInclusive;
+	}
+
+	return {
+		lower: 0,
+		upper: maxVal,
+		lowerInclusive: true,
+		upperInclusive: maxInclusive
+	};
+}
+
+// =============================================================================
 // Transcendental Function Rules
 // =============================================================================
 
@@ -171,7 +254,13 @@ function inferTranscendentalFunctionType(
 
 	// General rule: transcendental function of real input is transcendental
 	if (isSubtype(argType.base, 'real')) {
-		return inferTranscendentalOutputWithSign(name, argType, argValue);
+		const result = inferTranscendentalOutputWithSign(name, argType, argValue);
+		// Attach bounds from builtin range registry
+		const bounds = getFunctionBounds(name);
+		if (bounds) {
+			return { ...result, bounds };
+		}
+		return result;
 	}
 
 	return TRANSCENDENTAL_TYPE;
@@ -305,7 +394,26 @@ function inferIntegerOutputFunctionType(
 			}
 		}
 
-		return { base: 'integer', ...(sign !== undefined && { sign }), finite: argType.finite };
+		// Compute bounds for rounding functions
+		let bounds: Bounds | undefined;
+		if (argType.bounds) {
+			const fn = computeRoundingResult.bind(null, name);
+			const lower = argType.bounds.lower !== null ? fn(argType.bounds.lower) : null;
+			const upper = argType.bounds.upper !== null ? fn(argType.bounds.upper) : null;
+			bounds = {
+				lower,
+				upper,
+				lowerInclusive: lower !== null,
+				upperInclusive: upper !== null
+			};
+		}
+
+		return {
+			base: 'integer',
+			...(sign !== undefined && { sign }),
+			finite: argType.finite,
+			...(bounds !== undefined && { bounds })
+		};
 	}
 
 	// sign: returns -1, 0, or 1
@@ -385,7 +493,21 @@ function inferTypePreservingFunctionType(
 			return { base: 'real', sign: 'positive', finite: argType.finite };
 		}
 
-		return { base: argType.base, ...(sign !== undefined && { sign }), finite: argType.finite };
+		// Compute bounds for abs
+		let bounds: Bounds | undefined;
+		if (argType.bounds) {
+			bounds = computeAbsBounds(argType.bounds);
+		} else {
+			// Default: [0, +inf)
+			bounds = { lower: 0, upper: null, lowerInclusive: true, upperInclusive: false };
+		}
+
+		return {
+			base: argType.base,
+			...(sign !== undefined && { sign }),
+			finite: argType.finite,
+			bounds
+		};
 	}
 
 	return argType;

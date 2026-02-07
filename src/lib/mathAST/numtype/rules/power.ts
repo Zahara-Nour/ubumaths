@@ -10,6 +10,7 @@
 import type { MathType, SignInfo } from '../types';
 import { join, isSubtype } from '../algebra';
 import { COMPLEX_TYPE, UNKNOWN_TYPE } from '../types';
+import type { Bounds } from '$lib/math/intervals/algebra';
 
 // =============================================================================
 // Helper Functions
@@ -42,6 +43,65 @@ function isPerfectPower(base: number, n: number): boolean {
  */
 export interface TypeWithValue extends MathType {
 	readonly numericValue?: number;
+}
+
+// =============================================================================
+// Bounds Helpers for Power
+// =============================================================================
+
+/**
+ * Compute bounds for base^n where n is a known positive integer.
+ * - Even exponent: x^n is always non-negative. If base range doesn't cross 0,
+ *   the result is straightforward. If it crosses 0, lower bound is 0.
+ * - Odd exponent: x^n is monotonically increasing, so bounds = [lower^n, upper^n].
+ */
+function computePowerBounds(baseBounds: Bounds, exponent: number): Bounds | undefined {
+	if (baseBounds.lower === null || baseBounds.upper === null) return undefined;
+	if (exponent <= 0) return undefined;
+
+	const isEven = exponent % 2 === 0;
+
+	if (isEven) {
+		const absLower = Math.abs(baseBounds.lower);
+		const absUpper = Math.abs(baseBounds.upper);
+
+		// Crosses zero: lower < 0 < upper
+		if (baseBounds.lower < 0 && baseBounds.upper > 0) {
+			const maxAbs = Math.max(absLower, absUpper);
+			return {
+				lower: 0,
+				upper: maxAbs ** exponent,
+				lowerInclusive: true,
+				upperInclusive: maxAbs === absLower ? baseBounds.lowerInclusive : baseBounds.upperInclusive
+			};
+		}
+
+		// Entirely non-negative
+		if (baseBounds.lower >= 0) {
+			return {
+				lower: baseBounds.lower ** exponent,
+				upper: baseBounds.upper ** exponent,
+				lowerInclusive: baseBounds.lowerInclusive,
+				upperInclusive: baseBounds.upperInclusive
+			};
+		}
+
+		// Entirely non-positive: reverse order since x^even flips
+		return {
+			lower: absUpper ** exponent,
+			upper: absLower ** exponent,
+			lowerInclusive: baseBounds.upperInclusive,
+			upperInclusive: baseBounds.lowerInclusive
+		};
+	}
+
+	// Odd exponent: monotonically increasing
+	return {
+		lower: baseBounds.lower ** exponent,
+		upper: baseBounds.upper ** exponent,
+		lowerInclusive: baseBounds.lowerInclusive,
+		upperInclusive: baseBounds.upperInclusive
+	};
 }
 
 // =============================================================================
@@ -151,6 +211,10 @@ function inferIntegerExponentType(
 	exponent: number,
 	_baseValue?: number
 ): MathType {
+	// Compute bounds for positive exponents
+	const bounds =
+		exponent > 0 && baseType.bounds ? computePowerBounds(baseType.bounds, exponent) : undefined;
+
 	// Positive integer exponent
 	if (exponent > 0) {
 		// integer ^ positive_integer = integer
@@ -165,7 +229,12 @@ function inferIntegerExponentType(
 			} else if (baseType.sign === 'zero') {
 				sign = 'zero';
 			}
-			return { base: 'integer', ...(sign !== undefined && { sign }), finite: true };
+			return {
+				base: 'integer',
+				...(sign !== undefined && { sign }),
+				finite: true,
+				...(bounds !== undefined && { bounds })
+			};
 		}
 
 		// rational ^ positive_integer = rational
@@ -176,17 +245,22 @@ function inferIntegerExponentType(
 			} else if (baseType.sign === 'negative') {
 				sign = exponent % 2 === 0 ? 'positive' : 'negative';
 			}
-			return { base: 'rational', ...(sign !== undefined && { sign }), finite: true };
+			return {
+				base: 'rational',
+				...(sign !== undefined && { sign }),
+				finite: true,
+				...(bounds !== undefined && { bounds })
+			};
 		}
 
 		// algebraic ^ positive_integer = algebraic
 		if (isSubtype(baseType.base, 'algebraic')) {
-			return { base: 'algebraic', finite: true };
+			return { base: 'algebraic', finite: true, ...(bounds !== undefined && { bounds }) };
 		}
 
 		// real ^ positive_integer = real
 		if (isSubtype(baseType.base, 'real')) {
-			return { base: 'real', finite: true };
+			return { base: 'real', finite: true, ...(bounds !== undefined && { bounds }) };
 		}
 	}
 

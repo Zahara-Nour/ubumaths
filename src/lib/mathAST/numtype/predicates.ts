@@ -10,6 +10,7 @@ import type { TypeContext, NumericType, MathType } from './types';
 import { EMPTY_CONTEXT } from './types';
 import { isSubtype } from './algebra';
 import { inferType } from './infer';
+import type { Bounds } from '$lib/math/intervals/algebra';
 
 // =============================================================================
 // Base Type Predicates
@@ -345,4 +346,45 @@ export function getType(node: MathNode, ctx: TypeContext = EMPTY_CONTEXT): MathT
  */
 export function getBaseType(node: MathNode, ctx: TypeContext = EMPTY_CONTEXT): NumericType {
 	return inferType(node, ctx).base;
+}
+
+// =============================================================================
+// Bounds Predicates
+// =============================================================================
+
+/**
+ * Gets the inferred bounds for an expression, if known.
+ *
+ * @param node - The MathNode to analyze
+ * @param ctx - Optional type context
+ * @returns The Bounds if known, undefined otherwise
+ */
+export function getBoundsType(
+	node: MathNode,
+	ctx: TypeContext = EMPTY_CONTEXT
+): Bounds | undefined {
+	return inferType(node, ctx).bounds;
+}
+
+/**
+ * Checks if an expression's bounds are entirely within [low, high].
+ *
+ * @param node - The MathNode to check
+ * @param ctx - Optional type context (pass undefined for default)
+ * @param low - Lower bound of the target range
+ * @param high - Upper bound of the target range
+ * @returns true if bounds are known and entirely within [low, high]
+ */
+export function isInRangeType(
+	node: MathNode,
+	ctx: TypeContext | undefined,
+	low: number,
+	high: number
+): boolean {
+	const bounds = inferType(node, ctx ?? EMPTY_CONTEXT).bounds;
+	if (!bounds) return false;
+
+	// Both bounds must be finite and within [low, high]
+	if (bounds.lower === null || bounds.upper === null) return false;
+	return bounds.lower >= low && bounds.upper <= high;
 }

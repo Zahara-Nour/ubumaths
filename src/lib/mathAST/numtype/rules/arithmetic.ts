@@ -12,6 +12,115 @@
 
 import type { MathType, NumericType, ParityInfo, SignInfo } from '../types';
 import { join } from '../algebra';
+import type { Bounds } from '$lib/math/intervals/algebra';
+
+// =============================================================================
+// Bounds Arithmetic Helpers
+// =============================================================================
+
+/**
+ * Add two bounds: [a,b] + [c,d] = [a+c, b+d]
+ */
+function addBounds(a: Bounds, b: Bounds): Bounds {
+	const lower = a.lower === null || b.lower === null ? null : a.lower + b.lower;
+	const upper = a.upper === null || b.upper === null ? null : a.upper + b.upper;
+	return {
+		lower,
+		upper,
+		lowerInclusive: lower === null ? false : a.lowerInclusive && b.lowerInclusive,
+		upperInclusive: upper === null ? false : a.upperInclusive && b.upperInclusive
+	};
+}
+
+/**
+ * Subtract two bounds: [a,b] - [c,d] = [a-d, b-c]
+ */
+function subtractBounds(a: Bounds, b: Bounds): Bounds {
+	const lower = a.lower === null || b.upper === null ? null : a.lower - b.upper;
+	const upper = a.upper === null || b.lower === null ? null : a.upper - b.lower;
+	return {
+		lower,
+		upper,
+		lowerInclusive: lower === null ? false : a.lowerInclusive && b.upperInclusive,
+		upperInclusive: upper === null ? false : a.upperInclusive && b.lowerInclusive
+	};
+}
+
+/**
+ * Multiply two bounds using the four-corners approach.
+ * [a,b] * [c,d] = [min(ac,ad,bc,bd), max(ac,ad,bc,bd)]
+ */
+function multiplyBounds(a: Bounds, b: Bounds): Bounds | undefined {
+	// If either is unbounded, result is unbounded
+	if (a.lower === null || a.upper === null || b.lower === null || b.upper === null) {
+		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
+	}
+
+	const products = [
+		{ value: a.lower * b.lower, aInc: a.lowerInclusive, bInc: b.lowerInclusive },
+		{ value: a.lower * b.upper, aInc: a.lowerInclusive, bInc: b.upperInclusive },
+		{ value: a.upper * b.lower, aInc: a.upperInclusive, bInc: b.lowerInclusive },
+		{ value: a.upper * b.upper, aInc: a.upperInclusive, bInc: b.upperInclusive }
+	];
+
+	const minP = products.reduce((min, p) => (p.value < min.value ? p : min));
+	const maxP = products.reduce((max, p) => (p.value > max.value ? p : max));
+
+	return {
+		lower: minP.value,
+		upper: maxP.value,
+		lowerInclusive: minP.aInc && minP.bInc,
+		upperInclusive: maxP.aInc && maxP.bInc
+	};
+}
+
+/**
+ * Divide two bounds: [a,b] / [c,d]
+ * Returns undefined if divisor contains zero.
+ */
+function divideBounds(a: Bounds, b: Bounds): Bounds | undefined {
+	// Check if divisor contains zero
+	const bContainsZero =
+		(b.lower === null || b.lower < 0 || (b.lower === 0 && b.lowerInclusive)) &&
+		(b.upper === null || b.upper > 0 || (b.upper === 0 && b.upperInclusive));
+
+	if (bContainsZero) {
+		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
+	}
+
+	if (a.lower === null || a.upper === null) {
+		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
+	}
+
+	const quotients = [
+		{ value: a.lower / b.lower!, aInc: a.lowerInclusive, bInc: b.lowerInclusive },
+		{ value: a.lower / b.upper!, aInc: a.lowerInclusive, bInc: b.upperInclusive },
+		{ value: a.upper / b.lower!, aInc: a.upperInclusive, bInc: b.lowerInclusive },
+		{ value: a.upper / b.upper!, aInc: a.upperInclusive, bInc: b.upperInclusive }
+	];
+
+	const minQ = quotients.reduce((min, q) => (q.value < min.value ? q : min));
+	const maxQ = quotients.reduce((max, q) => (q.value > max.value ? q : max));
+
+	return {
+		lower: minQ.value,
+		upper: maxQ.value,
+		lowerInclusive: minQ.aInc && minQ.bInc,
+		upperInclusive: maxQ.aInc && maxQ.bInc
+	};
+}
+
+/**
+ * Negate bounds: -[a,b] = [-b,-a]
+ */
+function negateBounds(b: Bounds): Bounds {
+	return {
+		lower: b.upper === null ? null : -b.upper,
+		upper: b.lower === null ? null : -b.lower,
+		lowerInclusive: b.upperInclusive,
+		upperInclusive: b.lowerInclusive
+	};
+}
 
 // =============================================================================
 // Parity Helpers
@@ -82,11 +191,16 @@ export function inferAdditionType(leftType: MathType, rightType: MathType): Math
 	// Parity: even+even=even, odd+odd=even, even+odd=odd, odd+even=odd
 	const parity = inferAddSubParity(leftType.parity, rightType.parity);
 
+	// Bounds propagation
+	const bounds =
+		leftType.bounds && rightType.bounds ? addBounds(leftType.bounds, rightType.bounds) : undefined;
+
 	return {
 		base,
 		...(sign !== undefined && { sign }),
 		...(finite !== undefined && { finite }),
-		...(parity !== undefined && { parity })
+		...(parity !== undefined && { parity }),
+		...(bounds !== undefined && { bounds })
 	};
 }
 
@@ -140,11 +254,18 @@ export function inferSubtractionType(leftType: MathType, rightType: MathType): M
 	// Parity: same rules as addition (even-even=even, odd-odd=even, etc.)
 	const parity = inferAddSubParity(leftType.parity, rightType.parity);
 
+	// Bounds propagation
+	const bounds =
+		leftType.bounds && rightType.bounds
+			? subtractBounds(leftType.bounds, rightType.bounds)
+			: undefined;
+
 	return {
 		base,
 		...(sign !== undefined && { sign }),
 		...(finite !== undefined && { finite }),
-		...(parity !== undefined && { parity })
+		...(parity !== undefined && { parity }),
+		...(bounds !== undefined && { bounds })
 	};
 }
 
@@ -221,11 +342,18 @@ export function inferMultiplicationType(leftType: MathType, rightType: MathType)
 		parity = 'even';
 	}
 
+	// Bounds propagation
+	const bounds =
+		leftType.bounds && rightType.bounds
+			? multiplyBounds(leftType.bounds, rightType.bounds)
+			: undefined;
+
 	return {
 		base,
 		...(sign !== undefined && { sign }),
 		...(finite !== undefined && { finite }),
-		...(parity !== undefined && { parity })
+		...(parity !== undefined && { parity }),
+		...(bounds !== undefined && { bounds })
 	};
 }
 
@@ -295,10 +423,17 @@ export function inferDivisionType(numeratorType: MathType, denominatorType: Math
 			? numeratorType.finite && denominatorType.finite
 			: undefined;
 
+	// Bounds propagation
+	const bounds =
+		numeratorType.bounds && denominatorType.bounds
+			? divideBounds(numeratorType.bounds, denominatorType.bounds)
+			: undefined;
+
 	return {
 		base,
 		...(sign !== undefined && { sign }),
-		...(finite !== undefined && { finite })
+		...(finite !== undefined && { finite }),
+		...(bounds !== undefined && { bounds })
 	};
 }
 
@@ -330,11 +465,15 @@ export function inferOppositeType(operandType: MathType): MathType {
 		sign = 'nonzero';
 	}
 
+	// Bounds propagation
+	const bounds = operandType.bounds ? negateBounds(operandType.bounds) : undefined;
+
 	return {
 		base,
 		...(sign !== undefined && { sign }),
 		...(operandType.finite !== undefined && { finite: operandType.finite }),
-		...(operandType.parity !== undefined && { parity: operandType.parity })
+		...(operandType.parity !== undefined && { parity: operandType.parity }),
+		...(bounds !== undefined && { bounds })
 	};
 }
 
