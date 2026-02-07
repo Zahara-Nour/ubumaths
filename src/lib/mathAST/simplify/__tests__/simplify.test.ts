@@ -146,9 +146,9 @@ describe('simplify pipeline', () => {
 	});
 
 	describe('step recording', () => {
-		it('should record steps when verbosity is summarized', () => {
+		it('should record steps when verbosity is detailed', () => {
 			const result = simplify(add(variable('x'), number('0')), {
-				verbosity: 'summarized'
+				verbosity: 'detailed'
 			});
 			expect(result.steps.length).toBeGreaterThan(0);
 		});
