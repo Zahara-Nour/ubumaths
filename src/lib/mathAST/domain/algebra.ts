@@ -11,7 +11,6 @@ import type { IntervalDomain } from '$lib/math/intervals/types';
 import {
 	isEmpty as intervalsIsEmpty,
 	isUniversal as intervalsIsUniversal,
-	containsValue as intervalsContainsValue,
 	intersect as intervalsIntersect,
 	union as intervalsUnion,
 	complement as intervalsComplement,
@@ -250,6 +249,10 @@ export function isUniversal(d: Domain): boolean {
 
 /**
  * Check if a domain contains a specific numeric value.
+ *
+ * Uses direct numeric comparison against interval endpoints rather than
+ * MathNode-based symbolic comparison, which avoids issues with very small
+ * numbers in scientific notation (e.g., 1e-10).
  */
 export function containsValue(d: Domain, value: number): boolean {
 	if (d.kind === 'condition_domain') {
@@ -265,7 +268,79 @@ export function containsValue(d: Domain, value: number): boolean {
 		// Value is in domain if it's NOT excluded
 		return !isExcludedByPeriodic(d, value);
 	}
-	return intervalsContainsValue(d, value);
+	return numericContainsValue(d, value);
+}
+
+/**
+ * Check if an IntervalSet-compatible domain contains a numeric value
+ * using direct numeric evaluation of endpoints.
+ */
+function numericContainsValue(d: Domain, value: number): boolean {
+	if (d.kind === 'empty') return false;
+	if (d.kind === 'universal') return true;
+	if (d.kind !== 'interval_set') return false;
+
+	// Check excluded points
+	for (const ep of d.excludedPoints) {
+		const epVal = endpointToNumber(ep.value);
+		if (epVal !== null && Math.abs(epVal - value) < ZERO_TOLERANCE) {
+			return false;
+		}
+	}
+
+	// Check if value is in any interval
+	for (const interval of d.intervals) {
+		if (numericInInterval(value, interval)) return true;
+	}
+	return false;
+}
+
+/**
+ * Check if a numeric value is within an interval by evaluating endpoints numerically.
+ * Uses strict comparison (no tolerance) - the caller is responsible for probing
+ * with appropriate offsets from the boundary.
+ */
+function numericInInterval(value: number, interval: import('./types').Interval): boolean {
+	const lower = endpointToNumber(interval.lower.value);
+	const upper = endpointToNumber(interval.upper.value);
+
+	// Check lower bound
+	if (lower !== null) {
+		if (interval.lower.type === 'closed') {
+			if (value < lower) return false;
+		} else {
+			if (value <= lower) return false;
+		}
+	}
+
+	// Check upper bound
+	if (upper !== null) {
+		if (interval.upper.type === 'closed') {
+			if (value > upper) return false;
+		} else {
+			if (value >= upper) return false;
+		}
+	}
+
+	return true;
+}
+
+/**
+ * Convert an endpoint MathNode to a numeric value.
+ * Returns null for infinity or unevaluable expressions.
+ */
+function endpointToNumber(node: EndpointValue): number | null {
+	if (node.type === 'infinity') return null;
+	if (node.type === 'number') return parseFloat(node.value);
+	if (node.type === 'opposite' && node.operand.type === 'number') {
+		return -parseFloat(node.operand.value);
+	}
+	try {
+		const val = evaluateNodeToApproximatedNumber(node);
+		return Number.isFinite(val) ? val : null;
+	} catch {
+		return null;
+	}
 }
 
 // =============================================================================

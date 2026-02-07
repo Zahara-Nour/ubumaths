@@ -16,7 +16,6 @@ import { structurallyEqual } from './known-limits';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { computeDomain } from '../domain/compute';
-import { containsValue } from '../domain/algebra';
 import { ZERO_TOLERANCE } from '../common';
 
 // =============================================================================
@@ -66,8 +65,9 @@ export function evaluateOneSidedLimits(
  * Check if two limit results represent equal limits.
  */
 export function checkLimitsEqual(left: LimitResult, right: LimitResult): boolean {
-	// Both must have exact status
-	if (left.status !== 'exact' || right.status !== 'exact') {
+	// Both must have a resolved status (exact or infinite)
+	const resolvedStatuses = new Set(['exact', 'infinite']);
+	if (!resolvedStatuses.has(left.status) || !resolvedStatuses.has(right.status)) {
 		return false;
 	}
 
@@ -243,6 +243,39 @@ function mayHaveRestrictedDomain(expr: MathNode): boolean {
 }
 
 /**
+ * Check if a numeric value is on a domain boundary (at an interval endpoint).
+ * More robust than epsilon-probing with containsValue.
+ */
+function isOnDomainBoundary(domain: import('../domain/types').Domain, value: number): boolean {
+	if (domain.kind !== 'interval_set') return false;
+
+	for (const interval of domain.intervals) {
+		const lower = tryGetEndpointNumericValue(interval.lower.value);
+		if (lower !== null && Math.abs(lower - value) < ZERO_TOLERANCE) {
+			return true;
+		}
+		const upper = tryGetEndpointNumericValue(interval.upper.value);
+		if (upper !== null && Math.abs(upper - value) < ZERO_TOLERANCE) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Try to get a numeric value from an interval endpoint MathNode.
+ */
+function tryGetEndpointNumericValue(node: import('../types').MathNode): number | null {
+	if (isInfinity(node)) return null;
+	if (isNumber(node)) return parseFloat(node.value);
+	try {
+		return evaluateNodeToApproximatedNumber(node);
+	} catch {
+		return null;
+	}
+}
+
+/**
  * Check if expression has asymmetric behavior around a point.
  *
  * Uses domain analysis to detect if the approach point is on a domain boundary
@@ -261,17 +294,10 @@ function hasAsymmetricBehavior(expr: MathNode, varName: string, approach: MathNo
 	// Only compute domain for expressions that may have restricted domains
 	// (functions like sqrt/ln, powers with fractional exponents, divisions)
 	if (isNumber(approach) && mayHaveRestrictedDomain(expr)) {
-		const approachVal = parseFloat(approach.value);
-		const epsilon = ZERO_TOLERANCE;
-
 		try {
 			const { domain } = computeDomain(expr, varName);
 
-			const leftInDomain = containsValue(domain, approachVal - epsilon);
-			const rightInDomain = containsValue(domain, approachVal + epsilon);
-
-			// Asymmetric behavior if exactly one side is in domain
-			if (leftInDomain !== rightInDomain) {
+			if (isOnDomainBoundary(domain, parseFloat(approach.value))) {
 				return true;
 			}
 		} catch {

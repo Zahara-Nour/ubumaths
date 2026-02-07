@@ -111,8 +111,12 @@ function classifyWithSignExact(
 				return null;
 			}
 			if (numValue === 0) {
-				// Unsigned zero from normal form
-				return { type: 'zero' };
+				if (direction === 'both') {
+					return { type: 'zero' };
+				}
+				// For directional limits, fall back to numeric to determine sign
+				// (e.g., ln(x) → 0⁺ as x → 1⁺)
+				return null;
 			}
 			return { type: 'finite', value: numValue };
 		}
