@@ -28,6 +28,8 @@ import {
 	add,
 	multiply,
 	divide,
+	fraction,
+	implicitMultiply,
 	superscript,
 	opposite,
 	abs,
@@ -685,38 +687,163 @@ describe('Pattern Matching Integration', () => {
 		});
 
 		describe('with trigRules', () => {
+			// Helper to build angle nodes
+			const piOver = (d: number) => fraction(piConstant(), number(String(d)));
+			const kPiOver = (k: number, d: number) =>
+				fraction(implicitMultiply(number(String(k)), piConstant()), number(String(d)));
+			const kPi = (k: number) => implicitMultiply(number(String(k)), piConstant());
+
+			// Helper for expected values
+			const half = () => fraction(number('1'), number('2'));
+			const sqrt2Over2 = () => fraction(func('sqrt', [number('2')]), number('2'));
+			const sqrt3Over2 = () => fraction(func('sqrt', [number('3')]), number('2'));
+			const sqrt3 = () => func('sqrt', [number('3')]);
+			const sqrt3Over3 = () => fraction(func('sqrt', [number('3')]), number('3'));
+
+			// --- sin ---
 			it('simplifies sin(0) to 0', () => {
-				const node = func('sin', [number('0')]);
-				const result = applyRules([...trigRules], node);
+				const result = applyRules([...trigRules], func('sin', [number('0')]));
 				expect(nodesEqual(result, number('0'))).toBe(true);
 			});
 
-			it('simplifies cos(0) to 1', () => {
-				const node = func('cos', [number('0')]);
-				const result = applyRules([...trigRules], node);
+			it('simplifies sin(π/6) to 1/2', () => {
+				const result = applyRules([...trigRules], func('sin', [piOver(6)]));
+				expect(nodesEqual(result, half())).toBe(true);
+			});
+
+			it('simplifies sin(π/4) to √2/2', () => {
+				const result = applyRules([...trigRules], func('sin', [piOver(4)]));
+				expect(nodesEqual(result, sqrt2Over2())).toBe(true);
+			});
+
+			it('simplifies sin(π/3) to √3/2', () => {
+				const result = applyRules([...trigRules], func('sin', [piOver(3)]));
+				expect(nodesEqual(result, sqrt3Over2())).toBe(true);
+			});
+
+			it('simplifies sin(π/2) to 1', () => {
+				const result = applyRules([...trigRules], func('sin', [piOver(2)]));
 				expect(nodesEqual(result, number('1'))).toBe(true);
 			});
 
-			it('simplifies tan(0) to 0', () => {
-				const node = func('tan', [number('0')]);
-				const result = applyRules([...trigRules], node);
+			it('simplifies sin(2π/3) to √3/2', () => {
+				const result = applyRules([...trigRules], func('sin', [kPiOver(2, 3)]));
+				expect(nodesEqual(result, sqrt3Over2())).toBe(true);
+			});
+
+			it('simplifies sin(π) to 0', () => {
+				const result = applyRules([...trigRules], func('sin', [piConstant()]));
 				expect(nodesEqual(result, number('0'))).toBe(true);
 			});
 
-			it('simplifies sin(pi) to 0', () => {
-				const node = func('sin', [piConstant()]);
-				const result = applyRules([...trigRules], node);
-				expect(nodesEqual(result, number('0'))).toBe(true);
-			});
-
-			it('simplifies cos(pi) to -1', () => {
-				const node = func('cos', [piConstant()]);
-				const result = applyRules([...trigRules], node);
+			it('simplifies sin(3π/2) to -1', () => {
+				const result = applyRules([...trigRules], func('sin', [kPiOver(3, 2)]));
 				expect(nodesEqual(result, opposite(number('1')))).toBe(true);
 			});
 
+			it('simplifies sin(11π/6) to -1/2', () => {
+				const result = applyRules([...trigRules], func('sin', [kPiOver(11, 6)]));
+				expect(nodesEqual(result, opposite(half()))).toBe(true);
+			});
+
+			// --- cos ---
+			it('simplifies cos(0) to 1', () => {
+				const result = applyRules([...trigRules], func('cos', [number('0')]));
+				expect(nodesEqual(result, number('1'))).toBe(true);
+			});
+
+			it('simplifies cos(π/6) to √3/2', () => {
+				const result = applyRules([...trigRules], func('cos', [piOver(6)]));
+				expect(nodesEqual(result, sqrt3Over2())).toBe(true);
+			});
+
+			it('simplifies cos(π/3) to 1/2', () => {
+				const result = applyRules([...trigRules], func('cos', [piOver(3)]));
+				expect(nodesEqual(result, half())).toBe(true);
+			});
+
+			it('simplifies cos(π/2) to 0', () => {
+				const result = applyRules([...trigRules], func('cos', [piOver(2)]));
+				expect(nodesEqual(result, number('0'))).toBe(true);
+			});
+
+			it('simplifies cos(π) to -1', () => {
+				const result = applyRules([...trigRules], func('cos', [piConstant()]));
+				expect(nodesEqual(result, opposite(number('1')))).toBe(true);
+			});
+
+			it('simplifies cos(3π/2) to 0', () => {
+				const result = applyRules([...trigRules], func('cos', [kPiOver(3, 2)]));
+				expect(nodesEqual(result, number('0'))).toBe(true);
+			});
+
+			it('simplifies cos(5π/3) to 1/2', () => {
+				const result = applyRules([...trigRules], func('cos', [kPiOver(5, 3)]));
+				expect(nodesEqual(result, half())).toBe(true);
+			});
+
+			// --- tan ---
+			it('simplifies tan(0) to 0', () => {
+				const result = applyRules([...trigRules], func('tan', [number('0')]));
+				expect(nodesEqual(result, number('0'))).toBe(true);
+			});
+
+			it('simplifies tan(π/6) to √3/3', () => {
+				const result = applyRules([...trigRules], func('tan', [piOver(6)]));
+				expect(nodesEqual(result, sqrt3Over3())).toBe(true);
+			});
+
+			it('simplifies tan(π/4) to 1', () => {
+				const result = applyRules([...trigRules], func('tan', [piOver(4)]));
+				expect(nodesEqual(result, number('1'))).toBe(true);
+			});
+
+			it('simplifies tan(π/3) to √3', () => {
+				const result = applyRules([...trigRules], func('tan', [piOver(3)]));
+				expect(nodesEqual(result, sqrt3())).toBe(true);
+			});
+
+			it('simplifies tan(π) to 0', () => {
+				const result = applyRules([...trigRules], func('tan', [piConstant()]));
+				expect(nodesEqual(result, number('0'))).toBe(true);
+			});
+
+			it('simplifies tan(3π/4) to -1', () => {
+				const result = applyRules([...trigRules], func('tan', [kPiOver(3, 4)]));
+				expect(nodesEqual(result, opposite(number('1')))).toBe(true);
+			});
+
+			// --- Angle reduction ---
+			it('simplifies sin(2π) to 0 (angle reduction)', () => {
+				const result = applyRules([...trigRules], func('sin', [kPi(2)]));
+				expect(nodesEqual(result, number('0'))).toBe(true);
+			});
+
+			it('simplifies cos(2π) to 1 (angle reduction)', () => {
+				const result = applyRules([...trigRules], func('cos', [kPi(2)]));
+				expect(nodesEqual(result, number('1'))).toBe(true);
+			});
+
+			// --- Negative angles ---
+			it('simplifies sin(-π/6) to -1/2 (via angle reduction)', () => {
+				const result = applyRules([...trigRules], func('sin', [opposite(piOver(6))]));
+				expect(nodesEqual(result, opposite(half()))).toBe(true);
+			});
+
+			it('simplifies cos(-π/3) to 1/2 (via angle reduction)', () => {
+				const result = applyRules([...trigRules], func('cos', [opposite(piOver(3))]));
+				expect(nodesEqual(result, half())).toBe(true);
+			});
+
+			// --- Does not simplify non-remarkable ---
 			it('does not simplify sin(x)', () => {
 				const node = func('sin', [variable('x')]);
+				const result = applyRules([...trigRules], node);
+				expect(nodesEqual(result, node)).toBe(true);
+			});
+
+			it('does not simplify tan(π/2) (undefined)', () => {
+				const node = func('tan', [piOver(2)]);
 				const result = applyRules([...trigRules], node);
 				expect(nodesEqual(result, node)).toBe(true);
 			});
