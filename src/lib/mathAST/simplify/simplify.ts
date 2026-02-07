@@ -1,14 +1,15 @@
 /**
  * Simplify Pipeline
  *
- * Orchestrates the three simplification engines (pattern rules, normalize,
+ * Orchestrates the simplification engines (normalize, pattern rules,
  * identity transforms) with a cost function to produce the simplest form
  * of a mathematical expression.
  *
  * Algorithm:
+ * 0. Pre-normalize: reduce infinity expressions (normalize fails on ∞)
  * 1. Normalize (polynomial canonical form) + denormalize
- * 2. Apply pattern rules (arithmetic, power, abs)
- * 3. Apply identity transforms (trig, hyperbolic, algebraic, infinity)
+ * 2. Apply pattern rules (abs only — arithmetic/power are redundant with normalize)
+ * 3. Apply identity transforms (trig, hyperbolic, algebraic)
  * 4. Post-normalize
  * 5. Compare costs, keep the cheapest form
  * 6. Repeat until fixpoint or maxIterations
@@ -22,8 +23,11 @@ import { computeCost } from './cost';
 import { SimplifyStepRecorder } from './step-recorder';
 import { getSimplifyRuleDescription } from './descriptions-fr';
 
-// Pattern rules
-import { allRules } from '../pattern/rule-sets';
+// Pattern rules — only abs rules are used by the pipeline.
+// Arithmetic/power rules are fully redundant with normalize's polynomial
+// arithmetic (zero coefficients are dropped, identity elements eliminated,
+// powers handled by powNormalForm).
+import { simplifyRules } from '../pattern/rule-sets';
 import { applyRules } from '../pattern/rule';
 import { nodesEqual } from '../pattern/match';
 
@@ -87,8 +91,8 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 	const recorder = new SimplifyStepRecorder();
 	const isRecording = verbosity !== 'result';
 
-	// Select rules based on options
-	const rules = enableAbs ? allRules : allRules.filter((r) => !r.name.startsWith('abs-'));
+	// Select rules based on options (only abs rules — see module doc)
+	const rules = enableAbs ? simplifyRules : [];
 
 	let current = node;
 	let best = node;
@@ -97,7 +101,39 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 	for (let iter = 0; iter < maxIterations; iter++) {
 		const beforeIteration = current;
 
+		// Phase 0: Pre-normalize infinity reduction
+		// Normalize converts expressions to polynomial NormalForm, but infinity
+		// nodes cannot be represented as polynomials — normalize throws on them.
+		// By reducing infinity expressions first (e.g., arctan(+∞) → π/2,
+		// exp(-∞) → 0), we give normalize clean, finite expressions to work on.
+		if (enableInfinity && containsInfinity(current)) {
+			recorder.setPhase('identity');
+			const infResult = applyIdentityTransforms(current, infinityTransforms);
+			if (isRecording && infResult.changed) {
+				recorder.recordStep(
+					'infinity-transforms',
+					getSimplifyRuleDescription('infinity-transforms'),
+					current,
+					infResult.result,
+					'summarized'
+				);
+			}
+			current = infResult.result;
+
+			// Cost check: capture the post-infinity form before normalize
+			// potentially rewrites it to a more expensive representation
+			// (e.g., π/2 is cheaper than the (1/2)π normalize may produce).
+			const infCost = computeCost(current);
+			if (infCost < bestCost) {
+				best = current;
+				bestCost = infCost;
+			}
+		}
+
 		// Phase A: Normalize (canonical polynomial form)
+		// Handles arithmetic identities (x+0, x*1, x*0), like-term collection
+		// (2x+3x → 5x), power simplification (x^0, x^1), fraction reduction,
+		// radical simplification, and special function values (ln(e), sin(kπ)).
 		recorder.setPhase('normalize');
 		try {
 			const preprocessed = preprocess(current);
@@ -114,25 +150,33 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 			}
 			current = afterNormalize;
 		} catch {
-			// Normalize can fail on some expressions (e.g., infinity)
-			// Skip normalization in that case
+			// Normalize can still fail on edge cases not caught by Phase 0
+			// (e.g., remaining infinity in sub-expressions). Skip safely.
 		}
 
-		// Phase B: Pattern rules
-		recorder.setPhase('rules');
-		const afterRules = applyRules(rules, current, 100, ctx);
-		if (isRecording && !nodesEqual(afterRules, current)) {
-			recorder.recordStep(
-				'pattern-rules',
-				getSimplifyRuleDescription('pattern-rules'),
-				current,
-				afterRules,
-				'summarized'
-			);
+		// Phase B: Pattern rules (abs rules only)
+		// Arithmetic/power rules are NOT applied here — they are fully redundant
+		// with normalize's polynomial arithmetic. Only abs rules add value because
+		// normalize has limited support for absolute value simplification.
+		if (rules.length > 0) {
+			recorder.setPhase('rules');
+			const afterRules = applyRules(rules, current, 100, ctx);
+			if (isRecording && !nodesEqual(afterRules, current)) {
+				recorder.recordStep(
+					'pattern-rules',
+					getSimplifyRuleDescription('pattern-rules'),
+					current,
+					afterRules,
+					'summarized'
+				);
+			}
+			current = afterRules;
 		}
-		current = afterRules;
 
-		// Phase C: Identity transforms (selective)
+		// Phase C: Identity transforms (selective, no infinity — already done in Phase 0)
+		// These transforms operate on the MathNode tree level, handling patterns
+		// that normalize cannot: trig/hyperbolic identities (opaque to normalize),
+		// and algebraic factoring (normalize expands but does not factor).
 		recorder.setPhase('identity');
 
 		if (enableTrig && containsTrigFunctions(current)) {
@@ -177,20 +221,6 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 			current = algResult.result;
 		}
 
-		if (enableInfinity && containsInfinity(current)) {
-			const infResult = applyIdentityTransforms(current, infinityTransforms);
-			if (isRecording && infResult.changed) {
-				recorder.recordStep(
-					'infinity-transforms',
-					getSimplifyRuleDescription('infinity-transforms'),
-					current,
-					infResult.result,
-					'summarized'
-				);
-			}
-			current = infResult.result;
-		}
-
 		// Cost check before post-normalize (identity transforms may produce cheaper forms)
 		const preNormCost = computeCost(current);
 		if (preNormCost < bestCost) {
@@ -199,6 +229,8 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		}
 
 		// Phase D: Post-normalize
+		// Re-normalize after identity transforms, which may produce expressions
+		// that benefit from canonical form (e.g., trig identity yields 1 + 3 → 4).
 		recorder.setPhase('post-normalize');
 		try {
 			const preprocessed2 = preprocess(current);

@@ -706,10 +706,10 @@ export class Exp {
 	 * // simplified.latex => 'x'
 	 *
 	 * @example
-	 * import { allRules } from '$lib/mathAST/pattern';
+	 * import { allPatternRules } from '$lib/mathAST/pattern';
 	 *
 	 * const expr = Exp.parse('x^1 + 0');
-	 * const simplified = expr.simplifyWith(allRules);
+	 * const simplified = expr.simplifyWith(allPatternRules);
 	 * // simplified.latex => 'x'
 	 */
 	simplifyWith(rules: readonly Rule[], maxIterations?: number): Exp {

@@ -3,14 +3,14 @@
  *
  * Tests the integration between:
  * - Exp class pattern matching methods (matches, extract, simplifyWith)
- * - Pre-built rule sets (arithmeticRules, powerRules, allRules)
+ * - Pre-built rule sets (arithmeticRules, powerRules, allPatternRules)
  * - Pattern builder (P namespace)
  */
 
 import { describe, it, expect } from 'vitest';
 import { Exp } from '../../exp';
 import { P } from '../builder';
-import { arithmeticRules, powerRules, absRules, allRules } from '../rule-sets';
+import { arithmeticRules, powerRules, absRules, allPatternRules } from '../rule-sets';
 import { applyRules } from '../rule';
 import { nodesEqual } from '../match';
 import { number, variable, add, superscript } from '../../factory';
@@ -328,17 +328,17 @@ describe('Pattern Matching Integration', () => {
 			});
 		});
 
-		describe('with allRules', () => {
+		describe('with allPatternRules', () => {
 			it('simplifies x^1 + 0 to x', () => {
 				const expr = Exp.parse('x^1 + 0');
-				const simplified = expr.simplifyWith(allRules);
+				const simplified = expr.simplifyWith(allPatternRules);
 
 				expect(simplified.latex).toBe('x');
 			});
 
 			it('simplifies (x * 1)^0 to 1', () => {
 				const expr = Exp.parse('(x \\cdot 1)^0');
-				const simplified = expr.simplifyWith(allRules);
+				const simplified = expr.simplifyWith(allPatternRules);
 
 				expect(simplified.latex).toBe('1');
 			});
@@ -346,7 +346,7 @@ describe('Pattern Matching Integration', () => {
 			it('simplifies complex expression', () => {
 				// ((a + 0) * 1)^1 / 1
 				const expr = Exp.parse('\\frac{((a + 0) \\cdot 1)^1}{1}');
-				const simplified = expr.simplifyWith(allRules);
+				const simplified = expr.simplifyWith(allPatternRules);
 
 				// Parentheses are preserved, inner expressions simplify
 				expect(simplified.latex).toBe('\\left( \\left( a \\right) \\right)');
@@ -355,7 +355,7 @@ describe('Pattern Matching Integration', () => {
 			it('simplifies expression with zero multiplication', () => {
 				// (complex expr) * 0 should become 0
 				const expr = Exp.parse('(x^2 + 3x - 5) \\cdot 0');
-				const simplified = expr.simplifyWith(allRules);
+				const simplified = expr.simplifyWith(allPatternRules);
 
 				expect(simplified.latex).toBe('0');
 			});
@@ -363,7 +363,7 @@ describe('Pattern Matching Integration', () => {
 			it('simplifies double negation in nested expression', () => {
 				// (--a) + 0 -> (a)
 				const expr = Exp.parse('(--a) + 0');
-				const simplified = expr.simplifyWith(allRules);
+				const simplified = expr.simplifyWith(allPatternRules);
 
 				// Parentheses are preserved
 				expect(simplified.latex).toBe('\\left( a \\right)');
@@ -433,20 +433,22 @@ describe('Pattern Matching Integration', () => {
 			});
 		});
 
-		describe('allRules', () => {
+		describe('allPatternRules', () => {
 			it('combines arithmetic, power, and abs rules', () => {
-				expect(allRules.length).toBe(arithmeticRules.length + powerRules.length + absRules.length);
+				expect(allPatternRules.length).toBe(
+					arithmeticRules.length + powerRules.length + absRules.length
+				);
 			});
 
 			it('includes all arithmetic rules', () => {
 				for (const rule of arithmeticRules) {
-					expect(allRules).toContain(rule);
+					expect(allPatternRules).toContain(rule);
 				}
 			});
 
 			it('includes all power rules', () => {
 				for (const rule of powerRules) {
-					expect(allRules).toContain(rule);
+					expect(allPatternRules).toContain(rule);
 				}
 			});
 		});
@@ -459,14 +461,14 @@ describe('Pattern Matching Integration', () => {
 	describe('Edge Cases', () => {
 		it('handles empty expression correctly', () => {
 			const expr = Exp.number('0');
-			const simplified = expr.simplifyWith(allRules);
+			const simplified = expr.simplifyWith(allPatternRules);
 
 			expect(simplified.latex).toBe('0');
 		});
 
 		it('handles variables only', () => {
 			const expr = Exp.variable('x');
-			const simplified = expr.simplifyWith(allRules);
+			const simplified = expr.simplifyWith(allPatternRules);
 
 			expect(simplified.latex).toBe('x');
 		});
@@ -481,7 +483,7 @@ describe('Pattern Matching Integration', () => {
 
 		it('handles expression with no applicable rules', () => {
 			const expr = Exp.parse('x + y + z');
-			const simplified = expr.simplifyWith(allRules);
+			const simplified = expr.simplifyWith(allPatternRules);
 
 			// Should remain unchanged
 			expect(simplified.latex).toBe('x + y + z');
@@ -504,7 +506,7 @@ describe('Pattern Matching Integration', () => {
 		it('simplifies polynomial with identity terms', () => {
 			// x^2 + 0 should simplify to x^2
 			const expr = Exp.parse('x^2 + 0');
-			const simplified = expr.simplifyWith(allRules);
+			const simplified = expr.simplifyWith(allPatternRules);
 
 			// Single digit exponent doesn't need braces
 			expect(simplified.latex).toBe('x^2');

@@ -208,7 +208,7 @@ export { createRule, instantiate, applyRule, applyRuleDeep, applyRules } from '.
 // Rule Set Exports
 // =============================================================================
 
-export { arithmeticRules, powerRules, allRules } from './rule-sets';
+export { arithmeticRules, powerRules, absRules, allPatternRules, simplifyRules } from './rule-sets';
 
 // =============================================================================
 // Verification Exports
