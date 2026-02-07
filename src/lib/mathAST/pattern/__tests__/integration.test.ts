@@ -10,10 +10,20 @@
 import { describe, it, expect } from 'vitest';
 import { Exp } from '../../exp';
 import { P } from '../builder';
-import { arithmeticRules, powerRules, absRules, allPatternRules } from '../rule-sets';
+import { arithmeticRules, powerRules, absRules, logExpRules, allPatternRules } from '../rule-sets';
 import { applyRules } from '../rule';
 import { nodesEqual } from '../match';
-import { number, variable, add, superscript, opposite, abs } from '../../factory';
+import {
+	number,
+	variable,
+	add,
+	multiply,
+	superscript,
+	opposite,
+	abs,
+	func,
+	euler
+} from '../../factory';
 import type { TypeContext } from '../../numtype/types';
 
 describe('Pattern Matching Integration', () => {
@@ -385,10 +395,10 @@ describe('Pattern Matching Integration', () => {
 				expect(nodesEqual(result, superscript(variable('x'), number('4')))).toBe(true);
 			});
 
-			it('does not simplify (-a)^3 (odd exponent)', () => {
+			it('simplifies (-a)^3 to -(a^3) (odd exponent)', () => {
 				const node = superscript(opposite(variable('a')), number('3'));
 				const result = applyRules([...powerRules], node);
-				expect(nodesEqual(result, node)).toBe(true);
+				expect(nodesEqual(result, opposite(superscript(variable('a'), number('3'))))).toBe(true);
 			});
 
 			it('simplifies (-a)^n to a^n when n declared even', () => {
@@ -427,6 +437,119 @@ describe('Pattern Matching Integration', () => {
 				const node = superscript(abs(variable('x')), variable('n'));
 				const result = applyRules([...powerRules], node, 100, ctx);
 				expect(nodesEqual(result, superscript(variable('x'), variable('n')))).toBe(true);
+			});
+
+			it('simplifies (-a)^3 to -(a^3) (odd exponent)', () => {
+				const node = superscript(opposite(variable('a')), number('3'));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, opposite(superscript(variable('a'), number('3'))))).toBe(true);
+			});
+
+			it('simplifies (-a)^n to -(a^n) when n declared odd', () => {
+				const ctx: TypeContext = {
+					variables: new Map([['n', 'integer']]),
+					assumptions: new Map([['n', { parity: 'odd' }]])
+				};
+				const node = superscript(opposite(variable('a')), variable('n'));
+				const result = applyRules([...powerRules], node, 100, ctx);
+				expect(nodesEqual(result, opposite(superscript(variable('a'), variable('n'))))).toBe(true);
+			});
+
+			it('simplifies sqrt(x^2) to |x|', () => {
+				const node = func('sqrt', [superscript(variable('x'), number('2'))]);
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, abs(variable('x')))).toBe(true);
+			});
+
+			it('simplifies sqrt(a^2) to |a|', () => {
+				const node = func('sqrt', [superscript(variable('a'), number('2'))]);
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, abs(variable('a')))).toBe(true);
+			});
+
+			it('simplifies (x^2)^3 to x^(2*3) (power of power)', () => {
+				const node = superscript(superscript(variable('x'), number('2')), number('3'));
+				const result = applyRules([...powerRules], node);
+				expect(
+					nodesEqual(result, superscript(variable('x'), multiply(number('2'), number('3'))))
+				).toBe(true);
+			});
+
+			it('simplifies (a^m)^n to a^(m*n) with symbolic exponents', () => {
+				const node = superscript(superscript(variable('a'), variable('m')), variable('n'));
+				const result = applyRules([...powerRules], node);
+				expect(
+					nodesEqual(result, superscript(variable('a'), multiply(variable('m'), variable('n'))))
+				).toBe(true);
+			});
+
+			it('simplifies x^2 * x^3 to x^(2+3) (same base product)', () => {
+				const node = multiply(
+					superscript(variable('x'), number('2')),
+					superscript(variable('x'), number('3'))
+				);
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, superscript(variable('x'), add(number('2'), number('3'))))).toBe(
+					true
+				);
+			});
+
+			it('simplifies a^m * a^n to a^(m+n) with symbolic exponents', () => {
+				const node = multiply(
+					superscript(variable('a'), variable('m')),
+					superscript(variable('a'), variable('n'))
+				);
+				const result = applyRules([...powerRules], node);
+				expect(
+					nodesEqual(result, superscript(variable('a'), add(variable('m'), variable('n'))))
+				).toBe(true);
+			});
+
+			it('does not simplify x^2 * y^3 (different bases)', () => {
+				const node = multiply(
+					superscript(variable('x'), number('2')),
+					superscript(variable('y'), number('3'))
+				);
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, node)).toBe(true);
+			});
+		});
+
+		describe('with logExpRules', () => {
+			it('simplifies ln(e^x) to x', () => {
+				const node = func('ln', [superscript(euler(), variable('x'))]);
+				const result = applyRules([...logExpRules], node);
+				expect(nodesEqual(result, variable('x'))).toBe(true);
+			});
+
+			it('simplifies ln(e^2) to 2', () => {
+				const node = func('ln', [superscript(euler(), number('2'))]);
+				const result = applyRules([...logExpRules], node);
+				expect(nodesEqual(result, number('2'))).toBe(true);
+			});
+
+			it('simplifies e^(ln(x)) to x', () => {
+				const node = superscript(euler(), func('ln', [variable('x')]));
+				const result = applyRules([...logExpRules], node);
+				expect(nodesEqual(result, variable('x'))).toBe(true);
+			});
+
+			it('simplifies e^(ln(5)) to 5', () => {
+				const node = superscript(euler(), func('ln', [number('5')]));
+				const result = applyRules([...logExpRules], node);
+				expect(nodesEqual(result, number('5'))).toBe(true);
+			});
+
+			it('does not simplify ln(2^x) (base is not e)', () => {
+				const node = func('ln', [superscript(number('2'), variable('x'))]);
+				const result = applyRules([...logExpRules], node);
+				expect(nodesEqual(result, node)).toBe(true);
+			});
+
+			it('does not simplify 2^(ln(x)) (base is not e)', () => {
+				const node = superscript(number('2'), func('ln', [variable('x')]));
+				const result = applyRules([...logExpRules], node);
+				expect(nodesEqual(result, node)).toBe(true);
 			});
 		});
 
@@ -536,9 +659,9 @@ describe('Pattern Matching Integration', () => {
 		});
 
 		describe('allPatternRules', () => {
-			it('combines arithmetic, power, and abs rules', () => {
+			it('combines arithmetic, power, abs, and log/exp rules', () => {
 				expect(allPatternRules.length).toBe(
-					arithmeticRules.length + powerRules.length + absRules.length
+					arithmeticRules.length + powerRules.length + absRules.length + logExpRules.length
 				);
 			});
 

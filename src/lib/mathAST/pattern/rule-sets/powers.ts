@@ -47,7 +47,11 @@ function isNotZero(bindings: MatchBindings): boolean {
  * - 0^x = 0 (zero to positive power)
  * - (-1)^n = 1 (n even), (-1)^n = -1 (n odd)
  * - (-a)^n = a^n (n even)
+ * - (-a)^n = -(a^n) (n odd)
  * - |x|^n = x^n (n even)
+ * - sqrt(x^2) = |x|
+ * - (a^m)^n = a^(m*n) (power of power)
+ * - a^m * a^n = a^(m+n) (same base product)
  */
 export const powerRules: readonly Rule[] = [
 	// x^1 = x (power of one)
@@ -88,8 +92,32 @@ export const powerRules: readonly Rule[] = [
 		name: 'neg-base-pow-even'
 	}),
 
+	// (-a)^n = -(a^n) (when n is odd, sign passes through)
+	createRule(P.pow(P.neg(P._('a')), P._('n', P.isOdd())), P.neg(P.pow(P._('a'), P._('n'))), {
+		name: 'neg-base-pow-odd'
+	}),
+
 	// |x|^n = x^n (when n is even, both sides are non-negative)
 	createRule(P.pow(P.func('abs', [P._('x')]), P._('n', P.isEven())), P.pow(P._('x'), P._('n')), {
 		name: 'abs-pow-even'
-	})
+	}),
+
+	// sqrt(x^2) = |x|
+	createRule(P.func('sqrt', [P.pow(P._('x'), P.num(2))]), P.func('abs', [P._('x')]), {
+		name: 'sqrt-square'
+	}),
+
+	// (a^m)^n = a^(m*n) (power of a power)
+	createRule(
+		P.pow(P.pow(P._('a'), P._('m')), P._('n')),
+		P.pow(P._('a'), P.mul(P._('m'), P._('n'))),
+		{ name: 'pow-of-pow' }
+	),
+
+	// a^m * a^n = a^(m+n) (same base, sum of exponents)
+	createRule(
+		P.mul(P.pow(P._('a'), P._('m')), P.pow(P._('a'), P._('n'))),
+		P.pow(P._('a'), P.add(P._('m'), P._('n'))),
+		{ name: 'same-base-mul' }
+	)
 ] as const;
