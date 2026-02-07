@@ -39,14 +39,7 @@ import {
 	unitInterval
 } from '../factory';
 import { endpointToNumber } from '../endpoint';
-import {
-	isNumber,
-	isInfinity,
-	isGreek,
-	isVariable,
-	isFunction,
-	isDivision
-} from '$lib/mathAST/guards';
+import { isNumber, isInfinity, isMathConstant, isFunction, isDivision } from '$lib/mathAST/guards';
 
 describe('bound value constructors', () => {
 	describe('fromNumber', () => {
@@ -151,20 +144,20 @@ describe('bound value constructors', () => {
 	});
 
 	describe('symbolic constant constructors', () => {
-		it('creates pi as GreekNode', () => {
+		it('creates pi as MathConstantNode', () => {
 			const piVal = pi();
-			expect(isGreek(piVal)).toBe(true);
-			if (isGreek(piVal)) {
-				expect(piVal.letter).toBe('pi');
+			expect(isMathConstant(piVal)).toBe(true);
+			if (isMathConstant(piVal)) {
+				expect(piVal.constant).toBe('pi');
 			}
 			expect(endpointToNumber(piVal)).toBeCloseTo(Math.PI);
 		});
 
-		it('creates e as VariableNode', () => {
+		it('creates e as MathConstantNode', () => {
 			const eVal = e();
-			expect(isVariable(eVal)).toBe(true);
-			if (isVariable(eVal)) {
-				expect(eVal.name).toBe('e');
+			expect(isMathConstant(eVal)).toBe(true);
+			if (isMathConstant(eVal)) {
+				expect(eVal.constant).toBe('euler');
 			}
 			expect(endpointToNumber(eVal)).toBeCloseTo(Math.E);
 		});

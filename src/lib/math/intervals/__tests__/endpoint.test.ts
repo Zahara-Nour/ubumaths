@@ -16,7 +16,16 @@ import {
 	isPositiveInfinity,
 	isNegativeInfinity
 } from '../endpoint';
-import { number, infinity, func, fraction, greek, variable, power } from '$lib/mathAST/factory';
+import {
+	number,
+	infinity,
+	func,
+	fraction,
+	variable,
+	power,
+	piConstant,
+	euler
+} from '$lib/mathAST/factory';
 import type { EndpointValue } from '../types';
 import {
 	endpointLessThanOrEqual,
@@ -286,35 +295,35 @@ describe('compareEndpointValues edge cases', () => {
 
 	describe('special constants', () => {
 		it('compares pi > 3', () => {
-			const piVal = greek('pi');
+			const piVal = piConstant();
 			const three = numericEndpoint(3);
 			const result = compareEndpointValues(piVal, three);
 			expect(result.outcome).toBe(1);
 		});
 
 		it('compares pi < 4', () => {
-			const piVal = greek('pi');
+			const piVal = piConstant();
 			const four = numericEndpoint(4);
 			const result = compareEndpointValues(piVal, four);
 			expect(result.outcome).toBe(-1);
 		});
 
 		it('compares pi = pi', () => {
-			const pi1 = greek('pi');
-			const pi2 = greek('pi');
+			const pi1 = piConstant();
+			const pi2 = piConstant();
 			const result = compareEndpointValues(pi1, pi2);
 			expect(result.outcome).toBe(0);
 		});
 
 		it('compares e > 2', () => {
-			const eVal = variable('e');
+			const eVal = euler();
 			const two = numericEndpoint(2);
 			const result = compareEndpointValues(eVal, two);
 			expect(result.outcome).toBe(1);
 		});
 
 		it('compares e < 3', () => {
-			const eVal = variable('e');
+			const eVal = euler();
 			const three = numericEndpoint(3);
 			const result = compareEndpointValues(eVal, three);
 			expect(result.outcome).toBe(-1);
@@ -497,8 +506,8 @@ describe('comparison helper functions edge cases', () => {
 		});
 
 		it('returns true when a = b', () => {
-			const pi1 = greek('pi');
-			const pi2 = greek('pi');
+			const pi1 = piConstant();
+			const pi2 = piConstant();
 			expect(endpointGreaterThanOrEqual(pi1, pi2)).toBe(true);
 		});
 
@@ -532,12 +541,12 @@ describe('endpointToNumber edge cases', () => {
 	});
 
 	it('converts pi (approximate)', () => {
-		const piVal = greek('pi');
+		const piVal = piConstant();
 		expect(endpointToNumber(piVal)).toBeCloseTo(Math.PI);
 	});
 
 	it('converts e (approximate)', () => {
-		const eVal = variable('e');
+		const eVal = euler();
 		expect(endpointToNumber(eVal)).toBeCloseTo(Math.E);
 	});
 
@@ -573,8 +582,8 @@ describe('endpointEquals edge cases', () => {
 	});
 
 	it('handles pi comparisons', () => {
-		const pi1 = greek('pi');
-		const pi2 = greek('pi');
+		const pi1 = piConstant();
+		const pi2 = piConstant();
 		expect(endpointEquals(pi1, pi2)).toBe(true);
 	});
 });
