@@ -34,6 +34,7 @@ import {
 	piConstant
 } from '../../factory';
 import { isNumber, isInfinity } from '../../guards';
+import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import type { MathNode } from '../../types';
 
 // =============================================================================
@@ -88,8 +89,17 @@ function expectNumber(
 		}
 	}
 
-	// Handle FunctionNode that may contain constant (like ln(e))
-	// These are cases where evaluation is not fully implemented
+	// Fallback: try numeric evaluation for symbolic results (e.g., sqrt(6), 2·ln(e))
+	try {
+		const actual = evaluateNodeToApproximatedNumber(result.value);
+		if (Number.isFinite(actual)) {
+			expect(Math.abs(actual - expected)).toBeLessThan(tolerance);
+			return;
+		}
+	} catch {
+		// Numeric evaluation failed
+	}
+
 	throw new Error(`Expected number ${expected}, got ${JSON.stringify(result.value)}`);
 }
 

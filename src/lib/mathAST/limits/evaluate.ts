@@ -43,7 +43,9 @@ import { containsValue } from '../domain/algebra';
 import {
 	tryEvaluateLimitExact,
 	resultToFiniteNode,
-	isIndeterminateResult
+	resultToNode,
+	isIndeterminateResult,
+	isInfinityResult
 } from './exact-evaluation';
 import { getNumericValue, ZERO_TOLERANCE } from '../common';
 
@@ -316,14 +318,14 @@ export function evaluateLimit(
 
 	// Strategy 2: Try direct substitution
 	if (!isInfinity(approachPoint)) {
-		const directResult = tryDirectSubstitution(expression, varName, approachPoint, recorder);
+		const directResult = tryDirectSubstitution(expression, varName, approachPoint, dir, recorder);
 		if (directResult !== null) {
 			return createResult(
 				directResult,
 				varName,
 				approachPoint,
 				dir,
-				'exact',
+				isInfinity(directResult) ? 'infinite' : 'exact',
 				'none',
 				'direct-substitution',
 				recorder,
@@ -400,6 +402,7 @@ export function evaluateLimit(
 			algebraicResult.simplified,
 			varName,
 			approachPoint,
+			dir,
 			recorder
 		);
 		if (simplifiedResult !== null) {
@@ -597,14 +600,14 @@ function evaluateLimitInternal(
 
 	// Try direct substitution
 	if (!isInfinity(approach)) {
-		const directResult = tryDirectSubstitution(expr, varName, approach, recorder);
+		const directResult = tryDirectSubstitution(expr, varName, approach, direction, recorder);
 		if (directResult !== null) {
 			return createResult(
 				directResult,
 				varName,
 				approach,
 				direction,
-				'exact',
+				isInfinity(directResult) ? 'infinite' : 'exact',
 				'none',
 				'direct-substitution',
 				recorder,
@@ -704,10 +707,11 @@ function tryDirectSubstitution(
 	expr: MathNode,
 	varName: string,
 	approach: MathNode,
+	direction: LimitDirection,
 	recorder: LimitStepRecorderImpl
 ): MathNode | null {
 	// Try exact evaluation first
-	const exactResult = tryDirectSubstitutionExact(expr, varName, approach, recorder);
+	const exactResult = tryDirectSubstitutionExact(expr, varName, approach, direction, recorder);
 	if (exactResult !== null) {
 		return exactResult;
 	}
@@ -723,12 +727,30 @@ function tryDirectSubstitutionExact(
 	expr: MathNode,
 	varName: string,
 	approach: MathNode,
+	direction: LimitDirection,
 	recorder: LimitStepRecorderImpl
 ): MathNode | null {
-	const result = tryEvaluateLimitExact(expr, varName, approach, 'both');
+	const result = tryEvaluateLimitExact(expr, varName, approach, direction);
 
 	if (!result || isIndeterminateResult(result)) {
 		return null; // Indeterminate form or evaluation failed
+	}
+
+	// Handle infinity results (e.g., ln(0⁺) = -∞)
+	if (isInfinityResult(result)) {
+		const node = resultToNode(result);
+		if (node) {
+			recorder.recordStepByRule(
+				'direct-substitution',
+				expr,
+				node,
+				'summarized',
+				approach,
+				`Substitution de ${varName} par ${getNumericValue(approach) ?? approach}`
+			);
+			return node;
+		}
+		return null;
 	}
 
 	const node = resultToFiniteNode(result);
