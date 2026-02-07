@@ -5,14 +5,14 @@
  *
  * @example
  * ```typescript
- * import { arithmeticRules, powerRules, allRules } from './rule-sets';
+ * import { arithmeticRules, powerRules, allPatternRules } from './rule-sets';
  * import { applyRules } from '../rule';
  *
  * // Apply only arithmetic rules
  * const result1 = applyRules(arithmeticRules, node);
  *
  * // Apply all available rules
- * const result2 = applyRules(allRules, node);
+ * const result2 = applyRules(allPatternRules, node);
  * ```
  */
 
@@ -34,14 +34,26 @@ export { absRules } from './abs';
 // =============================================================================
 
 /**
- * All simplification rules combined.
+ * All pattern rules combined (for public API / standalone use).
  *
- * Includes:
- * - Arithmetic rules (addition, subtraction, multiplication, division identities)
- * - Power rules (exponent simplifications)
- * - Abs rules (absolute value simplifications)
+ * Includes arithmetic, power, and abs rules. Useful for direct pattern-based
+ * simplification via `applyRules()` or `exp.simplifyWith()`.
  *
- * Rules are ordered with arithmetic rules first, then power rules, then abs rules.
- * Priority within rules is preserved (mul-zero has higher priority).
+ * Note: The `simplify()` pipeline does NOT use these — arithmetic and power
+ * rules are redundant with normalize (polynomial arithmetic handles x+0, x*1,
+ * x^0, etc. implicitly). The pipeline uses `simplifyRules` instead.
  */
-export const allRules: readonly Rule[] = [...arithmeticRules, ...powerRules, ...absRules] as const;
+export const allPatternRules: readonly Rule[] = [
+	...arithmeticRules,
+	...powerRules,
+	...absRules
+] as const;
+
+/**
+ * Rules used by the simplify() pipeline.
+ *
+ * Only includes abs rules — arithmetic and power rules are fully redundant
+ * with normalize's polynomial arithmetic (zero coefficients are dropped,
+ * identity multiplications eliminated, powers handled by powNormalForm).
+ */
+export const simplifyRules: readonly Rule[] = [...absRules] as const;

@@ -494,7 +494,8 @@ export {
 	arithmeticRules,
 	powerRules,
 	absRules,
-	allRules,
+	allPatternRules,
+	simplifyRules,
 	// Type guards
 	isWildcardPattern,
 	isLiteralPattern,
