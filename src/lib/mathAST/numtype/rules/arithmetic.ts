@@ -10,8 +10,24 @@
  * - Positive (unary +)
  */
 
-import type { MathType, NumericType, SignInfo } from '../types';
+import type { MathType, NumericType, ParityInfo, SignInfo } from '../types';
 import { join } from '../algebra';
+
+// =============================================================================
+// Parity Helpers
+// =============================================================================
+
+/**
+ * Infers parity for addition and subtraction (same rules).
+ * even±even = even, odd±odd = even, even±odd = odd, odd±even = odd
+ */
+function inferAddSubParity(
+	leftParity: ParityInfo | undefined,
+	rightParity: ParityInfo | undefined
+): ParityInfo | undefined {
+	if (leftParity === undefined || rightParity === undefined) return undefined;
+	return leftParity === rightParity ? 'even' : 'odd';
+}
 
 // =============================================================================
 // Addition Type Rules
@@ -63,10 +79,14 @@ export function inferAdditionType(leftType: MathType, rightType: MathType): Math
 			? leftType.finite && rightType.finite
 			: undefined;
 
+	// Parity: even+even=even, odd+odd=even, even+odd=odd, odd+even=odd
+	const parity = inferAddSubParity(leftType.parity, rightType.parity);
+
 	return {
 		base,
 		...(sign !== undefined && { sign }),
-		...(finite !== undefined && { finite })
+		...(finite !== undefined && { finite }),
+		...(parity !== undefined && { parity })
 	};
 }
 
@@ -117,10 +137,14 @@ export function inferSubtractionType(leftType: MathType, rightType: MathType): M
 			? leftType.finite && rightType.finite
 			: undefined;
 
+	// Parity: same rules as addition (even-even=even, odd-odd=even, etc.)
+	const parity = inferAddSubParity(leftType.parity, rightType.parity);
+
 	return {
 		base,
 		...(sign !== undefined && { sign }),
-		...(finite !== undefined && { finite })
+		...(finite !== undefined && { finite }),
+		...(parity !== undefined && { parity })
 	};
 }
 
@@ -181,10 +205,27 @@ export function inferMultiplicationType(leftType: MathType, rightType: MathType)
 			? leftType.finite && rightType.finite
 			: undefined;
 
+	// Parity: even*any_integer=even, odd*odd=odd
+	let parity: ParityInfo | undefined;
+	if (leftType.parity !== undefined && rightType.parity !== undefined) {
+		if (leftType.parity === 'even' || rightType.parity === 'even') {
+			parity = 'even';
+		} else {
+			// odd * odd = odd
+			parity = 'odd';
+		}
+	} else if (leftType.parity === 'even' && base === 'integer') {
+		// even * integer = even (even if right parity is unknown, if result is integer)
+		parity = 'even';
+	} else if (rightType.parity === 'even' && base === 'integer') {
+		parity = 'even';
+	}
+
 	return {
 		base,
 		...(sign !== undefined && { sign }),
-		...(finite !== undefined && { finite })
+		...(finite !== undefined && { finite }),
+		...(parity !== undefined && { parity })
 	};
 }
 
@@ -292,7 +333,8 @@ export function inferOppositeType(operandType: MathType): MathType {
 	return {
 		base,
 		...(sign !== undefined && { sign }),
-		...(operandType.finite !== undefined && { finite: operandType.finite })
+		...(operandType.finite !== undefined && { finite: operandType.finite }),
+		...(operandType.parity !== undefined && { parity: operandType.parity })
 	};
 }
 

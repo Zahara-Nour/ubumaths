@@ -68,5 +68,15 @@ export const powerRules: readonly Rule[] = [
 	// Uses isPositive constraint to ensure exponent is positive
 	createRule(P.pow(P.num(0), P._('x', P.isPositive())), P.num(0), {
 		name: 'zero-pow'
+	}),
+
+	// (-1)^n = 1 (when n is even)
+	createRule(P.pow(P.neg(P.num(1)), P._('n', P.isEven())), P.num(1), {
+		name: 'neg-one-pow-even'
+	}),
+
+	// (-1)^n = -1 (when n is odd)
+	createRule(P.pow(P.neg(P.num(1)), P._('n', P.isOdd())), P.neg(P.num(1)), {
+		name: 'neg-one-pow-odd'
 	})
 ] as const;

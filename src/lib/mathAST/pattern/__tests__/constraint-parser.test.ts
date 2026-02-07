@@ -57,6 +57,26 @@ describe('Constraint Expression Parser', () => {
 			});
 		});
 
+		describe('parity constraints', () => {
+			it('parses "even" constraint', () => {
+				const constraint = parseConstraintExpr('even');
+				expect(constraint).toEqual(P.isEven());
+			});
+
+			it('parses "odd" constraint', () => {
+				const constraint = parseConstraintExpr('odd');
+				expect(constraint).toEqual(P.isOdd());
+			});
+
+			it('validates "even" as valid atomic constraint', () => {
+				expect(isValidAtomicConstraint('even')).toBe(true);
+			});
+
+			it('validates "odd" as valid atomic constraint', () => {
+				expect(isValidAtomicConstraint('odd')).toBe(true);
+			});
+		});
+
 		describe('numeric type constraints', () => {
 			it('parses "integerType" constraint', () => {
 				const constraint = parseConstraintExpr('integerType');

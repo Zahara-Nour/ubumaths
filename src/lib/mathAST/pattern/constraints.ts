@@ -241,6 +241,28 @@ export function checkConstraint(
 			return false;
 		}
 
+		case 'even': {
+			const value = parseNumberValue(node);
+			if (value !== undefined) return Number.isInteger(value) && value % 2 === 0;
+			// Fallback to type inference with context
+			if (ctx) {
+				const inferred = inferType(node, ctx);
+				return inferred.parity === 'even';
+			}
+			return false;
+		}
+
+		case 'odd': {
+			const value = parseNumberValue(node);
+			if (value !== undefined) return Number.isInteger(value) && Math.abs(value) % 2 === 1;
+			// Fallback to type inference with context
+			if (ctx) {
+				const inferred = inferType(node, ctx);
+				return inferred.parity === 'odd';
+			}
+			return false;
+		}
+
 		case 'freeOf':
 			return isFreeOfVariables(node, constraint.variables);
 

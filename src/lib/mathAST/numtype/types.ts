@@ -48,6 +48,16 @@ export type NumericType =
 export type SignInfo = 'positive' | 'negative' | 'zero' | 'nonzero' | 'unknown';
 
 // =============================================================================
+// Parity Information
+// =============================================================================
+
+/**
+ * Parity information for a numeric value (even or odd).
+ * Only meaningful for integer values.
+ */
+export type ParityInfo = 'even' | 'odd';
+
+// =============================================================================
 // Math Type (Full Type Information)
 // =============================================================================
 
@@ -65,6 +75,9 @@ export interface MathType {
 
 	/** Whether the value is finite (false for ±∞) */
 	readonly finite?: boolean;
+
+	/** Parity information if known (only meaningful for integers) */
+	readonly parity?: ParityInfo;
 }
 
 // =============================================================================
@@ -80,6 +93,7 @@ export interface MathType {
 export interface VariableAssumption {
 	readonly sign?: SignInfo;
 	readonly finite?: boolean;
+	readonly parity?: ParityInfo;
 }
 
 // =============================================================================

@@ -266,6 +266,34 @@ export function isNonPositiveType(node: MathNode, ctx: TypeContext = EMPTY_CONTE
 }
 
 // =============================================================================
+// Parity Predicates
+// =============================================================================
+
+/**
+ * Checks if an expression is known to be even (integer with even parity).
+ *
+ * @param node - The MathNode to check
+ * @param ctx - Optional type context
+ * @returns true if the expression is definitely an even integer
+ */
+export function isEvenType(node: MathNode, ctx: TypeContext = EMPTY_CONTEXT): boolean {
+	const type = inferType(node, ctx);
+	return type.parity === 'even';
+}
+
+/**
+ * Checks if an expression is known to be odd (integer with odd parity).
+ *
+ * @param node - The MathNode to check
+ * @param ctx - Optional type context
+ * @returns true if the expression is definitely an odd integer
+ */
+export function isOddType(node: MathNode, ctx: TypeContext = EMPTY_CONTEXT): boolean {
+	const type = inferType(node, ctx);
+	return type.parity === 'odd';
+}
+
+// =============================================================================
 // Finiteness Predicates
 // =============================================================================
 

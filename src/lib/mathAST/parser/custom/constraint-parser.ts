@@ -275,6 +275,8 @@ const VALID_ATOMIC_NAMES = new Set([
 	// Basic constraints
 	'number',
 	'integer',
+	'even',
+	'odd',
 	'positive',
 	'negative',
 	'nonzero',
@@ -312,6 +314,10 @@ function getAtomicConstraint(name: string): PatternConstraint {
 			return P.isNumber();
 		case 'integer':
 			return P.isInteger();
+		case 'even':
+			return P.isEven();
+		case 'odd':
+			return P.isOdd();
 		case 'positive':
 			return P.isPositive();
 		case 'negative':

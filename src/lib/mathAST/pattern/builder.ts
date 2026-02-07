@@ -44,6 +44,8 @@ import type {
 	ComparisonConstraint,
 	IntervalConstraint,
 	IntegerConstraint,
+	EvenConstraint,
+	OddConstraint,
 	FreeOfConstraint,
 	CustomConstraint,
 	AndConstraint,
@@ -698,6 +700,30 @@ function isInteger(): IntegerConstraint {
 	return { kind: 'integer' } as const;
 }
 
+/**
+ * Creates an even constraint (integer with even parity)
+ *
+ * @returns An even constraint
+ *
+ * @example
+ * P._('n', P.isEven())  // Match even integer values
+ */
+function isEven(): EvenConstraint {
+	return { kind: 'even' } as const;
+}
+
+/**
+ * Creates an odd constraint (integer with odd parity)
+ *
+ * @returns An odd constraint
+ *
+ * @example
+ * P._('n', P.isOdd())  // Match odd integer values
+ */
+function isOdd(): OddConstraint {
+	return { kind: 'odd' } as const;
+}
+
 // =============================================================================
 // Interval Constraint Builders
 // =============================================================================
@@ -1229,6 +1255,8 @@ export const P = {
 	eq,
 	ne,
 	isInteger,
+	isEven,
+	isOdd,
 	isFreeOf,
 	custom,
 	and,
@@ -1309,6 +1337,8 @@ export {
 	eq,
 	ne,
 	isInteger,
+	isEven,
+	isOdd,
 	isFreeOf,
 	custom,
 	and,

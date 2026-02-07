@@ -110,6 +110,20 @@ export interface IntegerConstraint {
 }
 
 /**
+ * Even constraint - matches integer expressions with even parity
+ */
+export interface EvenConstraint {
+	readonly kind: 'even';
+}
+
+/**
+ * Odd constraint - matches integer expressions with odd parity
+ */
+export interface OddConstraint {
+	readonly kind: 'odd';
+}
+
+/**
  * Free-of constraint - matches expressions not containing specified variables
  */
 export interface FreeOfConstraint {
@@ -189,6 +203,8 @@ export type PatternConstraint =
 	| ComparisonConstraint
 	| IntervalConstraint
 	| IntegerConstraint
+	| EvenConstraint
+	| OddConstraint
 	| FreeOfConstraint
 	| CustomConstraint
 	| AndConstraint
@@ -788,6 +804,20 @@ export function isIntegerConstraint(
 	constraint: PatternConstraint
 ): constraint is IntegerConstraint {
 	return constraint.kind === 'integer';
+}
+
+/**
+ * Checks if a constraint is an even constraint
+ */
+export function isEvenConstraint(constraint: PatternConstraint): constraint is EvenConstraint {
+	return constraint.kind === 'even';
+}
+
+/**
+ * Checks if a constraint is an odd constraint
+ */
+export function isOddConstraint(constraint: PatternConstraint): constraint is OddConstraint {
+	return constraint.kind === 'odd';
 }
 
 /**

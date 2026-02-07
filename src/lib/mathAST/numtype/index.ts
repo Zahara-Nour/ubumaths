@@ -49,6 +49,7 @@
 export type {
 	NumericType,
 	SignInfo,
+	ParityInfo,
 	MathType,
 	TypeContext,
 	TypeDescription,
@@ -117,6 +118,9 @@ export {
 	isNonzeroType,
 	isNonNegativeType,
 	isNonPositiveType,
+	// Parity predicates
+	isEvenType,
+	isOddType,
 	// Finiteness predicates
 	isFiniteType,
 	isInfiniteType,
