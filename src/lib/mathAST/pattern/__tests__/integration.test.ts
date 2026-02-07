@@ -10,7 +10,14 @@
 import { describe, it, expect } from 'vitest';
 import { Exp } from '../../exp';
 import { P } from '../builder';
-import { arithmeticRules, powerRules, absRules, logExpRules, allPatternRules } from '../rule-sets';
+import {
+	arithmeticRules,
+	powerRules,
+	absRules,
+	logExpRules,
+	functionParityRules,
+	allPatternRules
+} from '../rule-sets';
 import { applyRules } from '../rule';
 import { nodesEqual } from '../match';
 import {
@@ -565,6 +572,55 @@ describe('Pattern Matching Integration', () => {
 			});
 		});
 
+		describe('with functionParityRules', () => {
+			it('simplifies sin(-x) to -sin(x) (odd)', () => {
+				const node = func('sin', [opposite(variable('x'))]);
+				const result = applyRules([...functionParityRules], node);
+				expect(nodesEqual(result, opposite(func('sin', [variable('x')])))).toBe(true);
+			});
+
+			it('simplifies cos(-x) to cos(x) (even)', () => {
+				const node = func('cos', [opposite(variable('x'))]);
+				const result = applyRules([...functionParityRules], node);
+				expect(nodesEqual(result, func('cos', [variable('x')]))).toBe(true);
+			});
+
+			it('simplifies tan(-x) to -tan(x) (odd)', () => {
+				const node = func('tan', [opposite(variable('x'))]);
+				const result = applyRules([...functionParityRules], node);
+				expect(nodesEqual(result, opposite(func('tan', [variable('x')])))).toBe(true);
+			});
+
+			it('simplifies cosh(-x) to cosh(x) (even)', () => {
+				const node = func('cosh', [opposite(variable('x'))]);
+				const result = applyRules([...functionParityRules], node);
+				expect(nodesEqual(result, func('cosh', [variable('x')]))).toBe(true);
+			});
+
+			it('simplifies arcsin(-x) to -arcsin(x) (odd)', () => {
+				const node = func('arcsin', [opposite(variable('x'))]);
+				const result = applyRules([...functionParityRules], node);
+				expect(nodesEqual(result, opposite(func('arcsin', [variable('x')])))).toBe(true);
+			});
+
+			it('does not simplify sin(x) (no negation)', () => {
+				const node = func('sin', [variable('x')]);
+				const result = applyRules([...functionParityRules], node);
+				expect(nodesEqual(result, node)).toBe(true);
+			});
+
+			it('has one rule per even/odd function', () => {
+				// 5 even + 12 odd = 17 rules
+				expect(functionParityRules.length).toBe(17);
+			});
+
+			it('all rules have names', () => {
+				for (const rule of functionParityRules) {
+					expect(rule.name).not.toBe('unnamed-rule');
+				}
+			});
+		});
+
 		describe('with allPatternRules', () => {
 			it('simplifies x^1 + 0 to x', () => {
 				const expr = Exp.parse('x^1 + 0');
@@ -671,9 +727,13 @@ describe('Pattern Matching Integration', () => {
 		});
 
 		describe('allPatternRules', () => {
-			it('combines arithmetic, power, abs, and log/exp rules', () => {
+			it('combines all rule sets', () => {
 				expect(allPatternRules.length).toBe(
-					arithmeticRules.length + powerRules.length + absRules.length + logExpRules.length
+					arithmeticRules.length +
+						powerRules.length +
+						absRules.length +
+						logExpRules.length +
+						functionParityRules.length
 				);
 			});
 
