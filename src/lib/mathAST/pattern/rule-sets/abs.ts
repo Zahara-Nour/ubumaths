@@ -9,6 +9,9 @@
  * - |x*y| -> |x|*|y|  (product)
  * - |x/y| -> |x|/|y|  (quotient)
  *
+ * Parity-aware rules:
+ * - |x^n| -> x^n (n even, result is non-negative)
+ *
  * Conditional rules (require TypeContext with assumptions):
  * - |x| -> x   when x is positive
  * - |x| -> -x  when x is negative
@@ -63,6 +66,20 @@ const absQuotient = createRule(
 );
 
 // =============================================================================
+// Parity-Aware Abs Rules
+// =============================================================================
+
+/**
+ * |x^n| -> x^n when n is even.
+ * x^n is non-negative for even n, so abs is redundant.
+ */
+const absEvenPow = createRule(
+	P.func('abs', [P.pow(P._('x'), P._('n', P.isEven()))]),
+	P.pow(P._('x'), P._('n')),
+	{ name: 'abs-even-pow' }
+);
+
+// =============================================================================
 // Conditional Abs Rules (require TypeContext)
 // =============================================================================
 
@@ -97,6 +114,7 @@ export const absRules: readonly Rule[] = [
 	absIdempotent,
 	absProduct,
 	absQuotient,
+	absEvenPow,
 	absPositive,
 	absNegative
 ] as const;
