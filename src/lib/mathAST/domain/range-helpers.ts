@@ -933,6 +933,46 @@ export function getFunctionPeriod(funcName: string): number | null {
 // =============================================================================
 
 /**
+ * Compute base^(p/q) accurately by decomposing into root then integer power.
+ *
+ * Math.pow(8, 2/3) uses exp(0.666... * ln(8)) which gives 3.9999999999999996.
+ * Instead: Math.cbrt(8)=2, then 2^2=4 — exact.
+ *
+ * @param base - Non-negative base value (or any real for odd q)
+ * @param p - Numerator of exponent
+ * @param q - Denominator of exponent (positive)
+ */
+function rationalPow(base: number, p: number, q: number): number {
+	if (base === 0) return p > 0 ? 0 : Infinity;
+
+	const absBase = Math.abs(base);
+
+	// Step 1: q-th root using dedicated functions when available
+	let root: number;
+	if (q === 2) {
+		root = Math.sqrt(absBase);
+	} else if (q === 3) {
+		root = Math.cbrt(absBase);
+	} else {
+		root = Math.pow(absBase, 1 / q);
+	}
+
+	// Step 2: integer power (exact for integer exponent and reasonable values)
+	const result = Math.pow(root, Math.abs(p));
+
+	// Step 3: handle sign
+	const signedResult = p < 0 ? 1 / result : result;
+
+	// For odd q, negative base keeps its sign raised to p
+	if (base < 0 && q % 2 !== 0) {
+		// (-x)^(p/q) = (-1)^p * x^(p/q) for odd q
+		return p % 2 !== 0 ? -signedResult : signedResult;
+	}
+
+	return signedResult;
+}
+
+/**
  * Compute range for x^(p/q) where p, q are integers.
  */
 export function computeRationalPowerRange(baseRange: Domain, power: RationalPower): Domain {
@@ -971,8 +1011,8 @@ export function computeRationalPowerRange(baseRange: Domain, power: RationalPowe
 
 		if (isPositiveExponent) {
 			// x^(p/q) with p/q > 0, monotonically increasing on [0, +∞)
-			const lower = Math.pow(effectiveLower, p / q);
-			const upper = bounds.upper !== null ? Math.pow(bounds.upper, p / q) : null;
+			const lower = rationalPow(effectiveLower, p, q);
+			const upper = bounds.upper !== null ? rationalPow(bounds.upper, p, q) : null;
 
 			return domainFromBounds({
 				lower,
@@ -986,9 +1026,8 @@ export function computeRationalPowerRange(baseRange: Domain, power: RationalPowe
 				return universalDomain(); // Approaches +∞ as x → 0+
 			}
 
-			const exp = p / q;
-			const upper = effectiveLower > 0 ? Math.pow(effectiveLower, exp) : null;
-			const lower = bounds.upper !== null ? Math.pow(bounds.upper, exp) : null;
+			const upper = effectiveLower > 0 ? rationalPow(effectiveLower, p, q) : null;
+			const lower = bounds.upper !== null ? rationalPow(bounds.upper, p, q) : null;
 
 			return domainFromBounds({
 				lower,
@@ -999,16 +1038,14 @@ export function computeRationalPowerRange(baseRange: Domain, power: RationalPowe
 		}
 	} else {
 		// Odd denominator: defined for all reals
-		const exp = p / q;
-
 		if (bounds.lower === null || bounds.upper === null) {
 			return universalDomain();
 		}
 
 		// Odd root preserves order for positive exp, reverses for negative
 		if (isPositiveExponent) {
-			const lower = Math.sign(bounds.lower) * Math.pow(Math.abs(bounds.lower), exp);
-			const upper = Math.sign(bounds.upper) * Math.pow(Math.abs(bounds.upper), exp);
+			const lower = rationalPow(bounds.lower, p, q);
+			const upper = rationalPow(bounds.upper, p, q);
 
 			return domainFromBounds({
 				lower,
@@ -1022,9 +1059,10 @@ export function computeRationalPowerRange(baseRange: Domain, power: RationalPowe
 				return universalDomain(); // Includes zero, unbounded
 			}
 
-			const absExp = Math.abs(exp);
-			const lowerPow = Math.sign(bounds.lower) * Math.pow(Math.abs(bounds.lower), absExp);
-			const upperPow = Math.sign(bounds.upper) * Math.pow(Math.abs(bounds.upper), absExp);
+			// x^(p/q) with p/q < 0: compute as 1 / x^(|p|/q)
+			const absp = Math.abs(p);
+			const lowerPow = rationalPow(bounds.lower, absp, q);
+			const upperPow = rationalPow(bounds.upper, absp, q);
 
 			const lower = 1 / upperPow;
 			const upper = 1 / lowerPow;
