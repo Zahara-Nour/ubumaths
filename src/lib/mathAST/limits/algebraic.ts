@@ -22,7 +22,9 @@ import {
 	isFunction,
 	isInfinity
 } from '../guards';
-import { number, divide, multiply, subtract, add, power } from '../factory';
+import { number, divide, multiply, subtract, add, power, opposite } from '../factory';
+import { substitute } from '../eval/substitute';
+import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
 // =============================================================================
 // Algebraic Manipulation Result
@@ -39,7 +41,12 @@ export interface AlgebraicResult {
 	readonly simplified?: MathNode;
 
 	/** Technique used */
-	readonly technique?: 'factorization' | 'rationalization' | 'dominant-term' | 'common-denominator';
+	readonly technique?:
+		| 'factorization'
+		| 'rationalization'
+		| 'dominant-term'
+		| 'common-denominator'
+		| 'abs-simplification';
 
 	/** Description of the manipulation */
 	readonly description?: string;
@@ -557,6 +564,182 @@ function extractLeadingCoeff(expr: MathNode, varName: string, targetDegree: numb
 }
 
 // =============================================================================
+// Absolute Value Simplification
+// =============================================================================
+
+/**
+ * Try to simplify absolute value expressions by determining the sign of the
+ * argument near the approach point.
+ *
+ * For one-sided limits, |f(x)| can be replaced by f(x) or -f(x) depending
+ * on the sign of f(x) near the approach point.
+ *
+ * @param expr - The expression
+ * @param varName - The variable
+ * @param approach - The approach point
+ * @param direction - Direction of approach (must be 'left' or 'right')
+ * @param recorder - Step recorder
+ */
+function tryAbsSimplification(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	recorder: LimitStepRecorder
+): AlgebraicResult {
+	if (!isNumber(approach) || direction === 'both') {
+		return { success: false };
+	}
+
+	// Check if expression contains abs
+	if (!containsAbs(expr)) {
+		return { success: false };
+	}
+
+	const approachVal = parseFloat(approach.value);
+	const epsilon = 1e-8;
+	const testValue = direction === 'right' ? approachVal + epsilon : approachVal - epsilon;
+
+	const simplified = replaceAbs(expr, varName, testValue);
+	if (!simplified) {
+		return { success: false };
+	}
+
+	recorder.recordStep(
+		'abs-simplification',
+		`Simplification de la valeur absolue (approche par la ${direction === 'right' ? 'droite' : 'gauche'})`,
+		expr,
+		simplified,
+		'detailed',
+		undefined,
+		direction === 'right'
+			? 'Pour x → ' + approach.value + "⁺, on détermine le signe de l'argument"
+			: 'Pour x → ' + approach.value + "⁻, on détermine le signe de l'argument"
+	);
+
+	return {
+		success: true,
+		simplified,
+		technique: 'abs-simplification',
+		description: `Replaced |f(x)| based on sign from ${direction}`
+	};
+}
+
+/**
+ * Check if expression contains an abs function call.
+ */
+function containsAbs(expr: MathNode): boolean {
+	if (isFunction(expr) && expr.name.toLowerCase() === 'abs') {
+		return true;
+	}
+	switch (expr.type) {
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return containsAbs(expr.left) || containsAbs(expr.right);
+		case 'division':
+			return containsAbs(expr.numerator) || containsAbs(expr.denominator);
+		case 'superscript':
+			return containsAbs(expr.base) || containsAbs(expr.superscript);
+		case 'opposite':
+		case 'positive':
+			return containsAbs(expr.operand);
+		case 'function':
+			return expr.args.some(containsAbs);
+		case 'delimiter':
+			return containsAbs(expr.content);
+		default:
+			return false;
+	}
+}
+
+/**
+ * Replace abs(f(x)) nodes with f(x) or -f(x) based on numeric evaluation.
+ * Returns null if sign cannot be determined.
+ */
+function replaceAbs(expr: MathNode, varName: string, testValue: number): MathNode | null {
+	if (isFunction(expr) && expr.name.toLowerCase() === 'abs' && expr.args.length === 1) {
+		const arg = expr.args[0];
+		// Evaluate f(x) at the test point
+		const argValue = evaluateAtPoint(arg, varName, testValue);
+		if (argValue === null) return null;
+
+		if (argValue >= 0) {
+			return arg; // |f(x)| = f(x) when f(x) >= 0
+		} else {
+			return opposite(arg); // |f(x)| = -f(x) when f(x) < 0
+		}
+	}
+
+	// Recursively replace in subexpressions
+	switch (expr.type) {
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication': {
+			const left = replaceAbs(expr.left, varName, testValue);
+			const right = replaceAbs(expr.right, varName, testValue);
+			if (!left || !right) return null;
+			if (left === expr.left && right === expr.right) return expr;
+			return { ...expr, left, right };
+		}
+		case 'division': {
+			const num = replaceAbs(expr.numerator, varName, testValue);
+			const den = replaceAbs(expr.denominator, varName, testValue);
+			if (!num || !den) return null;
+			if (num === expr.numerator && den === expr.denominator) return expr;
+			return { ...expr, numerator: num, denominator: den };
+		}
+		case 'superscript': {
+			const base = replaceAbs(expr.base, varName, testValue);
+			const sup = replaceAbs(expr.superscript, varName, testValue);
+			if (!base || !sup) return null;
+			if (base === expr.base && sup === expr.superscript) return expr;
+			return { ...expr, base, superscript: sup };
+		}
+		case 'opposite':
+		case 'positive': {
+			const operand = replaceAbs(expr.operand, varName, testValue);
+			if (!operand) return null;
+			if (operand === expr.operand) return expr;
+			return { ...expr, operand };
+		}
+		case 'function': {
+			let changed = false;
+			const newArgs = expr.args.map((arg) => {
+				const replaced = replaceAbs(arg, varName, testValue);
+				if (replaced !== arg) changed = true;
+				return replaced;
+			});
+			if (newArgs.some((a) => a === null)) return null;
+			if (!changed) return expr;
+			return { ...expr, args: newArgs as MathNode[] };
+		}
+		case 'delimiter': {
+			const content = replaceAbs(expr.content, varName, testValue);
+			if (!content) return null;
+			if (content === expr.content) return expr;
+			return { ...expr, content };
+		}
+		default:
+			return expr;
+	}
+}
+
+/**
+ * Evaluate an expression at a specific point using full substitution and evaluation.
+ */
+function evaluateAtPoint(expr: MathNode, varName: string, value: number): number | null {
+	try {
+		const valueNode: MathNode = { type: 'number', value: String(value) };
+		const substituted = substitute(expr, { [varName]: valueNode });
+		const result = evaluateNodeToApproximatedNumber(substituted);
+		return Number.isFinite(result) ? result : null;
+	} catch {
+		return null;
+	}
+}
+
+// =============================================================================
 // Main Algebraic Simplification Entry Point
 // =============================================================================
 
@@ -587,6 +770,33 @@ export function tryAlgebraicSimplification(
 		const ratResult = tryRationalization(expr, varName, approach, recorder);
 		if (ratResult.success) {
 			return ratResult;
+		}
+
+		// Try abs simplification (for one-sided limits with absolute values)
+		const absResult = tryAbsSimplification(expr, varName, approach, direction, recorder);
+		if (absResult.success && absResult.simplified) {
+			// Try factorization on the simplified expression (e.g., x/x → 1)
+			const postFact = tryFactorization(absResult.simplified, varName, approach, recorder);
+			if (postFact.success) {
+				return { ...postFact, technique: 'abs-simplification' };
+			}
+			// Factorization may fail (e.g., (-x)/x), evaluate near approach point
+			const approachVal = parseFloat(approach.value);
+			const epsilon = 1e-8;
+			const testPt = direction === 'right' ? approachVal + epsilon : approachVal - epsilon;
+			const evalResult = evaluateAtPoint(absResult.simplified, varName, testPt);
+			if (evalResult !== null && Number.isFinite(evalResult)) {
+				const rounded = Math.round(evalResult);
+				if (Math.abs(evalResult - rounded) < 1e-6) {
+					return {
+						success: true,
+						simplified: number(String(rounded)),
+						technique: 'abs-simplification',
+						description: absResult.description
+					};
+				}
+			}
+			return absResult;
 		}
 	}
 

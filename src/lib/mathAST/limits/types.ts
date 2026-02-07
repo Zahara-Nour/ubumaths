@@ -65,6 +65,7 @@ export type LimitRule =
 	| 'lhopital' // L'Hôpital's rule
 	| 'squeeze' // Squeeze theorem
 	| 'algebraic-simplification' // Algebraic manipulation
+	| 'abs-simplification' // Absolute value sign resolution
 	| 'infinity-analysis' // Behavior at infinity
 	| 'one-sided' // One-sided limit analysis
 	| 'linearity' // lim(af + bg) = a*lim(f) + b*lim(g)
