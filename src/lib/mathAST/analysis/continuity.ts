@@ -469,9 +469,13 @@ function analyzePointContinuity(
 
 	// Special handling for known periodic functions (tan, cot, sec, csc)
 	// These functions have vertical asymptotes at their discontinuity points.
-	// The limit module may not correctly detect infinity (returns large values instead),
-	// so we override the classification for these known cases.
-	if (periodic && functionValueUndefined && ['tan', 'cot', 'sec', 'csc'].includes(source)) {
+	// The periodic flag from the candidate guarantees these are known asymptotes,
+	// so we always classify them as 'infinite' regardless of what the limit/evaluation
+	// modules return. Common issues that make the general path unreliable:
+	// - functionValueUndefined may be false because the candidate point is a truncated
+	//   approximation of the actual singularity (e.g., 1.570796327 instead of π/2)
+	// - cot/sec/csc are not supported by the numeric evaluator ("Unknown function")
+	if (periodic && ['tan', 'cot', 'sec', 'csc'].includes(source)) {
 		// Get sign information for the infinite discontinuity
 		const { leftSign, rightSign } = getInfinitySignInfo(expr, variable, point);
 
