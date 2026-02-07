@@ -20,6 +20,7 @@ import type { Rule } from '../types';
 import { arithmeticRules } from './arithmetic';
 import { powerRules } from './powers';
 import { absRules } from './abs';
+import { logExpRules } from './log-exp';
 
 // =============================================================================
 // Individual Rule Set Exports
@@ -28,6 +29,7 @@ import { absRules } from './abs';
 export { arithmeticRules } from './arithmetic';
 export { powerRules } from './powers';
 export { absRules } from './abs';
+export { logExpRules } from './log-exp';
 
 // =============================================================================
 // Combined Rule Sets
@@ -36,8 +38,8 @@ export { absRules } from './abs';
 /**
  * All pattern rules combined (for public API / standalone use).
  *
- * Includes arithmetic, power, and abs rules. Useful for direct pattern-based
- * simplification via `applyRules()` or `exp.simplifyWith()`.
+ * Includes arithmetic, power, abs, and log/exp rules. Useful for direct
+ * pattern-based simplification via `applyRules()` or `exp.simplifyWith()`.
  *
  * Note: The `simplify()` pipeline does NOT use these — arithmetic and power
  * rules are redundant with normalize (polynomial arithmetic handles x+0, x*1,
@@ -46,7 +48,8 @@ export { absRules } from './abs';
 export const allPatternRules: readonly Rule[] = [
 	...arithmeticRules,
 	...powerRules,
-	...absRules
+	...absRules,
+	...logExpRules
 ] as const;
 
 /**
