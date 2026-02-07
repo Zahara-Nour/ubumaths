@@ -53,7 +53,7 @@ This document describes the current state of the question system migration and t
 | Options inconnues    | 13    | Typos (`extraneaous`)   | ✅ OK - ignoré                    |
 | Solutions manquantes | 1     | Flash card #617         | ✅ OK - flash card sans input     |
 
-**Conclusion** : ~210 warnings, tous resolus. 242 questions sans `solutionss` utilisent l'expression comme solution (comportement normal). La seule question sans solution ni expression (#617) est un flash card. Toutes les options de validation (45/45) sont mappees et implementees.
+**Conclusion** : ~210 warnings, tous resolus. 242 questions sans `solutionss` utilisent l'expression comme solution (comportement normal). La seule question sans solution ni expression (#617) est un flash card. 40 options implementees, 6 ignorees (dont `exhaust` — option de generation uniquement, 3 questions, differe).
 
 ---
 
@@ -261,7 +261,7 @@ The image URL mapping is integrated into the transformation pipeline:
 | ---------------------- | ------------------------------------------------------------------- |
 | Source extraction      | ✅ 633 questions in `.claude/old-questions.json`                    |
 | Transformation tests   | ✅ 460/460 pass                                                     |
-| Options mapping        | ✅ 45/45 options mappees et implementees                            |
+| Options mapping        | ✅ 40/46 options implementees, 6 ignorees (dont `exhaust` differe)  |
 | Export for review      | ⚠️ `data/migration-output/export-2026-01-26/` (avant fixes options) |
 | Database schema        | ✅ `shared` column added, legacy seeds removed                      |
 | **Import to database** | ❌ **PENDING** - table `question_templates` empty                   |
@@ -289,7 +289,7 @@ The image URL mapping is integrated into the transformation pipeline:
 
 ### Phase 3b: Options Migration Review ✅ COMPLETE (v0.8.1)
 
-- All 45 old options mapped to new system (0 TODO remaining)
+- 40 options mapped to new system, 6 ignored (including `exhaust` — deferred)
 - Constraint options (23) → `ConstraintOptions` with strict/warn/off modes
 - Display options (8) → `DisplayOptions` on expression variables
 - Validation options (9): shuffleChoices, permutations (→ `products`), `solutionPool`, `requiredForm`
@@ -370,7 +370,8 @@ pnpm migrate:phase1:validate
 | 2026-01-27 | Complete image migration                     | All 254 images uploaded to new Supabase Storage bucket                             |
 | 2026-01-27 | Integrate image URL mapping                  | Transformer now converts old paths to new Storage URLs                             |
 | 2026-02-03 | Simplified expression syntax                 | `{{1..10}}` → `1..10` in variable definitions, cleaner code                        |
-| 2026-02-06 | Options review complete (45/45)              | All options mapped: constraints, display, permutations, solutionPool, requiredForm |
+| 2026-02-06 | Options review complete (40 impl, 6 ignored) | All options mapped: constraints, display, permutations, solutionPool, requiredForm |
+| 2026-02-06 | `exhaust` deferred                           | Generation-only option (3 questions), not needed for initial import                |
 | 2026-02-06 | Factor permutation → products constraint     | LaTeX parser fix + products constraint renders permutation options redundant       |
 | 2026-02-06 | solutionPool replaces solutions-order        | Pool matching (without replacement) for multi-answer questions                     |
 | 2026-02-06 | requiredForm for decomposition + subtraction | Pattern-based form validation replaces old format/one-single-form checks           |
