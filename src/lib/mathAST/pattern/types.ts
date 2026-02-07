@@ -551,6 +551,7 @@ export interface RuleOptions {
 	readonly name?: string;
 	readonly condition?: (bindings: MatchBindings) => boolean;
 	readonly priority?: number;
+	readonly group?: string;
 }
 
 /**
@@ -566,6 +567,43 @@ export interface Rule {
 	readonly replacement: Pattern | ((bindings: MatchBindings) => MathNode);
 	readonly condition?: (bindings: MatchBindings) => boolean;
 	readonly priority?: number;
+	readonly group?: string;
+}
+
+// =============================================================================
+// Rule Application Result Types
+// =============================================================================
+
+/**
+ * A single step in rule application — records what rule fired and the before/after.
+ */
+export interface RuleStep {
+	readonly ruleName: string;
+	readonly before: MathNode;
+	readonly after: MathNode;
+}
+
+/**
+ * Result of applying rules with step tracking (for standalone/pedagogical use).
+ */
+export interface RuleApplicationResult {
+	readonly result: MathNode;
+	readonly changed: boolean;
+	readonly steps: readonly RuleStep[];
+}
+
+// =============================================================================
+// Binding Helpers
+// =============================================================================
+
+/**
+ * Extract a MathNode from pattern match bindings safely.
+ * Returns null if the binding doesn't exist or is a sequence binding.
+ */
+export function getBindingNode(bindings: MatchBindings, name: string): MathNode | null {
+	const value = bindings.get(name);
+	if (value && isMathNodeBinding(value)) return value;
+	return null;
 }
 
 // =============================================================================

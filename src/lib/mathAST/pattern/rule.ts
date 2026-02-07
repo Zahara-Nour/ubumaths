@@ -11,7 +11,9 @@ import type {
 	MatchBindings,
 	RuleOptions,
 	SumPattern,
-	ProductPattern
+	ProductPattern,
+	RuleStep,
+	RuleApplicationResult
 } from './types';
 import { isSumSequenceBinding, isProductSequenceBinding, isAnySequencePattern } from './types';
 import type { MathNode } from '../types';
@@ -77,7 +79,8 @@ export function createRule(
 		pattern,
 		replacement,
 		...(options?.condition !== undefined && { condition: options.condition }),
-		...(options?.priority !== undefined && { priority: options.priority })
+		...(options?.priority !== undefined && { priority: options.priority }),
+		...(options?.group !== undefined && { group: options.group })
 	};
 }
 
@@ -416,4 +419,94 @@ export function applyRules(
 	}
 
 	return current;
+}
+
+// =============================================================================
+// Sorted Rules Helper
+// =============================================================================
+
+/**
+ * Sort rules by priority (higher first, undefined treated as 0).
+ */
+function sortByPriority(rules: readonly Rule[]): Rule[] {
+	return [...rules].sort((a, b) => {
+		const priorityA = a.priority ?? 0;
+		const priorityB = b.priority ?? 0;
+		return priorityB - priorityA;
+	});
+}
+
+// =============================================================================
+// Single-Pass Deep Application
+// =============================================================================
+
+/**
+ * Applies rules in a single bottom-up traversal.
+ * At each node, tries all rules in priority order; the first match wins.
+ * Does NOT iterate to fixpoint — the caller (simplify) handles the outer loop.
+ *
+ * @param rules - Rules to try at each node
+ * @param node - The expression tree to transform
+ * @param ctx - Optional type context for conditional rules
+ * @returns The transformed tree (same reference if nothing changed)
+ */
+export function applyRulesDeepOnce(
+	rules: readonly Rule[],
+	node: MathNode,
+	ctx?: TypeContext
+): MathNode {
+	const sorted = sortByPriority(rules);
+	return mapNode(node, (n) => {
+		for (const rule of sorted) {
+			const result = applyRule(rule, n, ctx);
+			if (result !== null) return result;
+		}
+		return n;
+	});
+}
+
+// =============================================================================
+// Fixpoint Application with Step Tracking
+// =============================================================================
+
+/**
+ * Applies rules to fixpoint with step tracking.
+ * Used by standalone API functions (pedagogical exercises) to return
+ * which rules fired and on which sub-expressions.
+ *
+ * @param rules - Rules to apply
+ * @param node - The expression to transform
+ * @param maxIterations - Safety limit (default 100)
+ * @param ctx - Optional type context
+ * @returns Result with steps tracking
+ */
+export function applyRulesWithSteps(
+	rules: readonly Rule[],
+	node: MathNode,
+	maxIterations: number = 100,
+	ctx?: TypeContext
+): RuleApplicationResult {
+	const sorted = sortByPriority(rules);
+	const steps: RuleStep[] = [];
+	let current = node;
+
+	for (let i = 0; i < maxIterations; i++) {
+		const iterSteps: RuleStep[] = [];
+		const result = mapNode(current, (n) => {
+			for (const rule of sorted) {
+				const transformed = applyRule(rule, n, ctx);
+				if (transformed !== null) {
+					iterSteps.push({ ruleName: rule.name, before: n, after: transformed });
+					return transformed;
+				}
+			}
+			return n;
+		});
+
+		if (iterSteps.length === 0) break;
+		steps.push(...iterSteps);
+		current = result;
+	}
+
+	return { result: current, changed: steps.length > 0, steps };
 }

@@ -1,9 +1,8 @@
 /**
  * Algebraic Identities Module
  *
- * Provides transformation functions for algebraic identities:
- * - Factoring: a²-b² → (a+b)(a-b), a²±2ab+b² → (a±b)², a³±b³ → ...
- * - Expanding: (a+b)(a-b) → a²-b², (a±b)² → a²±2ab+b²
+ * Thin wrapper around pattern-based algebraic identity rules.
+ * Provides backward-compatible API and individual transform exports.
  *
  * Uses the pattern matching system for structural detection,
  * with fallback to analysis/structures.ts for numeric cases.
@@ -12,191 +11,23 @@
  */
 
 import type { MathNode } from '../types';
-import { number, multiply, add, subtract, superscript, parentheses } from '../factory';
-import { P } from '../pattern/builder';
-import { match } from '../pattern/match';
+import type { Rule, RuleApplicationResult } from '../pattern/types';
+import { applyRulesWithSteps, applyRule } from '../pattern/rule';
 import {
-	isDifferenceOfSquares,
-	isPerfectSquareTrinomial,
-	isSumOfCubes,
-	isDifferenceOfCubes
-} from '../analysis/structures';
-import {
-	type TransformRule,
-	type TransformResult,
-	getBinding,
-	applyIdentityTransforms
-} from './identity-engine';
+	algebraicFactoringRules,
+	algebraicExpandingRules,
+	algebraicSimplifyRules
+} from '../pattern/rule-sets/algebraic-identities';
 
 // =============================================================================
 // Types
 // =============================================================================
 
 /** Result of applying algebraic identity transformations */
-export type AlgebraicTransformResult = TransformResult;
-
-// =============================================================================
-// Pattern Definitions
-// =============================================================================
-
-// --- Factoring patterns ---
-const PAT_DIFF_SQUARES = P.sub(P.pow(P._('a'), P.num(2)), P.pow(P._('b'), P.num(2)));
-const PAT_SUM_CUBES = P.add(P.pow(P._('a'), P.num(3)), P.pow(P._('b'), P.num(3)));
-const PAT_DIFF_CUBES = P.sub(P.pow(P._('a'), P.num(3)), P.pow(P._('b'), P.num(3)));
-
-// --- Expanding patterns ---
-const PAT_SUM_DIFF_PRODUCT = P.mul(
-	P.paren(P.add(P._('a'), P._('b'))),
-	P.paren(P.sub(P._('a'), P._('b')))
-);
-const PAT_SUM_SQUARED = P.pow(P.paren(P.add(P._('a'), P._('b'))), P.num(2));
-const PAT_DIFF_SQUARED = P.pow(P.paren(P.sub(P._('a'), P._('b'))), P.num(2));
-
-// =============================================================================
-// Factoring Transform Functions
-// =============================================================================
-
-/**
- * a² - b² → (a+b)(a-b)
- * Also handles numeric cases like x² - 4 → (x+2)(x-2)
- */
-function transformDiffSquaresToProduct(node: MathNode): MathNode | null {
-	// 1. Pattern match: a² - b²
-	const result = match(PAT_DIFF_SQUARES, node);
-	if (result.success) {
-		const a = getBinding(result.bindings, 'a');
-		const b = getBinding(result.bindings, 'b');
-		if (a && b) {
-			return multiply(parentheses(add(a, b)), parentheses(subtract(a, b)), 'implicit');
-		}
-	}
-
-	// 2. Fallback: numeric detection (e.g., x² - 4)
-	const detected = isDifferenceOfSquares(node);
-	if (detected) {
-		return multiply(
-			parentheses(add(detected.a, detected.b)),
-			parentheses(subtract(detected.a, detected.b)),
-			'implicit'
-		);
-	}
-
-	return null;
-}
-
-/**
- * a² + 2ab + b² → (a+b)²
- * a² - 2ab + b² → (a-b)²
- * Also handles numeric cases like x² + 6x + 9 → (x+3)²
- */
-function transformPerfectSquareTrinomial(node: MathNode): MathNode | null {
-	const detected = isPerfectSquareTrinomial(node);
-	if (!detected) return null;
-
-	const inner =
-		detected.sign === '+' ? add(detected.a, detected.b) : subtract(detected.a, detected.b);
-
-	return superscript(parentheses(inner), number('2'));
-}
-
-/**
- * a³ + b³ → (a+b)(a² - ab + b²)
- * Also handles numeric cases like x³ + 8 → (x+2)(x² - 2x + 4)
- */
-function transformSumCubesToProduct(node: MathNode): MathNode | null {
-	// 1. Pattern match: a³ + b³
-	const result = match(PAT_SUM_CUBES, node);
-	if (result.success) {
-		const a = getBinding(result.bindings, 'a');
-		const b = getBinding(result.bindings, 'b');
-		if (a && b) {
-			return buildSumCubesFactored(a, b);
-		}
-	}
-
-	// 2. Fallback: numeric detection
-	const detected = isSumOfCubes(node);
-	if (detected) {
-		return buildSumCubesFactored(detected.a, detected.b);
-	}
-
-	return null;
-}
-
-/**
- * a³ - b³ → (a-b)(a² + ab + b²)
- * Also handles numeric cases like x³ - 27 → (x-3)(x² + 3x + 9)
- */
-function transformDiffCubesToProduct(node: MathNode): MathNode | null {
-	// 1. Pattern match: a³ - b³
-	const result = match(PAT_DIFF_CUBES, node);
-	if (result.success) {
-		const a = getBinding(result.bindings, 'a');
-		const b = getBinding(result.bindings, 'b');
-		if (a && b) {
-			return buildDiffCubesFactored(a, b);
-		}
-	}
-
-	// 2. Fallback: numeric detection
-	const detected = isDifferenceOfCubes(node);
-	if (detected) {
-		return buildDiffCubesFactored(detected.a, detected.b);
-	}
-
-	return null;
-}
-
-// =============================================================================
-// Expanding Transform Functions
-// =============================================================================
-
-/**
- * (a+b)(a-b) → a² - b²
- */
-function transformProductToDiffSquares(node: MathNode): MathNode | null {
-	const result = match(PAT_SUM_DIFF_PRODUCT, node);
-	if (!result.success) return null;
-	const a = getBinding(result.bindings, 'a');
-	const b = getBinding(result.bindings, 'b');
-	if (!a || !b) return null;
-
-	return subtract(superscript(a, number('2')), superscript(b, number('2')));
-}
-
-/**
- * (a+b)² → a² + 2ab + b²
- */
-function transformExpandSumSquared(node: MathNode): MathNode | null {
-	const result = match(PAT_SUM_SQUARED, node);
-	if (!result.success) return null;
-	const a = getBinding(result.bindings, 'a');
-	const b = getBinding(result.bindings, 'b');
-	if (!a || !b) return null;
-
-	return add(
-		add(superscript(a, number('2')), multiply(number('2'), multiply(a, b, 'implicit'), 'implicit')),
-		superscript(b, number('2'))
-	);
-}
-
-/**
- * (a-b)² → a² - 2ab + b²
- */
-function transformExpandDiffSquared(node: MathNode): MathNode | null {
-	const result = match(PAT_DIFF_SQUARED, node);
-	if (!result.success) return null;
-	const a = getBinding(result.bindings, 'a');
-	const b = getBinding(result.bindings, 'b');
-	if (!a || !b) return null;
-
-	return add(
-		subtract(
-			superscript(a, number('2')),
-			multiply(number('2'), multiply(a, b, 'implicit'), 'implicit')
-		),
-		superscript(b, number('2'))
-	);
+export interface AlgebraicTransformResult {
+	readonly result: MathNode;
+	readonly changed: boolean;
+	readonly appliedRules: readonly string[];
 }
 
 // =============================================================================
@@ -204,66 +35,49 @@ function transformExpandDiffSquared(node: MathNode): MathNode | null {
 // =============================================================================
 
 /**
- * Create an implicit product with conventional ordering (numbers first).
+ * Convert RuleApplicationResult to AlgebraicTransformResult
  */
-function implicitProduct(a: MathNode, b: MathNode): MathNode {
-	// Put numbers first for conventional rendering: 2x not x2
-	if (b.type === 'number') return multiply(b, a, 'implicit');
-	return multiply(a, b, 'implicit');
+function toTransformResult(r: RuleApplicationResult): AlgebraicTransformResult {
+	return {
+		result: r.result,
+		changed: r.changed,
+		appliedRules: r.steps.map((s) => s.ruleName)
+	};
 }
 
 /**
- * Square a node. For numbers, compute the value directly (2 → 4, not 2²).
+ * Find a rule by name from all algebraic rules
  */
-function squared(node: MathNode): MathNode {
-	if (node.type === 'number') {
-		const val = parseFloat((node as { value: string }).value);
-		return number(String(val * val));
-	}
-	return superscript(node, number('2'));
+const allAlgebraicRules: Rule[] = [...algebraicFactoringRules, ...algebraicExpandingRules];
+
+function ruleByName(name: string): Rule {
+	const rule = allAlgebraicRules.find((r) => r.name === name);
+	if (!rule) throw new Error(`Unknown algebraic rule: ${name}`);
+	return rule;
 }
 
 /**
- * Build (a+b)(a² - ab + b²)
+ * Wrap a single rule into a transform function
  */
-function buildSumCubesFactored(a: MathNode, b: MathNode): MathNode {
-	return multiply(
-		parentheses(add(a, b)),
-		parentheses(add(subtract(squared(a), implicitProduct(a, b)), squared(b))),
-		'implicit'
-	);
+function wrapRule(name: string): (node: MathNode) => MathNode | null {
+	const rule = ruleByName(name);
+	return (node) => applyRule(rule, node);
 }
 
 /**
- * Build (a-b)(a² + ab + b²)
+ * Wrap multiple rules into a transform function (tries each until one succeeds)
+ * Used for symbolic + numeric fallback patterns (diff-squares, sum/diff-cubes)
  */
-function buildDiffCubesFactored(a: MathNode, b: MathNode): MathNode {
-	return multiply(
-		parentheses(subtract(a, b)),
-		parentheses(add(add(squared(a), implicitProduct(a, b)), squared(b))),
-		'implicit'
-	);
+function wrapRules(...names: string[]): (node: MathNode) => MathNode | null {
+	const rules = names.map((n) => ruleByName(n));
+	return (node) => {
+		for (const rule of rules) {
+			const result = applyRule(rule, node);
+			if (result !== null) return result;
+		}
+		return null;
+	};
 }
-
-// =============================================================================
-// Rule Collections
-// =============================================================================
-
-const FACTORING_TRANSFORMS: TransformRule[] = [
-	{ name: 'diff-squares-to-product', transform: transformDiffSquaresToProduct },
-	{ name: 'perfect-square-trinomial', transform: transformPerfectSquareTrinomial },
-	{ name: 'sum-cubes-to-product', transform: transformSumCubesToProduct },
-	{ name: 'diff-cubes-to-product', transform: transformDiffCubesToProduct }
-];
-
-const EXPANDING_TRANSFORMS: TransformRule[] = [
-	{ name: 'product-to-diff-squares', transform: transformProductToDiffSquares },
-	{ name: 'expand-sum-squared', transform: transformExpandSumSquared },
-	{ name: 'expand-diff-squared', transform: transformExpandDiffSquared }
-];
-
-// Default: factoring only (expanding is inverse, would cause loops)
-const ALL_ALGEBRAIC_TRANSFORMS: TransformRule[] = [...FACTORING_TRANSFORMS];
 
 // =============================================================================
 // Public API
@@ -284,7 +98,7 @@ const ALL_ALGEBRAIC_TRANSFORMS: TransformRule[] = [...FACTORING_TRANSFORMS];
  * @returns Transformation result
  */
 export function factorAlgebraic(node: MathNode): AlgebraicTransformResult {
-	return applyIdentityTransforms(node, FACTORING_TRANSFORMS);
+	return toTransformResult(applyRulesWithSteps(algebraicFactoringRules, node));
 }
 
 /**
@@ -299,31 +113,65 @@ export function factorAlgebraic(node: MathNode): AlgebraicTransformResult {
  * @returns Transformation result
  */
 export function expandAlgebraic(node: MathNode): AlgebraicTransformResult {
-	return applyIdentityTransforms(node, EXPANDING_TRANSFORMS);
+	return toTransformResult(applyRulesWithSteps(algebraicExpandingRules, node));
 }
 
 /**
  * Apply algebraic identity transforms (factoring by default).
  *
  * @param node - The expression to transform
- * @param transforms - The transforms to apply (defaults to factoring)
  * @returns Transformation result
  */
-export function applyAlgebraicIdentities(
-	node: MathNode,
-	transforms: TransformRule[] = ALL_ALGEBRAIC_TRANSFORMS
-): AlgebraicTransformResult {
-	return applyIdentityTransforms(node, transforms);
+export function applyAlgebraicIdentities(node: MathNode): AlgebraicTransformResult {
+	return toTransformResult(applyRulesWithSteps(algebraicSimplifyRules, node));
 }
 
 // =============================================================================
-// Exports for individual transforms (for testing)
+// Individual Transform Exports (for backward compatibility)
 // =============================================================================
 
-export const TRANSFORM_DIFF_SQUARES_TO_PRODUCT = transformDiffSquaresToProduct;
-export const TRANSFORM_PERFECT_SQUARE_TRINOMIAL = transformPerfectSquareTrinomial;
-export const TRANSFORM_SUM_CUBES_TO_PRODUCT = transformSumCubesToProduct;
-export const TRANSFORM_DIFF_CUBES_TO_PRODUCT = transformDiffCubesToProduct;
-export const TRANSFORM_PRODUCT_TO_DIFF_SQUARES = transformProductToDiffSquares;
-export const TRANSFORM_EXPAND_SUM_SQUARED = transformExpandSumSquared;
-export const TRANSFORM_EXPAND_DIFF_SQUARED = transformExpandDiffSquared;
+/**
+ * a² - b² → (a+b)(a-b)
+ * Also handles numeric cases like x² - 4 → (x+2)(x-2)
+ */
+export const TRANSFORM_DIFF_SQUARES_TO_PRODUCT = wrapRules(
+	'diff-squares-symbolic',
+	'diff-squares-numeric'
+);
+
+/**
+ * a² + 2ab + b² → (a+b)²
+ * a² - 2ab + b² → (a-b)²
+ * Also handles numeric cases like x² + 6x + 9 → (x+3)²
+ */
+export const TRANSFORM_PERFECT_SQUARE_TRINOMIAL = wrapRule('perfect-square-trinomial');
+
+/**
+ * a³ + b³ → (a+b)(a² - ab + b²)
+ * Also handles numeric cases like x³ + 8 → (x+2)(x² - 2x + 4)
+ */
+export const TRANSFORM_SUM_CUBES_TO_PRODUCT = wrapRules('sum-cubes-symbolic', 'sum-cubes-numeric');
+
+/**
+ * a³ - b³ → (a-b)(a² + ab + b²)
+ * Also handles numeric cases like x³ - 27 → (x-3)(x² + 3x + 9)
+ */
+export const TRANSFORM_DIFF_CUBES_TO_PRODUCT = wrapRules(
+	'diff-cubes-symbolic',
+	'diff-cubes-numeric'
+);
+
+/**
+ * (a+b)(a-b) → a² - b²
+ */
+export const TRANSFORM_PRODUCT_TO_DIFF_SQUARES = wrapRule('product-to-diff-squares');
+
+/**
+ * (a+b)² → a² + 2ab + b²
+ */
+export const TRANSFORM_EXPAND_SUM_SQUARED = wrapRule('expand-sum-squared');
+
+/**
+ * (a-b)² → a² - 2ab + b²
+ */
+export const TRANSFORM_EXPAND_DIFF_SQUARED = wrapRule('expand-diff-squared');

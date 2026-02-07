@@ -75,7 +75,10 @@ export type {
 	MatchBindings,
 	// Rule types
 	Rule,
-	RuleOptions
+	RuleOptions,
+	// Rule application result types
+	RuleStep,
+	RuleApplicationResult
 } from './types';
 
 // =============================================================================
@@ -113,6 +116,8 @@ export {
 	isProductSequenceBinding,
 	isSequenceBinding,
 	isMathNodeBinding,
+	// Binding helpers
+	getBindingNode,
 	// Constraint type guards
 	isTypeConstraint,
 	isNumberConstraint,
@@ -202,7 +207,15 @@ export { checkConstraint, containsVariable, isFreeOfVariables } from './constrai
 // Rule Exports
 // =============================================================================
 
-export { createRule, instantiate, applyRule, applyRuleDeep, applyRules } from './rule';
+export {
+	createRule,
+	instantiate,
+	applyRule,
+	applyRuleDeep,
+	applyRules,
+	applyRulesDeepOnce,
+	applyRulesWithSteps
+} from './rule';
 
 // =============================================================================
 // Rule Set Exports

@@ -1,61 +1,58 @@
 /**
  * Simplify Pipeline
  *
- * Orchestrates the simplification engines (normalize, pattern rules,
- * identity transforms) with a cost function to produce the simplest form
- * of a mathematical expression.
+ * Orchestrates the simplification engines (normalize, pattern rules)
+ * with a cost function to produce the simplest form of a mathematical expression.
  *
  * Algorithm:
  * 1. Normalize (normalizeExtended handles ∞ natively, then polynomial canonical form)
- * 2. Apply pattern rules (abs only — arithmetic/power are redundant with normalize)
- * 3. Apply identity transforms (trig, hyperbolic, algebraic)
- * 4. Post-normalize
- * 5. Compare costs, keep the cheapest form
- * 6. Repeat until fixpoint or maxIterations
+ * 2. Apply pattern rules (abs + trig + hyp + algebraic — single bottom-up pass)
+ * 3. Post-normalize
+ * 4. Compare costs, keep the cheapest form
+ * 5. Repeat until fixpoint or maxIterations
  *
  * @module mathAST/simplify/simplify
  */
 
 import type { MathNode } from '../types';
+import type { Rule } from '../pattern/types';
 import type { SimplifyOptions, SimplifyResult } from './types';
 import { computeCost } from './cost';
 import { SimplifyStepRecorder } from './step-recorder';
 import { getSimplifyRuleDescription } from './descriptions-fr';
 
-// Pattern rules — only abs rules are used by the pipeline.
-// Arithmetic/power rules are fully redundant with normalize's polynomial
-// arithmetic (zero coefficients are dropped, identity elements eliminated,
-// powers handled by powNormalForm).
-import { simplifyRules } from '../pattern/rule-sets';
-import { applyRules } from '../pattern/rule';
+// Pattern rules
+import { absRules } from '../pattern/rule-sets';
+import { trigSimplifyRules } from '../pattern/rule-sets/trig-identities';
+import { hypSimplifyRules } from '../pattern/rule-sets/hyperbolic-identities';
+import { algebraicSimplifyRules } from '../pattern/rule-sets/algebraic-identities';
+import { applyRulesDeepOnce } from '../pattern/rule';
 import { nodesEqual } from '../pattern/match';
 
 // Normalize
 import { preprocess } from '../normal/rules';
 import { normalizeExtended, denormalizeExtended } from '../normal';
 
-// Identity transforms
-import { applyTrigIdentities } from '../transform/trig-identities';
-import { applyHyperbolicIdentities } from '../transform/hyperbolic-identities';
-import { applyAlgebraicIdentities } from '../transform/algebraic-identities';
-
-// Detection
-import { findNodes } from '../transforms';
-import { isFunction } from '../guards';
-
 // =============================================================================
-// Detection Helpers
+// Rule Set Builder
 // =============================================================================
 
-const TRIG_FUNCTIONS = new Set(['sin', 'cos', 'tan', 'arcsin', 'arccos', 'arctan']);
-const HYP_FUNCTIONS = new Set(['sinh', 'cosh', 'tanh', 'arcsinh', 'arccosh', 'arctanh']);
-
-function containsTrigFunctions(node: MathNode): boolean {
-	return findNodes(node, (n) => isFunction(n) && TRIG_FUNCTIONS.has(n.name)).length > 0;
-}
-
-function containsHypFunctions(node: MathNode): boolean {
-	return findNodes(node, (n) => isFunction(n) && HYP_FUNCTIONS.has(n.name)).length > 0;
+/**
+ * Builds the combined rule set based on simplification options.
+ * Called once before the iteration loop.
+ */
+function buildSimplifyRules(options: {
+	enableAbs?: boolean;
+	enableTrig?: boolean;
+	enableHyperbolic?: boolean;
+	enableAlgebraic?: boolean;
+}): readonly Rule[] {
+	const rules: Rule[] = [];
+	if (options.enableAbs !== false) rules.push(...absRules);
+	if (options.enableTrig !== false) rules.push(...trigSimplifyRules);
+	if (options.enableHyperbolic !== false) rules.push(...hypSimplifyRules);
+	if (options.enableAlgebraic !== false) rules.push(...algebraicSimplifyRules);
+	return rules;
 }
 
 // =============================================================================
@@ -83,8 +80,8 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 	const recorder = new SimplifyStepRecorder();
 	const isRecording = verbosity !== 'result';
 
-	// Select rules based on options (only abs rules — see module doc)
-	const rules = enableAbs ? simplifyRules : [];
+	// Build rule set once (abs + trig + hyp + algebraic based on options)
+	const rules = buildSimplifyRules({ enableAbs, enableTrig, enableHyperbolic, enableAlgebraic });
 
 	let current = node;
 	let best = node;
@@ -118,13 +115,14 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 			// complex domain errors). Skip safely and continue.
 		}
 
-		// Phase B: Pattern rules (abs rules only)
-		// Arithmetic/power rules are NOT applied here — they are fully redundant
-		// with normalize's polynomial arithmetic. Only abs rules add value because
-		// normalize has limited support for absolute value simplification.
+		// Phase B: Pattern rules (single bottom-up pass)
+		// Applies all enabled rules in one traversal: abs, trig identities,
+		// hyperbolic identities, and algebraic factoring. Arithmetic/power rules
+		// are NOT included — they are fully redundant with normalize's polynomial
+		// arithmetic.
 		if (rules.length > 0) {
 			recorder.setPhase('rules');
-			const afterRules = applyRules(rules, current, 100, ctx);
+			const afterRules = applyRulesDeepOnce(rules, current, ctx);
 			if (isRecording && !nodesEqual(afterRules, current)) {
 				recorder.recordStep(
 					'pattern-rules',
@@ -137,63 +135,15 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 			current = afterRules;
 		}
 
-		// Phase C: Identity transforms (selective)
-		// These transforms operate on the MathNode tree level, handling patterns
-		// that normalize cannot: trig/hyperbolic identities (opaque to normalize),
-		// and algebraic factoring (normalize expands but does not factor).
-		recorder.setPhase('identity');
-
-		if (enableTrig && containsTrigFunctions(current)) {
-			const trigResult = applyTrigIdentities(current);
-			if (isRecording && trigResult.changed) {
-				recorder.recordStep(
-					'trig-identities',
-					getSimplifyRuleDescription('trig-identities'),
-					current,
-					trigResult.result,
-					'summarized'
-				);
-			}
-			current = trigResult.result;
-		}
-
-		if (enableHyperbolic && containsHypFunctions(current)) {
-			const hypResult = applyHyperbolicIdentities(current);
-			if (isRecording && hypResult.changed) {
-				recorder.recordStep(
-					'hyperbolic-identities',
-					getSimplifyRuleDescription('hyperbolic-identities'),
-					current,
-					hypResult.result,
-					'summarized'
-				);
-			}
-			current = hypResult.result;
-		}
-
-		if (enableAlgebraic) {
-			const algResult = applyAlgebraicIdentities(current);
-			if (isRecording && algResult.changed) {
-				recorder.recordStep(
-					'algebraic-identities',
-					getSimplifyRuleDescription('algebraic-identities'),
-					current,
-					algResult.result,
-					'summarized'
-				);
-			}
-			current = algResult.result;
-		}
-
-		// Cost check before post-normalize (identity transforms may produce cheaper forms)
+		// Cost check before post-normalize (rules may produce cheaper forms)
 		const preNormCost = computeCost(current);
 		if (preNormCost < bestCost) {
 			best = current;
 			bestCost = preNormCost;
 		}
 
-		// Phase D: Post-normalize
-		// Re-normalize after identity transforms, which may produce expressions
+		// Phase C: Post-normalize
+		// Re-normalize after pattern rules, which may produce expressions
 		// that benefit from canonical form (e.g., trig identity yields 1 + 3 → 4).
 		recorder.setPhase('post-normalize');
 		try {
@@ -214,14 +164,14 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 			// Skip normalization on failure
 		}
 
-		// Phase E: Cost check (post-normalize may also produce cheaper forms)
+		// Phase D: Cost check (post-normalize may also produce cheaper forms)
 		const currentCost = computeCost(current);
 		if (currentCost < bestCost) {
 			best = current;
 			bestCost = currentCost;
 		}
 
-		// Phase F: Fixpoint check
+		// Phase E: Fixpoint check
 		if (nodesEqual(current, beforeIteration)) {
 			break;
 		}
