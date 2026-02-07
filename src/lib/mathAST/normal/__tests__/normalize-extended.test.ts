@@ -10,6 +10,8 @@
 import { describe, it, expect } from 'vitest';
 import { normalizeExtended } from '../normalize-extended';
 import { denormalizeExtended } from '../denormalize';
+import { preprocess } from '../rules';
+import { toLatex } from '../../latex-generator';
 import {
 	positiveInfinity,
 	negativeInfinity,
@@ -353,6 +355,15 @@ describe('normalizeExtended - arctan', () => {
 	it('arctan(+∞) = π/2 (normal form)', () => {
 		const result = normalizeExtended(func('arctan', [positiveInfinity()]));
 		expect(result.type).toBe('normal');
+	});
+
+	it('arctan(+∞) full pipeline: preprocess + normalizeExtended + denormalize', () => {
+		const input = func('arctan', [positiveInfinity()]);
+		const preprocessed = preprocess(input);
+		const extResult = normalizeExtended(preprocessed);
+		expect(extResult.type).toBe('normal');
+		const node = denormalizeExtended(extResult);
+		expect(toLatex(node)).toBe('\\dfrac{\\pi}{2}');
 	});
 
 	it('arctan(-∞) = -π/2 (normal form)', () => {

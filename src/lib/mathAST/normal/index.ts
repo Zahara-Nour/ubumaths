@@ -199,7 +199,8 @@ export {
 
 export { normalize, ZERO_NORMAL_FORM, ONE_NORMAL_FORM } from './normalize.js';
 
-export { normalizeExtended } from './normalize-extended.js';
+export { normalizeExtended, containsExtendedNodes } from './normalize-extended.js';
+export type { NormalizeExtendedOptions } from './normalize-extended.js';
 
 export {
 	denormalize,

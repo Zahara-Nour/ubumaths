@@ -24,7 +24,14 @@ import {
 	isFunction,
 	isDelimiter
 } from '../guards';
-import { piConstant, number as numNode, divide as divNode } from '../factory';
+import { getChildren } from '../transforms';
+import {
+	piConstant,
+	number as numNode,
+	func as funcNode,
+	superscript as supNode
+} from '../factory';
+import { denormalize } from './denormalize';
 import { normalize, ZERO_NORMAL_FORM, ONE_NORMAL_FORM } from './normalize';
 import {
 	addPolynomials,
@@ -36,6 +43,22 @@ import {
 } from './polynomial';
 import { hashNormalForm } from './hash';
 import { isNegative as isNegativeRational, rationalToNumber } from './rational';
+
+// =============================================================================
+// Options
+// =============================================================================
+
+/**
+ * Options for normalizeExtended.
+ *
+ * - `skipFastPath`: Disables the fast-path that delegates to regular normalize
+ *   when no infinity/signed-zero nodes are present. Used by the limit module
+ *   for indeterminate form detection (e.g., 0/0) and to preserve the old
+ *   throwing behavior for unsupported cases (powers of normals, functions of normals).
+ */
+export interface NormalizeExtendedOptions {
+	readonly skipFastPath?: boolean;
+}
 
 // =============================================================================
 // Result Constructors
@@ -70,6 +93,44 @@ function multiplySign(
 	b: 'positive' | 'negative'
 ): 'positive' | 'negative' {
 	return a === b ? 'positive' : 'negative';
+}
+
+// =============================================================================
+// Precomputed Constants
+// =============================================================================
+
+/**
+ * NormalForm for π/2 as a proper fraction (numerator=π, denominator=2).
+ * This denormalizes as π/2 (fraction) rather than (1/2)·π (multiplication),
+ * which has lower cost in the simplify pipeline.
+ */
+let _piOver2NF: NormalForm | null = null;
+function piOver2NormalForm(): NormalForm {
+	if (!_piOver2NF) {
+		const piNF = normalize(piConstant());
+		const twoNF = normalize(numNode('2'));
+		const num = piNF.numerator;
+		const den = twoNF.numerator; // 2 as polynomial (used as denominator)
+		_piOver2NF = {
+			numerator: num,
+			denominator: den,
+			hash: hashNormalForm({ numerator: num, denominator: den, hash: '' })
+		};
+	}
+	return _piOver2NF;
+}
+
+// =============================================================================
+// Extended Node Detection
+// =============================================================================
+
+/**
+ * Checks if a MathNode tree contains any InfinityNode or SignedZeroNode.
+ * Used to short-circuit to regular normalize when no extended values are present.
+ */
+export function containsExtendedNodes(node: MathNode): boolean {
+	if (isInfinity(node) || isSignedZero(node)) return true;
+	return getChildren(node).some(containsExtendedNodes);
 }
 
 // =============================================================================
@@ -514,7 +575,8 @@ function divExtended(
  */
 function powExtended(
 	base: ExtendedNormalizeResult,
-	exp: ExtendedNormalizeResult
+	exp: ExtendedNormalizeResult,
+	options?: NormalizeExtendedOptions
 ): ExtendedNormalizeResult {
 	// Propagate indeterminate
 	if (base.type === 'indeterminate') return base;
@@ -592,16 +654,17 @@ function powExtended(
 		return signedZeroResult('positive');
 	}
 
-	// For normal^normal, delegate to regular normalize
-	// This is a simplification - full implementation would handle more cases
+	// For normal^normal: denormalize both, rebuild the superscript node,
+	// and delegate to regular normalize (which handles powNormalForm).
+	// In limit mode (skipFastPath), throw to preserve old behavior where
+	// the limit module falls back to numeric evaluation for powers.
 	if (base.type === 'normal' && exp.type === 'normal') {
-		// TODO: Implement proper power handling via normalize
-		// For now, just return the base if exp is zero
-		if (isZeroNormalForm(exp.form)) {
-			return normalResult(ONE_NORMAL_FORM);
+		if (options?.skipFastPath) {
+			throw new Error('Power of normal forms not supported in limit mode');
 		}
-		// Cannot easily compute power of normal forms
-		throw new Error('Power of normal forms not yet implemented in normalizeExtended');
+		const baseNode = denormalize(base.form);
+		const expNode = denormalize(exp.form);
+		return normalResult(normalize(supNode(baseNode, expNode)));
 	}
 
 	throw new Error('Unhandled case in powExtended');
@@ -612,7 +675,8 @@ function powExtended(
  */
 function applyFunctionExtended(
 	name: string,
-	args: ExtendedNormalizeResult[]
+	args: ExtendedNormalizeResult[],
+	options?: NormalizeExtendedOptions
 ): ExtendedNormalizeResult {
 	if (args.length === 0) {
 		throw new Error(`Function ${name} requires at least one argument`);
@@ -712,13 +776,11 @@ function applyFunctionExtended(
 		case 'arctan':
 			// arctan(+∞) = π/2
 			if (arg.type === 'infinity' && arg.sign === 'positive') {
-				return normalResult(normalize(divNode(piConstant(), numNode('2'), 'fraction')));
+				return normalResult(piOver2NormalForm());
 			}
 			// arctan(-∞) = -π/2
 			if (arg.type === 'infinity' && arg.sign === 'negative') {
-				return negExtended(
-					normalResult(normalize(divNode(piConstant(), numNode('2'), 'fraction')))
-				);
+				return negExtended(normalResult(piOver2NormalForm()));
 			}
 			// arctan(0±) = 0±
 			if (arg.type === 'signed-zero') {
@@ -814,10 +876,18 @@ function applyFunctionExtended(
 			break;
 	}
 
-	// For normal arguments, we would need to apply the function via normalize
-	// This requires more complex handling
+	// For normal arguments: denormalize back to MathNode, rebuild the function
+	// node, and delegate to regular normalize (which treats it as opaque or
+	// computes special values like sin(kπ/n)).
+	// In limit mode (skipFastPath), throw to preserve old behavior where
+	// the limit module falls back to numeric evaluation for functions.
 	if (arg.type === 'normal') {
-		throw new Error(`Function ${name} with normal form argument not yet implemented`);
+		if (options?.skipFastPath) {
+			throw new Error(`Function ${name} with normal argument not supported in limit mode`);
+		}
+		const argNode = denormalize(arg.form);
+		const rebuilt = funcNode(name, [argNode]);
+		return normalResult(normalize(rebuilt));
 	}
 
 	throw new Error(`Unhandled case for ${name} with argument type ${arg.type}`);
@@ -840,7 +910,11 @@ function applyFunctionExtended(
  * @param ctx - Optional normalization context for step recording
  * @returns An ExtendedNormalizeResult
  */
-export function normalizeExtended(node: MathNode, ctx?: NormalizeContext): ExtendedNormalizeResult {
+export function normalizeExtended(
+	node: MathNode,
+	ctx?: NormalizeContext,
+	options?: NormalizeExtendedOptions
+): ExtendedNormalizeResult {
 	// Handle InfinityNode
 	if (isInfinity(node)) {
 		return infinityResult(node.sign);
@@ -851,61 +925,71 @@ export function normalizeExtended(node: MathNode, ctx?: NormalizeContext): Exten
 		return signedZeroResult(node.sign);
 	}
 
+	// Fast path: if no infinity/signed-zero in the subtree, delegate to
+	// regular normalize directly. This avoids decomposing the expression
+	// into extended arithmetic (which can lose polynomial structure for
+	// expressions like sin²(x)+cos²(x) where normalize handles them better).
+	// Disabled for limit evaluation which needs recursive decomposition
+	// to detect indeterminate forms like 0/0.
+	if (!options?.skipFastPath && !containsExtendedNodes(node)) {
+		return normalResult(normalize(node, ctx));
+	}
+
 	// Handle Addition
 	if (isAddition(node)) {
-		const left = normalizeExtended(node.left, ctx);
-		const right = normalizeExtended(node.right, ctx);
+		const left = normalizeExtended(node.left, ctx, options);
+		const right = normalizeExtended(node.right, ctx, options);
 		return addExtended(left, right);
 	}
 
 	// Handle Subtraction
 	if (isSubtraction(node)) {
-		const left = normalizeExtended(node.left, ctx);
-		const right = normalizeExtended(node.right, ctx);
+		const left = normalizeExtended(node.left, ctx, options);
+		const right = normalizeExtended(node.right, ctx, options);
 		return subExtended(left, right);
 	}
 
 	// Handle Multiplication
 	if (isMultiplication(node)) {
-		const left = normalizeExtended(node.left, ctx);
-		const right = normalizeExtended(node.right, ctx);
+		const left = normalizeExtended(node.left, ctx, options);
+		const right = normalizeExtended(node.right, ctx, options);
 		return mulExtended(left, right);
 	}
 
 	// Handle Division
 	if (isDivision(node)) {
-		const num = normalizeExtended(node.numerator, ctx);
-		const den = normalizeExtended(node.denominator, ctx);
+		const num = normalizeExtended(node.numerator, ctx, options);
+		const den = normalizeExtended(node.denominator, ctx, options);
 		return divExtended(num, den);
 	}
 
 	// Handle Opposite (negation)
 	if (isOpposite(node)) {
-		const operand = normalizeExtended(node.operand, ctx);
+		const operand = normalizeExtended(node.operand, ctx, options);
 		return negExtended(operand);
 	}
 
 	// Handle Positive
 	if (isPositive(node)) {
-		return normalizeExtended(node.operand, ctx);
+		return normalizeExtended(node.operand, ctx, options);
 	}
 
 	// Handle Superscript (power)
 	if (isSuperscript(node)) {
-		const base = normalizeExtended(node.base, ctx);
-		const exp = normalizeExtended(node.superscript, ctx);
-		return powExtended(base, exp);
+		const base = normalizeExtended(node.base, ctx, options);
+		const exp = normalizeExtended(node.superscript, ctx, options);
+		return powExtended(base, exp, options);
 	}
 
 	// Handle Function
 	if (isFunction(node)) {
-		const args = node.args.map((arg) => normalizeExtended(arg, ctx));
-		return applyFunctionExtended(node.name, args);
+		const args = node.args.map((arg) => normalizeExtended(arg, ctx, options));
+		return applyFunctionExtended(node.name, args, options);
 	}
 
 	// Handle Delimiter (parentheses)
 	if (isDelimiter(node)) {
-		return normalizeExtended(node.content, ctx);
+		return normalizeExtended(node.content, ctx, options);
 	}
 
 	// For all other node types, delegate to regular normalize

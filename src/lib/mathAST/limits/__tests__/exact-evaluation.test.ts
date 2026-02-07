@@ -148,21 +148,21 @@ describe('evaluateLimitExact', () => {
 			expect(numValue).toBe(8);
 		});
 
-		it('returns null for x^2 (powers not yet supported)', () => {
-			// Powers of normal forms are not yet implemented
+		it('returns null for x^2 (powers not supported in limit mode)', () => {
+			// Powers of normal forms throw in limit mode (skipFastPath),
+			// causing tryEvaluateLimitExact to return null. The limit pipeline
+			// then falls back to numeric evaluation.
 			const expression = expr('x^2');
 			const result = tryEvaluateLimitExact(expression, 'x', number('4'), 'both');
 
-			// Should return null because power is not supported
 			expect(result).toBeNull();
 		});
 
-		it('returns null for (x^2-4)/(x-2) (powers not yet supported)', () => {
-			// Powers in numerator cause evaluation to fail
+		it('returns null for (x^2-4)/(x-2) (powers not supported in limit mode)', () => {
+			// Powers in numerator cause evaluation to throw in limit mode
 			const expression = expr('\\frac{x^2-4}{x-2}');
 			const result = tryEvaluateLimitExact(expression, 'x', number('2'), 'both');
 
-			// Should return null because power is not supported
 			expect(result).toBeNull();
 		});
 	});
@@ -225,12 +225,11 @@ describe('evaluateLimitExact', () => {
 // =============================================================================
 
 describe('tryEvaluateLimitExact', () => {
-	it('returns null for expressions with unsupported operations (powers)', () => {
-		// x^2 uses power which is not yet supported in normalizeExtended
+	it('returns null for expressions with powers (limit mode)', () => {
+		// Powers throw in limit mode, limit pipeline falls back to numeric evaluation
 		const expression = expr('x^2');
 		const result = tryEvaluateLimitExact(expression, 'x', number('3'), 'both');
 
-		// Should return null because power is not supported
 		expect(result).toBeNull();
 	});
 

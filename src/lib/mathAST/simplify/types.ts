@@ -37,9 +37,6 @@ export interface SimplifyOptions {
 
 	/** Enable absolute value simplification (default: true) */
 	readonly enableAbs?: boolean;
-
-	/** Enable infinity evaluation (default: true) */
-	readonly enableInfinity?: boolean;
 }
 
 // =============================================================================
