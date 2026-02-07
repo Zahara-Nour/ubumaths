@@ -300,16 +300,14 @@ describe('One-Sided Limits with Sign Changes', () => {
 			expectNegInfinity(result);
 		});
 
-		// TODO: Polynomial denominator limits not fully implemented
-		it.skip('x/(x²-1) at x=1 right-sided is +∞', () => {
+		it('x/(x²-1) at x=1 right-sided is +∞', () => {
 			// x/(x-1)(x+1), at x=1: num=1, den→0⁺
 			const expr = divide(variable('x'), subtract(xPow('2'), number('1')), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('1'), 'right');
 			expectPosInfinity(result);
 		});
 
-		// TODO: Polynomial denominator limits not fully implemented
-		it.skip('x/(x²-1) at x=1 left-sided is -∞', () => {
+		it('x/(x²-1) at x=1 left-sided is -∞', () => {
 			const expr = divide(variable('x'), subtract(xPow('2'), number('1')), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('1'), 'left');
 			expectNegInfinity(result);
@@ -317,22 +315,19 @@ describe('One-Sided Limits with Sign Changes', () => {
 	});
 
 	describe('absolute value functions', () => {
-		// TODO: abs(x)/x limits not fully implemented
-		it.skip('|x|/x at x=0 right-sided is 1', () => {
+		it('|x|/x at x=0 right-sided is 1', () => {
 			const expr = divide(func('abs', [variable('x')]), variable('x'), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('0'), 'right');
 			expectNumber(result, 1);
 		});
 
-		// TODO: abs(x)/x limits not fully implemented
-		it.skip('|x|/x at x=0 left-sided is -1', () => {
+		it('|x|/x at x=0 left-sided is -1', () => {
 			const expr = divide(func('abs', [variable('x')]), variable('x'), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('0'), 'left');
 			expectNumber(result, -1);
 		});
 
-		// TODO: abs(x)/x limits not fully implemented
-		it.skip('|x|/x at x=0 both-sided does not exist', () => {
+		it('|x|/x at x=0 both-sided does not exist', () => {
 			const expr = divide(func('abs', [variable('x')]), variable('x'), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('0'));
 			expect(result.status).toBe('does-not-exist');

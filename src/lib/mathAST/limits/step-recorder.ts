@@ -31,7 +31,8 @@ const RULE_DESCRIPTIONS: Readonly<Record<LimitRule, string>> = {
 	linearity: 'Linéarité de la limite',
 	product: "Limite d'un produit",
 	quotient: "Limite d'un quotient",
-	composition: "Limite d'une composée"
+	composition: "Limite d'une composée",
+	'abs-simplification': 'Simplification de la valeur absolue'
 };
 
 /**
