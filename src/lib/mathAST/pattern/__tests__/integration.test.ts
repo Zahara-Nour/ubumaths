@@ -15,6 +15,8 @@ import {
 	powerRules,
 	absRules,
 	logExpRules,
+	sqrtRules,
+	trigRules,
 	functionParityRules,
 	allPatternRules
 } from '../rule-sets';
@@ -25,11 +27,13 @@ import {
 	variable,
 	add,
 	multiply,
+	divide,
 	superscript,
 	opposite,
 	abs,
 	func,
-	euler
+	euler,
+	piConstant
 } from '../../factory';
 import type { TypeContext } from '../../numtype/types';
 
@@ -532,6 +536,37 @@ describe('Pattern Matching Integration', () => {
 				const result = applyRules([...powerRules], node);
 				expect(nodesEqual(result, node)).toBe(true);
 			});
+
+			it('simplifies (a/b)^n to a^n / b^n', () => {
+				const node = superscript(divide(variable('a'), variable('b')), variable('n'));
+				const result = applyRules([...powerRules], node);
+				expect(
+					nodesEqual(
+						result,
+						divide(
+							superscript(variable('a'), variable('n')),
+							superscript(variable('b'), variable('n'))
+						)
+					)
+				).toBe(true);
+			});
+
+			it('simplifies (x/2)^3 to x^3 / 2^3', () => {
+				const node = superscript(divide(variable('x'), number('2')), number('3'));
+				const result = applyRules([...powerRules], node);
+				expect(
+					nodesEqual(
+						result,
+						divide(superscript(variable('x'), number('3')), superscript(number('2'), number('3')))
+					)
+				).toBe(true);
+			});
+
+			it('simplifies x^(-1) to 1/x', () => {
+				const node = superscript(variable('x'), opposite(number('1')));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, divide(number('1'), variable('x')))).toBe(true);
+			});
 		});
 
 		describe('with logExpRules', () => {
@@ -559,15 +594,130 @@ describe('Pattern Matching Integration', () => {
 				expect(nodesEqual(result, number('5'))).toBe(true);
 			});
 
-			it('does not simplify ln(2^x) (base is not e)', () => {
+			it('simplifies ln(2^x) to x*ln(2) via ln-pow rule', () => {
 				const node = func('ln', [superscript(number('2'), variable('x'))]);
 				const result = applyRules([...logExpRules], node);
-				expect(nodesEqual(result, node)).toBe(true);
+				expect(nodesEqual(result, multiply(variable('x'), func('ln', [number('2')])))).toBe(true);
 			});
 
 			it('does not simplify 2^(ln(x)) (base is not e)', () => {
 				const node = superscript(number('2'), func('ln', [variable('x')]));
 				const result = applyRules([...logExpRules], node);
+				expect(nodesEqual(result, node)).toBe(true);
+			});
+
+			it('simplifies ln(1) to 0', () => {
+				const node = func('ln', [number('1')]);
+				const result = applyRules([...logExpRules], node);
+				expect(nodesEqual(result, number('0'))).toBe(true);
+			});
+
+			it('simplifies ln(e) to 1', () => {
+				const node = func('ln', [euler()]);
+				const result = applyRules([...logExpRules], node);
+				expect(nodesEqual(result, number('1'))).toBe(true);
+			});
+
+			it('simplifies ln(x^n) to n*ln(x)', () => {
+				const node = func('ln', [superscript(variable('x'), variable('n'))]);
+				const result = applyRules([...logExpRules], node);
+				expect(nodesEqual(result, multiply(variable('n'), func('ln', [variable('x')])))).toBe(true);
+			});
+
+			it('simplifies ln(x*y) to ln(x)+ln(y)', () => {
+				const node = func('ln', [multiply(variable('x'), variable('y'))]);
+				const result = applyRules([...logExpRules], node);
+				expect(
+					nodesEqual(result, add(func('ln', [variable('x')]), func('ln', [variable('y')])))
+				).toBe(true);
+			});
+
+			it('simplifies ln(x/y) to ln(x)-ln(y)', () => {
+				const node = func('ln', [divide(variable('x'), variable('y'))]);
+				const result = applyRules([...logExpRules], node);
+				const expected = {
+					type: 'subtraction' as const,
+					left: func('ln', [variable('x')]),
+					right: func('ln', [variable('y')])
+				};
+				expect(result.type).toBe('subtraction');
+				if (result.type === 'subtraction') {
+					expect(nodesEqual(result.left, expected.left)).toBe(true);
+					expect(nodesEqual(result.right, expected.right)).toBe(true);
+				}
+			});
+		});
+
+		describe('with sqrtRules', () => {
+			it('simplifies sqrt(0) to 0', () => {
+				const node = func('sqrt', [number('0')]);
+				const result = applyRules([...sqrtRules], node);
+				expect(nodesEqual(result, number('0'))).toBe(true);
+			});
+
+			it('simplifies sqrt(1) to 1', () => {
+				const node = func('sqrt', [number('1')]);
+				const result = applyRules([...sqrtRules], node);
+				expect(nodesEqual(result, number('1'))).toBe(true);
+			});
+
+			it('simplifies sqrt(x)*sqrt(y) to sqrt(x*y)', () => {
+				const node = multiply(func('sqrt', [variable('x')]), func('sqrt', [variable('y')]));
+				const result = applyRules([...sqrtRules], node);
+				expect(nodesEqual(result, func('sqrt', [multiply(variable('x'), variable('y'))]))).toBe(
+					true
+				);
+			});
+
+			it('simplifies sqrt(x/y) to sqrt(x)/sqrt(y)', () => {
+				const node = func('sqrt', [divide(variable('x'), variable('y'))]);
+				const result = applyRules([...sqrtRules], node);
+				expect(
+					nodesEqual(result, divide(func('sqrt', [variable('x')]), func('sqrt', [variable('y')])))
+				).toBe(true);
+			});
+
+			it('does not simplify sqrt(x) alone', () => {
+				const node = func('sqrt', [variable('x')]);
+				const result = applyRules([...sqrtRules], node);
+				expect(nodesEqual(result, node)).toBe(true);
+			});
+		});
+
+		describe('with trigRules', () => {
+			it('simplifies sin(0) to 0', () => {
+				const node = func('sin', [number('0')]);
+				const result = applyRules([...trigRules], node);
+				expect(nodesEqual(result, number('0'))).toBe(true);
+			});
+
+			it('simplifies cos(0) to 1', () => {
+				const node = func('cos', [number('0')]);
+				const result = applyRules([...trigRules], node);
+				expect(nodesEqual(result, number('1'))).toBe(true);
+			});
+
+			it('simplifies tan(0) to 0', () => {
+				const node = func('tan', [number('0')]);
+				const result = applyRules([...trigRules], node);
+				expect(nodesEqual(result, number('0'))).toBe(true);
+			});
+
+			it('simplifies sin(pi) to 0', () => {
+				const node = func('sin', [piConstant()]);
+				const result = applyRules([...trigRules], node);
+				expect(nodesEqual(result, number('0'))).toBe(true);
+			});
+
+			it('simplifies cos(pi) to -1', () => {
+				const node = func('cos', [piConstant()]);
+				const result = applyRules([...trigRules], node);
+				expect(nodesEqual(result, opposite(number('1')))).toBe(true);
+			});
+
+			it('does not simplify sin(x)', () => {
+				const node = func('sin', [variable('x')]);
+				const result = applyRules([...trigRules], node);
 				expect(nodesEqual(result, node)).toBe(true);
 			});
 		});
@@ -763,6 +913,8 @@ describe('Pattern Matching Integration', () => {
 						powerRules.length +
 						absRules.length +
 						logExpRules.length +
+						sqrtRules.length +
+						trigRules.length +
 						functionParityRules.length
 				);
 			});

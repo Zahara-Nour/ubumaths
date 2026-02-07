@@ -21,6 +21,8 @@ import { arithmeticRules } from './arithmetic';
 import { powerRules } from './powers';
 import { absRules } from './abs';
 import { logExpRules } from './log-exp';
+import { sqrtRules } from './sqrt';
+import { trigRules } from './trig';
 import { functionParityRules } from './function-parity';
 
 // =============================================================================
@@ -31,6 +33,8 @@ export { arithmeticRules } from './arithmetic';
 export { powerRules } from './powers';
 export { absRules } from './abs';
 export { logExpRules } from './log-exp';
+export { sqrtRules } from './sqrt';
+export { trigRules } from './trig';
 export { functionParityRules } from './function-parity';
 
 // =============================================================================
@@ -40,9 +44,9 @@ export { functionParityRules } from './function-parity';
 /**
  * All pattern rules combined (for public API / standalone use).
  *
- * Includes arithmetic, power, abs, log/exp, and function parity rules.
- * Useful for direct pattern-based simplification via `applyRules()` or
- * `exp.simplifyWith()`.
+ * Includes arithmetic, power, abs, log/exp, sqrt, trig, and function parity
+ * rules. Useful for direct pattern-based simplification via `applyRules()`
+ * or `exp.simplifyWith()`.
  *
  * Note: The `simplify()` pipeline does NOT use these — arithmetic and power
  * rules are redundant with normalize (polynomial arithmetic handles x+0, x*1,
@@ -53,6 +57,8 @@ export const allPatternRules: readonly Rule[] = [
 	...powerRules,
 	...absRules,
 	...logExpRules,
+	...sqrtRules,
+	...trigRules,
 	...functionParityRules
 ] as const;
 

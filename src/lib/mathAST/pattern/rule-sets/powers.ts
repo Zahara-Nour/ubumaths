@@ -53,6 +53,8 @@ function isNotZero(bindings: MatchBindings): boolean {
  * - (sqrt(x))^2 = x
  * - (a^m)^n = a^(m*n) (power of power)
  * - a^m * a^n = a^(m+n) (same base product)
+ * - (a/b)^n = a^n / b^n (power of quotient)
+ * - x^(-1) = 1/x (negative one exponent)
  */
 export const powerRules: readonly Rule[] = [
 	// x^1 = x (power of one)
@@ -125,5 +127,17 @@ export const powerRules: readonly Rule[] = [
 		P.mul(P.pow(P._('a'), P._('m')), P.pow(P._('a'), P._('n'))),
 		P.pow(P._('a'), P.add(P._('m'), P._('n'))),
 		{ name: 'same-base-mul' }
-	)
+	),
+
+	// (a/b)^n = a^n / b^n (power distributes over quotient)
+	createRule(
+		P.pow(P.div(P._('a'), P._('b')), P._('n')),
+		P.div(P.pow(P._('a'), P._('n')), P.pow(P._('b'), P._('n'))),
+		{ name: 'pow-of-quotient' }
+	),
+
+	// x^(-1) = 1/x (reciprocal)
+	createRule(P.pow(P._('x'), P.neg(P.num(1))), P.div(P.num(1), P._('x')), {
+		name: 'pow-neg-one'
+	})
 ] as const;
