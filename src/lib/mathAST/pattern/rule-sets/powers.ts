@@ -50,6 +50,7 @@ function isNotZero(bindings: MatchBindings): boolean {
  * - (-a)^n = -(a^n) (n odd)
  * - |x|^n = x^n (n even)
  * - sqrt(x^2) = |x|
+ * - (sqrt(x))^2 = x
  * - (a^m)^n = a^(m*n) (power of power)
  * - a^m * a^n = a^(m+n) (same base product)
  */
@@ -105,6 +106,11 @@ export const powerRules: readonly Rule[] = [
 	// sqrt(x^2) = |x|
 	createRule(P.func('sqrt', [P.pow(P._('x'), P.num(2))]), P.func('abs', [P._('x')]), {
 		name: 'sqrt-square'
+	}),
+
+	// (sqrt(x))^2 = x (squaring undoes square root; x >= 0 implied by sqrt)
+	createRule(P.pow(P.func('sqrt', [P._('x')]), P.num(2)), P._('x'), {
+		name: 'square-sqrt'
 	}),
 
 	// (a^m)^n = a^(m*n) (power of a power)
