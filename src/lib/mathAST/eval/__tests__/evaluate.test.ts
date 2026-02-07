@@ -1265,7 +1265,7 @@ describe('evaluate - extended precision: decimal conversions', () => {
 
 describe('evaluate - extended precision: negative fractions', () => {
 	it('-1/3 + -1/3 + -1/3 = -1', () => {
-		const result = evaluate(parseLatex('-\\frac{1}{3} + -\\frac{1}{3} + -\\frac{1}{3}'), {
+		const result = evaluate(parseLatex('-\\frac{1}{3} + (-\\frac{1}{3}) + (-\\frac{1}{3})'), {
 			mode: 'decimal'
 		});
 		expect(result.value).toBe(-1);

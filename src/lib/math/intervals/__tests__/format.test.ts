@@ -32,7 +32,7 @@ import {
 	nonZeroReals,
 	unitInterval
 } from '../factory';
-import { infinity, func, number, implicitMultiply } from '$lib/mathAST/factory';
+import { infinity, func, number, implicitMultiply, piConstant } from '$lib/mathAST/factory';
 
 describe('formatEndpointValue', () => {
 	it('formats positive infinity', () => {
@@ -285,7 +285,7 @@ describe('formatEndpointValue edge cases', () => {
 	it('formats sqrt with parentheses for complex radicand', () => {
 		// sqrt(a+b) should format as √(a+b) but we only have numeric radicands
 		// This tests the branch with non-number arguments
-		const sqrtPi = func('sqrt', [greek('pi')]);
+		const sqrtPi = func('sqrt', [piConstant()]);
 		expect(formatEndpointValue(sqrtPi)).toBe('√(π)');
 	});
 
