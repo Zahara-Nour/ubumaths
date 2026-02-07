@@ -776,14 +776,20 @@ export function findZeros(expr: MathNode, variable: string): number[] {
 }
 
 /**
- * Clean up floating-point roots by rounding values very close to integers.
- * This fixes precision issues in polynomial root-finding (e.g., 1.9999999999999998 → 2).
+ * Clean up floating-point roots by rounding values very close to integers,
+ * but only when the rounded value is at least as good a root (verified by substitution).
+ *
+ * @param roots - Raw roots from solver
+ * @param evaluate - Evaluates the polynomial at a given x (returns f(x))
  */
-function cleanRoots(roots: number[]): number[] {
+function cleanRoots(roots: number[], evaluate: (x: number) => number): number[] {
 	return roots.map((root) => {
 		const rounded = Math.round(root);
 		if (Math.abs(root - rounded) < ZERO_TOLERANCE) {
-			return rounded;
+			// Only snap if f(rounded) is at least as close to zero as f(root)
+			if (Math.abs(evaluate(rounded)) <= Math.abs(evaluate(root))) {
+				return rounded;
+			}
 		}
 		return root;
 	});
@@ -793,12 +799,14 @@ function cleanRoots(roots: number[]): number[] {
  * Solve a*x² + b*x + c = 0.
  */
 function solveQuadraticZeros(a: number, b: number, c: number): number[] {
+	const evalPoly = (x: number) => a * x * x + b * x + c;
+
 	if (Math.abs(a) < ZERO_TOLERANCE) {
 		// Linear case
 		if (Math.abs(b) < ZERO_TOLERANCE) {
 			return [];
 		}
-		return cleanRoots([-c / b]);
+		return cleanRoots([-c / b], (x) => b * x + c);
 	}
 
 	const discriminant = b * b - 4 * a * c;
@@ -808,11 +816,11 @@ function solveQuadraticZeros(a: number, b: number, c: number): number[] {
 	}
 
 	if (Math.abs(discriminant) < ZERO_TOLERANCE) {
-		return cleanRoots([-b / (2 * a)]);
+		return cleanRoots([-b / (2 * a)], evalPoly);
 	}
 
 	const sqrtD = Math.sqrt(discriminant);
-	return cleanRoots([(-b - sqrtD) / (2 * a), (-b + sqrtD) / (2 * a)]);
+	return cleanRoots([(-b - sqrtD) / (2 * a), (-b + sqrtD) / (2 * a)], evalPoly);
 }
 
 /**
@@ -877,7 +885,8 @@ function solveCubicZeros(a: number, b: number, c: number, d: number): number[] {
 	}
 
 	// Clean roots (round near-integers), sort, and remove near-duplicates
-	const cleaned = cleanRoots(roots);
+	const evalCubic = (x: number) => a * x * x * x + b * x * x + c * x + d;
+	const cleaned = cleanRoots(roots, evalCubic);
 	cleaned.sort((x, y) => x - y);
 	const uniqueRoots: number[] = [];
 	for (const root of cleaned) {
@@ -1009,7 +1018,13 @@ function solveBiquadratic(A: number, C: number, shift: number): number[] {
 		}
 	}
 
-	return deduplicateRoots(cleanRoots(tRoots));
+	// Evaluate the original polynomial: (x+shift)^4 + A*(x+shift)^2 + C
+	const evalBiquad = (x: number) => {
+		const t = x + shift;
+		const t2 = t * t;
+		return t2 * t2 + A * t2 + C;
+	};
+	return deduplicateRoots(cleanRoots(tRoots, evalBiquad));
 }
 
 /**

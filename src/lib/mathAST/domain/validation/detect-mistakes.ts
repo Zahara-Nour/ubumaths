@@ -17,6 +17,13 @@ import { formatInterval } from '../format';
 import { toCustom } from '../../custom-generator';
 import { findZeros } from '../preimage';
 
+/**
+ * Tolerance for comparing excluded points in student vs correct domain.
+ * Intentionally larger than ZERO_TOLERANCE because student inputs are parsed
+ * from text and may have rounding (e.g., student writes 0.33 for 1/3).
+ */
+const EXCLUSION_POINT_TOLERANCE = 0.001;
+
 // =============================================================================
 // Main API
 // =============================================================================
@@ -58,12 +65,12 @@ export function detectDomainMistakes(
 
 	// Points that correct excludes but student doesn't
 	const missingExclusions = correctExcluded.filter(
-		(cp) => !studentExcluded.some((sp) => Math.abs(sp - cp) < 0.001)
+		(cp) => !studentExcluded.some((sp) => Math.abs(sp - cp) < EXCLUSION_POINT_TOLERANCE)
 	);
 
 	// Points that student excludes but correct doesn't
 	const extraExclusions = studentExcluded.filter(
-		(sp) => !correctExcluded.some((cp) => Math.abs(sp - cp) < 0.001)
+		(sp) => !correctExcluded.some((cp) => Math.abs(sp - cp) < EXCLUSION_POINT_TOLERANCE)
 	);
 
 	// Quick check for interval equality (ignoring excluded points)
