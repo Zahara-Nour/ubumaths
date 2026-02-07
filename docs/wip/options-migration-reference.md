@@ -173,6 +173,7 @@ Elles sont attachees directement aux variables dont le nom commence par `express
 | `allow-same-expression`      | Legacy : autorisait des expressions identiques entre variations                    |
 | `allow-same-enounce`         | Legacy : autorisait des enonces identiques entre variations                        |
 | `multiples`                  | Legacy : option de generation, pas necessaire                                      |
+| `exhaust`                    | Generation : utilise chaque variation une seule fois (3 questions). Differe.       |
 
 ---
 
@@ -218,10 +219,10 @@ NOUVEAU SYSTEME (UbuMaths):
 | Contraintes | 23      | 23           | 0        |
 | Validation  | 9       | 9            | 0        |
 | Affichage   | 8       | 8            | 0        |
-| Ignorees    | 4       | -            | 4        |
-| **Total**   | **45**  | **40**       | **4**    |
+| Ignorees    | 6       | -            | 6        |
+| **Total**   | **46**  | **40**       | **6**    |
 
-> **Toutes les options sont maintenant mappees et implementees.**
+> **Toutes les options actives sont mappees et implementees.** 6 options legacy/generation sont ignorees (dont `exhaust`, differe).
 
 ### Fichiers de reference
 
