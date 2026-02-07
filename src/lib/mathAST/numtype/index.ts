@@ -46,7 +46,14 @@
 // Types
 // =============================================================================
 
-export type { NumericType, SignInfo, MathType, TypeContext, TypeDescription } from './types';
+export type {
+	NumericType,
+	SignInfo,
+	MathType,
+	TypeContext,
+	TypeDescription,
+	VariableAssumption
+} from './types';
 
 export {
 	EMPTY_CONTEXT,

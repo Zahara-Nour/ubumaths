@@ -103,8 +103,17 @@ export function inferMathConstantType(_node: MathConstantNode): MathType {
  */
 export function inferVariableType(node: VariableNode, ctx: TypeContext): MathType {
 	const varType = ctx.variables?.get(node.name);
+	const assumption = ctx.assumptions?.get(node.name);
 
 	if (varType !== undefined) {
+		// Enrich with assumptions if available
+		if (assumption) {
+			return {
+				base: varType,
+				...(assumption.sign !== undefined && { sign: assumption.sign }),
+				...(assumption.finite !== undefined && { finite: assumption.finite })
+			};
+		}
 		return { base: varType };
 	}
 
@@ -120,7 +129,23 @@ export function inferVariableType(node: VariableNode, ctx: TypeContext): MathTyp
 
 	// Default behavior based on strict mode
 	if (ctx.strict) {
+		if (assumption) {
+			return {
+				base: 'unknown',
+				...(assumption.sign !== undefined && { sign: assumption.sign }),
+				...(assumption.finite !== undefined && { finite: assumption.finite })
+			};
+		}
 		return UNKNOWN_TYPE;
+	}
+
+	// Enrich default 'real' with assumptions if available
+	if (assumption) {
+		return {
+			base: 'real',
+			...(assumption.sign !== undefined && { sign: assumption.sign }),
+			...(assumption.finite !== undefined && { finite: assumption.finite })
+		};
 	}
 
 	return REAL_TYPE;
@@ -149,14 +174,37 @@ export function inferGreekLetterType(node: GreekLetterNode, ctx: TypeContext): M
 	// Check if the greek letter has a known type in context
 	const letterName = node.letter;
 	const varType = ctx.variables?.get(letterName);
+	const assumption = ctx.assumptions?.get(letterName);
 
 	if (varType !== undefined) {
+		if (assumption) {
+			return {
+				base: varType,
+				...(assumption.sign !== undefined && { sign: assumption.sign }),
+				...(assumption.finite !== undefined && { finite: assumption.finite })
+			};
+		}
 		return { base: varType };
 	}
 
 	// Default behavior based on strict mode
 	if (ctx.strict) {
+		if (assumption) {
+			return {
+				base: 'unknown',
+				...(assumption.sign !== undefined && { sign: assumption.sign }),
+				...(assumption.finite !== undefined && { finite: assumption.finite })
+			};
+		}
 		return UNKNOWN_TYPE;
+	}
+
+	if (assumption) {
+		return {
+			base: 'real',
+			...(assumption.sign !== undefined && { sign: assumption.sign }),
+			...(assumption.finite !== undefined && { finite: assumption.finite })
+		};
 	}
 
 	return REAL_TYPE;

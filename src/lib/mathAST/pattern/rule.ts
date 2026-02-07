@@ -15,6 +15,7 @@ import type {
 } from './types';
 import { isSumSequenceBinding, isProductSequenceBinding, isAnySequencePattern } from './types';
 import type { MathNode } from '../types';
+import type { TypeContext } from '../numtype/types';
 import { match } from './match';
 import { mapNode } from '../transforms';
 import {
@@ -318,9 +319,9 @@ function instantiateProductPattern(pattern: ProductPattern, bindings: MatchBindi
  * const node = add(variable('a'), number('0'));
  * const result = applyRule(rule, node); // Returns variable('a')
  */
-export function applyRule(rule: Rule, node: MathNode): MathNode | null {
+export function applyRule(rule: Rule, node: MathNode, ctx?: TypeContext): MathNode | null {
 	// Try to match the pattern
-	const matchResult = match(rule.pattern, node);
+	const matchResult = match(rule.pattern, node, undefined, ctx);
 	if (!matchResult.success) {
 		return null;
 	}
@@ -351,9 +352,9 @@ export function applyRule(rule: Rule, node: MathNode): MathNode | null {
  * // Given: (a + 0) + (b + 0)
  * // Returns: a + b (both inner additions simplified)
  */
-export function applyRuleDeep(rule: Rule, node: MathNode): MathNode {
+export function applyRuleDeep(rule: Rule, node: MathNode, ctx?: TypeContext): MathNode {
 	return mapNode(node, (n) => {
-		const result = applyRule(rule, n);
+		const result = applyRule(rule, n, ctx);
 		return result ?? n;
 	});
 }
@@ -380,7 +381,8 @@ export function applyRuleDeep(rule: Rule, node: MathNode): MathNode {
 export function applyRules(
 	rules: readonly Rule[],
 	node: MathNode,
-	maxIterations: number = 100
+	maxIterations: number = 100,
+	ctx?: TypeContext
 ): MathNode {
 	// Sort rules by priority (higher first, undefined treated as 0)
 	const sortedRules = [...rules].sort((a, b) => {
@@ -396,7 +398,7 @@ export function applyRules(
 		let changed = false;
 
 		for (const rule of sortedRules) {
-			const transformed = applyRuleDeep(rule, current);
+			const transformed = applyRuleDeep(rule, current, ctx);
 
 			if (!nodesEqual(transformed, current)) {
 				current = transformed;

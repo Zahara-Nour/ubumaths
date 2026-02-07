@@ -19,6 +19,7 @@
 import type { Rule } from '../types';
 import { arithmeticRules } from './arithmetic';
 import { powerRules } from './powers';
+import { absRules } from './abs';
 
 // =============================================================================
 // Individual Rule Set Exports
@@ -26,6 +27,7 @@ import { powerRules } from './powers';
 
 export { arithmeticRules } from './arithmetic';
 export { powerRules } from './powers';
+export { absRules } from './abs';
 
 // =============================================================================
 // Combined Rule Sets
@@ -37,8 +39,9 @@ export { powerRules } from './powers';
  * Includes:
  * - Arithmetic rules (addition, subtraction, multiplication, division identities)
  * - Power rules (exponent simplifications)
+ * - Abs rules (absolute value simplifications)
  *
- * Rules are ordered with arithmetic rules first, then power rules.
+ * Rules are ordered with arithmetic rules first, then power rules, then abs rules.
  * Priority within rules is preserved (mul-zero has higher priority).
  */
-export const allRules: readonly Rule[] = [...arithmeticRules, ...powerRules] as const;
+export const allRules: readonly Rule[] = [...arithmeticRules, ...powerRules, ...absRules] as const;
