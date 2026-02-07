@@ -6,8 +6,8 @@
  * of a mathematical expression.
  *
  * Algorithm:
- * 1. Apply pattern rules (arithmetic, power, abs)
- * 2. Normalize (polynomial canonical form) + denormalize
+ * 1. Normalize (polynomial canonical form) + denormalize
+ * 2. Apply pattern rules (arithmetic, power, abs)
  * 3. Apply identity transforms (trig, hyperbolic, algebraic, infinity)
  * 4. Post-normalize
  * 5. Compare costs, keep the cheapest form
@@ -97,21 +97,7 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 	for (let iter = 0; iter < maxIterations; iter++) {
 		const beforeIteration = current;
 
-		// Phase A: Pattern rules
-		recorder.setPhase('rules');
-		const afterRules = applyRules(rules, current, 100, ctx);
-		if (isRecording && !nodesEqual(afterRules, current)) {
-			recorder.recordStep(
-				'pattern-rules',
-				getSimplifyRuleDescription('pattern-rules'),
-				current,
-				afterRules,
-				'summarized'
-			);
-		}
-		current = afterRules;
-
-		// Phase B: Normalize
+		// Phase A: Normalize (canonical polynomial form)
 		recorder.setPhase('normalize');
 		try {
 			const preprocessed = preprocess(current);
@@ -131,6 +117,20 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 			// Normalize can fail on some expressions (e.g., infinity)
 			// Skip normalization in that case
 		}
+
+		// Phase B: Pattern rules
+		recorder.setPhase('rules');
+		const afterRules = applyRules(rules, current, 100, ctx);
+		if (isRecording && !nodesEqual(afterRules, current)) {
+			recorder.recordStep(
+				'pattern-rules',
+				getSimplifyRuleDescription('pattern-rules'),
+				current,
+				afterRules,
+				'summarized'
+			);
+		}
+		current = afterRules;
 
 		// Phase C: Identity transforms (selective)
 		recorder.setPhase('identity');
