@@ -9,7 +9,8 @@
  */
 
 import { parseLatex, parseLatexSafe } from '$lib/mathAST/parser';
-import { evaluate, evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval';
+import { evaluate } from '$lib/mathAST/eval';
+import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { normalize, denormalize, normalFormsEquivalent } from '$lib/mathAST/normal';
 import { toLatex } from '$lib/mathAST';
 import type { EvalValue } from '$lib/mathAST/eval/types';
