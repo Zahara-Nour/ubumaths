@@ -16,14 +16,14 @@ import { negAlgebraic } from './algebraic.js';
  * Even functions satisfy f(-x) = f(x).
  * For these, we normalize by removing the negation from the argument.
  */
-const EVEN_FUNCTIONS = new Set(['cos', 'cosh', 'abs', 'sec', 'sech']);
+export const EVEN_FUNCTIONS: ReadonlySet<string> = new Set(['cos', 'cosh', 'abs', 'sec', 'sech']);
 
 /**
  * Odd functions satisfy f(-x) = -f(x).
  * For these, we normalize by removing the negation from the argument
  * and negating the entire result.
  */
-const ODD_FUNCTIONS = new Set([
+export const ODD_FUNCTIONS: ReadonlySet<string> = new Set([
 	'sin',
 	'sinh',
 	'tan',
