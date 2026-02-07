@@ -133,3 +133,97 @@ describe('applyRule with TypeContext', () => {
 		expect(result).toBeNull();
 	});
 });
+
+// =============================================================================
+// Parity constraints (even / odd)
+// =============================================================================
+
+function ctxEven(varName: string): TypeContext {
+	return {
+		variables: new Map([[varName, 'integer']]),
+		assumptions: new Map([[varName, { parity: 'even' }]])
+	};
+}
+
+function ctxOdd(varName: string): TypeContext {
+	return {
+		variables: new Map([[varName, 'integer']]),
+		assumptions: new Map([[varName, { parity: 'odd' }]])
+	};
+}
+
+describe('checkConstraint with parity (even/odd)', () => {
+	describe('even constraint', () => {
+		it('should match an even number without ctx', () => {
+			expect(checkConstraint({ kind: 'even' }, number('4'))).toBe(true);
+			expect(checkConstraint({ kind: 'even' }, number('0'))).toBe(true);
+		});
+
+		it('should not match an odd number without ctx', () => {
+			expect(checkConstraint({ kind: 'even' }, number('3'))).toBe(false);
+		});
+
+		it('should not match a variable without ctx', () => {
+			expect(checkConstraint({ kind: 'even' }, variable('n'))).toBe(false);
+		});
+
+		it('should match a variable declared even via ctx', () => {
+			expect(checkConstraint({ kind: 'even' }, variable('n'), ctxEven('n'))).toBe(true);
+		});
+
+		it('should not match a variable declared odd via ctx', () => {
+			expect(checkConstraint({ kind: 'even' }, variable('n'), ctxOdd('n'))).toBe(false);
+		});
+	});
+
+	describe('odd constraint', () => {
+		it('should match an odd number without ctx', () => {
+			expect(checkConstraint({ kind: 'odd' }, number('3'))).toBe(true);
+			expect(checkConstraint({ kind: 'odd' }, number('1'))).toBe(true);
+		});
+
+		it('should not match an even number without ctx', () => {
+			expect(checkConstraint({ kind: 'odd' }, number('4'))).toBe(false);
+		});
+
+		it('should match a variable declared odd via ctx', () => {
+			expect(checkConstraint({ kind: 'odd' }, variable('n'), ctxOdd('n'))).toBe(true);
+		});
+
+		it('should not match a variable declared even via ctx', () => {
+			expect(checkConstraint({ kind: 'odd' }, variable('n'), ctxEven('n'))).toBe(false);
+		});
+	});
+});
+
+describe('match with parity constraints', () => {
+	it('should match P.isEven() wildcard with even variable via ctx', () => {
+		const pattern = P._('n', P.isEven());
+		const result = match(pattern, variable('n'), EMPTY_BINDINGS, ctxEven('n'));
+		expect(result.success).toBe(true);
+	});
+
+	it('should not match P.isEven() wildcard without ctx', () => {
+		const pattern = P._('n', P.isEven());
+		const result = match(pattern, variable('n'));
+		expect(result.success).toBe(false);
+	});
+
+	it('should match P.isOdd() wildcard with odd variable via ctx', () => {
+		const pattern = P._('n', P.isOdd());
+		const result = match(pattern, variable('n'), EMPTY_BINDINGS, ctxOdd('n'));
+		expect(result.success).toBe(true);
+	});
+
+	it('should match P.isEven() with literal even number', () => {
+		const pattern = P._('n', P.isEven());
+		const result = match(pattern, number('4'));
+		expect(result.success).toBe(true);
+	});
+
+	it('should not match P.isEven() with literal odd number', () => {
+		const pattern = P._('n', P.isEven());
+		const result = match(pattern, number('3'));
+		expect(result.success).toBe(false);
+	});
+});

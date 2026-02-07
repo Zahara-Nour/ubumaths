@@ -119,9 +119,14 @@ export function inferPowerType(
 		return { base: 'integer', sign: 'positive', finite: true };
 	}
 
-	// Integer exponent cases
+	// Integer exponent cases (known value)
 	if (exponentType.base === 'integer' && Number.isInteger(exponentValue ?? NaN)) {
 		return inferIntegerExponentType(baseType, exponentValue!, baseValue);
+	}
+
+	// Symbolic integer exponent with known parity (e.g., n assumed even/odd)
+	if (isSubtype(exponentType.base, 'integer') && exponentType.parity !== undefined) {
+		return inferSymbolicIntegerExponentType(baseType, exponentType);
 	}
 
 	// Rational exponent (roots)
@@ -208,6 +213,53 @@ function inferIntegerExponentType(
 		if (isSubtype(baseType.base, 'real')) {
 			return { base: 'real', finite: true };
 		}
+	}
+
+	return { base: join(baseType.base, 'real') };
+}
+
+/**
+ * Infers type for a symbolic integer exponent with known parity.
+ * Used when we don't know the exact exponent value but know if it's even or odd.
+ *
+ * For sign inference: negative^even = positive, negative^odd = negative
+ */
+function inferSymbolicIntegerExponentType(baseType: MathType, exponentType: MathType): MathType {
+	const isEvenExp = exponentType.parity === 'even';
+
+	// For integer or rational base types, the result type follows standard rules
+	if (isSubtype(baseType.base, 'integer')) {
+		let sign: SignInfo | undefined;
+		if (baseType.sign === 'positive') {
+			sign = 'positive';
+		} else if (baseType.sign === 'negative') {
+			sign = isEvenExp ? 'positive' : 'negative';
+		} else if (baseType.sign === 'nonzero') {
+			sign = isEvenExp ? 'positive' : 'nonzero';
+		}
+		// Result could be integer (positive exp) or rational (negative exp) — we don't know which
+		// Conservative: return integer since we don't know the sign of the exponent
+		return { base: 'integer', ...(sign !== undefined && { sign }), finite: true };
+	}
+
+	if (baseType.base === 'rational') {
+		let sign: SignInfo | undefined;
+		if (baseType.sign === 'positive') {
+			sign = 'positive';
+		} else if (baseType.sign === 'negative') {
+			sign = isEvenExp ? 'positive' : 'negative';
+		}
+		return { base: 'rational', ...(sign !== undefined && { sign }), finite: true };
+	}
+
+	if (isSubtype(baseType.base, 'real')) {
+		let sign: SignInfo | undefined;
+		if (baseType.sign === 'positive') {
+			sign = 'positive';
+		} else if (baseType.sign === 'negative') {
+			sign = isEvenExp ? 'positive' : 'negative';
+		}
+		return { base: 'real', ...(sign !== undefined && { sign }), finite: true };
 	}
 
 	return { base: join(baseType.base, 'real') };

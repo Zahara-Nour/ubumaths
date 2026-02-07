@@ -13,7 +13,8 @@ import { P } from '../builder';
 import { arithmeticRules, powerRules, absRules, allPatternRules } from '../rule-sets';
 import { applyRules } from '../rule';
 import { nodesEqual } from '../match';
-import { number, variable, add, superscript } from '../../factory';
+import { number, variable, add, superscript, opposite } from '../../factory';
+import type { TypeContext } from '../../numtype/types';
 
 describe('Pattern Matching Integration', () => {
 	// ===========================================================================
@@ -325,6 +326,51 @@ describe('Pattern Matching Integration', () => {
 
 				// The parentheses are preserved as they are structural
 				expect(simplified.latex).toBe('\\left( x + y \\right)');
+			});
+
+			it('simplifies (-1)^2 to 1 (literal even exponent)', () => {
+				const node = superscript(opposite(number('1')), number('2'));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, number('1'))).toBe(true);
+			});
+
+			it('simplifies (-1)^4 to 1 (literal even exponent)', () => {
+				const node = superscript(opposite(number('1')), number('4'));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, number('1'))).toBe(true);
+			});
+
+			it('simplifies (-1)^3 to -1 (literal odd exponent)', () => {
+				const node = superscript(opposite(number('1')), number('3'));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, opposite(number('1')))).toBe(true);
+			});
+
+			it('simplifies (-1)^n to 1 when n declared even', () => {
+				const ctx: TypeContext = {
+					variables: new Map([['n', 'integer']]),
+					assumptions: new Map([['n', { parity: 'even' }]])
+				};
+				const node = superscript(opposite(number('1')), variable('n'));
+				const result = applyRules([...powerRules], node, 100, ctx);
+				expect(nodesEqual(result, number('1'))).toBe(true);
+			});
+
+			it('simplifies (-1)^n to -1 when n declared odd', () => {
+				const ctx: TypeContext = {
+					variables: new Map([['n', 'integer']]),
+					assumptions: new Map([['n', { parity: 'odd' }]])
+				};
+				const node = superscript(opposite(number('1')), variable('n'));
+				const result = applyRules([...powerRules], node, 100, ctx);
+				expect(nodesEqual(result, opposite(number('1')))).toBe(true);
+			});
+
+			it('does not simplify (-1)^n without parity assumption', () => {
+				const node = superscript(opposite(number('1')), variable('n'));
+				const result = applyRules([...powerRules], node);
+				// Should remain unchanged
+				expect(nodesEqual(result, node)).toBe(true);
 			});
 		});
 

@@ -16,7 +16,7 @@ import type {
 	VariableNode,
 	GreekLetterNode
 } from '../../types';
-import type { MathType, TypeContext } from '../types';
+import type { MathType, ParityInfo, TypeContext } from '../types';
 import { REAL_TYPE, TRANSCENDENTAL_TYPE, UNKNOWN_TYPE } from '../types';
 
 // =============================================================================
@@ -54,10 +54,17 @@ export function inferNumberType(node: NumberNode): MathType {
 	// Check if integer (mathematical value, not string representation)
 	const isInteger = Number.isInteger(value);
 
+	// Parity for integers
+	let parity: ParityInfo | undefined;
+	if (isInteger) {
+		parity = Math.abs(value) % 2 === 0 ? 'even' : 'odd';
+	}
+
 	return {
 		base: isInteger ? 'integer' : 'real',
 		sign,
-		finite: true
+		finite: true,
+		...(parity !== undefined && { parity })
 	};
 }
 
@@ -111,7 +118,8 @@ export function inferVariableType(node: VariableNode, ctx: TypeContext): MathTyp
 			return {
 				base: varType,
 				...(assumption.sign !== undefined && { sign: assumption.sign }),
-				...(assumption.finite !== undefined && { finite: assumption.finite })
+				...(assumption.finite !== undefined && { finite: assumption.finite }),
+				...(assumption.parity !== undefined && { parity: assumption.parity })
 			};
 		}
 		return { base: varType };
@@ -133,7 +141,8 @@ export function inferVariableType(node: VariableNode, ctx: TypeContext): MathTyp
 			return {
 				base: 'unknown',
 				...(assumption.sign !== undefined && { sign: assumption.sign }),
-				...(assumption.finite !== undefined && { finite: assumption.finite })
+				...(assumption.finite !== undefined && { finite: assumption.finite }),
+				...(assumption.parity !== undefined && { parity: assumption.parity })
 			};
 		}
 		return UNKNOWN_TYPE;
@@ -144,7 +153,8 @@ export function inferVariableType(node: VariableNode, ctx: TypeContext): MathTyp
 		return {
 			base: 'real',
 			...(assumption.sign !== undefined && { sign: assumption.sign }),
-			...(assumption.finite !== undefined && { finite: assumption.finite })
+			...(assumption.finite !== undefined && { finite: assumption.finite }),
+			...(assumption.parity !== undefined && { parity: assumption.parity })
 		};
 	}
 
@@ -181,7 +191,8 @@ export function inferGreekLetterType(node: GreekLetterNode, ctx: TypeContext): M
 			return {
 				base: varType,
 				...(assumption.sign !== undefined && { sign: assumption.sign }),
-				...(assumption.finite !== undefined && { finite: assumption.finite })
+				...(assumption.finite !== undefined && { finite: assumption.finite }),
+				...(assumption.parity !== undefined && { parity: assumption.parity })
 			};
 		}
 		return { base: varType };
@@ -193,7 +204,8 @@ export function inferGreekLetterType(node: GreekLetterNode, ctx: TypeContext): M
 			return {
 				base: 'unknown',
 				...(assumption.sign !== undefined && { sign: assumption.sign }),
-				...(assumption.finite !== undefined && { finite: assumption.finite })
+				...(assumption.finite !== undefined && { finite: assumption.finite }),
+				...(assumption.parity !== undefined && { parity: assumption.parity })
 			};
 		}
 		return UNKNOWN_TYPE;
@@ -203,7 +215,8 @@ export function inferGreekLetterType(node: GreekLetterNode, ctx: TypeContext): M
 		return {
 			base: 'real',
 			...(assumption.sign !== undefined && { sign: assumption.sign }),
-			...(assumption.finite !== undefined && { finite: assumption.finite })
+			...(assumption.finite !== undefined && { finite: assumption.finite }),
+			...(assumption.parity !== undefined && { parity: assumption.parity })
 		};
 	}
 
