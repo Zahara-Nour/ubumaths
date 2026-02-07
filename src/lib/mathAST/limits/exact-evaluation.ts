@@ -330,9 +330,15 @@ export function evaluateLimitExact(
 	const substitutionValue = getSubstitutionValue(approach, direction);
 	const substituted = substitute(preprocessed, { [varName]: substitutionValue });
 
-	// Step 3: Normalize with extended arithmetic
-	// Use skipFastPath to ensure recursive decomposition, which is needed
-	// for indeterminate form detection (e.g., detecting 0/0 in (x-a)/(x-a)).
+	// Step 3: Normalize with extended arithmetic.
+	// skipFastPath is needed for two-sided limits (direction='both'): in that
+	// case substituteApproachFactors does NOT inject signed zeros, so after
+	// plain substitution an expression like (x-5)/(x-5) becomes (5-5)/(5-5)
+	// — all regular numbers, no extended nodes. Without skipFastPath, the
+	// fast-path would delegate to normalize which throws "division by zero".
+	// With skipFastPath, recursive decomposition detects 0/0 via divExtended.
+	// For one-sided limits, signed zeros are injected so the fast-path is
+	// naturally skipped (containsExtendedNodes returns true).
 	return normalizeExtended(substituted, undefined, { skipFastPath: true });
 }
 

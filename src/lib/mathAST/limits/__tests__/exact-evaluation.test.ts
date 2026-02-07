@@ -148,22 +148,23 @@ describe('evaluateLimitExact', () => {
 			expect(numValue).toBe(8);
 		});
 
-		it('returns null for x^2 (powers not supported in limit mode)', () => {
-			// Powers of normal forms throw in limit mode (skipFastPath),
-			// causing tryEvaluateLimitExact to return null. The limit pipeline
-			// then falls back to numeric evaluation.
+		it('evaluates x^2 at x=4 to get 16', () => {
 			const expression = expr('x^2');
 			const result = tryEvaluateLimitExact(expression, 'x', number('4'), 'both');
 
-			expect(result).toBeNull();
+			expect(result).not.toBeNull();
+			expect(result!.type).toBe('normal');
+			expect(resultToNumber(result!)).toBe(16);
 		});
 
-		it('returns null for (x^2-4)/(x-2) (powers not supported in limit mode)', () => {
-			// Powers in numerator cause evaluation to throw in limit mode
+		it('evaluates (x^2-4)/(x-2) at x=2 as indeterminate 0/0', () => {
+			// After substitution: (4-4)/(2-2) = 0/0
+			// skipFastPath ensures recursive decomposition detects this
 			const expression = expr('\\frac{x^2-4}{x-2}');
 			const result = tryEvaluateLimitExact(expression, 'x', number('2'), 'both');
 
-			expect(result).toBeNull();
+			expect(result).not.toBeNull();
+			expect(result!.type).toBe('indeterminate');
 		});
 	});
 
@@ -225,12 +226,13 @@ describe('evaluateLimitExact', () => {
 // =============================================================================
 
 describe('tryEvaluateLimitExact', () => {
-	it('returns null for expressions with powers (limit mode)', () => {
-		// Powers throw in limit mode, limit pipeline falls back to numeric evaluation
+	it('evaluates x^2 at x=3 to get 9', () => {
 		const expression = expr('x^2');
 		const result = tryEvaluateLimitExact(expression, 'x', number('3'), 'both');
 
-		expect(result).toBeNull();
+		expect(result).not.toBeNull();
+		expect(result!.type).toBe('normal');
+		expect(resultToNumber(result!)).toBe(9);
 	});
 
 	it('returns result for simple algebraic expressions', () => {

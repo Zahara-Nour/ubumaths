@@ -52,9 +52,18 @@ import { isNegative as isNegativeRational, rationalToNumber } from './rational';
  * Options for normalizeExtended.
  *
  * - `skipFastPath`: Disables the fast-path that delegates to regular normalize
- *   when no infinity/signed-zero nodes are present. Used by the limit module
- *   for indeterminate form detection (e.g., 0/0) and to preserve the old
- *   throwing behavior for unsupported cases (powers of normals, functions of normals).
+ *   when no infinity/signed-zero nodes are present. Needed by the limit module
+ *   for two-sided limits (direction='both') where substituteApproachFactors
+ *   does NOT inject signed zeros. After plain substitution, (x-a)/(x-a) becomes
+ *   e.g. (5-5)/(5-5) — all regular numbers, no extended nodes. The fast-path
+ *   would send this to normalize, which throws "division by zero" instead of
+ *   detecting the 0/0 indeterminate form. Recursive decomposition normalizes
+ *   numerator and denominator separately, then divExtended(0, 0) correctly
+ *   returns { type: 'indeterminate', form: '0/0' }.
+ *
+ *   For one-sided limits (direction='left'|'right'), substituteApproachFactors
+ *   replaces (x-a) with 0⁺/0⁻, so containsExtendedNodes is true and the
+ *   fast-path is naturally skipped.
  */
 export interface NormalizeExtendedOptions {
 	readonly skipFastPath?: boolean;
@@ -575,8 +584,7 @@ function divExtended(
  */
 function powExtended(
 	base: ExtendedNormalizeResult,
-	exp: ExtendedNormalizeResult,
-	options?: NormalizeExtendedOptions
+	exp: ExtendedNormalizeResult
 ): ExtendedNormalizeResult {
 	// Propagate indeterminate
 	if (base.type === 'indeterminate') return base;
@@ -656,12 +664,7 @@ function powExtended(
 
 	// For normal^normal: denormalize both, rebuild the superscript node,
 	// and delegate to regular normalize (which handles powNormalForm).
-	// In limit mode (skipFastPath), throw to preserve old behavior where
-	// the limit module falls back to numeric evaluation for powers.
 	if (base.type === 'normal' && exp.type === 'normal') {
-		if (options?.skipFastPath) {
-			throw new Error('Power of normal forms not supported in limit mode');
-		}
 		const baseNode = denormalize(base.form);
 		const expNode = denormalize(exp.form);
 		return normalResult(normalize(supNode(baseNode, expNode)));
@@ -675,8 +678,7 @@ function powExtended(
  */
 function applyFunctionExtended(
 	name: string,
-	args: ExtendedNormalizeResult[],
-	options?: NormalizeExtendedOptions
+	args: ExtendedNormalizeResult[]
 ): ExtendedNormalizeResult {
 	if (args.length === 0) {
 		throw new Error(`Function ${name} requires at least one argument`);
@@ -879,12 +881,7 @@ function applyFunctionExtended(
 	// For normal arguments: denormalize back to MathNode, rebuild the function
 	// node, and delegate to regular normalize (which treats it as opaque or
 	// computes special values like sin(kπ/n)).
-	// In limit mode (skipFastPath), throw to preserve old behavior where
-	// the limit module falls back to numeric evaluation for functions.
 	if (arg.type === 'normal') {
-		if (options?.skipFastPath) {
-			throw new Error(`Function ${name} with normal argument not supported in limit mode`);
-		}
 		const argNode = denormalize(arg.form);
 		const rebuilt = funcNode(name, [argNode]);
 		return normalResult(normalize(rebuilt));
@@ -929,8 +926,12 @@ export function normalizeExtended(
 	// regular normalize directly. This avoids decomposing the expression
 	// into extended arithmetic (which can lose polynomial structure for
 	// expressions like sin²(x)+cos²(x) where normalize handles them better).
-	// Disabled for limit evaluation which needs recursive decomposition
-	// to detect indeterminate forms like 0/0.
+	//
+	// Disabled via skipFastPath for two-sided limit evaluation: after plain
+	// substitution (no signed zeros injected), an expression like (5-5)/(5-5)
+	// has no extended nodes but normalize throws "division by zero" instead
+	// of detecting the 0/0 indeterminate form. Recursive decomposition
+	// handles this correctly via divExtended.
 	if (!options?.skipFastPath && !containsExtendedNodes(node)) {
 		return normalResult(normalize(node, ctx));
 	}
@@ -978,13 +979,13 @@ export function normalizeExtended(
 	if (isSuperscript(node)) {
 		const base = normalizeExtended(node.base, ctx, options);
 		const exp = normalizeExtended(node.superscript, ctx, options);
-		return powExtended(base, exp, options);
+		return powExtended(base, exp);
 	}
 
 	// Handle Function
 	if (isFunction(node)) {
 		const args = node.args.map((arg) => normalizeExtended(arg, ctx, options));
-		return applyFunctionExtended(node.name, args, options);
+		return applyFunctionExtended(node.name, args);
 	}
 
 	// Handle Delimiter (parentheses)
