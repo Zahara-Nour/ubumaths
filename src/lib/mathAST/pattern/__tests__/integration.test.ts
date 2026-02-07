@@ -467,6 +467,18 @@ describe('Pattern Matching Integration', () => {
 				expect(nodesEqual(result, abs(variable('a')))).toBe(true);
 			});
 
+			it('simplifies (sqrt(x))^2 to x', () => {
+				const node = superscript(func('sqrt', [variable('x')]), number('2'));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, variable('x'))).toBe(true);
+			});
+
+			it('simplifies (sqrt(3))^2 to 3', () => {
+				const node = superscript(func('sqrt', [number('3')]), number('2'));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, number('3'))).toBe(true);
+			});
+
 			it('simplifies (x^2)^3 to x^(2*3) (power of power)', () => {
 				const node = superscript(superscript(variable('x'), number('2')), number('3'));
 				const result = applyRules([...powerRules], node);
