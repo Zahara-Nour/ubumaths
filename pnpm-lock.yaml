@@ -39,9 +39,6 @@ importers:
       '@codemirror/view':
         specifier: ^6.38.8
         version: 6.39.8
-      '@cortex-js/compute-engine':
-        specifier: ^0.30.2
-        version: 0.30.2
       '@fontsource/inter':
         specifier: ^5.2.8
         version: 5.2.8

@@ -20,7 +20,7 @@ import type {
 } from '$lib/questions/types';
 import { DEFAULT_CONSTRAINT_MODE } from '$lib/questions/types';
 import type { ValidationResult } from '$lib/types/question-display';
-import { evaluateExpression, areEquivalent } from '$lib/math/compute-engine';
+import { evaluateExpression, areEquivalent } from '$lib/math';
 import {
 	checkSpaces,
 	checkProducts,
