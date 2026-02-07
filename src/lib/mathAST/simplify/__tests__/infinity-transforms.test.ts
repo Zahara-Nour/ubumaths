@@ -11,7 +11,7 @@ import {
 	positiveInfinity,
 	negativeInfinity,
 	opposite,
-	greek,
+	piConstant,
 	divide
 } from '../../factory';
 import { toLatex } from '../../latex-generator';
@@ -34,12 +34,12 @@ describe('infinity transforms', () => {
 	describe('arctan', () => {
 		it('arctan(+∞) -> π/2', () => {
 			const result = applyInfTransforms(func('arctan', [positiveInfinity()]));
-			expect(result).toBe(toLatex(divide(greek('pi'), number('2'), 'fraction')));
+			expect(result).toBe(toLatex(divide(piConstant(), number('2'), 'fraction')));
 		});
 
 		it('arctan(-∞) -> -π/2', () => {
 			const result = applyInfTransforms(func('arctan', [negativeInfinity()]));
-			expect(result).toBe(toLatex(opposite(divide(greek('pi'), number('2'), 'fraction'))));
+			expect(result).toBe(toLatex(opposite(divide(piConstant(), number('2'), 'fraction'))));
 		});
 	});
 

@@ -6,7 +6,7 @@
  * of a mathematical expression.
  *
  * Algorithm:
- * 0. Pre-normalize: reduce infinity expressions (normalize fails on ∞)
+ * 0. Pre-normalize: reduce function-at-infinity expressions (arctan(∞), sinh(∞), etc.)
  * 1. Normalize (polynomial canonical form) + denormalize
  * 2. Apply pattern rules (abs only — arithmetic/power are redundant with normalize)
  * 3. Apply identity transforms (trig, hyperbolic, algebraic)
@@ -102,10 +102,11 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		const beforeIteration = current;
 
 		// Phase 0: Pre-normalize infinity reduction
-		// Normalize converts expressions to polynomial NormalForm, but infinity
-		// nodes cannot be represented as polynomials — normalize throws on them.
-		// By reducing infinity expressions first (e.g., arctan(+∞) → π/2,
-		// exp(-∞) → 0), we give normalize clean, finite expressions to work on.
+		// Normalize treats infinity nodes as opaque symbolic factors — it doesn't
+		// crash, but it can't simplify functions evaluated at infinity.
+		// normalizeExtended handles some cases (exp, ln, sqrt, sin, cos, tan, abs)
+		// but not arctan, sinh, cosh, tanh, arcsinh, arccosh at ±∞.
+		// These transforms reduce those remaining cases before normalize runs.
 		if (enableInfinity && containsInfinity(current)) {
 			recorder.setPhase('identity');
 			const infResult = applyIdentityTransforms(current, infinityTransforms);
@@ -150,8 +151,8 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 			}
 			current = afterNormalize;
 		} catch {
-			// Normalize can still fail on edge cases not caught by Phase 0
-			// (e.g., remaining infinity in sub-expressions). Skip safely.
+			// Normalize can fail on edge cases (e.g., unsupported node types).
+			// Skip safely and continue with the current expression.
 		}
 
 		// Phase B: Pattern rules (abs rules only)

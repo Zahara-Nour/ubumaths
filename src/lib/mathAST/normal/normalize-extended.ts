@@ -24,6 +24,7 @@ import {
 	isFunction,
 	isDelimiter
 } from '../guards';
+import { piConstant, number as numNode, divide as divNode } from '../factory';
 import { normalize, ZERO_NORMAL_FORM, ONE_NORMAL_FORM } from './normalize';
 import {
 	addPolynomials,
@@ -701,6 +702,105 @@ function applyFunctionExtended(
 			// tan(±∞) oscillates
 			if (arg.type === 'infinity') {
 				throw new Error('tan(infinity) oscillates, no limit');
+			}
+			// tan(0±) = 0±
+			if (arg.type === 'signed-zero') {
+				return arg;
+			}
+			break;
+
+		case 'arctan':
+			// arctan(+∞) = π/2
+			if (arg.type === 'infinity' && arg.sign === 'positive') {
+				return normalResult(normalize(divNode(piConstant(), numNode('2'), 'fraction')));
+			}
+			// arctan(-∞) = -π/2
+			if (arg.type === 'infinity' && arg.sign === 'negative') {
+				return negExtended(
+					normalResult(normalize(divNode(piConstant(), numNode('2'), 'fraction')))
+				);
+			}
+			// arctan(0±) = 0±
+			if (arg.type === 'signed-zero') {
+				return arg;
+			}
+			break;
+
+		case 'sinh':
+			// sinh(+∞) = +∞
+			if (arg.type === 'infinity' && arg.sign === 'positive') {
+				return infinityResult('positive');
+			}
+			// sinh(-∞) = -∞
+			if (arg.type === 'infinity' && arg.sign === 'negative') {
+				return infinityResult('negative');
+			}
+			// sinh(0±) = 0±
+			if (arg.type === 'signed-zero') {
+				return arg;
+			}
+			break;
+
+		case 'cosh':
+			// cosh(±∞) = +∞
+			if (arg.type === 'infinity') {
+				return infinityResult('positive');
+			}
+			// cosh(0±) = 1
+			if (arg.type === 'signed-zero') {
+				return normalResult(ONE_NORMAL_FORM);
+			}
+			break;
+
+		case 'tanh':
+			// tanh(+∞) = 1
+			if (arg.type === 'infinity' && arg.sign === 'positive') {
+				return normalResult(ONE_NORMAL_FORM);
+			}
+			// tanh(-∞) = -1
+			if (arg.type === 'infinity' && arg.sign === 'negative') {
+				return negExtended(normalResult(ONE_NORMAL_FORM));
+			}
+			// tanh(0±) = 0±
+			if (arg.type === 'signed-zero') {
+				return arg;
+			}
+			break;
+
+		case 'arcsinh':
+			// arcsinh(+∞) = +∞
+			if (arg.type === 'infinity' && arg.sign === 'positive') {
+				return infinityResult('positive');
+			}
+			// arcsinh(-∞) = -∞
+			if (arg.type === 'infinity' && arg.sign === 'negative') {
+				return infinityResult('negative');
+			}
+			// arcsinh(0±) = 0±
+			if (arg.type === 'signed-zero') {
+				return arg;
+			}
+			break;
+
+		case 'arccosh':
+			// arccosh(+∞) = +∞
+			if (arg.type === 'infinity' && arg.sign === 'positive') {
+				return infinityResult('positive');
+			}
+			// arccosh(-∞) is complex (domain [1, +∞))
+			if (arg.type === 'infinity' && arg.sign === 'negative') {
+				throw new Error('arccosh of negative infinity is complex');
+			}
+			break;
+
+		case 'arctanh':
+			// arctanh(0±) = 0±
+			if (arg.type === 'signed-zero') {
+				return arg;
+			}
+			// arctanh(±∞) is complex (domain (-1, 1))
+			if (arg.type === 'infinity') {
+				throw new Error('arctanh of infinity is complex');
 			}
 			break;
 

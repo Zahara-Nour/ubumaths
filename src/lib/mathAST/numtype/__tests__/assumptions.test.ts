@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { inferType } from '../infer';
-import { variable, greek } from '../../factory';
+import { variable, greek, piConstant } from '../../factory';
 import type { TypeContext, VariableAssumption } from '../types';
 
 // =============================================================================
@@ -99,7 +99,7 @@ describe('TypeContext assumptions', () => {
 
 		it('should not affect pi (always transcendental)', () => {
 			const ctx = ctxWithAssumptions({ pi: { sign: 'negative' } });
-			const result = inferType(greek('pi'), ctx);
+			const result = inferType(piConstant(), ctx);
 			// pi is always transcendental, positive
 			expect(result.base).toBe('transcendental');
 			expect(result.sign).toBe('positive');

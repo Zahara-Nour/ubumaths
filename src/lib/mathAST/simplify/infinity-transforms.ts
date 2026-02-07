@@ -11,7 +11,14 @@
 import type { TransformRule } from '../transform/identity-engine';
 import type { MathNode } from '../types';
 import { isFunction, isInfinity } from '../guards';
-import { greek, number, opposite, divide, positiveInfinity, negativeInfinity } from '../factory';
+import {
+	piConstant,
+	number,
+	opposite,
+	divide,
+	positiveInfinity,
+	negativeInfinity
+} from '../factory';
 
 // =============================================================================
 // Helpers
@@ -26,7 +33,7 @@ function isNegativeInfinity(node: MathNode): boolean {
 }
 
 function piOver2(): MathNode {
-	return divide(greek('pi'), number('2'), 'fraction');
+	return divide(piConstant(), number('2'), 'fraction');
 }
 
 // =============================================================================
@@ -178,6 +185,18 @@ const arcsinhPosInf: TransformRule = {
 };
 
 /**
+ * arcsinh(-∞) -> -∞
+ */
+const arcsinhNegInf: TransformRule = {
+	name: 'arcsinh-neg-inf',
+	transform(node: MathNode): MathNode | null {
+		if (!isFunction(node) || node.name !== 'arcsinh' || node.args.length !== 1) return null;
+		if (!isNegativeInfinity(node.args[0])) return null;
+		return negativeInfinity();
+	}
+};
+
+/**
  * arccosh(+∞) -> +∞
  */
 const arccoshPosInf: TransformRule = {
@@ -209,5 +228,6 @@ export const infinityTransforms: readonly TransformRule[] = [
 	expNegInf,
 	lnPosInf,
 	arcsinhPosInf,
+	arcsinhNegInf,
 	arccoshPosInf
 ] as const;
