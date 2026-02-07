@@ -53,7 +53,7 @@ This document describes the current state of the question system migration and t
 | Options inconnues    | 13    | Typos (`extraneaous`)   | ✅ OK - ignoré                    |
 | Solutions manquantes | 1     | Flash card #617         | ✅ OK - flash card sans input     |
 
-**Conclusion** : ~210 warnings, tous resolus. 242 questions sans `solutionss` utilisent l'expression comme solution (comportement normal). La seule question sans solution ni expression (#617) est un flash card. 40 options implementees, 6 ignorees (dont `exhaust` — option de generation uniquement, 3 questions, differe).
+**Conclusion** : ~210 warnings, tous resolus. 242 questions sans `solutionss` utilisent l'expression comme solution (comportement normal). La seule question sans solution ni expression (#617) est un flash card. 40 options implementees, 6 ignorees. Les 5 options ignorees (hors `exhaust`) ont ete verifiees dans le code source TinyMath : toutes sont du code mort (jamais consommees par `generateQuestion.ts` ou logique commentee). `exhaust` est differee (option de generation, 3 questions).
 
 ---
 

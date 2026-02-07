@@ -166,14 +166,16 @@ Elles sont attachees directement aux variables dont le nom commence par `express
 
 ## 4. Options ignorees (sans equivalent)
 
-| Option ancienne              | Raison                                                                             |
-| ---------------------------- | ---------------------------------------------------------------------------------- |
-| `enounce-no-spaces`          | Cosmetique, gere par le nouveau rendu                                              |
-| `exp-allow-unecessary-zeros` | Code mort dans TinyMath (logique commentee), mathAST preserve les zeros nativement |
-| `allow-same-expression`      | Legacy : autorisait des expressions identiques entre variations                    |
-| `allow-same-enounce`         | Legacy : autorisait des enonces identiques entre variations                        |
-| `multiples`                  | Legacy : option de generation, pas necessaire                                      |
-| `exhaust`                    | Generation : utilise chaque variation une seule fois (3 questions). Differe.       |
+Toutes ces options ont ete verifiees dans le code source de TinyMath (`extern/new-tinymath/`). Aucune n'a d'effet reel et peut etre ignoree en toute securite.
+
+| Option ancienne              | Raison                                                                                                                                                                       | Utilisee ?  |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `enounce-no-spaces`          | Declaree dans le type `Option` mais jamais consommee par `generateQuestion.ts`. La fonction `toLatex()` des enonces ne verifie pas cette option. Code mort.                  | 0 question  |
+| `exp-allow-unecessary-zeros` | Passee a `math().toLatex({ keepUnecessaryZeros })` mais la logique dans `output.ts:529` est **commentee** (`// const value = options.keepUnecessaryZeros ? ...`). Code mort. | 1 question  |
+| `allow-same-expression`      | Prevue pour bypasser `checkDuplicate()` (unicite des questions generees) mais jamais testee dans le code. `checkDuplicate()` est appele inconditionnellement. Code mort.     | 0 question  |
+| `allow-same-enounce`         | Idem `allow-same-expression` : prevue pour la verification de doublons d'enonces mais jamais implementee dans `generateQuestion.ts`. Code mort.                              | 0 question  |
+| `multiples`                  | Declaree dans le type `Option` mais jamais consommee par aucun fichier. Pas de commentaire explicatif. Code mort.                                                            | 0 question  |
+| `exhaust`                    | Generation : utilise chaque variation une seule fois (3 questions). Differe.                                                                                                 | 3 questions |
 
 ---
 
