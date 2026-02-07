@@ -194,7 +194,7 @@ describe('factorAlgebraic', () => {
 		const node = parseLatex('x^2-y^2');
 		const result = factorAlgebraic(node);
 		expect(result.changed).toBe(true);
-		expect(result.appliedRules).toContain('diff-squares-to-product');
+		expect(result.appliedRules).toContain('diff-squares-symbolic');
 		expect(toLatex(result.result)).toBe(toLatex(parseLatex('(x+y)(x-y)')));
 	});
 

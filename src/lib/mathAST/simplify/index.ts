@@ -11,4 +11,3 @@
 export { simplify } from './simplify';
 export { computeCost, cheapest } from './cost';
 export type { SimplifyOptions, SimplifyResult, SimplifyStep, SimplifyPhase } from './types';
-export { infinityTransforms } from './infinity-transforms';

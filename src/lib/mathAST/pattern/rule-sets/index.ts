@@ -2,18 +2,6 @@
  * Rule Sets Index
  *
  * Exports all predefined rule sets for pattern-based expression simplification.
- *
- * @example
- * ```typescript
- * import { arithmeticRules, powerRules, allPatternRules } from './rule-sets';
- * import { applyRules } from '../rule';
- *
- * // Apply only arithmetic rules
- * const result1 = applyRules(arithmeticRules, node);
- *
- * // Apply all available rules
- * const result2 = applyRules(allPatternRules, node);
- * ```
  */
 
 import type { Rule } from '../types';
@@ -36,6 +24,49 @@ export { logExpRules } from './log-exp';
 export { sqrtRules } from './sqrt';
 export { trigRules } from './trig';
 export { functionParityRules } from './function-parity';
+
+// Identity rule sets (trig, hyperbolic, algebraic)
+export {
+	trigSimplifyRules,
+	allTrigRules,
+	trigDoubleAngleRules,
+	trigPowerReductionRules,
+	trigPythagoreanRules,
+	trigQuotientRules,
+	trigLinearizationRules,
+	trigNegativeAngleRules,
+	trigPeriodicRules,
+	trigAdditionRules,
+	trigDoubleAngleExpansionRules,
+	trigCofunctionRules,
+	trigSupplementaryRules,
+	trigShiftPiOver2Rules,
+	trigFactorizationRules,
+	trigHalfAngleRules,
+	trigHigherPowerRules
+} from './trig-identities';
+
+export {
+	hypSimplifyRules,
+	allHyperbolicRules,
+	hypDoubleAngleRules,
+	hypPowerReductionRules,
+	hypPythagoreanRules,
+	hypQuotientRules,
+	hypLinearizationRules,
+	hypNegativeArgumentRules,
+	hypAdditionRules,
+	hypDoubleAngleExpansionRules,
+	hypFactorizationRules,
+	hypHalfAngleRules,
+	hypHigherPowerRules
+} from './hyperbolic-identities';
+
+export {
+	algebraicSimplifyRules,
+	algebraicFactoringRules,
+	algebraicExpandingRules
+} from './algebraic-identities';
 
 // =============================================================================
 // Combined Rule Sets
@@ -63,10 +94,10 @@ export const allPatternRules: readonly Rule[] = [
 ] as const;
 
 /**
- * Rules used by the simplify() pipeline.
+ * Rules used by the simplify() pipeline (Phase B).
  *
  * Only includes abs rules — arithmetic and power rules are fully redundant
- * with normalize's polynomial arithmetic (zero coefficients are dropped,
- * identity multiplications eliminated, powers handled by powNormalForm).
+ * with normalize's polynomial arithmetic. Trig/hyp/algebraic identity rules
+ * are added dynamically by buildSimplifyRules() based on SimplifyOptions.
  */
 export const simplifyRules: readonly Rule[] = [...absRules] as const;

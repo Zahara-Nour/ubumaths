@@ -6,16 +6,6 @@
  * @module mathAST/transform
  */
 
-// Identity engine (shared infrastructure)
-export {
-	type TransformRule,
-	type TransformResult,
-	getBinding,
-	applyTransformsToNode,
-	applyTransformsDeep,
-	applyIdentityTransforms
-} from './identity-engine';
-
 // Algebraic identities
 export {
 	// Application functions
