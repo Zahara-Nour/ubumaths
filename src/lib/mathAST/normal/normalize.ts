@@ -54,7 +54,8 @@ import {
 	absRational,
 	floorRational,
 	ceilRational,
-	roundRational
+	roundRational,
+	floatToRational
 } from './rational';
 import { simplifyRadical, integerNthRoot } from './radical';
 import { preprocess } from './rules/index.js';
@@ -776,6 +777,12 @@ function polynomialFromTerm(term: NormalTerm): NormalTerm[] {
  * Parses a number string to a Rational.
  */
 function parseNumberToRational(value: string): Rational {
+	// Handle scientific notation (BigInt doesn't support 'e' notation)
+	if (value.includes('e') || value.includes('E')) {
+		const num = parseFloat(value);
+		return floatToRational(num);
+	}
+
 	// Handle integers
 	if (!value.includes('.')) {
 		return fromInteger(BigInt(value));

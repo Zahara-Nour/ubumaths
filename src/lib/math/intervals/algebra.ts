@@ -145,8 +145,13 @@ export function isUniversal(d: IntervalDomain): boolean {
  * containsValue(positiveReals, number('-3'))    // false
  * containsValue(unitInterval, greek('pi'))      // false (π > 1)
  * containsValue(interval_0_pi, sqrt(2))         // true (√2 ≈ 1.41 < π)
+ * containsValue(positiveReals, 5)               // true (accepts raw numbers)
  */
-export function containsValue(d: IntervalDomain, value: MathNode): boolean {
+export function containsValue(d: IntervalDomain, value: MathNode | number): boolean {
+	// Convert raw numbers to MathNode
+	if (typeof value === 'number') {
+		return containsValue(d, fromNumber(value));
+	}
 	switch (d.kind) {
 		case 'empty':
 			return false;

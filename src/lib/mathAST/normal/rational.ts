@@ -587,8 +587,16 @@ export function floatToRational(x: number, precision: number = 15): Rational {
 
 	if (x === 0) return ZERO;
 
-	// Convert to fraction with denominator 10^precision
-	const scale = 10n ** BigInt(precision);
+	// Adjust scale based on magnitude to preserve precision for very small numbers.
+	// For x = 1e-100 with precision 15, a fixed 10^15 scale would round to 0.
+	// Instead, use 10^(precision - min(0, magnitude)) so the scaled value has
+	// enough significant digits.
+	const magnitude = Math.floor(Math.log10(Math.abs(x)));
+	const neededDigits = precision - Math.min(0, magnitude);
+
+	// Cap at 300 to avoid Number(scale) becoming Infinity (max float ~1.8e308)
+	const safeDigits = Math.min(neededDigits, 300);
+	const scale = 10n ** BigInt(safeDigits);
 	const numerator = BigInt(Math.round(x * Number(scale)));
 
 	// rational() will automatically reduce the fraction
