@@ -19,7 +19,7 @@ import type {
 	PredicateRule,
 	CustomExpressionRule
 } from './types';
-import { evaluateExpression, areEquivalent } from '$lib/math/compute-engine';
+import { evaluateExpression, areEquivalent } from '$lib/math';
 
 // ============================================================================
 // TYPES

@@ -33,12 +33,7 @@ export { validateTemplate, isValidTemplate } from './validators/template-validat
 export { detectCircularDependencies } from '$lib/ubumark';
 
 // Compute Engine (re-exported from $lib/math)
-export {
-	evaluateExpression,
-	simplifyExpression,
-	areEquivalent,
-	isValidLatex
-} from '$lib/math/compute-engine';
+export { evaluateExpression, simplifyExpression, areEquivalent, isValidLatex } from '$lib/math';
 
 // Validation Rule Evaluator
 export {
