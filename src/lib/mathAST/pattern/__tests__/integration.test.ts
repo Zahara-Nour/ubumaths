@@ -13,7 +13,7 @@ import { P } from '../builder';
 import { arithmeticRules, powerRules, absRules, allPatternRules } from '../rule-sets';
 import { applyRules } from '../rule';
 import { nodesEqual } from '../match';
-import { number, variable, add, superscript, opposite } from '../../factory';
+import { number, variable, add, superscript, opposite, abs } from '../../factory';
 import type { TypeContext } from '../../numtype/types';
 
 describe('Pattern Matching Integration', () => {
@@ -371,6 +371,62 @@ describe('Pattern Matching Integration', () => {
 				const result = applyRules([...powerRules], node);
 				// Should remain unchanged
 				expect(nodesEqual(result, node)).toBe(true);
+			});
+
+			it('simplifies (-a)^2 to a^2 (even exponent removes sign)', () => {
+				const node = superscript(opposite(variable('a')), number('2'));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, superscript(variable('a'), number('2')))).toBe(true);
+			});
+
+			it('simplifies (-x)^4 to x^4', () => {
+				const node = superscript(opposite(variable('x')), number('4'));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, superscript(variable('x'), number('4')))).toBe(true);
+			});
+
+			it('does not simplify (-a)^3 (odd exponent)', () => {
+				const node = superscript(opposite(variable('a')), number('3'));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, node)).toBe(true);
+			});
+
+			it('simplifies (-a)^n to a^n when n declared even', () => {
+				const ctx: TypeContext = {
+					variables: new Map([['n', 'integer']]),
+					assumptions: new Map([['n', { parity: 'even' }]])
+				};
+				const node = superscript(opposite(variable('a')), variable('n'));
+				const result = applyRules([...powerRules], node, 100, ctx);
+				expect(nodesEqual(result, superscript(variable('a'), variable('n')))).toBe(true);
+			});
+
+			it('simplifies |x|^2 to x^2 (even exponent)', () => {
+				const node = superscript(abs(variable('x')), number('2'));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, superscript(variable('x'), number('2')))).toBe(true);
+			});
+
+			it('simplifies |x|^4 to x^4', () => {
+				const node = superscript(abs(variable('x')), number('4'));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, superscript(variable('x'), number('4')))).toBe(true);
+			});
+
+			it('does not simplify |x|^3 (odd exponent)', () => {
+				const node = superscript(abs(variable('x')), number('3'));
+				const result = applyRules([...powerRules], node);
+				expect(nodesEqual(result, node)).toBe(true);
+			});
+
+			it('simplifies |x|^n to x^n when n declared even', () => {
+				const ctx: TypeContext = {
+					variables: new Map([['n', 'integer']]),
+					assumptions: new Map([['n', { parity: 'even' }]])
+				};
+				const node = superscript(abs(variable('x')), variable('n'));
+				const result = applyRules([...powerRules], node, 100, ctx);
+				expect(nodesEqual(result, superscript(variable('x'), variable('n')))).toBe(true);
 			});
 		});
 

@@ -45,6 +45,9 @@ function isNotZero(bindings: MatchBindings): boolean {
  * - x^0 = 1 (power of zero, x != 0)
  * - 1^x = 1 (one to any power)
  * - 0^x = 0 (zero to positive power)
+ * - (-1)^n = 1 (n even), (-1)^n = -1 (n odd)
+ * - (-a)^n = a^n (n even)
+ * - |x|^n = x^n (n even)
  */
 export const powerRules: readonly Rule[] = [
 	// x^1 = x (power of one)
@@ -78,5 +81,15 @@ export const powerRules: readonly Rule[] = [
 	// (-1)^n = -1 (when n is odd)
 	createRule(P.pow(P.neg(P.num(1)), P._('n', P.isOdd())), P.neg(P.num(1)), {
 		name: 'neg-one-pow-odd'
+	}),
+
+	// (-a)^n = a^n (when n is even, sign cancels)
+	createRule(P.pow(P.neg(P._('a')), P._('n', P.isEven())), P.pow(P._('a'), P._('n')), {
+		name: 'neg-base-pow-even'
+	}),
+
+	// |x|^n = x^n (when n is even, both sides are non-negative)
+	createRule(P.pow(P.func('abs', [P._('x')]), P._('n', P.isEven())), P.pow(P._('x'), P._('n')), {
+		name: 'abs-pow-even'
 	})
 ] as const;
