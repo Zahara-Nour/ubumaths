@@ -6,8 +6,7 @@
  * of a mathematical expression.
  *
  * Algorithm:
- * 0. Pre-normalize: reduce function-at-infinity expressions (arctan(∞), sinh(∞), etc.)
- * 1. Normalize (polynomial canonical form) + denormalize
+ * 1. Normalize (normalizeExtended handles ∞ natively, then polynomial canonical form)
  * 2. Apply pattern rules (abs only — arithmetic/power are redundant with normalize)
  * 3. Apply identity transforms (trig, hyperbolic, algebraic)
  * 4. Post-normalize
@@ -33,18 +32,16 @@ import { nodesEqual } from '../pattern/match';
 
 // Normalize
 import { preprocess } from '../normal/rules';
-import { normalize, denormalize } from '../normal';
+import { normalizeExtended, denormalizeExtended } from '../normal';
 
 // Identity transforms
-import { applyIdentityTransforms } from '../transform/identity-engine';
 import { applyTrigIdentities } from '../transform/trig-identities';
 import { applyHyperbolicIdentities } from '../transform/hyperbolic-identities';
 import { applyAlgebraicIdentities } from '../transform/algebraic-identities';
-import { infinityTransforms } from './infinity-transforms';
 
 // Detection
 import { findNodes } from '../transforms';
-import { isFunction, isInfinity } from '../guards';
+import { isFunction } from '../guards';
 
 // =============================================================================
 // Detection Helpers
@@ -59,10 +56,6 @@ function containsTrigFunctions(node: MathNode): boolean {
 
 function containsHypFunctions(node: MathNode): boolean {
 	return findNodes(node, (n) => isFunction(n) && HYP_FUNCTIONS.has(n.name)).length > 0;
-}
-
-function containsInfinity(node: MathNode): boolean {
-	return findNodes(node, (n) => isInfinity(n)).length > 0;
 }
 
 // =============================================================================
@@ -84,8 +77,7 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		enableTrig = true,
 		enableHyperbolic = true,
 		enableAlgebraic = true,
-		enableAbs = true,
-		enableInfinity = true
+		enableAbs = true
 	} = options ?? {};
 
 	const recorder = new SimplifyStepRecorder();
@@ -101,45 +93,16 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 	for (let iter = 0; iter < maxIterations; iter++) {
 		const beforeIteration = current;
 
-		// Phase 0: Pre-normalize infinity reduction
-		// Normalize treats infinity nodes as opaque symbolic factors — it doesn't
-		// crash, but it can't simplify functions evaluated at infinity.
-		// normalizeExtended handles some cases (exp, ln, sqrt, sin, cos, tan, abs)
-		// but not arctan, sinh, cosh, tanh, arcsinh, arccosh at ±∞.
-		// These transforms reduce those remaining cases before normalize runs.
-		if (enableInfinity && containsInfinity(current)) {
-			recorder.setPhase('identity');
-			const infResult = applyIdentityTransforms(current, infinityTransforms);
-			if (isRecording && infResult.changed) {
-				recorder.recordStep(
-					'infinity-transforms',
-					getSimplifyRuleDescription('infinity-transforms'),
-					current,
-					infResult.result,
-					'summarized'
-				);
-			}
-			current = infResult.result;
-
-			// Cost check: capture the post-infinity form before normalize
-			// potentially rewrites it to a more expensive representation
-			// (e.g., π/2 is cheaper than the (1/2)π normalize may produce).
-			const infCost = computeCost(current);
-			if (infCost < bestCost) {
-				best = current;
-				bestCost = infCost;
-			}
-		}
-
-		// Phase A: Normalize (canonical polynomial form)
-		// Handles arithmetic identities (x+0, x*1, x*0), like-term collection
-		// (2x+3x → 5x), power simplification (x^0, x^1), fraction reduction,
-		// radical simplification, and special function values (ln(e), sin(kπ)).
+		// Phase A: Normalize (extended — handles ∞ natively)
+		// normalizeExtended propagates infinity/signed-zero through arithmetic
+		// and functions (arctan(∞)→π/2, sinh(∞)→∞, etc.), then delegates to
+		// regular normalize for polynomial canonical form (arithmetic identities,
+		// like-term collection, power simplification, special function values).
 		recorder.setPhase('normalize');
 		try {
 			const preprocessed = preprocess(current);
-			const normalForm = normalize(preprocessed);
-			const afterNormalize = denormalize(normalForm);
+			const extResult = normalizeExtended(preprocessed);
+			const afterNormalize = denormalizeExtended(extResult);
 			if (isRecording && !nodesEqual(afterNormalize, current)) {
 				recorder.recordStep(
 					'normalize',
@@ -151,8 +114,8 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 			}
 			current = afterNormalize;
 		} catch {
-			// Normalize can fail on edge cases (e.g., unsupported node types).
-			// Skip safely and continue with the current expression.
+			// normalizeExtended can fail on edge cases (indeterminate forms,
+			// complex domain errors). Skip safely and continue.
 		}
 
 		// Phase B: Pattern rules (abs rules only)
@@ -174,7 +137,7 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 			current = afterRules;
 		}
 
-		// Phase C: Identity transforms (selective, no infinity — already done in Phase 0)
+		// Phase C: Identity transforms (selective)
 		// These transforms operate on the MathNode tree level, handling patterns
 		// that normalize cannot: trig/hyperbolic identities (opaque to normalize),
 		// and algebraic factoring (normalize expands but does not factor).
@@ -235,8 +198,8 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		recorder.setPhase('post-normalize');
 		try {
 			const preprocessed2 = preprocess(current);
-			const normalForm2 = normalize(preprocessed2);
-			const afterPostNorm = denormalize(normalForm2);
+			const extResult2 = normalizeExtended(preprocessed2);
+			const afterPostNorm = denormalizeExtended(extResult2);
 			if (isRecording && !nodesEqual(afterPostNorm, current)) {
 				recorder.recordStep(
 					'post-normalize',

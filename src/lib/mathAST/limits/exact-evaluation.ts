@@ -331,7 +331,9 @@ export function evaluateLimitExact(
 	const substituted = substitute(preprocessed, { [varName]: substitutionValue });
 
 	// Step 3: Normalize with extended arithmetic
-	return normalizeExtended(substituted);
+	// Use skipFastPath to ensure recursive decomposition, which is needed
+	// for indeterminate form detection (e.g., detecting 0/0 in (x-a)/(x-a)).
+	return normalizeExtended(substituted, undefined, { skipFastPath: true });
 }
 
 /**
