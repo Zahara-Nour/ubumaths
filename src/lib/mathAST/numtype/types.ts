@@ -13,6 +13,8 @@
  *              └── irrational_algebraic (√2, ∛5)
  */
 
+import type { Bounds } from '$lib/math/intervals/algebra';
+
 // =============================================================================
 // Numeric Type Enum
 // =============================================================================
@@ -78,6 +80,9 @@ export interface MathType {
 
 	/** Parity information if known (only meaningful for integers) */
 	readonly parity?: ParityInfo;
+
+	/** Numeric bounds (range) if known */
+	readonly bounds?: Bounds;
 }
 
 // =============================================================================
@@ -94,6 +99,7 @@ export interface VariableAssumption {
 	readonly sign?: SignInfo;
 	readonly finite?: boolean;
 	readonly parity?: ParityInfo;
+	readonly bounds?: Bounds;
 }
 
 // =============================================================================

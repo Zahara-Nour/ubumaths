@@ -16,8 +16,64 @@ import type {
 	VariableNode,
 	GreekLetterNode
 } from '../../types';
-import type { MathType, ParityInfo, TypeContext } from '../types';
-import { REAL_TYPE, TRANSCENDENTAL_TYPE, UNKNOWN_TYPE } from '../types';
+import type { MathType, ParityInfo, SignInfo, TypeContext } from '../types';
+import { REAL_TYPE, UNKNOWN_TYPE } from '../types';
+import type { Bounds } from '$lib/math/intervals/algebra';
+
+// =============================================================================
+// Helper: Sign deduction from bounds
+// =============================================================================
+
+/**
+ * Deduce sign from bounds when sign is not already known.
+ * - If lower > 0 (or lower === 0 and not inclusive) → positive
+ * - If upper < 0 (or upper === 0 and not inclusive) → negative
+ * - If lower === 0 and upper === 0 → zero
+ */
+function signFromBounds(bounds: Bounds): SignInfo | undefined {
+	const { lower, upper, lowerInclusive, upperInclusive } = bounds;
+
+	// Singleton zero
+	if (lower === 0 && upper === 0 && lowerInclusive && upperInclusive) {
+		return 'zero';
+	}
+
+	// Entirely positive: lower > 0, or lower === 0 and open (exclusive)
+	if (lower !== null && (lower > 0 || (lower === 0 && !lowerInclusive))) {
+		return 'positive';
+	}
+
+	// Entirely negative: upper < 0, or upper === 0 and open (exclusive)
+	if (upper !== null && (upper < 0 || (upper === 0 && !upperInclusive))) {
+		return 'negative';
+	}
+
+	return undefined;
+}
+
+/**
+ * Build a MathType enriched with assumption data (sign, finite, parity, bounds).
+ * Deduces sign from bounds if sign is not explicitly provided.
+ */
+function typeWithAssumption(
+	base: MathType['base'],
+	assumption: { sign?: SignInfo; finite?: boolean; parity?: ParityInfo; bounds?: Bounds }
+): MathType {
+	let sign = assumption.sign;
+
+	// Deduce sign from bounds if not explicitly set
+	if (sign === undefined && assumption.bounds) {
+		sign = signFromBounds(assumption.bounds);
+	}
+
+	return {
+		base,
+		...(sign !== undefined && { sign }),
+		...(assumption.finite !== undefined && { finite: assumption.finite }),
+		...(assumption.parity !== undefined && { parity: assumption.parity }),
+		...(assumption.bounds !== undefined && { bounds: assumption.bounds })
+	};
+}
 
 // =============================================================================
 // Number Node Inference
@@ -60,11 +116,19 @@ export function inferNumberType(node: NumberNode): MathType {
 		parity = Math.abs(value) % 2 === 0 ? 'even' : 'odd';
 	}
 
+	const bounds: Bounds = {
+		lower: value,
+		upper: value,
+		lowerInclusive: true,
+		upperInclusive: true
+	};
+
 	return {
 		base: isInteger ? 'integer' : 'real',
 		sign,
 		finite: true,
-		...(parity !== undefined && { parity })
+		...(parity !== undefined && { parity }),
+		bounds
 	};
 }
 
@@ -80,12 +144,14 @@ export function inferNumberType(node: NumberNode): MathType {
  * @param node - The math constant node
  * @returns MathType with base 'transcendental' and sign 'positive'
  */
-export function inferMathConstantType(_node: MathConstantNode): MathType {
+export function inferMathConstantType(node: MathConstantNode): MathType {
 	// Both π and e are positive transcendental numbers
+	const value = node.constant === 'pi' ? Math.PI : Math.E;
 	return {
 		base: 'transcendental',
 		sign: 'positive',
-		finite: true
+		finite: true,
+		bounds: { lower: value, upper: value, lowerInclusive: true, upperInclusive: true }
 	};
 }
 
@@ -113,14 +179,8 @@ export function inferVariableType(node: VariableNode, ctx: TypeContext): MathTyp
 	const assumption = ctx.assumptions?.get(node.name);
 
 	if (varType !== undefined) {
-		// Enrich with assumptions if available
 		if (assumption) {
-			return {
-				base: varType,
-				...(assumption.sign !== undefined && { sign: assumption.sign }),
-				...(assumption.finite !== undefined && { finite: assumption.finite }),
-				...(assumption.parity !== undefined && { parity: assumption.parity })
-			};
+			return typeWithAssumption(varType, assumption);
 		}
 		return { base: varType };
 	}
@@ -131,31 +191,22 @@ export function inferVariableType(node: VariableNode, ctx: TypeContext): MathTyp
 		return {
 			base: 'transcendental',
 			sign: 'positive',
-			finite: true
+			finite: true,
+			bounds: { lower: Math.E, upper: Math.E, lowerInclusive: true, upperInclusive: true }
 		};
 	}
 
 	// Default behavior based on strict mode
 	if (ctx.strict) {
 		if (assumption) {
-			return {
-				base: 'unknown',
-				...(assumption.sign !== undefined && { sign: assumption.sign }),
-				...(assumption.finite !== undefined && { finite: assumption.finite }),
-				...(assumption.parity !== undefined && { parity: assumption.parity })
-			};
+			return typeWithAssumption('unknown', assumption);
 		}
 		return UNKNOWN_TYPE;
 	}
 
 	// Enrich default 'real' with assumptions if available
 	if (assumption) {
-		return {
-			base: 'real',
-			...(assumption.sign !== undefined && { sign: assumption.sign }),
-			...(assumption.finite !== undefined && { finite: assumption.finite }),
-			...(assumption.parity !== undefined && { parity: assumption.parity })
-		};
+		return typeWithAssumption('real', assumption);
 	}
 
 	return REAL_TYPE;
@@ -178,7 +229,17 @@ export function inferVariableType(node: VariableNode, ctx: TypeContext): MathTyp
 export function inferGreekLetterType(node: GreekLetterNode, ctx: TypeContext): MathType {
 	// Special case: pi is a transcendental constant
 	if (node.letter === 'pi') {
-		return TRANSCENDENTAL_TYPE;
+		return {
+			base: 'transcendental',
+			sign: 'positive',
+			finite: true,
+			bounds: {
+				lower: Math.PI,
+				upper: Math.PI,
+				lowerInclusive: true,
+				upperInclusive: true
+			}
+		};
 	}
 
 	// Check if the greek letter has a known type in context
@@ -188,12 +249,7 @@ export function inferGreekLetterType(node: GreekLetterNode, ctx: TypeContext): M
 
 	if (varType !== undefined) {
 		if (assumption) {
-			return {
-				base: varType,
-				...(assumption.sign !== undefined && { sign: assumption.sign }),
-				...(assumption.finite !== undefined && { finite: assumption.finite }),
-				...(assumption.parity !== undefined && { parity: assumption.parity })
-			};
+			return typeWithAssumption(varType, assumption);
 		}
 		return { base: varType };
 	}
@@ -201,23 +257,13 @@ export function inferGreekLetterType(node: GreekLetterNode, ctx: TypeContext): M
 	// Default behavior based on strict mode
 	if (ctx.strict) {
 		if (assumption) {
-			return {
-				base: 'unknown',
-				...(assumption.sign !== undefined && { sign: assumption.sign }),
-				...(assumption.finite !== undefined && { finite: assumption.finite }),
-				...(assumption.parity !== undefined && { parity: assumption.parity })
-			};
+			return typeWithAssumption('unknown', assumption);
 		}
 		return UNKNOWN_TYPE;
 	}
 
 	if (assumption) {
-		return {
-			base: 'real',
-			...(assumption.sign !== undefined && { sign: assumption.sign }),
-			...(assumption.finite !== undefined && { finite: assumption.finite }),
-			...(assumption.parity !== undefined && { parity: assumption.parity })
-		};
+		return typeWithAssumption('real', assumption);
 	}
 
 	return REAL_TYPE;

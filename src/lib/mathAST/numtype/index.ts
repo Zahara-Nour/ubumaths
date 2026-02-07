@@ -56,6 +56,9 @@ export type {
 	VariableAssumption
 } from './types';
 
+// Re-export Bounds type from interval algebra
+export type { Bounds } from '$lib/math/intervals/algebra';
+
 export {
 	EMPTY_CONTEXT,
 	UNKNOWN_TYPE,
@@ -126,7 +129,10 @@ export {
 	isInfiniteType,
 	// Accessors
 	getType,
-	getBaseType
+	getBaseType,
+	// Bounds predicates
+	getBoundsType,
+	isInRangeType
 } from './predicates';
 
 // =============================================================================
