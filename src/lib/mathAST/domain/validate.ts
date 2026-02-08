@@ -329,13 +329,10 @@ function evaluateBuiltinFunction(name: string, arg: number): number | null {
 			return Math.cos(arg);
 		case 'tan':
 			return Math.tan(arg);
-		case 'asin':
 		case 'arcsin':
 			return arg >= -1 && arg <= 1 ? Math.asin(arg) : null;
-		case 'acos':
 		case 'arccos':
 			return arg >= -1 && arg <= 1 ? Math.acos(arg) : null;
-		case 'atan':
 		case 'arctan':
 			return Math.atan(arg);
 		case 'exp':
@@ -354,13 +351,10 @@ function evaluateBuiltinFunction(name: string, arg: number): number | null {
 			return Math.cosh(arg);
 		case 'tanh':
 			return Math.tanh(arg);
-		case 'acosh':
 		case 'arccosh':
 			return arg >= 1 ? Math.acosh(arg) : null;
-		case 'asinh':
 		case 'arcsinh':
 			return Math.asinh(arg);
-		case 'atanh':
 		case 'arctanh':
 			return arg > -1 && arg < 1 ? Math.atanh(arg) : null;
 		default:

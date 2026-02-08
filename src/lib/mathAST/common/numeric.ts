@@ -118,13 +118,10 @@ export function evaluateNumeric(expr: MathNode, varName: string, varValue: numbe
 					case 'abs':
 						return Math.abs(arg);
 					case 'arcsin':
-					case 'asin':
 						return arg >= -1 && arg <= 1 ? Math.asin(arg) : null;
 					case 'arccos':
-					case 'acos':
 						return arg >= -1 && arg <= 1 ? Math.acos(arg) : null;
 					case 'arctan':
-					case 'atan':
 						return Math.atan(arg);
 					case 'floor':
 						return Math.floor(arg);

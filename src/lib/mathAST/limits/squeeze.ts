@@ -83,7 +83,6 @@ export function getBoundedFunctionInfo(expr: MathNode): BoundedInfo {
 			};
 
 		case 'arctan':
-		case 'atan':
 			return {
 				bounded: true,
 				lower: -Math.PI / 2,
@@ -92,7 +91,6 @@ export function getBoundedFunctionInfo(expr: MathNode): BoundedInfo {
 			};
 
 		case 'arcsin':
-		case 'asin':
 			// arcsin is bounded but only defined on [-1, 1]
 			return {
 				bounded: true,

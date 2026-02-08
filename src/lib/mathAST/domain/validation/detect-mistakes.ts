@@ -162,11 +162,9 @@ function analyzeExpressionConstraints(node: MathNode, variable: string): Expecte
 					case 'log2':
 						constraints.push({ type: 'ln', argument: n.args[0] });
 						break;
-					case 'asin':
 					case 'arcsin':
 						constraints.push({ type: 'arcsin', argument: n.args[0] });
 						break;
-					case 'acos':
 					case 'arccos':
 						constraints.push({ type: 'arccos', argument: n.args[0] });
 						break;

@@ -583,24 +583,18 @@ describe('Function tokenization', () => {
 		'sin',
 		'cos',
 		'tan',
-		// Inverse trigonometric
+		// Inverse trigonometric (canonical form)
 		'arcsin',
 		'arccos',
 		'arctan',
-		'asin',
-		'acos',
-		'atan',
 		// Hyperbolic
 		'sinh',
 		'cosh',
 		'tanh',
-		// Inverse hyperbolic
+		// Inverse hyperbolic (canonical form)
 		'arcsinh',
 		'arccosh',
 		'arctanh',
-		'asinh',
-		'acosh',
-		'atanh',
 		// Other
 		'ln',
 		'log',
@@ -615,6 +609,26 @@ describe('Function tokenization', () => {
 			value: func,
 			position: 0,
 			length: func.length
+		});
+	});
+
+	// Short-form inverse names are accepted but normalized to canonical arc* form
+	const normalizedFunctions: [string, string][] = [
+		['asin', 'arcsin'],
+		['acos', 'arccos'],
+		['atan', 'arctan'],
+		['asinh', 'arcsinh'],
+		['acosh', 'arccosh'],
+		['atanh', 'arctanh']
+	];
+
+	it.each(normalizedFunctions)('should normalize %s to %s', (input, canonical) => {
+		const tokens = tokenize(input);
+		expect(tokens[0]).toEqual({
+			type: 'FUNC',
+			value: canonical,
+			position: 0,
+			length: input.length
 		});
 	});
 

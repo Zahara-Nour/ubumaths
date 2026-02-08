@@ -62,27 +62,27 @@ export const DEFAULT_FUNCTION_RULES: ReadonlyMap<BuiltInFunctionName, FunctionRu
 
 	// Inverse trigonometric functions - require dimensionless, produce angle
 	[
-		'asin',
+		'arcsin',
 		{
-			name: 'asin',
+			name: 'arcsin',
 			inputRequirement: 'dimensionless',
 			outputUnit: 'angle',
 			description: 'Inverse sine - produces angle'
 		}
 	],
 	[
-		'acos',
+		'arccos',
 		{
-			name: 'acos',
+			name: 'arccos',
 			inputRequirement: 'dimensionless',
 			outputUnit: 'angle',
 			description: 'Inverse cosine - produces angle'
 		}
 	],
 	[
-		'atan',
+		'arctan',
 		{
-			name: 'atan',
+			name: 'arctan',
 			inputRequirement: 'dimensionless',
 			outputUnit: 'angle',
 			description: 'Inverse tangent - produces angle'

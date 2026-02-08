@@ -191,9 +191,7 @@ function analyzeExpressionConstraints(node: MathNode, _variable: string): Expres
 					case 'log2':
 						constraints.push({ type: 'ln' });
 						break;
-					case 'asin':
 					case 'arcsin':
-					case 'acos':
 					case 'arccos':
 						constraints.push({ type: 'arcsin' });
 						break;

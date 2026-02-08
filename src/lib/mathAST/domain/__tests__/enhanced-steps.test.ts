@@ -147,9 +147,7 @@ describe('getConstraintRuleForFunction', () => {
 	});
 
 	it('should return correct rule for inverse trig functions', () => {
-		expect(getConstraintRuleForFunction('asin')).toBe('arcsin_constraint');
 		expect(getConstraintRuleForFunction('arcsin')).toBe('arcsin_constraint');
-		expect(getConstraintRuleForFunction('acos')).toBe('arccos_constraint');
 		expect(getConstraintRuleForFunction('arccos')).toBe('arccos_constraint');
 	});
 

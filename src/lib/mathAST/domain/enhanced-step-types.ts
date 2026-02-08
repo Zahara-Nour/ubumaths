@@ -34,8 +34,8 @@ export type DomainRule =
 	| 'csc_constraint' // csc(x) requires x ≠ kπ
 	| 'power_constraint' // x^(-n) requires x ≠ 0
 	| 'even_root_constraint' // x^(1/2n) requires x ≥ 0
-	| 'acosh_constraint' // acosh(u) requires u ≥ 1
-	| 'atanh_constraint' // atanh(u) requires |u| < 1
+	| 'arccosh_constraint' // arccosh(u) requires u ≥ 1
+	| 'arctanh_constraint' // arctanh(u) requires |u| < 1
 	// Operation rules
 	| 'intersection' // Intersection of constraints
 	| 'union' // Union of domains
@@ -192,16 +192,14 @@ export function getConstraintRuleForFunction(funcName: string): DomainRule | nul
 		log: 'log_constraint',
 		log10: 'log_constraint',
 		log2: 'log_constraint',
-		asin: 'arcsin_constraint',
 		arcsin: 'arcsin_constraint',
-		acos: 'arccos_constraint',
 		arccos: 'arccos_constraint',
 		tan: 'tan_constraint',
 		cot: 'cot_constraint',
 		sec: 'sec_constraint',
 		csc: 'csc_constraint',
-		acosh: 'acosh_constraint',
-		atanh: 'atanh_constraint'
+		arccosh: 'arccosh_constraint',
+		arctanh: 'arctanh_constraint'
 	};
 	return ruleMap[funcName] ?? null;
 }

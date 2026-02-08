@@ -1206,7 +1206,7 @@ function handleCubicThreeReal(
 
 		// Build the symbolic expression for one root
 		const sqrtNegPOver3 = func('sqrt', [opposite(fraction(p, three))]);
-		const cosArg = func('acos', [
+		const cosArg = func('arccos', [
 			multiply(
 				fraction(multiply(three, q, 'implicit'), multiply(two, p, 'implicit')),
 				func('sqrt', [opposite(fraction(three, p))]),

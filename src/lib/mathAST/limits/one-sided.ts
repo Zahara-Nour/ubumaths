@@ -220,7 +220,7 @@ export function needsOneSidedAnalysis(
 function mayHaveRestrictedDomain(expr: MathNode): boolean {
 	switch (expr.type) {
 		case 'function':
-			// Functions like sqrt, ln, log, asin, acos, etc. have restricted domains
+			// Functions like sqrt, ln, log, arcsin, arccos, etc. have restricted domains
 			return true;
 		case 'superscript':
 			// Powers with fractional exponents (like x^(1/2)) have restricted domains

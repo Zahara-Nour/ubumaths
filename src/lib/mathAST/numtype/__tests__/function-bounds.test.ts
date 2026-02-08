@@ -90,7 +90,7 @@ describe('applyFunctionToBounds - monotone increasing', () => {
 
 	it('atan([-1, 1]) -> [atan(-1), atan(1)]', () => {
 		const input: Bounds = { lower: -1, upper: 1, lowerInclusive: true, upperInclusive: true };
-		expectBoundsClose(applyFunctionToBounds('atan', input), {
+		expectBoundsClose(applyFunctionToBounds('arctan', input), {
 			lower: Math.atan(-1),
 			upper: Math.atan(1),
 			lowerInclusive: true,
@@ -100,7 +100,7 @@ describe('applyFunctionToBounds - monotone increasing', () => {
 
 	it('asin([-1, 1]) -> [-pi/2, pi/2]', () => {
 		const input: Bounds = { lower: -1, upper: 1, lowerInclusive: true, upperInclusive: true };
-		expectBoundsClose(applyFunctionToBounds('asin', input), {
+		expectBoundsClose(applyFunctionToBounds('arcsin', input), {
 			lower: -Math.PI / 2,
 			upper: Math.PI / 2,
 			lowerInclusive: true,
@@ -116,7 +116,7 @@ describe('applyFunctionToBounds - monotone increasing', () => {
 describe('applyFunctionToBounds - monotone decreasing', () => {
 	it('acos([0, 1]) -> [0, pi/2]', () => {
 		const input: Bounds = { lower: 0, upper: 1, lowerInclusive: true, upperInclusive: true };
-		expectBoundsClose(applyFunctionToBounds('acos', input), {
+		expectBoundsClose(applyFunctionToBounds('arccos', input), {
 			lower: 0,
 			upper: Math.PI / 2,
 			lowerInclusive: true,
@@ -285,7 +285,7 @@ describe('applyFunctionToBounds - edge cases', () => {
 			lowerInclusive: false,
 			upperInclusive: true
 		};
-		const result = applyFunctionToBounds('acos', input);
+		const result = applyFunctionToBounds('arccos', input);
 		expect(result).toBeDefined();
 		// decreasing flips: input.upper (closed) → output.lower (closed)
 		//                    input.lower (open) → output.upper (open)
@@ -332,7 +332,7 @@ describe('applyFunctionToBounds - singleton intervals', () => {
 
 	it('acos([0.5, 0.5]) -> [acos(0.5), acos(0.5)]', () => {
 		const input: Bounds = { lower: 0.5, upper: 0.5, lowerInclusive: true, upperInclusive: true };
-		expectBoundsClose(applyFunctionToBounds('acos', input), {
+		expectBoundsClose(applyFunctionToBounds('arccos', input), {
 			lower: Math.acos(0.5),
 			upper: Math.acos(0.5),
 			lowerInclusive: true,
@@ -424,7 +424,7 @@ describe('applyFunctionToBounds - domain boundaries', () => {
 
 	it('asin at domain edges: asin([-1, -1]) -> [-pi/2, -pi/2]', () => {
 		const input: Bounds = { lower: -1, upper: -1, lowerInclusive: true, upperInclusive: true };
-		expectBoundsClose(applyFunctionToBounds('asin', input), {
+		expectBoundsClose(applyFunctionToBounds('arcsin', input), {
 			lower: -Math.PI / 2,
 			upper: -Math.PI / 2,
 			lowerInclusive: true,
@@ -434,7 +434,7 @@ describe('applyFunctionToBounds - domain boundaries', () => {
 
 	it('acos at domain edges: acos([-1, -1]) -> [pi, pi]', () => {
 		const input: Bounds = { lower: -1, upper: -1, lowerInclusive: true, upperInclusive: true };
-		expectBoundsClose(applyFunctionToBounds('acos', input), {
+		expectBoundsClose(applyFunctionToBounds('arccos', input), {
 			lower: Math.PI,
 			upper: Math.PI,
 			lowerInclusive: true,
@@ -486,7 +486,7 @@ describe('applyFunctionToBounds - logarithmic variants', () => {
 describe('applyFunctionToBounds - inverse hyperbolic', () => {
 	it('asinh([-2, 3]) -> [asinh(-2), asinh(3)]', () => {
 		const input: Bounds = { lower: -2, upper: 3, lowerInclusive: true, upperInclusive: true };
-		expectBoundsClose(applyFunctionToBounds('asinh', input), {
+		expectBoundsClose(applyFunctionToBounds('arcsinh', input), {
 			lower: Math.asinh(-2),
 			upper: Math.asinh(3),
 			lowerInclusive: true,
@@ -496,7 +496,7 @@ describe('applyFunctionToBounds - inverse hyperbolic', () => {
 
 	it('acosh([1, 5]) -> [0, acosh(5)]', () => {
 		const input: Bounds = { lower: 1, upper: 5, lowerInclusive: true, upperInclusive: true };
-		expectBoundsClose(applyFunctionToBounds('acosh', input), {
+		expectBoundsClose(applyFunctionToBounds('arccosh', input), {
 			lower: 0,
 			upper: Math.acosh(5),
 			lowerInclusive: true,
@@ -511,7 +511,7 @@ describe('applyFunctionToBounds - inverse hyperbolic', () => {
 			lowerInclusive: true,
 			upperInclusive: true
 		};
-		expectBoundsClose(applyFunctionToBounds('atanh', input), {
+		expectBoundsClose(applyFunctionToBounds('arctanh', input), {
 			lower: Math.atanh(-0.5),
 			upper: Math.atanh(0.5),
 			lowerInclusive: true,
@@ -725,7 +725,7 @@ describe('applyFunctionToBounds - open bounds propagation', () => {
 
 	it('acos((0, 1)) -> (0, pi/2) with flipped inclusivity', () => {
 		const input: Bounds = { lower: 0, upper: 1, lowerInclusive: false, upperInclusive: false };
-		const result = applyFunctionToBounds('acos', input);
+		const result = applyFunctionToBounds('arccos', input);
 		expect(result).toBeDefined();
 		// decreasing: input open lower → output open upper, input open upper → output open lower
 		expect(result!.lowerInclusive).toBe(false);
@@ -750,7 +750,7 @@ describe('applyFunctionToBounds - open bounds propagation', () => {
 describe('applyFunctionToBounds - one-sided infinite bounds', () => {
 	it('atan((-inf, 0]) -> (-pi/2, 0]', () => {
 		const input: Bounds = { lower: null, upper: 0, lowerInclusive: false, upperInclusive: true };
-		const result = applyFunctionToBounds('atan', input);
+		const result = applyFunctionToBounds('arctan', input);
 		expect(result).toBeDefined();
 		// atan is increasing, input lower=-inf → output lower = atan(-inf) = -pi/2 (static bound, exclusive)
 		expect(result!.lower).toBeCloseTo(-Math.PI / 2);
@@ -877,7 +877,7 @@ describe('applyFunctionToBounds - tan', () => {
 describe('applyFunctionToBounds - aliases', () => {
 	it('arcsin works like asin', () => {
 		const input: Bounds = { lower: 0, upper: 1, lowerInclusive: true, upperInclusive: true };
-		const result1 = applyFunctionToBounds('asin', input);
+		const result1 = applyFunctionToBounds('arcsin', input);
 		const result2 = applyFunctionToBounds('arcsin', input);
 		expect(result1).toBeDefined();
 		expect(result2).toBeDefined();
@@ -887,7 +887,7 @@ describe('applyFunctionToBounds - aliases', () => {
 
 	it('arccos works like acos', () => {
 		const input: Bounds = { lower: 0, upper: 1, lowerInclusive: true, upperInclusive: true };
-		const result1 = applyFunctionToBounds('acos', input);
+		const result1 = applyFunctionToBounds('arccos', input);
 		const result2 = applyFunctionToBounds('arccos', input);
 		expect(result1).toBeDefined();
 		expect(result2).toBeDefined();
@@ -897,7 +897,7 @@ describe('applyFunctionToBounds - aliases', () => {
 
 	it('arctan works like atan', () => {
 		const input: Bounds = { lower: -1, upper: 1, lowerInclusive: true, upperInclusive: true };
-		const result1 = applyFunctionToBounds('atan', input);
+		const result1 = applyFunctionToBounds('arctan', input);
 		const result2 = applyFunctionToBounds('arctan', input);
 		expect(result1).toBeDefined();
 		expect(result2).toBeDefined();
@@ -907,7 +907,7 @@ describe('applyFunctionToBounds - aliases', () => {
 
 	it('arccosh works like acosh', () => {
 		const input: Bounds = { lower: 1, upper: 3, lowerInclusive: true, upperInclusive: true };
-		const result1 = applyFunctionToBounds('acosh', input);
+		const result1 = applyFunctionToBounds('arccosh', input);
 		const result2 = applyFunctionToBounds('arccosh', input);
 		expect(result1).toBeDefined();
 		expect(result2).toBeDefined();
@@ -955,7 +955,7 @@ describe('applyFunctionToBounds - extreme values', () => {
 
 	it('atan([1e6, 1e12]) very large -> both close to pi/2', () => {
 		const input: Bounds = { lower: 1e6, upper: 1e12, lowerInclusive: true, upperInclusive: true };
-		const result = applyFunctionToBounds('atan', input);
+		const result = applyFunctionToBounds('arctan', input);
 		expect(result).toBeDefined();
 		expect(result!.lower).toBeCloseTo(Math.PI / 2, 4);
 		expect(result!.upper).toBeCloseTo(Math.PI / 2, 4);

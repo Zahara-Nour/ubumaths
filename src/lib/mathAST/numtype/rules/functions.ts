@@ -34,24 +34,24 @@ const TRANSCENDENTAL_FUNCTIONS = new Set([
 	'cot',
 	'sec',
 	'csc',
-	'asin',
-	'acos',
-	'atan',
-	'acot',
-	'asec',
-	'acsc',
+	'arcsin',
+	'arccos',
+	'arctan',
+	'arccot',
+	'arcsec',
+	'arccsc',
 	'sinh',
 	'cosh',
 	'tanh',
 	'coth',
 	'sech',
 	'csch',
-	'asinh',
-	'acosh',
-	'atanh',
-	'acoth',
-	'asech',
-	'acsch',
+	'arcsinh',
+	'arccosh',
+	'arctanh',
+	'arccoth',
+	'arcsech',
+	'arccsch',
 	'exp',
 	'ln',
 	'log'
@@ -310,15 +310,15 @@ function checkSpecialTranscendentalValues(name: string, value: number): MathType
  * Checks function domain and returns complex if input is out of domain.
  */
 function checkFunctionDomain(name: string, argType: MathType, argValue?: number): MathType | null {
-	// asin, acos: domain [-1, 1]
-	if (name === 'asin' || name === 'acos') {
+	// arcsin, arccos: domain [-1, 1]
+	if (name === 'arcsin' || name === 'arccos') {
 		if (argValue !== undefined && (argValue < -1 || argValue > 1)) {
 			return COMPLEX_TYPE;
 		}
 	}
 
-	// acosh: domain [1, ∞)
-	if (name === 'acosh') {
+	// arccosh: domain [1, ∞)
+	if (name === 'arccosh') {
 		if (argValue !== undefined && argValue < 1) {
 			return COMPLEX_TYPE;
 		}

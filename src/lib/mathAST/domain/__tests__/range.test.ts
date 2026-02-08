@@ -278,23 +278,23 @@ describe('computeRange()', () => {
 		});
 
 		describe('inverse trigonometric functions', () => {
-			it('asin(x) has range [-π/2, π/2]', () => {
-				const result = computeRange(func('asin', [variable('x')]), 'x');
+			it('arcsin(x) has range [-π/2, π/2]', () => {
+				const result = computeRange(func('arcsin', [variable('x')]), 'x');
 				expect(containsValue(result.range, 0)).toBe(true);
 				expect(containsValue(result.range, Math.PI / 2)).toBe(true);
 				expect(containsValue(result.range, -Math.PI / 2)).toBe(true);
 				expect(containsValue(result.range, 2)).toBe(false);
 			});
 
-			it('acos(x) has range [0, π]', () => {
-				const result = computeRange(func('acos', [variable('x')]), 'x');
+			it('arccos(x) has range [0, π]', () => {
+				const result = computeRange(func('arccos', [variable('x')]), 'x');
 				expect(containsValue(result.range, 0)).toBe(true);
 				expect(containsValue(result.range, Math.PI)).toBe(true);
 				expect(containsValue(result.range, -0.1)).toBe(false);
 			});
 
-			it('atan(x) has range ]-π/2, π/2[', () => {
-				const result = computeRange(func('atan', [variable('x')]), 'x');
+			it('arctan(x) has range ]-π/2, π/2[', () => {
+				const result = computeRange(func('arctan', [variable('x')]), 'x');
 				expect(containsValue(result.range, 0)).toBe(true);
 				expect(containsValue(result.range, Math.PI / 2)).toBe(false); // open
 				expect(containsValue(result.range, -Math.PI / 2)).toBe(false); // open

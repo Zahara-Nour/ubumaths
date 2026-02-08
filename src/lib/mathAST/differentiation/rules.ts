@@ -590,7 +590,7 @@ export function tanhRule(u: MathNode, du: MathNode, simplify: boolean): MathNode
 // =============================================================================
 
 /**
- * Inverse hyperbolic sine rule: d/dx(asinh(u)) = u' / sqrt(u^2 + 1)
+ * Inverse hyperbolic sine rule: d/dx(arcsinh(u)) = u' / sqrt(u^2 + 1)
  */
 export function asinhRule(u: MathNode, du: MathNode, simplify: boolean): MathNode {
 	const uSquared = simplify ? simplifiedPower(u, number('2')) : power(u, number('2'));
@@ -604,7 +604,7 @@ export function asinhRule(u: MathNode, du: MathNode, simplify: boolean): MathNod
 }
 
 /**
- * Inverse hyperbolic cosine rule: d/dx(acosh(u)) = u' / sqrt(u^2 - 1)
+ * Inverse hyperbolic cosine rule: d/dx(arccosh(u)) = u' / sqrt(u^2 - 1)
  * Note: Only valid for u > 1
  */
 export function acoshRule(u: MathNode, du: MathNode, simplify: boolean): MathNode {
@@ -621,7 +621,7 @@ export function acoshRule(u: MathNode, du: MathNode, simplify: boolean): MathNod
 }
 
 /**
- * Inverse hyperbolic tangent rule: d/dx(atanh(u)) = u' / (1 - u^2)
+ * Inverse hyperbolic tangent rule: d/dx(arctanh(u)) = u' / (1 - u^2)
  * Note: Only valid for |u| < 1
  */
 export function atanhRule(u: MathNode, du: MathNode, simplify: boolean): MathNode {

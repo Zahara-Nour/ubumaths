@@ -142,11 +142,9 @@ function findOperations(node: MathNode): FoundOperation[] {
 					case 'log2':
 						operations.push({ type: 'ln', argument: n.args[0] });
 						break;
-					case 'asin':
 					case 'arcsin':
 						operations.push({ type: 'arcsin', argument: n.args[0] });
 						break;
-					case 'acos':
 					case 'arccos':
 						operations.push({ type: 'arccos', argument: n.args[0] });
 						break;

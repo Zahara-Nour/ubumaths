@@ -805,9 +805,7 @@ describe('bounds - function bounds edge cases', () => {
 		expect(b!.upper).toBeCloseTo(Math.tanh(2));
 	});
 
-	// Note: \\arccos and \\arctan parse to 'arccos'/'arctan' which aren't
-	// in TRANSCENDENTAL_FUNCTIONS (only 'acos'/'atan' are). This is a known
-	// gap in function name aliasing, not a bounds propagation issue.
+	// Note: arccos and arctan are now the canonical names in TRANSCENDENTAL_FUNCTIONS.
 
 	// --- cosh with bounded input ---
 

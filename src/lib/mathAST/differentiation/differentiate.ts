@@ -365,15 +365,12 @@ function differentiateFunctionNode(
 				return sqrtRule(u, du, simplify);
 
 			case 'arcsin':
-			case 'asin':
 				return arcsinRule(u, du, simplify);
 
 			case 'arccos':
-			case 'acos':
 				return arccosRule(u, du, simplify);
 
 			case 'arctan':
-			case 'atan':
 				return arctanRule(u, du, simplify);
 
 			case 'sinh':
@@ -385,15 +382,12 @@ function differentiateFunctionNode(
 			case 'tanh':
 				return tanhRule(u, du, simplify);
 
-			case 'asinh':
 			case 'arcsinh':
 				return asinhRule(u, du, simplify);
 
-			case 'acosh':
 			case 'arccosh':
 				return acoshRule(u, du, simplify);
 
-			case 'atanh':
 			case 'arctanh':
 				return atanhRule(u, du, simplify);
 

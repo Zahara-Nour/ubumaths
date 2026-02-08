@@ -472,14 +472,14 @@ describe('signOfFunction', () => {
 			expect(signOfFunction('sqrt', 'negative')).toBe('positive');
 		});
 
-		it('should return positive for acos with valid argument', () => {
-			// acos range is [0, pi], always non-negative
-			expect(signOfFunction('acos', 'positive')).toBe('positive');
-			expect(signOfFunction('acos', 'negative')).toBe('positive');
+		it('should return positive for arccos with valid argument', () => {
+			// arccos range is [0, pi], always non-negative
+			expect(signOfFunction('arccos', 'positive')).toBe('positive');
+			expect(signOfFunction('arccos', 'negative')).toBe('positive');
 		});
 
-		it('should return zero for acos with zero argument', () => {
-			expect(signOfFunction('acos', 'zero')).toBe('zero');
+		it('should return zero for arccos with zero argument', () => {
+			expect(signOfFunction('arccos', 'zero')).toBe('zero');
 		});
 	});
 
@@ -496,10 +496,10 @@ describe('signOfFunction', () => {
 			expect(signOfFunction('tanh', 'zero')).toBe('zero');
 		});
 
-		it('should preserve sign for atan', () => {
-			expect(signOfFunction('atan', 'positive')).toBe('positive');
-			expect(signOfFunction('atan', 'negative')).toBe('negative');
-			expect(signOfFunction('atan', 'zero')).toBe('zero');
+		it('should preserve sign for arctan', () => {
+			expect(signOfFunction('arctan', 'positive')).toBe('positive');
+			expect(signOfFunction('arctan', 'negative')).toBe('negative');
+			expect(signOfFunction('arctan', 'zero')).toBe('zero');
 		});
 
 		it('should preserve sign for cbrt (cube root)', () => {

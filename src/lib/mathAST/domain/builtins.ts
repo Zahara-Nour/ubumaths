@@ -45,13 +45,10 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	['log2', { domain: positiveReals(), constraint: 'x > 0' }],
 
 	// Inverse trig with [-1, 1] domain
-	['asin', { domain: unitInterval(), constraint: '-1 <= x <= 1' }],
 	['arcsin', { domain: unitInterval(), constraint: '-1 <= x <= 1' }],
-	['acos', { domain: unitInterval(), constraint: '-1 <= x <= 1' }],
 	['arccos', { domain: unitInterval(), constraint: '-1 <= x <= 1' }],
 
 	// Inverse hyperbolic with restricted domains
-	['acosh', { domain: intervalDomain([greaterThanOrEqual(fromNumber(1))]), constraint: 'x >= 1' }],
 	[
 		'arccosh',
 		{ domain: intervalDomain([greaterThanOrEqual(fromNumber(1))]), constraint: 'x >= 1' }
@@ -62,22 +59,13 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	['sin', { domain: universalDomain() }],
 	['cos', { domain: universalDomain() }],
 	['tan', { domain: universalDomain() }], // Note: has exclusions, but handled separately
-	['atan', { domain: universalDomain() }],
 	['arctan', { domain: universalDomain() }],
 	['sinh', { domain: universalDomain() }],
 	['cosh', { domain: universalDomain() }],
 	['tanh', { domain: universalDomain() }],
-	['asinh', { domain: universalDomain() }],
 	['arcsinh', { domain: universalDomain() }],
 
-	// atanh/arctanh: strictly between -1 and 1 (open interval ]-1, 1[)
-	[
-		'atanh',
-		{
-			domain: intervalDomain([openInterval(fromNumber(-1), fromNumber(1))]),
-			constraint: '-1 < x < 1'
-		}
-	],
+	// arctanh: strictly between -1 and 1 (open interval ]-1, 1[)
 	[
 		'arctanh',
 		{
@@ -421,17 +409,6 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 	// Inverse Trigonometric Functions
 	// ==========================================================================
 	[
-		'asin',
-		{
-			lower: -Math.PI / 2,
-			lowerInclusive: true,
-			upper: Math.PI / 2,
-			upperInclusive: true,
-			monotonicity: 'increasing',
-			evaluate: Math.asin
-		}
-	],
-	[
 		'arcsin',
 		{
 			lower: -Math.PI / 2,
@@ -443,17 +420,6 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 		}
 	],
 	[
-		'acos',
-		{
-			lower: 0,
-			lowerInclusive: true,
-			upper: Math.PI,
-			upperInclusive: true,
-			monotonicity: 'decreasing',
-			evaluate: Math.acos
-		}
-	],
-	[
 		'arccos',
 		{
 			lower: 0,
@@ -462,17 +428,6 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 			upperInclusive: true,
 			monotonicity: 'decreasing',
 			evaluate: Math.acos
-		}
-	],
-	[
-		'atan',
-		{
-			lower: -Math.PI / 2,
-			lowerInclusive: false,
-			upper: Math.PI / 2,
-			upperInclusive: false,
-			monotonicity: 'increasing',
-			evaluate: Math.atan
 		}
 	],
 	[
@@ -598,17 +553,6 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 	// Inverse Hyperbolic Functions
 	// ==========================================================================
 	[
-		'asinh',
-		{
-			lower: null,
-			lowerInclusive: false,
-			upper: null,
-			upperInclusive: false,
-			monotonicity: 'increasing',
-			evaluate: Math.asinh
-		}
-	],
-	[
 		'arcsinh',
 		{
 			lower: null,
@@ -620,17 +564,6 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 		}
 	],
 	[
-		'acosh',
-		{
-			lower: 0,
-			lowerInclusive: true,
-			upper: null,
-			upperInclusive: false,
-			monotonicity: 'increasing',
-			evaluate: Math.acosh
-		}
-	],
-	[
 		'arccosh',
 		{
 			lower: 0,
@@ -639,17 +572,6 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 			upperInclusive: false,
 			monotonicity: 'increasing',
 			evaluate: Math.acosh
-		}
-	],
-	[
-		'atanh',
-		{
-			lower: null,
-			lowerInclusive: false,
-			upper: null,
-			upperInclusive: false,
-			monotonicity: 'increasing',
-			evaluate: Math.atanh
 		}
 	],
 	[
