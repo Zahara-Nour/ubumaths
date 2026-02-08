@@ -11,7 +11,8 @@
  * | Quadratic (ax²+bx+c=0)     | quadraticSolver     | Complete                  |
  * | Cubic (ax³+bx²+cx+d=0)     | polynomialSolver    | Complete (Cardano)        |
  * | Pure power (x^n=k)          | polynomialSolver    | Complete                  |
- * | General polynomial deg > 3  | —                   | NOT supported             |
+ * | Quartic (ax⁴+bx³+cx²+dx+e=0)| quarticSolver       | Complete (Ferrari)        |
+ * | General polynomial deg > 4  | —                   | NOT supported             |
  * | Exponential (e^x=c)         | transcendentalSolver| Simple cases only         |
  * | Logarithmic (ln(x)=c)       | transcendentalSolver| Simple cases only         |
  * | Trigonometric (sin(x)=c)    | transcendentalSolver| Principal solution only   |
@@ -25,7 +26,7 @@
  *
  * ## Known gaps (affecting sign/variation correctness)
  *
- * 1. **Polynomials degree >= 4**: no general formula exists (Abel-Ruffini theorem).
+ * 1. **Polynomials degree >= 5**: no general formula exists (Abel-Ruffini theorem).
  *    Needs numeric methods (Newton) + Sturm sequences for root counting.
  * 2. **Trigonometric solutions**: only the principal value is returned, not the
  *    full periodic family (x = arcsin(c) + 2kπ). For sign analysis on R, all
@@ -58,6 +59,7 @@ import { createStepRecorder } from './step-recorder';
 import { linearSolver } from './solvers/linear';
 import { quadraticSolver } from './solvers/quadratic';
 import { polynomialSolver } from './solvers/polynomial';
+import { quarticSolver } from './solvers/quartic';
 import { transcendentalSolver } from './solvers/transcendental';
 import { normalize, normalFormsEquivalent } from '../normal';
 import { number } from '../factory';
@@ -81,9 +83,8 @@ function selectStrategy(classification: ClassificationResult): SolvingStrategy {
 			return 'algebraic';
 
 		case 'polynomial':
-			// Higher degree polynomials may need numeric methods
-			// Note: degree 4 is declared as 'algebraic' but polynomialSolver
-			// doesn't implement Ferrari's formula yet — only pure power x^4=k works.
+			// Degree 3 (Cardano) and 4 (Ferrari) are algebraic.
+			// Degree >= 5 needs numeric methods (Abel-Ruffini theorem).
 			return classification.degree && classification.degree <= 4 ? 'algebraic' : 'numeric';
 
 		case 'exponential':
@@ -113,6 +114,7 @@ function selectSolver(classification: ClassificationResult): EquationSolver | nu
 			return quadraticSolver;
 
 		case 'polynomial':
+			if (classification.degree === 4) return quarticSolver;
 			return polynomialSolver;
 
 		case 'exponential':

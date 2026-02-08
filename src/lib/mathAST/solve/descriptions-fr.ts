@@ -63,6 +63,17 @@ export type SolvingRule =
 	| 'apply-cardano-formula'
 	| 'apply-trigonometric-form'
 	| 'factor-common-root'
+	// Quartic
+	| 'identify-quartic'
+	| 'identify-biquadratic'
+	| 'biquadratic-substitution'
+	| 'biquadratic-back-substitution'
+	| 'biquadratic-no-positive-u'
+	| 'quartic-common-factor'
+	| 'quartic-ferrari'
+	| 'quartic-depress'
+	| 'quartic-resolvent-cubic'
+	| 'quartic-factor-quadratics'
 	// General
 	| 'to-standard-form'
 	| 'simplify-expression'
@@ -129,6 +140,22 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	'apply-cardano-formula': 'On applique la formule de Cardano',
 	'apply-trigonometric-form': 'On utilise la forme trigonometrique',
 	'factor-common-root': 'On factorise par la racine commune',
+
+	// Quartic
+	'identify-quartic': "L'equation est quartique (degre 4)",
+	'identify-biquadratic': "L'equation est biquadratique: ax⁴ + bx² + c = 0",
+	'biquadratic-substitution': 'On pose u = x² pour ramener a une equation quadratique',
+	'biquadratic-back-substitution':
+		'On revient a la variable originale: x = ±√u pour chaque solution positive u',
+	'biquadratic-no-positive-u':
+		"Aucune valeur de u n'est positive, donc il n'y a pas de solution reelle",
+	'quartic-common-factor': 'On factorise par x (racine evidente: x = 0)',
+	'quartic-ferrari': "On utilise la methode de Ferrari pour resoudre l'equation quartique",
+	'quartic-depress':
+		'On effectue la substitution pour obtenir la forme deprimee t⁴ + At² + Bt + C = 0',
+	'quartic-resolvent-cubic': 'On resout la cubique resolvante',
+	'quartic-factor-quadratics':
+		"On factorise en deux equations quadratiques et on resout chacune d'elles",
 
 	// General
 	'to-standard-form': "On met l'equation sous forme standard (... = 0)",
@@ -327,6 +354,37 @@ export function describeCubicDiscriminant(delta: MathNode, numericValue?: number
  * Create a description for factoring out a common root (x = 0).
  */
 export function describeFactorCommonRoot(variable: string): string {
+	return `On factorise par ${variable} (racine evidente: ${variable} = 0)`;
+}
+
+// =============================================================================
+// Quartic Descriptions
+// =============================================================================
+
+/**
+ * Create a description for identifying a quartic equation.
+ */
+export function describeIdentifyQuartic(
+	a: MathNode,
+	b: MathNode,
+	c: MathNode,
+	d: MathNode,
+	e: MathNode
+): string {
+	return `L'equation est quartique: ${toCustom(a)}x⁴ + ${toCustom(b)}x³ + ${toCustom(c)}x² + ${toCustom(d)}x + ${toCustom(e)} = 0`;
+}
+
+/**
+ * Create a description for identifying a biquadratic equation.
+ */
+export function describeIdentifyBiquadratic(a: MathNode, c: MathNode, e: MathNode): string {
+	return `L'equation est biquadratique: ${toCustom(a)}x⁴ + ${toCustom(c)}x² + ${toCustom(e)} = 0`;
+}
+
+/**
+ * Create a description for quartic common factor.
+ */
+export function describeQuarticCommonFactor(variable: string): string {
 	return `On factorise par ${variable} (racine evidente: ${variable} = 0)`;
 }
 

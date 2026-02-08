@@ -13,8 +13,8 @@
  *   real roots via trigonometric form).
  * - Pure power x^n = k: **complete** — handles all n, with exact integer
  *   roots when possible.
- * - **General degree 4 (quartic): NOT implemented.** Ferrari's formula exists
- *   but is not coded. Only x^4 = k (pure power) works.
+ * - **General degree 4 (quartic): handled by quarticSolver** (Ferrari's method).
+ *   See quartic.ts for details.
  * - **General degree >= 5: impossible algebraically** (Abel-Ruffini theorem).
  *   Would need numeric methods (Newton-Raphson) + Sturm sequences for
  *   guaranteed root counting.
@@ -69,7 +69,7 @@ import {
 /**
  * Check if a MathNode represents zero.
  */
-function isZeroNode(node: MathNode): boolean {
+export function isZeroNode(node: MathNode): boolean {
 	const norm = normalize(node);
 	return norm.numerator.length === 0 || normalFormsEquivalent(norm, ZERO_NORMAL_FORM);
 }
@@ -77,7 +77,7 @@ function isZeroNode(node: MathNode): boolean {
 /**
  * Check if a MathNode represents a negative number.
  */
-function isNegativeNode(node: MathNode): boolean {
+export function isNegativeNode(node: MathNode): boolean {
 	const norm = normalize(node);
 	if (norm.numerator.length !== 1) return false;
 
@@ -97,7 +97,7 @@ function isNegativeNode(node: MathNode): boolean {
 /**
  * Compute numeric value of a node (if possible).
  */
-function computeNumericValue(node: MathNode): number | null {
+export function computeNumericValue(node: MathNode): number | null {
 	try {
 		const norm = normalize(node);
 
@@ -145,7 +145,10 @@ function extractBigInt(node: MathNode): bigint | null {
  * Extract a power equation x^n = k from standard form x^n - k = 0.
  * Returns { n, k } where n is the exponent and k is the constant.
  */
-function extractPowerEquation(expr: MathNode, variable: string): { n: number; k: MathNode } | null {
+export function extractPowerEquation(
+	expr: MathNode,
+	variable: string
+): { n: number; k: MathNode } | null {
 	// Flatten to get terms
 	const flatSum = flattenSumShallow(expr);
 
@@ -244,7 +247,7 @@ function createNthRootNode(radicand: MathNode, n: number): MathNode {
 /**
  * Get the degree of a term in the given variable.
  */
-function getTermDegree(term: MathNode, variable: string): number {
+export function getTermDegree(term: MathNode, variable: string): number {
 	const vars = getVariables(term);
 	if (!vars.has(variable)) return 0;
 
@@ -294,7 +297,7 @@ function getTermDegree(term: MathNode, variable: string): number {
 /**
  * Extract coefficient from terms of given degree.
  */
-function extractCoefficient(terms: MathNode[], variable: string, degree: number): MathNode {
+export function extractCoefficient(terms: MathNode[], variable: string, degree: number): MathNode {
 	if (terms.length === 0) return number('0');
 
 	const termSum =
@@ -316,7 +319,7 @@ function extractCoefficient(terms: MathNode[], variable: string, degree: number)
 /**
  * Extract coefficients a, b, c, d from cubic expression ax³ + bx² + cx + d.
  */
-function extractCubicCoefficients(
+export function extractCubicCoefficients(
 	expr: MathNode,
 	variable: string
 ): { a: MathNode; b: MathNode; c: MathNode; d: MathNode } | null {
@@ -430,7 +433,7 @@ export const polynomialSolver: EquationSolver = {
 /**
  * Solve a power equation x^n = k
  */
-function solvePowerEquation(
+export function solvePowerEquation(
 	expr: MathNode,
 	variable: string,
 	extracted: { n: number; k: MathNode },
@@ -709,7 +712,7 @@ function handleEvenPositive(
  * 2. Compute discriminant Δ = -4p³ - 27q²
  * 3. Apply appropriate formula based on discriminant sign
  */
-function solveCubicCardano(
+export function solveCubicCardano(
 	variable: string,
 	coeffs: { a: MathNode; b: MathNode; c: MathNode; d: MathNode },
 	options: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
@@ -1266,7 +1269,10 @@ function handleCubicThreeReal(
 /**
  * Try to find a simple fraction close to the given value.
  */
-function findSimpleFraction(value: number, maxDenominator = 100): { n: number; d: number } | null {
+export function findSimpleFraction(
+	value: number,
+	maxDenominator = 100
+): { n: number; d: number } | null {
 	const TOLERANCE = 1e-9;
 
 	for (let d = 1; d <= maxDenominator; d++) {

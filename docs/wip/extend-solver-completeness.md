@@ -35,13 +35,11 @@ Currently, solve has three critical gaps:
 - `cos(ax+b) = c` → `x = (arccos(c) - b) / a + 2kπ/a` and `x = (-arccos(c) - b) / a + 2kπ/a`
 - `tan(ax+b) = c` → `x = (arctan(c) - b) / a + kπ/a`
 
-### Gap 2: Degree 4 polynomials (MEDIUM PRIORITY)
+### Gap 2: Degree 4 polynomials (MEDIUM PRIORITY) — DONE
 
-**Problem**: `polynomialSolver` in `src/lib/mathAST/solve/solvers/polynomial.ts` only handles cubics (Cardano) and pure powers (x^n = k). General quartics (ax⁴ + bx³ + cx² + dx + e = 0) are not supported. Since the derivative of a degree-5 polynomial is degree 4, this limits variation analysis.
+**Resolved**: `quarticSolver` in `src/lib/mathAST/solve/solvers/quartic.ts` handles all degree-4 polynomials via Ferrari's method (hybrid numeric/symbolic). Three sub-strategies: biquadratic, common factor, general Ferrari. 19 tests pass.
 
-**Approach**: Implement Ferrari's formula or numeric root-finding with Sturm sequences for guaranteed root counting.
-
-**Alternative simpler approach**: Use a numeric Durand-Kerner or companion matrix eigenvalue method to find all roots of degree-4 polynomials, then verify/refine with Newton's method. Since we already have `computeNumericValue` infrastructure, this may be more practical than the symbolic Ferrari formula.
+Note: Durand-Kerner and companion matrix eigenvalue approaches were considered but rejected — they are purely numeric methods that cannot produce exact symbolic solutions (integers, fractions). Ferrari is the correct algebraic approach for degree 4 (analogous to Cardano for degree 3). Numeric-only methods would be appropriate for degree >= 5 where no algebraic formula exists (Abel-Ruffini).
 
 ### Gap 3: Mixed/factored equations (LOW PRIORITY)
 

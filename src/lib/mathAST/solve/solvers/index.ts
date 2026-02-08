@@ -9,6 +9,7 @@
 export { linearSolver } from './linear';
 export { quadraticSolver } from './quadratic';
 export { polynomialSolver } from './polynomial';
+export { quarticSolver } from './quartic';
 export { transcendentalSolver } from './transcendental';
 // Future: export { numericSolver } from './numeric';
 
@@ -16,6 +17,7 @@ import type { EquationSolver } from '../types';
 import { linearSolver } from './linear';
 import { quadraticSolver } from './quadratic';
 import { polynomialSolver } from './polynomial';
+import { quarticSolver } from './quartic';
 import { transcendentalSolver } from './transcendental';
 
 /**
@@ -25,6 +27,7 @@ export const ALL_SOLVERS: readonly EquationSolver[] = [
 	linearSolver,
 	quadraticSolver,
 	polynomialSolver,
+	quarticSolver,
 	transcendentalSolver
 	// Future solvers will be added here
 ];

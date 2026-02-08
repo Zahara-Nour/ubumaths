@@ -7,7 +7,7 @@ Spec: [extend-solver-completeness.md](./extend-solver-completeness.md)
 | Gap                             | Priorite | Status                                 | Tests            |
 | ------------------------------- | -------- | -------------------------------------- | ---------------- |
 | Gap 1: Trig periodic solutions  | HIGH     | Phase 1 DONE, Phase 2 pending decision | 46 pass + 9 todo |
-| Gap 2: Degree 4 polynomials     | MEDIUM   | Not started                            | —                |
+| Gap 2: Degree 4 polynomials     | MEDIUM   | DONE                                   | 19 pass          |
 | Gap 3: Mixed/factored equations | LOW      | Not started                            | —                |
 
 ---
@@ -64,17 +64,30 @@ Etendre `extractTrigEquation` pour gerer les formes normalisees (`k*trig(x) + c 
 
 ---
 
-## Gap 2: Degree 4 polynomials — NOT STARTED
+## Gap 2: Degree 4 polynomials — DONE
 
-**Probleme:** `polynomialSolver` ne gere que les cubiques (Cardano) et puissances pures. Les quartiques generales (ax⁴ + bx³ + cx² + dx + e = 0) ne sont pas supportees. Bloque l'analyse de variation des polynomes de degre 5.
+**Fichiers crees/modifies:**
 
-**Approches envisagees dans la spec:**
+| File                              | Changes                                                                        |
+| --------------------------------- | ------------------------------------------------------------------------------ |
+| `solve/solvers/quartic.ts`        | **NEW** — quarticSolver avec 3 strategies: biquadratic, common factor, Ferrari |
+| `solve/solvers/polynomial.ts`     | Export des helpers partages (isZeroNode, computeNumericValue, etc.)            |
+| `solve/solvers/index.ts`          | Export quarticSolver, ajout a ALL_SOLVERS                                      |
+| `solve/solve.ts`                  | Route degree 4 vers quarticSolver, mise a jour docs                            |
+| `solve/descriptions-fr.ts`        | 10 SolvingRule entries + 3 fonctions de description                            |
+| `solve/__tests__/quartic.test.ts` | **NEW** — 19 tests                                                             |
 
-- Ferrari symbolique
-- Durand-Kerner numerique + raffinement Newton
-- Companion matrix eigenvalues
+**Strategies implementees:**
 
-**Prerequis:** aucun (independant du Gap 1).
+1. **Biquadratique** (b=0, d=0): substitution u=x², resolution quadratique, retro-substitution x=+-sqrt(u)
+2. **Facteur commun** (e=0): factorisation x(ax³+bx²+cx+d)=0, reutilisation cubique Cardano
+3. **Ferrari general**: depression, cubique resolvante, factorisation en 2 quadratiques
+
+Approche hybride numerique/symbolique: calcul numerique via Ferrari, identification comme entiers/fractions simples, construction de MathNode symboliques.
+
+**Tests:** biquadratiques (6), facteur commun (3), Ferrari general (3), puissances pures (2), auto-detection variable (2), coefficient negatif (1), steps pedagogiques (2).
+
+**Regressions:** 0 (163 tests solve passent, 8 fichiers).
 
 ---
 
