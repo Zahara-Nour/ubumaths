@@ -171,8 +171,9 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		}
 
 		// Phase D: Cost check (post-normalize may also produce cheaper forms)
+		// Use <= so that post-normalize's canonical form wins over equivalent cost
 		const currentCost = computeCost(current);
-		if (currentCost < bestCost) {
+		if (currentCost <= bestCost) {
 			best = current;
 			bestCost = currentCost;
 		}

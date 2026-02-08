@@ -160,38 +160,29 @@ export function checkConstraint(
 		case 'positive': {
 			const value = parseNumberValue(node);
 			if (value !== undefined) return value > 0;
-			// Fallback to type inference with context
-			if (ctx) {
-				const inferred = inferType(node, ctx);
-				return inferred.sign === 'positive';
-			}
-			return false;
+			// Fallback to type inference (works with or without context)
+			const inferredPos = inferType(node, ctx);
+			return inferredPos.sign === 'positive';
 		}
 
 		case 'negative': {
 			const value = parseNumberValue(node);
 			if (value !== undefined) return value < 0;
-			// Fallback to type inference with context
-			if (ctx) {
-				const inferred = inferType(node, ctx);
-				return inferred.sign === 'negative';
-			}
-			return false;
+			// Fallback to type inference (works with or without context)
+			const inferredNeg = inferType(node, ctx);
+			return inferredNeg.sign === 'negative';
 		}
 
 		case 'nonzero': {
 			const value = parseNumberValue(node);
 			if (value !== undefined) return value !== 0;
-			// Fallback to type inference with context
-			if (ctx) {
-				const inferred = inferType(node, ctx);
-				return (
-					inferred.sign === 'nonzero' ||
-					inferred.sign === 'positive' ||
-					inferred.sign === 'negative'
-				);
-			}
-			return false;
+			// Fallback to type inference (works with or without context)
+			const inferredNz = inferType(node, ctx);
+			return (
+				inferredNz.sign === 'nonzero' ||
+				inferredNz.sign === 'positive' ||
+				inferredNz.sign === 'negative'
+			);
 		}
 
 		case 'nonone': {

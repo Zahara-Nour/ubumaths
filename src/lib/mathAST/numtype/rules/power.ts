@@ -11,6 +11,7 @@ import type { MathType, SignInfo } from '../types';
 import { join, isSubtype } from '../algebra';
 import { COMPLEX_TYPE, UNKNOWN_TYPE } from '../types';
 import type { Bounds } from '$lib/math/intervals/algebra';
+import { applyFunctionToBounds } from './function-bounds';
 
 // =============================================================================
 // Helper Functions
@@ -463,27 +464,40 @@ export function inferSqrtType(operandType: MathType, operandValue?: number): Mat
 		return { base: 'integer', sign: 'zero', finite: true };
 	}
 
+	// Compute bounds via monotonicity
+	const bounds = operandType.bounds ? applyFunctionToBounds('sqrt', operandType.bounds) : undefined;
+
 	// sqrt of positive integer
 	if (operandType.base === 'integer' && operandValue !== undefined) {
 		if (isPerfectSquare(operandValue)) {
-			return { base: 'integer', sign: 'positive', finite: true };
+			return { base: 'integer', sign: 'positive', finite: true, ...(bounds && { bounds }) };
 		}
-		return { base: 'irrational_algebraic', sign: 'positive', finite: true };
+		return {
+			base: 'irrational_algebraic',
+			sign: 'positive',
+			finite: true,
+			...(bounds && { bounds })
+		};
 	}
 
 	// sqrt of positive integer (unknown value) - assume irrational algebraic
 	if (operandType.base === 'integer' && operandType.sign === 'positive') {
-		return { base: 'irrational_algebraic', sign: 'positive', finite: true };
+		return {
+			base: 'irrational_algebraic',
+			sign: 'positive',
+			finite: true,
+			...(bounds && { bounds })
+		};
 	}
 
 	// sqrt of positive rational
 	if (operandType.base === 'rational' && operandType.sign === 'positive') {
-		return { base: 'algebraic', sign: 'positive', finite: true };
+		return { base: 'algebraic', sign: 'positive', finite: true, ...(bounds && { bounds }) };
 	}
 
 	// sqrt of positive real
 	if (operandType.sign === 'positive') {
-		return { base: 'real', sign: 'positive', finite: true };
+		return { base: 'real', sign: 'positive', finite: true, ...(bounds && { bounds }) };
 	}
 
 	// Unknown sign - could be complex

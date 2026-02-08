@@ -14,6 +14,8 @@ import { COMPLEX_TYPE, TRANSCENDENTAL_TYPE, INTEGER_TYPE, UNKNOWN_TYPE } from '.
 import { inferSqrtType } from './power';
 import { getBuiltinRangeEntry } from '$lib/mathAST/domain/builtins';
 import type { Bounds } from '$lib/math/intervals/algebra';
+import { applyFunctionToBounds } from './function-bounds';
+import { signFromBounds } from './literals';
 
 // =============================================================================
 // Function Type Categories
@@ -255,10 +257,16 @@ function inferTranscendentalFunctionType(
 	// General rule: transcendental function of real input is transcendental
 	if (isSubtype(argType.base, 'real')) {
 		const result = inferTranscendentalOutputWithSign(name, argType, argValue);
-		// Attach bounds from builtin range registry
-		const bounds = getFunctionBounds(name);
+		// Try dynamic bounds propagation, fall back to static range
+		const computedBounds = argType.bounds ? applyFunctionToBounds(name, argType.bounds) : undefined;
+		const bounds = computedBounds ?? getFunctionBounds(name);
 		if (bounds) {
-			return { ...result, bounds };
+			const boundsSign = signFromBounds(bounds);
+			return {
+				...result,
+				bounds,
+				...(boundsSign !== undefined && { sign: boundsSign })
+			};
 		}
 		return result;
 	}

@@ -30,7 +30,7 @@ import type { Bounds } from '$lib/math/intervals/algebra';
  * - If upper < 0 (or upper === 0 and not inclusive) → negative
  * - If lower === 0 and upper === 0 → zero
  */
-function signFromBounds(bounds: Bounds): SignInfo | undefined {
+export function signFromBounds(bounds: Bounds): SignInfo | undefined {
 	const { lower, upper, lowerInclusive, upperInclusive } = bounds;
 
 	// Singleton zero

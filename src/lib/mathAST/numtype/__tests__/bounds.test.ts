@@ -564,3 +564,137 @@ describe('bounds - sign coherence', () => {
 		// sign should not be forced to positive or negative since range crosses zero
 	});
 });
+
+// =============================================================================
+// Phase 3: Function Bounds Propagation
+// =============================================================================
+
+describe('bounds - function bounds propagation', () => {
+	it('exp(x) with x in [2, 5] -> bounds [exp(2), exp(5)]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 2, upper: 5, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\exp(x)', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(Math.exp(2));
+		expect(b!.upper).toBeCloseTo(Math.exp(5));
+		expect(b!.lowerInclusive).toBe(true);
+		expect(b!.upperInclusive).toBe(true);
+	});
+
+	it('exp(x) with x in [2, 5] should have sign positive', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 2, upper: 5, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const type = inferType(parseLatex('\\exp(x)'), ctx);
+		expect(type.sign).toBe('positive');
+	});
+
+	it('sin(x) without bounds -> static bounds [-1, 1] (no regression)', () => {
+		const b = boundsOf('\\sin(x)');
+		expect(b).toEqual({ lower: -1, upper: 1, lowerInclusive: true, upperInclusive: true });
+	});
+
+	it('sin(x) with x in [0, pi/2] -> bounds [0, 1]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: {
+							lower: 0,
+							upper: Math.PI / 2,
+							lowerInclusive: true,
+							upperInclusive: true
+						}
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\sin(x)', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(0);
+		expect(b!.upper).toBeCloseTo(1);
+	});
+
+	it('sqrt(x) with x in [4, 9] -> bounds [2, 3], sign positive', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						sign: 'positive' as const,
+						bounds: { lower: 4, upper: 9, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const type = inferType(parseLatex('\\sqrt{x}'), ctx);
+		expect(type.bounds).toBeDefined();
+		expect(type.bounds!.lower).toBeCloseTo(2);
+		expect(type.bounds!.upper).toBeCloseTo(3);
+		expect(type.sign).toBe('positive');
+	});
+
+	it('sqrt(x) with x in [0, +inf) -> bounds [0, +inf)', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						sign: 'positive' as const,
+						bounds: { lower: 0, upper: null, lowerInclusive: true, upperInclusive: false }
+					}
+				]
+			])
+		};
+		const type = inferType(parseLatex('\\sqrt{x}'), ctx);
+		expect(type.bounds).toBeDefined();
+		expect(type.bounds!.lower).toBe(0);
+		expect(type.bounds!.upper).toBeNull();
+		expect(type.bounds!.lowerInclusive).toBe(true);
+	});
+
+	it('composition: exp(sin(x)) with x in [0, pi/2] -> [1, e]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: {
+							lower: 0,
+							upper: Math.PI / 2,
+							lowerInclusive: true,
+							upperInclusive: true
+						}
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\exp(\\sin(x))', ctx);
+		expect(b).toBeDefined();
+		// sin([0, pi/2]) = [0, 1], exp([0, 1]) = [1, e]
+		expect(b!.lower).toBeCloseTo(1);
+		expect(b!.upper).toBeCloseTo(Math.E);
+	});
+});
