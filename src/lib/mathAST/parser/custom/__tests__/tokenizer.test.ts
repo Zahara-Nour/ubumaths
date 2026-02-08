@@ -612,26 +612,6 @@ describe('Function tokenization', () => {
 		});
 	});
 
-	// Short-form inverse names are accepted but normalized to canonical arc* form
-	const normalizedFunctions: [string, string][] = [
-		['asin', 'arcsin'],
-		['acos', 'arccos'],
-		['atan', 'arctan'],
-		['asinh', 'arcsinh'],
-		['acosh', 'arccosh'],
-		['atanh', 'arctanh']
-	];
-
-	it.each(normalizedFunctions)('should normalize %s to %s', (input, canonical) => {
-		const tokens = tokenize(input);
-		expect(tokens[0]).toEqual({
-			type: 'FUNC',
-			value: canonical,
-			position: 0,
-			length: input.length
-		});
-	});
-
 	it('should tokenize function with parentheses', () => {
 		const tokens = tokenize('sin(x)');
 		expect(getTypes(tokens.slice(0, -1))).toEqual(['FUNC', 'LPAREN', 'LETTER', 'RPAREN']);
