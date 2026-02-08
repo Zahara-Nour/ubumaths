@@ -20,6 +20,7 @@ import {
 	add,
 	opposite
 } from '../../factory';
+import { toLatex } from '../../latex-generator';
 
 function parseEquation(latex: string): RelationNode {
 	const node = parseLatex(latex);
@@ -54,7 +55,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(4, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('4');
 		});
 
 		it('should solve √x = 2 → x = 4', () => {
@@ -62,7 +63,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(4, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('4');
 		});
 
 		it('should solve √x = 0 → x = 0 (boundary)', () => {
@@ -70,7 +71,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(0, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('0');
 		});
 
 		it('should solve √x - 1 = 0 → x = 1', () => {
@@ -78,7 +79,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(1, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('1');
 		});
 
 		it('should solve √x - 10 = 0 → x = 100 (large constant)', () => {
@@ -86,7 +87,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(100, 3);
+			expect(toLatex(result.solutions[0].value)).toBe('100');
 		});
 	});
 
@@ -130,7 +131,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(9, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('9');
 		});
 
 		it('should solve 3√x - 12 = 0 → √x = 4 → x = 16', () => {
@@ -142,7 +143,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(16, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('16');
 		});
 
 		it('should solve -√x + 3 = 0 → √x = 3 → x = 9 (negative coefficient)', () => {
@@ -152,7 +153,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(9, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('9');
 		});
 	});
 
@@ -165,7 +166,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(8, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('8');
 		});
 
 		it('should solve ∛x + 2 = 0 → x = -8 (odd root, negative OK)', () => {
@@ -173,7 +174,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(-8, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('-8');
 		});
 
 		it('should solve ∛x = 0 → x = 0', () => {
@@ -181,7 +182,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(0, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('0');
 		});
 
 		it('should solve ∛x - 3 = 0 → x = 27', () => {
@@ -189,7 +190,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(27, 3);
+			expect(toLatex(result.solutions[0].value)).toBe('27');
 		});
 	});
 
@@ -202,7 +203,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(81, 3);
+			expect(toLatex(result.solutions[0].value)).toBe('81');
 		});
 
 		it('should solve ⁵√x - 2 = 0 → x = 32', () => {
@@ -210,7 +211,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(32, 3);
+			expect(toLatex(result.solutions[0].value)).toBe('32');
 		});
 
 		it('should solve ⁵√x + 2 = 0 → x = -32 (odd root, negative OK)', () => {
@@ -218,7 +219,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(-32, 3);
+			expect(toLatex(result.solutions[0].value)).toBe('-32');
 		});
 
 		it('should return no-solution for ⁴√x + 2 = 0 (even root, negative RHS)', () => {
@@ -239,7 +240,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(10, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('10');
 		});
 
 		it('should solve √(x²-1) - 2 = 0 → x²-1 = 4 → x = ±√5', () => {
@@ -249,9 +250,8 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('multiple');
 			expect(result.solutions).toHaveLength(2);
-			const approxValues = result.solutions.map((s) => s.approximate).sort((a, b) => a! - b!);
-			expect(approxValues[0]).toBeCloseTo(-Math.sqrt(5), 5);
-			expect(approxValues[1]).toBeCloseTo(Math.sqrt(5), 5);
+			const values = result.solutions.map((s) => toLatex(s.value)).sort();
+			expect(values).toEqual(['-\\sqrt{5}', '\\sqrt{5}']);
 		});
 
 		it('should solve √(2x + 3) - 3 = 0 → 2x+3 = 9 → x = 3', () => {
@@ -261,7 +261,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(3, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('3');
 		});
 
 		it('should solve ∛(x+1) - 2 = 0 → x+1 = 8 → x = 7', () => {
@@ -277,7 +277,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(7, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('7');
 		});
 
 		it('should solve √(x+4) = 0 → x+4 = 0 → x = -4', () => {
@@ -286,7 +286,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(-4, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('-4');
 		});
 	});
 
@@ -300,7 +300,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(8, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('8');
 		});
 
 		it('should solve x^(1/2) - 3 = 0 → x = 9', () => {
@@ -309,7 +309,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(9, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('9');
 		});
 
 		it('should solve x^(1/3) - 2 = 0 → x = 8', () => {
@@ -318,7 +318,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(8, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('8');
 		});
 
 		it('should solve x^(3/2) = 27 → x = 27^(2/3) = 9', () => {
@@ -327,7 +327,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(9, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('9');
 		});
 
 		it('should solve x^(2/3) = 0 → x = 0 (zero RHS)', () => {
@@ -336,7 +336,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(0, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('0');
 		});
 
 		it('should solve x^(1/4) - 2 = 0 → x = 16 (4th root)', () => {
@@ -345,7 +345,7 @@ describe('Radical equation solver', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(16, 3);
+			expect(toLatex(result.solutions[0].value)).toBe('16');
 		});
 
 		it('should return no-solution for x^(1/2) + 3 = 0 (even root, negative)', () => {
@@ -435,7 +435,7 @@ describe('Radical equation solver', () => {
 			const result = solve(parseEquation('\\ln(x) - 1 = 0'));
 
 			expect(result.status).toBe('unique');
-			expect(result.solutions[0].approximate).toBeCloseTo(Math.E, 5);
+			expect(toLatex(result.solutions[0].value)).toBe('\\exponentialE');
 		});
 
 		it('should NOT intercept trig sin(x) = 0', () => {
