@@ -5,6 +5,13 @@
  * - Superscript/Power: base^exponent
  * - Square root: sqrt(x) = x^(1/2)
  * - Nth root: x^(1/n)
+ *
+ * ## Bounds Propagation
+ *
+ * Power bounds use monotonicity analysis (not the four-corners theorem),
+ * since x^n is a single-variable function. This avoids the over-approximation
+ * that would occur if we treated x^2 as x*x with independent operands
+ * (four-corners would give [-6,9] for [-2,3]^2 instead of the correct [0,9]).
  */
 
 import type { MathType, SignInfo } from '../types';
@@ -54,9 +61,28 @@ export interface TypeWithValue extends MathType {
  * Compute bounds for base^n where n is a known positive integer.
  * Handles partially infinite bounds (null endpoints = ±∞).
  *
- * - Even exponent: x^n is always non-negative. If base range doesn't cross 0,
- *   the result is straightforward. If it crosses 0, lower bound is 0.
- * - Odd exponent: x^n is monotonically increasing, so bounds = [lower^n, upper^n].
+ * Unlike multiplication (which uses the four-corners theorem for independent
+ * operands), power is a single-variable function x → x^n, so we exploit
+ * its monotonicity directly:
+ *
+ * - **Odd exponent** (monotonically increasing): [a,b]^n = [a^n, b^n].
+ *   Null endpoints propagate: (-∞)^odd = -∞, (+∞)^odd = +∞.
+ *
+ * - **Even exponent** (not monotone, but x^n ≥ 0 always):
+ *   - Entirely non-negative [a,b] with a≥0: [a^n, b^n] (monotone increasing on [0,∞))
+ *   - Entirely non-positive [a,b] with b≤0: [|b|^n, |a|^n] (monotone decreasing on (-∞,0])
+ *   - Crosses zero: [0, max(|a|^n, |b|^n)] (minimum is 0, attained at x=0)
+ *   Null endpoints give +∞ for the upper bound since |±∞|^n = +∞.
+ *
+ * This is exact (no over-approximation) because x^n is a function of a single
+ * variable — unlike multiplyBounds which assumes independence.
+ *
+ * @example
+ * // [2, +∞)^2 → [4, +∞)   (even, non-negative)
+ * // (-∞, -2]^2 → [4, +∞)   (even, non-positive, |upper|=2, |lower|=∞)
+ * // (-∞, 3]^2  → [0, +∞)   (even, crosses zero)
+ * // [2, +∞)^3  → [8, +∞)   (odd, monotone)
+ * // (-∞, -2]^3 → (-∞, -8]  (odd, monotone)
  */
 function computePowerBounds(baseBounds: Bounds, exponent: number): Bounds | undefined {
 	if (exponent <= 0) return undefined;

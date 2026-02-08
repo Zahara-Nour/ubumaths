@@ -4,8 +4,19 @@
  * Computes output bounds for builtin functions given input bounds,
  * using monotonicity data from the BUILTIN_RANGES registry.
  *
- * For monotone functions: f([a,b]) = [f(a), f(b)] or [f(b), f(a)]
- * For piecewise monotone: uses sampling at endpoints + critical points
+ * Like computePowerBounds (power.ts), this exploits single-variable
+ * monotonicity — not the four-corners theorem (arithmetic.ts):
+ *
+ * - **Globally monotone** (increasing: exp, ln, sqrt, sinh, arctan, ...):
+ *   f([a,b]) = [f(a), f(b)]
+ * - **Globally monotone** (decreasing: arccos, ...):
+ *   f([a,b]) = [f(b), f(a)]
+ * - **Piecewise monotone** (sin, cos, cosh, ...):
+ *   If input fits in one piece → apply monotone rule.
+ *   Otherwise → sampling at endpoints + critical points.
+ *
+ * Infinite input endpoints fall back to the function's static range
+ * from the BUILTIN_RANGES registry (e.g., sin → [-1, 1]).
  */
 
 import type { Bounds } from '$lib/math/intervals/algebra';
