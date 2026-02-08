@@ -65,7 +65,7 @@ export interface Endpoint {
  * // [0, π] represents 0 <= x <= π
  * { kind: 'interval',
  *   lower: { value: number('0'), type: 'closed' },
- *   upper: { value: greek('pi'), type: 'closed' } }
+ *   upper: { value: piConstant(), type: 'closed' } }
  */
 export interface Interval {
 	readonly kind: 'interval';

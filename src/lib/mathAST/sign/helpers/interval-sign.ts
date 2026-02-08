@@ -105,20 +105,13 @@ export function analyzeExpressionStructure(expr: MathNode, variable: string): Ex
 		return { type: 'constant', constantValue: value };
 	}
 
-	// Greek letters (might be pi)
+	// Greek letters are treated as variables
 	if (isGreek(expr)) {
-		if (expr.letter === 'pi') {
-			return { type: 'constant', constantValue: Math.PI };
-		}
-		// Other Greek letters are treated as variables
 		return { type: 'variable' };
 	}
 
 	// Variable
 	if (isVariable(expr)) {
-		if (expr.name === 'e') {
-			return { type: 'constant', constantValue: Math.E };
-		}
 		return { type: 'variable' };
 	}
 
@@ -424,14 +417,6 @@ function tryGetNumericValue(node: MathNode): number | null {
 
 	if (isMathConstant(node)) {
 		return node.constant === 'pi' ? Math.PI : Math.E;
-	}
-
-	if (isGreek(node) && node.letter === 'pi') {
-		return Math.PI;
-	}
-
-	if (isVariable(node) && node.name === 'e') {
-		return Math.E;
 	}
 
 	return null;

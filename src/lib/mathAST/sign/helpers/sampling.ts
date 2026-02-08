@@ -338,11 +338,6 @@ function getNumericBound(value: MathNode, _bound: 'lower' | 'upper'): number | n
 		return value.constant === 'pi' ? Math.PI : Math.E;
 	}
 
-	// Handle greek pi
-	if (value.type === 'greek' && value.letter === 'pi') {
-		return Math.PI;
-	}
-
 	// Try to evaluate symbolically
 	try {
 		const result = evaluate(value, { mode: 'decimal' });

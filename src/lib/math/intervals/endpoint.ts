@@ -67,7 +67,7 @@ export function isNegativeInfinity(value: EndpointValue): boolean {
  *
  * @example
  * endpointToNumber(number('5'))        // 5
- * endpointToNumber(greek('pi'))        // 3.141592653589793
+ * endpointToNumber(piConstant())       // 3.141592653589793
  * endpointToNumber(infinity('positive')) // Infinity
  * endpointToNumber(variable('x'))      // NaN (cannot evaluate)
  */

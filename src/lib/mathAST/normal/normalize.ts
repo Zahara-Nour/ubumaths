@@ -198,10 +198,7 @@ function isPiMonomial(monomial: readonly SymbolicFactor[]): boolean {
 	if (monomial.length !== 1) return false;
 	const f = monomial[0];
 	if (f.exponent.n !== 1n || f.exponent.d !== 1n) return false;
-	return (
-		(f.base.type === 'constant' && f.base.constant === 'pi') ||
-		(f.base.type === 'greek' && f.base.letter === 'pi')
-	);
+	return f.base.type === 'constant' && f.base.constant === 'pi';
 }
 
 /**
@@ -1771,10 +1768,7 @@ function getPiCoefficient(form: NormalForm): Rational | null {
 	// Monomial must be exactly π^1
 	if (term.monomial.length !== 1) return null;
 	const factor = term.monomial[0];
-	// π can be represented as MathConstantNode or (legacy) GreekLetterNode
-	const isPi =
-		(factor.base.type === 'constant' && factor.base.constant === 'pi') ||
-		(factor.base.type === 'greek' && factor.base.letter === 'pi');
+	const isPi = factor.base.type === 'constant' && factor.base.constant === 'pi';
 	if (!isPi) return null;
 	if (factor.exponent.n !== 1n || factor.exponent.d !== 1n) return null;
 

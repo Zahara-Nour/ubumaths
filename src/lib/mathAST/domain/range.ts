@@ -791,12 +791,8 @@ function extractConstant(node: MathNode): number | null {
 	if (node.type === 'number') {
 		return parseFloat(node.value);
 	}
-	if (node.type === 'greek') {
-		if (node.letter === 'pi') return Math.PI;
-	}
-	// Handle constant 'e' (Euler's number) - check if it's a symbol or constant type
-	if (node.type === 'constant' && 'name' in node && node.name === 'e') {
-		return Math.E;
+	if (node.type === 'constant') {
+		return node.constant === 'pi' ? Math.PI : Math.E;
 	}
 	if (node.type === 'opposite' && node.operand.type === 'number') {
 		return -parseFloat(node.operand.value);
@@ -1282,7 +1278,9 @@ function nodeToString(node: MathNode): string {
 		case 'variable':
 			return node.name;
 		case 'greek':
-			return node.letter === 'pi' ? 'π' : node.letter;
+			return node.letter;
+		case 'constant':
+			return node.constant === 'pi' ? 'π' : 'e';
 		case 'function':
 			return `${node.name}(...)`;
 		case 'addition':

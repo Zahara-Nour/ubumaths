@@ -57,10 +57,10 @@ function classifyExpressionRec(expr: MathNode, variable: string): ExpressionKind
 				return { kind: 'complex' };
 			}
 
+		case 'constant':
+			return { kind: 'constant', value: expr.constant === 'pi' ? Math.PI : Math.E };
+
 		case 'greek':
-			if (expr.letter === 'pi') {
-				return { kind: 'constant', value: Math.PI };
-			}
 			return { kind: 'complex' };
 
 		case 'opposite': {

@@ -4,8 +4,7 @@ import { getBindingNode } from '../types';
 import { createRule } from '../rule';
 import { nodesEqual } from '../match';
 import { P } from '../builder';
-import { isPiConstant, isGreek } from '../../guards';
-import type { GreekLetterNode } from '../../types';
+import { isPiConstant } from '../../guards';
 import {
 	number,
 	sin,
@@ -28,9 +27,7 @@ import {
 // ============================================================================
 
 function isPi(node: MathNode): boolean {
-	if (isPiConstant(node)) return true;
-	if (isGreek(node) && (node as GreekLetterNode).letter === 'pi') return true;
-	return false;
+	return isPiConstant(node);
 }
 
 function doubleArg(node: MathNode): MathNode {

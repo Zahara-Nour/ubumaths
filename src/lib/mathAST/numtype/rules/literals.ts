@@ -227,21 +227,6 @@ export function inferVariableType(node: VariableNode, ctx: TypeContext): MathTyp
  * @returns MathType based on context or default
  */
 export function inferGreekLetterType(node: GreekLetterNode, ctx: TypeContext): MathType {
-	// Special case: pi is a transcendental constant
-	if (node.letter === 'pi') {
-		return {
-			base: 'transcendental',
-			sign: 'positive',
-			finite: true,
-			bounds: {
-				lower: Math.PI,
-				upper: Math.PI,
-				lowerInclusive: true,
-				upperInclusive: true
-			}
-		};
-	}
-
 	// Check if the greek letter has a known type in context
 	const letterName = node.letter;
 	const varType = ctx.variables?.get(letterName);
