@@ -80,7 +80,12 @@ import type { Solution, PeriodicSolutionFamily } from './types';
 import { getRuleDescription } from './descriptions-fr';
 import { computeDomain } from '../domain/compute';
 import type { Domain } from '../domain/types';
-import { containsValue, isUniversal, isEmpty as isDomainEmpty } from '../domain/algebra';
+import {
+	containsValue,
+	isUniversal,
+	isEmpty as isDomainEmpty,
+	intersect as intersectDomains
+} from '../domain/algebra';
 import { formatInterval } from '../domain/format';
 
 // =============================================================================
@@ -1113,8 +1118,11 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		return handleConstantEquation(expr, opts);
 	}
 
-	// Compute domain of definition
-	const { domain } = computeDomain(expr, variable);
+	// Compute domain of definition, intersected with user-provided search domain
+	const { domain: computedDomain } = computeDomain(expr, variable);
+	const domain = options?.domain
+		? intersectDomains(computedDomain, options.domain)
+		: computedDomain;
 
 	// Short-circuit if domain is empty
 	if (isDomainEmpty(domain)) {
@@ -1138,9 +1146,17 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		};
 	}
 
-	// Record domain step if non-universal
+	// Record domain steps
 	const domainRecorder = createStepRecorder();
-	if (!isUniversal(domain)) {
+	if (options?.domain) {
+		domainRecorder.recordStep(
+			'search-domain',
+			`Recherche des solutions sur ${formatInterval(domain)}`,
+			expr,
+			expr,
+			'summarized'
+		);
+	} else if (!isUniversal(domain)) {
 		domainRecorder.recordStep(
 			'domain-computation',
 			`Ensemble de définition : ${formatInterval(domain)}`,

@@ -187,6 +187,9 @@ export interface SolveOptions {
 	/** Variable to solve for (default: auto-detect single variable) */
 	readonly variable?: string;
 
+	/** Restrict solution search to this domain (intersected with computed domain) */
+	readonly domain?: Domain;
+
 	/** Verbosity level for step recording (default: 'summarized') */
 	readonly verbosity?: SolvingVerbosity;
 
