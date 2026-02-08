@@ -30,7 +30,7 @@ import {
  * Uses WeakMap to avoid memory leaks - entries are garbage collected
  * when the MathNode is no longer referenced.
  */
-const typeCache = new WeakMap<MathNode, Map<string, MathType>>();
+let typeCache = new WeakMap<MathNode, Map<string, MathType>>();
 
 /**
  * Generates a cache key from a TypeContext.
@@ -323,9 +323,5 @@ export function clearTypeCache(node: MathNode): void {
  * Use sparingly - mainly for testing or memory management.
  */
 export function clearAllTypeCache(): void {
-	// WeakMap doesn't have a clear() method, so we create a new one
-	// This works because the old WeakMap will be garbage collected
-	// once no references to its keys exist
-	// Note: This is a no-op for the module-level cache,
-	// but callers can use it for documentation purposes
+	typeCache = new WeakMap();
 }
