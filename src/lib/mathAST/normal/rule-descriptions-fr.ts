@@ -87,6 +87,8 @@ export const RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'simplify-fraction': 'Simplification de la fraction',
 	'expand-power': 'Développement de la puissance',
 	'trig-known-value': 'Valeur trigonométrique remarquable',
+	'trig-pi-shift':
+		'Réduction de décalage trigonométrique (périodicité, supplémentaire, cofonction)',
 	'exp-ln-inverse': 'exp(ln(x)) = x',
 	'ln-exp-inverse': 'ln(exp(x)) = x',
 	'log-simplify': 'Simplification du logarithme',

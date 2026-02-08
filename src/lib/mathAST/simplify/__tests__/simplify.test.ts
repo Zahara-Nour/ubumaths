@@ -86,6 +86,51 @@ describe('simplify pipeline', () => {
 		it('tan(-x) -> -tan(x)', () => {
 			expect(simplifyLatex('\\tan(-x)')).toBe('-\\tan\\left( x \\right)');
 		});
+
+		// π-shift rules (handled by normalize)
+		it('sin(x + 2π) -> sin(x)', () => {
+			expect(simplifyLatex('\\sin(x+2\\pi)')).toBe('\\sin\\left( x \\right)');
+		});
+
+		it('cos(x + 2π) -> cos(x)', () => {
+			expect(simplifyLatex('\\cos(x+2\\pi)')).toBe('\\cos\\left( x \\right)');
+		});
+
+		it('sin(x + π) -> -sin(x)', () => {
+			expect(simplifyLatex('\\sin(x+\\pi)')).toBe('-\\sin\\left( x \\right)');
+		});
+
+		it('cos(x + π) -> -cos(x)', () => {
+			expect(simplifyLatex('\\cos(x+\\pi)')).toBe('-\\cos\\left( x \\right)');
+		});
+
+		it('sin(π - x) -> sin(x)', () => {
+			expect(simplifyLatex('\\sin(\\pi-x)')).toBe('\\sin\\left( x \\right)');
+		});
+
+		it('cos(π - x) -> -cos(x)', () => {
+			expect(simplifyLatex('\\cos(\\pi-x)')).toBe('-\\cos\\left( x \\right)');
+		});
+
+		it('tan(π - x) -> -tan(x)', () => {
+			expect(simplifyLatex('\\tan(\\pi-x)')).toBe('-\\tan\\left( x \\right)');
+		});
+
+		it('sin(π/2 - x) -> cos(x)', () => {
+			expect(simplifyLatex('\\sin(\\frac{\\pi}{2}-x)')).toBe('\\cos\\left( x \\right)');
+		});
+
+		it('cos(π/2 - x) -> sin(x)', () => {
+			expect(simplifyLatex('\\cos(\\frac{\\pi}{2}-x)')).toBe('\\sin\\left( x \\right)');
+		});
+
+		it('sin(x + π/2) -> cos(x)', () => {
+			expect(simplifyLatex('\\sin(x+\\frac{\\pi}{2})')).toBe('\\cos\\left( x \\right)');
+		});
+
+		it('cos(x + π/2) -> -sin(x)', () => {
+			expect(simplifyLatex('\\cos(x+\\frac{\\pi}{2})')).toBe('-\\sin\\left( x \\right)');
+		});
 	});
 
 	describe('logarithm / exponential', () => {
