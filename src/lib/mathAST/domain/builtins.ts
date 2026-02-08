@@ -81,21 +81,7 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 
 	// Inverse reciprocal trig: |x| >= 1 means ]-∞, -1] ∪ [1, +∞[
 	[
-		'asec',
-		{
-			domain: intervalDomain([lessThanOrEqual(fromNumber(-1)), greaterThanOrEqual(fromNumber(1))]),
-			constraint: '|x| >= 1'
-		}
-	],
-	[
 		'arcsec',
-		{
-			domain: intervalDomain([lessThanOrEqual(fromNumber(-1)), greaterThanOrEqual(fromNumber(1))]),
-			constraint: '|x| >= 1'
-		}
-	],
-	[
-		'acsc',
 		{
 			domain: intervalDomain([lessThanOrEqual(fromNumber(-1)), greaterThanOrEqual(fromNumber(1))]),
 			constraint: '|x| >= 1'
@@ -110,7 +96,6 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	],
 
 	// Inverse cotangent has universal domain
-	['acot', { domain: universalDomain() }],
 	['arccot', { domain: universalDomain() }],
 
 	// Absolute value and floor/ceiling
@@ -442,17 +427,6 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 		}
 	],
 	[
-		'acot',
-		{
-			lower: 0,
-			lowerInclusive: false,
-			upper: Math.PI,
-			upperInclusive: false,
-			monotonicity: 'decreasing',
-			evaluate: (x: number) => Math.atan(1 / x) + (x < 0 ? Math.PI : 0)
-		}
-	],
-	[
 		'arccot',
 		{
 			lower: 0,
@@ -464,17 +438,6 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 		}
 	],
 	[
-		'asec',
-		{
-			lower: 0,
-			lowerInclusive: true,
-			upper: Math.PI,
-			upperInclusive: true,
-			monotonicity: 'none', // Different on [-∞,-1] and [1,+∞]
-			evaluate: (x: number) => Math.acos(1 / x)
-		}
-	],
-	[
 		'arcsec',
 		{
 			lower: 0,
@@ -483,17 +446,6 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 			upperInclusive: true,
 			monotonicity: 'none',
 			evaluate: (x: number) => Math.acos(1 / x)
-		}
-	],
-	[
-		'acsc',
-		{
-			lower: -Math.PI / 2,
-			lowerInclusive: true,
-			upper: Math.PI / 2,
-			upperInclusive: true,
-			monotonicity: 'none',
-			evaluate: (x: number) => Math.asin(1 / x)
 		}
 	],
 	[

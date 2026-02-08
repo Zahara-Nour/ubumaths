@@ -124,11 +124,11 @@ describe('applyFunctionToBounds - monotone decreasing', () => {
 		});
 	});
 
-	it('acot([1, 10]) -> [acot(10), acot(1)]', () => {
+	it('arccot([1, 10]) -> [arccot(10), arccot(1)]', () => {
 		const input: Bounds = { lower: 1, upper: 10, lowerInclusive: true, upperInclusive: true };
-		const result = applyFunctionToBounds('acot', input);
+		const result = applyFunctionToBounds('arccot', input);
 		expect(result).toBeDefined();
-		// acot is decreasing: acot(10) < acot(1)
+		// arccot is decreasing: arccot(10) < arccot(1)
 		expect(result!.lower).toBeCloseTo(Math.atan(1 / 10), 10);
 		expect(result!.upper).toBeCloseTo(Math.PI / 4, 10);
 	});
