@@ -138,24 +138,18 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'log',
 	'exp',
 	'sqrt',
-	// Inverse trigonometric functions (canonical: arc* form)
+	// Inverse trigonometric functions
 	'arcsin',
 	'arccos',
 	'arctan',
-	'asin', // accepted, normalized to arcsin
-	'acos', // accepted, normalized to arccos
-	'atan', // accepted, normalized to arctan
 	// Hyperbolic functions
 	'sinh',
 	'cosh',
 	'tanh',
-	// Inverse hyperbolic functions (canonical: arc* form)
+	// Inverse hyperbolic functions
 	'arcsinh',
 	'arccosh',
 	'arctanh',
-	'asinh', // accepted, normalized to arcsinh
-	'acosh', // accepted, normalized to arccosh
-	'atanh', // accepted, normalized to arctanh
 	// Rounding functions
 	'floor',
 	'ceil',
@@ -172,19 +166,6 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Map from short-form inverse function names to their canonical arc* form.
- * The custom parser accepts both forms but always produces the canonical name.
- */
-const FUNCTION_NAME_CANONICAL: Readonly<Record<string, string>> = {
-	asin: 'arcsin',
-	acos: 'arccos',
-	atan: 'arctan',
-	asinh: 'arcsinh',
-	acosh: 'arccosh',
-	atanh: 'arctanh'
-};
-
-/**
  * Function names sorted by length (longest first) for greedy matching.
  * This ensures that "sqrt" is matched before "s" when checking prefixes.
  */
@@ -197,18 +178,12 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 	'arccos', // 6 chars
 	'arctan', // 6 chars
 	'median', // 6 chars
-	'asinh', // 5 chars
-	'acosh', // 5 chars
-	'atanh', // 5 chars
 	'stdev', // 5 chars
 	'floor', // 5 chars
 	'round', // 5 chars
 	'sinh', // 4 chars
 	'cosh', // 4 chars
 	'tanh', // 4 chars
-	'asin', // 4 chars
-	'acos', // 4 chars
-	'atan', // 4 chars
 	'sqrt', // 4 chars
 	'mean', // 4 chars
 	'ceil', // 4 chars
@@ -581,11 +556,9 @@ export class CustomTokenizer {
 		for (const funcName of FUNCTION_NAMES_BY_LENGTH) {
 			if (identifier.startsWith(funcName)) {
 				this.position = startPos + funcName.length;
-				// Normalize short-form inverse names (asin -> arcsin, etc.)
-				const canonicalName = FUNCTION_NAME_CANONICAL[funcName] ?? funcName;
 				return {
 					type: 'FUNC',
-					value: canonicalName,
+					value: funcName,
 					position: startPos,
 					length: funcName.length
 				};
