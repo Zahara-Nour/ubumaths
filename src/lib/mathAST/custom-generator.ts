@@ -295,6 +295,26 @@ function shouldWrapForFraction(node: MathNode): boolean {
 	}
 }
 
+/**
+ * Determines if a node needs `{}` wrapping when used as the LEFT operand
+ * of an implicit multiplication (juxtaposition).
+ *
+ * Without wrapping, `1/2π` is ambiguous: it parses as `1/(2π)` because `/`
+ * binds tighter than juxtaposition. The correct output is `{1/2}π`.
+ *
+ * Only fractions (division with displayStyle 'fraction') cause this ambiguity
+ * on the left side. Other complex expressions (addition, subtraction, etc.)
+ * would not normally appear as a left operand in implicit multiplication.
+ */
+function shouldWrapForImplicitMul(node: MathNode): boolean {
+	if (node.type === 'division' && node.displayStyle === 'fraction') return true;
+	// opposite of a fraction: -{1/2}π  (the minus is emitted separately, but the
+	// fraction inside still needs wrapping — however opposite is handled by its own
+	// visitor which emits `-` then the operand, so the operand itself goes through
+	// this check if it's used in implicit mul)
+	return false;
+}
+
 // =============================================================================
 // Generator Class
 // =============================================================================
@@ -395,11 +415,16 @@ export class CustomGenerator {
 				this.visitWithSpans(node.right);
 				break;
 
-			case 'multiplication':
+			case 'multiplication': {
+				const wrapLeft = node.displayStyle === 'implicit' && shouldWrapForImplicitMul(node.left);
+				const meta = node.operatorMetadata ?? node.metadata;
+				if (wrapLeft) this.emit('{', meta);
 				this.visitWithSpans(node.left);
+				if (wrapLeft) this.emit('}', meta);
 				this.visitMultiplicationOperatorSpan(node);
 				this.visitWithSpans(node.right);
 				break;
+			}
 
 			case 'division':
 				this.visitDivisionSpans(node);
@@ -999,9 +1024,12 @@ export class CustomGenerator {
 		const right = this.generateNode(node.right);
 
 		switch (node.displayStyle) {
-			case 'implicit':
-				// Juxtaposition: no operator
-				return `${left}${right}`;
+			case 'implicit': {
+				// Juxtaposition: no operator, but wrap left if it contains `/`
+				// to avoid ambiguity (e.g. `1/2π` → `{1/2}π`)
+				const wrappedLeft = shouldWrapForImplicitMul(node.left) ? `{${left}}` : left;
+				return `${wrappedLeft}${right}`;
+			}
 			case 'dot':
 			case 'cross':
 			case 'star':
