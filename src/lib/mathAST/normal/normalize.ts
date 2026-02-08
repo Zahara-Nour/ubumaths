@@ -1643,6 +1643,23 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 				return result;
 			}
 
+			// Special case: |x|^n → x^n when n is a positive even integer
+			// |x|^n is always non-negative, and equals x^n for even n
+			if (
+				ratExp !== null &&
+				ratExp.d === 1n &&
+				ratExp.n > 0n &&
+				ratExp.n % 2n === 0n &&
+				node.base.type === 'function' &&
+				node.base.name === 'abs' &&
+				node.base.args.length === 1
+			) {
+				const innerForm = normalizeNode(node.base.args[0], ctx);
+				const result = powNormalForm(innerForm, Number(ratExp.n));
+				recordNormalizationStep(ctx, 'abs-even-power', node, result, 'summarized');
+				return result;
+			}
+
 			const baseForm = normalizeNode(node.base, ctx);
 
 			// Check for non-negative integer exponent (handles x^0 = 1, x^1 = x, x^n)
@@ -3108,6 +3125,17 @@ function normalizeFunction(
 			}
 		} catch {
 			// Evaluation failed (free variables, etc.) - try symbolic parity
+		}
+
+		// |x^n| → x^n when n is a literal positive even integer
+		// Check original argument (before canonicalization) to preserve superscript structure
+		const originalAbsArg = node.args[0];
+		if (originalAbsArg.type === 'superscript') {
+			const exp = getNonNegativeIntExponent(originalAbsArg.superscript);
+			if (exp !== null && exp > 0 && exp % 2 === 0) {
+				recordNormalizationStep(ctx, 'abs-even-power', node, argForm, 'summarized');
+				return argForm;
+			}
 		}
 
 		// Apply parity rule: abs(-x) = abs(x)

@@ -3432,13 +3432,14 @@ describe('Symbolic Sqrt Simplification', () => {
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
-		test('sqrt(x+1) * sqrt(x+1) * sqrt(x+1) * sqrt(x+1) = |(x+1)²|', () => {
-			// Four sqrt(x+1) combined: sqrt((x+1)*(x+1)*(x+1)*(x+1))
-			// A1 rule detects sqrt(a*a) where a=(x+1)*(x+1), returns |a| = |(x+1)²|
-			// Note: |(x+1)²| = (x+1)² mathematically, but we don't simplify abs of squares
+		test('sqrt(x+1) * sqrt(x+1) * sqrt(x+1) * sqrt(x+1) = (x+1)²', () => {
+			// sqrt handling conservatively wraps in abs: result is abs(x²+2x+1)
+			// Mathematically |(x+1)²| = (x+1)², but abs can't be stripped from
+			// expanded polynomials (only from superscript nodes with even exponent)
 			const xplus1 = add(variable('x'), num('1'));
 			const expr = mul(mul(sqrt(xplus1), sqrt(xplus1)), mul(sqrt(xplus1), sqrt(xplus1)));
-			const expected = abs(power(add(variable('x'), num('1')), num('2')));
+			const squaredForm = denormalize(normalize(power(xplus1, num('2'))));
+			const expected = abs(squaredForm);
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 	});

@@ -79,6 +79,16 @@ const absEvenPow = createRule(
 	{ name: 'abs-even-pow' }
 );
 
+/**
+ * |x|^n -> x^n when n is even.
+ * |x|^n = (|x|)^n = x^n for even n (both sides non-negative).
+ */
+const absPowEven = createRule(
+	P.pow(P.func('abs', [P._('x')]), P._('n', P.isEven())),
+	P.pow(P._('x'), P._('n')),
+	{ name: 'abs-pow-even' }
+);
+
 // =============================================================================
 // Conditional Abs Rules (require TypeContext)
 // =============================================================================
@@ -115,6 +125,7 @@ export const absRules: readonly Rule[] = [
 	absProduct,
 	absQuotient,
 	absEvenPow,
+	absPowEven,
 	absPositive,
 	absNegative
 ] as const;
