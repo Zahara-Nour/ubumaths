@@ -3127,6 +3127,13 @@ function normalizeFunction(
 			// Evaluation failed (free variables, etc.) - try symbolic parity
 		}
 
+		// ||x|| → |x| (idempotence): if the argument is itself an abs call, return it
+		const canonicalArg0 = canonicalArgs[0];
+		if (canonicalArg0.type === 'function' && canonicalArg0.name === 'abs') {
+			recordNormalizationStep(ctx, 'abs-idempotent', node, argForm, 'summarized');
+			return argForm;
+		}
+
 		// |x^n| → x^n when n is a literal positive even integer
 		// Check original argument (before canonicalization) to preserve superscript structure
 		const originalAbsArg = node.args[0];
