@@ -426,19 +426,19 @@ describe('Pattern Matching Integration', () => {
 
 			it('simplifies |x|^2 to x^2 (even exponent)', () => {
 				const node = superscript(abs(variable('x')), number('2'));
-				const result = applyRules([...powerRules], node);
+				const result = applyRules([...absRules], node);
 				expect(nodesEqual(result, superscript(variable('x'), number('2')))).toBe(true);
 			});
 
 			it('simplifies |x|^4 to x^4', () => {
 				const node = superscript(abs(variable('x')), number('4'));
-				const result = applyRules([...powerRules], node);
+				const result = applyRules([...absRules], node);
 				expect(nodesEqual(result, superscript(variable('x'), number('4')))).toBe(true);
 			});
 
 			it('does not simplify |x|^3 (odd exponent)', () => {
 				const node = superscript(abs(variable('x')), number('3'));
-				const result = applyRules([...powerRules], node);
+				const result = applyRules([...absRules], node);
 				expect(nodesEqual(result, node)).toBe(true);
 			});
 
@@ -448,7 +448,7 @@ describe('Pattern Matching Integration', () => {
 					assumptions: new Map([['n', { parity: 'even' }]])
 				};
 				const node = superscript(abs(variable('x')), variable('n'));
-				const result = applyRules([...powerRules], node, 100, ctx);
+				const result = applyRules([...absRules], node, 100, ctx);
 				expect(nodesEqual(result, superscript(variable('x'), variable('n')))).toBe(true);
 			});
 
