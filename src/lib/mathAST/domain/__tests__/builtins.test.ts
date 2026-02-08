@@ -104,8 +104,8 @@ describe('getBuiltinDomain()', () => {
 		});
 	});
 
-	describe('asin/arcsin domain: [-1, 1]', () => {
-		it('returns unit interval for asin', () => {
+	describe('arcsin domain: [-1, 1]', () => {
+		it('returns unit interval for arcsin', () => {
 			const domain = getBuiltinDomain('arcsin');
 			expect(domain).toBeDefined();
 		});
@@ -123,26 +123,14 @@ describe('getBuiltinDomain()', () => {
 			expect(containsValue(domain, 1.01)).toBe(false);
 			expect(containsValue(domain, 2)).toBe(false);
 		});
-
-		it('arcsin is alias for asin', () => {
-			const asinDomain = getBuiltinDomain('arcsin');
-			const arcsinDomain = getBuiltinDomain('arcsin');
-			expect(asinDomain).toEqual(arcsinDomain);
-		});
 	});
 
-	describe('acos/arccos domain: [-1, 1]', () => {
+	describe('arccos domain: [-1, 1]', () => {
 		it('returns unit interval', () => {
 			const domain = getBuiltinDomain('arccos');
 			expect(domain).toBeDefined();
 			expect(containsValue(domain!, 0)).toBe(true);
 			expect(containsValue(domain!, 2)).toBe(false);
-		});
-
-		it('arccos is alias for acos', () => {
-			const acosDomain = getBuiltinDomain('arccos');
-			const arccosDomain = getBuiltinDomain('arccos');
-			expect(acosDomain).toEqual(arccosDomain);
 		});
 	});
 
@@ -295,12 +283,6 @@ describe('atanh domain: ]-1, 1[', () => {
 		const constraint = getBuiltinConstraintDescription('arctanh');
 		expect(constraint).toBe('-1 < x < 1');
 	});
-
-	it('arctanh is alias for atanh', () => {
-		const atanhDomain = getBuiltinDomain('arctanh');
-		const arctanhDomain = getBuiltinDomain('arctanh');
-		expect(atanhDomain).toEqual(arctanhDomain);
-	});
 });
 
 describe('sec, csc, cot domains', () => {
@@ -320,15 +302,15 @@ describe('sec, csc, cot domains', () => {
 	});
 });
 
-describe('asec/acsc domain: |x| >= 1', () => {
-	it('asec returns multi-interval domain', () => {
-		const domain = getBuiltinDomain('asec');
+describe('arcsec/arccsc domain: |x| >= 1', () => {
+	it('arcsec returns multi-interval domain', () => {
+		const domain = getBuiltinDomain('arcsec');
 		expect(domain).toBeDefined();
 		expect(domain?.kind).toBe('interval_set');
 	});
 
 	it('contains values where |x| >= 1', () => {
-		const domain = getBuiltinDomain('asec')!;
+		const domain = getBuiltinDomain('arcsec')!;
 		expect(containsValue(domain, 1)).toBe(true);
 		expect(containsValue(domain, -1)).toBe(true);
 		expect(containsValue(domain, 2)).toBe(true);
@@ -338,7 +320,7 @@ describe('asec/acsc domain: |x| >= 1', () => {
 	});
 
 	it('does not contain values where |x| < 1', () => {
-		const domain = getBuiltinDomain('asec')!;
+		const domain = getBuiltinDomain('arcsec')!;
 		expect(containsValue(domain, 0)).toBe(false);
 		expect(containsValue(domain, 0.5)).toBe(false);
 		expect(containsValue(domain, -0.5)).toBe(false);
@@ -346,36 +328,24 @@ describe('asec/acsc domain: |x| >= 1', () => {
 		expect(containsValue(domain, -0.999)).toBe(false);
 	});
 
-	it('arcsec is alias for asec', () => {
-		expect(getBuiltinDomain('arcsec')).toEqual(getBuiltinDomain('asec'));
-	});
-
-	it('acsc has same domain as asec', () => {
-		const asecDomain = getBuiltinDomain('asec')!;
-		const acscDomain = getBuiltinDomain('acsc')!;
-		expect(containsValue(acscDomain, 0)).toBe(containsValue(asecDomain, 0));
-		expect(containsValue(acscDomain, 1)).toBe(containsValue(asecDomain, 1));
-		expect(containsValue(acscDomain, 2)).toBe(containsValue(asecDomain, 2));
-	});
-
-	it('arccsc is alias for acsc', () => {
-		expect(getBuiltinDomain('arccsc')).toEqual(getBuiltinDomain('acsc'));
+	it('arccsc has same domain as arcsec', () => {
+		const arcsecDomain = getBuiltinDomain('arcsec')!;
+		const arccscDomain = getBuiltinDomain('arccsc')!;
+		expect(containsValue(arccscDomain, 0)).toBe(containsValue(arcsecDomain, 0));
+		expect(containsValue(arccscDomain, 1)).toBe(containsValue(arcsecDomain, 1));
+		expect(containsValue(arccscDomain, 2)).toBe(containsValue(arcsecDomain, 2));
 	});
 
 	it('has constraint description', () => {
-		expect(getBuiltinConstraintDescription('asec')).toBe('|x| >= 1');
-		expect(getBuiltinConstraintDescription('acsc')).toBe('|x| >= 1');
+		expect(getBuiltinConstraintDescription('arcsec')).toBe('|x| >= 1');
+		expect(getBuiltinConstraintDescription('arccsc')).toBe('|x| >= 1');
 	});
 });
 
-describe('acot domain', () => {
-	it('acot has universal domain', () => {
-		const domain = getBuiltinDomain('acot');
+describe('arccot domain', () => {
+	it('arccot has universal domain', () => {
+		const domain = getBuiltinDomain('arccot');
 		expect(domain?.kind).toBe('universal');
-	});
-
-	it('arccot is alias for acot', () => {
-		expect(getBuiltinDomain('arccot')).toEqual(getBuiltinDomain('acot'));
 	});
 });
 
