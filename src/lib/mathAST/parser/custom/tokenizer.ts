@@ -138,24 +138,24 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'log',
 	'exp',
 	'sqrt',
-	// Inverse trigonometric functions
+	// Inverse trigonometric functions (canonical: arc* form)
 	'arcsin',
 	'arccos',
 	'arctan',
-	'asin',
-	'acos',
-	'atan',
+	'asin', // accepted, normalized to arcsin
+	'acos', // accepted, normalized to arccos
+	'atan', // accepted, normalized to arctan
 	// Hyperbolic functions
 	'sinh',
 	'cosh',
 	'tanh',
-	// Inverse hyperbolic functions
+	// Inverse hyperbolic functions (canonical: arc* form)
 	'arcsinh',
 	'arccosh',
 	'arctanh',
-	'asinh',
-	'acosh',
-	'atanh',
+	'asinh', // accepted, normalized to arcsinh
+	'acosh', // accepted, normalized to arccosh
+	'atanh', // accepted, normalized to arctanh
 	// Rounding functions
 	'floor',
 	'ceil',
@@ -170,6 +170,19 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'max',
 	'sum'
 ]);
+
+/**
+ * Map from short-form inverse function names to their canonical arc* form.
+ * The custom parser accepts both forms but always produces the canonical name.
+ */
+const FUNCTION_NAME_CANONICAL: Readonly<Record<string, string>> = {
+	asin: 'arcsin',
+	acos: 'arccos',
+	atan: 'arctan',
+	asinh: 'arcsinh',
+	acosh: 'arccosh',
+	atanh: 'arctanh'
+};
 
 /**
  * Function names sorted by length (longest first) for greedy matching.
@@ -568,9 +581,11 @@ export class CustomTokenizer {
 		for (const funcName of FUNCTION_NAMES_BY_LENGTH) {
 			if (identifier.startsWith(funcName)) {
 				this.position = startPos + funcName.length;
+				// Normalize short-form inverse names (asin -> arcsin, etc.)
+				const canonicalName = FUNCTION_NAME_CANONICAL[funcName] ?? funcName;
 				return {
 					type: 'FUNC',
-					value: funcName,
+					value: canonicalName,
 					position: startPos,
 					length: funcName.length
 				};

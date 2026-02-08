@@ -49,9 +49,9 @@ const BUILTIN_SIGN_INFO: Record<string, BuiltinSignInfo> = {
 	// Sign-preserving functions (odd functions)
 	sinh: { preservesSign: true },
 	tanh: { preservesSign: true },
-	atan: { preservesSign: true },
-	asinh: { preservesSign: true },
-	atanh: { preservesSign: true },
+	arctan: { preservesSign: true },
+	arcsinh: { preservesSign: true },
+	arctanh: { preservesSign: true },
 	sign: { preservesSign: true },
 
 	// Domain-dependent: ln(x) is negative for 0 < x < 1, positive for x > 1
@@ -69,9 +69,9 @@ const BUILTIN_SIGN_INFO: Record<string, BuiltinSignInfo> = {
 	csc: { specialCase: 'periodic' },
 
 	// Inverse trig with restricted ranges
-	asin: {}, // range [-pi/2, pi/2], sign depends on arg
-	acos: { alwaysNonNegative: true }, // range [0, pi]
-	acosh: { alwaysNonNegative: true }, // range [0, +inf) for x >= 1
+	arcsin: {}, // range [-pi/2, pi/2], sign depends on arg
+	arccos: { alwaysNonNegative: true }, // range [0, pi]
+	arccosh: { alwaysNonNegative: true }, // range [0, +inf) for x >= 1
 
 	// Floor and ceiling preserve sign for positive, but floor(-0.5) = -1
 	floor: {},

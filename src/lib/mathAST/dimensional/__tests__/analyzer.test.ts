@@ -1247,16 +1247,16 @@ describe('Dimensional Analyzer', () => {
 		});
 
 		describe('Inverse Trigonometric Functions', () => {
-			it('should accept dimensionless for asin and return angle', () => {
-				const expr = func('asin', [number('0.5')]);
+			it('should accept dimensionless for arcsin and return angle', () => {
+				const expr = func('arcsin', [number('0.5')]);
 				const result = analyzeDimensions(expr);
 
 				expect(result.valid).toBe(true);
 				expect(result.resultUnit!.components.get('rad')).toBe(1);
 			});
 
-			it('should reject unit input for asin', () => {
-				const expr = func('asin', [quantity('0.5', 'm')]);
+			it('should reject unit input for arcsin', () => {
+				const expr = func('arcsin', [quantity('0.5', 'm')]);
 				const result = analyzeDimensions(expr);
 
 				expect(result.valid).toBe(false);

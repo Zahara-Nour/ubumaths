@@ -75,15 +75,15 @@ function getOuterFunctionRequirement(
 		case 'sqrt':
 			// Square root needs input >= 0
 			return { needsPositive: false, needsNonNegative: true, lowerBound: 0 };
-		case 'asin':
-		case 'acos':
+		case 'arcsin':
+		case 'arccos':
 			// Inverse trig needs input in [-1, 1] - handled by preimage already
 			return null;
-		case 'acosh':
-			// acosh needs input >= 1
+		case 'arccosh':
+			// arccosh needs input >= 1
 			return { needsPositive: false, needsNonNegative: false, lowerBound: 1 };
-		case 'atanh':
-			// atanh needs input in ]-1, 1[ - handled by preimage already
+		case 'arctanh':
+			// arctanh needs input in ]-1, 1[ - handled by preimage already
 			return null;
 		default:
 			return null;

@@ -27,16 +27,16 @@ describe('BUILTIN_DOMAINS registry', () => {
 		expect(BUILTIN_DOMAINS.has('log')).toBe(true);
 	});
 
-	it('has domain for asin', () => {
-		expect(BUILTIN_DOMAINS.has('asin')).toBe(true);
+	it('has domain for arcsin', () => {
+		expect(BUILTIN_DOMAINS.has('arcsin')).toBe(true);
 	});
 
-	it('has domain for acos', () => {
-		expect(BUILTIN_DOMAINS.has('acos')).toBe(true);
+	it('has domain for arccos', () => {
+		expect(BUILTIN_DOMAINS.has('arccos')).toBe(true);
 	});
 
-	it('has domain for acosh', () => {
-		expect(BUILTIN_DOMAINS.has('acosh')).toBe(true);
+	it('has domain for arccosh', () => {
+		expect(BUILTIN_DOMAINS.has('arccosh')).toBe(true);
 	});
 
 	it('does not have domain for sin (unrestricted)', () => {
@@ -106,26 +106,26 @@ describe('getBuiltinDomain()', () => {
 
 	describe('asin/arcsin domain: [-1, 1]', () => {
 		it('returns unit interval for asin', () => {
-			const domain = getBuiltinDomain('asin');
+			const domain = getBuiltinDomain('arcsin');
 			expect(domain).toBeDefined();
 		});
 
 		it('contains -1, 0, 1', () => {
-			const domain = getBuiltinDomain('asin')!;
+			const domain = getBuiltinDomain('arcsin')!;
 			expect(containsValue(domain, -1)).toBe(true);
 			expect(containsValue(domain, 0)).toBe(true);
 			expect(containsValue(domain, 1)).toBe(true);
 		});
 
 		it('does not contain values outside [-1, 1]', () => {
-			const domain = getBuiltinDomain('asin')!;
+			const domain = getBuiltinDomain('arcsin')!;
 			expect(containsValue(domain, -1.01)).toBe(false);
 			expect(containsValue(domain, 1.01)).toBe(false);
 			expect(containsValue(domain, 2)).toBe(false);
 		});
 
 		it('arcsin is alias for asin', () => {
-			const asinDomain = getBuiltinDomain('asin');
+			const asinDomain = getBuiltinDomain('arcsin');
 			const arcsinDomain = getBuiltinDomain('arcsin');
 			expect(asinDomain).toEqual(arcsinDomain);
 		});
@@ -133,14 +133,14 @@ describe('getBuiltinDomain()', () => {
 
 	describe('acos/arccos domain: [-1, 1]', () => {
 		it('returns unit interval', () => {
-			const domain = getBuiltinDomain('acos');
+			const domain = getBuiltinDomain('arccos');
 			expect(domain).toBeDefined();
 			expect(containsValue(domain!, 0)).toBe(true);
 			expect(containsValue(domain!, 2)).toBe(false);
 		});
 
 		it('arccos is alias for acos', () => {
-			const acosDomain = getBuiltinDomain('acos');
+			const acosDomain = getBuiltinDomain('arccos');
 			const arccosDomain = getBuiltinDomain('arccos');
 			expect(acosDomain).toEqual(arccosDomain);
 		});
@@ -148,13 +148,13 @@ describe('getBuiltinDomain()', () => {
 
 	describe('acosh domain: [1, +infinity[', () => {
 		it('contains 1 and above', () => {
-			const domain = getBuiltinDomain('acosh')!;
+			const domain = getBuiltinDomain('arccosh')!;
 			expect(containsValue(domain, 1)).toBe(true);
 			expect(containsValue(domain, 10)).toBe(true);
 		});
 
 		it('does not contain values below 1', () => {
-			const domain = getBuiltinDomain('acosh')!;
+			const domain = getBuiltinDomain('arccosh')!;
 			expect(containsValue(domain, 0)).toBe(false);
 			expect(containsValue(domain, 0.999)).toBe(false);
 			expect(containsValue(domain, -1)).toBe(false);
@@ -178,7 +178,7 @@ describe('getBuiltinDomain()', () => {
 		});
 
 		it('atan has universal domain', () => {
-			const domain = getBuiltinDomain('atan');
+			const domain = getBuiltinDomain('arctan');
 			expect(domain?.kind).toBe('universal');
 		});
 
@@ -207,8 +207,8 @@ describe('getBuiltinDomain()', () => {
 			expect(getBuiltinDomain('Ln')).toEqual(getBuiltinDomain('ln'));
 		});
 
-		it('ASIN returns same as asin', () => {
-			expect(getBuiltinDomain('ASIN')).toEqual(getBuiltinDomain('asin'));
+		it('ARCSIN returns same as arcsin', () => {
+			expect(getBuiltinDomain('ARCSIN')).toEqual(getBuiltinDomain('arcsin'));
 		});
 	});
 
@@ -233,11 +233,11 @@ describe('hasRestrictedDomain()', () => {
 	});
 
 	it('returns true for asin', () => {
-		expect(hasRestrictedDomain('asin')).toBe(true);
+		expect(hasRestrictedDomain('arcsin')).toBe(true);
 	});
 
 	it('returns true for acosh', () => {
-		expect(hasRestrictedDomain('acosh')).toBe(true);
+		expect(hasRestrictedDomain('arccosh')).toBe(true);
 	});
 
 	it('returns false for sin (universal domain)', () => {
@@ -264,13 +264,13 @@ describe('hasRestrictedDomain()', () => {
 
 describe('atanh domain: ]-1, 1[', () => {
 	it('returns open interval domain', () => {
-		const domain = getBuiltinDomain('atanh');
+		const domain = getBuiltinDomain('arctanh');
 		expect(domain).toBeDefined();
 		expect(domain?.kind).toBe('interval_set');
 	});
 
 	it('contains values strictly between -1 and 1', () => {
-		const domain = getBuiltinDomain('atanh')!;
+		const domain = getBuiltinDomain('arctanh')!;
 		expect(containsValue(domain, 0)).toBe(true);
 		expect(containsValue(domain, 0.5)).toBe(true);
 		expect(containsValue(domain, -0.5)).toBe(true);
@@ -278,13 +278,13 @@ describe('atanh domain: ]-1, 1[', () => {
 	});
 
 	it('does not contain -1 or 1 (open endpoints)', () => {
-		const domain = getBuiltinDomain('atanh')!;
+		const domain = getBuiltinDomain('arctanh')!;
 		expect(containsValue(domain, -1)).toBe(false);
 		expect(containsValue(domain, 1)).toBe(false);
 	});
 
 	it('does not contain values outside ]-1, 1[', () => {
-		const domain = getBuiltinDomain('atanh')!;
+		const domain = getBuiltinDomain('arctanh')!;
 		expect(containsValue(domain, -2)).toBe(false);
 		expect(containsValue(domain, 2)).toBe(false);
 		expect(containsValue(domain, -1.01)).toBe(false);
@@ -292,12 +292,12 @@ describe('atanh domain: ]-1, 1[', () => {
 	});
 
 	it('has constraint description', () => {
-		const constraint = getBuiltinConstraintDescription('atanh');
+		const constraint = getBuiltinConstraintDescription('arctanh');
 		expect(constraint).toBe('-1 < x < 1');
 	});
 
 	it('arctanh is alias for atanh', () => {
-		const atanhDomain = getBuiltinDomain('atanh');
+		const atanhDomain = getBuiltinDomain('arctanh');
 		const arctanhDomain = getBuiltinDomain('arctanh');
 		expect(atanhDomain).toEqual(arctanhDomain);
 	});
@@ -391,12 +391,12 @@ describe('getBuiltinConstraintDescription()', () => {
 	});
 
 	it('returns French description for asin', () => {
-		const desc = getBuiltinConstraintDescription('asin');
+		const desc = getBuiltinConstraintDescription('arcsin');
 		expect(desc).toBe('-1 <= x <= 1');
 	});
 
 	it('returns French description for acosh', () => {
-		const desc = getBuiltinConstraintDescription('acosh');
+		const desc = getBuiltinConstraintDescription('arccosh');
 		expect(desc).toBe('x >= 1');
 	});
 
@@ -583,18 +583,18 @@ describe('getBuiltinRange()', () => {
 
 	describe('asin range: [-pi/2, pi/2]', () => {
 		it('contains 0', () => {
-			const range = getBuiltinRange('asin')!;
+			const range = getBuiltinRange('arcsin')!;
 			expect(containsValue(range, 0)).toBe(true);
 		});
 
 		it('contains ±pi/2', () => {
-			const range = getBuiltinRange('asin')!;
+			const range = getBuiltinRange('arcsin')!;
 			expect(containsValue(range, Math.PI / 2)).toBe(true);
 			expect(containsValue(range, -Math.PI / 2)).toBe(true);
 		});
 
 		it('does not contain values outside [-pi/2, pi/2]', () => {
-			const range = getBuiltinRange('asin')!;
+			const range = getBuiltinRange('arcsin')!;
 			expect(containsValue(range, 2)).toBe(false);
 			expect(containsValue(range, -2)).toBe(false);
 		});
@@ -602,36 +602,36 @@ describe('getBuiltinRange()', () => {
 
 	describe('acos range: [0, pi]', () => {
 		it('contains 0 and pi', () => {
-			const range = getBuiltinRange('acos')!;
+			const range = getBuiltinRange('arccos')!;
 			expect(containsValue(range, 0)).toBe(true);
 			expect(containsValue(range, Math.PI)).toBe(true);
 		});
 
 		it('does not contain negative values', () => {
-			const range = getBuiltinRange('acos')!;
+			const range = getBuiltinRange('arccos')!;
 			expect(containsValue(range, -0.1)).toBe(false);
 		});
 
 		it('does not contain values > pi', () => {
-			const range = getBuiltinRange('acos')!;
+			const range = getBuiltinRange('arccos')!;
 			expect(containsValue(range, Math.PI + 0.1)).toBe(false);
 		});
 	});
 
 	describe('atan range: ]-pi/2, pi/2[', () => {
 		it('contains 0', () => {
-			const range = getBuiltinRange('atan')!;
+			const range = getBuiltinRange('arctan')!;
 			expect(containsValue(range, 0)).toBe(true);
 		});
 
 		it('does not contain ±pi/2 (open bounds)', () => {
-			const range = getBuiltinRange('atan')!;
+			const range = getBuiltinRange('arctan')!;
 			expect(containsValue(range, Math.PI / 2)).toBe(false);
 			expect(containsValue(range, -Math.PI / 2)).toBe(false);
 		});
 
 		it('contains values just inside bounds', () => {
-			const range = getBuiltinRange('atan')!;
+			const range = getBuiltinRange('arctan')!;
 			expect(containsValue(range, Math.PI / 2 - 0.01)).toBe(true);
 			expect(containsValue(range, -Math.PI / 2 + 0.01)).toBe(true);
 		});

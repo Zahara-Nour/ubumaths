@@ -63,8 +63,8 @@ describe('isInDomain()', () => {
 		});
 	});
 
-	describe('asin(x)', () => {
-		const expr = func('asin', [variable('x')]);
+	describe('arcsin(x)', () => {
+		const expr = func('arcsin', [variable('x')]);
 
 		it('returns true for x = 0', () => {
 			expect(isInDomain(expr, { x: 0 })).toBe(true);
@@ -142,11 +142,11 @@ describe('getDomainViolations()', () => {
 			expect(violations[0].value).toBe(0);
 		});
 
-		it('returns violation for asin(2)', () => {
-			const expr = func('asin', [variable('x')]);
+		it('returns violation for arcsin(2)', () => {
+			const expr = func('arcsin', [variable('x')]);
 			const violations = getDomainViolations(expr, { x: 2 });
 			expect(violations).toHaveLength(1);
-			expect(violations[0].source).toBe('asin');
+			expect(violations[0].source).toBe('arcsin');
 		});
 	});
 

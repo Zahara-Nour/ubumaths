@@ -257,22 +257,34 @@ function evaluateFunctionToRational(
 			if (numArgs.length !== 1) throw new Error('tan requires exactly 1 argument');
 			result = Math.tan(numArgs[0]);
 			break;
-		case 'asin':
 		case 'arcsin':
-			if (numArgs.length !== 1) throw new Error('asin requires exactly 1 argument');
-			if (numArgs[0] < -1 || numArgs[0] > 1) throw new Error('asin argument must be in [-1, 1]');
+			if (numArgs.length !== 1) throw new Error('arcsin requires exactly 1 argument');
+			if (numArgs[0] < -1 || numArgs[0] > 1) throw new Error('arcsin argument must be in [-1, 1]');
 			result = Math.asin(numArgs[0]);
 			break;
-		case 'acos':
 		case 'arccos':
-			if (numArgs.length !== 1) throw new Error('acos requires exactly 1 argument');
-			if (numArgs[0] < -1 || numArgs[0] > 1) throw new Error('acos argument must be in [-1, 1]');
+			if (numArgs.length !== 1) throw new Error('arccos requires exactly 1 argument');
+			if (numArgs[0] < -1 || numArgs[0] > 1) throw new Error('arccos argument must be in [-1, 1]');
 			result = Math.acos(numArgs[0]);
 			break;
-		case 'atan':
 		case 'arctan':
-			if (numArgs.length !== 1) throw new Error('atan requires exactly 1 argument');
+			if (numArgs.length !== 1) throw new Error('arctan requires exactly 1 argument');
 			result = Math.atan(numArgs[0]);
+			break;
+		case 'arcsinh':
+			if (numArgs.length !== 1) throw new Error('arcsinh requires exactly 1 argument');
+			result = Math.asinh(numArgs[0]);
+			break;
+		case 'arccosh':
+			if (numArgs.length !== 1) throw new Error('arccosh requires exactly 1 argument');
+			if (numArgs[0] < 1) throw new Error('arccosh argument must be >= 1');
+			result = Math.acosh(numArgs[0]);
+			break;
+		case 'arctanh':
+			if (numArgs.length !== 1) throw new Error('arctanh requires exactly 1 argument');
+			if (numArgs[0] <= -1 || numArgs[0] >= 1)
+				throw new Error('arctanh argument must be in (-1, 1)');
+			result = Math.atanh(numArgs[0]);
 			break;
 		case 'exp':
 			if (numArgs.length !== 1) throw new Error('exp requires exactly 1 argument');
@@ -609,18 +621,15 @@ const KNOWN_FUNCTIONS = new Set([
 	'sin',
 	'cos',
 	'tan',
-	'asin',
-	'acos',
-	'atan',
 	'arcsin',
 	'arccos',
 	'arctan',
 	'sinh',
 	'cosh',
 	'tanh',
-	'asinh',
-	'acosh',
-	'atanh',
+	'arcsinh',
+	'arccosh',
+	'arctanh',
 	'exp',
 	'ln',
 	'log',

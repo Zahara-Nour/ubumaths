@@ -61,7 +61,7 @@ describe('computeDomain()', () => {
 		});
 
 		it('arcsin(x) has domain [-1, 1]', () => {
-			const expr = func('asin', [variable('x')]);
+			const expr = func('arcsin', [variable('x')]);
 			const result = computeDomain(expr, 'x');
 			expect(result.domain.kind).toBe('interval_set');
 			expect(containsValue(result.domain, 0)).toBe(true);
@@ -83,7 +83,7 @@ describe('computeDomain()', () => {
 		});
 
 		it('sqrt(x) * arcsin(x) has domain [0, 1]', () => {
-			const expr = multiply(sqrt(variable('x')), func('asin', [variable('x')]), 'dot');
+			const expr = multiply(sqrt(variable('x')), func('arcsin', [variable('x')]), 'dot');
 			const result = computeDomain(expr, 'x');
 			// sqrt needs x >= 0, arcsin needs -1 <= x <= 1
 			// intersection is [0, 1]

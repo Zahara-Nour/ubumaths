@@ -274,14 +274,7 @@ function getLIATECategory(
 		}
 
 		// I - Inverse trigonometric
-		if (
-			funcName === 'arcsin' ||
-			funcName === 'arccos' ||
-			funcName === 'arctan' ||
-			funcName === 'asin' ||
-			funcName === 'acos' ||
-			funcName === 'atan'
-		) {
+		if (funcName === 'arcsin' || funcName === 'arccos' || funcName === 'arctan') {
 			return { category: 'inverse-trig', priority: LIATE_PRIORITY['inverse-trig'] };
 		}
 
@@ -327,14 +320,7 @@ function getLIATECategory(
 				return { category: 'logarithmic', priority: LIATE_PRIORITY.logarithmic };
 			}
 			// Check for powers of inverse-trig functions
-			if (
-				baseFuncName === 'arcsin' ||
-				baseFuncName === 'arccos' ||
-				baseFuncName === 'arctan' ||
-				baseFuncName === 'asin' ||
-				baseFuncName === 'acos' ||
-				baseFuncName === 'atan'
-			) {
+			if (baseFuncName === 'arcsin' || baseFuncName === 'arccos' || baseFuncName === 'arctan') {
 				return { category: 'inverse-trig', priority: LIATE_PRIORITY['inverse-trig'] };
 			}
 		}

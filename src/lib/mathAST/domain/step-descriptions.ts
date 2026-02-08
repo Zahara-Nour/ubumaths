@@ -33,9 +33,10 @@ export const DOMAIN_RULE_DESCRIPTIONS: Readonly<Record<DomainRule, string>> = {
 	power_constraint: 'Une puissance négative nécessite une base non nulle (u⁻ⁿ défini si u ≠ 0)',
 	even_root_constraint:
 		'Une racine paire nécessite un argument positif ou nul (u^(1/2n) défini si u ≥ 0)',
-	acosh_constraint: "L'argument cosinus hyperbolique nécessite u ≥ 1 (acosh(u) défini si u ≥ 1)",
-	atanh_constraint:
-		"L'argument tangente hyperbolique nécessite |u| < 1 (atanh(u) défini si -1 < u < 1)",
+	arccosh_constraint:
+		"L'argument cosinus hyperbolique inverse nécessite u ≥ 1 (arccosh(u) défini si u ≥ 1)",
+	arctanh_constraint:
+		"L'argument tangente hyperbolique inverse nécessite |u| < 1 (arctanh(u) défini si -1 < u < 1)",
 
 	// ==========================================================================
 	// Operation Rules
@@ -109,8 +110,8 @@ export const DOMAIN_RULE_TEMPLATES: Readonly<Record<DomainRule, string>> = {
 	csc_constraint: 'Pour que csc({expr}) soit définie, il faut {expr} ≠ kπ',
 	power_constraint: 'Pour que ({expr})⁻ⁿ soit définie, il faut {expr} ≠ 0',
 	even_root_constraint: 'Pour que ({expr})^(1/2n) soit définie, il faut {expr} ≥ 0',
-	acosh_constraint: 'Pour que acosh({expr}) soit défini, il faut {expr} ≥ 1',
-	atanh_constraint: 'Pour que atanh({expr}) soit défini, il faut -1 < {expr} < 1',
+	arccosh_constraint: 'Pour que arccosh({expr}) soit défini, il faut {expr} ≥ 1',
+	arctanh_constraint: 'Pour que arctanh({expr}) soit défini, il faut -1 < {expr} < 1',
 	intersection: "Le domaine final est l'intersection de toutes les contraintes",
 	union: 'Le domaine est la réunion des intervalles {intervals}',
 	complement: 'On prend le complémentaire du domaine',
