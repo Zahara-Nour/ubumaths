@@ -46,44 +46,7 @@ import { mapNode } from '../../transforms';
 import { getVariables } from '../../eval/substitute';
 import { extractLinearForm } from '../../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
-/**
- * Compute numeric value of a simple node.
- */
-function computeNumericValue(node: MathNode): number | null {
-	try {
-		const norm = normalize(node);
-		if (norm.numerator.length === 0) return 0;
-		if (norm.numerator.length !== 1 || norm.denominator.length !== 1) return null;
-
-		const numTerm = norm.numerator[0];
-		const denTerm = norm.denominator[0];
-
-		if (numTerm.monomial.length !== 0 || denTerm.monomial.length !== 0) return null;
-
-		const numCoeff = numTerm.coefficient;
-		const denCoeff = denTerm.coefficient;
-
-		if (numCoeff.terms.length !== 1 || denCoeff.terms.length !== 1) return null;
-
-		const numAlg = numCoeff.terms[0];
-		const denAlg = denCoeff.terms[0];
-
-		if (numAlg.radicals.length !== 0 || denAlg.radicals.length !== 0) return null;
-
-		const numValue = Number(numAlg.rational.n) / Number(numAlg.rational.d);
-		const denValue = Number(denAlg.rational.n) / Number(denAlg.rational.d);
-
-		if (denValue === 0) return null;
-		return numValue / denValue;
-	} catch {
-		return null;
-	}
-}
+import { computeNumericValue } from '../numeric-value';
 
 /**
  * Check if a function name is a trig function.
