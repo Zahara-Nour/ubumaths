@@ -567,11 +567,7 @@ export const hypHigherPowerRules: Rule[] = [
 /**
  * Rules used for automatic simplification (excluded: addition, expansion, factorization, half-angle, higher-power)
  */
-export const hypSimplifyRules: Rule[] = [
-	...hypPythagoreanRules,
-	...hypQuotientRules,
-	...hypNegativeArgumentRules
-];
+export const hypSimplifyRules: Rule[] = [...hypPythagoreanRules, ...hypQuotientRules];
 
 /**
  * All hyperbolic identity rules (for targeted transformations)

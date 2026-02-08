@@ -99,7 +99,9 @@ export function computeCost(node: MathNode): number {
 			const baseCost = FUNCTION_COSTS[node.name] ?? 6;
 			const argsCost = node.args.reduce((sum, arg) => sum + computeCost(arg), 0);
 			const powerCost = node.power ? computeCost(node.power) : 0;
-			return baseCost + argsCost + powerCost;
+			// Penalize negation inside function arguments: prefer -f(x) over f(-x)
+			const negArgPenalty = node.args.filter((a) => a.type === 'opposite').length;
+			return baseCost + argsCost + powerCost + negArgPenalty;
 		}
 
 		case 'delimiter':

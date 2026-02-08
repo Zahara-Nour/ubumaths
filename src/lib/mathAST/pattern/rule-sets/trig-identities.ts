@@ -611,12 +611,12 @@ export const trigHigherPowerRules: Rule[] = [
 export const trigSimplifyRules: Rule[] = [
 	...trigPythagoreanRules,
 	...trigQuotientRules,
-	...trigNegativeAngleRules,
 	...trigPeriodicRules
 ];
 
 export const allTrigRules: Rule[] = [
 	...trigSimplifyRules,
+	...trigNegativeAngleRules,
 	...trigDoubleAngleRules,
 	...trigPowerReductionRules,
 	...trigLinearizationRules,

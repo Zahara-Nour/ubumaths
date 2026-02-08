@@ -74,6 +74,18 @@ describe('simplify pipeline', () => {
 			const result = simplifyLatex('\\sin^2(x) + \\cos^2(x)');
 			expect(result).toBe('1');
 		});
+
+		it('cos(-x) -> cos(x)', () => {
+			expect(simplifyLatex('\\cos(-x)')).toBe('\\cos\\left( x \\right)');
+		});
+
+		it('sin(-x) -> -sin(x)', () => {
+			expect(simplifyLatex('\\sin(-x)')).toBe('-\\sin\\left( x \\right)');
+		});
+
+		it('tan(-x) -> -tan(x)', () => {
+			expect(simplifyLatex('\\tan(-x)')).toBe('-\\tan\\left( x \\right)');
+		});
 	});
 
 	describe('logarithm / exponential', () => {
