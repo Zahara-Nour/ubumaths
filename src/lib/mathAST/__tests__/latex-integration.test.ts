@@ -175,10 +175,10 @@ describe('LaTeX Generator - Integration Tests', () => {
 	it('generates exponential function', () => {
 		// e^(ix)
 		const expr = MathAST.power(
-			MathAST.variable('e'),
+			MathAST.euler(),
 			MathAST.parentheses(MathAST.implicitMultiply(MathAST.variable('i'), MathAST.variable('x')))
 		);
 
-		expect(toLatex(expr)).toBe('e^{\\left( i x \\right)}');
+		expect(toLatex(expr)).toBe('\\exponentialE^{\\left( i x \\right)}');
 	});
 });

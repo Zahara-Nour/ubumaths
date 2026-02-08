@@ -111,7 +111,7 @@ describe('ParseCache', () => {
 			cache.set('b', MathAST.variable('b'));
 			cache.set('c', MathAST.variable('c'));
 			cache.set('d', MathAST.variable('d')); // Evicts 'a'
-			cache.set('e', MathAST.variable('e')); // Evicts 'b'
+			cache.set('f', MathAST.variable('f')); // Evicts 'b'
 
 			expect(cache.getStats().evictions).toBe(2);
 		});

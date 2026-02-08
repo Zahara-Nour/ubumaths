@@ -79,6 +79,8 @@ export type SolvingRule =
 	| 'solve-factor'
 	// Trig recursive decomposition
 	| 'trig-recursive-decomposition'
+	// Exp/log recursive decomposition
+	| 'exp-log-recursive-decomposition'
 	// General
 	| 'to-standard-form'
 	| 'simplify-expression'
@@ -169,6 +171,10 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	// Trig recursive decomposition
 	'trig-recursive-decomposition':
 		'On decompose en resolvant f(x) = u pour chaque u-valeur trigonometrique',
+
+	// Exp/log recursive decomposition
+	'exp-log-recursive-decomposition':
+		'On decompose en resolvant f(x) = u pour chaque u-valeur exponentielle/logarithmique',
 
 	// General
 	'to-standard-form': "On met l'equation sous forme standard (... = 0)",

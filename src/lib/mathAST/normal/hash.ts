@@ -75,6 +75,9 @@ export function hashMathNode(node: MathNode): string {
 		case 'greek':
 			return `G(${node.letter})`;
 
+		case 'constant':
+			return `K(${node.constant})`;
+
 		case 'symbol':
 			return `S(${node.symbol})`;
 

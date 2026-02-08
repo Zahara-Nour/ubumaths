@@ -666,7 +666,7 @@ describe('guards', () => {
 					variable('b'),
 					variable('c'),
 					variable('d'),
-					variable('e')
+					variable('f')
 				);
 				expect(getRelationChainLength(chain)).toBe(5);
 			});

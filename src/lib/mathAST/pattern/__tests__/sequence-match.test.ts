@@ -690,7 +690,7 @@ describe('Sequence Pattern Matching', () => {
 			const pattern = P.sum(P._('first'), P.__('rest'));
 			const node = add(
 				add(add(add(variable('a'), variable('b')), variable('c')), variable('d')),
-				variable('e')
+				variable('f')
 			);
 
 			const result = match(pattern, node);
@@ -722,7 +722,7 @@ describe('Sequence Pattern Matching', () => {
 
 		it('matches 6-term product', () => {
 			const pattern = P.prod(P._('first'), P.__('rest'));
-			// a * b * c * d * e * f
+			// a * b * c * d * g * f
 			const node = multiply(
 				multiply(
 					multiply(
@@ -730,7 +730,7 @@ describe('Sequence Pattern Matching', () => {
 						variable('d'),
 						'implicit'
 					),
-					variable('e'),
+					variable('g'),
 					'implicit'
 				),
 				variable('f'),

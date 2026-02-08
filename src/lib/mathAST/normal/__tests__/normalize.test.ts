@@ -772,7 +772,8 @@ describe('Logarithm Remarkable Values', () => {
 	});
 
 	test('ln(e) = 1', () => {
-		const result = normalize(fn('ln', variable('e')));
+		const euler: MathNode = { type: 'constant', constant: 'euler' };
+		const result = normalize(fn('ln', euler));
 		expect(result.numerator.length).toBe(1);
 		const coef = result.numerator[0].coefficient.terms[0].rational;
 		expect(coef.n).toBe(1n);
@@ -798,8 +799,8 @@ describe('Exponential Remarkable Values', () => {
 		const result = normalize(fn('exp', num('1')));
 		expect(result.numerator.length).toBe(1);
 		expect(result.numerator[0].monomial.length).toBe(1);
-		expect(result.numerator[0].monomial[0].base.type).toBe('variable');
-		expect((result.numerator[0].monomial[0].base as { name: string }).name).toBe('e');
+		expect(result.numerator[0].monomial[0].base.type).toBe('constant');
+		expect((result.numerator[0].monomial[0].base as { constant: string }).constant).toBe('euler');
 	});
 });
 
@@ -1115,8 +1116,9 @@ describe('Exp/Ln Robustness After Ln Expansion Changes', () => {
 		});
 
 		test('exp(ln(e)) = e', () => {
-			const expr = fn('exp', fn('ln', variable('e')));
-			expect(normalize(expr).hash).toBe(normalize(variable('e')).hash);
+			const euler: MathNode = { type: 'constant', constant: 'euler' };
+			const expr = fn('exp', fn('ln', euler));
+			expect(normalize(expr).hash).toBe(normalize(euler).hash);
 		});
 
 		test('ln(exp(1)) = 1', () => {
@@ -1395,7 +1397,8 @@ describe('exp(Σ aᵢ·ln(xᵢ)) = Π xᵢ^aᵢ', () => {
 		test('exp(ln(x) + 1) = e·x (partial extraction with exp(1)=e)', () => {
 			// Partial ln extraction: exp(ln(x) + 1) = x · exp(1) = x · e = e·x
 			const expr = fn('exp', add(fn('ln', variable('x')), num('1')));
-			const expected = mul(variable('e'), variable('x'));
+			const euler: MathNode = { type: 'constant', constant: 'euler' };
+			const expected = mul(euler, variable('x'));
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
@@ -1966,12 +1969,12 @@ describe('exp expansion rules', () => {
 	});
 
 	describe('edge cases: many terms', () => {
-		test('exp(a + b + c + d + e) = exp(a)·exp(b)·exp(c)·exp(d)·exp(e)', () => {
+		test('exp(a + b + c + d + f) = exp(a)·exp(b)·exp(c)·exp(d)·exp(f)', () => {
 			const expr = fn(
 				'exp',
 				add(
 					add(add(add(variable('a'), variable('b')), variable('c')), variable('d')),
-					variable('e')
+					variable('f')
 				)
 			);
 			const expected = mul(
@@ -1979,7 +1982,7 @@ describe('exp expansion rules', () => {
 					mul(mul(fn('exp', variable('a')), fn('exp', variable('b'))), fn('exp', variable('c'))),
 					fn('exp', variable('d'))
 				),
-				fn('exp', variable('e'))
+				fn('exp', variable('f'))
 			);
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
@@ -2127,7 +2130,7 @@ describe('exp expansion rules', () => {
 	describe('edge cases: nested exp', () => {
 		test('exp(exp(0)) = e', () => {
 			const expr = fn('exp', fn('exp', num('0')));
-			const expected = variable('e');
+			const expected: MathNode = { type: 'constant', constant: 'euler' };
 			expect(normalize(expr).hash).toBe(normalize(expected).hash);
 		});
 
