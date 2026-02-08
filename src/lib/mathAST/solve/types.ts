@@ -15,6 +15,7 @@
  */
 
 import type { MathNode } from '../types';
+import type { Domain } from '../domain/types';
 
 // =============================================================================
 // Equation Classification
@@ -170,6 +171,9 @@ export interface SolveResult {
 
 	/** Periodic solution family for trig equations (used by sign module for zero enumeration) */
 	readonly periodicSolutions?: PeriodicSolutionFamily;
+
+	/** Domain of definition of the expression (where the equation is defined) */
+	readonly domain?: Domain;
 }
 
 // =============================================================================

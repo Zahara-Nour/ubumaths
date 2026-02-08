@@ -78,6 +78,10 @@ import { getVariables } from '../eval/substitute';
 import { isZeroNode } from './solvers/polynomial';
 import type { Solution, PeriodicSolutionFamily } from './types';
 import { getRuleDescription } from './descriptions-fr';
+import { computeDomain } from '../domain/compute';
+import type { Domain } from '../domain/types';
+import { containsValue, isUniversal, isEmpty as isDomainEmpty } from '../domain/algebra';
+import { formatInterval } from '../domain/format';
 
 // =============================================================================
 // Strategy Selection
@@ -676,6 +680,48 @@ function tryExpLogRecursiveDecomposition(
 }
 
 // =============================================================================
+// Domain Filtering
+// =============================================================================
+
+/**
+ * Filter solutions that fall outside the domain of definition.
+ *
+ * Solutions with `approximate !== undefined` are checked against the domain
+ * using `containsValue`. Solutions without an approximate value are kept
+ * (no numeric value to verify).
+ *
+ * Records a step for each excluded solution.
+ */
+function filterSolutionsByDomain(
+	result: SolveResult,
+	domain: Domain,
+	variable: string,
+	recorder: import('./types').SolveStepRecorder
+): SolveResult {
+	if (isUniversal(domain)) return { ...result, domain };
+
+	const kept: Solution[] = [];
+	for (const sol of result.solutions) {
+		if (sol.approximate !== undefined && !containsValue(domain, sol.approximate)) {
+			recorder.recordStep(
+				'domain-exclusion',
+				`${variable} ≈ ${sol.approximate.toPrecision(6)} est exclu du domaine de définition`,
+				sol.value,
+				sol.value,
+				'summarized'
+			);
+		} else {
+			kept.push(sol);
+		}
+	}
+
+	const newStatus: import('./types').SolutionStatus =
+		kept.length === 0 ? 'no-solution' : kept.length === 1 ? 'unique' : result.status;
+
+	return { ...result, solutions: kept, status: newStatus, domain };
+}
+
+// =============================================================================
 // Main Solve Function
 // =============================================================================
 
@@ -734,65 +780,121 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		return handleConstantEquation(expr, opts);
 	}
 
+	// Compute domain of definition
+	const { domain } = computeDomain(expr, variable);
+
+	// Short-circuit if domain is empty
+	if (isDomainEmpty(domain)) {
+		const recorder = createStepRecorder();
+		recorder.recordStep(
+			'domain-computation',
+			"L'expression n'est définie nulle part",
+			expr,
+			expr,
+			'summarized'
+		);
+		return {
+			variable,
+			status: 'no-solution',
+			solutions: [],
+			equationType: 'unknown',
+			strategy: 'algebraic',
+			steps: recorder.getStepsFiltered(opts.verbosity),
+			domain,
+			error: "L'expression n'est définie nulle part"
+		};
+	}
+
+	// Record domain step if non-universal
+	const domainRecorder = createStepRecorder();
+	if (!isUniversal(domain)) {
+		domainRecorder.recordStep(
+			'domain-computation',
+			`Ensemble de définition : ${formatInterval(domain)}`,
+			expr,
+			expr,
+			'summarized'
+		);
+	}
+
+	// --- Solve (all existing paths) ---
+
+	let result: SolveResult | null = null;
+
 	// Try product decomposition (zero-product property) before classification
-	const productResult = tryProductDecomposition(expr, variable, opts);
-	if (productResult) return productResult;
+	result = tryProductDecomposition(expr, variable, opts);
 
 	// Try trig recursive decomposition for non-linear trig arguments
-	const trigRecursiveResult = tryTrigRecursiveDecomposition(expr, variable, opts);
-	if (trigRecursiveResult) return trigRecursiveResult;
+	if (!result) {
+		result = tryTrigRecursiveDecomposition(expr, variable, opts);
+	}
 
 	// Try exp/log recursive decomposition for non-linear exp/log arguments
-	const expLogResult = tryExpLogRecursiveDecomposition(expr, variable, opts);
-	if (expLogResult) return expLogResult;
+	if (!result) {
+		result = tryExpLogRecursiveDecomposition(expr, variable, opts);
+	}
 
 	// Try transcendental solver directly before classification.
 	// This catches e^u (SuperscriptNode) which getTranscendentalType() doesn't detect
 	// as 'exponential' (it only recognizes exp() FunctionNode).
-	if (extractTranscendentalEquation(expr, variable)) {
+	if (!result && extractTranscendentalEquation(expr, variable)) {
 		const recorder = createStepRecorder();
 		const transcResult = transcendentalSolver.solve(expr, variable, opts, recorder);
 		if (transcResult.status !== 'no-solution' || !transcResult.error) {
-			return {
+			result = {
 				...transcResult,
 				steps: recorder.getStepsFiltered(opts.verbosity)
 			};
 		}
 	}
 
-	// Classify the equation
-	const classification = classifyEquation(equation, variable);
+	// Classification-based solver path
+	if (!result) {
+		const classification = classifyEquation(equation, variable);
+		const strategy = selectStrategy(classification);
+		const recorder = createStepRecorder();
+		const solver = selectSolver(classification);
 
-	// Select solving strategy
-	const strategy = selectStrategy(classification);
-
-	// Create step recorder
-	const recorder = createStepRecorder();
-
-	// Select and run appropriate solver
-	const solver = selectSolver(classification);
-
-	if (!solver) {
-		return {
-			variable,
-			status: 'no-solution',
-			solutions: [],
-			equationType: classification.type,
-			strategy,
-			steps: recorder.getStepsFiltered(opts.verbosity),
-			error: `Type d'equation non supporte: ${classification.type}`
-		};
+		if (!solver) {
+			result = {
+				variable,
+				status: 'no-solution',
+				solutions: [],
+				equationType: classification.type,
+				strategy,
+				steps: recorder.getStepsFiltered(opts.verbosity),
+				error: `Type d'equation non supporte: ${classification.type}`
+			};
+		} else {
+			const solverResult = solver.solve(expr, variable, opts, recorder);
+			result = {
+				...solverResult,
+				equationType: classification.type,
+				strategy,
+				steps: recorder.getStepsFiltered(opts.verbosity)
+			};
+		}
 	}
 
-	// Run the solver
-	const result = solver.solve(expr, variable, opts, recorder);
+	// --- Apply domain filtering (single exit point) ---
 
-	return {
-		...result,
-		equationType: classification.type,
-		strategy,
-		steps: recorder.getStepsFiltered(opts.verbosity)
-	};
+	// Prepend domain steps to result steps
+	const domainSteps = domainRecorder.getStepsFiltered(opts.verbosity);
+	if (domainSteps.length > 0) {
+		result = { ...result, steps: [...domainSteps, ...result.steps] };
+	}
+
+	result = filterSolutionsByDomain(result, domain, variable, domainRecorder);
+
+	// Append any exclusion steps
+	const exclusionSteps = domainRecorder
+		.getStepsFiltered(opts.verbosity)
+		.filter((s) => s.rule === 'domain-exclusion');
+	if (exclusionSteps.length > 0) {
+		result = { ...result, steps: [...result.steps, ...exclusionSteps] };
+	}
+
+	return result;
 }
 
 /**
