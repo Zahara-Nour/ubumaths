@@ -343,11 +343,6 @@ function getNumericBound(value: MathNode, _bound: 'lower' | 'upper'): number | n
 		return Math.PI;
 	}
 
-	// Handle variable e
-	if (value.type === 'variable' && value.name === 'e') {
-		return Math.E;
-	}
-
 	// Try to evaluate symbolically
 	try {
 		const result = evaluate(value, { mode: 'decimal' });

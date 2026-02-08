@@ -14,7 +14,8 @@ import {
 	func,
 	positiveInfinity,
 	opposite,
-	ln
+	ln,
+	euler
 } from '../../factory';
 import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
@@ -134,9 +135,8 @@ describe('simplify pipeline', () => {
 	});
 
 	describe('logarithm / exponential', () => {
-		it('ln(e) -> 1 (via normalize, e as variable)', () => {
-			// normalize treats 'e' as a variable, not as euler() constant
-			const result = simplify(ln(variable('e')));
+		it('ln(e) -> 1 (via normalize)', () => {
+			const result = simplify(ln(euler()));
 			expect(toLatex(result.result)).toBe('1');
 		});
 	});

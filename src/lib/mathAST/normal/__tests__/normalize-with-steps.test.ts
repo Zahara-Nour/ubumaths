@@ -59,7 +59,7 @@ const ln = (arg: MathNode): MathNode => ({
 	args: [arg]
 });
 const pi: MathNode = { type: 'greek', letter: 'pi' };
-const e: MathNode = { type: 'variable', name: 'e' };
+const e: MathNode = { type: 'constant', constant: 'euler' };
 const tan = (arg: MathNode): MathNode => ({
 	type: 'function',
 	name: 'tan',

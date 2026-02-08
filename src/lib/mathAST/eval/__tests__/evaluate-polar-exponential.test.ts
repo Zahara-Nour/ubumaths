@@ -67,11 +67,11 @@ describe('exp() in exact mode', () => {
 	});
 
 	describe('exp with complex arguments', () => {
-		it('exp(i) simplifies (may return variable or expression)', () => {
+		it('exp(i) simplifies (may return constant or expression)', () => {
 			const ast = parsePratt('\\exp(\\imaginaryI)');
 			const result = evaluate(ast, { mode: 'exact' });
 			// exp(i) = cos(1) + i*sin(1) - but without special rules, stays as expression
-			expect(['variable', 'function', 'addition']).toContain(result.node.type);
+			expect(['constant', 'function', 'addition']).toContain(result.node.type);
 		});
 
 		it('exp(i*pi) stays as function', () => {
@@ -84,11 +84,11 @@ describe('exp() in exact mode', () => {
 	});
 
 	describe('exp with real argument', () => {
-		it('exp(1) simplifies to e (variable)', () => {
+		it('exp(1) simplifies to e (constant)', () => {
 			const ast = parsePratt('\\exp(1)');
 			const result = evaluate(ast, { mode: 'exact' });
-			// exp(1) = e is represented as variable
-			expect(result.node.type).toBe('variable');
+			// exp(1) = e is represented as MathConstantNode('euler')
+			expect(result.node.type).toBe('constant');
 		});
 
 		it('exp(-1) stays as function', () => {

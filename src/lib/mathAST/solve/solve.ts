@@ -17,6 +17,8 @@
  * | Logarithmic (ln(x)=c)       | transcendentalSolver| Simple cases only         |
  * | Trigonometric (sin(ax+b)=c) | transcendentalSolver| Periodic family           |
  * | Trig non-linear (sin(f(x))=c)| tryTrigRecursive   | First-period u-values     |
+ * | Exp non-linear (e^(f(x))=c)  | tryExpLogRecursive | Recursive decomposition   |
+ * | Log non-linear (ln(f(x))=c)  | tryExpLogRecursive | Recursive decomposition   |
  * | Mixed products (x·sin(x)=0) | tryProductDecomp    | Zero-product property     |
  * | Mixed (x·e^x=1, etc.)      | —                   | NOT supported             |
  *
@@ -64,13 +66,13 @@ import { polynomialSolver } from './solvers/polynomial';
 import { quarticSolver } from './solvers/quartic';
 import {
 	transcendentalSolver,
-	extractTrigEquation,
+	extractTranscendentalEquation,
 	computeUSolutions
 } from './solvers/transcendental';
 import { extractLinearForm } from '../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
-import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../normal';
-import { number, equals } from '../factory';
+import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM, denormalize } from '../normal';
+import { number, equals, func, superscript, euler } from '../factory';
 import { flattenSumShallow, flattenProductShallow } from '../flatten';
 import { getVariables } from '../eval/substitute';
 import { isZeroNode } from './solvers/polynomial';
@@ -393,7 +395,8 @@ const MAX_TRIG_RECURSIVE_DEPTH = 3;
  * Only activates when the trig argument is non-linear. Linear arguments
  * (sin(ax+b) = c) are left to the normal solver which produces PeriodicSolutionFamily.
  *
- * **Limitation**: Only first-period u-values are used (k=0). For sin(x²) = 0 this gives
+ * **Limitation**: Only base u-values are used (k=0); additional periods of the trig
+ * function in u-space are not enumerated. For sin(x²) = 0 this gives
  * {0, ±√π} but not ±√(2π), ±√(3π), etc.
  *
  * @returns SolveResult if decomposition applies, null otherwise
@@ -407,8 +410,8 @@ function tryTrigRecursiveDecomposition(
 ): SolveResult | null {
 	if (trigRecursiveDepth >= MAX_TRIG_RECURSIVE_DEPTH) return null;
 
-	const extracted = extractTrigEquation(expr, variable);
-	if (!extracted) return null;
+	const extracted = extractTranscendentalEquation(expr, variable);
+	if (!extracted || extracted.kind !== 'trig') return null;
 
 	const { funcName, argument, constantNode, constantNumeric } = extracted;
 
@@ -506,6 +509,173 @@ function tryTrigRecursiveDecomposition(
 }
 
 // =============================================================================
+// Exp/Log Recursive Decomposition
+// =============================================================================
+
+/**
+ * Recursion guard for exp/log recursive decomposition.
+ */
+let expLogRecursiveDepth = 0;
+const MAX_EXP_LOG_RECURSIVE_DEPTH = 3;
+
+/**
+ * Try to solve an exp/log equation with a non-linear argument by recursive decomposition.
+ *
+ * For e^(f(x)) = c, compute u = ln(c), then solve f(x) = u recursively.
+ * For ln(f(x)) = c, compute u = e^c, then solve f(x) = u recursively.
+ *
+ * Only activates when the argument is non-linear. Linear arguments
+ * (e^(ax+b) = c) are left to the normal solver.
+ *
+ * @returns SolveResult if decomposition applies, null otherwise
+ */
+function tryExpLogRecursiveDecomposition(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
+		initialGuesses?: readonly number[];
+	}
+): SolveResult | null {
+	if (expLogRecursiveDepth >= MAX_EXP_LOG_RECURSIVE_DEPTH) return null;
+
+	const extracted = extractTranscendentalEquation(expr, variable);
+	if (!extracted || (extracted.kind !== 'exp' && extracted.kind !== 'log')) return null;
+
+	const { kind, funcName, argument, constantNode, constantNumeric } = extracted;
+
+	// If argument is linear, let the normal solver handle it
+	const linearForm = extractLinearForm(argument, variable);
+	if (linearForm) return null;
+
+	// Compute u-values
+	interface UValue {
+		readonly symbolic: MathNode;
+		readonly numeric: number;
+	}
+	const uValues: UValue[] = [];
+
+	if (kind === 'exp') {
+		// e^u = c → u = ln(c), requires c > 0
+		if (constantNumeric <= 0) {
+			const recorder = createStepRecorder();
+			recorder.recordStep(
+				'no-real-solution',
+				`L'equation exponentielle n'a pas de solution reelle car la valeur cible est negative ou nulle`,
+				expr,
+				expr,
+				'summarized'
+			);
+			return {
+				variable,
+				status: 'no-real-solution',
+				solutions: [],
+				equationType: 'exponential',
+				strategy: 'algebraic',
+				steps: recorder.getStepsFiltered(opts.verbosity)
+			};
+		}
+		const lnC = func('ln', [constantNode]);
+		const lnCSimplified = denormalize(normalize(lnC));
+		uValues.push({ symbolic: lnCSimplified, numeric: Math.log(constantNumeric) });
+	} else if (funcName === 'ln') {
+		// ln(u) = c → u = e^c
+		let inverseNode: MathNode;
+		if (constantNumeric === 0) {
+			inverseNode = number('1');
+		} else if (constantNumeric === 1) {
+			inverseNode = euler();
+		} else {
+			inverseNode = denormalize(normalize(superscript(euler(), constantNode)));
+		}
+		uValues.push({ symbolic: inverseNode, numeric: Math.exp(constantNumeric) });
+	} else {
+		// log(u) = c → u = 10^c
+		let inverseNode: MathNode;
+		if (constantNumeric === 0) {
+			inverseNode = number('1');
+		} else {
+			inverseNode = denormalize(normalize(superscript(number('10'), constantNode)));
+		}
+		uValues.push({ symbolic: inverseNode, numeric: Math.pow(10, constantNumeric) });
+	}
+
+	const recorder = createStepRecorder();
+	recorder.recordStep(
+		'exp-log-recursive-decomposition',
+		getRuleDescription('exp-log-recursive-decomposition'),
+		expr,
+		expr,
+		'summarized'
+	);
+
+	const allSolutions: Solution[] = [];
+
+	expLogRecursiveDepth++;
+	try {
+		for (const uVal of uValues) {
+			// Solve: argument = uVal.symbolic
+			const subEquation = equals(argument, uVal.symbolic);
+			const subResult = solve(subEquation, { variable, verbosity: opts.verbosity });
+
+			if (subResult.status === 'no-solution' || subResult.status === 'no-real-solution') {
+				continue;
+			}
+
+			// Ensure approximate values and filter out non-real solutions
+			for (const sol of subResult.solutions) {
+				let approx = sol.approximate;
+				if (approx === undefined) {
+					try {
+						approx = evaluateNodeToApproximatedNumber(sol.value);
+					} catch {
+						continue;
+					}
+				}
+				if (!isFinite(approx)) continue;
+
+				// For log equations, verify the solution doesn't make the argument negative
+				if (kind === 'log') {
+					try {
+						// The argument of ln/log must be positive
+						// We check by evaluating the argument at the solution
+						// For now, just accept - domain checking is complex
+					} catch {
+						continue;
+					}
+				}
+
+				allSolutions.push({ ...sol, approximate: approx });
+			}
+		}
+	} finally {
+		expLogRecursiveDepth--;
+	}
+
+	if (allSolutions.length === 0) {
+		return {
+			variable,
+			status: 'no-real-solution',
+			solutions: [],
+			equationType: kind === 'exp' ? 'exponential' : 'logarithmic',
+			strategy: 'algebraic',
+			steps: recorder.getStepsFiltered(opts.verbosity)
+		};
+	}
+
+	const deduplicated = deduplicateSolutions(allSolutions);
+	deduplicated.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
+
+	return {
+		variable,
+		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		solutions: deduplicated,
+		equationType: kind === 'exp' ? 'exponential' : 'logarithmic',
+		strategy: 'algebraic',
+		steps: recorder.getStepsFiltered(opts.verbosity)
+	};
+}
+
+// =============================================================================
 // Main Solve Function
 // =============================================================================
 
@@ -571,6 +741,24 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Try trig recursive decomposition for non-linear trig arguments
 	const trigRecursiveResult = tryTrigRecursiveDecomposition(expr, variable, opts);
 	if (trigRecursiveResult) return trigRecursiveResult;
+
+	// Try exp/log recursive decomposition for non-linear exp/log arguments
+	const expLogResult = tryExpLogRecursiveDecomposition(expr, variable, opts);
+	if (expLogResult) return expLogResult;
+
+	// Try transcendental solver directly before classification.
+	// This catches e^u (SuperscriptNode) which getTranscendentalType() doesn't detect
+	// as 'exponential' (it only recognizes exp() FunctionNode).
+	if (extractTranscendentalEquation(expr, variable)) {
+		const recorder = createStepRecorder();
+		const transcResult = transcendentalSolver.solve(expr, variable, opts, recorder);
+		if (transcResult.status !== 'no-solution' || !transcResult.error) {
+			return {
+				...transcResult,
+				steps: recorder.getStepsFiltered(opts.verbosity)
+			};
+		}
+	}
 
 	// Classify the equation
 	const classification = classifyEquation(equation, variable);

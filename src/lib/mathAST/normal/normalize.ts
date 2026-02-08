@@ -1798,7 +1798,7 @@ function isEulerNumber(form: NormalForm): boolean {
 	// Monomial must be exactly e^1
 	if (term.monomial.length !== 1) return false;
 	const factor = term.monomial[0];
-	if (factor.base.type !== 'variable' || factor.base.name !== 'e') return false;
+	if (factor.base.type !== 'constant' || factor.base.constant !== 'euler') return false;
 	if (factor.exponent.n !== 1n || factor.exponent.d !== 1n) return false;
 
 	return true;
@@ -3170,7 +3170,7 @@ function normalizeFunction(
 
 		// exp(1) = e
 		if (isIntegerValue(argForm, 1n)) {
-			const eForm = normalizeNode({ type: 'variable', name: 'e' }, ctx);
+			const eForm = normalizeNode({ type: 'constant', constant: 'euler' }, ctx);
 			recordNormalizationStep(ctx, 'exp-one', node, eForm, 'detailed');
 			return eForm;
 		}

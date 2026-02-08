@@ -598,9 +598,9 @@ describe('LatexGenerator - Relation Chains', () => {
 			variable('b'),
 			variable('c'),
 			variable('d'),
-			variable('e')
+			variable('f')
 		);
-		expect(toLatex(chain)).toBe('a = b = c = d = e');
+		expect(toLatex(chain)).toBe('a = b = c = d = f');
 	});
 
 	it('should handle numbers in chains', () => {

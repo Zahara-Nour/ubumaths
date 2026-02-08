@@ -247,7 +247,7 @@ describe('formatDomainFull', () => {
 // Edge Cases
 // =============================================================================
 
-import { variable, greek } from '$lib/mathAST/factory';
+import { greek, euler } from '$lib/mathAST/factory';
 import { excludedPoint } from '../factory';
 
 describe('formatEndpointValue edge cases', () => {
@@ -317,8 +317,8 @@ describe('formatEndpointValue edge cases', () => {
 		expect(formatEndpointValue(twoTimesThree)).toBe('2*3');
 	});
 
-	it('formats variable e', () => {
-		expect(() => formatEndpointValue(variable('e'))).not.toThrow();
+	it('formats euler constant', () => {
+		expect(() => formatEndpointValue(euler())).not.toThrow();
 	});
 
 	it('formats nested expressions', () => {

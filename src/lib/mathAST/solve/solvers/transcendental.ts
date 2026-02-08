@@ -3,17 +3,24 @@
  *
  * Solves equations involving exp, ln, log, sin, cos, tan.
  *
- * ## Limitations
+ * ## Architecture
  *
- * - **Exponential/Logarithmic**: only handles simple forms (e^x = c, ln(x) = c).
- *   Composed forms like e^(2x+1) = 5 or ln(x²) = 3 are not decomposed.
+ * A generic `extractTranscendentalEquation()` function uses `flattenSumShallow`
+ * to decompose `expr = 0` into signed terms, then identifies the unique
+ * transcendental term (trig function call, or e^u superscript, or ln/log call)
+ * with an optional coefficient. Remaining constant terms form the RHS.
+ *
+ * ## Capabilities
+ *
+ * - **Exponential**: `a·e^u + b = 0` → `e^u = -b/a`.
+ *   Linear arguments (e^(ax+b) = c) solved directly.
+ *   Non-linear arguments delegated to recursive decomposition in solve.ts.
+ * - **Logarithmic**: `a·ln(u) + b = 0` → `ln(u) = -b/a`.
+ *   Linear arguments (ln(ax+b) = c) solved directly.
+ *   Non-linear arguments delegated to recursive decomposition in solve.ts.
  * - **Trigonometric**: returns the **full periodic family** for sin/cos/tan.
- *   Handles linear arguments: sin(ax+b) = c → returns all base solutions
- *   within one period, with the period for enumeration.
- *   Non-linear arguments (sin(f(x)) = c) are handled via recursive
- *   decomposition in solve.ts (tryTrigRecursiveDecomposition).
- * - **Mixed equations** (e.g. x·sin(x) = 0): not handled. Some could be
- *   decomposed into factors, others need numeric methods.
+ *   Non-linear arguments handled via tryTrigRecursiveDecomposition in solve.ts.
+ * - **Mixed equations** (e.g. x·sin(x) = 0): not handled.
  *
  * @module mathAST/solve/solvers/transcendental
  */
@@ -28,13 +35,14 @@ import type {
 	PeriodicSolutionFamily
 } from '../types';
 import { containsTranscendental, getTranscendentalType } from '../classify';
-import { isFunction, isNumber } from '../../guards';
+import { isFunction, isEulerConstant } from '../../guards';
 import {
 	number,
 	func,
 	variable as varNode,
 	equals,
-	fraction,
+	superscript,
+	euler,
 	PI,
 	TWO_PI,
 	subtract,
@@ -42,11 +50,11 @@ import {
 	opposite
 } from '../../factory';
 import { denormalize, normalize } from '../../normal';
-import { mapNode } from '../../transforms';
 import { getVariables } from '../../eval/substitute';
 import { extractLinearForm } from '../../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
-import { computeNumericValue } from '../numeric-value';
+import { flattenSumShallow, unflattenSum, flattenProductShallow } from '../../flatten';
+import type { SignedTerm } from '../../flatten';
 
 /**
  * Check if a function name is a trig function.
@@ -55,119 +63,251 @@ export function isTrigFunc(name: string): boolean {
 	return name === 'sin' || name === 'cos' || name === 'tan';
 }
 
+/**
+ * Check if a function name is a log function.
+ */
+function isLogFunc(name: string): boolean {
+	return name === 'ln' || name === 'log';
+}
+
 // =============================================================================
-// Trig Equation Extraction
+// Generic Transcendental Equation Extraction
 // =============================================================================
 
 /**
- * Result of extracting trig equation structure from an expression.
+ * Classification of transcendental equation kind.
  */
-export interface TrigEquationParts {
-	readonly funcName: string;
-	readonly argument: MathNode;
-	readonly constantNode: MathNode;
+export type TranscendentalKind = 'trig' | 'exp' | 'log';
+
+/**
+ * Result of extracting transcendental equation structure from an expression.
+ *
+ * Represents `a·f(u) + b = 0` → `f(u) = -b/a = constantNode`.
+ */
+export interface TranscendentalEquationParts {
+	readonly kind: TranscendentalKind;
+	readonly funcName: string; // 'sin'|'cos'|'tan'|'ln'|'log'|'exp'
+	readonly argument: MathNode; // u in f(u)
+	readonly constantNode: MathNode; // c in f(u) = c (already isolated: c = -b/a)
 	readonly constantNumeric: number;
 }
 
+// Keep backward compat alias
+export type TrigEquationParts = TranscendentalEquationParts;
+
 /**
- * Extract trig equation structure from expr = 0.
- *
- * Handles:
- * - sin(2x) = 0 → { funcName: 'sin', argument: 2x, constant: 0 }
- * - cos(x) - 1/2 = 0 → { funcName: 'cos', argument: x, constant: 0.5 }
- * - cos(x) - √2/2 = 0 → { funcName: 'cos', argument: x, constant: 0.7071... }
- * - -sin(x) = 0 → { funcName: 'sin', argument: x, constant: 0 }
- * - k * cos(x) = 0 → { funcName: 'cos', argument: x, constant: 0 }
+ * Check if a node is e^u (SuperscriptNode with Euler constant base).
  */
-export function extractTrigEquation(expr: MathNode, variable: string): TrigEquationParts | null {
-	const zero = number('0');
+function isExpSuperscript(node: MathNode): node is MathNode & { type: 'superscript' } {
+	return node.type === 'superscript' && isEulerConstant(node.base);
+}
 
-	function makeParts(
-		funcName: string,
-		argument: MathNode,
-		constantNode: MathNode
-	): TrigEquationParts | null {
-		try {
-			const constantNumeric = evaluateNodeToApproximatedNumber(constantNode);
-			return { funcName, argument, constantNode, constantNumeric };
-		} catch {
+/**
+ * Info about a transcendental call found in a term.
+ */
+interface TranscendentalCallInfo {
+	readonly kind: TranscendentalKind;
+	readonly funcName: string;
+	readonly argument: MathNode;
+}
+
+/**
+ * Try to identify a transcendental call in a single (unsigned) factor.
+ * Returns info if the factor IS a transcendental call, null otherwise.
+ */
+function identifyTranscendentalCall(
+	node: MathNode,
+	variable: string
+): TranscendentalCallInfo | null {
+	// Trig/log function: sin(u), cos(u), tan(u), ln(u), log(u)
+	if (isFunction(node) && getVariables(node).has(variable)) {
+		if (isTrigFunc(node.name)) {
+			return { kind: 'trig', funcName: node.name, argument: node.args[0] };
+		}
+		if (isLogFunc(node.name)) {
+			return { kind: 'log', funcName: node.name, argument: node.args[0] };
+		}
+	}
+
+	// Exp: e^u (SuperscriptNode with euler base)
+	if (isExpSuperscript(node) && getVariables(node).has(variable)) {
+		return { kind: 'exp', funcName: 'exp', argument: node.superscript };
+	}
+
+	return null;
+}
+
+/**
+ * Try to extract a transcendental call from a product term.
+ *
+ * A term like `3*sin(x)` is a product of [3, sin(x)].
+ * We look for exactly one transcendental factor; the rest form the coefficient.
+ *
+ * @returns `{ call, coeffFactors }` if found, null otherwise.
+ */
+function extractTranscendentalFromProduct(
+	node: MathNode,
+	variable: string
+): { call: TranscendentalCallInfo; coeffFactors: MathNode[] } | null {
+	// First check: is the node itself a transcendental call?
+	const directCall = identifyTranscendentalCall(node, variable);
+	if (directCall) {
+		return { call: directCall, coeffFactors: [] };
+	}
+
+	// Check if it's a multiplication chain
+	if (node.type !== 'multiplication') return null;
+
+	const factors = flattenProductShallow(node);
+	let foundCall: TranscendentalCallInfo | null = null;
+	const coeffFactors: MathNode[] = [];
+
+	for (const { factor } of factors) {
+		const call = identifyTranscendentalCall(factor, variable);
+		if (call) {
+			if (foundCall) return null; // Two transcendental calls in same product → not supported
+			foundCall = call;
+		} else if (getVariables(factor).has(variable)) {
+			// A non-transcendental factor containing the variable (e.g., x*sin(x))
 			return null;
+		} else {
+			coeffFactors.push(factor);
 		}
 	}
 
-	// Case 1: expr is just trig(arg) → trig(arg) = 0
-	if (isFunction(expr) && isTrigFunc(expr.name) && getVariables(expr).has(variable)) {
-		return makeParts(expr.name, expr.args[0], zero);
+	if (!foundCall) return null;
+	return { call: foundCall, coeffFactors };
+}
+
+/**
+ * Reconstruct a coefficient node from a list of factor nodes.
+ * Empty list → number('1'), single factor → that factor, multiple → multiply chain.
+ */
+function reconstructCoefficient(factors: MathNode[]): MathNode {
+	if (factors.length === 0) return number('1');
+	if (factors.length === 1) return factors[0];
+	let result = factors[0];
+	for (let i = 1; i < factors.length; i++) {
+		result = { type: 'multiplication', left: result, right: factors[i], displayStyle: 'implicit' };
+	}
+	return result;
+}
+
+/**
+ * Extract transcendental equation structure from expr = 0.
+ *
+ * Handles all forms:
+ * - `f(u) = 0`
+ * - `f(u) - c = 0` → `f(u) = c`
+ * - `a*f(u) - b = 0` → `f(u) = b/a`
+ * - `-f(u) = 0` → `f(u) = 0`
+ *
+ * where f is sin, cos, tan, ln, log, or exp (represented as e^u).
+ *
+ * Algorithm:
+ * 1. flattenSumShallow → list of signed terms
+ * 2. For each term, check if its unsigned part (factoring out sign) contains
+ *    exactly one transcendental call (possibly multiplied by a constant coefficient)
+ * 3. The remaining terms form `b`
+ * 4. Compute `c = -b/a` where `a` is the coefficient
+ */
+export function extractTranscendentalEquation(
+	expr: MathNode,
+	variable: string
+): TranscendentalEquationParts | null {
+	const terms = flattenSumShallow(expr);
+
+	// Try each term as the transcendental term
+	for (let i = 0; i < terms.length; i++) {
+		const { sign, term } = terms[i];
+
+		// Try to extract transcendental call from this term
+		const extracted = extractTranscendentalFromProduct(term, variable);
+		if (!extracted) continue;
+
+		const { call, coeffFactors } = extracted;
+
+		// Verify no other term contains the variable in a transcendental way
+		// (we allow other terms to contain the variable only if they don't have
+		// a different transcendental function - but actually for extraction to work,
+		// the remaining terms must be free of the variable entirely)
+		const remainingTerms: SignedTerm[] = [];
+		let hasVariableInRemaining = false;
+
+		for (let j = 0; j < terms.length; j++) {
+			if (j === i) continue;
+			remainingTerms.push(terms[j]);
+			if (getVariables(terms[j].term).has(variable)) {
+				hasVariableInRemaining = true;
+			}
+		}
+
+		if (hasVariableInRemaining) continue;
+
+		// Compute the coefficient a (considering sign of the transcendental term)
+		const coeffNode = reconstructCoefficient(coeffFactors);
+		let aNumeric: number;
+		try {
+			aNumeric = evaluateNodeToApproximatedNumber(coeffNode);
+		} catch {
+			aNumeric = 1;
+		}
+		if (sign === '-') aNumeric = -aNumeric;
+
+		// Compute b from remaining terms
+		const bNode = unflattenSum(remainingTerms);
+
+		// Compute c = -b/a
+		let constantNode: MathNode;
+		let constantNumeric: number;
+
+		if (bNode === null || remainingTerms.length === 0) {
+			// No remaining terms: f(u) = 0 (with possible coefficient)
+			constantNode = number('0');
+			constantNumeric = 0;
+		} else {
+			let bNumeric: number;
+			try {
+				bNumeric = evaluateNodeToApproximatedNumber(bNode);
+			} catch {
+				continue; // Can't evaluate remaining terms numerically
+			}
+
+			constantNumeric = -bNumeric / aNumeric;
+
+			// Build symbolic constant: -b/a
+			if (Math.abs(aNumeric - 1) < 1e-15 && sign === '+') {
+				// a = 1, sign = '+': c = -b
+				constantNode = denormalize(normalize(opposite(bNode)));
+			} else if (Math.abs(aNumeric + 1) < 1e-15 && sign === '-') {
+				// a = -1 (sign flipped): c = -b/(-1) = b
+				constantNode = denormalize(normalize(bNode));
+			} else {
+				// General case: c = -b/a
+				const signedCoeff = sign === '-' ? denormalize(normalize(opposite(coeffNode))) : coeffNode;
+				constantNode = denormalize(normalize(divide(opposite(bNode), signedCoeff, 'fraction')));
+			}
+		}
+
+		return {
+			kind: call.kind,
+			funcName: call.funcName,
+			argument: call.argument,
+			constantNode,
+			constantNumeric
+		};
 	}
 
-	// Case 2: expr = trig(arg) - c (SubtractionNode)
-	if (expr.type === 'subtraction') {
-		const { left, right } = expr;
-		if (
-			isFunction(left) &&
-			isTrigFunc(left.name) &&
-			getVariables(left).has(variable) &&
-			!getVariables(right).has(variable)
-		) {
-			return makeParts(left.name, left.args[0], right);
-		}
-		if (
-			isFunction(right) &&
-			isTrigFunc(right.name) &&
-			getVariables(right).has(variable) &&
-			!getVariables(left).has(variable)
-		) {
-			return makeParts(right.name, right.args[0], left);
-		}
-	}
+	return null;
+}
 
-	// Case 3: expr = trig(arg) + c (AdditionNode) → trig(arg) = -c
-	if (expr.type === 'addition') {
-		const { left, right } = expr;
-		if (
-			isFunction(left) &&
-			isTrigFunc(left.name) &&
-			getVariables(left).has(variable) &&
-			!getVariables(right).has(variable)
-		) {
-			return makeParts(left.name, left.args[0], opposite(right));
-		}
-		if (
-			isFunction(right) &&
-			isTrigFunc(right.name) &&
-			getVariables(right).has(variable) &&
-			!getVariables(left).has(variable)
-		) {
-			return makeParts(right.name, right.args[0], opposite(left));
-		}
-	}
-
-	// Case 4: expr = -trig(arg) → trig(arg) = 0
-	if (expr.type === 'opposite' && isFunction(expr.operand) && isTrigFunc(expr.operand.name)) {
-		return makeParts(expr.operand.name, expr.operand.args[0], zero);
-	}
-
-	// Case 5: expr = k * trig(arg) → trig(arg) = 0 (since k ≠ 0)
-	if (expr.type === 'multiplication') {
-		const { left, right } = expr;
-		if (
-			isFunction(right) &&
-			isTrigFunc(right.name) &&
-			getVariables(right).has(variable) &&
-			!getVariables(left).has(variable)
-		) {
-			return makeParts(right.name, right.args[0], zero);
-		}
-		if (
-			isFunction(left) &&
-			isTrigFunc(left.name) &&
-			getVariables(left).has(variable) &&
-			!getVariables(right).has(variable)
-		) {
-			return makeParts(left.name, left.args[0], zero);
-		}
-	}
-
+// Keep backward compat export
+export function extractTrigEquation(
+	expr: MathNode,
+	variable: string
+): TranscendentalEquationParts | null {
+	const result = extractTranscendentalEquation(expr, variable);
+	if (result && result.kind === 'trig') return result;
 	return null;
 }
 
@@ -261,93 +401,34 @@ export function computeUSolutions(
 }
 
 // =============================================================================
-// Exponential Solver
+// Exponential Solver (using generic extractor)
 // =============================================================================
 
+/** Type alias for solver options */
+type SolverOptions = Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
+	initialGuesses?: readonly number[];
+};
+
 /**
- * Solve exponential equations like e^x = c or a^x = c.
+ * Solve exponential equations: e^(ax+b) = c.
+ *
+ * Uses extractTranscendentalEquation to get the equation parts,
+ * then solves for linear arguments only. Non-linear arguments return null
+ * (handled by recursive decomposition in solve.ts).
  */
 function solveExponential(
 	expr: MathNode,
 	variable: string,
-	options: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
-		initialGuesses?: readonly number[];
-	},
+	options: SolverOptions,
 	recorder: SolveStepRecorder
 ): SolveResult | null {
-	// Look for pattern: e^x - c = 0 or a^x - c = 0
-	// This is a simplified implementation
+	const extracted = extractTranscendentalEquation(expr, variable);
+	if (!extracted || extracted.kind !== 'exp') return null;
 
-	// Try to find e^x or a^x structure in the expression
-	let base: MathNode | null = null;
-	let exponent: MathNode | null = null;
-	let constant: number | null = null;
+	const { argument, constantNode, constantNumeric } = extracted;
 
-	// Simple pattern matching for e^x = c
-	// In standard form: e^x - c = 0
-	mapNode(expr, (n) => {
-		if (n.type === 'superscript') {
-			const baseNode = n.base;
-			const expNode = n.superscript;
-
-			// Check if exponent contains the variable
-			if (getVariables(expNode).has(variable)) {
-				base = baseNode;
-				exponent = expNode;
-			}
-		}
-		return n;
-	});
-
-	if (!base || !exponent) return null;
-
-	// TypeScript needs help with closure-assigned variables
-	// Use explicit type assertions since TypeScript doesn't track assignments inside closures
-	const foundBase = base as MathNode;
-	const _foundExponent = exponent as MathNode;
-
-	// Extract the constant from the expression
-	// For e^x - c = 0, we need to find c
-	// This is tricky in standard form, so we'll use numeric approximation
-
-	// Check if base is 'e' (Euler's number)
-	const isEulerBase =
-		(foundBase.type === 'variable' && foundBase.name === 'e') ||
-		(foundBase.type === 'number' && Math.abs(parseFloat(foundBase.value) - Math.E) < 0.0001);
-
-	// Try to extract the constant by evaluating expr with x=0
-	// If e^x - c = 0, then at x=0: e^0 - c = 1 - c, so c = 1 - expr(0)
-	// This is a heuristic approach
-
-	// For simplicity, let's handle the common case where expr = e^x - c
-	// We'll look for the constant term
-
-	let constantTerm: MathNode | null = null;
-	mapNode(expr, (n) => {
-		if (isNumber(n) || (n.type === 'opposite' && isNumber(n.operand))) {
-			const vars = getVariables(n);
-			if (vars.size === 0) {
-				constantTerm = n;
-			}
-		}
-		return n;
-	});
-
-	if (constantTerm) {
-		const constValue = computeNumericValue(constantTerm);
-		if (constValue !== null) {
-			// The equation is approximately: base^x = -constantTerm
-			constant = -constValue;
-		}
-	}
-
-	if (constant === null) {
-		// Try numeric evaluation
-		constant = 1; // Default assumption for e^x = 1
-	}
-
-	// Check for no solution (e^x = negative)
-	if (constant <= 0) {
+	// Check for no solution (e^u = negative or zero)
+	if (constantNumeric <= 0) {
 		recorder.recordStep(
 			'no-real-solution',
 			`L'equation exponentielle n'a pas de solution reelle car la valeur cible est negative ou nulle`,
@@ -366,42 +447,59 @@ function solveExponential(
 		};
 	}
 
-	// Solve: base^x = constant => x = ln(constant) / ln(base)
+	// Extract linear form from argument: u = ax + b
+	const linearForm = extractLinearForm(argument, variable);
+	if (!linearForm) {
+		// Non-linear argument: delegate to recursive decomposition
+		return null;
+	}
+
+	const coeffNode = linearForm.coefficient;
+	const offsetNode = linearForm.offset;
+	let aNumeric: number;
+	try {
+		aNumeric = evaluateNodeToApproximatedNumber(coeffNode);
+	} catch {
+		return null;
+	}
+	if (Math.abs(aNumeric) < 1e-15) return null;
+
+	// e^(ax+b) = c → ax+b = ln(c) → x = (ln(c) - b) / a
+	const lnC = func('ln', [constantNode]);
+	const lnCNumeric = Math.log(constantNumeric);
+
 	let solution: MathNode;
 	let approximate: number;
 
-	if (isEulerBase) {
-		// e^x = c => x = ln(c)
-		solution = func('ln', [number(constant.toString())]);
-		approximate = Math.log(constant);
-
-		recorder.recordStep(
-			'apply-logarithm',
-			`On applique le logarithme neperien: x = ln(${constant})`,
-			expr,
-			equals(varNode(variable), solution),
-			'detailed'
-		);
+	if (offsetNode === null && Math.abs(aNumeric - 1) < 1e-10) {
+		// Simple case: e^x = c → x = ln(c)
+		solution = lnC;
+		approximate = lnCNumeric;
+	} else if (offsetNode === null) {
+		// e^(ax) = c → x = ln(c)/a
+		solution = divide(lnC, coeffNode, 'fraction');
+		approximate = lnCNumeric / aNumeric;
 	} else {
-		// a^x = c => x = ln(c) / ln(a)
-		const baseValue = computeNumericValue(foundBase);
-		if (baseValue === null || baseValue <= 0 || baseValue === 1) {
-			return null;
+		// e^(ax+b) = c → x = (ln(c) - b) / a
+		let bNumeric: number;
+		try {
+			bNumeric = evaluateNodeToApproximatedNumber(offsetNode);
+		} catch {
+			bNumeric = 0;
 		}
-
-		solution = fraction(func('ln', [number(constant.toString())]), func('ln', [foundBase]));
-		approximate = Math.log(constant) / Math.log(baseValue);
-
-		recorder.recordStep(
-			'apply-logarithm',
-			`On applique le logarithme: x = ln(${constant}) / ln(base)`,
-			expr,
-			equals(varNode(variable), solution),
-			'detailed'
-		);
+		solution = divide(subtract(lnC, offsetNode), coeffNode, 'fraction');
+		approximate = (lnCNumeric - bNumeric) / aNumeric;
 	}
 
 	const solutionSimplified = denormalize(normalize(solution));
+
+	recorder.recordStep(
+		'apply-logarithm',
+		`On applique le logarithme neperien`,
+		expr,
+		equals(varNode(variable), solutionSimplified),
+		'detailed'
+	);
 
 	recorder.recordStep(
 		'isolate-variable',
@@ -428,90 +526,98 @@ function solveExponential(
 }
 
 // =============================================================================
-// Logarithmic Solver
+// Logarithmic Solver (using generic extractor)
 // =============================================================================
 
 /**
- * Solve logarithmic equations like ln(x) = c or log(x) = c.
+ * Solve logarithmic equations: ln(ax+b) = c or log(ax+b) = c.
+ *
+ * Uses extractTranscendentalEquation to get the equation parts,
+ * then solves for linear arguments only.
  */
 function solveLogarithmic(
 	expr: MathNode,
 	variable: string,
-	options: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
-		initialGuesses?: readonly number[];
-	},
+	options: SolverOptions,
 	recorder: SolveStepRecorder
 ): SolveResult | null {
-	// Look for pattern: ln(x) - c = 0 or log(x) - c = 0
-	let funcName: string | null = null;
-	let argument: MathNode | null = null;
+	const extracted = extractTranscendentalEquation(expr, variable);
+	if (!extracted || extracted.kind !== 'log') return null;
 
-	mapNode(expr, (n) => {
-		if (isFunction(n) && (n.name === 'ln' || n.name === 'log')) {
-			if (getVariables(n).has(variable)) {
-				funcName = n.name;
-				argument = n.args[0];
-			}
-		}
-		return n;
-	});
+	const { funcName, argument, constantNode, constantNumeric } = extracted;
 
-	if (!funcName || !argument) return null;
+	// Extract linear form from argument: u = ax + b
+	const linearForm = extractLinearForm(argument, variable);
+	if (!linearForm) {
+		// Non-linear argument: delegate to recursive decomposition
+		return null;
+	}
 
-	// Extract the constant
-	let constant: number = 0;
-	mapNode(expr, (n) => {
-		if (isNumber(n) || (n.type === 'opposite' && isNumber(n.operand))) {
-			const vars = getVariables(n);
-			if (vars.size === 0) {
-				const val = computeNumericValue(n);
-				if (val !== null) constant = -val;
-			}
-		}
-		return n;
-	});
+	const coeffNode = linearForm.coefficient;
+	const offsetNode = linearForm.offset;
+	let aNumeric: number;
+	try {
+		aNumeric = evaluateNodeToApproximatedNumber(coeffNode);
+	} catch {
+		return null;
+	}
+	if (Math.abs(aNumeric) < 1e-15) return null;
 
-	// Solve: ln(x) = c => x = e^c
-	// Solve: log(x) = c => x = 10^c
+	// ln(ax+b) = c → ax+b = e^c → x = (e^c - b) / a
+	// log(ax+b) = c → ax+b = 10^c → x = (10^c - b) / a
+	let inverseNode: MathNode;
+	let inverseNumeric: number;
+
+	if (funcName === 'ln') {
+		inverseNode =
+			constantNumeric === 0
+				? number('1')
+				: constantNumeric === 1
+					? euler()
+					: superscript(euler(), constantNode);
+		inverseNumeric = Math.exp(constantNumeric);
+	} else {
+		// log base 10
+		inverseNode = constantNumeric === 0 ? number('1') : superscript(number('10'), constantNode);
+		inverseNumeric = Math.pow(10, constantNumeric);
+	}
+
 	let solution: MathNode;
 	let approximate: number;
 
-	if (funcName === 'ln') {
-		// ln(x) = c => x = e^c
-		const eNode: MathNode = { type: 'variable', name: 'e' };
-		solution =
-			constant === 0
-				? number('1')
-				: constant === 1
-					? eNode
-					: { type: 'superscript', base: eNode, superscript: number(constant.toString()) };
-		approximate = Math.exp(constant);
-
-		recorder.recordStep(
-			'apply-exponential',
-			`On applique l'exponentielle: x = e^{${constant}}`,
-			expr,
-			equals(varNode(variable), solution),
-			'detailed'
-		);
+	if (offsetNode === null && Math.abs(aNumeric - 1) < 1e-10) {
+		// Simple case: ln(x) = c → x = e^c
+		solution = inverseNode;
+		approximate = inverseNumeric;
+	} else if (offsetNode === null) {
+		// ln(ax) = c → x = e^c/a
+		solution = divide(inverseNode, coeffNode, 'fraction');
+		approximate = inverseNumeric / aNumeric;
 	} else {
-		// log(x) = c => x = 10^c
-		solution =
-			constant === 0
-				? number('1')
-				: { type: 'superscript', base: number('10'), superscript: number(constant.toString()) };
-		approximate = Math.pow(10, constant);
-
-		recorder.recordStep(
-			'apply-exponential',
-			`On applique la puissance de 10: x = 10^{${constant}}`,
-			expr,
-			equals(varNode(variable), solution),
-			'detailed'
-		);
+		// ln(ax+b) = c → x = (e^c - b) / a
+		let bNumeric: number;
+		try {
+			bNumeric = evaluateNodeToApproximatedNumber(offsetNode);
+		} catch {
+			bNumeric = 0;
+		}
+		solution = divide(subtract(inverseNode, offsetNode), coeffNode, 'fraction');
+		approximate = (inverseNumeric - bNumeric) / aNumeric;
 	}
 
 	const solutionSimplified = denormalize(normalize(solution));
+
+	const applyRule = funcName === 'ln' ? 'apply-exponential' : 'apply-exponential';
+	const applyDesc =
+		funcName === 'ln' ? `On applique l'exponentielle` : `On applique la puissance de 10`;
+
+	recorder.recordStep(
+		applyRule,
+		applyDesc,
+		expr,
+		equals(varNode(variable), solutionSimplified),
+		'detailed'
+	);
 
 	recorder.recordStep(
 		'isolate-variable',
@@ -541,24 +647,10 @@ function solveLogarithmic(
 // Trigonometric Solver
 // =============================================================================
 
-/** Type alias for solver options */
-type SolverOptions = Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
-	initialGuesses?: readonly number[];
-};
-
 /**
  * Solve trigonometric equations: sin(ax+b) = c, cos(ax+b) = c, tan(ax+b) = c.
  *
- * Returns the full periodic solution family:
- * - baseSolutions: all distinct solutions within one period (in x-space)
- * - period: the repetition interval
- *
- * Solution families:
- * - sin(u) = c → u = arcsin(c) + 2kπ  and  u = π - arcsin(c) + 2kπ
- * - cos(u) = c → u = arccos(c) + 2kπ  and  u = -arccos(c) + 2kπ
- * - tan(u) = c → u = arctan(c) + kπ
- *
- * Then if u = ax + b: x = (u - b) / a, period = base_period / |a|
+ * Returns the full periodic solution family.
  */
 function solveTrigonometric(
 	expr: MathNode,
@@ -566,9 +658,8 @@ function solveTrigonometric(
 	options: SolverOptions,
 	recorder: SolveStepRecorder
 ): SolveResult | null {
-	// Extract trig equation structure (fixes old bug with numbers inside args)
-	const extracted = extractTrigEquation(expr, variable);
-	if (!extracted) return null;
+	const extracted = extractTranscendentalEquation(expr, variable);
+	if (!extracted || extracted.kind !== 'trig') return null;
 
 	const { funcName, argument, constantNode, constantNumeric: constant } = extracted;
 
@@ -597,7 +688,7 @@ function solveTrigonometric(
 	// Extract linear form from argument: u = ax + b
 	const linearForm = extractLinearForm(argument, variable);
 	if (!linearForm) {
-		// Non-linear argument (e.g. sin(x²)): not supported
+		// Non-linear argument (e.g. sin(x²)): not supported here
 		return null;
 	}
 
@@ -732,6 +823,15 @@ export const transcendentalSolver: EquationSolver = {
 			result = solveLogarithmic(expr, variable, options, recorder);
 		} else if (transcType === 'trigonometric') {
 			result = solveTrigonometric(expr, variable, options, recorder);
+		}
+
+		// If classification-based approach failed, try generic extraction
+		// (e.g., e^x is classified as 'exponential' but e^{x^2} may be 'mixed')
+		if (!result) {
+			result =
+				solveExponential(expr, variable, options, recorder) ??
+				solveLogarithmic(expr, variable, options, recorder) ??
+				solveTrigonometric(expr, variable, options, recorder);
 		}
 
 		if (result) return result;

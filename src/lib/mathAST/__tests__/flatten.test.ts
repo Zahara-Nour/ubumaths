@@ -396,21 +396,21 @@ describe('flattenProductShallow', () => {
 		]);
 	});
 
-	it('handles long multiplication chain: a * b * c * d * e', () => {
+	it('handles long multiplication chain: a * b * c * d * f', () => {
 		const a = variable('a');
 		const b = variable('b');
 		const c = variable('c');
 		const d = variable('d');
-		const e = variable('e');
-		// ((((a · b) · c) · d) · e)
-		const expr = multiply(multiply(multiply(multiply(a, b, 'dot'), c, 'dot'), d, 'dot'), e, 'dot');
+		const f = variable('f');
+		// ((((a · b) · c) · d) · f)
+		const expr = multiply(multiply(multiply(multiply(a, b, 'dot'), c, 'dot'), d, 'dot'), f, 'dot');
 		const result = flattenProductShallow(expr);
 		expect(result).toEqual([
 			{ style: 'implicit', factor: a },
 			{ style: 'dot', factor: b },
 			{ style: 'dot', factor: c },
 			{ style: 'dot', factor: d },
-			{ style: 'dot', factor: e }
+			{ style: 'dot', factor: f }
 		]);
 	});
 
@@ -795,7 +795,7 @@ describe('Relation Chain Flattening', () => {
 				variable('b'),
 				variable('c'),
 				variable('d'),
-				variable('e')
+				variable('f')
 			);
 			const flat = flattenRelationChain(chain);
 			expect(flat.operands).toHaveLength(5);
