@@ -33,12 +33,13 @@
 import type { MathNode, RelationNode } from '../../types';
 import type { Domain } from '../../domain/types';
 import type { ZeroInfo } from '../types';
-import type { Solution } from '../../solve/types';
+import type { Solution, PeriodicSolutionFamily } from '../../solve/types';
 import { solve } from '../../solve/solve';
-import { equals, number } from '../../factory';
+import { equals, number, add, multiply, opposite } from '../../factory';
 import { isRelation } from '../../guards';
 import { containsValue } from '$lib/math/intervals/algebra';
 import { getBoundsFromDomain } from '$lib/math/intervals/algebra';
+import { denormalize, normalize } from '../../normal';
 
 // =============================================================================
 // Zero Finding
@@ -91,7 +92,21 @@ export function findZeros(expr: MathNode, variable: string, domain: Domain): Zer
 			return [];
 		}
 
-		// Filter solutions within the domain
+		// Handle periodic solutions on bounded domains
+		if (result.periodicSolutions && domain.kind === 'interval_set') {
+			const bounds = getDomainBounds(domain);
+			if (
+				bounds &&
+				bounds.lower !== null &&
+				bounds.upper !== null &&
+				isFinite(bounds.lower) &&
+				isFinite(bounds.upper)
+			) {
+				return enumeratePeriodicZeros(result.periodicSolutions, bounds, domain);
+			}
+		}
+
+		// Filter solutions within the domain (default non-periodic path)
 		const zerosInDomain = filterSolutionsInDomain(result.solutions, domain);
 
 		return zerosInDomain;
@@ -168,6 +183,125 @@ function isValueInDomain(value: number, domain: Domain): boolean {
 
 		default:
 			return true;
+	}
+}
+
+// =============================================================================
+// Periodic Zero Enumeration
+// =============================================================================
+
+/**
+ * Enumerate all periodic zeros within bounded domain.
+ *
+ * For each base solution x₀ with period T, enumerates all values
+ * x₀ + k*T that fall within the domain bounds.
+ *
+ * @param family - The periodic solution family from the solver
+ * @param bounds - Numeric bounds of the domain
+ * @param domain - The full domain for membership checks
+ * @returns Array of ZeroInfo for all periodic zeros in the domain
+ *
+ * @internal
+ */
+function enumeratePeriodicZeros(
+	family: PeriodicSolutionFamily,
+	bounds: {
+		lower: number | null;
+		upper: number | null;
+		lowerInclusive: boolean;
+		upperInclusive: boolean;
+	},
+	domain: Domain
+): ZeroInfo[] {
+	const zeros: ZeroInfo[] = [];
+	const { baseSolutions, period, periodNumeric } = family;
+
+	if (periodNumeric <= 0 || !isFinite(periodNumeric)) return [];
+
+	const lower = bounds.lower!;
+	const upper = bounds.upper!;
+
+	// Tolerance for floating-point boundary comparisons.
+	// Math.PI + 2*Math.PI may not equal 3*Math.PI exactly.
+	// Looser than the 1e-10 duplicate tolerance in the solver because
+	// boundary comparisons involve accumulated floating-point errors from k*period.
+	const eps = 1e-9;
+
+	// Safety: limit the number of points to avoid runaway enumeration
+	const maxPoints = 200;
+
+	for (const baseSolution of baseSolutions) {
+		const baseNumeric = baseSolution.approximate;
+		if (baseNumeric === undefined) continue;
+
+		// Slightly expand k range to catch boundary values
+		const kMin = Math.ceil((lower - eps - baseNumeric) / periodNumeric);
+		const kMax = Math.floor((upper + eps - baseNumeric) / periodNumeric);
+
+		// Safety: prevent excessive iteration for very large domains or tiny periods
+		if (kMax - kMin > 1000) continue;
+
+		for (let k = kMin; k <= kMax && zeros.length < maxPoints; k++) {
+			const numericValue = baseNumeric + k * periodNumeric;
+
+			// Check if value is within bounds (with tolerance)
+			if (numericValue < lower - eps || numericValue > upper + eps) continue;
+
+			// Check inclusive/exclusive bounds
+			const atLower = Math.abs(numericValue - lower) < eps;
+			const atUpper = Math.abs(numericValue - upper) < eps;
+			if (atLower && !bounds.lowerInclusive) continue;
+			if (atUpper && !bounds.upperInclusive) continue;
+
+			// For non-contiguous domains (interval unions), check membership
+			if (!atLower && !atUpper && !isValueInDomain(numericValue, domain)) continue;
+
+			// Build symbolic value
+			const symbolicValue = buildPeriodicZeroSymbolic(baseSolution.value, k, period);
+
+			zeros.push({
+				value: symbolicValue,
+				approximate: numericValue,
+				exact: true
+			});
+		}
+	}
+
+	return zeros;
+}
+
+/**
+ * Build symbolic MathNode for base + k * period.
+ *
+ * Optimizes common cases:
+ * - k = 0: returns base directly
+ * - k = 1: base + period
+ * - k = -1: base - period
+ * - general: base + k * period
+ *
+ * Then normalizes to get a clean symbolic form.
+ */
+function buildPeriodicZeroSymbolic(base: MathNode, k: number, period: MathNode): MathNode {
+	if (k === 0) return base;
+
+	let kTimesT: MathNode;
+	if (k === 1) {
+		kTimesT = period;
+	} else if (k === -1) {
+		kTimesT = opposite(period);
+	} else if (k > 0) {
+		kTimesT = multiply(number(k.toString()), period, 'implicit');
+	} else {
+		kTimesT = opposite(multiply(number((-k).toString()), period, 'implicit'));
+	}
+
+	const raw = add(base, kTimesT);
+
+	// Normalize to simplify (e.g. 0 + 2π → 2π, π/2 + 2π → 5π/2)
+	try {
+		return denormalize(normalize(raw));
+	} catch {
+		return raw;
 	}
 }
 
