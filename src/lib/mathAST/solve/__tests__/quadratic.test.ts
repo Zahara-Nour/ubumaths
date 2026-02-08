@@ -214,6 +214,33 @@ describe('Quadratic Solver', () => {
 			expect(approxValues[0]).toBeCloseTo(-Math.pow(2, 0.25), 5);
 			expect(approxValues[1]).toBeCloseTo(Math.pow(2, 0.25), 5);
 		});
+
+		it('should detect no real solution when discriminant is negative via π (x^2 + \\pi x + 10 = 0)', () => {
+			// Δ = π² - 40 ≈ -30.13 < 0
+			const eq = parseEquation('x^2 + \\pi x + 10 = 0');
+			const result = solve(eq);
+
+			expect(result.status).toBe('no-real-solution');
+			expect(result.solutions).toHaveLength(0);
+		});
+
+		it('should solve when discriminant is positive via π (x^2 + \\pi x + 1 = 0)', () => {
+			// Δ = π² - 4 ≈ 5.87 > 0 → two real solutions
+			const eq = parseEquation('x^2 + \\pi x + 1 = 0');
+			const result = solve(eq);
+
+			expect(result.status).toBe('multiple');
+			expect(result.solutions).toHaveLength(2);
+
+			const approxValues = result.solutions
+				.map((s) => s.approximate)
+				.filter((a): a is number => a !== undefined)
+				.sort((a, b) => a - b);
+			expect(approxValues).toHaveLength(2);
+			const sqrtDelta = Math.sqrt(Math.PI * Math.PI - 4);
+			expect(approxValues[0]).toBeCloseTo((-Math.PI - sqrtDelta) / 2, 5);
+			expect(approxValues[1]).toBeCloseTo((-Math.PI + sqrtDelta) / 2, 5);
+		});
 	});
 
 	describe('Discriminant in steps', () => {
