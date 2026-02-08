@@ -113,7 +113,7 @@ function getOuterFunctionRequirement(
  */
 function analyzeComposition(
 	outerFunc: string,
-	innerNode: { name: string; args: readonly MathNode[] },
+	innerNode: { name: string; args: readonly MathNode[]; base?: MathNode },
 	variable: string,
 	currentDomain: Domain,
 	_steps: DomainStep[],
@@ -350,7 +350,7 @@ function computeDivisionDomain(
  * Compute domain for a function application.
  */
 function computeFunctionDomain(
-	node: { name: string; args: readonly MathNode[] },
+	node: { name: string; args: readonly MathNode[]; base?: MathNode },
 	variable: string,
 	steps: DomainStep[],
 	options: ComputeDomainOptions
@@ -374,9 +374,9 @@ function computeFunctionDomain(
 	if (node.name === 'cbrt') {
 		return domain;
 	}
-	if (node.name === 'sqrt' && 'base' in node && node.base) {
+	if (node.name === 'sqrt' && node.base) {
 		try {
-			const rootIndex = evaluateNodeToApproximatedNumber(node.base as MathNode);
+			const rootIndex = evaluateNodeToApproximatedNumber(node.base);
 			if (Number.isInteger(rootIndex) && rootIndex % 2 !== 0) {
 				return domain; // Odd root: defined on ℝ
 			}
