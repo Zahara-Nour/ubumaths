@@ -564,10 +564,26 @@ export const hypHigherPowerRules: Rule[] = [
 // COMBINED RULE SETS
 // ============================================================================
 
-/**
- * Rules used for automatic simplification (excluded: addition, expansion, factorization, half-angle, higher-power)
- */
-export const hypSimplifyRules: Rule[] = [...hypPythagoreanRules, ...hypQuotientRules];
+// Rules used by simplify() — only sinh/cosh/tanh-level identities (no sech/csch/coth introduction)
+const SIMPLIFY_PYTHAGOREAN = new Set([
+	'hyperbolic-pythagorean',
+	'one-plus-sinh-squared',
+	'cosh-squared-minus-one'
+]);
+const SIMPLIFY_QUOTIENT = new Set(['sinh-over-cosh']);
+
+/** cosh(a)/sinh(a) → 1/tanh(a) — avoids introducing coth() */
+const coshOverSinhSimplify = createRule(
+	P.div(P.func('cosh', [P._('a')]), P.func('sinh', [P._('a')])),
+	(b) => divide(number('1'), tanh(get(b, 'a')), 'fraction'),
+	{ name: 'cosh-over-sinh-simplify' }
+);
+
+export const hypSimplifyRules: Rule[] = [
+	...hypPythagoreanRules.filter((r) => SIMPLIFY_PYTHAGOREAN.has(r.name)),
+	...hypQuotientRules.filter((r) => SIMPLIFY_QUOTIENT.has(r.name)),
+	coshOverSinhSimplify
+];
 
 /**
  * All hyperbolic identity rules (for targeted transformations)
