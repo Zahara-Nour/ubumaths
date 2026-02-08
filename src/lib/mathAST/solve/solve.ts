@@ -1024,9 +1024,9 @@ function tryRadicalDecomposition(
 /**
  * Filter solutions that fall outside the domain of definition.
  *
- * Solutions with `approximate !== undefined` are checked against the domain
- * using `containsValue`. Solutions without an approximate value are kept
- * (no numeric value to verify).
+ * Evaluates each solution's symbolic value to a number and checks
+ * domain membership. Falls back to `approximate` if symbolic evaluation
+ * fails, and keeps the solution if neither is available.
  *
  * Records a step for each excluded solution.
  */
@@ -1040,10 +1040,17 @@ function filterSolutionsByDomain(
 
 	const kept: Solution[] = [];
 	for (const sol of result.solutions) {
-		if (sol.approximate !== undefined && !containsValue(domain, sol.approximate)) {
+		let numericValue: number | undefined;
+		try {
+			numericValue = evaluateNodeToApproximatedNumber(sol.value);
+		} catch {
+			numericValue = sol.approximate;
+		}
+
+		if (numericValue !== undefined && !containsValue(domain, numericValue)) {
 			recorder.recordStep(
 				'domain-exclusion',
-				`${variable} ≈ ${sol.approximate.toPrecision(6)} est exclu du domaine de définition`,
+				`${variable} = ${numericValue.toPrecision(6)} est exclu du domaine`,
 				sol.value,
 				sol.value,
 				'summarized'

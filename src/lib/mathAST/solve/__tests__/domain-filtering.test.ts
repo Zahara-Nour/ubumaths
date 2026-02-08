@@ -22,6 +22,8 @@ import {
 	universalDomain
 } from '../../domain/factory';
 import type { Domain } from '../../domain/types';
+import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
+import type { Solution } from '../types';
 
 function parseEquation(latex: string): RelationNode {
 	const node = parseLatex(latex);
@@ -29,6 +31,11 @@ function parseEquation(latex: string): RelationNode {
 		throw new Error(`Expected relation, got ${node.type}`);
 	}
 	return node;
+}
+
+/** Evaluate a solution's symbolic value to a number */
+function valueOf(sol: Solution): number {
+	return evaluateNodeToApproximatedNumber(sol.value);
 }
 
 describe('Domain filtering in solve()', () => {
@@ -41,7 +48,7 @@ describe('Domain filtering in solve()', () => {
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
 			// e^3 ≈ 20.09, which is in ]0, +∞[
-			expect(result.solutions[0].approximate).toBeCloseTo(Math.E ** 3, 3);
+			expect(valueOf(result.solutions[0])).toBeCloseTo(Math.E ** 3, 3);
 		});
 
 		it('should attach universal domain for x^2 + 1 = 0', () => {
@@ -68,7 +75,7 @@ describe('Domain filtering in solve()', () => {
 			// x = 1 is in ]0, +∞[, so it should be kept
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(1, 5);
+			expect(valueOf(result.solutions[0])).toBeCloseTo(1, 5);
 		});
 	});
 
@@ -95,7 +102,7 @@ describe('Domain filtering in solve()', () => {
 
 			expect(result.status).toBe('unique');
 			expect(result.solutions).toHaveLength(1);
-			expect(result.solutions[0].approximate).toBeCloseTo(1, 5);
+			expect(valueOf(result.solutions[0])).toBeCloseTo(1, 5);
 		});
 
 		it('should keep all polynomial solutions (universal domain)', () => {
@@ -103,9 +110,9 @@ describe('Domain filtering in solve()', () => {
 
 			expect(result.status).toBe('multiple');
 			expect(result.solutions).toHaveLength(2);
-			const approxValues = result.solutions.map((s) => s.approximate).sort();
-			expect(approxValues[0]).toBeCloseTo(2, 5);
-			expect(approxValues[1]).toBeCloseTo(3, 5);
+			const values = result.solutions.map((s) => valueOf(s)).sort((a, b) => a - b);
+			expect(values[0]).toBeCloseTo(2, 5);
+			expect(values[1]).toBeCloseTo(3, 5);
 		});
 	});
 
@@ -124,7 +131,7 @@ describe('Domain filtering in solve()', () => {
 
 				expect(result.status).toBe('unique');
 				expect(result.solutions).toHaveLength(1);
-				expect(result.solutions[0].approximate).toBeCloseTo(2, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(2, 5);
 			});
 
 			it('should filter x² - 4 = 0 to only negative solution on ]-∞, 0]', () => {
@@ -134,7 +141,7 @@ describe('Domain filtering in solve()', () => {
 
 				expect(result.status).toBe('unique');
 				expect(result.solutions).toHaveLength(1);
-				expect(result.solutions[0].approximate).toBeCloseTo(-2, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(-2, 5);
 			});
 
 			it('should keep both solutions of x² - 4 = 0 on [-3, 3]', () => {
@@ -174,7 +181,7 @@ describe('Domain filtering in solve()', () => {
 				});
 
 				expect(result.solutions).toHaveLength(1);
-				expect(result.solutions[0].approximate).toBeCloseTo(2, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(2, 5);
 			});
 
 			it('should EXCLUDE solution x = 2 on ]2, +∞[ (open excludes boundary)', () => {
@@ -192,7 +199,7 @@ describe('Domain filtering in solve()', () => {
 				});
 
 				expect(result.solutions).toHaveLength(1);
-				expect(result.solutions[0].approximate).toBeCloseTo(-2, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(-2, 5);
 			});
 
 			it('should EXCLUDE solution x = -2 on ]-∞, -2[ (open excludes boundary)', () => {
@@ -219,7 +226,7 @@ describe('Domain filtering in solve()', () => {
 				});
 
 				expect(closed.solutions).toHaveLength(1);
-				expect(closed.solutions[0].approximate).toBeCloseTo(3, 5);
+				expect(valueOf(closed.solutions[0])).toBeCloseTo(3, 5);
 				expect(open.solutions).toHaveLength(0);
 			});
 		});
@@ -237,7 +244,7 @@ describe('Domain filtering in solve()', () => {
 				expect(result.domain).toBeDefined();
 				expect(result.domain!.kind).not.toBe('universal');
 				expect(result.status).toBe('unique');
-				expect(result.solutions[0].approximate).toBeCloseTo(1, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(1, 5);
 			});
 
 			it('should return no-solution for ln(x) = 3 when domain is ]0, 10[', () => {
@@ -267,7 +274,7 @@ describe('Domain filtering in solve()', () => {
 				});
 
 				expect(result.status).toBe('unique');
-				expect(result.solutions[0].approximate).toBeCloseTo(1, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(1, 5);
 			});
 		});
 
@@ -303,7 +310,7 @@ describe('Domain filtering in solve()', () => {
 				});
 
 				expect(result.solutions).toHaveLength(1);
-				expect(result.solutions[0].approximate).toBeCloseTo(2, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(2, 5);
 			});
 
 			it('should find nothing in interval between solutions: x² - 4 = 0 on [-1, 1]', () => {
@@ -345,7 +352,7 @@ describe('Domain filtering in solve()', () => {
 				});
 
 				expect(result.solutions).toHaveLength(1);
-				expect(result.solutions[0].approximate).toBeCloseTo(-2, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(-2, 5);
 			});
 		});
 
@@ -369,7 +376,7 @@ describe('Domain filtering in solve()', () => {
 				});
 
 				expect(result.status).toBe('unique');
-				expect(result.solutions[0].approximate).toBeCloseTo(3, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(3, 5);
 			});
 
 			it('should restrict cubic x³ - 8 = 0 to [0, +∞[', () => {
@@ -379,7 +386,7 @@ describe('Domain filtering in solve()', () => {
 				});
 
 				expect(result.status).toBe('unique');
-				expect(result.solutions[0].approximate).toBeCloseTo(2, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(2, 5);
 			});
 
 			it('should restrict quadratic with 3 solutions (x³ - x = 0) to ]0, +∞[', () => {
@@ -389,7 +396,7 @@ describe('Domain filtering in solve()', () => {
 				});
 
 				expect(result.solutions).toHaveLength(1);
-				expect(result.solutions[0].approximate).toBeCloseTo(1, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(1, 5);
 			});
 
 			it('should restrict ln(x) = 0 to [0.5, 2]', () => {
@@ -399,7 +406,7 @@ describe('Domain filtering in solve()', () => {
 				});
 
 				expect(result.status).toBe('unique');
-				expect(result.solutions[0].approximate).toBeCloseTo(1, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(1, 5);
 			});
 
 			it('should restrict √x - 2 = 0 to [0, 3]', () => {
@@ -418,7 +425,7 @@ describe('Domain filtering in solve()', () => {
 				});
 
 				expect(result.status).toBe('unique');
-				expect(result.solutions[0].approximate).toBeCloseTo(4, 5);
+				expect(valueOf(result.solutions[0])).toBeCloseTo(4, 5);
 			});
 		});
 
