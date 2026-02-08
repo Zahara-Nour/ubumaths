@@ -10,6 +10,8 @@ import { solve } from '../solve';
 import { parseLatex } from '../../parser';
 import type { RelationNode } from '../../types';
 import { isUniversal } from '../../domain/algebra';
+import { intervalDomain, greaterThanOrEqual, fromNumber } from '../../domain/factory';
+import type { Domain } from '../../domain/types';
 
 function parseEquation(latex: string): RelationNode {
 	const node = parseLatex(latex);
@@ -94,6 +96,83 @@ describe('Domain filtering in solve()', () => {
 			const approxValues = result.solutions.map((s) => s.approximate).sort();
 			expect(approxValues[0]).toBeCloseTo(2, 5);
 			expect(approxValues[1]).toBeCloseTo(3, 5);
+		});
+	});
+
+	describe('User-provided search domain', () => {
+		it('should filter x² - 4 = 0 to only positive solution when domain is [0, +∞[', () => {
+			const searchDomain: Domain = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
+			const result = solve(parseEquation('x^2 - 4 = 0'), { domain: searchDomain });
+
+			expect(result.status).toBe('unique');
+			expect(result.solutions).toHaveLength(1);
+			expect(result.solutions[0].approximate).toBeCloseTo(2, 5);
+		});
+
+		it('should return no-solution for ln(x) = 3 when domain is ]0, 10[', () => {
+			// e³ ≈ 20.09 is outside ]0, 10[
+			const searchDomain: Domain = intervalDomain([
+				{
+					lower: { type: 'open', value: fromNumber(0) },
+					upper: { type: 'open', value: fromNumber(10) }
+				}
+			]);
+			const result = solve(parseEquation('\\ln(x) = 3'), { domain: searchDomain });
+
+			expect(result.status).toBe('no-solution');
+			expect(result.solutions).toHaveLength(0);
+		});
+
+		it('should not change behavior when no domain is provided', () => {
+			const result = solve(parseEquation('x^2 - 4 = 0'));
+
+			expect(result.status).toBe('multiple');
+			expect(result.solutions).toHaveLength(2);
+		});
+
+		it('should intersect user domain with computed domain', () => {
+			// ln(x) has computed domain ]0, +∞[
+			// User provides ]-∞, 5[ → intersection is ]0, 5[
+			// ln(x) = 0 → x = 1, which is in ]0, 5[
+			const searchDomain: Domain = intervalDomain([
+				{
+					lower: { type: 'open', value: fromNumber(-Infinity) },
+					upper: { type: 'open', value: fromNumber(5) }
+				}
+			]);
+			const result = solve(parseEquation('\\ln(x) = 0'), { domain: searchDomain });
+
+			expect(result.domain).toBeDefined();
+			expect(result.domain!.kind).not.toBe('universal');
+			expect(result.status).toBe('unique');
+			expect(result.solutions[0].approximate).toBeCloseTo(1, 5);
+		});
+
+		it('should record a search-domain step when domain is provided', () => {
+			const searchDomain: Domain = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
+			const result = solve(parseEquation('x^2 - 4 = 0'), {
+				domain: searchDomain,
+				verbosity: 'summarized'
+			});
+
+			const searchStep = result.steps.find((s) => s.rule === 'search-domain');
+			expect(searchStep).toBeDefined();
+			expect(searchStep!.description).toContain('Recherche des solutions sur');
+		});
+
+		it('should return no-solution when user domain is empty after intersection', () => {
+			// x² - 4 = 0 has universal computed domain
+			// User provides ]-∞, -5[ → solutions are -2 and 2, neither in ]-∞, -5[
+			const searchDomain: Domain = intervalDomain([
+				{
+					lower: { type: 'open', value: fromNumber(-Infinity) },
+					upper: { type: 'open', value: fromNumber(-5) }
+				}
+			]);
+			const result = solve(parseEquation('x^2 - 4 = 0'), { domain: searchDomain });
+
+			expect(result.status).toBe('no-solution');
+			expect(result.solutions).toHaveLength(0);
 		});
 	});
 });
