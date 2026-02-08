@@ -20,6 +20,41 @@ import { signFromBounds } from './literals';
 // =============================================================================
 
 /**
+ * Find min and max from a list of candidates, using OR for tied inclusivities.
+ * When multiple candidates share the same extreme value, the result is inclusive
+ * if ANY of the tied candidates is inclusive.
+ */
+function findExtremes(candidates: { value: number; inclusive: boolean }[]): {
+	min: number;
+	minInclusive: boolean;
+	max: number;
+	maxInclusive: boolean;
+} {
+	let min = Infinity;
+	let minInclusive = false;
+	let max = -Infinity;
+	let maxInclusive = false;
+
+	for (const c of candidates) {
+		if (c.value < min) {
+			min = c.value;
+			minInclusive = c.inclusive;
+		} else if (c.value === min && c.inclusive) {
+			minInclusive = true;
+		}
+
+		if (c.value > max) {
+			max = c.value;
+			maxInclusive = c.inclusive;
+		} else if (c.value === max && c.inclusive) {
+			maxInclusive = true;
+		}
+	}
+
+	return { min, minInclusive, max, maxInclusive };
+}
+
+/**
  * Add two bounds: [a,b] + [c,d] = [a+c, b+d]
  */
 function addBounds(a: Bounds, b: Bounds): Bounds {
@@ -57,21 +92,20 @@ function multiplyBounds(a: Bounds, b: Bounds): Bounds | undefined {
 		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
 	}
 
-	const products = [
-		{ value: a.lower * b.lower, aInc: a.lowerInclusive, bInc: b.lowerInclusive },
-		{ value: a.lower * b.upper, aInc: a.lowerInclusive, bInc: b.upperInclusive },
-		{ value: a.upper * b.lower, aInc: a.upperInclusive, bInc: b.lowerInclusive },
-		{ value: a.upper * b.upper, aInc: a.upperInclusive, bInc: b.upperInclusive }
+	const candidates = [
+		{ value: a.lower * b.lower, inclusive: a.lowerInclusive && b.lowerInclusive },
+		{ value: a.lower * b.upper, inclusive: a.lowerInclusive && b.upperInclusive },
+		{ value: a.upper * b.lower, inclusive: a.upperInclusive && b.lowerInclusive },
+		{ value: a.upper * b.upper, inclusive: a.upperInclusive && b.upperInclusive }
 	];
 
-	const minP = products.reduce((min, p) => (p.value < min.value ? p : min));
-	const maxP = products.reduce((max, p) => (p.value > max.value ? p : max));
+	const { min, minInclusive, max, maxInclusive } = findExtremes(candidates);
 
 	return {
-		lower: minP.value,
-		upper: maxP.value,
-		lowerInclusive: minP.aInc && minP.bInc,
-		upperInclusive: maxP.aInc && maxP.bInc
+		lower: min,
+		upper: max,
+		lowerInclusive: minInclusive,
+		upperInclusive: maxInclusive
 	};
 }
 
@@ -93,21 +127,38 @@ function divideBounds(a: Bounds, b: Bounds): Bounds | undefined {
 		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
 	}
 
-	const quotients = [
-		{ value: a.lower / b.lower!, aInc: a.lowerInclusive, bInc: b.lowerInclusive },
-		{ value: a.lower / b.upper!, aInc: a.lowerInclusive, bInc: b.upperInclusive },
-		{ value: a.upper / b.lower!, aInc: a.upperInclusive, bInc: b.lowerInclusive },
-		{ value: a.upper / b.upper!, aInc: a.upperInclusive, bInc: b.upperInclusive }
+	// Build quotient candidates; null divisor bound (±∞) → quotient approaches 0
+	const candidates: { value: number; inclusive: boolean }[] = [];
+	const aEndpoints = [
+		{ value: a.lower, inclusive: a.lowerInclusive },
+		{ value: a.upper, inclusive: a.upperInclusive }
+	];
+	const bEndpoints = [
+		{ value: b.lower, inclusive: b.lowerInclusive },
+		{ value: b.upper, inclusive: b.upperInclusive }
 	];
 
-	const minQ = quotients.reduce((min, q) => (q.value < min.value ? q : min));
-	const maxQ = quotients.reduce((max, q) => (q.value > max.value ? q : max));
+	for (const ae of aEndpoints) {
+		for (const be of bEndpoints) {
+			if (be.value === null) {
+				// a / ±∞ → 0 (approached but never reached)
+				candidates.push({ value: 0, inclusive: false });
+			} else {
+				candidates.push({
+					value: ae.value / be.value,
+					inclusive: ae.inclusive && be.inclusive
+				});
+			}
+		}
+	}
+
+	const { min, minInclusive, max, maxInclusive } = findExtremes(candidates);
 
 	return {
-		lower: minQ.value,
-		upper: maxQ.value,
-		lowerInclusive: minQ.aInc && minQ.bInc,
-		upperInclusive: maxQ.aInc && maxQ.bInc
+		lower: min,
+		upper: max,
+		lowerInclusive: minInclusive,
+		upperInclusive: maxInclusive
 	};
 }
 

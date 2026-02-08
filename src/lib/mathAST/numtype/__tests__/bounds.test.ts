@@ -4,7 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseLatex } from '../../parser';
-import { inferType } from '../infer';
+import { inferType, clearAllTypeCache } from '../infer';
 import { getBoundsType, isInRangeType } from '../predicates';
 import type { TypeContext } from '../types';
 import type { Bounds } from '$lib/math/intervals/algebra';
@@ -1194,5 +1194,160 @@ describe('bounds - sqrt edge cases', () => {
 		expect(type.bounds!.upper).toBeCloseTo(1);
 		expect(type.bounds!.lowerInclusive).toBe(false);
 		expect(type.bounds!.upperInclusive).toBe(false);
+	});
+});
+
+// =============================================================================
+// Bug regression: divideBounds with infinite divisor bounds
+// =============================================================================
+
+describe('bounds - divideBounds with infinite divisor', () => {
+	it('[2, 6] / [1, +inf) -> (0, 6]', () => {
+		// x in [2, 6], y in [1, +inf)
+		const ctx: TypeContext = {
+			variables: new Map([
+				['x', 'real'],
+				['y', 'real']
+			]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 2, upper: 6, lowerInclusive: true, upperInclusive: true }
+					}
+				],
+				[
+					'y',
+					{
+						sign: 'positive' as const,
+						bounds: { lower: 1, upper: null, lowerInclusive: true, upperInclusive: false }
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\frac{x}{y}', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBe(0);
+		expect(b!.lowerInclusive).toBe(false);
+		expect(b!.upper).toBe(6);
+		expect(b!.upperInclusive).toBe(true);
+	});
+
+	it('[1, 4] / (-inf, -2] -> [-2, 0)', () => {
+		const ctx: TypeContext = {
+			variables: new Map([
+				['x', 'real'],
+				['y', 'real']
+			]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 1, upper: 4, lowerInclusive: true, upperInclusive: true }
+					}
+				],
+				[
+					'y',
+					{
+						sign: 'negative' as const,
+						bounds: { lower: null, upper: -2, lowerInclusive: false, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\frac{x}{y}', ctx);
+		expect(b).toBeDefined();
+		// 1/(-2) = -0.5, 4/(-2) = -2, and 1/(-inf) -> 0-, 4/(-inf) -> 0-
+		expect(b!.lower).toBe(-2);
+		expect(b!.lowerInclusive).toBe(true);
+		expect(b!.upper).toBe(0);
+		expect(b!.upperInclusive).toBe(false);
+	});
+});
+
+// =============================================================================
+// Bug regression: multiply/divide inclusivity tie-breaking
+// =============================================================================
+
+describe('bounds - inclusivity tie-breaking', () => {
+	it('[0, 2] * (0, 3] -> [0, 6] (0 is achieved via 0*3)', () => {
+		// x in [0, 2] (inclusive 0), y in (0, 3] (exclusive 0)
+		// product 0 is achieved by x=0, y=3 (both inclusive)
+		const ctx: TypeContext = {
+			variables: new Map([
+				['x', 'real'],
+				['y', 'real']
+			]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 0, upper: 2, lowerInclusive: true, upperInclusive: true }
+					}
+				],
+				[
+					'y',
+					{
+						bounds: { lower: 0, upper: 3, lowerInclusive: false, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('x \\times y', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBe(0);
+		expect(b!.lowerInclusive).toBe(true); // 0*3 = 0 with both inclusive
+		expect(b!.upper).toBe(6);
+		expect(b!.upperInclusive).toBe(true);
+	});
+
+	it('(-2, 0] * [-3, 0) -> [0, 6) (0 achieved, 6 not achieved)', () => {
+		// x in (-2, 0], y in [-3, 0)
+		// corners: -2*-3=6(excl), -2*0=-0(excl), 0*-3=-0(incl), 0*0=0(both edges)
+		// 0 is achieved by x=0 (incl) * y=-3 (incl) = -0
+		// 6 = (-2)*(-3) where -2 is exclusive -> 6 not achieved
+		const ctx: TypeContext = {
+			variables: new Map([
+				['x', 'real'],
+				['y', 'real']
+			]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: -2, upper: 0, lowerInclusive: false, upperInclusive: true }
+					}
+				],
+				[
+					'y',
+					{
+						bounds: { lower: -3, upper: 0, lowerInclusive: true, upperInclusive: false }
+					}
+				]
+			])
+		};
+		const b = boundsOf('x \\times y', ctx);
+		expect(b).toBeDefined();
+		// Note: 0 * (-3) = -0 in JS, which is == 0 but not Object.is(0)
+		expect(b!.lower).toEqual(expect.closeTo(0));
+		expect(b!.lowerInclusive).toBe(true); // 0*(-3) = 0 with both inclusive
+		expect(b!.upper).toBe(6);
+		expect(b!.upperInclusive).toBe(false); // (-2)*(-3) = 6 but -2 is exclusive
+	});
+});
+
+// =============================================================================
+// Bug regression: clearAllTypeCache actually clears
+// =============================================================================
+
+describe('clearAllTypeCache', () => {
+	it('should return different object after cache is cleared', () => {
+		const node = parseLatex('5');
+		const type1 = inferType(node);
+		clearAllTypeCache();
+		const type2 = inferType(node);
+		// Values should be equal but object identity should differ
+		expect(type2).toEqual(type1);
+		expect(type2).not.toBe(type1);
 	});
 });
