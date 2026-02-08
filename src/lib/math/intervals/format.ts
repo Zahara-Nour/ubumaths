@@ -143,7 +143,7 @@ function formatSingleInterval(interval: Interval): string {
  * @example
  * formatEndpointValue(infinity('positive')) // → "+∞"
  * formatEndpointValue(number('5')) // → "5"
- * formatEndpointValue(greek('pi')) // → "π"
+ * formatEndpointValue(piConstant()) // → "π"
  * formatEndpointValue(func('sqrt', [number('2')])) // → "√2"
  */
 export function formatEndpointValue(value: EndpointValue): string {

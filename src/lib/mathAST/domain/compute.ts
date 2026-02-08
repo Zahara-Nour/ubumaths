@@ -785,8 +785,8 @@ function tryEvaluateConstant(node: MathNode): number | null {
 	if (node.type === 'opposite' && node.operand.type === 'number') {
 		return -parseFloat(node.operand.value);
 	}
-	if (node.type === 'greek' && node.letter === 'pi') {
-		return Math.PI;
+	if (node.type === 'constant') {
+		return node.constant === 'pi' ? Math.PI : Math.E;
 	}
 	return null;
 }

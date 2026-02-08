@@ -248,8 +248,10 @@ function tryEvaluate(node: MathNode, bindings: Bindings): number | null {
 		case 'variable':
 			return bindings[node.name] ?? null;
 
+		case 'constant':
+			return node.constant === 'pi' ? Math.PI : Math.E;
+
 		case 'greek':
-			if (node.letter === 'pi') return Math.PI;
 			return null;
 
 		case 'opposite': {

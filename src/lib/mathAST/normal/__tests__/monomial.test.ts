@@ -31,7 +31,7 @@ import {
 	monomialToString
 } from '../monomial';
 import type { SymbolicFactor, Rational } from '../types';
-import type { MathNode, VariableNode, GreekLetterNode, FunctionNode } from '../../types';
+import type { MathNode, VariableNode, FunctionNode } from '../../types';
 
 // =============================================================================
 // Test Helpers
@@ -42,12 +42,6 @@ const r = (n: bigint, d: bigint = 1n): Rational => ({ n, d });
 
 // Helper to create variable nodes
 const varNode = (name: string): VariableNode => ({ type: 'variable', name });
-
-// Helper to create greek letter nodes
-const greekNode = (letter: 'pi' | 'alpha' | 'beta' | 'gamma' | 'theta'): GreekLetterNode => ({
-	type: 'greek',
-	letter
-});
 
 // Helper to create function nodes
 const fnNode = (name: string, ...args: MathNode[]): FunctionNode => ({
@@ -60,7 +54,7 @@ const fnNode = (name: string, ...args: MathNode[]): FunctionNode => ({
 const x = varNode('x');
 const y = varNode('y');
 const z = varNode('z');
-const pi = greekNode('pi');
+const pi: MathNode = { type: 'constant', constant: 'pi' };
 
 // Helper to create symbolic factors
 const factor = (base: MathNode, exp: Rational = r(1n)): SymbolicFactor => symbolicFactor(base, exp);
@@ -86,8 +80,8 @@ describe('monomial', () => {
 			expect(hashNode(y)).toBe('V:y');
 		});
 
-		it('hashes greek letter nodes', () => {
-			expect(hashNode(pi)).toBe('G:pi');
+		it('hashes constant nodes', () => {
+			expect(hashNode(pi)).toBe('C:pi');
 		});
 
 		it('hashes number nodes', () => {
@@ -140,7 +134,7 @@ describe('monomial', () => {
 
 			it('equal nodes return 0', () => {
 				expect(compareNodes(x, varNode('x'))).toBe(0);
-				expect(compareNodes(pi, greekNode('pi'))).toBe(0);
+				expect(compareNodes(pi, { type: 'constant', constant: 'pi' } as MathNode)).toBe(0);
 			});
 
 			it('orders functions by name then arguments', () => {
@@ -378,7 +372,8 @@ describe('monomial', () => {
 		it('sorts factors in canonical order', () => {
 			const factors = [factor(y, r(1n)), factor(x, r(1n)), factor(pi, r(1n))];
 			const sorted = sortSymbolicFactors(factors);
-			expect((sorted[0].base as GreekLetterNode).letter).toBe('pi');
+			expect(sorted[0].base.type).toBe('constant');
+			expect((sorted[0].base as { constant: string }).constant).toBe('pi');
 			expect((sorted[1].base as VariableNode).name).toBe('x');
 			expect((sorted[2].base as VariableNode).name).toBe('y');
 		});

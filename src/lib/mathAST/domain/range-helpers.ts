@@ -314,11 +314,6 @@ export function evaluateConstant(node: MathNode): number | null {
 	const val = extractConstant(node);
 	if (val !== null) return val;
 
-	// Handle common constants
-	if (node.type === 'greek' && node.letter === 'pi') {
-		return Math.PI;
-	}
-
 	return null;
 }
 

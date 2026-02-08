@@ -28,7 +28,7 @@ import type { EndpointValue, CompareResult, CompareOutcome } from './types';
  *
  * @example
  * compareEndpointValues(number('3'), number('5'))  // { outcome: -1 }
- * compareEndpointValues(greek('pi'), number('3'))  // { outcome: 1 } (π > 3)
+ * compareEndpointValues(piConstant(), number('3'))  // { outcome: 1 } (π > 3)
  * compareEndpointValues(sqrt(2), sqrt(2))          // { outcome: 0 }
  * compareEndpointValues(variable('x'), number('3')) // { outcome: undefined }
  */
