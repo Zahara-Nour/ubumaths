@@ -119,6 +119,28 @@ export interface SolveStep {
 }
 
 /**
+ * Periodic solution family for trigonometric equations.
+ *
+ * For an equation like sin(ax+b) = c, the full solution set is:
+ *   x = baseSolution_i + k * period,  for k ∈ ℤ
+ *
+ * The baseSolutions contain the distinct solutions within one period,
+ * and `period` is the repetition interval.
+ *
+ * Used by the sign module to enumerate all zeros within a bounded domain.
+ */
+export interface PeriodicSolutionFamily {
+	/** Base solutions within one period (in x-space) */
+	readonly baseSolutions: readonly Solution[];
+
+	/** Period as a symbolic MathNode (e.g., 2π, π) */
+	readonly period: MathNode;
+
+	/** Numeric approximation of the period */
+	readonly periodNumeric: number;
+}
+
+/**
  * Result of solving an equation.
  */
 export interface SolveResult {
@@ -145,6 +167,9 @@ export interface SolveResult {
 
 	/** Periodicity note for trigonometric solutions */
 	readonly periodicityNote?: string;
+
+	/** Periodic solution family for trig equations (used by sign module for zero enumeration) */
+	readonly periodicSolutions?: PeriodicSolutionFamily;
 }
 
 // =============================================================================
