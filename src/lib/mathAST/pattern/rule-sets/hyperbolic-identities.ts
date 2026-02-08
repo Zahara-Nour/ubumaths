@@ -568,11 +568,8 @@ export const hypHigherPowerRules: Rule[] = [
  * Rules used for automatic simplification (excluded: addition, expansion, factorization, half-angle, higher-power)
  */
 export const hypSimplifyRules: Rule[] = [
-	...hypDoubleAngleRules,
-	...hypPowerReductionRules,
 	...hypPythagoreanRules,
 	...hypQuotientRules,
-	...hypLinearizationRules,
 	...hypNegativeArgumentRules
 ];
 

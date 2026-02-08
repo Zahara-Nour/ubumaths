@@ -465,6 +465,34 @@ export function applyRulesDeepOnce(
 	});
 }
 
+/**
+ * Same as applyRulesDeepOnce but also collects which rules fired.
+ *
+ * @param rules - Rules to try at each node
+ * @param node - The expression tree to transform
+ * @param ctx - Optional type context for conditional rules
+ * @returns Object with transformed tree and recorded steps
+ */
+export function applyRulesDeepOnceTracked(
+	rules: readonly Rule[],
+	node: MathNode,
+	ctx?: TypeContext
+): { result: MathNode; steps: RuleStep[] } {
+	const sorted = sortByPriority(rules);
+	const steps: RuleStep[] = [];
+	const result = mapNode(node, (n) => {
+		for (const rule of sorted) {
+			const transformed = applyRule(rule, n, ctx);
+			if (transformed !== null) {
+				steps.push({ ruleName: rule.name, before: n, after: transformed });
+				return transformed;
+			}
+		}
+		return n;
+	});
+	return { result, steps };
+}
+
 // =============================================================================
 // Fixpoint Application with Step Tracking
 // =============================================================================

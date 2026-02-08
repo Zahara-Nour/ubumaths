@@ -153,6 +153,16 @@ describe('simplify pipeline', () => {
 			expect(result.steps.length).toBeGreaterThan(0);
 		});
 
+		it('should record per-rule steps with rule names', () => {
+			const node = parseLatex('\\sin^2(x) + \\cos^2(x)');
+			const result = simplify(node, { verbosity: 'detailed' });
+			const ruleSteps = result.steps.filter((s) => s.phase === 'rules');
+			expect(ruleSteps.length).toBeGreaterThan(0);
+			// Steps should have individual rule names, not generic phase name
+			expect(ruleSteps[0].rule).not.toBe('pattern-rules');
+			expect(ruleSteps.some((s) => s.rule === 'pythagorean')).toBe(true);
+		});
+
 		it('should record no steps when verbosity is result', () => {
 			const result = simplify(add(variable('x'), number('0')), {
 				verbosity: 'result'

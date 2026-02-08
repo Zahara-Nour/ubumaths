@@ -26,7 +26,7 @@ import { absRules } from '../pattern/rule-sets';
 import { trigSimplifyRules } from '../pattern/rule-sets/trig-identities';
 import { hypSimplifyRules } from '../pattern/rule-sets/hyperbolic-identities';
 import { algebraicSimplifyRules } from '../pattern/rule-sets/algebraic-identities';
-import { applyRulesDeepOnce } from '../pattern/rule';
+import { applyRulesDeepOnceTracked } from '../pattern/rule';
 import { nodesEqual } from '../pattern/match';
 
 // Normalize
@@ -122,15 +122,21 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		// arithmetic.
 		if (rules.length > 0) {
 			recorder.setPhase('rules');
-			const afterRules = applyRulesDeepOnce(rules, current, ctx);
-			if (isRecording && !nodesEqual(afterRules, current)) {
-				recorder.recordStep(
-					'pattern-rules',
-					getSimplifyRuleDescription('pattern-rules'),
-					current,
-					afterRules,
-					'summarized'
-				);
+			const { result: afterRules, steps: ruleSteps } = applyRulesDeepOnceTracked(
+				rules,
+				current,
+				ctx
+			);
+			if (isRecording) {
+				for (const step of ruleSteps) {
+					recorder.recordStep(
+						step.ruleName,
+						getSimplifyRuleDescription(step.ruleName),
+						step.before,
+						step.after,
+						'detailed'
+					);
+				}
 			}
 			current = afterRules;
 		}
