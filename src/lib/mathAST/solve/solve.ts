@@ -15,7 +15,8 @@
  * | General polynomial deg > 4  | —                   | NOT supported             |
  * | Exponential (e^x=c)         | transcendentalSolver| Simple cases only         |
  * | Logarithmic (ln(x)=c)       | transcendentalSolver| Simple cases only         |
- * | Trigonometric (sin(x)=c)    | transcendentalSolver| Principal solution only   |
+ * | Trigonometric (sin(ax+b)=c) | transcendentalSolver| Periodic family           |
+ * | Trig non-linear (sin(f(x))=c)| tryTrigRecursive   | First-period u-values     |
  * | Mixed products (x·sin(x)=0) | tryProductDecomp    | Zero-product property     |
  * | Mixed (x·e^x=1, etc.)      | —                   | NOT supported             |
  *
@@ -61,7 +62,13 @@ import { linearSolver } from './solvers/linear';
 import { quadraticSolver } from './solvers/quadratic';
 import { polynomialSolver } from './solvers/polynomial';
 import { quarticSolver } from './solvers/quartic';
-import { transcendentalSolver } from './solvers/transcendental';
+import {
+	transcendentalSolver,
+	extractTrigEquation,
+	computeUSolutions
+} from './solvers/transcendental';
+import { extractLinearForm } from '../analysis/coefficient-utils';
+import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../normal';
 import { number, equals } from '../factory';
 import { flattenSumShallow, flattenProductShallow } from '../flatten';
@@ -368,6 +375,137 @@ function tryProductDecomposition(
 }
 
 // =============================================================================
+// Trig Recursive Decomposition
+// =============================================================================
+
+/**
+ * Recursion guard for trig recursive decomposition.
+ */
+let trigRecursiveDepth = 0;
+const MAX_TRIG_RECURSIVE_DEPTH = 3;
+
+/**
+ * Try to solve a trig equation with a non-linear argument by recursive decomposition.
+ *
+ * For sin(f(x)) = c, compute u-values (arcsin(c), π - arcsin(c)),
+ * then solve f(x) = u recursively.
+ *
+ * Only activates when the trig argument is non-linear. Linear arguments
+ * (sin(ax+b) = c) are left to the normal solver which produces PeriodicSolutionFamily.
+ *
+ * **Limitation**: Only first-period u-values are used (k=0). For sin(x²) = 0 this gives
+ * {0, ±√π} but not ±√(2π), ±√(3π), etc.
+ *
+ * @returns SolveResult if decomposition applies, null otherwise
+ */
+function tryTrigRecursiveDecomposition(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
+		initialGuesses?: readonly number[];
+	}
+): SolveResult | null {
+	if (trigRecursiveDepth >= MAX_TRIG_RECURSIVE_DEPTH) return null;
+
+	const extracted = extractTrigEquation(expr, variable);
+	if (!extracted) return null;
+
+	const { funcName, argument, constantNode, constantNumeric } = extracted;
+
+	// Check domain restrictions for sin/cos
+	if ((funcName === 'sin' || funcName === 'cos') && Math.abs(constantNumeric) > 1) {
+		const recorder = createStepRecorder();
+		recorder.recordStep(
+			'no-real-solution',
+			`L'equation ${funcName}(f(x)) = ${constantNumeric} n'a pas de solution car ${constantNumeric} n'est pas dans [-1, 1]`,
+			expr,
+			expr,
+			'summarized'
+		);
+		return {
+			variable,
+			status: 'no-real-solution',
+			solutions: [],
+			equationType: 'trigonometric',
+			strategy: 'algebraic',
+			steps: recorder.getStepsFiltered(opts.verbosity)
+		};
+	}
+
+	// If argument is linear, let the normal trig solver handle it (with PeriodicSolutionFamily)
+	const linearForm = extractLinearForm(argument, variable);
+	if (linearForm) return null;
+
+	// Compute u-space solutions
+	const basePeriod = funcName === 'tan' ? Math.PI : 2 * Math.PI;
+	const uSolutions = computeUSolutions(funcName, constantNode, constantNumeric, basePeriod);
+
+	const recorder = createStepRecorder();
+	recorder.recordStep(
+		'trig-recursive-decomposition',
+		getRuleDescription('trig-recursive-decomposition'),
+		expr,
+		expr,
+		'summarized'
+	);
+
+	const allSolutions: Solution[] = [];
+
+	trigRecursiveDepth++;
+	try {
+		for (const uSol of uSolutions) {
+			// Solve: argument = uSol.symbolic
+			const subEquation = equals(argument, uSol.symbolic);
+			const subResult = solve(subEquation, { variable, verbosity: opts.verbosity });
+
+			if (subResult.status === 'no-solution' || subResult.status === 'no-real-solution') {
+				continue;
+			}
+
+			// Ensure approximate values and filter out non-real solutions
+			for (const sol of subResult.solutions) {
+				let approx = sol.approximate;
+				if (approx === undefined) {
+					try {
+						approx = evaluateNodeToApproximatedNumber(sol.value);
+					} catch {
+						// If evaluation fails, skip this solution (likely imaginary)
+						continue;
+					}
+				}
+				if (!isFinite(approx)) continue;
+				allSolutions.push({ ...sol, approximate: approx });
+			}
+		}
+	} finally {
+		trigRecursiveDepth--;
+	}
+
+	if (allSolutions.length === 0) {
+		return {
+			variable,
+			status: 'no-real-solution',
+			solutions: [],
+			equationType: 'trigonometric',
+			strategy: 'algebraic',
+			steps: recorder.getStepsFiltered(opts.verbosity)
+		};
+	}
+
+	const deduplicated = deduplicateSolutions(allSolutions);
+	deduplicated.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
+
+	return {
+		variable,
+		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		solutions: deduplicated,
+		equationType: 'trigonometric',
+		strategy: 'algebraic',
+		steps: recorder.getStepsFiltered(opts.verbosity)
+	};
+}
+
+// =============================================================================
 // Main Solve Function
 // =============================================================================
 
@@ -429,6 +567,10 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Try product decomposition (zero-product property) before classification
 	const productResult = tryProductDecomposition(expr, variable, opts);
 	if (productResult) return productResult;
+
+	// Try trig recursive decomposition for non-linear trig arguments
+	const trigRecursiveResult = tryTrigRecursiveDecomposition(expr, variable, opts);
+	if (trigRecursiveResult) return trigRecursiveResult;
 
 	// Classify the equation
 	const classification = classifyEquation(equation, variable);
