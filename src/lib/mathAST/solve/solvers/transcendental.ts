@@ -35,7 +35,6 @@ import type {
 	PeriodicSolutionFamily
 } from '../types';
 import { containsTranscendental, getTranscendentalType } from '../classify';
-import { isFunction, isEulerConstant } from '../../guards';
 import {
 	number,
 	func,
@@ -53,22 +52,10 @@ import { denormalize, normalize } from '../../normal';
 import { getVariables } from '../../eval/substitute';
 import { extractLinearForm } from '../../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
-import { flattenSumShallow, unflattenSum, flattenProductShallow } from '../../flatten';
+import { flattenSumShallow, unflattenSum } from '../../flatten';
 import type { SignedTerm } from '../../flatten';
-
-/**
- * Check if a function name is a trig function.
- */
-export function isTrigFunc(name: string): boolean {
-	return name === 'sin' || name === 'cos' || name === 'tan';
-}
-
-/**
- * Check if a function name is a log function.
- */
-function isLogFunc(name: string): boolean {
-	return name === 'ln' || name === 'log';
-}
+import { P, tryMatch, getBindingNode, isProductSequenceBinding } from '../../pattern';
+import type { MatchBindings } from '../../pattern';
 
 // =============================================================================
 // Generic Transcendental Equation Extraction
@@ -96,94 +83,85 @@ export interface TranscendentalEquationParts {
 export type TrigEquationParts = TranscendentalEquationParts;
 
 /**
- * Check if a node is e^u (SuperscriptNode with Euler constant base).
+ * Result of matching a transcendental pattern against a term.
  */
-function isExpSuperscript(node: MathNode): node is MathNode & { type: 'superscript' } {
-	return node.type === 'superscript' && isEulerConstant(node.base);
-}
-
-/**
- * Info about a transcendental call found in a term.
- */
-interface TranscendentalCallInfo {
+interface TranscendentalPatternMatch {
 	readonly kind: TranscendentalKind;
 	readonly funcName: string;
 	readonly argument: MathNode;
+	readonly coeffFactors: readonly MathNode[];
 }
 
 /**
- * Try to identify a transcendental call in a single (unsigned) factor.
- * Returns info if the factor IS a transcendental call, null otherwise.
+ * Try to match a term against transcendental patterns using the pattern module.
+ *
+ * Tries each trig/log function pattern (sin, cos, tan, ln, log) and the exp pattern (e^u).
+ * Each pattern uses `P.prod(target, P.___('coeff', P.isFreeOf(variable)))` to match
+ * the transcendental call with optional coefficient factors.
+ *
+ * @returns Match info if found, null otherwise.
  */
-function identifyTranscendentalCall(
-	node: MathNode,
+function tryTranscendentalPatterns(
+	term: MathNode,
 	variable: string
-): TranscendentalCallInfo | null {
-	// Trig/log function: sin(u), cos(u), tan(u), ln(u), log(u)
-	if (isFunction(node) && getVariables(node).has(variable)) {
-		if (isTrigFunc(node.name)) {
-			return { kind: 'trig', funcName: node.name, argument: node.args[0] };
-		}
-		if (isLogFunc(node.name)) {
-			return { kind: 'log', funcName: node.name, argument: node.args[0] };
+): TranscendentalPatternMatch | null {
+	const freeOfVar = P.isFreeOf(variable);
+
+	// Pattern 1: trig/log functions — sin(u), cos(u), tan(u), ln(u), log(u)
+	const funcKinds: Array<[TranscendentalKind, string]> = [
+		['trig', 'sin'],
+		['trig', 'cos'],
+		['trig', 'tan'],
+		['log', 'ln'],
+		['log', 'log']
+	];
+
+	for (const [kind, funcName] of funcKinds) {
+		const pattern = P.prod(P.func(funcName, [P._('u')]), P.___('coeff', freeOfVar));
+		const bindings = tryMatch(pattern, term);
+		if (bindings) {
+			const u = getBindingNode(bindings, 'u');
+			if (u && getVariables(u).has(variable)) {
+				return { kind, funcName, argument: u, coeffFactors: extractCoeffFactors(bindings) };
+			}
 		}
 	}
 
-	// Exp: e^u (SuperscriptNode with euler base)
-	if (isExpSuperscript(node) && getVariables(node).has(variable)) {
-		return { kind: 'exp', funcName: 'exp', argument: node.superscript };
+	// Pattern 2: exponential — e^u
+	const expPattern = P.prod(P.pow(P.lit(euler()), P._('u')), P.___('coeff', freeOfVar));
+	const bindings = tryMatch(expPattern, term);
+	if (bindings) {
+		const u = getBindingNode(bindings, 'u');
+		if (u && getVariables(u).has(variable)) {
+			return {
+				kind: 'exp',
+				funcName: 'exp',
+				argument: u,
+				coeffFactors: extractCoeffFactors(bindings)
+			};
+		}
 	}
 
 	return null;
 }
 
 /**
- * Try to extract a transcendental call from a product term.
- *
- * A term like `3*sin(x)` is a product of [3, sin(x)].
- * We look for exactly one transcendental factor; the rest form the coefficient.
- *
- * @returns `{ call, coeffFactors }` if found, null otherwise.
+ * Extract coefficient factors from pattern match bindings.
+ * The 'coeff' binding is a ProductSequenceBinding with factors array.
  */
-function extractTranscendentalFromProduct(
-	node: MathNode,
-	variable: string
-): { call: TranscendentalCallInfo; coeffFactors: MathNode[] } | null {
-	// First check: is the node itself a transcendental call?
-	const directCall = identifyTranscendentalCall(node, variable);
-	if (directCall) {
-		return { call: directCall, coeffFactors: [] };
+function extractCoeffFactors(bindings: MatchBindings): readonly MathNode[] {
+	const coeff = bindings.get('coeff');
+	if (coeff && isProductSequenceBinding(coeff)) {
+		return coeff.factors;
 	}
-
-	// Check if it's a multiplication chain
-	if (node.type !== 'multiplication') return null;
-
-	const factors = flattenProductShallow(node);
-	let foundCall: TranscendentalCallInfo | null = null;
-	const coeffFactors: MathNode[] = [];
-
-	for (const { factor } of factors) {
-		const call = identifyTranscendentalCall(factor, variable);
-		if (call) {
-			if (foundCall) return null; // Two transcendental calls in same product → not supported
-			foundCall = call;
-		} else if (getVariables(factor).has(variable)) {
-			// A non-transcendental factor containing the variable (e.g., x*sin(x))
-			return null;
-		} else {
-			coeffFactors.push(factor);
-		}
-	}
-
-	if (!foundCall) return null;
-	return { call: foundCall, coeffFactors };
+	return [];
 }
 
 /**
  * Reconstruct a coefficient node from a list of factor nodes.
  * Empty list → number('1'), single factor → that factor, multiple → multiply chain.
  */
-function reconstructCoefficient(factors: MathNode[]): MathNode {
+function reconstructCoefficient(factors: readonly MathNode[]): MathNode {
 	if (factors.length === 0) return number('1');
 	if (factors.length === 1) return factors[0];
 	let result = factors[0];
@@ -221,16 +199,11 @@ export function extractTranscendentalEquation(
 	for (let i = 0; i < terms.length; i++) {
 		const { sign, term } = terms[i];
 
-		// Try to extract transcendental call from this term
-		const extracted = extractTranscendentalFromProduct(term, variable);
-		if (!extracted) continue;
+		// Try to match transcendental patterns on the unsigned term
+		const matched = tryTranscendentalPatterns(term, variable);
+		if (!matched) continue;
 
-		const { call, coeffFactors } = extracted;
-
-		// Verify no other term contains the variable in a transcendental way
-		// (we allow other terms to contain the variable only if they don't have
-		// a different transcendental function - but actually for extraction to work,
-		// the remaining terms must be free of the variable entirely)
+		// Verify remaining terms are free of the variable
 		const remainingTerms: SignedTerm[] = [];
 		let hasVariableInRemaining = false;
 
@@ -245,7 +218,7 @@ export function extractTranscendentalEquation(
 		if (hasVariableInRemaining) continue;
 
 		// Compute the coefficient a (considering sign of the transcendental term)
-		const coeffNode = reconstructCoefficient(coeffFactors);
+		const coeffNode = reconstructCoefficient(matched.coeffFactors);
 		let aNumeric: number;
 		try {
 			aNumeric = evaluateNodeToApproximatedNumber(coeffNode);
@@ -290,9 +263,9 @@ export function extractTranscendentalEquation(
 		}
 
 		return {
-			kind: call.kind,
-			funcName: call.funcName,
-			argument: call.argument,
+			kind: matched.kind,
+			funcName: matched.funcName,
+			argument: matched.argument,
 			constantNode,
 			constantNumeric
 		};
