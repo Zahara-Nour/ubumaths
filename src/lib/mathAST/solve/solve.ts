@@ -16,6 +16,7 @@
  * | Exponential (e^x=c)         | transcendentalSolver| Simple cases only         |
  * | Logarithmic (ln(x)=c)       | transcendentalSolver| Simple cases only         |
  * | Trigonometric (sin(x)=c)    | transcendentalSolver| Principal solution only   |
+ * | Mixed products (x·sin(x)=0) | tryProductDecomp    | Zero-product property     |
  * | Mixed (x·e^x=1, etc.)      | —                   | NOT supported             |
  *
  * ## Critical role in sign analysis
@@ -33,9 +34,9 @@
  *    zeros in the domain must be enumerated. The periodicity module
  *    (analysis/periodicity.ts) can detect periods and could be used to generate
  *    all zeros within a given interval.
- * 3. **Mixed transcendental equations** (x·sin(x)=0, e^x=x): not handled at all.
- *    Some can be decomposed (x·sin(x)=0 → x=0 or sin(x)=0), others require
- *    numeric methods.
+ * 3. **Mixed transcendental equations** (e^x=x): most not handled.
+ *    Product-form equations (x·sin(x)=0) are decomposed via zero-product property.
+ *    Non-product mixed equations still require numeric methods.
  *
  * For the UbuMaths pedagogical scope (high school level), the most impactful
  * gap is trigonometric periodic solutions: derivatives like cos(x) have infinitely
@@ -61,8 +62,13 @@ import { quadraticSolver } from './solvers/quadratic';
 import { polynomialSolver } from './solvers/polynomial';
 import { quarticSolver } from './solvers/quartic';
 import { transcendentalSolver } from './solvers/transcendental';
-import { normalize, normalFormsEquivalent } from '../normal';
-import { number } from '../factory';
+import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../normal';
+import { number, equals } from '../factory';
+import { flattenSumShallow, flattenProductShallow } from '../flatten';
+import { getVariables } from '../eval/substitute';
+import { isZeroNode } from './solvers/polynomial';
+import type { Solution, PeriodicSolutionFamily } from './types';
+import { getRuleDescription } from './descriptions-fr';
 
 // =============================================================================
 // Strategy Selection
@@ -184,6 +190,184 @@ function handleConstantEquation(
 }
 
 // =============================================================================
+// Product Decomposition (Zero-Product Property)
+// =============================================================================
+
+/**
+ * Extract product factors from a standard-form expression (lhs - rhs).
+ *
+ * toStandardForm returns `lhs - rhs`. If rhs was 0, this is `lhs - 0`,
+ * a subtraction node. We flatten the sum to find the non-zero term,
+ * then check if it's a multiplication.
+ *
+ * @returns Array of factors if expr is a product, null otherwise
+ */
+function extractProductFactors(expr: MathNode): MathNode[] | null {
+	const terms = flattenSumShallow(expr);
+
+	// Filter out zero terms
+	const nonZeroTerms = terms.filter(({ term }) => !isZeroNode(term));
+
+	// Must have exactly 1 non-zero term, and it must be positive
+	if (nonZeroTerms.length !== 1) return null;
+	const { sign, term } = nonZeroTerms[0];
+
+	// A negative term means the expression is `-product`, which is fine:
+	// -A·B = 0 iff A·B = 0. But we need the inner product node.
+	const productNode = sign === '-' && term.type === 'opposite' ? term.operand : term;
+
+	// Check if it's a multiplication
+	if (productNode.type !== 'multiplication') return null;
+
+	const factors = flattenProductShallow(productNode);
+	if (factors.length < 2) return null;
+
+	return factors.map(({ factor }) => factor);
+}
+
+/**
+ * Unwrap a delimiter node to get its content.
+ * Solvers may not handle delimiter-wrapped expressions correctly,
+ * so we unwrap them before passing to solve().
+ */
+function unwrapDelimiter(node: MathNode): MathNode {
+	return node.type === 'delimiter' ? node.content : node;
+}
+
+/**
+ * Try to compute an approximate numeric value for a solution missing one.
+ * Handles the case where the linear solver doesn't set approximate for zero.
+ */
+function ensureApproximate(sol: Solution): Solution {
+	if (sol.approximate !== undefined) return sol;
+	const norm = normalize(sol.value);
+	if (norm.numerator.length === 0 || normalFormsEquivalent(norm, ZERO_NORMAL_FORM)) {
+		return { ...sol, approximate: 0 };
+	}
+	return sol;
+}
+
+/**
+ * Deduplicate solutions by approximate numeric value or normalized form.
+ */
+function deduplicateSolutions(solutions: Solution[], tolerance = 1e-10): Solution[] {
+	const result: Solution[] = [];
+	for (const sol of solutions) {
+		const isDuplicate = result.some((existing) => {
+			// Compare by approximate value if both are defined
+			if (existing.approximate !== undefined && sol.approximate !== undefined) {
+				return Math.abs(existing.approximate - sol.approximate) < tolerance;
+			}
+			// Compare by normalized form as fallback
+			return normalFormsEquivalent(normalize(existing.value), normalize(sol.value));
+		});
+		if (!isDuplicate) {
+			result.push(sol);
+		}
+	}
+	return result;
+}
+
+/**
+ * Recursion guard for product decomposition.
+ * flattenProductShallow fully decomposes products so recursion is unlikely,
+ * but this prevents stack overflow on pathological inputs.
+ */
+let productDecompositionDepth = 0;
+const MAX_PRODUCT_DECOMPOSITION_DEPTH = 5;
+
+/**
+ * Try to solve an equation by product decomposition (zero-product property).
+ *
+ * If the standard-form expression is a product A·B·...= 0, solve each
+ * variable-dependent factor independently and merge solutions.
+ *
+ * **Limitation**: When multiple factors produce periodic solution families
+ * (e.g., sin(x)·cos(x) = 0), only the first periodic family is attached.
+ * For complete zero enumeration in sign analysis, each factor may need
+ * to be solved independently.
+ *
+ * @returns SolveResult if decomposition applies, null otherwise
+ */
+function tryProductDecomposition(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
+		initialGuesses?: readonly number[];
+	}
+): SolveResult | null {
+	if (productDecompositionDepth >= MAX_PRODUCT_DECOMPOSITION_DEPTH) return null;
+
+	const factors = extractProductFactors(expr);
+	if (!factors) return null;
+
+	// Partition into variable-dependent and constant factors
+	const variableFactors = factors.filter((f) => getVariables(f).has(variable));
+
+	// Need at least 2 variable-dependent factors for decomposition to be useful
+	if (variableFactors.length < 2) return null;
+
+	const recorder = createStepRecorder();
+	recorder.recordStep(
+		'zero-product-property',
+		getRuleDescription('zero-product-property'),
+		expr,
+		expr,
+		'summarized'
+	);
+
+	const allSolutions: Solution[] = [];
+	const periodicFamilies: PeriodicSolutionFamily[] = [];
+
+	productDecompositionDepth++;
+	try {
+		for (const factor of variableFactors) {
+			const unwrapped = unwrapDelimiter(factor);
+			const factorEq = equals(unwrapped, number('0'));
+			const factorResult = solve(factorEq, { variable, verbosity: opts.verbosity });
+
+			if (factorResult.status === 'no-solution' || factorResult.status === 'no-real-solution') {
+				continue;
+			}
+
+			allSolutions.push(...factorResult.solutions.map(ensureApproximate));
+
+			if (factorResult.periodicSolutions) {
+				periodicFamilies.push(factorResult.periodicSolutions);
+			}
+		}
+	} finally {
+		productDecompositionDepth--;
+	}
+
+	if (allSolutions.length === 0) {
+		return {
+			variable,
+			status: 'no-solution',
+			solutions: [],
+			equationType: 'mixed',
+			strategy: 'algebraic',
+			steps: recorder.getStepsFiltered(opts.verbosity)
+		};
+	}
+
+	const deduplicated = deduplicateSolutions(allSolutions);
+	deduplicated.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
+
+	return {
+		variable,
+		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		solutions: deduplicated,
+		equationType: 'mixed',
+		strategy: 'algebraic',
+		steps: recorder.getStepsFiltered(opts.verbosity),
+		// If there are periodic families, attach the first one
+		// (multiple periodic families would need a more complex merge)
+		...(periodicFamilies.length > 0 ? { periodicSolutions: periodicFamilies[0] } : {})
+	};
+}
+
+// =============================================================================
 // Main Solve Function
 // =============================================================================
 
@@ -241,6 +425,10 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	if (!variable) {
 		return handleConstantEquation(expr, opts);
 	}
+
+	// Try product decomposition (zero-product property) before classification
+	const productResult = tryProductDecomposition(expr, variable, opts);
+	if (productResult) return productResult;
 
 	// Classify the equation
 	const classification = classifyEquation(equation, variable);

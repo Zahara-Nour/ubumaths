@@ -74,6 +74,9 @@ export type SolvingRule =
 	| 'quartic-depress'
 	| 'quartic-resolvent-cubic'
 	| 'quartic-factor-quadratics'
+	// Product decomposition (zero-product property)
+	| 'zero-product-property'
+	| 'solve-factor'
 	// General
 	| 'to-standard-form'
 	| 'simplify-expression'
@@ -156,6 +159,10 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	'quartic-resolvent-cubic': 'On resout la cubique resolvante',
 	'quartic-factor-quadratics':
 		"On factorise en deux equations quadratiques et on resout chacune d'elles",
+
+	// Product decomposition (zero-product property)
+	'zero-product-property': 'Par la propriete du produit nul: si A × B = 0 alors A = 0 ou B = 0',
+	'solve-factor': 'On resout chaque facteur separement',
 
 	// General
 	'to-standard-form': "On met l'equation sous forme standard (... = 0)",
