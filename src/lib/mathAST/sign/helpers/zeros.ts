@@ -4,6 +4,29 @@
  * Functions for finding zeros (roots) of mathematical expressions
  * within a specified domain using the solve module.
  *
+ * Zeros serve as partition points for sign analysis: the domain is split at
+ * zeros into sub-intervals where the expression doesn't cross zero.
+ * By the intermediate value theorem, on each such sub-interval (assuming
+ * continuity), the expression has constant sign.
+ *
+ * **This is the critical dependency of the entire sign module.** If findZeros
+ * misses a zero (because solve cannot handle the equation type), the sign
+ * analysis will produce an interval that actually contains a sign change,
+ * and sampling may silently "confirm" an incorrect sign. No warning is emitted.
+ *
+ * ## Exact vs approximate values
+ *
+ * Each zero is returned as a ZeroInfo with:
+ * - `value: MathNode` — the **exact symbolic** representation (e.g. sqrt(2), π/3).
+ *   This is used as interval bounds, preserving exactness throughout.
+ * - `approximate: number` — a numeric approximation used **only** for sorting,
+ *   deduplication (within tolerance), and domain membership checks.
+ * - `exact: boolean` — whether the zero was found algebraically (true) or
+ *   numerically (false).
+ *
+ * The distinction matters: interval bounds in the final SignAnalysisResult are
+ * always the exact MathNode values, never floating-point approximations.
+ *
  * @module mathAST/sign/helpers/zeros
  */
 

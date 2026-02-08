@@ -1,8 +1,27 @@
 /**
  * Interval Sign Determination Helpers
  *
- * Functions for determining the sign of an expression on an interval
- * by analyzing its algebraic structure.
+ * Determines the sign of an expression on an interval by **algebraic structural
+ * analysis** — no numeric evaluation is performed here. The expression's AST is
+ * recursively decomposed and sign rules are applied:
+ *
+ * | Structure   | Rule                                      | Deterministic? |
+ * |-------------|-------------------------------------------|----------------|
+ * | Constant    | sign from value (>0, <0, =0)              | Yes            |
+ * | Variable    | sign deduced from interval bounds          | Yes            |
+ * | Product a·b | sign(a)·sign(b)                           | Yes            |
+ * | Quotient a/b| sign(a)·sign(b)                           | Yes            |
+ * | Power a^n   | depends on parity of n and sign(a)        | Yes            |
+ * | Function f  | known sign rules (exp→+, etc.)            | Yes            |
+ * | Sum a+b     | **'unknown'** — cannot determine           | No             |
+ * | Difference  | **'unknown'** — cannot determine           | No             |
+ *
+ * **Why sums/differences return 'unknown':**
+ * Knowing sign(a) and sign(b) does NOT determine sign(a+b). For example,
+ * if a > 0 and b < 0, then a+b can be positive (5+(-3)=2), negative (3+(-5)=-2),
+ * or zero (3+(-3)=0) depending on their magnitudes. Comparing magnitudes would
+ * require symbolic inequality solving, which is beyond the scope of this module.
+ * Instead, the caller falls back to numeric sampling (see sampling.ts).
  *
  * @module mathAST/sign/helpers/interval-sign
  */
@@ -222,7 +241,10 @@ export function determineSignOnInterval(
 
 		case 'sum':
 		case 'difference':
-			// Sums and differences are more complex - need numeric fallback
+			// Sums and differences cannot be resolved algebraically from component signs.
+			// sign(a) and sign(b) do not determine sign(a ± b) without comparing magnitudes.
+			// Example: (+) + (-) can be +, -, or 0 depending on |a| vs |b|.
+			// The caller will fall back to numeric sampling (see sampling.ts).
 			return 'unknown';
 
 		case 'polynomial':

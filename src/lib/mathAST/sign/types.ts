@@ -2,7 +2,15 @@
  * Sign Analysis Types
  *
  * Type definitions for analyzing the sign of mathematical expressions over intervals.
- * Used by the variations module to study monotonicity and by pedagogical displays.
+ * Used by the variations module (to study the sign of f' and determine monotonicity)
+ * and by pedagogical displays (sign tables).
+ *
+ * ## Key design choice: exact symbolic bounds
+ *
+ * All interval bounds and zero values are stored as MathNodes (exact symbolic form),
+ * not as floating-point numbers. Numeric approximations are only used for sorting
+ * and comparison, never as interval bounds. This ensures that the final sign table
+ * displays exact values (e.g. "f changes sign at x = √2", not "at x ≈ 1.414").
  *
  * @module mathAST/sign/types
  */
@@ -21,8 +29,11 @@ import type { Verbosity } from '../common/verbosity';
  *
  * - 'positive': Expression is strictly positive (> 0) on the interval
  * - 'negative': Expression is strictly negative (< 0) on the interval
- * - 'zero': Expression is identically zero on the interval
- * - 'unknown': Sign cannot be determined (e.g., expression changes sign)
+ * - 'zero': Expression is identically zero on the interval (typically a point interval {z})
+ * - 'unknown': Sign cannot be determined. This happens when:
+ *   1. Algebraic analysis failed (e.g. sums/differences whose sign depends on magnitudes)
+ *      AND numeric sampling also failed or was disabled.
+ *   2. The expression structure is not recognized.
  */
 export type Sign = 'positive' | 'negative' | 'zero' | 'unknown';
 
@@ -59,8 +70,17 @@ export interface SignedInterval {
 /**
  * Information about a zero (root) of an expression.
  *
- * Zeros are the points where the expression equals zero,
- * typically found by solving f(x) = 0.
+ * Zeros are the partition points for sign analysis: the domain is split at
+ * zeros into sub-intervals where the expression has constant sign (by IVT).
+ *
+ * ## Exact vs approximate
+ *
+ * The `value` field holds the **exact symbolic form** (e.g. sqrt(2) as a MathNode).
+ * This is used as interval bounds in the final result, preserving exactness.
+ * The `approximate` field is a numeric approximation used **only** for:
+ * - Sorting zeros in order
+ * - Deduplication (within tolerance)
+ * - Checking domain membership
  *
  * @example
  * // Zero of x^2 - 2 at sqrt(2)
@@ -71,10 +91,10 @@ export interface SignedInterval {
  * }
  */
 export interface ZeroInfo {
-	/** The zero value as a MathNode (symbolic form) */
+	/** The zero value as a MathNode — exact symbolic form used as interval bound */
 	readonly value: MathNode;
 
-	/** Numeric approximation of the zero (for ordering and display) */
+	/** Numeric approximation used for sorting and comparison only (never as a bound) */
 	readonly approximate?: number;
 
 	/** Whether the zero is exact (algebraic) or only approximate (numeric) */
@@ -181,7 +201,12 @@ export interface SignAnalysisOptions {
 	/** Throw error if sign cannot be determined (default: false) */
 	readonly strictMode?: boolean;
 
-	/** Allow numeric sampling as fallback for sign determination (default: true) */
+	/**
+	 * Allow numeric sampling as fallback for sign determination (default: true).
+	 * When algebraic analysis returns 'unknown' (e.g. for sums/differences),
+	 * sampling evaluates the expression at several points and checks consensus.
+	 * This is reliable between consecutive zeros for continuous functions (IVT).
+	 */
 	readonly numericFallback?: boolean;
 
 	/** Tolerance for numeric comparisons (default: 1e-10) */

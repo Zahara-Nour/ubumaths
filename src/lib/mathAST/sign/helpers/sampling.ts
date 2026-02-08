@@ -1,8 +1,49 @@
 /**
  * Numeric Sampling Helpers for Sign Determination
  *
- * Functions for determining the sign of an expression on an interval
- * using numeric sampling as a fallback when algebraic analysis fails.
+ * **Fallback** for when algebraic sign analysis returns 'unknown' (typically
+ * for sums and differences, where component signs don't determine the result).
+ *
+ * ## How it works
+ *
+ * 1. Generate sample points inside the interval (avoiding open endpoints)
+ * 2. Substitute each point into the expression and evaluate numerically
+ * 3. Determine sign of each sample (with tolerance 1e-10 for zero detection)
+ * 4. If all non-zero samples agree → return that sign; otherwise → 'unknown'
+ *
+ * ## Why this is reliable (and when it isn't)
+ *
+ * This module is called on intervals that lie **between consecutive zeros**
+ * of the expression (zeros were found in the previous step by the solve module).
+ * By the **intermediate value theorem**, a continuous function that doesn't cross
+ * zero on an interval has constant sign on that interval. Therefore, a single
+ * correctly-evaluated sample would suffice in theory; we use 5 for robustness
+ * against numeric edge cases.
+ *
+ * **Critical caveat:** this reasoning assumes that the solve module found **all**
+ * zeros. If a zero was missed, the interval actually contains a sign change, and
+ * sampling may "confirm" an incorrect sign if all sample points happen to fall on
+ * the same side of the missed zero — with no warning. The reliability of sampling
+ * (and of the entire sign module) is therefore entirely conditioned by the
+ * completeness of solve.
+ *
+ * ## Continuity assumption (important limitation)
+ *
+ * The IVT guarantee only holds for **continuous** functions. Standard mathematical
+ * expressions (polynomials, rational functions, exp, ln, sin, cos, sqrt, …) are
+ * continuous on their domain of definition, and discontinuities caused by
+ * non-definition (1/x at 0, ln at 0, tan at π/2+kπ) are handled by the domain
+ * module which splits the real line at those points.
+ *
+ * However, functions with **jump discontinuities inside their domain** (floor,
+ * ceiling, piecewise, …) could change sign between sample points without passing
+ * through zero, leading to incorrect results. These are not currently supported.
+ *
+ * ## Sampling does NOT affect interval bounds
+ *
+ * This module only determines the `sign` field of an already-existing interval.
+ * The interval bounds remain the exact symbolic MathNodes set by the zero-finding
+ * step — sampling never creates, modifies, or approximates interval bounds.
  *
  * @module mathAST/sign/helpers/sampling
  */
@@ -47,22 +88,24 @@ export interface SamplingOptions {
 /**
  * Determine sign by numeric sampling (fallback when algebraic analysis fails).
  *
+ * Called on intervals between consecutive zeros where the function is continuous.
+ * By the IVT, the sign is constant on such intervals, so sampling is reliable.
+ *
  * Strategy:
- * 1. Sample multiple points within the interval
- * 2. Evaluate the expression at each point
- * 3. If all samples have the same sign, return that sign
- * 4. If samples have different signs, return 'unknown' (shouldn't happen between zeros)
+ * 1. Generate `sampleCount` (default 5) evenly-spaced points inside the interval
+ * 2. Evaluate the expression at each point via substitute() + evaluate()
+ * 3. Determine sign of each result (values < tolerance treated as zero)
+ * 4. If all non-zero samples agree → return that sign
+ * 5. If samples disagree → return 'unknown' (should not happen if all zeros
+ *    were found and the function is continuous — indicates a missed zero or
+ *    a discontinuous function)
  *
  * @param expr - The expression to sample
  * @param variable - The variable name
- * @param interval - The interval to sample on
+ * @param interval - The interval to sample on (bounds are symbolic, converted
+ *                   to numeric for generating sample points)
  * @param options - Sampling options
  * @returns The determined sign
- *
- * @example
- * // Sample sign of x^2 + 1 on [-10, 10]
- * const sign = sampleSignOnInterval(parse('x^2 + 1'), 'x', interval);
- * // Returns 'positive'
  */
 export function sampleSignOnInterval(
 	expr: MathNode,
@@ -325,7 +368,14 @@ function getNumericBound(value: MathNode, _bound: 'lower' | 'upper'): number | n
 
 /**
  * Perform adaptive sampling to get more reliable sign determination.
- * Uses more samples near boundaries and at the midpoint.
+ * Unlike the basic version, places samples strategically:
+ * - Near the lower bound (catches sign close to zeros/discontinuities)
+ * - At the midpoint
+ * - Near the upper bound
+ * - Two intermediate points for extra reliability
+ *
+ * Same IVT-based reasoning as sampleSignOnInterval: between consecutive
+ * zeros, a continuous function has constant sign, so all samples should agree.
  *
  * @param expr - The expression to sample
  * @param variable - The variable name
