@@ -178,6 +178,44 @@ describe('Quadratic Solver', () => {
 		});
 	});
 
+	describe('Symbolic constants (π, √2)', () => {
+		it('should solve x^2 - \\pi = 0 -> x = ±√π', () => {
+			const eq = parseEquation('x^2 - \\pi = 0');
+			const result = solve(eq);
+
+			expect(result.status).toBe('multiple');
+			expect(result.solutions).toHaveLength(2);
+
+			const approxValues = result.solutions
+				.map((s) => s.approximate)
+				.sort((a, b) => (a ?? 0) - (b ?? 0));
+			expect(approxValues[0]).toBeCloseTo(-Math.sqrt(Math.PI), 5);
+			expect(approxValues[1]).toBeCloseTo(Math.sqrt(Math.PI), 5);
+		});
+
+		it('should detect no real solution for x^2 + \\pi = 0', () => {
+			const eq = parseEquation('x^2 + \\pi = 0');
+			const result = solve(eq);
+
+			expect(result.status).toBe('no-real-solution');
+			expect(result.solutions).toHaveLength(0);
+		});
+
+		it('should solve x^2 - \\sqrt{2} = 0 -> x = ±2^(1/4)', () => {
+			const eq = parseEquation('x^2 - \\sqrt{2} = 0');
+			const result = solve(eq);
+
+			expect(result.status).toBe('multiple');
+			expect(result.solutions).toHaveLength(2);
+
+			const approxValues = result.solutions
+				.map((s) => s.approximate)
+				.sort((a, b) => (a ?? 0) - (b ?? 0));
+			expect(approxValues[0]).toBeCloseTo(-Math.pow(2, 0.25), 5);
+			expect(approxValues[1]).toBeCloseTo(Math.pow(2, 0.25), 5);
+		});
+	});
+
 	describe('Discriminant in steps', () => {
 		it('should include discriminant calculation in detailed steps', () => {
 			const eq = parseEquation('x^2 - 5x + 6 = 0');

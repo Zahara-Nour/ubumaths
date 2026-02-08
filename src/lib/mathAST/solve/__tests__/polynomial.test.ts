@@ -271,6 +271,47 @@ describe('Polynomial Solver (x^n = k)', () => {
 		});
 	});
 
+	describe('Symbolic constants (π, e, √2)', () => {
+		it('should solve x^2 = \\pi -> x = ±√π', () => {
+			const eq = parseEquation('x^2 = \\pi');
+			const result = solve(eq);
+
+			expect(result.status).toBe('multiple');
+			expect(result.solutions).toHaveLength(2);
+
+			const approxValues = result.solutions
+				.map((s) => s.approximate)
+				.sort((a, b) => (a ?? 0) - (b ?? 0));
+			expect(approxValues[0]).toBeCloseTo(-Math.sqrt(Math.PI), 5);
+			expect(approxValues[1]).toBeCloseTo(Math.sqrt(Math.PI), 5);
+		});
+
+		it('should detect no real solution for x^2 = -\\pi', () => {
+			const eq = parseEquation('x^2 = -\\pi');
+			const result = solve(eq);
+
+			expect(result.status).toBe('no-real-solution');
+			expect(result.solutions).toHaveLength(0);
+		});
+
+		it('should detect no real solution for x^4 = -\\pi', () => {
+			const eq = parseEquation('x^4 = -\\pi');
+			const result = solve(eq);
+
+			expect(result.status).toBe('no-real-solution');
+			expect(result.solutions).toHaveLength(0);
+		});
+
+		it('should solve x^3 = \\pi -> x = π^(1/3)', () => {
+			const eq = parseEquation('x^3 = \\pi');
+			const result = solve(eq);
+
+			expect(result.status).toBe('unique');
+			expect(result.solutions).toHaveLength(1);
+			expect(result.solutions[0].approximate).toBeCloseTo(Math.cbrt(Math.PI), 5);
+		});
+	});
+
 	describe('Edge cases', () => {
 		it('should handle x^3 = 1000 -> x = 10', () => {
 			const eq = parseEquation('x^3 = 1000');
