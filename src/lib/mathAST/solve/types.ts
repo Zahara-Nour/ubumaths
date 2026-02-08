@@ -3,6 +3,14 @@
  *
  * Type definitions for the equation solving module.
  *
+ * ## Role in the sign/variation analysis chain
+ *
+ * The solve module is the **critical dependency** of the sign module: sign analysis
+ * assumes that solve finds ALL zeros of an expression. If a zero is missed, the
+ * sign table (and the variation table above it) may be silently incorrect.
+ *
+ * See solve.ts for the full completeness table and known gaps.
+ *
  * @module mathAST/solve/types
  */
 

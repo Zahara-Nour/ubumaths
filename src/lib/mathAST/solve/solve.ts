@@ -3,6 +3,43 @@
  *
  * Provides the main solve() function for solving equations.
  *
+ * ## Supported equation types and completeness guarantees
+ *
+ * | Type                        | Solver              | Completeness              |
+ * |-----------------------------|---------------------|---------------------------|
+ * | Linear (ax+b=0)             | linearSolver        | Complete                  |
+ * | Quadratic (ax²+bx+c=0)     | quadraticSolver     | Complete                  |
+ * | Cubic (ax³+bx²+cx+d=0)     | polynomialSolver    | Complete (Cardano)        |
+ * | Pure power (x^n=k)          | polynomialSolver    | Complete                  |
+ * | General polynomial deg > 3  | —                   | NOT supported             |
+ * | Exponential (e^x=c)         | transcendentalSolver| Simple cases only         |
+ * | Logarithmic (ln(x)=c)       | transcendentalSolver| Simple cases only         |
+ * | Trigonometric (sin(x)=c)    | transcendentalSolver| Principal solution only   |
+ * | Mixed (x·e^x=1, etc.)      | —                   | NOT supported             |
+ *
+ * ## Critical role in sign analysis
+ *
+ * The sign module (and the variations module above it) depends on solve finding
+ * **all** zeros of an expression. If solve misses a zero, the sign analysis may
+ * silently produce incorrect results (see sign/index.ts for details).
+ *
+ * ## Known gaps (affecting sign/variation correctness)
+ *
+ * 1. **Polynomials degree >= 4**: no general formula exists (Abel-Ruffini theorem).
+ *    Needs numeric methods (Newton) + Sturm sequences for root counting.
+ * 2. **Trigonometric solutions**: only the principal value is returned, not the
+ *    full periodic family (x = arcsin(c) + 2kπ). For sign analysis on R, all
+ *    zeros in the domain must be enumerated. The periodicity module
+ *    (analysis/periodicity.ts) can detect periods and could be used to generate
+ *    all zeros within a given interval.
+ * 3. **Mixed transcendental equations** (x·sin(x)=0, e^x=x): not handled at all.
+ *    Some can be decomposed (x·sin(x)=0 → x=0 or sin(x)=0), others require
+ *    numeric methods.
+ *
+ * For the UbuMaths pedagogical scope (high school level), the most impactful
+ * gap is trigonometric periodic solutions: derivatives like cos(x) have infinitely
+ * many zeros and the current solver only returns one.
+ *
  * @module mathAST/solve/solve
  */
 
@@ -31,6 +68,11 @@ import { number } from '../factory';
 
 /**
  * Select the best solving strategy based on equation classification.
+ *
+ * Note: 'algebraic' means an exact closed-form solution exists.
+ * 'numeric' means we'd need iterative methods (Newton, bisection, …).
+ * Currently, 'numeric' strategy is declared but not fully implemented —
+ * equations classified as numeric will typically fail to solve.
  */
 function selectStrategy(classification: ClassificationResult): SolvingStrategy {
 	switch (classification.type) {
@@ -40,6 +82,8 @@ function selectStrategy(classification: ClassificationResult): SolvingStrategy {
 
 		case 'polynomial':
 			// Higher degree polynomials may need numeric methods
+			// Note: degree 4 is declared as 'algebraic' but polynomialSolver
+			// doesn't implement Ferrari's formula yet — only pure power x^4=k works.
 			return classification.degree && classification.degree <= 4 ? 'algebraic' : 'numeric';
 
 		case 'exponential':
