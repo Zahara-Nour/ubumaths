@@ -214,6 +214,7 @@ export {
 	applyRuleDeep,
 	applyRules,
 	applyRulesDeepOnce,
+	applyRulesDeepOnceTracked,
 	applyRulesWithSteps
 } from './rule';
 
