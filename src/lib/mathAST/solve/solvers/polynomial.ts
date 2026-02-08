@@ -2,8 +2,26 @@
  * Polynomial Equation Solver
  *
  * Solves polynomial equations:
- * - Power equations: x^n = k (nth roots)
+ * - Power equations: x^n = k (nth roots) — any degree
  * - Cubic equations: ax³ + bx² + cx + d = 0 (Cardano's formula)
+ *
+ * ## Completeness
+ *
+ * - Degree 1-2: handled by linearSolver / quadraticSolver (not here).
+ * - Degree 3 (cubic): **complete** — uses Cardano's formula with all three
+ *   discriminant cases (Δ<0: one real root, Δ=0: multiple root, Δ>0: three
+ *   real roots via trigonometric form).
+ * - Pure power x^n = k: **complete** — handles all n, with exact integer
+ *   roots when possible.
+ * - **General degree 4 (quartic): NOT implemented.** Ferrari's formula exists
+ *   but is not coded. Only x^4 = k (pure power) works.
+ * - **General degree >= 5: impossible algebraically** (Abel-Ruffini theorem).
+ *   Would need numeric methods (Newton-Raphson) + Sturm sequences for
+ *   guaranteed root counting.
+ *
+ * The gap at degree 4 and above matters for sign analysis: if f'(x) is a
+ * polynomial of degree >= 4 with non-trivial structure, solve will miss its
+ * zeros and the sign table will be incorrect.
  *
  * @module mathAST/solve/solvers/polynomial
  */

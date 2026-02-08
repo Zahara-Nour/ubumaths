@@ -3,6 +3,19 @@
  *
  * Solves equations involving exp, ln, log, sin, cos, tan.
  *
+ * ## Limitations
+ *
+ * - **Exponential/Logarithmic**: only handles simple forms (e^x = c, ln(x) = c).
+ *   Composed forms like e^(2x+1) = 5 or ln(x²) = 3 are not decomposed.
+ * - **Trigonometric**: only returns the **principal solution** (e.g. arcsin(c)),
+ *   not the full periodic family (arcsin(c) + 2kπ, π - arcsin(c) + 2kπ).
+ *   This is the most critical gap for sign analysis: a derivative like cos(x)
+ *   has infinitely many zeros on R, but this solver only finds one.
+ *   The periodicity module (analysis/periodicity.ts) knows the periods of trig
+ *   functions and could be used to enumerate all zeros within a bounded domain.
+ * - **Mixed equations** (e.g. x·sin(x) = 0): not handled. Some could be
+ *   decomposed into factors, others need numeric methods.
+ *
  * @module mathAST/solve/solvers/transcendental
  */
 
