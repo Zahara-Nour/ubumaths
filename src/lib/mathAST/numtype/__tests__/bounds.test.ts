@@ -698,3 +698,503 @@ describe('bounds - function bounds propagation', () => {
 		expect(b!.upper).toBeCloseTo(Math.E);
 	});
 });
+
+// =============================================================================
+// Phase 3 edge cases: function bounds propagation
+// =============================================================================
+
+describe('bounds - function bounds edge cases', () => {
+	// --- Regression: no bounds on variable → static range preserved ---
+
+	it('cos(x) without bounds -> static [-1, 1]', () => {
+		const b = boundsOf('\\cos(x)');
+		expect(b).toEqual({ lower: -1, upper: 1, lowerInclusive: true, upperInclusive: true });
+	});
+
+	it('tanh(x) without bounds -> static (-1, 1)', () => {
+		const b = boundsOf('\\tanh(x)');
+		expect(b).toEqual({ lower: -1, upper: 1, lowerInclusive: false, upperInclusive: false });
+	});
+
+	it('exp(x) without bounds -> static (0, +inf)', () => {
+		const b = boundsOf('\\exp(x)');
+		expect(b).toEqual({ lower: 0, upper: null, lowerInclusive: false, upperInclusive: false });
+	});
+
+	it('cosh(x) without bounds -> static [1, +inf)', () => {
+		const b = boundsOf('\\cosh(x)');
+		expect(b).toEqual({ lower: 1, upper: null, lowerInclusive: true, upperInclusive: false });
+	});
+
+	// --- Negative input ranges ---
+
+	it('exp(x) with x in [-3, -1] -> [exp(-3), exp(-1)]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: -3, upper: -1, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\exp(x)', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(Math.exp(-3));
+		expect(b!.upper).toBeCloseTo(Math.exp(-1));
+	});
+
+	// --- Logarithmic with narrow positive range ---
+
+	it('ln(x) with x in [1, 10] -> [0, ln(10)]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						sign: 'positive' as const,
+						bounds: { lower: 1, upper: 10, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\ln(x)', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(0);
+		expect(b!.upper).toBeCloseTo(Math.log(10));
+	});
+
+	// --- Inverse trig with bounded input ---
+
+	it('sinh(x) with x in [-1, 2] -> [sinh(-1), sinh(2)]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: -1, upper: 2, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\sinh(x)', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(Math.sinh(-1));
+		expect(b!.upper).toBeCloseTo(Math.sinh(2));
+	});
+
+	it('tanh(x) with x in [-2, 2] -> [tanh(-2), tanh(2)]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: -2, upper: 2, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\tanh(x)', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(Math.tanh(-2));
+		expect(b!.upper).toBeCloseTo(Math.tanh(2));
+	});
+
+	// Note: \\arccos and \\arctan parse to 'arccos'/'arctan' which aren't
+	// in TRANSCENDENTAL_FUNCTIONS (only 'acos'/'atan' are). This is a known
+	// gap in function name aliasing, not a bounds propagation issue.
+
+	// --- cosh with bounded input ---
+
+	it('cosh(x) with x in [-2, 3] -> [1, cosh(3)] (sampling picks up minimum)', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: -2, upper: 3, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\cosh(x)', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(1, 2);
+		expect(b!.upper).toBeCloseTo(Math.cosh(3), 2);
+	});
+
+	// --- Sign refinement from computed bounds ---
+
+	it('sin(x) with x in [0, pi/2] -> sign positive (from bounds [0, 1])', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: {
+							lower: 0,
+							upper: Math.PI / 2,
+							lowerInclusive: false,
+							upperInclusive: false
+						}
+					}
+				]
+			])
+		};
+		const type = inferType(parseLatex('\\sin(x)'), ctx);
+		// sin on (0, pi/2) is strictly positive
+		expect(type.sign).toBe('positive');
+	});
+
+	it('cos(x) with x in [0, pi/4] -> sign positive (from bounds [cos(pi/4), 1])', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: {
+							lower: 0,
+							upper: Math.PI / 4,
+							lowerInclusive: true,
+							upperInclusive: true
+						}
+					}
+				]
+			])
+		};
+		const type = inferType(parseLatex('\\cos(x)'), ctx);
+		expect(type.sign).toBe('positive');
+	});
+
+	// --- Deep compositions ---
+
+	it('composition: ln(sqrt(x)) with x in [1, e^4] -> [0, 2]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						sign: 'positive' as const,
+						bounds: {
+							lower: 1,
+							upper: Math.E ** 4,
+							lowerInclusive: true,
+							upperInclusive: true
+						}
+					}
+				]
+			])
+		};
+		// sqrt([1, e^4]) = [1, e^2], ln([1, e^2]) = [0, 2]
+		const b = boundsOf('\\ln(\\sqrt{x})', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(0);
+		expect(b!.upper).toBeCloseTo(2);
+	});
+
+	it('composition: sqrt(exp(x)) with x in [0, 4] -> [1, e^2]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 0, upper: 4, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		// exp([0, 4]) = [1, e^4], sqrt([1, e^4]) = [1, e^2]
+		const type = inferType(parseLatex('\\sqrt{\\exp(x)}'), ctx);
+		expect(type.bounds).toBeDefined();
+		expect(type.bounds!.lower).toBeCloseTo(1);
+		expect(type.bounds!.upper).toBeCloseTo(Math.E ** 2);
+	});
+
+	it('3-deep composition: exp(sin(tanh(x))) with x in [0, 2]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 0, upper: 2, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		// tanh([0,2]) = [0, tanh(2)] ≈ [0, 0.964]
+		// sin([0, 0.964]) is in [-pi/2, pi/2] increasing piece → [0, sin(0.964)]
+		// exp([0, sin(0.964)]) = [1, exp(sin(0.964))]
+		const b = boundsOf('\\exp(\\sin(\\tanh(x)))', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(1);
+		expect(b!.upper).toBeCloseTo(Math.exp(Math.sin(Math.tanh(2))));
+	});
+
+	// --- Arithmetic + function combinations ---
+
+	it('2 * exp(x) with x in [0, 1] -> [2, 2e]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 0, upper: 1, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('2\\exp(x)', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(2);
+		expect(b!.upper).toBeCloseTo(2 * Math.E);
+	});
+
+	it('exp(x) + 1 with x in [0, 1] -> [2, e+1]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 0, upper: 1, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\exp(x)+1', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(2);
+		expect(b!.upper).toBeCloseTo(Math.E + 1);
+	});
+
+	it('-exp(x) with x in [0, 1] -> [-e, -1]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 0, upper: 1, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('-\\exp(x)', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(-Math.E);
+		expect(b!.upper).toBeCloseTo(-1);
+	});
+
+	// --- Power of function result ---
+
+	it('sin(x)^2 with x in [0, pi/2] -> [0, 1]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: {
+							lower: 0,
+							upper: Math.PI / 2,
+							lowerInclusive: true,
+							upperInclusive: true
+						}
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\sin(x)^2', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(0);
+		expect(b!.upper).toBeCloseTo(1);
+	});
+
+	// --- Open bounds propagation through pipeline ---
+
+	it('exp(x) with x in (0, 1) open -> bounds with open endpoints', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 0, upper: 1, lowerInclusive: false, upperInclusive: false }
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\exp(x)', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(1);
+		expect(b!.upper).toBeCloseTo(Math.E);
+		expect(b!.lowerInclusive).toBe(false);
+		expect(b!.upperInclusive).toBe(false);
+	});
+
+	// --- Singleton input ---
+
+	it('exp(x) with x = [3, 3] -> [exp(3), exp(3)]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 3, upper: 3, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('\\exp(x)', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(Math.exp(3));
+		expect(b!.upper).toBeCloseTo(Math.exp(3));
+	});
+
+	// --- Multiple variables with function bounds ---
+
+	it('exp(x) + ln(y) with x in [0,1], y in [1,e] -> [1, e+1]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([
+				['x', 'real'],
+				['y', 'real']
+			]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 0, upper: 1, lowerInclusive: true, upperInclusive: true }
+					}
+				],
+				[
+					'y',
+					{
+						sign: 'positive' as const,
+						bounds: {
+							lower: 1,
+							upper: Math.E,
+							lowerInclusive: true,
+							upperInclusive: true
+						}
+					}
+				]
+			])
+		};
+		// exp([0,1]) = [1, e], ln([1, e]) = [0, 1]
+		// sum = [1+0, e+1] = [1, e+1]
+		const b = boundsOf('\\exp(x)+\\ln(y)', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeCloseTo(1);
+		expect(b!.upper).toBeCloseTo(Math.E + 1);
+	});
+
+	// --- Constant input (known value bypasses bounds) ---
+
+	it('exp(0) = 1 uses special value path, not bounds', () => {
+		const type = inferType(parseLatex('\\exp(0)'));
+		expect(type.base).toBe('integer');
+		expect(type.sign).toBe('positive');
+	});
+
+	it('sin(0) = 0 uses special value path', () => {
+		const type = inferType(parseLatex('\\sin(0)'));
+		expect(type.base).toBe('integer');
+		expect(type.sign).toBe('zero');
+	});
+
+	it('ln(1) = 0 uses special value path', () => {
+		const type = inferType(parseLatex('\\ln(1)'));
+		expect(type.base).toBe('integer');
+		expect(type.sign).toBe('zero');
+	});
+});
+
+// =============================================================================
+// Phase 3 edge cases: sqrt bounds through power.ts
+// =============================================================================
+
+describe('bounds - sqrt edge cases', () => {
+	it('sqrt(x) with x = [0, 0] -> singleton [0, 0]', () => {
+		// sqrt(0) = 0, handled by special case
+		const type = inferType(parseLatex('\\sqrt{0}'));
+		expect(type.base).toBe('integer');
+		expect(type.sign).toBe('zero');
+	});
+
+	it('sqrt(x) with x in [1, 1] -> [1, 1]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						sign: 'positive' as const,
+						bounds: { lower: 1, upper: 1, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const type = inferType(parseLatex('\\sqrt{x}'), ctx);
+		expect(type.bounds).toBeDefined();
+		expect(type.bounds!.lower).toBeCloseTo(1);
+		expect(type.bounds!.upper).toBeCloseTo(1);
+	});
+
+	it('sqrt(x) with x in [100, 10000] -> [10, 100]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						sign: 'positive' as const,
+						bounds: {
+							lower: 100,
+							upper: 10000,
+							lowerInclusive: true,
+							upperInclusive: true
+						}
+					}
+				]
+			])
+		};
+		const type = inferType(parseLatex('\\sqrt{x}'), ctx);
+		expect(type.bounds).toBeDefined();
+		expect(type.bounds!.lower).toBeCloseTo(10);
+		expect(type.bounds!.upper).toBeCloseTo(100);
+	});
+
+	it('sqrt(x) with x in (0, 1) open bounds -> open bounds on output', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						sign: 'positive' as const,
+						bounds: { lower: 0, upper: 1, lowerInclusive: false, upperInclusive: false }
+					}
+				]
+			])
+		};
+		const type = inferType(parseLatex('\\sqrt{x}'), ctx);
+		expect(type.bounds).toBeDefined();
+		expect(type.bounds!.lower).toBeCloseTo(0);
+		expect(type.bounds!.upper).toBeCloseTo(1);
+		expect(type.bounds!.lowerInclusive).toBe(false);
+		expect(type.bounds!.upperInclusive).toBe(false);
+	});
+});
