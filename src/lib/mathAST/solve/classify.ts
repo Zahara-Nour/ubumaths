@@ -9,6 +9,7 @@
 import type { MathNode, RelationNode } from '../types';
 import type { ClassificationResult } from './types';
 import { subtract } from '../factory';
+import { isNumber } from '../guards';
 import { getVariables } from '../eval/substitute';
 
 // Import and re-export from analysis module for backwards compatibility
@@ -33,6 +34,10 @@ export { containsTranscendental, getTranscendentalType, getPolynomialDegree, isP
  * @returns The left side f(x) where f(x) = 0
  */
 export function toStandardForm(equation: RelationNode): MathNode {
+	// If rhs is 0, return lhs directly (avoid wrapping in "lhs - 0")
+	if (isNumber(equation.right) && equation.right.value === '0') {
+		return equation.left;
+	}
 	// For equality, move right side to left: lhs - rhs = 0
 	return subtract(equation.left, equation.right);
 }

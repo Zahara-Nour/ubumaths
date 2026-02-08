@@ -101,7 +101,8 @@ function isTrigFunc(name: string): boolean {
 interface TrigEquationParts {
 	readonly funcName: string;
 	readonly argument: MathNode;
-	readonly constant: number;
+	readonly constantNode: MathNode;
+	readonly constantNumeric: number;
 }
 
 /**
@@ -110,40 +111,49 @@ interface TrigEquationParts {
  * Handles:
  * - sin(2x) = 0 → { funcName: 'sin', argument: 2x, constant: 0 }
  * - cos(x) - 1/2 = 0 → { funcName: 'cos', argument: x, constant: 0.5 }
+ * - cos(x) - √2/2 = 0 → { funcName: 'cos', argument: x, constant: 0.7071... }
  * - -sin(x) = 0 → { funcName: 'sin', argument: x, constant: 0 }
  * - k * cos(x) = 0 → { funcName: 'cos', argument: x, constant: 0 }
- *
- * Unlike the old mapNode approach, this does NOT accidentally pick up
- * numbers from inside function arguments (e.g. the '2' in sin(2x)).
  */
 function extractTrigEquation(expr: MathNode, variable: string): TrigEquationParts | null {
+	const zero = number('0');
+
+	function makeParts(
+		funcName: string,
+		argument: MathNode,
+		constantNode: MathNode
+	): TrigEquationParts | null {
+		try {
+			const constantNumeric = evaluateNodeToApproximatedNumber(constantNode);
+			return { funcName, argument, constantNode, constantNumeric };
+		} catch {
+			return null;
+		}
+	}
+
 	// Case 1: expr is just trig(arg) → trig(arg) = 0
 	if (isFunction(expr) && isTrigFunc(expr.name) && getVariables(expr).has(variable)) {
-		return { funcName: expr.name, argument: expr.args[0], constant: 0 };
+		return makeParts(expr.name, expr.args[0], zero);
 	}
 
 	// Case 2: expr = trig(arg) - c (SubtractionNode)
 	if (expr.type === 'subtraction') {
 		const { left, right } = expr;
-		// trig(arg) - c = 0 → trig(arg) = c
 		if (
 			isFunction(left) &&
 			isTrigFunc(left.name) &&
 			getVariables(left).has(variable) &&
 			!getVariables(right).has(variable)
 		) {
-			const c = computeNumericValue(right);
-			if (c !== null) return { funcName: left.name, argument: left.args[0], constant: c };
+			return makeParts(left.name, left.args[0], right);
 		}
-		// c - trig(arg) = 0 → trig(arg) = c
 		if (
 			isFunction(right) &&
 			isTrigFunc(right.name) &&
 			getVariables(right).has(variable) &&
 			!getVariables(left).has(variable)
 		) {
-			const c = computeNumericValue(left);
-			if (c !== null) return { funcName: right.name, argument: right.args[0], constant: c };
+			return makeParts(right.name, right.args[0], left);
 		}
 	}
 
@@ -156,8 +166,7 @@ function extractTrigEquation(expr: MathNode, variable: string): TrigEquationPart
 			getVariables(left).has(variable) &&
 			!getVariables(right).has(variable)
 		) {
-			const c = computeNumericValue(right);
-			if (c !== null) return { funcName: left.name, argument: left.args[0], constant: -c };
+			return makeParts(left.name, left.args[0], opposite(right));
 		}
 		if (
 			isFunction(right) &&
@@ -165,14 +174,13 @@ function extractTrigEquation(expr: MathNode, variable: string): TrigEquationPart
 			getVariables(right).has(variable) &&
 			!getVariables(left).has(variable)
 		) {
-			const c = computeNumericValue(left);
-			if (c !== null) return { funcName: right.name, argument: right.args[0], constant: -c };
+			return makeParts(right.name, right.args[0], opposite(left));
 		}
 	}
 
 	// Case 4: expr = -trig(arg) → trig(arg) = 0
 	if (expr.type === 'opposite' && isFunction(expr.operand) && isTrigFunc(expr.operand.name)) {
-		return { funcName: expr.operand.name, argument: expr.operand.args[0], constant: 0 };
+		return makeParts(expr.operand.name, expr.operand.args[0], zero);
 	}
 
 	// Case 5: expr = k * trig(arg) → trig(arg) = 0 (since k ≠ 0)
@@ -184,7 +192,7 @@ function extractTrigEquation(expr: MathNode, variable: string): TrigEquationPart
 			getVariables(right).has(variable) &&
 			!getVariables(left).has(variable)
 		) {
-			return { funcName: right.name, argument: right.args[0], constant: 0 };
+			return makeParts(right.name, right.args[0], zero);
 		}
 		if (
 			isFunction(left) &&
@@ -192,44 +200,21 @@ function extractTrigEquation(expr: MathNode, variable: string): TrigEquationPart
 			getVariables(left).has(variable) &&
 			!getVariables(right).has(variable)
 		) {
-			return { funcName: left.name, argument: left.args[0], constant: 0 };
+			return makeParts(left.name, left.args[0], zero);
 		}
 	}
 
 	return null;
 }
 
-// =============================================================================
-// Known Trig Inverse Values
-// =============================================================================
-
 /**
- * Evaluate inverse trig functions for known special values.
- * Returns a clean symbolic MathNode instead of arcsin(0), arccos(0), etc.
- *
- * For example: arcsin(0) → 0, arccos(0) → π/2, arctan(1) → π/4
+ * Simplify an inverse trig call through the normalizer.
+ * The normalizer knows about remarkable values: arcsin(1/2) → π/6, etc.
+ * Returns simplified MathNode, or the raw arcfunc(constant) if no simplification.
  */
-function evaluateTrigInverse(inverseFuncName: string, constant: number): MathNode | null {
-	const eps = 1e-10;
-
-	if (inverseFuncName === 'arcsin') {
-		if (Math.abs(constant) < eps) return number('0');
-		if (Math.abs(constant - 1) < eps) return divide(PI, number('2'), 'fraction');
-		if (Math.abs(constant + 1) < eps) return opposite(divide(PI, number('2'), 'fraction'));
-		if (Math.abs(constant - 0.5) < eps) return divide(PI, number('6'), 'fraction');
-		if (Math.abs(constant + 0.5) < eps) return opposite(divide(PI, number('6'), 'fraction'));
-	} else if (inverseFuncName === 'arccos') {
-		if (Math.abs(constant - 1) < eps) return number('0');
-		if (Math.abs(constant + 1) < eps) return PI;
-		if (Math.abs(constant) < eps) return divide(PI, number('2'), 'fraction');
-		if (Math.abs(constant - 0.5) < eps) return divide(PI, number('3'), 'fraction');
-	} else if (inverseFuncName === 'arctan') {
-		if (Math.abs(constant) < eps) return number('0');
-		if (Math.abs(constant - 1) < eps) return divide(PI, number('4'), 'fraction');
-		if (Math.abs(constant + 1) < eps) return opposite(divide(PI, number('4'), 'fraction'));
-	}
-
-	return null;
+function simplifyInverseTrig(inverseFuncName: string, constantNode: MathNode): MathNode {
+	const arcNode = func(inverseFuncName, [constantNode]);
+	return denormalize(normalize(arcNode));
 }
 
 /**
@@ -549,7 +534,7 @@ function solveTrigonometric(
 	const extracted = extractTrigEquation(expr, variable);
 	if (!extracted) return null;
 
-	const { funcName, argument, constant } = extracted;
+	const { funcName, argument, constantNode, constantNumeric: constant } = extracted;
 
 	// Check domain restrictions for sin/cos
 	if (funcName === 'sin' || funcName === 'cos') {
@@ -603,8 +588,7 @@ function solveTrigonometric(
 
 	if (funcName === 'sin') {
 		const arcsinVal = Math.asin(constant);
-		const arcsinNode =
-			evaluateTrigInverse('arcsin', constant) ?? func('arcsin', [number(constant.toString())]);
+		const arcsinNode = simplifyInverseTrig('arcsin', constantNode);
 		uSolutions.push({ symbolic: arcsinNode, numeric: arcsinVal });
 
 		// Second solution: π - arcsin(c)
@@ -622,8 +606,7 @@ function solveTrigonometric(
 		}
 	} else if (funcName === 'cos') {
 		const arccosVal = Math.acos(constant);
-		const arccosNode =
-			evaluateTrigInverse('arccos', constant) ?? func('arccos', [number(constant.toString())]);
+		const arccosNode = simplifyInverseTrig('arccos', constantNode);
 		uSolutions.push({ symbolic: arccosNode, numeric: arccosVal });
 
 		// Second solution: -arccos(c)
@@ -642,8 +625,7 @@ function solveTrigonometric(
 	} else {
 		// tan: single solution family
 		const arctanVal = Math.atan(constant);
-		const arctanNode =
-			evaluateTrigInverse('arctan', constant) ?? func('arctan', [number(constant.toString())]);
+		const arctanNode = simplifyInverseTrig('arctan', constantNode);
 		uSolutions.push({ symbolic: arctanNode, numeric: arctanVal });
 	}
 

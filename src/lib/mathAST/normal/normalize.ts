@@ -2099,6 +2099,156 @@ function getTangentValue(coeff: Rational): NormalForm | null {
 }
 
 // =============================================================================
+// Inverse Trigonometric Special Values
+// =============================================================================
+
+/**
+ * Creates a NormalForm representing k*π.
+ */
+function normalFormPiMultiple(k: Rational): NormalForm {
+	if (k.n === 0n) return ZERO_NORMAL_FORM;
+	const piNode: MathNode = { type: 'constant', constant: 'pi' };
+	const term: NormalTerm = {
+		coefficient: algebraicFromRational(k),
+		monomial: [symbolicFactor(piNode, rational(1n, 1n))]
+	};
+	return normalFormFromPolynomial([term]);
+}
+
+/**
+ * Creates NormalForm for √3/3 (used by arctan).
+ */
+function normalFormSqrt3Over3(): NormalForm {
+	const term: NormalTerm = {
+		coefficient: {
+			terms: [
+				{
+					rational: rational(1n, 3n),
+					radicals: [{ radicand: 3n, index: 2n }]
+				}
+			]
+		},
+		monomial: EMPTY_MONOMIAL
+	};
+	return normalFormFromPolynomial([term]);
+}
+
+/**
+ * Creates NormalForm for √3.
+ */
+function normalFormSqrt3(): NormalForm {
+	const term: NormalTerm = {
+		coefficient: {
+			terms: [
+				{
+					rational: rational(1n, 1n),
+					radicals: [{ radicand: 3n, index: 2n }]
+				}
+			]
+		},
+		monomial: EMPTY_MONOMIAL
+	};
+	return normalFormFromPolynomial([term]);
+}
+
+/**
+ * Compare two NormalForms for equivalence (by hash).
+ */
+function formsEqual(a: NormalForm, b: NormalForm): boolean {
+	return hashNormalForm(a) === hashNormalForm(b);
+}
+
+/**
+ * Gets arcsin value for a known remarkable argument.
+ * arcsin range: [-π/2, π/2]
+ *
+ * Remarkable values:
+ *   arcsin(0) = 0
+ *   arcsin(1/2) = π/6
+ *   arcsin(√2/2) = π/4
+ *   arcsin(√3/2) = π/3
+ *   arcsin(1) = π/2
+ *   Negative values handled by parity: arcsin(-x) = -arcsin(x)
+ */
+function getArcSineValue(argForm: NormalForm): NormalForm | null {
+	if (formsEqual(argForm, ZERO_NORMAL_FORM)) return ZERO_NORMAL_FORM;
+	if (formsEqual(argForm, normalFormFromRational(rational(1n, 2n))))
+		return normalFormPiMultiple(rational(1n, 6n));
+	if (formsEqual(argForm, normalFormSqrt2Over2())) return normalFormPiMultiple(rational(1n, 4n));
+	if (formsEqual(argForm, normalFormSqrt3Over2())) return normalFormPiMultiple(rational(1n, 3n));
+	if (formsEqual(argForm, ONE_NORMAL_FORM)) return normalFormPiMultiple(rational(1n, 2n));
+	// Negative values: arcsin(-x) = -arcsin(x)
+	if (formsEqual(argForm, normalFormFromRational(rational(-1n, 2n))))
+		return negNormalForm(normalFormPiMultiple(rational(1n, 6n)));
+	if (formsEqual(argForm, negNormalForm(normalFormSqrt2Over2())))
+		return negNormalForm(normalFormPiMultiple(rational(1n, 4n)));
+	if (formsEqual(argForm, negNormalForm(normalFormSqrt3Over2())))
+		return negNormalForm(normalFormPiMultiple(rational(1n, 3n)));
+	if (formsEqual(argForm, negNormalForm(ONE_NORMAL_FORM)))
+		return negNormalForm(normalFormPiMultiple(rational(1n, 2n)));
+	return null;
+}
+
+/**
+ * Gets arccos value for a known remarkable argument.
+ * arccos range: [0, π]
+ *
+ * Remarkable values:
+ *   arccos(1) = 0
+ *   arccos(√3/2) = π/6
+ *   arccos(√2/2) = π/4
+ *   arccos(1/2) = π/3
+ *   arccos(0) = π/2
+ *   arccos(-1/2) = 2π/3
+ *   arccos(-√2/2) = 3π/4
+ *   arccos(-√3/2) = 5π/6
+ *   arccos(-1) = π
+ */
+function getArcCosineValue(argForm: NormalForm): NormalForm | null {
+	if (formsEqual(argForm, ONE_NORMAL_FORM)) return ZERO_NORMAL_FORM;
+	if (formsEqual(argForm, normalFormSqrt3Over2())) return normalFormPiMultiple(rational(1n, 6n));
+	if (formsEqual(argForm, normalFormSqrt2Over2())) return normalFormPiMultiple(rational(1n, 4n));
+	if (formsEqual(argForm, normalFormFromRational(rational(1n, 2n))))
+		return normalFormPiMultiple(rational(1n, 3n));
+	if (formsEqual(argForm, ZERO_NORMAL_FORM)) return normalFormPiMultiple(rational(1n, 2n));
+	if (formsEqual(argForm, normalFormFromRational(rational(-1n, 2n))))
+		return normalFormPiMultiple(rational(2n, 3n));
+	if (formsEqual(argForm, negNormalForm(normalFormSqrt2Over2())))
+		return normalFormPiMultiple(rational(3n, 4n));
+	if (formsEqual(argForm, negNormalForm(normalFormSqrt3Over2())))
+		return normalFormPiMultiple(rational(5n, 6n));
+	if (formsEqual(argForm, negNormalForm(ONE_NORMAL_FORM)))
+		return normalFormPiMultiple(rational(1n, 1n));
+	return null;
+}
+
+/**
+ * Gets arctan value for a known remarkable argument.
+ * arctan range: (-π/2, π/2)
+ *
+ * Remarkable values:
+ *   arctan(0) = 0
+ *   arctan(√3/3) = π/6
+ *   arctan(1) = π/4
+ *   arctan(√3) = π/3
+ *   Negative values handled by parity: arctan(-x) = -arctan(x)
+ */
+function getArcTangentValue(argForm: NormalForm): NormalForm | null {
+	if (formsEqual(argForm, ZERO_NORMAL_FORM)) return ZERO_NORMAL_FORM;
+	if (formsEqual(argForm, normalFormSqrt3Over3())) return normalFormPiMultiple(rational(1n, 6n));
+	if (formsEqual(argForm, ONE_NORMAL_FORM)) return normalFormPiMultiple(rational(1n, 4n));
+	if (formsEqual(argForm, normalFormSqrt3())) return normalFormPiMultiple(rational(1n, 3n));
+	// Negative values: arctan(-x) = -arctan(x)
+	if (formsEqual(argForm, negNormalForm(normalFormSqrt3Over3())))
+		return negNormalForm(normalFormPiMultiple(rational(1n, 6n)));
+	if (formsEqual(argForm, negNormalForm(ONE_NORMAL_FORM)))
+		return negNormalForm(normalFormPiMultiple(rational(1n, 4n)));
+	if (formsEqual(argForm, negNormalForm(normalFormSqrt3())))
+		return negNormalForm(normalFormPiMultiple(rational(1n, 3n)));
+	return null;
+}
+
+// =============================================================================
 // Logarithm Expansion Functions
 // =============================================================================
 
@@ -3074,10 +3224,21 @@ function normalizeFunction(
 		return normalizeOpaqueNode(canonicalNode);
 	}
 
-	// 8. Handle inverse trigonometric functions (arcsin, arctan, etc.)
-	const inverseTrigFunctions = ['arcsin', 'arctan', 'arcsinh', 'arctanh'];
+	// 8. Handle inverse trigonometric functions (arcsin, arccos, arctan, etc.)
+	const inverseTrigFunctions = ['arcsin', 'arccos', 'arctan', 'arcsinh', 'arctanh'];
 	if (inverseTrigFunctions.includes(name) && canonicalArgs.length === 1) {
 		const argForm = normalizeNode(canonicalArgs[0], ctx);
+
+		// Try special values: arcsin(1/2) = π/6, arccos(√2/2) = π/4, etc.
+		let specialValue: NormalForm | null = null;
+		if (name === 'arcsin') specialValue = getArcSineValue(argForm);
+		else if (name === 'arccos') specialValue = getArcCosineValue(argForm);
+		else if (name === 'arctan') specialValue = getArcTangentValue(argForm);
+
+		if (specialValue !== null) {
+			recordNormalizationStep(ctx, 'inverse-trig-special-value', node, specialValue, 'summarized');
+			return specialValue;
+		}
 
 		// Apply parity rules: arcsin(-x) = -arcsin(x), arctan(-x) = -arctan(x)
 		const parityResult4 = applyFunctionParity(argForm, name, canonicalNode, node, ctx);

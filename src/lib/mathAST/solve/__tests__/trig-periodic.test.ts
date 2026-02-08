@@ -287,25 +287,215 @@ describe('Trigonometric Periodic Solver', () => {
 	});
 
 	// =========================================================================
-	// Non-zero constants: trig(x) = c where |c| < 1
+	// Non-zero constants: trig(x) = c (remarkable values)
 	// =========================================================================
 
-	// Non-zero constants: extractTrigEquation currently only handles trig(x) = 0
-	// robustly. After normalization, expressions like sin(x) - 1/2 are transformed
-	// into forms the extractor doesn't recognize. These are documented as TODOs.
-	describe('non-zero constants (known limitation)', () => {
-		it.todo(
-			'sin(x) = 1/2 should return two base solutions: π/6 and 5π/6 (needs extractTrigEquation extension)'
-		);
-		it.todo(
-			'cos(x) = 1/2 should return two base solutions: π/3 and -π/3 (needs extractTrigEquation extension)'
-		);
-		it.todo(
-			'tan(x) = 1 should return one base solution: π/4 (needs extractTrigEquation extension)'
-		);
-		it.todo(
-			'tan(x) = -1 should return one base solution: -π/4 (needs extractTrigEquation extension)'
-		);
+	describe('remarkable values: simple fractions', () => {
+		it('sin(x) = 1/2 should return two base solutions: π/6 and 5π/6', () => {
+			const eq = parseEquation('sin(x) - 1/2 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(2);
+			expect(ps.periodNumeric).toBeCloseTo(2 * Math.PI, 5);
+
+			expect(hasZeroNear(ps.baseSolutions, Math.PI / 6)).toBe(true);
+			expect(hasZeroNear(ps.baseSolutions, (5 * Math.PI) / 6)).toBe(true);
+		});
+
+		it('cos(x) = 1/2 should return two base solutions: π/3 and -π/3', () => {
+			const eq = parseEquation('cos(x) - 1/2 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(2);
+			expect(ps.periodNumeric).toBeCloseTo(2 * Math.PI, 5);
+
+			expect(hasZeroNear(ps.baseSolutions, Math.PI / 3)).toBe(true);
+			expect(hasZeroNear(ps.baseSolutions, -Math.PI / 3)).toBe(true);
+		});
+
+		it('cos(x) = -1/2 should return two base solutions: 2π/3 and -2π/3', () => {
+			const eq = parseEquation('cos(x) + 1/2 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(2);
+
+			expect(hasZeroNear(ps.baseSolutions, (2 * Math.PI) / 3)).toBe(true);
+			expect(hasZeroNear(ps.baseSolutions, (-2 * Math.PI) / 3)).toBe(true);
+		});
+
+		it('sin(x) = -1/2 should return two base solutions: -π/6 and 7π/6', () => {
+			const eq = parseEquation('sin(x) + 1/2 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(2);
+
+			expect(hasZeroNear(ps.baseSolutions, -Math.PI / 6)).toBe(true);
+			expect(hasZeroNear(ps.baseSolutions, Math.PI + Math.PI / 6)).toBe(true);
+		});
+
+		it('tan(x) = 1 should return one base solution: π/4', () => {
+			const eq = parseEquation('tan(x) - 1 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(1);
+			expect(ps.periodNumeric).toBeCloseTo(Math.PI, 5);
+
+			expect(hasZeroNear(ps.baseSolutions, Math.PI / 4)).toBe(true);
+		});
+
+		it('tan(x) = -1 should return one base solution: -π/4', () => {
+			const eq = parseEquation('tan(x) + 1 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(1);
+			expect(hasZeroNear(ps.baseSolutions, -Math.PI / 4)).toBe(true);
+		});
+	});
+
+	describe('remarkable values: radicals (√2/2, √3/2, √3)', () => {
+		it('cos(x) = √2/2 should return two base solutions: π/4 and -π/4', () => {
+			const eq = parseEquation('cos(x) - sqrt(2)/2 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(2);
+
+			expect(hasZeroNear(ps.baseSolutions, Math.PI / 4)).toBe(true);
+			expect(hasZeroNear(ps.baseSolutions, -Math.PI / 4)).toBe(true);
+		});
+
+		it('sin(x) = √2/2 should return two base solutions: π/4 and 3π/4', () => {
+			const eq = parseEquation('sin(x) - sqrt(2)/2 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(2);
+
+			expect(hasZeroNear(ps.baseSolutions, Math.PI / 4)).toBe(true);
+			expect(hasZeroNear(ps.baseSolutions, (3 * Math.PI) / 4)).toBe(true);
+		});
+
+		it('cos(x) = √3/2 should return two base solutions: π/6 and -π/6', () => {
+			const eq = parseEquation('cos(x) - sqrt(3)/2 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(2);
+
+			expect(hasZeroNear(ps.baseSolutions, Math.PI / 6)).toBe(true);
+			expect(hasZeroNear(ps.baseSolutions, -Math.PI / 6)).toBe(true);
+		});
+
+		it('sin(x) = √3/2 should return two base solutions: π/3 and 2π/3', () => {
+			const eq = parseEquation('sin(x) - sqrt(3)/2 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(2);
+
+			expect(hasZeroNear(ps.baseSolutions, Math.PI / 3)).toBe(true);
+			expect(hasZeroNear(ps.baseSolutions, (2 * Math.PI) / 3)).toBe(true);
+		});
+
+		it('tan(x) = √3 should return one base solution: π/3', () => {
+			const eq = parseEquation('tan(x) - sqrt(3) = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(1);
+			expect(hasZeroNear(ps.baseSolutions, Math.PI / 3)).toBe(true);
+		});
+
+		it('tan(x) = √3/3 (= 1/√3) should return one base solution: π/6', () => {
+			const eq = parseEquation('tan(x) - sqrt(3)/3 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(1);
+			expect(hasZeroNear(ps.baseSolutions, Math.PI / 6)).toBe(true);
+		});
+
+		it('tan(x) = -√3 should return one base solution: -π/3', () => {
+			const eq = parseEquation('tan(x) + sqrt(3) = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(1);
+			expect(hasZeroNear(ps.baseSolutions, -Math.PI / 3)).toBe(true);
+		});
+
+		it('cos(x) = -√2/2 should return two base solutions: 3π/4 and -3π/4', () => {
+			const eq = parseEquation('cos(x) + sqrt(2)/2 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(2);
+
+			expect(hasZeroNear(ps.baseSolutions, (3 * Math.PI) / 4)).toBe(true);
+			expect(hasZeroNear(ps.baseSolutions, (-3 * Math.PI) / 4)).toBe(true);
+		});
+
+		it('sin(x) = -√3/2 should return two base solutions: -π/3 and π + π/3', () => {
+			const eq = parseEquation('sin(x) + sqrt(3)/2 = 0');
+			const result = solve(eq);
+
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+
+			const ps = result.periodicSolutions!;
+			expect(ps.baseSolutions.length).toBe(2);
+
+			expect(hasZeroNear(ps.baseSolutions, -Math.PI / 3)).toBe(true);
+			expect(hasZeroNear(ps.baseSolutions, Math.PI + Math.PI / 3)).toBe(true);
+		});
 	});
 
 	// =========================================================================
@@ -331,13 +521,23 @@ describe('Trigonometric Periodic Solver', () => {
 			expect(result.status).toBe('no-real-solution');
 		});
 
-		// cos(x) - 3/2 is not recognized as trig equation after normalization
-		it.todo(
-			'should detect no-real-solution for cos(x) = 1.5 (needs extractTrigEquation extension)'
-		);
+		it('should detect no-real-solution for cos(x) = 1.5', () => {
+			const eq = parseEquation('cos(x) - 3/2 = 0');
+			const result = solve(eq);
+			expect(result.status).toBe('no-real-solution');
+		});
 
-		// tan has no domain restriction on the constant — any real is valid
-		it.todo('tan(x) = 1000 should have a solution (needs extractTrigEquation extension)');
+		it('tan(x) = 1000 should have a solution', () => {
+			const eq = parseEquation('tan(x) - 1000 = 0');
+			const result = solve(eq);
+			expect(result.equationType).toBe('trigonometric');
+			expect(result.periodicSolutions).toBeDefined();
+			expect(result.periodicSolutions!.baseSolutions.length).toBe(1);
+			expect(result.periodicSolutions!.baseSolutions[0].approximate).toBeCloseTo(
+				Math.atan(1000),
+				5
+			);
+		});
 	});
 
 	// =========================================================================

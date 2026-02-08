@@ -168,6 +168,8 @@ export function extractPowerEquation(
 		if (degree >= 3) {
 			// This is the power term - check it's a pure power (x^n, not 2x^n)
 			if (!isPurePower(signedTerm, variable)) return null;
+			// Only one power term allowed (reject x^4 + x^3 etc.)
+			if (powerTerm !== null) return null;
 			powerTerm = signedTerm;
 			powerDegree = degree;
 		} else if (degree === 0) {
