@@ -52,56 +52,71 @@ export interface TypeWithValue extends MathType {
 
 /**
  * Compute bounds for base^n where n is a known positive integer.
+ * Handles partially infinite bounds (null endpoints = ±∞).
+ *
  * - Even exponent: x^n is always non-negative. If base range doesn't cross 0,
  *   the result is straightforward. If it crosses 0, lower bound is 0.
  * - Odd exponent: x^n is monotonically increasing, so bounds = [lower^n, upper^n].
  */
 function computePowerBounds(baseBounds: Bounds, exponent: number): Bounds | undefined {
-	if (baseBounds.lower === null || baseBounds.upper === null) return undefined;
 	if (exponent <= 0) return undefined;
 
+	const lowerFinite = baseBounds.lower !== null;
+	const upperFinite = baseBounds.upper !== null;
 	const isEven = exponent % 2 === 0;
 
 	if (isEven) {
-		const absLower = Math.abs(baseBounds.lower);
-		const absUpper = Math.abs(baseBounds.upper);
-
-		// Crosses zero: lower < 0 < upper
-		if (baseBounds.lower < 0 && baseBounds.upper > 0) {
-			const maxAbs = Math.max(absLower, absUpper);
+		// Entirely non-negative: lower is finite and >= 0
+		if (lowerFinite && baseBounds.lower! >= 0) {
 			return {
-				lower: 0,
-				upper: maxAbs ** exponent,
-				lowerInclusive: true,
-				upperInclusive: maxAbs === absLower ? baseBounds.lowerInclusive : baseBounds.upperInclusive
-			};
-		}
-
-		// Entirely non-negative
-		if (baseBounds.lower >= 0) {
-			return {
-				lower: baseBounds.lower ** exponent,
-				upper: baseBounds.upper ** exponent,
+				lower: baseBounds.lower! ** exponent,
+				upper: upperFinite ? baseBounds.upper! ** exponent : null,
 				lowerInclusive: baseBounds.lowerInclusive,
-				upperInclusive: baseBounds.upperInclusive
+				upperInclusive: upperFinite ? baseBounds.upperInclusive : false
 			};
 		}
 
-		// Entirely non-positive: reverse order since x^even flips
+		// Entirely non-positive: upper is finite and <= 0
+		if (upperFinite && baseBounds.upper! <= 0) {
+			const absUpper = Math.abs(baseBounds.upper!);
+			return {
+				lower: absUpper ** exponent,
+				upper: lowerFinite ? Math.abs(baseBounds.lower!) ** exponent : null,
+				lowerInclusive: baseBounds.upperInclusive,
+				upperInclusive: lowerFinite ? baseBounds.lowerInclusive : false
+			};
+		}
+
+		// Crosses zero (includes cases where lower is -∞ or upper is +∞)
+		let upper: number | null;
+		let upperInclusive: boolean;
+
+		if (!lowerFinite || !upperFinite) {
+			// At least one infinite endpoint → |endpoint|^n = +∞
+			upper = null;
+			upperInclusive = false;
+		} else {
+			const absLower = Math.abs(baseBounds.lower!);
+			const absUpper = Math.abs(baseBounds.upper!);
+			const maxAbs = Math.max(absLower, absUpper);
+			upper = maxAbs ** exponent;
+			upperInclusive = maxAbs === absLower ? baseBounds.lowerInclusive : baseBounds.upperInclusive;
+		}
+
 		return {
-			lower: absUpper ** exponent,
-			upper: absLower ** exponent,
-			lowerInclusive: baseBounds.upperInclusive,
-			upperInclusive: baseBounds.lowerInclusive
+			lower: 0,
+			upper,
+			lowerInclusive: true, // 0 is always in a range that crosses zero
+			upperInclusive
 		};
 	}
 
-	// Odd exponent: monotonically increasing
+	// Odd exponent: monotonically increasing, null^odd = null (±∞ preserved)
 	return {
-		lower: baseBounds.lower ** exponent,
-		upper: baseBounds.upper ** exponent,
-		lowerInclusive: baseBounds.lowerInclusive,
-		upperInclusive: baseBounds.upperInclusive
+		lower: lowerFinite ? baseBounds.lower! ** exponent : null,
+		upper: upperFinite ? baseBounds.upper! ** exponent : null,
+		lowerInclusive: lowerFinite ? baseBounds.lowerInclusive : false,
+		upperInclusive: upperFinite ? baseBounds.upperInclusive : false
 	};
 }
 

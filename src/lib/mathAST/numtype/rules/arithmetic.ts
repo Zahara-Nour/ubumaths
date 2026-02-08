@@ -83,29 +83,64 @@ function subtractBounds(a: Bounds, b: Bounds): Bounds {
 }
 
 /**
- * Multiply two bounds using the four-corners approach.
+ * Extended multiplication for interval arithmetic.
+ * Convention: 0 × ±∞ = 0 (correct for set-theoretic interval products).
+ */
+function extMul(x: number, y: number): number {
+	if (x === 0 || y === 0) return 0;
+	return x * y;
+}
+
+/**
+ * Compute inclusivity for a corner product in extended interval multiplication.
+ * - Infinite results are never inclusive
+ * - Zero from 0 × ±∞ is inclusive if the zero endpoint is inclusive
+ * - Finite × finite uses standard AND logic
+ */
+function cornerInclusive(aVal: number, aIncl: boolean, bVal: number, bIncl: boolean): boolean {
+	if (!isFinite(aVal) && !isFinite(bVal)) return false;
+	if (!isFinite(aVal)) return bVal === 0 ? bIncl : false;
+	if (!isFinite(bVal)) return aVal === 0 ? aIncl : false;
+	return aIncl && bIncl;
+}
+
+/**
+ * Multiply two bounds using the four-corners approach with extended arithmetic.
  * [a,b] * [c,d] = [min(ac,ad,bc,bd), max(ac,ad,bc,bd)]
+ *
+ * Handles partially infinite bounds (null endpoints = ±∞) using the convention
+ * 0 × ±∞ = 0, which is sound for set-theoretic interval products.
  */
 function multiplyBounds(a: Bounds, b: Bounds): Bounds | undefined {
-	// If either is unbounded, result is unbounded
-	if (a.lower === null || a.upper === null || b.lower === null || b.upper === null) {
-		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
-	}
+	const aLo = a.lower ?? -Infinity;
+	const aHi = a.upper ?? Infinity;
+	const bLo = b.lower ?? -Infinity;
+	const bHi = b.upper ?? Infinity;
 
-	const candidates = [
-		{ value: a.lower * b.lower, inclusive: a.lowerInclusive && b.lowerInclusive },
-		{ value: a.lower * b.upper, inclusive: a.lowerInclusive && b.upperInclusive },
-		{ value: a.upper * b.lower, inclusive: a.upperInclusive && b.lowerInclusive },
-		{ value: a.upper * b.upper, inclusive: a.upperInclusive && b.upperInclusive }
+	const pairs: [number, boolean, number, boolean][] = [
+		[aLo, a.lowerInclusive, bLo, b.lowerInclusive],
+		[aLo, a.lowerInclusive, bHi, b.upperInclusive],
+		[aHi, a.upperInclusive, bLo, b.lowerInclusive],
+		[aHi, a.upperInclusive, bHi, b.upperInclusive]
 	];
 
-	const { min, minInclusive, max, maxInclusive } = findExtremes(candidates);
+	const corners = pairs.map(([ae, aeIncl, be, beIncl]) => ({
+		value: extMul(ae, be),
+		inclusive: cornerInclusive(ae, aeIncl, be, beIncl)
+	}));
+
+	const values = corners.map((c) => c.value);
+	const minVal = Math.min(...values);
+	const maxVal = Math.max(...values);
+
+	const lower = minVal === -Infinity ? null : minVal;
+	const upper = maxVal === Infinity ? null : maxVal;
 
 	return {
-		lower: min,
-		upper: max,
-		lowerInclusive: minInclusive,
-		upperInclusive: maxInclusive
+		lower,
+		upper,
+		lowerInclusive: lower === null ? false : corners.some((c) => c.value === minVal && c.inclusive),
+		upperInclusive: upper === null ? false : corners.some((c) => c.value === maxVal && c.inclusive)
 	};
 }
 
