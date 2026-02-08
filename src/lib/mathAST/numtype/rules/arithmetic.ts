@@ -8,6 +8,37 @@
  * - Division (/)
  * - Opposite (unary -)
  * - Positive (unary +)
+ *
+ * ## Interval Arithmetic (Bounds Propagation)
+ *
+ * For multiplication and division, we use the **four-corners theorem**:
+ * since f(x,y) = x*y is bilinear (linear in x for fixed y, and vice versa),
+ * its extrema over the rectangle [a,b]×[c,d] are always at the corners.
+ * Therefore:
+ *
+ *   [a,b] × [c,d] = [min(ac,ad,bc,bd), max(ac,ad,bc,bd)]
+ *
+ * This gives the **exact** result for independent intervals (no over-approximation).
+ *
+ * The same principle applies to division (f(x,y) = x/y is bilinear in x
+ * for fixed y) when the divisor doesn't contain zero.
+ *
+ * **Important**: this assumes operand intervals are independent. When the same
+ * variable appears in both operands (e.g., x*x parsed as multiplication rather
+ * than x^2), the four-corners method over-approximates. In practice, x*x is
+ * parsed as x^2 and handled by computePowerBounds which is exact.
+ *
+ * ## Extended Arithmetic (Infinite Bounds)
+ *
+ * Bounds use `null` to represent ±∞ (lower=null means -∞, upper=null means +∞).
+ * For the four-corners computation with possibly infinite endpoints, we use the
+ * convention `0 × ±∞ = 0`. This is sound for set-theoretic interval products:
+ * when x=0 is in interval A, {0·y : y ∈ B} = {0} regardless of B.
+ *
+ * **Note**: this differs from limit arithmetic where 0·∞ is indeterminate.
+ * The normalizeExtended module (used for limits) correctly treats 0·∞ as
+ * indeterminate, because there the value depends on the rate of approach.
+ * Here we compute sets, not limits.
  */
 
 import type { MathType, NumericType, ParityInfo, SignInfo } from '../types';
@@ -20,9 +51,14 @@ import { signFromBounds } from './literals';
 // =============================================================================
 
 /**
- * Find min and max from a list of candidates, using OR for tied inclusivities.
+ * Find min and max from a list of finite candidates, with OR tie-breaking for inclusivity.
+ *
  * When multiple candidates share the same extreme value, the result is inclusive
- * if ANY of the tied candidates is inclusive.
+ * if ANY of the tied candidates is inclusive. This is correct because the extreme
+ * value is attained if at least one corner pair that produces it is inclusive.
+ *
+ * Used by divideBounds for finite-only corner products.
+ * For extended arithmetic (with ±∞), multiplyBounds uses inline logic instead.
  */
 function findExtremes(candidates: { value: number; inclusive: boolean }[]): {
 	min: number;
@@ -55,7 +91,11 @@ function findExtremes(candidates: { value: number; inclusive: boolean }[]): {
 }
 
 /**
- * Add two bounds: [a,b] + [c,d] = [a+c, b+d]
+ * Add two bounds: [a,b] + [c,d] = [a+c, b+d].
+ *
+ * Addition is monotone in both arguments, so the extrema are simply
+ * the sums of the corresponding endpoints. No four-corners needed.
+ * Null endpoints (±∞) propagate: -∞ + finite = -∞, etc.
  */
 function addBounds(a: Bounds, b: Bounds): Bounds {
 	const lower = a.lower === null || b.lower === null ? null : a.lower + b.lower;
@@ -69,7 +109,11 @@ function addBounds(a: Bounds, b: Bounds): Bounds {
 }
 
 /**
- * Subtract two bounds: [a,b] - [c,d] = [a-d, b-c]
+ * Subtract two bounds: [a,b] - [c,d] = [a-d, b-c].
+ *
+ * To minimize: take the smallest left (a) minus the largest right (d).
+ * To maximize: take the largest left (b) minus the smallest right (c).
+ * Null endpoints propagate naturally.
  */
 function subtractBounds(a: Bounds, b: Bounds): Bounds {
 	const lower = a.lower === null || b.upper === null ? null : a.lower - b.upper;
@@ -84,7 +128,15 @@ function subtractBounds(a: Bounds, b: Bounds): Bounds {
 
 /**
  * Extended multiplication for interval arithmetic.
- * Convention: 0 × ±∞ = 0 (correct for set-theoretic interval products).
+ *
+ * Uses the convention 0 × ±∞ = 0, which is sound for set-theoretic
+ * interval products: {0·y : y ∈ B} = {0} for any interval B.
+ *
+ * This also avoids JS's `0 * Infinity = NaN` and `-0 * Infinity = NaN`.
+ *
+ * @param x - First factor (may be ±Infinity)
+ * @param y - Second factor (may be ±Infinity)
+ * @returns The product, using the 0×±∞=0 convention
  */
 function extMul(x: number, y: number): number {
 	if (x === 0 || y === 0) return 0;
@@ -93,9 +145,14 @@ function extMul(x: number, y: number): number {
 
 /**
  * Compute inclusivity for a corner product in extended interval multiplication.
- * - Infinite results are never inclusive
- * - Zero from 0 × ±∞ is inclusive if the zero endpoint is inclusive
- * - Finite × finite uses standard AND logic
+ *
+ * Rules:
+ * - ±∞ × ±∞ → ±∞: never inclusive (infinity is never attained)
+ * - ±∞ × nonzero → ±∞: never inclusive
+ * - 0 × ±∞ → 0: inclusive if the zero endpoint is inclusive
+ *   (because x=0 is in the interval, so 0·y = 0 for all y)
+ * - finite × finite: inclusive only if both endpoints are inclusive
+ *   (the product a·b is attained only if both a ∈ A and b ∈ B)
  */
 function cornerInclusive(aVal: number, aIncl: boolean, bVal: number, bIncl: boolean): boolean {
 	if (!isFinite(aVal) && !isFinite(bVal)) return false;
@@ -105,11 +162,20 @@ function cornerInclusive(aVal: number, aIncl: boolean, bVal: number, bIncl: bool
 }
 
 /**
- * Multiply two bounds using the four-corners approach with extended arithmetic.
- * [a,b] * [c,d] = [min(ac,ad,bc,bd), max(ac,ad,bc,bd)]
+ * Multiply two bounds using the four-corners theorem with extended arithmetic.
  *
- * Handles partially infinite bounds (null endpoints = ±∞) using the convention
- * 0 × ±∞ = 0, which is sound for set-theoretic interval products.
+ * Since f(x,y) = x·y is bilinear, its extrema over [a,b]×[c,d] are at
+ * the four corners (a,c), (a,d), (b,c), (b,d). The result is:
+ *   [min(ac,ad,bc,bd), max(ac,ad,bc,bd)]
+ * This gives the exact product interval for independent operands.
+ *
+ * Handles partially infinite bounds (null = ±∞) via extMul and cornerInclusive.
+ * When the min/max is ±∞, the corresponding bound becomes null (exclusive).
+ *
+ * @example
+ * // [2, 3] × [-1, 4] → corners: -2, 8, -3, 12 → [-3, 12]
+ * // [2, 3] × [1, +∞) → corners: 2, +∞, 3, +∞ → [2, +∞)
+ * // [0, 3] × [2, +∞) → corners: 0, 0, 6, +∞ → [0, +∞) (0×∞=0 convention)
  */
 function multiplyBounds(a: Bounds, b: Bounds): Bounds | undefined {
 	const aLo = a.lower ?? -Infinity;
@@ -145,8 +211,18 @@ function multiplyBounds(a: Bounds, b: Bounds): Bounds | undefined {
 }
 
 /**
- * Divide two bounds: [a,b] / [c,d]
- * Returns undefined if divisor contains zero.
+ * Divide two bounds using the four-corners theorem: [a,b] / [c,d].
+ *
+ * Like multiplication, f(x,y) = x/y has its extrema at the four corners
+ * of the rectangle [a,b]×[c,d] when y ≠ 0 (bilinear structure in x for
+ * fixed y). The result is [min(a/c,a/d,b/c,b/d), max(a/c,a/d,b/c,b/d)].
+ *
+ * Special cases:
+ * - Divisor contains zero → returns (-∞, +∞) as the quotient is unbounded
+ * - Null divisor endpoints (±∞) → quotient approaches 0 (exclusive)
+ * - Null numerator endpoints → returns (-∞, +∞) (TODO: extend like multiplyBounds)
+ *
+ * @returns Bounds of the quotient, or (-∞,+∞) if divisor contains zero
  */
 function divideBounds(a: Bounds, b: Bounds): Bounds | undefined {
 	// Check if divisor contains zero
@@ -198,7 +274,10 @@ function divideBounds(a: Bounds, b: Bounds): Bounds | undefined {
 }
 
 /**
- * Negate bounds: -[a,b] = [-b,-a]
+ * Negate bounds: -[a,b] = [-b,-a].
+ *
+ * Negation reverses the interval and swaps inclusivity.
+ * Null endpoints swap sides: -(null, b] = [-b, null).
  */
 function negateBounds(b: Bounds): Bounds {
 	return {
