@@ -28,3 +28,6 @@ export { inferPowerType, inferSqrtType } from './power';
 
 // Function rules
 export { inferFunctionType } from './functions';
+
+// Precise bounds (closed interval method)
+export { computePreciseBounds } from './precise-bounds';

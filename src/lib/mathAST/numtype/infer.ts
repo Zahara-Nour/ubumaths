@@ -20,6 +20,10 @@ import {
 	inferPowerType,
 	inferFunctionType
 } from './rules';
+import { computePreciseBounds } from './rules/precise-bounds';
+import { signFromBounds } from './rules/literals';
+import { getVariables } from '../eval';
+import type { Bounds } from '$lib/math/intervals/algebra';
 
 // =============================================================================
 // Type Cache
@@ -304,6 +308,59 @@ function inferMatrixType(rows: readonly (readonly MathNode[])[], ctx: TypeContex
 	}
 
 	return { base: resultBase };
+}
+
+// =============================================================================
+// Precise Bounds (Closed Interval Method)
+// =============================================================================
+
+/**
+ * Find the first variable with finite bounds in assumptions.
+ */
+function findBoundedVariable(ctx: TypeContext): { name: string; bounds: Bounds } | undefined {
+	if (!ctx.assumptions) return undefined;
+
+	const entries = Array.from(ctx.assumptions.entries());
+	for (const [name, assumption] of entries) {
+		if (assumption.bounds && assumption.bounds.lower !== null && assumption.bounds.upper !== null) {
+			return { name, bounds: assumption.bounds };
+		}
+	}
+	return undefined;
+}
+
+/**
+ * Infers the numeric type with precise bounds using the closed interval method.
+ *
+ * First performs standard bottom-up inference via inferType(), then refines
+ * the bounds using differentiation + critical point analysis when a bounded
+ * variable is present in the context.
+ *
+ * This does NOT modify inferType() or its cache.
+ */
+export function inferTypeWithPreciseBounds(
+	node: MathNode,
+	ctx: TypeContext = EMPTY_CONTEXT
+): MathType {
+	const baseType = inferType(node, ctx);
+
+	// Find a variable with finite bounds in the context
+	const boundedVar = findBoundedVariable(ctx);
+	if (!boundedVar) return baseType;
+
+	// Check that the expression actually contains this variable
+	if (!getVariables(node).has(boundedVar.name)) return baseType;
+
+	const precise = computePreciseBounds(node, boundedVar.name, boundedVar.bounds);
+	if (!precise) return baseType;
+
+	// Derive sign from precise bounds
+	const sign = signFromBounds(precise);
+	return {
+		...baseType,
+		bounds: precise,
+		...(sign !== undefined && !baseType.sign ? { sign } : {})
+	};
 }
 
 // =============================================================================
