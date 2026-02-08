@@ -370,6 +370,21 @@ function computeFunctionDomain(
 		return intersect(domain, periodicDomain);
 	}
 
+	// Odd-index roots (cbrt, sqrt[3], sqrt[5], ...) are defined on all of ℝ
+	if (node.name === 'cbrt') {
+		return domain;
+	}
+	if (node.name === 'sqrt' && 'base' in node && node.base) {
+		try {
+			const rootIndex = evaluateNodeToApproximatedNumber(node.base as MathNode);
+			if (Number.isInteger(rootIndex) && rootIndex % 2 !== 0) {
+				return domain; // Odd root: defined on ℝ
+			}
+		} catch {
+			// Cannot evaluate root index — fall through to default sqrt domain
+		}
+	}
+
 	// Check if this function has a restricted domain
 	if (!hasRestrictedDomain(node.name)) {
 		return domain;

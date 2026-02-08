@@ -72,8 +72,8 @@ import {
 import { extractLinearForm } from '../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM, denormalize } from '../normal';
-import { number, equals, func, superscript, euler } from '../factory';
-import { flattenSumShallow, flattenProductShallow } from '../flatten';
+import { number, equals, func, superscript, euler, divide } from '../factory';
+import { flattenSumShallow, flattenProductShallow, unflattenSum } from '../flatten';
 import { getVariables } from '../eval/substitute';
 import { isZeroNode } from './solvers/polynomial';
 import type { Solution, PeriodicSolutionFamily } from './types';
@@ -680,6 +680,339 @@ function tryExpLogRecursiveDecomposition(
 }
 
 // =============================================================================
+// Radical Decomposition (x^(p/q) = c)
+// =============================================================================
+
+/**
+ * Result of extracting a radical equation structure from an expression.
+ *
+ * Represents `a·u^(p/q) + b = 0` → `u^(p/q) = -b/a = c`.
+ */
+interface RadicalEquationParts {
+	/** The argument inside the radical (u in u^(p/q)) */
+	readonly argument: MathNode;
+	/** Numerator of the exponent (p in p/q) */
+	readonly expNumerator: number;
+	/** Denominator of the exponent (q in p/q) */
+	readonly expDenominator: number;
+	/** The constant RHS after isolation (c in u^(p/q) = c) */
+	readonly constantNumeric: number;
+	/** Symbolic constant node */
+	readonly constantNode: MathNode;
+}
+
+/**
+ * Try to extract a radical equation from expr = 0.
+ *
+ * Detects two patterns:
+ * 1. FunctionNode: `a·sqrt(u) + b = 0` or `a·sqrt[n](u) + b = 0`
+ *    (sqrt is a function with optional `base` for nth root)
+ * 2. SuperscriptNode: `a·u^(p/q) + b = 0` where p/q is a non-integer fraction
+ *
+ * @returns RadicalEquationParts if pattern matches, null otherwise.
+ */
+function extractRadicalEquation(expr: MathNode, variable: string): RadicalEquationParts | null {
+	const terms = flattenSumShallow(expr);
+
+	for (let i = 0; i < terms.length; i++) {
+		const { sign, term } = terms[i];
+
+		// Try to match radical patterns
+		const matched = tryRadicalPatterns(term, variable);
+		if (!matched) continue;
+
+		// Remaining terms must be free of the variable
+		let hasVariableInRemaining = false;
+		const remainingTerms: { readonly sign: '+' | '-'; readonly term: MathNode }[] = [];
+
+		for (let j = 0; j < terms.length; j++) {
+			if (j === i) continue;
+			remainingTerms.push(terms[j]);
+			if (getVariables(terms[j].term).has(variable)) {
+				hasVariableInRemaining = true;
+			}
+		}
+
+		if (hasVariableInRemaining) continue;
+
+		// Compute coefficient a (from sign and coefficient factors)
+		let aNumeric = matched.coeffNumeric;
+		if (sign === '-') aNumeric = -aNumeric;
+
+		// Compute b from remaining terms
+		let bNumeric = 0;
+		if (remainingTerms.length > 0) {
+			const bNode = unflattenSum(remainingTerms);
+			if (!bNode) continue;
+			try {
+				bNumeric = evaluateNodeToApproximatedNumber(bNode);
+			} catch {
+				continue;
+			}
+		}
+
+		// c = -b/a
+		const constantNumeric = -bNumeric / aNumeric;
+		const constantNode =
+			Math.abs(constantNumeric - Math.round(constantNumeric)) < 1e-12
+				? number(String(Math.round(constantNumeric)))
+				: number(String(constantNumeric));
+
+		return {
+			argument: matched.argument,
+			expNumerator: matched.expNumerator,
+			expDenominator: matched.expDenominator,
+			constantNumeric,
+			constantNode
+		};
+	}
+
+	return null;
+}
+
+/**
+ * Pattern match result for radical terms.
+ */
+interface RadicalPatternMatch {
+	readonly argument: MathNode;
+	readonly expNumerator: number;
+	readonly expDenominator: number;
+	readonly coeffNumeric: number;
+}
+
+/**
+ * Try to match a term against radical patterns.
+ *
+ * Pattern 1: sqrt(u) — FunctionNode with name 'sqrt', optional base for nth root
+ * Pattern 2: cbrt(u) — FunctionNode with name 'cbrt'
+ * Pattern 3: u^(p/q) — SuperscriptNode where exponent is a fraction with non-integer value
+ *
+ * For products like 2·sqrt(x), we extract the coefficient.
+ */
+function tryRadicalPatterns(term: MathNode, variable: string): RadicalPatternMatch | null {
+	// Try to extract radical + coefficient from a product
+	const factors = term.type === 'multiplication' ? flattenProductShallow(term) : null;
+
+	if (factors && factors.length >= 2) {
+		// Find the radical factor and collect coefficients
+		for (let i = 0; i < factors.length; i++) {
+			const radical = matchSingleRadical(factors[i].factor, variable);
+			if (!radical) continue;
+
+			// Remaining factors must be free of variable
+			let coeffNumeric = 1;
+			let allConstant = true;
+			for (let j = 0; j < factors.length; j++) {
+				if (j === i) continue;
+				if (getVariables(factors[j].factor).has(variable)) {
+					allConstant = false;
+					break;
+				}
+				try {
+					coeffNumeric *= evaluateNodeToApproximatedNumber(factors[j].factor);
+				} catch {
+					allConstant = false;
+					break;
+				}
+			}
+
+			if (allConstant) {
+				return { ...radical, coeffNumeric };
+			}
+		}
+		return null;
+	}
+
+	// Single term (no product)
+	const radical = matchSingleRadical(term, variable);
+	if (radical) return { ...radical, coeffNumeric: 1 };
+
+	return null;
+}
+
+/**
+ * Match a single node as a radical expression.
+ */
+function matchSingleRadical(
+	node: MathNode,
+	variable: string
+): { argument: MathNode; expNumerator: number; expDenominator: number } | null {
+	// Pattern 1: sqrt(u) or sqrt[n](u)
+	if (node.type === 'function' && (node.name === 'sqrt' || node.name === 'cbrt')) {
+		if (node.args.length !== 1) return null;
+		const arg = node.args[0];
+		if (!getVariables(arg).has(variable)) return null;
+
+		if (node.name === 'cbrt') {
+			return { argument: arg, expNumerator: 1, expDenominator: 3 };
+		}
+
+		// sqrt with optional nth root index (base property)
+		let rootIndex = 2;
+		if (node.base) {
+			try {
+				rootIndex = evaluateNodeToApproximatedNumber(node.base);
+				if (!Number.isInteger(rootIndex) || rootIndex < 2) return null;
+			} catch {
+				return null;
+			}
+		}
+
+		return { argument: arg, expNumerator: 1, expDenominator: rootIndex };
+	}
+
+	// Pattern 2: u^(p/q) where exponent is a fraction (DivisionNode)
+	if (node.type === 'superscript') {
+		const exp = node.superscript;
+		if (exp.type !== 'division') return null;
+
+		// Evaluate numerator and denominator of exponent
+		let p: number, q: number;
+		try {
+			p = evaluateNodeToApproximatedNumber(exp.numerator);
+			q = evaluateNodeToApproximatedNumber(exp.denominator);
+		} catch {
+			return null;
+		}
+
+		// Must be a fractional exponent with integer parts
+		if (!Number.isInteger(p) || !Number.isInteger(q) || q <= 0 || p <= 0) return null;
+		// If p/q is an integer, it's not a radical (it's a polynomial)
+		if (p % q === 0) return null;
+
+		const base = node.base;
+		if (!getVariables(base).has(variable)) return null;
+
+		return { argument: base, expNumerator: p, expDenominator: q };
+	}
+
+	return null;
+}
+
+/**
+ * Recursion guard for radical decomposition.
+ */
+let radicalDecompositionDepth = 0;
+const MAX_RADICAL_DECOMPOSITION_DEPTH = 3;
+
+/**
+ * Try to solve an equation by radical decomposition.
+ *
+ * For `u^(p/q) = c`:
+ * - If q is even and c < 0: no real solution
+ * - If q is odd and c < 0: u = -(|c|^(q/p)) (odd root of negative)
+ * - Otherwise: u = c^(q/p), then solve u = value recursively
+ *
+ * @returns SolveResult if decomposition applies, null otherwise
+ */
+function tryRadicalDecomposition(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
+		initialGuesses?: readonly number[];
+	}
+): SolveResult | null {
+	if (radicalDecompositionDepth >= MAX_RADICAL_DECOMPOSITION_DEPTH) return null;
+
+	const extracted = extractRadicalEquation(expr, variable);
+	if (!extracted) return null;
+
+	const {
+		argument,
+		expNumerator: p,
+		expDenominator: q,
+		constantNumeric: c,
+		constantNode
+	} = extracted;
+
+	const recorder = createStepRecorder();
+
+	// Check domain: even root requires non-negative RHS
+	if (q % 2 === 0 && c < 0) {
+		recorder.recordStep(
+			'no-real-solution',
+			`L'equation n'a pas de solution reelle car une racine d'indice pair ne peut etre negative`,
+			expr,
+			expr,
+			'summarized'
+		);
+		return {
+			variable,
+			status: 'no-solution',
+			solutions: [],
+			equationType: 'unknown',
+			strategy: 'algebraic',
+			steps: recorder.getStepsFiltered(opts.verbosity)
+		};
+	}
+
+	// Build symbolic u-value: u^(p/q) = c → u = c^(q/p)
+	const inverseExp =
+		q === 1 ? number(String(p)) : divide(number(String(q)), number(String(p)), 'fraction');
+	const uSymbolic =
+		p === 1 && q === 1
+			? constantNode
+			: denormalize(normalize(superscript(constantNode, inverseExp)));
+
+	recorder.recordStep(
+		'radical-decomposition',
+		`On eleve les deux membres a la puissance ${q}/${p}`,
+		expr,
+		expr,
+		'summarized'
+	);
+
+	// Now solve: argument = uSymbolic
+	const allSolutions: Solution[] = [];
+
+	radicalDecompositionDepth++;
+	try {
+		const subEquation = equals(argument, uSymbolic);
+		const subResult = solve(subEquation, { variable, verbosity: opts.verbosity });
+
+		if (subResult.status !== 'no-solution' && subResult.status !== 'no-real-solution') {
+			for (const sol of subResult.solutions) {
+				let approx = sol.approximate;
+				if (approx === undefined) {
+					try {
+						approx = evaluateNodeToApproximatedNumber(sol.value);
+					} catch {
+						continue;
+					}
+				}
+				if (!isFinite(approx)) continue;
+				allSolutions.push({ ...sol, approximate: approx });
+			}
+		}
+	} finally {
+		radicalDecompositionDepth--;
+	}
+
+	if (allSolutions.length === 0) {
+		return {
+			variable,
+			status: 'no-solution',
+			solutions: [],
+			equationType: 'unknown',
+			strategy: 'algebraic',
+			steps: recorder.getStepsFiltered(opts.verbosity)
+		};
+	}
+
+	const deduplicated = deduplicateSolutions(allSolutions);
+	deduplicated.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
+
+	return {
+		variable,
+		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		solutions: deduplicated,
+		equationType: 'unknown',
+		strategy: 'algebraic',
+		steps: recorder.getStepsFiltered(opts.verbosity)
+	};
+}
+
+// =============================================================================
 // Domain Filtering
 // =============================================================================
 
@@ -832,6 +1165,11 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Try exp/log recursive decomposition for non-linear exp/log arguments
 	if (!result) {
 		result = tryExpLogRecursiveDecomposition(expr, variable, opts);
+	}
+
+	// Try radical decomposition (√x, ∛x, x^(p/q))
+	if (!result) {
+		result = tryRadicalDecomposition(expr, variable, opts);
 	}
 
 	// Try transcendental solver directly before classification.
