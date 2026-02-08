@@ -1198,6 +1198,210 @@ describe('bounds - sqrt edge cases', () => {
 });
 
 // =============================================================================
+// Precision: multiplyBounds with partially infinite bounds
+// =============================================================================
+
+describe('bounds - multiplyBounds with infinite operands', () => {
+	it('[2, 3] * [1, +inf) -> [2, +inf)', () => {
+		const ctx: TypeContext = {
+			variables: new Map([
+				['x', 'real'],
+				['y', 'real']
+			]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 2, upper: 3, lowerInclusive: true, upperInclusive: true }
+					}
+				],
+				[
+					'y',
+					{
+						sign: 'positive' as const,
+						bounds: { lower: 1, upper: null, lowerInclusive: true, upperInclusive: false }
+					}
+				]
+			])
+		};
+		const b = boundsOf('x \\times y', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBe(2);
+		expect(b!.lowerInclusive).toBe(true);
+		expect(b!.upper).toBeNull();
+		expect(b!.upperInclusive).toBe(false);
+	});
+
+	it('[0, 3] * [2, +inf) -> [0, +inf) (0*inf convention)', () => {
+		const ctx: TypeContext = {
+			variables: new Map([
+				['x', 'real'],
+				['y', 'real']
+			]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: 0, upper: 3, lowerInclusive: true, upperInclusive: true }
+					}
+				],
+				[
+					'y',
+					{
+						sign: 'positive' as const,
+						bounds: { lower: 2, upper: null, lowerInclusive: true, upperInclusive: false }
+					}
+				]
+			])
+		};
+		const b = boundsOf('x \\times y', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBe(0);
+		expect(b!.lowerInclusive).toBe(true); // 0*2=0 with both inclusive
+		expect(b!.upper).toBeNull();
+	});
+
+	it('(-inf, -1] * [2, 3] -> (-inf, -2]', () => {
+		const ctx: TypeContext = {
+			variables: new Map([
+				['x', 'real'],
+				['y', 'real']
+			]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						sign: 'negative' as const,
+						bounds: { lower: null, upper: -1, lowerInclusive: false, upperInclusive: true }
+					}
+				],
+				[
+					'y',
+					{
+						bounds: { lower: 2, upper: 3, lowerInclusive: true, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('x \\times y', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeNull();
+		expect(b!.upper).toBe(-2);
+		expect(b!.upperInclusive).toBe(true);
+	});
+});
+
+// =============================================================================
+// Precision: computePowerBounds with partially infinite bounds
+// =============================================================================
+
+describe('bounds - power with infinite base bounds', () => {
+	it('[2, +inf)^2 -> [4, +inf) (even exponent, non-negative)', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						sign: 'positive' as const,
+						bounds: { lower: 2, upper: null, lowerInclusive: true, upperInclusive: false }
+					}
+				]
+			])
+		};
+		const b = boundsOf('x^2', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBe(4);
+		expect(b!.lowerInclusive).toBe(true);
+		expect(b!.upper).toBeNull();
+		expect(b!.upperInclusive).toBe(false);
+	});
+
+	it('[2, +inf)^3 -> [8, +inf) (odd exponent)', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						sign: 'positive' as const,
+						bounds: { lower: 2, upper: null, lowerInclusive: true, upperInclusive: false }
+					}
+				]
+			])
+		};
+		const b = boundsOf('x^3', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBe(8);
+		expect(b!.lowerInclusive).toBe(true);
+		expect(b!.upper).toBeNull();
+		expect(b!.upperInclusive).toBe(false);
+	});
+
+	it('(-inf, -2]^2 -> [4, +inf) (even exponent, non-positive)', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						sign: 'negative' as const,
+						bounds: { lower: null, upper: -2, lowerInclusive: false, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('x^2', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBe(4);
+		expect(b!.lowerInclusive).toBe(true);
+		expect(b!.upper).toBeNull();
+		expect(b!.upperInclusive).toBe(false);
+	});
+
+	it('(-inf, 3]^2 -> [0, +inf) (even exponent, crosses zero)', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						bounds: { lower: null, upper: 3, lowerInclusive: false, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('x^2', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBe(0);
+		expect(b!.lowerInclusive).toBe(true);
+		expect(b!.upper).toBeNull();
+		expect(b!.upperInclusive).toBe(false);
+	});
+
+	it('(-inf, -2]^3 -> (-inf, -8] (odd exponent, negative)', () => {
+		const ctx: TypeContext = {
+			variables: new Map([['x', 'real']]),
+			assumptions: new Map([
+				[
+					'x',
+					{
+						sign: 'negative' as const,
+						bounds: { lower: null, upper: -2, lowerInclusive: false, upperInclusive: true }
+					}
+				]
+			])
+		};
+		const b = boundsOf('x^3', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBeNull();
+		expect(b!.lowerInclusive).toBe(false);
+		expect(b!.upper).toBe(-8);
+		expect(b!.upperInclusive).toBe(true);
+	});
+});
+
+// =============================================================================
 // Bug regression: divideBounds with infinite divisor bounds
 // =============================================================================
 

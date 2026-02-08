@@ -93,7 +93,7 @@ function applyMonotoneToBounds(
 		if (inputBounds.lower !== null) {
 			const val = evaluate(inputBounds.lower);
 			if (!isFinite(val)) {
-				outputLower = val === -Infinity ? null : null;
+				outputLower = null;
 				outputLowerInclusive = false;
 			} else {
 				outputLower = val;
