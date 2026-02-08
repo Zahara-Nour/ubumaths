@@ -31,6 +31,7 @@ import {
 } from '../../factory';
 import { denormalize, normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../../normal';
 import { describeCoefficients, describeDiscriminant, describeSolution } from '../descriptions-fr';
+import { computeNumericValue } from '../numeric-value';
 
 // =============================================================================
 // Coefficient Extraction
@@ -176,43 +177,6 @@ function isNegativeNode(node: MathNode): boolean {
 
 	const rat = algebraicTerm.rational;
 	return rat.n < 0n;
-}
-
-/**
- * Compute numeric value of a node (if possible).
- */
-function computeNumericValue(node: MathNode): number | null {
-	try {
-		const norm = normalize(node);
-
-		// Handle zero case
-		if (norm.numerator.length === 0) return 0;
-
-		if (norm.numerator.length !== 1 || norm.denominator.length !== 1) return null;
-
-		const numTerm = norm.numerator[0];
-		const denTerm = norm.denominator[0];
-
-		if (numTerm.monomial.length !== 0 || denTerm.monomial.length !== 0) return null;
-
-		const numCoeff = numTerm.coefficient;
-		const denCoeff = denTerm.coefficient;
-
-		if (numCoeff.terms.length !== 1 || denCoeff.terms.length !== 1) return null;
-
-		const numAlg = numCoeff.terms[0];
-		const denAlg = denCoeff.terms[0];
-
-		if (numAlg.radicals.length !== 0 || denAlg.radicals.length !== 0) return null;
-
-		const numValue = Number(numAlg.rational.n) / Number(numAlg.rational.d);
-		const denValue = Number(denAlg.rational.n) / Number(denAlg.rational.d);
-
-		if (denValue === 0) return null;
-		return numValue / denValue;
-	} catch {
-		return null;
-	}
 }
 
 // =============================================================================
