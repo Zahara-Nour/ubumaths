@@ -77,6 +77,8 @@ export type SolvingRule =
 	// Product decomposition (zero-product property)
 	| 'zero-product-property'
 	| 'solve-factor'
+	// Trig recursive decomposition
+	| 'trig-recursive-decomposition'
 	// General
 	| 'to-standard-form'
 	| 'simplify-expression'
@@ -163,6 +165,10 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	// Product decomposition (zero-product property)
 	'zero-product-property': 'Par la propriete du produit nul: si A × B = 0 alors A = 0 ou B = 0',
 	'solve-factor': 'On resout chaque facteur separement',
+
+	// Trig recursive decomposition
+	'trig-recursive-decomposition':
+		'On decompose en resolvant f(x) = u pour chaque u-valeur trigonometrique',
 
 	// General
 	'to-standard-form': "On met l'equation sous forme standard (... = 0)",

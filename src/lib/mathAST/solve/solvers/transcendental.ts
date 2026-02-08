@@ -10,7 +10,8 @@
  * - **Trigonometric**: returns the **full periodic family** for sin/cos/tan.
  *   Handles linear arguments: sin(ax+b) = c → returns all base solutions
  *   within one period, with the period for enumeration.
- *   Non-linear arguments (sin(x²) = c) are not supported.
+ *   Non-linear arguments (sin(f(x)) = c) are handled via recursive
+ *   decomposition in solve.ts (tryTrigRecursiveDecomposition).
  * - **Mixed equations** (e.g. x·sin(x) = 0): not handled. Some could be
  *   decomposed into factors, others need numeric methods.
  *
@@ -87,7 +88,7 @@ function computeNumericValue(node: MathNode): number | null {
 /**
  * Check if a function name is a trig function.
  */
-function isTrigFunc(name: string): boolean {
+export function isTrigFunc(name: string): boolean {
 	return name === 'sin' || name === 'cos' || name === 'tan';
 }
 
@@ -98,7 +99,7 @@ function isTrigFunc(name: string): boolean {
 /**
  * Result of extracting trig equation structure from an expression.
  */
-interface TrigEquationParts {
+export interface TrigEquationParts {
 	readonly funcName: string;
 	readonly argument: MathNode;
 	readonly constantNode: MathNode;
@@ -115,7 +116,7 @@ interface TrigEquationParts {
  * - -sin(x) = 0 → { funcName: 'sin', argument: x, constant: 0 }
  * - k * cos(x) = 0 → { funcName: 'cos', argument: x, constant: 0 }
  */
-function extractTrigEquation(expr: MathNode, variable: string): TrigEquationParts | null {
+export function extractTrigEquation(expr: MathNode, variable: string): TrigEquationParts | null {
 	const zero = number('0');
 
 	function makeParts(
@@ -212,9 +213,17 @@ function extractTrigEquation(expr: MathNode, variable: string): TrigEquationPart
  * The normalizer knows about remarkable values: arcsin(1/2) → π/6, etc.
  * Returns simplified MathNode, or the raw arcfunc(constant) if no simplification.
  */
-function simplifyInverseTrig(inverseFuncName: string, constantNode: MathNode): MathNode {
+export function simplifyInverseTrig(inverseFuncName: string, constantNode: MathNode): MathNode {
 	const arcNode = func(inverseFuncName, [constantNode]);
 	return denormalize(normalize(arcNode));
+}
+
+/**
+ * A solution in u-space (before transformation to x-space).
+ */
+export interface USolution {
+	readonly symbolic: MathNode;
+	readonly numeric: number;
 }
 
 /**
@@ -222,6 +231,70 @@ function simplifyInverseTrig(inverseFuncName: string, constantNode: MathNode): M
  */
 function normalizeAngle(angle: number, period: number): number {
 	return ((angle % period) + period) % period;
+}
+
+/**
+ * Compute u-space solutions for a trig equation: funcName(u) = constant.
+ *
+ * Returns the base solutions (before linear transform to x-space):
+ * - sin(u) = c → u = arcsin(c), u = π - arcsin(c) (if distinct mod 2π)
+ * - cos(u) = c → u = arccos(c), u = -arccos(c) (if distinct mod 2π)
+ * - tan(u) = c → u = arctan(c)
+ *
+ * Does NOT check domain restrictions (caller must check |c| ≤ 1 for sin/cos).
+ */
+export function computeUSolutions(
+	funcName: string,
+	constantNode: MathNode,
+	constantNumeric: number,
+	basePeriodNumeric: number
+): USolution[] {
+	const uSolutions: USolution[] = [];
+
+	if (funcName === 'sin') {
+		const arcsinVal = Math.asin(constantNumeric);
+		const arcsinNode = simplifyInverseTrig('arcsin', constantNode);
+		uSolutions.push({ symbolic: arcsinNode, numeric: arcsinVal });
+
+		// Second solution: π - arcsin(c)
+		const sol2Numeric = Math.PI - arcsinVal;
+		const sol2Node = denormalize(normalize(subtract(PI, arcsinNode)));
+
+		// Only add if distinct modulo 2π
+		if (
+			Math.abs(
+				normalizeAngle(arcsinVal, basePeriodNumeric) -
+					normalizeAngle(sol2Numeric, basePeriodNumeric)
+			) > 1e-10
+		) {
+			uSolutions.push({ symbolic: sol2Node, numeric: sol2Numeric });
+		}
+	} else if (funcName === 'cos') {
+		const arccosVal = Math.acos(constantNumeric);
+		const arccosNode = simplifyInverseTrig('arccos', constantNode);
+		uSolutions.push({ symbolic: arccosNode, numeric: arccosVal });
+
+		// Second solution: -arccos(c)
+		const sol2Numeric = -arccosVal;
+		const sol2Node = denormalize(normalize(opposite(arccosNode)));
+
+		// Only add if distinct modulo 2π
+		if (
+			Math.abs(
+				normalizeAngle(arccosVal, basePeriodNumeric) -
+					normalizeAngle(sol2Numeric, basePeriodNumeric)
+			) > 1e-10
+		) {
+			uSolutions.push({ symbolic: sol2Node, numeric: sol2Numeric });
+		}
+	} else {
+		// tan: single solution family
+		const arctanVal = Math.atan(constantNumeric);
+		const arctanNode = simplifyInverseTrig('arctan', constantNode);
+		uSolutions.push({ symbolic: arctanNode, numeric: arctanVal });
+	}
+
+	return uSolutions;
 }
 
 // =============================================================================
@@ -580,54 +653,7 @@ function solveTrigonometric(
 	const basePeriodNumeric = funcName === 'tan' ? Math.PI : 2 * Math.PI;
 	const basePeriodNode: MathNode = funcName === 'tan' ? PI : TWO_PI;
 
-	interface USolution {
-		symbolic: MathNode;
-		numeric: number;
-	}
-	const uSolutions: USolution[] = [];
-
-	if (funcName === 'sin') {
-		const arcsinVal = Math.asin(constant);
-		const arcsinNode = simplifyInverseTrig('arcsin', constantNode);
-		uSolutions.push({ symbolic: arcsinNode, numeric: arcsinVal });
-
-		// Second solution: π - arcsin(c)
-		const sol2Numeric = Math.PI - arcsinVal;
-		const sol2Node = denormalize(normalize(subtract(PI, arcsinNode)));
-
-		// Only add if distinct modulo 2π
-		if (
-			Math.abs(
-				normalizeAngle(arcsinVal, basePeriodNumeric) -
-					normalizeAngle(sol2Numeric, basePeriodNumeric)
-			) > 1e-10
-		) {
-			uSolutions.push({ symbolic: sol2Node, numeric: sol2Numeric });
-		}
-	} else if (funcName === 'cos') {
-		const arccosVal = Math.acos(constant);
-		const arccosNode = simplifyInverseTrig('arccos', constantNode);
-		uSolutions.push({ symbolic: arccosNode, numeric: arccosVal });
-
-		// Second solution: -arccos(c)
-		const sol2Numeric = -arccosVal;
-		const sol2Node = denormalize(normalize(opposite(arccosNode)));
-
-		// Only add if distinct modulo 2π
-		if (
-			Math.abs(
-				normalizeAngle(arccosVal, basePeriodNumeric) -
-					normalizeAngle(sol2Numeric, basePeriodNumeric)
-			) > 1e-10
-		) {
-			uSolutions.push({ symbolic: sol2Node, numeric: sol2Numeric });
-		}
-	} else {
-		// tan: single solution family
-		const arctanVal = Math.atan(constant);
-		const arctanNode = simplifyInverseTrig('arctan', constantNode);
-		uSolutions.push({ symbolic: arctanNode, numeric: arctanVal });
-	}
+	const uSolutions = computeUSolutions(funcName, constantNode, constant, basePeriodNumeric);
 
 	// Transform from u-space to x-space: x = (u - b) / a
 	const absA = Math.abs(aNumeric);

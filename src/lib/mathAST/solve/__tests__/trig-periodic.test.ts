@@ -566,6 +566,98 @@ describe('Trigonometric Periodic Solver', () => {
 });
 
 // =============================================================================
+// Non-linear Trig Arguments (Recursive Decomposition)
+// =============================================================================
+
+describe('Non-linear trig arguments (recursive decomposition)', () => {
+	it('sin(x²) = 0 → x = 0, ±√π', () => {
+		const eq = parseEquation('sin(x^2) = 0');
+		const result = solve(eq);
+
+		expect(result.equationType).toBe('trigonometric');
+		expect(result.periodicSolutions).toBeUndefined();
+
+		// sin(u) = 0 → u = 0, π → x² = 0 or x² = π → x = 0, ±√π
+		expect(result.solutions.length).toBe(3);
+		expect(hasZeroNear(result.solutions, 0)).toBe(true);
+		expect(hasZeroNear(result.solutions, Math.sqrt(Math.PI))).toBe(true);
+		expect(hasZeroNear(result.solutions, -Math.sqrt(Math.PI))).toBe(true);
+	});
+
+	it('sin(x²) = 1/2 → x = ±√(π/6), ±√(5π/6)', () => {
+		const eq = parseEquation('sin(x^2) - 1/2 = 0');
+		const result = solve(eq);
+
+		expect(result.equationType).toBe('trigonometric');
+		expect(result.periodicSolutions).toBeUndefined();
+
+		// sin(u) = 1/2 → u = π/6, 5π/6 → x² = π/6 or x² = 5π/6
+		expect(result.solutions.length).toBe(4);
+		expect(hasZeroNear(result.solutions, Math.sqrt(Math.PI / 6))).toBe(true);
+		expect(hasZeroNear(result.solutions, -Math.sqrt(Math.PI / 6))).toBe(true);
+		expect(hasZeroNear(result.solutions, Math.sqrt((5 * Math.PI) / 6))).toBe(true);
+		expect(hasZeroNear(result.solutions, -Math.sqrt((5 * Math.PI) / 6))).toBe(true);
+	});
+
+	it('cos(x²) = 1/2 → x = ±√(π/3)', () => {
+		const eq = parseEquation('cos(x^2) - 1/2 = 0');
+		const result = solve(eq);
+
+		expect(result.equationType).toBe('trigonometric');
+		expect(result.periodicSolutions).toBeUndefined();
+
+		// cos(u) = 1/2 → u = π/3, -π/3 → x² = π/3 (x² = -π/3 impossible)
+		expect(result.solutions.length).toBe(2);
+		expect(hasZeroNear(result.solutions, Math.sqrt(Math.PI / 3))).toBe(true);
+		expect(hasZeroNear(result.solutions, -Math.sqrt(Math.PI / 3))).toBe(true);
+	});
+
+	it('cos(x²) = 1 → x = 0', () => {
+		const eq = parseEquation('cos(x^2) - 1 = 0');
+		const result = solve(eq);
+
+		expect(result.equationType).toBe('trigonometric');
+		// cos(u) = 1 → u = 0 → x² = 0 → x = 0
+		expect(result.solutions.length).toBe(1);
+		expect(hasZeroNear(result.solutions, 0)).toBe(true);
+	});
+
+	it('tan(x²) = 1 → x = ±√(π/4)', () => {
+		const eq = parseEquation('tan(x^2) - 1 = 0');
+		const result = solve(eq);
+
+		expect(result.equationType).toBe('trigonometric');
+		expect(result.periodicSolutions).toBeUndefined();
+
+		// tan(u) = 1 → u = π/4 → x² = π/4
+		expect(result.solutions.length).toBe(2);
+		expect(hasZeroNear(result.solutions, Math.sqrt(Math.PI / 4))).toBe(true);
+		expect(hasZeroNear(result.solutions, -Math.sqrt(Math.PI / 4))).toBe(true);
+	});
+
+	it('sin(x²) = 2 → no solution', () => {
+		const eq = parseEquation('sin(x^2) - 2 = 0');
+		const result = solve(eq);
+
+		expect(result.status).toBe('no-real-solution');
+	});
+
+	describe('backward compatibility: linear args still produce periodicSolutions', () => {
+		it('sin(2x) = 0 → periodicSolutions defined', () => {
+			const eq = parseEquation('sin(2*x) = 0');
+			const result = solve(eq);
+			expect(result.periodicSolutions).toBeDefined();
+		});
+
+		it('cos(x) - 1/2 = 0 → periodicSolutions defined', () => {
+			const eq = parseEquation('cos(x) - 1/2 = 0');
+			const result = solve(eq);
+			expect(result.periodicSolutions).toBeDefined();
+		});
+	});
+});
+
+// =============================================================================
 // Sign Analysis: Periodic Zero Enumeration
 // =============================================================================
 
