@@ -13,6 +13,7 @@
 import type { MathType, NumericType, ParityInfo, SignInfo } from '../types';
 import { join } from '../algebra';
 import type { Bounds } from '$lib/math/intervals/algebra';
+import { signFromBounds } from './literals';
 
 // =============================================================================
 // Bounds Arithmetic Helpers
@@ -195,6 +196,11 @@ export function inferAdditionType(leftType: MathType, rightType: MathType): Math
 	const bounds =
 		leftType.bounds && rightType.bounds ? addBounds(leftType.bounds, rightType.bounds) : undefined;
 
+	// Deduce sign from bounds when algebraic rules couldn't determine it
+	if (sign === undefined && bounds) {
+		sign = signFromBounds(bounds);
+	}
+
 	return {
 		base,
 		...(sign !== undefined && { sign }),
@@ -259,6 +265,11 @@ export function inferSubtractionType(leftType: MathType, rightType: MathType): M
 		leftType.bounds && rightType.bounds
 			? subtractBounds(leftType.bounds, rightType.bounds)
 			: undefined;
+
+	// Deduce sign from bounds when algebraic rules couldn't determine it
+	if (sign === undefined && bounds) {
+		sign = signFromBounds(bounds);
+	}
 
 	return {
 		base,
@@ -348,6 +359,11 @@ export function inferMultiplicationType(leftType: MathType, rightType: MathType)
 			? multiplyBounds(leftType.bounds, rightType.bounds)
 			: undefined;
 
+	// Deduce sign from bounds when algebraic rules couldn't determine it
+	if (sign === undefined && bounds) {
+		sign = signFromBounds(bounds);
+	}
+
 	return {
 		base,
 		...(sign !== undefined && { sign }),
@@ -429,6 +445,11 @@ export function inferDivisionType(numeratorType: MathType, denominatorType: Math
 			? divideBounds(numeratorType.bounds, denominatorType.bounds)
 			: undefined;
 
+	// Deduce sign from bounds when algebraic rules couldn't determine it
+	if (sign === undefined && bounds) {
+		sign = signFromBounds(bounds);
+	}
+
 	return {
 		base,
 		...(sign !== undefined && { sign }),
@@ -467,6 +488,11 @@ export function inferOppositeType(operandType: MathType): MathType {
 
 	// Bounds propagation
 	const bounds = operandType.bounds ? negateBounds(operandType.bounds) : undefined;
+
+	// Deduce sign from bounds when algebraic rules couldn't determine it
+	if (sign === undefined && bounds) {
+		sign = signFromBounds(bounds);
+	}
 
 	return {
 		base,

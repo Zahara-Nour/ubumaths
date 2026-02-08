@@ -37,14 +37,35 @@ const typeCache = new WeakMap<MathNode, Map<string, MathType>>();
  * The key includes variable bindings to distinguish different contexts.
  */
 function getCacheKey(ctx: TypeContext): string {
-	if (!ctx.variables || ctx.variables.size === 0) {
-		return ctx.strict ? '_strict_' : '_default_';
+	const parts: string[] = [];
+	if (ctx.strict) parts.push('s');
+	if (ctx.variables && ctx.variables.size > 0) {
+		const vars = Array.from(ctx.variables.entries())
+			.sort((a, b) => a[0].localeCompare(b[0]))
+			.map(([k, v]) => `${k}:${v}`)
+			.join(',');
+		parts.push(`v{${vars}}`);
 	}
-	const entries = Array.from(ctx.variables.entries())
-		.sort((a, b) => a[0].localeCompare(b[0]))
-		.map(([k, v]) => `${k}:${v}`)
-		.join(',');
-	return `${ctx.strict ? 's:' : ''}${entries}`;
+	if (ctx.assumptions && ctx.assumptions.size > 0) {
+		const assumptions = Array.from(ctx.assumptions.entries())
+			.sort((a, b) => a[0].localeCompare(b[0]))
+			.map(([k, a]) => {
+				const props: string[] = [];
+				if (a.sign) props.push(`s=${a.sign}`);
+				if (a.finite !== undefined) props.push(`f=${a.finite}`);
+				if (a.parity) props.push(`p=${a.parity}`);
+				if (a.bounds) {
+					const b = a.bounds;
+					props.push(
+						`b=[${b.lower ?? ''}${b.lowerInclusive ? '=' : ''},${b.upper ?? ''}${b.upperInclusive ? '=' : ''}]`
+					);
+				}
+				return `${k}:{${props.join(',')}}`;
+			})
+			.join(',');
+		parts.push(`a{${assumptions}}`);
+	}
+	return parts.length === 0 ? '_default_' : parts.join('|');
 }
 
 /**
