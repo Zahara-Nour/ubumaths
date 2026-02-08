@@ -7,7 +7,7 @@
 import type { Rule } from '../types';
 import { arithmeticRules } from './arithmetic';
 import { powerRules } from './powers';
-import { absRules } from './abs';
+import { absRules, absSimplifyRules } from './abs';
 import { logExpRules } from './log-exp';
 import { sqrtRules } from './sqrt';
 import { trigRules } from './trig';
@@ -19,7 +19,7 @@ import { functionParityRules } from './function-parity';
 
 export { arithmeticRules } from './arithmetic';
 export { powerRules } from './powers';
-export { absRules } from './abs';
+export { absRules, absSimplifyRules } from './abs';
 export { logExpRules } from './log-exp';
 export { sqrtRules } from './sqrt';
 export { trigRules } from './trig';
@@ -96,8 +96,11 @@ export const allPatternRules: readonly Rule[] = [
 /**
  * Rules used by the simplify() pipeline (Phase B).
  *
- * Only includes abs rules — arithmetic and power rules are fully redundant
- * with normalize's polynomial arithmetic. Trig/hyp/algebraic identity rules
- * are added dynamically by buildSimplifyRules() based on SimplifyOptions.
+ * Only includes abs rules not already handled by normalize:
+ * - abs-even-pow / abs-pow-even: for variable n with TypeContext assumptions
+ * - abs-positive / abs-negative: conditional, require TypeContext
+ *
+ * Trig/hyp/algebraic identity rules are added dynamically by
+ * buildSimplifyRules() based on SimplifyOptions.
  */
-export const simplifyRules: readonly Rule[] = [...absRules] as const;
+export const simplifyRules: readonly Rule[] = [...absSimplifyRules] as const;

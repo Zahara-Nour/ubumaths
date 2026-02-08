@@ -78,6 +78,7 @@ export const RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	// ==========================================================================
 	'rounding-function': "Évaluation de fonction d'arrondi (floor, ceil, round)",
 	'abs-function': 'Évaluation de la valeur absolue: |a| = a si a ≥ 0, -a si a < 0',
+	'abs-idempotent': 'Idempotence de la valeur absolue: ||x|| = |x|',
 	'abs-even-power': 'Puissance paire et valeur absolue: |x^n| = x^n et |x|^n = x^n pour n pair',
 
 	// ==========================================================================

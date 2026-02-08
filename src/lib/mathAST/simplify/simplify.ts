@@ -22,7 +22,7 @@ import { SimplifyStepRecorder } from './step-recorder';
 import { getSimplifyRuleDescription } from './descriptions-fr';
 
 // Pattern rules
-import { absRules } from '../pattern/rule-sets';
+import { absSimplifyRules } from '../pattern/rule-sets';
 import { trigSimplifyRules } from '../pattern/rule-sets/trig-identities';
 import { hypSimplifyRules } from '../pattern/rule-sets/hyperbolic-identities';
 import { algebraicSimplifyRules } from '../pattern/rule-sets/algebraic-identities';
@@ -48,7 +48,7 @@ function buildSimplifyRules(options: {
 	enableAlgebraic?: boolean;
 }): readonly Rule[] {
 	const rules: Rule[] = [];
-	if (options.enableAbs !== false) rules.push(...absRules);
+	if (options.enableAbs !== false) rules.push(...absSimplifyRules);
 	if (options.enableTrig !== false) rules.push(...trigSimplifyRules);
 	if (options.enableHyperbolic !== false) rules.push(...hypSimplifyRules);
 	if (options.enableAlgebraic !== false) rules.push(...algebraicSimplifyRules);

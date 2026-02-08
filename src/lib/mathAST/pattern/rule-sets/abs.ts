@@ -114,7 +114,7 @@ const absNegative = createRule(P.func('abs', [P._('x', P.isNegative())]), P.neg(
 // =============================================================================
 
 /**
- * All abs simplification rules.
+ * All abs simplification rules (for standalone API use).
  *
  * Unconditional rules are listed first (higher priority),
  * conditional rules last.
@@ -124,6 +124,25 @@ export const absRules: readonly Rule[] = [
 	absIdempotent,
 	absProduct,
 	absQuotient,
+	absEvenPow,
+	absPowEven,
+	absPositive,
+	absNegative
+] as const;
+
+/**
+ * Abs rules for use in the simplify pipeline.
+ *
+ * Excludes rules already handled by normalize:
+ * - abs-negation: normalize handles via even function parity
+ * - abs-idempotent: normalize handles ||x|| → |x|
+ * - abs-product/abs-quotient: increase complexity (1 abs → 2 abs)
+ *
+ * Keeps:
+ * - abs-even-pow / abs-pow-even: for variable n with TypeContext assumptions
+ * - abs-positive / abs-negative: conditional, require TypeContext
+ */
+export const absSimplifyRules: readonly Rule[] = [
 	absEvenPow,
 	absPowEven,
 	absPositive,
