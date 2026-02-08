@@ -608,10 +608,30 @@ export const trigHigherPowerRules: Rule[] = [
 // Exports
 // ============================================================================
 
-export const trigSimplifyRules: Rule[] = [...trigPythagoreanRules, ...trigQuotientRules];
+// Rules used by simplify() — only sin/cos/tan-level identities (no sec/csc/cot introduction)
+const SIMPLIFY_PYTHAGOREAN = new Set([
+	'pythagorean',
+	'one-minus-sin-squared',
+	'one-minus-cos-squared'
+]);
+const SIMPLIFY_QUOTIENT = new Set(['sin-over-cos']);
+
+/** cos(a)/sin(a) → 1/tan(a) — avoids introducing cot() */
+const cosOverSinSimplify = createRule(
+	P.div(P.func('cos', [P._('a')]), P.func('sin', [P._('a')])),
+	(b) => divide(number('1'), tan(get(b, 'a')), 'fraction'),
+	{ name: 'cos-over-sin-simplify', group: 'QUOTIENT' }
+);
+
+export const trigSimplifyRules: Rule[] = [
+	...trigPythagoreanRules.filter((r) => SIMPLIFY_PYTHAGOREAN.has(r.name)),
+	...trigQuotientRules.filter((r) => SIMPLIFY_QUOTIENT.has(r.name)),
+	cosOverSinSimplify
+];
 
 export const allTrigRules: Rule[] = [
-	...trigSimplifyRules,
+	...trigPythagoreanRules,
+	...trigQuotientRules,
 	...trigPeriodicRules,
 	...trigNegativeAngleRules,
 	...trigDoubleAngleRules,
