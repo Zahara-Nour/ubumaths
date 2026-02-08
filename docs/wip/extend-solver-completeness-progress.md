@@ -8,7 +8,7 @@ Spec: [extend-solver-completeness.md](./extend-solver-completeness.md)
 | ------------------------------- | -------- | -------------------------------------- | ---------------- |
 | Gap 1: Trig periodic solutions  | HIGH     | Phase 1 DONE, Phase 2 pending decision | 46 pass + 9 todo |
 | Gap 2: Degree 4 polynomials     | MEDIUM   | DONE                                   | 19 pass          |
-| Gap 3: Mixed/factored equations | LOW      | Not started                            | —                |
+| Gap 3: Mixed/factored equations | LOW      | DONE                                   | 9 pass           |
 
 ---
 
@@ -91,13 +91,29 @@ Approche hybride numerique/symbolique: calcul numerique via Ferrari, identificat
 
 ---
 
-## Gap 3: Mixed/factored equations — NOT STARTED
+## Gap 3: Mixed/factored equations — DONE
 
-**Probleme:** `x·sin(x) = 0`, `(x²-1)·e^x = 0` classes comme 'mixed', non resolues. Decomposition en facteurs possible pour beaucoup de cas.
+**Fichiers modifies:**
 
-**Approche envisagee:** detecter la structure produit et resoudre chaque facteur independamment. `analyzeExpressionStructure` dans `interval-sign.ts` decompose deja les produits — logique similaire applicable au zero-finding.
+| File                              | Changes                                                                                                    |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `solve/solve.ts`                  | `tryProductDecomposition()`, `extractProductFactors()`, `deduplicateSolutions()`, wired pre-classification |
+| `solve/descriptions-fr.ts`        | 2 SolvingRule entries: `zero-product-property`, `solve-factor`                                             |
+| `solve/__tests__/product.test.ts` | **NEW** — 9 tests                                                                                          |
 
-**Prerequis:** Gap 1 (au moins Phase 1) pour que les zeros periodiques des facteurs trig soient trouves.
+**Approche:** pre-processing dans `solve()` avant classification. Quand la forme standard est un produit de facteurs dependant de la variable, on applique la propriete du produit nul (A\*B=0 => A=0 ou B=0) et on resout chaque facteur recursivement via `solve()`.
+
+**Cas geres:**
+
+- Produits mixtes: `x*sin(x) = 0`, `(x²-1)*e^x = 0`, `x*cos(x) = 0`
+- Produits polynomiaux: `x*(x-1)*(x+2) = 0`, `(x-1)*(x+1) = 0`
+- Facteurs sans solution reelle: `x*(x²+1) = 0` → x=0 seul
+- Deduplication: `(x-1)*(x-1) = 0` → x=1
+- Propagation des solutions periodiques trig
+- Delimiter unwrapping pour facteurs entre parentheses
+- Remplissage des valeurs `approximate` manquantes (zero)
+
+**Regressions:** 0 (172 tests solve passent, 9 fichiers).
 
 ---
 
