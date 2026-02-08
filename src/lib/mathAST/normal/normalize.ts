@@ -188,6 +188,153 @@ function applyFunctionParity(
 }
 
 // =============================================================================
+// Trigonometric π-shift Reduction
+// =============================================================================
+
+/**
+ * Checks if a monomial is exactly π^1.
+ */
+function isPiMonomial(monomial: readonly SymbolicFactor[]): boolean {
+	if (monomial.length !== 1) return false;
+	const f = monomial[0];
+	if (f.exponent.n !== 1n || f.exponent.d !== 1n) return false;
+	return (
+		(f.base.type === 'constant' && f.base.constant === 'pi') ||
+		(f.base.type === 'greek' && f.base.letter === 'pi')
+	);
+}
+
+/**
+ * Extracts a π/2 multiple from a trig function argument.
+ *
+ * Given a NormalForm representing an argument like (x + kπ/2),
+ * finds the integer k (number of half-turns) and returns the reduced
+ * argument (without the π term).
+ *
+ * Only works when:
+ * - The denominator is 1 (polynomial form)
+ * - There is exactly one π-term with a pure rational coefficient
+ * - The coefficient is a multiple of 1/2
+ *
+ * @returns { reducedForm, halfTurns } or null
+ */
+function extractPiHalfTurns(argForm: NormalForm): {
+	reducedForm: NormalForm;
+	halfTurns: number;
+} | null {
+	if (!isOnePolynomial(argForm.denominator)) return null;
+	if (argForm.numerator.length < 2) return null; // need at least π-term + something else
+
+	// Find the π-term
+	let piIdx = -1;
+	for (let i = 0; i < argForm.numerator.length; i++) {
+		if (isPiMonomial(argForm.numerator[i].monomial)) {
+			piIdx = i;
+			break;
+		}
+	}
+	if (piIdx === -1) return null;
+
+	const piTerm = argForm.numerator[piIdx];
+
+	// Coefficient must be a single pure rational (no radicals, no imaginary)
+	if (piTerm.coefficient.terms.length !== 1) return null;
+	const at = piTerm.coefficient.terms[0];
+	if (at.radicals.length !== 0) return null;
+	if (at.hasImaginaryUnit) return null;
+
+	const r = at.rational;
+
+	// Check if 2 * r is an integer: 2 * (n/d) = 2n/d must be integer
+	const twoN = 2n * r.n;
+	if (twoN % r.d !== 0n) return null;
+
+	const halfTurns = Number(twoN / r.d);
+
+	// Reduce mod 4 (period 2π = 4 half-turns)
+	const reduced = ((halfTurns % 4) + 4) % 4;
+
+	// Build reduced NormalForm (remove the π-term)
+	const newNumerator = [
+		...argForm.numerator.slice(0, piIdx),
+		...argForm.numerator.slice(piIdx + 1)
+	];
+
+	const reducedForm =
+		newNumerator.length > 0 ? normalFormFromPolynomial(newNumerator) : ZERO_NORMAL_FORM;
+
+	return { reducedForm, halfTurns: reduced };
+}
+
+/**
+ * Applies a π/2-shift transformation to a trig function.
+ *
+ * Uses the circular shift pattern:
+ *   sin(u + kπ/2): [sin(u), cos(u), -sin(u), -cos(u)] for k = 0,1,2,3
+ *   cos(u + kπ/2): [cos(u), -sin(u), -cos(u), sin(u)] for k = 0,1,2,3
+ *   tan(u + kπ):   tan(u) for any k (period π), i.e. only even halfTurns
+ *
+ * @returns The simplified NormalForm, or null if not applicable
+ */
+function applyTrigPiShift(
+	argForm: NormalForm,
+	name: string,
+	originalNode: MathNode,
+	ctx: NormalizeContext | undefined
+): NormalForm | null {
+	const shift = extractPiHalfTurns(argForm);
+	if (!shift) return null;
+
+	const { reducedForm, halfTurns } = shift;
+
+	// tan: only handle even halfTurns (multiples of π, since tan has period π)
+	if (name === 'tan' && halfTurns % 2 !== 0) return null;
+
+	// Denormalize the reduced argument to build the new function node
+	const reducedArgNode = denormalize(reducedForm);
+
+	// Determine the result function and sign
+	// sin shift table: [sin, cos, -sin, -cos]
+	// cos shift table: [cos, -sin, -cos, sin]
+	let resultName: string;
+	let negate: boolean;
+
+	if (name === 'sin') {
+		const table: [string, boolean][] = [
+			['sin', false], // 0: sin(u)
+			['cos', false], // 1: cos(u)
+			['sin', true], // 2: -sin(u)
+			['cos', true] // 3: -cos(u)
+		];
+		[resultName, negate] = table[halfTurns];
+	} else if (name === 'cos') {
+		const table: [string, boolean][] = [
+			['cos', false], // 0: cos(u)
+			['sin', true], // 1: -sin(u)
+			['cos', true], // 2: -cos(u)
+			['sin', false] // 3: sin(u)
+		];
+		[resultName, negate] = table[halfTurns];
+	} else {
+		// tan with even halfTurns: tan(u + kπ) = tan(u)
+		resultName = 'tan';
+		negate = false;
+	}
+
+	// Build and normalize the result
+	const resultFuncNode: MathNode = {
+		type: 'function',
+		name: resultName,
+		args: [reducedArgNode]
+	};
+	const resultForm = normalizeNode(resultFuncNode, ctx);
+	const finalResult = negate ? negNormalForm(resultForm) : resultForm;
+
+	recordNormalizationStep(ctx, 'trig-pi-shift', originalNode, finalResult, 'summarized');
+	return finalResult;
+}
+
+// =============================================================================
 // Rationalization - Clearing fractional exponents from denominator
 // =============================================================================
 
@@ -2674,6 +2821,10 @@ function normalizeFunction(
 				return ONE_NORMAL_FORM;
 			}
 		}
+
+		// Apply π-shift reduction: sin(x+π) = -sin(x), cos(x+π/2) = -sin(x), etc.
+		const piShiftResult = applyTrigPiShift(argForm, name, node, ctx);
+		if (piShiftResult !== null) return piShiftResult;
 
 		// Apply parity rules: cos(-x) = cos(x), sin(-x) = -sin(x), tan(-x) = -tan(x)
 		const parityResult = applyFunctionParity(argForm, name, canonicalNode, node, ctx);
