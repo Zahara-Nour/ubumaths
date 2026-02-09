@@ -26,10 +26,10 @@ import {
 	nonNegativeReals,
 	nonZeroReals,
 	unitInterval,
-	greaterThan,
-	greaterThanOrEqual,
-	lessThan,
-	lessThanOrEqual,
+	greaterThanInterval,
+	greaterThanOrEqualInterval,
+	lessThanInterval,
+	lessThanOrEqualInterval,
 	openInterval,
 	closedInterval,
 	realLine,
@@ -99,7 +99,7 @@ describe('intersect()', () => {
 	describe('with interval domains', () => {
 		it('intersect(]0, +inf[, ]-inf, 1]) = ]0, 1]', () => {
 			const a = positiveReals(); // ]0, +inf[
-			const b = intervalDomain([lessThanOrEqual(fromNumber(1))]); // ]-inf, 1]
+			const b = intervalDomain([lessThanOrEqualInterval(fromNumber(1))]); // ]-inf, 1]
 			const result = intersect(a, b);
 
 			expect(result.kind).toBe('interval_set');
@@ -130,7 +130,7 @@ describe('intersect()', () => {
 		});
 
 		it('intersect of disjoint intervals returns empty', () => {
-			const a = intervalDomain([lessThan(fromNumber(0))]); // ]-inf, 0[
+			const a = intervalDomain([lessThanInterval(fromNumber(0))]); // ]-inf, 0[
 			const b = positiveReals(); // ]0, +inf[
 			const result = intersect(a, b);
 
@@ -175,8 +175,8 @@ describe('union()', () => {
 
 	describe('with interval domains', () => {
 		it('union of adjacent intervals merges them', () => {
-			const a = intervalDomain([lessThanOrEqual(fromNumber(0))]); // ]-inf, 0]
-			const b = intervalDomain([greaterThanOrEqual(fromNumber(0))]); // [0, +inf[
+			const a = intervalDomain([lessThanOrEqualInterval(fromNumber(0))]); // ]-inf, 0]
+			const b = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]); // [0, +inf[
 			const result = union(a, b);
 
 			// Should be universal (entire real line)
@@ -184,8 +184,8 @@ describe('union()', () => {
 		});
 
 		it('union of overlapping intervals merges them', () => {
-			const a = intervalDomain([lessThan(fromNumber(1))]); // ]-inf, 1[
-			const b = intervalDomain([greaterThan(fromNumber(0))]); // ]0, +inf[
+			const a = intervalDomain([lessThanInterval(fromNumber(1))]); // ]-inf, 1[
+			const b = intervalDomain([greaterThanInterval(fromNumber(0))]); // ]0, +inf[
 			const result = union(a, b);
 
 			// Should cover all reals
@@ -193,8 +193,8 @@ describe('union()', () => {
 		});
 
 		it('union of disjoint intervals keeps both', () => {
-			const a = intervalDomain([lessThan(fromNumber(-1))]); // ]-inf, -1[
-			const b = intervalDomain([greaterThan(fromNumber(1))]); // ]1, +inf[
+			const a = intervalDomain([lessThanInterval(fromNumber(-1))]); // ]-inf, -1[
+			const b = intervalDomain([greaterThanInterval(fromNumber(1))]); // ]1, +inf[
 			const result = union(a, b);
 
 			expect(result.kind).toBe('interval_set');
@@ -513,7 +513,7 @@ describe('ConditionDomain algebra operations', () => {
 	describe('intersect with ConditionDomain', () => {
 		it('intersects condition with interval domain', () => {
 			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]); // x > 0
-			const interval = intervalDomain([lessThan(fromNumber(10))]); // x < 10
+			const interval = intervalDomain([lessThanInterval(fromNumber(10))]); // x < 10
 			const result = intersect(cd, interval);
 
 			expect(result.kind).toBe('interval_set');

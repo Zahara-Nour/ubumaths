@@ -18,7 +18,7 @@ import {
 	getConstraintRuleForFunction
 } from '../enhanced-step-types';
 import type { DomainRule } from '../enhanced-step-types';
-import { intervalDomain, greaterThanOrEqual, fromNumber } from '../factory';
+import { intervalDomain, greaterThanOrEqualInterval, fromNumber } from '../factory';
 
 // =============================================================================
 // Step Descriptions Tests
@@ -190,7 +190,7 @@ describe('DomainStepRecorder', () => {
 
 	it('should record step with intermediate domain', () => {
 		const recorder = createDomainStepRecorder();
-		const domain = intervalDomain([greaterThanOrEqual(fromNumber(2))]);
+		const domain = intervalDomain([greaterThanOrEqualInterval(fromNumber(2))]);
 
 		recorder.record('sqrt_constraint', '\\sqrt{x - 2}', 'x \\geq 2', {
 			intermediateDomain: domain

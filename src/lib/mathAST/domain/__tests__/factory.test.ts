@@ -20,10 +20,10 @@ import {
 	closedInterval,
 	leftClosedInterval,
 	rightClosedInterval,
-	greaterThan,
-	greaterThanOrEqual,
-	lessThan,
-	lessThanOrEqual,
+	greaterThanInterval,
+	greaterThanOrEqualInterval,
+	lessThanInterval,
+	lessThanOrEqualInterval,
 	realLine,
 	// Domain factories
 	emptyDomain,
@@ -143,9 +143,9 @@ describe('Interval factories', () => {
 		});
 	});
 
-	describe('greaterThan()', () => {
+	describe('greaterThanInterval()', () => {
 		it('creates ]a, +infinity[', () => {
-			const i = greaterThan(fromNumber(0));
+			const i = greaterThanInterval(fromNumber(0));
 			expect(isNumber(i.lower.value)).toBe(true);
 			expect(i.lower.type).toBe('open');
 			expect(isPositiveInfinity(i.upper.value)).toBe(true);
@@ -153,27 +153,27 @@ describe('Interval factories', () => {
 		});
 	});
 
-	describe('greaterThanOrEqual()', () => {
+	describe('greaterThanOrEqualInterval()', () => {
 		it('creates [a, +infinity[', () => {
-			const i = greaterThanOrEqual(fromNumber(0));
+			const i = greaterThanOrEqualInterval(fromNumber(0));
 			expect(isNumber(i.lower.value)).toBe(true);
 			expect(i.lower.type).toBe('closed');
 			expect(isPositiveInfinity(i.upper.value)).toBe(true);
 		});
 	});
 
-	describe('lessThan()', () => {
+	describe('lessThanInterval()', () => {
 		it('creates ]-infinity, a[', () => {
-			const i = lessThan(fromNumber(0));
+			const i = lessThanInterval(fromNumber(0));
 			expect(isNegativeInfinity(i.lower.value)).toBe(true);
 			expect(isNumber(i.upper.value)).toBe(true);
 			expect(i.upper.type).toBe('open');
 		});
 	});
 
-	describe('lessThanOrEqual()', () => {
+	describe('lessThanOrEqualInterval()', () => {
 		it('creates ]-infinity, a]', () => {
-			const i = lessThanOrEqual(fromNumber(0));
+			const i = lessThanOrEqualInterval(fromNumber(0));
 			expect(isNegativeInfinity(i.lower.value)).toBe(true);
 			expect(isNumber(i.upper.value)).toBe(true);
 			expect(i.upper.type).toBe('closed');
@@ -214,7 +214,7 @@ describe('Domain factories', () => {
 
 	describe('intervalDomain()', () => {
 		it('creates a domain with intervals', () => {
-			const d = intervalDomain([greaterThan(fromNumber(0))]);
+			const d = intervalDomain([greaterThanInterval(fromNumber(0))]);
 			expect(d.kind).toBe('interval_set');
 			expect(d.intervals).toHaveLength(1);
 			expect(d.excludedPoints).toHaveLength(0);

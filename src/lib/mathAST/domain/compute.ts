@@ -14,7 +14,7 @@ import type { Domain, DomainResult, DomainStep, IntervalSet } from './types';
 import {
 	universalDomain,
 	intervalDomain,
-	greaterThanOrEqual,
+	greaterThanOrEqualInterval,
 	fromNumber,
 	tanDomain,
 	cotDomain,
@@ -159,7 +159,7 @@ function analyzeComposition(
 				Math.abs(outerReq.lowerBound) < ZERO_TOLERANCE
 			) {
 				// ln(expr) >= 0 means expr >= 1
-				const constraintDomain = intervalDomain([greaterThanOrEqual(fromNumber(1))]);
+				const constraintDomain = intervalDomain([greaterThanOrEqualInterval(fromNumber(1))]);
 				const preimage = computePreimage(innerArg, constraintDomain, variable);
 				if (preimage) {
 					domain = intersect(domain, preimage);
@@ -168,7 +168,7 @@ function analyzeComposition(
 				// For other functions, construct the inner node and compute preimage
 				const innerExpr: MathNode = { type: 'function', name: innerNode.name, args: [innerArg] };
 				const constraintDomain = intervalDomain([
-					greaterThanOrEqual(fromNumber(outerReq.lowerBound))
+					greaterThanOrEqualInterval(fromNumber(outerReq.lowerBound))
 				]);
 				const preimage = computePreimage(innerExpr, constraintDomain, variable);
 				if (preimage) {
@@ -180,7 +180,9 @@ function analyzeComposition(
 
 	// Case 3: Outer needs >= specific bound (like acosh needs >= 1)
 	if (outerReq.lowerBound !== undefined && outerReq.lowerBound !== 0) {
-		const constraintDomain = intervalDomain([greaterThanOrEqual(fromNumber(outerReq.lowerBound))]);
+		const constraintDomain = intervalDomain([
+			greaterThanOrEqualInterval(fromNumber(outerReq.lowerBound))
+		]);
 		const preimage = computePreimage(innerArg, constraintDomain, variable);
 		if (preimage) {
 			domain = intersect(domain, preimage);
@@ -552,7 +554,7 @@ function computePowerDomain(
 			// Even root requires base >= 0
 			const preimage = computePreimage(
 				node.base,
-				intervalDomain([greaterThanOrEqual(fromNumber(0))]),
+				intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]),
 				variable
 			);
 			if (preimage) {

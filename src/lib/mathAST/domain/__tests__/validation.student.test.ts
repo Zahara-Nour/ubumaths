@@ -17,8 +17,8 @@ import {
 	intervalDomain,
 	universalDomain,
 	emptyDomain,
-	greaterThan,
-	greaterThanOrEqual,
+	greaterThanInterval,
+	greaterThanOrEqualInterval,
 	openInterval,
 	fromNumber
 } from '../factory';
@@ -193,8 +193,8 @@ describe('parseStudentDomain - edge cases', () => {
 
 describe('compareDomains', () => {
 	it('should detect equal domains', () => {
-		const d1 = intervalDomain([greaterThan(fromNumber(0))]);
-		const d2 = intervalDomain([greaterThan(fromNumber(0))]);
+		const d1 = intervalDomain([greaterThanInterval(fromNumber(0))]);
+		const d2 = intervalDomain([greaterThanInterval(fromNumber(0))]);
 
 		const result = compareDomains(d1, d2);
 		expect(result.areEqual).toBe(true);
@@ -203,8 +203,8 @@ describe('compareDomains', () => {
 	});
 
 	it('should detect student subset (too restrictive)', () => {
-		const student = intervalDomain([greaterThan(fromNumber(0))]); // ]0, +∞[
-		const correct = intervalDomain([greaterThanOrEqual(fromNumber(0))]); // [0, +∞[
+		const student = intervalDomain([greaterThanInterval(fromNumber(0))]); // ]0, +∞[
+		const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]); // [0, +∞[
 
 		const result = compareDomains(student, correct);
 		expect(result.areEqual).toBe(false);
@@ -214,7 +214,7 @@ describe('compareDomains', () => {
 
 	it('should detect student superset (too permissive)', () => {
 		const student = universalDomain(); // ℝ
-		const correct = intervalDomain([greaterThan(fromNumber(0))]); // ]0, +∞[
+		const correct = intervalDomain([greaterThanInterval(fromNumber(0))]); // ]0, +∞[
 
 		const result = compareDomains(student, correct);
 		expect(result.areEqual).toBe(false);
@@ -223,7 +223,7 @@ describe('compareDomains', () => {
 	});
 
 	it('should detect mixed error (missing and extra)', () => {
-		const student = intervalDomain([greaterThan(fromNumber(1))]); // ]1, +∞[
+		const student = intervalDomain([greaterThanInterval(fromNumber(1))]); // ]1, +∞[
 		const correct = intervalDomain([openInterval(fromNumber(0), fromNumber(5))]); // ]0, 5[
 
 		const result = compareDomains(student, correct);
@@ -242,21 +242,21 @@ describe('domainsAreEqual', () => {
 	});
 
 	it('should return true for equivalent interval domains', () => {
-		const d1 = intervalDomain([greaterThan(fromNumber(0))]);
-		const d2 = intervalDomain([greaterThan(fromNumber(0))]);
+		const d1 = intervalDomain([greaterThanInterval(fromNumber(0))]);
+		const d2 = intervalDomain([greaterThanInterval(fromNumber(0))]);
 		expect(domainsAreEqual(d1, d2)).toBe(true);
 	});
 
 	it('should return false for different domains', () => {
-		const d1 = intervalDomain([greaterThan(fromNumber(0))]);
-		const d2 = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
+		const d1 = intervalDomain([greaterThanInterval(fromNumber(0))]);
+		const d2 = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
 		expect(domainsAreEqual(d1, d2)).toBe(false);
 	});
 });
 
 describe('calculateDomainSimilarity', () => {
 	it('should return 100 for equal domains', () => {
-		const domain = intervalDomain([greaterThan(fromNumber(0))]);
+		const domain = intervalDomain([greaterThanInterval(fromNumber(0))]);
 		expect(calculateDomainSimilarity(domain, domain)).toBe(100);
 	});
 
@@ -265,8 +265,8 @@ describe('calculateDomainSimilarity', () => {
 	});
 
 	it('should return partial credit for subset', () => {
-		const student = intervalDomain([greaterThan(fromNumber(0))]);
-		const correct = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
+		const student = intervalDomain([greaterThanInterval(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
 		const score = calculateDomainSimilarity(student, correct);
 		expect(score).toBeGreaterThan(0);
 		expect(score).toBeLessThan(100);
@@ -274,7 +274,7 @@ describe('calculateDomainSimilarity', () => {
 
 	it('should return partial credit for superset', () => {
 		const student = universalDomain();
-		const correct = intervalDomain([greaterThan(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanInterval(fromNumber(0))]);
 		const score = calculateDomainSimilarity(student, correct);
 		expect(score).toBeGreaterThan(0);
 		expect(score).toBeLessThan(100);
@@ -293,7 +293,7 @@ describe('validateStudentDomain', () => {
 	};
 
 	it('should validate correct answer', () => {
-		const correct = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
 		const result = validateStudentDomain('[0, +∞[', correct, sqrtExpr);
 
 		expect(result.isCorrect).toBe(true);
@@ -301,7 +301,7 @@ describe('validateStudentDomain', () => {
 	});
 
 	it('should reject incorrect answer with feedback', () => {
-		const correct = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
 		const result = validateStudentDomain(']0, +∞[', correct, sqrtExpr);
 
 		expect(result.isCorrect).toBe(false);
@@ -310,7 +310,7 @@ describe('validateStudentDomain', () => {
 	});
 
 	it('should handle parse errors', () => {
-		const correct = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
 		const result = validateStudentDomain('invalid', correct, sqrtExpr);
 
 		expect(result.isCorrect).toBe(false);
@@ -319,7 +319,7 @@ describe('validateStudentDomain', () => {
 	});
 
 	it('should accept equivalent notations', () => {
-		const correct = intervalDomain([greaterThan(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanInterval(fromNumber(0))]);
 
 		const result1 = validateStudentDomain(']0, +∞[', correct, sqrtExpr);
 		const result2 = validateStudentDomain('x > 0', correct, sqrtExpr);
@@ -349,7 +349,7 @@ describe('generateDomainHints', () => {
 	};
 
 	it('should generate level 1 hints (vague)', () => {
-		const correct = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
 		const hints = generateDomainHints(sqrtExpr, null, correct, { level: 1 });
 
 		expect(hints.length).toBeGreaterThan(0);
@@ -357,7 +357,7 @@ describe('generateDomainHints', () => {
 	});
 
 	it('should generate level 2 hints (more specific)', () => {
-		const correct = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
 		const hints = generateDomainHints(sqrtExpr, null, correct, { level: 2 });
 
 		expect(hints.length).toBeGreaterThan(0);
@@ -365,29 +365,29 @@ describe('generateDomainHints', () => {
 	});
 
 	it('should generate level 3 hints (very specific)', () => {
-		const correct = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
 		const hints = generateDomainHints(sqrtExpr, null, correct, { level: 3 });
 
 		expect(hints.length).toBeGreaterThan(0);
 	});
 
 	it('should generate hints for logarithm', () => {
-		const correct = intervalDomain([greaterThan(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanInterval(fromNumber(0))]);
 		const hints = generateDomainHints(lnExpr, null, correct, { level: 1 });
 
 		expect(hints.some((h) => h.includes('logarithme'))).toBe(true);
 	});
 
 	it('should generate comparison hints when student answer provided', () => {
-		const correct = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
-		const student = intervalDomain([greaterThan(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
+		const student = intervalDomain([greaterThanInterval(fromNumber(0))]);
 
 		const hints = generateDomainHints(sqrtExpr, student, correct, { level: 2 });
 		expect(hints.some((h) => h.includes('exclu') || h.includes('manqu'))).toBe(true);
 	});
 
 	it('should respect maxHints option', () => {
-		const correct = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
 		const hints = generateDomainHints(sqrtExpr, null, correct, { level: 3, maxHints: 1 });
 
 		expect(hints.length).toBeLessThanOrEqual(1);

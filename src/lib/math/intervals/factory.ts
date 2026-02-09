@@ -147,28 +147,28 @@ export function rightClosedInterval(lower: EndpointValue, upper: EndpointValue):
 /**
  * Creates (-infinity, a) - French notation ]-infinity, a[
  */
-export function lessThan(bound: EndpointValue): Interval {
+export function lessThanInterval(bound: EndpointValue): Interval {
 	return interval(negInfinityEndpoint(), openEndpoint(bound));
 }
 
 /**
  * Creates (-infinity, a] - French notation ]-infinity, a]
  */
-export function lessThanOrEqual(bound: EndpointValue): Interval {
+export function lessThanOrEqualInterval(bound: EndpointValue): Interval {
 	return interval(negInfinityEndpoint(), closedEndpoint(bound));
 }
 
 /**
  * Creates (a, +infinity) - French notation ]a, +infinity[
  */
-export function greaterThan(bound: EndpointValue): Interval {
+export function greaterThanInterval(bound: EndpointValue): Interval {
 	return interval(openEndpoint(bound), posInfinityEndpoint());
 }
 
 /**
  * Creates [a, +infinity) - French notation [a, +infinity[
  */
-export function greaterThanOrEqual(bound: EndpointValue): Interval {
+export function greaterThanOrEqualInterval(bound: EndpointValue): Interval {
 	return interval(closedEndpoint(bound), posInfinityEndpoint());
 }
 
@@ -225,17 +225,17 @@ export function intervalSet(intervals: readonly Interval[]): IntervalSet {
 
 /** Domain for x > 0 (e.g., for ln) - ]0, +infinity[ */
 export function positiveReals(): IntervalSet {
-	return intervalSet([greaterThan(fromNumber(0))]);
+	return intervalSet([greaterThanInterval(fromNumber(0))]);
 }
 
 /** Domain for x >= 0 (e.g., for sqrt) - [0, +infinity[ */
 export function nonNegativeReals(): IntervalSet {
-	return intervalSet([greaterThanOrEqual(fromNumber(0))]);
+	return intervalSet([greaterThanOrEqualInterval(fromNumber(0))]);
 }
 
 /** Domain for x != 0 (e.g., for 1/x) - ]-∞, 0[ ∪ ]0, +∞[ */
 export function nonZeroReals(): IntervalSet {
-	return intervalSet([lessThan(fromNumber(0)), greaterThan(fromNumber(0))]);
+	return intervalSet([lessThanInterval(fromNumber(0)), greaterThanInterval(fromNumber(0))]);
 }
 
 /** Domain for -1 <= x <= 1 (e.g., for arcsin, arccos) - [-1, 1] */

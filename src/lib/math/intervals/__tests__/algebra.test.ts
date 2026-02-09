@@ -19,8 +19,8 @@ import {
 	bound,
 	closedInterval,
 	openInterval,
-	greaterThan,
-	lessThan,
+	greaterThanInterval,
+	lessThanInterval,
 	realLine,
 	emptySet,
 	universalSet,
@@ -70,7 +70,10 @@ describe('isUniversal', () => {
 	});
 
 	it('split intervals around 0 are not universal', () => {
-		const domain = intervalSet([lessThan(fromNumber(0)), greaterThan(fromNumber(0))]);
+		const domain = intervalSet([
+			lessThanInterval(fromNumber(0)),
+			greaterThanInterval(fromNumber(0))
+		]);
 		expect(isUniversal(domain)).toBe(false);
 	});
 });
@@ -102,7 +105,10 @@ describe('containsValue', () => {
 	});
 
 	it('split intervals do not contain the gap point', () => {
-		const domain = intervalSet([lessThan(fromNumber(0)), greaterThan(fromNumber(0))]);
+		const domain = intervalSet([
+			lessThanInterval(fromNumber(0)),
+			greaterThanInterval(fromNumber(0))
+		]);
 		expect(containsValue(domain, 0)).toBe(false);
 		expect(containsValue(domain, 1)).toBe(true);
 	});
@@ -226,7 +232,7 @@ describe('complement', () => {
 	});
 
 	it('complement of ]0, +inf[ is ]-inf, 0]', () => {
-		const domain = intervalSet([greaterThan(fromNumber(0))]);
+		const domain = intervalSet([greaterThanInterval(fromNumber(0))]);
 		const result = complement(domain);
 		expect(result.kind).toBe('interval_set');
 		if (result.kind === 'interval_set') {
@@ -330,22 +336,22 @@ describe('containsValue edge cases', () => {
 	});
 
 	it('handles very large values', () => {
-		const domain = intervalSet([greaterThan(fromNumber(0))]);
+		const domain = intervalSet([greaterThanInterval(fromNumber(0))]);
 		expect(containsValue(domain, 1e100)).toBe(true);
 	});
 
 	it('handles very small positive values', () => {
-		const domain = intervalSet([greaterThan(fromNumber(0))]);
+		const domain = intervalSet([greaterThanInterval(fromNumber(0))]);
 		expect(containsValue(domain, 1e-100)).toBe(true);
 	});
 
 	it('handles multiple split intervals', () => {
 		// ]-inf, 0[ ∪ ]0, 1[ ∪ ]1, 2[ ∪ ]2, +inf[
 		const domain = intervalSet([
-			lessThan(fromNumber(0)),
+			lessThanInterval(fromNumber(0)),
 			openInterval(fromNumber(0), fromNumber(1)),
 			openInterval(fromNumber(1), fromNumber(2)),
-			greaterThan(fromNumber(2))
+			greaterThanInterval(fromNumber(2))
 		]);
 		expect(containsValue(domain, 0)).toBe(false);
 		expect(containsValue(domain, 1)).toBe(false);
@@ -415,7 +421,7 @@ describe('intersect edge cases', () => {
 	});
 
 	it('intersect split intervals preserves gap', () => {
-		const a = intervalSet([lessThan(fromNumber(0)), greaterThan(fromNumber(0))]);
+		const a = intervalSet([lessThanInterval(fromNumber(0)), greaterThanInterval(fromNumber(0))]);
 		const b = intervalSet([closedInterval(fromNumber(-1), fromNumber(1))]);
 		const result = intersect(a, b);
 		expect(result.kind).toBe('interval_set');
@@ -547,7 +553,7 @@ describe('difference edge cases', () => {
 	});
 
 	it('difference with split intervals around 0', () => {
-		const a = intervalSet([lessThan(fromNumber(0)), greaterThan(fromNumber(0))]);
+		const a = intervalSet([lessThanInterval(fromNumber(0)), greaterThanInterval(fromNumber(0))]);
 		const b = intervalSet([closedInterval(fromNumber(-1), fromNumber(1))]);
 		// (]-inf,0[ ∪ ]0,+inf[) \ [-1, 1] = ]-inf, -1[ ∪ ]1, +inf[
 		const result = difference(a, b);

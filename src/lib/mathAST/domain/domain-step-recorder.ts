@@ -99,7 +99,7 @@ export interface DomainStepRecorder {
  * const recorder = createDomainStepRecorder();
  *
  * recorder.record('sqrt_constraint', '\\sqrt{x - 2}', 'x - 2 \\geq 0', {
- *   intermediateDomain: intervalDomain([greaterThanOrEqual(fromNumber(2))]),
+ *   intermediateDomain: intervalDomain([greaterThanOrEqualInterval(fromNumber(2))]),
  *   verbosityLevel: 'summarized'
  * });
  *
@@ -211,7 +211,7 @@ class DomainStepRecorderImpl implements DomainStepRecorder {
  *
  * // Record a constraint step
  * recorder.record('sqrt_constraint', '\\sqrt{x - 2}', 'x \\geq 2', {
- *   intermediateDomain: intervalDomain([greaterThanOrEqual(fromNumber(2))]),
+ *   intermediateDomain: intervalDomain([greaterThanOrEqualInterval(fromNumber(2))]),
  *   verbosityLevel: 'summarized'
  * });
  *

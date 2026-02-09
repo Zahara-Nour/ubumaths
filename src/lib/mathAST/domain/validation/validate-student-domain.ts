@@ -35,7 +35,7 @@ import { formatInterval } from '../format';
  * @example
  * ```typescript
  * const expr = { type: 'function', name: 'sqrt', args: [{ type: 'variable', name: 'x' }] };
- * const correct = intervalDomain([greaterThanOrEqual(fromNumber(0))]);
+ * const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
  *
  * const result = validateStudentDomain(']0, +∞[', correct, expr);
  * // {

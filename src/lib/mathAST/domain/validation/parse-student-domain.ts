@@ -22,10 +22,10 @@ import {
 	closedInterval,
 	leftClosedInterval,
 	rightClosedInterval,
-	lessThan,
-	lessThanOrEqual,
-	greaterThan,
-	greaterThanOrEqual
+	lessThanInterval,
+	lessThanOrEqualInterval,
+	greaterThanInterval,
+	greaterThanOrEqualInterval
 } from '../factory';
 import { union, excludePoints } from '../algebra';
 
@@ -163,7 +163,7 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 	if (/^[ℝR][₊+]$/.test(trimmed)) {
 		return {
 			success: true,
-			domain: intervalDomain([greaterThanOrEqual(fromNumber(0))]),
+			domain: intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]),
 			format: 'set_notation'
 		};
 	}
@@ -176,7 +176,7 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 	) {
 		return {
 			success: true,
-			domain: intervalDomain([greaterThan(fromNumber(0))]),
+			domain: intervalDomain([greaterThanInterval(fromNumber(0))]),
 			format: 'set_notation'
 		};
 	}
@@ -185,7 +185,7 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 	if (/^[ℝR][₋-]$/.test(trimmed)) {
 		return {
 			success: true,
-			domain: intervalDomain([lessThanOrEqual(fromNumber(0))]),
+			domain: intervalDomain([lessThanOrEqualInterval(fromNumber(0))]),
 			format: 'set_notation'
 		};
 	}
@@ -198,7 +198,7 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 	) {
 		return {
 			success: true,
-			domain: intervalDomain([lessThan(fromNumber(0))]),
+			domain: intervalDomain([lessThanInterval(fromNumber(0))]),
 			format: 'set_notation'
 		};
 	}
@@ -479,16 +479,16 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
 		let interval: Interval;
 		switch (op) {
 			case '>':
-				interval = greaterThan(value);
+				interval = greaterThanInterval(value);
 				break;
 			case '>=':
-				interval = greaterThanOrEqual(value);
+				interval = greaterThanOrEqualInterval(value);
 				break;
 			case '<':
-				interval = lessThan(value);
+				interval = lessThanInterval(value);
 				break;
 			case '<=':
-				interval = lessThanOrEqual(value);
+				interval = lessThanOrEqualInterval(value);
 				break;
 			default:
 				return { success: false, error: `Opérateur non reconnu: ${op}` };
@@ -519,16 +519,16 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
 		let interval: Interval;
 		switch (op) {
 			case '>':
-				interval = lessThan(value);
+				interval = lessThanInterval(value);
 				break;
 			case '>=':
-				interval = lessThanOrEqual(value);
+				interval = lessThanOrEqualInterval(value);
 				break;
 			case '<':
-				interval = greaterThan(value);
+				interval = greaterThanInterval(value);
 				break;
 			case '<=':
-				interval = greaterThanOrEqual(value);
+				interval = greaterThanOrEqualInterval(value);
 				break;
 			default:
 				return { success: false, error: `Opérateur non reconnu: ${op}` };

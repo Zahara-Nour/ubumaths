@@ -198,7 +198,7 @@ export function analyzeExpressionStructure(expr: MathNode, variable: string): Ex
  *
  * @example
  * // Determine sign of x^2 on ]-infinity, 0[
- * const sign = determineSignOnInterval(parse('x^2'), 'x', lessThan(0));
+ * const sign = determineSignOnInterval(parse('x^2'), 'x', lessThanInterval(0));
  * // Returns 'positive' (since x^2 >= 0 for all x)
  */
 export function determineSignOnInterval(

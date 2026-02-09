@@ -13,10 +13,10 @@ import {
 	universalDomain,
 	intervalDomain,
 	emptyDomain,
-	greaterThan,
-	greaterThanOrEqual,
-	lessThan,
-	lessThanOrEqual,
+	greaterThanInterval,
+	greaterThanOrEqualInterval,
+	lessThanInterval,
+	lessThanOrEqualInterval,
 	closedInterval,
 	openInterval,
 	realLine,
@@ -594,18 +594,22 @@ export function solveLinearInequality(
 	if (a > 0) {
 		if (op === '>=') {
 			return intervalDomain([
-				strict ? greaterThan(solutionValue) : greaterThanOrEqual(solutionValue)
+				strict ? greaterThanInterval(solutionValue) : greaterThanOrEqualInterval(solutionValue)
 			]);
 		} else {
-			return intervalDomain([strict ? lessThan(solutionValue) : lessThanOrEqual(solutionValue)]);
+			return intervalDomain([
+				strict ? lessThanInterval(solutionValue) : lessThanOrEqualInterval(solutionValue)
+			]);
 		}
 	} else {
 		// a < 0, flip inequality
 		if (op === '>=') {
-			return intervalDomain([strict ? lessThan(solutionValue) : lessThanOrEqual(solutionValue)]);
+			return intervalDomain([
+				strict ? lessThanInterval(solutionValue) : lessThanOrEqualInterval(solutionValue)
+			]);
 		} else {
 			return intervalDomain([
-				strict ? greaterThan(solutionValue) : greaterThanOrEqual(solutionValue)
+				strict ? greaterThanInterval(solutionValue) : greaterThanOrEqualInterval(solutionValue)
 			]);
 		}
 	}
@@ -693,9 +697,12 @@ export function solveQuadraticInequality(
 		if (op === '>=') {
 			// Want where >= 0: x <= minRoot OR x >= maxRoot
 			if (strict) {
-				return intervalDomain([lessThan(minRootValue), greaterThan(maxRootValue)]);
+				return intervalDomain([lessThanInterval(minRootValue), greaterThanInterval(maxRootValue)]);
 			} else {
-				return intervalDomain([lessThanOrEqual(minRootValue), greaterThanOrEqual(maxRootValue)]);
+				return intervalDomain([
+					lessThanOrEqualInterval(minRootValue),
+					greaterThanOrEqualInterval(maxRootValue)
+				]);
 			}
 		} else {
 			// Want where <= 0: minRoot <= x <= maxRoot
@@ -717,9 +724,12 @@ export function solveQuadraticInequality(
 		} else {
 			// Want where <= 0: x <= minRoot OR x >= maxRoot
 			if (strict) {
-				return intervalDomain([lessThan(minRootValue), greaterThan(maxRootValue)]);
+				return intervalDomain([lessThanInterval(minRootValue), greaterThanInterval(maxRootValue)]);
 			} else {
-				return intervalDomain([lessThanOrEqual(minRootValue), greaterThanOrEqual(maxRootValue)]);
+				return intervalDomain([
+					lessThanOrEqualInterval(minRootValue),
+					greaterThanOrEqualInterval(maxRootValue)
+				]);
 			}
 		}
 	}
@@ -1101,19 +1111,27 @@ export function solveCubicInequality(
 		if (a > 0) {
 			if (op === '>=') {
 				// f(x) >= 0 when x >= r
-				return intervalDomain([strict ? greaterThan(rValue) : greaterThanOrEqual(rValue)]);
+				return intervalDomain([
+					strict ? greaterThanInterval(rValue) : greaterThanOrEqualInterval(rValue)
+				]);
 			} else {
 				// f(x) <= 0 when x <= r
-				return intervalDomain([strict ? lessThan(rValue) : lessThanOrEqual(rValue)]);
+				return intervalDomain([
+					strict ? lessThanInterval(rValue) : lessThanOrEqualInterval(rValue)
+				]);
 			}
 		} else {
 			// a < 0
 			if (op === '>=') {
 				// f(x) >= 0 when x <= r
-				return intervalDomain([strict ? lessThan(rValue) : lessThanOrEqual(rValue)]);
+				return intervalDomain([
+					strict ? lessThanInterval(rValue) : lessThanOrEqualInterval(rValue)
+				]);
 			} else {
 				// f(x) <= 0 when x >= r
-				return intervalDomain([strict ? greaterThan(rValue) : greaterThanOrEqual(rValue)]);
+				return intervalDomain([
+					strict ? greaterThanInterval(rValue) : greaterThanOrEqualInterval(rValue)
+				]);
 			}
 		}
 	}
@@ -1131,8 +1149,8 @@ export function solveCubicInequality(
 			if (op === '>=') {
 				// f(x) >= 0: x = r1 (if double) or x >= r2
 				return intervalDomain([
-					strict ? lessThan(r1Value) : lessThanOrEqual(r1Value),
-					strict ? greaterThan(r2Value) : greaterThanOrEqual(r2Value)
+					strict ? lessThanInterval(r1Value) : lessThanOrEqualInterval(r1Value),
+					strict ? greaterThanInterval(r2Value) : greaterThanOrEqualInterval(r2Value)
 				]);
 			} else {
 				// f(x) <= 0: r1 <= x <= r2
@@ -1153,8 +1171,8 @@ export function solveCubicInequality(
 			} else {
 				// f(x) <= 0: x <= r1 or x >= r2
 				return intervalDomain([
-					strict ? lessThan(r1Value) : lessThanOrEqual(r1Value),
-					strict ? greaterThan(r2Value) : greaterThanOrEqual(r2Value)
+					strict ? lessThanInterval(r1Value) : lessThanOrEqualInterval(r1Value),
+					strict ? greaterThanInterval(r2Value) : greaterThanOrEqualInterval(r2Value)
 				]);
 			}
 		}
@@ -1176,16 +1194,19 @@ export function solveCubicInequality(
 		if (op === '>=') {
 			// f(x) >= 0: r1 <= x <= r2 or x >= r3
 			if (strict) {
-				return intervalDomain([openInterval(r1Value, r2Value), greaterThan(r3Value)]);
+				return intervalDomain([openInterval(r1Value, r2Value), greaterThanInterval(r3Value)]);
 			} else {
-				return intervalDomain([closedInterval(r1Value, r2Value), greaterThanOrEqual(r3Value)]);
+				return intervalDomain([
+					closedInterval(r1Value, r2Value),
+					greaterThanOrEqualInterval(r3Value)
+				]);
 			}
 		} else {
 			// f(x) <= 0: x <= r1 or r2 <= x <= r3
 			if (strict) {
-				return intervalDomain([lessThan(r1Value), openInterval(r2Value, r3Value)]);
+				return intervalDomain([lessThanInterval(r1Value), openInterval(r2Value, r3Value)]);
 			} else {
-				return intervalDomain([lessThanOrEqual(r1Value), closedInterval(r2Value, r3Value)]);
+				return intervalDomain([lessThanOrEqualInterval(r1Value), closedInterval(r2Value, r3Value)]);
 			}
 		}
 	} else {
@@ -1193,16 +1214,19 @@ export function solveCubicInequality(
 		if (op === '>=') {
 			// f(x) >= 0: x <= r1 or r2 <= x <= r3
 			if (strict) {
-				return intervalDomain([lessThan(r1Value), openInterval(r2Value, r3Value)]);
+				return intervalDomain([lessThanInterval(r1Value), openInterval(r2Value, r3Value)]);
 			} else {
-				return intervalDomain([lessThanOrEqual(r1Value), closedInterval(r2Value, r3Value)]);
+				return intervalDomain([lessThanOrEqualInterval(r1Value), closedInterval(r2Value, r3Value)]);
 			}
 		} else {
 			// f(x) <= 0: r1 <= x <= r2 or x >= r3
 			if (strict) {
-				return intervalDomain([openInterval(r1Value, r2Value), greaterThan(r3Value)]);
+				return intervalDomain([openInterval(r1Value, r2Value), greaterThanInterval(r3Value)]);
 			} else {
-				return intervalDomain([closedInterval(r1Value, r2Value), greaterThanOrEqual(r3Value)]);
+				return intervalDomain([
+					closedInterval(r1Value, r2Value),
+					greaterThanOrEqualInterval(r3Value)
+				]);
 			}
 		}
 	}
@@ -1298,8 +1322,8 @@ export function solveQuarticInequality(
 			if (op === '>=') {
 				// f(x) >= 0: x <= r1 or x >= r2
 				return intervalDomain([
-					strict ? lessThan(r1) : lessThanOrEqual(r1),
-					strict ? greaterThan(r2) : greaterThanOrEqual(r2)
+					strict ? lessThanInterval(r1) : lessThanOrEqualInterval(r1),
+					strict ? greaterThanInterval(r2) : greaterThanOrEqualInterval(r2)
 				]);
 			} else {
 				// f(x) <= 0: r1 <= x <= r2
@@ -1317,8 +1341,8 @@ export function solveQuarticInequality(
 			} else {
 				// f(x) <= 0: x <= r1 or x >= r2
 				return intervalDomain([
-					strict ? lessThan(r1) : lessThanOrEqual(r1),
-					strict ? greaterThan(r2) : greaterThanOrEqual(r2)
+					strict ? lessThanInterval(r1) : lessThanOrEqualInterval(r1),
+					strict ? greaterThanInterval(r2) : greaterThanOrEqualInterval(r2)
 				]);
 			}
 		}
@@ -1339,8 +1363,8 @@ export function solveQuarticInequality(
 			if (op === '>=') {
 				// f(x) >= 0: x <= r1 or x >= r3 (but we use r2 as safe boundary)
 				return intervalDomain([
-					strict ? lessThan(r1) : lessThanOrEqual(r1),
-					strict ? greaterThan(r2) : greaterThanOrEqual(r2)
+					strict ? lessThanInterval(r1) : lessThanOrEqualInterval(r1),
+					strict ? greaterThanInterval(r2) : greaterThanOrEqualInterval(r2)
 				]);
 			} else {
 				// f(x) <= 0: r1 <= x <= r2
@@ -1356,8 +1380,8 @@ export function solveQuarticInequality(
 					: intervalDomain([closedInterval(r1, r2)]);
 			} else {
 				return intervalDomain([
-					strict ? lessThan(r1) : lessThanOrEqual(r1),
-					strict ? greaterThan(r2) : greaterThanOrEqual(r2)
+					strict ? lessThanInterval(r1) : lessThanOrEqualInterval(r1),
+					strict ? greaterThanInterval(r2) : greaterThanOrEqualInterval(r2)
 				]);
 			}
 		}
@@ -1375,12 +1399,16 @@ export function solveQuarticInequality(
 		if (op === '>=') {
 			// f(x) >= 0: x <= r1 or r2 <= x <= r3 or x >= r4
 			if (strict) {
-				return intervalDomain([lessThan(r1), openInterval(r2, r3), greaterThan(r4)]);
+				return intervalDomain([
+					lessThanInterval(r1),
+					openInterval(r2, r3),
+					greaterThanInterval(r4)
+				]);
 			} else {
 				return intervalDomain([
-					lessThanOrEqual(r1),
+					lessThanOrEqualInterval(r1),
 					closedInterval(r2, r3),
-					greaterThanOrEqual(r4)
+					greaterThanOrEqualInterval(r4)
 				]);
 			}
 		} else {
@@ -1405,12 +1433,16 @@ export function solveQuarticInequality(
 		} else {
 			// f(x) <= 0: x <= r1 or r2 <= x <= r3 or x >= r4
 			if (strict) {
-				return intervalDomain([lessThan(r1), openInterval(r2, r3), greaterThan(r4)]);
+				return intervalDomain([
+					lessThanInterval(r1),
+					openInterval(r2, r3),
+					greaterThanInterval(r4)
+				]);
 			} else {
 				return intervalDomain([
-					lessThanOrEqual(r1),
+					lessThanOrEqualInterval(r1),
 					closedInterval(r2, r3),
-					greaterThanOrEqual(r4)
+					greaterThanOrEqualInterval(r4)
 				]);
 			}
 		}
