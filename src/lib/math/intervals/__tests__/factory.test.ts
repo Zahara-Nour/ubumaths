@@ -11,8 +11,8 @@ import {
 	bound,
 	openEndpoint,
 	closedEndpoint,
-	negInfinity,
-	posInfinity,
+	negInfinityEndpoint,
+	posInfinityEndpoint,
 	openInterval,
 	closedInterval,
 	leftClosedInterval,
@@ -153,13 +153,13 @@ describe('endpoint factories', () => {
 	});
 
 	it('creates negative infinity endpoint', () => {
-		const ep = negInfinity();
+		const ep = negInfinityEndpoint();
 		expect(ep.type).toBe('open');
 		expect(endpointToNumber(ep.value)).toBe(-Infinity);
 	});
 
 	it('creates positive infinity endpoint', () => {
-		const ep = posInfinity();
+		const ep = posInfinityEndpoint();
 		expect(ep.type).toBe('open');
 		expect(endpointToNumber(ep.value)).toBe(Infinity);
 	});

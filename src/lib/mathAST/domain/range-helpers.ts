@@ -15,8 +15,8 @@ import {
 	interval as makeInterval,
 	openEndpoint,
 	closedEndpoint,
-	posInfinity,
-	negInfinity
+	posInfinityEndpoint,
+	negInfinityEndpoint
 } from './factory';
 import {
 	positiveInfinity as posInfinityNode,
@@ -983,13 +983,13 @@ export function computeRangeWithCriticalPointsExact(
 
 		// Build domain with potentially infinite endpoints
 		const lowerEndpoint = lowerIsInfinite
-			? negInfinity()
+			? negInfinityEndpoint()
 			: min.inclusive
 				? closedEndpoint(min.node)
 				: openEndpoint(min.node);
 
 		const upperEndpoint = upperIsInfinite
-			? posInfinity()
+			? posInfinityEndpoint()
 			: max.inclusive
 				? closedEndpoint(max.node)
 				: openEndpoint(max.node);

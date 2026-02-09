@@ -47,7 +47,7 @@ export type Sign = 'positive' | 'negative' | 'zero' | 'unknown';
  * @example
  * // f(x) = x - 2 is negative on ]-infinity, 2[
  * {
- *   interval: { kind: 'interval', lower: negInfinity(), upper: openEndpoint(2) },
+ *   interval: { kind: 'interval', lower: negInfinityEndpoint(), upper: openEndpoint(2) },
  *   sign: 'negative',
  *   reason: 'f(x) = x - 2 < 0 when x < 2'
  * }

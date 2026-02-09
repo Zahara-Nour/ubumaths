@@ -94,14 +94,14 @@ export function closedEndpoint(value: EndpointValue): Endpoint {
 /**
  * Creates negative infinity endpoint (always open).
  */
-export function negInfinity(): Endpoint {
+export function negInfinityEndpoint(): Endpoint {
 	return openEndpoint(bound('-inf'));
 }
 
 /**
  * Creates positive infinity endpoint (always open).
  */
-export function posInfinity(): Endpoint {
+export function posInfinityEndpoint(): Endpoint {
 	return openEndpoint(bound('+inf'));
 }
 
@@ -148,35 +148,35 @@ export function rightClosedInterval(lower: EndpointValue, upper: EndpointValue):
  * Creates (-infinity, a) - French notation ]-infinity, a[
  */
 export function lessThan(bound: EndpointValue): Interval {
-	return interval(negInfinity(), openEndpoint(bound));
+	return interval(negInfinityEndpoint(), openEndpoint(bound));
 }
 
 /**
  * Creates (-infinity, a] - French notation ]-infinity, a]
  */
 export function lessThanOrEqual(bound: EndpointValue): Interval {
-	return interval(negInfinity(), closedEndpoint(bound));
+	return interval(negInfinityEndpoint(), closedEndpoint(bound));
 }
 
 /**
  * Creates (a, +infinity) - French notation ]a, +infinity[
  */
 export function greaterThan(bound: EndpointValue): Interval {
-	return interval(openEndpoint(bound), posInfinity());
+	return interval(openEndpoint(bound), posInfinityEndpoint());
 }
 
 /**
  * Creates [a, +infinity) - French notation [a, +infinity[
  */
 export function greaterThanOrEqual(bound: EndpointValue): Interval {
-	return interval(closedEndpoint(bound), posInfinity());
+	return interval(closedEndpoint(bound), posInfinityEndpoint());
 }
 
 /**
  * Creates the entire real line (-infinity, +infinity)
  */
 export function realLine(): Interval {
-	return interval(negInfinity(), posInfinity());
+	return interval(negInfinityEndpoint(), posInfinityEndpoint());
 }
 
 // =============================================================================
