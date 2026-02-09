@@ -20,6 +20,7 @@ import {
 	closedInterval,
 	fromNumber
 } from './factory';
+import { endpointToNumber } from '$lib/math/intervals/endpoint';
 
 // =============================================================================
 // Domain Definitions
@@ -797,20 +798,15 @@ export function getBoundsFromDomain(domain: Domain): Bounds | null {
 		const lowerEndpoint = firstInterval.lower;
 		const upperEndpoint = lastInterval.upper;
 
-		// Check for infinity
+		// Convert endpoints to numeric values (handles number, constants, fractions, etc.)
 		const lowerValue =
-			lowerEndpoint.value.type === 'infinity'
-				? null
-				: lowerEndpoint.value.type === 'number'
-					? parseFloat(lowerEndpoint.value.value)
-					: null;
-
+			lowerEndpoint.value.type === 'infinity' ? null : endpointToNumber(lowerEndpoint.value);
 		const upperValue =
-			upperEndpoint.value.type === 'infinity'
-				? null
-				: upperEndpoint.value.type === 'number'
-					? parseFloat(upperEndpoint.value.value)
-					: null;
+			upperEndpoint.value.type === 'infinity' ? null : endpointToNumber(upperEndpoint.value);
+
+		// endpointToNumber returns NaN for unevaluable nodes — treat as unbounded
+		if (lowerValue !== null && !Number.isFinite(lowerValue)) return null;
+		if (upperValue !== null && !Number.isFinite(upperValue)) return null;
 
 		return {
 			lower: lowerValue,
