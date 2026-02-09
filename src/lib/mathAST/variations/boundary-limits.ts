@@ -21,8 +21,8 @@ import { infinity } from '../factory';
 import { isNumber, isInfinity } from '../guards';
 import {
 	endpointToNumber,
-	isPositiveInfinity,
-	isNegativeInfinity
+	isPositiveInfinityEndpoint,
+	isNegativeInfinityEndpoint
 } from '$lib/math/intervals/endpoint';
 
 // =============================================================================
@@ -322,7 +322,7 @@ function processIntervalBound(
 	const value = endpoint.value;
 
 	// Check for infinity
-	if (isPositiveInfinity(value)) {
+	if (isPositiveInfinityEndpoint(value)) {
 		// Upper bound at +infinity: approach from left
 		return {
 			point: value,
@@ -331,7 +331,7 @@ function processIntervalBound(
 		};
 	}
 
-	if (isNegativeInfinity(value)) {
+	if (isNegativeInfinityEndpoint(value)) {
 		// Lower bound at -infinity: approach from right
 		return {
 			point: value,

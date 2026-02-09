@@ -14,7 +14,7 @@ import {
 } from '$lib/mathAST/domain/range-helpers';
 import type { MathNode } from '../../types';
 import type { IntervalDomain } from '$lib/math/intervals/types';
-import { isPositiveInfinity, isNegativeInfinity } from '$lib/math/intervals';
+import { isPositiveInfinityEndpoint, isNegativeInfinityEndpoint } from '$lib/math/intervals';
 
 /**
  * Compute precise bounds for an expression using the closed interval method
@@ -63,7 +63,7 @@ function hasFiniteEndpoints(domain: IntervalDomain): boolean {
 	if (domain.intervals.length === 0) return false;
 	const lo = domain.intervals[0].lower;
 	const hi = domain.intervals[domain.intervals.length - 1].upper;
-	return !isNegativeInfinity(lo.value) && !isPositiveInfinity(hi.value);
+	return !isNegativeInfinityEndpoint(lo.value) && !isPositiveInfinityEndpoint(hi.value);
 }
 
 /**
