@@ -7,14 +7,20 @@
 
 import type { MathNode } from '../types';
 import type { Domain } from './types';
-import { universalDomain, intervalDomain, fromNumber, closedInterval } from './factory';
+import {
+	universalDomain,
+	intervalDomain,
+	fromNumber,
+	closedInterval,
+	interval as makeInterval,
+	openEndpoint,
+	closedEndpoint
+} from './factory';
 import { getBoundsFromDomain, domainFromBounds, type Bounds } from './builtins';
 import { differentiate } from '../differentiation';
 import { evaluate, substitute } from '../eval';
 import { containsVariable, getNumericValue } from '../differentiation/rules';
-import { solve } from '../solve/solve';
-import { equals, number } from '../factory';
-import { isRelation } from '../guards';
+import { evaluateAtCriticalPoint, findCriticalPoints } from '../variations/critical-points';
 
 /**
  * Evaluate an expression at a specific numeric value of a variable.
@@ -30,27 +36,6 @@ function evalAt(expr: MathNode, varName: string, value: number): number | null {
 		// Evaluation failed
 	}
 	return null;
-}
-
-/**
- * Evaluate an expression exactly at a symbolic point.
- * Substitutes xNode for the variable, evaluates in exact mode,
- * then gets a numeric approximation.
- */
-function evalExact(
-	expr: MathNode,
-	variable: string,
-	xNode: MathNode
-): { y: MathNode; yApproximate: number } | null {
-	try {
-		const substituted = substitute(expr, { [variable]: xNode });
-		const result = evaluate(substituted, { mode: 'exact' });
-		const approx = evaluate(result.node, { mode: 'decimal' });
-		if (typeof approx.value !== 'number' || !isFinite(approx.value)) return null;
-		return { y: result.node, yApproximate: approx.value };
-	} catch {
-		return null;
-	}
 }
 
 // =============================================================================
@@ -824,66 +809,35 @@ export function computeRangeWithCriticalPointsExact(
 		const candidates: { node: MathNode; approximate: number; inclusive: boolean }[] = [];
 
 		// Evaluate f at endpoints (both must succeed)
-		const lowerEval = evalExact(expr, variable, fromNumber(bounds.lower));
-		if (!lowerEval) return null;
+		const lowerEval = evaluateAtCriticalPoint(expr, variable, fromNumber(bounds.lower));
+		if (!lowerEval || lowerEval.yApproximate === undefined) return null;
 		candidates.push({
 			node: lowerEval.y,
 			approximate: lowerEval.yApproximate,
 			inclusive: bounds.lowerInclusive
 		});
 
-		const upperEval = evalExact(expr, variable, fromNumber(bounds.upper));
-		if (!upperEval) return null;
+		const upperEval = evaluateAtCriticalPoint(expr, variable, fromNumber(bounds.upper));
+		if (!upperEval || upperEval.yApproximate === undefined) return null;
 		candidates.push({
 			node: upperEval.y,
 			approximate: upperEval.yApproximate,
 			inclusive: bounds.upperInclusive
 		});
 
-		// Differentiate and strip delimiters (solve chokes on delimiter nodes)
+		// Find critical points using the variations module
 		const derivative = stripDelimiters(differentiate(expr, { variable, simplify: true }));
+		const criticalPoints = findCriticalPoints(derivative, variable, domain, expr);
 
-		// For quotient derivatives f'/g, solve numerator = 0 (zeros of f/g are zeros of f)
-		const exprToSolve = derivative.type === 'division' ? derivative.numerator : derivative;
-
-		// Solve f'(x) = 0
-		const equation = equals(exprToSolve, number('0'));
-		if (!isRelation(equation)) return null;
-		const solveResult = solve(equation, { variable });
-
-		// Process solutions: evaluate f at each interior critical point
-		if (
-			solveResult.status === 'unique' ||
-			solveResult.status === 'multiple' ||
-			solveResult.status === 'approximate'
-		) {
-			for (const sol of solveResult.solutions) {
-				let xApprox = sol.approximate;
-
-				// Resolve missing approximate by evaluating the MathNode
-				if (xApprox === undefined) {
-					try {
-						const evalResult = evaluate(sol.value, { mode: 'decimal' });
-						if (typeof evalResult.value === 'number' && isFinite(evalResult.value)) {
-							xApprox = evalResult.value;
-						}
-					} catch {
-						continue;
-					}
-				}
-				if (xApprox === undefined) continue;
-
-				// Must be strictly inside the domain
-				if (xApprox <= bounds.lower || xApprox >= bounds.upper) continue;
-
-				// Evaluate f(x) at this critical point
-				const cpEval = evalExact(expr, variable, sol.value);
-				if (cpEval) {
-					candidates.push({
-						node: cpEval.y,
-						approximate: cpEval.yApproximate,
-						inclusive: true
-					});
+		for (const cp of criticalPoints) {
+			if (cp.y && cp.yApproximate !== undefined) {
+				// Must be strictly inside the domain (endpoints already evaluated above)
+				if (
+					cp.xApproximate !== undefined &&
+					cp.xApproximate > bounds.lower &&
+					cp.xApproximate < bounds.upper
+				) {
+					candidates.push({ node: cp.y, approximate: cp.yApproximate, inclusive: true });
 				}
 			}
 		}
@@ -924,12 +878,12 @@ export function computeRangeWithCriticalPointsExact(
 		}
 
 		return {
-			domain: domainFromBounds({
-				lower: min.approximate,
-				lowerInclusive: min.inclusive,
-				upper: max.approximate,
-				upperInclusive: max.inclusive
-			}),
+			domain: intervalDomain([
+				makeInterval(
+					min.inclusive ? closedEndpoint(min.node) : openEndpoint(min.node),
+					max.inclusive ? closedEndpoint(max.node) : openEndpoint(max.node)
+				)
+			]),
 			lowerNode: min.node,
 			upperNode: max.node,
 			lowerApproximate: min.approximate,
