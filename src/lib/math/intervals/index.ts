@@ -72,10 +72,10 @@ export {
 	closedInterval,
 	leftClosedInterval,
 	rightClosedInterval,
-	lessThan,
-	lessThanOrEqual,
-	greaterThan,
-	greaterThanOrEqual,
+	lessThanInterval,
+	lessThanOrEqualInterval,
+	greaterThanInterval,
+	greaterThanOrEqualInterval,
 	realLine
 } from './factory';
 

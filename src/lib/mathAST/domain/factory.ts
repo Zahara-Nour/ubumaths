@@ -28,10 +28,10 @@ export {
 	closedInterval,
 	leftClosedInterval,
 	rightClosedInterval,
-	lessThan,
-	lessThanOrEqual,
-	greaterThan,
-	greaterThanOrEqual,
+	lessThanInterval,
+	lessThanOrEqualInterval,
+	greaterThanInterval,
+	greaterThanOrEqualInterval,
 	realLine
 } from '$lib/math/intervals/factory';
 
@@ -62,8 +62,8 @@ import type {
 import type { MathNode } from '../types';
 import {
 	fromNumber as intervalsFromNumber,
-	greaterThan as intervalsGreaterThan,
-	greaterThanOrEqual as intervalsGreaterThanOrEqual,
+	greaterThanInterval as intervalsGreaterThan,
+	greaterThanOrEqualInterval as intervalsGreaterThanOrEqual,
 	closedInterval as intervalsClosedInterval,
 	realLine as intervalsRealLine
 } from '$lib/math/intervals/factory';

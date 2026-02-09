@@ -12,10 +12,10 @@ import type { RelationNode } from '../../types';
 import { isUniversal } from '../../domain/algebra';
 import {
 	intervalDomain,
-	greaterThanOrEqual,
-	greaterThan,
-	lessThan,
-	lessThanOrEqual,
+	greaterThanOrEqualInterval,
+	greaterThanInterval,
+	lessThanInterval,
+	lessThanOrEqualInterval,
 	closedInterval,
 	openInterval,
 	fromNumber,
@@ -119,7 +119,7 @@ describe('Domain filtering in solve()', () => {
 		describe('Basic filtering', () => {
 			it('should filter x² - 4 = 0 to only positive solution on [0, +∞[', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([greaterThanOrEqual(fromNumber(0))])
+					domain: intervalDomain([greaterThanOrEqualInterval(fromNumber(0))])
 				});
 
 				expect(result.status).toBe('unique');
@@ -129,7 +129,7 @@ describe('Domain filtering in solve()', () => {
 
 			it('should filter x² - 4 = 0 to only negative solution on ]-∞, 0]', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([lessThanOrEqual(fromNumber(0))])
+					domain: intervalDomain([lessThanOrEqualInterval(fromNumber(0))])
 				});
 
 				expect(result.status).toBe('unique');
@@ -170,7 +170,7 @@ describe('Domain filtering in solve()', () => {
 		describe('Open vs closed boundary', () => {
 			it('should KEEP solution x = 2 on [2, +∞[ (closed includes boundary)', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([greaterThanOrEqual(fromNumber(2))])
+					domain: intervalDomain([greaterThanOrEqualInterval(fromNumber(2))])
 				});
 
 				expect(result.solutions).toHaveLength(1);
@@ -179,7 +179,7 @@ describe('Domain filtering in solve()', () => {
 
 			it('should EXCLUDE solution x = 2 on ]2, +∞[ (open excludes boundary)', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([greaterThan(fromNumber(2))])
+					domain: intervalDomain([greaterThanInterval(fromNumber(2))])
 				});
 
 				expect(result.solutions).toHaveLength(0);
@@ -188,7 +188,7 @@ describe('Domain filtering in solve()', () => {
 
 			it('should KEEP solution x = -2 on ]-∞, -2] (closed includes boundary)', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([lessThanOrEqual(fromNumber(-2))])
+					domain: intervalDomain([lessThanOrEqualInterval(fromNumber(-2))])
 				});
 
 				expect(result.solutions).toHaveLength(1);
@@ -197,7 +197,7 @@ describe('Domain filtering in solve()', () => {
 
 			it('should EXCLUDE solution x = -2 on ]-∞, -2[ (open excludes boundary)', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([lessThan(fromNumber(-2))])
+					domain: intervalDomain([lessThanInterval(fromNumber(-2))])
 				});
 
 				expect(result.solutions).toHaveLength(0);
@@ -231,7 +231,7 @@ describe('Domain filtering in solve()', () => {
 			it('should intersect user domain ]-∞, 5[ with computed ]0, +∞[', () => {
 				// ln(x) = 0 → x = 1, which is in ]0, 5[
 				const result = solve(parseEquation('\\ln(x) = 0'), {
-					domain: intervalDomain([lessThan(fromNumber(5))])
+					domain: intervalDomain([lessThanInterval(fromNumber(5))])
 				});
 
 				expect(result.domain).toBeDefined();
@@ -253,7 +253,7 @@ describe('Domain filtering in solve()', () => {
 			it('should produce empty domain when search ]-∞, 0] contradicts computed ]0, +∞[', () => {
 				// ln(x) needs x > 0, user restricts to x ≤ 0 → empty intersection
 				const result = solve(parseEquation('\\ln(x) = 0'), {
-					domain: intervalDomain([lessThanOrEqual(fromNumber(0))])
+					domain: intervalDomain([lessThanOrEqualInterval(fromNumber(0))])
 				});
 
 				expect(result.status).toBe('no-solution');
@@ -263,7 +263,7 @@ describe('Domain filtering in solve()', () => {
 				// ln(x) = 0 → x = 1, computed domain ]0, +∞[
 				// User provides ]-10, +∞[ → superset → no effect
 				const result = solve(parseEquation('\\ln(x) = 0'), {
-					domain: intervalDomain([greaterThan(fromNumber(-10))])
+					domain: intervalDomain([greaterThanInterval(fromNumber(-10))])
 				});
 
 				expect(result.status).toBe('unique');
@@ -323,7 +323,10 @@ describe('Domain filtering in solve()', () => {
 			it('should filter on ]-∞, -1[ ∪ ]1, +∞[ keeping both solutions of x² - 4 = 0', () => {
 				// Solutions ±2 are both in the union
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([lessThan(fromNumber(-1)), greaterThan(fromNumber(1))])
+					domain: intervalDomain([
+						lessThanInterval(fromNumber(-1)),
+						greaterThanInterval(fromNumber(1))
+					])
 				});
 
 				expect(result.solutions).toHaveLength(2);
@@ -332,7 +335,10 @@ describe('Domain filtering in solve()', () => {
 			it('should filter on ]-∞, -3[ ∪ ]3, +∞[ excluding both solutions of x² - 4 = 0', () => {
 				// Solutions ±2 are NOT in the union
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([lessThan(fromNumber(-3)), greaterThan(fromNumber(3))])
+					domain: intervalDomain([
+						lessThanInterval(fromNumber(-3)),
+						greaterThanInterval(fromNumber(3))
+					])
 				});
 
 				expect(result.status).toBe('no-solution');
@@ -341,7 +347,10 @@ describe('Domain filtering in solve()', () => {
 			it('should keep only one solution in ]-∞, 0[ ∪ ]5, +∞[', () => {
 				// x² - 4 = 0 → x = -2 (in ]-∞, 0[) and x = 2 (not in either interval)
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([lessThan(fromNumber(0)), greaterThan(fromNumber(5))])
+					domain: intervalDomain([
+						lessThanInterval(fromNumber(0)),
+						greaterThanInterval(fromNumber(5))
+					])
 				});
 
 				expect(result.solutions).toHaveLength(1);
@@ -375,7 +384,7 @@ describe('Domain filtering in solve()', () => {
 			it('should restrict cubic x³ - 8 = 0 to [0, +∞[', () => {
 				// x = 2 (only real root), in [0, +∞[
 				const result = solve(parseEquation('x^3 - 8 = 0'), {
-					domain: intervalDomain([greaterThanOrEqual(fromNumber(0))])
+					domain: intervalDomain([greaterThanOrEqualInterval(fromNumber(0))])
 				});
 
 				expect(result.status).toBe('unique');
@@ -385,7 +394,7 @@ describe('Domain filtering in solve()', () => {
 			it('should restrict quadratic with 3 solutions (x³ - x = 0) to ]0, +∞[', () => {
 				// x(x²-1) = 0 → x = -1, 0, 1. Only x = 1 is in ]0, +∞[
 				const result = solve(parseEquation('x^3 - x = 0'), {
-					domain: intervalDomain([greaterThan(fromNumber(0))])
+					domain: intervalDomain([greaterThanInterval(fromNumber(0))])
 				});
 
 				expect(result.solutions).toHaveLength(1);
@@ -428,7 +437,7 @@ describe('Domain filtering in solve()', () => {
 		describe('Step recording', () => {
 			it('should record a search-domain step when domain is provided', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([greaterThanOrEqual(fromNumber(0))]),
+					domain: intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]),
 					verbosity: 'summarized'
 				});
 
@@ -461,7 +470,7 @@ describe('Domain filtering in solve()', () => {
 
 			it('should record search-domain step even for polynomial (universal computed domain)', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([greaterThan(fromNumber(0))]),
+					domain: intervalDomain([greaterThanInterval(fromNumber(0))]),
 					verbosity: 'summarized'
 				});
 
@@ -476,7 +485,7 @@ describe('Domain filtering in solve()', () => {
 		describe('Result domain', () => {
 			it('should set result.domain to the intersected domain', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([greaterThanOrEqual(fromNumber(0))])
+					domain: intervalDomain([greaterThanOrEqualInterval(fromNumber(0))])
 				});
 
 				expect(result.domain).toBeDefined();

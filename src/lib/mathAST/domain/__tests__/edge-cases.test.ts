@@ -28,9 +28,9 @@ import {
 	conditionDomain,
 	comparison,
 	positiveReals,
-	greaterThan,
-	greaterThanOrEqual,
-	lessThanOrEqual,
+	greaterThanInterval,
+	greaterThanOrEqualInterval,
+	lessThanOrEqualInterval,
 	openInterval,
 	closedInterval,
 	leftClosedInterval,
@@ -259,7 +259,7 @@ describe('Symbolic bounds edge cases', () => {
 		it('creates [0, √2] ∪ [π, +∞[', () => {
 			const d = intervalDomain([
 				closedInterval(fromNumber(0), bound('sqrt(2)')),
-				greaterThanOrEqual(bound('\\pi'))
+				greaterThanOrEqualInterval(bound('\\pi'))
 			]);
 			expect(d.kind).toBe('interval_set');
 			if (d.kind === 'interval_set') {
@@ -270,7 +270,7 @@ describe('Symbolic bounds edge cases', () => {
 		it('formats [0, √2] ∪ [π, +∞[ correctly', () => {
 			const d = intervalDomain([
 				closedInterval(fromNumber(0), bound('sqrt(2)')),
-				greaterThanOrEqual(bound('\\pi'))
+				greaterThanOrEqualInterval(bound('\\pi'))
 			]);
 			expect(formatDomainInterval(d)).toBe('[0, √2] ∪ [π, +∞[');
 		});
@@ -283,7 +283,7 @@ describe('Symbolic bounds edge cases', () => {
 		it('containsValue for [0, √2] ∪ [π, +∞[', () => {
 			const d = intervalDomain([
 				closedInterval(fromNumber(0), bound('sqrt(2)')),
-				greaterThanOrEqual(bound('\\pi'))
+				greaterThanOrEqualInterval(bound('\\pi'))
 			]);
 			expect(containsValue(d, 1)).toBe(true); // In first interval
 			expect(containsValue(d, 2)).toBe(false); // Between intervals
@@ -547,8 +547,8 @@ describe('Algebra corner cases', () => {
 
 		it('union creates gap-filling', () => {
 			// ]−∞, 0] ∪ ]0, +∞[ should cover all reals
-			const a = intervalDomain([lessThanOrEqual(fromNumber(0))]);
-			const b = intervalDomain([greaterThan(fromNumber(0))]);
+			const a = intervalDomain([lessThanOrEqualInterval(fromNumber(0))]);
+			const b = intervalDomain([greaterThanInterval(fromNumber(0))]);
 			const result = union(a, b);
 			expect(isUniversal(result)).toBe(true);
 		});
@@ -819,7 +819,7 @@ describe('Format edge cases', () => {
 		});
 
 		it('formats condition with negative bound', () => {
-			const d = intervalDomain([greaterThanOrEqual(fromNumber(-10))]);
+			const d = intervalDomain([greaterThanOrEqualInterval(fromNumber(-10))]);
 			expect(formatDomainCondition(d)).toBe('x ≥ -10');
 		});
 	});
@@ -845,8 +845,8 @@ describe('Format edge cases', () => {
 	describe('formatDomainFull edge cases', () => {
 		it('returns both formats for complex domain', () => {
 			const d = intervalDomain([
-				lessThanOrEqual(fromNumber(-2)),
-				greaterThanOrEqual(fromNumber(2))
+				lessThanOrEqualInterval(fromNumber(-2)),
+				greaterThanOrEqualInterval(fromNumber(2))
 			]);
 			const result = formatDomainFull(d);
 			expect(result.interval).toContain('∪');

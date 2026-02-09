@@ -17,10 +17,10 @@ import {
 	closedInterval,
 	leftClosedInterval,
 	rightClosedInterval,
-	lessThan,
-	lessThanOrEqual,
-	greaterThan,
-	greaterThanOrEqual,
+	lessThanInterval,
+	lessThanOrEqualInterval,
+	greaterThanInterval,
+	greaterThanOrEqualInterval,
 	realLine,
 	emptySet,
 	universalSet,
@@ -194,29 +194,29 @@ describe('interval factories', () => {
 		expect(int.upper.type).toBe('closed');
 	});
 
-	it('creates lessThan ]-infinity, a[', () => {
-		const int = lessThan(fromNumber(5));
+	it('creates lessThanInterval ]-infinity, a[', () => {
+		const int = lessThanInterval(fromNumber(5));
 		expect(endpointToNumber(int.lower.value)).toBe(-Infinity);
 		expect(int.lower.type).toBe('open');
 		expect(endpointToNumber(int.upper.value)).toBe(5);
 		expect(int.upper.type).toBe('open');
 	});
 
-	it('creates lessThanOrEqual ]-infinity, a]', () => {
-		const int = lessThanOrEqual(fromNumber(5));
+	it('creates lessThanOrEqualInterval ]-infinity, a]', () => {
+		const int = lessThanOrEqualInterval(fromNumber(5));
 		expect(endpointToNumber(int.lower.value)).toBe(-Infinity);
 		expect(int.upper.type).toBe('closed');
 	});
 
-	it('creates greaterThan ]a, +infinity[', () => {
-		const int = greaterThan(fromNumber(0));
+	it('creates greaterThanInterval ]a, +infinity[', () => {
+		const int = greaterThanInterval(fromNumber(0));
 		expect(endpointToNumber(int.lower.value)).toBe(0);
 		expect(int.lower.type).toBe('open');
 		expect(endpointToNumber(int.upper.value)).toBe(Infinity);
 	});
 
-	it('creates greaterThanOrEqual [a, +infinity[', () => {
-		const int = greaterThanOrEqual(fromNumber(0));
+	it('creates greaterThanOrEqualInterval [a, +infinity[', () => {
+		const int = greaterThanOrEqualInterval(fromNumber(0));
 		expect(int.lower.type).toBe('closed');
 		expect(endpointToNumber(int.upper.value)).toBe(Infinity);
 	});

@@ -27,10 +27,10 @@ import {
 	EMPTY_SET,
 	UNIVERSAL_SET,
 	fromNumber,
-	greaterThan,
-	greaterThanOrEqual,
-	lessThan,
-	lessThanOrEqual,
+	greaterThanInterval,
+	greaterThanOrEqualInterval,
+	lessThanInterval,
+	lessThanOrEqualInterval,
 	intervalDomain,
 	intervalSet,
 	excludedPoint as createExcludedPoint,
@@ -177,16 +177,16 @@ function convertSingleCondition(
 
 	switch (condition.op) {
 		case '>':
-			return intervalDomain([greaterThan(bound)]);
+			return intervalDomain([greaterThanInterval(bound)]);
 		case '>=':
-			return intervalDomain([greaterThanOrEqual(bound)]);
+			return intervalDomain([greaterThanOrEqualInterval(bound)]);
 		case '<':
-			return intervalDomain([lessThan(bound)]);
+			return intervalDomain([lessThanInterval(bound)]);
 		case '<=':
-			return intervalDomain([lessThanOrEqual(bound)]);
+			return intervalDomain([lessThanOrEqualInterval(bound)]);
 		case '!=':
 			// ℝ \ {bound} = ]-∞, bound[ ∪ ]bound, +∞[
-			return intervalDomain([lessThan(bound), greaterThan(bound)]);
+			return intervalDomain([lessThanInterval(bound), greaterThanInterval(bound)]);
 		case '=':
 			// Single point as closed interval [bound, bound]
 			return intervalDomain([closedInterval(bound, bound)]);

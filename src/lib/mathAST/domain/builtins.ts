@@ -13,9 +13,9 @@ import {
 	unitInterval,
 	universalDomain,
 	intervalDomain,
-	greaterThanOrEqual,
-	lessThanOrEqual,
-	greaterThan,
+	greaterThanOrEqualInterval,
+	lessThanOrEqualInterval,
+	greaterThanInterval,
 	openInterval,
 	closedInterval,
 	fromNumber
@@ -57,7 +57,7 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	// Inverse hyperbolic with restricted domains
 	[
 		'arccosh',
-		{ domain: intervalDomain([greaterThanOrEqual(fromNumber(1))]), constraint: 'x >= 1' }
+		{ domain: intervalDomain([greaterThanOrEqualInterval(fromNumber(1))]), constraint: 'x >= 1' }
 	],
 
 	// Universal domain functions
@@ -89,14 +89,20 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	[
 		'arcsec',
 		{
-			domain: intervalDomain([lessThanOrEqual(fromNumber(-1)), greaterThanOrEqual(fromNumber(1))]),
+			domain: intervalDomain([
+				lessThanOrEqualInterval(fromNumber(-1)),
+				greaterThanOrEqualInterval(fromNumber(1))
+			]),
 			constraint: '|x| >= 1'
 		}
 	],
 	[
 		'arccsc',
 		{
-			domain: intervalDomain([lessThanOrEqual(fromNumber(-1)), greaterThanOrEqual(fromNumber(1))]),
+			domain: intervalDomain([
+				lessThanOrEqualInterval(fromNumber(-1)),
+				greaterThanOrEqualInterval(fromNumber(1))
+			]),
 			constraint: '|x| >= 1'
 		}
 	],
@@ -674,16 +680,16 @@ function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
 	// Only lower bound: [a, +∞[ or ]a, +∞[
 	if (upper === null) {
 		if (lowerInclusive) {
-			return intervalDomain([greaterThanOrEqual(fromNumber(lower!))]);
+			return intervalDomain([greaterThanOrEqualInterval(fromNumber(lower!))]);
 		} else {
-			return intervalDomain([greaterThan(fromNumber(lower!))]);
+			return intervalDomain([greaterThanInterval(fromNumber(lower!))]);
 		}
 	}
 
 	// Only upper bound: ]-∞, b] or ]-∞, b[
 	if (lower === null) {
 		if (upperInclusive) {
-			return intervalDomain([lessThanOrEqual(fromNumber(upper))]);
+			return intervalDomain([lessThanOrEqualInterval(fromNumber(upper))]);
 		} else {
 			// lessThan is not exported, use openInterval with -∞
 			return intervalDomain([

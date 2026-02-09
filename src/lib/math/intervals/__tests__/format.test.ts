@@ -17,10 +17,10 @@ import {
 	bound,
 	closedInterval,
 	openInterval,
-	greaterThan,
-	greaterThanOrEqual,
-	lessThan,
-	lessThanOrEqual,
+	greaterThanInterval,
+	greaterThanOrEqualInterval,
+	lessThanInterval,
+	lessThanOrEqualInterval,
 	realLine,
 	emptySet,
 	universalSet,
@@ -103,23 +103,23 @@ describe('formatDomainInterval', () => {
 		expect(formatDomainInterval(domain)).toBe(']0, 1[');
 	});
 
-	it('formats greaterThan', () => {
-		const domain = intervalSet([greaterThan(fromNumber(0))]);
+	it('formats greaterThanInterval', () => {
+		const domain = intervalSet([greaterThanInterval(fromNumber(0))]);
 		expect(formatDomainInterval(domain)).toBe(']0, +∞[');
 	});
 
-	it('formats greaterThanOrEqual', () => {
-		const domain = intervalSet([greaterThanOrEqual(fromNumber(0))]);
+	it('formats greaterThanOrEqualInterval', () => {
+		const domain = intervalSet([greaterThanOrEqualInterval(fromNumber(0))]);
 		expect(formatDomainInterval(domain)).toBe('[0, +∞[');
 	});
 
-	it('formats lessThan', () => {
-		const domain = intervalSet([lessThan(fromNumber(0))]);
+	it('formats lessThanInterval', () => {
+		const domain = intervalSet([lessThanInterval(fromNumber(0))]);
 		expect(formatDomainInterval(domain)).toBe(']-∞, 0[');
 	});
 
-	it('formats lessThanOrEqual', () => {
-		const domain = intervalSet([lessThanOrEqual(fromNumber(0))]);
+	it('formats lessThanOrEqualInterval', () => {
+		const domain = intervalSet([lessThanOrEqualInterval(fromNumber(0))]);
 		expect(formatDomainInterval(domain)).toBe(']-∞, 0]');
 	});
 
@@ -168,23 +168,23 @@ describe('formatDomainCondition', () => {
 		expect(formatDomainCondition(universalSet(), 't')).toBe('t ∈ ℝ');
 	});
 
-	it('formats greaterThan as condition', () => {
+	it('formats greaterThanInterval as condition', () => {
 		const domain = positiveReals();
 		expect(formatDomainCondition(domain)).toBe('x > 0');
 	});
 
-	it('formats greaterThanOrEqual as condition', () => {
+	it('formats greaterThanOrEqualInterval as condition', () => {
 		const domain = nonNegativeReals();
 		expect(formatDomainCondition(domain)).toBe('x ≥ 0');
 	});
 
-	it('formats lessThan as condition', () => {
-		const domain = intervalSet([lessThan(fromNumber(5))]);
+	it('formats lessThanInterval as condition', () => {
+		const domain = intervalSet([lessThanInterval(fromNumber(5))]);
 		expect(formatDomainCondition(domain)).toBe('x < 5');
 	});
 
-	it('formats lessThanOrEqual as condition', () => {
-		const domain = intervalSet([lessThanOrEqual(fromNumber(5))]);
+	it('formats lessThanOrEqualInterval as condition', () => {
+		const domain = intervalSet([lessThanOrEqualInterval(fromNumber(5))]);
 		expect(formatDomainCondition(domain)).toBe('x ≤ 5');
 	});
 
@@ -213,7 +213,7 @@ describe('formatDomainCondition', () => {
 
 	it('formats with symbolic bounds', () => {
 		const sqrt2 = bound('sqrt(2)');
-		const domain = intervalSet([greaterThan(sqrt2)]);
+		const domain = intervalSet([greaterThanInterval(sqrt2)]);
 		expect(formatDomainCondition(domain)).toBe('x > √2');
 	});
 });
@@ -396,13 +396,13 @@ describe('formatDomainCondition edge cases', () => {
 
 	it('formats symbolic bound in condition', () => {
 		const sqrt3 = bound('sqrt(3)');
-		const domain = intervalSet([greaterThanOrEqual(sqrt3)]);
+		const domain = intervalSet([greaterThanOrEqualInterval(sqrt3)]);
 		expect(formatDomainCondition(domain)).toBe('x ≥ √3');
 	});
 
 	it('formats pi in condition', () => {
 		const piVal = bound('\\pi');
-		const domain = intervalSet([lessThan(piVal)]);
+		const domain = intervalSet([lessThanInterval(piVal)]);
 		expect(formatDomainCondition(domain)).toBe('x < π');
 	});
 
@@ -415,7 +415,7 @@ describe('formatDomainCondition edge cases', () => {
 describe('formatDomainFull edge cases', () => {
 	it('returns both formats for complex domain', () => {
 		const sqrt2 = bound('sqrt(2)');
-		const domain = intervalSet([greaterThan(sqrt2)]);
+		const domain = intervalSet([greaterThanInterval(sqrt2)]);
 		const result = formatDomainFull(domain, 'y');
 		expect(result.interval).toBe(']√2, +∞[');
 		expect(result.condition).toBe('y > √2');

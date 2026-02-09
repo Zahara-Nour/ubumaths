@@ -16,8 +16,8 @@ import {
 	intervalDomain,
 	closedInterval,
 	openInterval,
-	greaterThanOrEqual,
-	lessThanOrEqual,
+	greaterThanOrEqualInterval,
+	lessThanOrEqualInterval,
 	fromNumber,
 	nonZeroReals
 } from '../factory';
@@ -178,7 +178,7 @@ describe('computeRange()', () => {
 
 		it('variable x on ]-infinity, 0] has range ]-infinity, 0]', () => {
 			const result = computeRange(variable('x'), 'x', {
-				domain: intervalDomain([lessThanOrEqual(fromNumber(0))])
+				domain: intervalDomain([lessThanOrEqualInterval(fromNumber(0))])
 			});
 			expect(containsValue(result.range, 0)).toBe(true);
 			expect(containsValue(result.range, -100)).toBe(true);
@@ -957,8 +957,8 @@ describe('computeRange()', () => {
 
 		it('multi-interval domain ]-∞, -1] ∪ [1, +∞[', () => {
 			const domain = intervalDomain([
-				lessThanOrEqual(fromNumber(-1)),
-				greaterThanOrEqual(fromNumber(1))
+				lessThanOrEqualInterval(fromNumber(-1)),
+				greaterThanOrEqualInterval(fromNumber(1))
 			]);
 			const result = computeRange(variable('x'), 'x', { domain });
 			expect(containsValue(result.range, -1)).toBe(true);
