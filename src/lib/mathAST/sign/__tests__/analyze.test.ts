@@ -25,9 +25,9 @@ import {
 	openEndpoint,
 	closedEndpoint,
 	negInfinityEndpoint,
-	posInfinityEndpoint,
-	fromNumber
+	posInfinityEndpoint
 } from '$lib/math/intervals/factory';
+import { number } from '$lib/mathAST/factory';
 
 // =============================================================================
 // Helper Functions
@@ -53,15 +53,15 @@ function createIntervalDomain(
 		lower === -Infinity
 			? negInfinityEndpoint()
 			: openLower
-				? openEndpoint(fromNumber(lower))
-				: closedEndpoint(fromNumber(lower));
+				? openEndpoint(number(lower))
+				: closedEndpoint(number(lower));
 
 	const upperEndpoint =
 		upper === Infinity
 			? posInfinityEndpoint()
 			: openUpper
-				? openEndpoint(fromNumber(upper))
-				: closedEndpoint(fromNumber(upper));
+				? openEndpoint(number(upper))
+				: closedEndpoint(number(upper));
 
 	return {
 		kind: 'interval_set',

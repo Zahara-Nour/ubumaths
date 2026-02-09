@@ -15,12 +15,11 @@ import type { IntervalDomain, EndpointType } from '$lib/math/intervals/types';
 import {
 	intervalSet,
 	interval,
-	fromNumber,
 	endpointToNumber,
 	isPositiveInfinityEndpoint,
 	isNegativeInfinityEndpoint
 } from '$lib/math/intervals';
-import { infinity } from '../../factory';
+import { infinity, number } from '../../factory';
 
 // =============================================================================
 // Helpers
@@ -39,11 +38,11 @@ function numericInterval(
 	return intervalSet([
 		interval(
 			{
-				value: lower === null ? infinity('negative') : fromNumber(lower),
+				value: lower === null ? infinity('negative') : number(lower),
 				type: (lower === null ? 'open' : lowerInclusive ? 'closed' : 'open') as EndpointType
 			},
 			{
-				value: upper === null ? infinity('positive') : fromNumber(upper),
+				value: upper === null ? infinity('positive') : number(upper),
 				type: (upper === null ? 'open' : upperInclusive ? 'closed' : 'open') as EndpointType
 			}
 		)

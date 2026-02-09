@@ -18,9 +18,9 @@ import {
 	openInterval,
 	greaterThanOrEqualInterval,
 	lessThanOrEqualInterval,
-	fromNumber,
 	nonZeroReals
 } from '../factory';
+import { number } from '$lib/mathAST/factory';
 import type { MathNode } from '../../types';
 import type { Domain } from '../types';
 
@@ -66,12 +66,12 @@ function opposite(operand: MathNode): MathNode {
 
 // Helper to create a closed interval domain [a, b]
 function closedIntervalDomain(a: number, b: number): Domain {
-	return intervalDomain([closedInterval(fromNumber(a), fromNumber(b))]);
+	return intervalDomain([closedInterval(number(a), number(b))]);
 }
 
 // Helper to create an open interval domain ]a, b[
 function openIntervalDomain(a: number, b: number): Domain {
-	return intervalDomain([openInterval(fromNumber(a), fromNumber(b))]);
+	return intervalDomain([openInterval(number(a), number(b))]);
 }
 
 // =============================================================================
@@ -178,7 +178,7 @@ describe('computeRange()', () => {
 
 		it('variable x on ]-infinity, 0] has range ]-infinity, 0]', () => {
 			const result = computeRange(variable('x'), 'x', {
-				domain: intervalDomain([lessThanOrEqualInterval(fromNumber(0))])
+				domain: intervalDomain([lessThanOrEqualInterval(number(0))])
 			});
 			expect(containsValue(result.range, 0)).toBe(true);
 			expect(containsValue(result.range, -100)).toBe(true);
@@ -957,8 +957,8 @@ describe('computeRange()', () => {
 
 		it('multi-interval domain ]-∞, -1] ∪ [1, +∞[', () => {
 			const domain = intervalDomain([
-				lessThanOrEqualInterval(fromNumber(-1)),
-				greaterThanOrEqualInterval(fromNumber(1))
+				lessThanOrEqualInterval(number(-1)),
+				greaterThanOrEqualInterval(number(1))
 			]);
 			const result = computeRange(variable('x'), 'x', { domain });
 			expect(containsValue(result.range, -1)).toBe(true);

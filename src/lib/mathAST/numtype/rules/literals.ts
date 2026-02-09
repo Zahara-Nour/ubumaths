@@ -19,13 +19,7 @@ import type {
 import type { MathType, ParityInfo, SignInfo, TypeContext } from '../types';
 import { REAL_TYPE, UNKNOWN_TYPE } from '../types';
 import type { IntervalDomain } from '$lib/math/intervals/types';
-import {
-	intervalSet,
-	closedInterval,
-	fromNumber,
-	pi as piEndpoint,
-	e as eEndpoint
-} from '$lib/math/intervals';
+import { intervalSet, closedInterval, pi as piEndpoint, e as eEndpoint } from '$lib/math/intervals';
 import { isNegativeInfinityEndpoint, isPositiveInfinityEndpoint } from '$lib/math/intervals';
 import { compareNumericNodes } from '../../eval/compare-numeric';
 import { number } from '../../factory';
@@ -151,7 +145,7 @@ export function inferNumberType(node: NumberNode): MathType {
 		parity = Math.abs(value) % 2 === 0 ? 'even' : 'odd';
 	}
 
-	const endpoint = fromNumber(value);
+	const endpoint = number(value);
 	const bounds: IntervalDomain = intervalSet([closedInterval(endpoint, endpoint)]);
 
 	return {

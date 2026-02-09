@@ -24,7 +24,7 @@ import { toLatex } from '../../latex-generator';
 import { inferType } from '../../numtype/infer';
 import type { TypeContext } from '../../numtype/types';
 import type { IntervalDomain, EndpointType } from '$lib/math/intervals/types';
-import { intervalSet, interval, fromNumber } from '$lib/math/intervals';
+import { intervalSet, interval } from '$lib/math/intervals';
 import { infinity } from '$lib/mathAST/factory';
 
 // =============================================================================
@@ -57,7 +57,7 @@ function ltBounds(value: number): IntervalDomain {
 	return intervalSet([
 		interval(
 			{ value: infinity('negative'), type: 'open' as EndpointType },
-			{ value: fromNumber(value), type: 'open' as EndpointType }
+			{ value: number(value), type: 'open' as EndpointType }
 		)
 	]);
 }
@@ -65,7 +65,7 @@ function ltBounds(value: number): IntervalDomain {
 function gtBounds(value: number): IntervalDomain {
 	return intervalSet([
 		interval(
-			{ value: fromNumber(value), type: 'open' as EndpointType },
+			{ value: number(value), type: 'open' as EndpointType },
 			{ value: infinity('positive'), type: 'open' as EndpointType }
 		)
 	]);
@@ -74,8 +74,8 @@ function gtBounds(value: number): IntervalDomain {
 function closedBounds(a: number, b: number): IntervalDomain {
 	return intervalSet([
 		interval(
-			{ value: fromNumber(a), type: 'closed' as EndpointType },
-			{ value: fromNumber(b), type: 'closed' as EndpointType }
+			{ value: number(a), type: 'closed' as EndpointType },
+			{ value: number(b), type: 'closed' as EndpointType }
 		)
 	]);
 }

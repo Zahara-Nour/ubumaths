@@ -237,14 +237,19 @@ function normalizeCompositionOptions(
 // =============================================================================
 
 /**
- * Creates a number node
- * @param value - Numeric value as string (to preserve exact formatting)
+ * Creates a number node.
+ *
+ * Accepts a string or a JS number. Use a string when the original
+ * formatting matters (e.g. "007", "3.0", "1e-8"), because toString()
+ * normalizes the representation (007 → "7", 3.0 → "3").
+ *
+ * @param value - Numeric value as string or number
  * @param metadata - Optional rendering hints
  */
-export function number(value: string, metadata?: NodeMetadata): NumberNode {
+export function number(value: string | number, metadata?: NodeMetadata): NumberNode {
 	return {
 		type: 'number',
-		value,
+		value: typeof value === 'number' ? value.toString() : value,
 		...(metadata && { metadata })
 	} as const;
 }

@@ -22,27 +22,6 @@ import { normalizeIntervals } from './normalize';
 // =============================================================================
 
 /**
- * Creates an endpoint value from a JS number.
- *
- * Uses n.toString() internally, so integers and "normal" decimals are
- * stored exactly (e.g. "42", "0.5", "-3.14") and later evaluated via
- * exact BigInt/fraction arithmetic. However, values outside the range
- * [1e-7, 1e21] produce scientific notation strings ("1e-7", "1e+21")
- * which are evaluated via parseFloat → floatToRational (64-bit float
- * precision). For exact large/small values, use bound() with a
- * fraction expression like "3/2".
- *
- * @example
- * fromNumber(0)    // NumberNode '0'      → exact
- * fromNumber(1.5)  // NumberNode '1.5'    → exact (3/2)
- * fromNumber(-2)   // NumberNode '-2'     → exact
- * fromNumber(1e-8) // NumberNode '1e-8'   → float precision
- */
-export function fromNumber(n: number): MathNode {
-	return number(n.toString());
-}
-
-/**
  * Creates an endpoint value from a custom math expression string.
  *
  * Uses parseCustom from mathAST to parse any symbolic expression.
@@ -225,20 +204,20 @@ export function intervalSet(intervals: readonly Interval[]): IntervalSet {
 
 /** Domain for x > 0 (e.g., for ln) - ]0, +infinity[ */
 export function positiveReals(): IntervalSet {
-	return intervalSet([greaterThanInterval(fromNumber(0))]);
+	return intervalSet([greaterThanInterval(number(0))]);
 }
 
 /** Domain for x >= 0 (e.g., for sqrt) - [0, +infinity[ */
 export function nonNegativeReals(): IntervalSet {
-	return intervalSet([greaterThanOrEqualInterval(fromNumber(0))]);
+	return intervalSet([greaterThanOrEqualInterval(number(0))]);
 }
 
 /** Domain for x != 0 (e.g., for 1/x) - ]-∞, 0[ ∪ ]0, +∞[ */
 export function nonZeroReals(): IntervalSet {
-	return intervalSet([lessThanInterval(fromNumber(0)), greaterThanInterval(fromNumber(0))]);
+	return intervalSet([lessThanInterval(number(0)), greaterThanInterval(number(0))]);
 }
 
 /** Domain for -1 <= x <= 1 (e.g., for arcsin, arccos) - [-1, 1] */
 export function unitInterval(): IntervalSet {
-	return intervalSet([closedInterval(fromNumber(-1), fromNumber(1))]);
+	return intervalSet([closedInterval(number(-1), number(1))]);
 }

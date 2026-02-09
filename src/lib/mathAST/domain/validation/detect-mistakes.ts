@@ -45,7 +45,7 @@ const EXCLUSION_POINT_TOLERANCE = 0.001;
  * // Expression: 1/x
  * const expr = { type: 'division', numerator: ..., denominator: { type: 'variable', name: 'x' } };
  * const student = universalDomain();  // Student forgot to exclude 0
- * const correct = excludePoints(universalDomain(), [fromNumber(0)]);
+ * const correct = excludePoints(universalDomain(), [number(0)]);
  *
  * const mistakes = detectDomainMistakes(student, correct, expr);
  * // [{ type: 'forgot_denominator', description: "Tu as oublié d'exclure...", ... }]

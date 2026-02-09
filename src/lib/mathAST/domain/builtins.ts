@@ -17,9 +17,9 @@ import {
 	lessThanOrEqualInterval,
 	greaterThanInterval,
 	openInterval,
-	closedInterval,
-	fromNumber
+	closedInterval
 } from './factory';
+import { number } from '$lib/mathAST/factory';
 import { getEndpoints, buildInterval } from '$lib/math/intervals';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { tryConvertConditionToInterval } from './algebra';
@@ -54,7 +54,7 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	// Inverse hyperbolic with restricted domains
 	[
 		'arccosh',
-		{ domain: intervalDomain([greaterThanOrEqualInterval(fromNumber(1))]), constraint: 'x >= 1' }
+		{ domain: intervalDomain([greaterThanOrEqualInterval(number(1))]), constraint: 'x >= 1' }
 	],
 
 	// Universal domain functions
@@ -72,7 +72,7 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	[
 		'arctanh',
 		{
-			domain: intervalDomain([openInterval(fromNumber(-1), fromNumber(1))]),
+			domain: intervalDomain([openInterval(number(-1), number(1))]),
 			constraint: '-1 < x < 1'
 		}
 	],
@@ -87,8 +87,8 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 		'arcsec',
 		{
 			domain: intervalDomain([
-				lessThanOrEqualInterval(fromNumber(-1)),
-				greaterThanOrEqualInterval(fromNumber(1))
+				lessThanOrEqualInterval(number(-1)),
+				greaterThanOrEqualInterval(number(1))
 			]),
 			constraint: '|x| >= 1'
 		}
@@ -97,8 +97,8 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 		'arccsc',
 		{
 			domain: intervalDomain([
-				lessThanOrEqualInterval(fromNumber(-1)),
-				greaterThanOrEqualInterval(fromNumber(1))
+				lessThanOrEqualInterval(number(-1)),
+				greaterThanOrEqualInterval(number(1))
 			]),
 			constraint: '|x| >= 1'
 		}
@@ -677,23 +677,23 @@ function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
 	// Only lower bound: [a, +∞[ or ]a, +∞[
 	if (upper === null) {
 		if (lowerInclusive) {
-			return intervalDomain([greaterThanOrEqualInterval(fromNumber(lower!))]);
+			return intervalDomain([greaterThanOrEqualInterval(number(lower!))]);
 		} else {
-			return intervalDomain([greaterThanInterval(fromNumber(lower!))]);
+			return intervalDomain([greaterThanInterval(number(lower!))]);
 		}
 	}
 
 	// Only upper bound: ]-∞, b] or ]-∞, b[
 	if (lower === null) {
 		if (upperInclusive) {
-			return intervalDomain([lessThanOrEqualInterval(fromNumber(upper))]);
+			return intervalDomain([lessThanOrEqualInterval(number(upper))]);
 		} else {
 			// lessThan is not exported, use openInterval with -∞
 			return intervalDomain([
 				{
 					kind: 'interval',
 					lower: { value: { type: 'infinity', sign: 'negative' }, type: 'open' },
-					upper: { value: fromNumber(upper), type: 'open' }
+					upper: { value: number(upper), type: 'open' }
 				}
 			]);
 		}
@@ -701,16 +701,16 @@ function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
 
 	// Both bounds
 	if (lowerInclusive && upperInclusive) {
-		return intervalDomain([closedInterval(fromNumber(lower), fromNumber(upper))]);
+		return intervalDomain([closedInterval(number(lower), number(upper))]);
 	} else if (!lowerInclusive && !upperInclusive) {
-		return intervalDomain([openInterval(fromNumber(lower), fromNumber(upper))]);
+		return intervalDomain([openInterval(number(lower), number(upper))]);
 	} else if (lowerInclusive && !upperInclusive) {
 		// [a, b[
 		return intervalDomain([
 			{
 				kind: 'interval',
-				lower: { value: fromNumber(lower), type: 'closed' },
-				upper: { value: fromNumber(upper), type: 'open' }
+				lower: { value: number(lower), type: 'closed' },
+				upper: { value: number(upper), type: 'open' }
 			}
 		]);
 	} else {
@@ -718,8 +718,8 @@ function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
 		return intervalDomain([
 			{
 				kind: 'interval',
-				lower: { value: fromNumber(lower), type: 'open' },
-				upper: { value: fromNumber(upper), type: 'closed' }
+				lower: { value: number(lower), type: 'open' },
+				upper: { value: number(upper), type: 'closed' }
 			}
 		]);
 	}
@@ -831,11 +831,11 @@ function domainFromNumericBounds(bounds: NumericBounds): Domain {
 
 	const lo =
 		lower !== null
-			? { value: fromNumber(lower), type: lowerInclusive ? ('closed' as const) : ('open' as const) }
+			? { value: number(lower), type: lowerInclusive ? ('closed' as const) : ('open' as const) }
 			: { value: { type: 'infinity' as const, sign: 'negative' as const }, type: 'open' as const };
 	const hi =
 		upper !== null
-			? { value: fromNumber(upper), type: upperInclusive ? ('closed' as const) : ('open' as const) }
+			? { value: number(upper), type: upperInclusive ? ('closed' as const) : ('open' as const) }
 			: { value: { type: 'infinity' as const, sign: 'positive' as const }, type: 'open' as const };
 
 	return buildInterval(lo, hi) as Domain;

@@ -32,8 +32,7 @@ import {
 	openEndpoint,
 	closedEndpoint,
 	negInfinityEndpoint,
-	posInfinityEndpoint,
-	fromNumber
+	posInfinityEndpoint
 } from '$lib/math/intervals/factory';
 
 // =============================================================================
@@ -60,7 +59,7 @@ function universalDomain(): Domain {
 function boundedDomain(lower: number, upper: number): IntervalSet {
 	return {
 		kind: 'interval_set',
-		intervals: [interval(closedEndpoint(fromNumber(lower)), closedEndpoint(fromNumber(upper)))],
+		intervals: [interval(closedEndpoint(number(lower)), closedEndpoint(number(upper)))],
 		excludedPoints: []
 	};
 }
@@ -75,10 +74,10 @@ function createMonotonicInterval(
 	derivativeSign: 'positive' | 'negative' | 'zero' | 'unknown'
 ): MonotonicInterval {
 	const lowerEndpoint =
-		typeof lower === 'number' ? openEndpoint(fromNumber(lower)) : negInfinityEndpoint();
+		typeof lower === 'number' ? openEndpoint(number(lower)) : negInfinityEndpoint();
 
 	const upperEndpoint =
-		typeof upper === 'number' ? openEndpoint(fromNumber(upper)) : posInfinityEndpoint();
+		typeof upper === 'number' ? openEndpoint(number(upper)) : posInfinityEndpoint();
 
 	return {
 		interval: interval(lowerEndpoint, upperEndpoint),

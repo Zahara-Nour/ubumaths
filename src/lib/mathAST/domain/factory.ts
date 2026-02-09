@@ -10,7 +10,7 @@
 // =============================================================================
 
 // Bound value constructors
-export { fromNumber, bound } from '$lib/math/intervals/factory';
+export { bound } from '$lib/math/intervals/factory';
 
 // Endpoint factories
 export {
@@ -60,12 +60,12 @@ import type {
 	Interval
 } from './types';
 import {
-	fromNumber as intervalsFromNumber,
 	greaterThanInterval as intervalsGreaterThan,
 	greaterThanOrEqualInterval as intervalsGreaterThanOrEqual,
 	closedInterval as intervalsClosedInterval,
 	realLine as intervalsRealLine
 } from '$lib/math/intervals/factory';
+import { number } from '$lib/mathAST/factory';
 
 /**
  * Creates a condition-based domain.
@@ -183,20 +183,20 @@ export function excludedPoint(value: MathNode): ExcludedPoint {
 
 /** Domain for x > 0 (e.g., for ln) - ]0, +infinity[ */
 export function positiveReals(): IntervalSet {
-	return intervalSet([intervalsGreaterThan(intervalsFromNumber(0))]);
+	return intervalSet([intervalsGreaterThan(number(0))]);
 }
 
 /** Domain for x >= 0 (e.g., for sqrt) - [0, +infinity[ */
 export function nonNegativeReals(): IntervalSet {
-	return intervalSet([intervalsGreaterThanOrEqual(intervalsFromNumber(0))]);
+	return intervalSet([intervalsGreaterThanOrEqual(number(0))]);
 }
 
 /** Domain for x != 0 (e.g., for 1/x) - R \ {0} */
 export function nonZeroReals(): IntervalSet {
-	return intervalSet([intervalsRealLine()], [excludedPoint(intervalsFromNumber(0))]);
+	return intervalSet([intervalsRealLine()], [excludedPoint(number(0))]);
 }
 
 /** Domain for -1 <= x <= 1 (e.g., for arcsin, arccos) - [-1, 1] */
 export function unitInterval(): IntervalSet {
-	return intervalSet([intervalsClosedInterval(intervalsFromNumber(-1), intervalsFromNumber(1))]);
+	return intervalSet([intervalsClosedInterval(number(-1), number(1))]);
 }

@@ -19,9 +19,9 @@ import {
 	posInfinityEndpoint,
 	realLine,
 	EMPTY_SET,
-	UNIVERSAL_SET,
-	fromNumber
+	UNIVERSAL_SET
 } from './factory';
+import { number } from '$lib/mathAST/factory';
 import {
 	endpointToNumber,
 	isNegativeInfinityEndpoint,
@@ -142,7 +142,7 @@ export function isUniversalInterval(d: IntervalDomain): boolean {
 export function containsValue(d: IntervalDomain, value: MathNode | number): boolean {
 	// Convert raw numbers to MathNode
 	if (typeof value === 'number') {
-		return containsValue(d, fromNumber(value));
+		return containsValue(d, number(value));
 	}
 	switch (d.kind) {
 		case 'empty':

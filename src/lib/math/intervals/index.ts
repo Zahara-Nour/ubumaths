@@ -8,9 +8,10 @@
  *
  * @example
  * // Create intervals with symbolic bounds
- * import { closedInterval, bound, fromNumber, formatDomainInterval } from '$lib/math/intervals';
+ * import { closedInterval, bound, formatDomainInterval } from '$lib/math/intervals';
+ * import { number } from '$lib/mathAST/factory';
  *
- * const domain = intervalSet([closedInterval(fromNumber(0), bound('sqrt(2)'))]);
+ * const domain = intervalSet([closedInterval(number(0), bound('sqrt(2)'))]);
  * console.log(formatDomainInterval(domain)); // "[0, √2]"
  *
  * @example
@@ -44,7 +45,7 @@ export {
 } from './endpoint';
 
 // Factory functions - Endpoint values
-export { fromNumber, bound } from './factory';
+export { bound } from './factory';
 
 // Factory functions - Endpoints
 export {

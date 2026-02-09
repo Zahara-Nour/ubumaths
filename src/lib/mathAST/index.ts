@@ -680,8 +680,6 @@ export { DEFAULT_INTEGRATE_OPTIONS } from './integration';
 // =============================================================================
 
 export {
-	// Value constructors
-	fromNumber as domainFromNumber,
 	// Factory functions
 	emptyDomain,
 	universalDomain,
