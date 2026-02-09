@@ -29,6 +29,7 @@ import {
 	closedInterval
 } from './factory';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { endpointToNumber } from '$lib/math/intervals/endpoint';
 
 // =============================================================================
 // PeriodicExclusion Helpers
@@ -283,7 +284,7 @@ function numericContainsValue(d: Domain, value: number): boolean {
 	// Check excluded points
 	for (const ep of d.excludedPoints) {
 		const epVal = endpointToNumber(ep.value);
-		if (epVal !== null && Math.abs(epVal - value) < ZERO_TOLERANCE) {
+		if (!isNaN(epVal) && Math.abs(epVal - value) < ZERO_TOLERANCE) {
 			return false;
 		}
 	}
@@ -304,8 +305,8 @@ function numericInInterval(value: number, interval: import('./types').Interval):
 	const lower = endpointToNumber(interval.lower.value);
 	const upper = endpointToNumber(interval.upper.value);
 
-	// Check lower bound
-	if (lower !== null) {
+	// Check lower bound (isFinite excludes Infinity/-Infinity/NaN)
+	if (isFinite(lower)) {
 		if (interval.lower.type === 'closed') {
 			if (value < lower) return false;
 		} else {
@@ -314,7 +315,7 @@ function numericInInterval(value: number, interval: import('./types').Interval):
 	}
 
 	// Check upper bound
-	if (upper !== null) {
+	if (isFinite(upper)) {
 		if (interval.upper.type === 'closed') {
 			if (value > upper) return false;
 		} else {
@@ -323,24 +324,6 @@ function numericInInterval(value: number, interval: import('./types').Interval):
 	}
 
 	return true;
-}
-
-/**
- * Convert an endpoint MathNode to a numeric value.
- * Returns null for infinity or unevaluable expressions.
- */
-function endpointToNumber(node: EndpointValue): number | null {
-	if (node.type === 'infinity') return null;
-	if (node.type === 'number') return parseFloat(node.value);
-	if (node.type === 'opposite' && node.operand.type === 'number') {
-		return -parseFloat(node.operand.value);
-	}
-	try {
-		const val = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(val) ? val : null;
-	} catch {
-		return null;
-	}
 }
 
 // =============================================================================

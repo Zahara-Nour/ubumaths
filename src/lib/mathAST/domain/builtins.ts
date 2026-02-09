@@ -20,7 +20,12 @@ import {
 	closedInterval,
 	fromNumber
 } from './factory';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import {
+	getBoundsFromDomain as intervalsGetBoundsFromDomain,
+	domainFromBounds,
+	type Bounds
+} from '$lib/math/intervals/algebra';
+import { tryConvertConditionToInterval } from './algebra';
 
 // =============================================================================
 // Domain Definitions
@@ -769,115 +774,22 @@ export function hasRestrictedRange(name: string): boolean {
 // =============================================================================
 
 /**
- * Bounds structure for interval operations.
- */
-export interface Bounds {
-	lower: number | null;
-	lowerInclusive: boolean;
-	upper: number | null;
-	upperInclusive: boolean;
-}
-
-/**
  * Extract bounds from a Domain.
+ * Delegates to intervals module for IntervalDomain kinds,
+ * handles condition_domain and periodic_exclusion locally.
  */
 export function getBoundsFromDomain(domain: Domain): Bounds | null {
-	if (domain.kind === 'empty') return null;
-	if (domain.kind === 'universal') {
+	if (domain.kind === 'condition_domain') {
+		const converted = tryConvertConditionToInterval(domain);
+		if (converted) return intervalsGetBoundsFromDomain(converted);
+		return null;
+	}
+	if (domain.kind === 'periodic_exclusion') {
+		// Almost all of R — return universal bounds
 		return { lower: null, lowerInclusive: false, upper: null, upperInclusive: false };
 	}
-
-	if (domain.kind === 'interval_set') {
-		const intervals = domain.intervals;
-		if (intervals.length === 0) return null;
-
-		// Get overall bounds from first and last interval
-		const firstInterval = intervals[0];
-		const lastInterval = intervals[intervals.length - 1];
-
-		const lowerEndpoint = firstInterval.lower;
-		const upperEndpoint = lastInterval.upper;
-
-		// Convert endpoints to numeric values (handles number, constants, fractions, etc.)
-		const lowerValue =
-			lowerEndpoint.value.type === 'infinity' ? null : endpointToNumber(lowerEndpoint.value);
-		const upperValue =
-			upperEndpoint.value.type === 'infinity' ? null : endpointToNumber(upperEndpoint.value);
-
-		// endpointToNumber returns NaN for unevaluable nodes — treat as unbounded
-		if (lowerValue !== null && !Number.isFinite(lowerValue)) return null;
-		if (upperValue !== null && !Number.isFinite(upperValue)) return null;
-
-		return {
-			lower: lowerValue,
-			lowerInclusive: lowerEndpoint.type === 'closed',
-			upper: upperValue,
-			upperInclusive: upperEndpoint.type === 'closed'
-		};
-	}
-
-	// For other domain types, return universal bounds
-	return { lower: null, lowerInclusive: false, upper: null, upperInclusive: false };
-}
-
-/**
- * Create a Domain from Bounds.
- */
-export function domainFromBounds(bounds: Bounds): Domain {
-	const { lower, lowerInclusive, upper, upperInclusive } = bounds;
-
-	if (lower === null && upper === null) {
-		return universalDomain();
-	}
-
-	if (lower !== null && upper !== null && lower > upper) {
-		return { kind: 'empty' };
-	}
-
-	if (lower !== null && upper !== null) {
-		if (lowerInclusive && upperInclusive) {
-			return intervalDomain([closedInterval(fromNumber(lower), fromNumber(upper))]);
-		} else if (!lowerInclusive && !upperInclusive) {
-			return intervalDomain([openInterval(fromNumber(lower), fromNumber(upper))]);
-		} else if (lowerInclusive && !upperInclusive) {
-			return intervalDomain([
-				{
-					kind: 'interval',
-					lower: { value: fromNumber(lower), type: 'closed' },
-					upper: { value: fromNumber(upper), type: 'open' }
-				}
-			]);
-		} else {
-			return intervalDomain([
-				{
-					kind: 'interval',
-					lower: { value: fromNumber(lower), type: 'open' },
-					upper: { value: fromNumber(upper), type: 'closed' }
-				}
-			]);
-		}
-	}
-
-	if (lower !== null) {
-		if (lowerInclusive) {
-			return intervalDomain([greaterThanOrEqual(fromNumber(lower))]);
-		} else {
-			return intervalDomain([greaterThan(fromNumber(lower))]);
-		}
-	}
-
-	// upper !== null
-	if (upperInclusive) {
-		return intervalDomain([lessThanOrEqual(fromNumber(upper!))]);
-	} else {
-		return intervalDomain([
-			{
-				kind: 'interval',
-				lower: { value: { type: 'infinity', sign: 'negative' }, type: 'open' },
-				upper: { value: fromNumber(upper!), type: 'open' }
-			}
-		]);
-	}
+	// Remaining kinds (empty, universal, interval_set) are IntervalDomain
+	return intervalsGetBoundsFromDomain(domain);
 }
 
 /**
@@ -1170,3 +1082,9 @@ function getCriticalPoints(entry: BuiltinRangeEntry): number[] {
 		-2 * Math.PI
 	];
 }
+
+// =============================================================================
+// Re-exports from intervals module
+// =============================================================================
+
+export { domainFromBounds, type Bounds } from '$lib/math/intervals/algebra';
