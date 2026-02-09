@@ -133,8 +133,8 @@ describe('formatDomainInterval', () => {
 		expect(formatDomainInterval(domain)).toBe('[0, 1] ∪ [2, 3]');
 	});
 
-	it('formats excluded points', () => {
-		expect(formatDomainInterval(nonZeroReals())).toBe('ℝ \\ {0}');
+	it('formats non-zero reals as split intervals', () => {
+		expect(formatDomainInterval(nonZeroReals())).toBe(']-∞, 0[ ∪ ]0, +∞[');
 	});
 
 	it('formats interval with symbolic bounds', () => {
@@ -200,9 +200,9 @@ describe('formatDomainCondition', () => {
 		expect(formatDomainCondition(domain)).toBe('0 < x < 1');
 	});
 
-	it('formats excluded points as condition', () => {
+	it('formats non-zero reals as split interval condition', () => {
 		const domain = nonZeroReals();
-		expect(formatDomainCondition(domain)).toBe('x ∈ ℝ et x ≠ 0');
+		expect(formatDomainCondition(domain)).toBe('x < 0 ou x > 0');
 	});
 
 	it('formats multiple intervals with ou', () => {
@@ -248,7 +248,6 @@ describe('formatDomainFull', () => {
 // =============================================================================
 
 import { greek, euler } from '$lib/mathAST/factory';
-import { excludedPoint } from '../factory';
 
 describe('formatEndpointValue edge cases', () => {
 	it('formats integer zero', () => {
@@ -329,20 +328,6 @@ describe('formatEndpointValue edge cases', () => {
 });
 
 describe('formatDomainInterval edge cases', () => {
-	it('formats multiple excluded points', () => {
-		const domain = intervalSet(
-			[realLine()],
-			[excludedPoint(fromNumber(0)), excludedPoint(fromNumber(1)), excludedPoint(fromNumber(2))]
-		);
-		expect(formatDomainInterval(domain)).toBe('ℝ \\ {0, 1, 2}');
-	});
-
-	it('formats excluded symbolic points', () => {
-		const sqrt2 = radicalBound(2n);
-		const domain = intervalSet([realLine()], [excludedPoint(sqrt2)]);
-		expect(formatDomainInterval(domain)).toBe('ℝ \\ {√2}');
-	});
-
 	it('formats mixed open/closed bounds', () => {
 		// ]0, 1]
 		const domain = intervalSet([rightClosedInterval(fromNumber(0), fromNumber(1))]);
@@ -366,14 +351,6 @@ describe('formatDomainInterval edge cases', () => {
 			closedInterval(fromNumber(6), fromNumber(7))
 		]);
 		expect(formatDomainInterval(domain)).toBe('[0, 1] ∪ [3, 4] ∪ [6, 7]');
-	});
-
-	it('formats interval with excluded point inside', () => {
-		const domain = intervalSet(
-			[closedInterval(fromNumber(0), fromNumber(10))],
-			[excludedPoint(fromNumber(5))]
-		);
-		expect(formatDomainInterval(domain)).toBe('[0, 10] \\ {5}');
 	});
 
 	it('formats negative bounds', () => {
@@ -419,14 +396,6 @@ describe('formatDomainCondition edge cases', () => {
 		expect(formatDomainCondition(domain)).toBe('0 ≤ x ≤ 1 ou 3 ≤ x ≤ 4 ou 6 ≤ x ≤ 7');
 	});
 
-	it('formats multiple excluded points with et', () => {
-		const domain = intervalSet(
-			[realLine()],
-			[excludedPoint(fromNumber(0)), excludedPoint(fromNumber(1))]
-		);
-		expect(formatDomainCondition(domain)).toBe('x ∈ ℝ et x ≠ 0 et x ≠ 1');
-	});
-
 	it('formats symbolic bound in condition', () => {
 		const sqrt3 = radicalBound(3n);
 		const domain = intervalSet([greaterThanOrEqual(sqrt3)]);
@@ -466,11 +435,11 @@ describe('formatDomainFull edge cases', () => {
 		expect(result.condition).toBe('z ∈ ℝ');
 	});
 
-	it('handles excluded points in both formats', () => {
+	it('handles non-zero reals in both formats', () => {
 		const domain = nonZeroReals();
 		const result = formatDomainFull(domain);
-		expect(result.interval).toBe('ℝ \\ {0}');
-		expect(result.condition).toBe('x ∈ ℝ et x ≠ 0');
+		expect(result.interval).toBe(']-∞, 0[ ∪ ]0, +∞[');
+		expect(result.condition).toBe('x < 0 ou x > 0');
 	});
 });
 

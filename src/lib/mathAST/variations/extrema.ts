@@ -28,7 +28,7 @@ import type {
 import { evaluate } from '../eval';
 import { substitute } from '../eval/substitute';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
-import { containsValue } from '$lib/math/intervals/algebra';
+import { containsValue } from '../domain/algebra';
 
 // =============================================================================
 // Types

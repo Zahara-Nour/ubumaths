@@ -12,8 +12,7 @@ import {
 	intersect,
 	union,
 	complement,
-	difference,
-	excludePoints
+	difference
 } from '../algebra';
 import {
 	fromNumber,
@@ -21,11 +20,11 @@ import {
 	closedInterval,
 	openInterval,
 	greaterThan,
+	lessThan,
 	realLine,
 	emptySet,
 	universalSet,
-	intervalSet,
-	excludedPoint
+	intervalSet
 } from '../factory';
 import { endpointToNumber } from '../endpoint';
 
@@ -70,8 +69,8 @@ describe('isUniversal', () => {
 		expect(isUniversal(domain)).toBe(true);
 	});
 
-	it('real line with excluded points is not universal', () => {
-		const domain = intervalSet([realLine()], [excludedPoint(fromNumber(0))]);
+	it('split intervals around 0 are not universal', () => {
+		const domain = intervalSet([lessThan(fromNumber(0)), greaterThan(fromNumber(0))]);
 		expect(isUniversal(domain)).toBe(false);
 	});
 });
@@ -102,8 +101,8 @@ describe('containsValue', () => {
 		expect(containsValue(domain, 0.5)).toBe(true);
 	});
 
-	it('excluded points are not contained', () => {
-		const domain = intervalSet([realLine()], [excludedPoint(fromNumber(0))]);
+	it('split intervals do not contain the gap point', () => {
+		const domain = intervalSet([lessThan(fromNumber(0)), greaterThan(fromNumber(0))]);
 		expect(containsValue(domain, 0)).toBe(false);
 		expect(containsValue(domain, 1)).toBe(true);
 	});
@@ -266,30 +265,6 @@ describe('difference', () => {
 	});
 });
 
-describe('excludePoints', () => {
-	it('adds excluded point to interval set', () => {
-		const domain = intervalSet([realLine()]);
-		const result = excludePoints(domain, [fromNumber(0)]);
-		expect(result.kind).toBe('interval_set');
-		if (result.kind === 'interval_set') {
-			expect(result.excludedPoints.length).toBe(1);
-			expect(endpointToNumber(result.excludedPoints[0].value)).toBe(0);
-		}
-	});
-
-	it('adds excluded point to universal', () => {
-		const result = excludePoints(universalSet(), [fromNumber(0)]);
-		expect(result.kind).toBe('interval_set');
-		if (result.kind === 'interval_set') {
-			expect(result.excludedPoints.length).toBe(1);
-		}
-	});
-
-	it('excluded points on empty stays empty', () => {
-		expect(excludePoints(emptySet(), [fromNumber(0)]).kind).toBe('empty');
-	});
-});
-
 // =============================================================================
 // Edge Cases
 // =============================================================================
@@ -364,11 +339,14 @@ describe('containsValue edge cases', () => {
 		expect(containsValue(domain, 1e-100)).toBe(true);
 	});
 
-	it('handles multiple excluded points', () => {
-		const domain = intervalSet(
-			[realLine()],
-			[excludedPoint(fromNumber(0)), excludedPoint(fromNumber(1)), excludedPoint(fromNumber(2))]
-		);
+	it('handles multiple split intervals', () => {
+		// ]-inf, 0[ ∪ ]0, 1[ ∪ ]1, 2[ ∪ ]2, +inf[
+		const domain = intervalSet([
+			lessThan(fromNumber(0)),
+			openInterval(fromNumber(0), fromNumber(1)),
+			openInterval(fromNumber(1), fromNumber(2)),
+			greaterThan(fromNumber(2))
+		]);
 		expect(containsValue(domain, 0)).toBe(false);
 		expect(containsValue(domain, 1)).toBe(false);
 		expect(containsValue(domain, 2)).toBe(false);
@@ -436,14 +414,14 @@ describe('intersect edge cases', () => {
 		}
 	});
 
-	it('preserves excluded points in intersection', () => {
-		const a = intervalSet([realLine()], [excludedPoint(fromNumber(0))]);
+	it('intersect split intervals preserves gap', () => {
+		const a = intervalSet([lessThan(fromNumber(0)), greaterThan(fromNumber(0))]);
 		const b = intervalSet([closedInterval(fromNumber(-1), fromNumber(1))]);
 		const result = intersect(a, b);
 		expect(result.kind).toBe('interval_set');
 		if (result.kind === 'interval_set') {
-			expect(result.excludedPoints.length).toBe(1);
-			expect(endpointToNumber(result.excludedPoints[0].value)).toBe(0);
+			// [-1, 0[ ∪ ]0, 1]
+			expect(result.intervals.length).toBe(2);
 		}
 	});
 });
@@ -480,16 +458,14 @@ describe('union edge cases', () => {
 		expect(isUniversal(result)).toBe(true);
 	});
 
-	it('union removes redundant excluded points', () => {
-		// If an excluded point is no longer in the domain after union, it should be removed
-		const a = intervalSet(
-			[closedInterval(fromNumber(0), fromNumber(1))],
-			[excludedPoint(fromNumber(5))]
-		);
+	it('union of non-overlapping intervals keeps them separate', () => {
+		const a = intervalSet([closedInterval(fromNumber(0), fromNumber(1))]);
 		const b = intervalSet([closedInterval(fromNumber(2), fromNumber(3))]);
 		const result = union(a, b);
 		expect(result.kind).toBe('interval_set');
-		// The excluded point at 5 is not in [0,1] ∪ [2,3], so it's irrelevant
+		if (result.kind === 'interval_set') {
+			expect(result.intervals.length).toBe(2);
+		}
 	});
 });
 
@@ -570,52 +546,14 @@ describe('difference edge cases', () => {
 		}
 	});
 
-	it('difference with excluded point', () => {
-		const a = intervalSet([realLine()], [excludedPoint(fromNumber(0))]);
+	it('difference with split intervals around 0', () => {
+		const a = intervalSet([lessThan(fromNumber(0)), greaterThan(fromNumber(0))]);
 		const b = intervalSet([closedInterval(fromNumber(-1), fromNumber(1))]);
-		// (R \ {0}) \ [-1, 1] = ]-inf, -1[ ∪ ]1, +inf[
+		// (]-inf,0[ ∪ ]0,+inf[) \ [-1, 1] = ]-inf, -1[ ∪ ]1, +inf[
 		const result = difference(a, b);
 		expect(result.kind).toBe('interval_set');
 		if (result.kind === 'interval_set') {
 			expect(result.intervals.length).toBe(2);
-		}
-	});
-});
-
-describe('excludePoints edge cases', () => {
-	it('excludes multiple points', () => {
-		const domain = intervalSet([realLine()]);
-		const result = excludePoints(domain, [fromNumber(0), fromNumber(1), fromNumber(2)]);
-		expect(result.kind).toBe('interval_set');
-		if (result.kind === 'interval_set') {
-			expect(result.excludedPoints.length).toBe(3);
-		}
-	});
-
-	it('excludes symbolic point', () => {
-		const sqrt2 = radicalBound(2n);
-		const domain = intervalSet([realLine()]);
-		const result = excludePoints(domain, [sqrt2]);
-		expect(result.kind).toBe('interval_set');
-		if (result.kind === 'interval_set') {
-			expect(result.excludedPoints.length).toBe(1);
-			expect(endpointToNumber(result.excludedPoints[0].value)).toBeCloseTo(Math.sqrt(2));
-		}
-	});
-
-	it('excluding point outside interval has no effect on containsValue', () => {
-		const domain = intervalSet([closedInterval(fromNumber(0), fromNumber(1))]);
-		const result = excludePoints(domain, [fromNumber(5)]);
-		// 5 is not in [0, 1] anyway
-		expect(containsValue(result, 0.5)).toBe(true);
-	});
-
-	it('does not add duplicate excluded points', () => {
-		const domain = intervalSet([realLine()], [excludedPoint(fromNumber(0))]);
-		const result = excludePoints(domain, [fromNumber(0)]);
-		expect(result.kind).toBe('interval_set');
-		if (result.kind === 'interval_set') {
-			expect(result.excludedPoints.length).toBe(1);
 		}
 	});
 });

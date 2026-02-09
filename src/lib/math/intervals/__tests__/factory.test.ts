@@ -32,7 +32,6 @@ import {
 	emptySet,
 	universalSet,
 	intervalSet,
-	excludedPoint,
 	positiveReals,
 	nonNegativeReals,
 	nonZeroReals,
@@ -292,13 +291,6 @@ describe('domain factories', () => {
 		]);
 		expect(domain.kind).toBe('interval_set');
 		expect(domain.intervals.length).toBe(2);
-		expect(domain.excludedPoints.length).toBe(0);
-	});
-
-	it('creates interval set with excluded points', () => {
-		const domain = intervalSet([realLine()], [excludedPoint(fromNumber(0))]);
-		expect(domain.kind).toBe('interval_set');
-		expect(domain.excludedPoints.length).toBe(1);
 	});
 });
 
@@ -320,11 +312,16 @@ describe('common domain shortcuts', () => {
 		expect(int.lower.type).toBe('closed');
 	});
 
-	it('creates non-zero reals R \\ {0}', () => {
+	it('creates non-zero reals ]-inf, 0[ ∪ ]0, +inf[', () => {
 		const domain = nonZeroReals();
 		expect(domain.kind).toBe('interval_set');
-		expect(domain.excludedPoints.length).toBe(1);
-		expect(endpointToNumber(domain.excludedPoints[0].value)).toBe(0);
+		expect(domain.intervals.length).toBe(2);
+		// First interval: ]-inf, 0[
+		expect(endpointToNumber(domain.intervals[0].upper.value)).toBe(0);
+		expect(domain.intervals[0].upper.type).toBe('open');
+		// Second interval: ]0, +inf[
+		expect(endpointToNumber(domain.intervals[1].lower.value)).toBe(0);
+		expect(domain.intervals[1].lower.type).toBe('open');
 	});
 
 	it('creates unit interval [-1, 1]', () => {
@@ -497,20 +494,14 @@ describe('inverted intervals', () => {
 	});
 });
 
-describe('multiple excluded points', () => {
-	it('creates interval set with multiple excluded points', () => {
-		const domain = intervalSet(
-			[realLine()],
-			[excludedPoint(fromNumber(0)), excludedPoint(fromNumber(1)), excludedPoint(fromNumber(2))]
-		);
-		expect(domain.excludedPoints.length).toBe(3);
-	});
-
-	it('creates interval set with symbolic excluded points', () => {
-		const domain = intervalSet([realLine()], [excludedPoint(pi()), excludedPoint(sqrt2())]);
-		expect(domain.excludedPoints.length).toBe(2);
-		expect(endpointToNumber(domain.excludedPoints[0].value)).toBeCloseTo(Math.PI);
-		expect(endpointToNumber(domain.excludedPoints[1].value)).toBeCloseTo(Math.sqrt(2));
+describe('multiple disjoint intervals (replacing excluded points)', () => {
+	it('creates interval set with three disjoint intervals', () => {
+		const domain = intervalSet([
+			closedInterval(fromNumber(0), fromNumber(1)),
+			closedInterval(fromNumber(2), fromNumber(3)),
+			closedInterval(fromNumber(4), fromNumber(5))
+		]);
+		expect(domain.intervals.length).toBe(3);
 	});
 });
 

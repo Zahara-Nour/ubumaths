@@ -11,7 +11,7 @@
  * - Condition notation: x > 0
  */
 
-import type { Domain, ConditionDomain, PeriodicExclusion } from './types';
+import type { Domain, IntervalSet, ConditionDomain, PeriodicExclusion } from './types';
 import {
 	formatInterval as intervalsFormatInterval,
 	formatCondition as intervalsFormatCondition,
@@ -47,6 +47,9 @@ export function formatInterval(domain: Domain): string {
 	if (domain.kind === 'periodic_exclusion') {
 		return formatPeriodicExclusionInterval(domain);
 	}
+	if (domain.kind === 'interval_set') {
+		return formatIntervalSetWithExcluded(domain);
+	}
 	return intervalsFormatInterval(domain);
 }
 
@@ -63,6 +66,9 @@ export function formatCondition(domain: Domain, variable: string = 'x'): string 
 	}
 	if (domain.kind === 'periodic_exclusion') {
 		return formatPeriodicExclusionCondition(domain, variable);
+	}
+	if (domain.kind === 'interval_set') {
+		return formatIntervalSetConditionWithExcluded(domain, variable);
 	}
 	return intervalsFormatCondition(domain, variable);
 }
@@ -89,6 +95,12 @@ export function formatDomainFull(
 			condition: formatPeriodicExclusionCondition(domain, variable)
 		};
 	}
+	if (domain.kind === 'interval_set') {
+		return {
+			interval: formatIntervalSetWithExcluded(domain),
+			condition: formatIntervalSetConditionWithExcluded(domain, variable)
+		};
+	}
 	return intervalsFormatFull(domain, variable);
 }
 
@@ -101,6 +113,55 @@ export const formatDomainInterval = formatInterval;
 
 /** @deprecated Use formatCondition instead */
 export const formatDomainCondition = formatCondition;
+
+// =============================================================================
+// IntervalSet with ExcludedPoints Formatting (domain-specific)
+// =============================================================================
+
+/**
+ * Format an IntervalSet with excluded points.
+ * Delegates to intervals format for the base interval, then appends excluded points.
+ */
+function formatIntervalSetWithExcluded(domain: IntervalSet): string {
+	// Get base interval formatting (without excluded points)
+	const base = intervalsFormatInterval(domain);
+
+	if (domain.excludedPoints.length === 0) {
+		return base;
+	}
+
+	const excludedStr = domain.excludedPoints.map((p) => formatEndpointValue(p.value)).join(', ');
+
+	// If the base is ℝ, use "ℝ \ {0}" notation
+	if (base === 'ℝ') {
+		return `ℝ \\ {${excludedStr}}`;
+	}
+
+	return `${base} \\ {${excludedStr}}`;
+}
+
+/**
+ * Format an IntervalSet with excluded points as conditions.
+ */
+function formatIntervalSetConditionWithExcluded(domain: IntervalSet, variable: string): string {
+	// Get base condition formatting (without excluded points)
+	const base = intervalsFormatCondition(domain, variable);
+
+	if (domain.excludedPoints.length === 0) {
+		return base;
+	}
+
+	const excludedConds = domain.excludedPoints.map(
+		(ep) => `${variable} ≠ ${formatEndpointValue(ep.value)}`
+	);
+
+	// If multiple disjoint intervals, join with "ou"
+	if (domain.intervals.length > 1) {
+		return [base, ...excludedConds].join(' ou ');
+	}
+
+	return [base, ...excludedConds].join(' et ');
+}
 
 // =============================================================================
 // ConditionDomain Formatting (domain-specific)

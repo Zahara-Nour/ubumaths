@@ -73,14 +73,6 @@ export interface Interval {
 	readonly upper: Endpoint;
 }
 
-/**
- * Represents a single excluded point (e.g., x != 0)
- */
-export interface ExcludedPoint {
-	readonly kind: 'excluded_point';
-	readonly value: EndpointValue;
-}
-
 // =============================================================================
 // Domain Types
 // =============================================================================
@@ -100,18 +92,20 @@ export interface UniversalSet {
 }
 
 /**
- * An interval-based domain (union of intervals with optional excluded points)
+ * An interval-based domain (union of intervals).
+ *
+ * This is a pure interval representation without excluded points.
+ * The domain module's IntervalSet extends this with excludedPoints support.
  *
  * Represents domains like:
  * - ]0, +∞[
- * - ]-∞, 0[ ∪ ]0, +∞[ (ℝ \ {0})
+ * - ]-∞, 0[ ∪ ]0, +∞[
  * - [-1, 1]
  * - [0, π]
  */
 export interface IntervalSet {
 	readonly kind: 'interval_set';
 	readonly intervals: readonly Interval[];
-	readonly excludedPoints: readonly ExcludedPoint[];
 }
 
 /**
