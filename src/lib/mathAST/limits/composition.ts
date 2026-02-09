@@ -1242,85 +1242,91 @@ interface CompositionLimitPattern {
  * These patterns detect expressions like (x-1)·ln(x-1) by matching u·ln(u)
  * and binding 'u' to the common subexpression.
  */
-const COMPOSITION_LIMIT_PATTERNS: readonly CompositionLimitPattern[] = [
-	// u·ln(u) → 0 when u → 0⁺ (croissance comparée)
-	{
-		pattern: P.mul(P._('u'), P.func('ln', [P._('u')])),
-		uApproach: 'zero-right',
-		value: number('0'),
-		descriptionFr: 'Croissance comparée : u·ln(u) → 0 quand u → 0⁺'
-	},
-	// u²·ln(u) → 0 when u → 0⁺
-	{
-		pattern: P.mul(P.pow(P._('u'), P.num(2)), P.func('ln', [P._('u')])),
-		uApproach: 'zero-right',
-		value: number('0'),
-		descriptionFr: 'Croissance comparée : u²·ln(u) → 0 quand u → 0⁺'
-	},
-	// √u·ln(u) → 0 when u → 0⁺
-	{
-		pattern: P.mul(P.func('sqrt', [P._('u')]), P.func('ln', [P._('u')])),
-		uApproach: 'zero-right',
-		value: number('0'),
-		descriptionFr: 'Croissance comparée : √u·ln(u) → 0 quand u → 0⁺'
-	},
-	// u·e^u → 0 when u → -∞
-	{
-		pattern: P.mul(P._('u'), P.func('exp', [P._('u')])),
-		uApproach: 'neg-infinity',
-		value: number('0'),
-		descriptionFr: 'Croissance comparée : u·e^u → 0 quand u → -∞'
-	},
-	// u²·e^u → 0 when u → -∞
-	{
-		pattern: P.mul(P.pow(P._('u'), P.num(2)), P.func('exp', [P._('u')])),
-		uApproach: 'neg-infinity',
-		value: number('0'),
-		descriptionFr: 'Croissance comparée : u²·e^u → 0 quand u → -∞'
-	},
-	// u/e^u → 0 when u → +∞
-	{
-		pattern: P.div(P._('u'), P.func('exp', [P._('u')])),
-		uApproach: 'pos-infinity',
-		value: number('0'),
-		descriptionFr: 'Croissance comparée : u/e^u → 0 quand u → +∞'
-	},
-	// u²/e^u → 0 when u → +∞
-	{
-		pattern: P.div(P.pow(P._('u'), P.num(2)), P.func('exp', [P._('u')])),
-		uApproach: 'pos-infinity',
-		value: number('0'),
-		descriptionFr: 'Croissance comparée : u²/e^u → 0 quand u → +∞'
-	},
-	// ln(u)/u → 0 when u → +∞
-	{
-		pattern: P.div(P.func('ln', [P._('u')]), P._('u')),
-		uApproach: 'pos-infinity',
-		value: number('0'),
-		descriptionFr: 'Croissance comparée : ln(u)/u → 0 quand u → +∞'
-	},
-	// ln(u)/u² → 0 when u → +∞
-	{
-		pattern: P.div(P.func('ln', [P._('u')]), P.pow(P._('u'), P.num(2))),
-		uApproach: 'pos-infinity',
-		value: number('0'),
-		descriptionFr: 'Croissance comparée : ln(u)/u² → 0 quand u → +∞'
-	},
-	// e^u/u → +∞ when u → +∞
-	{
-		pattern: P.div(P.func('exp', [P._('u')]), P._('u')),
-		uApproach: 'pos-infinity',
-		value: positiveInfinity(),
-		descriptionFr: 'Croissance comparée : e^u/u → +∞ quand u → +∞'
-	},
-	// e^u/u² → +∞ when u → +∞
-	{
-		pattern: P.div(P.func('exp', [P._('u')]), P.pow(P._('u'), P.num(2))),
-		uApproach: 'pos-infinity',
-		value: positiveInfinity(),
-		descriptionFr: 'Croissance comparée : e^u/u² → +∞ quand u → +∞'
+let _compositionLimitPatterns: readonly CompositionLimitPattern[] | null = null;
+function getCompositionLimitPatterns(): readonly CompositionLimitPattern[] {
+	if (!_compositionLimitPatterns) {
+		_compositionLimitPatterns = [
+			// u·ln(u) → 0 when u → 0⁺ (croissance comparée)
+			{
+				pattern: P.mul(P._('u'), P.func('ln', [P._('u')])),
+				uApproach: 'zero-right',
+				value: number('0'),
+				descriptionFr: 'Croissance comparée : u·ln(u) → 0 quand u → 0⁺'
+			},
+			// u²·ln(u) → 0 when u → 0⁺
+			{
+				pattern: P.mul(P.pow(P._('u'), P.num(2)), P.func('ln', [P._('u')])),
+				uApproach: 'zero-right',
+				value: number('0'),
+				descriptionFr: 'Croissance comparée : u²·ln(u) → 0 quand u → 0⁺'
+			},
+			// √u·ln(u) → 0 when u → 0⁺
+			{
+				pattern: P.mul(P.func('sqrt', [P._('u')]), P.func('ln', [P._('u')])),
+				uApproach: 'zero-right',
+				value: number('0'),
+				descriptionFr: 'Croissance comparée : √u·ln(u) → 0 quand u → 0⁺'
+			},
+			// u·e^u → 0 when u → -∞
+			{
+				pattern: P.mul(P._('u'), P.func('exp', [P._('u')])),
+				uApproach: 'neg-infinity',
+				value: number('0'),
+				descriptionFr: 'Croissance comparée : u·e^u → 0 quand u → -∞'
+			},
+			// u²·e^u → 0 when u → -∞
+			{
+				pattern: P.mul(P.pow(P._('u'), P.num(2)), P.func('exp', [P._('u')])),
+				uApproach: 'neg-infinity',
+				value: number('0'),
+				descriptionFr: 'Croissance comparée : u²·e^u → 0 quand u → -∞'
+			},
+			// u/e^u → 0 when u → +∞
+			{
+				pattern: P.div(P._('u'), P.func('exp', [P._('u')])),
+				uApproach: 'pos-infinity',
+				value: number('0'),
+				descriptionFr: 'Croissance comparée : u/e^u → 0 quand u → +∞'
+			},
+			// u²/e^u → 0 when u → +∞
+			{
+				pattern: P.div(P.pow(P._('u'), P.num(2)), P.func('exp', [P._('u')])),
+				uApproach: 'pos-infinity',
+				value: number('0'),
+				descriptionFr: 'Croissance comparée : u²/e^u → 0 quand u → +∞'
+			},
+			// ln(u)/u → 0 when u → +∞
+			{
+				pattern: P.div(P.func('ln', [P._('u')]), P._('u')),
+				uApproach: 'pos-infinity',
+				value: number('0'),
+				descriptionFr: 'Croissance comparée : ln(u)/u → 0 quand u → +∞'
+			},
+			// ln(u)/u² → 0 when u → +∞
+			{
+				pattern: P.div(P.func('ln', [P._('u')]), P.pow(P._('u'), P.num(2))),
+				uApproach: 'pos-infinity',
+				value: number('0'),
+				descriptionFr: 'Croissance comparée : ln(u)/u² → 0 quand u → +∞'
+			},
+			// e^u/u → +∞ when u → +∞
+			{
+				pattern: P.div(P.func('exp', [P._('u')]), P._('u')),
+				uApproach: 'pos-infinity',
+				value: positiveInfinity(),
+				descriptionFr: 'Croissance comparée : e^u/u → +∞ quand u → +∞'
+			},
+			// e^u/u² → +∞ when u → +∞
+			{
+				pattern: P.div(P.func('exp', [P._('u')]), P.pow(P._('u'), P.num(2))),
+				uApproach: 'pos-infinity',
+				value: positiveInfinity(),
+				descriptionFr: 'Croissance comparée : e^u/u² → +∞ quand u → +∞'
+			}
+		];
 	}
-];
+	return _compositionLimitPatterns;
+}
 
 /**
  * Try to match a known limit pattern by detecting a common subexpression.
@@ -1342,7 +1348,7 @@ function tryKnownLimitWithSubstitution(
 	recorder: LimitStepRecorder
 ): CompositionResult {
 	// Try each composition pattern
-	for (const compPattern of COMPOSITION_LIMIT_PATTERNS) {
+	for (const compPattern of getCompositionLimitPatterns()) {
 		const matchResult = match(compPattern.pattern, expr);
 
 		if (matchResult.success) {
@@ -1456,12 +1462,21 @@ function formatApproachType(approach: CompositionLimitPattern['uApproach']): str
  * - (f - c) / (x - a) where f(a) = c
  * - (c - f) / (a - x) where f(a) = c (equivalent form)
  */
-const DERIVATIVE_PATTERNS = {
-	// (f - c) / (x - a)
-	standard: P.div(P.sub(P._('f'), P._('c')), P.sub(P._('x', P.isVariable()), P._('a'))),
-	// (c - f) / (a - x) = (f - c) / (x - a)
-	reversed: P.div(P.sub(P._('c'), P._('f')), P.sub(P._('a'), P._('x', P.isVariable())))
-};
+let _derivativePatterns: {
+	standard: ReturnType<typeof P.div>;
+	reversed: ReturnType<typeof P.div>;
+} | null = null;
+function getDerivativePatterns() {
+	if (!_derivativePatterns) {
+		_derivativePatterns = {
+			// (f - c) / (x - a)
+			standard: P.div(P.sub(P._('f'), P._('c')), P.sub(P._('x', P.isVariable()), P._('a'))),
+			// (c - f) / (a - x) = (f - c) / (x - a)
+			reversed: P.div(P.sub(P._('c'), P._('f')), P.sub(P._('a'), P._('x', P.isVariable())))
+		};
+	}
+	return _derivativePatterns;
+}
 
 /**
  * Try to recognize the derivative definition pattern:
@@ -1482,11 +1497,11 @@ function tryDerivativeDefinition(
 	if (!isDivision(expr)) return { success: false };
 
 	// Try standard form: (f - c) / (x - a)
-	let matchResult = match(DERIVATIVE_PATTERNS.standard, expr);
+	let matchResult = match(getDerivativePatterns().standard, expr);
 
 	if (!matchResult.success) {
 		// Try reversed form: (c - f) / (a - x)
-		matchResult = match(DERIVATIVE_PATTERNS.reversed, expr);
+		matchResult = match(getDerivativePatterns().reversed, expr);
 	}
 
 	if (!matchResult.success) {
