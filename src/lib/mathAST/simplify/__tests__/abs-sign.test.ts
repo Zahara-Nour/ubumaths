@@ -23,7 +23,9 @@ import {
 import { toLatex } from '../../latex-generator';
 import { inferType } from '../../numtype/infer';
 import type { TypeContext } from '../../numtype/types';
-import type { Bounds } from '$lib/math/intervals/algebra';
+import type { IntervalDomain, EndpointType } from '$lib/math/intervals/types';
+import { intervalSet, interval, fromNumber } from '$lib/math/intervals';
+import { infinity } from '$lib/mathAST/factory';
 
 // =============================================================================
 // Helpers
@@ -40,24 +42,42 @@ function exp(node: Parameters<typeof func>[1][0]) {
 const x = variable('x');
 const y = variable('y');
 
-function ctxBounds(varName: string, bounds: Bounds): TypeContext {
-	return { assumptions: new Map([[varName, { bounds }]]) };
+function ctxBounds(varName: string, bounds: IntervalDomain): TypeContext {
+	return {
+		variables: new Map([[varName, 'real']]),
+		assumptions: new Map([[varName, { bounds }]])
+	};
 }
 
 function ctxSign(varName: string, sign: 'positive' | 'negative'): TypeContext {
 	return { assumptions: new Map([[varName, { sign }]]) };
 }
 
-function ltBounds(value: number): Bounds {
-	return { lower: null, upper: value, lowerInclusive: false, upperInclusive: false };
+function ltBounds(value: number): IntervalDomain {
+	return intervalSet([
+		interval(
+			{ value: infinity('negative'), type: 'open' as EndpointType },
+			{ value: fromNumber(value), type: 'open' as EndpointType }
+		)
+	]);
 }
 
-function gtBounds(value: number): Bounds {
-	return { lower: value, upper: null, lowerInclusive: false, upperInclusive: false };
+function gtBounds(value: number): IntervalDomain {
+	return intervalSet([
+		interval(
+			{ value: fromNumber(value), type: 'open' as EndpointType },
+			{ value: infinity('positive'), type: 'open' as EndpointType }
+		)
+	]);
 }
 
-function closedBounds(a: number, b: number): Bounds {
-	return { lower: a, upper: b, lowerInclusive: true, upperInclusive: true };
+function closedBounds(a: number, b: number): IntervalDomain {
+	return intervalSet([
+		interval(
+			{ value: fromNumber(a), type: 'closed' as EndpointType },
+			{ value: fromNumber(b), type: 'closed' as EndpointType }
+		)
+	]);
 }
 
 function simplifyLatex(node: Parameters<typeof simplify>[0], ctx?: TypeContext): string {

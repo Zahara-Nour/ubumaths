@@ -23,7 +23,9 @@ import {
 import { computePreciseBounds } from './rules/precise-bounds';
 import { signFromBounds } from './rules/literals';
 import { getVariables } from '../eval';
-import type { Bounds } from '$lib/math/intervals/algebra';
+import type { IntervalDomain } from '$lib/math/intervals/types';
+import { isNegativeInfinity, isPositiveInfinity } from '$lib/math/intervals';
+import { formatInterval } from '$lib/math/intervals';
 
 // =============================================================================
 // Type Cache
@@ -59,10 +61,7 @@ function getCacheKey(ctx: TypeContext): string {
 				if (a.finite !== undefined) props.push(`f=${a.finite}`);
 				if (a.parity) props.push(`p=${a.parity}`);
 				if (a.bounds) {
-					const b = a.bounds;
-					props.push(
-						`b=[${b.lower ?? ''}${b.lowerInclusive ? '=' : ''},${b.upper ?? ''}${b.upperInclusive ? '=' : ''}]`
-					);
+					props.push(`b=${formatInterval(a.bounds)}`);
 				}
 				return `${k}:{${props.join(',')}}`;
 			})
@@ -317,16 +316,29 @@ function inferMatrixType(rows: readonly (readonly MathNode[])[], ctx: TypeContex
 /**
  * Find the first variable with finite bounds in assumptions.
  */
-function findBoundedVariable(ctx: TypeContext): { name: string; bounds: Bounds } | undefined {
+function findBoundedVariable(
+	ctx: TypeContext
+): { name: string; bounds: IntervalDomain } | undefined {
 	if (!ctx.assumptions) return undefined;
 
 	const entries = Array.from(ctx.assumptions.entries());
 	for (const [name, assumption] of entries) {
-		if (assumption.bounds && assumption.bounds.lower !== null && assumption.bounds.upper !== null) {
+		if (assumption.bounds && hasFiniteBounds(assumption.bounds)) {
 			return { name, bounds: assumption.bounds };
 		}
 	}
 	return undefined;
+}
+
+/**
+ * Check if an IntervalDomain has finite (non-infinite) endpoints on both sides.
+ */
+function hasFiniteBounds(domain: IntervalDomain): boolean {
+	if (domain.kind !== 'interval_set') return false;
+	if (domain.intervals.length === 0) return false;
+	const lo = domain.intervals[0].lower;
+	const hi = domain.intervals[domain.intervals.length - 1].upper;
+	return !isNegativeInfinity(lo.value) && !isPositiveInfinity(hi.value);
 }
 
 /**
@@ -351,15 +363,14 @@ export function inferTypeWithPreciseBounds(
 	// Check that the expression actually contains this variable
 	if (!getVariables(node).has(boundedVar.name)) return baseType;
 
-	const preciseResult = computePreciseBounds(node, boundedVar.name, boundedVar.bounds);
-	if (!preciseResult) return baseType;
+	const preciseBounds = computePreciseBounds(node, boundedVar.name, boundedVar.bounds);
+	if (!preciseBounds) return baseType;
 
 	// Derive sign from precise bounds
-	const sign = signFromBounds(preciseResult.bounds);
+	const sign = signFromBounds(preciseBounds);
 	return {
 		...baseType,
-		bounds: preciseResult.bounds,
-		...(preciseResult.exactBounds ? { exactBounds: preciseResult.exactBounds } : {}),
+		bounds: preciseBounds,
 		...(sign !== undefined && !baseType.sign ? { sign } : {})
 	};
 }

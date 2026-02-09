@@ -18,33 +18,64 @@ import type {
 } from '../../types';
 import type { MathType, ParityInfo, SignInfo, TypeContext } from '../types';
 import { REAL_TYPE, UNKNOWN_TYPE } from '../types';
-import type { Bounds } from '$lib/math/intervals/algebra';
+import type { IntervalDomain } from '$lib/math/intervals/types';
+import {
+	intervalSet,
+	closedInterval,
+	fromNumber,
+	pi as piEndpoint,
+	e as eEndpoint
+} from '$lib/math/intervals';
+import { isNegativeInfinity, isPositiveInfinity } from '$lib/math/intervals';
+import { compareNumericNodes } from '../../eval/compare-numeric';
+import { number } from '../../factory';
 
 // =============================================================================
 // Helper: Sign deduction from bounds
 // =============================================================================
 
-/**
- * Deduce sign from bounds when sign is not already known.
- * - If lower > 0 (or lower === 0 and not inclusive) → positive
- * - If upper < 0 (or upper === 0 and not inclusive) → negative
- * - If lower === 0 and upper === 0 → zero
- */
-export function signFromBounds(bounds: Bounds): SignInfo | undefined {
-	const { lower, upper, lowerInclusive, upperInclusive } = bounds;
+const ZERO = number('0');
 
-	// Singleton zero
-	if (lower === 0 && upper === 0 && lowerInclusive && upperInclusive) {
+/**
+ * Deduce sign from symbolic bounds (IntervalDomain).
+ * - If lower > 0 (or lower === 0 and open) → positive
+ * - If upper < 0 (or upper === 0 and open) → negative
+ * - If lower === 0 and upper === 0 (both closed) → zero
+ */
+export function signFromBounds(bounds: IntervalDomain): SignInfo | undefined {
+	if (bounds.kind === 'empty') return undefined;
+	if (bounds.kind === 'universal') return undefined;
+
+	// Extract overall lower and upper endpoints
+	const { intervals } = bounds;
+	if (intervals.length === 0) return undefined;
+
+	const lo = intervals[0].lower;
+	const hi = intervals[intervals.length - 1].upper;
+
+	// Skip infinite endpoints for sign deduction
+	if (isPositiveInfinity(lo.value) || isNegativeInfinity(lo.value)) {
+		// lower is -∞ → can't be entirely positive
+	}
+	if (isPositiveInfinity(hi.value) || isNegativeInfinity(hi.value)) {
+		// upper is +∞ → can't be entirely negative
+	}
+
+	const loCmp = isNegativeInfinity(lo.value) ? undefined : compareNumericNodes(lo.value, ZERO);
+	const hiCmp = isPositiveInfinity(hi.value) ? undefined : compareNumericNodes(hi.value, ZERO);
+
+	// Singleton zero: [0, 0]
+	if (loCmp === 0 && hiCmp === 0 && lo.type === 'closed' && hi.type === 'closed') {
 		return 'zero';
 	}
 
-	// Entirely positive: lower > 0, or lower === 0 and open (exclusive)
-	if (lower !== null && (lower > 0 || (lower === 0 && !lowerInclusive))) {
+	// Entirely positive: lower > 0, or lower === 0 and open
+	if (loCmp === 1 || (loCmp === 0 && lo.type === 'open')) {
 		return 'positive';
 	}
 
-	// Entirely negative: upper < 0, or upper === 0 and open (exclusive)
-	if (upper !== null && (upper < 0 || (upper === 0 && !upperInclusive))) {
+	// Entirely negative: upper < 0, or upper === 0 and open
+	if (hiCmp === -1 || (hiCmp === 0 && hi.type === 'open')) {
 		return 'negative';
 	}
 
@@ -57,7 +88,7 @@ export function signFromBounds(bounds: Bounds): SignInfo | undefined {
  */
 function typeWithAssumption(
 	base: MathType['base'],
-	assumption: { sign?: SignInfo; finite?: boolean; parity?: ParityInfo; bounds?: Bounds }
+	assumption: { sign?: SignInfo; finite?: boolean; parity?: ParityInfo; bounds?: IntervalDomain }
 ): MathType {
 	let sign = assumption.sign;
 
@@ -116,12 +147,8 @@ export function inferNumberType(node: NumberNode): MathType {
 		parity = Math.abs(value) % 2 === 0 ? 'even' : 'odd';
 	}
 
-	const bounds: Bounds = {
-		lower: value,
-		upper: value,
-		lowerInclusive: true,
-		upperInclusive: true
-	};
+	const endpoint = fromNumber(value);
+	const bounds: IntervalDomain = intervalSet([closedInterval(endpoint, endpoint)]);
 
 	return {
 		base: isInteger ? 'integer' : 'real',
@@ -146,12 +173,12 @@ export function inferNumberType(node: NumberNode): MathType {
  */
 export function inferMathConstantType(node: MathConstantNode): MathType {
 	// Both π and e are positive transcendental numbers
-	const value = node.constant === 'pi' ? Math.PI : Math.E;
+	const endpoint = node.constant === 'pi' ? piEndpoint() : eEndpoint();
 	return {
 		base: 'transcendental',
 		sign: 'positive',
 		finite: true,
-		bounds: { lower: value, upper: value, lowerInclusive: true, upperInclusive: true }
+		bounds: intervalSet([closedInterval(endpoint, endpoint)])
 	};
 }
 
@@ -188,11 +215,12 @@ export function inferVariableType(node: VariableNode, ctx: TypeContext): MathTyp
 	// Special case: 'e' is Euler's number (transcendental)
 	// Only if not explicitly defined in context
 	if (node.name === 'e') {
+		const ep = eEndpoint();
 		return {
 			base: 'transcendental',
 			sign: 'positive',
 			finite: true,
-			bounds: { lower: Math.E, upper: Math.E, lowerInclusive: true, upperInclusive: true }
+			bounds: intervalSet([closedInterval(ep, ep)])
 		};
 	}
 

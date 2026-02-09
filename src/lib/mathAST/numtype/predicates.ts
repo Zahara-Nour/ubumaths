@@ -10,7 +10,9 @@ import type { TypeContext, NumericType, MathType } from './types';
 import { EMPTY_CONTEXT } from './types';
 import { isSubtype } from './algebra';
 import { inferType } from './infer';
-import type { Bounds } from '$lib/math/intervals/algebra';
+import type { IntervalDomain } from '$lib/math/intervals/types';
+import { number as numberNode } from '../factory';
+import { compareNumericNodes } from '../eval/compare-numeric';
 
 // =============================================================================
 // Base Type Predicates
@@ -357,17 +359,19 @@ export function getBaseType(node: MathNode, ctx: TypeContext = EMPTY_CONTEXT): N
  *
  * @param node - The MathNode to analyze
  * @param ctx - Optional type context
- * @returns The Bounds if known, undefined otherwise
+ * @returns The IntervalDomain if known, undefined otherwise
  */
 export function getBoundsType(
 	node: MathNode,
 	ctx: TypeContext = EMPTY_CONTEXT
-): Bounds | undefined {
+): IntervalDomain | undefined {
 	return inferType(node, ctx).bounds;
 }
 
 /**
  * Checks if an expression's bounds are entirely within [low, high].
+ *
+ * Uses compareNumericNodes to compare symbolic endpoints against the numeric range.
  *
  * @param node - The MathNode to check
  * @param ctx - Optional type context (pass undefined for default)
@@ -383,8 +387,19 @@ export function isInRangeType(
 ): boolean {
 	const bounds = inferType(node, ctx ?? EMPTY_CONTEXT).bounds;
 	if (!bounds) return false;
+	if (bounds.kind !== 'interval_set' || bounds.intervals.length === 0) return false;
 
-	// Both bounds must be finite and within [low, high]
-	if (bounds.lower === null || bounds.upper === null) return false;
-	return bounds.lower >= low && bounds.upper <= high;
+	const lo = bounds.intervals[0].lower;
+	const hi = bounds.intervals[bounds.intervals.length - 1].upper;
+
+	// Compare symbolic endpoints against numeric thresholds
+	const lowNode = numberNode(String(low));
+	const highNode = numberNode(String(high));
+
+	const loCmp = compareNumericNodes(lo.value, lowNode);
+	const hiCmp = compareNumericNodes(hi.value, highNode);
+
+	// lo.value >= low and hi.value <= high
+	if (loCmp === undefined || hiCmp === undefined) return false;
+	return loCmp >= 0 && hiCmp <= 0;
 }
