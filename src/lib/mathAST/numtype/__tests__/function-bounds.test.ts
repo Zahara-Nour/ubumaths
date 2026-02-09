@@ -14,8 +14,8 @@ import {
 	interval,
 	fromNumber,
 	endpointToNumber,
-	isPositiveInfinity,
-	isNegativeInfinity
+	isPositiveInfinityEndpoint,
+	isNegativeInfinityEndpoint
 } from '$lib/math/intervals';
 import { infinity } from '../../factory';
 import type { IntervalDomain, EndpointType } from '$lib/math/intervals/types';
@@ -64,8 +64,8 @@ function toNumericBounds(domain: IntervalDomain | undefined):
 	const lo = domain.intervals[0].lower;
 	const hi = domain.intervals[domain.intervals.length - 1].upper;
 	return {
-		lower: isNegativeInfinity(lo.value) ? null : endpointToNumber(lo.value),
-		upper: isPositiveInfinity(hi.value) ? null : endpointToNumber(hi.value),
+		lower: isNegativeInfinityEndpoint(lo.value) ? null : endpointToNumber(lo.value),
+		upper: isPositiveInfinityEndpoint(hi.value) ? null : endpointToNumber(hi.value),
 		lowerInclusive: lo.type === 'closed',
 		upperInclusive: hi.type === 'closed'
 	};
@@ -254,7 +254,7 @@ describe('applyFunctionToBounds - infinite bounds', () => {
 		expect(result!.kind).toBe('interval_set');
 		if (result!.kind === 'interval_set') {
 			// Upper endpoint is +inf (infinity node from the registry default)
-			expect(isPositiveInfinity(result!.intervals[0].upper.value)).toBe(true);
+			expect(isPositiveInfinityEndpoint(result!.intervals[0].upper.value)).toBe(true);
 			expect(result!.intervals[0].upper.type).toBe('open');
 			// Lower endpoint is symbolic ln(0), open
 			expect(result!.intervals[0].lower.type).toBe('open');

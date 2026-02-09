@@ -17,8 +17,8 @@ import {
 	interval,
 	fromNumber,
 	endpointToNumber,
-	isPositiveInfinity,
-	isNegativeInfinity
+	isPositiveInfinityEndpoint,
+	isNegativeInfinityEndpoint
 } from '$lib/math/intervals';
 import { infinity } from '../../factory';
 
@@ -66,8 +66,8 @@ function toNumericBounds(domain: IntervalDomain | undefined):
 	const lo = domain.intervals[0].lower;
 	const hi = domain.intervals[domain.intervals.length - 1].upper;
 	return {
-		lower: isNegativeInfinity(lo.value) ? null : endpointToNumber(lo.value),
-		upper: isPositiveInfinity(hi.value) ? null : endpointToNumber(hi.value),
+		lower: isNegativeInfinityEndpoint(lo.value) ? null : endpointToNumber(lo.value),
+		upper: isPositiveInfinityEndpoint(hi.value) ? null : endpointToNumber(hi.value),
 		lowerInclusive: lo.type === 'closed',
 		upperInclusive: hi.type === 'closed'
 	};

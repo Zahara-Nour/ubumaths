@@ -24,7 +24,7 @@ import { computePreciseBounds } from './rules/precise-bounds';
 import { signFromBounds } from './rules/literals';
 import { getVariables } from '../eval';
 import type { IntervalDomain } from '$lib/math/intervals/types';
-import { isNegativeInfinity, isPositiveInfinity } from '$lib/math/intervals';
+import { isNegativeInfinityEndpoint, isPositiveInfinityEndpoint } from '$lib/math/intervals';
 import { formatInterval } from '$lib/math/intervals';
 
 // =============================================================================
@@ -338,7 +338,7 @@ function hasFiniteBounds(domain: IntervalDomain): boolean {
 	if (domain.intervals.length === 0) return false;
 	const lo = domain.intervals[0].lower;
 	const hi = domain.intervals[domain.intervals.length - 1].upper;
-	return !isNegativeInfinity(lo.value) && !isPositiveInfinity(hi.value);
+	return !isNegativeInfinityEndpoint(lo.value) && !isPositiveInfinityEndpoint(hi.value);
 }
 
 /**

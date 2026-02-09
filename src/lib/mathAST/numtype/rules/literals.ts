@@ -26,7 +26,7 @@ import {
 	pi as piEndpoint,
 	e as eEndpoint
 } from '$lib/math/intervals';
-import { isNegativeInfinity, isPositiveInfinity } from '$lib/math/intervals';
+import { isNegativeInfinityEndpoint, isPositiveInfinityEndpoint } from '$lib/math/intervals';
 import { compareNumericNodes } from '../../eval/compare-numeric';
 import { number } from '../../factory';
 
@@ -54,15 +54,19 @@ export function signFromBounds(bounds: IntervalDomain): SignInfo | undefined {
 	const hi = intervals[intervals.length - 1].upper;
 
 	// Skip infinite endpoints for sign deduction
-	if (isPositiveInfinity(lo.value) || isNegativeInfinity(lo.value)) {
+	if (isPositiveInfinityEndpoint(lo.value) || isNegativeInfinityEndpoint(lo.value)) {
 		// lower is -∞ → can't be entirely positive
 	}
-	if (isPositiveInfinity(hi.value) || isNegativeInfinity(hi.value)) {
+	if (isPositiveInfinityEndpoint(hi.value) || isNegativeInfinityEndpoint(hi.value)) {
 		// upper is +∞ → can't be entirely negative
 	}
 
-	const loCmp = isNegativeInfinity(lo.value) ? undefined : compareNumericNodes(lo.value, ZERO);
-	const hiCmp = isPositiveInfinity(hi.value) ? undefined : compareNumericNodes(hi.value, ZERO);
+	const loCmp = isNegativeInfinityEndpoint(lo.value)
+		? undefined
+		: compareNumericNodes(lo.value, ZERO);
+	const hiCmp = isPositiveInfinityEndpoint(hi.value)
+		? undefined
+		: compareNumericNodes(hi.value, ZERO);
 
 	// Singleton zero: [0, 0]
 	if (loCmp === 0 && hiCmp === 0 && lo.type === 'closed' && hi.type === 'closed') {

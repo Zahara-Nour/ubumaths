@@ -19,8 +19,8 @@
 import type { MathNode } from '../../types';
 import type { IntervalDomain, EndpointType } from '$lib/math/intervals/types';
 import {
-	isPositiveInfinity,
-	isNegativeInfinity,
+	isPositiveInfinityEndpoint,
+	isNegativeInfinityEndpoint,
 	getEndpoints,
 	buildInterval
 } from '$lib/math/intervals';
@@ -64,7 +64,7 @@ const MONOTONE_FUNCTIONS: Record<string, MonotoneFunctionInfo> = {
 		apply: (x) => funcNode('ln', [x]),
 		// ln requires x > 0
 		domainCheck: (lo) => {
-			if (isNegativeInfinity(lo.value)) return false;
+			if (isNegativeInfinityEndpoint(lo.value)) return false;
 			const cmp = compareNumericNodes(lo.value, ZERO);
 			return cmp === 1 || (cmp === 0 && lo.type === 'open');
 		}
@@ -73,7 +73,7 @@ const MONOTONE_FUNCTIONS: Record<string, MonotoneFunctionInfo> = {
 		monotonicity: 'increasing',
 		apply: (x) => funcNode('log', [x]),
 		domainCheck: (lo) => {
-			if (isNegativeInfinity(lo.value)) return false;
+			if (isNegativeInfinityEndpoint(lo.value)) return false;
 			const cmp = compareNumericNodes(lo.value, ZERO);
 			return cmp === 1 || (cmp === 0 && lo.type === 'open');
 		}
@@ -83,7 +83,7 @@ const MONOTONE_FUNCTIONS: Record<string, MonotoneFunctionInfo> = {
 		apply: (x) => sqrtNode(x),
 		// sqrt requires x >= 0
 		domainCheck: (lo) => {
-			if (isNegativeInfinity(lo.value)) return false;
+			if (isNegativeInfinityEndpoint(lo.value)) return false;
 			const cmp = compareNumericNodes(lo.value, ZERO);
 			return cmp === 1 || cmp === 0;
 		},
@@ -99,7 +99,8 @@ const MONOTONE_FUNCTIONS: Record<string, MonotoneFunctionInfo> = {
 		apply: (x) => funcNode('arcsin', [x]),
 		// arcsin requires -1 <= x <= 1
 		domainCheck: (lo, hi) => {
-			if (isNegativeInfinity(lo.value) || isPositiveInfinity(hi.value)) return false;
+			if (isNegativeInfinityEndpoint(lo.value) || isPositiveInfinityEndpoint(hi.value))
+				return false;
 			const loCmp = compareNumericNodes(lo.value, NEG_ONE);
 			const hiCmp = compareNumericNodes(hi.value, ONE);
 			if (loCmp === undefined || hiCmp === undefined) return false;
@@ -111,7 +112,8 @@ const MONOTONE_FUNCTIONS: Record<string, MonotoneFunctionInfo> = {
 		apply: (x) => funcNode('arccos', [x]),
 		// arccos requires -1 <= x <= 1
 		domainCheck: (lo, hi) => {
-			if (isNegativeInfinity(lo.value) || isPositiveInfinity(hi.value)) return false;
+			if (isNegativeInfinityEndpoint(lo.value) || isPositiveInfinityEndpoint(hi.value))
+				return false;
 			const loCmp = compareNumericNodes(lo.value, NEG_ONE);
 			const hiCmp = compareNumericNodes(hi.value, ONE);
 			if (loCmp === undefined || hiCmp === undefined) return false;
@@ -136,7 +138,8 @@ const MONOTONE_FUNCTIONS: Record<string, MonotoneFunctionInfo> = {
 		monotonicity: 'increasing',
 		apply: (x) => funcNode('arctanh', [x]),
 		domainCheck: (lo, hi) => {
-			if (isNegativeInfinity(lo.value) || isPositiveInfinity(hi.value)) return false;
+			if (isNegativeInfinityEndpoint(lo.value) || isPositiveInfinityEndpoint(hi.value))
+				return false;
 			const loCmp = compareNumericNodes(lo.value, NEG_ONE);
 			const hiCmp = compareNumericNodes(hi.value, ONE);
 			if (loCmp === undefined || hiCmp === undefined) return false;
@@ -149,7 +152,7 @@ const MONOTONE_FUNCTIONS: Record<string, MonotoneFunctionInfo> = {
 		apply: (x) => funcNode('arccosh', [x]),
 		// arccosh requires x >= 1
 		domainCheck: (lo) => {
-			if (isNegativeInfinity(lo.value)) return false;
+			if (isNegativeInfinityEndpoint(lo.value)) return false;
 			const cmp = compareNumericNodes(lo.value, ONE);
 			return cmp === 1 || cmp === 0;
 		}
@@ -190,8 +193,8 @@ export function applyFunctionToBounds(
 	}
 
 	const { lo, hi } = endpoints;
-	const loIsInf = isNegativeInfinity(lo.value);
-	const hiIsInf = isPositiveInfinity(hi.value);
+	const loIsInf = isNegativeInfinityEndpoint(lo.value);
+	const hiIsInf = isPositiveInfinityEndpoint(hi.value);
 
 	if (info.monotonicity === 'increasing') {
 		// f([a, b]) = [f(a), f(b)]
