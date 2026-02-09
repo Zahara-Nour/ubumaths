@@ -17,8 +17,8 @@ export {
 	endpoint,
 	openEndpoint,
 	closedEndpoint,
-	negInfinity,
-	posInfinity
+	negInfinityEndpoint,
+	posInfinityEndpoint
 } from '$lib/math/intervals/factory';
 
 // Interval factories

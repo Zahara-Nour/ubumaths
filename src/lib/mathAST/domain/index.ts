@@ -72,8 +72,8 @@ export {
 	endpoint,
 	openEndpoint,
 	closedEndpoint,
-	negInfinity,
-	posInfinity,
+	negInfinityEndpoint,
+	posInfinityEndpoint,
 	// Interval factories
 	interval,
 	openInterval,

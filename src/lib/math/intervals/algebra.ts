@@ -10,8 +10,8 @@ import {
 	universalSet,
 	intervalSet,
 	interval,
-	negInfinity,
-	posInfinity,
+	negInfinityEndpoint,
+	posInfinityEndpoint,
 	realLine,
 	EMPTY_SET,
 	UNIVERSAL_SET,
@@ -299,13 +299,13 @@ function complementInterval(int: Interval): Interval[] {
 	// Left part: ]-inf, lower] (flipped type)
 	if (!isNegativeInfinity(int.lower.value)) {
 		const upperType = int.lower.type === 'open' ? 'closed' : 'open';
-		result.push(interval(negInfinity(), { value: int.lower.value, type: upperType }));
+		result.push(interval(negInfinityEndpoint(), { value: int.lower.value, type: upperType }));
 	}
 
 	// Right part: [upper, +inf[ (flipped type)
 	if (!isPositiveInfinity(int.upper.value)) {
 		const lowerType = int.upper.type === 'open' ? 'closed' : 'open';
-		result.push(interval({ value: int.upper.value, type: lowerType }, posInfinity()));
+		result.push(interval({ value: int.upper.value, type: lowerType }, posInfinityEndpoint()));
 	}
 
 	return result;
@@ -483,16 +483,24 @@ export function domainFromBounds(bounds: Bounds): IntervalDomain {
 
 	if (lower !== null) {
 		if (lowerInclusive) {
-			return intervalSet([interval({ value: fromNumber(lower), type: 'closed' }, posInfinity())]);
+			return intervalSet([
+				interval({ value: fromNumber(lower), type: 'closed' }, posInfinityEndpoint())
+			]);
 		} else {
-			return intervalSet([interval({ value: fromNumber(lower), type: 'open' }, posInfinity())]);
+			return intervalSet([
+				interval({ value: fromNumber(lower), type: 'open' }, posInfinityEndpoint())
+			]);
 		}
 	}
 
 	// upper !== null
 	if (upperInclusive) {
-		return intervalSet([interval(negInfinity(), { value: fromNumber(upper!), type: 'closed' })]);
+		return intervalSet([
+			interval(negInfinityEndpoint(), { value: fromNumber(upper!), type: 'closed' })
+		]);
 	} else {
-		return intervalSet([interval(negInfinity(), { value: fromNumber(upper!), type: 'open' })]);
+		return intervalSet([
+			interval(negInfinityEndpoint(), { value: fromNumber(upper!), type: 'open' })
+		]);
 	}
 }

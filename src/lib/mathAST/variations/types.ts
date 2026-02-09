@@ -38,7 +38,7 @@ export type Monotonicity = 'increasing' | 'decreasing' | 'constant' | 'unknown';
  * @example
  * // f(x) = x^2 is decreasing on ]-infinity, 0[
  * {
- *   interval: { kind: 'interval', lower: negInfinity(), upper: openEndpoint(0) },
+ *   interval: { kind: 'interval', lower: negInfinityEndpoint(), upper: openEndpoint(0) },
  *   monotonicity: 'decreasing',
  *   derivativeSign: 'negative',
  *   reason: 'f\'(x) = 2x < 0 for x < 0'

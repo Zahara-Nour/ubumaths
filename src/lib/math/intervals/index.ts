@@ -57,7 +57,13 @@ export { isInfinite, isPositiveInfinity, isNegativeInfinity, endpointToNumber } 
 export { fromNumber, bound } from './factory';
 
 // Factory functions - Endpoints
-export { endpoint, openEndpoint, closedEndpoint, negInfinity, posInfinity } from './factory';
+export {
+	endpoint,
+	openEndpoint,
+	closedEndpoint,
+	negInfinityEndpoint,
+	posInfinityEndpoint
+} from './factory';
 
 // Factory functions - Intervals
 export {

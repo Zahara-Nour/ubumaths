@@ -71,8 +71,8 @@ import {
 	interval,
 	openEndpoint,
 	closedEndpoint,
-	negInfinity,
-	posInfinity
+	negInfinityEndpoint,
+	posInfinityEndpoint
 } from '$lib/math/intervals/factory';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { shouldIncludeStep } from '../common/verbosity';
@@ -303,7 +303,7 @@ function splitDomainAtZeros(domain: Domain, zeros: readonly ZeroInfo[]): SubInte
 	// Handle universal domain - treat as ]-infinity, +infinity[
 	if (domain.kind === 'universal') {
 		return splitIntervalAtZeros(
-			interval(negInfinity(), posInfinity()),
+			interval(negInfinityEndpoint(), posInfinityEndpoint()),
 			zeros.filter((z) => z.approximate !== undefined)
 		);
 	}
@@ -318,7 +318,7 @@ function splitDomainAtZeros(domain: Domain, zeros: readonly ZeroInfo[]): SubInte
 	if (domain.kind === 'periodic_exclusion' || domain.kind === 'condition_domain') {
 		// Fall back to treating as universal domain
 		return splitIntervalAtZeros(
-			interval(negInfinity(), posInfinity()),
+			interval(negInfinityEndpoint(), posInfinityEndpoint()),
 			zeros.filter((z) => z.approximate !== undefined)
 		);
 	}

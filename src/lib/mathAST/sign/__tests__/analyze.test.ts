@@ -24,8 +24,8 @@ import {
 	interval,
 	openEndpoint,
 	closedEndpoint,
-	negInfinity,
-	posInfinity,
+	negInfinityEndpoint,
+	posInfinityEndpoint,
 	fromNumber
 } from '$lib/math/intervals/factory';
 
@@ -51,14 +51,14 @@ function createIntervalDomain(
 ): IntervalSet {
 	const lowerEndpoint =
 		lower === -Infinity
-			? negInfinity()
+			? negInfinityEndpoint()
 			: openLower
 				? openEndpoint(fromNumber(lower))
 				: closedEndpoint(fromNumber(lower));
 
 	const upperEndpoint =
 		upper === Infinity
-			? posInfinity()
+			? posInfinityEndpoint()
 			: openUpper
 				? openEndpoint(fromNumber(upper))
 				: closedEndpoint(fromNumber(upper));

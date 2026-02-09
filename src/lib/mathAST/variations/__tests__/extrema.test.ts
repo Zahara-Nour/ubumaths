@@ -31,8 +31,8 @@ import {
 	interval,
 	openEndpoint,
 	closedEndpoint,
-	negInfinity,
-	posInfinity,
+	negInfinityEndpoint,
+	posInfinityEndpoint,
 	fromNumber
 } from '$lib/math/intervals/factory';
 
@@ -69,14 +69,16 @@ function boundedDomain(lower: number, upper: number): IntervalSet {
  * Create a monotonic interval helper.
  */
 function createMonotonicInterval(
-	lower: number | typeof negInfinity,
-	upper: number | typeof posInfinity,
+	lower: number | typeof negInfinityEndpoint,
+	upper: number | typeof posInfinityEndpoint,
 	monotonicity: 'increasing' | 'decreasing' | 'constant' | 'unknown',
 	derivativeSign: 'positive' | 'negative' | 'zero' | 'unknown'
 ): MonotonicInterval {
-	const lowerEndpoint = typeof lower === 'number' ? openEndpoint(fromNumber(lower)) : negInfinity();
+	const lowerEndpoint =
+		typeof lower === 'number' ? openEndpoint(fromNumber(lower)) : negInfinityEndpoint();
 
-	const upperEndpoint = typeof upper === 'number' ? openEndpoint(fromNumber(upper)) : posInfinity();
+	const upperEndpoint =
+		typeof upper === 'number' ? openEndpoint(fromNumber(upper)) : posInfinityEndpoint();
 
 	return {
 		interval: interval(lowerEndpoint, upperEndpoint),
