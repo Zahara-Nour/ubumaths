@@ -14,43 +14,27 @@ import {
 import type { EndpointValue } from './types';
 
 // =============================================================================
-// Re-export Comparison Functions
-// =============================================================================
-
-export {
-	compareEndpointValues,
-	compare,
-	endpointLessThan,
-	endpointEquals,
-	endpointLessThanOrEqual,
-	endpointGreaterThan,
-	endpointGreaterThanOrEqual
-} from './compare';
-
-export type { CompareResult, CompareOutcome } from './types';
-
-// =============================================================================
 // Infinity Checks
 // =============================================================================
 
 /**
  * Checks if an endpoint value is infinite (+∞ or -∞).
  */
-export function isInfinite(value: EndpointValue): boolean {
+export function isInfiniteEndpoint(value: EndpointValue): boolean {
 	return mathASTIsInfinity(value);
 }
 
 /**
  * Checks if an endpoint value is positive infinity (+∞).
  */
-export function isPositiveInfinity(value: EndpointValue): boolean {
+export function isPositiveInfinityEndpoint(value: EndpointValue): boolean {
 	return mathASTIsPositiveInfinity(value);
 }
 
 /**
  * Checks if an endpoint value is negative infinity (-∞).
  */
-export function isNegativeInfinity(value: EndpointValue): boolean {
+export function isNegativeInfinityEndpoint(value: EndpointValue): boolean {
 	return mathASTIsNegativeInfinity(value);
 }
 

@@ -37,283 +37,16 @@
  * when x=0 is in interval A, {0*y : y in B} = {0} regardless of B.
  */
 
-import type { MathNode } from '../../types';
 import type { MathType, NumericType, ParityInfo, SignInfo } from '../types';
 import { join } from '../algebra';
-import type { IntervalDomain, Endpoint, EndpointType } from '$lib/math/intervals/types';
 import {
-	intervalSet,
-	interval,
-	universalSet,
-	isPositiveInfinity,
-	isNegativeInfinity,
-	endpointToNumber,
-	containsValue
+	addBounds,
+	subtractBounds,
+	negateBounds,
+	multiplyBounds,
+	divideBounds
 } from '$lib/math/intervals';
-import {
-	add as addNode,
-	subtract as subtractNode,
-	opposite as oppositeNode,
-	implicitMultiply as multiplyNode,
-	fraction as divideNode,
-	infinity
-} from '../../factory';
 import { signFromBounds } from './literals';
-
-// =============================================================================
-// Symbolic Bounds Helpers
-// =============================================================================
-
-/**
- * Extract the overall lower and upper endpoints from an IntervalDomain.
- * Returns null for empty domains.
- */
-function extractEndpoints(domain: IntervalDomain): { lo: Endpoint; hi: Endpoint } | null {
-	if (domain.kind === 'empty') return null;
-	if (domain.kind === 'universal') {
-		return {
-			lo: { value: infinity('negative'), type: 'open' as EndpointType },
-			hi: { value: infinity('positive'), type: 'open' as EndpointType }
-		};
-	}
-	const { intervals } = domain;
-	if (intervals.length === 0) return null;
-	return {
-		lo: intervals[0].lower,
-		hi: intervals[intervals.length - 1].upper
-	};
-}
-
-/** Both must be closed for result to be closed */
-function combineEndpointTypes(a: EndpointType, b: EndpointType): EndpointType {
-	return a === 'closed' && b === 'closed' ? 'closed' : 'open';
-}
-
-/**
- * Build an IntervalDomain from lower and upper endpoints.
- * Returns universal if both endpoints are infinite.
- */
-function makeInterval(
-	lo: { value: MathNode; type: EndpointType },
-	hi: { value: MathNode; type: EndpointType }
-): IntervalDomain {
-	if (isNegativeInfinity(lo.value) && isPositiveInfinity(hi.value)) {
-		return universalSet();
-	}
-	return intervalSet([interval(lo, hi)]);
-}
-
-// =============================================================================
-// Symbolic Bounds Propagation Functions
-// =============================================================================
-
-/**
- * Addition: [a_lo + b_lo, a_hi + b_hi] (Tier 1 - always exact)
- */
-function addIntervalBounds(a: IntervalDomain, b: IntervalDomain): IntervalDomain | undefined {
-	const ae = extractEndpoints(a);
-	const be = extractEndpoints(b);
-	if (!ae || !be) return undefined;
-
-	const loInf = isNegativeInfinity(ae.lo.value) || isNegativeInfinity(be.lo.value);
-	const hiInf = isPositiveInfinity(ae.hi.value) || isPositiveInfinity(be.hi.value);
-
-	return makeInterval(
-		{
-			value: loInf ? infinity('negative') : addNode(ae.lo.value, be.lo.value),
-			type: loInf ? 'open' : combineEndpointTypes(ae.lo.type, be.lo.type)
-		},
-		{
-			value: hiInf ? infinity('positive') : addNode(ae.hi.value, be.hi.value),
-			type: hiInf ? 'open' : combineEndpointTypes(ae.hi.type, be.hi.type)
-		}
-	);
-}
-
-/**
- * Subtraction: [a_lo - b_hi, a_hi - b_lo] (Tier 1 - always exact)
- */
-function subtractIntervalBounds(a: IntervalDomain, b: IntervalDomain): IntervalDomain | undefined {
-	const ae = extractEndpoints(a);
-	const be = extractEndpoints(b);
-	if (!ae || !be) return undefined;
-
-	const loInf = isNegativeInfinity(ae.lo.value) || isPositiveInfinity(be.hi.value);
-	const hiInf = isPositiveInfinity(ae.hi.value) || isNegativeInfinity(be.lo.value);
-
-	return makeInterval(
-		{
-			value: loInf ? infinity('negative') : subtractNode(ae.lo.value, be.hi.value),
-			type: loInf ? 'open' : combineEndpointTypes(ae.lo.type, be.hi.type)
-		},
-		{
-			value: hiInf ? infinity('positive') : subtractNode(ae.hi.value, be.lo.value),
-			type: hiInf ? 'open' : combineEndpointTypes(ae.hi.type, be.lo.type)
-		}
-	);
-}
-
-/**
- * Negation: [-hi, -lo] (Tier 1 - always exact)
- */
-function negateIntervalBounds(d: IntervalDomain): IntervalDomain | undefined {
-	const e = extractEndpoints(d);
-	if (!e) return undefined;
-
-	const loIsNegInf = isNegativeInfinity(e.lo.value);
-	const hiIsPosInf = isPositiveInfinity(e.hi.value);
-
-	return makeInterval(
-		{
-			value: hiIsPosInf ? infinity('negative') : oppositeNode(e.hi.value),
-			type: e.hi.type
-		},
-		{
-			value: loIsNegInf ? infinity('positive') : oppositeNode(e.lo.value),
-			type: e.lo.type
-		}
-	);
-}
-
-/**
- * Multiplication using four-corners theorem (Tier 2/3).
- *
- * Evaluates all four corner products numerically to find min/max,
- * but builds result endpoints as symbolic MathNode trees.
- * Uses the convention 0 * Infinity = 0 for set-theoretic soundness.
- */
-function multiplyIntervalBounds(a: IntervalDomain, b: IntervalDomain): IntervalDomain | undefined {
-	const ae = extractEndpoints(a);
-	const be = extractEndpoints(b);
-	if (!ae || !be) return undefined;
-
-	const aLoNum = endpointToNumber(ae.lo.value);
-	const aHiNum = endpointToNumber(ae.hi.value);
-	const bLoNum = endpointToNumber(be.lo.value);
-	const bHiNum = endpointToNumber(be.hi.value);
-
-	// If any endpoint can't be evaluated, skip bounds
-	if (isNaN(aLoNum) || isNaN(aHiNum) || isNaN(bLoNum) || isNaN(bHiNum)) {
-		return undefined;
-	}
-
-	// Four-corners: compute all products numerically to find min/max
-	const corners = [
-		{ aEp: ae.lo, bEp: be.lo, val: aLoNum * bLoNum },
-		{ aEp: ae.lo, bEp: be.hi, val: aLoNum * bHiNum },
-		{ aEp: ae.hi, bEp: be.lo, val: aHiNum * bLoNum },
-		{ aEp: ae.hi, bEp: be.hi, val: aHiNum * bHiNum }
-	];
-
-	// Handle 0 * Infinity = 0 convention
-	for (const c of corners) {
-		if (!isFinite(c.val)) {
-			const aNum = endpointToNumber(c.aEp.value);
-			const bNum = endpointToNumber(c.bEp.value);
-			if (aNum === 0 || bNum === 0) {
-				c.val = 0;
-			}
-		}
-	}
-
-	let minCorner = corners[0];
-	let maxCorner = corners[0];
-	for (const c of corners) {
-		if (c.val < minCorner.val) minCorner = c;
-		if (c.val > maxCorner.val) maxCorner = c;
-	}
-
-	const loValue =
-		minCorner.val === -Infinity
-			? infinity('negative')
-			: multiplyNode(minCorner.aEp.value, minCorner.bEp.value);
-	const hiValue =
-		maxCorner.val === Infinity
-			? infinity('positive')
-			: multiplyNode(maxCorner.aEp.value, maxCorner.bEp.value);
-
-	const loType: EndpointType = !isFinite(minCorner.val)
-		? 'open'
-		: combineEndpointTypes(minCorner.aEp.type, minCorner.bEp.type);
-	const hiType: EndpointType = !isFinite(maxCorner.val)
-		? 'open'
-		: combineEndpointTypes(maxCorner.aEp.type, maxCorner.bEp.type);
-
-	return makeInterval({ value: loValue, type: loType }, { value: hiValue, type: hiType });
-}
-
-/**
- * Division using four-corners theorem (Tier 2/3).
- *
- * If the divisor contains zero, returns universal set (unbounded).
- * Otherwise evaluates all four corner quotients numerically to find min/max,
- * but builds result endpoints as symbolic MathNode trees.
- */
-function divideIntervalBounds(a: IntervalDomain, b: IntervalDomain): IntervalDomain | undefined {
-	const ae = extractEndpoints(a);
-	const be = extractEndpoints(b);
-	if (!ae || !be) return undefined;
-
-	// Check if divisor contains zero
-	if (containsValue(b, 0)) {
-		return universalSet();
-	}
-
-	const aLoNum = endpointToNumber(ae.lo.value);
-	const aHiNum = endpointToNumber(ae.hi.value);
-	const bLoNum = endpointToNumber(be.lo.value);
-	const bHiNum = endpointToNumber(be.hi.value);
-
-	if (isNaN(aLoNum) || isNaN(aHiNum) || isNaN(bLoNum) || isNaN(bHiNum)) {
-		return undefined;
-	}
-
-	// If numerator is unbounded, result is universal
-	if (!isFinite(aLoNum) || !isFinite(aHiNum)) {
-		return universalSet();
-	}
-
-	// Four corners for division
-	const corners: { aEp: Endpoint; bEp: Endpoint; val: number }[] = [];
-	const aEndpoints = [ae.lo, ae.hi];
-	const bEndpoints = [be.lo, be.hi];
-
-	for (const aEp of aEndpoints) {
-		for (const bEp of bEndpoints) {
-			const bNum = endpointToNumber(bEp.value);
-			const aNum = endpointToNumber(aEp.value);
-			if (!isFinite(bNum)) {
-				// a / +/-Infinity -> 0
-				corners.push({ aEp, bEp, val: 0 });
-			} else {
-				corners.push({ aEp, bEp, val: aNum / bNum });
-			}
-		}
-	}
-
-	let minCorner = corners[0];
-	let maxCorner = corners[0];
-	for (const c of corners) {
-		if (c.val < minCorner.val) minCorner = c;
-		if (c.val > maxCorner.val) maxCorner = c;
-	}
-
-	const loValue = divideNode(minCorner.aEp.value, minCorner.bEp.value);
-	const hiValue = divideNode(maxCorner.aEp.value, maxCorner.bEp.value);
-
-	// For corners where b was infinite, endpoint is open (approached but not reached)
-	const minBIsInf = !isFinite(endpointToNumber(minCorner.bEp.value));
-	const maxBIsInf = !isFinite(endpointToNumber(maxCorner.bEp.value));
-
-	const loType: EndpointType = minBIsInf
-		? 'open'
-		: combineEndpointTypes(minCorner.aEp.type, minCorner.bEp.type);
-	const hiType: EndpointType = maxBIsInf
-		? 'open'
-		: combineEndpointTypes(maxCorner.aEp.type, maxCorner.bEp.type);
-
-	return makeInterval({ value: loValue, type: loType }, { value: hiValue, type: hiType });
-}
 
 // =============================================================================
 // Parity Helpers
@@ -386,9 +119,7 @@ export function inferAdditionType(leftType: MathType, rightType: MathType): Math
 
 	// Bounds propagation
 	const bounds =
-		leftType.bounds && rightType.bounds
-			? addIntervalBounds(leftType.bounds, rightType.bounds)
-			: undefined;
+		leftType.bounds && rightType.bounds ? addBounds(leftType.bounds, rightType.bounds) : undefined;
 
 	// Deduce sign from bounds when algebraic rules couldn't determine it
 	if (sign === undefined && bounds) {
@@ -457,7 +188,7 @@ export function inferSubtractionType(leftType: MathType, rightType: MathType): M
 	// Bounds propagation
 	const bounds =
 		leftType.bounds && rightType.bounds
-			? subtractIntervalBounds(leftType.bounds, rightType.bounds)
+			? subtractBounds(leftType.bounds, rightType.bounds)
 			: undefined;
 
 	// Deduce sign from bounds when algebraic rules couldn't determine it
@@ -550,7 +281,7 @@ export function inferMultiplicationType(leftType: MathType, rightType: MathType)
 	// Bounds propagation
 	const bounds =
 		leftType.bounds && rightType.bounds
-			? multiplyIntervalBounds(leftType.bounds, rightType.bounds)
+			? multiplyBounds(leftType.bounds, rightType.bounds)
 			: undefined;
 
 	// Deduce sign from bounds when algebraic rules couldn't determine it
@@ -636,7 +367,7 @@ export function inferDivisionType(numeratorType: MathType, denominatorType: Math
 	// Bounds propagation
 	const bounds =
 		numeratorType.bounds && denominatorType.bounds
-			? divideIntervalBounds(numeratorType.bounds, denominatorType.bounds)
+			? divideBounds(numeratorType.bounds, denominatorType.bounds)
 			: undefined;
 
 	// Deduce sign from bounds when algebraic rules couldn't determine it
@@ -681,7 +412,7 @@ export function inferOppositeType(operandType: MathType): MathType {
 	}
 
 	// Bounds propagation
-	const bounds = operandType.bounds ? negateIntervalBounds(operandType.bounds) : undefined;
+	const bounds = operandType.bounds ? negateBounds(operandType.bounds) : undefined;
 
 	// Deduce sign from bounds when algebraic rules couldn't determine it
 	if (sign === undefined && bounds) {

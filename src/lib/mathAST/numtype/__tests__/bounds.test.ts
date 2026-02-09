@@ -240,9 +240,9 @@ describe('bounds - abs function', () => {
 		expect(b).toEqual({ lower: 2, upper: 5, lowerInclusive: true, upperInclusive: true });
 	});
 
-	it('should return undefined for abs when argument crosses zero (endpointToNumber bug)', () => {
-		// Known issue: computeAbsBounds passes Endpoint (not EndpointValue) to endpointToNumber
-		// when the interval crosses zero, causing NaN and returning undefined.
+	it('should compute bounds for abs when argument crosses zero', () => {
+		// |[-3, 5]| = [0, 5] since |5| > |-3|
+		// (Previously returned undefined due to endpointToNumber bug, now fixed)
 		const ctx: TypeContext = {
 			variables: new Map([['x', 'real']]),
 			assumptions: new Map([
@@ -254,8 +254,12 @@ describe('bounds - abs function', () => {
 				]
 			])
 		};
-		const b = boundsOf('|x|', ctx);
-		expect(b).toBeUndefined();
+		const b = numericBoundsOf('|x|', ctx);
+		expect(b).toBeDefined();
+		expect(b!.lower).toBe(0);
+		expect(b!.lowerInclusive).toBe(true);
+		expect(b!.upper).toBeCloseTo(5, 10);
+		expect(b!.upperInclusive).toBe(true);
 	});
 
 	it('should compute precise bounds for abs of negative range', () => {

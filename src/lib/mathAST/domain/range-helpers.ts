@@ -23,11 +23,83 @@ import {
 	negativeInfinity as negInfinityNode
 } from '../factory';
 import { evaluateLimit } from '../limits';
-import { getBoundsFromDomain, domainFromBounds, type Bounds } from './builtins';
+import { getEndpoints, buildInterval } from '$lib/math/intervals';
+import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { tryConvertConditionToInterval } from './algebra';
 import { differentiate } from '../differentiation';
 import { evaluate, substitute } from '../eval';
 import { containsVariable, getNumericValue } from '../differentiation/rules';
 import { evaluateAtCriticalPoint, findCriticalPoints } from '../variations/critical-points';
+
+// =============================================================================
+// Numeric Bounds Helpers (local to range-helpers)
+// =============================================================================
+
+interface NumericBounds {
+	lower: number | null; // null = -∞
+	upper: number | null; // null = +∞
+	lowerInclusive: boolean;
+	upperInclusive: boolean;
+}
+
+/**
+ * Extract numeric bounds from a Domain.
+ * Handles all Domain kinds: condition_domain → tryConvertConditionToInterval,
+ * periodic_exclusion → universal, interval_set → getEndpoints + endpointToNumber.
+ */
+function getNumericBounds(domain: Domain): NumericBounds | null {
+	if (domain.kind === 'empty') return null;
+	if (domain.kind === 'universal') {
+		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
+	}
+	if (domain.kind === 'condition_domain') {
+		const converted = tryConvertConditionToInterval(domain);
+		if (converted) return getNumericBounds(converted);
+		return null;
+	}
+	if (domain.kind === 'periodic_exclusion') {
+		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
+	}
+	// interval_set
+	const ep = getEndpoints(domain);
+	if (!ep) return null;
+
+	const lo = endpointToNumber(ep.lo.value);
+	const hi = endpointToNumber(ep.hi.value);
+
+	return {
+		lower: lo === -Infinity ? null : lo,
+		upper: hi === Infinity ? null : hi,
+		lowerInclusive: ep.lo.type === 'closed',
+		upperInclusive: ep.hi.type === 'closed'
+	};
+}
+
+/**
+ * Create a Domain from numeric bounds using symbolic buildInterval + fromNumber.
+ */
+function domainFromNumericBounds(bounds: NumericBounds): Domain {
+	const { lower, lowerInclusive, upper, upperInclusive } = bounds;
+
+	if (lower === null && upper === null) {
+		return universalDomain();
+	}
+
+	if (lower !== null && upper !== null && lower > upper) {
+		return { kind: 'empty' };
+	}
+
+	const lo =
+		lower !== null
+			? { value: fromNumber(lower), type: lowerInclusive ? ('closed' as const) : ('open' as const) }
+			: negInfinityEndpoint();
+	const hi =
+		upper !== null
+			? { value: fromNumber(upper), type: upperInclusive ? ('closed' as const) : ('open' as const) }
+			: posInfinityEndpoint();
+
+	return buildInterval(lo, hi) as Domain;
+}
 
 /**
  * Evaluate an expression at a specific numeric value of a variable.
@@ -407,7 +479,7 @@ export function computeQuadraticRange(quad: QuadraticForm, inputDomain: Domain):
 		return computeLinearRange({ a: b, b: c, variable: quad.variable }, inputDomain);
 	}
 
-	const bounds = getBoundsFromDomain(inputDomain);
+	const bounds = getNumericBounds(inputDomain);
 	if (!bounds) return universalDomain();
 
 	// Handle unbounded domains
@@ -416,7 +488,7 @@ export function computeQuadraticRange(quad: QuadraticForm, inputDomain: Domain):
 		if (a > 0) {
 			// Opens upward: minimum at vertex
 			const vertexY = c - (b * b) / (4 * a);
-			return domainFromBounds({
+			return domainFromNumericBounds({
 				lower: vertexY,
 				lowerInclusive: true,
 				upper: null,
@@ -425,7 +497,7 @@ export function computeQuadraticRange(quad: QuadraticForm, inputDomain: Domain):
 		} else {
 			// Opens downward: maximum at vertex
 			const vertexY = c - (b * b) / (4 * a);
-			return domainFromBounds({
+			return domainFromNumericBounds({
 				lower: null,
 				lowerInclusive: false,
 				upper: vertexY,
@@ -470,7 +542,7 @@ export function computeQuadraticRange(quad: QuadraticForm, inputDomain: Domain):
 		}
 	}
 
-	return domainFromBounds({
+	return domainFromNumericBounds({
 		lower: minVal.value,
 		lowerInclusive: minVal.inclusive,
 		upper: maxVal.value,
@@ -489,7 +561,7 @@ export function computeLinearRange(linear: LinearForm, inputDomain: Domain): Dom
 		return intervalDomain([closedInterval(fromNumber(b), fromNumber(b))]);
 	}
 
-	const bounds = getBoundsFromDomain(inputDomain);
+	const bounds = getNumericBounds(inputDomain);
 	if (!bounds) return universalDomain();
 
 	// Handle unbounded domains
@@ -525,7 +597,7 @@ export function computeLinearRange(linear: LinearForm, inputDomain: Domain): Dom
 		}
 	}
 
-	return domainFromBounds({
+	return domainFromNumericBounds({
 		lower: newLower,
 		lowerInclusive: newLowerInclusive,
 		upper: newUpper,
@@ -549,7 +621,7 @@ export function computeAbsRange(inputRange: Domain): Domain {
 	if (inputRange.kind === 'empty') return { kind: 'empty' };
 	if (inputRange.kind === 'universal') {
 		// |ℝ| = [0, +∞)
-		return domainFromBounds({
+		return domainFromNumericBounds({
 			lower: 0,
 			lowerInclusive: true,
 			upper: null,
@@ -557,9 +629,9 @@ export function computeAbsRange(inputRange: Domain): Domain {
 		});
 	}
 
-	const bounds = getBoundsFromDomain(inputRange);
+	const bounds = getNumericBounds(inputRange);
 	if (!bounds) {
-		return domainFromBounds({
+		return domainFromNumericBounds({
 			lower: 0,
 			lowerInclusive: true,
 			upper: null,
@@ -578,7 +650,7 @@ export function computeAbsRange(inputRange: Domain): Domain {
 	// Case 2: All non-positive
 	if (upper !== null && upper <= 0) {
 		// Negate the interval: -[a, b] = [-b, -a]
-		return domainFromBounds({
+		return domainFromNumericBounds({
 			lower: upper !== null ? -upper : null,
 			lowerInclusive: bounds.upperInclusive,
 			upper: lower !== null ? -lower : null,
@@ -613,7 +685,7 @@ export function computeAbsRange(inputRange: Domain): Domain {
 		maxAbsInclusive = bounds.upperInclusive;
 	}
 
-	return domainFromBounds({
+	return domainFromNumericBounds({
 		lower: 0,
 		lowerInclusive: true, // 0 is always achievable when interval contains 0
 		upper: maxAbs,
@@ -633,8 +705,8 @@ export function computeMinRange(aRange: Domain, bRange: Domain): Domain {
 		return { kind: 'empty' };
 	}
 
-	const boundsA = getBoundsFromDomain(aRange);
-	const boundsB = getBoundsFromDomain(bRange);
+	const boundsA = getNumericBounds(aRange);
+	const boundsB = getNumericBounds(bRange);
 
 	if (!boundsA || !boundsB) {
 		return universalDomain();
@@ -678,7 +750,7 @@ export function computeMinRange(aRange: Domain, bRange: Domain): Domain {
 	// Note: if one is null and the other isn't, min is bounded by the non-null one
 	// but for min, the upper bound should be the minimum of the two, so we take the non-null one only if it's smaller
 
-	return domainFromBounds({ lower, lowerInclusive, upper, upperInclusive });
+	return domainFromNumericBounds({ lower, lowerInclusive, upper, upperInclusive });
 }
 
 /**
@@ -689,8 +761,8 @@ export function computeMaxRange(aRange: Domain, bRange: Domain): Domain {
 		return { kind: 'empty' };
 	}
 
-	const boundsA = getBoundsFromDomain(aRange);
-	const boundsB = getBoundsFromDomain(bRange);
+	const boundsA = getNumericBounds(aRange);
+	const boundsB = getNumericBounds(bRange);
 
 	if (!boundsA || !boundsB) {
 		return universalDomain();
@@ -732,7 +804,7 @@ export function computeMaxRange(aRange: Domain, bRange: Domain): Domain {
 		upperInclusive = boundsB.upperInclusive;
 	}
 
-	return domainFromBounds({ lower, lowerInclusive, upper, upperInclusive });
+	return domainFromNumericBounds({ lower, lowerInclusive, upper, upperInclusive });
 }
 
 // =============================================================================
@@ -811,7 +883,7 @@ export function computeRangeWithCriticalPointsExact(
 	variable: string,
 	domain: Domain
 ): ExactRangeResult | null {
-	const bounds = getBoundsFromDomain(domain);
+	const bounds = getNumericBounds(domain);
 	if (!bounds) return null;
 
 	try {
@@ -1047,7 +1119,7 @@ export function computeRangeWithCriticalPoints(
 /**
  * Check if the input range spans at least one full period of a periodic function.
  */
-export function spansFullPeriod(inputBounds: Bounds, period: number): boolean {
+export function spansFullPeriod(inputBounds: NumericBounds, period: number): boolean {
 	if (inputBounds.lower === null || inputBounds.upper === null) {
 		return true; // Unbounded always spans full period
 	}
@@ -1124,7 +1196,7 @@ export function computeRationalPowerRange(baseRange: Domain, power: RationalPowe
 
 	if (baseRange.kind === 'empty') return { kind: 'empty' };
 
-	const bounds = getBoundsFromDomain(baseRange);
+	const bounds = getNumericBounds(baseRange);
 	if (!bounds) return universalDomain();
 
 	// Handle special cases
@@ -1158,7 +1230,7 @@ export function computeRationalPowerRange(baseRange: Domain, power: RationalPowe
 			const lower = rationalPow(effectiveLower, p, q);
 			const upper = bounds.upper !== null ? rationalPow(bounds.upper, p, q) : null;
 
-			return domainFromBounds({
+			return domainFromNumericBounds({
 				lower,
 				lowerInclusive: effectiveLowerInclusive,
 				upper,
@@ -1173,7 +1245,7 @@ export function computeRationalPowerRange(baseRange: Domain, power: RationalPowe
 			const upper = effectiveLower > 0 ? rationalPow(effectiveLower, p, q) : null;
 			const lower = bounds.upper !== null ? rationalPow(bounds.upper, p, q) : null;
 
-			return domainFromBounds({
+			return domainFromNumericBounds({
 				lower,
 				lowerInclusive: bounds.upperInclusive,
 				upper,
@@ -1191,7 +1263,7 @@ export function computeRationalPowerRange(baseRange: Domain, power: RationalPowe
 			const lower = rationalPow(bounds.lower, p, q);
 			const upper = rationalPow(bounds.upper, p, q);
 
-			return domainFromBounds({
+			return domainFromNumericBounds({
 				lower,
 				lowerInclusive: bounds.lowerInclusive,
 				upper,
@@ -1211,7 +1283,7 @@ export function computeRationalPowerRange(baseRange: Domain, power: RationalPowe
 			const lower = 1 / upperPow;
 			const upper = 1 / lowerPow;
 
-			return domainFromBounds({
+			return domainFromNumericBounds({
 				lower,
 				lowerInclusive: bounds.upperInclusive,
 				upper,
@@ -1227,7 +1299,7 @@ export function computeRationalPowerRange(baseRange: Domain, power: RationalPowe
 function computeIntegerPowerRange(baseRange: Domain, n: number): Domain {
 	if (baseRange.kind === 'empty') return { kind: 'empty' };
 
-	const bounds = getBoundsFromDomain(baseRange);
+	const bounds = getNumericBounds(baseRange);
 	if (!bounds) return universalDomain();
 
 	if (n === 0) {
@@ -1241,7 +1313,7 @@ function computeIntegerPowerRange(baseRange: Domain, n: number): Domain {
 	if (bounds.lower === null || bounds.upper === null) {
 		// Unbounded
 		if (n % 2 === 0) {
-			return domainFromBounds({
+			return domainFromNumericBounds({
 				lower: 0,
 				lowerInclusive: true,
 				upper: null,
@@ -1258,7 +1330,7 @@ function computeIntegerPowerRange(baseRange: Domain, n: number): Domain {
 
 		if (a >= 0) {
 			// All non-negative
-			return domainFromBounds({
+			return domainFromNumericBounds({
 				lower: Math.pow(a, n),
 				lowerInclusive: bounds.lowerInclusive,
 				upper: Math.pow(b, n),
@@ -1266,7 +1338,7 @@ function computeIntegerPowerRange(baseRange: Domain, n: number): Domain {
 			});
 		} else if (b <= 0) {
 			// All non-positive
-			return domainFromBounds({
+			return domainFromNumericBounds({
 				lower: Math.pow(b, n),
 				lowerInclusive: bounds.upperInclusive,
 				upper: Math.pow(a, n),
@@ -1275,7 +1347,7 @@ function computeIntegerPowerRange(baseRange: Domain, n: number): Domain {
 		} else {
 			// Spans zero
 			const maxPow = Math.max(Math.pow(Math.abs(a), n), Math.pow(b, n));
-			return domainFromBounds({
+			return domainFromNumericBounds({
 				lower: 0,
 				lowerInclusive: true,
 				upper: maxPow,
@@ -1285,7 +1357,7 @@ function computeIntegerPowerRange(baseRange: Domain, n: number): Domain {
 		}
 	} else if (n > 0 && n % 2 !== 0) {
 		// Odd positive power - monotonically increasing
-		return domainFromBounds({
+		return domainFromNumericBounds({
 			lower: Math.pow(bounds.lower, n),
 			lowerInclusive: bounds.lowerInclusive,
 			upper: Math.pow(bounds.upper, n),
@@ -1303,14 +1375,14 @@ function computeIntegerPowerRange(baseRange: Domain, n: number): Domain {
 		if (isEven) {
 			// 1/x^|n| where |n| is even
 			if (bounds.lower > 0) {
-				return domainFromBounds({
+				return domainFromNumericBounds({
 					lower: 1 / Math.pow(bounds.upper, absN),
 					lowerInclusive: bounds.upperInclusive,
 					upper: 1 / Math.pow(bounds.lower, absN),
 					upperInclusive: bounds.lowerInclusive
 				});
 			} else {
-				return domainFromBounds({
+				return domainFromNumericBounds({
 					lower: 1 / Math.pow(bounds.lower, absN),
 					lowerInclusive: bounds.lowerInclusive,
 					upper: 1 / Math.pow(bounds.upper, absN),
@@ -1319,7 +1391,7 @@ function computeIntegerPowerRange(baseRange: Domain, n: number): Domain {
 			}
 		} else {
 			// 1/x^|n| where |n| is odd
-			return domainFromBounds({
+			return domainFromNumericBounds({
 				lower: 1 / Math.pow(bounds.upper, absN),
 				lowerInclusive: bounds.upperInclusive,
 				upper: 1 / Math.pow(bounds.lower, absN),

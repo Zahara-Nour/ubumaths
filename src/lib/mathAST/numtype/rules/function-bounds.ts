@@ -17,53 +17,15 @@
  */
 
 import type { MathNode } from '../../types';
-import type { IntervalDomain, Endpoint, EndpointType } from '$lib/math/intervals/types';
+import type { IntervalDomain, EndpointType } from '$lib/math/intervals/types';
 import {
-	intervalSet,
-	interval,
-	universalSet,
 	isPositiveInfinity,
-	isNegativeInfinity
+	isNegativeInfinity,
+	getEndpoints,
+	buildInterval
 } from '$lib/math/intervals';
 import { func as funcNode, sqrt as sqrtNode, infinity, number as numberNode } from '../../factory';
 import { compareNumericNodes } from '../../eval/compare-numeric';
-
-// =============================================================================
-// Helpers
-// =============================================================================
-
-/**
- * Extract the overall lower and upper endpoints from an IntervalDomain.
- * Returns null for empty domains.
- */
-function extractEndpoints(domain: IntervalDomain): { lo: Endpoint; hi: Endpoint } | null {
-	if (domain.kind === 'empty') return null;
-	if (domain.kind === 'universal') {
-		return {
-			lo: { value: infinity('negative'), type: 'open' as EndpointType },
-			hi: { value: infinity('positive'), type: 'open' as EndpointType }
-		};
-	}
-	const { intervals } = domain;
-	if (intervals.length === 0) return null;
-	return {
-		lo: intervals[0].lower,
-		hi: intervals[intervals.length - 1].upper
-	};
-}
-
-/**
- * Build an IntervalDomain from lower and upper endpoints.
- */
-function makeInterval(
-	lo: { value: MathNode; type: EndpointType },
-	hi: { value: MathNode; type: EndpointType }
-): IntervalDomain {
-	if (isNegativeInfinity(lo.value) && isPositiveInfinity(hi.value)) {
-		return universalSet();
-	}
-	return intervalSet([interval(lo, hi)]);
-}
 
 const ZERO = numberNode('0');
 const ONE = numberNode('1');
@@ -219,7 +181,7 @@ export function applyFunctionToBounds(
 		return undefined;
 	}
 
-	const endpoints = extractEndpoints(inputBounds);
+	const endpoints = getEndpoints(inputBounds);
 	if (!endpoints) return undefined;
 
 	// Check domain requirement
@@ -240,7 +202,7 @@ export function applyFunctionToBounds(
 			? (info.rangeUpper ?? { value: infinity('positive'), type: 'open' as EndpointType })
 			: { value: info.apply(hi.value), type: hi.type };
 
-		return makeInterval(resultLo, resultHi);
+		return buildInterval(resultLo, resultHi);
 	}
 
 	// Decreasing: f([a, b]) = [f(b), f(a)]
@@ -251,5 +213,5 @@ export function applyFunctionToBounds(
 		? (info.rangeUpper ?? { value: infinity('positive'), type: 'open' as EndpointType })
 		: { value: info.apply(lo.value), type: lo.type };
 
-	return makeInterval(resultLo, resultHi);
+	return buildInterval(resultLo, resultHi);
 }

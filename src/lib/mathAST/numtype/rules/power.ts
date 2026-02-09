@@ -14,21 +14,10 @@
  * result endpoints are symbolic MathNode trees built with factory.power().
  */
 
-import type { MathNode } from '../../types';
 import type { MathType, SignInfo } from '../types';
 import { join, isSubtype } from '../algebra';
 import { COMPLEX_TYPE, UNKNOWN_TYPE } from '../types';
-import type { IntervalDomain, Endpoint, EndpointType } from '$lib/math/intervals/types';
-import {
-	intervalSet,
-	interval,
-	universalSet,
-	isPositiveInfinity,
-	isNegativeInfinity,
-	endpointToNumber
-} from '$lib/math/intervals';
-import { power as powerNode, infinity, number as numberNode } from '../../factory';
-import { compareNumericNodes } from '../../eval/compare-numeric';
+import { powerBounds } from '$lib/math/intervals';
 import { applyFunctionToBounds } from './function-bounds';
 
 // =============================================================================
@@ -62,161 +51,6 @@ function isPerfectPower(base: number, n: number): boolean {
  */
 export interface TypeWithValue extends MathType {
 	readonly numericValue?: number;
-}
-
-// =============================================================================
-// Symbolic Bounds Helpers for Power
-// =============================================================================
-
-const ZERO = numberNode('0');
-
-/**
- * Extract the overall lower and upper endpoints from an IntervalDomain.
- */
-function extractEndpoints(domain: IntervalDomain): { lo: Endpoint; hi: Endpoint } | null {
-	if (domain.kind === 'empty') return null;
-	if (domain.kind === 'universal') {
-		return {
-			lo: { value: infinity('negative'), type: 'open' as EndpointType },
-			hi: { value: infinity('positive'), type: 'open' as EndpointType }
-		};
-	}
-	const { intervals } = domain;
-	if (intervals.length === 0) return null;
-	return {
-		lo: intervals[0].lower,
-		hi: intervals[intervals.length - 1].upper
-	};
-}
-
-/**
- * Build an IntervalDomain from lower and upper endpoints.
- */
-function makeInterval(
-	lo: { value: MathNode; type: EndpointType },
-	hi: { value: MathNode; type: EndpointType }
-): IntervalDomain {
-	if (isNegativeInfinity(lo.value) && isPositiveInfinity(hi.value)) {
-		return universalSet();
-	}
-	return intervalSet([interval(lo, hi)]);
-}
-
-/**
- * Build a symbolic power MathNode: endpoint^n
- */
-function powEndpoint(endpoint: MathNode, n: number): MathNode {
-	return powerNode(endpoint, numberNode(String(n)));
-}
-
-/**
- * Compute symbolic bounds for base^n where n is a known positive integer.
- *
- * Uses monotonicity analysis with symbolic MathNode endpoints:
- *
- * - **Odd exponent** (monotonically increasing): [a,b]^n = [a^n, b^n]
- * - **Even exponent** (x^n ≥ 0 always):
- *   - lo ≥ 0: [lo^n, hi^n] (monotone increasing on [0,∞))
- *   - hi ≤ 0: [(-hi)^n, (-lo)^n] equivalently [hi^n, lo^n] since n is even
- *   - lo < 0 < hi: [0, max(lo^n, hi^n)] — compare |lo| vs |hi| numerically
- *
- * Endpoint sign checks use compareNumericNodes; result endpoints are symbolic.
- */
-function computePowerBounds(
-	baseBounds: IntervalDomain,
-	exponent: number
-): IntervalDomain | undefined {
-	if (exponent <= 0) return undefined;
-
-	const e = extractEndpoints(baseBounds);
-	if (!e) return undefined;
-
-	const { lo, hi } = e;
-	const loIsNegInf = isNegativeInfinity(lo.value);
-	const hiIsPosInf = isPositiveInfinity(hi.value);
-	const isEven = exponent % 2 === 0;
-
-	if (isEven) {
-		// Compare endpoints against zero symbolically
-		const loCmp = loIsNegInf ? -1 : compareNumericNodes(lo.value, ZERO);
-		const hiCmp = hiIsPosInf ? 1 : compareNumericNodes(hi.value, ZERO);
-
-		// Can't determine sign → bail
-		if (loCmp === undefined || hiCmp === undefined) return undefined;
-
-		// Entirely non-negative: lo >= 0
-		if (loCmp >= 0) {
-			return makeInterval(
-				{
-					value: powEndpoint(lo.value, exponent),
-					type: lo.type
-				},
-				{
-					value: hiIsPosInf ? infinity('positive') : powEndpoint(hi.value, exponent),
-					type: hiIsPosInf ? 'open' : hi.type
-				}
-			);
-		}
-
-		// Entirely non-positive: hi <= 0
-		if (hiCmp <= 0) {
-			// x^even is monotone decreasing on (-∞, 0], so swap: [hi^n, lo^n]
-			// Since n is even, (-a)^n = a^n, so hi^n and lo^n are both ≥ 0
-			return makeInterval(
-				{
-					value: powEndpoint(hi.value, exponent),
-					type: hi.type
-				},
-				{
-					value: loIsNegInf ? infinity('positive') : powEndpoint(lo.value, exponent),
-					type: loIsNegInf ? 'open' : lo.type
-				}
-			);
-		}
-
-		// Crosses zero: lo < 0 < hi → result is [0, max(|lo|^n, |hi|^n)]
-		if (loIsNegInf || hiIsPosInf) {
-			// At least one infinite → upper is +∞
-			return makeInterval(
-				{ value: ZERO, type: 'closed' },
-				{ value: infinity('positive'), type: 'open' }
-			);
-		}
-
-		// Compare |lo| vs |hi| numerically to find which gives larger power
-		const loNum = Math.abs(endpointToNumber(lo.value));
-		const hiNum = Math.abs(endpointToNumber(hi.value));
-
-		if (isNaN(loNum) || isNaN(hiNum)) return undefined;
-
-		let upperValue: MathNode;
-		let upperType: EndpointType;
-		if (loNum > hiNum) {
-			upperValue = powEndpoint(lo.value, exponent);
-			upperType = lo.type;
-		} else if (hiNum > loNum) {
-			upperValue = powEndpoint(hi.value, exponent);
-			upperType = hi.type;
-		} else {
-			// Equal absolute values — use either, closed if either is closed
-			upperValue = powEndpoint(hi.value, exponent);
-			upperType = lo.type === 'closed' || hi.type === 'closed' ? 'closed' : 'open';
-		}
-
-		return makeInterval({ value: ZERO, type: 'closed' }, { value: upperValue, type: upperType });
-	}
-
-	// Odd exponent: monotonically increasing, [lo^n, hi^n]
-	return makeInterval(
-		{
-			value: loIsNegInf ? infinity('negative') : powEndpoint(lo.value, exponent),
-			type: loIsNegInf ? 'open' : lo.type
-		},
-		{
-			value: hiIsPosInf ? infinity('positive') : powEndpoint(hi.value, exponent),
-			type: hiIsPosInf ? 'open' : hi.type
-		}
-	);
 }
 
 // =============================================================================
@@ -328,7 +162,7 @@ function inferIntegerExponentType(
 ): MathType {
 	// Compute bounds for positive exponents
 	const bounds =
-		exponent > 0 && baseType.bounds ? computePowerBounds(baseType.bounds, exponent) : undefined;
+		exponent > 0 && baseType.bounds ? powerBounds(baseType.bounds, exponent) : undefined;
 
 	// Positive integer exponent
 	if (exponent > 0) {

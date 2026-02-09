@@ -38,7 +38,8 @@ import { solve } from '../../solve/solve';
 import { equals, number, add, multiply, opposite } from '../../factory';
 import { isRelation } from '../../guards';
 import { containsValue } from '../../domain/algebra';
-import { getBoundsFromDomain } from '$lib/math/intervals/algebra';
+import { getEndpoints } from '$lib/math/intervals';
+import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { denormalize, normalize } from '../../normal';
 
 // =============================================================================
@@ -432,6 +433,9 @@ export function getZerosInInterval(
 /**
  * Get numeric bounds from a domain for zero filtering.
  *
+ * Uses getEndpoints + endpointToNumber (irréductible — the periodic zero
+ * enumeration loop needs float for kMin/kMax).
+ *
  * @param domain - The domain to extract bounds from
  * @returns Object with lower and upper bounds, or null if unbounded
  *
@@ -447,14 +451,20 @@ export function getDomainBounds(domain: Domain): {
 		return null;
 	}
 
-	if (domain.kind === 'universal') {
+	if (domain.kind !== 'interval_set') {
 		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
 	}
 
-	if (domain.kind === 'interval_set') {
-		return getBoundsFromDomain(domain);
-	}
+	const ep = getEndpoints(domain);
+	if (!ep) return null;
 
-	// For other domain types, return unbounded
-	return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
+	const lo = endpointToNumber(ep.lo.value);
+	const hi = endpointToNumber(ep.hi.value);
+
+	return {
+		lower: lo === -Infinity ? null : lo,
+		upper: hi === Infinity ? null : hi,
+		lowerInclusive: ep.lo.type === 'closed',
+		upperInclusive: ep.hi.type === 'closed'
+	};
 }

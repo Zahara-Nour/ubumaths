@@ -20,11 +20,8 @@ import {
 	closedInterval,
 	fromNumber
 } from './factory';
-import {
-	getBoundsFromDomain as intervalsGetBoundsFromDomain,
-	domainFromBounds,
-	type Bounds
-} from '$lib/math/intervals/algebra';
+import { getEndpoints, buildInterval } from '$lib/math/intervals';
+import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { tryConvertConditionToInterval } from './algebra';
 
 // =============================================================================
@@ -776,27 +773,77 @@ export function hasRestrictedRange(name: string): boolean {
 }
 
 // =============================================================================
-// Range Application with Monotonicity
+// Numeric Bounds Helpers (local to builtins)
 // =============================================================================
 
+interface NumericBounds {
+	lower: number | null; // null = -∞
+	upper: number | null; // null = +∞
+	lowerInclusive: boolean;
+	upperInclusive: boolean;
+}
+
 /**
- * Extract bounds from a Domain.
- * Delegates to intervals module for IntervalDomain kinds,
- * handles condition_domain and periodic_exclusion locally.
+ * Extract numeric bounds from a Domain.
+ * Handles all Domain kinds.
  */
-export function getBoundsFromDomain(domain: Domain): Bounds | null {
+function getNumericBounds(domain: Domain): NumericBounds | null {
+	if (domain.kind === 'empty') return null;
+	if (domain.kind === 'universal') {
+		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
+	}
 	if (domain.kind === 'condition_domain') {
 		const converted = tryConvertConditionToInterval(domain);
-		if (converted) return intervalsGetBoundsFromDomain(converted);
+		if (converted) return getNumericBounds(converted);
 		return null;
 	}
 	if (domain.kind === 'periodic_exclusion') {
-		// Almost all of R — return universal bounds
-		return { lower: null, lowerInclusive: false, upper: null, upperInclusive: false };
+		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
 	}
-	// Remaining kinds (empty, universal, interval_set) are IntervalDomain
-	return intervalsGetBoundsFromDomain(domain);
+	// interval_set
+	const ep = getEndpoints(domain);
+	if (!ep) return null;
+
+	const lo = endpointToNumber(ep.lo.value);
+	const hi = endpointToNumber(ep.hi.value);
+
+	return {
+		lower: lo === -Infinity ? null : lo,
+		upper: hi === Infinity ? null : hi,
+		lowerInclusive: ep.lo.type === 'closed',
+		upperInclusive: ep.hi.type === 'closed'
+	};
 }
+
+/**
+ * Create a Domain from numeric bounds.
+ */
+function domainFromNumericBounds(bounds: NumericBounds): Domain {
+	const { lower, lowerInclusive, upper, upperInclusive } = bounds;
+
+	if (lower === null && upper === null) {
+		return universalDomain();
+	}
+
+	if (lower !== null && upper !== null && lower > upper) {
+		return { kind: 'empty' };
+	}
+
+	const lo =
+		lower !== null
+			? { value: fromNumber(lower), type: lowerInclusive ? ('closed' as const) : ('open' as const) }
+			: { value: { type: 'infinity' as const, sign: 'negative' as const }, type: 'open' as const };
+	const hi =
+		upper !== null
+			? { value: fromNumber(upper), type: upperInclusive ? ('closed' as const) : ('open' as const) }
+			: { value: { type: 'infinity' as const, sign: 'positive' as const }, type: 'open' as const };
+
+	return buildInterval(lo, hi) as Domain;
+}
+
+// =============================================================================
+// Range Application with Monotonicity
+// =============================================================================
 
 /**
  * Apply a builtin function to an input range using monotonicity analysis.
@@ -826,7 +873,7 @@ export function applyFunctionToRange(name: string, inputRange: Domain): Domain {
 	}
 
 	// Get input bounds
-	const inputBounds = getBoundsFromDomain(inputRange);
+	const inputBounds = getNumericBounds(inputRange);
 	if (!inputBounds) {
 		return { kind: 'empty' };
 	}
@@ -862,7 +909,7 @@ export function applyFunctionToRange(name: string, inputRange: Domain): Domain {
 /**
  * Apply a monotonic function to bounded input.
  */
-function applyMonotonicFunction(entry: BuiltinRangeEntry, inputBounds: Bounds): Domain {
+function applyMonotonicFunction(entry: BuiltinRangeEntry, inputBounds: NumericBounds): Domain {
 	const monotonicity = entry.monotonicity;
 	if (monotonicity === 'increasing' || monotonicity === 'decreasing') {
 		return applyMonotonicFunctionWithEntry(entry, inputBounds, monotonicity);
@@ -876,7 +923,7 @@ function applyMonotonicFunction(entry: BuiltinRangeEntry, inputBounds: Bounds): 
  */
 function applyMonotonicFunctionWithEntry(
 	entry: BuiltinRangeEntry,
-	inputBounds: Bounds,
+	inputBounds: NumericBounds,
 	monotonicity: 'increasing' | 'decreasing'
 ): Domain {
 	const evaluate = entry.evaluate!;
@@ -978,7 +1025,7 @@ function applyMonotonicFunctionWithEntry(
 		}
 	}
 
-	return domainFromBounds({
+	return domainFromNumericBounds({
 		lower: outputLower,
 		lowerInclusive: outputLowerInclusive,
 		upper: outputUpper,
@@ -990,7 +1037,7 @@ function applyMonotonicFunctionWithEntry(
  * Find if input bounds are contained within a single monotonic interval.
  */
 function findContainingMonotonicInterval(
-	inputBounds: Bounds,
+	inputBounds: NumericBounds,
 	intervals: MonotonicInterval[]
 ): MonotonicInterval | null {
 	for (const interval of intervals) {
@@ -1010,7 +1057,7 @@ function findContainingMonotonicInterval(
  * Apply a non-monotonic function using sampling for accuracy.
  * Used for functions like sin, cos, abs, cosh that aren't globally monotonic.
  */
-function applyNonMonotonicFunction(entry: BuiltinRangeEntry, inputBounds: Bounds): Domain {
+function applyNonMonotonicFunction(entry: BuiltinRangeEntry, inputBounds: NumericBounds): Domain {
 	const evaluate = entry.evaluate!;
 	const samples: number[] = [];
 
@@ -1054,7 +1101,7 @@ function applyNonMonotonicFunction(entry: BuiltinRangeEntry, inputBounds: Bounds
 	const clampedLower = entry.lower !== null ? Math.max(minVal, entry.lower) : minVal;
 	const clampedUpper = entry.upper !== null ? Math.min(maxVal, entry.upper) : maxVal;
 
-	return domainFromBounds({
+	return domainFromNumericBounds({
 		lower: clampedLower,
 		lowerInclusive: true, // Conservative
 		upper: clampedUpper,
@@ -1088,9 +1135,3 @@ function getCriticalPoints(entry: BuiltinRangeEntry): number[] {
 		-2 * Math.PI
 	];
 }
-
-// =============================================================================
-// Re-exports from intervals module
-// =============================================================================
-
-export { domainFromBounds, type Bounds } from '$lib/math/intervals/algebra';
