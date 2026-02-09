@@ -351,14 +351,15 @@ export function inferTypeWithPreciseBounds(
 	// Check that the expression actually contains this variable
 	if (!getVariables(node).has(boundedVar.name)) return baseType;
 
-	const precise = computePreciseBounds(node, boundedVar.name, boundedVar.bounds);
-	if (!precise) return baseType;
+	const preciseResult = computePreciseBounds(node, boundedVar.name, boundedVar.bounds);
+	if (!preciseResult) return baseType;
 
 	// Derive sign from precise bounds
-	const sign = signFromBounds(precise);
+	const sign = signFromBounds(preciseResult.bounds);
 	return {
 		...baseType,
-		bounds: precise,
+		bounds: preciseResult.bounds,
+		...(preciseResult.exactBounds ? { exactBounds: preciseResult.exactBounds } : {}),
 		...(sign !== undefined && !baseType.sign ? { sign } : {})
 	};
 }
