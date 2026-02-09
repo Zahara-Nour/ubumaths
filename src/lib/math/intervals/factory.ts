@@ -22,6 +22,7 @@ import type {
 	UniversalSet,
 	IntervalSet
 } from './types';
+import { normalizeIntervals } from './normalize';
 
 // =============================================================================
 // Bound Value Constructors
@@ -282,9 +283,14 @@ export function universalSet(): UniversalSet {
 
 /**
  * Creates an interval set from intervals.
+ *
+ * Normalizes the input: sorts by lower bound and merges overlapping/adjacent
+ * intervals. This enforces the structural invariant that an IntervalSet always
+ * contains disjoint, sorted intervals - which the formatting and algebra
+ * operations rely on for correct output.
  */
 export function intervalSet(intervals: readonly Interval[]): IntervalSet {
-	return { kind: 'interval_set', intervals };
+	return { kind: 'interval_set', intervals: normalizeIntervals(intervals) };
 }
 
 // =============================================================================
