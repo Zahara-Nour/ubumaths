@@ -67,14 +67,7 @@ export {
 export {
 	// Bound value constructors (from intervals)
 	fromNumber,
-	rationalBound,
-	radicalBound,
-	positiveInfinity,
-	negativeInfinity,
-	pi,
-	e,
-	sqrt2,
-	sqrt3,
+	bound,
 	// Endpoint factories
 	endpoint,
 	openEndpoint,

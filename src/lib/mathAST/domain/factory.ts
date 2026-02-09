@@ -10,17 +10,7 @@
 // =============================================================================
 
 // Bound value constructors
-export {
-	fromNumber,
-	rationalBound,
-	radicalBound,
-	positiveInfinity,
-	negativeInfinity,
-	pi,
-	e,
-	sqrt2,
-	sqrt3
-} from '$lib/math/intervals/factory';
+export { fromNumber, bound } from '$lib/math/intervals/factory';
 
 // Endpoint factories
 export {
