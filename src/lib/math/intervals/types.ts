@@ -17,7 +17,7 @@ import type { MathNode } from '$lib/mathAST/types';
  * This includes:
  * - NumberNode: 0, 1, -5, 3.14
  * - InfinityNode: +∞, -∞
- * - GreekLetterNode: π, e
+ * - ConstantNode: π, e
  * - FunctionNode: sqrt(2), ln(3), sin(π/4)
  * - DivisionNode: 1/2, 3/4
  * - Any other symbolic expression
