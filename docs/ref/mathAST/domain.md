@@ -413,22 +413,6 @@ For complex expressions on bounded domains, derivatives are used to find extrema
 // Evaluates at domain endpoints and critical points within the domain
 ```
 
-The intervals module provides these arithmetic operations:
-
-```typescript
-import { add, subtract, multiply, divide, negate, scale } from '$lib/math/intervals';
-
-const a = closedInterval(fromNumber(1), fromNumber(3)); // [1, 3]
-const b = closedInterval(fromNumber(2), fromNumber(4)); // [2, 4]
-
-add(a, b); // [3, 7] - Minkowski sum
-subtract(a, b); // [-3, 1] - Minkowski difference
-multiply(a, b); // [2, 12] - Four-corners multiplication
-divide(a, b); // [0.25, 1.5] - Four-corners division
-negate(a); // [-3, -1] - Negation
-scale(a, 2); // [2, 6] - Scalar multiplication
-```
-
 ## Validation
 
 ### Simple Check

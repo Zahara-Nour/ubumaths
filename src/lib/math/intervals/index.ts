@@ -109,17 +109,8 @@ export {
 	excludePoints
 } from './algebra';
 
-// Interval arithmetic operations
-export {
-	add,
-	subtract,
-	multiply,
-	divide,
-	negate,
-	scale,
-	getBoundsFromDomain,
-	domainFromBounds
-} from './algebra';
+// Bounds utilities
+export { getBoundsFromDomain, domainFromBounds } from './algebra';
 export type { Bounds } from './algebra';
 
 // Formatting (new names)
