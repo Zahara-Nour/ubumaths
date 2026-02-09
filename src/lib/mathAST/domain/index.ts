@@ -28,7 +28,6 @@ export type {
 	UniversalSet,
 	IntervalSet,
 	CompareOutcome,
-	CompareResult,
 	// Domain-specific types
 	Domain,
 	ConditionDomain,
@@ -182,14 +181,8 @@ export {
 // Built-in Function Ranges (output ranges)
 // =============================================================================
 
-export {
-	getBuiltinRange,
-	hasRestrictedRange,
-	applyFunctionToRange,
-	getBoundsFromDomain,
-	domainFromBounds
-} from './builtins';
-export type { BuiltinRangeEntry, Monotonicity, MonotonicInterval, Bounds } from './builtins';
+export { getBuiltinRange, hasRestrictedRange, applyFunctionToRange } from './builtins';
+export type { BuiltinRangeEntry, Monotonicity, MonotonicInterval } from './builtins';
 
 // =============================================================================
 // Range Computation
@@ -219,7 +212,6 @@ export {
 	computeRangeWithCriticalPointsExact,
 	computeRangeWithCriticalPoints,
 	// Periodic optimization
-	spansFullPeriod,
 	getFunctionPeriod
 } from './range-helpers';
 export type { QuadraticForm, LinearForm, RationalPower, ExactRangeResult } from './range-helpers';

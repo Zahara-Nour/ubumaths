@@ -8,21 +8,11 @@
  * - Other: abs, sqrt, sign, factorial
  */
 
-import type { MathNode } from '../../types';
 import type { MathType, NumericType, SignInfo } from '../types';
 import { join, isSubtype } from '../algebra';
 import { COMPLEX_TYPE, TRANSCENDENTAL_TYPE, INTEGER_TYPE, UNKNOWN_TYPE } from '../types';
 import { inferSqrtType } from './power';
-import type { IntervalDomain, Endpoint, EndpointType } from '$lib/math/intervals/types';
-import {
-	intervalSet,
-	interval,
-	isPositiveInfinity,
-	isNegativeInfinity,
-	endpointToNumber
-} from '$lib/math/intervals';
-import { opposite as oppositeNode, infinity, number as numberNode } from '../../factory';
-import { compareNumericNodes } from '../../eval/compare-numeric';
+import { absBounds } from '$lib/math/intervals';
 import { applyFunctionToBounds } from './function-bounds';
 import { signFromBounds } from './literals';
 
@@ -136,112 +126,6 @@ export function inferFunctionType(
 		result = join(result, argTypes[i].base);
 	}
 	return { base: result };
-}
-
-// =============================================================================
-// Symbolic Bounds Helpers
-// =============================================================================
-
-const ZERO = numberNode('0');
-
-/**
- * Extract the overall lower and upper endpoints from an IntervalDomain.
- */
-function extractEndpoints(domain: IntervalDomain): { lo: Endpoint; hi: Endpoint } | null {
-	if (domain.kind === 'empty') return null;
-	if (domain.kind === 'universal') {
-		return {
-			lo: { value: infinity('negative'), type: 'open' as EndpointType },
-			hi: { value: infinity('positive'), type: 'open' as EndpointType }
-		};
-	}
-	const { intervals } = domain;
-	if (intervals.length === 0) return null;
-	return {
-		lo: intervals[0].lower,
-		hi: intervals[intervals.length - 1].upper
-	};
-}
-
-/**
- * Build an IntervalDomain from lower and upper endpoints.
- */
-function makeInterval(
-	lo: { value: MathNode; type: EndpointType },
-	hi: { value: MathNode; type: EndpointType }
-): IntervalDomain {
-	return intervalSet([interval(lo, hi)]);
-}
-
-/**
- * Compute symbolic abs bounds from argument IntervalDomain.
- * |[a, b]| where a <= b:
- * - If a >= 0: [a, b] (identity)
- * - If b <= 0: [-b, -a] (negate)
- * - If a < 0 < b: [0, max(|a|, b)] — compare numerically, keep symbolic
- */
-function computeAbsBounds(argBounds: IntervalDomain): IntervalDomain | undefined {
-	const e = extractEndpoints(argBounds);
-	if (!e) return undefined;
-
-	const { lo, hi } = e;
-	const loIsNegInf = isNegativeInfinity(lo.value);
-	const hiIsPosInf = isPositiveInfinity(hi.value);
-
-	const loCmp = loIsNegInf ? -1 : compareNumericNodes(lo.value, ZERO);
-	const hiCmp = hiIsPosInf ? 1 : compareNumericNodes(hi.value, ZERO);
-
-	if (loCmp === undefined || hiCmp === undefined) return undefined;
-
-	// Entirely non-negative: lo >= 0
-	if (loCmp >= 0) {
-		return argBounds;
-	}
-
-	// Entirely non-positive: hi <= 0
-	if (hiCmp <= 0) {
-		// |[a,b]| = [-b, -a] where a <= b <= 0
-		return makeInterval(
-			{
-				value: hiCmp === 0 ? ZERO : oppositeNode(hi.value),
-				type: hi.type
-			},
-			{
-				value: loIsNegInf ? infinity('positive') : oppositeNode(lo.value),
-				type: loIsNegInf ? 'open' : lo.type
-			}
-		);
-	}
-
-	// Crosses zero: lo < 0 < hi → [0, max(|lo|, hi)]
-	if (loIsNegInf || hiIsPosInf) {
-		return makeInterval(
-			{ value: ZERO, type: 'closed' },
-			{ value: infinity('positive'), type: 'open' }
-		);
-	}
-
-	// Compare |lo| vs hi numerically
-	const absLoNum = Math.abs(endpointToNumber(lo));
-	const hiNum = endpointToNumber(hi);
-
-	if (isNaN(absLoNum) || isNaN(hiNum)) return undefined;
-
-	let upperValue: MathNode;
-	let upperType: EndpointType;
-	if (absLoNum > hiNum) {
-		upperValue = oppositeNode(lo.value);
-		upperType = lo.type;
-	} else if (hiNum > absLoNum) {
-		upperValue = hi.value;
-		upperType = hi.type;
-	} else {
-		// Equal absolute values
-		upperValue = hi.value;
-		upperType = lo.type === 'closed' || hi.type === 'closed' ? 'closed' : 'open';
-	}
-
-	return makeInterval({ value: ZERO, type: 'closed' }, { value: upperValue, type: upperType });
 }
 
 // =============================================================================
@@ -520,7 +404,7 @@ function inferTypePreservingFunctionType(
 		}
 
 		// Compute symbolic bounds for abs (Tier 3)
-		const bounds = argType.bounds ? computeAbsBounds(argType.bounds) : undefined;
+		const bounds = argType.bounds ? absBounds(argType.bounds) : undefined;
 
 		return {
 			base: argType.base,

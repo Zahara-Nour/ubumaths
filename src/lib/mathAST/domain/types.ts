@@ -24,8 +24,7 @@ export type {
 	EmptySet,
 	UniversalSet,
 	// Comparison types
-	CompareOutcome,
-	CompareResult
+	CompareOutcome
 } from '$lib/math/intervals/types';
 
 // Import for use in this file

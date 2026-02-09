@@ -35,23 +35,19 @@ export type {
 	IntervalSet,
 	IntervalDomain,
 	// Comparison types
-	CompareResult,
 	CompareOutcome
 } from './types';
 
-// Comparison functions
-export {
-	compareEndpointValues,
-	compare,
-	endpointLessThan,
-	endpointEquals,
-	endpointLessThanOrEqual,
-	endpointGreaterThan,
-	endpointGreaterThanOrEqual
-} from './compare';
+// Comparison
+export { compare } from './compare';
 
 // Endpoint utilities
-export { isInfinite, isPositiveInfinity, isNegativeInfinity, endpointToNumber } from './endpoint';
+export {
+	isInfiniteEndpoint,
+	isPositiveInfinityEndpoint,
+	isNegativeInfinityEndpoint,
+	endpointToNumber
+} from './endpoint';
 
 // Factory functions - Endpoint values
 export { fromNumber, bound } from './factory';
@@ -96,9 +92,14 @@ export {
 	difference
 } from './algebra';
 
-// Bounds utilities
-export { getBoundsFromDomain, domainFromBounds } from './algebra';
-export type { Bounds } from './algebra';
+// Symbolic interval utilities
+export { getEndpoints, combineEndpointTypes, buildInterval } from './algebra';
+
+// Symbolic interval arithmetic
+export { addBounds, subtractBounds, negateBounds, multiplyBounds, divideBounds } from './algebra';
+
+// Specialized interval operations
+export { absBounds, powerBounds } from './algebra';
 
 // Formatting (new names)
 export { formatInterval, formatCondition, formatDomainFull, formatEndpointValue } from './format';

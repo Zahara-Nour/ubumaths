@@ -9,7 +9,7 @@
  */
 
 import type { Interval, Endpoint } from './types';
-import { compare } from './endpoint';
+import { compare } from './compare';
 
 /**
  * Check if two intervals overlap or are adjacent.
