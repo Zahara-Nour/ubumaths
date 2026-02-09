@@ -66,8 +66,7 @@ import {
 	intervalSet,
 	realLine,
 	lessThanOrEqualInterval,
-	lessThanInterval,
-	fromNumber
+	lessThanInterval
 } from '$lib/math/intervals';
 import type { NumericType } from '../numtype/types';
 
@@ -739,7 +738,7 @@ function isOdd(): OddConstraint {
  * P._('n', P.inInterval(positiveReals()))
  *
  * // Match n in [0, 10]
- * P._('n', P.inInterval(intervalSet([closedInterval(fromNumber(0), fromNumber(10))])))
+ * P._('n', P.inInterval(intervalSet([closedInterval(astNumber(0), astNumber(10))])))
  */
 function inInterval(domain: IntervalDomain): IntervalConstraint {
 	return { kind: 'interval', domain } as const;
@@ -847,7 +846,7 @@ function inRstar(): IntervalConstraint {
 function inRminus(): IntervalConstraint {
 	return {
 		kind: 'interval',
-		domain: intervalSet([lessThanOrEqualInterval(fromNumber(0))])
+		domain: intervalSet([lessThanOrEqualInterval(astNumber(0))])
 	} as const;
 }
 
@@ -861,7 +860,7 @@ function inRminus(): IntervalConstraint {
  * P._('n', P.inRminusStar())  // Match values < 0
  */
 function inRminusStar(): IntervalConstraint {
-	return { kind: 'interval', domain: intervalSet([lessThanInterval(fromNumber(0))]) } as const;
+	return { kind: 'interval', domain: intervalSet([lessThanInterval(astNumber(0))]) } as const;
 }
 
 /**

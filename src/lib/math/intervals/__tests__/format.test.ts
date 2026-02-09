@@ -13,7 +13,6 @@ import {
 	formatEndpointValue
 } from '../format';
 import {
-	fromNumber,
 	bound,
 	closedInterval,
 	openInterval,
@@ -44,10 +43,10 @@ describe('formatEndpointValue', () => {
 	});
 
 	it('formats integer values', () => {
-		expect(formatEndpointValue(fromNumber(0))).toBe('0');
-		expect(formatEndpointValue(fromNumber(1))).toBe('1');
-		expect(formatEndpointValue(fromNumber(-5))).toBe('-5');
-		expect(formatEndpointValue(fromNumber(42))).toBe('42');
+		expect(formatEndpointValue(number(0))).toBe('0');
+		expect(formatEndpointValue(number(1))).toBe('1');
+		expect(formatEndpointValue(number(-5))).toBe('-5');
+		expect(formatEndpointValue(number(42))).toBe('42');
 	});
 
 	it('formats rational values', () => {
@@ -94,39 +93,39 @@ describe('formatDomainInterval', () => {
 	});
 
 	it('formats closed interval', () => {
-		const domain = intervalSet([closedInterval(fromNumber(0), fromNumber(1))]);
+		const domain = intervalSet([closedInterval(number(0), number(1))]);
 		expect(formatDomainInterval(domain)).toBe('[0, 1]');
 	});
 
 	it('formats open interval', () => {
-		const domain = intervalSet([openInterval(fromNumber(0), fromNumber(1))]);
+		const domain = intervalSet([openInterval(number(0), number(1))]);
 		expect(formatDomainInterval(domain)).toBe(']0, 1[');
 	});
 
 	it('formats greaterThanInterval', () => {
-		const domain = intervalSet([greaterThanInterval(fromNumber(0))]);
+		const domain = intervalSet([greaterThanInterval(number(0))]);
 		expect(formatDomainInterval(domain)).toBe(']0, +∞[');
 	});
 
 	it('formats greaterThanOrEqualInterval', () => {
-		const domain = intervalSet([greaterThanOrEqualInterval(fromNumber(0))]);
+		const domain = intervalSet([greaterThanOrEqualInterval(number(0))]);
 		expect(formatDomainInterval(domain)).toBe('[0, +∞[');
 	});
 
 	it('formats lessThanInterval', () => {
-		const domain = intervalSet([lessThanInterval(fromNumber(0))]);
+		const domain = intervalSet([lessThanInterval(number(0))]);
 		expect(formatDomainInterval(domain)).toBe(']-∞, 0[');
 	});
 
 	it('formats lessThanOrEqualInterval', () => {
-		const domain = intervalSet([lessThanOrEqualInterval(fromNumber(0))]);
+		const domain = intervalSet([lessThanOrEqualInterval(number(0))]);
 		expect(formatDomainInterval(domain)).toBe(']-∞, 0]');
 	});
 
 	it('formats union of intervals', () => {
 		const domain = intervalSet([
-			closedInterval(fromNumber(0), fromNumber(1)),
-			closedInterval(fromNumber(2), fromNumber(3))
+			closedInterval(number(0), number(1)),
+			closedInterval(number(2), number(3))
 		]);
 		expect(formatDomainInterval(domain)).toBe('[0, 1] ∪ [2, 3]');
 	});
@@ -179,12 +178,12 @@ describe('formatDomainCondition', () => {
 	});
 
 	it('formats lessThanInterval as condition', () => {
-		const domain = intervalSet([lessThanInterval(fromNumber(5))]);
+		const domain = intervalSet([lessThanInterval(number(5))]);
 		expect(formatDomainCondition(domain)).toBe('x < 5');
 	});
 
 	it('formats lessThanOrEqualInterval as condition', () => {
-		const domain = intervalSet([lessThanOrEqualInterval(fromNumber(5))]);
+		const domain = intervalSet([lessThanOrEqualInterval(number(5))]);
 		expect(formatDomainCondition(domain)).toBe('x ≤ 5');
 	});
 
@@ -194,7 +193,7 @@ describe('formatDomainCondition', () => {
 	});
 
 	it('formats open bounded interval as condition', () => {
-		const domain = intervalSet([openInterval(fromNumber(0), fromNumber(1))]);
+		const domain = intervalSet([openInterval(number(0), number(1))]);
 		expect(formatDomainCondition(domain)).toBe('0 < x < 1');
 	});
 
@@ -205,8 +204,8 @@ describe('formatDomainCondition', () => {
 
 	it('formats multiple intervals with ou', () => {
 		const domain = intervalSet([
-			closedInterval(fromNumber(0), fromNumber(1)),
-			closedInterval(fromNumber(2), fromNumber(3))
+			closedInterval(number(0), number(1)),
+			closedInterval(number(2), number(3))
 		]);
 		expect(formatDomainCondition(domain)).toBe('0 ≤ x ≤ 1 ou 2 ≤ x ≤ 3');
 	});
@@ -234,7 +233,7 @@ describe('formatDomainFull', () => {
 
 	it('handles symbolic bounds', () => {
 		const sqrt2 = bound('sqrt(2)');
-		const domain = intervalSet([closedInterval(fromNumber(0), sqrt2)]);
+		const domain = intervalSet([closedInterval(number(0), sqrt2)]);
 		const result = formatDomainFull(domain);
 		expect(result.interval).toBe('[0, √2]');
 		expect(result.condition).toBe('0 ≤ x ≤ √2');
@@ -249,17 +248,17 @@ import { greek, euler } from '$lib/mathAST/factory';
 
 describe('formatEndpointValue edge cases', () => {
 	it('formats integer zero', () => {
-		expect(formatEndpointValue(fromNumber(0))).toBe('0');
+		expect(formatEndpointValue(number(0))).toBe('0');
 	});
 
 	it('formats negative integers', () => {
-		expect(formatEndpointValue(fromNumber(-10))).toBe('-10');
-		expect(formatEndpointValue(fromNumber(-1))).toBe('-1');
+		expect(formatEndpointValue(number(-10))).toBe('-10');
+		expect(formatEndpointValue(number(-1))).toBe('-1');
 	});
 
 	it('formats decimal numbers', () => {
-		expect(formatEndpointValue(fromNumber(1.5))).toBe('1.5');
-		expect(formatEndpointValue(fromNumber(0.001))).toBe('0.001');
+		expect(formatEndpointValue(number(1.5))).toBe('1.5');
+		expect(formatEndpointValue(number(0.001))).toBe('0.001');
 	});
 
 	it('formats negative rational values', () => {
@@ -328,36 +327,36 @@ describe('formatEndpointValue edge cases', () => {
 describe('formatDomainInterval edge cases', () => {
 	it('formats mixed open/closed bounds', () => {
 		// ]0, 1]
-		const domain = intervalSet([rightClosedInterval(fromNumber(0), fromNumber(1))]);
+		const domain = intervalSet([rightClosedInterval(number(0), number(1))]);
 		expect(formatDomainInterval(domain)).toBe(']0, 1]');
 	});
 
 	it('formats left-closed interval [a, b[', () => {
-		const domain = intervalSet([leftClosedInterval(fromNumber(0), fromNumber(1))]);
+		const domain = intervalSet([leftClosedInterval(number(0), number(1))]);
 		expect(formatDomainInterval(domain)).toBe('[0, 1[');
 	});
 
 	it('formats single point [a, a]', () => {
-		const domain = intervalSet([closedInterval(fromNumber(5), fromNumber(5))]);
+		const domain = intervalSet([closedInterval(number(5), number(5))]);
 		expect(formatDomainInterval(domain)).toBe('[5, 5]');
 	});
 
 	it('formats three disjoint intervals', () => {
 		const domain = intervalSet([
-			closedInterval(fromNumber(0), fromNumber(1)),
-			closedInterval(fromNumber(3), fromNumber(4)),
-			closedInterval(fromNumber(6), fromNumber(7))
+			closedInterval(number(0), number(1)),
+			closedInterval(number(3), number(4)),
+			closedInterval(number(6), number(7))
 		]);
 		expect(formatDomainInterval(domain)).toBe('[0, 1] ∪ [3, 4] ∪ [6, 7]');
 	});
 
 	it('formats negative bounds', () => {
-		const domain = intervalSet([closedInterval(fromNumber(-10), fromNumber(-5))]);
+		const domain = intervalSet([closedInterval(number(-10), number(-5))]);
 		expect(formatDomainInterval(domain)).toBe('[-10, -5]');
 	});
 
 	it('formats bounds spanning zero', () => {
-		const domain = intervalSet([closedInterval(fromNumber(-5), fromNumber(5))]);
+		const domain = intervalSet([closedInterval(number(-5), number(5))]);
 		expect(formatDomainInterval(domain)).toBe('[-5, 5]');
 	});
 });
@@ -365,13 +364,13 @@ describe('formatDomainInterval edge cases', () => {
 describe('formatDomainCondition edge cases', () => {
 	it('formats mixed interval as double inequality', () => {
 		// ]0, 1]
-		const domain = intervalSet([rightClosedInterval(fromNumber(0), fromNumber(1))]);
+		const domain = intervalSet([rightClosedInterval(number(0), number(1))]);
 		expect(formatDomainCondition(domain)).toBe('0 < x ≤ 1');
 	});
 
 	it('formats left-closed interval as double inequality', () => {
 		// [0, 1[
-		const domain = intervalSet([leftClosedInterval(fromNumber(0), fromNumber(1))]);
+		const domain = intervalSet([leftClosedInterval(number(0), number(1))]);
 		expect(formatDomainCondition(domain)).toBe('0 ≤ x < 1');
 	});
 
@@ -387,9 +386,9 @@ describe('formatDomainCondition edge cases', () => {
 
 	it('formats three disjoint intervals with ou', () => {
 		const domain = intervalSet([
-			closedInterval(fromNumber(0), fromNumber(1)),
-			closedInterval(fromNumber(3), fromNumber(4)),
-			closedInterval(fromNumber(6), fromNumber(7))
+			closedInterval(number(0), number(1)),
+			closedInterval(number(3), number(4)),
+			closedInterval(number(6), number(7))
 		]);
 		expect(formatDomainCondition(domain)).toBe('0 ≤ x ≤ 1 ou 3 ≤ x ≤ 4 ou 6 ≤ x ≤ 7');
 	});
@@ -407,7 +406,7 @@ describe('formatDomainCondition edge cases', () => {
 	});
 
 	it('formats negative bounds in condition', () => {
-		const domain = intervalSet([closedInterval(fromNumber(-5), fromNumber(-1))]);
+		const domain = intervalSet([closedInterval(number(-5), number(-1))]);
 		expect(formatDomainCondition(domain)).toBe('-5 ≤ x ≤ -1');
 	});
 });

@@ -11,13 +11,13 @@
  */
 
 import type { MathNode } from '../../types';
+import { number } from '$lib/mathAST/factory';
 import type { Domain, Interval } from '../types';
 import type { ParseStudentDomainResult } from './types';
 import {
 	intervalDomain,
 	emptyDomain,
 	universalDomain,
-	fromNumber,
 	bound,
 	openInterval,
 	closedInterval,
@@ -155,7 +155,7 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 	if (/^[ℝR]\*$/.test(trimmed)) {
 		return {
 			success: true,
-			domain: excludePoints(universalDomain(), [fromNumber(0)]),
+			domain: excludePoints(universalDomain(), [number(0)]),
 			format: 'set_notation'
 		};
 	}
@@ -164,7 +164,7 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 	if (/^[ℝR][₊+]$/.test(trimmed)) {
 		return {
 			success: true,
-			domain: intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]),
+			domain: intervalDomain([greaterThanOrEqualInterval(number(0))]),
 			format: 'set_notation'
 		};
 	}
@@ -177,7 +177,7 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 	) {
 		return {
 			success: true,
-			domain: intervalDomain([greaterThanInterval(fromNumber(0))]),
+			domain: intervalDomain([greaterThanInterval(number(0))]),
 			format: 'set_notation'
 		};
 	}
@@ -186,7 +186,7 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 	if (/^[ℝR][₋-]$/.test(trimmed)) {
 		return {
 			success: true,
-			domain: intervalDomain([lessThanOrEqualInterval(fromNumber(0))]),
+			domain: intervalDomain([lessThanOrEqualInterval(number(0))]),
 			format: 'set_notation'
 		};
 	}
@@ -199,7 +199,7 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 	) {
 		return {
 			success: true,
-			domain: intervalDomain([lessThanInterval(fromNumber(0))]),
+			domain: intervalDomain([lessThanInterval(number(0))]),
 			format: 'set_notation'
 		};
 	}
@@ -600,7 +600,7 @@ function parseEndpointValue(input: string): MathNode | null {
 	// Numbers (including negative and decimal)
 	const num = parseFloat(trimmed);
 	if (!isNaN(num) && isFinite(num)) {
-		return fromNumber(num);
+		return number(num);
 	}
 
 	// Fractions (a/b)
@@ -609,7 +609,7 @@ function parseEndpointValue(input: string): MathNode | null {
 		const num = parseFloat(fractionMatch[1]);
 		const den = parseFloat(fractionMatch[2]);
 		if (!isNaN(num) && !isNaN(den) && den !== 0) {
-			return fromNumber(num / den);
+			return number(num / den);
 		}
 	}
 

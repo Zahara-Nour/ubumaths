@@ -3,7 +3,7 @@
  *
  * Updated for MathNode-based endpoint values:
  * - Endpoint values are MathNode
- * - excludePoints takes MathNode[] (use fromNumber for numbers)
+ * - excludePoints takes MathNode[] (use number() for numbers)
  */
 
 import { describe, it, expect } from 'vitest';
@@ -34,11 +34,11 @@ import {
 	closedInterval,
 	realLine,
 	excludedPoint,
-	fromNumber,
 	conditionDomain,
 	comparison
 } from '../factory';
 import { isNumber, isNegativeInfinity } from '$lib/mathAST/guards';
+import { number } from '$lib/mathAST/factory';
 
 describe('isEmpty()', () => {
 	it('returns true for empty domain', () => {
@@ -58,17 +58,17 @@ describe('isEmpty()', () => {
 	});
 
 	it('returns true for degenerate interval ]a, a[', () => {
-		const degenerate = intervalDomain([openInterval(fromNumber(0), fromNumber(0))]);
+		const degenerate = intervalDomain([openInterval(number(0), number(0))]);
 		expect(isEmpty(degenerate)).toBe(true);
 	});
 
 	it('returns true for inverted interval ]1, 0[', () => {
-		const inverted = intervalDomain([openInterval(fromNumber(1), fromNumber(0))]);
+		const inverted = intervalDomain([openInterval(number(1), number(0))]);
 		expect(isEmpty(inverted)).toBe(true);
 	});
 
 	it('returns false for single point [a, a]', () => {
-		const point = intervalDomain([closedInterval(fromNumber(0), fromNumber(0))]);
+		const point = intervalDomain([closedInterval(number(0), number(0))]);
 		expect(isEmpty(point)).toBe(false);
 	});
 });
@@ -99,7 +99,7 @@ describe('intersect()', () => {
 	describe('with interval domains', () => {
 		it('intersect(]0, +inf[, ]-inf, 1]) = ]0, 1]', () => {
 			const a = positiveReals(); // ]0, +inf[
-			const b = intervalDomain([lessThanOrEqualInterval(fromNumber(1))]); // ]-inf, 1]
+			const b = intervalDomain([lessThanOrEqualInterval(number(1))]); // ]-inf, 1]
 			const result = intersect(a, b);
 
 			expect(result.kind).toBe('interval_set');
@@ -130,7 +130,7 @@ describe('intersect()', () => {
 		});
 
 		it('intersect of disjoint intervals returns empty', () => {
-			const a = intervalDomain([lessThanInterval(fromNumber(0))]); // ]-inf, 0[
+			const a = intervalDomain([lessThanInterval(number(0))]); // ]-inf, 0[
 			const b = positiveReals(); // ]0, +inf[
 			const result = intersect(a, b);
 
@@ -138,8 +138,8 @@ describe('intersect()', () => {
 		});
 
 		it('combines excluded points from both domains', () => {
-			const a = intervalDomain([realLine()], [excludedPoint(fromNumber(0))]);
-			const b = intervalDomain([realLine()], [excludedPoint(fromNumber(1))]);
+			const a = intervalDomain([realLine()], [excludedPoint(number(0))]);
+			const b = intervalDomain([realLine()], [excludedPoint(number(1))]);
 			const result = intersect(a, b);
 
 			expect(result.kind).toBe('interval_set');
@@ -175,8 +175,8 @@ describe('union()', () => {
 
 	describe('with interval domains', () => {
 		it('union of adjacent intervals merges them', () => {
-			const a = intervalDomain([lessThanOrEqualInterval(fromNumber(0))]); // ]-inf, 0]
-			const b = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]); // [0, +inf[
+			const a = intervalDomain([lessThanOrEqualInterval(number(0))]); // ]-inf, 0]
+			const b = intervalDomain([greaterThanOrEqualInterval(number(0))]); // [0, +inf[
 			const result = union(a, b);
 
 			// Should be universal (entire real line)
@@ -184,8 +184,8 @@ describe('union()', () => {
 		});
 
 		it('union of overlapping intervals merges them', () => {
-			const a = intervalDomain([lessThanInterval(fromNumber(1))]); // ]-inf, 1[
-			const b = intervalDomain([greaterThanInterval(fromNumber(0))]); // ]0, +inf[
+			const a = intervalDomain([lessThanInterval(number(1))]); // ]-inf, 1[
+			const b = intervalDomain([greaterThanInterval(number(0))]); // ]0, +inf[
 			const result = union(a, b);
 
 			// Should cover all reals
@@ -193,8 +193,8 @@ describe('union()', () => {
 		});
 
 		it('union of disjoint intervals keeps both', () => {
-			const a = intervalDomain([lessThanInterval(fromNumber(-1))]); // ]-inf, -1[
-			const b = intervalDomain([greaterThanInterval(fromNumber(1))]); // ]1, +inf[
+			const a = intervalDomain([lessThanInterval(number(-1))]); // ]-inf, -1[
+			const b = intervalDomain([greaterThanInterval(number(1))]); // ]1, +inf[
 			const result = union(a, b);
 
 			expect(result.kind).toBe('interval_set');
@@ -257,7 +257,7 @@ describe('complement()', () => {
 
 describe('excludePoints()', () => {
 	it('excludePoints(R, [0]) = R \\ {0}', () => {
-		const result = excludePoints(universalDomain(), [fromNumber(0)]);
+		const result = excludePoints(universalDomain(), [number(0)]);
 
 		expect(result.kind).toBe('interval_set');
 		if (result.kind === 'interval_set') {
@@ -268,7 +268,7 @@ describe('excludePoints()', () => {
 	});
 
 	it('excludePoints(]0, +inf[, [1, 2]) excludes the points', () => {
-		const result = excludePoints(positiveReals(), [fromNumber(1), fromNumber(2)]);
+		const result = excludePoints(positiveReals(), [number(1), number(2)]);
 
 		expect(result.kind).toBe('interval_set');
 		if (result.kind === 'interval_set') {
@@ -277,12 +277,12 @@ describe('excludePoints()', () => {
 	});
 
 	it('excludePoints(empty, [0]) = empty', () => {
-		expect(excludePoints(emptyDomain(), [fromNumber(0)]).kind).toBe('empty');
+		expect(excludePoints(emptyDomain(), [number(0)]).kind).toBe('empty');
 	});
 
 	it('does not duplicate existing excluded points', () => {
 		const base = nonZeroReals(); // Already excludes 0
-		const result = excludePoints(base, [fromNumber(0), fromNumber(1)]);
+		const result = excludePoints(base, [number(0), number(1)]);
 
 		expect(result.kind).toBe('interval_set');
 		if (result.kind === 'interval_set') {
@@ -340,7 +340,7 @@ describe('containsValue()', () => {
 		});
 
 		it('respects excluded points', () => {
-			const d = intervalDomain([realLine()], [excludedPoint(fromNumber(5))]);
+			const d = intervalDomain([realLine()], [excludedPoint(number(5))]);
 			expect(containsValue(d, 0)).toBe(true);
 			expect(containsValue(d, 5)).toBe(false);
 		});
@@ -354,7 +354,7 @@ describe('containsValue()', () => {
 describe('tryConvertConditionToInterval()', () => {
 	describe('single comparison conditions', () => {
 		it('converts x > 0 to ]0, +∞[', () => {
-			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]);
+			const cd = conditionDomain([comparison('x', '>', number(0))]);
 			const result = tryConvertConditionToInterval(cd);
 
 			expect(result).not.toBeNull();
@@ -365,7 +365,7 @@ describe('tryConvertConditionToInterval()', () => {
 		});
 
 		it('converts x >= 0 to [0, +∞[', () => {
-			const cd = conditionDomain([comparison('x', '>=', fromNumber(0))]);
+			const cd = conditionDomain([comparison('x', '>=', number(0))]);
 			const result = tryConvertConditionToInterval(cd);
 
 			expect(result).not.toBeNull();
@@ -375,7 +375,7 @@ describe('tryConvertConditionToInterval()', () => {
 		});
 
 		it('converts x < 5 to ]-∞, 5[', () => {
-			const cd = conditionDomain([comparison('x', '<', fromNumber(5))]);
+			const cd = conditionDomain([comparison('x', '<', number(5))]);
 			const result = tryConvertConditionToInterval(cd);
 
 			expect(result).not.toBeNull();
@@ -385,7 +385,7 @@ describe('tryConvertConditionToInterval()', () => {
 		});
 
 		it('converts x <= 5 to ]-∞, 5]', () => {
-			const cd = conditionDomain([comparison('x', '<=', fromNumber(5))]);
+			const cd = conditionDomain([comparison('x', '<=', number(5))]);
 			const result = tryConvertConditionToInterval(cd);
 
 			expect(result).not.toBeNull();
@@ -395,7 +395,7 @@ describe('tryConvertConditionToInterval()', () => {
 		});
 
 		it('converts x != 5 to ℝ \\ {5}', () => {
-			const cd = conditionDomain([comparison('x', '!=', fromNumber(5))]);
+			const cd = conditionDomain([comparison('x', '!=', number(5))]);
 			const result = tryConvertConditionToInterval(cd);
 
 			expect(result).not.toBeNull();
@@ -406,7 +406,7 @@ describe('tryConvertConditionToInterval()', () => {
 		});
 
 		it('converts x = 5 to {5}', () => {
-			const cd = conditionDomain([comparison('x', '=', fromNumber(5))]);
+			const cd = conditionDomain([comparison('x', '=', number(5))]);
 			const result = tryConvertConditionToInterval(cd);
 
 			expect(result).not.toBeNull();
@@ -419,7 +419,7 @@ describe('tryConvertConditionToInterval()', () => {
 	describe('AND conditions', () => {
 		it('converts x > 0 AND x < 10 to ]0, 10[', () => {
 			const cd = conditionDomain(
-				[comparison('x', '>', fromNumber(0)), comparison('x', '<', fromNumber(10))],
+				[comparison('x', '>', number(0)), comparison('x', '<', number(10))],
 				'and'
 			);
 			const result = tryConvertConditionToInterval(cd);
@@ -433,7 +433,7 @@ describe('tryConvertConditionToInterval()', () => {
 
 		it('converts x >= -1 AND x <= 1 to [-1, 1]', () => {
 			const cd = conditionDomain(
-				[comparison('x', '>=', fromNumber(-1)), comparison('x', '<=', fromNumber(1))],
+				[comparison('x', '>=', number(-1)), comparison('x', '<=', number(1))],
 				'and'
 			);
 			const result = tryConvertConditionToInterval(cd);
@@ -447,7 +447,7 @@ describe('tryConvertConditionToInterval()', () => {
 
 		it('returns empty for contradictory conditions x > 5 AND x < 3', () => {
 			const cd = conditionDomain(
-				[comparison('x', '>', fromNumber(5)), comparison('x', '<', fromNumber(3))],
+				[comparison('x', '>', number(5)), comparison('x', '<', number(3))],
 				'and'
 			);
 			const result = tryConvertConditionToInterval(cd);
@@ -460,7 +460,7 @@ describe('tryConvertConditionToInterval()', () => {
 	describe('OR conditions', () => {
 		it('converts x < 0 OR x > 5 to ]-∞, 0[ ∪ ]5, +∞[', () => {
 			const cd = conditionDomain(
-				[comparison('x', '<', fromNumber(0)), comparison('x', '>', fromNumber(5))],
+				[comparison('x', '<', number(0)), comparison('x', '>', number(5))],
 				'or'
 			);
 			const result = tryConvertConditionToInterval(cd);
@@ -475,7 +475,7 @@ describe('tryConvertConditionToInterval()', () => {
 
 		it('converts x <= -1 OR x >= 1 to ]-∞, -1] ∪ [1, +∞[', () => {
 			const cd = conditionDomain(
-				[comparison('x', '<=', fromNumber(-1)), comparison('x', '>=', fromNumber(1))],
+				[comparison('x', '<=', number(-1)), comparison('x', '>=', number(1))],
 				'or'
 			);
 			const result = tryConvertConditionToInterval(cd);
@@ -503,7 +503,7 @@ describe('tryConvertConditionToInterval()', () => {
 describe('ConditionDomain algebra operations', () => {
 	describe('containsValue with ConditionDomain', () => {
 		it('containsValue works after conversion for x > 0', () => {
-			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]);
+			const cd = conditionDomain([comparison('x', '>', number(0))]);
 			expect(containsValue(cd, 1)).toBe(true);
 			expect(containsValue(cd, 0)).toBe(false);
 			expect(containsValue(cd, -1)).toBe(false);
@@ -512,8 +512,8 @@ describe('ConditionDomain algebra operations', () => {
 
 	describe('intersect with ConditionDomain', () => {
 		it('intersects condition with interval domain', () => {
-			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]); // x > 0
-			const interval = intervalDomain([lessThanInterval(fromNumber(10))]); // x < 10
+			const cd = conditionDomain([comparison('x', '>', number(0))]); // x > 0
+			const interval = intervalDomain([lessThanInterval(number(10))]); // x < 10
 			const result = intersect(cd, interval);
 
 			expect(result.kind).toBe('interval_set');
@@ -523,8 +523,8 @@ describe('ConditionDomain algebra operations', () => {
 		});
 
 		it('intersects two condition domains', () => {
-			const cd1 = conditionDomain([comparison('x', '>', fromNumber(0))]);
-			const cd2 = conditionDomain([comparison('x', '<', fromNumber(10))]);
+			const cd1 = conditionDomain([comparison('x', '>', number(0))]);
+			const cd2 = conditionDomain([comparison('x', '<', number(10))]);
 			const result = intersect(cd1, cd2);
 
 			expect(result.kind).toBe('interval_set');
@@ -534,7 +534,7 @@ describe('ConditionDomain algebra operations', () => {
 
 	describe('union with ConditionDomain', () => {
 		it('unions condition with interval domain', () => {
-			const cd = conditionDomain([comparison('x', '<', fromNumber(0))]); // x < 0
+			const cd = conditionDomain([comparison('x', '<', number(0))]); // x < 0
 			const interval = positiveReals(); // x > 0
 			const result = union(cd, interval);
 
@@ -547,7 +547,7 @@ describe('ConditionDomain algebra operations', () => {
 
 	describe('complement with ConditionDomain', () => {
 		it('complements x > 0 to ]-∞, 0]', () => {
-			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]);
+			const cd = conditionDomain([comparison('x', '>', number(0))]);
 			const result = complement(cd);
 
 			expect(result.kind).toBe('interval_set');
@@ -560,7 +560,7 @@ describe('ConditionDomain algebra operations', () => {
 	describe('difference with ConditionDomain', () => {
 		it('computes difference with condition domain', () => {
 			const all = universalDomain();
-			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]);
+			const cd = conditionDomain([comparison('x', '>', number(0))]);
 			const result = difference(all, cd);
 
 			expect(result.kind).toBe('interval_set');
@@ -573,14 +573,14 @@ describe('ConditionDomain algebra operations', () => {
 	describe('isEmpty/isUniversal with ConditionDomain', () => {
 		it('isEmpty correctly identifies empty conditions', () => {
 			const cd = conditionDomain(
-				[comparison('x', '>', fromNumber(5)), comparison('x', '<', fromNumber(3))],
+				[comparison('x', '>', number(5)), comparison('x', '<', number(3))],
 				'and'
 			);
 			expect(isEmpty(cd)).toBe(true);
 		});
 
 		it('isUniversal returns false for non-universal conditions', () => {
-			const cd = conditionDomain([comparison('x', '>', fromNumber(0))]);
+			const cd = conditionDomain([comparison('x', '>', number(0))]);
 			expect(isUniversal(cd)).toBe(false);
 		});
 	});

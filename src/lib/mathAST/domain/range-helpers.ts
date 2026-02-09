@@ -10,7 +10,6 @@ import type { Domain } from './types';
 import {
 	universalDomain,
 	intervalDomain,
-	fromNumber,
 	closedInterval,
 	interval as makeInterval,
 	openEndpoint,
@@ -19,6 +18,7 @@ import {
 	negInfinityEndpoint
 } from './factory';
 import {
+	number,
 	positiveInfinity as posInfinityNode,
 	negativeInfinity as negInfinityNode
 } from '../factory';
@@ -76,7 +76,7 @@ function getNumericBounds(domain: Domain): NumericBounds | null {
 }
 
 /**
- * Create a Domain from numeric bounds using symbolic buildInterval + fromNumber.
+ * Create a Domain from numeric bounds using symbolic buildInterval + number.
  */
 function domainFromNumericBounds(bounds: NumericBounds): Domain {
 	const { lower, lowerInclusive, upper, upperInclusive } = bounds;
@@ -91,11 +91,11 @@ function domainFromNumericBounds(bounds: NumericBounds): Domain {
 
 	const lo =
 		lower !== null
-			? { value: fromNumber(lower), type: lowerInclusive ? ('closed' as const) : ('open' as const) }
+			? { value: number(lower), type: lowerInclusive ? ('closed' as const) : ('open' as const) }
 			: negInfinityEndpoint();
 	const hi =
 		upper !== null
-			? { value: fromNumber(upper), type: upperInclusive ? ('closed' as const) : ('open' as const) }
+			? { value: number(upper), type: upperInclusive ? ('closed' as const) : ('open' as const) }
 			: posInfinityEndpoint();
 
 	return buildInterval(lo, hi) as Domain;
@@ -558,7 +558,7 @@ export function computeLinearRange(linear: LinearForm, inputDomain: Domain): Dom
 
 	// Constant function
 	if (Math.abs(a) < 1e-10) {
-		return intervalDomain([closedInterval(fromNumber(b), fromNumber(b))]);
+		return intervalDomain([closedInterval(number(b), number(b))]);
 	}
 
 	const bounds = getNumericBounds(inputDomain);
@@ -893,7 +893,7 @@ export function computeRangeWithCriticalPointsExact(
 
 		// Evaluate f at lower endpoint (finite) or compute limit (infinite)
 		if (bounds.lower !== null) {
-			const lowerEval = evaluateAtCriticalPoint(expr, variable, fromNumber(bounds.lower));
+			const lowerEval = evaluateAtCriticalPoint(expr, variable, number(bounds.lower));
 			if (!lowerEval || lowerEval.yApproximate === undefined) return null;
 			candidates.push({
 				node: lowerEval.y,
@@ -928,7 +928,7 @@ export function computeRangeWithCriticalPointsExact(
 
 		// Evaluate f at upper endpoint (finite) or compute limit (infinite)
 		if (bounds.upper !== null) {
-			const upperEval = evaluateAtCriticalPoint(expr, variable, fromNumber(bounds.upper));
+			const upperEval = evaluateAtCriticalPoint(expr, variable, number(bounds.upper));
 			if (!upperEval || upperEval.yApproximate === undefined) return null;
 			candidates.push({
 				node: upperEval.y,
@@ -1202,7 +1202,7 @@ export function computeRationalPowerRange(baseRange: Domain, power: RationalPowe
 	// Handle special cases
 	if (p === 0) {
 		// x^0 = 1
-		return intervalDomain([closedInterval(fromNumber(1), fromNumber(1))]);
+		return intervalDomain([closedInterval(number(1), number(1))]);
 	}
 
 	if (q === 1) {
@@ -1303,7 +1303,7 @@ function computeIntegerPowerRange(baseRange: Domain, n: number): Domain {
 	if (!bounds) return universalDomain();
 
 	if (n === 0) {
-		return intervalDomain([closedInterval(fromNumber(1), fromNumber(1))]);
+		return intervalDomain([closedInterval(number(1), number(1))]);
 	}
 
 	if (n === 1) {

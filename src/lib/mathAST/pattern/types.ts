@@ -95,7 +95,7 @@ export interface ComparisonConstraint {
  * { kind: 'interval', domain: positiveReals() }
  *
  * // Match 0 <= n <= 10
- * { kind: 'interval', domain: intervalSet([closedInterval(fromNumber(0), fromNumber(10))]) }
+ * { kind: 'interval', domain: intervalSet([closedInterval(number(0), number(10))]) }
  */
 export interface IntervalConstraint {
 	readonly kind: 'interval';

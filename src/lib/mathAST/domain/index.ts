@@ -63,7 +63,6 @@ export {
 
 export {
 	// Bound value constructors (from intervals)
-	fromNumber,
 	bound,
 	// Endpoint factories
 	endpoint,

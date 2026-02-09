@@ -7,13 +7,7 @@ import { checkConstraint, containsVariable, isFreeOfVariables } from '../constra
 import { P } from '../builder';
 import type { PatternConstraint } from '../types';
 import { number, variable, add, multiply, divide, opposite, func, greek } from '../../factory';
-import {
-	intervalSet,
-	openInterval,
-	closedInterval,
-	leftClosedInterval,
-	fromNumber
-} from '$lib/math/intervals';
+import { intervalSet, openInterval, closedInterval, leftClosedInterval } from '$lib/math/intervals';
 import { parsePattern } from '../../parser/custom/pattern-parser';
 
 describe('Constraint Evaluation', () => {
@@ -521,9 +515,7 @@ describe('Constraint Evaluation', () => {
 
 		describe('inInterval - custom interval', () => {
 			it('matches values in custom open interval ]0, 10[', () => {
-				const customInterval = P.inInterval(
-					intervalSet([openInterval(fromNumber(0), fromNumber(10))])
-				);
+				const customInterval = P.inInterval(intervalSet([openInterval(number(0), number(10))]));
 
 				expect(checkConstraint(customInterval, number('5'))).toBe(true);
 				expect(checkConstraint(customInterval, number('0.001'))).toBe(true);
@@ -531,18 +523,14 @@ describe('Constraint Evaluation', () => {
 			});
 
 			it('fails for endpoints on open interval ]0, 10[', () => {
-				const customInterval = P.inInterval(
-					intervalSet([openInterval(fromNumber(0), fromNumber(10))])
-				);
+				const customInterval = P.inInterval(intervalSet([openInterval(number(0), number(10))]));
 
 				expect(checkConstraint(customInterval, number('0'))).toBe(false);
 				expect(checkConstraint(customInterval, number('10'))).toBe(false);
 			});
 
 			it('matches endpoints on closed interval [0, 10]', () => {
-				const customInterval = P.inInterval(
-					intervalSet([closedInterval(fromNumber(0), fromNumber(10))])
-				);
+				const customInterval = P.inInterval(intervalSet([closedInterval(number(0), number(10))]));
 
 				expect(checkConstraint(customInterval, number('0'))).toBe(true);
 				expect(checkConstraint(customInterval, number('10'))).toBe(true);
@@ -551,7 +539,7 @@ describe('Constraint Evaluation', () => {
 
 			it('matches left-closed right-open interval [0, 10[', () => {
 				const customInterval = P.inInterval(
-					intervalSet([leftClosedInterval(fromNumber(0), fromNumber(10))])
+					intervalSet([leftClosedInterval(number(0), number(10))])
 				);
 
 				expect(checkConstraint(customInterval, number('0'))).toBe(true);

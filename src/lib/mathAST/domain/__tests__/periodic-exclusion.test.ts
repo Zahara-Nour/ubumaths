@@ -22,7 +22,7 @@ import {
 	excludePoints
 } from '../algebra';
 import { formatDomainInterval, formatDomainCondition } from '../format';
-import { fromNumber } from '../factory';
+import { number } from '$lib/mathAST/factory';
 
 describe('PeriodicExclusion type', () => {
 	describe('factory functions', () => {
@@ -173,7 +173,7 @@ describe('PeriodicExclusion type', () => {
 
 		it('excludePoints returns unchanged periodic', () => {
 			const pe = tanDomain();
-			const result = excludePoints(pe, [fromNumber(5)]);
+			const result = excludePoints(pe, [number(5)]);
 			expect(result.kind).toBe('periodic_exclusion');
 		});
 	});

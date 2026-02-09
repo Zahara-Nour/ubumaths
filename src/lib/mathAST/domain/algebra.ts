@@ -8,6 +8,7 @@
 import type { MathNode } from '../types';
 import type { Domain, ExcludedPoint, PeriodicExclusion, ConditionDomain } from './types';
 import { ZERO_TOLERANCE } from '../common';
+import { number } from '$lib/mathAST/factory';
 import type { IntervalDomain } from '$lib/math/intervals/types';
 import {
 	isEmptyInterval as intervalsIsEmpty,
@@ -21,7 +22,6 @@ import { realLine } from '$lib/math/intervals/factory';
 import {
 	EMPTY_SET,
 	UNIVERSAL_SET,
-	fromNumber,
 	greaterThanInterval,
 	greaterThanOrEqualInterval,
 	lessThanInterval,
@@ -613,7 +613,7 @@ export function excludePoints(d: Domain, values: MathNode[]): Domain {
 export function excludeNumericPoints(d: Domain, values: number[]): Domain {
 	return excludePoints(
 		d,
-		values.map((v) => fromNumber(v))
+		values.map((v) => number(v))
 	);
 }
 

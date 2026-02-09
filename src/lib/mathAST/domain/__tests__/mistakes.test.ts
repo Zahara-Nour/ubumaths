@@ -18,9 +18,9 @@ import {
 	intervalDomain,
 	universalDomain,
 	greaterThanInterval,
-	greaterThanOrEqualInterval,
-	fromNumber
+	greaterThanOrEqualInterval
 } from '../factory';
+import { number } from '$lib/mathAST/factory';
 import { excludePoints } from '../algebra';
 import type { MathNode } from '../../types';
 
@@ -149,7 +149,7 @@ describe('detectDomainMistakes', () => {
 				denominator: { type: 'variable', name: 'x' }
 			};
 			const student = universalDomain(); // Forgot to exclude 0
-			const correct = excludePoints(universalDomain(), [fromNumber(0)]);
+			const correct = excludePoints(universalDomain(), [number(0)]);
 
 			const mistakes = detectDomainMistakes(student, correct, expr);
 
@@ -167,8 +167,8 @@ describe('detectDomainMistakes', () => {
 				numerator: { type: 'number', value: '1' },
 				denominator: { type: 'variable', name: 'x' }
 			};
-			const correct = excludePoints(universalDomain(), [fromNumber(0)]);
-			const student = excludePoints(universalDomain(), [fromNumber(0)]);
+			const correct = excludePoints(universalDomain(), [number(0)]);
+			const student = excludePoints(universalDomain(), [number(0)]);
 
 			const mistakes = detectDomainMistakes(student, correct, expr);
 
@@ -184,7 +184,7 @@ describe('detectDomainMistakes', () => {
 				args: [{ type: 'variable', name: 'x' }]
 			};
 			const student = universalDomain(); // Forgot x >= 0
-			const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
+			const correct = intervalDomain([greaterThanOrEqualInterval(number(0))]);
 
 			const mistakes = detectDomainMistakes(student, correct, expr);
 
@@ -202,7 +202,7 @@ describe('detectDomainMistakes', () => {
 				args: [{ type: 'variable', name: 'x' }]
 			};
 			const student = universalDomain(); // Forgot x > 0
-			const correct = intervalDomain([greaterThanInterval(fromNumber(0))]);
+			const correct = intervalDomain([greaterThanInterval(number(0))]);
 
 			const mistakes = detectDomainMistakes(student, correct, expr);
 
@@ -219,8 +219,8 @@ describe('detectDomainMistakes', () => {
 				name: 'ln',
 				args: [{ type: 'variable', name: 'x' }]
 			};
-			const student = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]); // [0, +∞[
-			const correct = intervalDomain([greaterThanInterval(fromNumber(0))]); // ]0, +∞[
+			const student = intervalDomain([greaterThanOrEqualInterval(number(0))]); // [0, +∞[
+			const correct = intervalDomain([greaterThanInterval(number(0))]); // ]0, +∞[
 
 			const mistakes = detectDomainMistakes(student, correct, expr);
 
@@ -237,8 +237,8 @@ describe('detectDomainMistakes', () => {
 				name: 'sqrt',
 				args: [{ type: 'variable', name: 'x' }]
 			};
-			const student = intervalDomain([greaterThanInterval(fromNumber(0))]); // ]0, +∞[
-			const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]); // [0, +∞[
+			const student = intervalDomain([greaterThanInterval(number(0))]); // ]0, +∞[
+			const correct = intervalDomain([greaterThanOrEqualInterval(number(0))]); // [0, +∞[
 
 			const mistakes = detectDomainMistakes(student, correct, expr);
 
@@ -262,7 +262,7 @@ describe('detectDomainMistakes', () => {
 			};
 			// 1/(x-2), should exclude x=2
 			const student = universalDomain(); // Forgot to exclude 2
-			const correct = excludePoints(universalDomain(), [fromNumber(2)]);
+			const correct = excludePoints(universalDomain(), [number(2)]);
 
 			const mistakes = detectDomainMistakes(student, correct, expr);
 
@@ -280,7 +280,7 @@ describe('detectDomainMistakes', () => {
 				type: 'variable',
 				name: 'x'
 			};
-			const student = intervalDomain([greaterThanInterval(fromNumber(0))]); // ]0, +∞[ - too restrictive
+			const student = intervalDomain([greaterThanInterval(number(0))]); // ]0, +∞[ - too restrictive
 			const correct = universalDomain(); // ℝ
 
 			const mistakes = detectDomainMistakes(student, correct, expr);
@@ -305,10 +305,10 @@ describe('detectDomainMistakes', () => {
 			};
 			// Student excludes 0 AND 1, but only sqrt constraint applies (0 should be included)
 			const student = excludePoints(
-				intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]),
-				[fromNumber(1)] // Excluding 1 is unnecessary
+				intervalDomain([greaterThanOrEqualInterval(number(0))]),
+				[number(1)] // Excluding 1 is unnecessary
 			);
-			const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
+			const correct = intervalDomain([greaterThanOrEqualInterval(number(0))]);
 
 			const mistakes = detectDomainMistakes(student, correct, expr);
 
@@ -331,7 +331,7 @@ describe('DomainMistake structure', () => {
 			args: [{ type: 'variable', name: 'x' }]
 		};
 		const student = universalDomain();
-		const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanOrEqualInterval(number(0))]);
 
 		const mistakes = detectDomainMistakes(student, correct, expr);
 
@@ -352,7 +352,7 @@ describe('DomainMistake structure', () => {
 			args: [{ type: 'variable', name: 'x' }]
 		};
 		const student = universalDomain();
-		const correct = intervalDomain([greaterThanOrEqualInterval(fromNumber(0))]);
+		const correct = intervalDomain([greaterThanOrEqualInterval(number(0))]);
 
 		const mistakes = detectDomainMistakes(student, correct, expr);
 

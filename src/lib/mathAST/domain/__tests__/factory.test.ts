@@ -38,18 +38,17 @@ import {
 	nonNegativeReals,
 	nonZeroReals,
 	unitInterval,
-	// Value constructors
-	fromNumber,
 	// Constants
 	EMPTY_DOMAIN,
 	UNIVERSAL_DOMAIN
 } from '../factory';
 import { isNumber, isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
+import { number } from '$lib/mathAST/factory';
 
 describe('Endpoint factories', () => {
 	describe('endpoint()', () => {
 		it('creates an endpoint with value and type', () => {
-			const e = endpoint(fromNumber(5), 'open');
+			const e = endpoint(number(5), 'open');
 			expect(isNumber(e.value)).toBe(true);
 			if (isNumber(e.value)) {
 				expect(e.value.value).toBe('5');
@@ -60,7 +59,7 @@ describe('Endpoint factories', () => {
 
 	describe('openEndpoint()', () => {
 		it('creates an open endpoint', () => {
-			const e = openEndpoint(fromNumber(3));
+			const e = openEndpoint(number(3));
 			expect(isNumber(e.value)).toBe(true);
 			if (isNumber(e.value)) {
 				expect(e.value.value).toBe('3');
@@ -71,7 +70,7 @@ describe('Endpoint factories', () => {
 
 	describe('closedEndpoint()', () => {
 		it('creates a closed endpoint', () => {
-			const e = closedEndpoint(fromNumber(3));
+			const e = closedEndpoint(number(3));
 			expect(isNumber(e.value)).toBe(true);
 			if (isNumber(e.value)) {
 				expect(e.value.value).toBe('3');
@@ -100,7 +99,7 @@ describe('Endpoint factories', () => {
 describe('Interval factories', () => {
 	describe('interval()', () => {
 		it('creates an interval with given endpoints', () => {
-			const i = interval(openEndpoint(fromNumber(0)), closedEndpoint(fromNumber(1)));
+			const i = interval(openEndpoint(number(0)), closedEndpoint(number(1)));
 			expect(i.kind).toBe('interval');
 			expect(isNumber(i.lower.value)).toBe(true);
 			expect(i.lower.type).toBe('open');
@@ -111,7 +110,7 @@ describe('Interval factories', () => {
 
 	describe('openInterval()', () => {
 		it('creates ]a, b[', () => {
-			const i = openInterval(fromNumber(0), fromNumber(1));
+			const i = openInterval(number(0), number(1));
 			expect(isNumber(i.lower.value)).toBe(true);
 			expect(i.lower.type).toBe('open');
 			expect(isNumber(i.upper.value)).toBe(true);
@@ -121,7 +120,7 @@ describe('Interval factories', () => {
 
 	describe('closedInterval()', () => {
 		it('creates [a, b]', () => {
-			const i = closedInterval(fromNumber(-1), fromNumber(1));
+			const i = closedInterval(number(-1), number(1));
 			expect(i.lower.type).toBe('closed');
 			expect(i.upper.type).toBe('closed');
 		});
@@ -129,7 +128,7 @@ describe('Interval factories', () => {
 
 	describe('leftClosedInterval()', () => {
 		it('creates [a, b[', () => {
-			const i = leftClosedInterval(fromNumber(0), fromNumber(1));
+			const i = leftClosedInterval(number(0), number(1));
 			expect(i.lower.type).toBe('closed');
 			expect(i.upper.type).toBe('open');
 		});
@@ -137,7 +136,7 @@ describe('Interval factories', () => {
 
 	describe('rightClosedInterval()', () => {
 		it('creates ]a, b]', () => {
-			const i = rightClosedInterval(fromNumber(0), fromNumber(1));
+			const i = rightClosedInterval(number(0), number(1));
 			expect(i.lower.type).toBe('open');
 			expect(i.upper.type).toBe('closed');
 		});
@@ -145,7 +144,7 @@ describe('Interval factories', () => {
 
 	describe('greaterThanInterval()', () => {
 		it('creates ]a, +infinity[', () => {
-			const i = greaterThanInterval(fromNumber(0));
+			const i = greaterThanInterval(number(0));
 			expect(isNumber(i.lower.value)).toBe(true);
 			expect(i.lower.type).toBe('open');
 			expect(isPositiveInfinity(i.upper.value)).toBe(true);
@@ -155,7 +154,7 @@ describe('Interval factories', () => {
 
 	describe('greaterThanOrEqualInterval()', () => {
 		it('creates [a, +infinity[', () => {
-			const i = greaterThanOrEqualInterval(fromNumber(0));
+			const i = greaterThanOrEqualInterval(number(0));
 			expect(isNumber(i.lower.value)).toBe(true);
 			expect(i.lower.type).toBe('closed');
 			expect(isPositiveInfinity(i.upper.value)).toBe(true);
@@ -164,7 +163,7 @@ describe('Interval factories', () => {
 
 	describe('lessThanInterval()', () => {
 		it('creates ]-infinity, a[', () => {
-			const i = lessThanInterval(fromNumber(0));
+			const i = lessThanInterval(number(0));
 			expect(isNegativeInfinity(i.lower.value)).toBe(true);
 			expect(isNumber(i.upper.value)).toBe(true);
 			expect(i.upper.type).toBe('open');
@@ -173,7 +172,7 @@ describe('Interval factories', () => {
 
 	describe('lessThanOrEqualInterval()', () => {
 		it('creates ]-infinity, a]', () => {
-			const i = lessThanOrEqualInterval(fromNumber(0));
+			const i = lessThanOrEqualInterval(number(0));
 			expect(isNegativeInfinity(i.lower.value)).toBe(true);
 			expect(isNumber(i.upper.value)).toBe(true);
 			expect(i.upper.type).toBe('closed');
@@ -214,28 +213,28 @@ describe('Domain factories', () => {
 
 	describe('intervalDomain()', () => {
 		it('creates a domain with intervals', () => {
-			const d = intervalDomain([greaterThanInterval(fromNumber(0))]);
+			const d = intervalDomain([greaterThanInterval(number(0))]);
 			expect(d.kind).toBe('interval_set');
 			expect(d.intervals).toHaveLength(1);
 			expect(d.excludedPoints).toHaveLength(0);
 		});
 
 		it('creates a domain with excluded points', () => {
-			const d = intervalDomain([realLine()], [excludedPoint(fromNumber(0))]);
+			const d = intervalDomain([realLine()], [excludedPoint(number(0))]);
 			expect(d.excludedPoints).toHaveLength(1);
 		});
 	});
 
 	describe('conditionDomain()', () => {
 		it('creates a domain with conditions (AND by default)', () => {
-			const d = conditionDomain([comparison('x', '>', fromNumber(0))]);
+			const d = conditionDomain([comparison('x', '>', number(0))]);
 			expect(d.kind).toBe('condition_domain');
 			expect(d.combinator).toBe('and');
 		});
 
 		it('creates a domain with OR combinator', () => {
 			const d = conditionDomain(
-				[comparison('x', '<', fromNumber(0)), comparison('x', '>', fromNumber(1))],
+				[comparison('x', '<', number(0)), comparison('x', '>', number(1))],
 				'or'
 			);
 			expect(d.combinator).toBe('or');
@@ -246,7 +245,7 @@ describe('Domain factories', () => {
 describe('Condition factories', () => {
 	describe('comparison()', () => {
 		it('creates a comparison condition', () => {
-			const c = comparison('x', '>', fromNumber(0));
+			const c = comparison('x', '>', number(0));
 			expect(c.kind).toBe('comparison');
 			expect(c.variable).toBe('x');
 			expect(c.op).toBe('>');
@@ -256,7 +255,7 @@ describe('Condition factories', () => {
 		it('supports all comparison operators', () => {
 			const ops = ['<', '<=', '>', '>=', '=', '!='] as const;
 			for (const op of ops) {
-				const c = comparison('x', op, fromNumber(0));
+				const c = comparison('x', op, number(0));
 				expect(c.op).toBe(op);
 			}
 		});
@@ -264,7 +263,7 @@ describe('Condition factories', () => {
 
 	describe('excludedPoint()', () => {
 		it('creates an excluded point', () => {
-			const e = excludedPoint(fromNumber(0));
+			const e = excludedPoint(number(0));
 			expect(e.kind).toBe('excluded_point');
 			expect(isNumber(e.value)).toBe(true);
 		});

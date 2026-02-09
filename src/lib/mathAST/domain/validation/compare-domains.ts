@@ -26,15 +26,15 @@ import { intersect, difference, isEmpty, isUniversal } from '../algebra';
  * ```typescript
  * // Student is too restrictive
  * compareDomains(
- *   intervalDomain([greaterThanInterval(fromNumber(0))]),  // ]0, +∞[
- *   intervalDomain([greaterThanOrEqualInterval(fromNumber(0))])  // [0, +∞[
+ *   intervalDomain([greaterThanInterval(number(0))]),  // ]0, +∞[
+ *   intervalDomain([greaterThanOrEqualInterval(number(0))])  // [0, +∞[
  * );
  * // { areEqual: false, studentIsSubset: true, studentMissing: {0}, ... }
  *
  * // Student is too permissive
  * compareDomains(
  *   universalDomain(),  // ℝ
- *   intervalDomain([greaterThanInterval(fromNumber(0))])  // ]0, +∞[
+ *   intervalDomain([greaterThanInterval(number(0))])  // ]0, +∞[
  * );
  * // { areEqual: false, studentIsSuperset: true, studentExtra: ]-∞, 0], ... }
  * ```

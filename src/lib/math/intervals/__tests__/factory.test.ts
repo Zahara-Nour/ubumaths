@@ -7,7 +7,6 @@
 
 import { describe, it, expect } from 'vitest';
 import {
-	fromNumber,
 	bound,
 	openEndpoint,
 	closedEndpoint,
@@ -32,11 +31,12 @@ import {
 } from '../factory';
 import { endpointToNumber } from '../endpoint';
 import { isNumber, isInfinity, isMathConstant, isFunction, isDivision } from '$lib/mathAST/guards';
+import { number } from '$lib/mathAST/factory';
 
 describe('bound value constructors', () => {
-	describe('fromNumber', () => {
+	describe('number', () => {
 		it('creates NumberNode for 0', () => {
-			const zero = fromNumber(0);
+			const zero = number(0);
 			expect(isNumber(zero)).toBe(true);
 			if (isNumber(zero)) {
 				expect(zero.value).toBe('0');
@@ -44,7 +44,7 @@ describe('bound value constructors', () => {
 		});
 
 		it('creates NumberNode for 1', () => {
-			const one = fromNumber(1);
+			const one = number(1);
 			expect(isNumber(one)).toBe(true);
 			if (isNumber(one)) {
 				expect(one.value).toBe('1');
@@ -52,7 +52,7 @@ describe('bound value constructors', () => {
 		});
 
 		it('creates NumberNode for -1', () => {
-			const minusOne = fromNumber(-1);
+			const minusOne = number(-1);
 			expect(isNumber(minusOne)).toBe(true);
 			if (isNumber(minusOne)) {
 				expect(minusOne.value).toBe('-1');
@@ -60,7 +60,7 @@ describe('bound value constructors', () => {
 		});
 
 		it('creates NumberNode from integer', () => {
-			const five = fromNumber(5);
+			const five = number(5);
 			expect(isNumber(five)).toBe(true);
 			if (isNumber(five)) {
 				expect(five.value).toBe('5');
@@ -68,7 +68,7 @@ describe('bound value constructors', () => {
 		});
 
 		it('creates NumberNode from decimal', () => {
-			const oneAndHalf = fromNumber(1.5);
+			const oneAndHalf = number(1.5);
 			expect(isNumber(oneAndHalf)).toBe(true);
 			if (isNumber(oneAndHalf)) {
 				expect(oneAndHalf.value).toBe('1.5');
@@ -141,13 +141,13 @@ describe('bound value constructors', () => {
 
 describe('endpoint factories', () => {
 	it('creates open endpoint', () => {
-		const ep = openEndpoint(fromNumber(5));
+		const ep = openEndpoint(number(5));
 		expect(ep.type).toBe('open');
 		expect(endpointToNumber(ep.value)).toBe(5);
 	});
 
 	it('creates closed endpoint', () => {
-		const ep = closedEndpoint(fromNumber(5));
+		const ep = closedEndpoint(number(5));
 		expect(ep.type).toBe('closed');
 		expect(endpointToNumber(ep.value)).toBe(5);
 	});
@@ -167,7 +167,7 @@ describe('endpoint factories', () => {
 
 describe('interval factories', () => {
 	it('creates open interval ]a, b[', () => {
-		const int = openInterval(fromNumber(1), fromNumber(5));
+		const int = openInterval(number(1), number(5));
 		expect(int.kind).toBe('interval');
 		expect(int.lower.type).toBe('open');
 		expect(int.upper.type).toBe('open');
@@ -176,26 +176,26 @@ describe('interval factories', () => {
 	});
 
 	it('creates closed interval [a, b]', () => {
-		const int = closedInterval(fromNumber(1), fromNumber(5));
+		const int = closedInterval(number(1), number(5));
 		expect(int.kind).toBe('interval');
 		expect(int.lower.type).toBe('closed');
 		expect(int.upper.type).toBe('closed');
 	});
 
 	it('creates left-closed interval [a, b[', () => {
-		const int = leftClosedInterval(fromNumber(1), fromNumber(5));
+		const int = leftClosedInterval(number(1), number(5));
 		expect(int.lower.type).toBe('closed');
 		expect(int.upper.type).toBe('open');
 	});
 
 	it('creates right-closed interval ]a, b]', () => {
-		const int = rightClosedInterval(fromNumber(1), fromNumber(5));
+		const int = rightClosedInterval(number(1), number(5));
 		expect(int.lower.type).toBe('open');
 		expect(int.upper.type).toBe('closed');
 	});
 
 	it('creates lessThanInterval ]-infinity, a[', () => {
-		const int = lessThanInterval(fromNumber(5));
+		const int = lessThanInterval(number(5));
 		expect(endpointToNumber(int.lower.value)).toBe(-Infinity);
 		expect(int.lower.type).toBe('open');
 		expect(endpointToNumber(int.upper.value)).toBe(5);
@@ -203,20 +203,20 @@ describe('interval factories', () => {
 	});
 
 	it('creates lessThanOrEqualInterval ]-infinity, a]', () => {
-		const int = lessThanOrEqualInterval(fromNumber(5));
+		const int = lessThanOrEqualInterval(number(5));
 		expect(endpointToNumber(int.lower.value)).toBe(-Infinity);
 		expect(int.upper.type).toBe('closed');
 	});
 
 	it('creates greaterThanInterval ]a, +infinity[', () => {
-		const int = greaterThanInterval(fromNumber(0));
+		const int = greaterThanInterval(number(0));
 		expect(endpointToNumber(int.lower.value)).toBe(0);
 		expect(int.lower.type).toBe('open');
 		expect(endpointToNumber(int.upper.value)).toBe(Infinity);
 	});
 
 	it('creates greaterThanOrEqualInterval [a, +infinity[', () => {
-		const int = greaterThanOrEqualInterval(fromNumber(0));
+		const int = greaterThanOrEqualInterval(number(0));
 		expect(int.lower.type).toBe('closed');
 		expect(endpointToNumber(int.upper.value)).toBe(Infinity);
 	});
@@ -250,8 +250,8 @@ describe('domain factories', () => {
 
 	it('creates interval set', () => {
 		const domain = intervalSet([
-			closedInterval(fromNumber(0), fromNumber(1)),
-			closedInterval(fromNumber(2), fromNumber(3))
+			closedInterval(number(0), number(1)),
+			closedInterval(number(2), number(3))
 		]);
 		expect(domain.kind).toBe('interval_set');
 		expect(domain.intervals.length).toBe(2);
@@ -303,28 +303,28 @@ describe('common domain shortcuts', () => {
 // Edge Cases
 // =============================================================================
 
-describe('fromNumber edge cases', () => {
+describe('number edge cases', () => {
 	it('handles very large numbers', () => {
-		const large = fromNumber(1e15);
+		const large = number(1e15);
 		expect(isNumber(large)).toBe(true);
 		expect(endpointToNumber(large)).toBe(1e15);
 	});
 
 	it('handles very small positive numbers', () => {
-		const small = fromNumber(1e-10);
+		const small = number(1e-10);
 		expect(isNumber(small)).toBe(true);
 		expect(endpointToNumber(small)).toBeCloseTo(1e-10);
 	});
 
 	it('handles negative zero', () => {
-		const negZero = fromNumber(-0);
+		const negZero = number(-0);
 		expect(isNumber(negZero)).toBe(true);
 		// -0 should be stored as "0"
 		expect(endpointToNumber(negZero)).toBe(0);
 	});
 
 	it('handles very negative numbers', () => {
-		const negLarge = fromNumber(-1e15);
+		const negLarge = number(-1e15);
 		expect(isNumber(negLarge)).toBe(true);
 		expect(endpointToNumber(negLarge)).toBe(-1e15);
 	});
@@ -355,13 +355,13 @@ describe('bound edge cases', () => {
 
 describe('interval with special bounds', () => {
 	it('creates interval with pi bounds', () => {
-		const int = closedInterval(fromNumber(0), bound('\\pi'));
+		const int = closedInterval(number(0), bound('\\pi'));
 		expect(endpointToNumber(int.lower.value)).toBe(0);
 		expect(endpointToNumber(int.upper.value)).toBeCloseTo(Math.PI);
 	});
 
 	it('creates interval with e bounds', () => {
-		const int = closedInterval(fromNumber(1), bound('e'));
+		const int = closedInterval(number(1), bound('e'));
 		expect(endpointToNumber(int.lower.value)).toBe(1);
 		expect(endpointToNumber(int.upper.value)).toBeCloseTo(Math.E);
 	});
@@ -373,7 +373,7 @@ describe('interval with special bounds', () => {
 	});
 
 	it('creates interval with mixed symbolic and numeric bounds', () => {
-		const int = closedInterval(fromNumber(1), bound('sqrt(2)'));
+		const int = closedInterval(number(1), bound('sqrt(2)'));
 		expect(endpointToNumber(int.lower.value)).toBe(1);
 		expect(endpointToNumber(int.upper.value)).toBeCloseTo(Math.sqrt(2));
 	});
@@ -381,7 +381,7 @@ describe('interval with special bounds', () => {
 
 describe('single point intervals', () => {
 	it('creates degenerate closed interval [a, a]', () => {
-		const int = closedInterval(fromNumber(5), fromNumber(5));
+		const int = closedInterval(number(5), number(5));
 		expect(int.lower.type).toBe('closed');
 		expect(int.upper.type).toBe('closed');
 		expect(endpointToNumber(int.lower.value)).toBe(5);
@@ -389,7 +389,7 @@ describe('single point intervals', () => {
 	});
 
 	it('creates open interval at single point (empty)', () => {
-		const int = openInterval(fromNumber(5), fromNumber(5));
+		const int = openInterval(number(5), number(5));
 		expect(int.lower.type).toBe('open');
 		expect(int.upper.type).toBe('open');
 		// This interval is empty (open at both ends with same value)
@@ -404,7 +404,7 @@ describe('single point intervals', () => {
 
 describe('inverted intervals', () => {
 	it('creates inverted interval [5, 1] (semantically empty)', () => {
-		const int = closedInterval(fromNumber(5), fromNumber(1));
+		const int = closedInterval(number(5), number(1));
 		expect(int.kind).toBe('interval');
 		// The interval factory doesn't validate order, but isEmpty will catch it
 		expect(endpointToNumber(int.lower.value)).toBe(5);
@@ -420,9 +420,9 @@ describe('inverted intervals', () => {
 describe('multiple disjoint intervals (replacing excluded points)', () => {
 	it('creates interval set with three disjoint intervals', () => {
 		const domain = intervalSet([
-			closedInterval(fromNumber(0), fromNumber(1)),
-			closedInterval(fromNumber(2), fromNumber(3)),
-			closedInterval(fromNumber(4), fromNumber(5))
+			closedInterval(number(0), number(1)),
+			closedInterval(number(2), number(3)),
+			closedInterval(number(4), number(5))
 		]);
 		expect(domain.intervals.length).toBe(3);
 	});
@@ -431,18 +431,18 @@ describe('multiple disjoint intervals (replacing excluded points)', () => {
 describe('complex interval sets', () => {
 	it('creates interval set with three intervals', () => {
 		const domain = intervalSet([
-			closedInterval(fromNumber(0), fromNumber(1)),
-			closedInterval(fromNumber(2), fromNumber(3)),
-			closedInterval(fromNumber(4), fromNumber(5))
+			closedInterval(number(0), number(1)),
+			closedInterval(number(2), number(3)),
+			closedInterval(number(4), number(5))
 		]);
 		expect(domain.intervals.length).toBe(3);
 	});
 
 	it('creates interval set mixing open and closed intervals', () => {
 		const domain = intervalSet([
-			openInterval(fromNumber(0), fromNumber(1)),
-			closedInterval(fromNumber(2), fromNumber(3)),
-			leftClosedInterval(fromNumber(4), fromNumber(5))
+			openInterval(number(0), number(1)),
+			closedInterval(number(2), number(3)),
+			leftClosedInterval(number(4), number(5))
 		]);
 		expect(domain.intervals.length).toBe(3);
 		expect(domain.intervals[0].lower.type).toBe('open');
