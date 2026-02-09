@@ -102,6 +102,7 @@ export {
 	universalSet,
 	emptyDomain,
 	universalDomain,
+	intervalSet,
 	intervalDomain,
 	excludedPoint,
 	// Common domain shortcuts

@@ -20,18 +20,49 @@ export type {
 	Endpoint,
 	// Interval types
 	Interval,
-	ExcludedPoint,
 	// Domain types (interval-based)
 	EmptySet,
 	UniversalSet,
-	IntervalSet,
 	// Comparison types
 	CompareOutcome,
 	CompareResult
 } from '$lib/math/intervals/types';
 
 // Import for use in this file
-import type { EndpointValue, EmptySet, UniversalSet, IntervalSet } from '$lib/math/intervals/types';
+import type { EndpointValue, Interval, EmptySet, UniversalSet } from '$lib/math/intervals/types';
+
+// =============================================================================
+// Domain-level types (not in intervals module)
+// =============================================================================
+
+/**
+ * Represents a single excluded point (e.g., x != 0).
+ * This is a domain-level semantic concept (pedagogical: "x ≠ 0"),
+ * not a pure interval concept.
+ */
+export interface ExcludedPoint {
+	readonly kind: 'excluded_point';
+	readonly value: EndpointValue;
+}
+
+/**
+ * An interval-based domain (union of intervals with optional excluded points)
+ *
+ * This is the domain-level version that adds excludedPoints to the intervals module's
+ * pure interval representation. TypeScript structural typing ensures this superset
+ * can be passed to interval-level functions that only read the intervals field.
+ *
+ * Represents domains like:
+ * - ]0, +∞[
+ * - ]-∞, 0[ ∪ ]0, +∞[ (ℝ \ {0})
+ * - [-1, 1]
+ * - [0, π]
+ */
+export interface IntervalSet {
+	readonly kind: 'interval_set';
+	readonly intervals: readonly Interval[];
+	readonly excludedPoints: readonly ExcludedPoint[];
+}
 
 // =============================================================================
 // Backward compatibility aliases

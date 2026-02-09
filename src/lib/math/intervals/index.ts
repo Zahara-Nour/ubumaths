@@ -29,7 +29,6 @@ export type {
 	Endpoint,
 	// Interval types
 	Interval,
-	ExcludedPoint,
 	// Domain types
 	EmptySet,
 	UniversalSet,
@@ -85,14 +84,7 @@ export {
 } from './factory';
 
 // Factory functions - Domains
-export {
-	emptySet,
-	universalSet,
-	intervalSet,
-	excludedPoint,
-	EMPTY_SET,
-	UNIVERSAL_SET
-} from './factory';
+export { emptySet, universalSet, intervalSet, EMPTY_SET, UNIVERSAL_SET } from './factory';
 
 // Factory functions - Common domain shortcuts
 export { positiveReals, nonNegativeReals, nonZeroReals, unitInterval } from './factory';
@@ -105,8 +97,7 @@ export {
 	intersect,
 	union,
 	complement,
-	difference,
-	excludePoints
+	difference
 } from './algebra';
 
 // Bounds utilities

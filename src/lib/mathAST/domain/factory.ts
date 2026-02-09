@@ -51,18 +51,9 @@ export { EMPTY_SET as EMPTY_DOMAIN } from '$lib/math/intervals/factory';
 export { UNIVERSAL_SET as UNIVERSAL_DOMAIN } from '$lib/math/intervals/factory';
 
 // Domain factories (with aliases for backward compatibility)
-export { emptySet, universalSet, excludedPoint } from '$lib/math/intervals/factory';
+export { emptySet, universalSet } from '$lib/math/intervals/factory';
 export { emptySet as emptyDomain } from '$lib/math/intervals/factory';
 export { universalSet as universalDomain } from '$lib/math/intervals/factory';
-export { intervalSet as intervalDomain } from '$lib/math/intervals/factory';
-
-// Common domain shortcuts
-export {
-	positiveReals,
-	nonNegativeReals,
-	nonZeroReals,
-	unitInterval
-} from '$lib/math/intervals/factory';
 
 // =============================================================================
 // Domain-specific factories (conditions)
@@ -70,12 +61,22 @@ export {
 
 import type {
 	EndpointValue,
+	ExcludedPoint,
+	IntervalSet,
 	ConditionDomain,
 	ComparisonCondition,
 	ComparisonOp,
-	PeriodicExclusion
+	PeriodicExclusion,
+	Interval
 } from './types';
 import type { MathNode } from '../types';
+import {
+	fromNumber as intervalsFromNumber,
+	greaterThan as intervalsGreaterThan,
+	greaterThanOrEqual as intervalsGreaterThanOrEqual,
+	closedInterval as intervalsClosedInterval,
+	realLine as intervalsRealLine
+} from '$lib/math/intervals/factory';
 
 /**
  * Creates a condition-based domain.
@@ -160,4 +161,53 @@ export function secDomain(): PeriodicExclusion {
  */
 export function cscDomain(): PeriodicExclusion {
 	return cotDomain();
+}
+
+// =============================================================================
+// Domain-level Interval Factories (with excludedPoints support)
+// =============================================================================
+
+/**
+ * Creates an interval set with optional excluded points.
+ * This is the domain-level version that supports excludedPoints.
+ */
+export function intervalSet(
+	intervals: readonly Interval[],
+	excludedPoints: readonly ExcludedPoint[] = []
+): IntervalSet {
+	return { kind: 'interval_set', intervals, excludedPoints };
+}
+
+/** Alias for backward compatibility */
+export const intervalDomain = intervalSet;
+
+/**
+ * Creates an excluded point.
+ */
+export function excludedPoint(value: EndpointValue): ExcludedPoint {
+	return { kind: 'excluded_point', value };
+}
+
+// =============================================================================
+// Common Domain Shortcuts (with excludedPoints support)
+// =============================================================================
+
+/** Domain for x > 0 (e.g., for ln) - ]0, +infinity[ */
+export function positiveReals(): IntervalSet {
+	return intervalSet([intervalsGreaterThan(intervalsFromNumber(0))]);
+}
+
+/** Domain for x >= 0 (e.g., for sqrt) - [0, +infinity[ */
+export function nonNegativeReals(): IntervalSet {
+	return intervalSet([intervalsGreaterThanOrEqual(intervalsFromNumber(0))]);
+}
+
+/** Domain for x != 0 (e.g., for 1/x) - R \ {0} */
+export function nonZeroReals(): IntervalSet {
+	return intervalSet([intervalsRealLine()], [excludedPoint(intervalsFromNumber(0))]);
+}
+
+/** Domain for -1 <= x <= 1 (e.g., for arcsin, arccos) - [-1, 1] */
+export function unitInterval(): IntervalSet {
+	return intervalSet([intervalsClosedInterval(intervalsFromNumber(-1), intervalsFromNumber(1))]);
 }

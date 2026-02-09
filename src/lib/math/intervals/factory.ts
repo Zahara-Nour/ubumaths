@@ -18,7 +18,6 @@ import type {
 	EndpointValue,
 	EndpointType,
 	Interval,
-	ExcludedPoint,
 	EmptySet,
 	UniversalSet,
 	IntervalSet
@@ -282,20 +281,10 @@ export function universalSet(): UniversalSet {
 }
 
 /**
- * Creates an interval set from intervals and optional excluded points.
+ * Creates an interval set from intervals.
  */
-export function intervalSet(
-	intervals: readonly Interval[],
-	excludedPoints: readonly ExcludedPoint[] = []
-): IntervalSet {
-	return { kind: 'interval_set', intervals, excludedPoints };
-}
-
-/**
- * Creates an excluded point.
- */
-export function excludedPoint(value: EndpointValue): ExcludedPoint {
-	return { kind: 'excluded_point', value };
+export function intervalSet(intervals: readonly Interval[]): IntervalSet {
+	return { kind: 'interval_set', intervals };
 }
 
 // =============================================================================
@@ -312,9 +301,9 @@ export function nonNegativeReals(): IntervalSet {
 	return intervalSet([greaterThanOrEqual(fromNumber(0))]);
 }
 
-/** Domain for x != 0 (e.g., for 1/x) - R \ {0} */
+/** Domain for x != 0 (e.g., for 1/x) - ]-∞, 0[ ∪ ]0, +∞[ */
 export function nonZeroReals(): IntervalSet {
-	return intervalSet([realLine()], [excludedPoint(fromNumber(0))]);
+	return intervalSet([lessThan(fromNumber(0)), greaterThan(fromNumber(0))]);
 }
 
 /** Domain for -1 <= x <= 1 (e.g., for arcsin, arccos) - [-1, 1] */

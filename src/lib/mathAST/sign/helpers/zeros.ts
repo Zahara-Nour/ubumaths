@@ -37,7 +37,7 @@ import type { Solution, PeriodicSolutionFamily } from '../../solve/types';
 import { solve } from '../../solve/solve';
 import { equals, number, add, multiply, opposite } from '../../factory';
 import { isRelation } from '../../guards';
-import { containsValue } from '$lib/math/intervals/algebra';
+import { containsValue } from '../../domain/algebra';
 import { getBoundsFromDomain } from '$lib/math/intervals/algebra';
 import { denormalize, normalize } from '../../normal';
 

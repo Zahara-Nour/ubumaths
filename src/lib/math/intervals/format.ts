@@ -105,21 +105,10 @@ function formatIntervalSet(domain: IntervalSet): string {
 
 	// Check for full real line
 	if (intervalStrs.length === 1 && intervalStrs[0] === ']-∞, +∞[') {
-		if (domain.excludedPoints.length === 0) {
-			return 'ℝ';
-		}
-		return `ℝ \\ {${domain.excludedPoints.map((p) => formatEndpointValue(p.value)).join(', ')}}`;
+		return 'ℝ';
 	}
 
-	let result = intervalStrs.join(' ∪ ');
-
-	// Add excluded points if any
-	if (domain.excludedPoints.length > 0) {
-		const excludedStr = domain.excludedPoints.map((p) => formatEndpointValue(p.value)).join(', ');
-		result += ` \\ {${excludedStr}}`;
-	}
-
-	return result;
+	return intervalStrs.join(' ∪ ');
 }
 
 function formatSingleInterval(interval: Interval): string {
@@ -247,26 +236,13 @@ function formatIntervalSetAsCondition(domain: IntervalSet, variable: string): st
 		if (cond) conditions.push(cond);
 	}
 
-	// Handle excluded points
-	if (domain.excludedPoints.length > 0) {
-		for (const ep of domain.excludedPoints) {
-			conditions.push(`${variable} ≠ ${formatEndpointValue(ep.value)}`);
-		}
-	}
-
 	if (conditions.length === 0) {
 		return `${variable} ∈ ℝ`;
 	}
 
-	// Join with "et" (and) or "ou" (or) depending on structure
+	// Join with "ou" for multiple disjoint intervals
 	if (domain.intervals.length > 1) {
-		// Multiple disjoint intervals: use "ou"
-		const intervalConds = domain.intervals.map((i) => formatIntervalAsCondition(i, variable));
-		const excludedConds = domain.excludedPoints.map(
-			(ep) => `${variable} ≠ ${formatEndpointValue(ep.value)}`
-		);
-		const allConds = [...intervalConds.filter(Boolean), ...excludedConds];
-		return allConds.join(' ou ');
+		return conditions.join(' ou ');
 	}
 
 	return conditions.join(' et ');

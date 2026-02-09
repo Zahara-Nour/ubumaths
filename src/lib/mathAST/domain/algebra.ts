@@ -5,7 +5,13 @@
  * Handles ConditionDomain and PeriodicExclusion as domain-specific types.
  */
 
-import type { Domain, EndpointValue, PeriodicExclusion, ConditionDomain } from './types';
+import type {
+	Domain,
+	EndpointValue,
+	ExcludedPoint,
+	PeriodicExclusion,
+	ConditionDomain
+} from './types';
 import { ZERO_TOLERANCE } from '../common';
 import type { IntervalDomain } from '$lib/math/intervals/types';
 import {
@@ -14,9 +20,9 @@ import {
 	intersect as intervalsIntersect,
 	union as intervalsUnion,
 	complement as intervalsComplement,
-	difference as intervalsDifference,
-	excludePoints as intervalsExcludePoints
+	difference as intervalsDifference
 } from '$lib/math/intervals/algebra';
+import { realLine } from '$lib/math/intervals/factory';
 import {
 	EMPTY_SET,
 	UNIVERSAL_SET,
@@ -26,6 +32,8 @@ import {
 	lessThan,
 	lessThanOrEqual,
 	intervalDomain,
+	intervalSet,
+	excludedPoint as createExcludedPoint,
 	closedInterval
 } from './factory';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -58,6 +66,60 @@ function isExcludedByPeriodic(pe: PeriodicExclusion, value: number): boolean {
 		// Cannot evaluate symbolically - conservatively assume not excluded
 		return false;
 	}
+}
+
+// =============================================================================
+// ExcludedPoint Helpers
+// =============================================================================
+
+/**
+ * Deduplicate excluded points by value.
+ */
+function deduplicateExcludedPoints(points: readonly ExcludedPoint[]): ExcludedPoint[] {
+	const seen = new Set<number>();
+	const result: ExcludedPoint[] = [];
+
+	for (const p of points) {
+		const val = endpointToNumber(p.value);
+		if (!Number.isNaN(val) && !seen.has(val)) {
+			seen.add(val);
+			result.push(p);
+		} else if (Number.isNaN(val)) {
+			// For symbolic values that can't be converted to numbers,
+			// we keep all of them (may result in duplicates for complex expressions)
+			result.push(p);
+		}
+	}
+
+	return result;
+}
+
+/**
+ * Extract excludedPoints from an IntervalSet-compatible domain.
+ * Returns empty array for non-IntervalSet domains.
+ */
+function getExcludedPoints(d: Domain): readonly ExcludedPoint[] {
+	if (d.kind === 'interval_set') return d.excludedPoints ?? [];
+	return [];
+}
+
+/**
+ * Wrap an IntervalDomain result from intervals algebra with excluded points,
+ * producing a domain-level result.
+ */
+function wrapWithExcludedPoints(
+	result: IntervalDomain,
+	excludedPoints: readonly ExcludedPoint[]
+): Domain {
+	if (result.kind === 'empty') return EMPTY_SET;
+	if (result.kind === 'universal') {
+		if (excludedPoints.length === 0) return UNIVERSAL_SET;
+		return intervalSet([realLine()], excludedPoints);
+	}
+	if (excludedPoints.length === 0) {
+		return intervalSet(result.intervals);
+	}
+	return intervalSet(result.intervals, excludedPoints);
 }
 
 // =============================================================================
@@ -241,6 +303,10 @@ export function isUniversal(d: Domain): boolean {
 		// Has exclusions, so not universal
 		return false;
 	}
+	// Check for excluded points at domain level
+	if (d.kind === 'interval_set' && (d.excludedPoints?.length ?? 0) > 0) {
+		return false;
+	}
 	return intervalsIsUniversal(d);
 }
 
@@ -281,8 +347,8 @@ function numericContainsValue(d: Domain, value: number): boolean {
 	if (d.kind === 'universal') return true;
 	if (d.kind !== 'interval_set') return false;
 
-	// Check excluded points
-	for (const ep of d.excludedPoints) {
+	// Check excluded points (may be absent for intervals-level IntervalSets)
+	for (const ep of d.excludedPoints ?? []) {
 		const epVal = endpointToNumber(ep.value);
 		if (!isNaN(epVal) && Math.abs(epVal - value) < ZERO_TOLERANCE) {
 			return false;
@@ -374,7 +440,13 @@ export function intersect(a: Domain, b: Domain): Domain {
 		return a;
 	}
 
-	return intervalsIntersect(a, b);
+	// Extract excludedPoints before delegating to intervals
+	const aExcluded = getExcludedPoints(a);
+	const bExcluded = getExcludedPoints(b);
+	const allExcluded = deduplicateExcludedPoints([...aExcluded, ...bExcluded]);
+
+	const result = intervalsIntersect(a, b);
+	return wrapWithExcludedPoints(result, allExcluded);
 }
 
 // =============================================================================
@@ -410,7 +482,22 @@ export function union(a: Domain, b: Domain): Domain {
 		return b;
 	}
 
-	return intervalsUnion(a, b);
+	// Extract excludedPoints before delegating to intervals
+	const aExcluded = getExcludedPoints(a);
+	const bExcluded = getExcludedPoints(b);
+
+	const result = intervalsUnion(a, b);
+
+	// For union, a point must be excluded in BOTH to remain excluded
+	if (aExcluded.length > 0 || bExcluded.length > 0) {
+		const aExcludedValues = new Set(aExcluded.map((ep) => endpointToNumber(ep.value)));
+		const commonExcluded = bExcluded.filter((ep) =>
+			aExcludedValues.has(endpointToNumber(ep.value))
+		);
+		return wrapWithExcludedPoints(result, commonExcluded);
+	}
+
+	return wrapWithExcludedPoints(result, []);
 }
 
 // =============================================================================
@@ -437,6 +524,8 @@ export function complement(d: Domain): Domain {
 		return EMPTY_SET;
 	}
 
+	// Note: excluded points in d become "included" in the complement
+	// (they are no longer excluded), so we don't carry them over
 	return intervalsComplement(d);
 }
 
@@ -469,7 +558,11 @@ export function difference(a: Domain, b: Domain): Domain {
 		return EMPTY_SET;
 	}
 
-	return intervalsDifference(a, b);
+	// difference = intersect(a, complement(b))
+	// Excluded points from a survive, excluded points from b don't matter
+	const aExcluded = getExcludedPoints(a);
+	const result = intervalsDifference(a, b);
+	return wrapWithExcludedPoints(result, aExcluded);
 }
 
 // =============================================================================
@@ -497,8 +590,20 @@ export function excludePoints(d: Domain, values: EndpointValue[]): Domain {
 		// Already has infinite exclusions, adding finite more doesn't change structure
 		return d;
 	}
+	if (d.kind === 'empty') return EMPTY_SET;
 
-	return intervalsExcludePoints(d, values);
+	const newExcluded = values.map((v) => createExcludedPoint(v));
+
+	if (d.kind === 'universal') {
+		return intervalSet([realLine()], newExcluded);
+	}
+
+	if (d.kind === 'interval_set') {
+		const combined = [...(d.excludedPoints ?? []), ...newExcluded];
+		return intervalSet([...d.intervals], deduplicateExcludedPoints(combined));
+	}
+
+	return d;
 }
 
 /**
