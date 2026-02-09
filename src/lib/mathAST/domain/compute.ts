@@ -337,7 +337,7 @@ function computeDivisionDomain(
 	// Combine domains
 	let domain = intersect(numDomain, denDomain);
 
-	// Exclude zeros (convert to EndpointValue[])
+	// Exclude zeros (convert to MathNode[])
 	if (zeros.length > 0) {
 		domain = excludePoints(
 			domain,

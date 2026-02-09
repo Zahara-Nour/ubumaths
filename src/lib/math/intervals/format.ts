@@ -8,7 +8,8 @@
  * - Condition notation: x > 0
  */
 
-import type { IntervalDomain, Interval, EndpointValue, IntervalSet } from './types';
+import type { MathNode } from '$lib/mathAST/types';
+import type { IntervalDomain, Interval, IntervalSet } from './types';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import {
 	isInfinity,
@@ -21,7 +22,7 @@ import {
 	isDivision,
 	isMultiplication
 } from '$lib/mathAST/guards';
-import { isUniversal } from './algebra';
+import { isUniversalInterval } from './algebra';
 
 // =============================================================================
 // Main API
@@ -135,7 +136,7 @@ function formatSingleInterval(interval: Interval): string {
  * formatEndpointValue(piConstant()) // → "π"
  * formatEndpointValue(func('sqrt', [number('2')])) // → "√2"
  */
-export function formatEndpointValue(value: EndpointValue): string {
+export function formatEndpointValue(value: MathNode): string {
 	// Handle infinity
 	if (isInfinity(value)) {
 		return value.sign === 'positive' ? '+∞' : '-∞';
@@ -225,7 +226,7 @@ function formatIntervalSetAsCondition(domain: IntervalSet, variable: string): st
 	}
 
 	// Check if it's the real line
-	if (isUniversal(domain)) {
+	if (isUniversalInterval(domain)) {
 		return `${variable} ∈ ℝ`;
 	}
 

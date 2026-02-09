@@ -9,14 +9,14 @@
  */
 
 import type { Interval, Endpoint } from './types';
-import { compare } from './compare';
+import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
 
 /**
  * Check if two intervals overlap or are adjacent.
  */
 function intervalsOverlapOrAdjacent(a: Interval, b: Interval): boolean {
-	const cmp1 = compare(a.upper.value, b.lower.value);
-	const cmp2 = compare(b.upper.value, a.lower.value);
+	const cmp1 = compareNumericNodes(a.upper.value, b.lower.value);
+	const cmp2 = compareNumericNodes(b.upper.value, a.lower.value);
 
 	// If comparison is undefined, assume they don't overlap (conservative)
 	if (cmp1 === undefined || cmp2 === undefined) return false;
@@ -41,7 +41,7 @@ function intervalsOverlapOrAdjacent(a: Interval, b: Interval): boolean {
  */
 function mergeIntervals(a: Interval, b: Interval): Interval {
 	// Take min of lower bounds
-	const cmpLower = compare(a.lower.value, b.lower.value);
+	const cmpLower = compareNumericNodes(a.lower.value, b.lower.value);
 	let lower: Endpoint;
 	if (cmpLower === undefined || cmpLower < 0) {
 		lower = a.lower;
@@ -54,7 +54,7 @@ function mergeIntervals(a: Interval, b: Interval): Interval {
 	}
 
 	// Take max of upper bounds
-	const cmpUpper = compare(a.upper.value, b.upper.value);
+	const cmpUpper = compareNumericNodes(a.upper.value, b.upper.value);
 	let upper: Endpoint;
 	if (cmpUpper === undefined || cmpUpper > 0) {
 		upper = a.upper;
@@ -81,7 +81,7 @@ export function normalizeIntervals(intervals: readonly Interval[]): Interval[] {
 
 	// Sort by lower bound
 	const sorted = [...intervals].sort((a, b) => {
-		const cmp = compare(a.lower.value, b.lower.value);
+		const cmp = compareNumericNodes(a.lower.value, b.lower.value);
 		// If comparison is undefined, keep original order
 		return cmp ?? 0;
 	});

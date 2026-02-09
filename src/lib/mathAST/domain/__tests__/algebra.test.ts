@@ -2,8 +2,8 @@
  * Tests for domain algebra operations
  *
  * Updated for MathNode-based endpoint values:
- * - EndpointValue is now MathNode
- * - excludePoints takes EndpointValue[] (use fromNumber for numbers)
+ * - Endpoint values are MathNode
+ * - excludePoints takes MathNode[] (use fromNumber for numbers)
  */
 
 import { describe, it, expect } from 'vitest';

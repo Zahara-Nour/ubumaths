@@ -46,7 +46,8 @@ import {
 	positiveInfinity,
 	negativeInfinity
 } from '$lib/math/intervals';
-import type { Endpoint, EndpointValue } from '$lib/math/intervals';
+import type { MathNode } from '../../types';
+import type { Endpoint } from '$lib/math/intervals';
 import { parseCustomPratt } from './parser-pratt';
 
 // =============================================================================
@@ -827,10 +828,10 @@ class ConstraintParser {
 	}
 
 	/**
-	 * Parse a bound string into an EndpointValue.
+	 * Parse a bound string into a MathNode.
 	 * Handles special cases like +inf, -inf, inf.
 	 */
-	private parseBoundString(boundStr: string, position: number): EndpointValue {
+	private parseBoundString(boundStr: string, position: number): MathNode {
 		const trimmed = boundStr.trim();
 
 		if (!trimmed) {

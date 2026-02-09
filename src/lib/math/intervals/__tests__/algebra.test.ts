@@ -6,8 +6,8 @@
 
 import { describe, it, expect } from 'vitest';
 import {
-	isEmpty,
-	isUniversal,
+	isEmptyInterval,
+	isUniversalInterval,
 	containsValue,
 	intersect,
 	union,
@@ -30,43 +30,43 @@ import { endpointToNumber } from '../endpoint';
 
 describe('isEmpty', () => {
 	it('empty set is empty', () => {
-		expect(isEmpty(emptySet())).toBe(true);
+		expect(isEmptyInterval(emptySet())).toBe(true);
 	});
 
 	it('universal set is not empty', () => {
-		expect(isEmpty(universalSet())).toBe(false);
+		expect(isEmptyInterval(universalSet())).toBe(false);
 	});
 
 	it('interval set with intervals is not empty', () => {
 		const domain = intervalSet([closedInterval(fromNumber(0), fromNumber(1))]);
-		expect(isEmpty(domain)).toBe(false);
+		expect(isEmptyInterval(domain)).toBe(false);
 	});
 
 	it('interval set with no intervals is empty', () => {
 		const domain = intervalSet([]);
-		expect(isEmpty(domain)).toBe(true);
+		expect(isEmptyInterval(domain)).toBe(true);
 	});
 
 	it('interval with inverted bounds is empty', () => {
 		// [5, 1] is empty because 5 > 1
 		const inv = closedInterval(fromNumber(5), fromNumber(1));
 		const domain = intervalSet([inv]);
-		expect(isEmpty(domain)).toBe(true);
+		expect(isEmptyInterval(domain)).toBe(true);
 	});
 });
 
 describe('isUniversal', () => {
 	it('universal set is universal', () => {
-		expect(isUniversal(universalSet())).toBe(true);
+		expect(isUniversalInterval(universalSet())).toBe(true);
 	});
 
 	it('empty set is not universal', () => {
-		expect(isUniversal(emptySet())).toBe(false);
+		expect(isUniversalInterval(emptySet())).toBe(false);
 	});
 
 	it('real line without excluded points is universal', () => {
 		const domain = intervalSet([realLine()]);
-		expect(isUniversal(domain)).toBe(true);
+		expect(isUniversalInterval(domain)).toBe(true);
 	});
 
 	it('split intervals around 0 are not universal', () => {
@@ -74,7 +74,7 @@ describe('isUniversal', () => {
 			lessThanInterval(fromNumber(0)),
 			greaterThanInterval(fromNumber(0))
 		]);
-		expect(isUniversal(domain)).toBe(false);
+		expect(isUniversalInterval(domain)).toBe(false);
 	});
 });
 
@@ -256,7 +256,7 @@ describe('difference', () => {
 	it('A \\ A = empty', () => {
 		const domain = intervalSet([closedInterval(fromNumber(0), fromNumber(1))]);
 		const result = difference(domain, domain);
-		expect(isEmpty(result)).toBe(true);
+		expect(isEmptyInterval(result)).toBe(true);
 	});
 
 	it('A \\ empty = A', () => {
@@ -279,20 +279,20 @@ describe('isEmpty edge cases', () => {
 	it('single point interval [a, a] is not empty', () => {
 		const point = closedInterval(fromNumber(5), fromNumber(5));
 		const domain = intervalSet([point]);
-		expect(isEmpty(domain)).toBe(false);
+		expect(isEmptyInterval(domain)).toBe(false);
 	});
 
 	it('open single point ]a, a[ is empty', () => {
 		const point = openInterval(fromNumber(5), fromNumber(5));
 		const domain = intervalSet([point]);
-		expect(isEmpty(domain)).toBe(true);
+		expect(isEmptyInterval(domain)).toBe(true);
 	});
 
 	it('interval with symbolic bounds is not empty', () => {
 		const sqrt2 = bound('sqrt(2)');
 		const sqrt3 = bound('sqrt(3)');
 		const domain = intervalSet([closedInterval(sqrt2, sqrt3)]);
-		expect(isEmpty(domain)).toBe(false);
+		expect(isEmptyInterval(domain)).toBe(false);
 	});
 
 	it('inverted symbolic bounds is empty', () => {
@@ -300,7 +300,7 @@ describe('isEmpty edge cases', () => {
 		const sqrt3 = bound('sqrt(3)');
 		// [sqrt(3), sqrt(2)] is empty because sqrt(3) > sqrt(2)
 		const domain = intervalSet([closedInterval(sqrt3, sqrt2)]);
-		expect(isEmpty(domain)).toBe(true);
+		expect(isEmptyInterval(domain)).toBe(true);
 	});
 
 	it('multiple empty intervals is empty', () => {
@@ -308,7 +308,7 @@ describe('isEmpty edge cases', () => {
 			openInterval(fromNumber(0), fromNumber(0)),
 			openInterval(fromNumber(1), fromNumber(1))
 		]);
-		expect(isEmpty(domain)).toBe(true);
+		expect(isEmptyInterval(domain)).toBe(true);
 	});
 });
 
@@ -390,7 +390,7 @@ describe('intersect edge cases', () => {
 		const a = intervalSet([openInterval(fromNumber(0), fromNumber(1))]);
 		const b = intervalSet([openInterval(fromNumber(1), fromNumber(2))]);
 		const result = intersect(a, b);
-		expect(isEmpty(result)).toBe(true);
+		expect(isEmptyInterval(result)).toBe(true);
 	});
 
 	it('one interval contains the other', () => {
@@ -461,7 +461,7 @@ describe('union edge cases', () => {
 		const result = union(left, right);
 		// The union of two half-lines that meet creates universal set
 		// It may be simplified to 'universal' kind directly
-		expect(isUniversal(result)).toBe(true);
+		expect(isUniversalInterval(result)).toBe(true);
 	});
 
 	it('union of non-overlapping intervals keeps them separate', () => {
@@ -515,7 +515,7 @@ describe('difference edge cases', () => {
 	it('B completely contains A: A \\ B = empty', () => {
 		const a = intervalSet([closedInterval(fromNumber(1), fromNumber(2))]);
 		const b = intervalSet([closedInterval(fromNumber(0), fromNumber(3))]);
-		expect(isEmpty(difference(a, b))).toBe(true);
+		expect(isEmptyInterval(difference(a, b))).toBe(true);
 	});
 
 	it('A completely contains B: creates two intervals', () => {

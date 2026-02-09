@@ -6,9 +6,9 @@
 
 import { number, infinity } from '$lib/mathAST/factory';
 import { parseCustomPratt } from '$lib/mathAST/parser/custom/parser-pratt';
+import type { MathNode } from '$lib/mathAST/types';
 import type {
 	Endpoint,
-	EndpointValue,
 	EndpointType,
 	Interval,
 	EmptySet,
@@ -38,7 +38,7 @@ import { normalizeIntervals } from './normalize';
  * fromNumber(-2)   // NumberNode '-2'     → exact
  * fromNumber(1e-8) // NumberNode '1e-8'   → float precision
  */
-export function fromNumber(n: number): EndpointValue {
+export function fromNumber(n: number): MathNode {
 	return number(n.toString());
 }
 
@@ -60,7 +60,7 @@ export function fromNumber(n: number): EndpointValue {
  * bound('e')         // Euler's number
  * bound('2*sqrt(3)') // 2√3
  */
-export function bound(expr: string): EndpointValue {
+export function bound(expr: string): MathNode {
 	if (expr === '+inf') return infinity('positive');
 	if (expr === '-inf') return infinity('negative');
 	return parseCustomPratt(expr);
@@ -73,21 +73,21 @@ export function bound(expr: string): EndpointValue {
 /**
  * Creates an endpoint with given value and type.
  */
-export function endpoint(value: EndpointValue, type: EndpointType): Endpoint {
+export function endpoint(value: MathNode, type: EndpointType): Endpoint {
 	return { value, type };
 }
 
 /**
  * Creates an open endpoint (excluded from interval).
  */
-export function openEndpoint(value: EndpointValue): Endpoint {
+export function openEndpoint(value: MathNode): Endpoint {
 	return endpoint(value, 'open');
 }
 
 /**
  * Creates a closed endpoint (included in interval).
  */
-export function closedEndpoint(value: EndpointValue): Endpoint {
+export function closedEndpoint(value: MathNode): Endpoint {
 	return endpoint(value, 'closed');
 }
 
@@ -119,56 +119,56 @@ export function interval(lower: Endpoint, upper: Endpoint): Interval {
 /**
  * Creates an open interval (a, b) - French notation ]a, b[
  */
-export function openInterval(lower: EndpointValue, upper: EndpointValue): Interval {
+export function openInterval(lower: MathNode, upper: MathNode): Interval {
 	return interval(openEndpoint(lower), openEndpoint(upper));
 }
 
 /**
  * Creates a closed interval [a, b]
  */
-export function closedInterval(lower: EndpointValue, upper: EndpointValue): Interval {
+export function closedInterval(lower: MathNode, upper: MathNode): Interval {
 	return interval(closedEndpoint(lower), closedEndpoint(upper));
 }
 
 /**
  * Creates a half-open interval [a, b) - French notation [a, b[
  */
-export function leftClosedInterval(lower: EndpointValue, upper: EndpointValue): Interval {
+export function leftClosedInterval(lower: MathNode, upper: MathNode): Interval {
 	return interval(closedEndpoint(lower), openEndpoint(upper));
 }
 
 /**
  * Creates a half-open interval (a, b] - French notation ]a, b]
  */
-export function rightClosedInterval(lower: EndpointValue, upper: EndpointValue): Interval {
+export function rightClosedInterval(lower: MathNode, upper: MathNode): Interval {
 	return interval(openEndpoint(lower), closedEndpoint(upper));
 }
 
 /**
  * Creates (-infinity, a) - French notation ]-infinity, a[
  */
-export function lessThanInterval(bound: EndpointValue): Interval {
+export function lessThanInterval(bound: MathNode): Interval {
 	return interval(negInfinityEndpoint(), openEndpoint(bound));
 }
 
 /**
  * Creates (-infinity, a] - French notation ]-infinity, a]
  */
-export function lessThanOrEqualInterval(bound: EndpointValue): Interval {
+export function lessThanOrEqualInterval(bound: MathNode): Interval {
 	return interval(negInfinityEndpoint(), closedEndpoint(bound));
 }
 
 /**
  * Creates (a, +infinity) - French notation ]a, +infinity[
  */
-export function greaterThanInterval(bound: EndpointValue): Interval {
+export function greaterThanInterval(bound: MathNode): Interval {
 	return interval(openEndpoint(bound), posInfinityEndpoint());
 }
 
 /**
  * Creates [a, +infinity) - French notation [a, +infinity[
  */
-export function greaterThanOrEqualInterval(bound: EndpointValue): Interval {
+export function greaterThanOrEqualInterval(bound: MathNode): Interval {
 	return interval(closedEndpoint(bound), posInfinityEndpoint());
 }
 
