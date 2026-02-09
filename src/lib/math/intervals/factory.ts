@@ -4,15 +4,8 @@
  * All bounds are MathNodes from mathAST, supporting symbolic expressions.
  */
 
-import {
-	number,
-	infinity,
-	func,
-	fraction,
-	implicitMultiply,
-	piConstant,
-	euler
-} from '$lib/mathAST/factory';
+import { number, infinity } from '$lib/mathAST/factory';
+import { parseCustomPratt } from '$lib/mathAST/parser/custom/parser-pratt';
 import type {
 	Endpoint,
 	EndpointValue,
@@ -29,115 +22,48 @@ import { normalizeIntervals } from './normalize';
 // =============================================================================
 
 /**
- * Creates an endpoint value from a number.
+ * Creates an endpoint value from a JS number.
  *
- * @param n - A number
- * @returns A NumberNode EndpointValue
+ * Uses n.toString() internally, so integers and "normal" decimals are
+ * stored exactly (e.g. "42", "0.5", "-3.14") and later evaluated via
+ * exact BigInt/fraction arithmetic. However, values outside the range
+ * [1e-7, 1e21] produce scientific notation strings ("1e-7", "1e+21")
+ * which are evaluated via parseFloat → floatToRational (64-bit float
+ * precision). For exact large/small values, use bound() with a
+ * fraction expression like "3/2".
  *
  * @example
- * fromNumber(0)    // NumberNode '0'
- * fromNumber(1.5)  // NumberNode '1.5'
- * fromNumber(-2)   // NumberNode '-2'
+ * fromNumber(0)    // NumberNode '0'      → exact
+ * fromNumber(1.5)  // NumberNode '1.5'    → exact (3/2)
+ * fromNumber(-2)   // NumberNode '-2'     → exact
+ * fromNumber(1e-8) // NumberNode '1e-8'   → float precision
  */
 export function fromNumber(n: number): EndpointValue {
 	return number(n.toString());
 }
 
 /**
- * Creates an endpoint value from a rational (exact fraction).
+ * Creates an endpoint value from a custom math expression string.
  *
- * @param n - Numerator
- * @param d - Denominator (default 1)
- * @returns A MathNode representing n/d (or just n if d=1)
+ * Uses parseCustom from mathAST to parse any symbolic expression.
+ * Special cases: '+inf' and '-inf' produce infinity nodes directly.
  *
- * @example
- * rationalBound(3n, 2n)  // 3/2
- * rationalBound(5n)      // 5
- */
-export function rationalBound(n: bigint, d: bigint = 1n): EndpointValue {
-	if (d === 1n) {
-		return number(n.toString());
-	}
-	return fraction(number(n.toString()), number(d.toString()));
-}
-
-/**
- * Creates an endpoint value from a square root (exact).
- *
- * @param radicand - The value under the radical (must be positive)
- * @param coefN - Coefficient numerator (default 1)
- * @param coefD - Coefficient denominator (default 1)
- * @returns A MathNode for (coefN/coefD) * sqrt(radicand)
+ * @param expr - A math expression in custom syntax
+ * @returns A MathNode representing the parsed expression
  *
  * @example
- * radicalBound(2n)         // sqrt(2)
- * radicalBound(3n, 2n)     // 2*sqrt(3)
- * radicalBound(2n, 1n, 2n) // (1/2)*sqrt(2)
+ * bound('+inf')      // positive infinity
+ * bound('-inf')      // negative infinity
+ * bound('3/2')       // fraction 3/2
+ * bound('sqrt(2)')   // √2
+ * bound('\\pi')      // π
+ * bound('e')         // Euler's number
+ * bound('2*sqrt(3)') // 2√3
  */
-export function radicalBound(
-	radicand: bigint,
-	coefN: bigint = 1n,
-	coefD: bigint = 1n
-): EndpointValue {
-	if (radicand === 1n) {
-		// sqrt(1) = 1, so just return the coefficient
-		return rationalBound(coefN, coefD);
-	}
-
-	const sqrtNode = func('sqrt', [number(radicand.toString())]);
-
-	if (coefN === 1n && coefD === 1n) {
-		return sqrtNode;
-	}
-
-	const coef =
-		coefD === 1n
-			? number(coefN.toString())
-			: fraction(number(coefN.toString()), number(coefD.toString()));
-
-	return implicitMultiply(coef, sqrtNode);
-}
-
-/**
- * Creates a positive infinity endpoint value.
- */
-export function positiveInfinity(): EndpointValue {
-	return infinity('positive');
-}
-
-/**
- * Creates a negative infinity endpoint value.
- */
-export function negativeInfinity(): EndpointValue {
-	return infinity('negative');
-}
-
-/**
- * Creates a pi endpoint value.
- */
-export function pi(): EndpointValue {
-	return piConstant();
-}
-
-/**
- * Creates an 'e' (Euler's number) endpoint value.
- */
-export function e(): EndpointValue {
-	return euler();
-}
-
-/**
- * Creates a sqrt(2) endpoint value.
- */
-export function sqrt2(): EndpointValue {
-	return func('sqrt', [number('2')]);
-}
-
-/**
- * Creates a sqrt(3) endpoint value.
- */
-export function sqrt3(): EndpointValue {
-	return func('sqrt', [number('3')]);
+export function bound(expr: string): EndpointValue {
+	if (expr === '+inf') return infinity('positive');
+	if (expr === '-inf') return infinity('negative');
+	return parseCustomPratt(expr);
 }
 
 // =============================================================================
@@ -169,14 +95,14 @@ export function closedEndpoint(value: EndpointValue): Endpoint {
  * Creates negative infinity endpoint (always open).
  */
 export function negInfinity(): Endpoint {
-	return openEndpoint(negativeInfinity());
+	return openEndpoint(bound('-inf'));
 }
 
 /**
  * Creates positive infinity endpoint (always open).
  */
 export function posInfinity(): Endpoint {
-	return openEndpoint(positiveInfinity());
+	return openEndpoint(bound('+inf'));
 }
 
 // =============================================================================

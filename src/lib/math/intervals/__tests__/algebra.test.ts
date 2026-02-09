@@ -16,7 +16,7 @@ import {
 } from '../algebra';
 import {
 	fromNumber,
-	radicalBound,
+	bound,
 	closedInterval,
 	openInterval,
 	greaterThan,
@@ -135,7 +135,7 @@ describe('intersect', () => {
 
 	it('intersects with algebraic bounds exactly', () => {
 		// [0, 2] ∩ [1, sqrt(3)] = [1, sqrt(3)]
-		const sqrt3 = radicalBound(3n);
+		const sqrt3 = bound('sqrt(3)');
 		const a = intervalSet([closedInterval(fromNumber(0), fromNumber(2))]);
 		const b = intervalSet([closedInterval(fromNumber(1), sqrt3)]);
 		const result = intersect(a, b);
@@ -202,7 +202,7 @@ describe('union', () => {
 	});
 
 	it('unions with algebraic bounds', () => {
-		const sqrt2 = radicalBound(2n);
+		const sqrt2 = bound('sqrt(2)');
 		const a = intervalSet([closedInterval(fromNumber(0), sqrt2)]);
 		const b = intervalSet([closedInterval(sqrt2, fromNumber(2))]);
 		const result = union(a, b);
@@ -283,15 +283,15 @@ describe('isEmpty edge cases', () => {
 	});
 
 	it('interval with symbolic bounds is not empty', () => {
-		const sqrt2 = radicalBound(2n);
-		const sqrt3 = radicalBound(3n);
+		const sqrt2 = bound('sqrt(2)');
+		const sqrt3 = bound('sqrt(3)');
 		const domain = intervalSet([closedInterval(sqrt2, sqrt3)]);
 		expect(isEmpty(domain)).toBe(false);
 	});
 
 	it('inverted symbolic bounds is empty', () => {
-		const sqrt2 = radicalBound(2n);
-		const sqrt3 = radicalBound(3n);
+		const sqrt2 = bound('sqrt(2)');
+		const sqrt3 = bound('sqrt(3)');
 		// [sqrt(3), sqrt(2)] is empty because sqrt(3) > sqrt(2)
 		const domain = intervalSet([closedInterval(sqrt3, sqrt2)]);
 		expect(isEmpty(domain)).toBe(true);
@@ -308,7 +308,7 @@ describe('isEmpty edge cases', () => {
 
 describe('containsValue edge cases', () => {
 	it('contains value near symbolic bound', () => {
-		const sqrt2 = radicalBound(2n);
+		const sqrt2 = bound('sqrt(2)');
 		const domain = intervalSet([closedInterval(fromNumber(0), sqrt2)]);
 		// Value slightly less than sqrt(2) should be contained
 		expect(containsValue(domain, 1.4)).toBe(true);
@@ -450,8 +450,8 @@ describe('union edge cases', () => {
 	});
 
 	it('union of two half-lines creates full line', () => {
-		const left = intervalSet([closedInterval(negativeInfinity(), fromNumber(0))]);
-		const right = intervalSet([closedInterval(fromNumber(0), positiveInfinity())]);
+		const left = intervalSet([closedInterval(bound('-inf'), fromNumber(0))]);
+		const right = intervalSet([closedInterval(fromNumber(0), bound('+inf'))]);
 		const result = union(left, right);
 		// The union of two half-lines that meet creates universal set
 		// It may be simplified to 'universal' kind directly
@@ -558,19 +558,16 @@ describe('difference edge cases', () => {
 	});
 });
 
-// Import additional factories for edge case tests
-import { positiveInfinity, negativeInfinity, pi } from '../factory';
-
 describe('symbolic bounds edge cases', () => {
 	it('interval from 0 to pi', () => {
-		const piVal = pi();
+		const piVal = bound('\\pi');
 		const domain = intervalSet([closedInterval(fromNumber(0), piVal)]);
 		expect(containsValue(domain, Math.PI / 2)).toBe(true);
 		expect(containsValue(domain, 4)).toBe(false);
 	});
 
 	it('intersect intervals with pi bound', () => {
-		const piVal = pi();
+		const piVal = bound('\\pi');
 		const a = intervalSet([closedInterval(fromNumber(0), piVal)]);
 		const b = intervalSet([closedInterval(fromNumber(2), fromNumber(5))]);
 		const result = intersect(a, b);

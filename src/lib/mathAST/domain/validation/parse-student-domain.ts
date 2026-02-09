@@ -17,12 +17,7 @@ import {
 	emptyDomain,
 	universalDomain,
 	fromNumber,
-	positiveInfinity,
-	negativeInfinity,
-	pi,
-	e,
-	sqrt2,
-	sqrt3,
+	bound,
 	openInterval,
 	closedInterval,
 	leftClosedInterval,
@@ -561,32 +556,32 @@ function parseEndpointValue(input: string): EndpointValue | null {
 
 	// Infinity
 	if (/^[+]?inf$/i.test(trimmed) || trimmed === '+∞') {
-		return positiveInfinity();
+		return bound('+inf');
 	}
 	if (/^-inf$/i.test(trimmed) || trimmed === '-∞') {
-		return negativeInfinity();
+		return bound('-inf');
 	}
 
 	// Special constants
 	if (trimmed === 'π' || trimmed === 'pi') {
-		return pi();
+		return bound('\\pi');
 	}
 	if (trimmed === 'e') {
-		return e();
+		return bound('e');
 	}
 	if (trimmed === '√2' || trimmed === 'sqrt(2)' || trimmed === 'sqrt2') {
-		return sqrt2();
+		return bound('sqrt(2)');
 	}
 	if (trimmed === '√3' || trimmed === 'sqrt(3)' || trimmed === 'sqrt3') {
-		return sqrt3();
+		return bound('sqrt(3)');
 	}
 
 	// Negative constants
 	if (trimmed === '-π' || trimmed === '-pi') {
-		return { kind: 'negative', value: pi() };
+		return bound('-\\pi');
 	}
 	if (trimmed === '-e') {
-		return { kind: 'negative', value: e() };
+		return bound('-e');
 	}
 
 	// Fractions of pi (π/2, π/3, etc.)

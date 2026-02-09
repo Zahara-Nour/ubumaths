@@ -38,11 +38,7 @@ import {
 	realLine,
 	excludedPoint,
 	fromNumber,
-	pi,
-	e,
-	sqrt2,
-	sqrt3,
-	radicalBound
+	bound
 } from '../factory';
 import { formatDomainInterval, formatDomainCondition, formatDomainFull } from '../format';
 import { computeDomain } from '../compute';
@@ -187,7 +183,7 @@ describe('ConditionDomain edge cases', () => {
 describe('Symbolic bounds edge cases', () => {
 	describe('π (pi) as bound', () => {
 		it('creates interval [0, π]', () => {
-			const d = intervalDomain([closedInterval(fromNumber(0), pi())]);
+			const d = intervalDomain([closedInterval(fromNumber(0), bound('\\pi'))]);
 			expect(d.kind).toBe('interval_set');
 			if (d.kind === 'interval_set') {
 				expect(d.intervals).toHaveLength(1);
@@ -195,17 +191,17 @@ describe('Symbolic bounds edge cases', () => {
 		});
 
 		it('formats [0, π] correctly', () => {
-			const d = intervalDomain([closedInterval(fromNumber(0), pi())]);
+			const d = intervalDomain([closedInterval(fromNumber(0), bound('\\pi'))]);
 			expect(formatDomainInterval(d)).toBe('[0, π]');
 		});
 
 		it('formats ]0, π[ correctly', () => {
-			const d = intervalDomain([openInterval(fromNumber(0), pi())]);
+			const d = intervalDomain([openInterval(fromNumber(0), bound('\\pi'))]);
 			expect(formatDomainInterval(d)).toBe(']0, π[');
 		});
 
 		it('containsValue with π bound', () => {
-			const d = intervalDomain([closedInterval(fromNumber(0), pi())]);
+			const d = intervalDomain([closedInterval(fromNumber(0), bound('\\pi'))]);
 			expect(containsValue(d, 0)).toBe(true);
 			expect(containsValue(d, 1)).toBe(true);
 			expect(containsValue(d, 3.14)).toBe(true);
@@ -215,17 +211,17 @@ describe('Symbolic bounds edge cases', () => {
 
 	describe('e (Euler number) as bound', () => {
 		it('creates interval ]1, e]', () => {
-			const d = intervalDomain([rightClosedInterval(fromNumber(1), e())]);
+			const d = intervalDomain([rightClosedInterval(fromNumber(1), bound('e'))]);
 			expect(d.kind).toBe('interval_set');
 		});
 
 		it('formats ]1, e] correctly', () => {
-			const d = intervalDomain([rightClosedInterval(fromNumber(1), e())]);
+			const d = intervalDomain([rightClosedInterval(fromNumber(1), bound('e'))]);
 			expect(formatDomainInterval(d)).toBe(']1, e]');
 		});
 
 		it('containsValue with e bound', () => {
-			const d = intervalDomain([closedInterval(fromNumber(1), e())]);
+			const d = intervalDomain([closedInterval(fromNumber(1), bound('e'))]);
 			expect(containsValue(d, 1)).toBe(true);
 			expect(containsValue(d, 2)).toBe(true);
 			expect(containsValue(d, 2.7)).toBe(true);
@@ -235,22 +231,22 @@ describe('Symbolic bounds edge cases', () => {
 
 	describe('√2 as bound', () => {
 		it('creates interval [0, √2]', () => {
-			const d = intervalDomain([closedInterval(fromNumber(0), sqrt2())]);
+			const d = intervalDomain([closedInterval(fromNumber(0), bound('sqrt(2)'))]);
 			expect(d.kind).toBe('interval_set');
 		});
 
 		it('formats [0, √2] correctly', () => {
-			const d = intervalDomain([closedInterval(fromNumber(0), sqrt2())]);
+			const d = intervalDomain([closedInterval(fromNumber(0), bound('sqrt(2)'))]);
 			expect(formatDomainInterval(d)).toBe('[0, √2]');
 		});
 
 		it('formats [√2, √3] correctly', () => {
-			const d = intervalDomain([closedInterval(sqrt2(), sqrt3())]);
+			const d = intervalDomain([closedInterval(bound('sqrt(2)'), bound('sqrt(3)'))]);
 			expect(formatDomainInterval(d)).toBe('[√2, √3]');
 		});
 
 		it('containsValue with √2 bound', () => {
-			const d = intervalDomain([closedInterval(fromNumber(0), sqrt2())]);
+			const d = intervalDomain([closedInterval(fromNumber(0), bound('sqrt(2)'))]);
 			expect(containsValue(d, 0)).toBe(true);
 			expect(containsValue(d, 1)).toBe(true);
 			expect(containsValue(d, 1.41)).toBe(true);
@@ -261,7 +257,10 @@ describe('Symbolic bounds edge cases', () => {
 
 	describe('mixed symbolic/numeric bounds', () => {
 		it('creates [0, √2] ∪ [π, +∞[', () => {
-			const d = intervalDomain([closedInterval(fromNumber(0), sqrt2()), greaterThanOrEqual(pi())]);
+			const d = intervalDomain([
+				closedInterval(fromNumber(0), bound('sqrt(2)')),
+				greaterThanOrEqual(bound('\\pi'))
+			]);
 			expect(d.kind).toBe('interval_set');
 			if (d.kind === 'interval_set') {
 				expect(d.intervals).toHaveLength(2);
@@ -269,17 +268,23 @@ describe('Symbolic bounds edge cases', () => {
 		});
 
 		it('formats [0, √2] ∪ [π, +∞[ correctly', () => {
-			const d = intervalDomain([closedInterval(fromNumber(0), sqrt2()), greaterThanOrEqual(pi())]);
+			const d = intervalDomain([
+				closedInterval(fromNumber(0), bound('sqrt(2)')),
+				greaterThanOrEqual(bound('\\pi'))
+			]);
 			expect(formatDomainInterval(d)).toBe('[0, √2] ∪ [π, +∞[');
 		});
 
 		it('creates [e, π]', () => {
-			const d = intervalDomain([closedInterval(e(), pi())]);
+			const d = intervalDomain([closedInterval(bound('e'), bound('\\pi'))]);
 			expect(formatDomainInterval(d)).toBe('[e, π]');
 		});
 
 		it('containsValue for [0, √2] ∪ [π, +∞[', () => {
-			const d = intervalDomain([closedInterval(fromNumber(0), sqrt2()), greaterThanOrEqual(pi())]);
+			const d = intervalDomain([
+				closedInterval(fromNumber(0), bound('sqrt(2)')),
+				greaterThanOrEqual(bound('\\pi'))
+			]);
 			expect(containsValue(d, 1)).toBe(true); // In first interval
 			expect(containsValue(d, 2)).toBe(false); // Between intervals
 			expect(containsValue(d, 4)).toBe(true); // In second interval
@@ -288,7 +293,7 @@ describe('Symbolic bounds edge cases', () => {
 
 	describe('symbolic excluded points', () => {
 		it('excludes π from universal', () => {
-			const d = excludePoints(universalDomain(), [pi()]);
+			const d = excludePoints(universalDomain(), [bound('\\pi')]);
 			expect(d.kind).toBe('interval_set');
 			if (d.kind === 'interval_set') {
 				expect(d.excludedPoints).toHaveLength(1);
@@ -296,40 +301,38 @@ describe('Symbolic bounds edge cases', () => {
 		});
 
 		it('formats ℝ \\ {π}', () => {
-			const d = excludePoints(universalDomain(), [pi()]);
+			const d = excludePoints(universalDomain(), [bound('\\pi')]);
 			expect(formatDomainInterval(d)).toBe('ℝ \\ {π}');
 		});
 
 		it('formats ℝ \\ {√2, π, e}', () => {
-			const d = excludePoints(universalDomain(), [sqrt2(), pi(), e()]);
+			const d = excludePoints(universalDomain(), [bound('sqrt(2)'), bound('\\pi'), bound('e')]);
 			expect(formatDomainInterval(d)).toBe('ℝ \\ {√2, π, e}');
 		});
 
 		it('containsValue respects symbolic excluded points', () => {
-			const d = excludePoints(universalDomain(), [pi()]);
+			const d = excludePoints(universalDomain(), [bound('\\pi')]);
 			expect(containsValue(d, 0)).toBe(true);
 			expect(containsValue(d, Math.PI)).toBe(false);
 		});
 	});
 
-	describe('radicalBound for arbitrary radicals', () => {
-		it('creates √5 bound', () => {
-			const sqrt5 = radicalBound(5n, 2n);
-			const d = intervalDomain([closedInterval(fromNumber(0), sqrt5)]);
-			// radicalBound(5n, 2n) creates 2*√5 representation
+	describe('bound for arbitrary radical expressions', () => {
+		it('creates 2*√5 bound', () => {
+			const twoSqrt5 = bound('2*sqrt(5)');
+			const d = intervalDomain([closedInterval(fromNumber(0), twoSqrt5)]);
 			expect(formatDomainInterval(d)).toContain('√5');
 		});
 
-		it('creates ∛2 (cube root of 2) bound', () => {
-			const cbrt2 = radicalBound(2n, 3n);
-			const d = intervalDomain([closedInterval(fromNumber(0), cbrt2)]);
-			// radicalBound(2n, 3n) creates 3*√2 representation
+		it('creates 3*√2 bound', () => {
+			const threeSqrt2 = bound('3*sqrt(2)');
+			const d = intervalDomain([closedInterval(fromNumber(0), threeSqrt2)]);
 			expect(formatDomainInterval(d)).toContain('√2');
 		});
 
-		it('creates ⁴√3 (fourth root of 3) bound', () => {
-			const root4_3 = radicalBound(3n, 4n);
-			const d = intervalDomain([closedInterval(fromNumber(0), root4_3)]);
+		it('creates 4*√3 bound', () => {
+			const fourSqrt3 = bound('4*sqrt(3)');
+			const d = intervalDomain([closedInterval(fromNumber(0), fourSqrt3)]);
 			expect(d.kind).toBe('interval_set');
 		});
 	});
@@ -851,7 +854,7 @@ describe('Format edge cases', () => {
 		});
 
 		it('handles symbolic bounds', () => {
-			const d = intervalDomain([closedInterval(fromNumber(0), pi())]);
+			const d = intervalDomain([closedInterval(fromNumber(0), bound('\\pi'))]);
 			const result = formatDomainFull(d);
 			expect(result.interval).toBe('[0, π]');
 			expect(result.condition).toBe('0 ≤ x ≤ π');

@@ -14,9 +14,7 @@ import {
 } from '../format';
 import {
 	fromNumber,
-	rationalBound,
-	radicalBound,
-	pi,
+	bound,
 	closedInterval,
 	openInterval,
 	greaterThan,
@@ -53,13 +51,13 @@ describe('formatEndpointValue', () => {
 	});
 
 	it('formats rational values', () => {
-		expect(formatEndpointValue(rationalBound(3n, 2n))).toBe('3/2');
-		expect(formatEndpointValue(rationalBound(-1n, 3n))).toBe('-1/3');
+		expect(formatEndpointValue(bound('3/2'))).toBe('3/2');
+		expect(formatEndpointValue(bound('-1/3'))).toBe('-1/3');
 	});
 
 	it('formats simple square roots', () => {
-		expect(formatEndpointValue(radicalBound(2n))).toBe('√2');
-		expect(formatEndpointValue(radicalBound(3n))).toBe('√3');
+		expect(formatEndpointValue(bound('sqrt(2)'))).toBe('√2');
+		expect(formatEndpointValue(bound('sqrt(3)'))).toBe('√3');
 	});
 
 	it('formats negative square roots', () => {
@@ -68,17 +66,17 @@ describe('formatEndpointValue', () => {
 	});
 
 	it('formats coefficients with square roots', () => {
-		const twoSqrt2 = radicalBound(2n, 2n);
+		const twoSqrt2 = bound('2*sqrt(2)');
 		expect(formatEndpointValue(twoSqrt2)).toBe('2*√2');
 	});
 
 	it('formats rational coefficients with square roots', () => {
-		const halfSqrt2 = radicalBound(2n, 1n, 2n);
-		expect(formatEndpointValue(halfSqrt2)).toBe('1/2*√2');
+		const halfSqrt2 = bound('sqrt(2)/2');
+		expect(formatEndpointValue(halfSqrt2)).toBe('√2/2');
 	});
 
 	it('formats pi', () => {
-		expect(formatEndpointValue(pi())).toBe('π');
+		expect(formatEndpointValue(bound('\\pi'))).toBe('π');
 	});
 });
 
@@ -138,8 +136,8 @@ describe('formatDomainInterval', () => {
 	});
 
 	it('formats interval with symbolic bounds', () => {
-		const sqrt2 = radicalBound(2n);
-		const sqrt3 = radicalBound(3n);
+		const sqrt2 = bound('sqrt(2)');
+		const sqrt3 = bound('sqrt(3)');
 		const domain = intervalSet([closedInterval(sqrt2, sqrt3)]);
 		expect(formatDomainInterval(domain)).toBe('[√2, √3]');
 	});
@@ -214,7 +212,7 @@ describe('formatDomainCondition', () => {
 	});
 
 	it('formats with symbolic bounds', () => {
-		const sqrt2 = radicalBound(2n);
+		const sqrt2 = bound('sqrt(2)');
 		const domain = intervalSet([greaterThan(sqrt2)]);
 		expect(formatDomainCondition(domain)).toBe('x > √2');
 	});
@@ -235,7 +233,7 @@ describe('formatDomainFull', () => {
 	});
 
 	it('handles symbolic bounds', () => {
-		const sqrt2 = radicalBound(2n);
+		const sqrt2 = bound('sqrt(2)');
 		const domain = intervalSet([closedInterval(fromNumber(0), sqrt2)]);
 		const result = formatDomainFull(domain);
 		expect(result.interval).toBe('[0, √2]');
@@ -265,19 +263,19 @@ describe('formatEndpointValue edge cases', () => {
 	});
 
 	it('formats negative rational values', () => {
-		expect(formatEndpointValue(rationalBound(-3n, 4n))).toBe('-3/4');
+		expect(formatEndpointValue(bound('-3/4'))).toBe('-3/4');
 	});
 
 	it('formats large denominators', () => {
-		expect(formatEndpointValue(rationalBound(1n, 1000n))).toBe('1/1000');
+		expect(formatEndpointValue(bound('1/1000'))).toBe('1/1000');
 	});
 
 	it('formats sqrt of large numbers', () => {
-		expect(formatEndpointValue(radicalBound(1000n))).toBe('√1000');
+		expect(formatEndpointValue(bound('sqrt(1000)'))).toBe('√1000');
 	});
 
 	it('formats negative coefficients with sqrt', () => {
-		const negTwoSqrt3 = radicalBound(3n, -2n, 1n);
+		const negTwoSqrt3 = bound('-2*sqrt(3)');
 		expect(formatEndpointValue(negTwoSqrt3)).toBe('-2*√3');
 	});
 
@@ -397,13 +395,13 @@ describe('formatDomainCondition edge cases', () => {
 	});
 
 	it('formats symbolic bound in condition', () => {
-		const sqrt3 = radicalBound(3n);
+		const sqrt3 = bound('sqrt(3)');
 		const domain = intervalSet([greaterThanOrEqual(sqrt3)]);
 		expect(formatDomainCondition(domain)).toBe('x ≥ √3');
 	});
 
 	it('formats pi in condition', () => {
-		const piVal = pi();
+		const piVal = bound('\\pi');
 		const domain = intervalSet([lessThan(piVal)]);
 		expect(formatDomainCondition(domain)).toBe('x < π');
 	});
@@ -416,7 +414,7 @@ describe('formatDomainCondition edge cases', () => {
 
 describe('formatDomainFull edge cases', () => {
 	it('returns both formats for complex domain', () => {
-		const sqrt2 = radicalBound(2n);
+		const sqrt2 = bound('sqrt(2)');
 		const domain = intervalSet([greaterThan(sqrt2)]);
 		const result = formatDomainFull(domain, 'y');
 		expect(result.interval).toBe(']√2, +∞[');

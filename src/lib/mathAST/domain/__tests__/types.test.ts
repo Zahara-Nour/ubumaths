@@ -16,7 +16,7 @@ import type {
 	ComparisonCondition,
 	Domain
 } from '../types';
-import { fromNumber, positiveInfinity, negativeInfinity } from '../factory';
+import { fromNumber, bound } from '../factory';
 import { isNumber, isPositiveInfinity, isNegativeInfinity } from '$lib/mathAST/guards';
 
 describe('Domain Types', () => {
@@ -34,13 +34,13 @@ describe('Domain Types', () => {
 		});
 
 		it('can represent positive infinity', () => {
-			const endpoint: Endpoint = { value: positiveInfinity(), type: 'open' };
+			const endpoint: Endpoint = { value: bound('+inf'), type: 'open' };
 			expect(isPositiveInfinity(endpoint.value)).toBe(true);
 			expect(endpoint.type).toBe('open');
 		});
 
 		it('can represent negative infinity', () => {
-			const endpoint: Endpoint = { value: negativeInfinity(), type: 'open' };
+			const endpoint: Endpoint = { value: bound('-inf'), type: 'open' };
 			expect(isNegativeInfinity(endpoint.value)).toBe(true);
 			expect(endpoint.type).toBe('open');
 		});
@@ -74,7 +74,7 @@ describe('Domain Types', () => {
 			const interval: Interval = {
 				kind: 'interval',
 				lower: { value: fromNumber(0), type: 'open' },
-				upper: { value: positiveInfinity(), type: 'open' }
+				upper: { value: bound('+inf'), type: 'open' }
 			};
 			expect(isPositiveInfinity(interval.upper.value)).toBe(true);
 		});
@@ -82,7 +82,7 @@ describe('Domain Types', () => {
 		it('can represent ]-infinity, 0]', () => {
 			const interval: Interval = {
 				kind: 'interval',
-				lower: { value: negativeInfinity(), type: 'open' },
+				lower: { value: bound('-inf'), type: 'open' },
 				upper: { value: fromNumber(0), type: 'closed' }
 			};
 			expect(isNegativeInfinity(interval.lower.value)).toBe(true);
@@ -116,7 +116,7 @@ describe('Domain Types', () => {
 					{
 						kind: 'interval',
 						lower: { value: fromNumber(0), type: 'open' },
-						upper: { value: positiveInfinity(), type: 'open' }
+						upper: { value: bound('+inf'), type: 'open' }
 					}
 				],
 				excludedPoints: []
@@ -131,8 +131,8 @@ describe('Domain Types', () => {
 				intervals: [
 					{
 						kind: 'interval',
-						lower: { value: negativeInfinity(), type: 'open' },
-						upper: { value: positiveInfinity(), type: 'open' }
+						lower: { value: bound('-inf'), type: 'open' },
+						upper: { value: bound('+inf'), type: 'open' }
 					}
 				],
 				excludedPoints: [{ kind: 'excluded_point', value: fromNumber(0) }]

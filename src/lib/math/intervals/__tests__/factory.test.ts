@@ -8,14 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	fromNumber,
-	rationalBound,
-	radicalBound,
-	positiveInfinity,
-	negativeInfinity,
-	pi,
-	e,
-	sqrt2,
-	sqrt3,
+	bound,
 	openEndpoint,
 	closedEndpoint,
 	negInfinity,
@@ -83,50 +76,9 @@ describe('bound value constructors', () => {
 		});
 	});
 
-	describe('rationalBound', () => {
-		it('creates exact 3/2 as DivisionNode', () => {
-			const threeHalves = rationalBound(3n, 2n);
-			expect(isDivision(threeHalves)).toBe(true);
-			expect(endpointToNumber(threeHalves)).toBe(1.5);
-		});
-
-		it('creates exact integer as NumberNode', () => {
-			const five = rationalBound(5n);
-			expect(isNumber(five)).toBe(true);
-			expect(endpointToNumber(five)).toBe(5);
-		});
-	});
-
-	describe('radicalBound', () => {
-		it('creates sqrt(2) as FunctionNode', () => {
-			const sqrt2Val = radicalBound(2n);
-			expect(isFunction(sqrt2Val)).toBe(true);
-			if (isFunction(sqrt2Val)) {
-				expect(sqrt2Val.name).toBe('sqrt');
-			}
-			expect(endpointToNumber(sqrt2Val)).toBeCloseTo(Math.sqrt(2));
-		});
-
-		it('creates 2*sqrt(3) as MultiplyNode', () => {
-			const twoSqrt3 = radicalBound(3n, 2n);
-			expect(endpointToNumber(twoSqrt3)).toBeCloseTo(2 * Math.sqrt(3));
-		});
-
-		it('creates (1/2)*sqrt(2)', () => {
-			const halfSqrt2 = radicalBound(2n, 1n, 2n);
-			expect(endpointToNumber(halfSqrt2)).toBeCloseTo(Math.sqrt(2) / 2);
-		});
-
-		it('handles sqrt(1) = 1', () => {
-			const sqrt1 = radicalBound(1n);
-			// sqrt(1) simplifies to the coefficient
-			expect(endpointToNumber(sqrt1)).toBe(1);
-		});
-	});
-
-	describe('infinity constructors', () => {
+	describe('bound', () => {
 		it('creates positive infinity', () => {
-			const inf = positiveInfinity();
+			const inf = bound('+inf');
 			expect(isInfinity(inf)).toBe(true);
 			if (isInfinity(inf)) {
 				expect(inf.sign).toBe('positive');
@@ -134,17 +86,36 @@ describe('bound value constructors', () => {
 		});
 
 		it('creates negative infinity', () => {
-			const inf = negativeInfinity();
+			const inf = bound('-inf');
 			expect(isInfinity(inf)).toBe(true);
 			if (isInfinity(inf)) {
 				expect(inf.sign).toBe('negative');
 			}
 		});
-	});
 
-	describe('symbolic constant constructors', () => {
+		it('creates exact 3/2 as DivisionNode', () => {
+			const threeHalves = bound('3/2');
+			expect(isDivision(threeHalves)).toBe(true);
+			expect(endpointToNumber(threeHalves)).toBe(1.5);
+		});
+
+		it('creates sqrt(2) as FunctionNode', () => {
+			const sqrt2Val = bound('sqrt(2)');
+			expect(isFunction(sqrt2Val)).toBe(true);
+			if (isFunction(sqrt2Val)) {
+				expect(sqrt2Val.name).toBe('sqrt');
+			}
+			expect(endpointToNumber(sqrt2Val)).toBeCloseTo(Math.sqrt(2));
+		});
+
+		it('creates sqrt(3) as FunctionNode', () => {
+			const sqrt3Val = bound('sqrt(3)');
+			expect(isFunction(sqrt3Val)).toBe(true);
+			expect(endpointToNumber(sqrt3Val)).toBeCloseTo(Math.sqrt(3));
+		});
+
 		it('creates pi as MathConstantNode', () => {
-			const piVal = pi();
+			const piVal = bound('\\pi');
 			expect(isMathConstant(piVal)).toBe(true);
 			if (isMathConstant(piVal)) {
 				expect(piVal.constant).toBe('pi');
@@ -153,7 +124,7 @@ describe('bound value constructors', () => {
 		});
 
 		it('creates e as MathConstantNode', () => {
-			const eVal = e();
+			const eVal = bound('e');
 			expect(isMathConstant(eVal)).toBe(true);
 			if (isMathConstant(eVal)) {
 				expect(eVal.constant).toBe('euler');
@@ -161,16 +132,9 @@ describe('bound value constructors', () => {
 			expect(endpointToNumber(eVal)).toBeCloseTo(Math.E);
 		});
 
-		it('creates sqrt(2) as FunctionNode', () => {
-			const sqrt2Val = sqrt2();
-			expect(isFunction(sqrt2Val)).toBe(true);
-			expect(endpointToNumber(sqrt2Val)).toBeCloseTo(Math.sqrt(2));
-		});
-
-		it('creates sqrt(3) as FunctionNode', () => {
-			const sqrt3Val = sqrt3();
-			expect(isFunction(sqrt3Val)).toBe(true);
-			expect(endpointToNumber(sqrt3Val)).toBeCloseTo(Math.sqrt(3));
+		it('creates 2*sqrt(3)', () => {
+			const twoSqrt3 = bound('2*sqrt(3)');
+			expect(endpointToNumber(twoSqrt3)).toBeCloseTo(2 * Math.sqrt(3));
 		});
 	});
 });
@@ -264,8 +228,8 @@ describe('interval factories', () => {
 	});
 
 	it('creates interval with symbolic bounds', () => {
-		const s2 = radicalBound(2n);
-		const s3 = radicalBound(3n);
+		const s2 = bound('sqrt(2)');
+		const s3 = bound('sqrt(3)');
 		const int = closedInterval(s2, s3);
 		expect(int.kind).toBe('interval');
 		expect(endpointToNumber(int.lower.value)).toBeCloseTo(Math.sqrt(2));
@@ -366,91 +330,50 @@ describe('fromNumber edge cases', () => {
 	});
 });
 
-describe('rationalBound edge cases', () => {
-	it('handles negative numerator', () => {
-		const negThird = rationalBound(-1n, 3n);
-		expect(isDivision(negThird)).toBe(true);
+describe('bound edge cases', () => {
+	it('handles negative fraction', () => {
+		const negThird = bound('-1/3');
 		expect(endpointToNumber(negThird)).toBeCloseTo(-1 / 3);
 	});
 
-	it('handles large numerator and denominator', () => {
-		const bigRational = rationalBound(1000000n, 999999n);
-		expect(isDivision(bigRational)).toBe(true);
-		expect(endpointToNumber(bigRational)).toBeCloseTo(1000000 / 999999);
-	});
-
-	it('handles zero numerator', () => {
-		const zero = rationalBound(0n, 5n);
-		expect(isDivision(zero)).toBe(true);
-		expect(endpointToNumber(zero)).toBe(0);
-	});
-
-	it('handles denominator of 1 returns NumberNode', () => {
-		const seven = rationalBound(7n, 1n);
-		expect(isNumber(seven)).toBe(true);
-		expect(endpointToNumber(seven)).toBe(7);
-	});
-});
-
-describe('radicalBound edge cases', () => {
-	it('handles large radicand', () => {
-		const sqrtLarge = radicalBound(10000n);
+	it('handles sqrt of large numbers', () => {
+		const sqrtLarge = bound('sqrt(10000)');
 		expect(isFunction(sqrtLarge)).toBe(true);
 		expect(endpointToNumber(sqrtLarge)).toBe(100);
 	});
 
-	it('handles coefficient of 1', () => {
-		const oneSqrt2 = radicalBound(2n, 1n, 1n);
-		expect(endpointToNumber(oneSqrt2)).toBeCloseTo(Math.sqrt(2));
-	});
-
-	it('handles negative coefficient', () => {
-		const negSqrt2 = radicalBound(2n, -1n, 1n);
+	it('handles negative sqrt', () => {
+		const negSqrt2 = bound('-sqrt(2)');
 		expect(endpointToNumber(negSqrt2)).toBeCloseTo(-Math.sqrt(2));
 	});
 
-	it('handles fractional coefficient', () => {
-		const thirdSqrt5 = radicalBound(5n, 1n, 3n);
+	it('handles fraction times sqrt', () => {
+		const thirdSqrt5 = bound('sqrt(5)/3');
 		expect(endpointToNumber(thirdSqrt5)).toBeCloseTo(Math.sqrt(5) / 3);
-	});
-
-	it('sqrt(1) with coefficient is just the coefficient', () => {
-		const threeSqrt1 = radicalBound(1n, 3n, 1n);
-		expect(endpointToNumber(threeSqrt1)).toBe(3);
-	});
-
-	it('sqrt(4) = 2', () => {
-		const sqrt4 = radicalBound(4n);
-		expect(endpointToNumber(sqrt4)).toBe(2);
-	});
-
-	it('handles perfect squares with coefficient', () => {
-		const twoSqrt9 = radicalBound(9n, 2n, 1n);
-		expect(endpointToNumber(twoSqrt9)).toBe(6); // 2 * 3
 	});
 });
 
 describe('interval with special bounds', () => {
 	it('creates interval with pi bounds', () => {
-		const int = closedInterval(fromNumber(0), pi());
+		const int = closedInterval(fromNumber(0), bound('\\pi'));
 		expect(endpointToNumber(int.lower.value)).toBe(0);
 		expect(endpointToNumber(int.upper.value)).toBeCloseTo(Math.PI);
 	});
 
 	it('creates interval with e bounds', () => {
-		const int = closedInterval(fromNumber(1), e());
+		const int = closedInterval(fromNumber(1), bound('e'));
 		expect(endpointToNumber(int.lower.value)).toBe(1);
 		expect(endpointToNumber(int.upper.value)).toBeCloseTo(Math.E);
 	});
 
 	it('creates interval from sqrt(2) to sqrt(3)', () => {
-		const int = closedInterval(sqrt2(), sqrt3());
+		const int = closedInterval(bound('sqrt(2)'), bound('sqrt(3)'));
 		expect(endpointToNumber(int.lower.value)).toBeCloseTo(Math.sqrt(2));
 		expect(endpointToNumber(int.upper.value)).toBeCloseTo(Math.sqrt(3));
 	});
 
 	it('creates interval with mixed symbolic and numeric bounds', () => {
-		const int = closedInterval(fromNumber(1), sqrt2());
+		const int = closedInterval(fromNumber(1), bound('sqrt(2)'));
 		expect(endpointToNumber(int.lower.value)).toBe(1);
 		expect(endpointToNumber(int.upper.value)).toBeCloseTo(Math.sqrt(2));
 	});
@@ -473,7 +396,7 @@ describe('single point intervals', () => {
 	});
 
 	it('creates single point at symbolic value', () => {
-		const int = closedInterval(pi(), pi());
+		const int = closedInterval(bound('\\pi'), bound('\\pi'));
 		expect(endpointToNumber(int.lower.value)).toBeCloseTo(Math.PI);
 		expect(endpointToNumber(int.upper.value)).toBeCloseTo(Math.PI);
 	});
@@ -489,7 +412,7 @@ describe('inverted intervals', () => {
 	});
 
 	it('creates inverted interval with symbolic bounds', () => {
-		const int = closedInterval(sqrt3(), sqrt2()); // sqrt(3) > sqrt(2)
+		const int = closedInterval(bound('sqrt(3)'), bound('sqrt(2)')); // sqrt(3) > sqrt(2)
 		expect(int.kind).toBe('interval');
 	});
 });
