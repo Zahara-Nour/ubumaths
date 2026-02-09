@@ -9,19 +9,20 @@
  * - Opposite (unary -)
  * - Positive (unary +)
  *
- * ## Interval Arithmetic (Bounds Propagation)
+ * ## Symbolic Interval Arithmetic (Bounds Propagation)
  *
- * For multiplication and division, we use the **four-corners theorem**:
- * since f(x,y) = x*y is bilinear (linear in x for fixed y, and vice versa),
- * its extrema over the rectangle [a,b]×[c,d] are always at the corners.
- * Therefore:
+ * Bounds are represented as IntervalDomain with symbolic MathNode endpoints.
+ * This preserves exact values (pi, sqrt(2), ln(3), etc.) throughout propagation.
  *
- *   [a,b] × [c,d] = [min(ac,ad,bc,bd), max(ac,ad,bc,bd)]
+ * For addition and subtraction (Tier 1), the result is always exact:
+ *   [a,b] + [c,d] = [a+c, b+d]
+ *   [a,b] - [c,d] = [a-d, b-c]
  *
- * This gives the **exact** result for independent intervals (no over-approximation).
- *
- * The same principle applies to division (f(x,y) = x/y is bilinear in x
- * for fixed y) when the divisor doesn't contain zero.
+ * For multiplication and division (Tier 3), we use the **four-corners theorem**:
+ * since f(x,y) = x*y is bilinear, its extrema over [a,b]x[c,d] are at corners.
+ * Endpoint values are evaluated numerically (via endpointToNumber) to determine
+ * which corners give the min/max, but the result endpoints remain symbolic
+ * MathNode trees built with factory functions.
  *
  * **Important**: this assumes operand intervals are independent. When the same
  * variable appears in both operands (e.g., x*x parsed as multiplication rather
@@ -30,262 +31,288 @@
  *
  * ## Extended Arithmetic (Infinite Bounds)
  *
- * Bounds use `null` to represent ±∞ (lower=null means -∞, upper=null means +∞).
+ * Infinite endpoints are represented as InfinityNode MathNodes.
  * For the four-corners computation with possibly infinite endpoints, we use the
- * convention `0 × ±∞ = 0`. This is sound for set-theoretic interval products:
- * when x=0 is in interval A, {0·y : y ∈ B} = {0} regardless of B.
- *
- * **Note**: this differs from limit arithmetic where 0·∞ is indeterminate.
- * The normalizeExtended module (used for limits) correctly treats 0·∞ as
- * indeterminate, because there the value depends on the rate of approach.
- * Here we compute sets, not limits.
+ * convention 0 * +/-Infinity = 0. This is sound for set-theoretic interval products:
+ * when x=0 is in interval A, {0*y : y in B} = {0} regardless of B.
  */
 
+import type { MathNode } from '../../types';
 import type { MathType, NumericType, ParityInfo, SignInfo } from '../types';
 import { join } from '../algebra';
-import type { Bounds } from '$lib/math/intervals/algebra';
+import type { IntervalDomain, Endpoint, EndpointType } from '$lib/math/intervals/types';
+import {
+	intervalSet,
+	interval,
+	universalSet,
+	isPositiveInfinity,
+	isNegativeInfinity,
+	endpointToNumber,
+	containsValue
+} from '$lib/math/intervals';
+import {
+	add as addNode,
+	subtract as subtractNode,
+	opposite as oppositeNode,
+	implicitMultiply as multiplyNode,
+	fraction as divideNode,
+	infinity
+} from '../../factory';
 import { signFromBounds } from './literals';
 
 // =============================================================================
-// Bounds Arithmetic Helpers
+// Symbolic Bounds Helpers
 // =============================================================================
 
 /**
- * Find min and max from a list of finite candidates, with OR tie-breaking for inclusivity.
- *
- * When multiple candidates share the same extreme value, the result is inclusive
- * if ANY of the tied candidates is inclusive. This is correct because the extreme
- * value is attained if at least one corner pair that produces it is inclusive.
- *
- * Used by divideBounds for finite-only corner products.
- * For extended arithmetic (with ±∞), multiplyBounds uses inline logic instead.
+ * Extract the overall lower and upper endpoints from an IntervalDomain.
+ * Returns null for empty domains.
  */
-function findExtremes(candidates: { value: number; inclusive: boolean }[]): {
-	min: number;
-	minInclusive: boolean;
-	max: number;
-	maxInclusive: boolean;
-} {
-	let min = Infinity;
-	let minInclusive = false;
-	let max = -Infinity;
-	let maxInclusive = false;
+function extractEndpoints(domain: IntervalDomain): { lo: Endpoint; hi: Endpoint } | null {
+	if (domain.kind === 'empty') return null;
+	if (domain.kind === 'universal') {
+		return {
+			lo: { value: infinity('negative'), type: 'open' as EndpointType },
+			hi: { value: infinity('positive'), type: 'open' as EndpointType }
+		};
+	}
+	const { intervals } = domain;
+	if (intervals.length === 0) return null;
+	return {
+		lo: intervals[0].lower,
+		hi: intervals[intervals.length - 1].upper
+	};
+}
 
-	for (const c of candidates) {
-		if (c.value < min) {
-			min = c.value;
-			minInclusive = c.inclusive;
-		} else if (c.value === min && c.inclusive) {
-			minInclusive = true;
+/** Both must be closed for result to be closed */
+function combineEndpointTypes(a: EndpointType, b: EndpointType): EndpointType {
+	return a === 'closed' && b === 'closed' ? 'closed' : 'open';
+}
+
+/**
+ * Build an IntervalDomain from lower and upper endpoints.
+ * Returns universal if both endpoints are infinite.
+ */
+function makeInterval(
+	lo: { value: MathNode; type: EndpointType },
+	hi: { value: MathNode; type: EndpointType }
+): IntervalDomain {
+	if (isNegativeInfinity(lo.value) && isPositiveInfinity(hi.value)) {
+		return universalSet();
+	}
+	return intervalSet([interval(lo, hi)]);
+}
+
+// =============================================================================
+// Symbolic Bounds Propagation Functions
+// =============================================================================
+
+/**
+ * Addition: [a_lo + b_lo, a_hi + b_hi] (Tier 1 - always exact)
+ */
+function addIntervalBounds(a: IntervalDomain, b: IntervalDomain): IntervalDomain | undefined {
+	const ae = extractEndpoints(a);
+	const be = extractEndpoints(b);
+	if (!ae || !be) return undefined;
+
+	const loInf = isNegativeInfinity(ae.lo.value) || isNegativeInfinity(be.lo.value);
+	const hiInf = isPositiveInfinity(ae.hi.value) || isPositiveInfinity(be.hi.value);
+
+	return makeInterval(
+		{
+			value: loInf ? infinity('negative') : addNode(ae.lo.value, be.lo.value),
+			type: loInf ? 'open' : combineEndpointTypes(ae.lo.type, be.lo.type)
+		},
+		{
+			value: hiInf ? infinity('positive') : addNode(ae.hi.value, be.hi.value),
+			type: hiInf ? 'open' : combineEndpointTypes(ae.hi.type, be.hi.type)
 		}
+	);
+}
 
-		if (c.value > max) {
-			max = c.value;
-			maxInclusive = c.inclusive;
-		} else if (c.value === max && c.inclusive) {
-			maxInclusive = true;
+/**
+ * Subtraction: [a_lo - b_hi, a_hi - b_lo] (Tier 1 - always exact)
+ */
+function subtractIntervalBounds(a: IntervalDomain, b: IntervalDomain): IntervalDomain | undefined {
+	const ae = extractEndpoints(a);
+	const be = extractEndpoints(b);
+	if (!ae || !be) return undefined;
+
+	const loInf = isNegativeInfinity(ae.lo.value) || isPositiveInfinity(be.hi.value);
+	const hiInf = isPositiveInfinity(ae.hi.value) || isNegativeInfinity(be.lo.value);
+
+	return makeInterval(
+		{
+			value: loInf ? infinity('negative') : subtractNode(ae.lo.value, be.hi.value),
+			type: loInf ? 'open' : combineEndpointTypes(ae.lo.type, be.hi.type)
+		},
+		{
+			value: hiInf ? infinity('positive') : subtractNode(ae.hi.value, be.lo.value),
+			type: hiInf ? 'open' : combineEndpointTypes(ae.hi.type, be.lo.type)
 		}
+	);
+}
+
+/**
+ * Negation: [-hi, -lo] (Tier 1 - always exact)
+ */
+function negateIntervalBounds(d: IntervalDomain): IntervalDomain | undefined {
+	const e = extractEndpoints(d);
+	if (!e) return undefined;
+
+	const loIsNegInf = isNegativeInfinity(e.lo.value);
+	const hiIsPosInf = isPositiveInfinity(e.hi.value);
+
+	return makeInterval(
+		{
+			value: hiIsPosInf ? infinity('negative') : oppositeNode(e.hi.value),
+			type: e.hi.type
+		},
+		{
+			value: loIsNegInf ? infinity('positive') : oppositeNode(e.lo.value),
+			type: e.lo.type
+		}
+	);
+}
+
+/**
+ * Multiplication using four-corners theorem (Tier 2/3).
+ *
+ * Evaluates all four corner products numerically to find min/max,
+ * but builds result endpoints as symbolic MathNode trees.
+ * Uses the convention 0 * Infinity = 0 for set-theoretic soundness.
+ */
+function multiplyIntervalBounds(a: IntervalDomain, b: IntervalDomain): IntervalDomain | undefined {
+	const ae = extractEndpoints(a);
+	const be = extractEndpoints(b);
+	if (!ae || !be) return undefined;
+
+	const aLoNum = endpointToNumber(ae.lo.value);
+	const aHiNum = endpointToNumber(ae.hi.value);
+	const bLoNum = endpointToNumber(be.lo.value);
+	const bHiNum = endpointToNumber(be.hi.value);
+
+	// If any endpoint can't be evaluated, skip bounds
+	if (isNaN(aLoNum) || isNaN(aHiNum) || isNaN(bLoNum) || isNaN(bHiNum)) {
+		return undefined;
 	}
 
-	return { min, minInclusive, max, maxInclusive };
-}
-
-/**
- * Add two bounds: [a,b] + [c,d] = [a+c, b+d].
- *
- * Addition is monotone in both arguments, so the extrema are simply
- * the sums of the corresponding endpoints. No four-corners needed.
- * Null endpoints (±∞) propagate: -∞ + finite = -∞, etc.
- */
-function addBounds(a: Bounds, b: Bounds): Bounds {
-	const lower = a.lower === null || b.lower === null ? null : a.lower + b.lower;
-	const upper = a.upper === null || b.upper === null ? null : a.upper + b.upper;
-	return {
-		lower,
-		upper,
-		lowerInclusive: lower === null ? false : a.lowerInclusive && b.lowerInclusive,
-		upperInclusive: upper === null ? false : a.upperInclusive && b.upperInclusive
-	};
-}
-
-/**
- * Subtract two bounds: [a,b] - [c,d] = [a-d, b-c].
- *
- * To minimize: take the smallest left (a) minus the largest right (d).
- * To maximize: take the largest left (b) minus the smallest right (c).
- * Null endpoints propagate naturally.
- */
-function subtractBounds(a: Bounds, b: Bounds): Bounds {
-	const lower = a.lower === null || b.upper === null ? null : a.lower - b.upper;
-	const upper = a.upper === null || b.lower === null ? null : a.upper - b.lower;
-	return {
-		lower,
-		upper,
-		lowerInclusive: lower === null ? false : a.lowerInclusive && b.upperInclusive,
-		upperInclusive: upper === null ? false : a.upperInclusive && b.lowerInclusive
-	};
-}
-
-/**
- * Extended multiplication for interval arithmetic.
- *
- * Uses the convention 0 × ±∞ = 0, which is sound for set-theoretic
- * interval products: {0·y : y ∈ B} = {0} for any interval B.
- *
- * This also avoids JS's `0 * Infinity = NaN` and `-0 * Infinity = NaN`.
- *
- * @param x - First factor (may be ±Infinity)
- * @param y - Second factor (may be ±Infinity)
- * @returns The product, using the 0×±∞=0 convention
- */
-function extMul(x: number, y: number): number {
-	if (x === 0 || y === 0) return 0;
-	return x * y;
-}
-
-/**
- * Compute inclusivity for a corner product in extended interval multiplication.
- *
- * Rules:
- * - ±∞ × ±∞ → ±∞: never inclusive (infinity is never attained)
- * - ±∞ × nonzero → ±∞: never inclusive
- * - 0 × ±∞ → 0: inclusive if the zero endpoint is inclusive
- *   (because x=0 is in the interval, so 0·y = 0 for all y)
- * - finite × finite: inclusive only if both endpoints are inclusive
- *   (the product a·b is attained only if both a ∈ A and b ∈ B)
- */
-function cornerInclusive(aVal: number, aIncl: boolean, bVal: number, bIncl: boolean): boolean {
-	if (!isFinite(aVal) && !isFinite(bVal)) return false;
-	if (!isFinite(aVal)) return bVal === 0 ? bIncl : false;
-	if (!isFinite(bVal)) return aVal === 0 ? aIncl : false;
-	return aIncl && bIncl;
-}
-
-/**
- * Multiply two bounds using the four-corners theorem with extended arithmetic.
- *
- * Since f(x,y) = x·y is bilinear, its extrema over [a,b]×[c,d] are at
- * the four corners (a,c), (a,d), (b,c), (b,d). The result is:
- *   [min(ac,ad,bc,bd), max(ac,ad,bc,bd)]
- * This gives the exact product interval for independent operands.
- *
- * Handles partially infinite bounds (null = ±∞) via extMul and cornerInclusive.
- * When the min/max is ±∞, the corresponding bound becomes null (exclusive).
- *
- * @example
- * // [2, 3] × [-1, 4] → corners: -2, 8, -3, 12 → [-3, 12]
- * // [2, 3] × [1, +∞) → corners: 2, +∞, 3, +∞ → [2, +∞)
- * // [0, 3] × [2, +∞) → corners: 0, 0, 6, +∞ → [0, +∞) (0×∞=0 convention)
- */
-function multiplyBounds(a: Bounds, b: Bounds): Bounds | undefined {
-	const aLo = a.lower ?? -Infinity;
-	const aHi = a.upper ?? Infinity;
-	const bLo = b.lower ?? -Infinity;
-	const bHi = b.upper ?? Infinity;
-
-	const pairs: [number, boolean, number, boolean][] = [
-		[aLo, a.lowerInclusive, bLo, b.lowerInclusive],
-		[aLo, a.lowerInclusive, bHi, b.upperInclusive],
-		[aHi, a.upperInclusive, bLo, b.lowerInclusive],
-		[aHi, a.upperInclusive, bHi, b.upperInclusive]
+	// Four-corners: compute all products numerically to find min/max
+	const corners = [
+		{ aEp: ae.lo, bEp: be.lo, val: aLoNum * bLoNum },
+		{ aEp: ae.lo, bEp: be.hi, val: aLoNum * bHiNum },
+		{ aEp: ae.hi, bEp: be.lo, val: aHiNum * bLoNum },
+		{ aEp: ae.hi, bEp: be.hi, val: aHiNum * bHiNum }
 	];
 
-	const corners = pairs.map(([ae, aeIncl, be, beIncl]) => ({
-		value: extMul(ae, be),
-		inclusive: cornerInclusive(ae, aeIncl, be, beIncl)
-	}));
-
-	const values = corners.map((c) => c.value);
-	const minVal = Math.min(...values);
-	const maxVal = Math.max(...values);
-
-	const lower = minVal === -Infinity ? null : minVal;
-	const upper = maxVal === Infinity ? null : maxVal;
-
-	return {
-		lower,
-		upper,
-		lowerInclusive: lower === null ? false : corners.some((c) => c.value === minVal && c.inclusive),
-		upperInclusive: upper === null ? false : corners.some((c) => c.value === maxVal && c.inclusive)
-	};
-}
-
-/**
- * Divide two bounds using the four-corners theorem: [a,b] / [c,d].
- *
- * Like multiplication, f(x,y) = x/y has its extrema at the four corners
- * of the rectangle [a,b]×[c,d] when y ≠ 0 (bilinear structure in x for
- * fixed y). The result is [min(a/c,a/d,b/c,b/d), max(a/c,a/d,b/c,b/d)].
- *
- * Special cases:
- * - Divisor contains zero → returns (-∞, +∞) as the quotient is unbounded
- * - Null divisor endpoints (±∞) → quotient approaches 0 (exclusive)
- * - Null numerator endpoints → returns (-∞, +∞) (TODO: extend like multiplyBounds)
- *
- * @returns Bounds of the quotient, or (-∞,+∞) if divisor contains zero
- */
-function divideBounds(a: Bounds, b: Bounds): Bounds | undefined {
-	// Check if divisor contains zero
-	const bContainsZero =
-		(b.lower === null || b.lower < 0 || (b.lower === 0 && b.lowerInclusive)) &&
-		(b.upper === null || b.upper > 0 || (b.upper === 0 && b.upperInclusive));
-
-	if (bContainsZero) {
-		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
-	}
-
-	if (a.lower === null || a.upper === null) {
-		return { lower: null, upper: null, lowerInclusive: false, upperInclusive: false };
-	}
-
-	// Build quotient candidates; null divisor bound (±∞) → quotient approaches 0
-	const candidates: { value: number; inclusive: boolean }[] = [];
-	const aEndpoints = [
-		{ value: a.lower, inclusive: a.lowerInclusive },
-		{ value: a.upper, inclusive: a.upperInclusive }
-	];
-	const bEndpoints = [
-		{ value: b.lower, inclusive: b.lowerInclusive },
-		{ value: b.upper, inclusive: b.upperInclusive }
-	];
-
-	for (const ae of aEndpoints) {
-		for (const be of bEndpoints) {
-			if (be.value === null) {
-				// a / ±∞ → 0 (approached but never reached)
-				candidates.push({ value: 0, inclusive: false });
-			} else {
-				candidates.push({
-					value: ae.value / be.value,
-					inclusive: ae.inclusive && be.inclusive
-				});
+	// Handle 0 * Infinity = 0 convention
+	for (const c of corners) {
+		if (!isFinite(c.val)) {
+			const aNum = endpointToNumber(c.aEp.value);
+			const bNum = endpointToNumber(c.bEp.value);
+			if (aNum === 0 || bNum === 0) {
+				c.val = 0;
 			}
 		}
 	}
 
-	const { min, minInclusive, max, maxInclusive } = findExtremes(candidates);
+	let minCorner = corners[0];
+	let maxCorner = corners[0];
+	for (const c of corners) {
+		if (c.val < minCorner.val) minCorner = c;
+		if (c.val > maxCorner.val) maxCorner = c;
+	}
 
-	return {
-		lower: min,
-		upper: max,
-		lowerInclusive: minInclusive,
-		upperInclusive: maxInclusive
-	};
+	const loValue =
+		minCorner.val === -Infinity
+			? infinity('negative')
+			: multiplyNode(minCorner.aEp.value, minCorner.bEp.value);
+	const hiValue =
+		maxCorner.val === Infinity
+			? infinity('positive')
+			: multiplyNode(maxCorner.aEp.value, maxCorner.bEp.value);
+
+	const loType: EndpointType = !isFinite(minCorner.val)
+		? 'open'
+		: combineEndpointTypes(minCorner.aEp.type, minCorner.bEp.type);
+	const hiType: EndpointType = !isFinite(maxCorner.val)
+		? 'open'
+		: combineEndpointTypes(maxCorner.aEp.type, maxCorner.bEp.type);
+
+	return makeInterval({ value: loValue, type: loType }, { value: hiValue, type: hiType });
 }
 
 /**
- * Negate bounds: -[a,b] = [-b,-a].
+ * Division using four-corners theorem (Tier 2/3).
  *
- * Negation reverses the interval and swaps inclusivity.
- * Null endpoints swap sides: -(null, b] = [-b, null).
+ * If the divisor contains zero, returns universal set (unbounded).
+ * Otherwise evaluates all four corner quotients numerically to find min/max,
+ * but builds result endpoints as symbolic MathNode trees.
  */
-function negateBounds(b: Bounds): Bounds {
-	return {
-		lower: b.upper === null ? null : -b.upper,
-		upper: b.lower === null ? null : -b.lower,
-		lowerInclusive: b.upperInclusive,
-		upperInclusive: b.lowerInclusive
-	};
+function divideIntervalBounds(a: IntervalDomain, b: IntervalDomain): IntervalDomain | undefined {
+	const ae = extractEndpoints(a);
+	const be = extractEndpoints(b);
+	if (!ae || !be) return undefined;
+
+	// Check if divisor contains zero
+	if (containsValue(b, 0)) {
+		return universalSet();
+	}
+
+	const aLoNum = endpointToNumber(ae.lo.value);
+	const aHiNum = endpointToNumber(ae.hi.value);
+	const bLoNum = endpointToNumber(be.lo.value);
+	const bHiNum = endpointToNumber(be.hi.value);
+
+	if (isNaN(aLoNum) || isNaN(aHiNum) || isNaN(bLoNum) || isNaN(bHiNum)) {
+		return undefined;
+	}
+
+	// If numerator is unbounded, result is universal
+	if (!isFinite(aLoNum) || !isFinite(aHiNum)) {
+		return universalSet();
+	}
+
+	// Four corners for division
+	const corners: { aEp: Endpoint; bEp: Endpoint; val: number }[] = [];
+	const aEndpoints = [ae.lo, ae.hi];
+	const bEndpoints = [be.lo, be.hi];
+
+	for (const aEp of aEndpoints) {
+		for (const bEp of bEndpoints) {
+			const bNum = endpointToNumber(bEp.value);
+			const aNum = endpointToNumber(aEp.value);
+			if (!isFinite(bNum)) {
+				// a / +/-Infinity -> 0
+				corners.push({ aEp, bEp, val: 0 });
+			} else {
+				corners.push({ aEp, bEp, val: aNum / bNum });
+			}
+		}
+	}
+
+	let minCorner = corners[0];
+	let maxCorner = corners[0];
+	for (const c of corners) {
+		if (c.val < minCorner.val) minCorner = c;
+		if (c.val > maxCorner.val) maxCorner = c;
+	}
+
+	const loValue = divideNode(minCorner.aEp.value, minCorner.bEp.value);
+	const hiValue = divideNode(maxCorner.aEp.value, maxCorner.bEp.value);
+
+	// For corners where b was infinite, endpoint is open (approached but not reached)
+	const minBIsInf = !isFinite(endpointToNumber(minCorner.bEp.value));
+	const maxBIsInf = !isFinite(endpointToNumber(maxCorner.bEp.value));
+
+	const loType: EndpointType = minBIsInf
+		? 'open'
+		: combineEndpointTypes(minCorner.aEp.type, minCorner.bEp.type);
+	const hiType: EndpointType = maxBIsInf
+		? 'open'
+		: combineEndpointTypes(maxCorner.aEp.type, maxCorner.bEp.type);
+
+	return makeInterval({ value: loValue, type: loType }, { value: hiValue, type: hiType });
 }
 
 // =============================================================================
@@ -294,7 +321,7 @@ function negateBounds(b: Bounds): Bounds {
 
 /**
  * Infers parity for addition and subtraction (same rules).
- * even±even = even, odd±odd = even, even±odd = odd, odd±even = odd
+ * even+/-even = even, odd+/-odd = even, even+/-odd = odd, odd+/-even = odd
  */
 function inferAddSubParity(
 	leftParity: ParityInfo | undefined,
@@ -359,7 +386,9 @@ export function inferAdditionType(leftType: MathType, rightType: MathType): Math
 
 	// Bounds propagation
 	const bounds =
-		leftType.bounds && rightType.bounds ? addBounds(leftType.bounds, rightType.bounds) : undefined;
+		leftType.bounds && rightType.bounds
+			? addIntervalBounds(leftType.bounds, rightType.bounds)
+			: undefined;
 
 	// Deduce sign from bounds when algebraic rules couldn't determine it
 	if (sign === undefined && bounds) {
@@ -428,7 +457,7 @@ export function inferSubtractionType(leftType: MathType, rightType: MathType): M
 	// Bounds propagation
 	const bounds =
 		leftType.bounds && rightType.bounds
-			? subtractBounds(leftType.bounds, rightType.bounds)
+			? subtractIntervalBounds(leftType.bounds, rightType.bounds)
 			: undefined;
 
 	// Deduce sign from bounds when algebraic rules couldn't determine it
@@ -521,7 +550,7 @@ export function inferMultiplicationType(leftType: MathType, rightType: MathType)
 	// Bounds propagation
 	const bounds =
 		leftType.bounds && rightType.bounds
-			? multiplyBounds(leftType.bounds, rightType.bounds)
+			? multiplyIntervalBounds(leftType.bounds, rightType.bounds)
 			: undefined;
 
 	// Deduce sign from bounds when algebraic rules couldn't determine it
@@ -607,7 +636,7 @@ export function inferDivisionType(numeratorType: MathType, denominatorType: Math
 	// Bounds propagation
 	const bounds =
 		numeratorType.bounds && denominatorType.bounds
-			? divideBounds(numeratorType.bounds, denominatorType.bounds)
+			? divideIntervalBounds(numeratorType.bounds, denominatorType.bounds)
 			: undefined;
 
 	// Deduce sign from bounds when algebraic rules couldn't determine it
@@ -652,7 +681,7 @@ export function inferOppositeType(operandType: MathType): MathType {
 	}
 
 	// Bounds propagation
-	const bounds = operandType.bounds ? negateBounds(operandType.bounds) : undefined;
+	const bounds = operandType.bounds ? negateIntervalBounds(operandType.bounds) : undefined;
 
 	// Deduce sign from bounds when algebraic rules couldn't determine it
 	if (sign === undefined && bounds) {

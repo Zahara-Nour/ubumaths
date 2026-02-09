@@ -1,286 +1,255 @@
 /**
- * Function Bounds Propagation
+ * Symbolic Function Bounds Propagation
  *
  * Computes output bounds for builtin functions given input bounds,
- * using monotonicity data from the BUILTIN_RANGES registry.
+ * using monotonicity analysis with symbolic MathNode endpoints.
  *
  * Like computePowerBounds (power.ts), this exploits single-variable
  * monotonicity — not the four-corners theorem (arithmetic.ts):
  *
- * - **Globally monotone** (increasing: exp, ln, sqrt, sinh, arctan, ...):
- *   f([a,b]) = [f(a), f(b)]
- * - **Globally monotone** (decreasing: arccos, ...):
- *   f([a,b]) = [f(b), f(a)]
- * - **Piecewise monotone** (sin, cos, cosh, ...):
- *   If input fits in one piece → apply monotone rule.
- *   Otherwise → sampling at endpoints + critical points.
+ * - **Tier 4 — Monotone functions** (exp, ln, sqrt, arctan, arcsin, sinh, tanh):
+ *   f([a,b]) = [f(a), f(b)]  (increasing)
+ *   f([a,b]) = [f(b), f(a)]  (decreasing)
+ *   Result endpoints are symbolic MathNode trees: e.g., exp([0, π]) → [exp(0), exp(π)]
  *
- * Infinite input endpoints fall back to the function's static range
- * from the BUILTIN_RANGES registry (e.g., sin → [-1, 1]).
+ * - **Tier 5 — Non-monotone functions** (sin, cos, tan, cot, sec, csc):
+ *   Return undefined — these are handled by computeRange in Phase 4.
  */
 
-import type { Bounds } from '$lib/math/intervals/algebra';
+import type { MathNode } from '../../types';
+import type { IntervalDomain, Endpoint, EndpointType } from '$lib/math/intervals/types';
 import {
-	getBuiltinRangeEntry,
-	type BuiltinRangeEntry,
-	type MonotonicInterval
-} from '$lib/mathAST/domain/builtins';
+	intervalSet,
+	interval,
+	universalSet,
+	isPositiveInfinity,
+	isNegativeInfinity
+} from '$lib/math/intervals';
+import { func as funcNode, sqrt as sqrtNode, infinity, number as numberNode } from '../../factory';
+import { compareNumericNodes } from '../../eval/compare-numeric';
+
+// =============================================================================
+// Helpers
+// =============================================================================
+
+/**
+ * Extract the overall lower and upper endpoints from an IntervalDomain.
+ * Returns null for empty domains.
+ */
+function extractEndpoints(domain: IntervalDomain): { lo: Endpoint; hi: Endpoint } | null {
+	if (domain.kind === 'empty') return null;
+	if (domain.kind === 'universal') {
+		return {
+			lo: { value: infinity('negative'), type: 'open' as EndpointType },
+			hi: { value: infinity('positive'), type: 'open' as EndpointType }
+		};
+	}
+	const { intervals } = domain;
+	if (intervals.length === 0) return null;
+	return {
+		lo: intervals[0].lower,
+		hi: intervals[intervals.length - 1].upper
+	};
+}
+
+/**
+ * Build an IntervalDomain from lower and upper endpoints.
+ */
+function makeInterval(
+	lo: { value: MathNode; type: EndpointType },
+	hi: { value: MathNode; type: EndpointType }
+): IntervalDomain {
+	if (isNegativeInfinity(lo.value) && isPositiveInfinity(hi.value)) {
+		return universalSet();
+	}
+	return intervalSet([interval(lo, hi)]);
+}
+
+const ZERO = numberNode('0');
+const ONE = numberNode('1');
+const NEG_ONE = numberNode('-1');
+
+// =============================================================================
+// Monotone function registry
+// =============================================================================
+
+type Monotonicity = 'increasing' | 'decreasing';
+
+interface MonotoneFunctionInfo {
+	monotonicity: Monotonicity;
+	/** Build symbolic MathNode for f(endpoint) */
+	apply: (endpoint: MathNode) => MathNode;
+	/** Domain check: returns false if endpoint is outside the function's domain */
+	domainCheck?: (lo: Endpoint, hi: Endpoint) => boolean;
+	/** Static lower bound of the function's range (as MathNode), if any */
+	rangeLower?: { value: MathNode; type: EndpointType };
+	/** Static upper bound of the function's range (as MathNode), if any */
+	rangeUpper?: { value: MathNode; type: EndpointType };
+}
+
+/**
+ * Registry of monotone functions for Tier 4 symbolic bounds propagation.
+ */
+const MONOTONE_FUNCTIONS: Record<string, MonotoneFunctionInfo> = {
+	exp: {
+		monotonicity: 'increasing',
+		apply: (x) => funcNode('exp', [x]),
+		// exp: ℝ → (0, +∞), static lower bound is 0 (open)
+		rangeLower: { value: ZERO, type: 'open' }
+	},
+	ln: {
+		monotonicity: 'increasing',
+		apply: (x) => funcNode('ln', [x]),
+		// ln requires x > 0
+		domainCheck: (lo) => {
+			if (isNegativeInfinity(lo.value)) return false;
+			const cmp = compareNumericNodes(lo.value, ZERO);
+			return cmp === 1 || (cmp === 0 && lo.type === 'open');
+		}
+	},
+	log: {
+		monotonicity: 'increasing',
+		apply: (x) => funcNode('log', [x]),
+		domainCheck: (lo) => {
+			if (isNegativeInfinity(lo.value)) return false;
+			const cmp = compareNumericNodes(lo.value, ZERO);
+			return cmp === 1 || (cmp === 0 && lo.type === 'open');
+		}
+	},
+	sqrt: {
+		monotonicity: 'increasing',
+		apply: (x) => sqrtNode(x),
+		// sqrt requires x >= 0
+		domainCheck: (lo) => {
+			if (isNegativeInfinity(lo.value)) return false;
+			const cmp = compareNumericNodes(lo.value, ZERO);
+			return cmp === 1 || cmp === 0;
+		},
+		rangeLower: { value: ZERO, type: 'closed' }
+	},
+	arctan: {
+		monotonicity: 'increasing',
+		apply: (x) => funcNode('arctan', [x])
+		// arctan: ℝ → (-π/2, π/2), no domain restriction
+	},
+	arcsin: {
+		monotonicity: 'increasing',
+		apply: (x) => funcNode('arcsin', [x]),
+		// arcsin requires -1 <= x <= 1
+		domainCheck: (lo, hi) => {
+			if (isNegativeInfinity(lo.value) || isPositiveInfinity(hi.value)) return false;
+			const loCmp = compareNumericNodes(lo.value, NEG_ONE);
+			const hiCmp = compareNumericNodes(hi.value, ONE);
+			if (loCmp === undefined || hiCmp === undefined) return false;
+			return loCmp >= 0 && hiCmp <= 0;
+		}
+	},
+	arccos: {
+		monotonicity: 'decreasing',
+		apply: (x) => funcNode('arccos', [x]),
+		// arccos requires -1 <= x <= 1
+		domainCheck: (lo, hi) => {
+			if (isNegativeInfinity(lo.value) || isPositiveInfinity(hi.value)) return false;
+			const loCmp = compareNumericNodes(lo.value, NEG_ONE);
+			const hiCmp = compareNumericNodes(hi.value, ONE);
+			if (loCmp === undefined || hiCmp === undefined) return false;
+			return loCmp >= 0 && hiCmp <= 0;
+		}
+	},
+	sinh: {
+		monotonicity: 'increasing',
+		apply: (x) => funcNode('sinh', [x])
+		// sinh: ℝ → ℝ, no domain restriction
+	},
+	tanh: {
+		monotonicity: 'increasing',
+		apply: (x) => funcNode('tanh', [x])
+		// tanh: ℝ → (-1, 1), no domain restriction
+	},
+	arcsinh: {
+		monotonicity: 'increasing',
+		apply: (x) => funcNode('arcsinh', [x])
+	},
+	arctanh: {
+		monotonicity: 'increasing',
+		apply: (x) => funcNode('arctanh', [x]),
+		domainCheck: (lo, hi) => {
+			if (isNegativeInfinity(lo.value) || isPositiveInfinity(hi.value)) return false;
+			const loCmp = compareNumericNodes(lo.value, NEG_ONE);
+			const hiCmp = compareNumericNodes(hi.value, ONE);
+			if (loCmp === undefined || hiCmp === undefined) return false;
+			// Strict: -1 < x < 1
+			return loCmp === 1 && hiCmp === -1;
+		}
+	},
+	arccosh: {
+		monotonicity: 'increasing',
+		apply: (x) => funcNode('arccosh', [x]),
+		// arccosh requires x >= 1
+		domainCheck: (lo) => {
+			if (isNegativeInfinity(lo.value)) return false;
+			const cmp = compareNumericNodes(lo.value, ONE);
+			return cmp === 1 || cmp === 0;
+		}
+	}
+};
 
 // =============================================================================
 // Main Entry Point
 // =============================================================================
 
 /**
- * Apply a builtin function to input bounds using monotonicity analysis.
+ * Apply a builtin function to input bounds using symbolic monotonicity analysis.
  *
- * Returns tighter bounds than the static range when input bounds are known.
- * Returns undefined when:
- * - Function is unknown (no registry entry)
- * - Function has no evaluator
- * - Input bounds are completely infinite (no finite endpoint)
- * - Computed output bounds are completely infinite
+ * For Tier 4 monotone functions: builds symbolic MathNode endpoints.
+ * For Tier 5 non-monotone functions: returns undefined.
  *
  * @param name - Function name (case-insensitive)
- * @param inputBounds - Bounds of the function argument
- * @returns Computed output bounds, or undefined to fall back to static range
+ * @param inputBounds - IntervalDomain bounds of the function argument
+ * @returns Computed output IntervalDomain, or undefined for non-monotone / unknown
  */
-export function applyFunctionToBounds(name: string, inputBounds: Bounds): Bounds | undefined {
-	// No finite endpoint → can't improve on static range
-	if (inputBounds.lower === null && inputBounds.upper === null) {
+export function applyFunctionToBounds(
+	name: string,
+	inputBounds: IntervalDomain
+): IntervalDomain | undefined {
+	const lowerName = name.toLowerCase();
+	const info = MONOTONE_FUNCTIONS[lowerName];
+	if (!info) {
+		// Tier 5: non-monotone or unknown function — no symbolic propagation
 		return undefined;
 	}
 
-	const entry = getBuiltinRangeEntry(name);
-	if (!entry || !entry.evaluate) {
+	const endpoints = extractEndpoints(inputBounds);
+	if (!endpoints) return undefined;
+
+	// Check domain requirement
+	if (info.domainCheck && !info.domainCheck(endpoints.lo, endpoints.hi)) {
 		return undefined;
 	}
 
-	// Globally monotonic
-	if (entry.monotonicity === 'increasing' || entry.monotonicity === 'decreasing') {
-		return applyMonotoneToBounds(entry, inputBounds, entry.monotonicity);
-	}
+	const { lo, hi } = endpoints;
+	const loIsInf = isNegativeInfinity(lo.value);
+	const hiIsInf = isPositiveInfinity(hi.value);
 
-	// Piecewise monotonic
-	if (entry.monotonicIntervals && entry.monotonicIntervals.length > 0) {
-		// Check if input fits in a single piece
-		const piece = findContainingPiece(inputBounds, entry.monotonicIntervals);
-		if (piece) {
-			return applyMonotoneToBounds(entry, inputBounds, piece.monotonicity);
-		}
-		// Spans multiple pieces → sampling
-		return applySamplingToBounds(entry, inputBounds);
-	}
-
-	return undefined;
-}
-
-// =============================================================================
-// Monotone Application
-// =============================================================================
-
-/**
- * Apply a monotone function to bounds.
- *
- * increasing: f([a,b]) = [f(a), f(b)]
- * decreasing: f([a,b]) = [f(b), f(a)]
- *
- * Handles infinite endpoints by falling back to the entry's static range.
- * Clamps output to the function's natural range.
- */
-function applyMonotoneToBounds(
-	entry: BuiltinRangeEntry,
-	inputBounds: Bounds,
-	monotonicity: 'increasing' | 'decreasing'
-): Bounds | undefined {
-	const evaluate = entry.evaluate!;
-
-	let outputLower: number | null;
-	let outputLowerInclusive: boolean;
-	let outputUpper: number | null;
-	let outputUpperInclusive: boolean;
-
-	if (monotonicity === 'increasing') {
+	if (info.monotonicity === 'increasing') {
 		// f([a, b]) = [f(a), f(b)]
-		if (inputBounds.lower !== null) {
-			const val = evaluate(inputBounds.lower);
-			if (!isFinite(val)) {
-				outputLower = null;
-				outputLowerInclusive = false;
-			} else {
-				outputLower = val;
-				outputLowerInclusive = inputBounds.lowerInclusive;
-			}
-		} else {
-			// x → -∞: use function's static lower bound
-			outputLower = entry.lower;
-			outputLowerInclusive = entry.lowerInclusive;
-		}
+		const resultLo = loIsInf
+			? (info.rangeLower ?? { value: infinity('negative'), type: 'open' as EndpointType })
+			: { value: info.apply(lo.value), type: lo.type };
+		const resultHi = hiIsInf
+			? (info.rangeUpper ?? { value: infinity('positive'), type: 'open' as EndpointType })
+			: { value: info.apply(hi.value), type: hi.type };
 
-		if (inputBounds.upper !== null) {
-			const val = evaluate(inputBounds.upper);
-			if (!isFinite(val)) {
-				outputUpper = null;
-				outputUpperInclusive = false;
-			} else {
-				outputUpper = val;
-				outputUpperInclusive = inputBounds.upperInclusive;
-			}
-		} else {
-			outputUpper = entry.upper;
-			outputUpperInclusive = entry.upperInclusive;
-		}
-	} else {
-		// Decreasing: f([a, b]) = [f(b), f(a)]
-		if (inputBounds.upper !== null) {
-			const val = evaluate(inputBounds.upper);
-			if (!isFinite(val)) {
-				outputLower = null;
-				outputLowerInclusive = false;
-			} else {
-				outputLower = val;
-				outputLowerInclusive = inputBounds.upperInclusive;
-			}
-		} else {
-			outputLower = entry.lower;
-			outputLowerInclusive = entry.lowerInclusive;
-		}
-
-		if (inputBounds.lower !== null) {
-			const val = evaluate(inputBounds.lower);
-			if (!isFinite(val)) {
-				outputUpper = null;
-				outputUpperInclusive = false;
-			} else {
-				outputUpper = val;
-				outputUpperInclusive = inputBounds.lowerInclusive;
-			}
-		} else {
-			outputUpper = entry.upper;
-			outputUpperInclusive = entry.upperInclusive;
-		}
+		return makeInterval(resultLo, resultHi);
 	}
 
-	// Clamp to function's natural range
-	if (entry.lower !== null) {
-		if (outputLower === null || outputLower < entry.lower) {
-			outputLower = entry.lower;
-			outputLowerInclusive = entry.lowerInclusive;
-		}
-	}
-	if (entry.upper !== null) {
-		if (outputUpper === null || outputUpper > entry.upper) {
-			outputUpper = entry.upper;
-			outputUpperInclusive = entry.upperInclusive;
-		}
-	}
+	// Decreasing: f([a, b]) = [f(b), f(a)]
+	const resultLo = hiIsInf
+		? (info.rangeLower ?? { value: infinity('negative'), type: 'open' as EndpointType })
+		: { value: info.apply(hi.value), type: hi.type };
+	const resultHi = loIsInf
+		? (info.rangeUpper ?? { value: infinity('positive'), type: 'open' as EndpointType })
+		: { value: info.apply(lo.value), type: lo.type };
 
-	// If both sides are infinite, no improvement over static range
-	if (outputLower === null && outputUpper === null) {
-		return undefined;
-	}
-
-	return {
-		lower: outputLower,
-		lowerInclusive: outputLowerInclusive,
-		upper: outputUpper,
-		upperInclusive: outputUpperInclusive
-	};
-}
-
-// =============================================================================
-// Piecewise Containment Check
-// =============================================================================
-
-/**
- * Find if input bounds are contained within a single monotonic piece.
- */
-function findContainingPiece(
-	inputBounds: Bounds,
-	pieces: MonotonicInterval[]
-): MonotonicInterval | null {
-	const inputStart = inputBounds.lower ?? -Infinity;
-	const inputEnd = inputBounds.upper ?? Infinity;
-
-	for (const piece of pieces) {
-		const pieceStart = piece.inputStart ?? -Infinity;
-		const pieceEnd = piece.inputEnd ?? Infinity;
-
-		if (inputStart >= pieceStart && inputEnd <= pieceEnd) {
-			return piece;
-		}
-	}
-	return null;
-}
-
-// =============================================================================
-// Sampling Fallback
-// =============================================================================
-
-/**
- * Apply a non-globally-monotone function using sampling at endpoints + critical points.
- *
- * Samples at:
- * 1. Input endpoints (if finite)
- * 2. Boundaries of monotonic intervals that fall within input range
- * 3. Additional uniform samples for periodic functions
- */
-function applySamplingToBounds(entry: BuiltinRangeEntry, inputBounds: Bounds): Bounds | undefined {
-	const evaluate = entry.evaluate!;
-	const samples: number[] = [];
-
-	const lo = inputBounds.lower ?? -10;
-	const hi = inputBounds.upper ?? 10;
-
-	// Sample at endpoints
-	if (inputBounds.lower !== null) {
-		const val = evaluate(inputBounds.lower);
-		if (isFinite(val)) samples.push(val);
-	}
-	if (inputBounds.upper !== null) {
-		const val = evaluate(inputBounds.upper);
-		if (isFinite(val)) samples.push(val);
-	}
-
-	// Sample at critical points (monotonic interval boundaries within input range)
-	if (entry.monotonicIntervals) {
-		for (const piece of entry.monotonicIntervals) {
-			if (piece.inputStart !== null && piece.inputStart >= lo && piece.inputStart <= hi) {
-				const val = evaluate(piece.inputStart);
-				if (isFinite(val)) samples.push(val);
-			}
-			if (piece.inputEnd !== null && piece.inputEnd >= lo && piece.inputEnd <= hi) {
-				const val = evaluate(piece.inputEnd);
-				if (isFinite(val)) samples.push(val);
-			}
-		}
-	}
-
-	// Additional uniform samples for better coverage
-	const numSamples = 20;
-	const step = (hi - lo) / numSamples;
-	for (let i = 1; i < numSamples; i++) {
-		const x = lo + i * step;
-		if (isFinite(x)) {
-			const val = evaluate(x);
-			if (isFinite(val)) samples.push(val);
-		}
-	}
-
-	if (samples.length === 0) {
-		return undefined;
-	}
-
-	let minVal = Math.min(...samples);
-	let maxVal = Math.max(...samples);
-
-	// Clamp to function's natural range
-	if (entry.lower !== null) minVal = Math.max(minVal, entry.lower);
-	if (entry.upper !== null) maxVal = Math.min(maxVal, entry.upper);
-
-	return {
-		lower: minVal,
-		lowerInclusive: true, // Conservative for sampling
-		upper: maxVal,
-		upperInclusive: true
-	};
+	return makeInterval(resultLo, resultHi);
 }

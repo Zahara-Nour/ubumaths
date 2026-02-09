@@ -8,12 +8,21 @@
  * - Other: abs, sqrt, sign, factorial
  */
 
+import type { MathNode } from '../../types';
 import type { MathType, NumericType, SignInfo } from '../types';
 import { join, isSubtype } from '../algebra';
 import { COMPLEX_TYPE, TRANSCENDENTAL_TYPE, INTEGER_TYPE, UNKNOWN_TYPE } from '../types';
 import { inferSqrtType } from './power';
-import { getBuiltinRangeEntry } from '$lib/mathAST/domain/builtins';
-import type { Bounds } from '$lib/math/intervals/algebra';
+import type { IntervalDomain, Endpoint, EndpointType } from '$lib/math/intervals/types';
+import {
+	intervalSet,
+	interval,
+	isPositiveInfinity,
+	isNegativeInfinity,
+	endpointToNumber
+} from '$lib/math/intervals';
+import { opposite as oppositeNode, infinity, number as numberNode } from '../../factory';
+import { compareNumericNodes } from '../../eval/compare-numeric';
 import { applyFunctionToBounds } from './function-bounds';
 import { signFromBounds } from './literals';
 
@@ -130,84 +139,109 @@ export function inferFunctionType(
 }
 
 // =============================================================================
-// Bounds Helpers
+// Symbolic Bounds Helpers
 // =============================================================================
 
+const ZERO = numberNode('0');
+
 /**
- * Get output bounds for a builtin function from the range registry.
+ * Extract the overall lower and upper endpoints from an IntervalDomain.
  */
-function getFunctionBounds(name: string): Bounds | undefined {
-	const entry = getBuiltinRangeEntry(name);
-	if (!entry) return undefined;
+function extractEndpoints(domain: IntervalDomain): { lo: Endpoint; hi: Endpoint } | null {
+	if (domain.kind === 'empty') return null;
+	if (domain.kind === 'universal') {
+		return {
+			lo: { value: infinity('negative'), type: 'open' as EndpointType },
+			hi: { value: infinity('positive'), type: 'open' as EndpointType }
+		};
+	}
+	const { intervals } = domain;
+	if (intervals.length === 0) return null;
 	return {
-		lower: entry.lower,
-		upper: entry.upper,
-		lowerInclusive: entry.lowerInclusive,
-		upperInclusive: entry.upperInclusive
+		lo: intervals[0].lower,
+		hi: intervals[intervals.length - 1].upper
 	};
 }
 
 /**
- * Compute abs bounds from argument bounds.
- * |[a, b]| where a <= b:
- * - If a >= 0: [a, b]
- * - If b <= 0: [-b, -a]
- * - If a < 0 < b: [0, max(-a, b)]
+ * Build an IntervalDomain from lower and upper endpoints.
  */
-function computeAbsBounds(argBounds: Bounds): Bounds {
-	const { lower, upper, lowerInclusive, upperInclusive } = argBounds;
+function makeInterval(
+	lo: { value: MathNode; type: EndpointType },
+	hi: { value: MathNode; type: EndpointType }
+): IntervalDomain {
+	return intervalSet([interval(lo, hi)]);
+}
 
-	// Both unbounded -> [0, +inf)
-	if (lower === null && upper === null) {
-		return { lower: 0, upper: null, lowerInclusive: true, upperInclusive: false };
-	}
+/**
+ * Compute symbolic abs bounds from argument IntervalDomain.
+ * |[a, b]| where a <= b:
+ * - If a >= 0: [a, b] (identity)
+ * - If b <= 0: [-b, -a] (negate)
+ * - If a < 0 < b: [0, max(|a|, b)] — compare numerically, keep symbolic
+ */
+function computeAbsBounds(argBounds: IntervalDomain): IntervalDomain | undefined {
+	const e = extractEndpoints(argBounds);
+	if (!e) return undefined;
 
-	// Entirely non-negative
-	if (lower !== null && lower >= 0) {
+	const { lo, hi } = e;
+	const loIsNegInf = isNegativeInfinity(lo.value);
+	const hiIsPosInf = isPositiveInfinity(hi.value);
+
+	const loCmp = loIsNegInf ? -1 : compareNumericNodes(lo.value, ZERO);
+	const hiCmp = hiIsPosInf ? 1 : compareNumericNodes(hi.value, ZERO);
+
+	if (loCmp === undefined || hiCmp === undefined) return undefined;
+
+	// Entirely non-negative: lo >= 0
+	if (loCmp >= 0) {
 		return argBounds;
 	}
 
-	// Entirely non-positive
-	if (upper !== null && upper <= 0) {
-		return {
-			lower: upper === 0 ? 0 : -upper,
-			upper: lower === null ? null : -lower,
-			lowerInclusive: upper === 0 ? true : upperInclusive,
-			upperInclusive: lower === null ? false : lowerInclusive
-		};
+	// Entirely non-positive: hi <= 0
+	if (hiCmp <= 0) {
+		// |[a,b]| = [-b, -a] where a <= b <= 0
+		return makeInterval(
+			{
+				value: hiCmp === 0 ? ZERO : oppositeNode(hi.value),
+				type: hi.type
+			},
+			{
+				value: loIsNegInf ? infinity('positive') : oppositeNode(lo.value),
+				type: loIsNegInf ? 'open' : lo.type
+			}
+		);
 	}
 
-	// Crosses zero: lower < 0 < upper
-	const absLower = lower !== null ? -lower : null;
-	const absUpper = upper;
+	// Crosses zero: lo < 0 < hi → [0, max(|lo|, hi)]
+	if (loIsNegInf || hiIsPosInf) {
+		return makeInterval(
+			{ value: ZERO, type: 'closed' },
+			{ value: infinity('positive'), type: 'open' }
+		);
+	}
 
-	let maxVal: number | null;
-	let maxInclusive: boolean;
+	// Compare |lo| vs hi numerically
+	const absLoNum = Math.abs(endpointToNumber(lo));
+	const hiNum = endpointToNumber(hi);
 
-	if (absLower === null) {
-		maxVal = null;
-		maxInclusive = false;
-	} else if (absUpper === null) {
-		maxVal = null;
-		maxInclusive = false;
-	} else if (absLower > absUpper) {
-		maxVal = absLower;
-		maxInclusive = lowerInclusive;
-	} else if (absUpper > absLower) {
-		maxVal = absUpper;
-		maxInclusive = upperInclusive;
+	if (isNaN(absLoNum) || isNaN(hiNum)) return undefined;
+
+	let upperValue: MathNode;
+	let upperType: EndpointType;
+	if (absLoNum > hiNum) {
+		upperValue = oppositeNode(lo.value);
+		upperType = lo.type;
+	} else if (hiNum > absLoNum) {
+		upperValue = hi.value;
+		upperType = hi.type;
 	} else {
-		// Equal
-		maxVal = absLower;
-		maxInclusive = lowerInclusive || upperInclusive;
+		// Equal absolute values
+		upperValue = hi.value;
+		upperType = lo.type === 'closed' || hi.type === 'closed' ? 'closed' : 'open';
 	}
 
-	return {
-		lower: 0,
-		upper: maxVal,
-		lowerInclusive: true,
-		upperInclusive: maxInclusive
-	};
+	return makeInterval({ value: ZERO, type: 'closed' }, { value: upperValue, type: upperType });
 }
 
 // =============================================================================
@@ -257,9 +291,8 @@ function inferTranscendentalFunctionType(
 	// General rule: transcendental function of real input is transcendental
 	if (isSubtype(argType.base, 'real')) {
 		const result = inferTranscendentalOutputWithSign(name, argType, argValue);
-		// Try dynamic bounds propagation, fall back to static range
-		const computedBounds = argType.bounds ? applyFunctionToBounds(name, argType.bounds) : undefined;
-		const bounds = computedBounds ?? getFunctionBounds(name);
+		// Try symbolic bounds propagation (Tier 4 monotone functions)
+		const bounds = argType.bounds ? applyFunctionToBounds(name, argType.bounds) : undefined;
 		if (bounds) {
 			const boundsSign = signFromBounds(bounds);
 			return {
@@ -402,25 +435,10 @@ function inferIntegerOutputFunctionType(
 			}
 		}
 
-		// Compute bounds for rounding functions
-		let bounds: Bounds | undefined;
-		if (argType.bounds) {
-			const fn = computeRoundingResult.bind(null, name);
-			const lower = argType.bounds.lower !== null ? fn(argType.bounds.lower) : null;
-			const upper = argType.bounds.upper !== null ? fn(argType.bounds.upper) : null;
-			bounds = {
-				lower,
-				upper,
-				lowerInclusive: lower !== null,
-				upperInclusive: upper !== null
-			};
-		}
-
 		return {
 			base: 'integer',
 			...(sign !== undefined && { sign }),
-			finite: argType.finite,
-			...(bounds !== undefined && { bounds })
+			finite: argType.finite
 		};
 	}
 
@@ -501,20 +519,14 @@ function inferTypePreservingFunctionType(
 			return { base: 'real', sign: 'positive', finite: argType.finite };
 		}
 
-		// Compute bounds for abs
-		let bounds: Bounds | undefined;
-		if (argType.bounds) {
-			bounds = computeAbsBounds(argType.bounds);
-		} else {
-			// Default: [0, +inf)
-			bounds = { lower: 0, upper: null, lowerInclusive: true, upperInclusive: false };
-		}
+		// Compute symbolic bounds for abs (Tier 3)
+		const bounds = argType.bounds ? computeAbsBounds(argType.bounds) : undefined;
 
 		return {
 			base: argType.base,
 			...(sign !== undefined && { sign }),
 			finite: argType.finite,
-			bounds
+			...(bounds !== undefined && { bounds })
 		};
 	}
 

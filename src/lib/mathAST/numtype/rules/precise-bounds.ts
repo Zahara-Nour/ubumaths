@@ -4,25 +4,17 @@
  * Bridges the domain/range-helpers critical point analysis
  * with the numtype inference system to provide exact bounds
  * for univariate expressions where interval arithmetic over-approximates.
+ *
+ * Now works directly with IntervalDomain (no Bounds conversion round-trip).
  */
 
 import {
 	computeRangeWithCriticalPointsExact,
 	computeRangeWithCriticalPoints
 } from '$lib/mathAST/domain/range-helpers';
-import { getBoundsFromDomain, domainFromBounds } from '$lib/mathAST/domain/builtins';
-import type { Bounds } from '$lib/math/intervals/algebra';
 import type { MathNode } from '../../types';
-import type { ExactBounds } from '../types';
-
-/**
- * Result of precise bounds computation.
- * Includes numeric Bounds and optionally exact symbolic ExactBounds.
- */
-export interface PreciseBoundsResult {
-	bounds: Bounds;
-	exactBounds?: ExactBounds;
-}
+import type { IntervalDomain } from '$lib/math/intervals/types';
+import { isPositiveInfinity, isNegativeInfinity } from '$lib/math/intervals';
 
 /**
  * Compute precise bounds for an expression using the closed interval method
@@ -31,50 +23,52 @@ export interface PreciseBoundsResult {
  * Tries the exact solver first (symbolic bounds), then falls back to
  * numeric sampling if the solver can't handle the derivative.
  *
- * @returns Precise bounds (with optional exact symbolic bounds), or undefined if computation fails
+ * @param expr - The expression to compute bounds for
+ * @param variable - The name of the bounded variable
+ * @param variableBounds - IntervalDomain with finite endpoints for the variable
+ * @returns Precise IntervalDomain bounds, or undefined if computation fails
  */
 export function computePreciseBounds(
 	expr: MathNode,
 	variable: string,
-	variableBounds: Bounds
-): PreciseBoundsResult | undefined {
-	// Finite bounds required (closed interval method)
-	if (variableBounds.lower === null || variableBounds.upper === null) return undefined;
+	variableBounds: IntervalDomain
+): IntervalDomain | undefined {
+	// Closed interval method requires finite bounds
+	if (!hasFiniteEndpoints(variableBounds)) return undefined;
 
 	try {
-		const inputDomain = domainFromBounds(variableBounds);
-
-		// Try exact method first (symbolic bounds)
-		const exactResult = computeRangeWithCriticalPointsExact(expr, variable, inputDomain);
-		if (
-			exactResult &&
-			exactResult.domain.kind !== 'empty' &&
-			exactResult.domain.kind !== 'universal'
-		) {
-			const bounds = getBoundsFromDomain(exactResult.domain);
-			if (bounds) {
-				return {
-					bounds,
-					exactBounds: {
-						lower: exactResult.lowerNode,
-						lowerApproximate: exactResult.lowerApproximate,
-						lowerInclusive: exactResult.lowerInclusive,
-						upper: exactResult.upperNode,
-						upperApproximate: exactResult.upperApproximate,
-						upperInclusive: exactResult.upperInclusive
-					}
-				};
-			}
+		// Try exact method first (symbolic critical point analysis)
+		const exactResult = computeRangeWithCriticalPointsExact(expr, variable, variableBounds);
+		if (exactResult && isUsableResult(exactResult.domain)) {
+			return exactResult.domain as IntervalDomain;
 		}
 
 		// Fallback: exact + sampling combo
-		const rangeDomain = computeRangeWithCriticalPoints(expr, variable, inputDomain);
-		if (!rangeDomain || rangeDomain.kind === 'empty' || rangeDomain.kind === 'universal') {
-			return undefined;
+		const rangeDomain = computeRangeWithCriticalPoints(expr, variable, variableBounds);
+		if (rangeDomain && isUsableResult(rangeDomain)) {
+			return rangeDomain as IntervalDomain;
 		}
-		const bounds = getBoundsFromDomain(rangeDomain);
-		return bounds ? { bounds } : undefined;
+
+		return undefined;
 	} catch {
 		return undefined;
 	}
+}
+
+/**
+ * Check if an IntervalDomain has finite (non-infinite) endpoints.
+ */
+function hasFiniteEndpoints(domain: IntervalDomain): boolean {
+	if (domain.kind !== 'interval_set') return false;
+	if (domain.intervals.length === 0) return false;
+	const lo = domain.intervals[0].lower;
+	const hi = domain.intervals[domain.intervals.length - 1].upper;
+	return !isNegativeInfinity(lo.value) && !isPositiveInfinity(hi.value);
+}
+
+/**
+ * Check if a Domain result is usable (not empty, not universal, and is an interval set).
+ */
+function isUsableResult(domain: { kind: string }): boolean {
+	return domain.kind === 'interval_set';
 }

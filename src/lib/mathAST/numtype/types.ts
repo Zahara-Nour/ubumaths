@@ -13,8 +13,7 @@
  *              └── irrational_algebraic (√2, ∛5)
  */
 
-import type { Bounds } from '$lib/math/intervals/algebra';
-import type { MathNode } from '../types';
+import type { IntervalDomain } from '$lib/math/intervals/types';
 
 // =============================================================================
 // Numeric Type Enum
@@ -61,23 +60,6 @@ export type SignInfo = 'positive' | 'negative' | 'zero' | 'nonzero' | 'unknown';
 export type ParityInfo = 'even' | 'odd';
 
 // =============================================================================
-// Exact Bounds (from closed interval method)
-// =============================================================================
-
-/**
- * Exact symbolic bounds from the closed interval method.
- * Lower and upper are MathNode values (e.g., symbolic expressions like √2, π/4).
- */
-export interface ExactBounds {
-	readonly lower: MathNode;
-	readonly lowerApproximate: number;
-	readonly lowerInclusive: boolean;
-	readonly upper: MathNode;
-	readonly upperApproximate: number;
-	readonly upperInclusive: boolean;
-}
-
-// =============================================================================
 // Math Type (Full Type Information)
 // =============================================================================
 
@@ -99,11 +81,8 @@ export interface MathType {
 	/** Parity information if known (only meaningful for integers) */
 	readonly parity?: ParityInfo;
 
-	/** Numeric bounds (range) if known */
-	readonly bounds?: Bounds;
-
-	/** Exact symbolic bounds if available (from closed interval method) */
-	readonly exactBounds?: ExactBounds;
+	/** Symbolic bounds (range) if known — IntervalDomain with MathNode endpoints */
+	readonly bounds?: IntervalDomain;
 }
 
 // =============================================================================
@@ -120,7 +99,7 @@ export interface VariableAssumption {
 	readonly sign?: SignInfo;
 	readonly finite?: boolean;
 	readonly parity?: ParityInfo;
-	readonly bounds?: Bounds;
+	readonly bounds?: IntervalDomain;
 }
 
 // =============================================================================
