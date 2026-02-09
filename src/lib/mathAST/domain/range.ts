@@ -38,7 +38,7 @@ import {
 	computeMinRange,
 	computeMaxRange,
 	computeRationalPowerRange,
-	computeRangeWithCriticalPoints,
+	computeRangeWithCriticalPointsExact,
 	spansFullPeriod,
 	getFunctionPeriod
 } from './range-helpers';
@@ -157,7 +157,23 @@ function computeRangeNode(
 		return result;
 	}
 
-	// Type-specific computation
+	// Try exact closed-interval method for bounded domains (solves dependency problem)
+	const inputBounds = getBoundsFromDomain(inputDomain);
+	if (inputBounds && inputBounds.lower !== null && inputBounds.upper !== null) {
+		const exactResult = computeRangeWithCriticalPointsExact(node, variable, inputDomain);
+		if (exactResult && exactResult.domain.kind !== 'universal') {
+			if (options.showSteps) {
+				steps.push({
+					expression: nodeToString(node),
+					rangeDescription: formatInterval(exactResult.domain),
+					explanation: `Méthode de l'intervalle fermé (points critiques exacts).`
+				});
+			}
+			return exactResult.domain;
+		}
+	}
+
+	// Type-specific computation (Minkowski fallback)
 	switch (node.type) {
 		case 'number':
 			return computeConstantRange(node, steps, options);
@@ -194,25 +210,9 @@ function computeRangeNode(
 			// Parentheses: compute range of content
 			return computeRangeNode(node.content, variable, inputDomain, steps, options);
 
-		default: {
-			// Unknown node type: try critical point analysis if domain is bounded
-			const bounds = getBoundsFromDomain(inputDomain);
-			if (bounds && bounds.lower !== null && bounds.upper !== null) {
-				const criticalResult = computeRangeWithCriticalPoints(node, variable, inputDomain);
-				if (criticalResult && criticalResult.kind !== 'universal') {
-					if (options.showSteps) {
-						steps.push({
-							expression: '...',
-							rangeDescription: formatInterval(criticalResult),
-							explanation: `Analyse des points critiques.`
-						});
-					}
-					return criticalResult;
-				}
-			}
-			// Safe fallback
+		default:
+			// Already tried exact method before the switch; safe fallback
 			return universalDomain();
-		}
 	}
 }
 

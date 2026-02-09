@@ -222,13 +222,13 @@ export {
 	// Power ranges
 	computeRationalPowerRange,
 	// Critical point analysis
-	findCriticalPoints,
+	computeRangeWithCriticalPointsExact,
 	computeRangeWithCriticalPoints,
 	// Periodic optimization
 	spansFullPeriod,
 	getFunctionPeriod
 } from './range-helpers';
-export type { QuadraticForm, LinearForm, RationalPower } from './range-helpers';
+export type { QuadraticForm, LinearForm, RationalPower, ExactRangeResult } from './range-helpers';
 
 // =============================================================================
 // Enhanced Step Recording

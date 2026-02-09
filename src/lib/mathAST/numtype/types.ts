@@ -14,6 +14,7 @@
  */
 
 import type { Bounds } from '$lib/math/intervals/algebra';
+import type { MathNode } from '../types';
 
 // =============================================================================
 // Numeric Type Enum
@@ -60,6 +61,23 @@ export type SignInfo = 'positive' | 'negative' | 'zero' | 'nonzero' | 'unknown';
 export type ParityInfo = 'even' | 'odd';
 
 // =============================================================================
+// Exact Bounds (from closed interval method)
+// =============================================================================
+
+/**
+ * Exact symbolic bounds from the closed interval method.
+ * Lower and upper are MathNode values (e.g., symbolic expressions like √2, π/4).
+ */
+export interface ExactBounds {
+	readonly lower: MathNode;
+	readonly lowerApproximate: number;
+	readonly lowerInclusive: boolean;
+	readonly upper: MathNode;
+	readonly upperApproximate: number;
+	readonly upperInclusive: boolean;
+}
+
+// =============================================================================
 // Math Type (Full Type Information)
 // =============================================================================
 
@@ -83,6 +101,9 @@ export interface MathType {
 
 	/** Numeric bounds (range) if known */
 	readonly bounds?: Bounds;
+
+	/** Exact symbolic bounds if available (from closed interval method) */
+	readonly exactBounds?: ExactBounds;
 }
 
 // =============================================================================

@@ -7,8 +7,9 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { parseLatex } from '../../parser';
+import { toLatex } from '../../latex-generator';
 import { inferType, inferTypeWithPreciseBounds, clearAllTypeCache } from '../infer';
-import type { TypeContext } from '../types';
+import type { TypeContext, ExactBounds } from '../types';
 import type { Bounds } from '$lib/math/intervals/algebra';
 
 // =============================================================================
@@ -17,6 +18,10 @@ import type { Bounds } from '$lib/math/intervals/algebra';
 
 function preciseBoundsOf(latex: string, ctx: TypeContext): Bounds | undefined {
 	return inferTypeWithPreciseBounds(parseLatex(latex), ctx).bounds;
+}
+
+function exactBoundsOf(latex: string, ctx: TypeContext): ExactBounds | undefined {
+	return inferTypeWithPreciseBounds(parseLatex(latex), ctx).exactBounds;
 }
 
 function ctxWithBounds(
@@ -945,5 +950,89 @@ describe('precise bounds - extremes at boundaries only', () => {
 		expect(b).toBeDefined();
 		expect(b!.lower).toBeCloseTo(Math.log(0.5), 2);
 		expect(b!.upper).toBeCloseTo(Math.log(2), 2);
+	});
+});
+
+// =============================================================================
+// 26. Exact symbolic bounds (toLatex assertions)
+// =============================================================================
+
+describe('exact symbolic bounds via toLatex', () => {
+	it('x^2 on [0, 3]: exact lower=0, upper=9', () => {
+		const ctx = ctxWithBounds('x', 0, 3);
+		const eb = exactBoundsOf('x^2', ctx);
+		expect(eb).toBeDefined();
+		expect(toLatex(eb!.lower)).toBe('0');
+		expect(toLatex(eb!.upper)).toBe('9');
+	});
+
+	it('x^2 + x on [-2, 1]: exact vertex value -1/4', () => {
+		const ctx = ctxWithBounds('x', -2, 1);
+		const eb = exactBoundsOf('x^2+x', ctx);
+		expect(eb).toBeDefined();
+		expect(eb!.lowerApproximate).toBeCloseTo(-0.25, 5);
+		expect(eb!.upperApproximate).toBeCloseTo(2, 5);
+	});
+
+	it('x - x on [0, 10]: exact bounds are both 0', () => {
+		const ctx = ctxWithBounds('x', 0, 10);
+		const eb = exactBoundsOf('x-x', ctx);
+		expect(eb).toBeDefined();
+		expect(toLatex(eb!.lower)).toBe('0');
+		expect(toLatex(eb!.upper)).toBe('0');
+	});
+
+	it('x^3 - 3x on [-2, 2]: exact bounds -2 and 2', () => {
+		const ctx = ctxWithBounds('x', -2, 2);
+		const eb = exactBoundsOf('x^3-3x', ctx);
+		expect(eb).toBeDefined();
+		expect(eb!.lowerApproximate).toBeCloseTo(-2, 5);
+		expect(eb!.upperApproximate).toBeCloseTo(2, 5);
+	});
+
+	it('x/(x+1) on [0, 10]: exact lower=0', () => {
+		const ctx = ctxWithBounds('x', 0, 10);
+		const eb = exactBoundsOf('\\frac{x}{x+1}', ctx);
+		expect(eb).toBeDefined();
+		expect(toLatex(eb!.lower)).toBe('0');
+		expect(eb!.upperApproximate).toBeCloseTo(10 / 11, 5);
+	});
+
+	it('2x + 3 on [0, 5]: exact bounds 3 and 13', () => {
+		const ctx = ctxWithBounds('x', 0, 5);
+		const eb = exactBoundsOf('2x+3', ctx);
+		expect(eb).toBeDefined();
+		expect(toLatex(eb!.lower)).toBe('3');
+		expect(toLatex(eb!.upper)).toBe('13');
+	});
+
+	it('x on [-3, 7]: identity, exact bounds -3 and 7', () => {
+		const ctx = ctxWithBounds('x', -3, 7);
+		const eb = exactBoundsOf('x', ctx);
+		expect(eb).toBeDefined();
+		expect(eb!.lowerApproximate).toBeCloseTo(-3, 5);
+		expect(eb!.upperApproximate).toBeCloseTo(7, 5);
+	});
+
+	it('exp(x) on [0, 1]: exact lower=1, upper=e', () => {
+		const ctx = ctxWithBounds('x', 0, 1);
+		const eb = exactBoundsOf('e^x', ctx);
+		expect(eb).toBeDefined();
+		expect(toLatex(eb!.lower)).toBe('1');
+		expect(eb!.upperApproximate).toBeCloseTo(Math.E, 5);
+	});
+
+	it('exactBounds includes inclusivity info', () => {
+		const ctx = ctxWithBounds('x', 0, 5);
+		const eb = exactBoundsOf('x^2', ctx);
+		expect(eb).toBeDefined();
+		expect(eb!.lowerInclusive).toBe(true);
+		expect(eb!.upperInclusive).toBe(true);
+	});
+
+	it('returns undefined exactBounds for expressions without bounded variable', () => {
+		const ctx: TypeContext = { variables: new Map([['x', 'real']]) };
+		const result = inferTypeWithPreciseBounds(parseLatex('x^2'), ctx);
+		expect(result.exactBounds).toBeUndefined();
 	});
 });

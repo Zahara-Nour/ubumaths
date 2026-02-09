@@ -12,9 +12,12 @@ import { getBoundsFromDomain, domainFromBounds, type Bounds } from './builtins';
 import { differentiate } from '../differentiation';
 import { evaluate, substitute } from '../eval';
 import { containsVariable, getNumericValue } from '../differentiation/rules';
+import { solve } from '../solve/solve';
+import { equals, number } from '../factory';
+import { isRelation } from '../guards';
 
 /**
- * Evaluate an expression at a specific value of a variable.
+ * Evaluate an expression at a specific numeric value of a variable.
  */
 function evalAt(expr: MathNode, varName: string, value: number): number | null {
 	try {
@@ -27,6 +30,27 @@ function evalAt(expr: MathNode, varName: string, value: number): number | null {
 		// Evaluation failed
 	}
 	return null;
+}
+
+/**
+ * Evaluate an expression exactly at a symbolic point.
+ * Substitutes xNode for the variable, evaluates in exact mode,
+ * then gets a numeric approximation.
+ */
+function evalExact(
+	expr: MathNode,
+	variable: string,
+	xNode: MathNode
+): { y: MathNode; yApproximate: number } | null {
+	try {
+		const substituted = substitute(expr, { [variable]: xNode });
+		const result = evaluate(substituted, { mode: 'exact' });
+		const approx = evaluate(result.node, { mode: 'decimal' });
+		if (typeof approx.value !== 'number' || !isFinite(approx.value)) return null;
+		return { y: result.node, yApproximate: approx.value };
+	} catch {
+		return null;
+	}
 }
 
 // =============================================================================
@@ -724,170 +748,301 @@ export function computeMaxRange(aRange: Domain, bRange: Domain): Domain {
 // =============================================================================
 
 /**
- * Find critical points of an expression by differentiating and solving f'(x) = 0.
+ * Recursively strip delimiter (parentheses) nodes from an expression tree.
  *
- * Currently uses sampling to find approximate roots of f'(x).
- * For polynomials, could use algebraic methods.
+ * Needed because `differentiate` may produce delimiter wrappers that confuse
+ * `solve`'s coefficient extraction (flattenSumShallow stops at delimiters).
  */
-export function findCriticalPoints(expr: MathNode, variable: string, domain: Domain): number[] {
-	const bounds = getBoundsFromDomain(domain);
-	if (!bounds || bounds.lower === null || bounds.upper === null) {
-		return [];
+function stripDelimiters(node: MathNode): MathNode {
+	if (node.type === 'delimiter') return stripDelimiters(node.content);
+
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return { ...node, left: stripDelimiters(node.left), right: stripDelimiters(node.right) };
+		case 'division':
+			return {
+				...node,
+				numerator: stripDelimiters(node.numerator),
+				denominator: stripDelimiters(node.denominator)
+			};
+		case 'opposite':
+		case 'positive':
+			return { ...node, operand: stripDelimiters(node.operand) };
+		case 'superscript':
+			return {
+				...node,
+				base: stripDelimiters(node.base),
+				superscript: stripDelimiters(node.superscript)
+			};
+		case 'function':
+			return { ...node, args: node.args.map(stripDelimiters) };
+		default:
+			return node;
 	}
-
-	const criticalPoints: number[] = [];
-
-	try {
-		// Differentiate the expression
-		const derivative = differentiate(expr, { variable, simplify: true });
-
-		// Sample to find sign changes (zeros of derivative)
-		const numSamples = 100;
-		const step = (bounds.upper - bounds.lower) / numSamples;
-
-		let prevValue: number | null = null;
-		let prevX: number | null = null;
-
-		for (let i = 0; i <= numSamples; i++) {
-			const x = bounds.lower + i * step;
-			const value = evalAt(derivative, variable, x);
-
-			if (value !== null) {
-				// Check for sign change (root)
-				if (prevValue !== null && prevX !== null) {
-					if ((prevValue < 0 && value > 0) || (prevValue > 0 && value < 0)) {
-						// Bisection to refine root location
-						const root = bisectionRoot(derivative, variable, prevX, x, prevValue, value);
-						if (root !== null && root > bounds.lower && root < bounds.upper) {
-							criticalPoints.push(root);
-						}
-					}
-				}
-
-				// Check for zero
-				if (Math.abs(value) < 1e-10) {
-					if (!criticalPoints.some((cp) => Math.abs(cp - x) < 1e-6)) {
-						criticalPoints.push(x);
-					}
-				}
-
-				prevValue = value;
-				prevX = x;
-			}
-		}
-	} catch {
-		// Differentiation failed, return empty
-	}
-
-	return criticalPoints;
 }
 
 /**
- * Bisection method to refine a root location.
+ * Result of exact range computation, including symbolic MathNode bounds.
  */
-function bisectionRoot(
-	expr: MathNode,
-	variable: string,
-	x1: number,
-	x2: number,
-	v1: number,
-	v2: number,
-	maxIter: number = 20
-): number | null {
-	let a = x1;
-	let b = x2;
-	let fa = v1;
-
-	for (let i = 0; i < maxIter; i++) {
-		const mid = (a + b) / 2;
-		const fm = evalAt(expr, variable, mid);
-
-		if (fm === null) {
-			return mid; // Best approximation
-		}
-
-		if (Math.abs(fm) < 1e-10) {
-			return mid;
-		}
-
-		if ((fa < 0 && fm > 0) || (fa > 0 && fm < 0)) {
-			b = mid;
-		} else {
-			a = mid;
-			fa = fm;
-		}
-	}
-
-	return (a + b) / 2;
+export interface ExactRangeResult {
+	/** The Domain with numeric bounds */
+	domain: Domain;
+	/** The exact lower bound as a MathNode */
+	lowerNode: MathNode;
+	/** The exact upper bound as a MathNode */
+	upperNode: MathNode;
+	/** Numeric approximation of the lower bound */
+	lowerApproximate: number;
+	/** Numeric approximation of the upper bound */
+	upperApproximate: number;
+	/** Whether the lower bound is inclusive */
+	lowerInclusive: boolean;
+	/** Whether the upper bound is inclusive */
+	upperInclusive: boolean;
 }
 
 /**
- * Compute exact range using critical point analysis.
+ * Compute exact range using the closed interval method.
  *
  * For a differentiable function on [a, b]:
- * Range = {f(a), f(b)} ∪ {f(c) : c is critical point in (a, b)}
+ *   Range = {f(a), f(b)} ∪ {f(c) : c is critical point in (a, b)}
+ *
+ * Uses the exact solver and symbolic evaluation for precise MathNode bounds.
+ * Returns null if endpoints can't be evaluated or solver fails.
+ */
+export function computeRangeWithCriticalPointsExact(
+	expr: MathNode,
+	variable: string,
+	domain: Domain
+): ExactRangeResult | null {
+	const bounds = getBoundsFromDomain(domain);
+	if (!bounds || bounds.lower === null || bounds.upper === null) return null;
+
+	try {
+		const candidates: { node: MathNode; approximate: number; inclusive: boolean }[] = [];
+
+		// Evaluate f at endpoints (both must succeed)
+		const lowerEval = evalExact(expr, variable, fromNumber(bounds.lower));
+		if (!lowerEval) return null;
+		candidates.push({
+			node: lowerEval.y,
+			approximate: lowerEval.yApproximate,
+			inclusive: bounds.lowerInclusive
+		});
+
+		const upperEval = evalExact(expr, variable, fromNumber(bounds.upper));
+		if (!upperEval) return null;
+		candidates.push({
+			node: upperEval.y,
+			approximate: upperEval.yApproximate,
+			inclusive: bounds.upperInclusive
+		});
+
+		// Differentiate and strip delimiters (solve chokes on delimiter nodes)
+		const derivative = stripDelimiters(differentiate(expr, { variable, simplify: true }));
+
+		// For quotient derivatives f'/g, solve numerator = 0 (zeros of f/g are zeros of f)
+		const exprToSolve = derivative.type === 'division' ? derivative.numerator : derivative;
+
+		// Solve f'(x) = 0
+		const equation = equals(exprToSolve, number('0'));
+		if (!isRelation(equation)) return null;
+		const solveResult = solve(equation, { variable });
+
+		// Process solutions: evaluate f at each interior critical point
+		if (
+			solveResult.status === 'unique' ||
+			solveResult.status === 'multiple' ||
+			solveResult.status === 'approximate'
+		) {
+			for (const sol of solveResult.solutions) {
+				let xApprox = sol.approximate;
+
+				// Resolve missing approximate by evaluating the MathNode
+				if (xApprox === undefined) {
+					try {
+						const evalResult = evaluate(sol.value, { mode: 'decimal' });
+						if (typeof evalResult.value === 'number' && isFinite(evalResult.value)) {
+							xApprox = evalResult.value;
+						}
+					} catch {
+						continue;
+					}
+				}
+				if (xApprox === undefined) continue;
+
+				// Must be strictly inside the domain
+				if (xApprox <= bounds.lower || xApprox >= bounds.upper) continue;
+
+				// Evaluate f(x) at this critical point
+				const cpEval = evalExact(expr, variable, sol.value);
+				if (cpEval) {
+					candidates.push({
+						node: cpEval.y,
+						approximate: cpEval.yApproximate,
+						inclusive: true
+					});
+				}
+			}
+		}
+
+		// Sanity check: sample interior points to verify the computed range covers
+		// all function values. Solve may find some but not all critical points
+		// (e.g. trig equations where it finds x=π/2 but not x=3π/2).
+		{
+			const lo = bounds.lower;
+			const hi = bounds.upper;
+			const minVal = Math.min(...candidates.map((c) => c.approximate));
+			const maxVal = Math.max(...candidates.map((c) => c.approximate));
+
+			for (let i = 1; i <= 10; i++) {
+				const x = lo + ((hi - lo) * i) / 11;
+				const fVal = evalAt(expr, variable, x);
+				if (fVal !== null && (fVal < minVal - 1e-10 || fVal > maxVal + 1e-10)) {
+					return null; // Function exceeds computed range → missed critical points
+				}
+			}
+		}
+
+		// Find min and max among candidates
+		let min = candidates[0];
+		let max = candidates[0];
+
+		for (const c of candidates) {
+			if (c.approximate < min.approximate) {
+				min = c;
+			} else if (c.approximate === min.approximate && c.inclusive) {
+				min = { ...min, inclusive: true };
+			}
+			if (c.approximate > max.approximate) {
+				max = c;
+			} else if (c.approximate === max.approximate && c.inclusive) {
+				max = { ...max, inclusive: true };
+			}
+		}
+
+		return {
+			domain: domainFromBounds({
+				lower: min.approximate,
+				lowerInclusive: min.inclusive,
+				upper: max.approximate,
+				upperInclusive: max.inclusive
+			}),
+			lowerNode: min.node,
+			upperNode: max.node,
+			lowerApproximate: min.approximate,
+			upperApproximate: max.approximate,
+			lowerInclusive: min.inclusive,
+			upperInclusive: max.inclusive
+		};
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Compute range using the closed interval method.
+ *
+ * Tries the exact solver first. Falls back to numeric sampling
+ * when the solver can't handle the derivative (trig, unsimplified polynomials).
  */
 export function computeRangeWithCriticalPoints(
 	expr: MathNode,
 	variable: string,
 	domain: Domain
 ): Domain | null {
+	const exact = computeRangeWithCriticalPointsExact(expr, variable, domain);
+	if (exact) return exact.domain;
+
+	return computeRangeWithSampling(expr, variable, domain);
+}
+
+/**
+ * Numeric fallback: find critical points by sampling the derivative for sign changes.
+ */
+function computeRangeWithSampling(expr: MathNode, variable: string, domain: Domain): Domain | null {
 	const bounds = getBoundsFromDomain(domain);
-	if (!bounds || bounds.lower === null || bounds.upper === null) {
-		return null;
-	}
+	if (!bounds || bounds.lower === null || bounds.upper === null) return null;
 
-	const criticalPoints = findCriticalPoints(expr, variable, domain);
-
-	// Evaluate at all critical points and endpoints
+	const lo = bounds.lower;
+	const hi = bounds.upper;
 	const values: { value: number; inclusive: boolean }[] = [];
 
-	// Endpoints
-	const lowerVal = evalAt(expr, variable, bounds.lower);
-	if (lowerVal !== null) {
-		values.push({ value: lowerVal, inclusive: bounds.lowerInclusive });
-	}
+	const lowerVal = evalAt(expr, variable, lo);
+	if (lowerVal !== null) values.push({ value: lowerVal, inclusive: bounds.lowerInclusive });
 
-	const upperVal = evalAt(expr, variable, bounds.upper);
-	if (upperVal !== null) {
-		values.push({ value: upperVal, inclusive: bounds.upperInclusive });
-	}
+	const upperVal = evalAt(expr, variable, hi);
+	if (upperVal !== null) values.push({ value: upperVal, inclusive: bounds.upperInclusive });
 
-	// Critical points (interior, so always achievable)
-	for (const cp of criticalPoints) {
-		const cpVal = evalAt(expr, variable, cp);
-		if (cpVal !== null) {
-			values.push({ value: cpVal, inclusive: true });
+	try {
+		const derivative = differentiate(expr, { variable, simplify: true });
+		const n = 100;
+		const step = (hi - lo) / n;
+		let prevD: number | null = null;
+		let prevX = lo;
+
+		for (let i = 0; i <= n; i++) {
+			const x = lo + i * step;
+			const d = evalAt(derivative, variable, x);
+			if (d === null) continue;
+
+			// Sign change → bisect to refine root
+			if (prevD !== null && ((prevD < 0 && d > 0) || (prevD > 0 && d < 0))) {
+				let a = prevX,
+					b = x,
+					fa = prevD;
+				for (let j = 0; j < 20; j++) {
+					const mid = (a + b) / 2;
+					const fm = evalAt(derivative, variable, mid);
+					if (fm === null || Math.abs(fm) < 1e-10) {
+						a = b = mid;
+						break;
+					}
+					if ((fa < 0 && fm > 0) || (fa > 0 && fm < 0)) {
+						b = mid;
+					} else {
+						a = mid;
+						fa = fm;
+					}
+				}
+				const root = (a + b) / 2;
+				if (root > lo && root < hi) {
+					const fRoot = evalAt(expr, variable, root);
+					if (fRoot !== null) values.push({ value: fRoot, inclusive: true });
+				}
+			}
+
+			// Near-zero sample
+			if (Math.abs(d) < 1e-10 && x > lo && x < hi) {
+				const fX = evalAt(expr, variable, x);
+				if (fX !== null) values.push({ value: fX, inclusive: true });
+			}
+
+			prevD = d;
+			prevX = x;
 		}
+	} catch {
+		// Differentiation failed
 	}
 
-	if (values.length === 0) {
-		return null;
-	}
+	if (values.length === 0) return null;
 
-	// Find min and max
-	let minVal = { value: Infinity, inclusive: false };
-	let maxVal = { value: -Infinity, inclusive: false };
-
+	let minV = { value: Infinity, inclusive: false };
+	let maxV = { value: -Infinity, inclusive: false };
 	for (const v of values) {
-		if (v.value < minVal.value) {
-			minVal = v;
-		} else if (v.value === minVal.value && v.inclusive) {
-			minVal.inclusive = true;
-		}
-
-		if (v.value > maxVal.value) {
-			maxVal = v;
-		} else if (v.value === maxVal.value && v.inclusive) {
-			maxVal.inclusive = true;
-		}
+		if (v.value < minV.value) minV = v;
+		else if (v.value === minV.value && v.inclusive) minV.inclusive = true;
+		if (v.value > maxV.value) maxV = v;
+		else if (v.value === maxV.value && v.inclusive) maxV.inclusive = true;
 	}
 
 	return domainFromBounds({
-		lower: minVal.value,
-		lowerInclusive: minVal.inclusive,
-		upper: maxVal.value,
-		upperInclusive: maxVal.inclusive
+		lower: minV.value,
+		lowerInclusive: minV.inclusive,
+		upper: maxV.value,
+		upperInclusive: maxV.inclusive
 	});
 }
 

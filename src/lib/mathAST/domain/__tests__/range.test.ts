@@ -515,10 +515,10 @@ describe('computeRange()', () => {
 		it('x - x on [0, 10] has range {0}', () => {
 			const expr = subtract(variable('x'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 10) });
-			// [0, 10] - [0, 10] = [-10, 10] (Minkowski difference)
+			// Exact method correctly computes x - x = 0 (not Minkowski [-10, 10])
 			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 10)).toBe(true);
-			expect(containsValue(result.range, -10)).toBe(true);
+			expect(containsValue(result.range, 10)).toBe(false);
+			expect(containsValue(result.range, -10)).toBe(false);
 		});
 
 		it('5 - 3 (two constants) has range {2}', () => {
