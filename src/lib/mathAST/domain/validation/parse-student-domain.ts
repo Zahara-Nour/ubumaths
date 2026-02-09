@@ -10,7 +10,8 @@
  * @module mathAST/domain/validation/parse-student-domain
  */
 
-import type { Domain, Interval, EndpointValue } from '../types';
+import type { MathNode } from '../../types';
+import type { Domain, Interval } from '../types';
 import type { ParseStudentDomainResult } from './types';
 import {
 	intervalDomain,
@@ -230,12 +231,12 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
  */
 function parseExcludedPoints(
 	input: string
-): { success: true; points: EndpointValue[] } | { success: false } {
+): { success: true; points: MathNode[] } | { success: false } {
 	const parts = input
 		.split(/[,;]/)
 		.map((s) => s.trim())
 		.filter(Boolean);
-	const points: EndpointValue[] = [];
+	const points: MathNode[] = [];
 
 	for (const part of parts) {
 		const value = parseEndpointValue(part);
@@ -549,9 +550,9 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
 // =============================================================================
 
 /**
- * Parse an endpoint value string into EndpointValue.
+ * Parse an endpoint value string into a MathNode.
  */
-function parseEndpointValue(input: string): EndpointValue | null {
+function parseEndpointValue(input: string): MathNode | null {
 	const trimmed = input.trim();
 
 	// Infinity

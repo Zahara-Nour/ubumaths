@@ -15,20 +15,18 @@
 
 // Endpoint types
 export type {
-	EndpointValue,
 	EndpointType,
 	Endpoint,
 	// Interval types
 	Interval,
 	// Domain types (interval-based)
 	EmptySet,
-	UniversalSet,
-	// Comparison types
-	CompareOutcome
+	UniversalSet
 } from '$lib/math/intervals/types';
 
 // Import for use in this file
-import type { EndpointValue, Interval, EmptySet, UniversalSet } from '$lib/math/intervals/types';
+import type { Interval, EmptySet, UniversalSet } from '$lib/math/intervals/types';
+import type { MathNode } from '../types';
 
 // =============================================================================
 // Domain-level types (not in intervals module)
@@ -41,7 +39,7 @@ import type { EndpointValue, Interval, EmptySet, UniversalSet } from '$lib/math/
  */
 export interface ExcludedPoint {
 	readonly kind: 'excluded_point';
-	readonly value: EndpointValue;
+	readonly value: MathNode;
 }
 
 /**
@@ -105,7 +103,7 @@ export interface ComparisonCondition {
 	readonly kind: 'comparison';
 	readonly variable: string;
 	readonly op: ComparisonOp;
-	readonly bound: EndpointValue;
+	readonly bound: MathNode;
 }
 
 /**
@@ -130,8 +128,6 @@ export interface ConditionDomain {
 // =============================================================================
 // Periodic Exclusion Types (for tan, cot, sec, csc)
 // =============================================================================
-
-import type { MathNode } from '../types';
 
 /**
  * Represents a domain with periodic exclusions.

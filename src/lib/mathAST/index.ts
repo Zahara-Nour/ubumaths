@@ -732,7 +732,6 @@ export type {
 	ConditionDomain,
 	Interval,
 	Endpoint,
-	EndpointValue,
 	ExcludedPoint,
 	Condition as DomainCondition,
 	ComparisonCondition,

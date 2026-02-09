@@ -19,7 +19,6 @@
 
 export type {
 	// Core interval types (from intervals module via types.ts)
-	EndpointValue,
 	EndpointType,
 	Endpoint,
 	Interval,
@@ -27,7 +26,6 @@ export type {
 	EmptySet,
 	UniversalSet,
 	IntervalSet,
-	CompareOutcome,
 	// Domain-specific types
 	Domain,
 	ConditionDomain,

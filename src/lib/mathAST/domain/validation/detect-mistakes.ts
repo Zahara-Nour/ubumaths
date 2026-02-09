@@ -612,8 +612,8 @@ function tryGetNumericValue(node: MathNode): number | null {
 }
 
 /**
- * Try to get a numeric value from an EndpointValue.
- * Handles both interval EndpointValue format (kind: 'number') and
+ * Try to get a numeric value from a MathNode.
+ * Handles both MathNode format (kind: 'number') and
  * MathNode format (type: 'number') used in excluded points.
  */
 function tryGetEndpointNumber(value: unknown): number | null {
@@ -625,7 +625,7 @@ function tryGetEndpointNumber(value: unknown): number | null {
 			sign?: string;
 		};
 
-		// Handle EndpointValue format: { kind: 'number', value: 0 }
+		// Handle MathNode format: { kind: 'number', value: 0 }
 		if (v.kind === 'number') {
 			if (typeof v.value === 'number') {
 				return v.value;

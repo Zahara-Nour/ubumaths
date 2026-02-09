@@ -24,7 +24,6 @@
 // Types
 export type {
 	// Endpoint types
-	EndpointValue,
 	EndpointType,
 	Endpoint,
 	// Interval types
@@ -33,13 +32,8 @@ export type {
 	EmptySet,
 	UniversalSet,
 	IntervalSet,
-	IntervalDomain,
-	// Comparison types
-	CompareOutcome
+	IntervalDomain
 } from './types';
-
-// Comparison
-export { compare } from './compare';
 
 // Endpoint utilities
 export {
@@ -83,8 +77,8 @@ export { positiveReals, nonNegativeReals, nonZeroReals, unitInterval } from './f
 
 // Algebra operations (set theory)
 export {
-	isEmpty,
-	isUniversal,
+	isEmptyInterval as isEmpty,
+	isUniversalInterval as isUniversal,
 	containsValue,
 	intersect,
 	union,

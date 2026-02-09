@@ -5,18 +5,13 @@
  * Handles ConditionDomain and PeriodicExclusion as domain-specific types.
  */
 
-import type {
-	Domain,
-	EndpointValue,
-	ExcludedPoint,
-	PeriodicExclusion,
-	ConditionDomain
-} from './types';
+import type { MathNode } from '../types';
+import type { Domain, ExcludedPoint, PeriodicExclusion, ConditionDomain } from './types';
 import { ZERO_TOLERANCE } from '../common';
 import type { IntervalDomain } from '$lib/math/intervals/types';
 import {
-	isEmpty as intervalsIsEmpty,
-	isUniversal as intervalsIsUniversal,
+	isEmptyInterval as intervalsIsEmpty,
+	isUniversalInterval as intervalsIsUniversal,
 	intersect as intervalsIntersect,
 	union as intervalsUnion,
 	complement as intervalsComplement,
@@ -576,7 +571,7 @@ export function difference(a: Domain, b: Domain): Domain {
  * @param values - Array of endpoint values to exclude
  * @returns New domain with points excluded
  */
-export function excludePoints(d: Domain, values: EndpointValue[]): Domain {
+export function excludePoints(d: Domain, values: MathNode[]): Domain {
 	if (d.kind === 'condition_domain') {
 		// Try to convert to intervals first
 		const converted = tryConvertConditionToInterval(d);
@@ -613,7 +608,7 @@ export function excludePoints(d: Domain, values: EndpointValue[]): Domain {
  * @param values - Array of numeric values to exclude
  * @returns New domain with points excluded
  *
- * @deprecated Use excludePoints with EndpointValue[] instead
+ * @deprecated Use excludePoints with MathNode[] instead
  */
 export function excludeNumericPoints(d: Domain, values: number[]): Domain {
 	return excludePoints(

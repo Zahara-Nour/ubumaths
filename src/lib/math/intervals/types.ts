@@ -12,19 +12,6 @@ import type { MathNode } from '$lib/mathAST/types';
 // =============================================================================
 
 /**
- * An endpoint value is a MathNode.
- *
- * This includes:
- * - NumberNode: 0, 1, -5, 3.14
- * - InfinityNode: +∞, -∞
- * - ConstantNode: π, e
- * - FunctionNode: sqrt(2), ln(3), sin(π/4)
- * - DivisionNode: 1/2, 3/4
- * - Any other symbolic expression
- */
-export type EndpointValue = MathNode;
-
-/**
  * Type of endpoint for an interval bound
  * - 'closed': includes the endpoint (<=, >=) - displayed as [ or ]
  * - 'open': excludes the endpoint (<, >) - displayed as ] or [
@@ -35,7 +22,7 @@ export type EndpointType = 'open' | 'closed';
  * Represents one end of an interval
  */
 export interface Endpoint {
-	readonly value: EndpointValue;
+	readonly value: MathNode;
 	readonly type: EndpointType;
 }
 
@@ -112,25 +99,3 @@ export interface IntervalSet {
  * Union of all interval domain types
  */
 export type IntervalDomain = EmptySet | UniversalSet | IntervalSet;
-
-// =============================================================================
-// Comparison Result Types
-// =============================================================================
-
-/**
- * Result of comparing two endpoint values.
- * Maps directly to compareNumericNodes() return type:
- * - -1: a < b
- * - 0: a = b
- * - 1: a > b
- * - undefined: cannot compare (e.g., contains variables)
- */
-export type CompareOutcome = -1 | 0 | 1 | undefined;
-
-/**
- * Result of endpoint comparison.
- * Structure kept for future extensibility.
- */
-export interface CompareResult {
-	readonly outcome: CompareOutcome;
-}

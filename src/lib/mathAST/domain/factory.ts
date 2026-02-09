@@ -49,8 +49,8 @@ export { universalSet as universalDomain } from '$lib/math/intervals/factory';
 // Domain-specific factories (conditions)
 // =============================================================================
 
+import type { MathNode } from '../types';
 import type {
-	EndpointValue,
 	ExcludedPoint,
 	IntervalSet,
 	ConditionDomain,
@@ -59,7 +59,6 @@ import type {
 	PeriodicExclusion,
 	Interval
 } from './types';
-import type { MathNode } from '../types';
 import {
 	fromNumber as intervalsFromNumber,
 	greaterThanInterval as intervalsGreaterThan,
@@ -84,7 +83,7 @@ export function conditionDomain(
 export function comparison(
 	variable: string,
 	op: ComparisonOp,
-	bound: EndpointValue
+	bound: MathNode
 ): ComparisonCondition {
 	return { kind: 'comparison', variable, op, bound };
 }
@@ -174,7 +173,7 @@ export const intervalDomain = intervalSet;
 /**
  * Creates an excluded point.
  */
-export function excludedPoint(value: EndpointValue): ExcludedPoint {
+export function excludedPoint(value: MathNode): ExcludedPoint {
 	return { kind: 'excluded_point', value };
 }
 

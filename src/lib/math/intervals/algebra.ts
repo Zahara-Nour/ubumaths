@@ -22,7 +22,6 @@ import {
 	UNIVERSAL_SET,
 	fromNumber
 } from './factory';
-import { compare } from './compare';
 import {
 	endpointToNumber,
 	isNegativeInfinityEndpoint,
@@ -52,12 +51,12 @@ import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
  */
 function nodeInInterval(value: MathNode, int: Interval): boolean {
 	// Check lower bound
-	const cmpLo = compare(value, int.lower.value);
+	const cmpLo = compareNumericNodes(value, int.lower.value);
 	if (cmpLo === undefined) return false;
 	if (int.lower.type === 'closed' ? cmpLo < 0 : cmpLo <= 0) return false;
 
 	// Check upper bound
-	const cmpHi = compare(value, int.upper.value);
+	const cmpHi = compareNumericNodes(value, int.upper.value);
 	if (cmpHi === undefined) return false;
 	if (int.upper.type === 'closed' ? cmpHi > 0 : cmpHi >= 0) return false;
 
@@ -69,7 +68,7 @@ function nodeInInterval(value: MathNode, int: Interval): boolean {
  * Returns undefined if comparison is not possible.
  */
 function isIntervalEmpty(int: Interval): boolean {
-	const cmp = compare(int.lower.value, int.upper.value);
+	const cmp = compareNumericNodes(int.lower.value, int.upper.value);
 
 	// If comparison is undefined, assume not empty (conservative)
 	if (cmp === undefined) return false;
@@ -99,7 +98,7 @@ function toIntervalSet(d: IntervalDomain): IntervalSet | null {
 /**
  * Check if a domain is empty (contains no values).
  */
-export function isEmpty(d: IntervalDomain): boolean {
+export function isEmptyInterval(d: IntervalDomain): boolean {
 	switch (d.kind) {
 		case 'empty':
 			return true;
@@ -114,7 +113,7 @@ export function isEmpty(d: IntervalDomain): boolean {
 /**
  * Check if a domain is the universal set.
  */
-export function isUniversal(d: IntervalDomain): boolean {
+export function isUniversalInterval(d: IntervalDomain): boolean {
 	if (d.kind === 'universal') return true;
 	if (d.kind === 'empty') return false;
 
@@ -170,7 +169,7 @@ export function containsValue(d: IntervalDomain, value: MathNode | number): bool
  */
 function intersectIntervals(a: Interval, b: Interval): Interval | null {
 	// Find the max of lower bounds
-	const cmpLower = compare(a.lower.value, b.lower.value);
+	const cmpLower = compareNumericNodes(a.lower.value, b.lower.value);
 
 	// If comparison is undefined, keep interval a's lower (conservative)
 	let lower: Endpoint;
@@ -185,7 +184,7 @@ function intersectIntervals(a: Interval, b: Interval): Interval | null {
 	}
 
 	// Find the min of upper bounds
-	const cmpUpper = compare(a.upper.value, b.upper.value);
+	const cmpUpper = compareNumericNodes(a.upper.value, b.upper.value);
 
 	let upper: Endpoint;
 	if (cmpUpper === undefined || cmpUpper < 0) {

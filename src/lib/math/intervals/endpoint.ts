@@ -1,8 +1,8 @@
 /**
  * Endpoint Utilities
  *
- * Provides utility functions for interval endpoints.
- * Re-exports comparison functions from compare.ts.
+ * Provides utility functions for interval endpoints:
+ * infinity checks and numeric conversion.
  */
 
 import { evaluate } from '$lib/mathAST/eval';
@@ -11,7 +11,7 @@ import {
 	isPositiveInfinity as mathASTIsPositiveInfinity,
 	isNegativeInfinity as mathASTIsNegativeInfinity
 } from '$lib/mathAST/guards';
-import type { EndpointValue } from './types';
+import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
 // Infinity Checks
@@ -20,21 +20,21 @@ import type { EndpointValue } from './types';
 /**
  * Checks if an endpoint value is infinite (+∞ or -∞).
  */
-export function isInfiniteEndpoint(value: EndpointValue): boolean {
+export function isInfiniteEndpoint(value: MathNode): boolean {
 	return mathASTIsInfinity(value);
 }
 
 /**
  * Checks if an endpoint value is positive infinity (+∞).
  */
-export function isPositiveInfinityEndpoint(value: EndpointValue): boolean {
+export function isPositiveInfinityEndpoint(value: MathNode): boolean {
 	return mathASTIsPositiveInfinity(value);
 }
 
 /**
  * Checks if an endpoint value is negative infinity (-∞).
  */
-export function isNegativeInfinityEndpoint(value: EndpointValue): boolean {
+export function isNegativeInfinityEndpoint(value: MathNode): boolean {
 	return mathASTIsNegativeInfinity(value);
 }
 
@@ -55,7 +55,7 @@ export function isNegativeInfinityEndpoint(value: EndpointValue): boolean {
  * endpointToNumber(infinity('positive')) // Infinity
  * endpointToNumber(variable('x'))      // NaN (cannot evaluate)
  */
-export function endpointToNumber(value: EndpointValue): number {
+export function endpointToNumber(value: MathNode): number {
 	// Handle infinity specially (evaluate doesn't support InfinityNode)
 	if (mathASTIsPositiveInfinity(value)) {
 		return Infinity;

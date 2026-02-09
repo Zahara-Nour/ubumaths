@@ -2,7 +2,7 @@
  * Tests for domain factory functions
  *
  * Updated for MathNode-based endpoint values:
- * - EndpointValue is now MathNode (numbers via NumberNode, infinity via InfinityNode)
+ * - Endpoint values are MathNode (numbers via NumberNode, infinity via InfinityNode)
  * - IntervalSet has kind: 'interval_set' (not 'interval_domain')
  */
 
