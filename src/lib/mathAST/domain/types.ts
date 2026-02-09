@@ -197,7 +197,7 @@ export interface RangeStep {
  * Result of a range computation
  */
 export interface RangeResult {
-	readonly range: Domain;
+	readonly range: Domain | null;
 	readonly variable: string;
 	readonly inputDomain?: Domain;
 	readonly steps?: readonly RangeStep[];
