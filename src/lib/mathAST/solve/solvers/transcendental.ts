@@ -54,8 +54,9 @@ import { extractLinearForm } from '../../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import type { SignedTerm } from '../../flatten';
-import { P, tryMatch, getBindingNode, isProductSequenceBinding } from '../../pattern';
-import type { MatchBindings } from '../../pattern';
+import { P } from '../../pattern/builder';
+import { tryMatch } from '../../pattern/match';
+import { getBindingNode, isProductSequenceBinding, type MatchBindings } from '../../pattern/types';
 
 // =============================================================================
 // Generic Transcendental Equation Extraction

@@ -22,7 +22,7 @@ import { SimplifyStepRecorder } from './step-recorder';
 import { getSimplifyRuleDescription } from './descriptions-fr';
 
 // Pattern rules
-import { absSimplifyRules } from '../pattern/rule-sets';
+import { absSimplifyRules } from '../pattern/rule-sets/abs';
 import { trigSimplifyRules } from '../pattern/rule-sets/trig-identities';
 import { hypSimplifyRules } from '../pattern/rule-sets/hyperbolic-identities';
 import { algebraicSimplifyRules } from '../pattern/rule-sets/algebraic-identities';

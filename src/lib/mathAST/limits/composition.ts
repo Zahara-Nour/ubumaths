@@ -27,7 +27,9 @@ import {
 	isSubtraction,
 	isMultiplication
 } from '../guards';
-import { P, match, type Pattern } from '../pattern';
+import { P } from '../pattern/builder';
+import { match } from '../pattern/match';
+import type { Pattern } from '../pattern/types';
 import { number, positiveInfinity } from '../factory';
 import { differentiate } from '../differentiation';
 import { substitute } from '../eval/substitute';

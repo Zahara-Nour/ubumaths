@@ -21,10 +21,10 @@ import {
 	isNumber,
 	isOpposite,
 	flattenProductShallow,
-	stripUnnecessaryBrackets,
-	P,
-	matches
+	stripUnnecessaryBrackets
 } from '$lib/mathAST';
+import { P } from '$lib/mathAST/pattern/builder';
+import { matches } from '$lib/mathAST/pattern/match';
 
 // =============================================================================
 // CONSTANTS
