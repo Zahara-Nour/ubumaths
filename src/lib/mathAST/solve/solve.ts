@@ -81,7 +81,7 @@ import { getRuleDescription } from './descriptions-fr';
 import { computeDomain } from '../domain/compute';
 import type { Domain } from '../domain/types';
 import {
-	containsValue,
+	containsNode,
 	isUniversal,
 	isEmpty as isDomainEmpty,
 	intersect as intersectDomains
@@ -1040,17 +1040,11 @@ function filterSolutionsByDomain(
 
 	const kept: Solution[] = [];
 	for (const sol of result.solutions) {
-		let numericValue: number | undefined;
-		try {
-			numericValue = evaluateNodeToApproximatedNumber(sol.value);
-		} catch {
-			numericValue = sol.approximate;
-		}
-
-		if (numericValue !== undefined && !containsValue(domain, numericValue)) {
+		if (!containsNode(domain, sol.value)) {
+			const numericValue = sol.approximate ?? evaluateNodeToApproximatedNumber(sol.value);
 			recorder.recordStep(
 				'domain-exclusion',
-				`${variable} = ${numericValue.toPrecision(6)} est exclu du domaine`,
+				`${variable} = ${(numericValue ?? 0).toPrecision(6)} est exclu du domaine`,
 				sol.value,
 				sol.value,
 				'summarized'
