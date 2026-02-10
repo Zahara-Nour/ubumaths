@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.6](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.5...v0.8.6) (2026-02-10)
+
+### 🐛 Bug Fixes
+
+- **build:** resolve circular dependency in pattern module imports ([1d62282](https://github.com/Zahara-Nour/ubumaths/commit/1d6228233d0f26b9a0cd93b8142a4585fb177007))
+
 ### [0.8.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.4...v0.8.5) (2026-02-10)
 
 ### 🐛 Bug Fixes
