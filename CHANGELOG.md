@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.4...v0.8.5) (2026-02-10)
+
+### 🐛 Bug Fixes
+
+- **parser:** replace removed positiveInfinity/negativeInfinity imports ([2505272](https://github.com/Zahara-Nour/ubumaths/commit/2505272275b6fa366740462833afdaa3cf255772))
+
 ### [0.8.4](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.3...v0.8.4) (2026-02-10)
 
 ### [0.8.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.2...v0.8.3) (2026-02-10)
