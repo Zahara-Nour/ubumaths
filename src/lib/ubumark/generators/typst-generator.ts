@@ -1778,9 +1778,11 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\left\s*\(/g, '(');
 	result = result.replace(/\\right\s*\)/g, ')');
 
-	// Convert \left[ ... \right] to [ ... ]
-	result = result.replace(/\\left\s*\[/g, '[');
-	result = result.replace(/\\right\s*\]/g, ']');
+	// Convert \left[ ... \right] to bracket symbols
+	// Use placeholders because raw [ ] in math inside content blocks [...]
+	// confuse the Typst parser (] prematurely closes the content block)
+	result = result.replace(/\\left\s*\[/g, '<<<LEFT_BRACKET>>>');
+	result = result.replace(/\\right\s*\]/g, '<<<RIGHT_BRACKET>>>');
 
 	// Convert \left| ... \right| to abs( ... ) or |...|
 	// Use lr(|...|) for proper sizing in Typst
@@ -2300,6 +2302,11 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Restore visible braces as Typst symbols
 	result = result.replace(/<<<VISIBLE_LBRACE>>>/g, 'brace.l');
 	result = result.replace(/<<<VISIBLE_RBRACE>>>/g, 'brace.r');
+
+	// Restore \left[...\right] brackets as Typst symbol names
+	// Raw [ ] would confuse the parser when math is inside content blocks [...]
+	result = result.replace(/<<<LEFT_BRACKET>>>/g, 'bracket.l ');
+	result = result.replace(/<<<RIGHT_BRACKET>>>/g, ' bracket.r');
 
 	// ========================================================================
 	// DOUBLE QUOTE AS DOUBLE PRIME (Step 2 of 2)
