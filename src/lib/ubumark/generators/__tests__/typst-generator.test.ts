@@ -245,8 +245,8 @@ describe('generateTypst', () => {
 
 		expect(typst).toContain('$');
 		// LaTeX is now converted to Typst syntax
-		// Note: 'dx' is preserved as differential notation, not split
-		expect(typst).toContain('integral_0^pi sin(x) dx');
+		// Typst "dif" operator produces upright d for differentials
+		expect(typst).toContain('integral_0^pi sin(x) dif x');
 	});
 
 	it('should generate ordered list', () => {
@@ -3096,11 +3096,12 @@ describe('convertLatexToTypstMath - Implicit Multiplication', () => {
 		expect(convertLatexToTypstMath('u_{nr}')).toBe('u_(n r)');
 	});
 
-	it('should preserve differential notation (dx, dy, dt, etc.)', () => {
-		// Differentials are NOT implicit multiplication - they are a single notation
-		expect(convertLatexToTypstMath('dx')).toBe('dx');
-		expect(convertLatexToTypstMath('dy')).toBe('dy');
-		expect(convertLatexToTypstMath('dt')).toBe('dt');
-		expect(convertLatexToTypstMath('\\int f(x) dx')).toBe('integral f(x) dx');
+	it('should convert differential notation (dx, dy, dt) to dif for Typst', () => {
+		// Typst "dif" operator produces upright d with correct spacing for differentials
+		// See: https://github.com/typst/typst/discussions/4165
+		expect(convertLatexToTypstMath('dx')).toBe('dif x');
+		expect(convertLatexToTypstMath('dy')).toBe('dif y');
+		expect(convertLatexToTypstMath('dt')).toBe('dif t');
+		expect(convertLatexToTypstMath('\\int f(x) dx')).toBe('integral f(x) dif x');
 	});
 });
