@@ -19,7 +19,7 @@ import type {
 import type { MathType, ParityInfo, SignInfo, TypeContext } from '../types';
 import { REAL_TYPE, UNKNOWN_TYPE } from '../types';
 import type { IntervalDomain } from '$lib/math/intervals/types';
-import { intervalSet, closedInterval, pi as piEndpoint, e as eEndpoint } from '$lib/math/intervals';
+import { intervalSet, closedInterval, bound } from '$lib/math/intervals';
 import { isNegativeInfinityEndpoint, isPositiveInfinityEndpoint } from '$lib/math/intervals';
 import { compareNumericNodes } from '../../eval/compare-numeric';
 import { number } from '../../factory';
@@ -171,7 +171,7 @@ export function inferNumberType(node: NumberNode): MathType {
  */
 export function inferMathConstantType(node: MathConstantNode): MathType {
 	// Both π and e are positive transcendental numbers
-	const endpoint = node.constant === 'pi' ? piEndpoint() : eEndpoint();
+	const endpoint = node.constant === 'pi' ? bound('\\pi') : bound('e');
 	return {
 		base: 'transcendental',
 		sign: 'positive',
@@ -213,7 +213,7 @@ export function inferVariableType(node: VariableNode, ctx: TypeContext): MathTyp
 	// Special case: 'e' is Euler's number (transcendental)
 	// Only if not explicitly defined in context
 	if (node.name === 'e') {
-		const ep = eEndpoint();
+		const ep = bound('e');
 		return {
 			base: 'transcendental',
 			sign: 'positive',
