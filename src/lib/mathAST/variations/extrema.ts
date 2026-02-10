@@ -28,7 +28,7 @@ import type {
 import { evaluate } from '../eval';
 import { substitute } from '../eval/substitute';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
-import { containsValue } from '../domain/algebra';
+import { containsNode } from '../domain/algebra';
 
 // =============================================================================
 // Types
@@ -436,21 +436,7 @@ export function getExtremumLabel(type: ExtremumType): string {
  * Check if a critical point is within the domain.
  */
 function isPointInDomain(point: CriticalPointInfo, domain: Domain): boolean {
-	if (domain.kind === 'empty') {
-		return false;
-	}
-	if (domain.kind === 'universal') {
-		return true;
-	}
-
-	if (point.xApproximate !== undefined) {
-		if (domain.kind === 'interval_set') {
-			return containsValue(domain, point.xApproximate);
-		}
-	}
-
-	// For other domain types, assume the point is valid
-	return true;
+	return containsNode(domain, point.x);
 }
 
 /**

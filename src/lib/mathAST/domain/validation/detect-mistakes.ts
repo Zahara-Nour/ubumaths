@@ -12,7 +12,8 @@ import type { Domain, IntervalSet } from '../types';
 import type { DomainMistake, DomainMistakeType } from './mistake-types';
 import { getMistakeSeverity } from './mistake-types';
 import { getMistakeDescription, applyMistakeCorrectionTemplate } from './mistake-descriptions';
-import { isEmpty, difference, containsValue } from '../algebra';
+import { isEmpty, difference, containsNode } from '../algebra';
+import { number as numberNode } from '../../factory';
 import { formatInterval } from '../format';
 import { toCustom } from '../../custom-generator';
 import { findZeros } from '../preimage';
@@ -654,10 +655,10 @@ function tryGetEndpointNumber(value: unknown): number | null {
 }
 
 /**
- * Check if a domain contains a specific value.
+ * Check if a domain contains a specific numeric value (via MathNode).
  */
 function containsValueInDomain(domain: Domain, value: number): boolean {
-	return containsValue(domain, value);
+	return containsNode(domain, numberNode(value));
 }
 
 /**
@@ -672,9 +673,10 @@ function mightContainNegativeValues(student: Domain, correct: Domain): boolean {
  * Check if student domain might contain non-positive values where correct doesn't.
  */
 function mightContainNonPositiveValues(student: Domain, correct: Domain): boolean {
+	const zero = numberNode('0');
 	return (
 		mightContainNegativeValues(student, correct) ||
-		(containsValue(student, 0) && !containsValue(correct, 0))
+		(containsNode(student, zero) && !containsNode(correct, zero))
 	);
 }
 

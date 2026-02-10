@@ -19,7 +19,7 @@ import { computeDomain } from '../domain/compute';
 import { evaluate } from '../eval';
 import { substitute } from '../eval/substitute';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
-import { containsValue } from '../domain/algebra';
+import { containsNode } from '../domain/algebra';
 
 // =============================================================================
 // Types
@@ -147,8 +147,7 @@ export function classifyCriticalPoint(
 	}
 
 	// Check if x is in the domain of the derivative
-	const xNumeric = evaluateToNumber(x);
-	if (xNumeric !== null && !isValueInDomain(xNumeric, derivativeDomain)) {
+	if (!containsNode(derivativeDomain, x)) {
 		return 'derivative_undefined';
 	}
 
@@ -297,13 +296,12 @@ function findDerivativeUndefinedPoints(
 		const undefinedPoints: Array<{ value: MathNode; approximate?: number; exact: boolean }> = [];
 
 		for (const excludedPoint of derivativeDomain.excludedPoints) {
-			const numericValue = endpointToNumber(excludedPoint.value);
-
 			// Check if this point is in the function's domain
-			if (Number.isFinite(numericValue) && isValueInDomain(numericValue, functionDomain)) {
+			if (containsNode(functionDomain, excludedPoint.value)) {
+				const numericValue = endpointToNumber(excludedPoint.value);
 				undefinedPoints.push({
 					value: excludedPoint.value,
-					approximate: numericValue,
+					approximate: Number.isFinite(numericValue) ? numericValue : undefined,
 					exact: true
 				});
 			}
@@ -325,62 +323,18 @@ function filterSolutionsInDomain(
 	const result: Array<{ value: MathNode; approximate?: number; exact: boolean }> = [];
 
 	for (const solution of solutions) {
-		const numericValue = solution.approximate;
-
-		// If we have a numeric approximation, check if it's in the domain
-		if (numericValue !== undefined) {
-			if (!isValueInDomain(numericValue, domain)) {
-				continue;
-			}
+		if (!containsNode(domain, solution.value)) {
+			continue;
 		}
 
 		result.push({
 			value: solution.value,
-			approximate: numericValue,
+			approximate: solution.approximate,
 			exact: solution.exact
 		});
 	}
 
 	return result;
-}
-
-/**
- * Check if a numeric value is within a domain.
- */
-function isValueInDomain(value: number, domain: Domain): boolean {
-	switch (domain.kind) {
-		case 'empty':
-			return false;
-
-		case 'universal':
-			return true;
-
-		case 'interval_set':
-			return containsValue(domain, value);
-
-		case 'condition_domain':
-		case 'periodic_exclusion':
-			// Conservatively return true for complex domain types
-			return true;
-
-		default:
-			return true;
-	}
-}
-
-/**
- * Try to evaluate a MathNode to a number.
- */
-function evaluateToNumber(node: MathNode): number | null {
-	try {
-		const result = evaluate(node, { mode: 'decimal' });
-		if (typeof result.value === 'number' && Number.isFinite(result.value)) {
-			return result.value;
-		}
-		return null;
-	} catch {
-		return null;
-	}
 }
 
 /**

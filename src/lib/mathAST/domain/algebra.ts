@@ -6,9 +6,16 @@
  */
 
 import type { MathNode } from '../types';
-import type { Domain, ExcludedPoint, PeriodicExclusion, ConditionDomain } from './types';
+import type {
+	Domain,
+	ExcludedPoint,
+	Interval,
+	IntervalSet,
+	PeriodicExclusion,
+	ConditionDomain
+} from './types';
 import { ZERO_TOLERANCE } from '../common';
-import { number } from '$lib/mathAST/factory';
+import { number, subtract, divide } from '$lib/mathAST/factory';
 import type { IntervalDomain } from '$lib/math/intervals/types';
 import {
 	isEmptyInterval as intervalsIsEmpty,
@@ -33,6 +40,7 @@ import {
 } from './factory';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { compareNumericNodes } from '../eval/compare-numeric';
 
 // =============================================================================
 // PeriodicExclusion Helpers
@@ -385,6 +393,163 @@ function numericInInterval(value: number, interval: import('./types').Interval):
 	}
 
 	return true;
+}
+
+// =============================================================================
+// containsNode (symbolic)
+// =============================================================================
+
+/**
+ * Check if a MathNode value is contained in an interval.
+ * Uses symbolic comparison via compareNumericNodes for exact results.
+ *
+ * Local copy of the private function from intervals/algebra.ts.
+ */
+function nodeInInterval(value: MathNode, int: Interval): boolean {
+	// Check lower bound
+	const cmpLo = compareNumericNodes(value, int.lower.value);
+	if (cmpLo === undefined) return false;
+	if (int.lower.type === 'closed' ? cmpLo < 0 : cmpLo <= 0) return false;
+
+	// Check upper bound
+	const cmpHi = compareNumericNodes(value, int.upper.value);
+	if (cmpHi === undefined) return false;
+	if (int.upper.type === 'closed' ? cmpHi > 0 : cmpHi >= 0) return false;
+
+	return true;
+}
+
+/**
+ * Check if an IntervalSet domain symbolically contains a MathNode value.
+ * Uses compareNumericNodes for exact symbolic comparison.
+ */
+function symbolicContainsNode(d: IntervalSet, value: MathNode): boolean {
+	// Check excluded points via compareNumericNodes
+	for (const ep of d.excludedPoints ?? []) {
+		const cmp = compareNumericNodes(value, ep.value);
+		if (cmp === 0) return false;
+	}
+	// Check if value is in any interval
+	for (const interval of d.intervals) {
+		if (nodeInInterval(value, interval)) return true;
+	}
+	return false;
+}
+
+/**
+ * Check if a value is excluded by a periodic exclusion domain (symbolic version).
+ * Returns true if value = basePoint + k*period for some integer k.
+ *
+ * Uses two approaches for robustness:
+ * 1. Pure numeric: evaluate all three to numbers and compute ratio directly
+ *    (avoids precision loss from symbolic string representation)
+ * 2. Symbolic: compute (value - basePoint) / period as MathNode then evaluate
+ */
+function isExcludedByPeriodicNode(pe: PeriodicExclusion, value: MathNode): boolean {
+	// Try pure numeric approach first (more precise for literal number nodes)
+	const valNum = evaluateNodeToApproximatedNumber(value);
+	const baseNum = evaluateNodeToApproximatedNumber(pe.basePoint);
+	const periodNum = evaluateNodeToApproximatedNumber(pe.period);
+
+	if (isFinite(valNum) && isFinite(baseNum) && isFinite(periodNum) && periodNum !== 0) {
+		const k = (valNum - baseNum) / periodNum;
+		if (Math.abs(k - Math.round(k)) < ZERO_TOLERANCE) return true;
+	}
+
+	// Fallback: symbolic approach (handles cases where nodes share structure)
+	const diff = subtract(value, pe.basePoint);
+	const ratio = divide(diff, pe.period);
+	const ratioVal = evaluateNodeToApproximatedNumber(ratio);
+	if (!isFinite(ratioVal)) return false;
+	return Math.abs(ratioVal - Math.round(ratioVal)) < ZERO_TOLERANCE;
+}
+
+/**
+ * Check if a domain contains a specific MathNode value using symbolic comparison.
+ *
+ * Uses compareNumericNodes for exact symbolic comparison against interval
+ * endpoints and excluded points. This avoids precision loss from converting
+ * MathNode to number before testing membership.
+ *
+ * Note: Returns false if symbolic comparison is inconclusive (compareNumericNodes
+ * returns undefined). Callers needing fewer false negatives should fall back to
+ * numeric containsValue when containsNode returns false.
+ *
+ * @param d - The domain to check
+ * @param value - A MathNode representing the value to check
+ * @returns true if value is in the domain, false if not or comparison inconclusive
+ */
+export function containsNode(d: Domain, value: MathNode): boolean {
+	if (d.kind === 'empty') return false;
+	if (d.kind === 'universal') return true;
+	if (d.kind === 'condition_domain') {
+		const converted = tryConvertConditionToInterval(d);
+		if (converted) return containsNode(converted, value);
+		return false; // conservative
+	}
+	if (d.kind === 'periodic_exclusion') {
+		return !isExcludedByPeriodicNode(d, value);
+	}
+	// IntervalSet
+	return symbolicContainsNode(d, value);
+}
+
+/**
+ * Check if a domain is approachable from a given direction at a point.
+ *
+ * Tests symbolically whether the domain contains values arbitrarily close
+ * to `point` from the specified direction. Used by limit evaluation to
+ * determine if left/right limits are meaningful.
+ *
+ * @param d - The domain to check
+ * @param point - The approach point as a MathNode
+ * @param direction - 'left' or 'right'
+ * @returns true if the domain extends toward the point from the given direction
+ */
+export function isApproachableFrom(
+	d: Domain,
+	point: MathNode,
+	direction: 'left' | 'right'
+): boolean {
+	if (d.kind === 'empty') return false;
+	if (d.kind === 'universal') return true;
+	if (d.kind === 'condition_domain') {
+		const converted = tryConvertConditionToInterval(d);
+		if (converted) return isApproachableFrom(converted, point, direction);
+		return true; // conservative
+	}
+	if (d.kind === 'periodic_exclusion') return true; // base domain is R
+	if (d.kind !== 'interval_set') return false;
+
+	// IntervalSet: check each interval
+	let anyInconclusive = false;
+	for (const interval of d.intervals) {
+		const cmpLo = compareNumericNodes(point, interval.lower.value);
+		const cmpHi = compareNumericNodes(point, interval.upper.value);
+		if (cmpLo === undefined || cmpHi === undefined) {
+			anyInconclusive = true;
+			continue;
+		}
+
+		if (direction === 'left') {
+			// Approachable from left: lower < point <= upper
+			if (cmpLo > 0 && cmpHi <= 0) return true;
+		} else {
+			// Approachable from right: lower <= point < upper
+			if (cmpLo >= 0 && cmpHi < 0) return true;
+		}
+	}
+
+	// If some comparisons were inconclusive, fall back to numeric check
+	if (anyInconclusive) {
+		const pointVal = evaluateNodeToApproximatedNumber(point);
+		if (!isFinite(pointVal)) return true; // conservative
+		const epsilon = ZERO_TOLERANCE;
+		const probe = direction === 'left' ? pointVal - epsilon : pointVal + epsilon;
+		return numericContainsValue(d, probe);
+	}
+
+	return false;
 }
 
 // =============================================================================
