@@ -1773,25 +1773,28 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\left\s*\|/g, 'lr(|');
 	result = result.replace(/\\right\s*\|/g, '|)');
 
-	// Convert \left\{ ... \right\} to { ... }
-	result = result.replace(/\\left\s*\\{/g, '{');
-	result = result.replace(/\\right\s*\\}/g, '}');
+	// Convert \left\{ ... \right\} to auto-sized visible braces
+	// Use placeholders because in Typst math, plain { } are visible (set notation)
+	// but in LaTeX, plain { } are invisible grouping
+	result = result.replace(/\\left\s*\\{/g, '<<<VISIBLE_LBRACE>>>');
+	result = result.replace(/\\right\s*\\}/g, '<<<VISIBLE_RBRACE>>>');
 
-	// Convert \left\lbrace ... \right\rbrace to { ... }
-	result = result.replace(/\\left\s*\\lbrace/g, '{');
-	result = result.replace(/\\right\s*\\rbrace/g, '}');
+	// Convert \left\lbrace ... \right\rbrace
+	result = result.replace(/\\left\s*\\lbrace/g, '<<<VISIBLE_LBRACE>>>');
+	result = result.replace(/\\right\s*\\rbrace/g, '<<<VISIBLE_RBRACE>>>');
 
 	// Convert standalone \lbrace and \rbrace
-	result = result.replace(/\\lbrace/g, '{');
-	result = result.replace(/\\rbrace/g, '}');
+	result = result.replace(/\\lbrace/g, '<<<VISIBLE_LBRACE>>>');
+	result = result.replace(/\\rbrace/g, '<<<VISIBLE_RBRACE>>>');
+
+	// Handle \{,\} as decimal comma BEFORE converting standalone \{ and \}
+	// In LaTeX, 0\{,\}25 is an alternative way to write 0{,}25 (French decimal)
+	result = result.replace(/\\{,\\}/g, '<<<DECIMAL_COMMA>>>');
 
 	// Convert standalone LaTeX escaped braces \{ and \}
-	// These produce literal braces in LaTeX, must be after \left\{ handling
-	result = result.replace(/\\{/g, '{');
-	result = result.replace(/\\}/g, '}');
-
-	// Re-run {,} replacement in case \{,\} was converted to {,}
-	result = result.replace(/\{,\}/g, '<<<DECIMAL_COMMA>>>');
+	// These produce visible braces in LaTeX, must be after \left\{ and \{,\} handling
+	result = result.replace(/\\{/g, '<<<VISIBLE_LBRACE>>>');
+	result = result.replace(/\\}/g, '<<<VISIBLE_RBRACE>>>');
 
 	// Handle invisible delimiters \left. and \right.
 	result = result.replace(/\\left\s*\./g, '');
@@ -2254,6 +2257,18 @@ export function convertLatexToTypstMath(latex: string): string {
 			return `${openSym} ${left} semi ${right} ${closeSym}`;
 		}
 	);
+
+	// ========================================================================
+	// BRACE HANDLING: Strip LaTeX grouping braces, restore visible braces
+	// ========================================================================
+	// In LaTeX, plain { } are invisible grouping. In Typst math, { } are visible
+	// (set notation). After all \command{arg} conversions consumed their braces,
+	// any remaining { } are just LaTeX grouping and must be removed.
+	// Intentionally visible braces (\{, \left\{) were converted to placeholders earlier.
+	result = result.replace(/[{}]/g, '');
+	// Restore visible braces as Typst symbols
+	result = result.replace(/<<<VISIBLE_LBRACE>>>/g, 'brace.l');
+	result = result.replace(/<<<VISIBLE_RBRACE>>>/g, 'brace.r');
 
 	// ========================================================================
 	// DOUBLE QUOTE AS DOUBLE PRIME (Step 2 of 2)

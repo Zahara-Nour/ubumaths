@@ -1957,8 +1957,8 @@ describe('convertLatexToTypstMath - Operators with spacing', () => {
 });
 
 describe('convertLatexToTypstMath - Brace handling', () => {
-	it('should convert standalone \\{ and \\} to braces', () => {
-		expect(convertLatexToTypstMath('\\{x\\}')).toBe('{x}');
+	it('should convert standalone \\{ and \\} to visible Typst brace symbols', () => {
+		expect(convertLatexToTypstMath('\\{ x \\}')).toBe('brace.l x brace.r');
 	});
 
 	it('should handle \\{,\\} (escaped braces around comma) as French decimal', () => {
