@@ -1529,7 +1529,7 @@ const KNOWN_TYPST_SYMBOLS = new Set([
 	'diaer',
 	'limsup',
 	'liminf',
-	// Greek letters (lowercase - uppercase are short enough)
+	// Greek letters (lowercase)
 	'alpha',
 	'beta',
 	'gamma',
@@ -1559,6 +1559,16 @@ const KNOWN_TYPST_SYMBOLS = new Set([
 	'varrho',
 	'varsigma',
 	'varphi',
+	// Greek letters (uppercase — needed because regex also matches Uppercase+lowercase)
+	'Gamma',
+	'Delta',
+	'Theta',
+	'Lambda',
+	'Sigma',
+	'Upsilon',
+	'Phi',
+	'Psi',
+	'Omega',
 	// Typst math symbols
 	'infinity',
 	'forall',
@@ -1596,25 +1606,10 @@ const KNOWN_TYPST_SYMBOLS = new Set([
 	'slant',
 	'double',
 	'cont',
-	'triple',
-	// Differential notation (dx, dy, dz, dt, etc.) - these are NOT implicit multiplication
-	'dx',
-	'dy',
-	'dz',
-	'dt',
-	'ds',
-	'du',
-	'dv',
-	'dw',
-	'dr',
-	'da',
-	'db',
-	'dc',
-	'dn',
-	'dm',
-	'dk',
-	'dp',
-	'dq'
+	'triple'
+	// NOTE: dx, dy, dt etc. are NOT protected here because Typst needs "d x" (with space).
+	// Typst treats "dx" as an unknown variable. The implicit multiplication split into "d x"
+	// is the correct Typst rendering for differential notation in integrals.
 ]);
 
 /**
@@ -1658,7 +1653,8 @@ function addImplicitMultiplicationSpaces(str: string): string {
 	});
 
 	// Apply implicit multiplication to remaining content
-	protected_ = protected_.replace(/([a-z]{2,})/g, (match, _group, offset, fullStr) => {
+	// Match 2+ lowercase letters OR uppercase+lowercase sequences (e.g., Delta, Gamma)
+	protected_ = protected_.replace(/([A-Z][a-z]+|[a-z]{2,})/g, (match, _group, offset, fullStr) => {
 		// If followed by '(', it's a function call - preserve entire match
 		const nextChar = fullStr[offset + match.length];
 		if (nextChar === '(') {
@@ -2231,6 +2227,15 @@ export function convertLatexToTypstMath(latex: string): string {
 	// We need to split sequences of 2+ lowercase letters that aren't known
 	// Typst symbols into individual letters with spaces.
 	result = addImplicitMultiplicationSpaces(result);
+
+	// ========================================================================
+	// DIFFERENTIAL NOTATION: Convert dx, dy, dt etc. to dif x, dif y, dif t
+	// ========================================================================
+	// Typst's built-in "dif" operator produces an upright "d" with correct spacing,
+	// which is the standard typographic convention for differentials in integrals.
+	// Must be AFTER implicit multiplication which splits "dx" into "d x".
+	// See: https://github.com/typst/typst/discussions/4165
+	result = result.replace(/\bd ([a-zA-Z])\b/g, 'dif $1');
 
 	// ========================================================================
 	// FRENCH INTERVAL NOTATION: Replace brackets with symbol names
