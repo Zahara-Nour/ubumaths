@@ -240,6 +240,34 @@ describe('generateVariationTableTypst - Sign Rows', () => {
 		expect(typst).toContain('($+$, ("||", $-$))');
 	});
 
+	it('should include asymptote marker at first domain point in sign row', () => {
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [{ expression: '0' }, { expression: '1' }, { expression: '+inf' }],
+			rows: [
+				{
+					type: 'sign',
+					label: "f'(x)",
+					values: new Map([
+						['0', { type: 'marker', marker: 'asymptote' }],
+						['0,1', { type: 'sign', value: '-' }],
+						['1', { type: 'marker', marker: 'zero' }],
+						['1,+inf', { type: 'sign', value: '+' }]
+					])
+				}
+			]
+		};
+
+		const typst = generateVariationTableTypst(node);
+
+		// First interval element should have "||" marker combined with sign
+		// vartable draws "||" at left border when first element starts with "||"
+		expect(typst).toContain('("||", $-$)');
+		// Second interval with zero marker
+		expect(typst).toContain('("z", $+$)');
+	});
+
 	it('should handle empty intervals with empty strings', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',

@@ -309,13 +309,13 @@ function generateSignRow(row: SignRow, domain: DomainPoint[]): string {
 		const intervalKey = `${startPoint},${endPoint}`;
 		const intervalValue = row.values.get(intervalKey);
 
-		// Get marker at the START of this interval (if any, except for first interval)
+		// Get marker at this domain point (if any)
+		// For i=0: vartable draws "||" at the left border when the first element starts with "||"
+		// For i>0: marker is combined with the following sign as a tuple (marker, sign)
 		let marker: string | null = null;
-		if (i > 0) {
-			const markerValue = row.values.get(startPoint);
-			if (markerValue && markerValue.type === 'marker') {
-				marker = convertSignMarkerToTypst(markerValue.marker);
-			}
+		const markerValue = row.values.get(startPoint);
+		if (markerValue && markerValue.type === 'marker') {
+			marker = convertSignMarkerToTypst(markerValue.marker);
 		}
 
 		// Format the element
