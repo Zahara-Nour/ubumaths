@@ -556,7 +556,8 @@ describe('generateVariationTableTypst - Labels', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain('frac(df, dt)');
+		// df → dif f, dt → dif t (differential notation)
+		expect(typst).toContain('frac(dif f, dif t)');
 	});
 });
 
@@ -828,8 +829,8 @@ describe('generateVariationTableTypst - Single Limit Asymptotes', () => {
 		const typst = generateVariationTableTypst(node);
 
 		// Point format: first point is right asymptote, second is normal
-		// Right asymptote: ("||", position, $value$)
-		expect(typst).toContain('("||", top, $+infinity$)');
+		// Right asymptote: (position, "||", $value$) - same format as left, direction from position in domain
+		expect(typst).toContain('(top, "||", $+infinity$)');
 		// Center value with position
 		expect(typst).toContain('(center, $0$)');
 	});
