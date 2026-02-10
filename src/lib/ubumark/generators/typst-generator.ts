@@ -1694,7 +1694,12 @@ function addImplicitMultiplicationSpaces(str: string): string {
  * Replace LaTeX command with Typst equivalent, adding spaces to prevent
  * variable name fusion like "xtimes" or "times0" or "times(" being parsed as function.
  */
-function replaceLatexCmd(str: string, latexCmd: string, typstCmd: string): string {
+function replaceLatexCmd(
+	str: string,
+	latexCmd: string,
+	typstCmd: string,
+	options?: { noSpaceBeforeParen?: boolean }
+): string {
 	// Pattern: \command not followed by letter (to avoid partial matches)
 	const pattern = new RegExp(`\\\\${latexCmd}(?![a-zA-Z])`, 'g');
 
@@ -1709,10 +1714,16 @@ function replaceLatexCmd(str: string, latexCmd: string, typstCmd: string): strin
 		// Add space AFTER if followed by:
 		// - digit: prevents "times0" being parsed as variable
 		// - open paren: prevents "times(...)" being parsed as function call
+		//   (skip for math functions like \sin where sin(x) is correct)
 		// - backslash: prevents "sect\overline" becoming "sectoverline" after conversion
 		const afterPos = offset + match.length;
-		if (afterPos < str.length && /[\d(\\]/.test(str[afterPos])) {
-			result = result + ' ';
+		if (afterPos < str.length) {
+			const afterChar = str[afterPos];
+			if (/[\d\\]/.test(afterChar)) {
+				result = result + ' ';
+			} else if (afterChar === '(' && !options?.noSpaceBeforeParen) {
+				result = result + ' ';
+			}
 		}
 
 		return result;
@@ -1813,6 +1824,15 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Uses balanced brace matching to handle nested braces like \dfrac{(-1)^{n+1}}{u^2_n}
 	result = convertLatexFractions(result);
 
+	// Fallback: handle \frac/\dfrac with single-char arguments (no braces)
+	// In LaTeX, \frac ab means \frac{a}{b} when a and b are single characters
+	// Common in handwritten LaTeX: \dfrac 1x, \frac 12, etc.
+	// Must be after convertLatexFractions which handles the braced form
+	result = result.replace(
+		/\\d?frac\s+([a-zA-Z0-9])\s*([a-zA-Z0-9])/g,
+		(_match, num: string, den: string) => ` frac(${num}, ${den})`
+	);
+
 	// Convert \begin{cases} ... \end{cases} to Typst cases()
 	// LaTeX: \begin{cases} a & b \\ c & d \end{cases}
 	// Typst: cases(display(a & b), display(c & d))
@@ -1871,8 +1891,10 @@ export function convertLatexToTypstMath(latex: string): string {
 		'arg'
 	];
 	for (const func of knownFunctions) {
-		const regex = new RegExp(`\\\\${func}(?![a-zA-Z])`, 'g');
-		result = result.replace(regex, func);
+		// Use replaceLatexCmd to add spaces when needed (prevents "xln" fusion
+		// that implicit multiplication would split into "x l n" instead of "x ln")
+		// noSpaceBeforeParen: sin(x) is correct Typst, no space needed before (
+		result = replaceLatexCmd(result, func, func, { noSpaceBeforeParen: true });
 	}
 
 	// Convert Greek letters
@@ -1989,6 +2011,10 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'prime', 'prime'); // Prime symbol (′)
 	result = replaceLatexCmd(result, 'doubleprime', 'prime.double'); // Double prime (″)
 
+	// Convert \text{d}x → dif x (differential notation before general \text handler)
+	// \text{d} is commonly used in LaTeX for upright "d" in integrals: \int f(x)\text{d}x
+	result = result.replace(/\\text\s*\{d\}\s*([a-zA-Z])/g, 'dif $1');
+
 	// Convert text command (handles nested math like \text{car $x-1<0$})
 	result = convertTextCommand(result);
 	result = result.replace(/\\textbf\s*{([^{}]*)}/g, 'bold("$1")');
@@ -2071,6 +2097,8 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/([a-zA-Z])e\^/g, '$1 e^');
 
 	// 5. Math text styles (1 argument) - use balanced brace matching for nested content
+	// First: convert \mathrm{d}x → dif x (differential notation, before general \mathrm)
+	result = result.replace(/\\mathrm\s*\{d\}\s*([a-zA-Z])/g, 'dif $1');
 	result = convertLatexOneArgCommand(result, 'mathbf', 'bold');
 	result = convertLatexOneArgCommand(result, 'mathit', 'italic');
 	result = convertLatexOneArgCommand(result, 'mathrm', 'upright');
