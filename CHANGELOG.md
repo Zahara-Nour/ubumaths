@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.2...v0.8.3) (2026-02-10)
+
+### 🐛 Bug Fixes
+
+- **numtype:** replace removed pi/e imports with bound() from intervals ([4e599e3](https://github.com/Zahara-Nour/ubumaths/commit/4e599e3006ab981580e3aaf328495475ac62d154))
+
 ### [0.8.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.1...v0.8.2) (2026-02-10)
 
 ### 📚 Documentation
