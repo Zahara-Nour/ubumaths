@@ -442,11 +442,13 @@ function formatPointVariation(value: VariationValue | undefined): string {
 			const limitPos = convertPositionForVartable(value.position);
 			return `(${limitPos}, "||", $${limitExpr}$)`;
 		}
-		// For single-limit asymptote (right side): asymptote bar then limit
+		// For single-limit asymptote (right side): position, then asymptote bar, then value
+		// vartable always expects (position, "||", $value$) — direction is determined by
+		// element position in the domain array, not by tuple element order
 		if (value.limitSide === 'right') {
 			const limitExpr = formatMathExpression(value.expression);
 			const limitPos = convertPositionForVartable(value.position);
-			return `("||", ${limitPos}, $${limitExpr}$)`;
+			return `(${limitPos}, "||", $${limitExpr}$)`;
 		}
 		// For asymptote without explicit limits: just the marker
 		return '"||"';
