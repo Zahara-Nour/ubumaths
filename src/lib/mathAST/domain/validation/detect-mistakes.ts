@@ -290,8 +290,8 @@ function detectForgotConstraintMistakes(
 
 				for (const zero of zeros) {
 					// Check if student's domain contains this zero (which it shouldn't)
-					const studentContains = containsValueInDomain(studentDomain, zero);
-					const correctContains = containsValueInDomain(correctDomain, zero);
+					const studentContains = containsNode(studentDomain, numberNode(zero));
+					const correctContains = containsNode(correctDomain, numberNode(zero));
 
 					// If student includes the zero but correct doesn't, they forgot to exclude it
 					if (studentContains && !correctContains) {
@@ -315,8 +315,8 @@ function detectForgotConstraintMistakes(
 				const zeros = constraint.zeros ?? [];
 
 				for (const zero of zeros) {
-					const studentContains = containsValueInDomain(studentDomain, zero);
-					const correctContains = containsValueInDomain(correctDomain, zero);
+					const studentContains = containsNode(studentDomain, numberNode(zero));
+					const correctContains = containsNode(correctDomain, numberNode(zero));
 
 					if (studentContains && !correctContains) {
 						mistakes.push(
@@ -652,13 +652,6 @@ function tryGetEndpointNumber(value: unknown): number | null {
 		}
 	}
 	return null;
-}
-
-/**
- * Check if a domain contains a specific numeric value (via MathNode).
- */
-function containsValueInDomain(domain: Domain, value: number): boolean {
-	return containsNode(domain, numberNode(value));
 }
 
 /**
