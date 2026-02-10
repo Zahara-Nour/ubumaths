@@ -119,7 +119,6 @@ export {
 	isUniversal,
 	containsValue,
 	containsNode,
-	isApproachableFrom,
 	intersect,
 	union,
 	complement,

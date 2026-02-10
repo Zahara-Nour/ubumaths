@@ -494,64 +494,6 @@ export function containsNode(d: Domain, value: MathNode): boolean {
 	return symbolicContainsNode(d, value);
 }
 
-/**
- * Check if a domain is approachable from a given direction at a point.
- *
- * Tests symbolically whether the domain contains values arbitrarily close
- * to `point` from the specified direction. Used by limit evaluation to
- * determine if left/right limits are meaningful.
- *
- * @param d - The domain to check
- * @param point - The approach point as a MathNode
- * @param direction - 'left' or 'right'
- * @returns true if the domain extends toward the point from the given direction
- */
-export function isApproachableFrom(
-	d: Domain,
-	point: MathNode,
-	direction: 'left' | 'right'
-): boolean {
-	if (d.kind === 'empty') return false;
-	if (d.kind === 'universal') return true;
-	if (d.kind === 'condition_domain') {
-		const converted = tryConvertConditionToInterval(d);
-		if (converted) return isApproachableFrom(converted, point, direction);
-		return true; // conservative
-	}
-	if (d.kind === 'periodic_exclusion') return true; // base domain is R
-	if (d.kind !== 'interval_set') return false;
-
-	// IntervalSet: check each interval
-	let anyInconclusive = false;
-	for (const interval of d.intervals) {
-		const cmpLo = compareNumericNodes(point, interval.lower.value);
-		const cmpHi = compareNumericNodes(point, interval.upper.value);
-		if (cmpLo === undefined || cmpHi === undefined) {
-			anyInconclusive = true;
-			continue;
-		}
-
-		if (direction === 'left') {
-			// Approachable from left: lower < point <= upper
-			if (cmpLo > 0 && cmpHi <= 0) return true;
-		} else {
-			// Approachable from right: lower <= point < upper
-			if (cmpLo >= 0 && cmpHi < 0) return true;
-		}
-	}
-
-	// If some comparisons were inconclusive, fall back to numeric check
-	if (anyInconclusive) {
-		const pointVal = evaluateNodeToApproximatedNumber(point);
-		if (!isFinite(pointVal)) return true; // conservative
-		const epsilon = ZERO_TOLERANCE;
-		const probe = direction === 'left' ? pointVal - epsilon : pointVal + epsilon;
-		return numericContainsValue(d, probe);
-	}
-
-	return false;
-}
-
 // =============================================================================
 // intersect
 // =============================================================================
