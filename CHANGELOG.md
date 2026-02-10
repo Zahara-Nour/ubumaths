@@ -2,6 +2,64 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.1...v0.8.2) (2026-02-10)
+
+### 📚 Documentation
+
+- **migration:** add exhaust to deferred options, fix option counts ([809e5ae](https://github.com/Zahara-Nour/ubumaths/commit/809e5aed12c8863f782673774cb9aacaed02b0ff))
+- **migration:** confirm 5 ignored options are dead code in TinyMath source ([c5e7b36](https://github.com/Zahara-Nour/ubumaths/commit/c5e7b365a776cc71251c960213bd6ac77233782a))
+- **numtype:** document four-corners theorem and extended arithmetic ([967d4f3](https://github.com/Zahara-Nour/ubumaths/commit/967d4f3c57a6ac7f67cb9ecc52675c19021879ee))
+- **sign:** document algorithm, assumptions, and solve dependency ([e2d30d2](https://github.com/Zahara-Nour/ubumaths/commit/e2d30d2fddd063d1c1db3a9a63fa2e9342da3c28))
+- **solve:** document completeness gaps and plan solver extension ([b985da2](https://github.com/Zahara-Nour/ubumaths/commit/b985da22bc52802844559d1deb2d23ae7ffad1a7))
+- **wip:** add progress document for solver completeness extension ([de6bc36](https://github.com/Zahara-Nour/ubumaths/commit/de6bc36aac32a8f88b0a74d2e98182fb89267dab))
+- **wip:** resolve missing solutions warning (flash card [#617](https://github.com/Zahara-Nour/ubumaths/issues/617)) ([ebd04d6](https://github.com/Zahara-Nour/ubumaths/commit/ebd04d69abe174f2654f3ab3710afe9d5154d83f))
+- **wip:** update migration status with completed options review ([23912d1](https://github.com/Zahara-Nour/ubumaths/commit/23912d19a16a62f9e0f2fbbaf64f23a123d7778b))
+
+### 🐛 Bug Fixes
+
+- **continuity:** classify periodic trig discontinuities as infinite ([1036693](https://github.com/Zahara-Nour/ubumaths/commit/1036693ad0102aef5acc1f49cbd2bc61703067e1))
+- **cost:** penalize negation inside function args to prefer canonical forms ([0974364](https://github.com/Zahara-Nour/ubumaths/commit/097436410b922131d42384eff55bfabd2bd2506a))
+- **custom-generator:** wrap fractions in {} for implicit multiplication ([01c23a4](https://github.com/Zahara-Nour/ubumaths/commit/01c23a462f58fc2237ed9b18b982698031562951))
+- **domain:** type-safe base property in computeFunctionDomain ([a364919](https://github.com/Zahara-Nour/ubumaths/commit/a364919731ecbff00a60d05d58a01627185b65ee))
+- **domain:** use decomposed root+power for exact rational exponentiation ([f4c2221](https://github.com/Zahara-Nour/ubumaths/commit/f4c22218d4eb751982aeefed3e8b33bfd0b27e8b))
+- **domain:** verify root snapping by substitution, name magic constant ([e428fd0](https://github.com/Zahara-Nour/ubumaths/commit/e428fd0235b28b2d1af79cf159627c4ea5cd53ab))
+- handle scientific notation and extreme values in numeric evaluation ([d83486f](https://github.com/Zahara-Nour/ubumaths/commit/d83486fcbe0ccaa61720afedb486c6d24150dcb8))
+- import evaluateNodeToApproximatedNumber from source file ([6262cb9](https://github.com/Zahara-Nour/ubumaths/commit/6262cb9af370e0b19781e39ddf3efe52a0ff73af))
+- **limits:** fix 26 failing tests across domain validation, one-sided limits, and composition ([14685d2](https://github.com/Zahara-Nour/ubumaths/commit/14685d2dfbe45caa428a778250e4e83d3b42d8b4))
+- **numtype:** fix 3 bugs in bounds propagation ([f97e64c](https://github.com/Zahara-Nour/ubumaths/commit/f97e64ce7ae62cc6ac59176f9806d3688b5dfbac))
+- **numtype:** improve bounds precision for partially infinite operands ([1990723](https://github.com/Zahara-Nour/ubumaths/commit/1990723926e09c42b26e7a45cdcc91c05b4f079f))
+- **tests:** correct pi/e representations and bracket negative fractions ([5d7b037](https://github.com/Zahara-Nour/ubumaths/commit/5d7b037cd439ac3043c9bc19a6a7958582a86386))
+
+### ✨ Features
+
+- **abs:** add |x^n| = x^n rule for even exponents ([ec73dee](https://github.com/Zahara-Nour/ubumaths/commit/ec73dee7cca27fe185fa3e1cc7e75aaf1b09053a))
+- **domain:** exact bounds via closed interval method ([e80b752](https://github.com/Zahara-Nour/ubumaths/commit/e80b7524251285ecc6ddfec14ae8fbfd35a67fb7))
+- **limits:** add abs simplification strategy, enable 5 skipped tests ([e2d8ba9](https://github.com/Zahara-Nour/ubumaths/commit/e2d8ba9e2ca9c9caadbac2e968a7e0a07ef00f97))
+- **mathAST:** add unified simplify pipeline with cost-based selection ([80480dc](https://github.com/Zahara-Nour/ubumaths/commit/80480dc4ebd9b7aa3eba14076857640df8ba71d6))
+- **normalizeExtended:** add arctan, hyperbolic, and inverse hyperbolic functions ([3079a74](https://github.com/Zahara-Nour/ubumaths/commit/3079a74d5a5a3d0d6772409859aa69231b546439))
+- **normalize:** implement trig π-shift reduction in normalize ([7c65d00](https://github.com/Zahara-Nour/ubumaths/commit/7c65d000510fc1bfdb44314c3d27fbc719ae76e3))
+- **normalize:** strip abs from even powers, move abs-pow-even to absRules ([6e989e9](https://github.com/Zahara-Nour/ubumaths/commit/6e989e90e9a760bb91775ce643bd9807a7f2ca7b))
+- **numtype:** add bounds (range) tracking to numeric type system ([f0aec12](https://github.com/Zahara-Nour/ubumaths/commit/f0aec128bfe8e841d6c8a7a708f29159d2cab441))
+- **numtype:** add parity (even/odd) to numeric type system ([429d6cb](https://github.com/Zahara-Nour/ubumaths/commit/429d6cb94d833470c9ee49b4602edd9c80abd446))
+- **numtype:** add precise bounds via closed interval method ([4a74f86](https://github.com/Zahara-Nour/ubumaths/commit/4a74f86e9df746254f1724293f680b5d55938adc))
+- **numtype:** propagate sign from bounds through arithmetic and functions ([f9016c2](https://github.com/Zahara-Nour/ubumaths/commit/f9016c273bd4b0e5218edd936299ec3d25de1bae))
+- **powers:** add (-a)^n=a^n and |x|^n=x^n rules for even exponents ([150e2c3](https://github.com/Zahara-Nour/ubumaths/commit/150e2c34d55d8cbddef68355db15d7e5708cdae5))
+- **powers:** add (sqrt(x))^2 = x simplification rule ([9330f32](https://github.com/Zahara-Nour/ubumaths/commit/9330f3258722884daa6e12125324e220d922e194))
+- **powers:** add group 1 simplification rules ([ce5c8d1](https://github.com/Zahara-Nour/ubumaths/commit/ce5c8d157f3421bc8baae1e81836b4313eb37afa))
+- **rules:** add ln properties, sqrt, trig known values, power rules ([eb06690](https://github.com/Zahara-Nour/ubumaths/commit/eb066900accd7f69e0402a90e0175e8208c9a41c))
+- **rules:** auto-generate function parity rules from shared lists ([e5ac77c](https://github.com/Zahara-Nour/ubumaths/commit/e5ac77cad8d0312f55639dd664b0f6c60048e9ed))
+- **simplify:** add per-rule pedagogical step tracking ([c68632f](https://github.com/Zahara-Nour/ubumaths/commit/c68632f9994e079144ae5b5e273bb1bce4b0d64a))
+- **solve:** add inverse trig remarkable values to normalizer ([5743202](https://github.com/Zahara-Nour/ubumaths/commit/5743202a50f9d7f3b1bd4a8720cf7e621a4278ec))
+- **solve:** add quartic polynomial solver (Ferrari method) ([e623191](https://github.com/Zahara-Nour/ubumaths/commit/e623191335b9a0ff818c78d551888a609d173891))
+- **solve:** add radical equation solver (√x, ∛x, x^(p/q)) ([a06521c](https://github.com/Zahara-Nour/ubumaths/commit/a06521cf1963a957fd7e3fbf1ece9362b20aca33))
+- **solve:** add recursive decomposition for non-linear trig arguments ([39401f0](https://github.com/Zahara-Nour/ubumaths/commit/39401f0eb4939b6a6a22b9ae438f21c351a3947d))
+- **solve:** add zero-product property for factored equations ([c01016d](https://github.com/Zahara-Nour/ubumaths/commit/c01016d2f5fc9a9429e5cfa8ecc455d82ae646e6))
+- **solve:** allow caller to specify a search domain ([ff71436](https://github.com/Zahara-Nour/ubumaths/commit/ff71436a17fd69ad85cb1faf2cfd7acc6edb9421))
+- **solve:** compute domain of definition and filter solutions ([9ca986e](https://github.com/Zahara-Nour/ubumaths/commit/9ca986eb8c12482ea31be18ddd0f576251df386c))
+- **solve:** generic transcendental extractor + exp/log recursive decomposition ([8199791](https://github.com/Zahara-Nour/ubumaths/commit/819979162b99903ee467aba897b28571d854c594))
+- **solve:** return full periodic solution families for trig equations ([ad92a0b](https://github.com/Zahara-Nour/ubumaths/commit/ad92a0b8c127415cd3e9ce2bd7e19d019f686747))
+- **trig:** handle all remarkable angle values with data-driven approach ([fb67f04](https://github.com/Zahara-Nour/ubumaths/commit/fb67f040fc698ffd36e39cef2fdc00d42c47e8b6))
+
 ### [0.8.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.0...v0.8.1) (2026-02-06)
 
 ### 🐛 Bug Fixes
