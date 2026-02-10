@@ -1182,8 +1182,8 @@ function convertTextcolorCommand(str: string): string {
 
 			// Convert to Typst: text(fill: color, content)
 			// Note: In Typst math, we need to use the hash prefix to call content-mode functions
-			// But text() in math mode works directly with fill parameter
-			const replacement = `#text(fill: ${color})[${content}]`;
+			// Use placeholders for [ ] to protect them from the catch-all bracket replacement
+			const replacement = `#text(fill: ${color})<<<CONTENT_L>>>${content}<<<CONTENT_R>>>`;
 			result = result.slice(0, startIndex) + replacement + result.slice(contentCloseIndex + 1);
 
 			changed = true;
@@ -1655,6 +1655,13 @@ function addImplicitMultiplicationSpaces(str: string): string {
 		return `<<<PROTECT_${protections.length - 1}>>>`;
 	});
 
+	// Protect content block placeholders <<<CONTENT_L>>>...<<<CONTENT_R>>>
+	// These come from \textcolor conversion and should not be split
+	protected_ = protected_.replace(/<<<CONTENT_L>>>([\s\S]*?)<<<CONTENT_R>>>/g, (match) => {
+		protections.push(match);
+		return `<<<PROTECT_${protections.length - 1}>>>`;
+	});
+
 	// Apply implicit multiplication to remaining content
 	// Match 2+ lowercase letters OR uppercase+lowercase sequences (e.g., Delta, Gamma)
 	protected_ = protected_.replace(/([A-Z][a-z]+|[a-z]{2,})/g, (match, _group, offset, fullStr) => {
@@ -1778,11 +1785,9 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\left\s*\(/g, '(');
 	result = result.replace(/\\right\s*\)/g, ')');
 
-	// Convert \left[ ... \right] to bracket symbols
-	// Use placeholders because raw [ ] in math inside content blocks [...]
-	// confuse the Typst parser (] prematurely closes the content block)
-	result = result.replace(/\\left\s*\[/g, '<<<LEFT_BRACKET>>>');
-	result = result.replace(/\\right\s*\]/g, '<<<RIGHT_BRACKET>>>');
+	// Convert \left[ ... \right] to [ ... ]
+	result = result.replace(/\\left\s*\[/g, '[');
+	result = result.replace(/\\right\s*\]/g, ']');
 
 	// Convert \left| ... \right| to abs( ... ) or |...|
 	// Use lr(|...|) for proper sizing in Typst
@@ -2303,10 +2308,21 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/<<<VISIBLE_LBRACE>>>/g, 'brace.l');
 	result = result.replace(/<<<VISIBLE_RBRACE>>>/g, 'brace.r');
 
-	// Restore \left[...\right] brackets as Typst symbol names
-	// Raw [ ] would confuse the parser when math is inside content blocks [...]
-	result = result.replace(/<<<LEFT_BRACKET>>>/g, 'bracket.l ');
-	result = result.replace(/<<<RIGHT_BRACKET>>>/g, ' bracket.r');
+	// ========================================================================
+	// BRACKET SAFETY: Replace remaining raw [ ] with symbol names
+	// ========================================================================
+	// Raw [ ] in math output confuse the Typst parser when the math is inside
+	// a content block [...] (e.g., in #enum items): ] prematurely closes the
+	// content block, causing "expected comma" and "^ not valid in code" errors.
+	// After French interval conversion above, any remaining [ ] come from
+	// \left[...\right], \right[, or the original LaTeX equation.
+	// Content block brackets (from \textcolor) use <<<CONTENT_L/R>>> placeholders.
+	result = result.replace(/\[/g, 'bracket.l ');
+	result = result.replace(/\]/g, ' bracket.r');
+
+	// Restore content block brackets (from \textcolor conversion)
+	result = result.replace(/<<<CONTENT_L>>>/g, '[');
+	result = result.replace(/<<<CONTENT_R>>>/g, ']');
 
 	// ========================================================================
 	// DOUBLE QUOTE AS DOUBLE PRIME (Step 2 of 2)

@@ -1551,8 +1551,10 @@ describe('convertLatexToTypstMath - French Interval Notation', () => {
 		expect(convertLatexToTypstMath(']-\\infty~;~1]')).toBe('bracket.r -infinity semi 1 bracket.r');
 	});
 
-	it('should not affect normal brackets without semicolons', () => {
-		expect(convertLatexToTypstMath('[a, b]')).toBe('[a, b]');
+	it('should convert non-interval brackets to symbol names', () => {
+		// Raw [ ] are replaced with bracket.l/bracket.r to avoid parser confusion
+		// when math is inside content blocks (e.g., #enum items)
+		expect(convertLatexToTypstMath('[a, b]')).toBe('bracket.l a, b bracket.r');
 	});
 });
 
