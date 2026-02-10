@@ -353,6 +353,8 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 					: toFrenchDecimal(node.expression);
 			// Convert LaTeX math to Typst math syntax
 			const typstMath = convertLatexToTypstMath(latex);
+			// DEBUG LOG: Keep for Typst debugging - logs each inline math conversion
+			console.log('[typst-gen] math-inline:', { latex, typstMath });
 
 			// ============================================================================
 			// IMPORTANT: Why we DON'T use #box[] for inline math
@@ -685,6 +687,8 @@ function generateMathBlock(node: MathBlockNode): string {
 
 	// Convert LaTeX math to Typst math syntax
 	const typstMath = convertLatexToTypstMath(latex);
+	// DEBUG LOG: Keep for Typst debugging - logs each block math conversion
+	console.log('[typst-gen] math-block:', { latex, typstMath });
 
 	// For simple equations, wrap in align(center) to ensure centering inside lists
 	return `#align(center)[$ ${typstMath} $]`;
@@ -1730,6 +1734,15 @@ export function convertLatexToTypstMath(latex: string): string {
 	}
 
 	// ========================================================================
+	// DOUBLE QUOTE AS DOUBLE PRIME (Step 1 of 2)
+	// ========================================================================
+	// In LaTeX math, " (ASCII double quote) represents double prime: f"(x) = f''(x)
+	// In Typst math, " starts a string literal, causing "unclosed string" errors.
+	// Use placeholder to protect from Typst string interpretation.
+	// Final replacement happens at the end of this function (Step 2).
+	result = result.replace(/"/g, ' <<<DOUBLE_PRIME>>> ');
+
+	// ========================================================================
 	// FRENCH DECIMAL COMMA HANDLING (Step 1 of 2)
 	// ========================================================================
 	// LaTeX {,} represents a French decimal comma (from french-math.ts).
@@ -2218,6 +2231,30 @@ export function convertLatexToTypstMath(latex: string): string {
 	// We need to split sequences of 2+ lowercase letters that aren't known
 	// Typst symbols into individual letters with spaces.
 	result = addImplicitMultiplicationSpaces(result);
+
+	// ========================================================================
+	// FRENCH INTERVAL NOTATION: Replace brackets with symbol names
+	// ========================================================================
+	// French math uses reversed brackets for intervals: ]0;+∞[, [1;+∞[, etc.
+	// In Typst math, literal [ and ] are parsed as delimiters that must be matched,
+	// causing "unclosed delimiter" errors for reversed/half-open intervals.
+	// Fix: replace brackets with Typst symbol names (bracket.l / bracket.r)
+	// which render identically but are NOT parsed as delimiters.
+	// Detect interval patterns by the semicolon separator (French notation).
+	result = result.replace(
+		/([[\]])\s*([^[\]]*?)\s*;\s*([^[\]]*?)\s*([[\]])/g,
+		(_match, open: string, left: string, right: string, close: string) => {
+			const openSym = open === '[' ? 'bracket.l' : 'bracket.r';
+			const closeSym = close === '[' ? 'bracket.l' : 'bracket.r';
+			return `${openSym} ${left} semi ${right} ${closeSym}`;
+		}
+	);
+
+	// ========================================================================
+	// DOUBLE QUOTE AS DOUBLE PRIME (Step 2 of 2)
+	// ========================================================================
+	// Restore placeholder to Typst double prime symbol
+	result = result.replace(/<<<DOUBLE_PRIME>>>/g, 'prime.double');
 
 	return result;
 }

@@ -1533,7 +1533,32 @@ describe('convertLatexToTypstMath - Math Spaces', () => {
 		// In LaTeX math, ~ is a non-breaking space
 		// In Typst math, ~ would be interpreted as tilde symbol, so convert to space
 		expect(convertLatexToTypstMath('a~b')).toBe('a b');
-		expect(convertLatexToTypstMath(']-\\infty~;~1[')).toBe(']-infinity ; 1[');
+		// French intervals use symbol names to avoid delimiter matching
+		expect(convertLatexToTypstMath(']-\\infty~;~1[')).toBe('bracket.r -infinity semi 1 bracket.l');
+	});
+});
+
+describe('convertLatexToTypstMath - French Interval Notation', () => {
+	it('should convert ]a;b[ open interval brackets to symbol names', () => {
+		expect(convertLatexToTypstMath(']0~;~+\\infty[')).toBe('bracket.r 0 semi +infinity bracket.l');
+	});
+
+	it('should convert [a;b[ half-open interval brackets to symbol names', () => {
+		expect(convertLatexToTypstMath('[1~;~+\\infty[')).toBe('bracket.l 1 semi +infinity bracket.l');
+	});
+
+	it('should convert ]a;b] half-open interval brackets to symbol names', () => {
+		expect(convertLatexToTypstMath(']-\\infty~;~1]')).toBe('bracket.r -infinity semi 1 bracket.r');
+	});
+
+	it('should not affect normal brackets without semicolons', () => {
+		expect(convertLatexToTypstMath('[a, b]')).toBe('[a, b]');
+	});
+});
+
+describe('convertLatexToTypstMath - Double Prime', () => {
+	it('should convert " to prime.double for second derivative notation', () => {
+		expect(convertLatexToTypstMath('f"(x)')).toBe('f prime.double (x)');
 	});
 });
 

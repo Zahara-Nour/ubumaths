@@ -363,6 +363,11 @@ export class TypstService {
 			return { success: false, error: 'Compiler not initialized', format };
 		}
 
+		// DEBUG LOG: Keep for Typst debugging - dumps full document before compilation
+		console.log('[TypstService] === FULL TYPST DOCUMENT ===');
+		console.log(content);
+		console.log('[TypstService] === END TYPST DOCUMENT ===');
+
 		try {
 			let data: Uint8Array | string;
 
