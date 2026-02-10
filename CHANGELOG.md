@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.7](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.6...v0.8.7) (2026-02-10)
+
+### 🐛 Bug Fixes
+
+- **typst:** fix vartable right-side asymptote tuple format ([0b4791f](https://github.com/Zahara-Nour/ubumaths/commit/0b4791f29420ad14bc1bd0bcc090ca04cdfef41b))
+- **typst:** handle double-prime and French interval notation in math conversion ([a3b7d7a](https://github.com/Zahara-Nour/ubumaths/commit/a3b7d7a241dd2b1fcb4d41599c57fbcdb1488fd3))
+- **typst:** handle known functions spacing, braceless fractions, and differentials ([700eaaf](https://github.com/Zahara-Nour/ubumaths/commit/700eaaf1187c1b8508fe5fb7ade549015c8d53b2))
+- **typst:** prevent dif symbol splitting and bracket parser confusion ([20d6358](https://github.com/Zahara-Nour/ubumaths/commit/20d6358bc28bb516b0601a027a6d8ad7b3224890))
+- **typst:** prevent variable fusion with bracket symbol names ([e158b34](https://github.com/Zahara-Nour/ubumaths/commit/e158b34b935e1855e81853f91af24c29d2860240))
+- **typst:** replace all raw brackets in math with symbol names ([4d9fc39](https://github.com/Zahara-Nour/ubumaths/commit/4d9fc399c021be21fe3a0c63cf2015bb6ea925ab))
+- **typst:** show asymptote marker at first domain point in sign rows ([83a65b3](https://github.com/Zahara-Nour/ubumaths/commit/83a65b3d07621cb2de4dfb99547eb07298740f1d))
+- **typst:** strip dollar delimiters from variation table expressions ([cecf153](https://github.com/Zahara-Nour/ubumaths/commit/cecf1536ebfe25825e7f84254aff12a06604bf15))
+- **typst:** strip invisible LaTeX grouping braces from Typst output ([5911546](https://github.com/Zahara-Nour/ubumaths/commit/5911546b6d52ffe31f08c8911da3989c16f2c171))
+- **typst:** use bracket symbols for \left[..\right] to avoid parser confusion ([4c2919d](https://github.com/Zahara-Nour/ubumaths/commit/4c2919d5b90aedcc592b3e246a0792e43f398b0f))
+- **typst:** use dif for differentials, fix Delta splitting, add uppercase Greek ([d6c960a](https://github.com/Zahara-Nour/ubumaths/commit/d6c960a55c2604bf3e86cbd32133e82c8a6b55fb))
+
 ### [0.8.6](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.5...v0.8.6) (2026-02-10)
 
 ### 🐛 Bug Fixes
