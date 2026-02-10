@@ -38,7 +38,7 @@ import type {
 	LimitSign
 } from './continuity-types';
 
-import { computeDomain, containsValue, isEmpty, findZeros } from '../domain';
+import { computeDomain, containsNode, isEmpty, findZeros } from '../domain';
 import { analyzeOneSidedLimits } from '../limits/evaluate';
 import { analyzeDiscontinuity as classifyDiscontinuity } from '../limits/one-sided';
 import {
@@ -889,11 +889,8 @@ function checkContinuousOnDomain(
 	}
 
 	for (const disc of discontinuities) {
-		const pointValue = tryEvaluateNumeric(disc.point);
-		if (pointValue === null) continue;
-
 		// Check if the discontinuity point is IN the domain
-		const pointInDomain = containsValue(domain, pointValue);
+		const pointInDomain = containsNode(domain, disc.point);
 
 		if (pointInDomain) {
 			// Discontinuity is inside the domain - function is not continuous on its domain

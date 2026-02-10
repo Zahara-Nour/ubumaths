@@ -37,7 +37,7 @@ import type { Solution, PeriodicSolutionFamily } from '../../solve/types';
 import { solve } from '../../solve/solve';
 import { equals, number, add, multiply, opposite } from '../../factory';
 import { isRelation } from '../../guards';
-import { containsValue } from '../../domain/algebra';
+import { containsNode } from '../../domain/algebra';
 import { getEndpoints } from '$lib/math/intervals';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { denormalize, normalize } from '../../normal';
@@ -130,61 +130,19 @@ function filterSolutionsInDomain(solutions: readonly Solution[], domain: Domain)
 	const result: ZeroInfo[] = [];
 
 	for (const solution of solutions) {
-		// Get numeric value for domain checking
-		const numericValue = solution.approximate;
-
-		// If we have a numeric approximation, check if it's in the domain
-		if (numericValue !== undefined) {
-			const inDomain = isValueInDomain(numericValue, domain);
-			if (!inDomain) {
-				continue;
-			}
+		if (!containsNode(domain, solution.value)) {
+			continue;
 		}
 
 		// Convert to ZeroInfo
 		result.push({
 			value: solution.value,
-			approximate: numericValue,
+			approximate: solution.approximate,
 			exact: solution.exact
 		});
 	}
 
 	return result;
-}
-
-/**
- * Check if a numeric value is within a domain.
- *
- * @param value - The numeric value to check
- * @param domain - The domain to check against
- * @returns True if the value is in the domain
- *
- * @internal
- */
-function isValueInDomain(value: number, domain: Domain): boolean {
-	switch (domain.kind) {
-		case 'empty':
-			return false;
-
-		case 'universal':
-			return true;
-
-		case 'interval_set':
-			return containsValue(domain, value);
-
-		case 'condition_domain':
-			// For condition domains, we'd need to evaluate conditions
-			// For now, conservatively return true
-			return true;
-
-		case 'periodic_exclusion':
-			// For periodic exclusions, we'd need to check against the exclusion pattern
-			// For now, conservatively return true
-			return true;
-
-		default:
-			return true;
-	}
 }
 
 // =============================================================================
@@ -254,11 +212,11 @@ function enumeratePeriodicZeros(
 			if (atLower && !bounds.lowerInclusive) continue;
 			if (atUpper && !bounds.upperInclusive) continue;
 
-			// For non-contiguous domains (interval unions), check membership
-			if (!atLower && !atUpper && !isValueInDomain(numericValue, domain)) continue;
-
 			// Build symbolic value
 			const symbolicValue = buildPeriodicZeroSymbolic(baseSolution.value, k, period);
+
+			// For non-contiguous domains (interval unions), check membership
+			if (!atLower && !atUpper && !containsNode(domain, symbolicValue)) continue;
 
 			zeros.push({
 				value: symbolicValue,

@@ -37,7 +37,14 @@ import type {
 } from './differentiability-types';
 import type { Discontinuity } from './continuity-types';
 
-import { computeDomain, containsValue, isEmpty, findZeros, excludePoints } from '../domain';
+import {
+	computeDomain,
+	containsNode,
+	containsValue,
+	isEmpty,
+	findZeros,
+	excludePoints
+} from '../domain';
 import { analyzeContinuity } from './continuity';
 import { differentiate } from '../differentiation';
 import { analyzeOneSidedLimits } from '../limits/evaluate';
@@ -578,10 +585,22 @@ function analyzePointDifferentiability(
 
 	// Check if point is in domain
 	const { domain } = computeDomain(expr, variable);
-	const pointValue = tryEvaluateNumeric(point);
 
-	// If point is exactly on domain boundary
-	const isOnBoundary = pointValue !== null && !containsValue(domain, pointValue);
+	// If point is exactly on domain boundary.
+	// containsNode may return false when symbolic comparison is inconclusive,
+	// so we use a two-pass approach: symbolic first, numeric fallback.
+	// If both fail, conservatively assume the point is NOT a boundary.
+	let isOnBoundary = false;
+	const inDomain = containsNode(domain, point);
+	if (!inDomain) {
+		// Double-check: if containsNode returned false, it might be due to
+		// inconclusive symbolic comparison. Try numeric as validation.
+		const pointValue = tryEvaluateNumeric(point);
+		if (pointValue !== null) {
+			isOnBoundary = !containsValue(domain, pointValue);
+		}
+		// If pointValue is null, we can't determine → assume not on boundary
+	}
 
 	// Special handling for abs patterns: |f(x)| has angular point at zeros of f
 	// The derivative of |x| is sign(x), which has left limit = -1 and right limit = +1 at 0
@@ -1051,11 +1070,8 @@ function checkDifferentiableOnDomain(
 			continue;
 		}
 
-		const pointValue = tryEvaluateNumeric(ndp.point);
-		if (pointValue === null) continue;
-
 		// Check if the non-differentiable point is in the domain
-		if (containsValue(domain, pointValue)) {
+		if (containsNode(domain, ndp.point)) {
 			return false;
 		}
 	}

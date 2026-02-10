@@ -118,6 +118,8 @@ export {
 	isEmpty,
 	isUniversal,
 	containsValue,
+	containsNode,
+	isApproachableFrom,
 	intersect,
 	union,
 	complement,
