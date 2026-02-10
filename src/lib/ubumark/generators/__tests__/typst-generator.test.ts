@@ -1556,6 +1556,18 @@ describe('convertLatexToTypstMath - French Interval Notation', () => {
 		// when math is inside content blocks (e.g., #enum items)
 		expect(convertLatexToTypstMath('[a, b]')).toBe('bracket.l a, b bracket.r');
 	});
+
+	it('should prevent variable fusion between letters and bracket symbols', () => {
+		// Regression test: "x[" must NOT produce "xbracket.l" which Typst parses
+		// as unknown variable "xbracket" with field access ".l"
+		const result1 = convertLatexToTypstMath('x[a;b]');
+		expect(result1).not.toMatch(/[a-zA-Z]bracket/);
+		expect(result1).toContain('x bracket.l');
+
+		const result2 = convertLatexToTypstMath('x[a, b]');
+		expect(result2).not.toMatch(/[a-zA-Z]bracket/);
+		expect(result2).toContain('x bracket.l');
+	});
 });
 
 describe('convertLatexToTypstMath - Double Prime', () => {

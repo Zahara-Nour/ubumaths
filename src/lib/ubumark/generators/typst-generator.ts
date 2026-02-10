@@ -2292,7 +2292,8 @@ export function convertLatexToTypstMath(latex: string): string {
 		(_match, open: string, left: string, right: string, close: string) => {
 			const openSym = open === '[' ? 'bracket.l' : 'bracket.r';
 			const closeSym = close === '[' ? 'bracket.l' : 'bracket.r';
-			return `${openSym} ${left} semi ${right} ${closeSym}`;
+			// Leading/trailing spaces prevent variable fusion (e.g., "xbracket.l")
+			return ` ${openSym} ${left} semi ${right} ${closeSym} `;
 		}
 	);
 
@@ -2317,8 +2318,14 @@ export function convertLatexToTypstMath(latex: string): string {
 	// After French interval conversion above, any remaining [ ] come from
 	// \left[...\right], \right[, or the original LaTeX equation.
 	// Content block brackets (from \textcolor) use <<<CONTENT_L/R>>> placeholders.
-	result = result.replace(/\[/g, 'bracket.l ');
+	result = result.replace(/\[/g, ' bracket.l ');
 	result = result.replace(/\]/g, ' bracket.r');
+
+	// Prevent variable fusion: ensure bracket symbols are space-separated from
+	// adjacent identifiers. Without this, "x[" becomes "xbracket.l" which Typst
+	// parses as unknown variable "xbracket". The leading space in replacements above
+	// handles most cases, but the French interval regex return value may also need it.
+	result = result.replace(/([a-zA-Z0-9)])bracket\./g, '$1 bracket.');
 
 	// Restore content block brackets (from \textcolor conversion)
 	result = result.replace(/<<<CONTENT_L>>>/g, '[');
@@ -2329,6 +2336,9 @@ export function convertLatexToTypstMath(latex: string): string {
 	// ========================================================================
 	// Restore placeholder to Typst double prime symbol
 	result = result.replace(/<<<DOUBLE_PRIME>>>/g, 'prime.double');
+
+	// Final trim: bracket symbol insertions may add leading/trailing spaces
+	result = result.trim();
 
 	return result;
 }
