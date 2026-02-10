@@ -186,16 +186,23 @@ function generateDomain(domain: DomainPoint[]): string {
  * @returns Typst math expression
  */
 function formatMathExpression(expr: string): string {
+	// Strip $...$ delimiters if present - in variation tables everything is math,
+	// so users may write $e^{-1/4}$ but the generator already wraps in $...$
+	let cleaned = expr.trim();
+	if (cleaned.startsWith('$') && cleaned.endsWith('$') && cleaned.length > 1) {
+		cleaned = cleaned.slice(1, -1);
+	}
+
 	// Handle infinity special cases
-	if (expr === '-inf' || expr === '-∞') {
+	if (cleaned === '-inf' || cleaned === '-∞') {
 		return '-infinity';
 	}
-	if (expr === '+inf' || expr === 'inf' || expr === '∞') {
+	if (cleaned === '+inf' || cleaned === 'inf' || cleaned === '∞') {
 		return '+infinity';
 	}
 
 	// Apply French decimal formatting first, then convert to Typst
-	const frenchExpr = toFrenchDecimal(expr);
+	const frenchExpr = toFrenchDecimal(cleaned);
 	return convertLatexToTypstMath(frenchExpr);
 }
 
@@ -218,7 +225,12 @@ function formatMathExpression(expr: string): string {
  */
 function generateLabels(rows: (SignRow | VariationRow)[]): string {
 	const labels = rows.map((row) => {
-		const converted = convertLatexToTypstMath(row.label);
+		// Strip $...$ delimiters if present - labels are already wrapped in $...$
+		let label = row.label.trim();
+		if (label.startsWith('$') && label.endsWith('$') && label.length > 1) {
+			label = label.slice(1, -1);
+		}
+		const converted = convertLatexToTypstMath(label);
 		const rowType = row.type === 'sign' ? 's' : 'v';
 		// Use content blocks [...] for labels, with embedded math
 		// vartable 0.2.1 format: ([label], "type") - no height parameter in this version
