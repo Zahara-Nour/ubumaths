@@ -690,8 +690,10 @@ function generateMathBlock(node: MathBlockNode): string {
 	// DEBUG LOG: Keep for Typst debugging - logs each block math conversion
 	console.log('[typst-gen] math-block:', { latex, typstMath });
 
-	// For simple equations, wrap in align(center) to ensure centering inside lists
-	return `#align(center)[$ ${typstMath} $]`;
+	// Display math ($ with space) is centered by default in Typst.
+	// Do NOT wrap in #align(center)[...] — the content block brackets [...]
+	// confuse the parser when math contains ] (e.g., from \left[...\right])
+	return `$ ${typstMath} $`;
 }
 
 /**
@@ -1574,6 +1576,7 @@ const KNOWN_TYPST_SYMBOLS = new Set([
 	'forall',
 	'exists',
 	'partial',
+	'dif',
 	'diff',
 	'nabla',
 	'emptyset',
