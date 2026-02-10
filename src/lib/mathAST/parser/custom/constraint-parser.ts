@@ -38,14 +38,7 @@
 import type { PatternConstraint, IntervalConstraint } from '../../pattern/types';
 import { P } from '../../pattern/builder';
 import type { MathNodeType } from '../../types';
-import {
-	intervalSet,
-	interval,
-	openEndpoint,
-	closedEndpoint,
-	positiveInfinity,
-	negativeInfinity
-} from '$lib/math/intervals';
+import { intervalSet, interval, openEndpoint, closedEndpoint, bound } from '$lib/math/intervals';
 import type { MathNode } from '../../types';
 import type { Endpoint } from '$lib/math/intervals';
 import { parseCustomPratt } from './parser-pratt';
@@ -840,10 +833,10 @@ class ConstraintParser {
 
 		// Handle infinity
 		if (trimmed === '+inf' || trimmed === 'inf') {
-			return positiveInfinity();
+			return bound('+inf');
 		}
 		if (trimmed === '-inf') {
-			return negativeInfinity();
+			return bound('-inf');
 		}
 
 		// Parse with math parser
