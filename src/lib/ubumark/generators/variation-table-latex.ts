@@ -246,16 +246,22 @@ function generateDomain(domain: DomainPoint[]): string {
  * @returns Formatted expression
  */
 function formatMathExpression(expr: string): string {
+	// Strip $...$ delimiters if present - in variation tables everything is math
+	let cleaned = expr.trim();
+	if (cleaned.startsWith('$') && cleaned.endsWith('$') && cleaned.length > 1) {
+		cleaned = cleaned.slice(1, -1);
+	}
+
 	// Handle infinity
-	if (expr === '-inf' || expr === '-∞') {
+	if (cleaned === '-inf' || cleaned === '-∞') {
 		return '-\\infty';
 	}
-	if (expr === '+inf' || expr === 'inf' || expr === '∞') {
+	if (cleaned === '+inf' || cleaned === 'inf' || cleaned === '∞') {
 		return '+\\infty';
 	}
 
 	// Preserve LaTeX commands and return as-is
-	return escapeLatexMath(expr);
+	return escapeLatexMath(cleaned);
 }
 
 // ============================================================================
