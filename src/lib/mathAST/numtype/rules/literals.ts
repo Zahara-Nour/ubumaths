@@ -19,10 +19,10 @@ import type {
 import type { MathType, ParityInfo, SignInfo, TypeContext } from '../types';
 import { REAL_TYPE, UNKNOWN_TYPE } from '../types';
 import type { IntervalDomain } from '$lib/math/intervals/types';
-import { intervalSet, closedInterval, bound } from '$lib/math/intervals';
+import { intervalSet, closedInterval } from '$lib/math/intervals';
 import { isNegativeInfinityEndpoint, isPositiveInfinityEndpoint } from '$lib/math/intervals';
 import { compareNumericNodes } from '../../eval/compare-numeric';
-import { number } from '../../factory';
+import { number, euler } from '../../factory';
 
 // =============================================================================
 // Helper: Sign deduction from bounds
@@ -162,21 +162,23 @@ export function inferNumberType(node: NumberNode): MathType {
 // =============================================================================
 
 /**
- * Infers the type of a MathConstantNode.
+ * Infers the type of a MathConstantNode (π, e).
  *
- * Both π and e are transcendental numbers.
+ * The Custom parser always produces MathConstantNode for 'e' and 'π',
+ * so this is the primary path for constant type inference.
+ *
+ * The node itself is used directly as the interval bound (it's already
+ * a MathNode representing the exact value — no need to re-parse it).
  *
  * @param node - The math constant node
  * @returns MathType with base 'transcendental' and sign 'positive'
  */
 export function inferMathConstantType(node: MathConstantNode): MathType {
-	// Both π and e are positive transcendental numbers
-	const endpoint = node.constant === 'pi' ? bound('\\pi') : bound('e');
 	return {
 		base: 'transcendental',
 		sign: 'positive',
 		finite: true,
-		bounds: intervalSet([closedInterval(endpoint, endpoint)])
+		bounds: intervalSet([closedInterval(node, node)])
 	};
 }
 
@@ -187,13 +189,18 @@ export function inferMathConstantType(node: MathConstantNode): MathType {
 /**
  * Infers the type of a VariableNode.
  *
- * Special case: 'e' (Euler's number) is treated as transcendental
- * unless overridden in context.
- *
  * If the variable is in the context, uses that type.
  * Otherwise:
  * - In strict mode: returns 'unknown'
  * - In normal mode: returns 'real' (default assumption)
+ *
+ * **Parser discrepancy for 'e':**
+ * The Custom parser treats 'e' as a reserved constant and produces a
+ * MathConstantNode (handled by inferMathConstantType above). But the
+ * LaTeX parser has no such rule — it produces a VariableNode for 'e'.
+ * Since both parsers can feed into type inference, we handle 'e' here
+ * too as a fallback. We create a proper MathConstantNode via euler()
+ * so the interval bounds have the correct node type.
  *
  * @param node - The variable node
  * @param ctx - Type context with variable bindings
@@ -210,10 +217,9 @@ export function inferVariableType(node: VariableNode, ctx: TypeContext): MathTyp
 		return { base: varType };
 	}
 
-	// Special case: 'e' is Euler's number (transcendental)
-	// Only if not explicitly defined in context
+	// Fallback for LaTeX parser: 'e' arrives as VariableNode (see docstring above)
 	if (node.name === 'e') {
-		const ep = bound('e');
+		const ep = euler();
 		return {
 			base: 'transcendental',
 			sign: 'positive',
