@@ -163,6 +163,14 @@ export interface ValidationResult {
 		/** French feedback message for student */
 		feedback: string;
 	}[];
+
+	/** Per-blank validation results (fill_in_blanks only) */
+	blankResults?: {
+		/** 0-based blank index */
+		index: number;
+		/** Whether this specific blank is correct */
+		isCorrect: boolean;
+	}[];
 }
 
 // ============================================================================
