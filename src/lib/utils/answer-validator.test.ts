@@ -7,8 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { validateAnswer, validateBlanks } from './answer-validator';
-import type { BlankInfo } from './answer-validator';
+import { validateAnswer } from './answer-validator';
 import type { QuestionInstance } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
@@ -994,96 +993,5 @@ describe('solutionPool - order-independent multi-answer matching', () => {
 			const result = validateAnswer('3', instance);
 			expect(result.isCorrect).toBe(true);
 		});
-	});
-});
-
-// ============================================================================
-// FILL-IN-BLANKS TYPE-AWARE VALIDATION
-// ============================================================================
-
-describe('validateBlanks — type-aware', () => {
-	it('should validate math blanks with algebraic equivalence', () => {
-		const blanks: BlankInfo[] = [
-			{ expectedAnswer: '2+3', type: 'math' },
-			{ expectedAnswer: '10', type: 'math' }
-		];
-		const result = validateBlanks(['5', '10'], blanks);
-		expect(result.isCorrect).toBe(true);
-		expect(result.blankResults).toHaveLength(2);
-		expect(result.blankResults![0].isCorrect).toBe(true);
-		expect(result.blankResults![1].isCorrect).toBe(true);
-	});
-
-	it('should validate text blanks with fuzzy matching (accent insensitive)', () => {
-		const blanks: BlankInfo[] = [{ expectedAnswer: 'entière', type: 'text' }];
-		const result = validateBlanks(['entiere'], blanks);
-		expect(result.isCorrect).toBe(true);
-	});
-
-	it('should validate text blanks with fuzzy matching (case insensitive)', () => {
-		const blanks: BlankInfo[] = [{ expectedAnswer: 'triangle', type: 'text' }];
-		const result = validateBlanks(['Triangle'], blanks);
-		expect(result.isCorrect).toBe(true);
-	});
-
-	it('should accept Levenshtein ≤ 1 for text blanks with 3+ chars', () => {
-		const blanks: BlankInfo[] = [{ expectedAnswer: 'entière', type: 'text' }];
-		// "entier" vs "entiere" (normalized) = Levenshtein 1
-		const result = validateBlanks(['entier'], blanks);
-		expect(result.isCorrect).toBe(true);
-	});
-
-	it('should reject Levenshtein > 1 for text blanks', () => {
-		const blanks: BlankInfo[] = [{ expectedAnswer: 'perpendiculaire', type: 'text' }];
-		const result = validateBlanks(['parallele'], blanks);
-		expect(result.isCorrect).toBe(false);
-	});
-
-	it('should require exact match for 1-2 char text blanks', () => {
-		const blanks: BlankInfo[] = [{ expectedAnswer: 'pi', type: 'text' }];
-		expect(validateBlanks(['pi'], blanks).isCorrect).toBe(true);
-		expect(validateBlanks(['pa'], blanks).isCorrect).toBe(false);
-	});
-
-	it('should return per-blank results', () => {
-		const blanks: BlankInfo[] = [
-			{ expectedAnswer: '5', type: 'math' },
-			{ expectedAnswer: 'triangle', type: 'text' },
-			{ expectedAnswer: '10', type: 'math' }
-		];
-		const result = validateBlanks(['5', 'rectangle', '10'], blanks);
-		expect(result.isCorrect).toBe(false);
-		expect(result.blankResults).toHaveLength(3);
-		expect(result.blankResults![0].isCorrect).toBe(true);
-		expect(result.blankResults![1].isCorrect).toBe(false);
-		expect(result.blankResults![2].isCorrect).toBe(true);
-		expect(result.feedback).toContain('2'); // blank 2 (1-indexed)
-	});
-
-	it('should validate pool blanks against pool items', () => {
-		const blanks: BlankInfo[] = [
-			{ expectedAnswer: 'rectangle', type: 'text', pool: ['triangle', 'rectangle', 'cercle'] }
-		];
-		expect(validateBlanks(['rectangle'], blanks).isCorrect).toBe(true);
-		expect(validateBlanks(['triangle'], blanks).isCorrect).toBe(true); // in pool
-		expect(validateBlanks(['losange'], blanks).isCorrect).toBe(false); // not in pool
-	});
-
-	it('should validate pool blanks with fuzzy matching', () => {
-		const blanks: BlankInfo[] = [
-			{ expectedAnswer: 'parallèle', type: 'text', pool: ['parallèle', 'perpendiculaire'] }
-		];
-		// "parallele" matches "parallèle" (accent difference)
-		expect(validateBlanks(['parallele'], blanks).isCorrect).toBe(true);
-	});
-
-	it('should reject mismatched answer count', () => {
-		const blanks: BlankInfo[] = [
-			{ expectedAnswer: '5', type: 'math' },
-			{ expectedAnswer: '10', type: 'math' }
-		];
-		const result = validateBlanks(['5'], blanks);
-		expect(result.isCorrect).toBe(false);
-		expect(result.message).toContain('Nombre');
 	});
 });

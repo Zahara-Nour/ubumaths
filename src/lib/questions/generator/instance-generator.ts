@@ -23,12 +23,11 @@ import type {
 	ResolvedCorrection
 } from '../types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
-import { templateMarkdown, resolvedMarkdown, detectCircularDependencies } from '$lib/ubumark';
+import { templateMarkdown, detectCircularDependencies } from '$lib/ubumark';
 import { validateTemplate } from '../validators/template-validator';
 import { resolveVariables } from './variable-resolver';
 import { resolveMarkdownContent, resolveSolution, resolveExpression } from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';
-import { resolveBlanks } from './blank-resolver';
 
 // ============================================================================
 // SHARED DEFAULTS MERGING
@@ -98,13 +97,7 @@ function resolveVariationWithShared(
 		variables: mergeVariables(shared.variables, variation.variables),
 
 		// blanks: per-variation only (no shared equivalent)
-		blanks: variation.blanks,
-
-		// answerFormat: per-variation overrides shared (use ??)
-		answerFormat: variation.answerFormat ?? shared.answerFormat,
-
-		// requiredForm: per-variation overrides shared (use ??)
-		requiredForm: variation.requiredForm ?? shared.requiredForm
+		blanks: variation.blanks
 	};
 }
 
@@ -173,7 +166,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		const resolvedVariables = resolveVariables(resolvedVariation.variables || [], seed);
 
 		// 6. Resolve statement markdown
-		let resolvedStatement: ResolvedMarkdown = resolveMarkdownContent(
+		const resolvedStatement: ResolvedMarkdown = resolveMarkdownContent(
 			resolvedVariation.statement,
 			resolvedVariables,
 			seed
@@ -245,30 +238,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			shuffledChoices = shuffleChoices(resolvedChoices, seed);
 		}
 
-		// 7b. Resolve fill_in_blanks: blank-resolver + answerFormat
-		let resolvedAnswerFormat: string | undefined;
-
-		if (template.type === 'fill_in_blanks') {
-			// Resolve answerFormat from merged variation
-			resolvedAnswerFormat = resolvedVariation.answerFormat;
-
-			if (resolvedVariation.blanks) {
-				// Template has explicit blank definitions — resolve expected answers
-				resolvedBlanks = resolvedVariation.blanks.map((blank) => ({
-					position: blank.position,
-					expectedAnswer: resolveExpression(blank.expectedAnswer, resolvedVariables, seed),
-					type: blank.type,
-					pool: blank.pool
-				}));
-			} else {
-				// No explicit blanks — use blank-resolver to extract from resolved statement
-				const blankResult = resolveBlanks(String(resolvedStatement));
-				if (blankResult.blanks.length > 0) {
-					resolvedBlanks = blankResult.blanks;
-					// Update statement with \placeholder replacements
-					resolvedStatement = resolvedMarkdown(blankResult.resolvedStatement);
-				}
-			}
+		if (template.type === 'fill_in_blanks' && resolvedVariation.blanks) {
+			resolvedBlanks = resolvedVariation.blanks.map((blank) => ({
+				position: blank.position,
+				expectedAnswer: resolveExpression(blank.expectedAnswer, resolvedVariables, seed)
+			}));
 		}
 
 		// 8. Construct instance
@@ -289,15 +263,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			delay: template.delay,
 			correction: resolvedCorrection, // Now ResolvedMarkdown
 			transformType: template.transformType,
-			answerFormat: resolvedAnswerFormat,
 			blanks: resolvedBlanks,
 			choices: resolvedChoices, // Now with ResolvedMarkdown content
 			shuffledChoices, // Now with ResolvedMarkdown content
 			multipleAnswers: template.multipleAnswers,
 			generatedAt: new Date().toISOString(),
 			seed,
-			selectedVariationIndex: variationIndex,
-			requiredForm: resolvedVariation.requiredForm
+			selectedVariationIndex: variationIndex
 		};
 
 		return {
