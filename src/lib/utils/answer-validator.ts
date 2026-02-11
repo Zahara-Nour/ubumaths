@@ -21,7 +21,6 @@ import type {
 import { DEFAULT_CONSTRAINT_MODE } from '$lib/questions/types';
 import type { ValidationResult } from '$lib/types/question-display';
 import { evaluateExpression, areEquivalent } from '$lib/math';
-import { fuzzyTextMatch } from '$lib/utils/fuzzy-text-validator';
 import {
 	checkSpaces,
 	checkProducts,
@@ -207,10 +206,13 @@ function validateWithSolutionPool(
 
 			let isMatch = false;
 			switch (type) {
-				case 'open_answer':
-					isMatch =
-						validateNumerical(userAnswer, solutions[i], precision).isCorrect ||
-						areEquivalent(userAnswer, solutions[i]);
+				case 'numerical_exact':
+				case 'numerical_decimal':
+				case 'numerical_rounded':
+					isMatch = validateNumerical(userAnswer, solutions[i], precision).isCorrect;
+					break;
+				case 'algebraic_transform':
+					isMatch = areEquivalent(userAnswer, solutions[i]);
 					break;
 				default:
 					isMatch = userAnswer.trim() === solutions[i].trim();
@@ -273,12 +275,8 @@ export function validateAnswer(
 		if (instance.options?.solutionPool && Array.isArray(solution)) {
 			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
 			result = validateWithSolutionPool(answers, solution, type, precision);
-		} else {
-			// Cast to string to handle both new types and legacy types during migration
-			const typeStr = type as string;
-
-			switch (typeStr) {
-				// Legacy numerical types (deprecated — will be removed after migration)
+		} else
+			switch (type) {
 				case 'numerical_exact':
 				case 'numerical_decimal':
 				case 'numerical_rounded':
@@ -301,24 +299,11 @@ export function validateAnswer(
 					result = validateAlgebraic(userAnswer as string, solution as string);
 					break;
 
-				// New types
 				case 'fill_in_blanks':
 					result = validateBlanks(
 						userAnswer as string[],
-						instance.blanks?.map((b) => ({
-							expectedAnswer: b.expectedAnswer,
-							type: b.type ?? 'math',
-							pool: b.pool
-						})) || []
+						instance.blanks?.map((b) => b.expectedAnswer) || []
 					);
-					break;
-
-				case 'open_answer':
-					// Open answer: try numerical first, then algebraic equivalence
-					result = validateNumerical(userAnswer as string | number, solution as string, precision)
-						.isCorrect
-						? validateNumerical(userAnswer as string | number, solution as string, precision)
-						: validateAlgebraic(String(userAnswer), solution as string);
 					break;
 
 				case 'multiple_choice':
@@ -335,7 +320,6 @@ export function validateAnswer(
 						message: `Type de question non supporté: ${type}`
 					};
 			}
-		}
 
 		// Apply required form check FIRST if configured (takes precedence over constraints)
 		// This validates structural form (product, sum, fraction, etc.)
@@ -614,65 +598,46 @@ export function validateAlgebraic(userAnswer: string, correctAnswer: string): Va
 // FILL-IN-BLANKS VALIDATION
 // ============================================================================
 
-/** Blank metadata passed to type-aware validation */
-export interface BlankInfo {
-	/** Expected correct answer */
-	expectedAnswer: string;
-	/** Blank type: 'math' uses algebraic equivalence, 'text' uses fuzzy matching */
-	type: 'math' | 'text';
-	/** Optional word pool — if defined, answer must be in pool */
-	pool?: string[];
-}
-
 /**
- * Validate fill-in-blanks answers with type-aware matching.
- *
- * - Math blanks: validated by algebraic equivalence (`areEquivalent`)
- * - Text blanks: validated by fuzzy text matching (accent/case insensitive, Levenshtein ≤ 1)
- * - Pool blanks: if `blank.pool` is defined, answer must be in the pool
- *
- * Returns per-blank results in `blankResults`.
+ * Validate fill-in-blanks answers
  *
  * @param userAnswers - Array of user answers for each blank
- * @param blanks - Blank metadata (expected answers, types, pools)
- * @returns Validation result with per-blank details
+ * @param correctAnswers - Array of correct answers
+ * @returns Validation result
  */
-export function validateBlanks(userAnswers: string[], blanks: BlankInfo[]): ValidationResult {
-	if (userAnswers.length !== blanks.length) {
+export function validateBlanks(userAnswers: string[], correctAnswers: string[]): ValidationResult {
+	if (userAnswers.length !== correctAnswers.length) {
 		return {
 			isCorrect: false,
 			message: 'Nombre de réponses incorrect'
 		};
 	}
 
-	const blankResults = userAnswers.map((userAns, i) => {
-		const blank = blanks[i];
-		let isCorrect = false;
+	const results = userAnswers.map((userAns, i) => {
+		const correctAns = correctAnswers[i];
 
-		// Pool validation: if pool is defined, answer must be in pool
-		if (blank.pool && blank.pool.length > 0) {
-			isCorrect = blank.pool.some((poolItem) => fuzzyTextMatch(userAns, poolItem));
-		} else if (blank.type === 'math') {
-			// Math blanks: algebraic equivalence
-			isCorrect = areEquivalent(userAns, blank.expectedAnswer);
-		} else {
-			// Text blanks: fuzzy text matching (accent/case/Levenshtein)
-			isCorrect = fuzzyTextMatch(userAns, blank.expectedAnswer);
+		// Try algebraic equivalence first
+		if (areEquivalent(userAns, correctAns)) {
+			return { isCorrect: true, index: i };
 		}
 
-		return { index: i, isCorrect };
+		// Fallback to exact string match (case-insensitive)
+		if (userAns.trim().toLowerCase() === correctAns.trim().toLowerCase()) {
+			return { isCorrect: true, index: i };
+		}
+
+		return { isCorrect: false, index: i };
 	});
 
-	const allCorrect = blankResults.every((r) => r.isCorrect);
-	const incorrectIndexes = blankResults.filter((r) => !r.isCorrect).map((r) => r.index + 1);
+	const allCorrect = results.every((r) => r.isCorrect);
+	const incorrectIndexes = results.filter((r) => !r.isCorrect).map((r) => r.index + 1);
 
 	return {
 		isCorrect: allCorrect,
 		message: allCorrect ? 'Correct !' : 'Incorrect',
 		feedback: allCorrect
 			? undefined
-			: `Les blancs suivants sont incorrects: ${incorrectIndexes.join(', ')}`,
-		blankResults
+			: `Les blancs suivants sont incorrects: ${incorrectIndexes.join(', ')}`
 	};
 }
 

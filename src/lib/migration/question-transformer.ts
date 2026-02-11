@@ -49,7 +49,6 @@ import { templateMarkdown } from '$lib/ubumark';
 import {
 	hasChoices,
 	hasMultipleAnswers,
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	hasFillInBlanks,
 	hasAnswerFields,
 	hasImages,
@@ -258,17 +257,7 @@ function mapGrade(oldGrade: OldGrade): GradeCode {
 // ============================================================================
 
 /**
- * Detect new question type from old question structure.
- *
- * Classification rules (in priority order):
- * 1. hasChoices → multiple_choice
- * 2. hasFillInBlanks (expressions with ?) → fill_in_blanks (fill-in mode)
- * 3. hasAnswerFields → fill_in_blanks (answerField mode)
- * 4. hasExpressions (without ?) → fill_in_blanks (result/rewrite mode)
- * 5. default → fill_in_blanks (simple numerical)
- *
- * All former numerical_exact, numerical_decimal, numerical_with_unit,
- * and algebraic_transform types are now unified as fill_in_blanks.
+ * Detect new question type from old question structure
  */
 function detectQuestionType(oldQuestion: QuestionBase): QuestionType {
 	// Multiple choice with multiple answers
@@ -281,12 +270,28 @@ function detectQuestionType(oldQuestion: QuestionBase): QuestionType {
 		return 'multiple_choice';
 	}
 
-	// All other types become fill_in_blanks:
-	// - expressions with ? (fill-in mode)
-	// - answerFields (answerField mode)
-	// - expressions without ? (result/rewrite mode)
-	// - simple numerical (default)
-	return 'fill_in_blanks';
+	// Fill in blanks (expressions with ?)
+	if (hasFillInBlanks(oldQuestion)) {
+		return 'fill_in_blanks';
+	}
+
+	// Decimal result type
+	if (oldQuestion['result-type'] === 'decimal') {
+		return 'numerical_decimal';
+	}
+
+	// Has custom answer fields - usually means specific format required
+	if (hasAnswerFields(oldQuestion)) {
+		// Check if answer field suggests algebraic transformation
+		const answerField = oldQuestion.answerFields?.[0] || '';
+		if (answerField.includes('factoriser') || answerField.includes('développer')) {
+			return 'algebraic_transform';
+		}
+		return 'numerical_exact';
+	}
+
+	// Default to numerical exact
+	return 'numerical_exact';
 }
 
 // ============================================================================
@@ -1650,30 +1655,6 @@ function detectSharedFields(
 		}
 	}
 
-	// ---- Extract answerFormat for fill_in_blanks (result/rewrite mode) ----
-	if (questionType === 'fill_in_blanks') {
-		const answerFormats = oldQuestion.answerFormats || [];
-		if (answerFormats.length > 0) {
-			// answerFormats is typically shared (same format for all variations)
-			const format = answerFormats[0];
-			if (format && format !== '?') {
-				shared.answerFormat = format;
-			}
-			// If format is just '?', don't set it (it's the default)
-
-			// Warn if multiple different answerFormats exist (per-variation not yet supported)
-			if (
-				answerFormats.length > 1 &&
-				!answerFormats.slice(1).every((f) => f === answerFormats[0])
-			) {
-				warnings.push(
-					`Multiple different answerFormats detected (${answerFormats.length}). ` +
-						`Only first format used: "${answerFormats[0]}".`
-				);
-			}
-		}
-	}
-
 	return { shared, perVariation };
 }
 
@@ -1687,9 +1668,7 @@ function hasSharedContent(shared: SharedVariationDefaults): boolean {
 		shared.solution !== undefined ||
 		shared.correction ||
 		(shared.choices && shared.choices.length > 0) ||
-		(shared.validationRules && shared.validationRules.length > 0) ||
-		shared.answerFormat ||
-		shared.requiredForm
+		(shared.validationRules && shared.validationRules.length > 0)
 	);
 }
 
@@ -1807,22 +1786,20 @@ function extractBlanks(
 		return undefined;
 	}
 
-	// Each ? corresponds to a solution — all are math blanks (in expressions)
+	// Each ? corresponds to a solution
 	for (let i = 0; i < questionMarks; i++) {
 		const answer = solutions?.[i];
 		if (answer !== undefined) {
 			const conversionResult = convertTinyCASToNew(String(answer));
 			blanks.push({
 				position: i,
-				expectedAnswer: conversionResult.converted || String(answer),
-				type: 'math'
+				expectedAnswer: conversionResult.converted || String(answer)
 			});
 		} else {
 			warnings.push(`Missing solution for blank at position ${i}`);
 			blanks.push({
 				position: i,
-				expectedAnswer: '',
-				type: 'math'
+				expectedAnswer: ''
 			});
 		}
 	}
@@ -1951,35 +1928,17 @@ export function transformQuestion(
 		}
 
 		// Apply requiredForm to shared (applies to all variations)
-		if (requiredForm && shared) {
+		if (requiredForm) {
 			shared.requiredForm = requiredForm;
 		}
 
 		// Assign category
 		const category = assignCategory(oldQuestion);
 
-		// Detect requiredForm from description (factoriser, développer, simplifier, résoudre)
-		// These are now fill_in_blanks with a requiredForm constraint
-		if (hasAnswerFields(oldQuestion) && shared && !shared.requiredForm) {
-			const answerField = oldQuestion.answerFields?.[0] || '';
-			const descLower = oldQuestion.description.toLowerCase();
-			if (answerField.includes('factoriser') || descLower.includes('factoriser')) {
-				shared.requiredForm = 'product';
-			} else if (answerField.includes('développer') || descLower.includes('développer')) {
-				shared.requiredForm = 'sum';
-			}
-		}
-
-		// Detect algebraic transform type from description (deprecated, kept for compatibility)
+		// Determine if algebraic transform type is needed
 		let transformType: AlgebraicTransformType | undefined;
-		const description = oldQuestion.description.toLowerCase();
-		if (
-			description.includes('factoriser') ||
-			description.includes('développer') ||
-			description.includes('simplifier') ||
-			description.includes('résoudre') ||
-			description.includes('resoudre')
-		) {
+		if (questionType === 'algebraic_transform') {
+			const description = oldQuestion.description.toLowerCase();
 			if (description.includes('factoriser')) {
 				transformType = 'factor';
 			} else if (description.includes('développer')) {
@@ -2019,8 +1978,8 @@ export function transformQuestion(
 			template.transformType = transformType;
 		}
 
-		// Add precision for decimal questions (result-type: 'decimal' in old system)
-		if (oldQuestion['result-type'] === 'decimal') {
+		// Add precision for decimal questions
+		if (questionType === 'numerical_decimal') {
 			template.precision = { type: 'decimal', digits: 2 }; // Default to 2 decimal places
 			warnings.push('Decimal precision set to 2 places by default - verify if correct');
 		}
@@ -2193,10 +2152,9 @@ export function validateTransformedTemplate(template: QuestionTemplate): {
 			errors.push(`Variation ${index}: multiple choice question missing choices`);
 		}
 
-		// fill_in_blanks: blanks are either explicit (fill-in mode) or generated at
-		// runtime by blank-resolver from ? in statement / answerFormat (result/rewrite mode).
-		// Only require blanks when there's no statement containing ? or answerFormat.
-		// This validation is intentionally lenient during migration.
+		if (template.type === 'fill_in_blanks' && !variation.blanks) {
+			errors.push(`Variation ${index}: fill-in-blanks question missing blanks`);
+		}
 	});
 
 	return {

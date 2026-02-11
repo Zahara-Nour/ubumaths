@@ -44,7 +44,7 @@ describe('Question Transformer', () => {
 
 				expect(result.success).toBe(true);
 				expect(result.template).toBeDefined();
-				expect(result.template?.type).toBe('fill_in_blanks');
+				expect(result.template?.type).toBe('numerical_exact');
 				expect(result.template?.title).toBe('Addition simple');
 				expect(result.template?.description).toBe('Additionner deux nombres');
 				expect(result.template?.variations).toHaveLength(1);
@@ -91,7 +91,7 @@ describe('Question Transformer', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				expect(result.template?.type).toBe('fill_in_blanks');
+				expect(result.template?.type).toBe('numerical_decimal');
 				expect(result.template?.precision).toEqual({
 					type: 'decimal',
 					digits: 2
@@ -193,8 +193,7 @@ describe('Question Transformer', () => {
 				expect(blanks).toHaveLength(1);
 				expect(blanks?.[0]).toEqual({
 					position: 0,
-					expectedAnswer: '{{b}}',
-					type: 'math'
+					expectedAnswer: '{{b}}'
 				});
 			});
 
@@ -1018,7 +1017,7 @@ describe('Question Transformer', () => {
 		it('should validate a correct template', () => {
 			const template: QuestionTemplate = {
 				id: 'test-id',
-				type: 'fill_in_blanks',
+				type: 'numerical_exact',
 				title: 'Test Question',
 				variations: [
 					{
@@ -1041,7 +1040,7 @@ describe('Question Transformer', () => {
 
 		it('should detect missing required fields', () => {
 			const template = {
-				type: 'fill_in_blanks',
+				type: 'numerical_exact',
 				variations: []
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any as QuestionTemplate;
