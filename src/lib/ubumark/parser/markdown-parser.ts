@@ -182,6 +182,14 @@ function isHorizontalRule(line: string): boolean {
 const BLANK_REGEX = /\{\{blank:(\d+)\}\}/g;
 
 /**
+ * Regex for text blanks: [_]
+ *
+ * Positional sugar syntax for blanks in text (outside math zones).
+ * Auto-incremented index, starting after the highest explicit {{blank:N}}.
+ */
+const TEXT_BLANK_REGEX = /\[_\]/g;
+
+/**
  * Regex for markdown links: [text](url) or [text](url "title")
  *
  * Uses negative lookbehind to NOT match images (which have ! prefix).
@@ -808,6 +816,82 @@ function parseTextForBlanks(text: string): (string | BlankNode)[] {
 }
 
 /**
+ * Parse text segments for [_] text blanks.
+ *
+ * Processes the string segments from a prior parsing step, replacing [_] occurrences
+ * with BlankNodes using auto-incremented indices starting from `startIndex`.
+ *
+ * @param segments - Array of string segments and already-parsed nodes
+ * @param startIndex - Starting index for auto-numbering (typically maxExplicitIndex + 1)
+ * @returns Array with [_] replaced by BlankNodes, plus the next available index
+ */
+function parseTextForTextBlanks(
+	segments: (string | BlankNode)[],
+	startIndex: number
+): { results: (string | BlankNode)[]; nextIndex: number } {
+	const results: (string | BlankNode)[] = [];
+	let currentIndex = startIndex;
+
+	for (const segment of segments) {
+		if (typeof segment !== 'string') {
+			// Already a BlankNode from {{blank:N}} — pass through
+			results.push(segment);
+			continue;
+		}
+
+		// Split text on [_] and interleave BlankNodes
+		// Skip [_] inside backtick code spans
+		const textBlankRegex = new RegExp(TEXT_BLANK_REGEX.source, 'g');
+		let position = 0;
+		let match: RegExpExecArray | null;
+
+		while ((match = textBlankRegex.exec(segment)) !== null) {
+			// Check if this [_] is inside a backtick code span
+			if (isInsideCodeSpan(segment, match.index)) {
+				continue;
+			}
+
+			// Add text before this [_]
+			if (match.index > position) {
+				results.push(segment.substring(position, match.index));
+			}
+
+			// Add BlankNode with auto-incremented index
+			results.push({
+				type: 'blank',
+				index: currentIndex++
+			});
+
+			position = match.index + match[0].length;
+		}
+
+		// Add remaining text after last [_]
+		if (position < segment.length) {
+			results.push(segment.substring(position));
+		}
+	}
+
+	return { results, nextIndex: currentIndex };
+}
+
+/**
+ * Check if a position in text falls inside a backtick code span (`...`).
+ */
+function isInsideCodeSpan(text: string, pos: number): boolean {
+	// Find all backtick code spans and check if pos is inside one
+	const codeSpanRegex = /`[^`]*`/g;
+	let match: RegExpExecArray | null;
+	while ((match = codeSpanRegex.exec(text)) !== null) {
+		const start = match.index;
+		const end = start + match[0].length;
+		if (pos > start && pos < end) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
  * Parse text for links ([text](url) or [text](url "title"))
  *
  * Extracts markdown links from text and returns an array of
@@ -1201,6 +1285,7 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
  *
  * Processing pipeline:
  * 1. Extract {{blank:N}} placeholders
+ * 1b. Extract [_] text blanks (auto-numbered after highest {{blank:N}})
  * 2. Extract {{hint:id}} references
  * 3. Extract [[type:uuid|label]] internal links
  * 4. Extract [text](url) links
@@ -1209,7 +1294,7 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
  * 7. Extract hard line breaks
  * 8. Parse remaining text for formatting (bold, italic, code)
  *
- * Priority order: blanks > hints > internal-links > links > hashtags > mentions > hardbreaks > code > bold > italic
+ * Priority order: blanks > text-blanks > hints > internal-links > links > hashtags > mentions > hardbreaks > code > bold > italic
  *
  * @param text - Plain text possibly with markdown formatting, blanks, hints, internal links, links, hashtags, and mentions
  * @returns Array of inline nodes (text, blank, hint-reference, internal-link, link, hashtag, mention)
@@ -1217,12 +1302,22 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 function parseTextFormatting(text: string): InlineNode[] {
 	if (!text) return [];
 
-	// Step 1: Extract blanks first
+	// Step 1: Extract {{blank:N}} first
 	const blankSegments = parseTextForBlanks(text);
+
+	// Step 1b: Extract [_] text blanks from remaining text segments
+	// Auto-number starting after the highest explicit {{blank:N}} index
+	const maxExplicitIndex = blankSegments.reduce((max, seg) => {
+		if (typeof seg !== 'string' && seg.type === 'blank') {
+			return Math.max(max, seg.index);
+		}
+		return max;
+	}, -1);
+	const { results: allBlankSegments } = parseTextForTextBlanks(blankSegments, maxExplicitIndex + 1);
 
 	// Step 2-8: Process each segment through the pipeline
 	const nodes: InlineNode[] = [];
-	for (const blankSegment of blankSegments) {
+	for (const blankSegment of allBlankSegments) {
 		if (typeof blankSegment === 'string') {
 			// Step 2: Extract hint references from text segment
 			const hintSegments = parseTextForHints(blankSegment);
