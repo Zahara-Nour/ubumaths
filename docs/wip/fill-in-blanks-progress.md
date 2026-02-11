@@ -110,6 +110,30 @@ Files to fix in subsequent phases:
 
 ---
 
-## Phase 7: Create math vocabulary dictionary FR — PENDING
+## Phase 7: Create math vocabulary dictionary FR ✅
+
+### Status: COMPLETE
+
+### Changes made
+
+| File                                      | Change                                                                                                                                                                                                   |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/data/math-dictionary-fr.ts`      | NEW — `MathTerm` interface, `MATH_DICTIONARY` (230+ terms), utility functions: `getTermsForLevel`, `getTermsByTag`, `getTermsByTagAndLevel`, `getAllTerms`, `searchTerms`                                |
+| `src/lib/data/math-dictionary-fr.test.ts` | NEW — 27 tests: dictionary integrity (≥200 terms, no duplicates, valid GradeCode, tag format), level filtering, tag filtering, search (prefix, substring, accent/case insensitive, limit, special chars) |
+
+### Decisions
+
+- Terms with multiple meanings (carré, cube, médiane, degré, opposé, simplifier) handled with: primary merged entry + secondary "(context)" variant for disambiguation.
+- `GRADE_ORDER` includes all valid `GradeCode` values from CP to T_STMG.
+- `searchTerms()` returns prefix matches first, then substring matches, limited to 20 results by default.
+- Search uses NFD normalization (accent-insensitive, case-insensitive).
+- Categories covered: arithmétique, fractions, décimaux, géométrie, transformations, grandeurs/mesures, calcul littéral, fonctions, statistiques/probabilités, théorèmes, solides, notation/logique, trigonométrie, proportionnalité.
+
+### Test results
+
+- 27/27 tests pass
+- No regressions
+
+---
 
 ## Phase 8: Integration tests + DB import — PENDING
