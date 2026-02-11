@@ -60,19 +60,23 @@ export type GradeLevel = GradeCode;
 // ============================================================================
 
 /**
- * Available question types
+ * Available question types (UI interaction modes)
+ *
+ * - `fill_in_blanks`: Questions with blanks to fill (math `?` or text `[_]`).
+ *   Covers result/rewrite, answerField, and fill-in modes.
+ * - `multiple_choice`: Choose among provided options.
+ * - `open_answer`: Free-form answer in a separate field (flash cards, oral questions).
+ *
+ * Validation (exact, decimal, tolerance, requiredForm) is configured separately.
+ *
+ * @see mapLegacyType() in legacy-type-mapper.ts for migration from old 7-type system.
  */
-export type QuestionType =
-	| 'numerical_exact' // Exact numerical value required
-	| 'numerical_decimal' // Decimal approximation
-	| 'numerical_rounded' // Rounded value
-	| 'numerical_with_unit' // Numerical value with physical unit
-	| 'algebraic_transform' // Factor, expand, simplify expressions
-	| 'fill_in_blanks' // Fill in missing parts
-	| 'multiple_choice'; // Multiple choice (one or several answers)
+export type QuestionType = 'fill_in_blanks' | 'multiple_choice' | 'open_answer';
 
 /**
  * Types of algebraic transformations
+ *
+ * @deprecated Use `requiredForm` instead. Will be removed after migration Phase 6.
  */
 export type AlgebraicTransformType = 'factor' | 'expand' | 'simplify' | 'solve';
 
@@ -182,13 +186,27 @@ export interface QuestionVariation {
 
 	// ---- Type-specific Fields (per-variation) ----
 
-	/** Blank positions and answers (for fill_in_blanks) */
+	/**
+	 * Per-variation answerFormat override.
+	 *
+	 * Overrides `shared.answerFormat` for this specific variation.
+	 * @see SharedVariationDefaults.answerFormat
+	 */
+	answerFormat?: string;
+
+	/** Blank definitions with type and expected answer (for fill_in_blanks) */
 	blanks?: {
-		/** Position in statement */
+		/** 0-based positional index (global across all blanks in the statement) */
 		position: number;
 
 		/** Expected answer - plain string value (not markdown) */
 		expectedAnswer: string;
+
+		/** Blank type: 'math' (in $...$) or 'text' (in prose) */
+		type: 'math' | 'text';
+
+		/** Optional word pool for text blanks (restricts autocompletion) */
+		pool?: string[];
 	}[];
 
 	/** Choices for multiple choice */
@@ -267,6 +285,20 @@ export interface SharedVariationDefaults {
 	 * @see QuestionVariation.requiredForm
 	 */
 	requiredForm?: RequiredForm;
+
+	/**
+	 * Visual format for the answer zone in Result/Rewrite mode.
+	 *
+	 * Contains `?` placeholders that become `\placeholder[N]{}` in MathLive.
+	 * Applied when an `expression*` variable has no `?` in its value.
+	 *
+	 * Per-variation `answerFormat` overrides this when defined.
+	 *
+	 * @example '10^?' — student sees `= 10^{[___]}`
+	 * @example '?*10^?' — student sees `= [___] × 10^{[___]}`
+	 * @example '?' — default: student sees `= [___]` (free input)
+	 */
+	answerFormat?: string;
 }
 
 // ============================================================================
@@ -413,7 +445,9 @@ export interface QuestionTemplate {
 
 	// ---- Type-specific Configuration (shared across all variations) ----
 
-	/** Type of algebraic transformation (for algebraic_transform) */
+	/**
+	 * @deprecated Use `requiredForm` instead. Will be removed after migration Phase 6.
+	 */
 	transformType?: AlgebraicTransformType;
 
 	/** Whether multiple answers are allowed (for multiple_choice) */
@@ -493,11 +527,26 @@ export interface QuestionInstance {
 
 	// ---- Type-specific (resolved) ----
 
+	/**
+	 * @deprecated Use `requiredForm` instead. Will be removed after migration Phase 6.
+	 */
 	transformType?: AlgebraicTransformType;
 
+	/**
+	 * Resolved answerFormat (from shared or variation override).
+	 * Contains `?` placeholders for the answer zone.
+	 */
+	answerFormat?: string;
+
 	blanks?: {
+		/** 0-based positional index */
 		position: number;
-		expectedAnswer: string; // Resolved plain string value
+		/** Resolved plain string value */
+		expectedAnswer: string;
+		/** Blank type: 'math' (in $...$) or 'text' (in prose) */
+		type: 'math' | 'text';
+		/** Optional word pool for text blanks */
+		pool?: string[];
 	}[];
 
 	choices?: {
