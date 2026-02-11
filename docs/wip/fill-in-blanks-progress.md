@@ -4,7 +4,7 @@
 
 ## Phase 1: Define updated TypeScript types ✅
 
-### Status: COMPLETE
+### Status: COMPLETE (commit `872b4a01`)
 
 ### Changes made
 
@@ -31,13 +31,64 @@ Files to fix in subsequent phases:
 
 ---
 
-## Phase 2: Add [_] support in ubumark parser — PENDING
+## Phase 2: Add [_] support in ubumark parser ✅
 
-## Phase 3: Adapt generation pipeline — PENDING
+### Status: COMPLETE (commit `82b6d01f`)
+
+### Changes made
+
+| File                                                         | Change                                                                                                               |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/ubumark/parser/markdown-parser.ts`                  | Added `TEXT_BLANK_REGEX`, `parseTextForTextBlanks()`, `isInsideCodeSpan()`. Step 1b in pipeline after `{{blank:N}}`. |
+| `src/lib/ubumark/__tests__/parser/text-blank-parser.test.ts` | NEW — 10 tests for `[_]` parsing.                                                                                    |
+
+---
+
+## Phase 3: Adapt generation pipeline ✅
+
+### Status: COMPLETE (commit `543df8a7`)
+
+### Changes made
+
+| File                                                 | Change                                                                       |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `src/lib/questions/generator/blank-resolver.ts`      | NEW — `resolveBlanks()`, `buildAnswerFormatExpression()`, `findMathZones()`. |
+| `src/lib/questions/generator/blank-resolver.test.ts` | NEW — 16 tests.                                                              |
+| `src/lib/questions/generator/instance-generator.ts`  | Merge `answerFormat`/`requiredForm` in shared, step 7b for fill_in_blanks.   |
+
+---
 
 ## Phase 4: Implement new FillBlanksInput — PENDING
 
-## Phase 5: Adapt validation — PENDING
+---
+
+## Phase 5: Adapt validation ✅
+
+### Status: COMPLETE
+
+### Changes made
+
+| File                                         | Change                                                                                                                                                                                                                                                                                                           |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/utils/fuzzy-text-validator.ts`      | NEW — `normalizeText()` (NFD+lowercase+trim+collapse spaces), `levenshteinDistance()` (O(min(m,n)) space), `fuzzyTextMatch()` (exact for 1-2 chars, Levenshtein ≤ 1 for 3+).                                                                                                                                     |
+| `src/lib/utils/fuzzy-text-validator.test.ts` | NEW — 35 tests (normalization, Levenshtein, fuzzy matching, multi-word, whitespace).                                                                                                                                                                                                                             |
+| `src/lib/utils/answer-validator.ts`          | `validateBlanks()` now type-aware: `BlankInfo` interface, math → `areEquivalent()`, text → `fuzzyTextMatch()`, pool → fuzzy pool match. Per-blank results in `blankResults`. Legacy types handled via string cast in switch. Added `open_answer` case. Removed `fill_in_blanks` from `validateWithSolutionPool`. |
+| `src/lib/utils/answer-validator.test.ts`     | Added 10 tests for type-aware `validateBlanks`.                                                                                                                                                                                                                                                                  |
+| `src/lib/types/question-display.ts`          | Added `blankResults` field to `ValidationResult`.                                                                                                                                                                                                                                                                |
+
+### Decisions
+
+- Pool validation uses `fuzzyTextMatch` against each pool item (accent/case tolerant).
+- `validateWithSolutionPool` no longer handles `fill_in_blanks` — it always goes through `validateBlanks`.
+- Legacy types (`numerical_exact`, etc.) still work via `typeStr = type as string` cast in switch.
+
+### Test results
+
+- 35/35 fuzzy-text-validator tests pass
+- 65/65 answer-validator tests pass (55 existing + 10 new)
+- No regressions
+
+---
 
 ## Phase 6: Update migration transformer — PENDING
 
