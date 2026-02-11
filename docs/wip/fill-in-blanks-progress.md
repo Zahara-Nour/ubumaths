@@ -90,7 +90,25 @@ Files to fix in subsequent phases:
 
 ---
 
-## Phase 6: Update migration transformer — PENDING
+## Phase 6: Update migration transformer ✅
+
+### Status: COMPLETE
+
+### Changes made
+
+| File                                             | Change                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/migration/question-transformer.ts`      | `detectQuestionType()` unified: all non-choice → `fill_in_blanks`. `answerFormat` extracted from `oldQuestion.answerFormats[0]` into `shared.answerFormat`. `requiredForm` detected from description (factoriser → product, développer → sum). `extractBlanks` sets `type: 'math'`. `validateTransformedTemplate` relaxed (blanks optional for result/rewrite). Null safety fixed for `shared`. Warning for multiple different answerFormats. |
+| `src/lib/migration/question-transformer.test.ts` | Updated expected types: `numerical_exact`/`numerical_decimal` → `fill_in_blanks`. Added `type: 'math'` to blank assertions. Updated template validation tests.                                                                                                                                                                                                                                                                                |
+
+### Decisions
+
+- All non-`multiple_choice` questions become `fill_in_blanks` (no `open_answer` in migration output — open_answer is for future manual creation only).
+- `answerFormat` always shared (per-variation warning emitted if different formats detected).
+- `transformType` still set for backwards compatibility (deprecated field).
+- Precision preserved for decimal questions via `result-type` check on old question.
+
+---
 
 ## Phase 7: Create math vocabulary dictionary FR — PENDING
 
