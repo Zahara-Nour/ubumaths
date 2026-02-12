@@ -81,7 +81,6 @@ export const createQuestionTemplateSchema = z.object({
 	level: z.number().int().positive('Le niveau doit être positif'),
 	status: z.enum(['draft', 'published']).default('published'),
 	delay: z.number().int().nonnegative().optional().nullable(),
-	transformType: z.string().max(50).optional().nullable(),
 	multipleAnswers: z.boolean().optional().nullable()
 });
 
@@ -145,7 +144,6 @@ export const questionTemplateResponseSchema = z.object({
 	level: z.number().int().positive(),
 	status: z.enum(['draft', 'published']),
 	delay: z.number().int().nonnegative().nullable().optional(),
-	transformType: z.string().nullable().optional(),
 	multipleAnswers: z.boolean().nullable().optional(),
 	created_by: z.string().uuid(),
 	created_at: z.string().datetime(),

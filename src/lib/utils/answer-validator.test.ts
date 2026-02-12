@@ -24,7 +24,6 @@ function createNumericalInstance(
 ): QuestionInstance {
 	return {
 		templateId: 'test-template',
-		type: 'numerical_exact',
 		statement: 'Test question' as ResolvedMarkdown,
 		solution,
 		grades: ['6'],
@@ -45,7 +44,6 @@ function createAlgebraicInstance(
 ): QuestionInstance {
 	return {
 		templateId: 'test-template',
-		type: 'algebraic_transform',
 		statement: 'Test question' as ResolvedMarkdown,
 		solution,
 		grades: ['6'],
@@ -276,7 +274,6 @@ describe('validateAnswer - Constraint Integration', () => {
 		it('should apply warn-level checks even when options is undefined', () => {
 			const instance: QuestionInstance = {
 				templateId: 'test',
-				type: 'numerical_exact',
 				statement: 'Test' as ResolvedMarkdown,
 				solution: '5',
 				grades: ['6'],
@@ -595,7 +592,6 @@ describe('validateAnswer - Multiple Answers', () => {
 	it('should check constraints for all answers', () => {
 		const instance: QuestionInstance = {
 			templateId: 'test',
-			type: 'fill_in_blanks',
 			statement: 'Test {{blank:0}} and {{blank:1}}' as ResolvedMarkdown,
 			solution: ['5', '10'],
 			grades: ['6'],
@@ -604,8 +600,8 @@ describe('validateAnswer - Multiple Answers', () => {
 			level: 1,
 			generatedAt: new Date().toISOString(),
 			blanks: [
-				{ position: 0, expectedAnswer: '5' },
-				{ position: 1, expectedAnswer: '10' }
+				{ expectedAnswer: '5', type: 'math' },
+				{ expectedAnswer: '10', type: 'math' }
 			],
 			options: {
 				constraints: {
@@ -715,7 +711,6 @@ describe('validateAnswer - Required Form Integration', () => {
 	): QuestionInstance {
 		return {
 			templateId: 'test-template',
-			type: 'algebraic_transform',
 			statement: 'Test question' as ResolvedMarkdown,
 			solution,
 			grades: ['6'],
@@ -847,7 +842,6 @@ describe('validateAnswer - Required Form Integration', () => {
 		it('should apply required form before other constraints', () => {
 			const instance: QuestionInstance = {
 				templateId: 'test-template',
-				type: 'algebraic_transform',
 				statement: 'Test question' as ResolvedMarkdown,
 				solution: '6',
 				grades: ['6'],
@@ -878,7 +872,6 @@ describe('validateAnswer - Required Form Integration', () => {
 		it('should combine requiredForm and constraints without conflict', () => {
 			const instance: QuestionInstance = {
 				templateId: 'test-template',
-				type: 'numerical_exact',
 				statement: 'Test question' as ResolvedMarkdown,
 				solution: '5',
 				grades: ['6'],
@@ -912,13 +905,9 @@ describe('validateAnswer - Required Form Integration', () => {
 // ============================================================================
 
 describe('solutionPool - order-independent multi-answer matching', () => {
-	function createPoolInstance(
-		solutions: string[],
-		type: QuestionInstance['type'] = 'numerical_exact'
-	): QuestionInstance {
+	function createPoolInstance(solutions: string[]): QuestionInstance {
 		return {
 			templateId: 'test-pool',
-			type,
 			statement: 'Test question' as ResolvedMarkdown,
 			solution: solutions,
 			grades: ['2'],
@@ -979,7 +968,6 @@ describe('solutionPool - order-independent multi-answer matching', () => {
 		it('should use positional matching (default behavior)', () => {
 			const instance: QuestionInstance = {
 				templateId: 'test-no-pool',
-				type: 'numerical_exact',
 				statement: 'Test question' as ResolvedMarkdown,
 				solution: '3',
 				grades: ['2'],

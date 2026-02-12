@@ -11,6 +11,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
+import { getQuestionType } from '$lib/questions/types';
 import { validateTemplate } from '$lib/questions';
 import { detectCircularDependencies } from '$lib/questions';
 import { checkCategoryUniqueness, getNextAvailableLevel } from '$lib/questions/category-validation';
@@ -213,7 +214,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const { data: template, error: insertError } = await locals.supabase
 			.from('question_templates')
 			.insert({
-				type: templateData.type,
+				type: getQuestionType({ choices: templateData.variations?.[0]?.choices }),
 				title: templateData.title,
 				description: templateData.description || null,
 				shared: templateData.shared || null,
@@ -233,7 +234,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				level: adjustedLevel,
 				status: templateData.status || 'published',
 				delay: templateData.delay || null,
-				transform_type: templateData.transformType || null,
 				multiple_answers: templateData.multipleAnswers ?? null,
 				created_by: user.id
 			})

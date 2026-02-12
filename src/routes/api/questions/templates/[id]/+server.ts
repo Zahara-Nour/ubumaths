@@ -10,6 +10,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
+import { getQuestionType } from '$lib/questions/types';
 import { validateTemplate, detectCircularDependencies } from '$lib/questions';
 import { checkCategoryUniqueness } from '$lib/questions/category-validation';
 import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
@@ -145,7 +146,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		const { data: template, error: updateError } = await locals.supabase
 			.from('question_templates')
 			.update({
-				type: templateData.type,
+				type: getQuestionType({ choices: templateData.variations?.[0]?.choices }),
 				title: templateData.title,
 				description: templateData.description || null,
 				shared: templateData.shared || null,
@@ -165,7 +166,6 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 				level: templateData.level,
 				status: templateData.status || 'published',
 				delay: templateData.delay || null,
-				transform_type: templateData.transformType || null,
 				multiple_answers: templateData.multipleAnswers ?? null
 			})
 			.eq('id', id)

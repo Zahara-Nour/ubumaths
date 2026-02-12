@@ -7,6 +7,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
+	import { getQuestionType } from '$lib/questions/types';
 	import type { AnswerData, ValidationResult } from '$lib/types/question-display';
 	import type { SlideProps } from './types.js';
 	import { validateAnswer } from '$lib/utils/answer-validator';
@@ -14,7 +15,6 @@
 	import Slide from './Slide.svelte';
 
 	// Input components
-	import MathInput from '$lib/components/question-inputs/MathInput.svelte';
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
 
@@ -65,19 +65,14 @@
 
 	// Initialize on mount
 	onMount(() => {
-		if (instance.type === 'fill_in_blanks' && instance.blanks) {
+		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
 			fillBlankValues = instance.blanks.map(() => '');
 		}
 	});
 
 	// Check if user has entered valid input
 	function hasValidInput(): boolean {
-		switch (instance.type) {
-			case 'numerical_exact':
-			case 'numerical_decimal':
-			case 'numerical_rounded':
-			case 'algebraic_transform':
-				return userAnswer.trim().length > 0;
+		switch (getQuestionType(instance)) {
 			case 'fill_in_blanks':
 				return fillBlankValues.every((v) => v.trim().length > 0);
 			case 'multiple_choice':
@@ -89,7 +84,7 @@
 
 	// Prepare answer value based on question type
 	function prepareAnswerValue(): string | string[] | number | number[] {
-		switch (instance.type) {
+		switch (getQuestionType(instance)) {
 			case 'fill_in_blanks':
 				return fillBlankValues;
 			case 'multiple_choice':
@@ -156,17 +151,7 @@
 		<!-- Answer Input Section -->
 		{#if interactive}
 			<div class="answer-section">
-				{#if instance.type === 'numerical_exact' || instance.type === 'numerical_decimal' || instance.type === 'numerical_rounded'}
-					<MathInput bind:value={userAnswer} disabled={isInputDisabled} onSubmit={handleSubmit} />
-				{:else if instance.type === 'algebraic_transform'}
-					<MathInput
-						bind:value={userAnswer}
-						disabled={isInputDisabled}
-						placeholder="Entrez votre expression..."
-						helperText="Utilisez le clavier virtuel ou tapez directement (ex: x^2, sqrt(x), (x+1)(x-1))"
-						onSubmit={handleSubmit}
-					/>
-				{:else if instance.type === 'fill_in_blanks'}
+				{#if getQuestionType(instance) === 'fill_in_blanks'}
 					<FillBlanksInput
 						statement={instance.statement}
 						blanks={instance.blanks || []}
@@ -175,7 +160,7 @@
 						validationResults={[]}
 						onSubmit={handleSubmit}
 					/>
-				{:else if instance.type === 'multiple_choice'}
+				{:else if getQuestionType(instance) === 'multiple_choice'}
 					<MultipleChoiceInput
 						choices={instance.shuffledChoices || []}
 						bind:selectedIndexes={selectedChoices}
@@ -183,12 +168,10 @@
 						disabled={isInputDisabled}
 						showValidation={isSubmitted}
 					/>
-				{:else}
-					<MathInput bind:value={userAnswer} disabled={isInputDisabled} onSubmit={handleSubmit} />
 				{/if}
 
 				<!-- Submit Button -->
-				{#if !isSubmitted && instance.type !== 'multiple_choice'}
+				{#if !isSubmitted && getQuestionType(instance) !== 'multiple_choice'}
 					<button class="submit-button" onclick={handleSubmit} disabled={!canSubmit}>
 						Valider
 					</button>

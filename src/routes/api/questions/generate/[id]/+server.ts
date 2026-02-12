@@ -24,7 +24,6 @@ type DbQuestionTemplate = Database['public']['Tables']['question_templates']['Ro
 function dbRowToQuestionTemplate(row: DbQuestionTemplate): QuestionTemplate {
 	return {
 		id: row.id,
-		type: row.type as unknown as QuestionTemplate['type'],
 		title: row.title,
 		description: row.description ?? undefined,
 		variations: row.variations as unknown as QuestionTemplate['variations'],
@@ -38,8 +37,6 @@ function dbRowToQuestionTemplate(row: DbQuestionTemplate): QuestionTemplate {
 		level: row.level,
 		status: row.status as unknown as QuestionTemplate['status'],
 		delay: row.delay ?? undefined,
-		transformType:
-			(row.transform_type as unknown as QuestionTemplate['transformType']) ?? undefined,
 		multipleAnswers: row.multiple_answers ?? undefined,
 		created_at: row.created_at ?? undefined,
 		updated_at: row.updated_at ?? undefined,

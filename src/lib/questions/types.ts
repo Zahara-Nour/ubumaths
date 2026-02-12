@@ -60,21 +60,26 @@ export type GradeLevel = GradeCode;
 // ============================================================================
 
 /**
- * Available question types
+ * Question type — inferred from structure, not stored explicitly.
+ *
+ * - `fill_in_blanks`: question has blanks[] (or is any non-choice question)
+ * - `multiple_choice`: question has choices[]
+ *
+ * Use `getQuestionType()` to derive from a template or instance.
  */
-export type QuestionType =
-	| 'numerical_exact' // Exact numerical value required
-	| 'numerical_decimal' // Decimal approximation
-	| 'numerical_rounded' // Rounded value
-	| 'numerical_with_unit' // Numerical value with physical unit
-	| 'algebraic_transform' // Factor, expand, simplify expressions
-	| 'fill_in_blanks' // Fill in missing parts
-	| 'multiple_choice'; // Multiple choice (one or several answers)
+export type QuestionType = 'fill_in_blanks' | 'multiple_choice';
 
 /**
- * Types of algebraic transformations
+ * Infer the question type from the presence of `choices`.
+ *
+ * Works on templates (via resolved variation or shared), instances,
+ * or any object with an optional `choices` field.
  */
-export type AlgebraicTransformType = 'factor' | 'expand' | 'simplify' | 'solve';
+export function getQuestionType(q: { choices?: unknown[] | undefined }): QuestionType {
+	return q.choices !== undefined && q.choices !== null && q.choices.length > 0
+		? 'multiple_choice'
+		: 'fill_in_blanks';
+}
 
 // ============================================================================
 // PRECISION TYPES
@@ -167,6 +172,44 @@ export type QuestionVariable = SharedVariable;
  *   ]
  * }
  */
+/**
+ * Default validation settings applied to all blanks in a question.
+ * Per-blank fields override these when defined.
+ */
+export interface BlankDefaults {
+	precision?: PrecisionType;
+	requiredForm?: RequiredForm;
+	unit?: {
+		/** true = the student must provide the unit */
+		expected: boolean;
+		/** Imposed unit (e.g., "m"). If absent → any compatible unit */
+		required?: string;
+	};
+}
+
+/**
+ * Template-side blank definition (positional, index = position in blanks[])
+ */
+export interface TemplateBlank {
+	/** Expected answer as template expression (e.g., "{{eval:{{a}}+{{b}}}}", "entier") */
+	expectedAnswer: string;
+	/** Pre-filled value (template expression) */
+	prefilled?: string;
+	/** Text blank: word pool for autocompletion only (does NOT restrict validation) */
+	pool?: string[];
+
+	// --- Per-blank overrides (override blankDefaults if defined) ---
+	precision?: PrecisionType;
+	requiredForm?: RequiredForm;
+	validationRules?: ValidationRule[];
+
+	/** Unit config (overrides blankDefaults.unit) */
+	unit?: {
+		expected: boolean;
+		required?: string;
+	};
+}
+
 export interface QuestionVariation {
 	/** Question statement as markdown template (can contain {{var}}, {{random:}}, etc.) */
 	statement: TemplateMarkdown;
@@ -174,22 +217,36 @@ export interface QuestionVariation {
 	/** Variables in declaration order (resolved sequentially) */
 	variables?: QuestionVariable[];
 
-	/** Expected solution(s) - plain string values (not markdown) */
-	solution: string | string[];
+	/**
+	 * Expected solution(s) — optional for fill_in_blanks (blanks[] is the source of truth).
+	 * Required for multiple_choice.
+	 */
+	solution?: string | string[];
 
 	/** Detailed correction/explanation with full structure (optional) */
 	correction?: QuestionCorrection;
 
-	// ---- Type-specific Fields (per-variation) ----
+	// ---- Fill-in-blanks Fields ----
 
-	/** Blank positions and answers (for fill_in_blanks) */
-	blanks?: {
-		/** Position in statement */
-		position: number;
+	/** Blank definitions (positional, index = position of the blank) */
+	blanks?: TemplateBlank[];
 
-		/** Expected answer - plain string value (not markdown) */
-		expectedAnswer: string;
-	}[];
+	/**
+	 * Default validation settings for all blanks in this variation.
+	 * Per-blank fields override these.
+	 */
+	blankDefaults?: BlankDefaults;
+
+	/**
+	 * Answer format per expression (key = expression variable name).
+	 * The value contains `?` markers replaced by \placeholder[N]{} at generation.
+	 * Default for an expression without entry: "?" (free field after =).
+	 *
+	 * @example { "expression1": "10^?" }
+	 */
+	answerFormats?: Record<string, string>;
+
+	// ---- Multiple Choice Fields ----
 
 	/** Choices for multiple choice */
 	choices?: {
@@ -240,7 +297,7 @@ export interface SharedVariationDefaults {
 	/** Shared variable definitions (resolved before per-variation variables) */
 	variables?: QuestionVariable[];
 
-	/** Shared expected solution(s) */
+	/** Shared expected solution(s) — optional for fill_in_blanks */
 	solution?: string | string[];
 
 	/** Shared correction with full structure (feedback + steps) */
@@ -267,6 +324,18 @@ export interface SharedVariationDefaults {
 	 * @see QuestionVariation.requiredForm
 	 */
 	requiredForm?: RequiredForm;
+
+	/**
+	 * Default validation settings for all blanks.
+	 * Per-blank fields override these.
+	 */
+	blankDefaults?: BlankDefaults;
+
+	/**
+	 * Answer format per expression (key = expression variable name).
+	 * @see QuestionVariation.answerFormats
+	 */
+	answerFormats?: Record<string, string>;
 }
 
 // ============================================================================
@@ -285,9 +354,6 @@ export interface SharedVariationDefaults {
 export interface QuestionTemplate {
 	/** Unique identifier (UUID) */
 	id: string;
-
-	/** Type of question */
-	type: QuestionType;
 
 	// ---- Title & Description ----
 
@@ -363,17 +429,6 @@ export interface QuestionTemplate {
 		/** Constraint validation options for form checking */
 		constraints?: ConstraintOptions;
 
-		/** Unit validation options for numerical_with_unit questions */
-		unitOptions?: {
-			/** Require matching unit symbols */
-			requireSameSymbol?: boolean;
-			/** Numeric tolerance */
-			tolerance?: {
-				absolute?: number;
-				relative?: number;
-			};
-		};
-
 		/** Whether to shuffle choices for multiple_choice questions (default: true) */
 		shuffleChoices?: boolean;
 
@@ -413,9 +468,6 @@ export interface QuestionTemplate {
 
 	// ---- Type-specific Configuration (shared across all variations) ----
 
-	/** Type of algebraic transformation (for algebraic_transform) */
-	transformType?: AlgebraicTransformType;
-
 	/** Whether multiple answers are allowed (for multiple_choice) */
 	multipleAnswers?: boolean;
 
@@ -443,12 +495,38 @@ export type ResolvedVariable = SharedResolvedVariable;
  * Created from a template with all variables resolved,
  * random values generated, and expressions evaluated.
  */
+/**
+ * Instance-side blank (resolved, with inferred type and merged validation)
+ */
+export interface InstanceBlank {
+	/** Resolved expected answer (math: "10^5", text: "entier") */
+	expectedAnswer: string;
+	/** LaTeX for flash back (math blanks only) */
+	expectedAnswerLatex?: string;
+	/** Inferred from context by the generator ('math' if in $...$, 'text' otherwise) */
+	type: 'math' | 'text';
+	/** Resolved pre-filled value */
+	prefilled?: string;
+
+	// --- Math blank validation (merged from blankDefaults + per-blank override) ---
+	precision?: PrecisionType;
+	requiredForm?: RequiredForm;
+	validationRules?: ValidationRule[];
+
+	/** Unit config (merged) */
+	unit?: {
+		expected: boolean;
+		required?: string;
+	};
+
+	// --- Text blank autocompletion ---
+	/** Word pool for autocompletion only (does NOT restrict validation) */
+	pool?: string[];
+}
+
 export interface QuestionInstance {
 	/** Reference to template ID */
 	templateId: string;
-
-	/** Type of question */
-	type: QuestionType;
 
 	// ---- Resolved Content ----
 
@@ -462,8 +540,11 @@ export interface QuestionInstance {
 	/** Resolved variables with final values */
 	resolvedVariables?: ResolvedVariable[];
 
-	/** Resolved solution(s) - plain string values (not markdown) */
-	solution: string | string[];
+	/**
+	 * Resolved solution(s) — optional for fill_in_blanks (blanks[] is the source of truth).
+	 * Present for multiple_choice.
+	 */
+	solution?: string | string[];
 
 	// ---- Metadata (copied from template) ----
 
@@ -491,14 +572,25 @@ export interface QuestionInstance {
 	 */
 	correction?: ResolvedCorrection;
 
-	// ---- Type-specific (resolved) ----
+	// ---- Fill-in-blanks (resolved) ----
 
-	transformType?: AlgebraicTransformType;
+	/** Resolved blanks with inferred type and merged validation config */
+	blanks?: InstanceBlank[];
 
-	blanks?: {
-		position: number;
-		expectedAnswer: string; // Resolved plain string value
+	/**
+	 * Expression metadata for the convention "expression*" variables.
+	 * Used by the component to augment expression nodes with `= answerFormat`.
+	 */
+	expressions?: {
+		/** Variable name (e.g., "expression1") */
+		name: string;
+		/** Resolved LaTeX of the expression */
+		latex: string;
+		/** Answer format in LaTeX with \placeholder[N]{} (absent if expression has inline ?) */
+		answerFormat?: string;
 	}[];
+
+	// ---- Multiple Choice (resolved) ----
 
 	choices?: {
 		content: ResolvedMarkdown; // Resolved markdown for each choice

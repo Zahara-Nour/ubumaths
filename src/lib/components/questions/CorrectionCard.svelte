@@ -22,6 +22,7 @@
 
 <script lang="ts">
 	import type { TestAnswerResult } from '$lib/types/test';
+	import { getQuestionType } from '$lib/questions/types';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -228,7 +229,7 @@
 									)}
 								>
 									<!-- Type-specific rendering -->
-									{#if answerResult.instance.type === 'fill_in_blanks' && Array.isArray(answerResult.userAnswer.value)}
+									{#if getQuestionType(answerResult.instance) === 'fill_in_blanks' && Array.isArray(answerResult.userAnswer.value)}
 										<ul class="space-y-1">
 											{#each answerResult.userAnswer.value as value, i (i)}
 												<li class="flex items-center gap-2">
@@ -236,7 +237,7 @@
 												</li>
 											{/each}
 										</ul>
-									{:else if answerResult.instance.type === 'multiple_choice'}
+									{:else if getQuestionType(answerResult.instance) === 'multiple_choice'}
 										<ul class="space-y-1">
 											{#if Array.isArray(answerResult.userAnswer.value)}
 												{#each answerResult.userAnswer.value as index (index)}

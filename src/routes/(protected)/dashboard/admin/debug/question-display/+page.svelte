@@ -9,6 +9,7 @@
 <script lang="ts">
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
+	import { getQuestionType } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -50,11 +51,10 @@
 
 	const sampleQuestions: Record<
 		string,
-		Partial<QuestionInstance> & Pick<QuestionInstance, 'type' | 'templateId'>
+		Partial<QuestionInstance> & Pick<QuestionInstance, 'templateId'>
 	> = {
 		numerical_exact: {
 			templateId: 'debug-numerical-1',
-			type: 'numerical_exact',
 			statement: 'Calculez: $$\\frac{15}{3}$$' as QuestionInstance['statement'],
 			solution: '5',
 			precision: { type: 'none' },
@@ -67,7 +67,6 @@
 		},
 		numerical_decimal: {
 			templateId: 'debug-numerical-2',
-			type: 'numerical_decimal',
 			statement: 'Calculez avec 2 décimales: $$\\frac{22}{7}$$' as QuestionInstance['statement'],
 			solution: '3.14',
 			precision: { type: 'decimal', digits: 2 },
@@ -80,10 +79,8 @@
 		},
 		algebraic_transform: {
 			templateId: 'debug-algebraic-1',
-			type: 'algebraic_transform',
 			statement: 'Factorisez: $$x^2 - 9$$' as QuestionInstance['statement'],
 			solution: '(x-3)(x+3)',
-			transformType: 'factor',
 			correction: {
 				steps: [
 					'On reconnaît une différence de carrés: $$a^2 - b^2 = (a-b)(a+b)$$. Ici, $$x^2 - 9 = x^2 - 3^2 = (x-3)(x+3)$$.' as QuestionInstance['statement']
@@ -93,13 +90,12 @@
 		},
 		fill_in_blanks: {
 			templateId: 'debug-blanks-1',
-			type: 'fill_in_blanks',
 			statement:
 				"Si les côtés sont 3 et 4, l'hypoténuse est ____ selon le théorème de ____." as QuestionInstance['statement'],
 			solution: ['5', 'Pythagore'],
 			blanks: [
-				{ position: 0, expectedAnswer: '5' },
-				{ position: 1, expectedAnswer: 'Pythagore' }
+				{ expectedAnswer: '5', type: 'math' },
+				{ expectedAnswer: 'Pythagore', type: 'text' }
 			],
 			correction: {
 				steps: [
@@ -110,7 +106,6 @@
 		},
 		multiple_choice: {
 			templateId: 'debug-qcm-1',
-			type: 'multiple_choice',
 			statement: 'Résolvez: $$2x + 5 = 13$$' as QuestionInstance['statement'],
 			solution: '0',
 			shuffledChoices: [
@@ -366,7 +361,7 @@
 							</div>
 							<div>
 								<span class="text-sm font-medium">Type:</span>
-								<Badge variant="outline" class="ml-2">{currentInstance.type}</Badge>
+								<Badge variant="outline" class="ml-2">{getQuestionType(currentInstance)}</Badge>
 							</div>
 							<div>
 								<span class="text-sm font-medium">Grades:</span>

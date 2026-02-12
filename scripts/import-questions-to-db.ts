@@ -128,7 +128,6 @@ interface QuestionTemplateInsert {
 	status: string;
 	delay?: number;
 	precision?: unknown;
-	transformType?: string;
 	multipleAnswers?: boolean;
 }
 
@@ -451,7 +450,6 @@ async function importQuestion(
 		status: transformed.status,
 		delay: transformed.delay || null,
 		precision: transformed.precision || null,
-		transform_type: transformed.transformType || null,
 		multiple_answers: transformed.multipleAnswers || null,
 		created_by: null // Migration has no specific user
 	};

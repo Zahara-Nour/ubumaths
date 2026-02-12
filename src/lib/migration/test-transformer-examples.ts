@@ -8,6 +8,7 @@
 
 import { transformQuestion } from './question-transformer';
 import type { QuestionBase } from './old-question-types';
+import { getQuestionType } from '$lib/questions/types';
 
 // Real examples from the old system
 const realQuestions: QuestionBase[] = [
@@ -111,7 +112,7 @@ function displayResult(index: number, question: QuestionBase, result: any) {
 
 		const template = result.template;
 		console.log('NEW TEMPLATE:');
-		console.log('  Type:', template.type);
+		console.log('  Type:', getQuestionType(template));
 		console.log('  Title:', template.title);
 		console.log('  Grade:', template.grades.join(', '));
 		console.log('  Theme:', template.theme);

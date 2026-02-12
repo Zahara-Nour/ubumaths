@@ -20,7 +20,8 @@ import type {
 	QuestionVariation,
 	QuestionVariable,
 	SharedVariationDefaults,
-	ResolvedCorrection
+	ResolvedCorrection,
+	InstanceBlank
 } from '../types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 import { templateMarkdown, detectCircularDependencies } from '$lib/ubumark';
@@ -82,7 +83,7 @@ function resolveVariationWithShared(
 		statement: variation.statement || shared.statement || templateMarkdown(''),
 
 		// solution: allow explicit empty array/string (use ??)
-		solution: variation.solution ?? shared.solution ?? '',
+		solution: variation.solution ?? shared.solution,
 
 		// correction: full structure (use ??)
 		correction: variation.correction ?? shared.correction,
@@ -93,11 +94,20 @@ function resolveVariationWithShared(
 		// validationRules: per-variation overrides entirely (use ??)
 		validationRules: variation.validationRules ?? shared.validationRules,
 
+		// requiredForm: per-variation overrides shared
+		requiredForm: variation.requiredForm ?? shared.requiredForm,
+
 		// variables: MERGE (shared first, per-variation can reference/override)
 		variables: mergeVariables(shared.variables, variation.variables),
 
-		// blanks: per-variation only (no shared equivalent)
-		blanks: variation.blanks
+		// blanks: per-variation only (no shared equivalent for now)
+		blanks: variation.blanks,
+
+		// blankDefaults: per-variation overrides shared
+		blankDefaults: variation.blankDefaults ?? shared.blankDefaults,
+
+		// answerFormats: per-variation overrides shared
+		answerFormats: variation.answerFormats ?? shared.answerFormats
 	};
 }
 
@@ -172,8 +182,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			seed
 		);
 
-		// Resolve solution (stays the same - it's a plain string)
-		const resolvedSolution = resolveSolution(resolvedVariation.solution, resolvedVariables, seed);
+		// Resolve solution (stays the same - it's a plain string; may be undefined for fill_in_blanks)
+		const resolvedSolution = resolvedVariation.solution
+			? resolveSolution(resolvedVariation.solution, resolvedVariables, seed)
+			: undefined;
 
 		// Resolve correction if present (QuestionCorrection has feedback and/or steps)
 		let resolvedCorrection: ResolvedCorrection | undefined;
@@ -215,13 +227,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 		}
 
-		// 7. Resolve type-specific fields from resolved variation
+		// 7. Resolve type-specific fields from resolved variation (inferred from structure)
 		let resolvedChoices;
 		let shuffledChoices;
-		let resolvedBlanks;
+		let resolvedBlanks: InstanceBlank[] | undefined;
 
-		if (template.type === 'multiple_choice' && resolvedVariation.choices) {
-			// Resolve choice content
+		if (resolvedVariation.choices) {
+			// Multiple choice — resolve choice content
 			resolvedChoices = resolvedVariation.choices.map((choice) => {
 				const resolvedContent: ResolvedMarkdown = resolveMarkdownContent(
 					choice.content,
@@ -238,17 +250,28 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			shuffledChoices = shuffleChoices(resolvedChoices, seed);
 		}
 
-		if (template.type === 'fill_in_blanks' && resolvedVariation.blanks) {
-			resolvedBlanks = resolvedVariation.blanks.map((blank) => ({
-				position: blank.position,
-				expectedAnswer: resolveExpression(blank.expectedAnswer, resolvedVariables, seed)
-			}));
+		if (resolvedVariation.blanks) {
+			// Fill-in-blanks — resolve each blank with merged validation config
+			resolvedBlanks = resolvedVariation.blanks.map((blank) => {
+				const resolved: InstanceBlank = {
+					expectedAnswer: resolveExpression(blank.expectedAnswer, resolvedVariables, seed),
+					type: 'math', // Default; will be properly inferred in Phase 3
+					precision: blank.precision ?? resolvedVariation.blankDefaults?.precision,
+					requiredForm: blank.requiredForm ?? resolvedVariation.blankDefaults?.requiredForm,
+					validationRules: blank.validationRules,
+					unit: blank.unit ?? resolvedVariation.blankDefaults?.unit,
+					pool: blank.pool
+				};
+				if (blank.prefilled) {
+					resolved.prefilled = resolveExpression(blank.prefilled, resolvedVariables, seed);
+				}
+				return resolved;
+			});
 		}
 
 		// 8. Construct instance
 		const instance: QuestionInstance = {
 			templateId: template.id,
-			type: template.type,
 			statement: resolvedStatement, // Now ResolvedMarkdown
 			resolvedVariables,
 			solution: resolvedSolution,
@@ -262,11 +285,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			level: template.level,
 			delay: template.delay,
 			correction: resolvedCorrection, // Now ResolvedMarkdown
-			transformType: template.transformType,
 			blanks: resolvedBlanks,
 			choices: resolvedChoices, // Now with ResolvedMarkdown content
 			shuffledChoices, // Now with ResolvedMarkdown content
 			multipleAnswers: template.multipleAnswers,
+			requiredForm: resolvedVariation.requiredForm,
 			generatedAt: new Date().toISOString(),
 			seed,
 			selectedVariationIndex: variationIndex

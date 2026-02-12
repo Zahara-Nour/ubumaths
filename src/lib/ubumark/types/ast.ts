@@ -50,6 +50,8 @@ export interface MathInlineNode extends BaseNode {
 	expression: string;
 	/** Syntax used: 'latex' for $...$ or 'custom' for ~...~ */
 	syntax: 'latex' | 'custom';
+	/** If this node represents a named expression (convention: variable starting with "expression") */
+	expressionName?: string;
 }
 
 /**
@@ -63,16 +65,17 @@ export interface LineBreakNode extends BaseNode {
 /**
  * Blank node - represents a fill-in-the-blank input field
  *
- * Syntax in markdown: {{blank:N}} where N is the 1-based index
+ * Syntax in markdown: {{blank:N}} where N is the 0-based index,
+ * or [_] for positional shorthand (index assigned by assignBlankIndices).
  *
  * @example
  * ```markdown
- * Calculate $2 + 3$ = {{blank:1}}
+ * Calculate $2 + 3$ = {{blank:0}}
  * ```
  */
 export interface BlankNode extends BaseNode {
 	type: 'blank';
-	/** 1-based index of the blank (corresponds to the N in {{blank:N}}) */
+	/** 0-based index of the blank (corresponds to the N in {{blank:N}}) */
 	index: number;
 }
 
@@ -282,6 +285,8 @@ export interface MathBlockNode extends BaseNode {
 	expression: string;
 	/** Syntax used: 'latex' for $$...$$ or 'custom' for ~~...~~ */
 	syntax: 'latex' | 'custom';
+	/** If this node represents a named expression (convention: variable starting with "expression") */
+	expressionName?: string;
 }
 
 // ============================================================================
@@ -567,7 +572,7 @@ export interface DocumentNode {
  * ```
  */
 export interface InputState {
-	/** 1-based index identifying the input field */
+	/** 0-based index identifying the input field */
 	index: number;
 	/** Current value (text or LaTeX depending on type) */
 	value: string;

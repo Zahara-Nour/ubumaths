@@ -11,6 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from './instance-generator';
 import type { QuestionTemplate, ResolvedVariable } from '../types';
+import { getQuestionType } from '../types';
 import { templateMarkdown } from '$lib/ubumark';
 
 /**
@@ -26,7 +27,7 @@ describe('generateInstance - Numerical Exact Questions', () => {
 	it('should generate simple numerical question instance', () => {
 		const template: QuestionTemplate = {
 			id: 'test-1',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -55,7 +56,7 @@ describe('generateInstance - Numerical Exact Questions', () => {
 		if (!result.success) return;
 
 		expect(result.instance).toBeDefined();
-		expect(result.instance.type).toBe('numerical_exact');
+		expect(getQuestionType(result.instance)).toBe('fill_in_blanks');
 
 		// Check variables exist in array
 		const a = getVarValue(result.instance.resolvedVariables, 'a');
@@ -68,7 +69,7 @@ describe('generateInstance - Numerical Exact Questions', () => {
 	it('should generate reproducible instance with seed', () => {
 		const template: QuestionTemplate = {
 			id: 'test-2',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -109,7 +110,7 @@ describe('generateInstance - Numerical Exact Questions', () => {
 	it('should generate different instances with different seeds', () => {
 		const template: QuestionTemplate = {
 			id: 'test-3',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -146,7 +147,7 @@ describe('generateInstance - Algebraic Transform Questions', () => {
 	it('should generate algebraic transform instance', () => {
 		const template: QuestionTemplate = {
 			id: 'test-4',
-			type: 'algebraic_transform',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -159,7 +160,7 @@ describe('generateInstance - Algebraic Transform Questions', () => {
 					solution: '(x-{{a}})(x+{{a}})'
 				}
 			],
-			transformType: 'factor',
+
 			grades: ['3'],
 			theme: 'Algèbre',
 			domain: 'Factorisation',
@@ -174,8 +175,7 @@ describe('generateInstance - Algebraic Transform Questions', () => {
 		expect(result.success).toBe(true);
 		if (!result.success) return;
 
-		expect(result.instance.type).toBe('algebraic_transform');
-		expect(result.instance.transformType).toBe('factor');
+		expect(getQuestionType(result.instance)).toBe('fill_in_blanks');
 
 		const a = getVarValue(result.instance.resolvedVariables, 'a');
 		const c = getVarValue(result.instance.resolvedVariables, 'c');
@@ -187,7 +187,7 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 	it('should generate fill-in-blanks instance', () => {
 		const template: QuestionTemplate = {
 			id: 'test-5',
-			type: 'fill_in_blanks',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -198,7 +198,7 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 						{ name: 'b', expression: '{{random:1..10}}' }
 					],
 					solution: ['{{eval:a + b}}'],
-					blanks: [{ position: 0, expectedAnswer: '{{eval:a + b}}' }]
+					blanks: [{ expectedAnswer: '{{eval:a + b}}' }]
 				}
 			],
 			grades: ['6'],
@@ -215,18 +215,18 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 		expect(result.success).toBe(true);
 		if (!result.success) return;
 
-		expect(result.instance.type).toBe('fill_in_blanks');
+		expect(getQuestionType(result.instance)).toBe('fill_in_blanks');
 		expect(Array.isArray(result.instance.solution)).toBe(true);
 
 		const a = getVarValue(result.instance.resolvedVariables, 'a');
 		const b = getVarValue(result.instance.resolvedVariables, 'b');
-		expect(result.instance.solution[0]).toBe((a + b).toString());
+		expect((result.instance.solution as string[])[0]).toBe((a + b).toString());
 	});
 
 	it('should generate fill-in-blanks with multiple blanks', () => {
 		const template: QuestionTemplate = {
 			id: 'test-6',
-			type: 'fill_in_blanks',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -238,10 +238,7 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 						{ name: 'sum', expression: '{{eval:a + b}}' }
 					],
 					solution: ['{{a}}', '{{b}}'],
-					blanks: [
-						{ position: 0, expectedAnswer: '{{a}}' },
-						{ position: 1, expectedAnswer: '{{b}}' }
-					]
+					blanks: [{ expectedAnswer: '{{a}}' }, { expectedAnswer: '{{b}}' }]
 				}
 			],
 			grades: ['6'],
@@ -260,8 +257,8 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 
 		expect(result.instance.solution).toHaveLength(2);
 		expect(result.instance.blanks).toHaveLength(2);
-		expect(result.instance.blanks![0].position).toBe(0);
-		expect(result.instance.blanks![1].position).toBe(1);
+		expect(result.instance.blanks![0].expectedAnswer).toBeDefined();
+		expect(result.instance.blanks![1].expectedAnswer).toBeDefined();
 	});
 });
 
@@ -269,7 +266,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 	it('should generate multiple choice instance with shuffled choices', () => {
 		const template: QuestionTemplate = {
 			id: 'test-7',
-			type: 'multiple_choice',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -306,7 +303,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 		expect(result.success).toBe(true);
 		if (!result.success) return;
 
-		expect(result.instance.type).toBe('multiple_choice');
+		expect(getQuestionType(result.instance)).toBe('multiple_choice');
 		expect(result.instance.shuffledChoices).toHaveLength(4);
 		expect(result.instance.multipleAnswers).toBe(false);
 
@@ -324,7 +321,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 	it('should generate multiple choice with multiple correct answers', () => {
 		const template: QuestionTemplate = {
 			id: 'test-8',
-			type: 'multiple_choice',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -378,7 +375,7 @@ describe('generateInstance - Complex Variable Resolution', () => {
 	it.skip('should generate fraction addition instance', () => {
 		const template: QuestionTemplate = {
 			id: 'test-9',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -422,7 +419,7 @@ describe('generateInstance - Complex Variable Resolution', () => {
 	it('should generate GCD simplification instance', () => {
 		const template: QuestionTemplate = {
 			id: 'test-10',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -468,7 +465,7 @@ describe('generateInstance - Content Resolution', () => {
 	it('should resolve variables in statement', () => {
 		const template: QuestionTemplate = {
 			id: 'test-11',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -504,7 +501,7 @@ describe('generateInstance - Content Resolution', () => {
 	it('should resolve LaTeX in statement', () => {
 		const template: QuestionTemplate = {
 			id: 'test-12',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -540,7 +537,7 @@ describe('generateInstance - Content Resolution', () => {
 	it('should resolve correction field', () => {
 		const template: QuestionTemplate = {
 			id: 'test-13',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -588,7 +585,7 @@ describe('generateInstance - Precision Handling', () => {
 	it('should include decimal precision', () => {
 		const template: QuestionTemplate = {
 			id: 'test-14',
-			type: 'numerical_decimal',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -622,7 +619,7 @@ describe('generateInstance - Precision Handling', () => {
 	it('should include tolerance precision', () => {
 		const template: QuestionTemplate = {
 			id: 'test-15',
-			type: 'numerical_rounded',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -659,7 +656,7 @@ describe('generateInstance - Validation Errors', () => {
 	it('should fail on circular dependency', () => {
 		const template: QuestionTemplate = {
 			id: 'test-16',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -694,7 +691,7 @@ describe('generateInstance - Validation Errors', () => {
 	it('should fail on min > max after variable resolution', () => {
 		const template: QuestionTemplate = {
 			id: 'test-17',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -730,7 +727,7 @@ describe('generateInstance - Validation Errors', () => {
 	it.skip('should fail on invalid eval expression', () => {
 		const template: QuestionTemplate = {
 			id: 'test-18',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -763,7 +760,7 @@ describe('generateInstance - Edge Cases', () => {
 	it('should generate instance with no variables', () => {
 		const template: QuestionTemplate = {
 			id: 'test-19',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -795,7 +792,7 @@ describe('generateInstance - Edge Cases', () => {
 	it('should generate instance with delay parameter', () => {
 		const template: QuestionTemplate = {
 			id: 'test-20',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -828,7 +825,7 @@ describe('generateInstance - Edge Cases', () => {
 	it.skip('should generate instance with multiple statement fields', () => {
 		const template: QuestionTemplate = {
 			id: 'test-21',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -866,7 +863,7 @@ describe('generateInstance - Real-World Templates', () => {
 	it('should generate quadratic equation instance', () => {
 		const template: QuestionTemplate = {
 			id: 'test-22',
-			type: 'algebraic_transform',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -881,7 +878,7 @@ describe('generateInstance - Real-World Templates', () => {
 					solution: 'x = \\frac{-{{b}} \\pm \\sqrt{{{disc}}}}{2{{a}}'
 				}
 			],
-			transformType: 'solve',
+
 			grades: ['3'],
 			theme: 'Algèbre',
 			domain: 'Équations',
@@ -907,7 +904,7 @@ describe('generateInstance - Real-World Templates', () => {
 	it.skip('should generate percentage calculation instance', () => {
 		const template: QuestionTemplate = {
 			id: 'test-23',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -950,7 +947,7 @@ describe('generateInstance - Variation Selection', () => {
 	it('should select first variation with seed 0', () => {
 		const template: QuestionTemplate = {
 			id: 'test-24',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -993,7 +990,7 @@ describe('generateInstance - Variation Selection', () => {
 	it('should select second variation with seed 1', () => {
 		const template: QuestionTemplate = {
 			id: 'test-25',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -1036,7 +1033,7 @@ describe('generateInstance - Variation Selection', () => {
 	it('should handle variation selection with modulo (4 variations)', () => {
 		const template: QuestionTemplate = {
 			id: 'test-26',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -1104,7 +1101,7 @@ describe('generateInstance - Variation Selection', () => {
 	it('should validate variations independently', () => {
 		const template: QuestionTemplate = {
 			id: 'test-27',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -1145,7 +1142,7 @@ describe('generateInstance - Shared Fields', () => {
 	it('should work without shared field (backward compatible)', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-1',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			variations: [
@@ -1183,7 +1180,7 @@ describe('generateInstance - Shared Fields', () => {
 	it('should use shared.statement when multiple variations share same structure', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-2',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			shared: {
@@ -1221,7 +1218,7 @@ describe('generateInstance - Shared Fields', () => {
 	it('should use variation.statement over shared.statement when both exist', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-3',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			shared: {
@@ -1255,7 +1252,7 @@ describe('generateInstance - Shared Fields', () => {
 	it('should merge shared.variables with variation.variables', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-4',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			shared: {
@@ -1300,7 +1297,7 @@ describe('generateInstance - Shared Fields', () => {
 	it('should override shared variable when variation has same name', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-5',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			shared: {
@@ -1343,7 +1340,7 @@ describe('generateInstance - Shared Fields', () => {
 	it('should use shared fields when all variations have identical values', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-6',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			shared: {
@@ -1380,7 +1377,7 @@ describe('generateInstance - Shared Fields', () => {
 	it('should use shared.correction for consistent feedback across variations', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-7',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			shared: {
@@ -1425,7 +1422,7 @@ describe('generateInstance - Shared Fields', () => {
 	it('should use shared.choices for consistent QCM structure across variations', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-8',
-			type: 'multiple_choice',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			shared: {
@@ -1470,7 +1467,7 @@ describe('generateInstance - Shared Fields', () => {
 		expect(result.success).toBe(true);
 		if (!result.success) return;
 
-		expect(result.instance.type).toBe('multiple_choice');
+		expect(getQuestionType(result.instance)).toBe('multiple_choice');
 		expect(result.instance.statement).toBe('What is 5 + 3?');
 		expect(result.instance.shuffledChoices).toHaveLength(4);
 
@@ -1485,7 +1482,7 @@ describe('generateInstance - Shared Fields', () => {
 	it('should resolve random expressions in shared variables used by all variations', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-9',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			shared: {
@@ -1533,7 +1530,7 @@ describe('generateInstance - Shared Fields', () => {
 	it('should allow variation to reference shared variables in its own variables', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-10',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			shared: {
@@ -1580,7 +1577,7 @@ describe('generateInstance - Shared Fields', () => {
 	it('should handle multiple variations each with different overrides of shared', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-11',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			shared: {
@@ -1631,7 +1628,7 @@ describe('generateInstance - Shared Fields', () => {
 	it('should use shared.correction with steps for consistent explanations', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-12',
-			type: 'numerical_exact',
+
 			title: 'Test Question',
 			status: 'draft' as const,
 			shared: {
