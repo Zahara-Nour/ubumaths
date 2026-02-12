@@ -2,7 +2,7 @@
 
 ## Contexte
 
-On redessine le systeme fill-in-blanks d'UbuMaths. Un premier plan (v1) a ete implemente (phases 1-7) puis entierement reverte (commit `0827fe24`) car plusieurs lacunes architecturales ont ete identifiees.
+On redessine le systeme fill-in-blanks d'UbuMaths. Un premier plan (v1) a ete implemente (phases 1-7) puis entierement reverte (commit `0827fe24`) car plusieurs lacunes architecturales ont ete identifiees. Le code du v1 n'est PAS reutilisable — il a ete ecrit avec des hypotheses fausses. Tout sera reecrit a partir du design corrige.
 
 Deux documents de travail existent :
 
@@ -29,38 +29,37 @@ Deux documents de travail existent :
 
 6. **Structure template-side des blanks** — `blankDefaults` au niveau question (defauts de validation), overridables per-blank. Le generateur fusionne et infere `type` (math/text) du contexte. (section 3.7)
 
-7. **Lien expressions ↔ blanks** — Blanks explicites dans le template pour les questions expression. L'auteur specifie `expectedAnswer` avec `{{eval:...}}` pour les `?` de l'answerFormat. Pas d'auto-creation par le generateur. Le transformer de migration genere ces blanks depuis les anciennes `solutionss`. (section 3.9)
+7. **Lien expressions <> blanks** — Blanks explicites dans le template pour les questions expression. L'auteur specifie `expectedAnswer` avec `{{eval:...}}` pour les `?` de l'answerFormat. Pas d'auto-creation par le generateur. Le transformer de migration genere ces blanks depuis les anciennes `solutionss`. (section 3.9)
 
 ## Etat du doc de redesign
 
-Le doc est **coherent et complet** sur le plan architecture/design. Toutes les questions ouvertes du v2-notes sont resolues. La section 7 "Prochaines etapes" liste les etapes d'implementation.
+Le doc est **coherent** sur le plan architecture/design. Toutes les questions ouvertes du v2-notes sont resolues. Mais la reflexion n'est peut-etre pas terminee — il peut rester des points de design a discuter avant de passer a l'implementation.
 
-## Prochaine etape
+## Objectif de cette session
 
-Passer a l'**implementation** (plan v2). Les etapes sont listees dans la section 7 du redesign :
+**Continuer la reflexion architecture/design.** Lire le doc de redesign, identifier d'eventuelles lacunes ou incoherences, et les discuter avec l'utilisateur. NE PAS lancer l'implementation sans accord explicite.
 
-1. ~~Questions en suspens~~ FAIT
-2. Definir les types TypeScript mis a jour
-3. Ajouter le support de `[_]` dans le parser ubumark
-4. Implementer le nouveau FillBlanksInput
-5. Adapter le pipeline de generation
-6. Adapter la validation
-7. Mettre a jour le transformer de migration
-8. Creer le dictionnaire de vocabulaire mathematique FR (deja fait, reverte mais recuperable)
-9. Tests + import en DB
+Pistes a explorer (non exhaustif) :
+
+- Le design couvre-t-il bien les 633 questions existantes ? Verifier avec des exemples concrets de `.claude/old-questions.json`
+- La structure `blanks` template-side est-elle suffisante pour tous les cas de migration ?
+- Le composant FillBlanksInput : comment gere-t-il le flash back (reconstruction des reponses dans le statement) ?
+- Le type `open_answer` : comment est-il utilise ? Quels cas concrets ?
+- Y a-t-il des cas limites non couverts (questions avec a la fois des `?` dans le statement ET des expressions avec answerFormats) ?
 
 ## Fichiers cles a lire
 
 - `docs/wip/fill-in-blanks-redesign.md` — **LIRE EN PREMIER** — doc d'architecture complet
-- `docs/wip/fill-in-blanks-plan-v2-notes.md` — contexte historique, code reutilisable du v1
-- `src/lib/questions/types.ts` — types actuels a modifier
+- `docs/wip/fill-in-blanks-plan-v2-notes.md` — contexte historique
+- `src/lib/questions/types.ts` — types actuels
 - `src/lib/questions/generator/instance-generator.ts` — pipeline de generation
 - `src/lib/utils/answer-validator.ts` — pipeline de validation
-- `src/lib/components/question-inputs/FillBlanksInput.svelte` — composant a refaire
+- `.claude/old-questions.json` — donnees des 633 questions TinyMath
 
 ## Consignes
 
-- Lire le doc de redesign AVANT de proposer un plan
-- Respecter le workflow TDD de CLAUDE.md (proposer comportements, attendre validation, ecrire tests, implementer)
-- Code reutilisable du v1 recuperable via git (fuzzy-text-validator, legacy-type-mapper, blank-resolver, math-dictionary-fr, parser [_])
+- Lire le doc de redesign AVANT de proposer quoi que ce soit
 - Etudier `src/lib/questions/` pour comprendre le systeme actuel
+- Proposer des corrections/clarifications section par section — attendre validation avant de modifier
+- Ne PAS lancer d'implementation
+- Ne PAS recuperer de code du v1 (reverte, hypotheses fausses)
