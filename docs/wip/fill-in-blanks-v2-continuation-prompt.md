@@ -1,157 +1,225 @@
-# Prompt de continuation — Fill-in-Blanks Redesign v2
+# Prompt d'implementation — Fill-in-Blanks Redesign v2
 
 ## Contexte
 
-On redessine le systeme fill-in-blanks d'UbuMaths. Un premier plan (v1) a ete implemente (phases 1-7) puis entierement reverte (commit `0827fe24`) car plusieurs lacunes architecturales ont ete identifiees. Le code du v1 n'est PAS reutilisable — il a ete ecrit avec des hypotheses fausses. Tout sera reecrit a partir du design corrige.
+On redessine le systeme fill-in-blanks d'UbuMaths. Un premier plan (v1) a ete implemente (phases 1-7) puis **entierement reverte** (commit `0827fe24`) car plusieurs lacunes architecturales ont ete identifiees. Le code du v1 n'est PAS reutilisable. Tout est reecrit a partir du design corrige.
 
-Documents de travail :
+5 sessions de design (2026-02-11 / 2026-02-12) ont produit un doc d'architecture complet et valide. **Toutes les questions ouvertes sont resolues.**
 
-- `docs/wip/fill-in-blanks-redesign.md` — doc d'architecture principal (CORRIGE et a jour)
-- `docs/wip/fill-in-blanks-plan-v2-notes.md` — lecons de l'echec du v1, questions ouvertes (toutes RESOLUES)
+## Document d'architecture
 
-## Ce qui a ete fait
+**`docs/wip/fill-in-blanks-redesign.md`** — LIRE EN ENTIER avant toute implementation.
 
-### Session 1 (2026-02-11) — Corrections initiales
+Ce document contient :
 
-4 corrections appliquees au doc de redesign + 3 decisions supplementaires :
+- Sections 1-2 : Contexte (ancien systeme TinyMath, etat actuel)
+- Section 3 : Decisions de design (syntaxe trous, validation, expressions, blanks, unites)
+- Section 4 : Decisions sur les questions en suspens (toutes resolues)
+- Section 7 : Etapes d'implementation detaillees
 
-1. **Suppression du faux binaire "mode expression" vs "mode statement"** — Un seul chemin de rendu (parcours AST unifie). Convention `expression` geree via `expressions[]` sur QuestionInstance. (sections 3.4, 3.6, 4.7)
-2. **`answerFormats` per-expression** — `answerFormats?: Record<string, string>` sur shared/variation. (sections 3.5, 4.3)
-3. **Convention `expression*` clarifiee** — "Variable dont le nom commence par `expression`". (tout le doc)
-4. **Validation per-blank** — Chaque trou porte sa propre config de validation. (section 3.7)
-5. **`blanks[]` seule source de verite** — `solution` absent pour `fill_in_blanks`. (section 3.8)
-6. **Structure template-side** — `blankDefaults` + overrides per-blank. (section 3.7)
-7. **Lien expressions <> blanks** — Blanks explicites, `{{eval:...}}` pour expectedAnswer. (section 3.9)
+## Decisions cles (resume compact)
 
-### Session 2 (2026-02-12) — Revue approfondie + 6 gaps + validation + unites
+### Architecture
 
-#### 6 gaps identifies et resolus
+- **2 types de questions seulement** : `fill_in_blanks` et `multiple_choice`. Type **infere** de la structure (presence de `choices`), pas stocke. (section 4.4)
+- **`solution` optionnel** : absent pour fill_in_blanks, `blanks[]` est la seule source de verite. (section 3.8)
+- **Un seul chemin de rendu** : parcours AST unifie, pas de mode expression vs mode statement. (sections 3.4, 3.6, 4.7)
 
-| Gap                                      | Probleme                                                               | Decision                                                                                                                                                                                  |
-| ---------------------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Flash back expression                 | Comment reconstruire `expression = reponse` en flash back ?            | **RESOLU session 3** — `expectedAnswerLatex` + meme pipeline que answerFormat. Section 4.7                                                                                                |
-| 2. Interface composant                   | Le parent a besoin du LaTeX (pour constraints) en plus de l'ascii-math | **Deux tableaux** : `bind:values` (ascii-math) + `bind:valuesLatex` (LaTeX). Section 3.7                                                                                                  |
-| 3. `solution` optionnel                  | Le champ existait mais n'etait pas marque optionnel                    | **`solution?: string \| string[]`** — absent pour fill_in_blanks. Sections 3.8, 4.4                                                                                                       |
-| 4. Indexation blanks                     | Expression blanks etaient appendes apres les statement blanks          | **Ordre naturel** — blanks comptes dans l'ordre du document. Quand le composant rencontre un noeud expression, les `?` de l'answerFormat sont comptes a cet endroit. Section 3.9 reecrite |
-| 5. Identification expressions dans l'AST | Le doc proposait du matching LaTeX (fragile)                           | **Tagging AST** — content-resolver insere `<<expr:NAME>>` avant la valeur resolue. Parser cree MathInlineNode/MathBlockNode avec `expressionName: string`. Sections 3.4, 4.7              |
-| 6. Syntaxes `[_]` et `{{blank:N}}`       | Coexistence pas specifiee                                              | **Pas de mixing** — les deux sont supportees, mais pas dans le meme statement. Section 4.8                                                                                                |
+### Trous et blanks
 
-#### Refonte validation : suppression de `validationType`
+- **Syntaxe** : `?` dans `$...$` = trou math, `[_]` dans le texte = trou texte. (section 3.1)
+- **Indexation 0-based partout** : `blanks[]`, `BlankNode.index`, `InputState.index`, `\placeholder[N]{}`. (section 4.1)
+- **`blanks[]` positionnels** : l'index dans le tableau = la position du trou. Pas de champ `position`. (section 4.1)
+- **`blankDefaults`** sur shared/variation : defauts de validation (precision, requiredForm, unit). Overrides per-blank. (section 3.7)
+- **Pool = autocompletion uniquement** : ne restreint pas la validation. (section 3.2)
 
-Apres etude approfondie du code actuel (`answer-validator.ts`, `src/lib/math/index.ts`, `src/lib/questions/units/validator.ts`) et comparaison avec TinyMath :
+### Expressions (convention `expression*`)
 
-- **Suppression du champ `validationType`** (anciennement `exact | decimal | algebraic`)
-- **Inference du mode depuis le contexte** :
-  - Ni `precision` ni `unit` → **equivalence** (`areEquivalent()`)
-  - `precision` present → **approximate** (`validateNumerical()`)
-  - `unit.expected` present → **unites** (`validateQuantityAnswer()`)
-  - `precision` + `unit.expected` → **unites + tolerance**
-  - Trou texte → **fuzzy matching**
+- Variable dont le nom commence par `expression` = expression math que l'eleve evalue. (section 3.4)
+- **Tagging AST** : content-resolver insere `<<expr:NAME>>` avant la valeur resolue. Parser cree noeud avec `expressionName: string`. (section 3.4)
+- **`answerFormats?: Record<string, string>`** sur shared/variation. Cle = nom de variable. Defaut `"?"`. (section 4.3)
+- **`expressions[]`** sur QuestionInstance : `{ name, latex, answerFormat? }`. (section 3.4)
+- **Pipeline answerFormat** : resolution variables → conversion LaTeX → stockage. Le composant n'a qu'a remplacer `?` par `\placeholder[N]{}`. (section 3.4)
 
-#### Config unites per-blank
+### Pipeline `assignBlankIndices()` (section 3.10)
 
-Apres etude approfondie du systeme d'unites existant (`src/lib/mathAST/units/`, `src/lib/questions/units/`) :
+Step apres resolution des variables, avant parsing ubumark. Parcourt le statement de gauche a droite avec compteur global :
 
-```typescript
-unit?: {
-  expected: boolean;          // true = l'eleve doit fournir l'unite
-  required?: string;          // unite imposee (ex: "m"). Si absent → libre
-  requireSameSymbol?: boolean; // true = symbole exact (pas de conversion)
-}
-```
+- `?` dans math → `\placeholder[N]{}`
+- `[_]` dans texte → `{{blank:N}}`
+- `<<expr:NAME>>` → reserve indices pour les `?` de l'answerFormat
+- Verification : totalBlanks == blanks.length
 
-Distinction syntaxe custom dans les templates :
+### Validation
 
-- `$5[km] = ?[m]$` → unite dans l'expression, blank ne contient pas d'unite, pas de config `unit` necessaire
-- `$5[km] = ?$` → eleve doit fournir l'unite → `unit: { expected: true }`
+- **Mode infere du contexte** : ni precision ni unit → `areEquivalent()`, precision → `validateNumerical()`, unit.expected → `validateQuantityAnswer()`, trou texte → fuzzy matching. (section 3.7)
+- **Per-blank** : chaque trou porte precision, requiredForm, validationRules, unit. (section 3.7)
+- **Pipeline trou math** : (1) validationRules custom ou validation par mode infere, (2) checkRequiredForm, (3) applyConstraints. (section 3.7)
+- **Interface composant** : `values: string[]` (ascii-math) + `valuesLatex: string[]` (LaTeX). (section 3.7)
 
-Analyse dimensionnelle (`checkDimensionalConsistency()`) a la validation, pas au rendu.
+### Unites (section 4.9, 4.10)
 
-### Session 3 (2026-02-12) — Review approfondie du doc + corrections
+- **Config `unit` simplifiee** : `{ expected: boolean; required?: string }`. Pas de `requireSameSymbol` (remplace par `unit.required`).
+- **`options.unitOptions` supprime** de QuestionTemplate. Remplace par `blankDefaults.unit`.
+- **`validateQuantityAnswer` alignee** sur `validateNumerical` : `(userAnswer, correctAnswer, precision?, requiredUnit?)`. Supporte tous les modes de `PrecisionType`.
+- **45 questions Grandeurs** : le transformer ajoute `unit: { expected: false }` (l'unite est dans l'expression).
 
-#### 3 incoherences corrigees dans le doc
+### Flash back (section 4.7)
 
-| Incoherence                                                        | Correction                                                                                       |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `validationType` fantome dans exemples sections 3.9 et 4.2         | Retire de tous les exemples (supprime en session 2, mais exemples pas mis a jour)                |
-| Pipeline answerFormat non documente (resolution variables + LaTeX) | Nouvelle sous-section "Pipeline de resolution answerFormat" ajoutee en section 3.4               |
-| Flash back non defini                                              | Section 4.7 mise a jour : `expectedAnswerLatex` sur chaque blank, meme pipeline que answerFormat |
+- `blanks[i].expectedAnswerLatex` fourni par le generateur (meme pipeline que answerFormat).
+- Trous statement : remplace par `expectedAnswerLatex` en lecture seule.
+- Trous expression : construit `expression = answerFormatResolu` avec reponses inserees.
+- Trous texte : affiche `expectedAnswer` dans un `<span>` stylise.
 
-#### Decisions supplementaires
+### Corrections (systeme existant, pas a modifier)
 
-| Decision                           | Details                                                                                                                                                                                               |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Flash back                         | Le generateur fournit `expectedAnswerLatex` via meme pipeline que answerFormat (resolution variables + conversion LaTeX). Le composant remplace les `?` par les reponses resolues en mode flash back. |
-| Indexation 0-based partout         | `blanks[]`, `BlankNode.index`, `InputState.index`, `\placeholder[N]{}` tous en 0-based. Plus de conversion +1/-1. `{{blank:0}}` = premier trou. Section 4.1 mise a jour.                              |
-| Champ `position` retire des blanks | L'index = la position dans le tableau. Le champ `position` est redondant et disparu.                                                                                                                  |
-| `solution` optionnel               | `solution?: string \| string[]` — absent pour `fill_in_blanks`. Cascade de changements dans resolveVariationWithShared, validateAnswer, resolveSolution.                                              |
-| `expressions2` dans le transformer | Les 2 questions avec `expressions2` sont des QCM (pas fill-in). Le transformer creera `expression2` depuis `expressions2[i]`. Pas d'impact sur l'architecture fill-in.                                |
-| answerField → fill_in_blanks       | Les 157 questions answerField sont converties en `fill_in_blanks` par le transformer. `\text{...}$$...$$` → `texte $?$`.                                                                              |
+- `correctionDetailss` (326/633 questions) → `correction.steps[]` (deja migre)
+- `correctionFormats` (7/633 questions) → `correction.feedback.correct/incorrect` (deja migre)
+- Le systeme `QuestionCorrection` est orthogonal au fill-in-blanks, il fonctionne deja.
+- **Point d'attention** : `{{solution}}` dans les corrections de questions fill-in-blanks devra etre resolu depuis `blanks[].expectedAnswer`.
 
-## Etat actuel du doc de redesign
+## Etapes d'implementation (section 7 du doc)
 
-Le doc est **coherent et complet** sur le plan architecture/design. **Toutes les questions ouvertes sont resolues.** Les 5 axes de reflexion (types, composant, validation, migration, cas limites) ont ete analyses en profondeur et valides.
+### Etape 2 — Types TypeScript
 
-### Session 4 (2026-02-12) — Verification approfondie + 4 decisions
+Modifier `src/lib/questions/types.ts` :
 
-#### 5 axes analyses
+- Supprimer `QuestionTemplate.type` et `QuestionInstance.type`
+- `QuestionType` → type utilitaire `'fill_in_blanks' | 'multiple_choice'` + fonction `getQuestionType()`
+- `solution` → `solution?: string | string[]` (optionnel)
+- Nouvelle structure `blanks[]` (template-side et instance-side, voir section 3.7)
+- Ajouter `blankDefaults?`, `answerFormats?` sur QuestionVariation et SharedVariationDefaults
+- Ajouter `expressions[]` sur QuestionInstance
+- `unit` simplifie : `{ expected: boolean; required?: string }`
+- Supprimer `options.unitOptions`
 
-| Axe                       | Resultat                                                                                                                                                              |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Verification des types | Ecarts doc vs code identifies : `solution` optionnel impacte ~7 endroits, `blanks[]` refonte majeure, nouveaux champs `expressions[]`/`answerFormats`/`blankDefaults` |
-| 2. Walkthrough composant  | 4 cas deroules (`$?+?=10$`, expression+answerFormat, answerField converti, mix texte+math). Pipeline `?` → `\placeholder[N]{}` clarifie                               |
-| 3. Validation per-blank   | Pipeline OK : `requiredForm` per-blank, `constraints` per-question, `validationRules` short-circuit. Pool texte = autocompletion seulement                            |
-| 4. Migration transformer  | Critere result/rewrite identifie, regex pour answerField validee, mapping `solutionss` → `blanks[]` clarifie                                                          |
-| 5. Cas limites            | `prefilled` + `expectedAnswer` = coherent, expressions inline/bloc = symetriques, `validationRules` = short-circuit                                                   |
+### Etape 3 — Parser ubumark
 
-#### 4 decisions prises
+Modifier `src/lib/ubumark/parser/markdown-parser.ts` et `src/lib/ubumark/types/ast.ts` :
 
-| Decision                          | Details                                                                                                                                                                    |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Type infere, pas explicite        | Plus de champ `type` — infere de la presence de `choices` (MC) ou non (FIB). 2 types seulement, pas de `open_answer`. Sections 4.4, 7 mises a jour                         |
-| Pool = autocompletion uniquement  | Le pool ne restreint pas la validation. Fuzzy matching toujours contre `expectedAnswer`. Sections 3.2, 3.7 mises a jour                                                    |
-| Pipeline `assignBlankIndices()`   | Nouveau step documente (section 3.10). Compteur global parcourant le statement, reservant des indices pour les `?` des answerFormats d'expressions a la position naturelle |
-| Regex pour conversion answerField | `\text{...}` → texte, `$$...$$` → `$?$`. Section 3.3 mise a jour                                                                                                           |
+- Support `[_]` → meme `BlankNode` que `{{blank:N}}`
+- Support `<<expr:NAME>>` → `expressionName` sur MathInlineNode/MathBlockNode
+- `expressionName?: string` sur les types AST
+- `BlankNode.index` et `InputState.index` : passage 1-based → 0-based
 
-### Session 5 (2026-02-12) — Synthese unites + 5 decisions
+### Etape 4 — `assignBlankIndices()`
 
-#### Analyse des 45 questions Grandeurs (globalIndex 426-470)
+Nouveau module dans le pipeline de generation :
 
-Les 45 questions Grandeurs impliquent des unites physiques (conversions simples, composees, perimetres/aires, durees, vitesses). Dans l'ancien systeme, l'unite cible est dans l'expression (`&1 km = ? m`), l'eleve tape un nombre pur. Le transformer les classifiait en `numerical_exact`, pas en `numerical_with_unit`.
+- Parcours gauche→droite, compteur global
+- `?` dans math → `\placeholder[N]{}`, `[_]` → `{{blank:N}}`
+- `<<expr:NAME>>` → reserve indices pour les `?` de l'answerFormat
+- Verification coherence : totalBlanks == blanks.length
 
-#### 5 decisions prises
+### Etape 5 — Composant FillBlanksInput
 
-| Decision                                 | Details                                                                                                                                                                          |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Suppression `requireSameSymbol`          | Remplace par `unit.required` — si on veut forcer "m", on met `required: "m"`. Sections 3.7, 4.9 mises a jour                                                                     |
-| Suppression `options.unitOptions`        | Remplace par `blankDefaults.unit` et `blanks[i].unit` (per-blank). 0 questions utilisaient `unitOptions`. Sections 4.9, 7 mises a jour                                           |
-| Transformer ajoute `unit` pour Grandeurs | Les 45 questions Grandeurs recoivent `unit: { expected: false }` sur les blanks (l'unite est dans l'expression). Section 4.10 ajoutee                                            |
-| Unification `validateQuantityAnswer`     | Nouvelle signature : `(userAnswer, correctAnswer, precision?, requiredUnit?)` — alignee sur `validateNumerical`. Supporte tous les modes de `PrecisionType`. Section 4.9 ajoutee |
-| Arguments unifies                        | `userAnswer`, `correctAnswer`, `precision` — memes noms dans `validateNumerical` et `validateQuantityAnswer`. Section 4.9                                                        |
+Reecrire `src/lib/components/question-inputs/FillBlanksInput.svelte` :
 
-## Objectif de la prochaine session
+- Parcours AST unifie (un seul chemin de rendu)
+- `\placeholder[N]{}` deja dans le statement
+- Expressions : augmenter noeud math avec `= answerFormat` en interactif
+- Flash back : `expectedAnswerLatex` en lecture seule
+- Interface : `bind:values` + `bind:valuesLatex`
 
-**Continuer la verification du design** ou **passer a l'implementation** selon les points restants a verifier. Le doc de redesign est mis a jour avec les decisions des sessions 1-5.
+### Etape 6 — Pipeline de generation
 
-## Fichiers cles
+Adapter `src/lib/questions/generator/instance-generator.ts` :
 
-- `docs/wip/fill-in-blanks-redesign.md` — **LIRE EN PREMIER** — doc d'architecture complet et a jour
-- `docs/wip/fill-in-blanks-plan-v2-notes.md` — contexte historique (lecons du v1)
-- `src/lib/questions/types.ts` — types actuels (a modifier)
-- `src/lib/questions/generator/instance-generator.ts` — pipeline de generation (a adapter)
-- `src/lib/questions/generator/content-resolver.ts` — resolution des variables (insertion `<<expr:NAME>>`)
-- `src/lib/utils/answer-validator.ts` — pipeline de validation (a adapter pour per-blank + unification signatures)
-- `src/lib/questions/units/validator.ts` — validation unites (signature a aligner sur validateNumerical)
-- `src/lib/ubumark/types/ast.ts` — types AST (ajout `expressionName`, passage 0-based)
-- `src/lib/ubumark/parser/markdown-parser.ts` — parser (ajout `[_]` et `<<expr:NAME>>`)
-- `src/lib/components/markdown/nodes/ParagraphNode.svelte` — routage AST → composants
-- `src/lib/components/markdown/nodes/MathPrompt.svelte` — prompts MathLive (deja fonctionnel)
-- `src/lib/migration/question-transformer.ts` — transformer (a adapter pour result/rewrite + answerField)
-- `.claude/old-questions.json` — donnees des 633 questions TinyMath
+- Detecter variables `expression*`, extraire metadonnees dans `instance.expressions[]`
+- Copier `answerFormats` → `expressions[i].answerFormat`
+- Construire `blanks[]` avec type et config (fusion blankDefaults + overrides)
+- Appeler `assignBlankIndices()` apres resolution du statement
+- `resolveVariationWithShared` : `solution` optionnel pour fill_in_blanks
 
-## Consignes
+### Etape 7 — Validation
 
-- Lire le doc de redesign EN ENTIER avant de commencer l'implementation
-- Suivre le workflow TDD (proposer comportements, attendre validation, ecrire tests, implementer)
-- Ne PAS recuperer de code du v1 (reverte, hypotheses fausses)
-- Utiliser des exemples concrets de `.claude/old-questions.json` pour les tests
+Adapter `src/lib/utils/answer-validator.ts` et `src/lib/questions/units/validator.ts` :
+
+- Validation per-blank (pipeline complet par trou)
+- Switch sur `instance.choices !== undefined` au lieu de `instance.type`
+- `validateQuantityAnswer` : nouvelle signature `(userAnswer, correctAnswer, precision?, requiredUnit?)`
+- Supprimer `options.unitOptions`, `UnitValidationOptions`, `requireSameSymbol`
+- `validateNumericalWithUnit` : supprime ou redirige vers `validateQuantityAnswer`
+
+### Etape 8 — Transformer de migration
+
+Adapter `src/lib/migration/question-transformer.ts` :
+
+- Reclasser 369 result/rewrite en fill_in_blanks (critere : `expressions[]` present, pas de `?` dans l'expression, pas de `choicess`)
+- Generer `blanks[]` depuis `solutionss`
+- Extraire `answerFormat` → `shared.answerFormats`
+- Convertir 157 answerField (regex : `\text{...}` → texte, `$$...$$` → `$?$`)
+- Generer `blanks[]` depuis `solutionss` pour answerField
+- 45 questions Grandeurs : ajouter `unit: { expected: false }` sur les blanks
+- `expressions2` : creer variable `expression2` (2 questions QCM)
+- Retirer `type` de la sortie du transformer
+
+### Etape 9 — Dictionnaire vocabulaire FR
+
+`src/lib/data/math-dictionary-fr.ts` : ~200-300 termes, fonctions utilitaires.
+
+### Etape 10 — Tests + import en DB
+
+## Fichiers cles a lire
+
+### A modifier
+
+| Fichier                                                     | Modifications                                                 |
+| ----------------------------------------------------------- | ------------------------------------------------------------- |
+| `src/lib/questions/types.ts`                                | Refonte types (blanks, solution optionnel, expressions, unit) |
+| `src/lib/questions/generator/instance-generator.ts`         | Pipeline generation (expressions, assignBlankIndices, blanks) |
+| `src/lib/questions/generator/content-resolver.ts`           | Insertion marqueur `<<expr:NAME>>`                            |
+| `src/lib/utils/answer-validator.ts`                         | Validation per-blank, suppression unitOptions                 |
+| `src/lib/questions/units/validator.ts`                      | Nouvelle signature validateQuantityAnswer                     |
+| `src/lib/ubumark/types/ast.ts`                              | `expressionName`, 0-based                                     |
+| `src/lib/ubumark/parser/markdown-parser.ts`                 | Support `[_]` et `<<expr:NAME>>`                              |
+| `src/lib/components/question-inputs/FillBlanksInput.svelte` | Reecriture complete                                           |
+| `src/lib/migration/question-transformer.ts`                 | result/rewrite, answerField, Grandeurs, expressions2          |
+
+### Deja fonctionnels (a integrer, pas a reecrire)
+
+| Fichier                                                  | Role                                   |
+| -------------------------------------------------------- | -------------------------------------- |
+| `src/lib/components/markdown/nodes/MathPrompt.svelte`    | Gere `\placeholder[N]{}` avec MathLive |
+| `src/lib/components/markdown/nodes/BlankInput.svelte`    | Input texte pour `[_]`                 |
+| `src/lib/components/markdown/nodes/ParagraphNode.svelte` | Routage AST → composants               |
+| `src/lib/questions/units/`                               | Systeme d'unites complet (770 tests)   |
+
+### Donnees
+
+| Fichier                                    | Role                                                      |
+| ------------------------------------------ | --------------------------------------------------------- |
+| `.claude/old-questions.json`               | 633 questions TinyMath (exemples concrets pour les tests) |
+| `docs/wip/fill-in-blanks-redesign.md`      | **DOC D'ARCHITECTURE — LIRE EN ENTIER**                   |
+| `docs/wip/fill-in-blanks-plan-v2-notes.md` | Lecons du v1, contexte historique                         |
+
+## Donnees des 633 questions
+
+| Mode d'interaction | Count     | Nouveau traitement                              |
+| ------------------ | --------- | ----------------------------------------------- |
+| Result/rewrite     | 369 (58%) | Convention `expression*` + answerFormats        |
+| AnswerField        | 157 (25%) | Statement avec `$?$` (conversion regex)         |
+| Fill-in            | 107 (17%) | Expression avec `?` dans la formule             |
+| **Total**          | **633**   | Dont 47 QCM, 45 Grandeurs, 326 avec corrections |
+
+Exemples representatifs dans `.claude/old-questions.json` :
+
+- globalIndex 413 : answerFormat `10^?` (puissances)
+- globalIndex 411 : answerFormat `?*10^?` (notation scientifique, multi-trous)
+- globalIndex 10 : result/rewrite simple (sans answerFormat)
+- globalIndex 51 : fill-in avec `?` dans l'expression
+- globalIndex 0 : answerField mono-trou
+- globalIndex 478, 587 : `expressions2` (QCM, 2 expressions simultanees)
+- globalIndex 426-470 : questions Grandeurs (unites)
+
+## Regles ABSOLUES
+
+1. **LIRE le doc d'architecture EN ENTIER** (`docs/wip/fill-in-blanks-redesign.md`) avant de coder quoi que ce soit
+2. **NE PAS recuperer de code du v1** (reverte, hypotheses fausses). Tout est reecrit from scratch
+3. **Workflow TDD** : proposer les comportements en francais → attendre validation utilisateur → ecrire tests → implementer
+4. **NE PAS devirer du doc** : si le doc dit "utiliser module X", utiliser module X. Ne pas reimplementer
+5. **Utiliser des exemples concrets** de `.claude/old-questions.json` pour les tests
+6. **Commits reguliers** apres chaque etape validee
+7. **Documents de progression** dans `docs/wip/` apres chaque phase significative
+8. **Svelte autofixer** sur chaque fichier .svelte modifie
+9. **Code review** (agent) apres chaque phase
