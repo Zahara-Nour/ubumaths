@@ -150,6 +150,8 @@ Le fichier `src/lib/questions/units/ce-integration.ts` porte un nom residuel "ce
 | Saisie libre   | Oui, mais feedback visuel si le mot n'est pas dans le dictionnaire/pool                     |
 | Validation     | Fuzzy : accents ignores, casse ignoree, distance de Levenshtein <= 1 → accepte sans warning |
 
+**Note** : le `pool` sert uniquement a l'**autocompletion** (suggestions dans le composant `BlankInput`). Il ne restreint PAS les reponses acceptees. La validation compare toujours `userAnswer` vs `expectedAnswer` en fuzzy matching, que la reponse soit dans le pool ou non.
+
 ### 3.3 Unification answerField → fill-in-blanks
 
 Les 157 questions answerField deviennent des fill-in-blanks avec trous math. Le template de phrase `\text{Le double de }$$&1$$\text{ est }$$...$$\text{.}` devient un statement ubumark :
@@ -157,6 +159,16 @@ Les 157 questions answerField deviennent des fill-in-blanks avec trous math. Le 
 ```
 Le double de ${{a}}$ est $?$.
 ```
+
+**Technique de conversion** : regex simple dans le transformer de migration :
+
+```typescript
+const converted = answerField
+	.replace(/\\text\{([^}]*)\}/g, '$1') // \text{...} → texte brut
+	.replace(/\$\$\.\.\.\$\$/g, '$?$'); // $$...$$ → $?$
+```
+
+Chaque `...` dans un `$$...$$` correspond a un trou math (`$?$`). Les blanks sont generes depuis les `solutionss` correspondantes.
 
 ### 3.4 Convention de nommage `expression` (variable dont le nom commence par `expression`)
 
@@ -256,13 +268,13 @@ Chaque trou est valide individuellement. Le type de trou determine le pipeline d
 
 Le mode de validation est **infere du contexte**, sans champ explicite :
 
-| Contexte                      | Mode                  | Fonction                                                                                                                            |
-| ----------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Ni `precision` ni `unit`      | **Equivalence**       | `areEquivalent()` (`src/lib/math/index.ts`) — normalisation structurelle + fallback numerique                                       |
-| `precision` present           | **Approximate**       | `validateNumerical()` (`src/lib/utils/answer-validator.ts`) — evaluation numerique + comparaison selon precision                    |
-| `unit.expected` present       | **Unite**             | `validateQuantityAnswer()` (`src/lib/questions/units/validator.ts`) — parsing LaTeX quantite, conversion unites, comparaison valeur |
-| `precision` + `unit.expected` | **Unite + tolerance** | `validateQuantityAnswer()` avec tolerance derivee de `precision`                                                                    |
-| Trou texte                    | **Fuzzy text**        | Matching accents/casse ignores, Levenshtein <= 1                                                                                    |
+| Contexte                      | Mode                  | Fonction                                                                                                                         |
+| ----------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Ni `precision` ni `unit`      | **Equivalence**       | `areEquivalent()` (`src/lib/math/index.ts`) — normalisation structurelle + fallback numerique                                    |
+| `precision` present           | **Approximate**       | `validateNumerical(userAnswer, correctAnswer, precision)` — evaluation numerique + comparaison selon precision                   |
+| `unit.expected` present       | **Unite**             | `validateQuantityAnswer(userAnswer, correctAnswer, precision?, requiredUnit?)` — parsing LaTeX quantite, conversion, comparaison |
+| `precision` + `unit.expected` | **Unite + precision** | `validateQuantityAnswer()` avec `precision` (meme `PrecisionType` que `validateNumerical`)                                       |
+| Trou texte                    | **Fuzzy text**        | Matching accents/casse ignores, Levenshtein <= 1                                                                                 |
 
 #### Structure template-side (QuestionVariation / SharedVariationDefaults)
 
@@ -276,7 +288,6 @@ blankDefaults?: {
   unit?: {
     expected: boolean;          // true = l'eleve doit fournir l'unite
     required?: string;          // unite imposee (ex: "m"). Si absent → libre
-    requireSameSymbol?: boolean; // true = symbole exact (pas de conversion)
   };
 }
 ```
@@ -287,7 +298,7 @@ blankDefaults?: {
 blanks?: {
   expectedAnswer: string;   // Expression template ("{{eval:{{a}}+{{b}}}}", "entier")
   prefilled?: string;       // Valeur pre-remplie (template expression)
-  pool?: string[];           // Trou texte : autocompletion + solutionPool
+  pool?: string[];           // Trou texte : autocompletion uniquement (pas de restriction de validation)
 
   // Overrides per-blank (ecrasent blankDefaults si definis)
   precision?: PrecisionType;
@@ -298,7 +309,6 @@ blanks?: {
   unit?: {
     expected: boolean;          // true = l'eleve doit fournir l'unite
     required?: string;          // unite imposee (ex: "m")
-    requireSameSymbol?: boolean; // true = symbole exact
   };
 }[]
 ```
@@ -335,27 +345,25 @@ blanks?: {
   unit?: {
     expected: boolean;
     required?: string;
-    requireSameSymbol?: boolean;
   };
 
-  // Trou texte — validation
-  pool?: string[];           // pour autocompletion + solutionPool
+  // Trou texte — autocompletion
+  pool?: string[];           // pour autocompletion uniquement (ne restreint pas la validation)
 }[]
 ```
 
 #### Pipelines de validation
 
-**Pipeline pour un trou texte** : fuzzy matching contre `expectedAnswer` (accents/casse ignores, Levenshtein <= 1). Si `pool` defini, solutionPool matching.
+**Pipeline pour un trou texte** : fuzzy matching contre `expectedAnswer` (accents/casse ignores, Levenshtein <= 1). Le `pool` ne participe pas a la validation — il sert uniquement a l'autocompletion dans le composant.
 
 **Pipeline pour un trou math** :
 
 1. `validationRules` custom si presentes → short-circuit. **Sinon** : validation selon le mode infere :
-   - Si `unit.expected` : `validateQuantityAnswer()` (avec tolerance si `precision` present)
-   - Si `precision` (sans unite) : `validateNumerical()` avec `precision`
+   - Si `unit.expected` : `validateQuantityAnswer(userLatex, expectedLatex, precision)` — meme signature que `validateNumerical` (voir section 4.9)
+   - Si `precision` (sans unite) : `validateNumerical(userAnswer, correctAnswer, precision)`
    - Sinon : `areEquivalent()` (equivalence structurelle/symbolique)
-2. Si `unit.expected` et reponse correcte : `checkDimensionalConsistency()` sur l'expression complete
-3. `checkRequiredForm()` — si reponse correcte + `requiredForm` defini + LaTeX disponible
-4. `applyConstraints()` — si reponse correcte + LaTeX disponible
+2. `checkRequiredForm()` — si reponse correcte + `requiredForm` defini + LaTeX disponible
+3. `applyConstraints()` — si reponse correcte + LaTeX disponible
 
 **Donnees collectees par le composant** pour chaque trou math :
 
@@ -375,7 +383,7 @@ Le parent passe les deux au validateur : `validateAnswer(values, instance, value
 
 **Pour `fill_in_blanks`** : `blanks[]` est la seule source de verite. Le champ `solution` est **optionnel** (`solution?: string | string[]`) et absent pour `fill_in_blanks`. Les reponses pour le flash back se reconstruisent en remplacant chaque `?`/`[_]` par `blanks[i].expectedAnswer` dans le statement.
 
-**Pour `multiple_choice` et `open_answer`** : `solution` reste la source de verite (presente et requise).
+**Pour `multiple_choice`** : `solution` reste la source de verite (presente et requise).
 
 **Pas d'evaluation automatique** : l'ancien systeme TinyMath derivait la solution de l'expression (`math(expression).eval()`). Le nouveau systeme utilise `{{eval:...}}` dans les templates (ex: `expectedAnswer: '{{eval:{{a}}+{{b}}}}'`), resolu explicitement pendant la generation. Pas de magie implicite.
 
@@ -422,6 +430,72 @@ blanks: [
 Cet ordre est plus intuitif que l'ancien schema (statement d'abord, answerFormats ensuite) car il suit la lecture gauche-a-droite du document final.
 
 Le transformer de migration genere automatiquement ces blanks a partir des anciennes `solutionss`.
+
+### 3.10 Pipeline d'assignation des indices de blanks (`assignBlankIndices`)
+
+Apres la resolution des variables (section 3.4) et avant le parsing ubumark, un step du pipeline parcourt le statement resolu **de gauche a droite** avec un compteur global pour assigner les indices des blanks. Ce step doit coordonner trois types de trous :
+
+1. **`?` dans les zones math** (`$...$` ou `$$...$$`) : remplaces par `\placeholder[N]{}`
+2. **`[_]` dans le texte** (hors math) : remplaces par `{{blank:N}}`
+3. **Expressions (`<<expr:NAME>>`)** : les `?` de l'answerFormat ne sont PAS dans le statement, mais ils **reservent des indices** a la position naturelle de l'expression
+
+#### Algorithme
+
+```
+Entree :
+  statement resolu : "$$<<expr:expression1>>10^{2} \times 10^{3}$$ et $? + ? = 10$"
+  answerFormats : { "expression1": "10^{?}" }
+
+Parcours gauche → droite, compteur = 0 :
+
+  ① Zone $$...$$ avec marqueur <<expr:expression1>>
+     L'answerFormat "10^{?}" contient 1 "?" → reserve index 0
+     answerFormat resolu : "10^{\placeholder[0]{}}"
+     Le contenu du noeud math n'est PAS modifie (pas de ? dans l'expression)
+     compteur = 1
+
+  ② Zone $...$ contenant "? + ? = 10"
+     1er "?" → \placeholder[1]{}
+     2e "?" → \placeholder[2]{}
+     compteur = 3
+
+Sortie :
+  statement : "$$<<expr:expression1>>10^{2} \times 10^{3}$$ et $\placeholder[1]{} + \placeholder[2]{} = 10$"
+  expressions[0].answerFormat : "10^{\placeholder[0]{}}"
+  totalBlanks : 3 (doit == blanks.length dans le template)
+```
+
+#### Placement dans le pipeline
+
+Ce step se trouve dans `instance-generator.ts`, apres `resolveMarkdownContent()` et avant la construction de l'instance. Le generateur a acces au statement resolu ET aux answerFormats de la question.
+
+Le step retourne :
+
+- Le statement modifie (avec `\placeholder[N]{}` et `{{blank:N}}`)
+- Les answerFormats modifies (avec `\placeholder[N]{}`)
+- Le nombre total de blanks (pour verification de coherence avec `blanks.length`)
+
+#### Cas des MathFields multiples
+
+Chaque noeud math produit un `<math-field>` distinct. Les IDs des prompts MathLive correspondent aux indices globaux (`\placeholder[N]{}` → prompt ID `"N"`). Le callback `onPromptChange(idx, value)` reporte l'index global, ce qui permet au parent de collecter `values[0]`, `values[1]`, `values[2]` correctement, meme si les prompts sont repartis sur plusieurs MathFields.
+
+#### Exemple complet : expression + trous dans le statement + trou texte
+
+```
+Template :
+  statement: "$${{expression1}}$$ Completer : $? + ?$ est un nombre [_]."
+  answerFormats: { "expression1": "?" }
+  blanks: [
+    { expectedAnswer: "{{eval:{{expression1}}}}" },  // index 0 (expression1)
+    { expectedAnswer: "3" },                          // index 1 (1er ? du statement)
+    { expectedAnswer: "7" },                          // index 2 (2e ? du statement)
+    { expectedAnswer: "entier" }                      // index 3 ([_] texte)
+  ]
+
+Apres assignBlankIndices :
+  statement: "$$<<expr:expression1>>...resolu...$$ Completer : $\placeholder[1]{} + \placeholder[2]{}$ est un nombre {{blank:3}}."
+  expressions[0].answerFormat: "\placeholder[0]{}"
+```
 
 ---
 
@@ -506,17 +580,27 @@ Le generateur copie le format correspondant dans chaque `instance.expressions[i]
 
 ### 4.4 Refonte des types de questions
 
-**Decision : 3 types UI purs. Validation separee du type.**
+**Decision : 2 types, inferes de la structure. Plus de champ `type` explicite.**
 
-| Type              | Mode d'interaction                                  | Couvre                                                 |
-| ----------------- | --------------------------------------------------- | ------------------------------------------------------ |
-| `fill_in_blanks`  | Trous dans le statement (`?`, `[_]`, `{{blank:N}}`) | Result/rewrite + answerField + fill-in (586 questions) |
-| `multiple_choice` | Choix parmi des propositions                        | 47 questions                                           |
-| `open_answer`     | Champ reponse separe, sans trou dans le statement   | Flash cards pures, questions orales                    |
+Le type de question est **deduit automatiquement** de la presence ou absence du champ `choices` :
 
-Les 7 types actuels sont reduits a 3. Les types `numerical_exact`, `numerical_decimal`, `numerical_rounded`, `numerical_with_unit`, `algebraic_transform` disparaissent. La distinction exact/decimal/tolerance releve de la **validation**, pas du mode d'interaction UI. La validation est configuree per-blank (`validationType`, `precision`, `requiredForm` — voir section 3.7).
+| Condition                               | Type infere       | Couvre                                                 |
+| --------------------------------------- | ----------------- | ------------------------------------------------------ |
+| `choices` present (variation ou shared) | `multiple_choice` | 47 questions                                           |
+| Sinon                                   | `fill_in_blanks`  | Result/rewrite + answerField + fill-in (586 questions) |
 
-Pour `fill_in_blanks`, le champ `solution` est **optionnel** et absent — `blanks[]` est la seule source de verite (voir section 3.8). `solution` reste requis pour `multiple_choice` et `open_answer`.
+Les 7 types actuels (`numerical_exact`, `numerical_decimal`, `numerical_rounded`, `numerical_with_unit`, `algebraic_transform`, `fill_in_blanks`, `multiple_choice`) disparaissent comme champ explicite. La distinction exact/decimal/tolerance releve de la **validation** (per-blank), pas du mode d'interaction UI.
+
+**Implications** :
+
+- `QuestionTemplate.type` : **supprime** — le type est infere de `choices`
+- `QuestionInstance.type` : **supprime** — le composant verifie `instance.choices` ou `instance.blanks`
+- `QuestionType` : le type union peut etre conserve comme type utilitaire (`'fill_in_blanks' | 'multiple_choice'`), derive via une fonction `getQuestionType(q)` plutot que stocke
+- `validateAnswer()` : switch sur `instance.choices !== undefined` au lieu de `instance.type`
+- `instance-generator.ts` : branches conditionnelles basees sur la presence de `choices`/`blanks` dans la variation resolue
+- `detectQuestionType()` dans le transformer : reste utile pour la logique de migration (decide comment convertir), mais le resultat n'est plus stocke dans le template
+
+Pour `fill_in_blanks`, le champ `solution` est **optionnel** et absent — `blanks[]` est la seule source de verite (voir section 3.8). `solution` reste requis pour `multiple_choice`.
 
 ### 4.5 Dictionnaire de vocabulaire mathematique
 
@@ -620,6 +704,55 @@ Raison : `{{blank:N}}` est utilise par l'extension TipTap `BlankField` (`src/lib
 
 **Restriction : les deux syntaxes ne doivent pas etre melangees dans le meme statement.** Un statement utilise soit `[_]` (positionnelle), soit `{{blank:N}}` (explicite), pas les deux. En pratique, `[_]` est utilise dans les templates textuels et la migration, `{{blank:N}}` dans l'editeur TipTap.
 
+### 4.9 Unification des fonctions de validation numerique
+
+**Decision : aligner les signatures de `validateQuantityAnswer` et `validateNumerical`.**
+
+Etat actuel — deux fonctions avec des signatures incompatibles :
+
+| Fonction                 | Signature actuelle                                                                                                     |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `validateNumerical`      | `(userAnswer: string \| number, correctAnswer: string, precision?: PrecisionType)`                                     |
+| `validateQuantityAnswer` | `(userAnswer: string, expectedAnswer: string, options?: { requireSameSymbol?, tolerance?: { absolute?, relative? } })` |
+
+Problemes :
+
+- `validateQuantityAnswer` utilise `tolerance: { absolute?, relative? }` au lieu de `PrecisionType`
+- `validateQuantityAnswer` ne gere pas `decimal`, `significant`, `magnitude` de `PrecisionType`
+- `requireSameSymbol` est redondant avec `unit.required` (si on veut forcer "m", on met `required: "m"`)
+- Les noms d'arguments different (`userAnswer`/`correctAnswer` vs `userAnswer`/`expectedAnswer`)
+
+Changements :
+
+1. **`requireSameSymbol` supprime** — remplace par `unit.required` sur le blank. Si `unit.required` est defini, la validation verifie que l'unite de la reponse correspond exactement.
+2. **`options.unitOptions` supprime** de `QuestionTemplate` — remplace par `blankDefaults.unit` et `blanks[i].unit` (per-blank)
+3. **`validateQuantityAnswer` nouvelle signature** :
+   ```typescript
+   validateQuantityAnswer(
+     userAnswer: string,
+     correctAnswer: string,
+     precision?: PrecisionType,
+     requiredUnit?: string       // depuis blank.unit.required
+   ): ValidationResult
+   ```
+4. **Arguments unifies** : `userAnswer`, `correctAnswer`, `precision` — memes noms dans les deux fonctions
+5. **`PrecisionType` gere nativement** : `validateQuantityAnswer` doit supporter `decimal`, `significant`, `magnitude` et `tolerance` comme `validateNumerical`, en plus du parsing d'unites.
+
+### 4.10 Migration des 45 questions Grandeurs
+
+**Decision : le transformer ajoute un champ `unit` pour les questions impliquant des unites physiques.**
+
+Les 45 questions Grandeurs (globalIndex 426-470) couvrent : conversions simples (km→m, kg→g), conversions composees (km²→m²), perimetres/aires avec unites, durees (h→min), vitesses (km/h→m/s).
+
+Dans l'ancien systeme, l'unite cible est dans l'expression (`&1 km = ? m`). L'eleve tape un nombre pur. Mais le transformer doit annoter les blanks avec la config `unit` appropriee pour que le systeme sache que la reponse represente une grandeur physique.
+
+Mapping :
+
+- `&1 km = ? m` → blank `{ expectedAnswer: "...", unit: { expected: false } }` — l'unite est dans l'expression, l'eleve tape un nombre
+- Si une question future a `$5 km = ?$` → blank `{ expectedAnswer: "...", unit: { expected: true } }` — l'eleve fournit valeur + unite
+
+La detection se fait par analyse de l'expression : si des symboles d'unites sont presents (via regex ou liste blanche), le transformer ajoute `unit` avec la config appropriee.
+
 ---
 
 ## 5. Fichiers de reference
@@ -710,11 +843,16 @@ Raison : `{{blank:N}}` est utilise par l'extension TipTap `BlankField` (`src/lib
 
 ~~1ter. Design review : identifier et resoudre les lacunes~~ **FAIT** (2026-02-12) — 6 gaps identifies, tous resolus. Decisions : tag AST `<<expr:NAME>>`, indexing naturel, solution optionnel, interface values+valuesLatex, pas de mix `[_]`/`{{blank:N}}`, flash back via `expectedAnswerLatex` + meme pipeline que answerFormat, pipeline answerFormat documente (resolution variables + conversion LaTeX)
 
+~~1quater. Verification approfondie du design~~ **FAIT** (2026-02-12) — 4 decisions supplementaires : type infere (pas de champ `type` explicite, 2 types deduits de la structure), pool = autocompletion uniquement, pipeline `assignBlankIndices()` documente (comptage global avec reservation d'indices pour les answerFormats d'expressions), regex pour conversion answerField.
+
 2. Definir les types TypeScript mis a jour
 
-   - `QuestionType` : 3 types (`fill_in_blanks`, `multiple_choice`, `open_answer`)
+   - Plus de `QuestionType` explicite — type infere de la structure (`choices` present → MC, sinon → FIB)
+   - `QuestionTemplate.type` et `QuestionInstance.type` : supprimes
    - Structure `blanks[]` positionnelle avec validation per-blank (`precision`, `requiredForm`, `unit`)
    - Pas de champ `validationType` — mode infere : `precision` → approximate, `unit.expected` → unites, defaut → equivalence
+   - `unit` simplifie : `{ expected: boolean; required?: string }` (pas de `requireSameSymbol` — remplace par `unit.required`)
+   - `options.unitOptions` supprime de `QuestionTemplate` — remplace par `blankDefaults.unit`
    - Champ `expressions[]` sur `QuestionInstance` pour la convention expression
    - `answerFormats?: Record<string, string>` sur shared/variation
    - `solution` optionnel (`solution?: string | string[]`), absent pour `fill_in_blanks` (blanks seule source de verite)
@@ -724,38 +862,53 @@ Raison : `{{blank:N}}` est utilise par l'extension TipTap `BlankField` (`src/lib
    - `[_]` : sucre syntaxique positionnel → meme `BlankNode` que `{{blank:N}}`
    - `<<expr:NAME>>` : marqueur d'expression → `expressionName` sur `MathInlineNode`/`MathBlockNode`
    - Ajout de `expressionName?: string` sur les types AST `MathInlineNode` et `MathBlockNode`
-   - Detection des `?` dans les noeuds math pour les trous math
 
-4. Implementer le nouveau FillBlanksInput
+4. Implementer `assignBlankIndices()` dans le pipeline de generation
+
+   - Parcours du statement resolu de gauche a droite avec compteur global
+   - `?` dans math → `\placeholder[N]{}`, `[_]` dans texte → `{{blank:N}}`
+   - `<<expr:NAME>>` → reserve indices pour les `?` de l'answerFormat (pas dans le statement, mais occupent des indices)
+   - Les answerFormats sont aussi modifies (`?` → `\placeholder[N]{}`)
+   - Verification de coherence : totalBlanks == blanks.length du template
+
+5. Implementer le nouveau FillBlanksInput
 
    - Un seul chemin de rendu : parcours AST unifie (pas deux modes)
-   - `?` → `?` visible (flash) ou `\placeholder[N]{}` (interactif)
-   - `[_]` → indicateur visuel (flash) ou `<input>` texte (interactif)
-   - Si `instance.expressions` : augmenter le noeud math avec `= answerFormat[\placeholder]` en interactif
+   - Les `\placeholder[N]{}` sont deja dans le statement (inseres par assignBlankIndices)
+   - `{{blank:N}}` → `<input>` texte (interactif) ou indicateur visuel (flash)
+   - Si `instance.expressions` : augmenter le noeud math avec `= answerFormat` (qui contient deja les `\placeholder`) en interactif
    - Integration dans FlashCard.svelte et QuestionCard.svelte
 
-5. Adapter le pipeline de generation
+6. Adapter le pipeline de generation
 
    - `instance-generator` : detecter les variables `expression`, extraire metadonnees dans `instance.expressions[]`
    - `instance-generator` : copier `answerFormats` du template vers `expressions[i].answerFormat`
    - `instance-generator` : construire `blanks[]` avec type et config de validation per-blank
+   - `instance-generator` : appeler `assignBlankIndices()` apres resolution du statement
 
-6. Adapter la validation
+7. Adapter la validation
 
    - `answer-validator` : validation per-blank (pipeline complet pour chaque trou math, fuzzy matching pour trous texte)
-   - Chaque trou math : validationRules ou validateNumerical/areEquivalent, puis checkRequiredForm, puis applyConstraints
+   - Chaque trou math : validationRules ou validateNumerical/validateQuantityAnswer/areEquivalent, puis checkRequiredForm, puis applyConstraints
+   - Switch sur `instance.choices !== undefined` au lieu de `instance.type`
+   - `validateQuantityAnswer` : nouvelle signature alignee sur `validateNumerical` — `(userAnswer, correctAnswer, precision?, requiredUnit?)`. Supporte tous les modes de `PrecisionType`. Suppression de `requireSameSymbol` (voir section 4.9)
+   - Suppression de `options.unitOptions` sur `QuestionTemplate` et de `UnitValidationOptions` dans answer-validator
 
-7. Mettre a jour le transformer de migration
+8. Mettre a jour le transformer de migration
 
-   - Reclasser les 369 result/rewrite en `fill_in_blanks`
+   - Reclasser les 369 result/rewrite (critere : `expressions[]` present ET pas de `?` dans l'expression ET pas de `choicess`)
+   - Generer `blanks[]` depuis `solutionss` (nombre de blanks = nombre de `?` dans l'answerFormat)
    - Extraire `answerFormat` → `shared.answerFormats: { "expression1": "..." }`
-   - Reclasser les 157 answerField en `fill_in_blanks`
+   - Convertir les 157 answerField en statement ubumark (regex : `\text{...}` → texte, `$$...$$` → `$?$`)
+   - Generer `blanks[]` depuis `solutionss` pour les answerField convertis
    - Gerer `expressions2` : les 2 questions QCM avec `expressions2` ont 2 expressions simultanees. Le transformer doit creer une variable `expression2` depuis `expressions2[i]` en plus de `expression1` depuis `expressions[i]`. Ces questions restent `multiple_choice` (pas de blanks).
+   - Le champ `type` n'est plus stocke dans le template — retirer de la sortie du transformer
+   - Migration des 45 questions Grandeurs : detecter les unites dans les expressions, ajouter `unit: { expected: false }` sur les blanks correspondants (l'unite est dans l'expression, l'eleve tape un nombre). Voir section 4.10
 
-8. Creer le dictionnaire de vocabulaire mathematique FR
+9. Creer le dictionnaire de vocabulaire mathematique FR
 
    - `src/lib/data/math-dictionary-fr.ts`
    - ~200-300 termes pour v1
    - Fonctions utilitaires (getTermsForLevel, getTermsByTag, etc.)
 
-9. Tests + import en DB
+10. Tests + import en DB

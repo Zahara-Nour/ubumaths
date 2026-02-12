@@ -90,88 +90,68 @@ Analyse dimensionnelle (`checkDimensionalConsistency()`) a la validation, pas au
 
 ## Etat actuel du doc de redesign
 
-Le doc est **coherent et complet** sur le plan architecture/design. **Toutes les questions ouvertes sont resolues.** Pas de lacune identifiee.
+Le doc est **coherent et complet** sur le plan architecture/design. **Toutes les questions ouvertes sont resolues.** Les 5 axes de reflexion (types, composant, validation, migration, cas limites) ont ete analyses en profondeur et valides.
 
-## Objectif de cette session
+### Session 4 (2026-02-12) — Verification approfondie + 4 decisions
 
-**Continuer la reflexion avant implementation.** Le doc de redesign est stable sur les decisions architecturales. Avant de coder, il reste a verifier en profondeur que le design tient face a la realite du code et des donnees. NE PAS lancer d'implementation sans accord explicite.
+#### 5 axes analyses
 
-### Axes de reflexion
+| Axe                       | Resultat                                                                                                                                                              |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Verification des types | Ecarts doc vs code identifies : `solution` optionnel impacte ~7 endroits, `blanks[]` refonte majeure, nouveaux champs `expressions[]`/`answerFormats`/`blankDefaults` |
+| 2. Walkthrough composant  | 4 cas deroules (`$?+?=10$`, expression+answerFormat, answerField converti, mix texte+math). Pipeline `?` → `\placeholder[N]{}` clarifie                               |
+| 3. Validation per-blank   | Pipeline OK : `requiredForm` per-blank, `constraints` per-question, `validationRules` short-circuit. Pool texte = autocompletion seulement                            |
+| 4. Migration transformer  | Critere result/rewrite identifie, regex pour answerField validee, mapping `solutionss` → `blanks[]` clarifie                                                          |
+| 5. Cas limites            | `prefilled` + `expectedAnswer` = coherent, expressions inline/bloc = symetriques, `validationRules` = short-circuit                                                   |
 
-#### 1. Verification des types avant ecriture
+#### 4 decisions prises
 
-Le doc decrit les structures (sections 3.7, 3.4) mais les types formels ne sont pas encore ecrits. Avant de coder `types.ts`, verifier la coherence :
+| Decision                          | Details                                                                                                                                                                    |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Type infere, pas explicite        | Plus de champ `type` — infere de la presence de `choices` (MC) ou non (FIB). 2 types seulement, pas de `open_answer`. Sections 4.4, 7 mises a jour                         |
+| Pool = autocompletion uniquement  | Le pool ne restreint pas la validation. Fuzzy matching toujours contre `expectedAnswer`. Sections 3.2, 3.7 mises a jour                                                    |
+| Pipeline `assignBlankIndices()`   | Nouveau step documente (section 3.10). Compteur global parcourant le statement, reservant des indices pour les `?` des answerFormats d'expressions a la position naturelle |
+| Regex pour conversion answerField | `\text{...}` → texte, `$$...$$` → `$?$`. Section 3.3 mise a jour                                                                                                           |
 
-- Les types template-side (`QuestionVariation.blanks`, `SharedVariationDefaults.blankDefaults`, `answerFormats`) sont-ils complets ?
-- Les types instance-side (`QuestionInstance.blanks`, `expressions[]`) couvrent-ils tous les cas ?
-- Le passage template → instance est-il clair pour le generateur ? (quelles transformations, quelles fusions)
-- `solution` optionnel : lister exhaustivement les endroits du code impactes
+### Session 5 (2026-02-12) — Synthese unites + 5 decisions
 
-**Methode** : ecrire les types en pseudo-code dans le doc, les confronter a 4-5 exemples concrets de `.claude/old-questions.json` (1 result/rewrite simple, 1 avec answerFormat non-trivial, 1 answerField, 1 fill-in, 1 multi-trous).
+#### Analyse des 45 questions Grandeurs (globalIndex 426-470)
 
-#### 2. Walkthrough composant avec exemples concrets
+Les 45 questions Grandeurs impliquent des unites physiques (conversions simples, composees, perimetres/aires, durees, vitesses). Dans l'ancien systeme, l'unite cible est dans l'expression (`&1 km = ? m`), l'eleve tape un nombre pur. Le transformer les classifiait en `numerical_exact`, pas en `numerical_with_unit`.
 
-Le doc dit "parcours AST unifie" mais ne detaille pas le flux de donnees. Pour chaque cas, derouler :
+#### 5 decisions prises
 
-- Quel AST le parser produit (noeuds concrets)
-- Ce que le composant recoit (instance.blanks, instance.expressions)
-- Comment le composant mappe AST → DOM en mode interactif et flash back
-- Comment les valeurs remontent (values[], valuesLatex[])
+| Decision                                 | Details                                                                                                                                                                          |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Suppression `requireSameSymbol`          | Remplace par `unit.required` — si on veut forcer "m", on met `required: "m"`. Sections 3.7, 4.9 mises a jour                                                                     |
+| Suppression `options.unitOptions`        | Remplace par `blankDefaults.unit` et `blanks[i].unit` (per-blank). 0 questions utilisaient `unitOptions`. Sections 4.9, 7 mises a jour                                           |
+| Transformer ajoute `unit` pour Grandeurs | Les 45 questions Grandeurs recoivent `unit: { expected: false }` sur les blanks (l'unite est dans l'expression). Section 4.10 ajoutee                                            |
+| Unification `validateQuantityAnswer`     | Nouvelle signature : `(userAnswer, correctAnswer, precision?, requiredUnit?)` — alignee sur `validateNumerical`. Supporte tous les modes de `PrecisionType`. Section 4.9 ajoutee |
+| Arguments unifies                        | `userAnswer`, `correctAnswer`, `precision` — memes noms dans `validateNumerical` et `validateQuantityAnswer`. Section 4.9                                                        |
 
-**Cas a derouler** :
+## Objectif de la prochaine session
 
-- `$? + ? = 10$` (fill-in simple, 2 trous math dans une expression inline)
-- `$${{expression1}}$$` avec answerFormat `"10^?"` (result/rewrite)
-- `Le chiffre des centaines est $?$.` (answerField converti)
-- Mix texte + math : `$f(x) = ?$ est une fonction [_].` (trou math + trou texte)
+**Continuer la verification du design** ou **passer a l'implementation** selon les points restants a verifier. Le doc de redesign est mis a jour avec les decisions des sessions 1-5.
 
-#### 3. Pipeline de validation per-blank : walkthrough
+## Fichiers cles
 
-Le doc decrit le pipeline (section 3.7) mais un walkthrough concret permettrait de verifier :
-
-- Pour un trou math sans precision ni unit → `areEquivalent()`. Quelles donnees exactement ?
-- Pour un trou math avec precision → `validateNumerical()`. Comment le validateur recoit-il la precision du blank specifique ?
-- Pour un trou texte → fuzzy matching. Comment le pool est-il passe ?
-- `checkRequiredForm` et `applyConstraints` : per-blank ou per-question ? Le doc dit per-blank pour requiredForm mais `constraints` reste per-question. Est-ce coherent ?
-
-#### 4. Migration transformer : mapping detaille
-
-Verifier que chaque categorie de questions se mappe correctement :
-
-- **369 result/rewrite** : comment le transformer detecte-t-il ces questions ? Actuellement il ne les reclasse pas. Quel critere ? (`expressions` present ET pas de `?` dans l'expression ET pas de `choicess`)
-- **157 answerField** : comment convertir `\text{...}$$...$$\text{.}` → `texte $?$.` ? Regex ou parsing ? Quels cas limites ? (multi-trous, texte avec LaTeX inline)
-- **107 fill-in** : deja geres mais le format `blanks[]` change (plus de `position`, ajout `expectedAnswerLatex`). Impact ?
-
-#### 5. Cas limites non encore explores
-
-- Que se passe-t-il si un blank a `prefilled` ET `expectedAnswer` ? Le prefilled est-il la valeur initiale du champ editable ?
-- Pool texte : comment le composant recoit-il `blanks[i].pool` et l'utilise pour l'autocompletion ? Quel composant d'autocompletion ?
-- `validationRules` per-blank : le doc les mentionne mais comment interagissent-elles avec le mode infere (precision/unit/equivalence) ? Short-circuit ou complement ?
-- Expressions inline (`${{expression1}}$`) vs bloc (`$${{expression1}}$$`) : le composant doit-il gerer les deux ? Le generateur produit-il le bon marqueur `<<expr:NAME>>` dans les deux cas ?
-
-## Fichiers cles a lire
-
-- `docs/wip/fill-in-blanks-redesign.md` — **LIRE EN PREMIER** — doc d'architecture complet
-- `docs/wip/fill-in-blanks-plan-v2-notes.md` — contexte historique
-- `src/lib/questions/types.ts` — types actuels (a comparer avec le design)
-- `src/lib/questions/generator/instance-generator.ts` — pipeline de generation
-- `src/lib/questions/generator/content-resolver.ts` — resolution des variables (ou le marqueur `<<expr:NAME>>` sera insere)
-- `src/lib/utils/answer-validator.ts` — pipeline de validation
-- `src/lib/questions/units/validator.ts` — validation des unites
-- `src/lib/math/index.ts` — `areEquivalent()`, `evaluateExpression()`
-- `src/lib/ubumark/types/ast.ts` — types AST (MathInlineNode, MathBlockNode, BlankNode)
-- `src/lib/components/question-inputs/FillBlanksInput.svelte` — composant actuel (a reecrire)
-- `src/lib/components/markdown/nodes/ParagraphNode.svelte` — routage AST → composants (deja fonctionnel)
-- `src/lib/components/markdown/nodes/MathPrompt.svelte` — prompts MathLive
-- `src/lib/components/markdown/nodes/BlankInput.svelte` — input texte pour blanks
-- `src/lib/migration/question-transformer.ts` — transformer actuel (a adapter)
+- `docs/wip/fill-in-blanks-redesign.md` — **LIRE EN PREMIER** — doc d'architecture complet et a jour
+- `docs/wip/fill-in-blanks-plan-v2-notes.md` — contexte historique (lecons du v1)
+- `src/lib/questions/types.ts` — types actuels (a modifier)
+- `src/lib/questions/generator/instance-generator.ts` — pipeline de generation (a adapter)
+- `src/lib/questions/generator/content-resolver.ts` — resolution des variables (insertion `<<expr:NAME>>`)
+- `src/lib/utils/answer-validator.ts` — pipeline de validation (a adapter pour per-blank + unification signatures)
+- `src/lib/questions/units/validator.ts` — validation unites (signature a aligner sur validateNumerical)
+- `src/lib/ubumark/types/ast.ts` — types AST (ajout `expressionName`, passage 0-based)
+- `src/lib/ubumark/parser/markdown-parser.ts` — parser (ajout `[_]` et `<<expr:NAME>>`)
+- `src/lib/components/markdown/nodes/ParagraphNode.svelte` — routage AST → composants
+- `src/lib/components/markdown/nodes/MathPrompt.svelte` — prompts MathLive (deja fonctionnel)
+- `src/lib/migration/question-transformer.ts` — transformer (a adapter pour result/rewrite + answerField)
 - `.claude/old-questions.json` — donnees des 633 questions TinyMath
 
 ## Consignes
 
-- Lire le doc de redesign EN ENTIER avant de proposer quoi que ce soit
-- Etudier le code existant pour comprendre le systeme actuel
-- Proposer des analyses/clarifications — attendre validation avant de modifier le doc
-- Ne PAS lancer d'implementation
+- Lire le doc de redesign EN ENTIER avant de commencer l'implementation
+- Suivre le workflow TDD (proposer comportements, attendre validation, ecrire tests, implementer)
 - Ne PAS recuperer de code du v1 (reverte, hypotheses fausses)
-- Utiliser des exemples concrets de `.claude/old-questions.json` pour valider les raisonnements
+- Utiliser des exemples concrets de `.claude/old-questions.json` pour les tests
