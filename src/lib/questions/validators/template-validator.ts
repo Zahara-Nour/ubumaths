@@ -158,9 +158,8 @@ function validateVariation(
 	// Type-specific validation (per-variation)
 	switch (questionType) {
 		case 'fill_in_blanks':
-			// Must have either blanks[] or solution to define expected answer(s)
-			if ((!variation.blanks || variation.blanks.length === 0) && !variation.solution) {
-				errors.push(`${prefix} fill_in_blanks requires either blanks[] or solution`);
+			if (!variation.blanks || variation.blanks.length === 0) {
+				errors.push(`${prefix} fill_in_blanks requires blanks[]`);
 			}
 			break;
 

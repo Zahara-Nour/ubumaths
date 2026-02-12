@@ -63,7 +63,7 @@ Templates are the stored definition of a question, containing:
 ```typescript
 interface QuestionTemplate {
 	id: string; // UUID
-	type: QuestionType; // Question type
+	// Type is inferred: getQuestionType() — choices present → multiple_choice, else → fill_in_blanks
 	title: string; // Display title
 	description?: string; // Internal documentation
 
@@ -85,7 +85,6 @@ interface QuestionTemplate {
 	delay?: number; // Time limit in seconds
 
 	// Type-specific
-	transformType?: AlgebraicTransformType;
 	multipleAnswers?: boolean;
 }
 ```
@@ -135,15 +134,12 @@ interface QuestionInstance {
 
 ## Question Types
 
-| Type                  | Description               | Example                      |
-| --------------------- | ------------------------- | ---------------------------- |
-| `numerical_exact`     | Exact numerical value     | `5`, `42`                    |
-| `numerical_decimal`   | Decimal approximation     | `3.14`                       |
-| `numerical_rounded`   | Rounded value             | `2.7` (rounded to 1 decimal) |
-| `numerical_with_unit` | Number with physical unit | `5 m`, `3.2 kg`              |
-| `algebraic_transform` | Factor/expand/simplify    | `x^2 + 2x + 1` -> `(x+1)^2`  |
-| `fill_in_blanks`      | Fill missing parts        | `2 + ___ = 5`                |
-| `multiple_choice`     | Single or multiple choice | Select correct option(s)     |
+| Type              | Description               | Example                  |
+| ----------------- | ------------------------- | ------------------------ |
+| `fill_in_blanks`  | Fill missing parts        | `2 + ___ = 5`            |
+| `multiple_choice` | Single or multiple choice | Select correct option(s) |
+
+Type is inferred via `getQuestionType()`: if `choices` is present and non-empty → `multiple_choice`, otherwise → `fill_in_blanks`. The old 7 types (numerical_exact, numerical_decimal, numerical_rounded, numerical_with_unit, algebraic_transform, fill_in_blanks, multiple_choice) have been collapsed to these 2. Precision and validation are now per-blank configuration, not per-type.
 
 ---
 
@@ -243,8 +239,7 @@ CREATE TABLE question_templates (
 
   -- Type
   type TEXT NOT NULL CHECK (type IN (
-    'numerical_exact', 'numerical_decimal', 'numerical_rounded',
-    'algebraic_transform', 'fill_in_blanks', 'multiple_choice'
+    'fill_in_blanks', 'multiple_choice'
   )),
 
   -- Content
@@ -267,7 +262,6 @@ CREATE TABLE question_templates (
   delay INTEGER,
 
   -- Type-specific
-  transform_type TEXT,
   multiple_answers BOOLEAN,
 
   -- Audit

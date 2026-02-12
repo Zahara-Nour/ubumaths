@@ -112,7 +112,7 @@ Current columns:
 - `options`, `precision` (JSONB)
 - `grades` (TEXT[])
 - `theme`, `domain`, `subdomain`, `level`
-- `status`, `delay`, `transform_type`, `multiple_answers`
+- `status`, `delay`, `multiple_answers`
 - `created_at`, `updated_at`, `created_by`
 
 ### Variable Syntax (ubumark)
