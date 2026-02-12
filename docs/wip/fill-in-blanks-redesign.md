@@ -219,6 +219,7 @@ Chaque trou est valide individuellement. Le type de trou determine le pipeline d
 blanks?: {
   expectedAnswer: string;   // Reponse attendue (math: "10^5", texte: "entier")
   type: 'math' | 'text';
+  prefilled?: string;       // Valeur pre-remplie (ex: "1234567" pour exercice de formatage)
 
   // Trou math — validation
   validationType?: 'exact' | 'decimal' | 'algebraic';
@@ -245,6 +246,14 @@ blanks?: {
 
 - Valeur ascii-math (via `getPromptValue(id, 'ascii-math')`)
 - LaTeX (via `getPromptValue(id)`) — necessaire pour les etapes 2 et 3
+
+### 3.8 Source des reponses correctes
+
+**Pour `fill_in_blanks`** : `blanks[]` est la seule source de verite. Le champ `solution` n'est pas utilise. Les reponses pour le flash back se reconstruisent en remplacant chaque `?`/`[_]` par `blanks[i].expectedAnswer` dans le statement.
+
+**Pour `multiple_choice` et `open_answer`** : `solution` reste la source de verite.
+
+**Pas d'evaluation automatique** : l'ancien systeme TinyMath derivait la solution de l'expression (`math(expression).eval()`). Le nouveau systeme utilise `{{eval:...}}` dans les templates (ex: `expectedAnswer: '{{eval:{{a}}+{{b}}}}'`), resolu explicitement pendant la generation. Pas de magie implicite.
 
 ---
 
