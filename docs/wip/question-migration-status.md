@@ -292,10 +292,10 @@ The image URL mapping is integrated into the transformation pipeline:
 - 40 options mapped to new system, 6 ignored (including `exhaust` — deferred)
 - Constraint options (23) → `ConstraintOptions` with strict/warn/off modes
 - Display options (8) → `DisplayOptions` on expression variables
-- Validation options (9): shuffleChoices, permutations (→ `products`), `solutionPool`, `requiredForm`
+- Validation options (9): shuffleChoices, permutations (→ `products`), `orderIndependent`, `requiredForm`
 - 4 legacy options silently ignored (no equivalent needed)
 - LaTeX parser fix: NUMBER cannot start implicit multiplication (aligns with custom parser)
-- `solutionPool` validator implemented in `answer-validator.ts` (pool matching without replacement)
+- `orderIndependent` matching in `validateBlanks()` (pool matching on blanks[] without replacement)
 - `requiredForm` patterns: `a:inN & gte(2) * b:inN & gte(2)` (decomposition), `0 - a` (subtraction form)
 - Reference: `docs/wip/options-migration-reference.md`
 
@@ -356,25 +356,25 @@ pnpm migrate:phase1:validate
 
 ## Decision Log
 
-| Date       | Decision                                     | Rationale                                                                          |
-| ---------- | -------------------------------------------- | ---------------------------------------------------------------------------------- |
-| 2026-01-26 | Add `shared` column to DB                    | TypeScript type requires it, API doesn't store it                                  |
-| 2026-01-26 | Remove legacy `{@:var}` syntax               | Parser doesn't support it, causes confusion                                        |
-| 2026-01-26 | Keep both random syntaxes                    | `{{random:1..10}}` and `{{1..10}}` both supported                                  |
-| 2026-01-26 | Fix single-variation correction bug          | Tests failing, blocks migration                                                    |
-| 2026-01-26 | Apply migration & regenerate types           | Database ready for fresh import                                                    |
-| 2026-01-26 | Correct question count: 633 not 2238         | Verified against source file, previous estimate was wrong                          |
-| 2026-01-26 | Fix logger.ts for standalone scripts         | Scripts can now run outside SvelteKit context                                      |
-| 2026-01-26 | Regenerate export (2026-01-26)               | Fresh export with 633 questions, 220 warnings                                      |
-| 2026-01-26 | Fix math delimiters (inline vs display)      | TinyMath used `$$` everywhere, ubumark needs `$` for inline                        |
-| 2026-01-27 | Complete image migration                     | All 254 images uploaded to new Supabase Storage bucket                             |
-| 2026-01-27 | Integrate image URL mapping                  | Transformer now converts old paths to new Storage URLs                             |
-| 2026-02-03 | Simplified expression syntax                 | `{{1..10}}` → `1..10` in variable definitions, cleaner code                        |
-| 2026-02-06 | Options review complete (40 impl, 6 ignored) | All options mapped: constraints, display, permutations, solutionPool, requiredForm |
-| 2026-02-06 | `exhaust` deferred                           | Generation-only option (3 questions), not needed for initial import                |
-| 2026-02-06 | Factor permutation → products constraint     | LaTeX parser fix + products constraint renders permutation options redundant       |
-| 2026-02-06 | solutionPool replaces solutions-order        | Pool matching (without replacement) for multi-answer questions                     |
-| 2026-02-06 | requiredForm for decomposition + subtraction | Pattern-based form validation replaces old format/one-single-form checks           |
+| Date       | Decision                                     | Rationale                                                                              |
+| ---------- | -------------------------------------------- | -------------------------------------------------------------------------------------- |
+| 2026-01-26 | Add `shared` column to DB                    | TypeScript type requires it, API doesn't store it                                      |
+| 2026-01-26 | Remove legacy `{@:var}` syntax               | Parser doesn't support it, causes confusion                                            |
+| 2026-01-26 | Keep both random syntaxes                    | `{{random:1..10}}` and `{{1..10}}` both supported                                      |
+| 2026-01-26 | Fix single-variation correction bug          | Tests failing, blocks migration                                                        |
+| 2026-01-26 | Apply migration & regenerate types           | Database ready for fresh import                                                        |
+| 2026-01-26 | Correct question count: 633 not 2238         | Verified against source file, previous estimate was wrong                              |
+| 2026-01-26 | Fix logger.ts for standalone scripts         | Scripts can now run outside SvelteKit context                                          |
+| 2026-01-26 | Regenerate export (2026-01-26)               | Fresh export with 633 questions, 220 warnings                                          |
+| 2026-01-26 | Fix math delimiters (inline vs display)      | TinyMath used `$$` everywhere, ubumark needs `$` for inline                            |
+| 2026-01-27 | Complete image migration                     | All 254 images uploaded to new Supabase Storage bucket                                 |
+| 2026-01-27 | Integrate image URL mapping                  | Transformer now converts old paths to new Storage URLs                                 |
+| 2026-02-03 | Simplified expression syntax                 | `{{1..10}}` → `1..10` in variable definitions, cleaner code                            |
+| 2026-02-06 | Options review complete (40 impl, 6 ignored) | All options mapped: constraints, display, permutations, orderIndependent, requiredForm |
+| 2026-02-06 | `exhaust` deferred                           | Generation-only option (3 questions), not needed for initial import                    |
+| 2026-02-06 | Factor permutation → products constraint     | LaTeX parser fix + products constraint renders permutation options redundant           |
+| 2026-02-06 | orderIndependent replaces solutions-order    | Pool matching on blanks[] (without replacement) for multi-answer questions             |
+| 2026-02-06 | requiredForm for decomposition + subtraction | Pattern-based form validation replaces old format/one-single-form checks               |
 
 ---
 

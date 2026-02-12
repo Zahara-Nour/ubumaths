@@ -432,10 +432,10 @@ export interface QuestionTemplate {
 		/** Whether to shuffle choices for multiple_choice questions (default: true) */
 		shuffleChoices?: boolean;
 
-		/** When true, multi-answer matching uses pool semantics:
-		 *  each student answer is matched against any unused solution
+		/** When true, multi-answer blanks are matched order-independently:
+		 *  each student answer is matched against any unused blank
 		 *  (instead of positional matching). */
-		solutionPool?: boolean;
+		orderIndependent?: boolean;
 	};
 
 	/** Precision for numerical answers (shared across all variations) */
