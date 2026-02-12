@@ -1,19 +1,22 @@
-# Fill-in-Blanks v2 — Session Prompt: Phase 2
+# Fill-in-Blanks v2 — Session Prompt: Phase 3
 
 ## Contexte
 
-On implemente le redesign fill-in-blanks v2 d'UbuMaths. **Phase 1 est terminee** (types TypeScript). On attaque **Phase 2 : Parser ubumark + `assignBlankIndices`**.
+On implemente le redesign fill-in-blanks v2 d'UbuMaths. **Phases 1 et 2 sont terminees**. On attaque **Phase 3 : Pipeline de generation**.
 
 ## Documents a lire AVANT de commencer
 
-1. **Plan d'implementation** : `.claude/plans/cosmic-dreaming-owl.md` — Section "Phase 2" (lignes 70-134)
+1. **Plan d'implementation** : `.claude/plans/cosmic-dreaming-owl.md` — Section "Phase 3" (lignes 138-189)
 2. **Doc d'architecture** : `docs/wip/fill-in-blanks-redesign.md` — Sections pertinentes :
+   - Section 3.4 : Convention `expression` + pipeline answerFormat (lignes 173-221)
    - Section 3.10 : Pipeline `assignBlankIndices` (ligne 434)
-   - Marqueurs `<<expr:NAME>>` (lignes 179-210)
-   - Conversion answerField (lignes 166-168)
-3. **Progress Phase 1** : `docs/wip/fill-in-blanks-v2-progress.md` — Decisions prises, etat actuel
-4. **Types modifies en Phase 1** : `src/lib/questions/types.ts` — `InstanceBlank`, `blankDefaults`, `answerFormats`, `expressions`
-5. **AST types modifies en Phase 1** : `src/lib/ubumark/types/ast.ts` — `expressionName` sur math nodes, index 0-based
+   - Section 3.7 : Validation per-blank (lignes 263-278)
+3. **Progress Phases 1-2** : `docs/wip/fill-in-blanks-v2-progress.md` — Decisions prises, issues ouvertes
+4. **Types** : `src/lib/questions/types.ts` — `InstanceBlank`, `blankDefaults`, `answerFormats`, `expressions`
+5. **Module Phase 2** : `src/lib/questions/generator/assign-blank-indices.ts` — `assignBlankIndices()` + ses tests
+6. **Generateur existant** : `src/lib/questions/generator/instance-generator.ts`
+7. **Content resolver existant** : `src/lib/questions/generator/content-resolver.ts`
+8. **Exemples old-questions** : `.claude/old-questions.json` — globalIndex 10, 51, 413, 411
 
 ## Ce que Phase 1 a fait
 
@@ -23,72 +26,73 @@ On implemente le redesign fill-in-blanks v2 d'UbuMaths. **Phase 1 est terminee**
 - `solution` n'existe que pour `multiple_choice`
 - `solutionPool` remplace par `options.orderIndependent` sur `blanks[]`
 - `validateBlanks()` supporte `orderIndependent`
-- `validateWithSolutionPool` supprime, legacy solution fallback supprime
 - Constraints utilisent `blanks[].expectedAnswer` au lieu de `solution`
 
-## Phase 2 — Objectif
+## Ce que Phase 2 a fait
 
-Le parser ubumark supporte `[_]` et `<<expr:NAME>>`. Nouveau module `assignBlankIndices()` qui numérote tous les blanks.
+- Parser detecte `<<expr:NAME>>` dans les noeuds math → `expressionName` sur le noeud AST, marqueur supprime du `expression`
+- Nouveau module `assignBlankIndices(statement, answerFormats?)` :
+  - `?` dans math → `\placeholder[N]{}`
+  - `[_]` dans texte → `{{blank:N}}`
+  - `<<expr:NAME>>` avec answerFormat → reserve indices via answerFormat uniquement (statement inchange)
+  - Compteur global 0-based gauche→droite
+- Decision : `[_]` pas dans le parser (gere par `assignBlankIndices` en amont)
+- Decision : expressions avec answerFormat vs sans sont deux chemins disjoints (les 107 fill-in n'utilisent pas de variable `expression*`)
+- Decision : marqueur `<<expr:>>` preserve dans le statement par `assignBlankIndices`, retire par le parser
 
-## Phase 2 — Etapes
+## Issues ouvertes (a traiter en Phase 3)
 
-### 2.0 — TDD : Specification
+- **`expectedAnswerLatex` non peuple** : champ declare sur `InstanceBlank` mais jamais rempli par le generateur. Sert pour le flash back.
+- **Inference type blank (math vs text)** : `InstanceBlank.type` doit etre infere du contexte — `'math'` si `?` dans `$...$`, `'text'` si `[_]` dans texte. `assignBlankIndices` connait ce contexte.
+
+## Phase 3 — Objectif
+
+Le generateur detecte les expressions, construit `blanks[]`, appelle `assignBlankIndices()`.
+
+## Phase 3 — Etapes
+
+### 3.0 — TDD : Specification
 
 Proposer les comportements en francais, attendre validation utilisateur.
 
-### 2.1 — Tests (nouveaux fichiers)
+### 3.1 — Tests (nouveau fichier)
 
-**`src/lib/ubumark/__tests__/parser/blank-and-expression.test.ts`** :
+**`src/lib/questions/generator/__tests__/generation-fill-blanks.test.ts`** :
 
-- `[_]` dans texte → `BlankNode` avec index correct (0-based)
-- `[_]` ne matche pas dans `$...$` (seulement hors math)
-- `<<expr:expression1>>` dans math → noeud avec `expressionName: "expression1"`
-- `<<expr:NAME>>` supprime du contenu math
-- Coexistence `{{blank:N}}` et `[_]` (pas dans le meme statement)
+- Generation instance fill_in_blanks simple (1 trou math)
+- Generation avec convention `expression*` + answerFormat
+- Generation multi-trous (expression + statement)
+- Fusion `blankDefaults` + overrides per-blank
+- `blanks[].type` infere (`math` vs `text`)
+- `expressions[]` peuple correctement
+- `expectedAnswerLatex` genere pour flash back
+- `solution` absent pour fill_in_blanks
+- Utiliser exemples de `.claude/old-questions.json` (globalIndex 10, 51, 413, 411)
 
-**`src/lib/questions/generator/__tests__/assign-blank-indices.test.ts`** :
+### 3.2 — Implementation
 
-- `?` dans `$...$` → `\placeholder[N]{}`
-- `[_]` dans texte → `{{blank:N}}`
-- `<<expr:NAME>>` reserve indices pour les `?` de l'answerFormat
-- Compteur global sequentiel gauche→droite
+**`src/lib/questions/generator/content-resolver.ts`** :
+
+- Inserer marqueur `<<expr:NAME>>` pour variables commencant par `expression`
+- Pipeline answerFormat : resolution variables → conversion LaTeX
+
+**`src/lib/questions/generator/instance-generator.ts`** :
+
+- `resolveVariationWithShared()` : merger `blankDefaults`, `answerFormats`, `solution` optionnel
+- Detecter variables `expression*` → extraire `instance.expressions[]`
+- Copier `answerFormats` → `expressions[i].answerFormat`
+- Construire `instance.blanks[]` avec type infere + config validation fusionnee
+- Appeler `assignBlankIndices()` apres resolution du statement
+- Generer `expectedAnswerLatex` pour chaque blank math
 - Verification coherence `totalBlanks == blanks.length`
-- Cas expression + trous statement + trou texte (exemple du doc section 3.10)
-- answerFormats modifies (`?` → `\placeholder[N]{}`)
 
-### 2.2 — Implementation parser
+### 3.3 — Verification
 
-**`src/lib/ubumark/parser/markdown-parser.ts`** :
-
-- Regex pour `[_]` (hors math zones)
-- `parseTextForBlanks()` : supporter `[_]` en plus de `{{blank:N}}`
-- Detection `<<expr:NAME>>` dans les noeuds math
-- `MathInlineNode`/`MathBlockNode` : ajouter `expressionName` si marqueur present
-
-### 2.3 — Implementation assignBlankIndices
-
-**`src/lib/questions/generator/assign-blank-indices.ts`** (nouveau) :
-
-```typescript
-export function assignBlankIndices(
-	statement: string,
-	answerFormats?: Record<string, string>
-): { statement: string; answerFormats?: Record<string, string>; totalBlanks: number };
-```
-
-- Parcours gauche→droite avec compteur global
-- `?` dans `$...$` et `$$...$$` → `\placeholder[N]{}`
-- `[_]` dans texte → `{{blank:N}}`
-- `<<expr:NAME>>` → reserve indices pour `?` de l'answerFormat
-- Retourner statement modifie + answerFormats modifies + totalBlanks
-
-### 2.4 — Verification
-
-- `pnpm test:server src/lib/ubumark/__tests__/parser/`
-- `pnpm test:server src/lib/questions/generator/__tests__/assign-blank-indices`
+- `pnpm test:server src/lib/questions/generator/`
+- Tests existants du generateur passent toujours
 - `npx tsc --noEmit` sur fichiers modifies
 
-### 2.5 — Code review + Commit + Doc
+### 3.4 — Code review + Commit + Doc
 
 - Agent `code-reviewer` (Opus)
 - Commit
@@ -99,5 +103,7 @@ export function assignBlankIndices(
 - **TDD obligatoire** : proposer comportements → validation utilisateur → tests → code → verification
 - **Ne PAS prendre de decisions sans demander** : si un choix se presente, demander a l'utilisateur
 - **`fill_in_blanks` n'a PAS de `solution`** : seul `blanks[]` existe
-- **Lire la doc d'architecture** (`docs/wip/fill-in-blanks-redesign.md`) section 3.10 AVANT de coder
+- **Utiliser `assignBlankIndices()`** : le module Phase 2 existe deja, ne PAS reimplementer sa logique
+- **Lire la doc d'architecture** (`docs/wip/fill-in-blanks-redesign.md`) sections 3.4 et 3.10 AVANT de coder
 - **Respecter le plan** : ne pas reimplementer ce que le plan dit d'utiliser
+- **Lire les fichiers existants** (`instance-generator.ts`, `content-resolver.ts`) AVANT de modifier
