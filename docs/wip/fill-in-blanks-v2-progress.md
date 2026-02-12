@@ -70,9 +70,9 @@ Issues corrigees apres code review (`code-reviewer` agent) :
 
 Issues documentees pour phases suivantes :
 
-- Per-blank validation config (precision, requiredForm, unit) → Phase 4
-- `expectedAnswerLatex` non peuple → Phase 3
-- Inference type blank (math vs text) → Phase 3
+- **Per-blank validation config** → Phase 4 : les types `InstanceBlank` declarent `precision`, `requiredForm`, `unit` per-blank, mais `validateBlanks()` ne les utilise pas encore (fait seulement `areEquivalent` ou string match).
+- **`expectedAnswerLatex` non peuple** → Phase 3 : champ declare sur `InstanceBlank` mais jamais rempli par le generateur. Sert pour le flash back (afficher la bonne reponse en LaTeX apres correction).
+- **Inference type blank (math vs text)** → Phase 3 : `InstanceBlank.type` doit etre infere du contexte par le generateur — `'math'` si le `?` est dans `$...$`, `'text'` si `[_]` est dans du texte. `assignBlankIndices` connait ce contexte.
 
 ### Test Results
 
