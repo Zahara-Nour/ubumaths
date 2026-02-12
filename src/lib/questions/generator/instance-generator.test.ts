@@ -368,8 +368,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 });
 
 describe('generateInstance - Complex Variable Resolution', () => {
-	// Known issue: Eval expression with parentheses may not evaluate correctly
-	it.skip('should generate fraction addition instance', () => {
+	it('should generate fraction addition instance', () => {
 		const template: QuestionTemplate = {
 			id: 'test-9',
 
@@ -378,13 +377,13 @@ describe('generateInstance - Complex Variable Resolution', () => {
 			variations: [
 				{
 					statement: templateMarkdown(
-						'Calculer: $$\\frac{{{num1}}}{{{{den}}}} + \\frac{{{num2}}}{{{{den}}}}$$ $?$'
+						'Calculer: $$\\frac{{{num1}}}{{{den}}} + \\frac{{{num2}}}{{{den}}}$$ $?$'
 					),
 					variables: [
 						{ name: 'den', expression: '{{random:2..9}}' },
 						{ name: 'denMinus1', expression: '{{eval:den-1}}' },
-						{ name: 'num1', expression: '{{random:1-denMinus1}}' },
-						{ name: 'num2', expression: '{{random:1-denMinus1!num1}}' }
+						{ name: 'num1', expression: '{{random:1..{{denMinus1}}}}' },
+						{ name: 'num2', expression: '{{random:1..{{denMinus1}}!{{num1}}}}' }
 					],
 					blanks: [{ expectedAnswer: '{{eval:(num1+num2)/den}}' }]
 				}
@@ -690,10 +689,7 @@ describe('generateInstance - Validation Errors', () => {
 		expect(result.errors.length).toBeGreaterThan(0);
 	});
 
-	// Note: The random range expression {{random:MIN..MAX}} with resolved variables
-	// does not currently detect min > max at generation time (it's treated as a literal).
-	// This validation would need to be added in the variable resolver.
-	it.skip('should fail on min > max after variable resolution', () => {
+	it('should fail on min > max after variable resolution', () => {
 		const template: QuestionTemplate = {
 			id: 'test-17',
 
@@ -728,8 +724,7 @@ describe('generateInstance - Validation Errors', () => {
 		expect(result.errors).toBeDefined();
 	});
 
-	// Note: MathLive accepts symbolic expressions, so "invalid syntax" is treated as a symbol
-	it.skip('should fail on invalid eval expression', () => {
+	it('should fail on invalid eval expression', () => {
 		const template: QuestionTemplate = {
 			id: 'test-18',
 
@@ -826,8 +821,7 @@ describe('generateInstance - Edge Cases', () => {
 		expect(result.instance.delay).toBe(120);
 	});
 
-	// Note: Failing due to validation issue with image fields (success: false, error: undefined)
-	it.skip('should generate instance with multiple statement fields', () => {
+	it('should generate instance with multiple statement fields', () => {
 		const template: QuestionTemplate = {
 			id: 'test-21',
 
@@ -909,8 +903,7 @@ describe('generateInstance - Real-World Templates', () => {
 		expect(disc).toBe(b ** 2 - 4 * a * c);
 	});
 
-	// Known issue: Complex eval expressions with multiple operations may not evaluate correctly
-	it.skip('should generate percentage calculation instance', () => {
+	it('should generate percentage calculation instance', () => {
 		const template: QuestionTemplate = {
 			id: 'test-23',
 
@@ -924,9 +917,9 @@ describe('generateInstance - Real-World Templates', () => {
 					variables: [
 						{ name: 'price', expression: '{{random:50..200}}' },
 						{ name: 'discount', expression: '{{random:10..50}}' },
-						{ name: 'reduction', expression: '{eval:{@:price} * {@:discount} / 100}' }
+						{ name: 'reduction', expression: '{{eval:price * discount / 100}}' }
 					],
-					blanks: [{ expectedAnswer: '{eval:{@:price} - {@:reduction}' }]
+					blanks: [{ expectedAnswer: '{{eval:price - reduction}}' }]
 				}
 			],
 			precision: { type: 'decimal', digits: 2 },
