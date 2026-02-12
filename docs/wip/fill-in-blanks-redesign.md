@@ -198,6 +198,8 @@ Ce sont deux axes orthogonaux :
 - `answerFormats: { "expression1": "10^?" }` → l'eleve voit `= 10^{[___]}`, ne remplit que l'exposant
 - `requiredForm = "product"` → la reponse `2 × 6` est acceptee mais `12` refuse
 
+Note : `requiredForm` est per-blank (voir section 3.7), pas per-question. `answerFormats` est per-expression sur le template (voir section 4.3).
+
 ### 3.6 Rendu unifie des trous
 
 Le statement est toujours la source unique de rendu. Deux marqueurs universels de trous :
@@ -213,15 +215,48 @@ Regle supplementaire pour les expressions : si `instance.expressions` existe, le
 
 Chaque trou est valide individuellement. Le type de trou determine le pipeline de validation.
 
-**Structure `blanks` sur `QuestionInstance`** (tableau positionnel, l'index = position du trou) :
+#### Structure template-side (QuestionVariation / SharedVariationDefaults)
+
+**Defauts au niveau question** (sur `shared` ou variation) :
+
+```typescript
+// Defauts de validation appliques a tous les blanks math de la question
+blankDefaults?: {
+  validationType?: 'exact' | 'decimal' | 'algebraic';
+  precision?: PrecisionType;
+  requiredForm?: RequiredForm;
+}
+```
+
+**Blanks per-variation** (tableau positionnel, l'index = position du trou) :
 
 ```typescript
 blanks?: {
-  expectedAnswer: string;   // Reponse attendue (math: "10^5", texte: "entier")
-  type: 'math' | 'text';
-  prefilled?: string;       // Valeur pre-remplie (ex: "1234567" pour exercice de formatage)
+  expectedAnswer: string;   // Expression template ("{{eval:{{a}}+{{b}}}}", "entier")
+  prefilled?: string;       // Valeur pre-remplie (template expression)
+  pool?: string[];           // Trou texte : autocompletion + solutionPool
 
-  // Trou math — validation
+  // Overrides per-blank (ecrasent blankDefaults si definis)
+  validationType?: 'exact' | 'decimal' | 'algebraic';
+  precision?: PrecisionType;
+  requiredForm?: RequiredForm;
+  validationRules?: ValidationRule[];
+}[]
+```
+
+Le `type` (`'math'` ou `'text'`) n'est pas specifie dans le template — il est infere par le generateur a partir du contexte (dans `$...$` = math, dans le texte = text).
+
+#### Structure instance-side (QuestionInstance)
+
+Le generateur fusionne `blankDefaults` + overrides per-blank et infere `type` :
+
+```typescript
+blanks?: {
+  expectedAnswer: string;   // Resolu (math: "10^5", texte: "entier")
+  type: 'math' | 'text';   // Infere du contexte par le generateur
+  prefilled?: string;       // Resolu
+
+  // Trou math — validation (fusionnee depuis blankDefaults + override)
   validationType?: 'exact' | 'decimal' | 'algebraic';
   precision?: PrecisionType;
   requiredForm?: RequiredForm;
@@ -231,6 +266,8 @@ blanks?: {
   pool?: string[];           // pour autocompletion + solutionPool
 }[]
 ```
+
+#### Pipelines de validation
 
 **Pipeline pour un trou texte** : fuzzy matching contre `expectedAnswer` (accents/casse ignores, Levenshtein <= 1). Si `pool` defini, solutionPool matching.
 
@@ -286,7 +323,15 @@ Les trous nommes (`?:id`, `[_:id]`) ne sont pas implementes en v1. Le positionne
 Un meme statement peut contenir des trous math (`$?$`) ET des trous texte (`[_]`).
 
 ```
-$f(x) = ?$ est une fonction [_].
+// Template
+statement: "$f(x) = ?$ est une fonction [_]."
+blankDefaults: { validationType: 'algebraic' }
+blanks: [
+  { expectedAnswer: '2x+1' },
+  { expectedAnswer: 'affine' }
+]
+
+// Instance (apres generation)
 blanks: [
   { expectedAnswer: '2x+1', type: 'math', validationType: 'algebraic' },
   { expectedAnswer: 'affine', type: 'text' }
@@ -324,7 +369,9 @@ Le generateur copie le format correspondant dans chaque `instance.expressions[i]
 | `multiple_choice` | Choix parmi des propositions                        | 47 questions                                           |
 | `open_answer`     | Champ reponse separe, sans trou dans le statement   | Flash cards pures, questions orales                    |
 
-Les 7 types actuels sont reduits a 3. Les types `numerical_exact`, `numerical_decimal`, `numerical_rounded`, `numerical_with_unit`, `algebraic_transform` disparaissent. La distinction exact/decimal/tolerance releve de la **validation**, pas du mode d'interaction UI. La validation est configuree separement (exact, decimal, tolerance, required_form...).
+Les 7 types actuels sont reduits a 3. Les types `numerical_exact`, `numerical_decimal`, `numerical_rounded`, `numerical_with_unit`, `algebraic_transform` disparaissent. La distinction exact/decimal/tolerance releve de la **validation**, pas du mode d'interaction UI. La validation est configuree per-blank (`validationType`, `precision`, `requiredForm` — voir section 3.7).
+
+Pour `fill_in_blanks`, le champ `solution` n'est pas utilise — `blanks[]` est la seule source de verite (voir section 3.8). `solution` reste pour `multiple_choice` et `open_answer`.
 
 ### 4.5 Dictionnaire de vocabulaire mathematique
 
@@ -456,11 +503,11 @@ Raison : `{{blank:N}}` est utilise par l'extension TipTap `BlankField` (`src/lib
 
 ### Par mode d'interaction reel (ancien systeme)
 
-| Mode           | Count | %   | Nouveau traitement                                                                      |
-| -------------- | ----- | --- | --------------------------------------------------------------------------------------- |
-| Result/rewrite | 369   | 58% | Convention `expression` (variable dont le nom commence par `expression`) + answerFormat |
-| AnswerField    | 157   | 25% | Statement avec `$?$`                                                                    |
-| Fill-in        | 107   | 17% | Expression avec `?` dans la formule                                                     |
+| Mode           | Count | %   | Nouveau traitement                                                                       |
+| -------------- | ----- | --- | ---------------------------------------------------------------------------------------- |
+| Result/rewrite | 369   | 58% | Convention `expression` (variable dont le nom commence par `expression`) + answerFormats |
+| AnswerField    | 157   | 25% | Statement avec `$?$`                                                                     |
+| Fill-in        | 107   | 17% | Expression avec `?` dans la formule                                                      |
 
 ### Par theme
 
@@ -485,11 +532,15 @@ Raison : `{{blank:N}}` est utilise par l'extension TipTap `BlankField` (`src/lib
 
 ~~1. Trancher les questions en suspens (4.1 a 4.7)~~ **FAIT** (2026-02-11)
 
+~~1bis. Corriger les erreurs du doc de redesign~~ **FAIT** (2026-02-12) — voir corrections 1-4
+
 2. Definir les types TypeScript mis a jour
 
    - `QuestionType` : 3 types (`fill_in_blanks`, `multiple_choice`, `open_answer`)
-   - Validation separee du type (exact, decimal, tolerance, required_form)
-   - Structure `blanks` avec numerotation globale positionnelle
+   - Structure `blanks[]` positionnelle avec validation per-blank (`validationType`, `precision`, `requiredForm`)
+   - Champ `expressions[]` sur `QuestionInstance` pour la convention expression
+   - `answerFormats?: Record<string, string>` sur shared/variation
+   - `solution` supprime pour `fill_in_blanks` (blanks seule source de verite)
 
 3. Ajouter le support de `[_]` dans le parser ubumark
 
@@ -498,24 +549,27 @@ Raison : `{{blank:N}}` est utilise par l'extension TipTap `BlankField` (`src/lib
 
 4. Implementer le nouveau FillBlanksInput
 
-   - Mode `expression` : MathField unique avec prompts natifs MathLive
-   - Mode statement : rendu hybride AST (TextNode/BlankNode/MathInlineNode)
+   - Un seul chemin de rendu : parcours AST unifie (pas deux modes)
+   - `?` → `?` visible (flash) ou `\placeholder[N]{}` (interactif)
+   - `[_]` → indicateur visuel (flash) ou `<input>` texte (interactif)
+   - Si `instance.expressions` : augmenter le noeud math avec `= answerFormat[\placeholder]` en interactif
    - Integration dans FlashCard.svelte et QuestionCard.svelte
 
 5. Adapter le pipeline de generation
 
-   - `instance-generator` : gerer la convention `expression` + `shared.answerFormats`
-   - `content-resolver` : convertir `?` en `\placeholder[N]{}` dans les zones math
+   - `instance-generator` : detecter les variables `expression`, extraire metadonnees dans `instance.expressions[]`
+   - `instance-generator` : copier `answerFormats` du template vers `expressions[i].answerFormat`
+   - `instance-generator` : construire `blanks[]` avec type et config de validation per-blank
 
 6. Adapter la validation
 
-   - `answer-validator` : support numerotation globale, validation par type (math vs texte)
-   - Validation fuzzy pour les trous texte (accents, casse, Levenshtein)
+   - `answer-validator` : validation per-blank (pipeline complet pour chaque trou math, fuzzy matching pour trous texte)
+   - Chaque trou math : validationRules ou validateNumerical/areEquivalent, puis checkRequiredForm, puis applyConstraints
 
 7. Mettre a jour le transformer de migration
 
    - Reclasser les 369 result/rewrite en `fill_in_blanks`
-   - Extraire `answerFormat` → `shared.answerFormat`
+   - Extraire `answerFormat` → `shared.answerFormats: { "expression1": "..." }`
    - Reclasser les 157 answerField en `fill_in_blanks`
 
 8. Creer le dictionnaire de vocabulaire mathematique FR
