@@ -24,11 +24,19 @@ import type {
 	InstanceBlank
 } from '../types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
-import { templateMarkdown, detectCircularDependencies } from '$lib/ubumark';
+import { templateMarkdown, resolvedMarkdown, detectCircularDependencies } from '$lib/ubumark';
 import { validateTemplate } from '../validators/template-validator';
 import { resolveVariables } from './variable-resolver';
-import { resolveMarkdownContent, resolveSolution, resolveExpression } from './content-resolver';
+import {
+	resolveMarkdownContent,
+	resolveSolution,
+	resolveExpression,
+	insertExpressionMarkers,
+	resolveAnswerFormat,
+	convertToLatex
+} from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';
+import { assignBlankIndices } from './assign-blank-indices';
 
 // ============================================================================
 // SHARED DEFAULTS MERGING
@@ -175,9 +183,21 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		// 5. Resolve variables in declaration order
 		const resolvedVariables = resolveVariables(resolvedVariation.variables || [], seed);
 
-		// 6. Resolve statement markdown
+		// 5b. Detect expression variable names (convention: name starts with "expression")
+		const expressionNames = new Set(
+			resolvedVariables.filter((v) => v.name.startsWith('expression')).map((v) => v.name)
+		);
+
+		// 5c. Insert <<expr:NAME>> markers in template before variable resolution
+		let statementTemplate = resolvedVariation.statement;
+		if (expressionNames.size > 0) {
+			const markedStatement = insertExpressionMarkers(String(statementTemplate), expressionNames);
+			statementTemplate = templateMarkdown(markedStatement);
+		}
+
+		// 6. Resolve statement markdown (with expression markers if present)
 		const resolvedStatement: ResolvedMarkdown = resolveMarkdownContent(
-			resolvedVariation.statement,
+			statementTemplate,
 			resolvedVariables,
 			seed
 		);
@@ -231,9 +251,95 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let resolvedChoices;
 		let shuffledChoices;
 		let resolvedBlanks: InstanceBlank[] | undefined;
+		let expressionsArray: QuestionInstance['expressions'] = undefined;
+		let finalStatement: ResolvedMarkdown = resolvedStatement;
+
+		if (resolvedVariation.blanks) {
+			// 7a. Fill-in-blanks pipeline
+
+			// Resolve answerFormats for expression variables (variable resolution + LaTeX conversion)
+			let resolvedAnswerFormats: Record<string, string> | undefined;
+			if (expressionNames.size > 0) {
+				resolvedAnswerFormats = {};
+				for (const exprName of Array.from(expressionNames)) {
+					const rawFormat = resolvedVariation.answerFormats?.[exprName] ?? '?';
+					resolvedAnswerFormats[exprName] = resolveAnswerFormat(rawFormat, resolvedVariables, seed);
+				}
+			}
+
+			// Call assignBlankIndices (? → \placeholder[N]{}, [_] → {{blank:N}})
+			const blankResult = assignBlankIndices(String(resolvedStatement), resolvedAnswerFormats);
+
+			// Coherence check: totalBlanks must match blanks[] length
+			if (blankResult.totalBlanks !== resolvedVariation.blanks.length) {
+				return {
+					success: false,
+					errors: [
+						`Blank count mismatch: statement has ${blankResult.totalBlanks} blank(s) but blanks[] has ${resolvedVariation.blanks.length} entry/entries`
+					]
+				};
+			}
+
+			// Use modified statement from assignBlankIndices
+			finalStatement = resolvedMarkdown(blankResult.statement);
+
+			// Build instance.blanks[] with inferred types and merged validation
+			resolvedBlanks = resolvedVariation.blanks.map((blank, i) => {
+				// Resolve expectedAnswer: only call resolveExpression if it contains {{...}}
+				// patterns. Bare strings like "pair", "entier" are literal text values
+				// and must NOT go through the normalizer (which treats identifiers as
+				// variable references).
+				const rawExpected = blank.expectedAnswer;
+				const expectedAnswer = rawExpected.includes('{{')
+					? resolveExpression(rawExpected, resolvedVariables, seed)
+					: rawExpected;
+
+				const resolved: InstanceBlank = {
+					expectedAnswer,
+					type: blankResult.blankTypes[i],
+					precision: blank.precision ?? resolvedVariation.blankDefaults?.precision,
+					requiredForm: blank.requiredForm ?? resolvedVariation.blankDefaults?.requiredForm,
+					validationRules: blank.validationRules,
+					unit: blank.unit ?? resolvedVariation.blankDefaults?.unit,
+					pool: blank.pool
+				};
+				if (blank.prefilled) {
+					const rawPrefilled = blank.prefilled;
+					resolved.prefilled = rawPrefilled.includes('{{')
+						? resolveExpression(rawPrefilled, resolvedVariables, seed)
+						: rawPrefilled;
+				}
+				// Generate expectedAnswerLatex for math blanks
+				if (resolved.type === 'math') {
+					resolved.expectedAnswerLatex = convertToLatex(resolved.expectedAnswer);
+				}
+				return resolved;
+			});
+
+			// Build instance.expressions[] from expression variables
+			if (expressionNames.size > 0) {
+				expressionsArray = [];
+				for (const exprName of Array.from(expressionNames)) {
+					const variable = resolvedVariables.find((v) => v.name === exprName);
+					if (!variable) {
+						return {
+							success: false,
+							errors: [
+								`Expression variable "${exprName}" referenced in statement but not found in resolved variables`
+							]
+						};
+					}
+					expressionsArray.push({
+						name: exprName,
+						latex: convertToLatex(variable.value),
+						answerFormat: blankResult.answerFormats?.[exprName]
+					});
+				}
+			}
+		}
 
 		if (resolvedVariation.choices) {
-			// Multiple choice — resolve choice content
+			// 7b. Multiple choice — resolve choice content
 			resolvedChoices = resolvedVariation.choices.map((choice) => {
 				const resolvedContent: ResolvedMarkdown = resolveMarkdownContent(
 					choice.content,
@@ -250,29 +356,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			shuffledChoices = shuffleChoices(resolvedChoices, seed);
 		}
 
-		if (resolvedVariation.blanks) {
-			// Fill-in-blanks — resolve each blank with merged validation config
-			resolvedBlanks = resolvedVariation.blanks.map((blank) => {
-				const resolved: InstanceBlank = {
-					expectedAnswer: resolveExpression(blank.expectedAnswer, resolvedVariables, seed),
-					type: 'math', // Default; will be properly inferred in Phase 3
-					precision: blank.precision ?? resolvedVariation.blankDefaults?.precision,
-					requiredForm: blank.requiredForm ?? resolvedVariation.blankDefaults?.requiredForm,
-					validationRules: blank.validationRules,
-					unit: blank.unit ?? resolvedVariation.blankDefaults?.unit,
-					pool: blank.pool
-				};
-				if (blank.prefilled) {
-					resolved.prefilled = resolveExpression(blank.prefilled, resolvedVariables, seed);
-				}
-				return resolved;
-			});
-		}
-
 		// 8. Construct instance
 		const instance: QuestionInstance = {
 			templateId: template.id,
-			statement: resolvedStatement, // Now ResolvedMarkdown
+			statement: finalStatement,
 			resolvedVariables,
 			solution: resolvedSolution,
 			exerciseInstruction: template.exerciseInstruction,
@@ -284,10 +371,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			subdomain: template.subdomain,
 			level: template.level,
 			delay: template.delay,
-			correction: resolvedCorrection, // Now ResolvedMarkdown
+			correction: resolvedCorrection,
 			blanks: resolvedBlanks,
-			choices: resolvedChoices, // Now with ResolvedMarkdown content
-			shuffledChoices, // Now with ResolvedMarkdown content
+			expressions: expressionsArray,
+			choices: resolvedChoices,
+			shuffledChoices,
 			multipleAnswers: template.multipleAnswers,
 			requiredForm: resolvedVariation.requiredForm,
 			generatedAt: new Date().toISOString(),

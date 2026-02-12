@@ -25,6 +25,8 @@ export interface AssignBlankIndicesResult {
 	answerFormats?: Record<string, string>;
 	/** Total number of blanks assigned */
 	totalBlanks: number;
+	/** Type of each blank in order: 'math' for ? in $...$, 'text' for [_] in text */
+	blankTypes: ('math' | 'text')[];
 }
 
 /**
@@ -51,6 +53,7 @@ export function assignBlankIndices(
 	answerFormats?: Record<string, string>
 ): AssignBlankIndicesResult {
 	let counter = 0;
+	const blankTypes: ('math' | 'text')[] = [];
 	const modifiedAnswerFormats = answerFormats ? { ...answerFormats } : undefined;
 
 	// Split statement into math zones and text zones, preserving order.
@@ -74,6 +77,7 @@ export function assignBlankIndices(
 					if (char === '?') {
 						modifiedFormat += `\\placeholder[${counter}]{}`;
 						counter++;
+						blankTypes.push('math');
 					} else {
 						modifiedFormat += char;
 					}
@@ -88,6 +92,7 @@ export function assignBlankIndices(
 					if (char === '?') {
 						newContent += `\\placeholder[${counter}]{}`;
 						counter++;
+						blankTypes.push('math');
 					} else {
 						newContent += char;
 					}
@@ -103,6 +108,7 @@ export function assignBlankIndices(
 				if (text[i] === '[' && text[i + 1] === '_' && text[i + 2] === ']') {
 					newText += `{{blank:${counter}}}`;
 					counter++;
+					blankTypes.push('text');
 					i += 3;
 				} else {
 					newText += text[i];
@@ -116,7 +122,8 @@ export function assignBlankIndices(
 	return {
 		statement: resultParts.join(''),
 		...(modifiedAnswerFormats !== undefined && { answerFormats: modifiedAnswerFormats }),
-		totalBlanks: counter
+		totalBlanks: counter,
+		blankTypes
 	};
 }
 
