@@ -6,7 +6,7 @@ On implemente le redesign fill-in-blanks v2 d'UbuMaths. **Phases 1 et 2 sont ter
 
 ## Documents a lire AVANT de commencer
 
-1. **Plan d'implementation** : `.claude/plans/cosmic-dreaming-owl.md` — Section "Phase 3" (lignes 138-189)
+1. **Plan d'implementation** : `docs/wip/fill-in-blanks-v2-plan.md` — Section "Phase 3"
 2. **Doc d'architecture** : `docs/wip/fill-in-blanks-redesign.md` — Sections pertinentes :
    - Section 3.4 : Convention `expression` + pipeline answerFormat (lignes 173-221)
    - Section 3.10 : Pipeline `assignBlankIndices` (ligne 434)
