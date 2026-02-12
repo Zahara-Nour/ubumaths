@@ -154,6 +154,18 @@ Constraint checks disponibles : `spaces`, `products`, `brackets`, `zeros`, `form
 
 Le champ `instance.expressions[]` supporte naturellement plusieurs expressions. Chaque entree a son propre `answerFormat`. Le composant augmente chaque noeud math correspondant independamment. Les 2 questions avec `expressions2` ont 2 expressions simultanees dans la meme variation (pas une par variation).
 
+### 5.5 `solution` vs `blanks[].expectedAnswer` — RESOLU
+
+**Decision** : pour `fill_in_blanks`, `blanks[]` est la seule source de verite. `solution` n'est pas utilise. Flash back reconstruit les reponses depuis `blanks[i].expectedAnswer`. `solution` reste pour `multiple_choice` et `open_answer`. Voir redesign section 3.8.
+
+### 5.6 Evaluation automatique des solutions — RESOLU
+
+**Decision** : pas d'auto-derivation implicite. Les reponses utilisent `{{eval:...}}` explicitement dans les templates. Voir redesign section 3.8.
+
+### 5.7 Prefilled — RESOLU
+
+**Decision** : champ `prefilled?: string` optionnel sur chaque blank. Voir redesign section 3.7.
+
 ---
 
 ## 6. Fichiers cles a connaitre
