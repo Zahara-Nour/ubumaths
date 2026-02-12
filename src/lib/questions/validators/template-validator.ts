@@ -8,6 +8,7 @@
  */
 
 import type { QuestionTemplate, QuestionVariation } from '../types';
+import { getQuestionType } from '../types';
 
 /**
  * Validate a question template
@@ -27,10 +28,6 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 	const errors: string[] = [];
 
 	// Required fields
-	if (!template.type) {
-		errors.push('Missing required field: type');
-	}
-
 	if (!template.grades || template.grades.length === 0) {
 		errors.push('Missing required field: grades');
 	}
@@ -42,9 +39,15 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		return errors;
 	}
 
+	// Infer question type from first variation (or shared) for type-specific checks
+	const firstVariation = template.variations[0];
+	const inferredType = getQuestionType({
+		choices: firstVariation.choices ?? template.shared?.choices
+	});
+
 	// Validate each variation
 	template.variations.forEach((variation, index) => {
-		const variationErrors = validateVariation(variation, template.type, index);
+		const variationErrors = validateVariation(variation, inferredType, index);
 		errors.push(...variationErrors);
 	});
 
@@ -59,15 +62,6 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 
 	if (!template.level || template.level <= 0) {
 		errors.push('level must be a positive integer');
-	}
-
-	// Type-specific validation (shared config)
-	switch (template.type) {
-		case 'algebraic_transform':
-			if (!template.transformType) {
-				errors.push('algebraic_transform requires transformType');
-			}
-			break;
 	}
 
 	// Validate delay (if present)
@@ -125,9 +119,9 @@ function validateVariation(
 		errors.push(`${prefix} Statement cannot be empty`);
 	}
 
-	// Validate solution
-	if (!variation.solution) {
-		errors.push(`${prefix} Missing required field: solution`);
+	// Validate solution (required for multiple_choice, optional for fill_in_blanks)
+	if (questionType === 'multiple_choice' && !variation.solution) {
+		errors.push(`${prefix} Missing required field: solution (required for multiple_choice)`);
 	}
 
 	// Validate correction (if present, now a QuestionCorrection object)
@@ -164,8 +158,9 @@ function validateVariation(
 	// Type-specific validation (per-variation)
 	switch (questionType) {
 		case 'fill_in_blanks':
-			if (!variation.blanks || variation.blanks.length === 0) {
-				errors.push(`${prefix} fill_in_blanks requires at least one blank`);
+			// Must have either blanks[] or solution to define expected answer(s)
+			if ((!variation.blanks || variation.blanks.length === 0) && !variation.solution) {
+				errors.push(`${prefix} fill_in_blanks requires either blanks[] or solution`);
 			}
 			break;
 

@@ -22,6 +22,7 @@
 
 <script lang="ts">
 	import type { QuestionInstance } from '$lib/questions/types';
+	import { getQuestionType } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
 	import { MarkdownRenderer } from '$lib/components/markdown';
@@ -32,7 +33,6 @@
 	import { cn } from '$lib/utils';
 
 	// Input components
-	import MathInput from '$lib/components/question-inputs/MathInput.svelte';
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
 
@@ -177,12 +177,12 @@
 
 	// Initialize type-specific state
 	$effect(() => {
-		if (instance.type === 'fill_in_blanks' && instance.blanks) {
+		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
 			fillBlankValues = instance.blanks.map(() => '');
 			blankValidationResults = instance.blanks.map(() => null);
 		}
 
-		if (instance.type === 'multiple_choice' && instance.shuffledChoices) {
+		if (getQuestionType(instance) === 'multiple_choice' && instance.shuffledChoices) {
 			selectedChoices = [];
 		}
 	});
@@ -195,13 +195,7 @@
 	 * Check if user has entered a valid input (not empty)
 	 */
 	function hasValidInput(): boolean {
-		switch (instance.type) {
-			case 'numerical_exact':
-			case 'numerical_decimal':
-			case 'numerical_rounded':
-			case 'algebraic_transform':
-				return typeof userAnswer === 'string' && userAnswer.trim().length > 0;
-
+		switch (getQuestionType(instance)) {
 			case 'fill_in_blanks':
 				return fillBlankValues.every((v) => v.trim().length > 0);
 
@@ -225,7 +219,7 @@
 	 * Prepare answer value based on question type
 	 */
 	function prepareAnswerValue(): string | string[] | number | number[] {
-		switch (instance.type) {
+		switch (getQuestionType(instance)) {
 			case 'fill_in_blanks':
 				return fillBlankValues;
 
@@ -278,7 +272,7 @@
 		onAnswerSubmit?.(answerData);
 
 		// Handle validation results for fill-in-blanks
-		if (instance.type === 'fill_in_blanks' && instance.blanks) {
+		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
 			blankValidationResults = fillBlankValues.map((value, i) => {
 				const expected = instance.blanks![i].expectedAnswer;
 				return value.trim().toLowerCase() === expected.trim().toLowerCase();
@@ -360,7 +354,7 @@
 					<Card.Header>
 						<div class="flex items-center justify-between">
 							<Card.Title>Question</Card.Title>
-							<Badge variant="outline">{instance.type}</Badge>
+							<Badge variant="outline">{getQuestionType(instance)}</Badge>
 						</div>
 					</Card.Header>
 
@@ -379,21 +373,7 @@
 								<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
 
 								<!-- Type-specific inputs -->
-								{#if instance.type === 'numerical_exact' || instance.type === 'numerical_decimal' || instance.type === 'numerical_rounded'}
-									<MathInput
-										bind:value={userAnswer as string}
-										disabled={isInputDisabled}
-										onSubmit={handleSubmit}
-									/>
-								{:else if instance.type === 'algebraic_transform'}
-									<MathInput
-										bind:value={userAnswer as string}
-										disabled={isInputDisabled}
-										placeholder="Entrez votre expression..."
-										helperText="Utilisez le clavier virtuel ou tapez directement (ex: x^2, sqrt(x), (x+1)(x-1))"
-										onSubmit={handleSubmit}
-									/>
-								{:else if instance.type === 'fill_in_blanks'}
+								{#if getQuestionType(instance) === 'fill_in_blanks'}
 									<FillBlanksInput
 										statement={instance.statement}
 										blanks={instance.blanks || []}
@@ -402,20 +382,13 @@
 										validationResults={isSubmitted ? blankValidationResults : []}
 										onSubmit={handleSubmit}
 									/>
-								{:else if instance.type === 'multiple_choice'}
+								{:else if getQuestionType(instance) === 'multiple_choice'}
 									<MultipleChoiceInput
 										choices={instance.shuffledChoices || []}
 										bind:selectedIndexes={selectedChoices}
 										multipleAnswers={instance.multipleAnswers}
 										disabled={isInputDisabled}
 										showValidation={isSubmitted}
-									/>
-								{:else}
-									<!-- numerical_with_unit and any future types - fallback to math input -->
-									<MathInput
-										bind:value={userAnswer as string}
-										disabled={isInputDisabled}
-										onSubmit={handleSubmit}
 									/>
 								{/if}
 
@@ -501,7 +474,7 @@
 											: 'border-red-600 bg-red-100 dark:bg-red-950'
 									)}
 								>
-									{#if instance.type === 'fill_in_blanks'}
+									{#if getQuestionType(instance) === 'fill_in_blanks'}
 										<ul class="space-y-1">
 											{#each fillBlankValues as value, i (i)}
 												<li class="flex items-center gap-2">
@@ -510,7 +483,7 @@
 												</li>
 											{/each}
 										</ul>
-									{:else if instance.type === 'multiple_choice'}
+									{:else if getQuestionType(instance) === 'multiple_choice'}
 										<ul class="space-y-1">
 											{#each selectedChoices as index (index)}
 												<li>{String.fromCharCode(65 + index)}</li>

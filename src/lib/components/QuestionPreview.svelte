@@ -17,6 +17,7 @@
 
 <script lang="ts">
 	import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
+	import { getQuestionType } from '$lib/questions/types';
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -309,7 +310,7 @@
 				<div class="space-y-2">
 					<div class="flex items-center gap-2">
 						<Badge variant="outline">Énoncé</Badge>
-						<Badge>{template.type}</Badge>
+						<Badge>{getQuestionType(template)}</Badge>
 					</div>
 					<div class="rounded-lg border bg-card p-4" use:renderLatex>
 						<MarkdownRenderer content={instance.statement} />

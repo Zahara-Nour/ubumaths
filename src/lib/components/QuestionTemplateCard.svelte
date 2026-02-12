@@ -22,6 +22,7 @@
 
 <script lang="ts">
 	import type { QuestionTemplate } from '$lib/questions/types';
+	import { getQuestionType } from '$lib/questions/types';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
@@ -42,12 +43,6 @@
 	 */
 	function getTypeBadgeClass(type: string): string {
 		switch (type) {
-			case 'numerical_exact':
-			case 'numerical_decimal':
-			case 'numerical_rounded':
-				return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-			case 'algebraic_transform':
-				return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
 			case 'fill_in_blanks':
 				return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
 			case 'multiple_choice':
@@ -62,10 +57,6 @@
 	 */
 	function getTypeLabel(type: string): string {
 		const types: Record<string, string> = {
-			numerical_exact: 'Numérique (exact)',
-			numerical_decimal: 'Numérique (décimal)',
-			numerical_rounded: 'Numérique (arrondi)',
-			algebraic_transform: 'Transformation algébrique',
 			fill_in_blanks: 'À trous',
 			multiple_choice: 'QCM'
 		};
@@ -115,8 +106,8 @@
 	<Card.Header class="space-y-3">
 		<!-- Type badge -->
 		<div class="flex items-start justify-between gap-2">
-			<Badge class={getTypeBadgeClass(template.type)}>
-				{getTypeLabel(template.type)}
+			<Badge class={getTypeBadgeClass(getQuestionType(template))}>
+				{getTypeLabel(getQuestionType(template))}
 			</Badge>
 			<span class="text-xs text-muted-foreground">
 				{new Date(template.created_at || new Date()).toLocaleDateString('fr-FR')}

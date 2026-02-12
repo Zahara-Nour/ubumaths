@@ -5,21 +5,16 @@
 	Dynamic answer editor that changes based on question type.
 
 	QUESTION TYPES:
-	- numerical_exact/decimal/rounded: Single LaTeX expression + precision
-	- algebraic_transform: LaTeX expression + transform type
-	- fill_in_blanks: Complex blanks with positions and expected answers
+	- fill_in_blanks: Blanks with expected answers
 	- multiple_choice: Choices with TemplateMarkdown content and isCorrect flags
 
 	PROPS:
 	- questionType: QuestionType
-	- answer: string | string[] (bindable) - NOT used for QCM (uses isCorrect instead)
+	- answer: string | string[] (bindable)
 	- precision: PrecisionType (bindable, for numerical)
-	- transformType: string (bindable, for algebraic)
 	- blanks: { position: number; expectedAnswer: string }[] (bindable, for fill-in-blanks)
 	- choices: { content: TemplateMarkdown; isCorrect: boolean }[] (bindable, for QCM)
 	- multipleAnswers: boolean (bindable, for QCM)
-
-	UPDATED: Refactored to use TemplateMarkdown for choice content (branded string type)
 -->
 
 <script lang="ts">
@@ -27,7 +22,6 @@
 	import type { TemplateMarkdown } from '$lib/ubumark';
 	import { templateMarkdown } from '$lib/ubumark';
 	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
@@ -40,7 +34,6 @@
 		questionType: QuestionType;
 		answer: string | string[];
 		precision?: PrecisionType;
-		transformType?: string;
 		blanks?: { position: number; expectedAnswer: string }[];
 		choices?: { content: TemplateMarkdown; isCorrect?: boolean }[];
 		multipleAnswers?: boolean;
@@ -50,20 +43,10 @@
 		questionType,
 		answer = $bindable(),
 		precision = $bindable(),
-		transformType = $bindable(),
 		blanks = $bindable([]),
 		choices = $bindable([]),
 		multipleAnswers = $bindable()
 	}: Props = $props();
-
-	// Transform types for algebraic questions
-	const TRANSFORM_TYPES = [
-		{ value: 'simplify', label: 'Simplification' },
-		{ value: 'expand', label: 'Développement' },
-		{ value: 'factor', label: 'Factorisation' },
-		{ value: 'solve', label: 'Résolution' },
-		{ value: 'canonical', label: 'Forme canonique' }
-	];
 
 	// Initialize fields based on question type
 	$effect(() => {
@@ -229,89 +212,6 @@
 				{#if questionType !== 'numerical_exact'}
 					<PrecisionEditor bind:precision />
 				{/if}
-			</Card.Content>
-		</Card.Root>
-	{/if}
-
-	<!-- Algebraic Transform -->
-	{#if questionType === 'algebraic_transform'}
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Transformation algébrique</Card.Title>
-				<Card.Description>Expression LaTeX attendue après transformation</Card.Description>
-			</Card.Header>
-			<Card.Content class="space-y-4">
-				<div class="space-y-2">
-					<Label for="transform-type">Type de transformation</Label>
-					<select
-						id="transform-type"
-						bind:value={transformType}
-						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						{#each TRANSFORM_TYPES as type (type.value)}
-							<option value={type.value}>{type.label}</option>
-						{/each}
-					</select>
-				</div>
-
-				<div class="space-y-2">
-					<Label for="answer">Expression attendue</Label>
-					<Textarea
-						id="answer"
-						bind:value={answer}
-						placeholder="Ex: (x+2)(x-3), x^2-1"
-						rows={2}
-						class="font-mono"
-					/>
-
-					<!-- Syntax helper buttons -->
-					<div class="flex flex-wrap gap-2">
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={() => insertSyntax('answer', '{{}}', (v) => (answer = v))}
-							class="text-xs"
-						>
-							Variable
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={() => insertSyntax('answer', '{{eval:}}', (v) => (answer = v))}
-							class="text-xs"
-						>
-							Évaluation
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={() => insertSyntax('answer', '\\frac{}{}', (v) => (answer = v))}
-							class="text-xs"
-						>
-							Fraction
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={() => insertSyntax('answer', '^{}', (v) => (answer = v))}
-							class="text-xs"
-						>
-							Exposant
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={() => insertSyntax('answer', '_{}', (v) => (answer = v))}
-							class="text-xs"
-						>
-							Indice
-						</Button>
-					</div>
-
-					<p class="text-xs text-muted-foreground">
-						L'équivalence algébrique sera vérifiée avec le Compute Engine
-					</p>
-				</div>
 			</Card.Content>
 		</Card.Root>
 	{/if}

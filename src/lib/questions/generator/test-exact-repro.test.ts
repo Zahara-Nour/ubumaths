@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from './instance-generator';
 import type { QuestionTemplate, ResolvedVariable } from '../types';
+import { getQuestionType } from '../types';
 import { templateMarkdown } from '$lib/ubumark';
 
 function getVarValue(resolvedVariables: ResolvedVariable[] | undefined, varName: string): number {
@@ -13,7 +14,6 @@ describe('Exact reproduction', () => {
 	it('should generate simple numerical question instance', () => {
 		const template: QuestionTemplate = {
 			id: 'test-1',
-			type: 'numerical_exact',
 			title: 'Simple Addition Test',
 			status: 'published',
 			variations: [
@@ -52,7 +52,7 @@ describe('Exact reproduction', () => {
 		}
 
 		expect(result.instance).toBeDefined();
-		expect(result.instance.type).toBe('numerical_exact');
+		expect(getQuestionType(result.instance)).toBe('fill_in_blanks');
 
 		// Check variables exist in array
 		const a = getVarValue(result.instance.resolvedVariables, 'a');

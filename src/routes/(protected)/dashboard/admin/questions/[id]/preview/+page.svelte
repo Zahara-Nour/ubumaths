@@ -17,6 +17,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import type { QuestionInstance } from '$lib/questions/types';
+	import { getQuestionType } from '$lib/questions/types';
 	import type { AnswerData } from '$lib/types/question-display';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -257,7 +258,7 @@ TEMPLATE - PAGE LAYOUT
 				<div class="grid gap-2 text-sm">
 					<div class="flex justify-between">
 						<span class="text-muted-foreground">Type:</span>
-						<code>{instance.type}</code>
+						<code>{getQuestionType(instance)}</code>
 					</div>
 					<div class="flex justify-between">
 						<span class="text-muted-foreground">Réponse attendue:</span>

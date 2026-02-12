@@ -146,18 +146,30 @@ export function resolveExpression(
 }
 
 /**
- * Resolve solution (can be string or array of strings)
+ * Resolve solution (can be string, array of strings, or undefined for fill_in_blanks)
  *
  * @param solution - Solution from template (expected answer)
  * @param resolvedVariables - Already resolved variables
  * @param seed - Optional seed for random generation
- * @returns Resolved solution
+ * @returns Resolved solution, or undefined if input is undefined
  */
 export function resolveSolution(
 	solution: string | string[],
 	resolvedVariables: ResolvedVariable[],
 	seed?: number
-): string | string[] {
+): string | string[];
+export function resolveSolution(
+	solution: string | string[] | undefined,
+	resolvedVariables: ResolvedVariable[],
+	seed?: number
+): string | string[] | undefined;
+export function resolveSolution(
+	solution: string | string[] | undefined,
+	resolvedVariables: ResolvedVariable[],
+	seed?: number
+): string | string[] | undefined {
+	if (solution === undefined) return undefined;
+
 	if (Array.isArray(solution)) {
 		return solution.map((sol) => resolveExpression(sol, resolvedVariables, seed));
 	}

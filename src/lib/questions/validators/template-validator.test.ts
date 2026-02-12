@@ -15,7 +15,6 @@ describe('validateTemplate - Valid Templates', () => {
 	it('should validate simple numerical exact template', () => {
 		const template: QuestionTemplate = {
 			id: 'test-1',
-			type: 'numerical_exact',
 			title: 'Simple Addition',
 			status: 'published',
 			variations: [
@@ -43,7 +42,6 @@ describe('validateTemplate - Valid Templates', () => {
 	it('should validate template with variables', () => {
 		const template: QuestionTemplate = {
 			id: 'test-2',
-			type: 'numerical_exact',
 			title: 'Test with Variables',
 			status: 'published',
 			variations: [
@@ -71,62 +69,69 @@ describe('validateTemplate - Valid Templates', () => {
 		expect(errors).toEqual([]);
 	});
 
-	it('should validate all question types', () => {
-		const types = [
-			'numerical_exact',
-			'numerical_decimal',
-			'numerical_rounded',
-			'algebraic_transform',
-			'fill_in_blanks',
-			'multiple_choice'
-		] as const;
+	it('should validate fill_in_blanks template (inferred from no choices)', () => {
+		const template: QuestionTemplate = {
+			id: 'test-fill',
+			title: 'Test fill_in_blanks',
+			status: 'published',
+			variations: [
+				{
+					statement: templateMarkdown('Question'),
+					variables: [],
+					solution: ['answer'],
+					blanks: [{ expectedAnswer: 'answer' }]
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
 
-		for (const type of types) {
-			const template: QuestionTemplate = {
-				id: `test-${type}`,
-				type,
-				title: `Test ${type}`,
-				status: 'published' as const,
-				variations: [
-					{
-						statement: templateMarkdown('Question'),
-						variables: [],
-						solution:
-							type === 'fill_in_blanks' ? ['answer'] : type === 'multiple_choice' ? '0' : '42',
-						blanks:
-							type === 'fill_in_blanks' ? [{ position: 0, expectedAnswer: 'answer' }] : undefined,
-						choices:
-							type === 'multiple_choice'
-								? [
-										{ content: templateMarkdown('A'), isCorrect: true },
-										{ content: templateMarkdown('B'), isCorrect: false },
-										{ content: templateMarkdown('C'), isCorrect: false },
-										{ content: templateMarkdown('D'), isCorrect: false }
-									]
-								: undefined
-					}
-				],
-				precision: { type: 'none' },
-				grades: ['6'],
-				theme: 'Test',
-				domain: 'Test',
-				level: 1,
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString(),
-				created_by: 'test-user',
-				transformType: type === 'algebraic_transform' ? 'simplify' : undefined,
-				multipleAnswers: type === 'multiple_choice' ? false : undefined
-			};
+		const errors = validateTemplate(template);
+		expect(errors).toEqual([]);
+	});
 
-			const errors = validateTemplate(template);
-			expect(errors).toEqual([]);
-		}
+	it('should validate multiple_choice template (inferred from choices)', () => {
+		const template: QuestionTemplate = {
+			id: 'test-mc',
+			title: 'Test multiple_choice',
+			status: 'published',
+			variations: [
+				{
+					statement: templateMarkdown('Question'),
+					variables: [],
+					solution: '0',
+					choices: [
+						{ content: templateMarkdown('A'), isCorrect: true },
+						{ content: templateMarkdown('B'), isCorrect: false },
+						{ content: templateMarkdown('C'), isCorrect: false },
+						{ content: templateMarkdown('D'), isCorrect: false }
+					]
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			multipleAnswers: false,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		const errors = validateTemplate(template);
+		expect(errors).toEqual([]);
 	});
 
 	it('should validate template with multiple variations', () => {
 		const template: QuestionTemplate = {
 			id: 'test-multi-var',
-			type: 'numerical_exact',
 			title: 'Test Multiple Variations',
 			status: 'published',
 			variations: [
@@ -164,7 +169,8 @@ describe('validateTemplate - Valid Templates', () => {
 });
 
 describe('validateTemplate - Required Fields', () => {
-	it('should fail on missing type', () => {
+	it('should infer type from choices (type no longer a field)', () => {
+		// Template without choices → fill_in_blanks (valid)
 		const template = {
 			id: 'test',
 			title: 'Test Template',
@@ -188,13 +194,13 @@ describe('validateTemplate - Required Fields', () => {
 
 		const errors = validateTemplate(template);
 
-		expect(errors.some((e) => e.includes('type'))).toBe(true);
+		// No type-related errors since type is now inferred
+		expect(errors.some((e) => e.includes('type'))).toBe(false);
 	});
 
 	it('should fail on missing variations', () => {
 		const template = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published' as const,
 			precision: { type: 'none' },
@@ -215,7 +221,6 @@ describe('validateTemplate - Required Fields', () => {
 	it('should fail on empty variations array', () => {
 		const template = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published' as const,
 			variations: [],
@@ -237,7 +242,6 @@ describe('validateTemplate - Required Fields', () => {
 	it('should fail on missing statement in variation', () => {
 		const template = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published' as const,
 			variations: [
@@ -261,16 +265,20 @@ describe('validateTemplate - Required Fields', () => {
 		expect(errors.some((e) => e.includes('statement'))).toBe(true);
 	});
 
-	it('should fail on missing solution in variation', () => {
+	it('should fail on missing solution for multiple_choice variation', () => {
 		const template = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published' as const,
 			variations: [
 				{
 					statement: templateMarkdown('Question'),
-					variables: []
+					variables: [],
+					choices: [
+						{ text: 'A', isCorrect: true },
+						{ text: 'B', isCorrect: false }
+					]
+					// solution missing — required for multiple_choice
 				}
 			],
 			precision: { type: 'none' },
@@ -288,10 +296,37 @@ describe('validateTemplate - Required Fields', () => {
 		expect(errors.some((e) => e.includes('solution'))).toBe(true);
 	});
 
+	it('should accept fill_in_blanks with blanks but no solution', () => {
+		const template = {
+			id: 'test',
+			title: 'Test Template',
+			status: 'published' as const,
+			variations: [
+				{
+					statement: templateMarkdown('Question'),
+					variables: [],
+					blanks: [{ expectedAnswer: '42' }]
+					// no solution — blanks[] provides expected answers
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		} as unknown as QuestionTemplate;
+
+		const errors = validateTemplate(template);
+
+		expect(errors).toEqual([]);
+	});
+
 	it('should fail on missing grades', () => {
 		const template = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published' as const,
 			variations: [
@@ -318,7 +353,6 @@ describe('validateTemplate - Required Fields', () => {
 	it('should fail on empty grades array', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Empty Grades',
 			status: 'published',
 			variations: [
@@ -346,7 +380,6 @@ describe('validateTemplate - Required Fields', () => {
 	it('should fail on missing theme', () => {
 		const template = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published' as const,
 			variations: [
@@ -373,7 +406,6 @@ describe('validateTemplate - Required Fields', () => {
 	it('should fail on missing domain', () => {
 		const template = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published' as const,
 			variations: [
@@ -400,7 +432,6 @@ describe('validateTemplate - Required Fields', () => {
 	it('should fail on missing level', () => {
 		const template = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published' as const,
 			variations: [
@@ -429,7 +460,6 @@ describe('validateTemplate - Statement Validation', () => {
 	it('should fail on empty statement array', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Empty Statement',
 			status: 'published',
 			variations: [
@@ -457,7 +487,6 @@ describe('validateTemplate - Statement Validation', () => {
 	it('should fail on statement with empty text content', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -485,7 +514,6 @@ describe('validateTemplate - Statement Validation', () => {
 	it('should validate statement with image field', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -515,7 +543,6 @@ describe('validateTemplate - Variable Validation', () => {
 	it('should fail on duplicate variable names in same variation', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -546,7 +573,6 @@ describe('validateTemplate - Variable Validation', () => {
 	it('should fail on missing variable name', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -574,7 +600,6 @@ describe('validateTemplate - Variable Validation', () => {
 	it('should validate valid variable names', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -607,7 +632,6 @@ describe('validateTemplate - Variable Validation', () => {
 	it('should allow same variable names in different variations', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -639,68 +663,9 @@ describe('validateTemplate - Variable Validation', () => {
 });
 
 describe('validateTemplate - Type-Specific Validation', () => {
-	it('should fail algebraic_transform without transformType', () => {
+	it('should accept fill_in_blanks with solution but no blanks', () => {
 		const template = {
 			id: 'test',
-			type: 'algebraic_transform',
-			title: 'Test Template',
-			status: 'published' as const,
-			variations: [
-				{
-					statement: templateMarkdown('Question'),
-					variables: [],
-					solution: 'x + 1'
-				}
-			],
-			grades: ['3'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		} as unknown as QuestionTemplate;
-
-		const errors = validateTemplate(template);
-
-		expect(errors.some((e) => e.includes('transformType'))).toBe(true);
-	});
-
-	it('should validate algebraic_transform with all transform types', () => {
-		const transformTypes = ['simplify', 'expand', 'factor', 'solve'];
-
-		for (const transformType of transformTypes) {
-			const template: QuestionTemplate = {
-				id: `test-${transformType}`,
-				type: 'algebraic_transform',
-				title: `Test ${transformType}`,
-				status: 'published',
-				variations: [
-					{
-						statement: templateMarkdown('Question'),
-						variables: [],
-						solution: 'x + 1'
-					}
-				],
-				transformType: transformType as never,
-				grades: ['3'],
-				theme: 'Test',
-				domain: 'Test',
-				level: 1,
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString(),
-				created_by: 'test-user'
-			};
-
-			const errors = validateTemplate(template);
-			expect(errors).toEqual([]);
-		}
-	});
-
-	it('should fail fill_in_blanks without blanks array in variation', () => {
-		const template = {
-			id: 'test',
-			type: 'fill_in_blanks',
 			title: 'Test Template',
 			status: 'published' as const,
 			variations: [
@@ -721,20 +686,47 @@ describe('validateTemplate - Type-Specific Validation', () => {
 
 		const errors = validateTemplate(template);
 
-		expect(errors.some((e) => e.includes('blanks') || e.includes('blank'))).toBe(true);
+		expect(errors).toEqual([]);
 	});
 
-	it('should fail multiple_choice without choices in variation', () => {
+	it('should fail fill_in_blanks without blanks and without solution', () => {
 		const template = {
 			id: 'test',
-			type: 'multiple_choice',
+			title: 'Test Template',
+			status: 'published' as const,
+			variations: [
+				{
+					statement: templateMarkdown('Question'),
+					variables: []
+					// Neither blanks[] nor solution
+				}
+			],
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		} as unknown as QuestionTemplate;
+
+		const errors = validateTemplate(template);
+
+		expect(errors.some((e) => e.includes('blanks') || e.includes('solution'))).toBe(true);
+	});
+
+	it('should fail multiple_choice with less than 2 choices in variation', () => {
+		const template = {
+			id: 'test',
 			title: 'Test Template',
 			status: 'published' as const,
 			variations: [
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					solution: '0'
+					solution: '0',
+					// Only 1 choice — multiple_choice requires at least 2
+					choices: [{ content: templateMarkdown('Only one'), isCorrect: true }]
 				}
 			],
 			multipleAnswers: false,
@@ -749,13 +741,12 @@ describe('validateTemplate - Type-Specific Validation', () => {
 
 		const errors = validateTemplate(template);
 
-		expect(errors.some((e) => e.includes('choices'))).toBe(true);
+		expect(errors.some((e) => e.includes('choices') || e.includes('2'))).toBe(true);
 	});
 
 	it('should fail multiple_choice with less than 2 choices', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'multiple_choice',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -786,7 +777,6 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 	it('should prefix errors with variation index', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -819,19 +809,18 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 	it('should validate each variation independently', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
 				{
-					statement: templateMarkdown(''), // Invalid variation 1
+					statement: templateMarkdown(''), // Invalid variation 1: empty statement
 					variables: [],
 					solution: '5'
 				},
 				{
-					statement: templateMarkdown('Question'),
+					statement: templateMarkdown(''), // Invalid variation 2: also empty statement
 					variables: [],
-					solution: '' // Invalid variation 2
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -846,8 +835,10 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 
 		const errors = validateTemplate(template);
 
-		// Should have errors for both variations
+		// Should have errors for both variations (empty statements)
 		expect(errors.length).toBeGreaterThan(1);
+		expect(errors.some((e) => e.includes('Variation 1'))).toBe(true);
+		expect(errors.some((e) => e.includes('Variation 2'))).toBe(true);
 	});
 });
 
@@ -855,7 +846,6 @@ describe('validateTemplate - Edge Cases', () => {
 	it('should validate template with optional delay', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -884,7 +874,6 @@ describe('validateTemplate - Edge Cases', () => {
 	it('should validate template with optional correction in variation', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -918,7 +907,6 @@ describe('validateTemplate - Edge Cases', () => {
 	it('should validate template with all grade levels', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -960,7 +948,6 @@ describe('validateTemplate - Edge Cases', () => {
 	it('should validate template with very long statement', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -993,7 +980,6 @@ describe('validateTemplate - Edge Cases', () => {
 
 		const template: QuestionTemplate = {
 			id: 'test',
-			type: 'numerical_exact',
 			title: 'Test Template',
 			status: 'published',
 			variations: [
@@ -1023,7 +1009,6 @@ describe('validateTemplate - Multiple Errors', () => {
 	it('should collect multiple validation errors', () => {
 		const template = {
 			id: 'test',
-			type: 'algebraic_transform',
 			title: 'Test Template',
 			status: 'published' as const,
 			variations: [
@@ -1037,7 +1022,7 @@ describe('validateTemplate - Multiple Errors', () => {
 				}
 			],
 			grades: [],
-			// missing theme, domain, level, transformType
+			// missing theme, domain, level
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
@@ -1051,7 +1036,6 @@ describe('validateTemplate - Multiple Errors', () => {
 		expect(errors.some((e) => e.includes('Statement cannot be empty'))).toBe(true);
 		expect(errors.some((e) => e.includes('Duplicate') || e.includes('duplicate'))).toBe(true);
 		expect(errors.some((e) => e.includes('grade'))).toBe(true);
-		expect(errors.some((e) => e.includes('transformType'))).toBe(true);
 		expect(errors.some((e) => e.includes('theme'))).toBe(true);
 		expect(errors.some((e) => e.includes('domain'))).toBe(true);
 		expect(errors.some((e) => e.includes('level'))).toBe(true);

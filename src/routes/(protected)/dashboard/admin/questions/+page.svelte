@@ -31,6 +31,7 @@
 	 */
 
 	import type { PageData } from './$types';
+	import { getQuestionType } from '$lib/questions/types';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { Button } from '$lib/components/ui/button';
@@ -101,10 +102,6 @@
 	// Question types for filter
 	const questionTypes: { value: string; label: string }[] = [
 		{ value: 'all', label: 'Tous les types' },
-		{ value: 'numerical_exact', label: 'Numérique (exact)' },
-		{ value: 'numerical_decimal', label: 'Numérique (décimal)' },
-		{ value: 'numerical_rounded', label: 'Numérique (arrondi)' },
-		{ value: 'algebraic_transform', label: 'Transformation algébrique' },
 		{ value: 'fill_in_blanks', label: 'À trous' },
 		{ value: 'multiple_choice', label: 'QCM' }
 	];
@@ -702,8 +699,8 @@
 												<!-- Type + Status + Categories -->
 												<td class="px-4 py-3">
 													<div class="flex flex-col gap-1">
-														<Badge class={getTypeBadgeClass(template.type)}>
-															{getTypeLabel(template.type)}
+														<Badge class={getTypeBadgeClass(getQuestionType(template))}>
+															{getTypeLabel(getQuestionType(template))}
 														</Badge>
 														<Badge
 															class="bg-amber-100 text-amber-900 dark:bg-amber-900 dark:text-amber-100"
@@ -872,8 +869,8 @@
 												<!-- Type + Categories -->
 												<td class="px-4 py-3">
 													<div class="flex flex-col gap-1">
-														<Badge class={getTypeBadgeClass(template.type)}>
-															{getTypeLabel(template.type)}
+														<Badge class={getTypeBadgeClass(getQuestionType(template))}>
+															{getTypeLabel(getQuestionType(template))}
 														</Badge>
 														<Badge variant="outline" class="text-xs">{template.theme}</Badge>
 														<Badge variant="outline" class="text-xs">{template.domain}</Badge>

@@ -20,7 +20,6 @@
 	// Sample question instances
 	const numericalQuestion: QuestionInstance = {
 		templateId: 'demo-numerical',
-		type: 'numerical_exact',
 		statement: resolvedMarkdown('Calculate $$\\frac{3}{4} + \\frac{1}{2}$$'),
 		solution: '5/4',
 		precision: { type: 'none' },
@@ -40,10 +39,8 @@
 
 	const algebraicQuestion: QuestionInstance = {
 		templateId: 'demo-algebraic',
-		type: 'algebraic_transform',
 		statement: resolvedMarkdown('Factor the expression: $$x^2 - 9$$'),
 		solution: '(x-3)(x+3)',
-		transformType: 'factor',
 		grades: ['3', '2'],
 		theme: 'Algèbre',
 		domain: 'Factorisation',
@@ -60,7 +57,6 @@
 
 	const qcmQuestion: QuestionInstance = {
 		templateId: 'demo-qcm',
-		type: 'multiple_choice',
 		statement: resolvedMarkdown('What is the value of $$\\pi$$ (approximated to 2 decimals)?'),
 		solution: '1', // Index of correct choice
 		choices: [
@@ -88,14 +84,13 @@
 
 	const fillBlanksQuestion: QuestionInstance = {
 		templateId: 'demo-fill-blanks',
-		type: 'fill_in_blanks',
 		statement: resolvedMarkdown(
 			'The Pythagorean theorem states that for a right triangle: $$a^2 + b^2 = ____^2$$ where ____ is the hypotenuse.'
 		),
 		solution: ['c', 'c'],
 		blanks: [
-			{ position: 0, expectedAnswer: 'c' },
-			{ position: 1, expectedAnswer: 'c' }
+			{ expectedAnswer: 'c', type: 'math' },
+			{ expectedAnswer: 'c', type: 'text' }
 		],
 		grades: ['4', '3'],
 		theme: 'Géométrie',

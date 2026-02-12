@@ -10,7 +10,6 @@
 
 import type {
 	QuestionInstance,
-	QuestionType,
 	PrecisionType,
 	ValidationStatus,
 	ConstraintId,
@@ -18,7 +17,7 @@ import type {
 	ConstraintOptions,
 	ValidationRule
 } from '$lib/questions/types';
-import { DEFAULT_CONSTRAINT_MODE } from '$lib/questions/types';
+import { DEFAULT_CONSTRAINT_MODE, getQuestionType } from '$lib/questions/types';
 import type { ValidationResult } from '$lib/types/question-display';
 import { evaluateExpression, areEquivalent } from '$lib/math';
 import {
@@ -35,7 +34,6 @@ import {
 	checkUnit
 } from '$lib/questions/constraint-validators';
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
-import { validateQuantityAnswer } from '$lib/questions/units/validator';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
 import { checkRequiredForm, getRequiredFormFeedback } from '$lib/questions/required-form-validator';
 
@@ -189,7 +187,6 @@ function evaluateValidationRules(
 function validateWithSolutionPool(
 	userAnswers: string[],
 	solutions: string[],
-	type: QuestionType,
 	precision?: PrecisionType
 ): ValidationResult {
 	if (userAnswers.length !== solutions.length) {
@@ -204,18 +201,12 @@ function validateWithSolutionPool(
 		for (let i = 0; i < solutions.length; i++) {
 			if (used.has(i)) continue;
 
+			// Try numerical match if precision is set, otherwise equivalence
 			let isMatch = false;
-			switch (type) {
-				case 'numerical_exact':
-				case 'numerical_decimal':
-				case 'numerical_rounded':
-					isMatch = validateNumerical(userAnswer, solutions[i], precision).isCorrect;
-					break;
-				case 'algebraic_transform':
-					isMatch = areEquivalent(userAnswer, solutions[i]);
-					break;
-				default:
-					isMatch = userAnswer.trim() === solutions[i].trim();
+			if (precision) {
+				isMatch = validateNumerical(userAnswer, solutions[i], precision).isCorrect;
+			} else {
+				isMatch = areEquivalent(userAnswer, solutions[i]);
 			}
 
 			if (isMatch) {
@@ -250,7 +241,8 @@ export function validateAnswer(
 	instance: QuestionInstance,
 	userAnswerLatex?: string | string[]
 ): ValidationResult {
-	const { type, solution, precision } = instance;
+	const { solution, precision } = instance;
+	const questionType = getQuestionType(instance);
 
 	try {
 		// Check custom validation rules first (for testAnswers-style questions)
@@ -268,58 +260,63 @@ export function validateAnswer(
 			return { isCorrect: true };
 		}
 
-		// Get validation result based on question type
+		// Get validation result based on question type (inferred from structure)
 		let result: ValidationResult;
 
-		// Solution pool: match each answer against any unused solution
-		if (instance.options?.solutionPool && Array.isArray(solution)) {
-			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
-			result = validateWithSolutionPool(answers, solution, type, precision);
-		} else
-			switch (type) {
-				case 'numerical_exact':
-				case 'numerical_decimal':
-				case 'numerical_rounded':
-					result = validateNumerical(userAnswer as string | number, solution as string, precision);
-					break;
+		if (questionType === 'multiple_choice') {
+			result = validateChoice(
+				userAnswer as number | number[],
+				solution as string | string[],
+				instance.multipleAnswers
+			);
+		} else if (questionType === 'fill_in_blanks') {
+			// Solution pool: match each answer against any unused solution
+			if (instance.options?.solutionPool && Array.isArray(solution)) {
+				const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
+				result = validateWithSolutionPool(answers, solution, precision);
+			} else if (instance.blanks && instance.blanks.length > 0) {
+				// Per-blank validation (new system)
+				result = validateBlanks(
+					userAnswer as string[],
+					instance.blanks.map((b) => b.expectedAnswer)
+				);
+			} else if (solution) {
+				// Fallback: solution comparison (legacy fill_in_blanks without blanks[])
+				const userAnswers = Array.isArray(userAnswer)
+					? userAnswer.map(String)
+					: [String(userAnswer)];
+				const solutions = Array.isArray(solution) ? solution : [solution];
 
-				case 'numerical_with_unit': {
-					const latexAnswer = Array.isArray(userAnswerLatex)
-						? userAnswerLatex[0]
-						: (userAnswerLatex ?? String(userAnswer));
-					result = validateNumericalWithUnit(
-						latexAnswer,
-						solution as string,
-						instance.options?.unitOptions
-					);
-					break;
-				}
-
-				case 'algebraic_transform':
-					result = validateAlgebraic(userAnswer as string, solution as string);
-					break;
-
-				case 'fill_in_blanks':
-					result = validateBlanks(
-						userAnswer as string[],
-						instance.blanks?.map((b) => b.expectedAnswer) || []
-					);
-					break;
-
-				case 'multiple_choice':
-					result = validateChoice(
-						userAnswer as number | number[],
-						solution as string | string[],
-						instance.multipleAnswers
-					);
-					break;
-
-				default:
-					return {
+				if (userAnswers.length !== solutions.length) {
+					result = {
 						isCorrect: false,
-						message: `Type de question non supporté: ${type}`
+						message: `Nombre de réponses incorrect (attendu: ${solutions.length}, reçu: ${userAnswers.length})`
 					};
+				} else if (solutions.length === 1) {
+					// Single answer: use full validation pipeline
+					if (precision) {
+						result = validateNumerical(userAnswers[0], solutions[0], precision);
+					} else {
+						result = validateAlgebraic(userAnswers[0], solutions[0]);
+					}
+				} else {
+					// Multi-answer: validate each pair
+					const allCorrect = userAnswers.every((ans, idx) =>
+						precision
+							? validateNumerical(ans, solutions[idx], precision).isCorrect
+							: areEquivalent(ans, solutions[idx])
+					);
+					result = { isCorrect: allCorrect };
+				}
+			} else {
+				result = { isCorrect: false, message: 'Pas de solution définie' };
 			}
+		} else {
+			return {
+				isCorrect: false,
+				message: `Type de question non supporté: ${questionType}`
+			};
+		}
 
 		// Apply required form check FIRST if configured (takes precedence over constraints)
 		// This validates structural form (product, sum, fraction, etc.)
@@ -499,49 +496,6 @@ export function validateNumerical(
 	return {
 		isCorrect,
 		message: isCorrect ? 'Correct !' : 'Incorrect'
-	};
-}
-
-// ============================================================================
-// NUMERICAL WITH UNIT VALIDATION
-// ============================================================================
-
-/**
- * Options for unit validation
- */
-export interface UnitValidationOptions {
-	/** Require matching unit symbols */
-	requireSameSymbol?: boolean;
-	/** Numeric tolerance */
-	tolerance?: {
-		absolute?: number;
-		relative?: number;
-	};
-}
-
-/**
- * Validate numerical answer with physical unit
- *
- * @param userAnswer - User's answer in LaTeX format (from MathLive)
- * @param correctAnswer - Correct answer in LaTeX format
- * @param options - Unit validation options
- * @returns Validation result
- */
-export function validateNumericalWithUnit(
-	userAnswer: string,
-	correctAnswer: string,
-	options?: UnitValidationOptions
-): ValidationResult {
-	const result = validateQuantityAnswer(userAnswer, correctAnswer, {
-		requireSameSymbol: options?.requireSameSymbol,
-		tolerance: options?.tolerance
-	});
-
-	// Map to ValidationResult format
-	return {
-		isCorrect: result.isCorrect,
-		message: result.isCorrect ? 'Correct !' : 'Incorrect',
-		feedback: result.feedback ?? undefined
 	};
 }
 

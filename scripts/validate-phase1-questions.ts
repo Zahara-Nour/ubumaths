@@ -247,12 +247,6 @@ function validateTemplateStructure(template: any): void {
 			}
 			break;
 
-		case 'algebraic_transform':
-			if (!template.transform_type) {
-				throw new Error('Algebraic transform missing transform_type');
-			}
-			break;
-
 		case 'fill_in_blanks':
 			if (!template.blanks || !Array.isArray(template.blanks)) {
 				throw new Error('Fill-in-blanks missing blanks array');

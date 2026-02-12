@@ -210,9 +210,6 @@
 	});
 
 	// Type-specific fields (shared)
-	let transformType = $state<'factor' | 'expand' | 'simplify' | 'solve' | undefined>(
-		template?.transformType
-	);
 	let multipleAnswers = $state<boolean | undefined>(template?.multipleAnswers);
 
 	// Help dialog states
@@ -421,9 +418,7 @@
 		};
 
 		// Add type-specific shared fields
-		if (questionType === 'algebraic_transform') {
-			return { ...base, transformType };
-		} else if (questionType === 'multiple_choice') {
+		if (questionType === 'multiple_choice') {
 			return { ...base, multipleAnswers };
 		}
 
@@ -905,7 +900,6 @@
 												{questionType}
 												bind:answer={variation.solution}
 												{precision}
-												{transformType}
 												bind:blanks={variation.blanks}
 												bind:choices={variation.choices}
 												{multipleAnswers}
