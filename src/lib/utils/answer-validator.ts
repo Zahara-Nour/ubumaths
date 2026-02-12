@@ -270,46 +270,19 @@ export function validateAnswer(
 				instance.multipleAnswers
 			);
 		} else if (questionType === 'fill_in_blanks') {
-			// Solution pool: match each answer against any unused solution
+			// Solution pool: order-independent matching (legacy, will migrate to blanks[] in Phase 4)
 			if (instance.options?.solutionPool && Array.isArray(solution)) {
 				const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
 				result = validateWithSolutionPool(answers, solution, precision);
 			} else if (instance.blanks && instance.blanks.length > 0) {
-				// Per-blank validation (new system)
+				// Per-blank validation
+				const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
 				result = validateBlanks(
-					userAnswer as string[],
+					answers,
 					instance.blanks.map((b) => b.expectedAnswer)
 				);
-			} else if (solution) {
-				// Fallback: solution comparison (legacy fill_in_blanks without blanks[])
-				const userAnswers = Array.isArray(userAnswer)
-					? userAnswer.map(String)
-					: [String(userAnswer)];
-				const solutions = Array.isArray(solution) ? solution : [solution];
-
-				if (userAnswers.length !== solutions.length) {
-					result = {
-						isCorrect: false,
-						message: `Nombre de réponses incorrect (attendu: ${solutions.length}, reçu: ${userAnswers.length})`
-					};
-				} else if (solutions.length === 1) {
-					// Single answer: use full validation pipeline
-					if (precision) {
-						result = validateNumerical(userAnswers[0], solutions[0], precision);
-					} else {
-						result = validateAlgebraic(userAnswers[0], solutions[0]);
-					}
-				} else {
-					// Multi-answer: validate each pair
-					const allCorrect = userAnswers.every((ans, idx) =>
-						precision
-							? validateNumerical(ans, solutions[idx], precision).isCorrect
-							: areEquivalent(ans, solutions[idx])
-					);
-					result = { isCorrect: allCorrect };
-				}
 			} else {
-				result = { isCorrect: false, message: 'Pas de solution définie' };
+				result = { isCorrect: false, message: 'Pas de blanks[] définis' };
 			}
 		} else {
 			return {
@@ -347,7 +320,11 @@ export function validateAnswer(
 		if (result.isCorrect && userAnswerLatex) {
 			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
 			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
-			const expected = Array.isArray(solution) ? solution : [solution];
+			const expected = instance.blanks
+				? instance.blanks.map((b) => b.expectedAnswer)
+				: Array.isArray(solution)
+					? solution
+					: [solution];
 
 			const { status, violations } = applyConstraints(
 				answers,

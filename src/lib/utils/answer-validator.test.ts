@@ -19,13 +19,13 @@ import type { ResolvedMarkdown } from '$lib/ubumark';
  * Create a minimal numerical question instance for testing
  */
 function createNumericalInstance(
-	solution: string,
+	expectedAnswer: string,
 	constraintOptions?: QuestionInstance['options']
 ): QuestionInstance {
 	return {
 		templateId: 'test-template',
 		statement: 'Test question' as ResolvedMarkdown,
-		solution,
+		blanks: [{ expectedAnswer, type: 'math' }],
 		grades: ['6'],
 		theme: 'Test',
 		domain: 'Test',
@@ -39,13 +39,13 @@ function createNumericalInstance(
  * Create a minimal algebraic question instance for testing
  */
 function createAlgebraicInstance(
-	solution: string,
+	expectedAnswer: string,
 	constraintOptions?: QuestionInstance['options']
 ): QuestionInstance {
 	return {
 		templateId: 'test-template',
 		statement: 'Test question' as ResolvedMarkdown,
-		solution,
+		blanks: [{ expectedAnswer, type: 'math' }],
 		grades: ['6'],
 		theme: 'Test',
 		domain: 'Test',
@@ -275,7 +275,7 @@ describe('validateAnswer - Constraint Integration', () => {
 			const instance: QuestionInstance = {
 				templateId: 'test',
 				statement: 'Test' as ResolvedMarkdown,
-				solution: '5',
+				blanks: [{ expectedAnswer: '5', type: 'math' }],
 				grades: ['6'],
 				theme: 'Test',
 				domain: 'Test',
@@ -593,7 +593,6 @@ describe('validateAnswer - Multiple Answers', () => {
 		const instance: QuestionInstance = {
 			templateId: 'test',
 			statement: 'Test {{blank:0}} and {{blank:1}}' as ResolvedMarkdown,
-			solution: ['5', '10'],
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -706,13 +705,13 @@ describe('validateAnswer - Required Form Integration', () => {
 	 * Create an algebraic instance with requiredForm
 	 */
 	function createInstanceWithRequiredForm(
-		solution: string,
+		expectedAnswer: string,
 		requiredForm: QuestionInstance['requiredForm']
 	): QuestionInstance {
 		return {
 			templateId: 'test-template',
 			statement: 'Test question' as ResolvedMarkdown,
-			solution,
+			blanks: [{ expectedAnswer, type: 'math' }],
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -843,7 +842,7 @@ describe('validateAnswer - Required Form Integration', () => {
 			const instance: QuestionInstance = {
 				templateId: 'test-template',
 				statement: 'Test question' as ResolvedMarkdown,
-				solution: '6',
+				blanks: [{ expectedAnswer: '6', type: 'math' }],
 				grades: ['6'],
 				theme: 'Test',
 				domain: 'Test',
@@ -873,7 +872,7 @@ describe('validateAnswer - Required Form Integration', () => {
 			const instance: QuestionInstance = {
 				templateId: 'test-template',
 				statement: 'Test question' as ResolvedMarkdown,
-				solution: '5',
+				blanks: [{ expectedAnswer: '5', type: 'math' }],
 				grades: ['6'],
 				theme: 'Test',
 				domain: 'Test',
@@ -969,7 +968,7 @@ describe('solutionPool - order-independent multi-answer matching', () => {
 			const instance: QuestionInstance = {
 				templateId: 'test-no-pool',
 				statement: 'Test question' as ResolvedMarkdown,
-				solution: '3',
+				blanks: [{ expectedAnswer: '3', type: 'math' }],
 				grades: ['2'],
 				theme: 'Test',
 				domain: 'Test',

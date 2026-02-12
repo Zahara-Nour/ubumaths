@@ -13,8 +13,7 @@
 1. **Type inference via `getQuestionType()`** — `choices` present (et non-vide) = `multiple_choice`, sinon = `fill_in_blanks`. `choices: []` est traite comme `fill_in_blanks`.
 2. **`transformType` entierement supprime** — Supprime de types.ts, Zod schemas, API endpoints, migration transformer, QuestionTemplateForm, AnswerEditor, scripts, et colonne DB (migration `20260212162248_drop_transform_type_column.sql`).
 3. **`fill_in_blanks` requiert `blanks[]`** — Chaque question fill_in_blanks doit definir `blanks[]`. Pas de champ `solution` pour fill_in_blanks. Le champ `solution` n'existe que pour `multiple_choice`.
-4. **Legacy answer validation fallback** — Sans `blanks[]`, utilise `areEquivalent` (symbolic) quand pas de precision, `validateNumerical` quand precision definie. Supporte multi-answer (pair-wise validation). Ce fallback sera remplace en Phase 4.
-5. **DB type column conservee** — Les endpoints API calculent `type` pour la colonne DB (indexation/requetes) mais le champ n'existe plus dans le modele TypeScript.
+4. **DB type column conservee** — Les endpoints API calculent `type` pour la colonne DB (indexation/requetes) mais le champ n'existe plus dans le modele TypeScript.
 
 ### Files Modified
 
@@ -22,7 +21,7 @@
 | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/lib/questions/types.ts`                                                 | Removed `type` and `transformType` from interfaces, added `getQuestionType()`, `InstanceBlank`, `blankDefaults`, `answerFormats`, `expressions` |
 | `src/lib/ubumark/types/ast.ts`                                               | `BlankNode.index`/`InputState.index` JSDoc 1-based→0-based, added `expressionName` on math nodes                                                |
-| `src/lib/utils/answer-validator.ts`                                          | `switch(type)` → `if(getQuestionType())`, removed `validateNumericalWithUnit`, smart fallback                                                   |
+| `src/lib/utils/answer-validator.ts`                                          | `switch(type)` → `if(getQuestionType())`, removed `validateNumericalWithUnit`, removed legacy solution fallback                                 |
 | `src/lib/questions/generator/instance-generator.ts`                          | Adapted to new types, builds `InstanceBlank[]`, optional solution                                                                               |
 | `src/lib/questions/generator/content-resolver.ts`                            | `resolveSolution` accepts undefined                                                                                                             |
 | `src/lib/questions/validators/template-validator.ts`                         | Type inferred, fill_in_blanks requires `blanks[]` (no solution fallback)                                                                        |
