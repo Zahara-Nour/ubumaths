@@ -116,7 +116,7 @@ Issues documentees pour phases suivantes :
 ### Decisions Made
 
 1. **`[_]` pas dans le parser** — `assignBlankIndices()` remplace `[_]` par `{{blank:N}}` avant le parsing. Le parser ne voit jamais `[_]`, seulement `{{blank:N}}` qu'il gere deja. Pas de support `[_]` ajoute au parser.
-2. **Expression avec answerFormat vs sans** — Si l'expression a un answerFormat, seuls les `?` de l'answerFormat reservent des indices (statement inchange). Si l'expression n'a pas d'answerFormat (fill-in dans l'expression, ex: `(-3) \times ? = -12`), les `?` du statement sont remplaces normalement.
+2. **Expression avec answerFormat : seul l'answerFormat reserve des indices** — Si une zone math contient `<<expr:NAME>>` et que `answerFormats[NAME]` existe, seuls les `?` de l'answerFormat reservent des indices (statement inchange). Les 107 questions fill-in qui ont des `?` dans leur math n'utilisent pas de variable `expression*` — ce sont de simples zones math, traitees par le chemin normal (`?` → `\placeholder[N]{}`). Les deux cas ne se croisent jamais en pratique. Si un editeur cree une expression avec `?` ET un answerFormat, les `?` du statement seraient ignores silencieusement (validation a ajouter dans l'UI editeur — voir issues reportees).
 3. **Marqueur `<<expr:>>` preserve dans le statement** — `assignBlankIndices` laisse le marqueur dans le statement. Le parser le retire ensuite pour mettre `expressionName` sur le noeud AST. Double-responsabilite intentionnelle : assignBlankIndices traite les indices, le parser traite le marqueur.
 4. **Regex ancre au debut** — `<<expr:NAME>>` ne matche qu'au debut du contenu math (`^<<expr:...>>`), coherent avec le fait que le content-resolver l'insere toujours au debut.
 
@@ -140,6 +140,10 @@ Issues corrigees apres code review (`code-reviewer` agent) :
 
 1. **Double-comptage `?` dans expressions** — Quand une expression avait un answerFormat, le code remplacait les `?` dans l'answerFormat ET dans le statement, doublant les indices. Corrige : si answerFormat existe pour l'expression, seul l'answerFormat est modifie (statement inchange).
 2. **Regex non ancre** — `EXPR_MARKER_REGEX` ne commencait pas par `^`, pouvait matcher un marqueur au milieu du contenu math. Corrige : ancre a `^`.
+
+Issues documentees pour plus tard :
+
+- **Validation editeur : expression avec `?` ET answerFormat** → UI editeur de questions : si une expression contient des `?` dans son contenu ET a un answerFormat, c'est une erreur (les deux sont mutuellement exclusifs). Ajouter une validation dans le formulaire d'edition pour empecher cette configuration.
 
 ### Test Results
 
