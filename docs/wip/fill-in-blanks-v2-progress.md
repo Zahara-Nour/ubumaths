@@ -6,14 +6,14 @@
 
 ### Changes Summary
 
-**Core type refactoring**: Removed `type` field from `QuestionTemplate` and `QuestionInstance`, replaced with inferred `getQuestionType()` function. 7 old types collapsed to 2: `fill_in_blanks` (no choices) and `multiple_choice` (has choices).
+**Core type refactoring**: Removed `type` and `transformType` fields from `QuestionTemplate` and `QuestionInstance`, replaced with inferred `getQuestionType()` function. 7 old types collapsed to 2: `fill_in_blanks` (no choices) and `multiple_choice` (has choices). `transformType` entirely removed from codebase and DB.
 
 ### Decisions Made
 
 1. **Type inference via `getQuestionType()`** — `choices` present (et non-vide) = `multiple_choice`, sinon = `fill_in_blanks`. `choices: []` est traite comme `fill_in_blanks`.
-2. **`transformType` supprime** — Supprime de types.ts, Zod schemas, API endpoints, migration transformer, QuestionTemplateForm, AnswerEditor, scripts, et colonne DB (migration `20260212162248_drop_transform_type_column.sql`).
-3. **`fill_in_blanks` requires `blanks[]` OR `solution`** — Every fill_in_blanks question must define expected answers somewhere. Either `blanks[]` array or `solution` field is required.
-4. **Legacy answer validation fallback** — Without `blanks[]`, uses `areEquivalent` (symbolic) when no precision, `validateNumerical` when precision is set. Supporte multi-answer (pair-wise validation).
+2. **`transformType` entierement supprime** — Supprime de types.ts, Zod schemas, API endpoints, migration transformer, QuestionTemplateForm, AnswerEditor, scripts, et colonne DB (migration `20260212162248_drop_transform_type_column.sql`).
+3. **`fill_in_blanks` requiert `blanks[]`** — Chaque question fill_in_blanks doit definir `blanks[]`. Pas de champ `solution` pour fill_in_blanks. Le champ `solution` n'existe que pour `multiple_choice`.
+4. **Legacy answer validation fallback** — Sans `blanks[]`, utilise `areEquivalent` (symbolic) quand pas de precision, `validateNumerical` quand precision definie. Supporte multi-answer (pair-wise validation). Ce fallback sera remplace en Phase 4.
 5. **DB type column conservee** — Les endpoints API calculent `type` pour la colonne DB (indexation/requetes) mais le champ n'existe plus dans le modele TypeScript.
 
 ### Files Modified
@@ -25,17 +25,21 @@
 | `src/lib/utils/answer-validator.ts`                                          | `switch(type)` → `if(getQuestionType())`, removed `validateNumericalWithUnit`, smart fallback                                                   |
 | `src/lib/questions/generator/instance-generator.ts`                          | Adapted to new types, builds `InstanceBlank[]`, optional solution                                                                               |
 | `src/lib/questions/generator/content-resolver.ts`                            | `resolveSolution` accepts undefined                                                                                                             |
-| `src/lib/questions/validators/template-validator.ts`                         | Type inferred, fill_in_blanks requires blanks[] OR solution                                                                                     |
+| `src/lib/questions/validators/template-validator.ts`                         | Type inferred, fill_in_blanks requires `blanks[]` (no solution fallback)                                                                        |
+| `src/lib/migration/question-transformer.ts`                                  | Removed `AlgebraicTransformType`, removed `transformType` detection logic and output                                                            |
 | `src/lib/migration/test-transformer-examples.ts`                             | `getQuestionType(template)` instead of `template.type`                                                                                          |
-| `src/lib/questions/validators/template-validator.test.ts`                    | Removed all `type:` refs, updated tests for inferred types                                                                                      |
+| `src/lib/server/validation/questions.ts`                                     | Removed `transformType` from Zod schemas                                                                                                        |
+| `src/lib/questions/validators/template-validator.test.ts`                    | Rewritten: removed all `type:` refs, fill_in_blanks uses `blanks[]` only (no `solution`)                                                        |
 | `src/lib/utils/answer-validator.test.ts`                                     | Removed `type:` from instances, fixed blanks structure                                                                                          |
 | `src/lib/questions/generator/instance-generator.test.ts`                     | Removed `type:` from templates                                                                                                                  |
 | `src/lib/questions/generator/test-exact-repro.test.ts`                       | Removed `type:`                                                                                                                                 |
-| `src/routes/api/questions/templates/+server.ts`                              | Compute `type` for DB column from structure                                                                                                     |
-| `src/routes/api/questions/templates/[id]/+server.ts`                         | Compute `type` for DB column from structure                                                                                                     |
-| `src/routes/api/questions/generate/[id]/+server.ts`                          | Removed `type` from `dbRowToQuestionTemplate`                                                                                                   |
+| `src/routes/api/questions/templates/+server.ts`                              | Compute `type` for DB column, removed `transform_type` write                                                                                    |
+| `src/routes/api/questions/templates/[id]/+server.ts`                         | Compute `type` for DB column, removed `transform_type` write                                                                                    |
+| `src/routes/api/questions/generate/[id]/+server.ts`                          | Removed `type` and `transformType` from `dbRowToQuestionTemplate`                                                                               |
 | `src/lib/components/QuestionTemplateCard.svelte`                             | `getQuestionType(template)`, simplified to 2 types                                                                                              |
 | `src/lib/components/QuestionPreview.svelte`                                  | Uses `getQuestionType()`                                                                                                                        |
+| `src/lib/components/QuestionTemplateForm.svelte`                             | Removed `transformType` state, algebraic_transform branch, AnswerEditor prop                                                                    |
+| `src/lib/components/AnswerEditor.svelte`                                     | Removed `transformType` prop, `TRANSFORM_TYPES`, algebraic transform UI section                                                                 |
 | `src/lib/components/questions/FlashCard.svelte`                              | Adapted to inferred type                                                                                                                        |
 | `src/lib/components/questions/QuestionCard.svelte`                           | Adapted to inferred type                                                                                                                        |
 | `src/lib/components/questions/CorrectionCard.svelte`                         | Adapted to inferred type                                                                                                                        |
@@ -45,6 +49,15 @@
 | `src/routes/(protected)/dashboard/admin/questions/[id]/preview/+page.svelte` | Badge uses `getQuestionType()`                                                                                                                  |
 | `src/routes/(public)/demo/question-display-demo/+page.svelte`                | Removed `type:` from instances                                                                                                                  |
 | `src/routes/(protected)/dashboard/admin/debug/question-display/+page.svelte` | `getQuestionType()` for display                                                                                                                 |
+| `scripts/import-questions-to-db.ts`                                          | Removed `transformType` from interface and DB insert                                                                                            |
+| `scripts/validate-phase1-questions.ts`                                       | Removed `algebraic_transform` validation case                                                                                                   |
+| `src/lib/types/database.ts`                                                  | Regenerated after dropping `transform_type` column                                                                                              |
+
+### Files Created
+
+| File                                                                | Description                            |
+| ------------------------------------------------------------------- | -------------------------------------- |
+| `supabase/migrations/20260212162248_drop_transform_type_column.sql` | DB migration: drop constraint + column |
 
 ### Code Review Findings (post-commit fixes)
 
@@ -66,13 +79,17 @@ Issues documentees pour phases suivantes :
 - Pre-existing failures: variable-resolver (2), instance-generator (3), color-integration (2)
 - Zero new test failures introduced
 
-### User Feedback Fix
+### User Feedback Fixes
 
-- **`blanks[]` ne doit PAS etre optionnel** — L'utilisateur a insiste : chaque question fill_in_blanks doit definir ses reponses attendues. Le validateur exige desormais `blanks[]` OU `solution`. 3 tests mis a jour + 1 nouveau test ajoute.
+1. **`blanks[]` obligatoire pour fill_in_blanks** — Le validateur exige `blanks[]` pour toute question fill_in_blanks. Pas de fallback `solution`.
+2. **Pas de `solution` pour fill_in_blanks** — Le champ `solution` n'existe que pour `multiple_choice`. Tous les tests ont ete reecrits pour refleter cette regle.
+3. **`transformType` entierement supprime** — Y compris la colonne DB `transform_type` et sa contrainte, les scripts d'import/validation, et les composants Svelte.
 
-### Commit
+### Commits
 
-- `b3fcaee6` — 27 files changed, 607 insertions, 569 deletions
+- `9a8c5fe4` — refactor: remove type field from QuestionTemplate/QuestionInstance, infer from structure (33 files)
+- `3e8801c1` — chore: regenerate database types after dropping transform_type column
+- `f6ac75a6` — docs: remove all transformType references from documentation
 
 ### Next Steps
 
