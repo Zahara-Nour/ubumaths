@@ -6079,6 +6079,75 @@ export type Database = {
 					}
 				];
 			};
+			migration_edits: {
+				Row: {
+					created_at: string | null;
+					edit_notes: string | null;
+					edited_json: Json;
+					editor_id: string;
+					id: string;
+					migration_tracking_id: string;
+					old_question_hash: string;
+					updated_at: string | null;
+				};
+				Insert: {
+					created_at?: string | null;
+					edit_notes?: string | null;
+					edited_json: Json;
+					editor_id: string;
+					id?: string;
+					migration_tracking_id: string;
+					old_question_hash: string;
+					updated_at?: string | null;
+				};
+				Update: {
+					created_at?: string | null;
+					edit_notes?: string | null;
+					edited_json?: Json;
+					editor_id?: string;
+					id?: string;
+					migration_tracking_id?: string;
+					old_question_hash?: string;
+					updated_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'migration_edits_editor_id_fkey';
+						columns: ['editor_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'migration_edits_editor_id_fkey';
+						columns: ['editor_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'migration_edits_editor_id_fkey';
+						columns: ['editor_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'migration_edits_editor_id_fkey';
+						columns: ['editor_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'migration_edits_migration_tracking_id_fkey';
+						columns: ['migration_tracking_id'];
+						isOneToOne: false;
+						referencedRelation: 'migration_tracking';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			migration_images: {
 				Row: {
 					created_at: string | null;
@@ -8100,7 +8169,6 @@ export type Database = {
 					subdomain: string | null;
 					theme: string;
 					title: string;
-					transform_type: string | null;
 					type: string;
 					updated_at: string | null;
 					variations: Json;
@@ -8123,7 +8191,6 @@ export type Database = {
 					subdomain?: string | null;
 					theme: string;
 					title: string;
-					transform_type?: string | null;
 					type: string;
 					updated_at?: string | null;
 					variations: Json;
@@ -8146,7 +8213,6 @@ export type Database = {
 					subdomain?: string | null;
 					theme?: string;
 					title?: string;
-					transform_type?: string | null;
 					type?: string;
 					updated_at?: string | null;
 					variations?: Json;
