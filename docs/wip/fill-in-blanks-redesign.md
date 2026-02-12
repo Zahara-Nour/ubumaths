@@ -160,9 +160,34 @@ Le double de ${{a}}$ est $?$.
 
 ### 3.4 Convention de nommage `expression` (variable dont le nom commence par `expression`)
 
-Une variable dont le nom commence par `expression` (ex: `expression1`) est une **convention de nommage** (pas un mode de rendu). Elle represente une expression mathematique que l'eleve doit evaluer.
+Une variable dont le nom commence par `expression` (ex: `expression1`) est une **convention de nommage** (pas un mode de rendu). Elle represente une expression mathematique que l'eleve doit evaluer. Le template decide si l'expression est en mode bloc (`$${{expression1}}$$`) ou inline (`${{expression1}}$`) selon le contexte.
 
-**Dans le generateur** : la variable est resolue normalement dans le statement. En plus, le generateur extrait les metadonnees dans un champ `expressions` sur l'instance :
+#### Tagging AST des expressions
+
+Le content-resolver detecte les variables dont le nom commence par `expression` pendant la resolution. Il insere un marqueur `<<expr:NAME>>` avant la valeur resolue dans le markdown :
+
+```
+Template :  $${{expression1}}$$
+Resolu :    $$<<expr:expression1>>10^2 \times 10^3$$
+```
+
+Le parser ubumark reconnait `<<expr:NAME>>` au debut d'une zone math (inline ou bloc), cree le noeud avec l'attribut `expressionName`, et supprime le marqueur du contenu :
+
+```typescript
+// MathBlockNode ou MathInlineNode avec tag expression
+{
+  type: 'math-block',           // ou 'math-inline'
+  expression: "10^2 \\times 10^3",  // marqueur supprime
+  syntax: 'latex',
+  expressionName: "expression1"      // tag ajoute par le parser
+}
+```
+
+Les types AST `MathInlineNode` et `MathBlockNode` recoivent un champ optionnel `expressionName?: string`.
+
+#### Dans le generateur
+
+La variable est resolue normalement dans le statement (avec insertion du marqueur `<<expr:NAME>>`). En plus, le generateur extrait les metadonnees dans un champ `expressions` sur l'instance :
 
 ```typescript
 // Champ ajoute sur QuestionInstance
@@ -173,7 +198,9 @@ expressions?: {
 }[]
 ```
 
-**Dans le composant** : le composant utilise `expressions[i].latex` pour identifier le noeud math correspondant dans l'AST du statement, puis :
+#### Dans le composant
+
+Le composant identifie les noeuds expression grace au tag `expressionName` sur les noeuds AST (pas de matching LaTeX). Puis :
 
 - **Flash** : rend le statement tel quel (l'expression seule)
   ```
@@ -215,6 +242,18 @@ Regle supplementaire pour les expressions : si `instance.expressions` existe, le
 
 Chaque trou est valide individuellement. Le type de trou determine le pipeline de validation.
 
+#### Mode de validation infere (pas de champ `validationType`)
+
+Le mode de validation est **infere du contexte**, sans champ explicite :
+
+| Contexte                      | Mode                  | Fonction                                                                                                                            |
+| ----------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Ni `precision` ni `unit`      | **Equivalence**       | `areEquivalent()` (`src/lib/math/index.ts`) — normalisation structurelle + fallback numerique                                       |
+| `precision` present           | **Approximate**       | `validateNumerical()` (`src/lib/utils/answer-validator.ts`) — evaluation numerique + comparaison selon precision                    |
+| `unit.expected` present       | **Unite**             | `validateQuantityAnswer()` (`src/lib/questions/units/validator.ts`) — parsing LaTeX quantite, conversion unites, comparaison valeur |
+| `precision` + `unit.expected` | **Unite + tolerance** | `validateQuantityAnswer()` avec tolerance derivee de `precision`                                                                    |
+| Trou texte                    | **Fuzzy text**        | Matching accents/casse ignores, Levenshtein <= 1                                                                                    |
+
 #### Structure template-side (QuestionVariation / SharedVariationDefaults)
 
 **Defauts au niveau question** (sur `shared` ou variation) :
@@ -222,9 +261,13 @@ Chaque trou est valide individuellement. Le type de trou determine le pipeline d
 ```typescript
 // Defauts de validation appliques a tous les blanks math de la question
 blankDefaults?: {
-  validationType?: 'exact' | 'decimal' | 'algebraic';
   precision?: PrecisionType;
   requiredForm?: RequiredForm;
+  unit?: {
+    expected: boolean;          // true = l'eleve doit fournir l'unite
+    required?: string;          // unite imposee (ex: "m"). Si absent → libre
+    requireSameSymbol?: boolean; // true = symbole exact (pas de conversion)
+  };
 }
 ```
 
@@ -237,14 +280,30 @@ blanks?: {
   pool?: string[];           // Trou texte : autocompletion + solutionPool
 
   // Overrides per-blank (ecrasent blankDefaults si definis)
-  validationType?: 'exact' | 'decimal' | 'algebraic';
   precision?: PrecisionType;
   requiredForm?: RequiredForm;
   validationRules?: ValidationRule[];
+
+  // Config unites (optionnel, override blankDefaults.unit)
+  unit?: {
+    expected: boolean;          // true = l'eleve doit fournir l'unite
+    required?: string;          // unite imposee (ex: "m")
+    requireSameSymbol?: boolean; // true = symbole exact
+  };
 }[]
 ```
 
 Le `type` (`'math'` ou `'text'`) n'est pas specifie dans le template — il est infere par le generateur a partir du contexte (dans `$...$` = math, dans le texte = text).
+
+#### Distinction trous avec/sans unite dans la syntaxe custom
+
+| Syntaxe custom                                            | Rendu          | Blank attend                                                |
+| --------------------------------------------------------- | -------------- | ----------------------------------------------------------- |
+| `$5[km] = ?[m]$`                                          | 5 km = [___] m | Nombre pur (`"5000"`) — l'unite est dans l'expression       |
+| `$5[km] = ?$` + `unit.expected: true`                     | 5 km = [___]   | Nombre + unite (`"5000\unit{m}"`) — l'eleve fournit l'unite |
+| `$5[km] = ?$` + `unit: { expected: true, required: "m" }` | 5 km = [___]   | Nombre + unite imposee — seule "m" est acceptee             |
+
+Quand `unit.expected` est present, l'analyse dimensionnelle (`checkDimensionalConsistency()`) est executee **a la validation** sur l'expression complete (statement + reponse inseree) pour verifier la coherence des dimensions.
 
 #### Structure instance-side (QuestionInstance)
 
@@ -257,10 +316,16 @@ blanks?: {
   prefilled?: string;       // Resolu
 
   // Trou math — validation (fusionnee depuis blankDefaults + override)
-  validationType?: 'exact' | 'decimal' | 'algebraic';
   precision?: PrecisionType;
   requiredForm?: RequiredForm;
   validationRules?: ValidationRule[];
+
+  // Config unites (fusionnee)
+  unit?: {
+    expected: boolean;
+    required?: string;
+    requireSameSymbol?: boolean;
+  };
 
   // Trou texte — validation
   pool?: string[];           // pour autocompletion + solutionPool
@@ -273,22 +338,33 @@ blanks?: {
 
 **Pipeline pour un trou math** :
 
-1. `validationRules` custom si presentes → short-circuit. **Sinon** : validation selon `validationType` :
-   - `'exact'` / `'decimal'` : `validateNumerical()` avec `precision`
-   - `'algebraic'` : `areEquivalent()` (equivalence symbolique)
-2. `checkRequiredForm()` — si reponse correcte + `requiredForm` defini + LaTeX disponible
-3. `applyConstraints()` — si reponse correcte + LaTeX disponible
+1. `validationRules` custom si presentes → short-circuit. **Sinon** : validation selon le mode infere :
+   - Si `unit.expected` : `validateQuantityAnswer()` (avec tolerance si `precision` present)
+   - Si `precision` (sans unite) : `validateNumerical()` avec `precision`
+   - Sinon : `areEquivalent()` (equivalence structurelle/symbolique)
+2. Si `unit.expected` et reponse correcte : `checkDimensionalConsistency()` sur l'expression complete
+3. `checkRequiredForm()` — si reponse correcte + `requiredForm` defini + LaTeX disponible
+4. `applyConstraints()` — si reponse correcte + LaTeX disponible
 
 **Donnees collectees par le composant** pour chaque trou math :
 
 - Valeur ascii-math (via `getPromptValue(id, 'ascii-math')`)
 - LaTeX (via `getPromptValue(id)`) — necessaire pour les etapes 2 et 3
 
+#### Interface composant → parent
+
+FillBlanksInput fournit **deux tableaux paralleles** au composant parent (FlashCard/QuestionCard) :
+
+- `values: string[]` — ascii-math pour les trous math, texte brut pour les trous texte
+- `valuesLatex: string[]` — LaTeX pour les trous math (string vide pour les trous texte)
+
+Le parent passe les deux au validateur : `validateAnswer(values, instance, valuesLatex)`.
+
 ### 3.8 Source des reponses correctes
 
-**Pour `fill_in_blanks`** : `blanks[]` est la seule source de verite. Le champ `solution` n'est pas utilise. Les reponses pour le flash back se reconstruisent en remplacant chaque `?`/`[_]` par `blanks[i].expectedAnswer` dans le statement.
+**Pour `fill_in_blanks`** : `blanks[]` est la seule source de verite. Le champ `solution` est **optionnel** (`solution?: string | string[]`) et absent pour `fill_in_blanks`. Les reponses pour le flash back se reconstruisent en remplacant chaque `?`/`[_]` par `blanks[i].expectedAnswer` dans le statement.
 
-**Pour `multiple_choice` et `open_answer`** : `solution` reste la source de verite.
+**Pour `multiple_choice` et `open_answer`** : `solution` reste la source de verite (presente et requise).
 
 **Pas d'evaluation automatique** : l'ancien systeme TinyMath derivait la solution de l'expression (`math(expression).eval()`). Le nouveau systeme utilise `{{eval:...}}` dans les templates (ex: `expectedAnswer: '{{eval:{{a}}+{{b}}}}'`), resolu explicitement pendant la generation. Pas de magie implicite.
 
@@ -300,18 +376,18 @@ Pour les questions avec la convention `expression`, les `?` ne sont pas dans le 
 
 ```
 // Exemple : expression simple (answerFormat defaut "?")
-statement: "${{expression1}}$"
+statement: "$${{expression1}}$$"
 blankDefaults: { validationType: 'exact' }
 blanks: [{ expectedAnswer: "{{eval:{{expression1}}}}" }]
 
 // Exemple : answerFormat avec forme (10^?)
-statement: "${{expression1}}$"
+statement: "$${{expression1}}$$"
 answerFormats: { "expression1": "10^?" }
 blankDefaults: { validationType: 'exact' }
 blanks: [{ expectedAnswer: "{{eval:{{a}}+{{b}}}}" }]
 
 // Exemple : answerFormat multi-trous (?*10^?)
-statement: "${{expression1}}$"
+statement: "$${{expression1}}$$"
 answerFormats: { "expression1": "?*10^?" }
 blanks: [
   { expectedAnswer: "{{a}},{{b}}" },
@@ -319,7 +395,22 @@ blanks: [
 ]
 ```
 
-L'ordre des blanks suit l'ordre des `?` dans l'answerFormat. Pour les questions avec des `?` dans le statement ET des expressions avec answerFormat, les blanks du statement viennent en premier (ordre d'apparition), puis ceux des answerFormats (ordre des expressions, puis ordre des `?` dans chaque format).
+#### Ordre de numerotation des blanks : ordre naturel du document
+
+Les blanks sont numerotes dans l'**ordre naturel d'apparition** dans le document rendu. Quand le composant rencontre un noeud expression (identifie par le tag `expressionName`), les `?` de son `answerFormat` sont comptes **a cet endroit du document**, pas a la fin.
+
+```
+// Exemple : expression + blanks dans le statement
+Statement: $${{expression1}}$$ et $?+?=10$
+answerFormats: { "expression1": "?" }
+blanks: [
+  { expectedAnswer: "{{eval:...}}" },  // blank 0 : le ? de expression1 (position naturelle)
+  { expectedAnswer: "..." },           // blank 1 : premier ? de $?+?=10$
+  { expectedAnswer: "..." }            // blank 2 : deuxieme ? de $?+?=10$
+]
+```
+
+Cet ordre est plus intuitif que l'ancien schema (statement d'abord, answerFormats ensuite) car il suit la lecture gauche-a-droite du document final.
 
 Le transformer de migration genere automatiquement ces blanks a partir des anciennes `solutionss`.
 
@@ -402,7 +493,7 @@ Le generateur copie le format correspondant dans chaque `instance.expressions[i]
 
 Les 7 types actuels sont reduits a 3. Les types `numerical_exact`, `numerical_decimal`, `numerical_rounded`, `numerical_with_unit`, `algebraic_transform` disparaissent. La distinction exact/decimal/tolerance releve de la **validation**, pas du mode d'interaction UI. La validation est configuree per-blank (`validationType`, `precision`, `requiredForm` — voir section 3.7).
 
-Pour `fill_in_blanks`, le champ `solution` n'est pas utilise — `blanks[]` est la seule source de verite (voir section 3.8). `solution` reste pour `multiple_choice` et `open_answer`.
+Pour `fill_in_blanks`, le champ `solution` est **optionnel** et absent — `blanks[]` est la seule source de verite (voir section 3.8). `solution` reste requis pour `multiple_choice` et `open_answer`.
 
 ### 4.5 Dictionnaire de vocabulaire mathematique
 
@@ -457,12 +548,25 @@ Le composant parcourt l'AST ubumark du statement noeud par noeud et route vers l
 
 - `TextNode` → `<span>`
 - `BlankNode` / `[_]` → `<input>` texte avec autocompletion (interactif) ou indicateur visuel (flash)
-- `MathInlineNode` contenant `?` → `<MathField>` avec `\placeholder[N]{}` (interactif) ou `?` visible (flash)
-- `MathInlineNode` sans `?` → `<MathField>` en lecture seule
+- `MathInlineNode`/`MathBlockNode` contenant `?` → `<MathField>` avec `\placeholder[N]{}` (interactif) ou `?` visible (flash)
+- `MathInlineNode`/`MathBlockNode` sans `?` → `<MathField>` en lecture seule
 
-Pour les questions avec `instance.expressions` : en mode interactif, le composant identifie le noeud math correspondant (par comparaison du LaTeX avec `expressions[i].latex`) et augmente son contenu avec `= answerFormat[\placeholder]`.
+Pour les questions avec `instance.expressions` : en mode interactif, le composant identifie les noeuds expression **grace au tag `expressionName`** sur les noeuds AST (voir section 3.4) et augmente leur contenu avec `= answerFormat[\placeholder]`.
 
-Le parser ubumark existant produit deja l'AST necessaire (`BlankNode`, `MathInlineNode`, `TextNode`). Le composant n'a qu'a mapper les noeuds vers les bons elements DOM selon le mode (flash vs interactif).
+Le parser ubumark existant produit deja l'AST necessaire (`BlankNode`, `MathInlineNode`, `MathBlockNode`, `TextNode`). Le composant n'a qu'a mapper les noeuds vers les bons elements DOM selon le mode (flash vs interactif).
+
+#### Interface de sortie
+
+Le composant fournit **deux tableaux paralleles** au parent :
+
+- `values: string[]` — ascii-math pour les trous math, texte brut pour les trous texte
+- `valuesLatex: string[]` — LaTeX pour les trous math (string vide pour les trous texte)
+
+Le parent passe les deux au validateur pour supporter `checkRequiredForm()` et `applyConstraints()` (voir section 3.7).
+
+#### Flash back (a decider)
+
+Le rendu du cote reponse (flash back) pour les questions expression n'est pas encore defini. A trancher lors de l'implementation du composant : le composant doit-il augmenter le noeud math avec `= reponse_resolue` au lieu de `= answerFormat[\placeholder]` ?
 
 ### 4.8 Syntaxe des trous texte : `[_]` et `{{blank:N}}` coexistent
 
@@ -476,6 +580,8 @@ Le parser ubumark existant produit deja l'AST necessaire (`BlankNode`, `MathInli
 Raison : `{{blank:N}}` est utilise par l'extension TipTap `BlankField` (`src/lib/extensions/blank-extension.ts`) pour l'edition visuelle avec chips, popover, navigation clavier. Le numero explicite est necessaire pour le round-trip markdown ↔ TipTap JSON et le reordonnancement dans l'editeur.
 
 `[_]` est un sucre syntaxique positionnel pour les cas simples. Le parser ubumark produit le meme `BlankNode` dans les deux cas.
+
+**Restriction : les deux syntaxes ne doivent pas etre melangees dans le meme statement.** Un statement utilise soit `[_]` (positionnelle), soit `{{blank:N}}` (explicite), pas les deux. En pratique, `[_]` est utilise dans les templates textuels et la migration, `{{blank:N}}` dans l'editeur TipTap.
 
 ---
 
@@ -565,18 +671,23 @@ Raison : `{{blank:N}}` est utilise par l'extension TipTap `BlankField` (`src/lib
 
 ~~1bis. Corriger les erreurs du doc de redesign~~ **FAIT** (2026-02-12) — voir corrections 1-4
 
+~~1ter. Design review : identifier et resoudre les lacunes~~ **FAIT** (2026-02-12) — 6 gaps identifies, 5 resolus (flash back reporte). Decisions : tag AST `<<expr:NAME>>`, indexing naturel, solution optionnel, interface values+valuesLatex, pas de mix `[_]`/`{{blank:N}}`
+
 2. Definir les types TypeScript mis a jour
 
    - `QuestionType` : 3 types (`fill_in_blanks`, `multiple_choice`, `open_answer`)
-   - Structure `blanks[]` positionnelle avec validation per-blank (`validationType`, `precision`, `requiredForm`)
+   - Structure `blanks[]` positionnelle avec validation per-blank (`precision`, `requiredForm`, `unit`)
+   - Pas de champ `validationType` — mode infere : `precision` → approximate, `unit.expected` → unites, defaut → equivalence
    - Champ `expressions[]` sur `QuestionInstance` pour la convention expression
    - `answerFormats?: Record<string, string>` sur shared/variation
-   - `solution` supprime pour `fill_in_blanks` (blanks seule source de verite)
+   - `solution` optionnel (`solution?: string | string[]`), absent pour `fill_in_blanks` (blanks seule source de verite)
 
-3. Ajouter le support de `[_]` dans le parser ubumark
+3. Ajouter le support de `[_]` et `<<expr:NAME>>` dans le parser ubumark
 
-   - Sucre syntaxique positionnel → meme `BlankNode` que `{{blank:N}}`
-   - Detection des `?` dans les `MathInlineNode` pour les trous math
+   - `[_]` : sucre syntaxique positionnel → meme `BlankNode` que `{{blank:N}}`
+   - `<<expr:NAME>>` : marqueur d'expression → `expressionName` sur `MathInlineNode`/`MathBlockNode`
+   - Ajout de `expressionName?: string` sur les types AST `MathInlineNode` et `MathBlockNode`
+   - Detection des `?` dans les noeuds math pour les trous math
 
 4. Implementer le nouveau FillBlanksInput
 
