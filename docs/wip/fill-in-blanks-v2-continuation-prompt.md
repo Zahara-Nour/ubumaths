@@ -29,7 +29,7 @@ Documents de travail :
 
 | Gap                                      | Probleme                                                               | Decision                                                                                                                                                                                  |
 | ---------------------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Flash back expression                 | Comment reconstruire `expression = reponse` en flash back ?            | **Differe** — note dans section 4.7                                                                                                                                                       |
+| 1. Flash back expression                 | Comment reconstruire `expression = reponse` en flash back ?            | **RESOLU session 3** — `expectedAnswerLatex` + meme pipeline que answerFormat. Section 4.7                                                                                                |
 | 2. Interface composant                   | Le parent a besoin du LaTeX (pour constraints) en plus de l'ascii-math | **Deux tableaux** : `bind:values` (ascii-math) + `bind:valuesLatex` (LaTeX). Section 3.7                                                                                                  |
 | 3. `solution` optionnel                  | Le champ existait mais n'etait pas marque optionnel                    | **`solution?: string \| string[]`** — absent pour fill_in_blanks. Sections 3.8, 4.4                                                                                                       |
 | 4. Indexation blanks                     | Expression blanks etaient appendes apres les statement blanks          | **Ordre naturel** — blanks comptes dans l'ordre du document. Quand le composant rencontre un noeud expression, les `?` de l'answerFormat sont comptes a cet endroit. Section 3.9 reecrite |
@@ -67,35 +67,57 @@ Distinction syntaxe custom dans les templates :
 
 Analyse dimensionnelle (`checkDimensionalConsistency()`) a la validation, pas au rendu.
 
+### Session 3 (2026-02-12) — Review approfondie du doc + corrections
+
+#### 3 incoherences corrigees dans le doc
+
+| Incoherence                                                        | Correction                                                                                       |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `validationType` fantome dans exemples sections 3.9 et 4.2         | Retire de tous les exemples (supprime en session 2, mais exemples pas mis a jour)                |
+| Pipeline answerFormat non documente (resolution variables + LaTeX) | Nouvelle sous-section "Pipeline de resolution answerFormat" ajoutee en section 3.4               |
+| Flash back non defini                                              | Section 4.7 mise a jour : `expectedAnswerLatex` sur chaque blank, meme pipeline que answerFormat |
+
+#### Decisions supplementaires
+
+| Decision                           | Details                                                                                                                                                                                               |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Flash back                         | Le generateur fournit `expectedAnswerLatex` via meme pipeline que answerFormat (resolution variables + conversion LaTeX). Le composant remplace les `?` par les reponses resolues en mode flash back. |
+| Indexation 0-based partout         | `blanks[]`, `BlankNode.index`, `InputState.index`, `\placeholder[N]{}` tous en 0-based. Plus de conversion +1/-1. `{{blank:0}}` = premier trou. Section 4.1 mise a jour.                              |
+| Champ `position` retire des blanks | L'index = la position dans le tableau. Le champ `position` est redondant et disparu.                                                                                                                  |
+| `solution` optionnel               | `solution?: string \| string[]` — absent pour `fill_in_blanks`. Cascade de changements dans resolveVariationWithShared, validateAnswer, resolveSolution.                                              |
+| `expressions2` dans le transformer | Les 2 questions avec `expressions2` sont des QCM (pas fill-in). Le transformer creera `expression2` depuis `expressions2[i]`. Pas d'impact sur l'architecture fill-in.                                |
+| answerField → fill_in_blanks       | Les 157 questions answerField sont converties en `fill_in_blanks` par le transformer. `\text{...}$$...$$` → `texte $?$`.                                                                              |
+
 ## Etat actuel du doc de redesign
 
-Le doc est **coherent et complet** sur le plan architecture/design. Toutes les questions ouvertes sont resolues sauf le flash back des expressions (differe).
+Le doc est **coherent et complet** sur le plan architecture/design. **Toutes les questions ouvertes sont resolues.** Pas de lacune identifiee.
 
-## Objectif de cette session
+## Objectif de la prochaine session
 
-**Continuer la reflexion architecture/design.** Lire le doc de redesign EN ENTIER, identifier d'eventuelles lacunes ou incoherences, et les discuter avec l'utilisateur. NE PAS lancer l'implementation sans accord explicite.
+**Passer a l'implementation.** Le doc de redesign est stable. Les prochaines etapes (section 7 du doc) :
 
-### Pistes a explorer (non exhaustif)
+1. ~~Trancher les questions en suspens~~ FAIT
+2. **Definir les types TypeScript mis a jour** ← prochaine etape
+3. Ajouter `[_]` et `<<expr:NAME>>` dans le parser ubumark
+4. Implementer le nouveau FillBlanksInput
+5. Adapter le pipeline de generation
+6. Adapter la validation
+7. Mettre a jour le transformer de migration
+8. Creer le dictionnaire de vocabulaire mathematique FR
+9. Tests + import en DB
 
-1. **Flash back des expressions** (gap 1 differe) — Comment reconstruire `expression = reponse` quand on affiche la solution ? Le composant doit-il stocker le LaTeX de la reponse validee ? Faut-il un format special dans `blanks[].expectedAnswer` ?
+### Changements de types a faire (etape 2)
 
-2. **Couverture des 633 questions** — Verifier avec des exemples concrets de `.claude/old-questions.json` que le design couvre bien tous les cas. En particulier :
-
-   - Les 15 questions avec `answerFormats` non-trivial (`10^?`, `?*10^?`, `&1^?`)
-   - Les 2 questions avec `expressions2` (2 expressions simultanees)
-   - Les questions answerField (phrase avec trous math)
-
-3. **Migration transformer** — Le transformer doit generer les `blanks[]` depuis les anciennes `solutions`. Est-ce que le mapping est clair pour tous les cas ?
-
-4. **Cas limites** :
-
-   - Questions avec a la fois des `?` dans le statement ET des expressions avec answerFormats
-   - Expressions en mode inline vs bloc — impact sur le rendu
-   - Blanks texte avec autocompletion + pool — comment le pool est-il defini ?
-
-5. **Types TypeScript** — Le doc decrit les structures mais les types formels ne sont pas encore definis. Verifier la coherence avant de passer a l'etape de definition des types (section 7, etape 2).
-
-6. **Composant FillBlanksInput** — Architecture detaillee du composant de rendu. Comment gere-t-il le parcours AST, les prompts MathLive, les inputs texte, les events ?
+- `QuestionType` : 7 types → 3 (`fill_in_blanks`, `multiple_choice`, `open_answer`)
+- `QuestionVariation.blanks` : enrichir avec validation per-blank, retirer `position`
+- `SharedVariationDefaults` : ajouter `blankDefaults`, `answerFormats`
+- `QuestionInstance.blanks` : enrichir avec `type`, `expectedAnswerLatex`, validation per-blank
+- `QuestionInstance.expressions` : nouveau champ
+- `QuestionInstance.solution` : rendre optionnel
+- `MathInlineNode`/`MathBlockNode` : ajouter `expressionName?: string`
+- `BlankNode.index` : passer en 0-based
+- `InputState.index` : passer en 0-based
+- `validateBlanks()` : reecrire pour validation per-blank
 
 ## Fichiers cles a lire
 
@@ -114,9 +136,7 @@ Le doc est **coherent et complet** sur le plan architecture/design. Toutes les q
 
 ## Consignes
 
-- Lire le doc de redesign EN ENTIER avant de proposer quoi que ce soit
-- Etudier `src/lib/questions/` pour comprendre le systeme actuel
-- Proposer des corrections/clarifications section par section — attendre validation avant de modifier
-- Ne PAS lancer d'implementation
+- Lire le doc de redesign EN ENTIER avant de commencer
+- Respecter le workflow TDD du CLAUDE.md (proposer comportements → validation → tests → implementation)
 - Ne PAS recuperer de code du v1 (reverte, hypotheses fausses)
-- Verifier la coherence interne du doc (les decisions des 2 sessions sont-elles bien refletees partout ?)
+- Commencer par l'etape 2 (types TypeScript) sauf instruction contraire
