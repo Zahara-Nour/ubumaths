@@ -66,8 +66,7 @@
 Issues corrigees apres code review (`code-reviewer` agent) :
 
 1. **`getQuestionType()` edge case** — `choices: []` retournait `multiple_choice`, corrige pour retourner `fill_in_blanks`
-2. **Fallback multi-answer** — Le fallback prenait `solution[0]` pour les arrays, corrige avec validation pair-wise
-3. **Test mis a jour** — Test "should fail multiple_choice without choices" adapte au nouveau comportement
+2. **Test mis a jour** — Test "should fail multiple_choice without choices" adapte au nouveau comportement
 
 Issues documentees pour phases suivantes :
 
