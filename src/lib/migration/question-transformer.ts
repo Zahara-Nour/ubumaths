@@ -1023,7 +1023,7 @@ function convertOptions(
 				} else {
 					// Multi-answer question where order doesn't matter
 					// (e.g., absolute value equations, polynomial roots)
-					options.solutionPool = true;
+					options.orderIndependent = true;
 					_mappedCount++;
 				}
 				break;

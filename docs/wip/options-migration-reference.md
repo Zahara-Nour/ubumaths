@@ -137,7 +137,7 @@ ordre" (ex: `a3`, `\sqrt{2}3` sont rejetes — seul `3a`, `3\sqrt{2}` sont accep
 
 | Option ancienne                 | Nouveau chemin                                     | Description                                             | Utilisation |
 | ------------------------------- | -------------------------------------------------- | ------------------------------------------------------- | ----------- |
-| `solutions-order-not-important` | `options.solutionPool = true` (4 questions)        | Matching par pool : chaque reponse pioche dans le pool  | 5 (0.79%)   |
+| `solutions-order-not-important` | `options.orderIndependent = true` (4 questions)    | Matching par pool : chaque reponse pioche dans le pool  | 5 (0.79%)   |
 | `solutions-order-not-important` | `requiredForm` + pattern (1 question avec formats) | Decomposition : pattern produit + equivalence numerique | (inclus)    |
 | `one-single-form-solution`      | `requiredForm: { pattern: '0 - a' }`               | Forme exacte : soustraction a partir de 0               | 1 (0.16%)   |
 

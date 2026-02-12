@@ -169,62 +169,6 @@ function evaluateValidationRules(
 }
 
 // ============================================================================
-// SOLUTION POOL MATCHING
-// ============================================================================
-
-/**
- * Validate multiple answers against a pool of solutions (order-independent).
- *
- * Each user answer is matched against any unused solution in the pool.
- * Once a solution is matched, it cannot be reused for another answer.
- *
- * @param userAnswers - Array of user answers
- * @param solutions - Pool of valid solutions
- * @param type - Question type (determines comparison method)
- * @param precision - Precision for numerical comparisons
- * @returns Validation result
- */
-function validateWithSolutionPool(
-	userAnswers: string[],
-	solutions: string[],
-	precision?: PrecisionType
-): ValidationResult {
-	if (userAnswers.length !== solutions.length) {
-		return { isCorrect: false, message: 'Nombre de réponses incorrect' };
-	}
-
-	const used = new Set<number>();
-
-	for (const userAnswer of userAnswers) {
-		let matched = false;
-
-		for (let i = 0; i < solutions.length; i++) {
-			if (used.has(i)) continue;
-
-			// Try numerical match if precision is set, otherwise equivalence
-			let isMatch = false;
-			if (precision) {
-				isMatch = validateNumerical(userAnswer, solutions[i], precision).isCorrect;
-			} else {
-				isMatch = areEquivalent(userAnswer, solutions[i]);
-			}
-
-			if (isMatch) {
-				used.add(i);
-				matched = true;
-				break;
-			}
-		}
-
-		if (!matched) {
-			return { isCorrect: false, message: 'Incorrect' };
-		}
-	}
-
-	return { isCorrect: true, message: 'Correct !' };
-}
-
-// ============================================================================
 // MAIN VALIDATION FUNCTION
 // ============================================================================
 
@@ -241,7 +185,7 @@ export function validateAnswer(
 	instance: QuestionInstance,
 	userAnswerLatex?: string | string[]
 ): ValidationResult {
-	const { solution, precision } = instance;
+	const { solution } = instance;
 	const questionType = getQuestionType(instance);
 
 	try {
@@ -270,16 +214,12 @@ export function validateAnswer(
 				instance.multipleAnswers
 			);
 		} else if (questionType === 'fill_in_blanks') {
-			// Solution pool: order-independent matching (legacy, will migrate to blanks[] in Phase 4)
-			if (instance.options?.solutionPool && Array.isArray(solution)) {
-				const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
-				result = validateWithSolutionPool(answers, solution, precision);
-			} else if (instance.blanks && instance.blanks.length > 0) {
-				// Per-blank validation
+			if (instance.blanks && instance.blanks.length > 0) {
 				const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
 				result = validateBlanks(
 					answers,
-					instance.blanks.map((b) => b.expectedAnswer)
+					instance.blanks.map((b) => b.expectedAnswer),
+					instance.options?.orderIndependent
 				);
 			} else {
 				result = { isCorrect: false, message: 'Pas de blanks[] définis' };
@@ -320,11 +260,15 @@ export function validateAnswer(
 		if (result.isCorrect && userAnswerLatex) {
 			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
 			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
+			// For fill_in_blanks: use blanks[].expectedAnswer
+			// For multiple_choice: use solution (index-based, constraints less relevant)
 			const expected = instance.blanks
 				? instance.blanks.map((b) => b.expectedAnswer)
 				: Array.isArray(solution)
 					? solution
-					: [solution];
+					: solution
+						? [solution]
+						: [];
 
 			const { status, violations } = applyConstraints(
 				answers,
@@ -534,9 +478,14 @@ export function validateAlgebraic(userAnswer: string, correctAnswer: string): Va
  *
  * @param userAnswers - Array of user answers for each blank
  * @param correctAnswers - Array of correct answers
+ * @param orderIndependent - When true, answers can be in any order (pool matching)
  * @returns Validation result
  */
-export function validateBlanks(userAnswers: string[], correctAnswers: string[]): ValidationResult {
+export function validateBlanks(
+	userAnswers: string[],
+	correctAnswers: string[],
+	orderIndependent?: boolean
+): ValidationResult {
 	if (userAnswers.length !== correctAnswers.length) {
 		return {
 			isCorrect: false,
@@ -544,20 +493,13 @@ export function validateBlanks(userAnswers: string[], correctAnswers: string[]):
 		};
 	}
 
+	if (orderIndependent) {
+		return validateBlanksOrderIndependent(userAnswers, correctAnswers);
+	}
+
 	const results = userAnswers.map((userAns, i) => {
 		const correctAns = correctAnswers[i];
-
-		// Try algebraic equivalence first
-		if (areEquivalent(userAns, correctAns)) {
-			return { isCorrect: true, index: i };
-		}
-
-		// Fallback to exact string match (case-insensitive)
-		if (userAns.trim().toLowerCase() === correctAns.trim().toLowerCase()) {
-			return { isCorrect: true, index: i };
-		}
-
-		return { isCorrect: false, index: i };
+		return { isCorrect: isAnswerMatch(userAns, correctAns), index: i };
 	});
 
 	const allCorrect = results.every((r) => r.isCorrect);
@@ -570,6 +512,37 @@ export function validateBlanks(userAnswers: string[], correctAnswers: string[]):
 			? undefined
 			: `Les blancs suivants sont incorrects: ${incorrectIndexes.join(', ')}`
 	};
+}
+
+/** Match a single answer against expected (algebraic equivalence or case-insensitive string) */
+function isAnswerMatch(userAns: string, correctAns: string): boolean {
+	if (areEquivalent(userAns, correctAns)) return true;
+	return userAns.trim().toLowerCase() === correctAns.trim().toLowerCase();
+}
+
+/** Order-independent matching: each answer is matched against any unused correct answer */
+function validateBlanksOrderIndependent(
+	userAnswers: string[],
+	correctAnswers: string[]
+): ValidationResult {
+	const used = new Set<number>();
+
+	for (const userAns of userAnswers) {
+		let matched = false;
+		for (let i = 0; i < correctAnswers.length; i++) {
+			if (used.has(i)) continue;
+			if (isAnswerMatch(userAns, correctAnswers[i])) {
+				used.add(i);
+				matched = true;
+				break;
+			}
+		}
+		if (!matched) {
+			return { isCorrect: false, message: 'Incorrect' };
+		}
+	}
+
+	return { isCorrect: true, message: 'Correct !' };
 }
 
 // ============================================================================

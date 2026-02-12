@@ -900,29 +900,29 @@ describe('validateAnswer - Required Form Integration', () => {
 });
 
 // ============================================================================
-// SOLUTION POOL TESTS
+// ORDER-INDEPENDENT MATCHING TESTS
 // ============================================================================
 
-describe('solutionPool - order-independent multi-answer matching', () => {
-	function createPoolInstance(solutions: string[]): QuestionInstance {
+describe('orderIndependent - order-independent multi-answer matching', () => {
+	function createOrderIndependentInstance(expectedAnswers: string[]): QuestionInstance {
 		return {
 			templateId: 'test-pool',
 			statement: 'Test question' as ResolvedMarkdown,
-			solution: solutions,
+			blanks: expectedAnswers.map((a) => ({ expectedAnswer: a, type: 'math' as const })),
 			grades: ['2'],
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
 			generatedAt: new Date().toISOString(),
-			options: { solutionPool: true }
+			options: { orderIndependent: true }
 		};
 	}
 
 	describe('numerical questions', () => {
-		// |x| = 3 → solutions: ["3", "-3"]
-		const instance = createPoolInstance(['3', '-3']);
+		// |x| = 3 → answers: ["3", "-3"]
+		const instance = createOrderIndependentInstance(['3', '-3']);
 
-		it('should accept answers in same order as solutions', () => {
+		it('should accept answers in same order', () => {
 			const result = validateAnswer(['3', '-3'], instance);
 			expect(result.isCorrect).toBe(true);
 		});
@@ -944,8 +944,8 @@ describe('solutionPool - order-independent multi-answer matching', () => {
 	});
 
 	describe('algebraic questions', () => {
-		// Roots of (x+2)(x-5) → solutions: ["-2", "5"]
-		const instance = createPoolInstance(['-2', '5'], 'algebraic_transform');
+		// Roots of (x+2)(x-5) → answers: ["-2", "5"]
+		const instance = createOrderIndependentInstance(['-2', '5']);
 
 		it('should accept answers in reversed order', () => {
 			const result = validateAnswer(['5', '-2'], instance);
@@ -963,12 +963,15 @@ describe('solutionPool - order-independent multi-answer matching', () => {
 		});
 	});
 
-	describe('without solutionPool flag', () => {
+	describe('without orderIndependent flag', () => {
 		it('should use positional matching (default behavior)', () => {
 			const instance: QuestionInstance = {
-				templateId: 'test-no-pool',
+				templateId: 'test-positional',
 				statement: 'Test question' as ResolvedMarkdown,
-				blanks: [{ expectedAnswer: '3', type: 'math' }],
+				blanks: [
+					{ expectedAnswer: '3', type: 'math' },
+					{ expectedAnswer: '-3', type: 'math' }
+				],
 				grades: ['2'],
 				theme: 'Test',
 				domain: 'Test',
@@ -976,9 +979,13 @@ describe('solutionPool - order-independent multi-answer matching', () => {
 				generatedAt: new Date().toISOString()
 			};
 
-			// Single answer, no pool
-			const result = validateAnswer('3', instance);
-			expect(result.isCorrect).toBe(true);
+			// Correct order
+			const result1 = validateAnswer(['3', '-3'], instance);
+			expect(result1.isCorrect).toBe(true);
+
+			// Wrong order — positional matching should fail
+			const result2 = validateAnswer(['-3', '3'], instance);
+			expect(result2.isCorrect).toBe(false);
 		});
 	});
 });
