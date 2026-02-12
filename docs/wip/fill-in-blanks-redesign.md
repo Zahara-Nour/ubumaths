@@ -194,9 +194,19 @@ La variable est resolue normalement dans le statement (avec insertion du marqueu
 expressions?: {
   name: string;           // "expression1"
   latex: string;          // "10^2 \\times 10^3"
-  answerFormat?: string;  // "10^?" — absent si l'expression contient deja des ?
+  answerFormat?: string;  // "10^?" en LaTeX — absent si l'expression contient deja des ?
 }[]
 ```
+
+#### Pipeline de resolution answerFormat
+
+Les `answerFormats` dans le template peuvent contenir des references de variables (ex: `"{{a}}^?"` pour l'ancien `&1^?`). Le generateur applique la meme pipeline que pour le contenu markdown :
+
+1. **Resolution des variables** : `"{{a}}^?"` → `"5^?"` (via `resolveExpression()`)
+2. **Conversion en LaTeX** : `"5^?"` → `"5^?"` (via `convertMathZonesToLatex()` — ici trivial, mais necessaire pour des cas comme `"{{a}}/{{b}}*?"` → `"\frac{5}{3} \times ?"`)
+3. **Stockage dans l'instance** : `expressions[i].answerFormat = "5^?"` (en LaTeX, pret pour le composant)
+
+Le composant recoit donc du LaTeX pret a l'emploi et n'a qu'a remplacer les `?` par `\placeholder[N]{}`.
 
 #### Dans le composant
 
@@ -311,9 +321,10 @@ Le generateur fusionne `blankDefaults` + overrides per-blank et infere `type` :
 
 ```typescript
 blanks?: {
-  expectedAnswer: string;   // Resolu (math: "10^5", texte: "entier")
-  type: 'math' | 'text';   // Infere du contexte par le generateur
-  prefilled?: string;       // Resolu
+  expectedAnswer: string;        // Resolu (math: "10^5", texte: "entier")
+  expectedAnswerLatex?: string;  // LaTeX pour flash back (trous math uniquement)
+  type: 'math' | 'text';        // Infere du contexte par le generateur
+  prefilled?: string;            // Resolu
 
   // Trou math — validation (fusionnee depuis blankDefaults + override)
   precision?: PrecisionType;
@@ -377,13 +388,11 @@ Pour les questions avec la convention `expression`, les `?` ne sont pas dans le 
 ```
 // Exemple : expression simple (answerFormat defaut "?")
 statement: "$${{expression1}}$$"
-blankDefaults: { validationType: 'exact' }
 blanks: [{ expectedAnswer: "{{eval:{{expression1}}}}" }]
 
 // Exemple : answerFormat avec forme (10^?)
 statement: "$${{expression1}}$$"
 answerFormats: { "expression1": "10^?" }
-blankDefaults: { validationType: 'exact' }
 blanks: [{ expectedAnswer: "{{eval:{{a}}+{{b}}}}" }]
 
 // Exemple : answerFormat multi-trous (?*10^?)
@@ -438,6 +447,21 @@ blanks: [
 
 Les trous nommes (`?:id`, `[_:id]`) ne sont pas implementes en v1. Le positionnel couvre les 633 questions actuelles. Extension possible plus tard sans casser l'existant.
 
+#### Indexation 0-based partout
+
+**Decision : tout est 0-based.** L'index d'un trou correspond a sa position dans le tableau `blanks[]`.
+
+| Element                  | Base    | Exemple                       |
+| ------------------------ | ------- | ----------------------------- |
+| `blanks[]` (tableau)     | 0-based | `blanks[0]` = premier trou    |
+| `BlankNode.index` (AST)  | 0-based | `{{blank:0}}` = premier trou  |
+| `InputState.index`       | 0-based | `index: 0` = premier trou     |
+| `\placeholder[N]{}` (ML) | 0-based | `\placeholder[0]{}` = premier |
+
+Mapping direct : `blanks[i]` ↔ `BlankNode.index === i` ↔ `InputState.index === i` ↔ `\placeholder[i]{}`. Aucune conversion `+1`/`-1` necessaire.
+
+Note : `BlankNode.index` et `InputState.index` etaient precedemment 1-based. Ce changement simplifie le code et elimine les bugs off-by-one. La syntaxe `{{blank:N}}` utilisee par l'editeur TipTap passe aussi en 0-based — le prof ne voit jamais le numero brut (il voit des chips visuels).
+
 ### 4.2 Mixite des types de trous
 
 **Decision : mixte autorise.**
@@ -447,7 +471,6 @@ Un meme statement peut contenir des trous math (`$?$`) ET des trous texte (`[_]`
 ```
 // Template
 statement: "$f(x) = ?$ est une fonction [_]."
-blankDefaults: { validationType: 'algebraic' }
 blanks: [
   { expectedAnswer: '2x+1' },
   { expectedAnswer: 'affine' }
@@ -455,7 +478,7 @@ blanks: [
 
 // Instance (apres generation)
 blanks: [
-  { expectedAnswer: '2x+1', type: 'math', validationType: 'algebraic' },
+  { expectedAnswer: '2x+1', type: 'math' },
   { expectedAnswer: 'affine', type: 'text' }
 ]
 ```
@@ -564,9 +587,23 @@ Le composant fournit **deux tableaux paralleles** au parent :
 
 Le parent passe les deux au validateur pour supporter `checkRequiredForm()` et `applyConstraints()` (voir section 3.7).
 
-#### Flash back (a decider)
+#### Flash back (RESOLU)
 
-Le rendu du cote reponse (flash back) pour les questions expression n'est pas encore defini. A trancher lors de l'implementation du composant : le composant doit-il augmenter le noeud math avec `= reponse_resolue` au lieu de `= answerFormat[\placeholder]` ?
+Pour le flash back (affichage de la reponse), le composant augmente le noeud math expression avec `= reponseResolue` au lieu de `= answerFormat[\placeholder]`.
+
+Le generateur fournit `blanks[i].expectedAnswerLatex` pour chaque trou, via la meme pipeline de conversion que pour `answerFormat` :
+
+1. **Resolution des variables** : `expectedAnswer: "{{eval:{{a}}+{{b}}}}"` → `"5"`
+2. **Conversion en LaTeX** : `"5"` → `"5"` (via le meme pipeline custom → LaTeX)
+3. **Stockage** : `blanks[i].expectedAnswerLatex = "5"`
+
+En mode flash back, le composant :
+
+- Trous dans le statement (`?`) : remplace par `expectedAnswerLatex` en lecture seule
+- Trous dans les expressions : construit `expression = answerFormatResolu` ou chaque `?` de l'answerFormat est remplace par `expectedAnswerLatex` correspondant
+- Trous texte (`[_]`) : affiche `expectedAnswer` dans un `<span>` stylise
+
+Exemple : answerFormat `"10^?"`, blank `expectedAnswerLatex: "5"` → flash back : `$$10^2 \times 10^3 = 10^{5}$$`
 
 ### 4.8 Syntaxe des trous texte : `[_]` et `{{blank:N}}` coexistent
 
@@ -671,7 +708,7 @@ Raison : `{{blank:N}}` est utilise par l'extension TipTap `BlankField` (`src/lib
 
 ~~1bis. Corriger les erreurs du doc de redesign~~ **FAIT** (2026-02-12) — voir corrections 1-4
 
-~~1ter. Design review : identifier et resoudre les lacunes~~ **FAIT** (2026-02-12) — 6 gaps identifies, 5 resolus (flash back reporte). Decisions : tag AST `<<expr:NAME>>`, indexing naturel, solution optionnel, interface values+valuesLatex, pas de mix `[_]`/`{{blank:N}}`
+~~1ter. Design review : identifier et resoudre les lacunes~~ **FAIT** (2026-02-12) — 6 gaps identifies, tous resolus. Decisions : tag AST `<<expr:NAME>>`, indexing naturel, solution optionnel, interface values+valuesLatex, pas de mix `[_]`/`{{blank:N}}`, flash back via `expectedAnswerLatex` + meme pipeline que answerFormat, pipeline answerFormat documente (resolution variables + conversion LaTeX)
 
 2. Definir les types TypeScript mis a jour
 
