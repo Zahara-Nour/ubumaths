@@ -166,6 +166,14 @@ Le champ `instance.expressions[]` supporte naturellement plusieurs expressions. 
 
 **Decision** : champ `prefilled?: string` optionnel sur chaque blank. Voir redesign section 3.7.
 
+### 5.8 Lien expressions ↔ blanks — RESOLU
+
+**Decision** : blanks explicites dans le template pour les questions expression. L'auteur specifie `blanks[].expectedAnswer` avec `{{eval:...}}` pour les `?` de l'answerFormat. Pas d'auto-creation par le generateur. Le transformer de migration genere ces blanks automatiquement depuis les anciennes `solutionss`. Voir redesign section 3.9.
+
+### 5.9 Structure template-side des blanks — RESOLU
+
+**Decision** : defauts au niveau question (`blankDefaults` sur shared/variation) + overrides per-blank. Le generateur fusionne et infere `type` du contexte. Voir redesign section 3.7.
+
 ---
 
 ## 6. Fichiers cles a connaitre

@@ -292,6 +292,37 @@ blanks?: {
 
 **Pas d'evaluation automatique** : l'ancien systeme TinyMath derivait la solution de l'expression (`math(expression).eval()`). Le nouveau systeme utilise `{{eval:...}}` dans les templates (ex: `expectedAnswer: '{{eval:{{a}}+{{b}}}}'`), resolu explicitement pendant la generation. Pas de magie implicite.
 
+### 3.9 Lien expressions ↔ blanks
+
+Pour les questions avec la convention `expression`, les `?` ne sont pas dans le statement — ils sont dans l'`answerFormat`, ajoutes par le composant en mode interactif. Mais la validation a besoin de `blanks[].expectedAnswer`.
+
+**Decision : blanks explicites dans le template.** L'auteur specifie les blanks correspondant aux `?` de l'answerFormat.
+
+```
+// Exemple : expression simple (answerFormat defaut "?")
+statement: "${{expression1}}$"
+blankDefaults: { validationType: 'exact' }
+blanks: [{ expectedAnswer: "{{eval:{{expression1}}}}" }]
+
+// Exemple : answerFormat avec forme (10^?)
+statement: "${{expression1}}$"
+answerFormats: { "expression1": "10^?" }
+blankDefaults: { validationType: 'exact' }
+blanks: [{ expectedAnswer: "{{eval:{{a}}+{{b}}}}" }]
+
+// Exemple : answerFormat multi-trous (?*10^?)
+statement: "${{expression1}}$"
+answerFormats: { "expression1": "?*10^?" }
+blanks: [
+  { expectedAnswer: "{{a}},{{b}}" },
+  { expectedAnswer: "{{c}}" }
+]
+```
+
+L'ordre des blanks suit l'ordre des `?` dans l'answerFormat. Pour les questions avec des `?` dans le statement ET des expressions avec answerFormat, les blanks du statement viennent en premier (ordre d'apparition), puis ceux des answerFormats (ordre des expressions, puis ordre des `?` dans chaque format).
+
+Le transformer de migration genere automatiquement ces blanks a partir des anciennes `solutionss`.
+
 ---
 
 ## 4. Decisions sur les questions en suspens
