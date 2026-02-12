@@ -293,6 +293,43 @@ const INTERNAL_LINK_REGEX =
 	/\[\[(\w+):([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\|([^\]]+)\]\]/gi;
 
 // ============================================================================
+// EXPRESSION MARKER DETECTION
+// ============================================================================
+
+/**
+ * Regex for expression markers: <<expr:NAME>> at the start of math content
+ *
+ * The content-resolver inserts these markers before expression variable values.
+ * NAME starts with "expression" followed by alphanumeric characters.
+ *
+ * @example
+ * ```
+ * "<<expr:expression1>>10^2" → name: "expression1", content: "10^2"
+ * ```
+ */
+const EXPRESSION_MARKER_REGEX = /^<<expr:(expression[a-zA-Z0-9]*)>>/;
+
+/**
+ * Extract expression marker from math content if present
+ *
+ * @param expression - Math expression content (may start with <<expr:NAME>>)
+ * @returns Object with cleaned expression and optional expressionName
+ */
+function extractExpressionMarker(expression: string): {
+	expression: string;
+	expressionName?: string;
+} {
+	const match = expression.match(EXPRESSION_MARKER_REGEX);
+	if (match) {
+		return {
+			expression: expression.slice(match[0].length).trim(),
+			expressionName: match[1]
+		};
+	}
+	return { expression };
+}
+
+// ============================================================================
 // MAIN PARSE FUNCTION
 // ============================================================================
 
@@ -558,20 +595,26 @@ function parseBlocks(
 			if (placeholder) {
 				if (placeholder.isBlock) {
 					// Block math: create a math-block node
+					const exprInfo = extractExpressionMarker(placeholder.expression);
 					blocks.push({
 						type: 'math-block',
-						expression: placeholder.expression,
-						syntax: placeholder.syntax
+						expression: exprInfo.expression,
+						syntax: placeholder.syntax,
+						...(exprInfo.expressionName && { expressionName: exprInfo.expressionName })
 					});
 				} else {
 					// Inline math on its own line: wrap in a paragraph
+					const exprInfo = extractExpressionMarker(placeholder.expression);
 					blocks.push({
 						type: 'paragraph',
 						children: [
 							{
 								type: 'math-inline',
-								expression: placeholder.expression,
-								syntax: placeholder.syntax
+								expression: exprInfo.expression,
+								syntax: placeholder.syntax,
+								...(exprInfo.expressionName && {
+									expressionName: exprInfo.expressionName
+								})
 							}
 						]
 					});
@@ -743,10 +786,14 @@ function parseInlineContent(
 						}
 					} else {
 						// Math placeholder → inline math node
+						const exprInfo = extractExpressionMarker(segment.expression);
 						nodes.push({
 							type: 'math-inline',
-							expression: segment.expression,
-							syntax: segment.syntax
+							expression: exprInfo.expression,
+							syntax: segment.syntax,
+							...(exprInfo.expressionName && {
+								expressionName: exprInfo.expressionName
+							})
 						});
 					}
 				}
@@ -1612,10 +1659,12 @@ function parseContentWithBlockMath(
 		}
 
 		// The block math itself
+		const exprInfo = extractExpressionMarker(placeholder.expression);
 		blocks.push({
 			type: 'math-block',
-			expression: placeholder.expression,
-			syntax: placeholder.syntax
+			expression: exprInfo.expression,
+			syntax: placeholder.syntax,
+			...(exprInfo.expressionName && { expressionName: exprInfo.expressionName })
 		});
 
 		// Continue with content after this placeholder
