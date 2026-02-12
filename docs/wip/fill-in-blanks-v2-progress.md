@@ -100,3 +100,55 @@ Issues documentees pour phases suivantes :
 
 - **Phase 2**: Parser ubumark + `assignBlankIndices` (Steps 3-4)
 - **Phase 3**: Pipeline de generation (Step 6)
+
+---
+
+## Phase 2: Parser ubumark + assignBlankIndices (COMPLETE)
+
+### Status: Done
+
+### Changes Summary
+
+**Parser `<<expr:NAME>>` detection** : Le parser ubumark detecte les marqueurs `<<expr:NAME>>` au debut du contenu math (inline et block). Le marqueur est retire du `expression` et stocke dans `expressionName` sur le noeud AST. 4 sites de creation de noeuds math modifies + 1 helper `extractExpressionMarker()`.
+
+**Nouveau module `assignBlankIndices()`** : Parcourt le statement resolu de gauche a droite avec un compteur global pour assigner des indices 0-based a tous les trous. Gere 3 types de trous : `?` dans math → `\placeholder[N]{}`, `[_]` dans texte → `{{blank:N}}`, `<<expr:NAME>>` → reserve indices via answerFormats.
+
+### Decisions Made
+
+1. **`[_]` pas dans le parser** — `assignBlankIndices()` remplace `[_]` par `{{blank:N}}` avant le parsing. Le parser ne voit jamais `[_]`, seulement `{{blank:N}}` qu'il gere deja. Pas de support `[_]` ajoute au parser.
+2. **Expression avec answerFormat vs sans** — Si l'expression a un answerFormat, seuls les `?` de l'answerFormat reservent des indices (statement inchange). Si l'expression n'a pas d'answerFormat (fill-in dans l'expression, ex: `(-3) \times ? = -12`), les `?` du statement sont remplaces normalement.
+3. **Marqueur `<<expr:>>` preserve dans le statement** — `assignBlankIndices` laisse le marqueur dans le statement. Le parser le retire ensuite pour mettre `expressionName` sur le noeud AST. Double-responsabilite intentionnelle : assignBlankIndices traite les indices, le parser traite le marqueur.
+4. **Regex ancre au debut** — `<<expr:NAME>>` ne matche qu'au debut du contenu math (`^<<expr:...>>`), coherent avec le fait que le content-resolver l'insere toujours au debut.
+
+### Files Modified
+
+| File                                        | Changes                                                                          |
+| ------------------------------------------- | -------------------------------------------------------------------------------- |
+| `src/lib/ubumark/parser/markdown-parser.ts` | Added `extractExpressionMarker()` helper + applied at 4 math node creation sites |
+
+### Files Created
+
+| File                                                            | Description                                                      |
+| --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `src/lib/questions/generator/assign-blank-indices.ts`           | New module: assigns 0-based indices to all blanks in a statement |
+| `src/lib/questions/generator/assign-blank-indices.test.ts`      | 25 tests for assignBlankIndices                                  |
+| `src/lib/ubumark/__tests__/parser/blank-and-expression.test.ts` | 10 tests for `<<expr:NAME>>` parser detection                    |
+
+### Code Review Findings (post-commit fixes)
+
+Issues corrigees apres code review (`code-reviewer` agent) :
+
+1. **Double-comptage `?` dans expressions** — Quand une expression avait un answerFormat, le code remplacait les `?` dans l'answerFormat ET dans le statement, doublant les indices. Corrige : si answerFormat existe pour l'expression, seul l'answerFormat est modifie (statement inchange).
+2. **Regex non ancre** — `EXPR_MARKER_REGEX` ne commencait pas par `^`, pouvait matcher un marqueur au milieu du contenu math. Corrige : ancre a `^`.
+
+### Test Results
+
+- **Parser** : 10/10 nouveaux + 719 existants (4 pre-existants en echec sur horizontal tables)
+- **assignBlankIndices** : 25/25
+- **TypeScript** : `tsc --noEmit` OK sur tous les fichiers modifies/crees
+- Zero nouvelle regression
+
+### Next Steps
+
+- **Phase 3**: Pipeline de generation (Step 6)
+- **Phase 4**: Validation per-blank (Step 7)
