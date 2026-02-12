@@ -750,6 +750,7 @@ Raison : `{{blank:N}}` est utilise par l'extension TipTap `BlankField` (`src/lib
    - Reclasser les 369 result/rewrite en `fill_in_blanks`
    - Extraire `answerFormat` → `shared.answerFormats: { "expression1": "..." }`
    - Reclasser les 157 answerField en `fill_in_blanks`
+   - Gerer `expressions2` : les 2 questions QCM avec `expressions2` ont 2 expressions simultanees. Le transformer doit creer une variable `expression2` depuis `expressions2[i]` en plus de `expression1` depuis `expressions[i]`. Ces questions restent `multiple_choice` (pas de blanks).
 
 8. Creer le dictionnaire de vocabulaire mathematique FR
 
