@@ -92,38 +92,68 @@ Analyse dimensionnelle (`checkDimensionalConsistency()`) a la validation, pas au
 
 Le doc est **coherent et complet** sur le plan architecture/design. **Toutes les questions ouvertes sont resolues.** Pas de lacune identifiee.
 
-## Objectif de la prochaine session
+## Objectif de cette session
 
-**Passer a l'implementation.** Le doc de redesign est stable. Les prochaines etapes (section 7 du doc) :
+**Continuer la reflexion avant implementation.** Le doc de redesign est stable sur les decisions architecturales. Avant de coder, il reste a verifier en profondeur que le design tient face a la realite du code et des donnees. NE PAS lancer d'implementation sans accord explicite.
 
-1. ~~Trancher les questions en suspens~~ FAIT
-2. **Definir les types TypeScript mis a jour** ← prochaine etape
-3. Ajouter `[_]` et `<<expr:NAME>>` dans le parser ubumark
-4. Implementer le nouveau FillBlanksInput
-5. Adapter le pipeline de generation
-6. Adapter la validation
-7. Mettre a jour le transformer de migration
-8. Creer le dictionnaire de vocabulaire mathematique FR
-9. Tests + import en DB
+### Axes de reflexion
 
-### Changements de types a faire (etape 2)
+#### 1. Verification des types avant ecriture
 
-- `QuestionType` : 7 types → 3 (`fill_in_blanks`, `multiple_choice`, `open_answer`)
-- `QuestionVariation.blanks` : enrichir avec validation per-blank, retirer `position`
-- `SharedVariationDefaults` : ajouter `blankDefaults`, `answerFormats`
-- `QuestionInstance.blanks` : enrichir avec `type`, `expectedAnswerLatex`, validation per-blank
-- `QuestionInstance.expressions` : nouveau champ
-- `QuestionInstance.solution` : rendre optionnel
-- `MathInlineNode`/`MathBlockNode` : ajouter `expressionName?: string`
-- `BlankNode.index` : passer en 0-based
-- `InputState.index` : passer en 0-based
-- `validateBlanks()` : reecrire pour validation per-blank
+Le doc decrit les structures (sections 3.7, 3.4) mais les types formels ne sont pas encore ecrits. Avant de coder `types.ts`, verifier la coherence :
+
+- Les types template-side (`QuestionVariation.blanks`, `SharedVariationDefaults.blankDefaults`, `answerFormats`) sont-ils complets ?
+- Les types instance-side (`QuestionInstance.blanks`, `expressions[]`) couvrent-ils tous les cas ?
+- Le passage template → instance est-il clair pour le generateur ? (quelles transformations, quelles fusions)
+- `solution` optionnel : lister exhaustivement les endroits du code impactes
+
+**Methode** : ecrire les types en pseudo-code dans le doc, les confronter a 4-5 exemples concrets de `.claude/old-questions.json` (1 result/rewrite simple, 1 avec answerFormat non-trivial, 1 answerField, 1 fill-in, 1 multi-trous).
+
+#### 2. Walkthrough composant avec exemples concrets
+
+Le doc dit "parcours AST unifie" mais ne detaille pas le flux de donnees. Pour chaque cas, derouler :
+
+- Quel AST le parser produit (noeuds concrets)
+- Ce que le composant recoit (instance.blanks, instance.expressions)
+- Comment le composant mappe AST → DOM en mode interactif et flash back
+- Comment les valeurs remontent (values[], valuesLatex[])
+
+**Cas a derouler** :
+
+- `$? + ? = 10$` (fill-in simple, 2 trous math dans une expression inline)
+- `$${{expression1}}$$` avec answerFormat `"10^?"` (result/rewrite)
+- `Le chiffre des centaines est $?$.` (answerField converti)
+- Mix texte + math : `$f(x) = ?$ est une fonction [_].` (trou math + trou texte)
+
+#### 3. Pipeline de validation per-blank : walkthrough
+
+Le doc decrit le pipeline (section 3.7) mais un walkthrough concret permettrait de verifier :
+
+- Pour un trou math sans precision ni unit → `areEquivalent()`. Quelles donnees exactement ?
+- Pour un trou math avec precision → `validateNumerical()`. Comment le validateur recoit-il la precision du blank specifique ?
+- Pour un trou texte → fuzzy matching. Comment le pool est-il passe ?
+- `checkRequiredForm` et `applyConstraints` : per-blank ou per-question ? Le doc dit per-blank pour requiredForm mais `constraints` reste per-question. Est-ce coherent ?
+
+#### 4. Migration transformer : mapping detaille
+
+Verifier que chaque categorie de questions se mappe correctement :
+
+- **369 result/rewrite** : comment le transformer detecte-t-il ces questions ? Actuellement il ne les reclasse pas. Quel critere ? (`expressions` present ET pas de `?` dans l'expression ET pas de `choicess`)
+- **157 answerField** : comment convertir `\text{...}$$...$$\text{.}` → `texte $?$.` ? Regex ou parsing ? Quels cas limites ? (multi-trous, texte avec LaTeX inline)
+- **107 fill-in** : deja geres mais le format `blanks[]` change (plus de `position`, ajout `expectedAnswerLatex`). Impact ?
+
+#### 5. Cas limites non encore explores
+
+- Que se passe-t-il si un blank a `prefilled` ET `expectedAnswer` ? Le prefilled est-il la valeur initiale du champ editable ?
+- Pool texte : comment le composant recoit-il `blanks[i].pool` et l'utilise pour l'autocompletion ? Quel composant d'autocompletion ?
+- `validationRules` per-blank : le doc les mentionne mais comment interagissent-elles avec le mode infere (precision/unit/equivalence) ? Short-circuit ou complement ?
+- Expressions inline (`${{expression1}}$`) vs bloc (`$${{expression1}}$$`) : le composant doit-il gerer les deux ? Le generateur produit-il le bon marqueur `<<expr:NAME>>` dans les deux cas ?
 
 ## Fichiers cles a lire
 
 - `docs/wip/fill-in-blanks-redesign.md` — **LIRE EN PREMIER** — doc d'architecture complet
 - `docs/wip/fill-in-blanks-plan-v2-notes.md` — contexte historique
-- `src/lib/questions/types.ts` — types actuels
+- `src/lib/questions/types.ts` — types actuels (a comparer avec le design)
 - `src/lib/questions/generator/instance-generator.ts` — pipeline de generation
 - `src/lib/questions/generator/content-resolver.ts` — resolution des variables (ou le marqueur `<<expr:NAME>>` sera insere)
 - `src/lib/utils/answer-validator.ts` — pipeline de validation
@@ -131,12 +161,17 @@ Le doc est **coherent et complet** sur le plan architecture/design. **Toutes les
 - `src/lib/math/index.ts` — `areEquivalent()`, `evaluateExpression()`
 - `src/lib/ubumark/types/ast.ts` — types AST (MathInlineNode, MathBlockNode, BlankNode)
 - `src/lib/components/question-inputs/FillBlanksInput.svelte` — composant actuel (a reecrire)
+- `src/lib/components/markdown/nodes/ParagraphNode.svelte` — routage AST → composants (deja fonctionnel)
 - `src/lib/components/markdown/nodes/MathPrompt.svelte` — prompts MathLive
+- `src/lib/components/markdown/nodes/BlankInput.svelte` — input texte pour blanks
+- `src/lib/migration/question-transformer.ts` — transformer actuel (a adapter)
 - `.claude/old-questions.json` — donnees des 633 questions TinyMath
 
 ## Consignes
 
-- Lire le doc de redesign EN ENTIER avant de commencer
-- Respecter le workflow TDD du CLAUDE.md (proposer comportements → validation → tests → implementation)
+- Lire le doc de redesign EN ENTIER avant de proposer quoi que ce soit
+- Etudier le code existant pour comprendre le systeme actuel
+- Proposer des analyses/clarifications — attendre validation avant de modifier le doc
+- Ne PAS lancer d'implementation
 - Ne PAS recuperer de code du v1 (reverte, hypotheses fausses)
-- Commencer par l'etape 2 (types TypeScript) sauf instruction contraire
+- Utiliser des exemples concrets de `.claude/old-questions.json` pour valider les raisonnements
