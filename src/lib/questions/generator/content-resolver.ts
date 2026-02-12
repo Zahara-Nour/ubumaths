@@ -35,43 +35,58 @@ const BLOCK_MATH_REGEX = /\$\$([\s\S]+?)\$\$/g;
 const INLINE_MATH_REGEX = /\$([^$\n]+)\$/g;
 
 /**
+ * Regex to revert auto-generated \placeholder[N]{} back to ? markers.
+ * The mathAST parser converts ? to \placeholder[N]{} with 1-based auto-increment,
+ * but we need assignBlankIndices to re-assign with correct 0-based global indices.
+ */
+const PLACEHOLDER_REVERT_REGEX = /\\placeholder\[\d+\]\{\}/g;
+
+/**
+ * Regex to match expression markers at the start of math content.
+ */
+const EXPR_MARKER_REGEX = /^<<expr:(expression[a-zA-Z0-9]*)>>/;
+
+/**
  * Convert content inside $...$ and $$...$$ from custom syntax to LaTeX
  *
  * After variable resolution, math zones contain custom mathAST syntax.
  * This function converts that syntax to LaTeX for rendering.
+ *
+ * Handles:
+ * - `<<expr:NAME>>` markers: stripped before parsing, re-added after conversion
+ * - `?` hole markers: mathAST converts them to \placeholder[N]{}, but we revert
+ *   them back to `?` so that assignBlankIndices can re-assign correct 0-based indices
  *
  * Note: ~...~ and ~~...~~ zones are NOT converted - they stay in custom
  * syntax for answer comparison and other non-display purposes.
  *
  * @param content - Content with resolved variables
  * @returns Content with math zones converted to LaTeX
- *
- * @example
- * ```typescript
- * // Custom syntax in $...$
- * convertMathZonesToLatex('Calculate $a/b$')
- * // → 'Calculate $\\frac{a}{b}$'
- *
- * // Block math
- * convertMathZonesToLatex('$$x^2 + 2x + 1$$')
- * // → '$$x^{2} + 2 x + 1$$'
- *
- * // ~...~ stays unchanged
- * convertMathZonesToLatex('Answer: ~a+b~')
- * // → 'Answer: ~a+b~' (no conversion)
- * ```
  */
 function convertMathZonesToLatex(content: string): string {
 	let result = content;
 
-	// Helper to convert a single expression
+	// Helper to convert a single expression, handling markers and ? preservation
 	const convertExpression = (expr: string): string => {
-		const parseResult = parseCustomSafe(expr.trim());
+		// Check for and strip expression marker <<expr:NAME>>
+		let prefix = '';
+		let mathContent = expr;
+		const markerMatch = mathContent.match(EXPR_MARKER_REGEX);
+		if (markerMatch) {
+			prefix = markerMatch[0];
+			mathContent = mathContent.slice(markerMatch[0].length);
+		}
+
+		const parseResult = parseCustomSafe(mathContent.trim());
 		if (parseResult.ast) {
-			return toLatex(parseResult.ast);
+			let latex = toLatex(parseResult.ast);
+			// Revert auto-generated \placeholder[N]{} back to ? markers
+			// assignBlankIndices will re-assign with correct 0-based indices
+			latex = latex.replace(PLACEHOLDER_REVERT_REGEX, '?');
+			return prefix + latex;
 		}
 		// On parse error, return original (will show error at render time)
-		return expr;
+		return prefix + mathContent;
 	};
 
 	// Convert block math $$...$$ first (before inline to avoid conflicts)
@@ -143,6 +158,81 @@ export function resolveExpression(
 	// Also resolve color references
 	resolved = resolveColorReferences(resolved, seed);
 	return resolved;
+}
+
+/**
+ * Insert <<expr:NAME>> markers before expression variable references in template markdown.
+ *
+ * For each {{expressionNAME}} reference where NAME is in the expressionNames set,
+ * inserts `<<expr:NAME>>` before the reference. After variable resolution,
+ * this produces `<<expr:NAME>>resolvedValue` in the output.
+ *
+ * @param content - Template markdown content
+ * @param expressionNames - Set of variable names starting with "expression"
+ * @returns Modified content with markers inserted
+ */
+export function insertExpressionMarkers(content: string, expressionNames: Set<string>): string {
+	if (expressionNames.size === 0) return content;
+
+	return content.replace(/\{\{(expression[a-zA-Z0-9]*)\}\}/g, (match, name: string) => {
+		if (expressionNames.has(name)) {
+			return `<<expr:${name}>>${match}`;
+		}
+		return match;
+	});
+}
+
+/**
+ * Resolve an answerFormat string: variable resolution + LaTeX conversion.
+ *
+ * The answerFormat can contain variable references (e.g., "{{a}}^?") and
+ * custom mathAST syntax. This function:
+ * 1. Resolves variables: "{{a}}^?" → "5^?"
+ * 2. Converts to LaTeX, preserving ? markers: "5^?" → "5^{?}"
+ *
+ * The ? markers are preserved for later replacement by assignBlankIndices.
+ *
+ * @param answerFormat - Answer format template string
+ * @param resolvedVariables - Already resolved variables
+ * @param seed - Optional seed for random generation
+ * @returns Resolved answerFormat in LaTeX with ? markers preserved
+ */
+export function resolveAnswerFormat(
+	answerFormat: string,
+	resolvedVariables: ResolvedVariable[],
+	seed?: number
+): string {
+	// Stage 1: Resolve variables and color references
+	let resolved = resolveVariableExpression(answerFormat, resolvedVariables, seed);
+	resolved = resolveColorReferences(resolved, seed);
+
+	// Stage 2: Convert to LaTeX, preserving ? markers
+	// The mathAST parser converts ? to \placeholder[N]{}, so we revert after
+	const parseResult = parseCustomSafe(resolved.trim());
+	if (parseResult.ast) {
+		resolved = toLatex(parseResult.ast);
+		// Revert auto-generated \placeholder[N]{} back to ? markers
+		resolved = resolved.replace(PLACEHOLDER_REVERT_REGEX, '?');
+	}
+
+	return resolved;
+}
+
+/**
+ * Convert a resolved expectedAnswer to LaTeX (for flash back display).
+ *
+ * @param expectedAnswer - Resolved expected answer string (e.g., "5", "10^5")
+ * @returns LaTeX string, or undefined if conversion fails
+ */
+export function convertToLatex(expression: string): string {
+	const parseResult = parseCustomSafe(expression.trim());
+	if (parseResult.ast) {
+		let latex = toLatex(parseResult.ast);
+		// Revert any auto-generated placeholders (shouldn't be present, but safety)
+		latex = latex.replace(PLACEHOLDER_REVERT_REGEX, '?');
+		return latex;
+	}
+	return expression;
 }
 
 /**
