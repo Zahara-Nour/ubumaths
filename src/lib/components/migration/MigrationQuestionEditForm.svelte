@@ -27,7 +27,13 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { resolveVariables, resolveExpression, resolveSolution } from '$lib/questions';
-	import type { QuestionVariable } from '$lib/questions/types';
+	import type {
+		QuestionVariable,
+		RequiredForm,
+		ValidationRule,
+		BlankDefaults,
+		PrecisionType
+	} from '$lib/questions/types';
 	import {
 		Plus,
 		X,
@@ -51,8 +57,13 @@
 	}
 
 	interface Blank {
-		position: number;
 		expectedAnswer: string;
+		prefilled?: string;
+		pool?: string[];
+		precision?: PrecisionType;
+		requiredForm?: RequiredForm;
+		validationRules?: ValidationRule[];
+		unit?: { expected: boolean; required?: string };
 	}
 
 	interface Correction {
@@ -67,24 +78,32 @@
 	interface Variation {
 		statement: string;
 		variables?: QuestionVariable[];
-		solution: string | string[];
+		solution?: string | string[];
 		correction?: Correction;
 		choices?: Choice[];
 		blanks?: Blank[];
+		answerFormats?: Record<string, string>;
+		validationRules?: ValidationRule[];
+		requiredForm?: RequiredForm;
+		blankDefaults?: BlankDefaults;
 	}
 
 	interface SharedDefaults {
 		variables?: QuestionVariable[];
 		choices?: Choice[];
+		validationRules?: ValidationRule[];
+		requiredForm?: RequiredForm;
+		blankDefaults?: BlankDefaults;
+		answerFormats?: Record<string, string>;
 	}
 
 	export interface EditedQuestion {
-		type?: string;
 		title: string;
 		description?: string;
 		shared?: SharedDefaults;
 		variations: Variation[];
 		exerciseInstruction?: string;
+		options?: Record<string, unknown>;
 		grades?: string[];
 		theme?: string;
 		domain?: string;
@@ -130,9 +149,12 @@
 	const currentVariation = $derived(formData.variations[selectedVariationIndex] || null);
 
 	const isQCM = $derived(
-		formData.type === 'multiple_choice' ||
-			(currentVariation?.choices && currentVariation.choices.length > 0) ||
+		(currentVariation?.choices && currentVariation.choices.length > 0) ||
 			(formData.shared?.choices && formData.shared.choices.length > 0)
+	);
+
+	const hasBlanks = $derived(
+		currentVariation?.blanks !== undefined && currentVariation.blanks.length > 0
 	);
 
 	// Preview instance generation
@@ -189,7 +211,7 @@
 		}
 	});
 
-	// Form validation
+	// Form validation (solution is optional for fill-in-blanks)
 	const isValid = $derived(
 		formData.title.trim().length > 0 &&
 			formData.variations.length > 0 &&
@@ -210,7 +232,6 @@
 			...formData.variations,
 			{
 				statement: '',
-				solution: '',
 				variables: [],
 				choices: isQCM ? [{ content: '', isCorrect: false }] : undefined
 			}
@@ -418,27 +439,151 @@
 					{/if}
 				</div>
 
-				<!-- Solution -->
+				<!-- Solution (optional for fill-in-blanks) -->
 				<div class="space-y-2">
-					<Label for="solution">Solution</Label>
-					{#if Array.isArray(currentVariation.solution)}
-						<div class="space-y-2">
-							{#each currentVariation.solution as _sol, si (si)}
-								<Input
-									bind:value={formData.variations[selectedVariationIndex].solution[si]}
-									placeholder="Solution {si + 1}"
-									class="font-mono"
-								/>
-							{/each}
-						</div>
+					<Label for="solution">
+						Solution
+						{#if hasBlanks}
+							<span class="text-xs text-muted-foreground">(optionnel pour blancs)</span>
+						{/if}
+					</Label>
+					{#if currentVariation.solution !== undefined}
+						{#if Array.isArray(currentVariation.solution)}
+							<div class="space-y-2">
+								{#each currentVariation.solution as _sol, si (si)}
+									<Input
+										bind:value={formData.variations[selectedVariationIndex].solution![si]}
+										placeholder="Solution {si + 1}"
+										class="font-mono"
+									/>
+								{/each}
+							</div>
+						{:else}
+							<Input
+								bind:value={formData.variations[selectedVariationIndex].solution}
+								placeholder={'Solution (ex: {{a}}+{{b}})'}
+								class="font-mono"
+							/>
+						{/if}
 					{:else}
-						<Input
-							bind:value={formData.variations[selectedVariationIndex].solution}
-							placeholder={'Solution (ex: {{a}}+{{b}})'}
-							class="font-mono"
-						/>
+						<p class="text-xs text-muted-foreground">
+							Pas de solution (les blancs sont la source de vérité)
+						</p>
 					{/if}
 				</div>
+
+				<!-- Blanks Editor -->
+				{#if hasBlanks}
+					<div class="space-y-3">
+						<Label>Blancs ({currentVariation.blanks?.length || 0})</Label>
+						<div class="space-y-2">
+							{#each currentVariation.blanks! as blank, bi (bi)}
+								<div class="space-y-2 rounded-md border p-3">
+									<div class="flex items-center gap-2">
+										<Badge variant="outline" class="font-mono text-xs">#{bi}</Badge>
+										<Input
+											bind:value={
+												formData.variations[selectedVariationIndex].blanks![bi].expectedAnswer
+											}
+											placeholder="Réponse attendue"
+											class="flex-1 font-mono text-sm"
+										/>
+									</div>
+									{#if blank.prefilled !== undefined}
+										<div class="flex items-center gap-2">
+											<span class="w-16 text-xs text-muted-foreground">prefilled:</span>
+											<Input
+												bind:value={
+													formData.variations[selectedVariationIndex].blanks![bi].prefilled
+												}
+												placeholder="Valeur pré-remplie"
+												class="flex-1 font-mono text-sm"
+											/>
+										</div>
+									{/if}
+									<!-- Read-only metadata -->
+									{#if blank.unit}
+										<div class="text-xs text-muted-foreground">
+											unité: {blank.unit.required ?? 'attendue'}
+										</div>
+									{/if}
+									{#if blank.precision}
+										<div class="text-xs text-muted-foreground">
+											precision: {JSON.stringify(blank.precision)}
+										</div>
+									{/if}
+									{#if blank.requiredForm}
+										<div class="text-xs text-muted-foreground">
+											requiredForm: {JSON.stringify(blank.requiredForm)}
+										</div>
+									{/if}
+									{#if blank.validationRules && blank.validationRules.length > 0}
+										<div class="text-xs text-muted-foreground">
+											validationRules: {JSON.stringify(blank.validationRules)}
+										</div>
+									{/if}
+									{#if blank.pool && blank.pool.length > 0}
+										<div class="text-xs text-muted-foreground">
+											pool: [{blank.pool.join(', ')}]
+										</div>
+									{/if}
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
+				<!-- answerFormats Editor -->
+				{#if currentVariation.answerFormats && Object.keys(currentVariation.answerFormats).length > 0}
+					<div class="space-y-3">
+						<Label>Answer Formats</Label>
+						<div class="space-y-2">
+							{#each Object.entries(currentVariation.answerFormats) as [key, value] (key)}
+								<div class="flex items-center gap-2">
+									<Input value={key} disabled class="w-32 bg-muted font-mono text-sm" />
+									<span class="text-muted-foreground">→</span>
+									<Input
+										{value}
+										oninput={(e) => {
+											const newVal = (e.target as HTMLInputElement).value;
+											formData.variations[selectedVariationIndex].answerFormats = {
+												...currentVariation.answerFormats,
+												[key]: newVal
+											};
+										}}
+										placeholder="Format (ex: 10^?)"
+										class="flex-1 font-mono text-sm"
+									/>
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
+				<!-- requiredForm (read-only) -->
+				{#if currentVariation.requiredForm}
+					<div class="space-y-2">
+						<Label>Required Form</Label>
+						<pre class="rounded-md bg-muted p-2 font-mono text-xs">{JSON.stringify(
+								currentVariation.requiredForm,
+								null,
+								2
+							)}</pre>
+					</div>
+				{/if}
+
+				<!-- validationRules (read-only) -->
+				{#if currentVariation.validationRules && currentVariation.validationRules.length > 0}
+					<div class="space-y-2">
+						<Label>Validation Rules ({currentVariation.validationRules.length})</Label>
+						<pre
+							class="max-h-40 overflow-auto rounded-md bg-muted p-2 font-mono text-xs">{JSON.stringify(
+								currentVariation.validationRules,
+								null,
+								2
+							)}</pre>
+					</div>
+				{/if}
 
 				<!-- Choices (for QCM) -->
 				{#if isQCM}

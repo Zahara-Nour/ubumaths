@@ -32,6 +32,10 @@
 			};
 			warnings: string[];
 			errors: string[];
+			stats: {
+				detectedType: string;
+				[key: string]: unknown;
+			};
 		};
 		reviewStatus?: ReviewStatus;
 		onclick?: () => void;
@@ -53,6 +57,9 @@
 
 	// Status icon
 	const StatusIcon = $derived(hasErrors ? AlertCircle : hasWarnings ? AlertTriangle : CheckCircle2);
+
+	// Detected type badge label
+	const typeLabel = $derived(question.stats.detectedType === 'multiple_choice' ? 'QCM' : 'Blancs');
 </script>
 
 <Card.Root
@@ -131,6 +138,11 @@
 						{question.warnings.length} avertissement{question.warnings.length > 1 ? 's' : ''}
 					</Badge>
 				{/if}
+
+				<!-- Type Badge -->
+				<Badge variant="outline" class="text-xs">
+					{typeLabel}
+				</Badge>
 
 				<!-- Global Index -->
 				<span class="text-xs text-muted-foreground">
