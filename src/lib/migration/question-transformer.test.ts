@@ -263,11 +263,14 @@ describe('Question Transformer', () => {
 
 				const var1 = result.template?.variations[0];
 				expect(var1?.statement).toContain('Additionner');
-				expect(var1?.solution).toBe('eval:a+b');
+				// result_rewrite → blanks instead of solution
+				expect(var1?.blanks).toBeDefined();
+				expect(var1?.blanks?.[0]?.expectedAnswer).toBe('{{eval:a+b}}');
 
 				const var2 = result.template?.variations[1];
 				expect(var2?.statement).toContain('Soustraire');
-				expect(var2?.solution).toBe('eval:a-b');
+				expect(var2?.blanks).toBeDefined();
+				expect(var2?.blanks?.[0]?.expectedAnswer).toBe('{{eval:a-b}}');
 			});
 		});
 
@@ -538,7 +541,9 @@ describe('Question Transformer', () => {
 				expect(vars?.[1]).toEqual({ name: 'b', expression: '0..9!a' });
 				expect(vars?.[2]).toEqual({ name: 'c', expression: 'eval:a*10+b' });
 
-				expect(result.template?.variations[0]?.solution).toBe('a');
+				// answer_field → blanks instead of solution
+				expect(result.template?.variations[0]?.blanks).toBeDefined();
+				expect(result.template?.variations[0]?.blanks?.[0]?.expectedAnswer).toBe('{{a}}');
 			});
 
 			it('should handle n-digit number patterns', () => {
@@ -775,14 +780,12 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.shared?.solution).toBeDefined();
-			expect(result.template?.shared?.solution).toBe('42');
-			// Variations still get the solution (as fallback), but shared indicates it's common
-			expect(result.template?.variations[0]?.solution).toBeDefined();
-			expect(result.template?.variations[1]?.solution).toBeDefined();
-			// Both variations should have the same solution as shared
-			expect(result.template?.variations[0]?.solution).toEqual(result.template?.shared?.solution);
-			expect(result.template?.variations[1]?.solution).toEqual(result.template?.shared?.solution);
+			// result_rewrite → no solution, blanks instead
+			expect(result.template?.shared?.solution).toBeUndefined();
+			expect(result.template?.variations[0]?.blanks).toBeDefined();
+			expect(result.template?.variations[0]?.blanks?.[0]?.expectedAnswer).toBe('42');
+			expect(result.template?.variations[1]?.blanks).toBeDefined();
+			expect(result.template?.variations[1]?.blanks?.[0]?.expectedAnswer).toBe('42');
 		});
 
 		it('should handle mix of shared and per-variation fields', () => {
@@ -806,13 +809,12 @@ describe('Question Transformer', () => {
 			expect(
 				result.template?.variations[0]?.variables?.find((v) => v.name === 'expression1')
 			).toBeDefined();
-			// Not shared
+			// result_rewrite → no solution, blanks instead
 			expect(result.template?.shared?.solution).toBeUndefined();
-			// Per-variation solutions
-			expect(result.template?.variations[0]?.solution).toBeDefined();
-			expect(result.template?.variations[1]?.solution).toBeDefined();
-			expect(result.template?.variations[0]?.solution).toBe('eval:a+b');
-			expect(result.template?.variations[1]?.solution).toBe('eval:a*2+b');
+			expect(result.template?.variations[0]?.blanks).toBeDefined();
+			expect(result.template?.variations[0]?.blanks?.[0]?.expectedAnswer).toBe('{{eval:a+b}}');
+			expect(result.template?.variations[1]?.blanks).toBeDefined();
+			expect(result.template?.variations[1]?.blanks?.[0]?.expectedAnswer).toBe('{{eval:a*2+b}}');
 		});
 
 		it('should preserve QuestionCorrection structure when shared', () => {
@@ -859,7 +861,9 @@ describe('Question Transformer', () => {
 			expect(result.template?.variations).toHaveLength(1);
 			expect(result.template?.variations[0]?.statement).toBeDefined();
 			expect(result.template?.variations[0]?.variables).toBeDefined();
-			expect(result.template?.variations[0]?.solution).toBeDefined();
+			// result_rewrite → blanks instead of solution
+			expect(result.template?.variations[0]?.blanks).toBeDefined();
+			expect(result.template?.variations[0]?.blanks?.[0]?.expectedAnswer).toBe('{{a}}');
 		});
 
 		it('should detect shared choices for multiple choice questions', () => {
@@ -1211,8 +1215,11 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			// Solution should evaluate the expression variable
-			expect(result.template?.variations[0]?.solution).toBe('eval:expression1');
+			// result_rewrite without solutions → blank with eval expression
+			expect(result.template?.variations[0]?.blanks).toBeDefined();
+			expect(result.template?.variations[0]?.blanks?.[0]?.expectedAnswer).toBe(
+				'{{eval:{{expression1}}}}'
+			);
 		});
 
 		it('should generate per-variation solutions from expressions when solutionss is absent', () => {
@@ -1229,8 +1236,15 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.variations[0]?.solution).toBe('eval:expression1');
-			expect(result.template?.variations[1]?.solution).toBe('eval:expression2');
+			// result_rewrite without solutions → blank with eval expression
+			expect(result.template?.variations[0]?.blanks).toBeDefined();
+			expect(result.template?.variations[0]?.blanks?.[0]?.expectedAnswer).toBe(
+				'{{eval:{{expression1}}}}'
+			);
+			expect(result.template?.variations[1]?.blanks).toBeDefined();
+			expect(result.template?.variations[1]?.blanks?.[0]?.expectedAnswer).toBe(
+				'{{eval:{{expression2}}}}'
+			);
 		});
 	});
 
