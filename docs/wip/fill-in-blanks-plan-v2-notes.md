@@ -116,7 +116,7 @@ Description: "Notation scientifique"
 
 ```typescript
 interface InputState {
-	index: number; // 1-based
+	index: number; // 0-based
 	value: string;
 	type: 'text' | 'math';
 	isCorrect: boolean | null;

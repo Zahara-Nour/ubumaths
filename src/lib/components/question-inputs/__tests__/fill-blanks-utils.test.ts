@@ -24,6 +24,7 @@ import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
 import {
 	augmentASTForExpressions,
 	buildInputStates,
+	buildInputStatesForCorrection,
 	applyValidationToInputStates
 } from '../fill-blanks-utils';
 
@@ -328,7 +329,74 @@ describe('buildInputStates', () => {
 });
 
 // =============================================================================
-// C. applyValidationToInputStates
+// C. buildInputStatesForCorrection
+// =============================================================================
+
+describe('buildInputStatesForCorrection', () => {
+	it('should use expectedAnswerLatex for math blanks', () => {
+		const blanks: InstanceBlank[] = [
+			makeBlank({ expectedAnswer: '5', expectedAnswerLatex: '5', type: 'math' })
+		];
+
+		const states = buildInputStatesForCorrection(blanks);
+
+		expect(states[0].value).toBe('5');
+		expect(states[0].type).toBe('math');
+		expect(states[0].isCorrect).toBe(true);
+	});
+
+	it('should fallback to expectedAnswer when expectedAnswerLatex is missing for math blanks', () => {
+		const blanks: InstanceBlank[] = [makeBlank({ expectedAnswer: '42', type: 'math' })];
+
+		const states = buildInputStatesForCorrection(blanks);
+
+		expect(states[0].value).toBe('42');
+	});
+
+	it('should use expectedAnswer for text blanks', () => {
+		const blanks: InstanceBlank[] = [
+			makeBlank({ expectedAnswer: 'entier', type: 'text', expectedAnswerLatex: 'ignored' })
+		];
+
+		const states = buildInputStatesForCorrection(blanks);
+
+		expect(states[0].value).toBe('entier');
+		expect(states[0].type).toBe('text');
+	});
+
+	it('should set isCorrect=true for all blanks', () => {
+		const blanks: InstanceBlank[] = [
+			makeBlank({ expectedAnswer: '5', type: 'math' }),
+			makeBlank({ expectedAnswer: 'pair', type: 'text' }),
+			makeBlank({ expectedAnswer: '10^{3}', expectedAnswerLatex: '10^{3}', type: 'math' })
+		];
+
+		const states = buildInputStatesForCorrection(blanks);
+
+		expect(states).toHaveLength(3);
+		expect(states.every((s) => s.isCorrect === true)).toBe(true);
+	});
+
+	it('should assign correct 0-based indices', () => {
+		const blanks: InstanceBlank[] = [
+			makeBlank({ expectedAnswer: 'a', type: 'math' }),
+			makeBlank({ expectedAnswer: 'b', type: 'text' })
+		];
+
+		const states = buildInputStatesForCorrection(blanks);
+
+		expect(states[0].index).toBe(0);
+		expect(states[1].index).toBe(1);
+	});
+
+	it('should return empty array for no blanks', () => {
+		const states = buildInputStatesForCorrection([]);
+		expect(states).toHaveLength(0);
+	});
+});
+
+// =============================================================================
+// D. applyValidationToInputStates
 // =============================================================================
 
 describe('applyValidationToInputStates', () => {

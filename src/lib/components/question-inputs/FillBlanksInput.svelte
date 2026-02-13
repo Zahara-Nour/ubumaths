@@ -42,6 +42,7 @@
 	import {
 		augmentASTForExpressions,
 		buildInputStates,
+		buildInputStatesForCorrection,
 		applyValidationToInputStates
 	} from './fill-blanks-utils';
 
@@ -58,6 +59,8 @@
 		valuesLatex?: string[];
 		/** Whether inputs are disabled */
 		disabled?: boolean;
+		/** Show correct answers in blanks (flash back / correction mode) */
+		showCorrectAnswers?: boolean;
 		/** Per-blank validation: true=correct, false=incorrect, null=not validated */
 		validationResults?: (boolean | null)[];
 		/** Callback when Enter is pressed in a blank */
@@ -71,9 +74,13 @@
 		values = $bindable([]),
 		valuesLatex = $bindable([]),
 		disabled = false,
+		showCorrectAnswers = false,
 		validationResults = [],
 		onSubmit
 	}: Props = $props();
+
+	// When showing correct answers, force disabled
+	let effectiveDisabled = $derived(disabled || showCorrectAnswers);
 
 	// Parse statement to AST and augment expression nodes
 	let augmentedAST = $derived.by(() => {
@@ -81,10 +88,12 @@
 		return augmentASTForExpressions(ast, expressions);
 	});
 
-	// Build InputState[] from blanks + validationResults
+	// Build InputState[] from blanks + validationResults (or correction mode)
 	let inputStates = $derived.by(() => {
+		if (showCorrectAnswers) {
+			return buildInputStatesForCorrection(blanks);
+		}
 		const base = buildInputStates(blanks);
-		// Merge current values into states
 		const withValues = base.map((s, i) => ({
 			...s,
 			value: values[i] ?? s.value
@@ -92,11 +101,23 @@
 		return applyValidationToInputStates(withValues, validationResults);
 	});
 
+	// Build correctValues map for MathPrompt pre-fill (flash back mode)
+	let mathCorrectValues = $derived.by(() => {
+		if (!showCorrectAnswers) return undefined;
+		const result: Record<string, string> = {};
+		for (let i = 0; i < blanks.length; i++) {
+			if (blanks[i].type === 'math') {
+				result[String(i)] = blanks[i].expectedAnswerLatex ?? blanks[i].expectedAnswer;
+			}
+		}
+		return Object.keys(result).length > 0 ? result : undefined;
+	});
+
 	/**
 	 * Handle input changes from BlankInput (text) or MathPrompt (math)
 	 */
 	function handleInputChange(index: number, value: string) {
-		if (disabled) return;
+		if (effectiveDisabled) return;
 
 		// Update values array
 		if (index >= 0 && index < blanks.length) {
@@ -113,7 +134,7 @@
 	 * Handle submit from text blank (Enter key)
 	 */
 	function handleInputSubmit(_index: number) {
-		if (!disabled) {
+		if (!effectiveDisabled) {
 			onSubmit?.();
 		}
 	}
@@ -128,7 +149,8 @@
 					inputs={inputStates}
 					onInputChange={handleInputChange}
 					onInputSubmit={handleInputSubmit}
-					inputsDisabled={disabled}
+					inputsDisabled={effectiveDisabled}
+					correctValues={mathCorrectValues}
 				/>
 			{:else if node.type === 'math-block'}
 				{#if node.expressionName || hasPrompts(node.expression, node.syntax)}
@@ -139,7 +161,8 @@
 							display="block"
 							inputs={inputStates.filter((s) => s.type === 'math')}
 							onPromptChange={handleInputChange}
-							{disabled}
+							disabled={effectiveDisabled}
+							correctValues={mathCorrectValues}
 						/>
 					{/key}
 				{:else}
@@ -154,7 +177,7 @@
 	{/if}
 
 	<!-- Helper text -->
-	{#if !disabled && blanks.length > 0}
+	{#if !effectiveDisabled && blanks.length > 0}
 		<div class="helper-text">
 			<span class="text-xs text-muted-foreground"> Remplissez les blancs avec vos réponses </span>
 		</div>

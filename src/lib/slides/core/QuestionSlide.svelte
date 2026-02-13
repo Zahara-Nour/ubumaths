@@ -207,7 +207,16 @@
 		{#if showCorrection || (isSubmitted && instance.correction)}
 			<div class="correction-section fragment">
 				<h3>Correction</h3>
-				{#if instance.solution}
+				{#if getQuestionType(instance) === 'fill_in_blanks' && instance.blanks}
+					<div class="solution">
+						<FillBlanksInput
+							statement={instance.statement}
+							blanks={instance.blanks}
+							expressions={instance.expressions}
+							showCorrectAnswers={true}
+						/>
+					</div>
+				{:else if instance.solution}
 					<div class="solution">
 						<strong>Reponse :</strong>
 						{#if Array.isArray(instance.solution)}

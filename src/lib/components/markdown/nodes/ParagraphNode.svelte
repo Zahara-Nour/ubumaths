@@ -43,6 +43,8 @@
 		onInputSubmit?: (index: number) => void;
 		/** Whether inputs are disabled (e.g., after submission) */
 		inputsDisabled?: boolean;
+		/** Pre-fill math prompts with correct values (flash back mode) */
+		correctValues?: Record<string, string>;
 		/** Callback when a hashtag is clicked */
 		onHashtagClick?: (tag: string) => void;
 		/** Callback when a mention is clicked */
@@ -66,6 +68,7 @@
 		onInputChange,
 		onInputSubmit,
 		inputsDisabled = false,
+		correctValues,
 		onHashtagClick,
 		onMentionClick,
 		genericFunctions,
@@ -145,6 +148,7 @@
 						inputs={inputs.filter((i) => i.type === 'math')}
 						onPromptChange={onInputChange}
 						disabled={inputsDisabled}
+						{correctValues}
 						{genericFunctions}
 					/>
 				{/key}

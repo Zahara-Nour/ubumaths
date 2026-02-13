@@ -107,6 +107,25 @@ export function buildInputStates(blanks: InstanceBlank[]): InputState[] {
 }
 
 /**
+ * Build InputStates pre-filled with correct answers (for flash back / correction display).
+ *
+ * Math blanks use expectedAnswerLatex (fallback: expectedAnswer).
+ * Text blanks use expectedAnswer.
+ * All states have isCorrect = true (visually marked as correct).
+ */
+export function buildInputStatesForCorrection(blanks: InstanceBlank[]): InputState[] {
+	return blanks.map((blank, index) => ({
+		index,
+		type: blank.type,
+		value:
+			blank.type === 'math'
+				? (blank.expectedAnswerLatex ?? blank.expectedAnswer ?? '')
+				: (blank.expectedAnswer ?? ''),
+		isCorrect: true
+	}));
+}
+
+/**
  * Apply validation results to InputState array.
  *
  * Maps each validationResults[i] (boolean | null) onto states[i].isCorrect.
