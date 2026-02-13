@@ -529,3 +529,53 @@ Issues corrigees apres code review (`code-reviewer` agent) :
 - Flash back mode (deferred — affichage des bonnes reponses dans les trous)
 - End-to-end testing with real questions
 - `showCorrectAnswers` prop (when flash back is implemented)
+
+---
+
+## Phase 7: Dictionnaire vocabulaire FR (COMPLETE)
+
+### Status: COMPLETE
+
+### Changes Summary
+
+**Dictionnaire de 230 termes mathematiques francais** couvrant 12+ themes : entiers, decimaux, fractions, relatifs, calcul-litteral, grandeurs, proportionnalite, puissances, racines-carrees, fonctions, suites, probabilites, statistiques, geometrie, logique, et termes transversaux.
+
+**4 fonctions utilitaires** :
+
+- `getTermsForLevel(level)` — termes introduits a ce niveau ou avant (utilise `schoolYear`)
+- `getTermsByTag(tag)` — termes avec ce tag
+- `getTermsByTagAndLevel(tag, level)` — intersection des deux
+- `getAllTerms()` — copie de tous les termes
+
+### Decisions Made
+
+1. **`schoolYear` pour ordonner les niveaux** — `getTermsForLevel` compare les `schoolYear` des GRADES, ce qui gere correctement la progression lineaire CP→T et les branches lycee.
+2. **Disambiguation "diviseur"** — Deux termes : "diviseur (arithmetique)" (CM1, divisibilite) et "diviseur (operation)" (CE2, division). Coherent avec le pattern de disambiguation utilise pour "carre (geometrie)", "tangente (trigonometrie)", etc.
+3. **`getAllTerms()` retourne une copie** — Prevent mutation externe du tableau.
+4. **Tags transversaux** — Certains termes ont des tags multiples (ex: "vitesse" → `['grandeurs', 'proportionnalite']`).
+
+### Files Created
+
+| File                                                | Description                                        |
+| --------------------------------------------------- | -------------------------------------------------- |
+| `src/lib/data/math-dictionary-fr.ts`                | 230 termes + 4 fonctions utilitaires               |
+| `src/lib/data/__tests__/math-dictionary-fr.test.ts` | 17 tests (integrite, couverture themes, fonctions) |
+
+### Code Review Findings
+
+- **"diviseur" disambiguation** — Renomme en "diviseur (arithmetique)" pour coherence
+- **Performance** — Memoization non necessaire pour 230 termes, suggestion documentee pour le futur
+
+### Test Results
+
+- **math-dictionary-fr.test.ts** : 17/17
+- **TypeScript** : `tsc --noEmit --project tsconfig.json` — 0 erreurs
+- **ESLint** : Clean (fichiers dans `.gitignore data/`, ESLint passe via lint-staged)
+
+### Commits
+
+- `4d66d2a3` — feat: add French math vocabulary dictionary (Phase 7)
+
+### Next Steps
+
+- Phase 8: End-to-end pipeline testing with 633 migrated questions
