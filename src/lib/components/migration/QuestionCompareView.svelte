@@ -22,8 +22,9 @@
 	import { AlertCircle, AlertTriangle, CheckCircle2, RefreshCw, Edit3, Code2 } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 	import ReviewActions from './ReviewActions.svelte';
-	import { MarkdownRenderer } from '$lib/components/markdown';
+	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { resolveVariables, resolveExpression, resolveSolution } from '$lib/questions';
+	import { assignBlankIndices } from '$lib/questions/generator/assign-blank-indices';
 	import type {
 		QuestionVariable,
 		ResolvedVariable,
@@ -31,8 +32,10 @@
 		TemplateBlank,
 		RequiredForm,
 		ValidationRule,
-		BlankDefaults
+		BlankDefaults,
+		QuestionInstance
 	} from '$lib/questions/types';
+	import type { ResolvedMarkdown } from '$lib/ubumark';
 	import { convertAsciiMathToLatex } from 'mathlive';
 	import 'mathlive';
 
@@ -231,6 +234,7 @@
 		correction: { feedback: string; steps: string[] } | null;
 		choices: Array<{ content: string; isCorrect: boolean }> | null;
 		blanks: ResolvedBlank[] | null;
+		blankTypes: ('math' | 'text')[];
 		variables: ResolvedVariable[];
 		error?: string;
 	}
@@ -280,10 +284,13 @@
 			// Resolve variables
 			const resolved = resolveVariables(allVariables, instanceSeed);
 
-			// Resolve statement
-			const statement = variation.statement
+			// Resolve statement, then assign blank indices (? → \placeholder[N]{}, [_] → {{blank:N}})
+			const rawStatement = variation.statement
 				? resolveExpression(variation.statement, resolved, instanceSeed)
 				: '';
+			const answerFmts = variation.answerFormats || newFields.shared?.answerFormats;
+			const blankResult = assignBlankIndices(rawStatement, answerFmts);
+			const statement = blankResult.statement;
 
 			// Resolve solution (expected answer)
 			const solution = variation.solution
@@ -335,6 +342,7 @@
 				correction,
 				choices,
 				blanks,
+				blankTypes: blankResult.blankTypes,
 				variables: resolved
 			};
 		} catch (e) {
@@ -344,10 +352,56 @@
 				correction: null,
 				choices: null,
 				blanks: null,
+				blankTypes: [],
 				variables: [],
 				error: e instanceof Error ? e.message : String(e)
 			};
 		}
+	});
+
+	/**
+	 * Convert resolvedInstance to QuestionInstance for FlashCard rendering
+	 */
+	const flashCardInstance = $derived.by((): QuestionInstance | null => {
+		if (!resolvedInstance || resolvedInstance.error) return null;
+
+		const correction = resolvedInstance.correction
+			? {
+					feedback: { correct: resolvedInstance.correction.feedback as ResolvedMarkdown },
+					steps: resolvedInstance.correction.steps as ResolvedMarkdown[]
+				}
+			: undefined;
+
+		const choices = resolvedInstance.choices
+			? resolvedInstance.choices.map((c) => ({
+					content: c.content as ResolvedMarkdown,
+					isCorrect: c.isCorrect
+				}))
+			: undefined;
+
+		const blanks = resolvedInstance.blanks
+			? resolvedInstance.blanks.map((b, i) => ({
+					expectedAnswer: b.resolvedAnswer ?? b.expectedAnswer,
+					type: resolvedInstance.blankTypes[i] ?? ('math' as const),
+					prefilled: b.prefilled,
+					unit: b.unit,
+					pool: b.pool
+				}))
+			: undefined;
+
+		return {
+			templateId: 'migration-preview',
+			statement: resolvedInstance.statement as ResolvedMarkdown,
+			solution: resolvedInstance.solution,
+			correction,
+			choices,
+			blanks,
+			resolvedVariables: resolvedInstance.variables,
+			grades: (newFields?.grades ?? []) as QuestionInstance['grades'],
+			theme: newFields?.theme ?? '',
+			domain: newFields?.domain ?? '',
+			level: newFields?.level ?? 1
+		};
 	});
 </script>
 
@@ -1098,87 +1152,13 @@
 					<Badge variant="outline" class="font-mono text-xs">Preview</Badge>
 				</Card.Title>
 			</Card.Header>
-			<Card.Content class="space-y-4">
-				{#if resolvedInstance}
-					{#if resolvedInstance.error}
-						<div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-							Erreur: {resolvedInstance.error}
-						</div>
-					{:else}
-						<!-- Statement rendered -->
-						<div>
-							<h4 class="mb-2 text-sm font-medium text-muted-foreground">Énoncé</h4>
-							<div class="rounded-lg border bg-card p-4">
-								<MarkdownRenderer content={resolvedInstance.statement} />
-							</div>
-						</div>
-
-						<!-- Solution rendered -->
-						<div>
-							<h4 class="mb-2 text-sm font-medium text-muted-foreground">Solution</h4>
-							<div class="rounded-lg border-2 border-primary/50 bg-primary/5 p-3">
-								{#if Array.isArray(resolvedInstance.solution)}
-									{#each resolvedInstance.solution as sol, si (si)}
-										<div class="mb-1 last:mb-0">
-											<MarkdownRenderer content={`$$${sol}$$`} />
-										</div>
-									{/each}
-								{:else}
-									<MarkdownRenderer content={`$$${resolvedInstance.solution}$$`} />
-								{/if}
-							</div>
-						</div>
-
-						<!-- Choices rendered -->
-						{#if resolvedInstance.choices}
-							<div>
-								<h4 class="mb-2 text-sm font-medium text-muted-foreground">Choix</h4>
-								<div class="space-y-2">
-									{#each resolvedInstance.choices as choice, ci (ci)}
-										<div
-											class={cn(
-												'flex items-center gap-3 rounded-lg border p-3',
-												choice.isCorrect ? 'border-success bg-success/10' : 'border-border bg-card'
-											)}
-										>
-											<Badge variant={choice.isCorrect ? 'default' : 'outline'}>
-												{String.fromCharCode(65 + ci)}
-											</Badge>
-											<div class="flex-1">
-												<MarkdownRenderer content={choice.content} />
-											</div>
-											{#if choice.isCorrect}
-												<CheckCircle2 class="h-4 w-4 text-success" />
-											{/if}
-										</div>
-									{/each}
-								</div>
-							</div>
-						{/if}
-
-						<!-- Correction rendered -->
-						{#if resolvedInstance.correction}
-							<div>
-								<h4 class="mb-2 text-sm font-medium text-muted-foreground">Correction</h4>
-								<div class="space-y-2 rounded-lg border bg-muted/50 p-4">
-									{#if resolvedInstance.correction.feedback}
-										<div class="text-sm">
-											<MarkdownRenderer content={resolvedInstance.correction.feedback} />
-										</div>
-									{/if}
-									{#if resolvedInstance.correction.steps.length > 0}
-										<ol class="list-inside list-decimal space-y-2 text-sm">
-											{#each resolvedInstance.correction.steps as step, si (si)}
-												<li>
-													<MarkdownRenderer content={step} />
-												</li>
-											{/each}
-										</ol>
-									{/if}
-								</div>
-							</div>
-						{/if}
-					{/if}
+			<Card.Content>
+				{#if resolvedInstance?.error}
+					<div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+						Erreur: {resolvedInstance.error}
+					</div>
+				{:else if flashCardInstance}
+					<FlashCard instance={flashCardInstance} size="sm" />
 				{:else}
 					<div class="flex flex-col items-center justify-center py-12 text-center">
 						<p class="text-sm text-muted-foreground">
