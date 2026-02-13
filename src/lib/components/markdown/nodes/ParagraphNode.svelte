@@ -144,6 +144,7 @@
 						display="inline"
 						inputs={inputs.filter((i) => i.type === 'math')}
 						onPromptChange={onInputChange}
+						disabled={inputsDisabled}
 						{genericFunctions}
 					/>
 				{/key}
