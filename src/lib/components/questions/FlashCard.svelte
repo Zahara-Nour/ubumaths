@@ -259,27 +259,28 @@
 						<div class="statement-section">
 							<h3 class="mb-3 text-lg font-semibold">Énoncé</h3>
 							<div class="statement-content rounded-lg border bg-card p-4">
-								<MarkdownRenderer content={statementMarkdown} />
+								{#if getQuestionType(instance) === 'fill_in_blanks' && instance.blanks}
+									<FillBlanksInput
+										statement={instance.statement}
+										blanks={instance.blanks}
+										expressions={instance.expressions}
+										bind:values={fillBlankValues}
+										bind:valuesLatex={fillBlankValuesLatex}
+										disabled={!interactive || isInputDisabled}
+										validationResults={isSubmitted ? blankValidationResults : []}
+										onSubmit={handleSubmit}
+									/>
+								{:else}
+									<MarkdownRenderer content={statementMarkdown} />
+								{/if}
 							</div>
 						</div>
 
 						<!-- Answer Input (Interactive Mode Only) -->
 						{#if interactive}
 							<div class="answer-section">
-								<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
-
-								{#if getQuestionType(instance) === 'fill_in_blanks'}
-									<FillBlanksInput
-										statement={instance.statement}
-										blanks={instance.blanks || []}
-										expressions={instance.expressions}
-										bind:values={fillBlankValues}
-										bind:valuesLatex={fillBlankValuesLatex}
-										disabled={isInputDisabled}
-										validationResults={isSubmitted ? blankValidationResults : []}
-										onSubmit={handleSubmit}
-									/>
-								{:else if getQuestionType(instance) === 'multiple_choice'}
+								{#if getQuestionType(instance) === 'multiple_choice'}
+									<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
 									<MultipleChoiceInput
 										choices={instance.shuffledChoices || []}
 										bind:selectedIndexes={selectedChoices}
