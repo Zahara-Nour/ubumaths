@@ -351,4 +351,62 @@ Issues documentees pour plus tard :
 
 ### Next Steps
 
-- **Phase 5**: Composants Svelte (Step 8)
+- **Phase 5**: Transformer de migration (Step 8)
+
+---
+
+## Phase 5: Transformer de migration (IN PROGRESS)
+
+### Status: Phase 5.0 TDD Specification — VALIDATED
+
+### Phase 5.0 — TDD Specification
+
+#### A. Reclassification result/rewrite → fill_in_blanks
+
+1. **Result simple (globalIndex 10)** : `expressions: ["(&1*100) + (&2*10) + &3"]` sans `answerFormats`, sans `choicess` → produit `blanks: [{ expectedAnswer: "eval:a*100+b*10+c" }]`, variable `expression1`, statement `$${{expression1}}$$`. Pas d'`answerFormats` en sortie (defaut `"?"` gere par le generateur).
+
+2. **Result avec answerFormat `10^?` (globalIndex 413)** : `expressions: ["10^&2*10^&3"]`, `answerFormats: ["10^?"]` → produit `blanks: [{ expectedAnswer: "eval:b+c" }]`, `shared.answerFormats: { "expression1": "10^?" }`.
+
+3. **Result avec answerFormat multi-trous `?*10^?` (globalIndex 411)** : `expressions: ["[._&1,&3*10^{&4}_]"]`, `answerFormats: ["?*10^?"]`, `solutionss: [["&1,&3", "&4"]]` → produit 2 blanks : `blanks: [{ expectedAnswer: "a,c" }, { expectedAnswer: "d" }]`, `shared.answerFormats: { "expression1": "?*10^?" }`.
+
+4. **Result sans solutionss** : quand `solutionss` est absent, generer 1 blank par defaut `{ expectedAnswer: "eval:expression1" }` (le resultat est l'evaluation de l'expression).
+
+5. **Pas de reclassification si `choicess` present** : une question avec `expressions` ET `choicess` reste `multiple_choice` (pas de blanks).
+
+#### B. Conversion answerField → fill_in_blanks
+
+6. **AnswerField mono-trou (globalIndex 0, variation 0)** : `answerFields: ["\\text{Le chiffre des dizaines est }$$...$$\\text{.}"]` → statement `Le chiffre des dizaines est $?$.`, `blanks: [{ expectedAnswer: "a" }]`.
+
+7. **AnswerField multi-trous** : `answerFields` avec plusieurs `$$...$$` → statement avec plusieurs `$?$`, un blank par `...`.
+
+8. **AnswerField avec variables dans le texte** : `$$&1$$` dans le texte → `${{a}}$` dans le statement (pas un trou, juste une variable affichee).
+
+#### C. Unite dans la solution (answerField)
+
+9. **AnswerField dont la solution contient une unite** (ex: globalIndex 470, solution `[_&2_km.h^{-1}_]`) → blank avec `unit: { expected: true }`. Detection via pattern `_unit_` dans la syntaxe TinyMath des solutions.
+
+10. **Expressions avec unite visible** (ex: `&1 km = ? m`, globalIndex 426-469) → PAS de champ `unit` sur les blanks. L'unite est visible dans l'expression, l'eleve tape un nombre pur, la validation est une simple comparaison numerique.
+
+#### D. `expressions2` (QCM)
+
+11. **QCM avec `expressions2`** (globalIndex 478, 587) : creer une variable `expression2` depuis `expressions2[i]` en plus de `expression1`. Le statement affiche les deux expressions. Ces questions restent `multiple_choice` (pas de blanks).
+
+#### E. Retirer `type` de la sortie
+
+12. **Plus de champ `type` sur le template** : le transformer ne met plus `type` dans la sortie. Le type est infere de la structure (`choices` present → MC, sinon → FIB).
+
+#### F. Corriger les 8 tests pre-existants
+
+13. **Tests `result.template?.type`** : remplacer par `getQuestionType(result.template!)` ou verifier la structure.
+14. **Test `solution` obligatoire** : `solution` n'est plus obligatoire pour fill_in_blanks (blanks est la source de verite). Corriger le test `validateTransformedTemplate`.
+15. **Nouveau champ `blanks[]` pour result/rewrite** : les tests qui creent des questions result/rewrite doivent verifier la presence de `blanks[]` au lieu de `solution`.
+
+### Decisions prises
+
+1. **Pas de `unit` pour les expressions avec unite visible** — Les questions Grandeurs 426-469 (`&1 km = ? m`) n'ont pas de champ `unit` sur les blanks. L'unite est decorative dans l'expression, l'eleve tape un nombre pur, la validation est numerique standard.
+2. **`unit: { expected: true }` uniquement pour les solutions avec unite** — Seules les questions dont la solution TinyMath contient une unite (pattern `_unit_`) recoivent `unit: { expected: true }` sur le blank. Ex: globalIndex 470 (`[_&2_km.h^{-1}_]`).
+
+### Next Steps
+
+- **Phase 5.1** : Ecrire les tests (`src/lib/migration/__tests__/transformer-fill-blanks.test.ts`)
+- **Phase 5.2** : Implementation dans `question-transformer.ts`
