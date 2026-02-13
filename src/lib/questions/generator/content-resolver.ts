@@ -47,8 +47,10 @@ const EXPR_MARKER_REGEX = /^<<expr:(expression[a-zA-Z0-9]*)>>/;
  *
  * Handles:
  * - `<<expr:NAME>>` markers: stripped before parsing, re-added after conversion
- * - `?` hole markers: preserved as `?` via toLatex({ preserveHoles: true })
- *   so that assignBlankIndices can assign correct 0-based global indices
+ * - `?` hole markers: preserved as `?` via toLatex({ preserveHoles: true }).
+ *   Without this, the parser would emit \placeholder[N]{} with local 1-based
+ *   indices per zone. assignBlankIndices needs raw `?` to assign global 0-based
+ *   indices across statement blanks, text blanks, AND expression answerFormats.
  *
  * Note: ~...~ and ~~...~~ zones are NOT converted - they stay in custom
  * syntax for answer comparison and other non-display purposes.
@@ -72,6 +74,7 @@ function convertMathZonesToLatex(content: string): string {
 
 		const parseResult = parseCustomSafe(mathContent.trim());
 		if (parseResult.ast) {
+			// preserveHoles: ? stays as ? (not \placeholder[N]{}) for assignBlankIndices
 			const latex = toLatex(parseResult.ast, { preserveHoles: true });
 			return prefix + latex;
 		}
@@ -196,7 +199,8 @@ export function resolveAnswerFormat(
 	let resolved = resolveVariableExpression(answerFormat, resolvedVariables, seed);
 	resolved = resolveColorReferences(resolved, seed);
 
-	// Stage 2: Convert to LaTeX, preserving ? markers for assignBlankIndices
+	// Stage 2: Convert to LaTeX
+	// preserveHoles: ? stays as ? (not \placeholder[N]{}) for assignBlankIndices
 	const parseResult = parseCustomSafe(resolved.trim());
 	if (parseResult.ast) {
 		resolved = toLatex(parseResult.ast, { preserveHoles: true });
@@ -214,6 +218,7 @@ export function resolveAnswerFormat(
 export function convertToLatex(expression: string): string {
 	const parseResult = parseCustomSafe(expression.trim());
 	if (parseResult.ast) {
+		// preserveHoles: ? stays as ? (not \placeholder[N]{}) for assignBlankIndices
 		return toLatex(parseResult.ast, { preserveHoles: true });
 	}
 	return expression;

@@ -58,8 +58,19 @@ type ColoredSpan = {
 
 export interface LatexGeneratorOptions {
 	readonly renderMetadata?: boolean; // default: false
-	/** When true, emit `?` instead of `\placeholder[N]{}` for HoleNodes.
-	 * Used by the generation pipeline so assignBlankIndices can re-assign global 0-based indices. */
+	/**
+	 * When true, emit `?` instead of `\placeholder[N]{}` for HoleNodes.
+	 *
+	 * Why: the custom parser creates HoleNodes with local 1-based indices
+	 * (each parseCustomSafe call restarts its counter at 1). But the question
+	 * generation pipeline needs global 0-based indices across the entire statement
+	 * (including text blanks and expression answerFormat blanks). The module
+	 * assignBlankIndices handles this — it expects raw `?` characters and replaces
+	 * them with `\placeholder[N]{}` using a single global counter.
+	 *
+	 * Without this option, the pipeline would need to revert \placeholder[N]{} → ?
+	 * after every toLatex call, doing work only to undo it.
+	 */
 	readonly preserveHoles?: boolean; // default: false
 }
 

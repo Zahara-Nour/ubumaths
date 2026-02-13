@@ -175,18 +175,19 @@ Issues documentees pour plus tard :
 
 1. **Pipeline answerFormat : resolve → LaTeX → assignBlankIndices** — Les variables sont resolues d'abord (`10^{{a}}` → `10^2`), puis converties en LaTeX (`10^{?}`), puis `assignBlankIndices` remplace les `?` par `\placeholder[N]{}`. Cette sequence garantit une structure LaTeX correcte (ex: `5^{?}` pas `5^?`).
 2. **`blankTypes` retourne par `assignBlankIndices`** — Au lieu d'inferer les types separement dans le generateur, `assignBlankIndices` retourne `blankTypes[]` car il connait le contexte (math zone vs texte). Evite la duplication de logique.
-3. **Revert `\placeholder[N]{}` → `?` apres conversion LaTeX** — Le parser mathAST convertit automatiquement `?` en `\placeholder[N]{}` avec indices 1-based. On reverte cette conversion pour que `assignBlankIndices` puisse re-assigner avec des indices 0-based corrects.
+3. **`preserveHoles` sur `toLatex`** — Le parser custom cree des `HoleNode` avec indices locaux 1-based (le compteur redemarre a 1 par appel `parseCustomSafe`). `toLatex` les emetait comme `\placeholder[N]{}`. Mais `assignBlankIndices` a besoin de `?` bruts pour assigner des indices globaux 0-based sur l'ensemble du statement (blanks math + blanks texte + blanks d'expressions answerFormat). L'option `toLatex(ast, { preserveHoles: true })` emet `?` directement, sans aller-retour inutile `? → \placeholder[N]{} → ?`.
 4. **Resolution conditionnelle de `expectedAnswer`** — Les valeurs textuelles comme "pair", "entier" ne sont pas passees au resolver (qui les traiterait comme des references de variables via `normalizeExpression`). Seules les valeurs contenant `{{` sont resolues.
 5. **Validation expression variable manquante** — Si une variable expression\* est detectee dans le statement mais absente des variables resolues, le generateur retourne une erreur explicite.
 6. **`solution` toujours `undefined` pour fill_in_blanks** — Coherent avec Phase 1 : `blanks[]` est la source de verite, pas `solution`.
 
 ### Files Modified
 
-| File                                                  | Changes                                                                                                                                                                                  |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/questions/generator/instance-generator.ts`   | Pipeline fill-in-blanks complet : detection expressions, insertion markers, assignBlankIndices, blanks avec type infere, expressions[], expectedAnswerLatex, coherence check             |
-| `src/lib/questions/generator/content-resolver.ts`     | 3 nouvelles fonctions exportees (`insertExpressionMarkers`, `resolveAnswerFormat`, `convertToLatex`); `convertMathZonesToLatex` gere les marqueurs `<<expr:>>` et reverte `\placeholder` |
-| `src/lib/questions/generator/assign-blank-indices.ts` | Ajout `blankTypes: ('math' \| 'text')[]` a `AssignBlankIndicesResult`, tracking des types a chaque point d'assignation                                                                   |
+| File                                                  | Changes                                                                                                                                                                                                                            |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/questions/generator/instance-generator.ts`   | Pipeline fill-in-blanks complet : detection expressions, insertion markers, assignBlankIndices, blanks avec type infere, expressions[], expectedAnswerLatex, coherence check                                                       |
+| `src/lib/questions/generator/content-resolver.ts`     | 3 nouvelles fonctions exportees (`insertExpressionMarkers`, `resolveAnswerFormat`, `convertToLatex`); `convertMathZonesToLatex` gere les marqueurs `<<expr:>>` ; utilise `toLatex({ preserveHoles: true })` pour preserver les `?` |
+| `src/lib/questions/generator/assign-blank-indices.ts` | Ajout `blankTypes: ('math' \| 'text')[]` a `AssignBlankIndicesResult`, tracking des types a chaque point d'assignation                                                                                                             |
+| `src/lib/mathAST/latex-generator.ts`                  | Ajout option `preserveHoles` a `LatexGeneratorOptions` ; 3 sites d'emission de `\placeholder` conditionnels                                                                                                                        |
 
 ### Files Created
 
@@ -205,18 +206,31 @@ Issues documentees pour plus tard :
 
 - **Limitation heuristique texte** : La detection `expectedAnswer.includes('{{')` pour savoir si la valeur doit etre resolue est fragile pour des cas theoriques (ex: texte avec `{{color:}}`). Fonctionne pour les 633 questions migrees.
 - **Validation position marqueur expression** : `insertExpressionMarkers()` ne verifie pas que `{{expression*}}` est au debut d'une zone math. Si place au milieu, le marqueur est silencieusement ignore par `assignBlankIndices` (le regex est ancre a `^`). A valider dans l'UI editeur.
-- **Tests existants `instance-generator.test.ts` en echec** : 29/39 tests echouent car la validation Phase 1 exige `blanks[]` pour fill_in_blanks, mais les tests ont ete ecrits avant la refonte. Ces echecs sont pre-existants (Phase 1/2), pas introduits par Phase 3.
+- **Limitation heuristique texte** (toujours ouvert) : voir ci-dessus.
+- **Validation position marqueur expression** (toujours ouvert) : voir ci-dessus.
 
 ### Test Results
 
 - **generation-fill-blanks.test.ts** : 33/33
 - **assign-blank-indices.test.ts** : 25/25
-- **instance-generator.test.ts** : 6/39 (29 echecs pre-existants Phase 1/2)
+- **instance-generator.test.ts** : 39/39 (0 skipped — tous corriges post-Phase 3)
 - TypeScript : `tsc --noEmit --project tsconfig.json` OK sur fichiers modifies
 - Zero nouvelle regression
+
+### Post-Phase 3 Fixes
+
+1. **Tests instance-generator.test.ts corriges** : Les 29 tests en echec (manquaient `blanks[]`, avaient `solution` pour fill_in_blanks) et les 5 tests skipped (ancienne syntaxe `{#:...}`, `{eval:{@:...}}`, double braces LaTeX) ont ete corriges. 39/39 passent, 0 skipped.
+
+2. **Suppression du revert `\placeholder → ?`** : Le hack regex `PLACEHOLDER_REVERT_REGEX` (3 sites dans `content-resolver.ts`) est remplace par l'option `toLatex({ preserveHoles: true })` dans `latex-generator.ts`. Voir decision 3 ci-dessus.
+
+### Commits
+
+- `9dc51f4b` — feat: implement fill-in-blanks generation pipeline (Phase 3)
+- `6075ae66` — fix: correct 3 failing instance-generator tests
+- `c91cf03e` — fix: unskip all 5 instance-generator tests by fixing syntax issues
+- `a8e64948` — refactor: add preserveHoles option to toLatex, remove placeholder revert hack
 
 ### Next Steps
 
 - **Phase 4**: Validation per-blank (Step 7)
 - **Phase 5**: Composants Svelte (Step 8)
-- **Fix existants** : Mettre a jour `instance-generator.test.ts` pour utiliser `blanks[]`
