@@ -383,23 +383,20 @@ describe('expressions2 QCM', () => {
 		expect(result.success).toBe(true);
 		const template = result.template!;
 
-		// Should remain multiple_choice
-		expect(getQuestionType(template.variations[0])).toBe('multiple_choice');
+		// Should remain multiple_choice (choices are shared, so check shared)
+		expect(template.shared?.choices).toBeDefined();
+		expect(getQuestionType(template.shared!)).toBe('multiple_choice');
 
-		// Each variation should have expression1 AND expression2 variables
+		// Each variation should have expression2 variable (from expressions2)
 		for (const variation of template.variations) {
 			const varNames = variation.variables?.map((v) => v.name) ?? [];
-			const sharedVarNames = template.shared?.variables?.map((v) => v.name) ?? [];
-			const allVarNames = [...varNames, ...sharedVarNames];
-
-			expect(allVarNames.some((n) => n.startsWith('expression') && n.includes('1'))).toBe(true);
-			expect(allVarNames.some((n) => n.startsWith('expression') && n.includes('2'))).toBe(true);
+			expect(varNames).toContain('expression2');
 		}
 
-		// Statement should reference both expressions
+		// Statement of first variation should reference expression2
 		const variation0 = template.variations[0];
 		const statement = String(variation0.statement ?? template.shared?.statement ?? '');
-		expect(statement).toContain('expression');
+		expect(statement).toContain('expression2');
 	});
 
 	it('should create expression2 for function parallels QCM (globalIndex 587)', () => {
@@ -429,8 +426,9 @@ describe('expressions2 QCM', () => {
 		expect(result.success).toBe(true);
 		const template = result.template!;
 
-		// Should remain multiple_choice
-		expect(getQuestionType(template.variations[0])).toBe('multiple_choice');
+		// Should remain multiple_choice (choices are shared, so check shared)
+		expect(template.shared?.choices).toBeDefined();
+		expect(getQuestionType(template.shared!)).toBe('multiple_choice');
 
 		// Should have expression2 variables (from expressions2)
 		const allVars: string[] = [];

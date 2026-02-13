@@ -252,45 +252,59 @@ function mapGrade(oldGrade: OldGrade): GradeCode {
 }
 
 // ============================================================================
-// QUESTION TYPE DETECTION
+// MIGRATION MODE DETECTION
 // ============================================================================
 
 /**
- * Detect new question type from old question structure
+ * Internal migration mode — determines HOW to convert the old question.
+ * The output type is always inferred from structure (choices → MC, else → FIB).
  */
-function detectQuestionType(oldQuestion: QuestionBase): QuestionType {
-	// Multiple choice with multiple answers
-	if (hasMultipleAnswers(oldQuestion)) {
-		return 'multiple_choice';
-	}
+type MigrationMode =
+	| 'result_rewrite' // Has expressions (no ? in them), no choices → fill_in_blanks with expression convention
+	| 'answer_field' // Has answerFields, no choices → fill_in_blanks with $?$ in statement
+	| 'fill_in' // Has expressions with ?, no choices → fill_in_blanks (existing behavior)
+	| 'multiple_choice'; // Has choices → multiple_choice
 
-	// Single choice
-	if (hasChoices(oldQuestion)) {
+/**
+ * Detect migration mode from old question structure.
+ * Replaces the old detectQuestionType which returned types that no longer exist.
+ */
+function detectMigrationMode(oldQuestion: QuestionBase): MigrationMode {
+	// Multiple choice (with or without multiple answers)
+	if (hasMultipleAnswers(oldQuestion) || hasChoices(oldQuestion)) {
 		return 'multiple_choice';
 	}
 
 	// Fill in blanks (expressions with ?)
 	if (hasFillInBlanks(oldQuestion)) {
-		return 'fill_in_blanks';
+		return 'fill_in';
 	}
 
-	// Decimal result type
-	if (oldQuestion['result-type'] === 'decimal') {
-		return 'numerical_decimal';
-	}
-
-	// Has custom answer fields - usually means specific format required
+	// Has custom answer fields → convert to fill_in_blanks with $?$ in statement
 	if (hasAnswerFields(oldQuestion)) {
-		// Check if answer field suggests algebraic transformation
-		const answerField = oldQuestion.answerFields?.[0] || '';
-		if (answerField.includes('factoriser') || answerField.includes('développer')) {
-			return 'algebraic_transform';
-		}
-		return 'numerical_exact';
+		return 'answer_field';
 	}
 
-	// Default to numerical exact
-	return 'numerical_exact';
+	// Has expressions without ? → result/rewrite → fill_in_blanks with expression convention
+	return 'result_rewrite';
+}
+
+/**
+ * @deprecated Use detectMigrationMode instead. Kept for stats reporting.
+ */
+function detectQuestionType(oldQuestion: QuestionBase): string {
+	const mode = detectMigrationMode(oldQuestion);
+	// Map to legacy names for stats only
+	switch (mode) {
+		case 'multiple_choice':
+			return 'multiple_choice';
+		case 'fill_in':
+			return 'fill_in_blanks';
+		case 'answer_field':
+			return 'fill_in_blanks';
+		case 'result_rewrite':
+			return oldQuestion['result-type'] === 'decimal' ? 'numerical_decimal' : 'fill_in_blanks';
+	}
 }
 
 // ============================================================================
@@ -585,6 +599,112 @@ function convertStatement(
 		statement: templateMarkdown(fixMathDelimiters(parts.join('\n\n'))),
 		expressionVariable
 	};
+}
+
+// ============================================================================
+// ANSWER FIELD CONVERSION
+// ============================================================================
+
+/**
+ * Convert an old answerField template to a ubumark statement with $?$ blanks.
+ *
+ * Conversion rules:
+ * - \text{...} → plain text
+ * - $$...$$ where content is "..." (three dots) → $?$ (math blank)
+ * - $$expr$$ where content is NOT "..." → $converted_expr$ (math display)
+ *
+ * @example
+ * '\\text{Le double de }$$&1$$\\text{ est }$$...$$\\text{.}'
+ * → 'Le double de ${{a}}$ est $?$.'
+ */
+function convertAnswerFieldToStatement(answerField: string, warnings: string[]): string {
+	let result = answerField;
+
+	// Step 1: Convert \text{...} → plain text
+	result = result.replace(/\\text\{([^}]*)\}/g, '$1');
+
+	// Step 2: Convert $$...$$ segments
+	result = result.replace(/\$\$(.*?)\$\$/g, (_match, content: string) => {
+		if (content === '...') {
+			// Blank marker → $?$
+			return '$?$';
+		}
+		// Math expression (may contain variable references like &1)
+		const converted = convertTinyCASToNew(content);
+		if (converted.warnings) {
+			warnings.push(...converted.warnings.map((w) => `AnswerField math: ${w}`));
+		}
+		return '$' + (converted.converted || content) + '$';
+	});
+
+	return result;
+}
+
+/**
+ * Detect if a TinyMath solution contains a unit.
+ * TinyMath unit syntax: [_expr_unit_] where unit is text after the last _ before ]
+ * Examples: [_&2_km.h^{-1}_], [_&1_m_]
+ *
+ * @returns true if the solution contains a unit annotation
+ */
+function solutionHasUnit(solution: string): boolean {
+	// Match patterns like [_expr_unit_] or [._expr_unit_.]
+	// The unit is between the last two underscores
+	// Simplified check: look for _text_ pattern where text looks like a unit
+	const unitPattern = /_([a-zA-Z][a-zA-Z0-9.^{}-]*)_\]$/;
+	return unitPattern.test(solution);
+}
+
+/**
+ * Extract blanks from solutionss for result/rewrite or answerField questions.
+ *
+ * @param solutions - The solutions array for this variation
+ * @param answerFormat - Optional answer format (e.g., "10^?", "?*10^?")
+ * @param expressionVarName - Name of the expression variable (for default blank)
+ * @param warnings - Array to collect warnings
+ */
+function extractBlanksFromSolutions(
+	solutions: (string | number)[] | undefined,
+	answerFormat: string | undefined,
+	expressionVarName: string | undefined,
+	warnings: string[],
+	blankCount?: number
+): NonNullable<QuestionVariation['blanks']> {
+	const blanks: NonNullable<QuestionVariation['blanks']> = [];
+
+	// Count expected blanks: explicit count > answerFormat ? count > default 1
+	const expectedCount = blankCount ?? (answerFormat ? (answerFormat.match(/\?/g) || []).length : 1);
+
+	if (solutions && solutions.length > 0) {
+		const count = Math.min(expectedCount, solutions.length);
+		if (solutions.length < expectedCount) {
+			warnings.push(`Expected ${expectedCount} solution(s) for blanks but got ${solutions.length}`);
+		}
+		for (let i = 0; i < count; i++) {
+			const rawAnswer = String(solutions[i]);
+			const conversionResult = convertTinyCASToNew(rawAnswer);
+			if (conversionResult.warnings) {
+				warnings.push(...conversionResult.warnings.map((w) => `Blank solution: ${w}`));
+			}
+			const blank: NonNullable<QuestionVariation['blanks']>[number] = {
+				expectedAnswer: conversionResult.converted || rawAnswer
+			};
+
+			// Detect unit in solution
+			if (solutionHasUnit(rawAnswer)) {
+				blank.unit = { expected: true };
+			}
+
+			blanks.push(blank);
+		}
+	} else if (expressionVarName) {
+		// No explicit solutions → eval of expression
+		blanks.push({ expectedAnswer: `{{eval:{{${expressionVarName}}}}}` });
+	} else {
+		warnings.push('No solutions and no expression variable for blanks');
+	}
+
+	return blanks;
 }
 
 // ============================================================================
@@ -1441,7 +1561,7 @@ interface SharedFieldsResult {
 function detectSharedFields(
 	oldQuestion: QuestionBase,
 	variationCount: number,
-	questionType: QuestionType,
+	migrationMode: MigrationMode,
 	imageMapping: ImageUrlMapping | undefined,
 	warnings: string[],
 	stats: TransformStats
@@ -1458,52 +1578,93 @@ function detectSharedFields(
 	// ---- Detect enounces sharing (→ statement) ----
 	const enounces = oldQuestion.enounces || [];
 	const expressions = oldQuestion.expressions || [];
-
-	// Statement is shared if enounce is shared (expression variables are always per-variation)
-	const enounceIsShared = enounces.length === 1 && variationCount > 1;
-	const expressionIsShared =
-		(expressions.length === 0 || expressions.length === 1) && variationCount > 1;
-	const statementIsShared =
-		(enounceIsShared || enounces.length === 0) && (expressionIsShared || expressions.length === 0);
+	const answerFields = oldQuestion.answerFields || [];
 
 	// Collect expression variables to add to perVariation later (after regular variables)
 	const expressionVariables: (QuestionVariable | undefined)[] = [];
 
-	if (statementIsShared) {
-		// Shared enounce AND shared/no expression - generate statement once
-		const enonce = enounces[0];
-		const expression = expressions[0];
-		const result = convertStatement(
-			enonce,
-			expression,
-			1, // Always expression1 when shared
-			images,
-			imageMapping,
-			warnings,
-			stats
-		);
-		shared.statement = result.statement;
-		// All variations share the same statement and expression variable
-		for (let i = 0; i < variationCount; i++) {
-			perVariation[i].statement = result.statement;
-			expressionVariables.push(result.expressionVariable);
+	if (migrationMode === 'answer_field') {
+		// AnswerField mode: convert answerField to statement with $?$
+		// The answerField replaces the expression in the statement
+		const answerFieldIsShared = answerFields.length === 1 && variationCount > 1;
+		const enounceIsShared = enounces.length === 1 && variationCount > 1;
+
+		if (answerFieldIsShared && (enounceIsShared || enounces.length === 0)) {
+			// Shared answerField
+			const enonce = enounces[0];
+			const convertedField = convertAnswerFieldToStatement(answerFields[0], warnings);
+			const parts: string[] = [];
+			if (enonce) {
+				const enonceResult = convertTinyCASToNew(enonce);
+				parts.push(enonceResult.converted || enonce);
+			}
+			parts.push(convertedField);
+			shared.statement = templateMarkdown(fixMathDelimiters(parts.join('\n\n')));
+			for (let i = 0; i < variationCount; i++) {
+				perVariation[i].statement = shared.statement;
+				expressionVariables.push(undefined); // No expression variable for answerField
+			}
+		} else {
+			// Per-variation answerField
+			for (let i = 0; i < variationCount; i++) {
+				const enonce = enounces[i] || enounces[0];
+				const af = answerFields[i] || answerFields[0];
+				const convertedField = convertAnswerFieldToStatement(af, warnings);
+				const parts: string[] = [];
+				if (enonce) {
+					const enonceResult = convertTinyCASToNew(enonce);
+					parts.push(enonceResult.converted || enonce);
+				}
+				parts.push(convertedField);
+				perVariation[i].statement = templateMarkdown(fixMathDelimiters(parts.join('\n\n')));
+				expressionVariables.push(undefined); // No expression variable for answerField
+			}
 		}
 	} else {
-		// Per-variation statements or expressions
-		for (let i = 0; i < variationCount; i++) {
-			const enonce = enounces[i] || enounces[0];
-			const expression = expressions[i] || expressions[0];
+		// Standard mode: enounce + expression → statement
+		const enounceIsShared = enounces.length === 1 && variationCount > 1;
+		const expressionIsShared =
+			(expressions.length === 0 || expressions.length === 1) && variationCount > 1;
+		const statementIsShared =
+			(enounceIsShared || enounces.length === 0) &&
+			(expressionIsShared || expressions.length === 0);
+
+		if (statementIsShared) {
+			// Shared enounce AND shared/no expression - generate statement once
+			const enonce = enounces[0];
+			const expression = expressions[0];
 			const result = convertStatement(
 				enonce,
 				expression,
-				i + 1, // expressionIndex varies per variation
+				1, // Always expression1 when shared
 				images,
 				imageMapping,
 				warnings,
 				stats
 			);
-			perVariation[i].statement = result.statement;
-			expressionVariables.push(result.expressionVariable);
+			shared.statement = result.statement;
+			// All variations share the same statement and expression variable
+			for (let i = 0; i < variationCount; i++) {
+				perVariation[i].statement = result.statement;
+				expressionVariables.push(result.expressionVariable);
+			}
+		} else {
+			// Per-variation statements or expressions
+			for (let i = 0; i < variationCount; i++) {
+				const enonce = enounces[i] || enounces[0];
+				const expression = expressions[i] || expressions[0];
+				const result = convertStatement(
+					enonce,
+					expression,
+					i + 1, // expressionIndex varies per variation
+					images,
+					imageMapping,
+					warnings,
+					stats
+				);
+				perVariation[i].statement = result.statement;
+				expressionVariables.push(result.expressionVariable);
+			}
 		}
 	}
 
@@ -1539,33 +1700,56 @@ function detectSharedFields(
 		}
 	}
 
-	// ---- Detect solutionss sharing (→ solution) ----
-	const solutionss = oldQuestion.solutionss || [];
-	const solutionIsShared = solutionss.length === 1 && variationCount > 1;
+	// ---- Handle expressions2 (creates expression2 variable for QCM with 2 expressions) ----
+	const expressions2 = oldQuestion.expressions2 || [];
+	if (expressions2.length > 0) {
+		for (let i = 0; i < variationCount; i++) {
+			const expr2 = expressions2[i] || expressions2[0];
+			if (expr2) {
+				const conversionResult = convertTinyCASToNew(expr2);
+				const afterTinyCAS = conversionResult.converted || expr2;
+				const bareExpr = toBareVariableSyntax(toSimplifiedSyntax(afterTinyCAS));
 
-	if (solutionss.length > 0) {
-		// Case: solutionss exists
-		if (solutionIsShared) {
-			shared.solution = convertSolution(solutionss[0], questionType, warnings);
-		} else {
-			for (let i = 0; i < variationCount; i++) {
-				const solutions = solutionss[i] || solutionss[0];
-				perVariation[i].solution = convertSolution(solutions, questionType, warnings);
-			}
-		}
-	} else if (expressions.length > 0) {
-		// Fallback: no solutionss but expressions exist
-		// The solution is the evaluated expression value (use eval to compute the result)
-		const expressionIsSharedForSolution = expressions.length === 1 && variationCount > 1;
+				const expr2Var: QuestionVariable = {
+					name: `expression${2}`,
+					expression: bareExpr
+				};
 
-		if (expressionIsSharedForSolution) {
-			shared.solution = 'eval:expression1';
-		} else {
-			for (let i = 0; i < variationCount; i++) {
-				perVariation[i].solution = `eval:expression${i + 1}`;
+				if (!perVariation[i].variables) {
+					perVariation[i].variables = [];
+				}
+				perVariation[i].variables!.push(expr2Var);
+
+				// Update statement to also reference expression2
+				const currentStatement = String(perVariation[i].statement ?? shared.statement ?? '');
+				if (!currentStatement.includes('{{expression2}}')) {
+					const updatedStatement = currentStatement + '\n\n$${{expression2}}$$';
+					perVariation[i].statement = templateMarkdown(updatedStatement);
+				}
 			}
 		}
 	}
+
+	// ---- Detect solutionss sharing (→ solution) ----
+	// Only create solution for multiple_choice. For fill_in_blanks modes,
+	// blanks[] is the source of truth (created in createVariationsWithShared).
+	const solutionss = oldQuestion.solutionss || [];
+	const solutionIsShared = solutionss.length === 1 && variationCount > 1;
+
+	if (migrationMode === 'multiple_choice') {
+		// MC needs solution (correct answer index/indices)
+		if (solutionss.length > 0) {
+			if (solutionIsShared) {
+				shared.solution = convertSolution(solutionss[0], 'multiple_choice', warnings);
+			} else {
+				for (let i = 0; i < variationCount; i++) {
+					const solutions = solutionss[i] || solutionss[0];
+					perVariation[i].solution = convertSolution(solutions, 'multiple_choice', warnings);
+				}
+			}
+		}
+	}
+	// For non-MC modes: blanks[] will be created in createVariationsWithShared
 
 	// ---- Detect correction sharing (correctionDetailss + correctionFormats) ----
 	const correctionDetailss = oldQuestion.correctionDetailss || [];
@@ -1620,7 +1804,7 @@ function detectSharedFields(
 	const choicess = oldQuestion.choicess || [];
 	const choicesIsShared = choicess.length === 1 && variationCount > 1;
 
-	if (questionType === 'multiple_choice' && choicess.length > 0) {
+	if (migrationMode === 'multiple_choice' && choicess.length > 0) {
 		// For QCM, choices don't have isCorrect - the correct choice is determined
 		// at runtime by evaluating the solution (which contains the correct index)
 		if (choicesIsShared) {
@@ -1667,7 +1851,8 @@ function hasSharedContent(shared: SharedVariationDefaults): boolean {
 		shared.solution !== undefined ||
 		shared.correction ||
 		(shared.choices && shared.choices.length > 0) ||
-		(shared.validationRules && shared.validationRules.length > 0)
+		(shared.validationRules && shared.validationRules.length > 0) ||
+		(shared.answerFormats && Object.keys(shared.answerFormats).length > 0)
 	);
 }
 
@@ -1687,7 +1872,7 @@ function hasSharedContent(shared: SharedVariationDefaults): boolean {
  */
 function createVariationsWithShared(
 	oldQuestion: QuestionBase,
-	questionType: QuestionType,
+	migrationMode: MigrationMode,
 	imageMapping: ImageUrlMapping | undefined,
 	warnings: string[],
 	stats: TransformStats
@@ -1699,23 +1884,77 @@ function createVariationsWithShared(
 	const { shared, perVariation } = detectSharedFields(
 		oldQuestion,
 		variationCount,
-		questionType,
+		migrationMode,
 		imageMapping,
 		warnings,
 		stats
 	);
 
-	// Handle fill_in_blanks - blanks are always per-variation
+	// Handle blanks based on migration mode
 	const expressions = oldQuestion.expressions || [];
 	const solutionss = oldQuestion.solutionss || [];
+	const oldAnswerFormats = oldQuestion.answerFormats || [];
 
-	if (questionType === 'fill_in_blanks') {
+	if (migrationMode === 'fill_in') {
+		// Fill-in: expressions with ? → blanks from expression
 		for (let i = 0; i < variationCount; i++) {
 			const expression = expressions[i] || expressions[0];
 			const solutions = solutionss[i] || solutionss[0];
 			if (expression) {
 				const blanks = extractBlanks(expression, solutions, warnings);
 				if (blanks && blanks.length > 0) {
+					perVariation[i].blanks = blanks;
+				}
+			}
+		}
+	} else if (migrationMode === 'result_rewrite') {
+		// Result/rewrite: blanks from solutionss, answerFormats extracted
+		const hasSharedAnswerFormat = oldAnswerFormats.length === 1 && variationCount > 1;
+		const sharedAnswerFormat = oldAnswerFormats[0]; // undefined when no formats
+
+		// Extract answerFormats to shared when single format for multiple variations
+		if (hasSharedAnswerFormat && sharedAnswerFormat) {
+			const exprVarName = expressions.length <= 1 ? 'expression1' : undefined;
+			if (exprVarName) {
+				shared.answerFormats = { [exprVarName]: sharedAnswerFormat };
+			}
+		}
+
+		for (let i = 0; i < variationCount; i++) {
+			const solutions = solutionss[i] || solutionss[0];
+			const answerFormat = oldAnswerFormats[i] || oldAnswerFormats[0];
+			const exprVarName = expressions.length <= 1 ? 'expression1' : `expression${i + 1}`;
+
+			const blanks = extractBlanksFromSolutions(solutions, answerFormat, exprVarName, warnings);
+			if (blanks.length > 0) {
+				perVariation[i].blanks = blanks;
+			}
+
+			// Per-variation answerFormats (when not shared)
+			if (answerFormat && !hasSharedAnswerFormat) {
+				perVariation[i].answerFormats = { [exprVarName]: answerFormat };
+			}
+		}
+	} else if (migrationMode === 'answer_field') {
+		// AnswerField: blanks from solutionss, count from $$...$$ in answerField
+		const answerFields = oldQuestion.answerFields || [];
+
+		for (let i = 0; i < variationCount; i++) {
+			const solutions = solutionss[i] || solutionss[0];
+			const af = answerFields[i] || answerFields[0];
+
+			// Count blanks from $$...$$ markers in answerField
+			const blankCount = af ? (af.match(/\$\$\.\.\.\$\$/g) || []).length : 0;
+
+			if (solutions && solutions.length > 0 && blankCount > 0) {
+				const blanks = extractBlanksFromSolutions(
+					solutions,
+					undefined, // No answerFormat for answerFields
+					undefined, // No expression variable
+					warnings,
+					blankCount
+				);
+				if (blanks.length > 0) {
 					perVariation[i].blanks = blanks;
 				}
 			}
@@ -1731,14 +1970,19 @@ function createVariationsWithShared(
 		if (!statement) {
 			warnings.push(`Variation ${index}: missing statement`);
 		}
-		if (solution === undefined) {
+		// Only warn about missing solution for multiple_choice
+		if (solution === undefined && migrationMode === 'multiple_choice') {
 			warnings.push(`Variation ${index}: missing solution`);
 		}
 
 		const variation: QuestionVariation = {
-			statement: statement || templateMarkdown(''),
-			solution: solution ?? ''
+			statement: statement || templateMarkdown('')
 		};
+
+		// Solution only for multiple_choice
+		if (solution !== undefined) {
+			variation.solution = solution;
+		}
 
 		// Add optional fields only if they exist and are NOT shared
 		if (pv.variables && pv.variables.length > 0) {
@@ -1755,6 +1999,9 @@ function createVariationsWithShared(
 		}
 		if (pv.blanks && pv.blanks.length > 0) {
 			variation.blanks = pv.blanks;
+		}
+		if (pv.answerFormats && Object.keys(pv.answerFormats).length > 0) {
+			variation.answerFormats = pv.answerFormats;
 		}
 
 		return variation;
@@ -1873,14 +2120,14 @@ export function transformQuestion(
 			}
 		}
 
-		// Detect question type
-		const questionType = detectQuestionType(oldQuestion);
-		stats.detectedType = questionType;
+		// Detect migration mode + legacy type for stats
+		const migrationMode = detectMigrationMode(oldQuestion);
+		stats.detectedType = detectQuestionType(oldQuestion);
 
 		// Create variations with shared field detection
 		const { variations, shared } = createVariationsWithShared(
 			oldQuestion,
-			questionType,
+			migrationMode,
 			options?.imageUrlMapping,
 			warnings,
 			stats
@@ -1959,7 +2206,7 @@ export function transformQuestion(
 		}
 
 		// Add precision for decimal questions
-		if (questionType === 'numerical_decimal') {
+		if (oldQuestion['result-type'] === 'decimal') {
 			template.precision = { type: 'decimal', digits: 2 }; // Default to 2 decimal places
 			warnings.push('Decimal precision set to 2 places by default - verify if correct');
 		}

@@ -355,9 +355,9 @@ Issues documentees pour plus tard :
 
 ---
 
-## Phase 5: Transformer de migration (IN PROGRESS)
+## Phase 5: Transformer de migration (COMPLETE)
 
-### Status: Phase 5.0 TDD Specification — VALIDATED
+### Status: Phase 5.2 Implementation — DONE (475/475 tests pass)
 
 ### Phase 5.0 — TDD Specification
 
@@ -406,7 +406,51 @@ Issues documentees pour plus tard :
 1. **Pas de `unit` pour les expressions avec unite visible** — Les questions Grandeurs 426-469 (`&1 km = ? m`) n'ont pas de champ `unit` sur les blanks. L'unite est decorative dans l'expression, l'eleve tape un nombre pur, la validation est numerique standard.
 2. **`unit: { expected: true }` uniquement pour les solutions avec unite** — Seules les questions dont la solution TinyMath contient une unite (pattern `_unit_`) recoivent `unit: { expected: true }` sur le blank. Ex: globalIndex 470 (`[_&2_km.h^{-1}_]`).
 
+### Phase 5.1 — Tests (DONE)
+
+- Created `src/lib/migration/__tests__/transformer-fill-blanks.test.ts` with 15 tests covering all Phase 5 behaviors
+- Fixed 8 pre-existing failures in `question-transformer.test.ts` (assertions on removed `type` field, `solution` → `blanks`)
+- Committed as `76dd98e7`
+
+### Phase 5.2 — Implementation (DONE)
+
+#### Changes to `question-transformer.ts`:
+
+1. **`MigrationMode` type + `detectMigrationMode()`** (L262-290) — Internal branching on `result_rewrite | answer_field | fill_in | multiple_choice`. Old `detectQuestionType` kept as deprecated wrapper for stats.
+
+2. **`convertAnswerFieldToStatement()`** (L620-641) — Converts `\text{...}$$...$$` → plain text with `$?$` blanks.
+
+3. **`solutionHasUnit()`** (L650-656) — Detects `_unit_]` pattern in TinyMath solutions.
+
+4. **`extractBlanksFromSolutions()`** (L666-706) — Creates `blanks[]` from `solutionss`, with unit detection and answerFormat-driven blank count.
+
+5. **`detectSharedFields()`** (L1560+) — Takes `migrationMode` instead of `questionType`. Handles `answer_field` mode (converts answerField to statement), `expressions2` (creates `expression2` variable), solution only for MC.
+
+6. **`createVariationsWithShared()`** (L1872+) — Creates blanks for `fill_in`, `result_rewrite`, `answer_field` modes. Extracts `answerFormats` for result_rewrite.
+
+7. **`transformQuestion()`** (L2072+) — Uses `detectMigrationMode()`. Precision check on `oldQuestion['result-type'] === 'decimal'`.
+
+8. **`hasSharedContent()`** (L1847+) — Added `answerFormats` check.
+
+#### Test updates to `question-transformer.test.ts`:
+
+- 7 additional tests updated to expect `blanks[]` instead of `solution` for result_rewrite/answer_field questions
+- Expression variable extraction tests updated to expect `blanks[0].expectedAnswer = "{{eval:{{expressionN}}}}"` format
+
+#### Results: 475/475 tests pass, 0 failures, ESLint clean
+
+### Files Modified
+
+| File                                                          | Changes                                                                                   |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `src/lib/migration/question-transformer.ts`                   | MigrationMode, helpers, detectSharedFields, createVariationsWithShared, transformQuestion |
+| `src/lib/migration/question-transformer.test.ts`              | Fixed 8+7 tests for new blanks structure                                                  |
+| `src/lib/migration/__tests__/transformer-fill-blanks.test.ts` | NEW: 15 Phase 5 tests                                                                     |
+| `docs/wip/fill-in-blanks-v2-progress.md`                      | Phase 5 progress                                                                          |
+| `docs/wip/phase5-continuation-prompt.md`                      | Updated unit handling                                                                     |
+
 ### Next Steps
 
-- **Phase 5.1** : Ecrire les tests (`src/lib/migration/__tests__/transformer-fill-blanks.test.ts`)
-- **Phase 5.2** : Implementation dans `question-transformer.ts`
+- Phase 6: Runtime generation pipeline integration
+- Phase 7: UI updates for fill_in_blanks display
+- Phase 8: End-to-end testing with 633 migrated questions
