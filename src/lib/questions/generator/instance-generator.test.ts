@@ -1672,3 +1672,103 @@ describe('generateInstance - Shared Fields', () => {
 		expect(result.instance.correction?.steps?.[1]).toBe('Step 2: Add them: 7 + 8 = 15');
 	});
 });
+
+describe('generateInstance - Bug: bare text choice "pair"', () => {
+	const sharedChoices = [
+		{ content: templateMarkdown('pair'), isCorrect: false },
+		{ content: templateMarkdown('impair'), isCorrect: false }
+	];
+
+	it('should not fail when choice content is bare text like "pair"', () => {
+		const template: QuestionTemplate = {
+			id: 'test-pair-bug',
+			title: "Parité d'un nombre entier",
+			shared: {
+				variables: [
+					{ name: 'a', expression: '0..49' },
+					{ name: 'b', expression: 'eval:2*a' },
+					{ name: 'c', expression: 'eval:2*a+1' }
+				],
+				choices: sharedChoices
+			},
+			variations: [
+				{
+					statement: templateMarkdown('Quelle est la parité de ce nombre ?\n\n${{expression1}}$'),
+					solution: ['0'],
+					variables: [{ name: 'expression1', expression: 'b' }],
+					choices: [{ ...sharedChoices[0], isCorrect: true }, sharedChoices[1]],
+					correction: {
+						steps: [
+							templateMarkdown('{{expression1}} est pair car il se termine par 0, 2, 4, 6, ou 8.')
+						]
+					}
+				},
+				{
+					statement: templateMarkdown('Quelle est la parité de ce nombre ?\n\n${{expression2}}$'),
+					solution: ['1'],
+					variables: [{ name: 'expression2', expression: 'c' }],
+					choices: [sharedChoices[0], { ...sharedChoices[1], isCorrect: true }],
+					correction: {
+						steps: [
+							templateMarkdown('{{expression2}} est impair car il se termine par 1, 3, 5, 7, ou 9.')
+						]
+					}
+				}
+			],
+			options: { shuffleChoices: false },
+			grades: ['CE1'] as QuestionTemplate['grades'],
+			theme: 'Nombres',
+			domain: 'Arithmétique',
+			level: 1,
+			status: 'draft',
+			delay: 10
+		};
+
+		const result = generateInstance(template, 42);
+		console.log('Result:', JSON.stringify(result, null, 2));
+		expect(result.success).toBe(true);
+	});
+
+	it('should reproduce the original bug with correction {{expression}} and {{solution}}', () => {
+		const template: QuestionTemplate = {
+			id: 'test-pair-bug-2',
+			title: "Parité d'un nombre entier",
+			shared: {
+				variables: [
+					{ name: 'a', expression: '0..49' },
+					{ name: 'b', expression: 'eval:2*a' },
+					{ name: 'c', expression: 'eval:2*a+1' }
+				],
+				choices: sharedChoices
+			},
+			variations: [
+				{
+					statement: templateMarkdown('Quelle est la parité de ce nombre ?\n\n${{expression1}}$'),
+					solution: ['0'],
+					variables: [{ name: 'expression1', expression: 'b' }],
+					choices: [{ ...sharedChoices[0], isCorrect: true }, sharedChoices[1]],
+					correction: {
+						steps: [
+							templateMarkdown(
+								'{{expression}} est {{solution}} car il se termine par 0, 2, 4, 6, ou 8.'
+							)
+						]
+					}
+				}
+			],
+			options: { shuffleChoices: false },
+			grades: ['CE1'] as QuestionTemplate['grades'],
+			theme: 'Nombres',
+			domain: 'Arithmétique',
+			level: 1,
+			status: 'draft',
+			delay: 10
+		};
+
+		const result = generateInstance(template, 42);
+		console.log('Result with original correction:', JSON.stringify(result, null, 2));
+		// This should fail because {{expression}} and {{solution}} are not defined variables
+		expect(result.success).toBe(false);
+		expect(result.errors?.[0]).toContain('not found');
+	});
+});

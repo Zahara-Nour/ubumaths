@@ -7,7 +7,7 @@
  * @module questions/validators/template-validator
  */
 
-import type { QuestionTemplate, QuestionVariation } from '../types';
+import type { QuestionTemplate, QuestionVariation, SharedVariationDefaults } from '../types';
 import { getQuestionType } from '../types';
 
 /**
@@ -45,9 +45,9 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		choices: firstVariation.choices ?? template.shared?.choices
 	});
 
-	// Validate each variation
+	// Validate each variation (pass shared defaults for merged field checks)
 	template.variations.forEach((variation, index) => {
-		const variationErrors = validateVariation(variation, inferredType, index);
+		const variationErrors = validateVariation(variation, inferredType, index, template.shared);
 		errors.push(...variationErrors);
 	});
 
@@ -102,25 +102,34 @@ export function validateTemplate(template: QuestionTemplate): string[] {
  * @param variation - Variation to validate
  * @param questionType - Question type from template
  * @param index - Variation index (for error messages)
+ * @param shared - Shared defaults (for merged field checks like choices)
  * @returns Array of error messages
  */
 function validateVariation(
 	variation: QuestionVariation,
 	questionType: string,
-	index: number
+	index: number,
+	shared?: SharedVariationDefaults
 ): string[] {
 	const errors: string[] = [];
 	const prefix = `Variation ${index + 1}:`;
 
-	// Validate statement (now a TemplateMarkdown string)
-	if (typeof variation.statement !== 'string') {
-		errors.push(`${prefix} Missing required field: statement`);
-	} else if (variation.statement.trim().length === 0) {
-		errors.push(`${prefix} Statement cannot be empty`);
+	// Validate statement (now a TemplateMarkdown string, can fall back to shared)
+	const hasOwnStatement =
+		typeof variation.statement === 'string' && variation.statement.trim().length > 0;
+	const hasSharedStatement =
+		typeof shared?.statement === 'string' && shared.statement.trim().length > 0;
+	if (!hasOwnStatement && !hasSharedStatement) {
+		if (typeof variation.statement !== 'string') {
+			errors.push(`${prefix} Missing required field: statement`);
+		} else {
+			errors.push(`${prefix} Statement cannot be empty`);
+		}
 	}
 
 	// Validate solution (required for multiple_choice, optional for fill_in_blanks)
-	if (questionType === 'multiple_choice' && !variation.solution) {
+	// Solution can come from shared defaults
+	if (questionType === 'multiple_choice' && !variation.solution && !shared?.solution) {
 		errors.push(`${prefix} Missing required field: solution (required for multiple_choice)`);
 	}
 
@@ -163,12 +172,14 @@ function validateVariation(
 			}
 			break;
 
-		case 'multiple_choice':
-			if (!variation.choices || variation.choices.length < 2) {
+		case 'multiple_choice': {
+			// Use merged choices (variation overrides shared)
+			const effectiveChoices = variation.choices ?? shared?.choices;
+			if (!effectiveChoices || effectiveChoices.length < 2) {
 				errors.push(`${prefix} multiple_choice requires at least 2 choices`);
 			}
 
-			// Check that at least one choice is correct
+			// Check that at least one choice is correct (only for per-variation choices with isCorrect)
 			if (variation.choices) {
 				const hasCorrect = variation.choices.some((choice) => choice.isCorrect);
 				if (!hasCorrect) {
@@ -176,6 +187,7 @@ function validateVariation(
 				}
 			}
 			break;
+		}
 	}
 
 	return errors;
