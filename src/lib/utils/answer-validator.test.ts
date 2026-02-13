@@ -711,13 +711,12 @@ describe('validateAnswer - Required Form Integration', () => {
 		return {
 			templateId: 'test-template',
 			statement: 'Test question' as ResolvedMarkdown,
-			blanks: [{ expectedAnswer, type: 'math' }],
+			blanks: [{ expectedAnswer, type: 'math', requiredForm }],
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			generatedAt: new Date().toISOString(),
-			requiredForm
+			generatedAt: new Date().toISOString()
 		};
 	}
 
@@ -842,13 +841,12 @@ describe('validateAnswer - Required Form Integration', () => {
 			const instance: QuestionInstance = {
 				templateId: 'test-template',
 				statement: 'Test question' as ResolvedMarkdown,
-				blanks: [{ expectedAnswer: '6', type: 'math' }],
+				blanks: [{ expectedAnswer: '6', type: 'math', requiredForm: 'product' }],
 				grades: ['6'],
 				theme: 'Test',
 				domain: 'Test',
 				level: 1,
 				generatedAt: new Date().toISOString(),
-				requiredForm: 'product',
 				options: {
 					constraints: {
 						brackets: 'strict',
@@ -872,13 +870,12 @@ describe('validateAnswer - Required Form Integration', () => {
 			const instance: QuestionInstance = {
 				templateId: 'test-template',
 				statement: 'Test question' as ResolvedMarkdown,
-				blanks: [{ expectedAnswer: '5', type: 'math' }],
+				blanks: [{ expectedAnswer: '5', type: 'math', requiredForm: 'sum' }],
 				grades: ['6'],
 				theme: 'Test',
 				domain: 'Test',
 				level: 1,
 				generatedAt: new Date().toISOString(),
-				requiredForm: 'sum',
 				options: {
 					constraints: {
 						brackets: 'strict',

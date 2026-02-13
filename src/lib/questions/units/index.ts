@@ -147,7 +147,7 @@ export {
 // VALIDATOR
 // ============================================================================
 
-export { validateQuantityAnswer, type ValidationOptions, type ValidationResult } from './validator';
+export { validateQuantityAnswer, type ValidationResult } from './validator';
 
 // ============================================================================
 // CE INTEGRATION

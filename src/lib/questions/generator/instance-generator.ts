@@ -299,7 +299,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					type: blankResult.blankTypes[i],
 					precision: blank.precision ?? resolvedVariation.blankDefaults?.precision,
 					requiredForm: blank.requiredForm ?? resolvedVariation.blankDefaults?.requiredForm,
-					validationRules: blank.validationRules,
+					validationRules: blank.validationRules ?? resolvedVariation.validationRules,
 					unit: blank.unit ?? resolvedVariation.blankDefaults?.unit,
 					pool: blank.pool
 				};

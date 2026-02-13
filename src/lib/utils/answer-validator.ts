@@ -10,6 +10,7 @@
 
 import type {
 	QuestionInstance,
+	InstanceBlank,
 	PrecisionType,
 	ValidationStatus,
 	ConstraintId,
@@ -36,6 +37,7 @@ import {
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
 import { checkRequiredForm, getRequiredFormFeedback } from '$lib/questions/required-form-validator';
+import { validateQuantityAnswer } from '$lib/questions/units/validator';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -169,6 +171,61 @@ function evaluateValidationRules(
 }
 
 // ============================================================================
+// FUZZY TEXT MATCHING
+// ============================================================================
+
+/**
+ * Compute Levenshtein distance between two strings
+ */
+function levenshteinDistance(a: string, b: string): number {
+	const m = a.length;
+	const n = b.length;
+	const dp: number[][] = Array.from({ length: m + 1 }, () => Array<number>(n + 1).fill(0));
+
+	for (let i = 0; i <= m; i++) dp[i][0] = i;
+	for (let j = 0; j <= n; j++) dp[0][j] = j;
+
+	for (let i = 1; i <= m; i++) {
+		for (let j = 1; j <= n; j++) {
+			if (a[i - 1] === b[j - 1]) {
+				dp[i][j] = dp[i - 1][j - 1];
+			} else {
+				dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+			}
+		}
+	}
+
+	return dp[m][n];
+}
+
+/**
+ * Normalize string for fuzzy comparison: lowercase + strip accents
+ */
+function normalizeForFuzzy(s: string): string {
+	return s
+		.trim()
+		.toLowerCase()
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '');
+}
+
+/**
+ * Fuzzy text matching: case insensitive, accents ignored, Levenshtein distance <= 1
+ */
+function isFuzzyTextMatch(userAnswer: string, expected: string): boolean {
+	const normalizedUser = normalizeForFuzzy(userAnswer);
+	const normalizedExpected = normalizeForFuzzy(expected);
+
+	// Empty answers must match exactly (prevent "" fuzzy-matching "a")
+	if (!normalizedUser || !normalizedExpected) {
+		return normalizedUser === normalizedExpected;
+	}
+
+	if (normalizedUser === normalizedExpected) return true;
+	return levenshteinDistance(normalizedUser, normalizedExpected) <= 1;
+}
+
+// ============================================================================
 // MAIN VALIDATION FUNCTION
 // ============================================================================
 
@@ -185,54 +242,48 @@ export function validateAnswer(
 	instance: QuestionInstance,
 	userAnswerLatex?: string | string[]
 ): ValidationResult {
-	const { solution } = instance;
 	const questionType = getQuestionType(instance);
 
 	try {
-		// Check custom validation rules first (for testAnswers-style questions)
-		// These are used when the correct answer depends on generated variables
+		// ---- FILL_IN_BLANKS: per-blank pipeline (return early) ----
+		// Global validationRules and requiredForm are NOT used here;
+		// each blank carries its own validation config.
+		if (questionType === 'fill_in_blanks') {
+			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
+			const latex = userAnswerLatex
+				? Array.isArray(userAnswerLatex)
+					? userAnswerLatex
+					: [userAnswerLatex]
+				: undefined;
+
+			if (!instance.blanks || instance.blanks.length === 0) {
+				return answers.length === 0
+					? { isCorrect: true }
+					: { isCorrect: false, message: 'Pas de blanks[] définis' };
+			}
+
+			return validateBlanks(answers, instance, latex);
+		}
+
+		// ---- MULTIPLE_CHOICE ----
+		const { solution } = instance;
+
+		// Check custom validation rules first (testAnswers-style)
 		if (instance.validationRules && instance.validationRules.length > 0) {
 			const userAnswerStr = Array.isArray(userAnswer) ? String(userAnswer[0]) : String(userAnswer);
 			const ruleResult = evaluateValidationRules(instance.validationRules, userAnswerStr, instance);
 
-			if (ruleResult) {
-				// Rule validation failed
-				return ruleResult;
-			}
-
-			// All rules passed - answer is correct
+			if (ruleResult) return ruleResult;
 			return { isCorrect: true };
 		}
 
-		// Get validation result based on question type (inferred from structure)
-		let result: ValidationResult;
+		const result: ValidationResult = validateChoice(
+			userAnswer as number | number[],
+			solution as string | string[],
+			instance.multipleAnswers
+		);
 
-		if (questionType === 'multiple_choice') {
-			result = validateChoice(
-				userAnswer as number | number[],
-				solution as string | string[],
-				instance.multipleAnswers
-			);
-		} else if (questionType === 'fill_in_blanks') {
-			if (instance.blanks && instance.blanks.length > 0) {
-				const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
-				result = validateBlanks(
-					answers,
-					instance.blanks.map((b) => b.expectedAnswer),
-					instance.options?.orderIndependent
-				);
-			} else {
-				result = { isCorrect: false, message: 'Pas de blanks[] définis' };
-			}
-		} else {
-			return {
-				isCorrect: false,
-				message: `Type de question non supporté: ${questionType}`
-			};
-		}
-
-		// Apply required form check FIRST if configured (takes precedence over constraints)
-		// This validates structural form (product, sum, fraction, etc.)
+		// Apply required form check (multiple_choice only; fill_in_blanks uses per-blank)
 		if (result.isCorrect && instance.requiredForm && userAnswerLatex) {
 			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
 			const formViolations = checkRequiredForm(latex, instance.requiredForm);
@@ -243,32 +294,16 @@ export function validateAnswer(
 					isCorrect: false,
 					status: 'bad_form',
 					feedback,
-					constraintViolations: [
-						{
-							constraint: 'form',
-							severity: 'error',
-							feedback
-						}
-					]
+					constraintViolations: [{ constraint: 'form', severity: 'error', feedback }]
 				};
 			}
 		}
 
-		// Apply constraint checks if answer is correct and LaTeX input is available.
-		// Constraints use DEFAULT_CONSTRAINT_MODE ('warn') when not explicitly set,
-		// so we always run checks even without explicit constraints in the template.
+		// Apply constraint checks (multiple_choice only)
 		if (result.isCorrect && userAnswerLatex) {
 			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
 			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
-			// For fill_in_blanks: use blanks[].expectedAnswer
-			// For multiple_choice: use solution (index-based, constraints less relevant)
-			const expected = instance.blanks
-				? instance.blanks.map((b) => b.expectedAnswer)
-				: Array.isArray(solution)
-					? solution
-					: solution
-						? [solution]
-						: [];
+			const expected = Array.isArray(solution) ? solution : solution ? [solution] : [];
 
 			const { status, violations } = applyConstraints(
 				answers,
@@ -284,7 +319,6 @@ export function validateAnswer(
 				result.isCorrect = false;
 				result.feedback = violations[0]?.feedback;
 			} else if (status === 'unoptimal_form') {
-				// Keep isCorrect true but add feedback
 				result.feedback = violations[0]?.feedback;
 			}
 		}
@@ -470,48 +504,199 @@ export function validateAlgebraic(userAnswer: string, correctAnswer: string): Va
 }
 
 // ============================================================================
-// FILL-IN-BLANKS VALIDATION
+// FILL-IN-BLANKS VALIDATION (PER-BLANK PIPELINE)
 // ============================================================================
 
 /**
- * Validate fill-in-blanks answers
- *
- * @param userAnswers - Array of user answers for each blank
- * @param correctAnswers - Array of correct answers
- * @param orderIndependent - When true, answers can be in any order (pool matching)
- * @returns Validation result
+ * Check if a single answer matches a blank's expected value (value only, no form/constraints).
+ * Uses inferred validation mode based on blank configuration.
+ * Used for order-independent matching.
  */
-export function validateBlanks(
-	userAnswers: string[],
-	correctAnswers: string[],
-	orderIndependent?: boolean
-): ValidationResult {
-	if (userAnswers.length !== correctAnswers.length) {
+function validateBlankValue(
+	userAnswer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): boolean {
+	// Check validation rules first (pre-condition)
+	if (blank.validationRules && blank.validationRules.length > 0) {
+		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
+		if (ruleResult) return false;
+	}
+
+	// Inferred mode
+	if (blank.type === 'text') {
+		return isFuzzyTextMatch(userAnswer, blank.expectedAnswer);
+	}
+
+	if (blank.unit?.expected) {
+		const result = validateQuantityAnswer(
+			userAnswer,
+			blank.expectedAnswer,
+			blank.precision,
+			blank.unit.required
+		);
+		return result.isCorrect;
+	}
+
+	if (blank.precision) {
+		const result = validateNumerical(userAnswer, blank.expectedAnswer, blank.precision);
+		return result.isCorrect;
+	}
+
+	return isAnswerMatch(userAnswer, blank.expectedAnswer);
+}
+
+/**
+ * Full per-blank pipeline: validationRules -> inferred mode -> requiredForm -> constraints.
+ */
+function validateSingleBlank(
+	userAnswer: string,
+	blank: InstanceBlank,
+	userAnswerLatex: string | undefined,
+	instance: QuestionInstance
+): {
+	isCorrect: boolean;
+	status?: ValidationStatus;
+	feedback?: string;
+	constraintViolations?: NonNullable<ValidationResult['constraintViolations']>;
+} {
+	// 1. Validation rules (pre-condition)
+	if (blank.validationRules && blank.validationRules.length > 0) {
+		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
+		if (ruleResult) {
+			return { isCorrect: false, feedback: ruleResult.feedback };
+		}
+	}
+
+	// 2. Inferred mode (value correctness)
+	let isCorrect: boolean;
+
+	if (blank.type === 'text') {
+		isCorrect = isFuzzyTextMatch(userAnswer, blank.expectedAnswer);
+	} else if (blank.unit?.expected) {
+		const result = validateQuantityAnswer(
+			userAnswer,
+			blank.expectedAnswer,
+			blank.precision,
+			blank.unit.required
+		);
+		isCorrect = result.isCorrect;
+	} else if (blank.precision) {
+		const result = validateNumerical(userAnswer, blank.expectedAnswer, blank.precision);
+		isCorrect = result.isCorrect;
+	} else {
+		isCorrect = isAnswerMatch(userAnswer, blank.expectedAnswer);
+	}
+
+	if (!isCorrect) {
+		return { isCorrect: false };
+	}
+
+	// 3. Required form check (per-blank)
+	if (blank.requiredForm && userAnswerLatex) {
+		const formViolations = checkRequiredForm([userAnswerLatex], blank.requiredForm);
+		if (formViolations.length > 0) {
+			const feedback = getRequiredFormFeedback(blank.requiredForm, false);
+			return {
+				isCorrect: false,
+				status: 'bad_form',
+				feedback,
+				constraintViolations: [{ constraint: 'form', severity: 'error', feedback }]
+			};
+		}
+	}
+
+	// 4. Constraints (per-blank, using instance-level constraint config)
+	if (userAnswerLatex) {
+		const { status, violations } = applyConstraints(
+			[userAnswer],
+			[userAnswerLatex],
+			[blank.expectedAnswer],
+			instance.options?.constraints ?? {}
+		);
+
 		return {
-			isCorrect: false,
-			message: 'Nombre de réponses incorrect'
+			isCorrect: status !== 'bad_form',
+			status,
+			feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
+			constraintViolations: violations
 		};
 	}
 
-	if (orderIndependent) {
-		return validateBlanksOrderIndependent(userAnswers, correctAnswers);
+	return { isCorrect: true };
+}
+
+/**
+ * Validate fill-in-blanks answers using per-blank pipeline
+ */
+export function validateBlanks(
+	userAnswers: string[],
+	instance: QuestionInstance,
+	userAnswersLatex?: string[]
+): ValidationResult {
+	const blanks = instance.blanks!;
+
+	if (userAnswers.length !== blanks.length) {
+		return { isCorrect: false, message: 'Nombre de réponses incorrect' };
 	}
 
-	const results = userAnswers.map((userAns, i) => {
-		const correctAns = correctAnswers[i];
-		return { isCorrect: isAnswerMatch(userAns, correctAns), index: i };
-	});
+	if (instance.options?.orderIndependent) {
+		return validateBlanksOrderIndependent(userAnswers, instance, userAnswersLatex);
+	}
 
-	const allCorrect = results.every((r) => r.isCorrect);
-	const incorrectIndexes = results.filter((r) => !r.isCorrect).map((r) => r.index + 1);
+	// Ordered: per-blank pipeline
+	let worstStatus: ValidationStatus | undefined;
+	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
+	const incorrectIndexes: number[] = [];
+	let hasConstraintResults = false;
 
-	return {
-		isCorrect: allCorrect,
-		message: allCorrect ? 'Correct !' : 'Incorrect',
-		feedback: allCorrect
-			? undefined
-			: `Les blancs suivants sont incorrects: ${incorrectIndexes.join(', ')}`
-	};
+	for (let i = 0; i < blanks.length; i++) {
+		const result = validateSingleBlank(userAnswers[i], blanks[i], userAnswersLatex?.[i], instance);
+
+		if (!result.isCorrect) {
+			incorrectIndexes.push(i + 1);
+		}
+
+		// Aggregate worst status (priority: bad_form > unoptimal_form > correct)
+		if (result.status !== undefined) {
+			if (worstStatus === undefined) {
+				worstStatus = result.status;
+			} else if (result.status === 'bad_form') {
+				worstStatus = 'bad_form';
+			} else if (result.status === 'unoptimal_form' && worstStatus !== 'bad_form') {
+				worstStatus = 'unoptimal_form';
+			}
+		}
+
+		if (result.constraintViolations) {
+			hasConstraintResults = true;
+			allViolations.push(...result.constraintViolations);
+		}
+	}
+
+	const allCorrect = incorrectIndexes.length === 0;
+	const result: ValidationResult = { isCorrect: allCorrect };
+
+	// Include constraint results when constraint checking occurred
+	if (hasConstraintResults || worstStatus !== undefined) {
+		if (worstStatus === 'bad_form') {
+			result.isCorrect = false;
+		}
+		result.status = worstStatus;
+		result.constraintViolations = allViolations;
+	}
+
+	if (!allCorrect) {
+		if (worstStatus === 'bad_form') {
+			result.feedback = allViolations[0]?.feedback;
+		} else {
+			result.feedback = `Les blancs suivants sont incorrects: ${incorrectIndexes.join(', ')}`;
+		}
+	} else if (worstStatus === 'unoptimal_form') {
+		result.feedback = allViolations[0]?.feedback;
+	}
+
+	return result;
 }
 
 /** Match a single answer against expected (algebraic equivalence or case-insensitive string) */
@@ -520,29 +705,71 @@ function isAnswerMatch(userAns: string, correctAns: string): boolean {
 	return userAns.trim().toLowerCase() === correctAns.trim().toLowerCase();
 }
 
-/** Order-independent matching: each answer is matched against any unused correct answer */
+/** Order-independent matching: each answer is matched against any unused blank */
 function validateBlanksOrderIndependent(
 	userAnswers: string[],
-	correctAnswers: string[]
+	instance: QuestionInstance,
+	userAnswersLatex?: string[]
 ): ValidationResult {
+	const blanks = instance.blanks!;
 	const used = new Set<number>();
+	const matching: number[] = new Array(userAnswers.length).fill(-1);
 
-	for (const userAns of userAnswers) {
-		let matched = false;
-		for (let i = 0; i < correctAnswers.length; i++) {
-			if (used.has(i)) continue;
-			if (isAnswerMatch(userAns, correctAnswers[i])) {
-				used.add(i);
-				matched = true;
+	for (let a = 0; a < userAnswers.length; a++) {
+		for (let b = 0; b < blanks.length; b++) {
+			if (used.has(b)) continue;
+			if (validateBlankValue(userAnswers[a], blanks[b], instance)) {
+				used.add(b);
+				matching[a] = b;
 				break;
 			}
 		}
-		if (!matched) {
+		if (matching[a] === -1) {
 			return { isCorrect: false, message: 'Incorrect' };
 		}
 	}
 
-	return { isCorrect: true, message: 'Correct !' };
+	// All matched. Apply form/constraints on matched pairs.
+	let worstStatus: ValidationStatus = 'correct';
+	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
+
+	for (let a = 0; a < userAnswers.length; a++) {
+		const b = matching[a];
+		const blankLatex = userAnswersLatex?.[a];
+
+		if (blanks[b].requiredForm && blankLatex) {
+			const formViolations = checkRequiredForm([blankLatex], blanks[b].requiredForm!);
+			if (formViolations.length > 0) {
+				const feedback = getRequiredFormFeedback(blanks[b].requiredForm!, false);
+				allViolations.push({ constraint: 'form', severity: 'error', feedback });
+				worstStatus = 'bad_form';
+			}
+		}
+
+		if (blankLatex) {
+			const { status, violations } = applyConstraints(
+				[userAnswers[a]],
+				[blankLatex],
+				[blanks[b].expectedAnswer],
+				instance.options?.constraints ?? {}
+			);
+			if (status === 'bad_form') worstStatus = 'bad_form';
+			else if (status === 'unoptimal_form' && worstStatus === 'correct')
+				worstStatus = 'unoptimal_form';
+			allViolations.push(...violations);
+		}
+	}
+
+	if (worstStatus === 'correct') {
+		return { isCorrect: true, message: 'Correct !' };
+	}
+
+	return {
+		isCorrect: worstStatus !== 'bad_form',
+		status: worstStatus,
+		feedback: allViolations[0]?.feedback,
+		constraintViolations: allViolations
+	};
 }
 
 // ============================================================================
