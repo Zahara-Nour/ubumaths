@@ -58,9 +58,11 @@ Le double de ${{a}}$ est $?$.
 
 Technique : regex `\text{...}` → texte, `$$...$$` → `$?$` ou `${{var}}$` selon le contenu. Generer `blanks[]` depuis `solutionss`.
 
-### 5.3 — Gerer les 45 questions Grandeurs (globalIndex 426-470)
+### 5.3 — Gerer les unites dans les solutions (answerField)
 
-Ajouter `unit: { expected: false }` sur les blanks. L'unite est dans l'expression (ex: `&1 km = ? m`), l'eleve tape un nombre pur.
+Les answerField dont la solution TinyMath contient une unite (pattern `_unit_`, ex: `[_&2_km.h^{-1}_]`, globalIndex 470) → blank avec `unit: { expected: true }`. L'eleve doit fournir valeur + unite.
+
+**IMPORTANT** : Les expressions avec unite visible (`&1 km = ? m`, globalIndex 426-469) n'ont PAS de champ `unit`. L'unite est decorative, l'eleve tape un nombre pur, la validation est numerique standard.
 
 ### 5.4 — Gerer `expressions2` (2 questions QCM, globalIndex 478, 587)
 
@@ -76,15 +78,16 @@ Les 8 tests qui echouent doivent etre corriges pour refleter la nouvelle structu
 
 ## Exemples concrets (`.claude/old-questions.json`)
 
-| globalIndex | Type ancien    | Description                                   |
-| ----------- | -------------- | --------------------------------------------- |
-| 10          | result/rewrite | Simple (sans answerFormat)                    |
-| 413         | result/rewrite | answerFormat `10^?` (puissances)              |
-| 411         | result/rewrite | answerFormat `?*10^?` (notation scientifique) |
-| 0           | answerField    | Mono-trou                                     |
-| 51          | fill-in        | `?` dans l'expression                         |
-| 426-470     | Grandeurs      | Conversions d'unites                          |
-| 478, 587    | QCM            | `expressions2` (2 expressions simultanees)    |
+| globalIndex | Type ancien    | Description                                      |
+| ----------- | -------------- | ------------------------------------------------ |
+| 10          | result/rewrite | Simple (sans answerFormat)                       |
+| 413         | result/rewrite | answerFormat `10^?` (puissances)                 |
+| 411         | result/rewrite | answerFormat `?*10^?` (notation scientifique)    |
+| 0           | answerField    | Mono-trou                                        |
+| 51          | fill-in        | `?` dans l'expression                            |
+| 426-469     | Grandeurs      | Expressions avec unite visible (pas de `unit`)   |
+| 470         | answerField    | Solution avec unite → `unit: { expected: true }` |
+| 478, 587    | QCM            | `expressions2` (2 expressions simultanees)       |
 
 ## Workflow TDD (OBLIGATOIRE)
 
