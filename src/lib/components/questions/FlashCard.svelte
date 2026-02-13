@@ -95,6 +95,7 @@
 	// Type-specific state
 	let selectedChoices = $state<number[]>([]);
 	let fillBlankValues = $state<string[]>([]);
+	let fillBlankValuesLatex = $state<string[]>([]);
 	let blankValidationResults = $state<(boolean | null)[]>([]);
 
 	// ============================================================================
@@ -178,7 +179,8 @@
 	// Initialize type-specific state
 	$effect(() => {
 		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
-			fillBlankValues = instance.blanks.map(() => '');
+			fillBlankValues = instance.blanks.map((b) => b.prefilled ?? '');
+			fillBlankValuesLatex = instance.blanks.map(() => '');
 			blankValidationResults = instance.blanks.map(() => null);
 		}
 
@@ -377,7 +379,9 @@
 									<FillBlanksInput
 										statement={instance.statement}
 										blanks={instance.blanks || []}
+										expressions={instance.expressions}
 										bind:values={fillBlankValues}
+										bind:valuesLatex={fillBlankValuesLatex}
 										disabled={isInputDisabled}
 										validationResults={isSubmitted ? blankValidationResults : []}
 										onSubmit={handleSubmit}

@@ -58,6 +58,7 @@
 	let userAnswer = $state('');
 	let selectedChoices: number[] = $state([]);
 	let fillBlankValues: string[] = $state([]);
+	let fillBlankValuesLatex: string[] = $state([]);
 	let isSubmitted = $state(false);
 	let validationResult: ValidationResult | null = $state(null);
 	let startTime = Date.now();
@@ -66,7 +67,8 @@
 	// Initialize on mount
 	onMount(() => {
 		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
-			fillBlankValues = instance.blanks.map(() => '');
+			fillBlankValues = instance.blanks.map((b) => b.prefilled ?? '');
+			fillBlankValuesLatex = instance.blanks.map(() => '');
 		}
 	});
 
@@ -155,7 +157,9 @@
 					<FillBlanksInput
 						statement={instance.statement}
 						blanks={instance.blanks || []}
+						expressions={instance.expressions}
 						bind:values={fillBlankValues}
+						bind:valuesLatex={fillBlankValuesLatex}
 						disabled={isInputDisabled}
 						validationResults={[]}
 						onSubmit={handleSubmit}
