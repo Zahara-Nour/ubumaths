@@ -34,6 +34,7 @@
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../src/lib/types/database';
+import { getQuestionType } from '../src/lib/questions/types';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -114,9 +115,9 @@ interface ExportedQuestion {
 }
 
 interface QuestionTemplateInsert {
-	type: string;
 	title: string;
 	description?: string;
+	shared?: unknown;
 	variations: unknown;
 	exerciseInstruction?: string;
 	options?: unknown;
@@ -435,10 +436,14 @@ async function importQuestion(
 
 	// Prepare template for insertion
 	// Map transformed fields to database columns (snake_case)
+	// Note: type is inferred via getQuestionType() since the redesign v2
+	// removed the type field from QuestionTemplate
+	const variations = transformed.variations as Array<{ choices?: unknown[] }>;
 	const template = {
-		type: transformed.type,
+		type: getQuestionType({ choices: variations?.[0]?.choices }),
 		title: transformed.title,
 		description: transformed.description || null,
+		shared: transformed.shared || null,
 		variations: transformed.variations,
 		exercise_instruction: transformed.exerciseInstruction || null,
 		options: transformed.options || null,
