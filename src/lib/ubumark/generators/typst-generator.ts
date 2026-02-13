@@ -2010,7 +2010,7 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'supset', 'supset');
 	result = replaceLatexCmd(result, 'cup', 'union');
 	result = replaceLatexCmd(result, 'cap', 'sect');
-	result = replaceLatexCmd(result, 'setminus', 'without');
+	result = replaceLatexCmd(result, 'setminus', '∖');
 	result = replaceLatexCmd(result, 'emptyset', 'emptyset');
 
 	// Convert common symbols
