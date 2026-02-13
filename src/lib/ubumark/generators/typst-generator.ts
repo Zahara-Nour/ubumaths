@@ -2010,6 +2010,7 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'supset', 'supset');
 	result = replaceLatexCmd(result, 'cup', 'union');
 	result = replaceLatexCmd(result, 'cap', 'sect');
+	result = replaceLatexCmd(result, 'setminus', 'without');
 	result = replaceLatexCmd(result, 'emptyset', 'emptyset');
 
 	// Convert common symbols
@@ -2306,8 +2307,8 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Intentionally visible braces (\{, \left\{) were converted to placeholders earlier.
 	result = result.replace(/[{}]/g, '');
 	// Restore visible braces as Typst symbols
-	result = result.replace(/<<<VISIBLE_LBRACE>>>/g, 'brace.l');
-	result = result.replace(/<<<VISIBLE_RBRACE>>>/g, 'brace.r');
+	result = result.replace(/<<<VISIBLE_LBRACE>>>/g, ' brace.l ');
+	result = result.replace(/<<<VISIBLE_RBRACE>>>/g, ' brace.r ');
 
 	// ========================================================================
 	// BRACKET SAFETY: Replace remaining raw [ ] with symbol names
