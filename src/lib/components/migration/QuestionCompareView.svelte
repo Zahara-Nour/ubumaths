@@ -21,7 +21,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import { AlertCircle, AlertTriangle, CheckCircle2, RefreshCw, Edit3, Code2 } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
-	import ReviewActions from './ReviewActions.svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { resolveVariables, resolveExpression, resolveSolution } from '$lib/questions';
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
@@ -42,9 +41,6 @@
 		transformed: Record<string, unknown> | null; // New format (null if transformation failed)
 		warnings: string[];
 		errors: string[];
-		onApprove?: () => void;
-		onReject?: (reason: string) => void;
-		onEdit?: () => void;
 		isEdited?: boolean;
 		class?: string;
 	}
@@ -54,9 +50,6 @@
 		transformed,
 		warnings,
 		errors,
-		onApprove,
-		onReject,
-		onEdit,
 		isEdited = false,
 		class: className
 	}: Props = $props();
@@ -1164,25 +1157,5 @@
 				</div>
 			</Card.Content>
 		</Card.Root>
-	{/if}
-
-	<!-- Review Actions -->
-	{#if onApprove || onReject || onEdit}
-		<div class="flex items-center justify-between">
-			<!-- Edit Button (left side) -->
-			{#if onEdit}
-				<Button variant="outline" onclick={onEdit}>
-					<Edit3 class="mr-2 h-4 w-4" />
-					Modifier
-				</Button>
-			{:else}
-				<div></div>
-			{/if}
-
-			<!-- Approve/Reject Actions (right side) -->
-			{#if onApprove || onReject}
-				<ReviewActions {onApprove} {onReject} disabled={hasErrors} />
-			{/if}
-		</div>
 	{/if}
 </div>

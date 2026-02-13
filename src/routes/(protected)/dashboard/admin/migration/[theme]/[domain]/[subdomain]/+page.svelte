@@ -31,11 +31,15 @@
 		AlertCircle,
 		AlertTriangle,
 		CheckCircle2,
+		ChevronLeft,
+		ChevronRight,
 		Home,
 		Layers,
 		XCircle,
+		X,
 		Edit3
 	} from 'lucide-svelte';
+	import ReviewActions from '$lib/components/migration/ReviewActions.svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import type { PageData } from './$types';
 
@@ -154,6 +158,29 @@
 	function closeDialog() {
 		dialogOpen = false;
 		selectedQuestion = null;
+	}
+
+	// Navigation within filtered questions
+	const selectedQuestionIndex = $derived(
+		selectedQuestion
+			? filteredQuestions.findIndex((q) => q.globalIndex === selectedQuestion!.globalIndex)
+			: -1
+	);
+	const canNavigatePrev = $derived(selectedQuestionIndex > 0);
+	const canNavigateNext = $derived(
+		selectedQuestionIndex >= 0 && selectedQuestionIndex < filteredQuestions.length - 1
+	);
+
+	function navigatePrev() {
+		if (canNavigatePrev) {
+			selectedQuestion = filteredQuestions[selectedQuestionIndex - 1];
+		}
+	}
+
+	function navigateNext() {
+		if (canNavigateNext) {
+			selectedQuestion = filteredQuestions[selectedQuestionIndex + 1];
+		}
 	}
 
 	// Navigate back
@@ -491,66 +518,113 @@
 
 <!-- Question Detail Dialog -->
 <Dialog.Root bind:open={dialogOpen}>
-	<Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-[95vw]">
-		<Dialog.Header>
-			<Dialog.Title class="flex items-center gap-2">
-				{#if selectedQuestion}
-					<span>Question #{selectedQuestion.globalIndex}</span>
-					<span class="text-muted-foreground">-</span>
-					<span class="text-muted-foreground">Niveau {selectedQuestion.level}</span>
-				{/if}
-			</Dialog.Title>
-			<Dialog.Description>
-				{#if selectedQuestion}
-					{selectedQuestion.question.description}
-				{/if}
-			</Dialog.Description>
-		</Dialog.Header>
-
+	<Dialog.Content
+		class="flex h-[100dvh] max-h-[100dvh] max-w-[100vw] flex-col overflow-hidden rounded-none p-0 sm:max-w-[100vw]"
+		showCloseButton={false}
+	>
+		<!-- Sticky header bar -->
 		{#if selectedQuestion}
 			{@const status = getReviewStatus(selectedQuestion.globalIndex)}
 			{@const isEdited = isQuestionEdited(selectedQuestion.globalIndex)}
-			{#if status !== 'pending' || isEdited}
-				<div class="mb-4 flex items-center gap-2">
-					{#if isEdited}
-						<Badge variant="outline" class="border-blue-500 text-blue-600">
-							<Edit3 class="mr-1 h-3 w-3" />
-							Modifie
-						</Badge>
-					{/if}
-					{#if status === 'approved'}
-						<Badge variant="default" class="bg-green-600">
-							<CheckCircle2 class="mr-1 h-3 w-3" />
-							Approuvee
-						</Badge>
-					{:else if status === 'rejected'}
-						<Badge variant="destructive">
-							<XCircle class="mr-1 h-3 w-3" />
-							Rejetee
-						</Badge>
-						{#if reviewStatus.get(selectedQuestion.globalIndex)?.reason}
-							<span class="text-sm text-muted-foreground">
-								- {reviewStatus.get(selectedQuestion.globalIndex)?.reason}
-							</span>
-						{/if}
-					{/if}
+			{@const hasErrors = selectedQuestion.errors.length > 0}
+			<div class="flex shrink-0 items-center gap-3 border-b px-4 py-2">
+				<!-- Navigation prev/next -->
+				<div class="flex items-center gap-1">
+					<Button
+						variant="ghost"
+						size="icon"
+						onclick={navigatePrev}
+						disabled={!canNavigatePrev}
+						class="h-8 w-8"
+					>
+						<ChevronLeft class="h-5 w-5" />
+					</Button>
+					<span class="min-w-[3rem] text-center text-sm text-muted-foreground">
+						{selectedQuestionIndex + 1}/{filteredQuestions.length}
+					</span>
+					<Button
+						variant="ghost"
+						size="icon"
+						onclick={navigateNext}
+						disabled={!canNavigateNext}
+						class="h-8 w-8"
+					>
+						<ChevronRight class="h-5 w-5" />
+					</Button>
 				</div>
-			{/if}
-			<QuestionCompareView
-				original={selectedQuestion.question}
-				transformed={getEditedTransformed(selectedQuestion)}
-				warnings={selectedQuestion.warnings}
-				errors={selectedQuestion.errors}
-				onApprove={status === 'pending' ? handleApprove : undefined}
-				onReject={status === 'pending' ? handleReject : undefined}
-				onEdit={status === 'pending' ? handleEditClick : undefined}
-				{isEdited}
-			/>
+
+				<!-- Title -->
+				<Dialog.Title class="flex items-center gap-2 text-base font-semibold">
+					<span>#{selectedQuestion.globalIndex}</span>
+					<span class="text-sm font-normal text-muted-foreground">
+						{data.theme} › {data.domain} › {data.subdomain}
+					</span>
+					<span class="text-muted-foreground">-</span>
+					<span class="text-muted-foreground">Niveau {selectedQuestion.level}</span>
+				</Dialog.Title>
+
+				<!-- Status badges -->
+				{#if isEdited}
+					<Badge variant="outline" class="border-blue-500 text-blue-600">
+						<Edit3 class="mr-1 h-3 w-3" />
+						Modifie
+					</Badge>
+				{/if}
+				{#if status === 'approved'}
+					<Badge variant="default" class="bg-green-600">
+						<CheckCircle2 class="mr-1 h-3 w-3" />
+						Approuvee
+					</Badge>
+				{:else if status === 'rejected'}
+					<Badge variant="destructive">
+						<XCircle class="mr-1 h-3 w-3" />
+						Rejetee
+					</Badge>
+				{/if}
+
+				<!-- Spacer -->
+				<div class="flex-1"></div>
+
+				<!-- Actions (only when pending) -->
+				{#if status === 'pending'}
+					<Button
+						variant="ghost"
+						size="icon"
+						onclick={handleEditClick}
+						title="Modifier"
+						class="h-8 w-8"
+					>
+						<Edit3 class="h-4 w-4" />
+					</Button>
+					<ReviewActions onApprove={handleApprove} onReject={handleReject} disabled={hasErrors} />
+				{/if}
+
+				<!-- Close button -->
+				<Button variant="ghost" size="icon" onclick={closeDialog} class="h-8 w-8" title="Fermer">
+					<X class="h-4 w-4" />
+				</Button>
+			</div>
 		{/if}
 
-		<Dialog.Footer>
-			<Button variant="outline" onclick={closeDialog} disabled={isSubmitting}>Fermer</Button>
-		</Dialog.Footer>
+		<!-- Scrollable content -->
+		<div class="flex-1 overflow-y-auto p-4">
+			{#if selectedQuestion}
+				<QuestionCompareView
+					original={selectedQuestion.question}
+					transformed={getEditedTransformed(selectedQuestion)}
+					warnings={selectedQuestion.warnings}
+					errors={selectedQuestion.errors}
+					isEdited={isQuestionEdited(selectedQuestion.globalIndex)}
+				/>
+			{/if}
+		</div>
+
+		<!-- Hidden description for accessibility -->
+		<Dialog.Description class="sr-only">
+			{#if selectedQuestion}
+				{selectedQuestion.question.description}
+			{/if}
+		</Dialog.Description>
 	</Dialog.Content>
 </Dialog.Root>
 
