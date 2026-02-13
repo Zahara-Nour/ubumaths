@@ -358,12 +358,20 @@ blanks?: {
 
 **Pipeline pour un trou math** :
 
-1. `validationRules` custom si presentes → short-circuit. **Sinon** : validation selon le mode infere :
-   - Si `unit.expected` : `validateQuantityAnswer(userLatex, expectedLatex, precision)` — meme signature que `validateNumerical` (voir section 4.9)
+1. `validationRules` custom si presentes → echec = short-circuit incorrect. Succes = continue.
+2. Validation selon le mode infere :
+   - Si `unit.expected` : `validateQuantityAnswer(userAnswer, correctAnswer, precision?, requiredUnit?)`
    - Si `precision` (sans unite) : `validateNumerical(userAnswer, correctAnswer, precision)`
    - Sinon : `areEquivalent()` (equivalence structurelle/symbolique)
-2. `checkRequiredForm()` — si reponse correcte + `requiredForm` defini + LaTeX disponible
-3. `applyConstraints()` — si reponse correcte + LaTeX disponible
+3. `checkRequiredForm()` — si reponse correcte + `blank.requiredForm` defini + LaTeX disponible
+4. `applyConstraints()` — si reponse correcte + LaTeX disponible
+
+**Notes** :
+
+- `validationRules` est une pre-condition supplementaire, pas un remplacement du pipeline.
+- `requiredForm` est lu depuis `blank.requiredForm` (per-blank), pas `instance.requiredForm`.
+- `instance.validationRules` (global) est supprime du validateur. Le generateur merge les regles globales sur les blanks via fallback (`blank.validationRules ?? variation.validationRules`).
+- Les blanks prefilled sont valides normalement (editables par l'eleve).
 
 **Donnees collectees par le composant** pour chaque trou math :
 

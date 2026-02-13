@@ -234,3 +234,82 @@ Issues documentees pour plus tard :
 
 - **Phase 4**: Validation per-blank (Step 7)
 - **Phase 5**: Composants Svelte (Step 8)
+
+---
+
+## Phase 4: Validation per-blank (IN PROGRESS)
+
+### Status: TDD Specification validated
+
+### Phase 4.0 — TDD Specification
+
+#### A. Inference du mode de validation (trou math)
+
+1. Trou math sans `precision` ni `unit` → equivalence (`areEquivalent()`)
+2. Trou math avec `precision` (sans `unit`) → numerique approchee (`validateNumerical()`)
+3. Trou math avec `unit.expected: true` (sans `precision`) → unite (`validateQuantityAnswer()`)
+4. Trou math avec `unit.expected: true` + `precision` → unite avec precision
+5. Trou math avec `unit.expected: true` + `unit.required: "m"` → unite imposee
+
+#### B. Validation trou texte (fuzzy)
+
+6. Match exact (casse ignoree) → correct
+7. Match accents ignores → correct
+8. Levenshtein <= 1 → correct
+9. Levenshtein > 1 → incorrect
+10. `pool` n'est PAS utilise pour la validation
+
+#### C. Pipeline per-blank (trou math)
+
+11. `validationRules` echouent → short-circuit incorrect
+12. `validationRules` passent → continue pipeline (mode infere, requiredForm, constraints)
+13. Pas de `validationRules` → mode infere puis `checkRequiredForm` per-blank si correct + LaTeX
+14. Puis `applyConstraints` per-blank si correct + LaTeX
+
+#### D. Multi-blank aggregation
+
+15. Tous corrects → `isCorrect: true`
+16. Au moins un incorrect → `isCorrect: false` avec feedback
+17. `orderIndependent` → pool matching avec mode infere per-blank
+
+#### E. Signature `validateAnswer`
+
+18. Signature polymorphe inchangee, normalisation interne
+19. Branch via `instance.choices !== undefined`
+20. `requiredForm` et `constraints` per-blank (plus globalement)
+21. Suppression de `instance.validationRules` du validateur
+
+#### F. Signature `validateQuantityAnswer`
+
+22. Nouvelle signature : `(userAnswer, correctAnswer, precision?, requiredUnit?)`
+23. `requiredUnit` → unite doit matcher exactement
+24. `precision` utilise `PrecisionType`
+25. 770 tests unitaires existants passent
+
+#### G. Correction generateur
+
+26. Fallback `validationRules` globales sur les blanks : `blank.validationRules ?? resolvedVariation.validationRules`
+
+### Decisions prises
+
+1. **`validationRules` = pre-condition, pas remplacement** — Si les regles passent, le pipeline standard continue (mode infere → requiredForm → constraints). Short-circuit uniquement en cas d'echec.
+2. **`instance.validationRules` supprime du validateur** — Le generateur merge les regles globales sur les blanks via fallback. Plus de double chemin de validation.
+3. **Prefilled = editable** — Les blanks avec `prefilled` sont valides normalement (l'eleve peut modifier la valeur).
+4. **Fuzzy text = vrai Levenshtein** — Distance <= 1 acceptee, pas juste strip accents.
+5. **Signature `validateAnswer` inchangee** — Polymorphe, normalisation en `string[]` interne.
+6. **`requiredForm` per-blank** — Lu depuis `blank.requiredForm`, pas `instance.requiredForm`.
+7. **`constraints` globales mais evaluees per-blank** — `instance.options.constraints` appliquees a chaque blank individuellement.
+
+### Files to modify
+
+| File                                                | Changes                                                                                           |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `src/lib/utils/answer-validator.ts`                 | Refactorer `validateBlanks()` → validation per-blank, supprimer `instance.validationRules` global |
+| `src/lib/questions/units/validator.ts`              | Nouvelle signature `validateQuantityAnswer(userAnswer, correctAnswer, precision?, requiredUnit?)` |
+| `src/lib/questions/generator/instance-generator.ts` | Fallback `validationRules` globales sur blanks                                                    |
+
+### Files to create
+
+| File                                                      | Description                |
+| --------------------------------------------------------- | -------------------------- |
+| `src/lib/utils/__tests__/answer-validator-blanks.test.ts` | Tests validation per-blank |
