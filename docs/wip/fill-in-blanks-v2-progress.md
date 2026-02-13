@@ -237,7 +237,7 @@ Issues documentees pour plus tard :
 
 ---
 
-## Phase 4: Validation per-blank (IN PROGRESS)
+## Phase 4: Validation per-blank (COMPLETE)
 
 ### Status: COMPLETE
 
@@ -322,6 +322,14 @@ Issues documentees pour plus tard :
 
 **Generator fix** (instance-generator.ts): One-liner `blank.validationRules ?? resolvedVariation.validationRules`.
 
+### Decisions hors-TDD (implementation)
+
+1. **Propagation `constraintViolations` quand `status === 'correct'`** — Les tests existants attendaient `status: 'correct'` et `constraintViolations: []` quand les constraints passent toutes. `validateSingleBlank` retourne toujours `{ status, constraintViolations }` quand du LaTeX est fourni.
+2. **Deplacement `requiredForm` instance → blank dans 3 tests existants** — `createInstanceWithRequiredForm()`, "should apply required form before other constraints", "should combine requiredForm and constraints". Coherent avec spec E20 (requiredForm per-blank).
+3. **Guard chaine vide `isFuzzyTextMatch`** — Empeche `""` de matcher `"a"` (Levenshtein distance 1).
+4. **Suppression `checkSameSymbol`** — Fonction inutilisee apres remplacement par `checkExactUnitMatch`. Detecte par lint.
+5. **Signature `validateBlanks` changee** — `(userAnswers, correctAnswers, orderIndependent?)` → `(userAnswers, instance, userAnswersLatex?)`. Pas d'appelants externes.
+
 ### Code Review Findings
 
 1. **Empty string guard in fuzzy matching** — Added: prevent `""` from fuzzy-matching `"a"` (Levenshtein distance 1)
@@ -339,7 +347,7 @@ Issues documentees pour plus tard :
 ### Commits
 
 - `9904b9f8` — docs: add Phase 4 TDD specification for per-blank validation
-- (pending) — feat: implement per-blank validation pipeline (Phase 4)
+- `7ce3ea27` — feat: implement per-blank validation pipeline (Phase 4)
 
 ### Next Steps
 
