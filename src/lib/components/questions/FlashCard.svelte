@@ -3,15 +3,8 @@
 	===================
 
 	Displays mathematical questions as interactive flashcards.
-	Integrates FlipCard mechanics, MathLive rendering, and answer validation.
-
-	Features:
-	- Interactive mode (enabled/disabled) for answer validation
-	- FlipCard-based layout with equal heights for front and back
-	- Type-specific answer inputs (numerical, algebraic, QCM, etc.)
-	- Statistics tracking (time spent, attempts)
-	- Visual feedback (correct/incorrect indicators)
-	- Viewport-constrained height with scrolling
+	Uses FlipCard for the flip mechanics and height measurement.
+	Handles answer validation, statistics, and type-specific inputs.
 
 	Props:
 	- interactive: boolean (default: false) - Enable answer validation
@@ -31,6 +24,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { RotateCw, Check, X, AlertCircle } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
+	import FlipCard from '$lib/components/FlipCard.svelte';
 
 	// Input components
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
@@ -83,15 +77,6 @@
 	// Flip state
 	let isFlipped = $state(false);
 
-	// Height management (FlipCard-style)
-	let frontHeight = $state(0);
-	let backHeight = $state(0);
-	let maxViewportHeight = $state(0);
-
-	// Element references for height measurement
-	let frontElement: HTMLElement | null = null;
-	let backElement: HTMLElement | null = null;
-
 	// Type-specific state
 	let selectedChoices = $state<number[]>([]);
 	let fillBlankValues = $state<string[]>([]);
@@ -102,33 +87,22 @@
 	// DERIVED STATE
 	// ============================================================================
 
-	const currentHeight = $derived(
-		Math.min(Math.max(frontHeight, backHeight), maxViewportHeight || 10000)
-	);
-
-	const isScrollable = $derived(Math.max(frontHeight, backHeight) > maxViewportHeight);
-
 	const canSubmit = $derived(interactive && !isSubmitted && hasValidInput());
 
 	const hasReachedMaxAttempts = $derived(maxAttempts > 0 && attempts >= maxAttempts);
 
 	const isInputDisabled = $derived(!interactive || isSubmitted || hasReachedMaxAttempts);
 
-	// Markdown content - instance.statement is ResolvedMarkdown (string)
-	// instance.correction is ResolvedCorrection (object with feedback and steps)
 	const statementMarkdown = $derived(instance.statement);
 
-	// Build correction markdown from ResolvedCorrection object
 	const correctionMarkdown = $derived.by(() => {
 		if (!instance.correction) return '';
 		const parts: string[] = [];
 
-		// Add steps if present
 		if (instance.correction.steps && instance.correction.steps.length > 0) {
 			parts.push(...instance.correction.steps);
 		}
 
-		// Add feedback if present (typically shown after answer validation)
 		if (instance.correction.feedback?.correct) {
 			parts.push(instance.correction.feedback.correct);
 		}
@@ -140,43 +114,12 @@
 	// INITIALIZATION
 	// ============================================================================
 
-	// Start timer on mount (interactive mode only)
 	$effect(() => {
 		if (interactive && !startTime) {
 			startTime = Date.now();
 		}
 	});
 
-	// Calculate max viewport height
-	$effect(() => {
-		if (typeof window !== 'undefined') {
-			maxViewportHeight = window.innerHeight * 0.8; // 80vh
-		}
-	});
-
-	// Measure front and back heights using ResizeObserver
-	$effect(() => {
-		if (!frontElement || !backElement) return;
-
-		const observer = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				if (entry.target === frontElement) {
-					frontHeight = entry.contentRect.height;
-				} else if (entry.target === backElement) {
-					backHeight = entry.contentRect.height;
-				}
-			}
-		});
-
-		observer.observe(frontElement);
-		observer.observe(backElement);
-
-		return () => {
-			observer.disconnect();
-		};
-	});
-
-	// Initialize type-specific state
 	$effect(() => {
 		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
 			fillBlankValues = instance.blanks.map((b) => b.prefilled ?? '');
@@ -193,41 +136,28 @@
 	// HELPER FUNCTIONS
 	// ============================================================================
 
-	/**
-	 * Check if user has entered a valid input (not empty)
-	 */
 	function hasValidInput(): boolean {
 		switch (getQuestionType(instance)) {
 			case 'fill_in_blanks':
 				return fillBlankValues.every((v) => v.trim().length > 0);
-
 			case 'multiple_choice':
 				return selectedChoices.length > 0;
-
 			default:
 				return false;
 		}
 	}
 
-	/**
-	 * Calculate time spent (in seconds)
-	 */
 	function getTimeSpent(): number {
 		if (!startTime) return 0;
 		return Math.round((Date.now() - startTime) / 1000);
 	}
 
-	/**
-	 * Prepare answer value based on question type
-	 */
 	function prepareAnswerValue(): string | string[] | number | number[] {
 		switch (getQuestionType(instance)) {
 			case 'fill_in_blanks':
 				return fillBlankValues;
-
 			case 'multiple_choice':
 				return instance.multipleAnswers ? selectedChoices : selectedChoices[0];
-
 			default:
 				return userAnswer;
 		}
@@ -237,9 +167,6 @@
 	// EVENT HANDLERS
 	// ============================================================================
 
-	/**
-	 * Handle answer submission
-	 */
 	function handleSubmit() {
 		if (!canSubmit || isSubmitting) return;
 
@@ -248,13 +175,11 @@
 
 		const answer = prepareAnswerValue();
 
-		// Validate answer
 		const validationResult = validateAnswer(answer, instance);
 		isCorrect = validationResult.isCorrect;
 		validationMessage = validationResult.message || '';
 		validationFeedback = validationResult.feedback || '';
 
-		// Create answer data
 		const answerData: AnswerData = {
 			value: answer,
 			isCorrect,
@@ -263,17 +188,13 @@
 			submittedAt: new Date().toISOString()
 		};
 
-		// Update history
 		answerHistory.push(answerData);
 
-		// Mark as submitted
 		isSubmitted = true;
 		isSubmitting = false;
 
-		// Emit event
 		onAnswerSubmit?.(answerData);
 
-		// Handle validation results for fill-in-blanks
 		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
 			blankValidationResults = fillBlankValues.map((value, i) => {
 				const expected = instance.blanks![i].expectedAnswer;
@@ -281,7 +202,6 @@
 			});
 		}
 
-		// Auto-flip on wrong answer if configured
 		if (!isCorrect && showCorrectionOnWrong) {
 			setTimeout(() => {
 				isFlipped = true;
@@ -289,7 +209,6 @@
 			}, 500);
 		}
 
-		// Emit completion event if correct or max attempts reached
 		if (isCorrect || hasReachedMaxAttempts) {
 			setTimeout(() => {
 				completeQuestion();
@@ -297,17 +216,11 @@
 		}
 	}
 
-	/**
-	 * Handle flip button click
-	 */
 	function handleFlip() {
 		isFlipped = !isFlipped;
 		onFlip?.(isFlipped);
 	}
 
-	/**
-	 * Complete question and emit stats
-	 */
 	function completeQuestion() {
 		const stats: QuestionStats = {
 			templateId: instance.templateId,
@@ -322,10 +235,6 @@
 		onComplete?.(stats);
 	}
 
-	// ============================================================================
-	// SIZE CLASSES
-	// ============================================================================
-
 	const sizeClasses = {
 		sm: 'max-w-md',
 		md: 'max-w-2xl',
@@ -333,25 +242,10 @@
 	};
 </script>
 
-<!-- Question Display Component -->
 <div class={cn('question-display-wrapper mx-auto w-full', sizeClasses[size])}>
-	<!-- Actual flip container -->
-	<div
-		class="flip-container"
-		class:flipped={isFlipped}
-		style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'}; perspective: 1000px;"
-	>
-		<div
-			class="flip-inner"
-			class:flipped={isFlipped}
-			style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};"
-		>
-			<!-- ===================== FRONT FACE ===================== -->
-			<div
-				bind:this={frontElement}
-				class={cn('flip-face flip-front', isScrollable && 'scrollable')}
-				style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};"
-			>
+	<FlipCard bind:flipped={isFlipped}>
+		{#snippet front()}
+			<div class="relative h-full">
 				<Card.Root class="h-full">
 					<Card.Header>
 						<div class="flex items-center justify-between">
@@ -374,7 +268,6 @@
 							<div class="answer-section">
 								<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
 
-								<!-- Type-specific inputs -->
 								{#if getQuestionType(instance) === 'fill_in_blanks'}
 									<FillBlanksInput
 										statement={instance.statement}
@@ -396,7 +289,6 @@
 									/>
 								{/if}
 
-								<!-- Submit Button -->
 								{#if !isSubmitted}
 									<div class="mt-4 flex justify-center">
 										<Button onclick={handleSubmit} disabled={!canSubmit || isSubmitting} size="lg">
@@ -405,7 +297,6 @@
 									</div>
 								{/if}
 
-								<!-- Validation Result -->
 								{#if isSubmitted && showValidationFeedback}
 									<div
 										class={cn(
@@ -431,7 +322,6 @@
 							</div>
 						{/if}
 
-						<!-- Attempts Counter -->
 						{#if interactive && attempts > 0}
 							<div class="flex items-center gap-2 text-sm text-muted-foreground">
 								<AlertCircle class="h-4 w-4" />
@@ -443,7 +333,6 @@
 					</Card.Content>
 				</Card.Root>
 
-				<!-- Flip Button -->
 				<button
 					class="flip-button"
 					onclick={handleFlip}
@@ -453,20 +342,16 @@
 					<RotateCw class="h-5 w-5" />
 				</button>
 			</div>
+		{/snippet}
 
-			<!-- ===================== BACK FACE ===================== -->
-			<div
-				bind:this={backElement}
-				class={cn('flip-face flip-back', isScrollable && 'scrollable')}
-				style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};"
-			>
+		{#snippet back()}
+			<div class="relative h-full">
 				<Card.Root class="h-full">
 					<Card.Header>
 						<Card.Title>Correction</Card.Title>
 					</Card.Header>
 
 					<Card.Content class="space-y-6">
-						<!-- User Answer (Interactive Mode) -->
 						{#if interactive && isSubmitted}
 							<div class="answer-comparison">
 								<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
@@ -500,7 +385,6 @@
 							</div>
 						{/if}
 
-						<!-- Correct Answer -->
 						<div class="correct-answer">
 							<h3 class="mb-3 text-lg font-semibold">Réponse correcte</h3>
 							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
@@ -523,7 +407,6 @@
 							</div>
 						</div>
 
-						<!-- Detailed Correction -->
 						{#if correctionMarkdown}
 							<div class="correction-steps">
 								<h3 class="mb-3 text-lg font-semibold">Explication détaillée</h3>
@@ -535,7 +418,6 @@
 					</Card.Content>
 				</Card.Root>
 
-				<!-- Flip Button (Back) -->
 				<button
 					class="flip-button"
 					onclick={handleFlip}
@@ -545,94 +427,11 @@
 					<RotateCw class="h-5 w-5" />
 				</button>
 			</div>
-		</div>
-	</div>
+		{/snippet}
+	</FlipCard>
 </div>
 
 <style>
-	/* ============================================================================
-	 * HIDDEN MEASURING CONTAINERS
-	 * ============================================================================ */
-
-	.measure-container {
-		position: absolute;
-		top: 0;
-		left: 0;
-		visibility: hidden;
-		pointer-events: none;
-		width: 100%;
-		z-index: -1;
-	}
-
-	.measure-container > div {
-		width: 100%;
-	}
-
-	/* ============================================================================
-	 * FLIP CONTAINER (3D Transforms)
-	 * ============================================================================ */
-
-	.flip-container {
-		position: relative;
-		width: 100%;
-		perspective: 1000px;
-	}
-
-	.flip-inner {
-		position: relative;
-		width: 100%;
-		transform-style: preserve-3d;
-		transition:
-			transform 0.6s cubic-bezier(0.33, 1, 0.68, 1),
-			height 0.6s cubic-bezier(0.33, 1, 0.68, 1);
-	}
-
-	.flip-inner.flipped {
-		transform: rotateY(180deg);
-	}
-
-	.flip-face {
-		position: absolute;
-		width: 100%;
-		backface-visibility: hidden;
-		-webkit-backface-visibility: hidden;
-		box-sizing: border-box;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.flip-front {
-		transform: rotateY(0deg);
-	}
-
-	.flip-back {
-		transform: rotateY(180deg);
-	}
-
-	.flip-face.scrollable {
-		overflow-y: auto;
-		scrollbar-width: thin;
-		scrollbar-color: hsl(var(--muted)) transparent;
-	}
-
-	.flip-face.scrollable::-webkit-scrollbar {
-		width: 8px;
-	}
-
-	.flip-face.scrollable::-webkit-scrollbar-track {
-		background: transparent;
-	}
-
-	.flip-face.scrollable::-webkit-scrollbar-thumb {
-		background: hsl(var(--muted));
-		border-radius: 4px;
-	}
-
-	.flip-face.scrollable::-webkit-scrollbar-thumb:hover {
-		background: hsl(var(--muted-foreground) / 0.5);
-	}
-
 	/* ============================================================================
 	 * FLIP BUTTON (Bottom-Right Corner)
 	 * ============================================================================ */
