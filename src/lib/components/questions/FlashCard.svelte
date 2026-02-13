@@ -504,13 +504,20 @@
 						<div class="correct-answer">
 							<h3 class="mb-3 text-lg font-semibold">Réponse correcte</h3>
 							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
-								{#if Array.isArray(instance.solution)}
+								{#if getQuestionType(instance) === 'fill_in_blanks' && instance.blanks}
+									<FillBlanksInput
+										statement={instance.statement}
+										blanks={instance.blanks}
+										expressions={instance.expressions}
+										showCorrectAnswers={true}
+									/>
+								{:else if Array.isArray(instance.solution)}
 									<ul class="space-y-1">
 										{#each instance.solution as ans, i (i)}
 											<li><MarkdownRenderer content={`$$${String(ans)}$$`} /></li>
 										{/each}
 									</ul>
-								{:else}
+								{:else if instance.solution !== undefined}
 									<MarkdownRenderer content={`$$${String(instance.solution)}$$`} />
 								{/if}
 							</div>

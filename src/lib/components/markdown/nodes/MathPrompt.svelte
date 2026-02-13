@@ -28,6 +28,8 @@
 	interface MathFieldElement extends HTMLElement {
 		/** Get current value from a specific prompt by ID */
 		getPromptValue(id: string): string | undefined;
+		/** Set the value of a specific prompt by ID */
+		setPromptValue(id: string, value: string): void;
 		/** Set validation state for a prompt */
 		setPromptState(id: string, state: 'correct' | 'incorrect' | undefined): void;
 	}
@@ -45,6 +47,8 @@
 		onPromptChange?: (index: number, value: string) => void;
 		/** Whether prompts are disabled (e.g., after submission) */
 		disabled?: boolean;
+		/** Pre-fill prompts with correct answer values (flash back mode). Map of prompt ID → LaTeX value */
+		correctValues?: Record<string, string>;
 		/** Additional CSS classes */
 		class?: string;
 		/** Configuration for generic function names (f, g, h, P, Q, etc.) */
@@ -58,6 +62,7 @@
 		inputs = [],
 		onPromptChange,
 		disabled = false,
+		correctValues,
 		class: className = '',
 		genericFunctions
 	}: Props = $props();
@@ -89,6 +94,23 @@
 			console.error('MathPrompt: Error reading prompt values:', error);
 		}
 	}
+
+	/**
+	 * Pre-fill prompts with correct answer values (flash back / correction mode)
+	 */
+	$effect(() => {
+		if (!mathField || !correctValues) return;
+
+		try {
+			const field = mathField as MathFieldElement;
+			for (const [id, value] of Object.entries(correctValues)) {
+				field.setPromptValue(id, value);
+				field.setPromptState(id, 'correct');
+			}
+		} catch (error) {
+			console.error('MathPrompt: Error setting correct values:', error);
+		}
+	});
 
 	/**
 	 * Update prompt states (correct/incorrect) when inputs prop changes
