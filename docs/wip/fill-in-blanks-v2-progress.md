@@ -502,12 +502,27 @@ Issues corrigees apres code review (`code-reviewer` agent) :
 2. **Missing `fillBlankValuesLatex` initialization** — Added to all parent components' `$effect`/`onMount` blocks.
 3. **Parent initialization with `prefilled`** — Changed `instance.blanks.map(() => '')` to `instance.blanks.map((b) => b.prefilled ?? '')` in all parents.
 
+### Post-commit fix: MathPrompt disabled
+
+`MathPrompt.svelte` n'avait pas de prop `disabled`. Apres soumission, les zones de saisie math (prompts MathLive) restaient visuellement editables meme si les valeurs ne se propageaient pas.
+
+**Correctif** :
+
+- `MathPrompt.svelte` : ajout prop `disabled`, attribut HTML `disabled` sur `<math-field>`
+- `ParagraphNode.svelte` : passe `disabled={inputsDisabled}` au MathPrompt inline
+- `FillBlanksInput.svelte` : passe `{disabled}` au MathPrompt block
+
 ### Test Results
 
 - **fill-blanks-utils.test.ts**: 21/21
 - **TypeScript**: `tsc --noEmit --project tsconfig.json` — 0 errors on all modified files
-- **ESLint**: Clean on all new files
-- **Svelte autofixer**: 0 issues on FillBlanksInput.svelte
+- **ESLint**: Clean on all files
+- **Svelte autofixer**: 0 issues sur MathPrompt.svelte et FillBlanksInput.svelte
+
+### Commits
+
+- `8b70cdc6` — feat: rewrite FillBlanksInput with AST-based rendering (Phase 6)
+- `cb17b311` — fix: add disabled prop to MathPrompt for fill-in-blank inputs
 
 ### Next Steps
 
