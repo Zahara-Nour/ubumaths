@@ -239,7 +239,7 @@ Issues documentees pour plus tard :
 
 ## Phase 4: Validation per-blank (IN PROGRESS)
 
-### Status: TDD Specification validated
+### Status: COMPLETE
 
 ### Phase 4.0 — TDD Specification
 
@@ -308,8 +308,39 @@ Issues documentees pour plus tard :
 | `src/lib/questions/units/validator.ts`              | Nouvelle signature `validateQuantityAnswer(userAnswer, correctAnswer, precision?, requiredUnit?)` |
 | `src/lib/questions/generator/instance-generator.ts` | Fallback `validationRules` globales sur blanks                                                    |
 
-### Files to create
+### Files Created
 
-| File                                                      | Description                |
-| --------------------------------------------------------- | -------------------------- |
-| `src/lib/utils/__tests__/answer-validator-blanks.test.ts` | Tests validation per-blank |
+| File                                            | Description                   |
+| ----------------------------------------------- | ----------------------------- |
+| `src/lib/utils/answer-validator-blanks.test.ts` | 49 tests validation per-blank |
+
+### Implementation Summary
+
+**`validateQuantityAnswer` rewritten** (units/validator.ts): New signature `(userAnswer, expectedAnswer, precision?, requiredUnit?)`. Removed `ValidationOptions` interface and `requireSameSymbol`. `requiredUnit` uses `checkExactUnitMatch` (coefficient + components) to distinguish km from m. 76 unit tests rewritten and passing.
+
+**Per-blank pipeline** (answer-validator.ts): Added Levenshtein distance + fuzzy text matching. New `validateSingleBlank()` function implements pipeline: validationRules → inferred mode → requiredForm → constraints. New `validateBlankValue()` for order-independent matching. `validateBlanks()` rewritten with per-blank pipeline and aggregation. `validateAnswer()` restructured: fill_in_blanks returns early with per-blank pipeline, multiple_choice keeps global behavior.
+
+**Generator fix** (instance-generator.ts): One-liner `blank.validationRules ?? resolvedVariation.validationRules`.
+
+### Code Review Findings
+
+1. **Empty string guard in fuzzy matching** — Added: prevent `""` from fuzzy-matching `"a"` (Levenshtein distance 1)
+2. **Status aggregation improved** — `worstStatus !== 'bad_form'` instead of `=== 'correct'` for better coverage
+3. **requiredForm dual-level design** documented — `instance.requiredForm` for multiple_choice, `blank.requiredForm` for fill_in_blanks
+
+### Test Results
+
+- **answer-validator-blanks.test.ts**: 49/49
+- **answer-validator.test.ts**: 55/55 (updated: `requiredForm` moved from instance to blank)
+- **validator.test.ts** (units): 76/76
+- **instance-generator.test.ts**: 39/39
+- **Total**: 219 tests, 0 failures
+
+### Commits
+
+- `9904b9f8` — docs: add Phase 4 TDD specification for per-blank validation
+- (pending) — feat: implement per-blank validation pipeline (Phase 4)
+
+### Next Steps
+
+- **Phase 5**: Composants Svelte (Step 8)

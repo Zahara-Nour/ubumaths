@@ -2,26 +2,23 @@
  * Unit System - Validator Tests
  * ==============================
  *
- * Comprehensive tests for Phase 5 unit system validation:
- * - Answer validation against expected values
- * - Unit compatibility checking
- * - Unit match requirements (exact, same symbol)
- * - Tolerance-based comparison (absolute, relative)
- * - Error classification and French feedback
+ * Tests for validateQuantityAnswer with signature:
+ * (userAnswer, expectedAnswer, precision?, requiredUnit?)
  *
  * Test Categories:
  * 1. Basic Validation - Simple correct/incorrect answers
  * 2. Unit Compatibility - Compatible vs incompatible units
  * 3. checkUnit Constraint Validator - Strict unit matching (via constraint system)
- * 4. requireSameSymbol Option - Symbol matching
- * 5. Tolerance Options - Absolute and relative tolerance
+ * 4. requiredUnit - Exact unit enforcement
+ * 5. Precision (PrecisionType) - Tolerance-based comparison
  * 6. Error Classification - All error types
  * 7. Edge Cases - Null, empty, invalid inputs
  * 8. French Feedback Messages - Verify correct messages
  */
 
 import { describe, test, expect } from 'vitest';
-import { validateQuantityAnswer, type ValidationOptions } from '../validator';
+import { validateQuantityAnswer } from '../validator';
+import type { PrecisionType } from '$lib/questions/types';
 import { checkUnit } from '../../constraint-validators';
 
 // ============================================================================
@@ -252,110 +249,103 @@ describe('validateQuantityAnswer accepts compatible units by default', () => {
 });
 
 // ============================================================================
-// REQUIRE SAME SYMBOL OPTION
+// REQUIRED UNIT
 // ============================================================================
 
-describe('requireSameSymbol Option', () => {
-	describe('When requireSameSymbol is true', () => {
-		const options: ValidationOptions = { requireSameSymbol: true };
+describe('requiredUnit', () => {
+	test('accepts when user uses exact required unit', () => {
+		const result = validateQuantityAnswer('5\\unit{m}', '5\\unit{m}', undefined, 'm');
 
-		test('accepts same base symbols (km vs m both use base "m")', () => {
-			// Note: km and m both have base symbol "m", so requireSameSymbol accepts them
-			const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}', options);
-
-			expect(result.isCorrect).toBe(true);
-			expect(result.feedback).toBeNull();
-		});
-
-		test('accepts same symbols (m vs m)', () => {
-			const result = validateQuantityAnswer('5\\unit{m}', '5\\unit{m}', options);
-
-			expect(result.isCorrect).toBe(true);
-			expect(result.feedback).toBeNull();
-		});
-
-		test('accepts same base symbols (g vs kg both use base "g")', () => {
-			// Note: g and kg both have base symbol "g", so requireSameSymbol accepts them
-			const result = validateQuantityAnswer('1000\\unit{g}', '1\\unit{kg}', options);
-
-			expect(result.isCorrect).toBe(true);
-			expect(result.feedback).toBeNull();
-		});
-
-		test('accepts same symbols (km vs km)', () => {
-			const result = validateQuantityAnswer('10\\unit{km}', '10\\unit{km}', options);
-
-			expect(result.isCorrect).toBe(true);
-			expect(result.feedback).toBeNull();
-		});
-
-		test('rejects different base symbols (m vs s)', () => {
-			const result = validateQuantityAnswer('5\\unit{m}', '5\\unit{s}', options);
-
-			expect(result.isCorrect).toBe(false);
-			expect(result.errorType).toBe('incompatible_units');
-		});
-
-		test('rejects different base symbols (m vs kg)', () => {
-			const result = validateQuantityAnswer('5\\unit{m}', '5\\unit{kg}', options);
-
-			expect(result.isCorrect).toBe(false);
-			expect(result.errorType).toBe('incompatible_units');
-		});
+		expect(result.isCorrect).toBe(true);
+		expect(result.feedback).toBeNull();
 	});
 
-	describe('When requireSameSymbol is false (default)', () => {
-		test('accepts different symbols with conversion', () => {
-			const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}');
+	test('accepts matching unit with same prefix (km vs km)', () => {
+		const result = validateQuantityAnswer('10\\unit{km}', '10\\unit{km}', undefined, 'km');
 
-			expect(result.isCorrect).toBe(true);
-			expect(result.feedback).toBeNull();
-		});
+		expect(result.isCorrect).toBe(true);
+		expect(result.feedback).toBeNull();
+	});
+
+	test('rejects km when required is m', () => {
+		const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}', undefined, 'm');
+
+		expect(result.isCorrect).toBe(false);
+		expect(result.errorType).toBe('wrong_unit');
+	});
+
+	test('rejects m when required is km', () => {
+		const result = validateQuantityAnswer('5000\\unit{m}', '5\\unit{km}', undefined, 'km');
+
+		expect(result.isCorrect).toBe(false);
+		expect(result.errorType).toBe('wrong_unit');
+	});
+
+	test('rejects g when required is kg', () => {
+		const result = validateQuantityAnswer('1000\\unit{g}', '1\\unit{kg}', undefined, 'kg');
+
+		expect(result.isCorrect).toBe(false);
+		expect(result.errorType).toBe('wrong_unit');
+	});
+
+	test('rejects incompatible units regardless of requiredUnit', () => {
+		const result = validateQuantityAnswer('5\\unit{m}', '5\\unit{kg}', undefined, 'kg');
+
+		expect(result.isCorrect).toBe(false);
+		expect(result.errorType).toBe('incompatible_units');
+	});
+
+	test('without requiredUnit, accepts any compatible unit', () => {
+		const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}');
+
+		expect(result.isCorrect).toBe(true);
+		expect(result.feedback).toBeNull();
 	});
 });
 
 // ============================================================================
-// TOLERANCE OPTIONS
+// PRECISION (PrecisionType)
 // ============================================================================
 
-describe('Tolerance Options', () => {
+describe('Precision (PrecisionType)', () => {
 	describe('Absolute tolerance', () => {
+		const precision: PrecisionType = { type: 'tolerance', tolerance: 0.1, mode: 'absolute' };
+
 		test('accepts answer within absolute tolerance', () => {
-			const options: ValidationOptions = { tolerance: { absolute: 0.1 } };
-			const result = validateQuantityAnswer('3.14\\unit{m}', '3.15\\unit{m}', options);
+			const result = validateQuantityAnswer('3.14\\unit{m}', '3.15\\unit{m}', precision);
 
 			expect(result.isCorrect).toBe(true);
 			expect(result.feedback).toBeNull();
 		});
 
-		test('accepts answer at exact absolute tolerance boundary', () => {
-			const options: ValidationOptions = { tolerance: { absolute: 0.1 } };
-			// Use values that avoid floating point precision issues
-			const result = validateQuantityAnswer('3.09999\\unit{m}', '3.0\\unit{m}', options);
+		test('accepts answer at tolerance boundary', () => {
+			const result = validateQuantityAnswer('3.09999\\unit{m}', '3.0\\unit{m}', precision);
 
 			expect(result.isCorrect).toBe(true);
 			expect(result.feedback).toBeNull();
 		});
 
 		test('rejects answer outside absolute tolerance', () => {
-			const options: ValidationOptions = { tolerance: { absolute: 0.1 } };
-			const result = validateQuantityAnswer('3.5\\unit{m}', '3.0\\unit{m}', options);
+			const result = validateQuantityAnswer('3.5\\unit{m}', '3.0\\unit{m}', precision);
 
 			expect(result.isCorrect).toBe(false);
 			expect(result.errorType).toBe('wrong_value');
 		});
 
 		test('works with negative differences', () => {
-			const options: ValidationOptions = { tolerance: { absolute: 0.1 } };
-			const result = validateQuantityAnswer('2.95\\unit{m}', '3.0\\unit{m}', options);
+			const result = validateQuantityAnswer('2.95\\unit{m}', '3.0\\unit{m}', precision);
 
 			expect(result.isCorrect).toBe(true);
 			expect(result.feedback).toBeNull();
 		});
 
 		test('works with unit conversion and tolerance', () => {
-			const options: ValidationOptions = { tolerance: { absolute: 10 } };
-			const result = validateQuantityAnswer('5.01\\unit{km}', '5000\\unit{m}', options);
+			const largeTolerance: PrecisionType = {
+				type: 'tolerance',
+				tolerance: 10,
+				mode: 'absolute'
+			};
+			const result = validateQuantityAnswer('5.01\\unit{km}', '5000\\unit{m}', largeTolerance);
 
 			expect(result.isCorrect).toBe(true);
 			expect(result.feedback).toBeNull();
@@ -364,91 +354,69 @@ describe('Tolerance Options', () => {
 
 	describe('Relative tolerance', () => {
 		test('accepts answer within relative tolerance (1%)', () => {
-			const options: ValidationOptions = { tolerance: { relative: 0.01 } };
-			const result = validateQuantityAnswer('100.5\\unit{m}', '100\\unit{m}', options);
+			const precision: PrecisionType = { type: 'tolerance', tolerance: 0.01, mode: 'relative' };
+			const result = validateQuantityAnswer('100.5\\unit{m}', '100\\unit{m}', precision);
 
 			expect(result.isCorrect).toBe(true);
 			expect(result.feedback).toBeNull();
 		});
 
 		test('accepts answer within relative tolerance (5%)', () => {
-			const options: ValidationOptions = { tolerance: { relative: 0.05 } };
-			const result = validateQuantityAnswer('102\\unit{m}', '100\\unit{m}', options);
+			const precision: PrecisionType = { type: 'tolerance', tolerance: 0.05, mode: 'relative' };
+			const result = validateQuantityAnswer('102\\unit{m}', '100\\unit{m}', precision);
 
 			expect(result.isCorrect).toBe(true);
 			expect(result.feedback).toBeNull();
 		});
 
 		test('rejects answer outside relative tolerance', () => {
-			const options: ValidationOptions = { tolerance: { relative: 0.01 } };
-			const result = validateQuantityAnswer('105\\unit{m}', '100\\unit{m}', options);
+			const precision: PrecisionType = { type: 'tolerance', tolerance: 0.01, mode: 'relative' };
+			const result = validateQuantityAnswer('105\\unit{m}', '100\\unit{m}', precision);
 
 			expect(result.isCorrect).toBe(false);
 			expect(result.errorType).toBe('wrong_value');
 		});
 
 		test('works with large values', () => {
-			const options: ValidationOptions = { tolerance: { relative: 0.01 } };
-			const result = validateQuantityAnswer('10050\\unit{m}', '10000\\unit{m}', options);
+			const precision: PrecisionType = { type: 'tolerance', tolerance: 0.01, mode: 'relative' };
+			const result = validateQuantityAnswer('10050\\unit{m}', '10000\\unit{m}', precision);
 
 			expect(result.isCorrect).toBe(true);
 			expect(result.feedback).toBeNull();
 		});
 
 		test('works with small values', () => {
-			const options: ValidationOptions = { tolerance: { relative: 0.01 } };
-			const result = validateQuantityAnswer('0.505\\unit{m}', '0.5\\unit{m}', options);
+			const precision: PrecisionType = { type: 'tolerance', tolerance: 0.01, mode: 'relative' };
+			const result = validateQuantityAnswer('0.505\\unit{m}', '0.5\\unit{m}', precision);
 
 			expect(result.isCorrect).toBe(true);
 			expect(result.feedback).toBeNull();
 		});
 	});
 
-	describe('Combined absolute and relative tolerance', () => {
-		test('accepts if either tolerance is met (absolute)', () => {
-			const options: ValidationOptions = {
-				tolerance: { absolute: 0.1, relative: 0.001 }
-			};
-			const result = validateQuantityAnswer('3.05\\unit{m}', '3.0\\unit{m}', options);
-
-			expect(result.isCorrect).toBe(true);
-			expect(result.feedback).toBeNull();
-		});
-
-		test('accepts if either tolerance is met (relative)', () => {
-			const options: ValidationOptions = {
-				tolerance: { absolute: 0.01, relative: 0.05 }
-			};
-			const result = validateQuantityAnswer('102\\unit{m}', '100\\unit{m}', options);
-
-			expect(result.isCorrect).toBe(true);
-			expect(result.feedback).toBeNull();
-		});
-
-		test('rejects if both tolerances are exceeded', () => {
-			const options: ValidationOptions = {
-				tolerance: { absolute: 0.1, relative: 0.001 }
-			};
-			const result = validateQuantityAnswer('5\\unit{m}', '3.0\\unit{m}', options);
-
-			expect(result.isCorrect).toBe(false);
-			expect(result.errorType).toBe('wrong_value');
-		});
-	});
-
-	describe('No tolerance (exact match required)', () => {
-		test('rejects slightly different values without tolerance', () => {
+	describe('No precision (exact match)', () => {
+		test('rejects slightly different values', () => {
 			const result = validateQuantityAnswer('3.141\\unit{m}', '3.14\\unit{m}');
 
 			expect(result.isCorrect).toBe(false);
 			expect(result.errorType).toBe('wrong_value');
 		});
 
-		test('accepts exact match without tolerance', () => {
+		test('accepts exact match', () => {
 			const result = validateQuantityAnswer('3.14\\unit{m}', '3.14\\unit{m}');
 
 			expect(result.isCorrect).toBe(true);
 			expect(result.feedback).toBeNull();
+		});
+	});
+
+	describe('Precision type: none', () => {
+		test('behaves like exact match', () => {
+			const precision: PrecisionType = { type: 'none' };
+			const result = validateQuantityAnswer('3.141\\unit{m}', '3.14\\unit{m}', precision);
+
+			expect(result.isCorrect).toBe(false);
+			expect(result.errorType).toBe('wrong_value');
 		});
 	});
 });
@@ -480,13 +448,11 @@ describe('Error Classification', () => {
 		expect(result.errorType).toBe('incompatible_units');
 	});
 
-	test('classifies wrong_unit when requireSameSymbol is violated (different base symbols)', () => {
-		const result = validateQuantityAnswer('5\\unit{m}', '5\\unit{L}', {
-			requireSameSymbol: true
-		});
+	test('classifies wrong_unit when requiredUnit is violated', () => {
+		const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}', undefined, 'm');
 
 		expect(result.isCorrect).toBe(false);
-		expect(result.errorType).toBe('incompatible_units'); // Different dimensions, not just wrong_unit
+		expect(result.errorType).toBe('wrong_unit');
 	});
 
 	test('classifies wrong_value for incorrect numeric value', () => {
@@ -586,7 +552,6 @@ describe('Edge Cases', () => {
 		const result = validateQuantityAnswer('5\\xyz{ abc}', '5\\unit{m}');
 
 		expect(result.isCorrect).toBe(false);
-		// Could be invalid_input or incompatible_units depending on parser behavior
 		expect(['invalid_input', 'incompatible_units']).toContain(result.errorType);
 	});
 });
@@ -614,49 +579,16 @@ describe('French Feedback Messages', () => {
 		expect(result.feedback).toBe('Valeur incorrecte.');
 	});
 
+	test('provides French message for wrong unit (requiredUnit)', () => {
+		const result = validateQuantityAnswer('5\\unit{km}', '5000\\unit{m}', undefined, 'm');
+
+		expect(result.feedback).toBe('Unité incorrecte.');
+	});
+
 	test('provides no feedback for correct answer', () => {
 		const result = validateQuantityAnswer('5\\unit{m}', '5\\unit{m}');
 
 		expect(result.feedback).toBeNull();
-	});
-});
-
-// ============================================================================
-// CUSTOM MESSAGES
-// ============================================================================
-
-describe('Custom Messages', () => {
-	test('allows custom message for incompatible units', () => {
-		const options: ValidationOptions = {
-			messages: {
-				incompatibleUnit: 'Ces unités ne vont pas ensemble.'
-			}
-		};
-		const result = validateQuantityAnswer('5\\unit{m}', '5\\unit{kg}', options);
-
-		expect(result.feedback).toBe('Ces unités ne vont pas ensemble.');
-	});
-
-	test('allows custom message for incorrect value', () => {
-		const options: ValidationOptions = {
-			messages: {
-				incorrectValue: 'Vérifie ton calcul.'
-			}
-		};
-		const result = validateQuantityAnswer('10\\unit{m}', '5\\unit{m}', options);
-
-		expect(result.feedback).toBe('Vérifie ton calcul.');
-	});
-
-	test('uses default message when custom message not provided', () => {
-		const options: ValidationOptions = {
-			messages: {
-				incorrectUnit: 'Custom unit message'
-			}
-		};
-		const result = validateQuantityAnswer('10\\unit{m}', '5\\unit{m}', options);
-
-		expect(result.feedback).toBe('Valeur incorrecte.');
 	});
 });
 
