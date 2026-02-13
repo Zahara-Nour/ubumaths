@@ -2125,13 +2125,15 @@ export function transformQuestion(
 		stats.detectedType = detectQuestionType(oldQuestion);
 
 		// Create variations with shared field detection
-		const { variations, shared } = createVariationsWithShared(
+		const sharedResult = createVariationsWithShared(
 			oldQuestion,
 			migrationMode,
 			options?.imageUrlMapping,
 			warnings,
 			stats
 		);
+		const variations = sharedResult.variations;
+		let shared = sharedResult.shared;
 
 		if (variations.length === 0) {
 			errors.push('No variations could be created');
@@ -2175,6 +2177,9 @@ export function transformQuestion(
 
 		// Apply requiredForm to shared (applies to all variations)
 		if (requiredForm) {
+			if (!shared) {
+				shared = {};
+			}
 			shared.requiredForm = requiredForm;
 		}
 
