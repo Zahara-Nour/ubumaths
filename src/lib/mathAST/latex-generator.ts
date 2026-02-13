@@ -58,6 +58,9 @@ type ColoredSpan = {
 
 export interface LatexGeneratorOptions {
 	readonly renderMetadata?: boolean; // default: false
+	/** When true, emit `?` instead of `\placeholder[N]{}` for HoleNodes.
+	 * Used by the generation pipeline so assignBlankIndices can re-assign global 0-based indices. */
+	readonly preserveHoles?: boolean; // default: false
 }
 
 // =============================================================================
@@ -216,7 +219,8 @@ export class LatexGenerator {
 
 	constructor(options?: LatexGeneratorOptions) {
 		this.options = {
-			renderMetadata: options?.renderMetadata ?? false
+			renderMetadata: options?.renderMetadata ?? false,
+			preserveHoles: options?.preserveHoles ?? false
 		};
 	}
 
@@ -375,7 +379,10 @@ export class LatexGenerator {
 				break;
 
 			case 'hole':
-				this.emit(`\\placeholder[${node.index}]{}`, node.metadata);
+				this.emit(
+					this.options.preserveHoles ? '?' : `\\placeholder[${node.index}]{}`,
+					node.metadata
+				);
 				break;
 
 			case 'constant':
@@ -843,7 +850,10 @@ export class LatexGenerator {
 				this.emit(SYMBOL_MAP[node.symbol], effectiveMeta);
 				break;
 			case 'hole':
-				this.emit(`\\placeholder[${node.index}]{}`, effectiveMeta);
+				this.emit(
+					this.options.preserveHoles ? '?' : `\\placeholder[${node.index}]{}`,
+					effectiveMeta
+				);
 				break;
 			case 'constant':
 				this.emit(node.constant === 'euler' ? '\\exponentialE' : '\\pi', effectiveMeta);
@@ -1188,9 +1198,10 @@ export class LatexGenerator {
 	}
 
 	/**
-	 * Generates a hole/placeholder as \placeholder[N]{}
+	 * Generates a hole/placeholder as \placeholder[N]{} (or ? when preserveHoles is true)
 	 */
 	private generateHole(node: HoleNode): string {
+		if (this.options.preserveHoles) return '?';
 		return `\\placeholder[${node.index}]{}`;
 	}
 

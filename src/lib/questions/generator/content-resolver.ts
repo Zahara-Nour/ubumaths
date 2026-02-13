@@ -35,13 +35,6 @@ const BLOCK_MATH_REGEX = /\$\$([\s\S]+?)\$\$/g;
 const INLINE_MATH_REGEX = /\$([^$\n]+)\$/g;
 
 /**
- * Regex to revert auto-generated \placeholder[N]{} back to ? markers.
- * The mathAST parser converts ? to \placeholder[N]{} with 1-based auto-increment,
- * but we need assignBlankIndices to re-assign with correct 0-based global indices.
- */
-const PLACEHOLDER_REVERT_REGEX = /\\placeholder\[\d+\]\{\}/g;
-
-/**
  * Regex to match expression markers at the start of math content.
  */
 const EXPR_MARKER_REGEX = /^<<expr:(expression[a-zA-Z0-9]*)>>/;
@@ -54,8 +47,8 @@ const EXPR_MARKER_REGEX = /^<<expr:(expression[a-zA-Z0-9]*)>>/;
  *
  * Handles:
  * - `<<expr:NAME>>` markers: stripped before parsing, re-added after conversion
- * - `?` hole markers: mathAST converts them to \placeholder[N]{}, but we revert
- *   them back to `?` so that assignBlankIndices can re-assign correct 0-based indices
+ * - `?` hole markers: preserved as `?` via toLatex({ preserveHoles: true })
+ *   so that assignBlankIndices can assign correct 0-based global indices
  *
  * Note: ~...~ and ~~...~~ zones are NOT converted - they stay in custom
  * syntax for answer comparison and other non-display purposes.
@@ -79,10 +72,7 @@ function convertMathZonesToLatex(content: string): string {
 
 		const parseResult = parseCustomSafe(mathContent.trim());
 		if (parseResult.ast) {
-			let latex = toLatex(parseResult.ast);
-			// Revert auto-generated \placeholder[N]{} back to ? markers
-			// assignBlankIndices will re-assign with correct 0-based indices
-			latex = latex.replace(PLACEHOLDER_REVERT_REGEX, '?');
+			const latex = toLatex(parseResult.ast, { preserveHoles: true });
 			return prefix + latex;
 		}
 		// On parse error, return original (will show error at render time)
@@ -206,13 +196,10 @@ export function resolveAnswerFormat(
 	let resolved = resolveVariableExpression(answerFormat, resolvedVariables, seed);
 	resolved = resolveColorReferences(resolved, seed);
 
-	// Stage 2: Convert to LaTeX, preserving ? markers
-	// The mathAST parser converts ? to \placeholder[N]{}, so we revert after
+	// Stage 2: Convert to LaTeX, preserving ? markers for assignBlankIndices
 	const parseResult = parseCustomSafe(resolved.trim());
 	if (parseResult.ast) {
-		resolved = toLatex(parseResult.ast);
-		// Revert auto-generated \placeholder[N]{} back to ? markers
-		resolved = resolved.replace(PLACEHOLDER_REVERT_REGEX, '?');
+		resolved = toLatex(parseResult.ast, { preserveHoles: true });
 	}
 
 	return resolved;
@@ -227,10 +214,7 @@ export function resolveAnswerFormat(
 export function convertToLatex(expression: string): string {
 	const parseResult = parseCustomSafe(expression.trim());
 	if (parseResult.ast) {
-		let latex = toLatex(parseResult.ast);
-		// Revert any auto-generated placeholders (shouldn't be present, but safety)
-		latex = latex.replace(PLACEHOLDER_REVERT_REGEX, '?');
-		return latex;
+		return toLatex(parseResult.ast, { preserveHoles: true });
 	}
 	return expression;
 }
