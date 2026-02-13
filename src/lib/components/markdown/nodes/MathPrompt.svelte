@@ -43,6 +43,8 @@
 		inputs?: InputState[];
 		/** Callback when a prompt value changes */
 		onPromptChange?: (index: number, value: string) => void;
+		/** Whether prompts are disabled (e.g., after submission) */
+		disabled?: boolean;
 		/** Additional CSS classes */
 		class?: string;
 		/** Configuration for generic function names (f, g, h, P, Q, etc.) */
@@ -55,6 +57,7 @@
 		display = 'inline',
 		inputs = [],
 		onPromptChange,
+		disabled = false,
 		class: className = '',
 		genericFunctions
 	}: Props = $props();
@@ -115,13 +118,20 @@
 
 {#if display === 'block'}
 	<div class="math-prompt-block-container my-6 flex justify-center {className}">
-		<math-field readonly bind:this={mathField} oninput={handleInput} class="math-prompt-block">
+		<math-field
+			readonly
+			{disabled}
+			bind:this={mathField}
+			oninput={handleInput}
+			class="math-prompt-block"
+		>
 			{latex}
 		</math-field>
 	</div>
 {:else}
 	<math-field
 		readonly
+		{disabled}
 		bind:this={mathField}
 		oninput={handleInput}
 		class="math-prompt-inline {className}"

@@ -139,6 +139,7 @@
 							display="block"
 							inputs={inputStates.filter((s) => s.type === 'math')}
 							onPromptChange={handleInputChange}
+							{disabled}
 						/>
 					{/key}
 				{:else}
