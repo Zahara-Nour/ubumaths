@@ -27,7 +27,11 @@
 	import type {
 		QuestionVariable,
 		ResolvedVariable,
-		QuestionCorrection
+		QuestionCorrection,
+		TemplateBlank,
+		RequiredForm,
+		ValidationRule,
+		BlankDefaults
 	} from '$lib/questions/types';
 	import { convertAsciiMathToLatex } from 'mathlive';
 	import 'mathlive';
@@ -132,13 +136,19 @@
 	const newFields = $derived(
 		transformed
 			? {
-					type: (transformed.type as string) || '',
 					title: (transformed.title as string) || '',
-					variations: (transformed.variations as unknown[]) || [],
+					variations: (transformed.variations as MigrationVariation[]) || [],
 					shared: transformed.shared as
 						| {
+								statement?: string;
 								variables?: QuestionVariable[];
-								choices?: Array<{ content: string; isCorrect: boolean }>;
+								solution?: string | string[];
+								correction?: QuestionCorrection;
+								choices?: Array<{ content: string; isCorrect?: boolean }>;
+								validationRules?: ValidationRule[];
+								requiredForm?: RequiredForm;
+								blankDefaults?: BlankDefaults;
+								answerFormats?: Record<string, string>;
 						  }
 						| undefined,
 					grades: (transformed.grades as string[]) || [],
@@ -152,6 +162,7 @@
 								constraints?: Record<string, string | boolean>;
 								unitOptions?: Record<string, unknown>;
 								shuffleChoices?: boolean;
+								orderIndependent?: boolean;
 								[key: string]: unknown;
 						  }
 						| undefined,
@@ -161,6 +172,18 @@
 				}
 			: null
 	);
+
+	/**
+	 * Infer the question type from transformed data
+	 */
+	const inferredType = $derived.by((): string => {
+		if (!newFields) return '';
+		// Check if any variation or shared has choices
+		const hasChoices =
+			newFields.variations.some((v) => v.choices && v.choices.length > 0) ||
+			(newFields.shared?.choices && newFields.shared.choices.length > 0);
+		return hasChoices ? 'QCM' : 'Blancs';
+	});
 
 	// Variation tab state
 	let selectedVariationIndex = $state(0);
@@ -180,17 +203,29 @@
 		variables?: QuestionVariable[];
 		solution?: string | string[];
 		correction?: QuestionCorrection;
-		choices?: Array<{ content: string; isCorrect: boolean }>;
-		blanks?: Array<{ position: number; expectedAnswer: string }>;
+		choices?: Array<{ content: string; isCorrect?: boolean }>;
+		blanks?: TemplateBlank[];
+		answerFormats?: Record<string, string>;
+		validationRules?: ValidationRule[];
+		requiredForm?: RequiredForm;
+		blankDefaults?: BlankDefaults;
 	}
 
 	// Resolved instance type
+	interface ResolvedBlank {
+		expectedAnswer: string;
+		resolvedAnswer?: string;
+		prefilled?: string;
+		pool?: string[];
+		unit?: { expected: boolean; required?: string };
+	}
+
 	interface ResolvedInstance {
 		statement: string;
 		solution: string | string[];
 		correction: { feedback: string; steps: string[] } | null;
 		choices: Array<{ content: string; isCorrect: boolean }> | null;
-		blanks: Array<{ position: number; expectedAnswer: string }> | null;
+		blanks: ResolvedBlank[] | null;
 		variables: ResolvedVariable[];
 		error?: string;
 	}
@@ -256,9 +291,11 @@
 			// Resolve choices (variation overrides shared)
 			// For QCM, isCorrect is determined by comparing index with evaluated solution
 			const rawChoices = variation.choices || newFields.shared?.choices;
-			const correctIndices = Array.isArray(solution)
-				? solution.map((s) => parseInt(String(s), 10))
-				: [parseInt(String(solution), 10)];
+			const correctIndices = (
+				Array.isArray(solution)
+					? solution.map((s) => parseInt(String(s), 10))
+					: [parseInt(String(solution), 10)]
+			).filter((n) => !isNaN(n));
 
 			const choices = rawChoices
 				? rawChoices.map((c, index) => ({
@@ -267,8 +304,25 @@
 					}))
 				: null;
 
-			// Keep blanks as-is (expectedAnswer already resolved in solution)
-			const blanks = variation.blanks || null;
+			// Resolve blanks (expectedAnswer may contain template expressions)
+			let blanks: ResolvedBlank[] | null = null;
+			if (variation.blanks && variation.blanks.length > 0) {
+				blanks = variation.blanks.map((b) => {
+					let resolvedAnswer: string | undefined;
+					try {
+						resolvedAnswer = resolveExpression(b.expectedAnswer, resolved, instanceSeed);
+					} catch {
+						resolvedAnswer = b.expectedAnswer;
+					}
+					return {
+						expectedAnswer: b.expectedAnswer,
+						resolvedAnswer,
+						prefilled: b.prefilled,
+						pool: b.pool,
+						unit: b.unit
+					};
+				});
+			}
 
 			return {
 				statement,
@@ -486,16 +540,12 @@
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				{#if newFields}
-					<!-- Type -->
-					<div>
-						<h4 class="mb-1 text-sm font-medium text-muted-foreground">type</h4>
-						<p class="text-sm">{newFields.type}</p>
-					</div>
-
-					<!-- Title -->
-					<div>
-						<h4 class="mb-1 text-sm font-medium text-muted-foreground">title</h4>
-						<p class="text-sm">{newFields.title}</p>
+					<!-- Type (inferred) + Title -->
+					<div class="flex items-center gap-2">
+						<Badge variant={inferredType === 'QCM' ? 'default' : 'secondary'}>
+							{inferredType}
+						</Badge>
+						<span class="text-sm font-medium">{newFields.title}</span>
 					</div>
 
 					<!-- Grades -->
@@ -622,6 +672,59 @@
 						</div>
 					{/if}
 
+					<!-- Shared answerFormats -->
+					{#if newFields.shared?.answerFormats && Object.keys(newFields.shared.answerFormats).length > 0}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+								answerFormats (partagé)
+							</h4>
+							<div class="space-y-1 rounded-md bg-muted p-3 font-mono text-xs">
+								{#each Object.entries(newFields.shared.answerFormats) as [key, value] (key)}
+									<div>
+										<span class="text-primary">{key}</span>
+										<span class="text-muted-foreground"> → </span>
+										<span>{value}</span>
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
+
+					<!-- Shared requiredForm -->
+					{#if newFields.shared?.requiredForm}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">requiredForm (partagé)</h4>
+							<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+									newFields.shared.requiredForm
+								)}</pre>
+						</div>
+					{/if}
+
+					<!-- Shared validationRules -->
+					{#if newFields.shared?.validationRules && newFields.shared.validationRules.length > 0}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+								validationRules (partagé) ({newFields.shared.validationRules.length})
+							</h4>
+							<pre
+								class="max-h-40 overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+									newFields.shared.validationRules
+								)}</pre>
+						</div>
+					{/if}
+
+					<!-- Shared blankDefaults -->
+					{#if newFields.shared?.blankDefaults}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+								blankDefaults (partagé)
+							</h4>
+							<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+									newFields.shared.blankDefaults
+								)}</pre>
+						</div>
+					{/if}
+
 					<!-- Variations with Tabs -->
 					{#if newFields.variations.length > 0}
 						<div class="space-y-4">
@@ -644,11 +747,140 @@
 								</Tabs.List>
 
 								{#each newFields.variations as variation, i (i)}
-									<Tabs.Content value={String(i)}>
-										<pre
-											class="max-h-80 overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
-												variation
-											)}</pre>
+									<Tabs.Content value={String(i)} class="space-y-3">
+										<!-- Statement -->
+										{#if variation.statement}
+											<div>
+												<h4 class="mb-1 text-xs font-medium text-muted-foreground">statement</h4>
+												<pre
+													class="overflow-x-auto rounded-md bg-muted p-2 font-mono text-xs">{variation.statement}</pre>
+											</div>
+										{/if}
+
+										<!-- Variables -->
+										{#if variation.variables && variation.variables.length > 0}
+											<div>
+												<h4 class="mb-1 text-xs font-medium text-muted-foreground">
+													variables ({variation.variables.length})
+												</h4>
+												<div class="space-y-0.5 rounded-md bg-muted p-2 font-mono text-xs">
+													{#each variation.variables as v (v.name)}
+														<div>
+															<span class="text-primary">{v.name}</span> = {v.expression}
+														</div>
+													{/each}
+												</div>
+											</div>
+										{/if}
+
+										<!-- Blanks (v2) -->
+										{#if variation.blanks && variation.blanks.length > 0}
+											<div>
+												<h4 class="mb-1 text-xs font-medium text-muted-foreground">
+													blanks ({variation.blanks.length})
+												</h4>
+												<div class="space-y-1 rounded-md bg-muted p-2 text-xs">
+													{#each variation.blanks as blank, bi (bi)}
+														<div class="flex flex-wrap items-center gap-1">
+															<Badge variant="outline" class="font-mono text-[10px]">#{bi}</Badge>
+															<span class="font-mono text-primary">{blank.expectedAnswer}</span>
+															{#if blank.prefilled}
+																<Badge variant="secondary" class="text-[10px]"
+																	>prefilled: {blank.prefilled}</Badge
+																>
+															{/if}
+															{#if blank.unit}
+																<Badge variant="secondary" class="text-[10px]">unit</Badge>
+															{/if}
+															{#if blank.pool}
+																<Badge variant="secondary" class="text-[10px]"
+																	>pool: {blank.pool.length}</Badge
+																>
+															{/if}
+														</div>
+													{/each}
+												</div>
+											</div>
+										{/if}
+
+										<!-- answerFormats -->
+										{#if variation.answerFormats && Object.keys(variation.answerFormats).length > 0}
+											<div>
+												<h4 class="mb-1 text-xs font-medium text-muted-foreground">
+													answerFormats
+												</h4>
+												<div class="space-y-0.5 rounded-md bg-muted p-2 font-mono text-xs">
+													{#each Object.entries(variation.answerFormats) as [key, value] (key)}
+														<div>
+															<span class="text-primary">{key}</span>
+															<span class="text-muted-foreground"> → </span>
+															<span>{value}</span>
+														</div>
+													{/each}
+												</div>
+											</div>
+										{/if}
+
+										<!-- validationRules -->
+										{#if variation.validationRules && variation.validationRules.length > 0}
+											<div>
+												<h4 class="mb-1 text-xs font-medium text-muted-foreground">
+													validationRules
+												</h4>
+												<pre
+													class="max-h-32 overflow-auto rounded-md bg-muted p-2 font-mono text-xs">{formatValue(
+														variation.validationRules
+													)}</pre>
+											</div>
+										{/if}
+
+										<!-- requiredForm -->
+										{#if variation.requiredForm}
+											<div>
+												<h4 class="mb-1 text-xs font-medium text-muted-foreground">requiredForm</h4>
+												<pre class="rounded-md bg-muted p-2 font-mono text-xs">{formatValue(
+														variation.requiredForm
+													)}</pre>
+											</div>
+										{/if}
+
+										<!-- Solution -->
+										{#if variation.solution !== undefined}
+											<div>
+												<h4 class="mb-1 text-xs font-medium text-muted-foreground">solution</h4>
+												<pre class="rounded-md bg-muted p-2 font-mono text-xs">{formatValue(
+														variation.solution
+													)}</pre>
+											</div>
+										{/if}
+
+										<!-- Choices -->
+										{#if variation.choices && variation.choices.length > 0}
+											<div>
+												<h4 class="mb-1 text-xs font-medium text-muted-foreground">
+													choices ({variation.choices.length})
+												</h4>
+												<div class="space-y-0.5 rounded-md bg-muted p-2 text-xs">
+													{#each variation.choices as choice, ci (ci)}
+														<div class="flex items-center gap-1">
+															<span class="font-mono">{ci}.</span>
+															<span>{choice.content}</span>
+														</div>
+													{/each}
+												</div>
+											</div>
+										{/if}
+
+										<!-- Correction -->
+										{#if variation.correction}
+											<div>
+												<h4 class="mb-1 text-xs font-medium text-muted-foreground">correction</h4>
+												<pre
+													class="max-h-32 overflow-auto rounded-md bg-muted p-2 font-mono text-xs">{formatValue(
+														variation.correction
+													)}</pre>
+											</div>
+										{/if}
 									</Tabs.Content>
 								{/each}
 							</Tabs.Root>
@@ -744,15 +976,31 @@
 						<!-- Blanks -->
 						{#if resolvedInstance.blanks}
 							<div>
-								<h4 class="mb-1 text-sm font-medium text-muted-foreground">Blancs à remplir</h4>
-								<ul class="space-y-1 font-mono text-sm">
+								<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+									Blancs à remplir ({resolvedInstance.blanks.length})
+								</h4>
+								<div class="space-y-2 text-sm">
 									{#each resolvedInstance.blanks as blank, bi (bi)}
-										<li>
-											Position {blank.position}:
-											<span class="text-primary">{blank.expectedAnswer}</span>
-										</li>
+										<div class="rounded-md bg-muted p-2">
+											<div class="flex items-center gap-2">
+												<Badge variant="outline" class="font-mono text-xs">#{bi}</Badge>
+												<span class="font-mono text-primary">
+													{blank.resolvedAnswer ?? blank.expectedAnswer}
+												</span>
+											</div>
+											{#if blank.resolvedAnswer && blank.resolvedAnswer !== blank.expectedAnswer}
+												<div class="mt-1 text-xs text-muted-foreground">
+													template: <span class="font-mono">{blank.expectedAnswer}</span>
+												</div>
+											{/if}
+											{#if blank.unit}
+												<div class="mt-1 text-xs text-muted-foreground">
+													unité: {blank.unit.required ?? 'attendue'}
+												</div>
+											{/if}
+										</div>
 									{/each}
-								</ul>
+								</div>
 							</div>
 						{/if}
 

@@ -13,6 +13,15 @@ import { join } from 'path';
 import type { PageServerLoad } from './$types';
 import type { GradeCode } from '$lib/types/grades';
 import type { MigrationStatus } from '$lib/types/migration';
+import type {
+	QuestionVariable,
+	QuestionCorrection,
+	TemplateBlank,
+	BlankDefaults,
+	RequiredForm,
+	ValidationRule
+} from '$lib/questions/types';
+import type { DisplayOptions } from '$lib/ubumark';
 
 /**
  * Get the latest export folder from data/migration-output/
@@ -58,10 +67,38 @@ export interface QuestionEntry {
 		};
 	};
 	transformed: {
-		type: string;
 		title: string;
 		description?: string;
-		variations?: unknown[];
+		shared?: {
+			statement?: string;
+			variables?: QuestionVariable[];
+			solution?: string | string[];
+			correction?: QuestionCorrection;
+			choices?: Array<{ content: string; isCorrect?: boolean }>;
+			validationRules?: ValidationRule[];
+			requiredForm?: RequiredForm;
+			blankDefaults?: BlankDefaults;
+			answerFormats?: Record<string, string>;
+		};
+		variations?: Array<{
+			statement: string;
+			variables?: QuestionVariable[];
+			solution?: string | string[];
+			correction?: QuestionCorrection;
+			choices?: Array<{ content: string; isCorrect?: boolean }>;
+			blanks?: TemplateBlank[];
+			answerFormats?: Record<string, string>;
+			validationRules?: ValidationRule[];
+			requiredForm?: RequiredForm;
+			blankDefaults?: BlankDefaults;
+		}>;
+		options?: {
+			constraints?: Record<string, string | boolean>;
+			shuffleChoices?: boolean;
+			orderIndependent?: boolean;
+			[key: string]: unknown;
+		};
+		defaultDisplayOptions?: DisplayOptions;
 		grades?: GradeCode[];
 		theme?: string;
 		domain?: string;
