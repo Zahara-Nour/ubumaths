@@ -19,7 +19,16 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { AlertCircle, AlertTriangle, CheckCircle2, RefreshCw, Edit3, Code2 } from 'lucide-svelte';
+	import {
+		AlertCircle,
+		AlertTriangle,
+		CheckCircle2,
+		RefreshCw,
+		Edit3,
+		Code2,
+		Copy,
+		Check
+	} from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { resolveVariables, resolveExpression, resolveSolution } from '$lib/questions';
@@ -183,6 +192,16 @@
 	let showRawOriginal = $state(false);
 	let showRawTransformed = $state(false);
 	let showRawInstance = $state(false);
+
+	// Copy to clipboard with visual feedback
+	let copiedId = $state<string | null>(null);
+	async function copyToClipboard(text: string, id: string) {
+		await navigator.clipboard.writeText(text);
+		copiedId = id;
+		setTimeout(() => {
+			if (copiedId === id) copiedId = null;
+		}, 2000);
+	}
 
 	// Variation tab state
 	let selectedVariationIndex = $state(0);
@@ -391,12 +410,27 @@
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				{#if showRawOriginal}
-					<pre
-						class="max-h-[70vh] overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{JSON.stringify(
-							original,
-							null,
-							2
-						)}</pre>
+					<div class="relative">
+						<Button
+							variant="ghost"
+							size="icon"
+							class="absolute top-2 right-2 h-7 w-7"
+							onclick={() => copyToClipboard(JSON.stringify(original, null, 2), 'original')}
+							title="Copier"
+						>
+							{#if copiedId === 'original'}
+								<Check class="h-4 w-4 text-green-600" />
+							{:else}
+								<Copy class="h-4 w-4" />
+							{/if}
+						</Button>
+						<pre
+							class="max-h-[70vh] overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{JSON.stringify(
+								original,
+								null,
+								2
+							)}</pre>
+					</div>
 				{:else}
 					<!-- Description -->
 					<div>
@@ -557,12 +591,27 @@
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				{#if showRawTransformed}
-					<pre
-						class="max-h-[70vh] overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{JSON.stringify(
-							transformed,
-							null,
-							2
-						)}</pre>
+					<div class="relative">
+						<Button
+							variant="ghost"
+							size="icon"
+							class="absolute top-2 right-2 h-7 w-7"
+							onclick={() => copyToClipboard(JSON.stringify(transformed, null, 2), 'transformed')}
+							title="Copier"
+						>
+							{#if copiedId === 'transformed'}
+								<Check class="h-4 w-4 text-green-600" />
+							{:else}
+								<Copy class="h-4 w-4" />
+							{/if}
+						</Button>
+						<pre
+							class="max-h-[70vh] overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{JSON.stringify(
+								transformed,
+								null,
+								2
+							)}</pre>
+					</div>
 				{:else if newFields}
 					<!-- Type (inferred) + Title -->
 					<div class="flex items-center gap-2">
@@ -951,12 +1000,27 @@
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				{#if showRawInstance && resolvedInstance}
-					<pre
-						class="max-h-[70vh] overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{JSON.stringify(
-							resolvedInstance,
-							null,
-							2
-						)}</pre>
+					<div class="relative">
+						<Button
+							variant="ghost"
+							size="icon"
+							class="absolute top-2 right-2 h-7 w-7"
+							onclick={() => copyToClipboard(JSON.stringify(resolvedInstance, null, 2), 'instance')}
+							title="Copier"
+						>
+							{#if copiedId === 'instance'}
+								<Check class="h-4 w-4 text-green-600" />
+							{:else}
+								<Copy class="h-4 w-4" />
+							{/if}
+						</Button>
+						<pre
+							class="max-h-[70vh] overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{JSON.stringify(
+								resolvedInstance,
+								null,
+								2
+							)}</pre>
+					</div>
 				{:else if resolvedInstance}
 					{#if resolvedInstance.error}
 						<div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
