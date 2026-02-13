@@ -313,7 +313,9 @@
 
 			const choices = rawChoices
 				? rawChoices.map((c, index) => ({
-						content: resolveExpression(c.content, resolved, instanceSeed),
+						content: c.content.includes('{{')
+							? resolveExpression(c.content, resolved, instanceSeed)
+							: c.content,
 						isCorrect: correctIndices.includes(index)
 					}))
 				: null;

@@ -339,13 +339,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		}
 
 		if (resolvedVariation.choices) {
-			// 7b. Multiple choice — resolve choice content
+			// 7b. Multiple choice — resolve choice content if it has variable references.
+			// Bare text like "pair" must NOT go through resolveMarkdownContent because
+			// normalizeExpression treats identifiers as variable references.
 			resolvedChoices = resolvedVariation.choices.map((choice) => {
-				const resolvedContent: ResolvedMarkdown = resolveMarkdownContent(
-					choice.content,
-					resolvedVariables,
-					seed
-				);
+				const content = choice.content;
+				const resolvedContent: ResolvedMarkdown = content.includes('{{')
+					? resolveMarkdownContent(content, resolvedVariables, seed)
+					: resolvedMarkdown(content);
 				return {
 					content: resolvedContent,
 					isCorrect: choice.isCorrect ?? false
