@@ -451,6 +451,66 @@ Issues documentees pour plus tard :
 
 ### Next Steps
 
-- Phase 6: Runtime generation pipeline integration
-- Phase 7: UI updates for fill_in_blanks display
-- Phase 8: End-to-end testing with 633 migrated questions
+- Phase 6: FillBlanksInput component rewrite
+- Phase 7: End-to-end testing with 633 migrated questions
+
+---
+
+## Phase 6: FillBlanksInput Component Rewrite (COMPLETE)
+
+### Status: COMPLETE
+
+### Changes Summary
+
+**Complete rewrite of FillBlanksInput** from `____` string splitting to unified AST-based rendering. The component now:
+
+- Parses the statement with `parseMarkdown()` to produce an AST
+- Augments expression nodes (those with `expressionName`) by appending ` = answerFormat`
+- Renders using existing node components (`ParagraphNode`, `MathPrompt`, `MathBlock`)
+- Bridges `InputState[]` ↔ `values[]`/`valuesLatex[]` for parent components
+
+### Decisions Made
+
+1. **Approach B (AST manipulation)** — Chosen over string manipulation. The parser already handles all delimiter edge cases. Modifying AST nodes is type-safe and robust. The rendering duplication (block-level switch) is minimal.
+2. **Reuse existing node components** — `ParagraphNode` already routes `math-inline` with `\placeholder` → `MathPrompt`, `blank` → `BlankInput`. FillBlanksInput just passes the augmented AST and the `InputState[]` bridge.
+3. **Block math with prompts → MathPrompt** — `MathBlockNode` with `expressionName` or `\placeholder` is rendered via `MathPrompt` with `display="block"` (not `MathBlock` which is read-only).
+4. **No child initialization $effect** — Removed initialization from FillBlanksInput per code review. Parent components own the state and handle initialization (with `prefilled` support).
+5. **Both `values` and `valuesLatex` contain LaTeX for math blanks** — MathLive's `getPromptValue()` returns LaTeX. The `valuesLatex` array exists for explicit LaTeX access by the validator's `checkRequiredForm()` and `applyConstraints()`.
+6. **Generator always provides `answerFormat`** — Default `'?'` → `\placeholder[N]{}`. The component never needs to handle missing answerFormat for expression nodes (gracefully returns unaugmented node if undefined).
+
+### Files Created
+
+| File                                                                     | Description                                                                                            |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `src/lib/components/question-inputs/fill-blanks-utils.ts`                | Pure utility functions: `augmentASTForExpressions`, `buildInputStates`, `applyValidationToInputStates` |
+| `src/lib/components/question-inputs/__tests__/fill-blanks-utils.test.ts` | 21 tests covering AST augmentation, InputState building, and validation mapping                        |
+
+### Files Modified
+
+| File                                                        | Changes                                                                                                     |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `src/lib/components/question-inputs/FillBlanksInput.svelte` | Complete rewrite: AST parsing, expression augmentation, node component rendering, InputState bridge         |
+| `src/lib/components/questions/FlashCard.svelte`             | Added `fillBlankValuesLatex` state, passes `expressions` + `bind:valuesLatex`, initializes with `prefilled` |
+| `src/lib/components/questions/QuestionCard.svelte`          | Same as FlashCard                                                                                           |
+| `src/lib/slides/core/QuestionSlide.svelte`                  | Same as FlashCard                                                                                           |
+
+### Code Review Findings (post-commit fixes)
+
+Issues corrigees apres code review (`code-reviewer` agent) :
+
+1. **Double initialization race condition** — Removed `$effect` initialization from FillBlanksInput. Parents own the state and handle initialization.
+2. **Missing `fillBlankValuesLatex` initialization** — Added to all parent components' `$effect`/`onMount` blocks.
+3. **Parent initialization with `prefilled`** — Changed `instance.blanks.map(() => '')` to `instance.blanks.map((b) => b.prefilled ?? '')` in all parents.
+
+### Test Results
+
+- **fill-blanks-utils.test.ts**: 21/21
+- **TypeScript**: `tsc --noEmit --project tsconfig.json` — 0 errors on all modified files
+- **ESLint**: Clean on all new files
+- **Svelte autofixer**: 0 issues on FillBlanksInput.svelte
+
+### Next Steps
+
+- Flash back mode (deferred — affichage des bonnes reponses dans les trous)
+- End-to-end testing with real questions
+- `showCorrectAnswers` prop (when flash back is implemented)

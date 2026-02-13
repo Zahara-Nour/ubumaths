@@ -2,112 +2,158 @@
 	Fill-in-Blanks Input Component
 	===============================
 
-	Renders a statement with editable MathField inputs at blank positions.
-	Blanks are represented by underscores (____) in the statement.
+	Renders a statement with fill-in-the-blank inputs using unified AST parsing.
+	Supports:
+	- Text blanks ({{blank:N}}) via BlankInput
+	- Math blanks (\placeholder[N]{}) via MathPrompt
+	- Expression convention (expressionName + answerFormat)
+	- Validation state display (correct/incorrect)
+
+	Architecture:
+	1. Parse statement → AST (parseMarkdown)
+	2. Augment expression nodes (append ` = answerFormat`)
+	3. Render AST using existing node components (ParagraphNode, MathPrompt, MathBlock)
+	4. Bridge InputState[] ↔ values[]/valuesLatex[] for parent
 
 	Props:
-	- statement: ResolvedMarkdown - Statement as resolved markdown string
-	- blanks: Array of blank configurations with positions
-	- values: Array of user answers for each blank (bindable)
+	- statement: ResolvedMarkdown - Resolved statement with \placeholder[N]{} and {{blank:N}}
+	- blanks: InstanceBlank[] - Blank definitions with type, expectedAnswer, prefilled, etc.
+	- expressions: Expression metadata for expression convention
+	- values: Bindable array of user answers (LaTeX for math, text for text)
+	- valuesLatex: Bindable array of LaTeX values (for math blanks, empty for text)
 	- disabled: Whether inputs are disabled
-	- validationResults: Array of validation results per blank (optional)
-	- onSubmit: Callback when Enter is pressed
+	- validationResults: Per-blank validation state
+	- onSubmit: Callback when Enter is pressed in a blank
 -->
 
 <script lang="ts">
+	import { parseMarkdown } from '$lib/ubumark';
 	import type { ResolvedMarkdown } from '$lib/ubumark';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import MathField from '$lib/components/MathField.svelte';
-	import { Check, X } from 'lucide-svelte';
+	import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
+	import { hasPrompts } from '$lib/components/markdown/utils/math-utils';
 
-	interface BlankConfig {
-		position: number;
-		expectedAnswer: string;
-	}
+	// Node components (reuse from MarkdownRenderer)
+	import ParagraphNode from '$lib/components/markdown/nodes/ParagraphNode.svelte';
+	import MathBlock from '$lib/components/markdown/nodes/MathBlock.svelte';
+	import MathPrompt from '$lib/components/markdown/nodes/MathPrompt.svelte';
+	import HeadingNode from '$lib/components/markdown/nodes/HeadingNode.svelte';
+
+	// Utility functions
+	import {
+		augmentASTForExpressions,
+		buildInputStates,
+		applyValidationToInputStates
+	} from './fill-blanks-utils';
 
 	interface Props {
-		/** Statement as resolved markdown (all placeholders resolved) */
+		/** Statement as resolved markdown (with \placeholder[N]{} and {{blank:N}}) */
 		statement: ResolvedMarkdown;
-		blanks: BlankConfig[];
+		/** Blank definitions from the instance */
+		blanks: InstanceBlank[];
+		/** Expression metadata for expression convention */
+		expressions?: QuestionInstance['expressions'];
+		/** User answers: LaTeX for math blanks, text for text blanks */
 		values?: string[];
+		/** LaTeX values for math blanks (empty string for text blanks) */
+		valuesLatex?: string[];
+		/** Whether inputs are disabled */
 		disabled?: boolean;
+		/** Per-blank validation: true=correct, false=incorrect, null=not validated */
 		validationResults?: (boolean | null)[];
+		/** Callback when Enter is pressed in a blank */
 		onSubmit?: () => void;
 	}
 
 	let {
 		statement,
 		blanks,
+		expressions,
 		values = $bindable([]),
+		valuesLatex = $bindable([]),
 		disabled = false,
 		validationResults = [],
 		onSubmit
 	}: Props = $props();
 
-	// Initialize values array if empty
-	$effect(() => {
-		if (values.length === 0 && blanks.length > 0) {
-			values = blanks.map(() => '');
-		}
+	// Parse statement to AST and augment expression nodes
+	let augmentedAST = $derived.by(() => {
+		const ast = parseMarkdown(statement);
+		return augmentASTForExpressions(ast, expressions);
 	});
 
-	// Handle Enter key to submit
-	function handleKeydown(e: KeyboardEvent, _index: number) {
-		if (e.key === 'Enter' && !disabled && onSubmit) {
-			e.preventDefault();
-			onSubmit();
+	// Build InputState[] from blanks + validationResults
+	let inputStates = $derived.by(() => {
+		const base = buildInputStates(blanks);
+		// Merge current values into states
+		const withValues = base.map((s, i) => ({
+			...s,
+			value: values[i] ?? s.value
+		}));
+		return applyValidationToInputStates(withValues, validationResults);
+	});
+
+	/**
+	 * Handle input changes from BlankInput (text) or MathPrompt (math)
+	 */
+	function handleInputChange(index: number, value: string) {
+		if (disabled) return;
+
+		// Update values array
+		if (index >= 0 && index < blanks.length) {
+			values[index] = value;
+
+			// For math blanks, value is LaTeX (from MathLive's getPromptValue)
+			if (blanks[index].type === 'math') {
+				valuesLatex[index] = value;
+			}
 		}
 	}
 
-	// Statement is now a ResolvedMarkdown string directly
-	// Split statement by blank markers (4 underscores)
-	const segments = $derived(statement.split('____'));
+	/**
+	 * Handle submit from text blank (Enter key)
+	 */
+	function handleInputSubmit(_index: number) {
+		if (!disabled) {
+			onSubmit?.();
+		}
+	}
 </script>
 
 <div class="fill-blanks-container">
-	<!-- Render statement segments with blank inputs interspersed -->
-	<div class="statement-with-blanks">
-		{#each segments as segment, i (i)}
-			<!-- Render text/math segment -->
-			{#if segment.trim()}
-				<span class="segment-text">
-					<MarkdownRenderer content={segment} />
-				</span>
-			{/if}
-
-			<!-- Render blank input (except after last segment) -->
-			{#if i < segments.length - 1}
-				<span class="blank-wrapper">
-					<MathField
-						bind:value={values[i]}
-						read-only={disabled}
-						virtual-keyboard-mode="manual"
-						class="blank-input {validationResults[i] === true
-							? 'correct'
-							: validationResults[i] === false
-								? 'incorrect'
-								: ''}"
-						placeholder="\\placeholder&#123;&#125;"
-						onkeydown={(e: KeyboardEvent) => handleKeydown(e, i)}
-					/>
-
-					<!-- Validation indicator -->
-					{#if validationResults[i] !== undefined && validationResults[i] !== null}
-						<span class="validation-icon">
-							{#if validationResults[i]}
-								<Check class="h-4 w-4 text-green-600" />
-							{:else}
-								<X class="h-4 w-4 text-red-600" />
-							{/if}
-						</span>
-					{/if}
-				</span>
+	{#if augmentedAST}
+		{#each augmentedAST.children as node, i (i)}
+			{#if node.type === 'paragraph'}
+				<ParagraphNode
+					children={node.children}
+					inputs={inputStates}
+					onInputChange={handleInputChange}
+					onInputSubmit={handleInputSubmit}
+					inputsDisabled={disabled}
+				/>
+			{:else if node.type === 'math-block'}
+				{#if node.expressionName || hasPrompts(node.expression, node.syntax)}
+					{#key node.expression}
+						<MathPrompt
+							expression={node.expression}
+							syntax={node.syntax}
+							display="block"
+							inputs={inputStates.filter((s) => s.type === 'math')}
+							onPromptChange={handleInputChange}
+						/>
+					{/key}
+				{:else}
+					{#key node.expression}
+						<MathBlock expression={node.expression} syntax={node.syntax} />
+					{/key}
+				{/if}
+			{:else if node.type === 'heading'}
+				<HeadingNode level={node.level} children={node.children} />
 			{/if}
 		{/each}
-	</div>
+	{/if}
 
 	<!-- Helper text -->
-	{#if !disabled}
+	{#if !disabled && blanks.length > 0}
 		<div class="helper-text">
 			<span class="text-xs text-muted-foreground"> Remplissez les blancs avec vos réponses </span>
 		</div>
@@ -117,76 +163,6 @@
 <style>
 	.fill-blanks-container {
 		width: 100%;
-	}
-
-	.statement-with-blanks {
-		display: inline-flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: calc(0.5rem * var(--font-scale, 1));
-		font-size: calc(1.125rem * var(--font-scale, 1));
-		line-height: 1.6;
-	}
-
-	.segment-text {
-		display: inline;
-	}
-
-	.blank-wrapper {
-		position: relative;
-		display: inline-flex;
-		align-items: center;
-		gap: calc(0.25rem * var(--font-scale, 1));
-	}
-
-	:global(.blank-input) {
-		min-width: calc(8rem * var(--font-scale, 1));
-		min-height: calc(2.5rem * var(--font-scale, 1));
-		padding: calc(0.5rem * var(--font-scale, 1));
-		font-size: calc(1rem * var(--font-scale, 1));
-		border: 2px solid hsl(var(--border));
-		border-radius: calc(0.375rem * var(--font-scale, 1));
-		background: hsl(var(--background));
-		transition: all 0.2s ease;
-	}
-
-	:global(.blank-input:focus) {
-		outline: none;
-		border-color: hsl(var(--primary));
-		box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
-	}
-
-	:global(.blank-input[read-only]) {
-		opacity: 0.5;
-		cursor: not-allowed;
-		background: hsl(var(--muted));
-	}
-
-	/* Validation states */
-	:global(.blank-input.correct) {
-		border-color: rgb(34, 197, 94); /* green-600 */
-		background: rgb(220, 252, 231); /* green-100 */
-	}
-
-	:global(.dark .blank-input.correct) {
-		border-color: rgb(34, 197, 94);
-		background: rgb(20, 83, 45); /* green-950 */
-	}
-
-	:global(.blank-input.incorrect) {
-		border-color: rgb(220, 38, 38); /* red-600 */
-		background: rgb(254, 226, 226); /* red-100 */
-	}
-
-	:global(.dark .blank-input.incorrect) {
-		border-color: rgb(220, 38, 38);
-		background: rgb(69, 10, 10); /* red-950 */
-	}
-
-	.validation-icon {
-		display: inline-flex;
-		align-items: center;
-		margin-left: calc(0.25rem * var(--font-scale, 1));
 	}
 
 	.helper-text {
