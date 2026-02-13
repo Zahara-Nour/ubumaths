@@ -19,7 +19,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { AlertCircle, AlertTriangle, CheckCircle2, RefreshCw, Edit3 } from 'lucide-svelte';
+	import { AlertCircle, AlertTriangle, CheckCircle2, RefreshCw, Edit3, Code2 } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 	import ReviewActions from './ReviewActions.svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
@@ -184,6 +184,11 @@
 			(newFields.shared?.choices && newFields.shared.choices.length > 0);
 		return hasChoices ? 'QCM' : 'Blancs';
 	});
+
+	// Raw view toggle states
+	let showRawOriginal = $state(false);
+	let showRawTransformed = $state(false);
+	let showRawInstance = $state(false);
 
 	// Variation tab state
 	let selectedVariationIndex = $state(0);
@@ -388,133 +393,151 @@
 				<Card.Title class="flex items-center gap-2">
 					<span>Format Original</span>
 					<Badge variant="outline" class="font-mono text-xs">Ancien</Badge>
+					<Button
+						variant={showRawOriginal ? 'secondary' : 'ghost'}
+						size="icon"
+						class="ml-auto h-7 w-7"
+						onclick={() => (showRawOriginal = !showRawOriginal)}
+						title="Voir le JSON brut"
+					>
+						<Code2 class="h-4 w-4" />
+					</Button>
 				</Card.Title>
 			</Card.Header>
 			<Card.Content class="space-y-4">
-				<!-- Description -->
-				<div>
-					<h4 class="mb-1 text-sm font-medium text-muted-foreground">description</h4>
-					<p class="text-sm">{oldFields.description}</p>
-				</div>
-
-				<!-- Subdescription -->
-				{#if oldFields.subdescription}
-					<div>
-						<h4 class="mb-1 text-sm font-medium text-muted-foreground">subdescription</h4>
-						<p class="text-sm">{oldFields.subdescription}</p>
-					</div>
-				{/if}
-
-				<!-- Grade -->
-				{#if oldFields.grade}
-					<div>
-						<h4 class="mb-1 text-sm font-medium text-muted-foreground">grade</h4>
-						<p class="text-sm">{oldFields.grade}e</p>
-					</div>
-				{/if}
-
-				<!-- Enounces -->
-				<div>
-					<h4 class="mb-1 text-sm font-medium text-muted-foreground">
-						enounces ({Array.isArray(oldFields.enounces) ? oldFields.enounces.length : 0})
-					</h4>
-					<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
-							oldFields.enounces
+				{#if showRawOriginal}
+					<pre
+						class="max-h-[70vh] overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{JSON.stringify(
+							original,
+							null,
+							2
 						)}</pre>
-				</div>
-
-				<!-- Expressions -->
-				{#if Array.isArray(oldFields.expressions) && oldFields.expressions.length > 0}
+				{:else}
+					<!-- Description -->
 					<div>
-						<h4 class="mb-1 text-sm font-medium text-muted-foreground">
-							expressions ({oldFields.expressions.length})
-						</h4>
-						<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
-								oldFields.expressions
-							)}</pre>
+						<h4 class="mb-1 text-sm font-medium text-muted-foreground">description</h4>
+						<p class="text-sm">{oldFields.description}</p>
 					</div>
-				{/if}
 
-				<!-- Variables -->
-				{#if Array.isArray(oldFields.variabless) && oldFields.variabless.length > 0}
-					<div>
-						<h4 class="mb-1 text-sm font-medium text-muted-foreground">
-							variabless ({oldFields.variabless.length})
-						</h4>
-						<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
-								oldFields.variabless
-							)}</pre>
-					</div>
-				{/if}
-
-				<!-- Solutions -->
-				<div>
-					<h4 class="mb-1 text-sm font-medium text-muted-foreground">
-						solutionss ({Array.isArray(oldFields.solutionss) ? oldFields.solutionss.length : 0})
-						{#if isQCM}<span class="text-xs text-muted-foreground/70"
-								>(indices des choix corrects)</span
-							>{/if}
-					</h4>
-					{#if isQCM && Array.isArray(oldFields.solutionss)}
-						<!-- QCM: Afficher indices + texte des choix corrects -->
-						<div class="space-y-2 rounded-md bg-muted p-3 text-xs">
-							{#each oldFields.solutionss as sol, vi (vi)}
-								{@const indices = Array.isArray(sol) ? sol : [sol]}
-								{@const texts = getCorrectChoicesText(
-									vi,
-									indices,
-									oldFields.choicess as OldChoice[][]
-								)}
-								<div>
-									<span class="font-medium">Var {vi + 1}:</span>
-									<span class="font-mono text-primary">
-										{#if indices.length === 1}
-											index {indices[0]}
-										{:else}
-											indices [{indices.join(', ')}]
-										{/if}
-									</span>
-									<span class="mx-1 text-muted-foreground">&rarr;</span>
-									<span class="text-success">
-										{#if texts.length === 1}
-											"{texts[0]}"
-										{:else}
-											[{texts.map((t) => `"${t}"`).join(', ')}]
-										{/if}
-									</span>
-								</div>
-							{/each}
+					<!-- Subdescription -->
+					{#if oldFields.subdescription}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">subdescription</h4>
+							<p class="text-sm">{oldFields.subdescription}</p>
 						</div>
-					{:else}
-						<!-- Non-QCM: Affichage JSON normal -->
-						<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
-								oldFields.solutionss
-							)}</pre>
 					{/if}
-				</div>
 
-				<!-- Options -->
-				{#if Array.isArray(oldFields.options) && oldFields.options.length > 0}
+					<!-- Grade -->
+					{#if oldFields.grade}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">grade</h4>
+							<p class="text-sm">{oldFields.grade}e</p>
+						</div>
+					{/if}
+
+					<!-- Enounces -->
 					<div>
 						<h4 class="mb-1 text-sm font-medium text-muted-foreground">
-							options ({oldFields.options.length})
+							enounces ({Array.isArray(oldFields.enounces) ? oldFields.enounces.length : 0})
 						</h4>
 						<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
-								oldFields.options
+								oldFields.enounces
 							)}</pre>
 					</div>
-				{/if}
 
-				<!-- Choices -->
-				{#if Array.isArray(oldFields.choicess) && oldFields.choicess.length > 0}
+					<!-- Expressions -->
+					{#if Array.isArray(oldFields.expressions) && oldFields.expressions.length > 0}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+								expressions ({oldFields.expressions.length})
+							</h4>
+							<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+									oldFields.expressions
+								)}</pre>
+						</div>
+					{/if}
+
+					<!-- Variables -->
+					{#if Array.isArray(oldFields.variabless) && oldFields.variabless.length > 0}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+								variabless ({oldFields.variabless.length})
+							</h4>
+							<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+									oldFields.variabless
+								)}</pre>
+						</div>
+					{/if}
+
+					<!-- Solutions -->
 					<div>
 						<h4 class="mb-1 text-sm font-medium text-muted-foreground">
-							choicess ({oldFields.choicess.length})
+							solutionss ({Array.isArray(oldFields.solutionss) ? oldFields.solutionss.length : 0})
+							{#if isQCM}<span class="text-xs text-muted-foreground/70"
+									>(indices des choix corrects)</span
+								>{/if}
 						</h4>
-						<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
-								oldFields.choicess
-							)}</pre>
+						{#if isQCM && Array.isArray(oldFields.solutionss)}
+							<!-- QCM: Afficher indices + texte des choix corrects -->
+							<div class="space-y-2 rounded-md bg-muted p-3 text-xs">
+								{#each oldFields.solutionss as sol, vi (vi)}
+									{@const indices = Array.isArray(sol) ? sol : [sol]}
+									{@const texts = getCorrectChoicesText(
+										vi,
+										indices,
+										oldFields.choicess as OldChoice[][]
+									)}
+									<div>
+										<span class="font-medium">Var {vi + 1}:</span>
+										<span class="font-mono text-primary">
+											{#if indices.length === 1}
+												index {indices[0]}
+											{:else}
+												indices [{indices.join(', ')}]
+											{/if}
+										</span>
+										<span class="mx-1 text-muted-foreground">&rarr;</span>
+										<span class="text-success">
+											{#if texts.length === 1}
+												"{texts[0]}"
+											{:else}
+												[{texts.map((t) => `"${t}"`).join(', ')}]
+											{/if}
+										</span>
+									</div>
+								{/each}
+							</div>
+						{:else}
+							<!-- Non-QCM: Affichage JSON normal -->
+							<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+									oldFields.solutionss
+								)}</pre>
+						{/if}
 					</div>
+
+					<!-- Options -->
+					{#if Array.isArray(oldFields.options) && oldFields.options.length > 0}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+								options ({oldFields.options.length})
+							</h4>
+							<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+									oldFields.options
+								)}</pre>
+						</div>
+					{/if}
+
+					<!-- Choices -->
+					{#if Array.isArray(oldFields.choicess) && oldFields.choicess.length > 0}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+								choicess ({oldFields.choicess.length})
+							</h4>
+							<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+									oldFields.choicess
+								)}</pre>
+						</div>
+					{/if}
 				{/if}
 			</Card.Content>
 		</Card.Root>
@@ -536,10 +559,26 @@
 							Modifie
 						</Badge>
 					{/if}
+					<Button
+						variant={showRawTransformed ? 'secondary' : 'ghost'}
+						size="icon"
+						class="ml-auto h-7 w-7"
+						onclick={() => (showRawTransformed = !showRawTransformed)}
+						title="Voir le JSON brut"
+					>
+						<Code2 class="h-4 w-4" />
+					</Button>
 				</Card.Title>
 			</Card.Header>
 			<Card.Content class="space-y-4">
-				{#if newFields}
+				{#if showRawTransformed}
+					<pre
+						class="max-h-[70vh] overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{JSON.stringify(
+							transformed,
+							null,
+							2
+						)}</pre>
+				{:else if newFields}
 					<!-- Type (inferred) + Title -->
 					<div class="flex items-center gap-2">
 						<Badge variant={inferredType === 'QCM' ? 'default' : 'secondary'}>
@@ -908,14 +947,32 @@
 			<Card.Header>
 				<Card.Title class="flex items-center justify-between">
 					<span>Instance Générée</span>
-					<Button variant="outline" size="sm" onclick={regenerateInstance}>
-						<RefreshCw class="mr-2 h-4 w-4" />
-						Nouvelle
-					</Button>
+					<div class="flex items-center gap-1">
+						<Button
+							variant={showRawInstance ? 'secondary' : 'ghost'}
+							size="icon"
+							class="h-7 w-7"
+							onclick={() => (showRawInstance = !showRawInstance)}
+							title="Voir le JSON brut"
+						>
+							<Code2 class="h-4 w-4" />
+						</Button>
+						<Button variant="outline" size="sm" onclick={regenerateInstance}>
+							<RefreshCw class="mr-2 h-4 w-4" />
+							Nouvelle
+						</Button>
+					</div>
 				</Card.Title>
 			</Card.Header>
 			<Card.Content class="space-y-4">
-				{#if resolvedInstance}
+				{#if showRawInstance && resolvedInstance}
+					<pre
+						class="max-h-[70vh] overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{JSON.stringify(
+							resolvedInstance,
+							null,
+							2
+						)}</pre>
+				{:else if resolvedInstance}
 					{#if resolvedInstance.error}
 						<div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
 							Erreur: {resolvedInstance.error}
