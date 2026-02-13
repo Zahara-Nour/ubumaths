@@ -648,3 +648,54 @@ Code review (code-reviewer agent) rated the test as "Excellent — ready to merg
 
 - `docs/wip/fill-in-blanks-v2-progress.md` (this file) — Phase 8 progress
 - `docs/wip/phase8-continuation-prompt.md` — Phase 8 specification (read before coding)
+
+---
+
+## Flash Back Mode (COMPLETE)
+
+### Status: COMPLETE
+
+### Changes Summary
+
+**Flash back mode for fill-in-blanks**: Added `showCorrectAnswers` prop to `FillBlanksInput` that displays correct answers in blanks. Used in FlashCard back face and QuestionSlide correction section for fill_in_blanks questions.
+
+- Math blanks: pre-filled via MathLive `setPromptValue()` API with `expectedAnswerLatex` (fallback: `expectedAnswer`)
+- Text blanks: pre-filled via `InputState.value` = `expectedAnswer`, inputs disabled
+- All blanks visually marked as correct (`isCorrect: true`)
+
+### Decisions Made
+
+1. **Approach A (FillBlanksInput handles correction)** — Parent just sets `showCorrectAnswers={true}`, component builds correction InputStates internally
+2. **MathLive `setPromptValue` API** — Cleanest way to programmatically fill `\placeholder[N]{}` prompts
+3. **`correctValues` pass-through** — ParagraphNode passes `correctValues` map to inline MathPrompt children
+4. **Editor validation skipped** — No user can create `answerFormats` UI conflicts today (no UI for it)
+
+### Files Modified
+
+| File                                                                     | Changes                                            |
+| ------------------------------------------------------------------------ | -------------------------------------------------- |
+| `src/lib/components/question-inputs/fill-blanks-utils.ts`                | `buildInputStatesForCorrection()`                  |
+| `src/lib/components/question-inputs/__tests__/fill-blanks-utils.test.ts` | 6 new tests                                        |
+| `src/lib/components/markdown/nodes/MathPrompt.svelte`                    | `correctValues` prop + `$effect` pre-fill          |
+| `src/lib/components/markdown/nodes/ParagraphNode.svelte`                 | `correctValues` pass-through                       |
+| `src/lib/components/question-inputs/FillBlanksInput.svelte`              | `showCorrectAnswers` prop, correction mode         |
+| `src/lib/components/questions/FlashCard.svelte`                          | Back face uses FillBlanksInput for fill_in_blanks  |
+| `src/lib/slides/core/QuestionSlide.svelte`                               | Correction uses FillBlanksInput for fill_in_blanks |
+| `docs/wip/fill-in-blanks-plan-v2-notes.md`                               | Fixed InputState.index doc (0-based, not 1-based)  |
+
+### Code Review Findings
+
+Code review rated as "Good — ready to merge". Applied 2 fixes:
+
+1. **Null safety** — Added `?? ''` fallback for `expectedAnswer` in `buildInputStatesForCorrection`
+2. **Documentation** — Fixed `InputState.index` from "1-based" to "0-based" in plan notes
+
+### Test Results
+
+- **fill-blanks-utils.test.ts**: 27/27 (21 existing + 6 new)
+- Svelte autofixer: 0 issues on all 5 modified .svelte files
+- ESLint: clean (pre-commit hook passed)
+
+### Commit
+
+- `75e27f0a` — feat: add flash back mode for fill-in-blanks correction display

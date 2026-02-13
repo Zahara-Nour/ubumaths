@@ -61,15 +61,18 @@ This document describes the current state of the question system migration and t
 
 ### TypeScript Types (`src/lib/questions/types.ts`)
 
+> **Updated 2026-02-13** — Fill-in-blanks redesign v2. `type` and `transformType` removed, replaced by `getQuestionType()` inference. `blanks[]` is now the primary structure for fill-in-blanks questions (no `solution` for fill_in_blanks).
+
 ```typescript
 interface QuestionTemplate {
 	id: string;
-	type: QuestionType;
+	// type is INFERRED via getQuestionType(): 'fill_in_blanks' | 'multiple_choice'
+	// choices present (non-empty) = multiple_choice, otherwise = fill_in_blanks
 	title: string;
 
 	// Content structure
-	shared?: SharedVariationDefaults; // Shared fields across all variations
-	variations: QuestionVariation[]; // At least 1 variation required
+	shared?: SharedVariationDefaults;
+	variations: QuestionVariation[];
 
 	// Metadata
 	grades: GradeLevel[];
@@ -83,22 +86,30 @@ interface QuestionTemplate {
 
 interface QuestionVariation {
 	statement: TemplateMarkdown;
-	solution: string | string[];
+	solution?: string | string[]; // Only for multiple_choice
 	variables?: QuestionVariable[];
 	correction?: QuestionCorrection;
 	choices?: { content: TemplateMarkdown; isCorrect: boolean }[];
 	validationRules?: ValidationRule[];
-	blanks?: { position: number; expectedAnswer: string }[];
+	blanks?: BlankDefinition[]; // For fill_in_blanks
+	answerFormats?: string[]; // For expression convention (e.g. ['?', '?+?'])
+	expressions?: { name: string; answerFormat?: string }[]; // Expression metadata
+	options?: { orderIndependent?: boolean }; // Pool matching for multi-blank
 }
 
-interface SharedVariationDefaults {
-	statement?: TemplateMarkdown;
-	solution?: string | string[];
-	variables?: QuestionVariable[];
-	correction?: QuestionCorrection;
-	choices?: { content: TemplateMarkdown; isCorrect: boolean }[];
-	validationRules?: ValidationRule[];
+interface BlankDefinition {
+	type: 'math' | 'text';
+	expectedAnswer: string; // LaTeX for math, text for text
+	answerFormat?: string; // e.g. '?' → \placeholder[N]{}, '?+?' → \placeholder[0]{}+\placeholder[1]{}
+	constraints?: ConstraintOptions;
+	precision?: number;
+	unit?: { expected?: boolean; required?: string };
+	prefilled?: string;
 }
+
+// At runtime, getQuestionType() infers:
+// - choices present & non-empty → 'multiple_choice'
+// - otherwise → 'fill_in_blanks'
 ```
 
 ### Database Schema (`question_templates` table)
@@ -107,13 +118,15 @@ Current columns:
 
 - `id`, `type`, `title`, `description`
 - `shared` (JSONB) - SharedVariationDefaults ✅ Added 2026-01-26
-- `variations` (JSONB) - Array of variations
+- `variations` (JSONB) - Array of variations (includes `blanks[]` for fill_in_blanks)
 - `exercise_instruction` (TEXT)
 - `options`, `precision` (JSONB)
 - `grades` (TEXT[])
 - `theme`, `domain`, `subdomain`, `level`
 - `status`, `delay`, `multiple_answers`
 - `created_at`, `updated_at`, `created_by`
+
+> **Note** : `transform_type` column dropped (migration `20260212162248_drop_transform_type_column.sql`). `type` column kept for DB indexing but inferred in TypeScript via `getQuestionType()`.
 
 ### Variable Syntax (ubumark)
 
@@ -236,12 +249,12 @@ The image URL mapping is integrated into the transformation pipeline:
 
 ### Core Transformation (`src/lib/migration/`)
 
-| Script                           | Status                    |
-| -------------------------------- | ------------------------- |
-| `syntax-converter.ts`            | ✅ Tests pass             |
-| `question-transformer.ts`        | ✅ Tests pass (bug fixed) |
-| `correction-integration.test.ts` | ✅ Tests pass             |
-| **All migration tests**          | ✅ **460/460 pass**       |
+| Script                           | Status                                    |
+| -------------------------------- | ----------------------------------------- |
+| `syntax-converter.ts`            | ✅ Tests pass                             |
+| `question-transformer.ts`        | ✅ Tests pass (fill-in-blanks v2 updated) |
+| `correction-integration.test.ts` | ✅ Tests pass                             |
+| **All migration tests**          | ✅ **475/475 pass**                       |
 
 ### Available Scripts (`scripts/`)
 
@@ -257,14 +270,15 @@ The image URL mapping is integrated into the transformation pipeline:
 
 ### Current State
 
-| Item                   | Status                                                              |
-| ---------------------- | ------------------------------------------------------------------- |
-| Source extraction      | ✅ 633 questions in `.claude/old-questions.json`                    |
-| Transformation tests   | ✅ 460/460 pass                                                     |
-| Options mapping        | ✅ 40/46 options implementees, 6 ignorees (dont `exhaust` differe)  |
-| Export for review      | ⚠️ `data/migration-output/export-2026-01-26/` (avant fixes options) |
-| Database schema        | ✅ `shared` column added, legacy seeds removed                      |
-| **Import to database** | ❌ **PENDING** - table `question_templates` empty                   |
+| Item                    | Status                                                                   |
+| ----------------------- | ------------------------------------------------------------------------ |
+| Source extraction       | ✅ 633 questions in `.claude/old-questions.json`                         |
+| Transformation tests    | ✅ 475/475 pass                                                          |
+| Options mapping         | ✅ 40/46 options implementees, 6 ignorees (dont `exhaust` differe)       |
+| Fill-in-blanks pipeline | ✅ Generation, validation per-blank, rendering AST, flash back mode      |
+| Export for review       | ⚠️ `data/migration-output/export-2026-01-26/` (avant fixes options)      |
+| Database schema         | ✅ `shared` column added, `transform_type` dropped, legacy seeds removed |
+| **Import to database**  | ❌ **PENDING** - table `question_templates` empty                        |
 
 ---
 
@@ -299,6 +313,18 @@ The image URL mapping is integrated into the transformation pipeline:
 - `requiredForm` patterns: `a:inN & gte(2) * b:inN & gte(2)` (decomposition), `0 - a` (subtraction form)
 - Reference: `docs/wip/options-migration-reference.md`
 
+### Phase 3c: Fill-in-Blanks Redesign v2 ✅ COMPLETE (2026-02-13)
+
+Complete redesign of the fill-in-blanks pipeline across 8 phases + flash back mode:
+
+- **Types**: `type`/`transformType` removed, `getQuestionType()` inference, `BlankDefinition` with `type`/`answerFormat`/`constraints`/`precision`/`unit`
+- **Transformer**: Produces `blanks[]` for `fill_in`, `result_rewrite`, `answer_field` migration modes. `MigrationMode` enum, helpers (`convertAnswerFieldToStatement`, `extractBlanksFromSolutions`, `solutionHasUnit`). 15 new transformer tests.
+- **Generator**: `instance-generator.ts` builds `InstanceBlank[]` with `expectedAnswer`/`expectedAnswerLatex`. Expression convention (`expressionName` + `answerFormat`). `assignBlankIndices()` for `\placeholder[N]{}` and `{{blank:N}}`.
+- **Validator**: Per-blank validation (math equivalence, numerical, unit, text fuzzy). `orderIndependent` pool matching. `requiredForm` pattern checking.
+- **Rendering**: FillBlanksInput rewritten with unified AST parsing. MathPrompt for `\placeholder` prompts, BlankInput for text blanks. Flash back mode (`showCorrectAnswers` prop).
+- **E2E tests**: 145 tests across 17 questions, 5 migration modes.
+- Reference: `docs/wip/fill-in-blanks-v2-progress.md`
+
 ### Phase 4: Import Questions ⏳ PENDING
 
 **Prerequisites met:**
@@ -306,10 +332,11 @@ The image URL mapping is integrated into the transformation pipeline:
 - ✅ 633 questions extracted to `.claude/old-questions.json`
 - ✅ 100% transformation success (633/633)
 - ✅ All 45 options mapped and implemented
-- ✅ Database schema ready (clean, no legacy data)
+- ✅ Fill-in-blanks pipeline complete (generation, validation, rendering, flash back)
+- ✅ Database schema ready (clean, no legacy data, `transform_type` dropped)
 - ✅ API endpoints updated
 - ✅ Custom validation (`testAnswers`) fully implemented via `ValidationRule`
-- ⚠️ Export needs regeneration (last export predates options fixes)
+- ⚠️ Export needs regeneration (last export predates fill-in-blanks v2)
 
 **To import:**
 
@@ -351,30 +378,36 @@ pnpm migrate:phase1:validate
 - `supabase/migrations/074_add_template_variations.sql` - Variations support
 - `supabase/migrations/075_enhance_seed_with_variations.sql` - Seeds (deleted by migration below)
 - `supabase/migrations/20260126083727_add_shared_column_and_cleanup_seeds.sql` - Adds `shared`, cleans legacy data
+- `supabase/migrations/20260212162248_drop_transform_type_column.sql` - Drops `transform_type` column
 
 ---
 
 ## Decision Log
 
-| Date       | Decision                                     | Rationale                                                                              |
-| ---------- | -------------------------------------------- | -------------------------------------------------------------------------------------- |
-| 2026-01-26 | Add `shared` column to DB                    | TypeScript type requires it, API doesn't store it                                      |
-| 2026-01-26 | Remove legacy `{@:var}` syntax               | Parser doesn't support it, causes confusion                                            |
-| 2026-01-26 | Keep both random syntaxes                    | `{{random:1..10}}` and `{{1..10}}` both supported                                      |
-| 2026-01-26 | Fix single-variation correction bug          | Tests failing, blocks migration                                                        |
-| 2026-01-26 | Apply migration & regenerate types           | Database ready for fresh import                                                        |
-| 2026-01-26 | Correct question count: 633 not 2238         | Verified against source file, previous estimate was wrong                              |
-| 2026-01-26 | Fix logger.ts for standalone scripts         | Scripts can now run outside SvelteKit context                                          |
-| 2026-01-26 | Regenerate export (2026-01-26)               | Fresh export with 633 questions, 220 warnings                                          |
-| 2026-01-26 | Fix math delimiters (inline vs display)      | TinyMath used `$$` everywhere, ubumark needs `$` for inline                            |
-| 2026-01-27 | Complete image migration                     | All 254 images uploaded to new Supabase Storage bucket                                 |
-| 2026-01-27 | Integrate image URL mapping                  | Transformer now converts old paths to new Storage URLs                                 |
-| 2026-02-03 | Simplified expression syntax                 | `{{1..10}}` → `1..10` in variable definitions, cleaner code                            |
-| 2026-02-06 | Options review complete (40 impl, 6 ignored) | All options mapped: constraints, display, permutations, orderIndependent, requiredForm |
-| 2026-02-06 | `exhaust` deferred                           | Generation-only option (3 questions), not needed for initial import                    |
-| 2026-02-06 | Factor permutation → products constraint     | LaTeX parser fix + products constraint renders permutation options redundant           |
-| 2026-02-06 | orderIndependent replaces solutions-order    | Pool matching on blanks[] (without replacement) for multi-answer questions             |
-| 2026-02-06 | requiredForm for decomposition + subtraction | Pattern-based form validation replaces old format/one-single-form checks               |
+| Date       | Decision                                     | Rationale                                                                                 |
+| ---------- | -------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 2026-01-26 | Add `shared` column to DB                    | TypeScript type requires it, API doesn't store it                                         |
+| 2026-01-26 | Remove legacy `{@:var}` syntax               | Parser doesn't support it, causes confusion                                               |
+| 2026-01-26 | Keep both random syntaxes                    | `{{random:1..10}}` and `{{1..10}}` both supported                                         |
+| 2026-01-26 | Fix single-variation correction bug          | Tests failing, blocks migration                                                           |
+| 2026-01-26 | Apply migration & regenerate types           | Database ready for fresh import                                                           |
+| 2026-01-26 | Correct question count: 633 not 2238         | Verified against source file, previous estimate was wrong                                 |
+| 2026-01-26 | Fix logger.ts for standalone scripts         | Scripts can now run outside SvelteKit context                                             |
+| 2026-01-26 | Regenerate export (2026-01-26)               | Fresh export with 633 questions, 220 warnings                                             |
+| 2026-01-26 | Fix math delimiters (inline vs display)      | TinyMath used `$$` everywhere, ubumark needs `$` for inline                               |
+| 2026-01-27 | Complete image migration                     | All 254 images uploaded to new Supabase Storage bucket                                    |
+| 2026-01-27 | Integrate image URL mapping                  | Transformer now converts old paths to new Storage URLs                                    |
+| 2026-02-03 | Simplified expression syntax                 | `{{1..10}}` → `1..10` in variable definitions, cleaner code                               |
+| 2026-02-06 | Options review complete (40 impl, 6 ignored) | All options mapped: constraints, display, permutations, orderIndependent, requiredForm    |
+| 2026-02-06 | `exhaust` deferred                           | Generation-only option (3 questions), not needed for initial import                       |
+| 2026-02-06 | Factor permutation → products constraint     | LaTeX parser fix + products constraint renders permutation options redundant              |
+| 2026-02-06 | orderIndependent replaces solutions-order    | Pool matching on blanks[] (without replacement) for multi-answer questions                |
+| 2026-02-06 | requiredForm for decomposition + subtraction | Pattern-based form validation replaces old format/one-single-form checks                  |
+| 2026-02-12 | Remove `type`/`transformType` from types     | Inferred via `getQuestionType()`, reduces redundancy                                      |
+| 2026-02-12 | `blanks[]` replaces `solution` for fill_in   | Primary structure for fill-in-blanks, supports math/text types, constraints, answerFormat |
+| 2026-02-12 | Drop `transform_type` DB column              | No longer used after type inference redesign                                              |
+| 2026-02-13 | AST-based FillBlanksInput rendering          | Unified parsing via `parseMarkdown()`, reuses ParagraphNode/MathPrompt/BlankInput         |
+| 2026-02-13 | Flash back mode via `showCorrectAnswers`     | MathLive `setPromptValue` for math, InputState.value for text                             |
 
 ---
 
@@ -436,17 +469,18 @@ Fixed test expectations in `correction-integration.test.ts`:
 2. [x] Create migration: delete legacy seeds ✅ (same migration deletes all seeds)
 3. [x] Fix `question-transformer.ts` bug ✅ Single-variation corrections now processed
 4. [x] Update API to handle `shared` field ✅ POST and PUT endpoints updated
-5. [x] Verify all tests pass ✅ **460/460 migration tests pass**
+5. [x] Verify all tests pass ✅ **475/475 migration tests pass**
 6. [x] Apply migration ✅ `pnpm db:migrate` executed
 7. [x] Regenerate TypeScript types ✅ `pnpm db:types` executed
 
 ### Remaining
 
 8. [x] Complete options migration review ✅ 45/45 options mapped (v0.8.1)
-9. [ ] **Re-exporter** les questions (export actuel date du 26/01, avant fixes options)
-10. [ ] **Run import**: `pnpm migration:import` (633 questions)
-11. [ ] **Validate**: `pnpm migrate:phase1:validate`
-12. [ ] **Test in UI**: Verify questions work in the application
+9. [x] Fill-in-blanks redesign v2 ✅ 8 phases + flash back mode (2026-02-13)
+10. [ ] **Re-exporter** les questions (export actuel date du 26/01, avant fill-in-blanks v2)
+11. [ ] **Run import**: `pnpm migration:import` (633 questions)
+12. [ ] **Validate**: `pnpm migrate:phase1:validate`
+13. [ ] **Test in UI**: Verify questions work in the application
 
 ---
 
