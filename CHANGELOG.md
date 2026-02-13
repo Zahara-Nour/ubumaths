@@ -2,6 +2,75 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.8](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.7...v0.8.8) (2026-02-13)
+
+### ⏪ Reverts
+
+- undo fill-in-blanks redesign phases 1-7 ([0827fe2](https://github.com/Zahara-Nour/ubumaths/commit/0827fe240c21f7a2c9737ddee652b15ead29c1e5))
+
+### 📚 Documentation
+
+- add answer source, prefilled, and evaluation decisions to redesign ([97b331c](https://github.com/Zahara-Nour/ubumaths/commit/97b331cd6b43e336976109695e1cce1f7db2b41a))
+- add continuation prompt for fill-in-blanks v2 session ([378389e](https://github.com/Zahara-Nour/ubumaths/commit/378389e5cdfc14b0569422362242d1926e59c802))
+- add expressions2 handling note to transformer step ([b86bb04](https://github.com/Zahara-Nour/ubumaths/commit/b86bb045e7bfbcec394355d0d6103249559b0945))
+- add Phase 2 continuation prompt for fill-in-blanks redesign ([0cce753](https://github.com/Zahara-Nour/ubumaths/commit/0cce7532e6b0a23a166150c9237a63f83adaed96))
+- add Phase 4 TDD specification for per-blank validation ([9904b9f](https://github.com/Zahara-Nour/ubumaths/commit/9904b9f8c03e25aef3a4ce006547bc4ef00f65e6))
+- add Phase 5 continuation prompt for transformer migration ([befbe6c](https://github.com/Zahara-Nour/ubumaths/commit/befbe6caf90a3d9de47b33b8569075a9877a0916))
+- add Phase 5 TDD specification for transformer migration ([fa62d96](https://github.com/Zahara-Nour/ubumaths/commit/fa62d964ba0cdbfb9e0c1721a78cf15d517c9a06))
+- add Phase 7 (dictionary) prompt, rename e2e testing to Phase 8 ([d6bc742](https://github.com/Zahara-Nour/ubumaths/commit/d6bc7422057554bc314b59b499f6c4121bb642b7))
+- add Phase 7 continuation prompt for e2e pipeline testing ([6912f15](https://github.com/Zahara-Nour/ubumaths/commit/6912f158292577c7505646288c15de4757702a02))
+- add preserveHoles comments and update progress doc ([d17560c](https://github.com/Zahara-Nour/ubumaths/commit/d17560c530e8b85fd3233012b0579632b9c9d14a))
+- add template-side blanks structure with blankDefaults ([6ab784f](https://github.com/Zahara-Nour/ubumaths/commit/6ab784f0530288d0038a83dbebe0e651133014b9))
+- clarify Phase 2 decision on expression answerFormat vs fill-in blanks ([50608c5](https://github.com/Zahara-Nour/ubumaths/commit/50608c500169dffff8be0001d392fbb3890f11a1))
+- detail deferred issues in Phase 1 progress ([b02ed92](https://github.com/Zahara-Nour/ubumaths/commit/b02ed92ea0a3204c5122bc026fa0c6b7fd0b28ef))
+- finalize Phase 4 progress doc with implementation decisions ([1966d93](https://github.com/Zahara-Nour/ubumaths/commit/1966d9392240b4d71d141cc2f85af1c95880c7bf))
+- finalize Phase 5 progress and add Phase 6 continuation prompt ([c5c8148](https://github.com/Zahara-Nour/ubumaths/commit/c5c8148b93191472667df4ea3751662154ce322a))
+- remove all transformType references from documentation ([f6ac75a](https://github.com/Zahara-Nour/ubumaths/commit/f6ac75a6eb4343812132f9d512b535264a6869f2))
+- remove obsolete code review finding from progress doc ([0171e3b](https://github.com/Zahara-Nour/ubumaths/commit/0171e3bc798e42ccb49f808ceab74b90347024ea))
+- remove validationType, add unit config and validation inference to redesign ([806f224](https://github.com/Zahara-Nour/ubumaths/commit/806f224226c0d89b437441309ed49972882dc7b1))
+- resolve all open gaps in fill-in-blanks redesign (session 3) ([82afef1](https://github.com/Zahara-Nour/ubumaths/commit/82afef1fa883a3adf7f9dad99138173ebb2cc2de))
+- rewrite continuation prompt for implementation phase ([0f2b608](https://github.com/Zahara-Nour/ubumaths/commit/0f2b6080172227658dc2467381be2da16111a792))
+- save implementation plan to docs/wip/ (persistent across sessions) ([385e2ca](https://github.com/Zahara-Nour/ubumaths/commit/385e2cabf8cdd371c078b99992b5d09dc79d1479))
+- session 5 decisions — unit simplification and validation unification ([1a3ff94](https://github.com/Zahara-Nour/ubumaths/commit/1a3ff947098f0259b8737cec6c73706e4a4521bf))
+- specify expression-blanks link and template-side structure ([a219091](https://github.com/Zahara-Nour/ubumaths/commit/a219091939b91c7cda114c881c52d254bdeef807))
+- update continuation prompt for session 4 (reflection, not implementation) ([33b8a56](https://github.com/Zahara-Nour/ubumaths/commit/33b8a569e74f89c828c6bc4f64185dc0a1f0eda7))
+- update continuation prompt to focus on reflection, not implementation ([40a6b59](https://github.com/Zahara-Nour/ubumaths/commit/40a6b59045c105ef1f7520b8b7c799d06dd0a144))
+- update continuation prompt with session 2 decisions ([b9eb2c7](https://github.com/Zahara-Nour/ubumaths/commit/b9eb2c707eb31505fb744b2e8e6d8d823ca3957e))
+- update fill-in-blanks redesign with v2 corrections ([1b8754d](https://github.com/Zahara-Nour/ubumaths/commit/1b8754d70cc91250e7e73ce2bfd67f5e2ebf0629))
+- update migration status with fill-in-blanks v2 and flash back mode ([a42115a](https://github.com/Zahara-Nour/ubumaths/commit/a42115a66124d9615f3971cd1163fcbbf6067dea))
+- update Phase 1 progress — add orderIndependent decision and all commits ([f6d37ed](https://github.com/Zahara-Nour/ubumaths/commit/f6d37ed117fb0b13fc64f8ae5219a1a798776360))
+- update Phase 1 progress with corrected decisions and complete file list ([69d504b](https://github.com/Zahara-Nour/ubumaths/commit/69d504bd2616810fa37e655819c9f1a26426d7de))
+- update Phase 6 progress with MathPrompt disabled fix ([e561333](https://github.com/Zahara-Nour/ubumaths/commit/e56133351568ecd982736e18aaf54e4678cfad88))
+- update progress with Phase 7 (dictionary) completion ([747af89](https://github.com/Zahara-Nour/ubumaths/commit/747af892a72468e7561da12a9039b4c21e9e8027))
+- update session prompt for Phase 3 (generation pipeline) ([8df8240](https://github.com/Zahara-Nour/ubumaths/commit/8df8240862b80a52e876b0769e4f54a1546d9dfb))
+
+### ✨ Features
+
+- add <<expr:NAME>> parser detection and assignBlankIndices module (Phase 2) ([70c7ec1](https://github.com/Zahara-Nour/ubumaths/commit/70c7ec12294e297ea6c4d4a0515202284c4a69b5))
+- add flash back mode for fill-in-blanks correction display ([75e27f0](https://github.com/Zahara-Nour/ubumaths/commit/75e27f0a8a77a309c41207c6d7b0411cfeb722c2))
+- add French math vocabulary dictionary (Phase 7) ([4d66d2a](https://github.com/Zahara-Nour/ubumaths/commit/4d66d2a31e81bfc5e87dc3515af7da58176b3e1e))
+- **data:** add French math vocabulary dictionary with 230+ terms ([e29288b](https://github.com/Zahara-Nour/ubumaths/commit/e29288ba4084c5f0a1cd6f398d7caff7556d0746))
+- **generator:** add blank-resolver and integrate answerFormat into pipeline ([543df8a](https://github.com/Zahara-Nour/ubumaths/commit/543df8a74583b00d8fa60d4e92f3e983432bf7d6))
+- implement fill-in-blanks generation pipeline (Phase 3) ([9dc51f4](https://github.com/Zahara-Nour/ubumaths/commit/9dc51f4b3a6932801b27350cfa176ceb1fe669ee))
+- implement per-blank validation pipeline (Phase 4) ([7ce3ea2](https://github.com/Zahara-Nour/ubumaths/commit/7ce3ea27831ff853350f7e5bfa4321aaacf20b1f))
+- implement Phase 5 transformer migration (result/rewrite, answerField, units, expressions2) ([b1db03c](https://github.com/Zahara-Nour/ubumaths/commit/b1db03c447b8ec1756a3f178a431b31b1486f27f))
+- **migration:** unify all non-choice types as fill_in_blanks ([84bbc9d](https://github.com/Zahara-Nour/ubumaths/commit/84bbc9d4b8781757dcadb51021b86739dfeed9f4))
+- **questions:** unify QuestionType to 3 values with answerFormat and enriched blanks ([872b4a0](https://github.com/Zahara-Nour/ubumaths/commit/872b4a01283358d9b104aee9adbf74674f1e8202))
+- rewrite FillBlanksInput with AST-based rendering (Phase 6) ([8b70cdc](https://github.com/Zahara-Nour/ubumaths/commit/8b70cdc650c4fb09eb3e2ff8c54293785a521d0f))
+- **ubumark:** add [_] text blank syntax in parser ([82b6d01](https://github.com/Zahara-Nour/ubumaths/commit/82b6d01feb77584a46ff44d178190a492149697c))
+- update migration review UI for fill-in-blanks v2 ([bfbe552](https://github.com/Zahara-Nour/ubumaths/commit/bfbe5527402c6ad0e658964936ea603895c45255))
+- **validation:** add type-aware fill-in-blanks validation with fuzzy text matching ([23af940](https://github.com/Zahara-Nour/ubumaths/commit/23af94083fec9d0e4889b2a75f752b3e754c975a))
+
+### 🐛 Bug Fixes
+
+- add disabled prop to MathPrompt for fill-in-blank inputs ([cb17b31](https://github.com/Zahara-Nour/ubumaths/commit/cb17b311132ad5cc1c966699f1a29ede7ad4913f))
+- correct 3 failing instance-generator tests ([6075ae6](https://github.com/Zahara-Nour/ubumaths/commit/6075ae66c1ae45cd7de99aa009da4596df66ed9e))
+- handle \setminus and brace spacing in LaTeX-to-Typst conversion ([21902d9](https://github.com/Zahara-Nour/ubumaths/commit/21902d9079a4b91f80c39713a2fd83794be48e50))
+- initialize shared object before setting requiredForm in transformer ([c38f7b2](https://github.com/Zahara-Nour/ubumaths/commit/c38f7b2a621d38d18543832e79f14387d93915fe)), closes [#203](https://github.com/Zahara-Nour/ubumaths/issues/203) [#312](https://github.com/Zahara-Nour/ubumaths/issues/312)
+- unskip all 5 instance-generator tests by fixing syntax issues ([c91cf03](https://github.com/Zahara-Nour/ubumaths/commit/c91cf03ef9c4831a4666eafd614dde1191e397f7))
+- update import script for fill-in-blanks v2 types ([798af8f](https://github.com/Zahara-Nour/ubumaths/commit/798af8fd8ad7d0a45aed81e1e420866f1308fc5b))
+- use Unicode character for \setminus in Typst conversion ([719bd91](https://github.com/Zahara-Nour/ubumaths/commit/719bd91c530346bc8d1d82a37f64fd210e2eeb3b))
+
 ### [0.8.7](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.6...v0.8.7) (2026-02-10)
 
 ### 🐛 Bug Fixes
