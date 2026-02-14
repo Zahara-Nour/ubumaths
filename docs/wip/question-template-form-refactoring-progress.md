@@ -20,8 +20,32 @@
 - **Cree** : `src/lib/components/QuestionTemplateHelpDialogs.svelte`
 - **Modifie** : `src/lib/components/QuestionTemplateForm.svelte` (import + remplacement bloc)
 
+---
+
+## Phase 2 : Consolidation des tableaux paralleles - COMPLETE
+
+### Etat actuel
+
+- 6 tableaux paralleles remplaces par `variationExtras: VariationExtra[]`
+- `QuestionTemplateForm.svelte` passe de 2069 a 2059 lignes (-10 lignes net, mais code bien plus lisible)
+- addVariation: 6 pushes -> 1 push
+- removeVariation: 6 filters -> 1 filter
+- duplicateVariation: 5 maps -> 1 map
+- Svelte autofixer : 0 issues
+- Code review : 0 issues
+
+### Decisions prises
+
+- Interface `VariationExtra` definie dans le script du composant (pas exportee, usage local)
+- `DEFAULT_VARIATION_EXTRA` const pour creer de nouvelles entries
+- Spread copy suffisant pour duplication (tous les champs sont primitifs)
+- Fallback defensif `|| DEFAULT_VARIATION_EXTRA` dans buildTemplate()
+
+### Fichiers modifies
+
+- **Modifie** : `src/lib/components/QuestionTemplateForm.svelte`
+
 ### Prochaines etapes
 
-- Phase 2 : Regrouper les 6 tableaux paralleles en `VariationExtra` (Opus)
 - Phase 3 : Extraire DisplayOptionsEditor, ValidationOptionsEditor, SharedFieldsEditor
 - Phase 4 : Quality checks finaux
