@@ -295,7 +295,9 @@
 	// Shared variables (resolved before per-variation variables)
 	let sharedVariables = $state<QuestionVariable[]>(template?.shared?.variables || []);
 	let sharedStatement = $state(templateMarkdown(template?.shared?.statement || ''));
-	let sharedSolution = $state<string | string[]>(template?.shared?.solution || '');
+	let sharedCorrectChoiceIndex = $state<string | string[]>(
+		template?.shared?.correctChoiceIndex || ''
+	);
 	let sharedCorrectionString = $state(correctionToString(template?.shared?.correction));
 	let sharedChoices = $state(template?.shared?.choices ?? []);
 	let sharedRequiredFormSelect = $state<string>(
@@ -433,7 +435,7 @@
 			{
 				statement: templateMarkdown(''),
 				variables: [],
-				solution: '',
+				correctChoiceIndex: '',
 				blanks: [],
 				choices: []
 			}
@@ -520,7 +522,7 @@
 			{
 				statement: templateMarkdown(''),
 				variables: [],
-				solution: '',
+				correctChoiceIndex: '',
 				blanks: [],
 				choices: []
 			}
@@ -571,7 +573,7 @@
 			// statement is now a branded string (TemplateMarkdown), so no deep copy needed
 			statement: templateMarkdown(sourceVariation.statement),
 			variables: JSON.parse(JSON.stringify(sourceVariation.variables || [])),
-			solution: sourceVariation.solution,
+			correctChoiceIndex: sourceVariation.correctChoiceIndex,
 			// correction is set from correctionStrings when building template
 			correction: undefined,
 			blanks: sourceVariation.blanks ? JSON.parse(JSON.stringify(sourceVariation.blanks)) : [],
@@ -648,11 +650,11 @@
 		if (sharedStatement.trim()) shared.statement = sharedStatement;
 		if (sharedVariables.length > 0) shared.variables = sharedVariables;
 		if (
-			typeof sharedSolution === 'string'
-				? sharedSolution.trim()
-				: sharedSolution.filter((s) => s.trim()).length > 0
+			typeof sharedCorrectChoiceIndex === 'string'
+				? sharedCorrectChoiceIndex.trim()
+				: sharedCorrectChoiceIndex.filter((s) => s.trim()).length > 0
 		)
-			shared.solution = sharedSolution;
+			shared.correctChoiceIndex = sharedCorrectChoiceIndex;
 		const sharedCorrectionObj = stringToCorrection(sharedCorrectionString);
 		if (sharedCorrectionObj) shared.correction = sharedCorrectionObj;
 		if (sharedChoices.length > 0) shared.choices = sharedChoices;
@@ -826,13 +828,13 @@
 			variations.every(
 				(v) =>
 					v.statement.trim().length > 0 &&
-					// fill_in_blanks: either solution or blanks must exist
+					// fill_in_blanks: either correctChoiceIndex or blanks must exist
 					((v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim())) ||
 						// multiple_choice: choices must have at least one correct
 						(v.choices && v.choices.length > 0) ||
 						// simple answer
-						(typeof v.solution === 'string' && v.solution.trim().length > 0) ||
-						(Array.isArray(v.solution) && v.solution.length > 0))
+						(typeof v.correctChoiceIndex === 'string' && v.correctChoiceIndex.trim().length > 0) ||
+						(Array.isArray(v.correctChoiceIndex) && v.correctChoiceIndex.length > 0))
 			) &&
 			grades.length > 0 &&
 			theme.trim().length > 0 &&
@@ -1331,7 +1333,7 @@
 							<Collapsible.Content class="pt-2">
 								<AnswerEditor
 									{questionType}
-									bind:answer={sharedSolution}
+									bind:answer={sharedCorrectChoiceIndex}
 									bind:choices={sharedChoices}
 									{multipleAnswers}
 								/>
@@ -1681,7 +1683,7 @@
 										<Card.Content>
 											<AnswerEditor
 												{questionType}
-												bind:answer={variation.solution}
+												bind:answer={variation.correctChoiceIndex}
 												bind:blanks={variation.blanks}
 												bind:choices={variation.choices}
 												{multipleAnswers}

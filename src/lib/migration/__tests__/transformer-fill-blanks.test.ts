@@ -58,7 +58,7 @@ describe('Result/rewrite → fill_in_blanks', () => {
 		expect(variation.blanks![0].expectedAnswer).toContain('eval:');
 
 		// Should NOT have solution (fill_in_blanks uses blanks, not solution)
-		expect(variation.solution).toBeUndefined();
+		expect(variation.correctChoiceIndex).toBeUndefined();
 
 		// No answerFormats (no answerFormats in source)
 		expect(variation.answerFormats).toBeUndefined();
@@ -100,7 +100,7 @@ describe('Result/rewrite → fill_in_blanks', () => {
 		expect(answerFormats).toBeDefined();
 		expect(answerFormats!['expression1']).toBe('10^?');
 
-		expect(variation.solution).toBeUndefined();
+		expect(variation.correctChoiceIndex).toBeUndefined();
 	});
 
 	it('should reclassify result with multi-blank answerFormat ?*10^? (globalIndex 411)', () => {
@@ -135,7 +135,7 @@ describe('Result/rewrite → fill_in_blanks', () => {
 		expect(answerFormats).toBeDefined();
 		expect(answerFormats!['expression1']).toBe('?*10^?');
 
-		expect(variation.solution).toBeUndefined();
+		expect(variation.correctChoiceIndex).toBeUndefined();
 	});
 
 	it('should generate default blank with eval when no solutionss (behavior 4)', () => {
@@ -159,7 +159,7 @@ describe('Result/rewrite → fill_in_blanks', () => {
 		expect(variation.blanks).toHaveLength(1);
 		expect(variation.blanks![0].expectedAnswer).toContain('eval:');
 
-		expect(variation.solution).toBeUndefined();
+		expect(variation.correctChoiceIndex).toBeUndefined();
 	});
 
 	it('should NOT reclassify when choicess present (behavior 5)', () => {

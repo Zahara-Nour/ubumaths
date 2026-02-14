@@ -103,10 +103,16 @@ function validateVariation(
 		}
 	}
 
-	// Validate solution (required for multiple_choice, optional for fill_in_blanks)
-	// Solution can come from shared defaults
-	if (questionType === 'multiple_choice' && !variation.solution && !shared?.solution) {
-		errors.push(`${prefix} Missing required field: solution (required for multiple_choice)`);
+	// Validate correctChoiceIndex (required for multiple_choice, optional for fill_in_blanks)
+	// Can come from shared defaults
+	if (
+		questionType === 'multiple_choice' &&
+		!variation.correctChoiceIndex &&
+		!shared?.correctChoiceIndex
+	) {
+		errors.push(
+			`${prefix} Missing required field: correctChoiceIndex (required for multiple_choice)`
+		);
 	}
 
 	// Validate correction (if present, now a QuestionCorrection object)

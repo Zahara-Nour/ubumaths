@@ -161,7 +161,9 @@
 
 	// Answer as array (solution from QuestionInstance)
 	const answerArray = $derived(
-		Array.isArray(instance.solution) ? instance.solution : [instance.solution]
+		Array.isArray(instance.correctChoiceIndex)
+			? instance.correctChoiceIndex
+			: [instance.correctChoiceIndex]
 	);
 
 	// ============================================================================
@@ -408,8 +410,10 @@
 				<div class="space-y-2">
 					{#each instance.shuffledChoices || [] as choice, i (i)}
 						{@const isCorrect =
-							(typeof instance.solution === 'string' && instance.solution === String(i)) ||
-							(Array.isArray(instance.solution) && instance.solution.includes(String(i)))}
+							(typeof instance.correctChoiceIndex === 'string' &&
+								instance.correctChoiceIndex === String(i)) ||
+							(Array.isArray(instance.correctChoiceIndex) &&
+								instance.correctChoiceIndex.includes(String(i)))}
 						<div
 							class={cn(
 								'flex items-center gap-3 rounded border p-3',

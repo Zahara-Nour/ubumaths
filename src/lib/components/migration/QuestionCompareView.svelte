@@ -295,8 +295,8 @@
 				: '';
 
 			// Resolve solution (expected answer)
-			const solution = variation.solution
-				? resolveSolution(variation.solution, resolved, instanceSeed)
+			const solution = variation.correctChoiceIndex
+				? resolveSolution(variation.correctChoiceIndex, resolved, instanceSeed)
 				: '';
 
 			// Resolve correction
@@ -920,11 +920,11 @@
 										{/if}
 
 										<!-- Solution -->
-										{#if variation.solution !== undefined}
+										{#if variation.correctChoiceIndex !== undefined}
 											<div>
 												<h4 class="mb-1 text-xs font-medium text-muted-foreground">solution</h4>
 												<pre class="rounded-md bg-muted p-2 font-mono text-xs">{formatValue(
-														variation.solution
+														variation.correctChoiceIndex
 													)}</pre>
 											</div>
 										{/if}
@@ -1039,9 +1039,9 @@
 						<div>
 							<h4 class="mb-1 text-sm font-medium text-muted-foreground">Solution</h4>
 							<p class="font-mono text-sm text-primary">
-								{Array.isArray(resolvedInstance.solution)
-									? resolvedInstance.solution.join(', ')
-									: resolvedInstance.solution}
+								{Array.isArray(resolvedInstance.correctChoiceIndex)
+									? resolvedInstance.correctChoiceIndex.join(', ')
+									: resolvedInstance.correctChoiceIndex}
 							</p>
 						</div>
 

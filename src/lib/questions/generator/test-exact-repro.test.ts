@@ -23,7 +23,7 @@ describe('Exact reproduction', () => {
 						{ name: 'a', expression: '{{random:1..10}}' },
 						{ name: 'b', expression: '{{random:1..10}}' }
 					],
-					solution: '{{eval:a + b}}'
+					correctChoiceIndex: '{{eval:a + b}}'
 				}
 			],
 			grades: ['6'],
@@ -39,9 +39,9 @@ describe('Exact reproduction', () => {
 
 		console.log('Result:', {
 			success: result.success,
-			solution: result.success ? result.instance.solution : undefined,
-			solutionType: result.success ? typeof result.instance.solution : undefined,
-			solutionString: result.success ? String(result.instance.solution) : undefined,
+			solution: result.success ? result.instance.correctChoiceIndex : undefined,
+			solutionType: result.success ? typeof result.instance.correctChoiceIndex : undefined,
+			solutionString: result.success ? String(result.instance.correctChoiceIndex) : undefined,
 			variables: result.success ? result.instance.resolvedVariables : undefined
 		});
 
@@ -58,6 +58,6 @@ describe('Exact reproduction', () => {
 		const b = getVarValue(result.instance.resolvedVariables, 'b');
 		expect(a).not.toBeNaN();
 		expect(b).not.toBeNaN();
-		expect(result.instance.solution).toBe((a + b).toString());
+		expect(result.instance.correctChoiceIndex).toBe((a + b).toString());
 	});
 });

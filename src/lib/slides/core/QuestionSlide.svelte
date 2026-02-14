@@ -216,13 +216,13 @@
 							showCorrectAnswers={true}
 						/>
 					</div>
-				{:else if instance.solution}
+				{:else if instance.correctChoiceIndex}
 					<div class="solution">
 						<strong>Reponse :</strong>
-						{#if Array.isArray(instance.solution)}
-							{instance.solution.join(', ')}
+						{#if Array.isArray(instance.correctChoiceIndex)}
+							{instance.correctChoiceIndex.join(', ')}
 						{:else}
-							<MarkdownRenderer content={`$${instance.solution}$`} />
+							<MarkdownRenderer content={`$${instance.correctChoiceIndex}$`} />
 						{/if}
 					</div>
 				{/if}

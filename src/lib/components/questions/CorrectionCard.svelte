@@ -266,14 +266,16 @@
 						<div class="correct-answer-section">
 							<h3 class="mb-3 text-lg font-semibold">Réponse correcte</h3>
 							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
-								{#if Array.isArray(answerResult.instance.solution)}
+								{#if Array.isArray(answerResult.instance.correctChoiceIndex)}
 									<ul class="space-y-1">
-										{#each answerResult.instance.solution as ans, i (i)}
+										{#each answerResult.instance.correctChoiceIndex as ans, i (i)}
 											<li><MarkdownRenderer content={`$$${String(ans)}$$`} /></li>
 										{/each}
 									</ul>
 								{:else}
-									<MarkdownRenderer content={`$$${String(answerResult.instance.solution)}$$`} />
+									<MarkdownRenderer
+										content={`$$${String(answerResult.instance.correctChoiceIndex)}$$`}
+									/>
 								{/if}
 							</div>
 						</div>

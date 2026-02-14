@@ -336,9 +336,9 @@
 				<div class="space-y-2">
 					<Badge variant="outline">Réponse</Badge>
 					<div class="rounded border bg-green-50 p-3 dark:bg-green-950/20">
-						{#if Array.isArray(instance.solution)}
+						{#if Array.isArray(instance.correctChoiceIndex)}
 							<ul class="space-y-1">
-								{#each instance.solution as ans, i (i)}
+								{#each instance.correctChoiceIndex as ans, i (i)}
 									<li class="flex items-center gap-2">
 										<Badge class="bg-green-600">{i + 1}</Badge>
 										<code class="font-mono">{ans}</code>
@@ -346,7 +346,7 @@
 								{/each}
 							</ul>
 						{:else}
-							<code class="font-mono text-lg">{instance.solution}</code>
+							<code class="font-mono text-lg">{instance.correctChoiceIndex}</code>
 						{/if}
 					</div>
 				</div>
@@ -358,8 +358,10 @@
 						<div class="space-y-2">
 							{#each instance.shuffledChoices as choice, i (i)}
 								{@const isCorrect =
-									(typeof instance.solution === 'string' && instance.solution === String(i)) ||
-									(Array.isArray(instance.solution) && instance.solution.includes(String(i)))}
+									(typeof instance.correctChoiceIndex === 'string' &&
+										instance.correctChoiceIndex === String(i)) ||
+									(Array.isArray(instance.correctChoiceIndex) &&
+										instance.correctChoiceIndex.includes(String(i)))}
 								<div
 									class="flex items-center gap-3 rounded border p-3 {isCorrect
 										? 'border-green-500 bg-green-50 dark:bg-green-950/20'

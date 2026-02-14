@@ -101,7 +101,7 @@ describe('validateTemplate - Valid Templates', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					solution: '0',
+					correctChoiceIndex: '0',
 					choices: [
 						{ content: templateMarkdown('A'), isCorrect: true },
 						{ content: templateMarkdown('B'), isCorrect: false },
@@ -282,10 +282,10 @@ describe('validateTemplate - Required Fields', () => {
 
 		const errors = validateTemplate(template);
 
-		expect(errors.some((e) => e.includes('solution'))).toBe(true);
+		expect(errors.some((e) => e.includes('correctChoiceIndex'))).toBe(true);
 	});
 
-	it('should accept fill_in_blanks with blanks (no solution needed)', () => {
+	it('should accept fill_in_blanks with blanks (no correctChoiceIndex needed)', () => {
 		const template = {
 			id: 'test',
 			title: 'Test Template',
@@ -673,7 +673,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					solution: '0',
+					correctChoiceIndex: '0',
 					// Only 1 choice — multiple_choice requires at least 2
 					choices: [{ content: templateMarkdown('Only one'), isCorrect: true }]
 				}
@@ -702,7 +702,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					solution: '0',
+					correctChoiceIndex: '0',
 					choices: [{ content: templateMarkdown('Only one'), isCorrect: true }]
 				}
 			],

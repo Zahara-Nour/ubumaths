@@ -90,8 +90,8 @@ function resolveVariationWithShared(
 		// Fall back to empty TemplateMarkdown if neither has value (edge case)
 		statement: variation.statement || shared.statement || templateMarkdown(''),
 
-		// solution: allow explicit empty array/string (use ??)
-		solution: variation.solution ?? shared.solution,
+		// correctChoiceIndex: allow explicit empty array/string (use ??)
+		correctChoiceIndex: variation.correctChoiceIndex ?? shared.correctChoiceIndex,
 
 		// correction: full structure (use ??)
 		correction: variation.correction ?? shared.correction,
@@ -136,7 +136,7 @@ function resolveVariationWithShared(
  *     { name: 'a', expression: '{#:1-10}' },
  *     { name: 'b', expression: '{#:1-10}' }
  *   ],
- *   solution: '{eval:{@:a}+{@:b}}',
+ *   correctChoiceIndex: '{eval:{@:a}+{@:b}}',
  *   grades: ['6'],
  *   delay: 30
  * };
@@ -144,7 +144,7 @@ function resolveVariationWithShared(
  * const result = generateInstance(template, 42);
  * if (result.success) {
  *   console.log(result.instance.statement[0].content);  // "Calculate $$7 + 3$$"
- *   console.log(result.instance.solution);               // "10"
+ *   console.log(result.instance.correctChoiceIndex);     // "10"
  * }
  * ```
  */
@@ -202,9 +202,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			seed
 		);
 
-		// Resolve solution (stays the same - it's a plain string; may be undefined for fill_in_blanks)
-		const resolvedSolution = resolvedVariation.solution
-			? resolveSolution(resolvedVariation.solution, resolvedVariables, seed)
+		// Resolve correctChoiceIndex (stays the same - it's a plain string; may be undefined for fill_in_blanks)
+		const resolvedCorrectChoiceIndex = resolvedVariation.correctChoiceIndex
+			? resolveSolution(resolvedVariation.correctChoiceIndex, resolvedVariables, seed)
 			: undefined;
 
 		// Resolve correction if present (QuestionCorrection has feedback and/or steps)
@@ -362,7 +362,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			templateId: template.id,
 			statement: finalStatement,
 			resolvedVariables,
-			solution: resolvedSolution,
+			correctChoiceIndex: resolvedCorrectChoiceIndex,
 			exerciseInstruction: template.exerciseInstruction,
 			options: template.options,
 			grades: template.grades,

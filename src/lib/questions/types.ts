@@ -167,11 +167,11 @@ export type QuestionVariable = SharedVariable;
  *   variations: [
  *     {
  *       statement: [{ type: 'text', content: 'Calculate $$2 + 3$$' }],
- *       solution: '5'
+ *       correctChoiceIndex: '5'
  *     },
  *     {
  *       statement: [{ type: 'text', content: 'Calculate $$7 - 4$$' }],
- *       solution: '3'
+ *       correctChoiceIndex: '3'
  *     }
  *   ]
  * }
@@ -222,10 +222,11 @@ export interface QuestionVariation {
 	variables?: QuestionVariable[];
 
 	/**
-	 * Expected solution(s) — optional for fill_in_blanks (blanks[] is the source of truth).
+	 * Index (or expression evaluating to index) of the correct choice for QCM.
+	 * Optional for fill_in_blanks (blanks[] is the source of truth).
 	 * Required for multiple_choice.
 	 */
-	solution?: string | string[];
+	correctChoiceIndex?: string | string[];
 
 	/** Detailed correction/explanation with full structure (optional) */
 	correction?: QuestionCorrection;
@@ -301,8 +302,8 @@ export interface SharedVariationDefaults {
 	/** Shared variable definitions (resolved before per-variation variables) */
 	variables?: QuestionVariable[];
 
-	/** Shared expected solution(s) — optional for fill_in_blanks */
-	solution?: string | string[];
+	/** Shared correct choice index — optional for fill_in_blanks */
+	correctChoiceIndex?: string | string[];
 
 	/** Shared correction with full structure (feedback + steps) */
 	correction?: QuestionCorrection;
@@ -542,10 +543,10 @@ export interface QuestionInstance {
 	resolvedVariables?: ResolvedVariable[];
 
 	/**
-	 * Resolved solution(s) — optional for fill_in_blanks (blanks[] is the source of truth).
+	 * Resolved correct choice index — optional for fill_in_blanks (blanks[] is the source of truth).
 	 * Present for multiple_choice.
 	 */
-	solution?: string | string[];
+	correctChoiceIndex?: string | string[];
 
 	// ---- Metadata (copied from template) ----
 

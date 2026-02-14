@@ -1740,11 +1740,15 @@ function detectSharedFields(
 		// MC needs solution (correct answer index/indices)
 		if (solutionss.length > 0) {
 			if (solutionIsShared) {
-				shared.solution = convertSolution(solutionss[0], 'multiple_choice', warnings);
+				shared.correctChoiceIndex = convertSolution(solutionss[0], 'multiple_choice', warnings);
 			} else {
 				for (let i = 0; i < variationCount; i++) {
 					const solutions = solutionss[i] || solutionss[0];
-					perVariation[i].solution = convertSolution(solutions, 'multiple_choice', warnings);
+					perVariation[i].correctChoiceIndex = convertSolution(
+						solutions,
+						'multiple_choice',
+						warnings
+					);
 				}
 			}
 		}
@@ -1848,7 +1852,7 @@ function hasSharedContent(shared: SharedVariationDefaults): boolean {
 	return !!(
 		shared.statement ||
 		(shared.variables && shared.variables.length > 0) ||
-		shared.solution !== undefined ||
+		shared.correctChoiceIndex !== undefined ||
 		shared.correction ||
 		(shared.choices && shared.choices.length > 0) ||
 		(shared.validationRules && shared.validationRules.length > 0) ||
@@ -1965,23 +1969,23 @@ function createVariationsWithShared(
 	const variations: QuestionVariation[] = perVariation.map((pv, index) => {
 		// Start with required fields - use shared fallback or throw error
 		const statement = pv.statement || shared.statement;
-		const solution = pv.solution ?? shared.solution;
+		const correctChoiceIndex = pv.correctChoiceIndex ?? shared.correctChoiceIndex;
 
 		if (!statement) {
 			warnings.push(`Variation ${index}: missing statement`);
 		}
-		// Only warn about missing solution for multiple_choice
-		if (solution === undefined && migrationMode === 'multiple_choice') {
-			warnings.push(`Variation ${index}: missing solution`);
+		// Only warn about missing correctChoiceIndex for multiple_choice
+		if (correctChoiceIndex === undefined && migrationMode === 'multiple_choice') {
+			warnings.push(`Variation ${index}: missing correctChoiceIndex`);
 		}
 
 		const variation: QuestionVariation = {
 			statement: statement || templateMarkdown('')
 		};
 
-		// Solution only for multiple_choice
-		if (solution !== undefined) {
-			variation.solution = solution;
+		// correctChoiceIndex only for multiple_choice
+		if (correctChoiceIndex !== undefined) {
+			variation.correctChoiceIndex = correctChoiceIndex;
 		}
 
 		// Add optional fields only if they exist and are NOT shared
@@ -2377,9 +2381,9 @@ export function validateTransformedTemplate(template: QuestionTemplate): {
 
 		// For multiple_choice, choices must be present
 		if (variation.choices && variation.choices.length > 0) {
-			// This is a multiple_choice variation — solution is required
-			if (variation.solution === undefined || variation.solution === null) {
-				errors.push(`Variation ${index}: missing solution for multiple_choice`);
+			// This is a multiple_choice variation — correctChoiceIndex is required
+			if (variation.correctChoiceIndex === undefined || variation.correctChoiceIndex === null) {
+				errors.push(`Variation ${index}: missing correctChoiceIndex for multiple_choice`);
 			}
 		}
 	});

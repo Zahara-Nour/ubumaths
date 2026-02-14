@@ -74,9 +74,10 @@ describe('Question Transformer', () => {
 				// Result/rewrite questions should have blanks[] (Phase 5.2 will add this)
 				// For now, verify solution is still generated as fallback
 				// Once Phase 5.2 is done, blanks[] will replace solution
-				const hasBlanksOrSolution =
-					(variation?.blanks && variation.blanks.length > 0) || variation?.solution !== undefined;
-				expect(hasBlanksOrSolution).toBe(true);
+				const hasBlanksOrCorrectChoiceIndex =
+					(variation?.blanks && variation.blanks.length > 0) ||
+					variation?.correctChoiceIndex !== undefined;
+				expect(hasBlanksOrCorrectChoiceIndex).toBe(true);
 			});
 
 			it('should detect and transform decimal questions', () => {
@@ -101,7 +102,7 @@ describe('Question Transformer', () => {
 				expect(result.success).toBe(true);
 				// type no longer stored — inferred from structure
 				expect('type' in result.template!).toBe(false);
-				expect(result.template?.precision).toEqual({
+				expect(result.template?.shared?.blankDefaults?.precision).toEqual({
 					type: 'decimal',
 					digits: 2
 				});
@@ -145,8 +146,8 @@ describe('Question Transformer', () => {
 				// It's calculated at runtime from the solution (which contains correct index)
 				expect(choices?.[0].isCorrect).toBeUndefined();
 				expect(choices?.[1].isCorrect).toBeUndefined();
-				// The solution contains the correct index
-				expect(result.template?.variations[0]?.solution).toBeDefined();
+				// The correctChoiceIndex contains the correct index
+				expect(result.template?.variations[0]?.correctChoiceIndex).toBeDefined();
 			});
 
 			it('should transform multiple answer questions', () => {
@@ -169,13 +170,13 @@ describe('Question Transformer', () => {
 				expect(result.template?.multipleAnswers).toBe(true);
 
 				const choices = result.template?.variations[0]?.choices;
-				// Note: isCorrect is NOT set in template - calculated at runtime from solution
+				// Note: isCorrect is NOT set in template - calculated at runtime from correctChoiceIndex
 				expect(choices?.[0]?.isCorrect).toBeUndefined();
 				expect(choices?.[1]?.isCorrect).toBeUndefined();
 				expect(choices?.[2]?.isCorrect).toBeUndefined();
 				expect(choices?.[3]?.isCorrect).toBeUndefined();
-				// The solution contains the correct indices
-				expect(result.template?.variations[0]?.solution).toBeDefined();
+				// The correctChoiceIndex contains the correct indices
+				expect(result.template?.variations[0]?.correctChoiceIndex).toBeDefined();
 			});
 		});
 
@@ -780,8 +781,8 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			// result_rewrite → no solution, blanks instead
-			expect(result.template?.shared?.solution).toBeUndefined();
+			// result_rewrite → no correctChoiceIndex, blanks instead
+			expect(result.template?.shared?.correctChoiceIndex).toBeUndefined();
 			expect(result.template?.variations[0]?.blanks).toBeDefined();
 			expect(result.template?.variations[0]?.blanks?.[0]?.expectedAnswer).toBe('42');
 			expect(result.template?.variations[1]?.blanks).toBeDefined();
@@ -809,8 +810,8 @@ describe('Question Transformer', () => {
 			expect(
 				result.template?.variations[0]?.variables?.find((v) => v.name === 'expression1')
 			).toBeDefined();
-			// result_rewrite → no solution, blanks instead
-			expect(result.template?.shared?.solution).toBeUndefined();
+			// result_rewrite → no correctChoiceIndex, blanks instead
+			expect(result.template?.shared?.correctChoiceIndex).toBeUndefined();
 			expect(result.template?.variations[0]?.blanks).toBeDefined();
 			expect(result.template?.variations[0]?.blanks?.[0]?.expectedAnswer).toBe('{{eval:a+b}}');
 			expect(result.template?.variations[1]?.blanks).toBeDefined();
@@ -996,9 +997,9 @@ describe('Question Transformer', () => {
 			expect(result.template?.variations[0]?.variables).toBeDefined();
 			expect(result.template?.variations[1]?.variables).toBeDefined();
 
-			expect(result.template?.shared?.solution).toBeUndefined();
-			expect(result.template?.variations[0]?.solution).toBeDefined();
-			expect(result.template?.variations[1]?.solution).toBeDefined();
+			expect(result.template?.shared?.correctChoiceIndex).toBeUndefined();
+			expect(result.template?.variations[0]?.correctChoiceIndex).toBeDefined();
+			expect(result.template?.variations[1]?.correctChoiceIndex).toBeDefined();
 		});
 
 		it('should handle per-variation corrections correctly', () => {
@@ -1101,7 +1102,9 @@ describe('Question Transformer', () => {
 
 			expect(result.valid).toBe(false);
 			expect(result.errors).toContain('Variation 0: missing statement');
-			expect(result.errors).toContain('Variation 0: missing solution for multiple_choice');
+			expect(result.errors).toContain(
+				'Variation 0: missing correctChoiceIndex for multiple_choice'
+			);
 		});
 	});
 

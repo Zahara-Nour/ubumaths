@@ -396,14 +396,14 @@
 										expressions={instance.expressions}
 										showCorrectAnswers={true}
 									/>
-								{:else if Array.isArray(instance.solution)}
+								{:else if Array.isArray(instance.correctChoiceIndex)}
 									<ul class="space-y-1">
-										{#each instance.solution as ans, i (i)}
+										{#each instance.correctChoiceIndex as ans, i (i)}
 											<li><MarkdownRenderer content={`$$${String(ans)}$$`} /></li>
 										{/each}
 									</ul>
-								{:else if instance.solution !== undefined}
-									<MarkdownRenderer content={`$$${String(instance.solution)}$$`} />
+								{:else if instance.correctChoiceIndex !== undefined}
+									<MarkdownRenderer content={`$$${String(instance.correctChoiceIndex)}$$`} />
 								{/if}
 							</div>
 						</div>
