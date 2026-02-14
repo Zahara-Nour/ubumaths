@@ -32,11 +32,12 @@
 		RequiredForm,
 		BlankDefaults,
 		SharedVariationDefaults,
-		ConstraintMode,
-		ConstraintId
+		ConstraintMode
 	} from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
 	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
+	import { CONSTRAINT_IDS } from '$lib/questions/constraint-constants';
+	import { REQUIRED_FORM_OPTIONS } from '$lib/questions/form-options';
 	import { GRADE_CODES, GRADES } from '$lib/types/grades';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -249,19 +250,6 @@
 	);
 
 	// Constraint states
-	const CONSTRAINT_IDS: ConstraintId[] = [
-		'spaces',
-		'products',
-		'brackets',
-		'zeros',
-		'form',
-		'nullTerms',
-		'factorOne',
-		'factorZero',
-		'signs',
-		'reducedFractions',
-		'unit'
-	];
 	let constraintModes = $state<Record<string, string>>(
 		Object.fromEntries(CONSTRAINT_IDS.map((id) => [id, template?.options?.constraints?.[id] || '']))
 	);
@@ -428,15 +416,6 @@
 	const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
 		{ value: 'fill_in_blanks', label: 'Texte à trous' },
 		{ value: 'multiple_choice', label: 'QCM' }
-	];
-
-	const REQUIRED_FORM_OPTIONS = [
-		{ value: '', label: 'Aucune' },
-		{ value: 'product', label: 'Produit' },
-		{ value: 'sum', label: 'Somme' },
-		{ value: 'fraction', label: 'Fraction' },
-		{ value: 'power', label: 'Puissance' },
-		{ value: 'custom', label: 'Pattern personnalisé' }
 	];
 
 	// Handle grade toggle

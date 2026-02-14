@@ -29,15 +29,7 @@
 	import MyCheckbox from './MyCheckbox.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { ChevronDown, CircleQuestionMark } from 'lucide-svelte';
-
-	const REQUIRED_FORM_OPTIONS = [
-		{ value: '', label: 'Aucune' },
-		{ value: 'product', label: 'Produit' },
-		{ value: 'sum', label: 'Somme' },
-		{ value: 'fraction', label: 'Fraction' },
-		{ value: 'power', label: 'Puissance' },
-		{ value: 'custom', label: 'Pattern personnalisé' }
-	];
+	import { REQUIRED_FORM_OPTIONS } from '$lib/questions/form-options';
 
 	interface Props {
 		open: boolean;
