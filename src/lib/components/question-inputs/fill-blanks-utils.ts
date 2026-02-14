@@ -18,6 +18,7 @@ import type {
 	InputState
 } from '$lib/ubumark';
 import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
+import { hasPrompts } from '$lib/components/markdown/utils/math-utils';
 
 type Expression = NonNullable<QuestionInstance['expressions']>[number];
 
@@ -77,9 +78,9 @@ function augmentMathNode(
 		return node;
 	}
 
-	// If the expression already contains holes (?), it has its own
+	// If the expression already contains prompts/holes, it has its own
 	// blanks — never augment with " = answerFormat"
-	if (node.expression.includes('?')) {
+	if (hasPrompts(node.expression, node.syntax)) {
 		return node;
 	}
 

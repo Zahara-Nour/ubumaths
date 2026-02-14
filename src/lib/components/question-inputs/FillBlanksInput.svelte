@@ -214,48 +214,6 @@
 			onSubmit?.();
 		}
 	}
-
-	/**
-	 * Get correction LaTeX for an expression node.
-	 *
-	 * - Augmented expressions (no ? in original): replace \placeholder[N]{} with answers
-	 * - Non-augmented expressions (has ?): replace ? with answers from answerFormat indices
-	 */
-	function getCorrectionLatex(
-		expression: string,
-		syntax: 'latex' | 'custom',
-		exprName?: string
-	): string {
-		const latex = expressionToLatex(expression, syntax);
-
-		if (expression.includes('?') && exprName && expressions && mathCorrectValues) {
-			// Expression has holes — find blank indices from the answerFormat
-			const expr = expressions.find((e) => e.name === exprName);
-			if (expr?.answerFormat) {
-				const indices: number[] = [];
-				const regex = /\\placeholder\[(\d+)\]\{\}/g;
-				let m;
-				while ((m = regex.exec(expr.answerFormat)) !== null) {
-					indices.push(parseInt(m[1]));
-				}
-				let idx = 0;
-				return latex.replace(/\?/g, () => {
-					if (idx < indices.length) {
-						const answer = mathCorrectValues![String(indices[idx])];
-						idx++;
-						return answer ? `\\textcolor{green}{${answer}}` : '?';
-					}
-					return '?';
-				});
-			}
-		}
-
-		// Standard case: replace \placeholder[N]{} with values
-		if (mathCorrectValues) {
-			return replacePromptsWithValues(latex, mathCorrectValues);
-		}
-		return latex;
-	}
 </script>
 
 <div class="fill-blanks-container">
@@ -280,13 +238,10 @@
 							<MathBlock expression={flashLatex} syntax="latex" />
 						{/key}
 					{:else if showCorrectAnswers && mathCorrectValues}
-						{@const correctionLatex = getCorrectionLatex(
-							node.expression,
-							node.syntax,
-							node.expressionName
-						)}
-						{#key correctionLatex}
-							<MathBlock expression={correctionLatex} syntax="latex" />
+						{@const latex = expressionToLatex(node.expression, node.syntax)}
+						{@const filledLatex = replacePromptsWithValues(latex, mathCorrectValues)}
+						{#key filledLatex}
+							<MathBlock expression={filledLatex} syntax="latex" />
 						{/key}
 					{:else}
 						{#key node.expression}
