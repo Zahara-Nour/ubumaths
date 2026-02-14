@@ -37,6 +37,7 @@ import {
 } from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
+import { normalizeExpression } from '$lib/ubumark/parameterization';
 
 // ============================================================================
 // SHARED DEFAULTS MERGING
@@ -285,14 +286,17 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 
 			// Build instance.blanks[] with inferred types and merged validation
 			resolvedBlanks = resolvedVariation.blanks.map((blank, i) => {
-				// Resolve expectedAnswer: only call resolveExpression if it contains {{...}}
-				// patterns. Bare strings like "pair", "entier" are literal text values
-				// and must NOT go through the normalizer (which treats identifiers as
-				// variable references).
+				// Resolve expectedAnswer:
+				// - Math blanks: normalize then resolve, like variables do.
+				//   normalizeExpression converts "eval:a+b" → "{{eval:a+b}}", etc.
+				// - Text blanks: only resolve if already contains {{...}}.
+				//   Bare words like "pair", "entier" are literal text, not variable refs.
 				const rawExpected = blank.expectedAnswer;
-				const expectedAnswer = rawExpected.includes('{{')
-					? resolveExpression(rawExpected, resolvedVariables, seed)
-					: rawExpected;
+				const isMathBlank = blankResult.blankTypes[i] === 'math';
+				const normalized = isMathBlank ? normalizeExpression(rawExpected) : rawExpected;
+				const expectedAnswer = normalized.includes('{{')
+					? resolveExpression(normalized, resolvedVariables, seed)
+					: normalized;
 
 				const resolved: InstanceBlank = {
 					expectedAnswer,
@@ -304,10 +308,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					pool: blank.pool
 				};
 				if (blank.prefilled) {
-					const rawPrefilled = blank.prefilled;
-					resolved.prefilled = rawPrefilled.includes('{{')
-						? resolveExpression(rawPrefilled, resolvedVariables, seed)
-						: rawPrefilled;
+					resolved.prefilled = resolveExpression(
+						normalizeExpression(blank.prefilled),
+						resolvedVariables,
+						seed
+					);
 				}
 				// Generate expectedAnswerLatex for math blanks
 				if (resolved.type === 'math') {
