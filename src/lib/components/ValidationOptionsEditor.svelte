@@ -12,7 +12,12 @@
 -->
 
 <script lang="ts">
-	import type { QuestionType, ConstraintId } from '$lib/questions/types';
+	import type { QuestionType } from '$lib/questions/types';
+	import {
+		CONSTRAINT_IDS,
+		CONSTRAINT_LABELS,
+		CONSTRAINT_MODE_OPTIONS
+	} from '$lib/questions/constraint-constants';
 	import * as Card from '$lib/components/ui/card';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Label } from '$lib/components/ui/label';
@@ -47,42 +52,6 @@
 		constraintModes = $bindable(),
 		questionType
 	}: Props = $props();
-
-	// Constraint configuration
-	const CONSTRAINT_IDS: ConstraintId[] = [
-		'spaces',
-		'products',
-		'brackets',
-		'zeros',
-		'form',
-		'nullTerms',
-		'factorOne',
-		'factorZero',
-		'signs',
-		'reducedFractions',
-		'unit'
-	];
-
-	const CONSTRAINT_LABELS: Record<ConstraintId, string> = {
-		spaces: 'Espaces',
-		products: 'Symbole de multiplication',
-		brackets: 'Parenthèses',
-		zeros: 'Zéros inutiles',
-		form: 'Forme générale',
-		nullTerms: 'Termes nuls (x + 0)',
-		factorOne: 'Facteur 1 (1 * x)',
-		factorZero: 'Facteur 0 (0 * x)',
-		signs: 'Signes (-- = +)',
-		reducedFractions: 'Fractions irréductibles',
-		unit: 'Unité'
-	};
-
-	const CONSTRAINT_MODE_OPTIONS = [
-		{ value: '', label: 'Défaut (warn)' },
-		{ value: 'strict', label: 'Strict' },
-		{ value: 'warn', label: 'Avertissement' },
-		{ value: 'off', label: 'Désactivé' }
-	];
 
 	// Local collapsible states
 	let validatorOpen = $state(false);
