@@ -435,29 +435,40 @@
 		]
 	);
 
-	// Separate state for correction editing (as strings)
-	let correctionStrings = $state<string[]>(
-		template?.variations.map((v) => correctionToString(v.correction)) || ['']
-	);
+	// Per-variation extra state (correction, overrides, etc.)
+	interface VariationExtra {
+		correctionString: string;
+		validationRulesJson: string;
+		answerFormatsJson: string;
+		requiredFormSelect: string;
+		requiredFormPattern: string;
+		overridesOpen: boolean;
+	}
 
-	// Per-variation override state arrays
-	let perVarValidationRulesJson = $state<string[]>(
-		template?.variations.map((v) => JSON.stringify(v.validationRules || [], null, 2)) || ['[]']
+	const DEFAULT_VARIATION_EXTRA: VariationExtra = {
+		correctionString: '',
+		validationRulesJson: '[]',
+		answerFormatsJson: '{}',
+		requiredFormSelect: '',
+		requiredFormPattern: '',
+		overridesOpen: false
+	};
+
+	let variationExtras = $state<VariationExtra[]>(
+		template?.variations.map((v) => ({
+			correctionString: correctionToString(v.correction),
+			validationRulesJson: JSON.stringify(v.validationRules || [], null, 2),
+			answerFormatsJson: JSON.stringify(v.answerFormats || {}, null, 2),
+			requiredFormSelect: v.requiredForm
+				? typeof v.requiredForm === 'string'
+					? v.requiredForm
+					: 'custom'
+				: '',
+			requiredFormPattern:
+				v.requiredForm && typeof v.requiredForm === 'object' ? v.requiredForm.pattern : '',
+			overridesOpen: false
+		})) || [{ ...DEFAULT_VARIATION_EXTRA }]
 	);
-	let perVarAnswerFormatsJson = $state<string[]>(
-		template?.variations.map((v) => JSON.stringify(v.answerFormats || {}, null, 2)) || ['{}']
-	);
-	let perVarRequiredFormSelect = $state<string[]>(
-		template?.variations.map((v) =>
-			v.requiredForm ? (typeof v.requiredForm === 'string' ? v.requiredForm : 'custom') : ''
-		) || ['']
-	);
-	let perVarRequiredFormPattern = $state<string[]>(
-		template?.variations.map((v) =>
-			v.requiredForm && typeof v.requiredForm === 'object' ? v.requiredForm.pattern : ''
-		) || ['']
-	);
-	let perVarOverridesOpen = $state<boolean[]>(template?.variations.map(() => false) || [false]);
 
 	// Current variation index for editing
 	let currentVariationIndex = $state(0);
@@ -521,24 +532,14 @@
 				blankDefaults: {}
 			}
 		];
-		correctionStrings = [...correctionStrings, ''];
-		perVarValidationRulesJson = [...perVarValidationRulesJson, '[]'];
-		perVarAnswerFormatsJson = [...perVarAnswerFormatsJson, '{}'];
-		perVarRequiredFormSelect = [...perVarRequiredFormSelect, ''];
-		perVarRequiredFormPattern = [...perVarRequiredFormPattern, ''];
-		perVarOverridesOpen = [...perVarOverridesOpen, false];
+		variationExtras = [...variationExtras, { ...DEFAULT_VARIATION_EXTRA }];
 		currentVariationIndex = variations.length - 1;
 	}
 
 	function removeVariation(index: number) {
 		if (variations.length <= 1) return; // Must have at least 1 variation
 		variations = variations.filter((_, i) => i !== index);
-		correctionStrings = correctionStrings.filter((_, i) => i !== index);
-		perVarValidationRulesJson = perVarValidationRulesJson.filter((_, i) => i !== index);
-		perVarAnswerFormatsJson = perVarAnswerFormatsJson.filter((_, i) => i !== index);
-		perVarRequiredFormSelect = perVarRequiredFormSelect.filter((_, i) => i !== index);
-		perVarRequiredFormPattern = perVarRequiredFormPattern.filter((_, i) => i !== index);
-		perVarOverridesOpen = perVarOverridesOpen.filter((_, i) => i !== index);
+		variationExtras = variationExtras.filter((_, i) => i !== index);
 		if (currentVariationIndex >= variations.length) {
 			currentVariationIndex = variations.length - 1;
 		}
@@ -568,7 +569,7 @@
 			statement: templateMarkdown(sourceVariation.statement),
 			variables: structuredClone(sourceVariation.variables || []),
 			correctChoiceIndex: sourceVariation.correctChoiceIndex,
-			// correction is set from correctionStrings when building template
+			// correction is set from variationExtras when building template
 			correction: undefined,
 			blanks: sourceVariation.blanks ? structuredClone(sourceVariation.blanks) : [],
 			choices: sourceVariation.choices ? structuredClone(sourceVariation.choices) : [],
@@ -579,21 +580,9 @@
 
 		// Replace the current variation with the duplicated content
 		variations = variations.map((v, i) => (i === currentVariationIndex ? duplicatedVariation : v));
-		// Also copy the correction string and override arrays
-		correctionStrings = correctionStrings.map((s, i) =>
-			i === currentVariationIndex ? correctionStrings[duplicateSourceIndex] : s
-		);
-		perVarValidationRulesJson = perVarValidationRulesJson.map((s, i) =>
-			i === currentVariationIndex ? perVarValidationRulesJson[duplicateSourceIndex] : s
-		);
-		perVarAnswerFormatsJson = perVarAnswerFormatsJson.map((s, i) =>
-			i === currentVariationIndex ? perVarAnswerFormatsJson[duplicateSourceIndex] : s
-		);
-		perVarRequiredFormSelect = perVarRequiredFormSelect.map((s, i) =>
-			i === currentVariationIndex ? perVarRequiredFormSelect[duplicateSourceIndex] : s
-		);
-		perVarRequiredFormPattern = perVarRequiredFormPattern.map((s, i) =>
-			i === currentVariationIndex ? perVarRequiredFormPattern[duplicateSourceIndex] : s
+		// Also copy the variation extras (correction, overrides)
+		variationExtras = variationExtras.map((extra, i) =>
+			i === currentVariationIndex ? { ...variationExtras[duplicateSourceIndex] } : extra
 		);
 		showDuplicateDialog = false;
 	}
@@ -605,27 +594,28 @@
 	> {
 		// Build variations with corrections and per-variation overrides
 		const cleanedVariations = variations.map((variation, index) => {
-			const correctionStr = correctionStrings[index] || '';
+			const extra = variationExtras[index] || DEFAULT_VARIATION_EXTRA;
 			const cleaned: QuestionVariation = {
 				...variation,
-				correction: stringToCorrection(correctionStr)
+				correction: stringToCorrection(extra.correctionString)
 			};
 
 			// Per-variation required form
-			const rfSelect = perVarRequiredFormSelect[index] || '';
-			if (rfSelect) {
-				if (rfSelect === 'custom' && (perVarRequiredFormPattern[index] || '').trim()) {
-					cleaned.requiredForm = { pattern: perVarRequiredFormPattern[index].trim() };
+			if (extra.requiredFormSelect) {
+				if (extra.requiredFormSelect === 'custom' && extra.requiredFormPattern.trim()) {
+					cleaned.requiredForm = { pattern: extra.requiredFormPattern.trim() };
 				} else if (
-					VALID_REQUIRED_FORMS.includes(rfSelect as (typeof VALID_REQUIRED_FORMS)[number])
+					VALID_REQUIRED_FORMS.includes(
+						extra.requiredFormSelect as (typeof VALID_REQUIRED_FORMS)[number]
+					)
 				) {
-					cleaned.requiredForm = rfSelect as RequiredForm;
+					cleaned.requiredForm = extra.requiredFormSelect as RequiredForm;
 				}
 			}
 
 			// Per-variation validation rules
 			try {
-				const rules = JSON.parse(perVarValidationRulesJson[index] || '[]');
+				const rules = JSON.parse(extra.validationRulesJson);
 				if (Array.isArray(rules) && rules.length > 0) cleaned.validationRules = rules;
 			} catch {
 				/* ignore */
@@ -633,7 +623,7 @@
 
 			// Per-variation answer formats
 			try {
-				const fmts = JSON.parse(perVarAnswerFormatsJson[index] || '{}');
+				const fmts = JSON.parse(extra.answerFormatsJson);
 				if (Object.keys(fmts).length > 0) cleaned.answerFormats = fmts;
 			} catch {
 				/* ignore */
@@ -840,7 +830,7 @@
 				correctChoiceIndex: v.correctChoiceIndex
 			})),
 			sharedVariables: sharedVariables.length,
-			correctionStrings
+			variationExtras
 		});
 	}
 
@@ -1803,7 +1793,7 @@
 									<Collapsible.Content>
 										<Card.Content>
 											<MarkdownEditor
-												bind:value={correctionStrings[index]}
+												bind:value={variationExtras[index].correctionString}
 												showParameterization={true}
 												variables={variation.variables}
 												placeholder="Explication de la solution (optionnel)..."
@@ -1818,13 +1808,14 @@
 						<!-- Per-variation overrides -->
 						<Card.Root>
 							<Card.Header>
-								<Collapsible.Root bind:open={perVarOverridesOpen[index]}>
+								<Collapsible.Root bind:open={variationExtras[index].overridesOpen}>
 									<Collapsible.Trigger
 										class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
 									>
 										<Card.Title>Surcharges (cette variation)</Card.Title>
 										<ChevronDown
-											class="h-4 w-4 transition-transform duration-200 {perVarOverridesOpen[index]
+											class="h-4 w-4 transition-transform duration-200 {variationExtras[index]
+												.overridesOpen
 												? 'rotate-180'
 												: ''}"
 										/>
@@ -1839,13 +1830,13 @@
 												<Label class="text-sm font-medium">Forme requise</Label>
 												<MySelect
 													type="single"
-													bind:value={perVarRequiredFormSelect[index]}
+													bind:value={variationExtras[index].requiredFormSelect}
 													items={REQUIRED_FORM_OPTIONS}
 												/>
-												{#if perVarRequiredFormSelect[index] === 'custom'}
+												{#if variationExtras[index].requiredFormSelect === 'custom'}
 													<Input
 														type="text"
-														bind:value={perVarRequiredFormPattern[index]}
+														bind:value={variationExtras[index].requiredFormPattern}
 														placeholder="Pattern personnalise (ex: a:integer * b:integer)"
 													/>
 												{/if}
@@ -1862,7 +1853,7 @@
 												<Label class="text-sm font-medium">Règles de validation</Label>
 												<textarea
 													class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
-													bind:value={perVarValidationRulesJson[index]}
+													bind:value={variationExtras[index].validationRulesJson}
 													rows={3}
 													placeholder="[]"
 												></textarea>
@@ -1874,7 +1865,7 @@
 												<Label class="text-sm font-medium">Formats de réponse</Label>
 												<textarea
 													class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
-													bind:value={perVarAnswerFormatsJson[index]}
+													bind:value={variationExtras[index].answerFormatsJson}
 													rows={3}
 													placeholder={'{}'}
 												></textarea>
