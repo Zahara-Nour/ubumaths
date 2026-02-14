@@ -525,8 +525,31 @@
 		// Build variations with corrections and per-variation overrides
 		const cleanedVariations = variations.map((variation, index) => {
 			const extra = variationExtras[index] || DEFAULT_VARIATION_EXTRA;
+
+			// Filter out empty variables
+			const filteredVars = variation.variables?.filter((v) => v.name && v.expression);
+
+			// Clean blankDefaults: exclude default precision, omit if empty
+			let cleanedBlankDefaults: QuestionVariation['blankDefaults'] | undefined;
+			if (variation.blankDefaults) {
+				const { precision, ...rest } = variation.blankDefaults;
+				const withPrecision =
+					precision && precision.type !== 'none' ? { precision, ...rest } : rest;
+				cleanedBlankDefaults = Object.keys(withPrecision).length > 0 ? withPrecision : undefined;
+			}
+
+			// Build cleaned variation without mutating reactive state
 			const cleaned: QuestionVariation = {
-				...variation,
+				statement: variation.statement,
+				...(filteredVars && filteredVars.length > 0 ? { variables: filteredVars } : {}),
+				...(questionType === 'multiple_choice'
+					? {
+							correctChoiceIndex: variation.correctChoiceIndex,
+							choices: variation.choices
+						}
+					: {}),
+				...(variation.blanks && variation.blanks.length > 0 ? { blanks: variation.blanks } : {}),
+				...(cleanedBlankDefaults ? { blankDefaults: cleanedBlankDefaults } : {}),
 				correction: stringToCorrection(extra.correctionString)
 			};
 
@@ -565,16 +588,21 @@
 		// Build shared defaults
 		const shared: SharedVariationDefaults = {};
 		if (sharedStatement.trim()) shared.statement = sharedStatement;
-		if (sharedVariables.length > 0) shared.variables = sharedVariables;
+		if (sharedVariables.length > 0) {
+			const filtered = sharedVariables.filter((v) => v.name && v.expression);
+			if (filtered.length > 0) shared.variables = filtered;
+		}
 		if (
-			typeof sharedCorrectChoiceIndex === 'string'
+			questionType === 'multiple_choice' &&
+			(typeof sharedCorrectChoiceIndex === 'string'
 				? sharedCorrectChoiceIndex.trim()
-				: sharedCorrectChoiceIndex.filter((s) => s.trim()).length > 0
+				: sharedCorrectChoiceIndex.filter((s) => s.trim()).length > 0)
 		)
 			shared.correctChoiceIndex = sharedCorrectChoiceIndex;
 		const sharedCorrectionObj = stringToCorrection(sharedCorrectionString);
 		if (sharedCorrectionObj) shared.correction = sharedCorrectionObj;
-		if (sharedChoices.length > 0) shared.choices = sharedChoices;
+		if (questionType === 'multiple_choice' && sharedChoices.length > 0)
+			shared.choices = sharedChoices;
 		if (sharedRequiredFormSelect) {
 			if (sharedRequiredFormSelect === 'custom' && sharedRequiredFormPattern.trim()) {
 				shared.requiredForm = { pattern: sharedRequiredFormPattern.trim() };
