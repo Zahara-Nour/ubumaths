@@ -26,7 +26,6 @@ describe('Exact reproduction', () => {
 					solution: '{{eval:a + b}}'
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Addition',

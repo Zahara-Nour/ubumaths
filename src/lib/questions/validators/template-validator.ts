@@ -69,30 +69,6 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		errors.push('delay must be positive');
 	}
 
-	// Validate precision (if present)
-	if (template.precision) {
-		const precision = template.precision;
-
-		if (
-			precision.type === 'decimal' ||
-			precision.type === 'significant' ||
-			precision.type === 'magnitude'
-		) {
-			if (!('digits' in precision) || precision.digits <= 0) {
-				errors.push(`${precision.type} precision requires positive digits`);
-			}
-		}
-
-		if (precision.type === 'tolerance') {
-			if (!('tolerance' in precision) || precision.tolerance <= 0) {
-				errors.push('tolerance precision requires positive tolerance value');
-			}
-			if (!('mode' in precision)) {
-				errors.push('tolerance precision requires mode (absolute or relative)');
-			}
-		}
-	}
-
 	return errors;
 }
 

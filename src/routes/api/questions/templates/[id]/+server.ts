@@ -146,13 +146,16 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		const { data: template, error: updateError } = await locals.supabase
 			.from('question_templates')
 			.update({
-				type: getQuestionType({ choices: templateData.variations?.[0]?.choices }),
+				type: getQuestionType({
+					choices: templateData.variations?.[0]?.choices,
+					shared: templateData.shared
+				}),
 				title: templateData.title,
 				description: templateData.description || null,
 				shared: templateData.shared || null,
+				default_display_options: templateData.defaultDisplayOptions || null,
 				variations: templateData.variations,
 				exercise_instruction: templateData.exerciseInstruction || null,
-				precision: templateData.precision || { type: 'none' },
 				options: templateData.options || null,
 				grades: templateData.grades,
 				// Categorization fields (independent from grades)

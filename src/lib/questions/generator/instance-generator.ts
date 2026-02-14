@@ -365,7 +365,6 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			solution: resolvedSolution,
 			exerciseInstruction: template.exerciseInstruction,
 			options: template.options,
-			precision: template.precision,
 			grades: template.grades,
 			theme: template.theme,
 			domain: template.domain,

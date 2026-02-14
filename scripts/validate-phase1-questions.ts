@@ -241,8 +241,8 @@ function validateTemplateStructure(template: any): void {
 		case 'numerical_exact':
 		case 'numerical_decimal':
 		case 'numerical_rounded':
-			// Should have precision for decimal/rounded
-			if (template.type !== 'numerical_exact' && !template.precision) {
+			// Should have precision for decimal/rounded (now in shared.blankDefaults)
+			if (template.type !== 'numerical_exact' && !template.shared?.blankDefaults?.precision) {
 				console.warn(`Warning: ${template.type} without precision specification`);
 			}
 			break;

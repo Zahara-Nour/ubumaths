@@ -66,13 +66,8 @@ export const createQuestionTemplateSchema = z.object({
 		.max(50, 'Trop de variations (max 50)')
 		.optional(),
 	exerciseInstruction: z.string().max(500).optional(),
-	precision: z
-		.object({
-			type: z.enum(['none', 'absolute', 'relative']),
-			value: z.number().optional()
-		})
-		.optional()
-		.default({ type: 'none' }),
+	shared: z.unknown().optional().nullable(),
+	defaultDisplayOptions: z.unknown().optional().nullable(),
 	options: z.unknown().optional().nullable(),
 	grades: z.array(gradeSchema).min(1, 'Au moins un niveau requis'),
 	theme: z.string().min(1, 'Thème requis').max(100),
@@ -129,13 +124,8 @@ export const questionTemplateResponseSchema = z.object({
 	description: z.string().nullable().optional(),
 	variations: z.array(z.unknown()).nullable().optional(),
 	exerciseInstruction: z.string().nullable().optional(),
-	precision: z
-		.object({
-			type: z.enum(['none', 'absolute', 'relative']),
-			value: z.number().optional()
-		})
-		.nullable()
-		.optional(),
+	shared: z.unknown().nullable().optional(),
+	defaultDisplayOptions: z.unknown().nullable().optional(),
 	options: z.unknown().nullable().optional(),
 	grades: z.array(gradeSchema),
 	theme: z.string(),

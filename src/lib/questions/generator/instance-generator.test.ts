@@ -41,7 +41,6 @@ describe('generateInstance - Numerical Exact Questions', () => {
 					blanks: [{ expectedAnswer: '{{eval:a + b}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Addition',
@@ -80,7 +79,6 @@ describe('generateInstance - Numerical Exact Questions', () => {
 					blanks: [{ expectedAnswer: '{{x}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -121,7 +119,6 @@ describe('generateInstance - Numerical Exact Questions', () => {
 					blanks: [{ expectedAnswer: '{{x}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -388,7 +385,6 @@ describe('generateInstance - Complex Variable Resolution', () => {
 					blanks: [{ expectedAnswer: '{{eval:(num1+num2)/den}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6', '5'],
 			theme: 'Fractions',
 			domain: 'Addition',
@@ -431,7 +427,6 @@ describe('generateInstance - Complex Variable Resolution', () => {
 					blanks: [{ expectedAnswer: '{{eval:num/den}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6', '5'],
 			theme: 'Fractions',
 			domain: 'Simplification',
@@ -474,7 +469,6 @@ describe('generateInstance - Content Resolution', () => {
 					blanks: [{ expectedAnswer: '{{eval:x * y}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Multiplication',
@@ -511,7 +505,6 @@ describe('generateInstance - Content Resolution', () => {
 					blanks: [{ expectedAnswer: '{{eval:a/b}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Fractions',
 			domain: 'Division',
@@ -554,7 +547,6 @@ describe('generateInstance - Content Resolution', () => {
 					}
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Addition',
@@ -579,80 +571,6 @@ describe('generateInstance - Content Resolution', () => {
 	});
 });
 
-describe('generateInstance - Precision Handling', () => {
-	it('should include decimal precision', () => {
-		const template: QuestionTemplate = {
-			id: 'test-14',
-
-			title: 'Test Question',
-			status: 'draft' as const,
-			variations: [
-				{
-					statement: templateMarkdown('Calculate ${{a}} / {{b}} = ?$'),
-					variables: [
-						{ name: 'a', expression: '{{random:1..10}}' },
-						{ name: 'b', expression: '{{random:2..9}}' }
-					],
-					blanks: [{ expectedAnswer: '{{eval:a/b}}' }]
-				}
-			],
-			precision: { type: 'decimal', digits: 2 },
-			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Division',
-			level: 2,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		};
-
-		const result = generateInstance(template);
-
-		expect(result.success).toBe(true);
-		if (!result.success) return;
-
-		expect(result.instance.precision).toEqual({ type: 'decimal', digits: 2 });
-	});
-
-	it('should include tolerance precision', () => {
-		const template: QuestionTemplate = {
-			id: 'test-15',
-
-			title: 'Test Question',
-			status: 'draft' as const,
-			variations: [
-				{
-					statement: templateMarkdown('Estimate ${{a}} / {{b}} = ?$'),
-					variables: [
-						{ name: 'a', expression: '{{random:10..100}}' },
-						{ name: 'b', expression: '{{random:2..9}}' }
-					],
-					blanks: [{ expectedAnswer: '{{eval:a/b}}' }]
-				}
-			],
-			precision: { type: 'tolerance', tolerance: 0.1, mode: 'absolute' },
-			grades: ['3'],
-			theme: 'Arithmétique',
-			domain: 'Racine carrée',
-			level: 3,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		};
-
-		const result = generateInstance(template);
-
-		expect(result.success).toBe(true);
-		if (!result.success) return;
-
-		expect(result.instance.precision).toEqual({
-			type: 'tolerance',
-			tolerance: 0.1,
-			mode: 'absolute'
-		});
-	});
-});
-
 describe('generateInstance - Validation Errors', () => {
 	it('should fail on circular dependency', () => {
 		const template: QuestionTemplate = {
@@ -670,7 +588,6 @@ describe('generateInstance - Validation Errors', () => {
 					blanks: [{ expectedAnswer: '{{a}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -706,7 +623,6 @@ describe('generateInstance - Validation Errors', () => {
 					blanks: [{ expectedAnswer: '{{x}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -737,7 +653,6 @@ describe('generateInstance - Validation Errors', () => {
 					blanks: [{ expectedAnswer: '{{a}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -770,7 +685,6 @@ describe('generateInstance - Edge Cases', () => {
 					blanks: [{ expectedAnswer: '4' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Addition',
@@ -802,7 +716,6 @@ describe('generateInstance - Edge Cases', () => {
 					blanks: [{ expectedAnswer: '42' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -836,7 +749,6 @@ describe('generateInstance - Edge Cases', () => {
 					blanks: [{ expectedAnswer: '{{eval:a * 2}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Multiplication',
@@ -922,7 +834,6 @@ describe('generateInstance - Real-World Templates', () => {
 					blanks: [{ expectedAnswer: '{{eval:price - reduction}}' }]
 				}
 			],
-			precision: { type: 'decimal', digits: 2 },
 			grades: ['6', '5'],
 			theme: 'Arithmétique',
 			domain: 'Pourcentages',
@@ -970,7 +881,6 @@ describe('generateInstance - Variation Selection', () => {
 					blanks: [{ expectedAnswer: '{{eval:a - b}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Opérations',
@@ -1013,7 +923,6 @@ describe('generateInstance - Variation Selection', () => {
 					blanks: [{ expectedAnswer: '{{eval:a - b}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Opérations',
@@ -1060,7 +969,6 @@ describe('generateInstance - Variation Selection', () => {
 					blanks: [{ expectedAnswer: '4' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -1118,7 +1026,6 @@ describe('generateInstance - Variation Selection', () => {
 					blanks: [{ expectedAnswer: '10' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -1157,7 +1064,6 @@ describe('generateInstance - Shared Fields', () => {
 					blanks: [{ expectedAnswer: '{{eval:a + b}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Addition',
@@ -1198,7 +1104,6 @@ describe('generateInstance - Shared Fields', () => {
 					blanks: [{ expectedAnswer: '{{eval:x + y}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Addition',
@@ -1233,7 +1138,6 @@ describe('generateInstance - Shared Fields', () => {
 					blanks: [{ expectedAnswer: '7' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -1271,7 +1175,6 @@ describe('generateInstance - Shared Fields', () => {
 					blanks: [{ expectedAnswer: '{{c}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -1316,7 +1219,6 @@ describe('generateInstance - Shared Fields', () => {
 					blanks: [{ expectedAnswer: '{{x}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -1356,7 +1258,6 @@ describe('generateInstance - Shared Fields', () => {
 					blanks: [{ expectedAnswer: '{{result}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -1399,7 +1300,6 @@ describe('generateInstance - Shared Fields', () => {
 					blanks: [{ expectedAnswer: '{{eval:a + b}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Addition',
@@ -1498,7 +1398,6 @@ describe('generateInstance - Shared Fields', () => {
 					blanks: [{ expectedAnswer: '{{eval:a * b}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Multiplication',
@@ -1548,7 +1447,6 @@ describe('generateInstance - Shared Fields', () => {
 					blanks: [{ expectedAnswer: '{{result}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -1595,7 +1493,6 @@ describe('generateInstance - Shared Fields', () => {
 					blanks: [{ expectedAnswer: '{{eval:base - deduct}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -1651,7 +1548,6 @@ describe('generateInstance - Shared Fields', () => {
 					blanks: [{ expectedAnswer: '{{eval:a + b}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Addition',
