@@ -1021,11 +1021,10 @@
 		<div class="space-y-4 py-4">
 			<div class="space-y-2">
 				<Label for="source-variation">Variation source</Label>
-				{@const duplicateSourceValue = String(duplicateSourceIndex)}
 				<MySelect
 					id="source-variation"
 					type="single"
-					value={duplicateSourceValue}
+					value={String(duplicateSourceIndex)}
 					onValueChange={(v) => (duplicateSourceIndex = Number(v))}
 					items={variations.map((_, index) => ({
 						value: String(index),
