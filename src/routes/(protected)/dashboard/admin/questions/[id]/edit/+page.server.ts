@@ -15,6 +15,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { mapDbTemplateToForm } from '$lib/questions/types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { profile, supabase } = locals;
@@ -38,6 +39,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	return {
-		template
+		template: mapDbTemplateToForm(template as unknown as Record<string, unknown>)
 	};
 };
