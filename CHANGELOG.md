@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.10](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.9...v0.8.10) (2026-02-14)
+
+### ✨ Features
+
+- **questions:** add flash mode for fill-in-the-blanks display ([99b035d](https://github.com/Zahara-Nour/ubumaths/commit/99b035db39d765b9762d1b18d9dc82c075cfb992))
+- **questions:** improve QuestionTemplateForm UX (validation, dirty state, memoization) ([42465c7](https://github.com/Zahara-Nour/ubumaths/commit/42465c76d79dc9a47736bc14830603882214f864))
+- **questions:** redesign FlashCard back with correction mode ([02a01cb](https://github.com/Zahara-Nour/ubumaths/commit/02a01cb7aea1bf949ea510fced3b7904455c95e6))
+
+### 🐛 Bug Fixes
+
+- **api:** align Zod schemas with actual types and Supabase response format ([64371b5](https://github.com/Zahara-Nour/ubumaths/commit/64371b561f4cfa492cb8fec100dfdda82b51db8d))
+- **questions:** clean buildTemplate output (QCM fields, empty vars, default precision) ([7fdffd0](https://github.com/Zahara-Nour/ubumaths/commit/7fdffd09668c2bb052fe64d446a99d02214c8330))
+- **questions:** clean up QuestionTemplateForm (dead code, accents, minor improvements) ([9a50700](https://github.com/Zahara-Nour/ubumaths/commit/9a5070052431351fec4204fb8204acf16a60700e))
+- **questions:** ensure blankDefaults.precision is always initialized ([8cd7df7](https://github.com/Zahara-Nour/ubumaths/commit/8cd7df776fa4024b7276e96c3d62df53513c04cd))
+- **questions:** improve correction display for fill-in-blanks ([04c4c19](https://github.com/Zahara-Nour/ubumaths/commit/04c4c19d1e440df79f6a2cda9663103f54a5b143))
+- **questions:** map snake_case DB fields to camelCase for edit form ([b9faae7](https://github.com/Zahara-Nour/ubumaths/commit/b9faae74d773d87daa9dbc55cfb3cc76d9570025))
+- **questions:** normalize expectedAnswer for math blanks before resolution ([4d940e9](https://github.com/Zahara-Nour/ubumaths/commit/4d940e9cf46b14bd7794ce9255e950859442e918))
+- **questions:** skip expression augmentation in flash mode ([a475b8a](https://github.com/Zahara-Nour/ubumaths/commit/a475b8aabf2c66b46a840335fdabd25308f1ad4b))
+
 ### [0.8.9](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.8...v0.8.9) (2026-02-14)
 
 ### ✨ Features
