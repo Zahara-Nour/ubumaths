@@ -331,12 +331,16 @@
 	}
 
 	// Helper to convert string to QuestionCorrection object
+	// Splits on double newlines to preserve multi-step structure (inverse of correctionToString)
 	function stringToCorrection(str: string): QuestionCorrection | undefined {
 		const trimmed = str.trim();
 		if (!trimmed) return undefined;
-		// Store simple string as steps
+		const steps = trimmed
+			.split(/\n\n+/)
+			.map((s) => templateMarkdown(s.trim()))
+			.filter((s) => s);
 		return {
-			steps: [templateMarkdown(trimmed)]
+			steps
 		};
 	}
 
@@ -764,7 +768,10 @@
 						Catégorisation
 						<button
 							type="button"
-							onclick={() => (categorizationHelpOpen = true)}
+							onclick={(e) => {
+								e.stopPropagation();
+								categorizationHelpOpen = true;
+							}}
 							class="text-muted-foreground transition-colors hover:text-foreground"
 							aria-label="Aide sur la catégorisation"
 						>
@@ -920,7 +927,10 @@
 									Variables partagées
 									<button
 										type="button"
-										onclick={() => (sharedVariableHelpOpen = true)}
+										onclick={(e) => {
+											e.stopPropagation();
+											sharedVariableHelpOpen = true;
+										}}
 										class="text-muted-foreground transition-colors hover:text-foreground"
 										aria-label="Aide sur les variables partagées"
 									>
@@ -1202,7 +1212,10 @@
 											Énoncé <span class="text-destructive">*</span>
 											<button
 												type="button"
-												onclick={() => (statementHelpOpen = true)}
+												onclick={(e) => {
+													e.stopPropagation();
+													statementHelpOpen = true;
+												}}
 												class="text-muted-foreground transition-colors hover:text-foreground"
 												aria-label="Aide sur l'énoncé"
 											>
@@ -1242,7 +1255,10 @@
 											Variables
 											<button
 												type="button"
-												onclick={() => (variableHelpOpen = true)}
+												onclick={(e) => {
+													e.stopPropagation();
+													variableHelpOpen = true;
+												}}
 												class="text-muted-foreground transition-colors hover:text-foreground"
 												aria-label="Aide sur les variables"
 											>
@@ -1279,7 +1295,10 @@
 											Réponse <span class="text-destructive">*</span>
 											<button
 												type="button"
-												onclick={() => (answerHelpOpen = true)}
+												onclick={(e) => {
+													e.stopPropagation();
+													answerHelpOpen = true;
+												}}
 												class="text-muted-foreground transition-colors hover:text-foreground"
 												aria-label="Aide sur la réponse"
 											>
@@ -1319,7 +1338,10 @@
 											Correction (optionnel)
 											<button
 												type="button"
-												onclick={() => (correctionHelpOpen = true)}
+												onclick={(e) => {
+													e.stopPropagation();
+													correctionHelpOpen = true;
+												}}
 												class="text-muted-foreground transition-colors hover:text-foreground"
 												aria-label="Aide sur la correction"
 											>
