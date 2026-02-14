@@ -37,17 +37,6 @@
 	} from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
 	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
-
-	// Helper to check if QuestionCorrection has meaningful content
-	function _hasNonEmptyCorrection(correction: QuestionCorrection | undefined): boolean {
-		if (!correction) return false;
-		const hasFeedback =
-			correction.feedback?.correct?.trim() ||
-			correction.feedback?.incorrect?.trim() ||
-			correction.feedback?.partial?.trim();
-		const hasSteps = correction.steps && correction.steps.some((s) => s.trim());
-		return !!(hasFeedback || hasSteps);
-	}
 	import { GRADE_CODES, GRADES } from '$lib/types/grades';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -65,6 +54,7 @@
 	import CategorySelector from './CategorySelector.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Collapsible from '$lib/components/ui/collapsible';
+	import { tick } from 'svelte';
 
 	// Lazy-loaded heavy components to reduce initial bundle size
 	let RichTextEditor = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -272,21 +262,21 @@
 	const CONSTRAINT_LABELS: Record<ConstraintId, string> = {
 		spaces: 'Espaces',
 		products: 'Symbole de multiplication',
-		brackets: 'Parentheses',
-		zeros: 'Zeros inutiles',
-		form: 'Forme generale',
+		brackets: 'Parenthèses',
+		zeros: 'Zéros inutiles',
+		form: 'Forme générale',
 		nullTerms: 'Termes nuls (x + 0)',
 		factorOne: 'Facteur 1 (1 * x)',
 		factorZero: 'Facteur 0 (0 * x)',
 		signs: 'Signes (-- = +)',
-		reducedFractions: 'Fractions irreductibles',
-		unit: 'Unite'
+		reducedFractions: 'Fractions irréductibles',
+		unit: 'Unité'
 	};
 	const CONSTRAINT_MODE_OPTIONS = [
-		{ value: '', label: 'Defaut (warn)' },
+		{ value: '', label: 'Défaut (warn)' },
 		{ value: 'strict', label: 'Strict' },
 		{ value: 'warn', label: 'Avertissement' },
-		{ value: 'off', label: 'Desactive' }
+		{ value: 'off', label: 'Désactivé' }
 	];
 	let constraintModes = $state<Record<string, string>>(
 		Object.fromEntries(CONSTRAINT_IDS.map((id) => [id, template?.options?.constraints?.[id] || '']))
@@ -575,14 +565,14 @@
 		const duplicatedVariation: QuestionVariation = {
 			// statement is now a branded string (TemplateMarkdown), so no deep copy needed
 			statement: templateMarkdown(sourceVariation.statement),
-			variables: JSON.parse(JSON.stringify(sourceVariation.variables || [])),
+			variables: structuredClone(sourceVariation.variables || []),
 			correctChoiceIndex: sourceVariation.correctChoiceIndex,
 			// correction is set from correctionStrings when building template
 			correction: undefined,
-			blanks: sourceVariation.blanks ? JSON.parse(JSON.stringify(sourceVariation.blanks)) : [],
-			choices: sourceVariation.choices ? JSON.parse(JSON.stringify(sourceVariation.choices)) : [],
+			blanks: sourceVariation.blanks ? structuredClone(sourceVariation.blanks) : [],
+			choices: sourceVariation.choices ? structuredClone(sourceVariation.choices) : [],
 			blankDefaults: sourceVariation.blankDefaults
-				? JSON.parse(JSON.stringify(sourceVariation.blankDefaults))
+				? structuredClone(sourceVariation.blankDefaults)
 				: {}
 		};
 
@@ -776,22 +766,6 @@
 	}
 
 	// Handle save
-	// Toggle status between draft and published
-	function _toggleStatus() {
-		if (status === 'draft') {
-			// Trying to publish - check for duplicates
-			if (categoryDuplicate) {
-				// Show publish confirmation dialog with suggested level
-				showPublishDialog = true;
-			} else {
-				// No duplicate, publish directly
-				status = 'published';
-			}
-		} else {
-			// Unpublishing - always allow
-			status = 'draft';
-		}
-	}
 
 	// Save as draft (no category validation)
 	function handleSaveDraft() {
@@ -813,7 +787,7 @@
 	}
 
 	// Confirm publication with adjusted level
-	function confirmPublishWithAdjustedLevel() {
+	async function confirmPublishWithAdjustedLevel() {
 		if (suggestedLevel) {
 			level = suggestedLevel;
 		}
@@ -821,10 +795,9 @@
 		showPublishDialog = false;
 
 		// Wait for next tick to let level update
-		setTimeout(() => {
-			const templateData = buildTemplate();
-			onSave(templateData);
-		}, 0);
+		await tick();
+		const templateData = buildTemplate();
+		onSave(templateData);
 	}
 
 	// Validate form
@@ -887,7 +860,6 @@
 					<CircleQuestionMark class="h-5 w-5" />
 				</button>
 			</Card.Title>
-			<Card.Description></Card.Description>
 		</Card.Header>
 		<Card.Content class="space-y-4">
 			<!-- Title (Required, with LaTeX support) -->
@@ -979,7 +951,6 @@
 							: ''}"
 					/>
 				</Collapsible.Trigger>
-				<Card.Description></Card.Description>
 				<Collapsible.Content>
 					<Card.Content class="space-y-4">
 						<div class="grid gap-4 md:grid-cols-2">
@@ -1090,26 +1061,26 @@
 					/>
 				</Collapsible.Trigger>
 				<Card.Description
-					>Transformations appliquees aux expressions avant affichage</Card.Description
+					>Transformations appliquées aux expressions avant affichage</Card.Description
 				>
 				<Collapsible.Content>
 					<Card.Content class="space-y-3">
-						<MyCheckbox bind:checked={displayShuffleTerms} label="Melanger les termes (sommes)" />
+						<MyCheckbox bind:checked={displayShuffleTerms} label="Mélanger les termes (sommes)" />
 						<MyCheckbox
 							bind:checked={displayShuffleFactors}
-							label="Melanger les facteurs (produits)"
+							label="Mélanger les facteurs (produits)"
 						/>
 						<MyCheckbox
 							bind:checked={displayShuffleTermsAndFactors}
-							label="Melanger termes et facteurs"
+							label="Mélanger termes et facteurs"
 						/>
 						<MyCheckbox
 							bind:checked={displayShallowShuffleTerms}
-							label="Melange superficiel (termes au niveau racine)"
+							label="Mélange superficiel (termes au niveau racine)"
 						/>
 						<MyCheckbox
 							bind:checked={displayShallowShuffleFactors}
-							label="Melange superficiel (facteurs au niveau racine)"
+							label="Mélange superficiel (facteurs au niveau racine)"
 						/>
 						<MyCheckbox
 							bind:checked={displayRemoveNullTerms}
@@ -1117,7 +1088,7 @@
 						/>
 						<MyCheckbox
 							bind:checked={displayRemoveUnnecessaryBrackets}
-							label="Supprimer les parentheses inutiles"
+							label="Supprimer les parenthèses inutiles"
 						/>
 						<MyCheckbox
 							bind:checked={displayRemoveSpaces}
@@ -1143,19 +1114,19 @@
 							: ''}"
 					/>
 				</Collapsible.Trigger>
-				<Card.Description>Options de validation des reponses</Card.Description>
+				<Card.Description>Options de validation des réponses</Card.Description>
 				<Collapsible.Content>
 					<Card.Content class="space-y-4">
 						<!-- General validation -->
 						<div class="space-y-3">
-							<h4 class="text-sm font-medium">Validation generale</h4>
+							<h4 class="text-sm font-medium">Validation générale</h4>
 							<MyCheckbox
 								bind:checked={optAllowEquivalent}
-								label="Accepter les formes equivalentes (1/2 = 0.5)"
+								label="Accepter les formes équivalentes (1/2 = 0.5)"
 							/>
 							<MyCheckbox
 								bind:checked={optAllowDifferentForms}
-								label="Accepter differentes formes algebriques (1/2 = 2/4)"
+								label="Accepter différentes formes algébriques (1/2 = 2/4)"
 							/>
 							<div class="space-y-1">
 								<Label>Forme canonique</Label>
@@ -1172,7 +1143,7 @@
 							</div>
 							<MyCheckbox
 								bind:checked={optOrderIndependent}
-								label="Matching des trous independant de l'ordre"
+								label="Matching des trous indépendant de l'ordre"
 							/>
 						</div>
 
@@ -1214,7 +1185,7 @@
 						{#if questionType === 'multiple_choice'}
 							<div class="space-y-3">
 								<h4 class="text-sm font-medium">Options QCM</h4>
-								<MyCheckbox bind:checked={optShuffleChoices} label="Melanger les choix" />
+								<MyCheckbox bind:checked={optShuffleChoices} label="Mélanger les choix" />
 							</div>
 						{/if}
 
@@ -1243,7 +1214,7 @@
 								{/each}
 								<MyCheckbox
 									bind:checked={optAllowBracketsInFirstNegativeTerm}
-									label="Autoriser parentheses sur premier terme negatif"
+									label="Autoriser parenthèses sur premier terme négatif"
 								/>
 							</Collapsible.Content>
 						</Collapsible.Root>
@@ -1523,7 +1494,6 @@
 							<CircleQuestionMark class="h-5 w-5" />
 						</button>
 					</Card.Title>
-					<Card.Description></Card.Description>
 				</div>
 				<Button onclick={addVariation} variant="outline" size="sm" type="button">
 					<Plus class="mr-2 h-4 w-4" />
@@ -1601,7 +1571,6 @@
 												: ''}"
 										/>
 									</Collapsible.Trigger>
-									<Card.Description></Card.Description>
 									<Collapsible.Content>
 										<Card.Content>
 											<MarkdownEditor
@@ -1644,7 +1613,6 @@
 												: ''}"
 										/>
 									</Collapsible.Trigger>
-									<Card.Description></Card.Description>
 									<Collapsible.Content>
 										<Card.Content>
 											<VariableEditor
@@ -1684,7 +1652,6 @@
 												: ''}"
 										/>
 									</Collapsible.Trigger>
-									<Card.Description></Card.Description>
 									<Collapsible.Content>
 										<Card.Content>
 											<AnswerEditor
@@ -1727,7 +1694,6 @@
 												: ''}"
 										/>
 									</Collapsible.Trigger>
-									<Card.Description></Card.Description>
 									<Collapsible.Content>
 										<Card.Content>
 											<MarkdownEditor
@@ -1758,7 +1724,7 @@
 										/>
 									</Collapsible.Trigger>
 									<Card.Description
-										>Surcharger les champs partages pour cette variation</Card.Description
+										>Surcharger les champs partagés pour cette variation</Card.Description
 									>
 									<Collapsible.Content>
 										<Card.Content class="space-y-4">
@@ -1781,13 +1747,13 @@
 
 											<!-- Parametres des trous (per-variation blankDefaults) -->
 											<div class="space-y-2">
-												<Label class="text-sm font-medium">Parametres des trous</Label>
+												<Label class="text-sm font-medium">Paramètres des trous</Label>
 												<PrecisionEditor bind:precision={variation.blankDefaults!.precision} />
 											</div>
 
 											<!-- Regles de validation -->
 											<div class="space-y-2">
-												<Label class="text-sm font-medium">Regles de validation</Label>
+												<Label class="text-sm font-medium">Règles de validation</Label>
 												<textarea
 													class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
 													bind:value={perVarValidationRulesJson[index]}
@@ -1799,7 +1765,7 @@
 
 											<!-- Formats de reponse -->
 											<div class="space-y-2">
-												<Label class="text-sm font-medium">Formats de reponse</Label>
+												<Label class="text-sm font-medium">Formats de réponse</Label>
 												<textarea
 													class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
 													bind:value={perVarAnswerFormatsJson[index]}
