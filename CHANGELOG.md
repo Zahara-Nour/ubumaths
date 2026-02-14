@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.9](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.8...v0.8.9) (2026-02-14)
+
+### ✨ Features
+
+- add raw JSON toggle to migration review cards ([0db7a1d](https://github.com/Zahara-Nour/ubumaths/commit/0db7a1dd09438f52dcae7a1eae4232f1dcf17bd4))
+- **migration:** add copy-to-clipboard buttons on raw JSON views ([89b5f37](https://github.com/Zahara-Nour/ubumaths/commit/89b5f37bcb86d0f4a9de852edab3daf2bd0063ce))
+- **migration:** add FlashCard preview with proper blank rendering ([744f54f](https://github.com/Zahara-Nour/ubumaths/commit/744f54f68588ba2a910110a17ef7985c70684681))
+- **migration:** fullscreen modal with header toolbar and navigation ([f07634c](https://github.com/Zahara-Nour/ubumaths/commit/f07634c4aa15bf04b4b81b490296daced91111b9))
+- **questions:** add all SharedVariationDefaults fields to template form ([448a88e](https://github.com/Zahara-Nour/ubumaths/commit/448a88ee1fa4b7e11bd7fb1575bba149ad562871))
+- **questions:** add display options, validation options, and per-variation overrides to form ([46a82fd](https://github.com/Zahara-Nour/ubumaths/commit/46a82fde08225f291cac6068052bcf12b360dd2c))
+
+### 🐛 Bug Fixes
+
+- **api:** allow admins to access question categories endpoints ([8d347e7](https://github.com/Zahara-Nour/ubumaths/commit/8d347e791ffd7b04dfbf451a5e41ba17bc6d588b))
+- **questions:** address code review issues in shared fields ([96bb88e](https://github.com/Zahara-Nour/ubumaths/commit/96bb88e602f10ebf4db624fd71ddc0d175409dab))
+- **questions:** fix bugs found in code review ([1a8a13d](https://github.com/Zahara-Nour/ubumaths/commit/1a8a13db4c7b76c44623d1effc012a32d4e2dd73))
+- **questions:** fix lossy correction round-trip and help button propagation ([8555b8b](https://github.com/Zahara-Nour/ubumaths/commit/8555b8b1c55872ffcbf02de24b4282c3fefb1a87))
+- **questions:** remove invalid [@const](https://github.com/const) tag placement in template form ([a1ac1bc](https://github.com/Zahara-Nour/ubumaths/commit/a1ac1bce5b3448915ef27a9120c5d3ce2ab7c86f))
+- **questions:** remove top-level precision, fix getQuestionType for shared choices ([ec6f45f](https://github.com/Zahara-Nour/ubumaths/commit/ec6f45f6a483eab82a29945d7d018cecc5988de3))
+- **questions:** resolve bare text choices causing "Variable not found" error ([36d8ff3](https://github.com/Zahara-Nour/ubumaths/commit/36d8ff36149126c3642787388fb03dcf8bbcdfa3))
+
 ### [0.8.8](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.7...v0.8.8) (2026-02-13)
 
 ### ⏪ Reverts
