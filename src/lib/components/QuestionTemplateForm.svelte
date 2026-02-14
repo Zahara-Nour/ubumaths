@@ -548,7 +548,9 @@
 							choices: variation.choices
 						}
 					: {}),
-				...(variation.blanks && variation.blanks.length > 0 ? { blanks: variation.blanks } : {}),
+				...(questionType === 'fill_in_blanks' && variation.blanks && variation.blanks.length > 0
+					? { blanks: variation.blanks }
+					: {}),
 				...(cleanedBlankDefaults ? { blankDefaults: cleanedBlankDefaults } : {}),
 				correction: stringToCorrection(extra.correctionString)
 			};
