@@ -27,7 +27,11 @@
 		QuestionVariation,
 		QuestionCorrection,
 		QuestionType,
-		GradeLevel
+		QuestionVariable,
+		GradeLevel,
+		RequiredForm,
+		BlankDefaults,
+		SharedVariationDefaults
 	} from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
 
@@ -52,6 +56,8 @@
 	import { MarkdownEditor } from '$lib/components/markdown';
 	import AnswerEditor from './AnswerEditor.svelte';
 	import MySelect from './MySelect.svelte';
+	import MyCheckbox from './MyCheckbox.svelte';
+	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { templateMarkdown } from '$lib/ubumark';
 	import CategorySelector from './CategorySelector.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -214,8 +220,50 @@
 	// Type-specific fields (shared)
 	let multipleAnswers = $state<boolean | undefined>(template?.multipleAnswers);
 
+	// Shared variables (resolved before per-variation variables)
+	let sharedVariables = $state<QuestionVariable[]>(template?.shared?.variables || []);
+	let sharedStatement = $state(templateMarkdown(template?.shared?.statement || ''));
+	let sharedSolution = $state<string | string[]>(template?.shared?.solution || '');
+	let sharedCorrectionString = $state(correctionToString(template?.shared?.correction));
+	let sharedChoices = $state(template?.shared?.choices ?? []);
+	let sharedRequiredFormSelect = $state<string>(
+		template?.shared?.requiredForm
+			? typeof template.shared.requiredForm === 'string'
+				? template.shared.requiredForm
+				: 'custom'
+			: ''
+	);
+	let sharedRequiredFormPattern = $state(
+		template?.shared?.requiredForm && typeof template.shared.requiredForm === 'object'
+			? template.shared.requiredForm.pattern
+			: ''
+	);
+	let sharedBlankPrecision = $state(template?.shared?.blankDefaults?.precision);
+	let sharedBlankRequiredFormSelect = $state<string>(
+		template?.shared?.blankDefaults?.requiredForm
+			? typeof template.shared.blankDefaults.requiredForm === 'string'
+				? template.shared.blankDefaults.requiredForm
+				: 'custom'
+			: ''
+	);
+	let sharedBlankRequiredFormPattern = $state(
+		template?.shared?.blankDefaults?.requiredForm &&
+			typeof template.shared.blankDefaults.requiredForm === 'object'
+			? template.shared.blankDefaults.requiredForm.pattern
+			: ''
+	);
+	let sharedBlankUnitExpected = $state(template?.shared?.blankDefaults?.unit?.expected ?? false);
+	let sharedBlankUnitRequired = $state(template?.shared?.blankDefaults?.unit?.required || '');
+	let sharedValidationRulesJson = $state(
+		JSON.stringify(template?.shared?.validationRules || [], null, 2)
+	);
+	let sharedAnswerFormatsJson = $state(
+		JSON.stringify(template?.shared?.answerFormats || {}, null, 2)
+	);
+
 	// Help dialog states
 	let titleDescriptionHelpOpen = $state(false);
+	let sharedVariableHelpOpen = $state(false);
 	let variableHelpOpen = $state(false);
 	let exerciseInstructionHelpOpen = $state(false);
 	let categorizationHelpOpen = $state(false);
@@ -229,6 +277,15 @@
 	let categorizationOpen = $state(true); // Open by default as it's required
 	let correctionOpen = $state(false);
 	let statementSectionOpen = $state(true); // Open by default as it's required
+	let sharedFieldsOpen = $state(false); // Closed by default
+	let sharedStatementOpen = $state(false);
+	let sharedVariablesOpen = $state(true); // Open by default for ease of use
+	let sharedSolutionOpen = $state(false);
+	let sharedCorrectionSharedOpen = $state(false);
+	let sharedRequiredFormOpen = $state(false);
+	let sharedBlankDefaultsOpen = $state(false);
+	let sharedValidationOpen = $state(false);
+	let sharedFormatsOpen = $state(false);
 	let variablesOpen = $state(true); // Open by default for ease of use
 	let answerSectionOpen = $state(true); // Open by default as it's required
 
@@ -290,6 +347,15 @@
 	const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
 		{ value: 'fill_in_blanks', label: 'Texte à trous' },
 		{ value: 'multiple_choice', label: 'QCM' }
+	];
+
+	const REQUIRED_FORM_OPTIONS = [
+		{ value: '', label: 'Aucune' },
+		{ value: 'product', label: 'Produit' },
+		{ value: 'sum', label: 'Somme' },
+		{ value: 'fraction', label: 'Fraction' },
+		{ value: 'power', label: 'Puissance' },
+		{ value: 'custom', label: 'Pattern personnalisé' }
 	];
 
 	// Handle grade toggle
@@ -399,9 +465,58 @@
 			};
 		});
 
+		// Build shared defaults
+		const shared: SharedVariationDefaults = {};
+		if (sharedStatement.trim()) shared.statement = sharedStatement;
+		if (sharedVariables.length > 0) shared.variables = sharedVariables;
+		if (typeof sharedSolution === 'string' ? sharedSolution.trim() : sharedSolution.length > 0)
+			shared.solution = sharedSolution;
+		const sharedCorrectionObj = stringToCorrection(sharedCorrectionString);
+		if (sharedCorrectionObj) shared.correction = sharedCorrectionObj;
+		if (sharedChoices.length > 0) shared.choices = sharedChoices;
+		if (sharedRequiredFormSelect) {
+			if (sharedRequiredFormSelect === 'custom' && sharedRequiredFormPattern.trim()) {
+				shared.requiredForm = { pattern: sharedRequiredFormPattern.trim() };
+			} else if (sharedRequiredFormSelect !== 'custom') {
+				shared.requiredForm = sharedRequiredFormSelect as RequiredForm;
+			}
+		}
+		const blankDefaults: BlankDefaults = {};
+		if (sharedBlankPrecision && sharedBlankPrecision.type !== 'none') {
+			blankDefaults.precision = sharedBlankPrecision;
+		}
+		if (sharedBlankRequiredFormSelect) {
+			if (sharedBlankRequiredFormSelect === 'custom' && sharedBlankRequiredFormPattern.trim()) {
+				blankDefaults.requiredForm = {
+					pattern: sharedBlankRequiredFormPattern.trim()
+				};
+			} else if (sharedBlankRequiredFormSelect !== 'custom') {
+				blankDefaults.requiredForm = sharedBlankRequiredFormSelect as RequiredForm;
+			}
+		}
+		if (sharedBlankUnitExpected) {
+			blankDefaults.unit = { expected: true };
+			if (sharedBlankUnitRequired.trim())
+				blankDefaults.unit.required = sharedBlankUnitRequired.trim();
+		}
+		if (Object.keys(blankDefaults).length > 0) shared.blankDefaults = blankDefaults;
+		try {
+			const rules = JSON.parse(sharedValidationRulesJson);
+			if (Array.isArray(rules) && rules.length > 0) shared.validationRules = rules;
+		} catch {
+			/* ignore invalid JSON */
+		}
+		try {
+			const fmts = JSON.parse(sharedAnswerFormatsJson);
+			if (Object.keys(fmts).length > 0) shared.answerFormats = fmts;
+		} catch {
+			/* ignore invalid JSON */
+		}
+
 		const base = {
 			title,
 			description: description.trim() ? description : undefined,
+			shared: Object.keys(shared).length > 0 ? shared : undefined,
 			variations: cleanedVariations,
 			exerciseInstruction,
 			grades,
@@ -717,6 +832,245 @@
 		</div>
 		<Input id="exercise-instruction" type="text" bind:value={exerciseInstruction} />
 	</div>
+
+	<!-- Champs partagés (shared defaults for all variations) -->
+	<Card.Root>
+		<Card.Header>
+			<Collapsible.Root bind:open={sharedFieldsOpen}>
+				<Collapsible.Trigger
+					class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+				>
+					<Card.Title>Champs partagés</Card.Title>
+					<ChevronDown
+						class="h-4 w-4 transition-transform duration-200 {sharedFieldsOpen ? 'rotate-180' : ''}"
+					/>
+				</Collapsible.Trigger>
+				<Card.Description>Valeurs par défaut héritées par toutes les variations</Card.Description>
+				<Collapsible.Content>
+					<Card.Content class="space-y-4">
+						<!-- 1. Énoncé partagé -->
+						<Collapsible.Root bind:open={sharedStatementOpen}>
+							<Collapsible.Trigger
+								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
+							>
+								<span class="text-sm font-medium">Énoncé partagé</span>
+								<ChevronDown
+									class="h-4 w-4 transition-transform duration-200 {sharedStatementOpen
+										? 'rotate-180'
+										: ''}"
+								/>
+							</Collapsible.Trigger>
+							<Collapsible.Content class="pt-2">
+								<MarkdownEditor
+									bind:value={sharedStatement}
+									showParameterization={true}
+									variables={sharedVariables}
+									placeholder="Énoncé partagé par toutes les variations..."
+									rows={4}
+								/>
+							</Collapsible.Content>
+						</Collapsible.Root>
+
+						<!-- 2. Variables partagées -->
+						<Collapsible.Root bind:open={sharedVariablesOpen}>
+							<Collapsible.Trigger
+								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
+							>
+								<span class="flex items-center gap-2 text-sm font-medium">
+									Variables partagées
+									<button
+										type="button"
+										onclick={() => (sharedVariableHelpOpen = true)}
+										class="text-muted-foreground transition-colors hover:text-foreground"
+										aria-label="Aide sur les variables partagées"
+									>
+										<CircleQuestionMark class="h-4 w-4" />
+									</button>
+								</span>
+								<ChevronDown
+									class="h-4 w-4 transition-transform duration-200 {sharedVariablesOpen
+										? 'rotate-180'
+										: ''}"
+								/>
+							</Collapsible.Trigger>
+							<Collapsible.Content class="pt-2">
+								<VariableEditor
+									bind:variables={sharedVariables}
+									bind:helpDialogOpen={sharedVariableHelpOpen}
+								/>
+							</Collapsible.Content>
+						</Collapsible.Root>
+
+						<!-- 3. Réponse partagée -->
+						<Collapsible.Root bind:open={sharedSolutionOpen}>
+							<Collapsible.Trigger
+								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
+							>
+								<span class="text-sm font-medium">Réponse partagée</span>
+								<ChevronDown
+									class="h-4 w-4 transition-transform duration-200 {sharedSolutionOpen
+										? 'rotate-180'
+										: ''}"
+								/>
+							</Collapsible.Trigger>
+							<Collapsible.Content class="pt-2">
+								<AnswerEditor
+									{questionType}
+									bind:answer={sharedSolution}
+									bind:choices={sharedChoices}
+									{multipleAnswers}
+								/>
+							</Collapsible.Content>
+						</Collapsible.Root>
+
+						<!-- 4. Correction partagée -->
+						<Collapsible.Root bind:open={sharedCorrectionSharedOpen}>
+							<Collapsible.Trigger
+								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
+							>
+								<span class="text-sm font-medium">Correction partagée</span>
+								<ChevronDown
+									class="h-4 w-4 transition-transform duration-200 {sharedCorrectionSharedOpen
+										? 'rotate-180'
+										: ''}"
+								/>
+							</Collapsible.Trigger>
+							<Collapsible.Content class="pt-2">
+								<MarkdownEditor
+									bind:value={sharedCorrectionString}
+									showParameterization={true}
+									variables={sharedVariables}
+									placeholder="Correction partagée par toutes les variations..."
+									rows={4}
+								/>
+							</Collapsible.Content>
+						</Collapsible.Root>
+
+						<!-- 5. Forme requise -->
+						<Collapsible.Root bind:open={sharedRequiredFormOpen}>
+							<Collapsible.Trigger
+								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
+							>
+								<span class="text-sm font-medium">Forme requise</span>
+								<ChevronDown
+									class="h-4 w-4 transition-transform duration-200 {sharedRequiredFormOpen
+										? 'rotate-180'
+										: ''}"
+								/>
+							</Collapsible.Trigger>
+							<Collapsible.Content class="space-y-2 pt-2">
+								<MySelect
+									type="single"
+									bind:value={sharedRequiredFormSelect}
+									items={REQUIRED_FORM_OPTIONS}
+								/>
+								{#if sharedRequiredFormSelect === 'custom'}
+									<Input
+										type="text"
+										bind:value={sharedRequiredFormPattern}
+										placeholder="Pattern personnalisé (ex: a:integer * b:integer)"
+									/>
+								{/if}
+							</Collapsible.Content>
+						</Collapsible.Root>
+
+						<!-- 6. Paramètres des trous (blankDefaults) -->
+						<Collapsible.Root bind:open={sharedBlankDefaultsOpen}>
+							<Collapsible.Trigger
+								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
+							>
+								<span class="text-sm font-medium">Paramètres des trous</span>
+								<ChevronDown
+									class="h-4 w-4 transition-transform duration-200 {sharedBlankDefaultsOpen
+										? 'rotate-180'
+										: ''}"
+								/>
+							</Collapsible.Trigger>
+							<Collapsible.Content class="space-y-4 pt-2">
+								<div class="space-y-2">
+									<Label>Précision</Label>
+									<PrecisionEditor bind:precision={sharedBlankPrecision} />
+								</div>
+								<div class="space-y-2">
+									<Label>Forme requise (trous)</Label>
+									<MySelect
+										type="single"
+										bind:value={sharedBlankRequiredFormSelect}
+										items={REQUIRED_FORM_OPTIONS}
+									/>
+									{#if sharedBlankRequiredFormSelect === 'custom'}
+										<Input
+											type="text"
+											bind:value={sharedBlankRequiredFormPattern}
+											placeholder="Pattern personnalisé"
+										/>
+									{/if}
+								</div>
+								<div class="space-y-2">
+									<MyCheckbox bind:checked={sharedBlankUnitExpected} label="Unité requise" />
+									{#if sharedBlankUnitExpected}
+										<Input
+											type="text"
+											bind:value={sharedBlankUnitRequired}
+											placeholder="Unité imposée (ex: m, kg, cm²)"
+										/>
+									{/if}
+								</div>
+							</Collapsible.Content>
+						</Collapsible.Root>
+
+						<!-- 7. Règles de validation -->
+						<Collapsible.Root bind:open={sharedValidationOpen}>
+							<Collapsible.Trigger
+								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
+							>
+								<span class="text-sm font-medium">Règles de validation</span>
+								<ChevronDown
+									class="h-4 w-4 transition-transform duration-200 {sharedValidationOpen
+										? 'rotate-180'
+										: ''}"
+								/>
+							</Collapsible.Trigger>
+							<Collapsible.Content class="pt-2">
+								<textarea
+									class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+									bind:value={sharedValidationRulesJson}
+									rows={5}
+									placeholder="[]"
+								></textarea>
+								<p class="mt-1 text-xs text-muted-foreground">Format JSON (tableau de règles)</p>
+							</Collapsible.Content>
+						</Collapsible.Root>
+
+						<!-- 8. Formats de réponse -->
+						<Collapsible.Root bind:open={sharedFormatsOpen}>
+							<Collapsible.Trigger
+								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
+							>
+								<span class="text-sm font-medium">Formats de réponse</span>
+								<ChevronDown
+									class="h-4 w-4 transition-transform duration-200 {sharedFormatsOpen
+										? 'rotate-180'
+										: ''}"
+								/>
+							</Collapsible.Trigger>
+							<Collapsible.Content class="pt-2">
+								<textarea
+									class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+									bind:value={sharedAnswerFormatsJson}
+									rows={5}
+									placeholder={'{}'}
+								></textarea>
+								<p class="mt-1 text-xs text-muted-foreground">
+									Format JSON (clé = nom de variable, valeur = format)
+								</p>
+							</Collapsible.Content>
+						</Collapsible.Root>
+					</Card.Content>
+				</Collapsible.Content>
+			</Collapsible.Root>
+		</Card.Header>
+	</Card.Root>
 
 	<!-- Variations Management -->
 	<Card.Root>
