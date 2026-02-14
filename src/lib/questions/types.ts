@@ -482,6 +482,26 @@ export interface QuestionTemplate {
 	created_by?: string; // UUID of creator
 }
 
+/**
+ * Map a raw Supabase question_templates row (snake_case) to QuestionTemplate (camelCase).
+ *
+ * Supabase returns column names as-is (snake_case), but our TypeScript
+ * QuestionTemplate interface uses camelCase for multi-word fields.
+ *
+ * Fields mapped:
+ * - exercise_instruction → exerciseInstruction
+ * - default_display_options → defaultDisplayOptions
+ * - multiple_answers → multipleAnswers
+ */
+export function mapDbTemplateToForm(dbTemplate: Record<string, unknown>): QuestionTemplate {
+	return {
+		...dbTemplate,
+		exerciseInstruction: dbTemplate.exercise_instruction as string | undefined,
+		defaultDisplayOptions: dbTemplate.default_display_options as DisplayOptions | undefined,
+		multipleAnswers: dbTemplate.multiple_answers as boolean | undefined
+	} as QuestionTemplate;
+}
+
 // ============================================================================
 // QUESTION INSTANCE (generated from template)
 // ============================================================================

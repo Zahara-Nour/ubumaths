@@ -10,7 +10,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
-import { getQuestionType } from '$lib/questions/types';
+import { getQuestionType, mapDbTemplateToForm } from '$lib/questions/types';
 import { validateTemplate, detectCircularDependencies } from '$lib/questions';
 import { checkCategoryUniqueness } from '$lib/questions/category-validation';
 import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
@@ -37,7 +37,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(404, 'Template not found');
 		}
 
-		return json(template);
+		return json(mapDbTemplateToForm(template as unknown as Record<string, unknown>));
 	} catch (err) {
 		console.error('Error fetching template:', err);
 
