@@ -274,7 +274,9 @@
 			? template.shared.requiredForm.pattern
 			: ''
 	);
-	let sharedBlankPrecision = $state(template?.shared?.blankDefaults?.precision);
+	let sharedBlankPrecision = $state(
+		template?.shared?.blankDefaults?.precision ?? { type: 'none' as const }
+	);
 	let sharedBlankRequiredFormSelect = $state<string>(
 		template?.shared?.blankDefaults?.requiredForm
 			? typeof template.shared.blankDefaults.requiredForm === 'string'
@@ -358,7 +360,7 @@
 			blanks: v.blanks || [],
 			choices: v.choices || [],
 			correction: v.correction,
-			blankDefaults: v.blankDefaults || {}
+			blankDefaults: { precision: { type: 'none' as const }, ...v.blankDefaults }
 		})) || [
 			{
 				statement: templateMarkdown(''),
@@ -366,7 +368,7 @@
 				correctChoiceIndex: '',
 				blanks: [],
 				choices: [],
-				blankDefaults: {}
+				blankDefaults: { precision: { type: 'none' as const } }
 			}
 		]
 	);
@@ -456,7 +458,7 @@
 				correctChoiceIndex: '',
 				blanks: [],
 				choices: [],
-				blankDefaults: {}
+				blankDefaults: { precision: { type: 'none' as const } }
 			}
 		];
 		variationExtras = [...variationExtras, { ...DEFAULT_VARIATION_EXTRA }];
@@ -500,9 +502,10 @@
 			correction: undefined,
 			blanks: sourceVariation.blanks ? structuredClone(sourceVariation.blanks) : [],
 			choices: sourceVariation.choices ? structuredClone(sourceVariation.choices) : [],
-			blankDefaults: sourceVariation.blankDefaults
-				? structuredClone(sourceVariation.blankDefaults)
-				: {}
+			blankDefaults: {
+				precision: { type: 'none' as const },
+				...(sourceVariation.blankDefaults ? structuredClone(sourceVariation.blankDefaults) : {})
+			}
 		};
 
 		// Replace the current variation with the duplicated content

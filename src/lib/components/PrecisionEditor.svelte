@@ -23,10 +23,9 @@
 	import { Badge } from '$lib/components/ui/badge';
 
 	interface Props {
-		precision?: PrecisionType;
+		precision: PrecisionType;
 	}
 
-	// Initialize with default value if undefined
 	let { precision = $bindable({ type: 'none' }) }: Props = $props();
 
 	// Precision type options
