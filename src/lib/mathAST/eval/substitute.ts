@@ -12,7 +12,7 @@ import type { FunctionBindings } from './function-bindings';
 import { DEFAULT_SUBSTITUTE_OPTIONS } from './types';
 import { mapNode } from '../transforms';
 import { isVariable, isGreek } from '../guards';
-import { number } from '../factory';
+import { number, multiply } from '../factory';
 import { parseLatex } from '../parser';
 
 // =============================================================================
@@ -90,6 +90,57 @@ function hasSubstitutableVariables(node: MathNode, bindings: EvalBindings): bool
 // =============================================================================
 // Single-Pass Substitution
 // =============================================================================
+
+/**
+ * Check if the leftmost leaf of a node is a NumberNode.
+ *
+ * Used to detect when implicit multiplication would produce ambiguous
+ * digit concatenation after substitution (e.g., 2*5 rendered as "25").
+ *
+ * @internal
+ */
+function leftmostIsNumber(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+			return true;
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return leftmostIsNumber(node.left);
+		case 'opposite':
+		case 'positive':
+			return leftmostIsNumber(node.operand);
+		default:
+			return false;
+	}
+}
+
+/**
+ * Fix implicit multiplication nodes where the right side starts with a number.
+ *
+ * After variable substitution, an implicit multiplication like `2k` (2 × k)
+ * may become `2 × 5`. If we keep `displayStyle: 'implicit'`,
+ * serialization would produce "25" instead of "2*5".
+ *
+ * Similarly, `xk` with k=5 would produce "x5" which is ambiguous
+ * (could be variable name `x5`).
+ *
+ * This function changes `implicit` → `star` whenever the right operand
+ * starts with a number.
+ *
+ * @internal
+ */
+function fixImplicitMultiplication(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (n.type === 'multiplication' && n.displayStyle === 'implicit' && leftmostIsNumber(n.right)) {
+			return multiply(n.left, n.right, 'star', {
+				operatorMetadata: n.operatorMetadata,
+				metadata: n.metadata
+			});
+		}
+		return n;
+	});
+}
 
 /**
  * Perform a single pass of substitution through the AST.
@@ -196,8 +247,8 @@ export function substitute(
 		// Perform one pass of substitution
 		const next = substituteOnce(current, bindings);
 
-		// Move to next iteration
-		current = next;
+		// Fix implicit multiplication where both sides became numeric
+		current = fixImplicitMultiplication(next);
 		iteration++;
 	}
 
