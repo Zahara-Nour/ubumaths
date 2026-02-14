@@ -2210,9 +2210,13 @@ export function transformQuestion(
 			template.delay = oldQuestion.defaultDelay;
 		}
 
-		// Add precision for decimal questions
+		// Add precision for decimal questions (via shared blankDefaults)
 		if (oldQuestion['result-type'] === 'decimal') {
-			template.precision = { type: 'decimal', digits: 2 }; // Default to 2 decimal places
+			if (!template.shared) template.shared = {};
+			template.shared.blankDefaults = {
+				...template.shared.blankDefaults,
+				precision: { type: 'decimal', digits: 2 }
+			};
 			warnings.push('Decimal precision set to 2 places by default - verify if correct');
 		}
 

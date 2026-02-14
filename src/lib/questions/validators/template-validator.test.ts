@@ -24,7 +24,6 @@ describe('validateTemplate - Valid Templates', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Addition',
@@ -54,7 +53,6 @@ describe('validateTemplate - Valid Templates', () => {
 					blanks: [{ expectedAnswer: '{eval:{@:a} + {@:b}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6', '5'],
 			theme: 'Arithmétique',
 			domain: 'Addition',
@@ -81,7 +79,6 @@ describe('validateTemplate - Valid Templates', () => {
 					blanks: [{ expectedAnswer: 'answer' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -113,7 +110,6 @@ describe('validateTemplate - Valid Templates', () => {
 					]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -151,7 +147,6 @@ describe('validateTemplate - Valid Templates', () => {
 					blanks: [{ expectedAnswer: '{eval:{@:a}-{@:b}}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Arithmétique',
 			domain: 'Opérations',
@@ -181,7 +176,6 @@ describe('validateTemplate - Required Fields', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -202,7 +196,6 @@ describe('validateTemplate - Required Fields', () => {
 			id: 'test',
 			title: 'Test Template',
 			status: 'published' as const,
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -223,7 +216,6 @@ describe('validateTemplate - Required Fields', () => {
 			title: 'Test Template',
 			status: 'published' as const,
 			variations: [],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -249,7 +241,6 @@ describe('validateTemplate - Required Fields', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -280,7 +271,6 @@ describe('validateTemplate - Required Fields', () => {
 					// solution missing — required for multiple_choice
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -307,7 +297,6 @@ describe('validateTemplate - Required Fields', () => {
 					blanks: [{ expectedAnswer: '42' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -334,7 +323,6 @@ describe('validateTemplate - Required Fields', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
@@ -360,7 +348,6 @@ describe('validateTemplate - Required Fields', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: [],
 			theme: 'Test',
 			domain: 'Test',
@@ -387,7 +374,6 @@ describe('validateTemplate - Required Fields', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			domain: 'Test',
 			level: 1,
@@ -413,7 +399,6 @@ describe('validateTemplate - Required Fields', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			level: 1,
@@ -439,7 +424,6 @@ describe('validateTemplate - Required Fields', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -467,7 +451,6 @@ describe('validateTemplate - Statement Validation', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -494,7 +477,6 @@ describe('validateTemplate - Statement Validation', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -521,7 +503,6 @@ describe('validateTemplate - Statement Validation', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -553,7 +534,6 @@ describe('validateTemplate - Variable Validation', () => {
 					blanks: [{ expectedAnswer: '{@:a}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -580,7 +560,6 @@ describe('validateTemplate - Variable Validation', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -612,7 +591,6 @@ describe('validateTemplate - Variable Validation', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -644,7 +622,6 @@ describe('validateTemplate - Variable Validation', () => {
 					blanks: [{ expectedAnswer: '{@:a}' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -763,7 +740,6 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 					blanks: [{ expectedAnswer: '10' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -795,7 +771,6 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -827,7 +802,6 @@ describe('validateTemplate - Edge Cases', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -861,7 +835,6 @@ describe('validateTemplate - Edge Cases', () => {
 					}
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -888,7 +861,6 @@ describe('validateTemplate - Edge Cases', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: [
 				'CP',
 				'CE1',
@@ -929,7 +901,6 @@ describe('validateTemplate - Edge Cases', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
@@ -961,7 +932,6 @@ describe('validateTemplate - Edge Cases', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',

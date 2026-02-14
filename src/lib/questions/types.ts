@@ -75,8 +75,12 @@ export type QuestionType = 'fill_in_blanks' | 'multiple_choice';
  * Works on templates (via resolved variation or shared), instances,
  * or any object with an optional `choices` field.
  */
-export function getQuestionType(q: { choices?: unknown[] | undefined }): QuestionType {
-	return q.choices !== undefined && q.choices !== null && q.choices.length > 0
+export function getQuestionType(q: {
+	choices?: unknown[] | undefined;
+	shared?: { choices?: unknown[] | undefined };
+}): QuestionType {
+	const choices = q.choices ?? q.shared?.choices;
+	return choices !== undefined && choices !== null && choices.length > 0
 		? 'multiple_choice'
 		: 'fill_in_blanks';
 }
@@ -438,9 +442,6 @@ export interface QuestionTemplate {
 		orderIndependent?: boolean;
 	};
 
-	/** Precision for numerical answers (shared across all variations) */
-	precision?: PrecisionType;
-
 	// ---- Metadata (shared across all variations) ----
 
 	/** Applicable grade levels */
@@ -558,7 +559,6 @@ export interface QuestionInstance {
 	exerciseInstruction?: string;
 
 	options?: QuestionTemplate['options'];
-	precision?: PrecisionType;
 	grades: GradeLevel[];
 	theme: string;
 	domain: string;

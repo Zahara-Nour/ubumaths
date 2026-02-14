@@ -307,14 +307,6 @@
 								<span>{instance.delay} secondes</span>
 							</div>
 						{/if}
-
-						<!-- Precision (if present) -->
-						{#if instance.precision}
-							<div class="flex items-center gap-2 text-sm">
-								<span class="font-medium text-muted-foreground">Précision:</span>
-								<span>{instance.precision.type}</span>
-							</div>
-						{/if}
 					</Collapsible.Content>
 				</div>
 			</Collapsible.Root>
