@@ -123,3 +123,23 @@ export function extractPromptIndices(expression: string, syntax: 'latex' | 'cust
 export function hasPrompts(expression: string, syntax: 'latex' | 'custom'): boolean {
 	return extractPromptIndices(expression, syntax).length > 0;
 }
+
+/**
+ * Convert a math expression to static flash-mode LaTeX.
+ *
+ * Converts to LaTeX then replaces all \placeholder[N]{} with \boxed{?}
+ * for non-interactive display of blanks.
+ *
+ * @param expression - The math expression string
+ * @param syntax - The syntax type: 'latex' or 'custom'
+ * @param genericFunctions - Optional configuration for generic function names
+ * @returns LaTeX string with placeholders replaced by \boxed{?}
+ */
+export function expressionToFlashLatex(
+	expression: string,
+	syntax: 'latex' | 'custom',
+	genericFunctions?: GenericFunctionConfig | null
+): string {
+	const latex = expressionToLatex(expression, syntax, genericFunctions);
+	return latex.replace(/\\placeholder\[\d+\]\{[^}]*\}/g, '\\boxed{?}');
+}
