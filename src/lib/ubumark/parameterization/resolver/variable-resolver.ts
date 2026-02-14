@@ -324,14 +324,23 @@ export function resolveExpression(
 				}
 			}
 
+			// Replace multi-character variable names via regex before AST parsing
+			// (parseCustom treats 'expression1' as e*x*p*r*e*s*s*i*o*n*1)
+			// Sort by name length descending to avoid partial replacements
+			const multiCharVars = alreadyResolved
+				.filter((rv) => rv.name.length > 1)
+				.sort((a, b) => b.name.length - a.name.length);
+			for (const rv of multiCharVars) {
+				const regex = new RegExp(`\\b${rv.name}\\b`, 'g');
+				exprToParse = exprToParse.replace(regex, rv.value);
+			}
+
 			// Parse expression: use LaTeX parser for backslash commands, custom parser otherwise
 			// Custom parser handles implicit multiplication (2k → 2*k)
 			const hasLatex = exprToParse.includes('\\');
 			const ast = hasLatex ? parseLatex(exprToParse) : parseCustom(exprToParse);
 
-			// Build bindings from already-resolved variables
-			// Only single-letter names: parseCustom treats 'ab' as a*b
-			// For multi-char variables, use {{var}} token syntax (resolved above)
+			// Build bindings from single-letter variables for AST substitution
 			const bindings: EvalBindings = {};
 			for (const rv of alreadyResolved) {
 				if (rv.name.length === 1) {
