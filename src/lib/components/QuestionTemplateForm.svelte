@@ -31,9 +31,12 @@
 		GradeLevel,
 		RequiredForm,
 		BlankDefaults,
-		SharedVariationDefaults
+		SharedVariationDefaults,
+		ConstraintMode,
+		ConstraintId
 	} from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
+	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
 
 	// Helper to check if QuestionCorrection has meaningful content
 	function _hasNonEmptyCorrection(correction: QuestionCorrection | undefined): boolean {
@@ -220,6 +223,75 @@
 	// Type-specific fields (shared)
 	let multipleAnswers = $state<boolean | undefined>(template?.multipleAnswers);
 
+	// Default display options state
+	let displayShuffleTerms = $state(template?.defaultDisplayOptions?.shuffleTerms ?? false);
+	let displayShuffleFactors = $state(template?.defaultDisplayOptions?.shuffleFactors ?? false);
+	let displayShuffleTermsAndFactors = $state(
+		template?.defaultDisplayOptions?.shuffleTermsAndFactors ?? false
+	);
+	let displayShallowShuffleTerms = $state(
+		template?.defaultDisplayOptions?.shallowShuffleTerms ?? false
+	);
+	let displayShallowShuffleFactors = $state(
+		template?.defaultDisplayOptions?.shallowShuffleFactors ?? false
+	);
+	let displayRemoveNullTerms = $state(template?.defaultDisplayOptions?.removeNullTerms ?? false);
+	let displayRemoveUnnecessaryBrackets = $state(
+		template?.defaultDisplayOptions?.removeUnnecessaryBrackets ?? false
+	);
+	let displayRemoveSpaces = $state(template?.defaultDisplayOptions?.removeSpaces ?? false);
+
+	// Template options state
+	let optAllowEquivalent = $state(template?.options?.allowEquivalent ?? false);
+	let optAllowDifferentForms = $state(template?.options?.allowDifferentForms ?? false);
+	let optCanonicalForm = $state<string>(template?.options?.canonicalForm || '');
+	let optOrderIndependent = $state(template?.options?.orderIndependent ?? false);
+	let optValidator = $state<string>(template?.options?.validator || '');
+	let optValidatorParamsJson = $state(
+		JSON.stringify(template?.options?.validatorParams || {}, null, 2)
+	);
+	let optShuffleChoices = $state(template?.options?.shuffleChoices ?? true);
+	let optAllowBracketsInFirstNegativeTerm = $state(
+		template?.options?.constraints?.allowBracketsInFirstNegativeTerm ?? false
+	);
+
+	// Constraint states
+	const CONSTRAINT_IDS: ConstraintId[] = [
+		'spaces',
+		'products',
+		'brackets',
+		'zeros',
+		'form',
+		'nullTerms',
+		'factorOne',
+		'factorZero',
+		'signs',
+		'reducedFractions',
+		'unit'
+	];
+	const CONSTRAINT_LABELS: Record<ConstraintId, string> = {
+		spaces: 'Espaces',
+		products: 'Symbole de multiplication',
+		brackets: 'Parentheses',
+		zeros: 'Zeros inutiles',
+		form: 'Forme generale',
+		nullTerms: 'Termes nuls (x + 0)',
+		factorOne: 'Facteur 1 (1 * x)',
+		factorZero: 'Facteur 0 (0 * x)',
+		signs: 'Signes (-- = +)',
+		reducedFractions: 'Fractions irreductibles',
+		unit: 'Unite'
+	};
+	const CONSTRAINT_MODE_OPTIONS = [
+		{ value: '', label: 'Defaut (warn)' },
+		{ value: 'strict', label: 'Strict' },
+		{ value: 'warn', label: 'Avertissement' },
+		{ value: 'off', label: 'Desactive' }
+	];
+	let constraintModes = $state<Record<string, string>>(
+		Object.fromEntries(CONSTRAINT_IDS.map((id) => [id, template?.options?.constraints?.[id] || '']))
+	);
+
 	// Shared variables (resolved before per-variation variables)
 	let sharedVariables = $state<QuestionVariable[]>(template?.shared?.variables || []);
 	let sharedStatement = $state(templateMarkdown(template?.shared?.statement || ''));
@@ -305,6 +377,10 @@
 	let categorizationOpen = $state(true); // Open by default as it's required
 	let correctionOpen = $state(false);
 	let statementSectionOpen = $state(true); // Open by default as it's required
+	let displayOptionsOpen = $state(false);
+	let optionsSectionOpen = $state(false);
+	let optionsConstraintsOpen = $state(false);
+	let optionsValidatorOpen = $state(false);
 	let sharedFieldsOpen = $state(false); // Closed by default
 	let sharedStatementOpen = $state(false);
 	let sharedVariablesOpen = $state(true); // Open by default for ease of use
@@ -369,6 +445,25 @@
 		template?.variations.map((v) => correctionToString(v.correction)) || ['']
 	);
 
+	// Per-variation override state arrays
+	let perVarValidationRulesJson = $state<string[]>(
+		template?.variations.map((v) => JSON.stringify(v.validationRules || [], null, 2)) || ['[]']
+	);
+	let perVarAnswerFormatsJson = $state<string[]>(
+		template?.variations.map((v) => JSON.stringify(v.answerFormats || {}, null, 2)) || ['{}']
+	);
+	let perVarRequiredFormSelect = $state<string[]>(
+		template?.variations.map((v) =>
+			v.requiredForm ? (typeof v.requiredForm === 'string' ? v.requiredForm : 'custom') : ''
+		) || ['']
+	);
+	let perVarRequiredFormPattern = $state<string[]>(
+		template?.variations.map((v) =>
+			v.requiredForm && typeof v.requiredForm === 'object' ? v.requiredForm.pattern : ''
+		) || ['']
+	);
+	let perVarOverridesOpen = $state<boolean[]>(template?.variations.map(() => false) || [false]);
+
 	// Current variation index for editing
 	let currentVariationIndex = $state(0);
 
@@ -431,6 +526,11 @@
 			}
 		];
 		correctionStrings = [...correctionStrings, ''];
+		perVarValidationRulesJson = [...perVarValidationRulesJson, '[]'];
+		perVarAnswerFormatsJson = [...perVarAnswerFormatsJson, '{}'];
+		perVarRequiredFormSelect = [...perVarRequiredFormSelect, ''];
+		perVarRequiredFormPattern = [...perVarRequiredFormPattern, ''];
+		perVarOverridesOpen = [...perVarOverridesOpen, false];
 		currentVariationIndex = variations.length - 1;
 	}
 
@@ -438,6 +538,11 @@
 		if (variations.length <= 1) return; // Must have at least 1 variation
 		variations = variations.filter((_, i) => i !== index);
 		correctionStrings = correctionStrings.filter((_, i) => i !== index);
+		perVarValidationRulesJson = perVarValidationRulesJson.filter((_, i) => i !== index);
+		perVarAnswerFormatsJson = perVarAnswerFormatsJson.filter((_, i) => i !== index);
+		perVarRequiredFormSelect = perVarRequiredFormSelect.filter((_, i) => i !== index);
+		perVarRequiredFormPattern = perVarRequiredFormPattern.filter((_, i) => i !== index);
+		perVarOverridesOpen = perVarOverridesOpen.filter((_, i) => i !== index);
 		if (currentVariationIndex >= variations.length) {
 			currentVariationIndex = variations.length - 1;
 		}
@@ -475,9 +580,21 @@
 
 		// Replace the current variation with the duplicated content
 		variations = variations.map((v, i) => (i === currentVariationIndex ? duplicatedVariation : v));
-		// Also copy the correction string
+		// Also copy the correction string and override arrays
 		correctionStrings = correctionStrings.map((s, i) =>
 			i === currentVariationIndex ? correctionStrings[duplicateSourceIndex] : s
+		);
+		perVarValidationRulesJson = perVarValidationRulesJson.map((s, i) =>
+			i === currentVariationIndex ? perVarValidationRulesJson[duplicateSourceIndex] : s
+		);
+		perVarAnswerFormatsJson = perVarAnswerFormatsJson.map((s, i) =>
+			i === currentVariationIndex ? perVarAnswerFormatsJson[duplicateSourceIndex] : s
+		);
+		perVarRequiredFormSelect = perVarRequiredFormSelect.map((s, i) =>
+			i === currentVariationIndex ? perVarRequiredFormSelect[duplicateSourceIndex] : s
+		);
+		perVarRequiredFormPattern = perVarRequiredFormPattern.map((s, i) =>
+			i === currentVariationIndex ? perVarRequiredFormPattern[duplicateSourceIndex] : s
 		);
 		showDuplicateDialog = false;
 	}
@@ -487,14 +604,43 @@
 		QuestionTemplate,
 		'id' | 'created_at' | 'updated_at' | 'created_by'
 	> {
-		// Build variations with corrections from correctionStrings
+		// Build variations with corrections and per-variation overrides
 		const cleanedVariations = variations.map((variation, index) => {
 			const correctionStr = correctionStrings[index] || '';
-			return {
+			const cleaned: QuestionVariation = {
 				...variation,
-				// Convert correction string to QuestionCorrection object
 				correction: stringToCorrection(correctionStr)
 			};
+
+			// Per-variation required form
+			const rfSelect = perVarRequiredFormSelect[index] || '';
+			if (rfSelect) {
+				if (rfSelect === 'custom' && (perVarRequiredFormPattern[index] || '').trim()) {
+					cleaned.requiredForm = { pattern: perVarRequiredFormPattern[index].trim() };
+				} else if (
+					VALID_REQUIRED_FORMS.includes(rfSelect as (typeof VALID_REQUIRED_FORMS)[number])
+				) {
+					cleaned.requiredForm = rfSelect as RequiredForm;
+				}
+			}
+
+			// Per-variation validation rules
+			try {
+				const rules = JSON.parse(perVarValidationRulesJson[index] || '[]');
+				if (Array.isArray(rules) && rules.length > 0) cleaned.validationRules = rules;
+			} catch {
+				/* ignore */
+			}
+
+			// Per-variation answer formats
+			try {
+				const fmts = JSON.parse(perVarAnswerFormatsJson[index] || '{}');
+				if (Object.keys(fmts).length > 0) cleaned.answerFormats = fmts;
+			} catch {
+				/* ignore */
+			}
+
+			return cleaned;
 		});
 
 		// Build shared defaults
@@ -557,12 +703,53 @@
 			/* ignore invalid JSON */
 		}
 
+		// Build defaultDisplayOptions
+		const displayOpts: DisplayOptions = {};
+		if (displayShuffleTerms) displayOpts.shuffleTerms = true;
+		if (displayShuffleFactors) displayOpts.shuffleFactors = true;
+		if (displayShuffleTermsAndFactors) displayOpts.shuffleTermsAndFactors = true;
+		if (displayShallowShuffleTerms) displayOpts.shallowShuffleTerms = true;
+		if (displayShallowShuffleFactors) displayOpts.shallowShuffleFactors = true;
+		if (displayRemoveNullTerms) displayOpts.removeNullTerms = true;
+		if (displayRemoveUnnecessaryBrackets) displayOpts.removeUnnecessaryBrackets = true;
+		if (displayRemoveSpaces) displayOpts.removeSpaces = true;
+		const defaultDisplayOptions = Object.keys(displayOpts).length > 0 ? displayOpts : undefined;
+
+		// Build options
+		const options: QuestionTemplate['options'] = {};
+		if (optAllowEquivalent) options.allowEquivalent = true;
+		if (optAllowDifferentForms) options.allowDifferentForms = true;
+		if (optCanonicalForm)
+			options.canonicalForm = optCanonicalForm as 'fraction' | 'decimal' | 'scientific';
+		if (optOrderIndependent) options.orderIndependent = true;
+		if (optValidator)
+			options.validator = optValidator as 'checkEquivalence' | 'checkAlgebraic' | 'checkNumeric';
+		try {
+			const vp = JSON.parse(optValidatorParamsJson);
+			if (Object.keys(vp).length > 0) options.validatorParams = vp;
+		} catch {
+			/* ignore */
+		}
+		if (!optShuffleChoices) options.shuffleChoices = false;
+		// Build constraints
+		const constraints: NonNullable<NonNullable<QuestionTemplate['options']>['constraints']> = {};
+		for (const id of CONSTRAINT_IDS) {
+			if (constraintModes[id]) {
+				(constraints as Record<string, ConstraintMode>)[id] = constraintModes[id] as ConstraintMode;
+			}
+		}
+		if (optAllowBracketsInFirstNegativeTerm) constraints.allowBracketsInFirstNegativeTerm = true;
+		if (Object.keys(constraints).length > 0) options.constraints = constraints;
+		const finalOptions = Object.keys(options).length > 0 ? options : undefined;
+
 		const base = {
 			title,
 			description: description.trim() ? description : undefined,
 			shared: Object.keys(shared).length > 0 ? shared : undefined,
+			defaultDisplayOptions,
 			variations: cleanedVariations,
 			exerciseInstruction,
+			options: finalOptions,
 			grades,
 			theme,
 			domain,
@@ -879,6 +1066,184 @@
 		</div>
 		<Input id="exercise-instruction" type="text" bind:value={exerciseInstruction} />
 	</div>
+
+	<!-- Display Options -->
+	<Card.Root>
+		<Card.Header>
+			<Collapsible.Root bind:open={displayOptionsOpen}>
+				<Collapsible.Trigger
+					class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+				>
+					<Card.Title>Options d'affichage</Card.Title>
+					<ChevronDown
+						class="h-4 w-4 transition-transform duration-200 {displayOptionsOpen
+							? 'rotate-180'
+							: ''}"
+					/>
+				</Collapsible.Trigger>
+				<Card.Description
+					>Transformations appliquees aux expressions avant affichage</Card.Description
+				>
+				<Collapsible.Content>
+					<Card.Content class="space-y-3">
+						<MyCheckbox bind:checked={displayShuffleTerms} label="Melanger les termes (sommes)" />
+						<MyCheckbox
+							bind:checked={displayShuffleFactors}
+							label="Melanger les facteurs (produits)"
+						/>
+						<MyCheckbox
+							bind:checked={displayShuffleTermsAndFactors}
+							label="Melanger termes et facteurs"
+						/>
+						<MyCheckbox
+							bind:checked={displayShallowShuffleTerms}
+							label="Melange superficiel (termes au niveau racine)"
+						/>
+						<MyCheckbox
+							bind:checked={displayShallowShuffleFactors}
+							label="Melange superficiel (facteurs au niveau racine)"
+						/>
+						<MyCheckbox
+							bind:checked={displayRemoveNullTerms}
+							label="Supprimer les termes nuls (x + 0 → x)"
+						/>
+						<MyCheckbox
+							bind:checked={displayRemoveUnnecessaryBrackets}
+							label="Supprimer les parentheses inutiles"
+						/>
+						<MyCheckbox
+							bind:checked={displayRemoveSpaces}
+							label="Supprimer les espaces de groupement des chiffres"
+						/>
+					</Card.Content>
+				</Collapsible.Content>
+			</Collapsible.Root>
+		</Card.Header>
+	</Card.Root>
+
+	<!-- Options de validation -->
+	<Card.Root>
+		<Card.Header>
+			<Collapsible.Root bind:open={optionsSectionOpen}>
+				<Collapsible.Trigger
+					class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+				>
+					<Card.Title>Options de validation</Card.Title>
+					<ChevronDown
+						class="h-4 w-4 transition-transform duration-200 {optionsSectionOpen
+							? 'rotate-180'
+							: ''}"
+					/>
+				</Collapsible.Trigger>
+				<Card.Description>Options de validation des reponses</Card.Description>
+				<Collapsible.Content>
+					<Card.Content class="space-y-4">
+						<!-- General validation -->
+						<div class="space-y-3">
+							<h4 class="text-sm font-medium">Validation generale</h4>
+							<MyCheckbox
+								bind:checked={optAllowEquivalent}
+								label="Accepter les formes equivalentes (1/2 = 0.5)"
+							/>
+							<MyCheckbox
+								bind:checked={optAllowDifferentForms}
+								label="Accepter differentes formes algebriques (1/2 = 2/4)"
+							/>
+							<div class="space-y-1">
+								<Label>Forme canonique</Label>
+								<MySelect
+									type="single"
+									bind:value={optCanonicalForm}
+									items={[
+										{ value: '', label: 'Aucune' },
+										{ value: 'fraction', label: 'Fraction' },
+										{ value: 'decimal', label: 'Decimal' },
+										{ value: 'scientific', label: 'Scientifique' }
+									]}
+								/>
+							</div>
+							<MyCheckbox
+								bind:checked={optOrderIndependent}
+								label="Matching des trous independant de l'ordre"
+							/>
+						</div>
+
+						<!-- Custom validator -->
+						<Collapsible.Root bind:open={optionsValidatorOpen}>
+							<Collapsible.Trigger
+								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
+							>
+								<span class="text-sm font-medium">Validateur custom</span>
+								<ChevronDown
+									class="h-4 w-4 transition-transform duration-200 {optionsValidatorOpen
+										? 'rotate-180'
+										: ''}"
+								/>
+							</Collapsible.Trigger>
+							<Collapsible.Content class="space-y-2 pt-2">
+								<MySelect
+									type="single"
+									bind:value={optValidator}
+									items={[
+										{ value: '', label: 'Aucun' },
+										{ value: 'checkEquivalence', label: 'Equivalence' },
+										{ value: 'checkAlgebraic', label: 'Algebrique' },
+										{ value: 'checkNumeric', label: 'Numerique' }
+									]}
+								/>
+								{#if optValidator}
+									<textarea
+										class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
+										bind:value={optValidatorParamsJson}
+										rows={3}
+										placeholder={'{}'}
+									></textarea>
+								{/if}
+							</Collapsible.Content>
+						</Collapsible.Root>
+
+						<!-- QCM options -->
+						{#if questionType === 'multiple_choice'}
+							<div class="space-y-3">
+								<h4 class="text-sm font-medium">Options QCM</h4>
+								<MyCheckbox bind:checked={optShuffleChoices} label="Melanger les choix" />
+							</div>
+						{/if}
+
+						<!-- Constraints -->
+						<Collapsible.Root bind:open={optionsConstraintsOpen}>
+							<Collapsible.Trigger
+								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
+							>
+								<span class="text-sm font-medium">Contraintes de forme</span>
+								<ChevronDown
+									class="h-4 w-4 transition-transform duration-200 {optionsConstraintsOpen
+										? 'rotate-180'
+										: ''}"
+								/>
+							</Collapsible.Trigger>
+							<Collapsible.Content class="space-y-3 pt-2">
+								{#each CONSTRAINT_IDS as id (id)}
+									<div class="grid grid-cols-2 items-center gap-2">
+										<Label class="text-xs">{CONSTRAINT_LABELS[id]}</Label>
+										<MySelect
+											type="single"
+											bind:value={constraintModes[id]}
+											items={CONSTRAINT_MODE_OPTIONS}
+										/>
+									</div>
+								{/each}
+								<MyCheckbox
+									bind:checked={optAllowBracketsInFirstNegativeTerm}
+									label="Autoriser parentheses sur premier terme negatif"
+								/>
+							</Collapsible.Content>
+						</Collapsible.Root>
+					</Card.Content>
+				</Collapsible.Content>
+			</Collapsible.Root>
+		</Card.Header>
+	</Card.Root>
 
 	<!-- Champs partagés (shared defaults for all variations) -->
 	<Card.Root>
@@ -1364,6 +1729,79 @@
 												placeholder="Explication de la solution (optionnel)..."
 												rows={6}
 											/>
+										</Card.Content>
+									</Collapsible.Content>
+								</Collapsible.Root>
+							</Card.Header>
+						</Card.Root>
+
+						<!-- Per-variation overrides -->
+						<Card.Root>
+							<Card.Header>
+								<Collapsible.Root bind:open={perVarOverridesOpen[index]}>
+									<Collapsible.Trigger
+										class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+									>
+										<Card.Title>Surcharges (cette variation)</Card.Title>
+										<ChevronDown
+											class="h-4 w-4 transition-transform duration-200 {perVarOverridesOpen[index]
+												? 'rotate-180'
+												: ''}"
+										/>
+									</Collapsible.Trigger>
+									<Card.Description
+										>Surcharger les champs partages pour cette variation</Card.Description
+									>
+									<Collapsible.Content>
+										<Card.Content class="space-y-4">
+											<!-- Forme requise (per-variation) -->
+											<div class="space-y-2">
+												<Label class="text-sm font-medium">Forme requise</Label>
+												<MySelect
+													type="single"
+													bind:value={perVarRequiredFormSelect[index]}
+													items={REQUIRED_FORM_OPTIONS}
+												/>
+												{#if perVarRequiredFormSelect[index] === 'custom'}
+													<Input
+														type="text"
+														bind:value={perVarRequiredFormPattern[index]}
+														placeholder="Pattern personnalise (ex: a:integer * b:integer)"
+													/>
+												{/if}
+											</div>
+
+											<!-- Parametres des trous (per-variation blankDefaults) -->
+											<div class="space-y-2">
+												<Label class="text-sm font-medium">Parametres des trous</Label>
+												<PrecisionEditor bind:precision={variation.blankDefaults} />
+											</div>
+
+											<!-- Regles de validation -->
+											<div class="space-y-2">
+												<Label class="text-sm font-medium">Regles de validation</Label>
+												<textarea
+													class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
+													bind:value={perVarValidationRulesJson[index]}
+													rows={3}
+													placeholder="[]"
+												></textarea>
+												<p class="text-xs text-muted-foreground">Format JSON (tableau de regles)</p>
+											</div>
+
+											<!-- Formats de reponse -->
+											<div class="space-y-2">
+												<Label class="text-sm font-medium">Formats de reponse</Label>
+												<textarea
+													class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
+													bind:value={perVarAnswerFormatsJson[index]}
+													rows={3}
+													placeholder={'{}'}
+												></textarea>
+												<p class="text-xs text-muted-foreground">
+													Format JSON (cle = nom de variable, valeur = format)
+												</p>
+											</div>
 										</Card.Content>
 									</Collapsible.Content>
 								</Collapsible.Root>
