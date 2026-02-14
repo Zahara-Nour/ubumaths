@@ -773,8 +773,21 @@
 		onSave(templateData);
 	}
 
+	// Cancel with dirty state confirmation
+	function handleCancel() {
+		if (
+			isDirty &&
+			!confirm('Vous avez des modifications non sauvegardées. Voulez-vous vraiment annuler ?')
+		) {
+			return;
+		}
+		onCancel();
+	}
+
 	// Publish question (with category validation)
 	function handlePublish() {
+		hasAttemptedPublish = true;
+		if (!isValid) return;
 		if (categoryDuplicate) {
 			// Show confirmation dialog
 			showPublishDialog = true;
@@ -800,18 +813,91 @@
 		onSave(templateData);
 	}
 
-	// Validate form
+	// Memoize buildTemplate() for preview (avoid recalculating on every render)
+	let previewTemplate = $derived(buildTemplate());
+
+	// Dirty state: protect against accidental data loss
+	function computeSnapshot(): string {
+		return JSON.stringify({
+			title,
+			description,
+			theme,
+			domain,
+			subdomain,
+			level,
+			status,
+			grades,
+			delay,
+			questionType,
+			exerciseInstruction,
+			multipleAnswers,
+			variations: variations.map((v) => ({
+				statement: v.statement,
+				variables: v.variables?.length,
+				blanks: v.blanks?.length,
+				choices: v.choices?.length,
+				correctChoiceIndex: v.correctChoiceIndex
+			})),
+			sharedVariables: sharedVariables.length,
+			correctionStrings
+		});
+	}
+
+	// Capture initial snapshot once (all $state vars are already initialized above)
+	const initialSnapshot = computeSnapshot();
+
+	let isDirty = $derived(computeSnapshot() !== initialSnapshot);
+
+	// Warn before leaving with unsaved changes
+	$effect(() => {
+		function handleBeforeUnload(e: BeforeUnloadEvent) {
+			if (isDirty) {
+				e.preventDefault();
+			}
+		}
+		window.addEventListener('beforeunload', handleBeforeUnload);
+		return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+	});
+
+	// Validation: show errors only after first publish attempt
+	let hasAttemptedPublish = $state(false);
+
+	// Individual field errors (visible only after first publish attempt)
+	let titleError = $derived(hasAttemptedPublish && !title.trim() ? 'Le titre est obligatoire' : '');
+	let gradesError = $derived(
+		hasAttemptedPublish && grades.length === 0 ? 'Sélectionnez au moins un niveau scolaire' : ''
+	);
+	let themeError = $derived(hasAttemptedPublish && !theme.trim() ? 'Le thème est obligatoire' : '');
+	let domainError = $derived(
+		hasAttemptedPublish && !domain.trim() ? 'Le domaine est obligatoire' : ''
+	);
+	let levelError = $derived(
+		hasAttemptedPublish && level <= 0 ? 'Le niveau doit être supérieur à 0' : ''
+	);
+
+	function getVariationErrors(v: QuestionVariation, index: number): string[] {
+		if (!hasAttemptedPublish) return [];
+		const errors: string[] = [];
+		if (!v.statement.trim()) errors.push(`Variation ${index + 1} : énoncé manquant`);
+		const hasAnswer =
+			(v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim())) ||
+			(v.choices && v.choices.length > 0) ||
+			(typeof v.correctChoiceIndex === 'string' && v.correctChoiceIndex.trim().length > 0) ||
+			(Array.isArray(v.correctChoiceIndex) && v.correctChoiceIndex.length > 0);
+		if (!hasAnswer) errors.push(`Variation ${index + 1} : réponse manquante`);
+		return errors;
+	}
+	let variationErrors = $derived(variations.flatMap((v, i) => getVariationErrors(v, i)));
+
+	// Global validity (used to disable the Publish button)
 	let isValid = $derived(
 		title.trim().length > 0 &&
 			variations.length > 0 &&
 			variations.every(
 				(v) =>
 					v.statement.trim().length > 0 &&
-					// fill_in_blanks: either correctChoiceIndex or blanks must exist
 					((v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim())) ||
-						// multiple_choice: choices must have at least one correct
 						(v.choices && v.choices.length > 0) ||
-						// simple answer
 						(typeof v.correctChoiceIndex === 'string' && v.correctChoiceIndex.trim().length > 0) ||
 						(Array.isArray(v.correctChoiceIndex) && v.correctChoiceIndex.length > 0))
 			) &&
@@ -868,6 +954,9 @@
 					Titre <span class="text-destructive">*</span>
 				</Label>
 				<Input id="title" type="text" bind:value={title} />
+				{#if titleError}
+					<p class="text-xs text-destructive">{titleError}</p>
+				{/if}
 			</div>
 
 			<!-- Description (Optional, with rich text and LaTeX support) -->
@@ -955,24 +1044,34 @@
 					<Card.Content class="space-y-4">
 						<div class="grid gap-4 md:grid-cols-2">
 							<!-- Theme (Required) -->
-							<CategorySelector
-								label="Thème"
-								bind:value={theme}
-								options={themeOptions}
-								required={true}
-								onValueChange={(val) => (theme = val)}
-								onAddNew={handleAddTheme}
-							/>
+							<div>
+								<CategorySelector
+									label="Thème"
+									bind:value={theme}
+									options={themeOptions}
+									required={true}
+									onValueChange={(val) => (theme = val)}
+									onAddNew={handleAddTheme}
+								/>
+								{#if themeError}
+									<p class="mt-1 text-xs text-destructive">{themeError}</p>
+								{/if}
+							</div>
 
 							<!-- Domain (Required) -->
-							<CategorySelector
-								label="Domaine"
-								bind:value={domain}
-								options={domainOptions}
-								required={true}
-								onValueChange={(val) => (domain = val)}
-								onAddNew={handleAddDomain}
-							/>
+							<div>
+								<CategorySelector
+									label="Domaine"
+									bind:value={domain}
+									options={domainOptions}
+									required={true}
+									onValueChange={(val) => (domain = val)}
+									onAddNew={handleAddDomain}
+								/>
+								{#if domainError}
+									<p class="mt-1 text-xs text-destructive">{domainError}</p>
+								{/if}
+							</div>
 						</div>
 
 						<div class="grid gap-4 md:grid-cols-2">
@@ -1000,6 +1099,9 @@
 									placeholder="1, 2, 3..."
 									required
 								/>
+								{#if levelError}
+									<p class="text-xs text-destructive">{levelError}</p>
+								{/if}
 								{#if categoryDuplicate && status === 'draft'}
 									<p class="text-xs text-amber-600 dark:text-amber-400">
 										⚠️ Cette catégorie existe déjà au niveau {level}. Niveau suggéré : {suggestedLevel}
@@ -1028,6 +1130,9 @@
 				</Badge>
 			{/each}
 		</div>
+		{#if gradesError}
+			<p class="text-xs text-destructive">{gradesError}</p>
+		{/if}
 	</div>
 
 	<!-- Exercise Instruction (Optional, Shared) -->
@@ -1802,7 +1907,7 @@
 
 		<Tabs.Content value="preview">
 			{#if QuestionPreview}
-				<QuestionPreview template={buildTemplate()} />
+				<QuestionPreview template={previewTemplate} />
 			{:else}
 				<div class="flex items-center justify-center p-8">
 					<p class="text-muted-foreground">Chargement de l'aperçu...</p>
@@ -1812,7 +1917,7 @@
 
 		<Tabs.Content value="json">
 			{#if JsonViewer}
-				<JsonViewer data={buildTemplate()} />
+				<JsonViewer data={previewTemplate} />
 			{:else}
 				<div class="flex items-center justify-center p-8">
 					<p class="text-muted-foreground">Chargement du JSON...</p>
@@ -1821,9 +1926,24 @@
 		</Tabs.Content>
 	</Tabs.Root>
 
+	<!-- Validation Errors Summary -->
+	{#if hasAttemptedPublish && variationErrors.length > 0}
+		<div class="rounded-lg border border-destructive/50 bg-destructive/5 p-3">
+			<p class="mb-1 text-sm font-medium text-destructive">Erreurs à corriger :</p>
+			<ul class="space-y-1 text-xs text-destructive">
+				{#each variationErrors as err, i (i)}
+					<li>• {err}</li>
+				{/each}
+			</ul>
+		</div>
+	{/if}
+
 	<!-- Action Buttons -->
-	<div class="flex justify-end gap-3">
-		<Button variant="outline" onclick={onCancel} disabled={isSubmitting}>
+	<div class="flex items-center justify-end gap-3">
+		{#if isDirty}
+			<span class="text-xs text-amber-600 dark:text-amber-400">Modifications non sauvegardées</span>
+		{/if}
+		<Button variant="outline" onclick={handleCancel} disabled={isSubmitting}>
 			<X class="mr-2 h-4 w-4" />
 			Annuler
 		</Button>
@@ -1838,7 +1958,7 @@
 		</Button>
 		<Button
 			onclick={handlePublish}
-			disabled={!isValid || isSubmitting}
+			disabled={isSubmitting}
 			class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
 		>
 			<CheckCircle2 class="mr-2 h-4 w-4" />
