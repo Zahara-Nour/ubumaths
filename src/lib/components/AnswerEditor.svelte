@@ -53,10 +53,6 @@
 					{ content: templateMarkdown(''), isCorrect: false }
 				];
 			}
-			// answer is managed separately (index or indices of correct choices)
-			if (typeof answer !== 'string' && !Array.isArray(answer)) {
-				answer = '0'; // Default to first choice
-			}
 		} else if (questionType === 'fill_in_blanks') {
 			if (!Array.isArray(answer)) {
 				answer = [''];

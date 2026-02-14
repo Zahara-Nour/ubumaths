@@ -517,6 +517,18 @@
 		showDuplicateDialog = false;
 	}
 
+	// Derive correctChoiceIndex from isCorrect flags on choices
+	function deriveCorrectChoiceIndex(
+		choices: { content: unknown; isCorrect?: boolean }[]
+	): string | string[] | undefined {
+		const indexes = choices
+			.map((c, i) => (c.isCorrect ? String(i) : null))
+			.filter((i): i is string => i !== null);
+		if (indexes.length === 1) return indexes[0];
+		if (indexes.length > 1) return indexes;
+		return undefined;
+	}
+
 	// Build template object
 	function buildTemplate(): Omit<
 		QuestionTemplate,
@@ -542,9 +554,9 @@
 			const cleaned: QuestionVariation = {
 				statement: variation.statement,
 				...(filteredVars && filteredVars.length > 0 ? { variables: filteredVars } : {}),
-				...(questionType === 'multiple_choice'
+				...(questionType === 'multiple_choice' && variation.choices
 					? {
-							correctChoiceIndex: variation.correctChoiceIndex,
+							correctChoiceIndex: deriveCorrectChoiceIndex(variation.choices),
 							choices: variation.choices
 						}
 					: {}),
@@ -594,13 +606,10 @@
 			const filtered = sharedVariables.filter((v) => v.name && v.expression);
 			if (filtered.length > 0) shared.variables = filtered;
 		}
-		if (
-			questionType === 'multiple_choice' &&
-			(typeof sharedCorrectChoiceIndex === 'string'
-				? sharedCorrectChoiceIndex.trim()
-				: sharedCorrectChoiceIndex.filter((s) => s.trim()).length > 0)
-		)
-			shared.correctChoiceIndex = sharedCorrectChoiceIndex;
+		if (questionType === 'multiple_choice' && sharedChoices.length > 0) {
+			const sharedDerived = deriveCorrectChoiceIndex(sharedChoices);
+			if (sharedDerived) shared.correctChoiceIndex = sharedDerived;
+		}
 		const sharedCorrectionObj = stringToCorrection(sharedCorrectionString);
 		if (sharedCorrectionObj) shared.correction = sharedCorrectionObj;
 		if (questionType === 'multiple_choice' && sharedChoices.length > 0)
