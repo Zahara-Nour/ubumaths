@@ -42,7 +42,7 @@
 		sharedCorrectionString: string;
 		sharedRequiredFormSelect: string;
 		sharedRequiredFormPattern: string;
-		sharedBlankPrecision: PrecisionType | undefined;
+		sharedBlankPrecision: PrecisionType;
 		sharedBlankRequiredFormSelect: string;
 		sharedBlankRequiredFormPattern: string;
 		sharedBlankUnitExpected: boolean;
