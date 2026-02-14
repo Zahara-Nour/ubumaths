@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.12](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.11...v0.8.12) (2026-02-14)
+
+### 🐛 Bug Fixes
+
+- **flashcard:** show correct answer content on back and choices in non-interactive mode ([c8ab0e1](https://github.com/Zahara-Nour/ubumaths/commit/c8ab0e15195386dd83485f84a3e4886f5b8cb481))
+
 ### [0.8.11](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.10...v0.8.11) (2026-02-14)
 
 ### 🐛 Bug Fixes
