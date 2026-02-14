@@ -1111,6 +1111,31 @@ describe('resolveVariables', () => {
 				expect(resolved[2].value).toBe('22');
 			});
 
+			it('should resolve multi-char variable in eval (eval:expression1)', () => {
+				const variables: Variable[] = [
+					{ name: 'a', expression: '3' },
+					{ name: 'b', expression: '2' },
+					{ name: 'expression1', expression: 'a^b' },
+					{ name: 'result', expression: 'eval:expression1+1' }
+				];
+				const resolved = resolveVariables(variables);
+				// expression1 = "3^2" → eval:3^2+1 → 9+1 = 10
+				expect(resolved[3].value).toBe('10');
+			});
+
+			it('should resolve multiple multi-char variables in eval', () => {
+				const variables: Variable[] = [
+					{ name: 'a', expression: '2' },
+					{ name: 'b', expression: '3' },
+					{ name: 'expression1', expression: 'a^b' },
+					{ name: 'expression2', expression: 'b^a' },
+					{ name: 'result', expression: 'eval:expression1+expression2' }
+				];
+				const resolved = resolveVariables(variables);
+				// expression1 = "2^3" = 8, expression2 = "3^2" = 9 → 8+9 = 17
+				expect(resolved[4].value).toBe('17');
+			});
+
 			it('should evaluate eval:2*k (explicit multiplication, regression)', () => {
 				const variables: Variable[] = [
 					{ name: 'k', expression: '5' },
