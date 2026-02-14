@@ -30,7 +30,13 @@
 	import { parseMarkdown } from '$lib/ubumark';
 	import type { ResolvedMarkdown } from '$lib/ubumark';
 	import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-	import { hasPrompts, expressionToFlashLatex } from '$lib/components/markdown/utils/math-utils';
+	import {
+		hasPrompts,
+		expressionToFlashLatex,
+		expressionToLatex,
+		replacePromptsWithValues
+	} from '$lib/components/markdown/utils/math-utils';
+	import type { BlockNode } from '$lib/ubumark';
 
 	// Node components (reuse from MarkdownRenderer)
 	import ParagraphNode from '$lib/components/markdown/nodes/ParagraphNode.svelte';
@@ -61,8 +67,10 @@
 		disabled?: boolean;
 		/** Flash mode: show blanks as static placeholders instead of inputs */
 		flashMode?: boolean;
-		/** Show correct answers in blanks (flash back / correction mode) */
+		/** Show correct answers in blanks (correction mode) */
 		showCorrectAnswers?: boolean;
+		/** Only show paragraphs/blocks that contain blanks (for correction display) */
+		onlyBlanks?: boolean;
 		/** Per-blank validation: true=correct, false=incorrect, null=not validated */
 		validationResults?: (boolean | null)[];
 		/** Callback when Enter is pressed in a blank */
@@ -78,6 +86,7 @@
 		disabled = false,
 		flashMode = false,
 		showCorrectAnswers = false,
+		onlyBlanks = false,
 		validationResults = [],
 		onSubmit
 	}: Props = $props();
@@ -85,12 +94,31 @@
 	// When showing correct answers, force disabled
 	let effectiveDisabled = $derived(disabled || showCorrectAnswers);
 
+	/** Check if a block node contains blanks or math prompts */
+	function nodeHasBlanks(node: BlockNode): boolean {
+		if (node.type === 'paragraph') {
+			return node.children.some(
+				(child) =>
+					child.type === 'blank' ||
+					(child.type === 'math-inline' && hasPrompts(child.expression, child.syntax))
+			);
+		}
+		if (node.type === 'math-block') {
+			return !!node.expressionName || hasPrompts(node.expression, node.syntax);
+		}
+		return false;
+	}
+
 	// Parse statement to AST and augment expression nodes
 	// In flash mode, skip augmentation (no "= ?" appended to expressions)
 	let augmentedAST = $derived.by(() => {
 		const ast = parseMarkdown(statement);
 		if (flashMode) return ast;
-		return augmentASTForExpressions(ast, expressions);
+		const augmented = augmentASTForExpressions(ast, expressions);
+		if (onlyBlanks) {
+			return { type: 'document' as const, children: augmented.children.filter(nodeHasBlanks) };
+		}
+		return augmented;
 	});
 
 	// Build InputState[] from blanks + validationResults (or correction mode)
@@ -156,6 +184,7 @@
 					onInputSubmit={handleInputSubmit}
 					inputsDisabled={effectiveDisabled}
 					{flashMode}
+					correctionMode={showCorrectAnswers}
 					correctValues={mathCorrectValues}
 				/>
 			{:else if node.type === 'math-block'}
@@ -164,6 +193,12 @@
 						{@const flashLatex = expressionToFlashLatex(node.expression, node.syntax)}
 						{#key flashLatex}
 							<MathBlock expression={flashLatex} syntax="latex" />
+						{/key}
+					{:else if showCorrectAnswers && mathCorrectValues}
+						{@const latex = expressionToLatex(node.expression, node.syntax)}
+						{@const filledLatex = replacePromptsWithValues(latex, mathCorrectValues)}
+						{#key filledLatex}
+							<MathBlock expression={filledLatex} syntax="latex" />
 						{/key}
 					{:else}
 						{#key node.expression}
