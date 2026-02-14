@@ -273,7 +273,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 						{ name: 'wrong1', expression: '{{eval:a + b + 1}}' },
 						{ name: 'wrong2', expression: '{{eval:a + b - 1}}' }
 					],
-					solution: '0',
+					correctChoiceIndex: '0',
 					choices: [
 						{ content: templateMarkdown('{{correct}}'), isCorrect: true },
 						{ content: templateMarkdown('{{wrong1}}'), isCorrect: false },
@@ -303,7 +303,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 
 		// Verify correct answer is tracked (don't check specific value, just that it exists)
 		const _correctAnswer = getVarValue(result.instance.resolvedVariables, 'correct');
-		const shuffledCorrectIndex = parseInt(result.instance.solution as string);
+		const shuffledCorrectIndex = parseInt(result.instance.correctChoiceIndex as string);
 		expect(shuffledCorrectIndex).toBeGreaterThanOrEqual(0);
 		expect(shuffledCorrectIndex).toBeLessThan(4);
 
@@ -322,7 +322,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 				{
 					statement: templateMarkdown('Select all prime numbers:'),
 					variables: [],
-					solution: ['0', '2'],
+					correctChoiceIndex: ['0', '2'],
 					choices: [
 						{ content: templateMarkdown('2'), isCorrect: true },
 						{ content: templateMarkdown('4'), isCorrect: false },
@@ -347,9 +347,9 @@ describe('generateInstance - Multiple Choice Questions', () => {
 		if (!result.success) return;
 
 		expect(result.instance.multipleAnswers).toBe(true);
-		expect(Array.isArray(result.instance.solution)).toBe(true);
+		expect(Array.isArray(result.instance.correctChoiceIndex)).toBe(true);
 
-		const answerIndices = result.instance.solution as string[];
+		const answerIndices = result.instance.correctChoiceIndex as string[];
 		const correctChoices = answerIndices.map(
 			(i) => result.instance.shuffledChoices![parseInt(i)].content
 		);
@@ -1343,7 +1343,7 @@ describe('generateInstance - Shared Fields', () => {
 						{ name: 'wrong1', expression: '{{eval:a + b + 1}}' },
 						{ name: 'wrong2', expression: '{{eval:a + b - 1}}' }
 					],
-					solution: '0',
+					correctChoiceIndex: '0',
 					choices: [
 						{ content: templateMarkdown('{{correct}}'), isCorrect: true },
 						{ content: templateMarkdown('{{wrong1}}'), isCorrect: false },
@@ -1590,7 +1590,7 @@ describe('generateInstance - Bug: bare text choice "pair"', () => {
 			variations: [
 				{
 					statement: templateMarkdown('Quelle est la parité de ce nombre ?\n\n${{expression1}}$'),
-					solution: ['0'],
+					correctChoiceIndex: ['0'],
 					variables: [{ name: 'expression1', expression: 'b' }],
 					choices: [{ ...sharedChoices[0], isCorrect: true }, sharedChoices[1]],
 					correction: {
@@ -1601,7 +1601,7 @@ describe('generateInstance - Bug: bare text choice "pair"', () => {
 				},
 				{
 					statement: templateMarkdown('Quelle est la parité de ce nombre ?\n\n${{expression2}}$'),
-					solution: ['1'],
+					correctChoiceIndex: ['1'],
 					variables: [{ name: 'expression2', expression: 'c' }],
 					choices: [sharedChoices[0], { ...sharedChoices[1], isCorrect: true }],
 					correction: {
@@ -1640,7 +1640,7 @@ describe('generateInstance - Bug: bare text choice "pair"', () => {
 			variations: [
 				{
 					statement: templateMarkdown('Quelle est la parité de ce nombre ?\n\n${{expression1}}$'),
-					solution: ['0'],
+					correctChoiceIndex: ['0'],
 					variables: [{ name: 'expression1', expression: 'b' }],
 					choices: [{ ...sharedChoices[0], isCorrect: true }, sharedChoices[1]],
 					correction: {

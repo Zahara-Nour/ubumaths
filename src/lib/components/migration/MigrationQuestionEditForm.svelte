@@ -176,8 +176,8 @@
 				: '';
 
 			// Resolve solution
-			const solution = currentVariation.solution
-				? resolveSolution(currentVariation.solution, resolved, previewSeed)
+			const solution = currentVariation.correctChoiceIndex
+				? resolveSolution(currentVariation.correctChoiceIndex, resolved, previewSeed)
 				: '';
 
 			// Resolve choices
@@ -447,12 +447,12 @@
 							<span class="text-xs text-muted-foreground">(optionnel pour blancs)</span>
 						{/if}
 					</Label>
-					{#if currentVariation.solution !== undefined}
-						{#if Array.isArray(currentVariation.solution)}
+					{#if currentVariation.correctChoiceIndex !== undefined}
+						{#if Array.isArray(currentVariation.correctChoiceIndex)}
 							<div class="space-y-2">
-								{#each currentVariation.solution as _sol, si (si)}
+								{#each currentVariation.correctChoiceIndex as _sol, si (si)}
 									<Input
-										bind:value={formData.variations[selectedVariationIndex].solution![si]}
+										bind:value={formData.variations[selectedVariationIndex].correctChoiceIndex![si]}
 										placeholder="Solution {si + 1}"
 										class="font-mono"
 									/>
@@ -460,7 +460,7 @@
 							</div>
 						{:else}
 							<Input
-								bind:value={formData.variations[selectedVariationIndex].solution}
+								bind:value={formData.variations[selectedVariationIndex].correctChoiceIndex}
 								placeholder={'Solution (ex: {{a}}+{{b}})'}
 								class="font-mono"
 							/>
@@ -795,14 +795,14 @@
 							<div>
 								<h4 class="mb-2 text-sm font-medium text-muted-foreground">Solution</h4>
 								<div class="rounded-lg border-2 border-primary/50 bg-primary/5 p-3">
-									{#if Array.isArray(previewInstance.solution)}
-										{#each previewInstance.solution as sol, si (si)}
+									{#if Array.isArray(previewInstance.correctChoiceIndex)}
+										{#each previewInstance.correctChoiceIndex as sol, si (si)}
 											<div class="mb-1 last:mb-0">
 												<MarkdownRenderer content={`$$${sol}$$`} />
 											</div>
 										{/each}
 									{:else}
-										<MarkdownRenderer content={`$$${previewInstance.solution}$$`} />
+										<MarkdownRenderer content={`$$${previewInstance.correctChoiceIndex}$$`} />
 									{/if}
 								</div>
 							</div>

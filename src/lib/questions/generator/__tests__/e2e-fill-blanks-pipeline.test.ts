@@ -133,7 +133,7 @@ describe('E2E Fill-in-blanks Pipeline', () => {
 				expect(instance.expressions![0].name).toBe('expression1');
 				expect(instance.expressions![0].latex).toBeTruthy();
 				expect(instance.choices).toBeUndefined();
-				expect(instance.solution).toBeUndefined();
+				expect(instance.correctChoiceIndex).toBeUndefined();
 			});
 
 			it('globalIndex 25 — addition table (simple eval)', () => {

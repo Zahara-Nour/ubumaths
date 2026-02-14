@@ -133,7 +133,7 @@ describe('Fill-in-blanks: simple math blanks', () => {
 		expect(result.instance.blanks![0].expectedAnswerLatex).toBe('5');
 	});
 
-	it('should have no solution for fill_in_blanks', () => {
+	it('should have no correctChoiceIndex for fill_in_blanks', () => {
 		const template = makeFillInTemplate({
 			statement: templateMarkdown('$?$'),
 			blanks: [{ expectedAnswer: '5' }]
@@ -144,7 +144,7 @@ describe('Fill-in-blanks: simple math blanks', () => {
 		if (!result.success) return;
 
 		expect(getQuestionType(result.instance)).toBe('fill_in_blanks');
-		expect(result.instance.solution).toBeUndefined();
+		expect(result.instance.correctChoiceIndex).toBeUndefined();
 	});
 });
 
@@ -586,7 +586,7 @@ describe('Fill-in-blanks: real-world examples', () => {
 		expect(result.instance.blanks![0].expectedAnswer).toBe('357');
 		expect(result.instance.blanks![0].type).toBe('math');
 		expect(result.instance.blanks![0].expectedAnswerLatex).toBeDefined();
-		expect(result.instance.solution).toBeUndefined();
+		expect(result.instance.correctChoiceIndex).toBeUndefined();
 	});
 
 	// Pattern from globalIndex 51: fill-in with ? in statement (not expression convention)

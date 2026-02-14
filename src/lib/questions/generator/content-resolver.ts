@@ -225,12 +225,12 @@ export function convertToLatex(expression: string): string {
 }
 
 /**
- * Resolve solution (can be string, array of strings, or undefined for fill_in_blanks)
+ * Resolve correctChoiceIndex (can be string, array of strings, or undefined for fill_in_blanks)
  *
- * @param solution - Solution from template (expected answer)
+ * @param solution - correctChoiceIndex from template (expected answer index)
  * @param resolvedVariables - Already resolved variables
  * @param seed - Optional seed for random generation
- * @returns Resolved solution, or undefined if input is undefined
+ * @returns Resolved correctChoiceIndex, or undefined if input is undefined
  */
 export function resolveSolution(
 	solution: string | string[],
