@@ -5,12 +5,11 @@
 	Main orchestrator for creating/editing question templates.
 
 	FEATURES:
-	- Type selection (numerical, algebraic, fill-in-blanks, QCM)
+	- Type selection (fill-in-blanks, QCM)
 	- Dynamic form fields based on question type
 	- Variable editor with syntax helpers
 	- Content field editor for statement/correction
 	- Answer editor (varies by type)
-	- Precision configuration (for numerical questions)
 	- Grade level multi-select
 	- Live preview of generated instances
 	- JSON viewer for debugging
@@ -28,9 +27,9 @@
 		QuestionVariation,
 		QuestionCorrection,
 		QuestionType,
-		GradeLevel,
-		PrecisionType
+		GradeLevel
 	} from '$lib/questions/types';
+	import { getQuestionType } from '$lib/questions/types';
 
 	// Helper to check if QuestionCorrection has meaningful content
 	function _hasNonEmptyCorrection(correction: QuestionCorrection | undefined): boolean {
@@ -52,6 +51,7 @@
 	import VariableEditor from './VariableEditor.svelte';
 	import { MarkdownEditor } from '$lib/components/markdown';
 	import AnswerEditor from './AnswerEditor.svelte';
+	import MySelect from './MySelect.svelte';
 	import { templateMarkdown } from '$lib/ubumark';
 	import CategorySelector from './CategorySelector.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -90,10 +90,12 @@
 	let { template, onSave, onCancel, isSubmitting }: Props = $props();
 
 	// Shared configuration state
-	let questionType = $state<QuestionType>(template?.type || 'numerical_exact');
+	// Infer type from structure when editing existing template
+	let questionType = $state<QuestionType>(
+		template ? getQuestionType(template.variations?.[0] ?? {}) : 'fill_in_blanks'
+	);
 	let grades = $state<GradeLevel[]>(template?.grades || []);
 	let delay = $state<number | undefined>(template?.delay);
-	let precision = $state<PrecisionType>(template?.precision || { type: 'none' });
 
 	// Exercise instruction (shared, optional)
 	let exerciseInstruction = $state<string | undefined>(template?.exerciseInstruction);
@@ -286,10 +288,6 @@
 
 	// Question type options
 	const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
-		{ value: 'numerical_exact', label: 'Numérique (exact)' },
-		{ value: 'numerical_decimal', label: 'Numérique (décimal)' },
-		{ value: 'numerical_rounded', label: 'Numérique (arrondi)' },
-		{ value: 'algebraic_transform', label: 'Transformation algébrique' },
 		{ value: 'fill_in_blanks', label: 'Texte à trous' },
 		{ value: 'multiple_choice', label: 'QCM' }
 	];
@@ -402,7 +400,6 @@
 		});
 
 		const base = {
-			type: questionType,
 			title,
 			description: description.trim() ? description : undefined,
 			variations: cleanedVariations,
@@ -413,8 +410,7 @@
 			subdomain,
 			level,
 			status,
-			delay,
-			precision: questionType.startsWith('numerical') ? precision : undefined
+			delay
 		};
 
 		// Add type-specific shared fields
@@ -483,9 +479,14 @@
 			variations.length > 0 &&
 			variations.every(
 				(v) =>
-					// statement is now a TemplateMarkdown string
 					v.statement.trim().length > 0 &&
-					(typeof v.solution === 'string' ? v.solution.trim().length > 0 : v.solution.length > 0)
+					// fill_in_blanks: either solution or blanks must exist
+					((v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim())) ||
+						// multiple_choice: choices must have at least one correct
+						(v.choices && v.choices.length > 0) ||
+						// simple answer
+						(typeof v.solution === 'string' && v.solution.trim().length > 0) ||
+						(Array.isArray(v.solution) && v.solution.length > 0))
 			) &&
 			grades.length > 0 &&
 			theme.trim().length > 0 &&
@@ -578,15 +579,7 @@
 	<div class="grid gap-4 md:grid-cols-2">
 		<div class="space-y-2">
 			<Label for="question-type">Type de question</Label>
-			<select
-				id="question-type"
-				bind:value={questionType}
-				class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-			>
-				{#each QUESTION_TYPES as type (type.value)}
-					<option value={type.value}>{type.label}</option>
-				{/each}
-			</select>
+			<MySelect id="question-type" type="single" bind:value={questionType} items={QUESTION_TYPES} />
 		</div>
 
 		<div class="space-y-2">
@@ -899,7 +892,6 @@
 											<AnswerEditor
 												{questionType}
 												bind:answer={variation.solution}
-												{precision}
 												bind:blanks={variation.blanks}
 												bind:choices={variation.choices}
 												{multipleAnswers}
@@ -1029,18 +1021,17 @@
 		<div class="space-y-4 py-4">
 			<div class="space-y-2">
 				<Label for="source-variation">Variation source</Label>
-				<select
+				{@const duplicateSourceValue = String(duplicateSourceIndex)}
+				<MySelect
 					id="source-variation"
-					bind:value={duplicateSourceIndex}
-					class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-				>
-					{#each variations as _, index (index)}
-						<option value={index}>
-							Variation {index + 1}
-							{#if index === 0}(Référence){/if}
-						</option>
-					{/each}
-				</select>
+					type="single"
+					value={duplicateSourceValue}
+					onValueChange={(v) => (duplicateSourceIndex = Number(v))}
+					items={variations.map((_, index) => ({
+						value: String(index),
+						label: `Variation ${index + 1}${index === 0 ? ' (Référence)' : ''}`
+					}))}
+				/>
 				<p class="text-xs text-muted-foreground">
 					Le contenu de cette variation sera copié et écrasera le contenu actuel de la Variation {currentVariationIndex +
 						1}.
@@ -1588,36 +1579,18 @@
 				<h4 class="mb-2 font-semibold">Format selon le type de question</h4>
 				<div class="space-y-3">
 					<div class="rounded-lg border bg-muted/30 p-3 text-sm">
-						<p class="mb-1 font-semibold">Questions numériques</p>
-						<p class="mb-2 text-xs text-muted-foreground">
-							Entrez une expression qui sera évaluée pour produire la réponse
-						</p>
-						<code class="text-xs">&#123;eval:&#123;@:a&#125;+&#123;@:b&#125;&#125;</code>
-						<p class="mt-2 text-xs text-muted-foreground">
-							Vous pouvez aussi entrer directement une valeur : <code>42</code>
-						</p>
-					</div>
-
-					<div class="rounded-lg border bg-muted/30 p-3 text-sm">
-						<p class="mb-1 font-semibold">Transformation algébrique</p>
-						<p class="mb-2 text-xs text-muted-foreground">Entrez l'expression attendue en LaTeX</p>
-						<code class="text-xs">(x+2)(x-3)</code> ou <code>x^2-x-6</code>
-						<p class="mt-2 text-xs text-muted-foreground">
-							L'équivalence algébrique sera vérifiée automatiquement
-						</p>
-					</div>
-
-					<div class="rounded-lg border bg-muted/30 p-3 text-sm">
 						<p class="mb-1 font-semibold">Texte à trous (fill-in-blanks)</p>
 						<p class="text-xs text-muted-foreground">
-							Définissez la position et la réponse attendue pour chaque trou
+							Définissez les trous et la réponse attendue pour chacun. Les réponses peuvent utiliser
+							des variables et des expressions évaluées.
 						</p>
 					</div>
 
 					<div class="rounded-lg border bg-muted/30 p-3 text-sm">
 						<p class="mb-1 font-semibold">QCM (multiple choice)</p>
 						<p class="text-xs text-muted-foreground">
-							Créez les choix et cochez ceux qui sont corrects
+							Créez les choix et cochez ceux qui sont corrects. Vous pouvez autoriser une ou
+							plusieurs bonnes réponses.
 						</p>
 					</div>
 				</div>
@@ -1641,31 +1614,6 @@
 						<code class="text-xs">&#123;#:1-10&#125;</code>
 						<span class="text-xs text-muted-foreground">- Nombre aléatoire</span>
 					</li>
-				</ul>
-			</section>
-
-			<section>
-				<h4 class="mb-2 font-semibold">Précision (questions numériques)</h4>
-				<p class="mb-2 text-sm text-muted-foreground">
-					Pour les questions numériques avec décimales ou arrondis, configurez la précision attendue
-					:
-				</p>
-				<ul class="space-y-1 text-xs text-muted-foreground">
-					<li>• <strong>Décimales</strong> : Arrondi à N chiffres après la virgule</li>
-					<li>• <strong>Chiffres significatifs</strong> : Précision scientifique</li>
-					<li>• <strong>Tolérance</strong> : Marge d'erreur absolue ou relative</li>
-				</ul>
-			</section>
-
-			<section>
-				<h4 class="mb-2 font-semibold">Validation automatique</h4>
-				<p class="text-sm text-muted-foreground">
-					Le système utilise le Compute Engine de MathLive pour :
-				</p>
-				<ul class="mt-2 space-y-1 text-xs text-muted-foreground">
-					<li>• Évaluer les expressions mathématiques</li>
-					<li>• Vérifier l'équivalence algébrique (ex: 2x = x+x)</li>
-					<li>• Comparer avec la précision configurée</li>
 				</ul>
 			</section>
 		</div>
