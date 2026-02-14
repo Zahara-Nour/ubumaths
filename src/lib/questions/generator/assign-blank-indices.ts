@@ -68,14 +68,15 @@ export function assignBlankIndices(
 			const exprMatch = segment.content.match(EXPR_MARKER_REGEX);
 
 			if (exprMatch && modifiedAnswerFormats && exprMatch[1] in modifiedAnswerFormats) {
-				// Expression with answerFormat: reserve indices for ? in answerFormat only.
-				// The statement content is NOT modified (no ? replacement).
+				// Expression with answerFormat: reserve indices for ? in answerFormat.
 				const exprName = exprMatch[1];
 				const answerFormat = modifiedAnswerFormats[exprName];
+				const indices: number[] = [];
 				let modifiedFormat = '';
 				for (const char of answerFormat) {
 					if (char === '?') {
 						modifiedFormat += `\\placeholder[${counter}]{}`;
+						indices.push(counter);
 						counter++;
 						blankTypes.push('math');
 					} else {
@@ -83,8 +84,28 @@ export function assignBlankIndices(
 					}
 				}
 				modifiedAnswerFormats[exprName] = modifiedFormat;
-				// Preserve statement content as-is (marker stays for the parser)
-				resultParts.push(`${segment.openDelim}${segment.content}${segment.closeDelim}`);
+
+				// If expression content also has ?, replace with \placeholder
+				// reusing the same indices (the ? in content IS the blank)
+				const markerPrefix = exprMatch[0];
+				const mathPart = segment.content.slice(markerPrefix.length);
+				if (mathPart.includes('?')) {
+					let idxPtr = 0;
+					let newMathPart = '';
+					for (const char of mathPart) {
+						if (char === '?' && idxPtr < indices.length) {
+							newMathPart += `\\placeholder[${indices[idxPtr]}]{}`;
+							idxPtr++;
+						} else {
+							newMathPart += char;
+						}
+					}
+					resultParts.push(
+						`${segment.openDelim}${markerPrefix}${newMathPart}${segment.closeDelim}`
+					);
+				} else {
+					resultParts.push(`${segment.openDelim}${segment.content}${segment.closeDelim}`);
+				}
 			} else {
 				// No expression marker — replace ? in math content
 				let newContent = '';
