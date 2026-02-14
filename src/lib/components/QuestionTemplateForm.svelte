@@ -261,6 +261,34 @@
 		JSON.stringify(template?.shared?.answerFormats || {}, null, 2)
 	);
 
+	// JSON validation feedback
+	const VALID_REQUIRED_FORMS = ['product', 'sum', 'fraction', 'power'] as const;
+
+	let validationRulesJsonError = $derived.by(() => {
+		const trimmed = sharedValidationRulesJson.trim();
+		if (!trimmed || trimmed === '[]') return '';
+		try {
+			const parsed = JSON.parse(trimmed);
+			if (!Array.isArray(parsed)) return 'Doit être un tableau JSON';
+			return '';
+		} catch (e) {
+			return e instanceof Error ? e.message : 'JSON invalide';
+		}
+	});
+
+	let answerFormatsJsonError = $derived.by(() => {
+		const trimmed = sharedAnswerFormatsJson.trim();
+		if (!trimmed || trimmed === '{}') return '';
+		try {
+			const parsed = JSON.parse(trimmed);
+			if (typeof parsed !== 'object' || Array.isArray(parsed) || parsed === null)
+				return 'Doit être un objet JSON';
+			return '';
+		} catch (e) {
+			return e instanceof Error ? e.message : 'JSON invalide';
+		}
+	});
+
 	// Help dialog states
 	let titleDescriptionHelpOpen = $state(false);
 	let sharedVariableHelpOpen = $state(false);
@@ -469,7 +497,11 @@
 		const shared: SharedVariationDefaults = {};
 		if (sharedStatement.trim()) shared.statement = sharedStatement;
 		if (sharedVariables.length > 0) shared.variables = sharedVariables;
-		if (typeof sharedSolution === 'string' ? sharedSolution.trim() : sharedSolution.length > 0)
+		if (
+			typeof sharedSolution === 'string'
+				? sharedSolution.trim()
+				: sharedSolution.filter((s) => s.trim()).length > 0
+		)
 			shared.solution = sharedSolution;
 		const sharedCorrectionObj = stringToCorrection(sharedCorrectionString);
 		if (sharedCorrectionObj) shared.correction = sharedCorrectionObj;
@@ -477,7 +509,11 @@
 		if (sharedRequiredFormSelect) {
 			if (sharedRequiredFormSelect === 'custom' && sharedRequiredFormPattern.trim()) {
 				shared.requiredForm = { pattern: sharedRequiredFormPattern.trim() };
-			} else if (sharedRequiredFormSelect !== 'custom') {
+			} else if (
+				VALID_REQUIRED_FORMS.includes(
+					sharedRequiredFormSelect as (typeof VALID_REQUIRED_FORMS)[number]
+				)
+			) {
 				shared.requiredForm = sharedRequiredFormSelect as RequiredForm;
 			}
 		}
@@ -490,7 +526,11 @@
 				blankDefaults.requiredForm = {
 					pattern: sharedBlankRequiredFormPattern.trim()
 				};
-			} else if (sharedBlankRequiredFormSelect !== 'custom') {
+			} else if (
+				VALID_REQUIRED_FORMS.includes(
+					sharedBlankRequiredFormSelect as (typeof VALID_REQUIRED_FORMS)[number]
+				)
+			) {
 				blankDefaults.requiredForm = sharedBlankRequiredFormSelect as RequiredForm;
 			}
 		}
@@ -1033,12 +1073,18 @@
 							</Collapsible.Trigger>
 							<Collapsible.Content class="pt-2">
 								<textarea
-									class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+									class="flex min-h-[80px] w-full rounded-md border bg-background px-3 py-2 font-mono text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none {validationRulesJsonError
+										? 'border-destructive'
+										: 'border-input'}"
 									bind:value={sharedValidationRulesJson}
 									rows={5}
 									placeholder="[]"
 								></textarea>
-								<p class="mt-1 text-xs text-muted-foreground">Format JSON (tableau de règles)</p>
+								{#if validationRulesJsonError}
+									<p class="mt-1 text-xs text-destructive">{validationRulesJsonError}</p>
+								{:else}
+									<p class="mt-1 text-xs text-muted-foreground">Format JSON (tableau de règles)</p>
+								{/if}
 							</Collapsible.Content>
 						</Collapsible.Root>
 
@@ -1056,14 +1102,20 @@
 							</Collapsible.Trigger>
 							<Collapsible.Content class="pt-2">
 								<textarea
-									class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+									class="flex min-h-[80px] w-full rounded-md border bg-background px-3 py-2 font-mono text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none {answerFormatsJsonError
+										? 'border-destructive'
+										: 'border-input'}"
 									bind:value={sharedAnswerFormatsJson}
 									rows={5}
 									placeholder={'{}'}
 								></textarea>
-								<p class="mt-1 text-xs text-muted-foreground">
-									Format JSON (clé = nom de variable, valeur = format)
-								</p>
+								{#if answerFormatsJsonError}
+									<p class="mt-1 text-xs text-destructive">{answerFormatsJsonError}</p>
+								{:else}
+									<p class="mt-1 text-xs text-muted-foreground">
+										Format JSON (clé = nom de variable, valeur = format)
+									</p>
+								{/if}
 							</Collapsible.Content>
 						</Collapsible.Root>
 					</Card.Content>
