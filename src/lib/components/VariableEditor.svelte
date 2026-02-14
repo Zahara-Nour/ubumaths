@@ -65,25 +65,6 @@
 		variables = newVars;
 	}
 
-	// Insert syntax helper into expression
-	function insertSyntax(index: number, syntax: string) {
-		const input = document.getElementById(`var-expression-${index}`) as HTMLInputElement;
-		if (!input) return;
-
-		const start = input.selectionStart || 0;
-		const end = input.selectionEnd || 0;
-		const expression = variables[index].expression;
-
-		variables[index].expression =
-			expression.substring(0, start) + syntax + expression.substring(end);
-
-		// Set cursor after inserted text
-		setTimeout(() => {
-			input.focus();
-			input.setSelectionRange(start + syntax.length, start + syntax.length);
-		}, 0);
-	}
-
 	// Validate variable name
 	function isValidVariableName(name: string): boolean {
 		return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name);
@@ -439,55 +420,7 @@
 								<!-- Variable expression -->
 								<div class="space-y-1">
 									<Label for="var-expression-{index}">Expression</Label>
-									<Input
-										id="var-expression-{index}"
-										bind:value={variable.expression}
-										placeholder={'Ex: {{random:1..10}}, {{var}}+5, {{eval:2^3}}'}
-									/>
-								</div>
-
-								<!-- Syntax helper buttons -->
-								<div class="flex flex-wrap gap-2">
-									<Button
-										variant="outline"
-										size="sm"
-										onclick={() => insertSyntax(index, '{{var}}')}
-										class="text-xs"
-									>
-										{'{{var}}'}
-									</Button>
-									<Button
-										variant="outline"
-										size="sm"
-										onclick={() => insertSyntax(index, '{{random:1..10}}')}
-										class="text-xs"
-									>
-										{'{{random:1..10}}'}
-									</Button>
-									<Button
-										variant="outline"
-										size="sm"
-										onclick={() => insertSyntax(index, '{{random:0.5..9.99:0.01}}')}
-										class="text-xs"
-									>
-										Décimal
-									</Button>
-									<Button
-										variant="outline"
-										size="sm"
-										onclick={() => insertSyntax(index, '{{random:1..100!5}}')}
-										class="text-xs"
-									>
-										Exclusion
-									</Button>
-									<Button
-										variant="outline"
-										size="sm"
-										onclick={() => insertSyntax(index, '{{eval:}}')}
-										class="text-xs"
-									>
-										Évaluation
-									</Button>
+									<Input id="var-expression-{index}" bind:value={variable.expression} />
 								</div>
 							</div>
 
