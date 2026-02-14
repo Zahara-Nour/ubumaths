@@ -1856,7 +1856,9 @@ function hasSharedContent(shared: SharedVariationDefaults): boolean {
 		shared.correction ||
 		(shared.choices && shared.choices.length > 0) ||
 		(shared.validationRules && shared.validationRules.length > 0) ||
-		(shared.answerFormats && Object.keys(shared.answerFormats).length > 0)
+		(shared.answerFormats && Object.keys(shared.answerFormats).length > 0) ||
+		shared.blankDefaults ||
+		shared.requiredForm
 	);
 }
 

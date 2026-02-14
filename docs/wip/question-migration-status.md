@@ -61,18 +61,22 @@ This document describes the current state of the question system migration and t
 
 ### TypeScript Types (`src/lib/questions/types.ts`)
 
-> **Updated 2026-02-13** — Fill-in-blanks redesign v2. `type` and `transformType` removed, replaced by `getQuestionType()` inference. `blanks[]` is now the primary structure for fill-in-blanks questions (no `solution` for fill_in_blanks).
+> **Updated 2026-02-14** — `precision` top-level removed (now in `shared.blankDefaults.precision`). `solution` renamed to `correctChoiceIndex`. `defaultDisplayOptions` and `options` added to template. `getQuestionType()` now checks `shared?.choices`.
 
 ```typescript
 interface QuestionTemplate {
 	id: string;
 	// type is INFERRED via getQuestionType(): 'fill_in_blanks' | 'multiple_choice'
-	// choices present (non-empty) = multiple_choice, otherwise = fill_in_blanks
+	// choices present (non-empty, including shared.choices) = multiple_choice, otherwise = fill_in_blanks
 	title: string;
 
 	// Content structure
 	shared?: SharedVariationDefaults;
 	variations: QuestionVariation[];
+
+	// Display & validation
+	defaultDisplayOptions?: DisplayOptions; // shuffleTerms, removeNullTerms, etc.
+	options?: TemplateOptions; // allowEquivalent, constraints, validator, shuffleChoices
 
 	// Metadata
 	grades: GradeLevel[];
@@ -86,13 +90,15 @@ interface QuestionTemplate {
 
 interface QuestionVariation {
 	statement: TemplateMarkdown;
-	solution?: string | string[]; // Only for multiple_choice
+	correctChoiceIndex?: string | string[]; // Only for multiple_choice (was: solution)
 	variables?: QuestionVariable[];
 	correction?: QuestionCorrection;
 	choices?: { content: TemplateMarkdown; isCorrect: boolean }[];
 	validationRules?: ValidationRule[];
 	blanks?: BlankDefinition[]; // For fill_in_blanks
-	answerFormats?: string[]; // For expression convention (e.g. ['?', '?+?'])
+	blankDefaults?: BlankDefaults; // Per-variation precision/requiredForm/unit
+	requiredForm?: RequiredForm | { pattern: string }; // Per-variation form constraint
+	answerFormats?: Record<string, string>; // Per-variation answer formats
 	expressions?: { name: string; answerFormat?: string }[]; // Expression metadata
 	options?: { orderIndependent?: boolean }; // Pool matching for multi-blank
 }
@@ -118,15 +124,16 @@ Current columns:
 
 - `id`, `type`, `title`, `description`
 - `shared` (JSONB) - SharedVariationDefaults ✅ Added 2026-01-26
-- `variations` (JSONB) - Array of variations (includes `blanks[]` for fill_in_blanks)
+- `variations` (JSONB) - Array of variations (includes `blanks[]` for fill_in_blanks, `correctChoiceIndex` for QCM)
 - `exercise_instruction` (TEXT)
-- `options`, `precision` (JSONB)
+- `options` (JSONB), `precision` (JSONB, DEPRECATED - now in `shared.blankDefaults.precision`)
+- `default_display_options` (JSONB) ✅ Added 2026-02-14
 - `grades` (TEXT[])
 - `theme`, `domain`, `subdomain`, `level`
 - `status`, `delay`, `multiple_answers`
 - `created_at`, `updated_at`, `created_by`
 
-> **Note** : `transform_type` column dropped (migration `20260212162248_drop_transform_type_column.sql`). `type` column kept for DB indexing but inferred in TypeScript via `getQuestionType()`.
+> **Note** : `transform_type` column dropped (migration `20260212162248_drop_transform_type_column.sql`). `type` column kept for DB indexing but inferred in TypeScript via `getQuestionType()`. `precision` column deprecated (2026-02-14) - precision now lives in `shared.blankDefaults.precision`. `solution` key in JSONB renamed to `correctChoiceIndex` (2026-02-14).
 
 ### Variable Syntax (ubumark)
 
@@ -379,35 +386,42 @@ pnpm migrate:phase1:validate
 - `supabase/migrations/075_enhance_seed_with_variations.sql` - Seeds (deleted by migration below)
 - `supabase/migrations/20260126083727_add_shared_column_and_cleanup_seeds.sql` - Adds `shared`, cleans legacy data
 - `supabase/migrations/20260212162248_drop_transform_type_column.sql` - Drops `transform_type` column
+- `supabase/migrations/20260214053310_deprecate_precision_add_display_options.sql` - Deprecates `precision`, adds `default_display_options`
+- `supabase/migrations/20260214054756_rename_solution_to_correctChoiceIndex.sql` - Renames `solution` key to `correctChoiceIndex` in JSONB
 
 ---
 
 ## Decision Log
 
-| Date       | Decision                                     | Rationale                                                                                 |
-| ---------- | -------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| 2026-01-26 | Add `shared` column to DB                    | TypeScript type requires it, API doesn't store it                                         |
-| 2026-01-26 | Remove legacy `{@:var}` syntax               | Parser doesn't support it, causes confusion                                               |
-| 2026-01-26 | Keep both random syntaxes                    | `{{random:1..10}}` and `{{1..10}}` both supported                                         |
-| 2026-01-26 | Fix single-variation correction bug          | Tests failing, blocks migration                                                           |
-| 2026-01-26 | Apply migration & regenerate types           | Database ready for fresh import                                                           |
-| 2026-01-26 | Correct question count: 633 not 2238         | Verified against source file, previous estimate was wrong                                 |
-| 2026-01-26 | Fix logger.ts for standalone scripts         | Scripts can now run outside SvelteKit context                                             |
-| 2026-01-26 | Regenerate export (2026-01-26)               | Fresh export with 633 questions, 220 warnings                                             |
-| 2026-01-26 | Fix math delimiters (inline vs display)      | TinyMath used `$$` everywhere, ubumark needs `$` for inline                               |
-| 2026-01-27 | Complete image migration                     | All 254 images uploaded to new Supabase Storage bucket                                    |
-| 2026-01-27 | Integrate image URL mapping                  | Transformer now converts old paths to new Storage URLs                                    |
-| 2026-02-03 | Simplified expression syntax                 | `{{1..10}}` → `1..10` in variable definitions, cleaner code                               |
-| 2026-02-06 | Options review complete (40 impl, 6 ignored) | All options mapped: constraints, display, permutations, orderIndependent, requiredForm    |
-| 2026-02-06 | `exhaust` deferred                           | Generation-only option (3 questions), not needed for initial import                       |
-| 2026-02-06 | Factor permutation → products constraint     | LaTeX parser fix + products constraint renders permutation options redundant              |
-| 2026-02-06 | orderIndependent replaces solutions-order    | Pool matching on blanks[] (without replacement) for multi-answer questions                |
-| 2026-02-06 | requiredForm for decomposition + subtraction | Pattern-based form validation replaces old format/one-single-form checks                  |
-| 2026-02-12 | Remove `type`/`transformType` from types     | Inferred via `getQuestionType()`, reduces redundancy                                      |
-| 2026-02-12 | `blanks[]` replaces `solution` for fill_in   | Primary structure for fill-in-blanks, supports math/text types, constraints, answerFormat |
-| 2026-02-12 | Drop `transform_type` DB column              | No longer used after type inference redesign                                              |
-| 2026-02-13 | AST-based FillBlanksInput rendering          | Unified parsing via `parseMarkdown()`, reuses ParagraphNode/MathPrompt/BlankInput         |
-| 2026-02-13 | Flash back mode via `showCorrectAnswers`     | MathLive `setPromptValue` for math, InputState.value for text                             |
+| Date       | Decision                                      | Rationale                                                                                 |
+| ---------- | --------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 2026-01-26 | Add `shared` column to DB                     | TypeScript type requires it, API doesn't store it                                         |
+| 2026-01-26 | Remove legacy `{@:var}` syntax                | Parser doesn't support it, causes confusion                                               |
+| 2026-01-26 | Keep both random syntaxes                     | `{{random:1..10}}` and `{{1..10}}` both supported                                         |
+| 2026-01-26 | Fix single-variation correction bug           | Tests failing, blocks migration                                                           |
+| 2026-01-26 | Apply migration & regenerate types            | Database ready for fresh import                                                           |
+| 2026-01-26 | Correct question count: 633 not 2238          | Verified against source file, previous estimate was wrong                                 |
+| 2026-01-26 | Fix logger.ts for standalone scripts          | Scripts can now run outside SvelteKit context                                             |
+| 2026-01-26 | Regenerate export (2026-01-26)                | Fresh export with 633 questions, 220 warnings                                             |
+| 2026-01-26 | Fix math delimiters (inline vs display)       | TinyMath used `$$` everywhere, ubumark needs `$` for inline                               |
+| 2026-01-27 | Complete image migration                      | All 254 images uploaded to new Supabase Storage bucket                                    |
+| 2026-01-27 | Integrate image URL mapping                   | Transformer now converts old paths to new Storage URLs                                    |
+| 2026-02-03 | Simplified expression syntax                  | `{{1..10}}` → `1..10` in variable definitions, cleaner code                               |
+| 2026-02-06 | Options review complete (40 impl, 6 ignored)  | All options mapped: constraints, display, permutations, orderIndependent, requiredForm    |
+| 2026-02-06 | `exhaust` deferred                            | Generation-only option (3 questions), not needed for initial import                       |
+| 2026-02-06 | Factor permutation → products constraint      | LaTeX parser fix + products constraint renders permutation options redundant              |
+| 2026-02-06 | orderIndependent replaces solutions-order     | Pool matching on blanks[] (without replacement) for multi-answer questions                |
+| 2026-02-06 | requiredForm for decomposition + subtraction  | Pattern-based form validation replaces old format/one-single-form checks                  |
+| 2026-02-12 | Remove `type`/`transformType` from types      | Inferred via `getQuestionType()`, reduces redundancy                                      |
+| 2026-02-12 | `blanks[]` replaces `solution` for fill_in    | Primary structure for fill-in-blanks, supports math/text types, constraints, answerFormat |
+| 2026-02-12 | Drop `transform_type` DB column               | No longer used after type inference redesign                                              |
+| 2026-02-13 | AST-based FillBlanksInput rendering           | Unified parsing via `parseMarkdown()`, reuses ParagraphNode/MathPrompt/BlankInput         |
+| 2026-02-13 | Flash back mode via `showCorrectAnswers`      | MathLive `setPromptValue` for math, InputState.value for text                             |
+| 2026-02-14 | Remove top-level `precision`                  | Precision now in `shared.blankDefaults.precision`, avoids field duplication               |
+| 2026-02-14 | Add `default_display_options` column          | Template-level display options (shuffleTerms, removeNullTerms, etc.)                      |
+| 2026-02-14 | Rename `solution` → `correctChoiceIndex`      | Clarifies semantics: field stores QCM choice index, not the actual answer                 |
+| 2026-02-14 | Add `defaultDisplayOptions`/`options` to form | Complete form coverage for all QuestionTemplate fields                                    |
+| 2026-02-14 | Per-variation overrides in form               | blankDefaults, validationRules, requiredForm, answerFormats per variation                 |
 
 ---
 
@@ -585,7 +599,7 @@ The 8 questions with "custom validation" warnings are **not blocked** - they use
 
 ### Phase 14: Dynamic QCM solutions ✅
 
-`isCorrect` n'est plus stocké statiquement - calculé à runtime depuis `solution`.
+`isCorrect` n'est plus stocké statiquement - calculé à runtime depuis `correctChoiceIndex` (was: `solution`).
 
 ### Phase 13: Simplified syntax for alphanumeric variables in expressions ✅
 
@@ -607,9 +621,9 @@ Excel-style: `1→a`, `26→z`, `27→aa`
 
 Expressions extraites en variables (`expression1`, `expression2`) pour ordre de résolution correct.
 
-### Phase 10: Rename answer to solution ✅
+### Phase 10: Rename answer to solution to correctChoiceIndex ✅
 
-Champ `answer` renommé en `solution` partout.
+Champ `answer` renommé en `solution` (v1), puis `solution` renommé en `correctChoiceIndex` (2026-02-14) pour clarifier la semantique (index de choix QCM, pas la reponse).
 
 ### Phase 9: Display Options Mapping ✅
 
