@@ -277,20 +277,25 @@
 							</div>
 						</div>
 
-						<!-- Answer Input (Interactive Mode Only) -->
+						<!-- Multiple choice: always show choices (disabled when non-interactive) -->
+						{#if getQuestionType(instance) === 'multiple_choice'}
+							<div class="answer-section">
+								{#if interactive}
+									<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
+								{/if}
+								<MultipleChoiceInput
+									choices={instance.shuffledChoices || []}
+									bind:selectedIndexes={selectedChoices}
+									multipleAnswers={instance.multipleAnswers}
+									disabled={!interactive || isInputDisabled}
+									showValidation={isSubmitted}
+								/>
+							</div>
+						{/if}
+
+						<!-- Interactive controls -->
 						{#if interactive}
 							<div class="answer-section">
-								{#if getQuestionType(instance) === 'multiple_choice'}
-									<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
-									<MultipleChoiceInput
-										choices={instance.shuffledChoices || []}
-										bind:selectedIndexes={selectedChoices}
-										multipleAnswers={instance.multipleAnswers}
-										disabled={isInputDisabled}
-										showValidation={isSubmitted}
-									/>
-								{/if}
-
 								{#if !isSubmitted}
 									<div class="mt-4 flex justify-center">
 										<Button onclick={handleSubmit} disabled={!canSubmit || isSubmitting} size="lg">
@@ -357,8 +362,12 @@
 					</Card.Header>
 
 					<Card.Content class="space-y-6">
-						<div class="statement-section">
-							<div class="statement-content rounded-lg border bg-card p-4">
+						<!-- Correct answer -->
+						<div class="correct-answer">
+							<h3 class="mb-3 text-lg font-semibold">Réponse correcte</h3>
+							<div
+								class="rounded-lg border-2 border-green-600 bg-green-50 p-4 dark:bg-green-950/20"
+							>
 								{#if getQuestionType(instance) === 'fill_in_blanks' && instance.blanks}
 									<FillBlanksInput
 										statement={instance.statement}
@@ -367,16 +376,17 @@
 										showCorrectAnswers={true}
 										onlyBlanks={true}
 									/>
-								{:else if getQuestionType(instance) === 'multiple_choice'}
-									{#if Array.isArray(instance.correctChoiceIndex)}
-										<ul class="space-y-1">
-											{#each instance.correctChoiceIndex as ans, i (i)}
-												<li><MarkdownRenderer content={`$$${String(ans)}$$`} /></li>
-											{/each}
-										</ul>
-									{:else if instance.correctChoiceIndex !== undefined}
-										<MarkdownRenderer content={`$$${String(instance.correctChoiceIndex)}$$`} />
-									{/if}
+								{:else if getQuestionType(instance) === 'multiple_choice' && instance.choices}
+									<ul class="space-y-2">
+										{#each instance.choices as choice, i (i)}
+											{#if choice.isCorrect}
+												<li class="flex items-center gap-2">
+													<Check class="h-5 w-5 flex-shrink-0 text-green-600" />
+													<MarkdownRenderer content={choice.content} />
+												</li>
+											{/if}
+										{/each}
+									</ul>
 								{/if}
 							</div>
 						</div>
