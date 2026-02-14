@@ -203,10 +203,25 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			seed
 		);
 
-		// Resolve correctChoiceIndex (stays the same - it's a plain string; may be undefined for fill_in_blanks)
-		const resolvedCorrectChoiceIndex = resolvedVariation.correctChoiceIndex
-			? resolveSolution(resolvedVariation.correctChoiceIndex, resolvedVariables, seed)
-			: undefined;
+		// Resolve correctChoiceIndex from explicit value or derive from isCorrect on choices
+		let resolvedCorrectChoiceIndex: string | string[] | undefined;
+		if (resolvedVariation.correctChoiceIndex) {
+			resolvedCorrectChoiceIndex = resolveSolution(
+				resolvedVariation.correctChoiceIndex,
+				resolvedVariables,
+				seed
+			);
+		} else if (resolvedVariation.choices) {
+			// Derive from isCorrect flags on choices
+			const correctIndexes = resolvedVariation.choices
+				.map((choice, i) => (choice.isCorrect ? String(i) : null))
+				.filter((i): i is string => i !== null);
+			if (correctIndexes.length === 1) {
+				resolvedCorrectChoiceIndex = correctIndexes[0];
+			} else if (correctIndexes.length > 1) {
+				resolvedCorrectChoiceIndex = correctIndexes;
+			}
+		}
 
 		// Resolve correction if present (QuestionCorrection has feedback and/or steps)
 		let resolvedCorrection: ResolvedCorrection | undefined;
