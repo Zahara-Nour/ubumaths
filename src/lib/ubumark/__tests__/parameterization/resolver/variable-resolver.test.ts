@@ -1091,6 +1091,36 @@ describe('resolveVariables', () => {
 			});
 		});
 
+		describe('Implicit multiplication in eval', () => {
+			it('should evaluate eval:2k with implicit multiplication', () => {
+				const variables: Variable[] = [
+					{ name: 'k', expression: '5' },
+					{ name: 'result', expression: 'eval:2k' }
+				];
+				const resolved = resolveVariables(variables);
+				expect(resolved[1].value).toBe('10');
+			});
+
+			it('should evaluate eval:3a+2b with multiple implicit multiplications', () => {
+				const variables: Variable[] = [
+					{ name: 'a', expression: '4' },
+					{ name: 'b', expression: '5' },
+					{ name: 'result', expression: 'eval:3a+2b' }
+				];
+				const resolved = resolveVariables(variables);
+				expect(resolved[2].value).toBe('22');
+			});
+
+			it('should evaluate eval:2*k (explicit multiplication, regression)', () => {
+				const variables: Variable[] = [
+					{ name: 'k', expression: '5' },
+					{ name: 'result', expression: 'eval:2*k' }
+				];
+				const resolved = resolveVariables(variables);
+				expect(resolved[1].value).toBe('10');
+			});
+		});
+
 		describe('Mixed syntax scenarios', () => {
 			it('should combine simplified random with variable reference in eval', () => {
 				const variables: Variable[] = [

@@ -6,7 +6,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { evaluateWithModifiers } from '../evaluate-with-modifiers';
+import { evaluateWithModifiers, evaluateAstWithModifiers } from '../evaluate-with-modifiers';
+import { parseLatex } from '$lib/mathAST/parser';
 
 // =============================================================================
 // Basic Evaluation Tests
@@ -225,5 +226,31 @@ describe('evaluateWithModifiers - error cases', () => {
 
 	it('throws on invalid LaTeX', () => {
 		expect(() => evaluateWithModifiers('\\frac{1}', {})).toThrow();
+	});
+});
+
+// =============================================================================
+// evaluateAstWithModifiers Tests
+// =============================================================================
+
+describe('evaluateAstWithModifiers - AST input', () => {
+	it('evaluates a simple AST: 3+4 -> 7', () => {
+		const ast = parseLatex('3+4');
+		expect(evaluateAstWithModifiers(ast, {})).toBe('7');
+	});
+
+	it('evaluates AST with addPositive modifier', () => {
+		const ast = parseLatex('5');
+		expect(evaluateAstWithModifiers(ast, { addPositive: true })).toBe('+5');
+	});
+
+	it('evaluates AST with bracketNegative modifier', () => {
+		const ast = parseLatex('-3');
+		expect(evaluateAstWithModifiers(ast, { bracketNegative: true })).toBe('(-3)');
+	});
+
+	it('evaluates AST with combined modifiers', () => {
+		const ast = parseLatex('-\\frac{1}{2}');
+		expect(evaluateAstWithModifiers(ast, { decimal: true, bracketNegative: true })).toBe('(-0.5)');
 	});
 });

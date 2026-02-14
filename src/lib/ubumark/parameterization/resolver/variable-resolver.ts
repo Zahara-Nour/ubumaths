@@ -23,7 +23,10 @@ import { parseRandomSpec } from '../parser/random-parser';
 import { parseEvalExpressionWithModifiers } from '../parser/eval-parser';
 import { normalizeExpression } from '../parser/expression-normalizer';
 import { generateRandomNumber } from './random-generator';
-import { evaluateWithModifiers } from '$lib/mathAST/eval';
+import { parseCustom } from '$lib/mathAST/parser/custom';
+import { parseLatex } from '$lib/mathAST/parser';
+import { substitute, evaluateAstWithModifiers } from '$lib/mathAST/eval';
+import type { EvalBindings } from '$lib/mathAST/eval';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 
 // ============================================================================
@@ -287,6 +290,8 @@ export function resolveExpression(
 	}
 
 	// STAGE 3: Evaluate {{eval:...}} expressions (with optional modifiers)
+	// Uses AST-based pipeline: parseCustom -> substitute -> evaluate
+	// This handles implicit multiplication (e.g., 2k → 2*k) correctly.
 	const evalTokens = tokenize(result).filter((t) => t.type === 'eval');
 
 	// Replace from end to start to preserve positions
@@ -298,17 +303,10 @@ export function resolveExpression(
 				throw new Error(`Failed to parse eval expression: ${token.content}`);
 			}
 
-			// IMPORTANT: Resolve variable references inside eval expression first
-			// Two cases:
-			// 1. {{eval:{{a}}+{{b}}}} -> extract "{{a}}+{{b}}" -> resolve to "7+10" -> evaluate to 17
-			// 2. {{eval:a+b}} -> substitute bare variable names -> "7+10" -> evaluate to 17
-			let resolvedEvalExpr = parsed.expression;
-
-			// First try to find {{var}} style tokens
+			// Resolve {{var}} tokens in the expression string before AST parsing
+			let exprToParse = parsed.expression;
 			const varTokensInEval = tokenize(parsed.expression).filter((t) => t.type === 'variable');
-
 			if (varTokensInEval.length > 0) {
-				// Case 1: Variables with brackets {{var}}
 				for (let j = varTokensInEval.length - 1; j >= 0; j--) {
 					const varToken = varTokensInEval[j];
 					const varName = parseVariableReference(varToken.content);
@@ -319,24 +317,32 @@ export function resolveExpression(
 						throw new Error(`Variable "${varName}" not found in eval expression`);
 					}
 
-					resolvedEvalExpr =
-						resolvedEvalExpr.slice(0, varToken.start) +
+					exprToParse =
+						exprToParse.slice(0, varToken.start) +
 						resolvedVar.value +
-						resolvedEvalExpr.slice(varToken.end);
-				}
-			} else {
-				// Case 2: Bare variable names (common in eval expressions)
-				// Replace each resolved variable name with its value
-				for (const resolvedVar of alreadyResolved) {
-					// Use word boundary to avoid partial replacements
-					// e.g., don't replace 'a' in 'tan' or 'max'
-					const regex = new RegExp(`\\b${resolvedVar.name}\\b`, 'g');
-					resolvedEvalExpr = resolvedEvalExpr.replace(regex, resolvedVar.value);
+						exprToParse.slice(varToken.end);
 				}
 			}
 
-			// Evaluate with modifiers (decimal, positive sign, bracket negative, etc.)
-			const evaluatedValue = evaluateWithModifiers(resolvedEvalExpr, parsed.modifiers);
+			// Parse expression: use LaTeX parser for backslash commands, custom parser otherwise
+			// Custom parser handles implicit multiplication (2k → 2*k)
+			const hasLatex = exprToParse.includes('\\');
+			const ast = hasLatex ? parseLatex(exprToParse) : parseCustom(exprToParse);
+
+			// Build bindings from already-resolved variables
+			// Only single-letter names: parseCustom treats 'ab' as a*b
+			// For multi-char variables, use {{var}} token syntax (resolved above)
+			const bindings: EvalBindings = {};
+			for (const rv of alreadyResolved) {
+				if (rv.name.length === 1) {
+					const num = Number(rv.value);
+					bindings[rv.name] = Number.isFinite(num) ? num : rv.value;
+				}
+			}
+
+			// Substitute variables in AST and evaluate
+			const substituted = substitute(ast, bindings);
+			const evaluatedValue = evaluateAstWithModifiers(substituted, parsed.modifiers);
 			result = result.slice(0, token.start) + String(evaluatedValue) + result.slice(token.end);
 		} catch (error) {
 			throw new Error(

@@ -104,12 +104,19 @@ function formatNumber(value: number): string {
  * evaluateWithModifiers('-1/4', { decimal: true, bracketNegative: true })  // Returns: '(-0.25)'
  * ```
  */
-export function evaluateWithModifiers(latex: string, modifiers: EvalModifiers = {}): string {
-	// Parse the LaTeX expression
-	const ast = parseLatex(latex);
-
+/**
+ * Evaluate a MathNode AST with optional formatting modifiers.
+ *
+ * Same as evaluateWithModifiers but accepts a pre-parsed AST instead of a LaTeX string.
+ * This is useful when the AST has already been constructed (e.g., via parseCustom + substitute).
+ *
+ * @param ast - MathNode AST to evaluate
+ * @param modifiers - Optional formatting modifiers
+ * @returns Formatted result as string
+ * @throws Error if evaluation fails
+ */
+export function evaluateAstWithModifiers(ast: MathNode, modifiers: EvalModifiers = {}): string {
 	// Always use decimal mode internally to get a numeric value
-	// This simplifies the logic and avoids having to interpret MathNode structures
 	const result = evaluate(ast, { mode: 'decimal' });
 
 	// Handle non-value results
@@ -123,9 +130,8 @@ export function evaluateWithModifiers(latex: string, modifiers: EvalModifiers = 
 	// Get the numeric value
 	let numValue: number;
 	if (isComplex(result.value)) {
-		throw new Error('Complex numbers are not supported in evaluateWithModifiers');
+		throw new Error('Complex numbers are not supported in evaluateAstWithModifiers');
 	} else if (isMathNode(result.value)) {
-		// In case we somehow got a MathNode (shouldn't happen in decimal mode)
 		numValue = evaluateNodeToApproximatedNumber(result.value);
 	} else {
 		numValue = result.value;
@@ -137,18 +143,31 @@ export function evaluateWithModifiers(latex: string, modifiers: EvalModifiers = 
 
 	// Apply formatting modifiers
 	if (modifiers.addPositive && numValue > 0) {
-		// Add + sign for positive numbers
 		if (!formattedOutput.startsWith('+')) {
 			formattedOutput = '+' + formattedOutput;
 		}
 	}
 
 	if (modifiers.bracketNegative && numValue < 0) {
-		// Wrap negative numbers in parentheses
 		if (!formattedOutput.startsWith('(')) {
 			formattedOutput = '(' + formattedOutput + ')';
 		}
 	}
 
 	return formattedOutput;
+}
+
+/**
+ * Evaluate a LaTeX expression with optional formatting modifiers.
+ *
+ * Parses a LaTeX string and delegates to evaluateAstWithModifiers.
+ *
+ * @param latex - LaTeX expression to evaluate
+ * @param modifiers - Optional formatting modifiers
+ * @returns Formatted result as string
+ * @throws Error if parsing or evaluation fails
+ */
+export function evaluateWithModifiers(latex: string, modifiers: EvalModifiers = {}): string {
+	const ast = parseLatex(latex);
+	return evaluateAstWithModifiers(ast, modifiers);
 }
