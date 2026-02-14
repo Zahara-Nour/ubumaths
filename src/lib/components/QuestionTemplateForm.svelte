@@ -48,7 +48,6 @@
 	import { MarkdownEditor } from '$lib/components/markdown';
 	import AnswerEditor from './AnswerEditor.svelte';
 	import MySelect from './MySelect.svelte';
-	import MyCheckbox from './MyCheckbox.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { templateMarkdown } from '$lib/ubumark';
 	import CategorySelector from './CategorySelector.svelte';
@@ -77,6 +76,9 @@
 	} from 'lucide-svelte';
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 	import QuestionTemplateHelpDialogs from './QuestionTemplateHelpDialogs.svelte';
+	import DisplayOptionsEditor from './DisplayOptionsEditor.svelte';
+	import ValidationOptionsEditor from './ValidationOptionsEditor.svelte';
+	import SharedFieldsEditor from './SharedFieldsEditor.svelte';
 
 	interface Props {
 		template?: QuestionTemplate;
@@ -260,25 +262,6 @@
 		'reducedFractions',
 		'unit'
 	];
-	const CONSTRAINT_LABELS: Record<ConstraintId, string> = {
-		spaces: 'Espaces',
-		products: 'Symbole de multiplication',
-		brackets: 'Parenthèses',
-		zeros: 'Zéros inutiles',
-		form: 'Forme générale',
-		nullTerms: 'Termes nuls (x + 0)',
-		factorOne: 'Facteur 1 (1 * x)',
-		factorZero: 'Facteur 0 (0 * x)',
-		signs: 'Signes (-- = +)',
-		reducedFractions: 'Fractions irréductibles',
-		unit: 'Unité'
-	};
-	const CONSTRAINT_MODE_OPTIONS = [
-		{ value: '', label: 'Défaut (warn)' },
-		{ value: 'strict', label: 'Strict' },
-		{ value: 'warn', label: 'Avertissement' },
-		{ value: 'off', label: 'Désactivé' }
-	];
 	let constraintModes = $state<Record<string, string>>(
 		Object.fromEntries(CONSTRAINT_IDS.map((id) => [id, template?.options?.constraints?.[id] || '']))
 	);
@@ -326,33 +309,8 @@
 		JSON.stringify(template?.shared?.answerFormats || {}, null, 2)
 	);
 
-	// JSON validation feedback
+	// Valid required form values (used in buildTemplate)
 	const VALID_REQUIRED_FORMS = ['product', 'sum', 'fraction', 'power'] as const;
-
-	let validationRulesJsonError = $derived.by(() => {
-		const trimmed = sharedValidationRulesJson.trim();
-		if (!trimmed || trimmed === '[]') return '';
-		try {
-			const parsed = JSON.parse(trimmed);
-			if (!Array.isArray(parsed)) return 'Doit être un tableau JSON';
-			return '';
-		} catch (e) {
-			return e instanceof Error ? e.message : 'JSON invalide';
-		}
-	});
-
-	let answerFormatsJsonError = $derived.by(() => {
-		const trimmed = sharedAnswerFormatsJson.trim();
-		if (!trimmed || trimmed === '{}') return '';
-		try {
-			const parsed = JSON.parse(trimmed);
-			if (typeof parsed !== 'object' || Array.isArray(parsed) || parsed === null)
-				return 'Doit être un objet JSON';
-			return '';
-		} catch (e) {
-			return e instanceof Error ? e.message : 'JSON invalide';
-		}
-	});
 
 	// Help dialog states
 	let titleDescriptionHelpOpen = $state(false);
@@ -372,17 +330,7 @@
 	let statementSectionOpen = $state(true); // Open by default as it's required
 	let displayOptionsOpen = $state(false);
 	let optionsSectionOpen = $state(false);
-	let optionsConstraintsOpen = $state(false);
-	let optionsValidatorOpen = $state(false);
-	let sharedFieldsOpen = $state(false); // Closed by default
-	let sharedStatementOpen = $state(false);
-	let sharedVariablesOpen = $state(true); // Open by default for ease of use
-	let sharedSolutionOpen = $state(false);
-	let sharedCorrectionSharedOpen = $state(false);
-	let sharedRequiredFormOpen = $state(false);
-	let sharedBlankDefaultsOpen = $state(false);
-	let sharedValidationOpen = $state(false);
-	let sharedFormatsOpen = $state(false);
+	let sharedFieldsOpen = $state(false);
 	let variablesOpen = $state(true); // Open by default for ease of use
 	let answerSectionOpen = $state(true); // Open by default as it's required
 
@@ -1143,436 +1091,54 @@
 	</div>
 
 	<!-- Display Options -->
-	<Card.Root>
-		<Card.Header>
-			<Collapsible.Root bind:open={displayOptionsOpen}>
-				<Collapsible.Trigger
-					class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
-				>
-					<Card.Title>Options d'affichage</Card.Title>
-					<ChevronDown
-						class="h-4 w-4 transition-transform duration-200 {displayOptionsOpen
-							? 'rotate-180'
-							: ''}"
-					/>
-				</Collapsible.Trigger>
-				<Card.Description
-					>Transformations appliquées aux expressions avant affichage</Card.Description
-				>
-				<Collapsible.Content>
-					<Card.Content class="space-y-3">
-						<MyCheckbox bind:checked={displayShuffleTerms} label="Mélanger les termes (sommes)" />
-						<MyCheckbox
-							bind:checked={displayShuffleFactors}
-							label="Mélanger les facteurs (produits)"
-						/>
-						<MyCheckbox
-							bind:checked={displayShuffleTermsAndFactors}
-							label="Mélanger termes et facteurs"
-						/>
-						<MyCheckbox
-							bind:checked={displayShallowShuffleTerms}
-							label="Mélange superficiel (termes au niveau racine)"
-						/>
-						<MyCheckbox
-							bind:checked={displayShallowShuffleFactors}
-							label="Mélange superficiel (facteurs au niveau racine)"
-						/>
-						<MyCheckbox
-							bind:checked={displayRemoveNullTerms}
-							label="Supprimer les termes nuls (x + 0 → x)"
-						/>
-						<MyCheckbox
-							bind:checked={displayRemoveUnnecessaryBrackets}
-							label="Supprimer les parenthèses inutiles"
-						/>
-						<MyCheckbox
-							bind:checked={displayRemoveSpaces}
-							label="Supprimer les espaces de groupement des chiffres"
-						/>
-					</Card.Content>
-				</Collapsible.Content>
-			</Collapsible.Root>
-		</Card.Header>
-	</Card.Root>
+	<DisplayOptionsEditor
+		bind:open={displayOptionsOpen}
+		bind:shuffleTerms={displayShuffleTerms}
+		bind:shuffleFactors={displayShuffleFactors}
+		bind:shuffleTermsAndFactors={displayShuffleTermsAndFactors}
+		bind:shallowShuffleTerms={displayShallowShuffleTerms}
+		bind:shallowShuffleFactors={displayShallowShuffleFactors}
+		bind:removeNullTerms={displayRemoveNullTerms}
+		bind:removeUnnecessaryBrackets={displayRemoveUnnecessaryBrackets}
+		bind:removeSpaces={displayRemoveSpaces}
+	/>
 
 	<!-- Options de validation -->
-	<Card.Root>
-		<Card.Header>
-			<Collapsible.Root bind:open={optionsSectionOpen}>
-				<Collapsible.Trigger
-					class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
-				>
-					<Card.Title>Options de validation</Card.Title>
-					<ChevronDown
-						class="h-4 w-4 transition-transform duration-200 {optionsSectionOpen
-							? 'rotate-180'
-							: ''}"
-					/>
-				</Collapsible.Trigger>
-				<Card.Description>Options de validation des réponses</Card.Description>
-				<Collapsible.Content>
-					<Card.Content class="space-y-4">
-						<!-- General validation -->
-						<div class="space-y-3">
-							<h4 class="text-sm font-medium">Validation générale</h4>
-							<MyCheckbox
-								bind:checked={optAllowEquivalent}
-								label="Accepter les formes équivalentes (1/2 = 0.5)"
-							/>
-							<MyCheckbox
-								bind:checked={optAllowDifferentForms}
-								label="Accepter différentes formes algébriques (1/2 = 2/4)"
-							/>
-							<div class="space-y-1">
-								<Label>Forme canonique</Label>
-								<MySelect
-									type="single"
-									bind:value={optCanonicalForm}
-									items={[
-										{ value: '', label: 'Aucune' },
-										{ value: 'fraction', label: 'Fraction' },
-										{ value: 'decimal', label: 'Decimal' },
-										{ value: 'scientific', label: 'Scientifique' }
-									]}
-								/>
-							</div>
-							<MyCheckbox
-								bind:checked={optOrderIndependent}
-								label="Matching des trous indépendant de l'ordre"
-							/>
-						</div>
-
-						<!-- Custom validator -->
-						<Collapsible.Root bind:open={optionsValidatorOpen}>
-							<Collapsible.Trigger
-								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
-							>
-								<span class="text-sm font-medium">Validateur custom</span>
-								<ChevronDown
-									class="h-4 w-4 transition-transform duration-200 {optionsValidatorOpen
-										? 'rotate-180'
-										: ''}"
-								/>
-							</Collapsible.Trigger>
-							<Collapsible.Content class="space-y-2 pt-2">
-								<MySelect
-									type="single"
-									bind:value={optValidator}
-									items={[
-										{ value: '', label: 'Aucun' },
-										{ value: 'checkEquivalence', label: 'Equivalence' },
-										{ value: 'checkAlgebraic', label: 'Algebrique' },
-										{ value: 'checkNumeric', label: 'Numerique' }
-									]}
-								/>
-								{#if optValidator}
-									<textarea
-										class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
-										bind:value={optValidatorParamsJson}
-										rows={3}
-										placeholder={'{}'}
-									></textarea>
-								{/if}
-							</Collapsible.Content>
-						</Collapsible.Root>
-
-						<!-- QCM options -->
-						{#if questionType === 'multiple_choice'}
-							<div class="space-y-3">
-								<h4 class="text-sm font-medium">Options QCM</h4>
-								<MyCheckbox bind:checked={optShuffleChoices} label="Mélanger les choix" />
-							</div>
-						{/if}
-
-						<!-- Constraints -->
-						<Collapsible.Root bind:open={optionsConstraintsOpen}>
-							<Collapsible.Trigger
-								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
-							>
-								<span class="text-sm font-medium">Contraintes de forme</span>
-								<ChevronDown
-									class="h-4 w-4 transition-transform duration-200 {optionsConstraintsOpen
-										? 'rotate-180'
-										: ''}"
-								/>
-							</Collapsible.Trigger>
-							<Collapsible.Content class="space-y-3 pt-2">
-								{#each CONSTRAINT_IDS as id (id)}
-									<div class="grid grid-cols-2 items-center gap-2">
-										<Label class="text-xs">{CONSTRAINT_LABELS[id]}</Label>
-										<MySelect
-											type="single"
-											bind:value={constraintModes[id]}
-											items={CONSTRAINT_MODE_OPTIONS}
-										/>
-									</div>
-								{/each}
-								<MyCheckbox
-									bind:checked={optAllowBracketsInFirstNegativeTerm}
-									label="Autoriser parenthèses sur premier terme négatif"
-								/>
-							</Collapsible.Content>
-						</Collapsible.Root>
-					</Card.Content>
-				</Collapsible.Content>
-			</Collapsible.Root>
-		</Card.Header>
-	</Card.Root>
+	<ValidationOptionsEditor
+		bind:open={optionsSectionOpen}
+		bind:allowEquivalent={optAllowEquivalent}
+		bind:allowDifferentForms={optAllowDifferentForms}
+		bind:canonicalForm={optCanonicalForm}
+		bind:orderIndependent={optOrderIndependent}
+		bind:validator={optValidator}
+		bind:validatorParamsJson={optValidatorParamsJson}
+		bind:shuffleChoices={optShuffleChoices}
+		bind:allowBracketsInFirstNegativeTerm={optAllowBracketsInFirstNegativeTerm}
+		bind:constraintModes
+		{questionType}
+	/>
 
 	<!-- Champs partagés (shared defaults for all variations) -->
-	<Card.Root>
-		<Card.Header>
-			<Collapsible.Root bind:open={sharedFieldsOpen}>
-				<Collapsible.Trigger
-					class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
-				>
-					<Card.Title>Champs partagés</Card.Title>
-					<ChevronDown
-						class="h-4 w-4 transition-transform duration-200 {sharedFieldsOpen ? 'rotate-180' : ''}"
-					/>
-				</Collapsible.Trigger>
-				<Card.Description>Valeurs par défaut héritées par toutes les variations</Card.Description>
-				<Collapsible.Content>
-					<Card.Content class="space-y-4">
-						<!-- 1. Énoncé partagé -->
-						<Collapsible.Root bind:open={sharedStatementOpen}>
-							<Collapsible.Trigger
-								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
-							>
-								<span class="text-sm font-medium">Énoncé partagé</span>
-								<ChevronDown
-									class="h-4 w-4 transition-transform duration-200 {sharedStatementOpen
-										? 'rotate-180'
-										: ''}"
-								/>
-							</Collapsible.Trigger>
-							<Collapsible.Content class="pt-2">
-								<MarkdownEditor
-									bind:value={sharedStatement}
-									showParameterization={true}
-									variables={sharedVariables}
-									placeholder="Énoncé partagé par toutes les variations..."
-									rows={4}
-								/>
-							</Collapsible.Content>
-						</Collapsible.Root>
-
-						<!-- 2. Variables partagées -->
-						<Collapsible.Root bind:open={sharedVariablesOpen}>
-							<Collapsible.Trigger
-								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
-							>
-								<span class="flex items-center gap-2 text-sm font-medium">
-									Variables partagées
-									<button
-										type="button"
-										onclick={(e) => {
-											e.stopPropagation();
-											sharedVariableHelpOpen = true;
-										}}
-										class="text-muted-foreground transition-colors hover:text-foreground"
-										aria-label="Aide sur les variables partagées"
-									>
-										<CircleQuestionMark class="h-4 w-4" />
-									</button>
-								</span>
-								<ChevronDown
-									class="h-4 w-4 transition-transform duration-200 {sharedVariablesOpen
-										? 'rotate-180'
-										: ''}"
-								/>
-							</Collapsible.Trigger>
-							<Collapsible.Content class="pt-2">
-								<VariableEditor
-									bind:variables={sharedVariables}
-									bind:helpDialogOpen={sharedVariableHelpOpen}
-								/>
-							</Collapsible.Content>
-						</Collapsible.Root>
-
-						<!-- 3. Réponse partagée -->
-						<Collapsible.Root bind:open={sharedSolutionOpen}>
-							<Collapsible.Trigger
-								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
-							>
-								<span class="text-sm font-medium">Réponse partagée</span>
-								<ChevronDown
-									class="h-4 w-4 transition-transform duration-200 {sharedSolutionOpen
-										? 'rotate-180'
-										: ''}"
-								/>
-							</Collapsible.Trigger>
-							<Collapsible.Content class="pt-2">
-								<AnswerEditor
-									{questionType}
-									bind:answer={sharedCorrectChoiceIndex}
-									bind:choices={sharedChoices}
-									{multipleAnswers}
-								/>
-							</Collapsible.Content>
-						</Collapsible.Root>
-
-						<!-- 4. Correction partagée -->
-						<Collapsible.Root bind:open={sharedCorrectionSharedOpen}>
-							<Collapsible.Trigger
-								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
-							>
-								<span class="text-sm font-medium">Correction partagée</span>
-								<ChevronDown
-									class="h-4 w-4 transition-transform duration-200 {sharedCorrectionSharedOpen
-										? 'rotate-180'
-										: ''}"
-								/>
-							</Collapsible.Trigger>
-							<Collapsible.Content class="pt-2">
-								<MarkdownEditor
-									bind:value={sharedCorrectionString}
-									showParameterization={true}
-									variables={sharedVariables}
-									placeholder="Correction partagée par toutes les variations..."
-									rows={4}
-								/>
-							</Collapsible.Content>
-						</Collapsible.Root>
-
-						<!-- 5. Forme requise -->
-						<Collapsible.Root bind:open={sharedRequiredFormOpen}>
-							<Collapsible.Trigger
-								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
-							>
-								<span class="text-sm font-medium">Forme requise</span>
-								<ChevronDown
-									class="h-4 w-4 transition-transform duration-200 {sharedRequiredFormOpen
-										? 'rotate-180'
-										: ''}"
-								/>
-							</Collapsible.Trigger>
-							<Collapsible.Content class="space-y-2 pt-2">
-								<MySelect
-									type="single"
-									bind:value={sharedRequiredFormSelect}
-									items={REQUIRED_FORM_OPTIONS}
-								/>
-								{#if sharedRequiredFormSelect === 'custom'}
-									<Input
-										type="text"
-										bind:value={sharedRequiredFormPattern}
-										placeholder="Pattern personnalisé (ex: a:integer * b:integer)"
-									/>
-								{/if}
-							</Collapsible.Content>
-						</Collapsible.Root>
-
-						<!-- 6. Paramètres des trous (blankDefaults) -->
-						<Collapsible.Root bind:open={sharedBlankDefaultsOpen}>
-							<Collapsible.Trigger
-								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
-							>
-								<span class="text-sm font-medium">Paramètres des trous</span>
-								<ChevronDown
-									class="h-4 w-4 transition-transform duration-200 {sharedBlankDefaultsOpen
-										? 'rotate-180'
-										: ''}"
-								/>
-							</Collapsible.Trigger>
-							<Collapsible.Content class="space-y-4 pt-2">
-								<div class="space-y-2">
-									<Label>Précision</Label>
-									<PrecisionEditor bind:precision={sharedBlankPrecision} />
-								</div>
-								<div class="space-y-2">
-									<Label>Forme requise (trous)</Label>
-									<MySelect
-										type="single"
-										bind:value={sharedBlankRequiredFormSelect}
-										items={REQUIRED_FORM_OPTIONS}
-									/>
-									{#if sharedBlankRequiredFormSelect === 'custom'}
-										<Input
-											type="text"
-											bind:value={sharedBlankRequiredFormPattern}
-											placeholder="Pattern personnalisé"
-										/>
-									{/if}
-								</div>
-								<div class="space-y-2">
-									<MyCheckbox bind:checked={sharedBlankUnitExpected} label="Unité requise" />
-									{#if sharedBlankUnitExpected}
-										<Input
-											type="text"
-											bind:value={sharedBlankUnitRequired}
-											placeholder="Unité imposée (ex: m, kg, cm²)"
-										/>
-									{/if}
-								</div>
-							</Collapsible.Content>
-						</Collapsible.Root>
-
-						<!-- 7. Règles de validation -->
-						<Collapsible.Root bind:open={sharedValidationOpen}>
-							<Collapsible.Trigger
-								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
-							>
-								<span class="text-sm font-medium">Règles de validation</span>
-								<ChevronDown
-									class="h-4 w-4 transition-transform duration-200 {sharedValidationOpen
-										? 'rotate-180'
-										: ''}"
-								/>
-							</Collapsible.Trigger>
-							<Collapsible.Content class="pt-2">
-								<textarea
-									class="flex min-h-[80px] w-full rounded-md border bg-background px-3 py-2 font-mono text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none {validationRulesJsonError
-										? 'border-destructive'
-										: 'border-input'}"
-									bind:value={sharedValidationRulesJson}
-									rows={5}
-									placeholder="[]"
-								></textarea>
-								{#if validationRulesJsonError}
-									<p class="mt-1 text-xs text-destructive">{validationRulesJsonError}</p>
-								{:else}
-									<p class="mt-1 text-xs text-muted-foreground">Format JSON (tableau de règles)</p>
-								{/if}
-							</Collapsible.Content>
-						</Collapsible.Root>
-
-						<!-- 8. Formats de réponse -->
-						<Collapsible.Root bind:open={sharedFormatsOpen}>
-							<Collapsible.Trigger
-								class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
-							>
-								<span class="text-sm font-medium">Formats de réponse</span>
-								<ChevronDown
-									class="h-4 w-4 transition-transform duration-200 {sharedFormatsOpen
-										? 'rotate-180'
-										: ''}"
-								/>
-							</Collapsible.Trigger>
-							<Collapsible.Content class="pt-2">
-								<textarea
-									class="flex min-h-[80px] w-full rounded-md border bg-background px-3 py-2 font-mono text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none {answerFormatsJsonError
-										? 'border-destructive'
-										: 'border-input'}"
-									bind:value={sharedAnswerFormatsJson}
-									rows={5}
-									placeholder={'{}'}
-								></textarea>
-								{#if answerFormatsJsonError}
-									<p class="mt-1 text-xs text-destructive">{answerFormatsJsonError}</p>
-								{:else}
-									<p class="mt-1 text-xs text-muted-foreground">
-										Format JSON (clé = nom de variable, valeur = format)
-									</p>
-								{/if}
-							</Collapsible.Content>
-						</Collapsible.Root>
-					</Card.Content>
-				</Collapsible.Content>
-			</Collapsible.Root>
-		</Card.Header>
-	</Card.Root>
+	<SharedFieldsEditor
+		bind:open={sharedFieldsOpen}
+		{questionType}
+		{multipleAnswers}
+		bind:sharedStatement
+		bind:sharedVariables
+		bind:sharedCorrectChoiceIndex
+		bind:sharedChoices
+		bind:sharedCorrectionString
+		bind:sharedRequiredFormSelect
+		bind:sharedRequiredFormPattern
+		bind:sharedBlankPrecision
+		bind:sharedBlankRequiredFormSelect
+		bind:sharedBlankRequiredFormPattern
+		bind:sharedBlankUnitExpected
+		bind:sharedBlankUnitRequired
+		bind:sharedValidationRulesJson
+		bind:sharedAnswerFormatsJson
+		bind:sharedVariableHelpOpen
+	/>
 
 	<!-- Variations Management -->
 	<Card.Root>
