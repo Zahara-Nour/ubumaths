@@ -160,18 +160,20 @@ export type QuestionVariable = SharedVariable;
  *
  * Templates can have multiple variations, and one is randomly selected
  * during instance generation. Each variation contains its own statement,
- * variables, solution, and correction.
+ * variables, correctChoiceIndex (for QCM), and correction.
  *
- * @example Simple numerical question with 2 variations
+ * @example Multiple choice question with 2 variations
  * {
  *   variations: [
  *     {
- *       statement: [{ type: 'text', content: 'Calculate $$2 + 3$$' }],
- *       correctChoiceIndex: '5'
+ *       statement: [{ type: 'text', content: 'Is 4 even?' }],
+ *       correctChoiceIndex: '0',
+ *       choices: [{ content: 'Yes', isCorrect: true }, { content: 'No', isCorrect: false }]
  *     },
  *     {
- *       statement: [{ type: 'text', content: 'Calculate $$7 - 4$$' }],
- *       correctChoiceIndex: '3'
+ *       statement: [{ type: 'text', content: 'Is 7 odd?' }],
+ *       correctChoiceIndex: '0',
+ *       choices: [{ content: 'Yes', isCorrect: true }, { content: 'No', isCorrect: false }]
  *     }
  *   ]
  * }

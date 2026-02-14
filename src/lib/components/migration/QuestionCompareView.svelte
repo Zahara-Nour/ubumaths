@@ -236,7 +236,7 @@
 
 	interface ResolvedInstance {
 		statement: string;
-		solution: string | string[];
+		correctChoiceIndex: string | string[];
 		correction: { feedback: string; steps: string[] } | null;
 		choices: Array<{ content: string; isCorrect: boolean }> | null;
 		blanks: ResolvedBlank[] | null;
@@ -342,7 +342,7 @@
 
 			return {
 				statement,
-				solution,
+				correctChoiceIndex: solution,
 				correction,
 				choices,
 				blanks,
@@ -351,7 +351,7 @@
 		} catch (e) {
 			return {
 				statement: '',
-				solution: '',
+				correctChoiceIndex: '',
 				correction: null,
 				choices: null,
 				blanks: null,

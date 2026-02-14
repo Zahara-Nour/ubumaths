@@ -243,8 +243,8 @@ describe('AnswerField → fill_in_blanks', () => {
 		// expectedAnswer from solutionss[0][0] = "&1" → converted to "a"
 		expect(variation0.blanks![0].expectedAnswer).toBeDefined();
 
-		// No solution for fill_in_blanks
-		expect(variation0.solution).toBeUndefined();
+		// No correctChoiceIndex for fill_in_blanks
+		expect(variation0.correctChoiceIndex).toBeUndefined();
 	});
 
 	it('should convert answerField with variables in text (behavior 8)', () => {
