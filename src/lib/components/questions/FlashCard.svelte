@@ -267,6 +267,7 @@
 										bind:values={fillBlankValues}
 										bind:valuesLatex={fillBlankValuesLatex}
 										disabled={!interactive || isInputDisabled}
+										flashMode={!interactive}
 										validationResults={isSubmitted ? blankValidationResults : []}
 										onSubmit={handleSubmit}
 									/>

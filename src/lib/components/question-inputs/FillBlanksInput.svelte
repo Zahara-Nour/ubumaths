@@ -30,7 +30,7 @@
 	import { parseMarkdown } from '$lib/ubumark';
 	import type { ResolvedMarkdown } from '$lib/ubumark';
 	import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-	import { hasPrompts } from '$lib/components/markdown/utils/math-utils';
+	import { hasPrompts, expressionToFlashLatex } from '$lib/components/markdown/utils/math-utils';
 
 	// Node components (reuse from MarkdownRenderer)
 	import ParagraphNode from '$lib/components/markdown/nodes/ParagraphNode.svelte';
@@ -59,6 +59,8 @@
 		valuesLatex?: string[];
 		/** Whether inputs are disabled */
 		disabled?: boolean;
+		/** Flash mode: show blanks as static placeholders instead of inputs */
+		flashMode?: boolean;
 		/** Show correct answers in blanks (flash back / correction mode) */
 		showCorrectAnswers?: boolean;
 		/** Per-blank validation: true=correct, false=incorrect, null=not validated */
@@ -74,6 +76,7 @@
 		values = $bindable([]),
 		valuesLatex = $bindable([]),
 		disabled = false,
+		flashMode = false,
 		showCorrectAnswers = false,
 		validationResults = [],
 		onSubmit
@@ -150,21 +153,29 @@
 					onInputChange={handleInputChange}
 					onInputSubmit={handleInputSubmit}
 					inputsDisabled={effectiveDisabled}
+					{flashMode}
 					correctValues={mathCorrectValues}
 				/>
 			{:else if node.type === 'math-block'}
 				{#if node.expressionName || hasPrompts(node.expression, node.syntax)}
-					{#key node.expression}
-						<MathPrompt
-							expression={node.expression}
-							syntax={node.syntax}
-							display="block"
-							inputs={inputStates.filter((s) => s.type === 'math')}
-							onPromptChange={handleInputChange}
-							disabled={effectiveDisabled}
-							correctValues={mathCorrectValues}
-						/>
-					{/key}
+					{#if flashMode}
+						{@const flashLatex = expressionToFlashLatex(node.expression, node.syntax)}
+						{#key flashLatex}
+							<MathBlock expression={flashLatex} syntax="latex" />
+						{/key}
+					{:else}
+						{#key node.expression}
+							<MathPrompt
+								expression={node.expression}
+								syntax={node.syntax}
+								display="block"
+								inputs={inputStates.filter((s) => s.type === 'math')}
+								onPromptChange={handleInputChange}
+								disabled={effectiveDisabled}
+								correctValues={mathCorrectValues}
+							/>
+						{/key}
+					{/if}
 				{:else}
 					{#key node.expression}
 						<MathBlock expression={node.expression} syntax={node.syntax} />
@@ -177,7 +188,7 @@
 	{/if}
 
 	<!-- Helper text -->
-	{#if !effectiveDisabled && blanks.length > 0}
+	{#if !flashMode && !effectiveDisabled && blanks.length > 0}
 		<div class="helper-text">
 			<span class="text-xs text-muted-foreground"> Remplissez les blancs avec vos réponses </span>
 		</div>

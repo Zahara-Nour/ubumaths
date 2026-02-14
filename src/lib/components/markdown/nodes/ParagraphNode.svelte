@@ -30,7 +30,7 @@
 	import BlankInput from './BlankInput.svelte';
 	import HintReference from './HintReference.svelte';
 	import InternalLink from './InternalLink.svelte';
-	import { hasPrompts } from '../utils/math-utils';
+	import { hasPrompts, expressionToFlashLatex } from '../utils/math-utils';
 
 	interface Props {
 		children: InlineNode[];
@@ -43,6 +43,8 @@
 		onInputSubmit?: (index: number) => void;
 		/** Whether inputs are disabled (e.g., after submission) */
 		inputsDisabled?: boolean;
+		/** Flash mode: show blanks as static placeholders (______ for text, \boxed{?} for math) */
+		flashMode?: boolean;
 		/** Pre-fill math prompts with correct values (flash back mode) */
 		correctValues?: Record<string, string>;
 		/** Callback when a hashtag is clicked */
@@ -68,6 +70,7 @@
 		onInputChange,
 		onInputSubmit,
 		inputsDisabled = false,
+		flashMode = false,
 		correctValues,
 		onHashtagClick,
 		onMentionClick,
@@ -140,33 +143,48 @@
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline'}
 			{#if hasPrompts(child.expression, child.syntax)}
-				{#key child.expression}
-					<MathPrompt
-						expression={child.expression}
-						syntax={child.syntax}
-						display="inline"
-						inputs={inputs.filter((i) => i.type === 'math')}
-						onPromptChange={onInputChange}
-						disabled={inputsDisabled}
-						{correctValues}
-						{genericFunctions}
-					/>
-				{/key}
+				{#if flashMode}
+					{@const flashLatex = expressionToFlashLatex(
+						child.expression,
+						child.syntax,
+						genericFunctions
+					)}
+					{#key flashLatex}
+						<MathInline expression={flashLatex} syntax="latex" />
+					{/key}
+				{:else}
+					{#key child.expression}
+						<MathPrompt
+							expression={child.expression}
+							syntax={child.syntax}
+							display="inline"
+							inputs={inputs.filter((i) => i.type === 'math')}
+							onPromptChange={onInputChange}
+							disabled={inputsDisabled}
+							{correctValues}
+							{genericFunctions}
+						/>
+					{/key}
+				{/if}
 			{:else}
 				{#key child.expression}
 					<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />
 				{/key}
 			{/if}
 		{:else if child.type === 'blank'}
-			{@const state = getInputState(child.index)}
-			<BlankInput
-				index={child.index}
-				value={state?.value ?? ''}
-				disabled={inputsDisabled}
-				isCorrect={state?.isCorrect ?? null}
-				onValueChange={(value) => onInputChange?.(child.index, value)}
-				onSubmit={() => onInputSubmit?.(child.index)}
-			/>
+			{#if flashMode}
+				<span class="flash-blank">______</span>
+			{:else}
+				{@const state = getInputState(child.index)}
+				<BlankInput
+					index={child.index}
+					value={state?.value ?? ''}
+					disabled={inputsDisabled}
+					isCorrect={state?.isCorrect ?? null}
+					onValueChange={(value) => onInputChange?.(child.index, value)}
+					onSubmit={() => onInputSubmit?.(child.index)}
+				/>
+			{/if}
 		{:else if child.type === 'link'}
 			<a
 				href={child.url}
@@ -226,3 +244,13 @@
 		{/if}
 	{/each}
 </p>
+
+<style>
+	.flash-blank {
+		display: inline-block;
+		font-weight: 600;
+		letter-spacing: 0.05em;
+		color: hsl(var(--muted-foreground));
+		vertical-align: baseline;
+	}
+</style>
