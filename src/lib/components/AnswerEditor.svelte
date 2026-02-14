@@ -50,8 +50,6 @@
 			if (!choices || choices.length === 0) {
 				choices = [
 					{ content: templateMarkdown(''), isCorrect: true },
-					{ content: templateMarkdown(''), isCorrect: false },
-					{ content: templateMarkdown(''), isCorrect: false },
 					{ content: templateMarkdown(''), isCorrect: false }
 				];
 			}
