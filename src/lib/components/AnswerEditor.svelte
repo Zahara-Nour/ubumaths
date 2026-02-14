@@ -11,14 +11,13 @@
 	PROPS:
 	- questionType: QuestionType
 	- answer: string | string[] (bindable)
-	- precision: PrecisionType (bindable, for numerical)
-	- blanks: { position: number; expectedAnswer: string }[] (bindable, for fill-in-blanks)
+	- blanks: TemplateBlank[] (bindable, for fill-in-blanks)
 	- choices: { content: TemplateMarkdown; isCorrect: boolean }[] (bindable, for QCM)
 	- multipleAnswers: boolean (bindable, for QCM)
 -->
 
 <script lang="ts">
-	import type { QuestionType, PrecisionType } from '$lib/questions/types';
+	import type { QuestionType, TemplateBlank } from '$lib/questions/types';
 	import type { TemplateMarkdown } from '$lib/ubumark';
 	import { templateMarkdown } from '$lib/ubumark';
 	import { Input } from '$lib/components/ui/input';
@@ -27,14 +26,12 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Badge } from '$lib/components/ui/badge';
-	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { Plus, Trash2 } from 'lucide-svelte';
 
 	interface Props {
 		questionType: QuestionType;
 		answer: string | string[];
-		precision?: PrecisionType;
-		blanks?: { position: number; expectedAnswer: string }[];
+		blanks?: TemplateBlank[];
 		choices?: { content: TemplateMarkdown; isCorrect?: boolean }[];
 		multipleAnswers?: boolean;
 	}
@@ -42,7 +39,6 @@
 	let {
 		questionType,
 		answer = $bindable(),
-		precision = $bindable(),
 		blanks = $bindable([]),
 		choices = $bindable([]),
 		multipleAnswers = $bindable()
@@ -68,12 +64,7 @@
 				answer = [''];
 			}
 			if (!blanks || blanks.length === 0) {
-				blanks = [{ position: 0, expectedAnswer: '' }];
-			}
-		} else {
-			// Numerical or algebraic - single string answer
-			if (Array.isArray(answer)) {
-				answer = '';
+				blanks = [{ expectedAnswer: '' }];
 			}
 		}
 	});
@@ -85,19 +76,18 @@
 
 	// QCM: Remove choice
 	function removeChoice(index: number) {
+		// Check if the choice being removed is correct before filtering
+		const wasCorrect = choices[index]?.isCorrect;
+
 		choices = choices.filter((_, i) => i !== index);
 
-		// Update isCorrect flags if we're removing a correct choice
-		const removedChoice = choices[index];
-		if (removedChoice?.isCorrect) {
-			// If there are no more correct choices, mark the first one as correct
+		// If we removed a correct choice, ensure at least one remains correct
+		if (wasCorrect) {
 			const hasCorrectChoice = choices.some((c) => c.isCorrect);
 			if (!hasCorrectChoice && choices.length > 0) {
 				choices[0].isCorrect = true;
 			}
 		}
-
-		// Note: answer field is not used with new structure (isCorrect flag on each choice)
 	}
 
 	// QCM: Toggle choice correctness
@@ -119,19 +109,14 @@
 	function addBlank() {
 		if (!Array.isArray(answer)) answer = [];
 		answer = [...answer, ''];
-		blanks = [...blanks, { position: blanks.length, expectedAnswer: '' }];
+		blanks = [...blanks, { expectedAnswer: '' }];
 	}
 
 	// Fill-in-blanks: Remove blank
 	function removeBlank(index: number) {
 		if (!Array.isArray(answer)) return;
 		answer = answer.filter((_, i) => i !== index);
-		blanks = blanks
-			.filter((_, i) => i !== index)
-			.map((b, i) => ({
-				position: i,
-				expectedAnswer: b.expectedAnswer
-			}));
+		blanks = blanks.filter((_, i) => i !== index);
 	}
 
 	// Insert syntax helper into input/textarea
@@ -159,132 +144,55 @@
 </script>
 
 <div class="space-y-4">
-	<!-- Numerical Questions -->
-	{#if questionType === 'numerical_exact' || questionType === 'numerical_decimal' || questionType === 'numerical_rounded'}
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Réponse numérique</Card.Title>
-				<Card.Description></Card.Description>
-			</Card.Header>
-			<Card.Content class="space-y-4">
-				<div class="space-y-2">
-					<Label for="answer">Expression de la réponse</Label>
-					<Input
-						id="answer"
-						bind:value={answer}
-						placeholder={'Ex: {{a}} + {{b}}, {{eval:2^3}}, 42'}
-						class="font-mono"
-					/>
-
-					<!-- Syntax helper buttons -->
-					<div class="flex flex-wrap gap-2">
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={() => insertSyntax('answer', '{{}}', (v) => (answer = v))}
-							class="text-xs"
-						>
-							Variable
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={() => insertSyntax('answer', '{{random:1..10}}', (v) => (answer = v))}
-							class="text-xs"
-						>
-							Aléatoire
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={() => insertSyntax('answer', '{{eval:}}', (v) => (answer = v))}
-							class="text-xs"
-						>
-							Évaluation
-						</Button>
-					</div>
-
-					<p class="text-xs text-muted-foreground">
-						Cette expression sera évaluée pour produire la réponse numérique attendue
-					</p>
-				</div>
-
-				{#if questionType !== 'numerical_exact'}
-					<PrecisionEditor bind:precision />
-				{/if}
-			</Card.Content>
-		</Card.Root>
-	{/if}
-
 	<!-- Fill in Blanks -->
 	{#if questionType === 'fill_in_blanks'}
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Texte à trous</Card.Title>
-				<Card.Description>Définissez les positions et réponses pour chaque trou</Card.Description>
+				<Card.Description>Définissez la réponse attendue pour chaque trou</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				{#if blanks}
 					{#each blanks as blank, index (index)}
 						<div class="flex gap-3">
 							<div class="flex-1 space-y-2">
-								<Label for="blank-{index}">
-									Trou #{index + 1}
+								<Label for="blank-answer-{index}">
+									Trou #{index + 1} — Réponse attendue
 								</Label>
-								<div class="grid grid-cols-2 gap-2">
-									<div class="space-y-2">
-										<Label for="blank-position-{index}" class="text-xs text-muted-foreground">
-											Position
-										</Label>
-										<Input
-											id="blank-position-{index}"
-											type="number"
-											min="0"
-											bind:value={blank.position}
-											placeholder="0"
-											class="font-mono"
-										/>
-									</div>
-									<div class="space-y-2">
-										<Label for="blank-answer-{index}" class="text-xs text-muted-foreground">
-											Réponse attendue
-										</Label>
-										<Input
-											id="blank-answer-{index}"
-											bind:value={blank.expectedAnswer}
-											placeholder={'Ex: {{var}}, {{eval:...}}'}
-											class="font-mono"
-										/>
-										<!-- Syntax helper buttons -->
-										<div class="flex flex-wrap gap-1">
-											<Button
-												variant="outline"
-												size="sm"
-												onclick={() =>
-													insertSyntax(
-														`blank-answer-${index}`,
-														'{{}}',
-														(v) => (blank.expectedAnswer = v)
-													)}
-												class="h-auto px-2 py-0.5 text-xs"
-											>
-												Variable
-											</Button>
-											<Button
-												variant="outline"
-												size="sm"
-												onclick={() =>
-													insertSyntax(
-														`blank-answer-${index}`,
-														'{{eval:}}',
-														(v) => (blank.expectedAnswer = v)
-													)}
-												class="h-auto px-2 py-0.5 text-xs"
-											>
-												Éval
-											</Button>
-										</div>
-									</div>
+								<Input
+									id="blank-answer-{index}"
+									bind:value={blank.expectedAnswer}
+									placeholder={'Ex: {{var}}, {{eval:...}}'}
+									class="font-mono"
+								/>
+								<!-- Syntax helper buttons -->
+								<div class="flex flex-wrap gap-1">
+									<Button
+										variant="outline"
+										size="sm"
+										onclick={() =>
+											insertSyntax(
+												`blank-answer-${index}`,
+												'{{}}',
+												(v) => (blank.expectedAnswer = v)
+											)}
+										class="h-auto px-2 py-0.5 text-xs"
+									>
+										Variable
+									</Button>
+									<Button
+										variant="outline"
+										size="sm"
+										onclick={() =>
+											insertSyntax(
+												`blank-answer-${index}`,
+												'{{eval:}}',
+												(v) => (blank.expectedAnswer = v)
+											)}
+										class="h-auto px-2 py-0.5 text-xs"
+									>
+										Éval
+									</Button>
 								</div>
 							</div>
 							<Button
@@ -306,7 +214,7 @@
 				</Button>
 
 				<p class="text-xs text-muted-foreground">
-					La position indique l'index du champ dans l'énoncé où insérer le trou (0 = début)
+					Les trous sont positionnels par index dans l'énoncé
 				</p>
 			</Card.Content>
 		</Card.Root>
