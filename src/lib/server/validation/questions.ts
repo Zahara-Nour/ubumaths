@@ -8,15 +8,7 @@ import { paginationSchema, gradeSchema } from './common';
 /**
  * Question types
  */
-export const questionTypeSchema = z.enum([
-	'multiple_choice',
-	'numerical',
-	'algebraic',
-	'fill_blanks',
-	'ordering',
-	'matrix',
-	'true_false'
-]);
+export const questionTypeSchema = z.enum(['multiple_choice', 'fill_in_blanks']);
 
 /**
  * Variable schema for question templates
@@ -27,45 +19,73 @@ const variableSchema = z.object({
 });
 
 /**
+ * Blank schema matching TemplateBlank interface
+ */
+const blankSchema = z.object({
+	expectedAnswer: z.string(),
+	prefilled: z.string().optional(),
+	pool: z.array(z.string()).optional(),
+	precision: z.unknown().optional(),
+	requiredForm: z.unknown().optional(),
+	validationRules: z.array(z.unknown()).optional(),
+	unit: z
+		.object({
+			expected: z.boolean(),
+			required: z.string().optional()
+		})
+		.optional()
+});
+
+/**
+ * Correction schema matching QuestionCorrection interface
+ */
+const correctionSchema = z.object({
+	feedback: z
+		.object({
+			correct: z.string().optional(),
+			incorrect: z.string().optional(),
+			partial: z.string().optional()
+		})
+		.optional(),
+	steps: z.array(z.string()).optional()
+});
+
+/**
  * Variation schema for question templates
- * Uses string (markdown) instead of ContentField[] for content fields
  */
 const variationSchema = z.object({
 	statement: z.string().min(1, "L'énoncé est requis"),
 	variables: z.array(variableSchema).optional(),
 	correctChoiceIndex: z.union([z.string(), z.array(z.string())]).optional(),
-	correction: z.string().optional(),
-	blanks: z
-		.array(
-			z.object({
-				position: z.number().int().nonnegative(),
-				expectedAnswer: z.string()
-			})
-		)
-		.optional(),
+	correction: correctionSchema.optional().nullable(),
+	blanks: z.array(blankSchema).optional(),
+	blankDefaults: z.unknown().optional(),
 	choices: z
 		.array(
 			z.object({
 				content: z.string(),
-				isCorrect: z.boolean()
+				isCorrect: z.boolean().optional()
 			})
 		)
-		.optional()
+		.optional(),
+	requiredForm: z.unknown().optional(),
+	validationRules: z.array(z.unknown()).optional(),
+	answerFormats: z.unknown().optional()
 });
 
 /**
  * Schema for creating a question template
  */
 export const createQuestionTemplateSchema = z.object({
-	type: questionTypeSchema,
+	type: questionTypeSchema.optional(),
 	title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long (max 200 caractères)'),
-	description: z.string().max(1000).optional(),
+	description: z.string().max(1000).optional().nullable(),
 	variations: z
 		.array(variationSchema)
 		.min(1, 'Au moins une variation requise')
 		.max(50, 'Trop de variations (max 50)')
 		.optional(),
-	exerciseInstruction: z.string().max(500).optional(),
+	exerciseInstruction: z.string().max(500).optional().nullable(),
 	shared: z.unknown().optional().nullable(),
 	defaultDisplayOptions: z.unknown().optional().nullable(),
 	options: z.unknown().optional().nullable(),
@@ -115,7 +135,7 @@ export const questionCategorySchema = z.object({
 // ============================================================================
 
 /**
- * Question template response schema
+ * Question template response schema (matches Supabase snake_case columns)
  */
 export const questionTemplateResponseSchema = z.object({
 	id: z.string().uuid(),
@@ -123,10 +143,11 @@ export const questionTemplateResponseSchema = z.object({
 	title: z.string(),
 	description: z.string().nullable().optional(),
 	variations: z.array(z.unknown()).nullable().optional(),
-	exerciseInstruction: z.string().nullable().optional(),
+	exercise_instruction: z.string().nullable().optional(),
 	shared: z.unknown().nullable().optional(),
-	defaultDisplayOptions: z.unknown().nullable().optional(),
+	default_display_options: z.unknown().nullable().optional(),
 	options: z.unknown().nullable().optional(),
+	precision: z.unknown().nullable().optional(),
 	grades: z.array(gradeSchema),
 	theme: z.string(),
 	domain: z.string(),
@@ -134,10 +155,10 @@ export const questionTemplateResponseSchema = z.object({
 	level: z.number().int().positive(),
 	status: z.enum(['draft', 'published']),
 	delay: z.number().int().nonnegative().nullable().optional(),
-	multipleAnswers: z.boolean().nullable().optional(),
+	multiple_answers: z.boolean().nullable().optional(),
 	created_by: z.string().uuid(),
-	created_at: z.string().datetime(),
-	updated_at: z.string().datetime()
+	created_at: z.string(),
+	updated_at: z.string()
 });
 
 /**
