@@ -36,7 +36,7 @@
 		expressionToLatex,
 		replacePromptsWithValues
 	} from '$lib/components/markdown/utils/math-utils';
-	import type { BlockNode } from '$lib/ubumark';
+	import type { BlockNode, InlineNode } from '$lib/ubumark';
 
 	// Node components (reuse from MarkdownRenderer)
 	import ParagraphNode from '$lib/components/markdown/nodes/ParagraphNode.svelte';
@@ -109,6 +109,41 @@
 		return false;
 	}
 
+	/** Filter paragraph children to only keep sentences containing blanks */
+	function filterSentencesForBlanks(children: InlineNode[]): InlineNode[] {
+		const sentences: InlineNode[][] = [[]];
+
+		for (const child of children) {
+			if (child.type !== 'text') {
+				sentences[sentences.length - 1].push(child);
+				continue;
+			}
+
+			// Split text at sentence boundaries: ". " followed by uppercase letter
+			const parts = child.content.split(/(?<=\.\s)(?=[A-ZÀ-ÿ])/);
+
+			for (let j = 0; j < parts.length; j++) {
+				if (j > 0) {
+					sentences.push([]);
+				}
+				if (parts[j]) {
+					sentences[sentences.length - 1].push({ ...child, content: parts[j] });
+				}
+			}
+		}
+
+		// Keep only sentences containing blanks or math prompts
+		return sentences
+			.filter((sentence) =>
+				sentence.some(
+					(node) =>
+						node.type === 'blank' ||
+						(node.type === 'math-inline' && hasPrompts(node.expression, node.syntax))
+				)
+			)
+			.flat();
+	}
+
 	// Parse statement to AST and augment expression nodes
 	// In flash mode, skip augmentation (no "= ?" appended to expressions)
 	let augmentedAST = $derived.by(() => {
@@ -116,7 +151,15 @@
 		if (flashMode) return ast;
 		const augmented = augmentASTForExpressions(ast, expressions);
 		if (onlyBlanks) {
-			return { type: 'document' as const, children: augmented.children.filter(nodeHasBlanks) };
+			const blanksOnly = augmented.children.filter(nodeHasBlanks);
+			return {
+				type: 'document' as const,
+				children: blanksOnly.map((block) =>
+					block.type === 'paragraph'
+						? { ...block, children: filterSentencesForBlanks(block.children) }
+						: block
+				)
+			};
 		}
 		return augmented;
 	});
@@ -171,6 +214,48 @@
 			onSubmit?.();
 		}
 	}
+
+	/**
+	 * Get correction LaTeX for an expression node.
+	 *
+	 * - Augmented expressions (no ? in original): replace \placeholder[N]{} with answers
+	 * - Non-augmented expressions (has ?): replace ? with answers from answerFormat indices
+	 */
+	function getCorrectionLatex(
+		expression: string,
+		syntax: 'latex' | 'custom',
+		exprName?: string
+	): string {
+		const latex = expressionToLatex(expression, syntax);
+
+		if (expression.includes('?') && exprName && expressions && mathCorrectValues) {
+			// Expression has holes — find blank indices from the answerFormat
+			const expr = expressions.find((e) => e.name === exprName);
+			if (expr?.answerFormat) {
+				const indices: number[] = [];
+				const regex = /\\placeholder\[(\d+)\]\{\}/g;
+				let m;
+				while ((m = regex.exec(expr.answerFormat)) !== null) {
+					indices.push(parseInt(m[1]));
+				}
+				let idx = 0;
+				return latex.replace(/\?/g, () => {
+					if (idx < indices.length) {
+						const answer = mathCorrectValues![String(indices[idx])];
+						idx++;
+						return answer ? `\\textcolor{green}{${answer}}` : '?';
+					}
+					return '?';
+				});
+			}
+		}
+
+		// Standard case: replace \placeholder[N]{} with values
+		if (mathCorrectValues) {
+			return replacePromptsWithValues(latex, mathCorrectValues);
+		}
+		return latex;
+	}
 </script>
 
 <div class="fill-blanks-container">
@@ -195,10 +280,13 @@
 							<MathBlock expression={flashLatex} syntax="latex" />
 						{/key}
 					{:else if showCorrectAnswers && mathCorrectValues}
-						{@const latex = expressionToLatex(node.expression, node.syntax)}
-						{@const filledLatex = replacePromptsWithValues(latex, mathCorrectValues)}
-						{#key filledLatex}
-							<MathBlock expression={filledLatex} syntax="latex" />
+						{@const correctionLatex = getCorrectionLatex(
+							node.expression,
+							node.syntax,
+							node.expressionName
+						)}
+						{#key correctionLatex}
+							<MathBlock expression={correctionLatex} syntax="latex" />
 						{/key}
 					{:else}
 						{#key node.expression}

@@ -77,6 +77,12 @@ function augmentMathNode(
 		return node;
 	}
 
+	// If the expression already contains holes (?), it has its own
+	// blanks — never augment with " = answerFormat"
+	if (node.expression.includes('?')) {
+		return node;
+	}
+
 	const expr = expressions.find((e) => e.name === node.expressionName);
 	if (!expr?.answerFormat) {
 		return node;
