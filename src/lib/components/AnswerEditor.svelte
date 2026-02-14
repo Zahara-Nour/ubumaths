@@ -149,7 +149,6 @@
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Texte à trous</Card.Title>
-				<Card.Description>Définissez la réponse attendue pour chaque trou</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				{#if blanks}
@@ -162,38 +161,8 @@
 								<Input
 									id="blank-answer-{index}"
 									bind:value={blank.expectedAnswer}
-									placeholder={'Ex: {{var}}, {{eval:...}}'}
 									class="font-mono"
 								/>
-								<!-- Syntax helper buttons -->
-								<div class="flex flex-wrap gap-1">
-									<Button
-										variant="outline"
-										size="sm"
-										onclick={() =>
-											insertSyntax(
-												`blank-answer-${index}`,
-												'{{}}',
-												(v) => (blank.expectedAnswer = v)
-											)}
-										class="h-auto px-2 py-0.5 text-xs"
-									>
-										Variable
-									</Button>
-									<Button
-										variant="outline"
-										size="sm"
-										onclick={() =>
-											insertSyntax(
-												`blank-answer-${index}`,
-												'{{eval:}}',
-												(v) => (blank.expectedAnswer = v)
-											)}
-										class="h-auto px-2 py-0.5 text-xs"
-									>
-										Éval
-									</Button>
-								</div>
 							</div>
 							<Button
 								variant="destructive"
