@@ -33,7 +33,7 @@ const variableSchema = z.object({
 const variationSchema = z.object({
 	statement: z.string().min(1, "L'énoncé est requis"),
 	variables: z.array(variableSchema).optional(),
-	solution: z.union([z.string(), z.array(z.string())]),
+	correctChoiceIndex: z.union([z.string(), z.array(z.string())]).optional(),
 	correction: z.string().optional(),
 	blanks: z
 		.array(

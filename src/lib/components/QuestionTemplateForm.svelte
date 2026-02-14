@@ -430,14 +430,16 @@
 			variables: v.variables || [],
 			blanks: v.blanks || [],
 			choices: v.choices || [],
-			correction: v.correction
+			correction: v.correction,
+			blankDefaults: v.blankDefaults || {}
 		})) || [
 			{
 				statement: templateMarkdown(''),
 				variables: [],
 				correctChoiceIndex: '',
 				blanks: [],
-				choices: []
+				choices: [],
+				blankDefaults: {}
 			}
 		]
 	);
@@ -524,7 +526,8 @@
 				variables: [],
 				correctChoiceIndex: '',
 				blanks: [],
-				choices: []
+				choices: [],
+				blankDefaults: {}
 			}
 		];
 		correctionStrings = [...correctionStrings, ''];
@@ -577,7 +580,10 @@
 			// correction is set from correctionStrings when building template
 			correction: undefined,
 			blanks: sourceVariation.blanks ? JSON.parse(JSON.stringify(sourceVariation.blanks)) : [],
-			choices: sourceVariation.choices ? JSON.parse(JSON.stringify(sourceVariation.choices)) : []
+			choices: sourceVariation.choices ? JSON.parse(JSON.stringify(sourceVariation.choices)) : [],
+			blankDefaults: sourceVariation.blankDefaults
+				? JSON.parse(JSON.stringify(sourceVariation.blankDefaults))
+				: {}
 		};
 
 		// Replace the current variation with the duplicated content
@@ -1776,7 +1782,7 @@
 											<!-- Parametres des trous (per-variation blankDefaults) -->
 											<div class="space-y-2">
 												<Label class="text-sm font-medium">Parametres des trous</Label>
-												<PrecisionEditor bind:precision={variation.blankDefaults} />
+												<PrecisionEditor bind:precision={variation.blankDefaults!.precision} />
 											</div>
 
 											<!-- Regles de validation -->
