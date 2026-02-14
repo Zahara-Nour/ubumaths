@@ -148,7 +148,7 @@ export function expressionToFlashLatex(
  * Replace \placeholder[N]{} with actual correct values in a LaTeX string.
  *
  * Used in correction mode to display the expression with answers filled in.
- * Values are wrapped in \underline{} for subtle highlighting.
+ * Values are wrapped in \textcolor{green}{} for highlighting.
  *
  * @param latex - LaTeX string containing \placeholder[N]{} markers
  * @param values - Map of prompt index (string) → correct LaTeX value
@@ -158,6 +158,6 @@ export function replacePromptsWithValues(latex: string, values: Record<string, s
 	return latex.replace(/\\placeholder\[(\d+)\]\{[^}]*\}/g, (_match: string, index: string) => {
 		const value = values[index];
 		if (!value) return '\\boxed{?}';
-		return `\\underline{${value}}`;
+		return `\\textcolor{green}{${value}}`;
 	});
 }

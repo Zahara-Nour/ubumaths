@@ -273,8 +273,6 @@
 
 	.correction-answer {
 		font-weight: 600;
-		text-decoration: underline;
-		text-decoration-color: hsl(var(--primary) / 0.5);
-		text-underline-offset: 2px;
+		color: hsl(142.1 76.2% 36.3%);
 	}
 </style>
