@@ -10,7 +10,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRoles } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/questions/categories/all
@@ -21,7 +21,7 @@ import { requireRole } from '$lib/server/middleware/auth';
  * Returns: { categories: QuestionCategory[] }
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	await requireRole(locals, 'teacher');
+	await requireRoles(locals, ['teacher', 'admin']);
 	const supabase = locals.supabase;
 
 	try {
