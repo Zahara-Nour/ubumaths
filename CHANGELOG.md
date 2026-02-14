@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.11](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.10...v0.8.11) (2026-02-14)
+
+### 🐛 Bug Fixes
+
+- **eval:** handle multi-char variable names (expression\*) in eval expressions ([c8353f2](https://github.com/Zahara-Nour/ubumaths/commit/c8353f201a8ba582fdea162e3735a2cc43b5911b))
+- **eval:** use AST substitution for implicit multiplication in eval expressions ([e64e60c](https://github.com/Zahara-Nour/ubumaths/commit/e64e60c88028ee48ba124499dc8535805341a979))
+- **mathAST:** convert implicit to explicit multiplication after substitution ([30f4601](https://github.com/Zahara-Nour/ubumaths/commit/30f46015b390bf072fde96541d0a8d49f6c42def))
+- **questions:** derive correctChoiceIndex from isCorrect flags on choices ([a0d5964](https://github.com/Zahara-Nour/ubumaths/commit/a0d5964ebd2fec08fe4a2d70ecbb370ed9e5f526))
+- **questions:** fix QCM creation defaults and blanks leak ([a7b83c7](https://github.com/Zahara-Nour/ubumaths/commit/a7b83c740794e64ef375241d1f847a964ccf9c0d))
+- **questions:** replace ? with \placeholder in expression content for interactive mode ([8fe5e58](https://github.com/Zahara-Nour/ubumaths/commit/8fe5e586650f6a9ad5e6359073a4128cd2f64f3f))
+
 ### [0.8.10](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.9...v0.8.10) (2026-02-14)
 
 ### ✨ Features
