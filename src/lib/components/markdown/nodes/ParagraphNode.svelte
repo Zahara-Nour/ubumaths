@@ -30,7 +30,12 @@
 	import BlankInput from './BlankInput.svelte';
 	import HintReference from './HintReference.svelte';
 	import InternalLink from './InternalLink.svelte';
-	import { hasPrompts, expressionToFlashLatex } from '../utils/math-utils';
+	import {
+		hasPrompts,
+		expressionToFlashLatex,
+		expressionToLatex,
+		replacePromptsWithValues
+	} from '../utils/math-utils';
 
 	interface Props {
 		children: InlineNode[];
@@ -45,6 +50,8 @@
 		inputsDisabled?: boolean;
 		/** Flash mode: show blanks as static placeholders (______ for text, \boxed{?} for math) */
 		flashMode?: boolean;
+		/** Correction mode: show blanks filled with correct answers (styled inline text) */
+		correctionMode?: boolean;
 		/** Pre-fill math prompts with correct values (flash back mode) */
 		correctValues?: Record<string, string>;
 		/** Callback when a hashtag is clicked */
@@ -71,6 +78,7 @@
 		onInputSubmit,
 		inputsDisabled = false,
 		flashMode = false,
+		correctionMode = false,
 		correctValues,
 		onHashtagClick,
 		onMentionClick,
@@ -152,6 +160,12 @@
 					{#key flashLatex}
 						<MathInline expression={flashLatex} syntax="latex" />
 					{/key}
+				{:else if correctionMode && correctValues}
+					{@const latex = expressionToLatex(child.expression, child.syntax, genericFunctions)}
+					{@const filledLatex = replacePromptsWithValues(latex, correctValues)}
+					{#key filledLatex}
+						<MathInline expression={filledLatex} syntax="latex" />
+					{/key}
 				{:else}
 					{#key child.expression}
 						<MathPrompt
@@ -174,6 +188,9 @@
 		{:else if child.type === 'blank'}
 			{#if flashMode}
 				<span class="flash-blank">______</span>
+			{:else if correctionMode}
+				{@const state = getInputState(child.index)}
+				<span class="correction-answer">{state?.value ?? ''}</span>
 			{:else}
 				{@const state = getInputState(child.index)}
 				<BlankInput
@@ -252,5 +269,12 @@
 		letter-spacing: 0.05em;
 		color: hsl(var(--muted-foreground));
 		vertical-align: baseline;
+	}
+
+	.correction-answer {
+		font-weight: 600;
+		text-decoration: underline;
+		text-decoration-color: hsl(var(--primary) / 0.5);
+		text-underline-offset: 2px;
 	}
 </style>

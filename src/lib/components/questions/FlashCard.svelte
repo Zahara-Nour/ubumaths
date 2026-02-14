@@ -350,69 +350,41 @@
 			<div class="relative h-full">
 				<Card.Root class="h-full">
 					<Card.Header>
-						<Card.Title>Correction</Card.Title>
+						<div class="flex items-center justify-between">
+							<Card.Title>Correction</Card.Title>
+							<Badge variant="outline">{getQuestionType(instance)}</Badge>
+						</div>
 					</Card.Header>
 
 					<Card.Content class="space-y-6">
-						{#if interactive && isSubmitted}
-							<div class="answer-comparison">
-								<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
-								<div
-									class={cn(
-										'rounded-lg border-2 p-4',
-										isCorrect
-											? 'border-green-600 bg-green-100 dark:bg-green-950'
-											: 'border-red-600 bg-red-100 dark:bg-red-950'
-									)}
-								>
-									{#if getQuestionType(instance) === 'fill_in_blanks'}
-										<ul class="space-y-1">
-											{#each fillBlankValues as value, i (i)}
-												<li class="flex items-center gap-2">
-													{blankValidationResults[i] ? '✓' : '✗'}
-													<code>{value}</code>
-												</li>
-											{/each}
-										</ul>
-									{:else if getQuestionType(instance) === 'multiple_choice'}
-										<ul class="space-y-1">
-											{#each selectedChoices as index (index)}
-												<li>{String.fromCharCode(65 + index)}</li>
-											{/each}
-										</ul>
-									{:else}
-										<MarkdownRenderer content={`$$${String(userAnswer)}$$`} />
-									{/if}
-								</div>
-							</div>
-						{/if}
-
-						<div class="correct-answer">
-							<h3 class="mb-3 text-lg font-semibold">Réponse correcte</h3>
-							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
+						<div class="statement-section">
+							<div class="statement-content rounded-lg border bg-card p-4">
 								{#if getQuestionType(instance) === 'fill_in_blanks' && instance.blanks}
 									<FillBlanksInput
 										statement={instance.statement}
 										blanks={instance.blanks}
 										expressions={instance.expressions}
 										showCorrectAnswers={true}
+										onlyBlanks={true}
 									/>
-								{:else if Array.isArray(instance.correctChoiceIndex)}
-									<ul class="space-y-1">
-										{#each instance.correctChoiceIndex as ans, i (i)}
-											<li><MarkdownRenderer content={`$$${String(ans)}$$`} /></li>
-										{/each}
-									</ul>
-								{:else if instance.correctChoiceIndex !== undefined}
-									<MarkdownRenderer content={`$$${String(instance.correctChoiceIndex)}$$`} />
+								{:else if getQuestionType(instance) === 'multiple_choice'}
+									{#if Array.isArray(instance.correctChoiceIndex)}
+										<ul class="space-y-1">
+											{#each instance.correctChoiceIndex as ans, i (i)}
+												<li><MarkdownRenderer content={`$$${String(ans)}$$`} /></li>
+											{/each}
+										</ul>
+									{:else if instance.correctChoiceIndex !== undefined}
+										<MarkdownRenderer content={`$$${String(instance.correctChoiceIndex)}$$`} />
+									{/if}
 								{/if}
 							</div>
 						</div>
 
 						{#if correctionMarkdown}
 							<div class="correction-steps">
-								<h3 class="mb-3 text-lg font-semibold">Explication détaillée</h3>
-								<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
+								<h3 class="mb-3 text-lg font-semibold">Explication</h3>
+								<div class="rounded-lg border bg-card p-4">
 									<MarkdownRenderer content={correctionMarkdown} />
 								</div>
 							</div>

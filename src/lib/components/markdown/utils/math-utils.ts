@@ -143,3 +143,21 @@ export function expressionToFlashLatex(
 	const latex = expressionToLatex(expression, syntax, genericFunctions);
 	return latex.replace(/\\placeholder\[\d+\]\{[^}]*\}/g, '\\boxed{?}');
 }
+
+/**
+ * Replace \placeholder[N]{} with actual correct values in a LaTeX string.
+ *
+ * Used in correction mode to display the expression with answers filled in.
+ * Values are wrapped in \underline{} for subtle highlighting.
+ *
+ * @param latex - LaTeX string containing \placeholder[N]{} markers
+ * @param values - Map of prompt index (string) → correct LaTeX value
+ * @returns LaTeX string with placeholders replaced by underlined correct values
+ */
+export function replacePromptsWithValues(latex: string, values: Record<string, string>): string {
+	return latex.replace(/\\placeholder\[(\d+)\]\{[^}]*\}/g, (_match: string, index: string) => {
+		const value = values[index];
+		if (!value) return '\\boxed{?}';
+		return `\\underline{${value}}`;
+	});
+}
