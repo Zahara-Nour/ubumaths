@@ -86,8 +86,10 @@
 	let effectiveDisabled = $derived(disabled || showCorrectAnswers);
 
 	// Parse statement to AST and augment expression nodes
+	// In flash mode, skip augmentation (no "= ?" appended to expressions)
 	let augmentedAST = $derived.by(() => {
 		const ast = parseMarkdown(statement);
+		if (flashMode) return ast;
 		return augmentASTForExpressions(ast, expressions);
 	});
 
