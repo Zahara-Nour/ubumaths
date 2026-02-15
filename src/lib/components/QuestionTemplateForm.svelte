@@ -36,10 +36,7 @@
 	} from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
 	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
-	import { createQuestionTemplateSchema } from '$lib/server/validation/questions';
-
-	// Strict version rejects unknown keys (e.g. 'option' instead of 'options')
-	const strictTemplateSchema = createQuestionTemplateSchema.strict();
+	import { z } from 'zod';
 	import { CONSTRAINT_IDS } from '$lib/questions/constraint-constants';
 	import { REQUIRED_FORM_OPTIONS } from '$lib/questions/form-options';
 	import { GRADE_CODES, GRADES } from '$lib/types/grades';
@@ -171,6 +168,28 @@
 	let jsonString = $state('');
 	let jsonValid = $state(true);
 	let _jsonErrors = $state<string[]>([]);
+
+	// Strict schema for JSON mode validation (rejects unknown keys)
+	const strictTemplateSchema = z
+		.object({
+			title: z.string(),
+			description: z.unknown().optional().nullable(),
+			variations: z.array(z.unknown()).optional(),
+			exerciseInstruction: z.unknown().optional().nullable(),
+			shared: z.unknown().optional().nullable(),
+			defaultDisplayOptions: z.unknown().optional().nullable(),
+			options: z.unknown().optional().nullable(),
+			grades: z.array(z.string()),
+			theme: z.string(),
+			domain: z.string(),
+			subdomain: z.unknown().optional().nullable(),
+			level: z.number(),
+			status: z.enum(['draft', 'published']).optional(),
+			delay: z.unknown().optional().nullable(),
+			multipleAnswers: z.unknown().optional().nullable(),
+			type: z.unknown().optional()
+		})
+		.strict();
 
 	// Load category cache on mount
 	$effect(() => {
