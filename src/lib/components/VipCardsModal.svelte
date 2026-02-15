@@ -439,16 +439,28 @@
 	}
 
 	/**
+	 * Promise chain to serialize remove API calls.
+	 * Prevents race condition where concurrent read-modify-write on the server
+	 * causes the second write to overwrite the first (lost update).
+	 * Optimistic UI updates remain instant — only the API calls are serialized.
+	 */
+	let removeQueue: Promise<void> = Promise.resolve();
+
+	/**
 	 * Handle card removal with optimistic UI via cache
 	 *
 	 * FLOW:
-	 * 1. Save current VIP cards state (for rollback)
-	 * 2. Find oldest unused instance of the card to remove
-	 * 3. Create new vipCards object without that instance
-	 * 4. Update cache optimistically → UI updates instantly via $derived
-	 * 5. Send request to server
-	 * 6. On success: Cache already correct, just show toast
-	 * 7. On error: Rollback by restoring previous state to cache
+	 * 1. Find oldest unused instance of the card to remove
+	 * 2. Apply optimistic update to cache → UI updates instantly via $derived
+	 * 3. Queue the API call (serialized to prevent server race conditions)
+	 * 4. On success: Cache already correct, just show toast
+	 * 5. On error: Re-add the specific removed instance to current cache state
+	 *
+	 * RACE CONDITION FIX:
+	 * The server does read-modify-write on the vip_cards JSONB column.
+	 * Without serialization, concurrent requests read the same DB state and
+	 * the last write wins, silently dropping earlier removals.
+	 * By chaining API calls, each request sees the previous one's committed state.
 	 *
 	 * @param card - The VIP card to remove
 	 */
@@ -462,13 +474,10 @@
 	}) {
 		if (!teacherView) return;
 
-		// Get current VIP cards
+		// Get current VIP cards from cache
 		const vipCards = getVipCards();
 
-		// STEP 1: Save current state for rollback
-		const previousVipCards = { ...vipCards };
-
-		// STEP 2: Find oldest unused instance to remove
+		// Find oldest unused instance to remove
 		const entries = Object.entries(vipCards);
 		const matchingInstances = entries
 			.filter(([_, inst]) => inst.cardId === card.id && !inst.usedAt)
@@ -480,38 +489,43 @@
 		}
 
 		const [instanceIdToRemove] = matchingInstances[0];
+		const removedInstance = vipCards[instanceIdToRemove];
 
-		// STEP 3: Create new vipCards without removed instance
+		// Apply optimistic update to cache (instant UI feedback)
 		const newVipCards = { ...vipCards };
 		delete newVipCards[instanceIdToRemove];
-
-		// STEP 4: Apply optimistic update to cache (instant UI feedback)
 		teacherCache.updateVipCardsOptimistic(classId, studentId, newVipCards);
 
-		// STEP 5: Send server request
-		try {
-			const response = await fetch('/api/vip-cards/remove', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					studentId,
-					cardId: card.id
-				})
-			});
+		// Serialize the API call to prevent server-side race condition
+		removeQueue = removeQueue.then(async () => {
+			try {
+				const response = await fetch('/api/vip-cards/remove', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						studentId,
+						cardId: card.id
+					})
+				});
 
-			const result = await response.json();
+				const result = await response.json();
 
-			if (!response.ok) {
-				throw new Error(result.message || 'Failed to remove card');
+				if (!response.ok) {
+					throw new Error(result.message || 'Failed to remove card');
+				}
+
+				toaster.success(`Carte ${card.name} retirée avec succès`);
+			} catch (_error) {
+				// Rollback: re-add only the failed instance to current cache state
+				// (preserves other successful optimistic removals)
+				const currentVipCards = getVipCards();
+				teacherCache.updateVipCardsOptimistic(classId, studentId, {
+					...currentVipCards,
+					[instanceIdToRemove]: removedInstance
+				});
+				toaster.error('Erreur réseau');
 			}
-
-			// STEP 6: SUCCESS - Cache already correct, just notify
-			toaster.success(`Carte ${card.name} retirée avec succès`);
-		} catch (_error) {
-			// STEP 7: ERROR - Rollback by restoring previous state
-			teacherCache.updateVipCardsOptimistic(classId, studentId, previousVipCards);
-			toaster.error('Erreur réseau');
-		}
+		});
 	}
 </script>
 
