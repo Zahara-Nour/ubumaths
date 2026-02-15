@@ -6,12 +6,13 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import VipCardActionEditor from '$lib/components/vip-cards/VipCardActionEditor.svelte';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 	import type { VipCardAction } from '$lib/types/vip-card';
 
 	interface Props {
 		card?: VipCardTemplate;
-		onSave: (cardData: CreateTemplateData) => Promise<void>;
+		onSave: (cardData: CreateTemplateData, imageFile?: File) => Promise<void>;
 		onCancel: () => void;
 	}
 
@@ -26,6 +27,8 @@
 		sort_order: number;
 		action?: VipCardAction | null;
 	}
+
+	const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 	let { card, onSave, onCancel }: Props = $props();
 
@@ -43,6 +46,47 @@
 	});
 
 	let saving = $state(false);
+
+	// Image upload state
+	let selectedFile = $state<File | null>(null);
+	let previewUrl = $state<string | null>(null);
+	let dragOver = $state(false);
+	let fileInput: HTMLInputElement;
+
+	function handleFileSelect(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const file = target.files?.[0];
+		if (file) validateAndPreview(file);
+	}
+
+	function handleDrop(event: DragEvent) {
+		event.preventDefault();
+		dragOver = false;
+		const file = event.dataTransfer?.files[0];
+		if (file) validateAndPreview(file);
+	}
+
+	function validateAndPreview(file: File) {
+		if (!ACCEPTED_TYPES.includes(file.type)) {
+			toaster.error('Formats acceptés : JPG, PNG, WebP');
+			return;
+		}
+		if (file.size > 2 * 1024 * 1024) {
+			toaster.error("L'image doit faire moins de 2MB");
+			return;
+		}
+		selectedFile = file;
+		const reader = new FileReader();
+		reader.onload = (e) => {
+			previewUrl = e.target?.result as string;
+		};
+		reader.readAsDataURL(file);
+	}
+
+	function removeSelectedFile() {
+		selectedFile = null;
+		previewUrl = null;
+	}
 
 	// Dropdown items for MySelect
 	const rarityItems = [
@@ -133,12 +177,11 @@
 
 		saving = true;
 		try {
-			// Ensure action is properly typed (null or VipCardAction, not undefined)
 			const dataToSave: CreateTemplateData = {
 				...formData,
 				action: formData.action ?? null
 			};
-			await onSave(dataToSave);
+			await onSave(dataToSave, selectedFile ?? undefined);
 		} finally {
 			saving = false;
 		}
@@ -224,17 +267,72 @@
 		/>
 	</div>
 
-	<!-- Image URL Field -->
+	<!-- Image Upload Zone -->
 	<div class="space-y-2">
-		<Label for="image_url">URL de l'image</Label>
-		<Input
-			id="image_path"
-			bind:value={formData.image_path}
-			placeholder="/images/vip-cards/bonus_points_x2.webp"
-		/>
-		<p class="text-xs text-muted-foreground">
-			Utilisez l'uploader d'image pour modifier l'image existante
-		</p>
+		<Label>Image de la carte</Label>
+
+		{#if previewUrl}
+			<!-- Preview of selected file -->
+			<div class="flex items-center gap-4">
+				<img src={previewUrl} alt="Aperçu" class="h-24 w-24 rounded border object-cover" />
+				<div class="flex-1">
+					<p class="text-sm">{selectedFile?.name}</p>
+					<p class="text-xs text-muted-foreground">
+						{((selectedFile?.size || 0) / 1024).toFixed(1)} KB
+					</p>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						class="mt-1 h-auto p-0 text-xs text-destructive"
+						onclick={removeSelectedFile}
+					>
+						Retirer
+					</Button>
+				</div>
+			</div>
+		{:else if card?.image_path}
+			<!-- Current image from card -->
+			<div class="flex items-center gap-4">
+				<img src={card.image_path} alt={card.name} class="h-24 w-24 rounded border object-cover" />
+				<p class="text-xs text-muted-foreground">Image actuelle</p>
+			</div>
+		{/if}
+
+		<!-- Drop zone -->
+		<div
+			class="rounded-lg border-2 border-dashed p-4 text-center transition-colors {dragOver
+				? 'border-primary bg-primary/5'
+				: 'border-muted-foreground/25'}"
+			ondrop={handleDrop}
+			ondragover={(e) => {
+				e.preventDefault();
+				dragOver = true;
+			}}
+			ondragleave={() => (dragOver = false)}
+			onkeydown={(e) => e.key === 'Enter' && fileInput.click()}
+			role="button"
+			tabindex="0"
+			aria-label="Zone de dépôt d'image"
+		>
+			<div class="space-y-1">
+				<p class="text-sm text-muted-foreground">
+					{previewUrl || card?.image_path ? "Changer l'image : " : ''}Glissez-déposez ou
+					<button type="button" class="text-primary underline" onclick={() => fileInput.click()}>
+						sélectionnez un fichier
+					</button>
+				</p>
+				<p class="text-xs text-muted-foreground">JPG, PNG, WebP - Max 2MB</p>
+			</div>
+
+			<input
+				bind:this={fileInput}
+				type="file"
+				accept="image/jpeg,image/png,image/webp"
+				onchange={handleFileSelect}
+				class="hidden"
+			/>
+		</div>
 	</div>
 
 	<!-- Sort Order Field -->

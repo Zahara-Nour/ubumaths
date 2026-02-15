@@ -111,7 +111,7 @@
 		}
 	}
 
-	async function handleSaveCard(cardData: CreateTemplateData) {
+	async function handleSaveCard(cardData: CreateTemplateData, imageFile?: File) {
 		const isEditing = !!editingCard;
 		const url =
 			isEditing && editingCard
@@ -147,7 +147,38 @@
 
 			// API returns camelCase, convert to snake_case for local state
 			const apiResponse: TemplateResponse = await response.json();
-			const savedCard = responseToTemplate(apiResponse) as VipCardTemplate;
+			let savedCard = responseToTemplate(apiResponse) as VipCardTemplate;
+
+			// Upload image if a file was provided
+			if (imageFile) {
+				const imgFormData = new FormData();
+				imgFormData.append('image', imageFile);
+
+				const imgResponse = await fetch(`/api/admin/vip-cards/templates/${savedCard.id}/image`, {
+					method: 'POST',
+					body: imgFormData
+				});
+
+				if (!imgResponse.ok) {
+					const imgError = await imgResponse.json();
+
+					// Rollback: delete card if image upload fails during creation
+					if (!isEditing) {
+						try {
+							await fetch(`/api/admin/vip-cards/templates/${savedCard.id}`, {
+								method: 'DELETE'
+							});
+						} catch (rollbackError) {
+							console.error('Failed to rollback card creation:', rollbackError);
+						}
+					}
+
+					throw new Error(`Échec de l'upload d'image : ${imgError.message || 'Erreur inconnue'}`);
+				} else {
+					const { imagePath } = await imgResponse.json();
+					savedCard = { ...savedCard, image_path: imagePath };
+				}
+			}
 
 			if (isEditing) {
 				templates = templates.map((t) => (t.id === savedCard.id ? savedCard : t));
