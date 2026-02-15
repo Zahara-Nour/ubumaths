@@ -61,6 +61,34 @@ export function validateUuidParams<T extends string>(
 }
 
 /**
+ * Validates a route parameter as a kebab-case slug (lowercase alphanumeric + hyphens/underscores).
+ *
+ * @param value - The parameter value to validate
+ * @param paramName - Name of the parameter for error messages (default: 'id')
+ * @returns The validated slug string
+ * @throws 400 error if not a valid slug
+ *
+ * @example
+ * ```typescript
+ * export const GET: RequestHandler = async ({ params }) => {
+ *     const id = validateSlugParam(params.id, 'templateId');
+ * };
+ * ```
+ */
+export function validateSlugParam(value: string, paramName = 'id'): string {
+	const result = z
+		.string()
+		.min(1)
+		.max(50)
+		.regex(/^[a-z0-9_-]+$/)
+		.safeParse(value);
+	if (!result.success) {
+		throw error(400, `Format ${paramName} invalide`);
+	}
+	return result.data;
+}
+
+/**
  * Validates a route parameter as a positive integer.
  *
  * @param value - The parameter value to validate

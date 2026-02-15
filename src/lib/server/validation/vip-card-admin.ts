@@ -197,8 +197,9 @@ export const createTemplateSchema = z
 		isEnabled: z.boolean(),
 		imagePath: z
 			.string()
-			.min(1, 'Image path is required')
-			.max(255, 'Image path must be 255 characters or less'),
+			.max(255, 'Image path must be 255 characters or less')
+			.optional()
+			.default(''),
 		action: actionSchema.optional(),
 		sortOrder: z
 			.number()
