@@ -82,9 +82,9 @@
 	}
 </script>
 
-<div class="flex items-center gap-6 px-6 py-4">
+<div class="flex items-center gap-3 px-4 py-3">
 	<!-- AVATAR -->
-	<Avatar.Root class="h-12 w-12 flex-shrink-0">
+	<Avatar.Root class="h-9 w-9 flex-shrink-0">
 		<Avatar.Image
 			src={getAvatarUrl({
 				avatar_url: student.avatar_url,
@@ -92,32 +92,32 @@
 			})}
 			alt={getFullName(student.firstname, student.lastname, student.full_name)}
 		/>
-		<Avatar.Fallback class="bg-primary/10 font-semibold text-primary">
+		<Avatar.Fallback class="bg-primary/10 text-sm font-semibold text-primary">
 			{getAvatarInitials(student.firstname, student.lastname)}
 		</Avatar.Fallback>
 	</Avatar.Root>
 
 	<!-- STUDENT NAME -->
-	<div class="min-w-0 flex-1">
-		<p class="truncate font-medium text-foreground">
+	<div class="min-w-[120px] flex-1">
+		<p class="truncate text-sm font-medium text-foreground">
 			{getFullName(student.firstname, student.lastname, student.full_name)}
 		</p>
 	</div>
 
 	<!-- GIDOUILLES COUNTER -->
-	<div class="flex w-32 items-center justify-end gap-2">
-		<img src={gidouilleImg} alt="Gidouille" class="h-6 w-6 flex-shrink-0" />
-		<span class="text-2xl font-bold text-foreground tabular-nums">
+	<div class="flex items-center justify-end gap-1.5">
+		<img src={gidouilleImg} alt="Gidouille" class="h-5 w-5 flex-shrink-0" />
+		<span class="text-lg font-bold text-foreground tabular-nums">
 			{gidouilles}
 		</span>
 	</div>
 
 	<!-- GIDOUILLES +/- BUTTONS -->
-	<div class="flex flex-shrink-0 items-center gap-2">
+	<div class="flex flex-shrink-0 items-center gap-1">
 		<Button
 			size="sm"
 			variant="default"
-			class="h-10 w-10 p-0"
+			class="h-7 w-7 p-0 text-xs"
 			disabled={gidouilles < 1}
 			onclick={() => onUpdateGidouilles(student.id, -1, getStudentDisplayName())}
 		>
@@ -126,7 +126,7 @@
 		<Button
 			size="sm"
 			variant="default"
-			class="h-10 w-10 p-0"
+			class="h-7 w-7 p-0 text-xs"
 			onclick={() => onUpdateGidouilles(student.id, 1, getStudentDisplayName())}
 		>
 			+
@@ -134,22 +134,22 @@
 	</div>
 
 	<!-- SEPARATOR -->
-	<div class="mx-2 h-10 w-px bg-border"></div>
+	<div class="mx-1 h-8 w-px bg-border"></div>
 
 	<!-- BONUS COUNTER -->
-	<div class="flex w-32 items-center justify-end gap-2">
-		<Star class="h-6 w-6 flex-shrink-0 fill-amber-400 text-amber-400" />
-		<span class="text-2xl font-bold text-foreground tabular-nums">
+	<div class="flex items-center justify-end gap-1.5">
+		<Star class="h-5 w-5 flex-shrink-0 fill-amber-400 text-amber-400" />
+		<span class="text-lg font-bold text-foreground tabular-nums">
 			{bonus}
 		</span>
 	</div>
 
 	<!-- BONUS +/- BUTTONS -->
-	<div class="flex flex-shrink-0 items-center gap-2">
+	<div class="flex flex-shrink-0 items-center gap-1">
 		<Button
 			size="sm"
 			variant="default"
-			class="h-10 w-10 p-0"
+			class="h-7 w-7 p-0 text-xs"
 			disabled={bonus < 1}
 			onclick={() => onUpdateBonus(student.id, -1, getStudentDisplayName())}
 		>
@@ -158,7 +158,7 @@
 		<Button
 			size="sm"
 			variant="default"
-			class="h-10 w-10 p-0"
+			class="h-7 w-7 p-0 text-xs"
 			onclick={() => onUpdateBonus(student.id, 1, getStudentDisplayName())}
 		>
 			+
@@ -166,10 +166,10 @@
 	</div>
 
 	<!-- SEPARATOR -->
-	<div class="mx-2 h-10 w-px bg-border"></div>
+	<div class="mx-1 h-8 w-px bg-border"></div>
 
 	<!-- VIP CARD BUTTONS -->
-	<div class="flex flex-shrink-0 items-center gap-2">
+	<div class="flex flex-shrink-0 items-center gap-1.5">
 		<!-- View VIP Cards Button -->
 		<Button size="sm" variant="outline" class="gap-1" onclick={() => onViewVipCards(student)}>
 			<Eye class="h-4 w-4" />
@@ -199,7 +199,7 @@
 					<Button
 						size="sm"
 						variant="outline"
-						class="h-10 w-10 p-0"
+						class="h-7 w-7 p-0"
 						onclick={() => onGrantVipCard(student.id)}
 						disabled={grantingCard === student.id}
 					>

@@ -201,7 +201,7 @@
 								<!-- Button to remove 1 gidouille (debounced) -->
 								<Button
 									variant="default"
-									class="h-10 w-10 p-0"
+									class="h-8 w-8 p-0 text-sm"
 									onclick={() => onUpdateClassGidouilles(classItem.id, -1)}
 								>
 									-
@@ -210,7 +210,7 @@
 								<!-- Button to add 1 gidouille (debounced) -->
 								<Button
 									variant="default"
-									class="h-10 w-10 p-0"
+									class="h-8 w-8 p-0 text-sm"
 									onclick={() => onUpdateClassGidouilles(classItem.id, 1)}
 								>
 									+
