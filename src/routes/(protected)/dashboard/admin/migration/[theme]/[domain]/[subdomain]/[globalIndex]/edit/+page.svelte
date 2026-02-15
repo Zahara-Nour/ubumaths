@@ -79,27 +79,28 @@
 				throw new Error('Erreur lors du chargement');
 			}
 			const result = await response.json();
-			if (!result.success || !result.data.transformed) {
+			if (!result.success || !result.data.transformed?.template) {
 				throw new Error(result.data.transformError || 'Transformation échouée');
 			}
+			const t = result.data.transformed.template;
 			// Rebuild template with correct category metadata (same as +page.server.ts)
 			templateOverride = {
 				id: `migration-${data.globalIndex}`,
-				title: result.data.transformed.title || '',
-				description: result.data.transformed.description,
-				shared: result.data.transformed.shared,
-				defaultDisplayOptions: result.data.transformed.defaultDisplayOptions,
-				multipleAnswers: result.data.transformed.multipleAnswers,
-				variations: result.data.transformed.variations || [],
-				exerciseInstruction: result.data.transformed.exerciseInstruction,
-				options: result.data.transformed.options,
-				grades: result.data.transformed.grades || [],
+				title: t.title || '',
+				description: t.description,
+				shared: t.shared,
+				defaultDisplayOptions: t.defaultDisplayOptions,
+				multipleAnswers: t.multipleAnswers,
+				variations: t.variations || [],
+				exerciseInstruction: t.exerciseInstruction,
+				options: t.options,
+				grades: t.grades || [],
 				theme: data.theme,
 				domain: data.domain,
 				subdomain: data.subdomain,
-				level: result.data.transformed.level || 1,
-				status: result.data.transformed.status || 'draft',
-				delay: result.data.transformed.delay
+				level: t.level || 1,
+				status: t.status || 'draft',
+				delay: t.delay
 			};
 			toaster.success("Question ré-exportée depuis l'original");
 		} catch (err) {
