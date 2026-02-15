@@ -60,10 +60,12 @@
 	let RichTextEditor = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 	let QuestionPreview = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 	let JsonViewer = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+	let JsonEditorComponent = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 	let loadedComponents = $state({
 		richText: false,
 		preview: false,
-		json: false
+		json: false,
+		jsonEditor: false
 	});
 	import {
 		X,
@@ -73,7 +75,8 @@
 		FileText,
 		CheckCircle2,
 		ChevronDown,
-		CircleQuestionMark
+		CircleQuestionMark,
+		Braces
 	} from 'lucide-svelte';
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 	import QuestionTemplateHelpDialogs from './QuestionTemplateHelpDialogs.svelte';
@@ -150,6 +153,20 @@
 			loadedComponents.json = true;
 		}
 	}
+
+	async function loadJsonEditor() {
+		if (!loadedComponents.jsonEditor) {
+			const module = await import('$lib/constructions/components/JsonEditor.svelte');
+			JsonEditorComponent = module.default;
+			loadedComponents.jsonEditor = true;
+		}
+	}
+
+	// JSON raw editing mode
+	let jsonMode = $state(false);
+	let jsonString = $state('');
+	let jsonValid = $state(true);
+	let _jsonErrors = $state<string[]>([]);
 
 	// Load category cache on mount
 	$effect(() => {
@@ -735,10 +752,159 @@
 		return base;
 	}
 
+	// Load all form state from a template object (inverse of buildTemplate)
+	function loadFromTemplate(
+		t: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>
+	) {
+		// Metadata
+		title = t.title || '';
+		description = t.description || '';
+		theme = t.theme || '';
+		domain = t.domain || '';
+		subdomain = t.subdomain;
+		level = t.level || 1;
+		status = t.status || 'draft';
+		grades = t.grades || [];
+		delay = t.delay;
+		exerciseInstruction = t.exerciseInstruction;
+		multipleAnswers = t.multipleAnswers;
+
+		// Type
+		questionType = getQuestionType(t.variations?.[0] ?? {});
+
+		// Display options
+		displayShuffleTerms = t.defaultDisplayOptions?.shuffleTerms ?? false;
+		displayShuffleFactors = t.defaultDisplayOptions?.shuffleFactors ?? false;
+		displayShuffleTermsAndFactors = t.defaultDisplayOptions?.shuffleTermsAndFactors ?? false;
+		displayShallowShuffleTerms = t.defaultDisplayOptions?.shallowShuffleTerms ?? false;
+		displayShallowShuffleFactors = t.defaultDisplayOptions?.shallowShuffleFactors ?? false;
+		displayRemoveNullTerms = t.defaultDisplayOptions?.removeNullTerms ?? false;
+		displayRemoveUnnecessaryBrackets = t.defaultDisplayOptions?.removeUnnecessaryBrackets ?? false;
+		displayRemoveSpaces = t.defaultDisplayOptions?.removeSpaces ?? false;
+
+		// Validation options
+		optAllowEquivalent = t.options?.allowEquivalent ?? false;
+		optAllowDifferentForms = t.options?.allowDifferentForms ?? false;
+		optCanonicalForm = t.options?.canonicalForm || '';
+		optOrderIndependent = t.options?.orderIndependent ?? false;
+		optValidator = t.options?.validator || '';
+		optValidatorParamsJson = JSON.stringify(t.options?.validatorParams || {}, null, 2);
+		optShuffleChoices = t.options?.shuffleChoices ?? true;
+		optAllowBracketsInFirstNegativeTerm =
+			t.options?.constraints?.allowBracketsInFirstNegativeTerm ?? false;
+		constraintModes = Object.fromEntries(
+			CONSTRAINT_IDS.map((id) => [id, t.options?.constraints?.[id] || ''])
+		);
+
+		// Shared fields
+		sharedVariables = t.shared?.variables || [];
+		sharedStatement = templateMarkdown(t.shared?.statement || '');
+		sharedCorrectChoiceIndex = t.shared?.correctChoiceIndex || '';
+		sharedCorrectionString = correctionToString(t.shared?.correction);
+		sharedChoices = t.shared?.choices ?? [];
+		sharedRequiredFormSelect = t.shared?.requiredForm
+			? typeof t.shared.requiredForm === 'string'
+				? t.shared.requiredForm
+				: 'custom'
+			: '';
+		sharedRequiredFormPattern =
+			t.shared?.requiredForm && typeof t.shared.requiredForm === 'object'
+				? t.shared.requiredForm.pattern
+				: '';
+		sharedBlankPrecision = t.shared?.blankDefaults?.precision ?? { type: 'none' as const };
+		sharedBlankRequiredFormSelect = t.shared?.blankDefaults?.requiredForm
+			? typeof t.shared.blankDefaults.requiredForm === 'string'
+				? t.shared.blankDefaults.requiredForm
+				: 'custom'
+			: '';
+		sharedBlankRequiredFormPattern =
+			t.shared?.blankDefaults?.requiredForm &&
+			typeof t.shared.blankDefaults.requiredForm === 'object'
+				? t.shared.blankDefaults.requiredForm.pattern
+				: '';
+		sharedBlankUnitExpected = t.shared?.blankDefaults?.unit?.expected ?? false;
+		sharedBlankUnitRequired = t.shared?.blankDefaults?.unit?.required || '';
+		sharedValidationRulesJson = JSON.stringify(t.shared?.validationRules || [], null, 2);
+		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
+
+		// Variations
+		variations = t.variations?.map((v) => ({
+			...v,
+			variables: v.variables || [],
+			blanks: v.blanks || [],
+			choices: v.choices || [],
+			correction: v.correction,
+			blankDefaults: { precision: { type: 'none' as const }, ...v.blankDefaults }
+		})) || [
+			{
+				statement: templateMarkdown(''),
+				variables: [],
+				correctChoiceIndex: '',
+				blanks: [],
+				choices: [],
+				blankDefaults: { precision: { type: 'none' as const } }
+			}
+		];
+
+		variationExtras = t.variations?.map((v) => ({
+			correctionString: correctionToString(v.correction),
+			validationRulesJson: JSON.stringify(v.validationRules || [], null, 2),
+			answerFormatsJson: JSON.stringify(v.answerFormats || {}, null, 2),
+			requiredFormSelect: v.requiredForm
+				? typeof v.requiredForm === 'string'
+					? v.requiredForm
+					: 'custom'
+				: '',
+			requiredFormPattern:
+				v.requiredForm && typeof v.requiredForm === 'object' ? v.requiredForm.pattern : '',
+			overridesOpen: false
+		})) || [{ ...DEFAULT_VARIATION_EXTRA }];
+
+		currentVariationIndex = 0;
+	}
+
+	// Toggle between form and JSON mode
+	async function toggleJsonMode() {
+		if (jsonMode) {
+			// JSON → Form: parse and load
+			try {
+				const parsed = JSON.parse(jsonString);
+				loadFromTemplate(parsed);
+				jsonMode = false;
+			} catch {
+				// Should not happen if jsonValid is true, but just in case
+				_jsonErrors = ['JSON invalide'];
+				jsonValid = false;
+			}
+		} else {
+			// Form → JSON: serialize current state
+			jsonString = JSON.stringify(buildTemplate(), null, 2);
+			await loadJsonEditor();
+			jsonMode = true;
+			jsonValid = true;
+			_jsonErrors = [];
+		}
+	}
+
+	function handleJsonValidate(isValid: boolean, errors: string[]) {
+		jsonValid = isValid;
+		_jsonErrors = errors;
+	}
+
 	// Handle save
 
 	// Save as draft (no category validation)
 	function handleSaveDraft() {
+		if (jsonMode) {
+			try {
+				const parsed = JSON.parse(jsonString);
+				onSave(parsed);
+			} catch {
+				_jsonErrors = ['JSON invalide'];
+				jsonValid = false;
+			}
+			return;
+		}
 		const templateData = buildTemplate();
 		onSave(templateData);
 	}
@@ -756,6 +922,17 @@
 
 	// Publish question (with category validation)
 	function handlePublish() {
+		if (jsonMode) {
+			try {
+				const parsed = JSON.parse(jsonString);
+				parsed.status = 'published';
+				onSave(parsed);
+			} catch {
+				_jsonErrors = ['JSON invalide'];
+				jsonValid = false;
+			}
+			return;
+		}
 		hasAttemptedPublish = true;
 		if (!isValid) return;
 		if (categoryDuplicate) {
@@ -902,79 +1079,100 @@
 		</div>
 	</div>
 
-	<!-- Title and Description -->
-	<Card.Root>
-		<Card.Header>
-			<Card.Title class="flex items-center gap-2">
-				Informations générales
-				<button
-					type="button"
-					onclick={() => (titleDescriptionHelpOpen = true)}
-					class="text-muted-foreground transition-colors hover:text-foreground"
-					aria-label="Aide sur le titre et la description"
+	{#if jsonMode}
+		<!-- JSON Raw Editor -->
+		{#if JsonEditorComponent}
+			<div class="overflow-hidden rounded-lg border border-border">
+				<JsonEditorComponent
+					bind:value={jsonString}
+					height="600px"
+					onValidate={handleJsonValidate}
+				/>
+			</div>
+		{:else}
+			<div class="flex items-center justify-center p-8">
+				<p class="text-muted-foreground">Chargement de l'éditeur JSON...</p>
+			</div>
+		{/if}
+	{:else}
+		<!-- Title and Description -->
+		<Card.Root>
+			<Card.Header>
+				<Card.Title class="flex items-center gap-2">
+					Informations générales
+					<button
+						type="button"
+						onclick={() => (titleDescriptionHelpOpen = true)}
+						class="text-muted-foreground transition-colors hover:text-foreground"
+						aria-label="Aide sur le titre et la description"
+					>
+						<CircleQuestionMark class="h-5 w-5" />
+					</button>
+				</Card.Title>
+			</Card.Header>
+			<Card.Content class="space-y-4">
+				<!-- Title (Required, with LaTeX support) -->
+				<div class="space-y-2">
+					<Label for="title" class="flex items-center gap-1">
+						Titre <span class="text-destructive">*</span>
+					</Label>
+					<Input id="title" type="text" bind:value={title} />
+					{#if titleError}
+						<p class="text-xs text-destructive">{titleError}</p>
+					{/if}
+				</div>
+
+				<!-- Description (Optional, with rich text and LaTeX support) -->
+				<Collapsible.Root
+					bind:open={descriptionOpen}
+					onOpenChange={async (open) => {
+						if (open) await loadRichTextEditor();
+					}}
 				>
-					<CircleQuestionMark class="h-5 w-5" />
-				</button>
-			</Card.Title>
-		</Card.Header>
-		<Card.Content class="space-y-4">
-			<!-- Title (Required, with LaTeX support) -->
+					<div class="space-y-2">
+						<Collapsible.Trigger
+							class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+						>
+							<Label for="description" class="cursor-pointer">Description</Label>
+							<ChevronDown
+								class="h-4 w-4 transition-transform duration-200 {descriptionOpen
+									? 'rotate-180'
+									: ''}"
+							/>
+						</Collapsible.Trigger>
+						<Collapsible.Content class="space-y-2">
+							{#if RichTextEditor}
+								<RichTextEditor
+									bind:value={description}
+									placeholder="Description ou contexte supplémentaire pour ce template..."
+								/>
+							{/if}
+						</Collapsible.Content>
+					</div>
+				</Collapsible.Root>
+			</Card.Content>
+		</Card.Root>
+
+		<!-- Type Selection -->
+		<div class="grid gap-4 md:grid-cols-2">
 			<div class="space-y-2">
-				<Label for="title" class="flex items-center gap-1">
-					Titre <span class="text-destructive">*</span>
-				</Label>
-				<Input id="title" type="text" bind:value={title} />
-				{#if titleError}
-					<p class="text-xs text-destructive">{titleError}</p>
-				{/if}
+				<Label for="question-type">Type de question</Label>
+				<MySelect
+					id="question-type"
+					type="single"
+					bind:value={questionType}
+					items={QUESTION_TYPES}
+				/>
 			</div>
 
-			<!-- Description (Optional, with rich text and LaTeX support) -->
-			<Collapsible.Root
-				bind:open={descriptionOpen}
-				onOpenChange={async (open) => {
-					if (open) await loadRichTextEditor();
-				}}
-			>
-				<div class="space-y-2">
-					<Collapsible.Trigger
-						class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
-					>
-						<Label for="description" class="cursor-pointer">Description</Label>
-						<ChevronDown
-							class="h-4 w-4 transition-transform duration-200 {descriptionOpen
-								? 'rotate-180'
-								: ''}"
-						/>
-					</Collapsible.Trigger>
-					<Collapsible.Content class="space-y-2">
-						{#if RichTextEditor}
-							<RichTextEditor
-								bind:value={description}
-								placeholder="Description ou contexte supplémentaire pour ce template..."
-							/>
-						{/if}
-					</Collapsible.Content>
-				</div>
-			</Collapsible.Root>
-		</Card.Content>
-	</Card.Root>
-
-	<!-- Type Selection -->
-	<div class="grid gap-4 md:grid-cols-2">
-		<div class="space-y-2">
-			<Label for="question-type">Type de question</Label>
-			<MySelect id="question-type" type="single" bind:value={questionType} items={QUESTION_TYPES} />
+			<div class="space-y-2">
+				<Label for="delay">Délai (secondes)</Label>
+				<Input id="delay" type="number" min="0" bind:value={delay} />
+			</div>
 		</div>
 
-		<div class="space-y-2">
-			<Label for="delay">Délai (secondes)</Label>
-			<Input id="delay" type="number" min="0" bind:value={delay} />
-		</div>
-	</div>
-
-	<!-- Categorization Fields -->
-	<!--
+		<!-- Categorization Fields -->
+		<!--
 		Category system allows organizing questions by:
 		- Theme: Broad subject area (e.g., "Algèbre", "Géométrie") [required]
 		- Domain: Specific topic within theme (e.g., "Équations", "Polynômes") [required]
@@ -984,536 +1182,539 @@
 		These fields are independent from grade levels (grades field).
 		Admins can add new categories on-the-fly via CategorySelector modals.
 	-->
-	<Card.Root>
-		<Card.Header>
-			<Collapsible.Root bind:open={categorizationOpen}>
-				<Collapsible.Trigger
-					class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
-				>
-					<Card.Title class="flex items-center gap-2">
-						Catégorisation
-						<button
-							type="button"
-							onclick={(e) => {
-								e.stopPropagation();
-								categorizationHelpOpen = true;
-							}}
-							class="text-muted-foreground transition-colors hover:text-foreground"
-							aria-label="Aide sur la catégorisation"
-						>
-							<CircleQuestionMark class="h-5 w-5" />
-						</button>
-					</Card.Title>
-					<ChevronDown
-						class="h-4 w-4 transition-transform duration-200 {categorizationOpen
-							? 'rotate-180'
-							: ''}"
-					/>
-				</Collapsible.Trigger>
-				<Collapsible.Content>
-					<Card.Content class="space-y-4">
-						<div class="grid gap-4 md:grid-cols-2">
-							<!-- Theme (Required) -->
-							<div>
-								<CategorySelector
-									label="Thème"
-									bind:value={theme}
-									options={themeOptions}
-									required={true}
-									onValueChange={(val) => (theme = val)}
-									onAddNew={handleAddTheme}
-								/>
-								{#if themeError}
-									<p class="mt-1 text-xs text-destructive">{themeError}</p>
-								{/if}
-							</div>
-
-							<!-- Domain (Required) -->
-							<div>
-								<CategorySelector
-									label="Domaine"
-									bind:value={domain}
-									options={domainOptions}
-									required={true}
-									onValueChange={(val) => (domain = val)}
-									onAddNew={handleAddDomain}
-								/>
-								{#if domainError}
-									<p class="mt-1 text-xs text-destructive">{domainError}</p>
-								{/if}
-							</div>
-						</div>
-
-						<div class="grid gap-4 md:grid-cols-2">
-							<!-- Subdomain (Optional) -->
-							<CategorySelector
-								label="Sous-domaine"
-								value={subdomain || ''}
-								options={subdomainOptions}
-								required={false}
-								onValueChange={(val) => (subdomain = val || undefined)}
-								onAddNew={handleAddSubdomain}
-							/>
-
-							<!-- Difficulty Level (Required, positive integer, no max) -->
-							<div class="space-y-2">
-								<Label for="level">
-									Niveau de difficulté
-									<span class="text-destructive">*</span>
-								</Label>
-								<Input
-									id="level"
-									type="number"
-									min="1"
-									bind:value={level}
-									placeholder="1, 2, 3..."
-									required
-								/>
-								{#if levelError}
-									<p class="text-xs text-destructive">{levelError}</p>
-								{/if}
-								{#if categoryDuplicate && status === 'draft'}
-									<p class="text-xs text-amber-600 dark:text-amber-400">
-										⚠️ Cette catégorie existe déjà au niveau {level}. Niveau suggéré : {suggestedLevel}
-									</p>
-								{/if}
-							</div>
-						</div>
-					</Card.Content>
-				</Collapsible.Content>
-			</Collapsible.Root>
-		</Card.Header>
-	</Card.Root>
-
-	<!-- Grade Levels -->
-	<div class="space-y-2">
-		<Label>Niveaux scolaires<span class="text-destructive">*</span></Label>
-		<div class="flex flex-wrap gap-2">
-			{#each GRADE_CODES as grade (grade)}
-				<Badge
-					class={grades.includes(grade)
-						? 'cursor-pointer bg-primary text-primary-foreground hover:bg-primary/80'
-						: 'cursor-pointer bg-muted text-muted-foreground hover:bg-muted/80'}
-					onclick={() => toggleGrade(grade)}
-				>
-					{GRADES[grade].displayName}
-				</Badge>
-			{/each}
-		</div>
-		{#if gradesError}
-			<p class="text-xs text-destructive">{gradesError}</p>
-		{/if}
-	</div>
-
-	<!-- Exercise Instruction (Optional, Shared) -->
-	<div class="space-y-2">
-		<div class="flex items-center gap-2">
-			<Label for="exercise-instruction">Consigne d'exercice</Label>
-			<button
-				type="button"
-				onclick={() => (exerciseInstructionHelpOpen = true)}
-				class="text-muted-foreground transition-colors hover:text-foreground"
-				aria-label="Aide sur la consigne d'exercice"
-			>
-				<CircleQuestionMark class="h-4 w-4" />
-			</button>
-		</div>
-		<Input id="exercise-instruction" type="text" bind:value={exerciseInstruction} />
-	</div>
-
-	<!-- Display Options -->
-	<DisplayOptionsEditor
-		bind:open={displayOptionsOpen}
-		bind:shuffleTerms={displayShuffleTerms}
-		bind:shuffleFactors={displayShuffleFactors}
-		bind:shuffleTermsAndFactors={displayShuffleTermsAndFactors}
-		bind:shallowShuffleTerms={displayShallowShuffleTerms}
-		bind:shallowShuffleFactors={displayShallowShuffleFactors}
-		bind:removeNullTerms={displayRemoveNullTerms}
-		bind:removeUnnecessaryBrackets={displayRemoveUnnecessaryBrackets}
-		bind:removeSpaces={displayRemoveSpaces}
-	/>
-
-	<!-- Options de validation -->
-	<ValidationOptionsEditor
-		bind:open={optionsSectionOpen}
-		bind:allowEquivalent={optAllowEquivalent}
-		bind:allowDifferentForms={optAllowDifferentForms}
-		bind:canonicalForm={optCanonicalForm}
-		bind:orderIndependent={optOrderIndependent}
-		bind:validator={optValidator}
-		bind:validatorParamsJson={optValidatorParamsJson}
-		bind:shuffleChoices={optShuffleChoices}
-		bind:allowBracketsInFirstNegativeTerm={optAllowBracketsInFirstNegativeTerm}
-		bind:constraintModes
-		{questionType}
-	/>
-
-	<!-- Champs partagés (shared defaults for all variations) -->
-	<SharedFieldsEditor
-		bind:open={sharedFieldsOpen}
-		{questionType}
-		{multipleAnswers}
-		bind:sharedStatement
-		bind:sharedVariables
-		bind:sharedCorrectChoiceIndex
-		bind:sharedChoices
-		bind:sharedCorrectionString
-		bind:sharedRequiredFormSelect
-		bind:sharedRequiredFormPattern
-		bind:sharedBlankPrecision
-		bind:sharedBlankRequiredFormSelect
-		bind:sharedBlankRequiredFormPattern
-		bind:sharedBlankUnitExpected
-		bind:sharedBlankUnitRequired
-		bind:sharedValidationRulesJson
-		bind:sharedAnswerFormatsJson
-		bind:sharedVariableHelpOpen
-	/>
-
-	<!-- Variations Management -->
-	<Card.Root>
-		<Card.Header>
-			<div class="flex items-center justify-between">
-				<div>
-					<Card.Title class="flex items-center gap-2">
-						Variations de la question
-						<button
-							type="button"
-							onclick={() => (variationsHelpOpen = true)}
-							class="text-muted-foreground transition-colors hover:text-foreground"
-							aria-label="Aide sur les variations"
-						>
-							<CircleQuestionMark class="h-5 w-5" />
-						</button>
-					</Card.Title>
-				</div>
-				<Button onclick={addVariation} variant="outline" size="sm" type="button">
-					<Plus class="mr-2 h-4 w-4" />
-					Ajouter une variation
-				</Button>
-			</div>
-		</Card.Header>
-		<Card.Content class="space-y-4">
-			<!-- Variation Tabs -->
-			<div class="flex gap-2 overflow-x-auto border-b">
-				{#each variations as _, index (index)}
-					<div class="flex flex-shrink-0 items-center">
-						<button
-							type="button"
-							class="flex items-center gap-2 border-b-2 px-4 py-2 whitespace-nowrap transition-colors {currentVariationIndex ===
-							index
-								? 'border-primary text-primary'
-								: 'border-transparent text-muted-foreground hover:text-foreground'}"
-							onclick={() => selectVariation(index)}
-						>
-							Variation {index + 1}
-						</button>
-						{#if variations.length > 1}
+		<Card.Root>
+			<Card.Header>
+				<Collapsible.Root bind:open={categorizationOpen}>
+					<Collapsible.Trigger
+						class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+					>
+						<Card.Title class="flex items-center gap-2">
+							Catégorisation
 							<button
 								type="button"
-								onclick={() => removeVariation(index)}
-								class="ml-1 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none"
-								title="Supprimer cette variation"
+								onclick={(e) => {
+									e.stopPropagation();
+									categorizationHelpOpen = true;
+								}}
+								class="text-muted-foreground transition-colors hover:text-foreground"
+								aria-label="Aide sur la catégorisation"
 							>
-								<Trash2 class="h-3 w-3" />
+								<CircleQuestionMark class="h-5 w-5" />
 							</button>
-						{/if}
-					</div>
+						</Card.Title>
+						<ChevronDown
+							class="h-4 w-4 transition-transform duration-200 {categorizationOpen
+								? 'rotate-180'
+								: ''}"
+						/>
+					</Collapsible.Trigger>
+					<Collapsible.Content>
+						<Card.Content class="space-y-4">
+							<div class="grid gap-4 md:grid-cols-2">
+								<!-- Theme (Required) -->
+								<div>
+									<CategorySelector
+										label="Thème"
+										bind:value={theme}
+										options={themeOptions}
+										required={true}
+										onValueChange={(val) => (theme = val)}
+										onAddNew={handleAddTheme}
+									/>
+									{#if themeError}
+										<p class="mt-1 text-xs text-destructive">{themeError}</p>
+									{/if}
+								</div>
+
+								<!-- Domain (Required) -->
+								<div>
+									<CategorySelector
+										label="Domaine"
+										bind:value={domain}
+										options={domainOptions}
+										required={true}
+										onValueChange={(val) => (domain = val)}
+										onAddNew={handleAddDomain}
+									/>
+									{#if domainError}
+										<p class="mt-1 text-xs text-destructive">{domainError}</p>
+									{/if}
+								</div>
+							</div>
+
+							<div class="grid gap-4 md:grid-cols-2">
+								<!-- Subdomain (Optional) -->
+								<CategorySelector
+									label="Sous-domaine"
+									value={subdomain || ''}
+									options={subdomainOptions}
+									required={false}
+									onValueChange={(val) => (subdomain = val || undefined)}
+									onAddNew={handleAddSubdomain}
+								/>
+
+								<!-- Difficulty Level (Required, positive integer, no max) -->
+								<div class="space-y-2">
+									<Label for="level">
+										Niveau de difficulté
+										<span class="text-destructive">*</span>
+									</Label>
+									<Input
+										id="level"
+										type="number"
+										min="1"
+										bind:value={level}
+										placeholder="1, 2, 3..."
+										required
+									/>
+									{#if levelError}
+										<p class="text-xs text-destructive">{levelError}</p>
+									{/if}
+									{#if categoryDuplicate && status === 'draft'}
+										<p class="text-xs text-amber-600 dark:text-amber-400">
+											⚠️ Cette catégorie existe déjà au niveau {level}. Niveau suggéré : {suggestedLevel}
+										</p>
+									{/if}
+								</div>
+							</div>
+						</Card.Content>
+					</Collapsible.Content>
+				</Collapsible.Root>
+			</Card.Header>
+		</Card.Root>
+
+		<!-- Grade Levels -->
+		<div class="space-y-2">
+			<Label>Niveaux scolaires<span class="text-destructive">*</span></Label>
+			<div class="flex flex-wrap gap-2">
+				{#each GRADE_CODES as grade (grade)}
+					<Badge
+						class={grades.includes(grade)
+							? 'cursor-pointer bg-primary text-primary-foreground hover:bg-primary/80'
+							: 'cursor-pointer bg-muted text-muted-foreground hover:bg-muted/80'}
+						onclick={() => toggleGrade(grade)}
+					>
+						{GRADES[grade].displayName}
+					</Badge>
 				{/each}
 			</div>
+			{#if gradesError}
+				<p class="text-xs text-destructive">{gradesError}</p>
+			{/if}
+		</div>
 
-			<!-- Current Variation Content -->
-			{#each variations as variation, index (index)}
-				{#if currentVariationIndex === index}
-					<div class="space-y-6 pt-4">
-						<!-- Duplicate Button (only for variations after the first) -->
-						{#if index > 0}
-							<div class="flex justify-end">
-								<Button type="button" variant="outline" size="sm" onclick={openDuplicateDialog}>
-									<Copy class="mr-2 h-4 w-4" />
-									Dupliquer depuis une autre variation
-								</Button>
-							</div>
-						{/if}
+		<!-- Exercise Instruction (Optional, Shared) -->
+		<div class="space-y-2">
+			<div class="flex items-center gap-2">
+				<Label for="exercise-instruction">Consigne d'exercice</Label>
+				<button
+					type="button"
+					onclick={() => (exerciseInstructionHelpOpen = true)}
+					class="text-muted-foreground transition-colors hover:text-foreground"
+					aria-label="Aide sur la consigne d'exercice"
+				>
+					<CircleQuestionMark class="h-4 w-4" />
+				</button>
+			</div>
+			<Input id="exercise-instruction" type="text" bind:value={exerciseInstruction} />
+		</div>
 
-						<!-- Statement -->
-						<Card.Root>
-							<Card.Header>
-								<Collapsible.Root bind:open={statementSectionOpen}>
-									<Collapsible.Trigger
-										class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
-									>
-										<Card.Title class="flex items-center gap-2">
-											Énoncé <span class="text-destructive">*</span>
-											<button
-												type="button"
-												onclick={(e) => {
-													e.stopPropagation();
-													statementHelpOpen = true;
-												}}
-												class="text-muted-foreground transition-colors hover:text-foreground"
-												aria-label="Aide sur l'énoncé"
-											>
-												<CircleQuestionMark class="h-5 w-5" />
-											</button>
-										</Card.Title>
-										<ChevronDown
-											class="h-4 w-4 transition-transform duration-200 {statementSectionOpen
-												? 'rotate-180'
-												: ''}"
-										/>
-									</Collapsible.Trigger>
-									<Collapsible.Content>
-										<Card.Content>
-											<MarkdownEditor
-												bind:value={variation.statement}
-												showParameterization={true}
-												variables={variation.variables}
-												placeholder="Ecrivez l'enonce de la question en markdown..."
-												rows={6}
+		<!-- Display Options -->
+		<DisplayOptionsEditor
+			bind:open={displayOptionsOpen}
+			bind:shuffleTerms={displayShuffleTerms}
+			bind:shuffleFactors={displayShuffleFactors}
+			bind:shuffleTermsAndFactors={displayShuffleTermsAndFactors}
+			bind:shallowShuffleTerms={displayShallowShuffleTerms}
+			bind:shallowShuffleFactors={displayShallowShuffleFactors}
+			bind:removeNullTerms={displayRemoveNullTerms}
+			bind:removeUnnecessaryBrackets={displayRemoveUnnecessaryBrackets}
+			bind:removeSpaces={displayRemoveSpaces}
+		/>
+
+		<!-- Options de validation -->
+		<ValidationOptionsEditor
+			bind:open={optionsSectionOpen}
+			bind:allowEquivalent={optAllowEquivalent}
+			bind:allowDifferentForms={optAllowDifferentForms}
+			bind:canonicalForm={optCanonicalForm}
+			bind:orderIndependent={optOrderIndependent}
+			bind:validator={optValidator}
+			bind:validatorParamsJson={optValidatorParamsJson}
+			bind:shuffleChoices={optShuffleChoices}
+			bind:allowBracketsInFirstNegativeTerm={optAllowBracketsInFirstNegativeTerm}
+			bind:constraintModes
+			{questionType}
+		/>
+
+		<!-- Champs partagés (shared defaults for all variations) -->
+		<SharedFieldsEditor
+			bind:open={sharedFieldsOpen}
+			{questionType}
+			{multipleAnswers}
+			bind:sharedStatement
+			bind:sharedVariables
+			bind:sharedCorrectChoiceIndex
+			bind:sharedChoices
+			bind:sharedCorrectionString
+			bind:sharedRequiredFormSelect
+			bind:sharedRequiredFormPattern
+			bind:sharedBlankPrecision
+			bind:sharedBlankRequiredFormSelect
+			bind:sharedBlankRequiredFormPattern
+			bind:sharedBlankUnitExpected
+			bind:sharedBlankUnitRequired
+			bind:sharedValidationRulesJson
+			bind:sharedAnswerFormatsJson
+			bind:sharedVariableHelpOpen
+		/>
+
+		<!-- Variations Management -->
+		<Card.Root>
+			<Card.Header>
+				<div class="flex items-center justify-between">
+					<div>
+						<Card.Title class="flex items-center gap-2">
+							Variations de la question
+							<button
+								type="button"
+								onclick={() => (variationsHelpOpen = true)}
+								class="text-muted-foreground transition-colors hover:text-foreground"
+								aria-label="Aide sur les variations"
+							>
+								<CircleQuestionMark class="h-5 w-5" />
+							</button>
+						</Card.Title>
+					</div>
+					<Button onclick={addVariation} variant="outline" size="sm" type="button">
+						<Plus class="mr-2 h-4 w-4" />
+						Ajouter une variation
+					</Button>
+				</div>
+			</Card.Header>
+			<Card.Content class="space-y-4">
+				<!-- Variation Tabs -->
+				<div class="flex gap-2 overflow-x-auto border-b">
+					{#each variations as _, index (index)}
+						<div class="flex flex-shrink-0 items-center">
+							<button
+								type="button"
+								class="flex items-center gap-2 border-b-2 px-4 py-2 whitespace-nowrap transition-colors {currentVariationIndex ===
+								index
+									? 'border-primary text-primary'
+									: 'border-transparent text-muted-foreground hover:text-foreground'}"
+								onclick={() => selectVariation(index)}
+							>
+								Variation {index + 1}
+							</button>
+							{#if variations.length > 1}
+								<button
+									type="button"
+									onclick={() => removeVariation(index)}
+									class="ml-1 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none"
+									title="Supprimer cette variation"
+								>
+									<Trash2 class="h-3 w-3" />
+								</button>
+							{/if}
+						</div>
+					{/each}
+				</div>
+
+				<!-- Current Variation Content -->
+				{#each variations as variation, index (index)}
+					{#if currentVariationIndex === index}
+						<div class="space-y-6 pt-4">
+							<!-- Duplicate Button (only for variations after the first) -->
+							{#if index > 0}
+								<div class="flex justify-end">
+									<Button type="button" variant="outline" size="sm" onclick={openDuplicateDialog}>
+										<Copy class="mr-2 h-4 w-4" />
+										Dupliquer depuis une autre variation
+									</Button>
+								</div>
+							{/if}
+
+							<!-- Statement -->
+							<Card.Root>
+								<Card.Header>
+									<Collapsible.Root bind:open={statementSectionOpen}>
+										<Collapsible.Trigger
+											class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+										>
+											<Card.Title class="flex items-center gap-2">
+												Énoncé <span class="text-destructive">*</span>
+												<button
+													type="button"
+													onclick={(e) => {
+														e.stopPropagation();
+														statementHelpOpen = true;
+													}}
+													class="text-muted-foreground transition-colors hover:text-foreground"
+													aria-label="Aide sur l'énoncé"
+												>
+													<CircleQuestionMark class="h-5 w-5" />
+												</button>
+											</Card.Title>
+											<ChevronDown
+												class="h-4 w-4 transition-transform duration-200 {statementSectionOpen
+													? 'rotate-180'
+													: ''}"
 											/>
-										</Card.Content>
-									</Collapsible.Content>
-								</Collapsible.Root>
-							</Card.Header>
-						</Card.Root>
-
-						<!-- Variables -->
-						<Card.Root>
-							<Card.Header>
-								<Collapsible.Root bind:open={variablesOpen}>
-									<Collapsible.Trigger
-										class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
-									>
-										<Card.Title class="flex items-center gap-2">
-											Variables
-											<button
-												type="button"
-												onclick={(e) => {
-													e.stopPropagation();
-													variableHelpOpen = true;
-												}}
-												class="text-muted-foreground transition-colors hover:text-foreground"
-												aria-label="Aide sur les variables"
-											>
-												<CircleQuestionMark class="h-5 w-5" />
-											</button>
-										</Card.Title>
-										<ChevronDown
-											class="h-4 w-4 transition-transform duration-200 {variablesOpen
-												? 'rotate-180'
-												: ''}"
-										/>
-									</Collapsible.Trigger>
-									<Collapsible.Content>
-										<Card.Content>
-											<VariableEditor
-												bind:variables={variation.variables}
-												bind:helpDialogOpen={variableHelpOpen}
-											/>
-										</Card.Content>
-									</Collapsible.Content>
-								</Collapsible.Root>
-							</Card.Header>
-						</Card.Root>
-
-						<!-- Answer -->
-						<Card.Root>
-							<Card.Header>
-								<Collapsible.Root bind:open={answerSectionOpen}>
-									<Collapsible.Trigger
-										class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
-									>
-										<Card.Title class="flex items-center gap-2">
-											Réponse <span class="text-destructive">*</span>
-											<button
-												type="button"
-												onclick={(e) => {
-													e.stopPropagation();
-													answerHelpOpen = true;
-												}}
-												class="text-muted-foreground transition-colors hover:text-foreground"
-												aria-label="Aide sur la réponse"
-											>
-												<CircleQuestionMark class="h-5 w-5" />
-											</button>
-										</Card.Title>
-										<ChevronDown
-											class="h-4 w-4 transition-transform duration-200 {answerSectionOpen
-												? 'rotate-180'
-												: ''}"
-										/>
-									</Collapsible.Trigger>
-									<Collapsible.Content>
-										<Card.Content>
-											<AnswerEditor
-												{questionType}
-												bind:answer={variation.correctChoiceIndex}
-												bind:blanks={variation.blanks}
-												bind:choices={variation.choices}
-												{multipleAnswers}
-											/>
-										</Card.Content>
-									</Collapsible.Content>
-								</Collapsible.Root>
-							</Card.Header>
-						</Card.Root>
-
-						<!-- Correction (optional) -->
-						<Card.Root>
-							<Card.Header>
-								<Collapsible.Root bind:open={correctionOpen}>
-									<Collapsible.Trigger
-										class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
-									>
-										<Card.Title class="flex items-center gap-2">
-											Correction (optionnel)
-											<button
-												type="button"
-												onclick={(e) => {
-													e.stopPropagation();
-													correctionHelpOpen = true;
-												}}
-												class="text-muted-foreground transition-colors hover:text-foreground"
-												aria-label="Aide sur la correction"
-											>
-												<CircleQuestionMark class="h-5 w-5" />
-											</button>
-										</Card.Title>
-										<ChevronDown
-											class="h-4 w-4 transition-transform duration-200 {correctionOpen
-												? 'rotate-180'
-												: ''}"
-										/>
-									</Collapsible.Trigger>
-									<Collapsible.Content>
-										<Card.Content>
-											<MarkdownEditor
-												bind:value={variationExtras[index].correctionString}
-												showParameterization={true}
-												variables={variation.variables}
-												placeholder="Explication de la solution (optionnel)..."
-												rows={6}
-											/>
-										</Card.Content>
-									</Collapsible.Content>
-								</Collapsible.Root>
-							</Card.Header>
-						</Card.Root>
-
-						<!-- Per-variation overrides -->
-						<Card.Root>
-							<Card.Header>
-								<Collapsible.Root bind:open={variationExtras[index].overridesOpen}>
-									<Collapsible.Trigger
-										class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
-									>
-										<Card.Title>Surcharges (cette variation)</Card.Title>
-										<ChevronDown
-											class="h-4 w-4 transition-transform duration-200 {variationExtras[index]
-												.overridesOpen
-												? 'rotate-180'
-												: ''}"
-										/>
-									</Collapsible.Trigger>
-									<Card.Description
-										>Surcharger les champs partagés pour cette variation</Card.Description
-									>
-									<Collapsible.Content>
-										<Card.Content class="space-y-4">
-											<!-- Forme requise (per-variation) -->
-											<div class="space-y-2">
-												<Label class="text-sm font-medium">Forme requise</Label>
-												<MySelect
-													type="single"
-													bind:value={variationExtras[index].requiredFormSelect}
-													items={REQUIRED_FORM_OPTIONS}
+										</Collapsible.Trigger>
+										<Collapsible.Content>
+											<Card.Content>
+												<MarkdownEditor
+													bind:value={variation.statement}
+													showParameterization={true}
+													variables={variation.variables}
+													placeholder="Ecrivez l'enonce de la question en markdown..."
+													rows={6}
 												/>
-												{#if variationExtras[index].requiredFormSelect === 'custom'}
-													<Input
-														type="text"
-														bind:value={variationExtras[index].requiredFormPattern}
-														placeholder="Pattern personnalise (ex: a:integer * b:integer)"
+											</Card.Content>
+										</Collapsible.Content>
+									</Collapsible.Root>
+								</Card.Header>
+							</Card.Root>
+
+							<!-- Variables -->
+							<Card.Root>
+								<Card.Header>
+									<Collapsible.Root bind:open={variablesOpen}>
+										<Collapsible.Trigger
+											class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+										>
+											<Card.Title class="flex items-center gap-2">
+												Variables
+												<button
+													type="button"
+													onclick={(e) => {
+														e.stopPropagation();
+														variableHelpOpen = true;
+													}}
+													class="text-muted-foreground transition-colors hover:text-foreground"
+													aria-label="Aide sur les variables"
+												>
+													<CircleQuestionMark class="h-5 w-5" />
+												</button>
+											</Card.Title>
+											<ChevronDown
+												class="h-4 w-4 transition-transform duration-200 {variablesOpen
+													? 'rotate-180'
+													: ''}"
+											/>
+										</Collapsible.Trigger>
+										<Collapsible.Content>
+											<Card.Content>
+												<VariableEditor
+													bind:variables={variation.variables}
+													bind:helpDialogOpen={variableHelpOpen}
+												/>
+											</Card.Content>
+										</Collapsible.Content>
+									</Collapsible.Root>
+								</Card.Header>
+							</Card.Root>
+
+							<!-- Answer -->
+							<Card.Root>
+								<Card.Header>
+									<Collapsible.Root bind:open={answerSectionOpen}>
+										<Collapsible.Trigger
+											class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+										>
+											<Card.Title class="flex items-center gap-2">
+												Réponse <span class="text-destructive">*</span>
+												<button
+													type="button"
+													onclick={(e) => {
+														e.stopPropagation();
+														answerHelpOpen = true;
+													}}
+													class="text-muted-foreground transition-colors hover:text-foreground"
+													aria-label="Aide sur la réponse"
+												>
+													<CircleQuestionMark class="h-5 w-5" />
+												</button>
+											</Card.Title>
+											<ChevronDown
+												class="h-4 w-4 transition-transform duration-200 {answerSectionOpen
+													? 'rotate-180'
+													: ''}"
+											/>
+										</Collapsible.Trigger>
+										<Collapsible.Content>
+											<Card.Content>
+												<AnswerEditor
+													{questionType}
+													bind:answer={variation.correctChoiceIndex}
+													bind:blanks={variation.blanks}
+													bind:choices={variation.choices}
+													{multipleAnswers}
+												/>
+											</Card.Content>
+										</Collapsible.Content>
+									</Collapsible.Root>
+								</Card.Header>
+							</Card.Root>
+
+							<!-- Correction (optional) -->
+							<Card.Root>
+								<Card.Header>
+									<Collapsible.Root bind:open={correctionOpen}>
+										<Collapsible.Trigger
+											class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+										>
+											<Card.Title class="flex items-center gap-2">
+												Correction (optionnel)
+												<button
+													type="button"
+													onclick={(e) => {
+														e.stopPropagation();
+														correctionHelpOpen = true;
+													}}
+													class="text-muted-foreground transition-colors hover:text-foreground"
+													aria-label="Aide sur la correction"
+												>
+													<CircleQuestionMark class="h-5 w-5" />
+												</button>
+											</Card.Title>
+											<ChevronDown
+												class="h-4 w-4 transition-transform duration-200 {correctionOpen
+													? 'rotate-180'
+													: ''}"
+											/>
+										</Collapsible.Trigger>
+										<Collapsible.Content>
+											<Card.Content>
+												<MarkdownEditor
+													bind:value={variationExtras[index].correctionString}
+													showParameterization={true}
+													variables={variation.variables}
+													placeholder="Explication de la solution (optionnel)..."
+													rows={6}
+												/>
+											</Card.Content>
+										</Collapsible.Content>
+									</Collapsible.Root>
+								</Card.Header>
+							</Card.Root>
+
+							<!-- Per-variation overrides -->
+							<Card.Root>
+								<Card.Header>
+									<Collapsible.Root bind:open={variationExtras[index].overridesOpen}>
+										<Collapsible.Trigger
+											class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+										>
+											<Card.Title>Surcharges (cette variation)</Card.Title>
+											<ChevronDown
+												class="h-4 w-4 transition-transform duration-200 {variationExtras[index]
+													.overridesOpen
+													? 'rotate-180'
+													: ''}"
+											/>
+										</Collapsible.Trigger>
+										<Card.Description
+											>Surcharger les champs partagés pour cette variation</Card.Description
+										>
+										<Collapsible.Content>
+											<Card.Content class="space-y-4">
+												<!-- Forme requise (per-variation) -->
+												<div class="space-y-2">
+													<Label class="text-sm font-medium">Forme requise</Label>
+													<MySelect
+														type="single"
+														bind:value={variationExtras[index].requiredFormSelect}
+														items={REQUIRED_FORM_OPTIONS}
 													/>
-												{/if}
-											</div>
+													{#if variationExtras[index].requiredFormSelect === 'custom'}
+														<Input
+															type="text"
+															bind:value={variationExtras[index].requiredFormPattern}
+															placeholder="Pattern personnalise (ex: a:integer * b:integer)"
+														/>
+													{/if}
+												</div>
 
-											<!-- Parametres des trous (per-variation blankDefaults) -->
-											<div class="space-y-2">
-												<Label class="text-sm font-medium">Paramètres des trous</Label>
-												<PrecisionEditor bind:precision={variation.blankDefaults!.precision} />
-											</div>
+												<!-- Parametres des trous (per-variation blankDefaults) -->
+												<div class="space-y-2">
+													<Label class="text-sm font-medium">Paramètres des trous</Label>
+													<PrecisionEditor bind:precision={variation.blankDefaults!.precision} />
+												</div>
 
-											<!-- Regles de validation -->
-											<div class="space-y-2">
-												<Label class="text-sm font-medium">Règles de validation</Label>
-												<textarea
-													class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
-													bind:value={variationExtras[index].validationRulesJson}
-													rows={3}
-													placeholder="[]"
-												></textarea>
-												<p class="text-xs text-muted-foreground">Format JSON (tableau de regles)</p>
-											</div>
+												<!-- Regles de validation -->
+												<div class="space-y-2">
+													<Label class="text-sm font-medium">Règles de validation</Label>
+													<textarea
+														class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
+														bind:value={variationExtras[index].validationRulesJson}
+														rows={3}
+														placeholder="[]"
+													></textarea>
+													<p class="text-xs text-muted-foreground">
+														Format JSON (tableau de regles)
+													</p>
+												</div>
 
-											<!-- Formats de reponse -->
-											<div class="space-y-2">
-												<Label class="text-sm font-medium">Formats de réponse</Label>
-												<textarea
-													class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
-													bind:value={variationExtras[index].answerFormatsJson}
-													rows={3}
-													placeholder={'{}'}
-												></textarea>
-												<p class="text-xs text-muted-foreground">
-													Format JSON (cle = nom de variable, valeur = format)
-												</p>
-											</div>
-										</Card.Content>
-									</Collapsible.Content>
-								</Collapsible.Root>
-							</Card.Header>
-						</Card.Root>
+												<!-- Formats de reponse -->
+												<div class="space-y-2">
+													<Label class="text-sm font-medium">Formats de réponse</Label>
+													<textarea
+														class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
+														bind:value={variationExtras[index].answerFormatsJson}
+														rows={3}
+														placeholder={'{}'}
+													></textarea>
+													<p class="text-xs text-muted-foreground">
+														Format JSON (cle = nom de variable, valeur = format)
+													</p>
+												</div>
+											</Card.Content>
+										</Collapsible.Content>
+									</Collapsible.Root>
+								</Card.Header>
+							</Card.Root>
+						</div>
+					{/if}
+				{/each}
+			</Card.Content>
+		</Card.Root>
+
+		<!-- Preview & JSON -->
+		<Tabs.Root
+			value="preview"
+			onValueChange={async (value) => {
+				if (value === 'preview') await loadQuestionPreview();
+				if (value === 'json') await loadJsonViewer();
+			}}
+		>
+			<Tabs.List class="grid w-full grid-cols-2">
+				<Tabs.Trigger value="preview" onclick={() => loadQuestionPreview()}>Aperçu</Tabs.Trigger>
+				<Tabs.Trigger value="json" onclick={() => loadJsonViewer()}>JSON</Tabs.Trigger>
+			</Tabs.List>
+
+			<Tabs.Content value="preview">
+				{#if QuestionPreview}
+					<QuestionPreview template={previewTemplate} />
+				{:else}
+					<div class="flex items-center justify-center p-8">
+						<p class="text-muted-foreground">Chargement de l'aperçu...</p>
 					</div>
 				{/if}
-			{/each}
-		</Card.Content>
-	</Card.Root>
+			</Tabs.Content>
 
-	<!-- Preview & JSON -->
-	<Tabs.Root
-		value="preview"
-		onValueChange={async (value) => {
-			if (value === 'preview') await loadQuestionPreview();
-			if (value === 'json') await loadJsonViewer();
-		}}
-	>
-		<Tabs.List class="grid w-full grid-cols-2">
-			<Tabs.Trigger value="preview" onclick={() => loadQuestionPreview()}>Aperçu</Tabs.Trigger>
-			<Tabs.Trigger value="json" onclick={() => loadJsonViewer()}>JSON</Tabs.Trigger>
-		</Tabs.List>
-
-		<Tabs.Content value="preview">
-			{#if QuestionPreview}
-				<QuestionPreview template={previewTemplate} />
-			{:else}
-				<div class="flex items-center justify-center p-8">
-					<p class="text-muted-foreground">Chargement de l'aperçu...</p>
-				</div>
-			{/if}
-		</Tabs.Content>
-
-		<Tabs.Content value="json">
-			{#if JsonViewer}
-				<JsonViewer data={previewTemplate} />
-			{:else}
-				<div class="flex items-center justify-center p-8">
-					<p class="text-muted-foreground">Chargement du JSON...</p>
-				</div>
-			{/if}
-		</Tabs.Content>
-	</Tabs.Root>
+			<Tabs.Content value="json">
+				{#if JsonViewer}
+					<JsonViewer data={previewTemplate} />
+				{:else}
+					<div class="flex items-center justify-center p-8">
+						<p class="text-muted-foreground">Chargement du JSON...</p>
+					</div>
+				{/if}
+			</Tabs.Content>
+		</Tabs.Root>
+	{/if}
 
 	<!-- Validation Errors Summary -->
 	{#if hasAttemptedPublish && variationErrors.length > 0}
@@ -1528,31 +1729,60 @@
 	{/if}
 
 	<!-- Action Buttons -->
-	<div class="flex items-center justify-end gap-3">
-		{#if isDirty}
-			<span class="text-xs text-amber-600 dark:text-amber-400">Modifications non sauvegardées</span>
-		{/if}
-		<Button variant="outline" onclick={handleCancel} disabled={isSubmitting}>
-			<X class="mr-2 h-4 w-4" />
-			Annuler
-		</Button>
+	<div class="flex items-center gap-3">
 		<Button
-			variant="secondary"
-			onclick={handleSaveDraft}
-			disabled={isSubmitting}
-			class="bg-amber-100 text-amber-900 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-100"
+			variant="outline"
+			onclick={toggleJsonMode}
+			disabled={isSubmitting || (jsonMode && !jsonValid)}
 		>
-			<FileText class="mr-2 h-4 w-4" />
-			{isSubmitting ? 'Enregistrement...' : 'Enregistrer brouillon'}
+			{#if jsonMode}
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="mr-2 h-4 w-4"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M9 3v18" /><path
+						d="M14 9h7"
+					/><path d="M14 15h7" /></svg
+				>
+				Formulaire
+			{:else}
+				<Braces class="mr-2 h-4 w-4" />
+				JSON
+			{/if}
 		</Button>
-		<Button
-			onclick={handlePublish}
-			disabled={isSubmitting}
-			class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
-		>
-			<CheckCircle2 class="mr-2 h-4 w-4" />
-			{isSubmitting ? 'Publication...' : 'Publier'}
-		</Button>
+		<div class="flex flex-1 items-center justify-end gap-3">
+			{#if isDirty}
+				<span class="text-xs text-amber-600 dark:text-amber-400"
+					>Modifications non sauvegardées</span
+				>
+			{/if}
+			<Button variant="outline" onclick={handleCancel} disabled={isSubmitting}>
+				<X class="mr-2 h-4 w-4" />
+				Annuler
+			</Button>
+			<Button
+				variant="secondary"
+				onclick={handleSaveDraft}
+				disabled={isSubmitting || (jsonMode && !jsonValid)}
+				class="bg-amber-100 text-amber-900 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-100"
+			>
+				<FileText class="mr-2 h-4 w-4" />
+				{isSubmitting ? 'Enregistrement...' : 'Enregistrer brouillon'}
+			</Button>
+			<Button
+				onclick={handlePublish}
+				disabled={isSubmitting || (jsonMode && !jsonValid)}
+				class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+			>
+				<CheckCircle2 class="mr-2 h-4 w-4" />
+				{isSubmitting ? 'Publication...' : 'Publier'}
+			</Button>
+		</div>
 	</div>
 </div>
 

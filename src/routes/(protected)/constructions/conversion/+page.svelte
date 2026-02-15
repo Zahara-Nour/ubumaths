@@ -18,6 +18,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import TagsInput from '$lib/components/templates/TagsInput.svelte';
 	import { JsonEditor, ConstructionPlayer } from '$lib/constructions/components';
+	import { constructionScriptSchema } from '$lib/constructions/schemas';
 	import { convertInstrumenPoche } from '$lib/constructions/converter';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
@@ -492,6 +493,7 @@
 					<JsonEditor
 						bind:value={jsonOutput}
 						height={jsonEditorHeight}
+						schema={constructionScriptSchema}
 						onValidate={handleJsonValidate}
 					/>
 				</div>

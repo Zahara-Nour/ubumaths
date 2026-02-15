@@ -1,37 +1,40 @@
 <script lang="ts">
 	/**
-	 * JsonEditor - CodeMirror 6 editor for construction script JSON
+	 * JsonEditor - CodeMirror 6 editor for JSON with optional schema validation
 	 *
 	 * Features:
 	 * - JSON syntax highlighting
-	 * - Validation against constructionScriptSchema
+	 * - Optional Zod schema validation (JSON.parse-only if no schema)
 	 * - Error line highlighting with red background and gutter marker
 	 * - Lazy loading of CodeMirror
 	 * - Debounced validation
 	 * - Line numbers and bracket matching
 	 * - Theme switching (light/dark)
-	 *
-	 * Adapted from PythonEditor.svelte
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import type { EditorView } from '@codemirror/view';
 	import type { Extension } from '@codemirror/state';
-	import { constructionScriptSchema } from '$lib/constructions/schemas';
-
 	// Props
 	let {
 		value = $bindable(''),
 		disabled = false,
 		fontSize = 14,
 		height = '400px',
+		schema,
 		onValidate = (_isValid: boolean, _errors: string[]) => {}
 	}: {
 		value?: string;
 		disabled?: boolean;
 		fontSize?: number;
 		height?: string;
+		schema?: {
+			safeParse: (data: unknown) => {
+				success: boolean;
+				error?: { issues: { path: (string | number)[]; message: string }[] };
+			};
+		};
 		onValidate?: (isValid: boolean, errors: string[]) => void;
 	} = $props();
 
@@ -59,27 +62,30 @@
 			// First parse JSON
 			const parsed = JSON.parse(jsonString);
 
-			// Then validate against schema
-			const validation = constructionScriptSchema.safeParse(parsed);
+			// If a schema is provided, validate against it
+			if (schema) {
+				const validation = schema.safeParse(parsed);
 
-			if (validation.success) {
+				if (validation.success) {
+					validationErrors = [];
+					errorLine = null;
+					onValidate(true, []);
+				} else {
+					// Extract error messages from Zod issues
+					const errors = (validation.error?.issues ?? []).map((issue) => {
+						const path = issue.path.join('.');
+						return path ? `${path}: ${issue.message}` : issue.message;
+					});
+
+					validationErrors = errors;
+					errorLine = null;
+					onValidate(false, errors);
+				}
+			} else {
+				// No schema: JSON parse succeeded, that's enough
 				validationErrors = [];
 				errorLine = null;
 				onValidate(true, []);
-			} else {
-				// Extract error messages from Zod issues
-				const errors = validation.error.issues.map((issue) => {
-					const path = issue.path.join('.');
-					return path ? `${path}: ${issue.message}` : issue.message;
-				});
-
-				validationErrors = errors;
-
-				// Try to extract line number from first error path
-				// Note: Zod doesn't provide line numbers, so we'll clear error line
-				// for schema errors. Only JSON parse errors have line numbers.
-				errorLine = null;
-				onValidate(false, errors);
 			}
 		} catch (error) {
 			// JSON parse error
