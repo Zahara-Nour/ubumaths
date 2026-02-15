@@ -214,6 +214,7 @@
 			firstname: string;
 			lastname?: string;
 			avatar_url?: string;
+			cardCount: number;
 		}>
 	>([]);
 
@@ -538,20 +539,21 @@
 				const vipCards = studentRewards.vip_cards as StudentVipCards | undefined;
 				if (!vipCards) continue;
 
-				// Check if student has at least one unused batman card
-				const hasBatmanCard = Object.values(vipCards).some((instance) => {
+				// Count unused batman cards for this student
+				const batmanCardCount = Object.values(vipCards).filter((instance) => {
 					const cardInstance = instance as VipCardInstance;
 					return cardInstance.cardId === 'batman' && !cardInstance.usedAt;
-				});
+				}).length;
 
-				if (hasBatmanCard) {
+				if (batmanCardCount > 0) {
 					const student = basicStudents.find((s) => s.id === studentId);
 					if (student) {
 						studentsWithBatman.push({
 							id: studentId,
 							firstname: student.firstname,
 							lastname: student.lastname ?? undefined,
-							avatar_url: student.avatar_url ?? undefined
+							avatar_url: student.avatar_url ?? undefined,
+							cardCount: batmanCardCount
 						});
 					}
 				}
@@ -589,8 +591,10 @@
 				throw new Error(error.message || "Erreur lors de l'utilisation de la carte");
 			}
 
-			// Remove student from list
-			batmanStudents = batmanStudents.filter((s) => s.id !== studentId);
+			// Decrement card count or remove student if last card
+			batmanStudents = batmanStudents
+				.map((s) => (s.id === studentId ? { ...s, cardCount: s.cardCount - 1 } : s))
+				.filter((s) => s.cardCount > 0);
 
 			// Invalidate rewards cache
 			if (selectedClassId) {
@@ -857,7 +861,7 @@
      ============================================================================ -->
 
 <Dialog.Root bind:open={batmanModalOpen} onOpenChange={(open) => !open && handleCloseBatman()}>
-	<Dialog.Content class="sm:max-w-md">
+	<Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-xl">
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<Sparkles class="h-5 w-5 text-amber-500" />
@@ -880,7 +884,7 @@
 					<p class="text-muted-foreground">Aucun élève n'a de carte "Batman & Robin" disponible.</p>
 				</div>
 			{:else}
-				<div class="space-y-2">
+				<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 					{#each batmanStudents as student (student.id)}
 						<button
 							onclick={() => handleUseBatmanCard(student.id)}
@@ -906,6 +910,13 @@
 								</p>
 								<p class="text-xs text-muted-foreground">Carte VIP disponible</p>
 							</div>
+
+							<!-- Card count badge (shown when 2+) -->
+							{#if student.cardCount >= 2}
+								<Badge variant="secondary" class="text-xs font-semibold">
+									x{student.cardCount}
+								</Badge>
+							{/if}
 
 							<!-- Action indicator -->
 							<Sparkles class="h-4 w-4 text-amber-500" />
