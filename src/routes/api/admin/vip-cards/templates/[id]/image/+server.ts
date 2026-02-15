@@ -135,8 +135,8 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			throw error(500, 'Failed to get public URL for uploaded image');
 		}
 
-		// 11. Update template image_path
-		const imagePath = `/images/vip-cards/${storageKey}`;
+		// 11. Update template image_path (use full Supabase Storage URL)
+		const imagePath = publicUrlData.publicUrl;
 
 		const { error: updateError } = await supabase
 			.from('vip_card_templates')

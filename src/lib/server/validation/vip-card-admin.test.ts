@@ -1996,7 +1996,8 @@ describe('VIP Card Action Validation', () => {
 				rarity: 'epic',
 				category: 'power',
 				isEnabled: true,
-				imagePath: '/images/vip-cards/tirage-epique@0.5x.webp',
+				imagePath:
+					'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/tirage-epique@0.5x.webp',
 				action: {
 					type: 'draw_cards',
 					count: 5,
@@ -2017,7 +2018,8 @@ describe('VIP Card Action Validation', () => {
 				rarity: 'legendary',
 				category: 'privilege',
 				isEnabled: true,
-				imagePath: '/images/vip-cards/choix-vip@0.5x.webp',
+				imagePath:
+					'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/choix-vip@0.5x.webp',
 				action: {
 					type: 'choose_card',
 					count: 3,
@@ -2036,7 +2038,8 @@ describe('VIP Card Action Validation', () => {
 				rarity: 'rare',
 				category: 'bonus',
 				isEnabled: true,
-				imagePath: '/images/vip-cards/bonus-50@0.5x.webp',
+				imagePath:
+					'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/bonus-50@0.5x.webp',
 				action: {
 					type: 'add_gidouilles',
 					amount: 50
@@ -2054,7 +2057,8 @@ describe('VIP Card Action Validation', () => {
 				rarity: 'epic',
 				category: 'privilege',
 				isEnabled: true,
-				imagePath: '/images/vip-cards/warning-eraser@0.5x.webp',
+				imagePath:
+					'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/warning-eraser@0.5x.webp',
 				action: {
 					type: 'remove_warnings',
 					count: 2,
@@ -2073,7 +2077,8 @@ describe('VIP Card Action Validation', () => {
 				rarity: 'legendary',
 				category: 'power',
 				isEnabled: true,
-				imagePath: '/images/vip-cards/exchange-master@0.5x.webp',
+				imagePath:
+					'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/exchange-master@0.5x.webp',
 				action: {
 					type: 'exchange_cards',
 					exchange: {
@@ -2095,7 +2100,8 @@ describe('VIP Card Action Validation', () => {
 				rarity: 'rare',
 				category: 'social',
 				isEnabled: true,
-				imagePath: '/images/vip-cards/vip-status@0.5x.webp',
+				imagePath:
+					'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/vip-status@0.5x.webp',
 				sortOrder: 30
 			});
 			expect(result.success).toBe(true);
