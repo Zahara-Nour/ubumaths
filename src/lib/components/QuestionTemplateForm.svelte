@@ -169,20 +169,150 @@
 	let jsonValid = $state(true);
 	let _jsonErrors = $state<string[]>([]);
 
-	// Strict schema for JSON mode validation (rejects unknown keys)
+	// Multi-level strict schema for JSON mode validation (rejects unknown keys at every level)
+	const constraintModeZ = z.enum(['strict', 'warn', 'off']);
+
+	const requiredFormZ = z.union([
+		z.enum(['product', 'sum', 'fraction', 'power']),
+		z.object({ pattern: z.string() }).strict()
+	]);
+
+	const unitZ = z.object({ expected: z.boolean(), required: z.string().optional() }).strict();
+
+	const blankDefaultsZ = z
+		.object({
+			precision: z.unknown().optional(),
+			requiredForm: requiredFormZ.optional(),
+			unit: unitZ.optional()
+		})
+		.strict();
+
+	const correctionZ = z
+		.object({
+			feedback: z
+				.object({
+					correct: z.unknown().optional(),
+					incorrect: z.unknown().optional(),
+					partial: z.unknown().optional()
+				})
+				.strict()
+				.optional(),
+			steps: z.array(z.unknown()).optional()
+		})
+		.strict();
+
+	const variableZ = z
+		.object({
+			name: z.string(),
+			expression: z.string(),
+			displayOptions: z.unknown().optional()
+		})
+		.strict();
+
+	const choiceZ = z
+		.object({
+			content: z.unknown(),
+			isCorrect: z.boolean().optional()
+		})
+		.strict();
+
+	const blankZ = z
+		.object({
+			expectedAnswer: z.string(),
+			prefilled: z.string().optional(),
+			pool: z.array(z.string()).optional(),
+			precision: z.unknown().optional(),
+			requiredForm: requiredFormZ.optional(),
+			validationRules: z.array(z.unknown()).optional(),
+			unit: unitZ.optional()
+		})
+		.strict();
+
+	const constraintsZ = z
+		.object({
+			spaces: constraintModeZ.optional(),
+			products: constraintModeZ.optional(),
+			brackets: constraintModeZ.optional(),
+			zeros: constraintModeZ.optional(),
+			form: constraintModeZ.optional(),
+			allowBracketsInFirstNegativeTerm: z.boolean().optional(),
+			nullTerms: constraintModeZ.optional(),
+			factorOne: constraintModeZ.optional(),
+			factorZero: constraintModeZ.optional(),
+			signs: constraintModeZ.optional(),
+			reducedFractions: constraintModeZ.optional(),
+			unit: constraintModeZ.optional()
+		})
+		.strict();
+
+	const optionsZ = z
+		.object({
+			allowEquivalent: z.boolean().optional(),
+			allowDifferentForms: z.boolean().optional(),
+			canonicalForm: z.enum(['fraction', 'decimal', 'scientific']).optional(),
+			orderIndependent: z.boolean().optional(),
+			validator: z.enum(['checkEquivalence', 'checkAlgebraic', 'checkNumeric']).optional(),
+			validatorParams: z.record(z.unknown()).optional(),
+			constraints: constraintsZ.optional(),
+			shuffleChoices: z.boolean().optional()
+		})
+		.strict();
+
+	const displayOptionsZ = z
+		.object({
+			shuffleTerms: z.boolean().optional(),
+			shuffleFactors: z.boolean().optional(),
+			shuffleTermsAndFactors: z.boolean().optional(),
+			shallowShuffleTerms: z.boolean().optional(),
+			shallowShuffleFactors: z.boolean().optional(),
+			removeNullTerms: z.boolean().optional(),
+			removeUnnecessaryBrackets: z.boolean().optional(),
+			removeSpaces: z.boolean().optional()
+		})
+		.strict();
+
+	const sharedZ = z
+		.object({
+			statement: z.unknown().optional(),
+			variables: z.array(variableZ).optional(),
+			correctChoiceIndex: z.unknown().optional(),
+			correction: correctionZ.optional().nullable(),
+			choices: z.array(choiceZ).optional(),
+			validationRules: z.array(z.unknown()).optional(),
+			requiredForm: requiredFormZ.optional(),
+			blankDefaults: blankDefaultsZ.optional(),
+			answerFormats: z.record(z.string()).optional()
+		})
+		.strict();
+
+	const variationZ = z
+		.object({
+			statement: z.unknown(),
+			variables: z.array(variableZ).optional(),
+			correctChoiceIndex: z.unknown().optional(),
+			correction: correctionZ.optional().nullable(),
+			blanks: z.array(blankZ).optional(),
+			blankDefaults: blankDefaultsZ.optional(),
+			answerFormats: z.record(z.string()).optional(),
+			choices: z.array(choiceZ).optional(),
+			validationRules: z.array(z.unknown()).optional(),
+			requiredForm: requiredFormZ.optional()
+		})
+		.strict();
+
 	const strictTemplateSchema = z
 		.object({
 			title: z.string(),
-			description: z.unknown().optional().nullable(),
-			variations: z.array(z.unknown()).optional(),
+			description: z.string().optional().nullable(),
+			variations: z.array(variationZ).optional(),
 			exerciseInstruction: z.unknown().optional().nullable(),
-			shared: z.unknown().optional().nullable(),
-			defaultDisplayOptions: z.unknown().optional().nullable(),
-			options: z.unknown().optional().nullable(),
+			shared: sharedZ.optional().nullable(),
+			defaultDisplayOptions: displayOptionsZ.optional().nullable(),
+			options: optionsZ.optional().nullable(),
 			grades: z.array(z.string()),
 			theme: z.string(),
 			domain: z.string(),
-			subdomain: z.unknown().optional().nullable(),
+			subdomain: z.string().optional().nullable(),
 			level: z.number(),
 			status: z.enum(['draft', 'published']).optional(),
 			delay: z.unknown().optional().nullable(),
