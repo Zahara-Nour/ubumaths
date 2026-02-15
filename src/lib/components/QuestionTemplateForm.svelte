@@ -99,7 +99,9 @@
 	// Shared configuration state
 	// Infer type from structure when editing existing template
 	let questionType = $state<QuestionType>(
-		template ? getQuestionType(template.variations?.[0] ?? {}) : 'fill_in_blanks'
+		template
+			? getQuestionType({ choices: template.variations?.[0]?.choices, shared: template.shared })
+			: 'fill_in_blanks'
 	);
 	let grades = $state<GradeLevel[]>(template?.grades || []);
 	let delay = $state<number | undefined>(template?.delay);
@@ -762,7 +764,7 @@
 		multipleAnswers = t.multipleAnswers;
 
 		// Type
-		questionType = getQuestionType(t.variations?.[0] ?? {});
+		questionType = getQuestionType({ choices: t.variations?.[0]?.choices, shared: t.shared });
 
 		// Display options
 		displayShuffleTerms = t.defaultDisplayOptions?.shuffleTerms ?? false;
