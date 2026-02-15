@@ -247,13 +247,13 @@
 		.object({
 			feedback: z
 				.object({
-					correct: z.unknown().optional(),
-					incorrect: z.unknown().optional(),
-					partial: z.unknown().optional()
+					correct: z.string().optional(),
+					incorrect: z.string().optional(),
+					partial: z.string().optional()
 				})
 				.strict()
 				.optional(),
-			steps: z.array(z.unknown()).optional()
+			steps: z.array(z.string()).optional()
 		})
 		.strict();
 
@@ -280,7 +280,7 @@
 
 	const choiceZ = z
 		.object({
-			content: z.unknown(),
+			content: z.string(),
 			isCorrect: z.boolean().optional()
 		})
 		.strict();
@@ -327,11 +327,13 @@
 		})
 		.strict();
 
+	const correctChoiceIndexZ = z.union([z.string(), z.array(z.string())]);
+
 	const sharedZ = z
 		.object({
-			statement: z.unknown().optional(),
+			statement: z.string().optional(),
 			variables: z.array(variableZ).optional(),
-			correctChoiceIndex: z.unknown().optional(),
+			correctChoiceIndex: correctChoiceIndexZ.optional(),
 			correction: correctionZ.optional().nullable(),
 			choices: z.array(choiceZ).optional(),
 			validationRules: z.array(validationRuleZ).optional(),
@@ -343,9 +345,9 @@
 
 	const variationZ = z
 		.object({
-			statement: z.unknown(),
+			statement: z.string(),
 			variables: z.array(variableZ).optional(),
-			correctChoiceIndex: z.unknown().optional(),
+			correctChoiceIndex: correctChoiceIndexZ.optional(),
 			correction: correctionZ.optional().nullable(),
 			blanks: z.array(blankZ).optional(),
 			blankDefaults: blankDefaultsZ.optional(),
@@ -361,7 +363,7 @@
 			title: z.string(),
 			description: z.string().optional().nullable(),
 			variations: z.array(variationZ).optional(),
-			exerciseInstruction: z.unknown().optional().nullable(),
+			exerciseInstruction: z.string().optional().nullable(),
 			shared: sharedZ.optional().nullable(),
 			defaultDisplayOptions: displayOptionsZ.optional().nullable(),
 			options: optionsZ.optional().nullable(),
@@ -371,9 +373,9 @@
 			subdomain: z.string().optional().nullable(),
 			level: z.number(),
 			status: z.enum(['draft', 'published']).optional(),
-			delay: z.unknown().optional().nullable(),
-			multipleAnswers: z.unknown().optional().nullable(),
-			type: z.unknown().optional()
+			delay: z.number().optional().nullable(),
+			multipleAnswers: z.boolean().optional().nullable(),
+			type: z.string().optional()
 		})
 		.strict();
 
