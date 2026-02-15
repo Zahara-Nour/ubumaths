@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.13](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.12...v0.8.13) (2026-02-15)
+
+### ✨ Features
+
+- **editor:** add raw JSON editing mode to QuestionTemplateForm ([0d979e6](https://github.com/Zahara-Nour/ubumaths/commit/0d979e60d595d237b0262212f66b617bcd59d308))
+- **migration:** add re-export button to question edit page ([d9de023](https://github.com/Zahara-Nour/ubumaths/commit/d9de0236a5e8e219b0e12fc72c02e79d2e6b37a2))
+- **migration:** replace edit dialog with dedicated edit page using QuestionTemplateForm ([e6c249b](https://github.com/Zahara-Nour/ubumaths/commit/e6c249b0f9827d16548a0474845201fdfd5b2e36))
+- **vip-cards:** add migration script for images to Supabase Storage ([e3a4b5b](https://github.com/Zahara-Nour/ubumaths/commit/e3a4b5b08ce1a34f573838fcbf2121782e70040a))
+
+### 🐛 Bug Fixes
+
+- **editor:** add multi-level strict validation to JSON mode schema ([6e4f8f0](https://github.com/Zahara-Nour/ubumaths/commit/6e4f8f066b2b883d8efaf9563d90ed0b8197d8c6))
+- **editor:** complete deep validation for precision, validationRules, displayOptions ([13e7746](https://github.com/Zahara-Nour/ubumaths/commit/13e774626844362d5b4ea445cf29164242492a8e))
+- **editor:** remove feedback from correction schema (template-only) ([d06ed4a](https://github.com/Zahara-Nour/ubumaths/commit/d06ed4a344cf54a63f5646d06ddf177ab3e7ac65))
+- **editor:** replace all z.unknown() with proper types in JSON schema ([11b416f](https://github.com/Zahara-Nour/ubumaths/commit/11b416f2394b6a0bb481c8dfcfce12be4e5e5f00))
+- **editor:** replace mount-only $effect calls with onMount ([e94fe64](https://github.com/Zahara-Nour/ubumaths/commit/e94fe64c624da09ad5a115fd1136c0d4c5e38ed0))
+- **editor:** replace server-only schema import with inline client schema ([f6f70ab](https://github.com/Zahara-Nour/ubumaths/commit/f6f70abc3988bb20dcbb67f8e4ba0a6eca9f7f61))
+- **editor:** validate JSON structure with strict schema in JSON mode ([6388616](https://github.com/Zahara-Nour/ubumaths/commit/638861687f26c9b81ecf3980f9dd65680c1bf930))
+- **migration:** access transformed.template in re-export handler ([fcfed43](https://github.com/Zahara-Nour/ubumaths/commit/fcfed437a44cc982b0cda874204fa64fc84cd767))
+- **migration:** populate theme/domain/subdomain in edit form ([ff17b15](https://github.com/Zahara-Nour/ubumaths/commit/ff17b15b32ec252d608549dabdbfdbf6d6a6a3d8))
+- **migration:** use entry-level level instead of transformer default ([9a7fb45](https://github.com/Zahara-Nour/ubumaths/commit/9a7fb452f0601c6cf7f291c3f6fcd131eac440ad))
+- **rewards:** reduce button sizes and ensure student names are visible ([8cc1462](https://github.com/Zahara-Nour/ubumaths/commit/8cc14621cecc406bf9a50559b3d29fcd8e5ae4b0))
+- **vip-cards:** fix image upload endpoint and integrate upload into editor form ([35fb764](https://github.com/Zahara-Nour/ubumaths/commit/35fb764d975bb9aef5a0cec49949ff917e4624d7))
+- **vip-cards:** serialize remove API calls to prevent race condition ([1467079](https://github.com/Zahara-Nour/ubumaths/commit/146707930ff56a8f73e4307ae2c36352b492cd22))
+- **vip-cards:** use slug validation for template IDs and make imagePath optional ([e04b2de](https://github.com/Zahara-Nour/ubumaths/commit/e04b2de455d53981b285e27d75f908473b295f43))
+- **vip-cards:** use Supabase Storage URLs for all image references ([2d69231](https://github.com/Zahara-Nour/ubumaths/commit/2d69231063809e600e83a42d5ec96f1328a54add))
+
 ### [0.8.12](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.11...v0.8.12) (2026-02-14)
 
 ### 🐛 Bug Fixes
