@@ -12,7 +12,7 @@ import { error, json } from '@sveltejs/kit';
 import sharp from 'sharp';
 import type { RequestHandler } from './$types';
 import type { UploadImageResponse } from '$lib/types/vip-card-admin';
-import { validateUuidParam } from '$lib/server/validation/params';
+import { validateSlugParam } from '$lib/server/validation/params';
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 	}
 
 	const supabase = locals.supabase;
-	const templateId = validateUuidParam(params.id, 'templateId');
+	const templateId = validateSlugParam(params.id, 'templateId');
 
 	try {
 		// 3. Check if template exists
