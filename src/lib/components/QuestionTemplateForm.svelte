@@ -179,9 +179,65 @@
 
 	const unitZ = z.object({ expected: z.boolean(), required: z.string().optional() }).strict();
 
+	const precisionZ = z.discriminatedUnion('type', [
+		z.object({ type: z.literal('none') }).strict(),
+		z.object({ type: z.literal('decimal'), digits: z.number() }).strict(),
+		z.object({ type: z.literal('significant'), digits: z.number() }).strict(),
+		z.object({ type: z.literal('magnitude'), digits: z.number() }).strict(),
+		z
+			.object({
+				type: z.literal('tolerance'),
+				tolerance: z.number(),
+				mode: z.enum(['absolute', 'relative'])
+			})
+			.strict()
+	]);
+
+	const validationRuleZ = z.discriminatedUnion('type', [
+		z.object({ type: z.literal('divisor'), dividend: z.string() }).strict(),
+		z.object({ type: z.literal('multiple'), base: z.string() }).strict(),
+		z
+			.object({
+				type: z.literal('range'),
+				min: z.string(),
+				max: z.string(),
+				inclusive: z.boolean().optional()
+			})
+			.strict(),
+		z
+			.object({
+				type: z.literal('equation_root'),
+				equation: z.string(),
+				variable: z.string().optional()
+			})
+			.strict(),
+		z.object({ type: z.literal('equivalent'), expression: z.string() }).strict(),
+		z
+			.object({
+				type: z.literal('predicate'),
+				predicate: z.enum([
+					'isPrime',
+					'isComposite',
+					'isEven',
+					'isOdd',
+					'isPositive',
+					'isNegative',
+					'isInteger'
+				])
+			})
+			.strict(),
+		z
+			.object({
+				type: z.literal('custom'),
+				expression: z.string(),
+				description: z.string().optional()
+			})
+			.strict()
+	]);
+
 	const blankDefaultsZ = z
 		.object({
-			precision: z.unknown().optional(),
+			precision: precisionZ.optional(),
 			requiredForm: requiredFormZ.optional(),
 			unit: unitZ.optional()
 		})
@@ -201,11 +257,24 @@
 		})
 		.strict();
 
+	const displayOptionsZ = z
+		.object({
+			shuffleTerms: z.boolean().optional(),
+			shuffleFactors: z.boolean().optional(),
+			shuffleTermsAndFactors: z.boolean().optional(),
+			shallowShuffleTerms: z.boolean().optional(),
+			shallowShuffleFactors: z.boolean().optional(),
+			removeNullTerms: z.boolean().optional(),
+			removeUnnecessaryBrackets: z.boolean().optional(),
+			removeSpaces: z.boolean().optional()
+		})
+		.strict();
+
 	const variableZ = z
 		.object({
 			name: z.string(),
 			expression: z.string(),
-			displayOptions: z.unknown().optional()
+			displayOptions: displayOptionsZ.optional()
 		})
 		.strict();
 
@@ -221,9 +290,9 @@
 			expectedAnswer: z.string(),
 			prefilled: z.string().optional(),
 			pool: z.array(z.string()).optional(),
-			precision: z.unknown().optional(),
+			precision: precisionZ.optional(),
 			requiredForm: requiredFormZ.optional(),
-			validationRules: z.array(z.unknown()).optional(),
+			validationRules: z.array(validationRuleZ).optional(),
 			unit: unitZ.optional()
 		})
 		.strict();
@@ -258,19 +327,6 @@
 		})
 		.strict();
 
-	const displayOptionsZ = z
-		.object({
-			shuffleTerms: z.boolean().optional(),
-			shuffleFactors: z.boolean().optional(),
-			shuffleTermsAndFactors: z.boolean().optional(),
-			shallowShuffleTerms: z.boolean().optional(),
-			shallowShuffleFactors: z.boolean().optional(),
-			removeNullTerms: z.boolean().optional(),
-			removeUnnecessaryBrackets: z.boolean().optional(),
-			removeSpaces: z.boolean().optional()
-		})
-		.strict();
-
 	const sharedZ = z
 		.object({
 			statement: z.unknown().optional(),
@@ -278,7 +334,7 @@
 			correctChoiceIndex: z.unknown().optional(),
 			correction: correctionZ.optional().nullable(),
 			choices: z.array(choiceZ).optional(),
-			validationRules: z.array(z.unknown()).optional(),
+			validationRules: z.array(validationRuleZ).optional(),
 			requiredForm: requiredFormZ.optional(),
 			blankDefaults: blankDefaultsZ.optional(),
 			answerFormats: z.record(z.string()).optional()
@@ -295,7 +351,7 @@
 			blankDefaults: blankDefaultsZ.optional(),
 			answerFormats: z.record(z.string()).optional(),
 			choices: z.array(choiceZ).optional(),
-			validationRules: z.array(z.unknown()).optional(),
+			validationRules: z.array(validationRuleZ).optional(),
 			requiredForm: requiredFormZ.optional()
 		})
 		.strict();
