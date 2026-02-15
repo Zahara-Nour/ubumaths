@@ -171,6 +171,16 @@
 					themeOptions = data.themes || [];
 					domainOptions = data.domains || [];
 					subdomainOptions = data.subdomains || [];
+					// Ensure template's current values are in options (e.g. migration categories)
+					if (theme && !themeOptions.includes(theme)) {
+						themeOptions = [...themeOptions, theme];
+					}
+					if (domain && !domainOptions.includes(domain)) {
+						domainOptions = [...domainOptions, domain];
+					}
+					if (subdomain && !subdomainOptions.includes(subdomain)) {
+						subdomainOptions = [...subdomainOptions, subdomain];
+					}
 				}
 			} catch (error) {
 				console.error('Error fetching categories:', error);

@@ -112,6 +112,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		}
 
 		// Map to QuestionTemplate format expected by QuestionTemplateForm
+		// Always use entry-level metadata for theme/domain/subdomain (correct categorization)
+		// The transformed data may have different/legacy categories
 		const template: QuestionTemplate = {
 			id: `migration-${globalIndex}`,
 			title: sourceData.title || '',
@@ -123,9 +125,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			exerciseInstruction: sourceData.exerciseInstruction,
 			options: sourceData.options,
 			grades: sourceData.grades || [],
-			theme: sourceData.theme || targetQuestion.theme,
-			domain: sourceData.domain || targetQuestion.domain,
-			subdomain: sourceData.subdomain,
+			theme: targetQuestion.theme,
+			domain: targetQuestion.domain,
+			subdomain: targetQuestion.subdomain,
 			level: sourceData.level || targetQuestion.level,
 			status: (sourceData.status as 'draft' | 'published') || 'draft',
 			delay: sourceData.delay
