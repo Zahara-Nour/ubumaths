@@ -98,7 +98,7 @@
 				theme: data.theme,
 				domain: data.domain,
 				subdomain: data.subdomain,
-				level: t.level || 1,
+				level: data.template.level,
 				status: t.status || 'draft',
 				delay: t.delay
 			};
