@@ -95,8 +95,8 @@
 	// Get rarity display info for this card, defaulting to common if rarity not set
 	const rarityInfo = card.rarity ? rarityColors[card.rarity] : rarityColors.common;
 
-	// Compute imagePath if not provided (convention: /vip-cards/{id}.png)
-	const computedImagePath = $derived(card.imagePath || `/vip-cards/${card.id}.png`);
+	// Use imagePath from database (Supabase Storage URL)
+	const computedImagePath = $derived(card.imagePath ?? '');
 
 	// Random seed for cosmos effect positioning
 	const randomSeed = {
