@@ -15,14 +15,17 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
-	import { ArrowLeft, Home, Loader2 } from 'lucide-svelte';
+	import { ArrowLeft, Home, Loader2, RotateCcw } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
 	let { data }: { data: PageData } = $props();
 
 	let isSubmitting = $state(false);
+	let isReexporting = $state(false);
 	let QuestionTemplateForm = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 	let isLoading = $state(true);
+	let templateOverride = $state<typeof data.template | null>(null);
+	let templateData = $derived(templateOverride ?? data.template);
 
 	const backUrl = $derived(
 		`/dashboard/admin/migration/${data.pathParams.theme}/${data.pathParams.domain}/${data.pathParams.subdomain}`
@@ -53,7 +56,7 @@
 			}
 
 			toaster.success(`Question #${data.globalIndex} modifiée`);
-			goto(backUrl).then(() => {});
+			void goto(backUrl);
 		} catch (err) {
 			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'enregistrement");
 		} finally {
@@ -62,7 +65,48 @@
 	}
 
 	function handleCancel() {
-		goto(backUrl).then(() => {});
+		void goto(backUrl);
+	}
+
+	async function handleReexport() {
+		if (!confirm("Ré-exporter depuis l'original ? Les modifications en cours seront perdues.")) {
+			return;
+		}
+		isReexporting = true;
+		try {
+			const response = await fetch(`/api/migration/questions/${data.globalIndex}`);
+			if (!response.ok) {
+				throw new Error('Erreur lors du chargement');
+			}
+			const result = await response.json();
+			if (!result.success || !result.data.transformed) {
+				throw new Error(result.data.transformError || 'Transformation échouée');
+			}
+			// Rebuild template with correct category metadata (same as +page.server.ts)
+			templateOverride = {
+				id: `migration-${data.globalIndex}`,
+				title: result.data.transformed.title || '',
+				description: result.data.transformed.description,
+				shared: result.data.transformed.shared,
+				defaultDisplayOptions: result.data.transformed.defaultDisplayOptions,
+				multipleAnswers: result.data.transformed.multipleAnswers,
+				variations: result.data.transformed.variations || [],
+				exerciseInstruction: result.data.transformed.exerciseInstruction,
+				options: result.data.transformed.options,
+				grades: result.data.transformed.grades || [],
+				theme: data.theme,
+				domain: data.domain,
+				subdomain: data.subdomain,
+				level: result.data.transformed.level || 1,
+				status: result.data.transformed.status || 'draft',
+				delay: result.data.transformed.delay
+			};
+			toaster.success("Question ré-exportée depuis l'original");
+		} catch (err) {
+			toaster.error(err instanceof Error ? err.message : 'Erreur de ré-export');
+		} finally {
+			isReexporting = false;
+		}
 	}
 </script>
 
@@ -108,6 +152,19 @@
 				</p>
 			</div>
 		</div>
+		<Button
+			variant="outline"
+			onclick={handleReexport}
+			disabled={isReexporting || isSubmitting}
+			class="gap-2"
+		>
+			{#if isReexporting}
+				<Loader2 class="h-4 w-4 animate-spin" />
+			{:else}
+				<RotateCcw class="h-4 w-4" />
+			{/if}
+			Ré-exporter
+		</Button>
 	</div>
 
 	<!-- Main Form -->
@@ -118,12 +175,14 @@
 					<Loader2 class="h-8 w-8 animate-spin text-muted-foreground" />
 				</div>
 			{:else if QuestionTemplateForm}
-				<QuestionTemplateForm
-					template={data.template}
-					onSave={handleSave}
-					onCancel={handleCancel}
-					{isSubmitting}
-				/>
+				{#key templateData}
+					<QuestionTemplateForm
+						template={templateData}
+						onSave={handleSave}
+						onCancel={handleCancel}
+						{isSubmitting}
+					/>
+				{/key}
 			{/if}
 		</Card.Content>
 	</Card.Root>
