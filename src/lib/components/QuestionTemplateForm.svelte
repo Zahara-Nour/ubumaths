@@ -245,15 +245,7 @@
 
 	const correctionZ = z
 		.object({
-			feedback: z
-				.object({
-					correct: z.string().optional(),
-					incorrect: z.string().optional(),
-					partial: z.string().optional()
-				})
-				.strict()
-				.optional(),
-			steps: z.array(z.string()).optional()
+			steps: z.array(z.string())
 		})
 		.strict();
 
