@@ -160,6 +160,7 @@ const variationSchema = z.object({
 	correction: correctionSchema.optional(),
 	blanks: z.array(blankSchema).max(20).optional(),
 	choices: z.array(choiceSchema).max(10).optional(),
+	correctChoiceIndex: z.union([z.string(), z.array(z.string())]).optional(),
 	answerFormats: answerFormatsSchema.optional(),
 	validationRules: z.array(validationRuleSchema).max(20).optional(),
 	requiredForm: requiredFormSchema.optional(),
@@ -175,6 +176,7 @@ const sharedDefaultsSchema = z.object({
 	solution: z.union([z.string().max(1000), z.array(z.string().max(1000)).max(20)]).optional(),
 	correction: correctionSchema.optional(),
 	choices: z.array(choiceSchema).max(10).optional(),
+	correctChoiceIndex: z.union([z.string(), z.array(z.string())]).optional(),
 	validationRules: z.array(validationRuleSchema).max(20).optional(),
 	requiredForm: requiredFormSchema.optional(),
 	blankDefaults: blankDefaultsSchema.optional(),
@@ -242,6 +244,19 @@ export const editedQuestionTemplateSchema = z.object({
 	title: z.string().min(1, 'Le titre est requis').max(500).optional(),
 	description: z.string().max(2000).optional(),
 	shared: sharedDefaultsSchema.optional(),
+	defaultDisplayOptions: z
+		.object({
+			shuffleTerms: z.boolean().optional(),
+			shuffleFactors: z.boolean().optional(),
+			shuffleTermsAndFactors: z.boolean().optional(),
+			shallowShuffleTerms: z.boolean().optional(),
+			shallowShuffleFactors: z.boolean().optional(),
+			removeNullTerms: z.boolean().optional(),
+			removeUnnecessaryBrackets: z.boolean().optional(),
+			removeSpaces: z.boolean().optional()
+		})
+		.optional(),
+	multipleAnswers: z.boolean().optional(),
 	variations: z.array(variationSchema).min(1, 'Au moins une variation requise').max(50),
 	exerciseInstruction: z.string().max(500).optional(),
 	options: z

@@ -15,6 +15,7 @@
 	 */
 
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -23,9 +24,6 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import QuestionCard from '$lib/components/migration/QuestionCard.svelte';
 	import QuestionCompareView from '$lib/components/migration/QuestionCompareView.svelte';
-	import MigrationQuestionEditForm, {
-		type EditedQuestion
-	} from '$lib/components/migration/MigrationQuestionEditForm.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		AlertCircle,
@@ -92,10 +90,6 @@
 
 	// Loading state for API calls
 	let isSubmitting = $state(false);
-
-	// Edit mode state
-	let isEditDialogOpen = $state(false);
-	let editingQuestion = $state<(typeof data.questions)[0] | null>(null);
 
 	// Get review status for a question
 	function getReviewStatus(globalIndex: number): ReviewStatus {
@@ -252,55 +246,11 @@
 		}
 	}
 
-	// Handle edit button click
+	// Handle edit button click - navigate to dedicated edit page
 	function handleEditClick() {
 		if (!selectedQuestion) return;
-		editingQuestion = selectedQuestion;
-		isEditDialogOpen = true;
-	}
-
-	// Handle edit save
-	async function handleEditSave(editedData: EditedQuestion, notes: string) {
-		if (!editingQuestion || isSubmitting) return;
-
-		isSubmitting = true;
-		try {
-			const response = await fetch(`/api/migration/questions/${editingQuestion.globalIndex}/edit`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					editedTransformed: editedData,
-					notes: notes || undefined
-				})
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.message || "Erreur lors de l'enregistrement");
-			}
-
-			const result = await response.json();
-
-			// Update local state
-			questionEdits.set(editingQuestion.globalIndex, {
-				editId: result.data.editId,
-				editedJson: editedData
-			});
-
-			toaster.success(`Question #${editingQuestion.globalIndex} modifiee`);
-			isEditDialogOpen = false;
-			editingQuestion = null;
-		} catch (err) {
-			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'enregistrement");
-		} finally {
-			isSubmitting = false;
-		}
-	}
-
-	// Handle edit cancel
-	function handleEditCancel() {
-		isEditDialogOpen = false;
-		editingQuestion = null;
+		dialogOpen = false;
+		goto(`${$page.url.pathname}/${selectedQuestion.globalIndex}/edit`).then(() => {});
 	}
 </script>
 
@@ -625,50 +575,5 @@
 				{selectedQuestion.question.description}
 			{/if}
 		</Dialog.Description>
-	</Dialog.Content>
-</Dialog.Root>
-
-<!-- Edit Question Dialog -->
-<Dialog.Root bind:open={isEditDialogOpen}>
-	<Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-[800px]">
-		<Dialog.Header>
-			<Dialog.Title class="flex items-center gap-2">
-				<Edit3 class="h-5 w-5" />
-				{#if editingQuestion}
-					<span>Modifier Question #{editingQuestion.globalIndex}</span>
-				{/if}
-			</Dialog.Title>
-			<Dialog.Description>
-				{#if editingQuestion}
-					Modifiez la question transformee avant de l'approuver.
-				{/if}
-			</Dialog.Description>
-		</Dialog.Header>
-
-		{#if editingQuestion}
-			{@const transformedData = getEditedTransformed(editingQuestion)}
-			{#key editingQuestion.globalIndex}
-				<MigrationQuestionEditForm
-					initialData={{
-						type: transformedData.type as string | undefined,
-						title: (transformedData.title as string) || '',
-						description: transformedData.description as string | undefined,
-						shared: transformedData.shared as EditedQuestion['shared'],
-						variations: (transformedData.variations as EditedQuestion['variations']) || [],
-						exerciseInstruction: transformedData.exerciseInstruction as string | undefined,
-						grades: transformedData.grades as string[] | undefined,
-						theme: transformedData.theme as string | undefined,
-						domain: transformedData.domain as string | undefined,
-						subdomain: transformedData.subdomain as string | undefined,
-						level: transformedData.level as number | undefined,
-						status: transformedData.status as 'draft' | 'published' | undefined,
-						delay: transformedData.delay as number | undefined
-					}}
-					onSave={handleEditSave}
-					onCancel={handleEditCancel}
-					isSaving={isSubmitting}
-				/>
-			{/key}
-		{/if}
 	</Dialog.Content>
 </Dialog.Root>

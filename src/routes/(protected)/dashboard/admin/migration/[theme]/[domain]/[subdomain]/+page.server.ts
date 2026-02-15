@@ -99,9 +99,12 @@ export interface QuestionEntry {
 			[key: string]: unknown;
 		};
 		defaultDisplayOptions?: DisplayOptions;
+		exerciseInstruction?: string;
+		multipleAnswers?: boolean;
 		grades?: GradeCode[];
 		theme?: string;
 		domain?: string;
+		subdomain?: string;
 		level?: number;
 		status?: string;
 		delay?: number;
