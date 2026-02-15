@@ -36,6 +36,10 @@
 	} from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
 	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
+	import { createQuestionTemplateSchema } from '$lib/server/validation/questions';
+
+	// Strict version rejects unknown keys (e.g. 'option' instead of 'options')
+	const strictTemplateSchema = createQuestionTemplateSchema.strict();
 	import { CONSTRAINT_IDS } from '$lib/questions/constraint-constants';
 	import { REQUIRED_FORM_OPTIONS } from '$lib/questions/form-options';
 	import { GRADE_CODES, GRADES } from '$lib/types/grades';
@@ -1086,6 +1090,7 @@
 				<JsonEditorComponent
 					bind:value={jsonString}
 					height="600px"
+					schema={strictTemplateSchema}
 					onValidate={handleJsonValidate}
 				/>
 			</div>
