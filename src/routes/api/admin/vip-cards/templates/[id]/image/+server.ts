@@ -9,9 +9,12 @@
  */
 
 import { error, json } from '@sveltejs/kit';
+import sharp from 'sharp';
 import type { RequestHandler } from './$types';
 import type { UploadImageResponse } from '$lib/types/vip-card-admin';
 import { validateUuidParam } from '$lib/server/validation/params';
+
+const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 /**
  * POST /api/admin/vip-cards/templates/[id]/image
@@ -68,9 +71,9 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			throw error(400, 'Image file is required');
 		}
 
-		// 5. Validate file type
-		if (imageFile.type !== 'image/webp') {
-			throw error(400, 'Only WebP images are allowed');
+		// 5. Validate file type (accept JPG, PNG, WebP)
+		if (!ACCEPTED_TYPES.includes(imageFile.type)) {
+			throw error(400, 'Only JPG, PNG, and WebP images are allowed');
 		}
 
 		// 6. Validate file size (max 2MB)
@@ -82,13 +85,37 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			throw error(400, 'Image must be less than 2MB');
 		}
 
-		// 7. Generate storage key
+		// 7. Convert to WebP and validate actual file format
+		let imageBuffer: Buffer;
+		const rawBuffer = Buffer.from(await imageFile.arrayBuffer());
+
+		try {
+			// Verify file is actually a valid image (defends against MIME spoofing)
+			const metadata = await sharp(rawBuffer).metadata();
+
+			if (!metadata.format || !['jpeg', 'png', 'webp'].includes(metadata.format)) {
+				throw error(400, 'Invalid image format detected');
+			}
+
+			if (metadata.format === 'webp') {
+				imageBuffer = rawBuffer;
+			} else {
+				imageBuffer = await sharp(rawBuffer).webp({ quality: 80 }).toBuffer();
+			}
+		} catch (err) {
+			if (err && typeof err === 'object' && 'status' in err) {
+				throw err;
+			}
+			throw error(400, 'Invalid image file - unable to process');
+		}
+
+		// 8. Generate storage key
 		const storageKey = `${templateId}@0.5x.webp`;
 
-		// 8. Upload to Supabase Storage (upsert mode - replaces existing)
+		// 9. Upload to Supabase Storage (upsert mode - replaces existing)
 		const { error: uploadError } = await supabase.storage
 			.from('vip-card-images')
-			.upload(storageKey, imageFile, {
+			.upload(storageKey, imageBuffer, {
 				contentType: 'image/webp',
 				upsert: true, // Replace if exists
 				cacheControl: '31536000' // Cache for 1 year (immutable content)
@@ -99,7 +126,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			throw error(500, `Failed to upload image: ${uploadError.message}`);
 		}
 
-		// 9. Get public URL
+		// 10. Get public URL
 		const { data: publicUrlData } = supabase.storage
 			.from('vip-card-images')
 			.getPublicUrl(storageKey);
@@ -108,7 +135,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			throw error(500, 'Failed to get public URL for uploaded image');
 		}
 
-		// 10. Update template image_path
+		// 11. Update template image_path
 		const imagePath = `/images/vip-cards/${storageKey}`;
 
 		const { error: updateError } = await supabase
@@ -121,7 +148,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			throw error(500, 'Failed to update template image path');
 		}
 
-		// 11. Return success response
+		// 12. Return success response
 		const response: UploadImageResponse = {
 			publicUrl: publicUrlData.publicUrl,
 			imagePath

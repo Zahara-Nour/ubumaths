@@ -44,10 +44,12 @@
 		dragOver = false;
 	}
 
+	const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
 	function validateAndPreview(file: File) {
 		// Validate file type
-		if (!file.type.startsWith('image/')) {
-			toaster.error('Le fichier doit être une image');
+		if (!ACCEPTED_TYPES.includes(file.type)) {
+			toaster.error('Formats acceptés : JPG, PNG, WebP');
 			return;
 		}
 
@@ -89,8 +91,8 @@
 				throw new Error(error.message || 'Upload failed');
 			}
 
-			const { imageUrl } = await response.json();
-			onComplete(imageUrl);
+			const { imagePath } = await response.json();
+			onComplete(imagePath);
 			toaster.success('Image uploadée avec succès');
 		} catch (error) {
 			console.error('Upload error:', error);
@@ -150,7 +152,7 @@
 		<input
 			bind:this={fileInput}
 			type="file"
-			accept="image/*"
+			accept="image/jpeg,image/png,image/webp"
 			onchange={handleFileSelect}
 			class="hidden"
 		/>
