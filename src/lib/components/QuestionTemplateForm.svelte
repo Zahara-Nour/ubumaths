@@ -55,7 +55,7 @@
 	import CategorySelector from './CategorySelector.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { tick } from 'svelte';
+	import { tick, onMount } from 'svelte';
 
 	// Lazy-loaded heavy components to reduce initial bundle size
 	let RichTextEditor = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -191,42 +191,33 @@
 		})
 		.strict();
 
-	// Load category cache on mount
-	$effect(() => {
+	// Load category cache, preview component, and category options on mount
+	onMount(async () => {
 		questionCategoriesCache.fetchCategories();
-	});
-
-	// Pre-load preview tab (default) on mount
-	$effect(() => {
 		loadQuestionPreview();
-	});
 
-	// Fetch existing categories on mount (for autocomplete options)
-	$effect(() => {
-		async function fetchCategories() {
-			try {
-				const response = await fetch('/api/questions/categories');
-				if (response.ok) {
-					const data = await response.json();
-					themeOptions = data.themes || [];
-					domainOptions = data.domains || [];
-					subdomainOptions = data.subdomains || [];
-					// Ensure template's current values are in options (e.g. migration categories)
-					if (theme && !themeOptions.includes(theme)) {
-						themeOptions = [...themeOptions, theme];
-					}
-					if (domain && !domainOptions.includes(domain)) {
-						domainOptions = [...domainOptions, domain];
-					}
-					if (subdomain && !subdomainOptions.includes(subdomain)) {
-						subdomainOptions = [...subdomainOptions, subdomain];
-					}
+		// Fetch existing categories for autocomplete options
+		try {
+			const response = await fetch('/api/questions/categories');
+			if (response.ok) {
+				const data = await response.json();
+				themeOptions = data.themes || [];
+				domainOptions = data.domains || [];
+				subdomainOptions = data.subdomains || [];
+				// Ensure template's current values are in options (e.g. migration categories)
+				if (theme && !themeOptions.includes(theme)) {
+					themeOptions = [...themeOptions, theme];
 				}
-			} catch (error) {
-				console.error('Error fetching categories:', error);
+				if (domain && !domainOptions.includes(domain)) {
+					domainOptions = [...domainOptions, domain];
+				}
+				if (subdomain && !subdomainOptions.includes(subdomain)) {
+					subdomainOptions = [...subdomainOptions, subdomain];
+				}
 			}
+		} catch (error) {
+			console.error('Error fetching categories:', error);
 		}
-		fetchCategories();
 	});
 
 	// Real-time category duplicate detection
