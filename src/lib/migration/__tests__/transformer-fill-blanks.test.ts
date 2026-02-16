@@ -17,6 +17,14 @@ import { transformQuestion } from '../question-transformer';
 import { getQuestionType } from '$lib/questions/types';
 import type { QuestionBase } from '../old-question-types';
 
+/** Helper to add _migration metadata to a test question */
+function withMigration(q: QuestionBase): QuestionBase {
+	return {
+		...q,
+		_migration: { theme: 'Test', domain: 'Test', subdomain: 'Test', level: 1, globalIndex: 0 }
+	} as QuestionBase;
+}
+
 // ============================================================================
 // A. Result/rewrite reclassification → fill_in_blanks
 // ============================================================================
@@ -36,7 +44,7 @@ describe('Result/rewrite → fill_in_blanks', () => {
 			grade: 'CE1'
 		};
 
-		const result = transformQuestion(oldQuestion, 10);
+		const result = transformQuestion(withMigration(oldQuestion), 10);
 
 		expect(result.success).toBe(true);
 		const template = result.template!;
@@ -79,7 +87,7 @@ describe('Result/rewrite → fill_in_blanks', () => {
 			grade: '4'
 		};
 
-		const result = transformQuestion(oldQuestion, 413);
+		const result = transformQuestion(withMigration(oldQuestion), 413);
 
 		expect(result.success).toBe(true);
 		const template = result.template!;
@@ -116,7 +124,7 @@ describe('Result/rewrite → fill_in_blanks', () => {
 			grade: '4'
 		};
 
-		const result = transformQuestion(oldQuestion, 411);
+		const result = transformQuestion(withMigration(oldQuestion), 411);
 
 		expect(result.success).toBe(true);
 		const template = result.template!;
@@ -149,7 +157,7 @@ describe('Result/rewrite → fill_in_blanks', () => {
 			grade: 'CP'
 		};
 
-		const result = transformQuestion(oldQuestion, 100);
+		const result = transformQuestion(withMigration(oldQuestion), 100);
 
 		expect(result.success).toBe(true);
 		const variation = result.template!.variations[0];
@@ -175,7 +183,7 @@ describe('Result/rewrite → fill_in_blanks', () => {
 			grade: 'CE1'
 		};
 
-		const result = transformQuestion(oldQuestion, 200);
+		const result = transformQuestion(withMigration(oldQuestion), 200);
 
 		expect(result.success).toBe(true);
 		const variation = result.template!.variations[0];
@@ -218,7 +226,7 @@ describe('AnswerField → fill_in_blanks', () => {
 			grade: 'CP'
 		};
 
-		const result = transformQuestion(oldQuestion, 0);
+		const result = transformQuestion(withMigration(oldQuestion), 0);
 
 		expect(result.success).toBe(true);
 		const template = result.template!;
@@ -260,7 +268,7 @@ describe('AnswerField → fill_in_blanks', () => {
 			grade: 'CP'
 		};
 
-		const result = transformQuestion(oldQuestion, 300);
+		const result = transformQuestion(withMigration(oldQuestion), 300);
 
 		expect(result.success).toBe(true);
 		const variation = result.template!.variations[0];
@@ -287,7 +295,7 @@ describe('AnswerField → fill_in_blanks', () => {
 			grade: 'CP'
 		};
 
-		const result = transformQuestion(oldQuestion, 301);
+		const result = transformQuestion(withMigration(oldQuestion), 301);
 
 		expect(result.success).toBe(true);
 		const variation = result.template!.variations[0];
@@ -323,7 +331,7 @@ describe('Unit in solutions', () => {
 			grade: '4'
 		};
 
-		const result = transformQuestion(oldQuestion, 470);
+		const result = transformQuestion(withMigration(oldQuestion), 470);
 
 		expect(result.success).toBe(true);
 		const variation = result.template!.variations[0];
@@ -346,7 +354,7 @@ describe('Unit in solutions', () => {
 			grade: '6'
 		};
 
-		const result = transformQuestion(oldQuestion, 426);
+		const result = transformQuestion(withMigration(oldQuestion), 426);
 
 		expect(result.success).toBe(true);
 		const variation = result.template!.variations[0];
@@ -378,7 +386,7 @@ describe('expressions2 QCM', () => {
 			grade: '2'
 		};
 
-		const result = transformQuestion(oldQuestion, 478);
+		const result = transformQuestion(withMigration(oldQuestion), 478);
 
 		expect(result.success).toBe(true);
 		const template = result.template!;
@@ -421,7 +429,7 @@ describe('expressions2 QCM', () => {
 			grade: '3'
 		};
 
-		const result = transformQuestion(oldQuestion, 587);
+		const result = transformQuestion(withMigration(oldQuestion), 587);
 
 		expect(result.success).toBe(true);
 		const template = result.template!;
@@ -458,7 +466,7 @@ describe('Type removed from output', () => {
 			grade: 'CP'
 		};
 
-		const result = transformQuestion(oldQuestion, 500);
+		const result = transformQuestion(withMigration(oldQuestion), 500);
 		expect(result.success).toBe(true);
 
 		// Template should NOT have a type field
@@ -477,7 +485,7 @@ describe('Type removed from output', () => {
 			grade: 'CE1'
 		};
 
-		const result = transformQuestion(oldQuestion, 501);
+		const result = transformQuestion(withMigration(oldQuestion), 501);
 		expect(result.success).toBe(true);
 
 		expect('type' in result.template!).toBe(false);
@@ -502,7 +510,7 @@ describe('Fill-in with ? in expression', () => {
 			grade: 'CP'
 		};
 
-		const result = transformQuestion(oldQuestion, 51);
+		const result = transformQuestion(withMigration(oldQuestion), 51);
 
 		expect(result.success).toBe(true);
 		const template = result.template!;

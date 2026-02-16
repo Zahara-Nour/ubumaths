@@ -1466,75 +1466,23 @@ function assignCategory(oldQuestion: QuestionBase): {
 	subdomain?: string;
 	level: number;
 } {
-	// Use _migration metadata when available (injected by export script)
+	// _migration metadata is required (injected by export script)
 	const migration = (oldQuestion as Record<string, unknown>)._migration as
 		| { theme: string; domain: string; subdomain?: string; level: number }
 		| undefined;
-	if (migration?.theme && migration?.domain && typeof migration?.level === 'number') {
-		return {
-			theme: migration.theme,
-			domain: migration.domain,
-			subdomain: migration.subdomain,
-			level: migration.level
-		};
+
+	if (!migration?.theme || !migration?.domain || typeof migration?.level !== 'number') {
+		throw new Error(
+			`Missing _migration metadata for question "${oldQuestion.description}". Re-export with the export script.`
+		);
 	}
 
-	// Fallback: guess from description and grade
-	const description = oldQuestion.description.toLowerCase();
-
-	// Try to detect theme from description
-	let theme = 'Nombres';
-	let domain = 'Arithmétique';
-	let subdomain: string | undefined;
-
-	if (description.includes('fraction')) {
-		theme = 'Nombres';
-		domain = 'Fractions';
-	} else if (description.includes('équation') || description.includes('equation')) {
-		theme = 'Algèbre';
-		domain = 'Équations';
-	} else if (
-		description.includes('géométr') ||
-		description.includes('angle') ||
-		description.includes('triangle')
-	) {
-		theme = 'Géométrie';
-		domain = 'Figures planes';
-	} else if (description.includes('fonction')) {
-		theme = 'Fonctions';
-		domain = 'Généralités';
-	} else if (description.includes('probabilité') || description.includes('statistique')) {
-		theme = 'Probabilités et statistiques';
-		domain = 'Probabilités';
-	} else if (description.includes('addition') || description.includes('soustraction')) {
-		theme = 'Nombres';
-		domain = 'Opérations';
-		subdomain = description.includes('addition') ? 'Addition' : 'Soustraction';
-	} else if (description.includes('multiplication') || description.includes('division')) {
-		theme = 'Nombres';
-		domain = 'Opérations';
-		subdomain = description.includes('multiplication') ? 'Multiplication' : 'Division';
-	}
-
-	// Assign level based on grade
-	const gradeLevel = oldQuestion.grade;
-	let level = 1;
-
-	if (['CP', 'CE1'].includes(gradeLevel)) {
-		level = 1;
-	} else if (['CE2', 'CM1', 'CM2'].includes(gradeLevel)) {
-		level = 2;
-	} else if (['6', '5'].includes(gradeLevel)) {
-		level = 3;
-	} else if (['4', '3'].includes(gradeLevel)) {
-		level = 4;
-	} else if (['2', 'SPE_1', 'SPE_T'].includes(gradeLevel)) {
-		level = 5;
-	} else {
-		level = 6;
-	}
-
-	return { theme, domain, subdomain, level };
+	return {
+		theme: migration.theme,
+		domain: migration.domain,
+		subdomain: migration.subdomain,
+		level: migration.level
+	};
 }
 
 // ============================================================================
