@@ -44,8 +44,8 @@
 	let { data }: { data: PageData } = $props();
 
 	// Filter state
-	type FilterType = 'all' | 'clean' | 'warnings' | 'errors' | 'approved' | 'rejected';
-	let activeFilter = $state<FilterType>('all');
+	type FilterType = 'all' | 'pending' | 'clean' | 'warnings' | 'errors' | 'approved' | 'rejected';
+	let activeFilter = $state<FilterType>('pending');
 
 	// Selected question for detail view
 	let selectedQuestion = $state<(typeof data.questions)[0] | null>(null);
@@ -115,6 +115,9 @@
 		let questions = data.questions;
 
 		switch (activeFilter) {
+			case 'pending':
+				questions = questions.filter((q) => getReviewStatus(q.globalIndex) === 'pending');
+				break;
 			case 'clean':
 				questions = questions.filter((q) => q.warnings.length === 0 && q.errors.length === 0);
 				break;
@@ -393,6 +396,14 @@
 		>
 			Toutes ({data.questions.length})
 		</Button>
+		<Button
+			variant={activeFilter === 'pending' ? 'default' : 'outline'}
+			size="sm"
+			onclick={() => (activeFilter = 'pending')}
+		>
+			En attente ({reviewStats.pending})
+		</Button>
+		<Separator orientation="vertical" class="mx-1 h-6" />
 		<Button
 			variant={activeFilter === 'clean' ? 'default' : 'outline'}
 			size="sm"
