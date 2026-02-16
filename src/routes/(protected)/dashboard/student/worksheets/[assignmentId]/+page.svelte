@@ -59,6 +59,18 @@
 	// Check if we have sections to display
 	let hasSections = $derived(sections.length > 0);
 
+	// Visual order of exercises (respects section grouping)
+	// Used for numbering and modal navigation
+	let visualOrderExercises = $derived.by(() => {
+		if (!hasSections) return exercises;
+		const ordered: StudentExerciseView[] = [];
+		for (const sectionId of sortedSectionIds) {
+			const sectionExercises = groupedExercises.get(sectionId) ?? [];
+			ordered.push(...sectionExercises);
+		}
+		return ordered;
+	});
+
 	// Check if there are essential exercises (for legend display)
 	let hasEssentialExercises = $derived(exercises.some((e) => e.is_essential));
 
@@ -74,7 +86,7 @@
 	let reportsMap = $state(new Map<string, StudentErrorReportView[]>());
 
 	// Current exercise mastery status for the modal
-	let currentExercise = $derived(exercises[currentExerciseIndex]);
+	let currentExercise = $derived(visualOrderExercises[currentExerciseIndex]);
 	let currentExerciseMasteryStatus = $derived<MasteryStatus>(
 		currentExercise ? (masteryMap.get(currentExercise.exercise_id) ?? 'not_worked') : 'not_worked'
 	);
@@ -175,7 +187,7 @@
 	}
 
 	function handleMasteryChange(status: MasteryStatus) {
-		const exercise = exercises[currentExerciseIndex];
+		const exercise = visualOrderExercises[currentExerciseIndex];
 		if (exercise) {
 			updateMastery(exercise.exercise_id, status);
 		}
@@ -271,12 +283,12 @@
 								{/if}
 
 								{#each sectionExercises as exercise (exercise.id)}
-									{@const globalIndex = exercises.findIndex((e) => e.id === exercise.id)}
+									{@const visualIndex = visualOrderExercises.findIndex((e) => e.id === exercise.id)}
 									<ExerciseListItem
 										{exercise}
-										index={globalIndex + 1}
+										index={visualIndex + 1}
 										masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
-										onclick={() => openExercise(globalIndex)}
+										onclick={() => openExercise(visualIndex)}
 									/>
 								{/each}
 							</div>
@@ -307,7 +319,7 @@
 
 <!-- Exercise Modal -->
 <ExerciseModal
-	{exercises}
+	exercises={visualOrderExercises}
 	currentIndex={currentExerciseIndex}
 	open={modalOpen}
 	masteryStatus={currentExerciseMasteryStatus}
