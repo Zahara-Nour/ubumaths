@@ -567,11 +567,21 @@
 			const cleaned: QuestionVariation = {
 				statement: variation.statement,
 				...(filteredVars && filteredVars.length > 0 ? { variables: filteredVars } : {}),
-				...(questionType === 'multiple_choice' && variation.choices
-					? {
-							correctChoiceIndex: deriveCorrectChoiceIndex(variation.choices),
-							choices: variation.choices
-						}
+				...(questionType === 'multiple_choice'
+					? sharedChoices.length > 0
+						? // Shared choices: preserve per-variation correctChoiceIndex, no per-variation choices
+							variation.correctChoiceIndex &&
+							(!Array.isArray(variation.correctChoiceIndex) ||
+								variation.correctChoiceIndex.length > 0)
+							? { correctChoiceIndex: variation.correctChoiceIndex }
+							: {}
+						: // Per-variation choices: derive correctChoiceIndex from isCorrect flags
+							variation.choices?.length
+							? {
+									correctChoiceIndex: deriveCorrectChoiceIndex(variation.choices),
+									choices: variation.choices
+								}
+							: {}
 					: {}),
 				...(questionType === 'fill_in_blanks' && variation.blanks && variation.blanks.length > 0
 					? { blanks: variation.blanks }
