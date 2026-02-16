@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.14](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.13...v0.8.14) (2026-02-16)
+
+### ✨ Features
+
+- **json-editor:** highlight error lines for Zod schema validation ([3e753b4](https://github.com/Zahara-Nour/ubumaths/commit/3e753b4cadd6b3dbc0d178acd9dfbe1885c6f95a))
+- **migration:** add copy button to JSON raw editor mode ([3f52915](https://github.com/Zahara-Nour/ubumaths/commit/3f52915a9713c8465f2b7be64c84f191430e010e))
+- **migration:** add pending filter as default in subdomain review ([d7fc690](https://github.com/Zahara-Nour/ubumaths/commit/d7fc690185f539cc6cd0c65bb6ff7b730088614e))
+- **vip-cards:** add Mathémagie button to teacher dashboard ([1201b77](https://github.com/Zahara-Nour/ubumaths/commit/1201b7743d70d9b5264e5739c31d119b05eed71e))
+
+### 🐛 Bug Fixes
+
+- **json-editor:** call updateErrorHighlight directly from validateJson ([da9b7ff](https://github.com/Zahara-Nour/ubumaths/commit/da9b7fffaff4543f108a38ec6442d799680f2d75))
+- **json-editor:** fix error line mapping and stop cursor jumping ([ce0548b](https://github.com/Zahara-Nour/ubumaths/commit/ce0548b14ee8b5dd13df960261921085403e2586))
+- **migration:** detect QCM type when choices are in shared defaults ([be7bd33](https://github.com/Zahara-Nour/ubumaths/commit/be7bd33cbe16bea9745ae1e95eb6ddfd8aa228d5))
+- **migration:** require \_migration metadata, remove category guessing fallback ([0e2b2a1](https://github.com/Zahara-Nour/ubumaths/commit/0e2b2a1e74d6a12a2bc037b17852f3800ef3b62f))
+- **migration:** use \_migration metadata for category instead of guessing ([e961052](https://github.com/Zahara-Nour/ubumaths/commit/e96105204d0f223992b1cf978e5dcf6c8ef7494d))
+- **question-form:** allow empty variation statement when shared statement exists ([ac8bc7c](https://github.com/Zahara-Nour/ubumaths/commit/ac8bc7c21eb719885f2700413dec183de043015f))
+- **question-form:** preserve correctChoiceIndex for shared choices QCM ([802afc5](https://github.com/Zahara-Nour/ubumaths/commit/802afc546cd84de412677aa3ff8a47aecfbcdd12))
+- **rgpd:** extend consent grace period to end of school year (2026-06-30) ([9c07a02](https://github.com/Zahara-Nour/ubumaths/commit/9c07a0208e7d88c312c400da9693b76f396ac7b4))
+- **validation:** allow empty variation statement when shared statement exists ([57fb9b0](https://github.com/Zahara-Nour/ubumaths/commit/57fb9b06274d2282b67082f09564a8aa20643479))
+- **vip-cards:** improve Batman & Robin modal UX ([a0f2178](https://github.com/Zahara-Nour/ubumaths/commit/a0f2178ad00e1b0af96f49c806eb2aadc1f77443))
+- **worksheets:** allow students to see sections and fix exercise numbering ([d2863c2](https://github.com/Zahara-Nour/ubumaths/commit/d2863c2806479126f28a7a5827bc89a8a7fbd618))
+
 ### [0.8.13](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.12...v0.8.13) (2026-02-15)
 
 ### ✨ Features
