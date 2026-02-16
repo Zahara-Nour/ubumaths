@@ -154,7 +154,7 @@ const answerFormatsSchema = z.record(z.string().max(50), z.string().max(500));
  * Variation schema for question templates during migration edit
  */
 const variationSchema = z.object({
-	statement: z.string().min(1, "L'enonce est requis").max(5000),
+	statement: z.string().max(5000).optional().default(''),
 	variables: z.array(variableSchema).max(50).optional(),
 	solution: z.union([z.string().max(1000), z.array(z.string().max(1000)).max(20)]).optional(),
 	correction: correctionSchema.optional(),
@@ -240,41 +240,54 @@ export const globalIndexSchema = z
  * Schema for the edited question template
  * Partial updates allowed - only includes editable fields
  */
-export const editedQuestionTemplateSchema = z.object({
-	title: z.string().min(1, 'Le titre est requis').max(500).optional(),
-	description: z.string().max(2000).optional(),
-	shared: sharedDefaultsSchema.optional(),
-	defaultDisplayOptions: z
-		.object({
-			shuffleTerms: z.boolean().optional(),
-			shuffleFactors: z.boolean().optional(),
-			shuffleTermsAndFactors: z.boolean().optional(),
-			shallowShuffleTerms: z.boolean().optional(),
-			shallowShuffleFactors: z.boolean().optional(),
-			removeNullTerms: z.boolean().optional(),
-			removeUnnecessaryBrackets: z.boolean().optional(),
-			removeSpaces: z.boolean().optional()
-		})
-		.optional(),
-	multipleAnswers: z.boolean().optional(),
-	variations: z.array(variationSchema).min(1, 'Au moins une variation requise').max(50),
-	exerciseInstruction: z.string().max(500).optional(),
-	options: z
-		.object({
-			constraints: z.record(z.string(), z.union([z.string(), z.boolean()])).optional(),
-			shuffleChoices: z.boolean().optional(),
-			orderIndependent: z.boolean().optional()
-		})
-		.passthrough()
-		.optional(),
-	grades: z.array(z.string()).min(1).max(20).optional(),
-	theme: z.string().max(100).optional(),
-	domain: z.string().max(100).optional(),
-	subdomain: z.string().max(100).optional(),
-	level: z.number().int().positive().max(100).optional(),
-	status: z.enum(['draft', 'published']).optional(),
-	delay: z.number().int().nonnegative().max(600).optional()
-});
+export const editedQuestionTemplateSchema = z
+	.object({
+		title: z.string().min(1, 'Le titre est requis').max(500).optional(),
+		description: z.string().max(2000).optional(),
+		shared: sharedDefaultsSchema.optional(),
+		defaultDisplayOptions: z
+			.object({
+				shuffleTerms: z.boolean().optional(),
+				shuffleFactors: z.boolean().optional(),
+				shuffleTermsAndFactors: z.boolean().optional(),
+				shallowShuffleTerms: z.boolean().optional(),
+				shallowShuffleFactors: z.boolean().optional(),
+				removeNullTerms: z.boolean().optional(),
+				removeUnnecessaryBrackets: z.boolean().optional(),
+				removeSpaces: z.boolean().optional()
+			})
+			.optional(),
+		multipleAnswers: z.boolean().optional(),
+		variations: z.array(variationSchema).min(1, 'Au moins une variation requise').max(50),
+		exerciseInstruction: z.string().max(500).optional(),
+		options: z
+			.object({
+				constraints: z.record(z.string(), z.union([z.string(), z.boolean()])).optional(),
+				shuffleChoices: z.boolean().optional(),
+				orderIndependent: z.boolean().optional()
+			})
+			.passthrough()
+			.optional(),
+		grades: z.array(z.string()).min(1).max(20).optional(),
+		theme: z.string().max(100).optional(),
+		domain: z.string().max(100).optional(),
+		subdomain: z.string().max(100).optional(),
+		level: z.number().int().positive().max(100).optional(),
+		status: z.enum(['draft', 'published']).optional(),
+		delay: z.number().int().nonnegative().max(600).optional()
+	})
+	.refine(
+		(data) => {
+			const hasSharedStatement = data.shared?.statement && data.shared.statement.trim().length > 0;
+			return data.variations.every(
+				(v) => (v.statement && v.statement.trim().length > 0) || hasSharedStatement
+			);
+		},
+		{
+			message: 'Chaque variation doit avoir un enonce, ou un enonce partage doit etre defini',
+			path: ['variations']
+		}
+	);
 
 /**
  * Schema for saving an edit to a question
