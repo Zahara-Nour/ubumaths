@@ -1076,7 +1076,19 @@
 	{#if jsonMode}
 		<!-- JSON Raw Editor -->
 		{#if JsonEditorComponent}
-			<div class="overflow-hidden rounded-lg border border-border">
+			<div class="relative overflow-hidden rounded-lg border border-border">
+				<Button
+					variant="secondary"
+					size="sm"
+					class="absolute top-2 right-2 z-10 gap-1"
+					onclick={async () => {
+						await navigator.clipboard.writeText(jsonString);
+						toaster.success('JSON copié');
+					}}
+				>
+					<Copy class="h-3.5 w-3.5" />
+					Copier
+				</Button>
 				<JsonEditorComponent
 					bind:value={jsonString}
 					height="600px"
