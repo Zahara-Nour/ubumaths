@@ -46,12 +46,49 @@
 
 	// Validation state
 	let validationErrors = $state<string[]>([]);
-	let errorLine = $state<number | null>(null);
+	let errorLines = $state<number[]>([]);
 	let validationTimeoutId = $state<number | null>(null);
 
 	// Error line effect type - stored after CodeMirror is loaded
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let errorLineEffectType: { of: (value: number | null) => any } | null = null;
+	let errorLineEffectType: { of: (value: number[]) => any } | null = null;
+
+	/**
+	 * Find the line number in a JSON string for a given Zod error path.
+	 * Walks the path segments sequentially, searching for each key/index in order.
+	 */
+	function findLineForPath(jsonStr: string, path: (string | number)[]): number | null {
+		if (path.length === 0) return null;
+		const lines = jsonStr.split('\n');
+		let searchFrom = 0;
+
+		for (const segment of path) {
+			// For string keys, search for "key":
+			// For numeric indices (array), skip forward past that many values
+			const pattern =
+				typeof segment === 'string'
+					? new RegExp(`"${segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"\\s*:`)
+					: null;
+
+			let found = false;
+			if (pattern) {
+				for (let i = searchFrom; i < lines.length; i++) {
+					if (pattern.test(lines[i])) {
+						searchFrom = i;
+						found = true;
+						break;
+					}
+				}
+			} else {
+				// Numeric index: skip forward past opening brackets/values
+				// Simple heuristic: advance a few lines per index
+				searchFrom = Math.min(searchFrom + (segment as number), lines.length - 1);
+				found = true;
+			}
+			if (!found) return null;
+		}
+		return searchFrom + 1; // 1-indexed
+	}
 
 	/**
 	 * Validate JSON and construction script schema
@@ -68,43 +105,49 @@
 
 				if (validation.success) {
 					validationErrors = [];
-					errorLine = null;
+					errorLines = [];
 					onValidate(true, []);
 				} else {
+					const issues = validation.error?.issues ?? [];
 					// Extract error messages from Zod issues
-					const errors = (validation.error?.issues ?? []).map((issue) => {
+					const errors = issues.map((issue) => {
 						const path = issue.path.join('.');
 						return path ? `${path}: ${issue.message}` : issue.message;
 					});
 
+					// Find line numbers for each error path
+					const lines: number[] = [];
+					for (const issue of issues) {
+						if (issue.path.length > 0) {
+							const line = findLineForPath(jsonString, issue.path);
+							if (line !== null && !lines.includes(line)) {
+								lines.push(line);
+							}
+						}
+					}
+
 					validationErrors = errors;
-					errorLine = null;
+					errorLines = lines;
 					onValidate(false, errors);
 				}
 			} else {
 				// No schema: JSON parse succeeded, that's enough
 				validationErrors = [];
-				errorLine = null;
+				errorLines = [];
 				onValidate(true, []);
 			}
 		} catch (error) {
 			// JSON parse error
 			if (error instanceof SyntaxError) {
-				// Try to extract line number from error message
-				// Chrome: "Unexpected token } in JSON at position 123"
-				// Firefox: "JSON.parse: unexpected character at line 5 column 2"
 				const lineMatch = error.message.match(/line (\d+)/i);
-				if (lineMatch) {
-					errorLine = parseInt(lineMatch[1], 10);
-				} else {
-					errorLine = null;
-				}
+				const line = lineMatch ? parseInt(lineMatch[1], 10) : null;
 
 				validationErrors = [`JSON Parse Error: ${error.message}`];
+				errorLines = line ? [line] : [];
 				onValidate(false, validationErrors);
 			} else {
 				validationErrors = ['Validation error occurred'];
-				errorLine = null;
+				errorLines = [];
 				onValidate(false, validationErrors);
 			}
 		}
@@ -129,19 +172,24 @@
 	/**
 	 * Update error line highlighting in CodeMirror
 	 */
-	function updateErrorHighlight(line: number | null): void {
+	function updateErrorHighlight(lines: number[]): void {
 		if (!editor || !errorLineEffectType) return;
 
-		const effects = [errorLineEffectType.of(line)];
+		const effects = [errorLineEffectType.of(lines)];
 
-		if (line !== null && line > 0 && line <= editor.state.doc.lines) {
-			// Scroll to error line and highlight it
-			const lineInfo = editor.state.doc.line(line);
-			editor.dispatch({
-				effects,
-				selection: { anchor: lineInfo.from },
-				scrollIntoView: true
-			});
+		if (lines.length > 0) {
+			// Scroll to first error line
+			const firstLine = lines[0];
+			if (firstLine > 0 && firstLine <= editor.state.doc.lines) {
+				const lineInfo = editor.state.doc.line(firstLine);
+				editor.dispatch({
+					effects,
+					selection: { anchor: lineInfo.from },
+					scrollIntoView: true
+				});
+			} else {
+				editor.dispatch({ effects });
+			}
 		} else {
 			// Clear error highlighting
 			editor.dispatch({ effects });
@@ -191,8 +239,8 @@
 				import('@codemirror/theme-one-dark')
 			]);
 
-			// Create error line highlighting system
-			const effectType = StateEffect.define<number | null>();
+			// Create error line highlighting system (supports multiple lines)
+			const effectType = StateEffect.define<number[]>();
 
 			// Error line decoration (red background)
 			const errorLineMark = Decoration.line({ class: 'cm-errorLine' });
@@ -208,36 +256,34 @@
 			}
 			const errorMarker = new ErrorMarker();
 
-			// State field to track error line and compute decorations
+			// State field to track error lines and compute decorations
 			const errorLineFieldDef = StateField.define<{
-				line: number | null;
+				lines: number[];
 				decorations: typeof RangeSet.prototype;
 			}>({
 				create() {
-					return { line: null, decorations: Decoration.none };
+					return { lines: [], decorations: Decoration.none };
 				},
 				update(value, tr) {
 					for (const effect of tr.effects) {
 						if (effect.is(effectType)) {
-							const newLine = effect.value;
-							if (newLine === null || newLine < 1) {
-								return { line: null, decorations: Decoration.none };
+							const newLines = effect.value;
+							if (newLines.length === 0) {
+								return { lines: [], decorations: Decoration.none };
 							}
-							// Create decoration for the error line
 							const doc = tr.state.doc;
-							if (newLine <= doc.lines) {
-								const lineInfo = doc.line(newLine);
-								return {
-									line: newLine,
-									decorations: Decoration.set([errorLineMark.range(lineInfo.from)])
-								};
-							}
-							return { line: null, decorations: Decoration.none };
+							const ranges = newLines
+								.filter((l) => l > 0 && l <= doc.lines)
+								.map((l) => errorLineMark.range(doc.line(l).from));
+							return {
+								lines: newLines,
+								decorations: ranges.length > 0 ? Decoration.set(ranges) : Decoration.none
+							};
 						}
 					}
 					// Handle document changes - remap decorations
-					if (tr.docChanged && value.line !== null) {
-						return { line: value.line, decorations: value.decorations.map(tr.changes) };
+					if (tr.docChanged && value.lines.length > 0) {
+						return { lines: value.lines, decorations: value.decorations.map(tr.changes) };
 					}
 					return value;
 				},
@@ -249,15 +295,12 @@
 				class: 'cm-errorGutter',
 				markers: (view) => {
 					const state = view.state.field(errorLineFieldDef);
-					if (state.line === null || state.line < 1) {
-						return RangeSet.empty;
-					}
+					if (state.lines.length === 0) return RangeSet.empty;
 					const doc = view.state.doc;
-					if (state.line <= doc.lines) {
-						const lineInfo = doc.line(state.line);
-						return RangeSet.of([errorMarker.range(lineInfo.from)]);
-					}
-					return RangeSet.empty;
+					const markers = state.lines
+						.filter((l) => l > 0 && l <= doc.lines)
+						.map((l) => errorMarker.range(doc.line(l).from));
+					return markers.length > 0 ? RangeSet.of(markers) : RangeSet.empty;
 				}
 			});
 
@@ -360,11 +403,11 @@
 		}
 	});
 
-	// React to errorLine changes - sync to CodeMirror
+	// React to errorLines changes - sync to CodeMirror
 	$effect(() => {
-		const line = errorLine;
+		const lines = errorLines;
 		if (editor && errorLineEffectType) {
-			updateErrorHighlight(line);
+			updateErrorHighlight(lines);
 		}
 	});
 
