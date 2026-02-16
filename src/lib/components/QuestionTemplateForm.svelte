@@ -1094,7 +1094,7 @@
 	{#if jsonMode}
 		<!-- JSON Raw Editor -->
 		{#if JsonEditorComponent}
-			<div class="relative overflow-hidden rounded-lg border border-border">
+			<div class="relative rounded-lg border border-border">
 				<Button
 					variant="secondary"
 					size="sm"
