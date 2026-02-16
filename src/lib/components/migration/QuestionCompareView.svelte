@@ -289,10 +289,9 @@
 			// Resolve variables
 			const resolved = resolveVariables(allVariables, instanceSeed);
 
-			// Resolve statement
-			const statement = variation.statement
-				? resolveExpression(variation.statement, resolved, instanceSeed)
-				: '';
+			// Resolve statement (fall back to shared statement if variation has none)
+			const rawStatement = variation.statement || newFields.shared?.statement || '';
+			const statement = rawStatement ? resolveExpression(rawStatement, resolved, instanceSeed) : '';
 
 			// Resolve solution (expected answer)
 			const solution = variation.correctChoiceIndex
