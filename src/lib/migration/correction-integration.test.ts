@@ -23,6 +23,26 @@ import { transformQuestion } from './question-transformer';
 // TEST HELPERS
 // ============================================================================
 
+const defaultMigration = {
+	_migration: {
+		theme: 'Nombres',
+		domain: 'Arithmétique',
+		subdomain: 'Calcul',
+		level: 1,
+		globalIndex: 0
+	}
+};
+
+function withMigration(
+	q: QuestionBase,
+	overrides?: Partial<(typeof defaultMigration)['_migration']>
+): QuestionBase {
+	return {
+		...q,
+		...{ _migration: { ...defaultMigration._migration, ...overrides } }
+	} as QuestionBase;
+}
+
 /**
  * Helper to create minimal TransformStats for testing
  */
@@ -81,7 +101,7 @@ function testTransformCorrection(
 		grade: 'CM1'
 	};
 
-	const result = transformQuestion(oldQuestion, 0);
+	const result = transformQuestion(withMigration(oldQuestion), 0);
 
 	if (!result.success) {
 		return undefined;
@@ -486,7 +506,7 @@ describe('Correction Integration', () => {
 					grade: 'CP'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				expect(result.template?.variations[0].correction).toBeDefined();
@@ -515,7 +535,7 @@ describe('Correction Integration', () => {
 					grade: 'CE1'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				expect(result.stats?.correctionConversions).toBeGreaterThan(0);
@@ -539,7 +559,7 @@ describe('Correction Integration', () => {
 					grade: 'CE2'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				expect(result.template?.variations[0].correction).toBeDefined();
@@ -561,7 +581,7 @@ describe('Correction Integration', () => {
 					grade: 'CM1'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				const steps = result.template?.variations[0].correction?.steps;
@@ -584,7 +604,7 @@ describe('Correction Integration', () => {
 					grade: 'CM2'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				const steps = result.template?.variations[0].correction?.steps;
@@ -609,7 +629,7 @@ describe('Correction Integration', () => {
 					grade: '6'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				expect(result.template?.variations[0].correction).toBeDefined();
@@ -637,7 +657,7 @@ describe('Correction Integration', () => {
 					grade: '5'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				const correction = result.template?.variations[0].correction;
@@ -667,7 +687,7 @@ describe('Correction Integration', () => {
 					grade: 'CM1'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				const steps = result.template?.variations[0].correction?.steps;
@@ -697,7 +717,7 @@ describe('Correction Integration', () => {
 					grade: '4'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				const steps = result.template?.variations[0].correction?.steps;
@@ -722,7 +742,7 @@ describe('Correction Integration', () => {
 					grade: 'CM1'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				// Empty text should be handled gracefully
@@ -739,7 +759,7 @@ describe('Correction Integration', () => {
 					grade: 'CM1'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 			});
@@ -755,7 +775,7 @@ describe('Correction Integration', () => {
 					grade: 'CM1'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				// Should handle gracefully, possibly leaving unconverted
@@ -772,7 +792,7 @@ describe('Correction Integration', () => {
 					grade: '3'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				const steps = result.template?.variations[0].correction?.steps;
@@ -800,7 +820,7 @@ describe('Correction Integration', () => {
 					grade: 'CE1'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				expect(result.template?.variations).toHaveLength(2);
@@ -823,7 +843,7 @@ describe('Correction Integration', () => {
 				grade: 'CM1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			expect(result.stats?.correctionConversions).toBeGreaterThan(0);
@@ -842,7 +862,7 @@ describe('Correction Integration', () => {
 				grade: 'CM1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// correctionConversions counts the number of correction strings processed, not placeholders
@@ -860,7 +880,7 @@ describe('Correction Integration', () => {
 				grade: 'CM1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			expect(result.stats?.correctionConversions).toBeGreaterThan(0);
@@ -881,7 +901,7 @@ describe('Correction Integration', () => {
 				grade: 'CM1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			expect(result.template?.variations[0].correction).toBeDefined();

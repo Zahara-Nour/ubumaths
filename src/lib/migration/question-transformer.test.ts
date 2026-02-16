@@ -21,6 +21,28 @@ import type { QuestionTemplate } from '$lib/questions/types';
 import { getQuestionType } from '$lib/questions/types';
 import { templateMarkdown } from '$lib/ubumark';
 
+/** Default _migration metadata for tests */
+const defaultMigration = {
+	_migration: {
+		theme: 'Nombres',
+		domain: 'Arithmétique',
+		subdomain: 'Calcul',
+		level: 1,
+		globalIndex: 0
+	}
+};
+
+/** Helper to add _migration metadata to a test question */
+function withMigration(
+	q: QuestionBase,
+	overrides?: Partial<typeof defaultMigration._migration>
+): QuestionBase {
+	return {
+		...q,
+		...{ _migration: { ...defaultMigration._migration, ...overrides } }
+	} as QuestionBase;
+}
+
 describe('Question Transformer', () => {
 	describe('transformQuestion', () => {
 		describe('Simple Questions', () => {
@@ -41,7 +63,7 @@ describe('Question Transformer', () => {
 					grade: 'CP'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				expect(result.template).toBeDefined();
@@ -97,7 +119,7 @@ describe('Question Transformer', () => {
 					grade: 'CM2'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				// type no longer stored — inferred from structure
@@ -130,7 +152,7 @@ describe('Question Transformer', () => {
 					grade: 'CE1'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				// type no longer stored — inferred from structure
@@ -161,7 +183,7 @@ describe('Question Transformer', () => {
 					grade: 'CE2'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				// type no longer stored — inferred from structure
@@ -198,7 +220,7 @@ describe('Question Transformer', () => {
 					grade: 'CE1'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				// type no longer stored — inferred from structure
@@ -228,7 +250,7 @@ describe('Question Transformer', () => {
 					grade: 'CE2'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				// type no longer stored — inferred from structure
@@ -257,7 +279,7 @@ describe('Question Transformer', () => {
 					grade: 'CE1'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				expect(result.template?.variations).toHaveLength(2);
@@ -293,7 +315,7 @@ describe('Question Transformer', () => {
 					grade: 'CM1'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				expect(result.template?.options?.constraints?.reducedFractions).toBe('strict');
@@ -310,7 +332,7 @@ describe('Question Transformer', () => {
 					grade: 'CM2'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				// 'off' explicitly disables the check (overrides 'warn' default)
@@ -328,7 +350,7 @@ describe('Question Transformer', () => {
 					grade: '4'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				// 'off' explicitly disables the check (overrides 'warn' default)
@@ -351,7 +373,7 @@ describe('Question Transformer', () => {
 					grade: '6'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				expect(result.template?.options?.constraints?.nullTerms).toBe('strict');
@@ -376,7 +398,7 @@ describe('Question Transformer', () => {
 					grade: '5'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				// 'off' explicitly disables the checks (overrides 'warn' default)
@@ -397,7 +419,7 @@ describe('Question Transformer', () => {
 					grade: '5'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 				// brackets 'off' explicitly disables bracket check, boolean flag is also set
@@ -417,7 +439,7 @@ describe('Question Transformer', () => {
 					grade: 'CM2'
 				};
 
-				const result = transformQuestion(oldQuestion, 0, { skipImages: true });
+				const result = transformQuestion(withMigration(oldQuestion), 0, { skipImages: true });
 
 				expect(result.success).toBe(false);
 				expect(result.errors).toContain('Question contains images - skipping for Phase 1');
@@ -434,7 +456,7 @@ describe('Question Transformer', () => {
 					grade: 'CM2'
 				};
 
-				const result = transformQuestion(oldQuestion, 0, { skipImages: false });
+				const result = transformQuestion(withMigration(oldQuestion), 0, { skipImages: false });
 
 				expect(result.success).toBe(true);
 				expect(result.warnings).toContain('Question contains images - will need manual review');
@@ -451,7 +473,9 @@ describe('Question Transformer', () => {
 					grade: '3'
 				};
 
-				const result = transformQuestion(oldQuestion, 0, { skipCustomValidation: true });
+				const result = transformQuestion(withMigration(oldQuestion), 0, {
+					skipCustomValidation: true
+				});
 
 				expect(result.success).toBe(false);
 				expect(result.errors).toContain('Question has custom validation - skipping for Phase 1');
@@ -460,7 +484,7 @@ describe('Question Transformer', () => {
 		});
 
 		describe('Category Assignment', () => {
-			it('should detect fraction category', () => {
+			it('should use _migration metadata for category', () => {
 				const oldQuestion: QuestionBase = {
 					description: 'Simplifier une fraction',
 					enounces: ['Simplifier :'],
@@ -469,49 +493,54 @@ describe('Question Transformer', () => {
 					grade: 'CM1'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(
+					withMigration(oldQuestion, { theme: 'Fractions', domain: 'Simplification', level: 3 }),
+					0
+				);
 
-				expect(result.template?.theme).toBe('Nombres');
-				expect(result.template?.domain).toBe('Fractions');
+				expect(result.template?.theme).toBe('Fractions');
+				expect(result.template?.domain).toBe('Simplification');
+				expect(result.template?.level).toBe(3);
 			});
 
-			it('should detect geometry category', () => {
+			it('should fail without _migration metadata', () => {
 				const oldQuestion: QuestionBase = {
-					description: 'Calculer un angle dans un triangle',
-					enounces: ['Calculer :'],
-					solutionss: [['60']],
-					defaultDelay: 45,
-					grade: '5'
+					description: 'Test',
+					enounces: ['Test'],
+					solutionss: [['1']],
+					defaultDelay: 30,
+					grade: 'CP'
 				};
 
 				const result = transformQuestion(oldQuestion, 0);
 
-				expect(result.template?.theme).toBe('Géométrie');
-				expect(result.template?.domain).toBe('Figures planes');
+				expect(result.success).toBe(false);
+				expect(result.errors?.some((e) => e.includes('_migration'))).toBe(true);
 			});
 
-			it('should assign level based on grade', () => {
-				const testCases: Array<[QuestionBase['grade'], number]> = [
-					['CP', 1],
-					['CE2', 2],
-					['6', 3],
-					['3', 4],
-					['2', 5],
-					['SPE_T', 5]
-				];
+			it('should preserve subdomain from _migration', () => {
+				const oldQuestion: QuestionBase = {
+					description: 'Test',
+					enounces: ['Test'],
+					solutionss: [['1']],
+					defaultDelay: 30,
+					grade: 'CE1'
+				};
 
-				for (const [grade, expectedLevel] of testCases) {
-					const oldQuestion: QuestionBase = {
-						description: 'Test',
-						enounces: ['Test'],
-						solutionss: [['1']],
-						defaultDelay: 30,
-						grade
-					};
+				const result = transformQuestion(
+					withMigration(oldQuestion, {
+						theme: 'Entiers',
+						domain: 'Apprivoiser',
+						subdomain: 'Ecriture',
+						level: 2
+					}),
+					0
+				);
 
-					const result = transformQuestion(oldQuestion, 0);
-					expect(result.template?.level).toBe(expectedLevel);
-				}
+				expect(result.template?.theme).toBe('Entiers');
+				expect(result.template?.domain).toBe('Apprivoiser');
+				expect(result.template?.subdomain).toBe('Ecriture');
+				expect(result.template?.level).toBe(2);
 			});
 		});
 
@@ -533,7 +562,7 @@ describe('Question Transformer', () => {
 					grade: 'CP'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 
@@ -562,7 +591,7 @@ describe('Question Transformer', () => {
 					grade: 'CE2'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 
@@ -585,7 +614,7 @@ describe('Question Transformer', () => {
 					grade: 'CP'
 				};
 
-				const result = transformQuestion(oldQuestion, 0);
+				const result = transformQuestion(withMigration(oldQuestion), 0);
 
 				expect(result.success).toBe(true);
 
@@ -598,29 +627,29 @@ describe('Question Transformer', () => {
 	describe('transformQuestionBatch', () => {
 		it('should transform multiple questions and provide summary', () => {
 			const questions: QuestionBase[] = [
-				{
+				withMigration({
 					description: 'Question 1',
 					enounces: ['Q1'],
 					solutionss: [['1']],
 					defaultDelay: 10,
 					grade: 'CP'
-				},
-				{
+				}),
+				withMigration({
 					description: 'Question 2',
 					enounces: ['Q2'],
 					images: ['image.png'],
 					solutionss: [['2']],
 					defaultDelay: 10,
 					grade: 'CE1'
-				},
-				{
+				}),
+				withMigration({
 					description: 'Question 3',
 					enounces: ['Q3'],
 					testAnswerss: [['custom']],
 					solutionss: [['3']],
 					defaultDelay: 10,
 					grade: 'CE2'
-				}
+				})
 			];
 
 			const { results, summary } = transformQuestionBatch(questions, {
@@ -638,20 +667,20 @@ describe('Question Transformer', () => {
 
 		it('should call progress callback', () => {
 			const questions: QuestionBase[] = [
-				{
+				withMigration({
 					description: 'Q1',
 					enounces: ['Q1'],
 					solutionss: [['1']],
 					defaultDelay: 10,
 					grade: 'CP'
-				},
-				{
+				}),
+				withMigration({
 					description: 'Q2',
 					enounces: ['Q2'],
 					solutionss: [['2']],
 					defaultDelay: 10,
 					grade: 'CE1'
-				}
+				})
 			];
 
 			const progressCalls: Array<[number, number]> = [];
@@ -684,7 +713,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			expect(result.template?.shared?.statement).toBeDefined();
@@ -716,7 +745,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// Statement is NOT shared because expressions differ
@@ -737,7 +766,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			expect(result.template?.shared?.statement).toBeUndefined();
@@ -758,7 +787,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			expect(result.template?.shared?.variables).toBeDefined();
@@ -778,7 +807,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// result_rewrite → no correctChoiceIndex, blanks instead
@@ -800,7 +829,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// Shared fields
@@ -831,7 +860,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			expect(result.template?.shared?.correction).toBeDefined();
@@ -853,7 +882,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// No shared field should exist for single variation
@@ -879,7 +908,7 @@ describe('Question Transformer', () => {
 				grade: 'CE2'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// type no longer stored — inferred from structure
@@ -907,7 +936,7 @@ describe('Question Transformer', () => {
 				grade: '4'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// Validation rules from options should be shared
@@ -936,7 +965,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// Should have only 1 variation since everything is identical
@@ -963,7 +992,7 @@ describe('Question Transformer', () => {
 				grade: 'CE2'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 
@@ -1015,7 +1044,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// Corrections are per-variation, not shared
@@ -1119,7 +1148,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			const vars = result.template?.variations[0]?.variables;
@@ -1140,7 +1169,7 @@ describe('Question Transformer', () => {
 				grade: 'CM1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// Statement should NOT have double $$ (no $$$$)
@@ -1164,7 +1193,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// Each variation has its own expression variable with different name
@@ -1192,7 +1221,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			const vars = result.template?.variations[0]?.variables;
@@ -1215,7 +1244,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// result_rewrite without solutions → blank with eval expression
@@ -1236,7 +1265,7 @@ describe('Question Transformer', () => {
 				grade: 'CE1'
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// result_rewrite without solutions → blank with eval expression
@@ -1264,7 +1293,7 @@ describe('Question Transformer', () => {
 				defaultDelay: 20
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
@@ -1287,7 +1316,7 @@ describe('Question Transformer', () => {
 				defaultDelay: 20
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
@@ -1308,7 +1337,7 @@ describe('Question Transformer', () => {
 				defaultDelay: 20
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
@@ -1329,7 +1358,7 @@ describe('Question Transformer', () => {
 				defaultDelay: 20
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
@@ -1350,7 +1379,7 @@ describe('Question Transformer', () => {
 				defaultDelay: 20
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
@@ -1371,7 +1400,7 @@ describe('Question Transformer', () => {
 				defaultDelay: 20
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// Option is silently ignored - no display options on expression variable
@@ -1393,7 +1422,7 @@ describe('Question Transformer', () => {
 				defaultDelay: 20
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
@@ -1417,7 +1446,7 @@ describe('Question Transformer', () => {
 				defaultDelay: 20
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
@@ -1438,7 +1467,7 @@ describe('Question Transformer', () => {
 				defaultDelay: 20
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			const exprVar = result.template?.variations[0]?.variables?.find((v) =>
@@ -1459,7 +1488,7 @@ describe('Question Transformer', () => {
 				defaultDelay: 20
 			};
 
-			const result = transformQuestion(oldQuestion, 0);
+			const result = transformQuestion(withMigration(oldQuestion), 0);
 
 			expect(result.success).toBe(true);
 			// Display options on expression variable
