@@ -1466,9 +1466,20 @@ function assignCategory(oldQuestion: QuestionBase): {
 	subdomain?: string;
 	level: number;
 } {
-	// For Phase 1, use simple defaults based on grade and description
-	// Later phases can implement more sophisticated extraction
+	// Use _migration metadata when available (injected by export script)
+	const migration = (oldQuestion as Record<string, unknown>)._migration as
+		| { theme: string; domain: string; subdomain?: string; level: number }
+		| undefined;
+	if (migration?.theme && migration?.domain && typeof migration?.level === 'number') {
+		return {
+			theme: migration.theme,
+			domain: migration.domain,
+			subdomain: migration.subdomain,
+			level: migration.level
+		};
+	}
 
+	// Fallback: guess from description and grade
 	const description = oldQuestion.description.toLowerCase();
 
 	// Try to detect theme from description
