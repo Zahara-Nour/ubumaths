@@ -31,11 +31,9 @@
 	} from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import { resolveVariables, resolveExpression, resolveSolution } from '$lib/questions';
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
 	import type {
 		QuestionVariable,
-		ResolvedVariable,
 		QuestionCorrection,
 		QuestionTemplate,
 		TemplateBlank,
@@ -216,6 +214,7 @@
 		statement?: string;
 		variables?: QuestionVariable[];
 		solution?: string | string[];
+		correctChoiceIndex?: string | string[];
 		correction?: QuestionCorrection;
 		choices?: Array<{ content: string; isCorrect?: boolean }>;
 		blanks?: TemplateBlank[];
@@ -225,144 +224,9 @@
 		blankDefaults?: BlankDefaults;
 	}
 
-	// Resolved instance type
-	interface ResolvedBlank {
-		expectedAnswer: string;
-		resolvedAnswer?: string;
-		prefilled?: string;
-		pool?: string[];
-		unit?: { expected: boolean; required?: string };
-	}
-
-	interface ResolvedInstance {
-		statement: string;
-		correctChoiceIndex: string | string[];
-		correction: { feedback: string; steps: string[] } | null;
-		choices: Array<{ content: string; isCorrect: boolean }> | null;
-		blanks: ResolvedBlank[] | null;
-		variables: ResolvedVariable[];
-		error?: string;
-	}
-
 	/**
-	 * Resolve correction placeholders
-	 */
-	function resolveCorrection(
-		correction: QuestionCorrection | undefined,
-		resolved: ResolvedVariable[],
-		seed: number
-	): { feedback: string; steps: string[] } | null {
-		if (!correction) return null;
-		try {
-			// correction.feedback is an object with correct/incorrect/partial properties
-			const feedbackText = correction.feedback?.correct || '';
-			const feedback = feedbackText ? resolveExpression(feedbackText, resolved, seed) : '';
-			const steps = correction.steps
-				? correction.steps.map((step) => {
-						if (typeof step === 'string') {
-							return resolveExpression(step, resolved, seed);
-						}
-						return resolveExpression(String(step), resolved, seed);
-					})
-				: [];
-			return { feedback, steps };
-		} catch {
-			return null;
-		}
-	}
-
-	/**
-	 * Generate a resolved instance from a variation
-	 */
-	const resolvedInstance = $derived.by((): ResolvedInstance | null => {
-		if (!newFields?.variations?.length) return null;
-
-		const variation = newFields.variations[selectedVariationIndex] as MigrationVariation;
-		if (!variation) return null;
-
-		try {
-			// Merge shared variables with variation-specific variables
-			const sharedVars = newFields.shared?.variables || [];
-			const variationVars = variation.variables || [];
-			const allVariables = [...sharedVars, ...variationVars];
-
-			// Resolve variables
-			const resolved = resolveVariables(allVariables, instanceSeed);
-
-			// Resolve statement (fall back to shared statement if variation has none)
-			const rawStatement = variation.statement || newFields.shared?.statement || '';
-			const statement = rawStatement ? resolveExpression(rawStatement, resolved, instanceSeed) : '';
-
-			// Resolve solution (expected answer)
-			const solution = variation.correctChoiceIndex
-				? resolveSolution(variation.correctChoiceIndex, resolved, instanceSeed)
-				: '';
-
-			// Resolve correction
-			const correction = resolveCorrection(variation.correction, resolved, instanceSeed);
-
-			// Resolve choices (variation overrides shared)
-			// For QCM, isCorrect is determined by comparing index with evaluated solution
-			const rawChoices = variation.choices || newFields.shared?.choices;
-			const correctIndices = (
-				Array.isArray(solution)
-					? solution.map((s) => parseInt(String(s), 10))
-					: [parseInt(String(solution), 10)]
-			).filter((n) => !isNaN(n));
-
-			const choices = rawChoices
-				? rawChoices.map((c, index) => ({
-						content: c.content.includes('{{')
-							? resolveExpression(c.content, resolved, instanceSeed)
-							: c.content,
-						isCorrect: correctIndices.includes(index)
-					}))
-				: null;
-
-			// Resolve blanks (expectedAnswer may contain template expressions)
-			let blanks: ResolvedBlank[] | null = null;
-			if (variation.blanks && variation.blanks.length > 0) {
-				blanks = variation.blanks.map((b) => {
-					let resolvedAnswer: string | undefined;
-					try {
-						resolvedAnswer = resolveExpression(b.expectedAnswer, resolved, instanceSeed);
-					} catch {
-						resolvedAnswer = b.expectedAnswer;
-					}
-					return {
-						expectedAnswer: b.expectedAnswer,
-						resolvedAnswer,
-						prefilled: b.prefilled,
-						pool: b.pool,
-						unit: b.unit
-					};
-				});
-			}
-
-			return {
-				statement,
-				correctChoiceIndex: solution,
-				correction,
-				choices,
-				blanks,
-				variables: resolved
-			};
-		} catch (e) {
-			return {
-				statement: '',
-				correctChoiceIndex: '',
-				correction: null,
-				choices: null,
-				blanks: null,
-				variables: [],
-				error: e instanceof Error ? e.message : String(e)
-			};
-		}
-	});
-
-	/**
-	 * Generate a QuestionInstance using the real pipeline (generateInstance)
-	 * for accurate FlashCard rendering.
+	 * Generate a QuestionInstance using the real pipeline (generateInstance).
+	 * Used for both the detail view and the FlashCard rendering.
 	 */
 	const generationResult = $derived.by(() => {
 		if (!transformed || !newFields?.variations?.length) return null;
@@ -1000,58 +864,61 @@
 				</Card.Title>
 			</Card.Header>
 			<Card.Content class="space-y-4">
-				{#if showRawInstance && resolvedInstance}
-					<div class="relative">
-						<Button
-							variant="ghost"
-							size="icon"
-							class="absolute top-2 right-2 h-7 w-7"
-							onclick={() => copyToClipboard(JSON.stringify(resolvedInstance, null, 2), 'instance')}
-							title="Copier"
-						>
-							{#if copiedId === 'instance'}
-								<Check class="h-4 w-4 text-green-600" />
-							{:else}
-								<Copy class="h-4 w-4" />
-							{/if}
-						</Button>
-						<pre
-							class="max-h-[70vh] overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{JSON.stringify(
-								resolvedInstance,
-								null,
-								2
-							)}</pre>
+				{#if generationResult && !generationResult.success}
+					<div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+						{#each generationResult.errors as err, i (i)}
+							<p>{err}</p>
+						{/each}
 					</div>
-				{:else if resolvedInstance}
-					{#if resolvedInstance.error}
-						<div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-							Erreur: {resolvedInstance.error}
+				{:else if generationResult?.success}
+					{@const inst = generationResult.instance}
+					{#if showRawInstance}
+						<div class="relative">
+							<Button
+								variant="ghost"
+								size="icon"
+								class="absolute top-2 right-2 h-7 w-7"
+								onclick={() => copyToClipboard(JSON.stringify(inst, null, 2), 'instance')}
+								title="Copier"
+							>
+								{#if copiedId === 'instance'}
+									<Check class="h-4 w-4 text-green-600" />
+								{:else}
+									<Copy class="h-4 w-4" />
+								{/if}
+							</Button>
+							<pre
+								class="max-h-[70vh] overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{JSON.stringify(
+									inst,
+									null,
+									2
+								)}</pre>
 						</div>
 					{:else}
 						<!-- Statement -->
 						<div>
 							<h4 class="mb-1 text-sm font-medium text-muted-foreground">Énoncé</h4>
-							<p class="text-sm whitespace-pre-wrap">{resolvedInstance.statement}</p>
+							<p class="text-sm whitespace-pre-wrap">{inst.statement}</p>
 						</div>
 
 						<!-- Solution -->
 						<div>
 							<h4 class="mb-1 text-sm font-medium text-muted-foreground">Solution</h4>
 							<p class="font-mono text-sm text-primary">
-								{Array.isArray(resolvedInstance.correctChoiceIndex)
-									? resolvedInstance.correctChoiceIndex.join(', ')
-									: resolvedInstance.correctChoiceIndex}
+								{Array.isArray(inst.correctChoiceIndex)
+									? inst.correctChoiceIndex.join(', ')
+									: (inst.correctChoiceIndex ?? '')}
 							</p>
 						</div>
 
 						<!-- Variables resolved -->
-						{#if resolvedInstance.variables.length > 0}
+						{#if inst.resolvedVariables && inst.resolvedVariables.length > 0}
 							<div>
 								<h4 class="mb-1 text-sm font-medium text-muted-foreground">
-									Variables ({resolvedInstance.variables.length})
+									Variables ({inst.resolvedVariables.length})
 								</h4>
 								<div class="flex flex-wrap gap-2">
-									{#each resolvedInstance.variables as v (v.name)}
+									{#each inst.resolvedVariables as v (v.name)}
 										<Badge variant="secondary" class="font-mono">
 											{v.name}={v.value}
 										</Badge>
@@ -1061,11 +928,11 @@
 						{/if}
 
 						<!-- Choices -->
-						{#if resolvedInstance.choices}
+						{#if inst.choices}
 							<div>
 								<h4 class="mb-1 text-sm font-medium text-muted-foreground">Choix</h4>
 								<ul class="space-y-1 text-sm">
-									{#each resolvedInstance.choices as choice, ci (ci)}
+									{#each inst.choices as choice, ci (ci)}
 										<li
 											class={cn(
 												'rounded px-2 py-1',
@@ -1081,25 +948,20 @@
 						{/if}
 
 						<!-- Blanks -->
-						{#if resolvedInstance.blanks}
+						{#if inst.blanks}
 							<div>
 								<h4 class="mb-1 text-sm font-medium text-muted-foreground">
-									Blancs à remplir ({resolvedInstance.blanks.length})
+									Blancs à remplir ({inst.blanks.length})
 								</h4>
 								<div class="space-y-2 text-sm">
-									{#each resolvedInstance.blanks as blank, bi (bi)}
+									{#each inst.blanks as blank, bi (bi)}
 										<div class="rounded-md bg-muted p-2">
 											<div class="flex items-center gap-2">
 												<Badge variant="outline" class="font-mono text-xs">#{bi}</Badge>
 												<span class="font-mono text-primary">
-													{blank.resolvedAnswer ?? blank.expectedAnswer}
+													{blank.expectedAnswer}
 												</span>
 											</div>
-											{#if blank.resolvedAnswer && blank.resolvedAnswer !== blank.expectedAnswer}
-												<div class="mt-1 text-xs text-muted-foreground">
-													template: <span class="font-mono">{blank.expectedAnswer}</span>
-												</div>
-											{/if}
 											{#if blank.unit}
 												<div class="mt-1 text-xs text-muted-foreground">
 													unité: {blank.unit.required ?? 'attendue'}
@@ -1112,17 +974,17 @@
 						{/if}
 
 						<!-- Correction -->
-						{#if resolvedInstance.correction}
+						{#if inst.correction}
 							<div>
 								<h4 class="mb-1 text-sm font-medium text-muted-foreground">Correction</h4>
-								{#if resolvedInstance.correction.feedback}
+								{#if inst.correction.feedback?.correct}
 									<p class="mb-2 text-sm whitespace-pre-wrap">
-										{resolvedInstance.correction.feedback}
+										{inst.correction.feedback.correct}
 									</p>
 								{/if}
-								{#if resolvedInstance.correction.steps.length > 0}
+								{#if inst.correction.steps && inst.correction.steps.length > 0}
 									<ol class="list-inside list-decimal space-y-1 text-sm">
-										{#each resolvedInstance.correction.steps as step, si (si)}
+										{#each inst.correction.steps as step, si (si)}
 											<li>{step}</li>
 										{/each}
 									</ol>
