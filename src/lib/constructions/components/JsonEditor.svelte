@@ -55,39 +55,33 @@
 
 	/**
 	 * Find the line number in a JSON string for a given Zod error path.
-	 * Walks the path segments sequentially, searching for each key/index in order.
+	 * Walks the path segments sequentially, returning the deepest match found.
 	 */
 	function findLineForPath(jsonStr: string, path: (string | number)[]): number | null {
 		if (path.length === 0) return null;
 		const lines = jsonStr.split('\n');
 		let searchFrom = 0;
+		let lastFoundLine = -1;
 
 		for (const segment of path) {
-			// For string keys, search for "key":
-			// For numeric indices (array), skip forward past that many values
-			const pattern =
-				typeof segment === 'string'
-					? new RegExp(`"${segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"\\s*:`)
-					: null;
-
-			let found = false;
-			if (pattern) {
+			if (typeof segment === 'string') {
+				const pattern = new RegExp(`"${segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"\\s*:`);
+				let found = false;
 				for (let i = searchFrom; i < lines.length; i++) {
 					if (pattern.test(lines[i])) {
-						searchFrom = i;
+						searchFrom = i + 1;
+						lastFoundLine = i;
 						found = true;
 						break;
 					}
 				}
+				if (!found) break;
 			} else {
 				// Numeric index: skip forward past opening brackets/values
-				// Simple heuristic: advance a few lines per index
 				searchFrom = Math.min(searchFrom + (segment as number), lines.length - 1);
-				found = true;
 			}
-			if (!found) return null;
 		}
-		return searchFrom + 1; // 1-indexed
+		return lastFoundLine >= 0 ? lastFoundLine + 1 : null; // 1-indexed
 	}
 
 	/**
@@ -170,30 +164,11 @@
 	}
 
 	/**
-	 * Update error line highlighting in CodeMirror
+	 * Update error line highlighting in CodeMirror (without moving cursor)
 	 */
 	function updateErrorHighlight(lines: number[]): void {
 		if (!editor || !errorLineEffectType) return;
-
-		const effects = [errorLineEffectType.of(lines)];
-
-		if (lines.length > 0) {
-			// Scroll to first error line
-			const firstLine = lines[0];
-			if (firstLine > 0 && firstLine <= editor.state.doc.lines) {
-				const lineInfo = editor.state.doc.line(firstLine);
-				editor.dispatch({
-					effects,
-					selection: { anchor: lineInfo.from },
-					scrollIntoView: true
-				});
-			} else {
-				editor.dispatch({ effects });
-			}
-		} else {
-			// Clear error highlighting
-			editor.dispatch({ effects });
-		}
+		editor.dispatch({ effects: [errorLineEffectType.of(lines)] });
 	}
 
 	// Update value from editor
