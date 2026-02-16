@@ -100,6 +100,7 @@
 				if (validation.success) {
 					validationErrors = [];
 					errorLines = [];
+					updateErrorHighlight([]);
 					onValidate(true, []);
 				} else {
 					const issues = validation.error?.issues ?? [];
@@ -122,12 +123,14 @@
 
 					validationErrors = errors;
 					errorLines = lines;
+					updateErrorHighlight(lines);
 					onValidate(false, errors);
 				}
 			} else {
 				// No schema: JSON parse succeeded, that's enough
 				validationErrors = [];
 				errorLines = [];
+				updateErrorHighlight([]);
 				onValidate(true, []);
 			}
 		} catch (error) {
@@ -138,10 +141,12 @@
 
 				validationErrors = [`JSON Parse Error: ${error.message}`];
 				errorLines = line ? [line] : [];
+				updateErrorHighlight(errorLines);
 				onValidate(false, validationErrors);
 			} else {
 				validationErrors = ['Validation error occurred'];
 				errorLines = [];
+				updateErrorHighlight([]);
 				onValidate(false, validationErrors);
 			}
 		}
@@ -378,14 +383,6 @@
 		}
 	});
 
-	// React to errorLines changes - sync to CodeMirror
-	$effect(() => {
-		const lines = errorLines;
-		if (editor && errorLineEffectType) {
-			updateErrorHighlight(lines);
-		}
-	});
-
 	onMount(() => {
 		initEditor();
 	});
@@ -404,9 +401,9 @@
 	});
 </script>
 
-<div class="flex h-full w-full flex-col" style="--editor-font-size: {fontSize}px; height: {height}">
+<div class="flex w-full flex-col" style="--editor-font-size: {fontSize}px">
 	<!-- Editor Container -->
-	<div class="relative flex-1 overflow-hidden" bind:this={editorContainer}>
+	<div class="relative overflow-hidden" style="height: {height}" bind:this={editorContainer}>
 		{#if isLoading}
 			<div class="flex h-full items-center justify-center">
 				<div class="flex flex-col items-center gap-2">
