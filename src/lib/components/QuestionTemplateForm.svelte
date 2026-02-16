@@ -1021,7 +1021,8 @@
 	function getVariationErrors(v: QuestionVariation, index: number): string[] {
 		if (!hasAttemptedPublish) return [];
 		const errors: string[] = [];
-		if (!v.statement.trim()) errors.push(`Variation ${index + 1} : énoncé manquant`);
+		if (!v.statement.trim() && !sharedStatement.trim())
+			errors.push(`Variation ${index + 1} : énoncé manquant`);
 		const hasAnswer =
 			(v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim())) ||
 			(v.choices && v.choices.length > 0) ||
@@ -1038,7 +1039,7 @@
 			variations.length > 0 &&
 			variations.every(
 				(v) =>
-					v.statement.trim().length > 0 &&
+					(v.statement.trim().length > 0 || sharedStatement.trim().length > 0) &&
 					((v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim())) ||
 						(v.choices && v.choices.length > 0) ||
 						(typeof v.correctChoiceIndex === 'string' && v.correctChoiceIndex.trim().length > 0) ||
