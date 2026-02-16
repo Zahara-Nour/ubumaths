@@ -45,7 +45,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
+
 	import VariableEditor from './VariableEditor.svelte';
 	import { MarkdownEditor } from '$lib/components/markdown';
 	import AnswerEditor from './AnswerEditor.svelte';
@@ -60,12 +60,12 @@
 	// Lazy-loaded heavy components to reduce initial bundle size
 	let RichTextEditor = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 	let QuestionPreview = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
-	let JsonViewer = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+
 	let JsonEditorComponent = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 	let loadedComponents = $state({
 		richText: false,
 		preview: false,
-		json: false,
+
 		jsonEditor: false
 	});
 	import {
@@ -146,14 +146,6 @@
 			const module = await import('./QuestionPreview.svelte');
 			QuestionPreview = module.default;
 			loadedComponents.preview = true;
-		}
-	}
-
-	async function loadJsonViewer() {
-		if (!loadedComponents.json) {
-			const module = await import('./JsonViewer.svelte');
-			JsonViewer = module.default;
-			loadedComponents.json = true;
 		}
 	}
 
@@ -1071,6 +1063,32 @@
 				</p>
 			</div>
 		</div>
+		<Button
+			variant="outline"
+			size="sm"
+			onclick={toggleJsonMode}
+			disabled={isSubmitting || (jsonMode && !jsonValid)}
+		>
+			{#if jsonMode}
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="mr-2 h-4 w-4"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M9 3v18" /><path
+						d="M14 9h7"
+					/><path d="M14 15h7" /></svg
+				>
+				Formulaire
+			{:else}
+				<Braces class="mr-2 h-4 w-4" />
+				JSON
+			{/if}
+		</Button>
 	</div>
 
 	{#if jsonMode}
@@ -1688,39 +1706,12 @@
 			</Card.Content>
 		</Card.Root>
 
-		<!-- Preview & JSON -->
-		<Tabs.Root
-			value="preview"
-			onValueChange={async (value) => {
-				if (value === 'preview') await loadQuestionPreview();
-				if (value === 'json') await loadJsonViewer();
-			}}
-		>
-			<Tabs.List class="grid w-full grid-cols-2">
-				<Tabs.Trigger value="preview" onclick={() => loadQuestionPreview()}>Aperçu</Tabs.Trigger>
-				<Tabs.Trigger value="json" onclick={() => loadJsonViewer()}>JSON</Tabs.Trigger>
-			</Tabs.List>
-
-			<Tabs.Content value="preview">
-				{#if QuestionPreview}
-					<QuestionPreview template={previewTemplate} />
-				{:else}
-					<div class="flex items-center justify-center p-8">
-						<p class="text-muted-foreground">Chargement de l'aperçu...</p>
-					</div>
-				{/if}
-			</Tabs.Content>
-
-			<Tabs.Content value="json">
-				{#if JsonViewer}
-					<JsonViewer data={previewTemplate} />
-				{:else}
-					<div class="flex items-center justify-center p-8">
-						<p class="text-muted-foreground">Chargement du JSON...</p>
-					</div>
-				{/if}
-			</Tabs.Content>
-		</Tabs.Root>
+		<!-- Preview -->
+		{#if QuestionPreview}
+			<QuestionPreview template={previewTemplate} />
+		{:else}
+			<Button variant="outline" onclick={loadQuestionPreview}>Charger l'aperçu</Button>
+		{/if}
 	{/if}
 
 	<!-- Validation Errors Summary -->
@@ -1737,31 +1728,6 @@
 
 	<!-- Action Buttons -->
 	<div class="flex items-center gap-3">
-		<Button
-			variant="outline"
-			onclick={toggleJsonMode}
-			disabled={isSubmitting || (jsonMode && !jsonValid)}
-		>
-			{#if jsonMode}
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="mr-2 h-4 w-4"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M9 3v18" /><path
-						d="M14 9h7"
-					/><path d="M14 15h7" /></svg
-				>
-				Formulaire
-			{:else}
-				<Braces class="mr-2 h-4 w-4" />
-				JSON
-			{/if}
-		</Button>
 		<div class="flex flex-1 items-center justify-end gap-3">
 			{#if isDirty}
 				<span class="text-xs text-amber-600 dark:text-amber-400"
