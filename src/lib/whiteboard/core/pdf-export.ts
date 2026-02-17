@@ -281,57 +281,54 @@ export function exportPageToSvg(
  * Render background to SVG
  */
 function renderBackgroundToSvg(page: Page): string {
-	const { width, height, background } = page;
+	const { width, height, background, overlay } = page;
+	const gridSpacing = background.gridSpacing ?? 20;
+	const gridOpacity = background.gridOpacity ?? 0.3;
 
-	if (background.type === 'plain') {
-		const gridSpacing = background.gridSpacing ?? 20;
-		const gridOpacity = background.gridOpacity ?? 0.3;
+	// Render plain background
+	let svg = `<rect width="${width}" height="${height}" fill="${background.color}"/>`;
 
-		let svg = `<rect width="${width}" height="${height}" fill="${background.color}"/>`;
+	// Add grid/ruled/dotted/triangular/hexagonal patterns
+	switch (background.style) {
+		case 'grid':
+			svg += renderGridPattern(width, height, gridSpacing, gridOpacity);
+			break;
+		case 'ruled':
+			svg += renderRuledPattern(width, height, gridSpacing, gridOpacity);
+			break;
+		case 'dotted':
+			svg += renderDottedPattern(width, height, gridSpacing, gridOpacity);
+			break;
+		case 'triangular':
+			svg += renderTriangularPattern(width, height, gridSpacing, gridOpacity);
+			break;
+		case 'triangular-dotted':
+			svg += renderTriangularDottedPattern(width, height, gridSpacing, gridOpacity);
+			break;
+		case 'hexagonal':
+			svg += renderHexagonalPattern(width, height, gridSpacing, gridOpacity);
+			break;
+		case 'hexagonal-dotted':
+			svg += renderHexagonalDottedPattern(width, height, gridSpacing, gridOpacity);
+			break;
+	}
 
-		// Add grid/ruled/dotted/triangular/hexagonal patterns
-		switch (background.style) {
-			case 'grid':
-				svg += renderGridPattern(width, height, gridSpacing, gridOpacity);
-				break;
-			case 'ruled':
-				svg += renderRuledPattern(width, height, gridSpacing, gridOpacity);
-				break;
-			case 'dotted':
-				svg += renderDottedPattern(width, height, gridSpacing, gridOpacity);
-				break;
-			case 'triangular':
-				svg += renderTriangularPattern(width, height, gridSpacing, gridOpacity);
-				break;
-			case 'triangular-dotted':
-				svg += renderTriangularDottedPattern(width, height, gridSpacing, gridOpacity);
-				break;
-			case 'hexagonal':
-				svg += renderHexagonalPattern(width, height, gridSpacing, gridOpacity);
-				break;
-			case 'hexagonal-dotted':
-				svg += renderHexagonalDottedPattern(width, height, gridSpacing, gridOpacity);
-				break;
+	// Render overlay on top of background
+	if (overlay?.type === 'image') {
+		const safeSrc = sanitizeImageSrc(overlay.src);
+		if (safeSrc) {
+			svg += `<image href="${safeSrc}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"/>`;
 		}
-
-		return svg;
+	} else if (overlay?.type === 'pdf') {
+		const area = overlay.contentArea;
+		const x = area?.x ?? 0;
+		const y = area?.y ?? 0;
+		const w = area?.w ?? width;
+		const h = area?.h ?? height;
+		svg += `<image href="${overlay.pdfData}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet"/>`;
 	}
 
-	if (background.type === 'image') {
-		const safeSrc = sanitizeImageSrc(background.src);
-		if (!safeSrc) {
-			return `<rect width="${width}" height="${height}" fill="#f0f0f0"/>`;
-		}
-		return `<image href="${safeSrc}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid slice"/>`;
-	}
-
-	// PDF background - render as image from stored data
-	if (background.type === 'pdf') {
-		// PDF backgrounds are rendered as images
-		return `<rect width="${width}" height="${height}" fill="#ffffff"/>`;
-	}
-
-	return `<rect width="${width}" height="${height}" fill="#ffffff"/>`;
+	return svg;
 }
 
 /**

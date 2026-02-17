@@ -1918,33 +1918,34 @@
 						fill="url(#hexagonal-dotted-pattern)"
 					/>
 				{/if}
-			{:else if currentPage?.background.type === 'image'}
-				<!-- White base for transparency -->
-				<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="#ffffff" />
-				<!-- Background image -->
-				<image
-					href={currentPage.background.src}
-					x="0"
-					y="0"
-					width={pageWidth}
-					height={pageHeight}
-					preserveAspectRatio="xMidYMid meet"
-				/>
-			{:else if currentPage?.background.type === 'pdf'}
-				{@const area = currentPage.background.contentArea}
-				<!-- White base -->
-				<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="#ffffff" />
-				<!-- PDF page rendered as image -->
-				<image
-					href={currentPage.background.pdfData}
-					x={area?.x ?? 0}
-					y={area?.y ?? 0}
-					width={area?.w ?? pageWidth}
-					height={area?.h ?? pageHeight}
-					preserveAspectRatio="xMidYMid meet"
-				/>
 			{/if}
 		</g>
+
+		<!-- Layer 1b: Overlay (image or PDF on top of background) -->
+		{#if currentPage?.overlay}
+			<g class="layer-overlay">
+				{#if currentPage.overlay.type === 'image'}
+					<image
+						href={currentPage.overlay.src}
+						x="0"
+						y="0"
+						width={pageWidth}
+						height={pageHeight}
+						preserveAspectRatio="xMidYMid meet"
+					/>
+				{:else if currentPage.overlay.type === 'pdf'}
+					{@const area = currentPage.overlay.contentArea}
+					<image
+						href={currentPage.overlay.pdfData}
+						x={area?.x ?? 0}
+						y={area?.y ?? 0}
+						width={area?.w ?? pageWidth}
+						height={area?.h ?? pageHeight}
+						preserveAspectRatio="xMidYMid meet"
+					/>
+				{/if}
+			</g>
+		{/if}
 
 		<!-- Arrow marker and hatched pattern definitions -->
 		<defs>

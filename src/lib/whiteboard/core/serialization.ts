@@ -171,6 +171,31 @@ function migrateAnnotations(data: unknown): unknown {
 	return data;
 }
 
+/**
+ * Migrate legacy pages where background could be image/pdf.
+ * Moves image/pdf backgrounds to `overlay` and sets a default plain background.
+ */
+function migrateBackgroundToOverlay(data: unknown): unknown {
+	if (typeof data !== 'object' || data === null) return data;
+
+	const doc = data as Record<string, unknown>;
+	if (!Array.isArray(doc.pages)) return data;
+
+	for (const page of doc.pages) {
+		if (typeof page !== 'object' || page === null) continue;
+		const pageObj = page as Record<string, unknown>;
+		const bg = pageObj.background as Record<string, unknown> | undefined;
+
+		if (bg && typeof bg === 'object' && bg.type !== 'plain') {
+			// Move image/pdf background to overlay
+			pageObj.overlay = bg;
+			pageObj.background = { type: 'plain', style: 'plain', color: '#ffffff' };
+		}
+	}
+
+	return data;
+}
+
 // =============================================================================
 // Serialization
 // =============================================================================
@@ -240,6 +265,7 @@ export function deserialize(json: string): DeserializationResult {
 	let migrated = migrateArrowTypes(parsed);
 	migrated = migrateArrowPointsModel(migrated);
 	migrated = migrateAnnotations(migrated);
+	migrated = migrateBackgroundToOverlay(migrated);
 
 	// Validate with Zod schema
 	const validation = validateDocument(migrated);
