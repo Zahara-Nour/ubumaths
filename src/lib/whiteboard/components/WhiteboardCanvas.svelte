@@ -7,7 +7,6 @@
 	 */
 
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
-	import { PDF_PAGE_MARGIN } from '../utils/pdf-loader';
 	import {
 		smoothStroke,
 		getToolOptions,
@@ -1932,15 +1931,16 @@
 					preserveAspectRatio="xMidYMid meet"
 				/>
 			{:else if currentPage?.background.type === 'pdf'}
+				{@const area = currentPage.background.contentArea}
 				<!-- White base -->
 				<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="#ffffff" />
-				<!-- PDF page rendered as image (centered with margin for annotations) -->
+				<!-- PDF page rendered as image -->
 				<image
 					href={currentPage.background.pdfData}
-					x={PDF_PAGE_MARGIN}
-					y={PDF_PAGE_MARGIN}
-					width={pageWidth - 2 * PDF_PAGE_MARGIN}
-					height={pageHeight - 2 * PDF_PAGE_MARGIN}
+					x={area?.x ?? 0}
+					y={area?.y ?? 0}
+					width={area?.w ?? pageWidth}
+					height={area?.h ?? pageHeight}
 					preserveAspectRatio="xMidYMid meet"
 				/>
 			{/if}

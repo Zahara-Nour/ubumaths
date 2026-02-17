@@ -575,6 +575,13 @@ export interface BackgroundPdf {
 	readonly totalPages: number;
 	readonly width: number;
 	readonly height: number;
+	/** Area where the PDF content is rendered (for extended mode with annotation space) */
+	readonly contentArea?: {
+		readonly x: number;
+		readonly y: number;
+		readonly w: number;
+		readonly h: number;
+	};
 }
 
 /** Plain/styled background */

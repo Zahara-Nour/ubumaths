@@ -42,7 +42,7 @@
 		Trash2
 	} from 'lucide-svelte';
 	import { importImageFile } from '../utils/image-loader';
-	import { importPdfFile } from '../utils/pdf-loader';
+	import { importPdfFile, type PdfImportMode } from '../utils/pdf-loader';
 	import ExportDialog from './ExportDialog.svelte';
 	import ExportToClassroomDialog from './ExportToClassroomDialog.svelte';
 	import SaveAsDialog from './SaveAsDialog.svelte';
@@ -717,7 +717,10 @@
 		imageInputRef?.click();
 	}
 
-	function handlePdfImportClick() {
+	let pendingPdfMode: PdfImportMode = 'normal';
+
+	function handlePdfImportClick(mode: PdfImportMode) {
+		pendingPdfMode = mode;
 		pdfInputRef?.click();
 	}
 
@@ -767,7 +770,7 @@
 
 		isImporting = true;
 		try {
-			const result = await importPdfFile(file, { fitMode: 'fit' });
+			const result = await importPdfFile(file, { fitMode: 'fit', mode: pendingPdfMode });
 
 			if (result.success && result.pages && result.pages.length > 0) {
 				whiteboardStore.addPagesFromPdf(result.pages);
@@ -1101,7 +1104,7 @@
 					</Button>
 				</div>
 				<!-- Row 2: Local + Import -->
-				<div class="grid grid-cols-4 gap-2">
+				<div class="grid grid-cols-5 gap-1">
 					<Button
 						type="button"
 						variant="ghost"
@@ -1144,17 +1147,33 @@
 						type="button"
 						variant="ghost"
 						size="sm"
-						onclick={handlePdfImportClick}
+						onclick={() => handlePdfImportClick('normal')}
 						disabled={isImporting}
 						class="h-9 flex-col gap-1 p-1"
-						title="Importer un PDF comme pages"
+						title="Importer un PDF (format adapté)"
 					>
-						{#if isImporting}
+						{#if isImporting && pendingPdfMode === 'normal'}
 							<Loader2 class="h-4 w-4 animate-spin" />
 						{:else}
 							<Upload class="h-4 w-4" />
 						{/if}
 						<span class="text-[10px]">PDF</span>
+					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={() => handlePdfImportClick('extended')}
+						disabled={isImporting}
+						class="h-9 flex-col gap-1 p-1"
+						title="Importer un PDF avec espace d'annotation"
+					>
+						{#if isImporting && pendingPdfMode === 'extended'}
+							<Loader2 class="h-4 w-4 animate-spin" />
+						{:else}
+							<FileText class="h-4 w-4" />
+						{/if}
+						<span class="text-[10px]">PDF+</span>
 					</Button>
 				</div>
 				<!-- Row 3: Dossier + Clear -->
