@@ -154,19 +154,19 @@
 
 	let currentBackgroundStyle = $derived.by(() => {
 		const page = whiteboardStore.currentPage;
-		if (!page || page.background.type !== 'plain') return 'plain';
+		if (!page) return 'plain';
 		return page.background.style;
 	});
 
 	let currentGridSpacing = $derived.by(() => {
 		const page = whiteboardStore.currentPage;
-		if (!page || page.background.type !== 'plain') return 20;
+		if (!page) return 20;
 		return page.background.gridSpacing ?? 20;
 	});
 
 	let currentGridOpacity = $derived.by(() => {
 		const page = whiteboardStore.currentPage;
-		if (!page || page.background.type !== 'plain') return 0.3;
+		if (!page) return 0.3;
 		return page.background.gridOpacity ?? 0.3;
 	});
 
@@ -219,17 +219,12 @@
 
 	function handleBackgroundStyleChange(style: BackgroundStyle) {
 		const page = whiteboardStore.currentPage;
-		const existingGridSpacing =
-			page?.background.type === 'plain' ? page.background.gridSpacing : undefined;
-		const existingGridOpacity =
-			page?.background.type === 'plain' ? page.background.gridOpacity : undefined;
-
 		whiteboardStore.setPageBackground({
 			type: 'plain',
 			style,
 			color: '#ffffff',
-			gridSpacing: existingGridSpacing,
-			gridOpacity: existingGridOpacity
+			gridSpacing: page?.background.gridSpacing,
+			gridOpacity: page?.background.gridOpacity
 		});
 	}
 
@@ -238,7 +233,7 @@
 		if (spacing === undefined) return;
 
 		const page = whiteboardStore.currentPage;
-		if (!page || page.background.type !== 'plain') return;
+		if (!page) return;
 
 		whiteboardStore.setPageBackground({
 			...page.background,
@@ -251,7 +246,7 @@
 		if (opacity === undefined) return;
 
 		const page = whiteboardStore.currentPage;
-		if (!page || page.background.type !== 'plain') return;
+		if (!page) return;
 
 		whiteboardStore.setPageBackground({
 			...page.background,

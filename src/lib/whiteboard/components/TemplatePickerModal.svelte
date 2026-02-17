@@ -215,15 +215,9 @@
 
 		// Initialize customization with template's current values
 		const bg = template.pageData.background;
-		if (bg.type === 'plain') {
-			customBackgroundColor = bg.color;
-			customBackgroundStyle = bg.style;
-			customGridSpacing = bg.gridSpacing ?? 20;
-		} else {
-			customBackgroundColor = '#ffffff';
-			customBackgroundStyle = 'plain';
-			customGridSpacing = 20;
-		}
+		customBackgroundColor = bg.color;
+		customBackgroundStyle = bg.style;
+		customGridSpacing = bg.gridSpacing ?? 20;
 		customFont = template.pageData.font;
 
 		showCustomizeDialog = true;
@@ -346,9 +340,6 @@
 
 	function getTemplatePreviewStyle(template: WhiteboardTemplateWithFavorite): string {
 		const bg = template.pageData.background;
-		if (bg.type !== 'plain') {
-			return 'background-color: #f0f0f0;';
-		}
 		return getBackgroundPreviewStyle(bg.color, bg.style);
 	}
 </script>

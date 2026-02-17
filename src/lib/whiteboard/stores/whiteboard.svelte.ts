@@ -18,7 +18,7 @@ import {
 	DEFAULT_STAMP_SIZE,
 	type WhiteboardDocument,
 	type Page,
-	type PageBackground,
+	type BackgroundPlain,
 	type WhiteboardElement,
 	type TextBlockElement,
 	type ImageElement,
@@ -92,7 +92,7 @@ import type {
 	Heading,
 	AnnotationElement
 } from '../types/document';
-import { createArrowPoints } from '../types/document';
+import { createArrowPoints, migratePage } from '../types/document';
 import type { WhiteboardTemplate, TemplatePageData, TemplateFont } from '../types/templates';
 import { calculateSnapForTranslate, type SnapIndicator } from '../core/snapping';
 import {
@@ -1033,7 +1033,10 @@ function createWhiteboardStore() {
 		 * Used when loading from APIs that already return parsed documents
 		 */
 		loadDocument(doc: WhiteboardDocument): void {
-			document = doc;
+			// Migrate legacy pages where background could be image/pdf
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const migratedPages = doc.pages.map((page) => migratePage(page as any));
+			document = { ...doc, pages: migratedPages };
 			history = createHistoryManager(document);
 			initAnnotationHistory();
 			hasUnsavedChanges = false;
@@ -1224,7 +1227,7 @@ function createWhiteboardStore() {
 			const newPage: Page = {
 				id: crypto.randomUUID(),
 				elements: clonedElements,
-				background: JSON.parse(JSON.stringify(pageData.background)) as PageBackground,
+				background: JSON.parse(JSON.stringify(pageData.background)) as BackgroundPlain,
 				width: pageData.width,
 				height: pageData.height
 			};
@@ -4719,7 +4722,7 @@ function createWhiteboardStore() {
 		/**
 		 * Set the background of the current page
 		 */
-		setPageBackground(background: PageBackground): void {
+		setPageBackground(background: BackgroundPlain): void {
 			updateCurrentPage((page) => ({
 				...page,
 				background

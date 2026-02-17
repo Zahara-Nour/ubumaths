@@ -165,9 +165,9 @@
 	let canGoToPrevPage = $derived(currentPageIdx > 0);
 	let canGoToNextPage = $derived(currentPageIdx < pageCount - 1);
 
-	/** Whether page has a fixed background (PDF/image) that should not be expanded */
+	/** Whether page has a fixed overlay (PDF/image) that should not be expanded */
 	let hasFixedBackground = $derived(
-		currentPage?.background.type === 'pdf' || currentPage?.background.type === 'image'
+		currentPage?.overlay?.type === 'pdf' || currentPage?.overlay?.type === 'image'
 	);
 
 	/** Page expansion state - derived from currentPage for proper reactivity */

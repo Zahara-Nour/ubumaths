@@ -86,8 +86,8 @@
 	}
 
 	function renderBackgroundPattern(style: BackgroundStyle, color: string): string {
-		const spacing = background?.type === 'plain' ? (background.gridSpacing ?? 20) : 20;
-		const opacity = background?.type === 'plain' ? (background.gridOpacity ?? 0.3) : 0.3;
+		const spacing = background?.gridSpacing ?? 20;
+		const opacity = background?.gridOpacity ?? 0.3;
 		const lineColor = color === '#ffffff' ? '#cccccc' : color;
 
 		switch (style) {
@@ -561,35 +561,45 @@
 	role="img"
 	aria-label="Whiteboard page content"
 >
-	<!-- Background -->
+	<!-- Background (always plain) -->
 	{#if background}
-		{#if background.type === 'plain'}
-			<!-- Background color -->
-			<rect x="0" y="0" width={pageWidth} height={pageHeight} fill={background.color} />
-			<!-- Background pattern if not plain style -->
-			{#if background.style !== 'plain'}
-				{@html renderBackgroundPattern(background.style, background.color)}
-				<rect
-					x="0"
-					y="0"
-					width={pageWidth}
-					height={pageHeight}
-					fill="url(#{getBackgroundPatternId(background.style)})"
-				/>
-			{/if}
-		{:else if background.type === 'image'}
-			<image
-				href={background.src}
+		<rect x="0" y="0" width={pageWidth} height={pageHeight} fill={background.color} />
+		{#if background.style !== 'plain'}
+			{@html renderBackgroundPattern(background.style, background.color)}
+			<rect
 				x="0"
 				y="0"
 				width={pageWidth}
 				height={pageHeight}
-				preserveAspectRatio="xMidYMid slice"
+				fill="url(#{getBackgroundPatternId(background.style)})"
 			/>
 		{/if}
 	{:else}
-		<!-- Default white background -->
 		<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="#ffffff" />
+	{/if}
+
+	<!-- Overlay (image or PDF on top of background) -->
+	{#if page?.overlay}
+		{#if page.overlay.type === 'image'}
+			<image
+				href={page.overlay.src}
+				x="0"
+				y="0"
+				width={pageWidth}
+				height={pageHeight}
+				preserveAspectRatio="xMidYMid meet"
+			/>
+		{:else if page.overlay.type === 'pdf'}
+			{@const area = page.overlay.contentArea}
+			<image
+				href={page.overlay.pdfData}
+				x={area?.x ?? 0}
+				y={area?.y ?? 0}
+				width={area?.w ?? pageWidth}
+				height={area?.h ?? pageHeight}
+				preserveAspectRatio="xMidYMid meet"
+			/>
+		{/if}
 	{/if}
 
 	<!-- Images layer (below strokes and shapes) -->

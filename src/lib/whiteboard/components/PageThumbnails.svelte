@@ -324,7 +324,7 @@
 									y="0"
 									width={page.width}
 									height={page.height}
-									fill={page.background.type === 'plain' ? page.background.color : '#ffffff'}
+									fill={page.background.color}
 								/>
 
 								<!-- Simplified content preview -->

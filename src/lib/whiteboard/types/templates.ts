@@ -7,7 +7,7 @@
  * @module whiteboard/types/templates
  */
 
-import type { WhiteboardElement, PageBackground } from './document';
+import type { WhiteboardElement, BackgroundPlain } from './document';
 
 // =============================================================================
 // Template Fonts
@@ -84,7 +84,7 @@ export interface TemplatePageData {
 	/** Elements to place on the page (deep cloned when applied) */
 	readonly elements: readonly WhiteboardElement[];
 	/** Background configuration */
-	readonly background: PageBackground;
+	readonly background: BackgroundPlain;
 	/** Page width in pixels */
 	readonly width: number;
 	/** Page height in pixels */

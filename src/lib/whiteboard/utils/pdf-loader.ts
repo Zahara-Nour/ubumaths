@@ -7,7 +7,8 @@
  * @module whiteboard/utils/pdf-loader
  */
 
-import type { Page, PageBackground, BackgroundPdf } from '../types/document';
+import type { Page, BackgroundPdf } from '../types/document';
+import { DEFAULT_BACKGROUND } from '../types/document';
 
 // =============================================================================
 // Constants
@@ -254,12 +255,12 @@ export function createPdfBackground(
 }
 
 /**
- * Set background on a page
+ * Set overlay on a page (image or PDF rendered on top of the plain background)
  */
-export function setPageBackground(page: Page, background: PageBackground): Page {
+export function setPageOverlay(page: Page, overlay: BackgroundPdf): Page {
 	return {
 		...page,
-		background
+		overlay
 	};
 }
 
@@ -306,7 +307,7 @@ export function createPageWithPdfBackground(
 		pageH = contentH;
 	}
 
-	const background = createPdfBackground(
+	const overlay = createPdfBackground(
 		pdfData,
 		pageIndex,
 		totalPages,
@@ -317,7 +318,8 @@ export function createPageWithPdfBackground(
 	return {
 		id: crypto.randomUUID(),
 		elements: [],
-		background,
+		background: { ...DEFAULT_BACKGROUND },
+		overlay,
 		width: pageW,
 		height: pageH
 	};
@@ -426,12 +428,12 @@ export async function importPdfFile(
 }
 
 /**
- * Import a single PDF page as background for current page
+ * Import a single PDF page as overlay for current page
  */
-export async function importPdfPageAsBackground(
+export async function importPdfPageAsOverlay(
 	file: File,
 	pageIndex: number
-): Promise<{ success: boolean; background?: BackgroundPdf; error?: string }> {
+): Promise<{ success: boolean; overlay?: BackgroundPdf; error?: string }> {
 	const loadResult = await loadPdfFile(file);
 	if (!loadResult.success || !loadResult.totalPages) {
 		return { success: false, error: loadResult.error };
@@ -442,7 +444,7 @@ export async function importPdfPageAsBackground(
 		return { success: false, error: renderResult.error };
 	}
 
-	const background = createPdfBackground(
+	const overlay = createPdfBackground(
 		renderResult.dataUrl,
 		pageIndex,
 		loadResult.totalPages,
@@ -450,5 +452,5 @@ export async function importPdfPageAsBackground(
 		renderResult.height || 792
 	);
 
-	return { success: true, background };
+	return { success: true, overlay };
 }

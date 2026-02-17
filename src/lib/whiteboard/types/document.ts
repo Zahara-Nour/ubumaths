@@ -593,8 +593,18 @@ export interface BackgroundPlain {
 	readonly gridOpacity?: number; // Opacity of grid lines (0-1, default: 0.3)
 }
 
-/** Union of background types */
+/** Union of all background types (used for legacy documents) */
 export type PageBackground = BackgroundImage | BackgroundPdf | BackgroundPlain;
+
+/** Overlay type: image or PDF rendered on top of the plain background */
+export type PageOverlay = BackgroundImage | BackgroundPdf;
+
+/** Default plain background */
+export const DEFAULT_BACKGROUND: BackgroundPlain = {
+	type: 'plain',
+	style: 'plain',
+	color: '#ffffff'
+};
 
 // =============================================================================
 // Instrument Types
@@ -791,7 +801,9 @@ export const ANNOTATION_TOOL_LABELS: Record<AnnotationToolType, string> = {
 export interface Page {
 	readonly id: string;
 	readonly elements: readonly WhiteboardElement[];
-	readonly background: PageBackground;
+	readonly background: BackgroundPlain;
+	/** Optional overlay (image or PDF) rendered on top of the plain background */
+	readonly overlay?: PageOverlay;
 	readonly width: number;
 	readonly height: number;
 	/** Original width before expansion (for scaling at export). Undefined = not expanded. */
@@ -831,13 +843,31 @@ export function createEmptyPage(format: PageFormatKey = DEFAULT_PAGE_FORMAT): Pa
 	return {
 		id: crypto.randomUUID(),
 		elements: [],
-		background: {
-			type: 'plain',
-			style: 'plain',
-			color: '#ffffff'
-		},
+		background: { ...DEFAULT_BACKGROUND },
 		width,
 		height
+	};
+}
+
+/** Legacy page type where background could be any type (for migration) */
+interface LegacyPage extends Omit<Page, 'background'> {
+	readonly background: PageBackground;
+}
+
+/**
+ * Migrate a legacy page where background could be image/pdf.
+ * Moves image/pdf backgrounds to `overlay` and sets a default plain background.
+ */
+export function migratePage(page: LegacyPage): Page {
+	if (page.background.type === 'plain') {
+		return page as Page;
+	}
+	// Move image/pdf background to overlay
+	const overlay: PageOverlay = page.background;
+	return {
+		...page,
+		background: { ...DEFAULT_BACKGROUND },
+		overlay
 	};
 }
 

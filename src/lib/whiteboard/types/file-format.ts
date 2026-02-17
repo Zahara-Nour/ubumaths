@@ -251,13 +251,21 @@ const backgroundImageSchema = z.object({
 	height: z.number().positive()
 });
 
+const contentAreaSchema = z.object({
+	x: z.number(),
+	y: z.number(),
+	w: z.number().positive(),
+	h: z.number().positive()
+});
+
 const backgroundPdfSchema = z.object({
 	type: z.literal('pdf'),
 	pdfData: z.string().max(50_000_000), // Max ~50MB for PDF
 	pageIndex: z.number().int().min(0),
 	totalPages: z.number().int().positive(),
 	width: z.number().positive(),
-	height: z.number().positive()
+	height: z.number().positive(),
+	contentArea: contentAreaSchema.optional()
 });
 
 const backgroundPlainSchema = z.object({
@@ -307,16 +315,21 @@ const instrumentsSchema = z.object({
 // Page Schema
 // =============================================================================
 
+/** Overlay schema: image or PDF rendered on top of plain background */
+const overlaySchema = z.discriminatedUnion('type', [backgroundImageSchema, backgroundPdfSchema]);
+
 const pageSchema = z.object({
 	id: z.string().uuid(),
 	elements: z.array(elementSchema).max(5000),
-	background: backgroundSchema,
+	background: backgroundSchema, // Accepts union for backward compat, migrated to plain at load
 	width: z.number().positive().max(10000),
 	height: z.number().positive().max(10000),
 	/** Original width before expansion (for scaling at export). Undefined = not expanded. */
 	originalWidth: z.number().positive().max(10000).optional(),
 	/** Original height before expansion (for scaling at export). Undefined = not expanded. */
 	originalHeight: z.number().positive().max(10000).optional(),
+	/** Overlay (image/PDF) rendered on top of the plain background */
+	overlay: overlaySchema.optional(),
 	/** Annotations on this page (overlay layer) */
 	annotations: z.array(annotationElementSchema).max(1000).optional()
 });
