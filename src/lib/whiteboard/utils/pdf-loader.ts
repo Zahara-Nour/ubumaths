@@ -22,11 +22,11 @@ export const PDF_MIME_TYPE = 'application/pdf';
 /** Default scale for PDF rendering (2x for high DPI) */
 export const PDF_RENDER_SCALE = 2;
 
-/** Margin around PDF content in whiteboard pages (px) */
-export const PDF_PAGE_MARGIN = 100;
-
 /** Conversion factor from PDF points (1/72 inch) to whiteboard pixels (96 DPI) */
 const PDF_TO_PX = 96 / 72;
+
+/** Small margin inside the content half in extended mode (px) */
+const EXTENDED_MODE_MARGIN = 20;
 
 // =============================================================================
 // Types
@@ -43,11 +43,16 @@ export interface PdfPageInfo {
 	height: number;
 }
 
+/** PDF import mode */
+export type PdfImportMode = 'normal' | 'extended';
+
 export interface PdfImportOptions {
 	/** Pages to import (empty = all pages) */
 	pages?: number[];
 	/** Fit mode for the background */
 	fitMode: 'fit' | 'fill' | 'stretch';
+	/** Import mode: normal (adapt to PDF) or extended (double one dimension for annotations) */
+	mode?: PdfImportMode;
 }
 
 export interface PdfLoadResult {
@@ -234,7 +239,8 @@ export function createPdfBackground(
 	pageIndex: number,
 	totalPages: number,
 	width: number,
-	height: number
+	height: number,
+	contentArea?: BackgroundPdf['contentArea']
 ): BackgroundPdf {
 	return {
 		type: 'pdf',
@@ -242,7 +248,8 @@ export function createPdfBackground(
 		pageIndex,
 		totalPages,
 		width,
-		height
+		height,
+		...(contentArea && { contentArea })
 	};
 }
 
@@ -258,22 +265,55 @@ export function setPageBackground(page: Page, background: PageBackground): Page 
 
 /**
  * Create a page with PDF background
- * Page dimensions adapt to PDF content + margin for annotations
+ *
+ * Normal mode: page adapts exactly to PDF dimensions
+ * Extended mode: doubles width (portrait) or height (landscape),
+ *   PDF in first half with small margin, second half free for annotations
  */
 export function createPageWithPdfBackground(
 	pdfData: string,
 	pageIndex: number,
 	totalPages: number,
 	pdfWidth: number,
-	pdfHeight: number
+	pdfHeight: number,
+	mode: PdfImportMode = 'normal'
 ): Page {
-	// Convert PDF points to whiteboard pixels and add margin
-	const contentWidth = Math.round(pdfWidth * PDF_TO_PX);
-	const contentHeight = Math.round(pdfHeight * PDF_TO_PX);
-	const pageW = contentWidth + 2 * PDF_PAGE_MARGIN;
-	const pageH = contentHeight + 2 * PDF_PAGE_MARGIN;
+	const contentW = Math.round(pdfWidth * PDF_TO_PX);
+	const contentH = Math.round(pdfHeight * PDF_TO_PX);
 
-	const background = createPdfBackground(pdfData, pageIndex, totalPages, pdfWidth, pdfHeight);
+	let pageW: number;
+	let pageH: number;
+	let contentArea: BackgroundPdf['contentArea'] | undefined;
+
+	if (mode === 'extended') {
+		const m = EXTENDED_MODE_MARGIN;
+		const isPortrait = contentH > contentW;
+
+		if (isPortrait) {
+			// Double width: PDF in left half, right half free
+			pageW = contentW * 2;
+			pageH = contentH;
+			contentArea = { x: m, y: m, w: contentW - 2 * m, h: contentH - 2 * m };
+		} else {
+			// Double height: PDF in top half, bottom half free
+			pageW = contentW;
+			pageH = contentH * 2;
+			contentArea = { x: m, y: m, w: contentW - 2 * m, h: contentH - 2 * m };
+		}
+	} else {
+		// Normal: page matches PDF dimensions exactly
+		pageW = contentW;
+		pageH = contentH;
+	}
+
+	const background = createPdfBackground(
+		pdfData,
+		pageIndex,
+		totalPages,
+		pdfWidth,
+		pdfHeight,
+		contentArea
+	);
 	return {
 		id: crypto.randomUUID(),
 		elements: [],
@@ -371,7 +411,8 @@ export async function importPdfFile(
 			pageIndex,
 			loadResult.totalPages,
 			renderResult.width || 612,
-			renderResult.height || 792
+			renderResult.height || 792,
+			options.mode ?? 'normal'
 		);
 
 		pages.push(page);
