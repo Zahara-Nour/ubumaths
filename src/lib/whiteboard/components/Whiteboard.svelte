@@ -165,6 +165,11 @@
 	let canGoToPrevPage = $derived(currentPageIdx > 0);
 	let canGoToNextPage = $derived(currentPageIdx < pageCount - 1);
 
+	/** Whether page has a fixed background (PDF/image) that should not be expanded */
+	let hasFixedBackground = $derived(
+		currentPage?.background.type === 'pdf' || currentPage?.background.type === 'image'
+	);
+
 	/** Page expansion state - derived from currentPage for proper reactivity */
 	let isPageExpanded = $derived(
 		currentPage?.originalWidth !== undefined && currentPage?.originalHeight !== undefined
@@ -339,9 +344,10 @@
 		const pageY = clickY / effectiveScale;
 
 		// Check if click is near right or bottom edge of page (within 50px)
+		// Don't allow edge expansion for fixed backgrounds (PDF/image)
 		const nearRightEdge = pageX > pageWidth - 50 && pageX <= pageWidth + 20;
 		const nearBottomEdge = pageY > pageHeight - 50 && pageY <= pageHeight + 20;
-		const isOnEdge = nearRightEdge || nearBottomEdge;
+		const isOnEdge = !hasFixedBackground && (nearRightEdge || nearBottomEdge);
 
 		// Allow pan if zoomed in OR if starting from page edge (for expansion)
 		if (!canPan && !isOnEdge) return;
@@ -406,7 +412,8 @@
 		const normalMaxPanY = Math.max(0, (canvasHeight - viewportHeight) / 2 + 20);
 
 		// If panning beyond bottom-right edge, try to expand the page
-		if (newPanX < -normalMaxPanX || newPanY < -normalMaxPanY) {
+		// Don't expand pages with fixed backgrounds (PDF/image)
+		if (!hasFixedBackground && (newPanX < -normalMaxPanX || newPanY < -normalMaxPanY)) {
 			const beyondX = newPanX < -normalMaxPanX ? (-normalMaxPanX - newPanX) / effectiveScale : 0;
 			const beyondY = newPanY < -normalMaxPanY ? (-normalMaxPanY - newPanY) / effectiveScale : 0;
 
