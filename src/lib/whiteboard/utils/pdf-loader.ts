@@ -8,7 +8,6 @@
  */
 
 import type { Page, PageBackground, BackgroundPdf } from '../types/document';
-import { createEmptyPage } from '../types/document';
 
 // =============================================================================
 // Constants
@@ -22,6 +21,12 @@ export const PDF_MIME_TYPE = 'application/pdf';
 
 /** Default scale for PDF rendering (2x for high DPI) */
 export const PDF_RENDER_SCALE = 2;
+
+/** Margin around PDF content in whiteboard pages (px) */
+export const PDF_PAGE_MARGIN = 100;
+
+/** Conversion factor from PDF points (1/72 inch) to whiteboard pixels (96 DPI) */
+const PDF_TO_PX = 96 / 72;
 
 // =============================================================================
 // Types
@@ -253,6 +258,7 @@ export function setPageBackground(page: Page, background: PageBackground): Page 
 
 /**
  * Create a page with PDF background
+ * Page dimensions adapt to PDF content + margin for annotations
  */
 export function createPageWithPdfBackground(
 	pdfData: string,
@@ -261,9 +267,20 @@ export function createPageWithPdfBackground(
 	pdfWidth: number,
 	pdfHeight: number
 ): Page {
-	const page = createEmptyPage('A4');
+	// Convert PDF points to whiteboard pixels and add margin
+	const contentWidth = Math.round(pdfWidth * PDF_TO_PX);
+	const contentHeight = Math.round(pdfHeight * PDF_TO_PX);
+	const pageW = contentWidth + 2 * PDF_PAGE_MARGIN;
+	const pageH = contentHeight + 2 * PDF_PAGE_MARGIN;
+
 	const background = createPdfBackground(pdfData, pageIndex, totalPages, pdfWidth, pdfHeight);
-	return setPageBackground(page, background);
+	return {
+		id: crypto.randomUUID(),
+		elements: [],
+		background,
+		width: pageW,
+		height: pageH
+	};
 }
 
 // =============================================================================
