@@ -38,6 +38,7 @@ import {
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
 import { normalizeExpression } from '$lib/ubumark/parameterization';
+import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
 
 // ============================================================================
 // SHARED DEFAULTS MERGING
@@ -223,46 +224,6 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 		}
 
-		// Resolve correction if present (QuestionCorrection has feedback and/or steps)
-		let resolvedCorrection: ResolvedCorrection | undefined;
-		if (resolvedVariation.correction) {
-			const { feedback, steps } = resolvedVariation.correction;
-			resolvedCorrection = {};
-
-			// Resolve feedback messages (correct/incorrect/partial)
-			if (feedback) {
-				resolvedCorrection.feedback = {};
-				if (feedback.correct) {
-					resolvedCorrection.feedback.correct = resolveMarkdownContent(
-						feedback.correct,
-						resolvedVariables,
-						seed
-					);
-				}
-				if (feedback.incorrect) {
-					resolvedCorrection.feedback.incorrect = resolveMarkdownContent(
-						feedback.incorrect,
-						resolvedVariables,
-						seed
-					);
-				}
-				if (feedback.partial) {
-					resolvedCorrection.feedback.partial = resolveMarkdownContent(
-						feedback.partial,
-						resolvedVariables,
-						seed
-					);
-				}
-			}
-
-			// Resolve step-by-step explanation
-			if (steps) {
-				resolvedCorrection.steps = steps.map((step) =>
-					resolveMarkdownContent(step, resolvedVariables, seed)
-				);
-			}
-		}
-
 		// 7. Resolve type-specific fields from resolved variation (inferred from structure)
 		let resolvedChoices;
 		let shuffledChoices;
@@ -375,6 +336,54 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 
 			// Shuffle choices
 			shuffledChoices = shuffleChoices(resolvedChoices, seed);
+		}
+
+		// 7c. Resolve correction with pseudo-variables (AFTER blanks and choices)
+		let resolvedCorrection: ResolvedCorrection | undefined;
+		if (resolvedVariation.correction) {
+			const correctionContext = buildCorrectionContext(
+				resolvedBlanks,
+				resolvedChoices, // Pre-shuffle: indices match correctChoiceIndex
+				resolvedCorrectChoiceIndex,
+				resolvedVariables
+			);
+
+			const { feedback, steps } = resolvedVariation.correction;
+			resolvedCorrection = {};
+
+			if (feedback) {
+				resolvedCorrection.feedback = {};
+				if (feedback.correct) {
+					resolvedCorrection.feedback.correct = resolveCorrectionContent(
+						feedback.correct,
+						resolvedVariables,
+						correctionContext,
+						seed
+					);
+				}
+				if (feedback.incorrect) {
+					resolvedCorrection.feedback.incorrect = resolveCorrectionContent(
+						feedback.incorrect,
+						resolvedVariables,
+						correctionContext,
+						seed
+					);
+				}
+				if (feedback.partial) {
+					resolvedCorrection.feedback.partial = resolveCorrectionContent(
+						feedback.partial,
+						resolvedVariables,
+						correctionContext,
+						seed
+					);
+				}
+			}
+
+			if (steps) {
+				resolvedCorrection.steps = steps.map((step) =>
+					resolveCorrectionContent(step, resolvedVariables, correctionContext, seed)
+				);
+			}
 		}
 
 		// 8. Construct instance

@@ -1625,7 +1625,7 @@ describe('generateInstance - Bug: bare text choice "pair"', () => {
 		expect(result.success).toBe(true);
 	});
 
-	it('should reproduce the original bug with correction {{expression}} and {{solution}}', () => {
+	it('should resolve correction {{expression}} and {{solution}} (previously crashed)', () => {
 		const template: QuestionTemplate = {
 			id: 'test-pair-bug-2',
 			title: "Parité d'un nombre entier",
@@ -1662,9 +1662,168 @@ describe('generateInstance - Bug: bare text choice "pair"', () => {
 		};
 
 		const result = generateInstance(template, 42);
-		console.log('Result with original correction:', JSON.stringify(result, null, 2));
-		// This should fail because {{expression}} and {{solution}} are not defined variables
-		expect(result.success).toBe(false);
-		expect(result.errors?.[0]).toContain('not found');
+		// Bug fix: {{expression}} resolves to expression1 (fallback), {{solution}} to correct choice text
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const step = result.instance.correction?.steps?.[0];
+		expect(step).toBeDefined();
+		// {{expression}} should resolve to the value of expression1 (= b = 2*a)
+		// {{solution}} should resolve to the correct choice text ("pair")
+		expect(String(step)).toContain('pair');
+		expect(String(step)).not.toContain('{{expression}}');
+		expect(String(step)).not.toContain('{{solution}}');
+	});
+});
+
+// ============================================================================
+// Integration tests: correction placeholder resolution (behaviors 17-20)
+// ============================================================================
+
+describe('generateInstance - Correction placeholder integration', () => {
+	it('17. fill-in-blanks: {{solution}} resolves in correction', () => {
+		const template: QuestionTemplate = {
+			id: 'test-corr-17',
+			title: 'Test correction fill-in',
+			status: 'draft' as const,
+			variations: [
+				{
+					statement: templateMarkdown('${{a}} + {{b}} = ?$'),
+					variables: [
+						{ name: 'a', expression: '5' },
+						{ name: 'b', expression: '3' }
+					],
+					blanks: [{ expectedAnswer: '{{eval:a + b}}' }],
+					correction: {
+						feedback: {
+							incorrect: templateMarkdown('La réponse correcte est {{solution}}.')
+						}
+					}
+				}
+			],
+			grades: ['6'],
+			theme: 'Arithmétique',
+			domain: 'Addition',
+			level: 1
+		};
+
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const feedback = result.instance.correction?.feedback?.incorrect;
+		expect(feedback).toBeDefined();
+		expect(String(feedback)).toContain('8');
+		expect(String(feedback)).not.toContain('{{solution}}');
+	});
+
+	it('18. QCM: {{solution}} resolves to correct choice text', () => {
+		const template: QuestionTemplate = {
+			id: 'test-corr-18',
+			title: 'Test correction QCM',
+			status: 'draft' as const,
+			variations: [
+				{
+					statement: templateMarkdown('2 est un nombre'),
+					correctChoiceIndex: '0',
+					choices: [
+						{ content: templateMarkdown('pair'), isCorrect: true },
+						{ content: templateMarkdown('impair'), isCorrect: false }
+					],
+					correction: {
+						feedback: {
+							incorrect: templateMarkdown('La réponse est {{solution}}.')
+						}
+					}
+				}
+			],
+			options: { shuffleChoices: false },
+			grades: ['CE1'],
+			theme: 'Nombres',
+			domain: 'Parité',
+			level: 1
+		};
+
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const feedback = result.instance.correction?.feedback?.incorrect;
+		expect(feedback).toBeDefined();
+		expect(String(feedback)).toContain('pair');
+	});
+
+	it('19. multi-blanks: {{solution_0}} and {{solution_1}} resolve', () => {
+		const template: QuestionTemplate = {
+			id: 'test-corr-19',
+			title: 'Test correction multi-blanks',
+			status: 'draft' as const,
+			variations: [
+				{
+					statement: templateMarkdown('$? + ? = 15$'),
+					variables: [],
+					blanks: [{ expectedAnswer: '7' }, { expectedAnswer: '8' }],
+					correction: {
+						steps: [templateMarkdown('Première réponse: {{solution_0}}, Deuxième: {{solution_1}}.')]
+					}
+				}
+			],
+			grades: ['CE1'],
+			theme: 'Arithmétique',
+			domain: 'Addition',
+			level: 1
+		};
+
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const step = result.instance.correction?.steps?.[0];
+		expect(step).toBeDefined();
+		expect(String(step)).toContain('7');
+		expect(String(step)).toContain('8');
+		expect(String(step)).not.toContain('{{solution_0}}');
+		expect(String(step)).not.toContain('{{solution_1}}');
+	});
+
+	it('20. {{answer}} survives generation in the instance', () => {
+		const template: QuestionTemplate = {
+			id: 'test-corr-20',
+			title: 'Test answer preservation',
+			status: 'draft' as const,
+			variations: [
+				{
+					statement: templateMarkdown('${{a}} + {{b}} = ?$'),
+					variables: [
+						{ name: 'a', expression: '5' },
+						{ name: 'b', expression: '3' }
+					],
+					blanks: [{ expectedAnswer: '{{eval:a + b}}' }],
+					correction: {
+						feedback: {
+							incorrect: templateMarkdown(
+								'Vous avez répondu {{answer}} mais la réponse est {{solution}}.'
+							)
+						}
+					}
+				}
+			],
+			grades: ['6'],
+			theme: 'Arithmétique',
+			domain: 'Addition',
+			level: 1
+		};
+
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const feedback = result.instance.correction?.feedback?.incorrect;
+		expect(feedback).toBeDefined();
+		// {{answer}} should be preserved for client-side resolution
+		expect(String(feedback)).toContain('{{answer}}');
+		// {{solution}} should be resolved
+		expect(String(feedback)).toContain('8');
+		expect(String(feedback)).not.toContain('{{solution}}');
 	});
 });
