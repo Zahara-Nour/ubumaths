@@ -38,6 +38,7 @@ import {
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
 import { normalizeExpression } from '$lib/ubumark/parameterization';
+import { applyRemoveSpaces } from '$lib/ubumark/parameterization/resolver/variable-resolver';
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
 
 // ============================================================================
@@ -289,6 +290,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						resolvedVariables,
 						seed
 					);
+					if (resolved.type === 'math' && template.defaultDisplayOptions?.removeSpaces) {
+						resolved.prefilled = applyRemoveSpaces(resolved.prefilled);
+					}
 				}
 				// Generate expectedAnswerLatex for math blanks
 				if (resolved.type === 'math') {

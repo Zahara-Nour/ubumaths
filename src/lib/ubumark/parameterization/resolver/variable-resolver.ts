@@ -57,7 +57,7 @@ import { toFrenchDecimal } from '$lib/utils/french-math';
  * applyRemoveSpaces("3.14")      → "3{,}1{}4"        (decimal → {,}, then {} between digits)
  * applyRemoveSpaces("12345.678") → "1{}2{}3{}4{}5{,}6{}7{}8"
  */
-function applyRemoveSpaces(latex: string): string {
+export function applyRemoveSpaces(latex: string): string {
 	// Step 1: convert decimal points to French commas (but no digit grouping)
 	const withFrenchComma = toFrenchDecimal(latex, { formatSpaces: false });
 	// Step 2: break consecutive digit sequences with empty LaTeX groups
