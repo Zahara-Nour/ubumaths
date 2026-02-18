@@ -323,14 +323,30 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			// 7b. Multiple choice — resolve choice content if it has variable references.
 			// Bare text like "pair" must NOT go through resolveMarkdownContent because
 			// normalizeExpression treats identifiers as variable references.
-			resolvedChoices = resolvedVariation.choices.map((choice) => {
+
+			// Build set of correct indexes from resolvedCorrectChoiceIndex
+			const correctIndexSet = new Set<number>();
+			if (resolvedCorrectChoiceIndex) {
+				const indexes = Array.isArray(resolvedCorrectChoiceIndex)
+					? resolvedCorrectChoiceIndex
+					: [resolvedCorrectChoiceIndex];
+				for (const idx of indexes) {
+					const n = parseInt(idx, 10);
+					if (!isNaN(n)) correctIndexSet.add(n);
+				}
+			}
+
+			resolvedChoices = resolvedVariation.choices.map((choice, i) => {
 				const content = choice.content;
 				const resolvedContent: ResolvedMarkdown = content.includes('{{')
 					? resolveMarkdownContent(content, resolvedVariables, seed)
 					: resolvedMarkdown(content);
+				// Use choice.isCorrect if set, otherwise derive from correctChoiceIndex
+				const isCorrect =
+					correctIndexSet.size > 0 ? correctIndexSet.has(i) : (choice.isCorrect ?? false);
 				return {
 					content: resolvedContent,
-					isCorrect: choice.isCorrect ?? false
+					isCorrect
 				};
 			});
 
