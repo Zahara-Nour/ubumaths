@@ -182,7 +182,7 @@ const sharedZ = z
 
 const variationZ = z
 	.object({
-		statement: z.string(),
+		statement: z.string().optional(),
 		variables: z.array(variableZ).optional(),
 		correctChoiceIndex: correctChoiceIndexZ.optional(),
 		correction: correctionZ.optional().nullable(),
@@ -220,4 +220,17 @@ export const questionTemplateSchema = z
 		delay: z.number().optional().nullable(),
 		multipleAnswers: z.boolean().optional().nullable()
 	})
-	.strict();
+	.strict()
+	.refine(
+		(data) => {
+			const hasSharedStatement = data.shared?.statement && data.shared.statement.trim().length > 0;
+			return data.variations.every(
+				(v) => (v.statement && v.statement.trim().length > 0) || hasSharedStatement
+			);
+		},
+		{
+			message:
+				'Chaque variation doit avoir un énoncé, ou un énoncé partagé doit être défini dans shared',
+			path: ['variations']
+		}
+	);
