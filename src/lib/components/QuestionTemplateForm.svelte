@@ -565,7 +565,7 @@
 
 			// Build cleaned variation without mutating reactive state
 			const cleaned: QuestionVariation = {
-				statement: variation.statement,
+				...(variation.statement?.trim() ? { statement: variation.statement } : {}),
 				...(filteredVars && filteredVars.length > 0 ? { variables: filteredVars } : {}),
 				...(questionType === 'multiple_choice'
 					? sharedChoices.length > 0
