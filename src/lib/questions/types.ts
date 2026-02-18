@@ -217,8 +217,9 @@ export interface TemplateBlank {
 }
 
 export interface QuestionVariation {
-	/** Question statement as markdown template (can contain {{var}}, {{random:}}, etc.) */
-	statement: TemplateMarkdown;
+	/** Question statement as markdown template (can contain {{var}}, {{random:}}, etc.).
+	 *  Optional when a shared statement is defined at template level. */
+	statement?: TemplateMarkdown;
 
 	/** Variables in declaration order (resolved sequentially) */
 	variables?: QuestionVariable[];
