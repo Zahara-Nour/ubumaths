@@ -826,6 +826,7 @@
 		// Variations
 		variations = t.variations?.map((v) => ({
 			...v,
+			statement: v.statement || templateMarkdown(''),
 			variables: v.variables || [],
 			blanks: v.blanks || [],
 			choices: v.choices || [],
