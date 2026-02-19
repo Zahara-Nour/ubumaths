@@ -86,6 +86,7 @@
 	import { openVipCardsModal } from '$lib/utils/vip-card-modals';
 	import { openBonusReasonModal } from '$lib/utils/bonus-modals';
 	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
+	import { onDestroy } from 'svelte';
 	import { Star, Loader2 } from 'lucide-svelte';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import type { StudentVipCards } from '$lib/types/vip-card';
@@ -123,13 +124,8 @@
 	// STATE
 	// ============================================================================
 
-	// Debounce timers for batching gidouille updates
-	// Tracks pending API calls per student to batch rapid clicks
-	let debounceTimers = $state<Record<string, ReturnType<typeof setTimeout>>>({});
-
-	// Base gidouilles values (captured at first click, before optimistic updates)
-	// Used to calculate accumulated delta correctly across multiple rapid clicks
-	let baseGidouilles = $state<Record<string, number>>({});
+	// Pending gidouille submissions: accumulates delta per student, sends after 500ms
+	const pendingGidouilles: Record<string, { timeoutId: number; accumulatedDelta: number }> = {};
 
 	// ============================================================================
 	// CACHE DATA ACCESS (Reactive via $derived)
@@ -220,6 +216,52 @@
 	// ============================================================================
 
 	/**
+	 * Debounced gidouille update (shared by add and warning actions)
+	 * Accumulates delta directly, sends single API call after 500ms of inactivity
+	 */
+	function debouncedUpdateGidouilles(studentId: string, delta: number, studentName: string) {
+		// 1. Instant optimistic update
+		teacherCache.updateGidouillesOptimistic(classId, studentId, delta);
+
+		// 2. Accumulate delta and reset debounce timer
+		if (pendingGidouilles[studentId]) {
+			clearTimeout(pendingGidouilles[studentId].timeoutId);
+			pendingGidouilles[studentId].accumulatedDelta += delta;
+		} else {
+			pendingGidouilles[studentId] = { timeoutId: 0, accumulatedDelta: delta };
+		}
+
+		// 3. Set new debounced timer (500ms)
+		const timeoutId = setTimeout(async () => {
+			const accumulatedDelta = pendingGidouilles[studentId].accumulatedDelta;
+			delete pendingGidouilles[studentId];
+
+			if (accumulatedDelta === 0) return;
+
+			try {
+				const response = await fetch('/api/teacher/rewards/update-student', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ studentId, classId, delta: accumulatedDelta })
+				});
+
+				if (response.ok) {
+					const amountStr = accumulatedDelta > 0 ? `+${accumulatedDelta}` : `${accumulatedDelta}`;
+					const plural = Math.abs(accumulatedDelta) > 1 ? 's' : '';
+					toaster.success(`${amountStr} gidouille${plural} (${studentName})`);
+				} else {
+					throw new Error('Failed');
+				}
+			} catch {
+				teacherCache.updateGidouillesOptimistic(classId, studentId, -accumulatedDelta);
+				toaster.error('Erreur lors de la mise a jour des gidouilles');
+			}
+		}, 500) as unknown as number;
+
+		pendingGidouilles[studentId].timeoutId = timeoutId;
+	}
+
+	/**
 	 * Handle warning button click (3-step logic)
 	 */
 	async function handleWarningAction(student: StudentData) {
@@ -229,70 +271,7 @@
 
 		// STEP 1: Remove gidouille if > 0 (optimistic UI + debounced API call)
 		if (gidouilles > 0) {
-			const studentId = student.id;
-
-			// Save base value on first click (before any optimistic updates)
-			if (!debounceTimers[studentId]) {
-				baseGidouilles[studentId] = gidouilles;
-			}
-
-			// 1. Instant optimistic update via cache
-			teacherCache.updateGidouillesOptimistic(classId, studentId, -1);
-
-			// 2. Clear existing timer for this student
-			if (debounceTimers[studentId]) {
-				clearTimeout(debounceTimers[studentId]);
-			}
-
-			// 3. Set new debounced timer (500ms)
-			debounceTimers[studentId] = setTimeout(async () => {
-				// Get current optimistic value from cache
-				const currentOptimistic =
-					teacherCache.getRewardsSync(classId)?.get(studentId)?.gidouilles ?? gidouilles;
-				// Use saved base value (from first click) instead of current value
-				const baseValue = baseGidouilles[studentId] ?? gidouilles;
-				const actualChange = currentOptimistic - baseValue;
-
-				// Clean up timer AND base value BEFORE the async fetch,
-				// so the next batch of clicks captures a fresh base value
-				const newTimers = { ...debounceTimers };
-				delete newTimers[studentId];
-				debounceTimers = newTimers;
-
-				const newBase = { ...baseGidouilles };
-				delete newBase[studentId];
-				baseGidouilles = newBase;
-
-				if (actualChange === 0) return;
-
-				try {
-					const response = await fetch('/api/rewards/gidouilles', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						credentials: 'include',
-						body: JSON.stringify({
-							studentId,
-							classId,
-							amount: actualChange
-						})
-					});
-
-					if (response.ok) {
-						// Success: Cache already has correct optimistic value
-						// Show toast with accumulated amount
-						const amountStr = actualChange > 0 ? `+${actualChange}` : `${actualChange}`;
-						const plural = Math.abs(actualChange) > 1 ? 's' : '';
-						toaster.success(`${amountStr} gidouille${plural} (${student.firstname})`);
-					} else {
-						throw new Error('Failed');
-					}
-				} catch (_error) {
-					// Rollback optimistic update by reversing delta
-					teacherCache.updateGidouillesOptimistic(classId, studentId, -actualChange);
-					toaster.error('Erreur lors du retrait de la gidouille');
-				}
-			}, 500);
-
+			debouncedUpdateGidouilles(student.id, -1, student.firstname);
 			return;
 		}
 
@@ -390,71 +369,8 @@
 	 * Handle add gidouille button click (optimistic UI + debounced API call)
 	 * Batches rapid clicks into single API call after 500ms of inactivity
 	 */
-	async function handleAddGidouille(student: StudentData) {
-		const studentId = student.id;
-		const gidouilles = student.gidouilles;
-
-		// Save base value on first click (before any optimistic updates)
-		if (!debounceTimers[studentId]) {
-			baseGidouilles[studentId] = gidouilles;
-		}
-
-		// 1. Instant optimistic update via cache
-		teacherCache.updateGidouillesOptimistic(classId, studentId, +1);
-
-		// 2. Clear existing timer for this student
-		if (debounceTimers[studentId]) {
-			clearTimeout(debounceTimers[studentId]);
-		}
-
-		// 3. Set new debounced timer (500ms)
-		debounceTimers[studentId] = setTimeout(async () => {
-			// Get current optimistic value from cache
-			const currentOptimistic =
-				teacherCache.getRewardsSync(classId)?.get(studentId)?.gidouilles ?? gidouilles;
-			// Use saved base value (from first click) instead of current value
-			const baseValue = baseGidouilles[studentId] ?? gidouilles;
-			const actualChange = currentOptimistic - baseValue;
-
-			// Clean up timer AND base value BEFORE the async fetch,
-			// so the next batch of clicks captures a fresh base value
-			const newTimers = { ...debounceTimers };
-			delete newTimers[studentId];
-			debounceTimers = newTimers;
-
-			const newBase = { ...baseGidouilles };
-			delete newBase[studentId];
-			baseGidouilles = newBase;
-
-			if (actualChange === 0) return;
-
-			try {
-				const response = await fetch('/api/rewards/gidouilles', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					credentials: 'include',
-					body: JSON.stringify({
-						studentId,
-						classId,
-						amount: actualChange
-					})
-				});
-
-				if (response.ok) {
-					// Success: Cache already has correct optimistic value
-					// Show toast with accumulated amount
-					const amountStr = actualChange > 0 ? `+${actualChange}` : `${actualChange}`;
-					const plural = Math.abs(actualChange) > 1 ? 's' : '';
-					toaster.success(`${amountStr} gidouille${plural} (${student.firstname})`);
-				} else {
-					throw new Error('Failed');
-				}
-			} catch (_error) {
-				// Rollback optimistic update by reversing delta
-				teacherCache.updateGidouillesOptimistic(classId, studentId, -actualChange);
-				toaster.error("Erreur lors de l'ajout de la gidouille");
-			}
-		}, 500);
+	function handleAddGidouille(student: StudentData) {
+		debouncedUpdateGidouilles(student.id, +1, student.firstname);
 	}
 
 	/**
@@ -497,6 +413,13 @@
 			}
 		});
 	}
+
+	// Clear pending timers on component unmount
+	onDestroy(() => {
+		Object.values(pendingGidouilles).forEach(({ timeoutId }) => {
+			clearTimeout(timeoutId);
+		});
+	});
 
 	/**
 	 * Handle show VIP cards button click
