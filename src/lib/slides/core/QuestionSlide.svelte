@@ -102,7 +102,9 @@
 
 		attempts += 1;
 		const answer = prepareAnswerValue();
-		const result = validateAnswer(answer, instance);
+		const answerLatex =
+			getQuestionType(instance) === 'fill_in_blanks' ? fillBlankValuesLatex : undefined;
+		const result = validateAnswer(answer, instance, answerLatex);
 		validationResult = result;
 		isSubmitted = true;
 
