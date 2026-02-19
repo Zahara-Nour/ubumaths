@@ -270,6 +270,7 @@
 										flashMode={!interactive}
 										validationResults={isSubmitted ? blankValidationResults : []}
 										onSubmit={handleSubmit}
+										mathModeSpace={instance.options?.constraints?.spaces ? '\\,' : undefined}
 									/>
 								{:else}
 									<MarkdownRenderer content={statementMarkdown} />

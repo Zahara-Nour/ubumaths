@@ -53,6 +53,8 @@
 		class?: string;
 		/** Configuration for generic function names (f, g, h, P, Q, etc.) */
 		genericFunctions?: GenericFunctionConfig | null;
+		/** LaTeX to insert when Space is pressed in math mode (e.g. '\\,' for thin space) */
+		mathModeSpace?: string;
 	}
 
 	let {
@@ -64,7 +66,8 @@
 		disabled = false,
 		correctValues,
 		class: className = '',
-		genericFunctions
+		genericFunctions,
+		mathModeSpace
 	}: Props = $props();
 
 	// Convert to LaTeX for rendering
@@ -110,6 +113,14 @@
 		} catch (error) {
 			console.error('MathPrompt: Error setting correct values:', error);
 		}
+	});
+
+	/**
+	 * Configure mathModeSpace on the math-field element
+	 */
+	$effect(() => {
+		if (!mathField || !mathModeSpace) return;
+		(mathField as Record<string, unknown>).mathModeSpace = mathModeSpace;
 	});
 
 	/**
