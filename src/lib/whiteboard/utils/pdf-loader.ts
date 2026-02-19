@@ -23,6 +23,9 @@ export const PDF_MIME_TYPE = 'application/pdf';
 /** Default scale for PDF rendering (2x for high DPI) */
 export const PDF_RENDER_SCALE = 2;
 
+/** Quality for PDF page rendering as WebP/JPEG (high quality for readable text) */
+export const PDF_PAGE_QUALITY = 0.92;
+
 /** Conversion factor from PDF points (1/72 inch) to whiteboard pixels (96 DPI) */
 const PDF_TO_PX = 96 / 72;
 
@@ -211,7 +214,11 @@ export async function renderPdfPage(
 			canvas
 		} as Parameters<typeof page.render>[0]).promise;
 
-		const dataUrl = canvas.toDataURL('image/png');
+		// WebP for better compression, JPEG fallback for unsupported browsers
+		let dataUrl = canvas.toDataURL('image/webp', PDF_PAGE_QUALITY);
+		if (!dataUrl.startsWith('data:image/webp')) {
+			dataUrl = canvas.toDataURL('image/jpeg', PDF_PAGE_QUALITY);
+		}
 
 		return {
 			success: true,
