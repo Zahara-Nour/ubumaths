@@ -34,7 +34,8 @@
 		hasPrompts,
 		expressionToFlashLatex,
 		expressionToLatex,
-		replacePromptsWithValues
+		replacePromptsWithValues,
+		replacePromptsWithPrefilled
 	} from '$lib/components/markdown/utils/math-utils';
 	import type { BlockNode, InlineNode } from '$lib/ubumark';
 
@@ -189,6 +190,18 @@
 		return Object.keys(result).length > 0 ? result : undefined;
 	});
 
+	// Build prefilled values map for flash mode (show prefilled instead of ?)
+	let mathPrefilledValues = $derived.by(() => {
+		if (!flashMode) return undefined;
+		const result: Record<string, string> = {};
+		for (let i = 0; i < blanks.length; i++) {
+			if (blanks[i].prefilled) {
+				result[String(i)] = blanks[i].prefilled!;
+			}
+		}
+		return Object.keys(result).length > 0 ? result : undefined;
+	});
+
 	/**
 	 * Handle input changes from BlankInput (text) or MathPrompt (math)
 	 */
@@ -229,11 +242,15 @@
 					{flashMode}
 					correctionMode={showCorrectAnswers}
 					correctValues={mathCorrectValues}
+					prefilledValues={mathPrefilledValues}
 				/>
 			{:else if node.type === 'math-block'}
 				{#if node.expressionName || hasPrompts(node.expression, node.syntax)}
 					{#if flashMode}
-						{@const flashLatex = expressionToFlashLatex(node.expression, node.syntax)}
+						{@const baseLatex = expressionToLatex(node.expression, node.syntax)}
+						{@const flashLatex = mathPrefilledValues
+							? replacePromptsWithPrefilled(baseLatex, mathPrefilledValues)
+							: expressionToFlashLatex(node.expression, node.syntax)}
 						{#key flashLatex}
 							<MathBlock expression={flashLatex} syntax="latex" />
 						{/key}

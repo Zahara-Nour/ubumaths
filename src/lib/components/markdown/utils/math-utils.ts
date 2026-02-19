@@ -161,3 +161,17 @@ export function replacePromptsWithValues(latex: string, values: Record<string, s
 		return `\\textcolor{green}{${value}}`;
 	});
 }
+
+/**
+ * Replace \placeholder[N]{} with prefilled values (unstyled) in a LaTeX string.
+ *
+ * Used in flash mode to display prefilled values without correction styling.
+ * Prompts without a prefilled value fall back to \boxed{?}.
+ */
+export function replacePromptsWithPrefilled(latex: string, values: Record<string, string>): string {
+	return latex.replace(/\\placeholder\[(\d+)\]\{[^}]*\}/g, (_match: string, index: string) => {
+		const value = values[index];
+		if (!value) return '\\boxed{?}';
+		return value;
+	});
+}
