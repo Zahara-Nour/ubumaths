@@ -28,6 +28,13 @@ const removeWarningSchema = z.object({
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {
+	// DEPRECATION WARNING: Log usage of this deprecated endpoint
+	console.warn(
+		'[DEPRECATED] /api/warnings/remove endpoint called. ' +
+			'Please migrate to /api/warnings/remove-multiple. ' +
+			'This endpoint will be removed in a future version.'
+	);
+
 	const supabase = locals.supabase;
 	const { user } = await locals.safeGetSession();
 	if (!user) {

@@ -316,7 +316,9 @@ GET /api/student/rewards
 
 ---
 
-### Add Gidouilles
+### Add Gidouilles (DEPRECATED)
+
+> **DEPRECATED**: Use `POST /api/teacher/rewards/update-student` with `{ studentId, classId, delta }` instead.
 
 Add gidouilles to a student (used by games, achievements).
 

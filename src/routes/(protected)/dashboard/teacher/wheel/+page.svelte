@@ -23,19 +23,20 @@
 	// Handle gidouille reward
 	const handleRewardGiven = async (studentId: string, amount: number) => {
 		try {
-			const response = await fetch('/api/rewards/gidouilles', {
+			const response = await fetch('/api/teacher/rewards/update-student', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
 					studentId,
-					amount
+					classId: selectedClassId,
+					delta: amount
 				})
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to award gidouilles');
+				throw new Error('Failed to update gidouilles');
 			}
 
 			// Refresh data
