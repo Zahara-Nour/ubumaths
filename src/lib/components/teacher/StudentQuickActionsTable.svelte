@@ -87,7 +87,7 @@
 	import { openBonusReasonModal } from '$lib/utils/bonus-modals';
 	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { onDestroy } from 'svelte';
-	import { Star, Loader2 } from 'lucide-svelte';
+	import { Star, Loader2, ScrollText } from 'lucide-svelte';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { getTotalUnusedCards } from '$lib/utils/vip-cards';
@@ -516,6 +516,13 @@
 										<span class="text-muted-foreground">{student.lastname}</span>
 									{/if}
 								</span>
+								<a
+									href="/dashboard/teacher/students/{student.id}/journal"
+									title="Voir l'historique des récompenses"
+									class="ml-auto text-muted-foreground transition-colors hover:text-foreground"
+								>
+									<ScrollText class="h-4 w-4" />
+								</a>
 							</div>
 						</Table.Cell>
 
