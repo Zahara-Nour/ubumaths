@@ -57,6 +57,8 @@
 		correctValues?: Record<string, string>;
 		/** Pre-fill blanks with initial values in flash mode */
 		prefilledValues?: Record<string, string>;
+		/** LaTeX to insert when Space is pressed in math mode */
+		mathModeSpace?: string;
 		/** Callback when a hashtag is clicked */
 		onHashtagClick?: (tag: string) => void;
 		/** Callback when a mention is clicked */
@@ -84,6 +86,7 @@
 		correctionMode = false,
 		correctValues,
 		prefilledValues,
+		mathModeSpace,
 		onHashtagClick,
 		onMentionClick,
 		genericFunctions,
@@ -180,6 +183,7 @@
 							disabled={inputsDisabled}
 							{correctValues}
 							{genericFunctions}
+							{mathModeSpace}
 						/>
 					{/key}
 				{/if}

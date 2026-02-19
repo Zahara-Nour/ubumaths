@@ -76,6 +76,8 @@
 		validationResults?: (boolean | null)[];
 		/** Callback when Enter is pressed in a blank */
 		onSubmit?: () => void;
+		/** LaTeX to insert when Space is pressed in math mode */
+		mathModeSpace?: string;
 	}
 
 	let {
@@ -89,7 +91,8 @@
 		showCorrectAnswers = false,
 		onlyBlanks = false,
 		validationResults = [],
-		onSubmit
+		onSubmit,
+		mathModeSpace
 	}: Props = $props();
 
 	// When showing correct answers, force disabled
@@ -243,6 +246,7 @@
 					correctionMode={showCorrectAnswers}
 					correctValues={mathCorrectValues}
 					prefilledValues={mathPrefilledValues}
+					{mathModeSpace}
 				/>
 			{:else if node.type === 'math-block'}
 				{#if node.expressionName || hasPrompts(node.expression, node.syntax)}
@@ -270,6 +274,7 @@
 								onPromptChange={handleInputChange}
 								disabled={effectiveDisabled}
 								correctValues={mathCorrectValues}
+								{mathModeSpace}
 							/>
 						{/key}
 					{/if}
