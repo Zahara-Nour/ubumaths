@@ -113,6 +113,25 @@
 	});
 
 	/**
+	 * Pre-fill prompts with initial values (prefilled blanks)
+	 */
+	$effect(() => {
+		if (!mathField || correctValues) return;
+
+		try {
+			const field = mathField as MathFieldElement;
+			for (const idx of promptIndices) {
+				const inputState = inputs.find((i) => i.index === idx);
+				if (inputState?.value) {
+					field.setPromptValue(String(idx), inputState.value);
+				}
+			}
+		} catch (error) {
+			console.error('MathPrompt: Error setting prefilled values:', error);
+		}
+	});
+
+	/**
 	 * Update prompt states (correct/incorrect) when inputs prop changes
 	 */
 	$effect(() => {
