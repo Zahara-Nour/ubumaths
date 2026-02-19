@@ -51,9 +51,9 @@
 		students={myStudents}
 		gidouilleReward={10}
 		onRewardGiven={async (id, amount) => {
-			await fetch('/api/rewards/gidouilles', {
+			await fetch('/api/teacher/rewards/update-student', {
 				method: 'POST',
-				body: JSON.stringify({ studentId: id, amount })
+				body: JSON.stringify({ studentId: id, classId, delta: amount })
 			});
 		}}
 	/>

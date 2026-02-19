@@ -202,10 +202,10 @@ $effect(() => {
 Invalidate after mutations to ensure freshness:
 
 ```typescript
-async function updateGidouilles(studentId: string, amount: number) {
-	await fetch('/api/rewards/gidouilles', {
+async function updateGidouilles(studentId: string, delta: number) {
+	await fetch('/api/teacher/rewards/update-student', {
 		method: 'POST',
-		body: JSON.stringify({ studentId, amount })
+		body: JSON.stringify({ studentId, classId, delta })
 	});
 
 	// Invalidate to force fresh data on next access
