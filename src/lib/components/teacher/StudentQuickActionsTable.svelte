@@ -253,6 +253,16 @@
 				const baseValue = baseGidouilles[studentId] ?? gidouilles;
 				const actualChange = currentOptimistic - baseValue;
 
+				// Clean up timer AND base value BEFORE the async fetch,
+				// so the next batch of clicks captures a fresh base value
+				const newTimers = { ...debounceTimers };
+				delete newTimers[studentId];
+				debounceTimers = newTimers;
+
+				const newBase = { ...baseGidouilles };
+				delete newBase[studentId];
+				baseGidouilles = newBase;
+
 				if (actualChange === 0) return;
 
 				try {
@@ -281,15 +291,6 @@
 					teacherCache.updateGidouillesOptimistic(classId, studentId, -actualChange);
 					toaster.error('Erreur lors du retrait de la gidouille');
 				}
-
-				// Clean up timer AND base value
-				const newTimers = { ...debounceTimers };
-				delete newTimers[studentId];
-				debounceTimers = newTimers;
-
-				const newBase = { ...baseGidouilles };
-				delete newBase[studentId];
-				baseGidouilles = newBase;
 			}, 500);
 
 			return;
@@ -415,6 +416,16 @@
 			const baseValue = baseGidouilles[studentId] ?? gidouilles;
 			const actualChange = currentOptimistic - baseValue;
 
+			// Clean up timer AND base value BEFORE the async fetch,
+			// so the next batch of clicks captures a fresh base value
+			const newTimers = { ...debounceTimers };
+			delete newTimers[studentId];
+			debounceTimers = newTimers;
+
+			const newBase = { ...baseGidouilles };
+			delete newBase[studentId];
+			baseGidouilles = newBase;
+
 			if (actualChange === 0) return;
 
 			try {
@@ -443,15 +454,6 @@
 				teacherCache.updateGidouillesOptimistic(classId, studentId, -actualChange);
 				toaster.error("Erreur lors de l'ajout de la gidouille");
 			}
-
-			// Clean up timer AND base value
-			const newTimers = { ...debounceTimers };
-			delete newTimers[studentId];
-			debounceTimers = newTimers;
-
-			const newBase = { ...baseGidouilles };
-			delete newBase[studentId];
-			baseGidouilles = newBase;
 		}, 500);
 	}
 
