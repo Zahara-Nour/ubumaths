@@ -80,6 +80,13 @@ export interface DeleteAutosaveResult {
 // Drive Sync Service
 // ============================================================================
 
+/**
+ * Maximum body size for Drive save requests (bytes).
+ * Vercel serverless functions have a 4.5MB body limit.
+ * Cap at 4MB to leave room for overhead.
+ */
+const MAX_DRIVE_BODY_SIZE = 4 * 1024 * 1024;
+
 class DriveSyncService {
 	private autoSyncTimeout: ReturnType<typeof setTimeout> | null = null;
 	private isSyncing = false;
@@ -110,18 +117,29 @@ class DriveSyncService {
 		this.isSyncing = true;
 
 		try {
+			const body = JSON.stringify({
+				document: options.document,
+				fileName: options.fileName,
+				fileId: options.fileId,
+				folderId: options.folderId,
+				thumbnail: options.thumbnail,
+				isAutosave: options.isAutosave,
+				originalFileId: options.originalFileId
+			});
+
+			// Check body size before sending (Vercel 4.5MB body limit)
+			if (body.length > MAX_DRIVE_BODY_SIZE) {
+				const sizeMB = (body.length / (1024 * 1024)).toFixed(1);
+				return {
+					success: false,
+					error: `Le document est trop volumineux (${sizeMB} Mo). Maximum : 4 Mo. Essayez de réduire le nombre de pages ou d'images.`
+				};
+			}
+
 			const response = await fetch('/api/whiteboard/drive/save', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					document: options.document,
-					fileName: options.fileName,
-					fileId: options.fileId,
-					folderId: options.folderId,
-					thumbnail: options.thumbnail,
-					isAutosave: options.isAutosave,
-					originalFileId: options.originalFileId
-				})
+				body
 			});
 
 			if (!response.ok) {
