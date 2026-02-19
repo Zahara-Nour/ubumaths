@@ -161,9 +161,11 @@
 		attempts += 1;
 
 		const answer = prepareAnswerValue();
+		const answerLatex =
+			getQuestionType(instance) === 'fill_in_blanks' ? fillBlankValuesLatex : undefined;
 
 		// Validate answer
-		const validationResult = validateAnswer(answer, instance);
+		const validationResult = validateAnswer(answer, instance, answerLatex);
 		const isCorrect = validationResult.isCorrect;
 
 		// Create answer data
