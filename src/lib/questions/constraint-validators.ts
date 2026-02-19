@@ -29,19 +29,20 @@ import { checkExactUnitMatch } from './units/validator';
  * Valid spacing characters: regular space, LaTeX thin space (\,)
  *
  * Violations detected:
- * - 4+ consecutive digits without spacing
+ * - 4+ digits without spacing (French math education convention)
  * - Incorrect space positions (not aligned to groups of 3)
  *
  * @param answersLatex - Array of LaTeX strings from MathLive
  * @returns Indices of answers with spacing violations
  *
  * @example
- * checkSpaces(['1234'])      // Returns [] - 4 digits OK without space (French convention)
- * checkSpaces(['12345'])     // Returns [0] - 5+ digits needs spacing
+ * checkSpaces(['123'])       // Returns [] - 3 digits OK without space
+ * checkSpaces(['1234'])      // Returns [0] - 4+ digits needs spacing
  * checkSpaces(['1 234'])     // Returns [] - correct spacing
  * checkSpaces(['1\\,234'])   // Returns [] - LaTeX thin space is valid
- * checkSpaces(['123'])       // Returns [] - 3 digits OK without space
- * checkSpaces(['0,12345'])   // Returns [0] - decimal part with 5+ digits needs spacing
+ * checkSpaces(['12345'])     // Returns [0] - needs spacing
+ * checkSpaces(['12 345'])    // Returns [] - correct spacing
+ * checkSpaces(['0,1234'])    // Returns [0] - decimal part with 4+ digits needs spacing
  */
 export function checkSpaces(answersLatex: string[]): number[] {
 	const violations: number[] = [];
@@ -116,17 +117,12 @@ function hasIntegerSpacingViolation(integerPart: string): boolean {
 	// Remove existing spaces to get pure digits
 	const digits = integerPart.replace(/\s/g, '');
 
-	// 4 or fewer digits: no spacing required
-	if (digits.length <= 4) {
-		// But if there ARE spaces, they should be correct
-		if (integerPart.includes(' ')) {
-			// Verify spacing is at correct positions
-			return !isCorrectIntegerSpacing(integerPart);
-		}
+	// 3 or fewer digits: no spacing required (1, 12, 123)
+	if (digits.length <= 3) {
 		return false;
 	}
 
-	// 5+ digits: spacing is required
+	// 4+ digits: spacing is required (French math convention: 1 234, 12 345, etc.)
 	if (!integerPart.includes(' ')) {
 		return true; // Missing required spacing
 	}
@@ -167,16 +163,12 @@ function hasDecimalSpacingViolation(decimalPart: string): boolean {
 	// Remove existing spaces to get pure digits
 	const digits = decimalPart.replace(/\s/g, '');
 
-	// 4 or fewer digits: no spacing required
-	if (digits.length <= 4) {
-		// But if there ARE spaces, they should be correct
-		if (decimalPart.includes(' ')) {
-			return !isCorrectDecimalSpacing(decimalPart);
-		}
+	// 3 or fewer digits: no spacing required
+	if (digits.length <= 3) {
 		return false;
 	}
 
-	// 5+ digits: spacing is required
+	// 4+ digits: spacing is required (French math convention)
 	if (!decimalPart.includes(' ')) {
 		return true;
 	}

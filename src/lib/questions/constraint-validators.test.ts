@@ -26,20 +26,16 @@ import {
 
 describe('checkSpaces', () => {
 	describe('French Format - Integer Part', () => {
-		it('should allow 4 digits without spacing (French convention)', () => {
-			const result = checkSpaces(['1234']);
-			expect(result).toHaveLength(0);
-		});
-
 		it('should allow 3 digits or fewer without spacing', () => {
 			expect(checkSpaces(['1'])).toHaveLength(0);
 			expect(checkSpaces(['12'])).toHaveLength(0);
 			expect(checkSpaces(['123'])).toHaveLength(0);
 		});
 
-		it('should require spacing for 5+ digits', () => {
-			const result = checkSpaces(['12345']);
-			expect(result).toEqual([0]);
+		it('should require spacing for 4+ digits (French math convention)', () => {
+			expect(checkSpaces(['1234'])).toEqual([0]);
+			expect(checkSpaces(['12345'])).toEqual([0]);
+			expect(checkSpaces(['123456'])).toEqual([0]);
 		});
 
 		it('should allow correct spacing with regular space', () => {
@@ -68,14 +64,15 @@ describe('checkSpaces', () => {
 	});
 
 	describe('French Format - Decimal Part', () => {
-		it('should allow 4 decimal digits without spacing', () => {
-			expect(checkSpaces(['0.1234'])).toHaveLength(0);
-			expect(checkSpaces(['0{,}1234'])).toHaveLength(0); // French LaTeX comma
+		it('should allow 3 decimal digits or fewer without spacing', () => {
+			expect(checkSpaces(['0.123'])).toHaveLength(0);
+			expect(checkSpaces(['0{,}123'])).toHaveLength(0); // French LaTeX comma
 		});
 
-		it('should require spacing for 5+ decimal digits', () => {
-			const result = checkSpaces(['0.12345']);
-			expect(result).toEqual([0]);
+		it('should require spacing for 4+ decimal digits (French math convention)', () => {
+			expect(checkSpaces(['0.1234'])).toEqual([0]);
+			expect(checkSpaces(['0{,}1234'])).toEqual([0]);
+			expect(checkSpaces(['0.12345'])).toEqual([0]);
 		});
 
 		it('should allow correct decimal spacing (groups of 3 from left)', () => {
@@ -98,11 +95,13 @@ describe('checkSpaces', () => {
 	describe('French Decimal Separator', () => {
 		it('should recognize {,} as French decimal comma', () => {
 			expect(checkSpaces(['3{,}14159'])).toEqual([0]); // 5 decimal digits
+			expect(checkSpaces(['3{,}1234'])).toEqual([0]); // 4 decimal digits
 			expect(checkSpaces(['3{,}141'])).toHaveLength(0); // 3 decimal digits
 		});
 
 		it('should recognize , as decimal separator in digit,digit pattern', () => {
 			expect(checkSpaces(['3,14159'])).toEqual([0]); // 5 decimal digits
+			expect(checkSpaces(['3,1234'])).toEqual([0]); // 4 decimal digits
 			expect(checkSpaces(['3,141'])).toHaveLength(0); // 3 decimal digits
 		});
 	});
@@ -110,10 +109,10 @@ describe('checkSpaces', () => {
 	describe('Multiple Answers', () => {
 		it('should check all answers and return violating indices', () => {
 			const result = checkSpaces(['1 234', '12345', '123', '123456']);
-			expect(result).toEqual([1, 3]); // Indices 1 and 3 violate
+			expect(result).toEqual([1, 3]); // Indices 1 and 3 violate (no spacing)
 		});
 
-		it('should return empty array when all answers are correct', () => {
+		it('should return empty array when all answers are correctly spaced', () => {
 			const result = checkSpaces(['1 234', '123', '12 345']);
 			expect(result).toHaveLength(0);
 		});
