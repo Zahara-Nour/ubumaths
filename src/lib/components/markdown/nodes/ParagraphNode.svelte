@@ -34,7 +34,8 @@
 		hasPrompts,
 		expressionToFlashLatex,
 		expressionToLatex,
-		replacePromptsWithValues
+		replacePromptsWithValues,
+		replacePromptsWithPrefilled
 	} from '../utils/math-utils';
 
 	interface Props {
@@ -54,6 +55,8 @@
 		correctionMode?: boolean;
 		/** Pre-fill math prompts with correct values (flash back mode) */
 		correctValues?: Record<string, string>;
+		/** Pre-fill blanks with initial values in flash mode */
+		prefilledValues?: Record<string, string>;
 		/** Callback when a hashtag is clicked */
 		onHashtagClick?: (tag: string) => void;
 		/** Callback when a mention is clicked */
@@ -80,6 +83,7 @@
 		flashMode = false,
 		correctionMode = false,
 		correctValues,
+		prefilledValues,
 		onHashtagClick,
 		onMentionClick,
 		genericFunctions,
@@ -152,11 +156,10 @@
 		{:else if child.type === 'math-inline'}
 			{#if hasPrompts(child.expression, child.syntax)}
 				{#if flashMode}
-					{@const flashLatex = expressionToFlashLatex(
-						child.expression,
-						child.syntax,
-						genericFunctions
-					)}
+					{@const baseLatex = expressionToLatex(child.expression, child.syntax, genericFunctions)}
+					{@const flashLatex = prefilledValues
+						? replacePromptsWithPrefilled(baseLatex, prefilledValues)
+						: expressionToFlashLatex(child.expression, child.syntax, genericFunctions)}
 					{#key flashLatex}
 						<MathInline expression={flashLatex} syntax="latex" />
 					{/key}
@@ -187,7 +190,12 @@
 			{/if}
 		{:else if child.type === 'blank'}
 			{#if flashMode}
-				<span class="flash-blank">______</span>
+				{@const prefilled = prefilledValues?.[String(child.index)]}
+				{#if prefilled}
+					<span class="flash-blank flash-prefilled">{prefilled}</span>
+				{:else}
+					<span class="flash-blank">______</span>
+				{/if}
 			{:else if correctionMode}
 				{@const state = getInputState(child.index)}
 				<span class="correction-answer">{state?.value ?? ''}</span>
