@@ -32,6 +32,7 @@
 
 	// Input components
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
+	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
 
 	// Props
@@ -94,7 +95,9 @@
 	// Initialize type-specific state
 	$effect(() => {
 		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
-			fillBlankValues = instance.blanks.map((b) => b.prefilled ?? '');
+			fillBlankValues = instance.blanks.map((b) =>
+				b.prefilled ? (b.type === 'math' ? toFrenchDecimal(b.prefilled) : b.prefilled) : ''
+			);
 			fillBlankValuesLatex = instance.blanks.map(() => '');
 		}
 
