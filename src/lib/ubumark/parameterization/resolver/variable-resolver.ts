@@ -269,7 +269,13 @@ export function resolveExpression(
 			if (!spec) {
 				throw new Error(`Failed to parse random spec: ${token.content}`);
 			}
-			const generatedValue = generateRandomNumber(spec, alreadyResolved, seed);
+			const generatedValue = generateRandomNumber(
+				spec,
+				alreadyResolved,
+				seed,
+				// Resolve sub-expressions in discrete list items (e.g., "1..9" in "0|1..9")
+				(subExpr) => resolveExpression(subExpr, alreadyResolved, seed)
+			);
 			result = result.slice(0, token.start) + String(generatedValue) + result.slice(token.end);
 		} catch (error) {
 			throw new Error(
