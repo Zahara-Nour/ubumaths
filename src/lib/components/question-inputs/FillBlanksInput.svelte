@@ -205,6 +205,20 @@
 		return Object.keys(result).length > 0 ? result : undefined;
 	});
 
+	// Build prefilled values map for interactive mode (math blanks with prefilled values).
+	// Separate from inputStates so MathPrompt receives a static prop that doesn't
+	// change on every keystroke (avoids cursor-jump from setPromptValue re-runs).
+	let interactivePrefilledValues = $derived.by(() => {
+		if (flashMode || showCorrectAnswers) return undefined;
+		const result: Record<string, string> = {};
+		for (let i = 0; i < blanks.length; i++) {
+			if (blanks[i].prefilled && blanks[i].type === 'math') {
+				result[String(i)] = toFrenchDecimal(blanks[i].prefilled!);
+			}
+		}
+		return Object.keys(result).length > 0 ? result : undefined;
+	});
+
 	// Map expression names to their displayLatex (for flash mode rendering with removeSpaces, etc.)
 	let expressionDisplayMap = $derived.by(() => {
 		if (!flashMode || !expressions) return undefined;
@@ -257,7 +271,7 @@
 					{flashMode}
 					correctionMode={showCorrectAnswers}
 					correctValues={mathCorrectValues}
-					prefilledValues={mathPrefilledValues}
+					prefilledValues={flashMode ? mathPrefilledValues : interactivePrefilledValues}
 					{expressionDisplayMap}
 					{mathModeSpace}
 				/>
@@ -290,6 +304,7 @@
 								onPromptChange={handleInputChange}
 								disabled={effectiveDisabled}
 								correctValues={mathCorrectValues}
+								prefilledValues={interactivePrefilledValues}
 								{mathModeSpace}
 							/>
 						{/key}
