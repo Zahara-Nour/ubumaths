@@ -5,153 +5,31 @@
  * Zod schemas for migration review API endpoints.
  * Validates approve/reject actions on migrated questions.
  *
+ * Shared question schemas (variableSchema, displayOptionsSchema, correctionSchema,
+ * blankSchema, choiceSchema) are imported from ./questions to avoid duplication.
+ *
  * @module server/validation/migration-review
  */
 
 import { z } from 'zod';
+import {
+	variableSchema,
+	displayOptionsSchema,
+	correctionSchema,
+	blankSchema,
+	choiceSchema
+} from './questions';
 
 // ============================================================================
 // QUESTION TEMPLATE SCHEMAS FOR EDITING
 // ============================================================================
 
 /**
- * Question types supported in the migration system
- * @deprecated Type is now inferred from structure (choices → MC, else → FIB).
- * Kept for backward compatibility with existing edits.
- */
-export const questionTypeSchema = z.enum(['fill_in_blanks', 'multiple_choice']);
-
-/**
- * Variable schema for question templates
- */
-const variableSchema = z.object({
-	name: z.string().min(1, 'Variable name is required').max(50),
-	expression: z.string().min(1, 'Expression is required').max(1000)
-});
-
-/**
- * Choice schema for multiple choice questions
- */
-const choiceSchema = z.object({
-	content: z.string().min(1, 'Choice content is required').max(2000),
-	isCorrect: z.boolean().optional()
-});
-
-/**
- * Correction schema
- */
-const correctionSchema = z.object({
-	feedback: z
-		.object({
-			correct: z.string().max(2000).optional(),
-			incorrect: z.string().max(2000).optional(),
-			partial: z.string().max(2000).optional()
-		})
-		.optional(),
-	steps: z.array(z.string().max(2000)).max(20).optional()
-});
-
-// ============================================================================
-// V2 FILL-IN-BLANKS SCHEMAS
-// ============================================================================
-
-/**
- * Precision schema for numerical answers
- */
-const precisionSchema = z.discriminatedUnion('type', [
-	z.object({ type: z.literal('none') }),
-	z.object({ type: z.literal('decimal'), digits: z.number().int().nonnegative().max(20) }),
-	z.object({ type: z.literal('significant'), digits: z.number().int().positive().max(20) }),
-	z.object({ type: z.literal('magnitude'), digits: z.number().int().max(20) }),
-	z.object({
-		type: z.literal('tolerance'),
-		tolerance: z.number().positive(),
-		mode: z.enum(['absolute', 'relative'])
-	})
-]);
-
-/**
- * Required form schema (predefined or custom pattern)
- */
-const requiredFormSchema = z.union([
-	z.enum(['product', 'sum', 'fraction', 'power']),
-	z.object({ pattern: z.string().min(1).max(500) })
-]);
-
-/**
- * Validation rule schema (discriminated union by type)
- */
-const validationRuleSchema = z.discriminatedUnion('type', [
-	z.object({ type: z.literal('divisor'), dividend: z.string().max(500) }),
-	z.object({ type: z.literal('multiple'), base: z.string().max(500) }),
-	z.object({
-		type: z.literal('range'),
-		min: z.string().max(500),
-		max: z.string().max(500),
-		inclusive: z.boolean().optional()
-	}),
-	z.object({
-		type: z.literal('equation_root'),
-		equation: z.string().max(1000),
-		variable: z.string().max(50).optional()
-	}),
-	z.object({ type: z.literal('equivalent'), expression: z.string().max(1000) }),
-	z.object({
-		type: z.literal('predicate'),
-		predicate: z.enum([
-			'isPrime',
-			'isComposite',
-			'isEven',
-			'isOdd',
-			'isPositive',
-			'isNegative',
-			'isInteger'
-		])
-	}),
-	z.object({
-		type: z.literal('custom'),
-		expression: z.string().max(2000),
-		description: z.string().max(500).optional()
-	})
-]);
-
-/**
- * Unit config schema for blanks
- */
-const unitConfigSchema = z.object({
-	expected: z.boolean(),
-	required: z.string().max(50).optional()
-});
-
-/**
- * Blank defaults schema (shared validation settings for all blanks)
- */
-const blankDefaultsSchema = z.object({
-	precision: precisionSchema.optional(),
-	requiredForm: requiredFormSchema.optional(),
-	unit: unitConfigSchema.optional()
-});
-
-/**
- * Blank schema for fill-in-blanks questions (v2 TemplateBlank)
- */
-const blankSchema = z.object({
-	expectedAnswer: z.string().max(500),
-	prefilled: z.string().max(500).optional(),
-	pool: z.array(z.string().max(200)).max(50).optional(),
-	precision: precisionSchema.optional(),
-	requiredForm: requiredFormSchema.optional(),
-	validationRules: z.array(validationRuleSchema).max(10).optional(),
-	unit: unitConfigSchema.optional()
-});
-
-/**
- * Answer formats schema (key = expression var name, value = format with ? markers)
- */
-const answerFormatsSchema = z.record(z.string().max(50), z.string().max(500));
-
-/**
  * Variation schema for question templates during migration edit
+ *
+ * Extends base question schemas with migration-specific fields:
+ * - statement is optional (can be inherited from shared)
+ * - solution field for legacy migration data
  */
 const variationSchema = z.object({
 	statement: z.string().max(5000).optional().default(''),
@@ -161,10 +39,10 @@ const variationSchema = z.object({
 	blanks: z.array(blankSchema).max(20).optional(),
 	choices: z.array(choiceSchema).max(10).optional(),
 	correctChoiceIndex: z.union([z.string(), z.array(z.string())]).optional(),
-	answerFormats: answerFormatsSchema.optional(),
-	validationRules: z.array(validationRuleSchema).max(20).optional(),
-	requiredForm: requiredFormSchema.optional(),
-	blankDefaults: blankDefaultsSchema.optional()
+	answerFormats: z.unknown().optional(),
+	validationRules: z.array(z.unknown()).optional(),
+	requiredForm: z.unknown().optional(),
+	blankDefaults: z.unknown().optional()
 });
 
 /**
@@ -177,10 +55,10 @@ const sharedDefaultsSchema = z.object({
 	correction: correctionSchema.optional(),
 	choices: z.array(choiceSchema).max(10).optional(),
 	correctChoiceIndex: z.union([z.string(), z.array(z.string())]).optional(),
-	validationRules: z.array(validationRuleSchema).max(20).optional(),
-	requiredForm: requiredFormSchema.optional(),
-	blankDefaults: blankDefaultsSchema.optional(),
-	answerFormats: answerFormatsSchema.optional()
+	validationRules: z.array(z.unknown()).optional(),
+	requiredForm: z.unknown().optional(),
+	blankDefaults: z.unknown().optional(),
+	answerFormats: z.unknown().optional()
 });
 
 // ============================================================================
@@ -245,18 +123,7 @@ export const editedQuestionTemplateSchema = z
 		title: z.string().min(1, 'Le titre est requis').max(500).optional(),
 		description: z.string().max(2000).optional(),
 		shared: sharedDefaultsSchema.optional(),
-		defaultDisplayOptions: z
-			.object({
-				shuffleTerms: z.boolean().optional(),
-				shuffleFactors: z.boolean().optional(),
-				shuffleTermsAndFactors: z.boolean().optional(),
-				shallowShuffleTerms: z.boolean().optional(),
-				shallowShuffleFactors: z.boolean().optional(),
-				removeNullTerms: z.boolean().optional(),
-				removeUnnecessaryBrackets: z.boolean().optional(),
-				removeSpaces: z.boolean().optional()
-			})
-			.optional(),
+		defaultDisplayOptions: displayOptionsSchema.optional(),
 		multipleAnswers: z.boolean().optional(),
 		variations: z.array(variationSchema).min(1, 'Au moins une variation requise').max(50),
 		exerciseInstruction: z.string().max(500).optional(),
