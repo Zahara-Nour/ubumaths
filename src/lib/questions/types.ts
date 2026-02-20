@@ -185,6 +185,8 @@ export type QuestionVariable = SharedVariable;
 export interface BlankDefaults {
 	precision?: PrecisionType;
 	requiredForm?: RequiredForm;
+	/** Prevent French digit grouping in prefilled values (insert {} between digits) */
+	removeSpaces?: boolean;
 	unit?: {
 		/** true = the student must provide the unit */
 		expected: boolean;
@@ -207,6 +209,8 @@ export interface TemplateBlank {
 	// --- Per-blank overrides (override blankDefaults if defined) ---
 	precision?: PrecisionType;
 	requiredForm?: RequiredForm;
+	/** Prevent French digit grouping in prefilled value (insert {} between digits) */
+	removeSpaces?: boolean;
 	validationRules?: ValidationRule[];
 
 	/** Unit config (overrides blankDefaults.unit) */
@@ -610,6 +614,8 @@ export interface QuestionInstance {
 		name: string;
 		/** Resolved LaTeX of the expression */
 		latex: string;
+		/** Display LaTeX with display transforms applied (e.g., removeSpaces inserts {} between digits) */
+		displayLatex?: string;
 		/** Answer format in LaTeX with \placeholder[N]{} (absent if expression has inline ?) */
 		answerFormat?: string;
 	}[];

@@ -19,6 +19,7 @@ import type {
 } from '$lib/ubumark';
 import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
 import { hasPrompts } from '$lib/components/markdown/utils/math-utils';
+import { toFrenchDecimal } from '$lib/utils/french-math';
 
 type Expression = NonNullable<QuestionInstance['expressions']>[number];
 
@@ -101,14 +102,23 @@ function augmentMathNode(
  * Creates one InputState per blank with:
  * - index: 0-based position
  * - type: 'math' or 'text' from the blank definition
- * - value: prefilled value or empty string
+ * - value: prefilled value or empty string (French-formatted for math blanks)
  * - isCorrect: null (not yet validated)
+ *
+ * Math prefilled values are converted to French decimal notation (toFrenchDecimal)
+ * for consistent rendering between flash mode (static LaTeX) and interactive mode
+ * (MathLive setPromptValue). Without this, interactive mode shows "12345" instead
+ * of "12 345" because setPromptValue bypasses the toFrenchDecimal pipeline.
  */
 export function buildInputStates(blanks: InstanceBlank[]): InputState[] {
 	return blanks.map((blank, index) => ({
 		index,
 		type: blank.type,
-		value: blank.prefilled ?? '',
+		value: blank.prefilled
+			? blank.type === 'math'
+				? toFrenchDecimal(blank.prefilled)
+				: blank.prefilled
+			: '',
 		isCorrect: null
 	}));
 }
