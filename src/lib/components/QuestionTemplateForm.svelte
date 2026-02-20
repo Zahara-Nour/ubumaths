@@ -875,7 +875,8 @@
 			}
 		} else {
 			// Form → JSON: serialize current state
-			jsonString = JSON.stringify(buildTemplate(), null, 2);
+			const built = buildTemplate();
+			jsonString = JSON.stringify(built, null, 2);
 			await loadJsonEditor();
 			jsonMode = true;
 			jsonValid = true;
