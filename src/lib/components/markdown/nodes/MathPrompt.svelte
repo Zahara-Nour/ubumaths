@@ -15,7 +15,6 @@
 	@module components/markdown/nodes/MathPrompt
 -->
 <script lang="ts">
-	import { untrack } from 'svelte';
 	import 'mathlive';
 	import type { InputState } from '$lib/ubumark';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
@@ -50,6 +49,8 @@
 		disabled?: boolean;
 		/** Pre-fill prompts with correct answer values (flash back mode). Map of prompt ID → LaTeX value */
 		correctValues?: Record<string, string>;
+		/** Pre-fill prompts with initial values (prefilled blanks). Map of prompt ID → LaTeX value */
+		prefilledValues?: Record<string, string>;
 		/** Additional CSS classes */
 		class?: string;
 		/** Configuration for generic function names (f, g, h, P, Q, etc.) */
@@ -66,6 +67,7 @@
 		onPromptChange,
 		disabled = false,
 		correctValues,
+		prefilledValues,
 		class: className = '',
 		genericFunctions,
 		mathModeSpace
@@ -126,29 +128,22 @@
 
 	/**
 	 * Pre-fill prompts with initial values (prefilled blanks).
-	 * Uses silenceNotifications to prevent input events from firing
-	 * during programmatic value setting (avoids feedback loop).
+	 * Uses a dedicated prop (like correctValues) so this effect only
+	 * depends on static data — not on `inputs` which changes on every keystroke.
 	 *
-	 * IMPORTANT: reads `inputs` inside untrack() so this effect only runs
-	 * when mathField or promptIndices change — NOT on every keystroke.
-	 * Otherwise setPromptValue would move the cursor to the end on each input.
+	 * Tracks promptIndices so it re-runs once MathLive has finished parsing
+	 * the expression and the prompt slots actually exist.
 	 */
 	$effect(() => {
-		if (!mathField || correctValues) return;
+		if (!mathField || correctValues || !prefilledValues) return;
 
-		// Track promptIndices (structural change) but NOT inputs (value changes)
-		const indices = promptIndices;
+		// Track promptIndices: ensures re-run after MathLive creates prompt slots
+		const _indices = promptIndices;
 
 		try {
 			const field = mathField as MathFieldElement;
-			const currentInputs = untrack(() => inputs);
-			for (const idx of indices) {
-				const inputState = currentInputs.find((i) => i.index === idx);
-				if (inputState?.value) {
-					field.setPromptValue(String(idx), inputState.value, {
-						silenceNotifications: true
-					});
-				}
+			for (const [id, value] of Object.entries(prefilledValues)) {
+				field.setPromptValue(id, value, { silenceNotifications: true });
 			}
 		} catch (error) {
 			console.error('MathPrompt: Error setting prefilled values:', error);

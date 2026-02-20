@@ -190,6 +190,7 @@
 							onPromptChange={onInputChange}
 							disabled={inputsDisabled}
 							{correctValues}
+							{prefilledValues}
 							{genericFunctions}
 							{mathModeSpace}
 						/>
