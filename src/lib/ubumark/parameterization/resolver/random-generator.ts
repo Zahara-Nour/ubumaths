@@ -13,6 +13,19 @@
 
 import type { RandomSpec, ResolvedVariable, NumberOrVariable } from '../../types';
 import { seededRandom } from '$lib/utils/random';
+import { detectExpressionType } from '../parser/expression-normalizer';
+
+/**
+ * Expression types that indicate a discrete list item is a sub-expression
+ * needing recursive resolution (e.g., "1..9" inside "0|1..9").
+ */
+const RESOLVABLE_EXPR_TYPES = new Set([
+	'random',
+	'eval',
+	'digits',
+	'discrete-list',
+	'already-wrapped'
+]);
 
 /**
  * Generate a random number or string from specification
@@ -128,11 +141,12 @@ import { seededRandom } from '$lib/utils/random';
 export function generateRandomNumber(
 	spec: RandomSpec,
 	resolvedVariables: ResolvedVariable[],
-	seed?: number
+	seed?: number,
+	resolveSubExpression?: (expr: string) => string
 ): number | string {
 	// Handle discrete lists separately (returns string)
 	if (spec.type === 'discrete-list') {
-		return generateFromDiscreteList(spec, resolvedVariables, seed);
+		return generateFromDiscreteList(spec, resolvedVariables, seed, resolveSubExpression);
 	}
 
 	// 1. Resolve variables in bounds/digits
@@ -391,10 +405,16 @@ function randomDecimalByRange(min: number, max: number, step: number, seed?: num
 export function generateFromDiscreteList(
 	spec: { type: 'discrete-list'; items: string[]; exclusions: string[] },
 	resolvedVariables: ResolvedVariable[],
-	seed?: number
+	seed?: number,
+	resolveSubExpression?: (expr: string) => string
 ): string {
-	// 1. Resolve each item (variable or literal)
-	const resolvedItems = spec.items.map((item) => resolveItemName(item, resolvedVariables));
+	// 1. Resolve each item: variable name → value, or mark as literal
+	const resolvedItems = spec.items.map((item) => {
+		const variable = resolvedVariables.find((v) => v.name === item);
+		return variable
+			? { value: variable.value, isLiteral: false }
+			: { value: item, isLiteral: true };
+	});
 
 	// 2. Resolve exclusions
 	const excludedValues = new Set<string>();
@@ -403,7 +423,7 @@ export function generateFromDiscreteList(
 	}
 
 	// 3. Filter available items
-	const availableItems = resolvedItems.filter((item) => !excludedValues.has(item));
+	const availableItems = resolvedItems.filter((item) => !excludedValues.has(item.value));
 
 	if (availableItems.length === 0) {
 		throw new Error(
@@ -414,8 +434,19 @@ export function generateFromDiscreteList(
 	// 4. Random selection
 	const random = seed !== undefined ? seededRandom(seed) : Math.random();
 	const index = Math.floor(random * availableItems.length);
+	const selected = availableItems[index];
 
-	return availableItems[index];
+	// 5. If selected item is a literal (not from a variable) and looks like a
+	//    sub-expression (range, eval, digits, etc.), resolve it recursively.
+	//    This handles cases like "0|1..9" where "1..9" is a range, not a literal.
+	if (selected.isLiteral && resolveSubExpression) {
+		const exprType = detectExpressionType(selected.value);
+		if (RESOLVABLE_EXPR_TYPES.has(exprType)) {
+			return resolveSubExpression(selected.value);
+		}
+	}
+
+	return selected.value;
 }
 
 /**
