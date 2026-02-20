@@ -29,7 +29,7 @@
 		/** Get current value from a specific prompt by ID */
 		getPromptValue(id: string): string | undefined;
 		/** Set the value of a specific prompt by ID */
-		setPromptValue(id: string, value: string): void;
+		setPromptValue(id: string, value: string, options?: { silenceNotifications?: boolean }): void;
 		/** Set validation state for a prompt */
 		setPromptState(id: string, state: 'correct' | 'incorrect' | undefined): void;
 	}
@@ -107,7 +107,7 @@
 		try {
 			const field = mathField as MathFieldElement;
 			for (const [id, value] of Object.entries(correctValues)) {
-				field.setPromptValue(id, value);
+				field.setPromptValue(id, value, { silenceNotifications: true });
 				field.setPromptState(id, 'correct');
 			}
 		} catch (error) {
@@ -124,7 +124,9 @@
 	});
 
 	/**
-	 * Pre-fill prompts with initial values (prefilled blanks)
+	 * Pre-fill prompts with initial values (prefilled blanks).
+	 * Uses silenceNotifications to prevent input events from firing
+	 * during programmatic value setting (avoids feedback loop).
 	 */
 	$effect(() => {
 		if (!mathField || correctValues) return;
@@ -134,7 +136,9 @@
 			for (const idx of promptIndices) {
 				const inputState = inputs.find((i) => i.index === idx);
 				if (inputState?.value) {
-					field.setPromptValue(String(idx), inputState.value);
+					field.setPromptValue(String(idx), inputState.value, {
+						silenceNotifications: true
+					});
 				}
 			}
 		} catch (error) {
