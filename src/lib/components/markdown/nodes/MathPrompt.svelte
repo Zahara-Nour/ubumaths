@@ -15,6 +15,7 @@
 	@module components/markdown/nodes/MathPrompt
 -->
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import 'mathlive';
 	import type { InputState } from '$lib/ubumark';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
@@ -127,14 +128,22 @@
 	 * Pre-fill prompts with initial values (prefilled blanks).
 	 * Uses silenceNotifications to prevent input events from firing
 	 * during programmatic value setting (avoids feedback loop).
+	 *
+	 * IMPORTANT: reads `inputs` inside untrack() so this effect only runs
+	 * when mathField or promptIndices change — NOT on every keystroke.
+	 * Otherwise setPromptValue would move the cursor to the end on each input.
 	 */
 	$effect(() => {
 		if (!mathField || correctValues) return;
 
+		// Track promptIndices (structural change) but NOT inputs (value changes)
+		const indices = promptIndices;
+
 		try {
 			const field = mathField as MathFieldElement;
-			for (const idx of promptIndices) {
-				const inputState = inputs.find((i) => i.index === idx);
+			const currentInputs = untrack(() => inputs);
+			for (const idx of indices) {
+				const inputState = currentInputs.find((i) => i.index === idx);
 				if (inputState?.value) {
 					field.setPromptValue(String(idx), inputState.value, {
 						silenceNotifications: true

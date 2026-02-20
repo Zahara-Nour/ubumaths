@@ -126,7 +126,9 @@
 			fillBlankValues = instance.blanks.map((b) =>
 				b.prefilled ? (b.type === 'math' ? toFrenchDecimal(b.prefilled) : b.prefilled) : ''
 			);
-			fillBlankValuesLatex = instance.blanks.map(() => '');
+			fillBlankValuesLatex = instance.blanks.map((b) =>
+				b.prefilled && b.type === 'math' ? toFrenchDecimal(b.prefilled) : ''
+			);
 			blankValidationResults = instance.blanks.map(() => null);
 		}
 

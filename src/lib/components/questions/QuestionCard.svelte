@@ -98,7 +98,9 @@
 			fillBlankValues = instance.blanks.map((b) =>
 				b.prefilled ? (b.type === 'math' ? toFrenchDecimal(b.prefilled) : b.prefilled) : ''
 			);
-			fillBlankValuesLatex = instance.blanks.map(() => '');
+			fillBlankValuesLatex = instance.blanks.map((b) =>
+				b.prefilled && b.type === 'math' ? toFrenchDecimal(b.prefilled) : ''
+			);
 		}
 
 		if (getQuestionType(instance) === 'multiple_choice' && instance.shuffledChoices) {
