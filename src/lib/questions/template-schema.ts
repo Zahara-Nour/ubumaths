@@ -120,6 +120,7 @@ const blankDefaultsZ = z
 	.object({
 		precision: precisionZ.optional(),
 		requiredForm: requiredFormZ.optional(),
+		removeSpaces: z.boolean().optional(),
 		unit: unitZ.optional()
 	})
 	.strict();
@@ -131,6 +132,7 @@ const blankZ = z
 		pool: z.array(z.string()).optional(),
 		precision: precisionZ.optional(),
 		requiredForm: requiredFormZ.optional(),
+		removeSpaces: z.boolean().optional(),
 		validationRules: z.array(validationRuleZ).optional(),
 		unit: unitZ.optional()
 	})

@@ -59,6 +59,8 @@
 		prefilledValues?: Record<string, string>;
 		/** LaTeX to insert when Space is pressed in math mode */
 		mathModeSpace?: string;
+		/** Display LaTeX overrides for expression nodes (e.g., with removeSpaces applied) */
+		expressionDisplayMap?: Record<string, string>;
 		/** Callback when a hashtag is clicked */
 		onHashtagClick?: (tag: string) => void;
 		/** Callback when a mention is clicked */
@@ -87,6 +89,7 @@
 		correctValues,
 		prefilledValues,
 		mathModeSpace,
+		expressionDisplayMap,
 		onHashtagClick,
 		onMentionClick,
 		genericFunctions,
@@ -159,10 +162,15 @@
 		{:else if child.type === 'math-inline'}
 			{#if hasPrompts(child.expression, child.syntax)}
 				{#if flashMode}
-					{@const baseLatex = expressionToLatex(child.expression, child.syntax, genericFunctions)}
+					{@const displayExpr = child.expressionName
+						? expressionDisplayMap?.[child.expressionName]
+						: undefined}
+					{@const baseLatex =
+						displayExpr ?? expressionToLatex(child.expression, child.syntax, genericFunctions)}
 					{@const flashLatex = prefilledValues
 						? replacePromptsWithPrefilled(baseLatex, prefilledValues)
-						: expressionToFlashLatex(child.expression, child.syntax, genericFunctions)}
+						: (displayExpr ??
+							expressionToFlashLatex(child.expression, child.syntax, genericFunctions))}
 					{#key flashLatex}
 						<MathInline expression={flashLatex} syntax="latex" />
 					{/key}

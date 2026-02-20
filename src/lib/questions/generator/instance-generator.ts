@@ -290,7 +290,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						resolvedVariables,
 						seed
 					);
-					if (resolved.type === 'math' && template.defaultDisplayOptions?.removeSpaces) {
+					const hasRemoveSpaces =
+						blank.removeSpaces ??
+						resolvedVariation.blankDefaults?.removeSpaces ??
+						template.defaultDisplayOptions?.removeSpaces;
+					if (resolved.type === 'math' && hasRemoveSpaces) {
 						resolved.prefilled = applyRemoveSpaces(resolved.prefilled);
 					}
 				}
@@ -317,6 +321,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					expressionsArray.push({
 						name: exprName,
 						latex: convertToLatex(variable.value),
+						displayLatex: variable.displayValue ?? undefined,
 						answerFormat: blankResult.answerFormats?.[exprName]
 					});
 				}

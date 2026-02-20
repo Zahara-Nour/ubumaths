@@ -205,6 +205,18 @@
 		return Object.keys(result).length > 0 ? result : undefined;
 	});
 
+	// Map expression names to their displayLatex (for flash mode rendering with removeSpaces, etc.)
+	let expressionDisplayMap = $derived.by(() => {
+		if (!flashMode || !expressions) return undefined;
+		const result: Record<string, string> = {};
+		for (const expr of expressions) {
+			if (expr.displayLatex) {
+				result[expr.name] = expr.displayLatex;
+			}
+		}
+		return Object.keys(result).length > 0 ? result : undefined;
+	});
+
 	/**
 	 * Handle input changes from BlankInput (text) or MathPrompt (math)
 	 */
@@ -246,15 +258,19 @@
 					correctionMode={showCorrectAnswers}
 					correctValues={mathCorrectValues}
 					prefilledValues={mathPrefilledValues}
+					{expressionDisplayMap}
 					{mathModeSpace}
 				/>
 			{:else if node.type === 'math-block'}
 				{#if node.expressionName || hasPrompts(node.expression, node.syntax)}
 					{#if flashMode}
-						{@const baseLatex = expressionToLatex(node.expression, node.syntax)}
+						{@const displayExpr = node.expressionName
+							? expressionDisplayMap?.[node.expressionName]
+							: undefined}
+						{@const baseLatex = displayExpr ?? expressionToLatex(node.expression, node.syntax)}
 						{@const flashLatex = mathPrefilledValues
 							? replacePromptsWithPrefilled(baseLatex, mathPrefilledValues)
-							: expressionToFlashLatex(node.expression, node.syntax)}
+							: (displayExpr ?? expressionToFlashLatex(node.expression, node.syntax))}
 						{#key flashLatex}
 							<MathBlock expression={flashLatex} syntax="latex" />
 						{/key}
