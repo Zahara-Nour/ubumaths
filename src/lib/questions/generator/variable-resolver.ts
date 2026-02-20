@@ -52,11 +52,12 @@ import {
 export function resolveVariableExpression(
 	expression: string,
 	alreadyResolved: ResolvedVariable[],
-	seed?: number
+	seed?: number,
+	options?: { useDisplayValue?: boolean }
 ): string {
 	// Use shared library's resolveExpression for full 3-stage pipeline
 	// NOTE: expression should already be in Markdown syntax at this point
-	return sharedResolveExpression(expression, alreadyResolved, seed);
+	return sharedResolveExpression(expression, alreadyResolved, seed, options);
 }
 
 /**
