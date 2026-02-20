@@ -100,7 +100,7 @@ describe('validateAnswer - Constraint Integration', () => {
 	});
 
 	describe('Constraints Require LaTeX Input', () => {
-		it('should skip constraint checks when no LaTeX provided', () => {
+		it('should still check constraints when no LaTeX provided (uses answer as fallback)', () => {
 			const instance = createNumericalInstance('42', {
 				constraints: {
 					spaces: 'strict',
@@ -111,12 +111,13 @@ describe('validateAnswer - Constraint Integration', () => {
 				}
 			});
 
-			// Correct answer but no LaTeX - constraints should be skipped
+			// Correct answer, no LaTeX - constraints still run using answer as fallback
 			const result = validateAnswer('42', instance);
 
 			expect(result.isCorrect).toBe(true);
-			expect(result.constraintViolations).toBeUndefined();
-			expect(result.status).toBeUndefined();
+			// Constraints are checked (no violations for '42')
+			expect(result.constraintViolations).toEqual([]);
+			expect(result.status).toBe('correct');
 		});
 
 		it('should check constraints when LaTeX is provided', () => {
@@ -465,6 +466,26 @@ describe('validateAnswer - Specific Constraints', () => {
 
 			const result = validateAnswer('1.0', instance, '1.0');
 
+			expect(result.status).toBe('bad_form');
+			expect(result.constraintViolations![0].constraint).toBe('zeros');
+		});
+
+		it('should detect leading zeros even without LaTeX (prefilled scenario)', () => {
+			const instance = createNumericalInstance('8972', {
+				constraints: {
+					zeros: 'strict',
+					spaces: 'off',
+					products: 'off',
+					brackets: 'off',
+					form: 'off'
+				}
+			});
+
+			// Simulates prefilled value submitted without MathLive interaction:
+			// answer has leading zeros, no LaTeX provided (empty string)
+			const result = validateAnswer('008972', instance, '');
+
+			expect(result.isCorrect).toBe(false);
 			expect(result.status).toBe('bad_form');
 			expect(result.constraintViolations![0].constraint).toBe('zeros');
 		});

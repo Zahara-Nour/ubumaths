@@ -607,23 +607,22 @@ function validateSingleBlank(
 	}
 
 	// 4. Constraints (per-blank, using instance-level constraint config)
-	if (userAnswerLatex) {
-		const { status, violations } = applyConstraints(
-			[userAnswer],
-			[userAnswerLatex],
-			[blank.expectedAnswer],
-			instance.options?.constraints ?? {}
-		);
+	// Use userAnswer as fallback when userAnswerLatex is empty (e.g., prefilled
+	// blanks where MathLive never fired an input event).
+	const effectiveLatex = userAnswerLatex || userAnswer;
+	const { status, violations } = applyConstraints(
+		[userAnswer],
+		[effectiveLatex],
+		[blank.expectedAnswer],
+		instance.options?.constraints ?? {}
+	);
 
-		return {
-			isCorrect: status !== 'bad_form',
-			status,
-			feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
-			constraintViolations: violations
-		};
-	}
-
-	return { isCorrect: true };
+	return {
+		isCorrect: status !== 'bad_form',
+		status,
+		feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
+		constraintViolations: violations
+	};
 }
 
 /**
