@@ -214,7 +214,8 @@ export function resolveVariables(
 export function resolveExpression(
 	expression: string,
 	alreadyResolved: ResolvedVariable[],
-	seed: number | undefined
+	seed: number | undefined,
+	options?: { useDisplayValue?: boolean }
 ): string {
 	// Check if this is an explicit text literal (text:...) BEFORE normalization
 	// Text literals should NOT have variable substitution applied
@@ -250,7 +251,11 @@ export function resolveExpression(
 			throw new Error(`Variable "${varName}" not found or not yet resolved`);
 		}
 
-		result = result.slice(0, token.start) + resolvedVar.value + result.slice(token.end);
+		const substitution =
+			options?.useDisplayValue && resolvedVar.displayValue
+				? resolvedVar.displayValue
+				: resolvedVar.value;
+		result = result.slice(0, token.start) + substitution + result.slice(token.end);
 	}
 
 	// STAGE 2: Generate random numbers {{random:...}} or {{...}}

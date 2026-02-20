@@ -120,7 +120,10 @@ export function resolveMarkdownContent(
 	seed?: number
 ): ResolvedMarkdown {
 	// Stage 1: Resolve variables, random expressions, and eval expressions
-	let resolvedContent = resolveVariableExpression(markdown, resolvedVariables, seed);
+	// Use displayValue when available (e.g., removeSpaces inserts {} between digits)
+	let resolvedContent = resolveVariableExpression(markdown, resolvedVariables, seed, {
+		useDisplayValue: true
+	});
 
 	// Stage 2: Resolve color references
 	resolvedContent = resolveColorReferences(resolvedContent, seed);
