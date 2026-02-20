@@ -105,17 +105,15 @@
 </script>
 
 <Card.Root class="transition-shadow hover:shadow-md">
-	<Card.Content class="flex items-start gap-4 p-4">
+	<Card.Content class="flex items-center gap-3 px-4 py-2.5">
 		<!-- Icon -->
-		<div
-			class={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-full', iconBgColor)}
-		>
-			<IconComponent class={cn('h-5 w-5', iconColor)} />
+		<div class={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-full', iconBgColor)}>
+			<IconComponent class={cn('h-4 w-4', iconColor)} />
 		</div>
 
 		<!-- Content -->
 		<div class="min-w-0 flex-1">
-			<div class="mb-1 flex flex-wrap items-center gap-2">
+			<div class="flex flex-wrap items-center gap-1.5">
 				<Badge class={cn('text-xs', eventTypeColor)} variant="secondary">
 					{eventTypeLabel}
 				</Badge>
@@ -124,21 +122,15 @@
 						{event.item_name}
 					</Badge>
 				{/if}
+				<span class="text-sm text-foreground">{event.description}</span>
+				<span class="text-xs text-muted-foreground">{relativeTime}</span>
 			</div>
-
-			<p class="text-sm text-foreground">
-				{event.description}
-			</p>
-
-			<p class="mt-1 text-xs text-muted-foreground">
-				{relativeTime}
-			</p>
 		</div>
 
 		<!-- Amount (for gidouilles/bonus) -->
 		{#if showAmount}
 			<div class={cn('shrink-0 text-right font-bold', amountClass)}>
-				<span class="text-lg">
+				<span class="text-base">
 					{amountPrefix}{Math.abs(event.amount ?? 0)}
 				</span>
 			</div>
