@@ -113,7 +113,6 @@ export {
 	EMPTY_MONOMIAL,
 	symbolicFactor,
 	variableMonomial,
-	hashNode,
 	compareNodes,
 	nodesEqual,
 	compareSymbolicFactors,
