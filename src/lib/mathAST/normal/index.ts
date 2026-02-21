@@ -225,7 +225,6 @@ export { isZeroExpression, isOneExpression } from './normalize.js';
 // =============================================================================
 
 export {
-	compareRadicals as compareRadicalsCanonical,
 	compareRadicalArrays,
 	equalRadicalArrays,
 	compareAlgebraicTerms,
@@ -235,12 +234,7 @@ export {
 	sortAlgebraicTerms,
 	isRadicalArraySorted,
 	isAlgebraicTermArraySorted,
-	compareSymbolicFactors as compareSymbolicFactorsCanonical,
-	sortSymbolicFactors as sortSymbolicFactorsCanonical,
 	isSymbolicFactorArraySorted,
-	compareMonomials as compareMonomialsCanonical,
-	compareNormalTerms as compareNormalTermsCanonical,
-	sortNormalTerms as sortNormalTermsCanonical,
 	isNormalTermArraySorted
 } from './compare.js';
 
