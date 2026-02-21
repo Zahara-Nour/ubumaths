@@ -7,6 +7,7 @@
 
 import type { MathNode } from '../types';
 import type { SymbolicFactor, Rational, ComparisonResult } from './types';
+import { hashMathNode } from './hash';
 import {
 	addRational,
 	isZero as isZeroRational,
@@ -238,7 +239,7 @@ export function compareNodes(a: MathNode, b: MathNode): ComparisonResult {
  * @returns true if nodes are structurally identical
  */
 export function nodesEqual(a: MathNode, b: MathNode): boolean {
-	return hashNode(a) === hashNode(b);
+	return hashMathNode(a) === hashMathNode(b);
 }
 
 // =============================================================================
