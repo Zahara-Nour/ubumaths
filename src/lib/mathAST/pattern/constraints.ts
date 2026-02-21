@@ -11,6 +11,7 @@ import type { TypeContext } from '../numtype/types';
 import { isNumber, isVariable } from '../guards';
 import { inferType, isSubtype } from '../numtype';
 import { containsValue } from '$lib/math/intervals';
+import { containsVariable } from '../common/contains-variable';
 
 // =============================================================================
 // Helper Functions
@@ -24,86 +25,6 @@ function parseNumberValue(node: MathNode): number | undefined {
 	if (!isNumber(node)) return undefined;
 	const parsed = parseFloat(node.value);
 	return Number.isFinite(parsed) ? parsed : undefined;
-}
-
-/**
- * Checks if a MathNode contains a specific variable name.
- * Recursively traverses the entire tree.
- *
- * @param node - The node to check
- * @param varName - The variable name to look for
- * @returns true if the variable is found anywhere in the tree
- */
-function containsVariable(node: MathNode, varName: string): boolean {
-	switch (node.type) {
-		case 'number':
-		case 'greek':
-		case 'symbol':
-		case 'hole':
-		case 'constant':
-			return false;
-
-		case 'variable':
-			return node.name === varName;
-
-		case 'addition':
-		case 'subtraction':
-		case 'multiplication':
-			return containsVariable(node.left, varName) || containsVariable(node.right, varName);
-
-		case 'division':
-			return (
-				containsVariable(node.numerator, varName) || containsVariable(node.denominator, varName)
-			);
-
-		case 'opposite':
-		case 'positive':
-			return containsVariable(node.operand, varName);
-
-		case 'function':
-			return (
-				node.args.some((arg) => containsVariable(arg, varName)) ||
-				(node.power !== undefined && containsVariable(node.power, varName)) ||
-				(node.base !== undefined && containsVariable(node.base, varName))
-			);
-
-		case 'delimiter':
-			return containsVariable(node.content, varName);
-
-		case 'subscript':
-			return containsVariable(node.base, varName) || containsVariable(node.subscript, varName);
-
-		case 'superscript':
-			return containsVariable(node.base, varName) || containsVariable(node.superscript, varName);
-
-		case 'relation':
-			return containsVariable(node.left, varName) || containsVariable(node.right, varName);
-
-		case 'unit':
-			return containsVariable(node.expression, varName);
-
-		case 'composition':
-			return containsVariable(node.outer, varName) || containsVariable(node.inner, varName);
-
-		case 'matrix':
-			// Check all matrix elements for the variable
-			return node.rows.some((row) => row.some((elem) => containsVariable(elem, varName)));
-
-		case 'complex':
-			return containsVariable(node.real, varName) || containsVariable(node.imaginary, varName);
-
-		case 'infinity':
-			return false;
-
-		case 'limit':
-			return containsVariable(node.expression, varName) || containsVariable(node.approach, varName);
-
-		default: {
-			// Exhaustive check
-			const _exhaustive: never = node;
-			return _exhaustive;
-		}
-	}
 }
 
 /**

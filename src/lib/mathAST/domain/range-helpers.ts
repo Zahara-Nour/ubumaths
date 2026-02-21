@@ -28,7 +28,8 @@ import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { tryConvertConditionToInterval } from './algebra';
 import { differentiate } from '../differentiation';
 import { evaluate, substitute } from '../eval';
-import { containsVariable, getNumericValue } from '../differentiation/rules';
+import { containsVariable } from '../common/contains-variable';
+import { getNumericValue } from '../common/numeric';
 import { evaluateAtCriticalPoint, findCriticalPoints } from '../variations/critical-points';
 
 // =============================================================================

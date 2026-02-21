@@ -21,6 +21,10 @@ import {
 } from '../guards';
 import { number, opposite, multiply, divide, add } from '../factory';
 import { getVariables } from '../eval/substitute';
+import { containsVariable } from '../common/contains-variable';
+
+// Re-export for backward compatibility
+export { containsVariable };
 
 // =============================================================================
 // Constants
@@ -60,14 +64,6 @@ export function isTargetVariableIn(node: MathNode, variables: readonly string[])
 		return node.letter;
 	}
 	return null;
-}
-
-/**
- * Check if node contains a specific variable.
- */
-export function containsVariable(node: MathNode, variable: string): boolean {
-	const vars = getVariables(node);
-	return vars.has(variable);
 }
 
 /**
