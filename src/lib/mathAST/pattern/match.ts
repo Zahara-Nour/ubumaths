@@ -31,7 +31,7 @@ import {
 import type { MathNode } from '../types';
 import type { TypeContext } from '../numtype/types';
 import type { SignedTerm } from '../flatten';
-import { hashMathNode } from '../normal/hash';
+import { nodesEqual } from '../normal/hash';
 import { checkConstraint } from './constraints';
 import { flattenSumShallow, flattenProductShallow } from '../flatten';
 import { opposite } from '../factory';
@@ -49,21 +49,8 @@ import {
 	isRelation
 } from '../guards';
 
-// =============================================================================
-// Structural Equality
-// =============================================================================
-
-/**
- * Checks if two MathNodes are structurally equal.
- * Uses hashMathNode for comparison.
- *
- * @param a - First node
- * @param b - Second node
- * @returns true if the nodes have identical structure
- */
-export function nodesEqual(a: MathNode, b: MathNode): boolean {
-	return hashMathNode(a) === hashMathNode(b);
-}
+// Re-export nodesEqual from canonical location
+export { nodesEqual } from '../normal/hash';
 
 // =============================================================================
 // Binding Utilities

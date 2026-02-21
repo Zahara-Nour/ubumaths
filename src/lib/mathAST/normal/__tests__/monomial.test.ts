@@ -11,7 +11,6 @@ import {
 	variableMonomial,
 	// Node operations
 	compareNodes,
-	nodesEqual,
 	// Factor operations
 	compareSymbolicFactors,
 	sameBase,
@@ -29,7 +28,7 @@ import {
 	// Conversion
 	monomialToString
 } from '../monomial';
-import { hashMathNode } from '../hash';
+import { hashMathNode, nodesEqual } from '../hash';
 import type { SymbolicFactor, Rational } from '../types';
 import type { MathNode, VariableNode, FunctionNode } from '../../types';
 
