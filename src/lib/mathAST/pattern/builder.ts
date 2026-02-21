@@ -46,6 +46,7 @@ import type {
 	IntegerConstraint,
 	EvenConstraint,
 	OddConstraint,
+	MultipleOfConstraint,
 	FreeOfConstraint,
 	CustomConstraint,
 	AndConstraint,
@@ -912,6 +913,20 @@ function inZstar(): AndConstraint {
 }
 
 /**
+ * Creates a multipleOf constraint (integer divisible by a given divisor)
+ *
+ * @param divisor - The divisor to check against
+ * @returns A multipleOf constraint
+ *
+ * @example
+ * P._('n', P.isMultipleOf(10))  // Match multiples of 10 (0, 10, 20, -10, ...)
+ * P._('k', P.isMultipleOf(3))   // Match multiples of 3
+ */
+function isMultipleOf(divisor: number): MultipleOfConstraint {
+	return { kind: 'multipleOf', divisor } as const;
+}
+
+/**
  * Creates a freeOf constraint (expression does not contain specified variables)
  *
  * @param variables - Variable names that must not appear in the expression
@@ -1259,6 +1274,7 @@ export const P = {
 	isInteger,
 	isEven,
 	isOdd,
+	isMultipleOf,
 	isFreeOf,
 	custom,
 	and,
@@ -1341,6 +1357,7 @@ export {
 	isInteger,
 	isEven,
 	isOdd,
+	isMultipleOf,
 	isFreeOf,
 	custom,
 	and,

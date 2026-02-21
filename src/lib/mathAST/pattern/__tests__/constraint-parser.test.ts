@@ -209,6 +209,39 @@ describe('Constraint Expression Parser', () => {
 			});
 		});
 
+		describe('multipleOf(...)', () => {
+			it('parses multipleOf(10)', () => {
+				const constraint = parseConstraintExpr('multipleOf(10)');
+				expect(constraint).toEqual(P.isMultipleOf(10));
+			});
+
+			it('parses multipleOf(3)', () => {
+				const constraint = parseConstraintExpr('multipleOf(3)');
+				expect(constraint).toEqual(P.isMultipleOf(3));
+			});
+
+			it('parses multipleOf(100)', () => {
+				const constraint = parseConstraintExpr('multipleOf(100)');
+				expect(constraint).toEqual(P.isMultipleOf(100));
+			});
+
+			it('throws error for empty multipleOf()', () => {
+				expect(() => parseConstraintExpr('multipleOf()')).toThrow('Expected number');
+			});
+
+			it('throws error for non-integer argument', () => {
+				expect(() => parseConstraintExpr('multipleOf(2.5)')).toThrow('positive integer');
+			});
+
+			it('throws error for negative argument', () => {
+				expect(() => parseConstraintExpr('multipleOf(-3)')).toThrow('positive integer');
+			});
+
+			it('throws error for zero argument', () => {
+				expect(() => parseConstraintExpr('multipleOf(0)')).toThrow('positive integer');
+			});
+		});
+
 		describe('freeOf(...)', () => {
 			it('parses freeOf(x) - single variable', () => {
 				const constraint = parseConstraintExpr('freeOf(x)');
@@ -691,6 +724,16 @@ describe('Constraint Expression Parser', () => {
 		it('parses a:inR+* + b:inR-* for operations with domain constraints', () => {
 			const pattern = parsePattern('a:inR+* + b:inR-*');
 			expect(pattern.type).toBe('addition-pattern');
+		});
+
+		it('parses n:multipleOf(10) for divisibility constraint', () => {
+			const pattern = parsePattern('n:multipleOf(10)');
+			expect(pattern).toEqual(P._('n', P.isMultipleOf(10)));
+		});
+
+		it('parses n:integer & multipleOf(5) for combined constraint', () => {
+			const pattern = parsePattern('n:integer & multipleOf(5)');
+			expect(pattern).toEqual(P._('n', P.and(P.isInteger(), P.isMultipleOf(5))));
 		});
 	});
 
