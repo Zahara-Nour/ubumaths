@@ -67,8 +67,6 @@ export {
 export {
 	zero,
 	one,
-	isZero,
-	isOne,
 	getNumericValue,
 	numericNode,
 	simplifiedAdd,
@@ -84,6 +82,8 @@ export {
 	tanRule,
 	containsVariable
 } from './rules';
+
+export { isZero, isOne } from '../guards';
 
 export { classifyIntegrand, detectVariable } from './classify';
 

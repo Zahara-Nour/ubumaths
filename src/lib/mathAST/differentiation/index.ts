@@ -60,8 +60,6 @@ export {
 	one,
 
 	// Predicates
-	isZero,
-	isOne,
 	containsVariable,
 
 	// Simplified constructors
@@ -72,3 +70,5 @@ export {
 	simplifiedPower,
 	simplifiedOpposite
 } from './rules';
+
+export { isZero, isOne } from '../guards';
