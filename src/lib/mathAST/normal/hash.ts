@@ -140,6 +140,15 @@ export function hashMathNode(node: MathNode): string {
 		case 'matrix':
 			return `M(${node.rows.map((row) => row.map(hashMathNode).join(',')).join(';')})`;
 
+		case 'boolean':
+			return `BOOL(${node.value})`;
+
+		case 'logical':
+			return `LOG:${node.operator}(${hashMathNode(node.left)},${hashMathNode(node.right)})`;
+
+		case 'logical-not':
+			return `LNOT(${hashMathNode(node.operand)})`;
+
 		default:
 			// Exhaustive check - should never reach
 			return 'UNKNOWN';

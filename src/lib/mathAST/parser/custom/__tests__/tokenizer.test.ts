@@ -1423,13 +1423,13 @@ describe('Edge cases', () => {
 
 	it('should handle exclamation mark alone', () => {
 		const tokens = tokenize('!');
-		// ! alone (not followed by =) is treated as unknown/LETTER
-		expect(tokens[0].type).toBe('LETTER');
+		// ! alone (not followed by =) is the logical NOT operator
+		expect(tokens[0].type).toBe('EXCLAMATION');
 	});
 
 	it('should handle ! followed by non-equals', () => {
 		const tokens = tokenize('!x');
-		expect(tokens[0].type).toBe('LETTER'); // ! as unknown
+		expect(tokens[0].type).toBe('EXCLAMATION'); // ! as logical NOT
 		expect(tokens[1].type).toBe('LETTER'); // x
 	});
 

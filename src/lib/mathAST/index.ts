@@ -75,6 +75,10 @@ export type {
 	UnitNode,
 	MatrixNode,
 	ComplexNode,
+	BooleanNode,
+	LogicalNode,
+	LogicalNotNode,
+	LogicalOperator,
 
 	// Union types
 	LiteralNode,
@@ -182,7 +186,14 @@ export {
 	zeroMatrix,
 
 	// Complex numbers
-	complex
+	complex,
+
+	// Boolean and logical
+	boolean,
+	logical,
+	logicalAnd,
+	logicalOr,
+	logicalNot
 } from './factory';
 
 // Options types for extended metadata
@@ -260,6 +271,9 @@ export {
 	isColumnVector,
 	isSquareMatrix,
 	isComplex,
+	isBoolean,
+	isLogical,
+	isLogicalNot,
 
 	// Utility predicates
 	hasDerivativeOrder,

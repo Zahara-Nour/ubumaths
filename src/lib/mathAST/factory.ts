@@ -7,6 +7,7 @@
 
 import type {
 	AdditionNode,
+	BooleanNode,
 	ComplexNode,
 	CompositionNode,
 	DelimiterNode,
@@ -22,6 +23,9 @@ import type {
 	InfinitySign,
 	LimitDirection,
 	LimitNode,
+	LogicalNode,
+	LogicalNotNode,
+	LogicalOperator,
 	MathConstant,
 	MathConstantNode,
 	MathNode,
@@ -1743,6 +1747,87 @@ export function zeroMatrix(numRows: number, numCols?: number, options?: MatrixOp
 }
 
 // =============================================================================
+// Boolean and Logical Factories
+// =============================================================================
+
+/**
+ * Creates a boolean literal node.
+ * @param value - true or false
+ * @param metadata - Optional rendering hints
+ */
+export function boolean(value: boolean, metadata?: NodeMetadata): BooleanNode {
+	return {
+		type: 'boolean',
+		value,
+		...(metadata && { metadata })
+	} as const;
+}
+
+/**
+ * Creates a logical binary operation node.
+ * @param operator - 'and' or 'or'
+ * @param left - Left operand
+ * @param right - Right operand
+ * @param options - Optional BinaryOpOptions or NodeMetadata
+ */
+export function logical(
+	operator: LogicalOperator,
+	left: MathNode,
+	right: MathNode,
+	options?: BinaryOpOptions | NodeMetadata
+): LogicalNode {
+	const opts = normalizeBinaryOpOptions(options);
+	return {
+		type: 'logical',
+		operator,
+		left,
+		right,
+		...(opts.operatorMetadata && { operatorMetadata: opts.operatorMetadata }),
+		...(opts.metadata && { metadata: opts.metadata })
+	} as const;
+}
+
+/**
+ * Convenience: Creates a logical AND node (a && b)
+ */
+export function logicalAnd(
+	left: MathNode,
+	right: MathNode,
+	options?: BinaryOpOptions | NodeMetadata
+): LogicalNode {
+	return logical('and', left, right, options);
+}
+
+/**
+ * Convenience: Creates a logical OR node (a || b)
+ */
+export function logicalOr(
+	left: MathNode,
+	right: MathNode,
+	options?: BinaryOpOptions | NodeMetadata
+): LogicalNode {
+	return logical('or', left, right, options);
+}
+
+/**
+ * Creates a logical NOT node (!a)
+ * @param operand - The value to negate
+ * @param options - Optional UnaryOpOptions or NodeMetadata
+ */
+export function logicalNot(
+	operand: MathNode,
+	options?: UnaryOpOptions | NodeMetadata
+): LogicalNotNode {
+	const opts = normalizeUnaryOpOptions(options);
+	return {
+		type: 'logical-not',
+		operand,
+		...(opts.operatorMetadata && { operatorMetadata: opts.operatorMetadata }),
+		...(opts.metadata && { metadata: opts.metadata })
+	} as const;
+}
+
+// =============================================================================
 // Pre-built Constants
 // =============================================================================
 
@@ -1885,5 +1970,12 @@ export const MathAST = {
 	rightLimit,
 	leftLimit,
 	limitAtInfinity,
-	limitAtNegativeInfinity
+	limitAtNegativeInfinity,
+
+	// Boolean and logical
+	boolean,
+	logical,
+	logicalAnd,
+	logicalOr,
+	logicalNot
 } as const;

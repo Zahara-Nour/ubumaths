@@ -35,11 +35,15 @@ import type {
 	CompositionNode,
 	ComplexNode,
 	InfinityNode,
-	LimitNode
+	LimitNode,
+	BooleanNode,
+	LogicalNode,
+	LogicalNotNode
 } from './types';
 
 import {
 	add,
+	boolean,
 	complex,
 	compose,
 	delimiter,
@@ -47,6 +51,8 @@ import {
 	func,
 	infinity,
 	limit,
+	logical,
+	logicalNot,
 	matrix,
 	multiply,
 	opposite,
@@ -181,6 +187,18 @@ export interface ASTVisitor {
 	// Limit callback
 	enterLimit?(node: LimitNode, context: VisitorContext): EnterResult;
 	leaveLimit?(node: LimitNode, context: VisitorContext): void;
+
+	// Boolean callback
+	enterBoolean?(node: BooleanNode, context: VisitorContext): EnterResult;
+	leaveBoolean?(node: BooleanNode, context: VisitorContext): void;
+
+	// Logical callback
+	enterLogical?(node: LogicalNode, context: VisitorContext): EnterResult;
+	leaveLogical?(node: LogicalNode, context: VisitorContext): void;
+
+	// LogicalNot callback
+	enterLogicalNot?(node: LogicalNotNode, context: VisitorContext): EnterResult;
+	leaveLogicalNot?(node: LogicalNotNode, context: VisitorContext): void;
 }
 
 // =============================================================================
@@ -264,6 +282,18 @@ export interface TransformVisitor {
 	// Limit callback
 	enterLimit?(node: LimitNode, context: VisitorContext): TransformEnterResult;
 	leaveLimit?(node: LimitNode, context: VisitorContext): TransformLeaveResult;
+
+	// Boolean callback
+	enterBoolean?(node: BooleanNode, context: VisitorContext): TransformEnterResult;
+	leaveBoolean?(node: BooleanNode, context: VisitorContext): TransformLeaveResult;
+
+	// Logical callback
+	enterLogical?(node: LogicalNode, context: VisitorContext): TransformEnterResult;
+	leaveLogical?(node: LogicalNode, context: VisitorContext): TransformLeaveResult;
+
+	// LogicalNot callback
+	enterLogicalNot?(node: LogicalNotNode, context: VisitorContext): TransformEnterResult;
+	leaveLogicalNot?(node: LogicalNotNode, context: VisitorContext): TransformLeaveResult;
 }
 
 // =============================================================================
@@ -293,7 +323,10 @@ const TYPE_TO_METHOD_NAME: Record<MathNode['type'], string> = {
 	matrix: 'Matrix',
 	complex: 'Complex',
 	infinity: 'Infinity',
-	limit: 'Limit'
+	limit: 'Limit',
+	boolean: 'Boolean',
+	logical: 'Logical',
+	'logical-not': 'LogicalNot'
 };
 
 // =============================================================================
@@ -427,6 +460,21 @@ function getChildrenWithPaths(node: MathNode): ChildInfo[] {
 				{ child: node.expression, pathSegments: ['expression'] },
 				{ child: node.approach, pathSegments: ['approach'] }
 			];
+
+		// Boolean is a leaf node
+		case 'boolean':
+			return [];
+
+		// Logical has left/right
+		case 'logical':
+			return [
+				{ child: node.left, pathSegments: ['left'] },
+				{ child: node.right, pathSegments: ['right'] }
+			];
+
+		// LogicalNot has operand
+		case 'logical-not':
+			return [{ child: node.operand, pathSegments: ['operand'] }];
 	}
 }
 
@@ -637,6 +685,29 @@ function reconstructNode(original: MathNode, transformedChildren: Map<string, Ma
 				original.direction,
 				original.metadata
 			);
+
+		// Boolean - no children, return as-is
+		case 'boolean':
+			return boolean(original.value, original.metadata);
+
+		// Logical - reconstruct with transformed left/right
+		case 'logical':
+			return logical(
+				original.operator,
+				getChild('left', original.left),
+				getChild('right', original.right),
+				{
+					operatorMetadata: original.operatorMetadata,
+					metadata: original.metadata
+				}
+			);
+
+		// LogicalNot - reconstruct with transformed operand
+		case 'logical-not':
+			return logicalNot(getChild('operand', original.operand), {
+				operatorMetadata: original.operatorMetadata,
+				metadata: original.metadata
+			});
 	}
 }
 
