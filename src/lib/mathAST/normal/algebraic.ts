@@ -119,17 +119,6 @@ export function algebraicFromRadical(r: SimplifiedRadical): AlgebraicCoefficient
 // =============================================================================
 
 /**
- * Creates a hash string for the radicals of a term.
- * Used to identify terms that can be combined.
- *
- * @param radicals - Array of simplified radicals
- * @returns A deterministic hash string
- */
-export function hashRadicals(radicals: readonly SimplifiedRadical[]): string {
-	return hashRadicalArray(radicals);
-}
-
-/**
  * Combines like terms (terms with same radical signature and imaginary flag).
  * Eliminates terms with zero coefficient.
  *
@@ -147,7 +136,7 @@ function combineLikeTerms(terms: AlgebraicTerm[]): AlgebraicTerm[] {
 
 	for (const term of terms) {
 		// Signature includes both radicals and imaginary flag
-		const radicalHash = hashRadicals(term.radicals);
+		const radicalHash = hashRadicalArray(term.radicals);
 		const sig = term.hasImaginaryUnit === true ? `${radicalHash}*i` : radicalHash;
 		const existing = groups.get(sig);
 
