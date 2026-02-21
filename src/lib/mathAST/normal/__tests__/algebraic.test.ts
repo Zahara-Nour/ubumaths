@@ -12,7 +12,6 @@ import {
 	algebraicCoefficient,
 	algebraicFromRational,
 	algebraicFromRadical,
-	hashRadicals,
 	// Arithmetic
 	addAlgebraic,
 	subAlgebraic,
@@ -28,6 +27,7 @@ import {
 	algebraicToString,
 	algebraicToNumber
 } from '../algebraic';
+import { hashRadicalArray } from '../hash';
 import type { SimplifiedRadical, Rational, AlgebraicCoefficient } from '../types';
 
 // =============================================================================
@@ -152,18 +152,18 @@ describe('algebraic', () => {
 		});
 	});
 
-	describe('hashRadicals', () => {
+	describe('hashRadicalArray', () => {
 		it('returns empty string for empty array', () => {
-			expect(hashRadicals([])).toBe('');
+			expect(hashRadicalArray([])).toBe('');
 		});
 
 		it('returns consistent hash for same radicals', () => {
-			expect(hashRadicals([sqrt2])).toBe(hashRadicals([sqrt2]));
-			expect(hashRadicals([sqrt2, sqrt3])).toBe(hashRadicals([sqrt2, sqrt3]));
+			expect(hashRadicalArray([sqrt2])).toBe(hashRadicalArray([sqrt2]));
+			expect(hashRadicalArray([sqrt2, sqrt3])).toBe(hashRadicalArray([sqrt2, sqrt3]));
 		});
 
 		it('returns different hash for different radicals', () => {
-			expect(hashRadicals([sqrt2])).not.toBe(hashRadicals([sqrt3]));
+			expect(hashRadicalArray([sqrt2])).not.toBe(hashRadicalArray([sqrt3]));
 		});
 	});
 
