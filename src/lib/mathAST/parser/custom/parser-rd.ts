@@ -16,15 +16,17 @@
  * - Tolerant and strict parsing modes
  *
  * Grammar:
- *   expression      := relation
+ *   expression      := logicalOr
+ *   logicalOr       := logicalAnd ('||' logicalAnd)*
+ *   logicalAnd      := relation ('&&' relation)*
  *   relation        := additive (RELATION_OP additive)*
  *   additive        := multiplicative (('+' | '-') multiplicative)*
  *   multiplicative  := unary (('*' | ':/' | ':' | IMPLICIT) unary)*
- *   unary           := ('+' | '-')? power
+ *   unary           := ('!' | '+' | '-')? power
  *   power           := postfix ('^' powerOperand | '_' subscriptOperand)*
  *   postfix         := atomWithFraction ('[' unit ']')?
  *   atomWithFraction := atom ('/' atom)*    // CRITICAL: / at primary level!
- *   atom            := NUMBER | LETTER | SYMBOL | function | parens | braces | absValue | color
+ *   atom            := NUMBER | LETTER | KEYWORD | SYMBOL | function | parens | braces | absValue | color
  *
  * Key difference from LaTeX parser:
  * - `/` has highest precedence (binds at atom level), creating fractions
@@ -215,7 +217,45 @@ class CustomRDParser {
 	 * expression := relation
 	 */
 	private parseExpression(): MathNode {
-		return this.parseRelation();
+		return this.parseLogicalOr();
+	}
+
+	/**
+	 * logicalOr := logicalAnd ('||' logicalAnd)*
+	 */
+	private parseLogicalOr(): MathNode {
+		let left = this.parseLogicalAnd();
+
+		while (this.check('OR_OR')) {
+			const operatorColor = this.colorStack.current();
+			this.advance(); // consume ||
+			const right = this.parseLogicalAnd();
+			const node = MathAST.logicalOr(left, right);
+			left = operatorColor
+				? ({ ...node, operatorMetadata: { color: operatorColor } } as MathNode)
+				: node;
+		}
+
+		return left;
+	}
+
+	/**
+	 * logicalAnd := relation ('&&' relation)*
+	 */
+	private parseLogicalAnd(): MathNode {
+		let left = this.parseRelation();
+
+		while (this.check('AND_AND')) {
+			const operatorColor = this.colorStack.current();
+			this.advance(); // consume &&
+			const right = this.parseRelation();
+			const node = MathAST.logicalAnd(left, right);
+			left = operatorColor
+				? ({ ...node, operatorMetadata: { color: operatorColor } } as MathNode)
+				: node;
+		}
+
+		return left;
 	}
 
 	/**
@@ -355,9 +395,20 @@ class CustomRDParser {
 	}
 
 	/**
-	 * unary := ('+' | '-')? power
+	 * unary := ('!' | '+' | '-')? power
 	 */
 	private parseUnary(): MathNode {
+		if (this.check('EXCLAMATION')) {
+			const operatorColor = this.colorStack.current();
+			this.advance(); // consume !
+			const operand = this.parseUnary();
+			const node = MathAST.logicalNot(operand);
+			if (operatorColor) {
+				return { ...node, operatorMetadata: { color: operatorColor } } as MathNode;
+			}
+			return node;
+		}
+
 		if (this.check('MINUS')) {
 			// Check for double minus (error case)
 			const minusToken = this.currentToken;
@@ -549,6 +600,9 @@ class CustomRDParser {
 			case 'LETTER':
 				return this.parseVariable();
 
+			case 'KEYWORD':
+				return this.parseKeyword();
+
 			case 'SYMBOL':
 				return this.parseSymbol();
 
@@ -657,6 +711,25 @@ class CustomRDParser {
 	private parseNumber(): MathNode {
 		const token = this.advance();
 		return this.applyColor(MathAST.number(token.value));
+	}
+
+	/**
+	 * Parse a boolean keyword: true, false
+	 */
+	private parseKeyword(): MathNode {
+		const token = this.advance();
+		if (token.value === 'true') {
+			return this.applyColor(MathAST.boolean(true));
+		}
+		if (token.value === 'false') {
+			return this.applyColor(MathAST.boolean(false));
+		}
+		this.error(
+			`Unknown keyword: "${token.value}"`,
+			token.position,
+			token.length,
+			'UNEXPECTED_TOKEN'
+		);
 	}
 
 	/**
@@ -778,7 +851,45 @@ class CustomRDParser {
 	private parseAbsoluteValueContent(): MathNode {
 		// We need to parse the expression but stop at PIPE
 		// Use a modified parsing approach that stops at PIPE
-		return this.parseRelationStopAtPipe();
+		return this.parseLogicalOrStopAtPipe();
+	}
+
+	/**
+	 * Parse logicalOr, stopping at PIPE
+	 */
+	private parseLogicalOrStopAtPipe(): MathNode {
+		let left = this.parseLogicalAndStopAtPipe();
+
+		while (this.check('OR_OR') && !this.check('PIPE')) {
+			const operatorColor = this.colorStack.current();
+			this.advance();
+			const right = this.parseLogicalAndStopAtPipe();
+			const node = MathAST.logicalOr(left, right);
+			left = operatorColor
+				? ({ ...node, operatorMetadata: { color: operatorColor } } as MathNode)
+				: node;
+		}
+
+		return left;
+	}
+
+	/**
+	 * Parse logicalAnd, stopping at PIPE
+	 */
+	private parseLogicalAndStopAtPipe(): MathNode {
+		let left = this.parseRelationStopAtPipe();
+
+		while (this.check('AND_AND') && !this.check('PIPE')) {
+			const operatorColor = this.colorStack.current();
+			this.advance();
+			const right = this.parseRelationStopAtPipe();
+			const node = MathAST.logicalAnd(left, right);
+			left = operatorColor
+				? ({ ...node, operatorMetadata: { color: operatorColor } } as MathNode)
+				: node;
+		}
+
+		return left;
 	}
 
 	/**
@@ -865,6 +976,17 @@ class CustomRDParser {
 	 * Parse unary, stopping at PIPE
 	 */
 	private parseUnaryStopAtPipe(): MathNode {
+		if (this.check('EXCLAMATION')) {
+			const operatorColor = this.colorStack.current();
+			this.advance();
+			const operand = this.parseUnaryStopAtPipe();
+			const node = MathAST.logicalNot(operand);
+			if (operatorColor) {
+				return { ...node, operatorMetadata: { color: operatorColor } } as MathNode;
+			}
+			return node;
+		}
+
 		if (this.check('MINUS')) {
 			const minusToken = this.currentToken;
 			this.advance();

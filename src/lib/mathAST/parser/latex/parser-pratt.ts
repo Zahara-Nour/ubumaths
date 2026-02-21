@@ -14,7 +14,14 @@
  * @module mathAST/parser/parser-pratt
  */
 
-import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } from '../../types';
+import type {
+	MathNode,
+	GreekLetter,
+	MathSymbol,
+	RelationType,
+	LogicalOperator,
+	NodeMetadata
+} from '../../types';
 import type { MatrixType } from '../../matrix/types';
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { Tokenizer } from './tokenizer';
@@ -55,6 +62,8 @@ const MATRIX_ENVIRONMENTS: Record<string, MatrixType> = {
 /* eslint-disable @typescript-eslint/no-duplicate-enum-values */
 const enum BP {
 	NONE = 0,
+	LOGICAL_OR = 6, // \lor (logical OR)
+	LOGICAL_AND = 7, // \land (logical AND)
 	RELATION = 10, // =, <, >, <=, >=, !=, etc.
 	ADDITION = 20, // +, -
 	COMPOSITION = 25, // \circ (composition operator, between + and *)
@@ -443,6 +452,12 @@ class PrattParser {
 						return this.parseRelationCommand(left, relType);
 					}
 				}
+				if (token.value === 'land') {
+					return this.parseLogicalBinary(left, 'and', BP.LOGICAL_AND);
+				}
+				if (token.value === 'lor') {
+					return this.parseLogicalBinary(left, 'or', BP.LOGICAL_OR);
+				}
 				if (token.value === 'cdot') {
 					return this.parseMultiplicationCommand(left, 'dot');
 				}
@@ -514,6 +529,12 @@ class PrattParser {
 				}
 				if (token.value === 'circ') {
 					return BP.COMPOSITION;
+				}
+				if (token.value === 'land') {
+					return BP.LOGICAL_AND;
+				}
+				if (token.value === 'lor') {
+					return BP.LOGICAL_OR;
 				}
 				// \textcolor is handled specially - it's transparent
 				if (token.value === 'textcolor') {
@@ -777,6 +798,22 @@ class PrattParser {
 				return this.parseLimit();
 			}
 			return this.parseFunction();
+		}
+
+		// Boolean/logical commands
+		if (cmd === 'text') {
+			return this.parseTextBoolean();
+		}
+		if (cmd === 'top') {
+			this.advance();
+			return this.applyColor(MathAST.boolean(true));
+		}
+		if (cmd === 'bot') {
+			this.advance();
+			return this.applyColor(MathAST.boolean(false));
+		}
+		if (cmd === 'lnot') {
+			return this.parseLogicalNot();
 		}
 
 		// Special commands
@@ -1190,6 +1227,14 @@ class PrattParser {
 			return false;
 		}
 
+		// Check for logical operator commands
+		if (
+			token.type === 'COMMAND' &&
+			(token.value === 'land' || token.value === 'lor' || token.value === 'lnot')
+		) {
+			return false;
+		}
+
 		// Check for \right
 		if (token.type === 'COMMAND' && token.value === 'right') {
 			return false;
@@ -1325,6 +1370,69 @@ class PrattParser {
 		this.advance(); // consume command
 		const right = this.parseExpression(BP.RELATION);
 		return this.applyColorWithOperator(MathAST.relation(relType, left, right), operatorColor);
+	}
+
+	// =========================================================================
+	// Boolean / Logical Parsers
+	// =========================================================================
+
+	/**
+	 * Parse \text{vrai} or \text{faux} as boolean literals.
+	 * Falls back to error for unrecognized \text content.
+	 */
+	private parseTextBoolean(): MathNode {
+		const cmdToken = this.advance(); // consume \text
+		this.expect('LBRACE', "Expected '{' after \\text");
+
+		// Read letters to form the text content
+		let text = '';
+		while (this.check('LETTER')) {
+			text += this.currentToken.value;
+			this.advance();
+		}
+		this.expect('RBRACE', "Expected '}' after \\text content");
+
+		if (text === 'vrai') {
+			return this.applyColor(MathAST.boolean(true));
+		}
+		if (text === 'faux') {
+			return this.applyColor(MathAST.boolean(false));
+		}
+
+		this.error(
+			`Unknown \\text content: "${text}". Expected "vrai" or "faux"`,
+			cmdToken.position,
+			cmdToken.length,
+			'UNEXPECTED_TOKEN'
+		);
+	}
+
+	/**
+	 * Parse \lnot as a prefix logical NOT operator.
+	 */
+	private parseLogicalNot(): MathNode {
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume \lnot
+		const operand = this.parseExpression(BP.UNARY);
+		const node = MathAST.logicalNot(operand);
+		if (operatorColor) {
+			return { ...node, operatorMetadata: { color: operatorColor } } as MathNode;
+		}
+		return node;
+	}
+
+	/**
+	 * Parse \land or \lor as infix logical binary operators.
+	 */
+	private parseLogicalBinary(left: MathNode, operator: LogicalOperator, bp: number): MathNode {
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume \land or \lor
+		const right = this.parseExpression(bp);
+		const node = MathAST.logical(operator, left, right);
+		if (operatorColor) {
+			return { ...node, operatorMetadata: { color: operatorColor } } as MathNode;
+		}
+		return node;
 	}
 
 	// =========================================================================

@@ -33,7 +33,10 @@ import {
 	isComposition,
 	isDerivativeFunction,
 	isInverseFunction,
-	isComplex
+	isComplex,
+	isBoolean,
+	isLogical,
+	isLogicalNot
 } from '../guards';
 import { substituteFunction } from './function-bindings';
 import {
@@ -51,12 +54,14 @@ import {
 	floatToRational
 } from '../normal/rational';
 import { integerNthRoot } from '../normal/radical';
-import { number, divide } from '../factory';
+import { number, divide, boolean as booleanNode } from '../factory';
 import { normalize } from '../normal/normalize';
 import { denormalize } from '../normal/denormalize';
 import { normalizeExtended } from '../normal/normalize-extended';
 import { denormalizeExtended } from '../normal/denormalize';
 import { mapNode } from '../transforms';
+import { areEquivalent } from '../equivalence';
+import { compareNumericNodes } from './compare-numeric';
 
 // =============================================================================
 // Core Evaluation
@@ -583,6 +588,11 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		throw new Error('Cannot evaluate composition expression directly.');
 	}
 
+	// Boolean/Logical nodes - not numeric
+	if (isBoolean(node) || isLogical(node) || isLogicalNot(node)) {
+		throw new Error('Cannot evaluate boolean/logical expression to a numeric value');
+	}
+
 	// Unknown node type
 	throw new Error(`Cannot evaluate node type: ${(node as MathNode).type}`);
 }
@@ -717,6 +727,10 @@ function validateEvaluable(node: MathNode, exactMode: boolean = false): void {
 		throw new Error('Cannot evaluate relation expressions to a numeric value');
 	}
 
+	if (isBoolean(node) || isLogical(node) || isLogicalNot(node)) {
+		throw new Error('Cannot evaluate boolean/logical expressions to a numeric value');
+	}
+
 	if (isSubscript(node)) {
 		throw new Error('Cannot evaluate subscript expressions numerically');
 	}
@@ -831,6 +845,91 @@ function evaluateRoundingFunctions(node: MathNode): MathNode {
 }
 
 // =============================================================================
+// Boolean Evaluation
+// =============================================================================
+
+/**
+ * Checks if a node is a boolean expression (boolean, relation, logical, logical-not).
+ */
+function isBooleanExpression(node: MathNode): boolean {
+	return isBoolean(node) || isRelation(node) || isLogical(node) || isLogicalNot(node);
+}
+
+/**
+ * Evaluates a MathNode as a boolean expression.
+ *
+ * Handles:
+ * - BooleanNode: returns the value directly
+ * - RelationNode: evaluates both sides and compares
+ *   - `=` / `!=`: uses areEquivalent() for semantic comparison
+ *   - `<` / `>` / `<=` / `>=`: uses compareNumericNodes()
+ * - LogicalNode: evaluates both operands as booleans
+ * - LogicalNotNode: evaluates operand as boolean and negates
+ *
+ * @param node - The MathNode to evaluate as boolean
+ * @returns The boolean result, or undefined if the expression is not evaluable
+ */
+function evaluateToBoolean(node: MathNode): boolean | undefined {
+	if (isBoolean(node)) {
+		return node.value;
+	}
+
+	if (isRelation(node)) {
+		const rel = node.relation;
+
+		// Equality and inequality use semantic equivalence
+		if (rel === '=' || rel === '≡') {
+			return areEquivalent(node.left, node.right);
+		}
+		if (rel === '!=' || rel === '≢') {
+			return !areEquivalent(node.left, node.right);
+		}
+
+		// Ordering relations use numeric comparison
+		const cmp = compareNumericNodes(node.left, node.right);
+		if (cmp === undefined) return undefined;
+
+		switch (rel) {
+			case '<':
+				return cmp === -1;
+			case '>':
+				return cmp === 1;
+			case '<=':
+				return cmp === 0 || cmp === -1;
+			case '>=':
+				return cmp === 0 || cmp === 1;
+			default:
+				// Other relation types (≈, ∈, etc.) are not evaluable as booleans
+				return undefined;
+		}
+	}
+
+	if (isLogical(node)) {
+		const left = evaluateToBoolean(node.left);
+
+		// Short-circuit: false && anything = false, true || anything = true
+		if (node.operator === 'and' && left === false) return false;
+		if (node.operator === 'or' && left === true) return true;
+
+		if (left === undefined) return undefined;
+		const right = evaluateToBoolean(node.right);
+		if (right === undefined) return undefined;
+
+		if (node.operator === 'and') return left && right;
+		if (node.operator === 'or') return left || right;
+		return undefined;
+	}
+
+	if (isLogicalNot(node)) {
+		const operand = evaluateToBoolean(node.operand);
+		if (operand === undefined) return undefined;
+		return !operand;
+	}
+
+	return undefined;
+}
+
+// =============================================================================
 // Main Export
 // =============================================================================
 
@@ -903,6 +1002,24 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 	let processedNode = node;
 	if (opts.functions && Object.keys(opts.functions).length > 0) {
 		processedNode = substituteFunction(node, opts.functions);
+	}
+
+	// 1b. Boolean evaluation: detect boolean root expressions
+	if (isBooleanExpression(processedNode)) {
+		const boolResult = evaluateToBoolean(processedNode);
+		if (boolResult === undefined) {
+			return {
+				status: 'unevaluable',
+				reason:
+					'Cannot evaluate boolean expression (may contain free variables or unsupported relations)'
+			};
+		}
+		return {
+			status: 'value',
+			value: boolResult,
+			node: booleanNode(boolResult),
+			exact: true
+		};
 	}
 
 	// 2. Check for free variables (exclude known constants)

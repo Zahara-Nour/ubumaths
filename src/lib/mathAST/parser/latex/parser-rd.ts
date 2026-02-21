@@ -14,14 +14,16 @@
  * - Left-to-right for mixed: x_1^2 -> (x_1)^2
  *
  * Grammar:
- *   expression      := relation
+ *   expression      := logicalOr
+ *   logicalOr       := logicalAnd (\lor logicalAnd)*
+ *   logicalAnd      := relation (\land relation)*
  *   relation        := additive (RELATION_OP additive)*
  *   additive        := multiplicative (('+' | '-') multiplicative)*
  *   multiplicative  := unary ((MUL_OP | IMPLICIT) unary)*
- *   unary           := ('+' | '-')? power
+ *   unary           := (\lnot | '+' | '-')? power
  *   power           := postfix ('^' powerOperand | '_' subscriptOperand)*
  *   postfix         := primary ('~' '\unit' group)?
- *   primary         := NUMBER | LETTER | GREEK | SYMBOL | fraction | sqrt | function | delimiter | color | braceGroup
+ *   primary         := NUMBER | LETTER | GREEK | SYMBOL | BOOLEAN | fraction | sqrt | function | delimiter | color | braceGroup
  *
  * @module mathAST/parser/parser-rd
  */
@@ -289,10 +291,48 @@ class RDParser {
 	// =========================================================================
 
 	/**
-	 * expression := relation
+	 * expression := logicalOr
 	 */
 	private parseExpression(): MathNode {
-		return this.parseRelation();
+		return this.parseLogicalOr();
+	}
+
+	/**
+	 * logicalOr := logicalAnd (\lor logicalAnd)*
+	 */
+	private parseLogicalOr(): MathNode {
+		let left = this.parseLogicalAnd();
+
+		while (this.checkCommand('lor')) {
+			const operatorColor = this.colorStack.current();
+			this.advance(); // consume \lor
+			const right = this.parseLogicalAnd();
+			const node = MathAST.logicalOr(left, right);
+			left = operatorColor
+				? ({ ...node, operatorMetadata: { color: operatorColor } } as MathNode)
+				: node;
+		}
+
+		return left;
+	}
+
+	/**
+	 * logicalAnd := relation (\land relation)*
+	 */
+	private parseLogicalAnd(): MathNode {
+		let left = this.parseRelation();
+
+		while (this.checkCommand('land')) {
+			const operatorColor = this.colorStack.current();
+			this.advance(); // consume \land
+			const right = this.parseRelation();
+			const node = MathAST.logicalAnd(left, right);
+			left = operatorColor
+				? ({ ...node, operatorMetadata: { color: operatorColor } } as MathNode)
+				: node;
+		}
+
+		return left;
 	}
 
 	/**
@@ -471,9 +511,20 @@ class RDParser {
 	}
 
 	/**
-	 * unary := ('+' | '-')? power
+	 * unary := (\lnot | '+' | '-')? power
 	 */
 	private parseUnary(): MathNode {
+		if (this.checkCommand('lnot')) {
+			const operatorColor = this.colorStack.current();
+			this.advance(); // consume \lnot
+			const operand = this.parseUnary();
+			const node = MathAST.logicalNot(operand);
+			if (operatorColor) {
+				return { ...node, operatorMetadata: { color: operatorColor } } as MathNode;
+			}
+			return node;
+		}
+
 		if (this.check('MINUS')) {
 			this.advance();
 			const operand = this.parseUnary();
@@ -695,6 +746,14 @@ class RDParser {
 			return false;
 		}
 
+		// Check for logical operator commands
+		if (
+			token.type === 'COMMAND' &&
+			(token.value === 'land' || token.value === 'lor' || token.value === 'lnot')
+		) {
+			return false;
+		}
+
 		// Check for \right
 		if (token.type === 'COMMAND' && token.value === 'right') {
 			return false;
@@ -781,6 +840,19 @@ class RDParser {
 			return this.parseFunction();
 		}
 
+		// Boolean/logical commands
+		if (cmd === 'text') {
+			return this.parseTextBoolean();
+		}
+		if (cmd === 'top') {
+			this.advance();
+			return this.applyColor(MathAST.boolean(true));
+		}
+		if (cmd === 'bot') {
+			this.advance();
+			return this.applyColor(MathAST.boolean(false));
+		}
+
 		// Special commands
 		switch (cmd) {
 			case 'frac':
@@ -809,6 +881,36 @@ class RDParser {
 			default:
 				this.error(`Unknown command: \\${cmd}`, token.position, token.length, 'UNKNOWN_COMMAND');
 		}
+	}
+
+	/**
+	 * Parse \text{vrai} or \text{faux} as boolean literals.
+	 */
+	private parseTextBoolean(): MathNode {
+		const cmdToken = this.advance(); // consume \text
+		this.expect('LBRACE', "Expected '{' after \\text");
+
+		// Read letters to form the text content
+		let text = '';
+		while (this.check('LETTER')) {
+			text += this.currentToken.value;
+			this.advance();
+		}
+		this.expect('RBRACE', "Expected '}' after \\text content");
+
+		if (text === 'vrai') {
+			return this.applyColor(MathAST.boolean(true));
+		}
+		if (text === 'faux') {
+			return this.applyColor(MathAST.boolean(false));
+		}
+
+		this.error(
+			`Unknown \\text content: "${text}". Expected "vrai" or "faux"`,
+			cmdToken.position,
+			cmdToken.length,
+			'UNEXPECTED_TOKEN'
+		);
 	}
 
 	// =========================================================================

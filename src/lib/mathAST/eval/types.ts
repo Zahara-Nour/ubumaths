@@ -149,9 +149,10 @@ export interface ComplexValueResult {
  *
  * - MathNode: In exact mode, the simplified AST (e.g., sqrt(2), cos(3))
  * - number: In decimal mode, the numeric approximation
+ * - boolean: For boolean results (relation/logical evaluation)
  * - ComplexValueResult: For complex number results
  */
-export type EvalValue = MathNode | number | ComplexValueResult;
+export type EvalValue = MathNode | number | boolean | ComplexValueResult;
 
 /**
  * Indeterminate forms that can arise during evaluation, especially for limits.

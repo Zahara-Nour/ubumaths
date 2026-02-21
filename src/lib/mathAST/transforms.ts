@@ -9,6 +9,7 @@ import type { MathNode, NodeMetadata } from './types';
 
 import {
 	add,
+	boolean,
 	complex,
 	compose,
 	delimiter,
@@ -18,6 +19,8 @@ import {
 	hole,
 	infinity,
 	limit,
+	logical,
+	logicalNot,
 	mathConstant,
 	matrix,
 	multiply,
@@ -234,6 +237,18 @@ export function getChildren(node: MathNode): MathNode[] {
 		// Limit has expression and approach as children
 		case 'limit':
 			return [node.expression, node.approach];
+
+		// Boolean is a leaf node
+		case 'boolean':
+			return [];
+
+		// Logical has left/right
+		case 'logical':
+			return [node.left, node.right];
+
+		// LogicalNot has operand
+		case 'logical-not':
+			return [node.operand];
 	}
 }
 
@@ -420,6 +435,27 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 				node.direction,
 				node.metadata
 			);
+			break;
+
+		// Boolean - no children
+		case 'boolean':
+			transformedNode = node;
+			break;
+
+		// Logical
+		case 'logical':
+			transformedNode = logical(node.operator, mapNode(node.left, fn), mapNode(node.right, fn), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			});
+			break;
+
+		// LogicalNot
+		case 'logical-not':
+			transformedNode = logicalNot(mapNode(node.operand, fn), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			});
 			break;
 	}
 
@@ -623,6 +659,29 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				transformedParent.direction,
 				transformedParent.metadata
 			);
+
+		// Boolean - no children
+		case 'boolean':
+			return transformedParent;
+
+		// Logical
+		case 'logical':
+			return logical(
+				transformedParent.operator,
+				mapNodeTopDown(transformedParent.left, fn),
+				mapNodeTopDown(transformedParent.right, fn),
+				{
+					operatorMetadata: transformedParent.operatorMetadata,
+					metadata: transformedParent.metadata
+				}
+			);
+
+		// LogicalNot
+		case 'logical-not':
+			return logicalNot(mapNodeTopDown(transformedParent.operand, fn), {
+				operatorMetadata: transformedParent.operatorMetadata,
+				metadata: transformedParent.metadata
+			});
 	}
 }
 
@@ -856,6 +915,24 @@ export function cloneNode<T extends MathNode>(node: T): T {
 				node.direction,
 				node.metadata
 			) as T;
+
+		// Boolean
+		case 'boolean':
+			return boolean(node.value, node.metadata) as T;
+
+		// Logical
+		case 'logical':
+			return logical(node.operator, cloneNode(node.left), cloneNode(node.right), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			}) as T;
+
+		// LogicalNot
+		case 'logical-not':
+			return logicalNot(cloneNode(node.operand), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			}) as T;
 	}
 }
 
@@ -1207,6 +1284,29 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 				node.direction,
 				node.metadata
 			);
+
+		// Boolean - no children
+		case 'boolean':
+			return node;
+
+		// Logical - strip brackets on both sides
+		case 'logical':
+			return logical(
+				node.operator,
+				stripBracketsInternal(node.left, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				stripBracketsInternal(node.right, { ...childCtx, isRoot: true, isFirstTerm: true }),
+				{
+					operatorMetadata: node.operatorMetadata,
+					metadata: node.metadata
+				}
+			);
+
+		// LogicalNot - strip brackets in operand
+		case 'logical-not':
+			return logicalNot(stripBracketsInternal(node.operand, { ...childCtx, isFirstTerm: true }), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			});
 	}
 }
 

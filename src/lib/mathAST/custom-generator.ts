@@ -286,7 +286,12 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'matrix':
 		case 'complex':
 		case 'limit':
+		case 'logical':
+		case 'logical-not':
 			return true;
+
+		case 'boolean':
+			return false;
 
 		default: {
 			const exhaustive: never = node;
@@ -491,6 +496,24 @@ export class CustomGenerator {
 
 			case 'limit':
 				this.visitLimitSpans(node);
+				break;
+
+			case 'boolean':
+				this.emit(node.value ? 'true' : 'false', node.metadata);
+				break;
+
+			case 'logical':
+				this.visitWithSpans(node.left);
+				this.emit(
+					node.operator === 'and' ? ' && ' : ' || ',
+					node.operatorMetadata ?? node.metadata
+				);
+				this.visitWithSpans(node.right);
+				break;
+
+			case 'logical-not':
+				this.emit('!', node.operatorMetadata ?? node.metadata);
+				this.visitWithSpans(node.operand);
 				break;
 
 			default: {
@@ -947,6 +970,18 @@ export class CustomGenerator {
 				break;
 			case 'limit':
 				content = this.generateLimit(node);
+				break;
+			case 'boolean':
+				content = node.value ? 'true' : 'false';
+				break;
+			case 'logical':
+				content =
+					this.generateNode(node.left) +
+					(node.operator === 'and' ? ' && ' : ' || ') +
+					this.generateNode(node.right);
+				break;
+			case 'logical-not':
+				content = '!' + this.generateNode(node.operand);
 				break;
 			default: {
 				const exhaustive: never = node;

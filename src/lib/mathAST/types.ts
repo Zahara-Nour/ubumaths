@@ -585,6 +585,52 @@ export interface LimitNode extends BaseNode {
 }
 
 // =============================================================================
+// Boolean and Logical Nodes
+// =============================================================================
+
+/**
+ * Represents a boolean literal value (true/false).
+ *
+ * LaTeX: \text{vrai} / \text{faux}, also \top / \bot
+ * Custom: true / false
+ */
+export interface BooleanNode extends BaseNode {
+	readonly type: 'boolean';
+	readonly value: boolean;
+}
+
+/**
+ * Logical binary operators
+ */
+export type LogicalOperator = 'and' | 'or';
+
+/**
+ * Represents a logical binary operation (and/or).
+ *
+ * LaTeX: a \land b, a \lor b
+ * Custom: a && b, a || b
+ */
+export interface LogicalNode extends BaseNode {
+	readonly type: 'logical';
+	readonly operator: LogicalOperator;
+	readonly left: MathNode;
+	readonly right: MathNode;
+	readonly operatorMetadata?: NodeMetadata;
+}
+
+/**
+ * Represents logical negation (not).
+ *
+ * LaTeX: \lnot a
+ * Custom: !a
+ */
+export interface LogicalNotNode extends BaseNode {
+	readonly type: 'logical-not';
+	readonly operand: MathNode;
+	readonly operatorMetadata?: NodeMetadata;
+}
+
+// =============================================================================
 // Function Composition Node
 // =============================================================================
 
@@ -636,7 +682,10 @@ export type MathNode =
 	| ComplexNode
 	| InfinityNode
 	| SignedZeroNode
-	| LimitNode;
+	| LimitNode
+	| BooleanNode
+	| LogicalNode
+	| LogicalNotNode;
 
 // =============================================================================
 // Node Type Extraction

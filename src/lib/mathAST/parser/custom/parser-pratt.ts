@@ -21,7 +21,14 @@
  * @module mathAST/parser/custom/parser-pratt
  */
 
-import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } from '../../types';
+import type {
+	MathNode,
+	GreekLetter,
+	MathSymbol,
+	RelationType,
+	LogicalOperator,
+	NodeMetadata
+} from '../../types';
 import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
@@ -49,11 +56,13 @@ import {
 const enum BP {
 	NONE = 0,
 	STOP_AT_PIPE = 1, // Special: stop parsing when encountering PIPE (for absolute value content)
+	LOGICAL_OR = 6, // || (logical OR)
+	LOGICAL_AND = 7, // && (logical AND)
 	RELATION = 10, // =, <, >, <=, >=, !=, <=>, =>
 	ADDITION = 20, // +, -
 	COMPOSITION = 25, // @ (composition operator, between + and *)
 	MULTIPLY = 30, // *, :/, :, implicit multiplication
-	UNARY = 40, // prefix -, +
+	UNARY = 40, // prefix -, +, !
 	POWER = 50 // ^, _ (right-associative)
 }
 
@@ -317,11 +326,17 @@ class CustomPrattParser {
 			case 'DOUBLE_LBRACKET':
 				return this.parseMatrixLiteral();
 
+			case 'KEYWORD':
+				return this.parseKeyword();
+
 			case 'MINUS':
 				return this.parsePrefixMinus();
 
 			case 'PLUS':
 				return this.parsePrefixPlus();
+
+			case 'EXCLAMATION':
+				return this.parseLogicalNot();
 
 			default:
 				this.error(
@@ -388,6 +403,12 @@ class CustomPrattParser {
 			case 'IMPLIES':
 				return this.parseRelation(left, '⟹');
 
+			case 'AND_AND':
+				return this.parseLogicalBinary(left, 'and', BP.LOGICAL_AND);
+
+			case 'OR_OR':
+				return this.parseLogicalBinary(left, 'or', BP.LOGICAL_OR);
+
 			case 'PIPE':
 				// PIPE in LED position means implicit multiplication with absolute value
 				// e.g., 2|x| = 2 * |x|
@@ -447,6 +468,12 @@ class CustomPrattParser {
 			case 'CARET':
 			case 'UNDERSCORE':
 				return BP.POWER;
+
+			case 'AND_AND':
+				return BP.LOGICAL_AND;
+
+			case 'OR_OR':
+				return BP.LOGICAL_OR;
 
 			case 'EQUALS':
 			case 'LESS':
@@ -1389,6 +1416,57 @@ class CustomPrattParser {
 		this.advance(); // consume operator
 		const right = this.parseExpression(BP.RELATION);
 		return this.applyColorWithOperator(MathAST.relation(relType, left, right), operatorColor);
+	}
+
+	// =========================================================================
+	// Boolean / Logical
+	// =========================================================================
+
+	/**
+	 * Parse a boolean keyword: true, false
+	 */
+	private parseKeyword(): MathNode {
+		const token = this.advance();
+		if (token.value === 'true') {
+			return this.applyColor(MathAST.boolean(true));
+		}
+		if (token.value === 'false') {
+			return this.applyColor(MathAST.boolean(false));
+		}
+		this.error(
+			`Unknown keyword: "${token.value}"`,
+			token.position,
+			token.length,
+			'UNEXPECTED_TOKEN'
+		);
+	}
+
+	/**
+	 * Parse prefix logical NOT: !expr
+	 */
+	private parseLogicalNot(): MathNode {
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume !
+		const operand = this.parseExpression(BP.UNARY);
+		const node = MathAST.logicalNot(operand);
+		if (operatorColor) {
+			return { ...node, operatorMetadata: { color: operatorColor } } as MathNode;
+		}
+		return node;
+	}
+
+	/**
+	 * Parse infix logical operators: && (and), || (or)
+	 */
+	private parseLogicalBinary(left: MathNode, operator: LogicalOperator, bp: number): MathNode {
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume && or ||
+		const right = this.parseExpression(bp);
+		const node = MathAST.logical(operator, left, right);
+		if (operatorColor) {
+			return { ...node, operatorMetadata: { color: operatorColor } } as MathNode;
+		}
+		return node;
 	}
 
 	// =========================================================================

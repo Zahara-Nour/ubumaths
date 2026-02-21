@@ -360,6 +360,33 @@ function printNode(node: MathNode, ctx: PrintContext, prefix: string, childPrefi
 			break;
 		}
 
+		// =========================================================================
+		// Boolean and Logical
+		// =========================================================================
+		case 'boolean':
+			addLine(ctx, prefix, `Boolean: ${node.value}`, node.metadata);
+			break;
+
+		case 'logical': {
+			let logicalHeader = `Logical [${node.operator}]`;
+			logicalHeader += formatExtendedMetadata('op', node.operatorMetadata);
+			addLine(ctx, prefix, logicalHeader, node.metadata);
+			const logicalChildren = [
+				{ label: 'left', node: node.left },
+				{ label: 'right', node: node.right }
+			];
+			printChildren(logicalChildren, ctx, childPrefix);
+			break;
+		}
+
+		case 'logical-not': {
+			let notHeader = 'LogicalNot';
+			notHeader += formatExtendedMetadata('op', node.operatorMetadata);
+			addLine(ctx, prefix, notHeader, node.metadata);
+			printNode(node.operand, ctx, childPrefix + TREE.last, childPrefix + TREE.space);
+			break;
+		}
+
 		default: {
 			// Exhaustive check
 			const _exhaustive: never = node;

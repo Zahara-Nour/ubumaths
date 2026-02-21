@@ -31,6 +31,9 @@ import type {
 	InfinityNode,
 	SignedZeroNode,
 	LimitNode,
+	BooleanNode,
+	LogicalNode,
+	LogicalNotNode,
 	LiteralNode,
 	BinaryOperationNode,
 	UnaryOperationNode,
@@ -293,6 +296,27 @@ export function isLimit(node: MathNode): node is LimitNode {
 }
 
 /**
+ * Type guard for BooleanNode
+ */
+export function isBoolean(node: MathNode): node is BooleanNode {
+	return node.type === 'boolean';
+}
+
+/**
+ * Type guard for LogicalNode
+ */
+export function isLogical(node: MathNode): node is LogicalNode {
+	return node.type === 'logical';
+}
+
+/**
+ * Type guard for LogicalNotNode
+ */
+export function isLogicalNot(node: MathNode): node is LogicalNotNode {
+	return node.type === 'logical-not';
+}
+
+/**
  * Returns true if node is positive infinity (+∞)
  */
 export function isPositiveInfinity(node: MathNode): node is InfinityNode {
@@ -406,7 +430,13 @@ export function hasChildren(node: MathNode): boolean {
 	if (isLimit(node)) {
 		return true; // Has expression and approach as children
 	}
-	// InfinityNode has no children (leaf node)
+	if (isLogical(node)) {
+		return true;
+	}
+	if (isLogicalNot(node)) {
+		return true;
+	}
+	// BooleanNode and InfinityNode have no children (leaf nodes)
 	return false;
 }
 
@@ -610,6 +640,15 @@ export function hasUnitDescendant(node: MathNode): boolean {
 		case 'limit':
 			// Check expression and approach for unit descendants
 			return hasUnitDescendant(node.expression) || hasUnitDescendant(node.approach);
+
+		case 'boolean':
+			return false;
+
+		case 'logical':
+			return hasUnitDescendant(node.left) || hasUnitDescendant(node.right);
+
+		case 'logical-not':
+			return hasUnitDescendant(node.operand);
 
 		default: {
 			const _exhaustive: never = node;

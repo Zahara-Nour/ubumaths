@@ -420,6 +420,24 @@ export class LatexGenerator {
 				this.visitLimitSpans(node);
 				break;
 
+			case 'boolean':
+				this.emit(node.value ? '\\text{vrai}' : '\\text{faux}', node.metadata);
+				break;
+
+			case 'logical':
+				this.visitWithSpans(node.left);
+				this.emit(
+					node.operator === 'and' ? ' \\land ' : ' \\lor ',
+					node.operatorMetadata ?? node.metadata
+				);
+				this.visitWithSpans(node.right);
+				break;
+
+			case 'logical-not':
+				this.emit('\\lnot ', node.operatorMetadata ?? node.metadata);
+				this.visitWithSpans(node.operand);
+				break;
+
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
@@ -952,6 +970,18 @@ export class LatexGenerator {
 				break;
 			case 'limit':
 				content = this.generateLimit(node);
+				break;
+			case 'boolean':
+				content = node.value ? '\\text{vrai}' : '\\text{faux}';
+				break;
+			case 'logical':
+				content =
+					this.generateNode(node.left) +
+					(node.operator === 'and' ? ' \\land ' : ' \\lor ') +
+					this.generateNode(node.right);
+				break;
+			case 'logical-not':
+				content = '\\lnot ' + this.generateNode(node.operand);
 				break;
 			default: {
 				const exhaustive: never = node;

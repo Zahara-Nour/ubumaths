@@ -45,6 +45,7 @@ export type CustomTokenType =
 	| 'BACKSLASH' // \ (for symbols)
 	| 'SYMBOL' // pi, alpha, beta, gamma, theta, infty (after \)
 	| 'FUNC' // sin, cos, tan, ln, log, exp, sqrt
+	| 'KEYWORD' // true, false (boolean literals)
 	| 'PLUS' // +
 	| 'MINUS' // -
 	| 'STAR' // *
@@ -60,6 +61,9 @@ export type CustomTokenType =
 	| 'HASH' // # (for hex colors)
 	| 'QUESTION' // ? (for holes/placeholders)
 	| 'PRIME' // ' (apostrophe for derivatives)
+	| 'EXCLAMATION' // ! (logical NOT)
+	| 'AND_AND' // && (logical AND)
+	| 'OR_OR' // || (logical OR)
 	| 'LPAREN' // (
 	| 'RPAREN' // )
 	| 'LBRACE' // {
@@ -164,6 +168,11 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'max',
 	'sum'
 ]);
+
+/**
+ * Keywords sorted by length (longest first) for greedy matching.
+ */
+const KEYWORDS_BY_LENGTH: readonly string[] = ['false', 'true'];
 
 /**
  * Function names sorted by length (longest first) for greedy matching.
@@ -374,6 +383,16 @@ export class CustomTokenizer {
 			return this.scanMultiChar('NOT_EQUAL', '!=', 2);
 		}
 
+		// && (logical AND)
+		if (char === '&' && this.peekChar(1) === '&') {
+			return this.scanMultiChar('AND_AND', '&&', 2);
+		}
+
+		// || (logical OR)
+		if (char === '|' && this.peekChar(1) === '|') {
+			return this.scanMultiChar('OR_OR', '||', 2);
+		}
+
 		// =>
 		if (char === '=' && this.peekChar(1) === '>') {
 			return this.scanMultiChar('IMPLIES', '=>', 2);
@@ -551,6 +570,19 @@ export class CustomTokenizer {
 			tempPos++;
 		}
 
+		// Check for boolean keywords first (true, false)
+		for (const keyword of KEYWORDS_BY_LENGTH) {
+			if (identifier.startsWith(keyword)) {
+				this.position = startPos + keyword.length;
+				return {
+					type: 'KEYWORD',
+					value: keyword,
+					position: startPos,
+					length: keyword.length
+				};
+			}
+		}
+
 		// Check if any function name is a prefix of (or equals) this identifier
 		// We check longest functions first to ensure greedy matching
 		for (const funcName of FUNCTION_NAMES_BY_LENGTH) {
@@ -652,8 +684,7 @@ export class CustomTokenizer {
 			case ',':
 				return 'COMMA';
 			case '!':
-				// Standalone ! (not followed by =) - treat as unknown, use LETTER as fallback
-				return 'LETTER';
+				return 'EXCLAMATION';
 			default:
 				// Unknown character - treat as a letter for now
 				return 'LETTER';
@@ -814,6 +845,8 @@ export function tokenTypeToString(type: CustomTokenType): string {
 			return 'backslash';
 		case 'FUNC':
 			return 'function';
+		case 'KEYWORD':
+			return 'keyword';
 		case 'PLUS':
 			return "'+'";
 		case 'MINUS':
@@ -844,6 +877,12 @@ export function tokenTypeToString(type: CustomTokenType): string {
 			return "'?'";
 		case 'PRIME':
 			return "'''";
+		case 'EXCLAMATION':
+			return "'!'";
+		case 'AND_AND':
+			return "'&&'";
+		case 'OR_OR':
+			return "'||'";
 		case 'LBRACE':
 			return "'{'";
 		case 'RBRACE':

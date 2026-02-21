@@ -597,9 +597,13 @@ describe('evaluate - error cases', () => {
 			expect(result.status).toBe('unevaluable');
 		});
 
-		it('returns unevaluable on relation expressions', () => {
+		it('evaluates relation expressions to boolean', () => {
 			const ast = relation('=', number('5'), number('5'));
-			expectUnevaluable(ast, /cannot evaluate relation expressions/i);
+			const result = evaluate(ast);
+			expect(result.status).toBe('value');
+			if (result.status === 'value') {
+				expect(result.value).toBe(true);
+			}
 		});
 	});
 });
