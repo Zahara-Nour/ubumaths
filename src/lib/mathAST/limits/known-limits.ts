@@ -8,6 +8,7 @@
  */
 
 import type { MathNode } from '../types';
+import { nodesEqual } from '../pattern/match';
 import type { KnownLimitEntry, LimitDirection } from './types';
 import {
 	number,
@@ -437,106 +438,10 @@ export const KNOWN_LIMITS: readonly KnownLimitEntry[] = [
 // =============================================================================
 
 /**
- * Check if two MathNodes are structurally equivalent.
- *
- * This is a simple structural comparison that doesn't account for
- * commutativity or algebraic equivalence.
+ * @deprecated Use nodesEqual from pattern/match instead.
+ * Kept as re-export for backward compatibility.
  */
-export function structurallyEqual(a: MathNode, b: MathNode): boolean {
-	// Different types
-	if (a.type !== b.type) return false;
-
-	switch (a.type) {
-		case 'number':
-			return b.type === 'number' && a.value === b.value;
-
-		case 'variable':
-			return b.type === 'variable' && a.name === b.name;
-
-		case 'greek':
-			return b.type === 'greek' && a.letter === b.letter;
-
-		case 'infinity':
-			return b.type === 'infinity' && a.sign === b.sign;
-
-		case 'symbol':
-			return b.type === 'symbol' && a.symbol === b.symbol;
-
-		case 'addition':
-		case 'subtraction':
-		case 'multiplication':
-			return (
-				b.type === a.type &&
-				structurallyEqual(a.left, b.left) &&
-				structurallyEqual(a.right, b.right)
-			);
-
-		case 'division':
-			return (
-				b.type === 'division' &&
-				structurallyEqual(a.numerator, b.numerator) &&
-				structurallyEqual(a.denominator, b.denominator)
-			);
-
-		case 'opposite':
-		case 'positive':
-			return b.type === a.type && structurallyEqual(a.operand, b.operand);
-
-		case 'function':
-			if (b.type !== 'function') return false;
-			if (a.name !== b.name) return false;
-			if (a.args.length !== b.args.length) return false;
-			return a.args.every((arg, i) => structurallyEqual(arg, b.args[i]));
-
-		case 'superscript':
-			return (
-				b.type === 'superscript' &&
-				structurallyEqual(a.base, b.base) &&
-				structurallyEqual(a.superscript, b.superscript)
-			);
-
-		case 'subscript':
-			return (
-				b.type === 'subscript' &&
-				structurallyEqual(a.base, b.base) &&
-				structurallyEqual(a.subscript, b.subscript)
-			);
-
-		case 'delimiter':
-			return b.type === 'delimiter' && structurallyEqual(a.content, b.content);
-
-		case 'relation':
-			return (
-				b.type === 'relation' &&
-				a.relation === b.relation &&
-				structurallyEqual(a.left, b.left) &&
-				structurallyEqual(a.right, b.right)
-			);
-
-		case 'limit':
-			return (
-				b.type === 'limit' &&
-				a.variable === b.variable &&
-				a.direction === b.direction &&
-				structurallyEqual(a.expression, b.expression) &&
-				structurallyEqual(a.approach, b.approach)
-			);
-
-		case 'unit':
-		case 'composition':
-		case 'matrix':
-		case 'complex':
-		case 'hole':
-		case 'constant':
-			// These types are less common in limits; implement as needed
-			return false;
-
-		default: {
-			const _exhaustive: never = a;
-			return _exhaustive;
-		}
-	}
-}
+export const structurallyEqual = nodesEqual;
 
 /**
  * Substitute a variable in a pattern with a replacement expression.

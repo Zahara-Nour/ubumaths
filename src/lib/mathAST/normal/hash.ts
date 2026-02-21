@@ -131,6 +131,15 @@ export function hashMathNode(node: MathNode): string {
 		case 'complex':
 			return `CMPLX(${hashMathNode(node.real)},${hashMathNode(node.imaginary)})`;
 
+		case 'infinity':
+			return `INF(${node.sign})`;
+
+		case 'limit':
+			return `LIM(${hashMathNode(node.expression)},${node.variable},${hashMathNode(node.approach)},${node.direction})`;
+
+		case 'matrix':
+			return `M(${node.rows.map((row) => row.map(hashMathNode).join(',')).join(';')})`;
+
 		default:
 			// Exhaustive check - should never reach
 			return 'UNKNOWN';
