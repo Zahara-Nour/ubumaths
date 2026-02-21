@@ -23,7 +23,7 @@ import {
 	sin,
 	parentheses
 } from '../factory';
-import { isNumber } from '../guards';
+import { isNumber, isZero, isOne, isNegativeOne } from '../guards';
 
 // =============================================================================
 // Constants
@@ -53,43 +53,6 @@ export function negativeOne(): MathNode {
 // =============================================================================
 // Simplification Helpers
 // =============================================================================
-
-/**
- * Check if a node represents numeric zero
- */
-export function isZero(node: MathNode): boolean {
-	if (isNumber(node)) {
-		const val = parseFloat(node.value);
-		return val === 0;
-	}
-	return false;
-}
-
-/**
- * Check if a node represents numeric one
- */
-export function isOne(node: MathNode): boolean {
-	if (isNumber(node)) {
-		const val = parseFloat(node.value);
-		return val === 1;
-	}
-	return false;
-}
-
-/**
- * Check if a node represents negative one (-1)
- */
-export function isNegativeOne(node: MathNode): boolean {
-	if (isNumber(node)) {
-		const val = parseFloat(node.value);
-		return val === -1;
-	}
-	if (node.type === 'opposite' && isNumber(node.operand)) {
-		const val = parseFloat(node.operand.value);
-		return val === 1;
-	}
-	return false;
-}
 
 /**
  * Get numeric value from a node if it's a constant number

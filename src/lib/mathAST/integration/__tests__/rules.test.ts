@@ -26,8 +26,6 @@ import {
 import {
 	zero,
 	one,
-	isZero,
-	isOne,
 	simplifiedAdd,
 	simplifiedMultiply,
 	simplifiedDivide,
@@ -39,6 +37,7 @@ import {
 	cosRule,
 	tanRule
 } from '../rules';
+import { isZero, isOne } from '../../guards';
 
 // Import classification functions
 import { classifyIntegrand, detectVariable } from '../classify';

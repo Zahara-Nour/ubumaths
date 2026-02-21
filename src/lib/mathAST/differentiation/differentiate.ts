@@ -14,7 +14,6 @@ import type { FunctionBindings, FunctionDefinition } from '../eval/function-bind
 import { DEFAULT_DIFFERENTIATION_OPTIONS, DifferentiationError } from './types';
 import {
 	zero,
-	isZero,
 	containsVariable,
 	constantRule,
 	variableRule,
@@ -46,7 +45,7 @@ import {
 } from './rules';
 import { substitute } from '../eval/substitute';
 import { derivativeFunc, number, multiply } from '../factory';
-import { isDerivativeFunction, isInverseFunction } from '../guards';
+import { isDerivativeFunction, isInverseFunction, isZero } from '../guards';
 
 // =============================================================================
 // Main Differentiation Function

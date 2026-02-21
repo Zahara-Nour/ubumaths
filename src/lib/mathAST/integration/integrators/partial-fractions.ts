@@ -13,7 +13,7 @@ import type {
 	IntegrateStepRecorder,
 	ResolvedIntegrateOptions
 } from '../types';
-import { isNumber, isVariable } from '../../guards';
+import { isNumber, isVariable, isZero } from '../../guards';
 import { number, divide, add, subtract, power, implicitMultiply, func } from '../../factory';
 import { containsVariable } from '../rules';
 import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
@@ -1567,11 +1567,3 @@ export const partialFractionsIntegrator: Integrator = {
 		};
 	}
 };
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
-function isZero(expr: MathNode): boolean {
-	return isNumber(expr) && expr.value === '0';
-}
