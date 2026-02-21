@@ -73,8 +73,19 @@
 		mathModeSpace
 	}: Props = $props();
 
-	// Convert to LaTeX for rendering
-	let latex = $derived(expressionToLatex(expression, syntax, genericFunctions));
+	// Convert to LaTeX for rendering, embedding prefilled values in placeholder syntax
+	let latex = $derived.by(() => {
+		let base = expressionToLatex(expression, syntax, genericFunctions);
+		if (prefilledValues && !correctValues) {
+			for (const [id, value] of Object.entries(prefilledValues)) {
+				base = base.replace(
+					new RegExp(`\\\\placeholder\\[${id}\\]\\{[^}]*\\}`),
+					`\\placeholder[${id}]{${value}}`
+				);
+			}
+		}
+		return base;
+	});
 
 	// Extract prompt indices from the expression
 	let promptIndices = $derived(extractPromptIndices(expression, syntax));
@@ -124,30 +135,6 @@
 	$effect(() => {
 		if (!mathField || !mathModeSpace) return;
 		(mathField as Record<string, unknown>).mathModeSpace = mathModeSpace;
-	});
-
-	/**
-	 * Pre-fill prompts with initial values (prefilled blanks).
-	 * Uses a dedicated prop (like correctValues) so this effect only
-	 * depends on static data — not on `inputs` which changes on every keystroke.
-	 *
-	 * Tracks promptIndices so it re-runs once MathLive has finished parsing
-	 * the expression and the prompt slots actually exist.
-	 */
-	$effect(() => {
-		if (!mathField || correctValues || !prefilledValues) return;
-
-		// Track promptIndices: ensures re-run after MathLive creates prompt slots
-		const _indices = promptIndices;
-
-		try {
-			const field = mathField as MathFieldElement;
-			for (const [id, value] of Object.entries(prefilledValues)) {
-				field.setPromptValue(id, value, { silenceNotifications: true });
-			}
-		} catch (error) {
-			console.error('MathPrompt: Error setting prefilled values:', error);
-		}
 	});
 
 	/**
