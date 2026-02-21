@@ -14,13 +14,8 @@ import {
 } from '../algebraic';
 import { ONE, fromInteger } from '../rational';
 import type { AlgebraicCoefficient, AlgebraicTerm } from '../types';
-import {
-	compareAlgebraicTerms,
-	sameRadicalSignature,
-	getRadicalSignature,
-	hashAlgebraicTerm
-} from '../compare';
-import { hashAlgebraicTerm as hashAlgebraicTermHash } from '../hash';
+import { compareAlgebraicTerms, sameRadicalSignature, getRadicalSignature } from '../compare';
+import { hashAlgebraicTerm } from '../hash';
 
 // Helper to create an imaginary term
 function imaginaryTerm(n: bigint, d: bigint = 1n): AlgebraicTerm {
@@ -105,13 +100,13 @@ describe('Imaginary term comparison', () => {
 		it('hashes imaginary unit as "i"', () => {
 			const i = imaginaryTerm(1n);
 			expect(hashAlgebraicTerm(i)).toBe('i');
-			expect(hashAlgebraicTermHash(i)).toBe('i');
+			expect(hashAlgebraicTerm(i)).toBe('i');
 		});
 
 		it('hashes 2i as "2*i"', () => {
 			const i2 = imaginaryTerm(2n);
 			expect(hashAlgebraicTerm(i2)).toBe('2*i');
-			expect(hashAlgebraicTermHash(i2)).toBe('2*i');
+			expect(hashAlgebraicTerm(i2)).toBe('2*i');
 		});
 
 		it('hashes 3/4*i correctly', () => {

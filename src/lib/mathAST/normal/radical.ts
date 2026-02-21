@@ -408,13 +408,3 @@ export function radicalToString(r: SimplifiedRadical): string {
 	}
 	return `root[${r.index}](${r.radicand})`;
 }
-
-/**
- * Creates a hash string for a radical (for canonical ordering and equality).
- *
- * @param r - A simplified radical
- * @returns A deterministic hash string
- */
-export function hashRadical(r: SimplifiedRadical): string {
-	return `R${r.index}:${r.radicand}`;
-}

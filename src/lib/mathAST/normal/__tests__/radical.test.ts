@@ -18,9 +18,9 @@ import {
 	equalRadicals,
 	// Conversion
 	radicalToNumber,
-	radicalToString,
-	hashRadical
+	radicalToString
 } from '../radical';
+import { hashRadical } from '../hash';
 import type { SimplifiedRadical } from '../types';
 
 describe('radical', () => {

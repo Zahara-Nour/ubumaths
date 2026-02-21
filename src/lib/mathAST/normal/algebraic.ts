@@ -18,7 +18,8 @@ import {
 	gcd as gcdBigInt
 } from './rational';
 import { simplifyRadical } from './radical';
-import { sortAlgebraicTerms, hashRadicalArray, equalRadicalArrays, sortRadicals } from './compare';
+import { sortAlgebraicTerms, equalRadicalArrays, sortRadicals } from './compare';
+import { hashRadicalArray } from './hash';
 
 // =============================================================================
 // Constants

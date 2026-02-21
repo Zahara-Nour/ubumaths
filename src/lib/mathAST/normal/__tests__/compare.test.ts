@@ -8,11 +8,9 @@ import {
 	compareRadicals,
 	compareRadicalArrays,
 	equalRadicalArrays,
-	hashRadicalArray,
 	// Level 2: Algebraic Terms
 	compareAlgebraicTerms,
 	sameRadicalSignature,
-	hashAlgebraicTerm,
 	getRadicalSignature,
 	// Sorting
 	sortRadicals,
@@ -21,6 +19,7 @@ import {
 	isRadicalArraySorted,
 	isAlgebraicTermArraySorted
 } from '../compare';
+import { hashRadicalArray, hashAlgebraicTerm } from '../hash';
 import type { SimplifiedRadical, AlgebraicTerm, Rational } from '../types';
 
 // Helper to create rationals
