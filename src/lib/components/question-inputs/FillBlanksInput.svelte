@@ -37,6 +37,7 @@
 		replacePromptsWithValues,
 		replacePromptsWithPrefilled
 	} from '$lib/components/markdown/utils/math-utils';
+	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import type { BlockNode, InlineNode } from '$lib/ubumark';
 
 	// Node components (reuse from MarkdownRenderer)
