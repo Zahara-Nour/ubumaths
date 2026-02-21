@@ -17,7 +17,7 @@ import {
 	algebraicEquals
 } from './algebraic';
 import { EMPTY_MONOMIAL, mulMonomials, monomialsEqual, compareMonomials } from './monomial';
-import { hashMonomial } from './hash';
+import { hashMonomial, hashAlgebraicCoefficient } from './hash';
 
 // =============================================================================
 // Constants
@@ -262,33 +262,13 @@ export function compareNormalTerms(a: NormalTerm, b: NormalTerm): ComparisonResu
 	// 2. Same monomial, compare by coefficient
 	// For like terms, this determines secondary ordering
 	// We use a hash-based comparison for coefficients
-	const hashA = hashCoefficient(a.coefficient);
-	const hashB = hashCoefficient(b.coefficient);
+	const hashA = hashAlgebraicCoefficient(a.coefficient);
+	const hashB = hashAlgebraicCoefficient(b.coefficient);
 
 	if (hashA < hashB) return -1;
 	if (hashA > hashB) return 1;
 
 	return 0;
-}
-
-/**
- * Creates a hash for an algebraic coefficient.
- * Used for comparison when monomials are equal.
- */
-function hashCoefficient(coef: AlgebraicCoefficient): string {
-	if (coef.terms.length === 0) return '0';
-
-	return coef.terms
-		.map((term) => {
-			const rStr =
-				term.rational.d === 1n
-					? term.rational.n.toString()
-					: `${term.rational.n}/${term.rational.d}`;
-			if (term.radicals.length === 0) return rStr;
-			const radStr = term.radicals.map((r) => `R${r.index}:${r.radicand}`).join('*');
-			return `${rStr}*${radStr}`;
-		})
-		.join('+');
 }
 
 /**

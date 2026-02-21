@@ -1,59 +1,36 @@
 /**
  * MathAST Normal Form - Canonical Ordering
  *
- * Functions for comparing and ordering elements in canonical form.
- * Implements all levels of the ordering hierarchy:
- * - Level 1: SimplifiedRadical ordering
- * - Level 2: AlgebraicTerm ordering
- * - Level 3: SymbolicFactor ordering
- * - Level 4: NormalTerm ordering
+ * Centralized module for comparing and ordering elements in canonical form.
+ * Re-exports comparison functions from domain modules and adds higher-level
+ * ordering utilities (radical arrays, algebraic terms, validation).
+ *
+ * Note: compareNormalTerms and sortNormalTerms are defined here AND in term.ts
+ * independently (identical logic) to avoid a circular dependency:
+ * algebraic.ts → compare.ts → term.ts → algebraic.ts
+ *
+ * Ordering hierarchy:
+ * - Level 1: SimplifiedRadical ordering (from radical.ts)
+ * - Level 2: AlgebraicTerm ordering (this module)
+ * - Level 3: SymbolicFactor ordering (from monomial.ts)
+ * - Level 4: NormalTerm ordering (this module + term.ts)
  */
 
-import type {
-	SimplifiedRadical,
-	AlgebraicTerm,
-	SymbolicFactor,
-	NormalTerm,
-	Rational,
-	ComparisonResult
-} from './types';
-import { compareRational, addRational, ZERO } from './rational';
-import { hashRadicalArray } from './hash';
-import { compareNodes } from './monomial';
+import type { SimplifiedRadical, AlgebraicTerm, NormalTerm, ComparisonResult } from './types';
+import { compareRational } from './rational';
+import { hashRadicalArray, hashAlgebraicCoefficient } from './hash';
+
+// Re-export domain comparison functions for centralized access
+export { compareRadicals } from './radical';
+export { compareSymbolicFactors, compareMonomials, sortSymbolicFactors } from './monomial';
+
+// Import for internal use
+import { compareRadicals } from './radical';
+import { compareSymbolicFactors, compareMonomials } from './monomial';
 
 // =============================================================================
-// Level 1: SimplifiedRadical Ordering
+// Level 1: Radical Array Ordering
 // =============================================================================
-
-/**
- * Compares two simplified radicals for canonical ordering.
- *
- * Order (ascending):
- * 1. By index: sqrt (2) < cbrt (3) < fourth root (4) < ...
- * 2. By radicand: sqrt(2) < sqrt(3) < sqrt(5) < ...
- *
- * This produces: sqrt(2) < sqrt(3) < sqrt(5) < cbrt(2) < cbrt(3) < ...
- *
- * @param a - First radical
- * @param b - Second radical
- * @returns -1 if a < b, 0 if a = b, 1 if a > b
- *
- * @example
- * compareRadicals({ radicand: 2n, index: 2n }, { radicand: 3n, index: 2n }) // -1
- * compareRadicals({ radicand: 2n, index: 2n }, { radicand: 2n, index: 3n }) // -1
- * compareRadicals({ radicand: 5n, index: 2n }, { radicand: 2n, index: 3n }) // -1
- */
-export function compareRadicals(a: SimplifiedRadical, b: SimplifiedRadical): ComparisonResult {
-	// Compare by index first (ascending)
-	if (a.index < b.index) return -1;
-	if (a.index > b.index) return 1;
-
-	// Same index, compare by radicand (ascending)
-	if (a.radicand < b.radicand) return -1;
-	if (a.radicand > b.radicand) return 1;
-
-	return 0;
-}
 
 /**
  * Compares two radical arrays lexicographically.
@@ -134,19 +111,6 @@ export function equalRadicalArrays(
  * @param a - First algebraic term
  * @param b - Second algebraic term
  * @returns -1 if a < b, 0 if a = b, 1 if a > b
- *
- * @example
- * // Pure rational before radical: 3 < sqrt(2)
- * compareAlgebraicTerms({ rational: r3, radicals: [] }, { rational: r1, radicals: [sqrt2] }) // -1
- *
- * // Same radicals, compare rationals: 2*sqrt(2) < 3*sqrt(2)
- * compareAlgebraicTerms({ rational: r2, radicals: [sqrt2] }, { rational: r3, radicals: [sqrt2] }) // -1
- *
- * // Different radicals: sqrt(2) < sqrt(3)
- * compareAlgebraicTerms({ rational: r1, radicals: [sqrt2] }, { rational: r1, radicals: [sqrt3] }) // -1
- *
- * // Real before imaginary: 3 < 3i
- * compareAlgebraicTerms({ rational: r3, radicals: [] }, { rational: r3, radicals: [], hasImaginaryUnit: true }) // -1
  */
 export function compareAlgebraicTerms(a: AlgebraicTerm, b: AlgebraicTerm): ComparisonResult {
 	// 1. Real terms before imaginary terms
@@ -174,15 +138,12 @@ export function compareAlgebraicTerms(a: AlgebraicTerm, b: AlgebraicTerm): Compa
  *
  * Two terms can be combined (added) if they have the same signature,
  * meaning identical radical parts AND same imaginary flag.
- * For example, 3*sqrt(2) + 2*sqrt(2) = 5*sqrt(2) because both have [sqrt(2)] and no i.
- * But 3*sqrt(2) + 2*sqrt(2)*i cannot be combined because they differ in imaginary flag.
  *
  * @param a - First algebraic term
  * @param b - Second algebraic term
  * @returns true if terms have identical radical parts and imaginary flag
  */
 export function sameRadicalSignature(a: AlgebraicTerm, b: AlgebraicTerm): boolean {
-	// Must have same imaginary flag
 	if ((a.hasImaginaryUnit === true) !== (b.hasImaginaryUnit === true)) {
 		return false;
 	}
@@ -230,6 +191,71 @@ export function sortAlgebraicTerms(terms: readonly AlgebraicTerm[]): AlgebraicTe
 }
 
 // =============================================================================
+// Level 3: SymbolicFactor Validation
+// =============================================================================
+
+/**
+ * Checks if a symbolic factor array is in canonical order.
+ *
+ * @param factors - Array of factors to check
+ * @returns true if sorted in ascending order
+ */
+export function isSymbolicFactorArraySorted(
+	factors: readonly import('./types').SymbolicFactor[]
+): boolean {
+	for (let i = 1; i < factors.length; i++) {
+		if (compareSymbolicFactors(factors[i - 1], factors[i]) > 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
+// =============================================================================
+// Level 4: NormalTerm Ordering
+// =============================================================================
+
+/**
+ * Compares two normal terms for canonical ordering.
+ *
+ * Note: This is intentionally duplicated in term.ts to avoid a circular
+ * dependency (algebraic.ts → compare.ts → term.ts → algebraic.ts).
+ * Both implementations use hashAlgebraicCoefficient from hash.ts.
+ *
+ * Order (graded lexicographic):
+ * 1. By monomial (higher degree first, then lex)
+ * 2. By coefficient
+ *
+ * @param a - First term
+ * @param b - Second term
+ * @returns -1 if a < b, 0 if a = b, 1 if a > b
+ */
+export function compareNormalTerms(a: NormalTerm, b: NormalTerm): ComparisonResult {
+	// 1. Compare by monomial
+	const monomialCmp = compareMonomials(a.monomial, b.monomial);
+	if (monomialCmp !== 0) return monomialCmp;
+
+	// 2. Same monomial, compare by coefficient
+	const hashA = hashAlgebraicCoefficient(a.coefficient);
+	const hashB = hashAlgebraicCoefficient(b.coefficient);
+
+	if (hashA < hashB) return -1;
+	if (hashA > hashB) return 1;
+
+	return 0;
+}
+
+/**
+ * Sorts an array of normal terms in canonical order.
+ *
+ * @param terms - Array of terms to sort
+ * @returns A new sorted array
+ */
+export function sortNormalTerms(terms: readonly NormalTerm[]): NormalTerm[] {
+	return [...terms].sort(compareNormalTerms);
+}
+
+// =============================================================================
 // Validation
 // =============================================================================
 
@@ -261,189 +287,6 @@ export function isAlgebraicTermArraySorted(terms: readonly AlgebraicTerm[]): boo
 		}
 	}
 	return true;
-}
-
-// =============================================================================
-// Level 3: SymbolicFactor Ordering
-// =============================================================================
-
-/**
- * Compares two symbolic factors for canonical ordering.
- *
- * Order:
- * 1. By base (using node comparison)
- * 2. By exponent (lower first)
- *
- * @param a - First factor
- * @param b - Second factor
- * @returns -1 if a < b, 0 if a = b, 1 if a > b
- *
- * @example
- * // pi < x (greek before variable)
- * compareSymbolicFactors({ base: pi, exp: 1 }, { base: x, exp: 1 }) // -1
- *
- * // x < y (alphabetical)
- * compareSymbolicFactors({ base: x, exp: 1 }, { base: y, exp: 1 }) // -1
- *
- * // x^1 < x^2 (by exponent)
- * compareSymbolicFactors({ base: x, exp: 1 }, { base: x, exp: 2 }) // -1
- */
-export function compareSymbolicFactors(a: SymbolicFactor, b: SymbolicFactor): ComparisonResult {
-	// 1. Compare by base
-	const baseCmp = compareNodes(a.base, b.base);
-	if (baseCmp !== 0) return baseCmp;
-
-	// 2. Same base, compare by exponent
-	return compareRational(a.exponent, b.exponent);
-}
-
-/**
- * Sorts an array of symbolic factors in canonical order.
- *
- * @param factors - Array of factors to sort
- * @returns A new sorted array
- */
-export function sortSymbolicFactors(factors: readonly SymbolicFactor[]): SymbolicFactor[] {
-	return [...factors].sort(compareSymbolicFactors);
-}
-
-/**
- * Checks if a symbolic factor array is in canonical order.
- *
- * @param factors - Array of factors to check
- * @returns true if sorted in ascending order
- */
-export function isSymbolicFactorArraySorted(factors: readonly SymbolicFactor[]): boolean {
-	for (let i = 1; i < factors.length; i++) {
-		if (compareSymbolicFactors(factors[i - 1], factors[i]) > 0) {
-			return false;
-		}
-	}
-	return true;
-}
-
-// =============================================================================
-// Level 4: NormalTerm Ordering
-// =============================================================================
-
-/**
- * Computes the total degree of a monomial.
- *
- * @param monomial - Array of symbolic factors
- * @returns Total degree as a Rational
- */
-function computeMonomialDegree(monomial: readonly SymbolicFactor[]): Rational {
-	if (monomial.length === 0) return ZERO;
-
-	let result = ZERO;
-	for (const factor of monomial) {
-		result = addRational(result, factor.exponent);
-	}
-	return result;
-}
-
-/**
- * Compares two monomials for canonical ordering.
- *
- * Order (graded lexicographic):
- * 1. By total degree (higher degree first)
- * 2. By lexicographic comparison of factors
- *
- * @param a - First monomial
- * @param b - Second monomial
- * @returns -1 if a < b, 0 if a = b, 1 if a > b
- */
-export function compareMonomials(
-	a: readonly SymbolicFactor[],
-	b: readonly SymbolicFactor[]
-): ComparisonResult {
-	// 1. Compare by total degree (higher first for graded ordering)
-	const degA = computeMonomialDegree(a);
-	const degB = computeMonomialDegree(b);
-	const degCmp = compareRational(degB, degA); // Reversed for descending
-	if (degCmp !== 0) return degCmp;
-
-	// 2. Same degree: lexicographic comparison
-	const minLen = Math.min(a.length, b.length);
-	for (let i = 0; i < minLen; i++) {
-		const cmp = compareSymbolicFactors(a[i], b[i]);
-		if (cmp !== 0) return cmp;
-	}
-
-	// 3. Longer monomial comes after (more factors)
-	if (a.length !== b.length) {
-		return a.length < b.length ? -1 : 1;
-	}
-
-	return 0;
-}
-
-/**
- * Creates a hash for an algebraic coefficient (for comparison).
- */
-function hashAlgebraicCoefficient(coef: import('./types').AlgebraicCoefficient): string {
-	if (coef.terms.length === 0) return '0';
-
-	return coef.terms
-		.map((term) => {
-			const rStr =
-				term.rational.d === 1n
-					? term.rational.n.toString()
-					: `${term.rational.n}/${term.rational.d}`;
-			let result = rStr;
-			if (term.radicals.length > 0) {
-				const radStr = term.radicals.map((r) => `R${r.index}:${r.radicand}`).join('*');
-				result = `${result}*${radStr}`;
-			}
-			if (term.hasImaginaryUnit === true) {
-				result = result === '1' ? 'i' : `${result}*i`;
-			}
-			return result;
-		})
-		.join('+');
-}
-
-/**
- * Compares two normal terms for canonical ordering.
- *
- * Order (graded lexicographic):
- * 1. By monomial (higher degree first, then lex)
- * 2. By coefficient
- *
- * @param a - First term
- * @param b - Second term
- * @returns -1 if a < b, 0 if a = b, 1 if a > b
- *
- * @example
- * // x^2 < x (higher degree first)
- * compareNormalTerms({ coef: 1, monomial: [x^2] }, { coef: 1, monomial: [x] }) // -1
- *
- * // x < y (alphabetical for same degree)
- * compareNormalTerms({ coef: 1, monomial: [x] }, { coef: 1, monomial: [y] }) // -1
- */
-export function compareNormalTerms(a: NormalTerm, b: NormalTerm): ComparisonResult {
-	// 1. Compare by monomial
-	const monomialCmp = compareMonomials(a.monomial, b.monomial);
-	if (monomialCmp !== 0) return monomialCmp;
-
-	// 2. Same monomial, compare by coefficient
-	const hashA = hashAlgebraicCoefficient(a.coefficient);
-	const hashB = hashAlgebraicCoefficient(b.coefficient);
-
-	if (hashA < hashB) return -1;
-	if (hashA > hashB) return 1;
-
-	return 0;
-}
-
-/**
- * Sorts an array of normal terms in canonical order.
- *
- * @param terms - Array of terms to sort
- * @returns A new sorted array
- */
-export function sortNormalTerms(terms: readonly NormalTerm[]): NormalTerm[] {
-	return [...terms].sort(compareNormalTerms);
 }
 
 /**
