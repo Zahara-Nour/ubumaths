@@ -8,19 +8,47 @@
 
 import type { MathNode } from '../types';
 import { isNumber } from '../guards';
+import { number, opposite } from '../factory';
 
 /**
- * Get numeric value from a MathNode if it's a number.
+ * Get numeric value from a MathNode if it's a number or opposite(number).
  *
  * @param node - The MathNode to extract a numeric value from
  * @returns The numeric value or null if not a number
+ *
+ * @example
+ * getNumericValue(number('3'))           // 3
+ * getNumericValue(opposite(number('5'))) // -5
+ * getNumericValue(variable('x'))         // null
  */
 export function getNumericValue(node: MathNode): number | null {
 	if (isNumber(node)) {
 		const val = parseFloat(node.value);
 		return Number.isFinite(val) ? val : null;
 	}
+	if (node.type === 'opposite' && isNumber(node.operand)) {
+		const val = parseFloat(node.operand.value);
+		return Number.isFinite(val) ? -val : null;
+	}
 	return null;
+}
+
+/**
+ * Create a MathNode from a numeric value.
+ * Negative values are wrapped in opposite().
+ *
+ * @param value - The numeric value
+ * @returns A MathNode representing the value
+ *
+ * @example
+ * numericNode(3)  // number('3')
+ * numericNode(-5) // opposite(number('5'))
+ */
+export function numericNode(value: number): MathNode {
+	if (value < 0) {
+		return opposite(number(Math.abs(value).toString()));
+	}
+	return number(value.toString());
 }
 
 /**

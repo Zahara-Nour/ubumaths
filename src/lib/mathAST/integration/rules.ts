@@ -8,128 +8,29 @@
  */
 
 import type { MathNode } from '../types';
-import {
-	number,
-	add,
-	multiply,
-	divide,
-	opposite,
-	power,
-	func,
-	ln,
-	cos,
-	sin,
-	variable
-} from '../factory';
+import { add, opposite, func, ln, cos, sin, variable } from '../factory';
 import { isNumber, isVariable, isZero, isOne } from '../guards';
+import { getNumericValue, numericNode } from '../common/numeric';
+import {
+	zero,
+	one,
+	simplifiedAdd,
+	simplifiedMultiply,
+	simplifiedDivide,
+	simplifiedPower
+} from '../common/simplify';
 
-// =============================================================================
-// Constants
-// =============================================================================
-
-/**
- * Create a constant 0 node
- */
-export function zero(): MathNode {
-	return number('0');
-}
-
-/**
- * Create a constant 1 node
- */
-export function one(): MathNode {
-	return number('1');
-}
-
-// =============================================================================
-// Predicates
-// =============================================================================
-
-/**
- * Get numeric value from a node if it's a constant number
- */
-export function getNumericValue(node: MathNode): number | null {
-	if (isNumber(node)) {
-		return parseFloat(node.value);
-	}
-	if (node.type === 'opposite' && isNumber(node.operand)) {
-		return -parseFloat(node.operand.value);
-	}
-	return null;
-}
-
-/**
- * Create a number node from a numeric value
- */
-export function numericNode(value: number): MathNode {
-	if (value < 0) {
-		return opposite(number(Math.abs(value).toString()));
-	}
-	return number(value.toString());
-}
-
-// =============================================================================
-// Simplified Constructors (with basic algebraic simplifications)
-// =============================================================================
-
-/**
- * Create a simplified addition: a + b
- * - 0 + b = b
- * - a + 0 = a
- */
-export function simplifiedAdd(a: MathNode, b: MathNode): MathNode {
-	if (isZero(a)) return b;
-	if (isZero(b)) return a;
-	return add(a, b);
-}
-
-/**
- * Create a simplified multiplication: a * b
- * - 0 * b = 0
- * - a * 0 = 0
- * - 1 * b = b
- * - a * 1 = a
- */
-export function simplifiedMultiply(a: MathNode, b: MathNode): MathNode {
-	if (isZero(a) || isZero(b)) return zero();
-	if (isOne(a)) return b;
-	if (isOne(b)) return a;
-
-	// Simplify constant multiplication
-	const aVal = getNumericValue(a);
-	const bVal = getNumericValue(b);
-	if (aVal !== null && bVal !== null) {
-		return numericNode(aVal * bVal);
-	}
-
-	return multiply(a, b, 'implicit');
-}
-
-/**
- * Create a simplified division: a / b (as fraction)
- * - 0 / b = 0
- * - a / 1 = a
- */
-export function simplifiedDivide(a: MathNode, b: MathNode): MathNode {
-	if (isZero(a)) return zero();
-	if (isOne(b)) return a;
-	return divide(a, b, 'fraction');
-}
-
-/**
- * Create a simplified power: base^exp
- * - x^0 = 1
- * - x^1 = x
- * - 0^n = 0 (for n > 0)
- * - 1^n = 1
- */
-export function simplifiedPower(base: MathNode, exp: MathNode): MathNode {
-	if (isZero(exp)) return one();
-	if (isOne(exp)) return base;
-	if (isZero(base)) return zero();
-	if (isOne(base)) return one();
-	return power(base, exp);
-}
+// Re-export for backward compatibility (used by integrators and tests)
+export {
+	getNumericValue,
+	numericNode,
+	zero,
+	one,
+	simplifiedAdd,
+	simplifiedMultiply,
+	simplifiedDivide,
+	simplifiedPower
+};
 
 // =============================================================================
 // Basic Integration Rules
