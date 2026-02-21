@@ -43,7 +43,8 @@ import {
 	divPolynomialByMonomial
 } from './polynomial';
 import { ZERO_TERM, mulTerms } from './term';
-import { EMPTY_MONOMIAL, symbolicFactor, sortSymbolicFactors, hashMonomial } from './monomial';
+import { EMPTY_MONOMIAL, symbolicFactor, sortSymbolicFactors } from './monomial';
+import { hashMonomial } from './hash';
 import {
 	rational,
 	fromInteger,

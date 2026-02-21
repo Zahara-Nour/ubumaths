@@ -17,7 +17,6 @@ import {
 	// Monomial operations
 	mulMonomials,
 	compareMonomials,
-	hashMonomial,
 	monomialDegree,
 	monomialsEqual,
 	// GCD operations
@@ -28,7 +27,7 @@ import {
 	// Conversion
 	monomialToString
 } from '../monomial';
-import { hashMathNode, nodesEqual } from '../hash';
+import { hashMathNode, nodesEqual, hashMonomial } from '../hash';
 import type { SymbolicFactor, Rational } from '../types';
 import type { MathNode, VariableNode, FunctionNode } from '../../types';
 
@@ -305,8 +304,8 @@ describe('monomial', () => {
 	});
 
 	describe('hashMonomial', () => {
-		it('empty monomial hashes to empty string', () => {
-			expect(hashMonomial([])).toBe('');
+		it('empty monomial hashes to 1', () => {
+			expect(hashMonomial([])).toBe('1');
 		});
 
 		it('produces consistent hashes', () => {
