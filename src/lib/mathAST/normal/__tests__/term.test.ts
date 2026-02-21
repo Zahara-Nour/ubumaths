@@ -205,8 +205,8 @@ describe('term', () => {
 	});
 
 	describe('getMonomialSignature', () => {
-		it('returns empty string for constant term', () => {
-			expect(getMonomialSignature(ONE_TERM)).toBe('');
+		it('returns "1" for constant term', () => {
+			expect(getMonomialSignature(ONE_TERM)).toBe('1');
 		});
 
 		it('returns same signature for like terms', () => {

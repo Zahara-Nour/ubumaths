@@ -16,13 +16,8 @@ import {
 	isOneAlgebraic,
 	algebraicEquals
 } from './algebraic';
-import {
-	EMPTY_MONOMIAL,
-	mulMonomials,
-	hashMonomial,
-	monomialsEqual,
-	compareMonomials
-} from './monomial';
+import { EMPTY_MONOMIAL, mulMonomials, monomialsEqual, compareMonomials } from './monomial';
+import { hashMonomial } from './hash';
 
 // =============================================================================
 // Constants

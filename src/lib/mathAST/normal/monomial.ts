@@ -311,25 +311,6 @@ export function compareMonomials(
 }
 
 /**
- * Creates a hash string for a monomial.
- *
- * @param monomial - Array of symbolic factors
- * @returns A deterministic hash string
- */
-export function hashMonomial(monomial: readonly SymbolicFactor[]): string {
-	if (monomial.length === 0) return '';
-
-	return monomial
-		.map((f) => {
-			const baseHash = hashMathNode(f.base);
-			const expStr =
-				f.exponent.d === 1n ? f.exponent.n.toString() : `${f.exponent.n}/${f.exponent.d}`;
-			return `${baseHash}^${expStr}`;
-		})
-		.join('*');
-}
-
-/**
  * Computes the total degree of a monomial.
  *
  * The degree is the sum of all exponents.
