@@ -10,7 +10,6 @@ import {
 	symbolicFactor,
 	variableMonomial,
 	// Node operations
-	hashNode,
 	compareNodes,
 	nodesEqual,
 	// Factor operations
@@ -30,6 +29,7 @@ import {
 	// Conversion
 	monomialToString
 } from '../monomial';
+import { hashMathNode } from '../hash';
 import type { SymbolicFactor, Rational } from '../types';
 import type { MathNode, VariableNode, FunctionNode } from '../../types';
 
@@ -74,36 +74,36 @@ describe('monomial', () => {
 	// Node Hashing
 	// ===========================================================================
 
-	describe('hashNode', () => {
+	describe('hashMathNode', () => {
 		it('hashes variable nodes', () => {
-			expect(hashNode(x)).toBe('V:x');
-			expect(hashNode(y)).toBe('V:y');
+			expect(hashMathNode(x)).toBe('V(x)');
+			expect(hashMathNode(y)).toBe('V(y)');
 		});
 
 		it('hashes constant nodes', () => {
-			expect(hashNode(pi)).toBe('C:pi');
+			expect(hashMathNode(pi)).toBe('K(pi)');
 		});
 
 		it('hashes number nodes', () => {
 			const num: MathNode = { type: 'number', value: '42' };
-			expect(hashNode(num)).toBe('N:42');
+			expect(hashMathNode(num)).toBe('N(42)');
 		});
 
 		it('hashes function nodes', () => {
 			const sinX = fnNode('sin', x);
-			const hash = hashNode(sinX);
+			const hash = hashMathNode(sinX);
 			expect(hash).toContain('sin');
-			expect(hash).toContain('V:x');
+			expect(hash).toContain('V(x)');
 		});
 
 		it('produces consistent hashes', () => {
-			expect(hashNode(x)).toBe(hashNode(varNode('x')));
-			expect(hashNode(fnNode('sin', x))).toBe(hashNode(fnNode('sin', varNode('x'))));
+			expect(hashMathNode(x)).toBe(hashMathNode(varNode('x')));
+			expect(hashMathNode(fnNode('sin', x))).toBe(hashMathNode(fnNode('sin', varNode('x'))));
 		});
 
 		it('produces different hashes for different nodes', () => {
-			expect(hashNode(x)).not.toBe(hashNode(y));
-			expect(hashNode(x)).not.toBe(hashNode(pi));
+			expect(hashMathNode(x)).not.toBe(hashMathNode(y));
+			expect(hashMathNode(x)).not.toBe(hashMathNode(pi));
 		});
 	});
 

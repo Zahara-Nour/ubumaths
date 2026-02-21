@@ -6,6 +6,7 @@
  */
 
 import type { NormalTerm, AlgebraicCoefficient, SymbolicFactor } from './types';
+import { hashMathNode } from './hash';
 import { ALGEBRAIC_ONE, addAlgebraic, isZeroAlgebraic } from './algebraic';
 import {
 	ONE_TERM,
@@ -287,7 +288,7 @@ export function polynomialsEqual(a: readonly NormalTerm[], b: readonly NormalTer
 			const factorA = termA.monomial[j];
 			const factorB = termB.monomial[j];
 			// Compare base hashes
-			if (hashNodeSimple(factorA.base) !== hashNodeSimple(factorB.base)) return false;
+			if (hashMathNode(factorA.base) !== hashMathNode(factorB.base)) return false;
 			// Compare exponents
 			if (factorA.exponent.n !== factorB.exponent.n || factorA.exponent.d !== factorB.exponent.d) {
 				return false;
@@ -315,24 +316,6 @@ export function polynomialsEqual(a: readonly NormalTerm[], b: readonly NormalTer
 	}
 
 	return true;
-}
-
-/**
- * Simple node hashing for equality checks.
- */
-function hashNodeSimple(node: import('../types').MathNode): string {
-	switch (node.type) {
-		case 'variable':
-			return `V:${node.name}`;
-		case 'greek':
-			return `G:${node.letter}`;
-		case 'number':
-			return `N:${node.value}`;
-		case 'function':
-			return `F:${node.name}(${node.args.map(hashNodeSimple).join(',')})`;
-		default:
-			return `?:${node.type}`;
-	}
 }
 
 // =============================================================================

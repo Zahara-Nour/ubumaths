@@ -26,7 +26,8 @@ import {
 	isOneAlgebraic,
 	algebraicEquals
 } from './algebraic';
-import { hashNode, nodesEqual } from './monomial';
+import { nodesEqual } from './monomial';
+import { hashMathNode } from './hash';
 import { normalTerm, constantTerm } from './term';
 import { collectLikeTerms, isZeroPolynomial, isOnePolynomial } from './polynomial';
 import { isInteger } from './rational';
@@ -673,7 +674,7 @@ export function tryUnivariateGcd(
 	if (
 		checkA.variable &&
 		checkB.variable &&
-		hashNode(checkA.variable) !== hashNode(checkB.variable)
+		hashMathNode(checkA.variable) !== hashMathNode(checkB.variable)
 	) {
 		return null;
 	}
@@ -761,7 +762,7 @@ export function dividePolynomials(
 	if (
 		checkDiv.variable &&
 		checkDvs.variable &&
-		hashNode(checkDiv.variable) !== hashNode(checkDvs.variable)
+		hashMathNode(checkDiv.variable) !== hashMathNode(checkDvs.variable)
 	) {
 		return null;
 	}

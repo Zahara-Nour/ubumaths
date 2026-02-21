@@ -25,63 +25,6 @@ import {
 export const EMPTY_MONOMIAL: readonly SymbolicFactor[] = [];
 
 // =============================================================================
-// Node Hashing
-// =============================================================================
-
-/**
- * Creates a hash string for a MathNode.
- * Used for canonical ordering and equality comparison.
- *
- * @param node - A MathNode
- * @returns A deterministic hash string
- */
-export function hashNode(node: MathNode): string {
-	switch (node.type) {
-		case 'number':
-			return `N:${node.value}`;
-		case 'variable':
-			return `V:${node.name}`;
-		case 'greek':
-			return `G:${node.letter}`;
-		case 'constant':
-			return `C:${node.constant}`;
-		case 'symbol':
-			return `S:${node.symbol}`;
-		case 'hole':
-			return `H:${node.index}`;
-		case 'addition':
-			return `ADD(${hashNode(node.left)},${hashNode(node.right)})`;
-		case 'subtraction':
-			return `SUB(${hashNode(node.left)},${hashNode(node.right)})`;
-		case 'multiplication':
-			return `MUL(${hashNode(node.left)},${hashNode(node.right)})`;
-		case 'division':
-			return `DIV(${hashNode(node.numerator)},${hashNode(node.denominator)})`;
-		case 'opposite':
-			return `NEG(${hashNode(node.operand)})`;
-		case 'positive':
-			return `POS(${hashNode(node.operand)})`;
-		case 'function':
-			return `FN:${node.name}(${node.args.map(hashNode).join(',')})${node.power ? '^' + hashNode(node.power) : ''}${node.base ? '_' + hashNode(node.base) : ''}`;
-		case 'delimiter':
-			return `DEL(${hashNode(node.content)})`;
-		case 'subscript':
-			return `SUB(${hashNode(node.base)}_${hashNode(node.subscript)})`;
-		case 'superscript':
-			return `SUP(${hashNode(node.base)}^${hashNode(node.superscript)})`;
-		case 'relation':
-			return `REL(${hashNode(node.left)}${node.relation}${hashNode(node.right)})`;
-		case 'unit':
-			return `UNIT(${hashNode(node.expression)})`;
-		case 'composition':
-			return `COMP(${hashNode(node.outer)},${hashNode(node.inner)})`;
-		default:
-			// Exhaustive check
-			return `UNKNOWN`;
-	}
-}
-
-// =============================================================================
 // Node Type Classification
 // =============================================================================
 
@@ -142,7 +85,7 @@ function getNodeName(node: MathNode): string {
 		case 'symbol':
 			return node.symbol;
 		default:
-			return hashNode(node);
+			return hashMathNode(node);
 	}
 }
 
@@ -221,8 +164,8 @@ export function compareNodes(a: MathNode, b: MathNode): ComparisonResult {
 	}
 
 	// 4. Fallback: compare by hash
-	const hashA = hashNode(a);
-	const hashB = hashNode(b);
+	const hashA = hashMathNode(a);
+	const hashB = hashMathNode(b);
 
 	if (hashA !== hashB) {
 		return hashA < hashB ? -1 : 1;
@@ -314,13 +257,13 @@ export function mulMonomials(
 
 	// Add factors from a
 	for (const factor of a) {
-		const hash = hashNode(factor.base);
+		const hash = hashMathNode(factor.base);
 		factors.set(hash, { base: factor.base, exponent: factor.exponent });
 	}
 
 	// Merge factors from b
 	for (const factor of b) {
-		const hash = hashNode(factor.base);
+		const hash = hashMathNode(factor.base);
 		const existing = factors.get(hash);
 
 		if (existing) {
@@ -389,7 +332,7 @@ export function hashMonomial(monomial: readonly SymbolicFactor[]): string {
 
 	return monomial
 		.map((f) => {
-			const baseHash = hashNode(f.base);
+			const baseHash = hashMathNode(f.base);
 			const expStr =
 				f.exponent.d === 1n ? f.exponent.n.toString() : `${f.exponent.n}/${f.exponent.d}`;
 			return `${baseHash}^${expStr}`;
@@ -488,13 +431,13 @@ export function gcdMonomials(
 	// Build maps for O(n) lookup
 	const mapA = new Map<string, SymbolicFactor>();
 	for (const factor of a) {
-		mapA.set(hashNode(factor.base), factor);
+		mapA.set(hashMathNode(factor.base), factor);
 	}
 
 	const result: SymbolicFactor[] = [];
 
 	for (const factorB of b) {
-		const hash = hashNode(factorB.base);
+		const hash = hashMathNode(factorB.base);
 		const factorA = mapA.get(hash);
 
 		if (factorA) {
@@ -539,12 +482,12 @@ export function divMonomials(
 	// Build map from a
 	const factors = new Map<string, { base: MathNode; exponent: Rational }>();
 	for (const factor of a) {
-		factors.set(hashNode(factor.base), { base: factor.base, exponent: factor.exponent });
+		factors.set(hashMathNode(factor.base), { base: factor.base, exponent: factor.exponent });
 	}
 
 	// Subtract exponents from b
 	for (const factor of b) {
-		const hash = hashNode(factor.base);
+		const hash = hashMathNode(factor.base);
 		const existing = factors.get(hash);
 
 		if (existing) {
