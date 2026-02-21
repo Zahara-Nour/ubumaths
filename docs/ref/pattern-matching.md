@@ -533,15 +533,91 @@ Patterns can be constructed from strings using a Pratt parser.
 
 ### Constraint Syntax
 
-| Syntax           | Constraint          |
-| ---------------- | ------------------- |
-| `:number`        | `P.isNumber()`      |
-| `:variable`      | `P.isVariable()`    |
-| `:integer`       | `P.isInteger()`     |
-| `:positive`      | `P.isPositive()`    |
-| `:negative`      | `P.isNegative()`    |
-| `:nonzero`       | `P.isNonzero()`     |
-| `:multipleOf(n)` | `P.isMultipleOf(n)` |
+Constraints are written after `:` on a wildcard name (e.g., `n:integer`). The constraint expression supports a full mini-language with logical operators.
+
+#### Atomic Constraints
+
+| Syntax      | Equivalent       |
+| ----------- | ---------------- |
+| `:number`   | `P.isNumber()`   |
+| `:variable` | `P.isVariable()` |
+| `:integer`  | `P.isInteger()`  |
+| `:even`     | `P.isEven()`     |
+| `:odd`      | `P.isOdd()`      |
+| `:positive` | `P.isPositive()` |
+| `:negative` | `P.isNegative()` |
+| `:nonzero`  | `P.isNonzero()`  |
+| `:nonone`   | `P.isNonone()`   |
+
+#### Numeric Type Constraints
+
+| Syntax                | Equivalent                 |
+| --------------------- | -------------------------- |
+| `:integerType`        | `P.isIntegerType()`        |
+| `:rationalType`       | `P.isRationalType()`       |
+| `:algebraicType`      | `P.isAlgebraicType()`      |
+| `:realType`           | `P.isRealType()`           |
+| `:transcendentalType` | `P.isTranscendentalType()` |
+| `:complexType`        | `P.isComplexType()`        |
+
+#### Mathematical Domain Shortcuts
+
+| Syntax   | Domain                  | Equivalent         |
+| -------- | ----------------------- | ------------------ |
+| `:inR`   | R (all reals)           | `P.inR()`          |
+| `:inR+`  | R+ (>= 0)               | `P.inRplus()`      |
+| `:inR+*` | R+\* (> 0)              | `P.inRplusStar()`  |
+| `:inR*`  | R\* (non-zero reals)    | `P.inRstar()`      |
+| `:inR-`  | R- (<= 0)               | `P.inRminus()`     |
+| `:inR-*` | R-\* (< 0)              | `P.inRminusStar()` |
+| `:inN`   | N (naturals >= 0)       | `P.inN()`          |
+| `:inN*`  | N\* (positive integers) | `P.inNstar()`      |
+| `:inZ`   | Z (all integers)        | `P.inZ()`          |
+| `:inZ*`  | Z\* (non-zero integers) | `P.inZstar()`      |
+
+#### Functional Constraints
+
+| Syntax                      | Equivalent                         |
+| --------------------------- | ---------------------------------- |
+| `:type(addition\|variable)` | `P.isType('addition', 'variable')` |
+| `:freeOf(x,y)`              | `P.isFreeOf('x', 'y')`             |
+| `:gt(0)`                    | `P.gt(0)`                          |
+| `:lt(10)`                   | `P.lt(10)`                         |
+| `:gte(0)`                   | `P.gte(0)`                         |
+| `:lte(100)`                 | `P.lte(100)`                       |
+| `:eq(2)`                    | `P.eq(2)`                          |
+| `:ne(0)`                    | `P.ne(0)`                          |
+| `:multipleOf(10)`           | `P.isMultipleOf(10)`               |
+| `:in]0,+inf[`               | `P.inInterval(...]0,+inf[)`        |
+| `:in[0,10]`                 | `P.inInterval(...[0,10])`          |
+
+#### Logical Operators
+
+Operators (highest to lowest precedence): `!` (NOT), `&` (AND), `|` (OR).
+
+| Syntax                        | Equivalent                                     |
+| ----------------------------- | ---------------------------------------------- |
+| `:integer & positive`         | `P.and(P.isInteger(), P.isPositive())`         |
+| `:number \| variable`         | `P.or(P.isNumber(), P.isVariable())`           |
+| `:!negative`                  | `P.not(P.isNegative())`                        |
+| `:!(positive & nonzero)`      | `P.not(P.and(...))`                            |
+| `:integer & gt(0)`            | `P.and(P.isInteger(), P.gt(0))`                |
+| `:freeOf(x) & type(addition)` | `P.and(P.isFreeOf('x'), P.isType('addition'))` |
+
+#### Interval Syntax (French Notation)
+
+The `in` constraint uses French bracket notation:
+
+- `]` on left = open (exclusive), `[` on left = closed (inclusive)
+- `[` on right = open (exclusive), `]` on right = closed (inclusive)
+- `+inf` / `-inf` for infinity
+
+```
+n:in]0,+inf[       # n > 0
+n:in[0,10]          # 0 <= n <= 10
+n:in[0,10[          # 0 <= n < 10
+n:in]-inf,0[        # n < 0
+```
 
 ### Examples
 
@@ -552,6 +628,10 @@ parsePattern('x + 0'); // P.add(P._('x'), P.num(0))
 parsePattern('n:number * $x'); // P.mul(P._('n', P.isNumber()), P.var('x'))
 parsePattern('sin(x)'); // P.func('sin', [P._('x')])
 parsePattern('a + __rest'); // P.add(P._('a'), P.__('rest'))
+parsePattern('n:integer & positive'); // P._('n', P.and(P.isInteger(), P.isPositive()))
+parsePattern('k:inN*'); // P._('k', P.inNstar())  -- positive integers
+parsePattern('c:freeOf(x)'); // P._('c', P.isFreeOf('x'))
+parsePattern('n:multipleOf(10)'); // P._('n', P.isMultipleOf(10))
 ```
 
 ---
