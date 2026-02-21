@@ -106,7 +106,7 @@ export const createQuestionTemplateSchema = z.object({
 	theme: z.string().min(1, 'Thème requis').max(100),
 	domain: z.string().min(1, 'Domaine requis').max(100),
 	subdomain: z.string().max(100).optional().nullable(),
-	level: z.number().int().positive('Le niveau doit être positif'),
+	level: z.number().int().nonnegative('Le niveau doit être >= 0'),
 	status: z.enum(['draft', 'published']).default('published'),
 	delay: z.number().int().nonnegative().optional().nullable(),
 	multipleAnswers: z.boolean().optional().nullable()
@@ -165,7 +165,7 @@ export const questionTemplateResponseSchema = z.object({
 	theme: z.string(),
 	domain: z.string(),
 	subdomain: z.string().nullable().optional(),
-	level: z.number().int().positive(),
+	level: z.number().int().nonnegative(),
 	status: z.enum(['draft', 'published']),
 	delay: z.number().int().nonnegative().nullable().optional(),
 	multiple_answers: z.boolean().nullable().optional(),
