@@ -424,6 +424,7 @@ export type { SimplifyOptions, SimplifyResult, SimplifyStep, SimplifyPhase } fro
 // =============================================================================
 
 export { substitute, evaluate } from './eval';
+export { areEquivalent } from './equivalence';
 export type { EvalBindings, EvalOptions, EvalResult } from './eval';
 
 // Helper utilities for variable analysis

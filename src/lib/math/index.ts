@@ -11,8 +11,8 @@
 import { parseLatex, parseLatexSafe } from '$lib/mathAST/parser';
 import { evaluate } from '$lib/mathAST/eval';
 import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { normalize, denormalize, normalFormsEquivalent } from '$lib/mathAST/normal';
-import { toLatex } from '$lib/mathAST';
+import { normalize, denormalize } from '$lib/mathAST/normal';
+import { toLatex, areEquivalent as areEquivalentNodes } from '$lib/mathAST';
 import type { EvalValue } from '$lib/mathAST/eval/types';
 import type { MathNode } from '$lib/mathAST/types';
 
@@ -115,55 +115,16 @@ export function evaluateExpression(latex: string): number | string {
  * areEquivalent('2x + 3', '3 + 2x')                // true
  */
 export function areEquivalent(latex1: string, latex2: string): boolean {
-	try {
-		const cleaned1 = stripLatexSpacing(latex1);
-		const cleaned2 = stripLatexSpacing(latex2);
-		const result1 = parseLatexSafe(cleaned1);
-		const result2 = parseLatexSafe(cleaned2);
+	const cleaned1 = stripLatexSpacing(latex1);
+	const cleaned2 = stripLatexSpacing(latex2);
+	const result1 = parseLatexSafe(cleaned1);
+	const result2 = parseLatexSafe(cleaned2);
 
-		if (!result1.ast || !result2.ast) {
-			return cleaned1 === cleaned2;
-		}
-
-		// Try structural equivalence via normalization
-		try {
-			const form1 = normalize(result1.ast);
-			const form2 = normalize(result2.ast);
-			return normalFormsEquivalent(form1, form2);
-		} catch {
-			// Normalization failed — try numeric comparison as fallback
-			try {
-				const eval1 = evaluate(result1.ast, { mode: 'decimal' });
-				const eval2 = evaluate(result2.ast, { mode: 'decimal' });
-
-				if (eval1.status === 'value' && eval2.status === 'value') {
-					const num1 =
-						typeof eval1.value === 'number'
-							? eval1.value
-							: isMathNode(eval1.value)
-								? evaluateNodeToApproximatedNumber(eval1.value)
-								: NaN;
-					const num2 =
-						typeof eval2.value === 'number'
-							? eval2.value
-							: isMathNode(eval2.value)
-								? evaluateNodeToApproximatedNumber(eval2.value)
-								: NaN;
-
-					if (!isNaN(num1) && !isNaN(num2)) {
-						return Math.abs(num1 - num2) < 1e-10;
-					}
-				}
-			} catch {
-				// Numeric comparison also failed
-			}
-
-			// Final fallback: string comparison
-			return cleaned1 === cleaned2;
-		}
-	} catch {
-		return stripLatexSpacing(latex1) === stripLatexSpacing(latex2);
+	if (!result1.ast || !result2.ast) {
+		return cleaned1 === cleaned2;
 	}
+
+	return areEquivalentNodes(result1.ast, result2.ast);
 }
 
 /**
