@@ -374,6 +374,8 @@ const FUNCTIONAL_CONSTRAINT_NAMES = new Set([
 	'lte',
 	'eq',
 	'ne',
+	// Divisibility
+	'multipleOf',
 	// Interval constraint
 	'in'
 ]);
@@ -631,6 +633,8 @@ class ConstraintParser {
 			return this.parseFreeOfConstraint();
 		} else if (['gt', 'lt', 'gte', 'lte', 'eq', 'ne'].includes(funcName)) {
 			return this.parseComparisonConstraint(funcName as 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'ne');
+		} else if (funcName === 'multipleOf') {
+			return this.parseMultipleOfConstraint();
 		}
 
 		throw new Error(`Unknown functional constraint '${funcName}'`);
@@ -718,6 +722,28 @@ class ConstraintParser {
 			case 'ne':
 				return P.ne(value);
 		}
+	}
+
+	/**
+	 * Parse multipleOf constraint: multipleOf(n)
+	 * Takes a single positive integer argument.
+	 */
+	private parseMultipleOfConstraint(): PatternConstraint {
+		if (this.currentToken.type !== 'NUMBER') {
+			throw new Error(
+				`Expected number in multipleOf(...) at position ${this.currentToken.position}`
+			);
+		}
+		const numToken = this.advance();
+		const value = parseFloat(numToken.value);
+
+		if (!Number.isFinite(value) || !Number.isInteger(value) || value <= 0) {
+			throw new Error(`multipleOf requires a positive integer, got '${numToken.value}'`);
+		}
+
+		this.expect('RPAREN', "Expected ')' after multipleOf constraint");
+
+		return P.isMultipleOf(value);
 	}
 
 	/**

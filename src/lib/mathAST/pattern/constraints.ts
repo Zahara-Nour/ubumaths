@@ -254,6 +254,12 @@ export function checkConstraint(
 			return false;
 		}
 
+		case 'multipleOf': {
+			const value = parseNumberValue(node);
+			if (value === undefined) return false;
+			return Number.isInteger(value) && Number.isInteger(value / constraint.divisor);
+		}
+
 		case 'freeOf':
 			return isFreeOfVariables(node, constraint.variables);
 

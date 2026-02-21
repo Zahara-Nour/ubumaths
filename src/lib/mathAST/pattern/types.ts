@@ -124,6 +124,18 @@ export interface OddConstraint {
 }
 
 /**
+ * Multiple-of constraint - matches integer numbers divisible by a given divisor
+ *
+ * @example
+ * // Match multiples of 10
+ * { kind: 'multipleOf', divisor: 10 }
+ */
+export interface MultipleOfConstraint {
+	readonly kind: 'multipleOf';
+	readonly divisor: number;
+}
+
+/**
  * Free-of constraint - matches expressions not containing specified variables
  */
 export interface FreeOfConstraint {
@@ -205,6 +217,7 @@ export type PatternConstraint =
 	| IntegerConstraint
 	| EvenConstraint
 	| OddConstraint
+	| MultipleOfConstraint
 	| FreeOfConstraint
 	| CustomConstraint
 	| AndConstraint
@@ -856,6 +869,15 @@ export function isEvenConstraint(constraint: PatternConstraint): constraint is E
  */
 export function isOddConstraint(constraint: PatternConstraint): constraint is OddConstraint {
 	return constraint.kind === 'odd';
+}
+
+/**
+ * Checks if a constraint is a multipleOf constraint
+ */
+export function isMultipleOfConstraint(
+	constraint: PatternConstraint
+): constraint is MultipleOfConstraint {
+	return constraint.kind === 'multipleOf';
 }
 
 /**

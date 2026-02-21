@@ -313,6 +313,41 @@ describe('Constraint Evaluation', () => {
 	});
 
 	// ===========================================================================
+	// MultipleOf Constraint
+	// ===========================================================================
+
+	describe('multipleOf constraint', () => {
+		it('matches multiples of 10', () => {
+			expect(checkConstraint(P.isMultipleOf(10), number('0'))).toBe(true);
+			expect(checkConstraint(P.isMultipleOf(10), number('10'))).toBe(true);
+			expect(checkConstraint(P.isMultipleOf(10), number('340'))).toBe(true);
+			expect(checkConstraint(P.isMultipleOf(10), number('-20'))).toBe(true);
+		});
+
+		it('fails for non-multiples of 10', () => {
+			expect(checkConstraint(P.isMultipleOf(10), number('3'))).toBe(false);
+			expect(checkConstraint(P.isMultipleOf(10), number('15'))).toBe(false);
+			expect(checkConstraint(P.isMultipleOf(10), number('101'))).toBe(false);
+		});
+
+		it('matches multiples of 3', () => {
+			expect(checkConstraint(P.isMultipleOf(3), number('0'))).toBe(true);
+			expect(checkConstraint(P.isMultipleOf(3), number('9'))).toBe(true);
+			expect(checkConstraint(P.isMultipleOf(3), number('-6'))).toBe(true);
+		});
+
+		it('fails for non-integer values', () => {
+			expect(checkConstraint(P.isMultipleOf(10), number('10.5'))).toBe(false);
+			expect(checkConstraint(P.isMultipleOf(3), number('3.14'))).toBe(false);
+		});
+
+		it('fails for non-number nodes', () => {
+			expect(checkConstraint(P.isMultipleOf(10), variable('x'))).toBe(false);
+			expect(checkConstraint(P.isMultipleOf(10), add(number('10'), number('20')))).toBe(false);
+		});
+	});
+
+	// ===========================================================================
 	// Interval Constraints
 	// ===========================================================================
 
