@@ -18,6 +18,7 @@ import type {
 	ComparisonResult
 } from './types';
 import { compareRational, addRational, ZERO } from './rational';
+import { hashRadicalArray } from './hash';
 import { compareNodes } from './monomial';
 
 // =============================================================================
@@ -114,17 +115,6 @@ export function equalRadicalArrays(
 	return true;
 }
 
-/**
- * Creates a hash string for a radical array.
- *
- * @param radicals - Array of simplified radicals
- * @returns A deterministic hash string
- */
-export function hashRadicalArray(radicals: readonly SimplifiedRadical[]): string {
-	if (radicals.length === 0) return '';
-	return radicals.map((r) => `R${r.index}:${r.radicand}`).join('*');
-}
-
 // =============================================================================
 // Level 2: AlgebraicTerm Ordering
 // =============================================================================
@@ -197,31 +187,6 @@ export function sameRadicalSignature(a: AlgebraicTerm, b: AlgebraicTerm): boolea
 		return false;
 	}
 	return equalRadicalArrays(a.radicals, b.radicals);
-}
-
-/**
- * Creates a hash string for an algebraic term.
- *
- * @param term - An algebraic term
- * @returns A deterministic hash string
- */
-export function hashAlgebraicTerm(term: AlgebraicTerm): string {
-	const radicalHash = hashRadicalArray(term.radicals);
-	const rationalStr =
-		term.rational.d === 1n ? term.rational.n.toString() : `${term.rational.n}/${term.rational.d}`;
-	const hasI = term.hasImaginaryUnit === true;
-
-	let result = rationalStr;
-
-	if (radicalHash !== '') {
-		result = `${result}*${radicalHash}`;
-	}
-
-	if (hasI) {
-		result = result === '1' ? 'i' : `${result}*i`;
-	}
-
-	return result;
 }
 
 /**
