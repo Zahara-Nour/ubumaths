@@ -669,8 +669,11 @@ export function checkZeros(answers: string[]): number[] {
  * Check if a single string has unnecessary zero violations
  */
 function hasZeroViolation(answer: string): boolean {
+	// Strip LaTeX thin spaces (\,) before analysis — MathLive returns
+	// values like "9\,005" which would otherwise split into "9" and "005"
+	let normalized = answer.replace(/\\,/g, '');
 	// Normalize French comma to period for analysis
-	const normalized = answer.replace(/,/g, '.');
+	normalized = normalized.replace(/,/g, '.');
 
 	// Extract numbers from the string (handles expressions like "5+3")
 	const numberPattern = /-?\d+(?:\.\d+)?/g;

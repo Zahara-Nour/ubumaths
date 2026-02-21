@@ -743,6 +743,14 @@ describe('checkZeros', () => {
 		it('should accept scientific notation-like numbers', () => {
 			expect(checkZeros(['1e10'])).toHaveLength(0);
 		});
+
+		it('should handle LaTeX thin spaces without false positives', () => {
+			// MathLive returns "9\\,005" when user types "9 005"
+			expect(checkZeros(['9\\,005'])).toHaveLength(0);
+			expect(checkZeros(['12\\,345'])).toHaveLength(0);
+			// But leading zeros with thin space should still be detected
+			expect(checkZeros(['009\\,005'])).toEqual([0]);
+		});
 	});
 });
 
