@@ -148,18 +148,18 @@ Constraints restrict what a wildcard can match. They are passed as the second ar
 
 ### Value Constraints
 
-| Constraint          | Matches                              |
-| ------------------- | ------------------------------------ |
-| `P.isNumber()`      | Number nodes only                    |
-| `P.isVariable()`    | Variable nodes only                  |
-| `P.isPositive()`    | Positive values (number or inferred) |
-| `P.isNegative()`    | Negative values                      |
-| `P.isNonzero()`     | Non-zero values                      |
-| `P.isNonone()`      | Values != 1                          |
-| `P.isInteger()`     | Integer values                       |
-| `P.isEven()`        | Even integers                        |
-| `P.isOdd()`         | Odd integers                         |
-| `P.isMultipleOf(n)` | Integers divisible by n              |
+| Constraint          | Matches                                 |
+| ------------------- | --------------------------------------- |
+| `P.isNumber()`      | Number nodes only                       |
+| `P.isVariable()`    | Variable nodes only                     |
+| `P.isPositive()`    | Positive values (number or inferred)    |
+| `P.isNegative()`    | Negative values                         |
+| `P.isNonzero()`     | Non-zero values                         |
+| `P.isNonone()`      | Values != 1                             |
+| `P.isInteger()`     | All integers (negative, zero, positive) |
+| `P.isEven()`        | Even integers                           |
+| `P.isOdd()`         | Odd integers                            |
+| `P.isMultipleOf(n)` | Integers divisible by n                 |
 
 ### Comparison Constraints
 
