@@ -148,17 +148,18 @@ Constraints restrict what a wildcard can match. They are passed as the second ar
 
 ### Value Constraints
 
-| Constraint       | Matches                              |
-| ---------------- | ------------------------------------ |
-| `P.isNumber()`   | Number nodes only                    |
-| `P.isVariable()` | Variable nodes only                  |
-| `P.isPositive()` | Positive values (number or inferred) |
-| `P.isNegative()` | Negative values                      |
-| `P.isNonzero()`  | Non-zero values                      |
-| `P.isNonone()`   | Values != 1                          |
-| `P.isInteger()`  | Integer values                       |
-| `P.isEven()`     | Even integers                        |
-| `P.isOdd()`      | Odd integers                         |
+| Constraint          | Matches                              |
+| ------------------- | ------------------------------------ |
+| `P.isNumber()`      | Number nodes only                    |
+| `P.isVariable()`    | Variable nodes only                  |
+| `P.isPositive()`    | Positive values (number or inferred) |
+| `P.isNegative()`    | Negative values                      |
+| `P.isNonzero()`     | Non-zero values                      |
+| `P.isNonone()`      | Values != 1                          |
+| `P.isInteger()`     | Integer values                       |
+| `P.isEven()`        | Even integers                        |
+| `P.isOdd()`         | Odd integers                         |
+| `P.isMultipleOf(n)` | Integers divisible by n              |
 
 ### Comparison Constraints
 
@@ -236,6 +237,9 @@ P._('x', P.or(P.isNumber(), P.isVariable()));
 
 // Anything except a number
 P._('x', P.not(P.isNumber()));
+
+// Multiples of 10 (for rounding exercises)
+P._('n', P.isMultipleOf(10));
 
 // Custom: value > 10
 P._(
@@ -529,14 +533,15 @@ Patterns can be constructed from strings using a Pratt parser.
 
 ### Constraint Syntax
 
-| Syntax      | Constraint       |
-| ----------- | ---------------- |
-| `:number`   | `P.isNumber()`   |
-| `:variable` | `P.isVariable()` |
-| `:integer`  | `P.isInteger()`  |
-| `:positive` | `P.isPositive()` |
-| `:negative` | `P.isNegative()` |
-| `:nonzero`  | `P.isNonzero()`  |
+| Syntax           | Constraint          |
+| ---------------- | ------------------- |
+| `:number`        | `P.isNumber()`      |
+| `:variable`      | `P.isVariable()`    |
+| `:integer`       | `P.isInteger()`     |
+| `:positive`      | `P.isPositive()`    |
+| `:negative`      | `P.isNegative()`    |
+| `:nonzero`       | `P.isNonzero()`     |
+| `:multipleOf(n)` | `P.isMultipleOf(n)` |
 
 ### Examples
 
