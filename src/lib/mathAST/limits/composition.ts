@@ -31,6 +31,7 @@ import { P } from '../pattern/builder';
 import { match } from '../pattern/match';
 import type { Pattern } from '../pattern/types';
 import { number, positiveInfinity } from '../factory';
+import { getNumericValue } from '../common/numeric';
 import { differentiate } from '../differentiation';
 import { substitute } from '../eval/substitute';
 import { evaluate } from '../eval/evaluate';
@@ -1622,14 +1623,3 @@ function evaluationResultToNode(result: unknown): MathNode | null {
 // =============================================================================
 // Helpers
 // =============================================================================
-
-/**
- * Get numeric value from a MathNode.
- */
-function getNumericValue(node: MathNode): number | null {
-	if (isNumber(node)) {
-		const val = parseFloat(node.value);
-		return Number.isFinite(val) ? val : null;
-	}
-	return null;
-}

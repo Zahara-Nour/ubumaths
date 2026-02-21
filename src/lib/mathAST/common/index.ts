@@ -16,7 +16,25 @@ export {
 export { formatNumber, cleanNumber } from './format.js';
 
 // Numeric Evaluation
-export { getNumericValue, evaluateNumeric, evaluateWithSubstitution } from './numeric.js';
+export {
+	getNumericValue,
+	numericNode,
+	evaluateNumeric,
+	evaluateWithSubstitution
+} from './numeric.js';
+
+// Simplified Constructors
+export {
+	zero,
+	one,
+	negativeOne,
+	simplifiedAdd,
+	simplifiedSubtract,
+	simplifiedMultiply,
+	simplifiedDivide,
+	simplifiedPower,
+	simplifiedOpposite
+} from './simplify.js';
 
 // Verbosity
 export { type Verbosity, VERBOSITY_ORDER, shouldIncludeStep } from './verbosity.js';

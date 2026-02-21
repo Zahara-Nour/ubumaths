@@ -21,8 +21,9 @@ import { selectIntegrator } from './integrators';
 import { containsVariable } from './rules';
 import { preprocess } from '../normal/rules';
 import { normalize, denormalize } from '../normal';
-import { number, add as addFactory, multiply as multiplyFactory, subtract } from '../factory';
+import { number, subtract } from '../factory';
 import { isAddition, isSubtraction, isMultiplication, isNumber, isDelimiter } from '../guards';
+import { simplifiedAdd, simplifiedMultiply } from '../common/simplify';
 import { CONSTANT_OF_INTEGRATION_NOTE } from './descriptions-fr';
 import { evaluate } from '../eval/evaluate';
 import { substitute } from '../eval/substitute';
@@ -69,34 +70,6 @@ function extractConstantMultiplier(
 
 	// No constant multiplier
 	return { constant: null, rest: expr };
-}
-
-/**
- * Simplify addition to avoid redundant steps.
- */
-function simplifiedAdd(left: MathNode, right: MathNode): MathNode {
-	// 0 + x = x
-	if (isNumber(left) && left.value === '0') return right;
-	// x + 0 = x
-	if (isNumber(right) && right.value === '0') return left;
-
-	return addFactory(left, right);
-}
-
-/**
- * Simplify multiplication to avoid redundant steps.
- */
-function simplifiedMultiply(left: MathNode, right: MathNode): MathNode {
-	// 0 * x = 0
-	if (isNumber(left) && left.value === '0') return number('0');
-	if (isNumber(right) && right.value === '0') return number('0');
-
-	// 1 * x = x
-	if (isNumber(left) && left.value === '1') return right;
-	// x * 1 = x
-	if (isNumber(right) && right.value === '1') return left;
-
-	return multiplyFactory(left, right, 'implicit');
 }
 
 /**

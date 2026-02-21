@@ -29,6 +29,7 @@ import {
 	isSubtraction
 } from '../guards';
 import { getVariables } from '../eval/substitute';
+import { getNumericValue } from '../common/numeric';
 import { analyzePolynomial } from './polynomial-analysis';
 import { getPolynomialDegree } from './expression-classify';
 
@@ -174,19 +175,6 @@ function numericPerfectCubeRoot(node: MathNode): MathNode | null {
 	const cbrt = Math.cbrt(val);
 	if (Number.isInteger(cbrt)) {
 		return { type: 'number', value: String(cbrt) };
-	}
-	return null;
-}
-
-/**
- * Get numeric value from a MathNode if it's a simple number.
- */
-function getNumericValue(node: MathNode): number | null {
-	if (isNumber(node)) {
-		return parseFloat(node.value);
-	}
-	if (isOpposite(node) && isNumber(node.operand)) {
-		return -parseFloat(node.operand.value);
 	}
 	return null;
 }
