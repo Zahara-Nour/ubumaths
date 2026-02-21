@@ -27,7 +27,7 @@ import { LimitError } from './types';
 import { isLimit, isNumber, isInfinity } from '../guards';
 import { matchKnownLimit, getKnownLimitValue } from './known-limits';
 import { LimitStepRecorderImpl } from './step-recorder';
-import { containsVariable } from '../integration/rules';
+import { containsVariable } from '../common/contains-variable';
 import { detectIndeterminateForm } from './indeterminate';
 import { applyLhopital, isLhopitalApplicable } from './lhopital';
 import { tryAlgebraicSimplification } from './algebraic';

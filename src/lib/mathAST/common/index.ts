@@ -42,6 +42,9 @@ export { type Verbosity, VERBOSITY_ORDER, shouldIncludeStep } from './verbosity.
 // Step Recorder Base
 export { type BaseStep, type BaseStepRecorder, StepRecorderBase } from './step-recorder-base.js';
 
+// Variable Detection
+export { containsVariable } from './contains-variable.js';
+
 // Periodic Functions
 export {
 	type PeriodicFunctionInfo,
