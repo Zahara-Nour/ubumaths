@@ -146,6 +146,17 @@ export function hashMathNode(node: MathNode): string {
 	}
 }
 
+/**
+ * Checks if two MathNodes are structurally equal.
+ *
+ * @param a - First node
+ * @param b - Second node
+ * @returns true if nodes are structurally identical
+ */
+export function nodesEqual(a: MathNode, b: MathNode): boolean {
+	return hashMathNode(a) === hashMathNode(b);
+}
+
 // =============================================================================
 // Algebraic Hashes
 // =============================================================================

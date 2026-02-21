@@ -26,8 +26,7 @@ import {
 	isOneAlgebraic,
 	algebraicEquals
 } from './algebraic';
-import { nodesEqual } from './monomial';
-import { hashMathNode } from './hash';
+import { hashMathNode, nodesEqual } from './hash';
 import { normalTerm, constantTerm } from './term';
 import { collectLikeTerms, isZeroPolynomial, isOnePolynomial } from './polynomial';
 import { isInteger } from './rational';
