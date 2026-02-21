@@ -60,8 +60,8 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		errors.push('Missing required field: domain');
 	}
 
-	if (!template.level || template.level <= 0) {
-		errors.push('level must be a positive integer');
+	if (template.level == null || template.level < 0) {
+		errors.push('level must be a non-negative integer');
 	}
 
 	// Validate delay (if present)

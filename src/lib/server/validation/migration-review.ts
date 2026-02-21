@@ -139,7 +139,7 @@ export const editedQuestionTemplateSchema = z
 		theme: z.string().max(100).optional(),
 		domain: z.string().max(100).optional(),
 		subdomain: z.string().max(100).optional(),
-		level: z.number().int().positive().max(100).optional(),
+		level: z.number().int().nonnegative().max(100).optional(),
 		status: z.enum(['draft', 'published']).optional(),
 		delay: z.number().int().nonnegative().max(600).optional()
 	})
