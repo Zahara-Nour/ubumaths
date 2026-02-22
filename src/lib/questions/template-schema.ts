@@ -178,7 +178,8 @@ const sharedZ = z
 		validationRules: z.array(validationRuleZ).optional(),
 		requiredForm: requiredFormZ.optional(),
 		blankDefaults: blankDefaultsZ.optional(),
-		answerFormats: z.record(z.string(), z.string()).optional()
+		answerFormats: z.record(z.string(), z.string()).optional(),
+		conditions: z.array(z.string()).optional()
 	})
 	.strict();
 
@@ -193,7 +194,8 @@ const variationZ = z
 		answerFormats: z.record(z.string(), z.string()).optional(),
 		choices: z.array(choiceZ).optional(),
 		validationRules: z.array(validationRuleZ).optional(),
-		requiredForm: requiredFormZ.optional()
+		requiredForm: requiredFormZ.optional(),
+		conditions: z.array(z.string()).optional()
 	})
 	.strict();
 
