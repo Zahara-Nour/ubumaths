@@ -224,10 +224,14 @@ export function resolveExpression(
 	// Normalize simplified syntax to legacy {{...}} syntax
 	let result = normalizeExpression(expression);
 
+	// Text literals: return as-is without any substitution or LaTeX conversion
+	if (isTextLiteral) {
+		return result;
+	}
+
 	// STAGE 0: If no {{...}} tokens, apply bare variable name substitution
 	// This allows expressions like "a^b*a^c" to work without explicit {{}}
-	// Skip for text literals (text:x should remain literal 'x', not resolve variable x)
-	if (!result.includes('{{') && !isTextLiteral) {
+	if (!result.includes('{{')) {
 		for (const resolvedVar of alreadyResolved) {
 			// Use word boundary to avoid partial replacements
 			// e.g., don't replace 'a' in 'tan' or 'max'

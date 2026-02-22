@@ -35,6 +35,7 @@ import {
 	mapNode,
 	stripUnnecessaryBrackets
 } from '$lib/mathAST';
+import { parseCustom } from '$lib/mathAST/parser/custom';
 import type { MathNode } from '$lib/mathAST';
 import type { DisplayOptions } from './display-options';
 
@@ -127,23 +128,23 @@ function removeNullTermsFromAST(ast: MathNode): MathNode {
 // ============================================================================
 
 /**
- * Apply display transformations to a LaTeX expression
+ * Apply display transformations to a custom-syntax expression
  *
  * Pipeline:
- * 1. Parse LaTeX to AST via mathAST
+ * 1. Parse custom syntax to AST via mathAST
  * 2. Apply structural transforms (shuffle terms/factors)
  * 3. Apply removeNullTerms / removeUnnecessaryBrackets
  * 4. Serialize back to LaTeX
  */
-export function applyDisplayTransforms(latex: string, options: Required<DisplayOptions>): string {
+export function applyDisplayTransforms(expr: string, options: Required<DisplayOptions>): string {
 	// Guard: empty or whitespace-only input
-	if (!latex || !latex.trim()) {
-		return latex;
+	if (!expr || !expr.trim()) {
+		return expr;
 	}
 
 	try {
-		// Step 1: Parse LaTeX to AST
-		let ast = parseLatex(latex);
+		// Step 1: Parse custom syntax to AST
+		let ast = parseCustom(expr);
 
 		// Step 2: Apply structural transforms (shuffles)
 		const doShuffleTerms =
@@ -177,8 +178,8 @@ export function applyDisplayTransforms(latex: string, options: Required<DisplayO
 		// Step 4: Serialize back to LaTeX
 		return toLatex(ast);
 	} catch {
-		// If parsing or transformation fails, return original latex unchanged
-		return latex;
+		// If parsing or transformation fails, return original expression unchanged
+		return expr;
 	}
 }
 
@@ -187,15 +188,15 @@ export function applyDisplayTransforms(latex: string, options: Required<DisplayO
 // ============================================================================
 
 /**
- * Check if an expression can be transformed
+ * Check if a custom-syntax expression can be transformed
  */
-export function canTransform(latex: string): boolean {
-	if (!latex || !latex.trim()) {
+export function canTransform(expr: string): boolean {
+	if (!expr || !expr.trim()) {
 		return false;
 	}
 
 	try {
-		parseLatex(latex);
+		parseCustom(expr);
 		return true;
 	} catch {
 		return false;
