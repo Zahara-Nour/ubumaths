@@ -277,6 +277,13 @@ export interface QuestionVariation {
 	}[];
 
 	/**
+	 * Generation conditions (guards). After variable generation, all conditions
+	 * are evaluated. If any is false, variables are regenerated (max 100 retries).
+	 * Conditions use variable names directly: 'a*b!=0', 'abs(a) != abs(b)'
+	 */
+	conditions?: string[];
+
+	/**
 	 * Custom validation rules for testAnswers-style validation
 	 *
 	 * Used when the correct answer depends on generated variables
@@ -326,6 +333,13 @@ export interface SharedVariationDefaults {
 		 */
 		isCorrect?: boolean;
 	}[];
+
+	/**
+	 * Shared generation conditions (guards). After variable generation, all conditions
+	 * are evaluated. If any is false, variables are regenerated (max 100 retries).
+	 * Conditions use variable names directly: 'a*b!=0', 'abs(a) != abs(b)'
+	 */
+	conditions?: string[];
 
 	/** Shared validation rules */
 	validationRules?: ValidationRule[];

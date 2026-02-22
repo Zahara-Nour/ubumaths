@@ -166,7 +166,10 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'stdev',
 	'min',
 	'max',
-	'sum'
+	'sum',
+	// Number theory functions
+	'gcd',
+	'mod'
 ]);
 
 /**
@@ -205,6 +208,8 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 	'max', // 3 chars
 	'sum', // 3 chars
 	'abs', // 3 chars
+	'gcd', // 3 chars
+	'mod', // 3 chars
 	'ln' // 2 chars
 ];
 

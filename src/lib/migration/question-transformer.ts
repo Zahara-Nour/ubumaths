@@ -1454,6 +1454,40 @@ function convertVariableReference(varRef: string): string {
 }
 
 // ============================================================================
+// CONDITION CONVERSION
+// ============================================================================
+
+/**
+ * Convert an old-system condition string to new format.
+ *
+ * Transformations:
+ * - Variable references: &1 → a, &2 → b, etc.
+ * - Function names: pgcd → gcd
+ * - Function separators: ; → , (within function calls)
+ * - Equality: single = → = (already valid in new system for relation)
+ *
+ * @param condition - Old condition string (e.g., "pgcd(&1+&2;&3)=1")
+ * @returns Converted condition string (e.g., "gcd(a+b,c)=1") or undefined if empty
+ */
+function convertCondition(condition: string): string | undefined {
+	if (!condition || condition.trim() === '') return undefined;
+
+	let result = condition;
+
+	// 1. Replace variable references: &N → letter name
+	result = result.replace(/&(\d+)/g, (_, num) => numberToLetterName(parseInt(num, 10)));
+
+	// 2. Replace pgcd → gcd
+	result = result.replace(/\bpgcd\b/g, 'gcd');
+
+	// 3. Replace semicolons with commas inside function calls
+	// (semicolons are used as argument separators in the old French syntax)
+	result = result.replace(/;/g, ',');
+
+	return result;
+}
+
+// ============================================================================
 // CATEGORY ASSIGNMENT
 // ============================================================================
 
@@ -1801,6 +1835,30 @@ function detectSharedFields(
 		}
 	}
 
+	// ---- Detect conditions sharing (→ conditions) ----
+	const oldConditions = oldQuestion.conditions || [];
+
+	if (oldConditions.length > 0) {
+		const conditionsIsShared = oldConditions.length === 1 && variationCount > 1;
+
+		if (conditionsIsShared) {
+			const converted = convertCondition(oldConditions[0]);
+			if (converted) {
+				shared.conditions = [converted];
+			}
+		} else {
+			for (let i = 0; i < variationCount; i++) {
+				const condition = oldConditions[i] || oldConditions[0];
+				if (condition) {
+					const converted = convertCondition(condition);
+					if (converted) {
+						perVariation[i].conditions = [converted];
+					}
+				}
+			}
+		}
+	}
+
 	return { shared, perVariation };
 }
 
@@ -1815,6 +1873,7 @@ function hasSharedContent(shared: SharedVariationDefaults): boolean {
 		shared.correction ||
 		(shared.choices && shared.choices.length > 0) ||
 		(shared.validationRules && shared.validationRules.length > 0) ||
+		(shared.conditions && shared.conditions.length > 0) ||
 		(shared.answerFormats && Object.keys(shared.answerFormats).length > 0) ||
 		shared.blankDefaults ||
 		shared.requiredForm
@@ -1961,6 +2020,9 @@ function createVariationsWithShared(
 		}
 		if (pv.validationRules && pv.validationRules.length > 0) {
 			variation.validationRules = pv.validationRules;
+		}
+		if (pv.conditions && pv.conditions.length > 0) {
+			variation.conditions = pv.conditions;
 		}
 		if (pv.blanks && pv.blanks.length > 0) {
 			variation.blanks = pv.blanks;
