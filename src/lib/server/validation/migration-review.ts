@@ -42,7 +42,8 @@ const variationSchema = z.object({
 	answerFormats: z.unknown().optional(),
 	validationRules: z.array(z.unknown()).optional(),
 	requiredForm: z.unknown().optional(),
-	blankDefaults: z.unknown().optional()
+	blankDefaults: z.unknown().optional(),
+	conditions: z.array(z.string()).optional()
 });
 
 /**
@@ -58,7 +59,8 @@ const sharedDefaultsSchema = z.object({
 	validationRules: z.array(z.unknown()).optional(),
 	requiredForm: z.unknown().optional(),
 	blankDefaults: z.unknown().optional(),
-	answerFormats: z.unknown().optional()
+	answerFormats: z.unknown().optional(),
+	conditions: z.array(z.string()).optional()
 });
 
 // ============================================================================

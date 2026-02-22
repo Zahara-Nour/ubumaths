@@ -619,6 +619,11 @@
 				/* ignore */
 			}
 
+			// Preserve conditions (generation guards)
+			if (variation.conditions && variation.conditions.length > 0) {
+				cleaned.conditions = variation.conditions;
+			}
+
 			return cleaned;
 		});
 
