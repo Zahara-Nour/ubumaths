@@ -40,6 +40,7 @@ import { assignBlankIndices } from './assign-blank-indices';
 import { normalizeExpression } from '$lib/ubumark/parameterization';
 import { applyRemoveSpaces } from '$lib/ubumark/parameterization/resolver/variable-resolver';
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
+import { evaluateConditions } from './condition-evaluator';
 
 // ============================================================================
 // SHARED DEFAULTS MERGING
@@ -110,6 +111,9 @@ function resolveVariationWithShared(
 
 		// variables: MERGE (shared first, per-variation can reference/override)
 		variables: mergeVariables(shared.variables, variation.variables),
+
+		// conditions: per-variation overrides shared
+		conditions: variation.conditions ?? shared.conditions,
 
 		// blanks: per-variation only (no shared equivalent for now)
 		blanks: variation.blanks,
@@ -183,8 +187,30 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 		}
 
-		// 5. Resolve variables in declaration order
-		const resolvedVariables = resolveVariables(resolvedVariation.variables || [], seed);
+		// 5. Resolve variables in declaration order (with condition retry loop)
+		const MAX_CONDITION_RETRIES = 100;
+		let resolvedVariables = resolveVariables(resolvedVariation.variables || [], seed);
+		let conditionRetryCount = 0;
+
+		if (resolvedVariation.conditions?.length) {
+			while (
+				!evaluateConditions(resolvedVariation.conditions, resolvedVariables) &&
+				conditionRetryCount < MAX_CONDITION_RETRIES
+			) {
+				conditionRetryCount++;
+				const effectiveSeed = seed !== undefined ? seed + conditionRetryCount * 7919 : undefined;
+				resolvedVariables = resolveVariables(resolvedVariation.variables || [], effectiveSeed);
+			}
+
+			if (conditionRetryCount >= MAX_CONDITION_RETRIES) {
+				return {
+					success: false,
+					errors: [
+						`Failed to generate variables satisfying conditions after ${MAX_CONDITION_RETRIES} retries. Conditions: ${resolvedVariation.conditions.join(', ')}`
+					]
+				};
+			}
+		}
 
 		// 5b. Detect expression variable names (convention: name starts with "expression")
 		const expressionNames = new Set(

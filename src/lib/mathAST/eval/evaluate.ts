@@ -51,7 +51,8 @@ import {
 	rationalToNumber,
 	isZero as isZeroRational,
 	isInteger as isIntegerRational,
-	floatToRational
+	floatToRational,
+	gcd as gcdBigInt
 } from '../normal/rational';
 import { integerNthRoot } from '../normal/radical';
 import { number, divide, boolean as booleanNode } from '../factory';
@@ -385,6 +386,27 @@ function evaluateFunctionToRational(
 			if (numArgs.length !== 1) throw new Error('tanh requires exactly 1 argument');
 			result = Math.tanh(numArgs[0]);
 			break;
+		case 'gcd': {
+			if (numArgs.length !== 2) throw new Error('gcd requires exactly 2 arguments');
+			const gcdA = rationalArgs[0],
+				gcdB = rationalArgs[1];
+			if (!isIntegerRational(gcdA) || !isIntegerRational(gcdB))
+				throw new Error('gcd requires integer arguments');
+			// gcdBigInt handles negative values by taking absolute values internally
+			return fromInteger(gcdBigInt(gcdA.n, gcdB.n));
+		}
+		case 'mod': {
+			if (numArgs.length !== 2) throw new Error('mod requires exactly 2 arguments');
+			const modA = rationalArgs[0],
+				modB = rationalArgs[1];
+			if (!isIntegerRational(modA) || !isIntegerRational(modB))
+				throw new Error('mod requires integer arguments');
+			if (modB.n === 0n) throw new Error('mod by zero');
+			// Use mathematical modulo (non-negative result when modulus is positive)
+			const remainder = modA.n % modB.n;
+			const modResult = modB.n > 0n && remainder < 0n ? remainder + modB.n : remainder;
+			return fromInteger(modResult);
+		}
 		default:
 			throw new Error(`Unknown function: ${name}`);
 	}
@@ -657,7 +679,9 @@ const KNOWN_FUNCTIONS = new Set([
 	'mean',
 	'median',
 	'variance',
-	'stdev'
+	'stdev',
+	'gcd',
+	'mod'
 ]);
 
 /**

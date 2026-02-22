@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import { evaluate } from '../evaluate';
 import { parseLatex } from '../../parser';
+import { parseCustom } from '../../parser/custom';
 import {
 	number,
 	variable,
@@ -3215,5 +3216,71 @@ describe('evaluate - edge cases: decimal places extremes', () => {
 			});
 			expect(result.value).toBe(0.1);
 		});
+	});
+});
+
+// =============================================================================
+// GCD and MOD Function Tests
+// =============================================================================
+
+describe('gcd and mod functions', () => {
+	it('gcd(12, 8) = 4', () => {
+		const ast = parseCustom('gcd(12, 8)');
+		const result = evaluate(ast, { mode: 'exact' });
+		expect(result.status).toBe('value');
+		if (isEvalValue(result)) {
+			expect(isMathNode(result.value)).toBe(true);
+			if (isMathNode(result.value) && isNumber(result.value)) {
+				expect(result.value.value).toBe('4');
+			}
+		}
+	});
+
+	it('gcd(17, 5) = 1', () => {
+		const ast = parseCustom('gcd(17, 5)');
+		const result = evaluate(ast, { mode: 'exact' });
+		expect(result.status).toBe('value');
+		if (isEvalValue(result)) {
+			expect(isMathNode(result.value)).toBe(true);
+			if (isMathNode(result.value) && isNumber(result.value)) {
+				expect(result.value.value).toBe('1');
+			}
+		}
+	});
+
+	it('mod(17, 5) = 2', () => {
+		const ast = parseCustom('mod(17, 5)');
+		const result = evaluate(ast, { mode: 'exact' });
+		expect(result.status).toBe('value');
+		if (isEvalValue(result)) {
+			expect(isMathNode(result.value)).toBe(true);
+			if (isMathNode(result.value) && isNumber(result.value)) {
+				expect(result.value.value).toBe('2');
+			}
+		}
+	});
+
+	it('mod(10, 3) = 1', () => {
+		const ast = parseCustom('mod(10, 3)');
+		const result = evaluate(ast, { mode: 'exact' });
+		expect(result.status).toBe('value');
+		if (isEvalValue(result)) {
+			expect(isMathNode(result.value)).toBe(true);
+			if (isMathNode(result.value) && isNumber(result.value)) {
+				expect(result.value.value).toBe('1');
+			}
+		}
+	});
+
+	it('gcd with negative numbers', () => {
+		const ast = parseCustom('gcd(-12, 8)');
+		const result = evaluate(ast, { mode: 'exact' });
+		expect(result.status).toBe('value');
+		if (isEvalValue(result)) {
+			expect(isMathNode(result.value)).toBe(true);
+			if (isMathNode(result.value) && isNumber(result.value)) {
+				expect(result.value.value).toBe('4');
+			}
+		}
 	});
 });
