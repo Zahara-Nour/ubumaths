@@ -83,7 +83,8 @@ const variationSchema = z.object({
 	choices: z.array(choiceSchema).optional(),
 	requiredForm: z.unknown().optional(),
 	validationRules: z.array(z.unknown()).optional(),
-	answerFormats: z.unknown().optional()
+	answerFormats: z.unknown().optional(),
+	conditions: z.array(z.string()).optional()
 });
 
 /**
