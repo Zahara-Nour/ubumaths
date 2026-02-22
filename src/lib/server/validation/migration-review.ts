@@ -5,8 +5,8 @@
  * Zod schemas for migration review API endpoints.
  * Validates approve/reject actions on migrated questions.
  *
- * Shared question schemas (variableSchema, displayOptionsSchema, correctionSchema,
- * blankSchema, choiceSchema) are imported from ./questions to avoid duplication.
+ * Building block schemas are imported from the single source of truth:
+ * $lib/questions/template-schema.ts
  *
  * @module server/validation/migration-review
  */
@@ -17,8 +17,11 @@ import {
 	displayOptionsSchema,
 	correctionSchema,
 	blankSchema,
-	choiceSchema
-} from './questions';
+	choiceSchema,
+	validationRuleSchema,
+	requiredFormSchema,
+	blankDefaultsSchema
+} from '$lib/questions/template-schema';
 
 // ============================================================================
 // QUESTION TEMPLATE SCHEMAS FOR EDITING
@@ -39,10 +42,10 @@ const variationSchema = z.object({
 	blanks: z.array(blankSchema).max(20).optional(),
 	choices: z.array(choiceSchema).max(10).optional(),
 	correctChoiceIndex: z.union([z.string(), z.array(z.string())]).optional(),
-	answerFormats: z.unknown().optional(),
-	validationRules: z.array(z.unknown()).optional(),
-	requiredForm: z.unknown().optional(),
-	blankDefaults: z.unknown().optional(),
+	answerFormats: z.record(z.string(), z.string()).optional(),
+	validationRules: z.array(validationRuleSchema).optional(),
+	requiredForm: requiredFormSchema.optional(),
+	blankDefaults: blankDefaultsSchema.optional(),
 	conditions: z.array(z.string()).optional()
 });
 
@@ -56,10 +59,10 @@ const sharedDefaultsSchema = z.object({
 	correction: correctionSchema.optional(),
 	choices: z.array(choiceSchema).max(10).optional(),
 	correctChoiceIndex: z.union([z.string(), z.array(z.string())]).optional(),
-	validationRules: z.array(z.unknown()).optional(),
-	requiredForm: z.unknown().optional(),
-	blankDefaults: z.unknown().optional(),
-	answerFormats: z.unknown().optional(),
+	validationRules: z.array(validationRuleSchema).optional(),
+	requiredForm: requiredFormSchema.optional(),
+	blankDefaults: blankDefaultsSchema.optional(),
+	answerFormats: z.record(z.string(), z.string()).optional(),
 	conditions: z.array(z.string()).optional()
 });
 

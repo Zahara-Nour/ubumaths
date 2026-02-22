@@ -4,158 +4,262 @@
  * Mirrors the QuestionTemplate interface from types.ts with .strict() at every
  * object level to reject unknown/misspelled keys.
  *
+ * Building blocks are exported WITHOUT .strict() for reuse by server-side
+ * validation schemas (questions.ts, migration-review.ts). The strict versions
+ * are used only locally for the questionTemplateSchema (JsonEditor validation).
+ *
  * Used by:
  * - QuestionTemplateForm JSON mode (client-side validation)
- * - Server-side API validation (can extend with .min()/.max() business rules)
+ * - Server-side API validation (imports building blocks)
  */
 
 import { z } from 'zod';
 
+// ============================================================================
+// BUILDING BLOCKS (exported, non-strict)
+// ============================================================================
+
 // === Primitives ===
 
-const constraintModeZ = z.enum(['strict', 'warn', 'off']);
+export const constraintModeSchema = z.enum(['strict', 'warn', 'off']);
 
-const requiredFormZ = z.union([
+export const requiredFormSchema = z.union([
+	z.enum(['product', 'sum', 'fraction', 'power']),
+	z.object({ pattern: z.string() })
+]);
+
+export const unitSchema = z.object({ expected: z.boolean(), required: z.string().optional() });
+
+// --- Precision: individual members for strict reuse ---
+const precisionNone = z.object({ type: z.literal('none') });
+const precisionDecimal = z.object({ type: z.literal('decimal'), digits: z.number() });
+const precisionSignificant = z.object({ type: z.literal('significant'), digits: z.number() });
+const precisionMagnitude = z.object({ type: z.literal('magnitude'), digits: z.number() });
+const precisionTolerance = z.object({
+	type: z.literal('tolerance'),
+	tolerance: z.number(),
+	mode: z.enum(['absolute', 'relative'])
+});
+
+export const precisionSchema = z.discriminatedUnion('type', [
+	precisionNone,
+	precisionDecimal,
+	precisionSignificant,
+	precisionMagnitude,
+	precisionTolerance
+]);
+
+// --- Validation rules: individual members for strict reuse ---
+const validationRuleDivisor = z.object({ type: z.literal('divisor'), dividend: z.string() });
+const validationRuleMultiple = z.object({ type: z.literal('multiple'), base: z.string() });
+const validationRuleRange = z.object({
+	type: z.literal('range'),
+	min: z.string(),
+	max: z.string(),
+	inclusive: z.boolean().optional()
+});
+const validationRuleEquationRoot = z.object({
+	type: z.literal('equation_root'),
+	equation: z.string(),
+	variable: z.string().optional()
+});
+const validationRuleEquivalent = z.object({
+	type: z.literal('equivalent'),
+	expression: z.string()
+});
+const validationRulePredicate = z.object({
+	type: z.literal('predicate'),
+	predicate: z.enum([
+		'isPrime',
+		'isComposite',
+		'isEven',
+		'isOdd',
+		'isPositive',
+		'isNegative',
+		'isInteger'
+	])
+});
+const validationRuleCustom = z.object({
+	type: z.literal('custom'),
+	expression: z.string(),
+	description: z.string().optional()
+});
+
+export const validationRuleSchema = z.discriminatedUnion('type', [
+	validationRuleDivisor,
+	validationRuleMultiple,
+	validationRuleRange,
+	validationRuleEquationRoot,
+	validationRuleEquivalent,
+	validationRulePredicate,
+	validationRuleCustom
+]);
+
+export const correctChoiceIndexSchema = z.union([z.string(), z.array(z.string())]);
+
+// === Nested objects ===
+
+/**
+ * FIX: correctionZ only had `steps` (required). The TypeScript QuestionCorrection
+ * interface has `feedback` (optional) + `steps` (optional).
+ */
+export const correctionSchema = z.object({
+	feedback: z
+		.object({
+			correct: z.string().optional(),
+			incorrect: z.string().optional(),
+			partial: z.string().optional()
+		})
+		.optional(),
+	steps: z.array(z.string()).optional()
+});
+
+export const displayOptionsSchema = z.object({
+	shuffleTerms: z.boolean().optional(),
+	shuffleFactors: z.boolean().optional(),
+	shuffleTermsAndFactors: z.boolean().optional(),
+	shallowShuffleTerms: z.boolean().optional(),
+	shallowShuffleFactors: z.boolean().optional(),
+	removeNullTerms: z.boolean().optional(),
+	removeUnnecessaryBrackets: z.boolean().optional(),
+	removeSpaces: z.boolean().optional()
+});
+
+export const variableSchema = z.object({
+	name: z.string().regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Variable name must be valid identifier'),
+	expression: z.string().min(1, 'Expression is required'),
+	displayOptions: displayOptionsSchema.optional()
+});
+
+export const choiceSchema = z.object({
+	content: z.string(),
+	isCorrect: z.boolean().optional()
+});
+
+export const blankDefaultsSchema = z.object({
+	precision: precisionSchema.optional(),
+	requiredForm: requiredFormSchema.optional(),
+	removeSpaces: z.boolean().optional(),
+	unit: unitSchema.optional()
+});
+
+export const blankSchema = z.object({
+	expectedAnswer: z.string(),
+	prefilled: z.string().optional(),
+	pool: z.array(z.string()).optional(),
+	precision: precisionSchema.optional(),
+	requiredForm: requiredFormSchema.optional(),
+	removeSpaces: z.boolean().optional(),
+	validationRules: z.array(validationRuleSchema).optional(),
+	unit: unitSchema.optional()
+});
+
+export const constraintsSchema = z.object({
+	spaces: constraintModeSchema.optional(),
+	products: constraintModeSchema.optional(),
+	brackets: constraintModeSchema.optional(),
+	zeros: constraintModeSchema.optional(),
+	form: constraintModeSchema.optional(),
+	allowBracketsInFirstNegativeTerm: z.boolean().optional(),
+	nullTerms: constraintModeSchema.optional(),
+	factorOne: constraintModeSchema.optional(),
+	factorZero: constraintModeSchema.optional(),
+	signs: constraintModeSchema.optional(),
+	reducedFractions: constraintModeSchema.optional(),
+	unit: constraintModeSchema.optional()
+});
+
+export const optionsSchema = z.object({
+	allowEquivalent: z.boolean().optional(),
+	allowDifferentForms: z.boolean().optional(),
+	canonicalForm: z.enum(['fraction', 'decimal', 'scientific']).optional(),
+	orderIndependent: z.boolean().optional(),
+	validator: z.enum(['checkEquivalence', 'checkAlgebraic', 'checkNumeric']).optional(),
+	validatorParams: z.record(z.string(), z.unknown()).optional(),
+	constraints: constraintsSchema.optional(),
+	shuffleChoices: z.boolean().optional()
+});
+
+// ============================================================================
+// STRICT VERSIONS (local, for questionTemplateSchema only)
+// ============================================================================
+
+const requiredFormStrictZ = z.union([
 	z.enum(['product', 'sum', 'fraction', 'power']),
 	z.object({ pattern: z.string() }).strict()
 ]);
 
-const unitZ = z.object({ expected: z.boolean(), required: z.string().optional() }).strict();
+const unitStrictZ = unitSchema.strict();
 
-const precisionZ = z.discriminatedUnion('type', [
-	z.object({ type: z.literal('none') }).strict(),
-	z.object({ type: z.literal('decimal'), digits: z.number() }).strict(),
-	z.object({ type: z.literal('significant'), digits: z.number() }).strict(),
-	z.object({ type: z.literal('magnitude'), digits: z.number() }).strict(),
-	z
-		.object({
-			type: z.literal('tolerance'),
-			tolerance: z.number(),
-			mode: z.enum(['absolute', 'relative'])
-		})
-		.strict()
+const precisionStrictZ = z.discriminatedUnion('type', [
+	precisionNone.strict(),
+	precisionDecimal.strict(),
+	precisionSignificant.strict(),
+	precisionMagnitude.strict(),
+	precisionTolerance.strict()
 ]);
 
-const validationRuleZ = z.discriminatedUnion('type', [
-	z.object({ type: z.literal('divisor'), dividend: z.string() }).strict(),
-	z.object({ type: z.literal('multiple'), base: z.string() }).strict(),
-	z
-		.object({
-			type: z.literal('range'),
-			min: z.string(),
-			max: z.string(),
-			inclusive: z.boolean().optional()
-		})
-		.strict(),
-	z
-		.object({
-			type: z.literal('equation_root'),
-			equation: z.string(),
-			variable: z.string().optional()
-		})
-		.strict(),
-	z.object({ type: z.literal('equivalent'), expression: z.string() }).strict(),
-	z
-		.object({
-			type: z.literal('predicate'),
-			predicate: z.enum([
-				'isPrime',
-				'isComposite',
-				'isEven',
-				'isOdd',
-				'isPositive',
-				'isNegative',
-				'isInteger'
-			])
-		})
-		.strict(),
-	z
-		.object({
-			type: z.literal('custom'),
-			expression: z.string(),
-			description: z.string().optional()
-		})
-		.strict()
+const validationRuleStrictZ = z.discriminatedUnion('type', [
+	validationRuleDivisor.strict(),
+	validationRuleMultiple.strict(),
+	validationRuleRange.strict(),
+	validationRuleEquationRoot.strict(),
+	validationRuleEquivalent.strict(),
+	validationRulePredicate.strict(),
+	validationRuleCustom.strict()
 ]);
 
-const correctChoiceIndexZ = z.union([z.string(), z.array(z.string())]);
-
-// === Nested objects ===
-
-const correctionZ = z
+const correctionStrictZ = z
 	.object({
-		steps: z.array(z.string())
+		feedback: z
+			.object({
+				correct: z.string().optional(),
+				incorrect: z.string().optional(),
+				partial: z.string().optional()
+			})
+			.strict()
+			.optional(),
+		steps: z.array(z.string()).optional()
 	})
 	.strict();
 
-const displayOptionsZ = z
+const displayOptionsStrictZ = displayOptionsSchema.strict();
+
+const variableStrictZ = z
 	.object({
-		shuffleTerms: z.boolean().optional(),
-		shuffleFactors: z.boolean().optional(),
-		shuffleTermsAndFactors: z.boolean().optional(),
-		shallowShuffleTerms: z.boolean().optional(),
-		shallowShuffleFactors: z.boolean().optional(),
-		removeNullTerms: z.boolean().optional(),
-		removeUnnecessaryBrackets: z.boolean().optional(),
-		removeSpaces: z.boolean().optional()
+		name: z.string().regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Variable name must be valid identifier'),
+		expression: z.string().min(1, 'Expression is required'),
+		displayOptions: displayOptionsStrictZ.optional()
 	})
 	.strict();
 
-const variableZ = z
-	.object({
-		name: z.string(),
-		expression: z.string(),
-		displayOptions: displayOptionsZ.optional()
-	})
-	.strict();
+const choiceStrictZ = choiceSchema.strict();
 
-const choiceZ = z
+const blankDefaultsStrictZ = z
 	.object({
-		content: z.string(),
-		isCorrect: z.boolean().optional()
-	})
-	.strict();
-
-const blankDefaultsZ = z
-	.object({
-		precision: precisionZ.optional(),
-		requiredForm: requiredFormZ.optional(),
+		precision: precisionStrictZ.optional(),
+		requiredForm: requiredFormStrictZ.optional(),
 		removeSpaces: z.boolean().optional(),
-		unit: unitZ.optional()
+		unit: unitStrictZ.optional()
 	})
 	.strict();
 
-const blankZ = z
+const blankStrictZ = z
 	.object({
 		expectedAnswer: z.string(),
 		prefilled: z.string().optional(),
 		pool: z.array(z.string()).optional(),
-		precision: precisionZ.optional(),
-		requiredForm: requiredFormZ.optional(),
+		precision: precisionStrictZ.optional(),
+		requiredForm: requiredFormStrictZ.optional(),
 		removeSpaces: z.boolean().optional(),
-		validationRules: z.array(validationRuleZ).optional(),
-		unit: unitZ.optional()
+		validationRules: z.array(validationRuleStrictZ).optional(),
+		unit: unitStrictZ.optional()
 	})
 	.strict();
 
-const constraintsZ = z
-	.object({
-		spaces: constraintModeZ.optional(),
-		products: constraintModeZ.optional(),
-		brackets: constraintModeZ.optional(),
-		zeros: constraintModeZ.optional(),
-		form: constraintModeZ.optional(),
-		allowBracketsInFirstNegativeTerm: z.boolean().optional(),
-		nullTerms: constraintModeZ.optional(),
-		factorOne: constraintModeZ.optional(),
-		factorZero: constraintModeZ.optional(),
-		signs: constraintModeZ.optional(),
-		reducedFractions: constraintModeZ.optional(),
-		unit: constraintModeZ.optional()
-	})
-	.strict();
+const constraintsStrictZ = constraintsSchema.strict();
 
-const optionsZ = z
+const optionsStrictZ = z
 	.object({
 		allowEquivalent: z.boolean().optional(),
 		allowDifferentForms: z.boolean().optional(),
@@ -163,43 +267,45 @@ const optionsZ = z
 		orderIndependent: z.boolean().optional(),
 		validator: z.enum(['checkEquivalence', 'checkAlgebraic', 'checkNumeric']).optional(),
 		validatorParams: z.record(z.string(), z.unknown()).optional(),
-		constraints: constraintsZ.optional(),
+		constraints: constraintsStrictZ.optional(),
 		shuffleChoices: z.boolean().optional()
 	})
 	.strict();
 
-const sharedZ = z
+const sharedStrictZ = z
 	.object({
 		statement: z.string().optional(),
-		variables: z.array(variableZ).optional(),
-		correctChoiceIndex: correctChoiceIndexZ.optional(),
-		correction: correctionZ.optional().nullable(),
-		choices: z.array(choiceZ).optional(),
-		validationRules: z.array(validationRuleZ).optional(),
-		requiredForm: requiredFormZ.optional(),
-		blankDefaults: blankDefaultsZ.optional(),
+		variables: z.array(variableStrictZ).optional(),
+		correctChoiceIndex: correctChoiceIndexSchema.optional(),
+		correction: correctionStrictZ.optional().nullable(),
+		choices: z.array(choiceStrictZ).optional(),
+		validationRules: z.array(validationRuleStrictZ).optional(),
+		requiredForm: requiredFormStrictZ.optional(),
+		blankDefaults: blankDefaultsStrictZ.optional(),
 		answerFormats: z.record(z.string(), z.string()).optional(),
 		conditions: z.array(z.string()).optional()
 	})
 	.strict();
 
-const variationZ = z
+const variationStrictZ = z
 	.object({
 		statement: z.string().optional(),
-		variables: z.array(variableZ).optional(),
-		correctChoiceIndex: correctChoiceIndexZ.optional(),
-		correction: correctionZ.optional().nullable(),
-		blanks: z.array(blankZ).optional(),
-		blankDefaults: blankDefaultsZ.optional(),
+		variables: z.array(variableStrictZ).optional(),
+		correctChoiceIndex: correctChoiceIndexSchema.optional(),
+		correction: correctionStrictZ.optional().nullable(),
+		blanks: z.array(blankStrictZ).optional(),
+		blankDefaults: blankDefaultsStrictZ.optional(),
 		answerFormats: z.record(z.string(), z.string()).optional(),
-		choices: z.array(choiceZ).optional(),
-		validationRules: z.array(validationRuleZ).optional(),
-		requiredForm: requiredFormZ.optional(),
+		choices: z.array(choiceStrictZ).optional(),
+		validationRules: z.array(validationRuleStrictZ).optional(),
+		requiredForm: requiredFormStrictZ.optional(),
 		conditions: z.array(z.string()).optional()
 	})
 	.strict();
 
-// === QuestionTemplate schema ===
+// ============================================================================
+// QuestionTemplate schema (strict — for JsonEditor validation)
+// ============================================================================
 
 /**
  * Strict Zod schema matching QuestionTemplate (without audit fields: id, created_at, etc.)
@@ -210,11 +316,11 @@ export const questionTemplateSchema = z
 	.object({
 		title: z.string(),
 		description: z.string().optional().nullable(),
-		shared: sharedZ.optional().nullable(),
-		defaultDisplayOptions: displayOptionsZ.optional().nullable(),
-		variations: z.array(variationZ),
+		shared: sharedStrictZ.optional().nullable(),
+		defaultDisplayOptions: displayOptionsStrictZ.optional().nullable(),
+		variations: z.array(variationStrictZ),
 		exerciseInstruction: z.string().optional().nullable(),
-		options: optionsZ.optional().nullable(),
+		options: optionsStrictZ.optional().nullable(),
 		grades: z.array(z.string()),
 		theme: z.string(),
 		domain: z.string(),
