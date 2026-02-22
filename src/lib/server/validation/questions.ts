@@ -1,74 +1,38 @@
 /**
  * Questions validation schemas
+ *
+ * Building block schemas (displayOptionsSchema, variableSchema, correctionSchema,
+ * choiceSchema, blankSchema, etc.) are imported from the single source of truth:
+ * $lib/questions/template-schema.ts
  */
 
 import { z } from 'zod';
 import { paginationSchema, gradeSchema } from './common';
+import {
+	requiredFormSchema,
+	validationRuleSchema,
+	correctionSchema,
+	displayOptionsSchema,
+	variableSchema,
+	choiceSchema,
+	blankSchema,
+	blankDefaultsSchema,
+	optionsSchema
+} from '$lib/questions/template-schema';
+
+// Re-export building blocks for downstream consumers (migration-review.ts, index.ts)
+export {
+	displayOptionsSchema,
+	variableSchema,
+	correctionSchema,
+	choiceSchema,
+	blankSchema
+} from '$lib/questions/template-schema';
 
 /**
  * Question types
  */
 export const questionTypeSchema = z.enum(['multiple_choice', 'fill_in_blanks']);
-
-/**
- * Variable schema for question templates
- */
-export const displayOptionsSchema = z
-	.object({
-		shuffleTerms: z.boolean().optional(),
-		shuffleFactors: z.boolean().optional(),
-		shuffleTermsAndFactors: z.boolean().optional(),
-		shallowShuffleTerms: z.boolean().optional(),
-		shallowShuffleFactors: z.boolean().optional(),
-		removeNullTerms: z.boolean().optional(),
-		removeUnnecessaryBrackets: z.boolean().optional(),
-		removeSpaces: z.boolean().optional()
-	})
-	.strict();
-
-export const variableSchema = z.object({
-	name: z.string().regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Variable name must be valid identifier'),
-	expression: z.string().min(1, 'Expression is required'),
-	displayOptions: displayOptionsSchema.optional()
-});
-
-/**
- * Blank schema matching TemplateBlank interface
- */
-export const blankSchema = z.object({
-	expectedAnswer: z.string(),
-	prefilled: z.string().optional(),
-	pool: z.array(z.string()).optional(),
-	precision: z.unknown().optional(),
-	requiredForm: z.unknown().optional(),
-	removeSpaces: z.boolean().optional(),
-	validationRules: z.array(z.unknown()).optional(),
-	unit: z
-		.object({
-			expected: z.boolean(),
-			required: z.string().optional()
-		})
-		.optional()
-});
-
-/**
- * Correction schema matching QuestionCorrection interface
- */
-export const correctionSchema = z.object({
-	feedback: z
-		.object({
-			correct: z.string().optional(),
-			incorrect: z.string().optional(),
-			partial: z.string().optional()
-		})
-		.optional(),
-	steps: z.array(z.string()).optional()
-});
-
-export const choiceSchema = z.object({
-	content: z.string(),
-	isCorrect: z.boolean().optional()
-});
 
 /**
  * Variation schema for question templates
@@ -79,11 +43,11 @@ const variationSchema = z.object({
 	correctChoiceIndex: z.union([z.string(), z.array(z.string())]).optional(),
 	correction: correctionSchema.optional().nullable(),
 	blanks: z.array(blankSchema).optional(),
-	blankDefaults: z.unknown().optional(),
+	blankDefaults: blankDefaultsSchema.optional(),
 	choices: z.array(choiceSchema).optional(),
-	requiredForm: z.unknown().optional(),
-	validationRules: z.array(z.unknown()).optional(),
-	answerFormats: z.unknown().optional(),
+	requiredForm: requiredFormSchema.optional(),
+	validationRules: z.array(validationRuleSchema).optional(),
+	answerFormats: z.record(z.string(), z.string()).optional(),
 	conditions: z.array(z.string()).optional()
 });
 
@@ -101,8 +65,8 @@ export const createQuestionTemplateSchema = z.object({
 		.optional(),
 	exerciseInstruction: z.string().max(500).optional().nullable(),
 	shared: z.unknown().optional().nullable(),
-	defaultDisplayOptions: z.unknown().optional().nullable(),
-	options: z.unknown().optional().nullable(),
+	defaultDisplayOptions: displayOptionsSchema.optional().nullable(),
+	options: optionsSchema.optional().nullable(),
 	grades: z.array(gradeSchema).min(1, 'Au moins un niveau requis'),
 	theme: z.string().min(1, 'Thème requis').max(100),
 	domain: z.string().min(1, 'Domaine requis').max(100),
