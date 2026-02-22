@@ -1066,7 +1066,7 @@ describe('resolveVariables', () => {
 					{ name: 'expr', expression: 'a^b*a^c' }
 				];
 				const resolved = resolveVariables(variables);
-				expect(resolved[3].value).toBe('3^2*3^4'); // Variables substituted
+				expect(resolved[3].value).toBe('3^2*3^4'); // Variables substituted, raw custom syntax
 			});
 
 			it('should substitute bare variable names with word boundaries', () => {

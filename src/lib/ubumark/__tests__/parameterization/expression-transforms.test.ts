@@ -172,8 +172,8 @@ describe('applyDisplayTransforms', () => {
 		it('should shuffle factors in a product', () => {
 			randomSpy.mockReturnValue(0.5);
 
-			const latex = 'a \\times b \\times c';
-			const result = applyDisplayTransforms(latex, makeOptions({ shuffleFactors: true }));
+			const expr = 'a*b*c';
+			const result = applyDisplayTransforms(expr, makeOptions({ shuffleFactors: true }));
 
 			// Result should contain all original factors
 			expect(result).toMatch(/a/);
@@ -181,24 +181,24 @@ describe('applyDisplayTransforms', () => {
 			expect(result).toMatch(/c/);
 		});
 
-		it('should preserve multiplication style (cdot)', () => {
+		it('should output \\times for multiplication from custom syntax', () => {
 			randomSpy.mockReturnValue(0.5);
 
-			const latex = 'a \\cdot b \\cdot c';
-			const result = applyDisplayTransforms(latex, makeOptions({ shuffleFactors: true }));
+			const expr = 'a*b*c';
+			const result = applyDisplayTransforms(expr, makeOptions({ shuffleFactors: true }));
 
-			// Should preserve the cdot style
+			// Custom parser: * → cross → \times in LaTeX output
 			expect(result).toMatch(/a/);
 			expect(result).toMatch(/b/);
 			expect(result).toMatch(/c/);
-			expect(result).toMatch(/\\cdot/);
+			expect(result).toMatch(/\\times/);
 		});
 
 		it('should handle implicit multiplication', () => {
 			randomSpy.mockReturnValue(0.5);
 
-			const latex = 'abc';
-			const result = applyDisplayTransforms(latex, makeOptions({ shuffleFactors: true }));
+			const expr = 'abc';
+			const result = applyDisplayTransforms(expr, makeOptions({ shuffleFactors: true }));
 
 			// Result should contain all variables
 			expect(result).toMatch(/a/);
@@ -300,11 +300,8 @@ describe('applyDisplayTransforms', () => {
 		});
 
 		it('should preserve necessary parentheses', () => {
-			const latex = '(a+b) \\times c';
-			const result = applyDisplayTransforms(
-				latex,
-				makeOptions({ removeUnnecessaryBrackets: true })
-			);
+			const expr = '(a+b)*c';
+			const result = applyDisplayTransforms(expr, makeOptions({ removeUnnecessaryBrackets: true }));
 
 			// Should still contain all variables
 			expect(result).toMatch(/a/);
@@ -384,10 +381,10 @@ describe('applyDisplayTransforms', () => {
 // ============================================================================
 
 describe('canTransform', () => {
-	it('should return true for valid LaTeX', () => {
+	it('should return true for valid custom-syntax expressions', () => {
 		expect(canTransform('a + b')).toBe(true);
 		expect(canTransform('x^2')).toBe(true);
-		expect(canTransform('\\frac{1}{2}')).toBe(true);
+		expect(canTransform('1/2')).toBe(true);
 	});
 
 	it('should return false for empty string', () => {
