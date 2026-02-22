@@ -26,7 +26,11 @@ export {
 	variableSchema,
 	correctionSchema,
 	choiceSchema,
-	blankSchema
+	blankSchema,
+	blankDefaultsSchema,
+	optionsSchema,
+	validationRuleSchema,
+	requiredFormSchema
 } from '$lib/questions/template-schema';
 
 /**
