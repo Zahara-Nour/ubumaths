@@ -828,6 +828,38 @@ export class WebReplEngine {
 				return this.createUnitAwareResult(substituted, '');
 			}
 
+			// Boolean result: colored output, no exact/decimal toggle
+			const boolCheck = evaluate(substituted, {
+				mode: 'exact',
+				functions: this.evalState.functions
+			});
+			if (boolCheck.status === 'value' && boolCheck.node.type === 'boolean') {
+				const boolValue = boolCheck.value as boolean;
+				const resultStr = String(boolValue);
+				const colorClass = boolValue ? 'text-green-400' : 'text-red-400';
+				let outputHtml = `<span class="${colorClass} font-bold">${resultStr}</span>`;
+
+				// Add bindings info if variables were substituted
+				if (variables.size > 0) {
+					const bindingsList: string[] = [];
+					for (const varName of variables) {
+						const value = this.evalState.bindings.get(varName);
+						if (value) {
+							bindingsList.push(`${varName}=${toCustom(value)}`);
+						}
+					}
+					const bindingsStr = bindingsList.join(', ');
+					outputHtml += `<span class="text-muted-foreground text-xs ml-2">[${this.escapeHtml(bindingsStr)}]</span>`;
+				}
+
+				return {
+					success: true,
+					output: resultStr,
+					outputHtml,
+					ast: boolCheck.node
+				};
+			}
+
 			// Evaluate in BOTH modes to enable toggle
 			// Pass user-defined functions from evalState
 			const exactResult = evaluate(substituted, {
