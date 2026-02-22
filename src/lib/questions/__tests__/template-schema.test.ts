@@ -127,6 +127,60 @@ describe('validationRuleSchema', () => {
 });
 
 // ============================================================================
+// variableSchema — promoted constraints (regex + min(1))
+// ============================================================================
+
+describe('variableSchema', () => {
+	it('rejects invalid identifier name', () => {
+		expect(variableSchema.safeParse({ name: '1bad', expression: 'x' }).success).toBe(false);
+	});
+
+	it('rejects name with spaces', () => {
+		expect(variableSchema.safeParse({ name: 'a b', expression: 'x' }).success).toBe(false);
+	});
+
+	it('accepts valid identifier with underscore', () => {
+		expect(variableSchema.safeParse({ name: '_foo_2', expression: 'x' }).success).toBe(true);
+	});
+
+	it('rejects empty expression', () => {
+		expect(variableSchema.safeParse({ name: 'x', expression: '' }).success).toBe(false);
+	});
+});
+
+// ============================================================================
+// blankSchema — required fields
+// ============================================================================
+
+describe('blankSchema', () => {
+	it('rejects blank without expectedAnswer', () => {
+		expect(blankSchema.safeParse({}).success).toBe(false);
+	});
+
+	it('accepts blank with only expectedAnswer', () => {
+		expect(blankSchema.safeParse({ expectedAnswer: '42' }).success).toBe(true);
+	});
+});
+
+// ============================================================================
+// precisionSchema — missing required fields
+// ============================================================================
+
+describe('precisionSchema rejection', () => {
+	it('rejects decimal without digits', () => {
+		expect(precisionSchema.safeParse({ type: 'decimal' }).success).toBe(false);
+	});
+
+	it('rejects significant without digits', () => {
+		expect(precisionSchema.safeParse({ type: 'significant' }).success).toBe(false);
+	});
+
+	it('rejects tolerance without tolerance/mode', () => {
+		expect(precisionSchema.safeParse({ type: 'tolerance' }).success).toBe(false);
+	});
+});
+
+// ============================================================================
 // questionTemplateSchema (strict) — rejects unknown keys
 // ============================================================================
 
@@ -206,5 +260,37 @@ describe('building blocks (non-strict)', () => {
 	it('optionsSchema strips unknown keys', () => {
 		const result = optionsSchema.parse({ shuffleChoices: true, extra: true });
 		expect(result).toEqual({ shuffleChoices: true });
+	});
+});
+
+// ============================================================================
+// questionTemplateSchema refine — statement requirement
+// ============================================================================
+
+describe('questionTemplateSchema refine', () => {
+	const base = {
+		title: 'Test',
+		grades: ['6e'],
+		theme: 'Calcul',
+		domain: 'Addition',
+		level: 1,
+		status: 'published' as const
+	};
+
+	it('rejects template with no statement anywhere', () => {
+		const result = questionTemplateSchema.safeParse({
+			...base,
+			variations: [{ blanks: [{ expectedAnswer: '2' }] }]
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('accepts template with shared statement and no variation statement', () => {
+		const result = questionTemplateSchema.safeParse({
+			...base,
+			shared: { statement: 'Calculer' },
+			variations: [{}]
+		});
+		expect(result.success).toBe(true);
 	});
 });
