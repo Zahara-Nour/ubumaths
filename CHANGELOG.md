@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.15](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.14...v0.8.15) (2026-02-22)
+
+### 🐛 Bug Fixes
+
+- allow level 0 in question template schemas and validators ([8332678](https://github.com/Zahara-Nour/ubumaths/commit/83326789e8993afba0cf772e015a0695251db808))
+- always run constraint checks and fix MathPrompt cursor jump ([f2f9287](https://github.com/Zahara-Nour/ubumaths/commit/f2f9287a29d65bd5e3cacf13ea12f80676b1d2ce))
+- apply toFrenchDecimal to prefilled values in parent components ([dca355d](https://github.com/Zahara-Nour/ubumaths/commit/dca355daf94e1d46f286d00fdb326b6bfa91fb97))
+- **constraints:** strip LaTeX thin spaces in checkZeros before analysis ([605f6a5](https://github.com/Zahara-Nour/ubumaths/commit/605f6a56a0f67ae12ee6a737159dcb09dbdcb0dd))
+- correct removeSpaces fallback chain and French digit grouping in interactive prefilled ([e80a484](https://github.com/Zahara-Nour/ubumaths/commit/e80a48428b369f838d426827da31c2f68fcb5f06))
+- **dashboard:** fix incorrect gidouille count on rapid successive batches ([0f6c4fb](https://github.com/Zahara-Nour/ubumaths/commit/0f6c4fb56fafebd7a5a8f496368c6c5c6084ad60))
+- **editor:** initialize variation statement to empty string on load ([a8688df](https://github.com/Zahara-Nour/ubumaths/commit/a8688dfbafafde423b3264392c1fb679af30872d))
+- **editor:** stop reinserting empty statement in variations ([06fd6a8](https://github.com/Zahara-Nour/ubumaths/commit/06fd6a865b6185ae7597f7eebd1f2ad6c1b546a6))
+- **fill-blanks:** pre-fill math prompts with prefilled values ([29e9330](https://github.com/Zahara-Nour/ubumaths/commit/29e93302f227cedae9d000ee5c0216d3cd083816))
+- **generator:** derive isCorrect from correctChoiceIndex for shared choices ([053b54d](https://github.com/Zahara-Nour/ubumaths/commit/053b54d7651eeebde6d12a6207df35767d40415b))
+- **MathPrompt:** embed prefilled values in LaTeX instead of using $effect ([06d81e5](https://github.com/Zahara-Nour/ubumaths/commit/06d81e562a2e3fb7e2a13e999afb7477f543aedf))
+- **MathPrompt:** use MathLive silenceNotifications for programmatic setPromptValue ([d6088b4](https://github.com/Zahara-Nour/ubumaths/commit/d6088b4ec20422db26300a9942bfbdf9606654fa))
+- **migration-review:** use shared statement fallback in instance preview ([00a586f](https://github.com/Zahara-Nour/ubumaths/commit/00a586fce4f6eaa05acc826eed6348ee6d4653bb))
+- preserve displayOptions on variables in migration edit save ([77de85b](https://github.com/Zahara-Nour/ubumaths/commit/77de85bd7cf106095123b77f3fd7d584b3baa9a7))
+- resolve sub-expressions in discrete list items (e.g., "0|1..9") ([73a12d7](https://github.com/Zahara-Nour/ubumaths/commit/73a12d715ccb2a68429f5be209ddf192401faea4))
+- use displayValue for variable references in statement resolution ([45018ec](https://github.com/Zahara-Nour/ubumaths/commit/45018ec71deeba06f8ee71f5125287089dfff25f))
+- **validation:** allow shared statement inheritance in client schema ([d8ae6bd](https://github.com/Zahara-Nour/ubumaths/commit/d8ae6bd1202544d52c579add423e111966735d89))
+- **validation:** pass LaTeX values to validateAnswer for constraint checking ([4228ac9](https://github.com/Zahara-Nour/ubumaths/commit/4228ac92ce3c0745dc7d2ab4bafa8700c7aed42a))
+- **validation:** require spacing for 4+ digit numbers (French math convention) ([515f72c](https://github.com/Zahara-Nour/ubumaths/commit/515f72c39ebb859a951120d803bcd22d07d0dddc))
+- **whiteboard:** compress PDF pages as WebP and check Drive body size ([512095b](https://github.com/Zahara-Nour/ubumaths/commit/512095bbd251a290a72b3e25883ac8d0936a6a14))
+- **whiteboard:** prevent page expansion jump when panning on PDF/image backgrounds ([edeac39](https://github.com/Zahara-Nour/ubumaths/commit/edeac3934f9e87e24db14c5a7ff107cd9e5dc9eb))
+
+### 📚 Documentation
+
+- add comprehensive pattern matching technical reference ([49f63a1](https://github.com/Zahara-Nour/ubumaths/commit/49f63a1b2d4c9b36e0fae9c2295f490feb8d537a))
+- add multipleOf constraint to pattern matching reference ([25134bf](https://github.com/Zahara-Nour/ubumaths/commit/25134bf6bb5c9fdb0537effd30d0c3193bc70ebe))
+- clarify isInteger matches all integers (not just positive) ([00de8a1](https://github.com/Zahara-Nour/ubumaths/commit/00de8a1d54bc517be4259c9e09115b3dfb79bbf0))
+- expand constraint string syntax with full reference ([eb5bef8](https://github.com/Zahara-Nour/ubumaths/commit/eb5bef8210976c0ff209dd2bc7ea58a3fa147cac))
+- update prefilled French digits debug progress to resolved ([04c4c3f](https://github.com/Zahara-Nour/ubumaths/commit/04c4c3fd73db0b2f1bc9d4b46850c215ad0d84f9))
+
+### ✨ Features
+
+- **dashboard:** add journal link to StudentQuickActionsTable ([a381379](https://github.com/Zahara-Nour/ubumaths/commit/a381379d66933593103b1594872244392f6d76a8))
+- **fill-blanks:** show prefilled values in flash mode ([247b522](https://github.com/Zahara-Nour/ubumaths/commit/247b52270ba8b3c42eb89b99c37cc05d8b48051d))
+- **generator:** add generation conditions (guards) with retry loop ([a478dc1](https://github.com/Zahara-Nour/ubumaths/commit/a478dc18406f67c9b3477a476a1cb76e695b026f))
+- **generator:** apply removeSpaces to prefilled blank values ([1ed41ae](https://github.com/Zahara-Nour/ubumaths/commit/1ed41ae5a86a93ae9e5c021d6a9fbd95ceb75317))
+- **generator:** resolve correction placeholders server-side at generation time ([5634ede](https://github.com/Zahara-Nour/ubumaths/commit/5634ede8159023c7959e7e9f0f14c4885f12370a))
+- **math-input:** add conditional mathModeSpace for space key in math fields ([fb61373](https://github.com/Zahara-Nour/ubumaths/commit/fb6137359b049f0554b41f4eb2a3c33aa64578a2))
+- **mathAST/cli:** add boolean result display to CAS REPL ([e687e25](https://github.com/Zahara-Nour/ubumaths/commit/e687e254e340b61d3af438f4feff0ce0b061fe3d))
+- **mathAST:** add areEquivalent for MathNode + deduplicate compareNodes ([52ee24f](https://github.com/Zahara-Nour/ubumaths/commit/52ee24f1ca2167ea1652feb49902d644e1d2f0d3))
+- **mathAST:** add BooleanNode, LogicalNode, LogicalNotNode with boolean evaluation ([3524edf](https://github.com/Zahara-Nour/ubumaths/commit/3524edfe067c0d3afdf27610bce3438948a1b017))
+- **pattern:** add multipleOf constraint for pattern matching ([3bb0975](https://github.com/Zahara-Nour/ubumaths/commit/3bb0975d627673b5710cac8035130f38d90d2d40))
+- **whiteboard:** adapt page dimensions to imported PDF with margin ([93b99e6](https://github.com/Zahara-Nour/ubumaths/commit/93b99e646cbddd045f09fb494e75affa664e845b))
+- **whiteboard:** add normal and extended PDF import modes ([62e512b](https://github.com/Zahara-Nour/ubumaths/commit/62e512b650c77ea1f99f22ce1420494b0505ed8f))
+
 ### [0.8.14](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.13...v0.8.14) (2026-02-16)
 
 ### ✨ Features
