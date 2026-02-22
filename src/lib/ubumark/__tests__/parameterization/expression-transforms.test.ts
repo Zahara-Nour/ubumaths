@@ -282,6 +282,27 @@ describe('applyDisplayTransforms', () => {
 			expect(result).toMatch(/x/);
 			expect(result).toMatch(/y/);
 		});
+
+		it('should remove product with zero factor', () => {
+			const result = applyDisplayTransforms('(0*10)+x', makeOptions({ removeNullTerms: true }));
+			expect(result).toBe('x');
+		});
+
+		it('should remove multiple zero products', () => {
+			const result = applyDisplayTransforms(
+				'x+(0*100)+(0*10)',
+				makeOptions({ removeNullTerms: true })
+			);
+			expect(result).toBe('x');
+		});
+
+		it('should return 0 when all terms are zero products', () => {
+			const result = applyDisplayTransforms(
+				'(0*10)+(0*100)',
+				makeOptions({ removeNullTerms: true })
+			);
+			expect(result).toBe('0');
+		});
 	});
 
 	// ============================================================================
