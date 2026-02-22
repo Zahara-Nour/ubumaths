@@ -385,7 +385,15 @@ function displayAutoEvaluation(ast: MathNode, state: ReplState): void {
 		// Evaluate using current mode
 		const evalResult = evaluate(substituted, { mode: state.evalState.mode });
 
-		// Format the result
+		// Boolean result: colored output, no exact/approximate info
+		if (evalResult.status === 'value' && evalResult.node.type === 'boolean') {
+			const boolValue = evalResult.value as boolean;
+			const colorFn = boolValue ? chalk.green : chalk.red;
+			console.log(chalk.bold('Result:') + ' ' + colorFn.bold(String(boolValue)));
+			return;
+		}
+
+		// Numeric result: standard formatting
 		const resultStr = toCustom(evalResult.node);
 		const latexStr = toLatex(evalResult.node);
 		const exactStr = evalResult.exact ? chalk.green('(exact)') : chalk.yellow('(approximate)');

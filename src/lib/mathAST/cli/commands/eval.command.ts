@@ -66,7 +66,18 @@ export class EvalCommand extends BaseCommand {
 			// Evaluate using current mode
 			const result = evaluate(substituted, { mode: ctx.evalState.mode });
 
-			// Format the result
+			// Boolean result: colored output, no mode/exact info
+			if (result.status === 'value' && result.node.type === 'boolean') {
+				const boolValue = result.value as boolean;
+				const colorFn = boolValue ? chalk.green : chalk.red;
+				return {
+					success: true,
+					output: chalk.bold('Result:') + ' ' + colorFn.bold(String(boolValue)),
+					ast: result.node
+				};
+			}
+
+			// Numeric result: standard formatting
 			const resultStr = toCustom(result.node);
 			const modeStr = ctx.evalState.mode;
 			const exactStr = result.exact ? chalk.green('(exact)') : chalk.yellow('(approximate)');
