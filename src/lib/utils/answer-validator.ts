@@ -21,19 +21,11 @@ import type {
 import { DEFAULT_CONSTRAINT_MODE, getQuestionType } from '$lib/questions/types';
 import type { ValidationResult } from '$lib/types/question-display';
 import { evaluateExpression, areEquivalent } from '$lib/math';
+import { checkUnit } from '$lib/questions/constraint-validators';
 import {
-	checkSpaces,
-	checkProducts,
-	checkBrackets,
-	checkZeros,
-	checkForm,
-	checkNullTerms,
-	checkFactorOne,
-	checkFactorZero,
-	checkSigns,
-	checkReducedFractions,
-	checkUnit
-} from '$lib/questions/constraint-validators';
+	checkForm as checkFormUnified,
+	type ConstraintSeverity
+} from '$lib/mathAST/cosmetic-transforms';
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
 import { checkRequiredForm, getRequiredFormFeedback } from '$lib/questions/required-form-validator';
@@ -44,7 +36,43 @@ import { validateQuantityAnswer } from '$lib/questions/units/validator';
 // ============================================================================
 
 /**
+ * Build constraint severity map from ConstraintOptions for the unified checkForm.
+ */
+function buildConstraintSeverities(
+	constraints: ConstraintOptions
+): Record<string, ConstraintSeverity> {
+	const severities: Record<string, ConstraintSeverity> = {};
+
+	const constraintIds: ConstraintId[] = [
+		'spaces',
+		'products',
+		'brackets',
+		'zeros',
+		'nullTerms',
+		'factorOne',
+		'factorZero',
+		'signs',
+		'reducedFractions'
+	];
+
+	for (const id of constraintIds) {
+		const mode = (constraints[id] as ConstraintMode | undefined) ?? DEFAULT_CONSTRAINT_MODE;
+		severities[id] = mode;
+	}
+
+	// The 'form' constraint maps to the overall form comparison (not a specific transformer)
+	// It's handled implicitly by checkForm's final comparison
+	const formMode = (constraints['form'] as ConstraintMode | undefined) ?? DEFAULT_CONSTRAINT_MODE;
+	severities['form'] = formMode;
+
+	return severities;
+}
+
+/**
  * Apply constraint checks to a mathematically correct answer
+ *
+ * Uses the unified checkForm pipeline for cosmetic constraints,
+ * plus separate unit matching.
  *
  * @param answers - Plain text answers
  * @param answersLatex - LaTeX versions of answers (from MathLive)
@@ -60,55 +88,69 @@ function applyConstraints(
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
 	const violations: NonNullable<ValidationResult['constraintViolations']> = [];
 	let worstStatus: ValidationStatus = 'correct';
+	const isMultiple = answers.length > 1;
+	const severities = buildConstraintSeverities(constraints);
 
-	// Define constraint checks
-	const checks: Array<{
-		id: ConstraintId;
-		check: () => number[];
-	}> = [
-		// Existing text/regex-based validators
-		{ id: 'spaces', check: () => checkSpaces(answersLatex) },
-		{ id: 'products', check: () => checkProducts(answersLatex) },
-		{
-			id: 'brackets',
-			check: () =>
-				checkBrackets(answersLatex, {
-					allowFirstNegative: constraints.allowBracketsInFirstNegativeTerm
-				})
-		},
-		{ id: 'zeros', check: () => checkZeros(answers) },
-		{
-			id: 'form',
-			check: () =>
-				checkForm(answersLatex, expectedAnswers, { strictForm: constraints.form === 'strict' })
-		},
-		// New Compute Engine pattern-matching validators
-		{ id: 'nullTerms', check: () => checkNullTerms(answersLatex) },
-		{ id: 'factorOne', check: () => checkFactorOne(answersLatex) },
-		{ id: 'factorZero', check: () => checkFactorZero(answersLatex) },
-		{ id: 'signs', check: () => checkSigns(answersLatex) },
-		{ id: 'reducedFractions', check: () => checkReducedFractions(answersLatex) },
-		// Unit matching (numerical_with_unit questions - no-op for non-unit answers)
-		{ id: 'unit', check: () => checkUnit(answersLatex, expectedAnswers) }
-	];
+	// Apply unified checkForm for each answer/expected pair
+	for (let i = 0; i < answersLatex.length; i++) {
+		const expected = expectedAnswers[i];
+		if (!expected) continue;
 
-	for (const { id, check } of checks) {
-		const mode = (constraints[id] as ConstraintMode | undefined) ?? DEFAULT_CONSTRAINT_MODE;
+		const formResult = checkFormUnified(answersLatex[i], expected, severities);
 
-		// Skip if explicitly disabled
-		if (mode === 'off') continue;
+		// Collect violations from checkForm
+		for (const v of formResult.violations) {
+			const constraintId = v.id as ConstraintId;
+			if (CONSTRAINT_FEEDBACK[constraintId]) {
+				const feedback = CONSTRAINT_FEEDBACK[constraintId][isMultiple ? 'multiple' : 'single'];
 
-		const problematic = check();
-		if (problematic.length > 0) {
-			const isMultiple = answers.length > 1;
-			const feedback = CONSTRAINT_FEEDBACK[id][isMultiple ? 'multiple' : 'single'];
+				if (v.severity === 'strict') {
+					violations.push({ constraint: constraintId, severity: 'error', feedback });
+					worstStatus = 'bad_form';
+				} else {
+					violations.push({ constraint: constraintId, severity: 'warning', feedback });
+					if (worstStatus === 'correct') {
+						worstStatus = 'unoptimal_form';
+					}
+				}
+			}
+		}
 
-			if (mode === 'strict') {
-				violations.push({ constraint: id, severity: 'error', feedback });
+		// Handle form mismatch (final comparison failed)
+		if (
+			!formResult.valid &&
+			formResult.status === 'bad_form' &&
+			formResult.violations.length === 0
+		) {
+			// Form mismatch without specific constraint violation
+			const formMode =
+				(constraints['form'] as ConstraintMode | undefined) ?? DEFAULT_CONSTRAINT_MODE;
+			if (formMode !== 'off') {
+				const feedback = CONSTRAINT_FEEDBACK['form'][isMultiple ? 'multiple' : 'single'];
+				if (formMode === 'strict') {
+					violations.push({ constraint: 'form', severity: 'error', feedback });
+					worstStatus = 'bad_form';
+				} else {
+					violations.push({ constraint: 'form', severity: 'warning', feedback });
+					if (worstStatus === 'correct') {
+						worstStatus = 'unoptimal_form';
+					}
+				}
+			}
+		}
+	}
+
+	// Unit matching (separate — not part of cosmetic transforms)
+	const unitMode = (constraints['unit'] as ConstraintMode | undefined) ?? DEFAULT_CONSTRAINT_MODE;
+	if (unitMode !== 'off') {
+		const unitProblematic = checkUnit(answersLatex, expectedAnswers);
+		if (unitProblematic.length > 0) {
+			const feedback = CONSTRAINT_FEEDBACK['unit'][isMultiple ? 'multiple' : 'single'];
+			if (unitMode === 'strict') {
+				violations.push({ constraint: 'unit', severity: 'error', feedback });
 				worstStatus = 'bad_form';
 			} else {
-				// mode === 'warn' -> partial credit
-				violations.push({ constraint: id, severity: 'warning', feedback });
+				violations.push({ constraint: 'unit', severity: 'warning', feedback });
 				if (worstStatus === 'correct') {
 					worstStatus = 'unoptimal_form';
 				}

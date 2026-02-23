@@ -27,7 +27,6 @@
 import {
 	parseLatex,
 	toLatex,
-	number,
 	flattenSumShallow,
 	flattenProductShallow,
 	unflattenSum,
@@ -36,7 +35,7 @@ import {
 	stripUnnecessaryBrackets
 } from '$lib/mathAST';
 import { parseCustom } from '$lib/mathAST/parser/custom';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
+import { removeNullTermsAST } from '$lib/mathAST/transforms';
 import type { MathNode } from '$lib/mathAST';
 import type { DisplayOptions } from './display-options';
 
@@ -107,35 +106,6 @@ function shuffleFactorsDeep(ast: MathNode): MathNode {
 }
 
 // ============================================================================
-// NULL TERM REMOVAL
-// ============================================================================
-
-/**
- * Check if a node evaluates to zero (handles 0, 0*10, (0*100), etc.)
- */
-function isZeroTerm(node: MathNode): boolean {
-	try {
-		return evaluateNodeToApproximatedNumber(node) === 0;
-	} catch {
-		return false;
-	}
-}
-
-/**
- * Remove zero terms from sums recursively (bottom-up via mapNode)
- */
-function removeNullTermsFromAST(ast: MathNode): MathNode {
-	return mapNode(ast, (node) => {
-		if (node.type !== 'addition' && node.type !== 'subtraction') return node;
-		const terms = flattenSumShallow(node);
-		const filtered = terms.filter((t) => !isZeroTerm(t.term));
-		if (filtered.length === terms.length) return node;
-		if (filtered.length === 0) return number('0');
-		return unflattenSum(filtered) ?? node;
-	});
-}
-
-// ============================================================================
 // MAIN TRANSFORMATION FUNCTION
 // ============================================================================
 
@@ -180,7 +150,7 @@ export function applyDisplayTransforms(expr: string, options: Required<DisplayOp
 
 		// Step 3: Apply cleanup transforms
 		if (options.removeNullTerms) {
-			ast = removeNullTermsFromAST(ast);
+			ast = removeNullTermsAST(ast);
 		}
 
 		if (options.removeUnnecessaryBrackets) {
