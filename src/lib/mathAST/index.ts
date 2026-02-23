@@ -226,7 +226,9 @@ export {
 	cloneNode,
 	countNodes,
 	getDepth,
-	stripUnnecessaryBrackets
+	stripUnnecessaryBrackets,
+	isZeroTerm,
+	removeNullTermsAST
 } from './transforms';
 
 export type { StripBracketsOptions } from './transforms';

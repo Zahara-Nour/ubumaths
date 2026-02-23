@@ -36,6 +36,8 @@ import {
 	variable,
 	withUnit
 } from './factory';
+import { flattenSumShallow, unflattenSum } from './flatten';
+import { evaluateNodeToApproximatedNumber } from './eval/evaluate';
 
 // =============================================================================
 // Metadata Helpers
@@ -1394,4 +1396,35 @@ export function getDepth(node: MathNode): number {
 	}
 
 	return 1 + maxChildDepth;
+}
+
+// =============================================================================
+// Null Term Removal
+// =============================================================================
+
+/**
+ * Check if a node evaluates to zero (handles 0, 0*10, (0*100), etc.)
+ */
+export function isZeroTerm(node: MathNode): boolean {
+	try {
+		return evaluateNodeToApproximatedNumber(node) === 0;
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * Remove zero terms from sums recursively (bottom-up via mapNode)
+ *
+ * Transforms: x + 0 → x, 0 + x → x, 0 - x → -x
+ */
+export function removeNullTermsAST(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (node.type !== 'addition' && node.type !== 'subtraction') return node;
+		const terms = flattenSumShallow(node);
+		const filtered = terms.filter((t) => !isZeroTerm(t.term));
+		if (filtered.length === terms.length) return node;
+		if (filtered.length === 0) return number('0');
+		return unflattenSum(filtered) ?? node;
+	});
 }
