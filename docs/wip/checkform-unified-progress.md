@@ -39,6 +39,20 @@
 - constraint-validators.test.ts: 512 passed
 - ESLint: 0 errors
 
+### FlashCard 3-state feedback + form mismatch fix
+
+- FlashCard displays 3 visual states: green (correct), yellow (unoptimal_form), red (bad_form/incorrect)
+- Form mismatch check made unconditional (no severity mode — it's binary pass/fail)
+- `form` removed from `buildConstraintSeverities`
+
+### Empty answer handling
+
+- `validateSingleBlank` returns `{ isCorrect: false, status: 'empty' }` for empty inputs
+- `validateBlanks` tracks `emptyCount`: all empty → `status: 'empty'`, ≤ half → `unoptimal_form`, > half → incorrect
+- `validateBlanksOrderIndependent` skips empty answers in matching, applies same ratio logic
+- Feedback messages: `"Tu n'as rien répondu."` (all empty), `"Tu n'as pas tout complété."` (partial)
+- Matches old tinycas system behavior from `correction.ts`
+
 ### Code review fixes
 
 - Fixed dead monomial fraction detection code in `reduceFractionsAST`

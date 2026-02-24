@@ -586,6 +586,11 @@ function validateSingleBlank(
 	feedback?: string;
 	constraintViolations?: NonNullable<ValidationResult['constraintViolations']>;
 } {
+	// 0. Empty answer — skip all checks
+	if (!userAnswer.trim()) {
+		return { isCorrect: false, status: 'empty' };
+	}
+
 	// 1. Validation rules (pre-condition)
 	if (blank.validationRules && blank.validationRules.length > 0) {
 		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
@@ -674,16 +679,22 @@ export function validateBlanks(
 	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
 	const incorrectIndexes: number[] = [];
 	let hasConstraintResults = false;
+	let emptyCount = 0;
 
 	for (let i = 0; i < blanks.length; i++) {
 		const result = validateSingleBlank(userAnswers[i], blanks[i], userAnswersLatex?.[i], instance);
+
+		if (result.status === 'empty') {
+			emptyCount++;
+		}
 
 		if (!result.isCorrect) {
 			incorrectIndexes.push(i + 1);
 		}
 
 		// Aggregate worst status (priority: bad_form > unoptimal_form > correct)
-		if (result.status !== undefined) {
+		// Skip 'empty' — handled separately below
+		if (result.status !== undefined && result.status !== 'empty') {
 			if (worstStatus === undefined) {
 				worstStatus = result.status;
 			} else if (result.status === 'bad_form') {
@@ -699,6 +710,22 @@ export function validateBlanks(
 		}
 	}
 
+	// All blanks empty → early return
+	if (emptyCount === blanks.length) {
+		return { isCorrect: false, status: 'empty', feedback: "Tu n'as rien répondu." };
+	}
+
+	// Some blanks empty among multiple: apply old system's ratio logic
+	if (emptyCount > 0) {
+		if (emptyCount <= blanks.length / 2) {
+			// ≤ half empty → unoptimal_form (unless already worse)
+			if (worstStatus !== 'bad_form') {
+				worstStatus = 'unoptimal_form';
+			}
+		}
+		// > half empty → stays incorrect via incorrectIndexes
+	}
+
 	const allCorrect = incorrectIndexes.length === 0;
 	const result: ValidationResult = { isCorrect: allCorrect };
 
@@ -712,7 +739,9 @@ export function validateBlanks(
 	}
 
 	if (!allCorrect) {
-		if (worstStatus === 'bad_form') {
+		if (emptyCount > 0 && blanks.length > 1) {
+			result.feedback = "Tu n'as pas tout complété.";
+		} else if (worstStatus === 'bad_form') {
 			result.feedback = allViolations[0]?.feedback;
 		} else {
 			result.feedback = `Les blancs suivants sont incorrects: ${incorrectIndexes.join(', ')}`;
@@ -737,10 +766,25 @@ function validateBlanksOrderIndependent(
 	userAnswersLatex?: string[]
 ): ValidationResult {
 	const blanks = instance.blanks!;
+
+	// Count empty answers first
+	let emptyCount = 0;
+	for (const ans of userAnswers) {
+		if (!ans.trim()) emptyCount++;
+	}
+
+	// All empty → early return
+	if (emptyCount === blanks.length) {
+		return { isCorrect: false, status: 'empty', feedback: "Tu n'as rien répondu." };
+	}
+
 	const used = new Set<number>();
 	const matching: number[] = new Array(userAnswers.length).fill(-1);
 
 	for (let a = 0; a < userAnswers.length; a++) {
+		// Skip empty answers — they won't match anything
+		if (!userAnswers[a].trim()) continue;
+
 		for (let b = 0; b < blanks.length; b++) {
 			if (used.has(b)) continue;
 			if (validateBlankValue(userAnswers[a], blanks[b], instance)) {
@@ -749,12 +793,31 @@ function validateBlanksOrderIndependent(
 				break;
 			}
 		}
-		if (matching[a] === -1) {
-			return { isCorrect: false, message: 'Incorrect' };
-		}
 	}
 
-	// All matched. Apply form/constraints on matched pairs.
+	// Count unmatched non-empty answers
+	const unmatchedNonEmpty = userAnswers.filter((a, i) => a.trim() && matching[i] === -1).length;
+	if (unmatchedNonEmpty > 0) {
+		if (emptyCount > 0 && blanks.length > 1) {
+			return { isCorrect: false, feedback: "Tu n'as pas tout complété." };
+		}
+		return { isCorrect: false, message: 'Incorrect' };
+	}
+
+	// Some blanks empty among multiple: apply ratio logic
+	if (emptyCount > 0) {
+		if (emptyCount > blanks.length / 2) {
+			return { isCorrect: false, feedback: "Tu n'as pas tout complété." };
+		}
+		// ≤ half empty: matched answers are correct but form is suboptimal
+		return {
+			isCorrect: false,
+			status: 'unoptimal_form',
+			feedback: "Tu n'as pas tout complété."
+		};
+	}
+
+	// All matched, no empty. Apply form/constraints on matched pairs.
 	let worstStatus: ValidationStatus = 'correct';
 	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
 
