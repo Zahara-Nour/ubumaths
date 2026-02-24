@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.16](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.15...v0.8.16) (2026-02-24)
+
+### ✨ Features
+
+- **mathAST:** add cosmetic AST transformers and unified checkForm pipeline ([d391347](https://github.com/Zahara-Nour/ubumaths/commit/d39134775ca2b4a0f1774f551f5576911bee5246))
+
+### 🐛 Bug Fixes
+
+- **questions:** add conditions field to variation Zod schema ([1931eaf](https://github.com/Zahara-Nour/ubumaths/commit/1931eaf2f4f3e8d890d8b50cc79cf4ff47658856))
+- **schemas:** complete re-exports and add rejection tests ([c10854f](https://github.com/Zahara-Nour/ubumaths/commit/c10854f6068cdcc452668e39fb99799a04b8586e))
+- **schemas:** preserve conditions field across all validation layers ([90530e8](https://github.com/Zahara-Nour/ubumaths/commit/90530e875639e2dc805be40198edcbd56535f090))
+- **ubumark:** removeNullTerms handles zero products like (0\*10) ([b145b9f](https://github.com/Zahara-Nour/ubumaths/commit/b145b9f7f251c5cf624ffa9afceb02813ca46739))
+- **ubumark:** use parseCustom instead of parseLatex in display transforms ([f4121d0](https://github.com/Zahara-Nour/ubumaths/commit/f4121d04984342f32f1794659bc87e4b1772cb98))
+- **validation:** form mismatch is always bad_form, add yellow warning UI ([9ff3c2e](https://github.com/Zahara-Nour/ubumaths/commit/9ff3c2e0abb2edb2277073895f5862773d54fff6))
+
 ### [0.8.15](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.14...v0.8.15) (2026-02-22)
 
 ### 🐛 Bug Fixes
