@@ -67,6 +67,7 @@
 	let isSubmitted = $state(false);
 	let isSubmitting = $state(false);
 	let isCorrect = $state(false);
+	let validationStatus = $state<'correct' | 'unoptimal_form' | 'bad_form' | undefined>();
 	let validationMessage = $state('');
 	let validationFeedback = $state('');
 
@@ -184,6 +185,7 @@
 
 		const validationResult = validateAnswer(answer, instance, answerLatex);
 		isCorrect = validationResult.isCorrect;
+		validationStatus = validationResult.status;
 		validationMessage = validationResult.message || '';
 		validationFeedback = validationResult.feedback || '';
 
@@ -316,12 +318,16 @@
 									<div
 										class={cn(
 											'mt-4 flex items-center gap-3 rounded-lg border-2 p-4',
-											isCorrect
-												? 'border-green-600 bg-green-100 text-green-900 dark:bg-green-950 dark:text-green-200'
-												: 'border-red-600 bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-200'
+											validationStatus === 'unoptimal_form'
+												? 'border-yellow-600 bg-yellow-100 text-yellow-900 dark:bg-yellow-950 dark:text-yellow-200'
+												: isCorrect
+													? 'border-green-600 bg-green-100 text-green-900 dark:bg-green-950 dark:text-green-200'
+													: 'border-red-600 bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-200'
 										)}
 									>
-										{#if isCorrect}
+										{#if validationStatus === 'unoptimal_form'}
+											<AlertCircle class="h-6 w-6 flex-shrink-0" />
+										{:else if isCorrect}
 											<Check class="h-6 w-6 flex-shrink-0" />
 										{:else}
 											<X class="h-6 w-6 flex-shrink-0" />

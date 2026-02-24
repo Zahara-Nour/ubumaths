@@ -60,11 +60,6 @@ function buildConstraintSeverities(
 		severities[id] = mode;
 	}
 
-	// The 'form' constraint maps to the overall form comparison (not a specific transformer)
-	// It's handled implicitly by checkForm's final comparison
-	const formMode = (constraints['form'] as ConstraintMode | undefined) ?? DEFAULT_CONSTRAINT_MODE;
-	severities['form'] = formMode;
-
 	return severities;
 }
 
@@ -116,27 +111,16 @@ function applyConstraints(
 			}
 		}
 
-		// Handle form mismatch (final comparison failed)
+		// Final form mismatch: the answer structure is fundamentally different
+		// from expected (e.g. 400+80 vs 480). This is unconditional — no severity mode.
 		if (
 			!formResult.valid &&
 			formResult.status === 'bad_form' &&
 			formResult.violations.length === 0
 		) {
-			// Form mismatch without specific constraint violation
-			const formMode =
-				(constraints['form'] as ConstraintMode | undefined) ?? DEFAULT_CONSTRAINT_MODE;
-			if (formMode !== 'off') {
-				const feedback = CONSTRAINT_FEEDBACK['form'][isMultiple ? 'multiple' : 'single'];
-				if (formMode === 'strict') {
-					violations.push({ constraint: 'form', severity: 'error', feedback });
-					worstStatus = 'bad_form';
-				} else {
-					violations.push({ constraint: 'form', severity: 'warning', feedback });
-					if (worstStatus === 'correct') {
-						worstStatus = 'unoptimal_form';
-					}
-				}
-			}
+			const feedback = CONSTRAINT_FEEDBACK['form'][isMultiple ? 'multiple' : 'single'];
+			violations.push({ constraint: 'form', severity: 'error', feedback });
+			worstStatus = 'bad_form';
 		}
 	}
 
