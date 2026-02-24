@@ -145,7 +145,7 @@
 	function hasValidInput(): boolean {
 		switch (getQuestionType(instance)) {
 			case 'fill_in_blanks':
-				return fillBlankValues.every((v) => v.trim().length > 0);
+				return true;
 			case 'multiple_choice':
 				return selectedChoices.length > 0;
 			default:
