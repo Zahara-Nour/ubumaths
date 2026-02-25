@@ -135,47 +135,24 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Award chosen cards
 	const result = await awardChosenCards(supabase, data.studentId, data.chosenCardIds, vipCards);
 
-	// Mark action card as used and clear approval metadata
-	const updatedCards = { ...result.updatedVipCards };
-	const now = new Date().toISOString();
-	const updatedActionCard = {
-		...actionCardInstance,
-		usedAt: now
-	};
-
-	// Clear activation request/approval fields since card is now used
-	delete (updatedActionCard as { activationRequestedAt?: string | null }).activationRequestedAt;
-	delete (updatedActionCard as { activationRequestedBy?: string | null }).activationRequestedBy;
-	delete (updatedActionCard as { activationApprovedAt?: string | null }).activationApprovedAt;
-	delete (updatedActionCard as { activationApprovedBy?: string | null }).activationApprovedBy;
-
-	updatedCards[data.actionCardInstanceId] = updatedActionCard;
-
-	// Update database with marked action card
-	const { error: updateError } = await supabase
-		.from('profiles')
-		.update({ vip_cards: updatedCards as never })
-		.eq('id', data.studentId);
-
-	if (updateError) {
-		console.error('[choose] Error marking action card as used:', updateError);
-		throw error(500, `Failed to mark action card as used: ${updateError.message}`);
-	}
-
-	// Log action card usage to vip_cards_activity for audit trail
-	const { error: activityError } = await supabase.from('vip_cards_activity').insert({
-		student_id: data.studentId,
-		card_instance_id: data.actionCardInstanceId,
-		card_template_id: actionCardInstance.cardId,
-		action: 'used',
-		metadata: {
+	// Mark action card as used atomically via RPC (FOR UPDATE + audit trail)
+	const { data: useResult, error: useError } = await supabase.rpc('use_vip_card', {
+		p_student_id: data.studentId,
+		p_instance_id: data.actionCardInstanceId,
+		p_metadata: {
 			action_type: 'choose_card',
 			cards_chosen: data.chosenCardIds
 		}
 	});
 
-	if (activityError) {
-		console.error('[choose] Error logging activity:', activityError);
+	if (useError) {
+		console.error('[choose] RPC use_vip_card error:', useError);
+		throw error(500, `Failed to mark action card as used: ${useError.message}`);
+	}
+
+	const rpcResult = useResult as { success: boolean; error?: string; cardName?: string };
+	if (!rpcResult.success) {
+		throw error(400, rpcResult.error || 'Failed to mark action card as used');
 	}
 
 	return json({
