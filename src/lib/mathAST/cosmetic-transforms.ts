@@ -284,14 +284,11 @@ export function removeSignsAST(ast: MathNode): MathNode {
 		}
 
 		// Addition with negative right operand: x + (-y) → x - y
+		// Note: (-a)+b is NOT transformed (would reorder terms)
 		if (node.type === 'addition') {
 			const right = unwrapDelimiters(node.right);
 			if (right.type === 'opposite') {
 				return subtract(node.left, right.operand);
-			}
-			const left = unwrapDelimiters(node.left);
-			if (left.type === 'opposite') {
-				return subtract(node.right, left.operand);
 			}
 		}
 

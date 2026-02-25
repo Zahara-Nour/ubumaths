@@ -25,6 +25,7 @@ import {
 	add,
 	subtract,
 	multiply,
+	divide,
 	opposite,
 	positive,
 	fraction,
@@ -242,11 +243,21 @@ describe('removeFactorsOneAST', () => {
 // =============================================================================
 
 describe('removeSignsAST', () => {
+	// --- Double negative ---
+
 	it('removes double negative: -(-x) → x', () => {
 		const ast = opposite(opposite(variable('x')));
 		const result = toLatex(removeSignsAST(ast));
 		expect(result).toBe('x');
 	});
+
+	it('removes opposite wrapping delimiter wrapping opposite: -((-x)) → x', () => {
+		const ast = opposite(parentheses(opposite(variable('x'))));
+		const result = toLatex(removeSignsAST(ast));
+		expect(result).toBe('x');
+	});
+
+	// --- Positive sign ---
 
 	it('removes positive sign: +x → x', () => {
 		const ast = positive(variable('x'));
@@ -254,11 +265,31 @@ describe('removeSignsAST', () => {
 		expect(result).toBe('x');
 	});
 
+	// --- Addition ---
+
 	it('converts x+(-y) to x-y', () => {
 		const ast = add(variable('x'), parentheses(opposite(variable('y'))));
 		const result = toLatex(removeSignsAST(ast));
 		expect(result).toBe('x - y');
 	});
+
+	it('does NOT transform (-a)+b (would reorder terms)', () => {
+		const ast = add(parentheses(opposite(variable('a'))), variable('b'));
+		const result = removeSignsAST(ast);
+		// Should remain an addition with left side unchanged
+		expect(result.type).toBe('addition');
+	});
+
+	it('converts (-a)+(-b) → (-a)-b (only right negative stripped)', () => {
+		const ast = add(parentheses(opposite(variable('a'))), parentheses(opposite(variable('b'))));
+		const result = removeSignsAST(ast);
+		// Right negative removed → subtraction, left stays as (-a)
+		expect(result.type).toBe('subtraction');
+		const latex = toLatex(result);
+		expect(latex).not.toContain('+');
+	});
+
+	// --- Subtraction ---
 
 	it('converts x-(-y) to x+y', () => {
 		const ast = subtract(variable('x'), parentheses(opposite(variable('y'))));
@@ -266,16 +297,66 @@ describe('removeSignsAST', () => {
 		expect(result).toBe('x + y');
 	});
 
-	it('converts (-a)+(-b) to -(a+b) form', () => {
-		// (-a) + (-b): the left side is detected as opposite
-		const ast = add(parentheses(opposite(variable('a'))), parentheses(opposite(variable('b'))));
+	// --- Multiplication ---
+
+	it('converts (-a)*b → -a*b (no parentheses)', () => {
+		const ast = multiply(parentheses(opposite(variable('a'))), variable('b'), 'dot');
 		const result = removeSignsAST(ast);
-		// The transformer converts x+(-y) → x-y first (right operand)
-		// Then the left (-a) stays since it's the first term rewritten as subtraction
 		const latex = toLatex(result);
-		// After removeSignsAST: addition with negative right → subtraction
-		// Result should be (-a) - b or equivalent (the right negative is removed)
-		expect(latex).not.toContain('+');
+		expect(latex).not.toContain('\\left(');
+		expect(latex).not.toContain('\\right)');
+	});
+
+	it('converts a*(-b) → -a*b (no parentheses)', () => {
+		const ast = multiply(variable('a'), parentheses(opposite(variable('b'))), 'dot');
+		const result = removeSignsAST(ast);
+		const latex = toLatex(result);
+		expect(latex).not.toContain('\\left(');
+		expect(latex).not.toContain('\\right)');
+	});
+
+	it('converts (-a)*(-b) → a*b (no parentheses)', () => {
+		const ast = multiply(
+			parentheses(opposite(variable('a'))),
+			parentheses(opposite(variable('b'))),
+			'dot'
+		);
+		const result = removeSignsAST(ast);
+		const latex = toLatex(result);
+		expect(latex).not.toContain('\\left(');
+		expect(latex).not.toContain('\\right)');
+		expect(latex).not.toContain('-');
+	});
+
+	// --- Division ---
+
+	it('converts (-a)/b → -a/b (no parentheses)', () => {
+		const ast = divide(parentheses(opposite(variable('a'))), variable('b'), 'fraction');
+		const result = removeSignsAST(ast);
+		const latex = toLatex(result);
+		expect(latex).not.toContain('\\left(');
+		expect(latex).not.toContain('\\right)');
+	});
+
+	it('converts a/(-b) → -a/b (no parentheses)', () => {
+		const ast = divide(variable('a'), parentheses(opposite(variable('b'))), 'fraction');
+		const result = removeSignsAST(ast);
+		const latex = toLatex(result);
+		expect(latex).not.toContain('\\left(');
+		expect(latex).not.toContain('\\right)');
+	});
+
+	it('converts (-a)/(-b) → a/b (no parentheses)', () => {
+		const ast = divide(
+			parentheses(opposite(variable('a'))),
+			parentheses(opposite(variable('b'))),
+			'fraction'
+		);
+		const result = removeSignsAST(ast);
+		const latex = toLatex(result);
+		expect(latex).not.toContain('\\left(');
+		expect(latex).not.toContain('\\right)');
+		expect(latex).not.toContain('-');
 	});
 });
 
