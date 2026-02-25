@@ -101,12 +101,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Approve the activation request
+	const now = new Date().toISOString();
 	const updatedInstance = {
 		...instance,
-		activationApprovedAt: new Date().toISOString(),
-		activationApprovedBy: user.id
-		// Keep activationRequestedAt and activationRequestedBy for audit trail
-		// Clear them when student actually activates the card
+		activationApprovedAt: now,
+		activationApprovedBy: user.id,
+		// Cards without an action (bonus cards) are consumed immediately on approval
+		// since there's no student-side activation step
+		...(template.action ? {} : { usedAt: now })
 	};
 
 	const updatedCards = {
@@ -126,9 +128,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Return success response
+	const autoConsumed = !template.action;
 	return json({
 		success: true,
-		message: 'Card activation approved. Student can now activate the card.',
-		cardName: template.name
+		message: autoConsumed
+			? 'Card approved and consumed.'
+			: 'Card activation approved. Student can now activate the card.',
+		cardName: template.name,
+		autoConsumed
 	});
 };
