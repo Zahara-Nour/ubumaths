@@ -288,6 +288,133 @@ describe('stripUnnecessaryBracketsAST', () => {
 		const result = transformLatex('\\left(x\\right)', stripUnnecessaryBracketsAST);
 		expect(result).toBe('x');
 	});
+
+	// --- Higher precedence in lower precedence parent: STRIP ---
+
+	it('strips (a*b)+c → a*b+c', () => {
+		const result = transformLatex('\\left(a\\times b\\right)+c', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips a+(b*c) → a+b*c', () => {
+		const result = transformLatex('a+\\left(b\\times c\\right)', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips (x^2)+1 → x^2+1', () => {
+		const result = transformLatex('\\left(x^{2}\\right)+1', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips (x^2)*y → x^2*y', () => {
+		const result = transformLatex('\\left(x^{2}\\right)\\times y', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips (a*b)-c → a*b-c', () => {
+		const result = transformLatex('\\left(a\\times b\\right)-c', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips a-(b*c) → a-b*c', () => {
+		const result = transformLatex('a-\\left(b\\times c\\right)', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips both in (a*b)+(c*d)', () => {
+		const result = transformLatex(
+			'\\left(a\\times b\\right)+\\left(c\\times d\\right)',
+			stripUnnecessaryBracketsAST
+		);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips the user case: (2*100)+(4*10)+2', () => {
+		const result = transformLatex(
+			'\\left(2\\times 100\\right)+\\left(4\\times 10\\right)+2',
+			stripUnnecessaryBracketsAST
+		);
+		expect(result).not.toContain('\\left(');
+	});
+
+	// --- Same precedence: commutative+associative → STRIP ---
+
+	it('strips (a+b)+c → a+b+c', () => {
+		const result = transformLatex('\\left(a+b\\right)+c', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips a+(b+c) → a+b+c', () => {
+		const result = transformLatex('a+\\left(b+c\\right)', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips (a*b)*c → a*b*c', () => {
+		const result = transformLatex(
+			'\\left(a\\times b\\right)\\times c',
+			stripUnnecessaryBracketsAST
+		);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips a*(b*c) → a*b*c', () => {
+		const result = transformLatex(
+			'a\\times \\left(b\\times c\\right)',
+			stripUnnecessaryBracketsAST
+		);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips (a-b)+c → a-b+c (left of addition, same prec)', () => {
+		const result = transformLatex('\\left(a-b\\right)+c', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips a+(b-c) → a+b-c (right of addition, same prec)', () => {
+		const result = transformLatex('a+\\left(b-c\\right)', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	// --- Lower precedence in higher precedence parent: PRESERVE ---
+
+	it('preserves (a+b)*c', () => {
+		const result = transformLatex('\\left(a+b\\right)\\times c', stripUnnecessaryBracketsAST);
+		expect(result).toContain('\\left(');
+	});
+
+	it('preserves c*(a+b)', () => {
+		const result = transformLatex('c\\times \\left(a+b\\right)', stripUnnecessaryBracketsAST);
+		expect(result).toContain('\\left(');
+	});
+
+	it('preserves (a+b)^2', () => {
+		const result = transformLatex('\\left(a+b\\right)^{2}', stripUnnecessaryBracketsAST);
+		expect(result).toContain('\\left(');
+	});
+
+	it('preserves (a*b)^2', () => {
+		const result = transformLatex('\\left(a\\times b\\right)^{2}', stripUnnecessaryBracketsAST);
+		expect(result).toContain('\\left(');
+	});
+
+	// --- Same precedence non-commutative: PRESERVE right operand ---
+
+	it('preserves a-(b+c)', () => {
+		const result = transformLatex('a-\\left(b+c\\right)', stripUnnecessaryBracketsAST);
+		expect(result).toContain('\\left(');
+	});
+
+	it('preserves a-(b-c)', () => {
+		const result = transformLatex('a-\\left(b-c\\right)', stripUnnecessaryBracketsAST);
+		expect(result).toContain('\\left(');
+	});
+
+	// --- Superscript: right-associative, same prec → PRESERVE ---
+
+	it('preserves (x^2)^3 (right-associative)', () => {
+		const result = transformLatex('\\left(x^{2}\\right)^{3}', stripUnnecessaryBracketsAST);
+		expect(result).toContain('\\left(');
+	});
 });
 
 // =============================================================================
@@ -398,5 +525,25 @@ describe('checkForm', () => {
 	it('handles signs: x+(-y) vs x-y → correct (signs simplified)', () => {
 		const result = checkForm('x+\\left(-y\\right)', 'x-y', {});
 		expect(result.valid).toBe(true);
+	});
+
+	it('accepts answer without brackets when expected has product-in-sum brackets', () => {
+		const result = checkForm(
+			'2\\times 100+4\\times 10+2',
+			'\\left(2\\times 100\\right)+\\left(4\\times 10\\right)+2',
+			{ brackets: 'off' }
+		);
+		expect(result.valid).toBe(true);
+		expect(result.status).toBe('correct');
+	});
+
+	it('accepts answer with brackets when expected has no brackets (product in sum)', () => {
+		const result = checkForm(
+			'\\left(2\\times 100\\right)+\\left(4\\times 10\\right)+2',
+			'2\\times 100+4\\times 10+2',
+			{ brackets: 'off' }
+		);
+		expect(result.valid).toBe(true);
+		expect(result.status).toBe('correct');
 	});
 });
