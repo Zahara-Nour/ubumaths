@@ -1007,6 +1007,36 @@ function needsBracketsForOpposite(
 }
 
 /**
+ * Get operator precedence for bracket stripping decisions.
+ * Higher number = higher precedence (binds tighter).
+ * Returns null for non-operator nodes.
+ */
+function getOperatorPrecedence(type: MathNode['type']): number | null {
+	switch (type) {
+		case 'addition':
+		case 'subtraction':
+			return 1;
+		case 'multiplication':
+		case 'division':
+			return 2;
+		case 'superscript':
+			return 3;
+		default:
+			return null;
+	}
+}
+
+/** Check if an operator is right-associative (e.g. superscript: a^b^c = a^(b^c)) */
+function isRightAssociative(type: MathNode['type']): boolean {
+	return type === 'superscript';
+}
+
+/** Check if an operator is commutative and associative (safe to strip right operand brackets at same precedence) */
+function isCommutativeAssociative(type: MathNode['type']): boolean {
+	return type === 'addition' || type === 'multiplication';
+}
+
+/**
  * Internal context for bracket stripping
  */
 interface StripContext {
@@ -1016,6 +1046,10 @@ interface StripContext {
 	isRoot: boolean;
 	/** Strip options */
 	options: StripBracketsOptions;
+	/** The parent operator type (for precedence-based stripping) */
+	parentType?: MathNode['type'];
+	/** Whether this node is the left operand of its parent */
+	isLeftOperand?: boolean;
 }
 
 /**
@@ -1026,7 +1060,7 @@ interface StripContext {
  * @returns The processed node with unnecessary brackets removed
  */
 function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
-	const { isFirstTerm, isRoot, options } = ctx;
+	const { isFirstTerm, isRoot, options, parentType, isLeftOperand } = ctx;
 	const allowFirstNegative = options.allowFirstNegative ?? false;
 
 	// Context for children - not root, not first term by default
@@ -1047,7 +1081,7 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 		// Delimiter - the main case for stripping
 		case 'delimiter': {
 			// First, recursively strip the content (content is considered root if this delimiter is root)
-			const contentCtx: StripContext = { isFirstTerm, isRoot, options };
+			const contentCtx: StripContext = { isFirstTerm, isRoot, options, parentType, isLeftOperand };
 			const strippedContent = stripBracketsInternal(node.content, contentCtx);
 
 			// Check if we can strip this delimiter
@@ -1103,17 +1137,31 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 				return strippedContent;
 			}
 
-			// Case 5: Superscript (power) - keep brackets to avoid ambiguity like (x+1)^2
-			if (strippedContent.type === 'superscript') {
-				return delimiter(node.delimiters, strippedContent, node.semantic, {
-					delimiterMetadata: node.delimiterMetadata,
-					leftDelimiterMetadata: node.leftDelimiterMetadata,
-					rightDelimiterMetadata: node.rightDelimiterMetadata,
-					metadata: node.metadata
-				});
+			// Case 5: Operator precedence — strip if content binds tighter than parent
+			// e.g., (a*b)+c → a*b+c, (x^2)+1 → x^2+1
+			if (parentType) {
+				const contentPrec = getOperatorPrecedence(strippedContent.type);
+				const parentPrec = getOperatorPrecedence(parentType);
+
+				if (contentPrec !== null && parentPrec !== null) {
+					// Higher precedence content → always safe to strip
+					if (contentPrec > parentPrec) {
+						return strippedContent;
+					}
+					if (contentPrec === parentPrec) {
+						// Left operand of left-associative operator: (a*b)*c → a*b*c
+						if (isLeftOperand && !isRightAssociative(parentType)) {
+							return strippedContent;
+						}
+						// Right operand of commutative+associative: a+(b+c) → a+b+c
+						if (!isLeftOperand && isCommutativeAssociative(parentType)) {
+							return strippedContent;
+						}
+					}
+				}
 			}
 
-			// Default: keep brackets for complex content (sums, products, etc.)
+			// Default: keep brackets (lower precedence in parent, unknown context, etc.)
 			return delimiter(node.delimiters, strippedContent, node.semantic, {
 				delimiterMetadata: node.delimiterMetadata,
 				leftDelimiterMetadata: node.leftDelimiterMetadata,
@@ -1122,11 +1170,20 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 			});
 		}
 
-		// Binary operations - process children
+		// Binary operations - process children with parent context for precedence
 		case 'addition':
 			return add(
-				stripBracketsInternal(node.left, { ...childCtx, isFirstTerm: true }),
-				stripBracketsInternal(node.right, childCtx),
+				stripBracketsInternal(node.left, {
+					...childCtx,
+					isFirstTerm: true,
+					parentType: 'addition',
+					isLeftOperand: true
+				}),
+				stripBracketsInternal(node.right, {
+					...childCtx,
+					parentType: 'addition',
+					isLeftOperand: false
+				}),
 				{
 					operatorMetadata: node.operatorMetadata,
 					metadata: node.metadata
@@ -1135,8 +1192,17 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 
 		case 'subtraction':
 			return subtract(
-				stripBracketsInternal(node.left, { ...childCtx, isFirstTerm: true }),
-				stripBracketsInternal(node.right, childCtx),
+				stripBracketsInternal(node.left, {
+					...childCtx,
+					isFirstTerm: true,
+					parentType: 'subtraction',
+					isLeftOperand: true
+				}),
+				stripBracketsInternal(node.right, {
+					...childCtx,
+					parentType: 'subtraction',
+					isLeftOperand: false
+				}),
 				{
 					operatorMetadata: node.operatorMetadata,
 					metadata: node.metadata
@@ -1145,8 +1211,17 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 
 		case 'multiplication':
 			return multiply(
-				stripBracketsInternal(node.left, { ...childCtx, isFirstTerm: true }),
-				stripBracketsInternal(node.right, childCtx),
+				stripBracketsInternal(node.left, {
+					...childCtx,
+					isFirstTerm: true,
+					parentType: 'multiplication',
+					isLeftOperand: true
+				}),
+				stripBracketsInternal(node.right, {
+					...childCtx,
+					parentType: 'multiplication',
+					isLeftOperand: false
+				}),
 				node.displayStyle,
 				{
 					operatorMetadata: node.operatorMetadata,
@@ -1221,7 +1296,11 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 		// Superscript - strip brackets in superscript (exponent)
 		case 'superscript':
 			return superscript(
-				stripBracketsInternal(node.base, childCtx),
+				stripBracketsInternal(node.base, {
+					...childCtx,
+					parentType: 'superscript',
+					isLeftOperand: true
+				}),
 				stripBracketsInternal(node.superscript, { ...childCtx, isRoot: true, isFirstTerm: true }),
 				node.metadata
 			);

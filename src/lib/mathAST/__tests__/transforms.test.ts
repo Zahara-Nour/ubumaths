@@ -841,5 +841,337 @@ describe('transforms', () => {
 				expect(result).toEqual(node);
 			});
 		});
+
+		describe('operator precedence', () => {
+			// --- Higher precedence content in lower precedence parent: STRIP ---
+
+			it('strips brackets around product in sum: (a*b)+c -> a*b+c', () => {
+				const node = add(parentheses(multiply(variable('a'), variable('b'), 'dot')), variable('c'));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('addition');
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.left.type).toBe('multiplication');
+			});
+
+			it('strips brackets around product in right of sum: a+(b*c) -> a+b*c', () => {
+				const node = add(variable('a'), parentheses(multiply(variable('b'), variable('c'), 'dot')));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('addition');
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.right.type).toBe('multiplication');
+			});
+
+			it('strips brackets around product in subtraction: (a*b)-c -> a*b-c', () => {
+				const node = subtract(
+					parentheses(multiply(variable('a'), variable('b'), 'dot')),
+					variable('c')
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('subtraction');
+				const sub = result as ReturnType<typeof subtract>;
+				expect(sub.left.type).toBe('multiplication');
+			});
+
+			it('strips brackets around product in right of subtraction: a-(b*c) -> a-b*c', () => {
+				const node = subtract(
+					variable('a'),
+					parentheses(multiply(variable('b'), variable('c'), 'dot'))
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('subtraction');
+				const sub = result as ReturnType<typeof subtract>;
+				expect(sub.right.type).toBe('multiplication');
+			});
+
+			it('strips brackets around power in sum: (x^2)+1 -> x^2+1', () => {
+				const node = add(parentheses(superscript(variable('x'), number('2'))), number('1'));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('addition');
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.left.type).toBe('superscript');
+			});
+
+			it('strips brackets around power in right of sum: 1+(x^2) -> 1+x^2', () => {
+				const node = add(number('1'), parentheses(superscript(variable('x'), number('2'))));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('addition');
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.right.type).toBe('superscript');
+			});
+
+			it('strips brackets around power in product: (x^2)*y -> x^2*y', () => {
+				const node = multiply(
+					parentheses(superscript(variable('x'), number('2'))),
+					variable('y'),
+					'dot'
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('multiplication');
+				const mult = result as ReturnType<typeof multiply>;
+				expect(mult.left.type).toBe('superscript');
+			});
+
+			it('strips brackets around power in right of product: y*(x^2) -> y*x^2', () => {
+				const node = multiply(
+					variable('y'),
+					parentheses(superscript(variable('x'), number('2'))),
+					'dot'
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('multiplication');
+				const mult = result as ReturnType<typeof multiply>;
+				expect(mult.right.type).toBe('superscript');
+			});
+
+			it('strips brackets around power in subtraction: (x^2)-1 -> x^2-1', () => {
+				const node = subtract(parentheses(superscript(variable('x'), number('2'))), number('1'));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('subtraction');
+				const sub = result as ReturnType<typeof subtract>;
+				expect(sub.left.type).toBe('superscript');
+			});
+
+			it('strips brackets around power in right of subtraction: 1-(x^2) -> 1-x^2', () => {
+				const node = subtract(number('1'), parentheses(superscript(variable('x'), number('2'))));
+				const result = stripUnnecessaryBrackets(node);
+
+				expect(result.type).toBe('subtraction');
+				const sub = result as ReturnType<typeof subtract>;
+				expect(sub.right.type).toBe('superscript');
+			});
+
+			// --- Lower precedence content in higher precedence parent: PRESERVE ---
+
+			it('preserves brackets around sum in product: (a+b)*c', () => {
+				const node = multiply(parentheses(add(variable('a'), variable('b'))), variable('c'), 'dot');
+				const result = stripUnnecessaryBrackets(node);
+
+				const mult = result as ReturnType<typeof multiply>;
+				expect(mult.left.type).toBe('delimiter');
+			});
+
+			it('preserves brackets around sum in right of product: c*(a+b)', () => {
+				const node = multiply(variable('c'), parentheses(add(variable('a'), variable('b'))), 'dot');
+				const result = stripUnnecessaryBrackets(node);
+
+				const mult = result as ReturnType<typeof multiply>;
+				expect(mult.right.type).toBe('delimiter');
+			});
+
+			it('preserves brackets around subtraction in product: (a-b)*c', () => {
+				const node = multiply(
+					parentheses(subtract(variable('a'), variable('b'))),
+					variable('c'),
+					'dot'
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				const mult = result as ReturnType<typeof multiply>;
+				expect(mult.left.type).toBe('delimiter');
+			});
+
+			it('preserves brackets around sum in right of subtraction: a-(b+c)', () => {
+				const node = subtract(variable('a'), parentheses(add(variable('b'), variable('c'))));
+				const result = stripUnnecessaryBrackets(node);
+
+				const sub = result as ReturnType<typeof subtract>;
+				expect(sub.right.type).toBe('delimiter');
+			});
+
+			it('preserves brackets around subtraction in right of subtraction: a-(b-c)', () => {
+				const node = subtract(variable('a'), parentheses(subtract(variable('b'), variable('c'))));
+				const result = stripUnnecessaryBrackets(node);
+
+				const sub = result as ReturnType<typeof subtract>;
+				expect(sub.right.type).toBe('delimiter');
+			});
+
+			it('preserves brackets around sum in power base: (x+1)^2', () => {
+				const node = superscript(parentheses(add(variable('x'), number('1'))), number('2'));
+				const result = stripUnnecessaryBrackets(node);
+
+				const sup = result as ReturnType<typeof superscript>;
+				expect(sup.base.type).toBe('delimiter');
+			});
+
+			it('preserves brackets around product in power base: (a*b)^2', () => {
+				const node = superscript(
+					parentheses(multiply(variable('a'), variable('b'), 'dot')),
+					number('2')
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				const sup = result as ReturnType<typeof superscript>;
+				expect(sup.base.type).toBe('delimiter');
+			});
+
+			// --- Same precedence: depends on associativity and position ---
+
+			it('preserves brackets around power in power base (right-associative): (x^2)^3', () => {
+				const node = superscript(parentheses(superscript(variable('x'), number('2'))), number('3'));
+				const result = stripUnnecessaryBrackets(node);
+
+				const sup = result as ReturnType<typeof superscript>;
+				expect(sup.base.type).toBe('delimiter');
+			});
+
+			it('strips same-precedence left operand of addition: (a+b)+c -> a+b+c', () => {
+				const node = add(parentheses(add(variable('a'), variable('b'))), variable('c'));
+				const result = stripUnnecessaryBrackets(node);
+
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.left.type).toBe('addition');
+			});
+
+			it('strips same-precedence right operand of addition: a+(b+c) -> a+b+c', () => {
+				const node = add(variable('a'), parentheses(add(variable('b'), variable('c'))));
+				const result = stripUnnecessaryBrackets(node);
+
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.right.type).toBe('addition');
+			});
+
+			it('strips subtraction in left of addition: (a-b)+c -> a-b+c', () => {
+				const node = add(parentheses(subtract(variable('a'), variable('b'))), variable('c'));
+				const result = stripUnnecessaryBrackets(node);
+
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.left.type).toBe('subtraction');
+			});
+
+			it('strips subtraction in right of addition: a+(b-c) -> a+b-c', () => {
+				const node = add(variable('a'), parentheses(subtract(variable('b'), variable('c'))));
+				const result = stripUnnecessaryBrackets(node);
+
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.right.type).toBe('subtraction');
+			});
+
+			it('strips addition in left of subtraction: (a+b)-c -> a+b-c', () => {
+				const node = subtract(parentheses(add(variable('a'), variable('b'))), variable('c'));
+				const result = stripUnnecessaryBrackets(node);
+
+				const sub = result as ReturnType<typeof subtract>;
+				expect(sub.left.type).toBe('addition');
+			});
+
+			it('strips same-precedence left of multiplication: (a*b)*c -> a*b*c', () => {
+				const node = multiply(
+					parentheses(multiply(variable('a'), variable('b'), 'dot')),
+					variable('c'),
+					'dot'
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				const mult = result as ReturnType<typeof multiply>;
+				expect(mult.left.type).toBe('multiplication');
+			});
+
+			it('strips same-precedence right of multiplication: a*(b*c) -> a*b*c', () => {
+				const node = multiply(
+					variable('a'),
+					parentheses(multiply(variable('b'), variable('c'), 'dot')),
+					'dot'
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				const mult = result as ReturnType<typeof multiply>;
+				expect(mult.right.type).toBe('multiplication');
+			});
+
+			// --- Composite / deeply nested cases ---
+
+			it('strips both brackets in (a*b)+(c*d) -> a*b+c*d', () => {
+				const node = add(
+					parentheses(multiply(variable('a'), variable('b'), 'dot')),
+					parentheses(multiply(variable('c'), variable('d'), 'dot'))
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.left.type).toBe('multiplication');
+				expect(addition.right.type).toBe('multiplication');
+			});
+
+			it('strips both brackets in (a*b)-(c*d) -> a*b-c*d', () => {
+				const node = subtract(
+					parentheses(multiply(variable('a'), variable('b'), 'dot')),
+					parentheses(multiply(variable('c'), variable('d'), 'dot'))
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				const sub = result as ReturnType<typeof subtract>;
+				expect(sub.left.type).toBe('multiplication');
+				expect(sub.right.type).toBe('multiplication');
+			});
+
+			it('strips double brackets with precedence: ((a*b))+c -> a*b+c', () => {
+				const node = add(
+					parentheses(parentheses(multiply(variable('a'), variable('b'), 'dot'))),
+					variable('c')
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.left.type).toBe('multiplication');
+			});
+
+			it('handles the exact user case: (2*100)+(4*10)+2', () => {
+				// Parser would produce: add(add(paren(mult(2,100)), paren(mult(4,10))), 2)
+				const term1 = parentheses(multiply(number('2'), number('100'), 'star'));
+				const term2 = parentheses(multiply(number('4'), number('10'), 'star'));
+				const node = add(add(term1, term2), number('2'));
+				const result = stripUnnecessaryBrackets(node);
+
+				// Verify no delimiters remain
+				const checkNoDelimiters = (n: import('../types').MathNode): boolean => {
+					if (n.type === 'delimiter') return false;
+					const children =
+						n.type === 'addition' || n.type === 'subtraction'
+							? [n.left, n.right]
+							: n.type === 'multiplication'
+								? [n.left, n.right]
+								: [];
+					return children.every(checkNoDelimiters);
+				};
+				expect(checkNoDelimiters(result)).toBe(true);
+			});
+
+			it('mixed: strips product but preserves sum in ((a*b))+(c+d) -> a*b+(c+d) after double-paren strip', () => {
+				// In (a*b)+(c+d), the (a*b) should strip, (c+d) should... also strip!
+				// Because c+d has same precedence as parent +, and it's right operand of commutative+associative
+				const node = add(
+					parentheses(multiply(variable('a'), variable('b'), 'dot')),
+					parentheses(add(variable('c'), variable('d')))
+				);
+				const result = stripUnnecessaryBrackets(node);
+
+				const addition = result as ReturnType<typeof add>;
+				expect(addition.left.type).toBe('multiplication');
+				expect(addition.right.type).toBe('addition');
+			});
+
+			it('preserves necessary brackets in mixed: a*(b+c)^2', () => {
+				const inner = superscript(parentheses(add(variable('b'), variable('c'))), number('2'));
+				const node = multiply(variable('a'), inner, 'dot');
+				const result = stripUnnecessaryBrackets(node);
+
+				const mult = result as ReturnType<typeof multiply>;
+				// The superscript should remain
+				expect(mult.right.type).toBe('superscript');
+				// And the brackets inside the superscript base should remain
+				const sup = mult.right as ReturnType<typeof superscript>;
+				expect(sup.base.type).toBe('delimiter');
+			});
+		});
 	});
 });
