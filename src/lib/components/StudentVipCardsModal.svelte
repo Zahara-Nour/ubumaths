@@ -294,8 +294,25 @@
 				break;
 
 			case 'add_gidouilles':
-				// For add_gidouilles, we just mark it as used and the backend handles the gidouille addition
-				await onComplete();
+				try {
+					const response = await fetch('/api/vip-cards/activate-add-gidouilles', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ instanceId, studentId })
+					});
+
+					if (!response.ok) {
+						const err = await response.json();
+						throw new Error(err.message || 'Échec ajout gidouilles');
+					}
+
+					const result = await response.json();
+					toaster.success(`${result.gidouillesAdded} gidouilles ajoutées !`);
+					await onComplete();
+				} catch (err) {
+					const message = err instanceof Error ? err.message : 'Erreur inconnue';
+					toaster.error(message);
+				}
 				break;
 
 			default:

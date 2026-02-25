@@ -185,6 +185,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			console.error('[remove-multiple] Error marking VIP card as used:', updateError);
 			throw error(500, `Failed to mark VIP card as used: ${updateError.message}`);
 		}
+
+		// Log action card usage to vip_cards_activity for audit trail
+		const { error: activityError } = await supabase.from('vip_cards_activity').insert({
+			student_id: studentId,
+			card_instance_id: vipCardInstanceId,
+			card_template_id: vipCardToMark.cardId,
+			action: 'used',
+			metadata: {
+				action_type: 'remove_warnings',
+				warnings_removed: removedIds.length
+			}
+		});
+
+		if (activityError) {
+			console.error('[remove-multiple] Error logging activity:', activityError);
+		}
 	}
 
 	// If some removals failed, return partial success with warnings
