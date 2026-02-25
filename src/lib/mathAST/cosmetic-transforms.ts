@@ -501,14 +501,59 @@ interface TransformerStep {
 	constraintId: string | null;
 }
 
-/** The ordered list of AST transformers */
+/**
+ * Ordered AST transformer pipeline — single pass, acyclic dependency graph.
+ *
+ * The order is carefully chosen so that each transformer only creates patterns
+ * that are handled by a LATER transformer (never an earlier one). This ensures
+ * a single pass is sufficient — no fixed-point loop needed.
+ *
+ * Dependency analysis (A → B means "A can create work for B"):
+ *
+ *   reduceFractions → nullProducts, nullTerms, factorOne
+ *     Can produce 0 (e.g. 0/3 → 0), 1 (e.g. 3/3 → 1), or -1
+ *
+ *   nullProducts → nullTerms
+ *     Replaces product with 0, which may create a null term (a + 0*b → a + 0)
+ *
+ *   nullTerms → signs
+ *     Removing null terms can create opposites (0 - x → -x)
+ *
+ *   brackets → signs, factorOne
+ *     Exposes content hidden by double parentheses: ((-a)) → (-a)
+ *     Revealed content may need sign or factor-one cleanup
+ *
+ *   signs → factorOne
+ *     (-1)*x → -(1*x) creates a factor-1 pattern.
+ *     This is why factorOne MUST come AFTER signs.
+ *     A dedicated removeFactorsMinusOneAST is NOT needed: signs + factorOne
+ *     together handle (-1)*x: signs → -(1*x) → factorOne → -x
+ *
+ *   factorOne → (terminal: removes factors, doesn't create new patterns)
+ *   multOperator → (only changes display style, no structural effect)
+ *   sort → (normalisation only, no constraint)
+ *
+ * Dependency graph (all arrows point downward → acyclic):
+ *
+ *   reduceFractions → nullProducts → nullTerms → signs → factorOne
+ *                                                  ↑
+ *                                             brackets
+ *
+ * Verification traces:
+ *   (-1)*x         : brackets→rien, signs→-(1*x), factorOne→-x ✓
+ *   ((-a))*b       : brackets→(-a)*b, signs→-(a*b), factorOne→rien ✓
+ *   (-a)*(-1)      : brackets→rien, signs→a*1, factorOne→a ✓
+ *   (3/3)*x        : reduceFractions→1*x, ..., factorOne→x ✓
+ *   a+0*b          : nullProducts→a+0, nullTerms→a ✓
+ *   2+(-5)         : brackets→keeps parens (negative), signs→2-5 ✓
+ */
 const AST_PIPELINE: TransformerStep[] = [
 	{ transform: reduceFractionsAST, constraintId: 'reducedFractions' },
 	{ transform: simplifyNullProductsAST, constraintId: 'factorZero' },
 	{ transform: removeNullTermsAST, constraintId: 'nullTerms' },
-	{ transform: removeFactorsOneAST, constraintId: 'factorOne' },
-	{ transform: removeSignsAST, constraintId: 'signs' },
 	{ transform: stripUnnecessaryBrackets, constraintId: 'brackets' },
+	{ transform: removeSignsAST, constraintId: 'signs' },
+	{ transform: removeFactorsOneAST, constraintId: 'factorOne' },
 	{ transform: removeMultOperatorAST, constraintId: 'products' },
 	{ transform: sortTermsAndFactorsAST, constraintId: null } // normalisation only
 ];
