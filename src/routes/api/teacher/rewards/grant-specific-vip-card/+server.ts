@@ -1,6 +1,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { requireAuth } from '$lib/server/middleware/auth';
+import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 
 /**
  * Validation schema for granting specific VIP cards
@@ -34,27 +36,27 @@ const grantVipCardSchema = z.object({
  * - cards: Array of granted card instances [{ cardId, instanceId, earnedAt }]
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// Auth check
-	const { user } = locals;
-	if (!user) {
-		throw error(401, 'Authentication required');
+	const { user, profile } = await requireAuth(locals);
+	const supabase = locals.supabase;
+
+	// Only teachers/admins can grant cards
+	if (profile.role !== 'teacher' && profile.role !== 'admin') {
+		throw error(403, 'Only teachers can grant VIP cards to students');
 	}
 
 	// Parse and validate request body
-	let requestBody: unknown;
-	try {
-		requestBody = await request.json();
-	} catch {
-		throw error(400, 'Invalid JSON in request body');
-	}
-
-	const validation = grantVipCardSchema.safeParse(requestBody);
+	const validation = grantVipCardSchema.safeParse(await request.json());
 	if (!validation.success) {
 		throw error(400, validation.error.issues[0].message);
 	}
 
 	const { studentId, cardId, count } = validation.data;
-	const supabase = locals.supabase;
+
+	// Verify teacher-student relationship
+	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
+	if (!hasAccess) {
+		throw error(403, 'You can only grant cards to students in your classes');
+	}
 
 	// Call RPC function
 	const { data: result, error: rpcError } = await supabase.rpc('grant_specific_vip_card', {
