@@ -124,6 +124,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, `Failed to request activation: ${updateError.message}`);
 	}
 
+	// Log activation request to vip_cards_activity for audit trail
+	const { error: activityError } = await supabase.from('vip_cards_activity').insert({
+		student_id: studentId,
+		card_instance_id: instanceId,
+		card_template_id: instance.cardId,
+		action: 'requested',
+		metadata: {
+			requested_by: studentId,
+			action_type: template.action.type
+		}
+	});
+
+	if (activityError) {
+		console.error('[request-activation] Error logging activity:', activityError);
+	}
+
 	// Return success with updated instance
 	return json({
 		success: true,

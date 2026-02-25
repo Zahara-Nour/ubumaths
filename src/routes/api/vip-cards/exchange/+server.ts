@@ -199,6 +199,29 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		console.error('[exchange] Error logging activity:', activityError);
 	}
 
+	// Log each discarded card individually to audit trail
+	if (result.cardsDiscarded.length > 0) {
+		const discardEntries = result.cardsDiscarded.map((card) => ({
+			student_id: data.studentId,
+			card_instance_id: card.instanceId,
+			card_template_id: card.cardId,
+			action: 'used' as const,
+			metadata: {
+				consumed_by: 'exchange',
+				exchange_mode: data.mode,
+				action_card_instance_id: data.actionCardInstanceId
+			}
+		}));
+
+		const { error: discardActivityError } = await supabase
+			.from('vip_cards_activity')
+			.insert(discardEntries);
+
+		if (discardActivityError) {
+			console.error('[exchange] Error logging discard activity:', discardActivityError);
+		}
+	}
+
 	// Get action card template info for response
 	const actionCardTemplate = await getTemplateById(supabase, actionCard.cardId);
 
