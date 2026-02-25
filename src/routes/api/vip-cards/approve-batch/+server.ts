@@ -14,6 +14,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 
 const batchApproveSchema = z.object({
 	requests: z
@@ -28,7 +29,7 @@ const batchApproveSchema = z.object({
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { profile } = await requireAuth(locals);
+	const { user, profile } = await requireAuth(locals);
 	const supabase = locals.supabase;
 
 	if (profile.role !== 'teacher' && profile.role !== 'admin') {
@@ -45,8 +46,30 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { requests } = validation.data;
 	const results = { success: 0, failed: 0, errors: [] as string[] };
 
+	// Verify teacher-student relationship for all unique students
+	const uniqueStudentIds = [...new Set(requests.map((r) => r.studentId))];
+	const accessChecks = await Promise.all(
+		uniqueStudentIds.map(async (studentId) => ({
+			studentId,
+			hasAccess: await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase)
+		}))
+	);
+	const deniedStudents = new Set(accessChecks.filter((c) => !c.hasAccess).map((c) => c.studentId));
+
+	if (deniedStudents.size > 0) {
+		// Filter out unauthorized requests and report them as failed
+		for (const req of requests) {
+			if (deniedStudents.has(req.studentId)) {
+				results.failed++;
+				results.errors.push(`${req.instanceId}: Student is not in your classes`);
+			}
+		}
+	}
+
+	const authorizedRequests = requests.filter((r) => !deniedStudents.has(r.studentId));
+
 	const rpcResults = await Promise.all(
-		requests.map((req) =>
+		authorizedRequests.map((req) =>
 			supabase
 				.rpc('approve_vip_card', {
 					p_student_id: req.studentId,
