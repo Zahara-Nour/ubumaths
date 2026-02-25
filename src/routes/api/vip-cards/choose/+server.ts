@@ -104,15 +104,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// If student flow: require teacher approval
-	if (
-		isStudent &&
-		actionCardInstance.activationRequestedAt &&
-		!actionCardInstance.activationApprovedAt
-	) {
-		throw error(
-			400,
-			'This card activation has not been approved yet. Please wait for teacher approval.'
-		);
+	if (isStudent && !actionCardInstance.activationApprovedAt) {
+		throw error(400, 'This card must be approved by a teacher before use.');
 	}
 
 	// Get action card template from database
@@ -167,6 +160,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (updateError) {
 		console.error('[choose] Error marking action card as used:', updateError);
 		throw error(500, `Failed to mark action card as used: ${updateError.message}`);
+	}
+
+	// Log action card usage to vip_cards_activity for audit trail
+	const { error: activityError } = await supabase.from('vip_cards_activity').insert({
+		student_id: data.studentId,
+		card_instance_id: data.actionCardInstanceId,
+		card_template_id: actionCardInstance.cardId,
+		action: 'used',
+		metadata: {
+			action_type: 'choose_card',
+			cards_chosen: data.chosenCardIds
+		}
+	});
+
+	if (activityError) {
+		console.error('[choose] Error logging activity:', activityError);
 	}
 
 	return json({
