@@ -1,13 +1,13 @@
 /**
- * API Endpoint: Use (Consume) VIP Card
- * =====================================
+ * API Endpoint: Approve VIP Card Activation
+ * ==========================================
  *
- * Marks a VIP card instance as used (consumed).
- * Delegates to the use_vip_card RPC.
+ * Teacher-only endpoint to approve a student's VIP card activation request.
+ * Sets activationApprovedAt/By only — does NOT consume the card.
  *
- * POST /api/vip-cards/use-card
+ * POST /api/vip-cards/approve-card
  *
- * @param instanceId - UUID of the VIP card instance to consume
+ * @param instanceId - UUID of the VIP card instance to approve
  * @param studentId - UUID of the student who owns the card
  */
 
@@ -17,21 +17,14 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { useCardSchema } from '$lib/server/validation/vip-cards';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 
-// ============================================================================
-// POST HANDLER
-// ============================================================================
-
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// Require authentication (teacher/admin)
 	const { user, profile } = await requireAuth(locals);
 	const supabase = locals.supabase;
 
-	// Verify user is teacher or admin
 	if (profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Only teachers can use VIP cards');
+		throw error(403, 'Only teachers can approve VIP card activation requests');
 	}
 
-	// Parse and validate request body
 	const body = await request.json();
 	const validation = useCardSchema.safeParse(body);
 
@@ -41,32 +34,30 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const { instanceId, studentId } = validation.data;
 
-	// Verify teacher-student relationship (admins bypass this check)
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 	if (!hasAccess) {
-		throw error(403, 'You can only use cards for students in your classes');
+		throw error(403, 'You can only approve cards for students in your classes');
 	}
 
-	// Call use_vip_card RPC (consume)
-	const { data: result, error: rpcError } = await supabase.rpc('use_vip_card', {
+	const { data: result, error: rpcError } = await supabase.rpc('approve_vip_card', {
 		p_student_id: studentId,
 		p_instance_id: instanceId
 	});
 
 	if (rpcError) {
-		console.error('[use-card] RPC error:', rpcError);
-		throw error(500, 'Failed to use card');
+		console.error('[approve-card] RPC error:', rpcError);
+		throw error(500, 'Failed to approve card');
 	}
 
 	const rpcResult = result as { success: boolean; error?: string; cardName?: string };
 
 	if (!rpcResult.success) {
-		throw error(400, rpcResult.error || 'Failed to use card');
+		throw error(400, rpcResult.error || 'Failed to approve card');
 	}
 
 	return json({
 		success: true,
-		message: 'Card used successfully.',
+		message: 'Card activation approved. Student can now activate the card.',
 		cardName: rpcResult.cardName
 	});
 };

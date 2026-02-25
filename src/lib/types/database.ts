@@ -12960,6 +12960,10 @@ export type Database = {
 				Args: { p_amount: number; p_student_id: string };
 				Returns: number;
 			};
+			approve_vip_card: {
+				Args: { p_instance_id: string; p_student_id: string };
+				Returns: Json;
+			};
 			are_classmates: { Args: { p_user_id: string }; Returns: boolean };
 			auto_activate_scheduled_tournaments: { Args: never; Returns: number };
 			auto_complete_ended_tournaments: { Args: never; Returns: number };
@@ -14267,9 +14271,21 @@ export type Database = {
 				};
 				Returns: boolean;
 			};
+			reject_vip_card: {
+				Args: { p_instance_id: string; p_student_id: string };
+				Returns: Json;
+			};
 			remove_student_vip_card: {
 				Args: { p_card_id: string; p_student_id: string };
 				Returns: boolean;
+			};
+			remove_vip_card: {
+				Args: {
+					p_card_id?: string;
+					p_instance_id?: string;
+					p_student_id: string;
+				};
+				Returns: Json;
 			};
 			reorder_worksheet_exercises: {
 				Args: { p_exercises: Json; p_worksheet_id: string };
@@ -14540,8 +14556,12 @@ export type Database = {
 				Returns: Json;
 			};
 			use_vip_card: {
-				Args: { p_card_id: string; p_student_id: string };
-				Returns: boolean;
+				Args: {
+					p_card_id?: string;
+					p_instance_id?: string;
+					p_student_id: string;
+				};
+				Returns: Json;
 			};
 			validate_1on1_chat_creation: {
 				Args: { p_user1_id: string; p_user2_id: string };

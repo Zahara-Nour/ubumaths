@@ -69,8 +69,6 @@
 
 	// Bulk action state
 	let isBulkProcessing = $state(false);
-	let bulkProgress = $state({ current: 0, total: 0 });
-
 	// Confirmation modals
 	let showBulkApproveDialog = $state(false);
 	let showBulkRejectDialog = $state(false);
@@ -183,46 +181,35 @@
 		if (selectedRequestDetails.length === 0) return;
 
 		isBulkProcessing = true;
-		bulkProgress = { current: 0, total: selectedRequestDetails.length };
-
 		const requestsToProcess = [...selectedRequestDetails];
-		const results = { success: 0, failed: 0 };
 
-		for (const request of requestsToProcess) {
-			try {
-				const response = await fetch('/api/vip-cards/use-card', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						instanceId: request.instanceId,
-						studentId: request.studentId
-					})
-				});
+		try {
+			const response = await fetch('/api/vip-cards/approve-batch', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					requests: requestsToProcess.map((r) => ({
+						instanceId: r.instanceId,
+						studentId: r.studentId
+					}))
+				})
+			});
 
-				if (response.ok) {
-					results.success++;
-				} else {
-					results.failed++;
-					console.error(`Failed to approve request ${request.instanceId}`);
-				}
-			} catch (error) {
-				results.failed++;
-				console.error(`Error approving request ${request.instanceId}:`, error);
+			const result = await response.json();
+
+			if (result.approved > 0) {
+				toaster.success(
+					`${result.approved} demande${result.approved > 1 ? 's' : ''} approuvee${result.approved > 1 ? 's' : ''}`
+				);
 			}
-
-			bulkProgress.current++;
-		}
-
-		// Show results
-		if (results.success > 0) {
-			toaster.success(
-				`${results.success} demande${results.success > 1 ? 's' : ''} approuvee${results.success > 1 ? 's' : ''}`
-			);
-		}
-		if (results.failed > 0) {
-			toaster.error(
-				`${results.failed} demande${results.failed > 1 ? 's' : ''} echouee${results.failed > 1 ? 's' : ''}`
-			);
+			if (result.failed > 0) {
+				toaster.error(
+					`${result.failed} demande${result.failed > 1 ? 's' : ''} echouee${result.failed > 1 ? 's' : ''}`
+				);
+			}
+		} catch (_error) {
+			console.error('[rewards] Bulk approve error:', _error);
+			toaster.error("Erreur lors de l'approbation en masse");
 		}
 
 		clearSelections();
@@ -244,46 +231,35 @@
 		if (selectedRequestDetails.length === 0) return;
 
 		isBulkProcessing = true;
-		bulkProgress = { current: 0, total: selectedRequestDetails.length };
-
 		const requestsToProcess = [...selectedRequestDetails];
-		const results = { success: 0, failed: 0 };
 
-		for (const request of requestsToProcess) {
-			try {
-				const response = await fetch('/api/vip-cards/reject-activation', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						instanceId: request.instanceId,
-						studentId: request.studentId
-					})
-				});
+		try {
+			const response = await fetch('/api/vip-cards/reject-batch', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					requests: requestsToProcess.map((r) => ({
+						instanceId: r.instanceId,
+						studentId: r.studentId
+					}))
+				})
+			});
 
-				if (response.ok) {
-					results.success++;
-				} else {
-					results.failed++;
-					console.error(`Failed to reject request ${request.instanceId}`);
-				}
-			} catch (error) {
-				results.failed++;
-				console.error(`Error rejecting request ${request.instanceId}:`, error);
+			const result = await response.json();
+
+			if (result.rejected > 0) {
+				toaster.success(
+					`${result.rejected} demande${result.rejected > 1 ? 's' : ''} rejetee${result.rejected > 1 ? 's' : ''}`
+				);
 			}
-
-			bulkProgress.current++;
-		}
-
-		// Show results
-		if (results.success > 0) {
-			toaster.success(
-				`${results.success} demande${results.success > 1 ? 's' : ''} rejetee${results.success > 1 ? 's' : ''}`
-			);
-		}
-		if (results.failed > 0) {
-			toaster.error(
-				`${results.failed} demande${results.failed > 1 ? 's' : ''} echouee${results.failed > 1 ? 's' : ''}`
-			);
+			if (result.failed > 0) {
+				toaster.error(
+					`${result.failed} demande${result.failed > 1 ? 's' : ''} echouee${result.failed > 1 ? 's' : ''}`
+				);
+			}
+		} catch (_error) {
+			console.error('[rewards] Bulk reject error:', _error);
+			toaster.error('Erreur lors du rejet en masse');
 		}
 
 		clearSelections();
@@ -299,13 +275,13 @@
 	}
 
 	/**
-	 * Handle use card from demandes tab
+	 * Handle approve card from demandes tab
 	 */
-	async function handleUseCard(instanceId: string, studentId: string, studentName: string) {
+	async function handleApproveCard(instanceId: string, studentId: string, studentName: string) {
 		processingRequests[instanceId] = true;
 
 		try {
-			const response = await fetch('/api/vip-cards/use-card', {
+			const response = await fetch('/api/vip-cards/approve-card', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ instanceId, studentId })
@@ -314,35 +290,17 @@
 			const result = await response.json();
 
 			if (!response.ok) {
-				throw new Error(result.message || "Erreur lors de l'utilisation");
+				throw new Error(result.message || "Erreur lors de l'approbation");
 			}
 
-			// Success toast with action details
-			let message = result.autoConsumed
-				? `Carte ${result.cardName} approuvee et consommee pour ${studentName} !`
-				: `Carte ${result.cardName} approuvee pour ${studentName} ! L'eleve peut maintenant l'activer.`;
-			if (result.actionResult) {
-				const ar = result.actionResult;
-				if (ar.cardsDrawn) {
-					const cardNames = ar.cardsDrawn.map((c: { name: string }) => c.name).join(', ');
-					message += `\n-> Cartes tirees : ${cardNames}`;
-				} else if (ar.warningsRemoved !== undefined) {
-					message += `\n-> ${ar.warningsRemoved} avertissement(s) enleve(s)`;
-				} else if (ar.cardsReceived) {
-					message += `\n-> Cartes recues : ${ar.cardsReceived.join(', ')}`;
-				} else if (ar.newBalance !== undefined) {
-					message += `\n-> Nouveau solde : ${ar.newBalance} gidouilles`;
-				}
-			}
-
-			toaster.success(message);
+			toaster.success(`Carte ${result.cardName} approuvee pour ${studentName}`);
 
 			// Optimistic update
 			onRequestsChange(activationRequests.filter((req) => req.instanceId !== instanceId));
 
 			await invalidateAll();
 		} catch (_error) {
-			console.error('[rewards] Use card error:', _error);
+			console.error('[rewards] Approve card error:', _error);
 			toaster.error(_error instanceof Error ? _error.message : 'Erreur');
 		} finally {
 			processingRequests[instanceId] = false;
@@ -528,7 +486,7 @@
 											<div class="flex justify-end gap-2">
 												<Button
 													onclick={() =>
-														handleUseCard(
+														handleApproveCard(
 															request.instanceId,
 															request.studentId,
 															request.studentName
@@ -541,7 +499,7 @@
 														<Loader2 class="h-4 w-4 animate-spin" />
 													{:else}
 														<Check class="mr-1 h-4 w-4" />
-														<span class="hidden sm:inline">Utiliser</span>
+														<span class="hidden sm:inline">Approuver</span>
 													{/if}
 												</Button>
 												<Button
@@ -594,7 +552,7 @@
 								>
 									{#if isBulkProcessing && !showBulkRejectDialog}
 										<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-										{bulkProgress.current}/{bulkProgress.total}
+										En cours...
 									{:else}
 										<CheckCircle class="mr-2 h-4 w-4" />
 										Approuver selectionnees
@@ -609,7 +567,7 @@
 								>
 									{#if isBulkProcessing && showBulkRejectDialog}
 										<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-										{bulkProgress.current}/{bulkProgress.total}
+										En cours...
 									{:else}
 										<XCircle class="mr-2 h-4 w-4" />
 										Rejeter selectionnees
