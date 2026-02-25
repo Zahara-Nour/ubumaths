@@ -49,6 +49,7 @@
 		showUseButton?: boolean;
 		hasPendingRequest?: boolean;
 		onUse?: () => void;
+		onApprove?: () => void;
 	}
 
 	let {
@@ -62,7 +63,8 @@
 		onRemove,
 		showUseButton = false,
 		hasPendingRequest = false,
-		onUse
+		onUse,
+		onApprove
 	}: Props = $props();
 
 	// Size classes
@@ -100,13 +102,21 @@
 	}
 
 	/**
-	 * Handle use button click
+	 * Handle use button click (green button — consume)
 	 * IMPORTANT: Stops event propagation to prevent card flip animation
-	 * @param e - MouseEvent from use button click
 	 */
 	function handleUse(e: MouseEvent) {
 		e.stopPropagation();
 		onUse?.();
+	}
+
+	/**
+	 * Handle approve button click (orange button — approve pending request)
+	 * IMPORTANT: Stops event propagation to prevent card flip animation
+	 */
+	function handleApprove(e: MouseEvent) {
+		e.stopPropagation();
+		onApprove?.();
 	}
 
 	// Rarity gem color system
@@ -231,27 +241,33 @@
 				</button>
 			{/if}
 
-			<!-- Use Button (Bottom Left) - Only show if showUseButton -->
-			{#if showUseButton}
+			<!-- Approve Button (Bottom Left, Orange) - Pending request -->
+			{#if showUseButton && hasPendingRequest}
 				<button
 					type="button"
 					class={cn(
-						'absolute bottom-2 left-2 rounded-full p-2 shadow-lg transition-all hover:scale-110 active:scale-95',
-						hasPendingRequest
-							? 'bg-orange-500 text-white hover:bg-orange-600'
-							: 'bg-green-600 text-white hover:bg-green-700',
+						'absolute bottom-2 left-2 rounded-full bg-orange-500 p-2 text-white shadow-lg transition-all hover:scale-110 hover:bg-orange-600 active:scale-95',
+						size === 'sm' ? 'p-1.5' : size === 'md' ? 'p-2' : 'p-2.5'
+					)}
+					onclick={handleApprove}
+					aria-label="Approuver la demande"
+				>
+					<Clock class={cn(size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5')} />
+				</button>
+			{/if}
+
+			<!-- Use Button (Bottom Left, Green) - Direct consume -->
+			{#if showUseButton && !hasPendingRequest}
+				<button
+					type="button"
+					class={cn(
+						'absolute bottom-2 left-2 rounded-full bg-green-600 p-2 text-white shadow-lg transition-all hover:scale-110 hover:bg-green-700 active:scale-95',
 						size === 'sm' ? 'p-1.5' : size === 'md' ? 'p-2' : 'p-2.5'
 					)}
 					onclick={handleUse}
-					aria-label={hasPendingRequest ? 'Demande en attente' : 'Utiliser cette carte'}
+					aria-label="Utiliser cette carte"
 				>
-					{#if hasPendingRequest}
-						<Clock class={cn(size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5')} />
-					{:else}
-						<Sparkles
-							class={cn(size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5')}
-						/>
-					{/if}
+					<Sparkles class={cn(size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5')} />
 				</button>
 			{/if}
 		</div>

@@ -166,39 +166,85 @@
 	}
 
 	/**
-	 * Find instance to use (prefer instances with pending requests)
+	 * Find instance with a pending activation request
 	 */
-	function findInstanceToUse(cardId: string): string | null {
+	function findPendingInstance(cardId: string): string | null {
 		const vipCards = getVipCards();
-		const entries = Object.entries(vipCards);
-
-		// Priorité 1: Instance avec demande
-		const withRequest = entries.find(
+		const entry = Object.entries(vipCards).find(
 			([_, inst]) => inst.cardId === cardId && !inst.usedAt && inst.activationRequestedAt
 		);
-		if (withRequest) return withRequest[0];
-
-		// Priorité 2: Première instance disponible
-		const available = entries.find(([_, inst]) => inst.cardId === cardId && !inst.usedAt);
-		return available?.[0] || null;
+		return entry?.[0] || null;
 	}
 
 	/**
-	 * Handle card usage with action dispatch
+	 * Find available instance (no pending request, not used)
+	 */
+	function findAvailableInstance(cardId: string): string | null {
+		const vipCards = getVipCards();
+		const entry = Object.entries(vipCards).find(
+			([_, inst]) => inst.cardId === cardId && !inst.usedAt && !inst.activationRequestedAt
+		);
+		return entry?.[0] || null;
+	}
+
+	/**
+	 * Handle approve button (orange) — approve a pending activation request
+	 */
+	async function handleApproveCard(card: { id: string; name: string }) {
+		if (!teacherView) return;
+
+		const instanceId = findPendingInstance(card.id);
+		if (!instanceId) {
+			toaster.error('Aucune demande en attente');
+			return;
+		}
+
+		const vipCards = getVipCards();
+		const previousVipCards = { ...vipCards };
+
+		try {
+			// Optimistic update
+			const instance = vipCards[instanceId];
+			const newVipCards = {
+				...vipCards,
+				[instanceId]: {
+					...instance,
+					activationApprovedAt: new Date().toISOString(),
+					activationApprovedBy: 'teacher'
+				}
+			};
+			teacherCache.updateVipCardsOptimistic(classId, studentId, newVipCards);
+
+			const response = await fetch('/api/vip-cards/approve-card', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ instanceId, studentId })
+			});
+
+			const result = await response.json();
+
+			if (!response.ok) {
+				throw new Error(result.message || "Echec de l'approbation");
+			}
+
+			toaster.success(`Carte ${card.name} approuvee`);
+		} catch (err) {
+			teacherCache.updateVipCardsOptimistic(classId, studentId, previousVipCards);
+			const message = err instanceof Error ? err.message : 'Erreur inconnue';
+			toaster.error(message);
+		}
+	}
+
+	/**
+	 * Handle use button (green) — consume a card directly
 	 *
-	 * NEW ARCHITECTURE:
-	 * - Detects action type from card definition
-	 * - Opens appropriate specialized modal
-	 * - Modal handles UI interaction + API call
-	 * - After success, marks card as used via /api/vip-cards/use-card
-	 *
-	 * @param card - The VIP card to use
+	 * - No action: mark as used directly
+	 * - With action: dispatch to appropriate modal
 	 */
 	async function handleUseCard(card: { id: string; name: string; action?: VipCardType['action'] }) {
 		if (!teacherView) return;
 
-		// Find instance to use
-		const instanceId = findInstanceToUse(card.id);
+		const instanceId = findAvailableInstance(card.id);
 		if (!instanceId) {
 			toaster.error('Aucune instance disponible');
 			return;
@@ -360,17 +406,13 @@
 	async function handleAddGidouilles(
 		action: Extract<VipCardType['action'], { type: 'add_gidouilles' }>,
 		instanceId: string,
-		cardName: string
+		_cardName: string
 	) {
 		try {
-			const response = await fetch('/api/teacher/rewards/update-student', {
+			const response = await fetch('/api/vip-cards/activate-add-gidouilles', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					studentId,
-					gidouilles: action.amount,
-					operation: 'add'
-				})
+				body: JSON.stringify({ instanceId, studentId })
 			});
 
 			if (!response.ok) {
@@ -378,13 +420,23 @@
 				throw new Error(err.message || 'Échec ajout gidouilles');
 			}
 
+			const result = await response.json();
+
 			// Optimistic update cache
 			teacherCache.updateGidouillesOptimistic(classId, studentId, action.amount);
 
-			// Mark card as used
-			await markCardAsUsed(instanceId, cardName);
+			// Update VIP cards in cache (card is now marked as used by the endpoint)
+			const vipCards = getVipCards();
+			const updatedCards = {
+				...vipCards,
+				[instanceId]: {
+					...vipCards[instanceId],
+					usedAt: new Date().toISOString()
+				}
+			};
+			teacherCache.updateVipCardsOptimistic(classId, studentId, updatedCards);
 
-			toaster.success(`${action.amount} gidouilles ajoutées !`);
+			toaster.success(`${result.gidouillesAdded} gidouilles ajoutées !`);
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Erreur inconnue';
 			toaster.error(message);
@@ -591,6 +643,7 @@
 						showUseButton={teacherView}
 						hasPendingRequest={cardHasPendingRequest(card.id)}
 						onUse={() => handleUseCard(card)}
+						onApprove={() => handleApproveCard(card)}
 					/>
 				</div>
 			{/each}

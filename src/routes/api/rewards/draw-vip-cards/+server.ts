@@ -2,6 +2,8 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { drawVipCardsSchema } from '$lib/server/validation/draw-vip-cards';
 import { requireConsent, hasConsentFields } from '$lib/server/middleware/consent';
+import { requireAuth } from '$lib/server/middleware/auth';
+import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 
 /**
  * Draw multiple VIP cards for a student
@@ -49,13 +51,11 @@ import { requireConsent, hasConsentFields } from '$lib/server/middleware/consent
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	// 1. Authentication check
-	if (!locals.user) {
-		throw error(401, 'Authentication required');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	// Check consent for students (teachers/admins can draw cards without consent)
-	if (locals.profile && hasConsentFields(locals.profile)) {
-		requireConsent(locals.profile, 'earn_rewards');
+	if (hasConsentFields(profile)) {
+		requireConsent(profile, 'earn_rewards');
 	}
 
 	const supabase = locals.supabase;
@@ -71,7 +71,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const data = validation.data;
 
-		// 3. RPC call with mapped parameters (including optional filters)
+		// 3. Authorization: verify caller can draw cards for this student
+		if (user.id !== data.studentId) {
+			// Teacher/admin drawing for a student — verify access
+			const hasAccess = await verifyTeacherStudentWithRole(
+				user.id,
+				data.studentId,
+				profile,
+				supabase
+			);
+			if (!hasAccess) {
+				throw error(403, 'You can only draw cards for students in your classes');
+			}
+		}
+
+		// 4. RPC call with mapped parameters (including optional filters)
 		const { data: result, error: rpcError } = await supabase.rpc('draw_multiple_vip_cards', {
 			p_student_id: data.studentId,
 			p_count: data.count,
@@ -85,7 +99,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			p_only_cards_with_actions: data.filters?.onlyCardsWithActions ?? false
 		});
 
-		// 4. Error handling
+		// 5. Error handling
 		if (rpcError) {
 			console.error('RPC error drawing VIP cards:', rpcError);
 
@@ -94,7 +108,36 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(400, rpcError.message || 'Failed to draw VIP cards');
 		}
 
-		// 5. Success response
+		// 6. Log audit trail for VIP card payment
+		if (data.paymentMethod === 'vip_card') {
+			// Fetch the card template ID from the student's profile (card is now marked as used by the RPC)
+			const { data: studentProfile } = await supabase
+				.from('profiles')
+				.select('vip_cards')
+				.eq('id', data.studentId)
+				.single();
+
+			const vipCards = (studentProfile?.vip_cards ?? {}) as Record<string, { cardId?: string }>;
+			const cardTemplateId = vipCards[data.vipCardInstanceId]?.cardId ?? 'unknown';
+
+			const { error: activityError } = await supabase.from('vip_cards_activity').insert({
+				student_id: data.studentId,
+				card_instance_id: data.vipCardInstanceId,
+				card_template_id: cardTemplateId,
+				action: 'used' as const,
+				metadata: {
+					action_type: 'draw_cards',
+					cards_drawn: data.count,
+					filters: data.filters ?? null
+				}
+			});
+
+			if (activityError) {
+				console.error('[draw-vip-cards] Error logging activity:', activityError);
+			}
+		}
+
+		// 7. Success response
 		return json(result);
 	} catch (err) {
 		console.error('Error drawing VIP cards:', err);

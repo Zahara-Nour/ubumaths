@@ -3,52 +3,33 @@
  * =========================================
  *
  * Allows teachers to reject activation requests for VIP cards.
- * Clears the activation request fields without marking the card as used.
+ * Delegates to the reject_vip_card RPC for atomic operation + audit trail.
  *
  * POST /api/vip-cards/reject-activation
  *
  * @param instanceId - UUID of the VIP card instance
  * @param studentId - UUID of the student who requested activation
- *
- * SECURITY:
- * - Requires authentication
- * - Only teachers/admins can reject activation
- * - Teacher must teach the student (verified via RLS)
- * - Card must have a pending activation request
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
-import type { StudentVipCards } from '$lib/types/vip-card';
-import { getTemplateById } from '$lib/server/vip-card-queries';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-
-// ============================================================================
-// VALIDATION SCHEMA
-// ============================================================================
 
 const rejectActivationSchema = z.object({
 	instanceId: z.string().uuid('Invalid instance ID format'),
 	studentId: z.string().uuid('Invalid student ID format')
 });
 
-// ============================================================================
-// POST HANDLER
-// ============================================================================
-
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// Require authentication (teacher/admin)
 	const { user, profile } = await requireAuth(locals);
 	const supabase = locals.supabase;
 
-	// Verify user is teacher or admin
 	if (profile.role !== 'teacher' && profile.role !== 'admin') {
 		throw error(403, 'Only teachers can reject VIP card activations');
 	}
 
-	// Parse and validate request body
 	const body = await request.json();
 	const validation = rejectActivationSchema.safeParse(body);
 
@@ -58,73 +39,30 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const { instanceId, studentId } = validation.data;
 
-	// Verify teacher-student relationship (admins bypass this check)
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 	if (!hasAccess) {
 		throw error(403, 'You can only reject activations for students in your classes');
 	}
 
-	// Fetch student's VIP cards
-	const { data: studentProfile, error: fetchError } = await supabase
-		.from('profiles')
-		.select('vip_cards')
-		.eq('id', studentId)
-		.single();
+	const { data: result, error: rpcError } = await supabase.rpc('reject_vip_card', {
+		p_student_id: studentId,
+		p_instance_id: instanceId
+	});
 
-	if (fetchError) {
-		console.error('[reject-activation] Error fetching student profile:', fetchError);
-		throw error(500, `Failed to fetch student profile: ${fetchError.message}`);
+	if (rpcError) {
+		console.error('[reject-activation] RPC error:', rpcError);
+		throw error(500, 'Failed to reject activation');
 	}
 
-	const vipCards = (studentProfile.vip_cards || {}) as unknown as StudentVipCards;
+	const rpcResult = result as { success: boolean; error?: string; cardName?: string };
 
-	// Verify that the instance exists
-	const instance = vipCards[instanceId];
-
-	if (!instance) {
-		throw error(404, 'VIP card instance not found');
+	if (!rpcResult.success) {
+		throw error(400, rpcResult.error || 'Failed to reject activation');
 	}
 
-	// Verify that there is a pending activation request
-	if (!instance.activationRequestedAt) {
-		throw error(400, 'No pending activation request for this card');
-	}
-
-	// Get card template
-	const template = await getTemplateById(supabase, instance.cardId);
-
-	if (!template) {
-		throw error(404, 'Card definition not found');
-	}
-
-	// Update instance: clear activation request fields
-	const updatedInstance = {
-		...instance,
-		activationRequestedAt: null,
-		activationRequestedBy: null
-	};
-
-	const updatedCards = {
-		...vipCards,
-		[instanceId]: updatedInstance
-	};
-
-	// Save updated cards to database
-	const { error: updateError } = await supabase
-		.from('profiles')
-		.update({ vip_cards: updatedCards as never })
-		.eq('id', studentId);
-
-	if (updateError) {
-		console.error('[reject-activation] Error updating vip_cards:', updateError);
-		throw error(500, `Failed to reject activation: ${updateError.message}`);
-	}
-
-	// Return success
 	return json({
 		success: true,
 		message: 'Activation request rejected successfully',
-		instance: updatedInstance,
-		cardName: template.name
+		cardName: rpcResult.cardName
 	});
 };
