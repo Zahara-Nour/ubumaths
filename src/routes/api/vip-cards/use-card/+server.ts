@@ -88,11 +88,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, 'This card has already been used');
 	}
 
-	// Verify that the card is not already approved
-	if (instance.activationApprovedAt) {
-		throw error(400, 'This card has already been approved');
-	}
-
 	// Get card template from database
 	const template = await getTemplateById(locals.supabase, instance.cardId);
 
@@ -100,13 +95,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(404, 'Card definition not found');
 	}
 
-	// Approve the activation request
+	// For cards WITH an action, reject if already approved (student must activate themselves)
+	// For cards WITHOUT an action (bonus cards), allow re-entry to consume them
+	if (instance.activationApprovedAt && template.action) {
+		throw error(400, 'This card has already been approved');
+	}
+
+	// Approve and/or consume the card
 	const now = new Date().toISOString();
 	const updatedInstance = {
 		...instance,
-		activationApprovedAt: now,
-		activationApprovedBy: user.id,
-		// Cards without an action (bonus cards) are consumed immediately on approval
+		activationApprovedAt: instance.activationApprovedAt || now,
+		activationApprovedBy: instance.activationApprovedBy || user.id,
+		// Cards without an action (bonus cards) are consumed immediately
 		// since there's no student-side activation step
 		...(template.action ? {} : { usedAt: now })
 	};
@@ -125,6 +126,27 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (updateError) {
 		console.error('[use-card] Error updating vip_cards:', updateError);
 		throw error(500, `Failed to approve card: ${updateError.message}`);
+	}
+
+	// Log to vip_cards_activity for audit trail (bonus cards consumed by teacher)
+	// The trigger on profiles.vip_cards only logs 'removed'; 'used' must be logged explicitly
+	if (!template.action) {
+		const { error: activityError } = await supabase.from('vip_cards_activity').insert({
+			student_id: studentId,
+			card_instance_id: instanceId,
+			card_template_id: instance.cardId,
+			action: 'used',
+			metadata: {
+				used_by: user.id,
+				used_at: now,
+				auto_consumed: true
+			}
+		});
+
+		if (activityError) {
+			// Non-blocking: log error but don't fail the request
+			console.error('[use-card] Error logging activity:', activityError);
+		}
 	}
 
 	// Return success response
