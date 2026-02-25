@@ -318,7 +318,9 @@
 			}
 
 			// Success toast with action details
-			let message = `Carte ${result.cardName} approuvee pour ${studentName} ! L'eleve peut maintenant l'activer.`;
+			let message = result.autoConsumed
+				? `Carte ${result.cardName} approuvee et consommee pour ${studentName} !`
+				: `Carte ${result.cardName} approuvee pour ${studentName} ! L'eleve peut maintenant l'activer.`;
 			if (result.actionResult) {
 				const ar = result.actionResult;
 				if (ar.cardsDrawn) {
