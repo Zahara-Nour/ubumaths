@@ -122,7 +122,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Mark card as used FIRST via use_vip_card RPC (safer: prevents double-spend if gidouilles fails)
 	const { data: rpcResult, error: rpcError } = await supabase.rpc('use_vip_card', {
 		p_student_id: studentId,
-		p_instance_id: instanceId
+		p_instance_id: instanceId,
+		p_metadata: {
+			action_type: 'add_gidouilles',
+			gidouilles_amount: amount
+		}
 	});
 
 	if (rpcError) {

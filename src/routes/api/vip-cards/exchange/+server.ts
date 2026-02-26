@@ -15,6 +15,11 @@
  * - SELECT FOR UPDATE prevents race conditions
  * - All input validated with Zod discriminated union
  * - Marks the action card as used after successful exchange
+ *
+ * AUDIT:
+ * - Discarded cards logged atomically via discard_vip_cards RPC
+ * - Action card usage logged atomically via use_vip_card RPC
+ * - New cards logged atomically via award_vip_card_no_cost RPC
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -68,7 +73,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 	// If isStudent, authorization check will happen after fetching the card (approval required)
 
-	// Fetch student's VIP cards with row-level lock to prevent race conditions
+	// Fetch student's VIP cards for validation
 	const { data: studentProfile, error: fetchError } = await supabase
 		.from('profiles')
 		.select('vip_cards')
@@ -115,7 +120,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	switch (data.mode) {
 		case 'replace_random':
-			result = await handleReplaceRandom(supabase, data.studentId, vipCards, data.cardsToDiscard);
+			result = await handleReplaceRandom(
+				supabase,
+				data.studentId,
+				vipCards,
+				data.cardsToDiscard,
+				data.mode
+			);
 			break;
 
 		case 'rarity_points':
@@ -124,7 +135,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				data.studentId,
 				vipCards,
 				data.cardsToDiscard,
-				data.targetRarity
+				data.targetRarity,
+				data.mode
 			);
 			break;
 
@@ -134,7 +146,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				data.studentId,
 				vipCards,
 				data.cardsToDiscard,
-				data.targetCardId
+				data.targetCardId,
+				data.mode
 			);
 			break;
 
@@ -164,29 +177,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, rpcResult.error || 'Failed to mark action card as used');
 	}
 
-	// Log each discarded card individually to audit trail
-	if (result.cardsDiscarded.length > 0) {
-		const discardEntries = result.cardsDiscarded.map((card) => ({
-			student_id: data.studentId,
-			card_instance_id: card.instanceId,
-			card_template_id: card.cardId,
-			action: 'used' as const,
-			metadata: {
-				used_by: 'exchange',
-				exchange_mode: data.mode,
-				action_card_instance_id: data.actionCardInstanceId
-			}
-		}));
-
-		const { error: discardActivityError } = await supabase
-			.from('vip_cards_activity')
-			.insert(discardEntries);
-
-		if (discardActivityError) {
-			console.error('[exchange] Error logging discard activity:', discardActivityError);
-		}
-	}
-
 	// Get action card template info for response
 	const actionCardTemplate = await getTemplateById(supabase, actionCard.cardId);
 
@@ -201,6 +191,56 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 };
 
 // ============================================================================
+// HELPER: Discard cards atomically via RPC
+// ============================================================================
+
+async function discardCardsAtomically(
+	supabase: SupabaseClient,
+	studentId: string,
+	cardsToDiscard: string[],
+	vipCards: StudentVipCards,
+	exchangeMode: string
+): Promise<Array<{ cardId: string; name: string; instanceId: string }>> {
+	// Collect card info for response before discarding
+	const cardsDiscarded: Array<{ cardId: string; name: string; instanceId: string }> = [];
+
+	for (const instanceId of cardsToDiscard) {
+		const instance = vipCards[instanceId];
+		const template = await getTemplateById(supabase, instance.cardId);
+		cardsDiscarded.push({
+			cardId: instance.cardId,
+			name: template?.name || instance.cardId,
+			instanceId
+		});
+	}
+
+	// Mark all discarded cards as used + log audit atomically via RPC
+	const { data: discardResult, error: discardError } = await supabase.rpc(
+		'discard_vip_cards' as never,
+		{
+			p_student_id: studentId,
+			p_instance_ids: cardsToDiscard,
+			p_metadata: {
+				used_by: 'exchange',
+				exchange_mode: exchangeMode
+			}
+		} as never
+	);
+
+	if (discardError) {
+		console.error('[exchange] RPC discard_vip_cards error:', discardError);
+		throw error(500, `Failed to discard cards: ${discardError.message}`);
+	}
+
+	const result = discardResult as { success: boolean; error?: string };
+	if (!result.success) {
+		throw error(400, result.error || 'Failed to discard cards');
+	}
+
+	return cardsDiscarded;
+}
+
+// ============================================================================
 // EXCHANGE HANDLERS
 // ============================================================================
 
@@ -213,42 +253,21 @@ async function handleReplaceRandom(
 	supabase: SupabaseClient,
 	studentId: string,
 	vipCards: StudentVipCards,
-	cardsToDiscard: string[]
+	cardsToDiscard: string[],
+	exchangeMode: string
 ) {
 	const count = cardsToDiscard.length;
-	const cardsDiscarded: Array<{ cardId: string; name: string; instanceId: string }> = [];
 
-	// Mark selected cards as used
-	const updatedCards = { ...vipCards };
-	const now = new Date().toISOString();
+	// Discard cards atomically (RPC: mark used + audit)
+	const cardsDiscarded = await discardCardsAtomically(
+		supabase,
+		studentId,
+		cardsToDiscard,
+		vipCards,
+		exchangeMode
+	);
 
-	for (const instanceId of cardsToDiscard) {
-		const instance = updatedCards[instanceId];
-		updatedCards[instanceId] = {
-			...instance,
-			usedAt: now
-		};
-
-		const template = await getTemplateById(supabase, instance.cardId);
-		cardsDiscarded.push({
-			cardId: instance.cardId,
-			name: template?.name || instance.cardId,
-			instanceId
-		});
-	}
-
-	// Update database with discarded cards
-	const { error: updateError } = await supabase
-		.from('profiles')
-		.update({ vip_cards: updatedCards as never })
-		.eq('id', studentId);
-
-	if (updateError) {
-		console.error('[replace_random] Error updating vip_cards:', updateError);
-		throw error(500, `Failed to discard cards: ${updateError.message}`);
-	}
-
-	// Draw N new cards using RPC
+	// Draw N new cards using RPC (each call is atomic with its own audit)
 	const cardsReceived: Array<{
 		cardId: string;
 		name: string;
@@ -261,7 +280,8 @@ async function handleReplaceRandom(
 			'award_vip_card_no_cost' as never,
 			{
 				p_student_id: studentId,
-				p_card_id: null // Random card
+				p_card_id: null, // Random card
+				p_source: 'exchange'
 			} as never
 		)) as { data: string | null; error: { message: string } | null };
 
@@ -276,8 +296,7 @@ async function handleReplaceRandom(
 
 		const template = await getTemplateById(supabase, cardId);
 
-		// Generate instance ID for response (actual instance will be in DB)
-		// We need to query the DB to get the actual instance ID
+		// Get the actual instance ID from the database
 		const { data: updatedProfile } = await supabase
 			.from('profiles')
 			.select('vip_cards')
@@ -286,17 +305,17 @@ async function handleReplaceRandom(
 
 		const latestVipCards = (updatedProfile?.vip_cards || {}) as unknown as StudentVipCards;
 
-		// Find the most recent card instance with this cardId
+		// Find the most recent card instance with this cardId (not in original set)
 		const latestInstanceId = Object.keys(latestVipCards).find((id) => {
 			const inst = latestVipCards[id];
-			return inst.cardId === cardId && !updatedCards[id]; // Not in original cards
+			return inst.cardId === cardId && !vipCards[id];
 		});
 
 		cardsReceived.push({
 			cardId,
 			name: template?.name || cardId,
-			instanceId: latestInstanceId || crypto.randomUUID(), // Fallback to new UUID
-			earnedAt: now
+			instanceId: latestInstanceId || crypto.randomUUID(),
+			earnedAt: new Date().toISOString()
 		});
 	}
 
@@ -314,10 +333,9 @@ async function handleRarityPoints(
 	studentId: string,
 	vipCards: StudentVipCards,
 	cardsToDiscard: string[],
-	targetRarity: VipCardRarity
+	targetRarity: VipCardRarity,
+	exchangeMode: string
 ) {
-	const cardsDiscarded: Array<{ cardId: string; name: string; instanceId: string }> = [];
-
 	// Calculate total points from cards to discard
 	let totalPoints = 0;
 	for (const instanceId of cardsToDiscard) {
@@ -337,35 +355,14 @@ async function handleRarityPoints(
 		);
 	}
 
-	// Mark selected cards as used
-	const updatedCards = { ...vipCards };
-	const now = new Date().toISOString();
-
-	for (const instanceId of cardsToDiscard) {
-		const instance = updatedCards[instanceId];
-		updatedCards[instanceId] = {
-			...instance,
-			usedAt: now
-		};
-
-		const template = await getTemplateById(supabase, instance.cardId);
-		cardsDiscarded.push({
-			cardId: instance.cardId,
-			name: template?.name || instance.cardId,
-			instanceId
-		});
-	}
-
-	// Update database with discarded cards
-	const { error: updateError } = await supabase
-		.from('profiles')
-		.update({ vip_cards: updatedCards as never })
-		.eq('id', studentId);
-
-	if (updateError) {
-		console.error('[rarity_points] Error updating vip_cards:', updateError);
-		throw error(500, `Failed to discard cards: ${updateError.message}`);
-	}
+	// Discard cards atomically (RPC: mark used + audit)
+	const cardsDiscarded = await discardCardsAtomically(
+		supabase,
+		studentId,
+		cardsToDiscard,
+		vipCards,
+		exchangeMode
+	);
 
 	// Get random card from target rarity
 	const targetTemplates = await getTemplatesByRarity(supabase, targetRarity, true);
@@ -376,12 +373,13 @@ async function handleRarityPoints(
 
 	const randomTemplate = targetTemplates[Math.floor(Math.random() * targetTemplates.length)];
 
-	// Award the card using RPC
-	const { data: _cardId, error: rpcError } = (await supabase.rpc(
+	// Award the card using RPC (atomic with audit)
+	const { error: rpcError } = (await supabase.rpc(
 		'award_vip_card_no_cost' as never,
 		{
 			p_student_id: studentId,
-			p_card_id: randomTemplate.id
+			p_card_id: randomTemplate.id,
+			p_source: 'exchange'
 		} as never
 	)) as { data: string | null; error: { message: string } | null };
 
@@ -401,7 +399,7 @@ async function handleRarityPoints(
 
 	const latestInstanceId = Object.keys(latestVipCards).find((id) => {
 		const inst = latestVipCards[id];
-		return inst.cardId === randomTemplate.id && !updatedCards[id];
+		return inst.cardId === randomTemplate.id && !vipCards[id];
 	});
 
 	const cardsReceived = [
@@ -409,7 +407,7 @@ async function handleRarityPoints(
 			cardId: randomTemplate.id,
 			name: randomTemplate.name,
 			instanceId: latestInstanceId || crypto.randomUUID(),
-			earnedAt: now
+			earnedAt: new Date().toISOString()
 		}
 	];
 
@@ -426,52 +424,31 @@ async function handleDiscardForSpecific(
 	studentId: string,
 	vipCards: StudentVipCards,
 	cardsToDiscard: string[],
-	targetCardId: string
+	targetCardId: string,
+	exchangeMode: string
 ) {
-	const cardsDiscarded: Array<{ cardId: string; name: string; instanceId: string }> = [];
-
 	// Validate target card exists
 	const targetTemplate = await getTemplateById(supabase, targetCardId);
 	if (!targetTemplate) {
 		throw error(404, `Target card not found: ${targetCardId}`);
 	}
 
-	// Mark selected cards as used
-	const updatedCards = { ...vipCards };
-	const now = new Date().toISOString();
+	// Discard cards atomically (RPC: mark used + audit)
+	const cardsDiscarded = await discardCardsAtomically(
+		supabase,
+		studentId,
+		cardsToDiscard,
+		vipCards,
+		exchangeMode
+	);
 
-	for (const instanceId of cardsToDiscard) {
-		const instance = updatedCards[instanceId];
-		updatedCards[instanceId] = {
-			...instance,
-			usedAt: now
-		};
-
-		const template = await getTemplateById(supabase, instance.cardId);
-		cardsDiscarded.push({
-			cardId: instance.cardId,
-			name: template?.name || instance.cardId,
-			instanceId
-		});
-	}
-
-	// Update database with discarded cards
-	const { error: updateError } = await supabase
-		.from('profiles')
-		.update({ vip_cards: updatedCards as never })
-		.eq('id', studentId);
-
-	if (updateError) {
-		console.error('[discard_for_specific] Error updating vip_cards:', updateError);
-		throw error(500, `Failed to discard cards: ${updateError.message}`);
-	}
-
-	// Award the specific card using RPC
-	const { data: _cardId, error: rpcError } = (await supabase.rpc(
+	// Award the specific card using RPC (atomic with audit)
+	const { error: rpcError } = (await supabase.rpc(
 		'award_vip_card_no_cost' as never,
 		{
 			p_student_id: studentId,
-			p_card_id: targetCardId
+			p_card_id: targetCardId,
+			p_source: 'exchange'
 		} as never
 	)) as { data: string | null; error: { message: string } | null };
 
@@ -491,7 +468,7 @@ async function handleDiscardForSpecific(
 
 	const latestInstanceId = Object.keys(latestVipCards).find((id) => {
 		const inst = latestVipCards[id];
-		return inst.cardId === targetCardId && !updatedCards[id];
+		return inst.cardId === targetCardId && !vipCards[id];
 	});
 
 	const cardsReceived = [
@@ -499,7 +476,7 @@ async function handleDiscardForSpecific(
 			cardId: targetCardId,
 			name: targetTemplate.name,
 			instanceId: latestInstanceId || crypto.randomUUID(),
-			earnedAt: now
+			earnedAt: new Date().toISOString()
 		}
 	];
 

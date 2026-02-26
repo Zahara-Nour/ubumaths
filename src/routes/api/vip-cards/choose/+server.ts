@@ -260,7 +260,8 @@ async function awardChosenCards(
 			'award_vip_card_no_cost' as never,
 			{
 				p_student_id: studentId,
-				p_card_id: cardId
+				p_card_id: cardId,
+				p_source: 'choose'
 			} as never
 		)) as { data: string | null; error: { message: string } | null };
 
