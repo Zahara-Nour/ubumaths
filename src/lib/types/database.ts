@@ -13215,6 +13215,14 @@ export type Database = {
 			delete_all_resolved_errors: { Args: never; Returns: number };
 			delete_attachment: { Args: { p_attachment_id: string }; Returns: string };
 			delete_user_account: { Args: { p_user_id: string }; Returns: Json };
+			discard_vip_cards: {
+				Args: {
+					p_instance_ids: string[];
+					p_metadata?: Json;
+					p_student_id: string;
+				};
+				Returns: Json;
+			};
 			draw_multiple_vip_cards: {
 				Args: {
 					p_count: number;
@@ -14299,6 +14307,10 @@ export type Database = {
 				Args: { p_details?: string; p_message_id: string; p_reason: string };
 				Returns: string;
 			};
+			request_vip_card_activation: {
+				Args: { p_instance_id: string; p_student_id: string };
+				Returns: Json;
+			};
 			resolve_error: {
 				Args: { p_error_log_id: string; p_notes: string; p_resolved_by: string };
 				Returns: boolean;
@@ -14555,14 +14567,24 @@ export type Database = {
 				Args: { p_game_id: string; p_grid_state: Json };
 				Returns: Json;
 			};
-			use_vip_card: {
-				Args: {
-					p_card_id?: string;
-					p_instance_id?: string;
-					p_student_id: string;
-				};
-				Returns: Json;
-			};
+			use_vip_card:
+				| {
+						Args: {
+							p_card_id?: string;
+							p_instance_id?: string;
+							p_student_id: string;
+						};
+						Returns: Json;
+				  }
+				| {
+						Args: {
+							p_card_id?: string;
+							p_instance_id?: string;
+							p_metadata?: Json;
+							p_student_id: string;
+						};
+						Returns: Json;
+				  };
 			validate_1on1_chat_creation: {
 				Args: { p_user1_id: string; p_user2_id: string };
 				Returns: boolean;
