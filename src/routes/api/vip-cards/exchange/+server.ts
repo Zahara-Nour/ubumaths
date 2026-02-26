@@ -17,6 +17,7 @@
  * - Marks the action card as used after successful exchange
  *
  * AUDIT:
+ * - All entries share a unique exchange_id for full traceability
  * - Discarded cards logged atomically via discard_vip_cards RPC
  * - Action card usage logged atomically via use_vip_card RPC
  * - New cards logged atomically via award_vip_card_no_cost RPC
@@ -112,6 +113,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 	}
 
+	// Generate a unique exchange_id to correlate all audit entries
+	const exchangeId = crypto.randomUUID();
+
 	// Dispatch to appropriate exchange handler based on mode
 	let result: {
 		cardsDiscarded: Array<{ cardId: string; name: string; instanceId: string }>;
@@ -125,7 +129,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				data.studentId,
 				vipCards,
 				data.cardsToDiscard,
-				data.mode
+				data.mode,
+				exchangeId
 			);
 			break;
 
@@ -136,7 +141,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				vipCards,
 				data.cardsToDiscard,
 				data.targetRarity,
-				data.mode
+				data.mode,
+				exchangeId
 			);
 			break;
 
@@ -147,7 +153,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				vipCards,
 				data.cardsToDiscard,
 				data.targetCardId,
-				data.mode
+				data.mode,
+				exchangeId
 			);
 			break;
 
@@ -163,7 +170,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			action_type: 'exchange_cards',
 			mode: data.mode,
 			cards_discarded: result.cardsDiscarded.length,
-			cards_received: result.cardsReceived.length
+			cards_received: result.cardsReceived.length,
+			exchange_id: exchangeId
 		}
 	});
 
@@ -199,7 +207,8 @@ async function discardCardsAtomically(
 	studentId: string,
 	cardsToDiscard: string[],
 	vipCards: StudentVipCards,
-	exchangeMode: string
+	exchangeMode: string,
+	exchangeId: string
 ): Promise<Array<{ cardId: string; name: string; instanceId: string }>> {
 	// Collect card info for response before discarding
 	const cardsDiscarded: Array<{ cardId: string; name: string; instanceId: string }> = [];
@@ -222,7 +231,8 @@ async function discardCardsAtomically(
 			p_instance_ids: cardsToDiscard,
 			p_metadata: {
 				used_by: 'exchange',
-				exchange_mode: exchangeMode
+				exchange_mode: exchangeMode,
+				exchange_id: exchangeId
 			}
 		} as never
 	);
@@ -254,7 +264,8 @@ async function handleReplaceRandom(
 	studentId: string,
 	vipCards: StudentVipCards,
 	cardsToDiscard: string[],
-	exchangeMode: string
+	exchangeMode: string,
+	exchangeId: string
 ) {
 	const count = cardsToDiscard.length;
 
@@ -264,7 +275,8 @@ async function handleReplaceRandom(
 		studentId,
 		cardsToDiscard,
 		vipCards,
-		exchangeMode
+		exchangeMode,
+		exchangeId
 	);
 
 	// Draw N new cards using RPC (each call is atomic with its own audit)
@@ -281,7 +293,8 @@ async function handleReplaceRandom(
 			{
 				p_student_id: studentId,
 				p_card_id: null, // Random card
-				p_source: 'exchange'
+				p_source: 'exchange',
+				p_extra_metadata: { exchange_id: exchangeId, exchange_mode: exchangeMode }
 			} as never
 		)) as { data: string | null; error: { message: string } | null };
 
@@ -334,7 +347,8 @@ async function handleRarityPoints(
 	vipCards: StudentVipCards,
 	cardsToDiscard: string[],
 	targetRarity: VipCardRarity,
-	exchangeMode: string
+	exchangeMode: string,
+	exchangeId: string
 ) {
 	// Calculate total points from cards to discard
 	let totalPoints = 0;
@@ -361,7 +375,8 @@ async function handleRarityPoints(
 		studentId,
 		cardsToDiscard,
 		vipCards,
-		exchangeMode
+		exchangeMode,
+		exchangeId
 	);
 
 	// Get random card from target rarity
@@ -379,7 +394,8 @@ async function handleRarityPoints(
 		{
 			p_student_id: studentId,
 			p_card_id: randomTemplate.id,
-			p_source: 'exchange'
+			p_source: 'exchange',
+			p_extra_metadata: { exchange_id: exchangeId, exchange_mode: exchangeMode }
 		} as never
 	)) as { data: string | null; error: { message: string } | null };
 
@@ -425,7 +441,8 @@ async function handleDiscardForSpecific(
 	vipCards: StudentVipCards,
 	cardsToDiscard: string[],
 	targetCardId: string,
-	exchangeMode: string
+	exchangeMode: string,
+	exchangeId: string
 ) {
 	// Validate target card exists
 	const targetTemplate = await getTemplateById(supabase, targetCardId);
@@ -439,7 +456,8 @@ async function handleDiscardForSpecific(
 		studentId,
 		cardsToDiscard,
 		vipCards,
-		exchangeMode
+		exchangeMode,
+		exchangeId
 	);
 
 	// Award the specific card using RPC (atomic with audit)
@@ -448,7 +466,8 @@ async function handleDiscardForSpecific(
 		{
 			p_student_id: studentId,
 			p_card_id: targetCardId,
-			p_source: 'exchange'
+			p_source: 'exchange',
+			p_extra_metadata: { exchange_id: exchangeId, exchange_mode: exchangeMode }
 		} as never
 	)) as { data: string | null; error: { message: string } | null };
 
