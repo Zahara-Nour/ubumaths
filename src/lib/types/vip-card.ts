@@ -5,9 +5,24 @@
 import type { WarningType } from '$lib/server/warnings';
 
 /**
- * How the VIP card was acquired
+ * How the VIP card was acquired.
+ *
+ * Instance JSONB (profiles.vip_cards) values:
+ *   purchase, draw, teacher_draw, teacher_award, trade, choose, exchange
+ *
+ * Activity metadata (vip_cards_activity.metadata.acquired_from) also uses:
+ *   draw_gidouilles, draw_vip_card (more granular draw sources)
  */
-export type VipCardAcquisitionSource = 'draw' | 'purchase' | 'gift' | 'exchange';
+export type VipCardAcquisitionSource =
+	| 'purchase' // Student bought with gidouilles
+	| 'draw' // Generic random draw (legacy / award_vip_card_no_cost default)
+	| 'draw_gidouilles' // Draw paid with gidouilles (draw_multiple_vip_cards)
+	| 'draw_vip_card' // Draw paid with VIP card (draw_multiple_vip_cards)
+	| 'teacher_draw' // Teacher-initiated random draw (costs 3 gidouilles)
+	| 'teacher_award' // Teacher gave specific card for free
+	| 'trade' // Received via student-to-student trade
+	| 'choose' // Selected via choose_card action
+	| 'exchange'; // Obtained via exchange_cards action
 
 /**
  * Represents an instance of a VIP card owned by a student.
