@@ -13,8 +13,12 @@
  * SECURITY:
  * - Requires authentication
  * - Student can only request activation for their own cards
- * - Card must have an action defined
+ * - Card must have an action defined (validated by RPC)
  * - Card must not be used or already have a pending activation request
+ *
+ * ATOMICITY:
+ * - Uses request_vip_card_activation RPC with FOR UPDATE lock
+ * - Profile update + audit trail in a single transaction
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -22,8 +26,6 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
-import type { StudentVipCards, VipCardAction } from '$lib/types/vip-card';
-import { getTemplateById } from '$lib/server/vip-card-queries';
 
 // ============================================================================
 // VALIDATION SCHEMA
@@ -59,94 +61,61 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(403, 'You can only request activation for your own cards');
 	}
 
-	// Fetch student's VIP cards
-	const { data: studentData, error: fetchError } = await supabase
+	// Call atomic RPC (FOR UPDATE + audit trail in one transaction)
+	const { data: rpcResult, error: rpcError } = await supabase.rpc(
+		'request_vip_card_activation' as never,
+		{
+			p_student_id: studentId,
+			p_instance_id: instanceId
+		} as never
+	);
+
+	if (rpcError) {
+		console.error('[request-activation] RPC error:', rpcError);
+		throw error(500, `Failed to request activation: ${rpcError.message}`);
+	}
+
+	const result = rpcResult as {
+		success: boolean;
+		error?: string;
+		cardName?: string;
+		actionType?: string;
+	};
+
+	if (!result.success) {
+		// Map RPC error messages to appropriate HTTP status codes
+		const msg = result.error || 'Failed to request activation';
+		if (msg.includes('not found')) {
+			throw error(404, msg);
+		}
+		if (msg.includes('only request activation for your own')) {
+			throw error(403, msg);
+		}
+		throw error(400, msg);
+	}
+
+	// Build action description from action type returned by RPC
+	const actionDescription = result.actionType
+		? getActionDescriptionFromType(result.actionType)
+		: 'Action speciale';
+
+	// Fetch updated instance for response
+	const { data: updatedProfile } = await supabase
 		.from('profiles')
 		.select('vip_cards')
 		.eq('id', studentId)
 		.single();
 
-	if (fetchError) {
-		console.error('[request-activation] Error fetching student profile:', fetchError);
-		throw error(500, `Failed to fetch student profile: ${fetchError.message}`);
-	}
+	const updatedInstance = updatedProfile?.vip_cards
+		? (updatedProfile.vip_cards as Record<string, unknown>)[instanceId]
+		: null;
 
-	const vipCards = (studentData.vip_cards || {}) as unknown as StudentVipCards;
-
-	// Verify that the instance exists and belongs to the student
-	const instance = vipCards[instanceId];
-
-	if (!instance) {
-		throw error(404, 'VIP card instance not found');
-	}
-
-	// Verify that the card is not already used
-	if (instance.usedAt) {
-		throw error(400, 'This card has already been used');
-	}
-
-	// Verify that there is no pending activation request
-	if (instance.activationRequestedAt) {
-		throw error(400, 'Activation request already pending');
-	}
-
-	// Get card template to verify it has an action
-	const template = await getTemplateById(supabase, instance.cardId);
-
-	if (!template) {
-		throw error(404, 'Card definition not found');
-	}
-
-	if (!template.action) {
-		throw error(400, 'This card does not have an activatable action');
-	}
-
-	// Update instance with activation request
-	const updatedInstance = {
-		...instance,
-		activationRequestedAt: new Date().toISOString(),
-		activationRequestedBy: studentId
-	};
-
-	const updatedCards = {
-		...vipCards,
-		[instanceId]: updatedInstance
-	};
-
-	// Save updated cards to database
-	const { error: updateError } = await supabase
-		.from('profiles')
-		.update({ vip_cards: updatedCards as never })
-		.eq('id', studentId);
-
-	if (updateError) {
-		console.error('[request-activation] Error updating vip_cards:', updateError);
-		throw error(500, `Failed to request activation: ${updateError.message}`);
-	}
-
-	// Log activation request to vip_cards_activity for audit trail
-	const { error: activityError } = await supabase.from('vip_cards_activity').insert({
-		student_id: studentId,
-		card_instance_id: instanceId,
-		card_template_id: instance.cardId,
-		action: 'requested',
-		metadata: {
-			requested_by: studentId,
-			action_type: template.action.type
-		}
-	});
-
-	if (activityError) {
-		console.error('[request-activation] Error logging activity:', activityError);
-	}
-
-	// Return success with updated instance
 	return json({
 		success: true,
 		message: 'Activation request submitted successfully',
 		instance: updatedInstance,
-		cardName: template.name,
-		actionDescription: getActionDescription(template.action)
+		cardName: result.cardName,
+		actionDescription
 	});
 };
 
@@ -155,30 +124,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 // ============================================================================
 
 /**
- * Get human-readable description of card action
+ * Get human-readable description of card action from action type string
  */
-function getActionDescription(action: VipCardAction): string {
-	switch (action.type) {
+function getActionDescriptionFromType(actionType: string): string {
+	switch (actionType) {
 		case 'draw_cards':
-			return `Piocher ${action.count} carte${action.count > 1 ? 's' : ''} VIP`;
-
+			return 'Piocher des cartes VIP';
 		case 'remove_warnings':
-			return `Enlever ${action.count} avertissement${action.count > 1 ? 's' : ''}${action.warningType ? ` (${action.warningType})` : ''}`;
-
+			return 'Enlever des avertissements';
 		case 'exchange_cards':
-			if (action.exchange.mode === 'replace_random') {
-				const count = action.exchange.count ?? 0;
-				return `Échanger ${count} carte${count > 1 ? 's' : ''} contre de nouvelles cartes`;
-			} else if (action.exchange.mode === 'rarity_points') {
-				return `Échanger des cartes contre une carte ${action.exchange.targetRarity}`;
-			} else {
-				return `Échanger ${action.exchange.discardCount} carte${action.exchange.discardCount > 1 ? 's' : ''} contre une carte spécifique`;
-			}
-
+			return 'Echanger des cartes';
 		case 'add_gidouilles':
-			return `Gagner ${action.amount} gidouilles`;
-
+			return 'Gagner des gidouilles';
+		case 'choose_card':
+			return 'Choisir des cartes';
 		default:
-			return 'Action spéciale';
+			return 'Action speciale';
 	}
 }
