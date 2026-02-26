@@ -1016,7 +1016,8 @@ BEGIN
         END IF;
     END IF;
 
-    -- TODO: Log VIP cards traded (would need to parse card arrays from final_trade JSON)
+    -- VIP cards are handled via vip_cards_activity -> log_vip_cards_to_events trigger
+    -- (execute_trade logs 'traded'/'gained' to vip_cards_activity, which propagates here)
 
     RETURN NEW;
 END;
