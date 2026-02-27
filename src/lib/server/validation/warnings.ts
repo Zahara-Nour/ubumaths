@@ -39,6 +39,29 @@ export const addWarningSchema = z.object({
 export type AddWarningData = z.infer<typeof addWarningSchema>;
 
 // ============================================================================
+// ADD WARNINGS BULK SCHEMA
+// ============================================================================
+
+/**
+ * Schema for adding multiple warnings to a student at once
+ * Validates student_id, class_id, academic_period_id, and an array of warning_types (1-20)
+ */
+export const addWarningsBulkSchema = z.object({
+	student_id: z.string().uuid('ID élève invalide'),
+	class_id: z.string().uuid('ID classe invalide'),
+	academic_period_id: z.string().uuid('ID période académique invalide'),
+	warning_types: z
+		.array(warningTypeSchema)
+		.min(1, 'Au moins un type requis')
+		.max(20, 'Maximum 20 avertissements')
+});
+
+/**
+ * Inferred TypeScript type for bulk add warning data
+ */
+export type AddWarningsBulkData = z.infer<typeof addWarningsBulkSchema>;
+
+// ============================================================================
 // REMOVE WARNING SCHEMA
 // ============================================================================
 
