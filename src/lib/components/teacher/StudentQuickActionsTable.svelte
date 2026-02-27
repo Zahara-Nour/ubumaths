@@ -92,6 +92,7 @@
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { getTotalUnusedCards } from '$lib/utils/vip-cards';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	import { WARNING_TYPE_LABELS, type WarningType } from '$lib/types/warnings';
 
 	// ============================================================================
 	// PROPS
@@ -126,6 +127,9 @@
 
 	// Pending gidouille submissions: accumulates delta per student, sends after 500ms
 	const pendingGidouilles: Record<string, { timeoutId: number; accumulatedDelta: number }> = {};
+
+	// Warning submission queue: serializes API calls per student (no debounce - each click = 1 POST)
+	const warningQueues: Record<string, Promise<void>> = {};
 
 	// ============================================================================
 	// CACHE DATA ACCESS (Reactive via $derived)
@@ -290,7 +294,7 @@
 			// 2. Make API call
 			try {
 				// Call API endpoint to remove VIP card
-				const response = await fetch('/api/rewards/vip-cards/remove', {
+				const response = await fetch('/api/vip-cards/remove', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					credentials: 'include',
@@ -318,46 +322,9 @@
 			return;
 		}
 
-		// STEP 3: Add warning C if score ≠ 0
+		// STEP 3: Add warning C if score ≠ 0 (uses shared queue to avoid conflicts)
 		if (score !== 0) {
-			const studentId = student.id;
-
-			// 1. Instant optimistic update via cache
-			const currentWarnings = warningsMap?.get(studentId) ?? { C: 0, M: 0, R: 0, T: 0 };
-			const newWarnings: StudentWarningCounts = {
-				C: currentWarnings.C + 1,
-				M: currentWarnings.M,
-				R: currentWarnings.R,
-				T: currentWarnings.T
-			};
-
-			teacherCache.updateWarningsOptimistic(classId, periodId, studentId, newWarnings);
-
-			// 2. Make API call
-			try {
-				const response = await fetch('/api/warnings', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					credentials: 'include',
-					body: JSON.stringify({
-						student_id: studentId,
-						warning_type: 'C',
-						class_id: classId,
-						academic_period_id: periodId
-					})
-				});
-
-				if (response.ok) {
-					// Success: Cache already has correct optimistic value
-					toaster.success(`Avertissement de conduite ajouté (${student.firstname})`);
-				} else {
-					throw new Error('Failed');
-				}
-			} catch (_error) {
-				// Rollback optimistic update by restoring previous state
-				teacherCache.updateWarningsOptimistic(classId, periodId, studentId, currentWarnings);
-				toaster.error("Erreur lors de l'ajout de l'avertissement");
-			}
+			handleAddWarning(student, 'C');
 			return;
 		}
 
@@ -410,6 +377,53 @@
 					teacherCache.updateBonusOptimistic(classId, studentId, -1);
 					toaster.error("Erreur lors de l'ajout du bonus");
 				}
+			}
+		});
+	}
+
+	/**
+	 * Add a specific warning type (R, T, M) with optimistic UI and serialized API calls.
+	 * Each click = 1 API call, queued to avoid race conditions.
+	 */
+	function handleAddWarning(student: StudentData, warningType: WarningType) {
+		const studentId = student.id;
+
+		// 1. Save current state for rollback
+		const previousCounts = warningsMap?.get(studentId) ?? { C: 0, M: 0, R: 0, T: 0 };
+
+		// 2. Apply optimistic update
+		const newCounts: StudentWarningCounts = { ...previousCounts };
+		newCounts[warningType]++;
+		teacherCache.updateWarningsOptimistic(classId, periodId, studentId, newCounts);
+
+		// 3. Queue API call (serialized per student)
+		const previous = warningQueues[studentId] ?? Promise.resolve();
+		warningQueues[studentId] = previous.then(async () => {
+			try {
+				const response = await fetch('/api/warnings', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
+					body: JSON.stringify({
+						student_id: studentId,
+						warning_type: warningType,
+						class_id: classId,
+						academic_period_id: periodId
+					})
+				});
+
+				if (response.ok) {
+					toaster.success(`+${WARNING_TYPE_LABELS[warningType]} (${student.firstname})`);
+				} else {
+					throw new Error('Failed');
+				}
+			} catch {
+				// Rollback this specific increment
+				const current = warningsMap?.get(studentId) ?? { C: 0, M: 0, R: 0, T: 0 };
+				const rolledBack: StudentWarningCounts = { ...current };
+				rolledBack[warningType] = Math.max(0, rolledBack[warningType] - 1);
+				teacherCache.updateWarningsOptimistic(classId, periodId, studentId, rolledBack);
+				toaster.error("Erreur lors de l'ajout de l'avertissement");
 			}
 		});
 	}
@@ -475,6 +489,9 @@
 					</Table.Head>
 					<Table.Head class="w-[80px] text-center">
 						<Star class="mx-auto h-5 w-5 fill-amber-400 text-amber-400" />
+					</Table.Head>
+					<Table.Head class="w-[120px] text-center">
+						<span class="text-xs font-medium text-muted-foreground">+Avert.</span>
 					</Table.Head>
 					<Table.Head class="w-[80px] text-center">
 						<!-- Danger Icon -->
@@ -568,6 +585,24 @@
 									<Badge variant="outline" class="text-muted-foreground">0</Badge>
 								{/if}
 							</button>
+						</Table.Cell>
+
+						<!-- Add Warning Buttons (R, T, M) -->
+						<Table.Cell class="text-center">
+							<div class="flex items-center justify-center gap-1">
+								{#each ['R', 'T', 'M'] as type (type)}
+									<button
+										type="button"
+										onclick={() => handleAddWarning(student, type as WarningType)}
+										title="Ajouter un avertissement {WARNING_TYPE_LABELS[type as WarningType]}"
+										class="cursor-pointer transition-transform hover:scale-110 active:scale-95"
+									>
+										<Badge variant={type === 'T' ? 'destructive' : 'secondary'} class="text-xs">
+											{type}
+										</Badge>
+									</button>
+								{/each}
+							</div>
 						</Table.Cell>
 
 						<!-- Warnings Score (cliquable pour ajouter un avertissement) -->
