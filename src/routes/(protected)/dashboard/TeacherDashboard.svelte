@@ -72,10 +72,19 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Calendar, Clock, Target, BookOpen, Users, Sparkles, WandSparkles } from 'lucide-svelte';
-	import type { StudentVipCards, VipCardInstance } from '$lib/types/vip-card';
+	import {
+		Calendar,
+		Clock,
+		Target,
+		BookOpen,
+		Users,
+		Sparkles,
+		WandSparkles,
+		Gamepad2
+	} from 'lucide-svelte';
 	import Wheel from '$lib/components/Wheel.svelte';
 	import StudentQuickActionsTable from '$lib/components/teacher/StudentQuickActionsTable.svelte';
+	import VipCardUseDialog from '$lib/components/teacher/VipCardUseDialog.svelte';
 
 	// Stores & Utilities
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -197,53 +206,12 @@
 	let isLoadingPeriods = $state(false);
 
 	// ============================================================================
-	// BATMAN & ROBIN MODAL STATE
+	// VIP CARD MODAL STATE
 	// ============================================================================
 
-	/**
-	 * Batman & Robin modal visibility
-	 */
 	let batmanModalOpen = $state(false);
-
-	/**
-	 * Students who have an unused "batman" VIP card
-	 */
-	let batmanStudents = $state<
-		Array<{
-			id: string;
-			firstname: string;
-			lastname?: string;
-			avatar_url?: string;
-			cardCount: number;
-		}>
-	>([]);
-
-	/**
-	 * Loading state for Batman modal
-	 */
-	let isLoadingBatman = $state(false);
-
-	/**
-	 * Currently using a Batman card (for button loading state)
-	 */
-	let isUsingBatmanCard = $state(false);
-
-	// ============================================================================
-	// MATHÉMAGIE MODAL STATE
-	// ============================================================================
-
 	let mathemagieModalOpen = $state(false);
-	let mathemagieStudents = $state<
-		Array<{
-			id: string;
-			firstname: string;
-			lastname?: string;
-			avatar_url?: string;
-			cardCount: number;
-		}>
-	>([]);
-	let isLoadingMathemagie = $state(false);
-	let isUsingMathemagieCard = $state(false);
+	let jeuModalOpen = $state(false);
 
 	// ============================================================================
 	// CACHE HYDRATION
@@ -528,216 +496,6 @@
 	}
 
 	// ============================================================================
-	// BATMAN & ROBIN HANDLERS
-	// ============================================================================
-
-	/**
-	 * Open Batman & Robin modal
-	 * Fetches students who have an unused "batman" VIP card
-	 */
-	async function handleOpenBatman() {
-		if (!selectedClassId) {
-			toaster.error('Veuillez sélectionner une classe');
-			return;
-		}
-
-		try {
-			isLoadingBatman = true;
-			batmanModalOpen = true;
-
-			// Get rewards data from cache (should be already loaded)
-			const rewards = await teacherCache.getStudentRewards(selectedClassId);
-			const basicStudents = await teacherCache.getStudentBasic(selectedClassId);
-
-			// Find students with unused "batman" card
-			const studentsWithBatman: typeof batmanStudents = [];
-
-			for (const [studentId, studentRewards] of rewards) {
-				const vipCards = studentRewards.vip_cards as StudentVipCards | undefined;
-				if (!vipCards) continue;
-
-				// Count unused batman cards for this student
-				const batmanCardCount = Object.values(vipCards).filter((instance) => {
-					const cardInstance = instance as VipCardInstance;
-					return cardInstance.cardId === 'batman' && !cardInstance.usedAt;
-				}).length;
-
-				if (batmanCardCount > 0) {
-					const student = basicStudents.find((s) => s.id === studentId);
-					if (student) {
-						studentsWithBatman.push({
-							id: studentId,
-							firstname: student.firstname,
-							lastname: student.lastname ?? undefined,
-							avatar_url: student.avatar_url ?? undefined,
-							cardCount: batmanCardCount
-						});
-					}
-				}
-			}
-
-			batmanStudents = studentsWithBatman;
-		} catch (error) {
-			console.error('Failed to fetch Batman students:', error);
-			toaster.error('Erreur lors du chargement');
-			batmanModalOpen = false;
-		} finally {
-			isLoadingBatman = false;
-		}
-	}
-
-	/**
-	 * Use a student's Batman card
-	 */
-	async function handleUseBatmanCard(studentId: string) {
-		try {
-			isUsingBatmanCard = true;
-
-			const response = await fetch('/api/teacher/rewards/use-vip-card', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({
-					studentId,
-					cardId: 'batman' // Template ID, RPC uses FIFO to pick the oldest instance
-				})
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.message || "Erreur lors de l'utilisation de la carte");
-			}
-
-			// Decrement card count or remove student if last card
-			batmanStudents = batmanStudents
-				.map((s) => (s.id === studentId ? { ...s, cardCount: s.cardCount - 1 } : s))
-				.filter((s) => s.cardCount > 0);
-
-			// Invalidate rewards cache
-			if (selectedClassId) {
-				teacherCache.invalidateRewards(selectedClassId);
-			}
-
-			toaster.success('Carte Batman & Robin utilisée !');
-
-			// Close modal if no more students
-			if (batmanStudents.length === 0) {
-				batmanModalOpen = false;
-			}
-		} catch (error) {
-			console.error('Failed to use Batman card:', error);
-			toaster.error(error instanceof Error ? error.message : 'Erreur');
-		} finally {
-			isUsingBatmanCard = false;
-		}
-	}
-
-	/**
-	 * Close Batman modal
-	 */
-	function handleCloseBatman() {
-		batmanModalOpen = false;
-		batmanStudents = [];
-	}
-
-	// ============================================================================
-	// MATHÉMAGIE HANDLERS
-	// ============================================================================
-
-	async function handleOpenMathemagie() {
-		if (!selectedClassId) {
-			toaster.error('Veuillez sélectionner une classe');
-			return;
-		}
-
-		try {
-			isLoadingMathemagie = true;
-			mathemagieModalOpen = true;
-
-			const rewards = await teacherCache.getStudentRewards(selectedClassId);
-			const basicStudents = await teacherCache.getStudentBasic(selectedClassId);
-
-			const studentsWithMathemagie: typeof mathemagieStudents = [];
-
-			for (const [studentId, studentRewards] of rewards) {
-				const vipCards = studentRewards.vip_cards as StudentVipCards | undefined;
-				if (!vipCards) continue;
-
-				const mathemagieCardCount = Object.values(vipCards).filter((instance) => {
-					const cardInstance = instance as VipCardInstance;
-					return cardInstance.cardId === 'mathemagie' && !cardInstance.usedAt;
-				}).length;
-
-				if (mathemagieCardCount > 0) {
-					const student = basicStudents.find((s) => s.id === studentId);
-					if (student) {
-						studentsWithMathemagie.push({
-							id: studentId,
-							firstname: student.firstname,
-							lastname: student.lastname ?? undefined,
-							avatar_url: student.avatar_url ?? undefined,
-							cardCount: mathemagieCardCount
-						});
-					}
-				}
-			}
-
-			mathemagieStudents = studentsWithMathemagie;
-		} catch (error) {
-			console.error('Failed to fetch Mathémagie students:', error);
-			toaster.error('Erreur lors du chargement');
-			mathemagieModalOpen = false;
-		} finally {
-			isLoadingMathemagie = false;
-		}
-	}
-
-	async function handleUseMathemagieCard(studentId: string) {
-		try {
-			isUsingMathemagieCard = true;
-
-			const response = await fetch('/api/teacher/rewards/use-vip-card', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({
-					studentId,
-					cardId: 'mathemagie'
-				})
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.message || "Erreur lors de l'utilisation de la carte");
-			}
-
-			mathemagieStudents = mathemagieStudents
-				.map((s) => (s.id === studentId ? { ...s, cardCount: s.cardCount - 1 } : s))
-				.filter((s) => s.cardCount > 0);
-
-			if (selectedClassId) {
-				teacherCache.invalidateRewards(selectedClassId);
-			}
-
-			toaster.success('Carte Mathémagie utilisée !');
-
-			if (mathemagieStudents.length === 0) {
-				mathemagieModalOpen = false;
-			}
-		} catch (error) {
-			console.error('Failed to use Mathémagie card:', error);
-			toaster.error(error instanceof Error ? error.message : 'Erreur');
-		} finally {
-			isUsingMathemagieCard = false;
-		}
-	}
-
-	function handleCloseMathemagie() {
-		mathemagieModalOpen = false;
-		mathemagieStudents = [];
-	}
-
-	// ============================================================================
 	// REACTIVE EFFECTS
 	// ============================================================================
 
@@ -881,7 +639,7 @@
 
 					<!-- Batman & Robin -->
 					<Button
-						onclick={handleOpenBatman}
+						onclick={() => (batmanModalOpen = true)}
 						variant="secondary"
 						size="sm"
 						disabled={!selectedClassId}
@@ -892,13 +650,24 @@
 
 					<!-- Mathémagie -->
 					<Button
-						onclick={handleOpenMathemagie}
+						onclick={() => (mathemagieModalOpen = true)}
 						variant="secondary"
 						size="sm"
 						disabled={!selectedClassId}
 					>
 						<WandSparkles class="mr-2 h-4 w-4" />
 						Mathémagie
+					</Button>
+
+					<!-- Jeu -->
+					<Button
+						onclick={() => (jeuModalOpen = true)}
+						variant="secondary"
+						size="sm"
+						disabled={!selectedClassId}
+					>
+						<Gamepad2 class="mr-2 h-4 w-4" />
+						Jeu
 					</Button>
 				</div>
 			{/if}
@@ -982,148 +751,32 @@
 </Dialog.Root>
 
 <!-- ============================================================================
-     BATMAN & ROBIN MODAL
+     VIP CARD USE DIALOGS
      ============================================================================ -->
 
-<Dialog.Root bind:open={batmanModalOpen} onOpenChange={(open) => !open && handleCloseBatman()}>
-	<Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-xl">
-		<Dialog.Header>
-			<Dialog.Title class="flex items-center gap-2">
-				<Sparkles class="h-5 w-5 text-amber-500" />
-				Batman & Robin
-			</Dialog.Title>
-			<Dialog.Description>
-				Sélectionnez un élève pour utiliser sa carte VIP "Batman & Robin"
-			</Dialog.Description>
-		</Dialog.Header>
+<VipCardUseDialog
+	bind:open={batmanModalOpen}
+	cardId="batman"
+	title="Batman & Robin"
+	icon={Sparkles}
+	iconColorClass="text-amber-500"
+	classId={selectedClassId}
+/>
 
-		<div class="mt-4">
-			{#if isLoadingBatman}
-				<div class="flex flex-col items-center justify-center py-8">
-					<div class="mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-primary"></div>
-					<p class="text-sm text-muted-foreground">Recherche des élèves...</p>
-				</div>
-			{:else if batmanStudents.length === 0}
-				<div class="py-8 text-center">
-					<Sparkles class="mx-auto mb-3 h-12 w-12 text-muted-foreground/50" />
-					<p class="text-muted-foreground">Aucun élève n'a de carte "Batman & Robin" disponible.</p>
-				</div>
-			{:else}
-				<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-					{#each batmanStudents as student (student.id)}
-						<button
-							onclick={() => handleUseBatmanCard(student.id)}
-							disabled={isUsingBatmanCard}
-							class="flex w-full items-center gap-3 rounded-lg border border-border p-3 text-left transition-colors hover:bg-muted disabled:opacity-50"
-						>
-							<!-- Avatar -->
-							{#if student.avatar_url}
-								<img src={student.avatar_url} alt="" class="h-10 w-10 rounded-full object-cover" />
-							{:else}
-								<div
-									class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary"
-								>
-									{student.firstname.charAt(0)}
-								</div>
-							{/if}
-
-							<!-- Name -->
-							<div class="flex-1">
-								<p class="font-medium text-foreground">
-									{student.firstname}
-									{student.lastname || ''}
-								</p>
-								<p class="text-xs text-muted-foreground">Carte VIP disponible</p>
-							</div>
-
-							<!-- Card count badge (shown when 2+) -->
-							{#if student.cardCount >= 2}
-								<Badge variant="secondary" class="text-xs font-semibold">
-									x{student.cardCount}
-								</Badge>
-							{/if}
-
-							<!-- Action indicator -->
-							<Sparkles class="h-4 w-4 text-amber-500" />
-						</button>
-					{/each}
-				</div>
-			{/if}
-		</div>
-	</Dialog.Content>
-</Dialog.Root>
-
-<!-- ============================================================================
-     MATHÉMAGIE MODAL
-     ============================================================================ -->
-
-<Dialog.Root
+<VipCardUseDialog
 	bind:open={mathemagieModalOpen}
-	onOpenChange={(open) => !open && handleCloseMathemagie()}
->
-	<Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-xl">
-		<Dialog.Header>
-			<Dialog.Title class="flex items-center gap-2">
-				<WandSparkles class="h-5 w-5 text-purple-500" />
-				Mathémagie
-			</Dialog.Title>
-			<Dialog.Description>
-				Sélectionnez un élève pour utiliser sa carte VIP "Mathémagie"
-			</Dialog.Description>
-		</Dialog.Header>
+	cardId="mathemagie"
+	title="Mathémagie"
+	icon={WandSparkles}
+	iconColorClass="text-purple-500"
+	classId={selectedClassId}
+/>
 
-		<div class="mt-4">
-			{#if isLoadingMathemagie}
-				<div class="flex flex-col items-center justify-center py-8">
-					<div class="mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-primary"></div>
-					<p class="text-sm text-muted-foreground">Recherche des élèves...</p>
-				</div>
-			{:else if mathemagieStudents.length === 0}
-				<div class="py-8 text-center">
-					<WandSparkles class="mx-auto mb-3 h-12 w-12 text-muted-foreground/50" />
-					<p class="text-muted-foreground">Aucun élève n'a de carte "Mathémagie" disponible.</p>
-				</div>
-			{:else}
-				<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-					{#each mathemagieStudents as student (student.id)}
-						<button
-							onclick={() => handleUseMathemagieCard(student.id)}
-							disabled={isUsingMathemagieCard}
-							class="flex w-full items-center gap-3 rounded-lg border border-border p-3 text-left transition-colors hover:bg-muted disabled:opacity-50"
-						>
-							<!-- Avatar -->
-							{#if student.avatar_url}
-								<img src={student.avatar_url} alt="" class="h-10 w-10 rounded-full object-cover" />
-							{:else}
-								<div
-									class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary"
-								>
-									{student.firstname.charAt(0)}
-								</div>
-							{/if}
-
-							<!-- Name -->
-							<div class="flex-1">
-								<p class="font-medium text-foreground">
-									{student.firstname}
-									{student.lastname || ''}
-								</p>
-								<p class="text-xs text-muted-foreground">Carte VIP disponible</p>
-							</div>
-
-							<!-- Card count badge (shown when 2+) -->
-							{#if student.cardCount >= 2}
-								<Badge variant="secondary" class="text-xs font-semibold">
-									x{student.cardCount}
-								</Badge>
-							{/if}
-
-							<!-- Action indicator -->
-							<WandSparkles class="h-4 w-4 text-purple-500" />
-						</button>
-					{/each}
-				</div>
-			{/if}
-		</div>
-	</Dialog.Content>
-</Dialog.Root>
+<VipCardUseDialog
+	bind:open={jeuModalOpen}
+	cardId="jeu"
+	title="Jeu"
+	icon={Gamepad2}
+	iconColorClass="text-green-500"
+	classId={selectedClassId}
+/>
