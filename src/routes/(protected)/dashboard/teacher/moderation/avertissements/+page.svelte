@@ -94,8 +94,11 @@
 		selectedClassId ? teacherCache.getStudentsSync(selectedClassId) : []
 	);
 
-	// Warning submission queues: serializes API calls per student (each click = 1 POST)
-	const warningQueues: Record<string, Promise<void>> = {};
+	// Pending warning submissions: accumulates types per student, sends bulk after 500ms
+	const pendingWarnings: Record<
+		string,
+		{ timeoutId: number; types: Array<'C' | 'M' | 'R' | 'T'> }
+	> = {};
 
 	// Modal removed: now using RemoveWarningsModal from vip-card-modals
 
@@ -145,7 +148,14 @@
 		}
 	});
 
-	// No cleanup needed for promise queues (they complete naturally)
+	// Cleanup pending warning timers on unmount
+	$effect(() => {
+		return () => {
+			Object.values(pendingWarnings).forEach(({ timeoutId }) => {
+				clearTimeout(timeoutId);
+			});
+		};
+	});
 
 	// ============================================================================
 	// HELPER FUNCTIONS
@@ -220,8 +230,8 @@
 	// ============================================================================
 
 	/**
-	 * Add warning with optimistic UI and serialized API calls.
-	 * Each click = 1 API call, queued per student to avoid race conditions.
+	 * Add warning with optimistic UI and accumulating debounce.
+	 * Rapid clicks accumulate types, then send one bulk POST after 500ms of inactivity.
 	 */
 	function addWarning(studentId: string, warningType: string, studentName: string) {
 		if (!selectedPeriodId || !selectedClassId) {
@@ -232,50 +242,64 @@
 		// Capture current IDs (may change if user switches class/period)
 		const currentClassId = selectedClassId;
 		const currentPeriodId = selectedPeriodId;
+		const wType = warningType as 'C' | 'M' | 'R' | 'T';
 
-		// STEP 1: Apply optimistic update (increment count)
-		const previousCounts = getStudentWarnings(studentId);
-		const newCounts: StudentWarningCounts = { ...previousCounts };
-		if (warningType === 'C') newCounts.C++;
-		else if (warningType === 'M') newCounts.M++;
-		else if (warningType === 'R') newCounts.R++;
-		else if (warningType === 'T') newCounts.T++;
-
+		// 1. Instant optimistic update
+		const currentCounts = getStudentWarnings(studentId);
+		const newCounts: StudentWarningCounts = { ...currentCounts };
+		newCounts[wType]++;
 		teacherCache.updateWarningsOptimistic(currentClassId, currentPeriodId, studentId, newCounts);
 
-		// STEP 2: Queue API call (serialized per student)
-		const previous = warningQueues[studentId] ?? Promise.resolve();
-		warningQueues[studentId] = previous.then(async () => {
+		// 2. Accumulate type and reset debounce timer
+		if (pendingWarnings[studentId]) {
+			clearTimeout(pendingWarnings[studentId].timeoutId);
+			pendingWarnings[studentId].types.push(wType);
+		} else {
+			pendingWarnings[studentId] = { timeoutId: 0, types: [wType] };
+		}
+
+		// 3. Set debounced timer (500ms)
+		const timeoutId = setTimeout(async () => {
+			const accumulated = pendingWarnings[studentId].types;
+			delete pendingWarnings[studentId];
+
+			if (accumulated.length === 0) return;
+
 			try {
-				const response = await fetch('/api/warnings', {
+				const response = await fetch('/api/warnings/bulk', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						student_id: studentId,
 						class_id: currentClassId,
 						academic_period_id: currentPeriodId,
-						warning_type: warningType
+						warning_types: accumulated
 					})
 				});
 
 				if (!response.ok) {
-					throw new Error('Failed to add warning');
+					throw new Error('Failed to add warnings');
 				}
 
-				toaster.success(
-					`Avertissement ${getWarningTypeLabel(warningType)} ajouté (${studentName})`
+				const result = await response.json();
+				// Sync cache with server-confirmed counts
+				teacherCache.updateWarningsOptimistic(
+					currentClassId,
+					currentPeriodId,
+					studentId,
+					result.counts
 				);
+				const labels = accumulated.map((t) => getWarningTypeLabel(t)).join(', ');
+				toaster.success(`+${labels} (${studentName})`);
 			} catch (err) {
-				console.error('Error adding warning:', err);
+				console.error('Error adding warnings:', err);
 
-				// Rollback this specific increment
+				// Rollback all accumulated increments
 				const current = getStudentWarnings(studentId);
 				const rolledBack: StudentWarningCounts = { ...current };
-				if (warningType === 'C') rolledBack.C = Math.max(0, rolledBack.C - 1);
-				else if (warningType === 'M') rolledBack.M = Math.max(0, rolledBack.M - 1);
-				else if (warningType === 'R') rolledBack.R = Math.max(0, rolledBack.R - 1);
-				else if (warningType === 'T') rolledBack.T = Math.max(0, rolledBack.T - 1);
-
+				for (const t of accumulated) {
+					rolledBack[t] = Math.max(0, rolledBack[t] - 1);
+				}
 				teacherCache.updateWarningsOptimistic(
 					currentClassId,
 					currentPeriodId,
@@ -283,9 +307,11 @@
 					rolledBack
 				);
 
-				toaster.error("Erreur lors de l'ajout de l'avertissement");
+				toaster.error("Erreur lors de l'ajout des avertissements");
 			}
-		});
+		}, 500) as unknown as number;
+
+		pendingWarnings[studentId].timeoutId = timeoutId;
 	}
 
 	/**

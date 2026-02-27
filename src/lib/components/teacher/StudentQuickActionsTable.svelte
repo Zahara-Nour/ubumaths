@@ -128,8 +128,11 @@
 	// Pending gidouille submissions: accumulates delta per student, sends after 500ms
 	const pendingGidouilles: Record<string, { timeoutId: number; accumulatedDelta: number }> = {};
 
-	// Warning submission queue: serializes API calls per student (no debounce - each click = 1 POST)
-	const warningQueues: Record<string, Promise<void>> = {};
+	// Pending warning submissions: accumulates types per student, sends bulk after 500ms
+	const pendingWarnings: Record<
+		string,
+		{ timeoutId: number; types: Array<'C' | 'M' | 'R' | 'T'> }
+	> = {};
 
 	// ============================================================================
 	// CACHE DATA ACCESS (Reactive via $derived)
@@ -382,55 +385,76 @@
 	}
 
 	/**
-	 * Add a specific warning type (R, T, M) with optimistic UI and serialized API calls.
-	 * Each click = 1 API call, queued to avoid race conditions.
+	 * Add a warning with optimistic UI and accumulating debounce.
+	 * Rapid clicks accumulate types, then send one bulk POST after 500ms of inactivity.
 	 */
 	function handleAddWarning(student: StudentData, warningType: WarningType) {
 		const studentId = student.id;
 
-		// 1. Save current state for rollback
-		const previousCounts = warningsMap?.get(studentId) ?? { C: 0, M: 0, R: 0, T: 0 };
-
-		// 2. Apply optimistic update
-		const newCounts: StudentWarningCounts = { ...previousCounts };
+		// 1. Instant optimistic update
+		const currentCounts = warningsMap?.get(studentId) ?? { C: 0, M: 0, R: 0, T: 0 };
+		const newCounts: StudentWarningCounts = { ...currentCounts };
 		newCounts[warningType]++;
 		teacherCache.updateWarningsOptimistic(classId, periodId, studentId, newCounts);
 
-		// 3. Queue API call (serialized per student)
-		const previous = warningQueues[studentId] ?? Promise.resolve();
-		warningQueues[studentId] = previous.then(async () => {
+		// 2. Accumulate type and reset debounce timer
+		if (pendingWarnings[studentId]) {
+			clearTimeout(pendingWarnings[studentId].timeoutId);
+			pendingWarnings[studentId].types.push(warningType);
+		} else {
+			pendingWarnings[studentId] = { timeoutId: 0, types: [warningType] };
+		}
+
+		// 3. Set debounced timer (500ms)
+		const timeoutId = setTimeout(async () => {
+			const accumulated = pendingWarnings[studentId].types;
+			delete pendingWarnings[studentId];
+
+			if (accumulated.length === 0) return;
+
 			try {
-				const response = await fetch('/api/warnings', {
+				const response = await fetch('/api/warnings/bulk', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					credentials: 'include',
 					body: JSON.stringify({
 						student_id: studentId,
-						warning_type: warningType,
 						class_id: classId,
-						academic_period_id: periodId
+						academic_period_id: periodId,
+						warning_types: accumulated
 					})
 				});
 
 				if (response.ok) {
-					toaster.success(`+${WARNING_TYPE_LABELS[warningType]} (${student.firstname})`);
+					const result = await response.json();
+					// Sync cache with server-confirmed counts
+					teacherCache.updateWarningsOptimistic(classId, periodId, studentId, result.counts);
+					const labels = accumulated.map((t: WarningType) => WARNING_TYPE_LABELS[t]).join(', ');
+					toaster.success(`+${labels} (${student.firstname})`);
 				} else {
 					throw new Error('Failed');
 				}
 			} catch {
-				// Rollback this specific increment
+				// Rollback all accumulated increments
 				const current = warningsMap?.get(studentId) ?? { C: 0, M: 0, R: 0, T: 0 };
 				const rolledBack: StudentWarningCounts = { ...current };
-				rolledBack[warningType] = Math.max(0, rolledBack[warningType] - 1);
+				for (const t of accumulated) {
+					rolledBack[t] = Math.max(0, rolledBack[t] - 1);
+				}
 				teacherCache.updateWarningsOptimistic(classId, periodId, studentId, rolledBack);
-				toaster.error("Erreur lors de l'ajout de l'avertissement");
+				toaster.error("Erreur lors de l'ajout des avertissements");
 			}
-		});
+		}, 500) as unknown as number;
+
+		pendingWarnings[studentId].timeoutId = timeoutId;
 	}
 
 	// Clear pending timers on component unmount
 	onDestroy(() => {
 		Object.values(pendingGidouilles).forEach(({ timeoutId }) => {
+			clearTimeout(timeoutId);
+		});
+		Object.values(pendingWarnings).forEach(({ timeoutId }) => {
 			clearTimeout(timeoutId);
 		});
 	});

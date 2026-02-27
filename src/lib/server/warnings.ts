@@ -224,95 +224,95 @@ export async function getClassWarnings(options: {
 }
 
 /**
- * Add a warning for a student
+ * Add a warning for a student via RPC
  *
- * Inserts a new warning and returns updated counts for that student.
- * RLS policies ensure teacher owns the class and sets created_by correctly.
+ * Atomically inserts a warning and returns updated counts in a single DB call.
+ * The RPC handles: auth check, type validation, max 20 limit, advisory lock.
  *
  * @param options - Configuration object
- * @param options.studentId - Student's user ID
- * @param options.classId - Class UUID
- * @param options.periodId - Academic period UUID
- * @param options.warningType - Type of warning ('C', 'M', 'R', 'T')
- * @param options.teacherId - Teacher's user ID (for created_by)
- * @param options.supabase - Supabase client instance
  * @returns Promise resolving to updated warning counts for the student
- *
- * @example
- * const updated = await addWarning({
- *   studentId: 'student-uuid',
- *   classId: 'class-uuid',
- *   periodId: 'period-uuid',
- *   warningType: 'C',
- *   teacherId: user.id,
- *   supabase
- * });
- * console.log('New counts:', updated);
  */
 export async function addWarning(options: {
 	studentId: string;
 	classId: string;
 	periodId: string;
 	warningType: WarningType;
-	teacherId: string;
 	supabase: SupabaseClient<Database>;
 }): Promise<StudentWarningCounts> {
-	const { studentId, classId, periodId, warningType, teacherId, supabase } = options;
+	const { studentId, classId, periodId, warningType, supabase } = options;
 
-	// Validate warning type
-	if (!['C', 'M', 'R', 'T'].includes(warningType)) {
-		throw error(400, `Invalid warning type: ${warningType}. Must be C, M, R, or T.`);
-	}
-
-	// Insert warning (RLS will verify teacher owns class and set created_by)
-	// Type assertion needed until database types are regenerated after migration
-	const { data: newWarning, error: insertError } = (await supabase
-		.from('student_warnings' as never)
-		.insert({
-			student_id: studentId,
-			class_id: classId,
-			academic_period_id: periodId,
-			warning_type: warningType,
-			created_by: teacherId
-		} as never)
-		.select()
-		.single()) as {
-		data: Warning | null;
-		error: { message: string } | null;
-	};
-
-	if (insertError) {
-		console.error('[addWarning] Error inserting warning:', insertError);
-		throw error(500, `Failed to add warning: ${insertError.message}`);
-	}
-
-	if (!newWarning) {
-		console.error('[addWarning] No warning returned after insert');
-		throw error(500, 'Failed to add warning: No data returned');
-	}
-
-	// Fetch updated counts for this student
-	const warningsMap = await getClassWarnings({
-		classId,
-		periodId,
-		teacherId,
-		supabase
+	const { data, error: rpcError } = await supabase.rpc('add_warning', {
+		p_student_id: studentId,
+		p_class_id: classId,
+		p_academic_period_id: periodId,
+		p_warning_type: warningType
 	});
 
-	const updatedCounts = warningsMap.get(studentId);
-
-	if (!updatedCounts) {
-		// Should never happen, but fallback to initial state
-		console.warn('[addWarning] No counts found after insert, returning default');
-		return {
-			C: warningType === 'C' ? 1 : 0,
-			M: warningType === 'M' ? 1 : 0,
-			R: warningType === 'R' ? 1 : 0,
-			T: warningType === 'T' ? 1 : 0
-		};
+	if (rpcError) {
+		console.error('[addWarning] RPC error:', rpcError);
+		throw error(500, `Failed to add warning: ${rpcError.message}`);
 	}
 
-	return updatedCounts;
+	const result = data as { success: boolean; error?: string; counts?: StudentWarningCounts };
+
+	if (!result.success) {
+		const msg = result.error || 'Unknown error';
+		if (msg.includes('Unauthorized')) throw error(403, msg);
+		if (msg.includes('20 warnings')) throw error(409, msg);
+		throw error(400, msg);
+	}
+
+	return result.counts ?? { C: 0, M: 0, R: 0, T: 0 };
+}
+
+/**
+ * Add multiple warnings for a student in one atomic operation via RPC
+ *
+ * Inserts all warnings and returns updated counts. Enforces max 20 limit
+ * across the total (existing + new). Uses advisory lock for concurrency safety.
+ *
+ * @param options - Configuration object
+ * @returns Promise resolving to updated warning counts for the student
+ */
+export async function addWarningsBulk(options: {
+	studentId: string;
+	classId: string;
+	periodId: string;
+	warningTypes: WarningType[];
+	supabase: SupabaseClient<Database>;
+}): Promise<{ counts: StudentWarningCounts; added: number }> {
+	const { studentId, classId, periodId, warningTypes, supabase } = options;
+
+	const { data, error: rpcError } = await supabase.rpc('add_warnings_bulk', {
+		p_student_id: studentId,
+		p_class_id: classId,
+		p_academic_period_id: periodId,
+		p_warning_types: warningTypes
+	});
+
+	if (rpcError) {
+		console.error('[addWarningsBulk] RPC error:', rpcError);
+		throw error(500, `Failed to add warnings: ${rpcError.message}`);
+	}
+
+	const result = data as {
+		success: boolean;
+		error?: string;
+		counts?: StudentWarningCounts;
+		added?: number;
+	};
+
+	if (!result.success) {
+		const msg = result.error || 'Unknown error';
+		if (msg.includes('Unauthorized')) throw error(403, msg);
+		if (msg.includes('exceed 20')) throw error(409, msg);
+		throw error(400, msg);
+	}
+
+	return {
+		counts: result.counts ?? { C: 0, M: 0, R: 0, T: 0 },
+		added: result.added ?? warningTypes.length
+	};
 }
 
 /**
