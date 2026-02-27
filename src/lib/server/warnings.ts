@@ -180,14 +180,15 @@ export async function getClassWarnings(options: {
 		throw error(403, 'You do not have permission to view warnings for this class');
 	}
 
-	// Fetch all warnings for this class and period
-	// RLS policies ensure teacher can only see their own class warnings
-	// Type assertion needed until database types are regenerated after migration
+	// Fetch all ACTIVE warnings for this class and period
+	// Explicit deleted_at filter needed because RLS allows teachers to see both
+	// active and deleted warnings (for audit trail), but counts must exclude deleted.
 	const { data: warnings, error: warningsError } = (await supabase
 		.from('student_warnings' as never)
 		.select('*')
 		.eq('class_id', classId)
 		.eq('academic_period_id', periodId)
+		.is('deleted_at', null)
 		.order('created_at', { ascending: false })) as {
 		data: Warning[] | null;
 		error: { message: string } | null;
