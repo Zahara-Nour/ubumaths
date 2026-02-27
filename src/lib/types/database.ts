@@ -14322,6 +14322,15 @@ export type Database = {
 				};
 				Returns: Json;
 			};
+			remove_warnings_bulk: {
+				Args: {
+					p_academic_period_id: string;
+					p_class_id: string;
+					p_student_id: string;
+					p_warning_types: string[];
+				};
+				Returns: Json;
+			};
 			reorder_worksheet_exercises: {
 				Args: { p_exercises: Json; p_worksheet_id: string };
 				Returns: number;
