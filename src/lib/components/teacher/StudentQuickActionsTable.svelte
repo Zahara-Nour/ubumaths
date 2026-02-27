@@ -391,13 +391,17 @@
 	function handleAddWarning(student: StudentData, warningType: WarningType) {
 		const studentId = student.id;
 
-		// 1. Instant optimistic update
-		const currentCounts = warningsMap?.get(studentId) ?? { C: 0, M: 0, R: 0, T: 0 };
-		const newCounts: StudentWarningCounts = { ...currentCounts };
+		// 1. Snapshot current counts BEFORE optimistic update (for accurate rollback)
+		const snapshotCounts: StudentWarningCounts = {
+			...(warningsMap?.get(studentId) ?? { C: 0, M: 0, R: 0, T: 0 })
+		};
+
+		// 2. Instant optimistic update
+		const newCounts: StudentWarningCounts = { ...snapshotCounts };
 		newCounts[warningType]++;
 		teacherCache.updateWarningsOptimistic(classId, periodId, studentId, newCounts);
 
-		// 2. Accumulate type and reset debounce timer
+		// 3. Accumulate type and reset debounce timer
 		if (pendingWarnings[studentId]) {
 			clearTimeout(pendingWarnings[studentId].timeoutId);
 			pendingWarnings[studentId].types.push(warningType);
@@ -405,7 +409,7 @@
 			pendingWarnings[studentId] = { timeoutId: 0, types: [warningType] };
 		}
 
-		// 3. Set debounced timer (500ms)
+		// 4. Set debounced timer (500ms)
 		const timeoutId = setTimeout(async () => {
 			const accumulated = pendingWarnings[studentId].types;
 			delete pendingWarnings[studentId];
@@ -435,13 +439,8 @@
 					throw new Error('Failed');
 				}
 			} catch {
-				// Rollback all accumulated increments
-				const current = warningsMap?.get(studentId) ?? { C: 0, M: 0, R: 0, T: 0 };
-				const rolledBack: StudentWarningCounts = { ...current };
-				for (const t of accumulated) {
-					rolledBack[t] = Math.max(0, rolledBack[t] - 1);
-				}
-				teacherCache.updateWarningsOptimistic(classId, periodId, studentId, rolledBack);
+				// Rollback to pre-update snapshot (avoids reading stale cache at error-time)
+				teacherCache.updateWarningsOptimistic(classId, periodId, studentId, snapshotCounts);
 				toaster.error("Erreur lors de l'ajout des avertissements");
 			}
 		}, 500) as unknown as number;

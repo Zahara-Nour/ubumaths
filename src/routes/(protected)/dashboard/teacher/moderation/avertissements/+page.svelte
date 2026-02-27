@@ -50,7 +50,7 @@
 	import { History, AlertCircle, Plus } from 'lucide-svelte';
 	import { openRemoveWarningsModal } from '$lib/utils/vip-card-modals';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
-	import { WARNING_TYPE_LABELS, type WarningType } from '$lib/types/warnings';
+	import { getWarningTypeLabel } from '$lib/types/warnings';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
 	import { selectedPeriodStore } from '$lib/stores/selectedPeriod.svelte';
@@ -185,13 +185,6 @@
 	}
 
 	/**
-	 * Get warning type label (French)
-	 */
-	function getWarningTypeLabel(type: string): string {
-		return WARNING_TYPE_LABELS[type as WarningType] || type;
-	}
-
-	/**
 	 * Get warning counts for a student from cache
 	 *
 	 * @param studentId - The student's ID
@@ -244,13 +237,15 @@
 		const currentPeriodId = selectedPeriodId;
 		const wType = warningType as 'C' | 'M' | 'R' | 'T';
 
-		// 1. Instant optimistic update
-		const currentCounts = getStudentWarnings(studentId);
-		const newCounts: StudentWarningCounts = { ...currentCounts };
+		// 1. Snapshot current counts BEFORE optimistic update (for accurate rollback)
+		const snapshotCounts: StudentWarningCounts = { ...getStudentWarnings(studentId) };
+
+		// 2. Instant optimistic update
+		const newCounts: StudentWarningCounts = { ...snapshotCounts };
 		newCounts[wType]++;
 		teacherCache.updateWarningsOptimistic(currentClassId, currentPeriodId, studentId, newCounts);
 
-		// 2. Accumulate type and reset debounce timer
+		// 3. Accumulate type and reset debounce timer
 		if (pendingWarnings[studentId]) {
 			clearTimeout(pendingWarnings[studentId].timeoutId);
 			pendingWarnings[studentId].types.push(wType);
@@ -258,7 +253,7 @@
 			pendingWarnings[studentId] = { timeoutId: 0, types: [wType] };
 		}
 
-		// 3. Set debounced timer (500ms)
+		// 4. Set debounced timer (500ms)
 		const timeoutId = setTimeout(async () => {
 			const accumulated = pendingWarnings[studentId].types;
 			delete pendingWarnings[studentId];
@@ -269,6 +264,7 @@
 				const response = await fetch('/api/warnings/bulk', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
 					body: JSON.stringify({
 						student_id: studentId,
 						class_id: currentClassId,
@@ -294,17 +290,12 @@
 			} catch (err) {
 				console.error('Error adding warnings:', err);
 
-				// Rollback all accumulated increments
-				const current = getStudentWarnings(studentId);
-				const rolledBack: StudentWarningCounts = { ...current };
-				for (const t of accumulated) {
-					rolledBack[t] = Math.max(0, rolledBack[t] - 1);
-				}
+				// Rollback to pre-update snapshot (avoids reading stale cache at error-time)
 				teacherCache.updateWarningsOptimistic(
 					currentClassId,
 					currentPeriodId,
 					studentId,
-					rolledBack
+					snapshotCounts
 				);
 
 				toaster.error("Erreur lors de l'ajout des avertissements");

@@ -73,7 +73,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	// If VIP card provided, fetch and validate it
 	let vipCardToMark: StudentVipCards[string] | null = null;
-	let studentVipCards: StudentVipCards | null = null;
 
 	if (vipCardInstanceId) {
 		// Fetch student's VIP cards
@@ -88,7 +87,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, `Failed to fetch student profile: ${fetchError.message}`);
 		}
 
-		studentVipCards = (studentProfile.vip_cards || {}) as unknown as StudentVipCards;
+		const studentVipCards = (studentProfile.vip_cards || {}) as unknown as StudentVipCards;
 		vipCardToMark = studentVipCards[vipCardInstanceId];
 
 		if (!vipCardToMark) {
@@ -138,9 +137,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	for (const warning of warnings) {
 		try {
+			// skipCreatorCheck: this endpoint already verified authorization above
+			// (teacher teaches student OR student has approved VIP card)
 			await removeWarning({
 				warningId: warning.id,
 				teacherId: user.id,
+				skipCreatorCheck: true,
 				supabase
 			});
 			removedIds.push(warning.id);
@@ -158,48 +160,26 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, `Failed to remove any warnings: ${errors.map((e) => e.error).join(', ')}`);
 	}
 
-	// Mark VIP card as used if provided
-	if (vipCardInstanceId && vipCardToMark && studentVipCards) {
-		const now = new Date().toISOString();
-
-		// Mark card as used and clear approval metadata
-		const updatedActionCard = {
-			...vipCardToMark,
-			usedAt: now
-		};
-
-		// Clear activation request/approval fields since card is now used
-		delete (updatedActionCard as { activationRequestedAt?: string | null }).activationRequestedAt;
-		delete (updatedActionCard as { activationRequestedBy?: string | null }).activationRequestedBy;
-		delete (updatedActionCard as { activationApprovedAt?: string | null }).activationApprovedAt;
-		delete (updatedActionCard as { activationApprovedBy?: string | null }).activationApprovedBy;
-
-		studentVipCards[vipCardInstanceId] = updatedActionCard;
-
-		const { error: updateError } = await supabase
-			.from('profiles')
-			.update({ vip_cards: studentVipCards as never })
-			.eq('id', studentId);
-
-		if (updateError) {
-			console.error('[remove-multiple] Error marking VIP card as used:', updateError);
-			throw error(500, `Failed to mark VIP card as used: ${updateError.message}`);
-		}
-
-		// Log action card usage to vip_cards_activity for audit trail
-		const { error: activityError } = await supabase.from('vip_cards_activity').insert({
-			student_id: studentId,
-			card_instance_id: vipCardInstanceId,
-			card_template_id: vipCardToMark.cardId,
-			action: 'used',
-			metadata: {
+	// Mark VIP card as used atomically via RPC (FOR UPDATE + audit trail)
+	if (vipCardInstanceId && vipCardToMark) {
+		const { data: useResult, error: useError } = await supabase.rpc('use_vip_card', {
+			p_student_id: studentId,
+			p_instance_id: vipCardInstanceId,
+			p_metadata: {
 				action_type: 'remove_warnings',
 				warnings_removed: removedIds.length
 			}
 		});
 
-		if (activityError) {
-			console.error('[remove-multiple] Error logging activity:', activityError);
+		if (useError) {
+			console.error('[remove-multiple] RPC use_vip_card error:', useError);
+			throw error(500, `Failed to mark VIP card as used: ${useError.message}`);
+		}
+
+		const rpcResult = useResult as { success: boolean; error?: string };
+		if (!rpcResult.success) {
+			console.error('[remove-multiple] use_vip_card failed:', rpcResult.error);
+			throw error(500, rpcResult.error || 'Failed to mark VIP card as used');
 		}
 	}
 
