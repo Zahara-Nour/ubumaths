@@ -94,10 +94,8 @@
 		selectedClassId ? teacherCache.getStudentsSync(selectedClassId) : []
 	);
 
-	// DEBOUNCING STATE
-	// Tracks pending add operations to batch rapid clicks
-	// Key: studentId, Value: timeout ID
-	let pendingAdds = $state<Record<string, number>>({});
+	// Warning submission queues: serializes API calls per student (each click = 1 POST)
+	const warningQueues: Record<string, Promise<void>> = {};
 
 	// Modal removed: now using RemoveWarningsModal from vip-card-modals
 
@@ -147,16 +145,7 @@
 		}
 	});
 
-	/**
-	 * Cleanup pending timeouts on unmount
-	 */
-	$effect(() => {
-		return () => {
-			Object.values(pendingAdds).forEach((timeoutId) => {
-				clearTimeout(timeoutId);
-			});
-		};
-	});
+	// No cleanup needed for promise queues (they complete naturally)
 
 	// ============================================================================
 	// HELPER FUNCTIONS
@@ -231,43 +220,40 @@
 	// ============================================================================
 
 	/**
-	 * Add warning with optimistic UI and debouncing
+	 * Add warning with optimistic UI and serialized API calls.
+	 * Each click = 1 API call, queued per student to avoid race conditions.
 	 */
-	async function addWarning(studentId: string, warningType: string, studentName: string) {
+	function addWarning(studentId: string, warningType: string, studentName: string) {
 		if (!selectedPeriodId || !selectedClassId) {
 			toaster.error('Aucune période académique active');
 			return;
 		}
 
-		// STEP 1: Save current state for rollback
-		const previousCounts = getStudentWarnings(studentId);
+		// Capture current IDs (may change if user switches class/period)
+		const currentClassId = selectedClassId;
+		const currentPeriodId = selectedPeriodId;
 
-		// STEP 2: Apply optimistic update (increment count)
+		// STEP 1: Apply optimistic update (increment count)
+		const previousCounts = getStudentWarnings(studentId);
 		const newCounts: StudentWarningCounts = { ...previousCounts };
 		if (warningType === 'C') newCounts.C++;
 		else if (warningType === 'M') newCounts.M++;
 		else if (warningType === 'R') newCounts.R++;
 		else if (warningType === 'T') newCounts.T++;
 
-		teacherCache.updateWarningsOptimistic(selectedClassId, selectedPeriodId, studentId, newCounts);
+		teacherCache.updateWarningsOptimistic(currentClassId, currentPeriodId, studentId, newCounts);
 
-		// STEP 3: Clear existing timeout if any
-		if (pendingAdds[studentId]) {
-			clearTimeout(pendingAdds[studentId]);
-		}
-
-		// STEP 4: Set new timeout to sync with server after 500ms
-		const timeoutId = setTimeout(async () => {
-			delete pendingAdds[studentId];
-
+		// STEP 2: Queue API call (serialized per student)
+		const previous = warningQueues[studentId] ?? Promise.resolve();
+		warningQueues[studentId] = previous.then(async () => {
 			try {
 				const response = await fetch('/api/warnings', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						student_id: studentId,
-						class_id: selectedClassId,
-						academic_period_id: selectedPeriodId,
+						class_id: currentClassId,
+						academic_period_id: currentPeriodId,
 						warning_type: warningType
 					})
 				});
@@ -276,27 +262,30 @@
 					throw new Error('Failed to add warning');
 				}
 
-				// SUCCESS: Optimistic update already has temp Warning object
-				// Cache will naturally refresh later with real ID from server
 				toaster.success(
 					`Avertissement ${getWarningTypeLabel(warningType)} ajouté (${studentName})`
 				);
 			} catch (err) {
 				console.error('Error adding warning:', err);
 
-				// ROLLBACK: Revert to previous state
+				// Rollback this specific increment
+				const current = getStudentWarnings(studentId);
+				const rolledBack: StudentWarningCounts = { ...current };
+				if (warningType === 'C') rolledBack.C = Math.max(0, rolledBack.C - 1);
+				else if (warningType === 'M') rolledBack.M = Math.max(0, rolledBack.M - 1);
+				else if (warningType === 'R') rolledBack.R = Math.max(0, rolledBack.R - 1);
+				else if (warningType === 'T') rolledBack.T = Math.max(0, rolledBack.T - 1);
+
 				teacherCache.updateWarningsOptimistic(
-					selectedClassId,
-					selectedPeriodId,
+					currentClassId,
+					currentPeriodId,
 					studentId,
-					previousCounts
+					rolledBack
 				);
 
 				toaster.error("Erreur lors de l'ajout de l'avertissement");
 			}
-		}, 500) as unknown as number;
-
-		pendingAdds[studentId] = timeoutId;
+		});
 	}
 
 	/**
