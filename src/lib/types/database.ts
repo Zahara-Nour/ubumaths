@@ -12960,6 +12960,24 @@ export type Database = {
 				Args: { p_amount: number; p_student_id: string };
 				Returns: number;
 			};
+			add_warning: {
+				Args: {
+					p_academic_period_id: string;
+					p_class_id: string;
+					p_student_id: string;
+					p_warning_type: string;
+				};
+				Returns: Json;
+			};
+			add_warnings_bulk: {
+				Args: {
+					p_academic_period_id: string;
+					p_class_id: string;
+					p_student_id: string;
+					p_warning_types: string[];
+				};
+				Returns: Json;
+			};
 			approve_vip_card: {
 				Args: { p_instance_id: string; p_student_id: string };
 				Returns: Json;
@@ -12986,6 +13004,15 @@ export type Database = {
 				| {
 						Args: {
 							p_card_id?: string;
+							p_source?: string;
+							p_student_id: string;
+						};
+						Returns: string;
+				  }
+				| {
+						Args: {
+							p_card_id?: string;
+							p_extra_metadata?: Json;
 							p_source?: string;
 							p_student_id: string;
 						};
