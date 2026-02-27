@@ -80,7 +80,9 @@
 		Users,
 		Sparkles,
 		WandSparkles,
-		Gamepad2
+		Gamepad2,
+		LifeBuoy,
+		BrainCog
 	} from 'lucide-svelte';
 	import Wheel from '$lib/components/Wheel.svelte';
 	import StudentQuickActionsTable from '$lib/components/teacher/StudentQuickActionsTable.svelte';
@@ -212,6 +214,8 @@
 	let batmanModalOpen = $state(false);
 	let mathemagieModalOpen = $state(false);
 	let jeuModalOpen = $state(false);
+	let helpModalOpen = $state(false);
+	let memoireModalOpen = $state(false);
 
 	// ============================================================================
 	// CACHE HYDRATION
@@ -669,6 +673,28 @@
 						<Gamepad2 class="mr-2 h-4 w-4" />
 						Jeu
 					</Button>
+
+					<!-- Help ! -->
+					<Button
+						onclick={() => (helpModalOpen = true)}
+						variant="secondary"
+						size="sm"
+						disabled={!selectedClassId}
+					>
+						<LifeBuoy class="mr-2 h-4 w-4" />
+						Help !
+					</Button>
+
+					<!-- Trou de mémoire -->
+					<Button
+						onclick={() => (memoireModalOpen = true)}
+						variant="secondary"
+						size="sm"
+						disabled={!selectedClassId}
+					>
+						<BrainCog class="mr-2 h-4 w-4" />
+						Trou de mémoire
+					</Button>
 				</div>
 			{/if}
 		</div>
@@ -778,5 +804,23 @@
 	title="Jeu"
 	icon={Gamepad2}
 	iconColorClass="text-green-500"
+	classId={selectedClassId}
+/>
+
+<VipCardUseDialog
+	bind:open={helpModalOpen}
+	cardId="help"
+	title="Help !"
+	icon={LifeBuoy}
+	iconColorClass="text-red-500"
+	classId={selectedClassId}
+/>
+
+<VipCardUseDialog
+	bind:open={memoireModalOpen}
+	cardId="memoire"
+	title="Trou de mémoire"
+	icon={BrainCog}
+	iconColorClass="text-blue-500"
 	classId={selectedClassId}
 />
