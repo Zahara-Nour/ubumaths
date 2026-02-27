@@ -318,6 +318,55 @@ export async function addWarningsBulk(options: {
 }
 
 /**
+ * Remove multiple warnings for a student in one atomic operation via RPC
+ *
+ * Soft-deletes the most recent active warning for each type in the array.
+ * Uses advisory lock for concurrency safety. Skips types with no active warnings.
+ *
+ * @param options - Configuration object
+ * @returns Promise resolving to updated warning counts and number removed
+ */
+export async function removeWarningsBulk(options: {
+	studentId: string;
+	classId: string;
+	periodId: string;
+	warningTypes: WarningType[];
+	supabase: SupabaseClient<Database>;
+}): Promise<{ counts: StudentWarningCounts; removed: number }> {
+	const { studentId, classId, periodId, warningTypes, supabase } = options;
+
+	const { data, error: rpcError } = await supabase.rpc('remove_warnings_bulk', {
+		p_student_id: studentId,
+		p_class_id: classId,
+		p_academic_period_id: periodId,
+		p_warning_types: warningTypes
+	});
+
+	if (rpcError) {
+		console.error('[removeWarningsBulk] RPC error:', rpcError);
+		throw error(500, `Failed to remove warnings: ${rpcError.message}`);
+	}
+
+	const result = data as {
+		success: boolean;
+		error?: string;
+		counts?: StudentWarningCounts;
+		removed?: number;
+	};
+
+	if (!result.success) {
+		const msg = result.error || 'Unknown error';
+		if (msg.includes('Unauthorized')) throw error(403, msg);
+		throw error(400, msg);
+	}
+
+	return {
+		counts: result.counts ?? { C: 0, M: 0, R: 0, T: 0 },
+		removed: result.removed ?? warningTypes.length
+	};
+}
+
+/**
  * Remove a warning by ID
  *
  * Deletes a warning and returns updated counts for the affected student.
