@@ -253,6 +253,7 @@ export async function addWarning(options: {
 		throw error(500, `Failed to add warning: ${rpcError.message}`);
 	}
 
+	// RPC returns JSON; Supabase types it as `unknown` so we cast to our known shape
 	const result = data as { success: boolean; error?: string; counts?: StudentWarningCounts };
 
 	if (!result.success) {
@@ -272,7 +273,7 @@ export async function addWarning(options: {
  * across the total (existing + new). Uses advisory lock for concurrency safety.
  *
  * @param options - Configuration object
- * @returns Promise resolving to updated warning counts for the student
+ * @returns Promise resolving to updated warning counts and number added
  */
 export async function addWarningsBulk(options: {
 	studentId: string;
@@ -295,6 +296,7 @@ export async function addWarningsBulk(options: {
 		throw error(500, `Failed to add warnings: ${rpcError.message}`);
 	}
 
+	// RPC returns JSON; Supabase types it as `unknown` so we cast to our known shape
 	const result = data as {
 		success: boolean;
 		error?: string;
@@ -319,24 +321,21 @@ export async function addWarningsBulk(options: {
  * Remove a warning by ID
  *
  * Deletes a warning and returns updated counts for the affected student.
- * RLS policies ensure teacher created the warning and owns the class.
+ * By default, verifies the caller created the warning (created_by check).
+ * Set skipCreatorCheck when the caller has already verified authorization
+ * (e.g. remove-multiple endpoint handles its own teacher/student auth).
  *
  * @param options - Configuration object
  * @param options.warningId - Warning UUID to delete
- * @param options.teacherId - Teacher's user ID (for RLS verification)
+ * @param options.teacherId - Caller's user ID (used for creator check and RLS)
+ * @param options.skipCreatorCheck - Skip created_by === teacherId verification
  * @param options.supabase - Supabase client instance
- * @returns Promise resolving to { studentId, updatedCounts }
- *
- * @example
- * const result = await removeWarning({
- *   warningId: 'warning-uuid',
- *   teacherId: user.id,
- *   supabase
- * });
+ * @returns Promise resolving to { studentId, classId, periodId, updatedCounts }
  */
 export async function removeWarning(options: {
 	warningId: string;
 	teacherId: string;
+	skipCreatorCheck?: boolean;
 	supabase: SupabaseClient<Database>;
 }): Promise<{
 	studentId: string;
@@ -344,10 +343,9 @@ export async function removeWarning(options: {
 	periodId: string;
 	updatedCounts: StudentWarningCounts;
 }> {
-	const { warningId, teacherId, supabase } = options;
+	const { warningId, teacherId, skipCreatorCheck = false, supabase } = options;
 
-	// Fetch warning first to get student_id, class_id, period_id before deletion
-	// Type assertion needed until database types are regenerated after migration
+	// Fetch warning to get student_id, class_id, period_id before deletion
 	const { data: warning, error: fetchError } = (await supabase
 		.from('student_warnings' as never)
 		.select('student_id, class_id, academic_period_id, created_by')
@@ -372,20 +370,17 @@ export async function removeWarning(options: {
 		throw error(404, 'Warning not found');
 	}
 
-	// Verify teacher created this warning
-	if (warning.created_by !== teacherId) {
-		console.error('[removeWarning] Teacher did not create this warning');
+	// Verify caller created this warning (unless caller already checked auth)
+	if (!skipCreatorCheck && warning.created_by !== teacherId) {
+		console.error('[removeWarning] Caller did not create this warning');
 		throw error(403, 'You can only delete warnings you created');
 	}
 
-	// Delete warning (RLS will double-check teacher owns class)
-	// Type assertion needed until database types are regenerated after migration
+	// Delete warning by ID (RLS provides additional class ownership check)
 	const { error: deleteError } = (await supabase
 		.from('student_warnings' as never)
 		.delete()
-		.eq('id', warningId)
-		.eq('created_by', teacherId)) as {
-		// Extra safety check
+		.eq('id', warningId)) as {
 		error: { message: string } | null;
 	};
 
