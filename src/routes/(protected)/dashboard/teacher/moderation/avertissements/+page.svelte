@@ -48,7 +48,6 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { History, AlertCircle, Plus } from 'lucide-svelte';
-	import { openRemoveWarningsModal } from '$lib/utils/vip-card-modals';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
 	import { getWarningTypeLabel } from '$lib/types/warnings';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
@@ -100,7 +99,11 @@
 		{ timeoutId: number; types: Array<'C' | 'M' | 'R' | 'T'> }
 	> = {};
 
-	// Modal removed: now using RemoveWarningsModal from vip-card-modals
+	// Pending warning removals: accumulates types per student, sends bulk after 500ms
+	const pendingRemovals: Record<
+		string,
+		{ timeoutId: number; types: Array<'C' | 'M' | 'R' | 'T'> }
+	> = {};
 
 	// ============================================================================
 	// COMPUTED VALUES
@@ -152,6 +155,9 @@
 	$effect(() => {
 		return () => {
 			Object.values(pendingWarnings).forEach(({ timeoutId }) => {
+				clearTimeout(timeoutId);
+			});
+			Object.values(pendingRemovals).forEach(({ timeoutId }) => {
 				clearTimeout(timeoutId);
 			});
 		};
@@ -306,23 +312,89 @@
 	}
 
 	/**
-	 * Remove warning using RemoveWarningsModal
-	 * Opens modal that shows exactly which warning will be removed
+	 * Remove warning with optimistic UI and accumulating debounce.
+	 * Rapid clicks accumulate types, then send one bulk POST after 500ms of inactivity.
+	 * Mirrors addWarning pattern but calls /api/warnings/remove-bulk.
 	 */
 	function handleRemoveWarning(studentId: string, studentName: string, warningType: string) {
-		if (!selectedClassId || !selectedPeriodId) return;
+		if (!selectedPeriodId || !selectedClassId) {
+			toaster.error('Aucune période académique active');
+			return;
+		}
 
-		// Open RemoveWarningsModal - will load warnings via API and show user which one will be removed
-		openRemoveWarningsModal({
-			studentId,
-			classId: selectedClassId,
-			periodId: selectedPeriodId,
-			count: 1, // Remove 1 warning
-			warningType: warningType as 'C' | 'M' | 'R' | 'T',
-			studentName
-			// No preloadedWarnings - modal will fetch them
-			// No onComplete - optimistic UI handled by modal
-		});
+		const currentClassId = selectedClassId;
+		const currentPeriodId = selectedPeriodId;
+		const wType = warningType as 'C' | 'M' | 'R' | 'T';
+
+		// 1. Snapshot current counts BEFORE optimistic update (for accurate rollback)
+		const snapshotCounts: StudentWarningCounts = { ...getStudentWarnings(studentId) };
+
+		// Skip if count already 0
+		if (snapshotCounts[wType] <= 0) return;
+
+		// 2. Instant optimistic update (decrement)
+		const newCounts: StudentWarningCounts = { ...snapshotCounts };
+		newCounts[wType]--;
+		teacherCache.updateWarningsOptimistic(currentClassId, currentPeriodId, studentId, newCounts);
+
+		// 3. Accumulate type and reset debounce timer
+		if (pendingRemovals[studentId]) {
+			clearTimeout(pendingRemovals[studentId].timeoutId);
+			pendingRemovals[studentId].types.push(wType);
+		} else {
+			pendingRemovals[studentId] = { timeoutId: 0, types: [wType] };
+		}
+
+		// 4. Set debounced timer (500ms)
+		const timeoutId = setTimeout(async () => {
+			const accumulated = pendingRemovals[studentId].types;
+			delete pendingRemovals[studentId];
+
+			if (accumulated.length === 0) return;
+
+			try {
+				const response = await fetch('/api/warnings/remove-bulk', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
+					body: JSON.stringify({
+						student_id: studentId,
+						class_id: currentClassId,
+						academic_period_id: currentPeriodId,
+						warning_types: accumulated
+					})
+				});
+
+				if (!response.ok) {
+					throw new Error('Failed to remove warnings');
+				}
+
+				const result = await response.json();
+				// Sync cache with server-confirmed counts
+				teacherCache.updateWarningsOptimistic(
+					currentClassId,
+					currentPeriodId,
+					studentId,
+					result.counts
+				);
+				const labels = accumulated.map((t) => getWarningTypeLabel(t)).join(', ');
+				toaster.success(`-${labels} (${studentName})`);
+			} catch (err) {
+				console.error('Error removing warnings:', err);
+
+				// Rollback to pre-update snapshot
+				teacherCache.updateWarningsOptimistic(
+					currentClassId,
+					currentPeriodId,
+					studentId,
+					snapshotCounts
+				);
+
+				toaster.error('Erreur lors de la suppression des avertissements');
+			}
+		}, 500) as unknown as number;
+
+		pendingRemovals[studentId].timeoutId = timeoutId;
 	}
 
 	/**

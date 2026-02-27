@@ -79,6 +79,29 @@ export const removeWarningSchema = z.object({
 export type RemoveWarningData = z.infer<typeof removeWarningSchema>;
 
 // ============================================================================
+// REMOVE WARNINGS BULK SCHEMA
+// ============================================================================
+
+/**
+ * Schema for removing multiple warnings for a student at once (soft-delete)
+ * Validates student_id, class_id, academic_period_id, and an array of warning_types (1-20)
+ */
+export const removeWarningsBulkSchema = z.object({
+	student_id: z.string().uuid('ID élève invalide'),
+	class_id: z.string().uuid('ID classe invalide'),
+	academic_period_id: z.string().uuid('ID période académique invalide'),
+	warning_types: z
+		.array(warningTypeSchema)
+		.min(1, 'Au moins un type requis')
+		.max(20, 'Maximum 20 avertissements')
+});
+
+/**
+ * Inferred TypeScript type for bulk remove warning data
+ */
+export type RemoveWarningsBulkData = z.infer<typeof removeWarningsBulkSchema>;
+
+// ============================================================================
 // GET WARNINGS SCHEMA
 // ============================================================================
 
