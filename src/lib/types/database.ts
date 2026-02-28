@@ -9926,6 +9926,7 @@ export type Database = {
 					created_by: string;
 					deleted_at: string | null;
 					deleted_by: string | null;
+					deletion_context: Json | null;
 					id: string;
 					student_id: string;
 					updated_at: string | null;
@@ -9938,6 +9939,7 @@ export type Database = {
 					created_by: string;
 					deleted_at?: string | null;
 					deleted_by?: string | null;
+					deletion_context?: Json | null;
 					id?: string;
 					student_id: string;
 					updated_at?: string | null;
@@ -9950,6 +9952,7 @@ export type Database = {
 					created_by?: string;
 					deleted_at?: string | null;
 					deleted_by?: string | null;
+					deletion_context?: Json | null;
 					id?: string;
 					student_id?: string;
 					updated_at?: string | null;
@@ -14326,6 +14329,7 @@ export type Database = {
 				Args: {
 					p_academic_period_id: string;
 					p_class_id: string;
+					p_deletion_context?: Json;
 					p_student_id: string;
 					p_warning_types: string[];
 				};
