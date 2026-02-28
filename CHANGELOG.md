@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.18](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.17...v0.8.18) (2026-02-28)
+
+### 🐛 Bug Fixes
+
+- **vip-cards:** drop 3-arg award_vip_card_no_cost overload causing PGRST203 ([ddf6bcf](https://github.com/Zahara-Nour/ubumaths/commit/ddf6bcf21d746f75cde701364e25f9b509a510ad))
+- **vip-cards:** exclude action card from exchange discard selection ([0c431ea](https://github.com/Zahara-Nour/ubumaths/commit/0c431ea7a75058edee42c542be38755252d2e349))
+
 ### [0.8.17](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.16...v0.8.17) (2026-02-28)
 
 ### 📚 Documentation
