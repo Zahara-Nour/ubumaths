@@ -81,7 +81,7 @@
 					>
 				</div>
 				{#if event.item_name}
-					<Badge variant="outline" class="max-w-16 truncate text-[10px] leading-tight">
+					<Badge variant="outline" class="max-w-16 truncate text-xs">
 						{event.item_name}
 					</Badge>
 				{/if}
@@ -98,7 +98,7 @@
 					<span class="text-sm leading-none font-bold">!</span>
 				</div>
 				{#if event.item_name}
-					<Badge variant="outline" class="text-[10px] leading-tight">
+					<Badge variant="outline" class="text-xs">
 						{event.item_name}
 					</Badge>
 				{/if}
