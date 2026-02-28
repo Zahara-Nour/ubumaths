@@ -81,7 +81,7 @@
 					>
 				</div>
 				{#if event.item_name}
-					<Badge variant="outline" class="max-w-16 truncate text-xs">
+					<Badge variant="outline" class="text-xs">
 						{event.item_name}
 					</Badge>
 				{/if}
