@@ -14670,7 +14670,7 @@ export type Database = {
 				| 'purchased'
 				| 'awarded'
 				| 'removed';
-			reward_type: 'gidouilles' | 'bonus' | 'vip_card' | 'achievement' | 'item';
+			reward_type: 'gidouilles' | 'bonus' | 'vip_card' | 'achievement' | 'item' | 'warning';
 			user_role: 'student' | 'teacher' | 'admin';
 			user_status: 'pending' | 'approved' | 'rejected';
 			whiteboard_template_category: 'geometry' | 'algebra' | 'graphs' | 'grids' | 'blank';
@@ -14813,7 +14813,7 @@ export const Constants = {
 				'awarded',
 				'removed'
 			],
-			reward_type: ['gidouilles', 'bonus', 'vip_card', 'achievement', 'item'],
+			reward_type: ['gidouilles', 'bonus', 'vip_card', 'achievement', 'item', 'warning'],
 			user_role: ['student', 'teacher', 'admin'],
 			user_status: ['pending', 'approved', 'rejected'],
 			whiteboard_template_category: ['geometry', 'algebra', 'graphs', 'grids', 'blank']

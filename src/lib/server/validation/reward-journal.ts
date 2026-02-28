@@ -15,7 +15,14 @@ import { z } from 'zod';
 /**
  * Reward type enum matching database enum
  */
-export const rewardTypeSchema = z.enum(['gidouilles', 'bonus', 'vip_card', 'achievement', 'item']);
+export const rewardTypeSchema = z.enum([
+	'gidouilles',
+	'bonus',
+	'vip_card',
+	'achievement',
+	'item',
+	'warning'
+]);
 
 /**
  * Reward event type enum matching database enum

@@ -16,7 +16,7 @@ import type { Json } from './database';
 /**
  * Types of rewards tracked in the system
  */
-export type RewardType = 'gidouilles' | 'bonus' | 'vip_card' | 'achievement' | 'item';
+export type RewardType = 'gidouilles' | 'bonus' | 'vip_card' | 'achievement' | 'item' | 'warning';
 
 /**
  * Types of events that can occur for rewards
