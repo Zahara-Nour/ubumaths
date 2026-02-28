@@ -108,34 +108,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(400, rpcError.message || 'Failed to draw VIP cards');
 		}
 
-		// 6. Log audit trail for VIP card payment
-		if (data.paymentMethod === 'vip_card') {
-			// Fetch the card template ID from the student's profile (card is now marked as used by the RPC)
-			const { data: studentProfile } = await supabase
-				.from('profiles')
-				.select('vip_cards')
-				.eq('id', data.studentId)
-				.single();
-
-			const vipCards = (studentProfile?.vip_cards ?? {}) as Record<string, { cardId?: string }>;
-			const cardTemplateId = vipCards[data.vipCardInstanceId]?.cardId ?? 'unknown';
-
-			const { error: activityError } = await supabase.from('vip_cards_activity').insert({
-				student_id: data.studentId,
-				card_instance_id: data.vipCardInstanceId,
-				card_template_id: cardTemplateId,
-				action: 'used' as const,
-				metadata: {
-					action_type: 'draw_cards',
-					cards_drawn: data.count,
-					filters: data.filters ?? null
-				}
-			});
-
-			if (activityError) {
-				console.error('[draw-vip-cards] Error logging activity:', activityError);
-			}
-		}
+		// 6. Audit trail for VIP card payment is now handled atomically
+		// inside the draw_multiple_vip_cards RPC (no separate INSERT needed)
 
 		// 7. Success response
 		return json(result);
