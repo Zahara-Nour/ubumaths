@@ -65,43 +65,29 @@
 
 <Card.Root class="transition-shadow hover:shadow-md">
 	<Card.Content class="flex items-center gap-3 px-4 py-2.5">
-		<!-- Icon + optional type badge below -->
+		<!-- Icon -->
 		{#if event.reward_type === 'gidouilles'}
 			<div class="flex h-8 w-8 shrink-0 items-center justify-center">
 				<img src={gidouilleImg} alt="Gidouille" class="h-6 w-6" />
 			</div>
 		{:else if event.reward_type === 'vip_card'}
-			<div class="flex shrink-0 flex-col items-center gap-1">
-				<div
-					class="flex h-8 w-6 items-center justify-center overflow-hidden rounded-sm border border-amber-400 bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 shadow-sm"
+			<div
+				class="flex h-8 w-6 shrink-0 items-center justify-center overflow-hidden rounded-sm border border-amber-400 bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 shadow-sm"
+			>
+				<span
+					class="text-[8px] font-black tracking-tight text-white"
+					style="text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.3)">VIP</span
 				>
-					<span
-						class="text-[8px] font-black tracking-tight text-white"
-						style="text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.3)">VIP</span
-					>
-				</div>
-				{#if event.item_name}
-					<Badge variant="outline" class="text-xs">
-						{event.item_name}
-					</Badge>
-				{/if}
 			</div>
 		{:else if event.reward_type === 'bonus'}
 			<div class="flex h-8 w-8 shrink-0 items-center justify-center">
 				<Star class="h-6 w-6 fill-amber-400 text-amber-400" />
 			</div>
 		{:else if event.reward_type === 'warning'}
-			<div class="flex shrink-0 flex-col items-center gap-1">
-				<div
-					class="flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-white shadow-sm"
-				>
-					<span class="text-sm leading-none font-bold">!</span>
-				</div>
-				{#if event.item_name}
-					<Badge variant="outline" class="text-xs">
-						{event.item_name}
-					</Badge>
-				{/if}
+			<div
+				class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-red-500 text-white shadow-sm"
+			>
+				<span class="text-sm leading-none font-bold">!</span>
 			</div>
 		{:else if LucideIcon}
 			<div
@@ -113,14 +99,12 @@
 
 		<!-- Content -->
 		<div class="min-w-0 flex-1">
-			<div class="flex flex-wrap items-center gap-1.5">
-				{#if event.item_name && event.reward_type !== 'warning' && event.reward_type !== 'vip_card'}
-					<Badge variant="outline" class="text-xs">
-						{event.item_name}
-					</Badge>
-				{/if}
-				<span class="text-sm text-foreground">{event.description}</span>
-			</div>
+			{#if event.item_name}
+				<Badge variant="outline" class="mb-1 text-xs">
+					{event.item_name}
+				</Badge>
+			{/if}
+			<p class="text-sm text-foreground">{event.description}</p>
 		</div>
 
 		<!-- Right side: amount and date -->
