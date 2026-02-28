@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import type { RewardEvent, RewardType, RewardEventType } from '$lib/types/reward-journal';
+	import type { RewardEvent, RewardType } from '$lib/types/reward-journal';
 	import { cn } from '$lib/utils';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
@@ -25,32 +25,6 @@
 		item: Package
 	};
 
-	// Color mapping by event_type
-	const eventTypeColors: Record<RewardEventType, string> = {
-		earned: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-		spent: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-		traded: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-		used: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-		expired: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
-		unlocked: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-		purchased: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-		awarded: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
-		removed: 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400'
-	};
-
-	// French labels for event types
-	const eventTypeLabels: Record<RewardEventType, string> = {
-		earned: 'Gagn\u00e9',
-		spent: 'D\u00e9pens\u00e9',
-		traded: '\u00c9chang\u00e9',
-		used: 'Utilis\u00e9',
-		expired: 'Expir\u00e9',
-		unlocked: 'D\u00e9bloqu\u00e9',
-		purchased: 'Achet\u00e9',
-		awarded: 'Attribu\u00e9',
-		removed: 'Retir\u00e9'
-	};
-
 	// Icon background colors by reward_type (only for lucide icon types)
 	const iconBgColors: Partial<Record<RewardType, string>> = {
 		achievement: 'bg-blue-100 dark:bg-blue-900/30',
@@ -65,8 +39,6 @@
 
 	// Computed values
 	let LucideIcon = $derived(lucideIconMap[event.reward_type]);
-	let eventTypeColor = $derived(eventTypeColors[event.event_type]);
-	let eventTypeLabel = $derived(eventTypeLabels[event.event_type]);
 	let iconBgColor = $derived(iconBgColors[event.reward_type] ?? '');
 	let iconColor = $derived(iconColors[event.reward_type] ?? '');
 
@@ -76,15 +48,13 @@
 	);
 
 	// Amount display logic
-	let showAmount = $derived(
-		event.amount !== null && (event.reward_type === 'gidouilles' || event.reward_type === 'bonus')
-	);
-
 	let isPositiveAmount = $derived(
 		event.event_type === 'earned' ||
 			event.event_type === 'awarded' ||
 			event.event_type === 'unlocked'
 	);
+
+	let displayAmount = $derived(Math.abs(event.amount ?? 1));
 
 	let amountClass = $derived(
 		isPositiveAmount ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
@@ -130,26 +100,23 @@
 		<!-- Content -->
 		<div class="min-w-0 flex-1">
 			<div class="flex flex-wrap items-center gap-1.5">
-				<Badge class={cn('text-xs', eventTypeColor)} variant="secondary">
-					{eventTypeLabel}
-				</Badge>
 				{#if event.item_name}
 					<Badge variant="outline" class="text-xs">
 						{event.item_name}
 					</Badge>
 				{/if}
 				<span class="text-sm text-foreground">{event.description}</span>
-				<span class="text-xs text-muted-foreground">{formattedDate}</span>
 			</div>
 		</div>
 
-		<!-- Amount (for gidouilles/bonus) -->
-		{#if showAmount}
-			<div class={cn('shrink-0 text-right font-bold', amountClass)}>
+		<!-- Right side: amount and date -->
+		<div class="shrink-0 text-right">
+			<div class={cn('font-bold', amountClass)}>
 				<span class="text-base">
-					{amountPrefix}{Math.abs(event.amount ?? 0)}
+					{amountPrefix}{displayAmount}
 				</span>
 			</div>
-		{/if}
+			<span class="text-xs text-muted-foreground">{formattedDate}</span>
+		</div>
 	</Card.Content>
 </Card.Root>
