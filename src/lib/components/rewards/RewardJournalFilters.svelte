@@ -11,7 +11,7 @@
 	import type { RewardType } from '$lib/types/reward-journal';
 	import { cn } from '$lib/utils';
 	import { Button } from '$lib/components/ui/button';
-	import { Coins, Star, Crown, Trophy, Package, X } from 'lucide-svelte';
+	import { Coins, Star, Crown, Trophy, Package, AlertTriangle, X } from 'lucide-svelte';
 
 	// Props
 	let {
@@ -33,7 +33,8 @@
 		{ value: 'bonus', label: 'Bonus', icon: Star },
 		{ value: 'vip_card', label: 'Cartes VIP', icon: Crown },
 		{ value: 'achievement', label: 'Succ\u00e8s', icon: Trophy },
-		{ value: 'item', label: 'Objets', icon: Package }
+		{ value: 'item', label: 'Objets', icon: Package },
+		{ value: 'warning', label: 'Avertissements', icon: AlertTriangle }
 	];
 
 	// Handle filter selection
