@@ -177,6 +177,7 @@ interface RemoveWarningsOptions {
 	count: number;
 	warningType?: 'C' | 'M' | 'R' | 'T';
 	studentName?: string;
+	cardName?: string;
 	onComplete?: () => void;
 }
 
@@ -218,7 +219,8 @@ export function openRemoveWarningsModal(options: RemoveWarningsOptions): string 
 			periodId: options.periodId,
 			count: options.count,
 			warningType: options.warningType,
-			studentName: options.studentName
+			studentName: options.studentName,
+			cardName: options.cardName
 		},
 		canDismiss: true,
 		onReturn: options.onComplete

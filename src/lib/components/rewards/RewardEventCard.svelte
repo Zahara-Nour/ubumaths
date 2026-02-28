@@ -71,6 +71,20 @@
 
 		// Warning removed: indicate source
 		if (event.event_type === 'removed') {
+			// New events have deletion_context in metadata
+			const metadata = event.metadata as Record<string, unknown> | null;
+			const deletionContext = metadata?.deletion_context as
+				| { source: string; card_name?: string }
+				| undefined;
+
+			if (deletionContext?.source === 'vip_card' && deletionContext.card_name) {
+				return `Carte VIP ${deletionContext.card_name}`;
+			}
+			if (deletionContext?.source === 'teacher') {
+				return 'Par le professeur';
+			}
+
+			// Fallback for old events without deletion_context
 			const isVipCard = event.created_by === event.student_id;
 			return isVipCard ? 'Carte VIP' : 'Par le professeur';
 		}

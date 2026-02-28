@@ -332,15 +332,17 @@ export async function removeWarningsBulk(options: {
 	classId: string;
 	periodId: string;
 	warningTypes: WarningType[];
+	deletionContext?: { source: 'vip_card' | 'teacher'; card_name?: string };
 	supabase: SupabaseClient<Database>;
 }): Promise<{ counts: StudentWarningCounts; removed: number }> {
-	const { studentId, classId, periodId, warningTypes, supabase } = options;
+	const { studentId, classId, periodId, warningTypes, deletionContext, supabase } = options;
 
 	const { data, error: rpcError } = await supabase.rpc('remove_warnings_bulk', {
 		p_student_id: studentId,
 		p_class_id: classId,
 		p_academic_period_id: periodId,
-		p_warning_types: warningTypes
+		p_warning_types: warningTypes,
+		p_deletion_context: deletionContext ?? null
 	});
 
 	if (rpcError) {

@@ -289,6 +289,7 @@
 					periodId,
 					count: action.count,
 					warningType: action.warningType,
+					cardName: card.name,
 					onComplete
 				});
 				break;
