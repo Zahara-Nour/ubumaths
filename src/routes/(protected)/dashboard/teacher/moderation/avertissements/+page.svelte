@@ -275,7 +275,8 @@
 						student_id: studentId,
 						class_id: currentClassId,
 						academic_period_id: currentPeriodId,
-						warning_types: accumulated
+						warning_types: accumulated,
+						deletion_context: { source: 'teacher' }
 					})
 				});
 
@@ -361,7 +362,8 @@
 						student_id: studentId,
 						class_id: currentClassId,
 						academic_period_id: currentPeriodId,
-						warning_types: accumulated
+						warning_types: accumulated,
+						deletion_context: { source: 'teacher' }
 					})
 				});
 

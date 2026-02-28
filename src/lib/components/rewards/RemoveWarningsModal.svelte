@@ -69,14 +69,36 @@
 
 	/**
 	 * Build the warning_types array for the RPC.
-	 * warningType is always provided by VIP card callers.
-	 * E.g. count=3 + warningType='C' → ['C','C','C']
+	 * If warningType is specified: E.g. count=3 + warningType='C' → ['C','C','C']
+	 * If not specified: distribute removals across types with active warnings.
 	 */
 	function buildWarningTypes(): ('C' | 'M' | 'R' | 'T')[] {
-		if (!warningType) {
-			throw new Error('warningType is required');
+		if (warningType) {
+			return Array.from({ length: count }, () => warningType);
 		}
-		return Array.from({ length: count }, () => warningType);
+
+		// No specific type: distribute across types that have active warnings
+		const currentCounts = teacherCache.getWarningsSync(classId, periodId)?.get(studentId) || {
+			C: 0,
+			M: 0,
+			R: 0,
+			T: 0
+		};
+
+		const types: ('C' | 'M' | 'R' | 'T')[] = [];
+		const remaining = { ...currentCounts };
+		const typeOrder: ('C' | 'M' | 'R' | 'T')[] = ['C', 'M', 'R', 'T'];
+
+		for (let i = 0; i < count && types.length < count; i++) {
+			for (const t of typeOrder) {
+				if (remaining[t] > 0 && types.length < count) {
+					types.push(t);
+					remaining[t]--;
+				}
+			}
+		}
+
+		return types;
 	}
 
 	/**
