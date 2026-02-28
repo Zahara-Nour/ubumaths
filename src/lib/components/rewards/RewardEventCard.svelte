@@ -61,6 +61,22 @@
 	);
 
 	let amountPrefix = $derived(isPositiveAmount ? '+' : '-');
+
+	// Description override for warnings
+	let displayDescription = $derived.by(() => {
+		if (event.reward_type !== 'warning') return event.description;
+
+		// Warning awarded: no description needed (badge already shows the type)
+		if (event.event_type === 'awarded') return '';
+
+		// Warning removed: indicate source
+		if (event.event_type === 'removed') {
+			const isVipCard = event.created_by === event.student_id;
+			return isVipCard ? 'Carte VIP' : 'Par le professeur';
+		}
+
+		return event.description;
+	});
 </script>
 
 <Card.Root class="transition-shadow hover:shadow-md">
@@ -104,7 +120,9 @@
 					{event.item_name}
 				</Badge>
 			{/if}
-			<p class="text-sm text-foreground">{event.description}</p>
+			{#if displayDescription}
+				<p class="text-sm text-foreground">{displayDescription}</p>
+			{/if}
 		</div>
 
 		<!-- Right side: amount and date -->
