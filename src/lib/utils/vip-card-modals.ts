@@ -168,17 +168,6 @@ export function openVipCardExchangeModal(options: ExchangeCardsOptions): string 
 }
 
 /**
- * Warning type for preloaded warnings
- */
-interface Warning {
-	id: string;
-	student_id: string;
-	warning_type: 'C' | 'M' | 'R' | 'T';
-	description: string | null;
-	created_at: string;
-}
-
-/**
  * Options for opening a remove warnings modal
  */
 interface RemoveWarningsOptions {
@@ -188,7 +177,6 @@ interface RemoveWarningsOptions {
 	count: number;
 	warningType?: 'C' | 'M' | 'R' | 'T';
 	studentName?: string;
-	preloadedWarnings?: Warning[]; // Optional: skip API loading
 	onComplete?: () => void;
 }
 
@@ -230,8 +218,7 @@ export function openRemoveWarningsModal(options: RemoveWarningsOptions): string 
 			periodId: options.periodId,
 			count: options.count,
 			warningType: options.warningType,
-			studentName: options.studentName,
-			preloadedWarnings: options.preloadedWarnings
+			studentName: options.studentName
 		},
 		canDismiss: true,
 		onReturn: options.onComplete
