@@ -78,15 +78,15 @@
 				| undefined;
 
 			if (deletionContext?.source === 'vip_card' && deletionContext.card_name) {
-				return `Carte VIP ${deletionContext.card_name}`;
+				return `Retiré grâce à une carte ${deletionContext.card_name}`;
 			}
 			if (deletionContext?.source === 'teacher') {
-				return 'Par le professeur';
+				return 'Retiré par le professeur';
 			}
 
 			// Fallback for old events without deletion_context
 			const isVipCard = event.created_by === event.student_id;
-			return isVipCard ? 'Carte VIP' : 'Par le professeur';
+			return isVipCard ? 'Retiré grâce à une carte VIP' : 'Retiré par le professeur';
 		}
 
 		return event.description;
