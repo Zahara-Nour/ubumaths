@@ -179,7 +179,10 @@
 				if (studentRewards) {
 					const vipCards = studentRewards.vip_cards as StudentVipCards;
 					availableCards = Object.entries(vipCards)
-						.filter(([_, instance]) => instance.usedAt === null)
+						.filter(
+							([instanceId, instance]) =>
+								instance.usedAt === null && instanceId !== actionCardInstanceId
+						)
 						.map(([instanceId, instance]) => {
 							const template = getTemplateById(instance.cardId, $vipCardTemplates);
 							if (!template) return null;
@@ -205,7 +208,10 @@
 			const vipCards = data.vipCards as StudentVipCards;
 
 			availableCards = Object.entries(vipCards)
-				.filter(([_, instance]) => instance.usedAt === null)
+				.filter(
+					([instanceId, instance]) =>
+						instance.usedAt === null && instanceId !== actionCardInstanceId
+				)
 				.map(([instanceId, instance]) => {
 					const template = getTemplateById(instance.cardId, $vipCardTemplates);
 					if (!template) return null;
