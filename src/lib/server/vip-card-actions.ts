@@ -5,7 +5,7 @@
  * Each action type calls its own API endpoint:
  *
  * - draw_cards → /api/rewards/draw-vip-cards (existing)
- * - remove_warnings → /api/warnings/remove-multiple (future)
+ * - remove_warnings → /api/warnings/remove-bulk
  * - exchange_cards → /api/vip-cards/exchange (future)
  * - add_gidouilles → /api/teacher/rewards/update-student (existing)
  *
@@ -59,7 +59,7 @@ import type {
 } from '$lib/types/vip-card';
 import { getRarityPoints } from '$lib/types/vip-card';
 import { getTemplateById, getTemplatesByRarity } from '$lib/server/vip-card-queries';
-import { removeWarning, type Warning } from '$lib/server/warnings';
+import { removeWarningsBulk } from '$lib/server/warnings';
 import { error } from '@sveltejs/kit';
 
 // ============================================================================
@@ -141,10 +141,11 @@ export interface AddGidouillesResult {
 export async function executeVipCardAction(options: {
 	action: VipCardAction;
 	studentId: string;
+	classId: string;
+	periodId: string;
 	supabase: SupabaseClient<Database>;
-	teacherId: string;
 }): Promise<ActionResult> {
-	const { action, studentId, supabase, teacherId } = options;
+	const { action, studentId, classId, periodId, supabase } = options;
 
 	try {
 		switch (action.type) {
@@ -161,8 +162,9 @@ export async function executeVipCardAction(options: {
 					count: action.count,
 					warningType: action.warningType,
 					studentId,
-					supabase,
-					teacherId
+					classId,
+					periodId,
+					supabase
 				});
 
 			case 'exchange_cards':
@@ -325,67 +327,41 @@ async function executeDrawCards(options: {
 /**
  * Execute remove_warnings action
  *
- * Removes N warnings from student record (optionally filtered by type).
+ * Removes N warnings from student record via atomic RPC (soft-delete).
+ * Builds a warning_types array from count + warningType and delegates to removeWarningsBulk.
  */
 async function executeRemoveWarnings(options: {
 	count: number;
 	warningType?: 'C' | 'M' | 'R' | 'T';
 	studentId: string;
+	classId: string;
+	periodId: string;
 	supabase: SupabaseClient<Database>;
-	teacherId: string;
 }): Promise<ActionResult> {
-	const { count, warningType, studentId, supabase, teacherId } = options;
+	const { count, warningType, studentId, classId, periodId, supabase } = options;
 
-	// Fetch student warnings
-	const { data: warnings, error: fetchError } = (await supabase
-		.from('student_warnings' as never)
-		.select('*')
-		.eq('student_id', studentId)
-		.order('created_at', { ascending: false })) as {
-		data: Warning[] | null;
-		error: { message: string } | null;
-	};
-
-	if (fetchError) {
-		throw error(500, `Failed to fetch warnings: ${fetchError.message}`);
+	if (!warningType) {
+		throw error(400, 'warningType is required for remove_warnings action');
 	}
 
-	if (!warnings || warnings.length === 0) {
-		return {
-			success: true,
-			message: 'No warnings to remove',
-			data: { warningsRemoved: 0, warningIds: [] } as RemoveWarningsResult
-		};
-	}
+	const warningTypes = Array.from({ length: count }, () => warningType);
 
-	// Filter by type if specified
-	const filteredWarnings = warningType
-		? warnings.filter((w) => w.warning_type === warningType)
-		: warnings;
-
-	// Take first N warnings
-	const warningsToRemove = filteredWarnings.slice(0, count);
-
-	const warningIds: string[] = [];
-
-	// Remove each warning
-	for (const warning of warningsToRemove) {
-		await removeWarning({
-			warningId: warning.id,
-			teacherId,
-			supabase
-		});
-		warningIds.push(warning.id);
-	}
+	const { removed } = await removeWarningsBulk({
+		studentId,
+		classId,
+		periodId,
+		warningTypes,
+		supabase
+	});
 
 	const result: RemoveWarningsResult = {
-		warningsRemoved: warningIds.length,
-		warningIds
+		warningsRemoved: removed,
+		warningIds: [] // IDs are no longer tracked with bulk soft-delete
 	};
 
 	return {
 		success: true,
-		message: `Removed ${warningIds.length} warning${warningIds.length > 1 ? 's' : ''}`,
+		message: `Removed ${removed} warning${removed > 1 ? 's' : ''}`,
 		data: result
 	};
 }

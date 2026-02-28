@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import {
 	warningTypeSchema,
 	addWarningSchema,
-	removeWarningSchema,
 	getWarningsSchema
 } from '$lib/server/validation/warnings';
 
@@ -328,110 +327,6 @@ describe('Warnings Validation Schemas', () => {
 	});
 
 	// ========================================
-	// Remove Warning Schema
-	// ========================================
-
-	describe('removeWarningSchema', () => {
-		it('accepts valid UUID for warning_id', () => {
-			const result = removeWarningSchema.safeParse({
-				warning_id: validUuid
-			});
-			expect(result.success).toBe(true);
-			if (result.success) {
-				expect(result.data.warning_id).toBe(validUuid);
-			}
-		});
-
-		it('accepts different valid UUID', () => {
-			const result = removeWarningSchema.safeParse({
-				warning_id: anotherUuid
-			});
-			expect(result.success).toBe(true);
-			if (result.success) {
-				expect(result.data.warning_id).toBe(anotherUuid);
-			}
-		});
-
-		it('rejects missing warning_id', () => {
-			const result = removeWarningSchema.safeParse({});
-			expect(result.success).toBe(false);
-		});
-
-		it('rejects invalid UUID format', () => {
-			const result = removeWarningSchema.safeParse({
-				warning_id: 'not-a-uuid'
-			});
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues[0].message).toBe('ID avertissement invalide');
-			}
-		});
-
-		it('rejects malformed UUID: too short', () => {
-			const result = removeWarningSchema.safeParse({
-				warning_id: '550e8400-e29b-41d4-a716'
-			});
-			expect(result.success).toBe(false);
-		});
-
-		it('rejects malformed UUID: missing dashes', () => {
-			const result = removeWarningSchema.safeParse({
-				warning_id: '550e8400e29b41d4a716446655440000'
-			});
-			expect(result.success).toBe(false);
-		});
-
-		it('rejects malformed UUID: wrong format', () => {
-			const result = removeWarningSchema.safeParse({
-				warning_id: '550e8400-e29b-41d4-a716-44665544000'
-			});
-			expect(result.success).toBe(false);
-		});
-
-		it('rejects non-string values: number', () => {
-			const result = removeWarningSchema.safeParse({
-				warning_id: 12345
-			});
-			expect(result.success).toBe(false);
-		});
-
-		it('rejects non-string values: object', () => {
-			const result = removeWarningSchema.safeParse({
-				warning_id: { id: validUuid }
-			});
-			expect(result.success).toBe(false);
-		});
-
-		it('rejects non-string values: array', () => {
-			const result = removeWarningSchema.safeParse({
-				warning_id: [validUuid]
-			});
-			expect(result.success).toBe(false);
-		});
-
-		it('rejects null value', () => {
-			const result = removeWarningSchema.safeParse({
-				warning_id: null
-			});
-			expect(result.success).toBe(false);
-		});
-
-		it('rejects undefined value', () => {
-			const result = removeWarningSchema.safeParse({
-				warning_id: undefined
-			});
-			expect(result.success).toBe(false);
-		});
-
-		it('rejects empty string', () => {
-			const result = removeWarningSchema.safeParse({
-				warning_id: ''
-			});
-			expect(result.success).toBe(false);
-		});
-	});
-
-	// ========================================
 	// Get Warnings Schema
 	// ========================================
 
@@ -601,7 +496,7 @@ describe('Warnings Validation Schemas', () => {
 	// ========================================
 
 	describe('Integration: Complete warning workflow', () => {
-		it('validates complete workflow: add → get → remove', () => {
+		it('validates complete workflow: add → get', () => {
 			// Step 1: Validate adding a warning
 			const addResult = addWarningSchema.safeParse({
 				student_id: validUuid,
@@ -617,12 +512,6 @@ describe('Warnings Validation Schemas', () => {
 				academic_period_id: thirdUuid
 			});
 			expect(getResult.success).toBe(true);
-
-			// Step 3: Validate removing the warning
-			const removeResult = removeWarningSchema.safeParse({
-				warning_id: validUuid
-			});
-			expect(removeResult.success).toBe(true);
 		});
 
 		it('validates adding all warning types for same student', () => {

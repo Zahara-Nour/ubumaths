@@ -62,23 +62,6 @@ export const addWarningsBulkSchema = z.object({
 export type AddWarningsBulkData = z.infer<typeof addWarningsBulkSchema>;
 
 // ============================================================================
-// REMOVE WARNING SCHEMA
-// ============================================================================
-
-/**
- * Schema for removing a warning
- * Validates warning_id (UUID)
- */
-export const removeWarningSchema = z.object({
-	warning_id: z.string().uuid('ID avertissement invalide')
-});
-
-/**
- * Inferred TypeScript type for remove warning data
- */
-export type RemoveWarningData = z.infer<typeof removeWarningSchema>;
-
-// ============================================================================
 // REMOVE WARNINGS BULK SCHEMA
 // ============================================================================
 
