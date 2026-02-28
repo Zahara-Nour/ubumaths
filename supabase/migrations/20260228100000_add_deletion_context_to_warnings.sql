@@ -154,7 +154,7 @@ BEGIN
     v_card_name := NEW.deletion_context->>'card_name';
 
     IF v_source = 'vip_card' AND v_card_name IS NOT NULL THEN
-        v_description := format('Retiré grâce à la carte VIP %s', v_card_name);
+        v_description := format('Retiré grâce à une carte %s', v_card_name);
     ELSE
         v_description := 'Retiré par le professeur';
     END IF;
