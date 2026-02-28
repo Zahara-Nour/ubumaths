@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.17](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.16...v0.8.17) (2026-02-28)
+
+### 📚 Documentation
+
+- add work-in-progress notes for question migration and VIP card unification ([4601e55](https://github.com/Zahara-Nour/ubumaths/commit/4601e5543cf83095abf25efbd6c69d51b5c4be9d))
+
+### ✨ Features
+
+- **journal:** add warnings to student reward journal ([18252e3](https://github.com/Zahara-Nour/ubumaths/commit/18252e39c0b8f8df446f72962e49bd1f68c36ed0))
+- **journal:** show VIP card name in warning removal context ([5f9c029](https://github.com/Zahara-Nour/ubumaths/commit/5f9c02983fbef76acbbf6ebfedddb77060875762))
+- **validation:** handle empty answers in fill-in-blanks validation ([b35fedf](https://github.com/Zahara-Nour/ubumaths/commit/b35fedf25c28b601e84ffb18ccf10b7a15422684))
+- **vip-cards:** add Help and Trou de mémoire buttons to teacher dashboard ([281febb](https://github.com/Zahara-Nour/ubumaths/commit/281febb75f92ea9359895cd6e28a18e64d6321d1))
+- **warnings:** add atomic RPCs and bulk API for warning additions ([6f2915f](https://github.com/Zahara-Nour/ubumaths/commit/6f2915fadd71d56eb141768b17eec28167019f5d))
+- **warnings:** add bulk removal with debounced optimistic UI ([325128d](https://github.com/Zahara-Nour/ubumaths/commit/325128d666eb5c7de3d3c4f5acd5274eca191848))
+
+### 🐛 Bug Fixes
+
+- **FlashCard:** allow submitting empty fill-in-blanks answers ([24a2cd3](https://github.com/Zahara-Nour/ubumaths/commit/24a2cd3243addeb54800eb7f9bbeac6b8ac2f4fe))
+- **journal:** contextual warning descriptions ([e74b94c](https://github.com/Zahara-Nour/ubumaths/commit/e74b94c45069538349b4170b529f07b8f10e19bb))
+- **journal:** increase type badge font size below icons ([54a0178](https://github.com/Zahara-Nour/ubumaths/commit/54a017861c8801aeb94e44142f7fb92b6e13a286))
+- **journal:** move type badge above description for all reward types ([986d954](https://github.com/Zahara-Nour/ubumaths/commit/986d954a9a1acea5e9b1e87084fc84044906545c))
+- **journal:** replace event type badges with uniform count display ([89a1ea1](https://github.com/Zahara-Nour/ubumaths/commit/89a1ea18753ba5ec8b017028ec6167b4740716d5))
+- **journal:** show type badge below icon for warnings and VIP cards ([687695a](https://github.com/Zahara-Nour/ubumaths/commit/687695a769b3d4f4e9c6e2900b5e35ae25e1e5cd))
+- **journal:** unify VIP card badge style with warning badge ([08a8798](https://github.com/Zahara-Nour/ubumaths/commit/08a87986dcbc098b84686d318387111c43e20bb2))
+- **journal:** update warning removal descriptions ([c009dac](https://github.com/Zahara-Nour/ubumaths/commit/c009dacd9d0985fb7ea299869b797a74d5e0e32a))
+- **mathAST:** add operator precedence to stripUnnecessaryBrackets ([41218d5](https://github.com/Zahara-Nour/ubumaths/commit/41218d5eca7340024f1ff4fdd7ad324f10dbc66a))
+- **mathAST:** remove left-negative reordering in removeSignsAST and add tests ([2ccc4e0](https://github.com/Zahara-Nour/ubumaths/commit/2ccc4e074e23f9acb305db26eeff1d0e1bc49d59))
+- **vip-cards:** add audit trail to choose/exchange/remove-warnings and fix activation flow ([4495ccc](https://github.com/Zahara-Nour/ubumaths/commit/4495cccf80472affeeba66fbd01dc92c42a23b7c))
+- **vip-cards:** add auth middleware and teacher-student check to grant-specific-vip-card ([8aeb186](https://github.com/Zahara-Nour/ubumaths/commit/8aeb186cfcc5186d07a506d8db30159ab66f33b1))
+- **vip-cards:** add teacher-student verification to batch approve/reject endpoints ([3ff1146](https://github.com/Zahara-Nour/ubumaths/commit/3ff1146f66e343f00c082a2f551fe2173165ddf0))
+- **vip-cards:** align acquisition types and add exchange correlation ID ([3fbd524](https://github.com/Zahara-Nour/ubumaths/commit/3fbd524c18f5d695ce148bb51bd4053e9d749413))
+- **vip-cards:** allow teacher to consume already-approved bonus cards and log to audit trail ([0c715d4](https://github.com/Zahara-Nour/ubumaths/commit/0c715d403a5cca107f277908573f9945d0a78a98))
+- **vip-cards:** auto-consume bonus cards on teacher approval ([557ebb3](https://github.com/Zahara-Nour/ubumaths/commit/557ebb3d77caf6f8a2630a37ea64213a27110421))
+- **vip-cards:** complete audit trail for exchange discards and activation requests ([66388a2](https://github.com/Zahara-Nour/ubumaths/commit/66388a20bd53002a5ee12b56fd84cea7ee715605))
+- **vip-cards:** complete audit trail for student journal ([a1704c2](https://github.com/Zahara-Nour/ubumaths/commit/a1704c210e6a8fb09fc0636eaf7bc5c03a940853))
+- **vip-cards:** drop 3-arg use_vip_card overload causing PostgREST error ([fa0f9c3](https://github.com/Zahara-Nour/ubumaths/commit/fa0f9c3fa66421231cb23ce4b84814ce8f2a2b68))
+- **warnings:** address code review issues across warning system ([d782135](https://github.com/Zahara-Nour/ubumaths/commit/d782135b85525f946c95cdfd8ab98b17d77bbf37))
+- **warnings:** filter soft-deleted warnings in getClassWarnings ([7f22bce](https://github.com/Zahara-Nour/ubumaths/commit/7f22bce05dc8c94232376f303f847c3a09cff4f6))
+- **warnings:** handle missing warningType in RemoveWarningsModal ([7558a66](https://github.com/Zahara-Nour/ubumaths/commit/7558a6664de73a76fb3e7e589718ceef70004897))
+- **warnings:** replace debounce with serialized queue for warning additions ([6144ed4](https://github.com/Zahara-Nour/ubumaths/commit/6144ed463cff2b0d3c4aa21d2b0bf6090f9c4d9a))
+
 ### [0.8.16](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.15...v0.8.16) (2026-02-24)
 
 ### ✨ Features
