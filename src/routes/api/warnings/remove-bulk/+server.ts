@@ -37,13 +37,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(400, validation.error.issues[0].message);
 		}
 
-		const { student_id, class_id, academic_period_id, warning_types } = validation.data;
+		const { student_id, class_id, academic_period_id, warning_types, deletion_context } =
+			validation.data;
 
 		const result = await removeWarningsBulk({
 			studentId: student_id,
 			classId: class_id,
 			periodId: academic_period_id,
 			warningTypes: warning_types,
+			deletionContext: deletion_context,
 			supabase
 		});
 

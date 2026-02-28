@@ -69,6 +69,13 @@ export type AddWarningsBulkData = z.infer<typeof addWarningsBulkSchema>;
  * Schema for removing multiple warnings for a student at once (soft-delete)
  * Validates student_id, class_id, academic_period_id, and an array of warning_types (1-20)
  */
+export const deletionContextSchema = z.object({
+	source: z.enum(['vip_card', 'teacher']),
+	card_name: z.string().optional()
+});
+
+export type DeletionContext = z.infer<typeof deletionContextSchema>;
+
 export const removeWarningsBulkSchema = z.object({
 	student_id: z.string().uuid('ID élève invalide'),
 	class_id: z.string().uuid('ID classe invalide'),
@@ -76,7 +83,8 @@ export const removeWarningsBulkSchema = z.object({
 	warning_types: z
 		.array(warningTypeSchema)
 		.min(1, 'Au moins un type requis')
-		.max(20, 'Maximum 20 avertissements')
+		.max(20, 'Maximum 20 avertissements'),
+	deletion_context: deletionContextSchema.optional()
 });
 
 /**

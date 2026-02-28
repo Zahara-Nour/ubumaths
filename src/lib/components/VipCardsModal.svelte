@@ -345,7 +345,7 @@
 	async function handleRemoveWarnings(
 		action: Extract<VipCardType['action'], { type: 'remove_warnings' }>,
 		instanceId: string,
-		_cardName: string
+		cardName: string
 	) {
 		openRemoveWarningsModal({
 			studentId,
@@ -354,6 +354,7 @@
 			count: action.count,
 			warningType: action.warningType,
 			studentName,
+			cardName,
 			onComplete: async () => {
 				// Mark VIP card as used after successful warnings removal
 				// (markCardAsUsed already handles optimistic UI + API call + rollback)

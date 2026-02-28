@@ -36,11 +36,20 @@
 		count: number;
 		warningType?: 'C' | 'M' | 'R' | 'T';
 		studentName?: string;
+		cardName?: string;
 		onComplete?: () => void | Promise<void>;
 	}
 
-	let { studentId, classId, periodId, count, warningType, studentName, onComplete }: Props =
-		$props();
+	let {
+		studentId,
+		classId,
+		periodId,
+		count,
+		warningType,
+		studentName,
+		cardName,
+		onComplete
+	}: Props = $props();
 
 	// State
 	let submitting = $state(false);
@@ -116,7 +125,10 @@
 					student_id: studentId,
 					class_id: classId,
 					academic_period_id: periodId,
-					warning_types: warningTypes
+					warning_types: warningTypes,
+					deletion_context: cardName
+						? { source: 'vip_card' as const, card_name: cardName }
+						: { source: 'teacher' as const }
 				})
 			});
 
