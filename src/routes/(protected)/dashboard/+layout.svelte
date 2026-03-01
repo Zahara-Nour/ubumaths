@@ -516,7 +516,6 @@
 							firstname={data.profile.firstname}
 							lastname={data.profile.lastname}
 							class="h-10 w-10"
-							user={data.user ?? undefined}
 						/>
 					</DropdownMenu.Trigger>
 					<DropdownMenu.Content align="end" class="w-56">
