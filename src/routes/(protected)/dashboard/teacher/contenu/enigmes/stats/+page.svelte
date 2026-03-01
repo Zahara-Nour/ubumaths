@@ -10,6 +10,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Avatar from '$lib/components/ui/avatar';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 	import { BarChart3, Trophy, Users, Target, TrendingUp, FileCheck, User } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -223,7 +224,13 @@
 
 								<!-- Avatar -->
 								<Avatar.Root>
-									<Avatar.Image src={studentStat.student.avatar_url} alt="Avatar élève" />
+									<Avatar.Image
+										src={getAvatarUrl({
+											avatar_url: studentStat.student.avatar_url,
+											role: 'student'
+										})}
+										alt="Avatar élève"
+									/>
 									<Avatar.Fallback>
 										<User class="h-4 w-4" />
 									</Avatar.Fallback>

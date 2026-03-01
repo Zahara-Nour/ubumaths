@@ -23,6 +23,7 @@
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { presenceManager } from '$lib/stores/presence.svelte';
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
 
@@ -241,7 +242,7 @@
 							<div class="relative flex-shrink-0">
 								<Avatar.Root class="h-10 w-10 {hasActive ? 'opacity-60' : ''}">
 									<Avatar.Image
-										src={friend.avatar_url || ''}
+										src={getAvatarUrl({ avatar_url: friend.avatar_url, role: 'student' })}
 										alt="{friend.firstname} {friend.lastname}"
 									/>
 									<Avatar.Fallback class="bg-primary/10 text-primary">

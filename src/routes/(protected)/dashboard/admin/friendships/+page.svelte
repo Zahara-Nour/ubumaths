@@ -170,7 +170,10 @@
 						<div class="flex items-center gap-3">
 							<Avatar.Root class="size-10">
 								<Avatar.Image
-									src={getAvatarUrl({ avatar_url: friendship.requester_avatar })}
+									src={getAvatarUrl({
+										avatar_url: friendship.requester_avatar,
+										role: friendship.requester_role
+									})}
 									alt={friendship.requester_name}
 								/>
 								<Avatar.Fallback>
@@ -196,7 +199,10 @@
 						<div class="flex items-center gap-3">
 							<Avatar.Root class="size-10">
 								<Avatar.Image
-									src={getAvatarUrl({ avatar_url: friendship.addressee_avatar })}
+									src={getAvatarUrl({
+										avatar_url: friendship.addressee_avatar,
+										role: friendship.addressee_role
+									})}
 									alt={friendship.addressee_name}
 								/>
 								<Avatar.Fallback>

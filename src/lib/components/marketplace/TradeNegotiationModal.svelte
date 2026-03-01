@@ -11,6 +11,7 @@
 	import { ArrowLeftRight, CheckCircle, XCircle } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Props
 	let {
@@ -194,7 +195,9 @@
 						<div class="rounded-lg border p-4">
 							<div class="mb-2 flex items-center gap-2">
 								<Avatar.Root class="h-6 w-6">
-									<Avatar.Image src={partner?.avatar_url || '/default-avatar.jpg'} />
+									<Avatar.Image
+										src={getAvatarUrl({ avatar_url: partner?.avatar_url, role: 'student' })}
+									/>
 									<Avatar.Fallback>
 										{partner?.username?.charAt(0).toUpperCase() || '?'}
 									</Avatar.Fallback>

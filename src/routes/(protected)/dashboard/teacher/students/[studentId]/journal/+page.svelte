@@ -26,6 +26,7 @@
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Card from '$lib/components/ui/card';
 	import * as Avatar from '$lib/components/ui/avatar';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 	import {
 		RefreshCw,
 		ChevronDown,
@@ -138,9 +139,10 @@
 
 				<!-- Student Avatar -->
 				<Avatar.Root class="h-12 w-12">
-					{#if student?.avatar_url}
-						<Avatar.Image src={student.avatar_url} alt={studentName} />
-					{/if}
+					<Avatar.Image
+						src={getAvatarUrl({ avatar_url: student?.avatar_url, role: 'student' })}
+						alt={studentName}
+					/>
 					<Avatar.Fallback class="bg-primary/10 text-primary">
 						{studentInitials}
 					</Avatar.Fallback>

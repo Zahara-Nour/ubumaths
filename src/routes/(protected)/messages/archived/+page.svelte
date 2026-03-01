@@ -19,10 +19,11 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { cn } from '$lib/utils';
+	import * as Avatar from '$lib/components/ui/avatar';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	let searchQuery = $state('');
 	let selectedIndex = $state(-1);
-	let failedAvatars = $state<Set<string>>(new Set());
 
 	// Load archived messages on mount
 	onMount(() => {
@@ -117,12 +118,6 @@
 			await privateMessages.deleteMessage(messageId);
 		}
 	}
-
-	// Handle avatar load error
-	function handleAvatarError(messageId: string) {
-		failedAvatars.add(messageId);
-		failedAvatars = failedAvatars; // Trigger reactivity
-	}
 </script>
 
 <div class="flex h-full flex-col">
@@ -210,20 +205,15 @@
 					>
 						<!-- Avatar -->
 						<div class="flex-shrink-0">
-							{#if message.sender_avatar_url && !failedAvatars.has(message.message_id)}
-								<img
-									src={message.sender_avatar_url}
+							<Avatar.Root class="h-10 w-10">
+								<Avatar.Image
+									src={getAvatarUrl({ avatar_url: message.sender_avatar_url, role: 'student' })}
 									alt={message.sender_name}
-									class="h-10 w-10 rounded-full object-cover"
-									onerror={() => handleAvatarError(message.message_id)}
 								/>
-							{:else}
-								<div
-									class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
-								>
+								<Avatar.Fallback class="bg-primary text-primary-foreground">
 									{message.sender_name?.charAt(0)?.toUpperCase() || '?'}
-								</div>
-							{/if}
+								</Avatar.Fallback>
+							</Avatar.Root>
 						</div>
 
 						<!-- Content -->

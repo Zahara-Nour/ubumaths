@@ -9,6 +9,7 @@
 	import { fr } from 'date-fns/locale';
 	import VipCard from '$lib/components/VipCard.svelte';
 	import CreateProposalModal from './CreateProposalModal.svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Props
 	let {
@@ -86,7 +87,7 @@
 			<div class="flex items-center gap-3">
 				<Avatar.Root class="h-10 w-10">
 					<Avatar.Image
-						src={listing.creator?.avatar_url || '/default-avatar.jpg'}
+						src={getAvatarUrl({ avatar_url: listing.creator?.avatar_url, role: 'student' })}
 						alt={listing.creator?.username}
 					/>
 					<Avatar.Fallback>

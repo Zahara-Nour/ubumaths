@@ -21,6 +21,7 @@
 	import { fr } from 'date-fns/locale';
 	import ListingDetailsModal from './ListingDetailsModal.svelte';
 	import ProposalResponseModal from './ProposalResponseModal.svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// State
 	let selectedTab = $state<'active' | 'completed' | 'expired'>('active');
@@ -189,7 +190,10 @@
 											<div class="flex items-center gap-3">
 												<Avatar.Root class="h-8 w-8">
 													<Avatar.Image
-														src={proposal.proposer?.avatar_url || '/default-avatar.jpg'}
+														src={getAvatarUrl({
+															avatar_url: proposal.proposer?.avatar_url,
+															role: 'student'
+														})}
 														alt={proposal.proposer?.username}
 													/>
 													<Avatar.Fallback>
