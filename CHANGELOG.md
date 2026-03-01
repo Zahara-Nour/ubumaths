@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.20](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.19...v0.8.20) (2026-03-01)
+
+### 🐛 Bug Fixes
+
+- **avatars:** use {#key} to prevent onerror double-fire on src change ([ac5bce5](https://github.com/Zahara-Nour/ubumaths/commit/ac5bce57cc488cf79eccbf6bef97c74c34258b9f))
+
 ### [0.8.19](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.18...v0.8.19) (2026-03-01)
 
 ### ✨ Features
