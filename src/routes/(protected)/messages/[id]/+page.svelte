@@ -24,8 +24,7 @@
 	import { goto } from '$app/navigation';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import { cn } from '$lib/utils';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarUrl } from '$lib/utils/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 
 	const messageId = $derived(page.params.id);
 
@@ -193,15 +192,11 @@
 				<div class="mt-4 flex items-start justify-between border-b border-border pb-4">
 					<div class="flex items-start gap-3">
 						<!-- Sender avatar -->
-						<Avatar.Root class="h-12 w-12">
-							<Avatar.Image
-								src={getAvatarUrl({ avatar_url: message.sender_avatar_url, role: 'student' })}
-								alt={message.sender_name}
-							/>
-							<Avatar.Fallback class="bg-primary text-primary-foreground">
-								{message.sender_name?.charAt(0)?.toUpperCase() || '?'}
-							</Avatar.Fallback>
-						</Avatar.Root>
+						<UserAvatar
+							avatar_url={message.sender_avatar_url}
+							role={message.sender_role}
+							class="h-12 w-12"
+						/>
 
 						<div>
 							<div class="font-semibold text-foreground">
@@ -230,15 +225,7 @@
 							<div class="mt-1 space-y-1">
 								{#each message.recipients as recipient (recipient.id)}
 									<div class="flex items-center justify-end gap-2">
-										<Avatar.Root class="h-6 w-6">
-											<Avatar.Image
-												src={getAvatarUrl({ avatar_url: recipient.avatar_url, role: 'student' })}
-												alt={recipient.name || 'Destinataire'}
-											/>
-											<Avatar.Fallback class="bg-primary/10 text-xs text-primary">
-												{recipient.name?.charAt(0)?.toUpperCase() || '?'}
-											</Avatar.Fallback>
-										</Avatar.Root>
+										<UserAvatar avatar_url={recipient.avatar_url} class="h-6 w-6" />
 										<span class="text-sm font-medium"
 											>{recipient.name || 'Destinataire inconnu'}</span
 										>

@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { friendsManager } from '$lib/stores/friends.svelte';
 	import OnlineStatus from './OnlineStatus.svelte';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { MoreVertical, Search, User } from 'lucide-svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	let searchQuery = $state('');
 
@@ -52,15 +51,13 @@
 				>
 					<div class="flex items-center gap-3">
 						<!-- Avatar -->
-						<Avatar.Root class="size-10">
-							<Avatar.Image
-								src={friend.friend_profile ? getAvatarUrl(friend.friend_profile) : undefined}
-								alt={friendsManager.getDisplayName(friend)}
-							/>
-							<Avatar.Fallback>
-								{friendsManager.getDisplayName(friend).charAt(0).toUpperCase()}
-							</Avatar.Fallback>
-						</Avatar.Root>
+						<UserAvatar
+							avatar_url={friend.friend_profile?.avatar_url}
+							role={friend.friend_profile?.role}
+							firstname={friend.friend_profile?.firstname}
+							lastname={friend.friend_profile?.lastname}
+							class="size-10"
+						/>
 
 						<!-- Name and Status -->
 						<div>

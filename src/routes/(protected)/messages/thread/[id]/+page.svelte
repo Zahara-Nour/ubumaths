@@ -18,8 +18,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarUrl } from '$lib/utils/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 
 	const threadRootId = $derived(page.params.id);
 
@@ -134,15 +133,7 @@
 						<div class="mb-4 flex items-start justify-between border-b border-border pb-4">
 							<div class="flex items-start gap-3">
 								<!-- Sender avatar -->
-								<Avatar.Root class="h-10 w-10">
-									<Avatar.Image
-										src={getAvatarUrl({ avatar_url: message.sender_avatar_url, role: 'student' })}
-										alt={message.sender_name}
-									/>
-									<Avatar.Fallback class="bg-primary text-primary-foreground">
-										{message.sender_name?.charAt(0)?.toUpperCase() || '?'}
-									</Avatar.Fallback>
-								</Avatar.Root>
+								<UserAvatar avatar_url={message.sender_avatar_url} role={message.sender_role} />
 
 								<div>
 									<div class="font-semibold text-foreground">

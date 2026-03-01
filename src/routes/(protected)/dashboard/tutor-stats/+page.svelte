@@ -7,7 +7,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import * as Card from '$lib/components/ui/card';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import {
@@ -290,20 +290,13 @@
 								<tr class="border-b last:border-0">
 									<td class="py-3">
 										<div class="flex items-center gap-3">
-											<Avatar.Root class="h-8 w-8">
-												<Avatar.Image
-													src={student.avatarUrl || undefined}
-													alt={student.studentName}
-												/>
-												<Avatar.Fallback>
-													{student.studentName
-														.split(' ')
-														.map((n) => n[0])
-														.join('')
-														.toUpperCase()
-														.slice(0, 2)}
-												</Avatar.Fallback>
-											</Avatar.Root>
+											<UserAvatar
+												avatar_url={student.avatarUrl}
+												role="student"
+												firstname={student.studentName.split(' ')[0]}
+												lastname={student.studentName.split(' ').slice(1).join(' ') || null}
+												class="h-8 w-8"
+											/>
 											<span class="font-medium">{student.studentName}</span>
 										</div>
 									</td>

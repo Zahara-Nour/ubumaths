@@ -6,11 +6,10 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as Card from '$lib/components/ui/card';
 	import * as Alert from '$lib/components/ui/alert';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 	import {
 		ShieldCheck,
 		AlertTriangle,
@@ -253,15 +252,12 @@
 									>
 										<!-- Student Info -->
 										<div class="flex items-center gap-3">
-											<Avatar.Root class="h-10 w-10">
-												<Avatar.Image
-													src={getAvatarUrl(student.avatar_url)}
-													alt={getStudentName(student)}
-												/>
-												<Avatar.Fallback>
-													{(student.firstname?.[0] || '') + (student.lastname?.[0] || '')}
-												</Avatar.Fallback>
-											</Avatar.Root>
+											<UserAvatar
+												avatar_url={student.avatar_url}
+												role="student"
+												firstname={student.firstname}
+												lastname={student.lastname}
+											/>
 											<div>
 												<p class="font-medium">{getStudentName(student)}</p>
 												<p class="text-sm text-muted-foreground">

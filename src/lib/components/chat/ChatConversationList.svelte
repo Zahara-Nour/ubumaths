@@ -22,13 +22,12 @@
 <script lang="ts">
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
-	import * as Avatar from '$lib/components/ui/avatar';
 	import { Badge } from '$lib/components/ui/badge';
 	import OnlineStatus from '$lib/components/OnlineStatus.svelte';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Search, MessageSquarePlus, Users } from 'lucide-svelte';
 	import type { Conversation } from '$lib/stores/chat.svelte';
 	import { presenceManager } from '$lib/stores/presence.svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Component Props
 	interface Props {
@@ -177,15 +176,12 @@
 					<div class="flex items-start gap-3">
 						<!-- Avatar with Online Status -->
 						<div class="relative flex-shrink-0">
-							<Avatar.Root class="h-12 w-12">
-								<Avatar.Image
-									src={avatar.src ? getAvatarUrl({ avatar_url: avatar.src, role: 'student' }) : ''}
-									alt={getConversationName(conversation)}
-								/>
-								<Avatar.Fallback class="bg-primary/10 text-primary">
-									{avatar.fallback}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<UserAvatar
+								avatar_url={avatar.src}
+								firstname={conversation.other_user_firstname}
+								lastname={conversation.other_user_lastname}
+								class="h-12 w-12"
+							/>
 
 							<!-- Online status for 1-on-1 chats -->
 							{#if !conversation.is_group && conversation.other_user_id}

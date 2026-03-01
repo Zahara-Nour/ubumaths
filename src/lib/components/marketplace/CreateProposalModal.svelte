@@ -7,12 +7,11 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
 	import { Badge } from '$lib/components/ui/badge';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import VipCardSelector from './VipCardSelector.svelte';
 	import VipCard from '$lib/components/VipCard.svelte';
 	import { Info, Coins, ArrowRight } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 	import type { VipCard as VipCardType } from '$lib/types/vip-card';
 
 	// Props
@@ -117,15 +116,12 @@
 			<!-- Listing Summary -->
 			<div class="space-y-3 rounded-lg border bg-muted/30 p-4">
 				<div class="flex items-center gap-3">
-					<Avatar.Root class="h-8 w-8">
-						<Avatar.Image
-							src={getAvatarUrl({ avatar_url: listing.creator?.avatar_url, role: 'student' })}
-							alt={listing.creator?.username}
-						/>
-						<Avatar.Fallback>
-							{listing.creator?.username?.charAt(0).toUpperCase() || '?'}
-						</Avatar.Fallback>
-					</Avatar.Root>
+					<UserAvatar
+						avatar_url={listing.creator?.avatar_url}
+						role="student"
+						firstname={listing.creator?.username}
+						class="h-8 w-8"
+					/>
 					<div>
 						<div class="font-medium">{listing.creator?.username || 'Anonyme'}</div>
 						<Badge

@@ -3,13 +3,12 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Clock, Eye, MessageSquare, Coins } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import VipCard from '$lib/components/VipCard.svelte';
 	import CreateProposalModal from './CreateProposalModal.svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Props
 	let {
@@ -85,15 +84,11 @@
 		<div class="space-y-4">
 			<!-- Creator Info -->
 			<div class="flex items-center gap-3">
-				<Avatar.Root class="h-10 w-10">
-					<Avatar.Image
-						src={getAvatarUrl({ avatar_url: listing.creator?.avatar_url, role: 'student' })}
-						alt={listing.creator?.username}
-					/>
-					<Avatar.Fallback>
-						{listing.creator?.username?.charAt(0).toUpperCase() || '?'}
-					</Avatar.Fallback>
-				</Avatar.Root>
+				<UserAvatar
+					avatar_url={listing.creator?.avatar_url}
+					role="student"
+					firstname={listing.creator?.username}
+				/>
 				<div>
 					<div class="font-medium">{listing.creator?.username || 'Anonyme'}</div>
 					<div class="text-sm text-muted-foreground">

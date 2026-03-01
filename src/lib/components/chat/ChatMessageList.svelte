@@ -27,13 +27,12 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte'; // onMount for future scroll handling
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import * as Avatar from '$lib/components/ui/avatar';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { MoreVertical, Flag, Download, Trash2 } from 'lucide-svelte';
 	import DeleteMessageDialog from '$lib/components/moderation/DeleteMessageDialog.svelte';
 	import type { Message } from '$lib/stores/chat.svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
 	import type { JSONContent } from '@tiptap/core';
 
@@ -251,15 +250,12 @@
 					<!-- Avatar (only for other users) -->
 					{#if !isOwnMessage(message)}
 						<div class="flex-shrink-0">
-							<Avatar.Root class="h-8 w-8">
-								<Avatar.Image
-									src={getAvatarUrl({ avatar_url: message.sender_avatar_url, role: 'student' })}
-									alt={getSenderName(message)}
-								/>
-								<Avatar.Fallback class="bg-primary/10 text-xs text-primary">
-									{message.sender_firstname?.[0]?.toUpperCase() || '?'}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<UserAvatar
+								avatar_url={message.sender_avatar_url}
+								firstname={message.sender_firstname}
+								lastname={message.sender_lastname}
+								class="h-8 w-8"
+							/>
 						</div>
 					{/if}
 

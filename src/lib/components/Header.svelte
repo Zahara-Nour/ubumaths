@@ -37,7 +37,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
@@ -63,7 +63,6 @@
 		FileSpreadsheet
 	} from 'lucide-svelte';
 	import gidouille from '$lib/assets/images/gidouille.png';
-	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 
@@ -207,25 +206,14 @@
 						<DropdownMenu.Trigger
 							class="relative h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 						>
-							<Avatar.Root class="h-10 w-10">
-								<Avatar.Image
-									src={getAvatarUrl(
-										profile
-											? {
-													avatar_url: profile.avatar_url,
-													role: profile.role
-												}
-											: { avatar_url: null },
-										user
-									)}
-									alt={user?.email || 'User'}
-								/>
-								<Avatar.Fallback>
-									{getAvatarInitials(profile?.firstname ?? null, profile?.lastname ?? null) ||
-										user?.email?.charAt(0).toUpperCase() ||
-										'?'}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<UserAvatar
+								avatar_url={profile?.avatar_url}
+								role={profile?.role}
+								firstname={profile?.firstname}
+								lastname={profile?.lastname}
+								class="h-10 w-10"
+								user={user ?? undefined}
+							/>
 						</DropdownMenu.Trigger>
 						<DropdownMenu.Content align="end" class="w-56">
 							<DropdownMenu.Label>{user?.email}</DropdownMenu.Label>

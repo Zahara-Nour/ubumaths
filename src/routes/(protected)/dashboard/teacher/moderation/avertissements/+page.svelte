@@ -40,13 +40,12 @@
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { History, AlertCircle, Plus } from 'lucide-svelte';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
 	import { getWarningTypeLabel } from '$lib/types/warnings';
@@ -515,18 +514,13 @@
 									{@const counts = getStudentWarnings(student.id)}
 									<div class="flex items-center gap-6 px-6 py-4">
 										<!-- AVATAR -->
-										<Avatar.Root class="h-12 w-12 flex-shrink-0">
-											<Avatar.Image
-												src={getAvatarUrl({
-													avatar_url: student.avatar_url,
-													role: (student.role as 'student' | 'teacher' | 'admin') || 'student'
-												})}
-												alt={getFullName(student.firstname, student.lastname, student.full_name)}
-											/>
-											<Avatar.Fallback class="bg-primary/10 font-semibold text-primary">
-												{getAvatarInitials(student.firstname, student.lastname)}
-											</Avatar.Fallback>
-										</Avatar.Root>
+										<UserAvatar
+											avatar_url={student.avatar_url}
+											role={student.role || 'student'}
+											firstname={student.firstname}
+											lastname={student.lastname}
+											class="h-12 w-12 flex-shrink-0"
+										/>
 
 										<!-- STUDENT NAME -->
 										<div class="min-w-0 flex-1">

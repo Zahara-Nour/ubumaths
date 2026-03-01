@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	let { data } = $props();
 
@@ -60,14 +60,14 @@
 		<!-- Avatar Display -->
 		<div class="rounded-lg border border-border bg-card p-6">
 			<h2 class="mb-4 text-xl font-semibold">Avatar Display</h2>
-			<Avatar.Root class="h-20 w-20">
-				<Avatar.Image src={getAvatarSrc()} alt={data.user?.email || 'User'} />
-				<Avatar.Fallback>
-					{getAvatarInitials(data.profile?.firstname ?? null, data.profile?.lastname ?? null) ||
-						data.user?.email?.charAt(0).toUpperCase() ||
-						'?'}
-				</Avatar.Fallback>
-			</Avatar.Root>
+			<UserAvatar
+				avatar_url={data.profile?.avatar_url}
+				role={data.profile?.role}
+				firstname={data.profile?.firstname}
+				lastname={data.profile?.lastname}
+				user={data.user}
+				class="h-20 w-20"
+			/>
 		</div>
 
 		<!-- Avatar Source -->

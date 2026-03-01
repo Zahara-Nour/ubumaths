@@ -3,12 +3,11 @@
 	import type { VipCard as VipCardType } from '$lib/types/vip-card';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Clock, Eye, MessageSquare, Coins } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import VipCard from '$lib/components/VipCard.svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Props
 	let {
@@ -117,15 +116,12 @@
 		<Card.Content class="space-y-3">
 			<!-- Creator Info -->
 			<div class="flex items-center gap-2">
-				<Avatar.Root class="h-6 w-6">
-					<Avatar.Image
-						src={getAvatarUrl({ avatar_url: listing.creator?.avatar_url, role: 'student' })}
-						alt={listing.creator?.username}
-					/>
-					<Avatar.Fallback>
-						{listing.creator?.username?.charAt(0).toUpperCase() || '?'}
-					</Avatar.Fallback>
-				</Avatar.Root>
+				<UserAvatar
+					avatar_url={listing.creator?.avatar_url}
+					role="student"
+					firstname={listing.creator?.username}
+					class="h-6 w-6"
+				/>
 				<span class="truncate text-xs text-muted-foreground">
 					{listing.creator?.username || 'Anonyme'}
 				</span>
@@ -223,15 +219,12 @@
 		<Card.Content class="p-4">
 			<div class="flex items-center gap-4">
 				<!-- Avatar -->
-				<Avatar.Root class="h-10 w-10 shrink-0">
-					<Avatar.Image
-						src={getAvatarUrl({ avatar_url: listing.creator?.avatar_url, role: 'student' })}
-						alt={listing.creator?.username}
-					/>
-					<Avatar.Fallback>
-						{listing.creator?.username?.charAt(0).toUpperCase() || '?'}
-					</Avatar.Fallback>
-				</Avatar.Root>
+				<UserAvatar
+					avatar_url={listing.creator?.avatar_url}
+					role="student"
+					firstname={listing.creator?.username}
+					class="h-10 w-10 shrink-0"
+				/>
 
 				<!-- Main Content -->
 				<div class="min-w-0 flex-1">

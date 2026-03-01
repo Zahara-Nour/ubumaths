@@ -6,7 +6,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import {
 		Package,
 		Clock,
@@ -21,7 +21,6 @@
 	import { fr } from 'date-fns/locale';
 	import ListingDetailsModal from './ListingDetailsModal.svelte';
 	import ProposalResponseModal from './ProposalResponseModal.svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// State
 	let selectedTab = $state<'active' | 'completed' | 'expired'>('active');
@@ -188,18 +187,12 @@
 									{#each proposals.slice(0, 3) as proposal (proposal.id)}
 										<div class="flex items-center justify-between rounded-lg border p-3">
 											<div class="flex items-center gap-3">
-												<Avatar.Root class="h-8 w-8">
-													<Avatar.Image
-														src={getAvatarUrl({
-															avatar_url: proposal.proposer?.avatar_url,
-															role: 'student'
-														})}
-														alt={proposal.proposer?.username}
-													/>
-													<Avatar.Fallback>
-														{proposal.proposer?.username?.charAt(0).toUpperCase() || '?'}
-													</Avatar.Fallback>
-												</Avatar.Root>
+												<UserAvatar
+													avatar_url={proposal.proposer?.avatar_url}
+													role="student"
+													firstname={proposal.proposer?.username}
+													class="h-8 w-8"
+												/>
 
 												<div>
 													<div class="text-sm font-medium">

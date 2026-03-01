@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { friendsManager } from '$lib/stores/friends.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Check, X, Clock, UserPlus } from 'lucide-svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	function getFriendshipTypeLabel(type: 'classmate' | 'mentor'): string {
 		return type === 'classmate' ? 'Camarade' : 'Mentor';
@@ -58,15 +57,13 @@
 					>
 						<div class="flex items-center gap-3">
 							<!-- Avatar -->
-							<Avatar.Root class="size-10">
-								<Avatar.Image
-									src={request.friend_profile ? getAvatarUrl(request.friend_profile) : undefined}
-									alt={friendsManager.getDisplayName(request)}
-								/>
-								<Avatar.Fallback>
-									{friendsManager.getDisplayName(request).charAt(0).toUpperCase()}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<UserAvatar
+								avatar_url={request.friend_profile?.avatar_url}
+								role={request.friend_profile?.role}
+								firstname={request.friend_profile?.firstname}
+								lastname={request.friend_profile?.lastname}
+								class="size-10"
+							/>
 
 							<!-- Name and Type -->
 							<div>
@@ -124,15 +121,13 @@
 					>
 						<div class="flex items-center gap-3">
 							<!-- Avatar -->
-							<Avatar.Root class="size-10">
-								<Avatar.Image
-									src={request.friend_profile ? getAvatarUrl(request.friend_profile) : undefined}
-									alt={friendsManager.getDisplayName(request)}
-								/>
-								<Avatar.Fallback>
-									{friendsManager.getDisplayName(request).charAt(0).toUpperCase()}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<UserAvatar
+								avatar_url={request.friend_profile?.avatar_url}
+								role={request.friend_profile?.role}
+								firstname={request.friend_profile?.firstname}
+								lastname={request.friend_profile?.lastname}
+								class="size-10"
+							/>
 
 							<!-- Name and Type -->
 							<div>

@@ -16,12 +16,11 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as Card from '$lib/components/ui/card';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarUrl } from '$lib/utils/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import * as Alert from '$lib/components/ui/alert';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { CheckCircle2, XCircle, User, AlertTriangle, ArrowLeft } from 'lucide-svelte';
+	import { CheckCircle2, XCircle, AlertTriangle, ArrowLeft } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 
@@ -93,15 +92,13 @@
 	<Card.Root class="mb-6">
 		<Card.Header>
 			<div class="flex items-start gap-4">
-				<Avatar.Root class="h-16 w-16">
-					<Avatar.Image
-						src={getAvatarUrl({ avatar_url: data.attempt.student.avatar_url, role: 'student' })}
-						alt="Avatar élève"
-					/>
-					<Avatar.Fallback>
-						<User class="h-8 w-8" />
-					</Avatar.Fallback>
-				</Avatar.Root>
+				<UserAvatar
+					avatar_url={data.attempt.student.avatar_url}
+					role="student"
+					firstname={data.attempt.student.firstname}
+					lastname={data.attempt.student.lastname}
+					class="h-16 w-16"
+				/>
 				<div class="flex-1">
 					<Card.Title class="text-2xl">
 						{data.attempt.student.firstname || ''}

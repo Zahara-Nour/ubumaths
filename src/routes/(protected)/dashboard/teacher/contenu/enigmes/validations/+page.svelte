@@ -15,9 +15,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarUrl } from '$lib/utils/avatar';
-	import { Clock, FileCheck, User } from 'lucide-svelte';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { Clock, FileCheck } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 
@@ -76,15 +75,12 @@
 						<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 							<!-- Student Info -->
 							<div class="flex items-start gap-3">
-								<Avatar.Root>
-									<Avatar.Image
-										src={getAvatarUrl({ avatar_url: attempt.student.avatar_url, role: 'student' })}
-										alt="Avatar élève"
-									/>
-									<Avatar.Fallback>
-										<User class="h-4 w-4" />
-									</Avatar.Fallback>
-								</Avatar.Root>
+								<UserAvatar
+									avatar_url={attempt.student.avatar_url}
+									role="student"
+									firstname={attempt.student.firstname}
+									lastname={attempt.student.lastname}
+								/>
 								<div class="flex-1">
 									<Card.Title class="text-lg">
 										{attempt.student.firstname || ''}
