@@ -212,7 +212,6 @@
 								firstname={profile?.firstname}
 								lastname={profile?.lastname}
 								class="h-10 w-10"
-								user={user ?? undefined}
 							/>
 						</DropdownMenu.Trigger>
 						<DropdownMenu.Content align="end" class="w-56">
