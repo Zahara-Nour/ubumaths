@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.19](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.18...v0.8.19) (2026-03-01)
+
+### ✨ Features
+
+- **avatars:** add UserAvatar component with resilient fallback cascade ([c348641](https://github.com/Zahara-Nour/ubumaths/commit/c34864174332f6964753a70909a2dc128af0fa9f))
+- **vip-cards:** add activation_context for student self-activatable cards ([092ee03](https://github.com/Zahara-Nour/ubumaths/commit/092ee0366e21636e9bf73a329f882721eeaad2bd))
+- **vip-cards:** add activation_context to admin template editor UI ([e703b5e](https://github.com/Zahara-Nour/ubumaths/commit/e703b5e86b20026b2cb5017dbb84e1462e12778e))
+
+### 🐛 Bug Fixes
+
+- **avatars:** replace bits-ui Avatar with native img for reliable loading ([2e1c956](https://github.com/Zahara-Nour/ubumaths/commit/2e1c9564c1865c845c03060371e125be3cd494cd))
+- **avatars:** unify avatar display across all pages using canonical pattern ([ca30da8](https://github.com/Zahara-Nour/ubumaths/commit/ca30da8ab130ab8cdf7b3f90a9a3532ac44b5017))
+
 ### [0.8.18](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.17...v0.8.18) (2026-02-28)
 
 ### 🐛 Bug Fixes
