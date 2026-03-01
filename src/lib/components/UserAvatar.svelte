@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import { cn } from '$lib/utils.js';
 	import {
 		getAvatarUrl,
 		getAvatarFallback,
@@ -26,33 +26,43 @@
 	}: Props = $props();
 
 	const primarySrc = $derived(getAvatarUrl({ avatar_url, role }, user));
+	const fallbackSrc = $derived(getAvatarFallback((role as UserRole) || 'student'));
+	const initials = $derived(getAvatarInitials(firstname, lastname));
 
-	let imgSrc = $state('');
-	let fallbackAttempted = $state(false);
+	let primaryFailed = $state(false);
+	let fallbackFailed = $state(false);
 
-	// Reset when props change
+	// Reset when the avatar source changes
 	$effect(() => {
-		imgSrc = primarySrc;
-		fallbackAttempted = false;
+		void primarySrc;
+		primaryFailed = false;
+		fallbackFailed = false;
 	});
 
-	function handleLoadingStatusChange(status: 'loading' | 'loaded' | 'error') {
-		if (status === 'error' && !fallbackAttempted) {
-			fallbackAttempted = true;
-			imgSrc = getAvatarFallback((role as UserRole) || 'student');
+	const imgSrc = $derived(!primaryFailed ? primarySrc : fallbackSrc);
+	const showImg = $derived(!primaryFailed || (!fallbackFailed && primarySrc !== fallbackSrc));
+
+	function handleImgError() {
+		if (!primaryFailed) {
+			primaryFailed = true;
+		} else {
+			fallbackFailed = true;
 		}
 	}
-
-	const initials = $derived(getAvatarInitials(firstname, lastname));
 </script>
 
-<Avatar.Root class={className}>
-	<Avatar.Image
-		src={imgSrc}
-		alt={firstname ? `${firstname} ${lastname ?? ''}`.trim() : 'User'}
-		onLoadingStatusChange={handleLoadingStatusChange}
-	/>
-	<Avatar.Fallback class="text-xs">
-		{initials}
-	</Avatar.Fallback>
-</Avatar.Root>
+<div class={cn('relative flex size-8 shrink-0 overflow-hidden rounded-full', className)}>
+	{#if showImg}
+		<img
+			src={imgSrc}
+			alt={firstname ? `${firstname} ${lastname ?? ''}`.trim() : 'User'}
+			class="aspect-square size-full object-cover"
+			loading="lazy"
+			onerror={handleImgError}
+		/>
+	{:else}
+		<span class="flex size-full items-center justify-center rounded-full bg-muted text-xs">
+			{initials}
+		</span>
+	{/if}
+</div>
