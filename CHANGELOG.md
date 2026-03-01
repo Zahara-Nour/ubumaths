@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.23](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.22...v0.8.23) (2026-03-01)
+
+### 🐛 Bug Fixes
+
+- **avatars:** use module-level SvelteSet to persist failed URLs across re-renders ([a1eef51](https://github.com/Zahara-Nour/ubumaths/commit/a1eef511506283a17ea521ae662ca0a3fe343d80))
+
+### 📚 Documentation
+
+- **avatars:** add comments explaining fallback cascade and SvelteSet usage ([e02e37e](https://github.com/Zahara-Nour/ubumaths/commit/e02e37e04a5e2fa69817593f6ad445da284320de))
+
 ### [0.8.22](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.21...v0.8.22) (2026-03-01)
 
 ### [0.8.21](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.20...v0.8.21) (2026-03-01)
