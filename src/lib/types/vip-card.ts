@@ -203,6 +203,8 @@ export interface VipCard {
 	maxOwnedPerStudent?: number; // Maximum active copies a student can own (default: 5)
 	// Consumable fields
 	usesTotal?: number | null; // Number of uses for consumables (null = single-use)
+	// Self-activation context (null = teacher approval required)
+	activationContext?: string | null;
 }
 
 /**

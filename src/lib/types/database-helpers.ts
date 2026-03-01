@@ -83,6 +83,13 @@ export type ClassSchedule = Tables<'class_schedules'>;
 export type Profile = Tables<'profiles'>;
 
 // ============================================================================
+// VIP Card Types
+// ============================================================================
+
+/** Activation context for self-activatable VIP cards */
+export type ActivationContext = 'any' | 'minesweeper';
+
+// ============================================================================
 // Friendship Types
 // ============================================================================
 

@@ -33,6 +33,7 @@ import type { VipCardRarity } from '$lib/types/vip-card';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getTemplateById, getTemplatesByRarity } from '$lib/server/vip-card-queries';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { validateActivationContext } from '$lib/server/vip-card-context';
 
 // ============================================================================
 // POST HANDLER
@@ -97,9 +98,24 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, `Action card already used: ${data.actionCardInstanceId}`);
 	}
 
-	// If student flow: require teacher approval
+	// If student flow: require teacher approval OR valid activation context
 	if (isStudent && !actionCard.activationApprovedAt) {
-		throw error(400, 'This card must be approved by a teacher before use.');
+		const actionTemplate = await getTemplateById(supabase, actionCard.cardId);
+		if (!actionTemplate) {
+			throw error(404, 'Action card template not found');
+		}
+		if (actionTemplate.activation_context) {
+			const contextValid = await validateActivationContext(
+				actionTemplate.activation_context,
+				supabase,
+				data.studentId
+			);
+			if (!contextValid) {
+				throw error(400, 'Cette carte ne peut être activée que dans un contexte spécifique');
+			}
+		} else {
+			throw error(400, 'This card must be approved by a teacher before use.');
+		}
 	}
 
 	// Validate that all cards to discard exist and are not used

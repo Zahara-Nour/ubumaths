@@ -32,6 +32,7 @@ import { z } from 'zod';
 import type { StudentVipCards } from '$lib/types/vip-card';
 import { getTemplateById } from '$lib/server/vip-card-queries';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { validateActivationContext } from '$lib/server/vip-card-context';
 
 const activateGidouillesSchema = z.object({
 	instanceId: z.string().uuid(),
@@ -88,15 +89,26 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, 'This card has already been used');
 	}
 
-	// Student flow: require teacher approval
-	if (isStudent && !instance.activationApprovedAt) {
-		throw error(400, "This card hasn't been approved by a teacher yet");
-	}
-
-	// Verify card has add_gidouilles action
+	// Fetch template early (needed for activation_context check)
 	const template = await getTemplateById(supabase, instance.cardId);
 	if (!template) {
 		throw error(404, 'Card template not found');
+	}
+
+	// Student flow: require teacher approval OR valid activation context
+	if (isStudent && !instance.activationApprovedAt) {
+		if (template.activation_context) {
+			const contextValid = await validateActivationContext(
+				template.activation_context,
+				supabase,
+				studentId
+			);
+			if (!contextValid) {
+				throw error(400, 'Cette carte ne peut être activée que dans un contexte spécifique');
+			}
+		} else {
+			throw error(400, "This card hasn't been approved by a teacher yet");
+		}
 	}
 
 	if (!template.action || template.action.type !== 'add_gidouilles') {
