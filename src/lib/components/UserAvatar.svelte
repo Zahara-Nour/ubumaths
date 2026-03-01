@@ -53,13 +53,15 @@
 
 <div class={cn('relative flex size-8 shrink-0 overflow-hidden rounded-full', className)}>
 	{#if showImg}
-		<img
-			src={imgSrc}
-			alt={firstname ? `${firstname} ${lastname ?? ''}`.trim() : 'User'}
-			class="aspect-square size-full object-cover"
-			loading="lazy"
-			onerror={handleImgError}
-		/>
+		{#key imgSrc}
+			<img
+				src={imgSrc}
+				alt={firstname ? `${firstname} ${lastname ?? ''}`.trim() : 'User'}
+				class="aspect-square size-full object-cover"
+				loading="lazy"
+				onerror={handleImgError}
+			/>
+		{/key}
 	{:else}
 		<span class="flex size-full items-center justify-center rounded-full bg-muted text-xs">
 			{initials}
