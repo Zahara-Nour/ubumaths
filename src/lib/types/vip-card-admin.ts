@@ -26,6 +26,7 @@ export interface VipCardTemplate {
 	is_enabled: boolean;
 	action: VipCardAction | null;
 	sort_order: number;
+	activation_context: string | null;
 	created_at: string;
 	updated_at: string;
 }
@@ -97,6 +98,7 @@ export interface TemplateResponse {
 	isEnabled: boolean;
 	action: VipCardAction | null;
 	sortOrder: number;
+	activationContext: string | null;
 	createdAt: string;
 }
 
@@ -198,6 +200,7 @@ export function templateToResponse(template: VipCardTemplate): TemplateResponse 
 		isEnabled: template.is_enabled,
 		action: template.action,
 		sortOrder: template.sort_order,
+		activationContext: template.activation_context,
 		createdAt: template.created_at
 	};
 }
@@ -236,6 +239,7 @@ export function responseToTemplate(response: TemplateResponse): VipCardTemplate 
 		is_enabled: response.isEnabled,
 		action: response.action,
 		sort_order: response.sortOrder,
+		activation_context: response.activationContext,
 		created_at: response.createdAt,
 		updated_at: response.createdAt // Use createdAt as fallback for now
 	};

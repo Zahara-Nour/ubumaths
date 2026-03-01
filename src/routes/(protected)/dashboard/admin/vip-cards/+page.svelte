@@ -32,6 +32,7 @@
 		image_path: string;
 		sort_order: number;
 		action?: VipCardAction | null;
+		activation_context: string | null;
 	}
 
 	interface CreateConfigData {
@@ -63,7 +64,7 @@
 	let editingConfig = $state<VipCardConfig | null>(null);
 
 	// Group templates by rarity using $derived
-	const groupedTemplates = $derived(() => {
+	const groupedTemplates = $derived.by(() => {
 		const groups: Record<string, VipCardTemplate[]> = {
 			common: [],
 			rare: [],
@@ -130,6 +131,7 @@
 			isEnabled: cardData.is_enabled,
 			imagePath: cardData.image_path,
 			sortOrder: cardData.sort_order,
+			activationContext: cardData.activation_context,
 			...(cardData.action ? { action: cardData.action } : {})
 		};
 
@@ -381,7 +383,7 @@
 			</div>
 
 			<!-- Cards grouped by rarity -->
-			{#each Object.entries(groupedTemplates()) as [rarity, cards] (rarity)}
+			{#each Object.entries(groupedTemplates) as [rarity, cards] (rarity)}
 				{#if cards.length > 0}
 					<div class="space-y-4">
 						<h2 class="text-xl font-semibold">

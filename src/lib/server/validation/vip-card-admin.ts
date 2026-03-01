@@ -22,6 +22,11 @@ const rarityEnum = z.enum(['common', 'rare', 'epic', 'legendary']);
 const categoryEnum = z.enum(['bonus', 'privilege', 'social', 'power']);
 
 /**
+ * Valid activation contexts for self-activatable cards
+ */
+const activationContextEnum = z.enum(['any', 'minesweeper']);
+
+/**
  * Valid VIP card rarity levels (copied from draw-vip-cards.ts for consistency)
  */
 const vipCardRarityEnum = z.enum(['common', 'rare', 'epic', 'legendary']);
@@ -201,6 +206,7 @@ export const createTemplateSchema = z
 			.optional()
 			.default(''),
 		action: actionSchema.optional(),
+		activationContext: activationContextEnum.nullable().optional().default(null),
 		sortOrder: z
 			.number()
 			.int('Sort order must be an integer')
@@ -239,6 +245,7 @@ export const updateTemplateSchema = z
 			.max(255, 'Image path must be 255 characters or less')
 			.optional(),
 		action: actionSchema.nullable().optional(),
+		activationContext: activationContextEnum.nullable().optional(),
 		sortOrder: z
 			.number()
 			.int('Sort order must be an integer')

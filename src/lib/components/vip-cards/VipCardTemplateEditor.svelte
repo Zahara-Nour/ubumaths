@@ -26,6 +26,7 @@
 		image_path: string;
 		sort_order: number;
 		action?: VipCardAction | null;
+		activation_context: string | null;
 	}
 
 	const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -42,7 +43,8 @@
 		is_enabled: card?.is_enabled ?? true,
 		image_path: card?.image_path ?? '',
 		sort_order: card?.sort_order ?? 0,
-		action: card?.action as VipCardAction | null
+		action: card?.action as VipCardAction | null,
+		activation_context: card?.activation_context ?? null
 	});
 
 	let saving = $state(false);
@@ -102,6 +104,20 @@
 		{ value: 'social', label: 'Social' },
 		{ value: 'power', label: 'Pouvoir' }
 	];
+
+	const activationContextItems = [
+		{ value: '', label: 'Approbation enseignant (défaut)' },
+		{ value: 'any', label: 'Auto-activation libre' },
+		{ value: 'minesweeper', label: 'Pendant une partie de démineur' }
+	];
+
+	// Bind helper: MySelect uses '' for "no selection", but we store null in DB
+	let activationContextValue = $state(card?.activation_context ?? '');
+
+	// Sync activationContextValue → formData.activation_context
+	$effect(() => {
+		formData.activation_context = activationContextValue === '' ? null : activationContextValue;
+	});
 
 	// Validation using Svelte 5 $derived - separate errors and validation
 	const errors = $derived.by(() => {
@@ -367,6 +383,26 @@
 			formData.action = newAction ?? null;
 		}}
 	/>
+
+	<!-- Activation Context (only relevant if card has an action) -->
+	{#if formData.action}
+		<div class="space-y-2">
+			<Label for="activation_context">Contexte d'activation</Label>
+			<MySelect
+				type="single"
+				bind:value={activationContextValue}
+				items={activationContextItems}
+				placeholder="Sélectionner un contexte"
+			/>
+			<p class="text-xs text-muted-foreground">
+				{#if formData.activation_context}
+					L'élève peut activer cette carte sans approbation de l'enseignant
+				{:else}
+					L'élève doit demander l'approbation de l'enseignant avant d'activer
+				{/if}
+			</p>
+		</div>
+	{/if}
 
 	<!-- Action Buttons -->
 	<div class="flex justify-end gap-2 pt-4">

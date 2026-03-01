@@ -91,6 +91,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				image_path: data.imagePath,
 				is_enabled: data.isEnabled,
 				action: data.action || null,
+				activation_context: data.activationContext ?? null,
 				sort_order: data.sortOrder
 			})
 			.select()
