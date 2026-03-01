@@ -5,8 +5,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarUrl, getAvatarInitials } from '$lib/utils/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 
 	let {
 		open = $bindable(false),
@@ -158,15 +157,12 @@
 							disabled={isUsing}
 							class="flex w-full items-center gap-3 rounded-lg border border-border p-3 text-left transition-colors hover:bg-muted disabled:opacity-50"
 						>
-							<Avatar.Root class="h-10 w-10">
-								<Avatar.Image
-									src={getAvatarUrl({ avatar_url: student.avatar_url, role: 'student' })}
-									alt="{student.firstname} {student.lastname || ''}"
-								/>
-								<Avatar.Fallback class="bg-primary/10 text-sm font-medium text-primary">
-									{getAvatarInitials(student.firstname, student.lastname || null)}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<UserAvatar
+								avatar_url={student.avatar_url}
+								role="student"
+								firstname={student.firstname}
+								lastname={student.lastname}
+							/>
 
 							<div class="flex-1">
 								<p class="font-medium text-foreground">

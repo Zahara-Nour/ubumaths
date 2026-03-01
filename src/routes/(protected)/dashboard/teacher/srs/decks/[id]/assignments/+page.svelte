@@ -17,7 +17,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		ArrowLeft,
@@ -92,15 +92,6 @@
 			hour: '2-digit',
 			minute: '2-digit'
 		});
-	}
-
-	/**
-	 * Get student initials
-	 */
-	function getInitials(firstName?: string, lastName?: string) {
-		const first = firstName?.charAt(0) || '';
-		const last = lastName?.charAt(0) || '';
-		return (first + last).toUpperCase();
 	}
 
 	/**
@@ -230,17 +221,13 @@
 							)}
 						>
 							<!-- Avatar -->
-							<Avatar.Root class="h-12 w-12">
-								{#if assignment.student?.avatarUrl}
-									<Avatar.Image
-										src={assignment.student.avatarUrl}
-										alt={assignment.student.firstName}
-									/>
-								{/if}
-								<Avatar.Fallback>
-									{getInitials(assignment.student?.firstName, assignment.student?.lastName)}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<UserAvatar
+								avatar_url={assignment.student?.avatarUrl}
+								role="student"
+								firstname={assignment.student?.firstName}
+								lastname={assignment.student?.lastName}
+								class="h-12 w-12"
+							/>
 
 							<!-- Student Info -->
 							<div class="flex-1">

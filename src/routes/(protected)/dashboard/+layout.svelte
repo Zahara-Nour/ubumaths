@@ -72,13 +72,12 @@
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { notificationStore } from '$lib/stores/notifications.svelte';
 	import { notificationsRealtimeManager } from '$lib/stores/notificationsRealtime.svelte';
 	import { activityStore } from '$lib/stores/activity.svelte';
-	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import NotificationBanner from '$lib/components/notifications/NotificationBanner.svelte';
 	import NotificationDropdown from '$lib/components/notifications/NotificationDropdown.svelte';
@@ -511,26 +510,14 @@
 					<DropdownMenu.Trigger
 						class="relative h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 					>
-						<Avatar.Root class="h-10 w-10">
-							<Avatar.Image
-								src={getAvatarUrl(
-									{
-										avatar_url: data.profile.avatar_url,
-										role: data.profile.role
-									},
-									data.user ?? undefined
-								)}
-								alt={data.profile.email || 'User'}
-							/>
-							<Avatar.Fallback class="text-xl">
-								{getAvatarInitials(
-									data.profile?.firstname ?? null,
-									data.profile?.lastname ?? null
-								) ||
-									data.profile.email?.charAt(0).toUpperCase() ||
-									'?'}
-							</Avatar.Fallback>
-						</Avatar.Root>
+						<UserAvatar
+							avatar_url={data.profile.avatar_url}
+							role={data.profile.role}
+							firstname={data.profile.firstname}
+							lastname={data.profile.lastname}
+							class="h-10 w-10"
+							user={data.user ?? undefined}
+						/>
 					</DropdownMenu.Trigger>
 					<DropdownMenu.Content align="end" class="w-56">
 						<DropdownMenu.Label>{data.profile.email}</DropdownMenu.Label>

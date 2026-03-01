@@ -26,13 +26,12 @@
 	import ReportMessageDialog from './ReportMessageDialog.svelte';
 	import RestrictedUserBanner from '$lib/components/moderation/RestrictedUserBanner.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import * as Avatar from '$lib/components/ui/avatar';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { ArrowLeft, MoreVertical, Users, UserPlus } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { uploadMultipleAttachments } from '$lib/utils/file-upload';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Component Props
 	interface Props {
@@ -370,15 +369,11 @@
 					{/if}
 
 					<!-- Avatar -->
-					<Avatar.Root class="h-10 w-10">
-						<Avatar.Image
-							src={avatar.src ? getAvatarUrl({ avatar_url: avatar.src, role: 'student' }) : ''}
-							alt={getConversationDisplayName()}
-						/>
-						<Avatar.Fallback class="bg-primary/10 text-primary">
-							{avatar.fallback}
-						</Avatar.Fallback>
-					</Avatar.Root>
+					<UserAvatar
+						avatar_url={avatar.src}
+						firstname={chatStore.activeConversation.other_user_firstname}
+						lastname={chatStore.activeConversation.other_user_lastname}
+					/>
 
 					<!-- Conversation Info -->
 					<div class="flex-1 overflow-hidden">

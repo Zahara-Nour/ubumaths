@@ -2,8 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarUrl } from '$lib/utils/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -168,18 +167,12 @@
 					<div class="flex flex-1 items-center gap-6">
 						<!-- Requester -->
 						<div class="flex items-center gap-3">
-							<Avatar.Root class="size-10">
-								<Avatar.Image
-									src={getAvatarUrl({
-										avatar_url: friendship.requester_avatar,
-										role: friendship.requester_role
-									})}
-									alt={friendship.requester_name}
-								/>
-								<Avatar.Fallback>
-									{friendship.requester_name.charAt(0).toUpperCase()}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<UserAvatar
+								avatar_url={friendship.requester_avatar}
+								role={friendship.requester_role}
+								firstname={friendship.requester_name}
+								class="size-10"
+							/>
 							<div>
 								<p class="font-medium">{friendship.requester_name}</p>
 								<p class="text-sm text-muted-foreground">
@@ -197,18 +190,12 @@
 
 						<!-- Addressee -->
 						<div class="flex items-center gap-3">
-							<Avatar.Root class="size-10">
-								<Avatar.Image
-									src={getAvatarUrl({
-										avatar_url: friendship.addressee_avatar,
-										role: friendship.addressee_role
-									})}
-									alt={friendship.addressee_name}
-								/>
-								<Avatar.Fallback>
-									{friendship.addressee_name.charAt(0).toUpperCase()}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<UserAvatar
+								avatar_url={friendship.addressee_avatar}
+								role={friendship.addressee_role}
+								firstname={friendship.addressee_name}
+								class="size-10"
+							/>
 							<div>
 								<p class="font-medium">{friendship.addressee_name}</p>
 								<p class="text-sm text-muted-foreground">

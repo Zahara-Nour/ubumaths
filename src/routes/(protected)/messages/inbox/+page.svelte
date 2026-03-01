@@ -19,8 +19,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { cn } from '$lib/utils';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarUrl } from '$lib/utils/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 
 	let searchQuery = $state('');
 	let selectedIndex = $state(-1);
@@ -205,15 +204,7 @@
 					>
 						<!-- Avatar -->
 						<div class="flex-shrink-0">
-							<Avatar.Root class="h-10 w-10">
-								<Avatar.Image
-									src={getAvatarUrl({ avatar_url: message.sender_avatar_url, role: 'student' })}
-									alt={message.sender_name}
-								/>
-								<Avatar.Fallback class="bg-primary text-primary-foreground">
-									{message.sender_name?.charAt(0)?.toUpperCase() || '?'}
-								</Avatar.Fallback>
-							</Avatar.Root>
+							<UserAvatar avatar_url={message.sender_avatar_url} />
 						</div>
 
 						<!-- Content -->

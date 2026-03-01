@@ -15,14 +15,13 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as Card from '$lib/components/ui/card';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { Database } from '$lib/types/database';
-	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { Upload, Save, RotateCcw, Loader2, Clock, Check, X } from 'lucide-svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Switch } from '$lib/components/ui/switch';
@@ -889,18 +888,12 @@
 											: ''}"
 									>
 										<div class="flex items-center gap-3">
-											<Avatar.Root class="h-10 w-10">
-												<Avatar.Image
-													src={getAvatarUrl({
-														avatar_url: user.avatar_url,
-														role: user.role
-													})}
-													alt={getFullName(user)}
-												/>
-												<Avatar.Fallback
-													>{getAvatarInitials(user.firstname, user.lastname)}</Avatar.Fallback
-												>
-											</Avatar.Root>
+											<UserAvatar
+												avatar_url={user.avatar_url}
+												role={user.role}
+												firstname={user.firstname}
+												lastname={user.lastname}
+											/>
 											<div class="min-w-0 flex-1">
 												<p class="truncate text-sm font-medium text-foreground">
 													{getFullName(user)}
@@ -949,21 +942,15 @@
 						<Card.Content class="space-y-6">
 							<!-- Avatar -->
 							{#if selectedUser}
-								{@const role = selectedUser.role || 'student'}
 								<div class="flex justify-between">
 									<div class="flex items-center gap-4">
-										<Avatar.Root class="h-20 w-20">
-											<Avatar.Image
-												src={getAvatarUrl({
-													avatar_url: selectedUser.avatar_url,
-													role: role
-												})}
-												alt={getFullName(selectedUser)}
-											/>
-											<Avatar.Fallback class="text-2xl">
-												{getAvatarInitials(selectedUser.firstname, selectedUser.lastname)}
-											</Avatar.Fallback>
-										</Avatar.Root>
+										<UserAvatar
+											avatar_url={selectedUser.avatar_url}
+											role={selectedUser.role}
+											firstname={selectedUser.firstname}
+											lastname={selectedUser.lastname}
+											class="h-20 w-20"
+										/>
 										<div class="flex-1">
 											<h3 class="text-xl font-semibold">{getFullName(selectedUser)}</h3>
 											<p class="text-sm text-muted-foreground">{selectedUser.email}</p>

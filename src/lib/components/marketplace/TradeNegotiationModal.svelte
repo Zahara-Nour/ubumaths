@@ -5,13 +5,12 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Separator } from '$lib/components/ui/separator';
 	import VipCardSelector from './VipCardSelector.svelte';
 	import { ArrowLeftRight, CheckCircle, XCircle } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Props
 	let {
@@ -177,9 +176,7 @@
 					<div class="space-y-3">
 						<div class="rounded-lg border p-4">
 							<div class="mb-2 flex items-center gap-2">
-								<Avatar.Root class="h-6 w-6">
-									<Avatar.Fallback>Vous</Avatar.Fallback>
-								</Avatar.Root>
+								<UserAvatar role="student" class="h-6 w-6" />
 								<span class="font-medium">Vous offrez</span>
 							</div>
 							<div class="text-sm text-muted-foreground">
@@ -194,14 +191,12 @@
 
 						<div class="rounded-lg border p-4">
 							<div class="mb-2 flex items-center gap-2">
-								<Avatar.Root class="h-6 w-6">
-									<Avatar.Image
-										src={getAvatarUrl({ avatar_url: partner?.avatar_url, role: 'student' })}
-									/>
-									<Avatar.Fallback>
-										{partner?.username?.charAt(0).toUpperCase() || '?'}
-									</Avatar.Fallback>
-								</Avatar.Root>
+								<UserAvatar
+									avatar_url={partner?.avatar_url}
+									role="student"
+									firstname={partner?.username}
+									class="h-6 w-6"
+								/>
 								<span class="font-medium">{partner?.username} offre</span>
 							</div>
 							<div class="text-sm text-muted-foreground">

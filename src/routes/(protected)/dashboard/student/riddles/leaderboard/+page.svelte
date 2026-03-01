@@ -9,9 +9,8 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarUrl } from '$lib/utils/avatar';
-	import { Trophy, User, ArrowLeft, Crown } from 'lucide-svelte';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { Trophy, ArrowLeft, Crown } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 
 	let { data }: { data: PageData } = $props();
@@ -80,18 +79,12 @@
 			<!-- 2nd Place -->
 			<div class="order-1 flex flex-col items-center">
 				<div class="mb-1 text-2xl sm:mb-2 sm:text-4xl">🥈</div>
-				<Avatar.Root class="h-10 w-10 border-2 border-gray-400 sm:h-16 sm:w-16 sm:border-4">
-					<Avatar.Image
-						src={getAvatarUrl({
-							avatar_url: data.leaderboard[1].profile.avatar_url,
-							role: 'student'
-						})}
-						alt="Avatar 2ème"
-					/>
-					<Avatar.Fallback>
-						<User class="h-4 w-4 sm:h-6 sm:w-6" />
-					</Avatar.Fallback>
-				</Avatar.Root>
+				<UserAvatar
+					avatar_url={data.leaderboard[1].profile.avatar_url}
+					role="student"
+					firstname={data.leaderboard[1].profile.firstname}
+					class="h-10 w-10 border-2 border-gray-400 sm:h-16 sm:w-16 sm:border-4"
+				/>
 				<p class="mt-1 line-clamp-1 text-center text-xs font-medium sm:mt-2 sm:text-sm">
 					{data.leaderboard[1].profile.firstname || ''}
 				</p>
@@ -106,18 +99,12 @@
 			<!-- 1st Place -->
 			<div class="order-2 flex flex-col items-center">
 				<div class="mb-1 text-3xl sm:mb-2 sm:text-5xl">🥇</div>
-				<Avatar.Root class="h-14 w-14 border-2 border-yellow-500 sm:h-20 sm:w-20 sm:border-4">
-					<Avatar.Image
-						src={getAvatarUrl({
-							avatar_url: data.leaderboard[0].profile.avatar_url,
-							role: 'student'
-						})}
-						alt="Avatar 1er"
-					/>
-					<Avatar.Fallback>
-						<User class="h-5 w-5 sm:h-8 sm:w-8" />
-					</Avatar.Fallback>
-				</Avatar.Root>
+				<UserAvatar
+					avatar_url={data.leaderboard[0].profile.avatar_url}
+					role="student"
+					firstname={data.leaderboard[0].profile.firstname}
+					class="h-14 w-14 border-2 border-yellow-500 sm:h-20 sm:w-20 sm:border-4"
+				/>
 				<p class="mt-1 line-clamp-1 text-center text-sm font-bold sm:mt-2">
 					{data.leaderboard[0].profile.firstname || ''}
 				</p>
@@ -132,18 +119,12 @@
 			<!-- 3rd Place -->
 			<div class="order-3 flex flex-col items-center">
 				<div class="mb-1 text-2xl sm:mb-2 sm:text-4xl">🥉</div>
-				<Avatar.Root class="h-10 w-10 border-2 border-amber-600 sm:h-16 sm:w-16 sm:border-4">
-					<Avatar.Image
-						src={getAvatarUrl({
-							avatar_url: data.leaderboard[2].profile.avatar_url,
-							role: 'student'
-						})}
-						alt="Avatar 3ème"
-					/>
-					<Avatar.Fallback>
-						<User class="h-4 w-4 sm:h-6 sm:w-6" />
-					</Avatar.Fallback>
-				</Avatar.Root>
+				<UserAvatar
+					avatar_url={data.leaderboard[2].profile.avatar_url}
+					role="student"
+					firstname={data.leaderboard[2].profile.firstname}
+					class="h-10 w-10 border-2 border-amber-600 sm:h-16 sm:w-16 sm:border-4"
+				/>
 				<p class="mt-1 line-clamp-1 text-center text-xs font-medium sm:mt-2 sm:text-sm">
 					{data.leaderboard[2].profile.firstname || ''}
 				</p>
@@ -183,15 +164,12 @@
 								</div>
 
 								<!-- Avatar -->
-								<Avatar.Root>
-									<Avatar.Image
-										src={getAvatarUrl({ avatar_url: entry.profile.avatar_url, role: 'student' })}
-										alt="Avatar élève"
-									/>
-									<Avatar.Fallback>
-										<User class="h-4 w-4" />
-									</Avatar.Fallback>
-								</Avatar.Root>
+								<UserAvatar
+									avatar_url={entry.profile.avatar_url}
+									role="student"
+									firstname={entry.profile.firstname}
+									lastname={entry.profile.lastname}
+								/>
 
 								<!-- Info -->
 								<div>

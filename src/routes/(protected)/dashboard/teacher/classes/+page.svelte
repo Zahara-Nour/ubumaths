@@ -44,7 +44,7 @@
 	import type { StudentWithEmailStatus } from './+page.server';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Card from '$lib/components/ui/card';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
@@ -55,7 +55,6 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 	import { Mail, CheckCircle2, BookOpen, GraduationCap, Loader2, ScrollText } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -617,15 +616,13 @@
 									{#each students as student (student.id)}
 										<div class="flex items-center justify-between py-3">
 											<div class="flex items-center gap-3">
-												<Avatar.Root class="size-8">
-													<Avatar.Image
-														src={getAvatarUrl({ avatar_url: student.avatar_url, role: 'student' })}
-														alt={getStudentDisplayName(student)}
-													/>
-													<Avatar.Fallback>
-														{student.firstname?.charAt(0).toUpperCase() || '?'}
-													</Avatar.Fallback>
-												</Avatar.Root>
+												<UserAvatar
+													avatar_url={student.avatar_url}
+													role="student"
+													firstname={student.firstname}
+													lastname={student.lastname}
+													class="size-8"
+												/>
 												<div>
 													<p class="font-medium text-foreground">
 														{getStudentDisplayName(student)}

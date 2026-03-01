@@ -79,13 +79,12 @@
 
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
 	import { openVipCardsModal } from '$lib/utils/vip-card-modals';
 	import { openBonusReasonModal } from '$lib/utils/bonus-modals';
-	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { onDestroy } from 'svelte';
 	import { Star, Loader2, ScrollText } from 'lucide-svelte';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
@@ -538,18 +537,13 @@
 						<!-- Name with Avatar -->
 						<Table.Cell class="font-medium">
 							<div class="flex items-center gap-2">
-								<Avatar.Root class="h-8 w-8">
-									<Avatar.Image
-										src={getAvatarUrl({
-											avatar_url: student.avatar_url,
-											role: (student.role as 'student' | 'teacher' | 'admin') || 'student'
-										})}
-										alt={student.firstname}
-									/>
-									<Avatar.Fallback>
-										{getAvatarInitials(student.firstname, student.lastname)}
-									</Avatar.Fallback>
-								</Avatar.Root>
+								<UserAvatar
+									avatar_url={student.avatar_url}
+									role={student.role || 'student'}
+									firstname={student.firstname}
+									lastname={student.lastname}
+									class="h-8 w-8"
+								/>
 								<span>
 									{student.firstname}
 									{#if student.lastname}

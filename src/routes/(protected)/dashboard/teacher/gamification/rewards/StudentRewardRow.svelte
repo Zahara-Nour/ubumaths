@@ -15,9 +15,8 @@
 
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip';
-	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { canAffordVipCard } from '$lib/utils/vip-cards';
 	import { Sparkles, Eye, Loader2, Plus, Star } from 'lucide-svelte';
 	import { getTemplateById, vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
@@ -84,18 +83,13 @@
 
 <div class="flex items-center gap-3 px-4 py-3">
 	<!-- AVATAR -->
-	<Avatar.Root class="h-9 w-9 flex-shrink-0">
-		<Avatar.Image
-			src={getAvatarUrl({
-				avatar_url: student.avatar_url,
-				role: (student.role as 'student' | 'teacher' | 'admin') || 'student'
-			})}
-			alt={getFullName(student.firstname, student.lastname, student.full_name)}
-		/>
-		<Avatar.Fallback class="bg-primary/10 text-sm font-semibold text-primary">
-			{getAvatarInitials(student.firstname, student.lastname)}
-		</Avatar.Fallback>
-	</Avatar.Root>
+	<UserAvatar
+		avatar_url={student.avatar_url}
+		role={student.role || 'student'}
+		firstname={student.firstname}
+		lastname={student.lastname}
+		class="h-9 w-9 flex-shrink-0"
+	/>
 
 	<!-- STUDENT NAME -->
 	<div class="min-w-[120px] flex-1">

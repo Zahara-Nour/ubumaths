@@ -6,7 +6,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import {
 		ArrowLeftRight,
 		Clock,
@@ -21,7 +21,6 @@
 	import { fr } from 'date-fns/locale';
 	import TradeNegotiationModal from './TradeNegotiationModal.svelte';
 	import StartFriendTradeModal from './StartFriendTradeModal.svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
@@ -218,15 +217,11 @@
 						<Card.Header>
 							<div class="flex items-start justify-between">
 								<div class="flex items-center gap-3">
-									<Avatar.Root class="h-10 w-10">
-										<Avatar.Image
-											src={getAvatarUrl({ avatar_url: partner?.avatar_url, role: 'student' })}
-											alt={partner?.username}
-										/>
-										<Avatar.Fallback>
-											{partner?.username?.charAt(0).toUpperCase() || '?'}
-										</Avatar.Fallback>
-									</Avatar.Root>
+									<UserAvatar
+										avatar_url={partner?.avatar_url}
+										role="student"
+										firstname={partner?.username}
+									/>
 
 									<div>
 										<Card.Title class="text-lg">
@@ -322,15 +317,12 @@
 						<Card.Content class="py-4">
 							<div class="flex items-center justify-between">
 								<div class="flex items-center gap-3">
-									<Avatar.Root class="h-8 w-8">
-										<Avatar.Image
-											src={getAvatarUrl({ avatar_url: partner?.avatar_url, role: 'student' })}
-											alt={partner?.username}
-										/>
-										<Avatar.Fallback>
-											{partner?.username?.charAt(0).toUpperCase() || '?'}
-										</Avatar.Fallback>
-									</Avatar.Root>
+									<UserAvatar
+										avatar_url={partner?.avatar_url}
+										role="student"
+										firstname={partner?.username}
+										class="h-8 w-8"
+									/>
 
 									<div>
 										<h4 class="font-medium">

@@ -11,8 +11,7 @@
 	import { page } from '$app/state';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { uploadMultipleMessageAttachments } from '$lib/utils/file-upload';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarUrl } from '$lib/utils/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 
 	// Props
 	let { data } = $props();
@@ -561,18 +560,11 @@
 													disabled={replyToMessageId !== null}
 												/>
 												<div class="flex flex-1 items-center gap-2">
-													<Avatar.Root class="h-8 w-8">
-														<Avatar.Image
-															src={getAvatarUrl({
-																avatar_url: recipient.avatar_url,
-																role: 'student'
-															})}
-															alt={recipient.full_name}
-														/>
-														<Avatar.Fallback class="bg-primary text-sm text-primary-foreground">
-															{recipient.full_name?.charAt(0)?.toUpperCase() || '?'}
-														</Avatar.Fallback>
-													</Avatar.Root>
+													<UserAvatar
+														avatar_url={recipient.avatar_url}
+														role={recipient.role}
+														class="h-8 w-8"
+													/>
 													<span class="text-sm font-medium">{recipient.full_name || 'Inconnu'}</span
 													>
 													<span class="text-xs text-muted-foreground">({recipient.role})</span>

@@ -25,8 +25,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Card from '$lib/components/ui/card';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarUrl } from '$lib/utils/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import {
 		RefreshCw,
 		ChevronDown,
@@ -53,14 +52,6 @@
 	let studentName = $derived(
 		student ? `${student.firstname || ''} ${student.lastname || ''}`.trim() || 'Eleve' : 'Eleve'
 	);
-
-	// Get initials for avatar fallback
-	let studentInitials = $derived.by(() => {
-		if (!student) return '?';
-		const first = student.firstname?.charAt(0) || '';
-		const last = student.lastname?.charAt(0) || '';
-		return (first + last).toUpperCase() || '?';
-	});
 
 	// Initialize store on mount with studentId
 	onMount(() => {
@@ -138,15 +129,13 @@
 				</Button>
 
 				<!-- Student Avatar -->
-				<Avatar.Root class="h-12 w-12">
-					<Avatar.Image
-						src={getAvatarUrl({ avatar_url: student?.avatar_url, role: 'student' })}
-						alt={studentName}
-					/>
-					<Avatar.Fallback class="bg-primary/10 text-primary">
-						{studentInitials}
-					</Avatar.Fallback>
-				</Avatar.Root>
+				<UserAvatar
+					avatar_url={student?.avatar_url}
+					role="student"
+					firstname={student?.firstname}
+					lastname={student?.lastname}
+					class="h-12 w-12"
+				/>
 
 				<!-- Title and Description -->
 				<div>

@@ -19,14 +19,13 @@
 -->
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Avatar from '$lib/components/ui/avatar';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import OnlineStatus from '$lib/components/OnlineStatus.svelte';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Search, MessageSquare } from 'lucide-svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { presenceManager } from '$lib/stores/presence.svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Component Props
 	interface Props {
@@ -193,16 +192,11 @@
 						>
 							<!-- Avatar with Online Status -->
 							<div class="relative flex-shrink-0">
-								<Avatar.Root class="h-10 w-10">
-									<Avatar.Image
-										src={getAvatarUrl({ ...friend, role: 'student' })}
-										alt="{friend.firstname} {friend.lastname}"
-									/>
-									<Avatar.Fallback class="bg-primary/10 text-primary">
-										{friend.firstname[0]?.toUpperCase() || '?'}
-										{friend.lastname[0]?.toUpperCase() || ''}
-									</Avatar.Fallback>
-								</Avatar.Root>
+								<UserAvatar
+									avatar_url={friend.avatar_url}
+									firstname={friend.firstname}
+									lastname={friend.lastname}
+								/>
 
 								<div class="absolute -right-1 -bottom-1">
 									<OnlineStatus status={presenceManager.getFriendPresence(friend.id)} size="sm" />

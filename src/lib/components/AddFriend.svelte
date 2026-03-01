@@ -2,12 +2,11 @@
 	import { onMount } from 'svelte';
 	import { friendsManager, type ClassmateInfo } from '$lib/stores/friends.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Search, UserPlus, Check, Clock, UserX, Users, Loader2 } from 'lucide-svelte';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Friendship relationship type (different from status which is 'pending' | 'accepted' | 'blocked')
 	type FriendshipRelationType = 'classmate' | 'mentor';
@@ -214,12 +213,13 @@
 						>
 							<div class="flex items-center gap-3">
 								<!-- Avatar -->
-								<Avatar.Root class="size-9">
-									<Avatar.Image src={getAvatarUrl(classmate)} alt={displayName} />
-									<Avatar.Fallback>
-										{displayName.charAt(0).toUpperCase()}
-									</Avatar.Fallback>
-								</Avatar.Root>
+								<UserAvatar
+									avatar_url={classmate.avatar_url}
+									role="student"
+									firstname={classmate.firstname}
+									lastname={classmate.lastname}
+									class="size-9"
+								/>
 
 								<!-- Name -->
 								<p class="font-medium">{displayName}</p>
@@ -312,12 +312,13 @@
 				<div class="flex items-center justify-between rounded-lg border border-border bg-card p-4">
 					<div class="flex items-center gap-3">
 						<!-- Avatar -->
-						<Avatar.Root class="size-10">
-							<Avatar.Image src={getAvatarUrl(user)} alt={getDisplayName(user)} />
-							<Avatar.Fallback>
-								{getDisplayName(user).charAt(0).toUpperCase()}
-							</Avatar.Fallback>
-						</Avatar.Root>
+						<UserAvatar
+							avatar_url={user.avatar_url}
+							role={user.role}
+							firstname={user.firstname}
+							lastname={user.lastname}
+							class="size-10"
+						/>
 
 						<!-- Name and Role -->
 						<div>

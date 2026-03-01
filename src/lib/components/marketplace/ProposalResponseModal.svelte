@@ -4,10 +4,9 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { CheckCircle, XCircle } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
-	import { getAvatarUrl } from '$lib/utils/avatar';
 	import { fr } from 'date-fns/locale';
 
 	// Props
@@ -87,15 +86,11 @@
 		<div class="space-y-4">
 			<!-- Proposer Info -->
 			<div class="flex items-center gap-3">
-				<Avatar.Root class="h-10 w-10">
-					<Avatar.Image
-						src={getAvatarUrl({ avatar_url: proposal.proposer?.avatar_url, role: 'student' })}
-						alt={proposal.proposer?.username}
-					/>
-					<Avatar.Fallback>
-						{proposal.proposer?.username?.charAt(0).toUpperCase() || '?'}
-					</Avatar.Fallback>
-				</Avatar.Root>
+				<UserAvatar
+					avatar_url={proposal.proposer?.avatar_url}
+					role="student"
+					firstname={proposal.proposer?.username}
+				/>
 				<div>
 					<div class="font-medium">{proposal.proposer?.username || 'Anonyme'}</div>
 					<div class="text-sm text-muted-foreground">
