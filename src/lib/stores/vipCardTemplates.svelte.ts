@@ -13,6 +13,8 @@ type VipCardTemplateRow = Database['public']['Tables']['vip_card_templates']['Ro
 
 export interface VipCardTemplate extends Omit<VipCardTemplateRow, 'action'> {
 	action: VipCardAction | null;
+	// Added ahead of pnpm db:types — will be redundant once database.ts is regenerated
+	activation_context?: string | null;
 }
 
 // Create the writable store
@@ -100,7 +102,8 @@ export function templateToVipCard(template: VipCardTemplate): VipCard {
 		imagePath: template.image_path,
 		category: template.category as VipCardCategory | undefined,
 		rarity: template.rarity as VipCardRarity,
-		action: template.action ?? undefined
+		action: template.action ?? undefined,
+		activationContext: template.activation_context ?? undefined
 	};
 }
 

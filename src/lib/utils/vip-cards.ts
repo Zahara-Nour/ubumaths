@@ -53,6 +53,7 @@ export function getStudentCardsWithCounts(
 	category?: string;
 	rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 	action?: VipCardAction;
+	activationContext?: string | null;
 	count: number;
 }> {
 	const cardMap = new Map<
@@ -65,6 +66,7 @@ export function getStudentCardsWithCounts(
 			category?: string;
 			rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 			action?: VipCardAction;
+			activationContext?: string | null;
 			count: number;
 		}
 	>();
@@ -86,6 +88,7 @@ export function getStudentCardsWithCounts(
 					category: template.category || undefined,
 					rarity: template.rarity as 'common' | 'rare' | 'epic' | 'legendary',
 					action: template.action ?? undefined,
+					activationContext: template.activation_context ?? undefined,
 					count: 1
 				});
 			}

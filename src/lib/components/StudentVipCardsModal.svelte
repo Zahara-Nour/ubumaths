@@ -138,6 +138,13 @@
 	}
 
 	/**
+	 * Check if a card is self-activatable (has activation_context on its template)
+	 */
+	function isSelfActivatable(card: { activationContext?: string | null }): boolean {
+		return !!card.activationContext;
+	}
+
+	/**
 	 * Check if a card has a pending activation request
 	 */
 	function cardHasPendingRequest(cardId: string): boolean {
@@ -176,6 +183,21 @@
 	}
 
 	/**
+	 * Find any unused instance of a card (regardless of activation state)
+	 * Used for self-activatable cards that don't need teacher approval
+	 */
+	function findAnyUnusedInstance(cardId: string): string | null {
+		const entries = Object.entries(vipCards);
+		// Prefer instances without pending request, but accept any unused
+		const noPending = entries.find(
+			([_, inst]) => inst.cardId === cardId && !inst.usedAt && !inst.activationRequestedAt
+		);
+		if (noPending) return noPending[0];
+		const anyUnused = entries.find(([_, inst]) => inst.cardId === cardId && !inst.usedAt);
+		return anyUnused ? anyUnused[0] : null;
+	}
+
+	/**
 	 * Find the approved instance of a card
 	 */
 	function findApprovedInstance(cardId: string): string | null {
@@ -194,6 +216,7 @@
 		id: string;
 		name: string;
 		action?: VipCardType['action'];
+		activationContext?: string | null;
 	}) {
 		// Verify card has an action
 		if (!card.action) {
@@ -201,10 +224,15 @@
 			return;
 		}
 
-		// Find the approved instance
-		const instanceId = findApprovedInstance(card.id);
+		// For self-activatable cards: find any unused instance
+		// For teacher-approved cards: find an approved instance
+		const instanceId = isSelfActivatable(card)
+			? findAnyUnusedInstance(card.id)
+			: findApprovedInstance(card.id);
 		if (!instanceId) {
-			toaster.error('Aucune carte approuvée trouvée');
+			toaster.error(
+				isSelfActivatable(card) ? 'Aucune carte disponible' : 'Aucune carte approuvée trouvée'
+			);
 			return;
 		}
 
@@ -463,7 +491,18 @@
 
 					<!-- Request Activation / Activate Button (only for action cards) -->
 					{#if card.action}
-						{#if cardIsApproved(card.id)}
+						{#if isSelfActivatable(card)}
+							<!-- Self-activatable: direct activation without teacher approval -->
+							<Button
+								size="sm"
+								variant="default"
+								class="bg-gradient-to-r from-green-500 to-emerald-500 text-xs text-white hover:from-green-600 hover:to-emerald-600"
+								onclick={() => handleActivateCard(card)}
+							>
+								<Sparkles class="mr-1 h-3 w-3" />
+								Activer
+							</Button>
+						{:else if cardIsApproved(card.id)}
 							<!-- Activate Button (approved, ready to use) -->
 							<Button
 								size="sm"

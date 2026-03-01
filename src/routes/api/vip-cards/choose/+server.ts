@@ -36,6 +36,7 @@ import { getRarityPoints } from '$lib/types/vip-card';
 import { getTemplateById, getTemplatesByIds } from '$lib/server/vip-card-queries';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { validateActivationContext } from '$lib/server/vip-card-context';
 
 // ============================================================================
 // POST HANDLER
@@ -103,15 +104,26 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, `Action card already used: ${data.actionCardInstanceId}`);
 	}
 
-	// If student flow: require teacher approval
-	if (isStudent && !actionCardInstance.activationApprovedAt) {
-		throw error(400, 'This card must be approved by a teacher before use.');
-	}
-
-	// Get action card template from database
+	// Get action card template from database (used for both context check and action validation)
 	const actionCard = await getTemplateById(supabase, actionCardInstance.cardId);
 	if (!actionCard) {
 		throw error(404, `Action card definition not found: ${actionCardInstance.cardId}`);
+	}
+
+	// If student flow: require teacher approval OR valid activation context
+	if (isStudent && !actionCardInstance.activationApprovedAt) {
+		if (actionCard.activation_context) {
+			const contextValid = await validateActivationContext(
+				actionCard.activation_context,
+				supabase,
+				data.studentId
+			);
+			if (!contextValid) {
+				throw error(400, 'Cette carte ne peut être activée que dans un contexte spécifique');
+			}
+		} else {
+			throw error(400, 'This card must be approved by a teacher before use.');
+		}
 	}
 
 	// Validate card has choose_card action

@@ -31,14 +31,17 @@
 		card: VipCard;
 		vipCardInstance: VipCardInstance;
 		onActivationRequested?: () => void;
+		onActivate?: () => void; // Direct activation callback for self-activatable cards
 	}
 
-	let { instanceId, studentId, card, vipCardInstance, onActivationRequested }: Props = $props();
+	let { instanceId, studentId, card, vipCardInstance, onActivationRequested, onActivate }: Props =
+		$props();
 
 	// State
 	let isRequesting = $state(false);
 
 	// Computed states
+	const isSelfActivatable = $derived(!!card.activationContext);
 	const isPending = $derived(!!vipCardInstance.activationRequestedAt);
 	const isUsed = $derived(!!vipCardInstance.usedAt);
 	const canActivate = $derived(!isUsed && !isPending && !!card.action);
@@ -123,7 +126,20 @@
 	}
 </script>
 
-{#if canActivate}
+{#if isSelfActivatable && !isUsed && !!card.action}
+	<!-- Self-activatable: direct activation without teacher approval -->
+	<div class="mt-2 flex flex-col gap-1">
+		<p class="text-center text-xs text-muted-foreground">{actionDescription}</p>
+		<Button
+			onclick={() => onActivate?.()}
+			size="sm"
+			class="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+		>
+			<Sparkles class="mr-2 h-4 w-4" />
+			Activer
+		</Button>
+	</div>
+{:else if canActivate}
 	<div class="mt-2 flex flex-col gap-1">
 		<p class="text-center text-xs text-muted-foreground">{actionDescription}</p>
 		<Button

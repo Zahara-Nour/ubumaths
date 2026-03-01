@@ -10941,6 +10941,7 @@ export type Database = {
 			vip_card_templates: {
 				Row: {
 					action: Json | null;
+					activation_context: string | null;
 					base_price: number;
 					category: string | null;
 					created_at: string;
@@ -10958,6 +10959,7 @@ export type Database = {
 				};
 				Insert: {
 					action?: Json | null;
+					activation_context?: string | null;
 					base_price?: number;
 					category?: string | null;
 					created_at?: string;
@@ -10975,6 +10977,7 @@ export type Database = {
 				};
 				Update: {
 					action?: Json | null;
+					activation_context?: string | null;
 					base_price?: number;
 					category?: string | null;
 					created_at?: string;
@@ -13007,14 +13010,6 @@ export type Database = {
 				| {
 						Args: {
 							p_card_id?: string;
-							p_source?: string;
-							p_student_id: string;
-						};
-						Returns: string;
-				  }
-				| {
-						Args: {
-							p_card_id?: string;
 							p_extra_metadata?: Json;
 							p_source?: string;
 							p_student_id: string;
@@ -14607,24 +14602,15 @@ export type Database = {
 				Args: { p_game_id: string; p_grid_state: Json };
 				Returns: Json;
 			};
-			use_vip_card:
-				| {
-						Args: {
-							p_card_id?: string;
-							p_instance_id?: string;
-							p_student_id: string;
-						};
-						Returns: Json;
-				  }
-				| {
-						Args: {
-							p_card_id?: string;
-							p_instance_id?: string;
-							p_metadata?: Json;
-							p_student_id: string;
-						};
-						Returns: Json;
-				  };
+			use_vip_card: {
+				Args: {
+					p_card_id?: string;
+					p_instance_id?: string;
+					p_metadata?: Json;
+					p_student_id: string;
+				};
+				Returns: Json;
+			};
 			validate_1on1_chat_creation: {
 				Args: { p_user1_id: string; p_user2_id: string };
 				Returns: boolean;
