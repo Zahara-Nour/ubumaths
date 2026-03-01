@@ -195,7 +195,7 @@
 							<div class="relative flex-shrink-0">
 								<Avatar.Root class="h-10 w-10">
 									<Avatar.Image
-										src={getAvatarUrl(friend)}
+										src={getAvatarUrl({ ...friend, role: 'student' })}
 										alt="{friend.firstname} {friend.lastname}"
 									/>
 									<Avatar.Fallback class="bg-primary/10 text-primary">

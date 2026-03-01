@@ -372,7 +372,7 @@
 					<!-- Avatar -->
 					<Avatar.Root class="h-10 w-10">
 						<Avatar.Image
-							src={avatar.src ? getAvatarUrl({ avatar_url: avatar.src }) : ''}
+							src={avatar.src ? getAvatarUrl({ avatar_url: avatar.src, role: 'student' }) : ''}
 							alt={getConversationDisplayName()}
 						/>
 						<Avatar.Fallback class="bg-primary/10 text-primary">

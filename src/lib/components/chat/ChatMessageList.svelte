@@ -253,7 +253,7 @@
 						<div class="flex-shrink-0">
 							<Avatar.Root class="h-8 w-8">
 								<Avatar.Image
-									src={getAvatarUrl({ avatar_url: message.sender_avatar_url })}
+									src={getAvatarUrl({ avatar_url: message.sender_avatar_url, role: 'student' })}
 									alt={getSenderName(message)}
 								/>
 								<Avatar.Fallback class="bg-primary/10 text-xs text-primary">

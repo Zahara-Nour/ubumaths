@@ -24,10 +24,10 @@
 	import { goto } from '$app/navigation';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import { cn } from '$lib/utils';
+	import * as Avatar from '$lib/components/ui/avatar';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	const messageId = $derived(page.params.id);
-
-	let failedAvatars = $state<Set<string>>(new Set());
 
 	// Load message on mount
 	onMount(async () => {
@@ -37,12 +37,6 @@
 	});
 
 	const message = $derived(privateMessages.currentMessage);
-
-	// Handle avatar load error
-	function handleAvatarError(userId: string) {
-		failedAvatars.add(userId);
-		failedAvatars = failedAvatars; // Trigger reactivity
-	}
 
 	// Format date
 	function formatDate(dateStr: string): string {
@@ -199,20 +193,15 @@
 				<div class="mt-4 flex items-start justify-between border-b border-border pb-4">
 					<div class="flex items-start gap-3">
 						<!-- Sender avatar -->
-						{#if message.sender_avatar_url && !failedAvatars.has(message.sender_id)}
-							<img
-								src={message.sender_avatar_url}
+						<Avatar.Root class="h-12 w-12">
+							<Avatar.Image
+								src={getAvatarUrl({ avatar_url: message.sender_avatar_url, role: 'student' })}
 								alt={message.sender_name}
-								class="h-12 w-12 rounded-full object-cover"
-								onerror={() => handleAvatarError(message.sender_id)}
 							/>
-						{:else}
-							<div
-								class="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground"
-							>
+							<Avatar.Fallback class="bg-primary text-primary-foreground">
 								{message.sender_name?.charAt(0)?.toUpperCase() || '?'}
-							</div>
-						{/if}
+							</Avatar.Fallback>
+						</Avatar.Root>
 
 						<div>
 							<div class="font-semibold text-foreground">
@@ -241,20 +230,15 @@
 							<div class="mt-1 space-y-1">
 								{#each message.recipients as recipient (recipient.id)}
 									<div class="flex items-center justify-end gap-2">
-										{#if recipient.avatar_url && !failedAvatars.has(recipient.id)}
-											<img
-												src={recipient.avatar_url}
+										<Avatar.Root class="h-6 w-6">
+											<Avatar.Image
+												src={getAvatarUrl({ avatar_url: recipient.avatar_url, role: 'student' })}
 												alt={recipient.name || 'Destinataire'}
-												class="h-6 w-6 rounded-full object-cover"
-												onerror={() => handleAvatarError(recipient.id)}
 											/>
-										{:else}
-											<div
-												class="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs text-primary"
-											>
+											<Avatar.Fallback class="bg-primary/10 text-xs text-primary">
 												{recipient.name?.charAt(0)?.toUpperCase() || '?'}
-											</div>
-										{/if}
+											</Avatar.Fallback>
+										</Avatar.Root>
 										<span class="text-sm font-medium"
 											>{recipient.name || 'Destinataire inconnu'}</span
 										>

@@ -8,6 +8,7 @@
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import VipCard from '$lib/components/VipCard.svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Props
 	let {
@@ -118,7 +119,7 @@
 			<div class="flex items-center gap-2">
 				<Avatar.Root class="h-6 w-6">
 					<Avatar.Image
-						src={listing.creator?.avatar_url || '/default-avatar.jpg'}
+						src={getAvatarUrl({ avatar_url: listing.creator?.avatar_url, role: 'student' })}
 						alt={listing.creator?.username}
 					/>
 					<Avatar.Fallback>
@@ -224,7 +225,7 @@
 				<!-- Avatar -->
 				<Avatar.Root class="h-10 w-10 shrink-0">
 					<Avatar.Image
-						src={listing.creator?.avatar_url || '/default-avatar.jpg'}
+						src={getAvatarUrl({ avatar_url: listing.creator?.avatar_url, role: 'student' })}
 						alt={listing.creator?.username}
 					/>
 					<Avatar.Fallback>

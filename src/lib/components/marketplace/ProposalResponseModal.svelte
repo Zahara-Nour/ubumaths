@@ -7,6 +7,7 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { CheckCircle, XCircle } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 	import { fr } from 'date-fns/locale';
 
 	// Props
@@ -88,7 +89,7 @@
 			<div class="flex items-center gap-3">
 				<Avatar.Root class="h-10 w-10">
 					<Avatar.Image
-						src={proposal.proposer?.avatar_url || '/default-avatar.jpg'}
+						src={getAvatarUrl({ avatar_url: proposal.proposer?.avatar_url, role: 'student' })}
 						alt={proposal.proposer?.username}
 					/>
 					<Avatar.Fallback>

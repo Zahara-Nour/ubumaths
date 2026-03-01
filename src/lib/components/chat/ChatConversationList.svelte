@@ -179,7 +179,7 @@
 						<div class="relative flex-shrink-0">
 							<Avatar.Root class="h-12 w-12">
 								<Avatar.Image
-									src={avatar.src ? getAvatarUrl({ avatar_url: avatar.src }) : ''}
+									src={avatar.src ? getAvatarUrl({ avatar_url: avatar.src, role: 'student' }) : ''}
 									alt={getConversationName(conversation)}
 								/>
 								<Avatar.Fallback class="bg-primary/10 text-primary">

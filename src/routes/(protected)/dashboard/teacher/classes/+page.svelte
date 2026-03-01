@@ -619,7 +619,7 @@
 											<div class="flex items-center gap-3">
 												<Avatar.Root class="size-8">
 													<Avatar.Image
-														src={getAvatarUrl({ avatar_url: student.avatar_url })}
+														src={getAvatarUrl({ avatar_url: student.avatar_url, role: 'student' })}
 														alt={getStudentDisplayName(student)}
 													/>
 													<Avatar.Fallback>

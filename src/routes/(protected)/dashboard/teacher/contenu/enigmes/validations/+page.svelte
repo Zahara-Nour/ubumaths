@@ -16,6 +16,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Avatar from '$lib/components/ui/avatar';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 	import { Clock, FileCheck, User } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
@@ -76,7 +77,10 @@
 							<!-- Student Info -->
 							<div class="flex items-start gap-3">
 								<Avatar.Root>
-									<Avatar.Image src={attempt.student.avatar_url} alt="Avatar élève" />
+									<Avatar.Image
+										src={getAvatarUrl({ avatar_url: attempt.student.avatar_url, role: 'student' })}
+										alt="Avatar élève"
+									/>
 									<Avatar.Fallback>
 										<User class="h-4 w-4" />
 									</Avatar.Fallback>

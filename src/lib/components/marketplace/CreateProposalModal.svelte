@@ -12,6 +12,7 @@
 	import VipCard from '$lib/components/VipCard.svelte';
 	import { Info, Coins, ArrowRight } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 	import type { VipCard as VipCardType } from '$lib/types/vip-card';
 
 	// Props
@@ -118,7 +119,7 @@
 				<div class="flex items-center gap-3">
 					<Avatar.Root class="h-8 w-8">
 						<Avatar.Image
-							src={listing.creator?.avatar_url || '/default-avatar.jpg'}
+							src={getAvatarUrl({ avatar_url: listing.creator?.avatar_url, role: 'student' })}
 							alt={listing.creator?.username}
 						/>
 						<Avatar.Fallback>

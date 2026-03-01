@@ -4,6 +4,8 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Trophy, ArrowLeft } from 'lucide-svelte';
+	import * as Avatar from '$lib/components/ui/avatar';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -113,9 +115,15 @@
 							</td>
 							<td class="px-3 py-3">
 								<div class="flex items-center gap-2">
-									{#if entry.avatar_url}
-										<img src={entry.avatar_url} alt="" class="h-8 w-8 rounded-full object-cover" />
-									{/if}
+									<Avatar.Root class="h-8 w-8">
+										<Avatar.Image
+											src={getAvatarUrl({ avatar_url: entry.avatar_url, role: 'student' })}
+											alt={entry.name}
+										/>
+										<Avatar.Fallback class="bg-primary/10 text-xs text-primary">
+											{entry.name?.charAt(0)?.toUpperCase() || '?'}
+										</Avatar.Fallback>
+									</Avatar.Root>
 									<div>
 										<p class="font-semibold text-foreground">{entry.name}</p>
 										{#if entry.user_id === data.currentUserId}

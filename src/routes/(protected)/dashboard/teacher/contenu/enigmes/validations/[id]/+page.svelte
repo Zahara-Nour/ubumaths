@@ -17,6 +17,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as Card from '$lib/components/ui/card';
 	import * as Avatar from '$lib/components/ui/avatar';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 	import * as Alert from '$lib/components/ui/alert';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -93,7 +94,10 @@
 		<Card.Header>
 			<div class="flex items-start gap-4">
 				<Avatar.Root class="h-16 w-16">
-					<Avatar.Image src={data.attempt.student.avatar_url} alt="Avatar élève" />
+					<Avatar.Image
+						src={getAvatarUrl({ avatar_url: data.attempt.student.avatar_url, role: 'student' })}
+						alt="Avatar élève"
+					/>
 					<Avatar.Fallback>
 						<User class="h-8 w-8" />
 					</Avatar.Fallback>

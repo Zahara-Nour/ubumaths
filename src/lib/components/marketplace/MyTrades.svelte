@@ -21,6 +21,7 @@
 	import { fr } from 'date-fns/locale';
 	import TradeNegotiationModal from './TradeNegotiationModal.svelte';
 	import StartFriendTradeModal from './StartFriendTradeModal.svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
@@ -219,7 +220,7 @@
 								<div class="flex items-center gap-3">
 									<Avatar.Root class="h-10 w-10">
 										<Avatar.Image
-											src={partner?.avatar_url || '/default-avatar.jpg'}
+											src={getAvatarUrl({ avatar_url: partner?.avatar_url, role: 'student' })}
 											alt={partner?.username}
 										/>
 										<Avatar.Fallback>
@@ -323,7 +324,7 @@
 								<div class="flex items-center gap-3">
 									<Avatar.Root class="h-8 w-8">
 										<Avatar.Image
-											src={partner?.avatar_url || '/default-avatar.jpg'}
+											src={getAvatarUrl({ avatar_url: partner?.avatar_url, role: 'student' })}
 											alt={partner?.username}
 										/>
 										<Avatar.Fallback>
