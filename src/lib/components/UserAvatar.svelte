@@ -29,42 +29,31 @@
 	const fallbackSrc = $derived(getAvatarFallback((role as UserRole) || 'student'));
 	const initials = $derived(getAvatarInitials(firstname, lastname));
 
-	let primaryFailed = $state(false);
-	let fallbackFailed = $state(false);
-
-	// Reset when the avatar source changes
-	$effect(() => {
-		void primarySrc;
-		primaryFailed = false;
-		fallbackFailed = false;
-	});
-
-	const imgSrc = $derived(!primaryFailed ? primarySrc : fallbackSrc);
-	const showImg = $derived(!primaryFailed || (!fallbackFailed && primarySrc !== fallbackSrc));
-
-	function handleImgError() {
-		if (!primaryFailed) {
-			primaryFailed = true;
+	function handleImgError(e: Event) {
+		const img = e.currentTarget as HTMLImageElement;
+		if (primarySrc !== fallbackSrc && img.dataset.fallback !== 'true') {
+			img.dataset.fallback = 'true';
+			img.src = fallbackSrc;
 		} else {
-			fallbackFailed = true;
+			// Hide img to reveal initials behind it
+			img.style.display = 'none';
 		}
 	}
 </script>
 
 <div class={cn('relative flex size-8 shrink-0 overflow-hidden rounded-full', className)}>
-	{#if showImg}
-		{#key imgSrc}
-			<img
-				src={imgSrc}
-				alt={firstname ? `${firstname} ${lastname ?? ''}`.trim() : 'User'}
-				class="aspect-square size-full object-cover"
-				loading="lazy"
-				onerror={handleImgError}
-			/>
-		{/key}
-	{:else}
-		<span class="flex size-full items-center justify-center rounded-full bg-muted text-xs">
-			{initials}
-		</span>
-	{/if}
+	<!-- Initials: always rendered as background layer -->
+	<span class="absolute inset-0 flex items-center justify-center bg-muted text-xs">
+		{initials}
+	</span>
+	<!-- Image: covers initials when loaded successfully -->
+	{#key primarySrc}
+		<img
+			src={primarySrc}
+			alt={firstname ? `${firstname} ${lastname ?? ''}`.trim() : 'User'}
+			class="relative z-10 aspect-square size-full object-cover"
+			loading="lazy"
+			onerror={handleImgError}
+		/>
+	{/key}
 </div>
