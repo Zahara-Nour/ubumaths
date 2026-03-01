@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.21](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.20...v0.8.21) (2026-03-01)
+
+### 🐛 Bug Fixes
+
+- **avatars:** eliminate reactive state machine, use pure DOM fallback ([6e26158](https://github.com/Zahara-Nour/ubumaths/commit/6e261582a608e299aa800f57bc877596a249166e))
+
 ### [0.8.20](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.19...v0.8.20) (2026-03-01)
 
 ### 🐛 Bug Fixes
