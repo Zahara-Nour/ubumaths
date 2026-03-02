@@ -27,15 +27,18 @@ import { z } from 'zod';
  *
  * Used by: POST /api/vip-cards/use-card
  *
- * This is the FINAL step in the VIP card usage flow.
- * Action execution happens in specialized endpoints BEFORE calling use-card.
+ * Unified schema for both student self-use and teacher/admin use:
+ * - Student: studentId is ignored (taken from session), context optional
+ * - Teacher/admin: studentId required, context optional
  */
 export const useCardSchema = z
 	.object({
 		/** UUID of the VIP card instance to mark as used */
 		instanceId: z.string().uuid('Invalid instance ID format'),
-		/** UUID of the student who owns the card */
-		studentId: z.string().uuid('Invalid student ID format')
+		/** UUID of the student who owns the card (required for teacher/admin, ignored for student) */
+		studentId: z.string().uuid('Invalid student ID format').optional(),
+		/** Activation context (required for cards with activation_context on template) */
+		context: z.string().min(1).max(64).optional()
 	})
 	.strict();
 
@@ -70,56 +73,6 @@ export const purchaseVipCardSchema = z
 	.strict();
 
 export type PurchaseVipCardInput = z.infer<typeof purchaseVipCardSchema>;
-
-// ============================================================================
-// USE CONSUMABLE CARD SCHEMA
-// ============================================================================
-
-/**
- * Schema for using a consumable VIP card (decrements usesRemaining)
- *
- * Used by: POST /api/vip-cards/use-consumable
- *
- * For multi-use cards (usesRemaining > 0):
- * - Decrements usesRemaining by 1
- * - When usesRemaining reaches 0, marks card as usedAt
- *
- * For single-use cards (usesRemaining = null):
- * - Marks card as usedAt immediately
- */
-export const useConsumableSchema = z
-	.object({
-		/** UUID of the student who owns the card */
-		studentId: z.string().uuid('Invalid student ID format'),
-		/** UUID of the VIP card instance to use */
-		instanceId: z.string().uuid('Invalid instance ID format')
-	})
-	.strict();
-
-export type UseConsumableInput = z.infer<typeof useConsumableSchema>;
-
-// ============================================================================
-// USE CONSUMABLE BODY SCHEMA (for API endpoint)
-// ============================================================================
-
-/**
- * Schema for the use consumable endpoint body
- *
- * Used by: POST /api/vip-cards/use-consumable
- *
- * Note: studentId is NOT accepted in the body for security.
- * The endpoint uses session.user.id instead.
- */
-export const useConsumableBodySchema = z
-	.object({
-		/** UUID of the VIP card instance to use */
-		instanceId: z.string().uuid('Invalid instance ID format'),
-		/** Activation context (required for cards with activation_context) */
-		context: z.string().min(1).optional()
-	})
-	.strict();
-
-export type UseConsumableBodyInput = z.infer<typeof useConsumableBodySchema>;
 
 // ============================================================================
 // GET PURCHASABLE CARDS SCHEMA

@@ -1,11 +1,12 @@
 /**
  * VIP Card Consumable - Unit Tests (TDD)
  *
- * Tests for the VIP card consumable system:
+ * Tests for the VIP card consumable system using the unified use_vip_card RPC:
  * 1. Consumable card has uses_total in template and usesRemaining in instance
  * 2. At acquisition, usesRemaining = uses_total
  * 3. Each use decrements usesRemaining and is logged in vip_cards_activity
  * 4. When usesRemaining = 0, instance is marked usedAt
+ * 5. Unified RPC handles both student and teacher/admin roles
  *
  * These are unit tests that mock Supabase RPC calls.
  */
@@ -13,6 +14,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { useCardSchema } from '$lib/server/validation/vip-cards';
 
 // ============================================================================
 // MOCK SETUP
@@ -34,46 +36,43 @@ function createMockSupabaseClient() {
 }
 
 // ============================================================================
-// TYPE DEFINITIONS (Expected after implementation)
+// TYPE DEFINITIONS
 // ============================================================================
 
 /**
  * Expected structure of a consumable VIP card template
  */
-interface _ConsumableVipCardTemplate {
+interface ConsumableVipCardTemplate {
 	id: string;
 	name: string;
 	rarity: 'common' | 'rare' | 'epic' | 'legendary';
 	category: 'consumable' | 'bonus' | 'privilege' | 'social' | 'power';
-	uses_total: number; // Number of times this card can be used (null = unlimited/single-use)
+	uses_total: number;
 }
-
-// Aliases for direct use in tests (without underscore prefix)
-type ConsumableVipCardTemplate = _ConsumableVipCardTemplate;
 
 /**
  * Expected structure of a consumable VIP card instance
  */
-interface _ConsumableVipCardInstance {
+interface ConsumableVipCardInstance {
 	instanceId: string;
 	cardId: string;
 	earnedAt: string;
 	usedAt: string | null;
-	usesRemaining: number | null; // For consumables, decrements with each use
+	usesRemaining: number | null;
 	acquiredFrom: 'draw' | 'purchase' | 'gift' | 'exchange';
 }
 
-// Alias for direct use in tests
-type ConsumableVipCardInstance = _ConsumableVipCardInstance;
-
 /**
- * Expected result of using a consumable card
+ * Unified result from use_vip_card RPC
  */
-interface _UseConsumableResult {
+interface UseCardResult {
 	success: boolean;
-	usesRemaining: number;
-	isFullyConsumed: boolean;
-	activityLogId?: string;
+	cardName?: string;
+	instanceId?: string;
+	cardId?: string;
+	usesRemaining?: number | null;
+	isFullyConsumed?: boolean;
+	usedAt?: string | null;
 	error?: string;
 }
 
@@ -88,7 +87,6 @@ describe('VIP Card Consumable - Unit Tests', () => {
 
 	describe('Template consumable configuration', () => {
 		it('should store uses_total in vip_card_templates', () => {
-			// Template structure verification
 			const consumableTemplate: ConsumableVipCardTemplate = {
 				id: 'homework-pass-3x',
 				name: 'Pass Devoirs x3',
@@ -102,13 +100,12 @@ describe('VIP Card Consumable - Unit Tests', () => {
 		});
 
 		it('should allow null uses_total for non-consumable cards', () => {
-			// Non-consumable cards have null uses_total (single-use)
 			const singleUseTemplate = {
 				id: 'bonus',
 				name: 'Bonus',
 				rarity: 'common',
 				category: 'bonus',
-				uses_total: null // null = single use (current behavior)
+				uses_total: null
 			};
 
 			expect(singleUseTemplate.uses_total).toBeNull();
@@ -125,259 +122,223 @@ describe('VIP Card Consumable - Unit Tests', () => {
 	// ============================================================================
 
 	describe('Instance initialization with usesRemaining', () => {
-		it('should set usesRemaining = uses_total when card is acquired', async () => {
-			const { mockRpc } = createMockSupabaseClient();
+		it('should set usesRemaining = uses_total when card is acquired', () => {
+			const instance: ConsumableVipCardInstance = {
+				instanceId: '123e4567-e89b-12d3-a456-426614174010',
+				cardId: 'homework-pass-3x',
+				earnedAt: '2025-11-20T10:00:00.000Z',
+				usedAt: null,
+				usesRemaining: 3,
+				acquiredFrom: 'draw'
+			};
 
-			// Mock draw_vip_card RPC for a consumable card
-			mockRpc.mockResolvedValue({
-				data: {
-					instanceId: '123e4567-e89b-12d3-a456-426614174010',
-					cardId: 'homework-pass-3x',
-					earnedAt: '2025-11-20T10:00:00.000Z',
-					usesRemaining: 3, // Set to uses_total from template
-					acquiredFrom: 'draw'
-				},
-				error: null
-			});
-
-			expect(mockRpc).toBeDefined();
-
-			// Expected behavior:
-			// When student draws 'homework-pass-3x' (uses_total=3)
-			// The instance should have usesRemaining=3
+			expect(instance.usesRemaining).toBe(3);
+			expect(instance.usedAt).toBeNull();
 		});
 
-		it('should set usesRemaining = uses_total when purchased', async () => {
-			const { mockRpc } = createMockSupabaseClient();
+		it('should set usesRemaining = null for non-consumable cards', () => {
+			const instance: ConsumableVipCardInstance = {
+				instanceId: '123e4567-e89b-12d3-a456-426614174012',
+				cardId: 'bonus',
+				earnedAt: '2025-11-20T10:00:00.000Z',
+				usedAt: null,
+				usesRemaining: null,
+				acquiredFrom: 'draw'
+			};
 
-			mockRpc.mockResolvedValue({
-				data: {
-					success: true,
-					instance: {
-						instanceId: '123e4567-e89b-12d3-a456-426614174011',
-						cardId: 'super-pass-5x',
-						earnedAt: '2025-11-20T10:00:00.000Z',
-						purchasedAt: '2025-11-20T10:00:00.000Z',
-						usesRemaining: 5, // uses_total = 5
-						acquiredFrom: 'purchase'
-					},
-					newBalance: 100
-				},
-				error: null
-			});
-
-			expect(mockRpc).toBeDefined();
-		});
-
-		it('should set usesRemaining = null for non-consumable cards', async () => {
-			const { mockRpc } = createMockSupabaseClient();
-
-			// Standard single-use card
-			mockRpc.mockResolvedValue({
-				data: {
-					instanceId: '123e4567-e89b-12d3-a456-426614174012',
-					cardId: 'bonus',
-					earnedAt: '2025-11-20T10:00:00.000Z',
-					usesRemaining: null, // Non-consumable
-					acquiredFrom: 'draw'
-				},
-				error: null
-			});
-
-			expect(mockRpc).toBeDefined();
-
-			// Expected: Regular cards have usesRemaining = null
-			// They are fully consumed on first use (current behavior)
+			expect(instance.usesRemaining).toBeNull();
 		});
 	});
 
 	// ============================================================================
-	// USE CONSUMABLE TESTS
+	// UNIFIED use_vip_card RPC TESTS
 	// ============================================================================
 
-	describe('Using consumable cards', () => {
+	describe('Unified use_vip_card RPC', () => {
 		it('should decrement usesRemaining on each use', async () => {
-			const { mockRpc } = createMockSupabaseClient();
+			const { mockClient, mockRpc } = createMockSupabaseClient();
 
-			// First use of a 3-use card
 			mockRpc.mockResolvedValue({
 				data: {
 					success: true,
-					usesRemaining: 2, // Was 3, now 2
+					cardName: 'Pass Devoirs x3',
+					instanceId: '123e4567-e89b-12d3-a456-426614174010',
+					cardId: 'homework-pass-3x',
+					usesRemaining: 2,
 					isFullyConsumed: false,
-					activityLogId: '123e4567-e89b-12d3-a456-426614174020'
-				},
+					usedAt: null
+				} satisfies UseCardResult,
 				error: null
 			});
 
-			expect(mockRpc).toBeDefined();
+			const result = await mockClient.rpc('use_vip_card', {
+				p_student_id: '123e4567-e89b-12d3-a456-426614174001',
+				p_instance_id: '123e4567-e89b-12d3-a456-426614174010'
+			});
 
-			// Expected: After use, usesRemaining decrements from 3 to 2
+			const data = result.data as UseCardResult;
+			expect(data.success).toBe(true);
+			expect(data.usesRemaining).toBe(2);
+			expect(data.isFullyConsumed).toBe(false);
+			expect(data.usedAt).toBeNull();
 		});
 
-		it('should mark card as usedAt when usesRemaining reaches 0', async () => {
-			const { mockRpc } = createMockSupabaseClient();
+		it('should mark card as fully consumed when usesRemaining reaches 0', async () => {
+			const { mockClient, mockRpc } = createMockSupabaseClient();
 
-			// Final use of a consumable card
 			mockRpc.mockResolvedValue({
 				data: {
 					success: true,
-					usesRemaining: 0, // Last use consumed
+					cardName: 'Pass Devoirs x3',
+					instanceId: '123e4567-e89b-12d3-a456-426614174010',
+					cardId: 'homework-pass-3x',
+					usesRemaining: 0,
 					isFullyConsumed: true,
-					usedAt: '2025-11-20T12:00:00.000Z', // Now marked as used
-					activityLogId: '123e4567-e89b-12d3-a456-426614174021'
-				},
+					usedAt: '2025-11-20T12:00:00.000Z'
+				} satisfies UseCardResult,
 				error: null
 			});
 
-			expect(mockRpc).toBeDefined();
+			const result = await mockClient.rpc('use_vip_card', {
+				p_student_id: '123e4567-e89b-12d3-a456-426614174001',
+				p_instance_id: '123e4567-e89b-12d3-a456-426614174010'
+			});
 
-			// Expected:
-			// - usesRemaining = 0
-			// - isFullyConsumed = true
-			// - usedAt is set to current timestamp
+			const data = result.data as UseCardResult;
+			expect(data.success).toBe(true);
+			expect(data.usesRemaining).toBe(0);
+			expect(data.isFullyConsumed).toBe(true);
+			expect(data.usedAt).not.toBeNull();
 		});
 
-		it('should reject use when usesRemaining = 0', async () => {
-			const { mockRpc } = createMockSupabaseClient();
+		it('should reject use when card has no remaining uses', async () => {
+			const { mockClient, mockRpc } = createMockSupabaseClient();
 
 			mockRpc.mockResolvedValue({
 				data: {
 					success: false,
 					error: 'Card has no remaining uses'
-				},
+				} satisfies UseCardResult,
 				error: null
 			});
 
-			expect(mockRpc).toBeDefined();
+			const result = await mockClient.rpc('use_vip_card', {
+				p_student_id: '123e4567-e89b-12d3-a456-426614174001',
+				p_instance_id: '123e4567-e89b-12d3-a456-426614174010'
+			});
 
-			// Expected: Cannot use a fully consumed card
+			const data = result.data as UseCardResult;
+			expect(data.success).toBe(false);
+			expect(data.error).toBe('Card has no remaining uses');
 		});
 
-		it('should log each use in vip_cards_activity', async () => {
-			const { mockRpc } = createMockSupabaseClient();
+		it('should reject use when card has already been used', async () => {
+			const { mockClient, mockRpc } = createMockSupabaseClient();
 
-			// Verify activity logging
 			mockRpc.mockResolvedValue({
 				data: {
-					success: true,
-					usesRemaining: 2,
-					isFullyConsumed: false,
-					activityLogId: '123e4567-e89b-12d3-a456-426614174022',
-					activityDetails: {
-						action: 'used',
-						metadata: {
-							usesRemaining: 2,
-							useNumber: 1 // First of 3 uses
-						}
-					}
-				},
+					success: false,
+					error: 'Card has already been used'
+				} satisfies UseCardResult,
 				error: null
 			});
 
-			expect(mockRpc).toBeDefined();
-
-			// Expected: Each use should create an activity log entry
-			// with action='used' and metadata showing uses count
-		});
-	});
-
-	// ============================================================================
-	// EDGE CASES
-	// ============================================================================
-
-	describe('Edge cases', () => {
-		it('should handle single-use cards (usesRemaining = null) same as before', async () => {
-			const { mockRpc } = createMockSupabaseClient();
-
-			// Single-use card (existing behavior)
-			mockRpc.mockResolvedValue({
-				data: {
-					success: true,
-					usesRemaining: null, // Not a consumable
-					isFullyConsumed: true, // Single use = fully consumed
-					usedAt: '2025-11-20T12:00:00.000Z'
-				},
-				error: null
+			const result = await mockClient.rpc('use_vip_card', {
+				p_student_id: '123e4567-e89b-12d3-a456-426614174001',
+				p_instance_id: '123e4567-e89b-12d3-a456-426614174010'
 			});
 
-			expect(mockRpc).toBeDefined();
-
-			// Expected: Cards without usesRemaining work as before
+			const data = result.data as UseCardResult;
+			expect(data.success).toBe(false);
+			expect(data.error).toBe('Card has already been used');
 		});
 
-		it('should handle usesRemaining = 1 correctly (last use)', async () => {
-			const { mockRpc } = createMockSupabaseClient();
+		it('should handle single-use cards (usesRemaining = null → treated as 1)', async () => {
+			const { mockClient, mockRpc } = createMockSupabaseClient();
 
+			// Single-use card: unified RPC returns usesRemaining=0 and isFullyConsumed=true
 			mockRpc.mockResolvedValue({
 				data: {
 					success: true,
-					usesRemaining: 0, // Was 1, now 0
-					isFullyConsumed: true,
-					usedAt: '2025-11-20T12:00:00.000Z'
-				},
-				error: null
-			});
-
-			expect(mockRpc).toBeDefined();
-		});
-
-		it('should prevent concurrent uses of same instance', async () => {
-			// Race condition protection - tested in integration tests
-			// The RPC should use row-level locking
-			expect(true).toBe(true);
-		});
-	});
-
-	// ============================================================================
-	// ACTIVITY LOGGING TESTS
-	// ============================================================================
-
-	describe('Activity logging for consumables', () => {
-		it('should log partial use with remaining count', async () => {
-			const { mockRpc } = createMockSupabaseClient();
-
-			// Verify metadata structure for partial use
-			const expectedMetadata = {
-				usesRemaining: 2,
-				useNumber: 1,
-				totalUses: 3
-			};
-
-			mockRpc.mockResolvedValue({
-				data: {
-					success: true,
-					usesRemaining: 2,
-					isFullyConsumed: false,
-					activityMetadata: expectedMetadata
-				},
-				error: null
-			});
-
-			expect(mockRpc).toBeDefined();
-		});
-
-		it('should log final use with fully_consumed flag', async () => {
-			const { mockRpc } = createMockSupabaseClient();
-
-			const expectedMetadata = {
-				usesRemaining: 0,
-				useNumber: 3,
-				totalUses: 3,
-				fullyConsumed: true
-			};
-
-			mockRpc.mockResolvedValue({
-				data: {
-					success: true,
+					cardName: 'Bonus',
+					instanceId: '123e4567-e89b-12d3-a456-426614174012',
+					cardId: 'bonus',
 					usesRemaining: 0,
 					isFullyConsumed: true,
-					activityMetadata: expectedMetadata
-				},
+					usedAt: '2025-11-20T12:00:00.000Z'
+				} satisfies UseCardResult,
 				error: null
 			});
 
-			expect(mockRpc).toBeDefined();
+			const result = await mockClient.rpc('use_vip_card', {
+				p_student_id: '123e4567-e89b-12d3-a456-426614174001',
+				p_instance_id: '123e4567-e89b-12d3-a456-426614174012'
+			});
+
+			const data = result.data as UseCardResult;
+			expect(data.success).toBe(true);
+			expect(data.isFullyConsumed).toBe(true);
+			expect(data.usedAt).not.toBeNull();
+		});
+
+		it('should support context parameter for activation_context cards', async () => {
+			const { mockClient, mockRpc } = createMockSupabaseClient();
+
+			mockRpc.mockResolvedValue({
+				data: {
+					success: true,
+					cardName: 'Hint Demineur',
+					instanceId: '123e4567-e89b-12d3-a456-426614174020',
+					cardId: 'minesweeper-hint',
+					usesRemaining: 0,
+					isFullyConsumed: true,
+					usedAt: '2025-11-20T12:00:00.000Z'
+				} satisfies UseCardResult,
+				error: null
+			});
+
+			const result = await mockClient.rpc('use_vip_card', {
+				p_student_id: '123e4567-e89b-12d3-a456-426614174001',
+				p_instance_id: '123e4567-e89b-12d3-a456-426614174020',
+				p_context: 'minesweeper'
+			});
+
+			expect(mockRpc).toHaveBeenCalledWith('use_vip_card', {
+				p_student_id: '123e4567-e89b-12d3-a456-426614174001',
+				p_instance_id: '123e4567-e89b-12d3-a456-426614174020',
+				p_context: 'minesweeper'
+			});
+
+			const data = result.data as UseCardResult;
+			expect(data.success).toBe(true);
+		});
+
+		it('should reject invalid activation context', async () => {
+			const { mockClient, mockRpc } = createMockSupabaseClient();
+
+			mockRpc.mockResolvedValue({
+				data: {
+					success: false,
+					error: 'This card cannot be used in the current context'
+				} satisfies UseCardResult,
+				error: null
+			});
+
+			const result = await mockClient.rpc('use_vip_card', {
+				p_student_id: '123e4567-e89b-12d3-a456-426614174001',
+				p_instance_id: '123e4567-e89b-12d3-a456-426614174020',
+				p_context: 'wrong_context'
+			});
+
+			const data = result.data as UseCardResult;
+			expect(data.success).toBe(false);
+			expect(data.error).toContain('cannot be used in the current context');
+		});
+
+		it('should prevent concurrent uses via row-level locking', () => {
+			// Race condition protection - the RPC uses FOR UPDATE on profiles row
+			// This is tested in integration/trigger tests, not unit tests
+			expect(true).toBe(true);
 		});
 	});
 
@@ -387,7 +348,6 @@ describe('VIP Card Consumable - Unit Tests', () => {
 
 	describe('Consumable display information', () => {
 		it('should expose uses info for UI display', () => {
-			// Instance with uses remaining
 			const consumableInstance: ConsumableVipCardInstance = {
 				instanceId: '123e4567-e89b-12d3-a456-426614174030',
 				cardId: 'homework-pass-3x',
@@ -418,42 +378,85 @@ describe('VIP Card Consumable - Unit Tests', () => {
 });
 
 // ============================================================================
-// ZOD VALIDATION TESTS
+// ZOD VALIDATION TESTS (unified useCardSchema)
 // ============================================================================
 
-describe('Consumable validation schemas', () => {
-	it('should validate use consumable request', () => {
-		// Schema will be: useConsumableSchema
-		// const result = useConsumableSchema.safeParse({
-		//   studentId: '123e4567-e89b-12d3-a456-426614174001',
-		//   instanceId: '123e4567-e89b-12d3-a456-426614174010'
-		// });
-		// expect(result.success).toBe(true);
-		expect(true).toBe(true); // Placeholder
+describe('Unified useCardSchema validation', () => {
+	it('should validate student request (instanceId only)', () => {
+		const result = useCardSchema.safeParse({
+			instanceId: '123e4567-e89b-12d3-a456-426614174010'
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('should validate teacher request (instanceId + studentId)', () => {
+		const result = useCardSchema.safeParse({
+			instanceId: '123e4567-e89b-12d3-a456-426614174010',
+			studentId: '123e4567-e89b-12d3-a456-426614174001'
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('should validate request with context', () => {
+		const result = useCardSchema.safeParse({
+			instanceId: '123e4567-e89b-12d3-a456-426614174010',
+			context: 'minesweeper'
+		});
+		expect(result.success).toBe(true);
 	});
 
 	it('should reject request with invalid instanceId', () => {
-		// const result = useConsumableSchema.safeParse({
-		//   studentId: '123e4567-e89b-12d3-a456-426614174001',
-		//   instanceId: 'not-a-uuid'
-		// });
-		// expect(result.success).toBe(false);
-		expect(true).toBe(true); // Placeholder
+		const result = useCardSchema.safeParse({
+			instanceId: 'not-a-uuid'
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('should reject request with invalid studentId', () => {
+		const result = useCardSchema.safeParse({
+			instanceId: '123e4567-e89b-12d3-a456-426614174010',
+			studentId: 'not-a-uuid'
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('should reject request with empty context', () => {
+		const result = useCardSchema.safeParse({
+			instanceId: '123e4567-e89b-12d3-a456-426614174010',
+			context: ''
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('should reject request without instanceId', () => {
+		const result = useCardSchema.safeParse({
+			studentId: '123e4567-e89b-12d3-a456-426614174001'
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('should reject unknown fields (strict mode)', () => {
+		const result = useCardSchema.safeParse({
+			instanceId: '123e4567-e89b-12d3-a456-426614174010',
+			extraField: 'should fail'
+		});
+		expect(result.success).toBe(false);
 	});
 });
 
 // ============================================================================
-// MIGRATION DATA TESTS
+// MIGRATION COMPATIBILITY TESTS
 // ============================================================================
 
-describe('Existing cards migration', () => {
+describe('Existing cards migration compatibility', () => {
 	it('should set usesRemaining = null for existing instances without uses_total', () => {
-		// Existing instances should remain compatible
-		// Migration should NOT alter existing data
+		// Existing instances have usesRemaining = null (single-use)
+		// The unified RPC treats COALESCE(usesRemaining, 1) = 1 remaining use
+		// So existing single-use cards work identically
 		expect(true).toBe(true);
 	});
 
-	it('should set default uses_total = null for all existing 26 templates', () => {
+	it('should set default uses_total = null for all existing templates', () => {
 		// All existing templates are single-use
 		// uses_total = null means "single use" (current behavior)
 		expect(true).toBe(true);

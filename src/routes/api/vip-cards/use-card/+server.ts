@@ -1,56 +1,76 @@
 /**
- * API Endpoint: Use (Consume) VIP Card
+ * API Endpoint: Use VIP Card (Unified)
  * =====================================
  *
- * Marks a VIP card instance as used (consumed).
- * Delegates to the use_vip_card RPC.
+ * Unified endpoint for using a VIP card instance.
+ * Supports both student self-use and teacher/admin use.
  *
  * POST /api/vip-cards/use-card
  *
- * @param instanceId - UUID of the VIP card instance to consume
- * @param studentId - UUID of the student who owns the card
+ * Student:
+ *   - studentId from session (body studentId ignored)
+ *   - Requires parental consent for 'purchase_items'
+ *   - context optional (for cards with activation_context)
+ *
+ * Teacher/admin:
+ *   - studentId required in body
+ *   - Class relationship verified
+ *   - context optional
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { requireConsent } from '$lib/server/middleware/consent';
 import { useCardSchema } from '$lib/server/validation/vip-cards';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-
-// ============================================================================
-// POST HANDLER
-// ============================================================================
+import type { UseCardResult } from '$lib/types/vip-card';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// Require authentication (teacher/admin)
 	const { user, profile } = await requireAuth(locals);
 	const supabase = locals.supabase;
 
-	// Verify user is teacher or admin
-	if (profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Only teachers can use VIP cards');
+	// Parse and validate request body
+	let body: unknown;
+	try {
+		body = await request.json();
+	} catch {
+		throw error(400, 'Invalid JSON body');
 	}
 
-	// Parse and validate request body
-	const body = await request.json();
 	const validation = useCardSchema.safeParse(body);
-
 	if (!validation.success) {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { instanceId, studentId } = validation.data;
+	const { instanceId, context } = validation.data;
+	let studentId: string;
 
-	// Verify teacher-student relationship (admins bypass this check)
-	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
-	if (!hasAccess) {
-		throw error(403, 'You can only use cards for students in your classes');
+	if (profile.role === 'student') {
+		// Student: use their own ID, verify consent
+		studentId = user.id;
+		requireConsent(profile, 'purchase_items');
+	} else if (profile.role === 'teacher' || profile.role === 'admin') {
+		// Teacher/admin: studentId required from body
+		if (!validation.data.studentId) {
+			throw error(400, 'studentId is required for teacher/admin');
+		}
+		studentId = validation.data.studentId;
+
+		// Verify class relationship (admins bypass via verifyTeacherStudentWithRole)
+		const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
+		if (!hasAccess) {
+			throw error(403, 'You can only use cards for students in your classes');
+		}
+	} else {
+		throw error(403, 'Unauthorized role');
 	}
 
-	// Call use_vip_card RPC (consume)
+	// Call unified use_vip_card RPC
 	const { data: result, error: rpcError } = await supabase.rpc('use_vip_card', {
 		p_student_id: studentId,
-		p_instance_id: instanceId
+		p_instance_id: instanceId,
+		p_context: context
 	});
 
 	if (rpcError) {
@@ -58,15 +78,28 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Failed to use card');
 	}
 
-	const rpcResult = result as { success: boolean; error?: string; cardName?: string };
+	const rpcResult = result as UseCardResult;
 
 	if (!rpcResult.success) {
-		throw error(400, rpcResult.error || 'Failed to use card');
+		const errorMessage = rpcResult.error || 'Failed to use card';
+
+		if (errorMessage.includes('not found') || errorMessage.includes('does not exist')) {
+			throw error(404, errorMessage);
+		}
+		if (errorMessage.includes('Unauthorized')) {
+			throw error(403, errorMessage);
+		}
+		// All other business logic errors → 400
+		throw error(400, errorMessage);
 	}
 
 	return json({
 		success: true,
-		message: 'Card used successfully.',
-		cardName: rpcResult.cardName
+		cardName: rpcResult.cardName,
+		instanceId: rpcResult.instanceId,
+		cardId: rpcResult.cardId,
+		usesRemaining: rpcResult.usesRemaining,
+		isFullyConsumed: rpcResult.isFullyConsumed,
+		usedAt: rpcResult.usedAt
 	});
 };

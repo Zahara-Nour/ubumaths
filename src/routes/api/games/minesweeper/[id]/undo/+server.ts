@@ -35,7 +35,7 @@ const undoRequestSchema = z.object({
  * The RPC function handles:
  * - Verifying game ownership and status (must be in_progress)
  * - Checking undo hasn't been used already in this game (max 1 per game)
- * - Consuming the VIP card via use_consumable_card()
+ * - Consuming the VIP card via use_vip_card()
  * - Updating the game state with the reverted grid
  * - Atomic transaction (all operations succeed or fail together)
  *
