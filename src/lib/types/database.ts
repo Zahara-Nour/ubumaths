@@ -14585,7 +14585,11 @@ export type Database = {
 				Returns: undefined;
 			};
 			use_consumable_card: {
-				Args: { p_instance_id: string; p_student_id: string };
+				Args: {
+					p_context?: string;
+					p_instance_id: string;
+					p_student_id: string;
+				};
 				Returns: Json;
 			};
 			use_hint: { Args: { p_game_id: string }; Returns: Json };

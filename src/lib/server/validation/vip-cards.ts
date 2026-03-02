@@ -113,7 +113,9 @@ export type UseConsumableInput = z.infer<typeof useConsumableSchema>;
 export const useConsumableBodySchema = z
 	.object({
 		/** UUID of the VIP card instance to use */
-		instanceId: z.string().uuid('Invalid instance ID format')
+		instanceId: z.string().uuid('Invalid instance ID format'),
+		/** Activation context (required for cards with activation_context) */
+		context: z.string().min(1).optional()
 	})
 	.strict();
 
