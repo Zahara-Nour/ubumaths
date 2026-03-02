@@ -514,18 +514,23 @@
 					<!-- Card -->
 					<div
 						class="transform cursor-pointer transition-transform hover:scale-105"
-						onclick={() => handleCardClick(card, card.count)}
+						onclick={() => handleCardClick(card, card.totalUses)}
 						onkeydown={(e) => {
 							if (e.key === 'Enter' || e.key === ' ') {
 								e.preventDefault();
-								handleCardClick(card, card.count);
+								handleCardClick(card, card.totalUses);
 							}
 						}}
 						role="button"
 						tabindex="0"
 						aria-label="Voir {card.name} en grand"
 					>
-						<VipCard card={card as VipCardType} count={card.count} size="sm" clickable={false} />
+						<VipCard
+							card={card as VipCardType}
+							count={card.totalUses}
+							size="sm"
+							clickable={false}
+						/>
 					</div>
 
 					<!-- Request Activation / Activate Button (only for action cards) -->
