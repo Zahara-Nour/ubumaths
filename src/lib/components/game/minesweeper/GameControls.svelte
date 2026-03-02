@@ -111,13 +111,7 @@
 	{#if isAuthenticated && onUseHint}
 		<div class="border-t border-border pt-3">
 			<Tooltip.Provider>
-				<HintButton
-					{hintsUsed}
-					{hintItemsAvailable}
-					disabled={gameStatus === 'won' || gameStatus === 'lost' || gameStatus === 'not_started'}
-					{isLoading}
-					{onUseHint}
-				/>
+				<HintButton {hintsUsed} {hintItemsAvailable} {gameStatus} {isLoading} {onUseHint} />
 			</Tooltip.Provider>
 		</div>
 	{/if}

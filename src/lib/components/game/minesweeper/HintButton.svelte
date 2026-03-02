@@ -7,13 +7,13 @@
 	let {
 		hintsUsed = 0,
 		hintItemsAvailable = 0,
-		disabled = false,
+		gameStatus = 'in_progress',
 		isLoading = false,
 		onUseHint
 	}: {
 		hintsUsed?: number;
 		hintItemsAvailable?: number;
-		disabled?: boolean;
+		gameStatus?: 'not_started' | 'in_progress' | 'won' | 'lost';
 		isLoading?: boolean;
 		onUseHint: () => void;
 	} = $props();
@@ -21,6 +21,7 @@
 	// Derived state
 	const isMaxedOut = $derived(hintsUsed >= 3);
 	const hasItems = $derived(hintItemsAvailable > 0);
+	const disabled = $derived(gameStatus !== 'in_progress');
 
 	// Color coding for hints counter
 	const hintsColor = $derived.by(() => {
@@ -45,8 +46,11 @@
 		if (isMaxedOut) {
 			return "Maximum d'indices atteint (3/3)";
 		}
+		if (gameStatus === 'not_started') {
+			return 'Cliquez sur une cellule pour commencer la partie';
+		}
 		if (disabled) {
-			return 'Terminez la partie actuelle pour utiliser un indice';
+			return 'La partie est terminée';
 		}
 		if (hasItems) {
 			return `Vous avez ${hintItemsAvailable} indice(s) en stock. Utiliser un indice de l'inventaire ne coûte rien et n'applique aucune pénalité !`;
