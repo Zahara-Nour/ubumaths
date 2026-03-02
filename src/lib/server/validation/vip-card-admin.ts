@@ -152,10 +152,9 @@ const chooseCardActionSchema = z
 		}
 	);
 
-const useConsumableActionSchema = z.object({
-	type: z.literal('use_consumable'),
-	context: z.string().min(1, 'Context is required'),
-	effect: z.string().min(1, 'Effect is required')
+const undoActionSchema = z.object({
+	type: z.literal('undo'),
+	context: z.string().min(1, 'Context is required')
 });
 
 /**
@@ -168,7 +167,7 @@ const actionSchema = z.discriminatedUnion('type', [
 	exchangeCardsActionSchema,
 	addGidouillesActionSchema,
 	chooseCardActionSchema,
-	useConsumableActionSchema
+	undoActionSchema
 ]);
 
 /**
