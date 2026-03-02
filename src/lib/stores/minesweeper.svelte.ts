@@ -37,9 +37,8 @@ const HINT_PENALTY_PERCENTAGE = 30; // Percentage penalty on final reward (only 
 // VIP card hint (migrated from shop item in Phase 4)
 const HINT_VIP_CARD_ID = 'minesweeper-hint'; // VIP card id for hints
 
-// Undo (Seconde Chance) item configuration
-const UNDO_ITEM_INTERNAL_NAME = 'minesweeper_undo'; // Shop item internal name
-// Note: Max 1 undo per game is enforced server-side in use_minesweeper_undo RPC
+// Undo (Seconde Chance) VIP card configuration
+const UNDO_VIP_CARD_ID = 'minesweeper-undo'; // VIP card id for undo
 
 /**
  * 8 neighboring cell directions (relative positions)
@@ -154,7 +153,7 @@ class MinesweeperStore {
 	hintItemsAvailable = $state(0);
 
 	/**
-	 * Number of undo (Seconde Chance) items available in student's inventory
+	 * Number of undo (Seconde Chance) VIP cards available for the student
 	 */
 	undoItemsAvailable = $state(0);
 
@@ -1120,10 +1119,10 @@ class MinesweeperStore {
 	}
 
 	/**
-	 * Fetch the count of undo items available in student's inventory
-	 * Updates `undoItemsAvailable` state
+	 * Fetch the count of undo VIP cards available for the student.
+	 * Uses client-side counting from profiles.vip_cards (same pattern as fetchHintItemCount).
 	 *
-	 * @returns Promise that resolves with the count of available undo items
+	 * @returns Promise that resolves with the count of available undo cards
 	 */
 	async fetchUndoItemCount(): Promise<number> {
 		if (!browser || !this.shouldUseDatabase()) {
@@ -1132,41 +1131,25 @@ class MinesweeperStore {
 		}
 
 		try {
-			// Query for minesweeper_undo items in student's inventory
-			// Note: student_item_inventory table may not be in generated types yet
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const supabaseAny = this.supabase as any;
-			const { data, error } = await supabaseAny
-				.from('student_item_inventory')
-				.select(
-					`
-					quantity,
-					shop_item_templates!inner(internal_name)
-				`
-				)
-				.eq('student_id', this.user!.id)
-				.eq('shop_item_templates.internal_name', UNDO_ITEM_INTERNAL_NAME)
-				.eq('is_locked', false)
-				.gt('quantity', 0);
+			const { data, error } = await this.supabase!.from('profiles')
+				.select('vip_cards')
+				.eq('id', this.user!.id)
+				.single();
 
 			if (error) {
-				logger.error('Failed to fetch undo item count:', error);
+				logger.error('Failed to fetch undo card count:', error);
 				this.undoItemsAvailable = 0;
 				return 0;
 			}
 
-			// Sum up all quantities
-			const totalCount =
-				(data as Array<{ quantity: number }> | null)?.reduce(
-					(sum, item) => sum + (item.quantity || 0),
-					0
-				) || 0;
-			this.undoItemsAvailable = totalCount;
+			const vipCards = (data?.vip_cards ?? {}) as StudentVipCards;
+			const totalCount = countAvailableConsumableUses(vipCards, UNDO_VIP_CARD_ID);
 
-			logger.info(`Undo items available: ${totalCount}`);
+			this.undoItemsAvailable = totalCount;
+			logger.info(`VIP undo cards available: ${totalCount}`);
 			return totalCount;
 		} catch (err) {
-			logger.error('Failed to fetch undo item count:', err);
+			logger.error('Failed to fetch undo card count:', err);
 			this.undoItemsAvailable = 0;
 			return 0;
 		}
@@ -1954,6 +1937,7 @@ class MinesweeperStore {
 				};
 
 				this.currentGame = game;
+				this.undoUsedThisGame = !!data.undo_used;
 
 				// Resume timer if game is in progress
 				if (game.status === 'in_progress') {
