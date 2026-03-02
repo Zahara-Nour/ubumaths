@@ -31,11 +31,11 @@ const undoRequestSchema = z.object({
  * Use Undo (Seconde Chance) in Minesweeper Game
  * POST /api/games/minesweeper/[id]/undo
  *
- * Uses the "Seconde Chance" item to undo a fatal bomb reveal.
+ * Uses a "Seconde Chance" VIP card to undo a fatal bomb reveal.
  * The RPC function handles:
  * - Verifying game ownership and status (must be in_progress)
  * - Checking undo hasn't been used already in this game (max 1 per game)
- * - Consuming the undo item from inventory
+ * - Consuming the VIP card via use_consumable_card()
  * - Updating the game state with the reverted grid
  * - Atomic transaction (all operations succeed or fail together)
  *
@@ -47,8 +47,8 @@ const undoRequestSchema = z.object({
  * - RPC verifies ownership and game state server-side
  *
  * **Limits**:
- * - Maximum 1 undo per game (regardless of how many items owned)
- * - Requires "Seconde Chance" (minesweeper_undo) item in inventory
+ * - Maximum 1 undo per game (regardless of how many cards owned)
+ * - Requires "Seconde Chance" (minesweeper-undo) VIP card
  *
  * **Request**:
  * ```json
@@ -73,7 +73,7 @@ const undoRequestSchema = z.object({
  * ```
  *
  * **Error Responses**:
- * - `400 Bad Request` - Invalid request, undo already used, or no items available
+ * - `400 Bad Request` - Invalid request, undo already used, or no VIP card available
  * - `404 Not Found` - Game not found or not in progress
  * - `500 Internal Server Error` - Database error
  */
@@ -108,7 +108,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	try {
 		// Call SECURITY DEFINER RPC function
-		// The function verifies ownership, checks undo hasn't been used, consumes item, and updates game
+		// The function verifies ownership, checks undo hasn't been used, consumes VIP card, and updates game
 		const { data, error: rpcError } = await locals.supabase
 			.rpc('use_minesweeper_undo', {
 				p_game_id: gameId,

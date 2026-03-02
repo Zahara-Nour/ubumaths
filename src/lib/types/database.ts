@@ -14485,10 +14485,6 @@ export type Database = {
 				Args: { p_emoji: string; p_message_id: string };
 				Returns: boolean;
 			};
-			try_consume_minesweeper_undo_item: {
-				Args: { p_student_id: string };
-				Returns: boolean;
-			};
 			unaccent: { Args: { '': string }; Returns: string };
 			unlock_cards: { Args: { p_entity_id: string }; Returns: number };
 			unlock_specific_cards: {
