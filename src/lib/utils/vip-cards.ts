@@ -162,13 +162,17 @@ export function sortCardsByPriority(
  * Sums usesRemaining for multi-use cards and counts 1 for single-use cards.
  *
  * @param vipCards - The student's VIP card instances
- * @param cardId - The card template ID to count (e.g. 'minesweeper-hint')
+ * @param cardIdOrIds - A single card template ID or array of IDs to match
  * @returns Total number of available uses across all instances
  */
-export function countAvailableConsumableUses(vipCards: StudentVipCards, cardId: string): number {
+export function countAvailableConsumableUses(
+	vipCards: StudentVipCards,
+	cardIdOrIds: string | string[]
+): number {
+	const ids = Array.isArray(cardIdOrIds) ? cardIdOrIds : [cardIdOrIds];
 	let count = 0;
 	for (const instance of Object.values(vipCards)) {
-		if (instance.cardId === cardId && !instance.usedAt) {
+		if (ids.includes(instance.cardId) && !instance.usedAt) {
 			count += instance.usesRemaining != null ? instance.usesRemaining : 1;
 		}
 	}
