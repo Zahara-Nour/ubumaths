@@ -152,7 +152,6 @@
 							minesRemaining={game.minesCount - game.flagsUsed}
 							gameStatus={game.status}
 							onReset={() => startGame(game.difficulty)}
-							difficulty={game.difficulty}
 							hintsUsed={game.hintsUsed || 0}
 							hintCardsAvailable={minesweeperStore.hintCardsAvailable}
 							onUseHint={() => minesweeperStore.useHint()}
