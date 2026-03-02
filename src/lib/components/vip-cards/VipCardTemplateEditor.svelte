@@ -27,6 +27,10 @@
 		sort_order: number;
 		action?: VipCardAction | null;
 		activation_context: string | null;
+		uses_total: number | null;
+		base_price: number;
+		is_purchasable: boolean;
+		max_owned_per_student: number;
 	}
 
 	const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -44,7 +48,11 @@
 		image_path: card?.image_path ?? '',
 		sort_order: card?.sort_order ?? 0,
 		action: card?.action as VipCardAction | null,
-		activation_context: card?.activation_context ?? null
+		activation_context: card?.activation_context ?? null,
+		uses_total: card?.uses_total ?? null,
+		base_price: card?.base_price ?? 0,
+		is_purchasable: card?.is_purchasable ?? true,
+		max_owned_per_student: card?.max_owned_per_student ?? 5
 	});
 
 	let saving = $state(false);
@@ -111,6 +119,15 @@
 		{ value: 'minesweeper', label: 'Pendant une partie de démineur' }
 	];
 
+	// Consumable state: checkbox drives whether uses_total is set
+	let isConsumable = $state(card?.uses_total !== null && card?.uses_total !== undefined);
+	let usesTotalInput = $state(card?.uses_total ?? 3);
+
+	// Sync consumable state → formData.uses_total
+	$effect(() => {
+		formData.uses_total = isConsumable ? usesTotalInput : null;
+	});
+
 	// Bind helper: MySelect uses '' for "no selection", but we store null in DB
 	let activationContextValue = $state(card?.activation_context ?? '');
 
@@ -143,6 +160,32 @@
 
 		if (formData.sort_order < 0) {
 			newErrors.sort_order = "L'ordre doit être positif";
+		}
+
+		if (formData.uses_total !== null) {
+			if (
+				!Number.isInteger(formData.uses_total) ||
+				formData.uses_total < 1 ||
+				formData.uses_total > 99
+			) {
+				newErrors.uses_total = 'Le nombre de charges doit être entre 1 et 99';
+			}
+		}
+
+		if (
+			!Number.isInteger(formData.base_price) ||
+			formData.base_price < 0 ||
+			formData.base_price > 10000
+		) {
+			newErrors.base_price = 'Le prix doit être entre 0 et 10 000';
+		}
+
+		if (
+			!Number.isInteger(formData.max_owned_per_student) ||
+			formData.max_owned_per_student < 1 ||
+			formData.max_owned_per_student > 100
+		) {
+			newErrors.max_owned_per_student = 'Le nombre de copies doit être entre 1 et 100';
 		}
 
 		// Validate action parameters if action is set
@@ -376,6 +419,54 @@
 		<Label for="is_enabled" class="cursor-pointer">Carte activée</Label>
 	</div>
 
+	<!-- Max Owned Per Student (always visible) -->
+	<div class="space-y-2">
+		<Label for="max_owned_per_student">Copies max par élève</Label>
+		<Input
+			id="max_owned_per_student"
+			type="number"
+			bind:value={formData.max_owned_per_student}
+			min={1}
+			max={100}
+			class={errors.max_owned_per_student ? 'border-destructive' : ''}
+		/>
+		{#if errors.max_owned_per_student}
+			<p class="text-sm text-destructive">{errors.max_owned_per_student}</p>
+		{/if}
+		<p class="text-xs text-muted-foreground">
+			Nombre maximum de copies de cette carte qu'un élève peut posséder.
+		</p>
+	</div>
+
+	<!-- Purchase Section -->
+	<div class="space-y-3 rounded-lg border p-4">
+		<div class="flex items-center space-x-2">
+			<Checkbox
+				id="is_purchasable"
+				checked={formData.is_purchasable}
+				onCheckedChange={(checked) => (formData.is_purchasable = !!checked)}
+			/>
+			<Label for="is_purchasable" class="cursor-pointer">Achetable par les élèves</Label>
+		</div>
+
+		{#if formData.is_purchasable}
+			<div class="space-y-2">
+				<Label for="base_price">Prix en gidouilles</Label>
+				<Input
+					id="base_price"
+					type="number"
+					bind:value={formData.base_price}
+					min={0}
+					max={10000}
+					class={errors.base_price ? 'border-destructive' : ''}
+				/>
+				{#if errors.base_price}
+					<p class="text-sm text-destructive">{errors.base_price}</p>
+				{/if}
+			</div>
+		{/if}
+	</div>
+
 	<!-- Action Configuration -->
 	<VipCardActionEditor
 		value={formData.action ?? null}
@@ -401,6 +492,45 @@
 					L'élève doit demander l'approbation de l'enseignant avant d'activer
 				{/if}
 			</p>
+		</div>
+	{/if}
+
+	<!-- Consumable Card (uses_total) -->
+	{#if formData.action}
+		<div class="space-y-3 rounded-lg border p-4">
+			<div class="flex items-center space-x-2">
+				<Checkbox
+					id="is_consumable"
+					checked={isConsumable}
+					onCheckedChange={(checked) => (isConsumable = !!checked)}
+				/>
+				<Label for="is_consumable" class="cursor-pointer">Carte consommable (multi-usage)</Label>
+			</div>
+
+			{#if isConsumable}
+				<div class="space-y-2">
+					<Label for="uses_total">Nombre de charges</Label>
+					<Input
+						id="uses_total"
+						type="number"
+						bind:value={usesTotalInput}
+						min={1}
+						max={99}
+						class={errors.uses_total ? 'border-destructive' : ''}
+					/>
+					{#if errors.uses_total}
+						<p class="text-sm text-destructive">{errors.uses_total}</p>
+					{/if}
+					<p class="text-xs text-muted-foreground">
+						Chaque utilisation consomme une charge. La carte est épuisée quand toutes les charges
+						sont utilisées.
+					</p>
+				</div>
+			{:else}
+				<p class="text-xs text-muted-foreground">
+					Usage unique : la carte est consommée dès la première utilisation.
+				</p>
+			{/if}
 		</div>
 	{/if}
 

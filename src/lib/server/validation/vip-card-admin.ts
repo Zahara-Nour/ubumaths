@@ -214,13 +214,37 @@ export const createTemplateSchema = z
 			.default(''),
 		action: actionSchema.optional(),
 		activationContext: activationContextEnum.nullable().optional().default(null),
+		usesTotal: z
+			.number()
+			.int('Uses total must be an integer')
+			.min(1, 'Uses total must be at least 1')
+			.max(99, 'Uses total cannot exceed 99')
+			.finite('Uses total must be finite')
+			.nullable()
+			.optional()
+			.default(null),
 		sortOrder: z
 			.number()
 			.int('Sort order must be an integer')
 			.min(0, 'Sort order cannot be negative')
 			.max(999, 'Sort order cannot exceed 999')
 			.finite('Sort order must be finite')
-			.default(0)
+			.default(0),
+		basePrice: z
+			.number()
+			.int('Base price must be an integer')
+			.min(0, 'Base price cannot be negative')
+			.max(10000, 'Base price cannot exceed 10000')
+			.finite('Base price must be finite')
+			.default(0),
+		isPurchasable: z.boolean().default(true),
+		maxOwnedPerStudent: z
+			.number()
+			.int('Max owned per student must be an integer')
+			.min(1, 'Max owned per student must be at least 1')
+			.max(100, 'Max owned per student cannot exceed 100')
+			.finite('Max owned per student must be finite')
+			.default(5)
 	})
 	.strict();
 
@@ -253,12 +277,35 @@ export const updateTemplateSchema = z
 			.optional(),
 		action: actionSchema.nullable().optional(),
 		activationContext: activationContextEnum.nullable().optional(),
+		usesTotal: z
+			.number()
+			.int('Uses total must be an integer')
+			.min(1, 'Uses total must be at least 1')
+			.max(99, 'Uses total cannot exceed 99')
+			.finite('Uses total must be finite')
+			.nullable()
+			.optional(),
 		sortOrder: z
 			.number()
 			.int('Sort order must be an integer')
 			.min(0, 'Sort order cannot be negative')
 			.max(999, 'Sort order cannot exceed 999')
 			.finite('Sort order must be finite')
+			.optional(),
+		basePrice: z
+			.number()
+			.int('Base price must be an integer')
+			.min(0, 'Base price cannot be negative')
+			.max(10000, 'Base price cannot exceed 10000')
+			.finite('Base price must be finite')
+			.optional(),
+		isPurchasable: z.boolean().optional(),
+		maxOwnedPerStudent: z
+			.number()
+			.int('Max owned per student must be an integer')
+			.min(1, 'Max owned per student must be at least 1')
+			.max(100, 'Max owned per student cannot exceed 100')
+			.finite('Max owned per student must be finite')
 			.optional()
 	})
 	.strict()
