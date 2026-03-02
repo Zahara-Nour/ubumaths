@@ -70,17 +70,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { instanceId } = validation.data;
+	const { instanceId, context } = validation.data;
 
 	// Call the use consumable RPC function
 	// The RPC handles all validation and atomicity:
 	// - Verifies card belongs to student
+	// - Validates activation_context if set on template
 	// - Checks usesRemaining > 0 (or null for single-use)
 	// - Decrements usesRemaining or marks usedAt
 	// - Logs EACH use to vip_cards_activity
 	const { data, error: rpcError } = await supabase.rpc('use_consumable_card', {
 		p_student_id: user.id,
-		p_instance_id: instanceId
+		p_instance_id: instanceId,
+		p_context: context ?? null
 	});
 
 	if (rpcError) {
