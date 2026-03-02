@@ -14580,14 +14580,6 @@ export type Database = {
 				Args: { p_status: string; p_user_id: string };
 				Returns: undefined;
 			};
-			use_consumable_card: {
-				Args: {
-					p_context?: string;
-					p_instance_id: string;
-					p_student_id: string;
-				};
-				Returns: Json;
-			};
 			use_hint: { Args: { p_game_id: string }; Returns: Json };
 			use_item: {
 				Args: { p_context: string; p_inventory_id: string; p_usage_data?: Json };
@@ -14600,6 +14592,7 @@ export type Database = {
 			use_vip_card: {
 				Args: {
 					p_card_id?: string;
+					p_context?: string;
 					p_instance_id?: string;
 					p_metadata?: Json;
 					p_student_id: string;

@@ -61,8 +61,7 @@ export type VipCardCategory =
 	| 'bonus' // Bonus points and academic rewards
 	| 'privilege' // Classroom privileges and special permissions
 	| 'social' // Social and team-related perks
-	| 'power' // Special abilities and game-changers
-	| 'consumable'; // Multi-use cards (uses_total > 1)
+	| 'power'; // Special abilities and game-changers
 
 /**
  * Rarity level of VIP card (required for all cards)
@@ -257,19 +256,16 @@ export interface PurchaseVipCardResult {
 }
 
 /**
- * Result of using a consumable VIP card
+ * Result of using a VIP card (unified for all roles)
  */
-export interface UseConsumableResult {
+export interface UseCardResult {
 	success: boolean;
+	cardName?: string;
+	instanceId?: string;
+	cardId?: string;
 	usesRemaining?: number | null;
 	isFullyConsumed?: boolean;
 	usedAt?: string | null;
-	activityMetadata?: {
-		usesRemaining: number | null;
-		useNumber: number;
-		totalUses: number;
-		fullyConsumed: boolean;
-	};
 	error?: string;
 }
 
