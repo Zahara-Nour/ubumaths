@@ -6,13 +6,13 @@
 	// Props
 	let {
 		hintsUsed = 0,
-		hintItemsAvailable = 0,
+		hintCardsAvailable = 0,
 		gameStatus = 'in_progress',
 		isLoading = false,
 		onUseHint
 	}: {
 		hintsUsed?: number;
-		hintItemsAvailable?: number;
+		hintCardsAvailable?: number;
 		gameStatus?: 'not_started' | 'in_progress' | 'won' | 'lost';
 		isLoading?: boolean;
 		onUseHint: () => void;
@@ -20,7 +20,7 @@
 
 	// Derived state
 	const isMaxedOut = $derived(hintsUsed >= 3);
-	const hasItems = $derived(hintItemsAvailable > 0);
+	const hasCards = $derived(hintCardsAvailable > 0);
 	const disabled = $derived(gameStatus !== 'in_progress');
 
 	// Color coding for hints counter
@@ -33,12 +33,12 @@
 	// Button disabled state
 	const isButtonDisabled = $derived(disabled || isMaxedOut || isLoading);
 
-	// Button label based on whether items are available
+	// Button label based on whether VIP cards are available
 	const buttonLabel = $derived.by(() => {
-		if (hasItems) {
+		if (hasCards) {
 			return 'Utiliser un indice';
 		}
-		return 'Indice (10 gidouilles)';
+		return 'Indice (1 gidouille)';
 	});
 
 	// Tooltip content
@@ -52,26 +52,26 @@
 		if (disabled) {
 			return 'La partie est terminée';
 		}
-		if (hasItems) {
-			return `Vous avez ${hintItemsAvailable} indice(s) en stock. Utiliser un indice de l'inventaire ne coûte rien et n'applique aucune pénalité !`;
+		if (hasCards) {
+			return `Vous avez ${hintCardsAvailable} carte(s) indice VIP. Pénalité réduite (5/11/17% au lieu de 10/22/35%).`;
 		}
-		return 'Révèle une cellule sûre au hasard. Coûte 10 gidouilles et applique une pénalité de 30% sur la récompense finale. Achetez des indices dans la boutique pour éviter la pénalité !';
+		return 'Révèle une cellule sûre au hasard. Coûte 1 gidouille et applique une pénalité progressive (10/22/35%) sur la récompense finale.';
 	});
 </script>
 
 <div class="flex flex-col gap-2">
-	<!-- Items available badge -->
-	{#if hasItems && !isMaxedOut}
+	<!-- VIP cards available badge -->
+	{#if hasCards && !isMaxedOut}
 		<div
 			class="flex items-center justify-center gap-2 rounded-md bg-green-100 px-3 py-1.5 dark:bg-green-900/30"
 		>
 			<span class="text-sm font-semibold text-green-700 dark:text-green-400">
-				{hintItemsAvailable} indice(s) disponible(s)
+				{hintCardsAvailable} carte(s) indice disponible(s)
 			</span>
 			<span
 				class="rounded-full bg-green-600 px-2 py-0.5 text-xs font-bold text-white dark:bg-green-500"
 			>
-				Sans pénalité !
+				Pénalité réduite
 			</span>
 		</div>
 	{/if}
@@ -82,9 +82,9 @@
 			<Button
 				onclick={onUseHint}
 				disabled={isButtonDisabled}
-				variant={hasItems ? 'default' : 'secondary'}
+				variant={hasCards ? 'default' : 'secondary'}
 				size="sm"
-				class={cn('w-full', hasItems && 'bg-green-600 hover:bg-green-700 dark:bg-green-600')}
+				class={cn('w-full', hasCards && 'bg-green-600 hover:bg-green-700 dark:bg-green-600')}
 				aria-label="Utiliser un indice"
 			>
 				{#if isLoading}
@@ -122,24 +122,13 @@
 		</span>
 	</div>
 
-	<!-- Warning notice (only show if no items available and no hints used yet) -->
-	{#if !hasItems && hintsUsed === 0}
+	<!-- Warning notice (only show if no cards available and no hints used yet) -->
+	{#if !hasCards && hintsUsed === 0}
 		<div class="rounded-md bg-yellow-50 p-2 dark:bg-yellow-900/10">
 			<p class="text-xs text-yellow-600 dark:text-yellow-400">
 				<span class="mr-1" aria-hidden="true">⚠️</span>
-				Pénalité de 30% sur la récompense finale
+				Pénalité progressive sur la récompense finale
 			</p>
 		</div>
-	{/if}
-
-	<!-- Shop link when running low on items -->
-	{#if !hasItems && !isMaxedOut}
-		<a
-			href="/dashboard/student/shop"
-			class="mt-1 flex items-center justify-center gap-2 text-xs text-muted-foreground transition-colors hover:text-primary"
-		>
-			<span aria-hidden="true">🛒</span>
-			<span>Acheter des indices (sans pénalité)</span>
-		</a>
 	{/if}
 </div>

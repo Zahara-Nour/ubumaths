@@ -34,7 +34,7 @@ const LOCALSTORAGE_KEY = 'minesweeper_game';
 const MAX_HINTS_PER_GAME = 3; // Maximum hints allowed per game
 const HINT_COST_GIDOUILLES = 1; // Gidouilles cost per hint (Strategy D: 1.0)
 const HINT_PENALTY_PERCENTAGE = 30; // Percentage penalty on final reward (only for gidouilles hints)
-// VIP card hint (migrated from shop item in Phase 4)
+// VIP card hint
 const HINT_VIP_CARD_ID = 'minesweeper-hint'; // VIP card id for hints
 
 // Undo (Seconde Chance) VIP card configuration
@@ -147,15 +147,15 @@ class MinesweeperStore {
 	newlyUnlockedAchievements = $state<UnlockedAchievement[]>([]);
 
 	/**
-	 * Number of hint items available in student's inventory
-	 * Used to show "No penalty" indicator when items are available
+	 * Number of hint VIP cards available for the student
+	 * Used to show "reduced penalty" indicator when cards are available
 	 */
-	hintItemsAvailable = $state(0);
+	hintCardsAvailable = $state(0);
 
 	/**
 	 * Number of undo (Seconde Chance) VIP cards available for the student
 	 */
-	undoItemsAvailable = $state(0);
+	undoCardsAvailable = $state(0);
 
 	/**
 	 * Whether undo has been used in the current game (max 1 per game)
@@ -706,7 +706,7 @@ class MinesweeperStore {
 		// Update cell reference after potential regeneration
 		const currentCell = game.grid[row][col];
 
-		// If mine, check for undo item before game over
+		// If mine, check for undo card before game over
 		if (currentCell.isMine) {
 			currentCell.isRevealed = true;
 			currentCell.isExploded = true;
@@ -1046,13 +1046,13 @@ class MinesweeperStore {
 			}
 
 			// Show appropriate toast based on hint source
-			if (result.source === 'vip_card' || result.source === 'item') {
+			if (result.source === 'vip_card') {
 				toaster.success(
 					`Indice utilisé (${game.hintsUsed}/${MAX_HINTS_PER_GAME}). Pénalité réduite !`
 				);
 				// Decrement local hint card count
-				if (this.hintItemsAvailable > 0) {
-					this.hintItemsAvailable--;
+				if (this.hintCardsAvailable > 0) {
+					this.hintCardsAvailable--;
 				}
 			} else {
 				toaster.success(
@@ -1088,15 +1088,15 @@ class MinesweeperStore {
 
 	/**
 	 * Fetch the count of hint VIP cards available in student's collection
-	 * Updates `hintItemsAvailable` state
+	 * Updates `hintCardsAvailable` state
 	 *
 	 * Uses client-side counting from profiles.vip_cards instead of a dedicated RPC.
 	 *
 	 * @returns Promise that resolves with the count of available hint cards
 	 */
-	async fetchHintItemCount(): Promise<number> {
+	async fetchHintCardCount(): Promise<number> {
 		if (!browser || !this.shouldUseDatabase()) {
-			this.hintItemsAvailable = 0;
+			this.hintCardsAvailable = 0;
 			return 0;
 		}
 
@@ -1108,39 +1108,39 @@ class MinesweeperStore {
 
 			if (error) {
 				logger.error('Failed to fetch hint card count:', error);
-				this.hintItemsAvailable = 0;
+				this.hintCardsAvailable = 0;
 				return 0;
 			}
 
 			const vipCards = (data?.vip_cards ?? {}) as StudentVipCards;
 			const totalCount = countAvailableConsumableUses(vipCards, HINT_VIP_CARD_ID);
 
-			this.hintItemsAvailable = totalCount;
+			this.hintCardsAvailable = totalCount;
 			logger.info(`VIP hint cards available: ${totalCount}`);
 			return totalCount;
 		} catch (err) {
 			logger.error('Failed to fetch hint card count:', err);
-			this.hintItemsAvailable = 0;
+			this.hintCardsAvailable = 0;
 			return 0;
 		}
 	}
 
 	/**
-	 * Refresh hint item count (call after purchasing items from shop)
+	 * Refresh hint card count (call after earning VIP cards)
 	 */
-	async refreshHintItemCount(): Promise<void> {
-		await this.fetchHintItemCount();
+	async refreshHintCardCount(): Promise<void> {
+		await this.fetchHintCardCount();
 	}
 
 	/**
 	 * Fetch the count of undo VIP cards available for the student.
-	 * Uses client-side counting from profiles.vip_cards (same pattern as fetchHintItemCount).
+	 * Uses client-side counting from profiles.vip_cards (same pattern as fetchHintCardCount).
 	 *
 	 * @returns Promise that resolves with the count of available undo cards
 	 */
-	async fetchUndoItemCount(): Promise<number> {
+	async fetchUndoCardCount(): Promise<number> {
 		if (!browser || !this.shouldUseDatabase()) {
-			this.undoItemsAvailable = 0;
+			this.undoCardsAvailable = 0;
 			return 0;
 		}
 
@@ -1152,33 +1152,33 @@ class MinesweeperStore {
 
 			if (error) {
 				logger.error('Failed to fetch undo card count:', error);
-				this.undoItemsAvailable = 0;
+				this.undoCardsAvailable = 0;
 				return 0;
 			}
 
 			const vipCards = (data?.vip_cards ?? {}) as StudentVipCards;
 			const totalCount = countAvailableConsumableUses(vipCards, UNDO_VIP_CARD_ID);
 
-			this.undoItemsAvailable = totalCount;
+			this.undoCardsAvailable = totalCount;
 			logger.info(`VIP undo cards available: ${totalCount}`);
 			return totalCount;
 		} catch (err) {
 			logger.error('Failed to fetch undo card count:', err);
-			this.undoItemsAvailable = 0;
+			this.undoCardsAvailable = 0;
 			return 0;
 		}
 	}
 
 	/**
 	 * Check if undo is available for the current game
-	 * Requires: undo item in inventory AND not already used in this game
+	 * Requires: undo VIP card available AND not already used in this game
 	 */
 	canUseUndo(): boolean {
-		return this.undoItemsAvailable > 0 && !this.undoUsedThisGame;
+		return this.undoCardsAvailable > 0 && !this.undoUsedThisGame;
 	}
 
 	/**
-	 * Use the undo item to revert a bomb reveal
+	 * Use the undo VIP card to revert a bomb reveal
 	 * Called when player confirms they want to use their "Seconde Chance"
 	 */
 	async useUndo(): Promise<void> {
@@ -1222,7 +1222,7 @@ class MinesweeperStore {
 			// Prepare grid state for API
 			const gridState = this.gridToDTO(game.grid);
 
-			// Call API to consume the undo item
+			// Call API to consume the undo VIP card
 			const response = await fetch(`/api/games/minesweeper/${game.id}/undo`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -1243,9 +1243,9 @@ class MinesweeperStore {
 			this.undoUsedThisGame = true;
 			this.pendingBombCell = null;
 
-			// Decrement local undo item count
-			if (this.undoItemsAvailable > 0) {
-				this.undoItemsAvailable--;
+			// Decrement local undo card count
+			if (this.undoCardsAvailable > 0) {
+				this.undoCardsAvailable--;
 			}
 
 			// Trigger reactivity
@@ -1263,7 +1263,7 @@ class MinesweeperStore {
 	}
 
 	/**
-	 * Decline to use the undo item - proceed with game over
+	 * Decline to use the undo card - proceed with game over
 	 * Called when player chooses not to use their "Seconde Chance"
 	 */
 	declineUndo(): void {
@@ -1559,7 +1559,7 @@ class MinesweeperStore {
 							time_seconds: game.timeElapsed,
 							time_mult: 1.0,
 							hints_used: game.hintsUsed || 0,
-							hints_from_items: 0,
+							reduced_penalty_hints: 0,
 							hint_penalty: 0,
 							theoretical_reward: 0,
 							actual_reward: 0,
@@ -1647,7 +1647,7 @@ class MinesweeperStore {
 						time_seconds: game.timeElapsed,
 						time_mult: 1.0,
 						hints_used: game.hintsUsed || 0,
-						hints_from_items: 0,
+						reduced_penalty_hints: 0,
 						hint_penalty: 0,
 						theoretical_reward: 0,
 						actual_reward: 0,
@@ -1722,7 +1722,7 @@ class MinesweeperStore {
 						time_seconds: game.timeElapsed,
 						time_mult: 1.0,
 						hints_used: game.hintsUsed || 0,
-						hints_from_items: 0,
+						reduced_penalty_hints: 0,
 						hint_penalty: 0,
 						theoretical_reward: 0,
 						actual_reward: 0,
@@ -1778,7 +1778,7 @@ class MinesweeperStore {
 						time_seconds: game.timeElapsed,
 						time_mult: 1.0,
 						hints_used: game.hintsUsed || 0,
-						hints_from_items: 0,
+						reduced_penalty_hints: 0,
 						hint_penalty: 0,
 						theoretical_reward: 0,
 						actual_reward: 0,
@@ -1859,7 +1859,7 @@ class MinesweeperStore {
 			time_seconds: game.timeElapsed,
 			time_mult: 1.0,
 			hints_used: game.hintsUsed || 0,
-			hints_from_items: 0,
+			reduced_penalty_hints: 0,
 			hint_penalty: 0,
 			theoretical_reward: 0,
 			actual_reward: 0,
@@ -2486,8 +2486,8 @@ class MinesweeperStore {
 		this.error = null;
 		this.isCompletingGame = false;
 		this.newlyUnlockedAchievements = [];
-		this.hintItemsAvailable = 0;
-		this.undoItemsAvailable = 0;
+		this.hintCardsAvailable = 0;
+		this.undoCardsAvailable = 0;
 		this.undoUsedThisGame = false;
 		this.pendingBombCell = null;
 		this.lastHintedCell = null;

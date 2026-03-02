@@ -2,8 +2,8 @@
 	UndoConfirmModal Component
 	==========================
 
-	Displays when a player clicks on a mine and has a "Seconde Chance" item available.
-	Allows them to use the item to undo the fatal move or accept defeat.
+	Displays when a player clicks on a mine and has a "Seconde Chance" VIP card available.
+	Allows them to use the card to undo the fatal move or accept defeat.
 
 	USAGE:
 	```svelte
@@ -104,8 +104,8 @@
 
 			<!-- Explanation -->
 			<div class="text-center text-sm text-muted-foreground">
-				<p>Utilisez votre item pour annuler ce coup et continuer à jouer.</p>
-				<p class="mt-1 text-xs italic">L'item sera consommé de votre inventaire.</p>
+				<p>Utilisez votre carte pour annuler ce coup et continuer à jouer.</p>
+				<p class="mt-1 text-xs italic">La carte sera consommée.</p>
 			</div>
 
 			<!-- Countdown timer -->

@@ -87,7 +87,7 @@ export interface DifficultyConfig {
  *
  * HINT PENALTY (progressive):
  *   Gidouilles hints: 10% / 22% / 35% for 1/2/3 hints
- *   Item hints:       5% / 11% / 17% for 1/2/3 hints
+ *   VIP card hints:   5% / 11% / 17% for 1/2/3 hints
  *
  * DAILY DEGRESSIVE:
  *   Win 1: 100%, Win 2: 85%, Win 3: 70%, Win 4: 55%, Win 5: 40%, Win 6+: 30%
@@ -128,7 +128,7 @@ export const REWARD_CONSTANTS = {
 
 	// Progressive hint penalties (cumulative percentages)
 	HINT_PENALTIES_GIDOUILLES: [0, 0.1, 0.22, 0.35], // Index = hints used
-	HINT_PENALTIES_ITEMS: [0, 0.05, 0.11, 0.17], // Half penalty for shop items
+	HINT_PENALTIES_REDUCED: [0, 0.05, 0.11, 0.17], // Reduced penalty for VIP card hints
 
 	// Daily degressive
 	DAILY_REDUCTION_PER_WIN: 0.15, // -15% per additional win
@@ -176,7 +176,7 @@ export interface RewardBreakdown {
 	time_seconds: number; // Actual completion time
 	time_mult: number; // 0.8 to 1.3
 	hints_used: number; // Total hints used
-	hints_from_items: number; // Hints from shop items (half penalty)
+	reduced_penalty_hints: number; // Hints with reduced penalty from VIP cards (5/11/17%)
 	hint_penalty: number; // 0 to 0.50
 
 	// Daily limit system (replaces wins_today and daily_mult)

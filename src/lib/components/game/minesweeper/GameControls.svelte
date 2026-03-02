@@ -12,7 +12,7 @@
 		onReset,
 		difficulty: _difficulty,
 		hintsUsed = 0,
-		hintItemsAvailable = 0,
+		hintCardsAvailable = 0,
 		onUseHint,
 		isAuthenticated = false,
 		isLoading = false
@@ -23,7 +23,7 @@
 		onReset: () => void;
 		difficulty: string;
 		hintsUsed?: number;
-		hintItemsAvailable?: number;
+		hintCardsAvailable?: number;
 		onUseHint?: () => void;
 		isAuthenticated?: boolean;
 		isLoading?: boolean;
@@ -111,7 +111,7 @@
 	{#if isAuthenticated && onUseHint}
 		<div class="border-t border-border pt-3">
 			<Tooltip.Provider>
-				<HintButton {hintsUsed} {hintItemsAvailable} {gameStatus} {isLoading} {onUseHint} />
+				<HintButton {hintsUsed} {hintCardsAvailable} {gameStatus} {isLoading} {onUseHint} />
 			</Tooltip.Provider>
 		</div>
 	{/if}
