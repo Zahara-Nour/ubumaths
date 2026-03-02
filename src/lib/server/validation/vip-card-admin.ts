@@ -152,6 +152,12 @@ const chooseCardActionSchema = z
 		}
 	);
 
+const useConsumableActionSchema = z.object({
+	type: z.literal('use_consumable'),
+	context: z.string().min(1, 'Context is required'),
+	effect: z.string().min(1, 'Effect is required')
+});
+
 /**
  * Action configuration schema using discriminated union
  * Ensures each action type has the correct parameters
@@ -161,7 +167,8 @@ const actionSchema = z.discriminatedUnion('type', [
 	removeWarningsActionSchema,
 	exchangeCardsActionSchema,
 	addGidouillesActionSchema,
-	chooseCardActionSchema
+	chooseCardActionSchema,
+	useConsumableActionSchema
 ]);
 
 /**
