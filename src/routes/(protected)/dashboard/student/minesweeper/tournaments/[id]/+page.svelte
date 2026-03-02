@@ -263,7 +263,6 @@
 					timeElapsed={currentGame.timeElapsed}
 					{minesRemaining}
 					gameStatus={currentGame.status}
-					difficulty={tournament.difficulty}
 					onReset={handleReset}
 				/>
 

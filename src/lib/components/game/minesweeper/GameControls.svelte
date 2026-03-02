@@ -10,7 +10,6 @@
 		minesRemaining,
 		gameStatus,
 		onReset,
-		difficulty: _,
 		hintsUsed = 0,
 		hintCardsAvailable = 0,
 		onUseHint,
@@ -21,7 +20,6 @@
 		minesRemaining: number;
 		gameStatus: 'not_started' | 'in_progress' | 'won' | 'lost';
 		onReset: () => void;
-		difficulty: string;
 		hintsUsed?: number;
 		hintCardsAvailable?: number;
 		onUseHint?: () => void;
