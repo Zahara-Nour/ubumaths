@@ -59,12 +59,6 @@
 		}
 		return 'Si proche ! La prochaine sera la bonne.';
 	});
-
-	// Handle play again - delegate entirely to callback
-	// The callback is responsible for closing the modal and starting a new game
-	function handlePlayAgain() {
-		onPlayAgain();
-	}
 </script>
 
 <Card.Root class="animate-in zoom-in-95 mx-4 w-full max-w-sm duration-200">
@@ -107,7 +101,7 @@
 	</Card.Content>
 
 	<Card.Footer class="flex justify-center pt-2">
-		<Button variant="default" onclick={handlePlayAgain} class="gap-2">
+		<Button variant="default" onclick={onPlayAgain} class="gap-2">
 			<RotateCcw class="h-4 w-4" />
 			Réessayer
 		</Button>

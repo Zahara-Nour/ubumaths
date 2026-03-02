@@ -3,6 +3,8 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
+	import { DIFFICULTY_LABELS } from '$lib/types/minesweeper';
+	import type { Difficulty } from '$lib/types/minesweeper';
 
 	interface Achievement {
 		name: string;
@@ -20,22 +22,6 @@
 
 	let isVisible = $state(false);
 	let autoDismissTimer: ReturnType<typeof setTimeout> | null = null;
-
-	/**
-	 * Translate difficulty to French
-	 */
-	function translateDifficulty(diff: string): string {
-		switch (diff) {
-			case 'beginner':
-				return 'Débutant';
-			case 'intermediate':
-				return 'Intermédiaire';
-			case 'expert':
-				return 'Expert';
-			default:
-				return diff;
-		}
-	}
 
 	/**
 	 * Handle close action
@@ -118,7 +104,7 @@
 						variant="secondary"
 						class="mt-2 border-primary-foreground/30 bg-primary-foreground/20 text-primary-foreground"
 					>
-						{translateDifficulty(achievement.difficulty)}
+						{DIFFICULTY_LABELS[achievement.difficulty as Difficulty] || achievement.difficulty}
 					</Badge>
 				{/if}
 			</div>

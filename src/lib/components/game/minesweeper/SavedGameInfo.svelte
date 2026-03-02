@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
 	import type { GameState } from '$lib/types/minesweeper';
-	import { DIFFICULTY_CONFIGS } from '$lib/types/minesweeper';
+	import { DIFFICULTY_CONFIGS, DIFFICULTY_LABELS } from '$lib/types/minesweeper';
+	import type { Difficulty } from '$lib/types/minesweeper';
 
 	// Props
 	let { savedGame }: { savedGame: GameState | null } = $props();
@@ -16,20 +17,6 @@
 			return `${hours}h ${mins.toString().padStart(2, '0')}m`;
 		}
 		return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-	}
-
-	// Get difficulty label in French
-	function getDifficultyLabel(difficulty: string): string {
-		switch (difficulty) {
-			case 'beginner':
-				return 'Débutant';
-			case 'intermediate':
-				return 'Intermédiaire';
-			case 'expert':
-				return 'Expert';
-			default:
-				return difficulty;
-		}
 	}
 
 	// Get difficulty badge color
@@ -67,7 +54,7 @@
 		<div class="flex flex-wrap items-center gap-2">
 			<!-- Difficulty badge -->
 			<Badge variant={getDifficultyVariant(savedGame.difficulty)}>
-				{getDifficultyLabel(savedGame.difficulty)}
+				{DIFFICULTY_LABELS[savedGame.difficulty as Difficulty] || savedGame.difficulty}
 			</Badge>
 
 			<!-- Progress -->
