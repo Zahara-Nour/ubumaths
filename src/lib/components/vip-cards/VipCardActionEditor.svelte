@@ -95,6 +95,13 @@
 		value?.type === 'choose_card' && value.possibleCardIds ? value.possibleCardIds.join(', ') : ''
 	);
 
+	// Hint/undo parameters
+	let hintContext = $state<string>(value?.type === 'hint' ? value.context : 'minesweeper');
+	let undoContext = $state<string>(value?.type === 'undo' ? value.context : 'minesweeper');
+
+	// Context options for in-game actions
+	const gameContextItems = [{ value: 'minesweeper', label: 'Démineur' }];
+
 	// Action type options
 	const actionTypeItems = [
 		{ value: 'none', label: 'Aucune (carte collectionnable uniquement)' },
@@ -102,7 +109,9 @@
 		{ value: 'remove_warnings', label: 'Retirer des avertissements' },
 		{ value: 'exchange_cards', label: 'Échanger des cartes' },
 		{ value: 'add_gidouilles', label: 'Ajouter des gidouilles' },
-		{ value: 'choose_card', label: 'Choisir des cartes spécifiques' }
+		{ value: 'choose_card', label: 'Choisir des cartes spécifiques' },
+		{ value: 'hint', label: 'Indice (in-game)' },
+		{ value: 'undo', label: 'Annuler (in-game)' }
 	];
 
 	// Warning type options (from shared constants)
@@ -277,6 +286,14 @@
 			};
 		}
 
+		if (actionType === 'hint') {
+			return { type: 'hint', context: hintContext };
+		}
+
+		if (actionType === 'undo') {
+			return { type: 'undo', context: undoContext };
+		}
+
 		return null;
 	});
 
@@ -309,6 +326,10 @@
 			chooseCardFilterMode = 'all';
 			chooseCardMaxRarity = 'common';
 			chooseCardPossibleIds = '';
+		} else if (newType === 'hint') {
+			hintContext = 'minesweeper';
+		} else if (newType === 'undo') {
+			undoContext = 'minesweeper';
 		}
 	}
 
@@ -682,6 +703,34 @@
 					</div>
 				</div>
 			{/if}
+		</div>
+	{:else if actionType === 'hint'}
+		<div class="space-y-2">
+			<Label for="hint-context">Contexte de jeu</Label>
+			<MySelect
+				type="single"
+				bind:value={hintContext}
+				items={gameContextItems}
+				placeholder="Sélectionner un jeu"
+				triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+			/>
+			<p class="text-sm text-muted-foreground">
+				Donne un indice à l'élève pendant une partie (ex : révèle une case sûre au démineur).
+			</p>
+		</div>
+	{:else if actionType === 'undo'}
+		<div class="space-y-2">
+			<Label for="undo-context">Contexte de jeu</Label>
+			<MySelect
+				type="single"
+				bind:value={undoContext}
+				items={gameContextItems}
+				placeholder="Sélectionner un jeu"
+				triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+			/>
+			<p class="text-sm text-muted-foreground">
+				Permet d'annuler la dernière action pendant une partie (ex : annuler un clic au démineur).
+			</p>
 		</div>
 	{/if}
 </div>
