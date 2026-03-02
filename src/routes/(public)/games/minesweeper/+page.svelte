@@ -25,17 +25,17 @@
 			// Initialize store with Supabase client
 			minesweeperStore.init(data.supabase, data.profile);
 
-			// Try to load saved game and fetch hint item count in parallel
+			// Try to load saved game and fetch VIP card counts in parallel
 			isLoadingSavedGame = true;
 			try {
 				await Promise.all([
 					minesweeperStore.loadSavedGame(),
-					// Fetch hint and undo item counts for students
+					// Fetch hint and undo VIP card counts for students
 					data.profile.role === 'student'
-						? minesweeperStore.fetchHintItemCount()
+						? minesweeperStore.fetchHintCardCount()
 						: Promise.resolve(),
 					data.profile.role === 'student'
-						? minesweeperStore.fetchUndoItemCount()
+						? minesweeperStore.fetchUndoCardCount()
 						: Promise.resolve()
 				]);
 				// Check if a saved game was loaded
@@ -154,7 +154,7 @@
 							onReset={() => startGame(game.difficulty)}
 							difficulty={game.difficulty}
 							hintsUsed={game.hintsUsed || 0}
-							hintItemsAvailable={minesweeperStore.hintItemsAvailable}
+							hintCardsAvailable={minesweeperStore.hintCardsAvailable}
 							onUseHint={() => minesweeperStore.useHint()}
 							isAuthenticated={data.isAuthenticated}
 							isLoading={minesweeperStore.isLoading}
@@ -347,7 +347,7 @@
 	/>
 {/each}
 
-<!-- Undo confirmation modal (display when player clicks on a bomb with undo item available) -->
+<!-- Undo confirmation modal (display when player clicks on a bomb with undo card available) -->
 {#if minesweeperStore.pendingBombCell}
 	<UndoConfirmModal
 		onUseUndo={() => minesweeperStore.useUndo()}

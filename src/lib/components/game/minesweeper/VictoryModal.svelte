@@ -70,14 +70,14 @@
 		if (breakdown.hints_used === 0) {
 			return { label: 'Sans indice', emoji: '✓', color: 'text-green-500', detail: '' };
 		}
-		const fromItems = breakdown.hints_from_items;
-		const fromGidouilles = breakdown.hints_used - fromItems;
+		const fromCards = breakdown.reduced_penalty_hints;
+		const fromGidouilles = breakdown.hints_used - fromCards;
 
 		let detail = '';
-		if (fromItems > 0 && fromGidouilles > 0) {
-			detail = `(${fromGidouilles} gidouilles + ${fromItems} item${fromItems > 1 ? 's' : ''})`;
-		} else if (fromItems > 0) {
-			detail = `(${fromItems} item${fromItems > 1 ? 's' : ''} - pénalité réduite)`;
+		if (fromCards > 0 && fromGidouilles > 0) {
+			detail = `(${fromGidouilles} gidouilles + ${fromCards} carte${fromCards > 1 ? 's' : ''})`;
+		} else if (fromCards > 0) {
+			detail = `(${fromCards} carte${fromCards > 1 ? 's' : ''} - pénalité réduite)`;
 		} else {
 			detail = `(${fromGidouilles} gidouilles)`;
 		}

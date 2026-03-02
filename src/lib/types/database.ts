@@ -6335,11 +6335,11 @@ export type Database = {
 					gidouilles_awarded: number | null;
 					grid_state: Json;
 					hint_penalty_applied: boolean;
-					hints_from_items: number;
 					hints_used: number;
 					id: string;
 					mines_count: number;
 					points_earned: number;
+					reduced_penalty_hints: number;
 					started_at: string | null;
 					status: string;
 					student_id: string | null;
@@ -6355,11 +6355,11 @@ export type Database = {
 					gidouilles_awarded?: number | null;
 					grid_state: Json;
 					hint_penalty_applied?: boolean;
-					hints_from_items?: number;
 					hints_used?: number;
 					id?: string;
 					mines_count: number;
 					points_earned?: number;
+					reduced_penalty_hints?: number;
 					started_at?: string | null;
 					status: string;
 					student_id?: string | null;
@@ -6375,11 +6375,11 @@ export type Database = {
 					gidouilles_awarded?: number | null;
 					grid_state?: Json;
 					hint_penalty_applied?: boolean;
-					hints_from_items?: number;
 					hints_used?: number;
 					id?: string;
 					mines_count?: number;
 					points_earned?: number;
+					reduced_penalty_hints?: number;
 					started_at?: string | null;
 					status?: string;
 					student_id?: string | null;
@@ -13067,8 +13067,8 @@ export type Database = {
 				| {
 						Args: {
 							p_difficulty: string;
-							p_hints_from_items?: number;
 							p_hints_used?: number;
+							p_reduced_penalty_hints?: number;
 							p_student_id: string;
 							p_time_seconds: number;
 						};
