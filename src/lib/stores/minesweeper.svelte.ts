@@ -331,7 +331,7 @@ class MinesweeperStore {
 						student_id: this.user!.id,
 						difficulty,
 						status: this.toDbStatus('in_progress'), // ✅ FIX: Database only accepts 'in_progress'|'won'|'lost'
-						grid_state: gridState as unknown as Json,
+						grid_state: this.gridStateToJson(gridState),
 						time_seconds: null, // ✅ FIX: NULL instead of 0 for in-progress games
 						mines_count: config.mines
 					})
@@ -599,6 +599,35 @@ class MinesweeperStore {
 		}
 
 		return dto;
+	}
+
+	/**
+	 * Convert GridStateDTO to a Json-compatible object for Supabase.
+	 * GridStateDTO.adjacentCounts (Record<string, number>) is not directly
+	 * assignable to Json, so we spread through a Json-typed structure.
+	 */
+	private gridStateToJson(dto: import('$lib/types/minesweeper').GridStateDTO): Json {
+		const { adjacentCounts, ...rest } = dto;
+		const jsonCounts: { [key: string]: Json } = {};
+		for (const [k, v] of Object.entries(adjacentCounts)) {
+			jsonCounts[k] = v;
+		}
+		return { ...rest, adjacentCounts: jsonCounts };
+	}
+
+	/**
+	 * Convert a Json value from the database back to GridStateDTO.
+	 */
+	private jsonToGridStateDTO(json: Json): import('$lib/types/minesweeper').GridStateDTO {
+		const obj = json as {
+			rows: number;
+			cols: number;
+			mines: [number, number][];
+			revealed: [number, number][];
+			flagged: [number, number][];
+			adjacentCounts: Record<string, number>;
+		};
+		return obj;
 	}
 
 	/**
@@ -1364,7 +1393,7 @@ class MinesweeperStore {
 					// Save to tournament games table
 					// Note: tournament_games table only has grid_state column for auto-save
 					const updatePayload = {
-						grid_state: gridState as unknown as Json
+						grid_state: this.gridStateToJson(gridState)
 					};
 
 					const { error } = await this.supabase!.from('minesweeper_tournament_games')
@@ -1390,7 +1419,7 @@ class MinesweeperStore {
 						cells_revealed: number;
 						hints_used: number;
 					} = {
-						grid_state: gridState as unknown as Json,
+						grid_state: this.gridStateToJson(gridState),
 						status: this.toDbStatus(game.status),
 						flags_used: game.flagsUsed,
 						cells_revealed: game.cellsRevealed,
@@ -1597,7 +1626,7 @@ class MinesweeperStore {
 					// RPC handles: ownership verification, server-side time calculation, grid validation, audit trail
 					const { data, error } = await this.supabase!.rpc('record_minesweeper_loss', {
 						p_game_id: game.id,
-						p_grid_state: gridState as unknown as Json
+						p_grid_state: this.gridStateToJson(gridState)
 					});
 
 					if (error) {
@@ -1925,9 +1954,7 @@ class MinesweeperStore {
 				const config = DIFFICULTY_CONFIGS[difficulty];
 
 				// Convert GridStateDTO from database to internal CellState[][]
-				const grid = this.dtoToGrid(
-					data.grid_state as unknown as import('$lib/types/minesweeper').GridStateDTO
-				);
+				const grid = this.dtoToGrid(this.jsonToGridStateDTO(data.grid_state as Json));
 
 				// Calculate elapsed time from started_at for in-progress games
 				let timeElapsed = 0;
