@@ -3,8 +3,8 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import { Checkbox } from '$lib/components/ui/checkbox';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import VipCardActionEditor from '$lib/components/vip-cards/VipCardActionEditor.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
@@ -410,14 +410,7 @@
 	</div>
 
 	<!-- Is Enabled Checkbox -->
-	<div class="flex items-center space-x-2">
-		<Checkbox
-			id="is_enabled"
-			checked={formData.is_enabled}
-			onCheckedChange={(checked) => (formData.is_enabled = !!checked)}
-		/>
-		<Label for="is_enabled" class="cursor-pointer">Carte activée</Label>
-	</div>
+	<MyCheckbox bind:checked={formData.is_enabled} label="Carte activée" />
 
 	<!-- Max Owned Per Student (always visible) -->
 	<div class="space-y-2">
@@ -440,14 +433,7 @@
 
 	<!-- Purchase Section -->
 	<div class="space-y-3 rounded-lg border p-4">
-		<div class="flex items-center space-x-2">
-			<Checkbox
-				id="is_purchasable"
-				checked={formData.is_purchasable}
-				onCheckedChange={(checked) => (formData.is_purchasable = !!checked)}
-			/>
-			<Label for="is_purchasable" class="cursor-pointer">Achetable par les élèves</Label>
-		</div>
+		<MyCheckbox bind:checked={formData.is_purchasable} label="Achetable par les élèves" />
 
 		{#if formData.is_purchasable}
 			<div class="space-y-2">
@@ -498,14 +484,7 @@
 	<!-- Consumable Card (uses_total) -->
 	{#if formData.action}
 		<div class="space-y-3 rounded-lg border p-4">
-			<div class="flex items-center space-x-2">
-				<Checkbox
-					id="is_consumable"
-					checked={isConsumable}
-					onCheckedChange={(checked) => (isConsumable = !!checked)}
-				/>
-				<Label for="is_consumable" class="cursor-pointer">Carte consommable (multi-usage)</Label>
-			</div>
+			<MyCheckbox bind:checked={isConsumable} label="Carte consommable (multi-usage)" />
 
 			{#if isConsumable}
 				<div class="space-y-2">
