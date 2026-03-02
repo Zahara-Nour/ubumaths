@@ -1947,7 +1947,8 @@ class MinesweeperStore {
 					flagsUsed: this.countFlags(grid),
 					cellsRevealed: this.countRevealed(grid),
 					timeElapsed,
-					startedAt: data.started_at ? new Date(data.started_at) : undefined
+					startedAt: data.started_at ? new Date(data.started_at) : undefined,
+					hintsUsed: data.hints_used ?? 0
 				};
 
 				this.currentGame = game;
