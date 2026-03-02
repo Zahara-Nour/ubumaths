@@ -32,7 +32,6 @@
 		image_path: string;
 		sort_order: number;
 		action?: VipCardAction | null;
-		activation_context: string | null;
 		uses_total: number | null;
 		base_price: number;
 		is_purchasable: boolean;
@@ -135,7 +134,6 @@
 			isEnabled: cardData.is_enabled,
 			imagePath: cardData.image_path,
 			sortOrder: cardData.sort_order,
-			activationContext: cardData.activation_context,
 			usesTotal: cardData.uses_total,
 			basePrice: cardData.base_price,
 			isPurchasable: cardData.is_purchasable,

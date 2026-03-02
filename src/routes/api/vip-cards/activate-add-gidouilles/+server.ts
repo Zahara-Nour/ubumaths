@@ -29,7 +29,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { z } from 'zod';
-import type { StudentVipCards } from '$lib/types/vip-card';
+import type { StudentVipCards, VipCardAction } from '$lib/types/vip-card';
 import { getTemplateById } from '$lib/server/vip-card-queries';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import { validateActivationContext } from '$lib/server/vip-card-context';
@@ -89,7 +89,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, 'This card has already been used');
 	}
 
-	// Fetch template early (needed for activation_context check)
+	// Fetch template early (needed for action.context check)
 	const template = await getTemplateById(supabase, instance.cardId);
 	if (!template) {
 		throw error(404, 'Card template not found');
@@ -97,12 +97,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	// Student flow: require teacher approval OR valid activation context
 	if (isStudent && !instance.activationApprovedAt) {
-		if (template.activation_context) {
-			const contextValid = await validateActivationContext(
-				template.activation_context,
-				supabase,
-				studentId
-			);
+		const actionContext = (template.action as VipCardAction | null)?.context;
+		if (actionContext) {
+			const contextValid = await validateActivationContext(actionContext, supabase, studentId);
 			if (!contextValid) {
 				throw error(400, 'Cette carte ne peut être activée que dans un contexte spécifique');
 			}

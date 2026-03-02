@@ -17,6 +17,9 @@
 	// Internal state for building the action
 	let actionType = $state<string>(value?.type ?? 'none');
 
+	// Context for activation (shared across all action types)
+	let actionContext = $state<string>(value?.context ?? '');
+
 	// Parameters for each action type
 	let drawCardsCount = $state<number>(value?.type === 'draw_cards' ? value.count : 2);
 	let removeWarningsCount = $state<number>(value?.type === 'remove_warnings' ? value.count : 1);
@@ -95,13 +98,6 @@
 		value?.type === 'choose_card' && value.possibleCardIds ? value.possibleCardIds.join(', ') : ''
 	);
 
-	// Hint/undo parameters
-	let hintContext = $state<string>(value?.type === 'hint' ? value.context : 'minesweeper');
-	let undoContext = $state<string>(value?.type === 'undo' ? value.context : 'minesweeper');
-
-	// Context options for in-game actions
-	const gameContextItems = [{ value: 'minesweeper', label: 'Démineur' }];
-
 	// Action type options
 	const actionTypeItems = [
 		{ value: 'none', label: 'Aucune (carte collectionnable uniquement)' },
@@ -152,6 +148,13 @@
 		{ value: 'legendary', label: 'Légendaire' }
 	];
 
+	// Activation context options (shared for all action types)
+	const activationContextItems = [
+		{ value: '', label: 'Approbation enseignant (défaut)' },
+		{ value: 'any', label: 'Auto-activation libre' },
+		{ value: 'minesweeper', label: 'Pendant une partie de démineur' }
+	];
+
 	// Filter mode options for choose_card
 	const chooseCardFilterModeItems = [
 		{ value: 'all', label: 'Toutes les cartes' },
@@ -163,6 +166,14 @@
 	const pointsRequired = $derived(
 		getRarityPoints(rarityPointsTargetRarity as 'common' | 'rare' | 'epic' | 'legendary')
 	);
+
+	// Helper to inject context into an action object
+	function withContext<T extends Record<string, unknown>>(action: T): T {
+		if (actionContext) {
+			return { ...action, context: actionContext };
+		}
+		return action;
+	}
 
 	// Build the complete VipCardAction based on current state
 	const currentAction = $derived.by((): VipCardAction | null => {
@@ -188,59 +199,59 @@
 			}
 			if (drawOnlyCardsWithActions) filters.onlyCardsWithActions = true;
 
-			return {
-				type: 'draw_cards',
+			return withContext({
+				type: 'draw_cards' as const,
 				count: drawCardsCount,
 				...(Object.keys(filters).length > 0 ? { filters } : {})
-			};
+			});
 		}
 
 		if (actionType === 'remove_warnings') {
-			return {
-				type: 'remove_warnings',
+			return withContext({
+				type: 'remove_warnings' as const,
 				count: removeWarningsCount,
 				...(removeWarningsType !== 'none' && { warningType: removeWarningsType as WarningType })
-			};
+			});
 		}
 
 		if (actionType === 'add_gidouilles') {
-			return {
-				type: 'add_gidouilles',
+			return withContext({
+				type: 'add_gidouilles' as const,
 				amount: addGidouillesAmount
-			};
+			});
 		}
 
 		if (actionType === 'exchange_cards') {
 			if (exchangeMode === 'replace_random') {
-				return {
-					type: 'exchange_cards',
+				return withContext({
+					type: 'exchange_cards' as const,
 					exchange: {
-						mode: 'replace_random',
+						mode: 'replace_random' as const,
 						count: replaceRandomFlexible ? undefined : replaceRandomCount
 					}
-				};
+				});
 			}
 
 			if (exchangeMode === 'rarity_points') {
-				return {
-					type: 'exchange_cards',
+				return withContext({
+					type: 'exchange_cards' as const,
 					exchange: {
-						mode: 'rarity_points',
+						mode: 'rarity_points' as const,
 						targetRarity: rarityPointsTargetRarity as 'common' | 'rare' | 'epic' | 'legendary',
 						pointsRequired
 					}
-				};
+				});
 			}
 
 			if (exchangeMode === 'discard_for_specific') {
-				return {
-					type: 'exchange_cards',
+				return withContext({
+					type: 'exchange_cards' as const,
 					exchange: {
-						mode: 'discard_for_specific',
+						mode: 'discard_for_specific' as const,
 						discardCount: discardForSpecificCount,
 						targetCardId: discardForSpecificTargetCardId
 					}
-				};
+				});
 			}
 		}
 
@@ -251,17 +262,17 @@
 			};
 
 			if (chooseCardFilterMode === 'all') {
-				return {
+				return withContext({
 					...baseAction,
 					filter: 'all' as const
-				};
+				});
 			}
 
 			if (chooseCardFilterMode === 'maxRarity') {
-				return {
+				return withContext({
 					...baseAction,
 					maxRarity: chooseCardMaxRarity as 'common' | 'rare' | 'epic' | 'legendary'
-				};
+				});
 			}
 
 			if (chooseCardFilterMode === 'specific') {
@@ -272,26 +283,26 @@
 					.filter((id) => id.length > 0);
 
 				if (cardIds.length > 0) {
-					return {
+					return withContext({
 						...baseAction,
 						possibleCardIds: cardIds
-					};
+					});
 				}
 			}
 
 			// Default to 'all' if no valid filter
-			return {
+			return withContext({
 				...baseAction,
 				filter: 'all' as const
-			};
+			});
 		}
 
 		if (actionType === 'hint') {
-			return { type: 'hint', context: hintContext };
+			return withContext({ type: 'hint' as const });
 		}
 
 		if (actionType === 'undo') {
-			return { type: 'undo', context: undoContext };
+			return withContext({ type: 'undo' as const });
 		}
 
 		return null;
@@ -303,6 +314,8 @@
 	});
 
 	// Reset parameters when action type changes
+	// Note: actionContext is intentionally NOT reset — it's a cross-cutting concern
+	// that applies regardless of action type (e.g., 'minesweeper' context)
 	function handleActionTypeChange(newType: string) {
 		actionType = newType;
 
@@ -326,10 +339,6 @@
 			chooseCardFilterMode = 'all';
 			chooseCardMaxRarity = 'common';
 			chooseCardPossibleIds = '';
-		} else if (newType === 'hint') {
-			hintContext = 'minesweeper';
-		} else if (newType === 'undo') {
-			undoContext = 'minesweeper';
 		}
 	}
 
@@ -705,31 +714,38 @@
 			{/if}
 		</div>
 	{:else if actionType === 'hint'}
-		<div class="space-y-2">
-			<Label for="hint-context">Contexte de jeu</Label>
-			<MySelect
-				type="single"
-				bind:value={hintContext}
-				items={gameContextItems}
-				placeholder="Sélectionner un jeu"
-				triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
-			/>
+		<div class="rounded-md bg-muted p-3">
 			<p class="text-sm text-muted-foreground">
-				Donne un indice à l'élève pendant une partie (ex : révèle une case sûre au démineur).
+				Donne un indice à l'élève pendant une partie (ex : révèle une case sûre au démineur). Le jeu
+				concerné est déterminé par le contexte d'activation.
 			</p>
 		</div>
 	{:else if actionType === 'undo'}
-		<div class="space-y-2">
-			<Label for="undo-context">Contexte de jeu</Label>
-			<MySelect
-				type="single"
-				bind:value={undoContext}
-				items={gameContextItems}
-				placeholder="Sélectionner un jeu"
-				triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
-			/>
+		<div class="rounded-md bg-muted p-3">
 			<p class="text-sm text-muted-foreground">
 				Permet d'annuler la dernière action pendant une partie (ex : annuler un clic au démineur).
+				Le jeu concerné est déterminé par le contexte d'activation.
+			</p>
+		</div>
+	{/if}
+
+	<!-- Activation Context Selector (visible for all action types) -->
+	{#if actionType !== 'none'}
+		<div class="space-y-2">
+			<Label for="action-context">Contexte d'activation</Label>
+			<MySelect
+				type="single"
+				bind:value={actionContext}
+				items={activationContextItems}
+				placeholder="Sélectionner un contexte"
+				triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+			/>
+			<p class="text-xs text-muted-foreground">
+				{#if actionContext}
+					L'élève peut activer cette carte sans approbation de l'enseignant
+				{:else}
+					L'élève doit demander l'approbation de l'enseignant avant d'activer
+				{/if}
 			</p>
 		</div>
 	{/if}

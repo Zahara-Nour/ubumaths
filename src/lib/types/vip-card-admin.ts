@@ -26,7 +26,6 @@ export interface VipCardTemplate {
 	is_enabled: boolean;
 	action: VipCardAction | null;
 	sort_order: number;
-	activation_context: string | null;
 	uses_total: number | null;
 	base_price: number;
 	is_purchasable: boolean;
@@ -83,7 +82,6 @@ export interface CreateTemplateRequest {
 	action?: VipCardAction;
 	sortOrder?: number;
 	usesTotal?: number | null;
-	activationContext?: string | null;
 	basePrice?: number;
 	isPurchasable?: boolean;
 	maxOwnedPerStudent?: number;
@@ -107,7 +105,6 @@ export interface TemplateResponse {
 	isEnabled: boolean;
 	action: VipCardAction | null;
 	sortOrder: number;
-	activationContext: string | null;
 	usesTotal: number | null;
 	basePrice: number;
 	isPurchasable: boolean;
@@ -213,7 +210,6 @@ export function templateToResponse(template: VipCardTemplate): TemplateResponse 
 		isEnabled: template.is_enabled,
 		action: template.action,
 		sortOrder: template.sort_order,
-		activationContext: template.activation_context,
 		usesTotal: template.uses_total,
 		basePrice: template.base_price,
 		isPurchasable: template.is_purchasable,
@@ -256,7 +252,6 @@ export function responseToTemplate(response: TemplateResponse): VipCardTemplate 
 		is_enabled: response.isEnabled,
 		action: response.action,
 		sort_order: response.sortOrder,
-		activation_context: response.activationContext,
 		uses_total: response.usesTotal,
 		base_price: response.basePrice,
 		is_purchasable: response.isPurchasable,

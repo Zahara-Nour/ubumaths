@@ -3,7 +3,7 @@
  * ======================================
  *
  * Validates whether a student can self-activate a VIP card based on its
- * activation_context field. Cards with a non-null activation_context can
+ * action.context field. Cards with a non-null action.context can
  * bypass teacher approval when the context condition is met.
  *
  * To add a new context: add an entry to contextValidators.
@@ -16,7 +16,7 @@ type ContextValidator = (supabase: SupabaseClient<Database>, studentId: string) 
 
 /**
  * Registry of context validators.
- * Each key matches a possible value of vip_card_templates.activation_context.
+ * Each key matches a possible value of action.context in the JSONB action field.
  */
 const contextValidators: Record<string, ContextValidator> = {
 	/** Always valid — student can self-activate freely */
@@ -41,7 +41,7 @@ const contextValidators: Record<string, ContextValidator> = {
 /**
  * Validate whether a student meets the activation context requirements.
  *
- * @param context - The activation_context value from the card template
+ * @param context - The action.context value from the card's action JSONB
  * @param supabase - Supabase client
  * @param studentId - UUID of the student attempting activation
  * @returns true if the context is valid, false otherwise

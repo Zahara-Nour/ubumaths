@@ -10941,7 +10941,6 @@ export type Database = {
 			vip_card_templates: {
 				Row: {
 					action: Json | null;
-					activation_context: string | null;
 					base_price: number;
 					category: string | null;
 					created_at: string;
@@ -10959,7 +10958,6 @@ export type Database = {
 				};
 				Insert: {
 					action?: Json | null;
-					activation_context?: string | null;
 					base_price?: number;
 					category?: string | null;
 					created_at?: string;
@@ -10977,7 +10975,6 @@ export type Database = {
 				};
 				Update: {
 					action?: Json | null;
-					activation_context?: string | null;
 					base_price?: number;
 					category?: string | null;
 					created_at?: string;

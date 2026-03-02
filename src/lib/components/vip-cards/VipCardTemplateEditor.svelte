@@ -26,7 +26,6 @@
 		image_path: string;
 		sort_order: number;
 		action?: VipCardAction | null;
-		activation_context: string | null;
 		uses_total: number | null;
 		base_price: number;
 		is_purchasable: boolean;
@@ -48,7 +47,6 @@
 		image_path: card?.image_path ?? '',
 		sort_order: card?.sort_order ?? 0,
 		action: card?.action as VipCardAction | null,
-		activation_context: card?.activation_context ?? null,
 		uses_total: card?.uses_total ?? null,
 		base_price: card?.base_price ?? 0,
 		is_purchasable: card?.is_purchasable ?? true,
@@ -113,12 +111,6 @@
 		{ value: 'power', label: 'Pouvoir' }
 	];
 
-	const activationContextItems = [
-		{ value: '', label: 'Approbation enseignant (défaut)' },
-		{ value: 'any', label: 'Auto-activation libre' },
-		{ value: 'minesweeper', label: 'Pendant une partie de démineur' }
-	];
-
 	// Consumable state: checkbox drives whether uses_total is set
 	let isConsumable = $state(card?.uses_total !== null && card?.uses_total !== undefined);
 	let usesTotalInput = $state(card?.uses_total ?? 3);
@@ -126,14 +118,6 @@
 	// Sync consumable state → formData.uses_total
 	$effect(() => {
 		formData.uses_total = isConsumable ? usesTotalInput : null;
-	});
-
-	// Bind helper: MySelect uses '' for "no selection", but we store null in DB
-	let activationContextValue = $state(card?.activation_context ?? '');
-
-	// Sync activationContextValue → formData.activation_context
-	$effect(() => {
-		formData.activation_context = activationContextValue === '' ? null : activationContextValue;
 	});
 
 	// Validation using Svelte 5 $derived - separate errors and validation
@@ -460,26 +444,6 @@
 			formData.action = newAction ?? null;
 		}}
 	/>
-
-	<!-- Activation Context (only relevant if card has an action) -->
-	{#if formData.action}
-		<div class="space-y-2">
-			<Label for="activation_context">Contexte d'activation</Label>
-			<MySelect
-				type="single"
-				bind:value={activationContextValue}
-				items={activationContextItems}
-				placeholder="Sélectionner un contexte"
-			/>
-			<p class="text-xs text-muted-foreground">
-				{#if formData.activation_context}
-					L'élève peut activer cette carte sans approbation de l'enseignant
-				{:else}
-					L'élève doit demander l'approbation de l'enseignant avant d'activer
-				{/if}
-			</p>
-		</div>
-	{/if}
 
 	<!-- Consumable Card (uses_total) -->
 	{#if formData.action}

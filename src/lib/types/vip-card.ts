@@ -125,6 +125,7 @@ interface DrawCardsAction {
 	type: 'draw_cards';
 	count: number; // Number of cards to draw
 	filters?: DrawCardsFilters; // Optional filters to control which cards can be drawn
+	context?: string; // Activation context (e.g., 'any', 'minesweeper')
 }
 
 /**
@@ -135,6 +136,7 @@ interface RemoveWarningsAction {
 	type: 'remove_warnings';
 	count: number; // Number of warnings to remove
 	warningType?: WarningType; // Optional: specific warning type to remove (C, M, R, T)
+	context?: string; // Activation context (e.g., 'any', 'minesweeper')
 }
 
 /**
@@ -144,6 +146,7 @@ interface RemoveWarningsAction {
 interface ExchangeCardsAction {
 	type: 'exchange_cards';
 	exchange: ExchangeCardAction;
+	context?: string; // Activation context (e.g., 'any', 'minesweeper')
 }
 
 /**
@@ -153,6 +156,7 @@ interface ExchangeCardsAction {
 interface AddGidouillesAction {
 	type: 'add_gidouilles';
 	amount: number; // Number of gidouilles to add
+	context?: string; // Activation context (e.g., 'any', 'minesweeper')
 }
 
 /**
@@ -172,6 +176,7 @@ interface ChooseCardAction {
 	filter?: 'all'; // Mode 1: All cards available (default)
 	maxRarity?: VipCardRarity; // Mode 2: Limit by max rarity (e.g., 'epic' = common/rare/epic only)
 	possibleCardIds?: string[]; // Mode 3: Specific list of allowed card IDs
+	context?: string; // Activation context (e.g., 'any', 'minesweeper')
 }
 
 /**
@@ -181,17 +186,17 @@ interface ChooseCardAction {
  */
 interface HintAction {
 	type: 'hint';
-	context: string; // e.g. 'minesweeper'
+	context?: string; // Activation context (e.g., 'minesweeper')
 }
 
 /**
  * VIP Card Action - Undo
  * Reverts the last action in a specific game context.
- * Behavior varies by context (e.g., minesweeper = undo a bomb click).
+ * The game context is determined by the action's context field.
  */
 interface UndoAction {
 	type: 'undo';
-	context: string; // e.g. 'minesweeper'
+	context?: string; // Activation context (e.g., 'minesweeper')
 }
 
 /**
@@ -224,8 +229,6 @@ export interface VipCard {
 	maxOwnedPerStudent?: number; // Maximum active copies a student can own (default: 5)
 	// Consumable fields
 	usesTotal?: number | null; // Number of uses for consumables (null = single-use)
-	// Self-activation context (null = teacher approval required)
-	activationContext?: string | null;
 }
 
 /**

@@ -83,8 +83,6 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		if (data.isEnabled !== undefined) updateData.is_enabled = data.isEnabled;
 		if (data.imagePath !== undefined) updateData.image_path = data.imagePath;
 		if (data.action !== undefined) updateData.action = data.action;
-		if (data.activationContext !== undefined)
-			updateData.activation_context = data.activationContext;
 		if (data.usesTotal !== undefined) updateData.uses_total = data.usesTotal;
 		if (data.sortOrder !== undefined) updateData.sort_order = data.sortOrder;
 		if (data.basePrice !== undefined) updateData.base_price = data.basePrice;
