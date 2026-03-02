@@ -13218,7 +13218,6 @@ export type Database = {
 			};
 			count_user_notebooks: { Args: { p_user_id: string }; Returns: number };
 			count_user_python_files: { Args: { p_user_id: string }; Returns: number };
-			count_vip_hint_cards: { Args: { p_student_id: string }; Returns: number };
 			create_1on1_chat: {
 				Args: { p_user1_id: string; p_user2_id: string };
 				Returns: string;
@@ -14489,10 +14488,6 @@ export type Database = {
 			try_consume_minesweeper_undo_item: {
 				Args: { p_student_id: string };
 				Returns: boolean;
-			};
-			try_consume_vip_hint_card: {
-				Args: { p_student_id: string };
-				Returns: string;
 			};
 			unaccent: { Args: { '': string }; Returns: string };
 			unlock_cards: { Args: { p_entity_id: string }; Returns: number };
