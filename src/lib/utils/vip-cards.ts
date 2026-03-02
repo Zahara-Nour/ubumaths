@@ -215,11 +215,11 @@ export function getActionDescription(action: VipCardAction, templates: VipCardTe
 		case 'add_gidouilles':
 			return `Gagner ${action.amount} gidouille${action.amount > 1 ? 's' : ''}`;
 
-		case 'use_consumable':
-			if (action.context === 'minesweeper' && action.effect === 'reveal_safe_cell') {
-				return 'Révéler une cellule sûre (Démineur)';
+		case 'undo':
+			if (action.context === 'minesweeper') {
+				return 'Annuler un coup (Démineur)';
 			}
-			return `Consommable (${action.context})`;
+			return `Annuler (${action.context})`;
 
 		default:
 			return 'Action spéciale';

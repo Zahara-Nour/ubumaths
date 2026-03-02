@@ -344,8 +344,8 @@
 				}
 				break;
 
-			case 'use_consumable': {
-				if (action.context === 'minesweeper' && action.effect === 'reveal_safe_cell') {
+			case 'undo': {
+				if (action.context === 'minesweeper') {
 					const { minesweeperStore } = await import('$lib/stores/minesweeper.svelte');
 
 					if (
@@ -356,10 +356,10 @@
 						return;
 					}
 
-					await minesweeperStore.useHint();
+					await minesweeperStore.useUndo();
 					await onComplete();
 				} else {
-					toaster.error('Type de consommable non supporté');
+					toaster.error("Contexte d'annulation non supporté");
 				}
 				break;
 			}

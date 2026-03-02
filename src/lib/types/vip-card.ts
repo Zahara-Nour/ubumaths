@@ -175,14 +175,13 @@ interface ChooseCardAction {
 }
 
 /**
- * VIP Card Action - Use consumable
- * For cards with activation_context that are consumed in a specific game context
- * (e.g., minesweeper-hint reveals a safe cell)
+ * VIP Card Action - Undo
+ * Reverts the last action in a specific game context.
+ * Behavior varies by context (e.g., minesweeper = undo a bomb click).
  */
-interface UseConsumableAction {
-	type: 'use_consumable';
+interface UndoAction {
+	type: 'undo';
 	context: string; // e.g. 'minesweeper'
-	effect: string; // e.g. 'reveal_safe_cell'
 }
 
 /**
@@ -195,7 +194,7 @@ export type VipCardAction =
 	| ExchangeCardsAction
 	| AddGidouillesAction
 	| ChooseCardAction
-	| UseConsumableAction;
+	| UndoAction;
 
 /**
  * Definition of a VIP card type (template)
