@@ -35,7 +35,7 @@ const MAX_HINTS_PER_GAME = 3; // Maximum hints allowed per game
 const HINT_COST_GIDOUILLES = 1; // Gidouilles cost per hint (Strategy D: 1.0)
 const HINT_PENALTY_PERCENTAGE = 30; // Percentage penalty on final reward (only for gidouilles hints)
 // VIP card hint
-const HINT_VIP_CARD_ID = 'minesweeper-hint'; // VIP card id for hints
+const HINT_VIP_CARD_IDS = ['minesweeper-hint', 'minesweeper-hint-2', 'minesweeper-hint-3'];
 
 // Undo (Seconde Chance) VIP card configuration
 const UNDO_VIP_CARD_ID = 'minesweeper-undo'; // VIP card id for undo
@@ -1142,7 +1142,7 @@ class MinesweeperStore {
 			}
 
 			const vipCards = (data?.vip_cards ?? {}) as StudentVipCards;
-			const totalCount = countAvailableConsumableUses(vipCards, HINT_VIP_CARD_ID);
+			const totalCount = countAvailableConsumableUses(vipCards, HINT_VIP_CARD_IDS);
 
 			this.hintCardsAvailable = totalCount;
 			logger.info(`VIP hint cards available: ${totalCount}`);
