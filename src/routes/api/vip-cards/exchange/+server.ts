@@ -27,7 +27,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { exchangeCardsSchema } from '$lib/server/validation/exchange-cards';
-import type { StudentVipCards } from '$lib/types/vip-card';
+import type { StudentVipCards, VipCardAction } from '$lib/types/vip-card';
 import { getRarityPoints } from '$lib/types/vip-card';
 import type { VipCardRarity } from '$lib/types/vip-card';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -104,12 +104,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (!actionTemplate) {
 			throw error(404, 'Action card template not found');
 		}
-		if (actionTemplate.activation_context) {
-			const contextValid = await validateActivationContext(
-				actionTemplate.activation_context,
-				supabase,
-				data.studentId
-			);
+		const actionContext = (actionTemplate.action as VipCardAction | null)?.context;
+		if (actionContext) {
+			const contextValid = await validateActivationContext(actionContext, supabase, data.studentId);
 			if (!contextValid) {
 				throw error(400, 'Cette carte ne peut être activée que dans un contexte spécifique');
 			}

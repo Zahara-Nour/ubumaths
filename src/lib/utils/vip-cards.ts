@@ -53,7 +53,6 @@ export function getStudentCardsWithCounts(
 	category?: string;
 	rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 	action?: VipCardAction;
-	activationContext?: string | null;
 	count: number;
 }> {
 	const cardMap = new Map<
@@ -66,7 +65,6 @@ export function getStudentCardsWithCounts(
 			category?: string;
 			rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 			action?: VipCardAction;
-			activationContext?: string | null;
 			count: number;
 		}
 	>();
@@ -88,7 +86,6 @@ export function getStudentCardsWithCounts(
 					category: template.category || undefined,
 					rarity: template.rarity as 'common' | 'rare' | 'epic' | 'legendary',
 					action: template.action ?? undefined,
-					activationContext: template.activation_context ?? undefined,
 					count: 1
 				});
 			}
@@ -216,16 +213,10 @@ export function getActionDescription(action: VipCardAction, templates: VipCardTe
 			return `Gagner ${action.amount} gidouille${action.amount > 1 ? 's' : ''}`;
 
 		case 'hint':
-			if (action.context === 'minesweeper') {
-				return 'Révéler une cellule sûre (Démineur)';
-			}
-			return `Indice (${action.context})`;
+			return 'Indice en jeu';
 
 		case 'undo':
-			if (action.context === 'minesweeper') {
-				return 'Annuler un coup (Démineur)';
-			}
-			return `Annuler (${action.context})`;
+			return 'Annuler un coup';
 
 		default:
 			return 'Action spéciale';

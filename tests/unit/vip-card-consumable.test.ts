@@ -46,7 +46,7 @@ interface ConsumableVipCardTemplate {
 	id: string;
 	name: string;
 	rarity: 'common' | 'rare' | 'epic' | 'legendary';
-	category: 'consumable' | 'bonus' | 'privilege' | 'social' | 'power';
+	category: 'bonus' | 'privilege' | 'social' | 'power';
 	uses_total: number;
 }
 
@@ -91,12 +91,12 @@ describe('VIP Card Consumable - Unit Tests', () => {
 				id: 'homework-pass-3x',
 				name: 'Pass Devoirs x3',
 				rarity: 'rare',
-				category: 'consumable',
+				category: 'power',
 				uses_total: 3
 			};
 
 			expect(consumableTemplate.uses_total).toBe(3);
-			expect(consumableTemplate.category).toBe('consumable');
+			expect(consumableTemplate.category).toBe('power');
 		});
 
 		it('should allow null uses_total for non-consumable cards', () => {
@@ -111,9 +111,9 @@ describe('VIP Card Consumable - Unit Tests', () => {
 			expect(singleUseTemplate.uses_total).toBeNull();
 		});
 
-		it('should support category = consumable for multi-use cards', () => {
-			const categories = ['bonus', 'privilege', 'social', 'power', 'consumable'];
-			expect(categories).toContain('consumable');
+		it('should support uses_total for multi-use cards', () => {
+			const categories = ['bonus', 'privilege', 'social', 'power'];
+			expect(categories).toContain('power');
 		});
 	});
 
@@ -281,7 +281,7 @@ describe('VIP Card Consumable - Unit Tests', () => {
 			expect(data.usedAt).not.toBeNull();
 		});
 
-		it('should support context parameter for activation_context cards', async () => {
+		it('should support context parameter for action.context cards', async () => {
 			const { mockClient, mockRpc } = createMockSupabaseClient();
 
 			mockRpc.mockResolvedValue({

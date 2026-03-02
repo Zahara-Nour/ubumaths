@@ -88,7 +88,8 @@ const drawCardsActionSchema = z.object({
 		.min(1, 'Count must be at least 1')
 		.max(10, 'Count cannot exceed 10')
 		.finite('Count must be finite'),
-	filters: drawCardsFiltersSchema.optional()
+	filters: drawCardsFiltersSchema.optional(),
+	context: activationContextEnum.optional()
 });
 
 const removeWarningsActionSchema = z.object({
@@ -99,12 +100,14 @@ const removeWarningsActionSchema = z.object({
 		.min(1, 'Count must be at least 1')
 		.max(5, 'Count cannot exceed 5')
 		.finite('Count must be finite'),
-	warningType: warningTypeEnum.optional()
+	warningType: warningTypeEnum.optional(),
+	context: activationContextEnum.optional()
 });
 
 const exchangeCardsActionSchema = z.object({
 	type: z.literal('exchange_cards'),
-	exchange: exchangeCardActionSchema
+	exchange: exchangeCardActionSchema,
+	context: activationContextEnum.optional()
 });
 
 const addGidouillesActionSchema = z.object({
@@ -114,7 +117,8 @@ const addGidouillesActionSchema = z.object({
 		.int('Amount must be an integer')
 		.min(1, 'Amount must be at least 1')
 		.max(1000, 'Amount cannot exceed 1000')
-		.finite('Amount must be finite')
+		.finite('Amount must be finite'),
+	context: activationContextEnum.optional()
 });
 
 /**
@@ -136,7 +140,8 @@ const chooseCardActionSchema = z
 			.array(z.string().min(1, 'Card ID cannot be empty'))
 			.min(1, 'At least one card ID is required when using specific cards filter')
 			.max(20, 'Cannot specify more than 20 cards')
-			.optional()
+			.optional(),
+		context: activationContextEnum.optional()
 	})
 	.strict()
 	.refine(
@@ -154,12 +159,12 @@ const chooseCardActionSchema = z
 
 const hintActionSchema = z.object({
 	type: z.literal('hint'),
-	context: z.string().min(1, 'Context is required')
+	context: activationContextEnum.optional()
 });
 
 const undoActionSchema = z.object({
 	type: z.literal('undo'),
-	context: z.string().min(1, 'Context is required')
+	context: activationContextEnum.optional()
 });
 
 /**
@@ -218,7 +223,6 @@ export const createTemplateSchema = z
 			.optional()
 			.default(''),
 		action: actionSchema.optional(),
-		activationContext: activationContextEnum.nullable().optional().default(null),
 		usesTotal: z
 			.number()
 			.int('Uses total must be an integer')
@@ -281,7 +285,6 @@ export const updateTemplateSchema = z
 			.max(255, 'Image path must be 255 characters or less')
 			.optional(),
 		action: actionSchema.nullable().optional(),
-		activationContext: activationContextEnum.nullable().optional(),
 		usesTotal: z
 			.number()
 			.int('Uses total must be an integer')

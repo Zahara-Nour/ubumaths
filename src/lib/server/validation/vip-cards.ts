@@ -37,7 +37,7 @@ export const useCardSchema = z
 		instanceId: z.string().uuid('Invalid instance ID format'),
 		/** UUID of the student who owns the card (required for teacher/admin, ignored for student) */
 		studentId: z.string().uuid('Invalid student ID format').optional(),
-		/** Activation context (required for cards with activation_context on template) */
+		/** Activation context (required for cards with action.context) */
 		context: z.string().min(1).max(64).optional()
 	})
 	.strict();

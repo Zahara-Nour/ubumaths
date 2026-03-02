@@ -41,7 +41,7 @@
 	let isRequesting = $state(false);
 
 	// Computed states
-	const isSelfActivatable = $derived(!!card.activationContext);
+	const isSelfActivatable = $derived(!!card.action?.context);
 	const isPending = $derived(!!vipCardInstance.activationRequestedAt);
 	const isUsed = $derived(!!vipCardInstance.usedAt);
 	const canActivate = $derived(!isUsed && !isPending && !!card.action);

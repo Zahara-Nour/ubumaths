@@ -138,10 +138,10 @@
 	}
 
 	/**
-	 * Check if a card is self-activatable (has activation_context on its template)
+	 * Check if a card is self-activatable (has context on its action)
 	 */
-	function isSelfActivatable(card: { activationContext?: string | null }): boolean {
-		return !!card.activationContext;
+	function isSelfActivatable(card: { action?: VipCardType['action'] }): boolean {
+		return !!card.action?.context;
 	}
 
 	/**
@@ -216,7 +216,6 @@
 		id: string;
 		name: string;
 		action?: VipCardType['action'];
-		activationContext?: string | null;
 	}) {
 		// Verify card has an action
 		if (!card.action) {
@@ -345,7 +344,7 @@
 				break;
 
 			case 'hint': {
-				if (action.context === 'minesweeper') {
+				if (card.action.context === 'minesweeper') {
 					const { minesweeperStore } = await import('$lib/stores/minesweeper.svelte');
 
 					if (
@@ -365,7 +364,7 @@
 			}
 
 			case 'undo': {
-				if (action.context === 'minesweeper') {
+				if (card.action.context === 'minesweeper') {
 					const { minesweeperStore } = await import('$lib/stores/minesweeper.svelte');
 
 					if (

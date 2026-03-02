@@ -10,7 +10,7 @@
  * Student:
  *   - studentId from session (body studentId ignored)
  *   - Requires parental consent for 'purchase_items'
- *   - context optional (for cards with activation_context)
+ *   - context optional (for cards with action.context)
  *
  * Teacher/admin:
  *   - studentId required in body

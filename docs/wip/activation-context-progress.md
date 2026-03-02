@@ -1,41 +1,71 @@
-# Cartes VIP auto-activables - Progress
+# Migration activation_context -> action.context - Progress
 
 ## Status: COMPLETE
 
 ## Summary
 
-Added `activation_context` field to VIP card templates allowing students to self-activate cards without teacher approval when a context condition is met.
+Migrated `activation_context` from a separate column on `vip_card_templates` to `action.context` inside the JSONB `action` field. The context is a property of the action, not the template itself.
+
+Previous implementation added `activation_context` as a standalone DB column. This refactoring unifies it into the action object for consistency.
+
+## Phases Completed
+
+1. **Types & Validation** - Added `context?: string` to all action interfaces, removed `activationContext` from VipCard
+2. **DB Migration** - SQL to copy data, update RPC, drop column
+3. **API Endpoints** - 5 endpoints updated
+4. **Store & Utilities** - Removed activation_context from store and utils
+5. **UI Components** - Context selector moved into VipCardActionEditor, removed from VipCardTemplateEditor
+6. **Tests** - Updated and passing (25/25)
+7. **Verification** - ESLint, TypeScript, Svelte autofixer, Prettier all clean
 
 ## Files Modified
 
 ### New Files
 
-- `supabase/migrations/20260228140000_add_activation_context_to_vip_card_templates.sql` - ALTER TABLE + CHECK constraint
-- `src/lib/server/vip-card-context.ts` - Context validator registry (any, minesweeper)
-- `src/lib/server/vip-card-context.test.ts` - 8 unit tests
+- `supabase/migrations/20260302204831_migrate_activation_context_to_action.sql`
 
-### Modified Files
+### Modified Files (Types & Validation)
 
-- `src/lib/types/vip-card.ts` - Added `activationContext` to `VipCard` interface
-- `src/lib/types/database-helpers.ts` - Added `ActivationContext` type
-- `src/lib/stores/vipCardTemplates.svelte.ts` - Added `activation_context` to `VipCardTemplate`, mapped in `templateToVipCard`
-- `src/lib/utils/vip-cards.ts` - Propagated `activationContext` in `getStudentCardsWithCounts`
-- `src/routes/api/vip-cards/activate-add-gidouilles/+server.ts` - Context-aware approval check
-- `src/routes/api/vip-cards/exchange/+server.ts` - Context-aware approval check
-- `src/routes/api/vip-cards/choose/+server.ts` - Context-aware approval check (optimized: single template fetch)
-- `src/lib/components/StudentVipCardsModal.svelte` - Self-activation UI branch + `findAnyUnusedInstance`
-- `src/lib/components/VipCardActivationButton.svelte` - Self-activation support with `onActivate` callback
+- `src/lib/types/vip-card.ts` - Added `context?: string` to all 7 action interfaces, removed `activationContext` from VipCard
+- `src/lib/types/vip-card-admin.ts` - Removed activation_context from VipCardTemplate, CreateTemplateRequest, TemplateResponse, conversion functions
+- `src/lib/server/validation/vip-card-admin.ts` - Added `context` to all Zod action schemas, removed from template schemas
+
+### Modified Files (API Endpoints)
+
+- `src/routes/api/vip-cards/activate-add-gidouilles/+server.ts` - `(template.action as VipCardAction | null)?.context`
+- `src/routes/api/vip-cards/choose/+server.ts` - Same pattern
+- `src/routes/api/vip-cards/exchange/+server.ts` - Same pattern
+- `src/routes/api/admin/vip-cards/templates/+server.ts` - Removed activationContext mapping
+- `src/routes/api/admin/vip-cards/templates/[id]/+server.ts` - Removed activationContext mapping
+
+### Modified Files (Store & Utils)
+
+- `src/lib/stores/vipCardTemplates.svelte.ts` - Removed activation_context from interface and mapping
+- `src/lib/utils/vip-cards.ts` - Removed activationContext from return type and mapping
+
+### Modified Files (UI)
+
+- `src/lib/components/vip-cards/VipCardActionEditor.svelte` - Added context selector (visible for all action types)
+- `src/lib/components/vip-cards/VipCardTemplateEditor.svelte` - Removed activation_context UI section
+- `src/lib/components/StudentVipCardsModal.svelte` - `card.action?.context` instead of `card.activationContext`
+- `src/lib/components/VipCardActivationButton.svelte` - `card.action?.context`
+- `src/routes/(protected)/dashboard/admin/vip-cards/+page.svelte` - Removed activation_context from interface and payload
+
+### Modified Files (Other)
+
+- `src/lib/server/vip-card-context.ts` - JSDoc updates
+- `src/routes/api/vip-cards/use-card/+server.ts` - Comment updates
+- `src/lib/server/validation/vip-cards.ts` - Comment updates
+- `tests/unit/vip-card-consumable.test.ts` - Test description updated
 
 ## Key Decisions
 
-- DB column has CHECK constraint limiting values to `('any', 'minesweeper')` - adding new contexts requires a migration
-- Unknown context values are denied by default (secure posture)
-- Minesweeper validator logs DB errors but returns false (deny-on-error)
-- draw_cards endpoint works without changes: the `draw_multiple_vip_cards` RPC only blocks cards with pending-but-unapproved requests, not cards without any request
-- `minesweeper-hint` card keeps its existing dedicated flow via `use_hint()` RPC
+- `withContext()` helper in VipCardActionEditor cleanly injects context into all action types
+- `as VipCardAction | null` cast used in API endpoints (DB returns generic JSON)
+- `activationContextEnum` Zod schema kept and reused for action.context validation
+- DB migration: data copied first, then RPC recreated, then column dropped (safe order)
 
-## Next Steps
+## User Actions Required
 
-- Run `pnpm db:migrate` to apply migration
-- Run `pnpm db:types` to regenerate database.ts (will make `activation_context?` redundant in VipCardTemplate)
-- Set `activation_context` on desired templates via SQL or admin UI
+- `pnpm db:migrate` to apply the SQL migration
+- `pnpm db:types` to regenerate database.ts (remove stale activation_context references)

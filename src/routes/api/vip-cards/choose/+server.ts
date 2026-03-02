@@ -31,7 +31,7 @@ import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { chooseCardsSchema } from '$lib/server/validation/choose-cards';
-import type { StudentVipCards } from '$lib/types/vip-card';
+import type { StudentVipCards, VipCardAction } from '$lib/types/vip-card';
 import { getRarityPoints } from '$lib/types/vip-card';
 import { getTemplateById, getTemplatesByIds } from '$lib/server/vip-card-queries';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -112,12 +112,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	// If student flow: require teacher approval OR valid activation context
 	if (isStudent && !actionCardInstance.activationApprovedAt) {
-		if (actionCard.activation_context) {
-			const contextValid = await validateActivationContext(
-				actionCard.activation_context,
-				supabase,
-				data.studentId
-			);
+		const actionContext = (actionCard.action as VipCardAction | null)?.context;
+		if (actionContext) {
+			const contextValid = await validateActivationContext(actionContext, supabase, data.studentId);
 			if (!contextValid) {
 				throw error(400, 'Cette carte ne peut être activée que dans un contexte spécifique');
 			}
