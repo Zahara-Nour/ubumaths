@@ -215,6 +215,12 @@ export function getActionDescription(action: VipCardAction, templates: VipCardTe
 		case 'add_gidouilles':
 			return `Gagner ${action.amount} gidouille${action.amount > 1 ? 's' : ''}`;
 
+		case 'hint':
+			if (action.context === 'minesweeper') {
+				return 'Révéler une cellule sûre (Démineur)';
+			}
+			return `Indice (${action.context})`;
+
 		case 'undo':
 			if (action.context === 'minesweeper') {
 				return 'Annuler un coup (Démineur)';

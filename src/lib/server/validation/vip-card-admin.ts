@@ -152,6 +152,11 @@ const chooseCardActionSchema = z
 		}
 	);
 
+const hintActionSchema = z.object({
+	type: z.literal('hint'),
+	context: z.string().min(1, 'Context is required')
+});
+
 const undoActionSchema = z.object({
 	type: z.literal('undo'),
 	context: z.string().min(1, 'Context is required')
@@ -167,6 +172,7 @@ const actionSchema = z.discriminatedUnion('type', [
 	exchangeCardsActionSchema,
 	addGidouillesActionSchema,
 	chooseCardActionSchema,
+	hintActionSchema,
 	undoActionSchema
 ]);
 
