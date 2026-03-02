@@ -10,7 +10,8 @@
 		onCellReveal,
 		onCellFlag,
 		onCellChord,
-		disabled = false
+		disabled = false,
+		hintedCell = null
 	}: {
 		difficulty: 'beginner' | 'intermediate' | 'expert';
 		gameState: GameState;
@@ -18,6 +19,7 @@
 		onCellFlag: (row: number, col: number) => void;
 		onCellChord?: (row: number, col: number) => void;
 		disabled?: boolean;
+		hintedCell?: { row: number; col: number } | null;
 	} = $props();
 
 	// Container ref for measuring available width
@@ -127,6 +129,7 @@
 					onFlag={onCellFlag}
 					onChord={onCellChord}
 					{disabled}
+					isHinted={hintedCell?.row === coords.row && hintedCell?.col === coords.col}
 					{cellSize}
 				/>
 			{/each}
