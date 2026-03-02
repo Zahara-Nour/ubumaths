@@ -138,6 +138,8 @@ function getActionDescriptionFromType(actionType: string): string {
 			return 'Gagner des gidouilles';
 		case 'choose_card':
 			return 'Choisir des cartes';
+		case 'hint':
+			return 'Obtenir un indice';
 		case 'undo':
 			return 'Annuler un coup';
 		default:

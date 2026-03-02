@@ -175,6 +175,16 @@ interface ChooseCardAction {
 }
 
 /**
+ * VIP Card Action - Hint
+ * Provides a hint in a specific game context.
+ * Behavior varies by context (e.g., minesweeper = reveal a safe cell).
+ */
+interface HintAction {
+	type: 'hint';
+	context: string; // e.g. 'minesweeper'
+}
+
+/**
  * VIP Card Action - Undo
  * Reverts the last action in a specific game context.
  * Behavior varies by context (e.g., minesweeper = undo a bomb click).
@@ -194,6 +204,7 @@ export type VipCardAction =
 	| ExchangeCardsAction
 	| AddGidouillesAction
 	| ChooseCardAction
+	| HintAction
 	| UndoAction;
 
 /**

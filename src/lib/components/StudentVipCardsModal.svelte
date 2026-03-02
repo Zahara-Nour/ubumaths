@@ -344,6 +344,26 @@
 				}
 				break;
 
+			case 'hint': {
+				if (action.context === 'minesweeper') {
+					const { minesweeperStore } = await import('$lib/stores/minesweeper.svelte');
+
+					if (
+						!minesweeperStore.currentGame ||
+						minesweeperStore.currentGame.status !== 'in_progress'
+					) {
+						toaster.error('Aucune partie de démineur en cours');
+						return;
+					}
+
+					await minesweeperStore.useHint();
+					await onComplete();
+				} else {
+					toaster.error("Contexte d'indice non supporté");
+				}
+				break;
+			}
+
 			case 'undo': {
 				if (action.context === 'minesweeper') {
 					const { minesweeperStore } = await import('$lib/stores/minesweeper.svelte');
