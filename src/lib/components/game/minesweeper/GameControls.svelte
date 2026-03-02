@@ -10,7 +10,7 @@
 		minesRemaining,
 		gameStatus,
 		onReset,
-		difficulty: _difficulty,
+		difficulty: _,
 		hintsUsed = 0,
 		hintCardsAvailable = 0,
 		onUseHint,
@@ -41,16 +41,6 @@
 		return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 	});
 
-	// Difficulty label in French (commented out - not displayed)
-	// const difficultyLabel = $derived.by(() => {
-	// 	const labels: Record<string, string> = {
-	// 		beginner: 'Débutant',
-	// 		intermediate: 'Intermédiaire',
-	// 		expert: 'Expert'
-	// 	};
-	// 	return labels[difficulty] || difficulty;
-	// });
-
 	// Status message
 	const statusMessage = $derived.by(() => {
 		if (gameStatus === 'won') return '🎉 Victoire !';
@@ -73,14 +63,6 @@
 			<span class="text-base sm:text-lg" aria-hidden="true">🚩</span>
 			<span class="font-bold tabular-nums">{minesRemaining}</span>
 		</div>
-
-		<!-- <div
-			class="flex items-center gap-1 rounded-md bg-muted px-2 py-1 font-semibold sm:gap-2 sm:px-3"
-			aria-label="Difficulté"
-		>
-			<span class="text-base sm:text-lg" aria-hidden="true">🎮</span>
-			<span>{difficultyLabel}</span>
-		</div> -->
 
 		<div class="flex items-center gap-1 font-mono sm:gap-2" aria-label="Temps écoulé">
 			<span class="text-base sm:text-lg" aria-hidden="true">⏱️</span>

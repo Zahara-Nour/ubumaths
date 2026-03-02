@@ -47,7 +47,7 @@
 	}
 
 	// Calculate progress percentage and details
-	const progressInfo = $derived(() => {
+	const progressInfo = $derived.by(() => {
 		if (!savedGame) return null;
 
 		const config = DIFFICULTY_CONFIGS[savedGame.difficulty];
@@ -73,9 +73,9 @@
 			<!-- Progress -->
 			<span class="text-muted-foreground">
 				Progression : <span class="font-medium text-foreground"
-					>{progressInfo()!.revealed}/{progressInfo()!.total} cases</span
+					>{progressInfo.revealed}/{progressInfo.total} cases</span
 				>
-				<span class="text-xs">({progressInfo()!.percentage}%)</span>
+				<span class="text-xs">({progressInfo.percentage}%)</span>
 			</span>
 
 			<!-- Time -->
