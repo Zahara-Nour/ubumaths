@@ -141,6 +141,7 @@
 							onCellFlag={(row, col) => minesweeperStore.toggleFlag(row, col)}
 							onCellChord={(row, col) => minesweeperStore.chordClick(row, col)}
 							disabled={game.status === 'won' || game.status === 'lost'}
+							hintedCell={minesweeperStore.lastHintedCell}
 						/>
 					</div>
 

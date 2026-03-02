@@ -23,6 +23,7 @@
 		onFlag,
 		onChord,
 		disabled = false,
+		isHinted = false,
 		cellSize = 32
 	}: {
 		row: number;
@@ -36,6 +37,7 @@
 		onFlag: (row: number, col: number) => void;
 		onChord?: (row: number, col: number) => void;
 		disabled?: boolean;
+		isHinted?: boolean;
 		cellSize?: number;
 	} = $props();
 
@@ -216,6 +218,7 @@
 			onChord &&
 			'cursor-pointer hover:ring-2 hover:ring-primary/50',
 		isExploded && 'animate-pulse bg-destructive',
+		isHinted && 'cell-hinted',
 		disabled && 'cursor-not-allowed opacity-60'
 	)}
 	style="width: {cellSize}px; height: {cellSize}px;"
@@ -293,5 +296,44 @@
 	}
 	:global(.dark) .num-8 {
 		color: rgb(212 212 216); /* gray-300 */
+	}
+
+	/* Hint glow animation - fades out over 3s */
+	button.cell-hinted {
+		animation: hint-glow 3s ease-out forwards;
+	}
+
+	@keyframes hint-glow {
+		0% {
+			box-shadow: 0 0 8px 3px rgba(234, 179, 8, 0.7);
+			background-color: rgba(253, 224, 71, 0.3);
+		}
+		70% {
+			box-shadow: 0 0 6px 2px rgba(234, 179, 8, 0.4);
+			background-color: rgba(253, 224, 71, 0.15);
+		}
+		100% {
+			box-shadow: none;
+			background-color: transparent;
+		}
+	}
+
+	:global(.dark) button.cell-hinted {
+		animation: hint-glow-dark 3s ease-out forwards;
+	}
+
+	@keyframes hint-glow-dark {
+		0% {
+			box-shadow: 0 0 8px 3px rgba(250, 204, 21, 0.6);
+			background-color: rgba(250, 204, 21, 0.2);
+		}
+		70% {
+			box-shadow: 0 0 6px 2px rgba(250, 204, 21, 0.3);
+			background-color: rgba(250, 204, 21, 0.1);
+		}
+		100% {
+			box-shadow: none;
+			background-color: transparent;
+		}
 	}
 </style>

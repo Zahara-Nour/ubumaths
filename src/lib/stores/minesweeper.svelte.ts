@@ -168,6 +168,12 @@ class MinesweeperStore {
 	 */
 	pendingBombCell = $state<{ row: number; col: number } | null>(null);
 
+	/**
+	 * Last cell revealed by a hint (for glow animation). Auto-clears after 3s.
+	 */
+	lastHintedCell = $state<{ row: number; col: number } | null>(null);
+	private hintGlowTimer: ReturnType<typeof setTimeout> | null = null;
+
 	// ============================================================================
 	// Tournament Mode State
 	// ============================================================================
@@ -1019,6 +1025,14 @@ class MinesweeperStore {
 					game.cellsRevealed++;
 				}
 			}
+
+			// Show glow on the hinted cell (auto-clears after 3s)
+			if (this.hintGlowTimer) clearTimeout(this.hintGlowTimer);
+			this.lastHintedCell = { row: selectedCell.row, col: selectedCell.col };
+			this.hintGlowTimer = setTimeout(() => {
+				this.lastHintedCell = null;
+				this.hintGlowTimer = null;
+			}, 3000);
 
 			// Increment hints counter
 			game.hintsUsed = hintsUsed + 1;
@@ -2475,6 +2489,11 @@ class MinesweeperStore {
 		this.undoItemsAvailable = 0;
 		this.undoUsedThisGame = false;
 		this.pendingBombCell = null;
+		this.lastHintedCell = null;
+		if (this.hintGlowTimer) {
+			clearTimeout(this.hintGlowTimer);
+			this.hintGlowTimer = null;
+		}
 
 		// Clear tournament state
 		this.tournamentId = null;
