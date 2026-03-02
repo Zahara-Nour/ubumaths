@@ -41,6 +41,11 @@ export function getStudentCardCounts(vipCards: StudentVipCards): Map<string, num
  * Get student cards with their counts, grouped by card ID
  * Returns an array of objects with card data and count
  * NOTE: Returns the full VipCard definition, not just the instance
+ *
+ * - count: number of instances (exemplaires)
+ * - totalUses: total remaining uses across all instances
+ *   For single-use cards (usesRemaining == null), totalUses == count.
+ *   For multi-use cards, totalUses = sum of usesRemaining.
  */
 export function getStudentCardsWithCounts(
 	vipCards: StudentVipCards,
@@ -54,6 +59,7 @@ export function getStudentCardsWithCounts(
 	rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 	action?: VipCardAction;
 	count: number;
+	totalUses: number;
 }> {
 	const cardMap = new Map<
 		string,
@@ -66,6 +72,7 @@ export function getStudentCardsWithCounts(
 			rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 			action?: VipCardAction;
 			count: number;
+			totalUses: number;
 		}
 	>();
 
@@ -74,9 +81,13 @@ export function getStudentCardsWithCounts(
 			const template = getTemplateById(instance.cardId, templates);
 			if (!template) return; // Skip if card template not found
 
+			const uses = instance.usesRemaining != null ? instance.usesRemaining : 1;
+			if (uses <= 0) return; // Skip fully consumed instances
+
 			const existing = cardMap.get(instance.cardId);
 			if (existing) {
 				existing.count++;
+				existing.totalUses += uses;
 			} else {
 				cardMap.set(instance.cardId, {
 					id: template.id,
@@ -86,7 +97,8 @@ export function getStudentCardsWithCounts(
 					category: template.category || undefined,
 					rarity: template.rarity as 'common' | 'rare' | 'epic' | 'legendary',
 					action: template.action ?? undefined,
-					count: 1
+					count: 1,
+					totalUses: uses
 				});
 			}
 		}
