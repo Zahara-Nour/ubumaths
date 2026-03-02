@@ -92,7 +92,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				is_enabled: data.isEnabled,
 				action: data.action || null,
 				activation_context: data.activationContext ?? null,
-				sort_order: data.sortOrder
+				uses_total: data.usesTotal ?? null,
+				sort_order: data.sortOrder,
+				base_price: data.basePrice,
+				is_purchasable: data.isPurchasable,
+				max_owned_per_student: data.maxOwnedPerStudent
 			})
 			.select()
 			.single();

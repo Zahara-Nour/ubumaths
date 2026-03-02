@@ -27,6 +27,10 @@ export interface VipCardTemplate {
 	action: VipCardAction | null;
 	sort_order: number;
 	activation_context: string | null;
+	uses_total: number | null;
+	base_price: number;
+	is_purchasable: boolean;
+	max_owned_per_student: number;
 	created_at: string;
 	updated_at: string;
 }
@@ -78,6 +82,11 @@ export interface CreateTemplateRequest {
 	imagePath: string;
 	action?: VipCardAction;
 	sortOrder?: number;
+	usesTotal?: number | null;
+	activationContext?: string | null;
+	basePrice?: number;
+	isPurchasable?: boolean;
+	maxOwnedPerStudent?: number;
 }
 
 /**
@@ -99,6 +108,10 @@ export interface TemplateResponse {
 	action: VipCardAction | null;
 	sortOrder: number;
 	activationContext: string | null;
+	usesTotal: number | null;
+	basePrice: number;
+	isPurchasable: boolean;
+	maxOwnedPerStudent: number;
 	createdAt: string;
 }
 
@@ -201,6 +214,10 @@ export function templateToResponse(template: VipCardTemplate): TemplateResponse 
 		action: template.action,
 		sortOrder: template.sort_order,
 		activationContext: template.activation_context,
+		usesTotal: template.uses_total,
+		basePrice: template.base_price,
+		isPurchasable: template.is_purchasable,
+		maxOwnedPerStudent: template.max_owned_per_student,
 		createdAt: template.created_at
 	};
 }
@@ -240,6 +257,10 @@ export function responseToTemplate(response: TemplateResponse): VipCardTemplate 
 		action: response.action,
 		sort_order: response.sortOrder,
 		activation_context: response.activationContext,
+		uses_total: response.usesTotal,
+		base_price: response.basePrice,
+		is_purchasable: response.isPurchasable,
+		max_owned_per_student: response.maxOwnedPerStudent,
 		created_at: response.createdAt,
 		updated_at: response.createdAt // Use createdAt as fallback for now
 	};
