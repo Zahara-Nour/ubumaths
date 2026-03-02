@@ -344,6 +344,26 @@
 				}
 				break;
 
+			case 'use_consumable': {
+				if (action.context === 'minesweeper' && action.effect === 'reveal_safe_cell') {
+					const { minesweeperStore } = await import('$lib/stores/minesweeper.svelte');
+
+					if (
+						!minesweeperStore.currentGame ||
+						minesweeperStore.currentGame.status !== 'in_progress'
+					) {
+						toaster.error('Aucune partie de démineur en cours');
+						return;
+					}
+
+					await minesweeperStore.useHint();
+					await onComplete();
+				} else {
+					toaster.error('Type de consommable non supporté');
+				}
+				break;
+			}
+
 			default:
 				toaster.error("Type d'action non supporté");
 				break;

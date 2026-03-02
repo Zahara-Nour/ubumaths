@@ -138,6 +138,8 @@ function getActionDescriptionFromType(actionType: string): string {
 			return 'Gagner des gidouilles';
 		case 'choose_card':
 			return 'Choisir des cartes';
+		case 'use_consumable':
+			return 'Consommable (activation directe)';
 		default:
 			return 'Action speciale';
 	}

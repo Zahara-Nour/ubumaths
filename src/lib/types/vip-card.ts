@@ -176,6 +176,17 @@ interface ChooseCardAction {
 }
 
 /**
+ * VIP Card Action - Use consumable
+ * For cards with activation_context that are consumed in a specific game context
+ * (e.g., minesweeper-hint reveals a safe cell)
+ */
+interface UseConsumableAction {
+	type: 'use_consumable';
+	context: string; // e.g. 'minesweeper'
+	effect: string; // e.g. 'reveal_safe_cell'
+}
+
+/**
  * Union type for all VIP card actions
  * These actions require teacher approval to activate
  */
@@ -184,7 +195,8 @@ export type VipCardAction =
 	| RemoveWarningsAction
 	| ExchangeCardsAction
 	| AddGidouillesAction
-	| ChooseCardAction;
+	| ChooseCardAction
+	| UseConsumableAction;
 
 /**
  * Definition of a VIP card type (template)

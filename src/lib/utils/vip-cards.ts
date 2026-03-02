@@ -161,6 +161,24 @@ export function sortCardsByPriority(
 }
 
 /**
+ * Count the total available uses of a specific consumable card type.
+ * Sums usesRemaining for multi-use cards and counts 1 for single-use cards.
+ *
+ * @param vipCards - The student's VIP card instances
+ * @param cardId - The card template ID to count (e.g. 'minesweeper-hint')
+ * @returns Total number of available uses across all instances
+ */
+export function countAvailableConsumableUses(vipCards: StudentVipCards, cardId: string): number {
+	let count = 0;
+	for (const instance of Object.values(vipCards)) {
+		if (instance.cardId === cardId && !instance.usedAt) {
+			count += instance.usesRemaining != null ? instance.usesRemaining : 1;
+		}
+	}
+	return count;
+}
+
+/**
  * Get human-readable French description of a VIP card action
  */
 export function getActionDescription(action: VipCardAction, templates: VipCardTemplate[]): string {
@@ -196,6 +214,12 @@ export function getActionDescription(action: VipCardAction, templates: VipCardTe
 
 		case 'add_gidouilles':
 			return `Gagner ${action.amount} gidouille${action.amount > 1 ? 's' : ''}`;
+
+		case 'use_consumable':
+			if (action.context === 'minesweeper' && action.effect === 'reveal_safe_cell') {
+				return 'Révéler une cellule sûre (Démineur)';
+			}
+			return `Consommable (${action.context})`;
 
 		default:
 			return 'Action spéciale';

@@ -1,7 +1,9 @@
 import { browser } from '$app/environment';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Json } from '$lib/types/database';
+import type { StudentVipCards } from '$lib/types/vip-card';
 import { createLogger } from '$lib/utils/logger';
+import { countAvailableConsumableUses } from '$lib/utils/vip-cards';
 import { toaster } from '$lib/stores/toaster.svelte';
 import { modalStack } from '$lib/stores/modalStack.svelte';
 import VictoryModal from '$lib/components/game/minesweeper/VictoryModal.svelte';
@@ -33,7 +35,7 @@ const MAX_HINTS_PER_GAME = 3; // Maximum hints allowed per game
 const HINT_COST_GIDOUILLES = 1; // Gidouilles cost per hint (Strategy D: 1.0)
 const HINT_PENALTY_PERCENTAGE = 30; // Percentage penalty on final reward (only for gidouilles hints)
 // VIP card hint (migrated from shop item in Phase 4)
-const _HINT_VIP_CARD_ID = 'minesweeper-hint'; // VIP card id for hints
+const HINT_VIP_CARD_ID = 'minesweeper-hint'; // VIP card id for hints
 
 // Undo (Seconde Chance) item configuration
 const UNDO_ITEM_INTERNAL_NAME = 'minesweeper_undo'; // Shop item internal name
@@ -1075,8 +1077,7 @@ class MinesweeperStore {
 	 * Fetch the count of hint VIP cards available in student's collection
 	 * Updates `hintItemsAvailable` state
 	 *
-	 * NOTE: Migrated from shop items to VIP cards in Phase 4.
-	 * Now uses count_vip_hint_cards RPC function.
+	 * Uses client-side counting from profiles.vip_cards instead of a dedicated RPC.
 	 *
 	 * @returns Promise that resolves with the count of available hint cards
 	 */
@@ -1087,10 +1088,10 @@ class MinesweeperStore {
 		}
 
 		try {
-			// Query VIP hint cards count using RPC
-			const { data, error } = await this.supabase!.rpc('count_vip_hint_cards', {
-				p_student_id: this.user!.id
-			});
+			const { data, error } = await this.supabase!.from('profiles')
+				.select('vip_cards')
+				.eq('id', this.user!.id)
+				.single();
 
 			if (error) {
 				logger.error('Failed to fetch hint card count:', error);
@@ -1098,9 +1099,10 @@ class MinesweeperStore {
 				return 0;
 			}
 
-			const totalCount = data || 0;
-			this.hintItemsAvailable = totalCount;
+			const vipCards = (data?.vip_cards ?? {}) as StudentVipCards;
+			const totalCount = countAvailableConsumableUses(vipCards, HINT_VIP_CARD_ID);
 
+			this.hintItemsAvailable = totalCount;
 			logger.info(`VIP hint cards available: ${totalCount}`);
 			return totalCount;
 		} catch (err) {
