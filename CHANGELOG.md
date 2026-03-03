@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.24](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.23...v0.8.24) (2026-03-03)
+
+### 🐛 Bug Fixes
+
+- **db:** fix use_hint RPC referencing dropped hints_from_items column ([b220ef0](https://github.com/Zahara-Nour/ubumaths/commit/b220ef0baabb07db3a281eb78e59269ec850bb8d))
+- **minesweeper:** correct hint button tooltip for not_started state ([c0c8c9b](https://github.com/Zahara-Nour/ubumaths/commit/c0c8c9b4371e2f0bb181a896f96b754bd516c783))
+- **minesweeper:** fix type safety issues and remove dead code ([2f9ea85](https://github.com/Zahara-Nour/ubumaths/commit/2f9ea85febb56904d104b25f7f71fb30945fc5f7))
+- **minesweeper:** match all hint card variants in use_hint ([33a5543](https://github.com/Zahara-Nour/ubumaths/commit/33a55439d3349ae2d3820d28012e41148d204d89))
+- **minesweeper:** remove unused difficulty prop from GameControls ([1a00888](https://github.com/Zahara-Nour/ubumaths/commit/1a00888ca5752d847fb221f4b6cdede201ffc230))
+- **minesweeper:** restore hintsUsed from DB in loadSavedGame ([13da4a6](https://github.com/Zahara-Nour/ubumaths/commit/13da4a64b0b81f20f423bc2e6679e534e0c7ce5a))
+- **vip-cards:** remove obsolete 'consumable' category from card templates ([26aa88e](https://github.com/Zahara-Nour/ubumaths/commit/26aa88e122755e61db5207de5bcad00caf3d7419))
+- **vip:** add activation_context check to use_consumable_card ([de9bb0a](https://github.com/Zahara-Nour/ubumaths/commit/de9bb0a846512beec6f150c400ed8cb4fd159db3))
+
+### ✨ Features
+
+- **minesweeper:** add glow animation on hint-revealed cell ([84d57ca](https://github.com/Zahara-Nour/ubumaths/commit/84d57ca2ef419d4fa3e046ce031c27fc98fdbd08))
+- **vip-cards:** add hint action type for minesweeper-hint cards ([ddd2a42](https://github.com/Zahara-Nour/ubumaths/commit/ddd2a42f4a7a716f91e18da8334d946bc22568bb))
+- **vip-cards:** add hint/undo actions to editor and replace Checkbox with MyCheckbox ([f7c0541](https://github.com/Zahara-Nour/ubumaths/commit/f7c0541d2810f1ab64c3c1aa676918ba84b3528e))
+- **vip-cards:** add purchase fields to admin template UI and API ([89d5edf](https://github.com/Zahara-Nour/ubumaths/commit/89d5edf8b11b51b1cf6ad62796a297819956f4c1))
+- **vip-cards:** display remaining charges instead of instance count ([83274d6](https://github.com/Zahara-Nour/ubumaths/commit/83274d6b877f87a0233b85593132b5c3b1ee1aa4))
+- **vip-cards:** unify use_vip_card and use_consumable_card into single RPC ([8ec55f6](https://github.com/Zahara-Nour/ubumaths/commit/8ec55f6fb22a75c8226360fad9779357a1ddbeb1))
+
 ### [0.8.23](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.22...v0.8.23) (2026-03-01)
 
 ### 🐛 Bug Fixes
