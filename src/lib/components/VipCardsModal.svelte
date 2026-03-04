@@ -623,11 +623,11 @@
 			{#each cardsWithCounts as card (card.id)}
 				<div
 					class="transform cursor-pointer transition-transform hover:scale-105"
-					onclick={() => handleCardClick(card, card.totalUses)}
+					onclick={() => handleCardClick(card, card.count)}
 					onkeydown={(e) => {
 						if (e.key === 'Enter' || e.key === ' ') {
 							e.preventDefault();
-							handleCardClick(card, card.totalUses);
+							handleCardClick(card, card.count);
 						}
 					}}
 					role="button"
@@ -636,7 +636,8 @@
 				>
 					<VipCard
 						card={card as VipCardType}
-						count={card.totalUses}
+						count={card.count}
+						totalUses={card.totalUses}
 						size="sm"
 						clickable={false}
 						showRemoveButton={teacherView}

@@ -35,11 +35,12 @@
 	import type { VipCard } from '$lib/types/vip-card';
 	import { cn } from '$lib/utils';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
-	import { Trash2, Sparkles, Clock } from 'lucide-svelte';
+	import { Trash2, Sparkles, Clock, Zap } from 'lucide-svelte';
 
 	interface Props {
 		card: VipCard;
 		count?: number;
+		totalUses?: number;
 		isFlipped?: boolean;
 		size?: 'sm' | 'md' | 'lg';
 		clickable?: boolean;
@@ -55,6 +56,7 @@
 	let {
 		card,
 		count = 1,
+		totalUses,
 		isFlipped = $bindable(false),
 		size = 'md',
 		clickable = true,
@@ -222,6 +224,21 @@
 						)}
 					>
 						×{count}
+					</Badge>
+				</div>
+			{/if}
+
+			<!-- Charges Badge (Top Right, below count) - Only for multi-use cards -->
+			{#if totalUses != null && totalUses !== count}
+				<div class={cn('absolute right-2', count > 1 ? 'top-9' : 'top-2')}>
+					<Badge
+						class={cn(
+							'flex items-center gap-0.5 bg-amber-500 font-bold text-white shadow-lg',
+							badgeSizeClasses[size]
+						)}
+					>
+						<Zap class={cn(size === 'sm' ? 'h-2.5 w-2.5' : 'h-3 w-3')} />
+						{totalUses}
 					</Badge>
 				</div>
 			{/if}
