@@ -40,7 +40,6 @@
 		achievements?: UnlockedAchievement[];
 		isPublicUser?: boolean;
 		onPlayAgain: () => void;
-		onClose: () => void;
 	}
 
 	let {
@@ -50,23 +49,13 @@
 		difficulty,
 		achievements = [],
 		isPublicUser = false,
-		onPlayAgain,
-		onClose
+		onPlayAgain
 	}: Props = $props();
-
-	// Time performance assessment
-	const timePerformance = $derived.by(() => {
-		const ratio = breakdown.time_seconds / breakdown.reference_time;
-		if (ratio <= 0.33) return { label: 'Éclair', emoji: '⚡', color: 'text-yellow-500' };
-		if (ratio <= 0.66) return { label: 'Rapide', emoji: '🚀', color: 'text-green-500' };
-		if (ratio <= 1.0) return { label: 'Normal', emoji: '👍', color: 'text-blue-500' };
-		return { label: 'Tranquille', emoji: '🐢', color: 'text-orange-500' };
-	});
 
 	// Hint assessment
 	const hintStatus = $derived.by(() => {
 		if (breakdown.hints_used === 0) {
-			return { label: 'Sans indice', emoji: '✓', color: 'text-green-500', detail: '' };
+			return { label: 'Sans indice', detail: '' };
 		}
 		const fromCards = breakdown.reduced_penalty_hints;
 		const fromGidouilles = breakdown.hints_used - fromCards;
@@ -82,8 +71,6 @@
 
 		return {
 			label: `${breakdown.hints_used} indice${breakdown.hints_used > 1 ? 's' : ''}`,
-			emoji: '💡',
-			color: 'text-yellow-600',
 			detail
 		};
 	});
@@ -93,14 +80,12 @@
 		if (breakdown.is_first_win_of_day) {
 			return {
 				label: '1ère victoire du jour !',
-				emoji: '🌟',
 				color: 'text-green-500',
 				message: '+1 gidouille'
 			};
 		}
 		return {
 			label: "Déjà gagné aujourd'hui",
-			emoji: '📊',
 			color: 'text-muted-foreground',
 			message: '+0 gidouille'
 		};
@@ -125,67 +110,61 @@
 		<img
 			src="/images/games/minesweeper-victory.webp"
 			alt="Victoire"
-			class="w-full sm:w-80 sm:self-center"
+			class="w-full sm:w-80 sm:self-center sm:p-4"
 		/>
 
 		<div class="min-w-0 flex-1 space-y-4 p-4 sm:p-6">
 			<!-- Main reward display -->
 			{#if !isPublicUser}
-				<div class="text-center">
-					<div class="text-3xl font-bold text-primary sm:text-4xl">
-						+{gidouilles.toFixed(2)}
+				{#if breakdown.is_first_win_of_day}
+					<div class="text-center">
+						<div class="text-3xl font-bold text-primary sm:text-4xl">
+							+{gidouilles.toFixed(2)}
+						</div>
+						<div class="text-sm text-muted-foreground">gidouilles</div>
 					</div>
-					<div class="text-sm text-muted-foreground">gidouilles</div>
-				</div>
+				{/if}
 
 				<!-- Breakdown section -->
 				<div class="space-y-2 rounded-lg bg-muted/50 p-3 text-sm">
-					<div class="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-						Décomposition
-					</div>
-
 					<!-- Base reward -->
 					<div class="flex items-center justify-between">
-						<span class="flex items-center gap-2">
-							<span>🎯</span>
-							<span>Base ({DIFFICULTY_LABELS[difficulty]})</span>
-						</span>
-						<span class="font-mono font-medium">×{breakdown.base_reward.toFixed(1)}</span>
+						<span>{DIFFICULTY_LABELS[difficulty]}</span>
+						<span class="font-mono font-medium">{breakdown.base_reward.toFixed(1)}</span>
 					</div>
 
 					<!-- Time multiplier -->
 					<div class="flex items-center justify-between">
-						<span class="flex items-center gap-2">
-							<span class={timePerformance.color}>{timePerformance.emoji}</span>
-							<span>Temps ({formatDuration(breakdown.time_seconds)})</span>
-						</span>
+						<span
+							>Temps ({formatDuration(breakdown.time_seconds)} / {formatDuration(
+								breakdown.reference_time
+							)})</span
+						>
 						<span class={`font-mono font-medium ${getMultColor(breakdown.time_mult)}`}>
 							{formatMult(breakdown.time_mult)}
 						</span>
 					</div>
 
-					<!-- Hint penalty -->
-					<div class="flex items-center justify-between">
-						<div class="flex items-center gap-2">
-							<span class={hintStatus.color}>{hintStatus.emoji}</span>
-							<span>{hintStatus.label}</span>
-							{#if hintStatus.detail}
-								<span class="text-xs text-muted-foreground">{hintStatus.detail}</span>
-							{/if}
+					<!-- Hint penalty (only show if hints were used) -->
+					{#if breakdown.hints_used > 0}
+						<div class="flex items-center justify-between">
+							<div>
+								<span>{hintStatus.label}</span>
+								{#if hintStatus.detail}
+									<span class="text-xs text-muted-foreground"> {hintStatus.detail}</span>
+								{/if}
+							</div>
+							<span class={`font-mono font-medium ${getMultColor(1 - breakdown.hint_penalty)}`}>
+								{formatMult(1 - breakdown.hint_penalty)}
+							</span>
 						</div>
-						<span class={`font-mono font-medium ${getMultColor(1 - breakdown.hint_penalty)}`}>
-							{formatMult(1 - breakdown.hint_penalty)}
-						</span>
-					</div>
+					{/if}
 
 					<div class="border-t border-border"></div>
 
 					<!-- Theoretical reward -->
 					<div class="flex items-center justify-between">
-						<span class="flex items-center gap-2">
-							<span>💎</span>
-							<span>Valeur théorique</span>
-						</span>
+						<span>Valeur théorique</span>
 						<span class="font-mono font-medium text-muted-foreground">
 							{breakdown.theoretical_reward.toFixed(2)}
 						</span>
@@ -193,10 +172,7 @@
 
 					<!-- Daily limit status -->
 					<div class="flex items-center justify-between">
-						<span class="flex items-center gap-2">
-							<span class={dailyStatus.color}>{dailyStatus.emoji}</span>
-							<span>{dailyStatus.label}</span>
-						</span>
+						<span class={dailyStatus.color}>{dailyStatus.label}</span>
 						<span class={`font-mono font-medium ${dailyStatus.color}`}>
 							{dailyStatus.message}
 						</span>
@@ -214,10 +190,7 @@
 
 					<!-- Week best reward -->
 					<div class="mt-1 flex items-center justify-between rounded bg-primary/10 p-2">
-						<span class="flex items-center gap-2">
-							<span>🏆</span>
-							<span>Meilleur cette semaine</span>
-						</span>
+						<span>Meilleur cette semaine</span>
 						<span class="font-mono font-medium text-primary">
 							{breakdown.week_best_reward.toFixed(2)}
 						</span>
@@ -264,8 +237,7 @@
 			{/if}
 
 			<!-- Actions -->
-			<div class="flex justify-center gap-3 pt-2">
-				<Button variant="outline" onclick={onClose}>Fermer</Button>
+			<div class="flex justify-center pt-2">
 				<Button onclick={onPlayAgain} class="gap-2">
 					<RotateCcw class="h-4 w-4" />
 					Rejouer
