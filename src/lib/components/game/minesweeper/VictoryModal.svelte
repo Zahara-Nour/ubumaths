@@ -75,22 +75,6 @@
 		};
 	});
 
-	// Daily limit status
-	const dailyStatus = $derived.by(() => {
-		if (breakdown.is_first_win_of_day) {
-			return {
-				label: '1ère victoire du jour !',
-				color: 'text-green-500',
-				message: '+1 gidouille'
-			};
-		}
-		return {
-			label: "Déjà gagné aujourd'hui",
-			color: 'text-muted-foreground',
-			message: '+0 gidouille'
-		};
-	});
-
 	function formatMult(mult: number): string {
 		return `×${mult.toFixed(2)}`;
 	}
@@ -162,29 +146,11 @@
 
 					<div class="border-t border-border"></div>
 
-					<!-- Theoretical reward -->
-					<div class="flex items-center justify-between">
-						<span>Valeur théorique</span>
-						<span class="font-mono font-medium text-muted-foreground">
-							{breakdown.theoretical_reward.toFixed(2)}
-						</span>
-					</div>
-
-					<!-- Daily limit status -->
-					<div class="flex items-center justify-between">
-						<span class={dailyStatus.color}>{dailyStatus.label}</span>
-						<span class={`font-mono font-medium ${dailyStatus.color}`}>
-							{dailyStatus.message}
-						</span>
-					</div>
-
-					<div class="border-t border-border"></div>
-
-					<!-- Actual result -->
+					<!-- Theoretical total -->
 					<div class="flex items-center justify-between font-medium">
-						<span>Gain réel</span>
+						<span>Gidouilles</span>
 						<span class="font-mono text-primary">
-							+{gidouilles.toFixed(0)} gidouille{gidouilles !== 1 ? 's' : ''}
+							{breakdown.theoretical_reward.toFixed(2)}
 						</span>
 					</div>
 
