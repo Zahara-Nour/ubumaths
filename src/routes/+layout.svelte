@@ -18,10 +18,10 @@
 	import '../fonts.css'; // Consolidated font imports (optimized loading)
 
 	// Vercel Analytics & Speed Insights (RUM - Real User Monitoring)
-	// IMPORTANT: Must be initialized in $effect, NOT at module level.
-	// Module-level calls cause "Cannot access 'universal' before initialization"
-	// because @vercel/speed-insights/sveltekit imports SvelteKit internals
-	// that may not be ready during module initialization (intermittent on slow networks/iPad).
+	// Loaded via dynamic import in $effect for two reasons:
+	// 1. Brave browser blocks these scripts - dynamic import + catch handles this gracefully
+	// 2. Avoids adding to the root layout's static dependency chain (see Safari TDZ fix
+	//    in +layout.ts for details on WebKit module initialization issues)
 	import { browser } from '$app/environment';
 
 	$effect(() => {
