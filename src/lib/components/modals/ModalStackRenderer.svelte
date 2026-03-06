@@ -105,12 +105,11 @@
 		padding: 0;
 		cursor: default;
 		text-align: left;
+		overflow-y: auto;
 	}
 
 	.modal-container {
 		max-width: 90vw;
-		max-height: 90vh;
-		overflow: auto;
 		cursor: default;
 	}
 </style>

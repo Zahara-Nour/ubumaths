@@ -25,7 +25,6 @@
 -->
 
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { RotateCcw, Trophy } from 'lucide-svelte';
 	import type { Difficulty, RewardBreakdown } from '$lib/types/minesweeper';
@@ -118,8 +117,8 @@
 	}
 </script>
 
-<Card.Root
-	class="animate-in zoom-in-95 mx-4 w-full max-w-sm overflow-hidden duration-200 sm:max-w-3xl"
+<div
+	class="animate-in zoom-in-95 mx-4 w-full max-w-sm overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm duration-200 sm:max-w-3xl"
 >
 	<div class="flex flex-col sm:flex-row">
 		<!-- Hero image -->
@@ -129,7 +128,7 @@
 			class="w-full sm:w-80 sm:self-center"
 		/>
 
-		<Card.Content class="min-w-0 flex-1 space-y-4 p-4 sm:p-6">
+		<div class="min-w-0 flex-1 space-y-4 p-4 sm:p-6">
 			<!-- Main reward display -->
 			{#if !isPublicUser}
 				<div class="text-center">
@@ -272,6 +271,6 @@
 					Rejouer
 				</Button>
 			</div>
-		</Card.Content>
+		</div>
 	</div>
-</Card.Root>
+</div>
