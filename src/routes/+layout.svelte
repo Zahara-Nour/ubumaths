@@ -18,20 +18,23 @@
 	import '../fonts.css'; // Consolidated font imports (optimized loading)
 
 	// Vercel Analytics & Speed Insights (RUM - Real User Monitoring)
-	// Wrapped in try/catch: Brave and other privacy browsers block these scripts
-	import { inject } from '@vercel/analytics';
-	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+	// IMPORTANT: Must be initialized in $effect, NOT at module level.
+	// Module-level calls cause "Cannot access 'universal' before initialization"
+	// because @vercel/speed-insights/sveltekit imports SvelteKit internals
+	// that may not be ready during module initialization (intermittent on slow networks/iPad).
+	import { browser } from '$app/environment';
 
-	try {
-		inject();
-	} catch (e) {
-		console.debug('[Analytics] Vercel Analytics blocked or failed:', e);
-	}
-	try {
-		injectSpeedInsights();
-	} catch (e) {
-		console.debug('[Analytics] Speed Insights blocked or failed:', e);
-	}
+	$effect(() => {
+		if (!browser) return;
+		Promise.all([import('@vercel/analytics'), import('@vercel/speed-insights/sveltekit')])
+			.then(([{ inject }, { injectSpeedInsights }]) => {
+				inject();
+				injectSpeedInsights();
+			})
+			.catch((e) => {
+				console.debug('[Analytics] Failed to initialize:', e);
+			});
+	});
 
 	import favicon from '$lib/assets/images/favicon.png';
 	import Header from '$lib/components/Header.svelte';
