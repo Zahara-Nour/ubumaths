@@ -30,9 +30,18 @@
 
 import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { invalidate } from '$app/navigation';
+// IMPORTANT: invalidate is imported dynamically to avoid circular dependency
+// that causes "Cannot access 'universal' before initialization" on Safari/iOS.
+// $app/navigation can end up in the same Vite chunk as the route entry module,
+// creating a TDZ issue when WebKit initializes modules in a different order than V8.
 import type { LayoutLoad } from './$types';
 import { createLogger } from '$lib/utils/logger';
+
+/** Dynamic invalidate to avoid circular dependency with route entry module */
+async function invalidateAuth() {
+	const { invalidate } = await import('$app/navigation');
+	invalidate('supabase:auth');
+}
 
 const logger = createLogger('+layout.ts', 'error');
 
@@ -194,7 +203,7 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 			if (event === 'SIGNED_OUT') {
 				console.log('🔐 [AUTH] Invalidating (signed out)');
 				setPersistedUserId(null);
-				invalidate('supabase:auth');
+				invalidateAuth();
 				setLastRefresh(Date.now());
 				return;
 			}
@@ -221,7 +230,7 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 				// Different user or first sign-in - this is a real auth change
 				console.log('🔐 [AUTH] Invalidating (new user signed in)');
 				setPersistedUserId(newUserId);
-				invalidate('supabase:auth');
+				invalidateAuth();
 				setLastRefresh(Date.now());
 				return;
 			}
@@ -244,7 +253,7 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 					console.log(
 						`🔐 [AUTH] Invalidating (token refresh after ${Math.round(timeSinceLastRefresh / 60000)} min)`
 					);
-					invalidate('supabase:auth');
+					invalidateAuth();
 					setLastRefresh(Date.now());
 				} else {
 					console.log(
