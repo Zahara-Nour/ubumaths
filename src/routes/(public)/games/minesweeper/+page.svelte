@@ -30,12 +30,15 @@
 			try {
 				await Promise.all([
 					minesweeperStore.loadSavedGame(),
-					// Fetch hint and undo VIP card counts for students
+					// Fetch hint, undo, and freeze VIP card counts for students
 					data.profile.role === 'student'
 						? minesweeperStore.fetchHintCardCount()
 						: Promise.resolve(),
 					data.profile.role === 'student'
 						? minesweeperStore.fetchUndoCardCount()
+						: Promise.resolve(),
+					data.profile.role === 'student'
+						? minesweeperStore.fetchFreezeCardCount()
 						: Promise.resolve()
 				]);
 				// Check if a saved game was loaded
@@ -155,6 +158,10 @@
 							hintsUsed={game.hintsUsed || 0}
 							hintCardsAvailable={minesweeperStore.hintCardsAvailable}
 							onUseHint={() => minesweeperStore.useHint()}
+							freezeCardsAvailable={minesweeperStore.freezeCardsAvailable}
+							freezeUsedThisGame={minesweeperStore.freezeUsedThisGame}
+							freezeRemainingSeconds={minesweeperStore.freezeRemainingSeconds}
+							onUseFreeze={() => minesweeperStore.useFreeze()}
 							isAuthenticated={data.isAuthenticated}
 							isLoading={minesweeperStore.isLoading}
 						/>

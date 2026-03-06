@@ -200,6 +200,17 @@ interface UndoAction {
 }
 
 /**
+ * VIP Card Action - Freeze Timer
+ * Freezes the game timer for a specified duration.
+ * The timer resumes automatically when the duration expires or the game ends.
+ */
+interface FreezeTimerAction {
+	type: 'freeze_timer';
+	duration: number; // Duration in seconds (e.g., 60)
+	context?: string; // Activation context (e.g., 'minesweeper')
+}
+
+/**
  * Union type for all VIP card actions
  * These actions require teacher approval to activate
  */
@@ -210,7 +221,8 @@ export type VipCardAction =
 	| AddGidouillesAction
 	| ChooseCardAction
 	| HintAction
-	| UndoAction;
+	| UndoAction
+	| FreezeTimerAction;
 
 /**
  * Definition of a VIP card type (template)

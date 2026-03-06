@@ -40,6 +40,13 @@ const HINT_VIP_CARD_IDS = ['minesweeper-hint', 'minesweeper-hint-2', 'minesweepe
 // Undo (Seconde Chance) VIP card configuration
 const UNDO_VIP_CARD_ID = 'minesweeper-undo'; // VIP card id for undo
 
+// Freeze Timer VIP card configuration
+const FREEZE_VIP_CARD_IDS = ['minesweeper-freeze', 'minesweeper-chronostase'];
+const FREEZE_DURATIONS: Record<string, number> = {
+	'minesweeper-freeze': 60,
+	'minesweeper-chronostase': 120
+};
+
 /**
  * 8 neighboring cell directions (relative positions)
  * Used for mine counting and cascade reveal algorithms
@@ -156,6 +163,26 @@ class MinesweeperStore {
 	 * Number of undo (Seconde Chance) VIP cards available for the student
 	 */
 	undoCardsAvailable = $state(0);
+
+	/**
+	 * Number of freeze timer (Gel Temporaire) VIP cards available for the student
+	 */
+	freezeCardsAvailable = $state(0);
+
+	/**
+	 * Whether freeze has been used in the current game (max 1 per game)
+	 */
+	freezeUsedThisGame = $state(false);
+
+	/**
+	 * Remaining seconds of active timer freeze (0 = not frozen)
+	 */
+	freezeRemainingSeconds = $state(0);
+
+	/**
+	 * Interval for the freeze countdown
+	 */
+	private freezeCountdownInterval: ReturnType<typeof setInterval> | null = null;
 
 	/**
 	 * Whether undo has been used in the current game (max 1 per game)
@@ -1307,6 +1334,190 @@ class MinesweeperStore {
 		this.completeGame(false);
 	}
 
+	// ============================================================================
+	// Freeze Timer (Gel Temporaire)
+	// ============================================================================
+
+	/**
+	 * Check if freeze is available for the current game
+	 * Requires: freeze VIP card available AND not already used in this game AND not in tournament
+	 */
+	canUseFreeze(): boolean {
+		return (
+			this.freezeCardsAvailable > 0 &&
+			!this.freezeUsedThisGame &&
+			!this.tournamentId &&
+			this.freezeRemainingSeconds <= 0
+		);
+	}
+
+	/**
+	 * Use the freeze timer VIP card to pause the timer for 60 seconds
+	 */
+	async useFreeze(): Promise<void> {
+		if (!browser || !this.currentGame) {
+			toaster.error('Aucune partie en cours');
+			return;
+		}
+
+		const game = this.currentGame;
+
+		if (game.status !== 'in_progress') {
+			toaster.error('La partie doit être en cours');
+			return;
+		}
+
+		if (!this.canUseFreeze()) {
+			toaster.error('Gel Temporaire non disponible');
+			return;
+		}
+
+		if (!this.shouldUseDatabase() || !game.id) {
+			toaster.error("Vous devez être connecté en tant qu'élève pour utiliser le Gel Temporaire");
+			return;
+		}
+
+		this.isLoading = true;
+		try {
+			// Consume the VIP card via the unified use-card endpoint
+			const response = await fetch('/api/vip-cards/use-card', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					instanceId: this.findFreezeCardInstanceId(),
+					context: 'minesweeper'
+				})
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.message || 'Échec du Gel Temporaire');
+			}
+
+			// Success - activate the freeze with card-specific duration
+			const duration = FREEZE_DURATIONS[this._freezeCardTemplateId ?? 'minesweeper-freeze'] ?? 60;
+			this.freezeUsedThisGame = true;
+			this.freezeRemainingSeconds = duration;
+
+			// Decrement local card count
+			if (this.freezeCardsAvailable > 0) {
+				this.freezeCardsAvailable--;
+			}
+
+			// Start freeze countdown
+			this.startFreezeCountdown();
+
+			toaster.success(`Timer gelé pendant ${duration}s !`);
+			logger.info('Freeze timer used successfully', { gameId: game.id });
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Échec du Gel Temporaire';
+			logger.error('Failed to use freeze timer:', err);
+			toaster.error(message);
+		} finally {
+			this.isLoading = false;
+		}
+	}
+
+	/**
+	 * Find the first available freeze card instance ID from the student's collection
+	 */
+	private findFreezeCardInstanceId(): string {
+		// We need to fetch from the profile data - use a synchronous approach
+		// The card instance was already counted in fetchFreezeCardCount
+		// We'll store it when we fetch
+		if (this._freezeCardInstanceId) {
+			return this._freezeCardInstanceId;
+		}
+		throw new Error('Aucune carte Gel Temporaire disponible');
+	}
+
+	/** Cached instance ID for the next available freeze card */
+	private _freezeCardInstanceId: string | null = null;
+	/** Cached template ID for duration lookup */
+	private _freezeCardTemplateId: string | null = null;
+
+	/**
+	 * Start the freeze countdown timer
+	 */
+	private startFreezeCountdown(): void {
+		if (this.freezeCountdownInterval) {
+			clearInterval(this.freezeCountdownInterval);
+		}
+
+		this.freezeCountdownInterval = setInterval(() => {
+			if (this.freezeRemainingSeconds > 0) {
+				this.freezeRemainingSeconds--;
+			}
+			if (this.freezeRemainingSeconds <= 0) {
+				this.stopFreezeCountdown();
+				toaster.info('Le Gel Temporaire est terminé, le timer reprend.');
+				logger.info('Freeze timer expired');
+			}
+		}, 1000);
+	}
+
+	/**
+	 * Stop the freeze countdown (on expiry, game end, or cleanup)
+	 */
+	private stopFreezeCountdown(): void {
+		if (this.freezeCountdownInterval) {
+			clearInterval(this.freezeCountdownInterval);
+			this.freezeCountdownInterval = null;
+		}
+	}
+
+	/**
+	 * Fetch the count of freeze VIP cards available for the student.
+	 * Also caches the first available instance ID for use-card API.
+	 */
+	async fetchFreezeCardCount(): Promise<number> {
+		if (!browser || !this.shouldUseDatabase()) {
+			this.freezeCardsAvailable = 0;
+			return 0;
+		}
+
+		try {
+			const { data, error } = await this.supabase!.from('profiles')
+				.select('vip_cards')
+				.eq('id', this.user!.id)
+				.single();
+
+			if (error) {
+				logger.error('Failed to fetch freeze card count:', error);
+				this.freezeCardsAvailable = 0;
+				return 0;
+			}
+
+			const vipCards = (data?.vip_cards ?? {}) as StudentVipCards;
+			const totalCount = countAvailableConsumableUses(vipCards, FREEZE_VIP_CARD_IDS);
+
+			// Cache the first available instance ID and its card ID (for duration lookup)
+			this._freezeCardInstanceId = null;
+			this._freezeCardTemplateId = null;
+			for (const [instanceId, instance] of Object.entries(vipCards)) {
+				if (
+					FREEZE_VIP_CARD_IDS.includes(instance.cardId) &&
+					!instance.usedAt &&
+					(instance.usesRemaining === undefined ||
+						instance.usesRemaining === null ||
+						instance.usesRemaining > 0)
+				) {
+					this._freezeCardInstanceId = instanceId;
+					this._freezeCardTemplateId = instance.cardId;
+					break;
+				}
+			}
+
+			this.freezeCardsAvailable = totalCount;
+			logger.info(`VIP freeze cards available: ${totalCount}`);
+			return totalCount;
+		} catch (err) {
+			logger.error('Failed to fetch freeze card count:', err);
+			this.freezeCardsAvailable = 0;
+			return 0;
+		}
+	}
+
 	/**
 	 * Start the game timer
 	 */
@@ -1317,7 +1528,10 @@ class MinesweeperStore {
 
 		this.timerInterval = setInterval(() => {
 			if (this.currentGame && this.currentGame.status === 'in_progress') {
-				this.currentGame.timeElapsed++;
+				// Skip timer increment when freeze is active
+				if (this.freezeRemainingSeconds <= 0) {
+					this.currentGame.timeElapsed++;
+				}
 			}
 		}, TIMER_INTERVAL);
 
@@ -1537,6 +1751,8 @@ class MinesweeperStore {
 		// Stop timers
 		this.stopTimer();
 		this.stopAutoSave();
+		this.stopFreezeCountdown();
+		this.freezeRemainingSeconds = 0;
 
 		// Update game status
 		game.status = won ? 'won' : 'lost';
@@ -2483,6 +2699,12 @@ class MinesweeperStore {
 		this.undoUsedThisGame = false;
 		this.pendingBombCell = null;
 		this.lastHintedCell = null;
+		this.freezeCardsAvailable = 0;
+		this.freezeUsedThisGame = false;
+		this.freezeRemainingSeconds = 0;
+		this.stopFreezeCountdown();
+		this._freezeCardInstanceId = null;
+		this._freezeCardTemplateId = null;
 		if (this.hintGlowTimer) {
 			clearTimeout(this.hintGlowTimer);
 			this.hintGlowTimer = null;

@@ -27,6 +27,7 @@
 		value?.type === 'remove_warnings' && value.warningType ? value.warningType : 'none'
 	);
 	let addGidouillesAmount = $state<number>(value?.type === 'add_gidouilles' ? value.amount : 50);
+	let freezeDuration = $state<number>(value?.type === 'freeze_timer' ? value.duration : 60);
 
 	// draw_cards filters
 	let drawForceRarity = $state<VipCardRarity | undefined>(
@@ -107,7 +108,8 @@
 		{ value: 'add_gidouilles', label: 'Ajouter des gidouilles' },
 		{ value: 'choose_card', label: 'Choisir des cartes spécifiques' },
 		{ value: 'hint', label: 'Indice (in-game)' },
-		{ value: 'undo', label: 'Annuler (in-game)' }
+		{ value: 'undo', label: 'Annuler (in-game)' },
+		{ value: 'freeze_timer', label: 'Geler le timer (in-game)' }
 	];
 
 	// Warning type options (from shared constants)
@@ -305,6 +307,10 @@
 			return withContext({ type: 'undo' as const });
 		}
 
+		if (actionType === 'freeze_timer') {
+			return withContext({ type: 'freeze_timer' as const, duration: freezeDuration });
+		}
+
 		return null;
 	});
 
@@ -334,6 +340,8 @@
 		} else if (newType === 'exchange_cards') {
 			exchangeMode = 'replace_random';
 			replaceRandomCount = 3;
+		} else if (newType === 'freeze_timer') {
+			freezeDuration = 60;
 		} else if (newType === 'choose_card') {
 			chooseCardCount = 1;
 			chooseCardFilterMode = 'all';
@@ -726,6 +734,26 @@
 				Permet d'annuler la dernière action pendant une partie (ex : annuler un clic au démineur).
 				Le jeu concerné est déterminé par le contexte d'activation.
 			</p>
+		</div>
+	{:else if actionType === 'freeze_timer'}
+		<div class="space-y-3">
+			<div class="space-y-2">
+				<Label for="freeze-duration">Durée du gel (secondes)</Label>
+				<Input
+					id="freeze-duration"
+					type="number"
+					bind:value={freezeDuration}
+					min={10}
+					max={300}
+					step={10}
+				/>
+				<p class="text-xs text-muted-foreground">
+					Gèle le timer pendant {freezeDuration} secondes ({Math.floor(
+						freezeDuration / 60
+					)}min{freezeDuration % 60 > 0 ? ` ${freezeDuration % 60}s` : ''}). Le jeu concerné est
+					déterminé par le contexte d'activation.
+				</p>
+			</div>
 		</div>
 	{/if}
 
