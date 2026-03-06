@@ -20,30 +20,22 @@
  * - depends('supabase:auth') tells SvelteKit to reload when this invalidates
  * - onAuthStateChange() detects login/logout events
  * - invalidate('supabase:auth') triggers a fresh server-side verification
- * - This creates a reactive loop: auth change → invalidate → server verify → UI update
+ * - This creates a reactive loop: auth change -> invalidate -> server verify -> UI update
  *
  * SECURITY:
  * - We use verified data from server (data.session, data.user)
  * - We DON'T use session from onAuthStateChange (it's unverified)
  * - Instead, we trigger server-side re-verification via invalidate()
+ *
+ * SAFARI/WEBKIT TDZ FIX:
+ * Heavy dependencies (@supabase/ssr) are imported DYNAMICALLY inside the load
+ * function. This prevents WebKit's "Cannot access 'universal' before initialization"
+ * error (https://bugs.webkit.org/show_bug.cgi?id=242740) caused by complex static
+ * dependency chains in the compiled route entry module.
  */
 
-import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-// IMPORTANT: invalidate is imported dynamically to avoid circular dependency
-// that causes "Cannot access 'universal' before initialization" on Safari/iOS.
-// $app/navigation can end up in the same Vite chunk as the route entry module,
-// creating a TDZ issue when WebKit initializes modules in a different order than V8.
 import type { LayoutLoad } from './$types';
-import { createLogger } from '$lib/utils/logger';
-
-/** Dynamic invalidate to avoid circular dependency with route entry module */
-async function invalidateAuth() {
-	const { invalidate } = await import('$app/navigation');
-	invalidate('supabase:auth');
-}
-
-const logger = createLogger('+layout.ts', 'error');
 
 // =============================================================================
 // AUTH STATE THROTTLING
@@ -59,7 +51,7 @@ const logger = createLogger('+layout.ts', 'error');
 // 1. Vite HMR reloads the module when returning to the browser tab (dev only)
 // 2. A new Supabase client is created, which detects the existing session
 // 3. Supabase emits SIGNED_IN (even though user was already signed in)
-// 4. Our listener calls invalidate('supabase:auth') → full layout reload
+// 4. Our listener calls invalidate('supabase:auth') -> full layout reload
 //
 // SOLUTION:
 // - Track the current user ID: skip SIGNED_IN if same user (not a real sign-in)
@@ -112,13 +104,24 @@ function setLastRefresh(timestamp: number): void {
 	sessionStorage.setItem(STORAGE_KEY_LAST_REFRESH, timestamp.toString());
 }
 
+/** Dynamic invalidate to avoid circular dependency with route entry module */
+async function invalidateAuth() {
+	const { invalidate } = await import('$app/navigation');
+	invalidate('supabase:auth');
+}
+
 export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	// Register this load function to re-run when 'supabase:auth' is invalidated
 	// This enables reactive auth state updates throughout the app
 	depends('supabase:auth');
 	console.log('🎨 [ROOT LAYOUT] Exécution');
 
-	logger.info('Loading, isBrowser:', isBrowser());
+	// --- DYNAMIC IMPORT (Safari/WebKit TDZ fix) ---
+	// @supabase/ssr is imported dynamically to prevent the compiled route entry
+	// module from having a complex static dependency chain that triggers
+	// WebKit's TDZ bug with the 'universal' export.
+	// See: https://bugs.webkit.org/show_bug.cgi?id=242740
+	const { createBrowserClient, createServerClient, isBrowser } = await import('@supabase/ssr');
 
 	/**
 	 * Create a Supabase client appropriate for the environment
@@ -151,12 +154,6 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 					// Cookie writes happen in the server hook
 				}
 			});
-
-	logger.trace('Supabase client created');
-
-	// Use the verified user from the server
-	// The server already verified this with getUser() - safe to trust
-	logger.info('User from server:', data.user ? `User: ${data.user.email}` : 'No user');
 
 	/**
 	 * Set up auth state change listener (browser only)
@@ -197,9 +194,9 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 		supabase.auth.onAuthStateChange((event, session) => {
 			console.log(`🔐 [AUTH] Event: ${event}`);
 
-			// ─────────────────────────────────────────────────────────────────
+			// -----------------------------------------------------------------
 			// SIGNED_OUT: Always reload - user explicitly logged out
-			// ─────────────────────────────────────────────────────────────────
+			// -----------------------------------------------------------------
 			if (event === 'SIGNED_OUT') {
 				console.log('🔐 [AUTH] Invalidating (signed out)');
 				setPersistedUserId(null);
@@ -208,16 +205,16 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 				return;
 			}
 
-			// ─────────────────────────────────────────────────────────────────
+			// -----------------------------------------------------------------
 			// SIGNED_IN: Only reload if user actually changed
-			// ─────────────────────────────────────────────────────────────────
+			// -----------------------------------------------------------------
 			// WHY: Supabase emits SIGNED_IN in these cases:
-			// 1. User actually signs in (different user or first sign-in) → RELOAD
-			// 2. Vite HMR reloads module, new client detects existing session → SKIP
-			// 3. Browser tab regains focus, Supabase re-checks session → SKIP
+			// 1. User actually signs in (different user or first sign-in) -> RELOAD
+			// 2. Vite HMR reloads module, new client detects existing session -> SKIP
+			// 3. Browser tab regains focus, Supabase re-checks session -> SKIP
 			//
 			// We compare user IDs to distinguish real sign-ins from false positives.
-			// ─────────────────────────────────────────────────────────────────
+			// -----------------------------------------------------------------
 			if (event === 'SIGNED_IN') {
 				const newUserId = session?.user?.id ?? null;
 				const currentUserId = getPersistedUserId();
@@ -235,17 +232,17 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 				return;
 			}
 
-			// ─────────────────────────────────────────────────────────────────
+			// -----------------------------------------------------------------
 			// TOKEN_REFRESHED: Throttle to avoid unnecessary reloads
-			// ─────────────────────────────────────────────────────────────────
+			// -----------------------------------------------------------------
 			// WHY: Supabase automatically refreshes tokens before expiry.
 			// This can happen when:
-			// 1. User returns after long inactivity → RELOAD (data may be stale)
-			// 2. User switches virtual screens briefly → SKIP (nothing changed)
+			// 1. User returns after long inactivity -> RELOAD (data may be stale)
+			// 2. User switches virtual screens briefly -> SKIP (nothing changed)
 			//
 			// We throttle: only reload if >30 min since last full refresh.
 			// Security is not impacted: RLS policies are checked on every DB query.
-			// ─────────────────────────────────────────────────────────────────
+			// -----------------------------------------------------------------
 			if (event === 'TOKEN_REFRESHED') {
 				const lastRefresh = getLastRefresh();
 				const timeSinceLastRefresh = Date.now() - lastRefresh;
@@ -263,9 +260,9 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 				return;
 			}
 
-			// ─────────────────────────────────────────────────────────────────
+			// -----------------------------------------------------------------
 			// INITIAL_SESSION: Emitted once on first load - no action needed
-			// ─────────────────────────────────────────────────────────────────
+			// -----------------------------------------------------------------
 			if (event === 'INITIAL_SESSION') {
 				console.log('🔐 [AUTH] Initial session detected (no action needed)');
 				return;
