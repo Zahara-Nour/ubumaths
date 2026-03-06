@@ -3,6 +3,7 @@
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { cn } from '$lib/utils';
 	import HintButton from './HintButton.svelte';
+	import FreezeTimerButton from './FreezeTimerButton.svelte';
 
 	// Props
 	let {
@@ -13,8 +14,13 @@
 		hintsUsed = 0,
 		hintCardsAvailable = 0,
 		onUseHint,
+		freezeCardsAvailable = 0,
+		freezeUsedThisGame = false,
+		freezeRemainingSeconds = 0,
+		onUseFreeze,
 		isAuthenticated = false,
-		isLoading = false
+		isLoading = false,
+		isTournament = false
 	}: {
 		timeElapsed: number;
 		minesRemaining: number;
@@ -23,8 +29,13 @@
 		hintsUsed?: number;
 		hintCardsAvailable?: number;
 		onUseHint?: () => void;
+		freezeCardsAvailable?: number;
+		freezeUsedThisGame?: boolean;
+		freezeRemainingSeconds?: number;
+		onUseFreeze?: () => void;
 		isAuthenticated?: boolean;
 		isLoading?: boolean;
+		isTournament?: boolean;
 	} = $props();
 
 	// Format time as MM:SS or HH:MM:SS for longer times
@@ -63,8 +74,15 @@
 		</div>
 
 		<div class="flex items-center gap-1 font-mono sm:gap-2" aria-label="Temps écoulé">
-			<span class="text-base sm:text-lg" aria-hidden="true">⏱️</span>
-			<span class="font-bold tabular-nums">{formattedTime}</span>
+			<span class="text-base sm:text-lg" aria-hidden="true"
+				>{freezeRemainingSeconds > 0 ? '❄️' : '⏱️'}</span
+			>
+			<span
+				class={cn(
+					'font-bold tabular-nums',
+					freezeRemainingSeconds > 0 && 'text-cyan-600 dark:text-cyan-400'
+				)}>{formattedTime}</span
+			>
 		</div>
 	</div>
 
@@ -92,6 +110,23 @@
 		<div class="border-t border-border pt-3">
 			<Tooltip.Provider>
 				<HintButton {hintsUsed} {hintCardsAvailable} {gameStatus} {isLoading} {onUseHint} />
+			</Tooltip.Provider>
+		</div>
+	{/if}
+
+	<!-- Freeze timer section (only for authenticated users with cards) -->
+	{#if isAuthenticated && onUseFreeze && (freezeCardsAvailable > 0 || freezeUsedThisGame || freezeRemainingSeconds > 0)}
+		<div class="border-t border-border pt-3">
+			<Tooltip.Provider>
+				<FreezeTimerButton
+					{freezeCardsAvailable}
+					{freezeUsedThisGame}
+					{freezeRemainingSeconds}
+					{gameStatus}
+					{isLoading}
+					{isTournament}
+					{onUseFreeze}
+				/>
 			</Tooltip.Provider>
 		</div>
 	{/if}

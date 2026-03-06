@@ -234,6 +234,9 @@ export function getActionDescription(action: VipCardAction, templates: VipCardTe
 		case 'undo':
 			return 'Annuler un coup';
 
+		case 'freeze_timer':
+			return `Geler le timer pendant ${action.duration}s`;
+
 		default:
 			return 'Action spéciale';
 	}
