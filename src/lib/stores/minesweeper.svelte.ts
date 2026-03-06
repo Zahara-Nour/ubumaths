@@ -1636,23 +1636,14 @@ class MinesweeperStore {
 					// Reveal all mines on loss
 					this.revealAllMines();
 
-					// Calculate total cells (non-mine cells)
-					const config = DIFFICULTY_CONFIGS[game.difficulty];
-					const totalCells = config.rows * config.cols - config.mines;
-
 					// Show defeat modal
 					modalStack.push({
 						component: DefeatModal,
 						props: {
-							difficulty: game.difficulty,
-							timeElapsed: game.timeElapsed,
-							cellsRevealed: game.cellsRevealed,
-							totalCells,
 							onPlayAgain: () => {
 								modalStack.clear();
 								this.startNewGame(game.difficulty);
-							},
-							onClose: () => modalStack.pop()
+							}
 						},
 						canDismiss: true
 					});
@@ -1665,8 +1656,6 @@ class MinesweeperStore {
 			} else {
 				// Public user - show modal without gidouilles
 				const config = DIFFICULTY_CONFIGS[game.difficulty];
-				const totalCells = config.rows * config.cols - config.mines;
-
 				if (won) {
 					// Create a simple breakdown for public users
 					const publicBreakdown: RewardBreakdown = {
@@ -1708,15 +1697,10 @@ class MinesweeperStore {
 					modalStack.push({
 						component: DefeatModal,
 						props: {
-							difficulty: game.difficulty,
-							timeElapsed: game.timeElapsed,
-							cellsRevealed: game.cellsRevealed,
-							totalCells,
 							onPlayAgain: () => {
 								modalStack.clear();
 								this.startNewGame(game.difficulty);
-							},
-							onClose: () => modalStack.pop()
+							}
 						},
 						canDismiss: true
 					});
@@ -1741,8 +1725,6 @@ class MinesweeperStore {
 
 				// Still show modal for the result (but user knows it wasn't saved)
 				const config = DIFFICULTY_CONFIGS[game.difficulty];
-				const totalCells = config.rows * config.cols - config.mines;
-
 				if (won) {
 					const errorBreakdown: RewardBreakdown = {
 						cycle: null,
@@ -1781,15 +1763,10 @@ class MinesweeperStore {
 					modalStack.push({
 						component: DefeatModal,
 						props: {
-							difficulty: game.difficulty,
-							timeElapsed: game.timeElapsed,
-							cellsRevealed: game.cellsRevealed,
-							totalCells,
 							onPlayAgain: () => {
 								modalStack.clear();
 								this.startNewGame(game.difficulty);
-							},
-							onClose: () => modalStack.pop()
+							}
 						},
 						canDismiss: true
 					});
@@ -1797,8 +1774,6 @@ class MinesweeperStore {
 			} else {
 				// Public users, teachers, and admins - no save expected, show modal normally
 				const config = DIFFICULTY_CONFIGS[game.difficulty];
-				const totalCells = config.rows * config.cols - config.mines;
-
 				if (won) {
 					const fallbackBreakdown: RewardBreakdown = {
 						cycle: null,
@@ -1837,15 +1812,10 @@ class MinesweeperStore {
 					modalStack.push({
 						component: DefeatModal,
 						props: {
-							difficulty: game.difficulty,
-							timeElapsed: game.timeElapsed,
-							cellsRevealed: game.cellsRevealed,
-							totalCells,
 							onPlayAgain: () => {
 								modalStack.clear();
 								this.startNewGame(game.difficulty);
-							},
-							onClose: () => modalStack.pop()
+							}
 						},
 						canDismiss: true
 					});

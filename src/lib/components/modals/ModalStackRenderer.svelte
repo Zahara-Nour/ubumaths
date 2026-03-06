@@ -22,30 +22,45 @@
 -->
 
 <script lang="ts">
-	import { modalStack } from '$lib/stores/modalStack.svelte';
+	import { modalStack, type ModalEntry } from '$lib/stores/modalStack.svelte';
 	import { fade } from 'svelte/transition';
 
-	// Reactive current modal from stack
-	const currentModal = $derived(modalStack.current);
+	const isOpen = $derived(modalStack.depth > 0);
 	const stackDepth = $derived(modalStack.depth);
 
-	// Handle backdrop click
+	// Side effect: snapshot the current modal for fade-out transition stability.
+	// $derived would re-evaluate to null during outro, crashing the render.
+	// This $effect only updates on push (guard: if current), keeping the
+	// reference alive during fade-out. Cleared by onoutroend.
+	let modalSnapshot = $state<ModalEntry | null>(null);
+
+	$effect(() => {
+		const current = modalStack.current;
+		if (current) {
+			modalSnapshot = current;
+		}
+	});
+
 	function handleBackdropClick() {
-		if (currentModal && currentModal.canDismiss !== false) {
+		if (modalSnapshot?.canDismiss !== false) {
 			modalStack.pop();
 		}
 	}
 
-	// Handle Escape key
 	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape' && currentModal && currentModal.canDismiss !== false) {
+		if (event.key === 'Escape' && isOpen && modalSnapshot?.canDismiss !== false) {
 			modalStack.pop();
 		}
 	}
 
-	// Stop propagation on modal content clicks
 	function handleModalClick(event: MouseEvent) {
 		event.stopPropagation();
+	}
+
+	function handleOutroEnd() {
+		if (!isOpen) {
+			modalSnapshot = null;
+		}
 	}
 </script>
 
@@ -53,7 +68,7 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <!-- Render modal if exists -->
-{#if currentModal}
+{#if isOpen && modalSnapshot}
 	<!-- Backdrop -->
 	<button
 		type="button"
@@ -62,6 +77,7 @@
 		onclick={handleBackdropClick}
 		aria-label="Fermer la modale en cliquant sur l'arrière-plan"
 		transition:fade={{ duration: 200 }}
+		onoutroend={handleOutroEnd}
 	>
 		<!-- Modal container -->
 		<div
@@ -72,10 +88,7 @@
 			aria-modal="true"
 			tabindex="-1"
 		>
-			{#if currentModal.component}
-				{@const ModalComponent = currentModal.component}
-				<ModalComponent {...currentModal.props} />
-			{/if}
+			<modalSnapshot.component {...modalSnapshot.props} />
 		</div>
 	</button>
 {/if}
