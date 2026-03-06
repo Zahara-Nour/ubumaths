@@ -18,11 +18,20 @@
 	import '../fonts.css'; // Consolidated font imports (optimized loading)
 
 	// Vercel Analytics & Speed Insights (RUM - Real User Monitoring)
+	// Wrapped in try/catch: Brave and other privacy browsers block these scripts
 	import { inject } from '@vercel/analytics';
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
-	inject(); // Web Analytics
-	injectSpeedInsights(); // Speed Insights (Core Web Vitals)
+	try {
+		inject();
+	} catch (e) {
+		console.debug('[Analytics] Vercel Analytics blocked or failed:', e);
+	}
+	try {
+		injectSpeedInsights();
+	} catch (e) {
+		console.debug('[Analytics] Speed Insights blocked or failed:', e);
+	}
 
 	import favicon from '$lib/assets/images/favicon.png';
 	import Header from '$lib/components/Header.svelte';
