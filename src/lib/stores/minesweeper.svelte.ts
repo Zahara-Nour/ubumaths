@@ -1609,8 +1609,7 @@ class MinesweeperStore {
 								onPlayAgain: () => {
 									modalStack.clear();
 									this.startNewGame(game.difficulty);
-								},
-								onClose: () => modalStack.pop()
+								}
 							},
 							canDismiss: true
 						});
@@ -1685,8 +1684,7 @@ class MinesweeperStore {
 							onPlayAgain: () => {
 								modalStack.clear();
 								this.startNewGame(game.difficulty);
-							},
-							onClose: () => modalStack.pop()
+							}
 						},
 						canDismiss: true
 					});
@@ -1753,8 +1751,7 @@ class MinesweeperStore {
 							onPlayAgain: () => {
 								modalStack.clear();
 								this.startNewGame(game.difficulty);
-							},
-							onClose: () => modalStack.pop()
+							}
 						},
 						canDismiss: true
 					});
@@ -1802,8 +1799,7 @@ class MinesweeperStore {
 							onPlayAgain: () => {
 								modalStack.clear();
 								this.startNewGame(game.difficulty);
-							},
-							onClose: () => modalStack.pop()
+							}
 						},
 						canDismiss: true
 					});
@@ -1878,8 +1874,7 @@ class MinesweeperStore {
 				onPlayAgain: () => {
 					modalStack.clear();
 					this.startNewGame(game.difficulty);
-				},
-				onClose: () => modalStack.pop()
+				}
 			},
 			canDismiss: true
 		});
