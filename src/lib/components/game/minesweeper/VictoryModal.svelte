@@ -118,152 +118,160 @@
 	}
 </script>
 
-<Card.Root class="animate-in zoom-in-95 mx-4 w-full max-w-md overflow-hidden duration-200">
-	<!-- Hero image -->
-	<img src="/images/games/minesweeper-victory.webp" alt="Victoire" class="w-full" />
+<Card.Root
+	class="animate-in zoom-in-95 mx-4 w-full max-w-sm overflow-hidden duration-200 sm:max-w-3xl"
+>
+	<div class="flex flex-col sm:flex-row">
+		<!-- Hero image -->
+		<img
+			src="/images/games/minesweeper-victory.webp"
+			alt="Victoire"
+			class="w-full sm:w-80 sm:self-center"
+		/>
 
-	<Card.Content class="space-y-4 p-4 sm:p-6">
-		<!-- Main reward display -->
-		{#if !isPublicUser && gidouilles > 0}
-			<div class="text-center">
-				<div class="text-3xl font-bold text-primary sm:text-4xl">
-					+{gidouilles.toFixed(2)}
-				</div>
-				<div class="text-sm text-muted-foreground">gidouilles</div>
-			</div>
-
-			<!-- Breakdown section -->
-			<div class="space-y-2 rounded-lg bg-muted/50 p-3 text-sm">
-				<div class="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-					Décomposition
-				</div>
-
-				<!-- Base reward -->
-				<div class="flex items-center justify-between">
-					<span class="flex items-center gap-2">
-						<span>🎯</span>
-						<span>Base ({DIFFICULTY_LABELS[difficulty]})</span>
-					</span>
-					<span class="font-mono font-medium">×{breakdown.base_reward.toFixed(1)}</span>
-				</div>
-
-				<!-- Time multiplier -->
-				<div class="flex items-center justify-between">
-					<span class="flex items-center gap-2">
-						<span class={timePerformance.color}>{timePerformance.emoji}</span>
-						<span>Temps ({formatDuration(breakdown.time_seconds)})</span>
-					</span>
-					<span class={`font-mono font-medium ${getMultColor(breakdown.time_mult)}`}>
-						{formatMult(breakdown.time_mult)}
-					</span>
-				</div>
-
-				<!-- Hint penalty -->
-				<div class="flex items-center justify-between">
-					<div class="flex items-center gap-2">
-						<span class={hintStatus.color}>{hintStatus.emoji}</span>
-						<span>{hintStatus.label}</span>
-						{#if hintStatus.detail}
-							<span class="text-xs text-muted-foreground">{hintStatus.detail}</span>
-						{/if}
+		<Card.Content class="min-w-0 flex-1 space-y-4 p-4 sm:p-6">
+			<!-- Main reward display -->
+			{#if !isPublicUser}
+				<div class="text-center">
+					<div class="text-3xl font-bold text-primary sm:text-4xl">
+						+{gidouilles.toFixed(2)}
 					</div>
-					<span class={`font-mono font-medium ${getMultColor(1 - breakdown.hint_penalty)}`}>
-						{formatMult(1 - breakdown.hint_penalty)}
-					</span>
+					<div class="text-sm text-muted-foreground">gidouilles</div>
 				</div>
 
-				<div class="border-t border-border"></div>
+				<!-- Breakdown section -->
+				<div class="space-y-2 rounded-lg bg-muted/50 p-3 text-sm">
+					<div class="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+						Décomposition
+					</div>
 
-				<!-- Theoretical reward -->
-				<div class="flex items-center justify-between">
-					<span class="flex items-center gap-2">
-						<span>💎</span>
-						<span>Valeur théorique</span>
-					</span>
-					<span class="font-mono font-medium text-muted-foreground">
-						{breakdown.theoretical_reward.toFixed(2)}
-					</span>
-				</div>
+					<!-- Base reward -->
+					<div class="flex items-center justify-between">
+						<span class="flex items-center gap-2">
+							<span>🎯</span>
+							<span>Base ({DIFFICULTY_LABELS[difficulty]})</span>
+						</span>
+						<span class="font-mono font-medium">×{breakdown.base_reward.toFixed(1)}</span>
+					</div>
 
-				<!-- Daily limit status -->
-				<div class="flex items-center justify-between">
-					<span class="flex items-center gap-2">
-						<span class={dailyStatus.color}>{dailyStatus.emoji}</span>
-						<span>{dailyStatus.label}</span>
-					</span>
-					<span class={`font-mono font-medium ${dailyStatus.color}`}>
-						{dailyStatus.message}
-					</span>
-				</div>
+					<!-- Time multiplier -->
+					<div class="flex items-center justify-between">
+						<span class="flex items-center gap-2">
+							<span class={timePerformance.color}>{timePerformance.emoji}</span>
+							<span>Temps ({formatDuration(breakdown.time_seconds)})</span>
+						</span>
+						<span class={`font-mono font-medium ${getMultColor(breakdown.time_mult)}`}>
+							{formatMult(breakdown.time_mult)}
+						</span>
+					</div>
 
-				<div class="border-t border-border"></div>
-
-				<!-- Actual result -->
-				<div class="flex items-center justify-between font-medium">
-					<span>Gain réel</span>
-					<span class="font-mono text-primary">
-						+{gidouilles.toFixed(0)} gidouille{gidouilles !== 1 ? 's' : ''}
-					</span>
-				</div>
-
-				<!-- Week best reward -->
-				<div class="mt-1 flex items-center justify-between rounded bg-primary/10 p-2">
-					<span class="flex items-center gap-2">
-						<span>🏆</span>
-						<span>Meilleur cette semaine</span>
-					</span>
-					<span class="font-mono font-medium text-primary">
-						{breakdown.week_best_reward.toFixed(2)}
-					</span>
-				</div>
-			</div>
-		{:else if isPublicUser}
-			<div class="py-2 text-center">
-				<div class="text-lg text-muted-foreground">
-					Bravo ! Grille {DIFFICULTY_LABELS[difficulty]} complétée en {formatDuration(
-						breakdown.time_seconds
-					)}.
-				</div>
-				<div class="mt-2 text-sm text-muted-foreground">
-					Connectez-vous pour gagner des gidouilles !
-				</div>
-			</div>
-		{/if}
-
-		<!-- Points display -->
-		{#if points > 0}
-			<div class="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-				<Trophy class="h-4 w-4" />
-				<span>+{points} points classement</span>
-			</div>
-		{/if}
-
-		<!-- Achievements -->
-		{#if achievements && achievements.length > 0}
-			<div class="rounded-lg bg-amber-50 p-3 dark:bg-amber-950/30">
-				<div
-					class="mb-2 text-xs font-medium tracking-wide text-amber-700 uppercase dark:text-amber-300"
-				>
-					Succès débloqués
-				</div>
-				<div class="space-y-1">
-					{#each achievements as achievement (achievement.achievement_id)}
+					<!-- Hint penalty -->
+					<div class="flex items-center justify-between">
 						<div class="flex items-center gap-2">
-							<span class="text-xl">{achievement.icon}</span>
-							<span class="font-medium">{achievement.name}</span>
+							<span class={hintStatus.color}>{hintStatus.emoji}</span>
+							<span>{hintStatus.label}</span>
+							{#if hintStatus.detail}
+								<span class="text-xs text-muted-foreground">{hintStatus.detail}</span>
+							{/if}
 						</div>
-					{/each}
-				</div>
-			</div>
-		{/if}
+						<span class={`font-mono font-medium ${getMultColor(1 - breakdown.hint_penalty)}`}>
+							{formatMult(1 - breakdown.hint_penalty)}
+						</span>
+					</div>
 
-		<!-- Actions -->
-		<div class="flex justify-center gap-3 pt-2">
-			<Button variant="outline" onclick={onClose}>Fermer</Button>
-			<Button onclick={onPlayAgain} class="gap-2">
-				<RotateCcw class="h-4 w-4" />
-				Rejouer
-			</Button>
-		</div>
-	</Card.Content>
+					<div class="border-t border-border"></div>
+
+					<!-- Theoretical reward -->
+					<div class="flex items-center justify-between">
+						<span class="flex items-center gap-2">
+							<span>💎</span>
+							<span>Valeur théorique</span>
+						</span>
+						<span class="font-mono font-medium text-muted-foreground">
+							{breakdown.theoretical_reward.toFixed(2)}
+						</span>
+					</div>
+
+					<!-- Daily limit status -->
+					<div class="flex items-center justify-between">
+						<span class="flex items-center gap-2">
+							<span class={dailyStatus.color}>{dailyStatus.emoji}</span>
+							<span>{dailyStatus.label}</span>
+						</span>
+						<span class={`font-mono font-medium ${dailyStatus.color}`}>
+							{dailyStatus.message}
+						</span>
+					</div>
+
+					<div class="border-t border-border"></div>
+
+					<!-- Actual result -->
+					<div class="flex items-center justify-between font-medium">
+						<span>Gain réel</span>
+						<span class="font-mono text-primary">
+							+{gidouilles.toFixed(0)} gidouille{gidouilles !== 1 ? 's' : ''}
+						</span>
+					</div>
+
+					<!-- Week best reward -->
+					<div class="mt-1 flex items-center justify-between rounded bg-primary/10 p-2">
+						<span class="flex items-center gap-2">
+							<span>🏆</span>
+							<span>Meilleur cette semaine</span>
+						</span>
+						<span class="font-mono font-medium text-primary">
+							{breakdown.week_best_reward.toFixed(2)}
+						</span>
+					</div>
+				</div>
+			{:else if isPublicUser}
+				<div class="py-2 text-center">
+					<div class="text-lg text-muted-foreground">
+						Bravo ! Grille {DIFFICULTY_LABELS[difficulty]} complétée en {formatDuration(
+							breakdown.time_seconds
+						)}.
+					</div>
+					<div class="mt-2 text-sm text-muted-foreground">
+						Connectez-vous pour gagner des gidouilles !
+					</div>
+				</div>
+			{/if}
+
+			<!-- Points display -->
+			{#if points > 0}
+				<div class="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+					<Trophy class="h-4 w-4" />
+					<span>+{points} points classement</span>
+				</div>
+			{/if}
+
+			<!-- Achievements -->
+			{#if achievements && achievements.length > 0}
+				<div class="rounded-lg bg-amber-50 p-3 dark:bg-amber-950/30">
+					<div
+						class="mb-2 text-xs font-medium tracking-wide text-amber-700 uppercase dark:text-amber-300"
+					>
+						Succès débloqués
+					</div>
+					<div class="space-y-1">
+						{#each achievements as achievement (achievement.achievement_id)}
+							<div class="flex items-center gap-2">
+								<span class="text-xl">{achievement.icon}</span>
+								<span class="font-medium">{achievement.name}</span>
+							</div>
+						{/each}
+					</div>
+				</div>
+			{/if}
+
+			<!-- Actions -->
+			<div class="flex justify-center gap-3 pt-2">
+				<Button variant="outline" onclick={onClose}>Fermer</Button>
+				<Button onclick={onPlayAgain} class="gap-2">
+					<RotateCcw class="h-4 w-4" />
+					Rejouer
+				</Button>
+			</div>
+		</Card.Content>
+	</div>
 </Card.Root>
