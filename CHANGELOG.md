@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.25](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.24...v0.8.25) (2026-03-06)
+
+### 📚 Documentation
+
+- document Safari/WebKit TDZ bug and fix ([fd0e636](https://github.com/Zahara-Nour/ubumaths/commit/fd0e636381c13180dfd4977c9907027f2429ed5f))
+
+### ✨ Features
+
+- **minesweeper:** smart hint card selection order ([2d3fa42](https://github.com/Zahara-Nour/ubumaths/commit/2d3fa42fd4090e0591cc8e8dcc7f4c378af9f2ac))
+- **vip-cards,minesweeper:** add freeze timer VIP cards (Gel Temporaire & Chronostase) ([0775ca0](https://github.com/Zahara-Nour/ubumaths/commit/0775ca0fa5086b06c06a2bddcb6aa41881d14323))
+- **vip-cards:** add separate charges badge for multi-use cards ([1e1f7b5](https://github.com/Zahara-Nour/ubumaths/commit/1e1f7b56dc4595f9368c71a8139e9595735716f3))
+
+### 🐛 Bug Fixes
+
+- add client-side error capture and protect analytics from ad blockers ([543bd06](https://github.com/Zahara-Nour/ubumaths/commit/543bd06c8f68ba6cab63f1f7dad31f580969d5b7))
+- dynamic import $app/navigation to fix Safari TDZ error ([52dab1a](https://github.com/Zahara-Nour/ubumaths/commit/52dab1a662ffafb1da86b0dda02931d152bbb687))
+- keep detailed error message on 500 page for easier debugging ([3336140](https://github.com/Zahara-Nour/ubumaths/commit/3336140bb3335db926cd44632307bbb3e3fc3ba5))
+- **minesweeper:** clean up VictoryModal display ([7b7d6f3](https://github.com/Zahara-Nour/ubumaths/commit/7b7d6f35c6be4c01b021c1f4c555d4952a728e81))
+- **minesweeper:** fix game completion bugs and redesign modals ([afcbb94](https://github.com/Zahara-Nour/ubumaths/commit/afcbb944a15bc620dcf61bb0131033e366a45e87))
+- **minesweeper:** remove non-existent updated_at column in use_minesweeper_undo RPC ([5847858](https://github.com/Zahara-Nour/ubumaths/commit/584785868e9c5ec8767e8aa6c8fc9bfd5fd91f88))
+- **minesweeper:** responsive VictoryModal layout and show breakdown always ([9385a0d](https://github.com/Zahara-Nour/ubumaths/commit/9385a0ddc1566c36ef1f9e51025947387ee246c1))
+- **minesweeper:** simplify VictoryModal breakdown display ([5ef7eca](https://github.com/Zahara-Nour/ubumaths/commit/5ef7ecaaf16ce15a627ee3fc0638004f7fe4da79))
+- **modals:** fix clipped rounded corners on right side of modal ([c7a3514](https://github.com/Zahara-Nour/ubumaths/commit/c7a351416f4587d0744920e4e3dbad4060d3ff67))
+- move Vercel analytics to dynamic import to fix iPad 500 error ([e707fed](https://github.com/Zahara-Nour/ubumaths/commit/e707fed130b8bd24c4703c82dc1780176512af89))
+- **safari:** dynamic import @supabase/ssr to fix WebKit TDZ error ([d960f78](https://github.com/Zahara-Nour/ubumaths/commit/d960f782503e01c00f5d49654e70b93aa4f7f06e))
+- show actual error message on 500 page for debugging ([df54208](https://github.com/Zahara-Nour/ubumaths/commit/df54208edffabd799f0b908822fe8aabf0f85f27))
+
 ### [0.8.24](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.23...v0.8.24) (2026-03-03)
 
 ### 🐛 Bug Fixes
