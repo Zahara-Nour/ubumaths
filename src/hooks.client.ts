@@ -81,6 +81,6 @@ export const handleError: HandleClientError = async ({ error, event, status, mes
 	}
 
 	return {
-		message: 'Une erreur inattendue est survenue.'
+		message: `Erreur: ${err.message} | ${err.stack?.split('\n').slice(0, 3).join(' | ') || 'no stack'}`
 	};
 };
