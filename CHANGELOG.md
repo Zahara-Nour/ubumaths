@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.26](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.25...v0.8.26) (2026-03-07)
+
+### 🐛 Bug Fixes
+
+- **minesweeper:** move charge badges outside overflow-hidden buttons ([3766a35](https://github.com/Zahara-Nour/ubumaths/commit/3766a3586d5b42d830d55b5dc6ecd3a144c94cad))
+- **minesweeper:** rewrite power tooltips to describe the power, not the state ([a07f453](https://github.com/Zahara-Nour/ubumaths/commit/a07f453752a9a39d45e04c0ef0edaca6de7f64fc))
+
+### ✨ Features
+
+- **minesweeper:** redesign GameControls as compact power bar with separate freeze types ([08c626f](https://github.com/Zahara-Nour/ubumaths/commit/08c626f88bde8e6bdaa800b4f26b7bbb283ba982))
+- **minesweeper:** remove freeze usage limit per game ([74cff3f](https://github.com/Zahara-Nour/ubumaths/commit/74cff3f0176eae78b6ff4e0643a28673163715bb))
+- **minesweeper:** replace flag emoji with illustrated flag icon ([a20a1f2](https://github.com/Zahara-Nour/ubumaths/commit/a20a1f2401f8caab97300c2e0097d1527e03115b))
+- **minesweeper:** use custom artwork for power bar icons ([67539fd](https://github.com/Zahara-Nour/ubumaths/commit/67539fd209126476a1bdc84961a3f3ea11126733))
+
 ### [0.8.25](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.24...v0.8.25) (2026-03-06)
 
 ### 📚 Documentation
