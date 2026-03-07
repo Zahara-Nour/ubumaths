@@ -180,11 +180,6 @@ class MinesweeperStore {
 	}
 
 	/**
-	 * Whether freeze has been used in the current game (max 1 per game)
-	 */
-	freezeUsedThisGame = $state(false);
-
-	/**
 	 * Remaining seconds of active timer freeze (0 = not frozen)
 	 */
 	freezeRemainingSeconds = $state(0);
@@ -1350,15 +1345,10 @@ class MinesweeperStore {
 
 	/**
 	 * Check if freeze is available for the current game
-	 * Requires: freeze VIP card available AND not already used in this game AND not in tournament
+	 * Requires: freeze VIP card available AND not in tournament AND not currently frozen
 	 */
 	canUseFreeze(): boolean {
-		return (
-			this.freezeCardsAvailable > 0 &&
-			!this.freezeUsedThisGame &&
-			!this.tournamentId &&
-			this.freezeRemainingSeconds <= 0
-		);
+		return this.freezeCardsAvailable > 0 && !this.tournamentId && this.freezeRemainingSeconds <= 0;
 	}
 
 	/**
@@ -1412,7 +1402,6 @@ class MinesweeperStore {
 			}
 
 			const duration = FREEZE_DURATIONS[templateId] ?? 60;
-			this.freezeUsedThisGame = true;
 			this.freezeRemainingSeconds = duration;
 
 			// Decrement local card count for this type
@@ -2729,7 +2718,6 @@ class MinesweeperStore {
 		this.pendingBombCell = null;
 		this.lastHintedCell = null;
 		this.freezeCardsByType = { freeze: 0, chronostase: 0 };
-		this.freezeUsedThisGame = false;
 		this.freezeRemainingSeconds = 0;
 		this.stopFreezeCountdown();
 		this._freezeCardInstances = { freeze: null, chronostase: null };

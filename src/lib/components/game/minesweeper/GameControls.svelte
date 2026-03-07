@@ -12,7 +12,6 @@
 		hintCardsAvailable?: number;
 		onUseHint?: () => void;
 		freezeCardsByType?: { freeze: number; chronostase: number };
-		freezeUsedThisGame?: boolean;
 		freezeRemainingSeconds?: number;
 		onUseFreeze?: (cardType: 'freeze' | 'chronostase') => void;
 		isAuthenticated?: boolean;
@@ -29,7 +28,6 @@
 		hintCardsAvailable = 0,
 		onUseHint,
 		freezeCardsByType = { freeze: 0, chronostase: 0 },
-		freezeUsedThisGame = false,
 		freezeRemainingSeconds = 0,
 		onUseFreeze,
 		isAuthenticated = false,
@@ -77,16 +75,13 @@
 	});
 
 	// Freeze state helpers
-	const freezeDisabled = $derived(
-		!gameInProgress || freezeUsedThisGame || isLoading || isTournament || isFrozen
-	);
+	const freezeDisabled = $derived(!gameInProgress || isLoading || isTournament || isFrozen);
 
 	function freezeTooltip(type: 'freeze' | 'chronostase'): string {
 		const duration = type === 'freeze' ? 60 : 120;
 		const name = type === 'freeze' ? 'Gel Temporaire' : 'Chronostase';
 		if (isTournament) return 'Non disponible en tournoi';
 		if (isFrozen) return `Timer gele (${freezeRemainingSeconds}s restantes)`;
-		if (freezeUsedThisGame) return 'Deja utilise cette partie (max 1)';
 		if (freezeCardsByType[type] <= 0) return `Aucune carte ${name} disponible`;
 		if (gameStatus === 'not_started') return "Commencez la partie d'abord";
 		if (!gameInProgress) return 'La partie est terminee';
@@ -97,9 +92,7 @@
 
 	const hasFreezeCards = $derived(freezeCardsByType.freeze > 0);
 	const hasChronostaseCards = $derived(freezeCardsByType.chronostase > 0);
-	const showFreeze = $derived(
-		onUseFreeze && (hasFreezeCards || hasChronostaseCards || freezeUsedThisGame || isFrozen)
-	);
+	const showFreeze = $derived(onUseFreeze && (hasFreezeCards || hasChronostaseCards || isFrozen));
 </script>
 
 <Tooltip.Provider>
@@ -185,7 +178,7 @@
 					{/if}
 
 					<!-- Freeze power (Gel Temporaire - 60s) -->
-					{#if showFreeze && (hasFreezeCards || (freezeUsedThisGame && !hasChronostaseCards))}
+					{#if showFreeze && hasFreezeCards}
 						<Tooltip.Root>
 							<Tooltip.Trigger>
 								<button
@@ -200,8 +193,7 @@
 									aria-label="Utiliser le Gel Temporaire (60s)"
 								>
 									<span class="text-xl">🧊</span>
-									<!-- Charges badge -->
-									{#if freezeCardsByType.freeze > 0 && !freezeUsedThisGame}
+									{#if freezeCardsByType.freeze > 0}
 										<span
 											class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-600 text-[10px] font-bold text-white"
 										>
@@ -217,7 +209,7 @@
 					{/if}
 
 					<!-- Chronostase power (120s) -->
-					{#if showFreeze && (hasChronostaseCards || (freezeUsedThisGame && !hasFreezeCards))}
+					{#if showFreeze && hasChronostaseCards}
 						<Tooltip.Root>
 							<Tooltip.Trigger>
 								<button
@@ -232,8 +224,7 @@
 									aria-label="Utiliser la Chronostase (120s)"
 								>
 									<span class="text-xl">⏳</span>
-									<!-- Charges badge -->
-									{#if freezeCardsByType.chronostase > 0 && !freezeUsedThisGame}
+									{#if freezeCardsByType.chronostase > 0}
 										<span
 											class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-bold text-white"
 										>
@@ -256,10 +247,10 @@
 					{#if onUseHint}
 						<span class="w-14 text-center">Indice</span>
 					{/if}
-					{#if showFreeze && (hasFreezeCards || (freezeUsedThisGame && !hasChronostaseCards))}
+					{#if showFreeze && hasFreezeCards}
 						<span class="w-14 text-center">Gel 60s</span>
 					{/if}
-					{#if showFreeze && (hasChronostaseCards || (freezeUsedThisGame && !hasFreezeCards))}
+					{#if showFreeze && hasChronostaseCards}
 						<span class="w-14 text-center">Gel 120s</span>
 					{/if}
 				</div>
