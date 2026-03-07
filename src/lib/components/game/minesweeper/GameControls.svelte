@@ -275,22 +275,6 @@
 						<span class="w-14 text-center">Gel 120s</span>
 					{/if}
 				</div>
-
-				<!-- Hints used counter -->
-				{#if onUseHint && hintsUsed > 0}
-					<div class="mt-2 text-center text-xs text-muted-foreground">
-						Indices : <span
-							class={cn(
-								'font-semibold',
-								hintsUsed >= 3
-									? 'text-red-600 dark:text-red-400'
-									: hintsUsed > 0
-										? 'text-amber-600 dark:text-amber-400'
-										: ''
-							)}>{hintsUsed}/3</span
-						>
-					</div>
-				{/if}
 			</div>
 		{/if}
 
