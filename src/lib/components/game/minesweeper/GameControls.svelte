@@ -91,15 +91,15 @@
 <Tooltip.Provider>
 	<div class="flex flex-col gap-3 rounded-lg border border-border bg-card p-4">
 		<!-- Header: mines + timer -->
-		<div class="flex items-center justify-center gap-4">
-			<div class="flex items-center gap-1.5 font-mono" aria-label="Mines restantes">
+		<div class="flex flex-col items-center gap-2">
+			<div class="flex items-center gap-1" aria-label="Mines restantes">
 				<img
 					src="/images/games/minesweeper-flag.webp"
 					alt=""
-					class="h-16 w-16"
+					class="h-10 w-10"
 					aria-hidden="true"
 				/>
-				<span class="text-lg font-bold tabular-nums">{minesRemaining}</span>
+				<span class="font-mono text-lg font-bold tabular-nums">{minesRemaining}</span>
 			</div>
 			<div
 				class={cn(
