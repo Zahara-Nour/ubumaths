@@ -93,7 +93,7 @@
 		<!-- Header: mines + timer -->
 		<div class="flex items-center justify-center gap-4 text-sm sm:text-base">
 			<div class="flex items-center gap-1.5 font-mono" aria-label="Mines restantes">
-				<span class="text-lg" aria-hidden="true">🚩</span>
+				<img src="/images/games/minesweeper-flag.webp" alt="" class="h-6 w-6" aria-hidden="true" />
 				<span class="font-bold tabular-nums">{minesRemaining}</span>
 			</div>
 			<div class="flex items-center gap-1.5 font-mono" aria-label="Temps ecoule">
