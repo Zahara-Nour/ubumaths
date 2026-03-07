@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.28](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.27...v0.8.28) (2026-03-07)
+
+### 🐛 Bug Fixes
+
+- **minesweeper:** award weekly bonus for current week, not previous ([ba2ce85](https://github.com/Zahara-Nour/ubumaths/commit/ba2ce85c1eb9dfb86dc30e790a745fdb1a99acbc))
+
 ### [0.8.27](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.26...v0.8.27) (2026-03-07)
 
 ### [0.8.26](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.25...v0.8.26) (2026-03-07)
