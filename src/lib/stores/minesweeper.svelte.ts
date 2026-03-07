@@ -165,9 +165,19 @@ class MinesweeperStore {
 	undoCardsAvailable = $state(0);
 
 	/**
-	 * Number of freeze timer (Gel Temporaire) VIP cards available for the student
+	 * Number of freeze timer VIP cards available, by type
 	 */
-	freezeCardsAvailable = $state(0);
+	freezeCardsByType = $state<{ freeze: number; chronostase: number }>({
+		freeze: 0,
+		chronostase: 0
+	});
+
+	/**
+	 * Total freeze cards available (convenience getter)
+	 */
+	get freezeCardsAvailable(): number {
+		return this.freezeCardsByType.freeze + this.freezeCardsByType.chronostase;
+	}
 
 	/**
 	 * Whether freeze has been used in the current game (max 1 per game)
@@ -1352,9 +1362,10 @@ class MinesweeperStore {
 	}
 
 	/**
-	 * Use the freeze timer VIP card to pause the timer for 60 seconds
+	 * Use a freeze timer VIP card to pause the timer
+	 * @param cardType - 'freeze' (60s) or 'chronostase' (120s)
 	 */
-	async useFreeze(): Promise<void> {
+	async useFreeze(cardType: 'freeze' | 'chronostase' = 'freeze'): Promise<void> {
 		if (!browser || !this.currentGame) {
 			toaster.error('Aucune partie en cours');
 			return;
@@ -1368,49 +1379,54 @@ class MinesweeperStore {
 		}
 
 		if (!this.canUseFreeze()) {
-			toaster.error('Gel Temporaire non disponible');
+			toaster.error('Gel non disponible');
+			return;
+		}
+
+		if (this.freezeCardsByType[cardType] <= 0) {
+			toaster.error('Aucune carte de ce type disponible');
 			return;
 		}
 
 		if (!this.shouldUseDatabase() || !game.id) {
-			toaster.error("Vous devez être connecté en tant qu'élève pour utiliser le Gel Temporaire");
+			toaster.error("Vous devez être connecté en tant qu'élève pour utiliser le Gel");
 			return;
 		}
 
+		const templateId = cardType === 'freeze' ? 'minesweeper-freeze' : 'minesweeper-chronostase';
+
 		this.isLoading = true;
 		try {
-			// Consume the VIP card via the unified use-card endpoint
 			const response = await fetch('/api/vip-cards/use-card', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					instanceId: this.findFreezeCardInstanceId(),
+					instanceId: this.findFreezeCardInstanceId(cardType),
 					context: 'minesweeper'
 				})
 			});
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || 'Échec du Gel Temporaire');
+				throw new Error(errorData.message || 'Echec du Gel');
 			}
 
-			// Success - activate the freeze with card-specific duration
-			const duration = FREEZE_DURATIONS[this._freezeCardTemplateId ?? 'minesweeper-freeze'] ?? 60;
+			const duration = FREEZE_DURATIONS[templateId] ?? 60;
 			this.freezeUsedThisGame = true;
 			this.freezeRemainingSeconds = duration;
 
-			// Decrement local card count
-			if (this.freezeCardsAvailable > 0) {
-				this.freezeCardsAvailable--;
-			}
+			// Decrement local card count for this type
+			this.freezeCardsByType = {
+				...this.freezeCardsByType,
+				[cardType]: Math.max(0, this.freezeCardsByType[cardType] - 1)
+			};
 
-			// Start freeze countdown
 			this.startFreezeCountdown();
 
-			toaster.success(`Timer gelé pendant ${duration}s !`);
-			logger.info('Freeze timer used successfully', { gameId: game.id });
+			toaster.success(`Timer gele pendant ${duration}s !`);
+			logger.info('Freeze timer used successfully', { gameId: game.id, cardType, duration });
 		} catch (err) {
-			const message = err instanceof Error ? err.message : 'Échec du Gel Temporaire';
+			const message = err instanceof Error ? err.message : 'Echec du Gel';
 			logger.error('Failed to use freeze timer:', err);
 			toaster.error(message);
 		} finally {
@@ -1421,20 +1437,19 @@ class MinesweeperStore {
 	/**
 	 * Find the first available freeze card instance ID from the student's collection
 	 */
-	private findFreezeCardInstanceId(): string {
-		// We need to fetch from the profile data - use a synchronous approach
-		// The card instance was already counted in fetchFreezeCardCount
-		// We'll store it when we fetch
-		if (this._freezeCardInstanceId) {
-			return this._freezeCardInstanceId;
+	private findFreezeCardInstanceId(cardType: 'freeze' | 'chronostase'): string {
+		const instanceId = this._freezeCardInstances[cardType];
+		if (instanceId) {
+			return instanceId;
 		}
-		throw new Error('Aucune carte Gel Temporaire disponible');
+		throw new Error('Aucune carte disponible');
 	}
 
-	/** Cached instance ID for the next available freeze card */
-	private _freezeCardInstanceId: string | null = null;
-	/** Cached template ID for duration lookup */
-	private _freezeCardTemplateId: string | null = null;
+	/** Cached instance IDs per freeze card type */
+	private _freezeCardInstances: { freeze: string | null; chronostase: string | null } = {
+		freeze: null,
+		chronostase: null
+	};
 
 	/**
 	 * Start the freeze countdown timer
@@ -1472,7 +1487,7 @@ class MinesweeperStore {
 	 */
 	async fetchFreezeCardCount(): Promise<number> {
 		if (!browser || !this.shouldUseDatabase()) {
-			this.freezeCardsAvailable = 0;
+			this.freezeCardsByType = { freeze: 0, chronostase: 0 };
 			return 0;
 		}
 
@@ -1484,36 +1499,50 @@ class MinesweeperStore {
 
 			if (error) {
 				logger.error('Failed to fetch freeze card count:', error);
-				this.freezeCardsAvailable = 0;
+				this.freezeCardsByType = { freeze: 0, chronostase: 0 };
 				return 0;
 			}
 
 			const vipCards = (data?.vip_cards ?? {}) as StudentVipCards;
-			const totalCount = countAvailableConsumableUses(vipCards, FREEZE_VIP_CARD_IDS);
 
-			// Cache the first available instance ID and its card ID (for duration lookup)
-			this._freezeCardInstanceId = null;
-			this._freezeCardTemplateId = null;
+			// Count by type and cache instance IDs per type
+			let freezeCount = 0;
+			let chronostaseCount = 0;
+			this._freezeCardInstances = { freeze: null, chronostase: null };
+
 			for (const [instanceId, instance] of Object.entries(vipCards)) {
 				if (
-					FREEZE_VIP_CARD_IDS.includes(instance.cardId) &&
-					!instance.usedAt &&
-					(instance.usesRemaining === undefined ||
-						instance.usesRemaining === null ||
-						instance.usesRemaining > 0)
+					!FREEZE_VIP_CARD_IDS.includes(instance.cardId) ||
+					instance.usedAt ||
+					(instance.usesRemaining !== undefined &&
+						instance.usesRemaining !== null &&
+						instance.usesRemaining <= 0)
 				) {
-					this._freezeCardInstanceId = instanceId;
-					this._freezeCardTemplateId = instance.cardId;
-					break;
+					continue;
+				}
+
+				if (instance.cardId === 'minesweeper-freeze') {
+					freezeCount++;
+					if (!this._freezeCardInstances.freeze) {
+						this._freezeCardInstances.freeze = instanceId;
+					}
+				} else if (instance.cardId === 'minesweeper-chronostase') {
+					chronostaseCount++;
+					if (!this._freezeCardInstances.chronostase) {
+						this._freezeCardInstances.chronostase = instanceId;
+					}
 				}
 			}
 
-			this.freezeCardsAvailable = totalCount;
-			logger.info(`VIP freeze cards available: ${totalCount}`);
+			this.freezeCardsByType = { freeze: freezeCount, chronostase: chronostaseCount };
+			const totalCount = freezeCount + chronostaseCount;
+			logger.info(
+				`VIP freeze cards available: ${totalCount} (freeze: ${freezeCount}, chronostase: ${chronostaseCount})`
+			);
 			return totalCount;
 		} catch (err) {
 			logger.error('Failed to fetch freeze card count:', err);
-			this.freezeCardsAvailable = 0;
+			this.freezeCardsByType = { freeze: 0, chronostase: 0 };
 			return 0;
 		}
 	}
@@ -2699,12 +2728,11 @@ class MinesweeperStore {
 		this.undoUsedThisGame = false;
 		this.pendingBombCell = null;
 		this.lastHintedCell = null;
-		this.freezeCardsAvailable = 0;
+		this.freezeCardsByType = { freeze: 0, chronostase: 0 };
 		this.freezeUsedThisGame = false;
 		this.freezeRemainingSeconds = 0;
 		this.stopFreezeCountdown();
-		this._freezeCardInstanceId = null;
-		this._freezeCardTemplateId = null;
+		this._freezeCardInstances = { freeze: null, chronostase: null };
 		if (this.hintGlowTimer) {
 			clearTimeout(this.hintGlowTimer);
 			this.hintGlowTimer = null;
