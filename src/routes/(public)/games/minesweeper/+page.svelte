@@ -159,7 +159,6 @@
 							hintCardsAvailable={minesweeperStore.hintCardsAvailable}
 							onUseHint={() => minesweeperStore.useHint()}
 							freezeCardsByType={minesweeperStore.freezeCardsByType}
-							freezeUsedThisGame={minesweeperStore.freezeUsedThisGame}
 							freezeRemainingSeconds={minesweeperStore.freezeRemainingSeconds}
 							onUseFreeze={(cardType) => minesweeperStore.useFreeze(cardType)}
 							isAuthenticated={data.isAuthenticated}
