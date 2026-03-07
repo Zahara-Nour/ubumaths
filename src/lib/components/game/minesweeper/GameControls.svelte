@@ -91,7 +91,7 @@
 <Tooltip.Provider>
 	<div class="flex flex-col gap-3 rounded-lg border border-border bg-card p-4">
 		<!-- Header: mines + timer -->
-		<div class="flex items-center justify-center gap-4 text-sm sm:text-base">
+		<div class="flex items-center justify-center gap-4">
 			<div class="flex items-center gap-1.5 font-mono" aria-label="Mines restantes">
 				<img
 					src="/images/games/minesweeper-flag.webp"
@@ -99,12 +99,20 @@
 					class="h-16 w-16"
 					aria-hidden="true"
 				/>
-				<span class="font-bold tabular-nums">{minesRemaining}</span>
+				<span class="text-lg font-bold tabular-nums">{minesRemaining}</span>
 			</div>
-			<div class="flex items-center gap-1.5 font-mono" aria-label="Temps ecoule">
-				<span class="text-lg" aria-hidden="true">{isFrozen ? '❄️' : '⏱️'}</span>
-				<span class={cn('font-bold tabular-nums', isFrozen && 'text-cyan-600 dark:text-cyan-400')}
-					>{formattedTime}</span
+			<div
+				class={cn(
+					'rounded-lg border border-border bg-muted/50 px-4 py-1.5 font-mono',
+					isFrozen && 'border-cyan-500/50 bg-cyan-50 dark:bg-cyan-950/20'
+				)}
+				aria-label="Temps ecoule"
+			>
+				<span
+					class={cn(
+						'text-2xl font-bold text-foreground tabular-nums',
+						isFrozen && 'text-cyan-600 dark:text-cyan-400'
+					)}>{formattedTime}</span
 				>
 			</div>
 		</div>
