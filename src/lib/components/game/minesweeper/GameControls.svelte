@@ -138,9 +138,6 @@
 			</div>
 		{/if}
 
-		<!-- Reset button -->
-		<Button onclick={onReset} variant="outline" size="sm" class="w-full">🔄 Nouvelle partie</Button>
-
 		<!-- Power bar -->
 		{#if showPowers}
 			<div class="border-t border-border pt-3">
@@ -296,5 +293,8 @@
 				{/if}
 			</div>
 		{/if}
+
+		<!-- Reset button -->
+		<Button onclick={onReset} variant="outline" size="sm" class="w-full">🔄 Nouvelle partie</Button>
 	</div>
 </Tooltip.Provider>
