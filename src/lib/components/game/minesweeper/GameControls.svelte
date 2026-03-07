@@ -147,24 +147,28 @@
 									onclick={onUseHint}
 									disabled={hintDisabled}
 									class={cn(
-										'relative flex h-14 w-14 flex-col items-center justify-center rounded-xl border-2 transition-all',
+										'relative h-14 w-14 overflow-hidden rounded-xl border-2 transition-all',
 										hintDisabled
-											? 'cursor-not-allowed border-muted bg-muted/50 opacity-50'
+											? 'cursor-not-allowed border-muted opacity-50 grayscale'
 											: hasHintCards
-												? 'border-green-500 bg-green-50 hover:bg-green-100 dark:bg-green-950/30 dark:hover:bg-green-900/40'
-												: 'border-amber-500 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/30 dark:hover:bg-amber-900/40'
+												? 'border-green-500 hover:border-green-400 hover:shadow-md hover:shadow-green-500/20'
+												: 'border-amber-500 hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/20'
 									)}
 									aria-label="Utiliser un indice"
 								>
+									<img
+										src="/images/games/power-hint.jpg"
+										alt="Indice"
+										class="h-full w-full object-cover"
+									/>
 									{#if isLoading}
-										<span class="animate-spin text-xl">⏳</span>
-									{:else}
-										<span class="text-xl">💡</span>
+										<span class="absolute inset-0 flex items-center justify-center bg-black/40">
+											<span class="animate-spin text-lg text-white">⏳</span>
+										</span>
 									{/if}
-									<!-- Charges badge -->
 									{#if hasHintCards && !hintMaxed}
 										<span
-											class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-green-600 text-[10px] font-bold text-white"
+											class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-green-600 text-[10px] font-bold text-white shadow"
 										>
 											{hintCardsAvailable}
 										</span>
@@ -185,17 +189,21 @@
 									onclick={() => onUseFreeze?.('freeze')}
 									disabled={freezeDisabled || freezeCardsByType.freeze <= 0}
 									class={cn(
-										'relative flex h-14 w-14 flex-col items-center justify-center rounded-xl border-2 transition-all',
+										'relative h-14 w-14 overflow-hidden rounded-xl border-2 transition-all',
 										freezeDisabled || freezeCardsByType.freeze <= 0
-											? 'cursor-not-allowed border-muted bg-muted/50 opacity-50'
-											: 'border-cyan-500 bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-950/30 dark:hover:bg-cyan-900/40'
+											? 'cursor-not-allowed border-muted opacity-50 grayscale'
+											: 'border-cyan-500 hover:border-cyan-400 hover:shadow-md hover:shadow-cyan-500/20'
 									)}
 									aria-label="Utiliser le Gel Temporaire (60s)"
 								>
-									<span class="text-xl">🧊</span>
+									<img
+										src="/images/games/power-freeze.jpg"
+										alt="Gel Temporaire"
+										class="h-full w-full object-cover"
+									/>
 									{#if freezeCardsByType.freeze > 0}
 										<span
-											class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-600 text-[10px] font-bold text-white"
+											class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-600 text-[10px] font-bold text-white shadow"
 										>
 											{freezeCardsByType.freeze}
 										</span>
@@ -216,17 +224,21 @@
 									onclick={() => onUseFreeze?.('chronostase')}
 									disabled={freezeDisabled || freezeCardsByType.chronostase <= 0}
 									class={cn(
-										'relative flex h-14 w-14 flex-col items-center justify-center rounded-xl border-2 transition-all',
+										'relative h-14 w-14 overflow-hidden rounded-xl border-2 transition-all',
 										freezeDisabled || freezeCardsByType.chronostase <= 0
-											? 'cursor-not-allowed border-muted bg-muted/50 opacity-50'
-											: 'border-violet-500 bg-violet-50 hover:bg-violet-100 dark:bg-violet-950/30 dark:hover:bg-violet-900/40'
+											? 'cursor-not-allowed border-muted opacity-50 grayscale'
+											: 'border-violet-500 hover:border-violet-400 hover:shadow-md hover:shadow-violet-500/20'
 									)}
 									aria-label="Utiliser la Chronostase (120s)"
 								>
-									<span class="text-xl">⏳</span>
+									<img
+										src="/images/games/power-chronostase.jpg"
+										alt="Chronostase"
+										class="h-full w-full object-cover"
+									/>
 									{#if freezeCardsByType.chronostase > 0}
 										<span
-											class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-bold text-white"
+											class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-bold text-white shadow"
 										>
 											{freezeCardsByType.chronostase}
 										</span>
