@@ -67,11 +67,9 @@
 	const hintDisabled = $derived(!gameInProgress || hintMaxed || isLoading);
 
 	const hintTooltip = $derived.by(() => {
-		if (hintMaxed) return "Maximum d'indices atteint (3/3)";
-		if (gameStatus === 'not_started') return "Commencez la partie d'abord";
-		if (!gameInProgress) return 'La partie est terminee';
-		if (hasHintCards) return `${hintCardsAvailable} carte(s) VIP. Penalite reduite (5/11/17%).`;
-		return 'Revele une cellule sure. Coute 1 gidouille + penalite (10/22/35%).';
+		const base = 'Indice : revele une cellule sure au hasard.';
+		if (hasHintCards) return `${base} Penalite reduite avec carte VIP.`;
+		return `${base} Coute 1 gidouille.`;
 	});
 
 	// Freeze state helpers
@@ -80,12 +78,7 @@
 	function freezeTooltip(type: 'freeze' | 'chronostase'): string {
 		const duration = type === 'freeze' ? 60 : 120;
 		const name = type === 'freeze' ? 'Gel Temporaire' : 'Chronostase';
-		if (isTournament) return 'Non disponible en tournoi';
-		if (isFrozen) return `Timer gele (${freezeRemainingSeconds}s restantes)`;
-		if (freezeCardsByType[type] <= 0) return `Aucune carte ${name} disponible`;
-		if (gameStatus === 'not_started') return "Commencez la partie d'abord";
-		if (!gameInProgress) return 'La partie est terminee';
-		return `Gele le timer pendant ${duration}s. La carte sera consommee.`;
+		return `${name} : gele le chronometre pendant ${duration}s.`;
 	}
 
 	const showPowers = $derived(isAuthenticated && !isTournament && (onUseHint || onUseFreeze));
