@@ -141,114 +141,120 @@
 				<div class="flex items-center justify-center gap-3">
 					<!-- Hint power -->
 					{#if onUseHint}
-						<Tooltip.Root>
-							<Tooltip.Trigger>
-								<button
-									onclick={onUseHint}
-									disabled={hintDisabled}
-									class={cn(
-										'relative h-14 w-14 overflow-hidden rounded-xl border-2 transition-all',
-										hintDisabled
-											? 'cursor-not-allowed border-muted opacity-50 grayscale'
-											: hasHintCards
-												? 'border-green-500 hover:border-green-400 hover:shadow-md hover:shadow-green-500/20'
-												: 'border-amber-500 hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/20'
-									)}
-									aria-label="Utiliser un indice"
+						<div class="relative">
+							<Tooltip.Root>
+								<Tooltip.Trigger>
+									<button
+										onclick={onUseHint}
+										disabled={hintDisabled}
+										class={cn(
+											'h-14 w-14 overflow-hidden rounded-xl border-2 transition-all',
+											hintDisabled
+												? 'cursor-not-allowed border-muted opacity-50 grayscale'
+												: hasHintCards
+													? 'border-green-500 hover:border-green-400 hover:shadow-md hover:shadow-green-500/20'
+													: 'border-amber-500 hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/20'
+										)}
+										aria-label="Utiliser un indice"
+									>
+										<img
+											src="/images/games/power-hint.jpg"
+											alt="Indice"
+											class="h-full w-full object-cover"
+										/>
+										{#if isLoading}
+											<span class="absolute inset-0 flex items-center justify-center bg-black/40">
+												<span class="animate-spin text-lg text-white">⏳</span>
+											</span>
+										{/if}
+									</button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>
+									<p class="max-w-48 text-sm">{hintTooltip}</p>
+								</Tooltip.Content>
+							</Tooltip.Root>
+							{#if hasHintCards && !hintMaxed}
+								<span
+									class="absolute -top-1.5 -right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-green-600 text-[10px] font-bold text-white shadow"
 								>
-									<img
-										src="/images/games/power-hint.jpg"
-										alt="Indice"
-										class="h-full w-full object-cover"
-									/>
-									{#if isLoading}
-										<span class="absolute inset-0 flex items-center justify-center bg-black/40">
-											<span class="animate-spin text-lg text-white">⏳</span>
-										</span>
-									{/if}
-									{#if hasHintCards && !hintMaxed}
-										<span
-											class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-green-600 text-[10px] font-bold text-white shadow"
-										>
-											{hintCardsAvailable}
-										</span>
-									{/if}
-								</button>
-							</Tooltip.Trigger>
-							<Tooltip.Content>
-								<p class="max-w-48 text-sm">{hintTooltip}</p>
-							</Tooltip.Content>
-						</Tooltip.Root>
+									{hintCardsAvailable}
+								</span>
+							{/if}
+						</div>
 					{/if}
 
 					<!-- Freeze power (Gel Temporaire - 60s) -->
 					{#if showFreeze && hasFreezeCards}
-						<Tooltip.Root>
-							<Tooltip.Trigger>
-								<button
-									onclick={() => onUseFreeze?.('freeze')}
-									disabled={freezeDisabled || freezeCardsByType.freeze <= 0}
-									class={cn(
-										'relative h-14 w-14 overflow-hidden rounded-xl border-2 transition-all',
-										freezeDisabled || freezeCardsByType.freeze <= 0
-											? 'cursor-not-allowed border-muted opacity-50 grayscale'
-											: 'border-cyan-500 hover:border-cyan-400 hover:shadow-md hover:shadow-cyan-500/20'
-									)}
-									aria-label="Utiliser le Gel Temporaire (60s)"
+						<div class="relative">
+							<Tooltip.Root>
+								<Tooltip.Trigger>
+									<button
+										onclick={() => onUseFreeze?.('freeze')}
+										disabled={freezeDisabled || freezeCardsByType.freeze <= 0}
+										class={cn(
+											'h-14 w-14 overflow-hidden rounded-xl border-2 transition-all',
+											freezeDisabled || freezeCardsByType.freeze <= 0
+												? 'cursor-not-allowed border-muted opacity-50 grayscale'
+												: 'border-cyan-500 hover:border-cyan-400 hover:shadow-md hover:shadow-cyan-500/20'
+										)}
+										aria-label="Utiliser le Gel Temporaire (60s)"
+									>
+										<img
+											src="/images/games/power-freeze.jpg"
+											alt="Gel Temporaire"
+											class="h-full w-full object-cover"
+										/>
+									</button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>
+									<p class="max-w-48 text-sm">{freezeTooltip('freeze')}</p>
+								</Tooltip.Content>
+							</Tooltip.Root>
+							{#if freezeCardsByType.freeze > 0}
+								<span
+									class="absolute -top-1.5 -right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-600 text-[10px] font-bold text-white shadow"
 								>
-									<img
-										src="/images/games/power-freeze.jpg"
-										alt="Gel Temporaire"
-										class="h-full w-full object-cover"
-									/>
-									{#if freezeCardsByType.freeze > 0}
-										<span
-											class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-600 text-[10px] font-bold text-white shadow"
-										>
-											{freezeCardsByType.freeze}
-										</span>
-									{/if}
-								</button>
-							</Tooltip.Trigger>
-							<Tooltip.Content>
-								<p class="max-w-48 text-sm">{freezeTooltip('freeze')}</p>
-							</Tooltip.Content>
-						</Tooltip.Root>
+									{freezeCardsByType.freeze}
+								</span>
+							{/if}
+						</div>
 					{/if}
 
 					<!-- Chronostase power (120s) -->
 					{#if showFreeze && hasChronostaseCards}
-						<Tooltip.Root>
-							<Tooltip.Trigger>
-								<button
-									onclick={() => onUseFreeze?.('chronostase')}
-									disabled={freezeDisabled || freezeCardsByType.chronostase <= 0}
-									class={cn(
-										'relative h-14 w-14 overflow-hidden rounded-xl border-2 transition-all',
-										freezeDisabled || freezeCardsByType.chronostase <= 0
-											? 'cursor-not-allowed border-muted opacity-50 grayscale'
-											: 'border-violet-500 hover:border-violet-400 hover:shadow-md hover:shadow-violet-500/20'
-									)}
-									aria-label="Utiliser la Chronostase (120s)"
+						<div class="relative">
+							<Tooltip.Root>
+								<Tooltip.Trigger>
+									<button
+										onclick={() => onUseFreeze?.('chronostase')}
+										disabled={freezeDisabled || freezeCardsByType.chronostase <= 0}
+										class={cn(
+											'h-14 w-14 overflow-hidden rounded-xl border-2 transition-all',
+											freezeDisabled || freezeCardsByType.chronostase <= 0
+												? 'cursor-not-allowed border-muted opacity-50 grayscale'
+												: 'border-violet-500 hover:border-violet-400 hover:shadow-md hover:shadow-violet-500/20'
+										)}
+										aria-label="Utiliser la Chronostase (120s)"
+									>
+										<img
+											src="/images/games/power-chronostase.jpg"
+											alt="Chronostase"
+											class="h-full w-full object-cover"
+										/>
+									</button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>
+									<p class="max-w-48 text-sm">{freezeTooltip('chronostase')}</p>
+								</Tooltip.Content>
+							</Tooltip.Root>
+							{#if freezeCardsByType.chronostase > 0}
+								<span
+									class="absolute -top-1.5 -right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-bold text-white shadow"
 								>
-									<img
-										src="/images/games/power-chronostase.jpg"
-										alt="Chronostase"
-										class="h-full w-full object-cover"
-									/>
-									{#if freezeCardsByType.chronostase > 0}
-										<span
-											class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-violet-600 text-[10px] font-bold text-white shadow"
-										>
-											{freezeCardsByType.chronostase}
-										</span>
-									{/if}
-								</button>
-							</Tooltip.Trigger>
-							<Tooltip.Content>
-								<p class="max-w-48 text-sm">{freezeTooltip('chronostase')}</p>
-							</Tooltip.Content>
-						</Tooltip.Root>
+									{freezeCardsByType.chronostase}
+								</span>
+							{/if}
+						</div>
 					{/if}
 				</div>
 
