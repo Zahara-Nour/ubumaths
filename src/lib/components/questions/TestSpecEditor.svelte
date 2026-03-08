@@ -31,7 +31,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MathInput from '$lib/components/question-inputs/MathInput.svelte';
-	import { Plus, Trash2, Play, Check, X } from 'lucide-svelte';
+	import { Plus, Trash2, Play, Check, X, Copy } from 'lucide-svelte';
 
 	interface Props {
 		testSpecs: TestSpec[];
@@ -407,6 +407,16 @@
 			</div>
 
 			<div class="flex justify-end gap-2">
+				<Button
+					variant="outline"
+					size="sm"
+					onclick={() => {
+						navigator.clipboard.writeText(JSON.stringify(editSpec, null, 2));
+					}}
+				>
+					<Copy class="mr-1 h-3 w-3" />
+					Copier JSON
+				</Button>
 				<Button
 					variant="outline"
 					size="sm"
