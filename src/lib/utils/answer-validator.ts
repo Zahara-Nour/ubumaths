@@ -292,7 +292,7 @@ export function validateAnswer(
 		}
 
 		// ---- MULTIPLE_CHOICE ----
-		const { solution } = instance;
+		const { correctChoiceIndex } = instance;
 
 		// Check custom validation rules first (testAnswers-style)
 		if (instance.validationRules && instance.validationRules.length > 0) {
@@ -305,7 +305,7 @@ export function validateAnswer(
 
 		const result: ValidationResult = validateChoice(
 			userAnswer as number | number[],
-			solution as string | string[],
+			correctChoiceIndex as string | string[],
 			instance.multipleAnswers
 		);
 
@@ -329,7 +329,11 @@ export function validateAnswer(
 		if (result.isCorrect && userAnswerLatex) {
 			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
 			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
-			const expected = Array.isArray(solution) ? solution : solution ? [solution] : [];
+			const expected = Array.isArray(correctChoiceIndex)
+				? correctChoiceIndex
+				: correctChoiceIndex
+					? [correctChoiceIndex]
+					: [];
 
 			const { status, violations } = applyConstraints(
 				answers,
