@@ -17,7 +17,8 @@ import {
 	choiceSchema,
 	blankSchema,
 	blankDefaultsSchema,
-	optionsSchema
+	optionsSchema,
+	testSpecSchema
 } from '$lib/questions/template-schema';
 
 // Re-export building blocks for downstream consumers (migration-review.ts, index.ts)
@@ -30,7 +31,8 @@ export {
 	blankDefaultsSchema,
 	optionsSchema,
 	validationRuleSchema,
-	requiredFormSchema
+	requiredFormSchema,
+	testSpecSchema
 } from '$lib/questions/template-schema';
 
 /**
@@ -78,7 +80,8 @@ export const createQuestionTemplateSchema = z.object({
 	level: z.number().int().nonnegative('Le niveau doit être >= 0'),
 	status: z.enum(['draft', 'published']).default('published'),
 	delay: z.number().int().nonnegative().optional().nullable(),
-	multipleAnswers: z.boolean().optional().nullable()
+	multipleAnswers: z.boolean().optional().nullable(),
+	testSpecs: z.array(testSpecSchema).optional().nullable()
 });
 
 /**

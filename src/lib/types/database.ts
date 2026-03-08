@@ -8168,6 +8168,7 @@ export type Database = {
 					shared: Json | null;
 					status: string;
 					subdomain: string | null;
+					test_specs: Json | null;
 					theme: string;
 					title: string;
 					type: string;
@@ -8191,6 +8192,7 @@ export type Database = {
 					shared?: Json | null;
 					status: string;
 					subdomain?: string | null;
+					test_specs?: Json | null;
 					theme: string;
 					title: string;
 					type: string;
@@ -8214,6 +8216,7 @@ export type Database = {
 					shared?: Json | null;
 					status?: string;
 					subdomain?: string | null;
+					test_specs?: Json | null;
 					theme?: string;
 					title?: string;
 					type?: string;

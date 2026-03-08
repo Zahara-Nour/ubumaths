@@ -238,6 +238,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				status: templateData.status || 'published',
 				delay: templateData.delay || null,
 				multiple_answers: templateData.multipleAnswers ?? null,
+				test_specs: templateData.testSpecs || null,
 				created_by: user.id
 			})
 			.select()

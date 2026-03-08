@@ -169,7 +169,8 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 				level: templateData.level,
 				status: templateData.status || 'published',
 				delay: templateData.delay || null,
-				multiple_answers: templateData.multipleAnswers ?? null
+				multiple_answers: templateData.multipleAnswers ?? null,
+				test_specs: templateData.testSpecs || null
 			})
 			.eq('id', id)
 			.select()

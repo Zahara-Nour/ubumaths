@@ -489,6 +489,9 @@ export interface QuestionTemplate {
 	/** Time limit in seconds (optional) */
 	delay?: number;
 
+	/** Deterministic test specifications for regression testing */
+	testSpecs?: TestSpec[];
+
 	// ---- Type-specific Configuration (shared across all variations) ----
 
 	/** Whether multiple answers are allowed (for multiple_choice) */
@@ -517,7 +520,8 @@ export function mapDbTemplateToForm(dbTemplate: Record<string, unknown>): Questi
 		...dbTemplate,
 		exerciseInstruction: dbTemplate.exercise_instruction as string | undefined,
 		defaultDisplayOptions: dbTemplate.default_display_options as DisplayOptions | undefined,
-		multipleAnswers: dbTemplate.multiple_answers as boolean | undefined
+		multipleAnswers: dbTemplate.multiple_answers as boolean | undefined,
+		testSpecs: (dbTemplate.test_specs as TestSpec[] | null) ?? undefined
 	} as QuestionTemplate;
 }
 
@@ -836,6 +840,33 @@ export interface ConstraintOptions {
  * { requiredForm: { pattern: 'a:integer * b:integer' } }
  */
 export type RequiredForm = 'product' | 'sum' | 'fraction' | 'power' | { pattern: string };
+
+// ============================================================================
+// TEST SPECS
+// ============================================================================
+
+/**
+ * Expected outcome of a test spec.
+ */
+export interface TestSpecExpected {
+	status: ValidationStatus;
+	constraintViolations?: ConstraintId[];
+}
+
+/**
+ * Deterministic test specification for a question template.
+ *
+ * Variables are fixed (no randomness), so the generated instance and
+ * validation result are fully reproducible.
+ */
+export interface TestSpec {
+	description: string;
+	variationIndex?: number;
+	variables: Record<string, string>;
+	answers?: string[];
+	selectedChoices?: number[];
+	expected: TestSpecExpected;
+}
 
 // ============================================================================
 // UNIFIED CORRECTION SYSTEM
