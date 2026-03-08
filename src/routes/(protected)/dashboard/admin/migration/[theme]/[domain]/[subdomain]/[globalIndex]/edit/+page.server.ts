@@ -130,7 +130,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			subdomain: targetQuestion.subdomain,
 			level: targetQuestion.level,
 			status: (sourceData.status as 'draft' | 'published') || 'draft',
-			delay: sourceData.delay
+			delay: sourceData.delay,
+			testSpecs: sourceData.testSpecs
 		};
 
 		return {
