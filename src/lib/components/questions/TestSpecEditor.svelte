@@ -23,7 +23,6 @@
 	} from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
 	import type { TestSpecResult } from '$lib/questions/test-spec-runner';
-	import { isRandomExpression } from '$lib/questions/generator/test-instance-builder';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -85,10 +84,7 @@
 		return [...effectiveShared, ...varVars];
 	}
 
-	// Only show root (random) variables — derived ones are computed automatically
-	let currentVars = $derived(
-		getVariationVars(editSpec.variationIndex ?? 0).filter((v) => isRandomExpression(v.expression))
-	);
+	let currentVars = $derived(getVariationVars(editSpec.variationIndex ?? 0));
 
 	// Determine question type from variation
 	let questionType = $derived(
@@ -107,8 +103,7 @@
 	function startAdd() {
 		editingIndex = null;
 		const spec = makeEmptySpec();
-		// Pre-populate only root (random) variable keys from variation
-		const vars = getVariationVars(0).filter((v) => isRandomExpression(v.expression));
+		const vars = getVariationVars(0);
 		for (const v of vars) {
 			spec.variables[v.name] = '';
 		}
@@ -148,8 +143,7 @@
 	function handleVariationChange(value: string) {
 		const idx = parseInt(value, 10);
 		editSpec.variationIndex = idx;
-		// Re-populate only root (random) variable keys
-		const vars = getVariationVars(idx).filter((v) => isRandomExpression(v.expression));
+		const vars = getVariationVars(idx);
 		const newVars: Record<string, string> = {};
 		for (const v of vars) {
 			newVars[v.name] = editSpec.variables[v.name] ?? '';
