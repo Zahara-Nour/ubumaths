@@ -279,7 +279,9 @@
 										flashMode={!interactive}
 										validationResults={isSubmitted ? blankValidationResults : []}
 										onSubmit={handleSubmit}
-										mathModeSpace={instance.options?.constraints?.spaces ? '\\,' : undefined}
+										mathModeSpace={(instance.options?.constraints?.spaces ?? 'warn') !== 'off'
+											? '\\,'
+											: undefined}
 									/>
 								{:else}
 									<MarkdownRenderer content={statementMarkdown} />

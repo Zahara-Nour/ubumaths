@@ -73,6 +73,19 @@ describe('removeZeros', () => {
 		expect(removeZeros('-1.0')).toBe('-1');
 	});
 
+	it('preserves zeros in digit-grouping (spaces)', () => {
+		expect(removeZeros('6 020')).toBe('6 020');
+		expect(removeZeros('1 000')).toBe('1 000');
+		expect(removeZeros('10 000')).toBe('10 000');
+		expect(removeZeros('1 000 000')).toBe('1 000 000');
+	});
+
+	it('preserves zeros in digit-grouping (LaTeX thin space)', () => {
+		expect(removeZeros('6\\,020')).toBe('6\\,020');
+		expect(removeZeros('1\\,000')).toBe('1\\,000');
+		expect(removeZeros('10\\,000')).toBe('10\\,000');
+	});
+
 	it('leaves clean numbers unchanged', () => {
 		expect(removeZeros('42')).toBe('42');
 		expect(removeZeros('3.14')).toBe('3.14');

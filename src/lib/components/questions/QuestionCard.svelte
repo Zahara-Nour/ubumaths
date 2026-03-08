@@ -236,7 +236,9 @@
 							disabled={isInputDisabled}
 							validationResults={[]}
 							onSubmit={handleSubmit}
-							mathModeSpace={instance.options?.constraints?.spaces ? '\\,' : undefined}
+							mathModeSpace={(instance.options?.constraints?.spaces ?? 'warn') !== 'off'
+								? '\\,'
+								: undefined}
 						/>
 					{:else if getQuestionType(instance) === 'multiple_choice'}
 						<MultipleChoiceInput
