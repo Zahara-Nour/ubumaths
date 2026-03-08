@@ -58,30 +58,44 @@ function resolveVariationWithShared(
 /**
  * Check if a variable expression contains randomness.
  *
- * Detects:
- * - {{random:...}} explicit random
- * - {{1..10}} shorthand range
- * - {{a|b|c}} shorthand choice list
- * - {{digits:...}} random digits
+ * Uses inverted logic: an expression is deterministic if it ONLY contains
+ * variable references ({{varName}}), eval expressions ({{eval:...}}),
+ * color refs ({{color:...}}), blank markers ({{blank:...}}), and plain text.
+ * Everything else (ranges, choices, digits, etc.) is random.
  *
- * Does NOT flag:
- * - {{varName}} variable references
- * - {{eval:...}} pure eval (deterministic if inputs are fixed)
+ * This mirrors the tokenizer's detection logic without reimplementing
+ * the full nested-brace parser.
  */
 export function isRandomExpression(expression: string): boolean {
-	// Match all {{...}} tokens
-	const tokenRegex = /\{\{([^{}]*(?:\{\{[^{}]*\}\}[^{}]*)*)\}\}/g;
-	let match;
-	while ((match = tokenRegex.exec(expression)) !== null) {
-		const inner = match[1];
-		// Explicit random
-		if (inner.startsWith('random:')) return true;
-		// Explicit digits
-		if (inner.startsWith('digits:')) return true;
-		// Shorthand range: contains ".."
-		if (inner.includes('..')) return true;
-		// Shorthand choice: contains "|" (but not inside nested braces)
-		if (inner.includes('|') && !inner.startsWith('eval:')) return true;
+	// Extract all top-level {{...}} tokens (handling nested braces)
+	let i = 0;
+	while (i < expression.length) {
+		if (expression[i] === '{' && expression[i + 1] === '{') {
+			// Find matching }}
+			let braceCount = 2;
+			let j = i + 2;
+			while (j < expression.length && braceCount > 0) {
+				if (expression[j] === '{') braceCount++;
+				else if (expression[j] === '}') braceCount--;
+				j++;
+			}
+			if (braceCount === 0) {
+				const inner = expression.substring(i + 2, j - 2);
+				// Deterministic tokens: skip them
+				if (
+					inner.startsWith('eval:') ||
+					inner.startsWith('blank:') ||
+					inner.startsWith('color:') ||
+					/^\w+$/.test(inner) // simple variable name
+				) {
+					i = j;
+					continue;
+				}
+				// Anything else inside {{...}} is random
+				return true;
+			}
+		}
+		i++;
 	}
 	return false;
 }
