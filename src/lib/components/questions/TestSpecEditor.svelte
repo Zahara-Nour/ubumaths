@@ -23,7 +23,7 @@
 	} from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
 	import type { TestSpecResult } from '$lib/questions/test-spec-runner';
-	import { isRandomExpression } from '$lib/questions/generator/test-instance-builder';
+	import { getRootVariableNames } from '$lib/questions/generator/test-instance-builder';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -85,10 +85,12 @@
 		return [...effectiveShared, ...varVars];
 	}
 
-	// Only show root (random) variables — derived ones are computed by the pipeline
-	let currentVars = $derived(
-		getVariationVars(editSpec.variationIndex ?? 0).filter((v) => isRandomExpression(v.expression))
-	);
+	// Only show root variables (no dependency on other variables in the set)
+	let currentVars = $derived.by(() => {
+		const allVars = getVariationVars(editSpec.variationIndex ?? 0);
+		const rootNames = getRootVariableNames(allVars);
+		return allVars.filter((v) => rootNames.has(v.name));
+	});
 
 	// Determine question type from variation
 	let questionType = $derived(
@@ -107,7 +109,9 @@
 	function startAdd() {
 		editingIndex = null;
 		const spec = makeEmptySpec();
-		const vars = getVariationVars(0).filter((v) => isRandomExpression(v.expression));
+		const allVars = getVariationVars(0);
+		const rootNames = getRootVariableNames(allVars);
+		const vars = allVars.filter((v) => rootNames.has(v.name));
 		for (const v of vars) {
 			spec.variables[v.name] = '';
 		}
@@ -147,7 +151,9 @@
 	function handleVariationChange(value: string) {
 		const idx = parseInt(value, 10);
 		editSpec.variationIndex = idx;
-		const vars = getVariationVars(idx).filter((v) => isRandomExpression(v.expression));
+		const allVarsForIdx = getVariationVars(idx);
+		const rootNamesForIdx = getRootVariableNames(allVarsForIdx);
+		const vars = allVarsForIdx.filter((v) => rootNamesForIdx.has(v.name));
 		const newVars: Record<string, string> = {};
 		for (const v of vars) {
 			newVars[v.name] = editSpec.variables[v.name] ?? '';

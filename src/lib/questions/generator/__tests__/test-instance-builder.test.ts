@@ -6,8 +6,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { generateInstanceWithFixedVariables, isRandomExpression } from '../test-instance-builder';
-import type { QuestionTemplate, QuestionVariation } from '../../types';
+import { generateInstanceWithFixedVariables, getRootVariableNames } from '../test-instance-builder';
+import type { QuestionTemplate, QuestionVariation, QuestionVariable } from '../../types';
 import { templateMarkdown } from '$lib/ubumark';
 
 function makeTemplate(
@@ -154,40 +154,56 @@ describe('generateInstanceWithFixedVariables', () => {
 	});
 });
 
-describe('isRandomExpression', () => {
-	it('should detect {{random:...}} expressions', () => {
-		expect(isRandomExpression('{{random:1..10}}')).toBe(true);
-		expect(isRandomExpression('{{random:rouge|vert|bleu}}')).toBe(true);
+describe('getRootVariableNames', () => {
+	it('should identify variables with no dependencies as root', () => {
+		const vars: QuestionVariable[] = [
+			{ name: 'a', expression: '{{random:1..10}}' },
+			{ name: 'b', expression: '{{random:1..10}}' },
+			{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' }
+		];
+		const roots = getRootVariableNames(vars);
+		expect(roots).toEqual(new Set(['a', 'b']));
 	});
 
-	it('should detect shorthand range expressions', () => {
-		expect(isRandomExpression('{{1..10}}')).toBe(true);
-		expect(isRandomExpression('{{-5..5}}')).toBe(true);
+	it('should identify all as root when no dependencies exist', () => {
+		const vars: QuestionVariable[] = [
+			{ name: 'a', expression: '{{random:1..10}}' },
+			{ name: 'b', expression: '{{random:5..20}}' }
+		];
+		const roots = getRootVariableNames(vars);
+		expect(roots).toEqual(new Set(['a', 'b']));
 	});
 
-	it('should detect shorthand choice expressions', () => {
-		expect(isRandomExpression('{{a|b|c}}')).toBe(true);
+	it('should handle chain dependencies', () => {
+		const vars: QuestionVariable[] = [
+			{ name: 'a', expression: '{{random:1..5}}' },
+			{ name: 'b', expression: '{{eval:{{a}}+10}}' },
+			{ name: 'c', expression: '{{eval:{{b}}*2}}' }
+		];
+		const roots = getRootVariableNames(vars);
+		expect(roots).toEqual(new Set(['a']));
 	});
 
-	it('should detect digits expressions', () => {
-		expect(isRandomExpression('{{digits:3}}')).toBe(true);
+	it('should handle random with variable bounds as non-root', () => {
+		const vars: QuestionVariable[] = [
+			{ name: 'max', expression: '{{random:5..10}}' },
+			{ name: 'a', expression: '{{random:1..{{max}}}}' }
+		];
+		const roots = getRootVariableNames(vars);
+		expect(roots).toEqual(new Set(['max']));
 	});
 
-	it('should NOT flag eval expressions as random', () => {
-		expect(isRandomExpression('{{eval:{{a}}+{{b}}}}')).toBe(false);
+	it('should return empty set for empty input', () => {
+		const roots = getRootVariableNames([]);
+		expect(roots).toEqual(new Set());
 	});
 
-	it('should NOT flag variable references as random', () => {
-		expect(isRandomExpression('{{a}}')).toBe(false);
-		expect(isRandomExpression('{{eval:{{a}}*2}}')).toBe(false);
-	});
-
-	it('should NOT flag plain text as random', () => {
-		expect(isRandomExpression('hello')).toBe(false);
-		expect(isRandomExpression('42')).toBe(false);
-	});
-
-	it('should NOT flag LaTeX with triple braces as random', () => {
-		expect(isRandomExpression('\\frac{{{a}}}{2}')).toBe(false);
+	it('should handle literal values as root', () => {
+		const vars: QuestionVariable[] = [
+			{ name: 'a', expression: '42' },
+			{ name: 'b', expression: '{{eval:{{a}}*2}}' }
+		];
+		const roots = getRootVariableNames(vars);
+		expect(roots).toEqual(new Set(['a']));
 	});
 });

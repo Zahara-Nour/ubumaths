@@ -195,7 +195,7 @@ export { resolveText, type ResolveTextOptions } from './resolver/text-resolver';
  * Uses DFS to find cycles in the dependency graph.
  * See: {@link module:ubumark/parameterization/validator/circular-dependency}
  */
-export { detectCircularDependencies } from './validator/circular-dependency';
+export { detectCircularDependencies, getVariableNames } from './validator/circular-dependency';
 
 /**
  * Validate variable definitions

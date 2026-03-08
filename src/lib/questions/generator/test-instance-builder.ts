@@ -5,9 +5,8 @@
  * Generates a question instance from a template with fixed (deterministic) variables.
  * Used by the test spec runner to validate questions without randomness.
  *
- * Only "root" variables (those with random expressions) need to be fixed.
- * Derived variables (those computed from other variables via {{eval:...}} or
- * variable references) are resolved normally by the pipeline.
+ * Only "root" variables (those that don't depend on other variables) need
+ * to be fixed. Derived variables are resolved normally by the pipeline.
  *
  * @module questions/generator/test-instance-builder
  */
@@ -20,6 +19,7 @@ import type {
 	GenerationResult
 } from '../types';
 import { generateInstance } from './instance-generator';
+import { getVariableNames } from '$lib/ubumark';
 
 /**
  * Merge shared defaults with variation-specific values.
@@ -56,53 +56,29 @@ function resolveVariationWithShared(
 }
 
 /**
- * Check if a variable expression contains randomness.
+ * Identify root variables — those that don't depend on any other variable
+ * in the same set.
  *
- * Uses inverted logic: an expression is deterministic if it ONLY contains
- * variable references ({{varName}}), eval expressions ({{eval:...}}),
- * color refs ({{color:...}}), blank markers ({{blank:...}}), and plain text.
- * Everything else (ranges, choices, digits, etc.) is random.
+ * Uses the same dependency extraction as the circular dependency detector
+ * (getVariableNames from the tokenizer). A variable is "root" if none of its
+ * referenced names are in the variable set.
  *
- * This mirrors the tokenizer's detection logic without reimplementing
- * the full nested-brace parser.
+ * @param variables - All variables (merged shared + variation)
+ * @returns Names of root variables that need fixed values in test specs
  */
-export function isRandomExpression(expression: string): boolean {
-	// Extract all top-level {{...}} tokens (handling nested braces)
-	let i = 0;
-	while (i < expression.length) {
-		if (
-			expression[i] === '{' &&
-			expression[i + 1] === '{' &&
-			// Skip triple braces {{{ which are LaTeX brace + parameterization {{
-			expression[i + 2] !== '{'
-		) {
-			// Find matching }}
-			let braceCount = 2;
-			let j = i + 2;
-			while (j < expression.length && braceCount > 0) {
-				if (expression[j] === '{') braceCount++;
-				else if (expression[j] === '}') braceCount--;
-				j++;
-			}
-			if (braceCount === 0) {
-				const inner = expression.substring(i + 2, j - 2);
-				// Deterministic tokens: skip them
-				if (
-					inner.startsWith('eval:') ||
-					inner.startsWith('blank:') ||
-					inner.startsWith('color:') ||
-					/^\w+$/.test(inner) // simple variable name
-				) {
-					i = j;
-					continue;
-				}
-				// Anything else inside {{...}} is random
-				return true;
-			}
+export function getRootVariableNames(variables: QuestionVariable[]): Set<string> {
+	const allNames = new Set(variables.map((v) => v.name));
+	const roots = new Set<string>();
+
+	for (const v of variables) {
+		const deps = getVariableNames(v.expression);
+		const hasInternalDep = deps.some((dep) => allNames.has(dep));
+		if (!hasInternalDep) {
+			roots.add(v.name);
 		}
-		i++;
 	}
-	return false;
+
+	return roots;
 }
 
 /**
