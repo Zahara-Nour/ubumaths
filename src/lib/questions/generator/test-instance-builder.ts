@@ -20,6 +20,7 @@ import type {
 } from '../types';
 import { generateInstance } from './instance-generator';
 import { getVariableNames } from '$lib/ubumark';
+import { normalizeExpression } from '$lib/ubumark/parameterization';
 
 /**
  * Merge shared defaults with variation-specific values.
@@ -71,15 +72,20 @@ export function getRootVariableNames(variables: QuestionVariable[]): Set<string>
 	const roots = new Set<string>();
 
 	for (const v of variables) {
-		// First try tokenizer-based detection ({{varName}} syntax)
-		let deps = getVariableNames(v.expression);
+		// Mirror the resolver's dependency detection:
+		// 1. Normalize expression ("0..9" → "{{0..9}}", "eval:a+b" → "{{eval:a+b}}")
+		const normalized = normalizeExpression(v.expression);
 
-		// Fallback: detect bare variable names in expressions without {{}} syntax
-		// (legacy migration format like "(a*1000) + (b*100) + c")
-		if (deps.length === 0) {
+		let deps: string[];
+		if (!normalized.includes('{{')) {
+			// STAGE 0 (same as resolver): no {{}} after normalization
+			// → detect bare variable names via regex word boundary
 			deps = Array.from(allNames).filter(
-				(name) => name !== v.name && new RegExp(`\\b${name}\\b`).test(v.expression)
+				(name) => name !== v.name && new RegExp(`\\b${name}\\b`).test(normalized)
 			);
+		} else {
+			// Has {{}} tokens → use tokenizer-based detection
+			deps = getVariableNames(normalized);
 		}
 
 		const hasInternalDep = deps.some((dep) => allNames.has(dep));

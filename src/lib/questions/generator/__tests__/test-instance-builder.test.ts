@@ -206,4 +206,28 @@ describe('getRootVariableNames', () => {
 		const roots = getRootVariableNames(vars);
 		expect(roots).toEqual(new Set(['a']));
 	});
+
+	it('should handle simplified format via normalizeExpression (variable-ref)', () => {
+		// Simplified format: "a" normalizes to "{{a}}", detected as dependency
+		const vars: QuestionVariable[] = [
+			{ name: 'a', expression: '0..9' },
+			{ name: 'b', expression: 'a' } // variable-ref to a
+		];
+		const roots = getRootVariableNames(vars);
+		expect(roots).toEqual(new Set(['a']));
+	});
+
+	it('should handle legacy bare expressions via regex fallback', () => {
+		// Legacy migration format: "(a*1000) + (b*100) + c" is text-literal,
+		// but regex fallback detects a, b, c as dependencies
+		const vars: QuestionVariable[] = [
+			{ name: 'a', expression: '0..9' },
+			{ name: 'b', expression: '0..9' },
+			{ name: 'c', expression: '0..9' },
+			{ name: 'd', expression: '0..9' },
+			{ name: 'expression', expression: '(a*1000) + (b*100) + (c*10) + d' }
+		];
+		const roots = getRootVariableNames(vars);
+		expect(roots).toEqual(new Set(['a', 'b', 'c', 'd']));
+	});
 });
