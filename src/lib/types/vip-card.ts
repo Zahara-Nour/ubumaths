@@ -236,7 +236,7 @@ export interface VipCard {
 	rarity: VipCardRarity; // Required rarity level
 	action?: VipCardAction | null; // Optional action that can be activated (null from database)
 	// Purchase fields (from database)
-	basePrice?: number; // Price in gidouilles (common=20, rare=50, epic=150, legendary=500)
+	basePrice?: number; // Price in gidouilles (from DB, varies per card)
 	isPurchasable?: boolean; // Whether this card can be purchased
 	maxOwnedPerStudent?: number; // Maximum active copies a student can own (default: 5)
 	// Consumable fields
@@ -244,13 +244,13 @@ export interface VipCard {
 }
 
 /**
- * Rarity-based pricing map
+ * Rarity-based pricing map (fallback for passive cards when basePrice is missing)
  */
 export const RARITY_PRICES: Record<VipCardRarity, number> = {
-	common: 20,
-	rare: 50,
-	epic: 150,
-	legendary: 500
+	common: 5,
+	rare: 15,
+	epic: 40,
+	legendary: 80
 };
 
 /**
