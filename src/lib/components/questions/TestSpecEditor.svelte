@@ -124,12 +124,12 @@
 
 	function startEdit(index: number) {
 		editingIndex = index;
-		editSpec = structuredClone(testSpecs[index]);
+		editSpec = JSON.parse(JSON.stringify(testSpecs[index]));
 	}
 
 	function saveSpec() {
 		if (!editSpec.description.trim()) return;
-		const spec = structuredClone(editSpec);
+		const spec: TestSpec = JSON.parse(JSON.stringify(editSpec));
 		// Clean up: remove empty answers/selectedChoices
 		if (questionType === 'fill_in_blanks') {
 			delete spec.selectedChoices;
