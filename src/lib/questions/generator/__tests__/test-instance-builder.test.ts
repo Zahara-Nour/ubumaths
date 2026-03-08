@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { generateInstanceWithFixedVariables } from '../test-instance-builder';
+import { generateInstanceWithFixedVariables, isRandomExpression } from '../test-instance-builder';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
 import { templateMarkdown } from '$lib/ubumark';
 
@@ -78,21 +78,22 @@ describe('generateInstanceWithFixedVariables', () => {
 		expect(result.errors[0]).toContain('out of range');
 	});
 
-	it('should return error for missing variables', () => {
+	it('should compute derived variables automatically from fixed root variables', () => {
 		const template = makeTemplate({
 			statement: templateMarkdown('${{a}} + {{b}} = ?$'),
 			variables: [
 				{ name: 'a', expression: '{{random:1..10}}' },
-				{ name: 'b', expression: '{{random:1..10}}' }
+				{ name: 'b', expression: '{{random:1..10}}' },
+				{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' }
 			],
-			blanks: [{ expectedAnswer: '{{eval:{{a}}+{{b}}}}' }]
+			blanks: [{ expectedAnswer: '{{sum}}' }]
 		});
 
-		const result = generateInstanceWithFixedVariables(template, { a: '3' });
-		expect(result.success).toBe(false);
-		if (result.success) return;
-		expect(result.errors[0]).toContain('Missing fixed variables');
-		expect(result.errors[0]).toContain('b');
+		// Only fix root (random) variables — sum is derived
+		const result = generateInstanceWithFixedVariables(template, { a: '3', b: '7' });
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+		expect(result.instance.blanks?.[0]?.expectedAnswer).toBe('10');
 	});
 
 	it('should work with shared variables', () => {
@@ -150,5 +151,39 @@ describe('generateInstanceWithFixedVariables', () => {
 		if (!result.success) return;
 		expect(result.instance.statement).toContain('Variation 1');
 		expect(result.instance.selectedVariationIndex).toBe(1);
+	});
+});
+
+describe('isRandomExpression', () => {
+	it('should detect {{random:...}} expressions', () => {
+		expect(isRandomExpression('{{random:1..10}}')).toBe(true);
+		expect(isRandomExpression('{{random:rouge|vert|bleu}}')).toBe(true);
+	});
+
+	it('should detect shorthand range expressions', () => {
+		expect(isRandomExpression('{{1..10}}')).toBe(true);
+		expect(isRandomExpression('{{-5..5}}')).toBe(true);
+	});
+
+	it('should detect shorthand choice expressions', () => {
+		expect(isRandomExpression('{{a|b|c}}')).toBe(true);
+	});
+
+	it('should detect digits expressions', () => {
+		expect(isRandomExpression('{{digits:3}}')).toBe(true);
+	});
+
+	it('should NOT flag eval expressions as random', () => {
+		expect(isRandomExpression('{{eval:{{a}}+{{b}}}}')).toBe(false);
+	});
+
+	it('should NOT flag variable references as random', () => {
+		expect(isRandomExpression('{{a}}')).toBe(false);
+		expect(isRandomExpression('{{eval:{{a}}*2}}')).toBe(false);
+	});
+
+	it('should NOT flag plain text as random', () => {
+		expect(isRandomExpression('hello')).toBe(false);
+		expect(isRandomExpression('42')).toBe(false);
 	});
 });

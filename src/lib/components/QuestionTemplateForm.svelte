@@ -125,7 +125,7 @@
 
 	// Test specs
 	let testSpecs = $state<TestSpec[]>(template?.testSpecs ?? []);
-	let showTestSpecEditor = $state(false);
+	let testSpecMode = $state(false);
 
 	// Category duplicate detection
 	let categoryDuplicate = $state<boolean>(false);
@@ -895,6 +895,7 @@
 			jsonString = JSON.stringify(built, null, 2);
 			await loadJsonEditor();
 			jsonMode = true;
+			testSpecMode = false;
 			jsonValid = true;
 			_jsonErrors = [];
 		}
@@ -1095,11 +1096,18 @@
 		<Button
 			variant="outline"
 			size="sm"
-			onclick={() => (showTestSpecEditor = true)}
+			onclick={() => {
+				testSpecMode = !testSpecMode;
+				if (testSpecMode) jsonMode = false;
+			}}
 			disabled={isSubmitting}
 		>
 			<FlaskConical class="mr-2 h-4 w-4" />
-			Tests{testSpecs.length > 0 ? ` (${testSpecs.length})` : ''}
+			{#if testSpecMode}
+				Formulaire
+			{:else}
+				Tests{testSpecs.length > 0 ? ` (${testSpecs.length})` : ''}
+			{/if}
 		</Button>
 		<Button
 			variant="outline"
@@ -1157,6 +1165,22 @@
 				<p class="text-muted-foreground">Chargement de l'éditeur JSON...</p>
 			</div>
 		{/if}
+	{:else if testSpecMode}
+		<!-- TestSpec Editor (inline) -->
+		<TestSpecEditor
+			bind:testSpecs
+			{variations}
+			shared={sharedStatement || sharedVariables.length > 0
+				? {
+						statement: sharedStatement || undefined,
+						variables: sharedVariables.length > 0 ? sharedVariables : undefined,
+						choices:
+							questionType === 'multiple_choice' && sharedChoices.length > 0
+								? sharedChoices
+								: undefined
+					}
+				: undefined}
+		/>
 	{:else}
 		<!-- Title and Description -->
 		<Card.Root>
@@ -1896,18 +1920,3 @@
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
-
-<!-- TestSpec Editor Dialog -->
-<TestSpecEditor
-	bind:open={showTestSpecEditor}
-	bind:testSpecs
-	{variations}
-	shared={sharedStatement || sharedVariables.length > 0
-		? {
-				statement: sharedStatement || undefined,
-				variables: sharedVariables.length > 0 ? sharedVariables : undefined,
-				choices:
-					questionType === 'multiple_choice' && sharedChoices.length > 0 ? sharedChoices : undefined
-			}
-		: undefined}
-/>

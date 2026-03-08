@@ -94,11 +94,12 @@ describe('runTestSpec', () => {
 		expect(result.error).toContain('answers[]');
 	});
 
-	it('should return error when generation fails', () => {
+	it('should return error when generation fails (bad variation index)', () => {
 		const template = makeTemplate();
 		const spec: TestSpec = {
-			description: 'missing var',
-			variables: { a: '3' }, // b is missing
+			description: 'bad variation',
+			variationIndex: 99, // out of range
+			variables: { a: '3', b: '7' },
 			answers: ['10'],
 			expected: { status: 'correct' }
 		};
