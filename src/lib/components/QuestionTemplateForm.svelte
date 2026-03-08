@@ -1180,6 +1180,7 @@
 								: undefined
 					}
 				: undefined}
+			onSave={handleSaveDraft}
 		/>
 	{:else}
 		<!-- Title and Description -->
