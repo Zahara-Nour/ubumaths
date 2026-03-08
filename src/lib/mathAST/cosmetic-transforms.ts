@@ -51,8 +51,10 @@ export function removeZeros(latex: string): string {
 	// Replace leading zeros in integer parts: 01 → 1, 007 → 7
 	// Handles negative: -01 → -1
 	// But NOT 0.5 (zero before decimal is required)
-	// Match at word boundaries or after operators
-	result = result.replace(/(^|[+\-*/=({,\s\\])0+(\d)/g, '$1$2');
+	// Do NOT strip zeros after digit-grouping spaces (e.g., 6 020, 6\,020)
+	// Match at start of string or after operators/delimiters (not after digits or spaces)
+	// The (?<!\\) lookbehind prevents matching \, (LaTeX thin space) as a comma delimiter
+	result = result.replace(/(^|(?<!\\)[+\-*/=({,])0+(\d)/g, '$1$2');
 
 	// Handle trailing decimal zeros: 1.0 → 1, 1.20 → 1.2, 1.00 → 1
 	// Also handles French comma (with {,}): 1{,}0 → 1
