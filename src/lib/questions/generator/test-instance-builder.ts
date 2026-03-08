@@ -70,7 +70,12 @@ export function isRandomExpression(expression: string): boolean {
 	// Extract all top-level {{...}} tokens (handling nested braces)
 	let i = 0;
 	while (i < expression.length) {
-		if (expression[i] === '{' && expression[i + 1] === '{') {
+		if (
+			expression[i] === '{' &&
+			expression[i + 1] === '{' &&
+			// Skip triple braces {{{ which are LaTeX brace + parameterization {{
+			expression[i + 2] !== '{'
+		) {
 			// Find matching }}
 			let braceCount = 2;
 			let j = i + 2;

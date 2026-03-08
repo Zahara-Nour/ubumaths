@@ -186,4 +186,8 @@ describe('isRandomExpression', () => {
 		expect(isRandomExpression('hello')).toBe(false);
 		expect(isRandomExpression('42')).toBe(false);
 	});
+
+	it('should NOT flag LaTeX with triple braces as random', () => {
+		expect(isRandomExpression('\\frac{{{a}}}{2}')).toBe(false);
+	});
 });
