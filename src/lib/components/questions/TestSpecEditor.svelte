@@ -37,9 +37,10 @@
 		testSpecs: TestSpec[];
 		variations: QuestionVariation[];
 		shared?: SharedVariationDefaults;
+		onSave?: () => void;
 	}
 
-	let { testSpecs = $bindable(), variations, shared }: Props = $props();
+	let { testSpecs = $bindable(), variations, shared, onSave }: Props = $props();
 
 	// Editor state
 	let editingIndex = $state<number | null>(null);
@@ -142,10 +143,12 @@
 			testSpecs = [...testSpecs, spec];
 		}
 		editingIndex = null;
+		onSave?.();
 	}
 
 	function deleteSpec(index: number) {
 		testSpecs = testSpecs.filter((_, i) => i !== index);
+		onSave?.();
 		results.delete(index);
 	}
 
