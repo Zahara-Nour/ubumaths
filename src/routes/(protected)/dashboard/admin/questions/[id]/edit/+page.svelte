@@ -47,7 +47,8 @@
 	});
 
 	async function handleSave(
-		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>
+		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>,
+		options?: { silent?: boolean }
 	) {
 		isSubmitting = true;
 
@@ -66,7 +67,9 @@
 				questionTemplatesCache.invalidate();
 
 				toaster.success('Question mise à jour avec succès');
-				goto('/dashboard/admin/questions').then(() => {});
+				if (!options?.silent) {
+					goto('/dashboard/admin/questions').then(() => {});
+				}
 			} else {
 				toaster.error('Erreur lors de la mise à jour');
 				console.error('Validation errors:', result.errors);
