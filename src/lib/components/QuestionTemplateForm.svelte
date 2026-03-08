@@ -91,7 +91,8 @@
 	interface Props {
 		template?: QuestionTemplate;
 		onSave: (
-			template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>
+			template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>,
+			options?: { silent?: boolean }
 		) => void;
 		onCancel: () => void;
 		isSubmitting: boolean;
@@ -909,11 +910,11 @@
 	// Handle save
 
 	// Save as draft (no category validation)
-	function handleSaveDraft() {
+	function handleSaveDraft(options?: { silent?: boolean }) {
 		if (jsonMode) {
 			try {
 				const parsed = JSON.parse(jsonString);
-				onSave(parsed);
+				onSave(parsed, options);
 			} catch {
 				_jsonErrors = ['JSON invalide'];
 				jsonValid = false;
@@ -921,7 +922,7 @@
 			return;
 		}
 		const templateData = buildTemplate();
-		onSave(templateData);
+		onSave(templateData, options);
 	}
 
 	// Cancel with dirty state confirmation
@@ -1180,7 +1181,7 @@
 								: undefined
 					}
 				: undefined}
-			onSave={handleSaveDraft}
+			onSave={() => handleSaveDraft({ silent: true })}
 		/>
 	{:else}
 		<!-- Title and Description -->

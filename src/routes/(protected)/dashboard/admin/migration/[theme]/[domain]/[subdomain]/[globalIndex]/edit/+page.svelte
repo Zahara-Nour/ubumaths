@@ -39,7 +39,8 @@
 	});
 
 	async function handleSave(
-		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>
+		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>,
+		options?: { silent?: boolean }
 	) {
 		isSubmitting = true;
 
@@ -56,7 +57,9 @@
 			}
 
 			toaster.success(`Question #${data.globalIndex} modifiée`);
-			void goto(backUrl);
+			if (!options?.silent) {
+				void goto(backUrl);
+			}
 		} catch (err) {
 			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'enregistrement");
 		} finally {
