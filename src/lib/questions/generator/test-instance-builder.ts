@@ -71,7 +71,17 @@ export function getRootVariableNames(variables: QuestionVariable[]): Set<string>
 	const roots = new Set<string>();
 
 	for (const v of variables) {
-		const deps = getVariableNames(v.expression);
+		// First try tokenizer-based detection ({{varName}} syntax)
+		let deps = getVariableNames(v.expression);
+
+		// Fallback: detect bare variable names in expressions without {{}} syntax
+		// (legacy migration format like "(a*1000) + (b*100) + c")
+		if (deps.length === 0) {
+			deps = Array.from(allNames).filter(
+				(name) => name !== v.name && new RegExp(`\\b${name}\\b`).test(v.expression)
+			);
+		}
+
 		const hasInternalDep = deps.some((dep) => allNames.has(dep));
 		if (!hasInternalDep) {
 			roots.add(v.name);
