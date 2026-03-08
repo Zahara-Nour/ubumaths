@@ -30,6 +30,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import MathField from '$lib/components/MathField.svelte';
 	import { Plus, Trash2, Play, Check, X } from 'lucide-svelte';
 
 	interface Props {
@@ -341,14 +342,14 @@
 						<Label>Reponses (LaTeX)</Label>
 						<div class="space-y-1">
 							{#each Array(blankCount) as _, i (i)}
-								<Input
-									value={editSpec.answers?.[i] ?? ''}
-									oninput={(e: Event) => {
-										if (!editSpec.answers) editSpec.answers = [];
-										editSpec.answers[i] = (e.target as HTMLInputElement).value;
-									}}
-									placeholder="Reponse blank {i}"
-									class="h-8 font-mono"
+								<MathField
+									bind:value={
+										() => editSpec.answers?.[i] ?? '',
+										(v) => {
+											if (!editSpec.answers) editSpec.answers = [];
+											editSpec.answers[i] = v;
+										}
+									}
 								/>
 							{/each}
 						</div>
