@@ -20,7 +20,8 @@ import {
 	choiceSchema,
 	validationRuleSchema,
 	requiredFormSchema,
-	blankDefaultsSchema
+	blankDefaultsSchema,
+	testSpecSchema
 } from '$lib/questions/template-schema';
 
 // ============================================================================
@@ -146,7 +147,8 @@ export const editedQuestionTemplateSchema = z
 		subdomain: z.string().max(100).optional(),
 		level: z.number().int().nonnegative().max(100).optional(),
 		status: z.enum(['draft', 'published']).optional(),
-		delay: z.number().int().nonnegative().max(600).optional()
+		delay: z.number().int().nonnegative().max(600).optional(),
+		testSpecs: z.array(testSpecSchema).optional()
 	})
 	.refine(
 		(data) => {
