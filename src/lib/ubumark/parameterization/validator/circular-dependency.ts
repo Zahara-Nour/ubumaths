@@ -141,7 +141,7 @@ export function detectCircularDependencies(variables: Variable[]): ValidationRes
  *
  * Recursively extracts variables from inside {{eval:}} and {{random:}} expressions.
  */
-function getVariableNames(expression: string): string[] {
+export function getVariableNames(expression: string): string[] {
 	const tokens = tokenize(expression);
 	const names: string[] = [];
 

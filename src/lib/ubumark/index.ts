@@ -267,7 +267,11 @@ export {
 export type { ResolveTextOptions } from './parameterization';
 
 // Validators
-export { detectCircularDependencies, validateVariables } from './parameterization';
+export {
+	detectCircularDependencies,
+	getVariableNames,
+	validateVariables
+} from './parameterization';
 
 // Expression Transforms
 export { applyDisplayTransforms, canTransform, getExpressionStructure } from './parameterization';
