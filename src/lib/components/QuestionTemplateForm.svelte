@@ -32,7 +32,8 @@
 		RequiredForm,
 		BlankDefaults,
 		SharedVariationDefaults,
-		ConstraintMode
+		ConstraintMode,
+		TestSpec
 	} from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
 	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
@@ -77,13 +78,15 @@
 		CheckCircle2,
 		ChevronDown,
 		CircleQuestionMark,
-		Braces
+		Braces,
+		FlaskConical
 	} from 'lucide-svelte';
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 	import QuestionTemplateHelpDialogs from './QuestionTemplateHelpDialogs.svelte';
 	import DisplayOptionsEditor from './DisplayOptionsEditor.svelte';
 	import ValidationOptionsEditor from './ValidationOptionsEditor.svelte';
 	import SharedFieldsEditor from './SharedFieldsEditor.svelte';
+	import TestSpecEditor from './questions/TestSpecEditor.svelte';
 
 	interface Props {
 		template?: QuestionTemplate;
@@ -119,6 +122,10 @@
 	let subdomain = $state<string | undefined>(template?.subdomain);
 	let level = $state<number>(template?.level || 1);
 	let status = $state<'draft' | 'published'>(template?.status || 'draft');
+
+	// Test specs
+	let testSpecs = $state<TestSpec[]>(template?.testSpecs ?? []);
+	let showTestSpecEditor = $state(false);
 
 	// Category duplicate detection
 	let categoryDuplicate = $state<boolean>(false);
@@ -742,7 +749,8 @@
 			subdomain,
 			level,
 			status,
-			delay
+			delay,
+			testSpecs: testSpecs.length > 0 ? testSpecs : undefined
 		};
 
 		// Add type-specific shared fields
@@ -861,6 +869,9 @@
 				v.requiredForm && typeof v.requiredForm === 'object' ? v.requiredForm.pattern : '',
 			overridesOpen: false
 		})) || [{ ...DEFAULT_VARIATION_EXTRA }];
+
+		// Test specs
+		testSpecs = (t as QuestionTemplate).testSpecs ?? [];
 
 		currentVariationIndex = 0;
 	}
@@ -1081,6 +1092,15 @@
 				</p>
 			</div>
 		</div>
+		<Button
+			variant="outline"
+			size="sm"
+			onclick={() => (showTestSpecEditor = true)}
+			disabled={isSubmitting}
+		>
+			<FlaskConical class="mr-2 h-4 w-4" />
+			Tests{testSpecs.length > 0 ? ` (${testSpecs.length})` : ''}
+		</Button>
 		<Button
 			variant="outline"
 			size="sm"
@@ -1876,3 +1896,18 @@
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
+
+<!-- TestSpec Editor Dialog -->
+<TestSpecEditor
+	bind:open={showTestSpecEditor}
+	bind:testSpecs
+	{variations}
+	shared={sharedStatement || sharedVariables.length > 0
+		? {
+				statement: sharedStatement || undefined,
+				variables: sharedVariables.length > 0 ? sharedVariables : undefined,
+				choices:
+					questionType === 'multiple_choice' && sharedChoices.length > 0 ? sharedChoices : undefined
+			}
+		: undefined}
+/>

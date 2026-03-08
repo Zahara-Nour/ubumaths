@@ -97,6 +97,36 @@ export const validationRuleSchema = z.discriminatedUnion('type', [
 
 export const correctChoiceIndexSchema = z.union([z.string(), z.array(z.string())]);
 
+// === Test Specs ===
+
+export const constraintIdSchema = z.enum([
+	'spaces',
+	'products',
+	'brackets',
+	'zeros',
+	'form',
+	'nullTerms',
+	'factorOne',
+	'factorZero',
+	'signs',
+	'reducedFractions',
+	'unit'
+]);
+
+export const testSpecExpectedSchema = z.object({
+	status: z.enum(['correct', 'unoptimal_form', 'bad_form', 'incorrect', 'empty']),
+	constraintViolations: z.array(constraintIdSchema).optional()
+});
+
+export const testSpecSchema = z.object({
+	description: z.string().min(1),
+	variationIndex: z.number().int().nonnegative().optional(),
+	variables: z.record(z.string(), z.string()),
+	answers: z.array(z.string()).optional(),
+	selectedChoices: z.array(z.number().int().nonnegative()).optional(),
+	expected: testSpecExpectedSchema
+});
+
 // === Nested objects ===
 
 /**
@@ -328,7 +358,8 @@ export const questionTemplateSchema = z
 		level: z.number(),
 		status: z.enum(['draft', 'published']),
 		delay: z.number().optional().nullable(),
-		multipleAnswers: z.boolean().optional().nullable()
+		multipleAnswers: z.boolean().optional().nullable(),
+		testSpecs: z.array(testSpecSchema).optional().nullable()
 	})
 	.strict()
 	.refine(

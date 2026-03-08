@@ -38,7 +38,10 @@
 		Edit3
 	} from 'lucide-svelte';
 	import ReviewActions from '$lib/components/migration/ReviewActions.svelte';
+	import TestSpecBatchRunner from '$lib/components/migration/TestSpecBatchRunner.svelte';
 	import { SvelteMap } from 'svelte/reactivity';
+	import { FlaskConical } from 'lucide-svelte';
+	import type { QuestionTemplate } from '$lib/questions/types';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -55,6 +58,36 @@
 	// Initialize from persisted data, updates on approve/reject
 	type ReviewStatus = 'pending' | 'approved' | 'rejected';
 	const reviewStatus = new SvelteMap<number, { status: ReviewStatus; reason?: string }>();
+
+	// Batch test runner
+	let showBatchRunner = $state(false);
+
+	// Build QuestionTemplate array from migration data for batch testing
+	let batchTestTemplates = $derived.by(() => {
+		return data.questions
+			.filter((q) => q.transformed?.variations?.length)
+			.map(
+				(q): QuestionTemplate => ({
+					id: `migration-${q.globalIndex}`,
+					title: q.transformed.title || `Question ${q.globalIndex}`,
+					status: 'draft',
+					shared: q.transformed.shared as QuestionTemplate['shared'],
+					variations: q.transformed.variations ?? [],
+					options: q.transformed.options as QuestionTemplate['options'],
+					defaultDisplayOptions: q.transformed.defaultDisplayOptions,
+					exerciseInstruction: q.transformed.exerciseInstruction,
+					multipleAnswers: q.transformed.multipleAnswers,
+					grades: q.transformed.grades ?? ['6'],
+					theme: q.transformed.theme ?? data.stats.theme,
+					domain: q.transformed.domain ?? data.stats.domain,
+					subdomain: q.transformed.subdomain ?? data.stats.subdomain,
+					level: q.transformed.level ?? q.level,
+					delay: q.transformed.delay,
+					testSpecs: (q.transformed as Record<string, unknown>)
+						.testSpecs as QuestionTemplate['testSpecs']
+				})
+			);
+	});
 
 	// Edit tracking - track which questions have been edited
 	const questionEdits = new SvelteMap<number, { editId: string; editedJson: unknown }>();
@@ -447,6 +480,11 @@
 			<XCircle class="mr-1 h-3 w-3" />
 			Rejetees ({reviewStats.rejected})
 		</Button>
+		<Separator orientation="vertical" class="mx-1 h-6" />
+		<Button variant="outline" size="sm" onclick={() => (showBatchRunner = true)}>
+			<FlaskConical class="mr-1 h-3 w-3" />
+			Tests
+		</Button>
 	</div>
 
 	<Separator />
@@ -588,3 +626,6 @@
 		</Dialog.Description>
 	</Dialog.Content>
 </Dialog.Root>
+
+<!-- Batch Test Runner -->
+<TestSpecBatchRunner bind:open={showBatchRunner} templates={batchTestTemplates} />
