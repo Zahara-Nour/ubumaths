@@ -217,6 +217,20 @@ describe('getRootVariableNames', () => {
 		expect(roots).toEqual(new Set(['a']));
 	});
 
+	it('should detect bare variable names inside eval tokens', () => {
+		// eval:a*1000+b*100+c*10+d normalizes to {{eval:a*1000+b*100+c*10+d}}
+		// The tokenizer sees one eval token, but a, b, c, d are bare vars inside it
+		const vars: QuestionVariable[] = [
+			{ name: 'a', expression: '1..9' },
+			{ name: 'b', expression: '1..9' },
+			{ name: 'c', expression: '1..9' },
+			{ name: 'd', expression: '1..9' },
+			{ name: 'expression', expression: 'eval:a*1000+b*100+c*10+d' }
+		];
+		const roots = getRootVariableNames(vars);
+		expect(roots).toEqual(new Set(['a', 'b', 'c', 'd']));
+	});
+
 	it('should handle legacy bare expressions via regex fallback', () => {
 		// Legacy migration format: "(a*1000) + (b*100) + c" is text-literal,
 		// but regex fallback detects a, b, c as dependencies
