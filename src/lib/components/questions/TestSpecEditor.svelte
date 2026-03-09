@@ -150,6 +150,13 @@
 		onSave?.();
 	}
 
+	function duplicateSpec(index: number) {
+		const copy: TestSpec = JSON.parse(JSON.stringify(testSpecs[index]));
+		copy.description = `${copy.description} (copie)`;
+		testSpecs = [...testSpecs, copy];
+		onSave?.();
+	}
+
 	function deleteSpec(index: number) {
 		testSpecs = testSpecs.filter((_, i) => i !== index);
 		onSave?.();
@@ -258,6 +265,9 @@
 							<Play class="h-3 w-3" />
 						</Button>
 						<Button variant="ghost" size="sm" onclick={() => startEdit(i)}>Editer</Button>
+						<Button variant="ghost" size="sm" onclick={() => duplicateSpec(i)}>
+							<Copy class="h-3 w-3" />
+						</Button>
 						<Button variant="ghost" size="sm" onclick={() => deleteSpec(i)}>
 							<Trash2 class="h-3 w-3" />
 						</Button>
