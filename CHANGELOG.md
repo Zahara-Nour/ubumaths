@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.29](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.28...v0.8.29) (2026-03-09)
+
+### ✨ Features
+
+- **test-specs:** add copy JSON button in test spec edit form ([04d505f](https://github.com/Zahara-Nour/ubumaths/commit/04d505f1d8c87ce640bd03927b0f0ad221a72b82))
+- **test-specs:** add deterministic test specifications for question templates ([41ced7c](https://github.com/Zahara-Nour/ubumaths/commit/41ced7c89964688909b1a6add86fffedd805ae27))
+- **test-specs:** auto-save to DB when adding/editing/deleting a test spec ([d5ac547](https://github.com/Zahara-Nour/ubumaths/commit/d5ac5472be258d6c67555e44659550aa41582b3d))
+- **test-specs:** silent save mode to stay on page after test spec changes ([1f3b01d](https://github.com/Zahara-Nour/ubumaths/commit/1f3b01dd98994d2180b1c62f6c3d8dc84f3fa63d))
+- **test-specs:** use MathField for answer inputs in TestSpecEditor ([d220825](https://github.com/Zahara-Nour/ubumaths/commit/d220825d0b68653657c4b6be60e8ff2e921ea8b9))
+
+### 🐛 Bug Fixes
+
+- **constraints:** enable mathModeSpace by default and fix removeZeros for digit grouping ([5ecc1d3](https://github.com/Zahara-Nour/ubumaths/commit/5ecc1d3fda7e751ff8ef4a7e74bfd05f005a7658))
+- **math:** handle French decimal comma in areEquivalent ([6f06be9](https://github.com/Zahara-Nour/ubumaths/commit/6f06be980ef1f6161d265acdfd198752d1ea207f)), closes [#13](https://github.com/Zahara-Nour/ubumaths/issues/13)
+- **test-specs:** add bare variable name fallback for legacy migration format ([54a9ef8](https://github.com/Zahara-Nour/ubumaths/commit/54a9ef8cd26925fa303eb531d401456707d4c00e))
+- **test-specs:** add missing constraint options (form, factorZero, unit) ([e91ec44](https://github.com/Zahara-Nour/ubumaths/commit/e91ec44b01734a64ae2d5a9f1c9f8d12367b4cd2))
+- **test-specs:** add testSpecs to migration edit validation schema ([0e38897](https://github.com/Zahara-Nour/ubumaths/commit/0e38897ddae88b9dfb5f8e482cc6c4306e8bb952))
+- **test-specs:** convert LaTeX answers to text values before validation ([269efa3](https://github.com/Zahara-Nour/ubumaths/commit/269efa385cd8b8fc407668529617ffd1cf870012))
+- **test-specs:** enable space input in MathField answer fields ([8868523](https://github.com/Zahara-Nour/ubumaths/commit/88685232763bc9074e14b01dabeafac7b2e617c3))
+- **test-specs:** filter root variables correctly with triple-brace handling ([8dbf6c0](https://github.com/Zahara-Nour/ubumaths/commit/8dbf6c0b1902c06064cd48b5b563a31bcd0cd43e))
+- **test-specs:** include testSpecs when loading migration question for edit ([c973242](https://github.com/Zahara-Nour/ubumaths/commit/c973242ca0b123133e630849a7da11390f82f315))
+- **test-specs:** replace structuredClone with JSON roundtrip for Svelte 5 proxies ([cddec28](https://github.com/Zahara-Nour/ubumaths/commit/cddec28e90a84a51745180ef72f6b81820c550ea))
+- **test-specs:** robust random expression detection using inverted logic ([3f86266](https://github.com/Zahara-Nour/ubumaths/commit/3f862662fc0f0339c35651b87d087435f9289212))
+- **test-specs:** show all variables in editor, not just random ones ([32cc9e8](https://github.com/Zahara-Nour/ubumaths/commit/32cc9e8d1c02a5340c724cd735a8ccd10644d492))
+- **validation:** rename solution to correctChoiceIndex in answer-validator ([89726bf](https://github.com/Zahara-Nour/ubumaths/commit/89726bf2edae13ef7808fd8e4fe531ed46fbf068))
+- **vip-cards:** rebalance purchase prices for 1g/day economy ([b626d57](https://github.com/Zahara-Nour/ubumaths/commit/b626d573d4c92ff5146678d12cac1422827024b3))
+
 ### [0.8.28](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.27...v0.8.28) (2026-03-07)
 
 ### 🐛 Bug Fixes
