@@ -20,7 +20,11 @@ import type {
 } from '../types';
 import { generateInstance } from './instance-generator';
 import { getVariableNames } from '$lib/ubumark';
-import { normalizeExpression } from '$lib/ubumark/parameterization';
+import {
+	normalizeExpression,
+	tokenize,
+	parseEvalExpressionWithModifiers
+} from '$lib/ubumark/parameterization';
 
 /**
  * Merge shared defaults with variation-specific values.
@@ -86,6 +90,22 @@ export function getRootVariableNames(variables: QuestionVariable[]): Set<string>
 		} else {
 			// Has {{}} tokens → use tokenizer-based detection
 			deps = getVariableNames(normalized);
+
+			// Also check for bare variable names inside eval tokens
+			// (e.g., {{eval:a*1000+b*100}} has a, b as single-letter vars in the expression)
+			const tokens = tokenize(normalized);
+			for (const token of tokens) {
+				if (token.type === 'eval') {
+					const parsed = parseEvalExpressionWithModifiers(token.content);
+					if (parsed) {
+						for (const name of allNames) {
+							if (name !== v.name && new RegExp(`\\b${name}\\b`).test(parsed.expression)) {
+								deps.push(name);
+							}
+						}
+					}
+				}
+			}
 		}
 
 		const hasInternalDep = deps.some((dep) => allNames.has(dep));
