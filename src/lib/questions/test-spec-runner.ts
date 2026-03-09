@@ -14,6 +14,25 @@ import { generateInstanceWithFixedVariables } from './generator/test-instance-bu
 import { validateAnswer } from '$lib/utils/answer-validator';
 import { getQuestionType } from './types';
 
+/**
+ * Convert LaTeX answer to plain text value for the validator.
+ * Strips spacing commands (\, \; etc.), French decimal braces ({,} → ,),
+ * and digit-grouping spaces so "1\,234{,}0" becomes "1234,0".
+ */
+function latexToTextValue(latex: string): string {
+	return (
+		latex
+			// LaTeX spacing commands: \, \; \: \! and \ (backslash-space)
+			.replace(/\\[,;:!]\s?/g, '')
+			.replace(/\\(?:quad|qquad|enspace|thinspace|medspace|thickspace)\s?/g, '')
+			.replace(/\\ /g, '')
+			// MathLive French decimal: {,} → ,
+			.replace(/\{,\}/g, ',')
+			// French number grouping: spaces between digit groups
+			.replace(/(\d)\s+(?=\d)/g, '$1')
+	);
+}
+
 export interface TestSpecResult {
 	spec: TestSpec;
 	passed: boolean;
@@ -56,8 +75,11 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 			if (!spec.answers) {
 				return makeError('Test spec for fill-in-blanks must provide answers[]');
 			}
-			// For fill-in-blanks, answers serve as both text and LaTeX
-			validationResult = validateAnswer(spec.answers, instance, spec.answers);
+			// spec.answers contains LaTeX. The validator needs:
+			// - arg1 (text value): LaTeX cleaned of spacing/formatting for numeric comparison
+			// - arg3 (LaTeX): raw LaTeX for constraint checking (spaces, zeros, etc.)
+			const textAnswers = spec.answers.map(latexToTextValue);
+			validationResult = validateAnswer(textAnswers, instance, spec.answers);
 		} else {
 			// Multiple choice
 			if (!spec.selectedChoices || spec.selectedChoices.length === 0) {
