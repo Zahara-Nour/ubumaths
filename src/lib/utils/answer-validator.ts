@@ -113,11 +113,9 @@ function applyConstraints(
 
 		// Final form mismatch: the answer structure is fundamentally different
 		// from expected (e.g. 400+80 vs 480). This is unconditional — no severity mode.
-		if (
-			!formResult.valid &&
-			formResult.status === 'bad_form' &&
-			formResult.violations.length === 0
-		) {
+		// Added even when other violations exist (e.g. spaces), since the form
+		// mismatch is the primary issue and should override cosmetic warnings.
+		if (!formResult.valid && formResult.status === 'bad_form') {
 			const feedback = CONSTRAINT_FEEDBACK['form'][isMultiple ? 'multiple' : 'single'];
 			violations.push({ constraint: 'form', severity: 'error', feedback });
 			worstStatus = 'bad_form';
