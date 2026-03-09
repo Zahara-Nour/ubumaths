@@ -56,6 +56,7 @@
 	];
 
 	const CONSTRAINT_OPTIONS: { value: ConstraintId; label: string }[] = [
+		{ value: 'form', label: 'form' },
 		{ value: 'spaces', label: 'spaces' },
 		{ value: 'zeros', label: 'zeros' },
 		{ value: 'products', label: 'products' },
@@ -63,7 +64,9 @@
 		{ value: 'signs', label: 'signs' },
 		{ value: 'nullTerms', label: 'nullTerms' },
 		{ value: 'factorOne', label: 'factorOne' },
-		{ value: 'reducedFractions', label: 'reducedFractions' }
+		{ value: 'factorZero', label: 'factorZero' },
+		{ value: 'reducedFractions', label: 'reducedFractions' },
+		{ value: 'unit', label: 'unit' }
 	];
 
 	function makeEmptySpec(): TestSpec {
