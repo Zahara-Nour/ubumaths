@@ -225,6 +225,52 @@ describe('runTestSpec with QCM', () => {
 	});
 });
 
+describe('runTestSpec with question #13 (decomposition)', () => {
+	it('should detect zeros violation for answer with unnecessary decimal', () => {
+		const template: QuestionTemplate = {
+			id: 'test-decomp',
+			title: 'Decomposition',
+			status: 'draft',
+			variations: [
+				{
+					statement: templateMarkdown('${{expression}}$'),
+					variables: [
+						{ name: 'a', expression: '{{random:0..9}}' },
+						{ name: 'b', expression: '{{random:0..9}}' },
+						{ name: 'c', expression: '{{random:0..9}}' },
+						{ name: 'd', expression: '{{random:0..9}}' },
+						{
+							name: 'expression',
+							expression: '{{eval:({{a}}*1000)+({{b}}*100)+({{c}}*10)+{{d}}}}',
+							displayOptions: { removeNullTerms: true }
+						}
+					],
+					blanks: [{ expectedAnswer: '{{eval:{{expression}}}}' }]
+				}
+			],
+			options: { constraints: { zeros: 'warn', spaces: 'warn' } },
+			grades: ['CE2'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1
+		};
+
+		// Test: "1\,234,0" should be recognized as 1234.0 = 1234, with zeros violation
+		const spec: TestSpec = {
+			description: 'unnecessary decimal zero',
+			variables: { a: '1', b: '2', c: '3', d: '4' },
+			answers: ['1\\,234,0'],
+			expected: { status: 'unoptimal_form', constraintViolations: ['zeros'] }
+		};
+
+		const result = runTestSpec(template, spec);
+		expect(result.error).toBeUndefined();
+		expect(result.actual.status).toBe('unoptimal_form');
+		expect(result.actual.constraintViolations).toContain('zeros');
+		expect(result.passed).toBe(true);
+	});
+});
+
 describe('runAllTestSpecs', () => {
 	it('should return empty array for template without specs', () => {
 		const template = makeTemplate();
