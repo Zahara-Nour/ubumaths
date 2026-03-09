@@ -275,6 +275,28 @@
 		Object.fromEntries(CONSTRAINT_IDS.map((id) => [id, template?.options?.constraints?.[id] || '']))
 	);
 
+	// Current options (derived for TestSpecEditor)
+	let currentOptions = $derived.by(() => {
+		const opts: QuestionTemplate['options'] = {};
+		if (optAllowEquivalent) opts.allowEquivalent = true;
+		if (optAllowDifferentForms) opts.allowDifferentForms = true;
+		if (optCanonicalForm)
+			opts.canonicalForm = optCanonicalForm as 'fraction' | 'decimal' | 'scientific';
+		if (optOrderIndependent) opts.orderIndependent = true;
+		if (optValidator)
+			opts.validator = optValidator as 'checkEquivalence' | 'checkAlgebraic' | 'checkNumeric';
+		if (!optShuffleChoices) opts.shuffleChoices = false;
+		const constraints: NonNullable<NonNullable<QuestionTemplate['options']>['constraints']> = {};
+		for (const id of CONSTRAINT_IDS) {
+			if (constraintModes[id]) {
+				(constraints as Record<string, string>)[id] = constraintModes[id];
+			}
+		}
+		if (optAllowBracketsInFirstNegativeTerm) constraints.allowBracketsInFirstNegativeTerm = true;
+		if (Object.keys(constraints).length > 0) opts.constraints = constraints;
+		return Object.keys(opts).length > 0 ? opts : undefined;
+	});
+
 	// Shared variables (resolved before per-variation variables)
 	let sharedVariables = $state<QuestionVariable[]>(template?.shared?.variables || []);
 	let sharedStatement = $state(templateMarkdown(template?.shared?.statement || ''));
@@ -1181,6 +1203,7 @@
 								: undefined
 					}
 				: undefined}
+			options={currentOptions}
 			onSave={() => handleSaveDraft({ silent: true })}
 		/>
 	{:else}

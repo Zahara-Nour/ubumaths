@@ -37,10 +37,11 @@
 		testSpecs: TestSpec[];
 		variations: QuestionVariation[];
 		shared?: SharedVariationDefaults;
+		options?: QuestionTemplate['options'];
 		onSave?: () => void;
 	}
 
-	let { testSpecs = $bindable(), variations, shared, onSave }: Props = $props();
+	let { testSpecs = $bindable(), variations, shared, options, onSave }: Props = $props();
 
 	// Editor state
 	let editingIndex = $state<number | null>(null);
@@ -168,24 +169,26 @@
 		editSpec.variables = newVars;
 	}
 
+	function buildTemplateForTest(): QuestionTemplate {
+		return {
+			id: 'test-preview',
+			title: 'Preview',
+			status: 'draft',
+			shared: shared ?? undefined,
+			variations,
+			options,
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1
+		};
+	}
+
 	async function runSpec(index: number) {
 		isRunning = true;
 		try {
-			// Dynamic import to avoid loading heavy validation code upfront
 			const { runTestSpec } = await import('$lib/questions/test-spec-runner');
-			// Build a minimal template from current form state
-			const templateForTest: QuestionTemplate = {
-				id: 'test-preview',
-				title: 'Preview',
-				status: 'draft',
-				shared: shared ?? undefined,
-				variations,
-				grades: ['6'],
-				theme: 'Test',
-				domain: 'Test',
-				level: 1
-			};
-			const result = runTestSpec(templateForTest, testSpecs[index]);
+			const result = runTestSpec(buildTemplateForTest(), testSpecs[index]);
 			results.set(index, result);
 		} finally {
 			isRunning = false;
@@ -196,17 +199,7 @@
 		isRunning = true;
 		try {
 			const { runTestSpec } = await import('$lib/questions/test-spec-runner');
-			const templateForTest: QuestionTemplate = {
-				id: 'test-preview',
-				title: 'Preview',
-				status: 'draft',
-				shared: shared ?? undefined,
-				variations,
-				grades: ['6'],
-				theme: 'Test',
-				domain: 'Test',
-				level: 1
-			};
+			const templateForTest = buildTemplateForTest();
 			results.clear();
 			for (let i = 0; i < testSpecs.length; i++) {
 				results.set(i, runTestSpec(templateForTest, testSpecs[i]));
