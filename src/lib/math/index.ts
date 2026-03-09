@@ -40,6 +40,10 @@ function stripLatexSpacing(latex: string): string {
 			.replace(/\\ /g, '')
 			// French number grouping: spaces between digit groups (12 345 → 12345)
 			.replace(/(\d)\s+(?=\d)/g, '$1')
+			// French decimal comma: {,} → . (LaTeX notation for comma decimal separator)
+			.replace(/\{,\}/g, '.')
+			// Plain comma as decimal separator between digits: 1234,5 → 1234.5
+			.replace(/(\d),(\d)/g, '$1.$2')
 	);
 }
 
