@@ -31,7 +31,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MathField from '$lib/components/MathField.svelte';
-	import { Plus, Trash2, Play, Check, X, Copy } from 'lucide-svelte';
+	import { Plus, Trash2, Play, Check, X, Copy, Loader2 } from 'lucide-svelte';
 
 	interface Props {
 		testSpecs: TestSpec[];
@@ -227,7 +227,11 @@
 			</Button>
 			{#if testSpecs.length > 0}
 				<Button variant="outline" size="sm" onclick={runAll} disabled={isRunning}>
-					<Play class="mr-1 h-3 w-3" />
+					{#if isRunning}
+						<Loader2 class="mr-1 h-3 w-3 animate-spin" />
+					{:else}
+						<Play class="mr-1 h-3 w-3" />
+					{/if}
 					Tout lancer
 				</Button>
 			{/if}
@@ -262,7 +266,11 @@
 					</div>
 					<div class="flex shrink-0 items-center gap-1">
 						<Button variant="ghost" size="sm" onclick={() => runSpec(i)} disabled={isRunning}>
-							<Play class="h-3 w-3" />
+							{#if isRunning}
+								<Loader2 class="h-3 w-3 animate-spin" />
+							{:else}
+								<Play class="h-3 w-3" />
+							{/if}
 						</Button>
 						<Button variant="ghost" size="sm" onclick={() => startEdit(i)}>Editer</Button>
 						<Button variant="ghost" size="sm" onclick={() => duplicateSpec(i)}>
