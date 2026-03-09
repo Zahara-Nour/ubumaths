@@ -53,7 +53,8 @@
 		{ value: 'correct', label: 'correct' },
 		{ value: 'unoptimal_form', label: 'unoptimal_form' },
 		{ value: 'bad_form', label: 'bad_form' },
-		{ value: 'incorrect', label: 'incorrect' }
+		{ value: 'incorrect', label: 'incorrect' },
+		{ value: 'empty', label: 'empty' }
 	];
 
 	const CONSTRAINT_OPTIONS: { value: ConstraintId; label: string }[] = [
