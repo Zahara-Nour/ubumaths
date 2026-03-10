@@ -21,13 +21,17 @@
 	import 'mathlive';
 	import type {
 		NumberLineNode,
-		NumberLineValue,
 		NumberLinePoint,
 		NumberLineSegment
 	} from '$lib/ubumark/types/number-line';
-	import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-	import { toLatex } from '$lib/mathAST/latex-generator';
-	import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
+	import {
+		NL_LAYOUT,
+		numVal,
+		valLatex,
+		valueToX,
+		computeGraduations,
+		computeLineExtents
+	} from '$lib/ubumark/utils/number-line-render';
 
 	interface Props {
 		node: NumberLineNode;
@@ -36,138 +40,30 @@
 
 	let { node, class: className = '' }: Props = $props();
 
-	// =========================================================================
-	// LAYOUT CONSTANTS
-	// =========================================================================
+	const {
+		SVG_WIDTH,
+		LINE_Y,
+		MINOR_TICK_HEIGHT,
+		MAJOR_TICK_HEIGHT,
+		LABEL_Y_OFFSET,
+		POINT_RADIUS,
+		POINT_Y_OFFSET,
+		POINT_LABEL_Y_OFFSET,
+		SEGMENT_Y_OFFSET,
+		ARROW_SIZE
+	} = NL_LAYOUT;
 
-	const MARGIN_LEFT = 40;
-	const MARGIN_RIGHT = 40;
-	const SVG_WIDTH = 600;
 	const SVG_HEIGHT = 120;
-	const LINE_Y = 50;
-	const MINOR_TICK_HEIGHT = 6;
-	const MAJOR_TICK_HEIGHT = 12;
-	const LABEL_Y_OFFSET = 20;
-	const POINT_RADIUS = 5;
-	const POINT_Y_OFFSET = -18;
-	const POINT_LABEL_Y_OFFSET = -30;
-	const SEGMENT_Y_OFFSET = 12;
-	const ARROW_SIZE = 8;
-	const LINE_WIDTH = SVG_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
 
 	// =========================================================================
 	// COMPUTED VALUES
 	// =========================================================================
 
-	function numVal(v: NumberLineValue): number {
-		return evaluateNodeToApproximatedNumber(v.ast);
-	}
-
-	function valLatex(v: NumberLineValue): string {
-		return toLatex(v.ast);
-	}
-
-	function isHidden(v: NumberLineValue): boolean {
-		return node.config.hidden.some((h) => compareNumericNodes(h.ast, v.ast) === 0);
-	}
-
 	let startNum = $derived(numVal(node.config.start));
 	let endNum = $derived(numVal(node.config.end));
-	let stepNum = $derived(numVal(node.config.step));
+	let scale = $derived(node.config.scale ?? 'linear');
 
-	/**
-	 * Map a numeric value to SVG x coordinate
-	 */
-	function valueToX(val: number): number {
-		if (node.config.scale === 'log') {
-			const logStart = Math.log10(startNum);
-			const logEnd = Math.log10(endNum);
-			const logVal = Math.log10(val);
-			return MARGIN_LEFT + ((logVal - logStart) / (logEnd - logStart)) * LINE_WIDTH;
-		}
-		return MARGIN_LEFT + ((val - startNum) / (endNum - startNum)) * LINE_WIDTH;
-	}
-
-	// =========================================================================
-	// GRADUATIONS
-	// =========================================================================
-
-	interface Graduation {
-		x: number;
-		value: number;
-		isMajor: boolean;
-		label: string | null;
-		hidden: boolean;
-		lineValue: NumberLineValue | null;
-	}
-
-	let graduations = $derived.by(() => {
-		const grads: Graduation[] = [];
-		const major = node.config.major;
-		const hasExplicitLabels = node.config.labels.length > 0;
-		const tolerance = stepNum * 0.001;
-
-		let tickIndex = 0;
-		for (let val = startNum; val <= endNum + tolerance; val += stepNum) {
-			const isMajor = tickIndex % major === 0;
-			const x = valueToX(val);
-
-			// Find matching NumberLineValue from labels if explicit
-			let lineValue: NumberLineValue | null = null;
-			let label: string | null = null;
-			let hidden = false;
-
-			if (hasExplicitLabels) {
-				// Check if this graduation matches an explicit label
-				const matchingLabel = node.config.labels.find((lv) => {
-					return Math.abs(numVal(lv) - val) < tolerance;
-				});
-				if (matchingLabel) {
-					lineValue = matchingLabel;
-					hidden = isHidden(matchingLabel);
-					label = hidden ? '?' : valLatex(matchingLabel);
-				}
-			} else if (isMajor) {
-				// Auto-label major graduations
-				// Try to find a matching value from step increments
-				// Build a NumberLineValue on-the-fly for display
-				label = formatAutoLabel(val);
-
-				// Check if hidden
-				const matchingHidden = node.config.hidden.find((hv) => {
-					return Math.abs(numVal(hv) - val) < tolerance;
-				});
-				if (matchingHidden) {
-					hidden = true;
-					label = '?';
-				}
-			}
-
-			grads.push({ x, value: val, isMajor, label, hidden, lineValue });
-			tickIndex++;
-		}
-
-		return grads;
-	});
-
-	/**
-	 * Format an auto-generated label for a graduation value
-	 */
-	function formatAutoLabel(val: number): string {
-		// Clean up floating point: if very close to an integer or simple fraction
-		if (Math.abs(val - Math.round(val)) < 1e-9) {
-			return String(Math.round(val));
-		}
-		// Try common fractions
-		for (const denom of [2, 3, 4, 5, 6, 8, 10]) {
-			const numer = val * denom;
-			if (Math.abs(numer - Math.round(numer)) < 1e-9) {
-				return `\\frac{${Math.round(numer)}}{${denom}}`;
-			}
-		}
-		// Fall back to decimal
-		return val.toFixed(2).replace(/\.?0+$/, '');
-	}
+	let graduations = $derived(computeGraduations(node.config));
 
 	// =========================================================================
 	// POINTS
@@ -175,7 +71,7 @@
 
 	let renderedPoints = $derived(
 		node.points.map((p: NumberLinePoint) => ({
-			x: valueToX(numVal(p.value)),
+			x: valueToX(numVal(p.value), startNum, endNum, scale),
 			y: LINE_Y + POINT_Y_OFFSET,
 			label: p.label,
 			latex: valLatex(p.value),
@@ -189,8 +85,8 @@
 
 	let renderedSegments = $derived(
 		node.segments.map((s: NumberLineSegment, i: number) => ({
-			x1: valueToX(numVal(s.start)),
-			x2: valueToX(numVal(s.end)),
+			x1: valueToX(numVal(s.start), startNum, endNum, scale),
+			x2: valueToX(numVal(s.end), startNum, endNum, scale),
 			y: LINE_Y + SEGMENT_Y_OFFSET + i * 10,
 			startOpen: s.startOpen,
 			endOpen: s.endOpen,
@@ -199,13 +95,11 @@
 	);
 
 	// =========================================================================
-	// ARROWS
+	// ARROWS & HEIGHT
 	// =========================================================================
 
-	let lineStartX = $derived(MARGIN_LEFT - (node.config.arrows ? ARROW_SIZE + 2 : 0));
-	let lineEndX = $derived(MARGIN_LEFT + LINE_WIDTH + (node.config.arrows ? ARROW_SIZE + 2 : 0));
+	let { lineStartX, lineEndX } = $derived(computeLineExtents(node.config.arrows));
 
-	// Dynamic height based on content
 	let svgHeight = $derived.by(() => {
 		let h = SVG_HEIGHT;
 		if (node.segments.length > 0) {
