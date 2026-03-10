@@ -17,7 +17,7 @@
  */
 
 import type { NumberLineNode, NumberLinePoint, NumberLineSegment } from '../types/number-line';
-import { numVal, computeGraduations } from '../utils/number-line-render';
+import { numVal, computeGraduations, mapValueToRange } from '../utils/number-line-render';
 import { convertLatexToTypstMath } from './typst-generator';
 
 // ============================================================================
@@ -84,14 +84,16 @@ export function generateNumberLineTypst(
 		// Graduations + labels
 		parts.push(generateGraduations(node, startNum, endNum, opts));
 
+		const scale = node.config.scale ?? 'linear';
+
 		// Segments (rendered below labels, before points)
 		if (node.segments.length > 0) {
-			parts.push(generateSegments(node.segments, startNum, endNum, opts));
+			parts.push(generateSegments(node.segments, startNum, endNum, scale, opts));
 		}
 
 		// Points
 		if (node.points.length > 0) {
-			parts.push(generatePoints(node.points, startNum, endNum, opts));
+			parts.push(generatePoints(node.points, startNum, endNum, scale, opts));
 		}
 
 		const body = parts.join('\n');
@@ -104,25 +106,6 @@ export function generateNumberLineTypst(
 // ============================================================================
 // COORDINATE MAPPING
 // ============================================================================
-
-/**
- * Map a numeric value to CeTZ x coordinate.
- */
-function valToX(
-	val: number,
-	startNum: number,
-	endNum: number,
-	lineWidth: number,
-	scale: 'linear' | 'log' = 'linear'
-): number {
-	if (scale === 'log') {
-		const logStart = Math.log10(startNum);
-		const logEnd = Math.log10(endNum);
-		const logVal = Math.log10(val);
-		return ((logVal - logStart) / (logEnd - logStart)) * lineWidth;
-	}
-	return ((val - startNum) / (endNum - startNum)) * lineWidth;
-}
 
 function fmt(n: number, decimals: number = 3): string {
 	return n.toFixed(decimals).replace(/\.?0+$/, '') || '0';
@@ -171,7 +154,7 @@ function generateGraduations(
 	const scale = node.config.scale ?? 'linear';
 
 	for (const grad of grads) {
-		const x = valToX(grad.value, startNum, endNum, opts.lineWidth, scale);
+		const x = mapValueToRange(grad.value, startNum, endNum, opts.lineWidth, scale);
 		const tickH = grad.isMajor ? opts.majorTickHeight : opts.minorTickHeight;
 		const halfH = tickH / 2;
 
@@ -208,13 +191,14 @@ function generatePoints(
 	points: NumberLinePoint[],
 	startNum: number,
 	endNum: number,
+	scale: 'linear' | 'log',
 	opts: Required<NumberLineTypstOptions>
 ): string {
 	const lines: string[] = [];
 	lines.push('  // Points');
 
 	for (const p of points) {
-		const x = valToX(numVal(p.value), startNum, endNum, opts.lineWidth);
+		const x = mapValueToRange(numVal(p.value), startNum, endNum, opts.lineWidth, scale);
 		const color = getTypstColor(p.color);
 
 		// Circle
@@ -240,6 +224,7 @@ function generateSegments(
 	segments: NumberLineSegment[],
 	startNum: number,
 	endNum: number,
+	scale: 'linear' | 'log',
 	opts: Required<NumberLineTypstOptions>
 ): string {
 	const lines: string[] = [];
@@ -247,8 +232,8 @@ function generateSegments(
 
 	for (let i = 0; i < segments.length; i++) {
 		const seg = segments[i];
-		const x1 = valToX(numVal(seg.start), startNum, endNum, opts.lineWidth);
-		const x2 = valToX(numVal(seg.end), startNum, endNum, opts.lineWidth);
+		const x1 = mapValueToRange(numVal(seg.start), startNum, endNum, opts.lineWidth, scale);
+		const x2 = mapValueToRange(numVal(seg.end), startNum, endNum, opts.lineWidth, scale);
 		const y = opts.segmentOffset - i * 0.3;
 		const color = getTypstColor(seg.color);
 

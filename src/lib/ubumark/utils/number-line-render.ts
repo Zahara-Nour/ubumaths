@@ -49,6 +49,26 @@ export function valLatex(v: NumberLineValue): string {
 // =========================================================================
 
 /**
+ * Map a numeric value to a normalized position within a given output width.
+ * Used by both SVG rendering and Typst generation.
+ */
+export function mapValueToRange(
+	val: number,
+	startNum: number,
+	endNum: number,
+	outputWidth: number,
+	scale: 'linear' | 'log' = 'linear'
+): number {
+	if (scale === 'log') {
+		const logStart = Math.log10(startNum);
+		const logEnd = Math.log10(endNum);
+		const logVal = Math.log10(val);
+		return ((logVal - logStart) / (logEnd - logStart)) * outputWidth;
+	}
+	return ((val - startNum) / (endNum - startNum)) * outputWidth;
+}
+
+/**
  * Map a numeric value to SVG x coordinate.
  * Supports linear and logarithmic scales.
  */
@@ -58,14 +78,9 @@ export function valueToX(
 	endNum: number,
 	scale: 'linear' | 'log' = 'linear'
 ): number {
-	const { MARGIN_LEFT, LINE_WIDTH } = NL_LAYOUT;
-	if (scale === 'log') {
-		const logStart = Math.log10(startNum);
-		const logEnd = Math.log10(endNum);
-		const logVal = Math.log10(val);
-		return MARGIN_LEFT + ((logVal - logStart) / (logEnd - logStart)) * LINE_WIDTH;
-	}
-	return MARGIN_LEFT + ((val - startNum) / (endNum - startNum)) * LINE_WIDTH;
+	return (
+		NL_LAYOUT.MARGIN_LEFT + mapValueToRange(val, startNum, endNum, NL_LAYOUT.LINE_WIDTH, scale)
+	);
 }
 
 /**
