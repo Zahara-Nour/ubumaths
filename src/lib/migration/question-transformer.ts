@@ -1581,8 +1581,15 @@ function detectSharedFields(
 		// The answerField replaces the expression in the statement
 		const answerFieldIsShared = answerFields.length === 1 && variationCount > 1;
 		const enounceIsShared = enounces.length === 1 && variationCount > 1;
+		// Images drive per-variation statements when they are the source of variations
+		const imagesArePerVariation =
+			images !== undefined && images.length > 1 && images.length === variationCount;
 
-		if (answerFieldIsShared && (enounceIsShared || enounces.length === 0)) {
+		if (
+			answerFieldIsShared &&
+			(enounceIsShared || enounces.length === 0) &&
+			!imagesArePerVariation
+		) {
 			// Shared answerField
 			const enonce = enounces[0];
 			const convertedField = convertAnswerFieldToStatement(answerFields[0], warnings);
@@ -1592,10 +1599,23 @@ function detectSharedFields(
 				parts.push(enonceResult.converted || enonce);
 			}
 			parts.push(convertedField);
+			// Add all images if present (shared across variations)
+			if (images && images.length > 0 && imageMapping) {
+				for (let j = 0; j < images.length; j++) {
+					const md = convertImageToMarkdown(images[j], imageMapping, `Question image ${j + 1}`);
+					if (md) {
+						parts.push(md);
+						stats.imagesConverted++;
+					} else {
+						stats.imagesMissing++;
+						parts.push(`![Question image ${j + 1}](${images[j]})`);
+					}
+				}
+			}
 			shared.statement = templateMarkdown(fixMathDelimiters(parts.join('\n\n')));
 			for (let i = 0; i < variationCount; i++) {
 				perVariation[i].statement = shared.statement;
-				expressionVariables.push(undefined); // No expression variable for answerField
+				expressionVariables.push(undefined);
 			}
 		} else {
 			// Per-variation answerField
@@ -1609,8 +1629,32 @@ function detectSharedFields(
 					parts.push(enonceResult.converted || enonce);
 				}
 				parts.push(convertedField);
+				// Add image: one per variation or all
+				if (images && images.length > 0 && imageMapping) {
+					if (imagesArePerVariation) {
+						const md = convertImageToMarkdown(images[i], imageMapping, `Question image`);
+						if (md) {
+							parts.push(md);
+							stats.imagesConverted++;
+						} else {
+							stats.imagesMissing++;
+							parts.push(`![Question image](${images[i]})`);
+						}
+					} else {
+						for (let j = 0; j < images.length; j++) {
+							const md = convertImageToMarkdown(images[j], imageMapping, `Question image ${j + 1}`);
+							if (md) {
+								parts.push(md);
+								stats.imagesConverted++;
+							} else {
+								stats.imagesMissing++;
+								parts.push(`![Question image ${j + 1}](${images[j]})`);
+							}
+						}
+					}
+				}
 				perVariation[i].statement = templateMarkdown(fixMathDelimiters(parts.join('\n\n')));
-				expressionVariables.push(undefined); // No expression variable for answerField
+				expressionVariables.push(undefined);
 			}
 		}
 	} else {
@@ -1618,9 +1662,13 @@ function detectSharedFields(
 		const enounceIsShared = enounces.length === 1 && variationCount > 1;
 		const expressionIsShared =
 			(expressions.length === 0 || expressions.length === 1) && variationCount > 1;
+		// Images drive per-variation statements when they are the source of variations
+		const imagesArePerVariation =
+			images !== undefined && images.length > 1 && images.length === variationCount;
 		const statementIsShared =
 			(enounceIsShared || enounces.length === 0) &&
-			(expressionIsShared || expressions.length === 0);
+			(expressionIsShared || expressions.length === 0) &&
+			!imagesArePerVariation;
 
 		if (statementIsShared) {
 			// Shared enounce AND shared/no expression - generate statement once
@@ -1646,11 +1694,13 @@ function detectSharedFields(
 			for (let i = 0; i < variationCount; i++) {
 				const enonce = enounces[i] || enounces[0];
 				const expression = expressions[i] || expressions[0];
+				// Distribute images: one per variation when images drive variations
+				const variationImages = imagesArePerVariation ? [images![i]] : images;
 				const result = convertStatement(
 					enonce,
 					expression,
 					i + 1, // expressionIndex varies per variation
-					images,
+					variationImages,
 					imageMapping,
 					warnings,
 					stats
