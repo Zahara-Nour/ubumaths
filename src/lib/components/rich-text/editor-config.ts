@@ -38,6 +38,7 @@ import { MarkdownPaste } from './markdown-paste-extension';
 import { CustomCode, CustomCodeBlock } from '$lib/extensions/code-extension';
 import { CustomStrike } from '$lib/extensions/strike-extension';
 import { VariationTableExtension } from '$lib/extensions/variation-table-extension';
+import { NumberLineExtension } from '$lib/extensions/number-line-extension';
 import { CustomListItem } from '$lib/extensions/list-item-extension';
 
 // Note: Underline is included in StarterKit v3
@@ -67,7 +68,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after markdown paste extension fixed
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v28`; // v28: Added CustomListItem for Mod+Enter paragraph support
+	return `h${headingLevels}-v29`; // v29: Added NumberLineExtension
 }
 
 /**
@@ -196,7 +197,10 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 		}),
 
 		// Variation tables (sign/variation tables)
-		VariationTableExtension.configure({})
+		VariationTableExtension.configure({}),
+
+		// Number lines (droites graduées)
+		NumberLineExtension.configure({})
 	];
 }
 
