@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.30](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.29...v0.8.30) (2026-03-10)
+
+### ✨ Features
+
+- **editor:** add TipTap extension for number line editing ([2344121](https://github.com/Zahara-Nour/ubumaths/commit/23441210eac1e63f062f21e7010274a85057f7ea))
+- **number-line:** add Typst/CeTZ generator for number lines ([95baec9](https://github.com/Zahara-Nour/ubumaths/commit/95baec916f1c283e4926c9b86da6acd0375169fc))
+- **test-specs:** add duplicate button for test specs ([60bf310](https://github.com/Zahara-Nour/ubumaths/commit/60bf3108d704a29929fd47b532918a32a3375217))
+- **test-specs:** show spinner while tests are running ([bf7438d](https://github.com/Zahara-Nour/ubumaths/commit/bf7438ddf3e1150faa1a9576ff7fa65007abd3e4))
+- **ubumark:** add number line tool (droite graduée) ([12daa60](https://github.com/Zahara-Nour/ubumaths/commit/12daa60a59b6bc004b62cdf4a47437dced7a40c9))
+
+### 🐛 Bug Fixes
+
+- **images:** use relative paths, white background, and render in fill-blanks ([df80868](https://github.com/Zahara-Nour/ubumaths/commit/df80868f966db4c18d685da7f5fd615be9d2728a))
+- **migration:** distribute one image per variation instead of all in one ([ba2f1eb](https://github.com/Zahara-Nour/ubumaths/commit/ba2f1ebd09bd116f98985aed986b8e9bf3cf4fab)), closes [#20](https://github.com/Zahara-Nour/ubumaths/issues/20)
+- **minesweeper:** allow teachers to save scores for global leaderboard ([c2f4ec7](https://github.com/Zahara-Nour/ubumaths/commit/c2f4ec7e6c9af6f7327e411545c98d2392903dd8))
+- **number-line:** deduplicate coordinate mapping, use $derived, cleanup timeout ([3f827f5](https://github.com/Zahara-Nour/ubumaths/commit/3f827f530ff025a53b40777be0ca38c93b785803))
+- **test-specs:** add missing 'empty' status option ([d10d507](https://github.com/Zahara-Nour/ubumaths/commit/d10d507bfbc87a951a3942c63203d4c869aeacab))
+- **test-specs:** detect bare variable names inside eval tokens ([c348aa0](https://github.com/Zahara-Nour/ubumaths/commit/c348aa0d840d7bbf8e1e695adf53681a15e1f7d5))
+- **test-specs:** pass template options (constraints) to test runner ([8505358](https://github.com/Zahara-Nour/ubumaths/commit/8505358205cabf23b978c975b3fad01e61503c5a))
+- **validation:** always add form violation on structural mismatch ([dece435](https://github.com/Zahara-Nour/ubumaths/commit/dece435e487571c94f5987f685b1109a2d5e95f8))
+- **vip:** rebalance card prices based on actual card power/value ([5565e76](https://github.com/Zahara-Nour/ubumaths/commit/5565e76f7f71ebb9a8a722bf26d0feb0ed276f2b))
+
 ### [0.8.29](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.28...v0.8.29) (2026-03-09)
 
 ### ✨ Features
