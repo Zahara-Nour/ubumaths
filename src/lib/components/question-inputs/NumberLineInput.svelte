@@ -14,11 +14,17 @@
 -->
 <script lang="ts">
 	import 'mathlive';
-	import type { NumberLineValue } from '$lib/ubumark/types/number-line';
-	import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-	import { toLatex } from '$lib/mathAST/latex-generator';
-	import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
 	import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
+	import {
+		NL_LAYOUT,
+		numVal,
+		valueToX,
+		xToValue,
+		snapToStep,
+		computeGraduations,
+		computeLineExtents,
+		type Graduation
+	} from '$lib/ubumark/utils/number-line-render';
 
 	interface Props {
 		/** The number line configuration block (raw text lines) */
@@ -59,7 +65,6 @@
 
 	let parsedNode = $derived.by(() => {
 		const lines = configBlock.split('\n');
-		// Add fixed points/segments if provided
 		const allLines = [...lines];
 		if (fixedPoints) allLines.push(`points: ${fixedPoints}`);
 		if (fixedSegments) allLines.push(`segments: ${fixedSegments}`);
@@ -71,47 +76,18 @@
 	// LAYOUT
 	// =========================================================================
 
-	const MARGIN_LEFT = 40;
-	const MARGIN_RIGHT = 40;
-	const SVG_WIDTH = 600;
+	const {
+		SVG_WIDTH,
+		LINE_Y,
+		MINOR_TICK_HEIGHT,
+		MAJOR_TICK_HEIGHT,
+		LABEL_Y_OFFSET,
+		POINT_Y_OFFSET,
+		ARROW_SIZE
+	} = NL_LAYOUT;
+
 	const SVG_HEIGHT = 140;
-	const LINE_Y = 50;
-	const MINOR_TICK_HEIGHT = 6;
-	const MAJOR_TICK_HEIGHT = 12;
-	const LABEL_Y_OFFSET = 20;
-	const POINT_RADIUS = 6;
-	const POINT_Y_OFFSET = -18;
-	const ARROW_SIZE = 8;
-	const LINE_WIDTH = SVG_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
-
-	// =========================================================================
-	// VALUE HELPERS
-	// =========================================================================
-
-	function numVal(v: NumberLineValue): number {
-		return evaluateNodeToApproximatedNumber(v.ast);
-	}
-
-	function valLatex(v: NumberLineValue): string {
-		return toLatex(v.ast);
-	}
-
-	// =========================================================================
-	// COORDINATE MAPPING
-	// =========================================================================
-
-	function valueToX(val: number, startN: number, endN: number): number {
-		return MARGIN_LEFT + ((val - startN) / (endN - startN)) * LINE_WIDTH;
-	}
-
-	function xToValue(x: number, startN: number, endN: number): number {
-		return startN + ((x - MARGIN_LEFT) / LINE_WIDTH) * (endN - startN);
-	}
-
-	function snapToStep(val: number, startN: number, stepN: number): number {
-		const steps = Math.round((val - startN) / stepN);
-		return startN + steps * stepN;
-	}
+	const POINT_RADIUS = 6; // Slightly larger than static for interaction
 
 	// =========================================================================
 	// PLACE-POINT INTERACTION
@@ -230,74 +206,10 @@
 	}
 
 	// =========================================================================
-	// GRADUATIONS (same logic as static NumberLine)
+	// GRADUATIONS
 	// =========================================================================
 
-	interface Graduation {
-		x: number;
-		value: number;
-		isMajor: boolean;
-		label: string | null;
-		hidden: boolean;
-	}
-
-	let graduations = $derived.by(() => {
-		if (!parsedNode) return [];
-
-		const grads: Graduation[] = [];
-		const config = parsedNode.config;
-		const startN = numVal(config.start);
-		const endN = numVal(config.end);
-		const stepN = numVal(config.step);
-		const major = config.major;
-		const hasExplicitLabels = config.labels.length > 0;
-		const tolerance = stepN * 0.001;
-
-		let tickIndex = 0;
-		for (let val = startN; val <= endN + tolerance; val += stepN) {
-			const isMajor = tickIndex % major === 0;
-			const x = valueToX(val, startN, endN);
-
-			let label: string | null = null;
-			let hidden = false;
-
-			if (hasExplicitLabels) {
-				const matchingLabel = config.labels.find((lv) => Math.abs(numVal(lv) - val) < tolerance);
-				if (matchingLabel) {
-					const isHidden = config.hidden.some(
-						(h) => compareNumericNodes(h.ast, matchingLabel.ast) === 0
-					);
-					hidden = isHidden;
-					label = hidden ? '?' : valLatex(matchingLabel);
-				}
-			} else if (isMajor) {
-				label = formatAutoLabel(val);
-				const matchingHidden = config.hidden.find((hv) => Math.abs(numVal(hv) - val) < tolerance);
-				if (matchingHidden) {
-					hidden = true;
-					label = '?';
-				}
-			}
-
-			grads.push({ x, value: val, isMajor, label, hidden });
-			tickIndex++;
-		}
-
-		return grads;
-	});
-
-	function formatAutoLabel(val: number): string {
-		if (Math.abs(val - Math.round(val)) < 1e-9) {
-			return String(Math.round(val));
-		}
-		for (const denom of [2, 3, 4, 5, 6, 8, 10]) {
-			const numer = val * denom;
-			if (Math.abs(numer - Math.round(numer)) < 1e-9) {
-				return `\\frac{${Math.round(numer)}}{${denom}}`;
-			}
-		}
-		return val.toFixed(2).replace(/\.?0+$/, '');
-	}
+	let graduations: Graduation[] = $derived(parsedNode ? computeGraduations(parsedNode.config) : []);
 
 	// =========================================================================
 	// FIXED POINTS
@@ -328,8 +240,9 @@
 {#if parsedNode}
 	{@const startN = numVal(parsedNode.config.start)}
 	{@const endN = numVal(parsedNode.config.end)}
-	{@const lineStartX = MARGIN_LEFT - (parsedNode.config.arrows ? ARROW_SIZE + 2 : 0)}
-	{@const lineEndX = MARGIN_LEFT + LINE_WIDTH + (parsedNode.config.arrows ? ARROW_SIZE + 2 : 0)}
+	{@const extents = computeLineExtents(parsedNode.config.arrows)}
+	{@const lineStartX = extents.lineStartX}
+	{@const lineEndX = extents.lineEndX}
 
 	<div class="number-line-input" class:disabled>
 		<svg
