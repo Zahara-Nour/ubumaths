@@ -350,7 +350,8 @@ export function getVariationCount(q: QuestionBase): number {
 		q.expressions?.length || 0,
 		q.solutionss?.length || 0,
 		q.variabless?.length || 0,
-		q.choicess?.length || 0
+		q.choicess?.length || 0,
+		q.images?.length || 0
 	];
 
 	// Return the maximum count (they should all be the same)
