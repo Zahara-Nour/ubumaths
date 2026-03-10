@@ -28,7 +28,6 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
 	import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-	import type { NumberLineNode } from '$lib/ubumark/types/number-line';
 	import { NUMBER_LINE_TEMPLATE } from './number-line-extension';
 
 	let { node, updateAttributes, deleteNode, selected, editor, getPos }: NodeViewProps = $props();
@@ -54,15 +53,9 @@
 	let hasAutoOpened = $state(false);
 
 	// Parsed node for rendering
-	let parsedNode = $state<NumberLineNode | null>(null);
-
-	$effect(() => {
+	let parsedNode = $derived.by(() => {
 		const result = parseNumberLineContent(content.split('\n'));
-		if (result.node) {
-			parsedNode = result.node;
-		} else {
-			parsedNode = null;
-		}
+		return result.node ?? null;
 	});
 
 	// Auto-open edit mode for newly created nodes
@@ -116,7 +109,6 @@
 				hasError: false,
 				errorMessage: null
 			});
-			parsedNode = result.node;
 			isEditingMarkdown = false;
 			syntaxStatus = 'unknown';
 			parseErrors = [];
@@ -180,6 +172,13 @@
 
 	let validateTimeout: ReturnType<typeof setTimeout> | null = null;
 
+	// Cleanup timeout on destroy
+	$effect(() => {
+		return () => {
+			if (validateTimeout) clearTimeout(validateTimeout);
+		};
+	});
+
 	function validateLive() {
 		if (validateTimeout) {
 			clearTimeout(validateTimeout);
@@ -231,7 +230,6 @@
 				hasError: false,
 				errorMessage: null
 			});
-			parsedNode = result.node;
 		} else {
 			const errorMsg = result.errors.map((e) => e.message).join('; ') || 'Syntaxe invalide';
 			updateAttributes({
