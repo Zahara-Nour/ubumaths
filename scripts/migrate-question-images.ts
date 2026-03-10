@@ -246,6 +246,7 @@ async function convertToWebP(sourcePath: string): Promise<Buffer | null> {
 		const sharp = (await import('sharp')).default;
 
 		return await sharp(sourcePath)
+			.flatten({ background: { r: 255, g: 255, b: 255 } })
 			.webp({
 				quality: CONFIG.quality,
 				effort: CONFIG.effort

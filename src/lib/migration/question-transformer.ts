@@ -67,6 +67,7 @@ import {
 } from './syntax-converter';
 import { convertPlaceholders } from './placeholder-converter';
 import { convertConditionals } from './conditional-converter';
+import { QUESTION_IMAGES_BUCKET } from '$lib/questions/constants';
 // Note: No AsciiMath→LaTeX conversion here. Variables use custom mathAST syntax.
 // LaTeX conversion happens at question instantiation when inside $...$
 
@@ -86,6 +87,21 @@ import { convertConditionals } from './conditional-converter';
 export type ImageUrlMapping = Record<string, string>;
 
 /**
+ * Extract the relative path from a full Supabase Storage URL.
+ * e.g. "https://xxx.supabase.co/storage/v1/object/public/question-images/entiers/rep.webp"
+ *   → "entiers/rep.webp"
+ */
+function extractRelativePath(fullUrl: string): string {
+	const marker = `/storage/v1/object/public/${QUESTION_IMAGES_BUCKET}/`;
+	const idx = fullUrl.indexOf(marker);
+	if (idx !== -1) {
+		return fullUrl.substring(idx + marker.length);
+	}
+	// Fallback: return as-is
+	return fullUrl;
+}
+
+/**
  * Look up new URL for an old image path
  *
  * Tries multiple path formats to find a match:
@@ -96,30 +112,30 @@ export type ImageUrlMapping = Record<string, string>;
  *
  * @param oldPath - The old image path from the question
  * @param mapping - The image URL mapping object
- * @returns The new Supabase Storage URL, or undefined if not found
+ * @returns The relative path within the question-images bucket, or undefined if not found
  */
-function lookupImageUrl(oldPath: string, mapping: ImageUrlMapping): string | undefined {
+function lookupImageRelativePath(oldPath: string, mapping: ImageUrlMapping): string | undefined {
 	// Try exact match first
 	if (mapping[oldPath]) {
-		return mapping[oldPath];
+		return extractRelativePath(mapping[oldPath]);
 	}
 
 	// Try without leading slash
 	const withoutLeadingSlash = oldPath.replace(/^\//, '');
 	if (mapping[withoutLeadingSlash]) {
-		return mapping[withoutLeadingSlash];
+		return extractRelativePath(mapping[withoutLeadingSlash]);
 	}
 
 	// Try with /images/ prefix removed
 	const withoutImages = oldPath.replace(/^\/?images\//, '');
 	if (mapping[withoutImages]) {
-		return mapping[withoutImages];
+		return extractRelativePath(mapping[withoutImages]);
 	}
 
 	// Try adding /images/ prefix
 	const withImages = `/images/${withoutLeadingSlash}`;
 	if (mapping[withImages]) {
-		return mapping[withImages];
+		return extractRelativePath(mapping[withImages]);
 	}
 
 	// Not found
@@ -127,12 +143,13 @@ function lookupImageUrl(oldPath: string, mapping: ImageUrlMapping): string | und
 }
 
 /**
- * Convert an old image path to markdown image syntax with new URL
+ * Convert an old image path to markdown image syntax with relative path only.
+ * The full URL is reconstructed at render time using QUESTION_IMAGES_BUCKET_URL.
  *
  * @param oldPath - The old image path
  * @param mapping - The image URL mapping object
  * @param altText - Alternative text for the image
- * @returns Markdown image syntax or undefined if not found
+ * @returns Markdown image syntax with relative path, or undefined if not found
  */
 function convertImageToMarkdown(
 	oldPath: string,
@@ -143,9 +160,9 @@ function convertImageToMarkdown(
 		return undefined;
 	}
 
-	const newUrl = lookupImageUrl(oldPath, mapping);
-	if (newUrl) {
-		return `![${altText}](${newUrl})`;
+	const relativePath = lookupImageRelativePath(oldPath, mapping);
+	if (relativePath) {
+		return `![${altText}](${relativePath})`;
 	}
 
 	return undefined;

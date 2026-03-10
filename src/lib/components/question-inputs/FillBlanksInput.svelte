@@ -45,6 +45,7 @@
 	import MathBlock from '$lib/components/markdown/nodes/MathBlock.svelte';
 	import MathPrompt from '$lib/components/markdown/nodes/MathPrompt.svelte';
 	import HeadingNode from '$lib/components/markdown/nodes/HeadingNode.svelte';
+	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
 
 	// Utility functions
 	import {
@@ -315,6 +316,16 @@
 						<MathBlock expression={node.expression} syntax={node.syntax} />
 					{/key}
 				{/if}
+			{:else if node.type === 'image'}
+				<ImageDisplay
+					src={node.src}
+					alt={node.alt}
+					title={node.title}
+					sizeClass={node.sizeClass}
+					widthPercent={node.widthPercent}
+					alignment={node.alignment}
+					caption={node.caption}
+				/>
 			{:else if node.type === 'heading'}
 				<HeadingNode level={node.level} children={node.children} />
 			{/if}

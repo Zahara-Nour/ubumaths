@@ -22,6 +22,8 @@
 		shouldUseFigureEnvironment
 	} from '$lib/exercises/services/image-dimensions';
 	import { escapeHtml } from '../utils';
+	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+	import { getQuestionImageUrl } from '$lib/questions/constants';
 
 	interface Props {
 		src: string;
@@ -49,8 +51,13 @@
 		class: className = ''
 	}: Props = $props();
 
+	// Resolve relative paths to full Supabase Storage URLs
+	let resolvedSrc = $derived(
+		src.includes('://') ? src : getQuestionImageUrl(PUBLIC_SUPABASE_URL, src)
+	);
+
 	// Escaped values for safe rendering
-	let escapedSrc = $derived(escapeHtml(src));
+	let escapedSrc = $derived(escapeHtml(resolvedSrc));
 	let escapedAlt = $derived(escapeHtml(alt));
 	let escapedTitle = $derived(title ? escapeHtml(title) : undefined);
 	let escapedCaption = $derived(caption ? escapeHtml(caption) : undefined);
@@ -191,10 +198,8 @@
 		max-width: 100%;
 		height: auto;
 		display: block;
-		border-radius: 0.5rem;
-		box-shadow:
-			0 1px 3px 0 rgb(0 0 0 / 0.1),
-			0 1px 2px -1px rgb(0 0 0 / 0.1);
+		border-radius: 0;
+		box-shadow: none;
 	}
 
 	/* Inline images - embedded within text flow */
@@ -249,9 +254,7 @@
 
 	/* Dark mode adjustments for images */
 	:global(.dark .exercise-image) {
-		box-shadow:
-			0 1px 3px 0 rgb(0 0 0 / 0.3),
-			0 1px 2px -1px rgb(0 0 0 / 0.3);
+		box-shadow: none;
 	}
 
 	/* Responsive adjustments for small screens */
