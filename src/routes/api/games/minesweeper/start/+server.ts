@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRoles } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { startGameSchema } from '$lib/server/validation/minesweeper';
 import { sanitizePostgresError } from '$lib/server/utils/error-handler';
@@ -47,7 +47,7 @@ const DIFFICULTY_CONFIGS = {
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	// ✅ SECURITY: Require student authentication
-	const { user, profile } = await requireRole(locals, 'student');
+	const { user, profile } = await requireRoles(locals, ['student', 'teacher']);
 	requireConsent(profile, 'play_games');
 
 	// ✅ SECURITY: Validate input with Zod

@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRoles } from '$lib/server/middleware/auth';
 import { completeGameSchema, validateGridState } from '$lib/server/validation/minesweeper';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
 import { validateUuidParam } from '$lib/server/validation/params';
@@ -45,7 +45,7 @@ import { validateUuidParam } from '$lib/server/validation/params';
 export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const id = validateUuidParam(params.id);
 	// ✅ SECURITY: Require student authentication
-	const { user } = await requireRole(locals, 'student');
+	const { user } = await requireRoles(locals, ['student', 'teacher']);
 
 	// ✅ SECURITY: Validate input structure with Zod
 	const body = await request.json();
