@@ -61,6 +61,7 @@ import { isCodeFence, findCodeBlocks, parseCodeBlock } from './code-block-parser
 import { findVariationBlocks, parseVariationTable } from './variation-table-parser';
 import { findProbTreeBlocks, parseProbabilityTree } from './probability-tree-parser';
 import { findTrigCircleBlocks, parseTrigCircle } from './trig-circle-parser';
+import { findNumberLineBlocks, parseNumberLine } from './number-line-parser';
 
 // ============================================================================
 // REGULAR EXPRESSIONS
@@ -404,6 +405,7 @@ function parseBlocks(
 	const variationBlocks = findVariationBlocks(originalLines);
 	const probTreeBlocks = findProbTreeBlocks(originalLines);
 	const trigCircleBlocks = findTrigCircleBlocks(originalLines);
+	const numberLineBlocks = findNumberLineBlocks(originalLines);
 
 	// =========================================================================
 	// CODE BLOCK LINE INDEX MISMATCH FIX
@@ -503,7 +505,26 @@ function parseBlocks(
 			continue;
 		}
 
-		// PRIORITY 1d: Check if this line is part of a code block (highest priority)
+		// PRIORITY 1d: Check if this line is part of a number line block
+		// Number lines use ```line syntax and must be checked before regular code blocks
+		const numberLineBlock = numberLineBlocks.find(
+			(range) => i >= range.startIndex && i <= range.endIndex
+		);
+		if (numberLineBlock) {
+			const result = parseNumberLine(
+				originalLines,
+				numberLineBlock.startIndex,
+				numberLineBlock.endIndex
+			);
+			if (result.node) {
+				blocks.push(result.node);
+			}
+			// Note: Errors are silently ignored for now; could be logged if needed
+			i = numberLineBlock.endIndex + 1;
+			continue;
+		}
+
+		// PRIORITY 1e: Check if this line is part of a code block (highest priority)
 		// Uses codeBlocks (from `lines`) for detection - indices match the loop variable `i`
 		const codeBlock = codeBlocks.find((range) => i >= range.startIndex && i <= range.endIndex);
 		if (codeBlock) {

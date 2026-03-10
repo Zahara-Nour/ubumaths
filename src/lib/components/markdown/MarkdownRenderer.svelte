@@ -48,6 +48,7 @@
 	import VariationTable from './nodes/VariationTable.svelte';
 	import ProbabilityTree from './nodes/ProbabilityTree.svelte';
 	import TrigCircle from './nodes/TrigCircle.svelte';
+	import NumberLine from './nodes/NumberLine.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -262,6 +263,8 @@
 					<ProbabilityTree {node} />
 				{:else if node.type === 'trig-circle'}
 					<TrigCircle {node} />
+				{:else if node.type === 'number-line'}
+					<NumberLine {node} />
 				{/if}
 			{/each}
 		{:else}

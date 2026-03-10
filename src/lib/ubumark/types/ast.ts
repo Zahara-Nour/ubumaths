@@ -500,10 +500,14 @@ export type { ProbabilityTreeNode } from './probability-tree';
 // Re-export TrigCircleNode for inclusion in BlockNode union
 export type { TrigCircleNode } from './trig-circle';
 
+// Re-export NumberLineNode for inclusion in BlockNode union
+export type { NumberLineNode } from './number-line';
+
 // Import the types for use in BlockNode union
 import type { VariationTableNode } from './variation-table';
 import type { ProbabilityTreeNode } from './probability-tree';
 import type { TrigCircleNode } from './trig-circle';
+import type { NumberLineNode } from './number-line';
 
 /**
  * Union of block nodes (top-level document structure)
@@ -521,7 +525,8 @@ export type BlockNode =
 	| CodeBlockNode
 	| VariationTableNode
 	| ProbabilityTreeNode
-	| TrigCircleNode;
+	| TrigCircleNode
+	| NumberLineNode;
 
 // ============================================================================
 // COMPOSITE NODES
@@ -576,8 +581,8 @@ export interface InputState {
 	index: number;
 	/** Current value (text or LaTeX depending on type) */
 	value: string;
-	/** Discriminant: 'text' for {{blank:N}}, 'math' for \placeholder[N]{} */
-	type: 'text' | 'math';
+	/** Discriminant: 'text' for {{blank:N}}, 'math' for \placeholder[N]{}, 'graphical' for graphical tools */
+	type: 'text' | 'math' | 'graphical';
 	/** Validation state: true=correct, false=incorrect, null=not validated */
 	isCorrect: boolean | null;
 }
