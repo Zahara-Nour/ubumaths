@@ -108,7 +108,7 @@ function augmentMathNode(
 export function buildInputStates(blanks: InstanceBlank[]): InputState[] {
 	return blanks.map((blank, index) => ({
 		index,
-		type: blank.type,
+		type: blank.type === 'graphical' ? 'graphical' : blank.type,
 		value: blank.prefilled
 			? blank.type === 'math'
 				? toFrenchDecimal(blank.prefilled)

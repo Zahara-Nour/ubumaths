@@ -117,6 +117,16 @@ export {
 
 export type { VariationBlockRange } from './variation-table-parser';
 
+// Number line parser
+export {
+	parseNumberLine,
+	parseNumberLineContent,
+	findNumberLineBlocks,
+	isNumberLineBlockStart
+} from './number-line-parser';
+
+export type { NumberLineBlockRange } from '../types/number-line';
+
 // ============================================================================
 // TYPE RE-EXPORTS (for convenience)
 // ============================================================================
@@ -139,6 +149,7 @@ export type {
 	TableCellNode,
 	MathBlockNode,
 	VariationTableNode,
+	NumberLineNode,
 	// Inline nodes
 	TextNode,
 	MathInlineNode,

@@ -43,6 +43,7 @@ export type {
 	VariationTableNode,
 	ProbabilityTreeNode,
 	TrigCircleNode,
+	NumberLineNode,
 	BlockNode,
 	// Composite
 	ASTNode,
@@ -135,6 +136,27 @@ export type {
 } from './trig-circle';
 
 export { DEFAULT_TRIG_CIRCLE_CONFIG, REMARKABLE_ANGLES, getPresetAngles } from './trig-circle';
+
+// ============================================================================
+// NUMBER LINE TYPES
+// ============================================================================
+
+export type {
+	// Value types
+	NumberLineValue,
+	NumberLinePoint,
+	NumberLineSegment,
+	// Configuration
+	NumberLineScale,
+	NumberLineConfig,
+	// AST node
+	NumberLineNode,
+	// Parser types
+	NumberLineParseError,
+	NumberLineParseWarning,
+	NumberLineParseResult,
+	NumberLineBlockRange
+} from './number-line';
 
 // ============================================================================
 // PARSER TYPES

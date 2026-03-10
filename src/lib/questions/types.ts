@@ -551,7 +551,7 @@ export interface InstanceBlank {
 	/** LaTeX for flash back (math blanks only) */
 	expectedAnswerLatex?: string;
 	/** Inferred from context by the generator ('math' if in $...$, 'text' otherwise) */
-	type: 'math' | 'text';
+	type: 'math' | 'text' | 'graphical';
 	/** Resolved pre-filled value */
 	prefilled?: string;
 
@@ -569,6 +569,25 @@ export interface InstanceBlank {
 	// --- Text blank autocompletion ---
 	/** Word pool for autocompletion only (does NOT restrict validation) */
 	pool?: string[];
+
+	// --- Graphical input configuration ---
+	/** Configuration for graphical input tools (number line, etc.) */
+	graphicalConfig?: {
+		/** Tool type — extensible for future graphical tools */
+		tool: 'number-line';
+		numberLine?: {
+			/** Number line config (start, end, step, etc.) — serialized for the component */
+			configBlock: string;
+			/** Fixed points to display (not interactive) */
+			fixedPoints?: string;
+			/** Fixed segments to display (not interactive) */
+			fixedSegments?: string;
+			/** Interaction mode */
+			task: 'read-value' | 'place-point';
+			/** Whether to snap to graduations (always true for place-point) */
+			snap: boolean;
+		};
+	};
 }
 
 export interface QuestionInstance {
