@@ -40,3 +40,10 @@ export { generateProbabilityTreeLatex } from './probability-tree-latex';
 export { generateProbabilityTreeTypst } from './probability-tree-typst';
 export type { ProbTreeLatexOptions } from './probability-tree-latex';
 export type { ProbTreeTypstOptions } from './probability-tree-typst';
+
+// ============================================================================
+// NUMBER LINE GENERATOR
+// ============================================================================
+
+export { generateNumberLineTypst } from './number-line-typst';
+export type { NumberLineTypstOptions } from './number-line-typst';

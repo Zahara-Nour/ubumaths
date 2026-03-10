@@ -56,9 +56,11 @@ import { toFrenchDecimal } from '$lib/utils/french-math';
 import { generateVariationTableTypst } from './variation-table-typst';
 import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import { generateTrigCircleTypst } from './trig-circle-typst';
+import { generateNumberLineTypst } from './number-line-typst';
 import type { VariationTableNode } from '../types/variation-table';
 import type { ProbabilityTreeNode } from '../types/probability-tree';
 import type { TrigCircleNode } from '../types/trig-circle';
+import type { NumberLineNode } from '../types/number-line';
 import { createLogger } from '$lib/utils/logger';
 import { urlToVirtualPath, isExternalUrl as checkExternalUrl } from '$lib/typst/image-loader';
 
@@ -296,6 +298,9 @@ function generateBlock(node: BlockNode, options: Required<TypstTranspilerOptions
 
 		case 'trig-circle':
 			return generateTrigCircleTypst(node as unknown as TrigCircleNode);
+
+		case 'number-line':
+			return generateNumberLineTypst(node as unknown as NumberLineNode);
 
 		default:
 			return '';
