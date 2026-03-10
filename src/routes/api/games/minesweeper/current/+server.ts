@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRoles } from '$lib/server/middleware/auth';
 import { sanitizePostgresError } from '$lib/server/utils/error-handler';
 
 /**
@@ -35,7 +35,7 @@ import { sanitizePostgresError } from '$lib/server/utils/error-handler';
  */
 export const GET: RequestHandler = async ({ locals }) => {
 	// ✅ SECURITY: Require student authentication
-	const { user } = await requireRole(locals, 'student');
+	const { user } = await requireRoles(locals, ['student', 'teacher']);
 
 	try {
 		// ✅ SECURITY: RLS policies ensure student_id = auth.uid()
