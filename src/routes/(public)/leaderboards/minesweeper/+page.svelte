@@ -72,8 +72,8 @@
 
 	<Separator class="mb-6" />
 
-	<!-- User's Rank Card (only if authenticated and has a rank) -->
-	{#if data.currentUserId && data.userRank}
+	<!-- User's Rank Card (only if authenticated and ranked with 10+ games) -->
+	{#if data.currentUserId && data.userRank && rankedPlayers.some((e) => e.student_id === data.currentUserId)}
 		<Card class="mb-6 border-primary/20 bg-primary/5 p-4 md:p-6">
 			<div class="flex items-center justify-between">
 				<div>
