@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.32](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.31...v0.8.32) (2026-03-11)
+
+### 🐛 Bug Fixes
+
+- **journal:** game rewards now visible in teacher audit trail ([617378c](https://github.com/Zahara-Nour/ubumaths/commit/617378cf6983fd20e1100dfc1d51f22dc8fcd7d9))
+
 ### [0.8.31](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.30...v0.8.31) (2026-03-11)
 
 ### 🐛 Bug Fixes
