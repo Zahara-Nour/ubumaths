@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.31](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.30...v0.8.31) (2026-03-11)
+
+### 🐛 Bug Fixes
+
+- **leaderboard:** only show rank card for ranked players (10+ games) ([644e15f](https://github.com/Zahara-Nour/ubumaths/commit/644e15ff61d59fd1d36000d1be61dbd63bcd5fa2))
+- **marketplace:** fix accept endpoint and sync missing migrations ([c5ed429](https://github.com/Zahara-Nour/ubumaths/commit/c5ed42979857e0d033e717f66add69e16840a165))
+- **marketplace:** fix trade journal entries display issues ([2b19f68](https://github.com/Zahara-Nour/ubumaths/commit/2b19f681b8994c691732f21046084597d80eb948))
+- **marketplace:** pass class_id in trade gidouilles and remove duplicate trigger ([5522557](https://github.com/Zahara-Nour/ubumaths/commit/55225570e6034c207c01cbc4bd38175cbb1f09ff))
+- **minesweeper:** fix time multiplier formula giving < 1.0 under reference time ([2777c74](https://github.com/Zahara-Nour/ubumaths/commit/2777c7464f769b14f85f1263d76f6e718884be4c))
+
 ### [0.8.30](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.29...v0.8.30) (2026-03-10)
 
 ### ✨ Features
