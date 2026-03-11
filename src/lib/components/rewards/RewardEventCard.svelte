@@ -48,10 +48,12 @@
 	);
 
 	// Amount display logic
+	// For traded gidouilles, positive amount = received, negative = sent
 	let isPositiveAmount = $derived(
 		event.event_type === 'earned' ||
 			event.event_type === 'awarded' ||
-			event.event_type === 'unlocked'
+			event.event_type === 'unlocked' ||
+			(event.event_type === 'traded' && (event.amount ?? 0) > 0)
 	);
 
 	let displayAmount = $derived(Math.abs(event.amount ?? 1));
