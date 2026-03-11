@@ -83,42 +83,25 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		throw error(403, 'Vous ne pouvez pas accepter votre propre offre');
 	}
 
-	// Set final trade data and mark as completed
-	const { error: updateError } = await supabase
-		.from('marketplace_trades')
-		.update({
-			status: 'completed',
-			final_trade: trade.current_offer,
-			completed_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		})
-		.eq('id', trade_id);
-
-	if (updateError) {
-		console.error('Error completing trade:', updateError);
-		throw error(500, "Erreur lors de la finalisation de l'échange");
-	}
-
 	// Execute the trade using RPC
-	const { error: executeError } = await supabase.rpc('execute_trade', {
+	// Note: execute_trade handles setting status to 'completed' atomically
+	// along with all card/gidouilles transfers and audit trail entries.
+	// Do NOT set status before calling the RPC — it checks status = 'negotiating'.
+	const { data: rpcResult, error: executeError } = await supabase.rpc('execute_trade', {
 		p_trade_id: trade_id
 	});
 
+	// Check for RPC call error (HTTP/connection level)
 	if (executeError) {
-		console.error('Error executing trade:', executeError);
-
-		// Rollback: revert trade status
-		await supabase
-			.from('marketplace_trades')
-			.update({
-				status: 'negotiating',
-				final_trade: null,
-				completed_at: null,
-				updated_at: new Date().toISOString()
-			})
-			.eq('id', trade_id);
-
+		console.error('RPC call error:', executeError);
 		throw error(500, "Erreur lors de l'exécution de l'échange");
+	}
+
+	// Check for business logic error (RPC returned {success: false, error: '...'})
+	if (!rpcResult?.success) {
+		const errorMsg = rpcResult?.error || 'Unknown error';
+		console.error('Trade execution failed:', errorMsg);
+		throw error(500, `Erreur: ${errorMsg}`);
 	}
 
 	// Notify both participants of completion
@@ -152,13 +135,20 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// await invalidateMarketplaceCaches(trade.initiator_id, trade.partner_id);
 	// await invalidateTeacherCachesForStudents(supabase, [trade.initiator_id, trade.partner_id]);
 
+	// Get the updated trade to return
+	const { data: completedTrade } = await supabase
+		.from('marketplace_trades')
+		.select('*')
+		.eq('id', trade_id)
+		.single();
+
 	return json({
 		success: true,
-		trade: {
+		trade: completedTrade ?? {
 			...trade,
 			status: 'completed',
 			final_trade: trade.current_offer,
-			completed_at: new Date().toISOString()
+			completed_at: rpcResult.completed_at
 		}
 	});
 };
