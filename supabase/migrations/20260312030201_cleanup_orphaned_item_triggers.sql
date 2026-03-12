@@ -5,7 +5,8 @@
 -- The item system tables (shop_purchase_history, item_usage_log) were dropped
 -- in 20260103120000_remove_items_system.sql with CASCADE, which removed the
 -- triggers. But the trigger FUNCTIONS still exist as orphans.
--- Also removes the 'item' value from reward_type enum (no longer used).
+-- Note: the 'item' reward_type enum value is kept for backward compatibility
+-- with existing reward_events rows that may reference it.
 -- ============================================================================
 
 -- Drop orphaned trigger functions
