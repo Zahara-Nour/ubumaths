@@ -52,10 +52,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			friendshipsResult,
 			notificationsResult,
 			gamePlayerResult,
-			inventoryResult,
-			gidouillesHistoryResult,
-			bonusHistoryResult,
-			shopPurchasesResult,
+			rewardEventsResult,
 			classMembershipsResult,
 			srsCardsResult
 		] = await Promise.all([
@@ -123,35 +120,13 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.eq('user_id', userId)
 				.maybeSingle(),
 
-			// Inventory
+			// Reward events (unified audit trail: gidouilles, bonus, vip cards, achievements)
 			supabase
-				.from('student_item_inventory')
-				.select('item_id, quantity, acquired_at')
-				.eq('student_id', userId),
-
-			// Gidouilles history (rewards)
-			supabase
-				.from('gidouilles_history')
-				.select('amount, reason, created_at')
+				.from('reward_events')
+				.select('reward_type, event_type, amount, item_name, description, created_at')
 				.eq('student_id', userId)
 				.order('created_at', { ascending: false })
-				.limit(500),
-
-			// Bonus history
-			supabase
-				.from('bonus_history')
-				.select('amount, reason, created_at')
-				.eq('student_id', userId)
-				.order('created_at', { ascending: false })
-				.limit(500),
-
-			// Shop purchases
-			supabase
-				.from('shop_purchase_history')
-				.select('item_id, quantity, price_paid, purchased_at')
-				.eq('student_id', userId)
-				.order('purchased_at', { ascending: false })
-				.limit(200),
+				.limit(1000),
 
 			// Class memberships
 			supabase.from('class_members').select('class_id, joined_at').eq('student_id', userId),
@@ -233,10 +208,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 			// Rewards & Economy
 			rewards: {
-				inventory: inventoryResult.data || [],
-				gidouilles_history: gidouillesHistoryResult.data || [],
-				bonus_history: bonusHistoryResult.data || [],
-				purchases: shopPurchasesResult.data || []
+				events: rewardEventsResult.data || []
 			},
 
 			// Classes
