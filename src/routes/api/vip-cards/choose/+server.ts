@@ -142,7 +142,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	await validateChosenCards(supabase, data.chosenCardIds, chooseAction);
 
 	// Award chosen cards
-	const result = await awardChosenCards(supabase, data.studentId, data.chosenCardIds, vipCards);
+	const result = await awardChosenCards(
+		supabase,
+		data.studentId,
+		data.chosenCardIds,
+		vipCards,
+		actionCard.name
+	);
 
 	// Mark action card as used atomically via RPC (FOR UPDATE + audit trail)
 	const { data: useResult, error: useError } = await supabase.rpc('use_vip_card', {
@@ -251,7 +257,8 @@ async function awardChosenCards(
 	supabase: SupabaseClient,
 	studentId: string,
 	chosenCardIds: string[],
-	currentVipCards: StudentVipCards
+	currentVipCards: StudentVipCards,
+	actionCardName: string
 ) {
 	const cardsReceived: Array<{
 		cardId: string;
@@ -270,7 +277,8 @@ async function awardChosenCards(
 			{
 				p_student_id: studentId,
 				p_card_id: cardId,
-				p_source: 'choose'
+				p_source: 'choose',
+				p_extra_metadata: { action_card_name: actionCardName }
 			} as never
 		)) as { data: string | null; error: { message: string } | null };
 
