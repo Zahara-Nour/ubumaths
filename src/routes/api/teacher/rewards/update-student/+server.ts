@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			p_student_id: studentId,
 			p_class_id: classId,
 			p_delta: delta,
-			p_reason: reason ?? 'Modifié par professeur',
+			p_reason: reason ?? (delta > 0 ? 'Ajouté par le professeur' : 'Retiré par le professeur'),
 			p_created_by: user.id
 		});
 
