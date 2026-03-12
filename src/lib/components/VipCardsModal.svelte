@@ -642,7 +642,9 @@
 						clickable={false}
 						showRemoveButton={teacherView}
 						onRemove={() => handleRemoveCard(card)}
-						showUseButton={teacherView}
+						showUseButton={teacherView &&
+							!!card.action &&
+							(!card.action.context || card.action.context === 'any')}
 						hasPendingRequest={cardHasPendingRequest(card.id)}
 						onUse={() => handleUseCard(card)}
 						onApprove={() => handleApproveCard(card)}
