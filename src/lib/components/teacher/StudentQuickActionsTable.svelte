@@ -125,7 +125,10 @@
 	// ============================================================================
 
 	// Pending gidouille submissions: accumulates delta per student, sends after 500ms
-	const pendingGidouilles: Record<string, { timeoutId: number; accumulatedDelta: number }> = {};
+	const pendingGidouilles: Record<
+		string,
+		{ timeoutId: number; accumulatedDelta: number; reason?: string }
+	> = {};
 
 	// Pending warning submissions: accumulates types per student, sends bulk after 500ms
 	const pendingWarnings: Record<
@@ -225,7 +228,12 @@
 	 * Debounced gidouille update (shared by add and warning actions)
 	 * Accumulates delta directly, sends single API call after 500ms of inactivity
 	 */
-	function debouncedUpdateGidouilles(studentId: string, delta: number, studentName: string) {
+	function debouncedUpdateGidouilles(
+		studentId: string,
+		delta: number,
+		studentName: string,
+		reason?: string
+	) {
 		// 1. Instant optimistic update
 		teacherCache.updateGidouillesOptimistic(classId, studentId, delta);
 
@@ -233,13 +241,17 @@
 		if (pendingGidouilles[studentId]) {
 			clearTimeout(pendingGidouilles[studentId].timeoutId);
 			pendingGidouilles[studentId].accumulatedDelta += delta;
+			if (reason !== undefined) {
+				pendingGidouilles[studentId].reason = reason;
+			}
 		} else {
-			pendingGidouilles[studentId] = { timeoutId: 0, accumulatedDelta: delta };
+			pendingGidouilles[studentId] = { timeoutId: 0, accumulatedDelta: delta, reason };
 		}
 
 		// 3. Set new debounced timer (500ms)
 		const timeoutId = setTimeout(async () => {
 			const accumulatedDelta = pendingGidouilles[studentId].accumulatedDelta;
+			const pendingReason = pendingGidouilles[studentId].reason;
 			delete pendingGidouilles[studentId];
 
 			if (accumulatedDelta === 0) return;
@@ -248,7 +260,13 @@
 				const response = await fetch('/api/teacher/rewards/update-student', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ studentId, classId, delta: accumulatedDelta })
+					credentials: 'include',
+					body: JSON.stringify({
+						studentId,
+						classId,
+						delta: accumulatedDelta,
+						reason: pendingReason
+					})
 				});
 
 				if (response.ok) {
@@ -260,7 +278,7 @@
 				}
 			} catch {
 				teacherCache.updateGidouillesOptimistic(classId, studentId, -accumulatedDelta);
-				toaster.error('Erreur lors de la mise a jour des gidouilles');
+				toaster.error('Erreur lors de la mise à jour des gidouilles');
 			}
 		}, 500) as unknown as number;
 
@@ -277,7 +295,12 @@
 
 		// STEP 1: Remove gidouille if > 0 (optimistic UI + debounced API call)
 		if (gidouilles > 0) {
-			debouncedUpdateGidouilles(student.id, -1, student.firstname);
+			debouncedUpdateGidouilles(
+				student.id,
+				-1,
+				student.firstname,
+				'Retiré suite à un avertissement'
+			);
 			return;
 		}
 
