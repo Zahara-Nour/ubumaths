@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.33](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.32...v0.8.33) (2026-03-12)
+
+### 🐛 Bug Fixes
+
+- **export:** replace dropped table references with reward_events ([f97abdb](https://github.com/Zahara-Nour/ubumaths/commit/f97abdb00cf7e4edf3ac99c4da6fb4cca014a66d))
+
 ### [0.8.32](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.31...v0.8.32) (2026-03-11)
 
 ### 🐛 Bug Fixes
