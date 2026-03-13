@@ -356,6 +356,17 @@ class MinesweeperStore {
 
 			// Save to database if student
 			if (this.shouldUseDatabase()) {
+				// Clean up old in-progress games to stay under the 10-game RLS limit
+				const { error: cleanupError } = await this.supabase!.from('minesweeper_games')
+					.delete()
+					.eq('student_id', this.user!.id)
+					.eq('status', 'in_progress')
+					.lt('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+				if (cleanupError) {
+					logger.warn('Failed to cleanup old in-progress games:', cleanupError);
+				}
+
 				const gridState = this.gridToDTO(newGame.grid);
 				const config = DIFFICULTY_CONFIGS[difficulty];
 				const { data, error } = await this.supabase!.from('minesweeper_games')
