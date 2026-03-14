@@ -42,6 +42,7 @@ import type { StudentVipCards } from '$lib/types/vip-card';
 import type { StudentWarningCounts } from '$lib/server/warnings';
 import { createLogger } from '$lib/utils/logger';
 import { browser } from '$app/environment';
+import { SvelteMap } from 'svelte/reactivity';
 
 // ============================================================================
 // CACHE CLASS
@@ -108,7 +109,7 @@ export class StudentDashboardCache {
 	 * Example keys: "2024-fall", "2024-spring"
 	 * @private
 	 */
-	private warningsCache = $state(new Map<string, CachedWarnings>()); // Key: periodId
+	private warningsCache = new SvelteMap<string, CachedWarnings>(); // Key: periodId
 
 	/**
 	 * Profile cache TTL: 2 hours

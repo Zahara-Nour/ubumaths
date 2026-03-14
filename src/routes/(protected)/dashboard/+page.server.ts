@@ -86,12 +86,24 @@ export const load: PageServerLoad = async ({ locals }) => {
 		}> | null;
 	}> = [];
 
-	if (profile.role === 'teacher' && profile.school_id) {
+	// Resolve school_id: use profile.school_id, or for students fallback to their class's school
+	let schoolId = profile.school_id;
+	if (!schoolId && profile.role === 'student') {
+		const { data: membership } = await supabase
+			.from('class_members')
+			.select('classes(school_id)')
+			.eq('student_id', profile.id)
+			.limit(1)
+			.maybeSingle();
+		schoolId = (membership?.classes as unknown as { school_id: string | null })?.school_id ?? null;
+	}
+
+	if ((profile.role === 'teacher' || profile.role === 'student') && schoolId) {
 		// Fetch current school year for academic periods
 		const { data: schoolYearData } = await supabase
 			.from('school_years')
 			.select('id')
-			.eq('school_id', profile.school_id)
+			.eq('school_id', schoolId)
 			.order('start_date', { ascending: false })
 			.limit(1)
 			.maybeSingle();
