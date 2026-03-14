@@ -102,6 +102,18 @@
 			canDismiss: true
 		});
 	}
+
+	// Open warnings journal modal
+	function openWarningsJournal() {
+		modalStack.push({
+			component: StudentJournalModal,
+			props: {
+				rewardType: 'warning',
+				title: 'Journal des Avertissements'
+			},
+			canDismiss: true
+		});
+	}
 </script>
 
 <div class="rounded-lg border border-border bg-card p-6 shadow">
@@ -174,8 +186,10 @@
 		</button>
 
 		<!-- Warnings Tile -->
-		<div
-			class="relative flex w-full flex-col gap-3 overflow-hidden rounded-lg border border-border p-6 transition-all"
+		<button
+			type="button"
+			onclick={openWarningsJournal}
+			class="group relative flex w-full cursor-pointer flex-col gap-3 overflow-hidden rounded-lg border border-border p-6 text-left transition-all hover:shadow-lg"
 		>
 			<!-- Score -->
 			<div class="flex items-center gap-3">
@@ -209,6 +223,6 @@
 					{/each}
 				</div>
 			{/if}
-		</div>
+		</button>
 	</div>
 </div>
