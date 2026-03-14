@@ -40,20 +40,29 @@
 	// import { formatDeadline, isDeadlinePassed, isDeadlineSoon } from '$lib/utils/dates';
 	// import { BookOpen, FileText, Calendar, CheckCircle } from 'lucide-svelte';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+	import { findCurrentPeriod } from '$lib/utils/academic-period';
 
 	// Receive data from parent (+page.svelte)
 	// Contains profile with student's information
 	let { data }: { data: PageData } = $props();
 
+	// Determine current academic period for warnings
+	const currentPeriodId = $derived(
+		findCurrentPeriod(data.academicPeriods as Parameters<typeof findCurrentPeriod>[0])
+	);
+
 	/**
-	 * EFFECT: Auto-fetch student rewards on mount
-	 * getRewards() handles cache-first pattern internally
-	 * (checks cache, auto-fetches if miss/expired)
+	 * EFFECT: Auto-fetch student data on mount (side effects: API calls)
+	 * Cache stores use SvelteMap for proper reactivity with $derived
 	 */
 	$effect(() => {
 		if (data.user && data.profile) {
-			// Auto-fetch rewards (cache-first, auto-fetch if needed)
+			// Fetch rewards (cache-first)
 			studentCache.getRewards();
+			// Fetch warnings for current period
+			if (currentPeriodId) {
+				studentCache.getWarnings(currentPeriodId);
+			}
 		}
 	});
 </script>
@@ -65,7 +74,11 @@
 		NOTE: RewardsBlock now derives gidouilles and vipCards from studentCache
 		Only riddlesSolved and studentId are passed as props
 	-->
-	<RewardsBlock riddlesSolved={data.riddlesSolved} studentId={data.profile.id} />
+	<RewardsBlock
+		riddlesSolved={data.riddlesSolved}
+		studentId={data.profile.id}
+		periodId={currentPeriodId}
+	/>
 
 	<!-- SRS REVISIONS SECTION -->
 	<!-- Quick access to spaced repetition system -->
