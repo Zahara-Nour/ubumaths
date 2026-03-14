@@ -25,8 +25,7 @@
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { getTotalUnusedCards } from '$lib/utils/vip-cards';
 	import StudentVipCardsModal from '$lib/components/StudentVipCardsModal.svelte';
-	import BonusHistoryModal from '$lib/components/BonusHistoryModal.svelte';
-	import GidouilleHistoryModal from '$lib/components/GidouilleHistoryModal.svelte';
+	import StudentJournalModal from '$lib/components/rewards/StudentJournalModal.svelte';
 	import { modalStack } from '$lib/stores/modalStack.svelte';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import { Badge } from '$lib/components/ui/badge';
@@ -80,20 +79,26 @@
 		});
 	}
 
-	// Open bonus history modal
-	function openBonusHistoryModal() {
+	// Open bonus journal modal
+	function openBonusJournal() {
 		modalStack.push({
-			component: BonusHistoryModal,
-			props: {},
+			component: StudentJournalModal,
+			props: {
+				rewardType: 'bonus',
+				title: 'Journal des Bonus'
+			},
 			canDismiss: true
 		});
 	}
 
-	// Open gidouille history modal
-	function openGidouilleHistoryModal() {
+	// Open gidouille journal modal
+	function openGidouilleJournal() {
 		modalStack.push({
-			component: GidouilleHistoryModal,
-			props: {},
+			component: StudentJournalModal,
+			props: {
+				rewardType: 'gidouilles',
+				title: 'Journal des Gidouilles'
+			},
 			canDismiss: true
 		});
 	}
@@ -110,7 +115,7 @@
 		<!-- Gidouilles Tile -->
 		<button
 			type="button"
-			onclick={openGidouilleHistoryModal}
+			onclick={openGidouilleJournal}
 			class="group relative flex w-full cursor-pointer items-center gap-4 overflow-hidden rounded-lg border border-border p-6 text-left transition-all hover:shadow-lg"
 		>
 			<div class="flex-shrink-0">
@@ -129,7 +134,7 @@
 		<!-- Bonus Tile -->
 		<button
 			type="button"
-			onclick={openBonusHistoryModal}
+			onclick={openBonusJournal}
 			class="group relative flex w-full cursor-pointer items-center gap-4 overflow-hidden rounded-lg border border-border p-6 text-left transition-all hover:shadow-lg"
 		>
 			<div class="flex-shrink-0">
