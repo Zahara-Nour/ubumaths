@@ -61,6 +61,10 @@
 		- Shows warning toast: "Already has 20 warnings"
 		- No action taken
 
+	NOTE: All 3 steps count as "avertissement" for the weekly reward check.
+	The SQL function run_weekly_rewards checks student_warnings, gidouilles_activity
+	(reason='Retiré suite à un avertissement'), and vip_cards_activity for removals.
+
 	TECHNICAL DETAILS:
 	------------------
 	- Uses Svelte 5 runes ($state, $derived, $effect, $props)
@@ -325,7 +329,8 @@
 					credentials: 'include',
 					body: JSON.stringify({
 						studentId,
-						cardId: randomCard.cardId
+						cardId: randomCard.cardId,
+						reason: 'warning'
 					})
 				});
 
