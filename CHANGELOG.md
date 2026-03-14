@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.35](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.34...v0.8.35) (2026-03-14)
+
+### ✨ Features
+
+- **student-dashboard:** factorize journal modal with RewardEventCard ([281bb59](https://github.com/Zahara-Nour/ubumaths/commit/281bb595222beba4ce72d9fcd3d8c38a95fc7992))
+- **student-dashboard:** make warnings tile clickable with journal modal ([9989fc2](https://github.com/Zahara-Nour/ubumaths/commit/9989fc2475e114080545f5332a375259cf0bcf12))
+- **student-dashboard:** redesign RewardsBlock with warnings tile ([3b4d5a4](https://github.com/Zahara-Nour/ubumaths/commit/3b4d5a4b581c887efb49ca8b67afc98963b0ca0e))
+
 ### [0.8.34](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.33...v0.8.34) (2026-03-14)
 
 ### 🐛 Bug Fixes
