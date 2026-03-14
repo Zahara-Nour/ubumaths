@@ -19,7 +19,8 @@ import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-acc
 
 const removeCardSchema = z.object({
 	studentId: z.string().uuid('Invalid student ID format'),
-	cardId: z.string().min(1, 'Card ID is required')
+	cardId: z.string().min(1, 'Card ID is required'),
+	reason: z.string().optional()
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -37,7 +38,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { studentId, cardId } = validation.data;
+	const { studentId, cardId, reason } = validation.data;
 
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 	if (!hasAccess) {
@@ -46,7 +47,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const { data: result, error: rpcError } = await supabase.rpc('remove_vip_card', {
 		p_student_id: studentId,
-		p_card_id: cardId
+		p_card_id: cardId,
+		p_reason: reason ?? null
 	});
 
 	if (rpcError) {
