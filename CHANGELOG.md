@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.34](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.33...v0.8.34) (2026-03-14)
+
+### 🐛 Bug Fixes
+
+- **journal:** differentiate teacher add/remove gidouilles messages ([be9c1b7](https://github.com/Zahara-Nour/ubumaths/commit/be9c1b729f37c1dfc8d419277f01d8bba3534892))
+- **journal:** log gidouilles spent on VIP card draw ([7e90820](https://github.com/Zahara-Nour/ubumaths/commit/7e9082063c5557debf2490ff896f2c65b543ea2e))
+- **journal:** log gidouilles spent on VIP purchase + simplify descriptions ([3f92649](https://github.com/Zahara-Nour/ubumaths/commit/3f9264972efd9f3d1aca78bed2e9512116147983))
+- **journal:** show action card name in choose_card descriptions ([23cbafc](https://github.com/Zahara-Nour/ubumaths/commit/23cbafc2b1feb3f295b827d42f02ee29f12497ed))
+- **journal:** show action card name in exchange descriptions ([0811a1e](https://github.com/Zahara-Nour/ubumaths/commit/0811a1ea73f5a115ea7e293649474390e756b4d1))
+- **journal:** show payment card name in draw_vip_card descriptions ([00cd1d6](https://github.com/Zahara-Nour/ubumaths/commit/00cd1d68a12eb177507456519fdf218d56bd3e85))
+- **minesweeper:** cleanup stale in-progress games before creating new one ([4a6fd90](https://github.com/Zahara-Nour/ubumaths/commit/4a6fd9005ef86a686c99c44d9f04f78aa3dc12d2))
+- **profiles:** auto-sync grade from class on class_members insert ([eae2c82](https://github.com/Zahara-Nour/ubumaths/commit/eae2c82001bd8f487f79618e0597b9cbd133c8c8))
+- **quickactions:** add reason for warning gidouille removal + review fixes ([7ce1cb7](https://github.com/Zahara-Nour/ubumaths/commit/7ce1cb751dd9581c9ee5192d594a4b7fe1bbc048))
+- **vip-cards:** only show activate button on dashboard-activatable cards ([49793e8](https://github.com/Zahara-Nour/ubumaths/commit/49793e8af717d84c8c5f4be771b46ab16c800a88))
+- **weekly-best-bonus:** add class_id so entries appear in teacher journal ([e890dfe](https://github.com/Zahara-Nour/ubumaths/commit/e890dfe619bdd25fbcae62a5b2147c8caa894609))
+- **weekly-best-bonus:** add French description and notification ([c88ee57](https://github.com/Zahara-Nour/ubumaths/commit/c88ee575872688eeaf13686dcf41d6e53ea15b16))
+- **weekly-best-bonus:** fix description overload and amount precision ([5a64b07](https://github.com/Zahara-Nour/ubumaths/commit/5a64b07abb873e06858f718630cae5783fbe207a))
+- **weekly-best-bonus:** keep decimal values instead of truncating to integer ([9d17910](https://github.com/Zahara-Nour/ubumaths/commit/9d179100c931dc73e87b02ce50c4730a2d23edc2))
+- **weekly-rewards:** fix broken cron jobs and check all warning steps ([2e74d60](https://github.com/Zahara-Nour/ubumaths/commit/2e74d60da38a6d8d2875a6a8ad165353855e1bae))
+- **weekly-rewards:** use 'info' notification type instead of 'success' ([7559638](https://github.com/Zahara-Nour/ubumaths/commit/7559638604cd436c9fb8d1f46572a441edd2751b))
+
 ### [0.8.33](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.32...v0.8.33) (2026-03-12)
 
 ### 🐛 Bug Fixes
