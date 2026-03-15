@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.38](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.37...v0.8.38) (2026-03-15)
+
+### ✨ Features
+
+- **minesweeper:** enhance stats page with weekly bonuses and leaderboard rank ([ca3cb12](https://github.com/Zahara-Nour/ubumaths/commit/ca3cb12e7de9580e268f5241a153fab007f2975b))
+
+### 🐛 Bug Fixes
+
+- **leaderboard:** exclude teachers from ranking and remove top-3 backgrounds ([84fd5e1](https://github.com/Zahara-Nour/ubumaths/commit/84fd5e121f13d72bf0965d25649d67da7bbe588c))
+- **stats:** remove redundant "Voir le classement global" card ([da33eab](https://github.com/Zahara-Nour/ubumaths/commit/da33eabda1f8c4f7e12a0a5515eab50d2b7f2df9))
+
 ### [0.8.37](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.36...v0.8.37) (2026-03-15)
 
 ### 🐛 Bug Fixes
