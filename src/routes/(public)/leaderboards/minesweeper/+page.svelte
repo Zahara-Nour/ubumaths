@@ -4,30 +4,16 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Trophy, ArrowLeft } from 'lucide-svelte';
+	import LeaderboardTable from '$lib/components/game/minesweeper/LeaderboardTable.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
-	// Split leaderboard into ranked (10+ games) and provisional (< 10 games)
 	const rankedPlayers = $derived(data.leaderboard.filter((e) => (e.top_games_count || 0) >= 10));
 	const provisionalPlayers = $derived(
 		data.leaderboard.filter((e) => (e.top_games_count || 0) < 10)
 	);
 
-	// Compute student-only rank for each ranked player (teachers don't get a rank number)
-	const studentRankMap = $derived.by(() => {
-		const map = new Map<string, number>();
-		let studentPos = 0;
-		for (const entry of rankedPlayers) {
-			if (entry.role === 'student') {
-				studentPos++;
-				map.set(entry.student_id, studentPos);
-			}
-		}
-		return map;
-	});
-
-	// Get medal emoji for top 3
 	function getMedalEmoji(rank: number): string {
 		return (
 			{
@@ -38,7 +24,6 @@
 		);
 	}
 
-	// Format points with thousands separator
 	function formatPoints(points: number): string {
 		return points.toLocaleString('fr-FR');
 	}
@@ -53,7 +38,6 @@
 </svelte:head>
 
 <div class="mx-auto max-w-4xl p-4 md:p-6">
-	<!-- Header -->
 	<div class="mb-6 flex items-center gap-4">
 		<a href="/leaderboards">
 			<Button variant="ghost" size="icon">
@@ -77,7 +61,6 @@
 
 	<Separator class="mb-6" />
 
-	<!-- User's Rank Card (only if authenticated and ranked with 10+ games) -->
 	{#if data.currentUserId && data.userRank && rankedPlayers.some((e) => e.student_id === data.currentUserId)}
 		<Card class="mb-6 border-primary/20 bg-primary/5 p-4 md:p-6">
 			<div class="flex items-center justify-between">
@@ -92,7 +75,6 @@
 		</Card>
 	{/if}
 
-	<!-- Ranked Players Table (10+ games) -->
 	{#if rankedPlayers.length === 0 && provisionalPlayers.length === 0}
 		<Card class="p-12 text-center">
 			<Trophy class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
@@ -100,55 +82,13 @@
 		</Card>
 	{:else}
 		{#if rankedPlayers.length > 0}
-			<div class="overflow-x-auto rounded-lg border border-border">
-				<table class="w-full text-sm">
-					<thead class="border-b border-border bg-muted/50">
-						<tr>
-							<th class="w-16 px-3 py-3 text-center font-semibold text-foreground">Rang</th>
-							<th class="px-3 py-3 text-left font-semibold text-foreground">Joueur</th>
-							<th class="px-3 py-3 text-center font-semibold text-foreground">Moyenne</th>
-						</tr>
-					</thead>
-					<tbody class="divide-y divide-border">
-						{#each rankedPlayers as entry (entry.student_id)}
-							{@const studentRank = studentRankMap.get(entry.student_id)}
-							<tr
-								class="transition-colors hover:bg-muted/50 {entry.student_id === data.currentUserId
-									? 'bg-primary/10'
-									: ''}"
-							>
-								<td class="px-3 py-3 text-center font-bold text-foreground">
-									{#if studentRank}
-										<span class="text-lg">{getMedalEmoji(studentRank)}</span>
-										<span class="ml-2 text-sm">#{studentRank}</span>
-									{/if}
-								</td>
-								<td class="px-3 py-3">
-									<p class="font-semibold text-foreground">
-										{entry.firstname || ''}
-										<span class="hidden sm:inline">{entry.lastname || ''}</span>
-									</p>
-									{#if entry.student_id === data.currentUserId}
-										<Badge class="mt-1" variant="default">Vous</Badge>
-									{/if}
-								</td>
-								<td class="px-3 py-3 text-center">
-									<span class="font-mono font-bold text-primary">
-										{formatPoints(entry.avg_top_10 || 0)}
-									</span>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
+			<LeaderboardTable entries={data.leaderboard} currentUserId={data.currentUserId} />
 		{:else}
 			<Card class="p-8 text-center">
 				<p class="text-muted-foreground">Aucun joueur classé (10 parties minimum)</p>
 			</Card>
 		{/if}
 
-		<!-- Provisional Players (< 10 games) -->
 		{#if provisionalPlayers.length > 0}
 			<div class="mt-8">
 				<h2 class="mb-3 text-lg font-semibold text-muted-foreground">

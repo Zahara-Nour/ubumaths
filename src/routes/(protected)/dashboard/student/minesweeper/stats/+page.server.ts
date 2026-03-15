@@ -203,8 +203,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// Get IDs of the 20 most recent games to fetch their theoretical rewards
 		const recentGameIds = (games || []).slice(0, 20).map((g) => g.id);
 
-		// Fetch theoretical rewards and weekly bests in parallel
-		const [rewardsResult, weeklyBestsResult] = await Promise.all([
+		// Fetch theoretical rewards, weekly bests, and leaderboard in parallel
+		const [rewardsResult, weeklyBestsResult, leaderboardResult] = await Promise.all([
 			recentGameIds.length > 0
 				? supabase
 						.from('daily_game_rewards')
@@ -218,7 +218,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 				)
 				.eq('student_id', user.id)
 				.order('week_start', { ascending: false })
-				.limit(10)
+				.limit(10),
+			supabase
+				.from('minesweeper_leaderboard')
+				.select('student_id, firstname, lastname, role, avg_top_10, top_games_count')
+				.order('rank', { ascending: true })
+				.limit(100)
 		]);
 
 		const rewards = rewardsResult.data || [];
@@ -387,7 +392,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 			effectivePeriods,
 			schoolTimezone,
 			leaderboardRank: classifiedRank,
-			leaderboardScore: classifiedRank ? rankData!.avg_top_10 : null
+			leaderboardScore: classifiedRank ? rankData!.avg_top_10 : null,
+			leaderboard: leaderboardResult.data || [],
+			currentUserId: user.id
 		};
 	} catch (err) {
 		console.error('[Stats] Error loading stats:', err);

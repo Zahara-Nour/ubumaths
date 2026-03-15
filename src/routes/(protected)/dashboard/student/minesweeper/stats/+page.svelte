@@ -2,8 +2,12 @@
 	import { Card } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import GameStats from '$lib/components/game/minesweeper/GameStats.svelte';
+	import LeaderboardTable from '$lib/components/game/minesweeper/LeaderboardTable.svelte';
 	import type { PageData } from './$types';
+
+	let showLeaderboard = $state(false);
 
 	const DAY_NAMES = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
 
@@ -76,31 +80,40 @@
 </svelte:head>
 
 <div class="space-y-8">
-	<div class="space-y-2">
-		<div class="flex items-center justify-between">
-			<div>
-				<h1 class="text-3xl font-bold text-foreground">Démineur - Mes statistiques</h1>
-				{#if data.leaderboardRank}
-					<p class="mt-1 text-lg text-muted-foreground">
-						Classement général : <span class="font-semibold text-foreground"
-							>{data.leaderboardRank}e</span
-						>
-						<span class="ml-2">({Math.round(data.leaderboardScore)} pts)</span>
-					</p>
-				{/if}
-			</div>
-			<a href="/games/minesweeper">
-				<Button variant="outline">Retour au jeu</Button>
-			</a>
-		</div>
+	<div class="flex items-center justify-between">
+		<h1 class="text-3xl font-bold text-foreground">Démineur - Mes statistiques</h1>
+		<a href="/games/minesweeper">
+			<Button variant="outline">Retour au jeu</Button>
+		</a>
 	</div>
 
-	<div>
-		<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-			{#each data.statistics as stats (stats.difficulty)}
-				<GameStats {...stats} />
-			{/each}
-		</div>
+	{#if data.leaderboardRank}
+		<Card class="p-4">
+			<div class="flex items-center justify-between">
+				<p class="text-lg text-muted-foreground">
+					Classement général : <span class="text-2xl font-bold text-foreground"
+						>#{data.leaderboardRank}</span
+					>
+					<span class="ml-2">({Math.round(data.leaderboardScore)} pts)</span>
+				</p>
+				<Button variant="outline" size="sm" onclick={() => (showLeaderboard = true)}
+					>Voir le classement</Button
+				>
+			</div>
+		</Card>
+
+		<Dialog.Root bind:open={showLeaderboard}>
+			<Dialog.Content class="max-h-[80vh] overflow-y-auto sm:max-w-2xl">
+				<Dialog.Title>Classement général</Dialog.Title>
+				<LeaderboardTable entries={data.leaderboard} currentUserId={data.currentUserId} />
+			</Dialog.Content>
+		</Dialog.Root>
+	{/if}
+
+	<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+		{#each data.statistics as stats (stats.difficulty)}
+			<GameStats {...stats} />
+		{/each}
 	</div>
 
 	<div>
