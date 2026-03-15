@@ -234,18 +234,4 @@
 			</div>
 		{/if}
 	</div>
-
-	<Card class="bg-gradient-to-r from-primary/10 to-transparent p-6">
-		<div class="flex items-center justify-between">
-			<div>
-				<h3 class="font-semibold text-foreground">Voir le classement global</h3>
-				<p class="mt-1 text-sm text-muted-foreground">
-					Comparez vos performances avec les autres joueurs
-				</p>
-			</div>
-			<a href="/leaderboards/minesweeper">
-				<Button>Classement</Button>
-			</a>
-		</div>
-	</Card>
 </div>
