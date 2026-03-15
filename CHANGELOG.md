@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.36](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.35...v0.8.36) (2026-03-15)
+
+### 🐛 Bug Fixes
+
+- **minesweeper:** clean up all orphaned in-progress games before creating new one ([29e6fe3](https://github.com/Zahara-Nour/ubumaths/commit/29e6fe31ffef8a545f6de7aa08e425bca24dcaf5))
+- **minesweeper:** defer DB insert to first cell reveal to avoid orphan games ([28e34b9](https://github.com/Zahara-Nour/ubumaths/commit/28e34b94029430171790f9d98cfb500f93046261))
+
+### ✨ Features
+
+- **minesweeper:** add hero banner image on main menu page ([0d304f8](https://github.com/Zahara-Nour/ubumaths/commit/0d304f8c4a928b58553dc187a84b70b8502b100f))
+- **minesweeper:** replace difficulty buttons with illustrated cards ([54a1b50](https://github.com/Zahara-Nour/ubumaths/commit/54a1b509da74dc02ed42379c30449a373f00ce47))
+
 ### [0.8.35](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.34...v0.8.35) (2026-03-14)
 
 ### ✨ Features
