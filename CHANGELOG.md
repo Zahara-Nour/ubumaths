@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.37](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.36...v0.8.37) (2026-03-15)
+
+### 🐛 Bug Fixes
+
+- **minesweeper:** skip orphaned games with 0 cells revealed on load ([fab5d71](https://github.com/Zahara-Nour/ubumaths/commit/fab5d719f8560127568252673ad8f097d4d0a4dd))
+
 ### [0.8.36](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.35...v0.8.36) (2026-03-15)
 
 ### 🐛 Bug Fixes
