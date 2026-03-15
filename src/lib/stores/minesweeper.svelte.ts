@@ -354,41 +354,9 @@ class MinesweeperStore {
 			this.stopTimer();
 			this.stopAutoSave();
 
-			// Save to database if student
-			if (this.shouldUseDatabase()) {
-				// Clean up ALL old in-progress games to stay under the 10-game RLS limit
-				// Since we're creating a new game, previous in-progress games are abandoned
-				const { error: cleanupError } = await this.supabase!.from('minesweeper_games')
-					.delete()
-					.eq('student_id', this.user!.id)
-					.eq('status', 'in_progress');
-
-				if (cleanupError) {
-					logger.warn('Failed to cleanup old in-progress games:', cleanupError);
-				}
-
-				const gridState = this.gridToDTO(newGame.grid);
-				const config = DIFFICULTY_CONFIGS[difficulty];
-				const { data, error } = await this.supabase!.from('minesweeper_games')
-					.insert({
-						student_id: this.user!.id,
-						difficulty,
-						status: this.toDbStatus('in_progress'), // ✅ FIX: Database only accepts 'in_progress'|'won'|'lost'
-						grid_state: this.gridStateToJson(gridState),
-						time_seconds: null, // ✅ FIX: NULL instead of 0 for in-progress games
-						mines_count: config.mines
-					})
-					.select('id')
-					.single();
-
-				if (error) {
-					throw error;
-				}
-
-				newGame.id = data.id;
-
-				logger.info('Created new game in database:', data.id);
-			} else {
+			// Save to database if student: defer DB insert to first cell reveal
+			// This avoids creating orphan rows for games that are never played
+			if (!this.shouldUseDatabase()) {
 				// Save to localStorage for public users, teachers, and admins
 				this.saveToLocalStorage(newGame);
 				logger.info('Created new game in localStorage');
@@ -762,17 +730,18 @@ class MinesweeperStore {
 				);
 			}
 
-			// Immediately save the game state so it can be resumed if page is reloaded
-			// before the first auto-save interval (10 seconds)
-			// This must happen AFTER potential grid regeneration to save the correct grid
-			logger.info('Triggering immediate save after first click', {
-				tournamentMode: this.isInTournamentMode(),
-				tournamentGameId: this.tournamentGameId,
-				gameId: game.id
-			});
-			this.saveGame().catch((err) => {
-				logger.error('Immediate save after first click failed:', err);
-			});
+			// Save game state after first click (AFTER potential grid regeneration)
+			// For students: create the DB row now (deferred from startNewGame to avoid orphans)
+			// For others: save to localStorage
+			if (this.shouldUseDatabase()) {
+				this.createGameInDatabase(game).catch((err) => {
+					logger.error('Failed to create game in database on first click:', err);
+				});
+			} else {
+				this.saveGame().catch((err) => {
+					logger.error('Immediate save after first click failed:', err);
+				});
+			}
 		}
 
 		// Update cell reference after potential regeneration
@@ -1611,6 +1580,47 @@ class MinesweeperStore {
 	/**
 	 * Save game state
 	 */
+	/**
+	 * Create the game row in the database on first cell reveal.
+	 * Cleans up any orphaned in-progress games before inserting.
+	 */
+	private async createGameInDatabase(game: GameState): Promise<void> {
+		// Clean up ALL old in-progress games to stay under the 10-game RLS limit
+		const { error: cleanupError } = await this.supabase!.from('minesweeper_games')
+			.delete()
+			.eq('student_id', this.user!.id)
+			.eq('status', 'in_progress');
+
+		if (cleanupError) {
+			logger.warn('Failed to cleanup old in-progress games:', cleanupError);
+		}
+
+		const gridState = this.gridToDTO(game.grid);
+		const config = DIFFICULTY_CONFIGS[game.difficulty];
+		const { data, error } = await this.supabase!.from('minesweeper_games')
+			.insert({
+				student_id: this.user!.id,
+				difficulty: game.difficulty,
+				status: this.toDbStatus('in_progress'),
+				grid_state: this.gridStateToJson(gridState),
+				time_seconds: null,
+				mines_count: config.mines,
+				cells_revealed: game.cellsRevealed,
+				flags_used: game.flagsUsed
+			})
+			.select('id')
+			.single();
+
+		if (error) {
+			throw error;
+		}
+
+		game.id = data.id;
+		// Update currentGame reference so subsequent saves use the DB id
+		this.currentGame = { ...game };
+		logger.info('Created new game in database on first click:', data.id);
+	}
+
 	async saveGame(): Promise<void> {
 		if (!browser || !this.currentGame) {
 			return;
