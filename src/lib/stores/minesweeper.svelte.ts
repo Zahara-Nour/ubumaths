@@ -2154,6 +2154,7 @@ class MinesweeperStore {
 					.select('*')
 					.eq('student_id', this.user!.id)
 					.eq('status', 'in_progress')
+					.gt('cells_revealed', 0)
 					.order('created_at', { ascending: false })
 					.limit(1)
 					.maybeSingle();
