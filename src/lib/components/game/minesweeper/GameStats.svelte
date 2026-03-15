@@ -51,10 +51,7 @@
 
 <Card.Root>
 	<Card.Header>
-		<Card.Title class="flex items-center gap-2">
-			<span aria-hidden="true">📊</span>
-			<span>Vos statistiques ({difficultyLabel})</span>
-		</Card.Title>
+		<Card.Title>{difficultyLabel}</Card.Title>
 	</Card.Header>
 	<Card.Content>
 		<dl class="space-y-3">
@@ -99,11 +96,5 @@
 				<dd class="font-semibold text-amber-500 tabular-nums">{formattedGidouilles}</dd>
 			</div>
 		</dl>
-
-		{#if gamesPlayed === 0}
-			<p class="mt-4 text-center text-sm text-muted-foreground italic">
-				Jouez votre première partie pour commencer !
-			</p>
-		{/if}
 	</Card.Content>
 </Card.Root>
