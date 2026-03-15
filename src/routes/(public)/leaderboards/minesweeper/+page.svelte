@@ -14,6 +14,19 @@
 		data.leaderboard.filter((e) => (e.top_games_count || 0) < 10)
 	);
 
+	// Compute student-only rank for each ranked player (teachers don't get a rank number)
+	const studentRankMap = $derived.by(() => {
+		const map = new Map<string, number>();
+		let studentPos = 0;
+		for (const entry of rankedPlayers) {
+			if (entry.role === 'student') {
+				studentPos++;
+				map.set(entry.student_id, studentPos);
+			}
+		}
+		return map;
+	});
+
 	// Get medal emoji for top 3
 	function getMedalEmoji(rank: number): string {
 		return (
@@ -23,14 +36,6 @@
 				3: '🥉'
 			}[rank] || ''
 		);
-	}
-
-	// Get medal/highlight for top players
-	function getRankClass(rank: number): string {
-		if (rank === 1) return 'bg-amber-500/20 border-l-4 border-amber-500';
-		if (rank === 2) return 'bg-gray-500/20 border-l-4 border-gray-400';
-		if (rank === 3) return 'bg-orange-600/20 border-l-4 border-orange-600';
-		return '';
 	}
 
 	// Format points with thousands separator
@@ -105,11 +110,18 @@
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-border">
-						{#each rankedPlayers as entry, index (entry.student_id)}
-							<tr class={`transition-colors hover:bg-muted/50 ${getRankClass(index + 1)}`}>
+						{#each rankedPlayers as entry (entry.student_id)}
+							{@const studentRank = studentRankMap.get(entry.student_id)}
+							<tr
+								class="transition-colors hover:bg-muted/50 {entry.student_id === data.currentUserId
+									? 'bg-primary/10'
+									: ''}"
+							>
 								<td class="px-3 py-3 text-center font-bold text-foreground">
-									<span class="text-lg">{getMedalEmoji(index + 1)}</span>
-									<span class="ml-2 text-sm">#{index + 1}</span>
+									{#if studentRank}
+										<span class="text-lg">{getMedalEmoji(studentRank)}</span>
+										<span class="ml-2 text-sm">#{studentRank}</span>
+									{/if}
 								</td>
 								<td class="px-3 py-3">
 									<p class="font-semibold text-foreground">
