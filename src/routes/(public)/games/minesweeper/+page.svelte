@@ -217,34 +217,32 @@
 					<!-- New game section -->
 					<div class="space-y-4">
 						<h3 class="text-lg font-semibold text-foreground">Nouvelle partie</h3>
-						<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-							<Button
+						<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+							<button
 								onclick={() => startGame('beginner')}
-								variant="secondary"
-								class="h-auto flex-col gap-1 py-4"
 								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
+								class="overflow-hidden rounded-xl transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
 							>
-								<span class="font-semibold">Débutant</span>
-								<span class="text-xs opacity-70">9×9 · 10 mines</span>
-							</Button>
-							<Button
+								<img src="/images/minesweeper-debutant.webp" alt="Débutant" class="w-full" />
+							</button>
+							<button
 								onclick={() => startGame('intermediate')}
-								variant="secondary"
-								class="h-auto flex-col gap-1 py-4"
 								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
+								class="overflow-hidden rounded-xl transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
 							>
-								<span class="font-semibold">Intermédiaire</span>
-								<span class="text-xs opacity-70">16×16 · 40 mines</span>
-							</Button>
-							<Button
+								<img
+									src="/images/minesweeper-intermediaire.webp"
+									alt="Intermédiaire"
+									class="w-full"
+								/>
+							</button>
+							<button
 								onclick={() => startGame('expert')}
-								variant="secondary"
-								class="h-auto flex-col gap-1 py-4"
 								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
+								class="overflow-hidden rounded-xl transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
 							>
-								<span class="font-semibold">Expert</span>
-								<span class="text-xs opacity-70">16×30 · 99 mines</span>
-							</Button>
+								<img src="/images/minesweeper-expert.webp" alt="Expert" class="w-full" />
+							</button>
 						</div>
 					</div>
 
