@@ -2,9 +2,11 @@
  * Minesweeper Leaderboard Page - Server Load
  * ==========================================
  *
- * Global leaderboard ranked by total points.
+ * Global leaderboard ranked by average of top 10 games.
  * Public - accessible to everyone.
  * If user is authenticated, their position is highlighted.
+ *
+ * Only "classified" players (top_games_count >= 10) are ranked.
  */
 
 import type { PageServerLoad } from './$types';
@@ -28,21 +30,35 @@ export const load: PageServerLoad = async ({ locals }) => {
 			throw leaderboardError;
 		}
 
-		// Find current user's position (if authenticated)
+		// Find current user's rank among classified players (top_games_count >= 10)
 		let userRank: number | null = null;
 		if (user && leaderboardData) {
 			const userEntry = leaderboardData.find((e) => e.student_id === user.id);
-			userRank = userEntry?.rank || null;
 
-			// If user not in top 100, query their specific rank
-			if (!userRank) {
-				const { data: userRankData } = await supabase
+			if (userEntry && userEntry.top_games_count >= 10) {
+				// Count how many classified players have a higher avg_top_10
+				const { count } = await supabase
 					.from('minesweeper_leaderboard')
-					.select('rank')
+					.select('*', { count: 'exact', head: true })
+					.gte('top_games_count', 10)
+					.gt('avg_top_10', userEntry.avg_top_10);
+				userRank = (count ?? 0) + 1;
+			} else if (user) {
+				// User not in top 100, check if they're classified
+				const { data: userData } = await supabase
+					.from('minesweeper_leaderboard')
+					.select('avg_top_10, top_games_count')
 					.eq('student_id', user.id)
 					.single();
 
-				userRank = userRankData?.rank || null;
+				if (userData?.top_games_count >= 10) {
+					const { count } = await supabase
+						.from('minesweeper_leaderboard')
+						.select('*', { count: 'exact', head: true })
+						.gte('top_games_count', 10)
+						.gt('avg_top_10', userData.avg_top_10);
+					userRank = (count ?? 0) + 1;
+				}
 			}
 		}
 
