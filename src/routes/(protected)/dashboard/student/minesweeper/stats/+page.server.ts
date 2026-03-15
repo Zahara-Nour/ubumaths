@@ -176,13 +176,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.eq('student_id', user.id)
 			.single();
 
-		// Compute rank among classified players (top_games_count >= 10) only
+		// Compute rank among classified students (>= 10 games, excluding teachers)
 		let classifiedRank: number | null = null;
 		if (rankData?.top_games_count >= 10) {
 			const { count } = await supabase
 				.from('minesweeper_leaderboard')
 				.select('*', { count: 'exact', head: true })
 				.gte('top_games_count', 10)
+				.eq('role', 'student')
 				.gt('avg_top_10', rankData.avg_top_10);
 			classifiedRank = (count ?? 0) + 1;
 		}
