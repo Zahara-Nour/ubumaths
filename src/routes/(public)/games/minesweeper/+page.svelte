@@ -177,6 +177,15 @@
 		{:else}
 			<!-- Menu (difficulty selection) -->
 			<div class="mx-auto max-w-2xl space-y-8">
+				<!-- Hero banner -->
+				<div class="overflow-hidden rounded-xl">
+					<img
+						src="/images/banner-minesweeper.webp"
+						alt="Démineur - Un plateau de jeu flottant entouré de cristaux et de coffres au trésor"
+						class="h-40 w-full object-cover sm:h-52 md:h-64"
+					/>
+				</div>
+
 				<div class="space-y-3 text-center">
 					<h1 class="text-4xl font-bold text-foreground md:text-5xl">Démineur</h1>
 				</div>
