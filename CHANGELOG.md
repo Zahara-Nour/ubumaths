@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.39](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.38...v0.8.39) (2026-04-01)
+
+### 🐛 Bug Fixes
+
+- **minesweeper:** trigger win when all mines are correctly flagged ([1e1cbc6](https://github.com/Zahara-Nour/ubumaths/commit/1e1cbc6c76d3451612221e3f78d2214eb7c60727))
+
 ### [0.8.38](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.37...v0.8.38) (2026-03-15)
 
 ### ✨ Features
