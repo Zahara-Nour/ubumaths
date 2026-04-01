@@ -889,6 +889,25 @@ class MinesweeperStore {
 
 			cell.isFlagged = true;
 			game.flagsUsed++;
+
+			// Check if all mines are correctly flagged → auto-reveal remaining safe cells and win
+			if (game.flagsUsed === game.minesCount) {
+				const allFlagsOnMines = game.grid.every((r) => r.every((c) => !c.isFlagged || c.isMine));
+				if (allFlagsOnMines) {
+					// Auto-reveal remaining unrevealed safe cells (satisfies server-side win validation)
+					for (let r = 0; r < game.rows; r++) {
+						for (let c = 0; c < game.cols; c++) {
+							const safeCell = game.grid[r][c];
+							if (!safeCell.isRevealed && !safeCell.isMine) {
+								safeCell.isRevealed = true;
+								game.cellsRevealed++;
+							}
+						}
+					}
+					this.completeGame(true);
+					return;
+				}
+			}
 		}
 
 		// Trigger reactivity
