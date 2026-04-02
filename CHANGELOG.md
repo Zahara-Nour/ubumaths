@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.41](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.40...v0.8.41) (2026-04-02)
+
+### 🐛 Bug Fixes
+
+- **api:** improve RPC error mapping in sanitizeRPCError ([06ca321](https://github.com/Zahara-Nour/ubumaths/commit/06ca32196664871973403b1c607e3c8f90f95eb2))
+
 ### [0.8.40](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.39...v0.8.40) (2026-04-02)
 
 ### 🐛 Bug Fixes
