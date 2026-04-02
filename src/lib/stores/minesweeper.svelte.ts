@@ -1149,8 +1149,8 @@ class MinesweeperStore {
 				userMessage = 'Partie introuvable';
 			} else if (rawMessage.includes('temporairement') || rawMessage.includes('réessayez')) {
 				userMessage = rawMessage; // already user-friendly from server
-			} else if (rawMessage.includes('invalide') || rawMessage.includes('Opération')) {
-				userMessage = "Impossible d'utiliser l'indice, réessayez";
+			} else if (rawMessage.includes('Opération invalide')) {
+				userMessage = `Impossible d'utiliser l'indice, réessayez (${rawMessage.match(/ERR-\w+/)?.[0] ?? 'ERR-?'})`;
 			}
 
 			toaster.error(userMessage);
