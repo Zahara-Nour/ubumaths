@@ -2,11 +2,41 @@ import { error } from '@sveltejs/kit';
 import type { PostgrestError } from '@supabase/supabase-js';
 
 /**
- * Generates a short opaque error code for tracing in logs.
- * Safe to expose to users — contains no sensitive information.
+ * Semantic error codes for RPC errors.
+ * Fixed codes identify the error type without needing Vercel logs.
+ * UNKNOWN errors also include a random trace code for log lookup.
+ *
+ * Catalog:
+ *   SCHEMA_CACHE  — PostgREST schema cache stale after migration
+ *   UNAUTH        — Not authenticated
+ *   NOT_FOUND     — Resource not found or not owned
+ *   HINT_LIMIT    — Maximum hints reached
+ *   ALREADY_USED  — Action already used in this game
+ *   NO_FUNDS      — Insufficient gidouilles
+ *   GRID          — Grid/game state validation failed
+ *   DEADLOCK      — PostgreSQL deadlock
+ *   TIMEOUT       — Statement or lock timeout
+ *   UNKNOWN       — Unmapped error (includes random trace code for Vercel logs)
  */
-function generateErrorCode(): string {
+export const RPC_ERROR_CODES = {
+	SCHEMA_CACHE: 'SCHEMA_CACHE',
+	UNAUTH: 'UNAUTH',
+	NOT_FOUND: 'NOT_FOUND',
+	HINT_LIMIT: 'HINT_LIMIT',
+	ALREADY_USED: 'ALREADY_USED',
+	NO_FUNDS: 'NO_FUNDS',
+	GRID: 'GRID',
+	DEADLOCK: 'DEADLOCK',
+	TIMEOUT: 'TIMEOUT',
+	UNKNOWN: 'UNKNOWN'
+} as const;
+
+function generateTraceCode(): string {
 	return Math.random().toString(36).slice(2, 8).toUpperCase();
+}
+
+function withCode(message: string, code: string, traceCode?: string): string {
+	return traceCode ? `${message} [${code}·${traceCode}]` : `${message} [${code}]`;
 }
 
 /**
@@ -99,12 +129,15 @@ export function sanitizeRPCError(err: unknown, functionName: string): never {
 
 		// PostgREST: schema cache stale (function not found after migration)
 		if (code === 'PGRST202' || msg.includes('Could not find the function')) {
-			throw error(503, 'Service temporairement indisponible, réessayez dans quelques secondes');
+			throw error(
+				503,
+				withCode('Service temporairement indisponible, réessayez', RPC_ERROR_CODES.SCHEMA_CACHE)
+			);
 		}
 
 		// Authentication
 		if (msg.includes('non authentifié') || msg.includes('Not authenticated')) {
-			throw error(401, 'Non authentifié');
+			throw error(401, withCode('Non authentifié', RPC_ERROR_CODES.UNAUTH));
 		}
 
 		// Not found / not owned
@@ -114,42 +147,45 @@ export function sanitizeRPCError(err: unknown, functionName: string): never {
 			msg.includes('not owned') ||
 			msg.includes('not in progress')
 		) {
-			throw error(404, 'Ressource introuvable');
+			throw error(404, withCode('Ressource introuvable', RPC_ERROR_CODES.NOT_FOUND));
 		}
 
 		// Hint limit
 		if (msg.includes('Maximum hints reached')) {
-			throw error(400, "Limite d'indices atteinte");
+			throw error(400, withCode("Limite d'indices atteinte", RPC_ERROR_CODES.HINT_LIMIT));
 		}
 
 		// Undo already used
 		if (msg.includes('already used') || msg.includes('déjà utilisé')) {
-			throw error(400, 'Action déjà utilisée dans cette partie');
+			throw error(
+				400,
+				withCode('Action déjà utilisée dans cette partie', RPC_ERROR_CODES.ALREADY_USED)
+			);
 		}
 
 		// Insufficient gidouilles
 		if (msg.includes('Insufficient gidouilles') || msg.includes('pas assez de gidouilles')) {
-			throw error(400, 'Gidouilles insuffisants');
+			throw error(400, withCode('Gidouilles insuffisants', RPC_ERROR_CODES.NO_FUNDS));
 		}
 
 		// Grid / game state validation
 		if (msg.includes('grille') || msg.includes('grid') || msg.includes('victoire')) {
-			throw error(400, 'Validation de la grille échouée');
+			throw error(400, withCode('Validation de la grille échouée', RPC_ERROR_CODES.GRID));
 		}
 
 		// PostgreSQL infrastructure errors
 		if (msg.includes('deadlock detected')) {
-			throw error(503, 'Conflit temporaire, réessayez');
+			throw error(503, withCode('Conflit temporaire, réessayez', RPC_ERROR_CODES.DEADLOCK));
 		}
 
 		if (msg.includes('canceling statement') || msg.includes('timeout')) {
-			throw error(503, 'Délai dépassé, réessayez');
+			throw error(503, withCode('Délai dépassé, réessayez', RPC_ERROR_CODES.TIMEOUT));
 		}
 
-		// Generic RPC error — generate a traceable code and log the real message
-		const errCode = generateErrorCode();
-		console.error(`[RPC:${functionName}] ERR-${errCode} — "${msg}" (code: "${code}")`);
-		throw error(400, `Opération invalide (ERR-${errCode})`);
+		// Unknown — generate a trace code and log the real message for Vercel lookup
+		const traceCode = generateTraceCode();
+		console.error(`[RPC:${functionName}] ${traceCode}·UNKNOWN — "${msg}" (code: "${code}")`);
+		throw error(400, withCode('Opération invalide', RPC_ERROR_CODES.UNKNOWN, traceCode));
 	}
 
 	throw error(500, 'Une erreur est survenue');

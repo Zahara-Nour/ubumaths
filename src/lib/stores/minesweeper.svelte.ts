@@ -1150,7 +1150,7 @@ class MinesweeperStore {
 			} else if (rawMessage.includes('temporairement') || rawMessage.includes('réessayez')) {
 				userMessage = rawMessage; // already user-friendly from server
 			} else if (rawMessage.includes('Opération invalide')) {
-				userMessage = `Impossible d'utiliser l'indice, réessayez (${rawMessage.match(/ERR-\w+/)?.[0] ?? 'ERR-?'})`;
+				userMessage = `Impossible d'utiliser l'indice, réessayez — ${rawMessage.match(/\[[\w·]+\]/)?.[0] ?? '[UNKNOWN]'}`;
 			}
 
 			toaster.error(userMessage);
