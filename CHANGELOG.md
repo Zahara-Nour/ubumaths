@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.46](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.45...v0.8.46) (2026-04-02)
+
+### 🐛 Bug Fixes
+
+- **api:** categorize unmapped RPC errors by PostgreSQL error code ([728cc79](https://github.com/Zahara-Nour/ubumaths/commit/728cc79519b2993b87bf019c46c36de3dc0b508d))
+
 ### [0.8.45](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.44...v0.8.45) (2026-04-02)
 
 ### 🐛 Bug Fixes
