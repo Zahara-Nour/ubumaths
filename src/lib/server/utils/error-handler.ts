@@ -2,6 +2,14 @@ import { error } from '@sveltejs/kit';
 import type { PostgrestError } from '@supabase/supabase-js';
 
 /**
+ * Generates a short opaque error code for tracing in logs.
+ * Safe to expose to users — contains no sensitive information.
+ */
+function generateErrorCode(): string {
+	return Math.random().toString(36).slice(2, 8).toUpperCase();
+}
+
+/**
  * Maps PostgreSQL constraint names to user-friendly error messages
  */
 const CONSTRAINT_MESSAGES: Record<string, string> = {
@@ -138,9 +146,10 @@ export function sanitizeRPCError(err: unknown, functionName: string): never {
 			throw error(503, 'Délai dépassé, réessayez');
 		}
 
-		// Generic RPC error — log the actual message for diagnosis
-		console.error(`[RPC:${functionName}] Unmapped error message: "${msg}" (code: "${code}")`);
-		throw error(400, 'Opération invalide');
+		// Generic RPC error — generate a traceable code and log the real message
+		const errCode = generateErrorCode();
+		console.error(`[RPC:${functionName}] ERR-${errCode} — "${msg}" (code: "${code}")`);
+		throw error(400, `Opération invalide (ERR-${errCode})`);
 	}
 
 	throw error(500, 'Une erreur est survenue');
