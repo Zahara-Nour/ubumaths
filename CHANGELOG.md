@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.49](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.48...v0.8.49) (2026-04-02)
+
+### 🐛 Bug Fixes
+
+- **db:** fix use_hint() INSERT columns for gidouilles_activity ([39cbd97](https://github.com/Zahara-Nour/ubumaths/commit/39cbd97efac6bc96132b994b862c3d9543c40471))
+
 ### [0.8.48](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.47...v0.8.48) (2026-04-02)
 
 ### 🐛 Bug Fixes
