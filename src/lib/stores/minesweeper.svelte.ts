@@ -1147,6 +1147,10 @@ class MinesweeperStore {
 				rawMessage.includes('introuvable')
 			) {
 				userMessage = 'Partie introuvable';
+			} else if (rawMessage.includes('temporairement') || rawMessage.includes('réessayez')) {
+				userMessage = rawMessage; // already user-friendly from server
+			} else if (rawMessage.includes('invalide') || rawMessage.includes('Opération')) {
+				userMessage = "Impossible d'utiliser l'indice, réessayez";
 			}
 
 			toaster.error(userMessage);
