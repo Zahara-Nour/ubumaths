@@ -129,15 +129,12 @@ export function sanitizeRPCError(err: unknown, functionName: string): never {
 
 		// PostgREST: schema cache stale (function not found after migration)
 		if (code === 'PGRST202' || msg.includes('Could not find the function')) {
-			throw error(
-				503,
-				withCode('Service temporairement indisponible, réessayez', RPC_ERROR_CODES.SCHEMA_CACHE)
-			);
+			throw error(503, 'Service temporairement indisponible, réessayez dans quelques secondes');
 		}
 
 		// Authentication
 		if (msg.includes('non authentifié') || msg.includes('Not authenticated')) {
-			throw error(401, withCode('Non authentifié', RPC_ERROR_CODES.UNAUTH));
+			throw error(401, 'Non authentifié');
 		}
 
 		// Not found / not owned
@@ -147,39 +144,36 @@ export function sanitizeRPCError(err: unknown, functionName: string): never {
 			msg.includes('not owned') ||
 			msg.includes('not in progress')
 		) {
-			throw error(404, withCode('Ressource introuvable', RPC_ERROR_CODES.NOT_FOUND));
+			throw error(404, 'Ressource introuvable');
 		}
 
 		// Hint limit
 		if (msg.includes('Maximum hints reached')) {
-			throw error(400, withCode("Limite d'indices atteinte", RPC_ERROR_CODES.HINT_LIMIT));
+			throw error(400, "Limite d'indices atteinte");
 		}
 
 		// Undo already used
 		if (msg.includes('already used') || msg.includes('déjà utilisé')) {
-			throw error(
-				400,
-				withCode('Action déjà utilisée dans cette partie', RPC_ERROR_CODES.ALREADY_USED)
-			);
+			throw error(400, 'Action déjà utilisée dans cette partie');
 		}
 
 		// Insufficient gidouilles
 		if (msg.includes('Insufficient gidouilles') || msg.includes('pas assez de gidouilles')) {
-			throw error(400, withCode('Gidouilles insuffisants', RPC_ERROR_CODES.NO_FUNDS));
+			throw error(400, 'Gidouilles insuffisants');
 		}
 
 		// Grid / game state validation
 		if (msg.includes('grille') || msg.includes('grid') || msg.includes('victoire')) {
-			throw error(400, withCode('Validation de la grille échouée', RPC_ERROR_CODES.GRID));
+			throw error(400, 'Validation de la grille échouée');
 		}
 
 		// PostgreSQL infrastructure errors
 		if (msg.includes('deadlock detected')) {
-			throw error(503, withCode('Conflit temporaire, réessayez', RPC_ERROR_CODES.DEADLOCK));
+			throw error(503, 'Conflit temporaire, réessayez');
 		}
 
 		if (msg.includes('canceling statement') || msg.includes('timeout')) {
-			throw error(503, withCode('Délai dépassé, réessayez', RPC_ERROR_CODES.TIMEOUT));
+			throw error(503, 'Délai dépassé, réessayez');
 		}
 
 		// Unknown — generate a trace code and log the real message for Vercel lookup
