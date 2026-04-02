@@ -176,10 +176,24 @@ export function sanitizeRPCError(err: unknown, functionName: string): never {
 			throw error(503, 'Délai dépassé, réessayez');
 		}
 
-		// Unknown — generate a trace code and log the real message for Vercel lookup
+		// Unknown message — categorize by PostgreSQL error code if possible
+		// Catalog: https://www.postgresql.org/docs/current/errcodes-appendix.html
+		let errorType: string = RPC_ERROR_CODES.UNKNOWN;
+		if (code === '40P01' || code === '40001') errorType = RPC_ERROR_CODES.DEADLOCK;
+		else if (code === '57014' || code === '57P01') errorType = RPC_ERROR_CODES.TIMEOUT;
+		else if (code === 'P0001')
+			errorType = 'DB_RAISE'; // custom RAISE EXCEPTION with unrecognized message
+		else if (code.startsWith('23'))
+			errorType = 'DB_CONSTRAINT'; // integrity constraint violations
+		else if (code.startsWith('08'))
+			errorType = 'DB_CONNECTION'; // connection errors
+		else if (code.startsWith('53'))
+			errorType = 'DB_RESOURCES'; // insufficient resources
+		else if (code.startsWith('PGRST')) errorType = 'PGRST'; // PostgREST errors
+
 		const traceCode = generateTraceCode();
-		console.error(`[RPC:${functionName}] ${traceCode}·UNKNOWN — "${msg}" (code: "${code}")`);
-		throw error(400, withCode('Opération invalide', RPC_ERROR_CODES.UNKNOWN, traceCode));
+		console.error(`[RPC:${functionName}] ${traceCode}·${errorType} — "${msg}" (code: "${code}")`);
+		throw error(400, withCode('Opération invalide', errorType, traceCode));
 	}
 
 	throw error(500, 'Une erreur est survenue');
