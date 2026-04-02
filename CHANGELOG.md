@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.43](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.42...v0.8.43) (2026-04-02)
+
+### 🐛 Bug Fixes
+
+- **api:** add traceable error codes for unmapped RPC errors ([adcb0cd](https://github.com/Zahara-Nour/ubumaths/commit/adcb0cda4d0b00ab68866a0c41ab7d51d17e838e))
+
 ### [0.8.42](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.41...v0.8.42) (2026-04-02)
 
 ### 🐛 Bug Fixes
