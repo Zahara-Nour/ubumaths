@@ -246,6 +246,12 @@ class MinesweeperStore {
 	private cleanupHandler: (() => void) | null = null;
 
 	/**
+	 * Promise for the in-flight DB game creation (first click).
+	 * Stored so completeGame() can await it if the game is won before the DB responds.
+	 */
+	private createGamePromise: Promise<void> | null = null;
+
+	/**
 	 * Check if current user should use database storage
 	 * Students and teachers use database. Admins use localStorage like anonymous users.
 	 * @returns true if user is a student or teacher with database access
@@ -326,6 +332,7 @@ class MinesweeperStore {
 		this.isLoading = true;
 		this.error = null;
 		this.newlyUnlockedAchievements = []; // Clear previous achievements
+		this.createGamePromise = null; // Reset pending DB creation promise
 
 		try {
 			const config = DIFFICULTY_CONFIGS[difficulty];
@@ -734,7 +741,9 @@ class MinesweeperStore {
 			// For students: create the DB row now (deferred from startNewGame to avoid orphans)
 			// For others: save to localStorage
 			if (this.shouldUseDatabase()) {
-				this.createGameInDatabase(game).catch((err) => {
+				// Store the promise so completeGame() can await it if the game is won
+				// before the DB responds (race condition guard)
+				this.createGamePromise = this.createGameInDatabase(game).catch((err) => {
 					logger.error('Failed to create game in database on first click:', err);
 				});
 			} else {
@@ -1816,6 +1825,13 @@ class MinesweeperStore {
 		game.status = won ? 'won' : 'lost';
 
 		try {
+			// Wait for DB game creation if it's still pending (race condition:
+			// game won on first click cascade before createGameInDatabase resolves)
+			if (this.createGamePromise) {
+				await this.createGamePromise;
+				this.createGamePromise = null;
+			}
+
 			if (this.shouldUseDatabase() && game.id) {
 				const gridState = this.gridToDTO(game.grid);
 
