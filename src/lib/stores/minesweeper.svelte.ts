@@ -1889,7 +1889,6 @@ class MinesweeperStore {
 							is_first_win_of_day: false,
 							week_best_reward: 0
 						};
-
 						// Show victory modal with detailed breakdown
 						modalStack.push({
 							component: VictoryModal,

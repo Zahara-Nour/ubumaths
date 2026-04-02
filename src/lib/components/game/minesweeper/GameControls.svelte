@@ -101,20 +101,22 @@
 				/>
 				<span class="font-mono text-lg font-bold tabular-nums">{minesRemaining}</span>
 			</div>
-			<div
-				class={cn(
-					'rounded-lg border border-border bg-muted/50 px-4 py-1.5 font-mono',
-					isFrozen && 'border-cyan-500/50 bg-cyan-50 dark:bg-cyan-950/20'
-				)}
-				aria-label="Temps ecoule"
-			>
-				<span
+			{#if gameStatus !== 'won' && gameStatus !== 'lost'}
+				<div
 					class={cn(
-						'text-2xl font-bold text-foreground tabular-nums',
-						isFrozen && 'text-cyan-600 dark:text-cyan-400'
-					)}>{formattedTime}</span
+						'rounded-lg border border-border bg-muted/50 px-4 py-1.5 font-mono',
+						isFrozen && 'border-cyan-500/50 bg-cyan-50 dark:bg-cyan-950/20'
+					)}
+					aria-label="Temps ecoule"
 				>
-			</div>
+					<span
+						class={cn(
+							'text-2xl font-bold text-foreground tabular-nums',
+							isFrozen && 'text-cyan-600 dark:text-cyan-400'
+						)}>{formattedTime}</span
+					>
+				</div>
+			{/if}
 		</div>
 
 		<!-- Freeze countdown banner -->
