@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.45](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.44...v0.8.45) (2026-04-02)
+
+### 🐛 Bug Fixes
+
+- **api:** restrict error codes to unmapped RPC errors only ([3b1dfa8](https://github.com/Zahara-Nour/ubumaths/commit/3b1dfa8ebaea919723032de31760592f44f88327))
+
 ### [0.8.44](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.43...v0.8.44) (2026-04-02)
 
 ### 🐛 Bug Fixes
