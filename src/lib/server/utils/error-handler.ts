@@ -86,39 +86,60 @@ export function sanitizeRPCError(err: unknown, functionName: string): never {
 
 	if (err && typeof err === 'object' && 'message' in err) {
 		const rpcError = err as { message: string; code?: string };
+		const msg = rpcError.message ?? '';
+		const code = rpcError.code ?? '';
 
-		// Map common RPC error messages (in French from our functions)
-		if (
-			rpcError.message?.includes('non authentifié') ||
-			rpcError.message?.includes('Not authenticated')
-		) {
+		// PostgREST: schema cache stale (function not found after migration)
+		if (code === 'PGRST202' || msg.includes('Could not find the function')) {
+			throw error(503, 'Service temporairement indisponible, réessayez dans quelques secondes');
+		}
+
+		// Authentication
+		if (msg.includes('non authentifié') || msg.includes('Not authenticated')) {
 			throw error(401, 'Non authentifié');
 		}
 
-		if (rpcError.message?.includes('introuvable') || rpcError.message?.includes('not found')) {
+		// Not found / not owned
+		if (
+			msg.includes('introuvable') ||
+			msg.includes('not found') ||
+			msg.includes('not owned') ||
+			msg.includes('not in progress')
+		) {
 			throw error(404, 'Ressource introuvable');
 		}
 
-		if (rpcError.message?.includes('Maximum hints reached')) {
+		// Hint limit
+		if (msg.includes('Maximum hints reached')) {
 			throw error(400, "Limite d'indices atteinte");
 		}
 
-		if (
-			rpcError.message?.includes('Insufficient gidouilles') ||
-			rpcError.message?.includes('pas assez de gidouilles')
-		) {
+		// Undo already used
+		if (msg.includes('already used') || msg.includes('déjà utilisé')) {
+			throw error(400, 'Action déjà utilisée dans cette partie');
+		}
+
+		// Insufficient gidouilles
+		if (msg.includes('Insufficient gidouilles') || msg.includes('pas assez de gidouilles')) {
 			throw error(400, 'Gidouilles insuffisants');
 		}
 
-		if (
-			rpcError.message?.includes('grille') ||
-			rpcError.message?.includes('grid') ||
-			rpcError.message?.includes('victoire')
-		) {
+		// Grid / game state validation
+		if (msg.includes('grille') || msg.includes('grid') || msg.includes('victoire')) {
 			throw error(400, 'Validation de la grille échouée');
 		}
 
-		// Generic RPC error
+		// PostgreSQL infrastructure errors
+		if (msg.includes('deadlock detected')) {
+			throw error(503, 'Conflit temporaire, réessayez');
+		}
+
+		if (msg.includes('canceling statement') || msg.includes('timeout')) {
+			throw error(503, 'Délai dépassé, réessayez');
+		}
+
+		// Generic RPC error — log the actual message for diagnosis
+		console.error(`[RPC:${functionName}] Unmapped error message: "${msg}" (code: "${code}")`);
 		throw error(400, 'Opération invalide');
 	}
 
