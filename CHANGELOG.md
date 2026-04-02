@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.42](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.41...v0.8.42) (2026-04-02)
+
+### 🐛 Bug Fixes
+
+- **minesweeper:** improve hint error toast messages ([4ad1a2b](https://github.com/Zahara-Nour/ubumaths/commit/4ad1a2b474bdd8de3de0d6776bcccb600200d7b2))
+
 ### [0.8.41](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.40...v0.8.41) (2026-04-02)
 
 ### 🐛 Bug Fixes
