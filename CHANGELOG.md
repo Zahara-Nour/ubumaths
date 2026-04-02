@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.47](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.46...v0.8.47) (2026-04-02)
+
+### 🐛 Bug Fixes
+
+- **db:** fix use_hint() referencing renamed table gidouilles_history ([871a39f](https://github.com/Zahara-Nour/ubumaths/commit/871a39f18c0ad221f0ae4c6a9e5ef3a2d6a34689))
+
 ### [0.8.46](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.45...v0.8.46) (2026-04-02)
 
 ### 🐛 Bug Fixes
