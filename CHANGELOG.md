@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.48](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.47...v0.8.48) (2026-04-02)
+
+### 🐛 Bug Fixes
+
+- **db:** fix delete_user_account() referencing renamed table ([dbc98fe](https://github.com/Zahara-Nour/ubumaths/commit/dbc98fea771f1d68bc412b560509610525a2ea3e))
+
 ### [0.8.47](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.46...v0.8.47) (2026-04-02)
 
 ### 🐛 Bug Fixes
