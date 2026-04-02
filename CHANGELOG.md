@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.40](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.39...v0.8.40) (2026-04-02)
+
+### 🐛 Bug Fixes
+
+- **minesweeper:** await DB game creation before completing game ([2d38aa6](https://github.com/Zahara-Nour/ubumaths/commit/2d38aa6eb998d2cdcf185d302071dfb9433d9982))
+
 ### [0.8.39](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.38...v0.8.39) (2026-04-01)
 
 ### 🐛 Bug Fixes
