@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.55](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.54...v0.8.55) (2026-04-03)
+
+### 🐛 Bug Fixes
+
+- **2048:** fix tiles not sliding smoothly on some moves ([e0f7ee3](https://github.com/Zahara-Nour/ubumaths/commit/e0f7ee3ae408fdf535df8a020ea9f6839e18899e))
+
 ### [0.8.54](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.53...v0.8.54) (2026-04-03)
 
 ### [0.8.53](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.52...v0.8.53) (2026-04-03)
