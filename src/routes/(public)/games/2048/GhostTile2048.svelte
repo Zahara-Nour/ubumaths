@@ -52,7 +52,7 @@
 		.col}; --to-row: {ghost.toPosition.row}; --to-col: {ghost.toPosition.col};"
 >
 	<span class="leading-none font-bold {getFontSize(ghost.value)}">
-		{ghost.displayValue || ghost.value}
+		{ghost.value}
 	</span>
 </div>
 

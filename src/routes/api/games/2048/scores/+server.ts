@@ -60,8 +60,7 @@ import type { RequestHandler } from './$types';
 import {
 	submit2048ScoreSchema,
 	submit2048ScoreResponseSchema,
-	get2048ScoreResponseSchema,
-	gameModeSchema
+	get2048ScoreResponseSchema
 } from '$lib/server/validation/games';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
@@ -70,7 +69,7 @@ import { validateJsonResponse } from '$lib/server/validation/response-utils';
 // GET - Fetch user's current score
 // ============================================================================
 
-export const GET: RequestHandler = async ({ locals, url }) => {
+export const GET: RequestHandler = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
 
 	// Auth check: Must be logged in
@@ -84,22 +83,12 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	}
 
 	try {
-		// ✅ SECURITY: Validate mode query parameter with Zod
-		const modeParam = url.searchParams.get('mode') || 'classic';
-		const modeValidation = gameModeSchema.safeParse(modeParam);
-
-		if (!modeValidation.success) {
-			throw error(400, 'Invalid game mode');
-		}
-
-		const mode = modeValidation.data;
-
-		// Fetch user's 2048 score record for the specified mode
+		// Fetch user's 2048 score record
 		const { data: scoreData, error: fetchError } = await supabase
 			.from('game_2048_scores')
-			.select('best_score, games_played, tiles_2048_reached, tiles_4096_reached, mode')
+			.select('best_score, games_played, tiles_2048_reached, tiles_4096_reached')
 			.eq('user_id', user.id)
-			.eq('mode', mode)
+			.eq('mode', 'classic')
 			.maybeSingle();
 
 		if (fetchError) {
@@ -112,8 +101,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			best_score: 0,
 			games_played: 0,
 			tiles_2048_reached: 0,
-			tiles_4096_reached: 0,
-			mode
+			tiles_4096_reached: 0
 		};
 
 		// Validate response before sending
@@ -163,14 +151,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(400, validation.error.issues[0].message);
 		}
 
-		const { score, reached_2048, reached_4096, mode } = validation.data;
+		const { score, reached_2048, reached_4096 } = validation.data;
 
 		// Use atomic UPSERT function to eliminate race condition
 		// Single database transaction handles INSERT or UPDATE with incrementing logic
 		const { data: upsertData, error: upsertError } = await supabase
 			.rpc('upsert_2048_score', {
 				p_user_id: user.id,
-				p_mode: mode,
+				p_mode: 'classic',
 				p_score: score,
 				p_reached_2048: reached_2048,
 				p_reached_4096: reached_4096

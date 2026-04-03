@@ -7,11 +7,10 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
 	import Tile2048 from './Tile2048.svelte';
 	import GhostTile2048 from './GhostTile2048.svelte';
 	import { initializeBoard, move } from './game-logic';
-	import type { GameState, Direction, GameMode, Tile, GhostTile } from './types';
+	import type { GameState, Direction, Tile, GhostTile } from './types';
 	import { browser } from '$app/environment';
 
 	// Props from page load
@@ -21,21 +20,12 @@
 	}
 	let { serverBestScore, canSaveScore }: Props = $props();
 
-	// Game mode options
-	const modeOptions = [
-		{ value: 'classic', label: 'Classique (Puissances de 2)' },
-		{ value: 'multiplication', label: 'Tables de Multiplication' },
-		{ value: 'equations', label: 'Équations Simples' },
-		{ value: 'fractions', label: 'Fractions' }
-	];
-
 	// Storage keys
 	const STORAGE_KEY_BEST_SCORE = '2048-best-score';
 	const STORAGE_KEY_GAME_STATE = '2048-game-state';
 
 	// State management with Svelte 5 runes
-	let selectedMode = $state<GameMode>('classic');
-	let gameState = $state<GameState>(initializeBoard(selectedMode));
+	let gameState = $state<GameState>(initializeBoard());
 	let bestScore = $state(0);
 
 	// Track milestones for server sync
@@ -63,8 +53,8 @@
 		if (savedGameState) {
 			try {
 				const parsed = JSON.parse(savedGameState) as GameState;
-				// Only restore if same mode and game not over
-				if (parsed.mode === selectedMode && !parsed.gameOver) {
+				// Only restore if game not over
+				if (!parsed.gameOver) {
 					gameState = parsed;
 				}
 			} catch {
@@ -73,7 +63,7 @@
 			}
 		}
 	}
-	let showEducationalHints = $state(true);
+	let showPowerNotation = $state(true);
 	let showGameOverDialog = $state(false);
 	let showVictoryDialog = $state(false);
 
@@ -115,8 +105,7 @@
 	 * Saves the current game score to the server (for authenticated students only)
 	 */
 	async function saveScoreToServer() {
-		// Only save if user can save scores (authenticated student) and in classic mode
-		if (!canSaveScore || selectedMode !== 'classic' || scoreSavedToServer) {
+		if (!canSaveScore || scoreSavedToServer) {
 			return;
 		}
 
@@ -127,8 +116,7 @@
 				body: JSON.stringify({
 					score: gameState.score,
 					reached_2048: reached2048,
-					reached_4096: reached4096,
-					mode: 'classic'
+					reached_4096: reached4096
 				})
 			});
 
@@ -213,7 +201,7 @@
 	 * Starts a new game
 	 */
 	function startNewGame() {
-		gameState = initializeBoard(selectedMode);
+		gameState = initializeBoard();
 		showGameOverDialog = false;
 		showVictoryDialog = false;
 		victoryCelebrated = false;
@@ -227,13 +215,6 @@
 		if (browser) {
 			localStorage.removeItem(STORAGE_KEY_GAME_STATE);
 		}
-	}
-
-	/**
-	 * Handles mode change - starts a new game with the selected mode
-	 */
-	function handleModeChange() {
-		startNewGame();
 	}
 
 	/**
@@ -423,23 +404,10 @@
 			<Button onclick={startNewGame} variant="default">Nouvelle Partie</Button>
 		</div>
 
-		<!-- Mode Selector -->
-		<div class="mb-4">
-			<label class="mb-2 block text-sm font-semibold">Mode de Jeu</label>
-			<MySelect
-				type="single"
-				bind:value={selectedMode}
-				items={modeOptions}
-				onValueChange={handleModeChange}
-			/>
+		<!-- Power notation toggle -->
+		<div class="flex items-center gap-2">
+			<MyCheckbox bind:checked={showPowerNotation} label="Afficher les puissances" />
 		</div>
-
-		<!-- Educational Hints Toggle (only for classic mode) -->
-		{#if selectedMode === 'classic'}
-			<div class="flex items-center gap-2">
-				<MyCheckbox bind:checked={showEducationalHints} label="Afficher les puissances" />
-			</div>
-		{/if}
 	</div>
 
 	<!-- Game Board -->
@@ -467,7 +435,7 @@
 			<!-- Active tiles (absolutely positioned for animations) -->
 			<div class="absolute inset-0 p-0">
 				{#each activeTiles as tile (tile.id)}
-					<Tile2048 {tile} showPowerNotation={showEducationalHints} />
+					<Tile2048 {tile} {showPowerNotation} />
 				{/each}
 			</div>
 		</div>
