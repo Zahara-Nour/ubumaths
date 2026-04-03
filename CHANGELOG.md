@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.61](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.60...v0.8.61) (2026-04-03)
+
+### 🐛 Bug Fixes
+
+- **2048:** two-phase effect for slide animation timing ([a522f9d](https://github.com/Zahara-Nour/ubumaths/commit/a522f9d3630ee7902ee2eb638e8b51bb8475b2f5))
+
 ### [0.8.60](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.59...v0.8.60) (2026-04-03)
 
 ### 🐛 Bug Fixes
