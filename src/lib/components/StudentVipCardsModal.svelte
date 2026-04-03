@@ -61,6 +61,8 @@
 	} from '$lib/utils/vip-card-modals';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import { syncVipCards } from '$lib/utils/cache-sync';
+	import StudentJournalModal from '$lib/components/rewards/StudentJournalModal.svelte';
+	import { ScrollText } from 'lucide-svelte';
 
 	interface Props {
 		studentId: string;
@@ -485,13 +487,32 @@
 				{totalCardsCount} carte{totalCardsCount > 1 ? 's' : ''} en ta possession
 			</p>
 		</div>
-		<button
-			onclick={handleClose}
-			class="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none"
-			aria-label="Fermer"
-		>
-			<X class="h-4 w-4" />
-		</button>
+		<div class="flex items-center gap-2">
+			<button
+				onclick={() => {
+					modalStack.push({
+						component: StudentJournalModal,
+						props: {
+							rewardType: 'vip_card',
+							title: 'Journal des Cartes VIP'
+						},
+						canDismiss: true
+					});
+				}}
+				class="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none"
+				aria-label="Voir le journal"
+				title="Journal des Cartes VIP"
+			>
+				<ScrollText class="h-4 w-4" />
+			</button>
+			<button
+				onclick={handleClose}
+				class="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none"
+				aria-label="Fermer"
+			>
+				<X class="h-4 w-4" />
+			</button>
+		</div>
 	</div>
 
 	<!-- Cards Display -->
