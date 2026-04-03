@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.57](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.56...v0.8.57) (2026-04-03)
+
+### 🐛 Bug Fixes
+
+- **2048:** two-frame animation for reliable tile sliding ([fef0c25](https://github.com/Zahara-Nour/ubumaths/commit/fef0c25f111ffa78e4c692782bc095392b312893))
+
 ### [0.8.56](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.55...v0.8.56) (2026-04-03)
 
 ### 🐛 Bug Fixes
