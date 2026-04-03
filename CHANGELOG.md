@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.59](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.58...v0.8.59) (2026-04-03)
+
+### 🐛 Bug Fixes
+
+- **2048:** use Web Animations API for reliable tile sliding ([7375492](https://github.com/Zahara-Nour/ubumaths/commit/73754926b273fa54c68bb8b6191648a5f021702c))
+
 ### [0.8.58](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.57...v0.8.58) (2026-04-03)
 
 ### 🐛 Bug Fixes
