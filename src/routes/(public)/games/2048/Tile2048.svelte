@@ -2,47 +2,53 @@
 	/**
 	 * Individual tile component for 2048 game
 	 * Displays tile value with appropriate colors and optional power notation
-	 * Slide animations use the Web Animations API via a Svelte action,
-	 * which creates a fresh animation instance every time (no restart issues).
+	 *
+	 * Slide animation: tracked internally via $effect + Web Animations API.
+	 * The component remembers its previous position and animates to the new one
+	 * whenever the position changes. This avoids all CSS transition/animation
+	 * restart issues because element.animate() always creates a fresh instance.
 	 */
 	import type { Tile } from './types';
 	import { getPowerNotation } from './game-utils';
 
-	// Props
 	let { tile, showPowerNotation = false } = $props<{
 		tile: Tile;
 		showPowerNotation?: boolean;
 	}>();
 
-	/**
-	 * Svelte action: animates tile sliding from previousPosition to current position.
-	 * Uses Web Animations API — each call to element.animate() creates a new animation
-	 * instance, so there are no CSS animation restart issues when the same DOM element
-	 * moves multiple times in a row.
-	 */
-	function slide(node: HTMLElement, t: Tile) {
-		function run(t: Tile) {
-			if (!t.previousPosition) return;
-			const gs = parseFloat(getComputedStyle(node).getPropertyValue('--grid-size'));
-			node.animate(
+	let tileEl: HTMLElement;
+
+	// Track previous position as plain (non-reactive) variables.
+	// Written inside $effect closure — no reactive loop.
+	let prevRow: number | undefined;
+	let prevCol: number | undefined;
+
+	$effect(() => {
+		// Read current position (creates reactive dependency)
+		const row = tile.position.row;
+		const col = tile.position.col;
+
+		// Animate if position changed and we have a previous position
+		if (
+			tileEl &&
+			prevRow !== undefined &&
+			prevCol !== undefined &&
+			(prevRow !== row || prevCol !== col)
+		) {
+			const gs = parseFloat(getComputedStyle(tileEl).getPropertyValue('--grid-size'));
+			tileEl.animate(
 				[
-					{
-						transform: `translate(${t.previousPosition.col * gs}px, ${t.previousPosition.row * gs}px)`
-					},
-					{
-						transform: `translate(${t.position.col * gs}px, ${t.position.row * gs}px)`
-					}
+					{ transform: `translate(${prevCol * gs}px, ${prevRow * gs}px)` },
+					{ transform: `translate(${col * gs}px, ${row * gs}px)` }
 				],
 				{ duration: 150, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }
 			);
 		}
-		run(t);
-		return { update: run };
-	}
 
-	/**
-	 * Returns Tailwind classes for tile background and text color based on value
-	 */
+		prevRow = row;
+		prevCol = col;
+	});
+
 	function getTileColor(value: number): string {
 		const colors: Record<number, string> = {
 			2: 'bg-amber-100 text-gray-800',
@@ -62,10 +68,6 @@
 		return colors[value] || 'bg-amber-700 text-white font-extrabold';
 	}
 
-	/**
-	 * Returns responsive font size classes based on tile value
-	 * Smaller tiles use larger fonts, bigger tiles use smaller fonts
-	 */
 	function getFontSize(value: number): string {
 		if (value < 100) return 'text-3xl sm:text-4xl';
 		if (value < 1000) return 'text-2xl sm:text-3xl';
@@ -75,7 +77,7 @@
 </script>
 
 <div
-	use:slide={tile}
+	bind:this={tileEl}
 	class="tile flex h-16 w-16 flex-col items-center justify-center rounded-lg shadow-md sm:h-20 sm:w-20 {getTileColor(
 		tile.value
 	)}"
@@ -106,8 +108,8 @@
 		/* Desktop/sm: tile size 80px (5rem) + gap 12px (0.75rem) = 92px total */
 		transform: translate(calc(var(--col) * var(--grid-size)), calc(var(--row) * var(--grid-size)));
 
-		/* No CSS transition on transform — sliding is handled by Web Animations API
-		 * via the `slide` Svelte action, which creates a fresh animation each move. */
+		/* No CSS transition on transform — sliding is done via Web Animations API
+		 * in the $effect above, which creates a new animation instance each time. */
 		transition:
 			background-color 200ms ease-in-out,
 			color 200ms ease-in-out;
@@ -120,7 +122,8 @@
 	}
 
 	/* New tile: scale up from 0.
-	 * Delay matches slide duration so tile appears after others finish sliding. */
+	 * Delay matches slide duration so tile appears after others finish sliding.
+	 * Only plays once (new DOM element), no restart issue. */
 	.tile-new {
 		animation: tile-appear 150ms ease-out 150ms backwards;
 	}
@@ -137,7 +140,8 @@
 	}
 
 	/* Merged tile: pop-in effect after ghost tiles finish sliding.
-	 * The delay must match GHOST_SLIDE_DURATION in Game2048.svelte. */
+	 * The delay must match GHOST_SLIDE_DURATION in Game2048.svelte.
+	 * Only plays once (new DOM element), no restart issue. */
 	.tile-merged {
 		animation: tile-merge-appear 200ms ease-out 150ms backwards;
 	}
