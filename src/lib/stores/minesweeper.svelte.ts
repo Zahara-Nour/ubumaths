@@ -37,6 +37,10 @@ const HINT_PENALTY_PERCENTAGE = 30; // Percentage penalty on final reward (only 
 // VIP card hint
 const HINT_VIP_CARD_IDS = ['minesweeper-hint', 'minesweeper-hint-2', 'minesweeper-hint-3'];
 
+// Detector VIP card configuration
+const DETECTOR_VIP_CARD_IDS = ['minesweeper-detector', 'minesweeper-detector-2'];
+const DETECTOR_COST_GIDOUILLES = 10; // Gidouilles cost per detector (more expensive than hint)
+
 // Undo (Seconde Chance) VIP card configuration
 const UNDO_VIP_CARD_ID = 'minesweeper-undo'; // VIP card id for undo
 
@@ -160,6 +164,11 @@ class MinesweeperStore {
 	hintCardsAvailable = $state(0);
 
 	/**
+	 * Number of detector VIP cards available for the student
+	 */
+	detectorCardsAvailable = $state(0);
+
+	/**
 	 * Number of undo (Seconde Chance) VIP cards available for the student
 	 */
 	undoCardsAvailable = $state(0);
@@ -205,6 +214,12 @@ class MinesweeperStore {
 	 */
 	lastHintedCell = $state<{ row: number; col: number } | null>(null);
 	private hintGlowTimer: ReturnType<typeof setTimeout> | null = null;
+
+	/**
+	 * Last cell flagged by a detector (for glow animation). Auto-clears after 3s.
+	 */
+	lastDetectedCell = $state<{ row: number; col: number } | null>(null);
+	private detectorGlowTimer: ReturnType<typeof setTimeout> | null = null;
 
 	// ============================================================================
 	// Tournament Mode State
@@ -1160,6 +1175,132 @@ class MinesweeperStore {
 	}
 
 	/**
+	 * Use a detector to flag a random mine cell.
+	 * Shares the hint counter (max 3 hints+detectors per game).
+	 * Costs 10 gidouilles or consumes a VIP detector card.
+	 */
+	async useDetector(): Promise<void> {
+		if (!browser || !this.currentGame) {
+			toaster.error('Aucune partie en cours');
+			return;
+		}
+
+		const game = this.currentGame;
+
+		if (game.status !== 'in_progress') {
+			toaster.error('La partie doit être en cours');
+			return;
+		}
+
+		// Shared hint counter
+		const hintsUsed = game.hintsUsed || 0;
+		if (hintsUsed >= MAX_HINTS_PER_GAME) {
+			toaster.error(`Maximum d'aides atteint (${MAX_HINTS_PER_GAME} par partie)`);
+			return;
+		}
+
+		if (!this.shouldUseDatabase() || !game.id) {
+			toaster.error("Vous devez être connecté en tant qu'élève pour utiliser le détecteur");
+			return;
+		}
+
+		// Find unflagged mine cells
+		const mineCells: { row: number; col: number }[] = [];
+		for (let row = 0; row < game.rows; row++) {
+			for (let col = 0; col < game.cols; col++) {
+				const cell = game.grid[row][col];
+				if (cell.isMine && !cell.isFlagged && !cell.isRevealed) {
+					mineCells.push({ row, col });
+				}
+			}
+		}
+
+		if (mineCells.length === 0) {
+			toaster.error('Toutes les mines sont déjà signalées');
+			return;
+		}
+
+		this.isLoading = true;
+		try {
+			const response = await fetch(`/api/games/minesweeper/${game.id}/detect`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' }
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.message || "Échec de l'utilisation du détecteur");
+			}
+
+			const result = await response.json();
+
+			// Select a random mine cell and flag it
+			const randomIndex = Math.floor(Math.random() * mineCells.length);
+			const selectedCell = mineCells[randomIndex];
+			const cell = game.grid[selectedCell.row][selectedCell.col];
+
+			if (!cell.isFlagged) {
+				cell.isFlagged = true;
+				game.flagsUsed++;
+			}
+
+			// Show glow on the detected cell (auto-clears after 3s)
+			if (this.detectorGlowTimer) clearTimeout(this.detectorGlowTimer);
+			this.lastDetectedCell = { row: selectedCell.row, col: selectedCell.col };
+			this.detectorGlowTimer = setTimeout(() => {
+				this.lastDetectedCell = null;
+				this.detectorGlowTimer = null;
+			}, 3000);
+
+			// Increment shared hints counter
+			game.hintsUsed = hintsUsed + 1;
+
+			// Check win condition
+			if (this.checkWinCondition()) {
+				this.handleWin();
+			} else {
+				this.currentGame = { ...game };
+			}
+
+			if (result.source === 'vip_card') {
+				toaster.success(
+					`Détecteur utilisé (${game.hintsUsed}/${MAX_HINTS_PER_GAME}). Pénalité réduite !`
+				);
+				if (this.detectorCardsAvailable > 0) {
+					this.detectorCardsAvailable--;
+				}
+			} else {
+				toaster.success(
+					`Détecteur utilisé (${game.hintsUsed}/${MAX_HINTS_PER_GAME}). Pénalité de ${HINT_PENALTY_PERCENTAGE}% appliquée.`
+				);
+			}
+
+			logger.info(
+				`Detector used. Source: ${result.source || 'gidouilles'}. Hints remaining: ${MAX_HINTS_PER_GAME - game.hintsUsed}. Gidouilles spent: ${result.gidouilles_spent || 0}`
+			);
+		} catch (err) {
+			const rawMessage = err instanceof Error ? err.message : "Échec de l'utilisation du détecteur";
+			logger.error('Failed to use detector:', err);
+
+			let userMessage = rawMessage;
+			if (rawMessage.toLowerCase().includes('insufficient') || rawMessage.includes('gidouilles')) {
+				userMessage = `Gidouilles insuffisantes (${DETECTOR_COST_GIDOUILLES} requis)`;
+			} else if (rawMessage.toLowerCase().includes('maximum') || rawMessage.includes('limite')) {
+				userMessage = `Maximum d'aides atteint (${MAX_HINTS_PER_GAME} par partie)`;
+			} else if (
+				rawMessage.toLowerCase().includes('not found') ||
+				rawMessage.includes('introuvable')
+			) {
+				userMessage = 'Partie introuvable';
+			}
+
+			toaster.error(userMessage);
+		} finally {
+			this.isLoading = false;
+		}
+	}
+
+	/**
 	 * Fetch the count of hint VIP cards available in student's collection
 	 * Updates `hintCardsAvailable` state
 	 *
@@ -1203,6 +1344,40 @@ class MinesweeperStore {
 	 */
 	async refreshHintCardCount(): Promise<void> {
 		await this.fetchHintCardCount();
+	}
+
+	/**
+	 * Fetch the count of detector VIP cards available for the student.
+	 */
+	async fetchDetectorCardCount(): Promise<number> {
+		if (!browser || !this.shouldUseDatabase()) {
+			this.detectorCardsAvailable = 0;
+			return 0;
+		}
+
+		try {
+			const { data, error } = await this.supabase!.from('profiles')
+				.select('vip_cards')
+				.eq('id', this.user!.id)
+				.single();
+
+			if (error) {
+				logger.error('Failed to fetch detector card count:', error);
+				this.detectorCardsAvailable = 0;
+				return 0;
+			}
+
+			const vipCards = (data?.vip_cards ?? {}) as StudentVipCards;
+			const totalCount = countAvailableConsumableUses(vipCards, DETECTOR_VIP_CARD_IDS);
+
+			this.detectorCardsAvailable = totalCount;
+			logger.info(`VIP detector cards available: ${totalCount}`);
+			return totalCount;
+		} catch (err) {
+			logger.error('Failed to fetch detector card count:', err);
+			this.detectorCardsAvailable = 0;
+			return 0;
+		}
 	}
 
 	/**
@@ -2773,10 +2948,12 @@ class MinesweeperStore {
 		this.isCompletingGame = false;
 		this.newlyUnlockedAchievements = [];
 		this.hintCardsAvailable = 0;
+		this.detectorCardsAvailable = 0;
 		this.undoCardsAvailable = 0;
 		this.undoUsedThisGame = false;
 		this.pendingBombCell = null;
 		this.lastHintedCell = null;
+		this.lastDetectedCell = null;
 		this.freezeCardsByType = { freeze: 0, chronostase: 0 };
 		this.freezeRemainingSeconds = 0;
 		this.stopFreezeCountdown();

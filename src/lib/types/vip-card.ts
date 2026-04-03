@@ -211,6 +211,16 @@ interface FreezeTimerAction {
 }
 
 /**
+ * VIP Card Action - Detector
+ * Detects a mine and flags it in a specific game context.
+ * Behavior varies by context (e.g., minesweeper = flag a random mine cell).
+ */
+interface DetectorAction {
+	type: 'detector';
+	context?: string; // Activation context (e.g., 'minesweeper')
+}
+
+/**
  * Union type for all VIP card actions
  * These actions require teacher approval to activate
  */
@@ -222,7 +232,8 @@ export type VipCardAction =
 	| ChooseCardAction
 	| HintAction
 	| UndoAction
-	| FreezeTimerAction;
+	| FreezeTimerAction
+	| DetectorAction;
 
 /**
  * Definition of a VIP card type (template)
