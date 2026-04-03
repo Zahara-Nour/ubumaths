@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.50](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.49...v0.8.50) (2026-04-03)
+
+### ✨ Features
+
+- **minesweeper:** add rank evolution to victory modal ([7825436](https://github.com/Zahara-Nour/ubumaths/commit/78254362d37f7c9e3b34c960c57caa53e1a29971)), closes [#7](https://github.com/Zahara-Nour/ubumaths/issues/7) [#6](https://github.com/Zahara-Nour/ubumaths/issues/6)
+- **minesweeper:** show game score and leaderboard evolution in victory modal ([7d8d531](https://github.com/Zahara-Nour/ubumaths/commit/7d8d531c99a8ea6679a9de84e7077f4221e03d79))
+- **minesweeper:** show gidouille badge on hint button when no VIP card ([a89f10f](https://github.com/Zahara-Nour/ubumaths/commit/a89f10f53f123a33e2cf31e6176a9f488daf1ba1))
+
+### 🐛 Bug Fixes
+
+- **db:** add rank to complete_minesweeper_game breakdown ([ca9e7a7](https://github.com/Zahara-Nour/ubumaths/commit/ca9e7a7cff7899758f8002edc50d8862b3cd3365))
+- **economy:** rebalance minesweeper hint costs ([ea2bba6](https://github.com/Zahara-Nour/ubumaths/commit/ea2bba65eea67671ccb5cdbd71a7ff2de3a099ff))
+- **minesweeper:** fix victory timer showing wrong time ([d322f5e](https://github.com/Zahara-Nour/ubumaths/commit/d322f5ec8f8154a77353eb6df359dd322295ae07))
+
 ### [0.8.49](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.48...v0.8.49) (2026-04-02)
 
 ### 🐛 Bug Fixes
