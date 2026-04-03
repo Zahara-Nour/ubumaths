@@ -20,6 +20,8 @@ export interface Tile {
 	value: number;
 	/** Current position on the board */
 	position: Position;
+	/** Position before the last move (for slide animation) */
+	previousPosition?: Position;
 	/** Whether this tile was just created (for animation) */
 	isNew: boolean;
 	/** IDs of tiles that merged to create this tile (for merge animation) */

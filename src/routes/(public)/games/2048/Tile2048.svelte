@@ -53,7 +53,10 @@
 	)}"
 	class:tile-new={tile.isNew}
 	class:tile-merged={tile.mergedFrom && tile.mergedFrom.length > 0}
-	style="--row: {tile.position.row}; --col: {tile.position.col};"
+	class:tile-moving={tile.previousPosition != null}
+	style="--row: {tile.position.row}; --col: {tile.position.col};{tile.previousPosition
+		? ` --prev-row: ${tile.previousPosition.row}; --prev-col: ${tile.previousPosition.col};`
+		: ''}"
 >
 	<span class="leading-none font-bold {getFontSize(tile.value)}">
 		{tile.value}
@@ -78,34 +81,46 @@
 		/* Desktop/sm: tile size 80px (5rem) + gap 12px (0.75rem) = 92px total */
 		transform: translate(calc(var(--col) * var(--grid-size)), calc(var(--row) * var(--grid-size)));
 
-		/* Base: NO transform transition (new/merged tiles must not slide) */
+		/* No transition on transform — we use keyframe animations instead.
+		 * Keyframes have explicit from/to values and don't depend on previous DOM state,
+		 * which solves the issue of new DOM elements (new/merged tiles) having no
+		 * previous position to transition from. */
 		transition:
 			background-color 200ms ease-in-out,
 			color 200ms ease-in-out;
 	}
 
-	/* Responsive positioning for larger screens */
 	@media (min-width: 640px) {
 		.tile {
 			--grid-size: 92px;
 		}
 	}
 
-	/* Only regular tiles (not new, not merged) get the transform transition.
-	 * Appear/merge animations use the `scale` CSS property (not transform),
-	 * so there is no animation/transition conflict on transform when
-	 * these classes are removed on the next move. */
-	.tile:not(.tile-new):not(.tile-merged) {
-		transition:
-			transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-			background-color 200ms ease-in-out,
-			color 200ms ease-in-out;
+	/* Sliding tiles: keyframe animation from previous position to current position.
+	 * Uses --prev-row/--prev-col custom properties set by the component. */
+	.tile-moving {
+		animation: tile-slide 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 	}
 
-	/* New tile: scale up from 0 using `scale` property (independent of transform).
-	 * Delay matches the movement transition duration so tile appears after sliding. */
+	@keyframes tile-slide {
+		from {
+			transform: translate(
+				calc(var(--prev-col) * var(--grid-size)),
+				calc(var(--prev-row) * var(--grid-size))
+			);
+		}
+		to {
+			transform: translate(
+				calc(var(--col) * var(--grid-size)),
+				calc(var(--row) * var(--grid-size))
+			);
+		}
+	}
+
+	/* New tile: scale up from 0.
+	 * Delay matches tile-slide duration so tile appears after others finish sliding. */
 	.tile-new {
-		animation: tile-appear 150ms ease-out 300ms backwards;
+		animation: tile-appear 150ms ease-out 150ms backwards;
 	}
 
 	@keyframes tile-appear {
@@ -119,11 +134,10 @@
 		}
 	}
 
-	/* Merged tile: pop-in effect using `scale` property (independent of transform).
-	 * The 300ms delay must match GHOST_SLIDE_DURATION in Game2048.svelte.
-	 * The 'backwards' fill mode keeps the tile at scale(0) during the delay. */
+	/* Merged tile: pop-in effect after ghost tiles finish sliding.
+	 * The delay must match GHOST_SLIDE_DURATION in Game2048.svelte. */
 	.tile-merged {
-		animation: tile-merge-appear 200ms ease-out 300ms backwards;
+		animation: tile-merge-appear 200ms ease-out 150ms backwards;
 	}
 
 	@keyframes tile-merge-appear {
