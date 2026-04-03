@@ -18,35 +18,49 @@
 
 	let tileEl: HTMLElement;
 
-	// Track previous position as plain (non-reactive) variables.
-	// Written inside $effect closure — no reactive loop.
+	// Pending animation data: captured before DOM update, consumed after.
+	let pendingSlide: { fromRow: number; fromCol: number; toRow: number; toCol: number } | null =
+		null;
+
+	// Track previous position as plain (non-reactive) closure variables.
 	let prevRow: number | undefined;
 	let prevCol: number | undefined;
 
-	$effect(() => {
-		// Read current position (creates reactive dependency)
+	// Phase 1 (before DOM update): detect position change and capture from/to.
+	$effect.pre(() => {
 		const row = tile.position.row;
 		const col = tile.position.col;
 
-		// Animate if position changed and we have a previous position
-		if (
-			tileEl &&
-			prevRow !== undefined &&
-			prevCol !== undefined &&
-			(prevRow !== row || prevCol !== col)
-		) {
-			const gs = parseFloat(getComputedStyle(tileEl).getPropertyValue('--grid-size'));
-			tileEl.animate(
-				[
-					{ transform: `translate(${prevCol * gs}px, ${prevRow * gs}px)` },
-					{ transform: `translate(${col * gs}px, ${row * gs}px)` }
-				],
-				{ duration: 150, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }
-			);
+		if (prevRow !== undefined && prevCol !== undefined && (prevRow !== row || prevCol !== col)) {
+			pendingSlide = { fromRow: prevRow, fromCol: prevCol, toRow: row, toCol: col };
 		}
 
 		prevRow = row;
 		prevCol = col;
+	});
+
+	// Phase 2 (after DOM update): run the animation now that the element
+	// is at its new CSS position. element.animate() overrides the visual
+	// transform for the duration, creating a smooth slide.
+	$effect(() => {
+		// Re-read position to create a reactive dependency matching phase 1
+		const _row = tile.position.row;
+		const _col = tile.position.col;
+		void _row;
+		void _col;
+
+		if (tileEl && pendingSlide) {
+			const gs = parseFloat(getComputedStyle(tileEl).getPropertyValue('--grid-size'));
+			const { fromRow, fromCol, toRow, toCol } = pendingSlide;
+			tileEl.animate(
+				[
+					{ transform: `translate(${fromCol * gs}px, ${fromRow * gs}px)` },
+					{ transform: `translate(${toCol * gs}px, ${toRow * gs}px)` }
+				],
+				{ duration: 150, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }
+			);
+			pendingSlide = null;
+		}
 	});
 
 	function getTileColor(value: number): string {
