@@ -78,10 +78,8 @@
 		/* Desktop/sm: tile size 80px (5rem) + gap 12px (0.75rem) = 92px total */
 		transform: translate(calc(var(--col) * var(--grid-size)), calc(var(--row) * var(--grid-size)));
 
-		/* Appear/merge effects use the separate CSS `scale` property (not transform)
-		 * to avoid animation/transition conflicts on the same property. */
+		/* Base: NO transform transition (new/merged tiles must not slide) */
 		transition:
-			transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
 			background-color 200ms ease-in-out,
 			color 200ms ease-in-out;
 	}
@@ -93,14 +91,21 @@
 		}
 	}
 
-	/* New tile: disable transform transition to prevent sliding from (0,0).
-	 * Scale animation uses the independent `scale` property (not transform).
+	/* Only regular tiles (not new, not merged) get the transform transition.
+	 * Appear/merge animations use the `scale` CSS property (not transform),
+	 * so there is no animation/transition conflict on transform when
+	 * these classes are removed on the next move. */
+	.tile:not(.tile-new):not(.tile-merged) {
+		transition:
+			transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+			background-color 200ms ease-in-out,
+			color 200ms ease-in-out;
+	}
+
+	/* New tile: scale up from 0 using `scale` property (independent of transform).
 	 * Delay matches the movement transition duration so tile appears after sliding. */
 	.tile-new {
 		animation: tile-appear 150ms ease-out 300ms backwards;
-		transition:
-			background-color 200ms ease-in-out,
-			color 200ms ease-in-out;
 	}
 
 	@keyframes tile-appear {
@@ -114,15 +119,11 @@
 		}
 	}
 
-	/* Merged tile: disable transform transition (appears in place, shouldn't slide).
-	 * Scale animation uses the independent `scale` property (not transform).
+	/* Merged tile: pop-in effect using `scale` property (independent of transform).
 	 * The 300ms delay must match GHOST_SLIDE_DURATION in Game2048.svelte.
 	 * The 'backwards' fill mode keeps the tile at scale(0) during the delay. */
 	.tile-merged {
 		animation: tile-merge-appear 200ms ease-out 300ms backwards;
-		transition:
-			background-color 200ms ease-in-out,
-			color 200ms ease-in-out;
 	}
 
 	@keyframes tile-merge-appear {
