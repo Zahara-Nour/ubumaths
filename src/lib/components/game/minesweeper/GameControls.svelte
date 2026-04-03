@@ -2,6 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { cn } from '$lib/utils';
+	import gidouilleImg from '$lib/assets/images/gidouille.png';
 
 	interface Props {
 		timeElapsed: number;
@@ -178,12 +179,20 @@
 									<p class="max-w-48 text-sm">{hintTooltip}</p>
 								</Tooltip.Content>
 							</Tooltip.Root>
-							{#if hasHintCards && !hintMaxed}
-								<span
-									class="absolute -top-1.5 -right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-green-600 text-[10px] font-bold text-white shadow"
-								>
-									{hintCardsAvailable}
-								</span>
+							{#if !hintMaxed}
+								{#if hasHintCards}
+									<span
+										class="absolute -top-1.5 -right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-green-600 text-[10px] font-bold text-white shadow"
+									>
+										{hintCardsAvailable}
+									</span>
+								{:else}
+									<span
+										class="absolute -top-1.5 -right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow"
+									>
+										<img src={gidouilleImg} alt="Coute des gidouilles" class="h-4 w-4" />
+									</span>
+								{/if}
 							{/if}
 						</div>
 					{/if}
