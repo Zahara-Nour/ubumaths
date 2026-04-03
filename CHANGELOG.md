@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.60](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.59...v0.8.60) (2026-04-03)
+
+### 🐛 Bug Fixes
+
+- **2048:** track position internally with $effect for slide animation ([1668e94](https://github.com/Zahara-Nour/ubumaths/commit/1668e944149b94130a6bbca1215dbd34c56d42c8))
+
 ### [0.8.59](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.58...v0.8.59) (2026-04-03)
 
 ### 🐛 Bug Fixes
