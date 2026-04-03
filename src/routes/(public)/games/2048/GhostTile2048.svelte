@@ -68,8 +68,8 @@
 		--grid-size: 72px;
 
 		/* Start at fromPosition, animate to toPosition
-		 * Duration (300ms) must be kept in sync with GHOST_SLIDE_DURATION in Game2048.svelte */
-		animation: ghost-slide 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+		 * Duration (150ms) must be kept in sync with GHOST_SLIDE_DURATION in Game2048.svelte */
+		animation: ghost-slide 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 	}
 
 	/* Responsive positioning for larger screens */

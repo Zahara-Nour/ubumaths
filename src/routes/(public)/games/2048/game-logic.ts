@@ -421,8 +421,21 @@ export function move(state: GameState, direction: Direction): MoveResult {
 	// Clear animation flags from PREVIOUS move first (on the input board)
 	// This ensures new tiles from THIS move will have their flags intact
 	let board: GameBoard = state.board.map((row) =>
-		row.map((tile): Tile | null => (tile ? { ...tile, isNew: false, mergedFrom: undefined } : null))
+		row.map((tile): Tile | null =>
+			tile ? { ...tile, isNew: false, mergedFrom: undefined, previousPosition: undefined } : null
+		)
 	);
+
+	// Build position map BEFORE the move (for slide animation tracking)
+	const previousPositions = new Map<string, Position>();
+	for (let row = 0; row < BOARD_SIZE; row++) {
+		for (let col = 0; col < BOARD_SIZE; col++) {
+			const tile = board[row][col];
+			if (tile) {
+				previousPositions.set(tile.id, { row, col });
+			}
+		}
+	}
 	let rotations = 0;
 
 	// Rotate board so direction becomes "left"
@@ -483,6 +496,18 @@ export function move(state: GameState, direction: Direction): MoveResult {
 	for (let i = 0; i < inverseRotations; i++) {
 		finalBoard = rotateBoardClockwise(finalBoard);
 	}
+
+	// Stamp previousPosition on tiles that moved (same id, different position)
+	finalBoard = finalBoard.map((row) =>
+		row.map((tile) => {
+			if (!tile) return null;
+			const prev = previousPositions.get(tile.id);
+			if (prev && (prev.row !== tile.position.row || prev.col !== tile.position.col)) {
+				return { ...tile, previousPosition: prev };
+			}
+			return tile;
+		})
+	);
 
 	// Add random tile (will have isNew: true for appear animation)
 	// Note: Animation flags were cleared at the START of this function,

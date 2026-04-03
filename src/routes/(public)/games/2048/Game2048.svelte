@@ -224,32 +224,19 @@
 		showVictoryDialog = false;
 	}
 
-	// Lock to prevent moves during the two-frame animation setup
-	let moveInProgress = false;
-
 	/**
 	 * Handles move in specified direction.
-	 *
-	 * Uses a two-frame approach to ensure smooth CSS transitions:
-	 * Frame 1: Clear isNew/mergedFrom flags → .tile-new/.tile-merged classes removed
-	 *          → the :not(.tile-new):not(.tile-merged) selector activates the transform transition
-	 * Frame 2: Apply new positions → browser sees the value change WITH the transition
-	 *          already active → smooth slide animation
-	 *
-	 * Without this split, the class removal and position change happen in the same frame,
-	 * and browsers may skip the transition when the transition definition and value change
-	 * are applied simultaneously.
+	 * Slide animations use CSS keyframes with explicit from/to positions
+	 * (not CSS transitions), so no two-frame hack is needed.
 	 */
 	function handleMove(direction: Direction) {
-		if (gameState.gameOver || moveInProgress) return;
+		if (gameState.gameOver) return;
 
 		const result = move(gameState, direction);
 		if (!result.moved) return;
 
-		moveInProgress = true;
-
 		// Animation timing constants (must match CSS in GhostTile2048.svelte)
-		const GHOST_SLIDE_DURATION = 300;
+		const GHOST_SLIDE_DURATION = 150;
 		const GHOST_CLEANUP_BUFFER = 20;
 
 		// If there are merge animations, create ghost tiles
@@ -271,20 +258,8 @@
 			}, GHOST_SLIDE_DURATION + GHOST_CLEANUP_BUFFER);
 		}
 
-		// Frame 1: Clear animation flags only (positions unchanged).
-		// This removes .tile-new/.tile-merged classes, activating the transform transition.
-		gameState = {
-			...gameState,
-			board: gameState.board.map((row) =>
-				row.map((tile) => (tile ? { ...tile, isNew: false, mergedFrom: undefined } : null))
-			)
-		};
-
-		// Frame 2: Apply new positions (with transform transition now active).
-		requestAnimationFrame(() => {
-			gameState = result.state;
-			moveInProgress = false;
-		});
+		// Apply new state directly — animations are CSS keyframes, not transitions
+		gameState = result.state;
 	}
 
 	/**
