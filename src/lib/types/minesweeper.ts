@@ -184,6 +184,10 @@ export interface RewardBreakdown {
 	actual_reward: number; // 0 or 1 (first win of day)
 	is_first_win_of_day: boolean; // Whether this was first win today
 	week_best_reward: number; // Best theoretical reward this week
+
+	// Leaderboard evolution
+	old_avg_top10?: number; // Avg top 10 score before this game
+	new_avg_top10?: number; // Avg top 10 score after this game
 }
 
 // ============================================================================
