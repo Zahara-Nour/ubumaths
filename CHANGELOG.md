@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.51](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.50...v0.8.51) (2026-04-03)
+
+### ✨ Features
+
+- **vip-cards:** add journal button to student VIP cards modal ([2b12bf5](https://github.com/Zahara-Nour/ubumaths/commit/2b12bf5d127e328eb85cc2a293a2fe88142bc4bb))
+
 ### [0.8.50](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.49...v0.8.50) (2026-04-03)
 
 ### ✨ Features
