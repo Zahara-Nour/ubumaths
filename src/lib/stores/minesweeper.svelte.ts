@@ -32,7 +32,7 @@ const LOCALSTORAGE_KEY = 'minesweeper_game';
 
 // ✅ FIX (I-2): Hints system configuration constants
 const MAX_HINTS_PER_GAME = 3; // Maximum hints allowed per game
-const HINT_COST_GIDOUILLES = 1; // Gidouilles cost per hint (Strategy D: 1.0)
+const HINT_COST_GIDOUILLES = 5; // Gidouilles cost per hint (rebalanced from 1.0)
 const HINT_PENALTY_PERCENTAGE = 30; // Percentage penalty on final reward (only for gidouilles hints)
 // VIP card hint
 const HINT_VIP_CARD_IDS = ['minesweeper-hint', 'minesweeper-hint-2', 'minesweeper-hint-3'];
