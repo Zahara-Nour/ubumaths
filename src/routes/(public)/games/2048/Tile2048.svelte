@@ -3,10 +3,32 @@
 	 * Individual tile component for 2048 game
 	 * Displays tile value with appropriate colors and optional power notation
 	 *
-	 * Slide animation: tracked internally via $effect + Web Animations API.
-	 * The component remembers its previous position and animates to the new one
-	 * whenever the position changes. This avoids all CSS transition/animation
-	 * restart issues because element.animate() always creates a fresh instance.
+	 * ## Animation architecture (IMPORTANT — do NOT change positioning to transform)
+	 *
+	 * Tiles are positioned with `left`/`top`, NOT `transform: translate()`.
+	 * This separation is critical to avoid the (0,0) slide bug:
+	 *
+	 * **The bug**: When Svelte creates a new DOM element (new/merged tile with a
+	 * new ID), if positioning uses `transform: translate(...)`, the browser may
+	 * paint one frame at translate(0,0) before the CSS animation (`scale: 0`)
+	 * takes effect. This causes a visible flash/slide from the top-left corner.
+	 * 8 different approaches were tried (CSS transitions, requestAnimationFrame,
+	 * $effect.pre two-phase, etc.) — none solved it reliably.
+	 *
+	 * **The fix**: Separate positioning from animation:
+	 * - `left`/`top` (CSS)         → immediate positioning, no animation conflict
+	 * - `scale`/`opacity` (CSS)     → appear/merge pop-in animations
+	 * - `transform` (Web Animations API) → slide animation for moving tiles
+	 *
+	 * **Slide animation**: The component tracks position changes via two $effects:
+	 * 1. `$effect.pre` captures old/new position BEFORE the DOM update
+	 * 2. `$effect` runs AFTER the DOM update, applying a Web Animations API
+	 *    animation from `translate(delta)` → `translate(0,0)` where delta is
+	 *    the offset between old and new position. This works because left/top
+	 *    already placed the element at its new position.
+	 *
+	 * For new/merged tiles, prevRow/prevCol are undefined on first render,
+	 * so no slide animation is triggered — only the CSS scale/opacity animation.
 	 */
 	import type { Tile } from './types';
 	import { getPowerNotation } from './game-utils';
@@ -40,8 +62,8 @@
 	});
 
 	// Phase 2 (after DOM update): run the animation now that the element
-	// is at its new CSS position. element.animate() overrides the visual
-	// transform for the duration, creating a smooth slide.
+	// is at its new CSS position (left/top). element.animate() overrides
+	// transform for the duration, creating a smooth slide from old → new.
 	$effect(() => {
 		// Re-read position to create a reactive dependency matching phase 1
 		const _row = tile.position.row;
@@ -52,10 +74,13 @@
 		if (tileEl && pendingSlide) {
 			const gs = parseFloat(getComputedStyle(tileEl).getPropertyValue('--grid-size'));
 			const { fromRow, fromCol, toRow, toCol } = pendingSlide;
+			// Animate from the offset (old position relative to new) back to (0,0)
+			const deltaCol = fromCol - toCol;
+			const deltaRow = fromRow - toRow;
 			tileEl.animate(
 				[
-					{ transform: `translate(${fromCol * gs}px, ${fromRow * gs}px)` },
-					{ transform: `translate(${toCol * gs}px, ${toRow * gs}px)` }
+					{ transform: `translate(${deltaCol * gs}px, ${deltaRow * gs}px)` },
+					{ transform: 'translate(0, 0)' }
 				],
 				{ duration: 150, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }
 			);
@@ -118,12 +143,14 @@
 		/* Responsive grid size: mobile 72px, desktop 92px */
 		--grid-size: 72px;
 
-		/* Mobile/base: tile size 64px (4rem) + gap 8px (0.5rem) = 72px total */
-		/* Desktop/sm: tile size 80px (5rem) + gap 12px (0.75rem) = 92px total */
-		transform: translate(calc(var(--col) * var(--grid-size)), calc(var(--row) * var(--grid-size)));
+		/* Position via left/top — NOT transform. This avoids the (0,0) slide bug:
+		 * new DOM elements get their correct position immediately, and CSS animations
+		 * (scale/opacity) don't conflict with a transform-based position. */
+		left: calc(var(--col) * var(--grid-size));
+		top: calc(var(--row) * var(--grid-size));
 
-		/* No CSS transition on transform — sliding is done via Web Animations API
-		 * in the $effect above, which creates a new animation instance each time. */
+		/* Sliding is done via Web Animations API (transform from offset → 0).
+		 * No CSS transition on position properties — they change instantly. */
 		transition:
 			background-color 200ms ease-in-out,
 			color 200ms ease-in-out;

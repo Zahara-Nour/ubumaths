@@ -2,7 +2,11 @@
 	/**
 	 * Ghost tile component for 2048 game merge animations
 	 * These tiles slide from their original position to the merge destination
-	 * then disappear as the merged tile appears
+	 * then disappear as the merged tile appears.
+	 *
+	 * Positioned via left/top at fromPosition, then CSS @keyframes animates
+	 * transform from translate(0,0) to translate(delta). See Tile2048.svelte
+	 * for why left/top is used instead of transform for positioning.
 	 */
 	import type { GhostTile } from './types';
 
@@ -67,8 +71,11 @@
 		/* Responsive grid size: mobile 72px, desktop 92px */
 		--grid-size: 72px;
 
-		/* Start at fromPosition, animate to toPosition
-		 * Duration (150ms) must be kept in sync with GHOST_SLIDE_DURATION in Game2048.svelte */
+		/* Position at fromPosition via left/top, animate transform to toPosition */
+		left: calc(var(--from-col) * var(--grid-size));
+		top: calc(var(--from-row) * var(--grid-size));
+
+		/* Duration (150ms) must be kept in sync with GHOST_SLIDE_DURATION in Game2048.svelte */
 		animation: ghost-slide 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 	}
 
@@ -81,16 +88,13 @@
 
 	@keyframes ghost-slide {
 		from {
-			transform: translate(
-				calc(var(--from-col) * var(--grid-size)),
-				calc(var(--from-row) * var(--grid-size))
-			);
+			transform: translate(0, 0);
 			opacity: 1;
 		}
 		to {
 			transform: translate(
-				calc(var(--to-col) * var(--grid-size)),
-				calc(var(--to-row) * var(--grid-size))
+				calc((var(--to-col) - var(--from-col)) * var(--grid-size)),
+				calc((var(--to-row) - var(--from-row)) * var(--grid-size))
 			);
 			opacity: 0.7;
 		}
@@ -100,10 +104,8 @@
 	@media (prefers-reduced-motion: reduce) {
 		.ghost-tile {
 			animation: none;
-			transform: translate(
-				calc(var(--to-col) * var(--grid-size)),
-				calc(var(--to-row) * var(--grid-size))
-			);
+			left: calc(var(--to-col) * var(--grid-size));
+			top: calc(var(--to-row) * var(--grid-size));
 			opacity: 0.7;
 		}
 	}
