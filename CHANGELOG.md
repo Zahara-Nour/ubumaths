@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.56](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.55...v0.8.56) (2026-04-03)
+
+### 🐛 Bug Fixes
+
+- **2048:** prevent new tiles sliding from top-left corner ([d68a882](https://github.com/Zahara-Nour/ubumaths/commit/d68a882a5e194e9afb24387f5c83077528b2dfee))
+
 ### [0.8.55](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.54...v0.8.55) (2026-04-03)
 
 ### 🐛 Bug Fixes
