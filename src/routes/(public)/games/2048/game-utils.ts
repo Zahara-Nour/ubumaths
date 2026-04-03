@@ -31,7 +31,18 @@ export function getPowerNotation(value: number): string {
 	}
 
 	const power = Math.log2(value);
-	const superscripts = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+	const superscripts = [
+		'\u2070',
+		'\u00B9',
+		'\u00B2',
+		'\u00B3',
+		'\u2074',
+		'\u2075',
+		'\u2076',
+		'\u2077',
+		'\u2078',
+		'\u2079'
+	];
 
 	const powerStr = power.toString();
 	const superscript = powerStr
@@ -40,25 +51,6 @@ export function getPowerNotation(value: number): string {
 		.join('');
 
 	return `2${superscript}`;
-}
-
-/**
- * Returns an educational message for a tile merge
- * @param value - The resulting value after merge
- * @returns Educational message
- * @example
- * getMergeMessage(64) // Returns "32 + 32 = 64 (2⁶) ✓"
- * getMergeMessage(2048) // Returns "1024 + 1024 = 2048 (2¹¹) 🎉 VICTOIRE!"
- */
-export function getMergeMessage(value: number): string {
-	const halfValue = value / 2;
-	const powerNotation = getPowerNotation(value);
-
-	if (value === 2048) {
-		return `${halfValue} + ${halfValue} = ${value} (${powerNotation}) 🎉 VICTOIRE!`;
-	}
-
-	return `${halfValue} + ${halfValue} = ${value} (${powerNotation}) ✓`;
 }
 
 /**

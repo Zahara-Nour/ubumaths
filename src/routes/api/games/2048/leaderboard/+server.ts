@@ -56,8 +56,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
 		// ✅ SECURITY: Validate query parameters with Zod
 		const queryParams = {
-			limit: url.searchParams.get('limit') || '10',
-			mode: url.searchParams.get('mode') || 'classic'
+			limit: url.searchParams.get('limit') || '10'
 		};
 
 		const validation = leaderboard2048QuerySchema.safeParse(queryParams);
@@ -66,13 +65,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw error(400, validation.error.issues[0].message);
 		}
 
-		const { limit, mode } = validation.data;
+		const { limit } = validation.data;
 
 		// ============================================================================
 		// STEP 1: Fetch top N players for leaderboard
 		// ============================================================================
 
-		// Query: Get top players with user info for the specified mode
+		// Query: Get top players with user info
 		// Uses index: idx_game_2048_scores_mode_score (mode, best_score DESC)
 		const { data: topPlayers, error: leaderboardError } = await supabase
 			.from('game_2048_scores')
@@ -89,7 +88,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				)
 			`
 			)
-			.eq('mode', mode)
+			.eq('mode', 'classic')
 			.order('best_score', { ascending: false })
 			.limit(limit);
 
@@ -127,7 +126,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const { data: rankData, error: rankError } = await supabase
 			.rpc('get_user_rank_in_mode', {
 				p_user_id: user.id,
-				p_mode: mode
+				p_mode: 'classic'
 			})
 			.maybeSingle();
 

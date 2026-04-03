@@ -15,7 +15,7 @@ import {
 	isGameWon,
 	rotateBoardClockwise
 } from './game-logic';
-import { getPowerNotation, getMergeMessage, getTilePower, generateTileId } from './game-utils';
+import { getPowerNotation, getTilePower, generateTileId } from './game-utils';
 import type { Tile, GameBoard } from './types';
 
 describe('2048 Game Logic', () => {
@@ -336,8 +336,7 @@ describe('2048 Game Logic', () => {
 				score: 0,
 				gameOver: false,
 				won: false,
-				canUndo: false,
-				mode: 'classic' as const
+				canUndo: false
 			};
 
 			const result = move(state, 'left');
@@ -366,8 +365,7 @@ describe('2048 Game Logic', () => {
 				score: 0,
 				gameOver: false,
 				won: false,
-				canUndo: false,
-				mode: 'classic' as const
+				canUndo: false
 			};
 
 			const result = move(state, 'left');
@@ -385,8 +383,7 @@ describe('2048 Game Logic', () => {
 				score: 0,
 				gameOver: false,
 				won: false,
-				canUndo: false,
-				mode: 'classic' as const
+				canUndo: false
 			};
 
 			const result = move(state, 'left');
@@ -403,8 +400,7 @@ describe('2048 Game Logic', () => {
 				score: 0,
 				gameOver: false,
 				won: false,
-				canUndo: false,
-				mode: 'classic' as const
+				canUndo: false
 			};
 
 			const result = move(state, 'up');
@@ -423,8 +419,7 @@ describe('2048 Game Logic', () => {
 				score: 0,
 				gameOver: false,
 				won: false,
-				canUndo: false,
-				mode: 'classic' as const
+				canUndo: false
 			};
 
 			const result = move(state, 'down');
@@ -444,8 +439,7 @@ describe('2048 Game Logic', () => {
 				score: 0,
 				gameOver: false,
 				won: false,
-				canUndo: false,
-				mode: 'classic' as const
+				canUndo: false
 			};
 
 			const result = move(state, 'up');
@@ -466,8 +460,7 @@ describe('2048 Game Logic', () => {
 				score: 0,
 				gameOver: false,
 				won: false,
-				canUndo: false,
-				mode: 'classic' as const
+				canUndo: false
 			};
 
 			const result = move(state, 'down');
@@ -488,8 +481,7 @@ describe('2048 Game Logic', () => {
 				score: 0,
 				gameOver: false,
 				won: false,
-				canUndo: false,
-				mode: 'classic' as const
+				canUndo: false
 			};
 
 			const result = move(state, 'up');
@@ -524,19 +516,6 @@ describe('2048 Game Logic', () => {
 		it('should handle non-powers of 2', () => {
 			expect(getPowerNotation(3)).toBe('3');
 			expect(getPowerNotation(100)).toBe('100');
-		});
-	});
-
-	describe('getMergeMessage', () => {
-		it('should return correct merge message', () => {
-			expect(getMergeMessage(4)).toBe('2 + 2 = 4 (2²) ✓');
-			expect(getMergeMessage(64)).toBe('32 + 32 = 64 (2⁶) ✓');
-		});
-
-		it('should return victory message for 2048', () => {
-			const message = getMergeMessage(2048);
-			expect(message).toContain('VICTOIRE');
-			expect(message).toContain('1024 + 1024 = 2048');
 		});
 	});
 });

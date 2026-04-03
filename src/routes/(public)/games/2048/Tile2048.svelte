@@ -56,9 +56,9 @@
 	style="--row: {tile.position.row}; --col: {tile.position.col};"
 >
 	<span class="leading-none font-bold {getFontSize(tile.value)}">
-		{tile.displayValue || tile.value}
+		{tile.value}
 	</span>
-	{#if showPowerNotation && !tile.displayValue && tile.value >= 4}
+	{#if showPowerNotation && tile.value >= 4}
 		<span class="mt-1 text-xs opacity-70">{getPowerNotation(tile.value)}</span>
 	{/if}
 </div>
