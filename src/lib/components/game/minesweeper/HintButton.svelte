@@ -38,7 +38,7 @@
 		if (hasCards) {
 			return 'Utiliser un indice';
 		}
-		return 'Indice (1 gidouille)';
+		return 'Indice (5 gidouilles)';
 	});
 
 	// Tooltip content
@@ -55,7 +55,7 @@
 		if (hasCards) {
 			return `Vous avez ${hintCardsAvailable} carte(s) indice VIP. Pénalité réduite (5/11/17% au lieu de 10/22/35%).`;
 		}
-		return 'Révèle une cellule sûre au hasard. Coûte 1 gidouille et applique une pénalité progressive (10/22/35%) sur la récompense finale.';
+		return 'Révèle une cellule sûre au hasard. Coûte 5 gidouilles et applique une pénalité progressive (10/22/35%) sur la récompense finale.';
 	});
 </script>
 

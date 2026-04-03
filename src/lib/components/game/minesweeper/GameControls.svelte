@@ -70,7 +70,7 @@
 	const hintTooltip = $derived.by(() => {
 		const base = 'Indice : revele une cellule sure au hasard.';
 		if (hasHintCards) return `${base} Penalite reduite avec carte VIP.`;
-		return `${base} Coute 1 gidouille.`;
+		return `${base} Coute 5 gidouilles.`;
 	});
 
 	// Freeze state helpers
