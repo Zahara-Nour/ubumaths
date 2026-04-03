@@ -188,6 +188,8 @@ export interface RewardBreakdown {
 	// Leaderboard evolution
 	old_avg_top10?: number; // Avg top 10 score before this game
 	new_avg_top10?: number; // Avg top 10 score after this game
+	old_rank?: number | null; // Rank before this game (null if first game)
+	new_rank?: number; // Rank after this game
 }
 
 // ============================================================================

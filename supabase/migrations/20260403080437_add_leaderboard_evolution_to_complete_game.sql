@@ -58,6 +58,8 @@ DECLARE
   -- Leaderboard evolution
   v_old_avg_top10 NUMERIC(10,1);
   v_new_avg_top10 NUMERIC(10,1);
+  v_old_rank INTEGER;
+  v_new_rank INTEGER;
 BEGIN
   -- Step 1: Get game and verify ownership
   SELECT * INTO v_game_record
@@ -85,7 +87,7 @@ BEGIN
     AND cm.status = 'active'
   LIMIT 1;
 
-  -- Calculate old avg_top10 BEFORE updating the game
+  -- Calculate old avg_top10 and rank BEFORE updating the game
   SELECT ROUND(AVG(pe), 1) INTO v_old_avg_top10
   FROM (
     SELECT mg.points_earned AS pe
@@ -96,6 +98,11 @@ BEGIN
     ORDER BY mg.points_earned DESC
     LIMIT 10
   ) top10;
+
+  -- Get old rank from leaderboard view
+  SELECT rank INTO v_old_rank
+  FROM public.minesweeper_leaderboard
+  WHERE student_id = v_game_record.student_id;
 
   -- Step 3: Validate grid_state represents a legitimate win
   v_is_valid := public.validate_minesweeper_win(p_grid_state, v_game_record.difficulty);
@@ -225,7 +232,7 @@ BEGIN
     grid_state = p_grid_state
   WHERE id = p_game_id;
 
-  -- Calculate new avg_top10 AFTER updating the game
+  -- Calculate new avg_top10 and rank AFTER updating the game
   SELECT ROUND(AVG(pe), 1) INTO v_new_avg_top10
   FROM (
     SELECT mg.points_earned AS pe
@@ -236,6 +243,11 @@ BEGIN
     ORDER BY mg.points_earned DESC
     LIMIT 10
   ) top10;
+
+  -- Get new rank from leaderboard view
+  SELECT rank INTO v_new_rank
+  FROM public.minesweeper_leaderboard
+  WHERE student_id = v_game_record.student_id;
 
   v_breakdown := jsonb_build_object(
     'cycle', v_cycle,
@@ -251,7 +263,9 @@ BEGIN
     'is_first_win_of_day', v_is_first_win,
     'week_best_reward', v_week_best_reward,
     'old_avg_top10', COALESCE(v_old_avg_top10, 0),
-    'new_avg_top10', COALESCE(v_new_avg_top10, 0)
+    'new_avg_top10', COALESCE(v_new_avg_top10, 0),
+    'old_rank', v_old_rank,
+    'new_rank', COALESCE(v_new_rank, 1)
   );
 
   -- Step 9: Check and unlock achievements
