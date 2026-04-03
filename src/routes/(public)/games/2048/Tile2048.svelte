@@ -2,7 +2,8 @@
 	/**
 	 * Individual tile component for 2048 game
 	 * Displays tile value with appropriate colors and optional power notation
-	 * Includes smooth CSS animations for movement, appearance, and merge
+	 * Slide animations use the Web Animations API via a Svelte action,
+	 * which creates a fresh animation instance every time (no restart issues).
 	 */
 	import type { Tile } from './types';
 	import { getPowerNotation } from './game-utils';
@@ -12,6 +13,32 @@
 		tile: Tile;
 		showPowerNotation?: boolean;
 	}>();
+
+	/**
+	 * Svelte action: animates tile sliding from previousPosition to current position.
+	 * Uses Web Animations API — each call to element.animate() creates a new animation
+	 * instance, so there are no CSS animation restart issues when the same DOM element
+	 * moves multiple times in a row.
+	 */
+	function slide(node: HTMLElement, t: Tile) {
+		function run(t: Tile) {
+			if (!t.previousPosition) return;
+			const gs = parseFloat(getComputedStyle(node).getPropertyValue('--grid-size'));
+			node.animate(
+				[
+					{
+						transform: `translate(${t.previousPosition.col * gs}px, ${t.previousPosition.row * gs}px)`
+					},
+					{
+						transform: `translate(${t.position.col * gs}px, ${t.position.row * gs}px)`
+					}
+				],
+				{ duration: 150, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }
+			);
+		}
+		run(t);
+		return { update: run };
+	}
 
 	/**
 	 * Returns Tailwind classes for tile background and text color based on value
@@ -48,15 +75,13 @@
 </script>
 
 <div
+	use:slide={tile}
 	class="tile flex h-16 w-16 flex-col items-center justify-center rounded-lg shadow-md sm:h-20 sm:w-20 {getTileColor(
 		tile.value
 	)}"
 	class:tile-new={tile.isNew}
 	class:tile-merged={tile.mergedFrom && tile.mergedFrom.length > 0}
-	class:tile-moving={tile.previousPosition != null}
-	style="--row: {tile.position.row}; --col: {tile.position.col};{tile.previousPosition
-		? ` --prev-row: ${tile.previousPosition.row}; --prev-col: ${tile.previousPosition.col};`
-		: ''}"
+	style="--row: {tile.position.row}; --col: {tile.position.col};"
 >
 	<span class="leading-none font-bold {getFontSize(tile.value)}">
 		{tile.value}
@@ -81,10 +106,8 @@
 		/* Desktop/sm: tile size 80px (5rem) + gap 12px (0.75rem) = 92px total */
 		transform: translate(calc(var(--col) * var(--grid-size)), calc(var(--row) * var(--grid-size)));
 
-		/* No transition on transform — we use keyframe animations instead.
-		 * Keyframes have explicit from/to values and don't depend on previous DOM state,
-		 * which solves the issue of new DOM elements (new/merged tiles) having no
-		 * previous position to transition from. */
+		/* No CSS transition on transform — sliding is handled by Web Animations API
+		 * via the `slide` Svelte action, which creates a fresh animation each move. */
 		transition:
 			background-color 200ms ease-in-out,
 			color 200ms ease-in-out;
@@ -96,29 +119,8 @@
 		}
 	}
 
-	/* Sliding tiles: keyframe animation from previous position to current position.
-	 * Uses --prev-row/--prev-col custom properties set by the component. */
-	.tile-moving {
-		animation: tile-slide 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-	}
-
-	@keyframes tile-slide {
-		from {
-			transform: translate(
-				calc(var(--prev-col) * var(--grid-size)),
-				calc(var(--prev-row) * var(--grid-size))
-			);
-		}
-		to {
-			transform: translate(
-				calc(var(--col) * var(--grid-size)),
-				calc(var(--row) * var(--grid-size))
-			);
-		}
-	}
-
 	/* New tile: scale up from 0.
-	 * Delay matches tile-slide duration so tile appears after others finish sliding. */
+	 * Delay matches slide duration so tile appears after others finish sliding. */
 	.tile-new {
 		animation: tile-appear 150ms ease-out 150ms backwards;
 	}
