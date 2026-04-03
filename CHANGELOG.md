@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.52](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.51...v0.8.52) (2026-04-03)
+
+### 🐛 Bug Fixes
+
+- **economy:** rebalance VIP card prices for healthier economy ([0fa8e1a](https://github.com/Zahara-Nour/ubumaths/commit/0fa8e1ae081d0d510f71ed80835326c38821e89f))
+
 ### [0.8.51](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.50...v0.8.51) (2026-04-03)
 
 ### ✨ Features
