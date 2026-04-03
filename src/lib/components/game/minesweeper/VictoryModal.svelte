@@ -182,15 +182,20 @@
 						<Trophy class="h-4 w-4" />
 						<span>Score : {points} points</span>
 					</div>
-					{#if breakdown.old_avg_top10 != null && breakdown.new_avg_top10 != null}
+					{#if breakdown.new_avg_top10 != null && breakdown.new_rank != null}
 						<div class="text-xs">
-							Classement : {breakdown.old_avg_top10}
-							→
-							<span
-								class={breakdown.new_avg_top10 > breakdown.old_avg_top10
-									? 'font-medium text-green-600 dark:text-green-400'
-									: ''}>{breakdown.new_avg_top10}</span
-							>
+							{#if breakdown.old_rank != null}
+								Classement : #{breakdown.old_rank} ({breakdown.old_avg_top10}) →
+								<span
+									class={breakdown.new_avg_top10 > (breakdown.old_avg_top10 ?? 0)
+										? 'font-medium text-green-600 dark:text-green-400'
+										: ''}>#{breakdown.new_rank} ({breakdown.new_avg_top10})</span
+								>
+							{:else}
+								Classement : <span class="font-medium text-green-600 dark:text-green-400"
+									>#{breakdown.new_rank} ({breakdown.new_avg_top10})</span
+								>
+							{/if}
 						</div>
 					{/if}
 				</div>
