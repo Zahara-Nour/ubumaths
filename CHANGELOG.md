@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.53](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.52...v0.8.53) (2026-04-03)
+
+### ✨ Features
+
+- **minesweeper:** add Detector VIP card to flag mines ([ed6c3c8](https://github.com/Zahara-Nour/ubumaths/commit/ed6c3c8100bab75415a4e86b64ceffa9913d457b))
+
 ### [0.8.52](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.51...v0.8.52) (2026-04-03)
 
 ### 🐛 Bug Fixes
