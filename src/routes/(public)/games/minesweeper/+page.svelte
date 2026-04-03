@@ -30,9 +30,12 @@
 			try {
 				await Promise.all([
 					minesweeperStore.loadSavedGame(),
-					// Fetch hint, undo, and freeze VIP card counts for students
+					// Fetch hint, detector, undo, and freeze VIP card counts for students
 					data.profile.role === 'student'
 						? minesweeperStore.fetchHintCardCount()
+						: Promise.resolve(),
+					data.profile.role === 'student'
+						? minesweeperStore.fetchDetectorCardCount()
 						: Promise.resolve(),
 					data.profile.role === 'student'
 						? minesweeperStore.fetchUndoCardCount()
@@ -144,7 +147,7 @@
 							onCellFlag={(row, col) => minesweeperStore.toggleFlag(row, col)}
 							onCellChord={(row, col) => minesweeperStore.chordClick(row, col)}
 							disabled={game.status === 'won' || game.status === 'lost'}
-							hintedCell={minesweeperStore.lastHintedCell}
+							hintedCell={minesweeperStore.lastHintedCell ?? minesweeperStore.lastDetectedCell}
 						/>
 					</div>
 
@@ -158,6 +161,8 @@
 							hintsUsed={game.hintsUsed || 0}
 							hintCardsAvailable={minesweeperStore.hintCardsAvailable}
 							onUseHint={() => minesweeperStore.useHint()}
+							detectorCardsAvailable={minesweeperStore.detectorCardsAvailable}
+							onUseDetector={() => minesweeperStore.useDetector()}
 							freezeCardsByType={minesweeperStore.freezeCardsByType}
 							freezeRemainingSeconds={minesweeperStore.freezeRemainingSeconds}
 							onUseFreeze={(cardType) => minesweeperStore.useFreeze(cardType)}

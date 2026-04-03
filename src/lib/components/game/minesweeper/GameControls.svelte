@@ -12,6 +12,8 @@
 		hintsUsed?: number;
 		hintCardsAvailable?: number;
 		onUseHint?: () => void;
+		detectorCardsAvailable?: number;
+		onUseDetector?: () => void;
 		freezeCardsByType?: { freeze: number; chronostase: number };
 		freezeRemainingSeconds?: number;
 		onUseFreeze?: (cardType: 'freeze' | 'chronostase') => void;
@@ -28,6 +30,8 @@
 		hintsUsed = 0,
 		hintCardsAvailable = 0,
 		onUseHint,
+		detectorCardsAvailable = 0,
+		onUseDetector,
 		freezeCardsByType = { freeze: 0, chronostase: 0 },
 		freezeRemainingSeconds = 0,
 		onUseFreeze,
@@ -73,6 +77,16 @@
 		return `${base} Coute 5 gidouilles.`;
 	});
 
+	// Detector state
+	const hasDetectorCards = $derived(detectorCardsAvailable > 0);
+	const detectorDisabled = $derived(!gameInProgress || hintMaxed || isLoading);
+
+	const detectorTooltip = $derived.by(() => {
+		const base = 'Detecteur : signale une mine au hasard avec un drapeau.';
+		if (hasDetectorCards) return `${base} Penalite reduite avec carte VIP.`;
+		return `${base} Coute 10 gidouilles.`;
+	});
+
 	// Freeze state helpers
 	const freezeDisabled = $derived(!gameInProgress || isLoading || isTournament || isFrozen);
 
@@ -82,7 +96,9 @@
 		return `${name} : gele le chronometre pendant ${duration}s.`;
 	}
 
-	const showPowers = $derived(isAuthenticated && !isTournament && (onUseHint || onUseFreeze));
+	const showPowers = $derived(
+		isAuthenticated && !isTournament && (onUseHint || onUseDetector || onUseFreeze)
+	);
 
 	const hasFreezeCards = $derived(freezeCardsByType.freeze > 0);
 	const hasChronostaseCards = $derived(freezeCardsByType.chronostase > 0);
@@ -197,6 +213,58 @@
 						</div>
 					{/if}
 
+					<!-- Detector power -->
+					{#if onUseDetector}
+						<div class="relative">
+							<Tooltip.Root>
+								<Tooltip.Trigger>
+									<button
+										onclick={onUseDetector}
+										disabled={detectorDisabled}
+										class={cn(
+											'h-14 w-14 overflow-hidden rounded-xl border-2 transition-all',
+											detectorDisabled
+												? 'cursor-not-allowed border-muted opacity-50 grayscale'
+												: hasDetectorCards
+													? 'border-orange-500 hover:border-orange-400 hover:shadow-md hover:shadow-orange-500/20'
+													: 'border-amber-500 hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/20'
+										)}
+										aria-label="Utiliser un détecteur"
+									>
+										<img
+											src="/images/games/power-detector.jpg"
+											alt="Détecteur"
+											class="h-full w-full object-cover"
+										/>
+										{#if isLoading}
+											<span class="absolute inset-0 flex items-center justify-center bg-black/40">
+												<span class="animate-spin text-lg text-white">⏳</span>
+											</span>
+										{/if}
+									</button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>
+									<p class="max-w-48 text-sm">{detectorTooltip}</p>
+								</Tooltip.Content>
+							</Tooltip.Root>
+							{#if !hintMaxed}
+								{#if hasDetectorCards}
+									<span
+										class="absolute -top-1.5 -right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-orange-600 text-[10px] font-bold text-white shadow"
+									>
+										{detectorCardsAvailable}
+									</span>
+								{:else}
+									<span
+										class="absolute -top-1.5 -right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow"
+									>
+										<img src={gidouilleImg} alt="Coute des gidouilles" class="h-4 w-4" />
+									</span>
+								{/if}
+							{/if}
+						</div>
+					{/if}
+
 					<!-- Freeze power (Gel Temporaire - 60s) -->
 					{#if showFreeze && hasFreezeCards}
 						<div class="relative">
@@ -278,6 +346,9 @@
 				>
 					{#if onUseHint}
 						<span class="w-14 text-center">Indice</span>
+					{/if}
+					{#if onUseDetector}
+						<span class="w-14 text-center">Détecteur</span>
 					{/if}
 					{#if showFreeze && hasFreezeCards}
 						<span class="w-14 text-center">Gel 60s</span>
