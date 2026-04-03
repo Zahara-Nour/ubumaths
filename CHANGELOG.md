@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.58](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.57...v0.8.58) (2026-04-03)
+
+### 🐛 Bug Fixes
+
+- **2048:** replace CSS transitions with keyframe animations for tile sliding ([151c311](https://github.com/Zahara-Nour/ubumaths/commit/151c311e4c40452e2eee66a62544c554ea420bb0))
+
 ### [0.8.57](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.56...v0.8.57) (2026-04-03)
 
 ### 🐛 Bug Fixes
