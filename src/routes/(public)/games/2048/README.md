@@ -331,62 +331,82 @@ function setupSwipeControls(
 }
 ```
 
-## 🎨 Styling Guidelines
+## 🎬 Animation Architecture
 
-### Tile Colors (Tailwind CSS)
+### Positioning: left/top (NOT transform)
 
-```typescript
-const tileColors: Record<number, string> = {
-	2: 'bg-amber-100 text-gray-800',
-	4: 'bg-amber-200 text-gray-800',
-	8: 'bg-orange-300 text-white',
-	16: 'bg-orange-400 text-white',
-	32: 'bg-orange-500 text-white',
-	64: 'bg-red-400 text-white',
-	128: 'bg-red-500 text-white',
-	256: 'bg-red-600 text-white',
-	512: 'bg-yellow-400 text-white',
-	1024: 'bg-yellow-500 text-white',
-	2048: 'bg-yellow-600 text-white'
-};
-```
+**DO NOT change tile positioning to use `transform: translate()`.**
 
-### Animation Classes
+Tiles are positioned with `left`/`top` CSS properties. This is intentional and critical.
 
-```css
-/* Tile appearance animation */
-.tile.new {
-	animation: appear 200ms ease-in-out;
-}
+#### The (0,0) slide bug
 
-@keyframes appear {
-	from {
-		opacity: 0;
-		transform: scale(0);
-	}
-	to {
-		opacity: 1;
-		transform: scale(1);
-	}
-}
+When Svelte creates a new DOM element (for new or merged tiles, which get new IDs
+via `{#each ... (tile.id)}`), if positioning used `transform: translate(...)`:
 
-/* Merge animation */
-.tile.merged {
-	animation: merge 150ms ease-in-out;
-}
+1. The browser could paint one frame before the CSS animation's `backwards` fill mode
+   (`scale: 0; opacity: 0`) takes effect
+2. During that frame, the element appears at `transform: translate(0, 0)` — the
+   top-left corner of the grid
+3. The element then snaps to its correct position, causing a visible slide/flash
 
-@keyframes merge {
-	0% {
-		transform: scale(1);
-	}
-	50% {
-		transform: scale(1.1);
-	}
-	100% {
-		transform: scale(1);
-	}
-}
-```
+This bug persisted through **8 different fix attempts**: CSS transitions, `:not()` selectors,
+`requestAnimationFrame`, Web Animations API actions, `$effect.pre` two-phase capture,
+`visibility: hidden` workarounds, etc.
+
+#### The solution: separate concerns
+
+| Responsibility           | Mechanism                                              | Property           |
+| ------------------------ | ------------------------------------------------------ | ------------------ |
+| **Positioning**          | CSS `left`/`top` via `--row`/`--col` custom properties | `left`, `top`      |
+| **Appear/merge pop-in**  | CSS `@keyframes` with delay + `backwards` fill         | `scale`, `opacity` |
+| **Slide (moving tiles)** | Web Animations API (`element.animate()`)               | `transform`        |
+
+By reserving `transform` exclusively for animations, new elements appear at the
+correct position immediately. The CSS `scale`/`opacity` animations handle appear/merge
+effects without any positioning conflict.
+
+### Three types of tile animation
+
+#### 1. Sliding tiles (same tile, new position)
+
+Handled by `Tile2048.svelte` via two `$effect` hooks:
+
+- `$effect.pre`: captures old position before DOM update
+- `$effect`: after DOM update, animates `transform: translate(delta) → translate(0, 0)`
+
+The element is already at its new `left`/`top` position, so the animation creates a
+visual offset from the old position back to the actual position.
+
+#### 2. New tiles (random spawn after each move)
+
+- CSS class `.tile-new` with `animation: tile-appear 150ms ease-out 150ms backwards`
+- 150ms delay = waits for sliding tiles to finish
+- `backwards` fill mode applies `scale: 0; opacity: 0` during the delay
+- Animates `scale: 0 → 1` and `opacity: 0 → 1`
+
+#### 3. Merged tiles (result of two tiles combining)
+
+Two-part animation:
+
+1. **Ghost tiles** (`GhostTile2048.svelte`): visual copies of the two source tiles
+   that slide to the merge destination. Positioned at `fromPosition` via `left`/`top`,
+   animated via CSS `@keyframes` using `transform: translate(0, 0) → translate(delta)`.
+
+2. **Result tile**: appears with `.tile-merged` class after ghost tiles finish sliding.
+   Uses `animation: tile-merge-appear 200ms ease-out 150ms backwards` with a bounce
+   effect (`scale: 0 → 1.15 → 1`).
+
+### Timing constants
+
+| Constant             | Value | Location                                                  |
+| -------------------- | ----- | --------------------------------------------------------- |
+| Slide duration       | 150ms | `Tile2048.svelte` ($effect), `GhostTile2048.svelte` (CSS) |
+| Appear delay         | 150ms | `Tile2048.svelte` (.tile-new CSS)                         |
+| Merge appear delay   | 150ms | `Tile2048.svelte` (.tile-merged CSS)                      |
+| Ghost cleanup buffer | 20ms  | `Game2048.svelte` (GHOST_CLEANUP_BUFFER)                  |
+
+These must stay in sync. The delays ensure proper sequencing: slide → appear/merge.
 
 ## ✅ Testing
 
