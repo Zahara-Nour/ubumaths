@@ -81,6 +81,9 @@
 				: 0 // rarity_points: variable
 	);
 	const isFlexibleCount = $derived(exchange.mode === 'replace_random' && !exchange.count);
+	const maxExchangeCount = $derived(
+		exchange.mode === 'replace_random' ? (exchange.maxCount ?? 10) : 10
+	);
 
 	const selectedPoints = $derived.by(() => {
 		if (exchange.mode !== 'rarity_points') return 0;
@@ -105,7 +108,7 @@
 		if (exchange.mode === 'replace_random') {
 			// Flexible mode: at least 1 card. Fixed mode: exact count
 			return isFlexibleCount
-				? selectedCards.size >= 1 && selectedCards.size <= 10
+				? selectedCards.size >= 1 && selectedCards.size <= maxExchangeCount
 				: selectedCards.size === requiredCount;
 		}
 		if (exchange.mode === 'discard_for_specific') return selectedCards.size === requiredCount;
@@ -485,11 +488,13 @@
 				{#if mode === 'replace_random'}
 					{#if isFlexibleCount}
 						<p class="text-sm">
-							Sélectionnez entre 1 et 10 cartes à échanger contre le même nombre de nouvelles cartes
-							aléatoires.
+							Sélectionnez entre 1 et {maxExchangeCount} cartes à échanger contre le même nombre de nouvelles
+							cartes aléatoires.
 						</p>
 						<p class="mt-2 text-sm">
-							Cartes sélectionnées : <span class="font-bold">{selectedCards.size} / 10 max</span>
+							Cartes sélectionnées : <span class="font-bold"
+								>{selectedCards.size} / {maxExchangeCount} max</span
+							>
 						</p>
 					{:else}
 						<p class="text-sm">
