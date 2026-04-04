@@ -14,15 +14,23 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import VipCard from '$lib/components/VipCard.svelte';
+	import VipCardSellModal from '$lib/components/vip-cards/VipCardSellModal.svelte';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import { Lock, Trophy, Sparkles, Gem } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
-	import type { VipCardRarity, StudentVipCards } from '$lib/types/vip-card';
+	import type { VipCard as VipCardType, VipCardRarity, StudentVipCards } from '$lib/types/vip-card';
 	import type { CardCollectionStatus } from './+page.server';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { syncVipCards } from '$lib/utils/cache-sync';
+	import { syncVipCards, syncGidouilles } from '$lib/utils/cache-sync';
 
 	let { data }: { data: PageData } = $props();
+
+	// Sell modal state
+	let sellModalOpen = $state(false);
+	let sellCard = $state<VipCardType | null>(null);
+	let sellInstanceId = $state('');
+	let sellPrice = $state(0);
+	let currentBalance = $derived(data.gidouilles);
 
 	// Rarity configuration for sections
 	const rarityConfig = {
@@ -172,6 +180,66 @@
 			toaster.error(message);
 		}
 	}
+
+	/**
+	 * Open sell modal for a card
+	 */
+	function handleSellCard(templateId: string) {
+		const template = data.templates.find((t) => t.id === templateId);
+		if (!template) return;
+
+		// Find the first sellable instance (not used, no pending activation)
+		const instances = Object.entries(data.ownedCards).filter(
+			([_, instance]) =>
+				instance.cardId === templateId && !instance.usedAt && !instance.activationRequestedAt
+		);
+
+		if (instances.length === 0) {
+			toaster.error('Aucune instance disponible a la vente');
+			return;
+		}
+
+		const [instanceId, instance] = instances[0];
+
+		// Calculate sell price (prorated for partial consumables)
+		let price = (template as { sell_price?: number }).sell_price ?? 1;
+		const usesTotal = (template as { uses_total?: number | null }).uses_total;
+		if (usesTotal && usesTotal > 0 && instance.usesRemaining != null) {
+			if (instance.usesRemaining < usesTotal) {
+				price = Math.max(1, Math.floor((price * instance.usesRemaining) / usesTotal));
+			}
+		}
+
+		sellCard = {
+			id: template.id,
+			name: template.name,
+			description: template.description,
+			imagePath: template.image_path,
+			category: template.category,
+			rarity: template.rarity as VipCardRarity,
+			action: template.action ?? undefined
+		};
+		sellInstanceId = instanceId;
+		sellPrice = price;
+		sellModalOpen = true;
+	}
+
+	/**
+	 * Handle successful sell — optimistic update
+	 */
+	function handleSellComplete(price: number) {
+		// Remove instance from owned cards
+		const updatedCards = { ...data.ownedCards };
+		delete updatedCards[sellInstanceId];
+
+		// Update cache and local state
+		syncVipCards({ type: 'student' }, updatedCards);
+		data.ownedCards = updatedCards;
+
+		// Update gidouilles balance
+		syncGidouilles({ type: 'student' }, price);
+		data.gidouilles = data.gidouilles + price;
+	}
 </script>
 
 <svelte:head>
@@ -258,8 +326,10 @@
 										{count}
 										size="sm"
 										showUseButton={status === 'owned' && hasAction && !hasPendingRequest}
+										showSellButton={status === 'owned' && !hasPendingRequest}
 										{hasPendingRequest}
 										onUse={() => handleUseCard(template.id)}
+										onSell={() => handleSellCard(template.id)}
 									/>
 
 									<!-- Lock Icon for Never Obtained -->
@@ -281,3 +351,15 @@
 		{/each}
 	</div>
 </div>
+
+<!-- Sell Modal -->
+{#if sellCard}
+	<VipCardSellModal
+		bind:open={sellModalOpen}
+		card={sellCard}
+		instanceId={sellInstanceId}
+		{sellPrice}
+		{currentBalance}
+		onSellComplete={handleSellComplete}
+	/>
+{/if}
