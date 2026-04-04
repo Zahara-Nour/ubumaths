@@ -126,6 +126,24 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 	}
 
+	// Validate no cards are locked in marketplace (action card + discard cards)
+	const allCardIds = [data.actionCardInstanceId, ...data.cardsToDiscard];
+	const { data: lockedCards, error: lockError } = await supabase
+		.from('marketplace_locked_cards')
+		.select('card_instance_id')
+		.eq('student_id', data.studentId)
+		.in('card_instance_id', allCardIds);
+
+	if (lockError) {
+		console.error('[exchange] Error checking marketplace locks:', lockError);
+		throw error(500, 'Failed to verify marketplace lock status');
+	}
+
+	if (lockedCards && lockedCards.length > 0) {
+		const lockedId = lockedCards[0].card_instance_id;
+		throw error(400, `Card is locked in marketplace and cannot be exchanged: ${lockedId}`);
+	}
+
 	// Get action card name early for audit trail descriptions
 	const actionCardTemplate = await getTemplateById(supabase, actionCard.cardId);
 	const actionCardName = actionCardTemplate?.name || actionCard.cardId;
