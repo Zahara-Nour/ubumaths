@@ -96,7 +96,7 @@ export interface VipCardsActivityRow {
 	student_id: string;
 	card_instance_id: string;
 	card_template_id: string;
-	action: 'gained' | 'used' | 'removed';
+	action: 'gained' | 'used' | 'removed' | 'sold';
 	metadata: Record<string, unknown> | null;
 	created_at: string;
 }
@@ -171,7 +171,7 @@ export interface VipCardsActivityInsert {
 	student_id: string;
 	card_instance_id: string;
 	card_template_id: string;
-	action: 'gained' | 'used' | 'removed';
+	action: 'gained' | 'used' | 'removed' | 'sold';
 	metadata?: Record<string, unknown> | null;
 }
 
