@@ -201,9 +201,10 @@
 
 		const [instanceId, instance] = instances[0];
 
-		// Calculate sell price (prorated for partial consumables)
-		let price = template.sell_price ?? 1;
-		const usesTotal = template.uses_total;
+		// Get sell price from collectionData (extracted server-side from DB)
+		const collectionStatus = data.collectionData?.[templateId];
+		let price = collectionStatus?.sellPrice ?? 1;
+		const usesTotal = (template as Record<string, unknown>).uses_total as number | null;
 		if (usesTotal && usesTotal > 0 && instance.usesRemaining != null) {
 			if (instance.usesRemaining < usesTotal) {
 				price = Math.max(1, Math.floor((price * instance.usesRemaining) / usesTotal));

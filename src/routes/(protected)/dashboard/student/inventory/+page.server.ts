@@ -26,6 +26,7 @@ export interface CardCollectionStatus {
 	lastEarnedAt: string | null; // Most recent time card was obtained
 	hasActiveInstance: boolean; // Has at least one unused instance
 	hasPendingRequest: boolean; // Has pending activation request
+	sellPrice: number | null; // Sell-back price from DB (null = not sellable)
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -111,6 +112,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		const firstEarnedAt = allEarnedTimes.length > 0 ? allEarnedTimes.sort()[0] : null;
 		const lastEarnedAt = allEarnedTimes.length > 0 ? allEarnedTimes.sort().reverse()[0] : null;
 
+		// Extract sell_price from raw DB data (not in auto-generated TS types yet)
+		const sellPrice = (template as Record<string, unknown>).sell_price as number | null;
+
 		collectionData[template.id] = {
 			template,
 			ownedInstances: activeInstances,
@@ -118,7 +122,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			firstEarnedAt,
 			lastEarnedAt,
 			hasActiveInstance: activeInstances.length > 0,
-			hasPendingRequest
+			hasPendingRequest,
+			sellPrice: sellPrice ?? null
 		};
 
 		// Update counts
