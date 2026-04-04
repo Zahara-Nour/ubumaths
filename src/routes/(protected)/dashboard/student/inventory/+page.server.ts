@@ -46,6 +46,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			studentId: user.id,
 			templates: [],
 			ownedCards: {},
+			gidouilles: 0,
 			collectionData: {},
 			collectionStats: {
 				totalCards: 0,
@@ -56,10 +57,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 		};
 	}
 
-	// Fetch student's profile with vip_cards
+	// Fetch student's profile with vip_cards and gidouilles balance
 	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
-		.select('vip_cards')
+		.select('vip_cards, gidouilles')
 		.eq('id', user.id)
 		.single();
 
@@ -69,6 +70,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			studentId: user.id,
 			templates: templates || [],
 			ownedCards: {},
+			gidouilles: 0,
 			collectionData: {},
 			collectionStats: {
 				totalCards: templates?.length || 0,
@@ -133,6 +135,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		studentId: user.id,
 		templates: templates || [],
 		ownedCards: vipCards,
+		gidouilles: (profile.gidouilles as number) ?? 0,
 		collectionData,
 		collectionStats: {
 			totalCards: templates?.length || 0,

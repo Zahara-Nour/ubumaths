@@ -35,7 +35,7 @@
 	import type { VipCard } from '$lib/types/vip-card';
 	import { cn } from '$lib/utils';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
-	import { Trash2, Sparkles, Clock, Zap } from 'lucide-svelte';
+	import { Trash2, Sparkles, Clock, Zap, Coins } from 'lucide-svelte';
 
 	interface Props {
 		card: VipCard;
@@ -51,6 +51,8 @@
 		hasPendingRequest?: boolean;
 		onUse?: () => void;
 		onApprove?: () => void;
+		showSellButton?: boolean;
+		onSell?: () => void;
 	}
 
 	let {
@@ -66,7 +68,9 @@
 		showUseButton = false,
 		hasPendingRequest = false,
 		onUse,
-		onApprove
+		onApprove,
+		showSellButton = false,
+		onSell
 	}: Props = $props();
 
 	// Size classes
@@ -119,6 +123,15 @@
 	function handleApprove(e: MouseEvent) {
 		e.stopPropagation();
 		onApprove?.();
+	}
+
+	/**
+	 * Handle sell button click (amber button — sell card back)
+	 * IMPORTANT: Stops event propagation to prevent card flip animation
+	 */
+	function handleSell(e: MouseEvent) {
+		e.stopPropagation();
+		onSell?.();
 	}
 
 	// Rarity gem color system
@@ -255,6 +268,21 @@
 					aria-label="Retirer cette carte"
 				>
 					<Trash2 class={cn(size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5')} />
+				</button>
+			{/if}
+
+			<!-- Sell Button (Bottom Right, Amber) - Student sell-back -->
+			{#if showSellButton && !showRemoveButton}
+				<button
+					type="button"
+					class={cn(
+						'absolute right-2 bottom-2 rounded-full bg-amber-500 p-2 text-white shadow-lg transition-all hover:scale-110 hover:bg-amber-600 active:scale-95',
+						size === 'sm' ? 'p-1.5' : size === 'md' ? 'p-2' : 'p-2.5'
+					)}
+					onclick={handleSell}
+					aria-label="Vendre cette carte"
+				>
+					<Coins class={cn(size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5')} />
 				</button>
 			{/if}
 
