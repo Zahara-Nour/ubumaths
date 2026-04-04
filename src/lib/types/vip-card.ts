@@ -266,6 +266,17 @@ export const RARITY_PRICES: Record<VipCardRarity, number> = {
 };
 
 /**
+ * Rarity-based sell-back prices (~20% of base rarity price)
+ * Must match values in vip_card_templates.sell_price (migration 20260404200000)
+ */
+export const RARITY_SELL_PRICES: Record<VipCardRarity, number> = {
+	common: 1,
+	rare: 3,
+	epic: 8,
+	legendary: 15
+};
+
+/**
  * Get the base price for a card based on its rarity
  */
 export function getRarityPrice(rarity: VipCardRarity): number {
