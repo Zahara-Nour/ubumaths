@@ -201,10 +201,10 @@
 
 		const [instanceId, instance] = instances[0];
 
-		// Get sell price from collectionData (extracted server-side from DB)
+		// Get sell price from collectionData (server-side from DB)
 		const collectionStatus = data.collectionData?.[templateId];
 		let price = collectionStatus?.sellPrice ?? 1;
-		const usesTotal = (template as Record<string, unknown>).uses_total as number | null;
+		const usesTotal = template.uses_total;
 		if (usesTotal && usesTotal > 0 && instance.usesRemaining != null) {
 			if (instance.usesRemaining < usesTotal) {
 				price = Math.max(1, Math.floor((price * instance.usesRemaining) / usesTotal));

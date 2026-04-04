@@ -10955,6 +10955,7 @@ export type Database = {
 					max_owned_per_student: number;
 					name: string;
 					rarity: string;
+					sell_price: number | null;
 					sort_order: number | null;
 					updated_at: string;
 					uses_total: number | null;
@@ -10972,6 +10973,7 @@ export type Database = {
 					max_owned_per_student?: number;
 					name: string;
 					rarity: string;
+					sell_price?: number | null;
 					sort_order?: number | null;
 					updated_at?: string;
 					uses_total?: number | null;
@@ -10989,6 +10991,7 @@ export type Database = {
 					max_owned_per_student?: number;
 					name?: string;
 					rarity?: string;
+					sell_price?: number | null;
 					sort_order?: number | null;
 					updated_at?: string;
 					uses_total?: number | null;
@@ -12460,6 +12463,7 @@ export type Database = {
 					games_won: number | null;
 					lastname: string | null;
 					rank: number | null;
+					role: Database['public']['Enums']['user_role'] | null;
 					student_id: string | null;
 					top_games_count: number | null;
 					total_gidouilles: number | null;
@@ -14315,6 +14319,7 @@ export type Database = {
 				Args: {
 					p_card_id?: string;
 					p_instance_id?: string;
+					p_reason?: string;
 					p_student_id: string;
 				};
 				Returns: Json;
@@ -14412,6 +14417,10 @@ export type Database = {
 					school_name: string;
 					updated_at: string;
 				}[];
+			};
+			sell_vip_card: {
+				Args: { p_card_instance_id: string; p_student_id: string };
+				Returns: Json;
 			};
 			send_private_message: {
 				Args: {
@@ -14580,6 +14589,7 @@ export type Database = {
 				Args: { p_status: string; p_user_id: string };
 				Returns: undefined;
 			};
+			use_detector: { Args: { p_game_id: string }; Returns: Json };
 			use_hint: { Args: { p_game_id: string }; Returns: Json };
 			use_item: {
 				Args: { p_context: string; p_inventory_id: string; p_usage_data?: Json };
