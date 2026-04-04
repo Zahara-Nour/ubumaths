@@ -13,8 +13,6 @@ type VipCardTemplateRow = Database['public']['Tables']['vip_card_templates']['Ro
 
 export interface VipCardTemplate extends Omit<VipCardTemplateRow, 'action'> {
 	action: VipCardAction | null;
-	// Added by migration 20260404200000 — not yet in auto-generated database.ts
-	sell_price: number | null;
 }
 
 // Create the writable store
