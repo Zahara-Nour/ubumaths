@@ -120,3 +120,24 @@ export const purchaseVipCardBodySchema = z
 	.strict();
 
 export type PurchaseVipCardBodyInput = z.infer<typeof purchaseVipCardBodySchema>;
+
+// ============================================================================
+// SELL VIP CARD SCHEMA
+// ============================================================================
+
+/**
+ * Schema for selling a VIP card back to the system
+ *
+ * Used by: POST /api/vip-cards/sell
+ *
+ * Note: studentId is NOT accepted in the body for security.
+ * The endpoint uses session.user.id instead.
+ */
+export const sellVipCardBodySchema = z
+	.object({
+		/** UUID of the VIP card instance to sell */
+		cardInstanceId: z.string().uuid('Invalid card instance ID format')
+	})
+	.strict();
+
+export type SellVipCardBodyInput = z.infer<typeof sellVipCardBodySchema>;
