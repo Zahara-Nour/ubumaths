@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.63](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.62...v0.8.63) (2026-04-04)
+
+### ✨ Features
+
+- **vip:** make fortune card max exchange count configurable (set to 20) ([7396ced](https://github.com/Zahara-Nour/ubumaths/commit/7396cedc440bff33aba5d02fd6a80ce2d09e4d42))
+
 ### [0.8.62](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.61...v0.8.62) (2026-04-03)
 
 ### 🐛 Bug Fixes
