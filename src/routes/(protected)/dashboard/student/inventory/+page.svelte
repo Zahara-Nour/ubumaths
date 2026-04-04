@@ -18,7 +18,6 @@
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import { Lock, Trophy, Sparkles, Gem } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
-	import { RARITY_SELL_PRICES } from '$lib/types/vip-card';
 	import type { VipCard as VipCardType, VipCardRarity, StudentVipCards } from '$lib/types/vip-card';
 	import type { CardCollectionStatus } from './+page.server';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -203,9 +202,8 @@
 		const [instanceId, instance] = instances[0];
 
 		// Calculate sell price (prorated for partial consumables)
-		const rarity = template.rarity.toLowerCase() as VipCardRarity;
-		let price = RARITY_SELL_PRICES[rarity] ?? 1;
-		const usesTotal = (template as { uses_total?: number | null }).uses_total;
+		let price = template.sell_price ?? 1;
+		const usesTotal = template.uses_total;
 		if (usesTotal && usesTotal > 0 && instance.usesRemaining != null) {
 			if (instance.usesRemaining < usesTotal) {
 				price = Math.max(1, Math.floor((price * instance.usesRemaining) / usesTotal));
