@@ -42,7 +42,7 @@
 	let canCreateListing = $derived(
 		!marketplaceStore.config ||
 			marketplaceStore.stats.my_active_listings <
-				marketplaceStore.config.max_active_listings_per_student
+				(marketplaceStore.config.max_listings_per_student ?? 5)
 	);
 </script>
 

@@ -130,13 +130,8 @@
 		if (wantedCardTemplateIds.includes(templateId)) {
 			wantedCardTemplateIds = wantedCardTemplateIds.filter((id) => id !== templateId);
 		} else {
-			if (
-				marketplaceStore.config &&
-				wantedCardTemplateIds.length >= marketplaceStore.config.max_cards_per_trade
-			) {
-				toaster.warning(
-					`Maximum ${marketplaceStore.config.max_cards_per_trade} types de cartes par annonce`
-				);
+			if (wantedCardTemplateIds.length >= 10) {
+				toaster.warning('Maximum 10 types de cartes par annonce');
 				return;
 			}
 			wantedCardTemplateIds = [...wantedCardTemplateIds, templateId];
@@ -245,7 +240,7 @@
 							bind:selectedCardIds={offeredCardIds}
 							mode="multiple"
 							excludeLocked={true}
-							maxSelection={marketplaceStore.config?.max_cards_per_trade || 10}
+							maxSelection={10}
 							compact={true}
 						/>
 					{:else}
@@ -268,10 +263,7 @@
 						type="number"
 						bind:value={offeredGidouilles}
 						min={0}
-						max={Math.min(
-							marketplaceStore.userGidouilles,
-							marketplaceStore.config?.max_gidouilles_per_trade || 10000
-						)}
+						max={Math.min(marketplaceStore.userGidouilles, 10000)}
 						placeholder="0"
 						class={offeredGidouilles > marketplaceStore.userGidouilles ? 'border-destructive' : ''}
 					/>
@@ -369,7 +361,7 @@
 						type="number"
 						bind:value={wantedGidouilles}
 						min={0}
-						max={marketplaceStore.config?.max_gidouilles_per_trade || 10000}
+						max={10000}
 						placeholder="0"
 					/>
 				</div>
