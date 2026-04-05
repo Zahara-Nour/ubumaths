@@ -31,7 +31,7 @@
 	let confirmedPrice = $state(0);
 	let error = $state<string | null>(null);
 
-	let newBalance = $derived(currentBalance + sellPrice);
+	let newBalance = $derived(Math.round((currentBalance + sellPrice) * 100) / 100);
 
 	const SUCCESS_DISPLAY_MS = 1500;
 

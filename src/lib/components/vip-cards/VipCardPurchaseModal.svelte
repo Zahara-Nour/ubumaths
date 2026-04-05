@@ -41,7 +41,7 @@
 	// Get card price
 	let cardPrice = $derived(card.basePrice ?? RARITY_PRICES[card.rarity] ?? 20);
 	let canAfford = $derived(currentBalance >= cardPrice);
-	let newBalance = $derived(currentBalance - cardPrice);
+	let newBalance = $derived(Math.round((currentBalance - cardPrice) * 100) / 100);
 
 	// Success display duration
 	const SUCCESS_DISPLAY_MS = 1500;
