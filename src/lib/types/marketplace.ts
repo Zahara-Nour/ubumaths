@@ -191,20 +191,19 @@ export interface ListingsFilter {
 	limit?: number;
 }
 
-// Marketplace configuration
+// Marketplace configuration (matches marketplace_config DB table)
 export interface MarketplaceConfig {
-	id: number;
-	max_active_listings_per_student: number;
-	max_proposals_per_listing: number;
-	default_listing_duration_days: number;
-	min_gidouilles_per_trade: number;
-	max_gidouilles_per_trade: number;
-	max_cards_per_trade: number;
-	trade_cooldown_minutes: number;
-	chat_enabled: boolean;
-	chat_max_message_length: number;
+	id: string;
+	school_id: string | null;
+	class_id: string | null;
+	enabled_globally: boolean | null;
+	enabled_for_class: boolean | null;
+	max_listings_per_student: number | null;
+	max_trades_per_day: number | null;
+	listing_duration_days: number | null;
 	created_at: string;
 	updated_at: string;
+	updated_by: string | null;
 }
 
 // Statistics

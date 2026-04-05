@@ -234,7 +234,7 @@
 									bind:selectedCardIds={myCardIds}
 									mode="multiple"
 									excludeLocked={true}
-									maxSelection={marketplaceStore.config?.max_cards_per_trade || 10}
+									maxSelection={10}
 									compact={true}
 								/>
 							{:else}
@@ -252,7 +252,7 @@
 							type="number"
 							bind:value={myGidouilles}
 							min={0}
-							max={marketplaceStore.config?.max_gidouilles_per_trade || 10000}
+							max={10000}
 							placeholder="0"
 						/>
 					</div>
@@ -269,7 +269,7 @@
 							type="number"
 							bind:value={partnerCardIds.length}
 							min={0}
-							max={marketplaceStore.config?.max_cards_per_trade || 10}
+							max={10}
 							placeholder="Nombre de cartes demandées"
 							disabled
 						/>
@@ -282,7 +282,7 @@
 							type="number"
 							bind:value={partnerGidouilles}
 							min={0}
-							max={marketplaceStore.config?.max_gidouilles_per_trade || 10000}
+							max={10000}
 							placeholder="0"
 						/>
 					</div>
