@@ -441,7 +441,7 @@ export class StudentDashboardCache {
 		if (!cached) return;
 
 		const currentGidouilles = cached.rewards.gidouilles;
-		const newGidouilles = Math.max(0, currentGidouilles + delta);
+		const newGidouilles = Math.max(0, Math.round((currentGidouilles + delta) * 100) / 100);
 
 		// Update cache with new gidouilles value
 		this.rewardsCache = {
