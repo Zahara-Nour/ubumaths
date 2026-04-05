@@ -17,11 +17,8 @@ const DEFAULT_MAX_TRADES_PER_DAY = 10;
  */
 const DEFAULT_MAX_LISTINGS_PER_STUDENT = 5;
 
-type VipCard = {
-	id: string;
-	template_id: string;
-	obtained_at: string;
-};
+// vip_cards JSONB is Record<instanceId, { cardId, earnedAt, usedAt? }>
+type VipCardsJson = Record<string, { cardId: string; earnedAt: string; usedAt?: string }>;
 
 // ============================================================================
 // CARD OWNERSHIP AND VALIDATION
@@ -52,11 +49,11 @@ export async function validateCardOwnership(
 		return false;
 	}
 
-	const ownedCards = profile.vip_cards as VipCard[];
-	const ownedCardIds = new Set(ownedCards.map((card) => card.id));
+	const ownedCards = profile.vip_cards as VipCardsJson;
+	const ownedCardIds = new Set(Object.keys(ownedCards));
 
-	// Check if all specified cards are owned
-	return cardIds.every((cardId) => ownedCardIds.has(cardId));
+	// Check if all specified cards are owned and not used
+	return cardIds.every((cardId) => ownedCardIds.has(cardId) && !ownedCards[cardId].usedAt);
 }
 
 /**
@@ -462,11 +459,11 @@ export async function enrichListingsWithCardData<
 	if (creators) {
 		for (const creator of creators) {
 			const cardMap = new Map<string, string>();
-			const vipCards = creator.vip_cards as VipCard[] | null;
+			const vipCards = creator.vip_cards as VipCardsJson | null;
 			if (vipCards) {
-				for (const card of vipCards) {
-					cardMap.set(card.id, card.template_id);
-					offeredTemplateIds.add(card.template_id);
+				for (const [instanceId, card] of Object.entries(vipCards)) {
+					cardMap.set(instanceId, card.cardId);
+					offeredTemplateIds.add(card.cardId);
 				}
 			}
 			creatorCardsMap.set(creator.id, cardMap);
