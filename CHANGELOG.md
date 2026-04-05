@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.64](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.63...v0.8.64) (2026-04-05)
+
+### ✨ Features
+
+- **vip:** add sell button and confirmation modal to student inventory ([eb060f0](https://github.com/Zahara-Nour/ubumaths/commit/eb060f00d018e74db76bb0fdb372a1b397a3aeba))
+- **vip:** add sell-back VIP card feature ([86c53b4](https://github.com/Zahara-Nour/ubumaths/commit/86c53b4067de30ff0b295ed6ddd5092dbe84a8fb))
+
+### 🐛 Bug Fixes
+
+- **vip:** add 'sold' action to journal trigger ([2fc343a](https://github.com/Zahara-Nour/ubumaths/commit/2fc343a42639d4903dfdd74c65dff58d245e2d4e))
+- **vip:** check marketplace locks in exchange endpoint ([719b875](https://github.com/Zahara-Nour/ubumaths/commit/719b87528ba0904d488ee8ecd3135b9cd63a6b36))
+- **vip:** extract sell_price server-side into collectionData ([0b55d9d](https://github.com/Zahara-Nour/ubumaths/commit/0b55d9d30293b5c4241d68c9f946fed77fb67bc2))
+- **vip:** use rarity-based sell prices instead of missing DB column type ([3c35273](https://github.com/Zahara-Nour/ubumaths/commit/3c35273e34e01b53d50a74acc82654ab481afeb0))
+- **vip:** use sell_price from DB templates instead of client-side constant ([418947f](https://github.com/Zahara-Nour/ubumaths/commit/418947ffafc11a3382753991f8bf48e85cdb76c8))
+
 ### [0.8.63](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.62...v0.8.63) (2026-04-04)
 
 ### ✨ Features
