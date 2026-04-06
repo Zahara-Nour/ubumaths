@@ -582,9 +582,16 @@ class MarketplaceStore {
 				} else {
 					this.myProposals = [proposal, ...this.myProposals];
 				}
-				toaster.success('Proposition envoyée');
-				// Refresh card locks (cards are now locked for this proposal)
-				await this.fetchMyVipCards();
+				if (proposal.auto_accepted) {
+					toaster.success('Échange effectué !');
+					// Refresh everything — trade was executed
+					studentCache.invalidateRewards();
+					await this.fetchInitialData();
+				} else {
+					toaster.success('Proposition envoyée');
+					// Refresh card locks (cards are now locked for this proposal)
+					await this.fetchMyVipCards();
+				}
 				return true;
 			} else {
 				const error = await response.text();
