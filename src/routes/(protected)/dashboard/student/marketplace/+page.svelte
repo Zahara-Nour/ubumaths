@@ -3,12 +3,13 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import ConsentButton from '$lib/components/ConsentButton.svelte';
-	import { Plus, ShoppingBag, Package, ArrowLeftRight, Store } from 'lucide-svelte';
+	import { Plus, ShoppingBag, Package, ArrowLeftRight, Store, Send } from 'lucide-svelte';
 
 	// Import components
 	import MarketplaceListings from '$lib/components/marketplace/MarketplaceListings.svelte';
 	import MyListings from '$lib/components/marketplace/MyListings.svelte';
 	import MyTrades from '$lib/components/marketplace/MyTrades.svelte';
+	import MyProposals from '$lib/components/marketplace/MyProposals.svelte';
 	import CreateListingModal from '$lib/components/marketplace/CreateListingModal.svelte';
 	import VipCardShopSection from '$lib/components/vip-cards/VipCardShopSection.svelte';
 
@@ -122,23 +123,32 @@
 
 			<!-- Nested tabs for exchanges -->
 			<Tabs.Root value="browse" class="w-full">
-				<Tabs.List class="grid w-full grid-cols-3">
+				<Tabs.List class="grid w-full grid-cols-4">
 					<Tabs.Trigger value="browse" class="gap-2">
 						<ShoppingBag class="h-4 w-4" />
 						Parcourir
 					</Tabs.Trigger>
 					<Tabs.Trigger value="my-listings" class="relative gap-2">
 						<Package class="h-4 w-4" />
-						Mes annonces
+						Annonces
 						{#if marketplaceStore.pendingActions.listings > 0}
 							<Badge variant="destructive" class="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
 								{marketplaceStore.pendingActions.listings}
 							</Badge>
 						{/if}
 					</Tabs.Trigger>
+					<Tabs.Trigger value="my-proposals" class="relative gap-2">
+						<Send class="h-4 w-4" />
+						Propositions
+						{#if marketplaceStore.pendingActions.proposals > 0}
+							<Badge variant="destructive" class="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
+								{marketplaceStore.pendingActions.proposals}
+							</Badge>
+						{/if}
+					</Tabs.Trigger>
 					<Tabs.Trigger value="trades" class="relative gap-2">
 						<ArrowLeftRight class="h-4 w-4" />
-						Mes échanges
+						Échanges
 						{#if marketplaceStore.pendingActions.trades > 0}
 							<Badge variant="destructive" class="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
 								{marketplaceStore.pendingActions.trades}
@@ -153,6 +163,10 @@
 
 				<Tabs.Content value="my-listings" class="mt-4">
 					<MyListings />
+				</Tabs.Content>
+
+				<Tabs.Content value="my-proposals" class="mt-4">
+					<MyProposals />
 				</Tabs.Content>
 
 				<Tabs.Content value="trades" class="mt-4">
