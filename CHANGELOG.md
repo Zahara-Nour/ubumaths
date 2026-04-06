@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.65](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.64...v0.8.65) (2026-04-06)
+
+### 📚 Documentation
+
+- **marketplace:** document TradeCardSelector dual usage modes ([b697120](https://github.com/Zahara-Nour/ubumaths/commit/b697120c55bc4682622a6458fcded2facc6bf794))
+
+### ✨ Features
+
+- **marketplace:** add "Mes propositions" tab and proposal indicators ([cc1024a](https://github.com/Zahara-Nour/ubumaths/commit/cc1024aa817ad060b56d2dc93b9f06eed9b8ff63))
+- **marketplace:** add quick accept button in proposal modal ([409e83c](https://github.com/Zahara-Nour/ubumaths/commit/409e83c21ddd60c552251ba626dca8eb4df0f53a))
+- **marketplace:** auto-accept proposals that match listing demand ([1fddad7](https://github.com/Zahara-Nour/ubumaths/commit/1fddad71368312f6af6f4e341ae6b45c2ecc26ed))
+- **marketplace:** drop title and description columns from listings ([4824bfd](https://github.com/Zahara-Nour/ubumaths/commit/4824bfd8b489448adb90ed7f9474a4d40e1649a6))
+- **marketplace:** remove listing title, display content directly ([d9b78b4](https://github.com/Zahara-Nour/ubumaths/commit/d9b78b40f3ab1f3fd7d498d070646be2b925506e))
+
+### 🐛 Bug Fixes
+
+- **marketplace:** accept_proposal_atomic now executes the actual trade ([346276a](https://github.com/Zahara-Nour/ubumaths/commit/346276a9a8db7ce2c6e51819ff4de8c72fd311d8))
+- **marketplace:** add +/- quantity buttons in compact card selector ([205c416](https://github.com/Zahara-Nour/ubumaths/commit/205c416d5ccfc7687fe0bb82b2817df774daafbd))
+- **marketplace:** add is_system flag to notification inserts ([5f0d21c](https://github.com/Zahara-Nour/ubumaths/commit/5f0d21cb2362cffc940162dd3b7df2a173b699f2))
+- **marketplace:** add lock check in validateCardOwnership ([29735f5](https://github.com/Zahara-Nour/ubumaths/commit/29735f579cb9316e4e2f89c465e2415f34572b16))
+- **marketplace:** add username field to API responses ([f5c0223](https://github.com/Zahara-Nour/ubumaths/commit/f5c0223eda65d30650b94b2a9d183e8bcbefda82))
+- **marketplace:** align config type with DB, fix disabled button ([56cefbe](https://github.com/Zahara-Nour/ubumaths/commit/56cefbefa032da4c3295daa8218745734095d740))
+- **marketplace:** allow resubmitting proposal after rejection ([dccd600](https://github.com/Zahara-Nour/ubumaths/commit/dccd6004eaac1ab26ee5cee3bba86bc793c3a87e))
+- **marketplace:** fix lock_cards RPC and listings insert RLS policy ([51b4182](https://github.com/Zahara-Nour/ubumaths/commit/51b4182bbfd5c262527280056b23180d17538643))
+- **marketplace:** fix proposal creation and fetching ([2d42a29](https://github.com/Zahara-Nour/ubumaths/commit/2d42a295696b1008fdbdfdd005fcd39995e680f9))
+- **marketplace:** fix vip_cards JSONB parsed as array instead of Record ([37293d0](https://github.com/Zahara-Nour/ubumaths/commit/37293d017ce872c8ba0bb43d017f909dd175525f))
+- **marketplace:** group duplicate cards in listing details modal ([18d288a](https://github.com/Zahara-Nour/ubumaths/commit/18d288af74c91013f8488115836dd4ca35f7e682))
+- **marketplace:** group duplicate cards in listing display, fix proposals/my ([5627aec](https://github.com/Zahara-Nour/ubumaths/commit/5627aecb1a83714f1aae0e04430e0d7b65d692a7))
+- **marketplace:** move quick accept button to listing details modal ([a63d627](https://github.com/Zahara-Nour/ubumaths/commit/a63d6272119515b0a64cb7dd9aa0478bf14559de))
+- **marketplace:** notify rejected proposers on auto-accept ([517b722](https://github.com/Zahara-Nour/ubumaths/commit/517b7225c47555aa533f4f821660f74cbbc6c13e))
+- **marketplace:** prevent duplicate proposals in store on resubmission ([6dbe3b0](https://github.com/Zahara-Nour/ubumaths/commit/6dbe3b0b2fe900c1b151a9be5e9e17984f63c0c1))
+- **marketplace:** prevent self-proposals on own listings ([e07d138](https://github.com/Zahara-Nour/ubumaths/commit/e07d138f23fdc1879fdb59bb096b343ea2f1b996))
+- **marketplace:** remove arbitrary 10-card limit on trades ([891fca8](https://github.com/Zahara-Nour/ubumaths/commit/891fca85baf7d11e534d52579e22b75b5dccdece))
+- **marketplace:** remove description field from listing creation form ([a677330](https://github.com/Zahara-Nour/ubumaths/commit/a677330fd9d93567491598593f64de3cd54764dc))
+- **marketplace:** remove incorrect checkCardsUnused blocking listings ([8260972](https://github.com/Zahara-Nour/ubumaths/commit/8260972a381f9407e948e5720cc90f1348ea0e1e))
+- **marketplace:** remove title field, auto-generate from content ([d78cb60](https://github.com/Zahara-Nour/ubumaths/commit/d78cb60379f02aa0ecdc6e60b15179e403e33cae))
+- **marketplace:** remove title references from admin endpoints ([d8ec4b2](https://github.com/Zahara-Nour/ubumaths/commit/d8ec4b24bc339f892a4c22b4cfebcaf32878b523))
+- **marketplace:** remove unnecessary confirm dialog on proposal accept ([aa2c132](https://github.com/Zahara-Nour/ubumaths/commit/aa2c13239a4eb4f91d0a72ed4c0d937e80e4149b))
+- **marketplace:** remove updated_at from listings updates ([d7e9ebc](https://github.com/Zahara-Nour/ubumaths/commit/d7e9ebc226fc772c80733ce8c694b3f162601ed2))
+- **marketplace:** replace listing type select with toggle buttons ([e6c3f56](https://github.com/Zahara-Nour/ubumaths/commit/e6c3f56da3d379340ef2383f3f1fe46e809e870d))
+- **marketplace:** replace native confirm with ConfirmDialog for cancel ([5bd898e](https://github.com/Zahara-Nour/ubumaths/commit/5bd898e9b91909ab25bcc055f8a21e652704cf06))
+- **marketplace:** replace nonexistent username column with firstname/lastname ([66b6779](https://github.com/Zahara-Nour/ubumaths/commit/66b67797dee8016f74d5324308b336753a02b67e))
+- **marketplace:** simplify listing form by type ([7fd9b42](https://github.com/Zahara-Nour/ubumaths/commit/7fd9b422d3a56516913e2be466f3a5769b3a54ed))
+- **marketplace:** support creator_id filter and proposal resubmission ([52f25c4](https://github.com/Zahara-Nour/ubumaths/commit/52f25c479578ab4dbaa29918165289345ff2842b))
+- **marketplace:** use 'marketplace' trade_type in accept_proposal_atomic ([7ebc734](https://github.com/Zahara-Nour/ubumaths/commit/7ebc73424dfe2afc2584056b0436ceaf9d3478a8))
+- **marketplace:** use PATCH /proposals/[id] for accept/reject ([f374074](https://github.com/Zahara-Nour/ubumaths/commit/f374074ca1df00da4ba1263688e5348c39f12d8d))
+- **marketplace:** use TradeCardSelector everywhere for card selection ([41b4a89](https://github.com/Zahara-Nour/ubumaths/commit/41b4a89e69cf7974c0ae43e937cf24c4fdb57348))
+- **marketplace:** use valid notification type and correct action URLs ([ac6fae7](https://github.com/Zahara-Nour/ubumaths/commit/ac6fae77a049041245f59dd915a3fa4b59083d6a))
+- **vip:** round balance display to avoid floating point artifacts ([d1d86ac](https://github.com/Zahara-Nour/ubumaths/commit/d1d86ac7202cb2264e87a098c69895cdf148bf47))
+- **vip:** round gidouilles in cache to avoid floating point display ([c775baa](https://github.com/Zahara-Nour/ubumaths/commit/c775baa8b4426347e8b82a341cff2ff6e741c14f))
+
 ### [0.8.64](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.63...v0.8.64) (2026-04-05)
 
 ### ✨ Features
