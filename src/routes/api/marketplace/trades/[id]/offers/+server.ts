@@ -66,7 +66,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	// Validate card ownership if offering cards
 	if (userCards.length > 0) {
-		const ownsCards = await validateCardOwnership(supabase, userId, userCards);
+		const ownsCards = await validateCardOwnership(supabase, userId, userCards, data.trade_id);
 		if (!ownsCards) {
 			throw error(403, 'Vous ne possédez pas toutes les cartes spécifiées');
 		}

@@ -25,16 +25,20 @@ type VipCardsJson = Record<string, { cardId: string; earnedAt: string; usedAt?: 
 // ============================================================================
 
 /**
- * Validates that a student owns the specified cards
+ * Validates that a student owns the specified cards, they are not used,
+ * and not locked for another entity.
  * @param supabase Supabase client
  * @param studentId Student ID to check ownership for
  * @param cardIds Array of card IDs to validate
- * @returns true if student owns all cards, false otherwise
+ * @param excludeEntityId If provided, locks for this entity are ignored
+ *   (e.g. when updating an offer in an existing trade)
+ * @returns true if student owns all cards and they are available
  */
 export async function validateCardOwnership(
 	supabase: SupabaseClient<Database>,
 	studentId: string,
-	cardIds: string[]
+	cardIds: string[],
+	excludeEntityId?: string
 ): Promise<boolean> {
 	if (cardIds.length === 0) return true;
 
@@ -53,7 +57,25 @@ export async function validateCardOwnership(
 	const ownedCardIds = new Set(Object.keys(ownedCards));
 
 	// Check if all specified cards are owned and not used
-	return cardIds.every((cardId) => ownedCardIds.has(cardId) && !ownedCards[cardId].usedAt);
+	const allOwnedAndUnused = cardIds.every(
+		(cardId) => ownedCardIds.has(cardId) && !ownedCards[cardId].usedAt
+	);
+	if (!allOwnedAndUnused) return false;
+
+	// Check if any cards are locked in another listing/trade
+	let query = supabase
+		.from('marketplace_locked_cards')
+		.select('card_instance_id')
+		.in('card_instance_id', cardIds)
+		.eq('student_id', studentId);
+
+	if (excludeEntityId) {
+		query = query.neq('locked_entity_id', excludeEntityId);
+	}
+
+	const { data: locks } = await query;
+
+	return !locks || locks.length === 0;
 }
 
 /**
