@@ -12,10 +12,7 @@ export const createListingSchema = z
 		listing_type: z.enum(['sell', 'buy']),
 
 		// Offered items (for 'sell' listings)
-		offered_card_ids: z
-			.array(z.string().uuid('ID de carte invalide'))
-			.max(10, 'Maximum 10 cartes peuvent être offertes')
-			.default([]),
+		offered_card_ids: z.array(z.string().uuid('ID de carte invalide')).default([]),
 		offered_gidouilles: z
 			.number()
 			.int('Les gidouilles doivent être un nombre entier')
@@ -27,7 +24,6 @@ export const createListingSchema = z
 		// Wanted items (for both listing types)
 		wanted_card_template_ids: z
 			.array(z.string().uuid('ID de modèle de carte invalide'))
-			.max(10, 'Maximum 10 modèles de cartes peuvent être demandés')
 			.default([]),
 		wanted_gidouilles: z
 			.number()
@@ -105,10 +101,7 @@ export const listingsQuerySchema = z.object({
 export const createProposalSchema = z
 	.object({
 		listing_id: z.string().uuid("ID d'annonce invalide"),
-		offered_card_ids: z
-			.array(z.string().uuid('ID de carte invalide'))
-			.max(10, 'Maximum 10 cartes peuvent être offertes')
-			.default([]),
+		offered_card_ids: z.array(z.string().uuid('ID de carte invalide')).default([]),
 		offered_gidouilles: z
 			.number()
 			.int('Les gidouilles doivent être un nombre entier')
@@ -140,10 +133,7 @@ export const updateProposalSchema = z.object({
 export const createTradeSchema = z.object({
 	partner_id: z.string().uuid('ID du partenaire invalide'),
 	initial_offer: z.object({
-		cards: z
-			.array(z.string().uuid('ID de carte invalide'))
-			.max(10, 'Maximum 10 cartes peuvent être offertes')
-			.default([]),
+		cards: z.array(z.string().uuid('ID de carte invalide')).default([]),
 		gidouilles: z
 			.number()
 			.int('Les gidouilles doivent être un nombre entier')
@@ -159,10 +149,7 @@ export const createTradeSchema = z.object({
  */
 export const createOfferSchema = z.object({
 	trade_id: z.string().uuid("ID d'échange invalide"),
-	initiator_cards: z
-		.array(z.string().uuid('ID de carte invalide'))
-		.max(10, 'Maximum 10 cartes')
-		.default([]),
+	initiator_cards: z.array(z.string().uuid('ID de carte invalide')).default([]),
 	initiator_gidouilles: z
 		.number()
 		.int('Les gidouilles doivent être un nombre entier')
@@ -170,10 +157,7 @@ export const createOfferSchema = z.object({
 		.max(10000, 'Maximum 10000 gidouilles')
 		.finite('La valeur doit être un nombre fini')
 		.default(0),
-	partner_cards: z
-		.array(z.string().uuid('ID de carte invalide'))
-		.max(10, 'Maximum 10 cartes')
-		.default([]),
+	partner_cards: z.array(z.string().uuid('ID de carte invalide')).default([]),
 	partner_gidouilles: z
 		.number()
 		.int('Les gidouilles doivent être un nombre entier')
