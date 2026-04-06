@@ -254,8 +254,8 @@
 			if (requiredCount > 0 && selectedCards.size >= requiredCount) {
 				const first = Array.from(selectedCards)[0];
 				selectedCards.delete(first);
-			} else if (isFlexibleCount && selectedCards.size >= 10) {
-				// Flexible mode: max 10 cards
+			} else if (isFlexibleCount && selectedCards.size >= maxExchangeCount) {
+				// Flexible mode: max maxExchangeCount cards
 				return; // Don't add if already at max
 			}
 			selectedCards.add(unselectedInstance.instanceId);
