@@ -38,7 +38,6 @@ export const createListingSchema = z
 			.default(0),
 
 		// Metadata
-		title: z.string().max(100, 'Le titre ne peut pas dépasser 100 caractères').optional(),
 		description: z
 			.string()
 			.max(500, 'La description ne peut pas dépasser 500 caractères')
@@ -62,12 +61,6 @@ export const createListingSchema = z
  * Schema for updating an existing listing
  */
 export const updateListingSchema = z.object({
-	title: z
-		.string()
-		.min(3, 'Le titre doit contenir au moins 3 caractères')
-		.max(100, 'Le titre ne peut pas dépasser 100 caractères')
-		.optional(),
-	description: z.string().max(500, 'La description ne peut pas dépasser 500 caractères').optional(),
 	wanted_card_template_ids: z
 		.array(z.string().uuid('ID de modèle de carte invalide'))
 		.max(10, 'Maximum 10 modèles de cartes peuvent être demandés')
