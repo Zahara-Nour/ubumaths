@@ -1,6 +1,5 @@
--- Fix accept_proposal_atomic to actually transfer assets
--- Previously it only changed statuses without transferring cards/gidouilles.
--- Now it creates a marketplace_trade and calls execute_trade for the actual transfer.
+-- Fix: trade_type must be 'marketplace' not 'listing'
+-- The marketplace_trades_trade_type_check constraint only allows 'friend' or 'marketplace'
 
 CREATE OR REPLACE FUNCTION public.accept_proposal_atomic(
   p_proposal_id UUID,
@@ -18,7 +17,6 @@ DECLARE
   v_current_offer JSONB;
   v_execute_result JSONB;
 BEGIN
-  -- Lock the proposal row
   SELECT * INTO v_proposal
   FROM marketplace_proposals
   WHERE id = p_proposal_id
@@ -32,7 +30,6 @@ BEGIN
     RETURN json_build_object('success', false, 'error', 'Cette proposition a déjà été traitée');
   END IF;
 
-  -- Lock the listing row
   SELECT * INTO v_listing
   FROM marketplace_listings
   WHERE id = v_proposal.listing_id
@@ -46,10 +43,6 @@ BEGIN
     RETURN json_build_object('success', false, 'error', 'Vous n''êtes pas autorisé à accepter cette proposition');
   END IF;
 
-  -- Build current_offer in the format execute_trade expects:
-  -- For a listing acceptance:
-  --   "initiator" = listing creator (who gives listing's offered items)
-  --   "partner" = proposer (who gives proposal's offered items)
   v_current_offer := jsonb_build_object(
     'from_initiator', jsonb_build_object(
       'cards', COALESCE(to_jsonb(v_listing.offered_card_ids), '[]'::jsonb),
@@ -61,7 +54,6 @@ BEGIN
     )
   );
 
-  -- Create a trade record for execute_trade to process
   v_trade_id := gen_random_uuid();
   INSERT INTO marketplace_trades (
     id, initiator_id, partner_id, trade_type, status,
@@ -73,12 +65,9 @@ BEGIN
     v_current_offer, NOW(), NOW()
   );
 
-  -- Execute the trade (transfers cards, gidouilles, logs activity)
   v_execute_result := execute_trade(v_trade_id);
 
   IF NOT (v_execute_result->>'success')::boolean THEN
-    -- execute_trade failed, it handles its own cleanup
-    -- but we need to remove the trade we just created
     DELETE FROM marketplace_trades WHERE id = v_trade_id;
     RETURN json_build_object(
       'success', false,
@@ -86,7 +75,6 @@ BEGIN
     );
   END IF;
 
-  -- Reject all other pending proposals and unlock their cards
   DECLARE
     v_other_proposal RECORD;
   BEGIN
@@ -101,13 +89,11 @@ BEGIN
           response_message = 'Autre proposition acceptée'
       WHERE id = v_other_proposal.id;
 
-      -- Unlock cards locked for this proposal
       DELETE FROM marketplace_locked_cards
       WHERE locked_entity_id = v_other_proposal.id;
     END LOOP;
   END;
 
-  -- Unlock cards locked for the listing itself
   DELETE FROM marketplace_locked_cards
   WHERE locked_entity_id = v_listing.id;
 
