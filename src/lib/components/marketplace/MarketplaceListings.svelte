@@ -269,5 +269,10 @@
 <!-- Listing Details Modal -->
 {#if selectedListing}
 	{@const isOpen = !!selectedListing}
-	<ListingDetailsModal listing={selectedListing} open={isOpen} onclose={closeListingDetails} />
+	<ListingDetailsModal
+		listing={selectedListing}
+		open={isOpen}
+		onclose={closeListingDetails}
+		isOwner={selectedListing.creator_id === marketplaceStore.currentUserId}
+	/>
 {/if}
