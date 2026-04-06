@@ -44,19 +44,13 @@
 
 	// Validation
 	let isValid = $derived.by(() => {
-		// Check if user has enough gidouilles to offer
-		if (offeredGidouilles > marketplaceStore.userGidouilles) return false;
-
-		// At least one offer or demand
-		const hasOffer = offeredCardIds.length > 0 || offeredGidouilles > 0;
-		const hasDemand = wantedCardTemplateIds.length > 0 || wantedGidouilles > 0;
-
 		if (listingType === 'sell') {
-			// For selling, must have something to offer
-			return hasOffer;
+			// Sell: must offer at least one card
+			return offeredCardIds.length > 0;
 		} else {
-			// For buying, must specify what you want
-			return hasDemand;
+			// Buy: must offer gidouilles and want at least one card template
+			if (offeredGidouilles > marketplaceStore.userGidouilles) return false;
+			return offeredGidouilles > 0 && wantedCardTemplateIds.length > 0;
 		}
 	});
 
@@ -184,153 +178,139 @@
 			<!-- What I Offer Section -->
 			<div class="space-y-3 rounded-lg border bg-muted/30 p-4">
 				<h3 class="font-medium">
-					{listingType === 'sell' ? "Ce que j'offre" : 'Ce que je peux échanger'}
+					{listingType === 'sell' ? "Ce que j'offre" : "Ce que j'offre en échange"}
 				</h3>
 
 				{#if listingType === 'sell'}
-					<p class="text-sm text-muted-foreground">
-						Sélectionnez les cartes et/ou gidouilles que vous voulez vendre
-					</p>
+					<!-- Sell: offer cards -->
+					<div class="space-y-2">
+						<Label>Mes cartes VIP</Label>
+						{#if marketplaceStore.myVipCards.length > 0}
+							<VipCardSelector
+								cards={marketplaceStore.myVipCards}
+								bind:selectedCardIds={offeredCardIds}
+								mode="multiple"
+								excludeLocked={true}
+								maxSelection={10}
+								compact={true}
+							/>
+						{:else}
+							<p class="py-4 text-center text-sm text-muted-foreground">
+								Vous n'avez pas de cartes VIP disponibles
+							</p>
+						{/if}
+					</div>
 				{:else}
-					<p class="text-sm text-muted-foreground">
-						Optionnel: Indiquez ce que vous pourriez échanger
-					</p>
-				{/if}
-
-				<!-- Card Selection -->
-				<div class="space-y-2">
-					<Label>Mes cartes VIP</Label>
-					{#if marketplaceStore.myVipCards.length > 0}
-						<VipCardSelector
-							cards={marketplaceStore.myVipCards}
-							bind:selectedCardIds={offeredCardIds}
-							mode="multiple"
-							excludeLocked={true}
-							maxSelection={10}
-							compact={true}
+					<!-- Buy: offer gidouilles -->
+					<div class="space-y-2">
+						<Label for="offered-gidouilles">
+							Gidouilles
+							<span class="ml-2 text-xs text-muted-foreground">
+								(Solde: {marketplaceStore.userGidouilles})
+							</span>
+						</Label>
+						<Input
+							id="offered-gidouilles"
+							type="number"
+							bind:value={offeredGidouilles}
+							min={0}
+							max={Math.min(marketplaceStore.userGidouilles, 10000)}
+							placeholder="0"
+							class={offeredGidouilles > marketplaceStore.userGidouilles
+								? 'border-destructive'
+								: ''}
 						/>
-					{:else}
-						<p class="py-4 text-center text-sm text-muted-foreground">
-							Vous n'avez pas de cartes VIP disponibles
-						</p>
-					{/if}
-				</div>
-
-				<!-- Gidouilles -->
-				<div class="space-y-2">
-					<Label for="offered-gidouilles">
-						Gidouilles
-						<span class="ml-2 text-xs text-muted-foreground">
-							(Solde: {marketplaceStore.userGidouilles})
-						</span>
-					</Label>
-					<Input
-						id="offered-gidouilles"
-						type="number"
-						bind:value={offeredGidouilles}
-						min={0}
-						max={Math.min(marketplaceStore.userGidouilles, 10000)}
-						placeholder="0"
-						class={offeredGidouilles > marketplaceStore.userGidouilles ? 'border-destructive' : ''}
-					/>
-					{#if offeredGidouilles > marketplaceStore.userGidouilles}
-						<p class="text-xs text-destructive">
-							Vous n'avez pas assez de gidouilles (solde: {marketplaceStore.userGidouilles})
-						</p>
-					{/if}
-				</div>
+						{#if offeredGidouilles > marketplaceStore.userGidouilles}
+							<p class="text-xs text-destructive">
+								Vous n'avez pas assez de gidouilles (solde: {marketplaceStore.userGidouilles})
+							</p>
+						{/if}
+					</div>
+				{/if}
 			</div>
 
 			<!-- What I Want Section -->
 			<div class="space-y-3 rounded-lg border bg-muted/30 p-4">
 				<h3 class="font-medium">
-					{listingType === 'buy' ? 'Ce que je recherche' : 'Ce que je demande en échange'}
+					{listingType === 'sell' ? 'Ce que je demande en échange' : 'Ce que je recherche'}
 				</h3>
 
-				{#if listingType === 'buy'}
-					<p class="text-sm text-muted-foreground">
-						Spécifiez les cartes et/ou gidouilles que vous recherchez
-					</p>
+				{#if listingType === 'sell'}
+					<!-- Sell: want gidouilles -->
+					<div class="space-y-2">
+						<Label for="wanted-gidouilles">Gidouilles demandées</Label>
+						<Input
+							id="wanted-gidouilles"
+							type="number"
+							bind:value={wantedGidouilles}
+							min={0}
+							max={10000}
+							placeholder="0"
+						/>
+					</div>
 				{:else}
-					<p class="text-sm text-muted-foreground">
-						Optionnel: Indiquez ce que vous aimeriez en échange
-					</p>
-				{/if}
+					<!-- Buy: want cards -->
+					<div class="space-y-2">
+						<Label>Types de cartes recherchés</Label>
 
-				<!-- Template Selection -->
-				<div class="space-y-2">
-					<Label>Types de cartes recherchés</Label>
-
-					{#if selectedTemplateNames.length > 0}
-						<div class="mb-2 flex flex-wrap gap-2">
-							{#each selectedTemplateNames as name (name)}
-								<Badge variant="secondary">{name}</Badge>
-							{/each}
-						</div>
-					{/if}
-
-					<Button
-						type="button"
-						variant="outline"
-						size="sm"
-						onclick={() => (showTemplateSelector = !showTemplateSelector)}
-					>
-						{showTemplateSelector ? 'Fermer la sélection' : 'Sélectionner des cartes'}
-					</Button>
-
-					{#if showTemplateSelector}
-						<div class="mt-2 max-h-80 overflow-y-auto rounded-lg border p-3">
-							<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-								{#each $vipCardTemplates as template (template.id)}
-									{@const isSelected = wantedCardTemplateIds.includes(template.id)}
-									<button
-										type="button"
-										onclick={() => toggleTemplate(template.id)}
-										class={cn(
-											'relative flex flex-col items-center gap-2 rounded-lg border-2 p-2 transition-all hover:scale-105',
-											isSelected
-												? 'border-primary bg-primary/10 ring-2 ring-primary'
-												: 'border-transparent hover:border-foreground/20'
-										)}
-									>
-										<VipCard card={templateToVipCard(template)} size="sm" clickable={false} />
-										<div class="text-center">
-											<div class="line-clamp-1 text-xs font-medium">{template.name}</div>
-											<Badge
-												variant="outline"
-												class="mt-1 border {RARITY_COLORS[
-													template.rarity as keyof typeof RARITY_COLORS
-												]} text-xs"
-											>
-												{RARITY_LABELS[template.rarity as keyof typeof RARITY_LABELS]}
-											</Badge>
-										</div>
-										{#if isSelected}
-											<div
-												class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg"
-											>
-												<Check class="h-3 w-3" />
-											</div>
-										{/if}
-									</button>
+						{#if selectedTemplateNames.length > 0}
+							<div class="mb-2 flex flex-wrap gap-2">
+								{#each selectedTemplateNames as name (name)}
+									<Badge variant="secondary">{name}</Badge>
 								{/each}
 							</div>
-						</div>
-					{/if}
-				</div>
+						{/if}
 
-				<!-- Gidouilles -->
-				<div class="space-y-2">
-					<Label for="wanted-gidouilles">Gidouilles demandés</Label>
-					<Input
-						id="wanted-gidouilles"
-						type="number"
-						bind:value={wantedGidouilles}
-						min={0}
-						max={10000}
-						placeholder="0"
-					/>
-				</div>
+						<Button
+							type="button"
+							variant="outline"
+							size="sm"
+							onclick={() => (showTemplateSelector = !showTemplateSelector)}
+						>
+							{showTemplateSelector ? 'Fermer la sélection' : 'Sélectionner des cartes'}
+						</Button>
+
+						{#if showTemplateSelector}
+							<div class="mt-2 max-h-80 overflow-y-auto rounded-lg border p-3">
+								<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+									{#each $vipCardTemplates as template (template.id)}
+										{@const isSelected = wantedCardTemplateIds.includes(template.id)}
+										<button
+											type="button"
+											onclick={() => toggleTemplate(template.id)}
+											class={cn(
+												'relative flex flex-col items-center gap-2 rounded-lg border-2 p-2 transition-all hover:scale-105',
+												isSelected
+													? 'border-primary bg-primary/10 ring-2 ring-primary'
+													: 'border-transparent hover:border-foreground/20'
+											)}
+										>
+											<VipCard card={templateToVipCard(template)} size="sm" clickable={false} />
+											<div class="text-center">
+												<div class="line-clamp-1 text-xs font-medium">{template.name}</div>
+												<Badge
+													variant="outline"
+													class="mt-1 border {RARITY_COLORS[
+														template.rarity as keyof typeof RARITY_COLORS
+													]} text-xs"
+												>
+													{RARITY_LABELS[template.rarity as keyof typeof RARITY_LABELS]}
+												</Badge>
+											</div>
+											{#if isSelected}
+												<div
+													class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg"
+												>
+													<Check class="h-3 w-3" />
+												</div>
+											{/if}
+										</button>
+									{/each}
+								</div>
+							</div>
+						{/if}
+					</div>
+				{/if}
 			</div>
 
 			<!-- Expiry -->
