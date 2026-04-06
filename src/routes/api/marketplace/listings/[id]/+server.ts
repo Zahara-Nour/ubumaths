@@ -2,7 +2,11 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { updateListingSchema } from '$lib/server/marketplace/validation';
-import { unlockCardsForEntity, isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
+import {
+	unlockCardsForEntity,
+	isMarketplaceEnabled,
+	enrichWithUsernames
+} from '$lib/server/marketplace/helpers';
 // TODO: Implement cache invalidation
 // import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
 import { z } from 'zod';
@@ -96,10 +100,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		})();
 	}
 
-	return json({
-		...listing,
-		proposals: proposals || undefined
-	});
+	return json(
+		enrichWithUsernames({
+			...listing,
+			proposals: proposals?.map(enrichWithUsernames) || undefined
+		})
+	);
 };
 
 /**
@@ -180,7 +186,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	// Invalidate caches
 	// TODO: await invalidateListingCaches(supabase, userId);
 
-	return json(updatedListing);
+	return json(enrichWithUsernames(updatedListing));
 };
 
 /**

@@ -3,7 +3,8 @@ import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import {
 	unlockCardsForEntity,
-	createMarketplaceNotification
+	createMarketplaceNotification,
+	enrichWithUsernames
 } from '$lib/server/marketplace/helpers';
 import { z } from 'zod';
 
@@ -95,7 +96,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		);
 	}
 
-	return json(trade);
+	return json(enrichWithUsernames(trade));
 };
 
 /**

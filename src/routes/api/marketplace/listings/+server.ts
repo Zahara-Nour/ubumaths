@@ -8,7 +8,8 @@ import {
 	checkActiveListingsLimit,
 	isMarketplaceEnabled,
 	getStudentSchoolId,
-	enrichListingsWithCardData
+	enrichListingsWithCardData,
+	enrichWithUsernames
 } from '$lib/server/marketplace/helpers';
 // TODO: Add cache invalidation when cache-manager is properly implemented
 // import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
@@ -146,8 +147,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 	}
 
-	// Enrich listings with card template data
-	const enrichedListings = await enrichListingsWithCardData(supabase, listings || []);
+	// Enrich listings with card template data and usernames
+	const enrichedListings = (await enrichListingsWithCardData(supabase, listings || [])).map(
+		enrichWithUsernames
+	);
 
 	return json({
 		listings: enrichedListings,
@@ -271,8 +274,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// TODO: Invalidate caches when cache-manager is implemented
 	// await invalidateListingCaches(supabase, userId);
 
-	// Enrich the newly created listing with card template data
+	// Enrich the newly created listing with card template data and usernames
 	const [enrichedListing] = await enrichListingsWithCardData(supabase, [listing]);
 
-	return json(enrichedListing, { status: 201 });
+	return json(enrichWithUsernames(enrichedListing), { status: 201 });
 };

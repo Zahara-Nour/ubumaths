@@ -6,7 +6,8 @@ import {
 	validateCardOwnership,
 	lockCardsForEntity,
 	isMarketplaceEnabled,
-	getStudentGidouilles
+	getStudentGidouilles,
+	enrichWithUsernames
 } from '$lib/server/marketplace/helpers';
 import { notifyNewProposal } from '$lib/server/marketplace/notifications';
 import { z } from 'zod';
@@ -71,7 +72,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		throw error(500, 'Erreur lors de la récupération des propositions');
 	}
 
-	return json(proposals);
+	return json(proposals.map(enrichWithUsernames));
 };
 
 /**
@@ -220,5 +221,5 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// Create notification for listing creator
 	await notifyNewProposal(supabase, listing.creator_id, userId, listing.title, proposal.id);
 
-	return json(proposal, { status: 201 });
+	return json(enrichWithUsernames(proposal), { status: 201 });
 };
