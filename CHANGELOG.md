@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.67](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.66...v0.8.67) (2026-04-06)
+
+### 🐛 Bug Fixes
+
+- **marketplace:** fix multiple marketplace bugs and improve proposal UX ([a96a56b](https://github.com/Zahara-Nour/ubumaths/commit/a96a56b1880fb428e25c315b09223213289cf7c9))
+
 ### [0.8.66](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.65...v0.8.66) (2026-04-06)
 
 ### 🐛 Bug Fixes
