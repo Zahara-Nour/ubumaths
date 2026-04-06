@@ -636,8 +636,8 @@ class MarketplaceStore {
 		}
 
 		try {
-			const response = await fetch(`/api/marketplace/proposals/${proposalId}/accept`, {
-				method: 'POST',
+			const response = await fetch(`/api/marketplace/proposals/${proposalId}`, {
+				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(validation.data)
 			});
@@ -689,8 +689,8 @@ class MarketplaceStore {
 		}
 
 		try {
-			const response = await fetch(`/api/marketplace/proposals/${proposalId}/reject`, {
-				method: 'POST',
+			const response = await fetch(`/api/marketplace/proposals/${proposalId}`, {
+				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(validation.data)
 			});
