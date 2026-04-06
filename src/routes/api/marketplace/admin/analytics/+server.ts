@@ -195,7 +195,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	// Process listings
 	const cardListingFrequency: Record<string, number> = {};
-	let mostExpensiveListings: Array<{ id: string; title: string; gidouilles: number }> = [];
+	let mostExpensiveListings: Array<{ id: string; listing_type: string; gidouilles: number }> = [];
 
 	for (const listing of listings || []) {
 		listingCreatorIds.add(listing.creator_id);
@@ -204,7 +204,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		if (listing.wanted_gidouilles > 0) {
 			mostExpensiveListings.push({
 				id: listing.id,
-				title: listing.title,
+				listing_type: listing.listing_type,
 				gidouilles: listing.wanted_gidouilles
 			});
 		}
