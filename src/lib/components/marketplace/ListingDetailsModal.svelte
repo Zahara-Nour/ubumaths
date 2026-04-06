@@ -10,6 +10,7 @@
 	import VipCard from '$lib/components/VipCard.svelte';
 	import CreateProposalModal from './CreateProposalModal.svelte';
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
+	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Props
 	let {
@@ -29,6 +30,34 @@
 
 	// Check if user already has a proposal on this listing
 	let myProposal = $derived(marketplaceStore.myProposals.find((p) => p.listing_id === listing.id));
+
+	// Can accept directly: listing asks only for gidouilles and user has enough
+	let canAcceptDirectly = $derived.by(() => {
+		if (isOwner || myProposal?.status === 'pending') return false;
+		const wantedGidouilles = listing.wanted_gidouilles || 0;
+		if (wantedGidouilles <= 0) return false;
+		const wantsCards = (listing.wanted_templates?.length || 0) > 0;
+		if (wantsCards) return false;
+		return marketplaceStore.userGidouilles >= wantedGidouilles;
+	});
+
+	let isAccepting = $state(false);
+
+	async function acceptDirectly() {
+		if (isAccepting) return;
+		isAccepting = true;
+		try {
+			const success = await marketplaceStore.submitProposal(listing.id, {
+				offered_gidouilles: listing.wanted_gidouilles || 0
+			});
+			if (success) {
+				toaster.success('Proposition envoyée !');
+				handleClose();
+			}
+		} finally {
+			isAccepting = false;
+		}
+	}
 
 	// Format time
 	function formatTime(dateString: string) {
@@ -218,8 +247,14 @@
 				{#if myProposal?.status === 'pending'}
 					<Button disabled>Proposition envoyée</Button>
 				{:else}
-					<Button onclick={() => (showProposalModal = true)}>
-						{myProposal?.status === 'rejected' ? 'Reproposer' : 'Faire une proposition'}
+					{#if canAcceptDirectly}
+						<Button onclick={acceptDirectly} disabled={isAccepting} class="gap-1.5">
+							<Coins class="h-4 w-4" />
+							{isAccepting ? 'Envoi...' : `Accepter pour ${listing.wanted_gidouilles} gidouilles`}
+						</Button>
+					{/if}
+					<Button variant="outline" onclick={() => (showProposalModal = true)}>
+						{myProposal?.status === 'rejected' ? 'Reproposer' : 'Autre proposition'}
 					</Button>
 				{/if}
 			{/if}
