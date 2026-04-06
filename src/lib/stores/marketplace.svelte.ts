@@ -94,8 +94,13 @@ class MarketplaceStore {
 
 	// Private
 	private supabase: SupabaseClient | null = null;
-	private userId: string | null = null;
+	private _userId: string | null = null;
 	private classId: string | null = null;
+
+	// Public getter for userId (needed by components to check ownership)
+	get currentUserId(): string | null {
+		return this._userId;
+	}
 
 	// Cache management
 	private lastFetch = {
@@ -127,7 +132,7 @@ class MarketplaceStore {
 	// Initialize
 	async init(supabase: SupabaseClient, userId: string, classId?: string) {
 		this.supabase = supabase;
-		this.userId = userId;
+		this._userId = userId;
 		this.classId = classId || null;
 		await this.fetchConfig();
 		await this.fetchInitialData();
@@ -177,7 +182,7 @@ class MarketplaceStore {
 
 		// Count trades where I need to respond
 		this.pendingActions.trades = this.activeTrades.filter(
-			(t) => t.status === 'negotiating' && t.last_offer_by && t.last_offer_by !== this.userId
+			(t) => t.status === 'negotiating' && t.last_offer_by && t.last_offer_by !== this._userId
 		).length;
 
 		// Count my proposals that got responses
@@ -277,12 +282,12 @@ class MarketplaceStore {
 
 	// Fetch my listings
 	async fetchMyListings() {
-		if (!this.supabase || !this.userId) return;
+		if (!this.supabase || !this._userId) return;
 
 		this.isLoading.myListings = true;
 
 		try {
-			const response = await fetch('/api/marketplace/listings?creator_id=' + this.userId);
+			const response = await fetch('/api/marketplace/listings?creator_id=' + this._userId);
 			if (response.ok) {
 				const data = await response.json();
 				this.myListings = data.listings;
@@ -324,7 +329,7 @@ class MarketplaceStore {
 
 	// Fetch my proposals (proposals I made on other people's listings)
 	async fetchMyProposals() {
-		if (!this.userId) return;
+		if (!this._userId) return;
 
 		this.isLoading.proposals = true;
 
@@ -346,7 +351,7 @@ class MarketplaceStore {
 
 	// Fetch my trades
 	async fetchMyTrades() {
-		if (!this.userId) return;
+		if (!this._userId) return;
 
 		this.isLoading.trades = true;
 		this.errors.trades = null;
@@ -372,7 +377,7 @@ class MarketplaceStore {
 	// Fetch my VIP cards with lock status
 	// Uses student cache for cards + templates, only fetches locks from DB
 	async fetchMyVipCards() {
-		if (!this.supabase || !this.userId) return;
+		if (!this.supabase || !this._userId) return;
 
 		this.isLoading.cards = true;
 
@@ -391,7 +396,7 @@ class MarketplaceStore {
 			const { data: locks, error: locksError } = await this.supabase
 				.from('marketplace_locked_cards')
 				.select('card_instance_id, locked_for, locked_entity_id')
-				.eq('student_id', this.userId);
+				.eq('student_id', this._userId);
 
 			if (locksError) {
 				console.error('Failed to fetch card locks:', locksError);
@@ -462,7 +467,7 @@ class MarketplaceStore {
 
 	// Fetch user's gidouilles balance from student cache
 	async fetchUserGidouilles() {
-		if (!this.userId) return;
+		if (!this._userId) return;
 
 		try {
 			const rewards = await studentCache.getRewards();
@@ -474,7 +479,7 @@ class MarketplaceStore {
 
 	// Create a new listing
 	async createListing(data: CreateListingData): Promise<boolean> {
-		if (!this.supabase || !this.userId) return false;
+		if (!this.supabase || !this._userId) return false;
 
 		// Validate data with Zod
 		const validation = createListingSchema.safeParse(data);
@@ -487,7 +492,7 @@ class MarketplaceStore {
 		const tempId = crypto.randomUUID();
 		const optimisticListing: MarketplaceListing = {
 			id: tempId,
-			creator_id: this.userId,
+			creator_id: this._userId,
 			listing_type: validation.data.listing_type,
 			title: validation.data.title,
 			description: validation.data.description || null,
@@ -835,7 +840,7 @@ class MarketplaceStore {
 	async acceptTradeOffer(tradeId: string): Promise<boolean> {
 		const trade = this.activeTrades.find((t) => t.id === tradeId);
 		const offer = trade?.latest_offer;
-		const amInitiator = trade?.initiator_id === this.userId;
+		const amInitiator = trade?.initiator_id === this._userId;
 
 		// Calculate gidouilles delta based on my role in the trade
 		// Initiator gives initiator_*, receives partner_*
