@@ -372,6 +372,7 @@ export async function createMarketplaceNotification(
 	// Create the notification
 	// type must be 'info'|'alert'|'announcement'|'reminder' (DB constraint)
 	await supabase.from('notifications').insert({
+		is_system: true,
 		target_user_ids: [recipientId],
 		target_type: 'users',
 		type: 'info',
