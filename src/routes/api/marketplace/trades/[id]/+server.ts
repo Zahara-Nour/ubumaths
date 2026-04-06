@@ -38,19 +38,22 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       *,
       initiator:profiles!marketplace_trades_initiator_id_fkey(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       ),
       partner:profiles!marketplace_trades_partner_id_fkey(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       ),
       offers:marketplace_trade_offers(
         *,
         offer_by_profile:profiles!marketplace_trade_offers_offer_by_fkey(
           id,
-          username,
+          firstname,
+          lastname,
           avatar_url
         )
       ),
@@ -58,7 +61,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
         *,
         sender:profiles!marketplace_chat_messages_sender_id_fkey(
           id,
-          username,
+          firstname,
+          lastname,
           avatar_url
         )
       )
