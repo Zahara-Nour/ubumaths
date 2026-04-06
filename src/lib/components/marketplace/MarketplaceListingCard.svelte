@@ -57,33 +57,44 @@
 		listing.listing_type === 'sell' ? 'default' : 'secondary'
 	);
 
-	// Convert offered cards to VipCard format for display (max 3 thumbnails)
-	let offeredCardsForDisplay = $derived.by((): VipCardType[] => {
+	// Group offered cards by template for display
+	let offeredCardsGrouped = $derived.by(() => {
 		if (!listing.offered_cards?.length) return [];
-		return listing.offered_cards.slice(0, 3).map((card) => ({
-			id: card.template_id,
-			name: card.template.name,
-			description: card.template.description,
-			imagePath: card.template.image_path ?? undefined,
-			rarity: card.template.rarity as VipCardType['rarity']
-		}));
+		const groups = new Map<string, { card: VipCardType; count: number }>();
+		for (const card of listing.offered_cards) {
+			const existing = groups.get(card.template_id);
+			if (existing) {
+				existing.count++;
+			} else {
+				groups.set(card.template_id, {
+					card: {
+						id: card.template_id,
+						name: card.template.name,
+						description: card.template.description,
+						imagePath: card.template.image_path ?? undefined,
+						rarity: card.template.rarity as VipCardType['rarity']
+					},
+					count: 1
+				});
+			}
+		}
+		return Array.from(groups.values());
 	});
 
-	// Convert wanted templates to VipCard format for display (max 3 thumbnails)
-	let wantedCardsForDisplay = $derived.by((): VipCardType[] => {
+	// Group wanted templates for display (already unique by template)
+	let wantedCardsGrouped = $derived.by(() => {
 		if (!listing.wanted_templates?.length) return [];
-		return listing.wanted_templates.slice(0, 3).map((template) => ({
-			id: template.id,
-			name: template.name,
-			description: template.description,
-			imagePath: template.image_path ?? undefined,
-			rarity: template.rarity as VipCardType['rarity']
+		return listing.wanted_templates.map((template) => ({
+			card: {
+				id: template.id,
+				name: template.name,
+				description: template.description,
+				imagePath: template.image_path ?? undefined,
+				rarity: template.rarity as VipCardType['rarity']
+			} as VipCardType,
+			count: 1
 		}));
 	});
-
-	// Count extra cards not shown
-	let extraOfferedCount = $derived(Math.max(0, (listing.offered_cards?.length || 0) - 3));
-	let extraWantedCount = $derived(Math.max(0, (listing.wanted_templates?.length || 0) - 3));
 </script>
 
 {#if viewMode === 'grid'}
@@ -151,13 +162,10 @@
 				<div class="space-y-1">
 					<span class="text-xs font-medium">Offre:</span>
 					<div class="flex items-center gap-2">
-						{#if offeredCardsForDisplay.length > 0}
-							{#each offeredCardsForDisplay as card (card.id)}
-								<VipCard {card} size="sm" clickable={false} />
+						{#if offeredCardsGrouped.length > 0}
+							{#each offeredCardsGrouped as group (group.card.id)}
+								<VipCard card={group.card} size="sm" clickable={false} count={group.count} />
 							{/each}
-							{#if extraOfferedCount > 0}
-								<span class="text-xs text-muted-foreground">+{extraOfferedCount}</span>
-							{/if}
 						{/if}
 						{#if listing.offered_gidouilles && listing.offered_gidouilles > 0}
 							<div
@@ -167,7 +175,7 @@
 								<span class="font-medium">{listing.offered_gidouilles}</span>
 							</div>
 						{/if}
-						{#if !offeredCardsForDisplay.length && !listing.offered_gidouilles}
+						{#if !offeredCardsGrouped.length && !listing.offered_gidouilles}
 							<span class="text-xs text-muted-foreground italic">Rien</span>
 						{/if}
 					</div>
@@ -176,13 +184,10 @@
 				<div class="space-y-1">
 					<span class="text-xs font-medium">Demande:</span>
 					<div class="flex items-center gap-2">
-						{#if wantedCardsForDisplay.length > 0}
-							{#each wantedCardsForDisplay as card (card.id)}
-								<VipCard {card} size="sm" clickable={false} />
+						{#if wantedCardsGrouped.length > 0}
+							{#each wantedCardsGrouped as group (group.card.id)}
+								<VipCard card={group.card} size="sm" clickable={false} count={group.count} />
 							{/each}
-							{#if extraWantedCount > 0}
-								<span class="text-xs text-muted-foreground">+{extraWantedCount}</span>
-							{/if}
 						{/if}
 						{#if listing.wanted_gidouilles && listing.wanted_gidouilles > 0}
 							<div
@@ -192,7 +197,7 @@
 								<span class="font-medium">{listing.wanted_gidouilles}</span>
 							</div>
 						{/if}
-						{#if !wantedCardsForDisplay.length && !listing.wanted_gidouilles}
+						{#if !wantedCardsGrouped.length && !listing.wanted_gidouilles}
 							<span class="text-xs text-muted-foreground italic">Rien</span>
 						{/if}
 					</div>
@@ -271,13 +276,10 @@
 						<!-- Offer thumbnails -->
 						<div class="flex items-center gap-1.5">
 							<span class="font-medium text-foreground">Offre:</span>
-							{#if offeredCardsForDisplay.length > 0}
-								{#each offeredCardsForDisplay as card (card.id)}
-									<VipCard {card} size="sm" clickable={false} />
+							{#if offeredCardsGrouped.length > 0}
+								{#each offeredCardsGrouped as group (group.card.id)}
+									<VipCard card={group.card} size="sm" clickable={false} count={group.count} />
 								{/each}
-								{#if extraOfferedCount > 0}
-									<span>+{extraOfferedCount}</span>
-								{/if}
 							{/if}
 							{#if listing.offered_gidouilles && listing.offered_gidouilles > 0}
 								<span
@@ -287,20 +289,17 @@
 									{listing.offered_gidouilles}
 								</span>
 							{/if}
-							{#if !offeredCardsForDisplay.length && !listing.offered_gidouilles}
+							{#if !offeredCardsGrouped.length && !listing.offered_gidouilles}
 								<span class="italic">Rien</span>
 							{/if}
 						</div>
 						<!-- Demand thumbnails -->
 						<div class="flex items-center gap-1.5">
 							<span class="font-medium text-foreground">Demande:</span>
-							{#if wantedCardsForDisplay.length > 0}
-								{#each wantedCardsForDisplay as card (card.id)}
-									<VipCard {card} size="sm" clickable={false} />
+							{#if wantedCardsGrouped.length > 0}
+								{#each wantedCardsGrouped as group (group.card.id)}
+									<VipCard card={group.card} size="sm" clickable={false} count={group.count} />
 								{/each}
-								{#if extraWantedCount > 0}
-									<span>+{extraWantedCount}</span>
-								{/if}
 							{/if}
 							{#if listing.wanted_gidouilles && listing.wanted_gidouilles > 0}
 								<span
@@ -310,7 +309,7 @@
 									{listing.wanted_gidouilles}
 								</span>
 							{/if}
-							{#if !wantedCardsForDisplay.length && !listing.wanted_gidouilles}
+							{#if !wantedCardsGrouped.length && !listing.wanted_gidouilles}
 								<span class="italic">Rien</span>
 							{/if}
 						</div>
