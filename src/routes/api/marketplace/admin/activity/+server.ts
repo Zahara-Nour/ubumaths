@@ -107,9 +107,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	// Fetch recent activities from different tables
 	interface ActivityDetails {
-		title?: string;
-		description?: string;
-		listing_title?: string;
 		listing_type?: string;
 		offered_gidouilles?: number;
 		wanted_gidouilles?: number;
@@ -137,7 +134,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.select(
 			`
 			id,
-			title,
 			listing_type,
 			created_at,
 			creator_id,
@@ -163,7 +159,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				? `${creator.firstname || ''} ${creator.lastname || ''}`.trim() || 'Élève inconnu'
 				: 'Élève inconnu',
 			details: {
-				title: listing.title,
 				listing_type: listing.listing_type,
 				status: listing.status,
 				offered_gidouilles: listing.offered_gidouilles,
@@ -183,7 +178,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			status,
 			offered_gidouilles,
 			proposer:proposer_id(firstname, lastname),
-			listing:listing_id(title, creator_id)
+			listing:listing_id(listing_type, creator_id)
 		`
 		)
 		.in('proposer_id', studentIds)
@@ -203,8 +198,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				: 'Élève inconnu',
 			details: {
 				status: proposal.status,
-				listing_title:
-					(proposal as { listing?: { title?: string } | null }).listing?.title || undefined,
+				listing_type:
+					(proposal as { listing?: { listing_type?: string } | null }).listing?.listing_type ||
+					undefined,
 				listing_creator_id:
 					(proposal as { listing?: { creator_id?: string } | null }).listing?.creator_id ||
 					undefined,
