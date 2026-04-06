@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.66](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.65...v0.8.66) (2026-04-06)
+
+### 🐛 Bug Fixes
+
+- **vip-cards:** use maxExchangeCount instead of hardcoded 10 in exchange modal ([997847e](https://github.com/Zahara-Nour/ubumaths/commit/997847ebfc5507ba9c9f5d08c0556557b847b8e1))
+
 ### [0.8.65](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.64...v0.8.65) (2026-04-06)
 
 ### 📚 Documentation
