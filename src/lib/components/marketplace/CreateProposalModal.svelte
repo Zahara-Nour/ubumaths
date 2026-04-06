@@ -8,7 +8,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Badge } from '$lib/components/ui/badge';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import VipCardSelector from './VipCardSelector.svelte';
+	import TradeCardSelector from './trade/TradeCardSelector.svelte';
 	import VipCard from '$lib/components/VipCard.svelte';
 	import { Info, Coins, ArrowRight } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -55,6 +55,17 @@
 			category: template.category as VipCardType['category']
 		}));
 	});
+
+	// Convert VipCardWithLockStatus to TradeCard format
+	let tradeCards = $derived(
+		marketplaceStore.myVipCards
+			.filter((c) => !c.is_locked)
+			.map((c) => ({
+				instanceId: c.id,
+				cardId: c.template_id,
+				earnedAt: c.earned_at
+			}))
+	);
 
 	// Reset form
 	function resetForm() {
@@ -179,19 +190,7 @@
 				<!-- Card Selection -->
 				<div class="space-y-2">
 					<Label>Vos cartes VIP</Label>
-					{#if marketplaceStore.myVipCards.length > 0}
-						<VipCardSelector
-							cards={marketplaceStore.myVipCards}
-							bind:selectedCardIds={offeredCardIds}
-							mode="multiple"
-							excludeLocked={true}
-							compact={true}
-						/>
-					{:else}
-						<p class="py-4 text-center text-sm text-muted-foreground">
-							Vous n'avez pas de cartes VIP disponibles
-						</p>
-					{/if}
+					<TradeCardSelector cards={tradeCards} bind:selectedCardIds={offeredCardIds} />
 				</div>
 
 				<!-- Gidouilles -->
