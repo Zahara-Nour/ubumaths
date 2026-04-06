@@ -34,13 +34,19 @@
 
 	interface Props {
 		cards: TradeCard[];
-		selectedCardIds: string[];
+		selectedCardIds?: string[];
 		readonly?: boolean;
 		onSelect?: (instanceId: string) => void;
 		onDeselect?: (instanceId: string) => void;
 	}
 
-	let { cards, selectedCardIds, readonly = false, onSelect, onDeselect }: Props = $props();
+	let {
+		cards,
+		selectedCardIds = $bindable([]),
+		readonly = false,
+		onSelect,
+		onDeselect
+	}: Props = $props();
 
 	// Group cards by template (cardId)
 	let groupedCards = $derived.by(() => {
@@ -106,15 +112,24 @@
 			(inst) => !selectedCardIds.includes(inst.instanceId)
 		);
 
-		if (unselectedInstance) {
-			// Select next unselected instance
-			onSelect?.(unselectedInstance.instanceId);
-		} else {
-			// All selected → deselect all instances of this group
-			for (const inst of group.instances) {
-				if (selectedCardIds.includes(inst.instanceId)) {
-					onDeselect?.(inst.instanceId);
+		if (onSelect || onDeselect) {
+			// Callback mode (used by TradeOfferPanel)
+			if (unselectedInstance) {
+				onSelect?.(unselectedInstance.instanceId);
+			} else {
+				for (const inst of group.instances) {
+					if (selectedCardIds.includes(inst.instanceId)) {
+						onDeselect?.(inst.instanceId);
+					}
 				}
+			}
+		} else {
+			// Bindable mode (used by CreateListingModal)
+			if (unselectedInstance) {
+				selectedCardIds = [...selectedCardIds, unselectedInstance.instanceId];
+			} else {
+				const groupIds = new Set(group.instances.map((i) => i.instanceId));
+				selectedCardIds = selectedCardIds.filter((id) => !groupIds.has(id));
 			}
 		}
 	}
