@@ -185,7 +185,6 @@
 							bind:selectedCardIds={offeredCardIds}
 							mode="multiple"
 							excludeLocked={true}
-							maxSelection={10}
 							compact={true}
 						/>
 					{:else}

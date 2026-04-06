@@ -13,7 +13,6 @@
 	import VipCard from '$lib/components/VipCard.svelte';
 	import { RARITY_COLORS, RARITY_LABELS } from '$lib/constants/vip-card-ui';
 	import { Info, Check } from 'lucide-svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
 	import { cn } from '$lib/utils';
 
 	// Props
@@ -108,10 +107,6 @@
 		if (wantedCardTemplateIds.includes(templateId)) {
 			wantedCardTemplateIds = wantedCardTemplateIds.filter((id) => id !== templateId);
 		} else {
-			if (wantedCardTemplateIds.length >= 10) {
-				toaster.warning('Maximum 10 types de cartes par annonce');
-				return;
-			}
 			wantedCardTemplateIds = [...wantedCardTemplateIds, templateId];
 		}
 	}
@@ -191,7 +186,6 @@
 								bind:selectedCardIds={offeredCardIds}
 								mode="multiple"
 								excludeLocked={true}
-								maxSelection={10}
 								compact={true}
 							/>
 						{:else}
