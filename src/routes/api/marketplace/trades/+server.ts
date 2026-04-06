@@ -4,7 +4,6 @@ import type { RequestHandler } from './$types';
 import { createTradeSchema } from '$lib/server/marketplace/validation';
 import {
 	validateCardOwnership,
-	checkCardsUnused,
 	isMarketplaceEnabled,
 	verifyFriendship,
 	createMarketplaceNotification,
@@ -255,11 +254,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const ownsCards = await validateCardOwnership(supabase, userId, initial_offer.cards);
 		if (!ownsCards) {
 			throw error(403, 'Vous ne possédez pas toutes les cartes spécifiées');
-		}
-
-		const cardsUnused = await checkCardsUnused(supabase, initial_offer.cards);
-		if (!cardsUnused) {
-			throw error(403, 'Certaines cartes ont déjà été utilisées');
 		}
 	}
 
