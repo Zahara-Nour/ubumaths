@@ -50,7 +50,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       *,
       sender:profiles!marketplace_chat_messages_sender_id_fkey(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       )
     `
@@ -123,7 +124,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
       *,
       sender:profiles!marketplace_chat_messages_sender_id_fkey(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       )
     `

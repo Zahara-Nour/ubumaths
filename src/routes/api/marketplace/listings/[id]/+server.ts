@@ -44,7 +44,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       *,
       creator:profiles!marketplace_listings_creator_id_fkey(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       )
     `
@@ -66,7 +67,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
         *,
         proposer:profiles!marketplace_proposals_proposer_id_fkey(
           id,
-          username,
+          firstname,
+          lastname,
           avatar_url
         )
       `
@@ -162,7 +164,8 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
       *,
       creator:profiles!marketplace_listings_creator_id_fkey(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       )
     `

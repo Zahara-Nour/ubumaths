@@ -57,7 +57,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       *,
       proposer:profiles!marketplace_proposals_proposer_id_fkey(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       )
     `
@@ -176,7 +177,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
       *,
       proposer:profiles!marketplace_proposals_proposer_id_fkey(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       )
     `
