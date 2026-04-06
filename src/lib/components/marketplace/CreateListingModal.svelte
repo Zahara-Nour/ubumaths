@@ -6,7 +6,6 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
@@ -24,7 +23,6 @@
 
 	// Form state
 	let listingType = $state<'sell' | 'buy'>('sell');
-	let description = $state('');
 	let offeredCardIds = $state<string[]>([]);
 	let offeredGidouilles = $state(0);
 	let wantedCardTemplateIds = $state<string[]>([]);
@@ -75,7 +73,6 @@
 	// Reset form
 	function resetForm() {
 		listingType = 'sell';
-		description = '';
 		offeredCardIds = [];
 		offeredGidouilles = 0;
 		wantedCardTemplateIds = [];
@@ -93,7 +90,6 @@
 		try {
 			const data: CreateListingData = {
 				listing_type: listingType,
-				description: description.trim() || undefined,
 				offered_card_ids: offeredCardIds.length > 0 ? offeredCardIds : undefined,
 				offered_gidouilles: offeredGidouilles > 0 ? offeredGidouilles : undefined,
 				wanted_card_template_ids:
@@ -183,21 +179,6 @@
 						Je veux acheter
 					</Button>
 				</div>
-			</div>
-
-			<!-- Description -->
-			<div class="space-y-2">
-				<Label for="description">Description (optionnel)</Label>
-				<Textarea
-					id="description"
-					bind:value={description}
-					placeholder="Ajoutez des détails sur votre annonce..."
-					rows={3}
-					maxlength={500}
-				/>
-				<p class="text-xs text-muted-foreground">
-					{description.length}/500 caractères
-				</p>
 			</div>
 
 			<!-- What I Offer Section -->
