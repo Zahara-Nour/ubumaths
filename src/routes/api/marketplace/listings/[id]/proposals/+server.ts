@@ -9,7 +9,7 @@ import {
 	getStudentGidouilles,
 	enrichWithUsernames
 } from '$lib/server/marketplace/helpers';
-import { notifyNewProposal } from '$lib/server/marketplace/notifications';
+import { notifyNewProposal, notifyProposalAccepted } from '$lib/server/marketplace/notifications';
 import { z } from 'zod';
 
 // ID validation schema
@@ -254,7 +254,47 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		})
 		.eq('id', listingId);
 
-	// Create notification for listing creator
+	// Check if proposal exactly matches listing demand → auto-accept
+	const exactMatch = (() => {
+		const wantedGidouilles = listing.wanted_gidouilles || 0;
+		const offeredGidouilles = data.offered_gidouilles || 0;
+		const wantedCards = listing.wanted_card_template_ids || [];
+		const offeredCards = data.offered_card_ids || [];
+
+		// Only auto-accept for pure gidouilles trades (no cards involved in demand)
+		if (wantedCards.length > 0) return false;
+		if (wantedGidouilles <= 0) return false;
+
+		// Proposal offers exactly what's asked (gidouilles only, no extra cards)
+		return offeredGidouilles >= wantedGidouilles && offeredCards.length === 0;
+	})();
+
+	if (exactMatch) {
+		// Auto-accept: execute trade immediately via RPC
+		const { data: result, error: rpcError } = await supabase.rpc('accept_proposal_atomic', {
+			p_proposal_id: proposal.id,
+			p_user_id: listing.creator_id
+		});
+
+		if (!rpcError && result?.success) {
+			// Notify both parties
+			await notifyProposalAccepted(supabase, userId, 'Annonce', proposal.id);
+
+			return json(
+				{
+					...enrichWithUsernames(proposal),
+					status: 'accepted',
+					auto_accepted: true,
+					trade_id: result.trade_id
+				},
+				{ status: 201 }
+			);
+		}
+		// If auto-accept fails, fall through to normal proposal flow
+		console.error('Auto-accept failed:', rpcError || result?.error);
+	}
+
+	// Normal flow: notify listing creator about new proposal
 	await notifyNewProposal(supabase, listing.creator_id, userId, 'Annonce', proposal.id);
 
 	return json(enrichWithUsernames(proposal), { status: 201 });
