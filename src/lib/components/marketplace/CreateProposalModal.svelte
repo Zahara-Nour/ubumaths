@@ -76,7 +76,7 @@
 				message: message.trim() || undefined
 			};
 
-			const success = await marketplaceStore.createProposal(listing.id, data);
+			const success = await marketplaceStore.submitProposal(listing.id, data);
 
 			if (success) {
 				toaster.success('Proposition envoyee !');
