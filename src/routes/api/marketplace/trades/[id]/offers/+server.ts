@@ -4,7 +4,6 @@ import type { RequestHandler } from './$types';
 import { createOfferSchema } from '$lib/server/marketplace/validation';
 import {
 	validateCardOwnership,
-	checkCardsUnused,
 	lockCardsForEntity,
 	getStudentGidouilles
 } from '$lib/server/marketplace/helpers';
@@ -70,11 +69,6 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		const ownsCards = await validateCardOwnership(supabase, userId, userCards);
 		if (!ownsCards) {
 			throw error(403, 'Vous ne possédez pas toutes les cartes spécifiées');
-		}
-
-		const cardsUnused = await checkCardsUnused(supabase, userCards);
-		if (!cardsUnused) {
-			throw error(403, 'Certaines cartes ont déjà été utilisées');
 		}
 	}
 
