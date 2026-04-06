@@ -23,7 +23,7 @@ export const createListingSchema = z
 
 		// Wanted items (for both listing types)
 		wanted_card_template_ids: z
-			.array(z.string().uuid('ID de modèle de carte invalide'))
+			.array(z.string().min(1, 'ID de modèle de carte invalide'))
 			.default([]),
 		wanted_gidouilles: z
 			.number()
@@ -58,7 +58,7 @@ export const createListingSchema = z
  */
 export const updateListingSchema = z.object({
 	wanted_card_template_ids: z
-		.array(z.string().uuid('ID de modèle de carte invalide'))
+		.array(z.string().min(1, 'ID de modèle de carte invalide'))
 		.max(10, 'Maximum 10 modèles de cartes peuvent être demandés')
 		.optional(),
 	wanted_gidouilles: z
@@ -88,7 +88,7 @@ export const listingsQuerySchema = z.object({
 		.finite('La valeur doit être un nombre fini')
 		.default(20),
 	type: z.enum(['sell', 'buy']).optional(),
-	card_template_id: z.string().uuid('ID de modèle de carte invalide').optional()
+	card_template_id: z.string().min(1, 'ID de modèle de carte invalide').optional()
 });
 
 // ============================================================================

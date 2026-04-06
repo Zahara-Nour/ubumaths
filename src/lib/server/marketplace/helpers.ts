@@ -600,3 +600,89 @@ export async function enrichListingsWithCardData<
 		};
 	});
 }
+
+/**
+ * Enriches marketplace proposals with card template data
+ * Maps offered_card_ids (instance IDs) to template info using proposer's vip_cards
+ */
+export async function enrichProposalsWithCardData<
+	T extends {
+		proposer_id: string;
+		offered_card_ids: string[] | null;
+	}
+>(
+	supabase: SupabaseClient<Database>,
+	proposals: T[]
+): Promise<(T & { offered_cards?: OfferedCardInfo[] })[]> {
+	if (proposals.length === 0) return proposals;
+
+	// Collect unique proposer IDs
+	const proposerIds = [...new Set(proposals.map((p) => p.proposer_id))];
+
+	// Fetch proposers' vip_cards to map instance IDs to template IDs
+	const { data: proposers } = await supabase
+		.from('profiles')
+		.select('id, vip_cards')
+		.in('id', proposerIds);
+
+	const proposerCardsMap = new Map<string, Map<string, string>>();
+	const templateIds = new Set<string>();
+
+	if (proposers) {
+		for (const proposer of proposers) {
+			const cardMap = new Map<string, string>();
+			const vipCards = proposer.vip_cards as VipCardsJson | null;
+			if (vipCards) {
+				for (const [instanceId, card] of Object.entries(vipCards)) {
+					cardMap.set(instanceId, card.cardId);
+					templateIds.add(card.cardId);
+				}
+			}
+			proposerCardsMap.set(proposer.id, cardMap);
+		}
+	}
+
+	// Fetch all needed templates
+	const templateMap = new Map<string, CardTemplateInfo>();
+	if (templateIds.size > 0) {
+		const { data: templates } = await supabase
+			.from('vip_card_templates')
+			.select('id, name, description, image_path, rarity, category')
+			.in('id', Array.from(templateIds));
+
+		if (templates) {
+			for (const t of templates) {
+				templateMap.set(t.id, {
+					id: t.id,
+					name: t.name,
+					description: t.description,
+					image_path: t.image_path,
+					rarity: t.rarity as CardTemplateInfo['rarity'],
+					category: t.category
+				});
+			}
+		}
+	}
+
+	return proposals.map((proposal) => {
+		const proposerCards = proposerCardsMap.get(proposal.proposer_id);
+		const offeredCards: OfferedCardInfo[] = [];
+
+		if (proposal.offered_card_ids && proposerCards) {
+			for (const cardId of proposal.offered_card_ids) {
+				const templateId = proposerCards.get(cardId);
+				if (templateId) {
+					const template = templateMap.get(templateId);
+					if (template) {
+						offeredCards.push({ id: cardId, template_id: templateId, template });
+					}
+				}
+			}
+		}
+
+		return {
+			...proposal,
+			offered_cards: offeredCards.length > 0 ? offeredCards : undefined
+		};
+	});
+}

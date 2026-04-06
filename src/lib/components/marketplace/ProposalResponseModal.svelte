@@ -1,21 +1,26 @@
 <script lang="ts">
-	import type { MarketplaceProposal } from '$lib/types/marketplace';
+	import type { MarketplaceListing, MarketplaceProposal } from '$lib/types/marketplace';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
+	import { Badge } from '$lib/components/ui/badge';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { CheckCircle, XCircle } from 'lucide-svelte';
+	import VipCard from '$lib/components/VipCard.svelte';
+	import { RARITY_COLORS, RARITY_LABELS } from '$lib/constants/vip-card-ui';
+	import { CheckCircle, XCircle, ArrowDown } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 
 	// Props
 	let {
 		proposal,
+		listing = undefined,
 		open = $bindable(false),
 		onResponse = async () => {}
 	} = $props<{
 		proposal: MarketplaceProposal;
+		listing?: MarketplaceListing | null;
 		open?: boolean;
 		onResponse?: (action: 'accept' | 'reject', message?: string) => Promise<void>;
 	}>();
@@ -67,7 +72,7 @@
 </script>
 
 <Dialog.Root bind:open>
-	<Dialog.Content class="max-w-lg">
+	<Dialog.Content class="max-h-[90vh] max-w-lg overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>Répondre à la proposition</Dialog.Title>
 			<Dialog.Description>
@@ -91,20 +96,125 @@
 				</div>
 			</div>
 
-			<!-- Proposal Details -->
-			<div class="space-y-2 rounded-lg border p-4">
-				<h4 class="font-medium">Offre proposée</h4>
-				<div class="text-sm text-muted-foreground">
-					{#if proposal.offered_card_ids?.length}
-						<p>{proposal.offered_card_ids.length} carte(s)</p>
+			<!-- My Listing (what I offered/asked) -->
+			{#if listing}
+				<div class="space-y-2 rounded-lg border bg-muted/30 p-4">
+					<h4 class="font-medium">
+						Mon annonce ({listing.listing_type === 'sell' ? 'Vente' : 'Achat'})
+					</h4>
+
+					{#if listing.offered_cards?.length}
+						<div>
+							<p class="mb-1 text-xs font-medium text-muted-foreground">Je propose :</p>
+							<div class="flex flex-wrap gap-2">
+								{#each listing.offered_cards as card (card.id)}
+									<div class="flex items-center gap-2 rounded-md border bg-background p-2">
+										<VipCard
+											card={{
+												id: card.template_id,
+												name: card.template?.name ?? 'Inconnue',
+												description: card.template?.description ?? '',
+												imagePath: card.template?.image_path ?? undefined,
+												rarity: card.template?.rarity ?? 'common',
+												category: undefined
+											}}
+											size="sm"
+											clickable={false}
+										/>
+										<span class="text-xs font-medium">{card.template?.name ?? 'Inconnue'}</span>
+									</div>
+								{/each}
+							</div>
+						</div>
 					{/if}
-					{#if proposal.offered_gidouilles && proposal.offered_gidouilles > 0}
-						<p>{proposal.offered_gidouilles} gidouilles</p>
+					{#if listing.offered_gidouilles && listing.offered_gidouilles > 0}
+						<p class="text-sm text-muted-foreground">
+							Je propose : {listing.offered_gidouilles} gidouilles
+						</p>
 					{/if}
-					{#if !proposal.offered_card_ids?.length && !proposal.offered_gidouilles}
-						<p>Aucune offre spécifiée</p>
+
+					{#if listing.wanted_templates?.length}
+						<div>
+							<p class="mb-1 text-xs font-medium text-muted-foreground">Je recherche :</p>
+							<div class="flex flex-wrap gap-2">
+								{#each listing.wanted_templates as template (template.id)}
+									<div class="flex items-center gap-2 rounded-md border bg-background p-2">
+										<VipCard
+											card={{
+												id: template.id,
+												name: template.name,
+												description: template.description,
+												imagePath: template.image_path ?? undefined,
+												rarity: template.rarity,
+												category: undefined
+											}}
+											size="sm"
+											clickable={false}
+										/>
+										<span class="text-xs font-medium">{template.name}</span>
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
+					{#if listing.wanted_gidouilles && listing.wanted_gidouilles > 0}
+						<p class="text-sm text-muted-foreground">
+							Je demande : {listing.wanted_gidouilles} gidouilles
+						</p>
 					{/if}
 				</div>
+
+				<div class="flex justify-center">
+					<ArrowDown class="h-5 w-5 text-muted-foreground" />
+				</div>
+			{/if}
+
+			<!-- Proposal Details (what the proposer offers) -->
+			<div class="space-y-2 rounded-lg border p-4">
+				<h4 class="font-medium">Offre de {proposal.proposer?.username || 'Anonyme'}</h4>
+				{#if proposal.offered_cards?.length}
+					<div class="flex flex-wrap gap-2">
+						{#each proposal.offered_cards as card (card.id)}
+							<div class="flex items-center gap-2 rounded-md border p-2">
+								<VipCard
+									card={{
+										id: card.template_id,
+										name: card.template?.name ?? 'Inconnue',
+										description: card.template?.description ?? '',
+										imagePath: card.template?.image_path ?? undefined,
+										rarity: card.template?.rarity ?? 'common',
+										category: undefined
+									}}
+									size="sm"
+									clickable={false}
+								/>
+								<div class="text-sm">
+									<div class="font-medium">{card.template?.name ?? 'Inconnue'}</div>
+									{#if card.template?.rarity}
+										<Badge
+											variant="outline"
+											class="border {RARITY_COLORS[card.template.rarity]} text-xs"
+										>
+											{RARITY_LABELS[card.template.rarity]}
+										</Badge>
+									{/if}
+								</div>
+							</div>
+						{/each}
+					</div>
+				{:else if proposal.offered_card_ids?.length}
+					<p class="text-sm text-muted-foreground">
+						{proposal.offered_card_ids.length} carte(s)
+					</p>
+				{/if}
+				{#if proposal.offered_gidouilles && proposal.offered_gidouilles > 0}
+					<p class="text-sm text-muted-foreground">
+						{proposal.offered_gidouilles} gidouilles
+					</p>
+				{/if}
+				{#if !proposal.offered_card_ids?.length && !proposal.offered_gidouilles}
+					<p class="text-sm text-muted-foreground">Aucune offre spécifiée</p>
+				{/if}
 			</div>
 
 			{#if proposal.message}
