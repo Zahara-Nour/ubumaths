@@ -315,7 +315,7 @@
 						<div class="space-y-2">
 							{#each analytics.economic.mostExpensiveListings as listing (listing.id)}
 								<div class="flex items-center justify-between rounded-lg bg-muted/50 p-2">
-									<span class="flex-1 truncate text-sm">{listing.title}</span>
+									<span class="flex-1 truncate text-sm">{listing.title || 'Annonce'}</span>
 									<Badge variant="secondary">
 										{formatNumber(listing.gidouilles)} gidouilles
 									</Badge>

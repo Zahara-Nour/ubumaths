@@ -256,7 +256,13 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		.eq('id', listingId);
 
 	// Create notification for listing creator
-	await notifyNewProposal(supabase, listing.creator_id, userId, listing.title, proposal.id);
+	await notifyNewProposal(
+		supabase,
+		listing.creator_id,
+		userId,
+		listing.title || 'Annonce',
+		proposal.id
+	);
 
 	return json(enrichWithUsernames(proposal), { status: 201 });
 };

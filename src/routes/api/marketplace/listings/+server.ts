@@ -235,7 +235,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			creator_id: userId,
 			school_id: schoolId,
 			listing_type: data.listing_type,
-			title: data.title,
+			title: data.title || null,
 			description: data.description || null,
 			offered_card_ids: data.offered_card_ids,
 			offered_gidouilles: data.offered_gidouilles,
