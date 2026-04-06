@@ -145,8 +145,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		if (existingProposal.status === 'pending') {
 			throw error(403, 'Vous avez déjà une proposition en cours pour cette annonce');
 		}
-		// Remove rejected/withdrawn proposals to allow resubmission
-		await supabase.from('marketplace_proposals').delete().eq('id', existingProposal.id);
+		// Resubmission: reuse the rejected/withdrawn proposal record
 	}
 
 	// Validate card ownership if offering cards
@@ -165,29 +164,64 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		}
 	}
 
-	// Create the proposal
-	const { data: proposal, error: proposalError } = await supabase
-		.from('marketplace_proposals')
-		.insert({
-			listing_id: listingId,
-			proposer_id: userId,
-			offered_card_ids: data.offered_card_ids,
-			offered_gidouilles: data.offered_gidouilles,
-			message: data.message || null,
-			status: 'pending'
-		})
-		.select(
-			`
-      *,
-      proposer:profiles!marketplace_proposals_proposer_id_fkey(
-        id,
-        firstname,
-        lastname,
-        avatar_url
-      )
-    `
-		)
-		.single();
+	let proposal;
+	let proposalError;
+
+	if (existingProposal) {
+		// Update the existing rejected/withdrawn proposal
+		const result = await supabase
+			.from('marketplace_proposals')
+			.update({
+				offered_card_ids: data.offered_card_ids,
+				offered_gidouilles: data.offered_gidouilles,
+				message: data.message || null,
+				status: 'pending',
+				response_message: null,
+				responded_at: null,
+				created_at: new Date().toISOString()
+			})
+			.eq('id', existingProposal.id)
+			.select(
+				`
+        *,
+        proposer:profiles!marketplace_proposals_proposer_id_fkey(
+          id,
+          firstname,
+          lastname,
+          avatar_url
+        )
+      `
+			)
+			.single();
+		proposal = result.data;
+		proposalError = result.error;
+	} else {
+		// Create a new proposal
+		const result = await supabase
+			.from('marketplace_proposals')
+			.insert({
+				listing_id: listingId,
+				proposer_id: userId,
+				offered_card_ids: data.offered_card_ids,
+				offered_gidouilles: data.offered_gidouilles,
+				message: data.message || null,
+				status: 'pending'
+			})
+			.select(
+				`
+        *,
+        proposer:profiles!marketplace_proposals_proposer_id_fkey(
+          id,
+          firstname,
+          lastname,
+          avatar_url
+        )
+      `
+			)
+			.single();
+		proposal = result.data;
+		proposalError = result.error;
+	}
 
 	if (proposalError) {
 		console.error('Error creating proposal:', proposalError);

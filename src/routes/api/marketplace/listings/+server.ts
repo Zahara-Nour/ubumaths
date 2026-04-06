@@ -40,6 +40,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	const { page, limit, type, card_template_id } = queryValidation.data;
+	const creatorId = url.searchParams.get('creator_id');
 
 	// Get user profile to check role
 	const { data: profile, error: profileError } = await supabase
@@ -91,10 +92,18 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			{ count: 'exact' }
 		)
 		.eq('school_id', schoolId)
-		.eq('status', 'active')
 		.order('created_at', { ascending: false });
 
+	// Only filter by active status when browsing (not when viewing own listings)
+	if (!creatorId) {
+		query = query.eq('status', 'active');
+	}
+
 	// Apply filters
+	if (creatorId) {
+		query = query.eq('creator_id', creatorId);
+	}
+
 	if (type) {
 		query = query.eq('listing_type', type);
 	}
