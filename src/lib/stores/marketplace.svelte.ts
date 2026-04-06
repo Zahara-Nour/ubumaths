@@ -577,7 +577,13 @@ class MarketplaceStore {
 
 			if (response.ok) {
 				const proposal = await response.json();
-				this.myProposals = [proposal, ...this.myProposals];
+				// Replace existing proposal (resubmission) or add new
+				const existingIndex = this.myProposals.findIndex((p) => p.id === proposal.id);
+				if (existingIndex >= 0) {
+					this.myProposals = this.myProposals.map((p) => (p.id === proposal.id ? proposal : p));
+				} else {
+					this.myProposals = [proposal, ...this.myProposals];
+				}
 				toaster.success('Proposition envoyée');
 				// Refresh card locks (cards are now locked for this proposal)
 				await this.fetchMyVipCards();
