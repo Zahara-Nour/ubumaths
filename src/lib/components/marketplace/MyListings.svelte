@@ -71,8 +71,11 @@
 	}
 
 	// Open proposal response modal
-	function openProposalResponse(proposal: MarketplaceProposal) {
+	let selectedListingForProposal = $state<MarketplaceListing | null>(null);
+
+	function openProposalResponse(proposal: MarketplaceProposal, listing: MarketplaceListing) {
 		selectedProposal = proposal;
+		selectedListingForProposal = listing;
 		respondingToProposal = true;
 	}
 
@@ -87,6 +90,7 @@
 		}
 
 		selectedProposal = null;
+		selectedListingForProposal = null;
 		respondingToProposal = false;
 	}
 
@@ -215,7 +219,7 @@
 													<Button
 														size="sm"
 														variant="outline"
-														onclick={() => openProposalResponse(proposal)}
+														onclick={() => openProposalResponse(proposal, listing)}
 													>
 														Répondre
 													</Button>
@@ -345,6 +349,7 @@
 {#if selectedProposal && respondingToProposal}
 	<ProposalResponseModal
 		proposal={selectedProposal}
+		listing={selectedListingForProposal}
 		bind:open={respondingToProposal}
 		onResponse={handleProposalResponse}
 	/>

@@ -7,7 +7,8 @@ import {
 	lockCardsForEntity,
 	isMarketplaceEnabled,
 	getStudentGidouilles,
-	enrichWithUsernames
+	enrichWithUsernames,
+	enrichProposalsWithCardData
 } from '$lib/server/marketplace/helpers';
 import {
 	notifyNewProposal,
@@ -76,7 +77,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		throw error(500, 'Erreur lors de la récupération des propositions');
 	}
 
-	return json(proposals.map(enrichWithUsernames));
+	const enrichedProposals = await enrichProposalsWithCardData(supabase, proposals);
+	return json(enrichedProposals.map(enrichWithUsernames));
 };
 
 /**
@@ -238,7 +240,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			supabase,
 			userId,
 			data.offered_card_ids,
-			proposal.id,
+			listingId,
 			'listing'
 		);
 
@@ -259,18 +261,45 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		.eq('id', listingId);
 
 	// Check if proposal exactly matches listing demand → auto-accept
-	const exactMatch = (() => {
+	const exactMatch = await (async () => {
 		const wantedGidouilles = listing.wanted_gidouilles || 0;
 		const offeredGidouilles = data.offered_gidouilles || 0;
-		const wantedCards = listing.wanted_card_template_ids || [];
-		const offeredCards = data.offered_card_ids || [];
+		const wantedTemplateIds = listing.wanted_card_template_ids || [];
+		const offeredCardIds = data.offered_card_ids || [];
 
-		// Only auto-accept for pure gidouilles trades (no cards involved in demand)
-		if (wantedCards.length > 0) return false;
-		if (wantedGidouilles <= 0) return false;
+		// Case 1: Sell listing — wants gidouilles only
+		if (wantedTemplateIds.length === 0 && wantedGidouilles > 0) {
+			return offeredGidouilles >= wantedGidouilles && offeredCardIds.length === 0;
+		}
 
-		// Proposal offers exactly what's asked (gidouilles only, no extra cards)
-		return offeredGidouilles >= wantedGidouilles && offeredCards.length === 0;
+		// Case 2: Buy listing — wants specific card templates
+		if (wantedTemplateIds.length > 0 && offeredCardIds.length > 0) {
+			// Resolve offered card instance IDs to their template IDs
+			const { data: proposerProfile } = await supabase
+				.from('profiles')
+				.select('vip_cards')
+				.eq('id', userId)
+				.single();
+
+			if (!proposerProfile?.vip_cards) return false;
+
+			const vipCards = proposerProfile.vip_cards as Record<
+				string,
+				{ cardId: string; earnedAt: string }
+			>;
+			const offeredTemplateIds = offeredCardIds.map((id) => vipCards[id]?.cardId).filter(Boolean);
+
+			// Check that every wanted template is covered by offered cards
+			const offeredSet = new Set(offeredTemplateIds);
+			const allWantedCovered = wantedTemplateIds.every((tid) => offeredSet.has(tid));
+
+			// Also check gidouilles match if any are wanted
+			const gidouillesOk = wantedGidouilles <= 0 || offeredGidouilles >= wantedGidouilles;
+
+			return allWantedCovered && gidouillesOk;
+		}
+
+		return false;
 	})();
 
 	if (exactMatch) {

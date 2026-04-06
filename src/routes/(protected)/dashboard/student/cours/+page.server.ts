@@ -58,8 +58,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		`
 		)
 		.eq('student_id', user.id)
-		.eq('status', 'active')
-		.eq('is_test', false);
+		.eq('status', 'active');
 
 	if (membershipError) {
 		console.error('[Student Cours] Error fetching memberships:', membershipError);

@@ -10,7 +10,6 @@
 	import VipCard from '$lib/components/VipCard.svelte';
 	import CreateProposalModal from './CreateProposalModal.svelte';
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Props
 	let {
@@ -31,15 +30,55 @@
 	// Check if user already has a proposal on this listing
 	let myProposal = $derived(marketplaceStore.myProposals.find((p) => p.listing_id === listing.id));
 
-	// Can accept directly: listing asks only for gidouilles and user has enough
+	// Can accept directly: user can fulfill exactly what the listing demands
 	let canAcceptDirectly = $derived.by(() => {
 		if (isOwner || myProposal?.status === 'pending') return false;
+
 		const wantedGidouilles = listing.wanted_gidouilles || 0;
-		if (wantedGidouilles <= 0) return false;
-		const wantsCards = (listing.wanted_templates?.length || 0) > 0;
-		if (wantsCards) return false;
-		return marketplaceStore.userGidouilles >= wantedGidouilles;
+		const wantedTemplates = listing.wanted_card_template_ids || [];
+
+		// Case 1: Sell listing — wants gidouilles only
+		if (wantedTemplates.length === 0 && wantedGidouilles > 0) {
+			return marketplaceStore.userGidouilles >= wantedGidouilles;
+		}
+
+		// Case 2: Buy listing — wants specific cards (+ optionally gidouilles)
+		if (wantedTemplates.length > 0) {
+			// Check gidouilles
+			if (wantedGidouilles > 0 && marketplaceStore.userGidouilles < wantedGidouilles) {
+				return false;
+			}
+			// Check that user owns unlocked cards matching each wanted template
+			const availableCards = marketplaceStore.myVipCards.filter((c) => !c.is_locked);
+			const remainingTemplates = [...wantedTemplates];
+			for (const templateId of remainingTemplates) {
+				const match = availableCards.find(
+					(c) => c.template_id === templateId && !remainingTemplates.includes(c.id)
+				);
+				if (!match) return false;
+			}
+			return true;
+		}
+
+		return false;
 	});
+
+	// Find card instance IDs that match the wanted templates (for direct accept)
+	function findMatchingCardIds(): string[] {
+		const wantedTemplates = listing.wanted_card_template_ids || [];
+		const availableCards = marketplaceStore.myVipCards.filter((c) => !c.is_locked);
+		const usedIds = new Set<string>();
+		const matchedIds: string[] = [];
+
+		for (const templateId of wantedTemplates) {
+			const match = availableCards.find((c) => c.template_id === templateId && !usedIds.has(c.id));
+			if (match) {
+				matchedIds.push(match.id);
+				usedIds.add(match.id);
+			}
+		}
+		return matchedIds;
+	}
 
 	let isAccepting = $state(false);
 
@@ -47,11 +86,20 @@
 		if (isAccepting) return;
 		isAccepting = true;
 		try {
-			const success = await marketplaceStore.submitProposal(listing.id, {
-				offered_gidouilles: listing.wanted_gidouilles || 0
-			});
+			const wantedTemplates = listing.wanted_card_template_ids || [];
+			const wantedGidouilles = listing.wanted_gidouilles || 0;
+
+			const proposalData: { offered_card_ids?: string[]; offered_gidouilles?: number } = {};
+
+			if (wantedTemplates.length > 0) {
+				proposalData.offered_card_ids = findMatchingCardIds();
+			}
+			if (wantedGidouilles > 0) {
+				proposalData.offered_gidouilles = wantedGidouilles;
+			}
+
+			const success = await marketplaceStore.submitProposal(listing.id, proposalData);
 			if (success) {
-				toaster.success('Proposition envoyée !');
 				handleClose();
 			}
 		} finally {
@@ -250,7 +298,15 @@
 					{#if canAcceptDirectly}
 						<Button onclick={acceptDirectly} disabled={isAccepting} class="gap-1.5">
 							<Coins class="h-4 w-4" />
-							{isAccepting ? 'Envoi...' : `Accepter pour ${listing.wanted_gidouilles} gidouilles`}
+							{#if isAccepting}
+								Envoi...
+							{:else if (listing.wanted_card_template_ids?.length ?? 0) > 0 && (listing.wanted_gidouilles ?? 0) > 0}
+								Accepter (carte + {listing.wanted_gidouilles} gidouilles)
+							{:else if (listing.wanted_card_template_ids?.length ?? 0) > 0}
+								Accepter l'échange
+							{:else}
+								Accepter pour {listing.wanted_gidouilles} gidouilles
+							{/if}
 						</Button>
 					{/if}
 					<Button variant="outline" onclick={() => (showProposalModal = true)}>
