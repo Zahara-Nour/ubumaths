@@ -36,14 +36,6 @@
 	async function handleAccept() {
 		if (isSubmitting) return;
 
-		if (
-			!confirm(
-				"Êtes-vous sûr de vouloir accepter cette proposition ? L'échange sera effectué immédiatement."
-			)
-		) {
-			return;
-		}
-
 		isSubmitting = true;
 		try {
 			await onResponse('accept', responseMessage || undefined);
