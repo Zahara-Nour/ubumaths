@@ -36,12 +36,6 @@
 	// Template selection mode
 	let showTemplateSelector = $state(false);
 
-	// Listing type options
-	const listingTypeOptions = [
-		{ value: 'sell', label: 'Je veux vendre' },
-		{ value: 'buy', label: 'Je veux acheter' }
-	];
-
 	// Expiry options
 	const expiryOptions = [
 		{ value: '1', label: '1 jour' },
@@ -179,7 +173,22 @@
 			<!-- Listing Type -->
 			<div class="space-y-2">
 				<Label>Type d'annonce</Label>
-				<MySelect type="single" bind:value={listingType} items={listingTypeOptions} />
+				<div class="grid grid-cols-2 gap-2">
+					<Button
+						type="button"
+						variant={listingType === 'sell' ? 'default' : 'outline'}
+						onclick={() => (listingType = 'sell')}
+					>
+						Je veux vendre
+					</Button>
+					<Button
+						type="button"
+						variant={listingType === 'buy' ? 'default' : 'outline'}
+						onclick={() => (listingType = 'buy')}
+					>
+						Je veux acheter
+					</Button>
+				</div>
 			</div>
 
 			<!-- Title -->
