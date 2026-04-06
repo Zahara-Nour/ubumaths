@@ -250,8 +250,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	await supabase
 		.from('marketplace_listings')
 		.update({
-			proposal_count: listing.proposal_count + 1,
-			updated_at: new Date().toISOString()
+			proposal_count: listing.proposal_count + 1
 		})
 		.eq('id', listingId);
 
