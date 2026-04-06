@@ -21,12 +21,14 @@
 	import { fr } from 'date-fns/locale';
 	import ListingDetailsModal from './ListingDetailsModal.svelte';
 	import ProposalResponseModal from './ProposalResponseModal.svelte';
+	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 
 	// State
 	let selectedTab = $state<'active' | 'completed' | 'expired'>('active');
 	let selectedListing = $state<MarketplaceListing | null>(null);
 	let selectedProposal = $state<MarketplaceProposal | null>(null);
 	let respondingToProposal = $state(false);
+	let cancellingListingId = $state<string | null>(null);
 
 	// Filter listings by status
 	let activeListings = $derived(marketplaceStore.myListings.filter((l) => l.status === 'active'));
@@ -58,10 +60,14 @@
 	}
 
 	// Cancel listing
-	async function cancelListing(listingId: string) {
-		if (!confirm('Êtes-vous sûr de vouloir annuler cette annonce ?')) return;
+	function requestCancelListing(listingId: string) {
+		cancellingListingId = listingId;
+	}
 
-		await marketplaceStore.cancelListing(listingId);
+	async function confirmCancelListing() {
+		if (!cancellingListingId) return;
+		await marketplaceStore.cancelListing(cancellingListingId);
+		cancellingListingId = null;
 	}
 
 	// Open proposal response modal
@@ -240,7 +246,11 @@
 							<Button variant="outline" size="sm" onclick={() => (selectedListing = listing)}>
 								Voir les détails
 							</Button>
-							<Button variant="destructive" size="sm" onclick={() => cancelListing(listing.id)}>
+							<Button
+								variant="destructive"
+								size="sm"
+								onclick={() => requestCancelListing(listing.id)}
+							>
 								<Trash2 class="mr-2 h-4 w-4" />
 								Annuler
 							</Button>
@@ -337,5 +347,17 @@
 		proposal={selectedProposal}
 		bind:open={respondingToProposal}
 		onResponse={handleProposalResponse}
+	/>
+{/if}
+
+<!-- Cancel Listing Confirmation -->
+{#if cancellingListingId}
+	<ConfirmDialog
+		open={true}
+		title="Annuler l'annonce"
+		description="Les cartes verrouillées pour cette annonce seront débloquées. Cette action est irréversible."
+		confirmLabel="Annuler l'annonce"
+		onConfirm={confirmCancelListing}
+		onCancel={() => (cancellingListingId = null)}
 	/>
 {/if}
