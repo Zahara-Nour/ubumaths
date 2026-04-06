@@ -218,6 +218,35 @@
 								{RARITY_LABELS[group.template.rarity as keyof typeof RARITY_LABELS]}
 							</Badge>
 						</div>
+						{#if mode === 'multiple' && group.availableCount > 1}
+							<div class="flex w-full items-center justify-between">
+								<button
+									type="button"
+									onclick={(e) => {
+										e.stopPropagation();
+										adjustSelection(group.template.id, -1);
+									}}
+									disabled={selectedCount === 0}
+									class="h-5 w-5 rounded border text-xs font-bold hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+								>
+									-
+								</button>
+								<span class="text-xs font-medium">
+									{selectedCount}/{group.availableCount}
+								</span>
+								<button
+									type="button"
+									onclick={(e) => {
+										e.stopPropagation();
+										adjustSelection(group.template.id, 1);
+									}}
+									disabled={selectedCount >= group.availableCount}
+									class="h-5 w-5 rounded border text-xs font-bold hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+								>
+									+
+								</button>
+							</div>
+						{/if}
 					</div>
 				{:else}
 					<!-- Full view with VipCard -->
