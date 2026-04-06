@@ -300,19 +300,23 @@ class MarketplaceStore {
 		}
 	}
 
-	// Fetch received proposals
+	// Fetch received proposals (on all my listings)
 	async fetchReceivedProposals() {
 		if (!this.myListings.length) return;
 
 		try {
-			const listingIds = this.myListings.map((l) => l.id);
-			const response = await fetch(
-				'/api/marketplace/proposals?listing_ids=' + listingIds.join(',')
+			const allProposals: MarketplaceProposal[] = [];
+			await Promise.all(
+				this.myListings.map(async (listing) => {
+					const response = await fetch(`/api/marketplace/listings/${listing.id}/proposals`);
+					if (response.ok) {
+						const proposals = await response.json();
+						allProposals.push(...proposals);
+					}
+				})
 			);
-			if (response.ok) {
-				this.receivedProposals = await response.json();
-				this.updatePendingCounts();
-			}
+			this.receivedProposals = allProposals;
+			this.updatePendingCounts();
 		} catch (_error) {
 			console.error('Failed to fetch received proposals:', _error);
 		}
