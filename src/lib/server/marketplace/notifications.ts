@@ -36,6 +36,7 @@ export async function notifyNewProposal(
 			: 'Un élève';
 
 		await supabase.from('notifications').insert({
+			is_system: true,
 			target_user_ids: [listingOwnerId],
 			target_type: 'users',
 			type: 'info',
@@ -62,6 +63,7 @@ export async function notifyProposalAccepted(
 ): Promise<void> {
 	try {
 		await supabase.from('notifications').insert({
+			is_system: true,
 			target_user_ids: [proposerId],
 			target_type: 'users',
 			type: 'info',
@@ -92,6 +94,7 @@ export async function notifyProposalRejected(
 			: `Votre proposition pour "${listingTitle}" a été refusée.`;
 
 		await supabase.from('notifications').insert({
+			is_system: true,
 			target_user_ids: [proposerId],
 			target_type: 'users',
 			type: 'info',
@@ -118,6 +121,7 @@ export async function notifyTradeCompleted(
 ): Promise<void> {
 	try {
 		await supabase.from('notifications').insert({
+			is_system: true,
 			target_user_ids: [userId],
 			target_type: 'users',
 			type: 'info',
@@ -154,6 +158,7 @@ export async function notifyNewTradeOffer(
 			: 'Un élève';
 
 		await supabase.from('notifications').insert({
+			is_system: true,
 			target_user_ids: [recipientId],
 			target_type: 'users',
 			type: 'info',
