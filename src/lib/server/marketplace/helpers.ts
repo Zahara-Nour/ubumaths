@@ -2,6 +2,47 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
 // ============================================================================
+// PROFILE HELPERS
+// ============================================================================
+
+/**
+ * Adds a `username` field (firstname + lastname) to profile objects
+ * returned by Supabase joins. The DB has firstname/lastname but
+ * marketplace components expect a `username` field.
+ */
+export function addUsername<T extends Record<string, unknown>>(
+	profile: T & { firstname?: string; lastname?: string }
+): T & { username: string } {
+	const firstname = (profile.firstname as string) || '';
+	const lastname = (profile.lastname as string) || '';
+	return { ...profile, username: `${firstname} ${lastname}`.trim() || 'Anonyme' };
+}
+
+/**
+ * Transforms all profile relations in a marketplace record to include username.
+ * Handles common relation names: creator, proposer, initiator, partner, sender.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function enrichWithUsernames<T extends Record<string, any>>(record: T): T {
+	const profileKeys = [
+		'creator',
+		'proposer',
+		'initiator',
+		'partner',
+		'sender',
+		'offer_by_profile'
+	] as const;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const result = { ...record } as any;
+	for (const key of profileKeys) {
+		if (result[key] && typeof result[key] === 'object' && !Array.isArray(result[key])) {
+			result[key] = addUsername(result[key]);
+		}
+	}
+	return result;
+}
+
+// ============================================================================
 // CONSTANTS
 // ============================================================================
 
