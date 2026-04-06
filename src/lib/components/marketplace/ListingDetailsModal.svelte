@@ -44,27 +44,54 @@
 		onclose();
 	}
 
-	// Convert offered cards to VipCard format
-	let offeredCardsForDisplay = $derived.by(() => {
+	// Group offered cards by template
+	let offeredCardsGrouped = $derived.by(() => {
 		if (!listing.offered_cards?.length) return [];
-		return listing.offered_cards.map((card) => ({
-			id: card.template_id,
-			name: card.template.name,
-			description: card.template.description,
-			imagePath: card.template.image_path,
-			rarity: card.template.rarity
-		}));
+		const groups = new Map<
+			string,
+			{
+				card: {
+					id: string;
+					name: string;
+					description: string;
+					imagePath: string | null;
+					rarity: string;
+				};
+				count: number;
+			}
+		>();
+		for (const card of listing.offered_cards) {
+			const existing = groups.get(card.template_id);
+			if (existing) {
+				existing.count++;
+			} else {
+				groups.set(card.template_id, {
+					card: {
+						id: card.template_id,
+						name: card.template.name,
+						description: card.template.description,
+						imagePath: card.template.image_path,
+						rarity: card.template.rarity
+					},
+					count: 1
+				});
+			}
+		}
+		return Array.from(groups.values());
 	});
 
-	// Convert wanted templates to VipCard format
-	let wantedCardsForDisplay = $derived.by(() => {
+	// Wanted templates (already unique)
+	let wantedCardsGrouped = $derived.by(() => {
 		if (!listing.wanted_templates?.length) return [];
 		return listing.wanted_templates.map((template) => ({
-			id: template.id,
-			name: template.name,
-			description: template.description,
-			imagePath: template.image_path,
-			rarity: template.rarity
+			card: {
+				id: template.id,
+				name: template.name,
+				description: template.description,
+				imagePath: template.image_path,
+				rarity: template.rarity
+			},
+			count: 1
 		}));
 	});
 </script>
@@ -123,10 +150,10 @@
 				<div class="space-y-3 rounded-lg border p-4">
 					<h4 class="font-semibold text-green-600">Offre</h4>
 
-					{#if offeredCardsForDisplay.length > 0}
+					{#if offeredCardsGrouped.length > 0}
 						<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
-							{#each offeredCardsForDisplay as card (card.id)}
-								<VipCard {card} size="sm" clickable={false} />
+							{#each offeredCardsGrouped as group (group.card.id)}
+								<VipCard card={group.card} size="sm" clickable={false} count={group.count} />
 							{/each}
 						</div>
 					{/if}
@@ -139,7 +166,7 @@
 						</div>
 					{/if}
 
-					{#if !offeredCardsForDisplay.length && !listing.offered_gidouilles}
+					{#if !offeredCardsGrouped.length && !listing.offered_gidouilles}
 						<p class="text-muted-foreground italic">Aucune offre</p>
 					{/if}
 				</div>
@@ -148,10 +175,10 @@
 				<div class="space-y-3 rounded-lg border p-4">
 					<h4 class="font-semibold text-blue-600">Demande</h4>
 
-					{#if wantedCardsForDisplay.length > 0}
+					{#if wantedCardsGrouped.length > 0}
 						<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
-							{#each wantedCardsForDisplay as card (card.id)}
-								<VipCard {card} size="sm" clickable={false} />
+							{#each wantedCardsGrouped as group (group.card.id)}
+								<VipCard card={group.card} size="sm" clickable={false} count={group.count} />
 							{/each}
 						</div>
 					{/if}
@@ -164,7 +191,7 @@
 						</div>
 					{/if}
 
-					{#if !wantedCardsForDisplay.length && !listing.wanted_gidouilles}
+					{#if !wantedCardsGrouped.length && !listing.wanted_gidouilles}
 						<p class="text-muted-foreground italic">Aucune demande spécifique</p>
 					{/if}
 				</div>
