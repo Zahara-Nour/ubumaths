@@ -9,7 +9,11 @@ import {
 	getStudentGidouilles,
 	enrichWithUsernames
 } from '$lib/server/marketplace/helpers';
-import { notifyNewProposal, notifyProposalAccepted } from '$lib/server/marketplace/notifications';
+import {
+	notifyNewProposal,
+	notifyProposalAccepted,
+	notifyProposalRejected
+} from '$lib/server/marketplace/notifications';
 import { z } from 'zod';
 
 // ID validation schema
@@ -277,8 +281,27 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		});
 
 		if (!rpcError && result?.success) {
-			// Notify both parties
+			// Notify accepted proposer
 			await notifyProposalAccepted(supabase, userId, 'Annonce', proposal.id);
+
+			// Notify rejected proposers
+			const { data: rejectedProposals } = await supabase
+				.from('marketplace_proposals')
+				.select('proposer_id')
+				.eq('listing_id', listingId)
+				.eq('status', 'rejected')
+				.neq('id', proposal.id);
+
+			if (rejectedProposals) {
+				for (const p of rejectedProposals) {
+					await notifyProposalRejected(
+						supabase,
+						p.proposer_id,
+						'Annonce',
+						'Autre proposition acceptée'
+					);
+				}
+			}
 
 			return json(
 				{
