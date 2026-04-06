@@ -24,7 +24,6 @@
 
 	// Form state
 	let listingType = $state<'sell' | 'buy'>('sell');
-	let title = $state('');
 	let description = $state('');
 	let offeredCardIds = $state<string[]>([]);
 	let offeredGidouilles = $state(0);
@@ -47,9 +46,6 @@
 
 	// Validation
 	let isValid = $derived.by(() => {
-		// Title is required
-		if (!title.trim()) return false;
-
 		// Check if user has enough gidouilles to offer
 		if (offeredGidouilles > marketplaceStore.userGidouilles) return false;
 
@@ -79,7 +75,6 @@
 	// Reset form
 	function resetForm() {
 		listingType = 'sell';
-		title = '';
 		description = '';
 		offeredCardIds = [];
 		offeredGidouilles = 0;
@@ -96,9 +91,24 @@
 		isSubmitting = true;
 
 		try {
+			// Auto-generate title from content
+			const parts: string[] = [];
+			if (listingType === 'sell') {
+				if (offeredCardIds.length > 0) parts.push(`${offeredCardIds.length} carte(s)`);
+				if (offeredGidouilles > 0) parts.push(`${offeredGidouilles} gidouilles`);
+			} else {
+				if (wantedCardTemplateIds.length > 0)
+					parts.push(`${wantedCardTemplateIds.length} carte(s)`);
+				if (wantedGidouilles > 0) parts.push(`${wantedGidouilles} gidouilles`);
+			}
+			const autoTitle =
+				listingType === 'sell'
+					? `Vend ${parts.join(' + ') || 'items'}`
+					: `Cherche ${parts.join(' + ') || 'items'}`;
+
 			const data: CreateListingData = {
 				listing_type: listingType,
-				title: title.trim(),
+				title: autoTitle,
 				description: description.trim() || undefined,
 				offered_card_ids: offeredCardIds.length > 0 ? offeredCardIds : undefined,
 				offered_gidouilles: offeredGidouilles > 0 ? offeredGidouilles : undefined,
@@ -189,24 +199,6 @@
 						Je veux acheter
 					</Button>
 				</div>
-			</div>
-
-			<!-- Title -->
-			<div class="space-y-2">
-				<Label for="title">Titre de l'annonce *</Label>
-				<Input
-					id="title"
-					type="text"
-					bind:value={title}
-					placeholder={listingType === 'sell'
-						? 'Ex: Échange carte épique contre gidouilles'
-						: 'Ex: Recherche carte Azuka'}
-					maxlength={100}
-					required
-				/>
-				<p class="text-xs text-muted-foreground">
-					{title.length}/100 caractères
-				</p>
 			</div>
 
 			<!-- Description -->
