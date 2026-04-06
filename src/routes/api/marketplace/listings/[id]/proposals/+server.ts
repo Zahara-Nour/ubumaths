@@ -133,17 +133,20 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		throw error(403, 'Vous ne pouvez pas faire une proposition sur votre propre annonce');
 	}
 
-	// Check if user already has a proposal for this listing
+	// Check if user already has a pending proposal for this listing
 	const { data: existingProposal } = await supabase
 		.from('marketplace_proposals')
-		.select('id')
+		.select('id, status')
 		.eq('listing_id', listingId)
 		.eq('proposer_id', userId)
-		.eq('status', 'pending')
 		.single();
 
 	if (existingProposal) {
-		throw error(403, 'Vous avez déjà une proposition en cours pour cette annonce');
+		if (existingProposal.status === 'pending') {
+			throw error(403, 'Vous avez déjà une proposition en cours pour cette annonce');
+		}
+		// Remove rejected/withdrawn proposals to allow resubmission
+		await supabase.from('marketplace_proposals').delete().eq('id', existingProposal.id);
 	}
 
 	// Validate card ownership if offering cards
