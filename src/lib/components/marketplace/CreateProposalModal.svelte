@@ -31,6 +31,23 @@
 	let message = $state('');
 	let isSubmitting = $state(false);
 
+	// Check if user can directly accept the listing's demand
+	let canAcceptDirectly = $derived.by(() => {
+		const wantedGidouilles = listing.wanted_gidouilles || 0;
+		if (wantedGidouilles <= 0) return false;
+		// Listing only asks for gidouilles (no specific cards)
+		const wantsCards = (listing.wanted_templates?.length || 0) > 0;
+		if (wantsCards) return false;
+		return marketplaceStore.userGidouilles >= wantedGidouilles;
+	});
+
+	// Quick accept: fill with exactly what the listing asks
+	function acceptDirectly() {
+		offeredGidouilles = listing.wanted_gidouilles || 0;
+		offeredCardIds = [];
+		handleSubmit();
+	}
+
 	// Validation
 	let isValid = $derived.by(() => {
 		// Must offer something
@@ -245,6 +262,12 @@
 
 		<Dialog.Footer>
 			<Button variant="outline" onclick={() => (open = false)}>Annuler</Button>
+			{#if canAcceptDirectly}
+				<Button variant="default" onclick={acceptDirectly} disabled={isSubmitting} class="gap-1.5">
+					<Coins class="h-4 w-4" />
+					Accepter pour {listing.wanted_gidouilles} gidouilles
+				</Button>
+			{/if}
 			<Button onclick={handleSubmit} disabled={!isValid || isSubmitting}>
 				{isSubmitting ? 'Envoi...' : 'Envoyer la proposition'}
 			</Button>
