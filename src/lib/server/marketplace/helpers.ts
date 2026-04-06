@@ -361,19 +361,21 @@ export async function createMarketplaceNotification(
 	};
 
 	const actionUrls: Record<typeof type, string> = {
-		proposal_received: '/dashboard/marketplace/proposals',
-		proposal_accepted: '/dashboard/marketplace/proposals',
-		proposal_rejected: '/dashboard/marketplace/proposals',
-		trade_offer: '/dashboard/marketplace/trades',
-		trade_completed: '/dashboard/marketplace/trades',
-		trade_cancelled: '/dashboard/marketplace/trades'
+		proposal_received: '/dashboard/student/marketplace',
+		proposal_accepted: '/dashboard/student/marketplace',
+		proposal_rejected: '/dashboard/student/marketplace',
+		trade_offer: '/dashboard/student/marketplace',
+		trade_completed: '/dashboard/student/marketplace',
+		trade_cancelled: '/dashboard/student/marketplace'
 	};
 
 	// Create the notification
+	// type must be 'info'|'alert'|'announcement'|'reminder' (DB constraint)
 	await supabase.from('notifications').insert({
 		target_user_ids: [recipientId],
 		target_type: 'users',
-		type: 'marketplace',
+		type: 'info',
+		system_event_type: `marketplace_${type}`,
 		title: 'Marketplace',
 		message: messages[type],
 		action_url: actionUrls[type],

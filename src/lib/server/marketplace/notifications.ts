@@ -6,6 +6,9 @@
  *
  * All notifications are inserted into the `notifications` table and will
  * be automatically broadcast to users via the notificationsRealtimeManager.
+ *
+ * Note: notifications.type is constrained to 'info', 'alert', 'announcement', 'reminder'.
+ * We use 'info' for all marketplace notifications and distinguish via system_event_type.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -13,12 +16,6 @@ import type { Database } from '$lib/types/database';
 
 /**
  * Create notification when someone makes a proposal on user's listing
- *
- * @param supabase - Supabase client
- * @param listingOwnerId - ID of the user who created the listing
- * @param proposerId - ID of the user who made the proposal
- * @param listingTitle - Title of the listing
- * @param proposalId - ID of the proposal
  */
 export async function notifyNewProposal(
 	supabase: SupabaseClient<Database>,
@@ -28,7 +25,6 @@ export async function notifyNewProposal(
 	proposalId: string
 ): Promise<void> {
 	try {
-		// Get proposer's name for notification
 		const { data: proposerProfile } = await supabase
 			.from('profiles')
 			.select('firstname, lastname')
@@ -42,7 +38,8 @@ export async function notifyNewProposal(
 		await supabase.from('notifications').insert({
 			target_user_ids: [listingOwnerId],
 			target_type: 'users',
-			type: 'marketplace_proposal',
+			type: 'info',
+			system_event_type: 'marketplace_proposal',
 			title: 'Nouvelle proposition',
 			message: `${proposerName} a fait une proposition pour "${listingTitle}"`,
 			action_url: `/dashboard/student/marketplace?tab=my-listings&highlight=${proposalId}`,
@@ -51,17 +48,11 @@ export async function notifyNewProposal(
 		});
 	} catch (error) {
 		console.error('Failed to create proposal notification:', error);
-		// Don't throw - notification failure shouldn't break the main flow
 	}
 }
 
 /**
  * Create notification when proposal is accepted
- *
- * @param supabase - Supabase client
- * @param proposerId - ID of the user who made the proposal
- * @param listingTitle - Title of the listing
- * @param tradeId - ID of the completed trade
  */
 export async function notifyProposalAccepted(
 	supabase: SupabaseClient<Database>,
@@ -73,7 +64,8 @@ export async function notifyProposalAccepted(
 		await supabase.from('notifications').insert({
 			target_user_ids: [proposerId],
 			target_type: 'users',
-			type: 'marketplace_proposal_accepted',
+			type: 'info',
+			system_event_type: 'marketplace_proposal_accepted',
 			title: 'Proposition acceptée',
 			message: `Votre proposition pour "${listingTitle}" a été acceptée ! L'échange est terminé.`,
 			action_url: `/dashboard/student/marketplace?tab=trades&highlight=${tradeId}`,
@@ -87,11 +79,6 @@ export async function notifyProposalAccepted(
 
 /**
  * Create notification when proposal is rejected
- *
- * @param supabase - Supabase client
- * @param proposerId - ID of the user who made the proposal
- * @param listingTitle - Title of the listing
- * @param rejectionMessage - Optional message explaining the rejection
  */
 export async function notifyProposalRejected(
 	supabase: SupabaseClient<Database>,
@@ -107,10 +94,11 @@ export async function notifyProposalRejected(
 		await supabase.from('notifications').insert({
 			target_user_ids: [proposerId],
 			target_type: 'users',
-			type: 'marketplace_proposal_rejected',
+			type: 'info',
+			system_event_type: 'marketplace_proposal_rejected',
 			title: 'Proposition refusée',
 			message,
-			action_url: `/dashboard/student/marketplace?tab=proposals`,
+			action_url: '/dashboard/student/marketplace',
 			action_label: 'Voir',
 			priority: 'normal'
 		});
@@ -121,11 +109,6 @@ export async function notifyProposalRejected(
 
 /**
  * Create notification when trade is completed
- *
- * @param supabase - Supabase client
- * @param userId - ID of the user to notify
- * @param partnerName - Name of the trade partner
- * @param tradeId - ID of the completed trade
  */
 export async function notifyTradeCompleted(
 	supabase: SupabaseClient<Database>,
@@ -137,7 +120,8 @@ export async function notifyTradeCompleted(
 		await supabase.from('notifications').insert({
 			target_user_ids: [userId],
 			target_type: 'users',
-			type: 'marketplace_trade_completed',
+			type: 'info',
+			system_event_type: 'marketplace_trade_completed',
 			title: 'Échange terminé',
 			message: `Votre échange avec ${partnerName} est terminé ! Les cartes et gidouilles ont été transférés.`,
 			action_url: `/dashboard/student/marketplace?tab=trades&highlight=${tradeId}`,
@@ -151,11 +135,6 @@ export async function notifyTradeCompleted(
 
 /**
  * Create notification when a new offer is made in a trade
- *
- * @param supabase - Supabase client
- * @param recipientId - ID of the user to notify
- * @param offererId - ID of the user who made the offer
- * @param tradeId - ID of the trade
  */
 export async function notifyNewTradeOffer(
 	supabase: SupabaseClient<Database>,
@@ -164,7 +143,6 @@ export async function notifyNewTradeOffer(
 	tradeId: string
 ): Promise<void> {
 	try {
-		// Get offerer's name for notification
 		const { data: offererProfile } = await supabase
 			.from('profiles')
 			.select('firstname, lastname')
@@ -178,7 +156,8 @@ export async function notifyNewTradeOffer(
 		await supabase.from('notifications').insert({
 			target_user_ids: [recipientId],
 			target_type: 'users',
-			type: 'marketplace_trade_offer',
+			type: 'info',
+			system_event_type: 'marketplace_trade_offer',
 			title: 'Nouvelle offre',
 			message: `${offererName} a fait une nouvelle offre dans votre échange`,
 			action_url: `/dashboard/student/marketplace?tab=trades&highlight=${tradeId}`,
