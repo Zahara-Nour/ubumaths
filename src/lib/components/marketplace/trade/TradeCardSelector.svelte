@@ -1,22 +1,27 @@
 <!--
 	TradeCardSelector Component
 	===========================
-	Grid of VIP cards for selection in trades.
-	Follows VipCardExchangeModal pattern: cards grouped by template with counter.
+	Unified card selector for all marketplace interactions.
+	Cards grouped by template with click-to-increment selection.
 
-	Features:
-	- Cards grouped by template (cardId)
-	- Click to increment selection counter
-	- Click when all selected → deselect all
-	- Badge showing selectedCount/totalCount
-	- Read-only mode for partner's cards
+	Interaction:
+	- Click a card → select one more instance of that template
+	- Click when all instances selected → deselect all
+	- Badge shows selectedCount/totalCount when multiple instances exist
 
-	Props:
-	- cards: TradeCard[] - Available cards with instanceId
-	- selectedCardIds: string[] - Currently selected instance IDs
-	- readonly: boolean - Disable selection
-	- onSelect?: (cardId: string) => void - Called with instanceId to select
-	- onDeselect?: (cardId: string) => void - Called with instanceId to deselect
+	Two usage modes:
+	1. BINDABLE (simple forms: listings, proposals)
+	   No side effects needed — just bind the selected IDs.
+	   Example: <TradeCardSelector cards={cards} bind:selectedCardIds={myIds} />
+
+	2. CALLBACK (realtime trades)
+	   Each selection must trigger network sync (Supabase Realtime),
+	   so the parent controls state via onSelect/onDeselect callbacks.
+	   Example: <TradeCardSelector cards={cards} selectedCardIds={offer.cards}
+	              onSelect={handleSelect} onDeselect={handleDeselect} />
+
+	If onSelect/onDeselect are provided, they are used.
+	Otherwise, selectedCardIds is mutated directly via binding.
 -->
 <script lang="ts">
 	import VipCard from '$lib/components/VipCard.svelte';
