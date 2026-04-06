@@ -160,10 +160,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	// Update the listing
 	const { data: updatedListing, error: updateError } = await supabase
 		.from('marketplace_listings')
-		.update({
-			...updates,
-			updated_at: new Date().toISOString()
-		})
+		.update(updates)
 		.eq('id', listingId)
 		.select(
 			`
@@ -233,7 +230,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		.from('marketplace_listings')
 		.update({
 			status: 'cancelled',
-			updated_at: new Date().toISOString()
+			cancelled_at: new Date().toISOString()
 		})
 		.eq('id', listingId);
 

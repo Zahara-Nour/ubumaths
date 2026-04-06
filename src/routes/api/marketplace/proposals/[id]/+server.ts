@@ -208,8 +208,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		await supabase
 			.from('marketplace_listings')
 			.update({
-				proposal_count: Math.max(0, listing.proposal_count - 1),
-				updated_at: new Date().toISOString()
+				proposal_count: Math.max(0, listing.proposal_count - 1)
 			})
 			.eq('id', listing.id);
 
@@ -289,8 +288,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		await supabase
 			.from('marketplace_listings')
 			.update({
-				proposal_count: Math.max(0, listing.proposal_count - 1),
-				updated_at: new Date().toISOString()
+				proposal_count: Math.max(0, listing.proposal_count - 1)
 			})
 			.eq('id', proposal.listing_id);
 	}
