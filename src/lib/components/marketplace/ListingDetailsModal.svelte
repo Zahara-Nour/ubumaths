@@ -9,6 +9,7 @@
 	import { fr } from 'date-fns/locale';
 	import VipCard from '$lib/components/VipCard.svelte';
 	import CreateProposalModal from './CreateProposalModal.svelte';
+	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
 
 	// Props
 	let {
@@ -25,6 +26,9 @@
 
 	// State for proposal modal
 	let showProposalModal = $state(false);
+
+	// Check if user already has a proposal on this listing
+	let myProposal = $derived(marketplaceStore.myProposals.find((p) => p.listing_id === listing.id));
 
 	// Format time
 	function formatTime(dateString: string) {
@@ -167,10 +171,30 @@
 			</div>
 		</div>
 
-		<Dialog.Footer>
+		<Dialog.Footer class="flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+			{#if !isOwner && myProposal}
+				<div class="flex-1 text-sm">
+					{#if myProposal.status === 'pending'}
+						<Badge variant="secondary">Proposition en attente</Badge>
+					{:else if myProposal.status === 'accepted'}
+						<Badge variant="default">Proposition acceptée</Badge>
+					{:else if myProposal.status === 'rejected'}
+						<Badge variant="destructive">Proposition refusée</Badge>
+						{#if myProposal.response_message}
+							<span class="ml-2 text-xs text-muted-foreground">{myProposal.response_message}</span>
+						{/if}
+					{/if}
+				</div>
+			{/if}
 			<Button variant="outline" onclick={handleClose}>Fermer</Button>
 			{#if !isOwner}
-				<Button onclick={() => (showProposalModal = true)}>Faire une proposition</Button>
+				{#if myProposal?.status === 'pending'}
+					<Button disabled>Proposition envoyée</Button>
+				{:else}
+					<Button onclick={() => (showProposalModal = true)}>
+						{myProposal?.status === 'rejected' ? 'Reproposer' : 'Faire une proposition'}
+					</Button>
+				{/if}
 			{/if}
 		</Dialog.Footer>
 	</Dialog.Content>

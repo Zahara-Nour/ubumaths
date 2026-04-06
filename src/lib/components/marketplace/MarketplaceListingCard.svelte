@@ -8,6 +8,7 @@
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import VipCard from '$lib/components/VipCard.svelte';
+	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
 
 	// Props
 	let {
@@ -19,6 +20,9 @@
 		viewMode?: 'grid' | 'list';
 		onclick?: () => void;
 	}>();
+
+	// Check if user has a proposal on this listing
+	let myProposal = $derived(marketplaceStore.myProposals.find((p) => p.listing_id === listing.id));
 
 	// Calculate time until expiry
 	let expiryText = $derived.by(() => {
@@ -94,9 +98,27 @@
 	>
 		<Card.Header class="pb-3">
 			<div class="flex items-start justify-between gap-2">
-				<Badge variant={typeVariant} class="text-xs">
-					{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
-				</Badge>
+				<div class="flex gap-1">
+					<Badge variant={typeVariant} class="text-xs">
+						{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
+					</Badge>
+					{#if myProposal}
+						<Badge
+							variant={myProposal.status === 'pending'
+								? 'secondary'
+								: myProposal.status === 'accepted'
+									? 'default'
+									: 'destructive'}
+							class="text-xs"
+						>
+							{myProposal.status === 'pending'
+								? 'Proposé'
+								: myProposal.status === 'accepted'
+									? 'Accepté'
+									: 'Refusé'}
+						</Badge>
+					{/if}
+				</div>
 				{#if isExpiringSoon}
 					<Badge variant="destructive" class="text-xs">Expire bientôt</Badge>
 				{/if}
