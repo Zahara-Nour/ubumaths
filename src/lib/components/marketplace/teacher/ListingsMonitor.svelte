@@ -320,7 +320,7 @@
 							<div class="flex items-start justify-between">
 								<div class="flex-1 space-y-1">
 									<CardTitle class="line-clamp-1 text-base">
-										{listing.title}
+										{listing.title || 'Annonce'}
 									</CardTitle>
 									<div class="flex items-center gap-2 text-sm text-muted-foreground">
 										<User class="h-3 w-3" />

@@ -73,7 +73,7 @@
 	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center justify-between">
-				{listing.title}
+				{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
 				<Badge variant={listing.listing_type === 'sell' ? 'default' : 'secondary'}>
 					{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
 				</Badge>

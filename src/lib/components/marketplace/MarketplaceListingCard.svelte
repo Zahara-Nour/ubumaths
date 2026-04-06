@@ -93,7 +93,7 @@
 		tabindex={0}
 		{onclick}
 		onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && onclick?.()}
-		aria-label={`Annonce: ${listing.title} par ${listing.creator?.username || 'Anonyme'}`}
+		aria-label={`Annonce ${listing.listing_type === 'sell' ? 'vente' : 'achat'} par ${listing.creator?.username || 'Anonyme'}`}
 		class="cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg focus:ring-2 focus:ring-primary focus:outline-none"
 	>
 		<Card.Header class="pb-3">
@@ -123,10 +123,6 @@
 					<Badge variant="destructive" class="text-xs">Expire bientôt</Badge>
 				{/if}
 			</div>
-
-			<Card.Title class="line-clamp-1 text-base">
-				{listing.title}
-			</Card.Title>
 
 			{#if listing.description}
 				<Card.Description class="line-clamp-2 text-xs">
@@ -235,7 +231,7 @@
 		tabindex={0}
 		{onclick}
 		onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && onclick?.()}
-		aria-label={`Annonce: ${listing.title} par ${listing.creator?.username || 'Anonyme'}`}
+		aria-label={`Annonce ${listing.listing_type === 'sell' ? 'vente' : 'achat'} par ${listing.creator?.username || 'Anonyme'}`}
 		class="cursor-pointer transition-shadow hover:shadow-md focus:ring-2 focus:ring-primary focus:outline-none"
 	>
 		<Card.Content class="p-4">
@@ -251,7 +247,9 @@
 				<!-- Main Content -->
 				<div class="min-w-0 flex-1">
 					<div class="mb-1 flex items-start justify-between gap-2">
-						<h3 class="truncate font-medium">{listing.title}</h3>
+						<span class="truncate text-sm text-muted-foreground"
+							>{listing.creator?.username || 'Anonyme'}</span
+						>
 						<div class="flex shrink-0 items-center gap-2">
 							<Badge variant={typeVariant} class="text-xs">
 								{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}

@@ -102,7 +102,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Faire une proposition</Dialog.Title>
 			<Dialog.Description>
-				Proposez un echange pour l'annonce "{listing.title}"
+				Proposez un echange pour l'annonce "{listing.title || 'cette annonce'}"
 			</Dialog.Description>
 		</Dialog.Header>
 

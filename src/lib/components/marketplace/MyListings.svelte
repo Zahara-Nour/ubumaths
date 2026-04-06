@@ -144,7 +144,7 @@
 							<div class="flex items-start justify-between">
 								<div class="space-y-1">
 									<Card.Title class="text-lg">
-										{listing.title}
+										{listing.title || (listing.listing_type === 'sell' ? 'Vente' : 'Achat')}
 									</Card.Title>
 									{#if listing.description}
 										<Card.Description>
@@ -266,7 +266,9 @@
 						<Card.Content class="py-4">
 							<div class="flex items-center justify-between">
 								<div>
-									<h4 class="font-medium">{listing.title}</h4>
+									<h4 class="font-medium">
+										{listing.title || (listing.listing_type === 'sell' ? 'Vente' : 'Achat')}
+									</h4>
 									<p class="mt-1 text-sm text-muted-foreground">
 										Complétée {formatTime(listing.completed_at ?? listing.created_at)}
 									</p>
@@ -298,7 +300,9 @@
 						<Card.Content class="py-4">
 							<div class="flex items-center justify-between">
 								<div>
-									<h4 class="font-medium">{listing.title}</h4>
+									<h4 class="font-medium">
+										{listing.title || (listing.listing_type === 'sell' ? 'Vente' : 'Achat')}
+									</h4>
 									<p class="mt-1 text-sm text-muted-foreground">
 										{listing.status === 'expired' ? 'Expirée' : 'Annulée'}
 										{formatTime(listing.cancelled_at ?? listing.expires_at)}

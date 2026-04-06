@@ -160,7 +160,12 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		// Create notification for accepted proposer
-		await notifyProposalAccepted(supabase, proposal.proposer_id, listing.title, proposalId);
+		await notifyProposalAccepted(
+			supabase,
+			proposal.proposer_id,
+			listing.title || 'Annonce',
+			proposalId
+		);
 
 		// Notify rejected proposers (already handled by the RPC function but we still send notifications)
 		const { data: rejectedProposals } = await supabase
@@ -176,7 +181,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				await notifyProposalRejected(
 					supabase,
 					rejectedProposal.proposer_id,
-					listing.title,
+					listing.title || 'Annonce',
 					"L'annonce a été complétée avec une autre proposition"
 				);
 			}
@@ -216,7 +221,12 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			.eq('id', listing.id);
 
 		// Create notification for proposer
-		await notifyProposalRejected(supabase, proposal.proposer_id, listing.title, response_message);
+		await notifyProposalRejected(
+			supabase,
+			proposal.proposer_id,
+			listing.title || 'Annonce',
+			response_message
+		);
 
 		return json({
 			...proposal,

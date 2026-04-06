@@ -154,7 +154,7 @@ export interface MarketplaceTradeChatMessage {
 // Create listing data
 export interface CreateListingData {
 	listing_type: 'sell' | 'buy';
-	title: string;
+	title?: string;
 	description?: string;
 	offered_card_ids?: string[];
 	offered_gidouilles?: number;

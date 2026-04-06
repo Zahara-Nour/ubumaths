@@ -38,10 +38,7 @@ export const createListingSchema = z
 			.default(0),
 
 		// Metadata
-		title: z
-			.string()
-			.min(3, 'Le titre doit contenir au moins 3 caractères')
-			.max(100, 'Le titre ne peut pas dépasser 100 caractères'),
+		title: z.string().max(100, 'Le titre ne peut pas dépasser 100 caractères').optional(),
 		description: z
 			.string()
 			.max(500, 'La description ne peut pas dépasser 500 caractères')

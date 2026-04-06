@@ -65,7 +65,7 @@
 					<div class="min-w-0 flex-1 space-y-1">
 						<div class="flex items-center gap-2">
 							<span class="truncate font-medium">
-								{listing?.title || 'Annonce supprimée'}
+								{listing?.title || (listing ? 'Annonce' : 'Annonce supprimée')}
 							</span>
 							<Badge variant={statusVariant(proposal.status)}>
 								{statusLabel(proposal.status)}

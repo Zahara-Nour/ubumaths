@@ -494,7 +494,7 @@ class MarketplaceStore {
 			id: tempId,
 			creator_id: this._userId,
 			listing_type: validation.data.listing_type,
-			title: validation.data.title,
+			title: validation.data.title || null,
 			description: validation.data.description || null,
 			offered_card_ids: validation.data.offered_card_ids || null,
 			offered_gidouilles: validation.data.offered_gidouilles || null,

@@ -91,24 +91,8 @@
 		isSubmitting = true;
 
 		try {
-			// Auto-generate title from content
-			const parts: string[] = [];
-			if (listingType === 'sell') {
-				if (offeredCardIds.length > 0) parts.push(`${offeredCardIds.length} carte(s)`);
-				if (offeredGidouilles > 0) parts.push(`${offeredGidouilles} gidouilles`);
-			} else {
-				if (wantedCardTemplateIds.length > 0)
-					parts.push(`${wantedCardTemplateIds.length} carte(s)`);
-				if (wantedGidouilles > 0) parts.push(`${wantedGidouilles} gidouilles`);
-			}
-			const autoTitle =
-				listingType === 'sell'
-					? `Vend ${parts.join(' + ') || 'items'}`
-					: `Cherche ${parts.join(' + ') || 'items'}`;
-
 			const data: CreateListingData = {
 				listing_type: listingType,
-				title: autoTitle,
 				description: description.trim() || undefined,
 				offered_card_ids: offeredCardIds.length > 0 ? offeredCardIds : undefined,
 				offered_gidouilles: offeredGidouilles > 0 ? offeredGidouilles : undefined,
