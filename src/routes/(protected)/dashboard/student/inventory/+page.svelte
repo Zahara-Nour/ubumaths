@@ -239,7 +239,7 @@
 
 		// Update gidouilles balance
 		syncGidouilles({ type: 'student' }, price);
-		data.gidouilles = data.gidouilles + price;
+		data.gidouilles = Math.round((data.gidouilles + price) * 100) / 100;
 	}
 </script>
 
