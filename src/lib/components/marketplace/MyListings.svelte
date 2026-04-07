@@ -50,6 +50,42 @@
 		}
 	});
 
+	// Build text summary for a listing (e.g. "1 carte Jeu + 5 gidouilles pour 1 carte Batman")
+	function getListingSummary(listing: MarketplaceListing): string {
+		// Offer side
+		const offerParts: string[] = [];
+		if (listing.offered_cards?.length) {
+			const grouped: Record<string, { name: string; count: number }> = {};
+			for (const c of listing.offered_cards) {
+				const existing = grouped[c.template_id];
+				if (existing) existing.count++;
+				else grouped[c.template_id] = { name: c.template.name, count: 1 };
+			}
+			for (const { name, count } of Object.values(grouped)) {
+				offerParts.push(count > 1 ? `${count} cartes ${name}` : `1 carte ${name}`);
+			}
+		}
+		if (listing.offered_gidouilles && listing.offered_gidouilles > 0) {
+			offerParts.push(`${listing.offered_gidouilles.toLocaleString('fr-FR')} gidouilles`);
+		}
+
+		// Demand side
+		const demandParts: string[] = [];
+		if (listing.wanted_templates?.length) {
+			for (const t of listing.wanted_templates) {
+				demandParts.push(`1 carte ${t.name}`);
+			}
+		}
+		if (listing.wanted_gidouilles && listing.wanted_gidouilles > 0) {
+			demandParts.push(`${listing.wanted_gidouilles.toLocaleString('fr-FR')} gidouilles`);
+		}
+
+		const offer = offerParts.length > 0 ? offerParts.join(' + ') : 'rien';
+		const demand = demandParts.length > 0 ? demandParts.join(' + ') : 'rien';
+
+		return `${offer} pour ${demand}`;
+	}
+
 	// Get proposals for a listing
 	function getListingProposals(listingId: string): MarketplaceProposal[] {
 		return marketplaceStore.receivedProposals.filter((p) => p.listing_id === listingId);
@@ -189,33 +225,7 @@
 
 							<!-- Line 2: text summary of offer/demand -->
 							<p class="mt-1 text-xs text-muted-foreground">
-								{#if listing.offered_cards?.length || listing.offered_gidouilles}
-									Offre :
-									{#if listing.offered_cards?.length}{listing.offered_cards.length} carte{listing
-											.offered_cards.length > 1
-											? 's'
-											: ''}{/if}{#if listing.offered_cards?.length && listing.offered_gidouilles}
-										+
-									{/if}{#if listing.offered_gidouilles}{listing.offered_gidouilles.toLocaleString(
-											'fr-FR'
-										)} gidouilles{/if}
-								{:else}
-									Offre : rien
-								{/if}
-								→
-								{#if listing.wanted_templates?.length || listing.wanted_gidouilles}
-									Demande :
-									{#if listing.wanted_templates?.length}{listing.wanted_templates.length} carte{listing
-											.wanted_templates.length > 1
-											? 's'
-											: ''}{/if}{#if listing.wanted_templates?.length && listing.wanted_gidouilles}
-										+
-									{/if}{#if listing.wanted_gidouilles}{listing.wanted_gidouilles.toLocaleString(
-											'fr-FR'
-										)} gidouilles{/if}
-								{:else}
-									Demande : rien
-								{/if}
+								{getListingSummary(listing)}
 							</p>
 
 							<!-- Line 3: proposals if any -->
