@@ -3,29 +3,13 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
 	import { RefreshCw, ShoppingBag } from 'lucide-svelte';
 	import MarketplaceListingCard from './MarketplaceListingCard.svelte';
 	import ListingDetailsModal from './ListingDetailsModal.svelte';
 	import type { MarketplaceListing } from '$lib/types/marketplace';
 
 	// State
-	let selectedSort = $state<string>('recent');
 	let selectedListing = $state<MarketplaceListing | null>(null);
-
-	// Filter options
-	const sortOptions = [
-		{ value: 'recent', label: 'Plus récents' },
-		{ value: 'expiring_soon', label: 'Expire bientôt' },
-		{ value: 'popular', label: 'Plus populaires' }
-	];
-
-	// Apply filters
-	function applyFilters() {
-		marketplaceStore.setFilters({
-			sort_by: selectedSort as 'recent' | 'expiring_soon' | 'popular'
-		});
-	}
 
 	// Load more listings
 	function loadMore() {
@@ -49,22 +33,6 @@
 </script>
 
 <div class="space-y-3">
-	<!-- Sort + refresh -->
-	<div class="flex items-center gap-2">
-		<div class="w-36 sm:w-40">
-			<MySelect
-				type="single"
-				bind:value={selectedSort}
-				items={sortOptions}
-				onchange={applyFilters}
-			/>
-		</div>
-		<div class="flex-1"></div>
-		<Button variant="outline" size="icon" onclick={refresh} aria-label="Actualiser">
-			<RefreshCw class="h-4 w-4" />
-		</Button>
-	</div>
-
 	<!-- Listings Grid -->
 	{#if marketplaceStore.isLoading.listings && marketplaceStore.listings.length === 0}
 		<SkeletonList itemCount={8} />
