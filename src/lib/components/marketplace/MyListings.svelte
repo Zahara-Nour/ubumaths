@@ -143,102 +143,123 @@
 		<div class="space-y-4">
 			{#each filteredListings as listing (listing.id)}
 				{#if statusFilter === 'active'}
-					<!-- Active listing: full card with proposals and actions -->
+					<!-- Active listing: compact card -->
 					{@const proposals = getListingProposals(listing.id)}
 					{@const pendingCount = getPendingProposalsCount(listing.id)}
 
-					<Card.Root>
-						<Card.Header class="pb-3">
-							<div class="flex flex-wrap items-center gap-x-4 gap-y-1">
-								<Card.Title class="text-base">
+					<Card.Root class="cursor-pointer" onclick={() => (selectedListing = listing)}>
+						<Card.Content class="p-3">
+							<!-- Line 1: title + stats + cancel button -->
+							<div class="flex items-center gap-2">
+								<span class="text-sm font-semibold">
 									{listing.title || (listing.listing_type === 'sell' ? 'Vente' : 'Achat')}
-								</Card.Title>
-								<div class="flex items-center gap-3 text-xs text-muted-foreground">
-									<span class="flex items-center gap-1">
+								</span>
+								<div class="flex items-center gap-2 text-xs text-muted-foreground">
+									<span class="flex items-center gap-0.5">
 										<Clock class="h-3 w-3" />
 										{formatTime(listing.expires_at)}
 									</span>
-									<span class="flex items-center gap-1">
+									<span class="flex items-center gap-0.5">
 										<Eye class="h-3 w-3" />
 										{listing.view_count}
 									</span>
-									<span class="flex items-center gap-1">
+									<span class="flex items-center gap-0.5">
 										<MessageSquare class="h-3 w-3" />
 										{listing.proposal_count}
 									</span>
 								</div>
 								{#if pendingCount > 0}
-									<Badge variant="destructive" class="text-xs">{pendingCount} nouvelle(s)</Badge>
+									<Badge variant="destructive" class="px-1.5 py-0 text-[10px]"
+										>{pendingCount} nouvelle(s)</Badge
+									>
 								{/if}
+								<div class="flex-1"></div>
+								<Button
+									variant="ghost"
+									size="sm"
+									class="h-7 shrink-0 px-2 text-xs text-destructive hover:text-destructive"
+									onclick={(e) => {
+										e.stopPropagation();
+										requestCancelListing(listing.id);
+									}}
+								>
+									<Trash2 class="h-3 w-3" />
+								</Button>
 							</div>
-						</Card.Header>
 
-						{#if proposals.length > 0}
-							<Card.Content>
-								<h4 class="mb-3 font-medium">Propositions reçues</h4>
-								<div class="space-y-2">
+							<!-- Line 2: text summary of offer/demand -->
+							<p class="mt-1 text-xs text-muted-foreground">
+								{#if listing.offered_cards?.length || listing.offered_gidouilles}
+									Offre :
+									{#if listing.offered_cards?.length}{listing.offered_cards.length} carte{listing
+											.offered_cards.length > 1
+											? 's'
+											: ''}{/if}{#if listing.offered_cards?.length && listing.offered_gidouilles}
+										+
+									{/if}{#if listing.offered_gidouilles}{listing.offered_gidouilles.toLocaleString(
+											'fr-FR'
+										)} gidouilles{/if}
+								{:else}
+									Offre : rien
+								{/if}
+								→
+								{#if listing.wanted_templates?.length || listing.wanted_gidouilles}
+									Demande :
+									{#if listing.wanted_templates?.length}{listing.wanted_templates.length} carte{listing
+											.wanted_templates.length > 1
+											? 's'
+											: ''}{/if}{#if listing.wanted_templates?.length && listing.wanted_gidouilles}
+										+
+									{/if}{#if listing.wanted_gidouilles}{listing.wanted_gidouilles.toLocaleString(
+											'fr-FR'
+										)} gidouilles{/if}
+								{:else}
+									Demande : rien
+								{/if}
+							</p>
+
+							<!-- Line 3: proposals if any -->
+							{#if proposals.length > 0}
+								<div class="mt-2 flex flex-wrap items-center gap-2">
 									{#each proposals.slice(0, 3) as proposal (proposal.id)}
-										<div class="flex items-center justify-between rounded-lg border p-3">
-											<div class="flex items-center gap-3">
-												<UserAvatar
-													avatar_url={proposal.proposer?.avatar_url}
-													role="student"
-													firstname={proposal.proposer?.username}
-													class="h-8 w-8"
-												/>
-												<div>
-													<div class="text-sm font-medium">
-														{proposal.proposer?.username || 'Anonyme'}
-													</div>
-													<div class="text-xs text-muted-foreground">
-														{formatTime(proposal.created_at)}
-													</div>
-												</div>
-											</div>
-											<div class="flex items-center gap-2">
-												{#if proposal.status === 'pending'}
-													<Button
-														size="sm"
-														variant="outline"
-														onclick={() => openProposalResponse(proposal, listing)}
-													>
-														Répondre
-													</Button>
-												{:else}
-													<Badge variant={proposal.status === 'accepted' ? 'success' : 'secondary'}>
-														{proposal.status === 'accepted' ? 'Acceptée' : 'Refusée'}
-													</Badge>
-												{/if}
-											</div>
+										<div class="flex items-center gap-1.5 rounded-md border px-2 py-1">
+											<UserAvatar
+												avatar_url={proposal.proposer?.avatar_url}
+												role="student"
+												firstname={proposal.proposer?.username}
+												class="h-4 w-4"
+											/>
+											<span class="text-xs">{proposal.proposer?.username || 'Anonyme'}</span>
+											{#if proposal.status === 'pending'}
+												<Button
+													size="sm"
+													variant="outline"
+													class="h-5 px-1.5 text-[10px]"
+													onclick={(e) => {
+														e.stopPropagation();
+														openProposalResponse(proposal, listing);
+													}}
+												>
+													Répondre
+												</Button>
+											{:else}
+												<Badge
+													variant={proposal.status === 'accepted' ? 'success' : 'secondary'}
+													class="px-1 py-0 text-[10px]"
+												>
+													{proposal.status === 'accepted' ? '✓' : '✗'}
+												</Badge>
+											{/if}
 										</div>
 									{/each}
 									{#if proposals.length > 3}
-										<Button
-											variant="ghost"
-											size="sm"
-											class="w-full"
-											onclick={() => (selectedListing = listing)}
+										<span class="text-xs text-muted-foreground"
+											>+{proposals.length - 3} autre(s)</span
 										>
-											Voir toutes les propositions ({proposals.length})
-										</Button>
 									{/if}
 								</div>
-							</Card.Content>
-						{/if}
-
-						<Card.Footer class="flex justify-between">
-							<Button variant="outline" size="sm" onclick={() => (selectedListing = listing)}>
-								Voir les détails
-							</Button>
-							<Button
-								variant="destructive"
-								size="sm"
-								onclick={() => requestCancelListing(listing.id)}
-							>
-								<Trash2 class="mr-2 h-4 w-4" />
-								Annuler
-							</Button>
-						</Card.Footer>
+							{/if}
+						</Card.Content>
 					</Card.Root>
 				{:else}
 					<!-- Completed/Expired listing: simple card -->
