@@ -18,7 +18,7 @@
 
 	// Refresh listings
 	function refresh() {
-		marketplaceStore.fetchListings(false);
+		marketplaceStore.fetchListings(true);
 	}
 
 	// Open listing details

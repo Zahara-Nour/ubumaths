@@ -114,7 +114,7 @@
 						class="h-8 w-8"
 						onclick={() => {
 							if (annonceView === 'all') {
-								marketplaceStore.fetchListings(false);
+								marketplaceStore.fetchListings(true);
 							} else {
 								marketplaceStore.fetchMyListings();
 							}
