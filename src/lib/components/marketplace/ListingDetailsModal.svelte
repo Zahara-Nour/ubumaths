@@ -4,7 +4,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Clock, Eye, MessageSquare, Coins } from 'lucide-svelte';
+	import { Clock, Eye, MessageSquare } from 'lucide-svelte';
+	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import VipCard from '$lib/components/VipCard.svelte';
@@ -237,9 +238,9 @@
 
 					{#if listing.offered_gidouilles && listing.offered_gidouilles > 0}
 						<div class="flex items-center gap-2 rounded-lg bg-yellow-50 p-3 dark:bg-yellow-950/30">
-							<Coins class="h-5 w-5 text-yellow-500" />
-							<span class="font-semibold">{listing.offered_gidouilles}</span>
-							<span class="text-muted-foreground">gidouilles</span>
+							<span class="font-semibold">{listing.offered_gidouilles.toLocaleString('fr-FR')}</span
+							>
+							<img src={gidouilleImage} alt="Gidouille" class="h-5 w-5" />
 						</div>
 					{/if}
 
@@ -262,9 +263,8 @@
 
 					{#if listing.wanted_gidouilles && listing.wanted_gidouilles > 0}
 						<div class="flex items-center gap-2 rounded-lg bg-yellow-50 p-3 dark:bg-yellow-950/30">
-							<Coins class="h-5 w-5 text-yellow-500" />
-							<span class="font-semibold">{listing.wanted_gidouilles}</span>
-							<span class="text-muted-foreground">gidouilles</span>
+							<span class="font-semibold">{listing.wanted_gidouilles.toLocaleString('fr-FR')}</span>
+							<img src={gidouilleImage} alt="Gidouille" class="h-5 w-5" />
 						</div>
 					{/if}
 
@@ -297,15 +297,15 @@
 				{:else}
 					{#if canAcceptDirectly}
 						<Button onclick={acceptDirectly} disabled={isAccepting} class="gap-1.5">
-							<Coins class="h-4 w-4" />
+							<img src={gidouilleImage} alt="Gidouille" class="h-4 w-4" />
 							{#if isAccepting}
 								Envoi...
 							{:else if (listing.wanted_card_template_ids?.length ?? 0) > 0 && (listing.wanted_gidouilles ?? 0) > 0}
-								Accepter (carte + {listing.wanted_gidouilles} gidouilles)
+								Accepter (carte + {listing.wanted_gidouilles?.toLocaleString('fr-FR')} gidouilles)
 							{:else if (listing.wanted_card_template_ids?.length ?? 0) > 0}
 								Accepter l'échange
 							{:else}
-								Accepter pour {listing.wanted_gidouilles} gidouilles
+								Accepter pour {listing.wanted_gidouilles?.toLocaleString('fr-FR')} gidouilles
 							{/if}
 						</Button>
 					{/if}
