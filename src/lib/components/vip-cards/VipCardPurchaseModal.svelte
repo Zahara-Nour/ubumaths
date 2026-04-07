@@ -1,7 +1,8 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
-	import { Coins, ShoppingCart, AlertCircle, Check } from 'lucide-svelte';
+	import { ShoppingCart, AlertCircle, Check } from 'lucide-svelte';
+	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { VipCard } from '$lib/types/vip-card';
 	import { RARITY_PRICES } from '$lib/types/vip-card';
@@ -42,6 +43,14 @@
 	let cardPrice = $derived(card.basePrice ?? RARITY_PRICES[card.rarity] ?? 20);
 	let canAfford = $derived(currentBalance >= cardPrice);
 	let newBalance = $derived(Math.round((currentBalance - cardPrice) * 100) / 100);
+
+	// Format number with French locale
+	function fmt(n: number, decimals = 0): string {
+		return n.toLocaleString('fr-FR', {
+			minimumFractionDigits: decimals,
+			maximumFractionDigits: decimals
+		});
+	}
 
 	// Success display duration
 	const SUCCESS_DISPLAY_MS = 1500;
@@ -159,15 +168,15 @@
 					<div class="flex items-center justify-between">
 						<span class="text-sm text-muted-foreground">Prix</span>
 						<span class="flex items-center gap-1 font-semibold">
-							<Coins class="h-4 w-4 text-yellow-500" />
-							{cardPrice}
+							{fmt(cardPrice)}
+							<img src={gidouilleImage} alt="Gidouille" class="h-4 w-4" />
 						</span>
 					</div>
 					<div class="flex items-center justify-between">
 						<span class="text-sm text-muted-foreground">Solde actuel</span>
 						<span class="flex items-center gap-1">
-							<Coins class="h-4 w-4 text-yellow-500" />
-							{currentBalance.toFixed(1)}
+							{fmt(currentBalance, 1)}
+							<img src={gidouilleImage} alt="Gidouille" class="h-4 w-4" />
 						</span>
 					</div>
 					<hr class="my-2" />
@@ -178,8 +187,12 @@
 								? 'text-green-600'
 								: 'text-red-600'}"
 						>
-							<Coins class="h-4 w-4 text-yellow-500" />
-							{canAfford ? newBalance.toFixed(1) : 'Insuffisant'}
+							{#if canAfford}
+								{fmt(newBalance, 1)}
+								<img src={gidouilleImage} alt="Gidouille" class="h-4 w-4" />
+							{:else}
+								Insuffisant
+							{/if}
 						</span>
 					</div>
 				</div>
@@ -200,7 +213,7 @@
 						class="flex items-center gap-2 rounded-lg border border-yellow-500/50 bg-yellow-50 p-3 text-sm text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200"
 					>
 						<AlertCircle class="h-4 w-4 shrink-0" />
-						Gidouilles insuffisantes. Il te manque {(cardPrice - currentBalance).toFixed(1)} gidouilles.
+						Gidouilles insuffisantes. Il te manque {fmt(cardPrice - currentBalance, 1)} gidouilles.
 					</div>
 				{/if}
 			{/if}
@@ -217,8 +230,8 @@
 						Achat en cours...
 					{:else}
 						<ShoppingCart class="h-4 w-4" />
-						Acheter pour {cardPrice}
-						<Coins class="h-4 w-4 text-yellow-300" />
+						Acheter pour {fmt(cardPrice)}
+						<img src={gidouilleImage} alt="Gidouille" class="h-4 w-4" />
 					{/if}
 				</Button>
 			</Dialog.Footer>

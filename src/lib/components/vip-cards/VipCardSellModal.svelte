@@ -1,7 +1,8 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
-	import { Coins, AlertCircle, Check } from 'lucide-svelte';
+	import { AlertCircle, Check, Sparkles } from 'lucide-svelte';
+	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { VipCard } from '$lib/types/vip-card';
 	import { RARITY_ACCENT_COLORS, RARITY_LABELS } from '$lib/constants/vip-card-ui';
@@ -32,6 +33,11 @@
 	let error = $state<string | null>(null);
 
 	let newBalance = $derived(Math.round((currentBalance + sellPrice) * 100) / 100);
+
+	// Format number with French locale
+	function fmt(n: number): string {
+		return n.toLocaleString('fr-FR');
+	}
 
 	const SUCCESS_DISPLAY_MS = 1500;
 
@@ -89,7 +95,7 @@
 	<Dialog.Content class="sm:max-w-md">
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
-				<Coins class="h-5 w-5 text-amber-500" />
+				<img src={gidouilleImage} alt="Gidouille" class="h-5 w-5" />
 				Vendre une carte VIP
 			</Dialog.Title>
 			<Dialog.Description>Revendre cette carte contre des gidouilles</Dialog.Description>
@@ -104,7 +110,7 @@
 					</div>
 					<p class="text-lg font-semibold text-green-600">Carte vendue !</p>
 					<p class="text-sm text-muted-foreground">
-						+{confirmedPrice} gidouilles ajoutees a ton solde
+						+{fmt(confirmedPrice)} gidouilles ajoutees a ton solde
 					</p>
 				</div>
 			{:else}
@@ -114,7 +120,7 @@
 						<img src={card.imagePath} alt={card.name} class="h-20 w-20 rounded-lg object-cover" />
 					{:else}
 						<div class="flex h-20 w-20 items-center justify-center rounded-lg bg-muted">
-							<Coins class="h-8 w-8 text-muted-foreground" />
+							<Sparkles class="h-8 w-8 text-muted-foreground" />
 						</div>
 					{/if}
 					<div class="flex-1">
@@ -133,23 +139,23 @@
 					<div class="flex items-center justify-between">
 						<span class="text-sm text-muted-foreground">Prix de vente</span>
 						<span class="flex items-center gap-1 font-semibold text-amber-600">
-							+<Coins class="h-4 w-4 text-yellow-500" />
-							{sellPrice}
+							+{fmt(sellPrice)}
+							<img src={gidouilleImage} alt="Gidouille" class="h-4 w-4" />
 						</span>
 					</div>
 					<div class="flex items-center justify-between">
 						<span class="text-sm text-muted-foreground">Solde actuel</span>
 						<span class="flex items-center gap-1">
-							<Coins class="h-4 w-4 text-yellow-500" />
-							{currentBalance}
+							{fmt(currentBalance)}
+							<img src={gidouilleImage} alt="Gidouille" class="h-4 w-4" />
 						</span>
 					</div>
 					<hr class="my-2" />
 					<div class="flex items-center justify-between">
 						<span class="text-sm font-medium">Solde apres vente</span>
 						<span class="flex items-center gap-1 font-semibold text-green-600">
-							<Coins class="h-4 w-4 text-yellow-500" />
-							{newBalance}
+							{fmt(newBalance)}
+							<img src={gidouilleImage} alt="Gidouille" class="h-4 w-4" />
 						</span>
 					</div>
 				</div>
@@ -180,9 +186,8 @@
 						></span>
 						Vente en cours...
 					{:else}
-						<Coins class="h-4 w-4" />
-						Vendre pour {sellPrice}
-						<Coins class="h-4 w-4 text-yellow-300" />
+						Vendre pour {fmt(sellPrice)}
+						<img src={gidouilleImage} alt="Gidouille" class="h-4 w-4" />
 					{/if}
 				</Button>
 			</Dialog.Footer>

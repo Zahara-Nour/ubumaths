@@ -202,11 +202,15 @@
 				<Sparkles class="h-6 w-6 text-primary" />
 				Cartes VIP
 			</h2>
-			<p class="text-muted-foreground">Achete des cartes VIP avec tes gidouilles</p>
 		</div>
 		<div class="flex items-center gap-2 rounded-lg border bg-card px-4 py-2 shadow-sm">
 			<img src={gidouilleImage} alt="Gidouille" class="h-5 w-5" />
-			<span class="text-lg font-semibold">{gidouillesBalance.toFixed(1)}</span>
+			<span class="text-lg font-semibold"
+				>{gidouillesBalance.toLocaleString('fr-FR', {
+					minimumFractionDigits: 1,
+					maximumFractionDigits: 1
+				})}</span
+			>
 			<span class="text-sm text-muted-foreground">gidouilles</span>
 		</div>
 	</div>
@@ -395,8 +399,8 @@
 										<!-- Price -->
 										<div class="flex items-center justify-between border-t pt-1.5">
 											<div class="flex items-center gap-1">
+												<span class="text-sm font-bold">{price.toLocaleString('fr-FR')}</span>
 												<img src={gidouilleImage} alt="Gidouille" class="h-3.5 w-3.5" />
-												<span class="text-sm font-bold">{price}</span>
 											</div>
 											<ConsentButton
 												size="sm"
