@@ -158,14 +158,9 @@
 										<Card.Description>{listing.description}</Card.Description>
 									{/if}
 								</div>
-								<div class="flex items-center gap-2">
-									<Badge variant={listing.listing_type === 'sell' ? 'default' : 'secondary'}>
-										{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
-									</Badge>
-									{#if pendingCount > 0}
-										<Badge variant="destructive">{pendingCount} nouvelle(s)</Badge>
-									{/if}
-								</div>
+								{#if pendingCount > 0}
+									<Badge variant="destructive">{pendingCount} nouvelle(s)</Badge>
+								{/if}
 							</div>
 							<div class="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
 								<span class="flex items-center gap-1">
