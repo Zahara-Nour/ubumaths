@@ -158,10 +158,7 @@
 
 <div class="space-y-4">
 	<!-- Header -->
-	<div class="flex items-center justify-between">
-		<div class="text-sm text-muted-foreground">
-			{activityItems.length} activité(s)
-		</div>
+	<div class="flex justify-end">
 		<Button size="sm" onclick={() => (showStartTradeModal = true)} class="gap-1.5">
 			<Plus class="h-4 w-4" />
 			<span class="hidden sm:inline">Nouvel échange</span>
