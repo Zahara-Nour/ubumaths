@@ -195,25 +195,11 @@
 </script>
 
 <div class="space-y-6">
-	<!-- Header with balance -->
-	<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-		<div>
-			<h2 class="flex items-center gap-2 text-2xl font-bold">
-				<Sparkles class="h-6 w-6 text-primary" />
-				Cartes VIP
-			</h2>
-		</div>
-		<div class="flex items-center gap-2 rounded-lg border bg-card px-4 py-2 shadow-sm">
-			<img src={gidouilleImage} alt="Gidouille" class="h-5 w-5" />
-			<span class="text-lg font-semibold"
-				>{gidouillesBalance.toLocaleString('fr-FR', {
-					minimumFractionDigits: 1,
-					maximumFractionDigits: 1
-				})}</span
-			>
-			<span class="text-sm text-muted-foreground">gidouilles</span>
-		</div>
-	</div>
+	<!-- Header -->
+	<h2 class="flex items-center gap-2 text-2xl font-bold">
+		<Sparkles class="h-6 w-6 text-primary" />
+		Cartes VIP
+	</h2>
 
 	<!-- Filters and Search -->
 	<div class="flex flex-col gap-4 sm:flex-row sm:items-center">
