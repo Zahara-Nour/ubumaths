@@ -183,10 +183,7 @@
 			{#each activityItems as item (item.id)}
 				{#if item.type === 'proposal'}
 					<!-- PROPOSAL ITEM -->
-					{@const proposal = item.data as MarketplaceProposal}
-					{@const listing = proposal.listing as
-						| { title: string; creator_id: string; status: string }
-						| undefined}
+					{@const proposal = item.data as MarketplaceProposal & { summary?: string }}
 					<Card.Root class={item.requiresAction ? 'ring-2 ring-primary' : ''}>
 						<Card.Content class="p-4">
 							<div
@@ -201,24 +198,17 @@
 									<div class="min-w-0 space-y-1">
 										<div class="flex flex-wrap items-center gap-2">
 											<span class="text-sm font-medium">
-												Proposition sur « {listing?.title || 'Annonce'} »
+												{proposal.summary || 'Proposition'}
 											</span>
 											<Badge variant={proposalStatusVariant(proposal.status)}>
 												{proposalStatusLabel(proposal.status)}
 											</Badge>
 										</div>
-										<div class="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+										<div class="text-xs text-muted-foreground">
 											<span class="flex items-center gap-1">
 												<Clock class="h-3 w-3" />
 												{formatTime(proposal.created_at)}
 											</span>
-											{#if proposal.offered_gidouilles}
-												<span>{proposal.offered_gidouilles.toLocaleString('fr-FR')} gidouilles</span
-												>
-											{/if}
-											{#if proposal.offered_card_ids?.length}
-												<span>{proposal.offered_card_ids.length} carte(s)</span>
-											{/if}
 										</div>
 										{#if proposal.response_message}
 											<div class="mt-1 rounded bg-muted p-2 text-xs">
