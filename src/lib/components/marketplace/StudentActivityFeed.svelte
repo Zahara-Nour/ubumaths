@@ -216,7 +216,8 @@
 												{formatTime(proposal.created_at)}
 											</span>
 											{#if proposal.offered_gidouilles}
-												<span>{proposal.offered_gidouilles} gidouilles</span>
+												<span>{proposal.offered_gidouilles.toLocaleString('fr-FR')} gidouilles</span
+												>
 											{/if}
 											{#if proposal.offered_card_ids?.length}
 												<span>{proposal.offered_card_ids.length} carte(s)</span>

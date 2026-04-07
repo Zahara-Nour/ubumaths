@@ -4,7 +4,8 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Clock, Eye, MessageSquare, Coins } from 'lucide-svelte';
+	import { Clock, Eye, MessageSquare } from 'lucide-svelte';
+	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import VipCard from '$lib/components/VipCard.svelte';
@@ -164,8 +165,8 @@
 						<div
 							class="flex items-center gap-0.5 rounded bg-yellow-50 px-1.5 py-0.5 text-xs dark:bg-yellow-950/30"
 						>
-							<Coins class="h-3 w-3 text-yellow-500" />
-							<span class="font-medium">{listing.offered_gidouilles}</span>
+							<span class="font-medium">{listing.offered_gidouilles.toLocaleString('fr-FR')}</span>
+							<img src={gidouilleImage} alt="Gidouille" class="h-3 w-3" />
 						</div>
 					{/if}
 					{#if !offeredCardsGrouped.length && !listing.offered_gidouilles}
@@ -186,8 +187,8 @@
 						<div
 							class="flex items-center gap-0.5 rounded bg-yellow-50 px-1.5 py-0.5 text-xs dark:bg-yellow-950/30"
 						>
-							<Coins class="h-3 w-3 text-yellow-500" />
-							<span class="font-medium">{listing.wanted_gidouilles}</span>
+							<span class="font-medium">{listing.wanted_gidouilles.toLocaleString('fr-FR')}</span>
+							<img src={gidouilleImage} alt="Gidouille" class="h-3 w-3" />
 						</div>
 					{/if}
 					{#if !wantedCardsGrouped.length && !listing.wanted_gidouilles}

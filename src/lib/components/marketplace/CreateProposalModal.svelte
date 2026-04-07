@@ -10,7 +10,8 @@
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import TradeCardSelector from './trade/TradeCardSelector.svelte';
 	import VipCard from '$lib/components/VipCard.svelte';
-	import { Info, Coins, ArrowRight } from 'lucide-svelte';
+	import { Info, ArrowRight } from 'lucide-svelte';
+	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { VipCard as VipCardType } from '$lib/types/vip-card';
 
@@ -164,8 +165,10 @@
 							<div
 								class="flex items-center gap-1 rounded-lg bg-yellow-50 px-2 py-1 dark:bg-yellow-950/30"
 							>
-								<Coins class="h-4 w-4 text-yellow-500" />
-								<span class="font-semibold">{listing.wanted_gidouilles}</span>
+								<span class="font-semibold"
+									>{listing.wanted_gidouilles.toLocaleString('fr-FR')}</span
+								>
+								<img src={gidouilleImage} alt="Gidouille" class="h-4 w-4" />
 							</div>
 						{/if}
 						{#if !wantedCardsForDisplay.length && !listing.wanted_gidouilles}
