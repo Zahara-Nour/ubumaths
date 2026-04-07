@@ -166,8 +166,7 @@
 	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>
-				{listing.listing_type === 'sell' ? 'Vente' : 'Achat'} — {listing.creator?.username ||
-					'Anonyme'}
+				{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
 			</Dialog.Title>
 			{#if listing.description}
 				<Dialog.Description>
