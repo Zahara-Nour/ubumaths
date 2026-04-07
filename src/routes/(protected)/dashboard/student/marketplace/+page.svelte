@@ -2,14 +2,14 @@
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '$lib/components/ui/button';
 	import ConsentButton from '$lib/components/ConsentButton.svelte';
-	import { Plus, ShoppingBag, Package, ArrowLeftRight, Store, Send } from 'lucide-svelte';
+	import { Plus, ShoppingBag, Package, Store, Bell } from 'lucide-svelte';
 
 	// Import components
 	import MarketplaceListings from '$lib/components/marketplace/MarketplaceListings.svelte';
 	import MyListings from '$lib/components/marketplace/MyListings.svelte';
-	import MyTrades from '$lib/components/marketplace/MyTrades.svelte';
-	import MyProposals from '$lib/components/marketplace/MyProposals.svelte';
+	import StudentActivityFeed from '$lib/components/marketplace/StudentActivityFeed.svelte';
 	import CreateListingModal from '$lib/components/marketplace/CreateListingModal.svelte';
 	import VipCardShopSection from '$lib/components/vip-cards/VipCardShopSection.svelte';
 
@@ -19,6 +19,7 @@
 	// State
 	let activeTab = $state<string>('shop');
 	let showCreateModal = $state(false);
+	let annonceView = $state<'all' | 'mine'>('all');
 
 	// Initialize stores
 	$effect(() => {
@@ -31,8 +32,7 @@
 		};
 	});
 
-	// Computed (unused but kept for potential future use)
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	// Computed
 	let totalPending = $derived(
 		marketplaceStore.pendingActions.listings +
 			marketplaceStore.pendingActions.trades +
@@ -58,121 +58,79 @@
 			<ShoppingBag class="h-7 w-7 text-primary" />
 			Marketplace
 		</h1>
-		<p class="text-sm text-muted-foreground">Boutique et échange de cartes VIP</p>
 	</div>
 
-	<!-- Main Content Tabs -->
+	<!-- 3 Flat Tabs -->
 	<Tabs.Root bind:value={activeTab} class="w-full">
-		<Tabs.List class="grid w-full grid-cols-2">
+		<Tabs.List class="grid w-full grid-cols-3">
 			<Tabs.Trigger value="shop" class="gap-2">
 				<Store class="h-4 w-4" />
 				Boutique
 			</Tabs.Trigger>
-			<Tabs.Trigger value="exchanges" class="relative gap-2">
-				<ArrowLeftRight class="h-4 w-4" />
-				Échanges
-				{#if marketplaceStore.pendingActions.listings + marketplaceStore.pendingActions.trades > 0}
+			<Tabs.Trigger value="annonces" class="gap-2">
+				<Package class="h-4 w-4" />
+				Annonces
+			</Tabs.Trigger>
+			<Tabs.Trigger value="activity" class="relative gap-2">
+				<Bell class="h-4 w-4" />
+				Activité
+				{#if totalPending > 0}
 					<Badge variant="destructive" class="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
-						{marketplaceStore.pendingActions.listings + marketplaceStore.pendingActions.trades}
+						{totalPending}
 					</Badge>
 				{/if}
 			</Tabs.Trigger>
 		</Tabs.List>
 
+		<!-- Tab 1: Boutique -->
 		<Tabs.Content value="shop" class="mt-6">
 			<VipCardShopSection supabase={data.supabase} userId={data.user.id} />
 		</Tabs.Content>
 
-		<Tabs.Content value="exchanges" class="mt-6">
-			<!-- Stats + Action Bar -->
-			<div
-				class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card/50 p-3"
-			>
-				<div class="flex flex-wrap gap-4 text-sm">
-					<span class="text-muted-foreground">
-						<span class="font-semibold text-foreground"
-							>{marketplaceStore.stats.active_listings}</span
-						> annonces
-					</span>
-					<span class="text-muted-foreground">
-						<span class="font-semibold text-foreground"
-							>{marketplaceStore.stats.my_active_listings}</span
-						> miennes
-					</span>
-					<span class="text-muted-foreground">
-						<span class="font-semibold text-foreground"
-							>{marketplaceStore.stats.my_pending_proposals}</span
-						> propositions
-					</span>
-					<span class="text-muted-foreground">
-						<span class="font-semibold text-foreground"
-							>{marketplaceStore.stats.my_active_trades}</span
-						> échanges
-					</span>
+		<!-- Tab 2: Annonces -->
+		<Tabs.Content value="annonces" class="mt-6">
+			<!-- Header: pills + action button -->
+			<div class="mb-4 flex items-center justify-between gap-3">
+				<div class="flex gap-2">
+					<Button
+						variant={annonceView === 'all' ? 'default' : 'outline'}
+						size="sm"
+						class="shrink-0 gap-1.5"
+						onclick={() => (annonceView = 'all')}
+					>
+						Toutes
+					</Button>
+					<Button
+						variant={annonceView === 'mine' ? 'default' : 'outline'}
+						size="sm"
+						class="shrink-0 gap-1.5"
+						onclick={() => (annonceView = 'mine')}
+					>
+						Mes annonces
+					</Button>
 				</div>
 				<ConsentButton
 					size="sm"
 					onclick={() => (showCreateModal = true)}
 					disabled={!canCreateListing}
-					class="gap-1.5"
+					class="gap-1.5 sm:gap-2"
 				>
 					<Plus class="h-4 w-4" />
-					Nouvelle annonce
+					<span class="hidden sm:inline">Nouvelle annonce</span>
 				</ConsentButton>
 			</div>
 
-			<!-- Nested tabs for exchanges -->
-			<Tabs.Root value="browse" class="w-full">
-				<Tabs.List class="grid w-full grid-cols-4">
-					<Tabs.Trigger value="browse" class="gap-2">
-						<ShoppingBag class="h-4 w-4" />
-						Parcourir
-					</Tabs.Trigger>
-					<Tabs.Trigger value="my-listings" class="relative gap-2">
-						<Package class="h-4 w-4" />
-						Annonces
-						{#if marketplaceStore.pendingActions.listings > 0}
-							<Badge variant="destructive" class="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
-								{marketplaceStore.pendingActions.listings}
-							</Badge>
-						{/if}
-					</Tabs.Trigger>
-					<Tabs.Trigger value="my-proposals" class="relative gap-2">
-						<Send class="h-4 w-4" />
-						Propositions
-						{#if marketplaceStore.pendingActions.proposals > 0}
-							<Badge variant="destructive" class="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
-								{marketplaceStore.pendingActions.proposals}
-							</Badge>
-						{/if}
-					</Tabs.Trigger>
-					<Tabs.Trigger value="trades" class="relative gap-2">
-						<ArrowLeftRight class="h-4 w-4" />
-						Échanges
-						{#if marketplaceStore.pendingActions.trades > 0}
-							<Badge variant="destructive" class="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
-								{marketplaceStore.pendingActions.trades}
-							</Badge>
-						{/if}
-					</Tabs.Trigger>
-				</Tabs.List>
+			<!-- Content based on pill selection -->
+			{#if annonceView === 'all'}
+				<MarketplaceListings />
+			{:else}
+				<MyListings />
+			{/if}
+		</Tabs.Content>
 
-				<Tabs.Content value="browse" class="mt-4">
-					<MarketplaceListings />
-				</Tabs.Content>
-
-				<Tabs.Content value="my-listings" class="mt-4">
-					<MyListings />
-				</Tabs.Content>
-
-				<Tabs.Content value="my-proposals" class="mt-4">
-					<MyProposals />
-				</Tabs.Content>
-
-				<Tabs.Content value="trades" class="mt-4">
-					<MyTrades />
-				</Tabs.Content>
-			</Tabs.Root>
+		<!-- Tab 3: Activité -->
+		<Tabs.Content value="activity" class="mt-6">
+			<StudentActivityFeed userId={data.user.id} />
 		</Tabs.Content>
 	</Tabs.Root>
 </div>

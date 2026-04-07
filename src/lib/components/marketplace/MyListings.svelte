@@ -2,8 +2,8 @@
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
 	import type { MarketplaceListing, MarketplaceProposal } from '$lib/types/marketplace';
 	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
@@ -23,23 +23,33 @@
 	import ProposalResponseModal from './ProposalResponseModal.svelte';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 
+	// Constants
+	const statusFilterItems = [
+		{ value: 'active', label: 'Actives' },
+		{ value: 'completed', label: 'Complétées' },
+		{ value: 'expired', label: 'Expirées / Annulées' }
+	];
+
 	// State
-	let selectedTab = $state<'active' | 'completed' | 'expired'>('active');
+	let statusFilter = $state<'active' | 'completed' | 'expired'>('active');
 	let selectedListing = $state<MarketplaceListing | null>(null);
 	let selectedProposal = $state<MarketplaceProposal | null>(null);
 	let respondingToProposal = $state(false);
 	let cancellingListingId = $state<string | null>(null);
 
 	// Filter listings by status
-	let activeListings = $derived(marketplaceStore.myListings.filter((l) => l.status === 'active'));
-
-	let completedListings = $derived(
-		marketplaceStore.myListings.filter((l) => l.status === 'completed')
-	);
-
-	let expiredListings = $derived(
-		marketplaceStore.myListings.filter((l) => l.status === 'expired' || l.status === 'cancelled')
-	);
+	let filteredListings = $derived.by(() => {
+		switch (statusFilter) {
+			case 'active':
+				return marketplaceStore.myListings.filter((l) => l.status === 'active');
+			case 'completed':
+				return marketplaceStore.myListings.filter((l) => l.status === 'completed');
+			case 'expired':
+				return marketplaceStore.myListings.filter(
+					(l) => l.status === 'expired' || l.status === 'cancelled'
+				);
+		}
+	});
 
 	// Get proposals for a listing
 	function getListingProposals(listingId: string): MarketplaceProposal[] {
@@ -101,51 +111,50 @@
 </script>
 
 <div class="space-y-4">
-	<!-- Header with stats -->
-	<div class="flex items-center justify-between">
-		<div class="flex items-center gap-4">
-			<div class="text-sm text-muted-foreground">
-				Total: {marketplaceStore.myListings.length} annonce(s)
+	<!-- Header -->
+	<div class="flex items-center justify-between gap-3">
+		<div class="flex items-center gap-3">
+			<div class="w-48">
+				<MySelect type="single" bind:value={statusFilter} items={statusFilterItems} />
 			</div>
 			{#if marketplaceStore.pendingActions.listings > 0}
 				<Badge variant="destructive">
-					{marketplaceStore.pendingActions.listings} proposition(s) en attente
+					{marketplaceStore.pendingActions.listings} en attente
 				</Badge>
 			{/if}
 		</div>
-		<Button variant="outline" size="icon" onclick={refresh} aria-label="Actualiser les annonces">
+		<Button variant="outline" size="icon" onclick={refresh} aria-label="Actualiser">
 			<RefreshCw class="h-4 w-4" />
 		</Button>
 	</div>
 
-	<!-- Tabs for listing status -->
-	<Tabs.Root bind:value={selectedTab}>
-		<Tabs.List>
-			<Tabs.Trigger value="active">
-				Actives ({activeListings.length})
-			</Tabs.Trigger>
-			<Tabs.Trigger value="completed">
-				Complétées ({completedListings.length})
-			</Tabs.Trigger>
-			<Tabs.Trigger value="expired">
-				Expirées/Annulées ({expiredListings.length})
-			</Tabs.Trigger>
-		</Tabs.List>
-
-		<!-- Active Listings -->
-		<Tabs.Content value="active" class="mt-4 space-y-4">
-			{#if marketplaceStore.isLoading.myListings}
-				<SkeletonList itemCount={3} />
-			{:else if activeListings.length === 0}
-				<Card.Root>
-					<Card.Content class="py-12 text-center">
-						<Package class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-						<h3 class="mb-2 font-semibold">Aucune annonce active</h3>
-						<p class="text-muted-foreground">Créez une annonce pour commencer à échanger</p>
-					</Card.Content>
-				</Card.Root>
-			{:else}
-				{#each activeListings as listing (listing.id)}
+	<!-- Content -->
+	{#if marketplaceStore.isLoading.myListings}
+		<SkeletonList itemCount={3} />
+	{:else if filteredListings.length === 0}
+		<!-- Empty state -->
+		<Card.Root>
+			<Card.Content class="py-12 text-center">
+				{#if statusFilter === 'active'}
+					<Package class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+					<h3 class="mb-2 font-semibold">Aucune annonce active</h3>
+					<p class="text-muted-foreground">Créez une annonce pour commencer à échanger</p>
+				{:else if statusFilter === 'completed'}
+					<CheckCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+					<h3 class="mb-2 font-semibold">Aucune annonce complétée</h3>
+					<p class="text-muted-foreground">Les annonces complétées apparaîtront ici</p>
+				{:else}
+					<AlertCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+					<h3 class="mb-2 font-semibold">Aucune annonce expirée</h3>
+					<p class="text-muted-foreground">Les annonces expirées ou annulées apparaîtront ici</p>
+				{/if}
+			</Card.Content>
+		</Card.Root>
+	{:else}
+		<div class="space-y-4">
+			{#each filteredListings as listing (listing.id)}
+				{#if statusFilter === 'active'}
+					<!-- Active listing: full card with proposals and actions -->
 					{@const proposals = getListingProposals(listing.id)}
 					{@const pendingCount = getPendingProposalsCount(listing.id)}
 
@@ -157,9 +166,7 @@
 										{listing.title || (listing.listing_type === 'sell' ? 'Vente' : 'Achat')}
 									</Card.Title>
 									{#if listing.description}
-										<Card.Description>
-											{listing.description}
-										</Card.Description>
+										<Card.Description>{listing.description}</Card.Description>
 									{/if}
 								</div>
 								<div class="flex items-center gap-2">
@@ -167,13 +174,10 @@
 										{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
 									</Badge>
 									{#if pendingCount > 0}
-										<Badge variant="destructive">
-											{pendingCount} nouvelle(s)
-										</Badge>
+										<Badge variant="destructive">{pendingCount} nouvelle(s)</Badge>
 									{/if}
 								</div>
 							</div>
-
 							<div class="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
 								<span class="flex items-center gap-1">
 									<Clock class="h-3 w-3" />
@@ -203,7 +207,6 @@
 													firstname={proposal.proposer?.username}
 													class="h-8 w-8"
 												/>
-
 												<div>
 													<div class="text-sm font-medium">
 														{proposal.proposer?.username || 'Anonyme'}
@@ -213,7 +216,6 @@
 													</div>
 												</div>
 											</div>
-
 											<div class="flex items-center gap-2">
 												{#if proposal.status === 'pending'}
 													<Button
@@ -231,7 +233,6 @@
 											</div>
 										</div>
 									{/each}
-
 									{#if proposals.length > 3}
 										<Button
 											variant="ghost"
@@ -260,22 +261,8 @@
 							</Button>
 						</Card.Footer>
 					</Card.Root>
-				{/each}
-			{/if}
-		</Tabs.Content>
-
-		<!-- Completed Listings -->
-		<Tabs.Content value="completed" class="mt-4 space-y-4">
-			{#if completedListings.length === 0}
-				<Card.Root>
-					<Card.Content class="py-12 text-center">
-						<CheckCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-						<h3 class="mb-2 font-semibold">Aucune annonce complétée</h3>
-						<p class="text-muted-foreground">Les annonces complétées apparaîtront ici</p>
-					</Card.Content>
-				</Card.Root>
-			{:else}
-				{#each completedListings as listing (listing.id)}
+				{:else}
+					<!-- Completed/Expired listing: simple card -->
 					<Card.Root>
 						<Card.Content class="py-4">
 							<div class="flex items-center justify-between">
@@ -284,54 +271,38 @@
 										{listing.title || (listing.listing_type === 'sell' ? 'Vente' : 'Achat')}
 									</h4>
 									<p class="mt-1 text-sm text-muted-foreground">
-										Complétée {formatTime(listing.completed_at ?? listing.created_at)}
+										{#if listing.status === 'completed'}
+											Complétée {formatTime(listing.completed_at ?? listing.created_at)}
+										{:else if listing.status === 'expired'}
+											Expirée {formatTime(listing.expires_at)}
+										{:else}
+											Annulée {formatTime(listing.cancelled_at ?? listing.expires_at)}
+										{/if}
 									</p>
 								</div>
-								<Badge variant="success">
-									<CheckCircle class="mr-1 h-3 w-3" />
-									Complétée
+								<Badge
+									variant={listing.status === 'completed'
+										? 'success'
+										: listing.status === 'expired'
+											? 'destructive'
+											: 'outline'}
+								>
+									{#if listing.status === 'completed'}
+										<CheckCircle class="mr-1 h-3 w-3" />
+										Complétée
+									{:else if listing.status === 'expired'}
+										Expirée
+									{:else}
+										Annulée
+									{/if}
 								</Badge>
 							</div>
 						</Card.Content>
 					</Card.Root>
-				{/each}
-			{/if}
-		</Tabs.Content>
-
-		<!-- Expired/Cancelled Listings -->
-		<Tabs.Content value="expired" class="mt-4 space-y-4">
-			{#if expiredListings.length === 0}
-				<Card.Root>
-					<Card.Content class="py-12 text-center">
-						<AlertCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-						<h3 class="mb-2 font-semibold">Aucune annonce expirée</h3>
-						<p class="text-muted-foreground">Les annonces expirées ou annulées apparaîtront ici</p>
-					</Card.Content>
-				</Card.Root>
-			{:else}
-				{#each expiredListings as listing (listing.id)}
-					<Card.Root>
-						<Card.Content class="py-4">
-							<div class="flex items-center justify-between">
-								<div>
-									<h4 class="font-medium">
-										{listing.title || (listing.listing_type === 'sell' ? 'Vente' : 'Achat')}
-									</h4>
-									<p class="mt-1 text-sm text-muted-foreground">
-										{listing.status === 'expired' ? 'Expirée' : 'Annulée'}
-										{formatTime(listing.cancelled_at ?? listing.expires_at)}
-									</p>
-								</div>
-								<Badge variant={listing.status === 'expired' ? 'destructive' : 'outline'}>
-									{listing.status === 'expired' ? 'Expirée' : 'Annulée'}
-								</Badge>
-							</div>
-						</Card.Content>
-					</Card.Root>
-				{/each}
-			{/if}
-		</Tabs.Content>
-	</Tabs.Root>
+				{/if}
+			{/each}
+		</div>
+	{/if}
 </div>
 
 <!-- Listing Details Modal -->

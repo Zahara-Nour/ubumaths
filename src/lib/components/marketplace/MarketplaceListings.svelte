@@ -3,19 +3,16 @@
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { Search, Filter, Grid3x3, List, RefreshCw, ShoppingBag } from 'lucide-svelte';
+	import { Search, Filter, RefreshCw, ShoppingBag } from 'lucide-svelte';
 	import MarketplaceListingCard from './MarketplaceListingCard.svelte';
 	import ListingDetailsModal from './ListingDetailsModal.svelte';
 	import type { MarketplaceListing } from '$lib/types/marketplace';
 
 	// State
-	let viewMode = $state<'grid' | 'list'>('grid');
 	let searchQuery = $state('');
-	let selectedType = $state<string>('all');
 	let selectedSort = $state<string>('recent');
 	let selectedRarity = $state<string>('all');
 	let showFilters = $state(false);
@@ -25,12 +22,6 @@
 	let searchTimer: ReturnType<typeof setTimeout>;
 
 	// Filter options
-	const typeOptions = [
-		{ value: 'all', label: 'Tous' },
-		{ value: 'sell', label: 'Vente' },
-		{ value: 'buy', label: 'Achat' }
-	];
-
 	const sortOptions = [
 		{ value: 'recent', label: 'Plus récents' },
 		{ value: 'expiring_soon', label: 'Expire bientôt' },
@@ -48,7 +39,6 @@
 	// Apply filters
 	function applyFilters() {
 		marketplaceStore.setFilters({
-			type: selectedType === 'all' ? undefined : (selectedType as 'sell' | 'buy'),
 			sort_by: selectedSort as 'recent' | 'expiring_soon' | 'popular',
 			card_rarity:
 				selectedRarity === 'all'
@@ -95,9 +85,9 @@
 
 <div class="space-y-4">
 	<!-- Search and Filters Bar -->
-	<div class="flex flex-col gap-4">
-		<div class="flex flex-col gap-3 sm:flex-row">
-			<!-- Search Input -->
+	<div class="flex flex-col gap-3">
+		<!-- Line 1: always visible — search + filter toggle + refresh -->
+		<div class="flex gap-2">
 			<div class="relative flex-1">
 				<Search class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 				<Input
@@ -108,88 +98,41 @@
 					class="pl-10"
 				/>
 			</div>
-
-			<!-- Filter Buttons -->
-			<div class="flex gap-2">
-				<Button
-					variant="outline"
-					size="icon"
-					onclick={() => (showFilters = !showFilters)}
-					class="relative"
-				>
-					<Filter class="h-4 w-4" />
-					{#if selectedType !== 'all' || selectedRarity !== 'all'}
-						<span class="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-primary"></span>
-					{/if}
-				</Button>
-
-				<Button
-					variant="outline"
-					size="icon"
-					onclick={refresh}
-					aria-label="Actualiser les annonces"
-				>
-					<RefreshCw class="h-4 w-4" />
-				</Button>
-
-				<!-- View Mode Toggle -->
-				<div class="hidden gap-1 rounded-md border p-1 sm:flex">
-					<Button
-						variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-						size="icon"
-						onclick={() => (viewMode = 'grid')}
-					>
-						<Grid3x3 class="h-4 w-4" />
-					</Button>
-					<Button
-						variant={viewMode === 'list' ? 'secondary' : 'ghost'}
-						size="icon"
-						onclick={() => (viewMode = 'list')}
-					>
-						<List class="h-4 w-4" />
-					</Button>
-				</div>
-			</div>
+			<Button
+				variant="outline"
+				size="icon"
+				onclick={() => (showFilters = !showFilters)}
+				class="relative sm:hidden"
+			>
+				<Filter class="h-4 w-4" />
+				{#if selectedRarity !== 'all'}
+					<span class="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-primary"></span>
+				{/if}
+			</Button>
+			<Button variant="outline" size="icon" onclick={refresh} aria-label="Actualiser les annonces">
+				<RefreshCw class="h-4 w-4" />
+			</Button>
 		</div>
 
-		<!-- Expandable Filters -->
-		{#if showFilters}
-			<Card.Root>
-				<Card.Content class="pt-6">
-					<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-						<div class="space-y-2">
-							<Label>Type d'annonce</Label>
-							<MySelect
-								type="single"
-								bind:value={selectedType}
-								items={typeOptions}
-								onchange={applyFilters}
-							/>
-						</div>
-
-						<div class="space-y-2">
-							<Label>Rareté des cartes</Label>
-							<MySelect
-								type="single"
-								bind:value={selectedRarity}
-								items={rarityOptions}
-								onchange={applyFilters}
-							/>
-						</div>
-
-						<div class="space-y-2">
-							<Label>Trier par</Label>
-							<MySelect
-								type="single"
-								bind:value={selectedSort}
-								items={sortOptions}
-								onchange={applyFilters}
-							/>
-						</div>
-					</div>
-				</Card.Content>
-			</Card.Root>
-		{/if}
+		<!-- Line 2: filter dropdowns — hidden on mobile unless toggled, always visible on sm+ -->
+		<div class={showFilters ? 'flex gap-2' : 'hidden sm:flex sm:gap-2'}>
+			<div class="w-full sm:w-40">
+				<MySelect
+					type="single"
+					bind:value={selectedRarity}
+					items={rarityOptions}
+					onchange={applyFilters}
+				/>
+			</div>
+			<div class="w-full sm:w-40">
+				<MySelect
+					type="single"
+					bind:value={selectedSort}
+					items={sortOptions}
+					onchange={applyFilters}
+				/>
+			</div>
+		</div>
 	</div>
 
 	<!-- Results Count -->
@@ -218,18 +161,17 @@
 				<ShoppingBag class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 				<h3 class="mb-2 font-semibold">Aucune annonce trouvée</h3>
 				<p class="mb-4 text-muted-foreground">
-					{#if searchQuery || selectedType !== 'all' || selectedRarity !== 'all'}
+					{#if searchQuery || selectedRarity !== 'all'}
 						Essayez de modifier vos filtres
 					{:else}
 						Soyez le premier à créer une annonce !
 					{/if}
 				</p>
-				{#if searchQuery || selectedType !== 'all' || selectedRarity !== 'all'}
+				{#if searchQuery || selectedRarity !== 'all'}
 					<Button
 						variant="outline"
 						onclick={() => {
 							searchQuery = '';
-							selectedType = 'all';
 							selectedRarity = 'all';
 						}}
 					>
@@ -240,13 +182,9 @@
 		</Card.Root>
 	{:else}
 		<!-- Listings display -->
-		<div
-			class={viewMode === 'grid'
-				? 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-				: 'space-y-4'}
-		>
+		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 			{#each marketplaceStore.listings as listing (listing.id)}
-				<MarketplaceListingCard {listing} {viewMode} onclick={() => openListingDetails(listing)} />
+				<MarketplaceListingCard {listing} onclick={() => openListingDetails(listing)} />
 			{/each}
 		</div>
 
