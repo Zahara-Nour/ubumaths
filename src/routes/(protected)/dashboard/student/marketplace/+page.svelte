@@ -4,7 +4,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import ConsentButton from '$lib/components/ConsentButton.svelte';
-	import { Plus, ShoppingBag, Package, Store, Bell } from 'lucide-svelte';
+	import { Plus, ShoppingBag, Package, Store, Bell, RefreshCw } from 'lucide-svelte';
 
 	// Import components
 	import MarketplaceListings from '$lib/components/marketplace/MarketplaceListings.svelte';
@@ -91,7 +91,7 @@
 		<Tabs.Content value="annonces" class="mt-6">
 			<!-- Header: pills + action button -->
 			<div class="mb-4 flex items-center justify-between gap-3">
-				<div class="flex gap-2">
+				<div class="flex items-center gap-2">
 					<Button
 						variant={annonceView === 'all' ? 'default' : 'outline'}
 						size="sm"
@@ -107,6 +107,21 @@
 						onclick={() => (annonceView = 'mine')}
 					>
 						Mes annonces
+					</Button>
+					<Button
+						variant="outline"
+						size="icon"
+						class="h-8 w-8"
+						onclick={() => {
+							if (annonceView === 'all') {
+								marketplaceStore.fetchListings(false);
+							} else {
+								marketplaceStore.fetchMyListings();
+							}
+						}}
+						aria-label="Actualiser"
+					>
+						<RefreshCw class="h-3.5 w-3.5" />
 					</Button>
 				</div>
 				<ConsentButton
