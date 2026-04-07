@@ -4,15 +4,13 @@
 	import * as Card from '$lib/components/ui/card';
 	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { Filter, RefreshCw, ShoppingBag } from 'lucide-svelte';
+	import { RefreshCw, ShoppingBag } from 'lucide-svelte';
 	import MarketplaceListingCard from './MarketplaceListingCard.svelte';
 	import ListingDetailsModal from './ListingDetailsModal.svelte';
 	import type { MarketplaceListing } from '$lib/types/marketplace';
 
 	// State
 	let selectedSort = $state<string>('recent');
-	let selectedRarity = $state<string>('all');
-	let showFilters = $state(false);
 	let selectedListing = $state<MarketplaceListing | null>(null);
 
 	// Filter options
@@ -22,22 +20,10 @@
 		{ value: 'popular', label: 'Plus populaires' }
 	];
 
-	const rarityOptions = [
-		{ value: 'all', label: 'Toutes raretés' },
-		{ value: 'common', label: 'Commune' },
-		{ value: 'rare', label: 'Rare' },
-		{ value: 'epic', label: 'Épique' },
-		{ value: 'legendary', label: 'Légendaire' }
-	];
-
 	// Apply filters
 	function applyFilters() {
 		marketplaceStore.setFilters({
-			sort_by: selectedSort as 'recent' | 'expiring_soon' | 'popular',
-			card_rarity:
-				selectedRarity === 'all'
-					? undefined
-					: (selectedRarity as 'common' | 'rare' | 'epic' | 'legendary')
+			sort_by: selectedSort as 'recent' | 'expiring_soon' | 'popular'
 		});
 	}
 
@@ -60,25 +46,11 @@
 	function closeListingDetails() {
 		selectedListing = null;
 	}
-
-	let hasActiveFilters = $derived(selectedRarity !== 'all');
 </script>
 
 <div class="space-y-3">
-	<!-- Filter bar: filter toggle + sort + refresh -->
+	<!-- Sort + refresh -->
 	<div class="flex items-center gap-2">
-		<Button
-			variant={showFilters ? 'secondary' : 'outline'}
-			size="sm"
-			onclick={() => (showFilters = !showFilters)}
-			class="relative gap-1.5"
-		>
-			<Filter class="h-3.5 w-3.5" />
-			<span class="hidden sm:inline">Filtres</span>
-			{#if hasActiveFilters}
-				<span class="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-primary"></span>
-			{/if}
-		</Button>
 		<div class="w-36 sm:w-40">
 			<MySelect
 				type="single"
@@ -92,32 +64,6 @@
 			<RefreshCw class="h-4 w-4" />
 		</Button>
 	</div>
-
-	<!-- Collapsible rarity filter -->
-	{#if showFilters}
-		<div class="flex items-center gap-2">
-			<div class="w-full sm:w-48">
-				<MySelect
-					type="single"
-					bind:value={selectedRarity}
-					items={rarityOptions}
-					onchange={applyFilters}
-				/>
-			</div>
-			{#if hasActiveFilters}
-				<Button
-					variant="ghost"
-					size="sm"
-					onclick={() => {
-						selectedRarity = 'all';
-						applyFilters();
-					}}
-				>
-					Effacer
-				</Button>
-			{/if}
-		</div>
-	{/if}
 
 	<!-- Listings Grid -->
 	{#if marketplaceStore.isLoading.listings && marketplaceStore.listings.length === 0}
@@ -134,24 +80,7 @@
 			<Card.Content class="py-12 text-center">
 				<ShoppingBag class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 				<h3 class="mb-2 font-semibold">Aucune annonce trouvée</h3>
-				<p class="mb-4 text-muted-foreground">
-					{#if selectedRarity !== 'all'}
-						Essayez de modifier vos filtres
-					{:else}
-						Soyez le premier à créer une annonce !
-					{/if}
-				</p>
-				{#if selectedRarity !== 'all'}
-					<Button
-						variant="outline"
-						onclick={() => {
-							selectedRarity = 'all';
-							applyFilters();
-						}}
-					>
-						Réinitialiser les filtres
-					</Button>
-				{/if}
+				<p class="text-muted-foreground">Soyez le premier à créer une annonce !</p>
 			</Card.Content>
 		</Card.Root>
 	{:else}
