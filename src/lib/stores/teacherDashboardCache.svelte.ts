@@ -412,7 +412,7 @@ export class TeacherDashboardCache {
 		if (!rewards) return;
 
 		// Create new rewards object to trigger reactivity
-		const newGidouilles = Math.max(0, rewards.gidouilles + delta);
+		const newGidouilles = Math.max(0, Math.round((rewards.gidouilles + delta) * 100) / 100);
 		const updatedRewards: StudentRewards = {
 			...rewards,
 			gidouilles: newGidouilles
