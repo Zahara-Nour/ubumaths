@@ -148,33 +148,28 @@
 					{@const pendingCount = getPendingProposalsCount(listing.id)}
 
 					<Card.Root>
-						<Card.Header>
-							<div class="flex items-start justify-between">
-								<div class="space-y-1">
-									<Card.Title class="text-lg">
-										{listing.title || (listing.listing_type === 'sell' ? 'Vente' : 'Achat')}
-									</Card.Title>
-									{#if listing.description}
-										<Card.Description>{listing.description}</Card.Description>
-									{/if}
+						<Card.Header class="pb-3">
+							<div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+								<Card.Title class="text-base">
+									{listing.title || (listing.listing_type === 'sell' ? 'Vente' : 'Achat')}
+								</Card.Title>
+								<div class="flex items-center gap-3 text-xs text-muted-foreground">
+									<span class="flex items-center gap-1">
+										<Clock class="h-3 w-3" />
+										{formatTime(listing.expires_at)}
+									</span>
+									<span class="flex items-center gap-1">
+										<Eye class="h-3 w-3" />
+										{listing.view_count}
+									</span>
+									<span class="flex items-center gap-1">
+										<MessageSquare class="h-3 w-3" />
+										{listing.proposal_count}
+									</span>
 								</div>
 								{#if pendingCount > 0}
-									<Badge variant="destructive">{pendingCount} nouvelle(s)</Badge>
+									<Badge variant="destructive" class="text-xs">{pendingCount} nouvelle(s)</Badge>
 								{/if}
-							</div>
-							<div class="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
-								<span class="flex items-center gap-1">
-									<Clock class="h-3 w-3" />
-									Expire {formatTime(listing.expires_at)}
-								</span>
-								<span class="flex items-center gap-1">
-									<Eye class="h-3 w-3" />
-									{listing.view_count} vue(s)
-								</span>
-								<span class="flex items-center gap-1">
-									<MessageSquare class="h-3 w-3" />
-									{listing.proposal_count} proposition(s)
-								</span>
 							</div>
 						</Card.Header>
 
