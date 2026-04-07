@@ -18,7 +18,6 @@
 	} from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
-	import ListingDetailsModal from './ListingDetailsModal.svelte';
 	import ProposalResponseModal from './ProposalResponseModal.svelte';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 
@@ -31,7 +30,6 @@
 
 	// State
 	let statusFilter = $state<'active' | 'completed' | 'expired'>('active');
-	let selectedListing = $state<MarketplaceListing | null>(null);
 	let selectedProposal = $state<MarketplaceProposal | null>(null);
 	let respondingToProposal = $state(false);
 	let cancellingListingId = $state<string | null>(null);
@@ -183,7 +181,7 @@
 					{@const proposals = getListingProposals(listing.id)}
 					{@const pendingCount = getPendingProposalsCount(listing.id)}
 
-					<Card.Root class="cursor-pointer" onclick={() => (selectedListing = listing)}>
+					<Card.Root>
 						<Card.Content class="p-3">
 							<!-- Line 1: title + stats + cancel button -->
 							<div class="flex items-center gap-2">
@@ -214,10 +212,7 @@
 									variant="ghost"
 									size="sm"
 									class="h-7 shrink-0 px-2 text-xs text-destructive hover:text-destructive"
-									onclick={(e) => {
-										e.stopPropagation();
-										requestCancelListing(listing.id);
-									}}
+									onclick={() => requestCancelListing(listing.id)}
 								>
 									<Trash2 class="h-3 w-3" />
 								</Button>
@@ -245,10 +240,7 @@
 													size="sm"
 													variant="outline"
 													class="h-5 px-1.5 text-[10px]"
-													onclick={(e) => {
-														e.stopPropagation();
-														openProposalResponse(proposal, listing);
-													}}
+													onclick={() => openProposalResponse(proposal, listing)}
 												>
 													Répondre
 												</Button>
@@ -314,17 +306,6 @@
 		</div>
 	{/if}
 </div>
-
-<!-- Listing Details Modal -->
-{#if selectedListing}
-	{@const isOpen = !!selectedListing}
-	<ListingDetailsModal
-		listing={selectedListing}
-		open={isOpen}
-		onclose={() => (selectedListing = null)}
-		isOwner={true}
-	/>
-{/if}
 
 <!-- Proposal Response Modal -->
 {#if selectedProposal && respondingToProposal}
