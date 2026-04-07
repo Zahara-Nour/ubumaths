@@ -14,8 +14,7 @@
 		MessageSquare,
 		Trash2,
 		CheckCircle,
-		AlertCircle,
-		RefreshCw
+		AlertCircle
 	} from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
@@ -103,29 +102,19 @@
 		selectedListingForProposal = null;
 		respondingToProposal = false;
 	}
-
-	// Refresh listings
-	function refresh() {
-		marketplaceStore.fetchMyListings();
-	}
 </script>
 
 <div class="space-y-4">
 	<!-- Header -->
-	<div class="flex items-center justify-between gap-3">
-		<div class="flex items-center gap-3">
-			<div class="w-48">
-				<MySelect type="single" bind:value={statusFilter} items={statusFilterItems} />
-			</div>
-			{#if marketplaceStore.pendingActions.listings > 0}
-				<Badge variant="destructive">
-					{marketplaceStore.pendingActions.listings} en attente
-				</Badge>
-			{/if}
+	<div class="flex items-center gap-3">
+		<div class="w-48">
+			<MySelect type="single" bind:value={statusFilter} items={statusFilterItems} />
 		</div>
-		<Button variant="outline" size="icon" onclick={refresh} aria-label="Actualiser">
-			<RefreshCw class="h-4 w-4" />
-		</Button>
+		{#if marketplaceStore.pendingActions.listings > 0}
+			<Badge variant="destructive">
+				{marketplaceStore.pendingActions.listings} en attente
+			</Badge>
+		{/if}
 	</div>
 
 	<!-- Content -->
