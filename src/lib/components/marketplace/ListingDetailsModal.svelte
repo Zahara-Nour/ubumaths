@@ -3,11 +3,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Clock, Eye, MessageSquare } from 'lucide-svelte';
 	import gidouilleImage from '$lib/assets/images/gidouille.png';
-	import { formatDistanceToNow } from 'date-fns';
-	import { fr } from 'date-fns/locale';
 	import VipCard from '$lib/components/VipCard.svelte';
 	import CreateProposalModal from './CreateProposalModal.svelte';
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
@@ -108,14 +104,6 @@
 		}
 	}
 
-	// Format time
-	function formatTime(dateString: string) {
-		return formatDistanceToNow(new Date(dateString), {
-			addSuffix: true,
-			locale: fr
-		});
-	}
-
 	// Close handler
 	function handleClose() {
 		open = false;
@@ -177,11 +165,9 @@
 <Dialog.Root bind:open onOpenChange={(v) => !v && handleClose()}>
 	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-y-auto">
 		<Dialog.Header>
-			<Dialog.Title class="flex items-center justify-between">
-				{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
-				<Badge variant={listing.listing_type === 'sell' ? 'default' : 'secondary'}>
-					{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
-				</Badge>
+			<Dialog.Title>
+				{listing.listing_type === 'sell' ? 'Vente' : 'Achat'} — {listing.creator?.username ||
+					'Anonyme'}
 			</Dialog.Title>
 			{#if listing.description}
 				<Dialog.Description>
@@ -191,42 +177,11 @@
 		</Dialog.Header>
 
 		<div class="space-y-4">
-			<!-- Creator Info -->
-			<div class="flex items-center gap-3">
-				<UserAvatar
-					avatar_url={listing.creator?.avatar_url}
-					role="student"
-					firstname={listing.creator?.username}
-				/>
-				<div>
-					<div class="font-medium">{listing.creator?.username || 'Anonyme'}</div>
-					<div class="text-sm text-muted-foreground">
-						Créé {formatTime(listing.created_at)}
-					</div>
-				</div>
-			</div>
-
-			<!-- Stats -->
-			<div class="flex items-center gap-4 text-sm text-muted-foreground">
-				<span class="flex items-center gap-1">
-					<Clock class="h-4 w-4" />
-					Expire {formatTime(listing.expires_at)}
-				</span>
-				<span class="flex items-center gap-1">
-					<Eye class="h-4 w-4" />
-					{listing.view_count} vue(s)
-				</span>
-				<span class="flex items-center gap-1">
-					<MessageSquare class="h-4 w-4" />
-					{listing.proposal_count} proposition(s)
-				</span>
-			</div>
-
 			<!-- Offer/Demand Details with Cards -->
 			<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 				<!-- Offered Section -->
 				<div class="space-y-3 rounded-lg border p-4">
-					<h4 class="font-semibold text-green-600">Offre</h4>
+					<h4 class="text-sm font-semibold">Offre</h4>
 
 					{#if offeredCardsGrouped.length > 0}
 						<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -251,7 +206,7 @@
 
 				<!-- Wanted Section -->
 				<div class="space-y-3 rounded-lg border p-4">
-					<h4 class="font-semibold text-blue-600">Demande</h4>
+					<h4 class="text-sm font-semibold">Demande</h4>
 
 					{#if wantedCardsGrouped.length > 0}
 						<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -290,7 +245,6 @@
 					{/if}
 				</div>
 			{/if}
-			<Button variant="outline" onclick={handleClose}>Fermer</Button>
 			{#if !isOwner}
 				{#if myProposal?.status === 'pending'}
 					<Button disabled>Proposition envoyée</Button>
