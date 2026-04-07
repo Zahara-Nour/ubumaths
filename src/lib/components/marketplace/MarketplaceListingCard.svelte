@@ -4,7 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Clock, Eye, MessageSquare } from 'lucide-svelte';
+	import { Clock, ArrowRight } from 'lucide-svelte';
 	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
@@ -48,11 +48,6 @@
 		return hoursUntilExpiry > 0 && hoursUntilExpiry <= 24;
 	});
 
-	// Get listing type badge variant
-	let typeVariant = $derived<'default' | 'secondary'>(
-		listing.listing_type === 'sell' ? 'default' : 'secondary'
-	);
-
 	// Group offered cards by template for display
 	let offeredCardsGrouped = $derived.by(() => {
 		if (!listing.offered_cards?.length) return [];
@@ -91,6 +86,10 @@
 			count: 1
 		}));
 	});
+
+	// Check if offer side has content
+	let hasOffer = $derived(offeredCardsGrouped.length > 0 || (listing.offered_gidouilles ?? 0) > 0);
+	let hasDemand = $derived(wantedCardsGrouped.length > 0 || (listing.wanted_gidouilles ?? 0) > 0);
 </script>
 
 <Card.Root
@@ -101,125 +100,97 @@
 	aria-label={`Annonce ${listing.listing_type === 'sell' ? 'vente' : 'achat'} par ${listing.creator?.username || 'Anonyme'}`}
 	class="cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg focus:ring-2 focus:ring-primary focus:outline-none"
 >
-	<Card.Header class="pb-3">
-		<div class="flex items-start justify-between gap-2">
-			<div class="flex gap-1">
-				<Badge variant={typeVariant} class="text-xs">
-					{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
-				</Badge>
-				{#if myProposal}
-					<Badge
-						variant={myProposal.status === 'pending'
-							? 'secondary'
-							: myProposal.status === 'accepted'
-								? 'default'
-								: 'destructive'}
-						class="text-xs"
-					>
-						{myProposal.status === 'pending'
-							? 'Proposé'
-							: myProposal.status === 'accepted'
-								? 'Accepté'
-								: 'Refusé'}
-					</Badge>
-				{/if}
-			</div>
-			{#if isExpiringSoon}
-				<Badge variant="destructive" class="text-xs">Expire bientôt</Badge>
+	<!-- Compact header: avatar, name, badge, time — all on one line -->
+	<div class="flex items-center gap-2 px-3 pt-3 pb-2">
+		<UserAvatar
+			avatar_url={listing.creator?.avatar_url}
+			role="student"
+			firstname={listing.creator?.username}
+			class="h-5 w-5"
+		/>
+		<span class="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+			{listing.creator?.username || 'Anonyme'}
+		</span>
+		<Badge
+			variant={listing.listing_type === 'sell' ? 'default' : 'secondary'}
+			class="shrink-0 px-1.5 py-0 text-[10px]"
+		>
+			{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
+		</Badge>
+		{#if myProposal}
+			<Badge
+				variant={myProposal.status === 'pending'
+					? 'secondary'
+					: myProposal.status === 'accepted'
+						? 'default'
+						: 'destructive'}
+				class="shrink-0 px-1.5 py-0 text-[10px]"
+			>
+				{myProposal.status === 'pending'
+					? 'Proposé'
+					: myProposal.status === 'accepted'
+						? 'Accepté'
+						: 'Refusé'}
+			</Badge>
+		{/if}
+	</div>
+
+	<!-- Offer → Demand: side by side -->
+	<div class="flex items-center gap-1 px-3 pb-2">
+		<!-- Offer column -->
+		<div class="flex min-w-0 flex-1 flex-wrap items-center gap-1">
+			{#if offeredCardsGrouped.length > 0}
+				{#each offeredCardsGrouped as group (group.card.id)}
+					<VipCard card={group.card} size="sm" clickable={false} count={group.count} />
+				{/each}
+			{/if}
+			{#if listing.offered_gidouilles && listing.offered_gidouilles > 0}
+				<div
+					class="flex items-center gap-0.5 rounded bg-yellow-50 px-1.5 py-0.5 text-xs dark:bg-yellow-950/30"
+				>
+					<span class="font-medium">{listing.offered_gidouilles.toLocaleString('fr-FR')}</span>
+					<img src={gidouilleImage} alt="Gidouille" class="h-3 w-3" />
+				</div>
+			{/if}
+			{#if !hasOffer}
+				<span class="text-xs text-muted-foreground italic">Rien</span>
 			{/if}
 		</div>
 
-		{#if listing.description}
-			<Card.Description class="line-clamp-2 text-xs">
-				{listing.description}
-			</Card.Description>
+		<!-- Arrow -->
+		<ArrowRight class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+
+		<!-- Demand column -->
+		<div class="flex min-w-0 flex-1 flex-wrap items-center gap-1">
+			{#if wantedCardsGrouped.length > 0}
+				{#each wantedCardsGrouped as group (group.card.id)}
+					<VipCard card={group.card} size="sm" clickable={false} count={group.count} />
+				{/each}
+			{/if}
+			{#if listing.wanted_gidouilles && listing.wanted_gidouilles > 0}
+				<div
+					class="flex items-center gap-0.5 rounded bg-yellow-50 px-1.5 py-0.5 text-xs dark:bg-yellow-950/30"
+				>
+					<span class="font-medium">{listing.wanted_gidouilles.toLocaleString('fr-FR')}</span>
+					<img src={gidouilleImage} alt="Gidouille" class="h-3 w-3" />
+				</div>
+			{/if}
+			{#if !hasDemand}
+				<span class="text-xs text-muted-foreground italic">Rien</span>
+			{/if}
+		</div>
+	</div>
+
+	<!-- Footer: time + expiring badge -->
+	<div
+		class="flex items-center justify-between border-t px-3 py-1.5 text-[11px] text-muted-foreground"
+	>
+		<span class="flex items-center gap-1">
+			<Clock class="h-3 w-3" />
+			{expiryText}
+		</span>
+		{#if isExpiringSoon}
+			<Badge variant="destructive" class="px-1.5 py-0 text-[10px]">Bientôt</Badge>
 		{/if}
-	</Card.Header>
-
-	<Card.Content class="space-y-3">
-		<!-- Creator Info -->
-		<div class="flex items-center gap-2">
-			<UserAvatar
-				avatar_url={listing.creator?.avatar_url}
-				role="student"
-				firstname={listing.creator?.username}
-				class="h-6 w-6"
-			/>
-			<span class="truncate text-xs text-muted-foreground">
-				{listing.creator?.username || 'Anonyme'}
-			</span>
-		</div>
-
-		<!-- Offer/Demand with VipCard -->
-		<div class="space-y-3">
-			<!-- Offered Cards -->
-			<div class="space-y-1">
-				<span class="text-xs font-medium">Offre:</span>
-				<div class="flex items-center gap-2">
-					{#if offeredCardsGrouped.length > 0}
-						{#each offeredCardsGrouped as group (group.card.id)}
-							<VipCard card={group.card} size="sm" clickable={false} count={group.count} />
-						{/each}
-					{/if}
-					{#if listing.offered_gidouilles && listing.offered_gidouilles > 0}
-						<div
-							class="flex items-center gap-0.5 rounded bg-yellow-50 px-1.5 py-0.5 text-xs dark:bg-yellow-950/30"
-						>
-							<span class="font-medium">{listing.offered_gidouilles.toLocaleString('fr-FR')}</span>
-							<img src={gidouilleImage} alt="Gidouille" class="h-3 w-3" />
-						</div>
-					{/if}
-					{#if !offeredCardsGrouped.length && !listing.offered_gidouilles}
-						<span class="text-xs text-muted-foreground italic">Rien</span>
-					{/if}
-				</div>
-			</div>
-			<!-- Wanted Cards -->
-			<div class="space-y-1">
-				<span class="text-xs font-medium">Demande:</span>
-				<div class="flex items-center gap-2">
-					{#if wantedCardsGrouped.length > 0}
-						{#each wantedCardsGrouped as group (group.card.id)}
-							<VipCard card={group.card} size="sm" clickable={false} count={group.count} />
-						{/each}
-					{/if}
-					{#if listing.wanted_gidouilles && listing.wanted_gidouilles > 0}
-						<div
-							class="flex items-center gap-0.5 rounded bg-yellow-50 px-1.5 py-0.5 text-xs dark:bg-yellow-950/30"
-						>
-							<span class="font-medium">{listing.wanted_gidouilles.toLocaleString('fr-FR')}</span>
-							<img src={gidouilleImage} alt="Gidouille" class="h-3 w-3" />
-						</div>
-					{/if}
-					{#if !wantedCardsGrouped.length && !listing.wanted_gidouilles}
-						<span class="text-xs text-muted-foreground italic">Rien</span>
-					{/if}
-				</div>
-			</div>
-		</div>
-	</Card.Content>
-
-	<Card.Footer class="pt-3 pb-3">
-		<div class="flex w-full items-center justify-between text-xs text-muted-foreground">
-			<div class="flex items-center gap-3">
-				{#if listing.proposal_count > 0}
-					<span class="flex items-center gap-1">
-						<MessageSquare class="h-3 w-3" />
-						{listing.proposal_count}
-					</span>
-				{/if}
-				{#if listing.view_count > 0}
-					<span class="flex items-center gap-1">
-						<Eye class="h-3 w-3" />
-						{listing.view_count}
-					</span>
-				{/if}
-			</div>
-
-			<span class="flex items-center gap-1">
-				<Clock class="h-3 w-3" />
-				{expiryText}
-			</span>
-		</div>
-	</Card.Footer>
+	</div>
 </Card.Root>

@@ -135,14 +135,7 @@
 		</div>
 	</div>
 
-	<!-- Results Count -->
-	{#if !marketplaceStore.isLoading.listings && marketplaceStore.listings.length > 0}
-		<div class="text-sm text-muted-foreground">
-			{marketplaceStore.listings.length} annonce(s) trouvée(s)
-		</div>
-	{/if}
-
-	<!-- Listings Grid/List -->
+	<!-- Listings Grid -->
 	{#if marketplaceStore.isLoading.listings && marketplaceStore.listings.length === 0}
 		<!-- Loading skeletons -->
 		<SkeletonList itemCount={8} />
