@@ -5,6 +5,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import ConsentButton from '$lib/components/ConsentButton.svelte';
 	import { Plus, ShoppingBag, Package, Store, Bell, RefreshCw } from 'lucide-svelte';
+	import gidouilleImage from '$lib/assets/images/gidouille.png';
+	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 
 	// Import components
 	import MarketplaceListings from '$lib/components/marketplace/MarketplaceListings.svelte';
@@ -40,6 +42,8 @@
 	);
 
 	// Check if user can create more listings
+	let gidouillesBalance = $derived(studentCache.getRewardsSync()?.gidouilles ?? 0);
+
 	let canCreateListing = $derived(
 		!marketplaceStore.config ||
 			marketplaceStore.stats.my_active_listings <
@@ -53,11 +57,20 @@
 
 <div class="container mx-auto max-w-7xl px-4 py-6">
 	<!-- Header -->
-	<div class="mb-4">
+	<div class="mb-4 flex items-center justify-between">
 		<h1 class="flex items-center gap-3 text-2xl font-bold">
 			<ShoppingBag class="h-7 w-7 text-primary" />
 			Marketplace
 		</h1>
+		<div class="flex items-center gap-1.5 rounded-lg border bg-card px-3 py-1.5 shadow-sm">
+			<span class="text-sm font-semibold"
+				>{gidouillesBalance.toLocaleString('fr-FR', {
+					minimumFractionDigits: 1,
+					maximumFractionDigits: 1
+				})}</span
+			>
+			<img src={gidouilleImage} alt="Gidouille" class="h-4 w-4" />
+		</div>
 	</div>
 
 	<!-- 3 Flat Tabs -->
