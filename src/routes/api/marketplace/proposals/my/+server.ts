@@ -69,6 +69,15 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return json([]);
 	}
 
+	// DEBUG: log the first proposal's listing structure
+	if (proposals.length > 0) {
+		const first = proposals[0];
+		console.log('=== LISTING STRUCTURE DEBUG ===');
+		console.log('typeof listing:', typeof first.listing);
+		console.log('Array.isArray:', Array.isArray(first.listing));
+		console.log('listing value:', JSON.stringify(first.listing));
+	}
+
 	// --- Step 1: Collect all template IDs we need names for ---
 	// For "buy" listings: wanted_card_template_ids ARE template IDs directly
 	// For "sell" listings: offered_card_ids are instance IDs → need profile resolution
@@ -77,7 +86,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 	let needInstanceResolution = false;
 
 	for (const p of proposals) {
-		const listing = p.listing as ListingData | null;
+		const rawListing = p.listing;
+		const listing: ListingData | null = Array.isArray(rawListing)
+			? ((rawListing[0] as ListingData) ?? null)
+			: (rawListing as ListingData | null);
 		if (!listing) continue;
 
 		// Buy listing: wanted_card_template_ids are template IDs directly
@@ -137,7 +149,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	// --- Step 4: Build summary for each proposal ---
 	const enriched = proposals.map((p) => {
-		const listing = p.listing as ListingData | null;
+		const rawListing = p.listing;
+		const listing: ListingData | null = Array.isArray(rawListing)
+			? ((rawListing[0] as ListingData) ?? null)
+			: (rawListing as ListingData | null);
 
 		// What I offered
 		const myParts: string[] = [];
@@ -185,9 +200,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 			}
 		}
 
-		const myOffer = myParts.length > 0 ? myParts.join(' + ') : 'rien';
-		const theirOffer = theirParts.length > 0 ? theirParts.join(' + ') : 'rien';
-		const summary = `${myOffer} contre ${theirOffer}`;
+		const iGave = myParts.length > 0 ? myParts.join(' + ') : 'rien';
+		const iGot = theirParts.length > 0 ? theirParts.join(' + ') : 'rien';
+		const summary = `${iGot} contre ${iGave}`;
 
 		return { ...p, summary };
 	});
