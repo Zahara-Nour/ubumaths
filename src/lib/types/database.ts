@@ -4676,7 +4676,6 @@ export type Database = {
 					completed_at: string | null;
 					created_at: string;
 					creator_id: string;
-					description: string | null;
 					expires_at: string;
 					id: string;
 					listing_type: string;
@@ -4686,7 +4685,6 @@ export type Database = {
 					proposal_count: number | null;
 					school_id: string;
 					status: string;
-					title: string;
 					view_count: number | null;
 					wanted_card_template_ids: string[] | null;
 					wanted_gidouilles: number | null;
@@ -4696,7 +4694,6 @@ export type Database = {
 					completed_at?: string | null;
 					created_at?: string;
 					creator_id: string;
-					description?: string | null;
 					expires_at: string;
 					id?: string;
 					listing_type: string;
@@ -4706,7 +4703,6 @@ export type Database = {
 					proposal_count?: number | null;
 					school_id: string;
 					status?: string;
-					title: string;
 					view_count?: number | null;
 					wanted_card_template_ids?: string[] | null;
 					wanted_gidouilles?: number | null;
@@ -4716,7 +4712,6 @@ export type Database = {
 					completed_at?: string | null;
 					created_at?: string;
 					creator_id?: string;
-					description?: string | null;
 					expires_at?: string;
 					id?: string;
 					listing_type?: string;
@@ -4726,7 +4721,6 @@ export type Database = {
 					proposal_count?: number | null;
 					school_id?: string;
 					status?: string;
-					title?: string;
 					view_count?: number | null;
 					wanted_card_template_ids?: string[] | null;
 					wanted_gidouilles?: number | null;
