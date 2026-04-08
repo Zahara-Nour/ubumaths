@@ -28,7 +28,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 			*,
 			listing:marketplace_listings!marketplace_proposals_listing_id_fkey(
 				id,
-				title,
 				listing_type,
 				creator_id,
 				status,
