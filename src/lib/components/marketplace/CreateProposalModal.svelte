@@ -113,9 +113,7 @@
 	<Dialog.Content class="max-h-[90vh] max-w-2xl overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>Faire une proposition</Dialog.Title>
-			<Dialog.Description>
-				Proposez un echange pour l'annonce "{listing.title || 'cette annonce'}"
-			</Dialog.Description>
+			<Dialog.Description>Proposez un échange pour cette annonce</Dialog.Description>
 		</Dialog.Header>
 
 		<form

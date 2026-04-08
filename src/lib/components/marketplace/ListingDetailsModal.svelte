@@ -168,11 +168,6 @@
 			<Dialog.Title>
 				{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
 			</Dialog.Title>
-			{#if listing.description}
-				<Dialog.Description>
-					{listing.description}
-				</Dialog.Description>
-			{/if}
 		</Dialog.Header>
 
 		<div class="space-y-4">
