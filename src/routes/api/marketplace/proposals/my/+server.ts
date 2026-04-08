@@ -99,44 +99,45 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 	}
 
+	// Helper: group card IDs into "name (xN)" parts
+	function groupCards(ids: string[], nameMap: Map<string, string>): string[] {
+		const grouped: Record<string, number> = {};
+		for (const id of ids) {
+			const name = nameMap.get(id) || '?';
+			grouped[name] = (grouped[name] || 0) + 1;
+		}
+		return Object.entries(grouped).map(([name, count]) => (count > 1 ? `${count}x ${name}` : name));
+	}
+
 	// Build summary for each proposal
 	const enriched = proposals.map((p) => {
 		const listing = p.listing as Record<string, unknown> | null;
 
-		// What I offered
+		// What I offered (my proposal)
 		const myOfferParts: string[] = [];
 		if (p.offered_card_ids?.length) {
-			const grouped: Record<string, number> = {};
-			for (const id of p.offered_card_ids) {
-				const name = cardNameMap.get(id) || 'carte';
-				grouped[name] = (grouped[name] || 0) + 1;
-			}
-			for (const [name, count] of Object.entries(grouped)) {
-				myOfferParts.push(count > 1 ? `${count} cartes ${name}` : `1 carte ${name}`);
-			}
+			myOfferParts.push(...groupCards(p.offered_card_ids, cardNameMap));
 		}
 		if (p.offered_gidouilles && p.offered_gidouilles > 0) {
 			myOfferParts.push(`${p.offered_gidouilles} gidouilles`);
 		}
 
-		// What I get in return (what the listing offers)
+		// What I get in return:
+		// - listing.offered_card_ids = cards the listing creator offers
+		// - listing.offered_gidouilles = gidouilles the creator offers
 		const returnParts: string[] = [];
 		if (listing) {
-			const offeredCardIds = listing.offered_card_ids as string[] | null;
-			if (offeredCardIds?.length) {
-				const grouped: Record<string, number> = {};
-				for (const id of offeredCardIds) {
-					const name = cardNameMap.get(id) || 'carte';
-					grouped[name] = (grouped[name] || 0) + 1;
-				}
-				for (const [name, count] of Object.entries(grouped)) {
-					returnParts.push(count > 1 ? `${count} cartes ${name}` : `1 carte ${name}`);
-				}
+			const offCardIds = listing.offered_card_ids as string[] | null;
+			if (offCardIds?.length) {
+				returnParts.push(...groupCards(offCardIds, cardNameMap));
 			}
-			const offeredGidouilles = listing.offered_gidouilles as number | null;
-			if (offeredGidouilles && offeredGidouilles > 0) {
-				returnParts.push(`${offeredGidouilles} gidouilles`);
+			const offGid = listing.offered_gidouilles as number | null;
+			if (offGid && offGid > 0) {
+				returnParts.push(`${offGid} gidouilles`);
 			}
+			// Also check wanted_gidouilles for sell listings
+			// (seller wants gidouilles but the proposer already
+			// listed them in myOffer, so skip to avoid duplication)
 		}
 
 		const myOffer = myOfferParts.length > 0 ? myOfferParts.join(' + ') : 'rien';
