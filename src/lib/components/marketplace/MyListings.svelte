@@ -186,7 +186,7 @@
 							<!-- Line 1: title + stats + cancel button -->
 							<div class="flex items-center gap-2">
 								<span class="text-sm font-semibold">
-									{listing.title || (listing.listing_type === 'sell' ? 'Vente' : 'Achat')}
+									{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
 								</span>
 								<div class="flex items-center gap-2 text-xs text-muted-foreground">
 									<span class="flex items-center gap-0.5">
@@ -270,7 +270,7 @@
 							<div class="flex items-center justify-between">
 								<div>
 									<h4 class="font-medium">
-										{listing.title || (listing.listing_type === 'sell' ? 'Vente' : 'Achat')}
+										{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
 									</h4>
 									<p class="mt-1 text-sm text-muted-foreground">
 										{#if listing.status === 'completed'}

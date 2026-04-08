@@ -320,7 +320,7 @@
 							<div class="flex items-start justify-between">
 								<div class="flex-1 space-y-1">
 									<CardTitle class="line-clamp-1 text-base">
-										{listing.title || 'Annonce'}
+										{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
 									</CardTitle>
 									<div class="flex items-center gap-2 text-sm text-muted-foreground">
 										<User class="h-3 w-3" />
@@ -399,12 +399,6 @@
 									</div>
 								{/if}
 							</div>
-
-							{#if listing.description}
-								<p class="line-clamp-2 text-sm text-muted-foreground">
-									{listing.description}
-								</p>
-							{/if}
 						</CardContent>
 					</Card>
 				{/each}
