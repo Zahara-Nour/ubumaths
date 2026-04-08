@@ -4,7 +4,7 @@ import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
 
 /**
  * GET /api/marketplace/proposals/my
- * Get current user's proposals (as proposer) with enriched data
+ * Get current user's proposals (as proposer) with enriched summary
  */
 export const GET: RequestHandler = async ({ locals }) => {
 	const supabase = locals.supabase;
@@ -14,13 +14,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 		throw error(401, 'Non authentifié');
 	}
 
-	// Check if marketplace is enabled for user
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {
 		throw error(403, "Le marketplace n'est pas activé pour votre classe");
 	}
 
-	// Fetch user's proposals with listing info (including offer/demand details)
+	// Fetch proposals with listing details
 	const { data: proposals, error: proposalsError } = await supabase
 		.from('marketplace_proposals')
 		.select(
@@ -50,8 +49,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return json([]);
 	}
 
-	// Collect all card instance IDs from proposals + listing offered_card_ids
-	// to resolve their template names in a single query
+	// Collect all IDs to resolve names
 	const allCardInstanceIds = new Set<string>();
 	const allTemplateIds = new Set<string>();
 
@@ -68,45 +66,69 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 	}
 
-	// Resolve card instance IDs → template names
+	// Resolve card instance IDs → template names (left join, no !inner)
 	const cardNameMap = new Map<string, string>();
 
 	if (allCardInstanceIds.size > 0) {
 		const { data: instances } = await supabase
 			.from('vip_card_instances')
-			.select('id, template:vip_card_templates!inner(name)')
+			.select('id, template_id')
 			.in('id', Array.from(allCardInstanceIds));
 
 		if (instances) {
+			// Collect template IDs from instances
 			for (const inst of instances) {
-				const tmpl = inst.template as unknown as { name: string } | null;
-				if (tmpl) cardNameMap.set(inst.id, tmpl.name);
+				allTemplateIds.add(inst.template_id);
+			}
+
+			// Resolve all template IDs at once
+			if (allTemplateIds.size > 0) {
+				const { data: templates } = await supabase
+					.from('vip_card_templates')
+					.select('id, name')
+					.in('id', Array.from(allTemplateIds));
+
+				const templateMap = new Map<string, string>();
+				if (templates) {
+					for (const t of templates) templateMap.set(t.id, t.name);
+				}
+
+				// Map instance ID → template name
+				for (const inst of instances) {
+					const name = templateMap.get(inst.template_id);
+					if (name) cardNameMap.set(inst.id, name);
+				}
+
+				// Also populate templateNameMap for wanted_card_template_ids
+				for (const [id, name] of templateMap) {
+					cardNameMap.set(`tmpl:${id}`, name);
+				}
 			}
 		}
-	}
-
-	// Resolve template IDs → names (for wanted_card_template_ids)
-	const templateNameMap = new Map<string, string>();
-
-	if (allTemplateIds.size > 0) {
+	} else if (allTemplateIds.size > 0) {
+		// No card instances but we have template IDs to resolve
 		const { data: templates } = await supabase
 			.from('vip_card_templates')
 			.select('id, name')
 			.in('id', Array.from(allTemplateIds));
 
 		if (templates) {
-			for (const t of templates) templateNameMap.set(t.id, t.name);
+			for (const t of templates) {
+				cardNameMap.set(`tmpl:${t.id}`, t.name);
+			}
 		}
 	}
 
-	// Helper: group card IDs into "name (xN)" parts
-	function groupCards(ids: string[], nameMap: Map<string, string>): string[] {
+	// Helper: group IDs into "name (xN)" parts
+	function groupByName(ids: string[], nameMap: Map<string, string>, prefix = ''): string[] {
 		const grouped: Record<string, number> = {};
 		for (const id of ids) {
-			const name = nameMap.get(id) || '?';
+			const name = nameMap.get(prefix + id) || '?';
 			grouped[name] = (grouped[name] || 0) + 1;
 		}
-		return Object.entries(grouped).map(([name, count]) => (count > 1 ? `${count}x ${name}` : name));
+		return Object.entries(grouped)
+			.filter(([name]) => name !== '?')
+			.map(([name, count]) => (count > 1 ? `${count}x ${name}` : name));
 	}
 
 	// Build summary for each proposal
@@ -116,28 +138,39 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// What I offered (my proposal)
 		const myOfferParts: string[] = [];
 		if (p.offered_card_ids?.length) {
-			myOfferParts.push(...groupCards(p.offered_card_ids, cardNameMap));
+			myOfferParts.push(...groupByName(p.offered_card_ids, cardNameMap));
 		}
 		if (p.offered_gidouilles && p.offered_gidouilles > 0) {
 			myOfferParts.push(`${p.offered_gidouilles} gidouilles`);
 		}
 
-		// What I get in return:
-		// - listing.offered_card_ids = cards the listing creator offers
-		// - listing.offered_gidouilles = gidouilles the creator offers
+		// What I get in return
 		const returnParts: string[] = [];
 		if (listing) {
+			// Cards the listing creator offers
 			const offCardIds = listing.offered_card_ids as string[] | null;
 			if (offCardIds?.length) {
-				returnParts.push(...groupCards(offCardIds, cardNameMap));
+				returnParts.push(...groupByName(offCardIds, cardNameMap));
 			}
+			// Gidouilles the listing creator offers
 			const offGid = listing.offered_gidouilles as number | null;
 			if (offGid && offGid > 0) {
 				returnParts.push(`${offGid} gidouilles`);
 			}
-			// Also check wanted_gidouilles for sell listings
-			// (seller wants gidouilles but the proposer already
-			// listed them in myOffer, so skip to avoid duplication)
+			// For "sell" listings: the creator wants gidouilles (already in myOffer)
+			// and offers cards (already in returnParts via offered_card_ids).
+			// For "buy" listings: the creator wants cards and offers gidouilles.
+			// If neither side has cards, use wanted_card_template_ids for context
+			if (returnParts.length === 0) {
+				const wantedTmplIds = listing.wanted_card_template_ids as string[] | null;
+				if (wantedTmplIds?.length) {
+					// The listing wanted these cards (which I'm giving) — show what I get
+					const wantedGid = listing.wanted_gidouilles as number | null;
+					if (wantedGid && wantedGid > 0) {
+						returnParts.push(`${wantedGid} gidouilles`);
+					}
+				}
+			}
 		}
 
 		const myOffer = myOfferParts.length > 0 ? myOfferParts.join(' + ') : 'rien';
