@@ -157,14 +157,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// What I offered
 		const myParts: string[] = [];
 
-		if (listing?.listing_type === 'buy' && listing.wanted_card_template_ids?.length) {
-			// For buy listings: I offered cards matching wanted_card_template_ids
-			// Use template IDs directly (no instance resolution needed!)
-			const names = listing.wanted_card_template_ids
-				.map((id) => templateNameMap.get(id))
-				.filter((n): n is string => !!n);
-			if (names.length > 0) myParts.push(formatCardNames(names));
-		} else if (p.offered_card_ids?.length) {
+		if (p.offered_card_ids?.length) {
 			// Resolve instance IDs via profiles
 			const names: string[] = [];
 			for (const instanceId of p.offered_card_ids) {
@@ -172,7 +165,15 @@ export const GET: RequestHandler = async ({ locals }) => {
 				const name = templateId ? templateNameMap.get(templateId) : undefined;
 				if (name) names.push(name);
 			}
-			if (names.length > 0) myParts.push(formatCardNames(names));
+			if (names.length > 0) {
+				myParts.push(formatCardNames(names));
+			} else if (listing?.listing_type === 'buy' && listing.wanted_card_template_ids?.length) {
+				// Fallback: use listing's wanted templates as proxy for what I gave
+				const fallbackNames = listing.wanted_card_template_ids
+					.map((id) => templateNameMap.get(id))
+					.filter((n): n is string => !!n);
+				if (fallbackNames.length > 0) myParts.push(formatCardNames(fallbackNames));
+			}
 		}
 
 		if (p.offered_gidouilles && p.offered_gidouilles > 0) {
