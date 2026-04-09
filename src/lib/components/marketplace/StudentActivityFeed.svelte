@@ -6,6 +6,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import {
 		Send,
+		Inbox,
 		ArrowLeftRight,
 		Clock,
 		CheckCircle,
@@ -14,6 +15,7 @@
 		Loader2,
 		MessageSquare
 	} from 'lucide-svelte';
+	import type { MarketplaceListing } from '$lib/types/marketplace';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { goto } from '$app/navigation';
@@ -37,23 +39,86 @@
 	// Unified activity item type
 	type ActivityItem = {
 		id: string;
-		type: 'proposal' | 'trade';
+		type: 'proposal-sent' | 'proposal-received' | 'trade';
 		date: string;
 		requiresAction: boolean;
+		summary?: string;
 		data: MarketplaceProposal | MarketplaceTrade;
 	};
+
+	// Build summary for a received proposal (from the listing owner's perspective)
+	// Format: "ce que j'ai reçu contre ce que j'ai donné"
+	function buildReceivedProposalSummary(
+		proposal: MarketplaceProposal,
+		listing: MarketplaceListing
+	): string {
+		// What I got (from the proposer's offer)
+		const iGotParts: string[] = [];
+		if (proposal.offered_cards?.length) {
+			const grouped: Record<string, number> = {};
+			for (const c of proposal.offered_cards) {
+				const name = c.template?.name ?? '?';
+				grouped[name] = (grouped[name] || 0) + 1;
+			}
+			const names = Object.entries(grouped).map(([n, c]) => (c > 1 ? `${c}x ${n}` : n));
+			iGotParts.push(names.join(' + '));
+		}
+		if (proposal.offered_gidouilles && proposal.offered_gidouilles > 0) {
+			iGotParts.push(`${proposal.offered_gidouilles} gidouilles`);
+		}
+
+		// What I gave (what my listing offered)
+		const iGaveParts: string[] = [];
+		if (listing.offered_cards?.length) {
+			const grouped: Record<string, number> = {};
+			for (const c of listing.offered_cards) {
+				const name = c.template?.name ?? '?';
+				grouped[name] = (grouped[name] || 0) + 1;
+			}
+			const names = Object.entries(grouped).map(([n, c]) => (c > 1 ? `${c}x ${n}` : n));
+			iGaveParts.push(names.join(' + '));
+		}
+		if (listing.offered_gidouilles && listing.offered_gidouilles > 0) {
+			iGaveParts.push(`${listing.offered_gidouilles} gidouilles`);
+		}
+
+		const iGot = iGotParts.length > 0 ? iGotParts.join(' + ') : 'rien';
+		const iGave = iGaveParts.length > 0 ? iGaveParts.join(' + ') : 'rien';
+		return `${iGot} contre ${iGave}`;
+	}
 
 	// Merge proposals and trades into unified feed
 	let activityItems = $derived.by(() => {
 		const items: ActivityItem[] = [];
 
-		// Add proposals
+		// Add sent proposals (proposals I made on others' listings)
 		for (const proposal of marketplaceStore.myProposals) {
 			items.push({
-				id: `proposal-${proposal.id}`,
-				type: 'proposal',
+				id: `proposal-sent-${proposal.id}`,
+				type: 'proposal-sent',
 				date: proposal.created_at,
 				requiresAction: proposal.status !== 'pending' && proposal.status !== 'withdrawn',
+				summary: (proposal as MarketplaceProposal & { summary?: string }).summary,
+				data: proposal
+			});
+		}
+
+		// Add received proposals (proposals others made on my listings)
+		// Build a map of listing ID → listing for summary construction
+		const listingMap = new Map<string, MarketplaceListing>();
+		for (const l of marketplaceStore.myListings) {
+			listingMap.set(l.id, l);
+		}
+		for (const proposal of marketplaceStore.receivedProposals) {
+			// Skip if this proposal is already shown as a sent proposal (shouldn't happen but safety)
+			if (proposal.proposer_id === userId) continue;
+			const listing = listingMap.get(proposal.listing_id);
+			items.push({
+				id: `proposal-recv-${proposal.id}`,
+				type: 'proposal-received',
+				date: proposal.created_at,
+				requiresAction: proposal.status === 'pending',
+				summary: listing ? buildReceivedProposalSummary(proposal, listing) : undefined,
 				data: proposal
 			});
 		}
@@ -181,9 +246,10 @@
 	{:else}
 		<div class="space-y-3">
 			{#each activityItems as item (item.id)}
-				{#if item.type === 'proposal'}
+				{#if item.type === 'proposal-sent' || item.type === 'proposal-received'}
 					<!-- PROPOSAL ITEM -->
-					{@const proposal = item.data as MarketplaceProposal & { summary?: string }}
+					{@const proposal = item.data as MarketplaceProposal}
+					{@const isSent = item.type === 'proposal-sent'}
 					<Card.Root class={item.requiresAction ? 'ring-2 ring-primary' : ''}>
 						<Card.Content class="p-4">
 							<div
@@ -191,14 +257,20 @@
 							>
 								<div class="flex items-start gap-3">
 									<div
-										class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-950/30 dark:text-purple-400"
+										class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full {isSent
+											? 'bg-purple-100 text-purple-600 dark:bg-purple-950/30 dark:text-purple-400'
+											: 'bg-blue-100 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400'}"
 									>
-										<Send class="h-4 w-4" />
+										{#if isSent}
+											<Send class="h-4 w-4" />
+										{:else}
+											<Inbox class="h-4 w-4" />
+										{/if}
 									</div>
 									<div class="min-w-0 space-y-1">
 										<div class="flex flex-wrap items-center gap-2">
 											<span class="text-sm font-medium">
-												{proposal.summary || 'Proposition'}
+												{item.summary || 'Proposition'}
 											</span>
 											<Badge variant={proposalStatusVariant(proposal.status)}>
 												{proposalStatusLabel(proposal.status)}
@@ -208,6 +280,9 @@
 											<span class="flex items-center gap-1">
 												<Clock class="h-3 w-3" />
 												{formatTime(proposal.created_at)}
+												{#if !isSent && proposal.proposer?.username}
+													— de {proposal.proposer.username}
+												{/if}
 											</span>
 										</div>
 										{#if proposal.response_message}
@@ -222,7 +297,7 @@
 										{/if}
 									</div>
 								</div>
-								{#if proposal.status === 'pending'}
+								{#if isSent && proposal.status === 'pending'}
 									<Button
 										variant="outline"
 										size="sm"
