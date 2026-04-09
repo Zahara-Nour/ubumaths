@@ -40,10 +40,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 	const listingId = idValidation.data;
 
-	// Verify user owns the listing
+	// Verify user owns the listing + get listing details for summary
 	const { data: listing, error: listingError } = await supabase
 		.from('marketplace_listings')
-		.select('creator_id')
+		.select(
+			'creator_id, listing_type, offered_card_ids, offered_gidouilles, wanted_card_template_ids, wanted_gidouilles'
+		)
 		.eq('id', listingId)
 		.single();
 
@@ -55,7 +57,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		throw error(403, 'Vous ne pouvez pas voir les propositions de cette annonce');
 	}
 
-	// Fetch proposals with proposer info
+	// Fetch proposals with proposer info + proposer's vip_cards (for card name resolution)
 	const { data: proposals, error: proposalsError } = await supabase
 		.from('marketplace_proposals')
 		.select(
@@ -65,7 +67,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
         id,
         firstname,
         lastname,
-        avatar_url
+        avatar_url,
+        vip_cards
       )
     `
 		)
@@ -77,8 +80,107 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		throw error(500, 'Erreur lors de la récupération des propositions');
 	}
 
+	// Resolve template names for listing's offered_card_ids
+	// After an accepted trade, the cards are in the PROPOSER's profile
+	type VipCardsJson = Record<string, { cardId: string }>;
+
+	// Collect all template IDs we need
+	const allTemplateIds = new Set<string>();
+
+	// From listing's wanted_card_template_ids (already template IDs)
+	if (listing.wanted_card_template_ids?.length) {
+		for (const id of listing.wanted_card_template_ids) allTemplateIds.add(id);
+	}
+
+	// Build instanceId → templateId map from ALL proposers' profiles
+	// (listing's offered cards may now be in any proposer's profile)
+	const instanceToTemplate = new Map<string, string>();
+	if (proposals) {
+		for (const p of proposals) {
+			const proposer = p.proposer as { vip_cards?: VipCardsJson } | null;
+			if (proposer?.vip_cards) {
+				for (const [instId, card] of Object.entries(proposer.vip_cards)) {
+					instanceToTemplate.set(instId, card.cardId);
+					allTemplateIds.add(card.cardId);
+				}
+			}
+		}
+	}
+
+	// Also check MY profile (owner) for cards not yet traded
+	const { data: myProfile } = await supabase
+		.from('profiles')
+		.select('vip_cards')
+		.eq('id', userId)
+		.single();
+	if (myProfile?.vip_cards) {
+		const myCards = myProfile.vip_cards as VipCardsJson;
+		for (const [instId, card] of Object.entries(myCards)) {
+			instanceToTemplate.set(instId, card.cardId);
+			allTemplateIds.add(card.cardId);
+		}
+	}
+
+	// Fetch all template names
+	const templateNameMap = new Map<string, string>();
+	if (allTemplateIds.size > 0) {
+		const { data: templates } = await supabase
+			.from('vip_card_templates')
+			.select('id, name')
+			.in('id', Array.from(allTemplateIds));
+		if (templates) {
+			for (const t of templates) templateNameMap.set(t.id, t.name);
+		}
+	}
+
+	// Helper to group card names
+	function formatCardNames(names: string[]): string {
+		const counts = new Map<string, number>();
+		for (const name of names) counts.set(name, (counts.get(name) ?? 0) + 1);
+		return Array.from(counts)
+			.map(([name, count]) => (count > 1 ? `${count}x ${name}` : name))
+			.join(' + ');
+	}
+
+	// Build summary for each proposal (from listing owner's perspective)
+	// Format: "[ce que j'ai reçu] contre [ce que j'ai donné]"
 	const enrichedProposals = await enrichProposalsWithCardData(supabase, proposals);
-	return json(enrichedProposals.map(enrichWithUsernames));
+	const result = enrichedProposals.map(enrichWithUsernames).map((p) => {
+		// Ce que j'ai reçu = what the proposer offered
+		const iGotParts: string[] = [];
+		if (p.offered_cards?.length) {
+			const names = p.offered_cards
+				.map((c: { template?: { name?: string } }) => c.template?.name)
+				.filter((n: string | undefined): n is string => !!n);
+			if (names.length > 0) iGotParts.push(formatCardNames(names));
+		}
+		if (p.offered_gidouilles && p.offered_gidouilles > 0) {
+			iGotParts.push(`${p.offered_gidouilles} gidouilles`);
+		}
+
+		// Ce que j'ai donné = what my listing offered
+		const iGaveParts: string[] = [];
+		// Resolve listing offered_card_ids via profiles
+		if (listing.offered_card_ids?.length) {
+			const names: string[] = [];
+			for (const instId of listing.offered_card_ids) {
+				const tmplId = instanceToTemplate.get(instId);
+				const name = tmplId ? templateNameMap.get(tmplId) : undefined;
+				if (name) names.push(name);
+			}
+			if (names.length > 0) iGaveParts.push(formatCardNames(names));
+		}
+		if (listing.offered_gidouilles && listing.offered_gidouilles > 0) {
+			iGaveParts.push(`${listing.offered_gidouilles} gidouilles`);
+		}
+
+		const iGot = iGotParts.length > 0 ? iGotParts.join(' + ') : 'rien';
+		const iGave = iGaveParts.length > 0 ? iGaveParts.join(' + ') : 'rien';
+
+		return { ...p, summary: `${iGot} contre ${iGave}` };
+	});
+
+	return json(result);
 };
 
 /**
