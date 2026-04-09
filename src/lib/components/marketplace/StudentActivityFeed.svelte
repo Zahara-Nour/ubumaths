@@ -97,7 +97,7 @@
 				id: `proposal-sent-${proposal.id}`,
 				type: 'proposal-sent',
 				date: proposal.created_at,
-				requiresAction: proposal.status !== 'pending' && proposal.status !== 'withdrawn',
+				requiresAction: false,
 				summary: (proposal as MarketplaceProposal & { summary?: string }).summary,
 				data: proposal
 			});
@@ -135,13 +135,8 @@
 			});
 		}
 
-		// Sort: requiresAction first, then by date descending
-		items.sort((a, b) => {
-			if (a.requiresAction !== b.requiresAction) {
-				return a.requiresAction ? -1 : 1;
-			}
-			return new Date(b.date).getTime() - new Date(a.date).getTime();
-		});
+		// Sort by date descending (most recent first)
+		items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 		return items;
 	});
