@@ -45,25 +45,6 @@
 		data: MarketplaceProposal | MarketplaceTrade;
 	};
 
-	// Build summary for a received proposal (from the listing owner's perspective)
-	// Format: "Reçu [ce que le proposeur a offert]"
-	function buildReceivedProposalSummary(proposal: MarketplaceProposal): string {
-		const parts: string[] = [];
-		if (proposal.offered_cards?.length) {
-			const grouped: Record<string, number> = {};
-			for (const c of proposal.offered_cards) {
-				const name = c.template?.name ?? '?';
-				if (name !== '?') grouped[name] = (grouped[name] || 0) + 1;
-			}
-			const names = Object.entries(grouped).map(([n, c]) => (c > 1 ? `${c}x ${n}` : n));
-			if (names.length > 0) parts.push(names.join(' + '));
-		}
-		if (proposal.offered_gidouilles && proposal.offered_gidouilles > 0) {
-			parts.push(`${proposal.offered_gidouilles} gidouilles`);
-		}
-		return parts.length > 0 ? `Reçu ${parts.join(' + ')}` : 'Proposition';
-	}
-
 	// Merge proposals and trades into unified feed
 	let activityItems = $derived.by(() => {
 		const items: ActivityItem[] = [];
@@ -88,7 +69,7 @@
 				type: 'proposal-received',
 				date: proposal.created_at,
 				requiresAction: proposal.status === 'pending',
-				summary: buildReceivedProposalSummary(proposal),
+				summary: (proposal as MarketplaceProposal & { summary?: string }).summary,
 				data: proposal
 			});
 		}
