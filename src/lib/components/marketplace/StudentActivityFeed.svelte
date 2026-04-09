@@ -91,9 +91,8 @@
 	let activityItems = $derived.by(() => {
 		const items: ActivityItem[] = [];
 
-		// Add sent proposals (skip accepted — they become trades)
+		// Add sent proposals
 		for (const proposal of marketplaceStore.myProposals) {
-			if (proposal.status === 'accepted') continue;
 			items.push({
 				id: `proposal-sent-${proposal.id}`,
 				type: 'proposal-sent',
@@ -111,7 +110,6 @@
 		}
 		for (const proposal of marketplaceStore.receivedProposals) {
 			if (proposal.proposer_id === userId) continue;
-			if (proposal.status === 'accepted') continue;
 			const listing = listingMap.get(proposal.listing_id);
 			items.push({
 				id: `proposal-recv-${proposal.id}`,
@@ -123,8 +121,9 @@
 			});
 		}
 
-		// Add trades
+		// Add trades (skip marketplace trades — they're shown as proposals)
 		for (const trade of marketplaceStore.activeTrades) {
+			if (trade.trade_type === 'marketplace' && trade.status === 'completed') continue;
 			const isMyTurn = trade.last_offer_by !== null && trade.last_offer_by !== userId;
 			items.push({
 				id: `trade-${trade.id}`,
