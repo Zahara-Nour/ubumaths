@@ -91,8 +91,9 @@
 	let activityItems = $derived.by(() => {
 		const items: ActivityItem[] = [];
 
-		// Add sent proposals (proposals I made on others' listings)
+		// Add sent proposals (skip accepted — they become trades)
 		for (const proposal of marketplaceStore.myProposals) {
+			if (proposal.status === 'accepted') continue;
 			items.push({
 				id: `proposal-sent-${proposal.id}`,
 				type: 'proposal-sent',
@@ -103,15 +104,14 @@
 			});
 		}
 
-		// Add received proposals (proposals others made on my listings)
-		// Build a map of listing ID → listing for summary construction
+		// Add received proposals (skip accepted — they become trades)
 		const listingMap = new Map<string, MarketplaceListing>();
 		for (const l of marketplaceStore.myListings) {
 			listingMap.set(l.id, l);
 		}
 		for (const proposal of marketplaceStore.receivedProposals) {
-			// Skip if this proposal is already shown as a sent proposal (shouldn't happen but safety)
 			if (proposal.proposer_id === userId) continue;
+			if (proposal.status === 'accepted') continue;
 			const listing = listingMap.get(proposal.listing_id);
 			items.push({
 				id: `proposal-recv-${proposal.id}`,
