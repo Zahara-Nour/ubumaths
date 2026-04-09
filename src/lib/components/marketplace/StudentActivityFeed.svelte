@@ -15,7 +15,6 @@
 		Loader2,
 		MessageSquare
 	} from 'lucide-svelte';
-	import type { MarketplaceListing } from '$lib/types/marketplace';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { goto } from '$app/navigation';
@@ -47,44 +46,22 @@
 	};
 
 	// Build summary for a received proposal (from the listing owner's perspective)
-	// Format: "ce que j'ai reçu contre ce que j'ai donné"
-	function buildReceivedProposalSummary(
-		proposal: MarketplaceProposal,
-		listing: MarketplaceListing
-	): string {
-		// What I got (from the proposer's offer)
-		const iGotParts: string[] = [];
+	// Format: "Reçu [ce que le proposeur a offert]"
+	function buildReceivedProposalSummary(proposal: MarketplaceProposal): string {
+		const parts: string[] = [];
 		if (proposal.offered_cards?.length) {
 			const grouped: Record<string, number> = {};
 			for (const c of proposal.offered_cards) {
 				const name = c.template?.name ?? '?';
-				grouped[name] = (grouped[name] || 0) + 1;
+				if (name !== '?') grouped[name] = (grouped[name] || 0) + 1;
 			}
 			const names = Object.entries(grouped).map(([n, c]) => (c > 1 ? `${c}x ${n}` : n));
-			iGotParts.push(names.join(' + '));
+			if (names.length > 0) parts.push(names.join(' + '));
 		}
 		if (proposal.offered_gidouilles && proposal.offered_gidouilles > 0) {
-			iGotParts.push(`${proposal.offered_gidouilles} gidouilles`);
+			parts.push(`${proposal.offered_gidouilles} gidouilles`);
 		}
-
-		// What I gave (what my listing offered)
-		const iGaveParts: string[] = [];
-		if (listing.offered_cards?.length) {
-			const grouped: Record<string, number> = {};
-			for (const c of listing.offered_cards) {
-				const name = c.template?.name ?? '?';
-				grouped[name] = (grouped[name] || 0) + 1;
-			}
-			const names = Object.entries(grouped).map(([n, c]) => (c > 1 ? `${c}x ${n}` : n));
-			iGaveParts.push(names.join(' + '));
-		}
-		if (listing.offered_gidouilles && listing.offered_gidouilles > 0) {
-			iGaveParts.push(`${listing.offered_gidouilles} gidouilles`);
-		}
-
-		const iGot = iGotParts.length > 0 ? iGotParts.join(' + ') : 'rien';
-		const iGave = iGaveParts.length > 0 ? iGaveParts.join(' + ') : 'rien';
-		return `${iGot} contre ${iGave}`;
+		return parts.length > 0 ? `Reçu ${parts.join(' + ')}` : 'Proposition';
 	}
 
 	// Merge proposals and trades into unified feed
@@ -103,20 +80,15 @@
 			});
 		}
 
-		// Add received proposals (skip accepted — they become trades)
-		const listingMap = new Map<string, MarketplaceListing>();
-		for (const l of marketplaceStore.myListings) {
-			listingMap.set(l.id, l);
-		}
+		// Add received proposals
 		for (const proposal of marketplaceStore.receivedProposals) {
 			if (proposal.proposer_id === userId) continue;
-			const listing = listingMap.get(proposal.listing_id);
 			items.push({
 				id: `proposal-recv-${proposal.id}`,
 				type: 'proposal-received',
 				date: proposal.created_at,
 				requiresAction: proposal.status === 'pending',
-				summary: listing ? buildReceivedProposalSummary(proposal, listing) : undefined,
+				summary: buildReceivedProposalSummary(proposal),
 				data: proposal
 			});
 		}
