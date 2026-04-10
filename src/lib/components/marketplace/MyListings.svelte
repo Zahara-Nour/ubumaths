@@ -265,12 +265,21 @@
 					</Card.Root>
 				{:else}
 					<!-- Completed/Expired listing -->
+					{@const acceptedProposal =
+						listing.status === 'completed'
+							? getListingProposals(listing.id).find((p) => p.status === 'accepted')
+							: null}
 					<Card.Root>
 						<Card.Content class="p-3">
 							<div class="flex items-center gap-2">
 								<span class="text-sm font-semibold">
 									{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
 								</span>
+								{#if listing.status === 'completed' && acceptedProposal?.proposer?.username}
+									<span class="text-xs text-muted-foreground">
+										avec {acceptedProposal.proposer.username}
+									</span>
+								{/if}
 								<span class="text-xs text-muted-foreground">
 									{#if listing.status === 'completed'}
 										{formatTime(listing.completed_at ?? listing.created_at)}
