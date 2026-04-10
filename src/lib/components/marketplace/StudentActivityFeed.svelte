@@ -197,9 +197,11 @@
 										<span class="text-sm font-medium">
 											{item.summary || 'Proposition'}
 										</span>
-										<Badge variant={proposalStatusVariant(proposal.status)}>
-											{proposalStatusLabel(proposal.status)}
-										</Badge>
+										{#if proposal.status !== 'accepted'}
+											<Badge variant={proposalStatusVariant(proposal.status)}>
+												{proposalStatusLabel(proposal.status)}
+											</Badge>
+										{/if}
 									</div>
 									<div class="text-xs text-muted-foreground">
 										<span class="flex items-center gap-1">
