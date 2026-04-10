@@ -96,7 +96,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	// Only filter by active status when browsing (not when viewing own listings)
 	if (!creatorId) {
-		query = query.eq('status', 'active');
+		query = query.eq('status', 'active').neq('creator_id', userId);
 	}
 
 	// Apply filters
