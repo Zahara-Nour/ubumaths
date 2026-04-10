@@ -560,15 +560,92 @@ export async function enrichListingsWithCardData<
 		}
 	}
 
+	// Build a global instanceId → templateId map from ALL fetched profiles
+	const globalInstanceMap = new Map<string, string>();
+	for (const cardMap of creatorCardsMap.values()) {
+		for (const [instanceId, templateId] of cardMap) {
+			globalInstanceMap.set(instanceId, templateId);
+		}
+	}
+
+	// Find unresolved offered_card_ids (cards transferred to other users)
+	const unresolvedInstanceIds: string[] = [];
+	for (const listing of listings) {
+		if (listing.offered_card_ids) {
+			for (const cardId of listing.offered_card_ids) {
+				if (!globalInstanceMap.has(cardId)) {
+					unresolvedInstanceIds.push(cardId);
+				}
+			}
+		}
+	}
+
+	// If there are unresolved cards, search ALL school profiles
+	if (unresolvedInstanceIds.length > 0) {
+		// Get school_id from first listing's creator
+		const firstCreatorId = listings[0]?.creator_id;
+		if (firstCreatorId) {
+			const { data: schoolData } = await supabase
+				.from('profiles')
+				.select('school_id')
+				.eq('id', firstCreatorId)
+				.single();
+
+			if (schoolData?.school_id) {
+				const { data: allProfiles } = await supabase
+					.from('profiles')
+					.select('vip_cards')
+					.eq('school_id', schoolData.school_id)
+					.not('vip_cards', 'is', null);
+
+				if (allProfiles) {
+					for (const profile of allProfiles) {
+						const vipCards = profile.vip_cards as VipCardsJson | null;
+						if (vipCards) {
+							for (const [instanceId, card] of Object.entries(vipCards)) {
+								if (!globalInstanceMap.has(instanceId)) {
+									globalInstanceMap.set(instanceId, card.cardId);
+									if (!templateMap.has(card.cardId)) {
+										offeredTemplateIds.add(card.cardId);
+									}
+								}
+							}
+						}
+					}
+
+					// Fetch any new template IDs found
+					const newTemplateIds = [...offeredTemplateIds].filter((id) => !templateMap.has(id));
+					if (newTemplateIds.length > 0) {
+						const { data: newTemplates } = await supabase
+							.from('vip_card_templates')
+							.select('id, name, description, image_path, rarity, category')
+							.in('id', newTemplateIds);
+
+						if (newTemplates) {
+							for (const template of newTemplates) {
+								templateMap.set(template.id, {
+									id: template.id,
+									name: template.name,
+									description: template.description,
+									image_path: template.image_path,
+									rarity: template.rarity as 'common' | 'rare' | 'epic' | 'legendary',
+									category: template.category
+								});
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	// Enrich each listing
 	return listings.map((listing) => {
-		const creatorCards = creatorCardsMap.get(listing.creator_id);
-
-		// Map offered card IDs to templates
+		// Map offered card IDs to templates using global map
 		const offeredCards: OfferedCardInfo[] = [];
-		if (listing.offered_card_ids && creatorCards) {
+		if (listing.offered_card_ids) {
 			for (const cardId of listing.offered_card_ids) {
-				const templateId = creatorCards.get(cardId);
+				const templateId = globalInstanceMap.get(cardId);
 				if (templateId) {
 					const template = templateMap.get(templateId);
 					if (template) {

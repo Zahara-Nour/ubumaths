@@ -62,10 +62,6 @@
 			for (const { name, count } of Object.values(grouped)) {
 				offerParts.push(count > 1 ? `${count} cartes ${name}` : `1 carte ${name}`);
 			}
-		} else if (listing.offered_card_ids?.length) {
-			// Fallback: cards were transferred, show count only
-			const n = listing.offered_card_ids.length;
-			offerParts.push(`${n} carte${n > 1 ? 's' : ''}`);
 		}
 		if (listing.offered_gidouilles && listing.offered_gidouilles > 0) {
 			offerParts.push(`${listing.offered_gidouilles.toLocaleString('fr-FR')} gidouilles`);
