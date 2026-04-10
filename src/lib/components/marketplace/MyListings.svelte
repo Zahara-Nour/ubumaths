@@ -62,6 +62,10 @@
 			for (const { name, count } of Object.values(grouped)) {
 				offerParts.push(count > 1 ? `${count} cartes ${name}` : `1 carte ${name}`);
 			}
+		} else if (listing.offered_card_ids?.length) {
+			// Fallback: cards were transferred, show count only
+			const n = listing.offered_card_ids.length;
+			offerParts.push(`${n} carte${n > 1 ? 's' : ''}`);
 		}
 		if (listing.offered_gidouilles && listing.offered_gidouilles > 0) {
 			offerParts.push(`${listing.offered_gidouilles.toLocaleString('fr-FR')} gidouilles`);
@@ -280,22 +284,6 @@
 										{formatTime(listing.cancelled_at ?? listing.expires_at)}
 									{/if}
 								</span>
-								<Badge
-									variant={listing.status === 'completed'
-										? 'success'
-										: listing.status === 'expired'
-											? 'destructive'
-											: 'outline'}
-									class="px-1.5 py-0 text-[10px]"
-								>
-									{#if listing.status === 'completed'}
-										Complétée
-									{:else if listing.status === 'expired'}
-										Expirée
-									{:else}
-										Annulée
-									{/if}
-								</Badge>
 							</div>
 							<p class="mt-1 text-xs text-muted-foreground">
 								{getListingSummary(listing)}
