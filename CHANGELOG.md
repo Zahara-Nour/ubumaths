@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.68](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.67...v0.8.68) (2026-04-10)
+
+### 🐛 Bug Fixes
+
+- **db:** add RLS policy for proposers to see listings ([0618e1e](https://github.com/Zahara-Nour/ubumaths/commit/0618e1e773b59086dcd8196f5cd8361093dde522))
+- **db:** fix infinite recursion in listings RLS policy ([239bbc2](https://github.com/Zahara-Nour/ubumaths/commit/239bbc2094cd24294bbf320564429064c35f3447))
+- **inventory:** round gidouilles after sell to avoid float artifacts ([5258ff5](https://github.com/Zahara-Nour/ubumaths/commit/5258ff521faaf29dc1f5645c41807e67e2f4fb34))
+- **marketplace:** add summary with card names to received proposals ([205b970](https://github.com/Zahara-Nour/ubumaths/commit/205b970e671e68680fb5b46b4d4dbf13c2153871))
+- **marketplace:** add text summary to proposals in feed ([42af84f](https://github.com/Zahara-Nour/ubumaths/commit/42af84f8d934d37a709c96f6b00b843ec2b8e850))
+- **marketplace:** avoid duplicate entries in activity feed ([947f514](https://github.com/Zahara-Nour/ubumaths/commit/947f514ac6c0c826e270e29ce5e7f33a5f8a2eaf))
+- **marketplace:** compact listing card and remove count ([759d233](https://github.com/Zahara-Nour/ubumaths/commit/759d233c80b4db823662617253580295be70d571))
+- **marketplace:** compact my listings with text summary ([85ca953](https://github.com/Zahara-Nour/ubumaths/commit/85ca95319ef8b63f758478597927465503f17070))
+- **marketplace:** fix proposal summary card name resolution ([5a35cef](https://github.com/Zahara-Nour/ubumaths/commit/5a35cefc76c85ebfdea4f428bfa2409684757079))
+- **marketplace:** fix proposal summary format ([dd5cfd3](https://github.com/Zahara-Nour/ubumaths/commit/dd5cfd3adb8051872627aa49f4be64b691fce8b7))
+- **marketplace:** fix received proposal summary ([ff280fc](https://github.com/Zahara-Nour/ubumaths/commit/ff280fc2b85dbd203b211dea490e1d2de3431820))
+- **marketplace:** force refresh bypassing cache ([0737665](https://github.com/Zahara-Nour/ubumaths/commit/0737665c9e4f128ac82d2d1c83664358a0a92aa8))
+- **marketplace:** hide accepted proposals from activity feed ([57a943e](https://github.com/Zahara-Nour/ubumaths/commit/57a943e1275b10aa13b238bc0e6d535df80efe23))
+- **marketplace:** inline stats next to listing title ([b59b7ad](https://github.com/Zahara-Nour/ubumaths/commit/b59b7addf9523e18c68f68ab42dace0d616f5ed0))
+- **marketplace:** move gidouilles balance to main header ([e44b327](https://github.com/Zahara-Nour/ubumaths/commit/e44b3275af8468ad806aa43e45b1372e56a6e215))
+- **marketplace:** move refresh button next to pills ([717571e](https://github.com/Zahara-Nour/ubumaths/commit/717571e9dda775c14fa89b57cd44e0266a8a4ce4))
+- **marketplace:** only show cards actually offered in summary ([6245166](https://github.com/Zahara-Nour/ubumaths/commit/62451662862cad78dcb20e93de6333b464ecc841))
+- **marketplace:** refetch proposals after submit for summary ([78b7d0d](https://github.com/Zahara-Nour/ubumaths/commit/78b7d0df3a7164072e35e0672b95b34993161819))
+- **marketplace:** remove activity count from feed header ([6470da7](https://github.com/Zahara-Nour/ubumaths/commit/6470da791842db5ea106fbf046f92771ff2881cf))
+- **marketplace:** remove duplicate sell/buy badge in my listings ([7af1893](https://github.com/Zahara-Nour/ubumaths/commit/7af18930fbb3697de43cb97a4c6fc9fbf0703adc))
+- **marketplace:** remove listing details modal from my listings ([812bea2](https://github.com/Zahara-Nour/ubumaths/commit/812bea20161b52b97e83e9a922e2aa397f0ba592))
+- **marketplace:** remove non-existent title column from query ([b84955c](https://github.com/Zahara-Nour/ubumaths/commit/b84955c8622372cb3b6f4567753bbc04622d5dbd))
+- **marketplace:** remove rarity filter from listings ([2336a1f](https://github.com/Zahara-Nour/ubumaths/commit/2336a1ff8a3ab24a0e6993d3c13a86748a700d25))
+- **marketplace:** remove references to non-existent columns ([334db57](https://github.com/Zahara-Nour/ubumaths/commit/334db5770d58351021d295eac3dc33ec67d3e81b))
+- **marketplace:** remove search bar, simplify filter UI ([14da57a](https://github.com/Zahara-Nour/ubumaths/commit/14da57a152828b49081801f445f9e587a678f748))
+- **marketplace:** remove sort dropdown from listings ([6fa228b](https://github.com/Zahara-Nour/ubumaths/commit/6fa228b5d8a793c1d2efe9b356b87479056bd1e8))
+- **marketplace:** remove student name from listing modal title ([61d190d](https://github.com/Zahara-Nour/ubumaths/commit/61d190dc15534790d245792d7da92ae0dae7fd2d))
+- **marketplace:** resolve card names in proposal summaries ([63c56aa](https://github.com/Zahara-Nour/ubumaths/commit/63c56aa678d52a79950e53b8411c7658c9caff98))
+- **marketplace:** show card names in listing summary ([3c4eaee](https://github.com/Zahara-Nour/ubumaths/commit/3c4eaee16c63b1a886edf990c61fb8b77d6a18cf))
+- **marketplace:** show received proposals in activity feed ([3b9c274](https://github.com/Zahara-Nour/ubumaths/commit/3b9c274a394c02261bfac18326ad288d0e696284))
+- **marketplace:** simplify listing details modal ([372d076](https://github.com/Zahara-Nour/ubumaths/commit/372d076b10b337fcc2fd5d7cd2031984f6943fa8))
+- **marketplace:** simplify proposal response modal ([f7f3b0f](https://github.com/Zahara-Nour/ubumaths/commit/f7f3b0f2a627c3c0ef451402e53ebdfb927c7520))
+- **marketplace:** simplify proposal summary to counts only ([e020a37](https://github.com/Zahara-Nour/ubumaths/commit/e020a37a2f10862c41ee75b59a75535271c227e8))
+- **marketplace:** sort activity feed by date only ([47a4477](https://github.com/Zahara-Nour/ubumaths/commit/47a4477e728c4786f6260432370d3d889cd28862))
+- **marketplace:** swap proposal summary order ([df73514](https://github.com/Zahara-Nour/ubumaths/commit/df73514de36cbcf9fdfea177e2a7adddc4db81f5))
+- **marketplace:** use gidouille image and French decimal format ([98dfa4b](https://github.com/Zahara-Nour/ubumaths/commit/98dfa4b183f5c70d036665d6b85adfc3ecda3990))
+- **marketplace:** use template IDs directly for buy listings ([0296164](https://github.com/Zahara-Nour/ubumaths/commit/0296164aad3dda720ed7f9a8bdfa3b55b5fa3775))
+- **teacher:** round gidouilles in optimistic update ([5cdf2a5](https://github.com/Zahara-Nour/ubumaths/commit/5cdf2a59f6ba438da0f8c3ee6f3368187262150a))
+- **vip-cards:** use gidouille image and French decimal format ([a8c775d](https://github.com/Zahara-Nour/ubumaths/commit/a8c775d4907c640817821126e007cfc61201923b))
+
 ### [0.8.67](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.66...v0.8.67) (2026-04-06)
 
 ### 🐛 Bug Fixes
