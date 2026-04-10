@@ -280,6 +280,14 @@
 										{formatTime(listing.cancelled_at ?? listing.expires_at)}
 									{/if}
 								</span>
+								{#if statusFilter === 'expired'}
+									<Badge
+										variant={listing.status === 'expired' ? 'destructive' : 'outline'}
+										class="px-1.5 py-0 text-[10px]"
+									>
+										{listing.status === 'expired' ? 'Expirée' : 'Annulée'}
+									</Badge>
+								{/if}
 							</div>
 							<p class="mt-1 text-xs text-muted-foreground">
 								{getListingSummary(listing)}
