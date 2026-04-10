@@ -264,33 +264,31 @@
 						</Card.Content>
 					</Card.Root>
 				{:else}
-					<!-- Completed/Expired listing: simple card -->
+					<!-- Completed/Expired listing -->
 					<Card.Root>
-						<Card.Content class="py-4">
-							<div class="flex items-center justify-between">
-								<div>
-									<h4 class="font-medium">
-										{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
-									</h4>
-									<p class="mt-1 text-sm text-muted-foreground">
-										{#if listing.status === 'completed'}
-											Complétée {formatTime(listing.completed_at ?? listing.created_at)}
-										{:else if listing.status === 'expired'}
-											Expirée {formatTime(listing.expires_at)}
-										{:else}
-											Annulée {formatTime(listing.cancelled_at ?? listing.expires_at)}
-										{/if}
-									</p>
-								</div>
+						<Card.Content class="p-3">
+							<div class="flex items-center gap-2">
+								<span class="text-sm font-semibold">
+									{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
+								</span>
+								<span class="text-xs text-muted-foreground">
+									{#if listing.status === 'completed'}
+										{formatTime(listing.completed_at ?? listing.created_at)}
+									{:else if listing.status === 'expired'}
+										{formatTime(listing.expires_at)}
+									{:else}
+										{formatTime(listing.cancelled_at ?? listing.expires_at)}
+									{/if}
+								</span>
 								<Badge
 									variant={listing.status === 'completed'
 										? 'success'
 										: listing.status === 'expired'
 											? 'destructive'
 											: 'outline'}
+									class="px-1.5 py-0 text-[10px]"
 								>
 									{#if listing.status === 'completed'}
-										<CheckCircle class="mr-1 h-3 w-3" />
 										Complétée
 									{:else if listing.status === 'expired'}
 										Expirée
@@ -299,6 +297,9 @@
 									{/if}
 								</Badge>
 							</div>
+							<p class="mt-1 text-xs text-muted-foreground">
+								{getListingSummary(listing)}
+							</p>
 						</Card.Content>
 					</Card.Root>
 				{/if}
