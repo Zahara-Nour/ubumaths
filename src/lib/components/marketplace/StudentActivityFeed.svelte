@@ -4,17 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import {
-		Send,
-		Inbox,
-		ArrowLeftRight,
-		Clock,
-		CheckCircle,
-		XCircle,
-		Plus,
-		Loader2,
-		MessageSquare
-	} from 'lucide-svelte';
+	import { Clock, CheckCircle, XCircle, Plus, Loader2, MessageSquare } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { goto } from '$app/navigation';
@@ -202,47 +192,34 @@
 							<div
 								class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
 							>
-								<div class="flex items-start gap-3">
-									<div
-										class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full {isSent
-											? 'bg-purple-100 text-purple-600 dark:bg-purple-950/30 dark:text-purple-400'
-											: 'bg-blue-100 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400'}"
-									>
-										{#if isSent}
-											<Send class="h-4 w-4" />
-										{:else}
-											<Inbox class="h-4 w-4" />
-										{/if}
+								<div class="min-w-0 flex-1 space-y-1">
+									<div class="flex flex-wrap items-center gap-2">
+										<span class="text-sm font-medium">
+											{item.summary || 'Proposition'}
+										</span>
+										<Badge variant={proposalStatusVariant(proposal.status)}>
+											{proposalStatusLabel(proposal.status)}
+										</Badge>
 									</div>
-									<div class="min-w-0 space-y-1">
-										<div class="flex flex-wrap items-center gap-2">
-											<span class="text-sm font-medium">
-												{item.summary || 'Proposition'}
-											</span>
-											<Badge variant={proposalStatusVariant(proposal.status)}>
-												{proposalStatusLabel(proposal.status)}
-											</Badge>
-										</div>
-										<div class="text-xs text-muted-foreground">
-											<span class="flex items-center gap-1">
-												<Clock class="h-3 w-3" />
-												{formatTime(proposal.created_at)}
-												{#if !isSent && proposal.proposer?.username}
-													— de {proposal.proposer.username}
-												{/if}
-											</span>
-										</div>
-										{#if proposal.response_message}
-											<div class="mt-1 rounded bg-muted p-2 text-xs">
-												{#if proposal.status === 'accepted'}
-													<CheckCircle class="mr-1 inline h-3 w-3 text-green-500" />
-												{:else if proposal.status === 'rejected'}
-													<XCircle class="mr-1 inline h-3 w-3 text-destructive" />
-												{/if}
-												{proposal.response_message}
-											</div>
-										{/if}
+									<div class="text-xs text-muted-foreground">
+										<span class="flex items-center gap-1">
+											<Clock class="h-3 w-3" />
+											{formatTime(proposal.created_at)}
+											{#if !isSent && proposal.proposer?.username}
+												— de {proposal.proposer.username}
+											{/if}
+										</span>
 									</div>
+									{#if proposal.response_message}
+										<div class="mt-1 rounded bg-muted p-2 text-xs">
+											{#if proposal.status === 'accepted'}
+												<CheckCircle class="mr-1 inline h-3 w-3 text-green-500" />
+											{:else if proposal.status === 'rejected'}
+												<XCircle class="mr-1 inline h-3 w-3 text-destructive" />
+											{/if}
+											{proposal.response_message}
+										</div>
+									{/if}
 								</div>
 								{#if isSent && proposal.status === 'pending'}
 									<Button
@@ -269,46 +246,39 @@
 							<div
 								class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
 							>
-								<div class="flex items-start gap-3">
-									<div
-										class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-600 dark:bg-orange-950/30 dark:text-orange-400"
-									>
-										<ArrowLeftRight class="h-4 w-4" />
-									</div>
-									<div class="min-w-0 space-y-1">
-										<div class="flex flex-wrap items-center gap-2">
-											<span class="text-sm font-medium">
-												Échange avec {partner?.username || 'Anonyme'}
-											</span>
-											{#if trade.status === 'negotiating'}
-												{#if isMyTurn}
-													<Badge variant="destructive">Votre tour</Badge>
-												{:else if trade.last_offer_by === userId}
-													<Badge variant="secondary">En attente</Badge>
-												{:else}
-													<Badge variant="outline">Nouvelle offre</Badge>
-												{/if}
-											{:else if trade.status === 'completed'}
-												<Badge variant="default">
-													<CheckCircle class="mr-1 h-3 w-3" />
-													Complété
-												</Badge>
+								<div class="min-w-0 flex-1 space-y-1">
+									<div class="flex flex-wrap items-center gap-2">
+										<span class="text-sm font-medium">
+											Échange avec {partner?.username || 'Anonyme'}
+										</span>
+										{#if trade.status === 'negotiating'}
+											{#if isMyTurn}
+												<Badge variant="destructive">Votre tour</Badge>
+											{:else if trade.last_offer_by === userId}
+												<Badge variant="secondary">En attente</Badge>
 											{:else}
-												<Badge variant="outline">
-													<XCircle class="mr-1 h-3 w-3" />
-													Annulé
-												</Badge>
+												<Badge variant="outline">Nouvelle offre</Badge>
 											{/if}
-										</div>
-										<div class="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-											<span class="flex items-center gap-1">
-												<Clock class="h-3 w-3" />
-												{formatTime(trade.updated_at)}
-											</span>
-											<span>
-												{trade.trade_type === 'friend' ? 'Échange direct' : 'Via marketplace'}
-											</span>
-										</div>
+										{:else if trade.status === 'completed'}
+											<Badge variant="default">
+												<CheckCircle class="mr-1 h-3 w-3" />
+												Complété
+											</Badge>
+										{:else}
+											<Badge variant="outline">
+												<XCircle class="mr-1 h-3 w-3" />
+												Annulé
+											</Badge>
+										{/if}
+									</div>
+									<div class="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+										<span class="flex items-center gap-1">
+											<Clock class="h-3 w-3" />
+											{formatTime(trade.updated_at)}
+										</span>
+										<span>
+											{trade.trade_type === 'friend' ? 'Échange direct' : 'Via marketplace'}
+										</span>
 									</div>
 								</div>
 								{#if trade.status === 'negotiating'}
