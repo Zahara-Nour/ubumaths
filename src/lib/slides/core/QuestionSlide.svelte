@@ -150,6 +150,9 @@
 
 <Slide {...slideProps}>
 	<div class="question-slide">
+		{#if instance.exerciseInstruction}
+			<p class="exercise-instruction">{instance.exerciseInstruction}</p>
+		{/if}
 		<!-- Question Statement -->
 		<div class="question-statement">
 			<MarkdownRenderer content={instance.statement} />
@@ -261,6 +264,12 @@
 		text-align: center;
 		/* Base font size for slides */
 		font-size: 32px;
+	}
+
+	.exercise-instruction {
+		font-size: 0.8em;
+		color: hsl(var(--muted-foreground));
+		font-weight: 500;
 	}
 
 	.question-statement {

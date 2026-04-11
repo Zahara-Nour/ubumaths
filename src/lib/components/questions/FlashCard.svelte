@@ -264,6 +264,11 @@
 					</Card.Header>
 
 					<Card.Content class="space-y-6">
+						{#if instance.exerciseInstruction}
+							<p class="text-base font-medium text-muted-foreground">
+								{instance.exerciseInstruction}
+							</p>
+						{/if}
 						<!-- Question Statement -->
 						<div class="statement-section">
 							<h3 class="mb-3 text-lg font-semibold">Énoncé</h3>
