@@ -16,7 +16,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { resolveVariables } from '../../../parameterization/resolver/variable-resolver';
+import {
+	resolveVariables,
+	resolveExpression
+} from '../../../parameterization/resolver/variable-resolver';
 import type { Variable } from '../../../types';
 
 describe('resolveVariables', () => {
@@ -1158,6 +1161,50 @@ describe('resolveVariables', () => {
 				const b = parseInt(resolved[1].value);
 				const sum = parseInt(resolved[2].value);
 				expect(sum).toBe(a + b);
+			});
+
+			it('should resolve eval embedded in random range: 1..{{eval:a-1}}', () => {
+				const variables: Variable[] = [
+					{ name: 'a', expression: '5..9' },
+					{ name: 'b', expression: '1..{{eval:a-1}}' }
+				];
+				// Run multiple seeds to verify b is always < a
+				for (let seed = 0; seed < 50; seed++) {
+					const resolved = resolveVariables(variables, seed);
+					const a = parseInt(resolved[0].value);
+					const b = parseInt(resolved[1].value);
+					expect(b).toBeGreaterThanOrEqual(1);
+					expect(b).toBeLessThan(a);
+				}
+			});
+
+			it('should resolve eval embedded in explicit random: {{random:1..{{eval:a-1}}}}', () => {
+				const variables: Variable[] = [
+					{ name: 'a', expression: '5..9' },
+					{ name: 'b', expression: '{{random:1..{{eval:a-1}}}}' }
+				];
+				for (let seed = 0; seed < 50; seed++) {
+					const resolved = resolveVariables(variables, seed);
+					const a = parseInt(resolved[0].value);
+					const b = parseInt(resolved[1].value);
+					expect(b).toBeGreaterThanOrEqual(1);
+					expect(b).toBeLessThan(a);
+				}
+			});
+
+			it('should resolve eval in expectedAnswer referencing display variable', () => {
+				const variables: Variable[] = [
+					{ name: 'a', expression: '5..9' },
+					{ name: 'b', expression: '1..{{eval:a-1}}' },
+					{ name: 'expression1', expression: 'a-b' }
+				];
+				for (let seed = 0; seed < 20; seed++) {
+					const resolved = resolveVariables(variables, seed);
+					const a = parseInt(resolved[0].value);
+					const b = parseInt(resolved[1].value);
+					const answer = resolveExpression('{{eval:{{expression1}}}}', resolved, seed);
+					expect(parseInt(answer)).toBe(a - b);
+				}
 			});
 
 			it('should combine discrete list with eval', () => {
