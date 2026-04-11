@@ -169,7 +169,8 @@
 						| undefined,
 					defaultDisplayOptions: transformed.defaultDisplayOptions as
 						| Record<string, boolean>
-						| undefined
+						| undefined,
+					exerciseInstruction: transformed.exerciseInstruction as string | undefined
 				}
 			: null
 	);
@@ -246,7 +247,8 @@
 			level: newFields.level ?? 1,
 			status: 'draft',
 			options: newFields.options as QuestionTemplate['options'],
-			defaultDisplayOptions: newFields.defaultDisplayOptions
+			defaultDisplayOptions: newFields.defaultDisplayOptions,
+			exerciseInstruction: newFields.exerciseInstruction
 		};
 
 		return generateInstance(template, instanceSeed);
