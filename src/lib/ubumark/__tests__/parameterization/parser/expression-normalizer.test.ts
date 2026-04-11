@@ -298,6 +298,38 @@ describe('normalizeExpression', () => {
 		});
 	});
 
+	describe('embedded {{}} tokens (not fully wrapped)', () => {
+		it('detects random range with embedded eval: 1..{{eval:a-1}}', () => {
+			expect(detectExpressionType('1..{{eval:a-1}}')).toBe('random');
+			expect(normalizeExpression('1..{{eval:a-1}}')).toBe('{{1..{{eval:a-1}}}}');
+		});
+
+		it('detects random range with embedded variable: 1..{{max}}', () => {
+			// This was already handled, but verify it stays correct
+			expect(normalizeExpression('{{random:1..{{max}}}}')).toBe('{{random:1..{{max}}}}');
+		});
+
+		it('preserves mixed text + tokens as already-wrapped: Value is {{a}}', () => {
+			expect(detectExpressionType('Value is {{random:1..10}}')).toBe('already-wrapped');
+			expect(normalizeExpression('Value is {{random:1..10}}')).toBe('Value is {{random:1..10}}');
+		});
+
+		it('detects discrete list with embedded tokens: {{a}}|{{b}}|c', () => {
+			expect(detectExpressionType('{{a}}|{{b}}|c')).toBe('discrete-list');
+			expect(normalizeExpression('{{a}}|{{b}}|c')).toBe('{{{{a}}|{{b}}|c}}');
+		});
+
+		it('preserves fully wrapped with nested tokens: {{eval:{{a}}+{{b}}}}', () => {
+			expect(detectExpressionType('{{eval:{{a}}+{{b}}}}')).toBe('already-wrapped');
+			expect(normalizeExpression('{{eval:{{a}}+{{b}}}}')).toBe('{{eval:{{a}}+{{b}}}}');
+		});
+
+		it('preserves {{a}}+{{b}} as already-wrapped (no range/list pattern)', () => {
+			expect(detectExpressionType('{{a}}+{{b}}')).toBe('already-wrapped');
+			expect(normalizeExpression('{{a}}+{{b}}')).toBe('{{a}}+{{b}}');
+		});
+	});
+
 	describe('whitespace handling', () => {
 		it('trims before detecting type but preserves in result', () => {
 			expect(normalizeExpression('  1..10  ')).toBe('{{1..10}}');

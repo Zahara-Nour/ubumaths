@@ -262,6 +262,12 @@ export function resolveExpression(
 		result = result.slice(0, token.start) + substitution + result.slice(token.end);
 	}
 
+	// STAGE 1.5: Resolve embedded {{eval:...}} tokens before random/digits processing.
+	// The tokenizer groups nested {{}} as a single outer token, so Stage 3 would never
+	// see an {{eval:...}} inside a {{random:...}}. This step scans the raw string to
+	// find and evaluate innermost {{eval:...}} tokens at any nesting level.
+	result = resolveEmbeddedEvals(result, alreadyResolved);
+
 	// STAGE 2: Generate random numbers {{random:...}} or {{...}}
 	const randomTokens = tokenize(result).filter((t) => t.type === 'random');
 
@@ -589,4 +595,141 @@ function resolveDigitValue(str: string, alreadyResolved: ResolvedVariable[]): nu
 	}
 
 	throw new Error(`Invalid digit value: ${str}`);
+}
+
+// ============================================================================
+// EMBEDDED EVAL RESOLUTION
+// ============================================================================
+
+/**
+ * Resolve {{eval:...}} tokens embedded at any nesting level in the string.
+ *
+ * The tokenizer groups nested {{}} into a single outer token, so a top-level
+ * Stage 3 pass cannot see an {{eval:...}} that sits inside a {{random:...}}.
+ * This function scans the raw string for `{{eval:` markers, finds the matching
+ * closing braces via brace counting, and evaluates the innermost evals first.
+ *
+ * Only resolves eval tokens whose inner content does NOT itself contain
+ * `{{eval:` — this guarantees we resolve from the inside out.
+ * The outer loop repeats until no more embedded evals remain.
+ *
+ * @param text - The expression string (after Stage 1 variable resolution)
+ * @param alreadyResolved - Variables already resolved
+ * @param seed - Optional seed for random generation
+ * @returns The string with all embedded {{eval:...}} tokens resolved
+ */
+function resolveEmbeddedEvals(text: string, alreadyResolved: ResolvedVariable[]): string {
+	let result = text;
+	let iterations = 0;
+	const MAX_ITERATIONS = 20;
+
+	while (result.includes('{{eval:') && iterations < MAX_ITERATIONS) {
+		iterations++;
+		let changed = false;
+
+		// Collect all innermost {{eval:...}} tokens (those without nested {{eval:)
+		const positions: Array<{ start: number; end: number }> = [];
+		let searchFrom = 0;
+
+		while (searchFrom < result.length) {
+			const idx = result.indexOf('{{eval:', searchFrom);
+			if (idx === -1) break;
+
+			// Find matching closing braces via brace counting
+			let braceCount = 0;
+			let i = idx;
+			while (i < result.length) {
+				if (result[i] === '{') braceCount++;
+				else if (result[i] === '}') braceCount--;
+				i++;
+				if (braceCount === 0) break;
+			}
+
+			if (braceCount !== 0) {
+				// Unmatched braces — skip
+				searchFrom = idx + 7;
+				continue;
+			}
+
+			const inner = result.substring(idx + 7, i - 2); // content between {{eval: and }}
+			// Only process innermost evals (no nested {{eval: inside)
+			if (!inner.includes('{{eval:')) {
+				positions.push({ start: idx, end: i });
+			}
+
+			searchFrom = i;
+		}
+
+		if (positions.length === 0) break;
+
+		// Resolve from right to left to preserve positions
+		for (let p = positions.length - 1; p >= 0; p--) {
+			const { start, end } = positions[p];
+			const evalToken = result.substring(start, end);
+
+			const evaluated = evaluateSingleEval(evalToken, alreadyResolved);
+			if (evaluated !== null) {
+				result = result.substring(0, start) + evaluated + result.substring(end);
+				changed = true;
+			}
+		}
+
+		if (!changed) break;
+	}
+
+	return result;
+}
+
+/**
+ * Evaluate a single {{eval:...}} token string.
+ *
+ * Reuses the same logic as Stage 3: resolve inner {{var}} references,
+ * substitute multi-char and single-char variables, parse AST, evaluate.
+ *
+ * @returns The evaluated value as string, or null if evaluation fails
+ */
+function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable[]): string | null {
+	const parsed = parseEvalExpressionWithModifiers(evalToken);
+	if (!parsed) return null;
+
+	let exprToParse = parsed.expression;
+
+	// Resolve {{var}} tokens in the expression
+	const varTokensInEval = tokenize(parsed.expression).filter((t) => t.type === 'variable');
+	for (let j = varTokensInEval.length - 1; j >= 0; j--) {
+		const varToken = varTokensInEval[j];
+		const varName = parseVariableReference(varToken.content);
+		if (!varName) continue;
+
+		const resolvedVar = alreadyResolved.find((v) => v.name === varName);
+		if (!resolvedVar) return null; // Can't resolve yet — leave for Stage 3
+
+		exprToParse =
+			exprToParse.slice(0, varToken.start) + resolvedVar.value + exprToParse.slice(varToken.end);
+	}
+
+	// Replace multi-character variable names via regex before AST parsing
+	const multiCharVars = alreadyResolved
+		.filter((rv) => rv.name.length > 1)
+		.sort((a, b) => b.name.length - a.name.length);
+	for (const rv of multiCharVars) {
+		const regex = new RegExp(`\\b${rv.name}\\b`, 'g');
+		exprToParse = exprToParse.replace(regex, rv.value);
+	}
+
+	// Parse and evaluate
+	const hasLatex = exprToParse.includes('\\');
+	const ast = hasLatex ? parseLatex(exprToParse) : parseCustom(exprToParse);
+
+	const bindings: EvalBindings = {};
+	for (const rv of alreadyResolved) {
+		if (rv.name.length === 1) {
+			const num = Number(rv.value);
+			bindings[rv.name] = Number.isFinite(num) ? num : rv.value;
+		}
+	}
+
+	const substituted = substitute(ast, bindings);
+	const evaluatedValue = evaluateAstWithModifiers(substituted, parsed.modifiers);
+	return String(evaluatedValue);
 }

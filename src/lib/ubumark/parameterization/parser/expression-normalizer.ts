@@ -56,9 +56,19 @@ export function detectExpressionType(expression: string): ExpressionType {
 	if (trimmed.startsWith('random:')) return 'random';
 	if (trimmed.startsWith('digits:')) return 'digits';
 
-	// Contains any {{...}} tokens - already has legacy syntax, pass through
-	// This handles both fully wrapped ({{1..10}}) and mixed (Value is {{a}})
+	// Contains {{...}} tokens — check if they wrap the entire expression
 	if (trimmed.includes('{{') && trimmed.includes('}}')) {
+		if (trimmed.startsWith('{{') && isFullyWrapped(trimmed)) {
+			// Outermost {{ ... }} wraps everything: {{1..10}}, {{eval:a+b}}, {{random:{{min}}..{{max}}}}
+			return 'already-wrapped';
+		}
+		// Embedded {{}} tokens (e.g., "1..{{eval:a-1}}", "{{a}}|{{b}}").
+		// Check if the skeleton (text outside {{...}}) forms a random range.
+		// If so, the expression needs {{random:...}} wrapping.
+		// Otherwise, treat as already-wrapped (mixed text + tokens like "Value is {{a}}").
+		const skeleton = stripBracedTokens(trimmed);
+		if (skeleton.includes('..')) return 'random';
+		if (hasTopLevelPipe(skeleton)) return 'discrete-list';
 		return 'already-wrapped';
 	}
 
@@ -123,6 +133,63 @@ export function normalizeExpression(expression: string): string {
 			// These need {{...}} wrapping for the parsers
 			return `{{${trimmed}}}`;
 	}
+}
+
+/**
+ * Check if the outermost {{ ... }} wraps the entire expression.
+ *
+ * Uses brace counting: starts at the opening {{ and returns true
+ * only if the matching }} is the last character of the string.
+ *
+ * @example
+ * isFullyWrapped('{{1..10}}')                  // true
+ * isFullyWrapped('{{eval:{{a}}+{{b}}}}')       // true
+ * isFullyWrapped('{{random:{{min}}..{{max}}}}') // true
+ * isFullyWrapped('1..{{eval:a-1}}')            // false (doesn't start with {{)
+ * isFullyWrapped('{{a}}+{{b}}')                // false (first {{ closes before end)
+ */
+export function isFullyWrapped(expression: string): boolean {
+	if (!expression.startsWith('{{')) return false;
+
+	let braceCount = 0;
+	for (let i = 0; i < expression.length; i++) {
+		if (expression[i] === '{') braceCount++;
+		else if (expression[i] === '}') braceCount--;
+		if (braceCount === 0) {
+			// The opening {{ is closed here — fully wrapped only if at the end
+			return i === expression.length - 1;
+		}
+	}
+	return false;
+}
+
+/**
+ * Strip all {{...}} tokens from a string, leaving only the surrounding text.
+ *
+ * Uses brace counting to handle nested braces correctly.
+ * e.g., "1..{{eval:a-1}}" → "1.."
+ *        "{{a}}+{{b}}"    → "+"
+ *        "Value is {{x}}" → "Value is "
+ */
+function stripBracedTokens(str: string): string {
+	let result = '';
+	let i = 0;
+	while (i < str.length) {
+		if (str[i] === '{' && i + 1 < str.length && str[i + 1] === '{') {
+			// Skip the entire {{...}} token
+			let braceCount = 0;
+			while (i < str.length) {
+				if (str[i] === '{') braceCount++;
+				else if (str[i] === '}') braceCount--;
+				i++;
+				if (braceCount === 0) break;
+			}
+		} else {
+			result += str[i];
+			i++;
+		}
+	}
+	return result;
 }
 
 /**
