@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.69](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.68...v0.8.69) (2026-04-11)
+
+### 🐛 Bug Fixes
+
+- **marketplace:** add badge to distinguish expired vs cancelled ([a14d22e](https://github.com/Zahara-Nour/ubumaths/commit/a14d22e4ae6a4671ddfaa12942d393faa0f920e6))
+- **marketplace:** add summary to completed/expired listings ([25d5f1d](https://github.com/Zahara-Nour/ubumaths/commit/25d5f1ddc002170f8a431aa9912ff9169099a434))
+- **marketplace:** exclude own listings from browse view ([6506f6a](https://github.com/Zahara-Nour/ubumaths/commit/6506f6a3006767a556e67b8223ac62e9cae922b1))
+- **marketplace:** hide Acceptée badge from activity feed ([b31eb41](https://github.com/Zahara-Nour/ubumaths/commit/b31eb41f1f7e87e2e8d3a18fc0d080ea7ee57cc9))
+- **marketplace:** remove icons from activity feed items ([4877e6f](https://github.com/Zahara-Nour/ubumaths/commit/4877e6f2d191f91c8fe3487e7ed2a86a8a80caad))
+- **marketplace:** remove redundant badge and fix "rien" ([1670cc5](https://github.com/Zahara-Nour/ubumaths/commit/1670cc598a4f8e98202105cf38a36cce7715cbff))
+- **marketplace:** resolve card names from all school profiles ([c61fbf2](https://github.com/Zahara-Nour/ubumaths/commit/c61fbf21d6baf34291020c734040ecf708b299b2))
+- **marketplace:** show buyer name on completed listings ([0baea3f](https://github.com/Zahara-Nour/ubumaths/commit/0baea3fa81ab545305717b3c0083b96d76e75e7b))
+
 ### [0.8.68](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.67...v0.8.68) (2026-04-10)
 
 ### 🐛 Bug Fixes
