@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.70](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.69...v0.8.70) (2026-04-12)
+
+### ✨ Features
+
+- **questions:** display exerciseInstruction in question components ([64d10e5](https://github.com/Zahara-Nour/ubumaths/commit/64d10e53a595d3da01abc7432eec11b3425afce5))
+
+### 🐛 Bug Fixes
+
+- **migration:** show real approval counts in dashboard tree ([9460905](https://github.com/Zahara-Nour/ubumaths/commit/94609058cd2bc08b8c2997011dd15e68e8336dbb))
+- **questions:** resolve {{eval:...}} nested inside random bounds ([6385f8b](https://github.com/Zahara-Nour/ubumaths/commit/6385f8b5a414acf040c9711f342d93d2c6fe0e1f))
+- **vip-cards:** allow up to 20 cards in exchange validation ([d151e90](https://github.com/Zahara-Nour/ubumaths/commit/d151e909d040e9508cd06c1b138703c790454618))
+
 ### [0.8.69](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.68...v0.8.69) (2026-04-11)
 
 ### 🐛 Bug Fixes
