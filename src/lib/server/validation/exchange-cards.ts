@@ -26,11 +26,11 @@ const baseSchema = z.object({
 	/** UUID of the student performing the exchange */
 	studentId: z.string().uuid('Invalid student ID format'),
 
-	/** Array of VIP card instance IDs to discard (1-10 cards) */
+	/** Array of VIP card instance IDs to discard (1-20 cards) */
 	cardsToDiscard: z
 		.array(z.string().uuid('Invalid card instance ID format'))
 		.min(1, 'Must discard at least 1 card')
-		.max(10, 'Cannot discard more than 10 cards'),
+		.max(20, 'Cannot discard more than 20 cards'),
 
 	/** UUID of the action card instance being used to perform this exchange */
 	actionCardInstanceId: z.string().uuid('Invalid action card instance ID format')
