@@ -56,6 +56,11 @@ export function removeZeros(latex: string): string {
 	// The (?<!\\) lookbehind prevents matching \, (LaTeX thin space) as a comma delimiter
 	result = result.replace(/(^|(?<!\\)[+\-*/=({,])0+(\d)/g, '$1$2');
 
+	// Leading zeros followed by digit-grouping thin space: 0\,565 → 565
+	// A zero at a position where leading zeros are valid (start or after operator),
+	// followed by \, and then digits, is a superfluous leading zero with grouping.
+	result = result.replace(/(^|[+\-*/=({,])0+(?:\\,\s?)+(\d)/g, '$1$2');
+
 	// Handle trailing decimal zeros: 1.0 → 1, 1.20 → 1.2, 1.00 → 1
 	// Also handles French comma (with {,}): 1{,}0 → 1
 	// Using a loop to handle all occurrences
