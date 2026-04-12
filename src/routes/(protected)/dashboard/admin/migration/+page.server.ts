@@ -58,10 +58,37 @@ export const load: PageServerLoad = async ({ locals }) => {
 		const manifestContent = await fs.readFile(manifestPath, 'utf-8');
 		const manifest: MigrationManifest = JSON.parse(manifestContent);
 
-		// Transform structure into tree nodes
-		const treeData = transformToTreeNodes(manifest.structure);
+		// Query migration_tracking for review statuses
+		// Only count Phase 4 (manual validation via UI) — not Phase 1 (auto-import)
+		const statusMap = new Map<number, 'validated' | 'failed'>();
+		if (locals.supabase) {
+			const { data: trackingData } = await locals.supabase
+				.from('migration_tracking')
+				.select('old_question_index, migration_status')
+				.eq('phase', 4)
+				.in('migration_status', ['validated', 'failed']);
+
+			if (trackingData) {
+				for (const row of trackingData) {
+					statusMap.set(row.old_question_index, row.migration_status as 'validated' | 'failed');
+				}
+			}
+		}
+
+		// Build globalIndex mapping from level files
+		const globalIndexMap = await buildGlobalIndexMap(latestExport, manifest.structure);
+
+		// Transform structure into tree nodes with real progress
+		const treeData = transformToTreeNodes(manifest.structure, statusMap, globalIndexMap);
 
 		// Calculate total statistics
+		let totalApproved = 0;
+		let totalRejected = 0;
+		for (const status of statusMap.values()) {
+			if (status === 'validated') totalApproved++;
+			else if (status === 'failed') totalRejected++;
+		}
+
 		const stats = {
 			totalQuestions: manifest.totalQuestions,
 			totalThemes: manifest.totalThemes,
@@ -70,7 +97,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 			successCount: manifest.successCount,
 			warningCount: manifest.warningCount,
 			errorCount: manifest.errorCount,
-			exportDate: manifest.exportDate
+			exportDate: manifest.exportDate,
+			totalApproved,
+			totalRejected
 		};
 
 		return {
@@ -102,23 +131,81 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 /**
+ * Build a mapping of subdomain path → globalIndex[] by reading level files.
+ * Each level-*.json file contains questions with a globalIndex field.
+ */
+async function buildGlobalIndexMap(
+	exportFolder: string,
+	structure: ManifestStructure
+): Promise<Map<string, number[]>> {
+	const indexMap = new Map<string, number[]>();
+
+	for (const themeData of Object.values(structure)) {
+		for (const domainData of Object.values(themeData)) {
+			for (const subdomainData of Object.values(domainData)) {
+				const subdomainDir = path.join(exportFolder, subdomainData.path);
+				const indices: number[] = [];
+
+				try {
+					const files = await fs.readdir(subdomainDir);
+					const levelFiles = files.filter((f) => f.startsWith('level-') && f.endsWith('.json'));
+
+					for (const file of levelFiles) {
+						const content = await fs.readFile(path.join(subdomainDir, file), 'utf-8');
+						const questions = JSON.parse(content) as Array<{ globalIndex: number }>;
+						for (const q of questions) {
+							indices.push(q.globalIndex);
+						}
+					}
+				} catch {
+					// Skip if directory doesn't exist
+				}
+
+				indexMap.set(subdomainData.path, indices);
+			}
+		}
+	}
+
+	return indexMap;
+}
+
+/**
  * Transform the manifest structure into a flat tree representation
  * suitable for the UI component
  */
-function transformToTreeNodes(structure: ManifestStructure): TreeNode[] {
+function transformToTreeNodes(
+	structure: ManifestStructure,
+	statusMap: Map<number, 'validated' | 'failed'>,
+	globalIndexMap: Map<string, number[]>
+): TreeNode[] {
 	const themeNodes: TreeNode[] = [];
 
 	for (const [themeName, themeData] of Object.entries(structure)) {
 		const domainNodes: TreeNode[] = [];
 		let themeTotal = 0;
+		let themeApproved = 0;
+		let themeRejected = 0;
 
 		for (const [domainName, domainData] of Object.entries(themeData)) {
 			const subdomainNodes: TreeNode[] = [];
 			let domainTotal = 0;
+			let domainApproved = 0;
+			let domainRejected = 0;
 
 			for (const [subdomainName, subdomainData] of Object.entries(domainData)) {
-				const levelCount = subdomainData.levels.length;
+				const globalIndices = globalIndexMap.get(subdomainData.path) ?? [];
+				const levelCount = globalIndices.length || subdomainData.levels.length;
+				let approved = 0;
+				let rejected = 0;
+				for (const idx of globalIndices) {
+					const status = statusMap.get(idx);
+					if (status === 'validated') approved++;
+					else if (status === 'failed') rejected++;
+				}
+
 				domainTotal += levelCount;
+				domainApproved += approved;
+				domainRejected += rejected;
 
 				subdomainNodes.push({
 					name: subdomainName,
@@ -128,14 +215,16 @@ function transformToTreeNodes(structure: ManifestStructure): TreeNode[] {
 					levelCount,
 					progress: {
 						total: levelCount,
-						approved: 0, // Will be populated from database later
-						pending: levelCount, // All pending initially
-						rejected: 0
+						approved,
+						pending: levelCount - approved - rejected,
+						rejected
 					}
 				});
 			}
 
 			themeTotal += domainTotal;
+			themeApproved += domainApproved;
+			themeRejected += domainRejected;
 
 			domainNodes.push({
 				name: domainName,
@@ -144,9 +233,9 @@ function transformToTreeNodes(structure: ManifestStructure): TreeNode[] {
 				children: subdomainNodes,
 				progress: {
 					total: domainTotal,
-					approved: 0,
-					pending: domainTotal,
-					rejected: 0
+					approved: domainApproved,
+					pending: domainTotal - domainApproved - domainRejected,
+					rejected: domainRejected
 				}
 			});
 		}
@@ -158,9 +247,9 @@ function transformToTreeNodes(structure: ManifestStructure): TreeNode[] {
 			children: domainNodes,
 			progress: {
 				total: themeTotal,
-				approved: 0,
-				pending: themeTotal,
-				rejected: 0
+				approved: themeApproved,
+				pending: themeTotal - themeApproved - themeRejected,
+				rejected: themeRejected
 			}
 		});
 	}

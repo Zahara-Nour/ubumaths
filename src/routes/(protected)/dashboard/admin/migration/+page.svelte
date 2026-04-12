@@ -210,9 +210,11 @@
 			<Card.Content>
 				<CategoryProgress
 					total={data.stats.totalQuestions}
-					approved={0}
-					pending={data.stats.totalQuestions}
-					rejected={0}
+					approved={data.stats.totalApproved ?? 0}
+					pending={data.stats.totalQuestions -
+						(data.stats.totalApproved ?? 0) -
+						(data.stats.totalRejected ?? 0)}
+					rejected={data.stats.totalRejected ?? 0}
 					showBar
 				/>
 				<p class="mt-3 text-sm text-muted-foreground">
