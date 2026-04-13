@@ -6,7 +6,7 @@
 
 ## Etat actuel
 
-**Phase en cours** : Phase 8 (dashboard enseignant)
+**Phase en cours** : Phase 9 (changement palotin + quality checks)
 
 ## Phases
 
@@ -97,7 +97,16 @@ Integre dans les phases precedentes :
 - Streak loss detection : Phase 3 (layout.server.ts au login)
 - Streak increment + milestones : Phase 2 (buddy-xp-service.ts au premier exo du jour)
 
-### Phase 8 — Dashboard enseignant ⬜
+### Phase 8 — Dashboard enseignant ✅
+
+**Fichiers crees** :
+
+- `src/routes/(protected)/dashboard/teacher/gamification/buddies/+page.server.ts` — fetch classes → members → buddies, stats agregees
+- `src/routes/(protected)/dashboard/teacher/gamification/buddies/+page.svelte` — cards par classe expandable, stats + liste eleves
+
+**Fichiers modifies** :
+
+- `src/routes/(protected)/dashboard/teacher/gamification/+layout.svelte` — ajout tab "Palotins"
 
 ### Phase 9 — Changement palotin + quality checks ⬜
 
