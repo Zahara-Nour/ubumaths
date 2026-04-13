@@ -27,7 +27,7 @@
 
 - `src/lib/types/database-helpers.ts` — ajout aliases StudentBuddy, BuddySkin
 
-**Non verifie** : migration non pushee (attente `pnpm db:migrate` par l'utilisateur)
+**DB** : migration pushee (`pnpm db:migrate`), types regeneres (`pnpm db:types`)
 
 ### Phase 2 — Logique serveur ✅
 
