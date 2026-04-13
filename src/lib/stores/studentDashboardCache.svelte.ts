@@ -36,8 +36,10 @@ import type {
 	CachedProfile,
 	CachedRewards,
 	CachedWarnings,
+	CachedBuddy,
 	CacheStats
 } from '$lib/types/student-cache';
+import type { BuddyState } from '$lib/types/buddy';
 import type { StudentVipCards } from '$lib/types/vip-card';
 import type { StudentWarningCounts } from '$lib/server/warnings';
 import { createLogger } from '$lib/utils/logger';
@@ -112,6 +114,13 @@ export class StudentDashboardCache {
 	private warningsCache = new SvelteMap<string, CachedWarnings>(); // Key: periodId
 
 	/**
+	 * Buddy cache (singleton - palotin buddy state)
+	 * Supports optimistic XP updates for instant UI feedback
+	 * @private
+	 */
+	private buddyCache: CachedBuddy | null = $state(null);
+
+	/**
 	 * Profile cache TTL: 2 hours
 	 * Reasoning: Profile data (name, email, classes) changes infrequently
 	 * @private
@@ -132,6 +141,12 @@ export class StudentDashboardCache {
 	 * @private
 	 */
 	private readonly WARNINGS_TTL = 10 * 60 * 1000; // 10 minutes
+
+	/**
+	 * Buddy cache TTL: 10 minutes
+	 * @private
+	 */
+	private readonly BUDDY_TTL = 10 * 60 * 1000; // 10 minutes
 
 	/**
 	 * Cache monitoring flag (controlled by VITE_ENABLE_CACHE_MONITORING env variable)
@@ -424,6 +439,22 @@ export class StudentDashboardCache {
 		return null;
 	}
 
+	/**
+	 * Get student buddy synchronously
+	 * Returns null if cache is empty, expired, or no buddy chosen
+	 * Use in $derived for reactive UI
+	 */
+	getBuddySync(): BuddyState | null {
+		const cached = this.buddyCache;
+		const now = Date.now();
+
+		if (cached && now - cached.fetchedAt < this.BUDDY_TTL) {
+			return cached.buddy;
+		}
+
+		return null;
+	}
+
 	// ========================================================================
 	// OPTIMISTIC UPDATES (Instant UI feedback)
 	// ========================================================================
@@ -538,6 +569,30 @@ export class StudentDashboardCache {
 		this.log('trace', `[Cache] Optimistic warnings update for period ${periodId}: total ${total}`);
 	}
 
+	/**
+	 * Update buddy XP optimistically (instant UI feedback)
+	 *
+	 * @param xpGained - XP gained in this action
+	 * @param newLevel - New level if leveled up (optional)
+	 * @param newStreak - Updated streak value (optional)
+	 */
+	updateBuddyXpOptimistic(xpGained: number, newLevel?: number, newStreak?: number): void {
+		if (!this.buddyCache) return;
+
+		const buddy = { ...this.buddyCache.buddy };
+		buddy.xp += xpGained;
+		buddy.xp_earned_today += xpGained;
+		if (newLevel !== undefined) buddy.level = newLevel;
+		if (newStreak !== undefined) buddy.current_streak = newStreak;
+
+		this.buddyCache = {
+			buddy,
+			fetchedAt: this.buddyCache.fetchedAt
+		};
+
+		this.log('trace', `[Cache] Optimistic buddy XP update: +${xpGained}`);
+	}
+
 	// ========================================================================
 	// HYDRATION (Pre-fill from server load functions)
 	// ========================================================================
@@ -618,6 +673,23 @@ export class StudentDashboardCache {
 		this.log('trace', `[Cache] Hydrated warnings cache for period ${periodId}`);
 	}
 
+	/**
+	 * Hydrate buddy cache from server data
+	 *
+	 * @param buddy - The student buddy state (or null if no buddy yet)
+	 */
+	hydrateBuddy(buddy: BuddyState | null): void {
+		if (!buddy) {
+			this.buddyCache = null;
+			return;
+		}
+		this.buddyCache = {
+			buddy,
+			fetchedAt: Date.now()
+		};
+		this.log('trace', '[Cache] Hydrated buddy cache');
+	}
+
 	// ========================================================================
 	// INVALIDATION
 	// ========================================================================
@@ -657,11 +729,20 @@ export class StudentDashboardCache {
 	}
 
 	/**
+	 * Invalidate buddy cache
+	 */
+	invalidateBuddy(): void {
+		this.buddyCache = null;
+		this.log('trace', 'Cache invalidated: buddy');
+	}
+
+	/**
 	 * Clear all caches
 	 */
 	invalidateAll(): void {
 		this.profileCache = null;
 		this.rewardsCache = null;
+		this.buddyCache = null;
 		this.warningsCache.clear();
 		this.log('trace', 'Cache: All caches cleared');
 	}
