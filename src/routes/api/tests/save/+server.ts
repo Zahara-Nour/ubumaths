@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { validateSaveTest } from '$lib/server/validation/tests';
+import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
 
 /**
  * API route to save test results to database
@@ -69,7 +70,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Note: session is already saved, so we return success but log the error
 		}
 
-		return json({ sessionId: testSession.id }, { status: 201 });
+		// Award buddy XP for each answer
+		let buddyXp = null;
+		try {
+			const answers = result.answers.map(
+				(answer: { isCorrect: boolean; instance: { templateId?: string } }) => ({
+					isCorrect: answer.isCorrect,
+					theme: undefined // TODO: extract theme from categories if available
+				})
+			);
+			buddyXp = await addBuddyXpFromTest(supabase, user.id, answers);
+		} catch (buddyError) {
+			// Non-critical: buddy XP failure should not fail the test save
+			console.error('⚠️ [API] Error awarding buddy XP:', buddyError);
+		}
+
+		return json({ sessionId: testSession.id, buddy_xp: buddyXp }, { status: 201 });
 	} catch (error) {
 		console.error('Error saving test results:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });

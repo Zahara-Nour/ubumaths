@@ -6,7 +6,7 @@
 
 ## Etat actuel
 
-**Phase en cours** : Phase 6 (hook XP)
+**Phase en cours** : Phase 8 (dashboard enseignant)
 
 ## Phases
 
@@ -80,9 +80,22 @@
 
 - `src/routes/(protected)/dashboard/student/+layout.svelte` — affiche quiz si pas de buddy, widget apres choix
 
-### Phase 6 — Hook XP (tests/riddles/quiz) ⬜
+### Phase 6 — Hook XP (tests/riddles/quiz) ✅
 
-### Phase 7 — Streak ⬜
+**Fichiers modifies** :
+
+- `src/routes/api/tests/save/+server.ts` — appel addBuddyXpFromTest() apres sauvegarde
+- `src/routes/api/riddles/[id]/submit/+server.ts` — appel addBuddyXpFromExercise() apres soumission
+- `src/routes/api/student/chapters/[id]/quiz/submit/+server.ts` — appel addBuddyXpFromExercise() apres soumission
+
+Tous les hooks sont non-critiques (erreur buddy ne fait pas echouer l'operation principale).
+
+### Phase 7 — Streak ✅
+
+Integre dans les phases precedentes :
+
+- Streak loss detection : Phase 3 (layout.server.ts au login)
+- Streak increment + milestones : Phase 2 (buddy-xp-service.ts au premier exo du jour)
 
 ### Phase 8 — Dashboard enseignant ⬜
 

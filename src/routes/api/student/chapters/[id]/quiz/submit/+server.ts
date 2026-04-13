@@ -44,6 +44,7 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { submitQuizAnswer } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { addBuddyXpFromExercise } from '$lib/server/buddy-xp-service';
 
 /**
  * Path parameters schema
@@ -121,8 +122,19 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			throw error(500, 'Failed to create quiz result');
 		}
 
+		// Award buddy XP
+		let buddyXp = null;
+		try {
+			buddyXp = await addBuddyXpFromExercise(locals.supabase, user.id, {
+				isCorrect
+			});
+		} catch (buddyError) {
+			console.error('⚠️ [API] Error awarding buddy XP for chapter quiz:', buddyError);
+		}
+
 		return json({
-			result: result.data
+			result: result.data,
+			buddy_xp: buddyXp
 		});
 	} catch (err) {
 		// Re-throw SvelteKit errors
