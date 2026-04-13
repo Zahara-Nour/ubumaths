@@ -66,6 +66,9 @@
 			studentCache.hydrateRewards(data.rewards);
 		}
 
+		// Hydrate buddy cache (10min TTL)
+		studentCache.hydrateBuddy(data.buddy);
+
 		// Hydrate consent store for UI disabling
 		if (data.consentStatus) {
 			consent.set(data.consentStatus);

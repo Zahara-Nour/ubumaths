@@ -131,11 +131,40 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			vip_cards: vipCards
 		};
 
+		// Fetch buddy data (may not exist yet if quiz not completed)
+		const { data: buddyData } = await supabase
+			.from('student_buddies')
+			.select('*')
+			.eq('student_id', user.id)
+			.maybeSingle();
+
+		// Check for streak loss (last activity > 1 day ago with active streak)
+		let streakLost = false;
+		if (buddyData && buddyData.current_streak > 0 && buddyData.last_activity_date) {
+			const lastActivity = new Date(buddyData.last_activity_date);
+			const today = new Date();
+			// Reset time parts for clean day comparison
+			lastActivity.setHours(0, 0, 0, 0);
+			today.setHours(0, 0, 0, 0);
+			const daysDiff = Math.floor((today.getTime() - lastActivity.getTime()) / 86400000);
+			if (daysDiff > 1) {
+				// Reset streak server-side
+				await supabase
+					.from('student_buddies')
+					.update({ current_streak: 0 })
+					.eq('student_id', user.id);
+				buddyData.current_streak = 0;
+				streakLost = true;
+			}
+		}
+
 		// Return data for cache hydration on client
-		// The +layout.svelte will call studentCache.hydrateProfile() and hydrateRewards()
+		// The +layout.svelte will call studentCache.hydrateProfile(), hydrateRewards(), hydrateBuddy()
 		return {
 			studentProfile,
-			rewards
+			rewards,
+			buddy: buddyData,
+			streakLost
 		};
 	} catch (err) {
 		console.error('[Layout] Unexpected error loading student dashboard:', err);
@@ -157,7 +186,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 				gidouilles: 0,
 				bonus: 0,
 				vip_cards: {}
-			}
+			},
+			buddy: null,
+			streakLost: false
 		};
 	}
 };

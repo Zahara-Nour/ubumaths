@@ -82,6 +82,12 @@ export type ClassSchedule = Tables<'class_schedules'>;
 /** Profile table row type alias */
 export type Profile = Tables<'profiles'>;
 
+/** Student buddy table row type alias */
+export type StudentBuddy = Tables<'student_buddies'>;
+
+/** Buddy skin table row type alias */
+export type BuddySkin = Tables<'buddy_skins'>;
+
 // ============================================================================
 // VIP Card Types
 // ============================================================================

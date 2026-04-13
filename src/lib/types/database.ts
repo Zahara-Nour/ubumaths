@@ -666,6 +666,42 @@ export type Database = {
 					}
 				];
 			};
+			buddy_skins: {
+				Row: {
+					description: string | null;
+					id: string;
+					image_path: string;
+					is_enabled: boolean;
+					name: string;
+					palotin_type: string;
+					sort_order: number;
+					unlock_method: string;
+					unlock_requirement: Json;
+				};
+				Insert: {
+					description?: string | null;
+					id?: string;
+					image_path: string;
+					is_enabled?: boolean;
+					name: string;
+					palotin_type: string;
+					sort_order?: number;
+					unlock_method: string;
+					unlock_requirement?: Json;
+				};
+				Update: {
+					description?: string | null;
+					id?: string;
+					image_path?: string;
+					is_enabled?: boolean;
+					name?: string;
+					palotin_type?: string;
+					sort_order?: number;
+					unlock_method?: string;
+					unlock_requirement?: Json;
+				};
+				Relationships: [];
+			};
 			bug_reports: {
 				Row: {
 					auto_generated: boolean | null;
@@ -9789,6 +9825,93 @@ export type Database = {
 					}
 				];
 			};
+			student_buddies: {
+				Row: {
+					change_count: number;
+					created_at: string;
+					current_streak: number;
+					equipped_skin_id: string | null;
+					last_activity_date: string | null;
+					last_xp_date: string | null;
+					level: number;
+					longest_streak: number;
+					palotin_type: string;
+					student_id: string;
+					themes_explored: string[];
+					updated_at: string;
+					xp: number;
+					xp_earned_today: number;
+				};
+				Insert: {
+					change_count?: number;
+					created_at?: string;
+					current_streak?: number;
+					equipped_skin_id?: string | null;
+					last_activity_date?: string | null;
+					last_xp_date?: string | null;
+					level?: number;
+					longest_streak?: number;
+					palotin_type: string;
+					student_id: string;
+					themes_explored?: string[];
+					updated_at?: string;
+					xp?: number;
+					xp_earned_today?: number;
+				};
+				Update: {
+					change_count?: number;
+					created_at?: string;
+					current_streak?: number;
+					equipped_skin_id?: string | null;
+					last_activity_date?: string | null;
+					last_xp_date?: string | null;
+					level?: number;
+					longest_streak?: number;
+					palotin_type?: string;
+					student_id?: string;
+					themes_explored?: string[];
+					updated_at?: string;
+					xp?: number;
+					xp_earned_today?: number;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'student_buddies_equipped_skin_id_fkey';
+						columns: ['equipped_skin_id'];
+						isOneToOne: false;
+						referencedRelation: 'buddy_skins';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_buddies_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: true;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_buddies_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: true;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'student_buddies_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: true;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_buddies_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: true;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			student_checklist_progress: {
 				Row: {
 					checklist_item_id: string;
@@ -12960,6 +13083,10 @@ export type Database = {
 				Args: { p_proposal_id: string; p_user_id: string };
 				Returns: Json;
 			};
+			add_buddy_xp: {
+				Args: { p_is_milestone?: boolean; p_student_id: string; p_xp: number };
+				Returns: Json;
+			};
 			add_student_gidouilles: {
 				Args: { p_amount: number; p_student_id: string };
 				Returns: number;
@@ -14067,6 +14194,10 @@ export type Database = {
 			};
 			has_individual_assignment: {
 				Args: { p_assignment_id: string };
+				Returns: boolean;
+			};
+			has_proposal_on_listing: {
+				Args: { p_listing_id: string; p_user_id: string };
 				Returns: boolean;
 			};
 			increment_rate_limit: {

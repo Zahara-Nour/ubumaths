@@ -287,5 +287,23 @@ export interface CacheStats {
 	memoryEstimate: string;
 }
 
+// ============================================================================
+// BUDDY CACHE (Cache 4)
+// ============================================================================
+
+/**
+ * Cached buddy data (Cache 4)
+ *
+ * TTL: 10 minutes (BUDDY_TTL)
+ *
+ * Supports optimistic XP updates via updateBuddyXpOptimistic().
+ */
+export interface CachedBuddy {
+	/** The student buddy state */
+	buddy: import('$lib/types/buddy').BuddyState;
+	/** Unix timestamp (milliseconds) when this data was fetched */
+	fetchedAt: number;
+}
+
 // Re-export types for convenience
 export type { StudentWarningCounts, Warning, StudentVipCards };
