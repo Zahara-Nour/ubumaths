@@ -7,6 +7,7 @@ import { riddleAnswerSchema } from '$lib/server/validation/riddles';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { addBuddyXpFromExercise } from '$lib/server/buddy-xp-service';
 
 /**
  * Submit riddle attempt
@@ -146,6 +147,21 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			is_first_win: Boolean(rewardInfo.is_first_win),
 			week_best_reward: Number(rewardInfo.week_best_reward) || 0
 		};
+	}
+
+	// Award buddy XP (only for automatic validation with definitive result)
+	if (isCorrect !== null) {
+		try {
+			const buddyXp = await addBuddyXpFromExercise(locals.supabase, user.id, {
+				isCorrect,
+				theme: 'enigmes'
+			});
+			if (buddyXp) {
+				(response as Record<string, unknown>).buddy_xp = buddyXp;
+			}
+		} catch (buddyError) {
+			console.error('⚠️ [API] Error awarding buddy XP for riddle:', buddyError);
+		}
 	}
 
 	return json(response);
