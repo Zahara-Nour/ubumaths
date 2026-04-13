@@ -6,7 +6,7 @@
 
 ## Etat actuel
 
-**Phase en cours** : Phase 5 (quiz selection)
+**Phase en cours** : Phase 6 (hook XP)
 
 ## Phases
 
@@ -67,7 +67,18 @@
 
 - `src/routes/(protected)/dashboard/student/+layout.svelte` — render BuddyWidget si buddy existe
 
-### Phase 5 — Quiz selection ⬜
+### Phase 5 — Quiz selection ✅
+
+**Fichiers crees** :
+
+- `src/lib/config/buddy-quiz.ts` — 4 questions + PALOTIN_INFO (nom, subtitle, description)
+- `src/lib/components/buddy/PalotinQuizQuestion.svelte` — question avec 3 gros boutons
+- `src/lib/components/buddy/PalotinResult.svelte` — resultat avec suggestion, 3 cartes, confirmation
+- `src/lib/components/buddy/PalotinQuiz.svelte` — overlay plein ecran : intro → questions → resultat → POST API
+
+**Fichiers modifies** :
+
+- `src/routes/(protected)/dashboard/student/+layout.svelte` — affiche quiz si pas de buddy, widget apres choix
 
 ### Phase 6 — Hook XP (tests/riddles/quiz) ⬜
 

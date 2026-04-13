@@ -43,7 +43,11 @@
 	import { consent } from '$lib/stores/consent.svelte';
 	import ConsentBanner from '$lib/components/ConsentBanner.svelte';
 	import BuddyWidget from '$lib/components/buddy/BuddyWidget.svelte';
+	import PalotinQuiz from '$lib/components/buddy/PalotinQuiz.svelte';
 	import { onMount } from 'svelte';
+
+	let showQuiz = $state(false);
+	let buddyChosen = $state(false);
 
 	// Get server data (includes consentStatus from parent protected layout)
 	let { data, children } = $props();
@@ -70,6 +74,13 @@
 		// Hydrate buddy cache (10min TTL)
 		studentCache.hydrateBuddy(data.buddy);
 
+		// Show quiz if no buddy yet
+		if (!data.buddy) {
+			showQuiz = true;
+		} else {
+			buddyChosen = true;
+		}
+
 		// Hydrate consent store for UI disabling
 		if (data.consentStatus) {
 			consent.set(data.consentStatus);
@@ -82,8 +93,18 @@
 	<ConsentBanner consentStatus={data.consentStatus} />
 {/if}
 
+<!-- Palotin Quiz (shown once if no buddy chosen) -->
+{#if showQuiz}
+	<PalotinQuiz
+		onComplete={() => {
+			showQuiz = false;
+			buddyChosen = true;
+		}}
+	/>
+{/if}
+
 <!-- Buddy Widget (always visible for students with a buddy) -->
-{#if data.buddy}
+{#if buddyChosen}
 	<BuddyWidget streakLost={data.streakLost} />
 {/if}
 
