@@ -541,6 +541,9 @@ A la **premiere connexion**, avant d'acceder au dashboard. Le choix du buddy est
 - [x] **Skins VIP** : skin debloque pour le Palotin actuel, conserve si changement
 - [x] **Equilibrage XP** : 5000 XP total niv 20, cap 100/jour (hors milestones streak), streak x14 ajoute (100 XP)
 - [x] **Contenu narratif** : 10 anecdotes/Palotin + 15 idle lore/Palotin = 75 textes generes et integres
+- [x] **Role enseignant** : vue agregee + detail au clic, pas d'XP bonus, mode silencieux classe
+- [x] **Interactions sociales** : reactions automatiques passives (niv 17+), skin visible mais pas le niveau, pas de leaderboard
+- [x] **Scope MVP** : roadmap en 5 phases (MVP → v1.1 → v1.2 → v2 → v3)
 
 ## Skins detailles
 
@@ -599,8 +602,111 @@ Bribes de lore qui apparaissent aleatoirement en idle a partir du niveau 5. Them
 
 ---
 
-## Decisions a prendre
+## Role de l'enseignant
 
-- [ ] Role de l'enseignant : visibilite niveaux, XP bonus, desactivation ?
-- [ ] Interactions sociales (niv 17+) : visibilite du Palotin des autres, risque moquerie ?
-- [ ] Scope MVP vs features differees
+### Visibilite
+
+- **Vue agregee** par defaut : repartition Giron/Pile/Cotice, niveau moyen, % d'eleves actifs (streak > 0)
+- **Detail individuel au clic** : Palotin choisi, niveau, XP, streak actuel, streak record
+- Permet de reperer les decrocheurs sans fliquer en permanence
+
+### XP bonus enseignant
+
+- **Non** — l'XP reste pure, se merite uniquement par le travail de l'eleve
+- L'enseignant a deja les gidouilles et cartes VIP comme leviers de recompense
+
+### Mode silencieux classe
+
+- L'enseignant peut activer un **mode silencieux** qui desactive les bulles pour tous les eleves pendant une duree choisie
+- Le buddy reste visible (icone) mais ne parle pas
+- Pas de desactivation individuelle (eviter l'effet punitif)
+- Utile en contexte d'evaluation ou de concentration
+
+---
+
+## Interactions sociales
+
+### Interaction entre Palotins (niv 17+)
+
+- **Reactions automatiques passives** : quand deux eleves de la meme classe sont connectes en meme temps, leurs Palotins se commentent mutuellement
+- Ex : "Tiens, le Palotin de [prenom] est en ligne aussi !", "On dirait que [prenom] bosse dur la-bas !"
+- Pas d'envoi de messages par l'eleve, pas d'interaction directe
+- Zero risque, zero effort, cree du lien passif
+
+### Visibilite du Palotin des autres
+
+- **Icone du Palotin visible** a cote du nom sur la page classe, des le niveau 1
+- **Niveau non visible** par les autres — seul le skin montre la progression (pas de chiffre)
+- **Exception** : titre "Palotin Royal" (niv 20) affiche explicitement
+
+### Anti-moquerie
+
+- Pas de leaderboard des niveaux de Palotins
+- Pas de chiffre visible, seul le skin reflète la progression
+- Tout le monde a un Palotin (pas de division "ceux qui ont / ceux qui n'ont pas")
+- Le Palotin de base (niv 1) doit etre visuellement cool, juste plus simple
+- Les reactions automatiques entre Palotins sont toujours positives ou droles
+
+---
+
+## Roadmap
+
+### MVP (v1) — Le buddy qui marche (~2-3 semaines)
+
+| Feature              | Detail                                                                                        |
+| -------------------- | --------------------------------------------------------------------------------------------- |
+| Choix du Palotin     | Quiz 4 questions + presentation + choix libre                                                 |
+| Buddy visible        | Bas-droite desktop (80-100px), icone mobile (60px)                                            |
+| Messages pre-ecrits  | Correct, incorrect, idle, streak, level up, themes, onboarding                                |
+| Systeme XP           | Sources d'XP, cap journalier, table de niveaux 1-20                                           |
+| Streak               | Compteur, bonus XP, perte emotionnelle (Palotin triste)                                       |
+| Niveaux 1-10         | Deblocages : bulles idle, streaks, hints basiques (niv 5), bonus gidouille quotidien (niv 10) |
+| Apparence base       | 1 image par Palotin (6 expressions du character sheet)                                        |
+| DB                   | Tables `student_buddies` + `buddy_skins`                                                      |
+| Dashboard enseignant | Vue agregee + detail au clic                                                                  |
+| Changement Palotin   | 1er gratuit, puis payant                                                                      |
+
+**Pas dans le MVP** : skins de niveau, hints IA, anecdotes, idle lore, interactions sociales, cartes VIP buddy, mode silencieux, animations.
+
+### v1.1 — Le buddy qui parle (~1 semaine)
+
+| Feature              | Detail                                             |
+| -------------------- | -------------------------------------------------- |
+| Anecdotes de niveau  | 10 par Palotin, debloquees tous les 2 niveaux      |
+| Idle lore            | 15 par Palotin, aleatoire a partir du niv 5        |
+| Messages themes      | Commentaires par type d'exercice                   |
+| Reactions cartes VIP | Messages quand l'eleve obtient une carte (niv 14+) |
+
+Contenu deja ecrit (396 textes). Il suffit de brancher la logique de deblocage.
+
+### v1.2 — Le buddy qui evolue (~2 semaines)
+
+| Feature         | Detail                                                    |
+| --------------- | --------------------------------------------------------- |
+| Skins de niveau | 6 skins par Palotin (niv 1, 4, 8, 12, 16, 20) = 18 images |
+| Animations CSS  | Idle (balancement), reactions (bounce, tremblement)       |
+| Niveaux 11-20   | Tous les deblocages restants                              |
+
+Depend des assets visuels.
+
+### v2 — Le buddy social et IA (~3-4 semaines)
+
+| Feature                       | Detail                                                                  |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| Hints IA                      | `/api/buddy-chat` via Groq, hints contextuels                           |
+| Skins VIP                     | Nouvelles cartes `unlock_buddy_skin`, `buddy_xp_boost`, `streak_shield` |
+| Interactions sociales         | Reactions automatiques entre Palotins (niv 17+)                         |
+| Mode silencieux classe        | Controle enseignant                                                     |
+| Icone Palotin sur page classe | Visible par les camarades                                               |
+
+### v3 (si succes) — Le buddy immersif
+
+| Feature             | Detail                                           |
+| ------------------- | ------------------------------------------------ |
+| Animations Rive     | State machine, transitions fluides entre humeurs |
+| Arcs narratifs      | Mini-quetes, histoire suivie                     |
+| Messages IA etendus | Commentaires contextuels rares                   |
+
+---
+
+## Toutes les decisions sont prises. La spec est complete et prete pour le plan d'implementation.
