@@ -42,6 +42,7 @@
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import { consent } from '$lib/stores/consent.svelte';
 	import ConsentBanner from '$lib/components/ConsentBanner.svelte';
+	import BuddyWidget from '$lib/components/buddy/BuddyWidget.svelte';
 	import { onMount } from 'svelte';
 
 	// Get server data (includes consentStatus from parent protected layout)
@@ -79,6 +80,11 @@
 <!-- Consent Banner (shows warning for students without parental consent) -->
 {#if data.consentStatus}
 	<ConsentBanner consentStatus={data.consentStatus} />
+{/if}
+
+<!-- Buddy Widget (always visible for students with a buddy) -->
+{#if data.buddy}
+	<BuddyWidget streakLost={data.streakLost} />
 {/if}
 
 {@render children()}
