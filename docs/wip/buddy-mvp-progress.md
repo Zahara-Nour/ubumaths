@@ -6,7 +6,7 @@
 
 ## Etat actuel
 
-**Phase en cours** : Phase 9 (changement palotin + quality checks)
+**Statut** : MVP COMPLET - toutes les phases implementees
 
 ## Phases
 
@@ -108,7 +108,20 @@ Integre dans les phases precedentes :
 
 - `src/routes/(protected)/dashboard/teacher/gamification/+layout.svelte` — ajout tab "Palotins"
 
-### Phase 9 — Changement palotin + quality checks ⬜
+### Phase 9 — Changement palotin + quality checks ✅
+
+**Fichiers crees** :
+
+- `src/lib/components/buddy/ChangePalotinModal.svelte` — modal avec cout (1er gratuit, puis 50 gidouilles), confirmation, XP conservee
+
+**Fichiers modifies** :
+
+- `src/routes/(protected)/dashboard/student/+layout.svelte` — integration ChangePalotinModal via BuddyWidget callback
+
+**Quality checks** :
+
+- ESLint : 0 erreurs sur tous les fichiers buddy (.ts + .svelte)
+- TypeScript : 0 erreurs dans notre code (seules erreurs dans node_modules/zod v4 locales, pre-existantes)
 
 ## Decisions prises pendant l'implementation
 

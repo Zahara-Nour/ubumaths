@@ -44,10 +44,12 @@
 	import ConsentBanner from '$lib/components/ConsentBanner.svelte';
 	import BuddyWidget from '$lib/components/buddy/BuddyWidget.svelte';
 	import PalotinQuiz from '$lib/components/buddy/PalotinQuiz.svelte';
+	import ChangePalotinModal from '$lib/components/buddy/ChangePalotinModal.svelte';
 	import { onMount } from 'svelte';
 
 	let showQuiz = $state(false);
 	let buddyChosen = $state(false);
+	let showChangeModal = $state(false);
 
 	// Get server data (includes consentStatus from parent protected layout)
 	let { data, children } = $props();
@@ -105,7 +107,16 @@
 
 <!-- Buddy Widget (always visible for students with a buddy) -->
 {#if buddyChosen}
-	<BuddyWidget streakLost={data.streakLost} />
+	<BuddyWidget streakLost={data.streakLost} onChangePalotin={() => (showChangeModal = true)} />
+{/if}
+
+<!-- Change Palotin Modal -->
+{#if showChangeModal && data.buddy}
+	<ChangePalotinModal
+		bind:open={showChangeModal}
+		buddy={data.buddy}
+		onClose={() => (showChangeModal = false)}
+	/>
 {/if}
 
 {@render children()}
