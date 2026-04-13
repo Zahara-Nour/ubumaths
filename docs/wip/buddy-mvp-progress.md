@@ -6,7 +6,7 @@
 
 ## Etat actuel
 
-**Phase en cours** : Phase 4 (widget UI)
+**Phase en cours** : Phase 5 (quiz selection)
 
 ## Phases
 
@@ -53,7 +53,19 @@
 - `src/routes/api/student/buddy/xp/+server.ts` — POST (add XP from exercise)
 - `src/routes/api/student/buddy/change/+server.ts` — POST (change palotin, 1er gratuit puis 50 gidouilles)
 
-### Phase 4 — Widget UI ⬜
+### Phase 4 — Widget UI ✅
+
+**Fichiers crees** :
+
+- `src/lib/components/buddy/buddy-message-engine.ts` — selection messages avec anti-repetition, mapping contexte→expression
+- `src/lib/components/buddy/BuddySpeechBubble.svelte` — bulle avec fade, max 70vw mobile, pointeur
+- `src/lib/components/buddy/BuddyAvatar.svelte` — image palotin + fallback cercle colore si pas d'image
+- `src/lib/components/buddy/BuddyStatusPanel.svelte` — barre XP, niveau, streak, bouton changer
+- `src/lib/components/buddy/BuddyWidget.svelte` — conteneur fixed bottom-right, idle messages, streak badge, export showMessage()
+
+**Fichiers modifies** :
+
+- `src/routes/(protected)/dashboard/student/+layout.svelte` — render BuddyWidget si buddy existe
 
 ### Phase 5 — Quiz selection ⬜
 
