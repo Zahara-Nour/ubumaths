@@ -1,6 +1,6 @@
 # 2048 Gidouilles - Document de progression
 
-## Etat actuel : Phases 1-4 terminees
+## Etat actuel : TERMINE (phases 1-5)
 
 ## Decisions prises
 
@@ -51,6 +51,13 @@
   - Reset des donnees dans startNewGame()
   - Svelte autofixer : keys ajoutees aux each milestones
 
-## Prochaines etapes
+### Phase 5 - Fixes code review
 
-- **Phase 5** : Verification finale (tests, lint, code review)
+- Migration : utilise `achievements` (universal) au lieu de `game_achievements` (legacy)
+- Migration : ajoute '2048' au CHECK constraint `achievements.context`
+- API : milestones deplacees hors du guard `theoreticalReward > 0` (games_played fonctionne pour score < 1000)
+- API : type cast propre pour school_id (MembershipWithClass)
+- API : race-safe milestone insert avec `.select('id')` check
+- Frontend : supprime milestones dead code dans Victory dialog (server save pas encore fait)
+
+## Etat : TERMINE

@@ -205,7 +205,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.limit(1)
 				.maybeSingle();
 
-			const schoolId = (membership?.classes as unknown as { school_id: string })?.school_id;
+			type MembershipWithClass = { classes: { school_id: string } };
+			const schoolId = (membership as MembershipWithClass | null)?.classes?.school_id;
 
 			if (schoolId) {
 				// Record reward via atomic RPC (handles daily cap per game type)
@@ -237,17 +238,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					};
 				}
 			}
-
-			// ================================================================
-			// Milestones (one-time achievements)
-			// ================================================================
-			await checkAndAward2048Milestones(
-				supabase,
-				user.id,
-				{ reached_2048, reached_4096, games_played, best_score },
-				milestones
-			);
 		}
+
+		// ================================================================
+		// Milestones (one-time achievements) - independent of score threshold
+		// ================================================================
+		await checkAndAward2048Milestones(
+			supabase,
+			user.id,
+			{ reached_2048, reached_4096, games_played, best_score },
+			milestones
+		);
 
 		// Build and validate response
 		const response = {
@@ -310,11 +311,12 @@ async function checkAndAward2048Milestones(
 	const eligibleSlugs = checks.filter((c) => c.condition).map((c) => c.slug);
 	if (eligibleSlugs.length === 0) return;
 
-	// Fetch achievement definitions for eligible milestones
+	// Fetch achievement definitions from universal achievements table
+	// (id is TEXT slug in this table)
 	const { data: achievements } = await supabase
-		.from('game_achievements')
-		.select('id, slug, name, gidouilles_reward')
-		.in('slug', eligibleSlugs);
+		.from('achievements')
+		.select('id, name, metadata')
+		.in('id', eligibleSlugs);
 
 	if (!achievements || achievements.length === 0) return;
 
@@ -332,38 +334,45 @@ async function checkAndAward2048Milestones(
 	for (const achievement of achievements) {
 		if (existingIds.has(achievement.id)) continue;
 
-		// Insert into student_achievements
-		const { error: insertError } = await supabase.from('student_achievements').insert({
-			student_id: userId,
-			achievement_id: achievement.id,
-			gidouilles_awarded: achievement.gidouilles_reward,
-			points_awarded: 0,
-			unlock_reason: 'Game milestone'
-		});
+		const gidouillesReward =
+			(achievement.metadata as { gidouilles_reward?: number })?.gidouilles_reward ?? 0;
+		if (gidouillesReward <= 0) continue;
+
+		// Insert into student_achievements (race-safe: unique index prevents duplicates)
+		const { data: insertResult, error: insertError } = await supabase
+			.from('student_achievements')
+			.insert({
+				student_id: userId,
+				achievement_id: achievement.id,
+				gidouilles_awarded: gidouillesReward,
+				points_awarded: 0,
+				unlock_reason: 'Game milestone'
+			})
+			.select('id');
 
 		if (insertError) {
-			console.error('[API] Error awarding milestone:', achievement.slug, insertError);
+			// Unique constraint violation = concurrent race, skip silently
+			console.error('[API] Error awarding milestone:', achievement.id, insertError);
 			continue;
 		}
+
+		// Only credit gidouilles if the row was actually inserted
+		if (!insertResult || insertResult.length === 0) continue;
 
 		// Credit gidouilles to profile
 		const { error: gidouillesError } = await supabase.rpc('update_student_gidouilles', {
 			p_student_id: userId,
-			p_delta: achievement.gidouilles_reward
+			p_delta: gidouillesReward
 		});
 
 		if (gidouillesError) {
-			console.error(
-				'[API] Error crediting milestone gidouilles:',
-				achievement.slug,
-				gidouillesError
-			);
+			console.error('[API] Error crediting milestone gidouilles:', achievement.id, gidouillesError);
 		}
 
 		milestones.push({
-			slug: achievement.slug,
+			slug: achievement.id,
 			name: achievement.name,
-			gidouilles_reward: achievement.gidouilles_reward
+			gidouilles_reward: gidouillesReward
 		});
 	}
 }
