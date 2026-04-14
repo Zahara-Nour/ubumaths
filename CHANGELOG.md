@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.73](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.72...v0.8.73) (2026-04-14)
+
+### 🐛 Bug Fixes
+
+- **buddy:** move buddy-xp to shared utils to fix build error ([549c8ff](https://github.com/Zahara-Nour/ubumaths/commit/549c8ffcfe7e0e2ee5b944cb02473a7b446460c8))
+
 ### [0.8.72](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.71...v0.8.72) (2026-04-14)
 
 ### 🐛 Bug Fixes
