@@ -1,6 +1,6 @@
 # 2048 Gidouilles - Document de progression
 
-## Etat actuel : Phases 1-3 terminees
+## Etat actuel : Phases 1-4 terminees
 
 ## Decisions prises
 
@@ -40,7 +40,17 @@
   - Credit gidouilles milestones via update_student_gidouilles RPC
   - Reponse enrichie : reward (nullable) + milestones array
 
+### Phase 4 - Frontend
+
+- `src/routes/(public)/games/2048/Game2048.svelte`
+  - Ajout state rewardData et unlockedMilestones
+  - saveScoreToServer() capture reward + milestones de la reponse API
+  - Game Over Dialog : affiche gidouille gagnee, valeur theorique, meilleur semaine
+  - Victory Dialog : affiche milestones debloques
+  - Score < 1000 : message informatif
+  - Reset des donnees dans startNewGame()
+  - Svelte autofixer : keys ajoutees aux each milestones
+
 ## Prochaines etapes
 
-- **Phase 4** : Frontend Game2048.svelte (affichage rewards dans dialogs)
-- **Phase 5** : Verification finale (types, lint, autofixer, code review)
+- **Phase 5** : Verification finale (tests, lint, code review)

@@ -33,6 +33,15 @@
 	let reached4096 = $state(false);
 	let scoreSavedToServer = $state(false);
 
+	// Reward data from server response
+	let rewardData = $state<{
+		theoretical_reward: number;
+		actual_reward: number;
+		is_first_win_of_day: boolean;
+		week_best_reward: number;
+	} | null>(null);
+	let unlockedMilestones = $state<{ slug: string; name: string; gidouilles_reward: number }[]>([]);
+
 	// Initialize best score: server > localStorage > 0
 	if (browser) {
 		// Server score takes priority if available
@@ -130,6 +139,13 @@
 						localStorage.setItem(STORAGE_KEY_BEST_SCORE, bestScore.toString());
 					}
 				}
+				// Capture reward data
+				if (data.reward) {
+					rewardData = data.reward;
+				}
+				if (data.milestones && data.milestones.length > 0) {
+					unlockedMilestones = data.milestones;
+				}
 			}
 		} catch {
 			// Silent failure - localStorage still has the score
@@ -210,6 +226,8 @@
 		reached2048 = false;
 		reached4096 = false;
 		scoreSavedToServer = false;
+		rewardData = null;
+		unlockedMilestones = [];
 
 		// Clear saved game state when starting fresh
 		if (browser) {
@@ -462,7 +480,44 @@
 		</Dialog.Header>
 		<div class="py-6 text-center">
 			<div class="mb-2 text-lg">Score final :</div>
-			<div class="mb-6 text-4xl font-bold">{gameState.score}</div>
+			<div class="mb-4 text-4xl font-bold">{gameState.score}</div>
+
+			{#if canSaveScore && rewardData}
+				<div class="mb-4 space-y-2 rounded-lg bg-muted/50 p-3 text-sm">
+					{#if rewardData.is_first_win_of_day}
+						<div class="text-2xl font-bold text-primary">+1 gidouille</div>
+					{:else}
+						<div class="text-muted-foreground">Gidouille 2048 déjà gagnée aujourd'hui</div>
+					{/if}
+					<div class="flex items-center justify-between">
+						<span>Valeur théorique</span>
+						<span class="font-mono font-medium">{rewardData.theoretical_reward.toFixed(2)}g</span>
+					</div>
+					<div class="flex items-center justify-between rounded bg-primary/10 px-2 py-1">
+						<span>Meilleur cette semaine</span>
+						<span class="font-mono font-medium text-primary"
+							>{rewardData.week_best_reward.toFixed(2)}g</span
+						>
+					</div>
+				</div>
+			{:else if canSaveScore && gameState.score < 1000}
+				<div class="mb-4 text-sm text-muted-foreground">
+					Score minimum de 1 000 pour gagner des gidouilles
+				</div>
+			{/if}
+
+			{#if unlockedMilestones.length > 0}
+				<div class="mb-4 space-y-1 rounded-lg bg-yellow-50 p-3 text-sm dark:bg-yellow-950/30">
+					<div class="font-semibold">Succès débloqués !</div>
+					{#each unlockedMilestones as milestone (milestone.slug)}
+						<div class="flex items-center justify-between">
+							<span>{milestone.name}</span>
+							<span class="font-mono font-bold text-primary">+{milestone.gidouilles_reward}g</span>
+						</div>
+					{/each}
+				</div>
+			{/if}
+
 			<Button onclick={startNewGame} size="lg" class="w-full">Rejouer</Button>
 		</div>
 	</Dialog.Content>
@@ -477,7 +532,20 @@
 		</Dialog.Header>
 		<div class="py-6 text-center">
 			<div class="mb-2 text-lg">Score :</div>
-			<div class="mb-6 text-4xl font-bold">{gameState.score}</div>
+			<div class="mb-4 text-4xl font-bold">{gameState.score}</div>
+
+			{#if unlockedMilestones.length > 0}
+				<div class="mb-4 space-y-1 rounded-lg bg-yellow-50 p-3 text-sm dark:bg-yellow-950/30">
+					<div class="font-semibold">Succès débloqués !</div>
+					{#each unlockedMilestones as milestone (milestone.slug)}
+						<div class="flex items-center justify-between">
+							<span>{milestone.name}</span>
+							<span class="font-mono font-bold text-primary">+{milestone.gidouilles_reward}g</span>
+						</div>
+					{/each}
+				</div>
+			{/if}
+
 			<div class="flex flex-col gap-3">
 				<Button onclick={continueGame} size="lg" class="w-full">Continuer</Button>
 				<Button onclick={startNewGame} variant="outline" size="lg" class="w-full">Rejouer</Button>
