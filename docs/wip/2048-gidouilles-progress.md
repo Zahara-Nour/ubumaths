@@ -1,6 +1,6 @@
 # 2048 Gidouilles - Document de progression
 
-## Etat actuel : Phases 1-2 terminees
+## Etat actuel : Phases 1-3 terminees
 
 ## Decisions prises
 
@@ -29,8 +29,18 @@
 - `src/lib/server/games/reward-2048.test.ts` - Tests unitaires
 - `src/lib/server/validation/games.ts` - Schemas Zod : reward2048Schema, milestone2048Schema, submit2048ScoreWithRewardResponseSchema
 
+### Phase 3 - Endpoint API
+
+- `src/routes/api/games/2048/scores/+server.ts`
+  - POST handler enrichi : calcul reward theorique, appel record_game_reward RPC, milestones check
+  - Utilise calculate2048TheoreticalReward() pour le score theorique
+  - Recupere school_id via class_members + classes join
+  - Genere UUID par soumission comme game_id
+  - Check et award milestones via game_achievements + student_achievements
+  - Credit gidouilles milestones via update_student_gidouilles RPC
+  - Reponse enrichie : reward (nullable) + milestones array
+
 ## Prochaines etapes
 
-- **Phase 3** : Modifier POST /api/games/2048/scores (reward + milestones)
 - **Phase 4** : Frontend Game2048.svelte (affichage rewards dans dialogs)
 - **Phase 5** : Verification finale (types, lint, autofixer, code review)
