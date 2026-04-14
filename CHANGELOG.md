@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.71](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.70...v0.8.71) (2026-04-14)
+
+### 📚 Documentation
+
+- **buddy:** complete spec with teacher role, social features, and roadmap ([2eb5853](https://github.com/Zahara-Nour/ubumaths/commit/2eb5853a098abd10e52ceb89beac774c424c0099))
+- **buddy:** update progress doc - migration confirmed pushed ([3d60771](https://github.com/Zahara-Nour/ubumaths/commit/3d6077150f6cf4e035c3571d2d72d16c2b31b2f8))
+
+### ✨ Features
+
+- **2048:** add gidouilles reward system (phases 1-2) ([d1ce86b](https://github.com/Zahara-Nour/ubumaths/commit/d1ce86b50a2b0fbbc109613312f34096e60c673c))
+- **2048:** add reward display in game over and victory dialogs (phase 4) ([3070488](https://github.com/Zahara-Nour/ubumaths/commit/3070488edf40377b54cbf08b2c1d489d88e4dd8a))
+- **2048:** add reward logic to score submission endpoint (phase 3) ([5c87cd8](https://github.com/Zahara-Nour/ubumaths/commit/5c87cd8adb20718fbeb93afbfd04f5cfe276add1))
+- **buddy:** add buddy widget UI components (phase 4) ([4a56e09](https://github.com/Zahara-Nour/ubumaths/commit/4a56e090df76c5bb49095871f78d5e32ff00409b))
+- **buddy:** add change Palotin modal and complete MVP (phase 9) ([ba61290](https://github.com/Zahara-Nour/ubumaths/commit/ba6129054f37c2bd069fba56f1bad7820cb89f4b))
+- **buddy:** add database, server logic, cache, and API endpoints (phases 1-3) ([a765179](https://github.com/Zahara-Nour/ubumaths/commit/a765179e6dae528c8fe7695a91f2c5175d0fa110))
+- **buddy:** add Palotin companion system spec and pre-written messages ([60e56c5](https://github.com/Zahara-Nour/ubumaths/commit/60e56c58d936f8b619de11213aeb3073b1e8bf0a))
+- **buddy:** add Palotin personality quiz selection flow (phase 5) ([bb07277](https://github.com/Zahara-Nour/ubumaths/commit/bb07277a8634341b1889b423b7a441266163c9bb))
+- **buddy:** add teacher Palotins dashboard (phase 8) ([ef6f10c](https://github.com/Zahara-Nour/ubumaths/commit/ef6f10c50e7810b16f43d8d2603bd1b551e880ce))
+- **buddy:** hook XP gains into interactive systems (phases 6-7) ([9eac50b](https://github.com/Zahara-Nour/ubumaths/commit/9eac50b62ddc76b367a78b12017c96537532bd17))
+
+### 🐛 Bug Fixes
+
+- **2048:** address code review findings (phase 5) ([bf848ec](https://github.com/Zahara-Nour/ubumaths/commit/bf848eca785f46a06416e1e6948cdf568efc124e))
+- **validation:** handle leading zeros with digit-grouping thin space ([eadf101](https://github.com/Zahara-Nour/ubumaths/commit/eadf101fdc5fa136045e5dfa5c400bf23f8b25fb))
+
 ### [0.8.70](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.69...v0.8.70) (2026-04-12)
 
 ### ✨ Features
