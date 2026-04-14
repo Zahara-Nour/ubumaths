@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.72](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.71...v0.8.72) (2026-04-14)
+
+### 🐛 Bug Fixes
+
+- **2048:** wait for server response before showing game over dialog ([82834ec](https://github.com/Zahara-Nour/ubumaths/commit/82834eceeee4fbf25d708ab87dffd960b02a3a65))
+
 ### [0.8.71](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.70...v0.8.71) (2026-04-14)
 
 ### 📚 Documentation
