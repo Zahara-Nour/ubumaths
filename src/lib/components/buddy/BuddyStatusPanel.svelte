@@ -7,8 +7,7 @@
 
 <script lang="ts">
 	import type { BuddyState } from '$lib/types/buddy';
-	import { xpProgress } from '$lib/server/buddy-xp';
-	import { MAX_LEVEL } from '$lib/server/buddy-xp';
+	import { xpProgress, MAX_LEVEL } from '$lib/utils/buddy-xp';
 	import { Progress } from '$lib/components/ui/progress';
 	import { Button } from '$lib/components/ui/button';
 	import { Flame, Star, ArrowRightLeft, X } from 'lucide-svelte';
