@@ -63,13 +63,44 @@ export const leaderboard2048QuerySchema = z.object({
 // ============================================================================
 
 /**
- * Response schema for POST /api/games/2048/scores
+ * Response schema for POST /api/games/2048/scores (legacy, without rewards)
  */
 export const submit2048ScoreResponseSchema = z.object({
 	success: z.literal(true),
 	best_score: z.number().int().nonnegative(),
 	is_new_best: z.boolean(),
 	games_played: z.number().int().positive()
+});
+
+/**
+ * Schema for 2048 reward data returned in score submission response
+ */
+export const reward2048Schema = z.object({
+	theoretical_reward: z.number().nonnegative(),
+	actual_reward: z.number().nonnegative(),
+	is_first_win_of_day: z.boolean(),
+	week_best_reward: z.number().nonnegative()
+});
+
+/**
+ * Schema for a milestone unlocked during a 2048 game
+ */
+export const milestone2048Schema = z.object({
+	slug: z.string(),
+	name: z.string(),
+	gidouilles_reward: z.number().nonnegative()
+});
+
+/**
+ * Response schema for POST /api/games/2048/scores (with rewards)
+ */
+export const submit2048ScoreWithRewardResponseSchema = z.object({
+	success: z.literal(true),
+	best_score: z.number().int().nonnegative(),
+	is_new_best: z.boolean(),
+	games_played: z.number().int().positive(),
+	reward: reward2048Schema.nullable(),
+	milestones: z.array(milestone2048Schema)
 });
 
 /**
