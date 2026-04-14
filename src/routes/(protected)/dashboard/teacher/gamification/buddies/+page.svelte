@@ -11,7 +11,7 @@
 	import { Progress } from '$lib/components/ui/progress';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Star, Flame, ChevronDown, ChevronUp } from 'lucide-svelte';
-	import { xpProgress, MAX_LEVEL } from '$lib/server/buddy-xp';
+	import { xpProgress, MAX_LEVEL } from '$lib/utils/buddy-xp';
 
 	let { data }: { data: PageData } = $props();
 
@@ -113,8 +113,8 @@
 										</div>
 
 										<!-- XP progress -->
+										{@const prog = xpProgress(student.xp, student.level)}
 										<div class="hidden w-20 sm:block">
-											{@const prog = xpProgress(student.xp, student.level)}
 											<Progress
 												value={student.level >= MAX_LEVEL
 													? 100

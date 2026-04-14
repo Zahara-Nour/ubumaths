@@ -9,7 +9,7 @@
 	import type { PalotinType } from '$lib/config/buddy-messages';
 	import type { BuddyQuizAnswer } from '$lib/types/buddy';
 	import { QUIZ_QUESTIONS } from '$lib/config/buddy-quiz';
-	import { scoreQuiz } from '$lib/server/buddy-xp';
+	import { scoreQuiz } from '$lib/utils/buddy-xp';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import PalotinQuizQuestion from './PalotinQuizQuestion.svelte';
 	import PalotinResult from './PalotinResult.svelte';
