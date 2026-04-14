@@ -532,20 +532,7 @@
 		</Dialog.Header>
 		<div class="py-6 text-center">
 			<div class="mb-2 text-lg">Score :</div>
-			<div class="mb-4 text-4xl font-bold">{gameState.score}</div>
-
-			{#if unlockedMilestones.length > 0}
-				<div class="mb-4 space-y-1 rounded-lg bg-yellow-50 p-3 text-sm dark:bg-yellow-950/30">
-					<div class="font-semibold">Succès débloqués !</div>
-					{#each unlockedMilestones as milestone (milestone.slug)}
-						<div class="flex items-center justify-between">
-							<span>{milestone.name}</span>
-							<span class="font-mono font-bold text-primary">+{milestone.gidouilles_reward}g</span>
-						</div>
-					{/each}
-				</div>
-			{/if}
-
+			<div class="mb-6 text-4xl font-bold">{gameState.score}</div>
 			<div class="flex flex-col gap-3">
 				<Button onclick={continueGame} size="lg" class="w-full">Continuer</Button>
 				<Button onclick={startNewGame} variant="outline" size="lg" class="w-full">Rejouer</Button>

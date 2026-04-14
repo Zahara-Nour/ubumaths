@@ -287,17 +287,27 @@ END;
 $$;
 
 -- ============================================================================
--- 1e. Insert 2048 achievements
+-- 1e. Add '2048' to achievements context CHECK + insert 2048 achievements
 -- ============================================================================
 
-INSERT INTO game_achievements (slug, name, description, category, requirement_type, requirement_value, gidouilles_reward, icon_url)
+-- Expand context CHECK constraint to include '2048'
+ALTER TABLE public.achievements
+  DROP CONSTRAINT IF EXISTS achievements_context_check;
+
+ALTER TABLE public.achievements
+  ADD CONSTRAINT achievements_context_check
+  CHECK (context IN ('minesweeper', 'questions', 'assessments', 'srs', 'riddles', 'social', 'meta', 'system', '2048'));
+
+-- Insert 2048 achievements into the universal achievements table
+-- (id is TEXT slug, not UUID)
+INSERT INTO achievements (id, context, category, name, description, icon, unlock_type, metadata)
 VALUES
-  ('2048_first_2048', 'Premiere tuile 2048', 'Atteindre la tuile 2048 pour la premiere fois', '2048', 'milestone', 2048, 5, '/achievements/2048.svg'),
-  ('2048_first_4096', 'Premiere tuile 4096', 'Atteindre la tuile 4096 pour la premiere fois', '2048', 'milestone', 4096, 10, '/achievements/4096.svg'),
-  ('2048_10_games', '10 parties', 'Jouer 10 parties de 2048', '2048', 'games_played', 10, 2, '/achievements/10games.svg'),
-  ('2048_50_games', '50 parties', 'Jouer 50 parties de 2048', '2048', 'games_played', 50, 5, '/achievements/50games.svg'),
-  ('2048_score_50k', 'Score 50 000', 'Atteindre un score de 50 000 points', '2048', 'best_score', 50000, 3, '/achievements/50k.svg')
-ON CONFLICT (slug) DO NOTHING;
+  ('2048_first_2048', '2048', 'milestone', 'Premiere tuile 2048', 'Atteindre la tuile 2048 pour la premiere fois', '🏆', 'event_based', '{"gidouilles_reward": 5}'::jsonb),
+  ('2048_first_4096', '2048', 'milestone', 'Premiere tuile 4096', 'Atteindre la tuile 4096 pour la premiere fois', '💎', 'event_based', '{"gidouilles_reward": 10}'::jsonb),
+  ('2048_10_games', '2048', 'milestone', '10 parties', 'Jouer 10 parties de 2048', '🎮', 'progressive', '{"gidouilles_reward": 2}'::jsonb),
+  ('2048_50_games', '2048', 'milestone', '50 parties', 'Jouer 50 parties de 2048', '🎯', 'progressive', '{"gidouilles_reward": 5}'::jsonb),
+  ('2048_score_50k', '2048', 'milestone', 'Score 50 000', 'Atteindre un score de 50 000 points', '⭐', 'event_based', '{"gidouilles_reward": 3}'::jsonb)
+ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================================
 -- VERIFICATION
