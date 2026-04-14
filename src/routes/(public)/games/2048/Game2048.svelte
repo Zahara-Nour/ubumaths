@@ -155,9 +155,10 @@
 	// Derive dialog states from game state and trigger server save on game over
 	$effect(() => {
 		if (gameState.gameOver && !showGameOverDialog) {
-			showGameOverDialog = true;
-			// Save score to server when game ends
-			saveScoreToServer();
+			// Save score first, then open dialog (avoids layout jump from reward data arriving late)
+			saveScoreToServer().then(() => {
+				showGameOverDialog = true;
+			});
 		}
 		if (gameState.won && !victoryCelebrated) {
 			showVictoryDialog = true;
