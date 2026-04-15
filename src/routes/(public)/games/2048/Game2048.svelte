@@ -14,6 +14,7 @@
 	import {
 		initializeBoard,
 		move,
+		addRandomTile,
 		removeTile,
 		removeNewlySpawnedTile,
 		getEligibleBombTargets,
@@ -587,8 +588,12 @@
 		if (visionPreview) {
 			// Remove the random spawn
 			let board = removeNewlySpawnedTile(newState.board);
-			// Add the pre-generated spawn (if position is still empty)
-			board = addTileAt(board, visionPreview.position, visionPreview.value);
+			// Add the pre-generated spawn (fallback to random if predicted cell is now occupied)
+			if (board[visionPreview.position.row][visionPreview.position.col] !== null) {
+				board = addRandomTile(board);
+			} else {
+				board = addTileAt(board, visionPreview.position, visionPreview.value);
+			}
 			newState = { ...newState, board };
 
 			// Update vision for next move
@@ -762,8 +767,14 @@
 	// Wave 2 VIP Card Handlers (Fusion, Joker, Vision, Multiplier)
 	// ================================================================
 
-	async function handleFusion() {
-		if (cardUsage.fusion >= MAX_FUSION_PER_GAME || isCardLoading || gameState.gameOver) return;
+	function handleFusion() {
+		if (
+			fusionMode ||
+			cardUsage.fusion >= MAX_FUSION_PER_GAME ||
+			isCardLoading ||
+			gameState.gameOver
+		)
+			return;
 		if (!hasFusionTargets) {
 			toaster.error('Aucune paire de tuiles adjacentes identiques');
 			return;
@@ -772,13 +783,13 @@
 		fusionFirstTile = null;
 	}
 
-	function handleFusionFirstClick(row: number, col: number) {
+	async function handleFusionFirstClick(row: number, col: number) {
 		if (!fusionMode) return;
 		const neighbors = getFusionNeighbors(gameState.board, { row, col });
 		if (neighbors.length === 0) return;
 		if (neighbors.length === 1) {
 			// Only one neighbor: directly fuse
-			handleFusionSecondClick(neighbors[0].row, neighbors[0].col, { row, col });
+			await handleFusionSecondClick(neighbors[0].row, neighbors[0].col, { row, col });
 		} else {
 			fusionFirstTile = { row, col };
 		}
@@ -837,8 +848,9 @@
 		fusionFirstTile = null;
 	}
 
-	async function handleJoker() {
-		if (cardUsage.joker >= MAX_JOKER_PER_GAME || isCardLoading || gameState.gameOver) return;
+	function handleJoker() {
+		if (jokerMode || cardUsage.joker >= MAX_JOKER_PER_GAME || isCardLoading || gameState.gameOver)
+			return;
 		if (!hasJokerTargets) {
 			toaster.error('Aucune tuile eligible pour le Joker');
 			return;
