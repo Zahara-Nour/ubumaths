@@ -156,21 +156,28 @@
 	let isCardLoading = $state(false);
 
 	const isAuthenticated = $derived(canSaveScore);
+
+	// Determine the best bomb tier available (highest tier first: VIP cards, then gidouilles)
+	const bestBombMaxValue = $derived.by(() => {
+		// VIP card path: highest tier with an available card
+		if (vipCards) {
+			for (const tier of BOMB_TIERS) {
+				const cardId = BOMB_CARD_BY_TIER[tier];
+				for (const instance of Object.values(vipCards)) {
+					if (instance.cardId === cardId && !instance.usedAt) return tier;
+				}
+			}
+		}
+		// Gidouilles fallback: highest tier the player can afford
+		for (const tier of BOMB_TIERS) {
+			if (gidouilles >= (BOMB_COSTS[tier] ?? 3)) return tier;
+		}
+		return 4;
+	});
+
 	const hasBombTargets = $derived(
 		getEligibleBombTargets(gameState.board, bestBombMaxValue).length > 0
 	);
-
-	// Determine the best bomb card available (highest tier first)
-	const bestBombMaxValue = $derived.by(() => {
-		if (!vipCards) return 4;
-		for (const tier of BOMB_TIERS) {
-			const cardId = BOMB_CARD_BY_TIER[tier];
-			for (const instance of Object.values(vipCards)) {
-				if (instance.cardId === cardId && !instance.usedAt) return tier;
-			}
-		}
-		return 4; // fallback to cheapest tier for gidouilles
-	});
 
 	// Best bomb cost for gidouilles display
 	const bombCostGidouilles = $derived(BOMB_COSTS[bestBombMaxValue] ?? 3);
@@ -552,7 +559,11 @@
 		try {
 			if (pendingBombCard) {
 				const ok = await consumeVipCard(pendingBombCard.instanceId);
-				if (!ok) return;
+				if (!ok) {
+					bombMode = false;
+					pendingBombCard = null;
+					return;
+				}
 				bombCardsAvailable = Math.max(0, bombCardsAvailable - 1);
 				if (vipCards && vipCards[pendingBombCard.instanceId]) {
 					vipCards[pendingBombCard.instanceId].usedAt = new Date().toISOString();
@@ -560,7 +571,11 @@
 			} else {
 				const powerType = BOMB_POWER_TYPES[bombMaxValue] ?? 'bomb_4';
 				const ok = await payWithGidouilles(powerType);
-				if (!ok) return;
+				if (!ok) {
+					bombMode = false;
+					pendingBombCard = null;
+					return;
+				}
 			}
 
 			// Save state for potential undo
