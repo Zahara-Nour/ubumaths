@@ -13,6 +13,10 @@ import { countAvailableConsumableUses } from '$lib/utils/vip-cards';
 const UNDO_CARD_IDS = ['2048-undo'];
 const BOMB_CARD_IDS = ['2048-bomb', '2048-bomb-2', '2048-bomb-3'];
 const FREEZE_CARD_IDS = ['2048-freeze-spawn'];
+const FUSION_CARD_IDS = ['2048-merge'];
+const JOKER_CARD_IDS = ['2048-joker'];
+const VISION_CARD_IDS = ['2048-vision'];
+const MULTIPLIER_CARD_IDS = ['2048-multiplier', '2048-multiplier-2'];
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
@@ -27,6 +31,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 			undoCardsAvailable: 0,
 			bombCardsAvailable: 0,
 			freezeCardsAvailable: 0,
+			fusionCardsAvailable: 0,
+			jokerCardsAvailable: 0,
+			visionCardsAvailable: 0,
+			multiplierCardsAvailable: 0,
 			gidouilles: 0
 		};
 	}
@@ -43,6 +51,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 			undoCardsAvailable: 0,
 			bombCardsAvailable: 0,
 			freezeCardsAvailable: 0,
+			fusionCardsAvailable: 0,
+			jokerCardsAvailable: 0,
+			visionCardsAvailable: 0,
+			multiplierCardsAvailable: 0,
 			gidouilles: 0
 		};
 	}
@@ -69,6 +81,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 		undoCardsAvailable: countAvailableConsumableUses(vipCards, UNDO_CARD_IDS),
 		bombCardsAvailable: countAvailableConsumableUses(vipCards, BOMB_CARD_IDS),
 		freezeCardsAvailable: countAvailableConsumableUses(vipCards, FREEZE_CARD_IDS),
+		fusionCardsAvailable: countAvailableConsumableUses(vipCards, FUSION_CARD_IDS),
+		jokerCardsAvailable: countAvailableConsumableUses(vipCards, JOKER_CARD_IDS),
+		visionCardsAvailable: countAvailableConsumableUses(vipCards, VISION_CARD_IDS),
+		multiplierCardsAvailable: countAvailableConsumableUses(vipCards, MULTIPLIER_CARD_IDS),
 		gidouilles
 	};
 };

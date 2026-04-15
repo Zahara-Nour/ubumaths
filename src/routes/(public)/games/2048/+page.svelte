@@ -45,6 +45,10 @@
 			initialUndoCards={data.undoCardsAvailable}
 			initialBombCards={data.bombCardsAvailable}
 			initialFreezeCards={data.freezeCardsAvailable}
+			initialFusionCards={data.fusionCardsAvailable}
+			initialJokerCards={data.jokerCardsAvailable}
+			initialVisionCards={data.visionCardsAvailable}
+			initialMultiplierCards={data.multiplierCardsAvailable}
 			initialGidouilles={data.gidouilles}
 		/>
 	</div>

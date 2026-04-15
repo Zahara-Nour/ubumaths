@@ -16,9 +16,16 @@
 		move,
 		removeTile,
 		removeNewlySpawnedTile,
-		getEligibleBombTargets
+		getEligibleBombTargets,
+		getFusionTargets,
+		getFusionNeighbors,
+		mergeTilesAt,
+		getJokerTargets,
+		applyJoker,
+		generateNextSpawn,
+		addTileAt
 	} from './game-logic';
-	import type { GameState, Direction, Tile, GhostTile, VipCardUsage } from './types';
+	import type { GameState, Direction, Tile, GhostTile, VipCardUsage, VisionPreview } from './types';
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { browser } from '$app/environment';
@@ -26,15 +33,31 @@
 	// VIP card IDs
 	const UNDO_CARD_IDS = ['2048-undo'];
 	const FREEZE_CARD_IDS = ['2048-freeze-spawn'];
+	const FUSION_CARD_IDS = ['2048-merge'];
+	const JOKER_CARD_IDS = ['2048-joker'];
+	const VISION_CARD_IDS = ['2048-vision'];
+	const MULTIPLIER_CARD_IDS = ['2048-multiplier', '2048-multiplier-2'];
 
 	// Max uses per game
 	const MAX_UNDO_PER_GAME = 2;
 	const MAX_BOMB_PER_GAME = 3;
 	const MAX_FREEZE_PER_GAME = 2;
+	const MAX_FUSION_PER_GAME = 1;
+	const MAX_JOKER_PER_GAME = 1;
+	const MAX_VISION_PER_GAME = 2;
+	const MAX_MULTIPLIER_PER_GAME = 1;
 
 	// Gidouilles costs
 	const UNDO_COST = 5;
 	const FREEZE_COST = 3;
+	const FUSION_COST = 15;
+	const JOKER_COST = 10;
+	const VISION_COST = 3;
+	const MULTIPLIER_COSTS: Record<number, number> = { 1.5: 20, 2: 40 };
+	const MULTIPLIER_CARD_BY_FACTOR: Record<number, string> = {
+		1.5: '2048-multiplier',
+		2: '2048-multiplier-2'
+	};
 
 	// Bomb tier mapping
 	const BOMB_CARD_BY_TIER: Record<number, string> = {
@@ -58,6 +81,10 @@
 		initialUndoCards: number;
 		initialBombCards: number;
 		initialFreezeCards: number;
+		initialFusionCards: number;
+		initialJokerCards: number;
+		initialVisionCards: number;
+		initialMultiplierCards: number;
 		initialGidouilles: number;
 	}
 	let {
@@ -67,6 +94,10 @@
 		initialUndoCards = 0,
 		initialBombCards = 0,
 		initialFreezeCards = 0,
+		initialFusionCards = 0,
+		initialJokerCards = 0,
+		initialVisionCards = 0,
+		initialMultiplierCards = 0,
 		initialGidouilles = 0
 	}: Props = $props();
 
@@ -148,12 +179,31 @@
 	let bombMode = $state(false);
 	let bombMaxValue = $state(4);
 	let pendingBombCard = $state<{ instanceId: string; maxValue: number } | null>(null);
-	let cardUsage = $state<VipCardUsage>({ undo: 0, bomb: 0, freeze: 0 });
+	let cardUsage = $state<VipCardUsage>({
+		undo: 0,
+		bomb: 0,
+		freeze: 0,
+		fusion: 0,
+		joker: 0,
+		vision: 0,
+		multiplier: 0
+	});
 	let undoCardsAvailable = $state(initialUndoCards);
 	let bombCardsAvailable = $state(initialBombCards);
 	let freezeCardsAvailable = $state(initialFreezeCards);
+	let fusionCardsAvailable = $state(initialFusionCards);
+	let jokerCardsAvailable = $state(initialJokerCards);
+	let visionCardsAvailable = $state(initialVisionCards);
+	let multiplierCardsAvailable = $state(initialMultiplierCards);
 	let gidouilles = $state(initialGidouilles);
 	let isCardLoading = $state(false);
+
+	// Wave 2 states
+	let fusionMode = $state(false);
+	let fusionFirstTile = $state<{ row: number; col: number } | null>(null);
+	let jokerMode = $state(false);
+	let visionPreview = $state<VisionPreview | null>(null);
+	let scoreMultiplier = $state(1);
 
 	const isAuthenticated = $derived(canSaveScore);
 
@@ -181,6 +231,31 @@
 
 	// Best bomb cost for gidouilles display
 	const bombCostGidouilles = $derived(BOMB_COSTS[bestBombMaxValue] ?? 3);
+
+	// Fusion/Joker/Vision derived
+	const hasFusionTargets = $derived(getFusionTargets(gameState.board).length > 0);
+	const hasJokerTargets = $derived(getJokerTargets(gameState.board).length > 0);
+	const fusionNeighbors = $derived(
+		fusionFirstTile ? getFusionNeighbors(gameState.board, fusionFirstTile) : []
+	);
+
+	// Best multiplier factor available
+	const bestMultiplierFactor = $derived.by(() => {
+		if (vipCards) {
+			for (const factor of [2, 1.5]) {
+				const cardId = MULTIPLIER_CARD_BY_FACTOR[factor];
+				for (const instance of Object.values(vipCards)) {
+					if (instance.cardId === cardId && !instance.usedAt) return factor;
+				}
+			}
+		}
+		// Gidouilles fallback: best factor affordable
+		for (const factor of [2, 1.5]) {
+			if (gidouilles >= (MULTIPLIER_COSTS[factor] ?? 20)) return factor;
+		}
+		return 1.5;
+	});
+	const multiplierCostGidouilles = $derived(MULTIPLIER_COSTS[bestMultiplierFactor] ?? 20);
 
 	/**
 	 * Find first available VIP card instance ID for given card IDs
@@ -217,6 +292,28 @@
 						instance.usesRemaining > 0)
 				) {
 					return { instanceId, maxValue: tier };
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Find best multiplier card instance (highest factor first)
+	 */
+	function findMultiplierCardInstance(): { instanceId: string; factor: number } | null {
+		if (!vipCards) return null;
+		for (const factor of [2, 1.5]) {
+			const cardId = MULTIPLIER_CARD_BY_FACTOR[factor];
+			for (const [instanceId, instance] of Object.entries(vipCards)) {
+				if (
+					instance.cardId === cardId &&
+					!instance.usedAt &&
+					(instance.usesRemaining === undefined ||
+						instance.usesRemaining === null ||
+						instance.usesRemaining > 0)
+				) {
+					return { instanceId, factor };
 				}
 			}
 		}
@@ -334,7 +431,9 @@
 	// Derive dialog states from game state and trigger server save on game over
 	$effect(() => {
 		if (gameState.gameOver && !showGameOverDialog) {
-			bombMode = false; // clear bomb mode before dialog
+			bombMode = false;
+			fusionMode = false;
+			jokerMode = false; // clear all modes before dialog
 			// Save score first, then open dialog (avoids layout jump from reward data arriving late)
 			saveScoreToServer().then(() => {
 				showGameOverDialog = true;
@@ -415,7 +514,12 @@
 		skipNextSpawn = false;
 		bombMode = false;
 		pendingBombCard = null;
-		cardUsage = { undo: 0, bomb: 0, freeze: 0 };
+		fusionMode = false;
+		fusionFirstTile = null;
+		jokerMode = false;
+		visionPreview = null;
+		scoreMultiplier = 1;
+		cardUsage = { undo: 0, bomb: 0, freeze: 0, fusion: 0, joker: 0, vision: 0, multiplier: 0 };
 
 		// Clear saved game state when starting fresh
 		if (browser) {
@@ -436,7 +540,7 @@
 	 * (not CSS transitions), so no two-frame hack is needed.
 	 */
 	function handleMove(direction: Direction) {
-		if (gameState.gameOver || bombMode) return;
+		if (gameState.gameOver || bombMode || fusionMode || jokerMode) return;
 
 		// Save current state for undo (deep copy)
 		previousState = JSON.parse(JSON.stringify(gameState));
@@ -479,6 +583,36 @@
 				board: removeNewlySpawnedTile(newState.board)
 			};
 			skipNextSpawn = false;
+		}
+
+		// Vision: replace random spawn with pre-generated one
+		if (visionPreview) {
+			// Remove the random spawn
+			let board = removeNewlySpawnedTile(newState.board);
+			// Add the pre-generated spawn (if position is still empty)
+			board = addTileAt(board, visionPreview.position, visionPreview.value);
+			newState = { ...newState, board };
+
+			// Update vision for next move
+			const remaining = visionPreview.movesRemaining - 1;
+			if (remaining > 0) {
+				const nextSpawn = generateNextSpawn(board);
+				visionPreview = nextSpawn
+					? { position: nextSpawn.position, value: nextSpawn.value, movesRemaining: remaining }
+					: null;
+			} else {
+				visionPreview = null;
+			}
+		}
+
+		// Score Multiplier: boost the score gain from merges
+		if (scoreMultiplier > 1) {
+			const originalScore = gameState.score;
+			const scoreGain = newState.score - originalScore;
+			if (scoreGain > 0) {
+				const extraScore = Math.round(scoreGain * (scoreMultiplier - 1));
+				newState = { ...newState, score: newState.score + extraScore };
+			}
 		}
 
 		// Apply new state directly — animations are CSS keyframes, not transitions
@@ -621,6 +755,200 @@
 			skipNextSpawn = true;
 			cardUsage = { ...cardUsage, freeze: cardUsage.freeze + 1 };
 			toaster.success('Prochain coup sans nouvelle tuile !');
+		} finally {
+			isCardLoading = false;
+		}
+	}
+
+	// ================================================================
+	// Wave 2 VIP Card Handlers (Fusion, Joker, Vision, Multiplier)
+	// ================================================================
+
+	async function handleFusion() {
+		if (cardUsage.fusion >= MAX_FUSION_PER_GAME || isCardLoading || gameState.gameOver) return;
+		if (!hasFusionTargets) {
+			toaster.error('Aucune paire de tuiles adjacentes identiques');
+			return;
+		}
+		fusionMode = true;
+		fusionFirstTile = null;
+	}
+
+	function handleFusionFirstClick(row: number, col: number) {
+		if (!fusionMode) return;
+		const neighbors = getFusionNeighbors(gameState.board, { row, col });
+		if (neighbors.length === 0) return;
+		if (neighbors.length === 1) {
+			// Only one neighbor: directly fuse
+			handleFusionSecondClick(neighbors[0].row, neighbors[0].col, { row, col });
+		} else {
+			fusionFirstTile = { row, col };
+		}
+	}
+
+	async function handleFusionSecondClick(
+		row: number,
+		col: number,
+		firstTile?: { row: number; col: number }
+	) {
+		if (!fusionMode || isCardLoading) return;
+		const pos1 = firstTile ?? fusionFirstTile;
+		if (!pos1) return;
+
+		isCardLoading = true;
+		try {
+			const instanceId = findCardInstanceId(FUSION_CARD_IDS);
+			if (instanceId) {
+				const ok = await consumeVipCard(instanceId);
+				if (!ok) {
+					fusionMode = false;
+					fusionFirstTile = null;
+					return;
+				}
+				fusionCardsAvailable = Math.max(0, fusionCardsAvailable - 1);
+				if (vipCards && vipCards[instanceId]) {
+					vipCards[instanceId].usedAt = new Date().toISOString();
+				}
+			} else {
+				const ok = await payWithGidouilles('fusion');
+				if (!ok) {
+					fusionMode = false;
+					fusionFirstTile = null;
+					return;
+				}
+			}
+
+			previousState = JSON.parse(JSON.stringify(gameState));
+			const result = mergeTilesAt(gameState.board, pos1, { row, col });
+			let newScore = gameState.score + result.scoreGain;
+			if (scoreMultiplier > 1 && result.scoreGain > 0) {
+				newScore += Math.round(result.scoreGain * (scoreMultiplier - 1));
+			}
+			gameState = { ...gameState, board: result.board, score: newScore };
+			fusionMode = false;
+			fusionFirstTile = null;
+			cardUsage = { ...cardUsage, fusion: cardUsage.fusion + 1 };
+			toaster.success('Fusion reussie !');
+		} finally {
+			isCardLoading = false;
+		}
+	}
+
+	function handleCancelFusion() {
+		fusionMode = false;
+		fusionFirstTile = null;
+	}
+
+	async function handleJoker() {
+		if (cardUsage.joker >= MAX_JOKER_PER_GAME || isCardLoading || gameState.gameOver) return;
+		if (!hasJokerTargets) {
+			toaster.error('Aucune tuile eligible pour le Joker');
+			return;
+		}
+		jokerMode = true;
+	}
+
+	async function handleJokerTarget(row: number, col: number) {
+		if (!jokerMode || isCardLoading) return;
+
+		isCardLoading = true;
+		try {
+			const instanceId = findCardInstanceId(JOKER_CARD_IDS);
+			if (instanceId) {
+				const ok = await consumeVipCard(instanceId);
+				if (!ok) {
+					jokerMode = false;
+					return;
+				}
+				jokerCardsAvailable = Math.max(0, jokerCardsAvailable - 1);
+				if (vipCards && vipCards[instanceId]) {
+					vipCards[instanceId].usedAt = new Date().toISOString();
+				}
+			} else {
+				const ok = await payWithGidouilles('joker');
+				if (!ok) {
+					jokerMode = false;
+					return;
+				}
+			}
+
+			previousState = JSON.parse(JSON.stringify(gameState));
+			gameState = { ...gameState, board: applyJoker(gameState.board, { row, col }) };
+			jokerMode = false;
+			cardUsage = { ...cardUsage, joker: cardUsage.joker + 1 };
+			toaster.success('Joker applique !');
+		} finally {
+			isCardLoading = false;
+		}
+	}
+
+	function handleCancelJoker() {
+		jokerMode = false;
+	}
+
+	async function handleVision() {
+		if (
+			cardUsage.vision >= MAX_VISION_PER_GAME ||
+			isCardLoading ||
+			visionPreview ||
+			gameState.gameOver
+		)
+			return;
+
+		isCardLoading = true;
+		try {
+			const instanceId = findCardInstanceId(VISION_CARD_IDS);
+			if (instanceId) {
+				const ok = await consumeVipCard(instanceId);
+				if (!ok) return;
+				visionCardsAvailable = Math.max(0, visionCardsAvailable - 1);
+				if (vipCards && vipCards[instanceId]) {
+					vipCards[instanceId].usedAt = new Date().toISOString();
+				}
+			} else {
+				const ok = await payWithGidouilles('vision');
+				if (!ok) return;
+			}
+
+			const spawn = generateNextSpawn(gameState.board);
+			if (spawn) {
+				visionPreview = { position: spawn.position, value: spawn.value, movesRemaining: 3 };
+			}
+			cardUsage = { ...cardUsage, vision: cardUsage.vision + 1 };
+			toaster.success('Vision activee pour 3 coups !');
+		} finally {
+			isCardLoading = false;
+		}
+	}
+
+	async function handleMultiplier() {
+		if (cardUsage.multiplier >= MAX_MULTIPLIER_PER_GAME || isCardLoading || gameState.gameOver)
+			return;
+		if (scoreMultiplier > 1) return; // already active
+
+		isCardLoading = true;
+		try {
+			const multiplierCard = findMultiplierCardInstance();
+			let factor: number;
+			if (multiplierCard) {
+				const ok = await consumeVipCard(multiplierCard.instanceId);
+				if (!ok) return;
+				multiplierCardsAvailable = Math.max(0, multiplierCardsAvailable - 1);
+				if (vipCards && vipCards[multiplierCard.instanceId]) {
+					vipCards[multiplierCard.instanceId].usedAt = new Date().toISOString();
+				}
+				factor = multiplierCard.factor;
+			} else {
+				// Gidouilles fallback: best affordable factor
+				factor = bestMultiplierFactor;
+				const powerType = factor === 2 ? 'multiplier_2' : 'multiplier_1_5';
+				const ok = await payWithGidouilles(powerType);
+				if (!ok) return;
+			}
+
+			scoreMultiplier = factor;
+			cardUsage = { ...cardUsage, multiplier: cardUsage.multiplier + 1 };
+			toaster.success(`Multiplicateur x${factor} active !`);
 		} finally {
 			isCardLoading = false;
 		}
