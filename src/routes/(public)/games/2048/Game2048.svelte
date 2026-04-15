@@ -36,8 +36,6 @@
 	const FUSION_CARD_IDS = ['2048-merge'];
 	const JOKER_CARD_IDS = ['2048-joker'];
 	const VISION_CARD_IDS = ['2048-vision'];
-	const MULTIPLIER_CARD_IDS = ['2048-multiplier', '2048-multiplier-2'];
-
 	// Max uses per game
 	const MAX_UNDO_PER_GAME = 2;
 	const MAX_BOMB_PER_GAME = 3;
@@ -1085,9 +1083,16 @@
 		<div class="mb-4 flex items-center justify-between">
 			<!-- Scores -->
 			<div class="flex gap-4">
-				<div class="score-box rounded-lg bg-muted px-4 py-2">
+				<div class="score-box relative rounded-lg bg-muted px-4 py-2">
 					<div class="text-xs font-semibold text-muted-foreground uppercase">Score</div>
 					<div class="text-2xl font-bold">{gameState.score}</div>
+					{#if scoreMultiplier > 1}
+						<span
+							class="absolute -top-1.5 -right-1.5 rounded-full bg-yellow-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow"
+						>
+							x{scoreMultiplier}
+						</span>
+					{/if}
 				</div>
 				<div class="score-box rounded-lg bg-muted px-4 py-2">
 					<div class="text-xs font-semibold text-muted-foreground uppercase">Meilleur</div>
@@ -1127,18 +1132,64 @@
 		maxFreezePerGame={MAX_FREEZE_PER_GAME}
 		freezeActive={skipNextSpawn}
 		onUseFreezeSpawn={handleFreezeSpawn}
+		{fusionCardsAvailable}
+		fusionUsedThisGame={cardUsage.fusion}
+		maxFusionPerGame={MAX_FUSION_PER_GAME}
+		{fusionMode}
+		{hasFusionTargets}
+		onUseFusion={handleFusion}
+		onCancelFusion={handleCancelFusion}
+		{jokerCardsAvailable}
+		jokerUsedThisGame={cardUsage.joker}
+		maxJokerPerGame={MAX_JOKER_PER_GAME}
+		{jokerMode}
+		{hasJokerTargets}
+		onUseJoker={handleJoker}
+		onCancelJoker={handleCancelJoker}
+		{visionCardsAvailable}
+		visionUsedThisGame={cardUsage.vision}
+		maxVisionPerGame={MAX_VISION_PER_GAME}
+		visionActive={visionPreview !== null}
+		onUseVision={handleVision}
+		{multiplierCardsAvailable}
+		multiplierUsedThisGame={cardUsage.multiplier}
+		maxMultiplierPerGame={MAX_MULTIPLIER_PER_GAME}
+		{scoreMultiplier}
+		onUseMultiplier={handleMultiplier}
 		{gidouilles}
 		undoCostGidouilles={UNDO_COST}
 		{bombCostGidouilles}
 		freezeCostGidouilles={FREEZE_COST}
+		fusionCostGidouilles={FUSION_COST}
+		jokerCostGidouilles={JOKER_COST}
+		visionCostGidouilles={VISION_COST}
+		{multiplierCostGidouilles}
 	/>
 
-	<!-- Bomb mode banner -->
+	<!-- Mode banners -->
 	{#if bombMode}
 		<div
 			class="mb-2 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-center text-sm font-medium text-red-700 dark:border-red-800 dark:bg-red-950/30 dark:text-red-400"
 		>
 			💣 Cliquez sur une tuile a supprimer (valeur &le; {bombMaxValue})
+		</div>
+	{:else if fusionMode && !fusionFirstTile}
+		<div
+			class="mb-2 rounded-lg border border-purple-300 bg-purple-50 px-3 py-2 text-center text-sm font-medium text-purple-700 dark:border-purple-800 dark:bg-purple-950/30 dark:text-purple-400"
+		>
+			🔀 Cliquez sur une tuile a fusionner
+		</div>
+	{:else if fusionMode && fusionFirstTile}
+		<div
+			class="mb-2 rounded-lg border border-purple-300 bg-purple-50 px-3 py-2 text-center text-sm font-medium text-purple-700 dark:border-purple-800 dark:bg-purple-950/30 dark:text-purple-400"
+		>
+			🔀 Cliquez sur un voisin identique
+		</div>
+	{:else if jokerMode}
+		<div
+			class="mb-2 rounded-lg border border-pink-300 bg-pink-50 px-3 py-2 text-center text-sm font-medium text-pink-700 dark:border-pink-800 dark:bg-pink-950/30 dark:text-pink-400"
+		>
+			🃏 Cliquez sur une tuile a transformer
 		</div>
 	{/if}
 
@@ -1164,14 +1215,55 @@
 				{/each}
 			</div>
 
+			<!-- Vision preview ghost (semi-transparent tile showing next spawn) -->
+			{#if visionPreview}
+				<div class="absolute inset-0 p-0">
+					<div
+						class="absolute flex h-16 w-16 items-center justify-center rounded-lg border-2 border-dashed border-indigo-400 bg-indigo-100/40 text-lg font-bold text-indigo-500 opacity-60 sm:h-20 sm:w-20 dark:bg-indigo-900/30"
+						style="left: calc({visionPreview.position
+							.col} * var(--grid-size, 72px)); top: calc({visionPreview.position
+							.row} * var(--grid-size, 72px));"
+					>
+						{visionPreview.value}
+						<span
+							class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500 text-[8px] font-bold text-white"
+						>
+							{visionPreview.movesRemaining}
+						</span>
+					</div>
+				</div>
+			{/if}
+
 			<!-- Active tiles (absolutely positioned for animations) -->
 			<div class="absolute inset-0 p-0">
 				{#each activeTiles as tile (tile.id)}
+					{@const isFusionTarget =
+						fusionMode &&
+						!fusionFirstTile &&
+						getFusionNeighbors(gameState.board, tile.position).length > 0}
+					{@const isFusionNeighbor =
+						fusionMode &&
+						fusionFirstTile !== null &&
+						fusionNeighbors.some((n) => n.row === tile.position.row && n.col === tile.position.col)}
+					{@const isJokerTarget =
+						jokerMode &&
+						getJokerTargets(gameState.board).some(
+							(p) => p.row === tile.position.row && p.col === tile.position.col
+						)}
 					<Tile2048
 						{tile}
 						{showPowerNotation}
 						bombTarget={bombMode && tile.value <= bombMaxValue}
 						onBombClick={handleBombTarget}
+						fusionTarget={isFusionTarget}
+						fusionNeighbor={isFusionNeighbor}
+						onFusionClick={fusionMode
+							? fusionFirstTile
+								? (r, c) => handleFusionSecondClick(r, c)
+								: handleFusionFirstClick
+							: undefined}
+						jokerTarget={isJokerTarget}
+						onJokerClick={jokerMode ? handleJokerTarget : undefined}
 					/>
 				{/each}
 			</div>
