@@ -243,9 +243,9 @@
 	});
 </script>
 
-{#snippet powerBadge(count: number, color: string)}
+{#snippet powerBadge(count: number, bgClass: string)}
 	<span
-		class="absolute -top-1.5 -right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-{color}-600 text-[10px] font-bold text-white shadow"
+		class="absolute -top-1.5 -right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white shadow {bgClass}"
 	>
 		{count}
 	</span>
@@ -288,7 +288,7 @@
 					</Tooltip.Root>
 					{#if !undoMaxed}
 						{#if hasUndoCards}
-							{@render powerBadge(undoCardsAvailable, 'green')}
+							{@render powerBadge(undoCardsAvailable, 'bg-green-600')}
 						{:else if canAffordUndo}
 							{@render gidouilleBadge()}
 						{/if}
@@ -329,7 +329,7 @@
 					</Tooltip.Root>
 					{#if !bombMaxed && !bombMode}
 						{#if hasBombCards}
-							{@render powerBadge(bombCardsAvailable, 'orange')}
+							{@render powerBadge(bombCardsAvailable, 'bg-orange-600')}
 						{:else if canAffordBomb}
 							{@render gidouilleBadge()}
 						{/if}
@@ -359,10 +359,10 @@
 						<Tooltip.Content><p class="max-w-48 text-sm">{freezeTooltip}</p></Tooltip.Content>
 					</Tooltip.Root>
 					{#if freezeActive}
-						{@render powerBadge(0, 'cyan')}
+						{@render powerBadge(0, 'bg-cyan-600')}
 					{:else if !freezeMaxed}
 						{#if hasFreezeCards}
-							{@render powerBadge(freezeCardsAvailable, 'cyan')}
+							{@render powerBadge(freezeCardsAvailable, 'bg-cyan-600')}
 						{:else if canAffordFreeze}
 							{@render gidouilleBadge()}
 						{/if}
@@ -416,7 +416,7 @@
 					</Tooltip.Root>
 					{#if !fusionMaxed && !fusionMode}
 						{#if hasFusionCards}
-							{@render powerBadge(fusionCardsAvailable, 'purple')}
+							{@render powerBadge(fusionCardsAvailable, 'bg-purple-600')}
 						{:else if canAffordFusion}
 							{@render gidouilleBadge()}
 						{/if}
@@ -457,7 +457,7 @@
 					</Tooltip.Root>
 					{#if !jokerMaxed && !jokerMode}
 						{#if hasJokerCards}
-							{@render powerBadge(jokerCardsAvailable, 'pink')}
+							{@render powerBadge(jokerCardsAvailable, 'bg-pink-600')}
 						{:else if canAffordJoker}
 							{@render gidouilleBadge()}
 						{/if}
@@ -487,10 +487,10 @@
 						<Tooltip.Content><p class="max-w-48 text-sm">{visionTooltip}</p></Tooltip.Content>
 					</Tooltip.Root>
 					{#if visionActive}
-						{@render powerBadge(0, 'indigo')}
+						{@render powerBadge(0, 'bg-indigo-600')}
 					{:else if !visionMaxed}
 						{#if hasVisionCards}
-							{@render powerBadge(visionCardsAvailable, 'indigo')}
+							{@render powerBadge(visionCardsAvailable, 'bg-indigo-600')}
 						{:else if canAffordVision}
 							{@render gidouilleBadge()}
 						{/if}
@@ -527,7 +527,7 @@
 						</span>
 					{:else if !multiplierMaxed}
 						{#if hasMultiplierCards}
-							{@render powerBadge(multiplierCardsAvailable, 'yellow')}
+							{@render powerBadge(multiplierCardsAvailable, 'bg-yellow-600')}
 						{:else if canAffordMultiplier}
 							{@render gidouilleBadge()}
 						{/if}
