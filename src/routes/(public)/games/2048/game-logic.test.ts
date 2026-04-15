@@ -16,7 +16,15 @@ import {
 	rotateBoardClockwise,
 	removeTile,
 	removeNewlySpawnedTile,
-	getEligibleBombTargets
+	getEligibleBombTargets,
+	getAdjacentTiles,
+	getFusionTargets,
+	getFusionNeighbors,
+	mergeTilesAt,
+	getJokerTargets,
+	applyJoker,
+	generateNextSpawn,
+	addTileAt
 } from './game-logic';
 import { getPowerNotation, getTilePower, generateTileId } from './game-utils';
 import type { Tile, GameBoard } from './types';
@@ -582,6 +590,240 @@ describe('2048 Game Logic', () => {
 			const board = createEmptyBoard();
 			const targets = getEligibleBombTargets(board, 64);
 			expect(targets).toHaveLength(0);
+		});
+	});
+
+	// ================================================================
+	// Wave 2 VIP Card Functions
+	// ================================================================
+
+	describe('getAdjacentTiles', () => {
+		it('should return all adjacent tiles', () => {
+			const board = createEmptyBoard();
+			board[1][1] = { id: '1', value: 4, position: { row: 1, col: 1 }, isNew: false };
+			board[0][1] = { id: '2', value: 2, position: { row: 0, col: 1 }, isNew: false }; // above
+			board[1][2] = { id: '3', value: 8, position: { row: 1, col: 2 }, isNew: false }; // right
+			board[2][1] = { id: '4', value: 16, position: { row: 2, col: 1 }, isNew: false }; // below
+
+			const result = getAdjacentTiles(board, { row: 1, col: 1 });
+			expect(result).toHaveLength(3);
+			expect(result.map((r) => r.tile.value).sort((a, b) => a - b)).toEqual([2, 8, 16]);
+		});
+
+		it('should handle corner position', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+			board[0][1] = { id: '2', value: 4, position: { row: 0, col: 1 }, isNew: false };
+			board[1][0] = { id: '3', value: 8, position: { row: 1, col: 0 }, isNew: false };
+
+			const result = getAdjacentTiles(board, { row: 0, col: 0 });
+			expect(result).toHaveLength(2);
+		});
+
+		it('should return empty array for isolated tile', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+
+			const result = getAdjacentTiles(board, { row: 0, col: 0 });
+			expect(result).toHaveLength(0);
+		});
+	});
+
+	describe('getFusionTargets', () => {
+		it('should return tiles with same-value neighbors', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 4, position: { row: 0, col: 0 }, isNew: false };
+			board[0][1] = { id: '2', value: 4, position: { row: 0, col: 1 }, isNew: false };
+			board[2][2] = { id: '3', value: 8, position: { row: 2, col: 2 }, isNew: false };
+
+			const targets = getFusionTargets(board);
+			expect(targets).toHaveLength(2); // both 4s
+			expect(targets).toContainEqual({ row: 0, col: 0 });
+			expect(targets).toContainEqual({ row: 0, col: 1 });
+		});
+
+		it('should return empty array when no adjacent identical tiles', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+			board[0][1] = { id: '2', value: 4, position: { row: 0, col: 1 }, isNew: false };
+
+			const targets = getFusionTargets(board);
+			expect(targets).toHaveLength(0);
+		});
+	});
+
+	describe('getFusionNeighbors', () => {
+		it('should return positions of neighbors with same value', () => {
+			const board = createEmptyBoard();
+			board[1][1] = { id: '1', value: 4, position: { row: 1, col: 1 }, isNew: false };
+			board[0][1] = { id: '2', value: 4, position: { row: 0, col: 1 }, isNew: false };
+			board[1][2] = { id: '3', value: 8, position: { row: 1, col: 2 }, isNew: false };
+			board[2][1] = { id: '4', value: 4, position: { row: 2, col: 1 }, isNew: false };
+
+			const neighbors = getFusionNeighbors(board, { row: 1, col: 1 });
+			expect(neighbors).toHaveLength(2);
+			expect(neighbors).toContainEqual({ row: 0, col: 1 });
+			expect(neighbors).toContainEqual({ row: 2, col: 1 });
+		});
+	});
+
+	describe('mergeTilesAt', () => {
+		it('should merge two tiles and return doubled value at pos1', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 4, position: { row: 0, col: 0 }, isNew: false };
+			board[0][1] = { id: '2', value: 4, position: { row: 0, col: 1 }, isNew: false };
+
+			const result = mergeTilesAt(board, { row: 0, col: 0 }, { row: 0, col: 1 });
+			expect(result.board[0][0]?.value).toBe(8);
+			expect(result.board[0][1]).toBeNull();
+			expect(result.scoreGain).toBe(8);
+		});
+
+		it('should not merge tiles with different values', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+			board[0][1] = { id: '2', value: 4, position: { row: 0, col: 1 }, isNew: false };
+
+			const result = mergeTilesAt(board, { row: 0, col: 0 }, { row: 0, col: 1 });
+			expect(result.scoreGain).toBe(0);
+			expect(result.board).toBe(board); // same reference, no change
+		});
+
+		it('should set mergedFrom on the new tile', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: 'a', value: 16, position: { row: 0, col: 0 }, isNew: false };
+			board[1][0] = { id: 'b', value: 16, position: { row: 1, col: 0 }, isNew: false };
+
+			const result = mergeTilesAt(board, { row: 0, col: 0 }, { row: 1, col: 0 });
+			expect(result.board[0][0]?.mergedFrom).toEqual(['a', 'b']);
+			expect(result.board[0][0]?.value).toBe(32);
+		});
+	});
+
+	describe('getJokerTargets', () => {
+		it('should return tiles with a strictly higher-value neighbor', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+			board[0][1] = { id: '2', value: 4, position: { row: 0, col: 1 }, isNew: false };
+
+			const targets = getJokerTargets(board);
+			// Only (0,0) has a higher neighbor (4 > 2). (0,1) has no higher neighbor.
+			expect(targets).toHaveLength(1);
+			expect(targets).toContainEqual({ row: 0, col: 0 });
+		});
+
+		it('should exclude tiles where all neighbors are same or lower value', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 4, position: { row: 0, col: 0 }, isNew: false };
+			board[0][1] = { id: '2', value: 4, position: { row: 0, col: 1 }, isNew: false };
+
+			const targets = getJokerTargets(board);
+			expect(targets).toHaveLength(0);
+		});
+
+		it('should include tile if at least one neighbor is higher', () => {
+			const board = createEmptyBoard();
+			board[1][1] = { id: '1', value: 2, position: { row: 1, col: 1 }, isNew: false };
+			board[0][1] = { id: '2', value: 2, position: { row: 0, col: 1 }, isNew: false };
+			board[1][2] = { id: '3', value: 16, position: { row: 1, col: 2 }, isNew: false };
+
+			const targets = getJokerTargets(board);
+			// (1,1) has higher neighbor (16) → target
+			// (0,1) only neighbor is (1,1)=2 (same) → NOT target
+			// (1,2) only neighbor is (1,1)=2 (lower) → NOT target
+			expect(targets).toHaveLength(1);
+			expect(targets).toContainEqual({ row: 1, col: 1 });
+		});
+	});
+
+	describe('applyJoker', () => {
+		it('should change tile value to highest neighbor value', () => {
+			const board = createEmptyBoard();
+			board[1][1] = { id: '1', value: 2, position: { row: 1, col: 1 }, isNew: false };
+			board[0][1] = { id: '2', value: 8, position: { row: 0, col: 1 }, isNew: false };
+			board[1][2] = { id: '3', value: 4, position: { row: 1, col: 2 }, isNew: false };
+
+			const result = applyJoker(board, { row: 1, col: 1 });
+			expect(result[1][1]?.value).toBe(8); // took highest neighbor
+		});
+
+		it('should not change if tile already equals highest neighbor', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 8, position: { row: 0, col: 0 }, isNew: false };
+			board[0][1] = { id: '2', value: 4, position: { row: 0, col: 1 }, isNew: false };
+
+			const result = applyJoker(board, { row: 0, col: 0 });
+			expect(result).toBe(board); // same reference, no change
+		});
+
+		it('should not mutate original board', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+			board[0][1] = { id: '2', value: 16, position: { row: 0, col: 1 }, isNew: false };
+
+			applyJoker(board, { row: 0, col: 0 });
+			expect(board[0][0]?.value).toBe(2); // original unchanged
+		});
+	});
+
+	describe('generateNextSpawn', () => {
+		it('should return a position and value for a board with empty cells', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+
+			const spawn = generateNextSpawn(board);
+			expect(spawn).not.toBeNull();
+			expect(spawn!.position.row).toBeGreaterThanOrEqual(0);
+			expect(spawn!.position.row).toBeLessThan(4);
+			expect([2, 4]).toContain(spawn!.value);
+		});
+
+		it('should return null for a full board', () => {
+			const board = createEmptyBoard();
+			for (let r = 0; r < 4; r++) {
+				for (let c = 0; c < 4; c++) {
+					board[r][c] = {
+						id: `${r}-${c}`,
+						value: 2,
+						position: { row: r, col: c },
+						isNew: false
+					};
+				}
+			}
+			expect(generateNextSpawn(board)).toBeNull();
+		});
+
+		it('should pick an empty cell', () => {
+			const board = createEmptyBoard();
+			// Fill all except (3,3)
+			for (let r = 0; r < 4; r++) {
+				for (let c = 0; c < 4; c++) {
+					if (r === 3 && c === 3) continue;
+					board[r][c] = {
+						id: `${r}-${c}`,
+						value: 2,
+						position: { row: r, col: c },
+						isNew: false
+					};
+				}
+			}
+			const spawn = generateNextSpawn(board);
+			expect(spawn).toEqual({ position: { row: 3, col: 3 }, value: expect.any(Number) });
+		});
+	});
+
+	describe('addTileAt', () => {
+		it('should add a tile at the specified position', () => {
+			const board = createEmptyBoard();
+			const result = addTileAt(board, { row: 2, col: 3 }, 4);
+			expect(result[2][3]?.value).toBe(4);
+			expect(result[2][3]?.isNew).toBe(true);
+		});
+
+		it('should not mutate original board', () => {
+			const board = createEmptyBoard();
+			addTileAt(board, { row: 0, col: 0 }, 2);
+			expect(board[0][0]).toBeNull();
 		});
 	});
 

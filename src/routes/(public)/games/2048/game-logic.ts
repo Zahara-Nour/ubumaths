@@ -459,6 +459,172 @@ export function getEligibleBombTargets(board: GameBoard, maxValue: number): Posi
 	return targets;
 }
 
+// ================================================================
+// Wave 2 VIP Card Functions (Fusion, Joker, Vision)
+// ================================================================
+
+/**
+ * Gets all adjacent tiles (up, down, left, right) for a given position
+ * @param board - Current game board
+ * @param position - Position to check adjacency for
+ * @returns Array of adjacent tiles with their positions
+ */
+export function getAdjacentTiles(
+	board: GameBoard,
+	position: Position
+): { tile: Tile; position: Position }[] {
+	const { row, col } = position;
+	const directions = [
+		{ row: row - 1, col },
+		{ row: row + 1, col },
+		{ row, col: col - 1 },
+		{ row, col: col + 1 }
+	];
+	const result: { tile: Tile; position: Position }[] = [];
+	for (const dir of directions) {
+		if (dir.row >= 0 && dir.row < BOARD_SIZE && dir.col >= 0 && dir.col < BOARD_SIZE) {
+			const tile = board[dir.row][dir.col];
+			if (tile) {
+				result.push({ tile, position: { row: dir.row, col: dir.col } });
+			}
+		}
+	}
+	return result;
+}
+
+/**
+ * Gets positions of tiles that have at least one adjacent tile with the same value.
+ * Used to determine if Fusion Forcée can be activated.
+ */
+export function getFusionTargets(board: GameBoard): Position[] {
+	const targets: Position[] = [];
+	for (let row = 0; row < BOARD_SIZE; row++) {
+		for (let col = 0; col < BOARD_SIZE; col++) {
+			const tile = board[row][col];
+			if (!tile) continue;
+			const neighbors = getAdjacentTiles(board, { row, col });
+			if (neighbors.some((n) => n.tile.value === tile.value)) {
+				targets.push({ row, col });
+			}
+		}
+	}
+	return targets;
+}
+
+/**
+ * Gets positions of adjacent tiles that have the same value as the tile at the given position.
+ * Used in the second step of Fusion Forcée (selecting which neighbor to merge with).
+ */
+export function getFusionNeighbors(board: GameBoard, position: Position): Position[] {
+	const tile = board[position.row][position.col];
+	if (!tile) return [];
+	return getAdjacentTiles(board, position)
+		.filter((n) => n.tile.value === tile.value)
+		.map((n) => n.position);
+}
+
+/**
+ * Merges two adjacent tiles at pos1 and pos2. The merged tile (doubled value)
+ * is placed at pos1, and pos2 becomes empty.
+ * @returns New board and score gained from the merge
+ */
+export function mergeTilesAt(
+	board: GameBoard,
+	pos1: Position,
+	pos2: Position
+): { board: GameBoard; scoreGain: number } {
+	const tile1 = board[pos1.row][pos1.col];
+	const tile2 = board[pos2.row][pos2.col];
+	const isAdjacent =
+		(Math.abs(pos1.row - pos2.row) === 1 && pos1.col === pos2.col) ||
+		(Math.abs(pos1.col - pos2.col) === 1 && pos1.row === pos2.row);
+	if (!tile1 || !tile2 || tile1.value !== tile2.value || !isAdjacent) {
+		return { board, scoreGain: 0 };
+	}
+	const mergedValue = tile1.value * 2;
+	const newBoard = board.map((r) => [...r]);
+	newBoard[pos1.row][pos1.col] = {
+		id: generateTileId(),
+		value: mergedValue,
+		position: pos1,
+		isNew: false,
+		mergedFrom: [tile1.id, tile2.id]
+	};
+	newBoard[pos2.row][pos2.col] = null;
+	return { board: newBoard, scoreGain: mergedValue };
+}
+
+/**
+ * Gets positions of tiles that have at least one adjacent tile with a strictly higher value.
+ * Used to determine if Joker can be activated. Only tiles that would benefit from Joker
+ * (i.e., gain a higher value) are eligible.
+ */
+export function getJokerTargets(board: GameBoard): Position[] {
+	const targets: Position[] = [];
+	for (let row = 0; row < BOARD_SIZE; row++) {
+		for (let col = 0; col < BOARD_SIZE; col++) {
+			const tile = board[row][col];
+			if (!tile) continue;
+			const neighbors = getAdjacentTiles(board, { row, col });
+			if (neighbors.some((n) => n.tile.value > tile.value)) {
+				targets.push({ row, col });
+			}
+		}
+	}
+	return targets;
+}
+
+/**
+ * Applies the Joker effect: changes the tile's value to match its highest-value neighbor.
+ * @returns New board with the tile's value changed
+ */
+export function applyJoker(board: GameBoard, position: Position): GameBoard {
+	const tile = board[position.row][position.col];
+	if (!tile) return board;
+	const neighbors = getAdjacentTiles(board, position);
+	if (neighbors.length === 0) return board;
+	const maxNeighborValue = Math.max(...neighbors.map((n) => n.tile.value));
+	if (maxNeighborValue <= tile.value) return board; // no change needed
+	const newBoard = board.map((r) => [...r]);
+	newBoard[position.row][position.col] = {
+		...tile,
+		value: maxNeighborValue,
+		mergedFrom: undefined,
+		previousPosition: undefined
+	};
+	return newBoard;
+}
+
+/**
+ * Pre-generates the next tile spawn (position and value).
+ * Used by the Vision VIP card to preview where the next tile will appear.
+ * @returns The spawn info, or null if the board is full
+ */
+export function generateNextSpawn(board: GameBoard): { position: Position; value: number } | null {
+	const emptyCells = getEmptyCells(board);
+	if (emptyCells.length === 0) return null;
+	const randomIndex = Math.floor(Math.random() * emptyCells.length);
+	const position = emptyCells[randomIndex];
+	const value = Math.random() < 0.9 ? 2 : 4;
+	return { position, value };
+}
+
+/**
+ * Adds a tile with a specific value at a specific position.
+ * Used to place the pre-generated Vision spawn instead of a random one.
+ */
+export function addTileAt(board: GameBoard, position: Position, value: number): GameBoard {
+	if (board[position.row][position.col] !== null) return board;
+	const newBoard = board.map((r) => [...r]);
+	newBoard[position.row][position.col] = {
+		id: generateTileId(),
+		value,
+		position,
+		isNew: true
+	};
+	return newBoard;
+}
+
 /**
  * Performs a move in the specified direction
  * @param state - Current game state
