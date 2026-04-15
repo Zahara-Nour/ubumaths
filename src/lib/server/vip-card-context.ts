@@ -22,6 +22,9 @@ const contextValidators: Record<string, ContextValidator> = {
 	/** Always valid — student can self-activate freely */
 	any: async () => true,
 
+	/** Always valid for 2048 — no server-side game session to validate */
+	'2048': async () => true,
+
 	/** Valid only when the student has an in-progress minesweeper game */
 	minesweeper: async (supabase, studentId) => {
 		const { data, error } = await supabase

@@ -13,7 +13,10 @@ import {
 	canMove,
 	isGameOver,
 	isGameWon,
-	rotateBoardClockwise
+	rotateBoardClockwise,
+	removeTile,
+	removeNewlySpawnedTile,
+	getEligibleBombTargets
 } from './game-logic';
 import { getPowerNotation, getTilePower, generateTileId } from './game-utils';
 import type { Tile, GameBoard } from './types';
@@ -487,6 +490,98 @@ describe('2048 Game Logic', () => {
 			const result = move(state, 'up');
 			expect(result.moved).toBe(false);
 			expect(result.state).toBe(state); // Should return same state
+		});
+	});
+
+	describe('removeTile', () => {
+		it('should remove a tile at the specified position', () => {
+			const board = createEmptyBoard();
+			board[1][2] = { id: '1', value: 4, position: { row: 1, col: 2 }, isNew: false };
+			board[0][0] = { id: '2', value: 8, position: { row: 0, col: 0 }, isNew: false };
+
+			const result = removeTile(board, 1, 2);
+			expect(result[1][2]).toBeNull();
+			expect(result[0][0]?.value).toBe(8); // Other tiles untouched
+		});
+
+		it('should not mutate the original board', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+
+			removeTile(board, 0, 0);
+			expect(board[0][0]?.value).toBe(2); // Original unchanged
+		});
+
+		it('should handle removing from an already empty cell', () => {
+			const board = createEmptyBoard();
+			const result = removeTile(board, 2, 2);
+			expect(result[2][2]).toBeNull();
+		});
+	});
+
+	describe('removeNewlySpawnedTile', () => {
+		it('should remove the tile with isNew: true', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+			board[2][3] = { id: '2', value: 2, position: { row: 2, col: 3 }, isNew: true };
+
+			const result = removeNewlySpawnedTile(board);
+			expect(result[2][3]).toBeNull();
+			expect(result[0][0]?.value).toBe(2); // Other tiles untouched
+		});
+
+		it('should return the same board if no new tile exists', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+
+			const result = removeNewlySpawnedTile(board);
+			expect(result).toBe(board); // Same reference
+		});
+
+		it('should only remove the first new tile found', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: true };
+			board[1][1] = { id: '2', value: 4, position: { row: 1, col: 1 }, isNew: true };
+
+			const result = removeNewlySpawnedTile(board);
+			// First one found (row 0, col 0) should be removed
+			expect(result[0][0]).toBeNull();
+			expect(result[1][1]?.value).toBe(4);
+		});
+	});
+
+	describe('getEligibleBombTargets', () => {
+		it('should return positions of tiles with value <= maxValue', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+			board[1][1] = { id: '2', value: 4, position: { row: 1, col: 1 }, isNew: false };
+			board[2][2] = { id: '3', value: 8, position: { row: 2, col: 2 }, isNew: false };
+			board[3][3] = { id: '4', value: 16, position: { row: 3, col: 3 }, isNew: false };
+
+			const targets4 = getEligibleBombTargets(board, 4);
+			expect(targets4).toHaveLength(2);
+			expect(targets4).toContainEqual({ row: 0, col: 0 });
+			expect(targets4).toContainEqual({ row: 1, col: 1 });
+
+			const targets16 = getEligibleBombTargets(board, 16);
+			expect(targets16).toHaveLength(4);
+
+			const targets64 = getEligibleBombTargets(board, 64);
+			expect(targets64).toHaveLength(4);
+		});
+
+		it('should return empty array when no eligible tiles', () => {
+			const board = createEmptyBoard();
+			board[0][0] = { id: '1', value: 128, position: { row: 0, col: 0 }, isNew: false };
+
+			const targets = getEligibleBombTargets(board, 4);
+			expect(targets).toHaveLength(0);
+		});
+
+		it('should return empty array for empty board', () => {
+			const board = createEmptyBoard();
+			const targets = getEligibleBombTargets(board, 64);
+			expect(targets).toHaveLength(0);
 		});
 	});
 
