@@ -231,12 +231,23 @@
 	// Best bomb cost for gidouilles display
 	const bombCostGidouilles = $derived(BOMB_COSTS[bestBombMaxValue] ?? 3);
 
-	// Fusion/Joker/Vision derived
+	// Fusion/Joker/Vision derived (pre-computed Sets for O(1) lookups in template)
+	const fusionTargetSet = $derived(
+		fusionMode && !fusionFirstTile
+			? new Set(getFusionTargets(gameState.board).map((p) => `${p.row},${p.col}`))
+			: new Set<string>()
+	);
 	const hasFusionTargets = $derived(getFusionTargets(gameState.board).length > 0);
-	const hasJokerTargets = $derived(getJokerTargets(gameState.board).length > 0);
 	const fusionNeighbors = $derived(
 		fusionFirstTile ? getFusionNeighbors(gameState.board, fusionFirstTile) : []
 	);
+	const fusionNeighborSet = $derived(new Set(fusionNeighbors.map((p) => `${p.row},${p.col}`)));
+	const jokerTargetSet = $derived(
+		jokerMode
+			? new Set(getJokerTargets(gameState.board).map((p) => `${p.row},${p.col}`))
+			: new Set<string>()
+	);
+	const hasJokerTargets = $derived(getJokerTargets(gameState.board).length > 0);
 
 	// Best multiplier factor available
 	const bestMultiplierFactor = $derived.by(() => {
@@ -512,6 +523,7 @@
 		previousState = null;
 		skipNextSpawn = false;
 		bombMode = false;
+		bombMaxValue = 4;
 		pendingBombCard = null;
 		fusionMode = false;
 		fusionFirstTile = null;
@@ -1233,8 +1245,8 @@
 					<div
 						class="absolute flex h-16 w-16 items-center justify-center rounded-lg border-2 border-dashed border-indigo-400 bg-indigo-100/40 text-lg font-bold text-indigo-500 opacity-60 sm:h-20 sm:w-20 dark:bg-indigo-900/30"
 						style="left: calc({visionPreview.position
-							.col} * var(--grid-size, 72px)); top: calc({visionPreview.position
-							.row} * var(--grid-size, 72px));"
+							.col} * var(--grid-size)); top: calc({visionPreview.position
+							.row} * var(--grid-size));"
 					>
 						{visionPreview.value}
 						<span
@@ -1249,19 +1261,10 @@
 			<!-- Active tiles (absolutely positioned for animations) -->
 			<div class="absolute inset-0 p-0">
 				{#each activeTiles as tile (tile.id)}
-					{@const isFusionTarget =
-						fusionMode &&
-						!fusionFirstTile &&
-						getFusionNeighbors(gameState.board, tile.position).length > 0}
-					{@const isFusionNeighbor =
-						fusionMode &&
-						fusionFirstTile !== null &&
-						fusionNeighbors.some((n) => n.row === tile.position.row && n.col === tile.position.col)}
-					{@const isJokerTarget =
-						jokerMode &&
-						getJokerTargets(gameState.board).some(
-							(p) => p.row === tile.position.row && p.col === tile.position.col
-						)}
+					{@const posKey = `${tile.position.row},${tile.position.col}`}
+					{@const isFusionTarget = fusionTargetSet.has(posKey)}
+					{@const isFusionNeighbor = fusionNeighborSet.has(posKey)}
+					{@const isJokerTarget = jokerTargetSet.has(posKey)}
 					<Tile2048
 						{tile}
 						{showPowerNotation}
@@ -1370,6 +1373,13 @@
 
 	.game-board {
 		touch-action: none; /* Prevent default touch actions */
+		--grid-size: 72px;
+	}
+
+	@media (min-width: 640px) {
+		.game-board {
+			--grid-size: 92px;
+		}
 	}
 
 	.empty-cell {
