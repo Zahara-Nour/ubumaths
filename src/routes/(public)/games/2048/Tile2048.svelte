@@ -33,17 +33,42 @@
 	import type { Tile } from './types';
 	import { getPowerNotation } from './game-utils';
 
-	let {
-		tile,
-		showPowerNotation = false,
-		bombTarget = false,
-		onBombClick
-	} = $props<{
+	interface Props {
 		tile: Tile;
 		showPowerNotation?: boolean;
 		bombTarget?: boolean;
 		onBombClick?: (row: number, col: number) => void;
-	}>();
+		fusionTarget?: boolean;
+		fusionNeighbor?: boolean;
+		onFusionClick?: (row: number, col: number) => void;
+		jokerTarget?: boolean;
+		onJokerClick?: (row: number, col: number) => void;
+	}
+
+	let {
+		tile,
+		showPowerNotation = false,
+		bombTarget = false,
+		onBombClick,
+		fusionTarget = false,
+		fusionNeighbor = false,
+		onFusionClick,
+		jokerTarget = false,
+		onJokerClick
+	}: Props = $props();
+
+	const isClickable = $derived(bombTarget || fusionTarget || fusionNeighbor || jokerTarget);
+
+	function handleClick() {
+		const { row, col } = tile.position;
+		if (bombTarget) onBombClick?.(row, col);
+		else if (fusionTarget || fusionNeighbor) onFusionClick?.(row, col);
+		else if (jokerTarget) onJokerClick?.(row, col);
+	}
+
+	function handleKeyPress(e: KeyboardEvent) {
+		if (e.key === 'Enter' || e.key === ' ') handleClick();
+	}
 
 	let tileEl: HTMLElement;
 
@@ -130,15 +155,14 @@
 	class:tile-new={tile.isNew}
 	class:tile-merged={tile.mergedFrom && tile.mergedFrom.length > 0}
 	class:tile-bomb-target={bombTarget}
+	class:tile-fusion-target={fusionTarget}
+	class:tile-fusion-neighbor={fusionNeighbor}
+	class:tile-joker-target={jokerTarget}
 	style="--row: {tile.position.row}; --col: {tile.position.col};"
-	onclick={bombTarget ? () => onBombClick?.(tile.position.row, tile.position.col) : undefined}
-	onkeydown={bombTarget
-		? (e) => {
-				if (e.key === 'Enter' || e.key === ' ') onBombClick?.(tile.position.row, tile.position.col);
-			}
-		: undefined}
-	role={bombTarget ? 'button' : undefined}
-	tabindex={bombTarget ? 0 : undefined}
+	onclick={isClickable ? handleClick : undefined}
+	onkeydown={isClickable ? handleKeyPress : undefined}
+	role={isClickable ? 'button' : undefined}
+	tabindex={isClickable ? 0 : undefined}
 >
 	<span class="leading-none font-bold {getFontSize(tile.value)}">
 		{tile.value}
@@ -218,7 +242,7 @@
 		}
 	}
 
-	/* Bomb target mode: pulsing red ring + pointer cursor */
+	/* Bomb target mode: pulsing red ring */
 	.tile-bomb-target {
 		cursor: pointer;
 		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.7);
@@ -236,6 +260,50 @@
 		}
 	}
 
+	/* Fusion target mode: pulsing purple ring (step 1 - select source) */
+	.tile-fusion-target {
+		cursor: pointer;
+		box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.7);
+		animation: fusion-pulse 1s ease-in-out infinite;
+		z-index: 20;
+	}
+
+	/* Fusion neighbor mode: pulsing bright purple ring (step 2 - select neighbor) */
+	.tile-fusion-neighbor {
+		cursor: pointer;
+		box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.9);
+		animation: fusion-pulse 0.7s ease-in-out infinite;
+		z-index: 20;
+	}
+
+	@keyframes fusion-pulse {
+		0%,
+		100% {
+			box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.7);
+		}
+		50% {
+			box-shadow: 0 0 0 5px rgba(168, 85, 247, 0.4);
+		}
+	}
+
+	/* Joker target mode: pulsing pink ring */
+	.tile-joker-target {
+		cursor: pointer;
+		box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.7);
+		animation: joker-pulse 1s ease-in-out infinite;
+		z-index: 20;
+	}
+
+	@keyframes joker-pulse {
+		0%,
+		100% {
+			box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.7);
+		}
+		50% {
+			box-shadow: 0 0 0 5px rgba(236, 72, 153, 0.4);
+		}
+	}
+
 	/* Accessibility: Respect user's motion preferences */
 	@media (prefers-reduced-motion: reduce) {
 		.tile {
@@ -246,6 +314,17 @@
 		.tile-bomb-target {
 			animation: none !important;
 			box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.7);
+		}
+
+		.tile-fusion-target,
+		.tile-fusion-neighbor {
+			animation: none !important;
+			box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.7);
+		}
+
+		.tile-joker-target {
+			animation: none !important;
+			box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.7);
 		}
 	}
 </style>
