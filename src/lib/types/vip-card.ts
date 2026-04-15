@@ -222,6 +222,26 @@ interface DetectorAction {
 }
 
 /**
+ * VIP Card Action - Bomb
+ * Removes a tile up to a maximum value from the 2048 board.
+ * The max_target_value determines which tiles can be targeted.
+ */
+interface BombAction {
+	type: 'bomb';
+	max_target_value: number; // Max tile value that can be removed (e.g., 4, 16, 64)
+	context?: string; // Activation context (e.g., '2048')
+}
+
+/**
+ * VIP Card Action - Freeze Spawn
+ * Prevents a new tile from spawning after the next move in 2048.
+ */
+interface FreezeSpawnAction {
+	type: 'freeze_spawn';
+	context?: string; // Activation context (e.g., '2048')
+}
+
+/**
  * Union type for all VIP card actions
  * These actions require teacher approval to activate
  */
@@ -234,7 +254,9 @@ export type VipCardAction =
 	| HintAction
 	| UndoAction
 	| FreezeTimerAction
-	| DetectorAction;
+	| DetectorAction
+	| BombAction
+	| FreezeSpawnAction;
 
 /**
  * Definition of a VIP card type (template)

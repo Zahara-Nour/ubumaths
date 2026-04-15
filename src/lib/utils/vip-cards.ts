@@ -237,6 +237,15 @@ export function getActionDescription(action: VipCardAction, templates: VipCardTe
 		case 'freeze_timer':
 			return `Geler le timer pendant ${action.duration}s`;
 
+		case 'detector':
+			return 'Détecter une mine';
+
+		case 'bomb':
+			return `Supprimer une tuile (valeur ≤ ${action.max_target_value})`;
+
+		case 'freeze_spawn':
+			return 'Prochain coup sans nouvelle tuile';
+
 		default:
 			return 'Action spéciale';
 	}

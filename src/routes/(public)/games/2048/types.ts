@@ -103,3 +103,15 @@ export interface MoveResult {
 	/** Merge animations to play (empty if no merges) */
 	mergeAnimations: MergeAnimation[];
 }
+
+/**
+ * Tracks VIP card usage during a single game session
+ */
+export interface VipCardUsage {
+	/** Number of undo cards used */
+	undo: number;
+	/** Number of bomb cards used (across all tiers) */
+	bomb: number;
+	/** Number of freeze spawn cards used */
+	freeze: number;
+}

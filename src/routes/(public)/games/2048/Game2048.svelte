@@ -3,22 +3,72 @@
 	 * Main 2048 game component
 	 * Manages game state, controls, and UI
 	 * Syncs scores to server for authenticated students
+	 * Integrates VIP card powers (Undo, Bomb, Freeze Spawn)
 	 */
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import Tile2048 from './Tile2048.svelte';
 	import GhostTile2048 from './GhostTile2048.svelte';
-	import { initializeBoard, move } from './game-logic';
-	import type { GameState, Direction, Tile, GhostTile } from './types';
+	import Game2048Controls from './Game2048Controls.svelte';
+	import {
+		initializeBoard,
+		move,
+		removeTile,
+		removeNewlySpawnedTile,
+		getEligibleBombTargets
+	} from './game-logic';
+	import type { GameState, Direction, Tile, GhostTile, VipCardUsage } from './types';
+	import type { StudentVipCards } from '$lib/types/vip-card';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import { browser } from '$app/environment';
+
+	// VIP card IDs
+	const UNDO_CARD_IDS = ['2048-undo'];
+	const FREEZE_CARD_IDS = ['2048-freeze-spawn'];
+
+	// Max uses per game
+	const MAX_UNDO_PER_GAME = 2;
+	const MAX_BOMB_PER_GAME = 3;
+	const MAX_FREEZE_PER_GAME = 2;
+
+	// Gidouilles costs
+	const UNDO_COST = 5;
+	const FREEZE_COST = 3;
+
+	// Bomb tier mapping
+	const BOMB_CARD_BY_TIER: Record<number, string> = {
+		4: '2048-bomb',
+		16: '2048-bomb-2',
+		64: '2048-bomb-3'
+	};
+	const BOMB_TIERS = [64, 16, 4] as const; // highest first for card selection
+	const BOMB_COSTS: Record<number, number> = { 4: 3, 16: 8, 64: 15 };
+	const BOMB_POWER_TYPES: Record<number, string> = {
+		4: 'bomb_4',
+		16: 'bomb_16',
+		64: 'bomb_64'
+	};
 
 	// Props from page load
 	interface Props {
 		serverBestScore: number | null;
 		canSaveScore: boolean;
+		vipCards: StudentVipCards | null;
+		initialUndoCards: number;
+		initialBombCards: number;
+		initialFreezeCards: number;
+		initialGidouilles: number;
 	}
-	let { serverBestScore, canSaveScore }: Props = $props();
+	let {
+		serverBestScore,
+		canSaveScore,
+		vipCards = null,
+		initialUndoCards = 0,
+		initialBombCards = 0,
+		initialFreezeCards = 0,
+		initialGidouilles = 0
+	}: Props = $props();
 
 	// Storage keys
 	const STORAGE_KEY_BEST_SCORE = '2048-best-score';
@@ -90,6 +140,128 @@
 	let saveScoreTimer: ReturnType<typeof setTimeout> | null = null;
 	let saveGameTimer: ReturnType<typeof setTimeout> | null = null;
 
+	// ================================================================
+	// VIP Card State
+	// ================================================================
+	let previousState: GameState | null = $state(null);
+	let skipNextSpawn = $state(false);
+	let bombMode = $state(false);
+	let bombMaxValue = $state(4);
+	let pendingBombCard = $state<{ instanceId: string; maxValue: number } | null>(null);
+	let cardUsage = $state<VipCardUsage>({ undo: 0, bomb: 0, freeze: 0 });
+	let undoCardsAvailable = $state(initialUndoCards);
+	let bombCardsAvailable = $state(initialBombCards);
+	let freezeCardsAvailable = $state(initialFreezeCards);
+	let gidouilles = $state(initialGidouilles);
+	let isCardLoading = $state(false);
+
+	const isAuthenticated = $derived(canSaveScore);
+	const hasBombTargets = $derived(
+		getEligibleBombTargets(gameState.board, bestBombMaxValue).length > 0
+	);
+
+	// Determine the best bomb card available (highest tier first)
+	const bestBombMaxValue = $derived.by(() => {
+		if (!vipCards) return 4;
+		for (const tier of BOMB_TIERS) {
+			const cardId = BOMB_CARD_BY_TIER[tier];
+			for (const instance of Object.values(vipCards)) {
+				if (instance.cardId === cardId && !instance.usedAt) return tier;
+			}
+		}
+		return 4; // fallback to cheapest tier for gidouilles
+	});
+
+	// Best bomb cost for gidouilles display
+	const bombCostGidouilles = $derived(BOMB_COSTS[bestBombMaxValue] ?? 3);
+
+	/**
+	 * Find first available VIP card instance ID for given card IDs
+	 */
+	function findCardInstanceId(cardIds: string[]): string | null {
+		if (!vipCards) return null;
+		for (const [instanceId, instance] of Object.entries(vipCards)) {
+			if (
+				cardIds.includes(instance.cardId) &&
+				!instance.usedAt &&
+				(instance.usesRemaining === undefined ||
+					instance.usesRemaining === null ||
+					instance.usesRemaining > 0)
+			) {
+				return instanceId;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Find best bomb card instance (highest tier first)
+	 */
+	function findBombCardInstance(): { instanceId: string; maxValue: number } | null {
+		if (!vipCards) return null;
+		for (const tier of BOMB_TIERS) {
+			const cardId = BOMB_CARD_BY_TIER[tier];
+			for (const [instanceId, instance] of Object.entries(vipCards)) {
+				if (
+					instance.cardId === cardId &&
+					!instance.usedAt &&
+					(instance.usesRemaining === undefined ||
+						instance.usesRemaining === null ||
+						instance.usesRemaining > 0)
+				) {
+					return { instanceId, maxValue: tier };
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Consume a VIP card via the API
+	 */
+	async function consumeVipCard(instanceId: string): Promise<boolean> {
+		try {
+			const response = await fetch('/api/vip-cards/use-card', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ instanceId, context: '2048' })
+			});
+			if (!response.ok) {
+				const data = await response.json();
+				toaster.error(data.message || 'Erreur lors de la consommation de la carte');
+				return false;
+			}
+			return true;
+		} catch {
+			toaster.error('Erreur reseau');
+			return false;
+		}
+	}
+
+	/**
+	 * Pay with gidouilles via the API
+	 */
+	async function payWithGidouilles(powerType: string): Promise<boolean> {
+		try {
+			const response = await fetch('/api/games/2048/use-power', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ power_type: powerType })
+			});
+			if (!response.ok) {
+				const data = await response.json();
+				toaster.error(data.message || 'Pas assez de gidouilles');
+				return false;
+			}
+			const data = await response.json();
+			gidouilles = data.gidouilles_remaining ?? gidouilles;
+			return true;
+		} catch {
+			toaster.error('Erreur reseau');
+			return false;
+		}
+	}
+
 	// Memoize active tiles to avoid redundant array operations on every render
 	let activeTiles = $derived(gameState.board.flat().filter((t): t is Tile => t !== null));
 
@@ -155,6 +327,7 @@
 	// Derive dialog states from game state and trigger server save on game over
 	$effect(() => {
 		if (gameState.gameOver && !showGameOverDialog) {
+			bombMode = false; // clear bomb mode before dialog
 			// Save score first, then open dialog (avoids layout jump from reward data arriving late)
 			saveScoreToServer().then(() => {
 				showGameOverDialog = true;
@@ -230,6 +403,13 @@
 		rewardData = null;
 		unlockedMilestones = [];
 
+		// Reset VIP card usage for new game
+		previousState = null;
+		skipNextSpawn = false;
+		bombMode = false;
+		pendingBombCard = null;
+		cardUsage = { undo: 0, bomb: 0, freeze: 0 };
+
 		// Clear saved game state when starting fresh
 		if (browser) {
 			localStorage.removeItem(STORAGE_KEY_GAME_STATE);
@@ -249,10 +429,16 @@
 	 * (not CSS transitions), so no two-frame hack is needed.
 	 */
 	function handleMove(direction: Direction) {
-		if (gameState.gameOver) return;
+		if (gameState.gameOver || bombMode) return;
+
+		// Save current state for undo (deep copy)
+		previousState = JSON.parse(JSON.stringify(gameState));
 
 		const result = move(gameState, direction);
-		if (!result.moved) return;
+		if (!result.moved) {
+			previousState = null; // No move happened, don't allow undo
+			return;
+		}
 
 		// Animation timing constants (must match CSS in GhostTile2048.svelte)
 		const GHOST_SLIDE_DURATION = 150;
@@ -277,8 +463,152 @@
 			}, GHOST_SLIDE_DURATION + GHOST_CLEANUP_BUFFER);
 		}
 
+		let newState = result.state;
+
+		// Freeze Spawn: remove the newly spawned tile
+		if (skipNextSpawn) {
+			newState = {
+				...newState,
+				board: removeNewlySpawnedTile(newState.board)
+			};
+			skipNextSpawn = false;
+		}
+
 		// Apply new state directly — animations are CSS keyframes, not transitions
-		gameState = result.state;
+		gameState = newState;
+	}
+
+	// ================================================================
+	// VIP Card Handlers
+	// ================================================================
+
+	async function handleUndo() {
+		if (!previousState || cardUsage.undo >= MAX_UNDO_PER_GAME || isCardLoading) return;
+
+		isCardLoading = true;
+		try {
+			const instanceId = findCardInstanceId(UNDO_CARD_IDS);
+			if (instanceId) {
+				const ok = await consumeVipCard(instanceId);
+				if (!ok) return;
+				undoCardsAvailable = Math.max(0, undoCardsAvailable - 1);
+				// Mark instance as used locally
+				if (vipCards && vipCards[instanceId]) {
+					vipCards[instanceId].usedAt = new Date().toISOString();
+				}
+			} else {
+				const ok = await payWithGidouilles('undo');
+				if (!ok) return;
+			}
+
+			gameState = previousState;
+			previousState = null;
+			cardUsage = { ...cardUsage, undo: cardUsage.undo + 1 };
+			toaster.success('Coup annule !');
+		} finally {
+			isCardLoading = false;
+		}
+	}
+
+	async function handleBomb() {
+		if (cardUsage.bomb >= MAX_BOMB_PER_GAME || isCardLoading || gameState.gameOver) return;
+
+		// Determine which bomb to use and capture it
+		const bombCard = findBombCardInstance();
+		pendingBombCard = bombCard;
+		if (bombCard) {
+			bombMaxValue = bombCard.maxValue;
+		} else {
+			// Gidouilles fallback: use cheapest bomb tier that has targets
+			for (const tier of [4, 16, 64] as const) {
+				if (
+					getEligibleBombTargets(gameState.board, tier).length > 0 &&
+					gidouilles >= (BOMB_COSTS[tier] ?? 3)
+				) {
+					bombMaxValue = tier;
+					break;
+				}
+			}
+		}
+
+		if (getEligibleBombTargets(gameState.board, bombMaxValue).length === 0) {
+			toaster.error('Aucune tuile eligible');
+			pendingBombCard = null;
+			return;
+		}
+
+		bombMode = true;
+	}
+
+	function handleCancelBomb() {
+		bombMode = false;
+		pendingBombCard = null;
+	}
+
+	async function handleBombTarget(row: number, col: number) {
+		if (!bombMode || isCardLoading) return;
+
+		isCardLoading = true;
+		try {
+			if (pendingBombCard) {
+				const ok = await consumeVipCard(pendingBombCard.instanceId);
+				if (!ok) return;
+				bombCardsAvailable = Math.max(0, bombCardsAvailable - 1);
+				if (vipCards && vipCards[pendingBombCard.instanceId]) {
+					vipCards[pendingBombCard.instanceId].usedAt = new Date().toISOString();
+				}
+			} else {
+				const powerType = BOMB_POWER_TYPES[bombMaxValue] ?? 'bomb_4';
+				const ok = await payWithGidouilles(powerType);
+				if (!ok) return;
+			}
+
+			// Save state for potential undo
+			previousState = JSON.parse(JSON.stringify(gameState));
+
+			gameState = {
+				...gameState,
+				board: removeTile(gameState.board, row, col)
+			};
+			bombMode = false;
+			pendingBombCard = null;
+			cardUsage = { ...cardUsage, bomb: cardUsage.bomb + 1 };
+			toaster.success('Tuile supprimee !');
+		} finally {
+			isCardLoading = false;
+		}
+	}
+
+	async function handleFreezeSpawn() {
+		if (
+			cardUsage.freeze >= MAX_FREEZE_PER_GAME ||
+			isCardLoading ||
+			skipNextSpawn ||
+			gameState.gameOver
+		)
+			return;
+
+		isCardLoading = true;
+		try {
+			const instanceId = findCardInstanceId(FREEZE_CARD_IDS);
+			if (instanceId) {
+				const ok = await consumeVipCard(instanceId);
+				if (!ok) return;
+				freezeCardsAvailable = Math.max(0, freezeCardsAvailable - 1);
+				if (vipCards && vipCards[instanceId]) {
+					vipCards[instanceId].usedAt = new Date().toISOString();
+				}
+			} else {
+				const ok = await payWithGidouilles('freeze_spawn');
+				if (!ok) return;
+			}
+
+			skipNextSpawn = true;
+			cardUsage = { ...cardUsage, freeze: cardUsage.freeze + 1 };
+			toaster.success('Prochain coup sans nouvelle tuile !');
+		} finally {
+			isCardLoading = false;
+		}
 	}
 
 	/**
@@ -432,6 +762,43 @@
 		</div>
 	</div>
 
+	<!-- VIP Card Controls -->
+	<Game2048Controls
+		gameOver={gameState.gameOver}
+		{isAuthenticated}
+		isLoading={isCardLoading}
+		{undoCardsAvailable}
+		canUndo={previousState !== null}
+		undoUsedThisGame={cardUsage.undo}
+		maxUndoPerGame={MAX_UNDO_PER_GAME}
+		onUseUndo={handleUndo}
+		{bombCardsAvailable}
+		bombUsedThisGame={cardUsage.bomb}
+		maxBombPerGame={MAX_BOMB_PER_GAME}
+		{bombMode}
+		{hasBombTargets}
+		onUseBomb={handleBomb}
+		onCancelBomb={handleCancelBomb}
+		{freezeCardsAvailable}
+		freezeUsedThisGame={cardUsage.freeze}
+		maxFreezePerGame={MAX_FREEZE_PER_GAME}
+		freezeActive={skipNextSpawn}
+		onUseFreezeSpawn={handleFreezeSpawn}
+		{gidouilles}
+		undoCostGidouilles={UNDO_COST}
+		{bombCostGidouilles}
+		freezeCostGidouilles={FREEZE_COST}
+	/>
+
+	<!-- Bomb mode banner -->
+	{#if bombMode}
+		<div
+			class="mb-2 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-center text-sm font-medium text-red-700 dark:border-red-800 dark:bg-red-950/30 dark:text-red-400"
+		>
+			💣 Cliquez sur une tuile a supprimer (valeur &le; {bombMaxValue})
+		</div>
+	{/if}
+
 	<!-- Game Board -->
 	<div
 		class="game-board mb-6 rounded-lg bg-muted/50 p-3 select-none sm:p-4"
@@ -457,7 +824,12 @@
 			<!-- Active tiles (absolutely positioned for animations) -->
 			<div class="absolute inset-0 p-0">
 				{#each activeTiles as tile (tile.id)}
-					<Tile2048 {tile} {showPowerNotation} />
+					<Tile2048
+						{tile}
+						{showPowerNotation}
+						bombTarget={bombMode && tile.value <= bombMaxValue}
+						onBombClick={handleBombTarget}
+					/>
 				{/each}
 			</div>
 		</div>

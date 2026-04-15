@@ -408,6 +408,58 @@ function transformPosition(pos: Position, rotations: number): Position {
 }
 
 /**
+ * Removes a tile at the specified position from the board
+ * @param board - Current game board
+ * @param row - Row of the tile to remove
+ * @param col - Column of the tile to remove
+ * @returns New board with the tile removed (set to null)
+ */
+export function removeTile(board: GameBoard, row: number, col: number): GameBoard {
+	const newBoard = board.map((r) => [...r]);
+	newBoard[row][col] = null;
+	return newBoard;
+}
+
+/**
+ * Removes the newly spawned tile (the one with isNew: true) from the board.
+ * Used by the Freeze Spawn VIP card to prevent a new tile from appearing after a move.
+ * @param board - Board after a move (contains one tile with isNew: true)
+ * @returns New board with the new tile removed, or same board if no new tile found
+ */
+export function removeNewlySpawnedTile(board: GameBoard): GameBoard {
+	for (let row = 0; row < BOARD_SIZE; row++) {
+		for (let col = 0; col < BOARD_SIZE; col++) {
+			const tile = board[row][col];
+			if (tile && tile.isNew) {
+				const newBoard = board.map((r) => [...r]);
+				newBoard[row][col] = null;
+				return newBoard;
+			}
+		}
+	}
+	return board;
+}
+
+/**
+ * Gets positions of tiles eligible for the Bomb VIP card (value <= maxValue)
+ * @param board - Current game board
+ * @param maxValue - Maximum tile value that can be targeted
+ * @returns Array of positions with eligible tiles
+ */
+export function getEligibleBombTargets(board: GameBoard, maxValue: number): Position[] {
+	const targets: Position[] = [];
+	for (let row = 0; row < BOARD_SIZE; row++) {
+		for (let col = 0; col < BOARD_SIZE; col++) {
+			const tile = board[row][col];
+			if (tile && tile.value <= maxValue) {
+				targets.push({ row, col });
+			}
+		}
+	}
+	return targets;
+}
+
+/**
  * Performs a move in the specified direction
  * @param state - Current game state
  * @param direction - Direction to move

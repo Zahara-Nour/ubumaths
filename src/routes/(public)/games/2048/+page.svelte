@@ -38,7 +38,15 @@
 
 	<!-- Game Component -->
 	<div class="mb-8">
-		<Game2048 serverBestScore={data.serverBestScore} canSaveScore={data.canSaveScore} />
+		<Game2048
+			serverBestScore={data.serverBestScore}
+			canSaveScore={data.canSaveScore}
+			vipCards={data.vipCards}
+			initialUndoCards={data.undoCardsAvailable}
+			initialBombCards={data.bombCardsAvailable}
+			initialFreezeCards={data.freezeCardsAvailable}
+			initialGidouilles={data.gidouilles}
+		/>
 	</div>
 
 	<!-- Actions -->

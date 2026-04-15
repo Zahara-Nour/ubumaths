@@ -33,9 +33,16 @@
 	import type { Tile } from './types';
 	import { getPowerNotation } from './game-utils';
 
-	let { tile, showPowerNotation = false } = $props<{
+	let {
+		tile,
+		showPowerNotation = false,
+		bombTarget = false,
+		onBombClick
+	} = $props<{
 		tile: Tile;
 		showPowerNotation?: boolean;
+		bombTarget?: boolean;
+		onBombClick?: (row: number, col: number) => void;
 	}>();
 
 	let tileEl: HTMLElement;
@@ -122,7 +129,16 @@
 	)}"
 	class:tile-new={tile.isNew}
 	class:tile-merged={tile.mergedFrom && tile.mergedFrom.length > 0}
+	class:tile-bomb-target={bombTarget}
 	style="--row: {tile.position.row}; --col: {tile.position.col};"
+	onclick={bombTarget ? () => onBombClick?.(tile.position.row, tile.position.col) : undefined}
+	onkeydown={bombTarget
+		? (e) => {
+				if (e.key === 'Enter' || e.key === ' ') onBombClick?.(tile.position.row, tile.position.col);
+			}
+		: undefined}
+	role={bombTarget ? 'button' : undefined}
+	tabindex={bombTarget ? 0 : undefined}
 >
 	<span class="leading-none font-bold {getFontSize(tile.value)}">
 		{tile.value}
@@ -202,11 +218,34 @@
 		}
 	}
 
+	/* Bomb target mode: pulsing red ring + pointer cursor */
+	.tile-bomb-target {
+		cursor: pointer;
+		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.7);
+		animation: bomb-pulse 1s ease-in-out infinite;
+		z-index: 20;
+	}
+
+	@keyframes bomb-pulse {
+		0%,
+		100% {
+			box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.7);
+		}
+		50% {
+			box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.4);
+		}
+	}
+
 	/* Accessibility: Respect user's motion preferences */
 	@media (prefers-reduced-motion: reduce) {
 		.tile {
 			transition: none;
 			animation: none !important;
+		}
+
+		.tile-bomb-target {
+			animation: none !important;
+			box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.7);
 		}
 	}
 </style>
