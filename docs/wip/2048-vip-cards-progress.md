@@ -145,6 +145,16 @@ Ajouter 3 types de cartes VIP au jeu 2048 (5 templates au total) :
 5. **bombMode** reset au game over (UX fix)
 6. **BOMB_CARD_IDS** unused var supprimee (ESLint fix)
 
+## Vague 2 — Progression
+
+| Phase   | Statut  | Notes                                                                                                                 |
+| ------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
+| Phase 1 | Fait    | 8 fonctions pures + 20 tests (66 total). Review fixes: adjacency check, occupied cell guard, stale animation metadata |
+| Phase 2 | A faire | Types + Migration DB + endpoint                                                                                       |
+| Phase 3 | A faire | Integration Game2048.svelte                                                                                           |
+| Phase 4 | A faire | UI Controls + Tile2048                                                                                                |
+| Phase 5 | A faire | Tests + Quality checks + review finale                                                                                |
+
 ## Risques identifies
 
 1. **Undo + localStorage** : Si le joueur recharge la page, previousState est perdu. Acceptable (les cartes ne sont pas consommees si undo pas utilise).
