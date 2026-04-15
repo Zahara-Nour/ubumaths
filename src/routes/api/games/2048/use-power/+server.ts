@@ -20,11 +20,27 @@ const POWER_COSTS: Record<string, number> = {
 	bomb_4: 3,
 	bomb_16: 8,
 	bomb_64: 15,
-	freeze_spawn: 3
+	freeze_spawn: 3,
+	fusion: 15,
+	joker: 10,
+	vision: 3,
+	multiplier_1_5: 20,
+	multiplier_2: 40
 };
 
 const usePowerSchema = z.object({
-	power_type: z.enum(['undo', 'bomb_4', 'bomb_16', 'bomb_64', 'freeze_spawn'])
+	power_type: z.enum([
+		'undo',
+		'bomb_4',
+		'bomb_16',
+		'bomb_64',
+		'freeze_spawn',
+		'fusion',
+		'joker',
+		'vision',
+		'multiplier_1_5',
+		'multiplier_2'
+	])
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {
