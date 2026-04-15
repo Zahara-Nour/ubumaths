@@ -242,6 +242,44 @@ interface FreezeSpawnAction {
 }
 
 /**
+ * VIP Card Action - Fusion
+ * Merges two adjacent identical tiles without a global move in 2048.
+ */
+interface FusionAction {
+	type: 'fusion';
+	context?: string; // Activation context (e.g., '2048')
+}
+
+/**
+ * VIP Card Action - Joker
+ * Changes a tile's value to match its highest-value adjacent neighbor in 2048.
+ */
+interface JokerAction {
+	type: 'joker';
+	context?: string; // Activation context (e.g., '2048')
+}
+
+/**
+ * VIP Card Action - Vision
+ * Pre-shows where the next tile will spawn for N moves in 2048.
+ */
+interface VisionAction {
+	type: 'vision';
+	duration: number; // Number of moves to preview (e.g., 3)
+	context?: string; // Activation context (e.g., '2048')
+}
+
+/**
+ * VIP Card Action - Multiplier
+ * Multiplies score gained from each merge for the rest of the game in 2048.
+ */
+interface MultiplierAction {
+	type: 'multiplier';
+	factor: number; // Multiplier factor (e.g., 1.5, 2)
+	context?: string; // Activation context (e.g., '2048')
+}
+
+/**
  * Union type for all VIP card actions
  * These actions require teacher approval to activate
  */
@@ -256,7 +294,11 @@ export type VipCardAction =
 	| FreezeTimerAction
 	| DetectorAction
 	| BombAction
-	| FreezeSpawnAction;
+	| FreezeSpawnAction
+	| FusionAction
+	| JokerAction
+	| VisionAction
+	| MultiplierAction;
 
 /**
  * Definition of a VIP card type (template)

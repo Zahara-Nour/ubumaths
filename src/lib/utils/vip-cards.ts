@@ -246,6 +246,18 @@ export function getActionDescription(action: VipCardAction, templates: VipCardTe
 		case 'freeze_spawn':
 			return 'Prochain coup sans nouvelle tuile';
 
+		case 'fusion':
+			return 'Fusionner 2 tuiles identiques adjacentes';
+
+		case 'joker':
+			return 'Tuile prend la valeur du plus grand voisin';
+
+		case 'vision':
+			return `Prevoir le prochain spawn pendant ${action.duration} coups`;
+
+		case 'multiplier':
+			return `Score x${action.factor} pour toute la partie`;
+
 		default:
 			return 'Action spéciale';
 	}

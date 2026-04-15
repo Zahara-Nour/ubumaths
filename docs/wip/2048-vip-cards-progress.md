@@ -150,7 +150,7 @@ Ajouter 3 types de cartes VIP au jeu 2048 (5 templates au total) :
 | Phase   | Statut  | Notes                                                                                                                 |
 | ------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
 | Phase 1 | Fait    | 8 fonctions pures + 20 tests (66 total). Review fixes: adjacency check, occupied cell guard, stale animation metadata |
-| Phase 2 | A faire | Types + Migration DB + endpoint                                                                                       |
+| Phase 2 | Fait    | VipCardUsage etendu, VisionPreview, 4 action types, 5 templates SQL, endpoint 5 power_types                           |
 | Phase 3 | A faire | Integration Game2048.svelte                                                                                           |
 | Phase 4 | A faire | UI Controls + Tile2048                                                                                                |
 | Phase 5 | A faire | Tests + Quality checks + review finale                                                                                |

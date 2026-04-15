@@ -114,4 +114,24 @@ export interface VipCardUsage {
 	bomb: number;
 	/** Number of freeze spawn cards used */
 	freeze: number;
+	/** Number of fusion cards used */
+	fusion: number;
+	/** Number of joker cards used */
+	joker: number;
+	/** Number of vision activations */
+	vision: number;
+	/** Number of multiplier activations (0 or 1) */
+	multiplier: number;
+}
+
+/**
+ * State for the Vision VIP card preview
+ */
+export interface VisionPreview {
+	/** Position where the next tile will spawn */
+	position: Position;
+	/** Value of the next tile (2 or 4) */
+	value: number;
+	/** Remaining moves of vision effect */
+	movesRemaining: number;
 }
