@@ -5,6 +5,7 @@
 	 * Syncs scores to server for authenticated students
 	 * Integrates VIP card powers (Undo, Bomb, Freeze Spawn)
 	 */
+	import { cn } from '$lib/utils';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
@@ -1273,7 +1274,10 @@
 
 	<!-- Game Board -->
 	<div
-		class="game-board mb-6 rounded-lg bg-muted/50 p-3 select-none sm:p-4"
+		class={cn(
+			'game-board mb-6 rounded-lg bg-muted/50 p-3 select-none sm:p-4',
+			skipNextSpawn && 'board-frozen'
+		)}
 		ontouchstart={handleTouchStart}
 		ontouchend={handleTouchEnd}
 	>
@@ -1440,5 +1444,35 @@
 		user-select: none;
 		-webkit-user-select: none;
 		-moz-user-select: none;
+	}
+
+	/* Freeze spawn: icy board effect */
+	.board-frozen {
+		outline: 2px solid rgba(34, 211, 238, 0.6);
+		outline-offset: -2px;
+		box-shadow:
+			inset 0 0 20px rgba(34, 211, 238, 0.15),
+			0 0 12px rgba(34, 211, 238, 0.3);
+		animation: freeze-shimmer 2s ease-in-out infinite;
+	}
+
+	@keyframes freeze-shimmer {
+		0%,
+		100% {
+			box-shadow:
+				inset 0 0 20px rgba(34, 211, 238, 0.15),
+				0 0 12px rgba(34, 211, 238, 0.3);
+		}
+		50% {
+			box-shadow:
+				inset 0 0 30px rgba(34, 211, 238, 0.25),
+				0 0 18px rgba(34, 211, 238, 0.45);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.board-frozen {
+			animation: none;
+		}
 	}
 </style>
