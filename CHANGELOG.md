@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.74](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.73...v0.8.74) (2026-04-17)
+
+### ✨ Features
+
+- **2048:** add icy visual effect on board when freeze spawn is active ([45b2028](https://github.com/Zahara-Nour/ubumaths/commit/45b2028134b184036e13cf9767d99aed6cca9911))
+- **2048:** add VIP card powers (Undo, Bomb, Freeze Spawn) ([780e691](https://github.com/Zahara-Nour/ubumaths/commit/780e6910c6342d233595cb1cfa0663f4ca2d18c9))
+- **2048:** add wave 2 handlers (Fusion, Joker, Vision, Multiplier) ([388a619](https://github.com/Zahara-Nour/ubumaths/commit/388a6192e14ce62ca44277ff7ae6ca0598152cb3))
+- **2048:** add wave 2 pure functions (Fusion, Joker, Vision, addTileAt) ([0d95ba8](https://github.com/Zahara-Nour/ubumaths/commit/0d95ba872701109e8261d562e0edc0fd70347540))
+- **2048:** add wave 2 types, migration, and endpoint ([a902c9e](https://github.com/Zahara-Nour/ubumaths/commit/a902c9e29e6b855076dbe44d1af0bd8d60b5b923))
+- **2048:** add wave 2 UI (Fusion, Joker, Vision, Multiplier) ([696a960](https://github.com/Zahara-Nour/ubumaths/commit/696a96001ff6b98c1d431baa4d5c7e502a52db2b))
+
+### 🐛 Bug Fixes
+
+- **2048:** clear animation flags in applyJoker and mergeTilesAt ([8d391be](https://github.com/Zahara-Nour/ubumaths/commit/8d391bef7da77565a07b29bb13a5df8f2c13c065))
+- **2048:** clear animation flags on undo and rollback to prevent tile re-animation ([5f82f09](https://github.com/Zahara-Nour/ubumaths/commit/5f82f0949d502c11705605b56cb3161dd00459f3))
+- **2048:** fix bomb button disabled state and bomb mode stuck on failure ([c05ffeb](https://github.com/Zahara-Nour/ubumaths/commit/c05ffebc2d03979fa6850644b05f416c030eb59f))
+- **2048:** fix VIP card images, power icons, gidouilles RPC, and separate bomb/multiplier tiers ([6858196](https://github.com/Zahara-Nour/ubumaths/commit/6858196a940dfc4c64b5b80c7eead23992ab191f))
+- **2048:** fix vision positioning on desktop and optimize target lookups ([29403cf](https://github.com/Zahara-Nour/ubumaths/commit/29403cfc4b695dcaf7cf439bad8c520c78d59185))
+- **2048:** optimistic UI for powers, remove bomb3 tier, improve UX ([5a54d1a](https://github.com/Zahara-Nour/ubumaths/commit/5a54d1a2600dd7eaacb9f7d9692b92534b62f77f))
+- **2048:** prevent activating powers without sufficient gidouilles ([13cc663](https://github.com/Zahara-Nour/ubumaths/commit/13cc66350558b4f425b6e68196ca029e9843fc96))
+- **2048:** remove fusion mode explanatory banners ([9e1bf47](https://github.com/Zahara-Nour/ubumaths/commit/9e1bf47f025ae4d10593f138f0839541aa40d880))
+- **2048:** remove joker banner and improve joker glow in dark mode ([7ec684e](https://github.com/Zahara-Nour/ubumaths/commit/7ec684e5454f4710f7e10ad62e93544a0b6d3325))
+- **2048:** review fixes for wave 2 VIP cards ([93e18a2](https://github.com/Zahara-Nour/ubumaths/commit/93e18a2720b51dddc15984f92256f1cb474d3d4e))
+
 ### [0.8.73](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.72...v0.8.73) (2026-04-14)
 
 ### 🐛 Bug Fixes
