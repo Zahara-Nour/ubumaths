@@ -11177,7 +11177,7 @@ export type Database = {
 			weekly_best_rewards: {
 				Row: {
 					best_reward_game_id: string | null;
-					best_reward_game_type: string | null;
+					best_reward_game_type: string;
 					best_theoretical_reward: number;
 					bonus_awarded: number | null;
 					bonus_awarded_at: string | null;
@@ -11190,7 +11190,7 @@ export type Database = {
 				};
 				Insert: {
 					best_reward_game_id?: string | null;
-					best_reward_game_type?: string | null;
+					best_reward_game_type: string;
 					best_theoretical_reward?: number;
 					bonus_awarded?: number | null;
 					bonus_awarded_at?: string | null;
@@ -11203,7 +11203,7 @@ export type Database = {
 				};
 				Update: {
 					best_reward_game_id?: string | null;
-					best_reward_game_type?: string | null;
+					best_reward_game_type?: string;
 					best_theoretical_reward?: number;
 					bonus_awarded?: number | null;
 					bonus_awarded_at?: string | null;
@@ -14714,6 +14714,7 @@ export type Database = {
 				Args: { p_status: string; p_user_id: string };
 				Returns: undefined;
 			};
+			use_2048_power: { Args: { p_power_type: string }; Returns: Json };
 			use_detector: { Args: { p_game_id: string }; Returns: Json };
 			use_hint: { Args: { p_game_id: string }; Returns: Json };
 			use_item: {
