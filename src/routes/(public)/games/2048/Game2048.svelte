@@ -1257,21 +1257,6 @@
 		visionCostGidouilles={VISION_COST}
 	/>
 
-	<!-- Mode banners -->
-	{#if fusionMode && !fusionFirstTile}
-		<div
-			class="mb-2 rounded-lg border border-purple-300 bg-purple-50 px-3 py-2 text-center text-sm font-medium text-purple-700 dark:border-purple-800 dark:bg-purple-950/30 dark:text-purple-400"
-		>
-			🔀 Cliquez sur une tuile a fusionner
-		</div>
-	{:else if fusionMode && fusionFirstTile}
-		<div
-			class="mb-2 rounded-lg border border-purple-300 bg-purple-50 px-3 py-2 text-center text-sm font-medium text-purple-700 dark:border-purple-800 dark:bg-purple-950/30 dark:text-purple-400"
-		>
-			🔀 Cliquez sur un voisin identique
-		</div>
-	{/if}
-
 	<!-- Game Board -->
 	<div
 		class={cn(
