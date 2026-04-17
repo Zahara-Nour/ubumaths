@@ -1252,12 +1252,6 @@
 		>
 			🔀 Cliquez sur un voisin identique
 		</div>
-	{:else if jokerMode}
-		<div
-			class="mb-2 rounded-lg border border-pink-300 bg-pink-50 px-3 py-2 text-center text-sm font-medium text-pink-700 dark:border-pink-800 dark:bg-pink-950/30 dark:text-pink-400"
-		>
-			🃏 Cliquez sur une tuile a transformer
-		</div>
 	{/if}
 
 	<!-- Game Board -->

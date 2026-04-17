@@ -296,10 +296,14 @@
 		}
 	}
 
-	/* Joker target mode: pulsing pink ring */
+	/* Joker target mode: pulsing pink glow */
 	.tile-joker-target {
 		cursor: pointer;
-		box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.7);
+		outline: 3px solid rgba(236, 72, 153, 0.9);
+		outline-offset: -1px;
+		box-shadow:
+			0 0 8px 2px rgba(236, 72, 153, 0.6),
+			inset 0 0 6px rgba(236, 72, 153, 0.3);
 		animation: joker-pulse 1s ease-in-out infinite;
 		z-index: 20;
 	}
@@ -307,10 +311,16 @@
 	@keyframes joker-pulse {
 		0%,
 		100% {
-			box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.7);
+			outline-color: rgba(236, 72, 153, 0.9);
+			box-shadow:
+				0 0 8px 2px rgba(236, 72, 153, 0.6),
+				inset 0 0 6px rgba(236, 72, 153, 0.3);
 		}
 		50% {
-			box-shadow: 0 0 0 5px rgba(236, 72, 153, 0.4);
+			outline-color: rgba(249, 168, 212, 1);
+			box-shadow:
+				0 0 14px 4px rgba(236, 72, 153, 0.8),
+				inset 0 0 8px rgba(236, 72, 153, 0.4);
 		}
 	}
 
@@ -335,7 +345,8 @@
 
 		.tile-joker-target {
 			animation: none !important;
-			box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.7);
+			outline: 3px solid rgba(236, 72, 153, 0.9);
+			box-shadow: 0 0 8px 2px rgba(236, 72, 153, 0.6);
 		}
 	}
 </style>
