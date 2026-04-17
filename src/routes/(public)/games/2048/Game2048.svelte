@@ -617,6 +617,12 @@
 			}
 		}
 
+		// Must have a card or enough gidouilles
+		if (!bombCard && gidouilles < (BOMB_COSTS[tier] ?? 3)) {
+			toaster.error('Pas assez de gidouilles');
+			return;
+		}
+
 		pendingBombCard = bombCard;
 		bombMaxValue = tier;
 		activeBombTier = tier;
@@ -759,6 +765,11 @@
 			toaster.error('Aucune paire de tuiles adjacentes identiques');
 			return;
 		}
+		const hasCard = findCardInstanceId(FUSION_CARD_IDS) !== null;
+		if (!hasCard && gidouilles < FUSION_COST) {
+			toaster.error('Pas assez de gidouilles');
+			return;
+		}
 		fusionMode = true;
 		fusionFirstTile = null;
 	}
@@ -844,6 +855,12 @@
 			return;
 		if (!hasJokerTargets) {
 			toaster.error('Aucune tuile eligible pour le Joker');
+			return;
+		}
+		// Must have a card or enough gidouilles
+		const hasCard = findCardInstanceId(JOKER_CARD_IDS) !== null;
+		if (!hasCard && gidouilles < JOKER_COST) {
+			toaster.error('Pas assez de gidouilles');
 			return;
 		}
 		jokerMode = true;
