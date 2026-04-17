@@ -558,7 +558,7 @@ export function mergeTilesAt(
 		return { board, scoreGain: 0 };
 	}
 	const mergedValue = tile1.value * 2;
-	const newBoard = board.map((r) => [...r]);
+	const newBoard = clearAnimationFlags(board);
 	newBoard[pos1.row][pos1.col] = {
 		id: generateTileId(),
 		value: mergedValue,
@@ -601,10 +601,11 @@ export function applyJoker(board: GameBoard, position: Position): GameBoard {
 	if (neighbors.length === 0) return board;
 	const maxNeighborValue = Math.max(...neighbors.map((n) => n.tile.value));
 	if (maxNeighborValue <= tile.value) return board; // no change needed
-	const newBoard = board.map((r) => [...r]);
+	const newBoard = clearAnimationFlags(board);
 	newBoard[position.row][position.col] = {
 		...tile,
 		value: maxNeighborValue,
+		isNew: false,
 		mergedFrom: undefined,
 		previousPosition: undefined
 	};
