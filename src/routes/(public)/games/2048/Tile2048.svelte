@@ -242,10 +242,14 @@
 		}
 	}
 
-	/* Bomb target mode: pulsing red ring */
+	/* Bomb target mode: pulsing red glow */
 	.tile-bomb-target {
 		cursor: pointer;
-		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.7);
+		outline: 3px solid rgba(239, 68, 68, 0.9);
+		outline-offset: -1px;
+		box-shadow:
+			0 0 8px 2px rgba(239, 68, 68, 0.6),
+			inset 0 0 6px rgba(239, 68, 68, 0.3);
 		animation: bomb-pulse 1s ease-in-out infinite;
 		z-index: 20;
 	}
@@ -253,10 +257,16 @@
 	@keyframes bomb-pulse {
 		0%,
 		100% {
-			box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.7);
+			outline-color: rgba(239, 68, 68, 0.9);
+			box-shadow:
+				0 0 8px 2px rgba(239, 68, 68, 0.6),
+				inset 0 0 6px rgba(239, 68, 68, 0.3);
 		}
 		50% {
-			box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.4);
+			outline-color: rgba(252, 165, 165, 1);
+			box-shadow:
+				0 0 14px 4px rgba(239, 68, 68, 0.8),
+				inset 0 0 8px rgba(239, 68, 68, 0.4);
 		}
 	}
 
@@ -313,7 +323,8 @@
 
 		.tile-bomb-target {
 			animation: none !important;
-			box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.7);
+			outline: 3px solid rgba(239, 68, 68, 0.9);
+			box-shadow: 0 0 8px 2px rgba(239, 68, 68, 0.6);
 		}
 
 		.tile-fusion-target,
