@@ -628,50 +628,64 @@
 	async function handleBombTarget(row: number, col: number) {
 		if (!bombMode || isCardLoading) return;
 
-		isCardLoading = true;
+		// 1. OPTIMISTIC: apply immediately
+		const savedState = JSON.parse(JSON.stringify(gameState));
+		const savedBombCard = pendingBombCard;
+		const savedBombMaxValue = bombMaxValue;
+		const savedBombCardsByTier = { ...bombCardsByTier };
+		const savedGidouilles = gidouilles;
+
+		previousState = savedState;
+		gameState = { ...gameState, board: removeTile(gameState.board, row, col) };
+		bombMode = false;
+		activeBombTier = null;
+		cardUsage = { ...cardUsage, bomb: cardUsage.bomb + 1 };
+
+		// Optimistically decrement card count
+		if (savedBombCard) {
+			if (savedBombCard.maxValue === 16)
+				bombCardsByTier.tier2 = Math.max(0, bombCardsByTier.tier2 - 1);
+			else bombCardsByTier.tier1 = Math.max(0, bombCardsByTier.tier1 - 1);
+			if (vipCards && vipCards[savedBombCard.instanceId]) {
+				vipCards[savedBombCard.instanceId].usedAt = new Date().toISOString();
+			}
+		}
+
+		pendingBombCard = null;
+
+		// 2. API call in background
 		try {
-			if (pendingBombCard) {
-				const ok = await consumeVipCard(pendingBombCard.instanceId);
-				if (!ok) {
-					bombMode = false;
-					activeBombTier = null;
-					pendingBombCard = null;
-					return;
-				}
-				// Decrement the correct tier
-				if (pendingBombCard.maxValue === 64)
-					bombCardsByTier.tier3 = Math.max(0, bombCardsByTier.tier3 - 1);
-				else if (pendingBombCard.maxValue === 16)
-					bombCardsByTier.tier2 = Math.max(0, bombCardsByTier.tier2 - 1);
-				else bombCardsByTier.tier1 = Math.max(0, bombCardsByTier.tier1 - 1);
-				if (vipCards && vipCards[pendingBombCard.instanceId]) {
-					vipCards[pendingBombCard.instanceId].usedAt = new Date().toISOString();
-				}
+			let ok: boolean;
+			if (savedBombCard) {
+				ok = await consumeVipCard(savedBombCard.instanceId);
 			} else {
-				const powerType = BOMB_POWER_TYPES[bombMaxValue] ?? 'bomb_4';
-				const ok = await payWithGidouilles(powerType);
-				if (!ok) {
-					bombMode = false;
-					activeBombTier = null;
-					pendingBombCard = null;
-					return;
-				}
+				const powerType = BOMB_POWER_TYPES[savedBombMaxValue] ?? 'bomb_4';
+				ok = await payWithGidouilles(powerType);
 			}
 
-			// Save state for potential undo
-			previousState = JSON.parse(JSON.stringify(gameState));
-
-			gameState = {
-				...gameState,
-				board: removeTile(gameState.board, row, col)
-			};
-			bombMode = false;
-			activeBombTier = null;
-			pendingBombCard = null;
-			cardUsage = { ...cardUsage, bomb: cardUsage.bomb + 1 };
-			toaster.success('Tuile supprimee !');
-		} finally {
-			isCardLoading = false;
+			if (!ok) {
+				// 3. ROLLBACK on failure
+				gameState = savedState;
+				previousState = null;
+				bombCardsByTier = savedBombCardsByTier;
+				gidouilles = savedGidouilles;
+				cardUsage = { ...cardUsage, bomb: cardUsage.bomb - 1 };
+				if (savedBombCard && vipCards && vipCards[savedBombCard.instanceId]) {
+					delete vipCards[savedBombCard.instanceId].usedAt;
+				}
+				toaster.error('Echec du pouvoir, action annulee');
+			}
+		} catch {
+			// Rollback on network error
+			gameState = savedState;
+			previousState = null;
+			bombCardsByTier = savedBombCardsByTier;
+			gidouilles = savedGidouilles;
+			cardUsage = { ...cardUsage, bomb: cardUsage.bomb - 1 };
+			if (savedBombCard && vipCards && vipCards[savedBombCard.instanceId]) {
+				delete vipCards[savedBombCard.instanceId].usedAt;
+			}
+			toaster.error('Erreur reseau, action annulee');
 		}
 	}
 
@@ -684,26 +698,44 @@
 		)
 			return;
 
-		isCardLoading = true;
-		try {
-			const instanceId = findCardInstanceId(FREEZE_CARD_IDS);
-			if (instanceId) {
-				const ok = await consumeVipCard(instanceId);
-				if (!ok) return;
-				freezeCardsAvailable = Math.max(0, freezeCardsAvailable - 1);
-				if (vipCards && vipCards[instanceId]) {
-					vipCards[instanceId].usedAt = new Date().toISOString();
-				}
-			} else {
-				const ok = await payWithGidouilles('freeze_spawn');
-				if (!ok) return;
-			}
+		const instanceId = findCardInstanceId(FREEZE_CARD_IDS);
+		const savedFreezeCards = freezeCardsAvailable;
+		const savedGidouilles = gidouilles;
 
-			skipNextSpawn = true;
-			cardUsage = { ...cardUsage, freeze: cardUsage.freeze + 1 };
-			toaster.success('Prochain coup sans nouvelle tuile !');
-		} finally {
-			isCardLoading = false;
+		// Optimistic
+		skipNextSpawn = true;
+		cardUsage = { ...cardUsage, freeze: cardUsage.freeze + 1 };
+		if (instanceId) {
+			freezeCardsAvailable = Math.max(0, freezeCardsAvailable - 1);
+			if (vipCards && vipCards[instanceId]) {
+				vipCards[instanceId].usedAt = new Date().toISOString();
+			}
+		}
+
+		// API in background
+		try {
+			const ok = instanceId
+				? await consumeVipCard(instanceId)
+				: await payWithGidouilles('freeze_spawn');
+			if (!ok) {
+				skipNextSpawn = false;
+				cardUsage = { ...cardUsage, freeze: cardUsage.freeze - 1 };
+				freezeCardsAvailable = savedFreezeCards;
+				gidouilles = savedGidouilles;
+				if (instanceId && vipCards && vipCards[instanceId]) {
+					delete vipCards[instanceId].usedAt;
+				}
+				toaster.error('Echec du pouvoir, action annulee');
+			}
+		} catch {
+			skipNextSpawn = false;
+			cardUsage = { ...cardUsage, freeze: cardUsage.freeze - 1 };
+			freezeCardsAvailable = savedFreezeCards;
+			gidouilles = savedGidouilles;
+			if (instanceId && vipCards && vipCards[instanceId]) {
+				delete vipCards[instanceId].usedAt;
+			}
+			toaster.error('Erreur reseau, action annulee');
 		}
 	}
 
@@ -748,42 +780,53 @@
 		const pos1 = firstTile ?? fusionFirstTile;
 		if (!pos1) return;
 
-		isCardLoading = true;
-		try {
-			const instanceId = findCardInstanceId(FUSION_CARD_IDS);
-			if (instanceId) {
-				const ok = await consumeVipCard(instanceId);
-				if (!ok) {
-					fusionMode = false;
-					fusionFirstTile = null;
-					return;
-				}
-				fusionCardsAvailable = Math.max(0, fusionCardsAvailable - 1);
-				if (vipCards && vipCards[instanceId]) {
-					vipCards[instanceId].usedAt = new Date().toISOString();
-				}
-			} else {
-				const ok = await payWithGidouilles('fusion');
-				if (!ok) {
-					fusionMode = false;
-					fusionFirstTile = null;
-					return;
-				}
-			}
+		const instanceId = findCardInstanceId(FUSION_CARD_IDS);
+		const savedState = JSON.parse(JSON.stringify(gameState));
+		const savedFusionCards = fusionCardsAvailable;
+		const savedGidouilles = gidouilles;
 
-			previousState = JSON.parse(JSON.stringify(gameState));
-			const result = mergeTilesAt(gameState.board, pos1, { row, col });
-			let newScore = gameState.score + result.scoreGain;
-			if (scoreMultiplier > 1 && result.scoreGain > 0) {
-				newScore += Math.round(result.scoreGain * (scoreMultiplier - 1));
+		// Optimistic
+		previousState = savedState;
+		const result = mergeTilesAt(gameState.board, pos1, { row, col });
+		let newScore = gameState.score + result.scoreGain;
+		if (scoreMultiplier > 1 && result.scoreGain > 0) {
+			newScore += Math.round(result.scoreGain * (scoreMultiplier - 1));
+		}
+		gameState = { ...gameState, board: result.board, score: newScore };
+		fusionMode = false;
+		fusionFirstTile = null;
+		cardUsage = { ...cardUsage, fusion: cardUsage.fusion + 1 };
+		if (instanceId) {
+			fusionCardsAvailable = Math.max(0, fusionCardsAvailable - 1);
+			if (vipCards && vipCards[instanceId]) {
+				vipCards[instanceId].usedAt = new Date().toISOString();
 			}
-			gameState = { ...gameState, board: result.board, score: newScore };
-			fusionMode = false;
-			fusionFirstTile = null;
-			cardUsage = { ...cardUsage, fusion: cardUsage.fusion + 1 };
-			toaster.success('Fusion reussie !');
-		} finally {
-			isCardLoading = false;
+		}
+
+		// API in background
+		try {
+			const ok = instanceId ? await consumeVipCard(instanceId) : await payWithGidouilles('fusion');
+			if (!ok) {
+				gameState = savedState;
+				previousState = null;
+				fusionCardsAvailable = savedFusionCards;
+				gidouilles = savedGidouilles;
+				cardUsage = { ...cardUsage, fusion: cardUsage.fusion - 1 };
+				if (instanceId && vipCards && vipCards[instanceId]) {
+					delete vipCards[instanceId].usedAt;
+				}
+				toaster.error('Echec du pouvoir, action annulee');
+			}
+		} catch {
+			gameState = savedState;
+			previousState = null;
+			fusionCardsAvailable = savedFusionCards;
+			gidouilles = savedGidouilles;
+			cardUsage = { ...cardUsage, fusion: cardUsage.fusion - 1 };
+			if (instanceId && vipCards && vipCards[instanceId]) {
+				delete vipCards[instanceId].usedAt;
+			}
+			toaster.error('Erreur reseau, action annulee');
 		}
 	}
 
@@ -805,34 +848,47 @@
 	async function handleJokerTarget(row: number, col: number) {
 		if (!jokerMode || isCardLoading) return;
 
-		isCardLoading = true;
-		try {
-			const instanceId = findCardInstanceId(JOKER_CARD_IDS);
-			if (instanceId) {
-				const ok = await consumeVipCard(instanceId);
-				if (!ok) {
-					jokerMode = false;
-					return;
-				}
-				jokerCardsAvailable = Math.max(0, jokerCardsAvailable - 1);
-				if (vipCards && vipCards[instanceId]) {
-					vipCards[instanceId].usedAt = new Date().toISOString();
-				}
-			} else {
-				const ok = await payWithGidouilles('joker');
-				if (!ok) {
-					jokerMode = false;
-					return;
-				}
-			}
+		const instanceId = findCardInstanceId(JOKER_CARD_IDS);
+		const savedState = JSON.parse(JSON.stringify(gameState));
+		const savedJokerCards = jokerCardsAvailable;
+		const savedGidouilles = gidouilles;
 
-			previousState = JSON.parse(JSON.stringify(gameState));
-			gameState = { ...gameState, board: applyJoker(gameState.board, { row, col }) };
-			jokerMode = false;
-			cardUsage = { ...cardUsage, joker: cardUsage.joker + 1 };
-			toaster.success('Joker applique !');
-		} finally {
-			isCardLoading = false;
+		// Optimistic
+		previousState = savedState;
+		gameState = { ...gameState, board: applyJoker(gameState.board, { row, col }) };
+		jokerMode = false;
+		cardUsage = { ...cardUsage, joker: cardUsage.joker + 1 };
+		if (instanceId) {
+			jokerCardsAvailable = Math.max(0, jokerCardsAvailable - 1);
+			if (vipCards && vipCards[instanceId]) {
+				vipCards[instanceId].usedAt = new Date().toISOString();
+			}
+		}
+
+		// API in background
+		try {
+			const ok = instanceId ? await consumeVipCard(instanceId) : await payWithGidouilles('joker');
+			if (!ok) {
+				gameState = savedState;
+				previousState = null;
+				jokerCardsAvailable = savedJokerCards;
+				gidouilles = savedGidouilles;
+				cardUsage = { ...cardUsage, joker: cardUsage.joker - 1 };
+				if (instanceId && vipCards && vipCards[instanceId]) {
+					delete vipCards[instanceId].usedAt;
+				}
+				toaster.error('Echec du pouvoir, action annulee');
+			}
+		} catch {
+			gameState = savedState;
+			previousState = null;
+			jokerCardsAvailable = savedJokerCards;
+			gidouilles = savedGidouilles;
+			cardUsage = { ...cardUsage, joker: cardUsage.joker - 1 };
+			if (instanceId && vipCards && vipCards[instanceId]) {
+				delete vipCards[instanceId].usedAt;
+			}
+			toaster.error('Erreur reseau, action annulee');
 		}
 	}
 
@@ -849,29 +905,45 @@
 		)
 			return;
 
-		isCardLoading = true;
-		try {
-			const instanceId = findCardInstanceId(VISION_CARD_IDS);
-			if (instanceId) {
-				const ok = await consumeVipCard(instanceId);
-				if (!ok) return;
-				visionCardsAvailable = Math.max(0, visionCardsAvailable - 1);
-				if (vipCards && vipCards[instanceId]) {
-					vipCards[instanceId].usedAt = new Date().toISOString();
-				}
-			} else {
-				const ok = await payWithGidouilles('vision');
-				if (!ok) return;
-			}
+		const instanceId = findCardInstanceId(VISION_CARD_IDS);
+		const savedVisionCards = visionCardsAvailable;
+		const savedGidouilles = gidouilles;
 
-			const spawn = generateNextSpawn(gameState.board);
-			if (spawn) {
-				visionPreview = { position: spawn.position, value: spawn.value, movesRemaining: 3 };
+		// Optimistic
+		const spawn = generateNextSpawn(gameState.board);
+		if (spawn) {
+			visionPreview = { position: spawn.position, value: spawn.value, movesRemaining: 3 };
+		}
+		cardUsage = { ...cardUsage, vision: cardUsage.vision + 1 };
+		if (instanceId) {
+			visionCardsAvailable = Math.max(0, visionCardsAvailable - 1);
+			if (vipCards && vipCards[instanceId]) {
+				vipCards[instanceId].usedAt = new Date().toISOString();
 			}
-			cardUsage = { ...cardUsage, vision: cardUsage.vision + 1 };
-			toaster.success('Vision activee pour 3 coups !');
-		} finally {
-			isCardLoading = false;
+		}
+
+		// API in background
+		try {
+			const ok = instanceId ? await consumeVipCard(instanceId) : await payWithGidouilles('vision');
+			if (!ok) {
+				visionPreview = null;
+				cardUsage = { ...cardUsage, vision: cardUsage.vision - 1 };
+				visionCardsAvailable = savedVisionCards;
+				gidouilles = savedGidouilles;
+				if (instanceId && vipCards && vipCards[instanceId]) {
+					delete vipCards[instanceId].usedAt;
+				}
+				toaster.error('Echec du pouvoir, action annulee');
+			}
+		} catch {
+			visionPreview = null;
+			cardUsage = { ...cardUsage, vision: cardUsage.vision - 1 };
+			visionCardsAvailable = savedVisionCards;
+			gidouilles = savedGidouilles;
+			if (instanceId && vipCards && vipCards[instanceId]) {
+				delete vipCards[instanceId].usedAt;
+			}
+			toaster.error('Erreur reseau, action annulee');
 		}
 	}
 
@@ -880,46 +952,66 @@
 			return;
 		if (scoreMultiplier > 1) return; // already active
 
-		isCardLoading = true;
-		try {
-			// Find a VIP card for this specific factor
-			const cardId = MULTIPLIER_CARD_BY_FACTOR[factor];
-			let cardInstanceId: string | null = null;
-			if (vipCards && cardId) {
-				for (const [instanceId, instance] of Object.entries(vipCards)) {
-					if (
-						instance.cardId === cardId &&
-						!instance.usedAt &&
-						(instance.usesRemaining === undefined ||
-							instance.usesRemaining === null ||
-							instance.usesRemaining > 0)
-					) {
-						cardInstanceId = instanceId;
-						break;
-					}
+		// Find a VIP card for this specific factor
+		const cardId = MULTIPLIER_CARD_BY_FACTOR[factor];
+		let cardInstanceId: string | null = null;
+		if (vipCards && cardId) {
+			for (const [instanceId, instance] of Object.entries(vipCards)) {
+				if (
+					instance.cardId === cardId &&
+					!instance.usedAt &&
+					(instance.usesRemaining === undefined ||
+						instance.usesRemaining === null ||
+						instance.usesRemaining > 0)
+				) {
+					cardInstanceId = instanceId;
+					break;
 				}
 			}
+		}
 
+		const savedMultiplierCards = { ...multiplierCardsByFactor };
+		const savedGidouilles = gidouilles;
+
+		// Optimistic
+		scoreMultiplier = factor;
+		cardUsage = { ...cardUsage, multiplier: cardUsage.multiplier + 1 };
+		if (cardInstanceId) {
+			if (factor === 2) multiplierCardsByFactor.x2 = Math.max(0, multiplierCardsByFactor.x2 - 1);
+			else multiplierCardsByFactor.x15 = Math.max(0, multiplierCardsByFactor.x15 - 1);
+			if (vipCards && vipCards[cardInstanceId]) {
+				vipCards[cardInstanceId].usedAt = new Date().toISOString();
+			}
+		}
+
+		// API in background
+		try {
+			let ok: boolean;
 			if (cardInstanceId) {
-				const ok = await consumeVipCard(cardInstanceId);
-				if (!ok) return;
-				// Decrement the correct factor
-				if (factor === 2) multiplierCardsByFactor.x2 = Math.max(0, multiplierCardsByFactor.x2 - 1);
-				else multiplierCardsByFactor.x15 = Math.max(0, multiplierCardsByFactor.x15 - 1);
-				if (vipCards && vipCards[cardInstanceId]) {
-					vipCards[cardInstanceId].usedAt = new Date().toISOString();
-				}
+				ok = await consumeVipCard(cardInstanceId);
 			} else {
 				const powerType = factor === 2 ? 'multiplier_2' : 'multiplier_1_5';
-				const ok = await payWithGidouilles(powerType);
-				if (!ok) return;
+				ok = await payWithGidouilles(powerType);
 			}
-
-			scoreMultiplier = factor;
-			cardUsage = { ...cardUsage, multiplier: cardUsage.multiplier + 1 };
-			toaster.success(`Multiplicateur x${factor} active !`);
-		} finally {
-			isCardLoading = false;
+			if (!ok) {
+				scoreMultiplier = 1;
+				cardUsage = { ...cardUsage, multiplier: cardUsage.multiplier - 1 };
+				multiplierCardsByFactor = savedMultiplierCards;
+				gidouilles = savedGidouilles;
+				if (cardInstanceId && vipCards && vipCards[cardInstanceId]) {
+					delete vipCards[cardInstanceId].usedAt;
+				}
+				toaster.error('Echec du pouvoir, action annulee');
+			}
+		} catch {
+			scoreMultiplier = 1;
+			cardUsage = { ...cardUsage, multiplier: cardUsage.multiplier - 1 };
+			multiplierCardsByFactor = savedMultiplierCards;
+			gidouilles = savedGidouilles;
+			if (cardInstanceId && vipCards && vipCards[cardInstanceId]) {
+				delete vipCards[cardInstanceId].usedAt;
+			}
+			toaster.error('Erreur reseau, action annulee');
 		}
 	}
 
@@ -1144,13 +1236,7 @@
 	/>
 
 	<!-- Mode banners -->
-	{#if bombMode}
-		<div
-			class="mb-2 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-center text-sm font-medium text-red-700 dark:border-red-800 dark:bg-red-950/30 dark:text-red-400"
-		>
-			💣 Cliquez sur une tuile a supprimer (valeur &le; {bombMaxValue})
-		</div>
-	{:else if fusionMode && !fusionFirstTile}
+	{#if fusionMode && !fusionFirstTile}
 		<div
 			class="mb-2 rounded-lg border border-purple-300 bg-purple-50 px-3 py-2 text-center text-sm font-medium text-purple-700 dark:border-purple-800 dark:bg-purple-950/30 dark:text-purple-400"
 		>

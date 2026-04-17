@@ -415,7 +415,16 @@ function transformPosition(pos: Position, rotations: number): Position {
  * @returns New board with the tile removed (set to null)
  */
 export function removeTile(board: GameBoard, row: number, col: number): GameBoard {
-	const newBoard = board.map((r) => [...r]);
+	const newBoard = board.map((r) =>
+		r.map((tile) => {
+			if (!tile) return null;
+			// Clear animation flags to prevent re-animation when board updates
+			if (tile.isNew || tile.mergedFrom) {
+				return { ...tile, isNew: false, mergedFrom: undefined };
+			}
+			return tile;
+		})
+	);
 	newBoard[row][col] = null;
 	return newBoard;
 }
