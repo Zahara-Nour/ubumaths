@@ -16,6 +16,7 @@
 		move,
 		addRandomTile,
 		removeTile,
+		clearAnimationFlags,
 		removeNewlySpawnedTile,
 		getEligibleBombTargets,
 		getFusionTargets,
@@ -578,7 +579,10 @@
 				if (!ok) return;
 			}
 
-			gameState = previousState;
+			gameState = {
+				...previousState,
+				board: clearAnimationFlags(previousState.board)
+			};
 			previousState = null;
 			cardUsage = { ...cardUsage, undo: cardUsage.undo + 1 };
 			toaster.success('Coup annule !');
@@ -665,7 +669,7 @@
 
 			if (!ok) {
 				// 3. ROLLBACK on failure
-				gameState = savedState;
+				gameState = { ...savedState, board: clearAnimationFlags(savedState.board) };
 				previousState = null;
 				bombCardsByTier = savedBombCardsByTier;
 				gidouilles = savedGidouilles;
@@ -677,7 +681,7 @@
 			}
 		} catch {
 			// Rollback on network error
-			gameState = savedState;
+			gameState = { ...savedState, board: clearAnimationFlags(savedState.board) };
 			previousState = null;
 			bombCardsByTier = savedBombCardsByTier;
 			gidouilles = savedGidouilles;
@@ -807,7 +811,7 @@
 		try {
 			const ok = instanceId ? await consumeVipCard(instanceId) : await payWithGidouilles('fusion');
 			if (!ok) {
-				gameState = savedState;
+				gameState = { ...savedState, board: clearAnimationFlags(savedState.board) };
 				previousState = null;
 				fusionCardsAvailable = savedFusionCards;
 				gidouilles = savedGidouilles;
@@ -818,7 +822,7 @@
 				toaster.error('Echec du pouvoir, action annulee');
 			}
 		} catch {
-			gameState = savedState;
+			gameState = { ...savedState, board: clearAnimationFlags(savedState.board) };
 			previousState = null;
 			fusionCardsAvailable = savedFusionCards;
 			gidouilles = savedGidouilles;
@@ -869,7 +873,7 @@
 		try {
 			const ok = instanceId ? await consumeVipCard(instanceId) : await payWithGidouilles('joker');
 			if (!ok) {
-				gameState = savedState;
+				gameState = { ...savedState, board: clearAnimationFlags(savedState.board) };
 				previousState = null;
 				jokerCardsAvailable = savedJokerCards;
 				gidouilles = savedGidouilles;
@@ -880,7 +884,7 @@
 				toaster.error('Echec du pouvoir, action annulee');
 			}
 		} catch {
-			gameState = savedState;
+			gameState = { ...savedState, board: clearAnimationFlags(savedState.board) };
 			previousState = null;
 			jokerCardsAvailable = savedJokerCards;
 			gidouilles = savedGidouilles;

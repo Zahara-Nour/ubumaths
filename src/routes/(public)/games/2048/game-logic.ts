@@ -414,17 +414,24 @@ function transformPosition(pos: Position, rotations: number): Position {
  * @param col - Column of the tile to remove
  * @returns New board with the tile removed (set to null)
  */
-export function removeTile(board: GameBoard, row: number, col: number): GameBoard {
-	const newBoard = board.map((r) =>
+/**
+ * Clear animation flags (isNew, mergedFrom) on all tiles to prevent re-animation
+ * when the board is updated without a move (e.g. bomb, undo, joker).
+ */
+export function clearAnimationFlags(board: GameBoard): GameBoard {
+	return board.map((r) =>
 		r.map((tile) => {
 			if (!tile) return null;
-			// Clear animation flags to prevent re-animation when board updates
 			if (tile.isNew || tile.mergedFrom) {
 				return { ...tile, isNew: false, mergedFrom: undefined };
 			}
 			return tile;
 		})
 	);
+}
+
+export function removeTile(board: GameBoard, row: number, col: number): GameBoard {
+	const newBoard = clearAnimationFlags(board);
 	newBoard[row][col] = null;
 	return newBoard;
 }
