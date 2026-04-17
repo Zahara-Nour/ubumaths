@@ -4,6 +4,10 @@
 	import { cn } from '$lib/utils';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 
+	const STORAGE_BASE =
+		'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images';
+	const powerImg = (id: string) => `${STORAGE_BASE}/${id}@0.5x.webp`;
+
 	interface Props {
 		timeElapsed: number;
 		minesRemaining: number;
@@ -180,7 +184,7 @@
 										aria-label="Utiliser un indice"
 									>
 										<img
-											src="/images/games/power-hint.jpg"
+											src={powerImg('minesweeper-hint')}
 											alt="Indice"
 											class="h-full w-full object-cover"
 										/>
@@ -232,7 +236,7 @@
 										aria-label="Utiliser un détecteur"
 									>
 										<img
-											src="/images/games/power-detector.jpg"
+											src={powerImg('minesweeper-detector')}
 											alt="Détecteur"
 											class="h-full w-full object-cover"
 										/>
@@ -282,7 +286,7 @@
 										aria-label="Utiliser le Gel Temporaire (60s)"
 									>
 										<img
-											src="/images/games/power-freeze.jpg"
+											src={powerImg('minesweeper-freeze')}
 											alt="Gel Temporaire"
 											class="h-full w-full object-cover"
 										/>
@@ -319,7 +323,7 @@
 										aria-label="Utiliser la Chronostase (120s)"
 									>
 										<img
-											src="/images/games/power-chronostase.jpg"
+											src={powerImg('minesweeper-chronostase')}
 											alt="Chronostase"
 											class="h-full w-full object-cover"
 										/>

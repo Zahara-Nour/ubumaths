@@ -64,7 +64,6 @@
 		16: '2048-bomb-2',
 		64: '2048-bomb-3'
 	};
-	const BOMB_TIERS = [64, 16, 4] as const; // highest first for card selection
 	const BOMB_COSTS: Record<number, number> = { 4: 3, 16: 8, 64: 15 };
 	const BOMB_POWER_TYPES: Record<number, string> = {
 		4: 'bomb_4',
@@ -78,12 +77,12 @@
 		canSaveScore: boolean;
 		vipCards: StudentVipCards | null;
 		initialUndoCards: number;
-		initialBombCards: number;
+		initialBombCards: { tier1: number; tier2: number };
 		initialFreezeCards: number;
 		initialFusionCards: number;
 		initialJokerCards: number;
 		initialVisionCards: number;
-		initialMultiplierCards: number;
+		initialMultiplierCards: { x15: number; x2: number };
 		initialGidouilles: number;
 	}
 	let {
@@ -91,12 +90,12 @@
 		canSaveScore,
 		vipCards = null,
 		initialUndoCards = 0,
-		initialBombCards = 0,
+		initialBombCards = { tier1: 0, tier2: 0 },
 		initialFreezeCards = 0,
 		initialFusionCards = 0,
 		initialJokerCards = 0,
 		initialVisionCards = 0,
-		initialMultiplierCards = 0,
+		initialMultiplierCards = { x15: 0, x2: 0 },
 		initialGidouilles = 0
 	}: Props = $props();
 
@@ -176,6 +175,7 @@
 	let previousState: GameState | null = $state(null);
 	let skipNextSpawn = $state(false);
 	let bombMode = $state(false);
+	let activeBombTier = $state<number | null>(null);
 	let bombMaxValue = $state(4);
 	let pendingBombCard = $state<{ instanceId: string; maxValue: number } | null>(null);
 	let cardUsage = $state<VipCardUsage>({
@@ -188,12 +188,12 @@
 		multiplier: 0
 	});
 	let undoCardsAvailable = $state(initialUndoCards);
-	let bombCardsAvailable = $state(initialBombCards);
+	let bombCardsByTier = $state({ ...initialBombCards });
 	let freezeCardsAvailable = $state(initialFreezeCards);
 	let fusionCardsAvailable = $state(initialFusionCards);
 	let jokerCardsAvailable = $state(initialJokerCards);
 	let visionCardsAvailable = $state(initialVisionCards);
-	let multiplierCardsAvailable = $state(initialMultiplierCards);
+	let multiplierCardsByFactor = $state({ ...initialMultiplierCards });
 	let gidouilles = $state(initialGidouilles);
 	let isCardLoading = $state(false);
 
@@ -206,30 +206,9 @@
 
 	const isAuthenticated = $derived(canSaveScore);
 
-	// Determine the best bomb tier available (highest tier first: VIP cards, then gidouilles)
-	const bestBombMaxValue = $derived.by(() => {
-		// VIP card path: highest tier with an available card
-		if (vipCards) {
-			for (const tier of BOMB_TIERS) {
-				const cardId = BOMB_CARD_BY_TIER[tier];
-				for (const instance of Object.values(vipCards)) {
-					if (instance.cardId === cardId && !instance.usedAt) return tier;
-				}
-			}
-		}
-		// Gidouilles fallback: highest tier the player can afford
-		for (const tier of BOMB_TIERS) {
-			if (gidouilles >= (BOMB_COSTS[tier] ?? 3)) return tier;
-		}
-		return 4;
-	});
-
-	const hasBombTargets = $derived(
-		getEligibleBombTargets(gameState.board, bestBombMaxValue).length > 0
-	);
-
-	// Best bomb cost for gidouilles display
-	const bombCostGidouilles = $derived(BOMB_COSTS[bestBombMaxValue] ?? 3);
+	// Per-tier bomb targets
+	const hasBomb1Targets = $derived(getEligibleBombTargets(gameState.board, 4).length > 0);
+	const hasBomb2Targets = $derived(getEligibleBombTargets(gameState.board, 16).length > 0);
 
 	// Fusion/Joker/Vision derived (pre-computed Sets for O(1) lookups in template)
 	const fusionTargetSet = $derived(
@@ -249,23 +228,7 @@
 	);
 	const hasJokerTargets = $derived(getJokerTargets(gameState.board).length > 0);
 
-	// Best multiplier factor available
-	const bestMultiplierFactor = $derived.by(() => {
-		if (vipCards) {
-			for (const factor of [2, 1.5]) {
-				const cardId = MULTIPLIER_CARD_BY_FACTOR[factor];
-				for (const instance of Object.values(vipCards)) {
-					if (instance.cardId === cardId && !instance.usedAt) return factor;
-				}
-			}
-		}
-		// Gidouilles fallback: best factor affordable
-		for (const factor of [2, 1.5]) {
-			if (gidouilles >= (MULTIPLIER_COSTS[factor] ?? 20)) return factor;
-		}
-		return 1.5;
-	});
-	const multiplierCostGidouilles = $derived(MULTIPLIER_COSTS[bestMultiplierFactor] ?? 20);
+	// (per-tier/factor props are passed directly to Controls)
 
 	/**
 	 * Find first available VIP card instance ID for given card IDs
@@ -281,50 +244,6 @@
 					instance.usesRemaining > 0)
 			) {
 				return instanceId;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Find best bomb card instance (highest tier first)
-	 */
-	function findBombCardInstance(): { instanceId: string; maxValue: number } | null {
-		if (!vipCards) return null;
-		for (const tier of BOMB_TIERS) {
-			const cardId = BOMB_CARD_BY_TIER[tier];
-			for (const [instanceId, instance] of Object.entries(vipCards)) {
-				if (
-					instance.cardId === cardId &&
-					!instance.usedAt &&
-					(instance.usesRemaining === undefined ||
-						instance.usesRemaining === null ||
-						instance.usesRemaining > 0)
-				) {
-					return { instanceId, maxValue: tier };
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Find best multiplier card instance (highest factor first)
-	 */
-	function findMultiplierCardInstance(): { instanceId: string; factor: number } | null {
-		if (!vipCards) return null;
-		for (const factor of [2, 1.5]) {
-			const cardId = MULTIPLIER_CARD_BY_FACTOR[factor];
-			for (const [instanceId, instance] of Object.entries(vipCards)) {
-				if (
-					instance.cardId === cardId &&
-					!instance.usedAt &&
-					(instance.usesRemaining === undefined ||
-						instance.usesRemaining === null ||
-						instance.usesRemaining > 0)
-				) {
-					return { instanceId, factor };
-				}
 			}
 		}
 		return null;
@@ -442,6 +361,7 @@
 	$effect(() => {
 		if (gameState.gameOver && !showGameOverDialog) {
 			bombMode = false;
+			activeBombTier = null;
 			fusionMode = false;
 			jokerMode = false; // clear all modes before dialog
 			// Save score first, then open dialog (avoids layout jump from reward data arriving late)
@@ -523,6 +443,7 @@
 		previousState = null;
 		skipNextSpawn = false;
 		bombMode = false;
+		activeBombTier = null;
 		bombMaxValue = 4;
 		pendingBombCard = null;
 		fusionMode = false;
@@ -666,38 +587,41 @@
 		}
 	}
 
-	async function handleBomb() {
+	async function handleBomb(tier: number) {
 		if (cardUsage.bomb >= MAX_BOMB_PER_GAME || isCardLoading || gameState.gameOver) return;
 
-		// Determine which bomb to use and capture it
-		const bombCard = findBombCardInstance();
-		pendingBombCard = bombCard;
-		if (bombCard) {
-			bombMaxValue = bombCard.maxValue;
-		} else {
-			// Gidouilles fallback: use cheapest bomb tier that has targets
-			for (const tier of [4, 16, 64] as const) {
+		if (getEligibleBombTargets(gameState.board, tier).length === 0) {
+			toaster.error('Aucune tuile eligible');
+			return;
+		}
+
+		// Find a VIP card for this specific tier
+		const cardId = BOMB_CARD_BY_TIER[tier];
+		let bombCard: { instanceId: string; maxValue: number } | null = null;
+		if (vipCards && cardId) {
+			for (const [instanceId, instance] of Object.entries(vipCards)) {
 				if (
-					getEligibleBombTargets(gameState.board, tier).length > 0 &&
-					gidouilles >= (BOMB_COSTS[tier] ?? 3)
+					instance.cardId === cardId &&
+					!instance.usedAt &&
+					(instance.usesRemaining === undefined ||
+						instance.usesRemaining === null ||
+						instance.usesRemaining > 0)
 				) {
-					bombMaxValue = tier;
+					bombCard = { instanceId, maxValue: tier };
 					break;
 				}
 			}
 		}
 
-		if (getEligibleBombTargets(gameState.board, bombMaxValue).length === 0) {
-			toaster.error('Aucune tuile eligible');
-			pendingBombCard = null;
-			return;
-		}
-
+		pendingBombCard = bombCard;
+		bombMaxValue = tier;
+		activeBombTier = tier;
 		bombMode = true;
 	}
 
 	function handleCancelBomb() {
 		bombMode = false;
+		activeBombTier = null;
 		pendingBombCard = null;
 	}
 
@@ -710,10 +634,16 @@
 				const ok = await consumeVipCard(pendingBombCard.instanceId);
 				if (!ok) {
 					bombMode = false;
+					activeBombTier = null;
 					pendingBombCard = null;
 					return;
 				}
-				bombCardsAvailable = Math.max(0, bombCardsAvailable - 1);
+				// Decrement the correct tier
+				if (pendingBombCard.maxValue === 64)
+					bombCardsByTier.tier3 = Math.max(0, bombCardsByTier.tier3 - 1);
+				else if (pendingBombCard.maxValue === 16)
+					bombCardsByTier.tier2 = Math.max(0, bombCardsByTier.tier2 - 1);
+				else bombCardsByTier.tier1 = Math.max(0, bombCardsByTier.tier1 - 1);
 				if (vipCards && vipCards[pendingBombCard.instanceId]) {
 					vipCards[pendingBombCard.instanceId].usedAt = new Date().toISOString();
 				}
@@ -722,6 +652,7 @@
 				const ok = await payWithGidouilles(powerType);
 				if (!ok) {
 					bombMode = false;
+					activeBombTier = null;
 					pendingBombCard = null;
 					return;
 				}
@@ -735,6 +666,7 @@
 				board: removeTile(gameState.board, row, col)
 			};
 			bombMode = false;
+			activeBombTier = null;
 			pendingBombCard = null;
 			cardUsage = { ...cardUsage, bomb: cardUsage.bomb + 1 };
 			toaster.success('Tuile supprimee !');
@@ -943,26 +875,41 @@
 		}
 	}
 
-	async function handleMultiplier() {
+	async function handleMultiplier(factor: number) {
 		if (cardUsage.multiplier >= MAX_MULTIPLIER_PER_GAME || isCardLoading || gameState.gameOver)
 			return;
 		if (scoreMultiplier > 1) return; // already active
 
 		isCardLoading = true;
 		try {
-			const multiplierCard = findMultiplierCardInstance();
-			let factor: number;
-			if (multiplierCard) {
-				const ok = await consumeVipCard(multiplierCard.instanceId);
-				if (!ok) return;
-				multiplierCardsAvailable = Math.max(0, multiplierCardsAvailable - 1);
-				if (vipCards && vipCards[multiplierCard.instanceId]) {
-					vipCards[multiplierCard.instanceId].usedAt = new Date().toISOString();
+			// Find a VIP card for this specific factor
+			const cardId = MULTIPLIER_CARD_BY_FACTOR[factor];
+			let cardInstanceId: string | null = null;
+			if (vipCards && cardId) {
+				for (const [instanceId, instance] of Object.entries(vipCards)) {
+					if (
+						instance.cardId === cardId &&
+						!instance.usedAt &&
+						(instance.usesRemaining === undefined ||
+							instance.usesRemaining === null ||
+							instance.usesRemaining > 0)
+					) {
+						cardInstanceId = instanceId;
+						break;
+					}
 				}
-				factor = multiplierCard.factor;
+			}
+
+			if (cardInstanceId) {
+				const ok = await consumeVipCard(cardInstanceId);
+				if (!ok) return;
+				// Decrement the correct factor
+				if (factor === 2) multiplierCardsByFactor.x2 = Math.max(0, multiplierCardsByFactor.x2 - 1);
+				else multiplierCardsByFactor.x15 = Math.max(0, multiplierCardsByFactor.x15 - 1);
+				if (vipCards && vipCards[cardInstanceId]) {
+					vipCards[cardInstanceId].usedAt = new Date().toISOString();
+				}
 			} else {
-				// Gidouilles fallback: best affordable factor
-				factor = bestMultiplierFactor;
 				const powerType = factor === 2 ? 'multiplier_2' : 'multiplier_1_5';
 				const ok = await payWithGidouilles(powerType);
 				if (!ok) return;
@@ -1144,13 +1091,18 @@
 		undoUsedThisGame={cardUsage.undo}
 		maxUndoPerGame={MAX_UNDO_PER_GAME}
 		onUseUndo={handleUndo}
-		{bombCardsAvailable}
+		bomb1Cards={bombCardsByTier.tier1}
+		bomb2Cards={bombCardsByTier.tier2}
 		bombUsedThisGame={cardUsage.bomb}
 		maxBombPerGame={MAX_BOMB_PER_GAME}
 		{bombMode}
-		{hasBombTargets}
+		{activeBombTier}
+		{hasBomb1Targets}
+		{hasBomb2Targets}
 		onUseBomb={handleBomb}
 		onCancelBomb={handleCancelBomb}
+		bomb1Cost={BOMB_COSTS[4]}
+		bomb2Cost={BOMB_COSTS[16]}
 		{freezeCardsAvailable}
 		freezeUsedThisGame={cardUsage.freeze}
 		maxFreezePerGame={MAX_FREEZE_PER_GAME}
@@ -1175,19 +1127,20 @@
 		maxVisionPerGame={MAX_VISION_PER_GAME}
 		visionActive={visionPreview !== null}
 		onUseVision={handleVision}
-		{multiplierCardsAvailable}
+		multi15Cards={multiplierCardsByFactor.x15}
+		multi2Cards={multiplierCardsByFactor.x2}
 		multiplierUsedThisGame={cardUsage.multiplier}
 		maxMultiplierPerGame={MAX_MULTIPLIER_PER_GAME}
 		{scoreMultiplier}
 		onUseMultiplier={handleMultiplier}
+		multi15Cost={MULTIPLIER_COSTS[1.5]}
+		multi2Cost={MULTIPLIER_COSTS[2]}
 		{gidouilles}
 		undoCostGidouilles={UNDO_COST}
-		{bombCostGidouilles}
 		freezeCostGidouilles={FREEZE_COST}
 		fusionCostGidouilles={FUSION_COST}
 		jokerCostGidouilles={JOKER_COST}
 		visionCostGidouilles={VISION_COST}
-		{multiplierCostGidouilles}
 	/>
 
 	<!-- Mode banners -->
