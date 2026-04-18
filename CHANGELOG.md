@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.75](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.74...v0.8.75) (2026-04-18)
+
+### 🐛 Bug Fixes
+
+- **2048:** remove educational text and descriptions ([5be90c3](https://github.com/Zahara-Nour/ubumaths/commit/5be90c3d59b64f45cb7714b676d68614592d4285))
+- **2048:** remove power-of-2 notation feature ([85226d4](https://github.com/Zahara-Nour/ubumaths/commit/85226d49e1361dc60a9d57ebe2cff05d53670155))
+
+### ✨ Features
+
+- **rewards:** weekly best rewards per game type + 2048 daily reward description ([8ea6081](https://github.com/Zahara-Nour/ubumaths/commit/8ea608154758d2dac43562e48008359d94500227))
+
 ### [0.8.74](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.73...v0.8.74) (2026-04-17)
 
 ### ✨ Features
