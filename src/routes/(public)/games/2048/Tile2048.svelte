@@ -31,11 +31,8 @@
 	 * so no slide animation is triggered — only the CSS scale/opacity animation.
 	 */
 	import type { Tile } from './types';
-	import { getPowerNotation } from './game-utils';
-
 	interface Props {
 		tile: Tile;
-		showPowerNotation?: boolean;
 		bombTarget?: boolean;
 		onBombClick?: (row: number, col: number) => void;
 		fusionTarget?: boolean;
@@ -47,7 +44,6 @@
 
 	let {
 		tile,
-		showPowerNotation = false,
 		bombTarget = false,
 		onBombClick,
 		fusionTarget = false,
@@ -167,9 +163,6 @@
 	<span class="leading-none font-bold {getFontSize(tile.value)}">
 		{tile.value}
 	</span>
-	{#if showPowerNotation && tile.value >= 4}
-		<span class="mt-1 text-xs opacity-70">{getPowerNotation(tile.value)}</span>
-	{/if}
 </div>
 
 <style>
