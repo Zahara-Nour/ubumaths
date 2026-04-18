@@ -1160,13 +1160,85 @@
 	});
 </script>
 
-<div class="game-container mx-auto max-w-md px-4">
-	<!-- Header Section -->
-	<div class="header mb-6">
-		<div class="mb-4 flex items-center justify-between">
+<div class="game-container mx-auto max-w-4xl px-4">
+	<!-- Game board and controls in responsive layout -->
+	<div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
+		<!-- Board (main area) -->
+		<div class="flex justify-center lg:col-span-3">
+			<div
+				class={cn(
+					'game-board rounded-lg bg-muted/50 p-3 select-none sm:p-4',
+					skipNextSpawn && 'board-frozen'
+				)}
+				ontouchstart={handleTouchStart}
+				ontouchend={handleTouchEnd}
+			>
+				<div class="tile-container relative">
+					<!-- Background grid (empty cells) -->
+					<div class="grid grid-cols-4 gap-2 sm:gap-3" aria-hidden="true">
+						{#each Array(16) as _, index (index)}
+							<div class="empty-cell h-16 w-16 rounded-lg bg-muted/30 sm:h-20 sm:w-20"></div>
+						{/each}
+					</div>
+
+					<!-- Ghost tiles (sliding to merge position) -->
+					<div class="absolute inset-0 p-0">
+						{#each ghostTiles as ghost (ghost.id)}
+							<GhostTile2048 {ghost} />
+						{/each}
+					</div>
+
+					<!-- Vision preview ghost -->
+					{#if visionPreview}
+						<div class="absolute inset-0 p-0">
+							<div
+								class="absolute flex h-16 w-16 items-center justify-center rounded-lg border-2 border-dashed border-indigo-400 bg-indigo-100/40 text-lg font-bold text-indigo-500 opacity-60 sm:h-20 sm:w-20 dark:bg-indigo-900/30"
+								style="left: calc({visionPreview.position
+									.col} * var(--grid-size)); top: calc({visionPreview.position
+									.row} * var(--grid-size));"
+							>
+								{visionPreview.value}
+								<span
+									class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500 text-[8px] font-bold text-white"
+								>
+									{visionPreview.movesRemaining}
+								</span>
+							</div>
+						</div>
+					{/if}
+
+					<!-- Active tiles -->
+					<div class="absolute inset-0 p-0">
+						{#each activeTiles as tile (tile.id)}
+							{@const posKey = `${tile.position.row},${tile.position.col}`}
+							{@const isFusionTarget = fusionTargetSet.has(posKey)}
+							{@const isFusionNeighbor = fusionNeighborSet.has(posKey)}
+							{@const isJokerTarget = jokerTargetSet.has(posKey)}
+							<Tile2048
+								{tile}
+								bombTarget={bombMode && tile.value <= bombMaxValue}
+								onBombClick={handleBombTarget}
+								fusionTarget={isFusionTarget}
+								fusionNeighbor={isFusionNeighbor}
+								onFusionClick={fusionMode
+									? fusionFirstTile
+										? (r, c) => handleFusionSecondClick(r, c)
+										: handleFusionFirstClick
+									: undefined}
+								jokerTarget={isJokerTarget}
+								onJokerClick={jokerMode ? handleJokerTarget : undefined}
+							/>
+						{/each}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Sidebar: Scores + Controls -->
+		<div class="space-y-4">
 			<!-- Scores -->
-			<div class="flex gap-4">
-				<div class="score-box relative rounded-lg bg-muted px-4 py-2">
+			<div class="flex gap-4 lg:flex-col">
+				<div class="score-box relative flex-1 rounded-lg bg-muted px-4 py-2 text-center">
 					<div class="text-xs font-semibold text-muted-foreground uppercase">Score</div>
 					<div class="text-2xl font-bold">{gameState.score}</div>
 					{#if scoreMultiplier > 1}
@@ -1177,155 +1249,77 @@
 						</span>
 					{/if}
 				</div>
-				<div class="score-box rounded-lg bg-muted px-4 py-2">
+				<div class="score-box flex-1 rounded-lg bg-muted px-4 py-2 text-center">
 					<div class="text-xs font-semibold text-muted-foreground uppercase">Meilleur</div>
 					<div class="text-2xl font-bold">{bestScore}</div>
 				</div>
 			</div>
 
 			<!-- New Game Button -->
-			<Button onclick={startNewGame} variant="default">Nouvelle Partie</Button>
+			<Button onclick={startNewGame} variant="default" class="w-full">Nouvelle Partie</Button>
+
+			<!-- VIP Card Controls -->
+			<Game2048Controls
+				gameOver={gameState.gameOver}
+				{isAuthenticated}
+				isLoading={isCardLoading}
+				{undoCardsAvailable}
+				canUndo={previousState !== null}
+				undoUsedThisGame={cardUsage.undo}
+				maxUndoPerGame={MAX_UNDO_PER_GAME}
+				onUseUndo={handleUndo}
+				bomb1Cards={bombCardsByTier.tier1}
+				bomb2Cards={bombCardsByTier.tier2}
+				bombUsedThisGame={cardUsage.bomb}
+				maxBombPerGame={MAX_BOMB_PER_GAME}
+				{bombMode}
+				{activeBombTier}
+				{hasBomb1Targets}
+				{hasBomb2Targets}
+				onUseBomb={handleBomb}
+				onCancelBomb={handleCancelBomb}
+				bomb1Cost={BOMB_COSTS[4]}
+				bomb2Cost={BOMB_COSTS[16]}
+				{freezeCardsAvailable}
+				freezeUsedThisGame={cardUsage.freeze}
+				maxFreezePerGame={MAX_FREEZE_PER_GAME}
+				freezeActive={skipNextSpawn}
+				onUseFreezeSpawn={handleFreezeSpawn}
+				{fusionCardsAvailable}
+				fusionUsedThisGame={cardUsage.fusion}
+				maxFusionPerGame={MAX_FUSION_PER_GAME}
+				{fusionMode}
+				{hasFusionTargets}
+				onUseFusion={handleFusion}
+				onCancelFusion={handleCancelFusion}
+				{jokerCardsAvailable}
+				jokerUsedThisGame={cardUsage.joker}
+				maxJokerPerGame={MAX_JOKER_PER_GAME}
+				{jokerMode}
+				{hasJokerTargets}
+				onUseJoker={handleJoker}
+				onCancelJoker={handleCancelJoker}
+				{visionCardsAvailable}
+				visionUsedThisGame={cardUsage.vision}
+				maxVisionPerGame={MAX_VISION_PER_GAME}
+				visionActive={visionPreview !== null}
+				onUseVision={handleVision}
+				multi15Cards={multiplierCardsByFactor.x15}
+				multi2Cards={multiplierCardsByFactor.x2}
+				multiplierUsedThisGame={cardUsage.multiplier}
+				maxMultiplierPerGame={MAX_MULTIPLIER_PER_GAME}
+				{scoreMultiplier}
+				onUseMultiplier={handleMultiplier}
+				multi15Cost={MULTIPLIER_COSTS[1.5]}
+				multi2Cost={MULTIPLIER_COSTS[2]}
+				{gidouilles}
+				undoCostGidouilles={UNDO_COST}
+				freezeCostGidouilles={FREEZE_COST}
+				fusionCostGidouilles={FUSION_COST}
+				jokerCostGidouilles={JOKER_COST}
+				visionCostGidouilles={VISION_COST}
+			/>
 		</div>
-	</div>
-
-	<!-- VIP Card Controls -->
-	<Game2048Controls
-		gameOver={gameState.gameOver}
-		{isAuthenticated}
-		isLoading={isCardLoading}
-		{undoCardsAvailable}
-		canUndo={previousState !== null}
-		undoUsedThisGame={cardUsage.undo}
-		maxUndoPerGame={MAX_UNDO_PER_GAME}
-		onUseUndo={handleUndo}
-		bomb1Cards={bombCardsByTier.tier1}
-		bomb2Cards={bombCardsByTier.tier2}
-		bombUsedThisGame={cardUsage.bomb}
-		maxBombPerGame={MAX_BOMB_PER_GAME}
-		{bombMode}
-		{activeBombTier}
-		{hasBomb1Targets}
-		{hasBomb2Targets}
-		onUseBomb={handleBomb}
-		onCancelBomb={handleCancelBomb}
-		bomb1Cost={BOMB_COSTS[4]}
-		bomb2Cost={BOMB_COSTS[16]}
-		{freezeCardsAvailable}
-		freezeUsedThisGame={cardUsage.freeze}
-		maxFreezePerGame={MAX_FREEZE_PER_GAME}
-		freezeActive={skipNextSpawn}
-		onUseFreezeSpawn={handleFreezeSpawn}
-		{fusionCardsAvailable}
-		fusionUsedThisGame={cardUsage.fusion}
-		maxFusionPerGame={MAX_FUSION_PER_GAME}
-		{fusionMode}
-		{hasFusionTargets}
-		onUseFusion={handleFusion}
-		onCancelFusion={handleCancelFusion}
-		{jokerCardsAvailable}
-		jokerUsedThisGame={cardUsage.joker}
-		maxJokerPerGame={MAX_JOKER_PER_GAME}
-		{jokerMode}
-		{hasJokerTargets}
-		onUseJoker={handleJoker}
-		onCancelJoker={handleCancelJoker}
-		{visionCardsAvailable}
-		visionUsedThisGame={cardUsage.vision}
-		maxVisionPerGame={MAX_VISION_PER_GAME}
-		visionActive={visionPreview !== null}
-		onUseVision={handleVision}
-		multi15Cards={multiplierCardsByFactor.x15}
-		multi2Cards={multiplierCardsByFactor.x2}
-		multiplierUsedThisGame={cardUsage.multiplier}
-		maxMultiplierPerGame={MAX_MULTIPLIER_PER_GAME}
-		{scoreMultiplier}
-		onUseMultiplier={handleMultiplier}
-		multi15Cost={MULTIPLIER_COSTS[1.5]}
-		multi2Cost={MULTIPLIER_COSTS[2]}
-		{gidouilles}
-		undoCostGidouilles={UNDO_COST}
-		freezeCostGidouilles={FREEZE_COST}
-		fusionCostGidouilles={FUSION_COST}
-		jokerCostGidouilles={JOKER_COST}
-		visionCostGidouilles={VISION_COST}
-	/>
-
-	<!-- Game Board -->
-	<div
-		class={cn(
-			'game-board mb-6 rounded-lg bg-muted/50 p-3 select-none sm:p-4',
-			skipNextSpawn && 'board-frozen'
-		)}
-		ontouchstart={handleTouchStart}
-		ontouchend={handleTouchEnd}
-	>
-		<!-- Tile container with absolute positioning for smooth animations -->
-		<div class="tile-container relative">
-			<!-- Background grid (empty cells) -->
-			<div class="grid grid-cols-4 gap-2 sm:gap-3" aria-hidden="true">
-				{#each Array(16) as _, index (index)}
-					<div class="empty-cell h-16 w-16 rounded-lg bg-muted/30 sm:h-20 sm:w-20"></div>
-				{/each}
-			</div>
-
-			<!-- Ghost tiles (sliding to merge position) -->
-			<div class="absolute inset-0 p-0">
-				{#each ghostTiles as ghost (ghost.id)}
-					<GhostTile2048 {ghost} />
-				{/each}
-			</div>
-
-			<!-- Vision preview ghost (semi-transparent tile showing next spawn) -->
-			{#if visionPreview}
-				<div class="absolute inset-0 p-0">
-					<div
-						class="absolute flex h-16 w-16 items-center justify-center rounded-lg border-2 border-dashed border-indigo-400 bg-indigo-100/40 text-lg font-bold text-indigo-500 opacity-60 sm:h-20 sm:w-20 dark:bg-indigo-900/30"
-						style="left: calc({visionPreview.position
-							.col} * var(--grid-size)); top: calc({visionPreview.position
-							.row} * var(--grid-size));"
-					>
-						{visionPreview.value}
-						<span
-							class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500 text-[8px] font-bold text-white"
-						>
-							{visionPreview.movesRemaining}
-						</span>
-					</div>
-				</div>
-			{/if}
-
-			<!-- Active tiles (absolutely positioned for animations) -->
-			<div class="absolute inset-0 p-0">
-				{#each activeTiles as tile (tile.id)}
-					{@const posKey = `${tile.position.row},${tile.position.col}`}
-					{@const isFusionTarget = fusionTargetSet.has(posKey)}
-					{@const isFusionNeighbor = fusionNeighborSet.has(posKey)}
-					{@const isJokerTarget = jokerTargetSet.has(posKey)}
-					<Tile2048
-						{tile}
-						bombTarget={bombMode && tile.value <= bombMaxValue}
-						onBombClick={handleBombTarget}
-						fusionTarget={isFusionTarget}
-						fusionNeighbor={isFusionNeighbor}
-						onFusionClick={fusionMode
-							? fusionFirstTile
-								? (r, c) => handleFusionSecondClick(r, c)
-								: handleFusionFirstClick
-							: undefined}
-						jokerTarget={isJokerTarget}
-						onJokerClick={jokerMode ? handleJokerTarget : undefined}
-					/>
-				{/each}
-			</div>
-		</div>
-	</div>
-
-	<!-- Controls Info -->
-	<div class="controls-info text-center text-sm text-muted-foreground">
-		<p class="mb-2">
-			<span class="font-semibold">Clavier :</span> Utilisez les flèches directionnelles
-		</p>
-		<p><span class="font-semibold">Tactile :</span> Glissez dans la direction souhaitée</p>
 	</div>
 </div>
 
