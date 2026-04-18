@@ -8,7 +8,6 @@
 	import { cn } from '$lib/utils';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import Tile2048 from './Tile2048.svelte';
 	import GhostTile2048 from './GhostTile2048.svelte';
 	import Game2048Controls from './Game2048Controls.svelte';
@@ -153,7 +152,6 @@
 			}
 		}
 	}
-	let showPowerNotation = $state(true);
 	let showGameOverDialog = $state(false);
 	let showVictoryDialog = $state(false);
 
@@ -1188,11 +1186,6 @@
 			<!-- New Game Button -->
 			<Button onclick={startNewGame} variant="default">Nouvelle Partie</Button>
 		</div>
-
-		<!-- Power notation toggle -->
-		<div class="flex items-center gap-2">
-			<MyCheckbox bind:checked={showPowerNotation} label="Afficher les puissances" />
-		</div>
 	</div>
 
 	<!-- VIP Card Controls -->
@@ -1310,7 +1303,6 @@
 					{@const isJokerTarget = jokerTargetSet.has(posKey)}
 					<Tile2048
 						{tile}
-						{showPowerNotation}
 						bombTarget={bombMode && tile.value <= bombMaxValue}
 						onBombClick={handleBombTarget}
 						fusionTarget={isFusionTarget}

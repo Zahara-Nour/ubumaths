@@ -100,14 +100,6 @@
 					</div>
 
 					<div>
-						<h3 class="mb-2 font-semibold">🧮 Aspect Éducatif</h3>
-						<p class="text-sm text-muted-foreground">
-							Activez l'option <em>"Afficher les puissances"</em> pour voir la notation en puissances
-							de 2 (2⁶ = 64, 2¹¹ = 2048, etc.). Cela aide à comprendre la progression exponentielle !
-						</p>
-					</div>
-
-					<div>
 						<h3 class="mb-2 font-semibold">💡 Stratégie</h3>
 						<ul class="list-inside list-disc space-y-1 text-sm text-muted-foreground">
 							<li>Gardez vos tuiles de grande valeur dans un coin</li>
