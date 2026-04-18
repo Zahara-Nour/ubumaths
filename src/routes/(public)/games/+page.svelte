@@ -51,7 +51,7 @@
 		},
 		{
 			title: '2048',
-			description: 'Fusionnez les tuiles pour atteindre 2048 !',
+			description: '',
 			href: '/games/2048',
 			color: 'from-amber-500 to-orange-600',
 			public: true

@@ -27,13 +27,6 @@
 	<!-- Page Header -->
 	<div class="mb-8 text-center">
 		<h1 class="mb-4 text-4xl font-bold text-primary sm:text-5xl">2048</h1>
-		<p class="mb-4 text-lg text-muted-foreground">
-			Fusionnez les tuiles pour atteindre <span class="font-bold text-foreground">2048</span> !
-		</p>
-		<p class="mx-auto max-w-xl text-sm text-muted-foreground">
-			Un jeu de réflexion mathématique où vous combinez des puissances de 2. Déplacez les tuiles
-			avec les flèches du clavier ou en glissant sur l'écran tactile.
-		</p>
 	</div>
 
 	<!-- Game Component -->
@@ -111,13 +104,5 @@
 				</Card.Content>
 			</Card.Root>
 		{/if}
-	</div>
-
-	<!-- Educational Note -->
-	<div class="mt-8 text-center text-xs text-muted-foreground">
-		<p>
-			Ce jeu aide à comprendre les <strong>puissances de 2</strong> et la
-			<strong>croissance exponentielle</strong>.
-		</p>
 	</div>
 </div>
