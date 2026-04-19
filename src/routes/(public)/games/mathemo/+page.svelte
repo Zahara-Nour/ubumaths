@@ -473,9 +473,9 @@
 	<meta name="description" content="Un clone de Wordle adapté au cours de Maths" />
 </svelte:head>
 
-<div class="flex min-h-screen flex-col items-center justify-start gap-2 p-4 pt-4 sm:gap-4 sm:pt-8">
+<div class="mx-auto max-w-4xl px-4 py-8">
 	<!-- Banner -->
-	<div class="w-full max-w-2xl overflow-hidden rounded-xl">
+	<div class="mb-8 overflow-hidden rounded-xl">
 		<img
 			src="/images/banner-mathemo.webp"
 			alt="Mathémo - Un jeu de vocabulaire mathématique style Wordle"
@@ -483,242 +483,270 @@
 		/>
 	</div>
 
-	<!-- Classement link -->
-	<a href="/leaderboards/mathemo">
-		<Button variant="outline" size="sm">
-			<Trophy class="mr-2 h-4 w-4" />
-			Classement
-		</Button>
-	</a>
-
-	<!-- VIP Powers Bar (authenticated students only) -->
-	{#if canSaveScore && !gameOver}
-		<div class="flex flex-wrap justify-center gap-2">
-			<!-- Letter Bonus -->
-			<Tooltip.Provider>
-				<Tooltip.Root>
-					<Tooltip.Trigger>
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={handleUseLetter}
-							disabled={gameOver || cardUsage.letter >= 1 || (!hasLetterCard && !canAffordLetter)}
-						>
-							<Lightbulb class="mr-1 h-4 w-4" />
-							Lettre
-							{#if hasLetterCard}
-								<span class="ml-1 text-xs text-primary">VIP</span>
-							{:else}
-								<span class="ml-1 text-xs text-muted-foreground">{LETTER_COST}g</span>
-							{/if}
-						</Button>
-					</Tooltip.Trigger>
-					<Tooltip.Content>Révèle 1 lettre aléatoire</Tooltip.Content>
-				</Tooltip.Root>
-			</Tooltip.Provider>
-
-			<!-- Undo -->
-			<Tooltip.Provider>
-				<Tooltip.Root>
-					<Tooltip.Trigger>
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={handleUseUndo}
-							disabled={gameOver ||
-								cardUsage.undo >= 1 ||
-								game.currentRow === 0 ||
-								(!hasUndoCard && !canAffordUndo)}
-						>
-							<Undo2 class="mr-1 h-4 w-4" />
-							Retour
-							{#if hasUndoCard}
-								<span class="ml-1 text-xs text-primary">VIP</span>
-							{:else}
-								<span class="ml-1 text-xs text-muted-foreground">{UNDO_COST}g</span>
-							{/if}
-						</Button>
-					</Tooltip.Trigger>
-					<Tooltip.Content>Annule le dernier essai</Tooltip.Content>
-				</Tooltip.Root>
-			</Tooltip.Provider>
-
-			<!-- Vowels -->
-			<Tooltip.Provider>
-				<Tooltip.Root>
-					<Tooltip.Trigger>
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={handleUseVowels}
-							disabled={gameOver || cardUsage.vowels >= 1 || (!hasVowelsCard && !canAffordVowels)}
-						>
-							<Eye class="mr-1 h-4 w-4" />
-							Voyelles
-							{#if hasVowelsCard}
-								<span class="ml-1 text-xs text-primary">VIP</span>
-							{:else}
-								<span class="ml-1 text-xs text-muted-foreground">{VOWELS_COST}g</span>
-							{/if}
-						</Button>
-					</Tooltip.Trigger>
-					<Tooltip.Content>Révèle 2 voyelles aléatoires</Tooltip.Content>
-				</Tooltip.Root>
-			</Tooltip.Provider>
-
-			<!-- Multiplier -->
-			<Tooltip.Provider>
-				<Tooltip.Root>
-					<Tooltip.Trigger>
-						<Button
-							variant={scoreMultiplier > 1 ? 'default' : 'outline'}
-							size="sm"
-							onclick={handleUseMultiplier}
-							disabled={gameOver ||
-								cardUsage.multiplier >= 1 ||
-								(!hasMultiplierCard && !canAffordMultiplier)}
-						>
-							<Zap class="mr-1 h-4 w-4" />
-							×1.5
-							{#if hasMultiplierCard}
-								<span class="ml-1 text-xs text-primary">VIP</span>
-							{:else}
-								<span class="ml-1 text-xs text-muted-foreground">{MULTIPLIER_COST}g</span>
-							{/if}
-						</Button>
-					</Tooltip.Trigger>
-					<Tooltip.Content>Multiplie le score par 1.5</Tooltip.Content>
-				</Tooltip.Root>
-			</Tooltip.Provider>
-		</div>
-	{/if}
-
-	<!-- Controls: Difficulty and Attempts -->
-	{#if !gameOver}
-		<div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
-			<!-- Difficulty Selector -->
-			<div class="flex items-center gap-1 sm:gap-2">
-				<label for="difficulty" class="text-xs font-medium sm:text-sm">Niveau:</label>
-				<MySelect
-					type="single"
-					bind:value={selectedDifficulty}
-					items={difficultyItems}
-					placeholder="Sélectionner un niveau"
-				/>
-			</div>
-
-			<!-- Attempts Controls (hidden for authenticated students - fixed at 6) -->
-			{#if !canSaveScore}
-				<div class="flex items-center gap-1 sm:gap-2">
-					<span class="text-xs font-medium sm:text-sm">Tentatives:</span>
-					<Button
-						variant="outline"
-						size="sm"
-						onclick={() => handleAdjustAttempts(-1)}
-						disabled={game.maxAttempts <= 3}
-					>
-						-
-					</Button>
-					<span class="text-lg font-bold">{game.maxAttempts}</span>
-					<Button
-						variant="outline"
-						size="sm"
-						onclick={() => handleAdjustAttempts(1)}
-						disabled={game.maxAttempts >= 10}
-					>
-						+
-					</Button>
-				</div>
-			{/if}
-		</div>
-	{/if}
-
-	<!-- Game Grid -->
-	<div
-		class="grid"
-		class:playing={!won}
-		class:bad-guess={badGuess}
-		style="--grid-size: {game.getSize()}; --max-attempts: {game.maxAttempts}"
-	>
-		{#each Array(game.maxAttempts) as _unused, row (row)}
-			{@const current = row === game.currentRow && !gameOver}
-			<h2 class="visually-hidden">Row {row + 1}</h2>
-			<div class="row" class:current>
-				{#each Array(game.getSize()) as _unused2, column (column)}
-					{@const answer = game.answers[row]?.[column]}
-					{@const value = game.guesses[row]?.[column] ?? ''}
-					{@const selected = current && column === currentGuess.length}
-					{@const exact = answer === 'x'}
-					{@const close = answer === 'c'}
-					{@const missing = answer === '_'}
-					{@const clue = !value && current && !!game.correctLetters[column]}
-					{@const isAnimating = animatingRow === row}
-					{@const isNewDiscovery = newlyDiscoveredIndices.includes(column)}
-					<div
-						class="letter"
-						class:exact={exact && !isAnimating}
-						class:close={close && !isAnimating}
-						class:missing={missing && !isAnimating}
-						class:selected
-						class:clue
-						class:flipping={isAnimating}
-						class:flipping-exact={isAnimating && exact}
-						class:flipping-close={isAnimating && close}
-						class:flipping-missing={isAnimating && missing}
-						class:new-discovery={isNewDiscovery}
-						style={isAnimating ? `animation-delay: ${column * 150}ms` : ''}
-					>
-						{value || (current ? game.correctLetters[column] : '')}
-						<span class="visually-hidden">
-							{#if exact}
-								(correct)
-							{:else if close}
-								(present)
-							{:else if missing}
-								(absent)
-							{:else}
-								empty
-							{/if}
-						</span>
-					</div>
-				{/each}
-			</div>
-		{/each}
-	</div>
-
-	<!-- Keyboard -->
-	{#if !gameOver}
-		<div class="controls">
-			<div class="keyboard">
-				<button
-					data-key="enter"
-					class:selected={canSubmit}
-					disabled={!canSubmit}
-					onclick={() => handleKeyClick('enter')}
-				>
-					enter
-				</button>
-
-				<button data-key="backspace" onclick={() => handleKeyClick('backspace')}> back </button>
-
-				{#each ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'] as row (row)}
-					<div class="row">
-						{#each row as letter (letter)}
-							<button
-								data-key={letter}
-								class={classnames[letter]}
-								disabled={currentGuess.length >= game.getSize()}
-								onclick={() => handleKeyClick(letter)}
-								aria-label="{letter} {description[letter] || ''}"
+	<!-- Game board and controls in responsive layout -->
+	<div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
+		<!-- Board (main area) -->
+		<div class="flex flex-col items-center gap-2 lg:col-span-3">
+			<!-- Game Grid -->
+			<div
+				class="mathemo-grid"
+				class:playing={!won}
+				class:bad-guess={badGuess}
+				style="--grid-size: {game.getSize()}; --max-attempts: {game.maxAttempts}"
+			>
+				{#each Array(game.maxAttempts) as _unused, row (row)}
+					{@const current = row === game.currentRow && !gameOver}
+					<h2 class="visually-hidden">Row {row + 1}</h2>
+					<div class="row" class:current>
+						{#each Array(game.getSize()) as _unused2, column (column)}
+							{@const answer = game.answers[row]?.[column]}
+							{@const value = game.guesses[row]?.[column] ?? ''}
+							{@const selected = current && column === currentGuess.length}
+							{@const exact = answer === 'x'}
+							{@const close = answer === 'c'}
+							{@const missing = answer === '_'}
+							{@const clue = !value && current && !!game.correctLetters[column]}
+							{@const isAnimating = animatingRow === row}
+							{@const isNewDiscovery = newlyDiscoveredIndices.includes(column)}
+							<div
+								class="letter"
+								class:exact={exact && !isAnimating}
+								class:close={close && !isAnimating}
+								class:missing={missing && !isAnimating}
+								class:selected
+								class:clue
+								class:flipping={isAnimating}
+								class:flipping-exact={isAnimating && exact}
+								class:flipping-close={isAnimating && close}
+								class:flipping-missing={isAnimating && missing}
+								class:new-discovery={isNewDiscovery}
+								style={isAnimating ? `animation-delay: ${column * 150}ms` : ''}
 							>
-								{letter}
-							</button>
+								{value || (current ? game.correctLetters[column] : '')}
+								<span class="visually-hidden">
+									{#if exact}
+										(correct)
+									{:else if close}
+										(present)
+									{:else if missing}
+										(absent)
+									{:else}
+										empty
+									{/if}
+								</span>
+							</div>
 						{/each}
 					</div>
 				{/each}
 			</div>
+
+			<!-- Keyboard -->
+			{#if !gameOver}
+				<div class="controls">
+					<div class="keyboard">
+						<button
+							data-key="enter"
+							class:selected={canSubmit}
+							disabled={!canSubmit}
+							onclick={() => handleKeyClick('enter')}
+						>
+							enter
+						</button>
+
+						<button data-key="backspace" onclick={() => handleKeyClick('backspace')}> back </button>
+
+						{#each ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'] as row (row)}
+							<div class="row">
+								{#each row as letter (letter)}
+									<button
+										data-key={letter}
+										class={classnames[letter]}
+										disabled={currentGuess.length >= game.getSize()}
+										onclick={() => handleKeyClick(letter)}
+										aria-label="{letter} {description[letter] || ''}"
+									>
+										{letter}
+									</button>
+								{/each}
+							</div>
+						{/each}
+					</div>
+				</div>
+			{/if}
 		</div>
-	{/if}
+
+		<!-- Sidebar: Stats + Controls + Powers -->
+		<div class="space-y-4">
+			<!-- Stats -->
+			<div class="flex gap-4 lg:flex-col">
+				<div class="flex-1 rounded-lg bg-muted px-4 py-2 text-center">
+					<div class="text-xs font-semibold text-muted-foreground uppercase">Essai</div>
+					<div class="text-2xl font-bold">{game.currentRow}/{game.maxAttempts}</div>
+				</div>
+				<div class="flex-1 rounded-lg bg-muted px-4 py-2 text-center">
+					<div class="text-xs font-semibold text-muted-foreground uppercase">Lettres</div>
+					<div class="text-2xl font-bold">{game.getSize()}</div>
+				</div>
+			</div>
+
+			<!-- Difficulty Selector -->
+			{#if !gameOver}
+				<div class="space-y-2">
+					<label for="difficulty" class="text-xs font-medium">Niveau</label>
+					<MySelect
+						type="single"
+						bind:value={selectedDifficulty}
+						items={difficultyItems}
+						placeholder="Sélectionner un niveau"
+					/>
+				</div>
+
+				<!-- Attempts Controls (non-authenticated only) -->
+				{#if !canSaveScore}
+					<div class="flex items-center justify-center gap-2">
+						<span class="text-xs font-medium">Tentatives :</span>
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={() => handleAdjustAttempts(-1)}
+							disabled={game.maxAttempts <= 3}
+						>
+							-
+						</Button>
+						<span class="text-lg font-bold">{game.maxAttempts}</span>
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={() => handleAdjustAttempts(1)}
+							disabled={game.maxAttempts >= 10}
+						>
+							+
+						</Button>
+					</div>
+				{/if}
+			{/if}
+
+			<!-- New Game Button -->
+			<Button onclick={handleRestart} variant="default" class="w-full">Nouvelle Partie</Button>
+
+			<!-- VIP Powers (authenticated students only) -->
+			{#if canSaveScore}
+				<div class="space-y-2">
+					<div class="text-xs font-semibold text-muted-foreground uppercase">Pouvoirs</div>
+					<div class="grid grid-cols-2 gap-2">
+						<Tooltip.Provider>
+							<Tooltip.Root>
+								<Tooltip.Trigger>
+									<Button
+										variant="outline"
+										size="sm"
+										class="w-full"
+										onclick={handleUseLetter}
+										disabled={gameOver ||
+											cardUsage.letter >= 1 ||
+											(!hasLetterCard && !canAffordLetter)}
+									>
+										<Lightbulb class="mr-1 h-3 w-3" />
+										<span class="text-xs">Lettre</span>
+										{#if hasLetterCard}
+											<span class="ml-1 text-xs text-primary">VIP</span>
+										{:else}
+											<span class="ml-1 text-xs text-muted-foreground">{LETTER_COST}g</span>
+										{/if}
+									</Button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>Révèle 1 lettre aléatoire</Tooltip.Content>
+							</Tooltip.Root>
+						</Tooltip.Provider>
+
+						<Tooltip.Provider>
+							<Tooltip.Root>
+								<Tooltip.Trigger>
+									<Button
+										variant="outline"
+										size="sm"
+										class="w-full"
+										onclick={handleUseUndo}
+										disabled={gameOver ||
+											cardUsage.undo >= 1 ||
+											game.currentRow === 0 ||
+											(!hasUndoCard && !canAffordUndo)}
+									>
+										<Undo2 class="mr-1 h-3 w-3" />
+										<span class="text-xs">Retour</span>
+										{#if hasUndoCard}
+											<span class="ml-1 text-xs text-primary">VIP</span>
+										{:else}
+											<span class="ml-1 text-xs text-muted-foreground">{UNDO_COST}g</span>
+										{/if}
+									</Button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>Annule le dernier essai</Tooltip.Content>
+							</Tooltip.Root>
+						</Tooltip.Provider>
+
+						<Tooltip.Provider>
+							<Tooltip.Root>
+								<Tooltip.Trigger>
+									<Button
+										variant="outline"
+										size="sm"
+										class="w-full"
+										onclick={handleUseVowels}
+										disabled={gameOver ||
+											cardUsage.vowels >= 1 ||
+											(!hasVowelsCard && !canAffordVowels)}
+									>
+										<Eye class="mr-1 h-3 w-3" />
+										<span class="text-xs">Voyelles</span>
+										{#if hasVowelsCard}
+											<span class="ml-1 text-xs text-primary">VIP</span>
+										{:else}
+											<span class="ml-1 text-xs text-muted-foreground">{VOWELS_COST}g</span>
+										{/if}
+									</Button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>Révèle 2 voyelles aléatoires</Tooltip.Content>
+							</Tooltip.Root>
+						</Tooltip.Provider>
+
+						<Tooltip.Provider>
+							<Tooltip.Root>
+								<Tooltip.Trigger>
+									<Button
+										variant={scoreMultiplier > 1 ? 'default' : 'outline'}
+										size="sm"
+										class="w-full"
+										onclick={handleUseMultiplier}
+										disabled={gameOver ||
+											cardUsage.multiplier >= 1 ||
+											(!hasMultiplierCard && !canAffordMultiplier)}
+									>
+										<Zap class="mr-1 h-3 w-3" />
+										<span class="text-xs">×1.5</span>
+										{#if hasMultiplierCard}
+											<span class="ml-1 text-xs text-primary">VIP</span>
+										{:else}
+											<span class="ml-1 text-xs text-muted-foreground">{MULTIPLIER_COST}g</span>
+										{/if}
+									</Button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>Multiplie le score par 1.5</Tooltip.Content>
+							</Tooltip.Root>
+						</Tooltip.Provider>
+					</div>
+				</div>
+			{/if}
+
+			<!-- Classement link -->
+			<a href="/leaderboards/mathemo" class="block">
+				<Button variant="outline" size="sm" class="w-full">
+					<Trophy class="mr-2 h-4 w-4" />
+					Classement
+				</Button>
+			</a>
+		</div>
+	</div>
 </div>
 
 {#if won}
@@ -803,7 +831,7 @@
 
 <style lang="postcss">
 	/* ===== Grid Container ===== */
-	.grid {
+	.mathemo-grid {
 		/* Dynamic grid size based on target word length and number of attempts */
 		/* Scale down cell size when there are more attempts to prevent overflow */
 		--cell-size: calc(
@@ -822,7 +850,7 @@
 
 	/* Larger cell sizes and margins on taller screens */
 	@media (min-height: 800px) {
-		.grid {
+		.mathemo-grid {
 			--cell-size: calc(
 				min(3.5rem, max(2.5rem, calc((100vh - 500px) / var(--max-attempts)))) * var(--font-scale)
 			);
@@ -831,7 +859,7 @@
 	}
 
 	/* Individual grid rows (one per guess attempt) */
-	.grid .row {
+	.mathemo-grid .row {
 		display: grid;
 		grid-template-columns: repeat(var(--grid-size), var(--cell-size));
 		grid-gap: calc(0.2rem * var(--font-scale));
@@ -841,13 +869,13 @@
 
 	/* Wiggle animation for invalid word submission */
 	@media (prefers-reduced-motion: no-preference) {
-		.grid.bad-guess .row.current {
+		.mathemo-grid.bad-guess .row.current {
 			animation: wiggle 0.5s;
 		}
 	}
 
 	/* Drop shadow on current row while game is active */
-	.grid.playing .row.current {
+	.mathemo-grid.playing .row.current {
 		filter: drop-shadow(3px 3px 10px hsl(var(--muted)));
 	}
 
