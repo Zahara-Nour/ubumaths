@@ -191,8 +191,11 @@
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let hasSpun = $state(false);
 
-	/** Currently selected student (winner) - displayed below the wheel */
+	/** Currently selected student (winner) */
 	let selectedStudent = $state<Student | null>(null);
+
+	/** Index of the winning slice for on-wheel highlighting */
+	let highlightedIndex = $state<number | null>(null);
 
 	/**
 	 * Current rotation angle in degrees
@@ -291,6 +294,7 @@
 		// Reset winner state for new spin
 		hasSpun = false;
 		selectedStudent = null;
+		highlightedIndex = null;
 
 		// Notify that spin is starting
 		onSpinStart?.();
@@ -321,7 +325,9 @@
 		 * Handle when spin animation completes
 		 * The CSS transition ends after 4 seconds (default spinDuration)
 		 */
-		const handleTransitionEnd = () => {
+		const handleTransitionEnd = (e: TransitionEvent) => {
+			// Ignore transitions from child elements (text highlights)
+			if (e.target !== wheelElement) return;
 			isSpinning = false;
 			hasSpun = true;
 
@@ -347,12 +353,12 @@
 			 * - angle = 90°  -> index = 2 (third student)
 			 * - angle = 270° -> index = 6 (seventh student)
 			 */
-			const winnerIndex = Math.floor((normalizedAngle * wheelData().length) / 360);
-			const winner = students[winnerIndex];
+			const winIdx = Math.floor((normalizedAngle * wheelData().length) / 360);
+			const winner = students[winIdx];
 
 			if (winner) {
-				// Update displayed winner
 				selectedStudent = winner;
+				highlightedIndex = winIdx;
 
 				// Celebrate with confetti (if enabled)
 				if (showConfetti) {
@@ -444,6 +450,7 @@
 		angle = 0;
 		hasSpun = false;
 		selectedStudent = null;
+		highlightedIndex = null;
 	};
 </script>
 
@@ -461,13 +468,22 @@
 				? 'all 4s ease-out'
 				: 'none'};"
 		>
-			<!-- Filters for shadows -->
+			<!-- Filters for shadows and winner glow -->
 			<defs>
 				<filter id="shadow">
 					<feDropShadow dx="0" dy="0" stdDeviation="10" />
 				</filter>
 				<filter id="shadow2">
 					<feDropShadow dx="0" dy="0" stdDeviation="5" />
+				</filter>
+				<filter id="winner-outline">
+					<feMorphology in="SourceAlpha" operator="dilate" radius="2" result="expanded" />
+					<feFlood flood-color="#1a1a1a" flood-opacity="0.7" result="color" />
+					<feComposite in="color" in2="expanded" operator="in" result="outline" />
+					<feMerge>
+						<feMergeNode in="outline" />
+						<feMergeNode in="SourceGraphic" />
+					</feMerge>
 				</filter>
 			</defs>
 
@@ -529,15 +545,20 @@
 			<!-- Student names -->
 			{#each wheelData() as name, i (i)}
 				<text
-					fill={getTextColor(i)}
+					fill={highlightedIndex === i ? '#fbbf24' : getTextColor(i)}
 					font-weight="bold"
 					font-size="1em"
+					opacity={highlightedIndex !== null && highlightedIndex !== i ? 0.25 : 1}
+					filter={highlightedIndex === i ? 'url(#winner-outline)' : 'none'}
+					stroke={highlightedIndex === i ? '#f59e0b' : 'none'}
+					stroke-width={highlightedIndex === i ? '0.3' : '0'}
 					x="{(3 / 4) * (2 * wheelRadius + 3)}em"
 					y="50%"
 					text-anchor="middle"
 					dominant-baseline="middle"
 					transform-origin="50% 50%"
 					transform="rotate({((i + 0.5) * 360) / wheelData().length})"
+					class="wheel-text-transition"
 				>
 					{name}
 				</text>
@@ -574,18 +595,11 @@
 			{/if}
 		</button>
 
-		<!-- Winner Display -->
-		{#if selectedStudent}
-			<div class="mt-4 rounded-lg border-2 border-primary bg-card p-6 text-center shadow-lg">
-				<p class="mb-2 text-sm font-medium text-muted-foreground">Élève sélectionné :</p>
-				<p class="text-3xl font-bold text-primary">{selectedStudent.firstname}</p>
-
-				{#if gidouilleReward && gidouilleReward > 0}
-					<p class="mt-3 text-sm text-muted-foreground">
-						+{gidouilleReward} gidouille{gidouilleReward > 1 ? 's' : ''} 🎉
-					</p>
-				{/if}
-			</div>
+		<!-- Gidouille reward info (winner is highlighted on wheel) -->
+		{#if selectedStudent && gidouilleReward && gidouilleReward > 0}
+			<p class="mt-2 text-sm text-muted-foreground">
+				{selectedStudent.firstname} : +{gidouilleReward} gidouille{gidouilleReward > 1 ? 's' : ''}
+			</p>
 		{/if}
 	</div>
 </div>
@@ -608,5 +622,12 @@
 		100% {
 			filter: blur(0px);
 		}
+	}
+
+	.wheel-text-transition {
+		transition:
+			fill 0.5s ease,
+			opacity 0.5s ease,
+			stroke 0.5s ease;
 	}
 </style>

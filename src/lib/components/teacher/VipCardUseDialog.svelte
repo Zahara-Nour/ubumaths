@@ -2,10 +2,13 @@
 	import type { Component } from 'svelte';
 	import type { StudentVipCards, VipCardInstance } from '$lib/types/vip-card';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import Wheel from '$lib/components/Wheel.svelte';
+	import { Target, ArrowLeft, Check } from 'lucide-svelte';
 
 	let {
 		open = $bindable(false),
@@ -34,6 +37,12 @@
 	>([]);
 	let isLoading = $state(false);
 	let isUsing = $state(false);
+
+	/** Whether we're showing the wheel view instead of the student list */
+	let showWheel = $state(false);
+
+	/** The winner selected by the wheel, pending approval */
+	let wheelWinner = $state<{ id: string; firstname: string } | null>(null);
 
 	$effect(() => {
 		if (open && classId) {
@@ -120,21 +129,56 @@
 		}
 	}
 
+	function handleWheelWinner(student: { id: string; firstname: string }) {
+		wheelWinner = student;
+	}
+
+	async function handleApproveWinner() {
+		if (!wheelWinner) return;
+		await handleUseCard(wheelWinner.id);
+		wheelWinner = null;
+		showWheel = false;
+	}
+
 	function handleClose() {
 		open = false;
 		students = [];
+		showWheel = false;
+		wheelWinner = null;
 	}
 </script>
 
 <Dialog.Root bind:open onOpenChange={(o) => !o && handleClose()}>
-	<Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+	<Dialog.Content
+		class="max-h-[95vh] overflow-y-auto {showWheel
+			? 'sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[80vw]'
+			: 'sm:max-w-xl'}"
+	>
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
-				<Icon class="h-5 w-5 {iconColorClass}" />
-				{title}
+				{#if showWheel}
+					<button
+						onclick={() => {
+							showWheel = false;
+							wheelWinner = null;
+						}}
+						class="rounded-md p-1 transition-colors hover:bg-muted"
+					>
+						<ArrowLeft class="h-5 w-5" />
+					</button>
+					<Target class="h-5 w-5 text-primary" />
+					Roue de la fortune - {title}
+				{:else}
+					<Icon class="h-5 w-5 {iconColorClass}" />
+					{title}
+				{/if}
 			</Dialog.Title>
 			<Dialog.Description>
-				Sélectionnez un élève pour utiliser sa carte VIP "{title}"
+				{#if showWheel}
+					Tirage au sort parmi les élèves ayant la carte "{title}"
+				{:else}
+					Sélectionnez un élève pour utiliser sa carte VIP "{title}"
+				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -149,7 +193,38 @@
 					<Icon class="mx-auto mb-3 h-12 w-12 text-muted-foreground/50" />
 					<p class="text-muted-foreground">Aucun élève n'a de carte "{title}" disponible.</p>
 				</div>
+			{:else if showWheel}
+				<!-- Wheel view -->
+				<div class="flex w-full flex-col items-center gap-4 py-4">
+					<Wheel {students} onWinner={handleWheelWinner} showConfetti={true} confettiZIndex={100} />
+
+					{#if wheelWinner}
+						<Button onclick={handleApproveWinner} disabled={isUsing} class="mt-2" size="lg">
+							<Check class="mr-2 h-5 w-5" />
+							{#if isUsing}
+								Utilisation en cours...
+							{:else}
+								Approuver — utiliser la carte de {wheelWinner.firstname}
+							{/if}
+						</Button>
+					{/if}
+				</div>
 			{:else}
+				<!-- Student list view -->
+				<div class="mb-3 flex justify-end">
+					<Button
+						onclick={() => {
+							showWheel = true;
+							wheelWinner = null;
+						}}
+						variant="outline"
+						size="sm"
+					>
+						<Target class="mr-2 h-4 w-4" />
+						Roue de la fortune
+					</Button>
+				</div>
+
 				<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 					{#each students as student (student.id)}
 						<button
