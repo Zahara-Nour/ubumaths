@@ -14782,6 +14782,7 @@ export type Database = {
 				Args: { p_context: string; p_inventory_id: string; p_usage_data?: Json };
 				Returns: Json;
 			};
+			use_mathemo_power: { Args: { p_power_type: string }; Returns: Json };
 			use_minesweeper_undo: {
 				Args: { p_game_id: string; p_grid_state: Json };
 				Returns: Json;

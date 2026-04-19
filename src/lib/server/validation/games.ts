@@ -161,7 +161,8 @@ export const submitMathemoScoreSchema = z
 			.min(3, 'Max attempts must be at least 3')
 			.max(10, 'Max attempts cannot exceed 10'),
 		won: z.boolean(),
-		found_first_try: z.boolean()
+		found_first_try: z.boolean(),
+		score_multiplier: z.number().min(1).max(2).default(1)
 	})
 	.refine((data) => data.attempts_used <= data.max_attempts, {
 		message: 'attempts_used cannot exceed max_attempts'

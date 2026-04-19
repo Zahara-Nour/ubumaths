@@ -288,6 +288,76 @@ class MathemoGame {
 		this.saveToLocalStorage();
 	}
 
+	// ===== VIP Power Methods =====
+
+	/**
+	 * Reveal a random unrevealed letter from the answer
+	 * @returns Index of the revealed letter, or -1 if all already revealed
+	 */
+	revealRandomLetter(): number {
+		const unrevealed: number[] = [];
+		for (let i = 0; i < this.answer.length; i++) {
+			if (!this.correctLetters[i]) {
+				unrevealed.push(i);
+			}
+		}
+		if (unrevealed.length === 0) return -1;
+
+		const idx = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+		this.correctLetters[idx] = this.answer[idx];
+		this.saveToLocalStorage();
+		return idx;
+	}
+
+	/**
+	 * Reveal up to 2 random unrevealed vowels from the answer
+	 * @returns Array of indices revealed
+	 */
+	revealVowels(): number[] {
+		const vowels = new Set(['a', 'e', 'i', 'o', 'u', 'y']);
+		const normalizedAnswer = this.answer
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, '')
+			.toLowerCase();
+
+		// Find vowel positions not yet revealed
+		const unrevealedVowels: number[] = [];
+		for (let i = 0; i < normalizedAnswer.length; i++) {
+			if (vowels.has(normalizedAnswer[i]) && !this.correctLetters[i]) {
+				unrevealedVowels.push(i);
+			}
+		}
+
+		// Pick up to 2 random
+		const revealed: number[] = [];
+		const count = Math.min(2, unrevealedVowels.length);
+		const shuffled = [...unrevealedVowels].sort(() => Math.random() - 0.5);
+		for (let i = 0; i < count; i++) {
+			const idx = shuffled[i];
+			this.correctLetters[idx] = this.answer[idx];
+			revealed.push(idx);
+		}
+
+		this.saveToLocalStorage();
+		return revealed;
+	}
+
+	/**
+	 * Undo the last submitted guess
+	 * Removes last feedback, resets current row, clears the guess
+	 * @returns true if undo was performed, false if nothing to undo
+	 */
+	undoLastGuess(): boolean {
+		if (this.currentRow === 0) return false;
+		if (this.isGameOver()) return false;
+
+		this.currentRow--;
+		this.answers.pop();
+		this.guesses[this.currentRow] = '';
+		this.saveToLocalStorage();
+		return true;
+	}
+
 	// ===== Utility Methods =====
 
 	/**

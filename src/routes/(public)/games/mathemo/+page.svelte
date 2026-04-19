@@ -21,9 +21,11 @@
 	import { reducedMotion } from './reduced-motion.svelte';
 	import { game } from './game.svelte';
 	import type { Difficulty } from './types';
+	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Trophy } from 'lucide-svelte';
+	import * as Tooltip from '$lib/components/ui/tooltip';
+	import { Trophy, Lightbulb, Undo2, Eye, Zap } from 'lucide-svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import type { PageData } from './$types';
 
@@ -70,6 +72,143 @@
 	/** Dialog visibility */
 	let showVictoryDialog = $state(false);
 	let showDefeatDialog = $state(false);
+
+	// ===== VIP Card State =====
+
+	const LETTER_CARD_IDS = ['mathemo-letter'];
+	const UNDO_CARD_IDS = ['mathemo-undo'];
+	const VOWELS_CARD_IDS = ['mathemo-vowels'];
+	const MULTIPLIER_CARD_IDS = ['mathemo-multiplier'];
+
+	const LETTER_COST = 5;
+	const UNDO_COST = 5;
+	const VOWELS_COST = 8;
+	const MULTIPLIER_COST = 15;
+
+	/** Per-game usage tracking */
+	let cardUsage = $state({ letter: 0, undo: 0, vowels: 0, multiplier: 0 });
+
+	/** Score multiplier for this game */
+	let scoreMultiplier = $state(1);
+
+	/** Current gidouilles balance (updated after each power use) */
+	let currentGidouilles = $state(data.gidouilles);
+
+	/** VIP cards from server */
+	let vipCards = $state<StudentVipCards | null>(data.vipCards ?? null);
+
+	// Derived: available cards + affordability
+	let hasLetterCard = $derived(findCardInstanceId(LETTER_CARD_IDS) !== null);
+	let hasUndoCard = $derived(findCardInstanceId(UNDO_CARD_IDS) !== null);
+	let hasVowelsCard = $derived(findCardInstanceId(VOWELS_CARD_IDS) !== null);
+	let hasMultiplierCard = $derived(findCardInstanceId(MULTIPLIER_CARD_IDS) !== null);
+
+	let canAffordLetter = $derived(currentGidouilles >= LETTER_COST);
+	let canAffordUndo = $derived(currentGidouilles >= UNDO_COST);
+	let canAffordVowels = $derived(currentGidouilles >= VOWELS_COST);
+	let canAffordMultiplier = $derived(currentGidouilles >= MULTIPLIER_COST);
+
+	/** Find the first available VIP card instance for given card IDs */
+	function findCardInstanceId(cardIds: string[]): string | null {
+		if (!vipCards) return null;
+		for (const [instanceId, instance] of Object.entries(vipCards)) {
+			if (
+				cardIds.includes(instance.cardId) &&
+				!instance.usedAt &&
+				(instance.usesRemaining === null || instance.usesRemaining > 0)
+			) {
+				return instanceId;
+			}
+		}
+		return null;
+	}
+
+	/** Generic power handler: try VIP card first, then gidouilles fallback */
+	async function usePower(
+		cardIds: string[],
+		powerType: string,
+		applyEffect: () => void
+	): Promise<boolean> {
+		const instanceId = findCardInstanceId(cardIds);
+
+		if (instanceId) {
+			// Use VIP card
+			try {
+				const response = await fetch('/api/vip-cards/use-card', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ instanceId, context: 'mathemo' })
+				});
+				if (!response.ok) return false;
+				// Mark card as used locally
+				if (vipCards && vipCards[instanceId]) {
+					const card = vipCards[instanceId];
+					if (card.usesRemaining !== null && card.usesRemaining !== undefined) {
+						card.usesRemaining--;
+						if (card.usesRemaining <= 0) card.usedAt = new Date().toISOString();
+					} else {
+						card.usedAt = new Date().toISOString();
+					}
+				}
+				applyEffect();
+				return true;
+			} catch {
+				return false;
+			}
+		} else {
+			// Pay with gidouilles
+			try {
+				const response = await fetch('/api/games/mathemo/use-power', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ power_type: powerType })
+				});
+				if (!response.ok) return false;
+				const result = await response.json();
+				currentGidouilles = result.gidouilles_remaining;
+				applyEffect();
+				return true;
+			} catch {
+				return false;
+			}
+		}
+	}
+
+	async function handleUseLetter() {
+		if (gameOver || cardUsage.letter >= 1) return;
+		const success = await usePower(LETTER_CARD_IDS, 'letter', () => {
+			game.revealRandomLetter();
+			cardUsage.letter++;
+		});
+		if (!success) console.error('Failed to use letter power');
+	}
+
+	async function handleUseUndo() {
+		if (gameOver || cardUsage.undo >= 1 || game.currentRow === 0) return;
+		const success = await usePower(UNDO_CARD_IDS, 'undo', () => {
+			game.undoLastGuess();
+			cardUsage.undo++;
+		});
+		if (!success) console.error('Failed to use undo power');
+	}
+
+	async function handleUseVowels() {
+		if (gameOver || cardUsage.vowels >= 1) return;
+		const success = await usePower(VOWELS_CARD_IDS, 'vowels', () => {
+			game.revealVowels();
+			cardUsage.vowels++;
+		});
+		if (!success) console.error('Failed to use vowels power');
+	}
+
+	async function handleUseMultiplier() {
+		if (gameOver || cardUsage.multiplier >= 1) return;
+		const success = await usePower(MULTIPLIER_CARD_IDS, 'multiplier', () => {
+			scoreMultiplier = 1.5;
+			cardUsage.multiplier++;
+		});
+		if (!success) console.error('Failed to use multiplier power');
+	}
 
 	// ===== Derived Values (Computed from Game State) =====
 
@@ -172,7 +311,7 @@
 		scoreSubmitted = true;
 
 		try {
-			const completionData = game.getCompletionData();
+			const completionData = { ...game.getCompletionData(), score_multiplier: scoreMultiplier };
 			const response = await fetch('/api/games/mathemo/scores', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -322,6 +461,8 @@
 		scoreSubmitted = false;
 		showVictoryDialog = false;
 		showDefeatDialog = false;
+		cardUsage = { letter: 0, undo: 0, vowels: 0, multiplier: 0 };
+		scoreMultiplier = 1;
 	}
 </script>
 
@@ -349,6 +490,108 @@
 			Classement
 		</Button>
 	</a>
+
+	<!-- VIP Powers Bar (authenticated students only) -->
+	{#if canSaveScore && !gameOver}
+		<div class="flex flex-wrap justify-center gap-2">
+			<!-- Letter Bonus -->
+			<Tooltip.Provider>
+				<Tooltip.Root>
+					<Tooltip.Trigger>
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={handleUseLetter}
+							disabled={gameOver || cardUsage.letter >= 1 || (!hasLetterCard && !canAffordLetter)}
+						>
+							<Lightbulb class="mr-1 h-4 w-4" />
+							Lettre
+							{#if hasLetterCard}
+								<span class="ml-1 text-xs text-primary">VIP</span>
+							{:else}
+								<span class="ml-1 text-xs text-muted-foreground">{LETTER_COST}g</span>
+							{/if}
+						</Button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Révèle 1 lettre aléatoire</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+
+			<!-- Undo -->
+			<Tooltip.Provider>
+				<Tooltip.Root>
+					<Tooltip.Trigger>
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={handleUseUndo}
+							disabled={gameOver ||
+								cardUsage.undo >= 1 ||
+								game.currentRow === 0 ||
+								(!hasUndoCard && !canAffordUndo)}
+						>
+							<Undo2 class="mr-1 h-4 w-4" />
+							Retour
+							{#if hasUndoCard}
+								<span class="ml-1 text-xs text-primary">VIP</span>
+							{:else}
+								<span class="ml-1 text-xs text-muted-foreground">{UNDO_COST}g</span>
+							{/if}
+						</Button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Annule le dernier essai</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+
+			<!-- Vowels -->
+			<Tooltip.Provider>
+				<Tooltip.Root>
+					<Tooltip.Trigger>
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={handleUseVowels}
+							disabled={gameOver || cardUsage.vowels >= 1 || (!hasVowelsCard && !canAffordVowels)}
+						>
+							<Eye class="mr-1 h-4 w-4" />
+							Voyelles
+							{#if hasVowelsCard}
+								<span class="ml-1 text-xs text-primary">VIP</span>
+							{:else}
+								<span class="ml-1 text-xs text-muted-foreground">{VOWELS_COST}g</span>
+							{/if}
+						</Button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Révèle 2 voyelles aléatoires</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+
+			<!-- Multiplier -->
+			<Tooltip.Provider>
+				<Tooltip.Root>
+					<Tooltip.Trigger>
+						<Button
+							variant={scoreMultiplier > 1 ? 'default' : 'outline'}
+							size="sm"
+							onclick={handleUseMultiplier}
+							disabled={gameOver ||
+								cardUsage.multiplier >= 1 ||
+								(!hasMultiplierCard && !canAffordMultiplier)}
+						>
+							<Zap class="mr-1 h-4 w-4" />
+							×1.5
+							{#if hasMultiplierCard}
+								<span class="ml-1 text-xs text-primary">VIP</span>
+							{:else}
+								<span class="ml-1 text-xs text-muted-foreground">{MULTIPLIER_COST}g</span>
+							{/if}
+						</Button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Multiplie le score par 1.5</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+		</div>
+	{/if}
 
 	<!-- Controls: Difficulty and Attempts -->
 	{#if !gameOver}
