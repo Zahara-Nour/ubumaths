@@ -216,7 +216,39 @@
 	 * Optionally adds "Joker" if odd number of students
 	 */
 	let wheelData = $derived(() => {
-		const names = students.map((s) => s.firstname);
+		// Group students by firstname to detect duplicates
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity
+		const firstnameGroups = new Map<string, number[]>();
+		for (let i = 0; i < students.length; i++) {
+			const key = students[i].firstname;
+			const group = firstnameGroups.get(key);
+			if (group) {
+				group.push(i);
+			} else {
+				firstnameGroups.set(key, [i]);
+			}
+		}
+
+		const names = students.map((s, i) => {
+			const group = firstnameGroups.get(s.firstname)!;
+			if (group.length === 1) return s.firstname;
+
+			// Find minimum lastname prefix to disambiguate
+			const lastname = s.lastname || '';
+			const others = group.filter((j) => j !== i).map((j) => students[j].lastname || '');
+
+			let len = 1;
+			const maxLen = Math.max(lastname.length, ...others.map((o) => o.length));
+			while (len <= maxLen) {
+				const prefix = lastname.slice(0, len).toLowerCase();
+				const unique = others.every((o) => o.slice(0, len).toLowerCase() !== prefix);
+				if (unique) break;
+				len++;
+			}
+
+			if (!lastname) return s.firstname;
+			return `${s.firstname} ${lastname.slice(0, len)}.`;
+		});
 
 		// Add joker to balance odd numbers (prevents asymmetric wheel)
 		if (addJokerIfOdd && names.length % 2 !== 0) {
@@ -512,19 +544,27 @@
 				filter="url(#shadow)"
 			/>
 
-			<!-- Center gray circle -->
-			<circle r="3em" cx="50%" cy="50%" fill={accentColor} />
-
-			<!-- Yellow stroke around center circle with shadow -->
-			<circle
-				r="3em"
-				cx="50%"
-				cy="50%"
-				fill="transparent"
-				stroke="#f9ef69"
-				stroke-width="0.5em"
-				filter="url(#shadow2)"
-			/>
+			<!-- Center circle (clickable to spin) -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<g
+				onclick={spin}
+				class="center-button"
+				class:center-disabled={isSpinning || students.length === 0}
+				role="button"
+				tabindex="-1"
+				style="outline: none;"
+			>
+				<circle r="3em" cx="50%" cy="50%" fill={accentColor} />
+				<circle
+					r="3em"
+					cx="50%"
+					cy="50%"
+					fill="transparent"
+					stroke="#f9ef69"
+					stroke-width="0.5em"
+					filter="url(#shadow2)"
+				/>
+			</g>
 
 			<!-- Yellow decorative dots around perimeter -->
 			{#each Array(wheelData().length * 3)
@@ -579,29 +619,12 @@
 		</span>
 	</div>
 
-	<!-- Controls -->
-	<div class="flex flex-col items-center gap-4">
-		<button
-			onclick={spin}
-			disabled={isSpinning || students.length === 0}
-			class="rounded-lg bg-primary px-8 py-3 font-bold text-primary-foreground transition-all hover:scale-105 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
-		>
-			{#if isSpinning}
-				Tourne...
-			{:else if students.length === 0}
-				Aucun élève
-			{:else}
-				Lancer la roue
-			{/if}
-		</button>
-
-		<!-- Gidouille reward info (winner is highlighted on wheel) -->
-		{#if selectedStudent && gidouilleReward && gidouilleReward > 0}
-			<p class="mt-2 text-sm text-muted-foreground">
-				{selectedStudent.firstname} : +{gidouilleReward} gidouille{gidouilleReward > 1 ? 's' : ''}
-			</p>
-		{/if}
-	</div>
+	<!-- Gidouille reward info (winner is highlighted on wheel) -->
+	{#if selectedStudent && gidouilleReward && gidouilleReward > 0}
+		<p class="text-sm text-muted-foreground">
+			{selectedStudent.firstname} : +{gidouilleReward} gidouille{gidouilleReward > 1 ? 's' : ''}
+		</p>
+	{/if}
 </div>
 
 <style>
@@ -629,5 +652,18 @@
 			fill 0.5s ease,
 			opacity 0.5s ease,
 			stroke 0.5s ease;
+	}
+
+	.center-button {
+		cursor: pointer;
+	}
+
+	.center-button:hover circle {
+		filter: brightness(1.2);
+	}
+
+	.center-disabled {
+		cursor: not-allowed;
+		pointer-events: none;
 	}
 </style>
