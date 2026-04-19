@@ -143,6 +143,15 @@
 		game.startNewGame(game.difficulty, 6);
 	}
 
+	// If loading a finished game from localStorage, show the appropriate dialog
+	if (game.isGameOver()) {
+		if (game.hasWon()) {
+			showVictoryDialog = true;
+		} else {
+			showDefeatDialog = true;
+		}
+	}
+
 	/**
 	 * Watch for difficulty changes and start a new game
 	 * Uses $effect to react to selectedDifficulty changes
