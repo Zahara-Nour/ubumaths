@@ -23,6 +23,7 @@
 	import type { Difficulty } from './types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import { Trophy } from 'lucide-svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import type { PageData } from './$types';
 
@@ -340,6 +341,14 @@
 			class="h-40 w-full object-cover sm:h-52 md:h-64"
 		/>
 	</div>
+
+	<!-- Classement link -->
+	<a href="/leaderboards/mathemo">
+		<Button variant="outline" size="sm">
+			<Trophy class="mr-2 h-4 w-4" />
+			Classement
+		</Button>
+	</a>
 
 	<!-- Controls: Difficulty and Attempts -->
 	{#if !gameOver}
