@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.78](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.77...v0.8.78) (2026-04-19)
+
+### ✨ Features
+
+- **wheel:** clickable center, disambiguate duplicate names ([f03e9da](https://github.com/Zahara-Nour/ubumaths/commit/f03e9da1cad83b57bb9cc4f5d8a5b0bed215b730))
+
 ### [0.8.77](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.76...v0.8.77) (2026-04-19)
 
 ### ✨ Features
