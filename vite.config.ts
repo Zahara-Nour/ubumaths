@@ -79,7 +79,6 @@ export default defineConfig(({ mode }) => {
 				'@tiptap/pm/transform',
 				'@tiptap/pm/commands',
 				'@tiptap/pm/keymap',
-				'@tiptap/pm/inputrules',
 				'@tiptap/pm/gapcursor',
 				'@tiptap/pm/dropcursor',
 				'@tiptap/pm/history'
