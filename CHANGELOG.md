@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.79](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.78...v0.8.79) (2026-04-19)
+
+### ✨ Features
+
+- **wheel:** click winner name to approve VIP card use ([388d8bd](https://github.com/Zahara-Nour/ubumaths/commit/388d8bd619a95ceb418ad24936d77c67fe34ae40))
+
 ### [0.8.78](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.77...v0.8.78) (2026-04-19)
 
 ### ✨ Features
