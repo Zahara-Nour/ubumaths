@@ -13,7 +13,7 @@ node_modules
 extern
 externe
 
-data
+/data
 
 # OS
 .DS_Store
@@ -62,4 +62,4 @@ validation-audit.json
 supabase/.temp/
 # Downloaded question images (cached, actual images in Supabase)
 static/images/questions/
-data/
+/data/
