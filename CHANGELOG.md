@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.80](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.79...v0.8.80) (2026-04-19)
+
+### ✨ Features
+
+- **2048:** add banner image to game page ([106e137](https://github.com/Zahara-Nour/ubumaths/commit/106e13799d7b0f2df0a06d4bf89eff45664d90d0))
+
 ### [0.8.79](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.78...v0.8.79) (2026-04-19)
 
 ### ✨ Features
