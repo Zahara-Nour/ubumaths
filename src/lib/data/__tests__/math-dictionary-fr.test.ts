@@ -2,8 +2,9 @@ import { describe, it, expect } from 'vitest';
 import MATH_DICTIONARY, {
 	getAllTerms,
 	getTermsByTag,
-	getTermsByTagAndLevel,
-	getTermsForLevel,
+	getTermsByTagAndGrade,
+	getTermsForGrade,
+	resolveGradedField,
 	type MathTerm
 } from '../math-dictionary-fr';
 import { GRADE_CODES } from '$lib/types/grades';
@@ -28,7 +29,7 @@ describe('math-dictionary-fr', () => {
 	it('should have valid GradeCode for every term', () => {
 		const validCodes = new Set<string>(GRADE_CODES);
 		for (const term of MATH_DICTIONARY) {
-			expect(validCodes.has(term.level), `"${term.term}" has invalid level "${term.level}"`).toBe(
+			expect(validCodes.has(term.grade), `"${term.term}" has invalid grade "${term.grade}"`).toBe(
 				true
 			);
 		}
@@ -42,10 +43,28 @@ describe('math-dictionary-fr', () => {
 
 	it('should have non-empty definitions for principal terms', () => {
 		for (const term of MATH_DICTIONARY) {
-			if (term.derivedFrom) continue; // Derived terms don't need definitions
-			expect(term.definition?.trim().length, `"${term.term}" has empty definition`).toBeGreaterThan(
+			if (term.derivedFrom) continue;
+			expect(term.definitions?.items.length, `"${term.term}" has no definitions`).toBeGreaterThan(
 				0
 			);
+			for (const item of term.definitions?.items ?? []) {
+				expect(
+					item.content?.trim().length,
+					`"${term.term}" has empty definition content`
+				).toBeGreaterThan(0);
+			}
+		}
+	});
+
+	it('should have valid GradeCode in definition items', () => {
+		const validCodes = new Set<string>(GRADE_CODES);
+		for (const term of MATH_DICTIONARY) {
+			for (const item of term.definitions?.items ?? []) {
+				expect(
+					validCodes.has(item.grade),
+					`"${term.term}" definition has invalid grade "${item.grade}"`
+				).toBe(true);
+			}
 		}
 	});
 
@@ -95,34 +114,81 @@ describe('math-dictionary-fr', () => {
 	});
 
 	// -----------------------------------------------------------------------
-	// getTermsForLevel
+	// resolveGradedField
 	// -----------------------------------------------------------------------
 
-	describe('getTermsForLevel', () => {
-		it('should return CP terms for level CP', () => {
-			const terms = getTermsForLevel('CP');
+	describe('resolveGradedField', () => {
+		it('should return all items for cumulative mode (default)', () => {
+			const field = {
+				items: [
+					{ grade: 'CP' as const, content: 'Base' },
+					{ grade: '6' as const, content: 'Complément 6ème' },
+					{ grade: '3' as const, content: 'Complément 3ème' }
+				]
+			};
+			const result = resolveGradedField(field, '3');
+			expect(result).toEqual(['Base', 'Complément 6ème', 'Complément 3ème']);
+		});
+
+		it('should filter by grade accessibility', () => {
+			const field = {
+				items: [
+					{ grade: 'CP' as const, content: 'Base' },
+					{ grade: '6' as const, content: 'Complément 6ème' },
+					{ grade: 'T_SPE' as const, content: 'Complément Tale' }
+				]
+			};
+			const result = resolveGradedField(field, '6');
+			expect(result).toEqual(['Base', 'Complément 6ème']);
+		});
+
+		it('should return only last item for discriminant mode', () => {
+			const field = {
+				mode: 'discriminant' as const,
+				items: [
+					{ grade: 'CP' as const, content: 'Simple' },
+					{ grade: '6' as const, content: 'Détaillé' },
+					{ grade: '3' as const, content: 'Avancé' }
+				]
+			};
+			const result = resolveGradedField(field, '3');
+			expect(result).toEqual(['Avancé']);
+		});
+
+		it('should return empty for inaccessible grade', () => {
+			const field = {
+				items: [{ grade: 'T_SPE' as const, content: 'Terminale only' }]
+			};
+			const result = resolveGradedField(field, '6');
+			expect(result).toEqual([]);
+		});
+	});
+
+	// -----------------------------------------------------------------------
+	// getTermsForGrade
+	// -----------------------------------------------------------------------
+
+	describe('getTermsForGrade', () => {
+		it('should return CP terms for grade CP', () => {
+			const terms = getTermsForGrade('CP');
 			expect(terms.length).toBeGreaterThan(0);
 			for (const t of terms) {
-				expect(t.level).toBe('CP');
+				expect(t.grade).toBe('CP');
 			}
 		});
 
-		it('should return CP through 6e terms for level 6', () => {
-			const terms = getTermsForLevel('6');
-			// Should include CP terms
-			expect(terms.some((t) => t.level === 'CP')).toBe(true);
-			// Should include 6e terms
-			expect(terms.some((t) => t.level === '6')).toBe(true);
-			// Should NOT include 5e+ terms
-			expect(terms.some((t) => t.level === '5')).toBe(false);
-			expect(terms.some((t) => t.level === '4')).toBe(false);
+		it('should return CP through 6e terms for grade 6', () => {
+			const terms = getTermsForGrade('6');
+			expect(terms.some((t) => t.grade === 'CP')).toBe(true);
+			expect(terms.some((t) => t.grade === '6')).toBe(true);
+			expect(terms.some((t) => t.grade === '5')).toBe(false);
 		});
 
-		it('should include more terms at higher levels', () => {
-			const cpTerms = getTermsForLevel('CP');
-			const cm2Terms = getTermsForLevel('CM2');
-			const sixTerms = getTermsForLevel('6');
-			const troisTerms = getTermsForLevel('3');
+		it('should include more terms at higher grades', () => {
+			const cpTerms = getTermsForGrade('CP');
+			const cm2Terms = getTermsForGrade('CM2');
+			const sixTerms = getTermsForGrade('6');
+			const troisTerms = getTermsForGrade('3');
 			expect(cm2Terms.length).toBeGreaterThan(cpTerms.length);
 			expect(sixTerms.length).toBeGreaterThan(cm2Terms.length);
 			expect(troisTerms.length).toBeGreaterThan(sixTerms.length);
@@ -154,28 +220,25 @@ describe('math-dictionary-fr', () => {
 	});
 
 	// -----------------------------------------------------------------------
-	// getTermsByTagAndLevel
+	// getTermsByTagAndGrade
 	// -----------------------------------------------------------------------
 
-	describe('getTermsByTagAndLevel', () => {
+	describe('getTermsByTagAndGrade', () => {
 		it('should return a subset of getTermsByTag', () => {
 			const allGeometrie = getTermsByTag('géométrie');
-			const geometrie4 = getTermsByTagAndLevel('géométrie', '4');
+			const geometrie4 = getTermsByTagAndGrade('géométrie', '4');
 			expect(geometrie4.length).toBeGreaterThan(0);
 			expect(geometrie4.length).toBeLessThanOrEqual(allGeometrie.length);
-			// Every term in the filtered set should be in the full set
 			for (const t of geometrie4) {
 				expect(allGeometrie).toContainEqual(t);
 			}
 		});
 
-		it('should respect level filtering', () => {
-			const terms = getTermsByTagAndLevel('fonctions', '6');
+		it('should respect grade filtering', () => {
+			const terms = getTermsByTagAndGrade('fonctions', '6');
 			for (const t of terms) {
 				expect(t.tags).toContain('fonctions');
-				// schoolYear should be <= 6 (6eme)
 			}
-			// "fonction" is introduced at level '3', should not appear at level '6'
 			expect(terms.some((t) => t.term === 'fonction')).toBe(false);
 		});
 	});
@@ -195,8 +258,8 @@ describe('math-dictionary-fr', () => {
 			all.push({
 				term: 'test',
 				tags: ['test'],
-				definition: 'test',
-				level: 'CP'
+				definitions: { items: [{ grade: 'CP', content: 'test' }] },
+				grade: 'CP'
 			} satisfies MathTerm);
 			expect(getAllTerms().length).toBe(MATH_DICTIONARY.length);
 		});
