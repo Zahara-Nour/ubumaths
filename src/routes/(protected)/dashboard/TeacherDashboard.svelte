@@ -72,18 +72,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import {
-		Calendar,
-		Clock,
-		Target,
-		BookOpen,
-		Users,
-		Sparkles,
-		WandSparkles,
-		Gamepad2,
-		LifeBuoy,
-		BrainCog
-	} from 'lucide-svelte';
+	import { Calendar, Clock, Target, BookOpen, Users } from 'lucide-svelte';
 	import Wheel from '$lib/components/Wheel.svelte';
 	import StudentQuickActionsTable from '$lib/components/teacher/StudentQuickActionsTable.svelte';
 	import VipCardUseDialog from '$lib/components/teacher/VipCardUseDialog.svelte';
@@ -648,7 +637,6 @@
 						size="sm"
 						disabled={!selectedClassId}
 					>
-						<Sparkles class="mr-2 h-4 w-4" />
 						Batman & Robin
 					</Button>
 
@@ -659,7 +647,6 @@
 						size="sm"
 						disabled={!selectedClassId}
 					>
-						<WandSparkles class="mr-2 h-4 w-4" />
 						Mathémagie
 					</Button>
 
@@ -670,7 +657,6 @@
 						size="sm"
 						disabled={!selectedClassId}
 					>
-						<Gamepad2 class="mr-2 h-4 w-4" />
 						Jeu
 					</Button>
 
@@ -681,7 +667,6 @@
 						size="sm"
 						disabled={!selectedClassId}
 					>
-						<LifeBuoy class="mr-2 h-4 w-4" />
 						Help !
 					</Button>
 
@@ -692,7 +677,6 @@
 						size="sm"
 						disabled={!selectedClassId}
 					>
-						<BrainCog class="mr-2 h-4 w-4" />
 						Trou de mémoire
 					</Button>
 				</div>
@@ -784,35 +768,30 @@
 	bind:open={batmanModalOpen}
 	cardId="batman"
 	title="Batman & Robin"
-	icon={Sparkles}
-	iconColorClass="text-amber-500"
 	classId={selectedClassId}
+	showWheelOption={true}
 />
 
 <VipCardUseDialog
 	bind:open={mathemagieModalOpen}
 	cardId="mathemagie"
 	title="Mathémagie"
-	icon={WandSparkles}
-	iconColorClass="text-purple-500"
 	classId={selectedClassId}
+	showWheelOption={true}
 />
 
 <VipCardUseDialog
 	bind:open={jeuModalOpen}
 	cardId="jeu"
 	title="Jeu"
-	icon={Gamepad2}
-	iconColorClass="text-green-500"
 	classId={selectedClassId}
+	showWheelOption={true}
 />
 
 <VipCardUseDialog
 	bind:open={helpModalOpen}
 	cardId="help"
 	title="Help !"
-	icon={LifeBuoy}
-	iconColorClass="text-red-500"
 	classId={selectedClassId}
 />
 
@@ -820,7 +799,5 @@
 	bind:open={memoireModalOpen}
 	cardId="memoire"
 	title="Trou de mémoire"
-	icon={BrainCog}
-	iconColorClass="text-blue-500"
 	classId={selectedClassId}
 />
