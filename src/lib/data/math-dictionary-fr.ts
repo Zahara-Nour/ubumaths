@@ -4447,13 +4447,6 @@ export function getTermsForGrade(grade: GradeCode): MathTerm[] {
 }
 
 /**
- * @deprecated Use getTermsForGrade instead
- */
-export function getTermsForLevel(level: GradeCode): MathTerm[] {
-	return getTermsForGrade(level);
-}
-
-/**
  * Returns all terms matching the given tag.
  */
 export function getTermsByTag(tag: string): MathTerm[] {
@@ -4465,13 +4458,6 @@ export function getTermsByTag(tag: string): MathTerm[] {
  */
 export function getTermsByTagAndGrade(tag: string, grade: GradeCode): MathTerm[] {
 	return MATH_DICTIONARY.filter((t) => t.tags.includes(tag) && hasAccessToGrade(grade, t.grade));
-}
-
-/**
- * @deprecated Use getTermsByTagAndGrade instead
- */
-export function getTermsByTagAndLevel(tag: string, level: GradeCode): MathTerm[] {
-	return getTermsByTagAndGrade(tag, level);
 }
 
 /**
