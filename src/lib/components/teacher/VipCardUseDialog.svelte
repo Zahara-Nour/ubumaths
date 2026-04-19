@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { Component } from 'svelte';
 	import type { StudentVipCards, VipCardInstance } from '$lib/types/vip-card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -14,16 +13,14 @@
 		open = $bindable(false),
 		cardId,
 		title,
-		icon: Icon,
-		iconColorClass,
-		classId
+		classId,
+		showWheelOption = false
 	}: {
 		open: boolean;
 		cardId: string;
 		title: string;
-		icon: Component<{ class?: string }>;
-		iconColorClass: string;
 		classId: string | null;
+		showWheelOption?: boolean;
 	} = $props();
 
 	let students = $state<
@@ -155,7 +152,7 @@
 			? 'sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[80vw]'
 			: 'sm:max-w-xl'}"
 	>
-		<Dialog.Header>
+		<Dialog.Header class="flex flex-row items-center justify-between pr-8">
 			<Dialog.Title class="flex items-center gap-2">
 				{#if showWheel}
 					<button
@@ -167,20 +164,22 @@
 					>
 						<ArrowLeft class="h-5 w-5" />
 					</button>
-					<Target class="h-5 w-5 text-primary" />
 					Roue de la fortune - {title}
 				{:else}
-					<Icon class="h-5 w-5 {iconColorClass}" />
 					{title}
 				{/if}
 			</Dialog.Title>
-			<Dialog.Description>
-				{#if showWheel}
-					Tirage au sort parmi les élèves ayant la carte "{title}"
-				{:else}
-					Sélectionnez un élève pour utiliser sa carte VIP "{title}"
-				{/if}
-			</Dialog.Description>
+			{#if showWheelOption && !showWheel && students.length > 0 && !isLoading}
+				<Button
+					onclick={() => {
+						showWheel = true;
+						wheelWinner = null;
+					}}
+					size="icon"
+				>
+					<Target class="h-5 w-5" />
+				</Button>
+			{/if}
 		</Dialog.Header>
 
 		<div class="mt-4">
@@ -191,10 +190,9 @@
 				</div>
 			{:else if students.length === 0}
 				<div class="py-8 text-center">
-					<Icon class="mx-auto mb-3 h-12 w-12 text-muted-foreground/50" />
 					<p class="text-muted-foreground">Aucun élève n'a de carte "{title}" disponible.</p>
 				</div>
-			{:else if showWheel}
+			{:else if showWheelOption && showWheel}
 				<!-- Wheel view -->
 				<div class="flex w-full flex-col items-center gap-4 py-4">
 					<Wheel
@@ -214,20 +212,6 @@
 				</div>
 			{:else}
 				<!-- Student list view -->
-				<div class="mb-3 flex justify-end">
-					<Button
-						onclick={() => {
-							showWheel = true;
-							wheelWinner = null;
-						}}
-						variant="outline"
-						size="sm"
-					>
-						<Target class="mr-2 h-4 w-4" />
-						Roue de la fortune
-					</Button>
-				</div>
-
 				<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 					{#each students as student (student.id)}
 						<button
@@ -247,7 +231,6 @@
 									{student.firstname}
 									{student.lastname || ''}
 								</p>
-								<p class="text-xs text-muted-foreground">Carte VIP disponible</p>
 							</div>
 
 							{#if student.cardCount >= 2}
@@ -255,8 +238,6 @@
 									x{student.cardCount}
 								</Badge>
 							{/if}
-
-							<Icon class="h-4 w-4 {iconColorClass}" />
 						</button>
 					{/each}
 				</div>
