@@ -280,6 +280,15 @@ interface MultiplierAction {
 }
 
 /**
+ * VIP Card Action - Reveal Vowels
+ * Reveals a limited number of vowel positions in a Wordle-style game.
+ */
+interface RevealVowelsAction {
+	type: 'reveal_vowels';
+	context?: string; // Activation context (e.g., 'mathemo')
+}
+
+/**
  * Union type for all VIP card actions
  * These actions require teacher approval to activate
  */
@@ -298,7 +307,8 @@ export type VipCardAction =
 	| FusionAction
 	| JokerAction
 	| VisionAction
-	| MultiplierAction;
+	| MultiplierAction
+	| RevealVowelsAction;
 
 /**
  * Definition of a VIP card type (template)

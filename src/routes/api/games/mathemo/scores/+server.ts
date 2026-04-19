@@ -100,12 +100,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(400, validation.error.issues[0].message);
 		}
 
-		const { word_length, attempts_used, max_attempts, won, found_first_try } = validation.data;
+		const { word_length, attempts_used, max_attempts, won, found_first_try, score_multiplier } =
+			validation.data;
 
-		// Calculate score for leaderboard (theoretical_reward × 100)
+		// Calculate score for leaderboard (theoretical_reward × 100 × multiplier)
 		const gameScore = won
 			? Math.round(
-					calculateMathemoTheoreticalReward(word_length, attempts_used, max_attempts) * 100
+					calculateMathemoTheoreticalReward(word_length, attempts_used, max_attempts) *
+						100 *
+						score_multiplier
 				)
 			: 0;
 
