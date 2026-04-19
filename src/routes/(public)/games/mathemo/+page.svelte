@@ -22,6 +22,7 @@
 	import { game } from './game.svelte';
 	import type { Difficulty } from './types';
 	import { Button } from '$lib/components/ui/button';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import type { PageData } from './$types';
 
@@ -65,13 +66,14 @@
 	/** Whether the score has been submitted for this game */
 	let scoreSubmitted = $state(false);
 
+	/** Dialog visibility */
+	let showVictoryDialog = $state(false);
+	let showDefeatDialog = $state(false);
+
 	// ===== Derived Values (Computed from Game State) =====
 
 	/** Has the player won the game? */
 	let won = $derived(game.hasWon());
-
-	/** Has the player lost the game? */
-	let lost = $derived(game.hasLost());
 
 	/** Is the game over (won or lost)? */
 	let gameOver = $derived(game.isGameOver());
@@ -246,6 +248,17 @@
 					if (canSaveScore) {
 						submitScore();
 					}
+					// Show dialog after flip animation completes
+					setTimeout(
+						() => {
+							if (game.hasWon()) {
+								showVictoryDialog = true;
+							} else {
+								showDefeatDialog = true;
+							}
+						},
+						game.getSize() * 150 + 400
+					);
 				}
 			}
 		} else if (key === 'backspace') {
@@ -297,6 +310,8 @@
 		rewardData = null;
 		unlockedMilestones = [];
 		scoreSubmitted = false;
+		showVictoryDialog = false;
+		showDefeatDialog = false;
 	}
 </script>
 
@@ -410,94 +425,8 @@
 		{/each}
 	</div>
 
-	<!-- Controls: Keyboard or End Screen -->
-	{#if gameOver}
-		<div class="flex flex-col items-center gap-4">
-			{#if lost}
-				<!-- Defeat card -->
-				<div class="w-full max-w-xs overflow-hidden rounded-xl shadow-lg">
-					<img src="/images/defeat-mathemo.webp" alt="Défaite" class="w-full" />
-				</div>
-				<div class="flex flex-col items-center gap-1">
-					<p class="text-sm text-muted-foreground">Le mot mathématique était :</p>
-					<span class="text-2xl font-bold text-primary">{game.answer}</span>
-				</div>
-				<Button onclick={handleRestart} class="gap-2">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					>
-						<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-						<path d="M21 3v5h-5" />
-						<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-						<path d="M3 21v-5h5" />
-					</svg>
-					Rejouer
-				</Button>
-			{:else if won}
-				<!-- Victory card -->
-				<div class="w-full max-w-xs overflow-hidden rounded-xl shadow-lg">
-					<img src="/images/victory-mathemo.webp" alt="Victoire" class="w-full" />
-				</div>
-				<Button onclick={handleRestart} class="gap-2">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					>
-						<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-						<path d="M21 3v5h-5" />
-						<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-						<path d="M3 21v-5h5" />
-					</svg>
-					Rejouer
-				</Button>
-
-				<!-- Reward display (authenticated students only) -->
-				{#if canSaveScore && rewardData}
-					<div class="flex flex-col items-center gap-1 text-sm">
-						{#if rewardData.is_first_win_of_day}
-							<div class="text-xl font-bold text-primary">+1 gidouille</div>
-						{:else}
-							<div class="text-muted-foreground">Gidouille Mathémo déjà gagnée aujourd'hui</div>
-						{/if}
-						<div class="text-muted-foreground">
-							Valeur théorique : {rewardData.theoretical_reward.toFixed(2)}g
-						</div>
-						<div class="text-muted-foreground">
-							Meilleur cette semaine : {rewardData.week_best_reward.toFixed(2)}g
-						</div>
-					</div>
-				{/if}
-
-				<!-- Milestones -->
-				{#if unlockedMilestones.length > 0}
-					<div class="flex flex-col items-center gap-1">
-						<div class="text-sm font-semibold">Succès débloqués !</div>
-						{#each unlockedMilestones as milestone (milestone.slug)}
-							<div class="flex items-center gap-2 text-sm">
-								<span>{milestone.name}</span>
-								<span class="font-bold text-primary">+{milestone.gidouilles_reward}g</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			{/if}
-		</div>
-	{:else}
+	<!-- Keyboard -->
+	{#if !gameOver}
 		<div class="controls">
 			<div class="keyboard">
 				<button
@@ -543,6 +472,73 @@
 		}}
 	></div>
 {/if}
+
+<!-- Victory Dialog -->
+<Dialog.Root bind:open={showVictoryDialog}>
+	<Dialog.Content class="sm:max-w-sm">
+		<Dialog.Header class="sr-only">
+			<Dialog.Title>Victoire</Dialog.Title>
+			<Dialog.Description>Vous avez trouvé le mot !</Dialog.Description>
+		</Dialog.Header>
+		<div class="flex flex-col items-center gap-4">
+			<img src="/images/victory-mathemo.webp" alt="Victoire" class="w-full rounded-lg" />
+
+			{#if canSaveScore && rewardData}
+				<div class="w-full space-y-2 rounded-lg bg-muted/50 p-3 text-sm">
+					{#if rewardData.is_first_win_of_day}
+						<div class="text-center text-xl font-bold text-primary">+1 gidouille</div>
+					{:else}
+						<div class="text-center text-muted-foreground">
+							Gidouille Mathémo déjà gagnée aujourd'hui
+						</div>
+					{/if}
+					<div class="flex items-center justify-between">
+						<span>Valeur théorique</span>
+						<span class="font-mono font-medium">{rewardData.theoretical_reward.toFixed(2)}g</span>
+					</div>
+					<div class="flex items-center justify-between rounded bg-primary/10 px-2 py-1">
+						<span>Meilleur cette semaine</span>
+						<span class="font-mono font-medium text-primary"
+							>{rewardData.week_best_reward.toFixed(2)}g</span
+						>
+					</div>
+				</div>
+			{/if}
+
+			{#if unlockedMilestones.length > 0}
+				<div class="w-full space-y-1 rounded-lg bg-yellow-50 p-3 text-sm dark:bg-yellow-950/30">
+					<div class="font-semibold">Succès débloqués !</div>
+					{#each unlockedMilestones as milestone (milestone.slug)}
+						<div class="flex items-center justify-between">
+							<span>{milestone.name}</span>
+							<span class="font-mono font-bold text-primary">+{milestone.gidouilles_reward}g</span>
+						</div>
+					{/each}
+				</div>
+			{/if}
+
+			<Button onclick={handleRestart} size="lg" class="w-full">Rejouer</Button>
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Defeat Dialog -->
+<Dialog.Root bind:open={showDefeatDialog}>
+	<Dialog.Content class="sm:max-w-sm">
+		<Dialog.Header class="sr-only">
+			<Dialog.Title>Défaite</Dialog.Title>
+			<Dialog.Description>Vous n'avez pas trouvé le mot.</Dialog.Description>
+		</Dialog.Header>
+		<div class="flex flex-col items-center gap-4">
+			<img src="/images/defeat-mathemo.webp" alt="Défaite" class="w-full rounded-lg" />
+			<div class="text-center">
+				<p class="text-sm text-muted-foreground">Le mot mathématique était :</p>
+				<span class="text-2xl font-bold text-primary">{game.answer}</span>
+			</div>
+			<Button onclick={handleRestart} size="lg" class="w-full">Rejouer</Button>
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
 
 <style lang="postcss">
 	/* ===== Grid Container ===== */
