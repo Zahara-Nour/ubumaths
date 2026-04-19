@@ -134,3 +134,78 @@ export const leaderboard2048ResponseSchema = z.object({
 	leaderboard: z.array(leaderboardEntrySchema),
 	user_rank: z.number().int().positive().nullable()
 });
+
+// ============================================================================
+// MATHEMO GAME SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for submitting a Mathemo game result
+ * POST /api/games/mathemo/scores
+ */
+export const submitMathemoScoreSchema = z
+	.object({
+		word_length: z
+			.number()
+			.int()
+			.min(2, 'Word length must be at least 2')
+			.max(20, 'Word length cannot exceed 20'),
+		attempts_used: z
+			.number()
+			.int()
+			.min(1, 'Must use at least 1 attempt')
+			.max(10, 'Cannot exceed 10 attempts'),
+		max_attempts: z
+			.number()
+			.int()
+			.min(3, 'Max attempts must be at least 3')
+			.max(10, 'Max attempts cannot exceed 10'),
+		won: z.boolean(),
+		found_first_try: z.boolean()
+	})
+	.refine((data) => data.attempts_used <= data.max_attempts, {
+		message: 'attempts_used cannot exceed max_attempts'
+	})
+	.refine((data) => !data.found_first_try || (data.won && data.attempts_used === 1), {
+		message: 'found_first_try requires won=true and attempts_used=1'
+	});
+
+/**
+ * Schema for Mathemo reward data
+ */
+export const rewardMathemoSchema = z.object({
+	theoretical_reward: z.number().nonnegative(),
+	actual_reward: z.number().nonnegative(),
+	is_first_win_of_day: z.boolean(),
+	week_best_reward: z.number().nonnegative()
+});
+
+/**
+ * Schema for a milestone unlocked during a Mathemo game
+ */
+export const milestoneMathemoSchema = z.object({
+	slug: z.string(),
+	name: z.string(),
+	gidouilles_reward: z.number().nonnegative()
+});
+
+/**
+ * Response schema for POST /api/games/mathemo/scores
+ */
+export const submitMathemoScoreWithRewardResponseSchema = z.object({
+	success: z.literal(true),
+	games_played: z.number().int().positive(),
+	games_won: z.number().int().nonnegative(),
+	reward: rewardMathemoSchema.nullable(),
+	milestones: z.array(milestoneMathemoSchema)
+});
+
+/**
+ * Response schema for GET /api/games/mathemo/scores
+ */
+export const getMathemoScoreResponseSchema = z.object({
+	games_played: z.number().int().nonnegative(),
+	games_won: z.number().int().nonnegative(),
+	best_word_length: z.number().int().nonnegative(),
+	first_try_count: z.number().int().nonnegative()
+});

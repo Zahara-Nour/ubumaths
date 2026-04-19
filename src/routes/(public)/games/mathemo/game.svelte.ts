@@ -298,6 +298,27 @@ class MathemoGame {
 		return this.answer.length;
 	}
 
+	/**
+	 * Get game completion data for API submission
+	 * Should be called after game ends (win or loss)
+	 */
+	getCompletionData(): {
+		word_length: number;
+		attempts_used: number;
+		max_attempts: number;
+		won: boolean;
+		found_first_try: boolean;
+	} {
+		const won = this.hasWon();
+		return {
+			word_length: this.answer.length,
+			attempts_used: this.currentRow,
+			max_attempts: this.maxAttempts,
+			won,
+			found_first_try: won && this.currentRow === 1
+		};
+	}
+
 	// ===== Persistence (localStorage) =====
 
 	/**
