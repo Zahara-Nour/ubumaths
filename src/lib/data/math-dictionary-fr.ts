@@ -205,8 +205,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 		level: 'CE2'
 	},
 	{
-		term: 'geometrie',
-		tags: ['geometrie'],
+		term: 'géométrie',
+		tags: ['géométrie'],
 		definition: "Branche des mathematiques etudiant les figures et l'espace.",
 		level: 'CP'
 	},
@@ -302,66 +302,66 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'pair',
-		tags: ['entiers', 'arithmetique'],
+		tags: ['entiers', 'arithmétique'],
 		definition: 'Nombre entier divisible par $2$. Ex : $0, 2, 4, 6, 8, \\ldots$',
 		level: 'CP'
 	},
 	{
 		term: 'impair',
-		tags: ['entiers', 'arithmetique'],
+		tags: ['entiers', 'arithmétique'],
 		definition: "Nombre entier qui n'est pas divisible par $2$. Ex : $1, 3, 5, 7, 9, \\ldots$",
 		level: 'CP'
 	},
 	{
 		term: 'dizaine',
-		tags: ['entiers', 'numeration'],
+		tags: ['entiers', 'numération'],
 		definition: 'Groupe de $10$ unites. Le chiffre des dizaines indique le nombre de dizaines.',
 		level: 'CP'
 	},
 	{
 		term: 'centaine',
-		tags: ['entiers', 'numeration'],
+		tags: ['entiers', 'numération'],
 		definition:
 			'Groupe de $100$ unites ($10$ dizaines). Le chiffre des centaines indique le nombre de centaines.',
 		level: 'CE1'
 	},
 	{
 		term: 'millier',
-		tags: ['entiers', 'numeration'],
+		tags: ['entiers', 'numération'],
 		definition: 'Groupe de $1\\,000$ unites.',
 		level: 'CE2'
 	},
 	{
 		term: 'unite',
-		tags: ['entiers', 'numeration', 'grandeurs'],
+		tags: ['entiers', 'numération', 'grandeurs'],
 		definition:
 			'Grandeur de reference pour mesurer. En numeration, le rang le plus a droite dans un nombre entier.',
 		level: 'CP'
 	},
 	{
 		term: 'multiple',
-		tags: ['entiers', 'arithmetique', 'divisibilite'],
+		tags: ['entiers', 'arithmétique', 'divisibilité'],
 		definition:
 			'$a$ est un multiple de $b$ si $a = b \\times k$ avec $k$ entier. Ex : $12$ est un multiple de $3$.',
 		level: 'CM1'
 	},
 	{
 		term: 'diviseur (arithmétique)',
-		tags: ['entiers', 'arithmetique', 'divisibilite'],
+		tags: ['entiers', 'arithmétique', 'divisibilité'],
 		definition:
 			'$b$ est un diviseur de $a$ si $a \\div b$ est un entier (reste $0$). Ex : $3$ est un diviseur de $12$.',
 		level: 'CM1'
 	},
 	{
 		term: 'divisible',
-		tags: ['entiers', 'arithmetique', 'divisibilite'],
+		tags: ['entiers', 'arithmétique', 'divisibilité'],
 		definition:
 			'Un nombre est divisible par un autre si la division tombe juste (reste $0$). Ex : $12$ est divisible par $3$.',
 		level: 'CM1'
 	},
 	{
 		term: 'nombre premier',
-		tags: ['entiers', 'arithmetique', 'divisibilite'],
+		tags: ['entiers', 'arithmétique', 'divisibilité'],
 		definition:
 			"Entier naturel superieur a $1$ qui n'a que deux diviseurs : $1$ et lui-meme. Ex : $2, 3, 5, 7, 11$.",
 		level: '5',
@@ -369,35 +369,35 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'décomposition en facteurs premiers',
-		tags: ['entiers', 'arithmetique', 'divisibilite'],
+		tags: ['entiers', 'arithmétique', 'divisibilité'],
 		definition:
 			"Ecriture d'un entier comme produit de nombres premiers. Ex : $60 = 2^2 \\times 3 \\times 5$.",
 		level: '4'
 	},
 	{
 		term: 'PGCD',
-		tags: ['entiers', 'arithmetique', 'divisibilite'],
+		tags: ['entiers', 'arithmétique', 'divisibilité'],
 		definition: 'Plus Grand Commun Diviseur de deux entiers. Ex : $\\text{PGCD}(12, 18) = 6$.',
 		level: '3',
 		synonyms: ['plus grand commun diviseur']
 	},
 	{
 		term: 'PPCM',
-		tags: ['entiers', 'arithmetique', 'divisibilite'],
+		tags: ['entiers', 'arithmétique', 'divisibilité'],
 		definition: 'Plus Petit Commun Multiple de deux entiers. Ex : $\\text{PPCM}(4, 6) = 12$.',
 		level: '3',
 		synonyms: ['plus petit commun multiple']
 	},
 	{
 		term: 'critère de divisibilité',
-		tags: ['entiers', 'arithmetique', 'divisibilite'],
+		tags: ['entiers', 'arithmétique', 'divisibilité'],
 		definition:
 			'Regle permettant de savoir si un nombre est divisible par un autre sans faire la division. Ex : un nombre est divisible par $3$ si la somme de ses chiffres est divisible par $3$.',
 		level: '6'
 	},
 	{
 		term: 'division euclidienne',
-		tags: ['entiers', 'arithmetique'],
+		tags: ['entiers', 'arithmétique'],
 		definition:
 			"Division d'un entier $a$ par un entier $b \\neq 0$ donnant un quotient $q$ et un reste $r$ tels que $a = b \\times q + r$ avec $0 \\leq r < b$.",
 		level: '6'
@@ -459,27 +459,27 @@ const MATH_DICTIONARY: MathTerm[] = [
 		level: 'CE1'
 	},
 	{
-		term: 'arithmetique',
-		tags: ['entiers', 'arithmetique'],
+		term: 'arithmétique',
+		tags: ['entiers', 'arithmétique'],
 		definition: 'Etude des proprietes des nombres entiers (divisibilite, premiers, etc.).',
 		level: '6'
 	},
 	{
 		term: 'décomposition',
-		tags: ['entiers', 'arithmetique'],
+		tags: ['entiers', 'arithmétique'],
 		definition:
 			"Ecriture d'un nombre comme produit de facteurs. Ex : $60 = 2^2 \\times 3 \\times 5$.",
 		level: '4'
 	},
 	{
 		term: 'décomposer',
-		tags: ['entiers', 'arithmetique'],
+		tags: ['entiers', 'arithmétique'],
 		level: '4',
 		derivedFrom: 'décomposition en facteurs premiers'
 	},
 	{
 		term: 'diviseur',
-		tags: ['entiers', 'arithmetique', 'divisibilite'],
+		tags: ['entiers', 'arithmétique', 'divisibilité'],
 		definition: 'Nombre qui divise exactement un autre nombre.',
 		level: 'CM1'
 	},
@@ -491,25 +491,25 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'euclide',
-		tags: ['entiers', 'arithmetique'],
+		tags: ['entiers', 'arithmétique'],
 		definition: "Mathematicien grec. Associe a la division euclidienne et l'algorithme d'Euclide.",
 		level: '6'
 	},
 	{
 		term: 'euclidienne',
-		tags: ['entiers', 'arithmetique'],
+		tags: ['entiers', 'arithmétique'],
 		level: '6',
 		derivedFrom: 'division euclidienne'
 	},
 	{
-		term: 'numeration',
-		tags: ['entiers', 'numeration'],
+		term: 'numération',
+		tags: ['entiers', 'numération'],
 		definition: 'Systeme de representation des nombres (decimal, binaire, etc.).',
 		level: 'CP'
 	},
 	{
 		term: 'premier',
-		tags: ['entiers', 'arithmetique'],
+		tags: ['entiers', 'arithmétique'],
 		definition: "Se dit d'un nombre n'ayant que deux diviseurs : $1$ et lui-meme.",
 		level: '5'
 	},
@@ -519,7 +519,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	// =========================================================================
 	{
 		term: 'nombre décimal',
-		tags: ['decimaux'],
+		tags: ['décimaux'],
 		definition:
 			"Nombre pouvant s'ecrire sous forme de fraction decimale. Ex : $3{,}14 = \\frac{314}{100}$.",
 		level: 'CM1',
@@ -527,98 +527,98 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'virgule',
-		tags: ['decimaux'],
+		tags: ['décimaux'],
 		definition:
 			"Signe separant la partie entiere de la partie decimale dans l'ecriture d'un nombre decimal.",
 		level: 'CM1'
 	},
 	{
 		term: 'partie entiere',
-		tags: ['decimaux'],
+		tags: ['décimaux'],
 		definition:
 			"Partie d'un nombre decimal situee a gauche de la virgule. Ex : dans $3{,}14$, la partie entiere est $3$.",
 		level: 'CM1'
 	},
 	{
 		term: 'partie decimale',
-		tags: ['decimaux'],
+		tags: ['décimaux'],
 		definition:
 			"Partie d'un nombre decimal situee a droite de la virgule. Ex : dans $3{,}14$, la partie decimale est $0{,}14$.",
 		level: 'CM1'
 	},
 	{
 		term: 'dixieme',
-		tags: ['decimaux', 'numeration'],
+		tags: ['décimaux', 'numération'],
 		definition: 'Premier rang apres la virgule. $0{,}1 = \\frac{1}{10}$.',
 		level: 'CM1'
 	},
 	{
 		term: 'centieme',
-		tags: ['decimaux', 'numeration'],
+		tags: ['décimaux', 'numération'],
 		definition: 'Deuxieme rang apres la virgule. $0{,}01 = \\frac{1}{100}$.',
 		level: 'CM1'
 	},
 	{
 		term: 'millieme',
-		tags: ['decimaux', 'numeration'],
+		tags: ['décimaux', 'numération'],
 		definition: 'Troisieme rang apres la virgule. $0{,}001 = \\frac{1}{1000}$.',
 		level: 'CM2'
 	},
 	{
 		term: 'fraction décimale',
-		tags: ['decimaux', 'fractions'],
+		tags: ['décimaux', 'fractions'],
 		definition:
 			'Fraction dont le denominateur est une puissance de $10$. Ex : $\\frac{7}{10}$, $\\frac{314}{100}$.',
 		level: 'CM1'
 	},
 	{
 		term: 'arrondi',
-		tags: ['decimaux'],
+		tags: ['décimaux'],
 		definition:
 			"Valeur approchee d'un nombre obtenue en tronquant puis ajustant le dernier chiffre conserve. Ex : $3{,}14$ arrondi au dixieme est $3{,}1$.",
 		level: 'CM2'
 	},
 	{
 		term: 'arrondir',
-		tags: ['decimaux'],
+		tags: ['décimaux'],
 		level: 'CM2',
 		derivedFrom: 'arrondi'
 	},
 	{
 		term: 'décimal',
-		tags: ['decimaux'],
+		tags: ['décimaux'],
 		level: 'CM1',
 		derivedFrom: 'nombre décimal'
 	},
 	{
 		term: 'décimale',
-		tags: ['decimaux'],
+		tags: ['décimaux'],
 		level: 'CM1',
 		derivedFrom: 'nombre décimal'
 	},
 	{
 		term: 'troncature',
-		tags: ['decimaux'],
+		tags: ['décimaux'],
 		definition:
 			"Valeur approchee obtenue en supprimant les chiffres au-dela d'un rang donne, sans arrondir.",
 		level: '6'
 	},
 	{
 		term: 'valeur approchée',
-		tags: ['decimaux'],
+		tags: ['décimaux'],
 		definition: "Nombre proche d'un nombre exact, par exces ou par defaut.",
 		level: 'CM2'
 	},
 	{
 		term: 'encadrement',
-		tags: ['decimaux'],
+		tags: ['décimaux'],
 		definition:
 			"Encadrer un nombre $x$, c'est trouver deux nombres $a$ et $b$ tels que $a \\leq x \\leq b$.",
 		level: '6'
 	},
 	{
 		term: 'intercaler',
-		tags: ['decimaux'],
+		tags: ['décimaux'],
 		definition: 'Placer un nombre entre deux autres sur la droite graduee.',
 		level: 'CM1'
 	},
@@ -649,14 +649,14 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'fraction irréductible',
-		tags: ['fractions', 'arithmetique'],
+		tags: ['fractions', 'arithmétique'],
 		definition:
 			"Fraction dont le numerateur et le denominateur n'ont pas de diviseur commun autre que $1$. Ex : $\\frac{3}{4}$ est irreductible.",
 		level: '5'
 	},
 	{
 		term: 'simplifier une fraction',
-		tags: ['fractions', 'arithmetique'],
+		tags: ['fractions', 'arithmétique'],
 		definition:
 			'Diviser le numerateur et le denominateur par un meme nombre. Ex : $\\frac{6}{8} = \\frac{3}{4}$.',
 		level: '5'
@@ -690,13 +690,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'simplification',
-		tags: ['fractions', 'calcul-litteral'],
+		tags: ['fractions', 'calcul-littéral'],
 		definition: 'Action de simplifier une fraction ou une expression.',
 		level: '5'
 	},
 	{
 		term: 'simplifier',
-		tags: ['fractions', 'arithmetique'],
+		tags: ['fractions', 'arithmétique'],
 		level: '5',
 		derivedFrom: 'simplifier une fraction'
 	},
@@ -774,164 +774,164 @@ const MATH_DICTIONARY: MathTerm[] = [
 	// =========================================================================
 	{
 		term: 'expression',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: 'Suite de nombres et de lettres relies par des operations. Ex : $3x + 2$.',
 		level: '5'
 	},
 	{
 		term: 'expression litterale',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: 'Expression contenant au moins une lettre representant un nombre. Ex : $2a + b$.',
 		level: '5',
 		synonyms: ['expression algebrique']
 	},
 	{
 		term: 'variable',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: 'Lettre representant un nombre inconnu ou pouvant varier. Ex : $x$ dans $2x + 3$.',
 		level: '5'
 	},
 	{
 		term: 'équation',
-		tags: ['calcul-litteral', 'equations'],
+		tags: ['calcul-littéral', 'équations'],
 		definition: 'Egalite contenant une inconnue a determiner. Ex : $2x + 3 = 7$.',
 		level: '4'
 	},
 	{
 		term: 'inconnue',
-		tags: ['calcul-litteral', 'equations'],
+		tags: ['calcul-littéral', 'équations'],
 		definition:
 			"Valeur a trouver dans une equation. Souvent notee $x$. Ex : dans $2x + 3 = 7$, l'inconnue est $x = 2$.",
 		level: '4'
 	},
 	{
 		term: 'solution (équation)',
-		tags: ['calcul-litteral', 'equations'],
+		tags: ['calcul-littéral', 'équations'],
 		definition:
 			"Valeur de l'inconnue qui rend l'equation vraie. Ex : $x = 2$ est la solution de $2x + 3 = 7$.",
 		level: '4'
 	},
 	{
 		term: 'développer',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition:
 			'Transformer un produit en somme en utilisant la distributivite. Ex : $3(x + 2) = 3x + 6$.',
 		level: '4'
 	},
 	{
 		term: 'factoriser',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: 'Transformer une somme en produit. Ex : $3x + 6 = 3(x + 2)$.',
 		level: '3'
 	},
 	{
 		term: 'réduire',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: 'Regrouper les termes semblables dans une expression. Ex : $3x + 2x = 5x$.',
 		level: '5'
 	},
 	{
 		term: 'distributivite',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: 'Propriete : $a(b + c) = ab + ac$. Permet de developper ou factoriser.',
 		level: '5'
 	},
 	{
 		term: 'identité remarquable',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: 'Formule algebrique classique. Ex : $(a + b)^2 = a^2 + 2ab + b^2$.',
 		level: '3'
 	},
 	{
 		term: 'coefficient',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: 'Nombre qui multiplie une variable. Ex : dans $5x$, le coefficient de $x$ est $5$.',
 		level: '5'
 	},
 	{
 		term: 'monome',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: "Expression constituee d'un coefficient et de variables. Ex : $3x^2$.",
 		level: '3'
 	},
 	{
 		term: 'polynôme',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: 'Somme de monomes. Ex : $2x^2 + 3x - 1$.',
 		level: '2'
 	},
 	{
 		term: 'degre',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition:
 			'Plus grand exposant de la variable dans un polynome. Ex : le degre de $2x^3 + x$ est $3$.',
 		level: '2'
 	},
 	{
 		term: 'inéquation',
-		tags: ['calcul-litteral', 'equations'],
+		tags: ['calcul-littéral', 'équations'],
 		definition: 'Inegalite contenant une inconnue. Ex : $2x + 1 > 5$.',
 		level: '4'
 	},
 	{
 		term: "système d'equations",
-		tags: ['calcul-litteral', 'equations'],
+		tags: ['calcul-littéral', 'équations'],
 		definition:
 			'Ensemble de plusieurs equations a resoudre simultanement. Ex : $\\{x + y = 5;\\; x - y = 1\\}$.',
 		level: '3'
 	},
 	{
 		term: 'substituer',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition:
 			'Remplacer une variable par une valeur numerique. Ex : si $x = 3$, alors $2x + 1 = 7$.',
 		level: '5'
 	},
 	{
 		term: 'algèbre',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: 'Branche des mathematiques utilisant des lettres pour representer des nombres.',
 		level: '4'
 	},
 	{
 		term: 'algébrique',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		level: '4',
 		derivedFrom: 'algèbre'
 	},
 	{
 		term: 'développement',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: 'Action de transformer un produit en somme par distributivite.',
 		level: '4'
 	},
 	{
 		term: 'factorisation',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: 'Action de transformer une somme en produit.',
 		level: '3'
 	},
 	{
 		term: 'inégalité',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		definition: "Relation d'ordre entre deux expressions : $<$, $>$, $\\leq$, $\\geq$.",
 		level: '4'
 	},
 	{
 		term: 'littéral',
-		tags: ['calcul-litteral'],
+		tags: ['calcul-littéral'],
 		level: '5',
 		derivedFrom: 'expression litterale'
 	},
 	{
 		term: 'resoudre',
-		tags: ['calcul-litteral', 'equations'],
+		tags: ['calcul-littéral', 'équations'],
 		level: '4',
 		derivedFrom: 'solution (équation)'
 	},
 	{
 		term: 'solution',
-		tags: ['calcul-litteral', 'equations'],
+		tags: ['calcul-littéral', 'équations'],
 		definition: 'Valeur qui verifie une equation ou un probleme.',
 		level: '4',
 		derivedFrom: 'solution (équation)'
@@ -942,20 +942,20 @@ const MATH_DICTIONARY: MathTerm[] = [
 	// =========================================================================
 	{
 		term: 'périmètre',
-		tags: ['grandeurs', 'geometrie'],
+		tags: ['grandeurs', 'géométrie'],
 		definition:
 			"Longueur du contour d'une figure. Ex : le perimetre d'un rectangle est $2(L + l)$.",
 		level: 'CE1'
 	},
 	{
 		term: 'aire',
-		tags: ['grandeurs', 'geometrie'],
+		tags: ['grandeurs', 'géométrie'],
 		definition: "Mesure de la surface d'une figure. Ex : l'aire d'un rectangle est $L \\times l$.",
 		level: 'CM1'
 	},
 	{
 		term: 'volume',
-		tags: ['grandeurs', 'geometrie'],
+		tags: ['grandeurs', 'géométrie'],
 		definition:
 			"Mesure de l'espace occupe par un solide. Ex : le volume d'un pave droit est $L \\times l \\times h$.",
 		level: 'CM2'
@@ -968,7 +968,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'longueur',
-		tags: ['grandeurs', 'geometrie'],
+		tags: ['grandeurs', 'géométrie'],
 		definition:
 			'Grandeur mesurant une distance. Unites : $\\text{mm}$, $\\text{cm}$, $\\text{m}$, $\\text{km}$.',
 		level: 'CP'
@@ -1000,32 +1000,32 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'vitesse',
-		tags: ['grandeurs', 'proportionnalite'],
+		tags: ['grandeurs', 'proportionnalité'],
 		definition:
 			'Rapport entre une distance et un temps. $v = \\frac{d}{t}$. Unites : $\\text{km/h}$, $\\text{m/s}$.',
 		level: '4'
 	},
 	{
 		term: 'angle',
-		tags: ['grandeurs', 'geometrie'],
+		tags: ['grandeurs', 'géométrie'],
 		definition: 'Figure formee par deux demi-droites de meme origine. Se mesure en degres ($°$).',
 		level: 'CE2'
 	},
 	{
 		term: 'angle droit',
-		tags: ['grandeurs', 'geometrie'],
+		tags: ['grandeurs', 'géométrie'],
 		definition: 'Angle mesurant $90°$.',
 		level: 'CE1'
 	},
 	{
 		term: 'angle aigu',
-		tags: ['grandeurs', 'geometrie'],
+		tags: ['grandeurs', 'géométrie'],
 		definition: 'Angle mesurant moins de $90°$.',
 		level: 'CM1'
 	},
 	{
 		term: 'angle obtus',
-		tags: ['grandeurs', 'geometrie'],
+		tags: ['grandeurs', 'géométrie'],
 		definition: 'Angle mesurant entre $90°$ et $180°$.',
 		level: 'CM1'
 	},
@@ -1037,13 +1037,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'construction',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Realisation d'une figure geometrique a l'aide d'instruments.",
 		level: 'CE1'
 	},
 	{
 		term: 'construire',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		level: 'CE1',
 		derivedFrom: 'construction'
 	},
@@ -1067,7 +1067,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'distance',
-		tags: ['geometrie', 'grandeurs'],
+		tags: ['géométrie', 'grandeurs'],
 		definition: 'Longueur du plus court chemin entre deux points.',
 		level: 'CE1'
 	},
@@ -1085,7 +1085,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'hauteur',
-		tags: ['grandeurs', 'geometrie'],
+		tags: ['grandeurs', 'géométrie'],
 		definition: "Dimension verticale d'un objet ou d'une figure.",
 		level: 'CE1'
 	},
@@ -1103,7 +1103,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'largeur',
-		tags: ['grandeurs', 'geometrie'],
+		tags: ['grandeurs', 'géométrie'],
 		definition: "Plus petite dimension d'un rectangle.",
 		level: 'CE1'
 	},
@@ -1133,7 +1133,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'surface',
-		tags: ['geometrie', 'grandeurs'],
+		tags: ['géométrie', 'grandeurs'],
 		definition: "Etendue d'une figure plane. Synonyme d'aire.",
 		level: 'CM1'
 	},
@@ -1143,91 +1143,91 @@ const MATH_DICTIONARY: MathTerm[] = [
 	// =========================================================================
 	{
 		term: 'proportionnel',
-		tags: ['proportionnalite'],
+		tags: ['proportionnalité'],
 		definition:
 			"Deux grandeurs sont proportionnelles si l'une est obtenue en multipliant l'autre par un meme nombre constant.",
 		level: 'CM2'
 	},
 	{
 		term: 'coefficient de proportionnalité',
-		tags: ['proportionnalite'],
+		tags: ['proportionnalité'],
 		definition: "Constante par laquelle on multiplie une grandeur pour obtenir l'autre.",
 		level: '6'
 	},
 	{
 		term: 'tableau de proportionnalité',
-		tags: ['proportionnalite'],
+		tags: ['proportionnalité'],
 		definition:
 			'Tableau dans lequel les valeurs de deux grandeurs proportionnelles sont en correspondance.',
 		level: 'CM2'
 	},
 	{
 		term: 'pourcentage',
-		tags: ['proportionnalite'],
+		tags: ['proportionnalité'],
 		definition: 'Proportion exprimee sur $100$. Ex : $25\\%$ signifie $\\frac{25}{100}$.',
 		level: 'CM2'
 	},
 	{
 		term: 'échelle',
-		tags: ['proportionnalite', 'grandeurs'],
+		tags: ['proportionnalité', 'grandeurs'],
 		definition:
 			"Rapport entre les dimensions d'une representation et les dimensions reelles. Ex : echelle $1/1000$.",
 		level: 'CM2'
 	},
 	{
 		term: 'produit en croix',
-		tags: ['proportionnalite'],
+		tags: ['proportionnalité'],
 		definition:
 			'Methode pour trouver une valeur manquante dans un tableau de proportionnalite : $\\frac{a}{b} = \\frac{c}{d} \\Rightarrow a \\times d = b \\times c$.',
 		level: '6'
 	},
 	{
 		term: 'taux',
-		tags: ['proportionnalite'],
+		tags: ['proportionnalité'],
 		definition: 'Rapport exprime en pourcentage. Ex : un taux de $5\\%$ signifie $\\frac{5}{100}$.',
 		level: '4'
 	},
 	{
 		term: 'augmentation',
-		tags: ['proportionnalite'],
+		tags: ['proportionnalité'],
 		definition: "Variation positive d'une grandeur. Augmenter de $20\\%$ : multiplier par $1{,}2$.",
 		level: '4'
 	},
 	{
 		term: 'diminution',
-		tags: ['proportionnalite'],
+		tags: ['proportionnalité'],
 		definition: "Variation negative d'une grandeur. Diminuer de $20\\%$ : multiplier par $0{,}8$.",
 		level: '4',
 		synonyms: ['reduction']
 	},
 	{
 		term: 'coefficient multiplicateur',
-		tags: ['proportionnalite'],
+		tags: ['proportionnalité'],
 		definition:
 			'Nombre par lequel on multiplie pour appliquer une variation. Ex : $+20\\% \\Rightarrow \\times 1{,}2$.',
 		level: '2'
 	},
 	{
 		term: 'proportion',
-		tags: ['proportionnalite'],
+		tags: ['proportionnalité'],
 		definition: 'Egalite de deux rapports. Ex : $\\frac{a}{b} = \\frac{c}{d}$.',
 		level: 'CM2'
 	},
 	{
-		term: 'proportionnalite',
-		tags: ['proportionnalite'],
+		term: 'proportionnalité',
+		tags: ['proportionnalité'],
 		definition: 'Relation entre deux grandeurs dont le rapport est constant.',
 		level: 'CM2'
 	},
 	{
 		term: 'rapport',
-		tags: ['proportionnalite'],
+		tags: ['proportionnalité'],
 		definition: 'Quotient de deux grandeurs. Ex : rapport $\\frac{a}{b}$.',
 		level: '6'
 	},
 	{
 		term: 'ratio',
-		tags: ['proportionnalite'],
+		tags: ['proportionnalité'],
 		definition: 'Rapport entre deux quantites. Synonyme de rapport.',
 		level: '6'
 	},
@@ -1344,7 +1344,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'fonction linéaire',
-		tags: ['fonctions', 'proportionnalite'],
+		tags: ['fonctions', 'proportionnalité'],
 		definition: 'Fonction de la forme $f(x) = ax$. Represente une situation de proportionnalite.',
 		level: '3'
 	},
@@ -1413,14 +1413,14 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'abscisse',
-		tags: ['fonctions', 'geometrie'],
+		tags: ['fonctions', 'géométrie'],
 		definition:
 			"Coordonnee horizontale d'un point dans un repere. Premiere coordonnee du couple $(x, y)$.",
 		level: '5'
 	},
 	{
 		term: 'ordonnée',
-		tags: ['fonctions', 'geometrie'],
+		tags: ['fonctions', 'géométrie'],
 		definition:
 			"Coordonnee verticale d'un point dans un repere. Deuxieme coordonnee du couple $(x, y)$.",
 		level: '5'
@@ -1441,7 +1441,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'repère',
-		tags: ['fonctions', 'geometrie'],
+		tags: ['fonctions', 'géométrie'],
 		definition:
 			"Systeme d'axes perpendiculaires gradue permettant de representer des points par leurs coordonnees.",
 		level: '5',
@@ -1493,7 +1493,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'tangente',
-		tags: ['fonctions', 'geometrie'],
+		tags: ['fonctions', 'géométrie'],
 		definition:
 			'Droite qui touche la courbe en un point et a la meme pente que la courbe en ce point.',
 		level: '1_SPE'
@@ -1601,7 +1601,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'coordonnée',
-		tags: ['geometrie', 'fonctions'],
+		tags: ['géométrie', 'fonctions'],
 		definition: "Nombre repérant la position d'un point sur un axe ou dans un plan.",
 		level: '5'
 	},
@@ -1633,7 +1633,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'raison',
 		tags: ['suites'],
 		definition:
-			'Constante $r$ telle que $u_{n+1} = u_n + r$ (arithmetique) ou $u_{n+1} = u_n \\times q$ (geometrique, notee $q$).',
+			'Constante $r$ telle que $u_{n+1} = u_n + r$ (arithmétique) ou $u_{n+1} = u_n \\times q$ (géométrique, notée $q$).',
 		level: '1_SPE'
 	},
 	{
@@ -1706,91 +1706,91 @@ const MATH_DICTIONARY: MathTerm[] = [
 	// =========================================================================
 	{
 		term: 'probabilité',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition: "Nombre entre $0$ et $1$ mesurant la chance qu'un evenement se produise.",
 		level: '5'
 	},
 	{
 		term: 'expérience aléatoire',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition: 'Experience dont le resultat depend du hasard. Ex : lancer un de.',
 		level: '5'
 	},
 	{
 		term: 'issue',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition: "Resultat possible d'une experience aleatoire. Ex : obtenir $3$ en lancant un de.",
 		level: '5',
 		synonyms: ['eventualite']
 	},
 	{
 		term: 'événement',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition:
 			"Ensemble d'issues. Ex : obtenir un nombre pair en lancant un de ($\\{2, 4, 6\\}$).",
 		level: '5'
 	},
 	{
 		term: 'univers',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition:
 			'Ensemble de toutes les issues possibles. Ex : pour un de, $\\Omega = \\{1, 2, 3, 4, 5, 6\\}$.',
 		level: '5'
 	},
 	{
 		term: 'équiprobabilité',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition: 'Situation ou toutes les issues ont la meme probabilite.',
 		level: '5'
 	},
 	{
 		term: 'événement contraire',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition: "Complementaire d'un evenement. $P(\\bar{A}) = 1 - P(A)$.",
 		level: '5'
 	},
 	{
 		term: 'arbre de probabilités',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition:
 			"Schema en arbre representant les etapes successives d'une experience aleatoire et les probabilites associees.",
 		level: '3'
 	},
 	{
 		term: 'fréquence',
-		tags: ['probabilites', 'statistiques'],
+		tags: ['probabilités', 'statistiques'],
 		definition:
 			"Rapport du nombre d'occurrences d'un evenement au nombre total d'experiences. $f = \\frac{\\text{effectif}}{\\text{total}}$.",
 		level: '5'
 	},
 	{
 		term: 'loi de probabilité',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition:
 			'Tableau associant a chaque issue sa probabilite. La somme des probabilites vaut $1$.',
 		level: '3'
 	},
 	{
 		term: 'variable aléatoire',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition: "Fonction associant un nombre reel a chaque issue d'une experience aleatoire.",
 		level: '1_SPE'
 	},
 	{
 		term: 'espérance',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition: "Valeur moyenne d'une variable aleatoire. $E(X) = \\sum x_i \\cdot P(X = x_i)$.",
 		level: '1_SPE'
 	},
 	{
 		term: 'combinaison',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition: 'Nombre de facons de choisir $k$ elements parmi $n$ : $\\binom{n}{k}$.',
 		level: 'T_SPE'
 	},
 	{
 		term: 'permutation',
-		tags: ['probabilites'],
+		tags: ['probabilités'],
 		definition: "Arrangement ordonne de tous les elements d'un ensemble.",
 		level: 'T_SPE'
 	},
@@ -1868,77 +1868,77 @@ const MATH_DICTIONARY: MathTerm[] = [
 	// =========================================================================
 	{
 		term: 'segment',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Partie d'une droite delimitee par deux points. Note $[AB]$.",
 		level: 'CP'
 	},
 	{
 		term: 'droite',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Ligne infinie, sans courbure. Note $(AB)$.',
 		level: 'CP'
 	},
 	{
 		term: 'demi-droite',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Partie d'une droite ayant une origine mais pas de fin. Note $[AB)$.",
 		level: 'CE1'
 	},
 	{
 		term: 'perpendiculaire',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Deux droites sont perpendiculaires si elles forment un angle droit ($90°$).',
 		level: 'CE2'
 	},
 	{
 		term: 'parallèle',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Deux droites sont paralleles si elles ne se coupent jamais.',
 		level: 'CE2'
 	},
 	{
 		term: 'symétrie axiale',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Transformation qui associe a un point son symetrique par rapport a un axe.',
 		level: '6'
 	},
 	{
 		term: 'symétrie centrale',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Transformation qui associe a un point son symetrique par rapport a un centre.',
 		level: '5'
 	},
 	{
 		term: 'translation',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition:
 			'Transformation qui deplace chaque point de la meme direction, du meme sens et de la meme distance.',
 		level: '4'
 	},
 	{
 		term: 'rotation',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition:
 			"Transformation qui fait tourner chaque point autour d'un centre, d'un angle donne.",
 		level: '4'
 	},
 	{
 		term: 'homothetie',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition:
 			'Transformation qui agrandit ou reduit une figure par rapport a un centre et un rapport $k$.',
 		level: '3'
 	},
 	{
 		term: 'théorème de Pythagore',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Dans un triangle rectangle, $c^2 = a^2 + b^2$ ou $c$ est l'hypotenuse.",
 		level: '4',
 		synonyms: ['Pythagore']
 	},
 	{
 		term: 'théorème de Thalès',
-		tags: ['geometrie', 'proportionnalite'],
+		tags: ['géométrie', 'proportionnalité'],
 		definition:
 			'Si deux droites paralleles coupent deux secantes, alors elles determinent des segments proportionnels.',
 		level: '3',
@@ -1946,170 +1946,170 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'hypoténuse',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Cote le plus long d'un triangle rectangle, oppose a l'angle droit.",
 		level: '4'
 	},
 	{
-		term: 'trigonometrie',
-		tags: ['geometrie'],
+		term: 'trigonométrie',
+		tags: ['géométrie'],
 		definition:
 			"Etude des relations entre les angles et les cotes d'un triangle. Utilise $\\cos$, $\\sin$, $\\tan$.",
 		level: '3'
 	},
 	{
 		term: 'cosinus',
-		tags: ['geometrie', 'trigonometrie'],
+		tags: ['géométrie', 'trigonométrie'],
 		definition:
 			'$\\cos(\\alpha) = \\frac{\\text{adjacent}}{\\text{hypotenuse}}$ dans un triangle rectangle.',
 		level: '4'
 	},
 	{
 		term: 'sinus',
-		tags: ['geometrie', 'trigonometrie'],
+		tags: ['géométrie', 'trigonométrie'],
 		definition:
 			'$\\sin(\\alpha) = \\frac{\\text{oppose}}{\\text{hypotenuse}}$ dans un triangle rectangle.',
 		level: '3'
 	},
 	{
 		term: 'tangente (trigonométrie)',
-		tags: ['geometrie', 'trigonometrie'],
+		tags: ['géométrie', 'trigonométrie'],
 		definition:
 			'$\\tan(\\alpha) = \\frac{\\text{oppose}}{\\text{adjacent}}$ dans un triangle rectangle.',
 		level: '3'
 	},
 	{
 		term: 'cercle',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Ensemble des points situes a une meme distance (rayon) d'un point (centre).",
 		level: 'CE1'
 	},
 	{
 		term: 'rayon',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Segment joignant le centre d'un cercle a un point du cercle.",
 		level: 'CE1'
 	},
 	{
 		term: 'diamètre',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition:
 			"Segment passant par le centre d'un cercle et joignant deux points du cercle. $d = 2r$.",
 		level: 'CE1'
 	},
 	{
 		term: 'triangle',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Polygone a trois cotes.',
 		level: 'CP'
 	},
 	{
 		term: 'rectangle',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Quadrilatere ayant quatre angles droits.',
 		level: 'CP'
 	},
 	{
 		term: 'carré (géométrie)',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Rectangle ayant quatre cotes egaux.',
 		level: 'CP'
 	},
 	{
 		term: 'losange',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Quadrilatere ayant quatre cotes egaux.',
 		level: 'CE2'
 	},
 	{
 		term: 'parallélogramme',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Quadrilatere dont les cotes opposes sont paralleles et egaux.',
 		level: 'CM1'
 	},
 	{
 		term: 'trapeze',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Quadrilatere ayant exactement deux cotes paralleles.',
 		level: 'CM1'
 	},
 	{
 		term: 'polygone',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Figure plane fermee delimitee par des segments. Ex : triangle, carre, hexagone.',
 		level: 'CE1'
 	},
 	{
 		term: 'sommet',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Point de rencontre de deux cotes d'un polygone.",
 		level: 'CE1'
 	},
 	{
 		term: 'côté',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Segment delimitant un polygone.',
 		level: 'CE1'
 	},
 	{
 		term: 'diagonale',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Segment joignant deux sommets non consecutifs d'un polygone.",
 		level: 'CM1'
 	},
 	{
 		term: 'milieu',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Point qui partage un segment en deux parties egales.',
 		level: 'CE2'
 	},
 	{
 		term: 'médiane (géométrie)',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Dans un triangle, segment joignant un sommet au milieu du cote oppose.',
 		level: '5'
 	},
 	{
 		term: 'médiatrice',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition:
 			'Droite perpendiculaire a un segment et passant par son milieu. Lieu des points equidistants des extremites.',
 		level: '6'
 	},
 	{
 		term: 'bissectrice',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Demi-droite qui partage un angle en deux angles egaux.',
 		level: '6'
 	},
 	{
 		term: 'hauteur (géométrie)',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Droite passant par un sommet d'un triangle et perpendiculaire au cote oppose.",
 		level: '5'
 	},
 	{
 		term: 'vecteur',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition:
 			'Objet mathematique defini par une direction, un sens et une norme (longueur). Note $\\vec{AB}$.',
 		level: '2'
 	},
 	{
 		term: 'norme',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Longueur d'un vecteur. $\\|\\vec{u}\\| = \\sqrt{x^2 + y^2}$.",
 		level: '2'
 	},
 	{
 		term: 'coordonnées',
-		tags: ['geometrie', 'fonctions'],
+		tags: ['géométrie', 'fonctions'],
 		definition: 'Couple de nombres $(x, y)$ repérant un point dans le plan.',
 		level: '5'
 	},
 	{
 		term: 'scalaire',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition:
 			'Produit scalaire de deux vecteurs : $\\vec{u} \\cdot \\vec{v} = \\|u\\|\\|v\\|\\cos(\\theta)$.',
 		level: '1_SPE',
@@ -2117,164 +2117,164 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'adjacent',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Se dit de deux angles ayant un cote commun.',
 		level: '6'
 	},
 	{
 		term: 'aigu',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Se dit d'un angle mesurant moins de $90°$.",
 		level: 'CM1'
 	},
 	{
 		term: 'aligne',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Se dit de points situes sur une meme droite.',
 		level: '6'
 	},
 	{
 		term: 'aligner',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		level: '6',
 		derivedFrom: 'aligne'
 	},
 	{
 		term: 'arête',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Segment commun a deux faces d'un solide.",
 		level: '6'
 	},
 	{
 		term: 'axe',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Droite de reference (axe de symetrie, axe des abscisses, etc.).',
 		level: 'CE2'
 	},
 	{
 		term: 'barycentre',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Point d'equilibre d'un systeme de points ponderes.",
 		level: '1_SPE'
 	},
 	{
 		term: 'centre',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Point equidistant de tous les points d'un cercle ou d'une sphere.",
 		level: 'CE1'
 	},
 	{
 		term: 'codage',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition:
 			'Symboles places sur une figure pour indiquer des proprietes (longueurs egales, angles droits, etc.).',
 		level: '6'
 	},
 	{
 		term: 'coder',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		level: '6',
 		derivedFrom: 'codage'
 	},
 	{
 		term: 'compas',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Instrument de geometrie servant a tracer des cercles et reporter des longueurs.',
 		level: 'CE1'
 	},
 	{
 		term: 'complémentaire',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		level: '5',
 		derivedFrom: 'angle'
 	},
 	{
 		term: 'cône',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Solide ayant une base circulaire et un sommet pointu.',
 		level: '5'
 	},
 	{
 		term: 'cylindre',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Solide ayant deux bases circulaires paralleles et egales.',
 		level: '5'
 	},
 	{
 		term: 'droit',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Se dit d'un angle mesurant $90°$. Aussi : droite, une ligne infinie.",
 		level: 'CE1'
 	},
 	{
 		term: 'ellipse',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Courbe fermee dont la somme des distances a deux foyers est constante.',
 		level: '2'
 	},
 	{
 		term: 'équerre',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Instrument de geometrie en forme de triangle rectangle.',
 		level: 'CE1'
 	},
 	{
 		term: 'équidistant',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'A egale distance de deux points ou objets.',
 		level: '6'
 	},
 	{
 		term: 'équilatéral',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		level: '6',
 		derivedFrom: 'triangle'
 	},
 	{
 		term: 'espace',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Ensemble a trois dimensions dans lequel se situent les objets geometriques.',
 		level: 'CM2'
 	},
 	{
 		term: 'extrémité',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Point aux bouts d'un segment.",
 		level: 'CE1'
 	},
 	{
 		term: 'face',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Surface plane delimitant un solide.',
 		level: 'CE2'
 	},
 	{
 		term: 'figure',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Dessin geometrique representant des formes.',
 		level: 'CE1'
 	},
 	{
 		term: 'forme',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Aspect exterieur d'un objet geometrique.",
 		level: 'CP'
 	},
 	{
 		term: 'hexagone',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Polygone a six cotes.',
 		level: 'CM1'
 	},
 	{
 		term: 'hyperbole',
-		tags: ['geometrie', 'fonctions'],
+		tags: ['géométrie', 'fonctions'],
 		definition: 'Courbe formee de deux branches, representant la fonction inverse ou une conique.',
 		level: '2'
 	},
 	{
 		term: 'hypothénuse',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition:
 			"Variante orthographique de hypotenuse (cote le plus long d'un triangle rectangle).",
 		level: '4',
@@ -2282,204 +2282,204 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'isocèle',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		level: '6',
 		derivedFrom: 'triangle'
 	},
 	{
 		term: 'obtus',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Se dit d'un angle mesurant entre $90°$ et $180°$.",
 		level: 'CM1'
 	},
 	{
 		term: 'octogone',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Polygone a huit cotes.',
 		level: 'CM1'
 	},
 	{
 		term: 'origine',
-		tags: ['transversal', 'geometrie'],
+		tags: ['transversal', 'géométrie'],
 		definition: 'Point de reference sur une droite graduee ou dans un repere.',
 		level: '6'
 	},
 	{
 		term: 'orthogonal',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		level: '5',
 		derivedFrom: 'perpendiculaire'
 	},
 	{
 		term: 'parabole',
-		tags: ['geometrie', 'fonctions'],
+		tags: ['géométrie', 'fonctions'],
 		definition: 'Courbe en U representant une fonction du second degre.',
 		level: '2'
 	},
 	{
 		term: 'patron',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Figure plane qui, une fois pliee, forme un solide.',
 		level: '6'
 	},
 	{
 		term: 'pave',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Solide a six faces rectangulaires (parallelepipede rectangle).',
 		level: '6',
 		synonyms: ['parallelepipede rectangle']
 	},
 	{
 		term: 'pentagone',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Polygone a cinq cotes.',
 		level: 'CM1'
 	},
 	{
 		term: 'perspective',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Representation d'un objet 3D sur un plan 2D.",
 		level: '6'
 	},
 	{
 		term: 'pi',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition:
 			"Nombre $\\pi \\approx 3{,}14159$. Rapport du perimetre d'un cercle a son diametre.",
 		level: '6'
 	},
 	{
 		term: 'plan',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Surface plane infinie a deux dimensions.',
 		level: 'CE2'
 	},
 	{
 		term: 'point',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Element geometrique sans dimension, designe par une lettre majuscule.',
 		level: 'CP'
 	},
 	{
 		term: 'prisme',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Solide dont les deux bases sont des polygones egaux et paralleles.',
 		level: '5'
 	},
 	{
 		term: 'pyramide',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Solide dont la base est un polygone et les faces laterales sont des triangles.',
 		level: '5'
 	},
 	{
 		term: 'pythagore',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Mathematicien grec. Associe au theoreme de Pythagore.',
 		level: '4',
 		derivedFrom: 'théorème de Pythagore'
 	},
 	{
 		term: 'quadrilatere',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Polygone a quatre cotes.',
 		level: 'CE2'
 	},
 	{
 		term: 'quelconque',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Sans propriete particuliere. Ex : triangle quelconque.',
 		level: '6'
 	},
 	{
 		term: 'radian',
-		tags: ['geometrie', 'trigonometrie'],
+		tags: ['géométrie', 'trigonométrie'],
 		definition: "Unite de mesure d'angle. $\\pi\\,\\text{rad} = 180°$.",
 		level: '2'
 	},
 	{
 		term: 'rapporteur',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Instrument de geometrie servant a mesurer des angles.',
 		level: 'CE2'
 	},
 	{
 		term: 'regle',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Instrument de geometrie servant a tracer des droites et mesurer des longueurs.',
 		level: 'CP'
 	},
 	{
 		term: 'sécante',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Droite qui coupe une autre droite ou une courbe en un ou plusieurs points.',
 		level: '4'
 	},
 	{
 		term: 'secant',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		level: '4',
 		derivedFrom: 'sécante'
 	},
 	{
 		term: 'secteur',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Portion de disque delimitee par deux rayons et un arc de cercle.',
 		level: '6'
 	},
 	{
 		term: 'concave',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Se dit d'une figure ou d'une courbe qui presente un creux.",
 		level: '4'
 	},
 	{
 		term: 'convexe',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition:
 			"Se dit d'une figure ou d'une courbe qui ne presente pas de creux. Un segment joignant deux points de la figure reste a l'interieur.",
 		level: '4'
 	},
 	{
 		term: 'solide',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Figure geometrique de l'espace a trois dimensions.",
 		level: 'CE2'
 	},
 	{
 		term: 'sphère',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: "Ensemble des points de l'espace situes a une meme distance d'un centre.",
 		level: '5'
 	},
 	{
 		term: 'sphérique',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		level: '5',
 		derivedFrom: 'sphère'
 	},
 	{
 		term: 'symétrie',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Transformation geometrique (axiale ou centrale).',
 		level: '6'
 	},
 	{
 		term: 'symétrique',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		level: '6',
 		derivedFrom: 'symétrie axiale'
 	},
 	{
 		term: 'tangeant',
-		tags: ['geometrie', 'trigonometrie'],
+		tags: ['géométrie', 'trigonométrie'],
 		definition: 'Variante orthographique de tangente.',
 		level: '3',
 		derivedFrom: 'tangente (trigonométrie)'
 	},
 	{
 		term: 'thales',
-		tags: ['geometrie'],
+		tags: ['géométrie'],
 		definition: 'Mathematicien grec. Associe au theoreme de Thales.',
 		level: '3',
 		derivedFrom: 'théorème de Thalès'
@@ -2614,7 +2614,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	// =========================================================================
 	{
 		term: 'shisma',
-		tags: ['arithmetique'],
+		tags: ['arithmétique'],
 		definition: 'Petit intervalle musical en theorie des nombres (terme rare).',
 		level: 'T_SPE'
 	}

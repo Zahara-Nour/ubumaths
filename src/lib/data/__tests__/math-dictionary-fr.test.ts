@@ -36,20 +36,16 @@ describe('math-dictionary-fr', () => {
 
 	it('should have at least 1 tag for every term', () => {
 		for (const term of MATH_DICTIONARY) {
-			expect(
-				term.tags.length,
-				`"${term.term}" has no tags`
-			).toBeGreaterThanOrEqual(1);
+			expect(term.tags.length, `"${term.term}" has no tags`).toBeGreaterThanOrEqual(1);
 		}
 	});
 
 	it('should have non-empty definitions for principal terms', () => {
 		for (const term of MATH_DICTIONARY) {
 			if (term.derivedFrom) continue; // Derived terms don't need definitions
-			expect(
-				term.definition?.trim().length,
-				`"${term.term}" has empty definition`
-			).toBeGreaterThan(0);
+			expect(term.definition?.trim().length, `"${term.term}" has empty definition`).toBeGreaterThan(
+				0
+			);
 		}
 	});
 
@@ -65,15 +61,10 @@ describe('math-dictionary-fr', () => {
 		}
 	});
 
-	it('should have lowercase tags without accents', () => {
-		const accentRegex = /[àâäéèêëïîôùûüÿçæœ]/;
+	it('should have lowercase tags', () => {
 		for (const term of MATH_DICTIONARY) {
 			for (const tag of term.tags) {
 				expect(tag, `tag "${tag}" on "${term.term}" is not lowercase`).toBe(tag.toLowerCase());
-				expect(
-					accentRegex.test(tag),
-					`tag "${tag}" on "${term.term}" contains accents`
-				).toBe(false);
 			}
 		}
 	});
@@ -86,17 +77,17 @@ describe('math-dictionary-fr', () => {
 		const allTags = new Set(MATH_DICTIONARY.flatMap((t) => t.tags));
 		const expectedThemes = [
 			'entiers',
-			'decimaux',
-			'calcul-litteral',
+			'décimaux',
+			'calcul-littéral',
 			'fractions',
 			'grandeurs',
 			'fonctions',
 			'relatifs',
-			'proportionnalite',
+			'proportionnalité',
 			'puissances',
 			'suites',
 			'racines-carrees',
-			'probabilites'
+			'probabilités'
 		];
 		for (const theme of expectedThemes) {
 			expect(allTags.has(theme), `missing theme: ${theme}`).toBe(true);
@@ -143,16 +134,16 @@ describe('math-dictionary-fr', () => {
 	// -----------------------------------------------------------------------
 
 	describe('getTermsByTag', () => {
-		it('should return terms for "arithmetique"', () => {
-			const terms = getTermsByTag('arithmetique');
+		it('should return terms for "arithmétique"', () => {
+			const terms = getTermsByTag('arithmétique');
 			expect(terms.length).toBeGreaterThan(0);
 			for (const t of terms) {
-				expect(t.tags).toContain('arithmetique');
+				expect(t.tags).toContain('arithmétique');
 			}
 		});
 
-		it('should return terms for "geometrie"', () => {
-			const terms = getTermsByTag('geometrie');
+		it('should return terms for "géométrie"', () => {
+			const terms = getTermsByTag('géométrie');
 			expect(terms.length).toBeGreaterThan(0);
 		});
 
@@ -168,8 +159,8 @@ describe('math-dictionary-fr', () => {
 
 	describe('getTermsByTagAndLevel', () => {
 		it('should return a subset of getTermsByTag', () => {
-			const allGeometrie = getTermsByTag('geometrie');
-			const geometrie4 = getTermsByTagAndLevel('geometrie', '4');
+			const allGeometrie = getTermsByTag('géométrie');
+			const geometrie4 = getTermsByTagAndLevel('géométrie', '4');
 			expect(geometrie4.length).toBeGreaterThan(0);
 			expect(geometrie4.length).toBeLessThanOrEqual(allGeometrie.length);
 			// Every term in the filtered set should be in the full set
